@@ -12,8 +12,12 @@ the land itself: gas, heat, ash, ice and thin air. A player who reaches one of i
 This is a seed from the owner's brief (2026-11-09) and the map. Two drafts were merged into it on 2026-11-09: the brief's (who
 comes here, the outposts, the Labyrinth as neighbour) and a reading of the model's numbers. The owner's decisions of 2026-11-09
 are applied to the scale model in **5.1 edit 3** (`tools/scale-model/edit_513.py`; section 9). Names marked **TBD** are the
-owner's to give, and *proposed* marks this plan's own suggestions. Nothing is built; it is a kit for the rebuild's queue, a
-neighbour of `biomes/labyrinth/PLAN.md`. Coordinates are 5.1 px (1821 x 1723, 2 km a px).
+owner's to give, and *proposed* marks this plan's own suggestions. A neighbour of `biomes/labyrinth/PLAN.md`. Coordinates are 5.1 px
+(1821 x 1723, 2 km a px).
+
+**Built 2026-11-10** (branch `claude/firebliss-80cc25`, on `claude/cloud-kits-verify`'s 5.1 edit 3): the four stations of section 7 on the
+model's own ground (section 7a), with the core adoption of section 8 as built. What is owed is in `KNOWN_ISSUES.md`; how a page is
+made is in `README.md`.
 
 ## 1. What the map carves (Gemini, map 5.1)
 
@@ -221,10 +225,50 @@ page is the usual 5.2 km square.
 Station 1 comes first: it holds the oasis, the hazards and the bands all at once. A fifth could be West Bliss Cauldron (125,1340,
 2,695 m, the Yan Warra's head under Mount Pyre) or the Copper-Fissure Vent's lava, if the owner wants either.
 
+### 7a. The pages as built (2026-11-10)
+
+Each page stands on the model's own ground: `model_site.py` reads a window of the 5.1 height grid (22 x 22 cells of 2 km) round its
+centre at build time and the page interpolates it with a cubic B-spline (`FB_MODEL`, `45-host-stage.js`), then adds only what 2 km cells
+cannot hold (the shore's coves, the thermal ground, a river's channel or gorge, hollows, a camp's pad). The lakes are 11-17 km across, wider
+than a page, so each valley's page stands on its lake's shore.
+
+| Station | Page | Centre (5.1 px) | Why there | What the model gives there |
+|---|---|---|---|---|
+| 1 Great Firebliss Vale | `dist/firebliss.html` | 183,1315 | the plan's north-shore point, 1 km toward the lake so the shore crosses the page | the lake (2,279.8 m) over the south-east; the floor rising north-west 40 m; Cfb, 12 °C (21 / 4), 1,050 mm |
+| 2 Solfatara Glen | `dist/firebliss-glen.html` | 234,1320.5 | where the Tlahn Warra reaches the lake (234,1321), 2 km from the plan's point | the lake (2,119.9 m) over the east half; the glen's floor 5-8 m over it, rising south-west; Cfb, 12.9 °C, 1,240 mm |
+| 3 East Bliss Vale | `dist/firebliss-east.html` | 285,1320.6 | the Weyt Warra's outlet (285,1320): the station is "the way in", up the gorge; the plan's point (282,1315) is the warmest shore, 12 km north-west | the lake (1,960 m) north-west; edit 3's carved outlet channel south down the middle (2 km wide on the cells); Cfa, 13.9 °C, 1,370 mm |
+| 4 Firebliss Mons | `dist/firebliss-mons.html` | 205,1282 | the plan's point | the crater floor (5,481-5,500 m) south and east, the inner wall north-west to 5,930 m; EF, -12.6 °C, 600 mm |
 ## 8. Core adoption (written first, as the working rules ask)
 
 Start from `biomes/copperglacier` (the newest finished kit and the neighbour: its ice, frost and station frame) and the geyser
 kit's `basin` recipe.
+
+**As built (2026-11-10).** "Branch" means read in place from `origin/claude/core-plan-features-229d2a` by `build.py` (`git show`) until
+that branch is merged: the pieces are not copied into the kit (`KNOWN_ISSUES.md`).
+
+| Need | Module | Taken | How |
+|---|---|---|---|
+| randomness | `core/rand` (`KRAND`) | yes | every placement cell seeded by `KRAND.cell(seed + salt, ix, iz)`; the camps' and hollows' by `KRAND.hash` of (world, key, index) |
+| the ground | the scale model 5.1 (`model_site.py`) | yes | the heights and water levels round each centre, baked into the page; no hand-drawn profile |
+| volcanoes, relief | `KRELIEF` (38) | yes | `KRELIEF.river` grades the Warras; the volcanoes themselves are the model's (2 km cells hold Mons' crater); `volcano`/`range` not called |
+| landforms | `KRELIEF` 38c (`maar`, `stepcut`, `terraces`) | **no** | the sinter steps are the geyser kit's terrace flights (its `GEYSER.lay` terraces); the gas hollows are KRAND-placed dish hollows on the stage |
+| thermal ground | the geyser kit (`biomes/geyser`, read in place as `biomes/ringisles` reads it) | yes | `GEYSER.lay` on each station's authored layout: springs, geysers, sinter flats and terraces, acid fields with mud pots and fumaroles, dead fringes; its relief, heat, flora and show |
+| ground temperature | `KTHERM` (47) | yes | the vents' heat between them, from the geyser layout: the snow's bare ground, the hot-ground hazard, the frost coral's warmth on Mons |
+| lava and tuff | `KLAVA`, `KSTRATA` | **no** | no station is on the Copper-Fissure Vent's flow (section 7); the walls are off the pages (the far field), so no bedded face is drawn |
+| glacier and frost | `KGLACIER` (44g), `KFROST` (42) | **KFROST yes, KGLACIER no** | KFROST's sorted circles on the ash flats over 2,900 m; Mons' crater ice is the ground's ice and snow layers (a crater floor, not a flowing glacier) |
+| ground | `KGROUND` (43), `KHORIZON` (45), `KFAR` (44) | yes | library layers on documented masks with KGROUND's relief; the far field to 14 km on the model's own heights; the walls' shadows; the plume as far sprites (`KFAR.sprites`) |
+| water | `core/water` (`open`, `flow`, ext 56-61, geyser 52/52b) | yes | the tarns (`WATER.open`, still: no surf, no breakers; the warm springs' tint), the Warras (`WATER.flow` on `KRELIEF.river`), the springs and geysers through the geyser kit's show; the reflections switch off at load |
+| flora | `core/biome` and the kits read in place | yes | the geyser kit's thermal trees and floor; the Throne's ash pine and tree fern as kin (`BIO.kin`); Copper Glacier's cushions, lichen, moss, sedge, boulders and frost coral (`COPPERG.build` on this page's fields); the kit's own meadow, reeds and stones |
+| sky, weather | `core/atmos` | yes | the standard sky at each site; height fog; rain cover; snow that lies (the station's line, bare over warm ground); the plume (`ATMOS.ashPlume`, branch) as fog, ash fall and the hazard's `ash` |
+| hazards | `core/hazard` (20, 21) and 22 (branch) | yes | heat and acid (the geyser kit's records), gas that pools at night (`KHAZ.night`), the sinter crust (`KHAZ.crust` / `under`), the gorge's flood (`KHAZ.front`, station 3), cold and thin air (`KHAZ.provide`), falls on the steep |
+| camps | `core/camp` (`KCAMP.pitch`) | yes | the hunters' camps; the two culture rows (`fellgang-hunt`, `kimr-hunt`) are the kit's data, registered on `KCAMP.CULTURES` (to move to core/camp/10 when settled) |
+| fauna | `kits/fauna` | **no** | owed: the Labyrinth's strays and the range's own animals wait for the fauna kit's Labyrinth and alpine sets (`KNOWN_ISSUES.md`) |
+| resources | `kits/resources` (`KRES`), read in place | yes | the nodes in each square from the rebaked `geology.json` (Copper Glacier's `res_site.js`, read in place), registered and drawn as stained outcrops: four sulphur nodes on Mons' crater floor; the valleys' data holds none (the sulphur is at the vents), so the Glen's sulphur is the fumaroles' crusts |
+| shadows | `core/shadow` | yes | off at load (`?shadow=1`) |
+| tags, space, mask, host, export, materials | as every kit | yes | `KTAGS`, `KSPACE` through the biome core; `KHOST` full with the polygon tool; `core/export`'s profile; `materials.json` and `pack.py` |
+| city, hamlet | `core/city`, `core/hamlet` | no | nobody lives here; the oases are offered to the open world's outpost registry as `outposts.json` (section 6), nothing drawn |
+
+**The plan's table** (2026-11-09, kept for the record):
 
 | Need | Module | How |
 |---|---|---|
@@ -286,6 +330,16 @@ outlet; the 2,920 m catena tarn at 146,1467 has rim cells 90 m under its level. 
 150 m somewhere along their course; that is a map-wide hydrology pass, not this one.
 
 ## 10. For the owner
+
+Found while building (2026-11-10):
+- **The stations' points.** The Glen's page stands where the Tlahn Warra reaches the lake and East Bliss's on the Weyt Warra's outlet,
+  not on the plan's warmest-shore points (section 7a says why). Move them back if the owner wants the shores.
+- **The gorges under the grid.** Edit 3 carves each outlet as one 2 km cell; station 3 adds a 26-40 m gorge in a tuff bench inside it
+  (sub-cell, the kit's). Should the model's channel be narrower and deeper?
+- **The plume misses the valley pages.** With the plume south-east of the cones the three valley pages get no ash fall (Mons' own does),
+  as section 1 says ("its own valleys lie mostly upwind").
+
+The plan's questions:
 
 - **The volcanoes' activity:** the plan takes all five as degassing and only the Copper-Fissure Vent as flowing lava.
 - **The two peoples:** do the Fellgangs and the Kimr have a truce here, a border, or a feud? Do they pass at different

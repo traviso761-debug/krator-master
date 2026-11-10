@@ -1,0 +1,33 @@
+{
+ "build": "firebliss",
+ "note": "The Firebliss Range's adapter onto the material library (core/materials/PLAN.md; PLAN.md section 8). The ground's KGROUND layers (84-host-ground.js): ground.grass (the warm meadow), ground.ashsoil (the floor's ashy soil), ground.ash (the ash slopes), ground.cinder (the steeper ash and the talus), rock.basalt (the steep: the gorge's and the crater's walls), ground.sinter (the geyser kit's sinter), ground.mat (the thermophile mats in the run-off's warm band), ground.sulphur (the acid fields' altered clay and sulphur), ground.snow and ice.glacier (Mons: the crater's ice). The cards: grass, fern, flower, fireweed, reed, ashgrass. The solids: pumice, obsidian, scoria, sulphur (the crusts), bird (the dead birds of the gas hollows), hide (the shelters and the racks' hides), wood (the poles), rock.cairn (cairns, hearths, caches, the Fellgangs' signs), horn (the Kimr's markers), bone (a butchery site). The geyser kit's, the Throne's and Copper Glacier's species keep their own packs (build.py: sidecars). Run python3 tools/textures/pack.py biomes/firebliss after any change, then python3 build.py.",
+ "size": 512,
+ "families": {
+  "ground.grass": {"lib": "ground.grass.lush", "scale": [2.6, 2.6], "tint": {"keep": 0.7, "mean": null}, "roughLift": 0.3, "mapOnly": true},
+  "ground.ashsoil": {"lib": "ground.ash.soil", "scale": [2.6, 2.6], "tint": {"keep": 0.8, "mean": null}, "roughLift": 0.3, "mapOnly": true},
+  "ground.ash": {"lib": "ground.ash", "scale": [3.0, 3.0], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.3, "mapOnly": true},
+  "ground.cinder": {"lib": "ground.cinder", "scale": [2.4, 2.4], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.3, "mapOnly": true},
+  "rock.basalt": {"lib": "rock.basalt.flowbanded", "scale": [4, 4], "tint": {"keep": 0.0, "mean": 0.5}, "mapOnly": true, "roughLift": 0.3},
+  "ground.sinter": {"lib": "ground.sinter", "scale": [2.2, 2.2], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.2, "specular": 0.3, "mapOnly": true},
+  "ground.mat": {"lib": "ground.mat.thermal", "scale": [2.0, 2.0], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.1, "specular": 0.4, "mapOnly": true},
+  "ground.sulphur": {"lib": "ground.sulphur", "scale": [2.0, 2.0], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.2, "mapOnly": true},
+  "ground.snow": {"lib": "ground.snow011", "scale": [3.0, 3.0], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.3, "specular": 0.2, "mapOnly": true},
+  "ice.glacier": {"lib": "ice.glacier", "scale": [6.0, 6.0], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.1, "specular": 0.5, "mapOnly": true},
+  "grass": {"lib": "card.grass.panic", "scale": [1, 1], "tint": {"keep": 0.0, "mean": 0.7}, "roughLift": 0, "specular": 0.2, "cell": [0.34, 0.34, 0.66, 0.66]},
+  "fern": {"lib": "card.fern.green", "scale": [1, 1], "tint": {"keep": 0.0, "mean": 0.66}, "roughLift": 0, "specular": 0.2, "cell": [0.34, 0.34, 0.66, 0.66]},
+  "flower": {"lib": "card.flower.bloom.highland", "scale": [1, 1], "tint": {"keep": 0.5, "mean": 0.7}, "roughLift": 0, "specular": 0.2, "cell": [0.34, 0.34, 0.66, 0.66]},
+  "fireweed": {"lib": "card.fireweed", "scale": [1, 1], "tint": {"keep": 0.5, "mean": 0.7}, "roughLift": 0, "specular": 0.2, "cell": [0.34, 0.34, 0.66, 0.66]},
+  "reed": {"lib": "card.reed", "scale": [1, 1], "tint": {"keep": 0.0, "mean": 0.7}, "roughLift": 0, "specular": 0.2, "cell": [0.329, 0.329, 0.667, 0.671]},
+  "ashgrass": {"lib": "card.ichu", "scale": [1, 1], "tint": {"keep": 0.0, "mean": 0.7}, "roughLift": 0, "specular": 0.2, "cell": [0.34, 0.34, 0.66, 0.66]},
+  "stone.pumice": {"lib": "stone.pumice", "scale": [1.5, 1.5], "tint": {"keep": 0.0, "mean": 0.66}, "roughLift": 0.3},
+  "stone.obsidian": {"lib": "stone.obsidian", "scale": [1.5, 1.5], "tint": {"keep": 0.0, "mean": 0.5}, "roughLift": 0.0, "specular": 0.6},
+  "rock.scoria": {"lib": "rock.basalt.vesicular", "scale": [1.5, 1.5], "tint": {"keep": 0.0, "mean": 0.6}, "roughLift": 0.3},
+  "sulphur": {"lib": "ground.sulphur", "scale": [1.0, 1.0], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.2},
+  "bird": {"lib": "feather.plumage", "scale": [1.0, 1.0], "tint": {"keep": 0.0, "mean": 0.6}, "roughLift": 0.2},
+  "hide": {"lib": "cloth.hide.canopy", "scale": [1.0, 1.0], "tint": {"keep": 0.0, "mean": 0.66}, "roughLift": 0.2},
+  "wood": {"lib": "wood.silver", "scale": [1.0, 2.0], "tint": {"keep": 0.0, "mean": 0.66}, "roughLift": 0.2},
+  "rock.cairn": {"lib": "rock.basalt.flowbanded", "scale": [1.2, 1.2], "tint": {"keep": 0.0, "mean": 0.6}, "roughLift": 0.3},
+  "horn": {"lib": "bone.horn", "scale": [1.0, 1.0], "tint": {"keep": 0.0, "mean": 0.75}, "roughLift": 0.1},
+  "bone": {"lib": "organic.bone", "scale": [1.0, 1.0], "tint": {"keep": 0.0, "mean": 0.78}, "roughLift": 0.1}
+ }
+}
