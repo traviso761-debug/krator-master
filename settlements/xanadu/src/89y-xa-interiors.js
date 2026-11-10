@@ -21,8 +21,15 @@ KFURN.useBatch(XAF,KratorFurniture,KratorInteriors,{indexed:true});
 VERN.interiors=XAF.interiors;
 function xafWealth(D){const w=D.tags&&D.tags.wealth;return w==='poor'?.2:w==='rich'?.8:w==='civic'?.65:.5;}
 // a top-level placement with an item in the set: its rooms planned and furnished where it stands (plain data on the group)
+// HELD (the owner, 2026-11-09): the citadel waits on the owner's visual references, so on Erewhon every placement inside its
+// wall (CIT_POLY, targets/erewhon/87-er-layout.js: what settlements/xanadu/citadel/BLUEPRINT.md covers, the officers' and
+// envoys' houses, the guard's barracks and the court temple with the palace) is built as it always was: no hollow walls, no rooms
+XAF.held=0;
 {const place0=VERN.place;
- VERN.place=function(sc,key,x,z,ry,o){const top=!VERN.cur;const G=place0.call(VERN,sc,key,x,z,ry,o);
+ VERN.place=function(sc,key,x,z,ry,o){const top=!VERN.cur;
+  if(top&&XAF.interiors&&typeof inCitadel==='function'&&inCitadel(x,z,0)){const I=VERN.interiors;VERN.interiors=null;XAF.held++;
+   try{return place0.call(VERN,sc,key,x,z,ry,o);}finally{VERN.interiors=I;}}
+  const G=place0.call(VERN,sc,key,x,z,ry,o);
   if(top&&G&&XAF.interiors&&(!o||(o.scale||1)===1)){const it=KratorInteriors.sets.find(key);
    if(it&&!it.skip){const pre='xa.'+XAF.buildings.length+'.';
     try{const r=XAF.interior(it,x,z,ry||0,XAF.adapter,{baseY:(o&&o.y)||0,prefix:pre}).summary;
@@ -39,11 +46,12 @@ if(XAF.interiors){
    const W2=(lz,ly)=>{const q=loc(x,z,0,lz,ry),v=IZDOOR._w(q[0],ly,q[1]);return[v[0],v[2],v[1]];};
    KWALK.strip({a:W2(.3,y),b:W2(-run+.05,y+rise),w:Math.max(.6,w-.1),name:'xa flight',tag:'interior:xa-flight'});return r;};}
  xnDoorway=vaWrapDoorway(xnDoorway);xnPane=vaWrapPane(xnPane,{stained:'xStainedB',frosted:'xFrostedB'});xnRoom=vaWrapRoom(xnRoom);}
-// the batch becomes meshes with each bake (the sheet bakes once; Erewhon chunk by chunk, each chunk's pieces into its group)
-{const bake0=kbake;kbake=function(sc){if(XAF.interiors&&XAF.batch){const g=XAF.batch.flush(sc);g.userData.probeSkip=false;g.children.forEach(m=>{m.material.onBeforeCompile=KFURN.srgbHook;});}return bake0.apply(this,arguments);};}
+// the batch becomes meshes with each bake (the furniture TEXTURED, 2026-11-10: the detail map's hook from the bundle, tex=True,
+// then the sRGB one chained after it) (the sheet bakes once; Erewhon chunk by chunk, each chunk's pieces into its group)
+{const bake0=kbake;kbake=function(sc){if(XAF.interiors&&XAF.batch){const g=XAF.batch.flush(sc);g.userData.probeSkip=false;g.children.forEach(m=>{const prev=m.material.onBeforeCompile;m.material.onBeforeCompile=prev&&prev!==KFURN.srgbHook?function(sh){prev.call(this,sh);KFURN.srgbHook(sh);}:KFURN.srgbHook;});}return bake0.apply(this,arguments);};}
 function xaIxWalk(){if(!XAF.interiors)return 0;KDOOR.walk(KWALK);window._doorwaysCleared=KDOOR.clearDoorways(KWALK);
  const S=XAF.summary();window._interiors={on:true,buildings:XAF.buildings.length,rooms:XAF.buildings.reduce((a,b)=>a+((b.interior&&b.interior.rooms)||0),0),
-  pieces:S.interiorPieces,hollow:VHOLLOW.bodies,matched:VAUTO.matched,planDoors:VAUTO.planDoors||0};return KDOOR.list.length;}
+  pieces:S.interiorPieces,held:XAF.held,hollow:VHOLLOW.bodies,matched:VAUTO.matched,planDoors:VAUTO.planDoors||0};return KDOOR.list.length;}
 // the cutaway's units (core/host 99-host-cutaway, X; 2026-11-09): every furnished top-level building, its storeys from its set
 // item (the bodies' levels and the explicit rooms' floors, one storey per distinct floor more than a metre apart)
 function xafUnits(F,defs){const U=[];for(const B of F.buildings){const it=KratorInteriors.sets.find(B.key);if(!it||it.skip||!B.interior)continue;

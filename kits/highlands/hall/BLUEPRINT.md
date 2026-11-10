@@ -46,12 +46,12 @@ the Republic's red hanging; the division doors open off the side aisles (8.75 m 
 | Public | citizens who come to listen, petitioners | the forecourt, the great portal, the **Vestibule** (the Hall of Citizens), the public stair, the public gallery lobby and the **public gallery** |
 | Press | the broadsheets' writers | the press stair from the Vestibule, the **press room** and the **press gallery** |
 | Members | the 300 | the **Members' Lobby** off the Vestibule (kept by the doorkeepers), the chamber, the division lobbies, the cloakroom, the writing room, the dining room, the party rooms, the members' stairs to the committee floor, the wings |
-| The Speaker and the clerks | the Speaker, the clerks, the serjeant | the back of the ring: the Speaker's Lobby (the back door from the service yard), his office and the seal room, the clerks' office, the guard |
+| The Speaker and the clerks | the Speaker, the clerks, the serjeant | the back of the ring: the Speaker's Lobby (the back door from the service yard), the Speaker's office and the seal room, the clerks' office, the guard |
 | Service | cooks, porters, guards | the back door, the kitchen behind the dining room, the serjeant's guard room |
 
 The public never meets the members' routes: the Vestibule's two stairs rise along its side walls to landings at the upper
 storey, and from there to the public lobby (west) and the press room (east), which open only on their galleries; the wall
-between them and the members' landings is blind. The Speaker reaches the chamber from his own lobby behind the dais.
+between them and the members' landings is blind. The Speaker reaches the chamber from their own lobby behind the dais.
 
 ## Storeys and sizes
 
@@ -84,7 +84,7 @@ the clock stage stay solid.
 | The Veterans' room | committee | -30.5 to -22 | -28 to -6 | the old faction's party room; to the members' offices (west wing) and the chamber |
 | Members' dining room | hall | 22 to 30.5 | -28 to -6 | to the library wing, the kitchen and the chamber |
 | Serjeant's guard | guard | -30.5 to -18 | -35.5 to -28 | the Assembly's own guard |
-| Clerks' office | study | -18 to -6 | -35.5 to -28 | the Clerk of the Assembly and his clerks |
+| Clerks' office | study | -18 to -6 | -35.5 to -28 | the Clerk of the Assembly and the under-clerks |
 | Speaker's Lobby | lobby | -6 to 6 | -35.5 to -28 | the back door; the Speaker's way to the dais |
 | Speaker's office | study | 6 to 14 | -35.5 to -28 | |
 | Seal room | store | 14 to 18 | -35.5 to -28 | the Great Seal and the Republic's charter, off the Speaker's office only |

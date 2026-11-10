@@ -11,8 +11,8 @@ Republic (`../hall/BLUEPRINT.md`).
 ## The brief, from the lore
 
 - The Republic is the 3rd Legion's mutiny made a state (`LORE.md` 6.3): its head of state, the First Citizen, is a
-  soldier's office before it is a civil one, so he lives in the Legion's fortress and not in a palace; "service makes a
-  citizen", and a citizen who commands lives by his command.
+  soldier's office before it is a civil one, so the First Citizen lives in the Legion's fortress and not in a palace; "service makes a
+  citizen", and a citizen who commands lives by the command.
 - Roketstad was the Izani Empire's munitions hub and an Ancient spaceport; the Republic's **Rocketeers** and the
   **Arsenal** (racks of rockets) make rockets its arm. The headquarters holds the **rocket corps' command** and the signals
   that reach the batteries and the town; the Arsenal itself is elsewhere in the town, so the Fortress keeps a **magazine**
@@ -75,7 +75,7 @@ vaulted storey 1.3 m up, slit windows), the **gaol** in the north-east (the turn
 ## Circulation
 
 - Envoys: the gate, the bailey, the residence's door, the entrance hall, the Hall of Envoys; dining in the state dining room.
-- The First Citizen: his stair to the upper storey; the study; the bridge to the guard hall; up the keep to the war room.
+- The First Citizen: the private stair to the upper storey; the study; the bridge to the guard hall; up the keep to the war room.
 - The staff: the keep's outside stair to the guard hall, the keep's stairs; down to the armoury.
 - The guard: the barracks, the bailey, the magazine and the gaol, the curtain's stairs to the wall-walk.
 

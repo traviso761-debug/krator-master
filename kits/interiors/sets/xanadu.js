@@ -95,8 +95,8 @@
       doors: [{ at: [-5.2, 4], w: 1.6 }, { at: [0, 4], w: 1.6 }, { at: [5.2, 4], w: 1.6 }], program: [['shop', 'shop', 'shop'], ['living', 'bedroom']] }],
     note: 'three open shop fronts (their counters on the street are the builder\'s); the shopkeepers\' flat over the back half' });
   add({ key: 'xa_workshop', name: 'Workshop', wealth: POOR, types: ['industry', 'market/shop'], lot: [22, 18],
-    bodies: [stack(-4, -4, 10, 7, [3, 2.6], { doors: [{ at: [-2, -0.5], w: 1.1 }], program: [['workshop', 'shop'], ['store', 'study']] })],
-    note: 'the shop and its loft; the yard\'s open sheds are left out' });
+    bodies: [stack(-4, -4, 10, 7, [3, 2.6], { doors: [{ at: [-2, -0.5], w: 1.1 }], program: [['workshop'], ['store', 'study']] })],
+    note: 'the workshop, which sells from its bench, and its loft; the yard\'s open sheds are left out (2026-11-10: split into a workshop and a shop, the shop half had no wall for a counter beside the stair: the sets gate)' });
   skip('xa_smithy', 'Scrap smithy', ['industry'], 'a forge house open at the front between two piers (three rubble walls under a sheet roof): no enclosed room; the forge and anvil are the yard\'s furniture');
 
   /* ================================================================ farms and mills (76-xa-farm.js) */

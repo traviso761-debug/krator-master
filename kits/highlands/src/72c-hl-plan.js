@@ -10,6 +10,7 @@
 //               cuts it (both shells' walls, where two stand back to back), and gets a leaf unless the builder draws one
 //               (`drawn`) or it is an opening (`open`)
 //   stairs      every flight of `stairs` as solid steps, and a strip in core/walk from its foot to its head
+//   gaps        a door marked `gap` (a tall room's walk wall where an upper door pierces its line) is core/walk's only: not drawn
 // The rooms' floors, walls and doorways go into core/walk with the furnishing (89y: IX.walk), as for every set item.
 //   hnPlan(o) -> {rooms, walls, doors, stairs} drawn, or null when the interiors are off (the builder draws as it always did)
 //   hnPlanOn() -> the placement is being built hollow with an item of explicit rooms
@@ -32,7 +33,7 @@ function hnPlan(o){if(!hnPlanOn())return null;o=o||{};const C=VERN.cur,it=C.ixIt
   const holes=wells.filter(W=>Math.abs(W.y-r.y)<.3&&W.x1>x0&&W.x0<x1&&W.z1>z0&&W.z0<z1).map(W=>[[W.x0,W.z0],[W.x1,W.z0],[W.x1,W.z1],[W.x0,W.z1]]);
   vnRectFill([[x0-.1,z0-.1],[x1+.1,z0-.1],[x1+.1,z1+.1],[x0-.1,z1+.1]],holes,(a,b,c,d)=>{vB('vWood',(a+b)/2,r.y-th,(c+d)/2,b-a,th,d-c,0,floorC);});}
  // ---- the doors, once each (both rooms list a shared door)
- const D=[];for(const r of R)for(const d of r.doors||[]){if(D.some(q=>Math.hypot(q.at[0]-d.at[0],q.at[1]-d.at[1])<.3&&Math.abs(q.y-r.y)<.5))continue;const[x0,x1,z0,z1]=box(r);D.push(Object.assign({y:r.y,hr:r.h,zline:Math.min(Math.abs(d.at[1]-z0),Math.abs(d.at[1]-z1))<Math.min(Math.abs(d.at[0]-x0),Math.abs(d.at[0]-x1))},d));}
+ const D=[];for(const r of R)for(const d of r.doors||[]){if(d.gap)continue;if(D.some(q=>Math.hypot(q.at[0]-d.at[0],q.at[1]-d.at[1])<.3&&Math.abs(q.y-r.y)<.5))continue;const[x0,x1,z0,z1]=box(r);D.push(Object.assign({y:r.y,hr:r.h,zline:Math.min(Math.abs(d.at[1]-z0),Math.abs(d.at[1]-z1))<Math.min(Math.abs(d.at[0]-x0),Math.abs(d.at[0]-x1))},d));}
  // ---- the partitions: each line (axis, coordinate) gathers its rooms' edges as rectangles in (u, y), less the doors on it
  const lines=new Map(),rails=[];
  for(const r of R){const[x0,x1,z0,z1]=box(r),y0=r.y,y1=r.y+r.h,rl=r.rail||[];
@@ -61,6 +62,9 @@ function hnPlan(o){if(!hnPlanOn())return null;o=o||{};const C=VERN.cur,it=C.ixIt
   // a shell wall here: cut it, facing whichever way it faces
   let F=null;for(const a of[ry,ry+Math.PI]){F=vaOpen(d.at[0],d.y,d.at[1],a,d.w,h,true);if(F)break;}
   if(!F)vaThreshold(d.at[0],d.y,d.at[1],ry,d.w,.2);   // a partition's doorway: the floor through it (a shell's: vaOpen laid it)
+  // an upper door through two shells' walls back to back (the vestibule's landings into the public lobby and the press room):
+  // vaOpen's threshold runs from the face it found into the wall behind; the floor on the other side's sill is laid here too
+  else if(!ground.some(y=>Math.abs(y-d.y)<.3)){const fry=F.B.ry+[0,Math.PI,Math.PI/2,-Math.PI/2][F.face];vaThreshold(d.at[0],d.y,d.at[1],fry+Math.PI,d.w,.6);}
   if(d.open)continue;const m=F?loc(d.at[0],d.at[1],0,-F.B.t/2,F.B.ry+[0,Math.PI,Math.PI/2,-Math.PI/2][F.face]):[d.at[0],d.at[1]];const fry=F?F.B.ry+[0,Math.PI,Math.PI/2,-Math.PI/2][F.face]:ry;
   if(d.w>=1.8){for(const s of[-1,1]){const q=loc(m[0],m[1],s*d.w/4,0,fry);IZDOOR.leaf(q[0],d.y,q[1],fry,d.w/2-.02,h-.04,.07,null,{mirror:s>0});}}
   else IZDOOR.leaf(m[0],d.y,m[1],fry,d.w*.96,h-.04,.06,null);out.doors++;}

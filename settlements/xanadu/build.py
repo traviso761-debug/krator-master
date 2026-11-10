@@ -121,7 +121,7 @@ def virtual_bodies():
     sys.path.insert(0, os.path.join(ROOT, 'kits', 'catalog'))
     sys.path.insert(0, os.path.join(ROOT, 'kits', 'interiors'))
     import furniture_bundle, kit_bundle
-    return {'69d-furniture-bundle.js': furniture_bundle.bundle(FURN_CULTURES) + kit_bundle.bundle(['xanadu'])}
+    return {'69d-furniture-bundle.js': furniture_bundle.bundle(FURN_CULTURES, tex=True) + kit_bundle.bundle(['xanadu'])}   # tex: the library's detail maps on every piece (2026-11-10)
 CORE_OPT = os.path.join(CORE, 'opt')   # opt-in shared fragments: a build takes only the ones it names
 # the material library (core/materials/record: KMAT, the loader and the in-place bind; not 24-tex-def.js, whose TEX
 # clashes with core/materials 20-textures.js): materials.json -> tools/textures/pack.py -> tex/ -> the GENERATED

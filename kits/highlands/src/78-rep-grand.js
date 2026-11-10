@@ -331,6 +331,13 @@ function hnHallChamber(FL){const C0=[0,-12],oak=hC(HPAL.redwood[0]),boards=hC(HP
 // A square curtain of rubble and ashlar with a roofed half-timber hoarding, Peles towers at the corners (spires to
 // the field, tent roofs behind), the gatehouse in the front wall, a tall keep with a jettied timber storey and
 // corner bartizans, the commandant's palace, a barracks, stables and a smithy in the bailey.
+// the war room's map table (kits/highlands/fortress/BLUEPRINT.md; the catalog has none): an oak table 3.6 x 2.2 m on six legs,
+// the Republic's map laid on it, the corps' and the batteries' markers on the map; the set's war room keeps its floor clear
+// (fixture map_table). Fixed colours: no rng() here
+function hnMapTable(x,y,z){const oak=hC(HPAL.redwood[0]),map=hC(0xcdb98e),W=3.6,D=2.2,H=.86;
+ for(const sx of[-1,0,1])for(const sz of[-1,1])vB('vWood',x+sx*(W/2-.12),y,z+sz*(D/2-.12),.12,H-.06,.12,0,oak);
+ vB('vWood',x,y+H-.06,z,W,.06,D,0,oak);vB('vWood',x,y+H-.16,z,W-.2,.1,D-.2,0,oak);vB('hPaint',x,y+H,z,W-.24,.012,D-.24,0,map);
+ [[-1.1,-.5,0x9a2a22],[-.4,.3,0x9a2a22],[.6,-.2,0x2a3e7a],[1.2,.55,0x2a3e7a],[.1,.7,0x9a2a22],[-1.3,.6,0x3a5a2a]].forEach(([u,v,c])=>vB('vWood',x+u,y+H+.012,z+v,.08,.06,.08,0,hC(c)));}
 function buildHlRepFortress(G,o){reseed(21211+(o.v|0));const X=36,Z=32,TW=10,TH=17,H=9.5,IX=hnPlanOn(),band=IX?vnBand:vB;   // IX: the interiors on (kits/highlands/fortress/BLUEPRINT.md)
  const rub=hC(vPick(HPAL.rubble)),ash=hC(vPick(HPAL.ashlar)),cream=hC(vPick(HPAL.stucco)),red=hC(vPick(HPAL.redwood)),slate=hC(vPick(HPAL.slate)),lit=vLit()?'lit':'glass',tar=hC(vPick(HPAL.tar));
  vnReg('Fortress',0,0,48,44);vnReg('Fortress — keep',-14,-14,9,44);
@@ -388,7 +395,7 @@ function buildHlRepFortress(G,o){reseed(21211+(o.v|0));const X=36,Z=32,TW=10,TH=
  if(IX){const wood=red;hnFachBox(-2,5.0,-18.5,10,3.0,2.6,0,cream,wood,lit);vB('vWood',-2,4.75,-18.5,10.2,.25,2.9,0,wood);
   for(const x of[-5,1])for(const s of[-1,1])vPst('vPostB',x,0,-18.5+s*1.1,.16,4.75,wood);vnGableRoof(-2,8.0,-18.5,10,2.6,1.1,0,'hGableSc',slate,.35);
   for(const s of[-1,1])vnStairs(s*32.5,0,-26.1,0,1.6,1.32,5,'vStone',ash);
-  hnPlan({wallC:cream});}
+  hnMapTable(-17.4,12.6,-15.2);hnPlan({wallC:cream});}
  // the bailey: a well, a cart, barrels, a pell-post and the garrison
  FURNISH('hl_rep_civic_well',6,0,2,0,{v:1});   // the windlass well
  hnRCPave(0,22,8,14,0,hC(vPick(HPAL.rubble)),2.2);

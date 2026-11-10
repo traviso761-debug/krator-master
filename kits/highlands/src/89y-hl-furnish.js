@@ -68,4 +68,7 @@ const hlfBake=kbake;
 // the catalog's colours are sRGB values taken as they are; this kit's materials are linear (hC converts every colour), so
 // the furniture keeps its 8-bit vertex colours and linearises them in the vertex shader (as Girder and Locus do)
 const hlfSRGB=KFURN.srgbHook;
-kbake=function(sc){const g=HLF.batch.flush(sc);g.userData.probeSkip=false;HLF.group=g;g.children.forEach(m=>{m.material.onBeforeCompile=hlfSRGB;});return hlfBake(sc);};
+// (2026-11-10) the furniture is TEXTURED: the bundle carries the library's detail maps (furniture_bundle tex=True), the
+// flush gives each family's mesh its triplanar detail hook, and the sRGB hook is chained after it, not put in its place
+const hlfHook=m=>{const prev=m.material.onBeforeCompile;m.material.onBeforeCompile=prev&&prev!==hlfSRGB?function(sh){prev.call(this,sh);hlfSRGB(sh);}:hlfSRGB;};
+kbake=function(sc){const g=HLF.batch.flush(sc);g.userData.probeSkip=false;HLF.group=g;g.children.forEach(hlfHook);return hlfBake(sc);};
