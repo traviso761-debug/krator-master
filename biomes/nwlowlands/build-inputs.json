@@ -12,7 +12,7 @@
     "biomes/nhighlands/tex/nbark2.albedo.webp": "f9b4583d9a589cd2a6aa7de9ea7e46963ada22a394fded3701b417c3aa1de549",
     "biomes/nhighlands/tex/nbark4.albedo.webp": "e10487757d5bf4765adac4fd0842f48f11ae14356a93b8c8c6af56d7c2e9216f",
     "biomes/nhighlands/tex/nwood.albedo.webp": "677160f0c90c1ee870e0e570f1ab2ccec4f5704c2488ef4a308884da10c2d6ba",
-    "biomes/nhighlands/tex/pack.json": "9fcdba40c9f2644df7520723179061bb9c02b08bc1f520b07daca06cbff1be61",
+    "biomes/nhighlands/tex/pack.json": "f62cea8d117ef8fddfc804fe0286ee3abf05723c13f64a193258f77c43606d50",
     "biomes/nhighlands/tex/small.albedo.webp": "37ef0c8c677a5e655702b2e2e9dde61ce1078c0a3228fa4ddccf812201b9001d",
     "biomes/nwlowlands/KNOWN_ISSUES.md": "4a9311b80f180b1c4a25b5ccf1d1467f275fbbf08cb16928005489505c56035e",
     "biomes/nwlowlands/PORT.md": "8f9a1b98d365a8e2674e752853d4f449d43791966183b2f34f10d62033004a7c",
@@ -180,6 +180,7 @@
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
+    "biomes/nwlowlands": "db00be4a7ce9573dc93f4c064efd39413086391a0f06f3f174aeede95943cba3",
     "biomes/nwlowlands/src": "82937487a4f4fd6f57b34edc726b6bc38ea76257f11e72350c9983fa7f901b52",
     "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
     "tools": "2d2fdaca850a104a2a2c553313ccb3ad18dc6bc48cb554c8c714fc1ca39607bf",
@@ -203,7 +204,7 @@
     "biomes/nhighlands/tex/nbark2.albedo.webp": "f9b4583d9a589cd2a6aa7de9ea7e46963ada22a394fded3701b417c3aa1de549",
     "biomes/nhighlands/tex/nbark4.albedo.webp": "e10487757d5bf4765adac4fd0842f48f11ae14356a93b8c8c6af56d7c2e9216f",
     "biomes/nhighlands/tex/nwood.albedo.webp": "677160f0c90c1ee870e0e570f1ab2ccec4f5704c2488ef4a308884da10c2d6ba",
-    "biomes/nhighlands/tex/pack.json": "9fcdba40c9f2644df7520723179061bb9c02b08bc1f520b07daca06cbff1be61",
+    "biomes/nhighlands/tex/pack.json": "f62cea8d117ef8fddfc804fe0286ee3abf05723c13f64a193258f77c43606d50",
     "biomes/nhighlands/tex/small.albedo.webp": "37ef0c8c677a5e655702b2e2e9dde61ce1078c0a3228fa4ddccf812201b9001d",
     "biomes/nwlowlands/KNOWN_ISSUES.md": "4a9311b80f180b1c4a25b5ccf1d1467f275fbbf08cb16928005489505c56035e",
     "biomes/nwlowlands/PORT.md": "8f9a1b98d365a8e2674e752853d4f449d43791966183b2f34f10d62033004a7c",

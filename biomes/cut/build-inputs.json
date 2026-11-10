@@ -249,7 +249,7 @@
     "biomes/nhighlands/tex/needle.albedo.webp": "0360d9f2189a32a144054a27ef92dc8399923e8c750caaf11b3772bec35d302c",
     "biomes/nhighlands/tex/nrock.albedo.webp": "b1f0c732928d62e99dd6ab6a9a5d91937ef478b254c9573700aaf8d60e696f51",
     "biomes/nhighlands/tex/nwood.albedo.webp": "677160f0c90c1ee870e0e570f1ab2ccec4f5704c2488ef4a308884da10c2d6ba",
-    "biomes/nhighlands/tex/pack.json": "9fcdba40c9f2644df7520723179061bb9c02b08bc1f520b07daca06cbff1be61",
+    "biomes/nhighlands/tex/pack.json": "f62cea8d117ef8fddfc804fe0286ee3abf05723c13f64a193258f77c43606d50",
     "biomes/nhighlands/tex/paddle.albedo.webp": "9ccf476f47ba5b0abb8b02e40202fad8683b787739a03865ea7c7c7f9c9e1e35",
     "biomes/nhighlands/tex/pinnate.albedo.webp": "900252ce0bbcb604bed207935f83b117bd40fe2ef3c475a8e80de94376752f4a",
     "biomes/nhighlands/tex/pleat.albedo.webp": "d26634f88b0abd9ac11758d9af18af5d8066c4165f256e56cc1790f7ce28b2a7",
@@ -383,6 +383,7 @@
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
+    "biomes/cut": "ddb9cf7157c521a23afc83af8c22e23125278b95b9e31e3d1d15033553038c31",
     "biomes/cut/src": "939ce2ef1e9edc0566c7e8e5d4645d5ede7b87bde3347f4560b2ff5675f4eb63",
     "biomes/cut/stations/face": "56504ab346509958479981f3fc99c426a74d2966ca096333dbbe05cb0d8a680b",
     "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
@@ -475,7 +476,7 @@
     "biomes/nhighlands/tex/needle.albedo.webp": "0360d9f2189a32a144054a27ef92dc8399923e8c750caaf11b3772bec35d302c",
     "biomes/nhighlands/tex/nrock.albedo.webp": "b1f0c732928d62e99dd6ab6a9a5d91937ef478b254c9573700aaf8d60e696f51",
     "biomes/nhighlands/tex/nwood.albedo.webp": "677160f0c90c1ee870e0e570f1ab2ccec4f5704c2488ef4a308884da10c2d6ba",
-    "biomes/nhighlands/tex/pack.json": "9fcdba40c9f2644df7520723179061bb9c02b08bc1f520b07daca06cbff1be61",
+    "biomes/nhighlands/tex/pack.json": "f62cea8d117ef8fddfc804fe0286ee3abf05723c13f64a193258f77c43606d50",
     "biomes/nhighlands/tex/paddle.albedo.webp": "9ccf476f47ba5b0abb8b02e40202fad8683b787739a03865ea7c7c7f9c9e1e35",
     "biomes/nhighlands/tex/pinnate.albedo.webp": "900252ce0bbcb604bed207935f83b117bd40fe2ef3c475a8e80de94376752f4a",
     "biomes/nhighlands/tex/pleat.albedo.webp": "d26634f88b0abd9ac11758d9af18af5d8066c4165f256e56cc1790f7ce28b2a7",

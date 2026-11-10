@@ -560,7 +560,7 @@
     "biomes/nhighlands/tex/nbark0.albedo.webp": "d83f5db583f6c524f08c73666837d179e76c2343991abbcb700cd827940af095",
     "biomes/nhighlands/tex/needle.albedo.webp": "0360d9f2189a32a144054a27ef92dc8399923e8c750caaf11b3772bec35d302c",
     "biomes/nhighlands/tex/nwood.albedo.webp": "677160f0c90c1ee870e0e570f1ab2ccec4f5704c2488ef4a308884da10c2d6ba",
-    "biomes/nhighlands/tex/pack.json": "9fcdba40c9f2644df7520723179061bb9c02b08bc1f520b07daca06cbff1be61",
+    "biomes/nhighlands/tex/pack.json": "f62cea8d117ef8fddfc804fe0286ee3abf05723c13f64a193258f77c43606d50",
     "biomes/oidong/src/50-biome-oidong-species.js": "8fb72d34cdcb21f2ba36eed2915dcca765d14947a8163ac616c9fb88956ca7b2",
     "biomes/oidong/src/55-biome-oidong-trees.js": "0bfbf5317e3ce66bfaf06791240809f1250e59884942d5b031bb0d4d9b0d83a3",
     "biomes/oidong/src/60-biome-oidong-floor.js": "b6edfa252b83ec9616baa44113d6cb4e2e9c47ea802e6d634f77fa85098c4c64",
@@ -682,6 +682,7 @@
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
+    "biomes/highrift": "6fdecef50212fe839ef0f8fb9b32af14aa3684d3a6633e2919e2184f05ed667d",
     "biomes/highrift/src": "740676022ed38f47a0a5c9ac471fe95e95912851a05e65463a1a13f788a18a39",
     "biomes/highrift/stations/mirror": "bed3e64e39feedcd4cee4287d4f663b0699319a71d76531b6b7c7d05a1ea7d90",
     "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",

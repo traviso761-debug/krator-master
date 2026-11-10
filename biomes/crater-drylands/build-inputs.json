@@ -659,7 +659,7 @@
     "biomes/nhighlands/src/60-biome-nhighlands-floor.js": "04ab5fd71cffcbc92b4493eb17460f2a022a34d2446af6d6be3fa4fe0324ee3c",
     "biomes/nhighlands/src/70-biome-nhighlands.js": "ede9e879b99d3946e4b304176b57969ef49e52d16b9f0ec1dd7fc6b30e60ccad",
     "biomes/nhighlands/tex/nbark4.albedo.webp": "e10487757d5bf4765adac4fd0842f48f11ae14356a93b8c8c6af56d7c2e9216f",
-    "biomes/nhighlands/tex/pack.json": "9fcdba40c9f2644df7520723179061bb9c02b08bc1f520b07daca06cbff1be61",
+    "biomes/nhighlands/tex/pack.json": "f62cea8d117ef8fddfc804fe0286ee3abf05723c13f64a193258f77c43606d50",
     "biomes/nhighlands/tex/small.albedo.webp": "37ef0c8c677a5e655702b2e2e9dde61ce1078c0a3228fa4ddccf812201b9001d",
     "biomes/sedesert/src/50-biome-sedesert-species.js": "b04ddad3aea8ff4a0c4a7105a7bd561445d0a815916841136e8641cec3452b15",
     "biomes/sedesert/src/55-biome-sedesert-trees.js": "7e33caf4a07bc5f335dcb47ee565ad0a71cdb7ddd7f76d3a0ae2c5912bd0c232",
@@ -777,6 +777,7 @@
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
+    "biomes/crater-drylands": "d5d4bb6f917070f186082deb135dc2da77ccf205a06c710ddddf354ec6d90b2f",
     "biomes/crater-drylands/src": "6e70d9890572cf80882241fcf3650f88bc9ca7d1f777ef30651e6a126c019c93",
     "biomes/crater-drylands/stations": "71afee8c4086661fb59f114a5adbbe49e1a9fff07fce2695338f920d5191d40f",
     "biomes/crater-drylands/stations/south": "ea5d7d903b99541f173bf365a13320d0de42c9db9b31b5c432fdfb7c6214d1b0",

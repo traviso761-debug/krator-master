@@ -181,7 +181,7 @@
   },
   "build.py --station alpine": {
    "inputs": {
-    "biomes/nhighlands/KNOWN_ISSUES.md": "21d95f43399a64187c949909807a6f4d73644147541f80e6d1000c6a784acf32",
+    "biomes/nhighlands/KNOWN_ISSUES.md": "d6ec071b0157f1bc69f3a73e948f3097514a60cae5e3777c2ac039cb61adff49",
     "biomes/nhighlands/PORT.md": "7e639a8bda336f5a676f66ce4b8a12cb4d3850d34a155a1e6fd8be76c98e8c7d",
     "biomes/nhighlands/build.py": "189bfae5c6f7e3bbf9904a23c8eb0a22d88ca15d93044b54b6585b8a00f1412e",
     "biomes/nhighlands/src/00-head.html": "c84c27ad3018b81c3672e0b6afe14cb2948dcc0ca84242ce96ec5693dd473548",
@@ -219,8 +219,14 @@
     "biomes/nhighlands/tex/drape.albedo.webp": "c069b2f0ad499afb8c9e67365eb3d892a8f4379deeab70678fa07186f713e8cb",
     "biomes/nhighlands/tex/fin.albedo.webp": "a209a39b16832f78c98cb3b0a11401342cc0a4750098d9d4aefb161c78e5104c",
     "biomes/nhighlands/tex/frond.albedo.webp": "d4efcdabe0469c96fe69d572d92f66f2f1bdeb1c7098026e20418bf1d4f62357",
+    "biomes/nhighlands/tex/ground.fell.albedo.webp": "9429fe1cc4738da7978fa3705f8175f63df74fee39a2fc92051b4f0a9cac7ece",
+    "biomes/nhighlands/tex/ground.goldgrass.albedo.webp": "17b01e3497307376aaed6c2878544cc5977fce1ee4f4cab88dc9cd64053f0c9e",
     "biomes/nhighlands/tex/ground.meadow.albedo.webp": "bae6374a078dd55098e90684357de3d9ef20ff5a8fa5b3b2853c9ebb3d5aebb5",
     "biomes/nhighlands/tex/ground.mulch.albedo.webp": "71a43926404eec76fb61d0cf06e7f34a744cda27d5e4c0794e061235efd26198",
+    "biomes/nhighlands/tex/ground.needles.albedo.webp": "7bd4cde5827538c793b12dd72be82433832b17954395fbfa91300dba0611709b",
+    "biomes/nhighlands/tex/ground.scree.albedo.webp": "b4b96dbbeb9051de02b85e8d328748b401923a51906d819f024398c9a921cf07",
+    "biomes/nhighlands/tex/ground.slab.albedo.webp": "fa2b641724fb587df922ff4743042a1e0c7306f7e5c8aa6977de096dd97fc10f",
+    "biomes/nhighlands/tex/ground.snowbed.albedo.webp": "e08e202f82fabdb67226abde189242ca27b6748cbc09c8ed334fee6458800e18",
     "biomes/nhighlands/tex/groundCladonia.albedo.webp": "a155a74fdd26bd51f2f9291a4a5a36f73cf3b86373e4c152b48273e6e76d71c2",
     "biomes/nhighlands/tex/groundDetail.albedo.webp": "cd37cef58e199b19f7871c96280b000bdce80110699655c5d960d92616c5cbfb",
     "biomes/nhighlands/tex/heath.albedo.webp": "c1037b32c42babf3584a06998717948203afd510c0557b8a3dead1a594987022",
@@ -240,7 +246,7 @@
     "biomes/nhighlands/tex/needle.albedo.webp": "0360d9f2189a32a144054a27ef92dc8399923e8c750caaf11b3772bec35d302c",
     "biomes/nhighlands/tex/nrock.albedo.webp": "b1f0c732928d62e99dd6ab6a9a5d91937ef478b254c9573700aaf8d60e696f51",
     "biomes/nhighlands/tex/nwood.albedo.webp": "677160f0c90c1ee870e0e570f1ab2ccec4f5704c2488ef4a308884da10c2d6ba",
-    "biomes/nhighlands/tex/pack.json": "9fcdba40c9f2644df7520723179061bb9c02b08bc1f520b07daca06cbff1be61",
+    "biomes/nhighlands/tex/pack.json": "f62cea8d117ef8fddfc804fe0286ee3abf05723c13f64a193258f77c43606d50",
     "biomes/nhighlands/tex/paddle.albedo.webp": "9ccf476f47ba5b0abb8b02e40202fad8683b787739a03865ea7c7c7f9c9e1e35",
     "biomes/nhighlands/tex/pinnate.albedo.webp": "900252ce0bbcb604bed207935f83b117bd40fe2ef3c475a8e80de94376752f4a",
     "biomes/nhighlands/tex/pleat.albedo.webp": "d26634f88b0abd9ac11758d9af18af5d8066c4165f256e56cc1790f7ce28b2a7",
@@ -348,15 +354,15 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/nhighlands/dist/nhighlands-alpine.html": "6c1592525a5f40eb62902e0e7d207888d57c0ec7f0835e2d08b3eafddbce9dee"
+    "biomes/nhighlands/dist/nhighlands-alpine.html": "1b64d634c8e1b930803e5a17fbee420901e8cc6fa3fbeba9f31c9f54871bc404"
    },
    "outputs_raw": {
-    "biomes/nhighlands/dist/nhighlands-alpine.html": "6c1592525a5f40eb62902e0e7d207888d57c0ec7f0835e2d08b3eafddbce9dee"
+    "biomes/nhighlands/dist/nhighlands-alpine.html": "1b64d634c8e1b930803e5a17fbee420901e8cc6fa3fbeba9f31c9f54871bc404"
    }
   },
   "build.py --station bogs": {
    "inputs": {
-    "biomes/nhighlands/KNOWN_ISSUES.md": "21d95f43399a64187c949909807a6f4d73644147541f80e6d1000c6a784acf32",
+    "biomes/nhighlands/KNOWN_ISSUES.md": "d6ec071b0157f1bc69f3a73e948f3097514a60cae5e3777c2ac039cb61adff49",
     "biomes/nhighlands/PORT.md": "7e639a8bda336f5a676f66ce4b8a12cb4d3850d34a155a1e6fd8be76c98e8c7d",
     "biomes/nhighlands/build.py": "189bfae5c6f7e3bbf9904a23c8eb0a22d88ca15d93044b54b6585b8a00f1412e",
     "biomes/nhighlands/src/00-head.html": "c84c27ad3018b81c3672e0b6afe14cb2948dcc0ca84242ce96ec5693dd473548",
@@ -420,7 +426,7 @@
     "biomes/nhighlands/tex/needle.albedo.webp": "0360d9f2189a32a144054a27ef92dc8399923e8c750caaf11b3772bec35d302c",
     "biomes/nhighlands/tex/nrock.albedo.webp": "b1f0c732928d62e99dd6ab6a9a5d91937ef478b254c9573700aaf8d60e696f51",
     "biomes/nhighlands/tex/nwood.albedo.webp": "677160f0c90c1ee870e0e570f1ab2ccec4f5704c2488ef4a308884da10c2d6ba",
-    "biomes/nhighlands/tex/pack.json": "9fcdba40c9f2644df7520723179061bb9c02b08bc1f520b07daca06cbff1be61",
+    "biomes/nhighlands/tex/pack.json": "f62cea8d117ef8fddfc804fe0286ee3abf05723c13f64a193258f77c43606d50",
     "biomes/nhighlands/tex/paddle.albedo.webp": "9ccf476f47ba5b0abb8b02e40202fad8683b787739a03865ea7c7c7f9c9e1e35",
     "biomes/nhighlands/tex/pinnate.albedo.webp": "900252ce0bbcb604bed207935f83b117bd40fe2ef3c475a8e80de94376752f4a",
     "biomes/nhighlands/tex/pleat.albedo.webp": "d26634f88b0abd9ac11758d9af18af5d8066c4165f256e56cc1790f7ce28b2a7",
@@ -540,7 +546,7 @@
   },
   "build.py --station foothills": {
    "inputs": {
-    "biomes/nhighlands/KNOWN_ISSUES.md": "21d95f43399a64187c949909807a6f4d73644147541f80e6d1000c6a784acf32",
+    "biomes/nhighlands/KNOWN_ISSUES.md": "d6ec071b0157f1bc69f3a73e948f3097514a60cae5e3777c2ac039cb61adff49",
     "biomes/nhighlands/PORT.md": "7e639a8bda336f5a676f66ce4b8a12cb4d3850d34a155a1e6fd8be76c98e8c7d",
     "biomes/nhighlands/build.py": "189bfae5c6f7e3bbf9904a23c8eb0a22d88ca15d93044b54b6585b8a00f1412e",
     "biomes/nhighlands/src/00-head.html": "c84c27ad3018b81c3672e0b6afe14cb2948dcc0ca84242ce96ec5693dd473548",
@@ -579,8 +585,13 @@
     "biomes/nhighlands/tex/drape.albedo.webp": "c069b2f0ad499afb8c9e67365eb3d892a8f4379deeab70678fa07186f713e8cb",
     "biomes/nhighlands/tex/fin.albedo.webp": "a209a39b16832f78c98cb3b0a11401342cc0a4750098d9d4aefb161c78e5104c",
     "biomes/nhighlands/tex/frond.albedo.webp": "d4efcdabe0469c96fe69d572d92f66f2f1bdeb1c7098026e20418bf1d4f62357",
+    "biomes/nhighlands/tex/ground.chaparral.albedo.webp": "2796e520848948d49b11342e49c3483c0d8e9c2077ed88c21b311aeff891fe10",
+    "biomes/nhighlands/tex/ground.goldgrass.albedo.webp": "17b01e3497307376aaed6c2878544cc5977fce1ee4f4cab88dc9cd64053f0c9e",
+    "biomes/nhighlands/tex/ground.lush.albedo.webp": "65ded909b02ae97988f5a5bef7e4a1bf8908353339f86751662d98b4961bc780",
     "biomes/nhighlands/tex/ground.meadow.albedo.webp": "bae6374a078dd55098e90684357de3d9ef20ff5a8fa5b3b2853c9ebb3d5aebb5",
     "biomes/nhighlands/tex/ground.mulch.albedo.webp": "71a43926404eec76fb61d0cf06e7f34a744cda27d5e4c0794e061235efd26198",
+    "biomes/nhighlands/tex/ground.needles.albedo.webp": "7bd4cde5827538c793b12dd72be82433832b17954395fbfa91300dba0611709b",
+    "biomes/nhighlands/tex/ground.slab.albedo.webp": "fa2b641724fb587df922ff4743042a1e0c7306f7e5c8aa6977de096dd97fc10f",
     "biomes/nhighlands/tex/groundCladonia.albedo.webp": "a155a74fdd26bd51f2f9291a4a5a36f73cf3b86373e4c152b48273e6e76d71c2",
     "biomes/nhighlands/tex/groundDetail.albedo.webp": "cd37cef58e199b19f7871c96280b000bdce80110699655c5d960d92616c5cbfb",
     "biomes/nhighlands/tex/heath.albedo.webp": "c1037b32c42babf3584a06998717948203afd510c0557b8a3dead1a594987022",
@@ -600,7 +611,7 @@
     "biomes/nhighlands/tex/needle.albedo.webp": "0360d9f2189a32a144054a27ef92dc8399923e8c750caaf11b3772bec35d302c",
     "biomes/nhighlands/tex/nrock.albedo.webp": "b1f0c732928d62e99dd6ab6a9a5d91937ef478b254c9573700aaf8d60e696f51",
     "biomes/nhighlands/tex/nwood.albedo.webp": "677160f0c90c1ee870e0e570f1ab2ccec4f5704c2488ef4a308884da10c2d6ba",
-    "biomes/nhighlands/tex/pack.json": "9fcdba40c9f2644df7520723179061bb9c02b08bc1f520b07daca06cbff1be61",
+    "biomes/nhighlands/tex/pack.json": "f62cea8d117ef8fddfc804fe0286ee3abf05723c13f64a193258f77c43606d50",
     "biomes/nhighlands/tex/paddle.albedo.webp": "9ccf476f47ba5b0abb8b02e40202fad8683b787739a03865ea7c7c7f9c9e1e35",
     "biomes/nhighlands/tex/pinnate.albedo.webp": "900252ce0bbcb604bed207935f83b117bd40fe2ef3c475a8e80de94376752f4a",
     "biomes/nhighlands/tex/pleat.albedo.webp": "d26634f88b0abd9ac11758d9af18af5d8066c4165f256e56cc1790f7ce28b2a7",
@@ -724,15 +735,15 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/nhighlands/dist/nhighlands-foothills.html": "a48283c4aef64336a85b04e411cadc1370819756f0bb2d2049d00b7be15a6cb1"
+    "biomes/nhighlands/dist/nhighlands-foothills.html": "bef44273e2094c930fab33d543b223bbf42973a4e017f0c985828cebb35753a6"
    },
    "outputs_raw": {
-    "biomes/nhighlands/dist/nhighlands-foothills.html": "a48283c4aef64336a85b04e411cadc1370819756f0bb2d2049d00b7be15a6cb1"
+    "biomes/nhighlands/dist/nhighlands-foothills.html": "bef44273e2094c930fab33d543b223bbf42973a4e017f0c985828cebb35753a6"
    }
   },
   "build.py --station montane": {
    "inputs": {
-    "biomes/nhighlands/KNOWN_ISSUES.md": "21d95f43399a64187c949909807a6f4d73644147541f80e6d1000c6a784acf32",
+    "biomes/nhighlands/KNOWN_ISSUES.md": "d6ec071b0157f1bc69f3a73e948f3097514a60cae5e3777c2ac039cb61adff49",
     "biomes/nhighlands/PORT.md": "7e639a8bda336f5a676f66ce4b8a12cb4d3850d34a155a1e6fd8be76c98e8c7d",
     "biomes/nhighlands/build.py": "189bfae5c6f7e3bbf9904a23c8eb0a22d88ca15d93044b54b6585b8a00f1412e",
     "biomes/nhighlands/src/00-head.html": "c84c27ad3018b81c3672e0b6afe14cb2948dcc0ca84242ce96ec5693dd473548",
@@ -770,8 +781,11 @@
     "biomes/nhighlands/tex/drape.albedo.webp": "c069b2f0ad499afb8c9e67365eb3d892a8f4379deeab70678fa07186f713e8cb",
     "biomes/nhighlands/tex/fin.albedo.webp": "a209a39b16832f78c98cb3b0a11401342cc0a4750098d9d4aefb161c78e5104c",
     "biomes/nhighlands/tex/frond.albedo.webp": "d4efcdabe0469c96fe69d572d92f66f2f1bdeb1c7098026e20418bf1d4f62357",
+    "biomes/nhighlands/tex/ground.goldgrass.albedo.webp": "17b01e3497307376aaed6c2878544cc5977fce1ee4f4cab88dc9cd64053f0c9e",
     "biomes/nhighlands/tex/ground.meadow.albedo.webp": "bae6374a078dd55098e90684357de3d9ef20ff5a8fa5b3b2853c9ebb3d5aebb5",
     "biomes/nhighlands/tex/ground.mulch.albedo.webp": "71a43926404eec76fb61d0cf06e7f34a744cda27d5e4c0794e061235efd26198",
+    "biomes/nhighlands/tex/ground.needles.albedo.webp": "7bd4cde5827538c793b12dd72be82433832b17954395fbfa91300dba0611709b",
+    "biomes/nhighlands/tex/ground.slab.albedo.webp": "fa2b641724fb587df922ff4743042a1e0c7306f7e5c8aa6977de096dd97fc10f",
     "biomes/nhighlands/tex/groundCladonia.albedo.webp": "a155a74fdd26bd51f2f9291a4a5a36f73cf3b86373e4c152b48273e6e76d71c2",
     "biomes/nhighlands/tex/groundDetail.albedo.webp": "cd37cef58e199b19f7871c96280b000bdce80110699655c5d960d92616c5cbfb",
     "biomes/nhighlands/tex/heath.albedo.webp": "c1037b32c42babf3584a06998717948203afd510c0557b8a3dead1a594987022",
@@ -791,7 +805,7 @@
     "biomes/nhighlands/tex/needle.albedo.webp": "0360d9f2189a32a144054a27ef92dc8399923e8c750caaf11b3772bec35d302c",
     "biomes/nhighlands/tex/nrock.albedo.webp": "b1f0c732928d62e99dd6ab6a9a5d91937ef478b254c9573700aaf8d60e696f51",
     "biomes/nhighlands/tex/nwood.albedo.webp": "677160f0c90c1ee870e0e570f1ab2ccec4f5704c2488ef4a308884da10c2d6ba",
-    "biomes/nhighlands/tex/pack.json": "9fcdba40c9f2644df7520723179061bb9c02b08bc1f520b07daca06cbff1be61",
+    "biomes/nhighlands/tex/pack.json": "f62cea8d117ef8fddfc804fe0286ee3abf05723c13f64a193258f77c43606d50",
     "biomes/nhighlands/tex/paddle.albedo.webp": "9ccf476f47ba5b0abb8b02e40202fad8683b787739a03865ea7c7c7f9c9e1e35",
     "biomes/nhighlands/tex/pinnate.albedo.webp": "900252ce0bbcb604bed207935f83b117bd40fe2ef3c475a8e80de94376752f4a",
     "biomes/nhighlands/tex/pleat.albedo.webp": "d26634f88b0abd9ac11758d9af18af5d8066c4165f256e56cc1790f7ce28b2a7",
@@ -898,10 +912,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/nhighlands/dist/nhighlands-montane.html": "ac8e496248f7d14cfe332e7418e1e3ef05b6533e853ba710a7d11744ae22e6e7"
+    "biomes/nhighlands/dist/nhighlands-montane.html": "fe637cf2222199514ca85528ffc6ca81f164c5f2c36395511d681fed5926a866"
    },
    "outputs_raw": {
-    "biomes/nhighlands/dist/nhighlands-montane.html": "ac8e496248f7d14cfe332e7418e1e3ef05b6533e853ba710a7d11744ae22e6e7"
+    "biomes/nhighlands/dist/nhighlands-montane.html": "fe637cf2222199514ca85528ffc6ca81f164c5f2c36395511d681fed5926a866"
    }
   }
  }
