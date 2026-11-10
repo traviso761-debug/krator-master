@@ -96,8 +96,8 @@ function vaPlanDoors(C){const it=C.ixItem;if(!it)return;
    t=Math.max(0,Math.min(1,((d.at[0]-a[0])*ex+(d.at[1]-a[1])*ez)/L2)),dd=Math.hypot(d.at[0]-a[0]-ex*t,d.at[1]-a[1]-ez*t);if(dd<bd){bd=dd;best=[ex,ez];}}
   if(!best||bd>.6)continue;const cx=P.reduce((s,p)=>s+p[0],0)/P.length,cz=P.reduce((s,p)=>s+p[1],0)/P.length;
   let nx=best[1],nz=-best[0];const nl=Math.hypot(nx,nz)||1;nx/=nl;nz/=nl;if(nx*(d.at[0]-cx)+nz*(d.at[1]-cz)<0){nx=-nx;nz=-nz;}
-  const ry=Math.atan2(nx,nz),F=vnFaceOf(d.at[0],y+.1,d.at[1],ry);if(!F)continue;const w=d.w||1;
+  const ry=Math.atan2(nx,nz),F=vnFaceOf(d.at[0],y+.1,d.at[1],ry);if(!F)continue;const w=d.w==null?1:d.w;
   if(F.B.ops.some(o=>o.door&&o.face===F.face&&Math.abs(o.u-F.u)<(o.w+w)/2+.3))continue;
-  vaOpen(d.at[0],y,d.at[1],ry,w,d.h||2.2,true);const m=loc(d.at[0],d.at[1],0,-F.B.t/2,ry);IZDOOR.leaf(m[0],y,m[1],ry,w*.96,(d.h||2.2)-.04,.07,null);VAUTO.planDoors=(VAUTO.planDoors||0)+1;}}
+  const dh=d.h==null?2.2:d.h;vaOpen(d.at[0],y,d.at[1],ry,w,dh,true);const m=loc(d.at[0],d.at[1],0,-F.B.t/2,ry);IZDOOR.leaf(m[0],y,m[1],ry,w*.96,dh-.04,.07,null);VAUTO.planDoors=(VAUTO.planDoors||0)+1;}}
 {const fl1=vnHollowFlush;vnHollowFlush=function(C){if(C.ixItem)try{vaPlanDoors(C);}catch(e){reportErr('vaPlanDoors '+(C.D&&C.D.key)+': '+e);}return fl1.apply(this,arguments);};}
 function vaWrapRoom(f0){return function(x,y,z,w,h,d,ry){if(vaOpen(x,y,z,ry,w,h,false))return;return f0.apply(this,arguments);};}

@@ -69,9 +69,9 @@ const VIEWS={};
  for(const r of R){const dist=Math.max(sheetRowCam(r.w),(r.h||0)*1.7);
   put((B[r.branch]?B[r.branch]+' — ':'')+r.family,[0,Math.max(18,dist*.45),r.z+r.d/2+dist,0,Math.min(4+(r.h||0)*.35,20),r.z]);}
  for(const S of SITES){const D=VERN.defs[S.key],nm=(S.label||D.name)+(S.o.v&&!S.label?' v'+S.o.v:''),E=D.eye;
-  for(const X of(D.eyes||[]))put(nm+' — '+X[0],[S.x+X[1],1.7+(X[5]||0),S.z+X[2],S.x+X[3],Math.min(D.h||6,14)*.3,S.z+X[4]]);   // a def's own extra stances
-  put(nm+' — eye level',E?[S.x+E[0],1.7+(E[4]||0),S.z+E[1],S.x+E[2],Math.min(D.h||6,14)*.3,S.z+E[3]]
-                          :[S.x+D.w*.18,1.7,S.z+sheetEyeCam(D),S.x,Math.min(D.h||6,14)*.4,S.z]);}})();
+  for(const X of(D.eyes||[]))put(nm+' — '+X[0],[S.x+X[1],1.7+(X[5]||0),S.z+X[2],S.x+X[3],Math.min(D.h==null?6:D.h,14)*.3,S.z+X[4]]);   // a def's own extra stances
+  put(nm+' — eye level',E?[S.x+E[0],1.7+(E[4]||0),S.z+E[1],S.x+E[2],Math.min(D.h==null?6:D.h,14)*.3,S.z+E[3]]
+                          :[S.x+D.w*.18,1.7,S.z+sheetEyeCam(D),S.x,Math.min(D.h==null?6:D.h,14)*.4,S.z]);}})();
 // ---------------------------------------------------------------- the ground: the kit's own ground material, a flat placeholder for its site
 const SHEET_ZC=SHEET_ROWS.length?SHEET_ROWS[SHEET_ROWS.length-1].z/2:0;   // the ground's centre: halfway down the rows
 if(TEX[SHEET.ground]&&SHEET.groundRepeat)TEX[SHEET.ground].repeat.set(SHEET.groundRepeat,SHEET.groundRepeat);

@@ -12,7 +12,7 @@ The page is one <script> made of, in filename order:
   core/materials/record 23-mat-record.js, 24-tex-def.js, 25-matlib-host.js (KMAT: the material records and the library loader)
   core/tags             50/52/53-core-tags*.js (KTAGS: every placed thing is registered with its class and tags)
   core/furnish          50/52/53-core-furnish*.js (KFURN: the catalog furniture placement pass)
-  core/walk             20-core-walk.js, box/24-core-walk-box.js (KWALK, KWALKBOX: the boxes a building draws are its floors and walls; src/37-wk-rec.js)
+  core/walk             20-core-walk.js, box/24-core-walk-box.js (KWALK, KWALKBOX: the boxes a building draws are its floors and walls; core/engine/37-wk-rec.js)
   core/atmos            89-atmos-*.js (ATMOS: the sky's light on the library materials, ATMOS.skylight)
   core/door             10-core-door.js, 20-core-glass.js, 90-core-door-host.js (KDOOR, KGLASS, KDOORHOST: doors that open, real glass;
                         core/engine/36o-open.js draws them)

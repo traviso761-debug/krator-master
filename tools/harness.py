@@ -173,9 +173,14 @@ def pid_alive(pid):
         return code.value == 259                                            # STILL_ACTIVE
     try:
         os.kill(int(pid), 0)
-        return True
     except OSError:
         return False
+    # a zombie answers kill(0) but is dead: under a PID 1 that does not reap orphans (a container) a killed job stays one
+    try:
+        with open('/proc/%d/stat' % int(pid), encoding='utf-8') as f:
+            return f.read().rsplit(')', 1)[1].split()[0] != 'Z'
+    except (OSError, IndexError):
+        return True
 
 
 def _proc_start(pid):
