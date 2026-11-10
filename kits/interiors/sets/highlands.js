@@ -21,32 +21,6 @@
   function rrect(w, d, cx, cz, ry) { return rect(w, d).map(function (p) { return turn(p, ry, cx, cz); }); }
   const POOR = 0.2, MID = 0.5, RICH = 0.8, CIVIC = 0.65;
   const SF = ['single-family dwelling'], MF = ['multi-family dwelling'];
-  /* the Republic's room kinds for its great buildings (2026-11-09: the Hall of the Republic and the Fortress; their
-     blueprints are kits/highlands/hall/BLUEPRINT.md and kits/highlands/fortress/BLUEPRINT.md). Each takes the pieces of
-     the older kinds it aliases; the seating of the Assembly, the Speaker's chair and the war room's map table are the
-     builders' own placements (FURNISH), so a kind here asks only for what the placer can find in the catalog */
-  const SEATS = IX.SEAT_TYPES, SURFACE = IX.SURFACE_GROUP;
-  const kind = function (k, spec, alias, weight) { if (IX.PROGRAMS[k]) return; IX.PROGRAMS[k] = spec; IX.KIND_ALIAS[k] = alias; IX.KIND_WEIGHT[k] = weight; };
-  kind('chamber', { require: [], optional: [{ types: ['banner', 'art', 'statue'], max: 4 }, { types: ['lamp'], max: 4 }], extra: 40 }, ['hall', 'school'], 4);
-  kind('committee', { require: [{ need: 'table', types: ['table'], n: 1 }, { need: 'seats', types: SEATS, n: 4 }],
-    optional: [{ types: ['shelf', 'storage', 'board'], max: 2 }, { types: ['banner', 'art', 'lamp'], max: 2 }, SURFACE], extra: 5 }, ['hall', 'study'], 1.4);
-  kind('gallery', { require: [{ need: 'benches', types: ['bench', 'seating'], n: 2 }], optional: [{ types: ['bench', 'seating', 'chair'], max: 8 }, { types: ['lamp'], max: 2 }], extra: 3 },
-    ['hall', 'antechamber', 'tavern'], 1.2);
-  kind('lobby', { require: [], optional: [{ types: ['bench', 'seating'], max: 3 }, { types: ['lamp', 'banner', 'art', 'statue'], max: 3 }, { types: ['rack'], max: 1 }], extra: 8 },
-    ['antechamber', 'hall'], 0.8);
-  kind('guard', { require: [{ need: 'rack', types: ['rack', 'weapon'], n: 1 }, { need: 'seats', types: SEATS, n: 1 }],
-    optional: [{ types: ['table'], max: 1 }, { types: ['storage', 'bed'], max: 2 }, { types: ['lamp'], max: 1 }], extra: 6 }, ['barracks', 'antechamber', 'hall'], 1);
-  kind('war_room', { require: [{ need: 'table', types: ['table'], n: 1 }, { need: 'seats', types: SEATS, n: 2 }],
-    optional: [{ types: ['board', 'shelf', 'storage', 'desk'], max: 4 }, { types: ['banner', 'art', 'lamp'], max: 2 }, SURFACE], extra: 5 }, ['hall', 'study', 'barracks'], 1.6);
-  kind('armoury', { require: [{ need: 'racks', types: ['rack', 'weapon'], n: 2 }], optional: [{ types: ['rack', 'weapon', 'storage'], max: 6 }], extra: 3 },
-    ['barracks', 'store', 'workshop'], 1);
-  kind('magazine', { require: [{ need: 'stores', types: ['storage', 'stack'], n: 2 }], optional: [{ types: ['storage', 'stack', 'rack'], max: 8 }], extra: 2.5 }, ['store'], 1);
-  kind('audience', { require: [{ need: 'seat of state', types: ['seating', 'chair'], n: 1 }],
-    optional: [{ types: ['seating', 'bench', 'chair'], max: 6 }, { types: ['rug', 'banner', 'art', 'statue', 'screen'], max: 4 }, { types: ['lamp'], max: 2 }, { types: ['table'], max: 1 }], extra: 6 },
-    ['hall', 'antechamber'], 1.6);
-  kind('signals', { require: [{ need: 'desk', types: ['desk', 'table'], n: 1 }], optional: [{ types: ['board', 'shelf', 'storage', 'chair'], max: 4 }, SURFACE], extra: 5 },
-    ['study', 'workshop'], 1);
-  kind('cell', { require: [{ need: 'bed', types: ['bed'], n: 1 }], optional: [{ types: ['storage'], max: 1 }], extra: 6 }, ['bedroom', 'barracks'], 0.5);
   /* an explicit room in a great building's own frame: x0 x1 z0 z1 its inner faces, y its floor, h its clear height.
      o: {rail: [edges left open as a balcony's railing: 'x0' 'x1' 'z0' 'z1'], fixtures, wealth} */
   const room = function (id, kind, x0, x1, z0, z1, y, h, o) {

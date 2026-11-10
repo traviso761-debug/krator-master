@@ -25,7 +25,10 @@
   /* the room kinds the citadel adds (a kind already registered by another set is kept) */
   const SEATS = IX.SEAT_TYPES, SURFACE = IX.SURFACE_GROUP;
   const kind = function (k, spec, alias, weight) { if (IX.PROGRAMS[k]) return; IX.PROGRAMS[k] = spec; IX.KIND_ALIAS[k] = alias; IX.KIND_WEIGHT[k] = weight; };
-  kind('audience', { require: [{ need: 'seat of state', types: ['seating', 'chair'], n: 1 }],
+  /* the citadel's own audience hall and gallery, fuller than the Republic's kinds of the same name that src/30-programs.js
+     registers since 2026-11-10: these two replace them on a page that loads this set (lobby, guard and armoury are the same) */
+  const own = function (k, spec, alias, weight) { IX.PROGRAMS[k] = spec; IX.KIND_ALIAS[k] = alias; IX.KIND_WEIGHT[k] = weight; };
+  own('audience', { require: [{ need: 'seat of state', types: ['seating', 'chair'], n: 1 }],
     optional: [{ types: ['seating', 'bench', 'chair'], max: 8 }, { types: ['rug', 'banner', 'art', 'statue', 'screen'], max: 6 }, { types: ['lamp'], max: 4 }, { types: ['table'], max: 2 }], extra: 6 },
     ['hall', 'antechamber'], 1.6);
   kind('lobby', { require: [], optional: [{ types: ['bench', 'seating'], max: 3 }, { types: ['lamp', 'banner', 'art', 'statue'], max: 3 }, { types: ['rack'], max: 1 }], extra: 8 },
@@ -35,7 +38,7 @@
     optional: [{ types: ['table'], max: 1 }, { types: ['storage', 'bed'], max: 2 }, { types: ['lamp'], max: 1 }], extra: 6 }, ['barracks', 'antechamber', 'hall'], 1);
   kind('armoury', { require: [{ need: 'racks', types: ['rack', 'weapon'], n: 2 }], optional: [{ types: ['rack', 'weapon', 'storage'], max: 6 }], extra: 3 },
     ['barracks', 'store', 'workshop'], 1);
-  kind('gallery', { require: [], optional: [{ types: ['bench', 'seating', 'chair'], max: 6 }, { types: ['lamp', 'planter', 'plant'], max: 3 }], extra: 6 },
+  own('gallery', { require: [], optional: [{ types: ['bench', 'seating', 'chair'], max: 6 }, { types: ['lamp', 'planter', 'plant'], max: 3 }], extra: 6 },
     ['hall', 'antechamber'], 1.2);
   kind('ramp', { require: [], optional: [], extra: 100 }, ['antechamber'], 0.5);
   kind('bath', { require: [], optional: [{ types: ['seating', 'bench'], max: 3 }, { types: ['lamp', 'screen'], max: 3 }], extra: 6 }, ['antechamber', 'bedroom'], 1);

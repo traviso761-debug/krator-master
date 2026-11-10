@@ -93,6 +93,21 @@
    "mapOnly": true,
    "size": 256
   },
+  "tile": {
+   "lib": "ceramic.glaze",
+   "scale": [
+    0.4,
+    0.4
+   ],
+   "tint": {
+    "keep": 0.25,
+    "mean": 0.6
+   },
+   "roughLift": 0.2,
+   "specular": 0.3,
+   "mapOnly": true,
+   "size": 256
+  },
   "clay": {
    "lib": "ceramic.terracotta",
    "scale": [
