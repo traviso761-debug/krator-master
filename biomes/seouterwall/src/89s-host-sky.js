@@ -9,10 +9,10 @@
 // its forest the larch's colour of the season below the tree line, its snow above the season's snow line (autumn's on the walls'
 // upper half, winter's down to the col's rims, summer's only on the crests). The cut reaches px 870 to the west (region/farland.json),
 // so the Godthrone's eastern flank stands in the west horizon.
-// The page opens at 10:00 on the season's day (45: SEASON_DAY; #hour=, #day= and #time=run move it, as the host's slider does).
+// The page opens at OPEN_HOUR (13:00: 45) on the season's day (45: SEASON_DAY; #hour=, #day= and #time=run move it, as the host's slider does).
 const SKY_DAY0=(()=>{const m=/[?&#]day=([^&#]*)/.exec(location.search+location.hash),d=m?+decodeURIComponent(m[1]):SEASON_DAY;return isFinite(d)?d:SEASON_DAY;})();
 const skyHostClock=()=>typeof KHOST!=='undefined'&&KHOST.host?KHOST.host.clock:null;
-const SKY_CLOCK={get hour(){const c=skyHostClock();return c?c.hour:10;},get day(){const c=skyHostClock();return SKY_DAY0+(c?c.day||0:0);},
+const SKY_CLOCK={get hour(){const c=skyHostClock();return c?c.hour:OPEN_HOUR;},get day(){const c=skyHostClock();return SKY_DAY0+(c?c.day||0:0);},
  get t(){const c=skyHostClock();return c?c.t:0;}};
 // the far land's colours (display RGB): the season's snow line (absolute metres), the tree line (the larch's top: the warmest month
 // +7.5 °C, a mean of -5.5 on the bench's swing)

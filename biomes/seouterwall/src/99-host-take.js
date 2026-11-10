@@ -146,7 +146,7 @@ KHOST.on(skyView,'view');   /* the shared sky, its lights and fog at the hour (8
 const H=KHOST.take({build:'seouterwall',title:'Krator biome — the SE outer wall: '+SITE.title,
  hint:'The SE outer wall ('+SEOW_REGION.site.base.toFixed(0)+' m, '+SEOW_REGION.site.atm.toFixed(2)+' atm, '+SEOW_REGION.site.cls+'): '+SITE.title+', '+SEASON+'. The Season select reloads the page',
  scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,views:VIEWS,ticks:TICKS,
- clock:{hour:10},draw:()=>SKY.render(),   /* the shared sky's pass, then the world (89s-host-sky.js) */
+ clock:{hour:OPEN_HOUR},draw:()=>SKY.render(),   /* the shared sky's pass, then the world (89s-host-sky.js) */
  controls:[{select:SEASONS.map(s=>[s,'Season: '+s]),id:'seasonsel',on:v=>{const u=new URL(location.href);u.searchParams.set('season',v);location.href=u.toString();}}],
  inspect:describe,stats:()=>'inst '+window._instances+'\nseason '+SEASON+' · day '+SKY_DAY0+'\nlod '+(BIO.lodShown?BIO.lodShown.meshes+'/'+BIO.lodShown.of+' chunk meshes':''),
  layers:{'flora':{match:o=>!!(o.userData&&o.userData.biome)},'heaps':{match:o=>!!(o.userData&&o.userData.rock)},

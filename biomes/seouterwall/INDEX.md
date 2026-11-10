@@ -29,7 +29,7 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 |---|---|---|
 | `00-head.html` | 1 |  |
 | `44s-host-site.js` | 9 | one record a point (memo of the last): the heigh (81) |
-| `45-host-stage.js` | 7 | the station, its air and its season (24); the model's ground (bicubic over its 1 km cells) (38); the ground's height (48); renderer, light, camera (64) |
+| `45-host-stage.js` | 7 | the station, its air and its season (24); the model's ground (bicubic over its 1 km cells) (42); the ground's height (52); renderer, light, camera (68) |
 | `46-biome-seow-layout.js` | 8 |  |
 | `47-host-land.js` | 41 **big** | the near box and a coarse look at the ground (8); the brook (its line, its water level never climb (16); the Ancients' highway (station 1: SITE.road; PLA (47); the ground's heat (station 3: SITE.heat; core/te (70); the water: the brook, the model's tarn (stations (78); the rockfall heaps (core/terrain KRUBBLE: PLAN.m (89); the wind's exposure (the God-Bore: PLAN.md secti (109); the fields (biomes/WORLD.md; BIOME-API.md) (116); the host binding (before the meshes: their paint (146); the library layers (or procedural without the pa (157) |
 | `50-biome-seow-species.js` | 7 | textures (procedural, greyscale: the fallback wh (35); materials (the library's cards swap in: material (51); instanced items (the NW outer wall's upright car (64) |

@@ -43,3 +43,7 @@
       `ground.gravel019`, `ground.tundra`, `ground.lichen.crust`, `ground.needles`, `rock.megabreccia`, and `rock.basalt.titanium` for
       station 2's headwall, its orange glass beds KSTRATA's tint over it), so nothing was added to `core/materials/PROMPTS-NEEDED.md`.
       The rime-ice feathers (the benches' stations) will want their own.
+- [x] **Every station opened in an eclipse** (the software verify's shots, 2026-11-10: a night-blue sky over black ground at 10:00). The
+      shared sky's astronomy puts the gas giant across the sun from about 09:00 to 11:00 on the autumn day (176) at all six pixels; the pages
+      open at 13:00 now (`OPEN_HOUR`, 45; clear on all four seasons' days; `SITE.hour` a station's own). The eclipse itself is right, and the
+      hearth trees open for it (station 3).

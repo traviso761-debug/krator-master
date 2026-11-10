@@ -1,7 +1,7 @@
 // ================================================================= HOST — the atmosphere (core/atmos), bound: the clock, the weather, the snow
 // core/atmos's one-time init on this page's frame ticks, ground and camera (ATMOS.bindHost), so core/water and the open world's one
 // clock can take this biome. The hour is the host clock's (the shared sky reads it too: 89s-host-sky.js).
-ATMOS.bindHost({THREE,scene,camera,renderer,ticks:TICKS,ground:(x,z)=>terrainH(x,z),hour:()=>typeof KHOST!=='undefined'&&KHOST.host?KHOST.host.clock.hour:10,seed:6147,viewH:()=>innerHeight});
+ATMOS.bindHost({THREE,scene,camera,renderer,ticks:TICKS,ground:(x,z)=>terrainH(x,z),hour:()=>typeof KHOST!=='undefined'&&KHOST.host?KHOST.host.clock.hour:OPEN_HOUR,seed:6147,viewH:()=>innerHeight});
 // R8: the foliage sways in core/atmos's wind and its travelling gusts (one wind field: BIO.bindAtmosWind), before the first frame; R7, the
 // cut-outs by alpha-to-coverage, is set after the bake (89z)
 BIO.bindAtmosWind();

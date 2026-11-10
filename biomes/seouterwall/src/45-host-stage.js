@@ -34,6 +34,10 @@ const SEASON_DAY={spring:61,summer:121,autumn:176,winter:274}[SEASON];   /* wint
 // over the mean and the coldest 12 under it (46: SEOW.AMP; the plan's +15 / -8 round +3.5 on the col). A shaded slope runs a degree
 // and a half colder, a sunny one as much warmer (aspect). SITE.warm: a station's own correction
 const meanAt=y=>SEOW_REGION.site.mean+(SITE.warm||0)-6.5*y/1000;
+// THE HOUR THE PAGE OPENS AT: 13:00, not the other kits' 10:00. The shared sky's astronomy puts the gas giant across the sun from about 09:00
+// to 11:00 on the autumn day (176) at every station of this wall (found by the software verify, 2026-11-10: a page opening dark in an eclipse);
+// 13:00 is clear on all four seasons' days. SITE.hour: a station's own
+const OPEN_HOUR=SITE.hour==null?13:SITE.hour;
 
 // ---------------------------------------------------------------- the model's ground (bicubic over its 1 km cells)
 const MODEL=(function(){const G=SEOW_REGION.grid,H=G.h,nx=G.nx,nz=G.nz;
