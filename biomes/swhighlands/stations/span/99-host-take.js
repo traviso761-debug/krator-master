@@ -68,7 +68,7 @@ function hostNegatives(){const r=(name,c)=>({name,failed:!c.ok,detail:c.detail})
   r('a seep pool on the open slickrock',HCHK.swamps(SEEP_POOLS.concat([{x:-300,z:rimZ(-300)-500,r:3,level:tableTop(-300,rimZ(-300)-500)-1}]))),
   r('cell lamps on dry rock',HCHK.lamps(itemPositions('celllamp').map(p=>[p[0]+40,p[1],p[2]+40])))];}
 function biomeChecks(){const R={},sp=['anemonetree'];
- R.missing=sp.filter(k=>!SWHI.TREES.some(T=>T.sp===SWHI.KEY[k])).concat(['cedar','madrone'].filter(k=>!(STATION_KIN[k]||[]).length));
+ R.missing=sp.filter(k=>!SWHI.TREES.some(T=>T.sp===SWHI.KEY[k])).concat(['madrone'].filter(k=>!(STATION_KIN[k]||[]).length));
  R.bySpecies=sp.map(k=>k+':'+SWHI.TREES.filter(T=>T.sp===SWHI.KEY[k]).length).concat(['cedar','madrone'].map(k=>k+':'+(STATION_KIN[k]||[]).length)).join(' ');
  R.treesOnCliffs=SWHI.TREES.filter(T=>T.lv>0&&!towerTop(T.x,T.z,0)&&FC.at(FC.a.slope,T.x,T.z)>1.2).length;R.towers=PILLARS.length;
  R.floor={lamp:itemPositions('celllamp').length,reed:itemPositions('wingreed').length,trumpets:itemPositions('trumpets').length,torch:itemPositions('torch').length,beadcoral:itemPositions('beadcoral').length,cushion:itemPositions('cushion').length};

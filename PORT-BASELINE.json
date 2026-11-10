@@ -476,6 +476,10 @@
    "bytes": 4878002,
    "sha256": "0cb522aab849a6eeb61cd086b7cd225f73c9bdc2c9432345818d198690fdc0c4"
   },
+  "biomes/swhighlands/dist/swhighlands-coast.html": {
+   "bytes": 4861261,
+   "sha256": "574ea9f85bdc19a288beed330e9e193a658a3fc1fec1871fcafdead3b94d2941"
+  },
   "biomes/swhighlands/dist/swhighlands-pillars-span.html": {
    "bytes": 6427647,
    "sha256": "4149b4b690ee315b35be8918db8071869e5cfe02706b9c1484dbca770b2a1612"
@@ -489,8 +493,8 @@
    "sha256": "2b8b4cf148fc7713487fcbfecd8e960ad49be4ee014e9b75c808cd352b0a1a80"
   },
   "biomes/swhighlands/dist/swhighlands-span.html": {
-   "bytes": 4692817,
-   "sha256": "f2811c8cce853a1054bee8addb8ac6c5ef8053307493ac5bafd764358c85111c"
+   "bytes": 5907352,
+   "sha256": "7afe808731da22cb99776e0132ee5dbe569e21fff956eedfcdc3d5e470339954"
   },
   "biomes/swhighlands/dist/swhighlands-treeline.html": {
    "bytes": 8805074,

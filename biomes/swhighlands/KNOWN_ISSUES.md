@@ -65,10 +65,14 @@ From `PLAN.md` section 10 and what station 1 met:
 - [ ] **Station 3, Span's tableland** (2026-11-09): stands on station 4's ground (`INHERIT`), so the ground's paint is the pillar rim's
   (the hanging swamps are not painted greener: the moss, reeds and lamps carry them). The twin falls run on the table's own fall line
   without a carved channel (their ribbons hug the slickrock; where the ground rises the water is under it); since the look pass each
-  falls in ONE curtain from the caprock's edge to the cliff's foot (a WATER.fall on the face) and the streams are wider, but the notch
-  is not carved (that is station 4's ground). Cell lamps: the kit's pass (5 m cells) found 19 in pools 3-5 m across, so the station puts
-  one to four in every pool with the kit's own put (87-host-kin.js). The tier cedar and the flayed madrone grow from swlowlands in place
-  (`SWLOW.make`/`grow`, station.json `kin`), on the slickrock and its sunny side. The slot-canyon view is skipped when no slot is deep
+  falls in ONE curtain (a WATER.fall on the face, from the stream's steepest 12 m) and the streams are wider, but from the floor the
+  curtains still read thin and stop partway down the caprock (the foot is where the stream next runs under a 30% fall, high on the
+  apron); a carved notch and a lip at the cap's very edge want a pass, and the notch is station 4's ground. Cell lamps: the kit's pass (5 m cells) found 19 in pools 3-5 m across, so the station puts
+  one to four in every pool with the kit's own put (87-host-kin.js). The flayed madrone grows from swlowlands in place (`SWLOW.make`/`grow`,
+  station.json `kin`) on the slickrock's sunny side. **The tier cedar is held back** (`?kincedar=1` grows it): grown here its tier
+  pads, sized from its 16-26 m crown and set up to a third of their size off the limb, leave 3.7% of the page's cards floating in the core
+  attach audit (limit 1%; the needle cards, `d` null at the worst: no structure within reach), at full detail as at the mid tier; its own
+  page passes. Owed: read the audit's worst list against the cedar's `clumpAt` calls (swlowlands' 55, B[16]). The slot-canyon view is skipped when no slot is deep
   and open enough away from Span's canyon.
 - [ ] **Station 7, the ridge karst** (2026-11-09): **KKARST names two branch levels' sinks alike** (`sink:i,j` has no level in it), so a
   network with `levels` of kind 'branch' throws in KCAVERN (duplicate id); the old level is built as its own network and merged with
@@ -82,7 +86,8 @@ From `PLAN.md` section 10 and what station 1 met:
   chunks) is meshed only when the eye comes within 90 m.
 - [ ] `stations/span/INHERIT` makes station 3 follow every change to station 4's fragments: rebuild and verify both after editing
   `stations/pillars/`.
-- [ ] **A repack changes the bottle brush's card facts**: `tools/textures/pack.py` today writes `"plants": 3, "anchor": "center"` for the
-  `brush` family (card.frond.needle), and the core card guard then refuses the brush's clump (no "stems"). The 2026-11-09 repack (for the
-  `own` families) kept the committed `brush` entry by hand; the next full repack needs the brush's card given "stems" (check_cells.py) or
-  the treeline's and every page's brush will fail the guard.
+- [ ] **A repack changes the cards' facts**: `tools/textures/pack.py` today writes `"anchor"` (and for `brush`, `"plants": 3`) on the card
+  families (brush, club, eggs, glass, heath, moss and others), which changes every page's bytes, and the core card guard then refuses the
+  bottle brush's clump (card.frond.needle: no "stems"). The 2026-11-09 repack (for the `own` families) kept the committed `pack.json` and
+  added only `caveRock` and `ground.sand`; the next full repack needs the brush's card given "stems" (check_cells.py), and every page
+  rebuilt and re-verified.

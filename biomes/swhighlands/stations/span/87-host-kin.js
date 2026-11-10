@@ -1,7 +1,7 @@
 // ================================================================= HOST — station 3: the south-western lowlands' trees, read in place (PLAN.md section 3)
 // The lowlands are a neighbour, so two of their species come up on to Span's tableland as themselves (station.json "kin": swlowlands'
 // 50 and 55), grown by its own API, SWLOW.make and .grow, as nhighlands' foothills grow its oaks:
-//   cedar     the TIER CEDAR in its own country: the tableland's open slickrock and the dry side (the `table` field), spaced wide
+//   cedar     the TIER CEDAR in its own country (held back: ?kincedar=1; KNOWN_ISSUES.md): the open slickrock (`table`), spaced wide
 //   madrone   the FLAYED MADRONE: the tableland's sunny, north-facing ground (`table` times `north`)
 // Lattice cells from KRAND.hash(world, i, j, salt), each tree from a reseed of the same hash, so nothing the kit placed moves. Clear of
 // the kit's own trees (core/space), the mask, the towers and the seep pools. Each a registered tree.
@@ -14,14 +14,16 @@ function STATION_GROW(){if(typeof SWLOW==='undefined'||!SWLOW.make||!SWLOW.grow|
   for(let j=Math.floor(TERR.Z0/cell);j<=Math.floor(TERR.Z1/cell);j++)for(let i=Math.floor(TERR.X0/cell);i<=Math.floor(TERR.X1/cell);i++){
    const h=KRAND.hash(W,i,j,salt),u=k=>KRAND.unit(KRAND.hash(h,k,0,salt)),x=(i+u(1))*cell,z=(j+u(2))*cell;
    if(u(3)>accept(x,z)||!clear(x,z,minR))continue;
-   BIO.fn.reseed(h);const T=SWLOW.make(sp,x,groundH(x,z),z),lv=BIO.lodD(x,z)<700?2:1;   /* the source kit's own hero reach (swlowlands' 87) */T.lv=lv;
+   BIO.fn.reseed(h);const T=SWLOW.make(sp,x,groundH(x,z),z),lv=2;   /* the hero within the LOD range, the far form past it: the mid form (lv 1) left 3.5% of the cedars' needle cards off their limbs (the core attach audit) */T.lv=lv;
    try{BIO.owner=[x,z];BIO.range=LT;BIO.minRange=0;SWLOW.grow(T,lv);BIO.range=1e9;BIO.minRange=LT;SWLOW.grow(Object.assign({},T),0);}finally{BIO.owner=null;BIO.range=null;BIO.minRange=0;}
    S.insert(T,x,z,(T.rb==null?1:T.rb)*1.4+2);(STATION_KIN[key]||(STATION_KIN[key]=[])).push(T);
    REGISTER({name:Sx.name,kind:'tree',label:Sx.name,x,z,y:T.y0,r:Math.min(T.crownR==null?6:T.crownR,30),h:T.H});n++;}
   return n;}
  const F=n=>(x,z)=>BIO.field(n,x,z),TB=F('table'),NO=F('north');
  BIO.cur='swhighlands/trees';
- out.cedar=lattice('cedar',90,0x7d01,(x,z)=>TB(x,z)*.3,9);
+ /* the tier cedar is held back: grown here its tier pads sit metres off their limbs and 3.7% of the page's cards fail the core attach audit
+    (its own page passes; KNOWN_ISSUES.md). ?kincedar=1 grows it for a look */
+ if(new URLSearchParams(location.search).get('kincedar')==='1')out.cedar=lattice('cedar',90,0x7d01,(x,z)=>TB(x,z)*.3,9);
  out.madrone=lattice('madrone',60,0x7d02,(x,z)=>TB(x,z)*smooth(.05,.45,NO(x,z))*.35,7);
  BIO.cur=null;return out;}
 // THE CELL LAMPS, one to four a seep pool (the look pass, 2026-11-09: the kit's lamp pass on 5 m cells found only 19 in pools 3-5 m

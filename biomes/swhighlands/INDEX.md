@@ -4,7 +4,7 @@
 
 Docs: `BIOME-API.md`, `KNOWN_ISSUES.md`, `LESSONS.md`, `NOTES.md`, `PERF.md`, `PLAN.md`, `PORT.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/swhighlands-caverns.html`, `dist/swhighlands-pillars-span.html`, `dist/swhighlands-pillars.html`, `dist/swhighlands-rainwall.html`, `dist/swhighlands-span.html`, `dist/swhighlands-treeline.html`, `dist/swhighlands.html`
+Built output (never open it; edit `src/` and rebuild): `dist/swhighlands-caverns.html`, `dist/swhighlands-coast.html`, `dist/swhighlands-pillars-span.html`, `dist/swhighlands-pillars.html`, `dist/swhighlands-rainwall.html`, `dist/swhighlands-span.html`, `dist/swhighlands-treeline.html`, `dist/swhighlands.html`
 
 Build: `cd biomes/swhighlands && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -50,9 +50,10 @@ Each station builds one page (`build.py --station <name>`) from its own fragment
 
 | Station | Fragments | KB |
 |---|---|---|
-| caverns | 44k-host-karst.js, 89x-host-caverns.js | 37 |
+| caverns | 44k-host-karst.js, 89x-host-caverns.js | 40 |
+| coast | 45-host-stage.js, 47-host-land.js, 82-host-far.js, 84-host-ground.js, 87-host-kin.js, 88-host-build.js, 89a-host-atmos.js, 89s-host-sky.js, 89w-host-water.js, 99-host-take.js | 48 |
 | pillars | 45-host-stage.js, 47-host-land.js, 82-host-far.js, 84-host-ground.js, 88-host-build.js, 89a-host-atmos.js, 89s-host-sky.js, 89w-host-water.js, 99-host-take.js | 72 |
 | rainwall | 45-host-stage.js, 47-host-land.js, 58b-biome-swhighlands-snags.js, 82-host-far.js, 84-host-ground.js, 88-host-build.js, 89a-host-atmos.js, 89s-host-sky.js, 89w-host-water.js, 99-host-take.js | 54 |
 | shared | 89zz-host-shadow.js | 3 |
-| span | 48-host-tableland.js, 88-host-build.js, 89wb-host-tableland-water.js, 99-host-take.js | 22 |
+| span | 48-host-tableland.js, 87-host-kin.js, 88-host-build.js, 89wb-host-tableland-water.js, 99-host-take.js | 27 |
 | treeline | 45-host-stage.js, 47-host-land.js, 47c-host-ehigh-end.js, 82-host-far.js, 84-host-ground.js, 88-host-build.js, 89a-host-atmos.js, 89s-host-sky.js, 89w-host-water.js, 99-host-take.js | 37 |

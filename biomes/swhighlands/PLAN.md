@@ -80,7 +80,7 @@ reads nothing of `settlements/span` and draws nothing of it. What a settlement m
 - **Span's tableland (station 3)** stands on station 4's ground whole (`stations/span/INHERIT`: the table, its eroded joints,
   `KRELIEF.tableland`, `KSTACKS.pillars`, Span's canyon and reservoir, Pan Riba) and adds its fields (table, dome, swamp, pool), the
   seep pools (core/water stills) and the twin falls (flows and falls) in `48-host-tableland.js`; **swlowlands read in place**
-  (`station.json` `kin`: its 50 and 55, the tier cedar and the flayed madrone by `SWLOW.make`/`grow`). Not taken: `38c` (no landform it owes).
+  (`station.json` `kin`: its 50 and 55, the flayed madrone by `SWLOW.make`/`grow`; the tier cedar held back, `KNOWN_ISSUES.md`). Not taken: `38c` (no landform it owes).
 - **The fan coast (station 5)**: its own stage (`stations/coast/`) on `KRELIEF.range` (the scarp's spurs) and **`KRELIEF.wadi` with its
   fan** (the wadis' floors and their cones, run on under the sea), `KSTACKS` (the sea arches, `KSTACKS.archRound`, and the stacks),
   **core/water's open water** (`WATER.open`: the Ring Sea with its swell and the shared wave field, the bed from the ground, the shore

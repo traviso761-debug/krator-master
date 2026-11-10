@@ -7,7 +7,7 @@
 const FAR=(function(){const RIN=TERR.X1,ROUT=30000,SINK=20;
  const farH=(x,z)=>scarp0(x,z);
  const GL=KFAR.lines({cell:60,inner:4200,out:ROUT,grow:1.06}),rr2=(ROUT-400)*(ROUT-400);
- const FARK={curve:{from:RIN},crest:{k:.4,from:7000,to:14000}};
+ const FARK={curve:{from:RIN}};   /* no crest lift: east of the coast the sea runs to the horizon (the lift stood a grey wall over it) */
  const L=a=>a.map(v=>Math.pow(v/255,2.2)),mixC=(a,b,t)=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t];
  const C={forest:L([132,120,92]),forest2:L([110,104,78]),scar:L([150,138,112]),rock:L([118,108,94]),far:L([132,138,146])};
  const G=KFAR.grid(Object.assign({lines:GL,dense:true,

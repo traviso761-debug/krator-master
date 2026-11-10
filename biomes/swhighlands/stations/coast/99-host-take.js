@@ -12,7 +12,8 @@ const VIEWS={};
  // a fan delta from the beach beside it, its cobble front running into the sea
  {const F=WADI_RECS[2].fan;if(F){const z=F.z-F.r*.9,x=coastX(z)-6;add('A fan delta from the beach',[x,G(x,z)+2.2,z,F.x+F.r*.4,0,F.z]);}}
  // the sea arches: from the beach, through the opening along the shore
- ROCKS.filter(B=>B.isArch).forEach((B,i)=>{const z=B.z+(i?-1:1)*(B.top-B.y0+40),x=coastX(z)+4;add(i?'The southern sea arch':'The northern sea arch',[x,Math.max(G(x,z),0)+2.5,z,B.x,B.y0+(B.top-B.y0)*.45,B.z]);});
+ /* from out in the surf, square to the span, through the opening toward the beach */
+ ROCKS.filter(B=>B.isArch).forEach((B,i)=>{const d=B.top-B.y0+45,x=B.x+d,z=B.z+(i?-8:8);add(i?'The southern sea arch':'The northern sea arch',[x,2.4,z,B.x-20,B.y0+(B.top-B.y0)*.35,B.z]);});
  // the flysch platforms at low water: its ribs running out to sea
  {const P=PLATFORMS[0],z=(P.z0+P.z1)/2+30,x=coastX(z)-25;add('The flysch platforms',[x,Math.max(G(x,z),0)+4,z,x+90,-.5,z-20]);}
  add('Star-fruit caudex on a ledge',specimen('starcaudex',7,1.6,.5));

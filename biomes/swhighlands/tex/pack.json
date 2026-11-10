@@ -93,7 +93,6 @@
    }
   },
   "club": {
-   "anchor": "center",
    "breakup": null,
    "card": true,
    "cell": [
@@ -108,7 +107,6 @@
    "lib": "card.clubmoss",
    "metal": 0,
    "normalScale": 1.0,
-   "plants": 9,
    "roughLift": 0.0,
    "scale": [
     1,
@@ -239,7 +237,6 @@
    }
   },
   "eggs": {
-   "anchor": "tight",
    "breakup": null,
    "card": true,
    "files": {
@@ -248,7 +245,6 @@
    "lib": "card.beads.bell",
    "metal": 0,
    "normalScale": 1.0,
-   "plants": 1,
    "roughLift": 0.0,
    "scale": [
     1,
@@ -267,7 +263,6 @@
    }
   },
   "glass": {
-   "anchor": "none",
    "breakup": null,
    "card": true,
    "cell": [
@@ -282,7 +277,6 @@
    "lib": "card.fin.glass",
    "metal": 0,
    "normalScale": 1.0,
-   "plants": 9,
    "roughLift": 0.0,
    "scale": [
     1,
@@ -470,7 +464,6 @@
    }
   },
   "heath": {
-   "anchor": "none",
    "breakup": null,
    "card": true,
    "cell": [
@@ -485,7 +478,6 @@
    "lib": "card.bulbheath",
    "metal": 0,
    "normalScale": 1.0,
-   "plants": 9,
    "roughLift": 0.0,
    "scale": [
     1,
@@ -504,7 +496,6 @@
    }
   },
   "moss": {
-   "anchor": "center",
    "breakup": null,
    "card": true,
    "files": {
@@ -513,7 +504,6 @@
    "lib": "card.moss",
    "metal": 0,
    "normalScale": 1.0,
-   "plants": 1,
    "roughLift": 0.0,
    "scale": [
     1,
@@ -840,7 +830,6 @@
    }
   },
   "turf": {
-   "anchor": "center",
    "breakup": null,
    "card": true,
    "files": {
@@ -849,7 +838,6 @@
    "lib": "card.moss",
    "metal": 0,
    "normalScale": 1.0,
-   "plants": 1,
    "roughLift": 0.0,
    "scale": [
     1,
@@ -896,7 +884,6 @@
    }
   },
   "whorl": {
-   "anchor": "center",
    "breakup": null,
    "card": true,
    "cell": [
@@ -911,7 +898,6 @@
    "lib": "card.frond.needle",
    "metal": 0,
    "normalScale": 1.0,
-   "plants": 3,
    "roughLift": 0.0,
    "scale": [
     1,
