@@ -18,15 +18,14 @@
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/materials/record/26-matlib-bind.js": "93c467f3805276f5aea2482da7fac2216db1e52d18d191c1925c8cd90446b54c",
-    "core/shader/06-core-khook.js": "263ba824c45b1f350a27ef1c2db3b89a022679fae4b9af234a6c2c6bfb740a04",
+    "core/shader/06-core-khook.js": "eb1a0436d3d5dbaab81c3e43de2b642c96d9c3b44331a8960801880e5e20c56d",
     "core/shader/06b-core-kcolor.js": "ededfc6b8a1a8aae5bf3c6ab40863478f9beb8e1aaf2acf4ba9da25ef6392115",
-    "core/water/20-core-water.js": "bd762ed47d5f7926adf0538d5d08187a4d136707bbb8a7e22143c2fa368c55a2",
+    "core/water/20-core-water.js": "a5094b861983c604194f4d6061c771d414c5af42ea2810e5127c82c18ad87616",
     "core/water/22-core-water-flow.js": "eab9b6ee42e8747dfd1082a1b6d76804b4659d5fd3a2b3d4bc1a566af13dbed7",
-    "core/water/50-core-water-draw.js": "4f9eb0101df9d818d53371c3be6696caf81dbf126625dd7c11ba820a3437faba",
-    "core/water/51-core-water-kinds.js": "06ebe7686845e59349ccf5c301a504868a6cd720dabcf9f86f4d199b70cc484c",
+    "core/water/50-core-water-draw.js": "9b487271223b64c2935b3336667963139dddcc055b852ac4f0a1912b2a9dd7e0",
+    "core/water/51-core-water-kinds.js": "e0c2edba19b476b4b46a4e08a63f0af695423d88b1da15b380795b2e4d07ead4",
     "kits/ancients/src/8zo-anc-open.js": "d8ed886b9ab091fa75036c30fb424d594bf32fae45740caa952347c7a9f64fa5",
-    "kits/port/KNOWN_ISSUES.md": "a798201638e59c8adb6ff4a71d51fd79b9a22fc545a7d9c841e6d2fc9c25c835",
-    "kits/port/build.py": "90c7d264158bd9d1153e90816adb06f0c83b27005272e2fc4897592822960509",
+    "kits/port/KNOWN_ISSUES.md": "cc00f4ade09a7f98aadf0a8b274565d0e867b2785196be9a76060067d9da78f0",
     "kits/port/src/00-head.html": "0943bbc0cfb9e39df9a2d653ced3bd64adf319eda202c2a1574fa422dca301f4",
     "kits/port/src/10-core.js": "781a533365a446e7c2fa4c1b8b3a630bc5f42ff17db65058435d86a2b12cf290",
     "kits/port/src/12-stats.js": "67d17e87faa80d6e5503dd3dc0d53cb2b9e0d68ce77f256187968ee914f881bd",
@@ -59,7 +58,7 @@
     "kits/port/src/85-hb-2-marina.js": "3cedd59c726aee4df3db3e1eaa26a59459599e0d00f16b069b81d53442884053",
     "kits/port/src/85-hb-3-haven.js": "c342156ade02e16d804fe040c22088516afdc3c5bc73e32ece3a59e2edbcc365",
     "kits/port/src/86-vs-a-feeder.js": "5a139a3fdd5fe454beaae133d43f559ad34226b56724c6b065658c646e455564",
-    "kits/port/src/86-vs-b-panamax.js": "bbf6b44d46f545216f5940eee5beb7402171556a357dbd3e6af9089650c3fb86",
+    "kits/port/src/86-vs-b-panamax.js": "56d4e77f7a1ea20a289ff14213abbafccfbdff728bbe2091d1116364497a21f8",
     "kits/port/src/86-vs-c-giant.js": "90719fb136a41d8638df61c27c487c6c34af3c13c326c9b4fcd6a0baa16593f0",
     "kits/port/src/87-sl-a-carrier.js": "83a6f4b1f7c604fee7bddf3117c2b83cd22ecd46a332812b7fb408860b4ec98d",
     "kits/port/src/87-sl-b-sub.js": "26e54ab90c901b3ef280cdfda287627844debb52627ad9fb4dee16661737db2f",
@@ -127,29 +126,28 @@
     "settlements/hook/build.py": "9784cd62adc2ae46a845c20c169ff85cd0ec539e0484a9792a9148ec82168366",
     "settlements/hook/targets/hook/89z-rows.js": "cbe6a0385c0899903298b515fa832cb3c93ac31edaaddbae007cd76c55e53588",
     "settlements/hook/targets/hook/91z-views.js": "6e2f0218aaae6392549aeaa0bfc7f732a72a4aaf7328fbd1afad49786550a0cf",
-    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
-    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
-    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
+    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
    },
    "listings": {
     "core/lod": "ce04505dcf0d6e6739a489ddb83f6692b9c08a79cfbe7ef33f6cf4585055624a",
     "core/materials": "3342416a526793b328fa0871f795bdf98d2084292aa7bcb917fecc405076716c",
     "kits/port/src": "e4a61258b0241d83312c0618246e35674c9a7e3971b116f7a0c1434d76168216",
+    "settlements/hook": "e091d3d098848f6a5a5cc9393b478252fdb3ba022f6c59a666b6798d20902a4a",
     "settlements/hook/dist": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "settlements/hook/src": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "settlements/hook/targets": "0648298b48be031996277ae472115a46e7964d2ac3882e61b84351f3c3f8a547",
     "settlements/hook/targets/hook": "110dafb507a2d12553bf9fae67bff24f62ea606ee3c6843801219bd84ed1cdc4",
-    "tools": "2d2fdaca850a104a2a2c553313ccb3ad18dc6bc48cb554c8c714fc1ca39607bf",
+    "tools": "24cc9a0d867a37d71596ec8a001087a35735c498125de4e336dde163318589d8",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "settlements/hook/build-manifest-hook.json": "301bf9f645f41077d8e73061813d723e5a75faa2a23f86fd356f8beaad67ce23",
-    "settlements/hook/dist/hook.html": "420a031d6e2e230cc8da3ea281fad60264186e61a35bfb03141b539f3e1fb4ba",
+    "settlements/hook/build-manifest-hook.json": "a6e960ecdb1b606a53fa0b26676009c3c009bb4e2efeb7b818542e1cbd3e0f98",
+    "settlements/hook/dist/hook.html": "de3e0022c8ee73cf53217c3ffc70f23f2617893dffd71254c33b1e4ec2d4f7d6",
     "settlements/hook/dist/hook.tex.port.js": "b8c17bdd6e016374c0da0a81cf4754ec99c8e6a4e0c5a71f18ac8c720a1e85f0"
    },
    "outputs_raw": {
-    "settlements/hook/build-manifest-hook.json": "301bf9f645f41077d8e73061813d723e5a75faa2a23f86fd356f8beaad67ce23",
-    "settlements/hook/dist/hook.html": "420a031d6e2e230cc8da3ea281fad60264186e61a35bfb03141b539f3e1fb4ba",
+    "settlements/hook/build-manifest-hook.json": "a6e960ecdb1b606a53fa0b26676009c3c009bb4e2efeb7b818542e1cbd3e0f98",
+    "settlements/hook/dist/hook.html": "de3e0022c8ee73cf53217c3ffc70f23f2617893dffd71254c33b1e4ec2d4f7d6",
     "settlements/hook/dist/hook.tex.port.js": "b8c17bdd6e016374c0da0a81cf4754ec99c8e6a4e0c5a71f18ac8c720a1e85f0"
    }
   }

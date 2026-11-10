@@ -132,6 +132,9 @@ for(const f of ['46-core-lava-gpu.js','46-core-lava-draw.js']){let e=null;try{ne
  const gp=path.join(__dirname,'golden-lava.json');
  if(process.argv.includes('--write')){fs.writeFileSync(gp,JSON.stringify(G,null,1)+'\n',{encoding:'utf8'});console.log('wrote '+gp);}
  const g=JSON.parse(fs.readFileSync(gp,'utf8'));
- ok('golden: the steps, the mass and the sample cells match golden-lava.json',g.steps===G.steps&&Math.abs(g.sumH-G.sumH)<1e-9*Math.max(1,G.sumH)&&g.cells.every((c,i)=>Math.abs(c.h-G.cells[i].h)<1e-9&&Math.abs(c.T-G.cells[i].T)<1e-6),false);}
+ // to klava_test.gd's tolerances: the golden is written on one machine and read on others, and pow (Math.pow, the cube root) can differ
+ // by an ulp between engines and builds, which 663 steps carry to ~2e-6 m (2026-10-27); the determinism check above stays to the bit
+ const TOL_H=1e-4,TOL_T=1e-3,TOL_REL=1e-7;
+ ok('golden: the steps, the mass and the sample cells match golden-lava.json (to klava_test.gd\'s tolerances)',g.steps===G.steps&&Math.abs(g.sumH-G.sumH)<=TOL_REL*Math.max(1,G.sumH)&&g.cells.every((c,i)=>Math.abs(c.h-G.cells[i].h)<=TOL_H&&Math.abs(c.T-G.cells[i].T)<=TOL_T),false);}
 
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);

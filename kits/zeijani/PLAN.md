@@ -21,7 +21,8 @@ progress log at the end of the plan current.
 
 1. **`kits/zeijani`**, the Zeijani building kit: every building in the owner's manifest (section 6), carved,
    constructed and wooden, with its interiors planned and furnished, on a kit sheet like Scyvoi's. Bundled for worlds as
-   `KratorZeijani`.
+   `KratorZeijani`. *(2026-11-09, P8: never made; Dhelv reads the kit's `src/` in place, less its sheet's host. A
+   `kit_bundle.py` waits for a second world that takes the kit.)*
 2. **`core/terrain/39-core-cavern.js`**, a shared underground: voids as signed-distance primitives (tubes, halls,
    galleries, rooms, shafts, trenches), meshed in chunks, writing floors and blockers into `core/walk` as it carves.
    The kit sheet is its first consumer, Dhelv the second.
@@ -96,7 +97,7 @@ Two requirements run through everything (the owner): **`core/furnish`, `core/tag
 
 | Path | What |
 |---|---|
-| `kits/zeijani/` | the kit: `src/` (defs and void plans [G data], builders [draw], the sheet host [web]), `build.py`, `verify.py`, `kit_bundle.py` (`KratorZeijani`), `materials.json`, `tex/`, the docs, `PORT.md`. The README, the refs and this plan exist |
+| `kits/zeijani/` | the kit: `src/` (defs and void plans [G data], builders [draw], the sheet host [web]), `build.py`, `verify.py`, `kit_bundle.py` (`KratorZeijani`; never made, see section 1), `materials.json`, `tex/`, the docs, `PORT.md`. The README, the refs and this plan exist |
 | `kits/catalog/krator-master-furniture-zeijani.js` | the Zeijani culture file: their loose pieces |
 | `kits/interiors/sets/zeijani.js` | an interior item per kit key; the new room kinds go in `IX.PROGRAMS` |
 | `core/tags/52-core-tags-vocab.js` | `'zeijani': 'Zeijani'` in `CULTURE_NAMES`; new jobs in `CATALOG_JOBS` and the catalog's `FURN_JOBS`, together (they mirror each other) |
@@ -277,7 +278,8 @@ Tools: Inspector (T), Cut-away (C), Night (N), Polygon (P), and Walk (F), which 
 carved interiors. URL options: `?only=`, `?t=`, `?mat=proc`, `?furniture=0`.
 
 The sheet exports its defs, tags, void plans, interiors, furniture and walk floors. (GODOT-PLAN rule 10: a build
-without an export is not finished.)
+without an export is not finished.) *(2026-11-09, P8: only Dhelv's page exports (`verify.py --export`, P7); the sheet
+has no export of its own. The kit's defs reach Godot through Dhelv's.)*
 
 ### 6.6 The catalog culture file
 
@@ -696,6 +698,7 @@ Commit at the end of each phase, and update the progress log below.
 | 2026-10-08 | P6 (review 3, interiors) | **The owner's walk-through, fixed.** The council's flank stairs opened under the frieze (its gaps were on the wrong stretch); things floated on tables, barrels and jars (a host's surface is now measured on what is drawn, `catalog.top`, and the catalog's `surface: false` honoured: kits/interiors); wall pieces stood on the cloisters' open sides (rooms take `open` sides); the pennants were fragments (a `stretch` piece runs its wall); the beds and the mortar z-fought, the fleece bed's layers floated (kits/catalog); the hypertrees' limbs kept their painted canvas (biomes/hyperjungle binds `limb` and `wood`); the fountains had no water; the park's children stood in one clump (eight spots on the hill); the shelf's columns and lip weathered irregularly; the gallery fronts unburied; the ground's T-junction cracks snapped shut; the stream over the ground; the cut-away stops at a site's top; the cliff casts no clipped shadow. |
 | 2026-10-08 | P6 (shared kits) | **The shared kits rebuilt everywhere** (the owner: "rebuild and fix the shared kit issues"). origin/main merged into the branch (the Zeijani and the Ash Nomads cultures side by side: core/tags 21 cultures, digest 1aa3363); every build rebuilt (80 pages changed, most by the tags' vocabulary); Iziz's vendored hyperjungle re-vendored (its bark gap closed; `bio_wrap` read the CRLF upstream wrong and `--vendor-bio` emptied a copy when it failed: both fixed); the sets verify's overlap and reach failures from the stretched pennants fixed (the footprint stays declared, the span is drawn). The owner confirmed the slope's reading (rising east, to the volcano). |
 | 2026-10-08 | P7 | **Godot.** A Godot 4.7.2 binary on this machine (signed by Prehensile Tales). Dhelv's export (`92-dhelv-export.js`, `verify.py --export`): terrain, place, cavern (the plan), tags, walk, nav, sim with each actor's baked `motion`, golden, lights. `core/simulation/ksim.gd` (`KSim`), the twin of `SIM.at` and `SIM.pose`: `godot/tests/dhelv/dhelv_sim_test.gd` replays the page's trace, 3906 rows, 0 differ (negative: legs 10% faster). `godot/krator/dhelv_nav.gd` bakes the walk floors (Recast) into a navmesh: `dhelv_nav_test.gd` walks the gate to the temple through the stone door on the braid's a strand, 1031 m against DHN's 1044 m (negative: the stone door's floors left out). The spike's `dhelv` case: sites as boxes, the floors drawn, a NavigationAgent3D walking that way, the ramblers posed by KSim, 48 lamps. Gaps: the cavern's rock (marching cubes not ported), furniture, materials. |
+| 2026-11-09 | P8 | **Docs and wrap-up.** README, API, DESIGN, KNOWN_ISSUES of the kit and of Dhelv brought to today (the kit's stale words fixed: `36-def.js`'s def fields, the tents in `verify.py`, `91f`, `91n` and the page's hint; `kit_bundle.py` (`KratorZeijani`) and the sheet's export marked never made: Dhelv reads `src/` in place and exports); `PORT.md` (`tools/audit_port.py`) and `INDEX.md` (`tools/make_index.py`) for both; both pages already in `PORT-BASELINE.json` (not rewritten: they differ from it, by the shared core's changes since and Dhelv's new inputs). **Dhelv's page had stopped loading** since the shared moves: `build.py` now takes the placeholder sky (core/atmos/placeholder; "KratorSky is not defined"), core/door and `core/engine/36o-open.js` ("svLeaf is not defined"), and `src/45-dhelv-bio.js` puts the kit's `box` and `poly` back after core/biome's `BIO.geo.stemClump`, which leaks them as globals (a one-character fix in core/biome left for the all-builds rebuild: Dhelv's KNOWN_ISSUES). `verify.py --assert`, SwiftShader: the kit's sheet passes (error panel clean); Dhelv passes every check and negative and the universal asserts. `check_core_use.py`: no new finding for either. Gallery: both are listed by discover; every file under 16 MB. Not done: the lessons into the skill; Dhelv's doors do not open (no `KDOORHOST.tick` in its take: KNOWN_ISSUES). The owner decides the push |
 
 ## Appendix A: the owner's brief, verbatim
 

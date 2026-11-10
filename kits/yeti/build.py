@@ -76,7 +76,10 @@ OUT = os.path.join(DIST, KIT_ID + '.html')
 TEX_DIR = os.path.join(HERE, 'tex')
 CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('shader', 'rand', 'materials/record', 'tags', 'furnish', 'atmos', 'door', 'walk', 'walk/box')]
 # single core files (a module the kit takes one piece of)
-CORE_FILES = [os.path.join(ROOT, 'core', 'city', '36-city-covered.js')]
+CORE_FILES = [os.path.join(ROOT, 'core', 'city', '36-city-covered.js'),
+              # kits/eternian's head generator, READ IN PLACE ([G data]: one generator for every build that carries the State's
+              # faces, as kits/ancients' Sanctum reads it): the war loot's faces and masks (src/45-yt-inside.js; PLAN.md section 5)
+              os.path.join(ROOT, 'kits', 'eternian', 'src', '42-et-head.js')]
 # the host shell from core/host (core/host/README.md): the camera, the frame loop and its clock (core/clock), the panel, the probe,
 # and the authoring tools (inspect, polygon, path). core/engine's 99-host-take.js (with 92-world.js) hands it the
 # page; it replaced the engine's own 92-camera.js and 91-probe.js (2026-10-18, kits/scyvoi/KNOWN_ISSUES.md "Host port").
@@ -86,10 +89,28 @@ sys.path.insert(0, os.path.join(ROOT, 'core', 'atmos', 'placeholder'))
 import placeholder as psky   # the placeholder sky (KratorSky), read in place: MODULARITY-PLAN.md step 1
 sys.path.insert(0, os.path.join(ROOT, 'core', 'engine'))
 import engine as kengine   # the building-kit engine, read in place: MODULARITY-PLAN.md step 2
-CORE_HOST = khost.SHELL + ['94-host-polytool.js']
+CORE_HOST = khost.SHELL + kengine.HOST   # the polygon tool and the one key map (core/host/92k-host-keys.js)
+# The forest-steppe row's FLORA (PLAN.md section 9, Y6): biomes/nwouterwall's kit with core/space and core/biome, READ IN PLACE (as
+# settlements/highlands' Roketstad reads nhighlands) under slot names in the 93b-bio- band: after the scene (90) and the world's first
+# build (92), round the kit's own host binding (src/93b-bio-45-yt-init.js before the biome's fragments, src/93b-bio-80-yt-flora.js after
+# them). Nothing is copied; the kit's pack is not taken (the flora draws in its procedural colours: KNOWN_ISSUES.md).
+_B = lambda *p: os.path.join(ROOT, *p)
+BIO_BAND = {'93b-bio-05-core-space.js': _B('core', 'space', '20-core-space.js'),
+            '93b-bio-10-core-head.js': _B('core', 'biome', '10-core-head.js'),
+            '93b-bio-20-core-kit.js': _B('core', 'biome', '20-core-kit.js'),
+            '93b-bio-30-core-foliage.js': _B('core', 'biome', '30-core-foliage.js'),
+            '93b-bio-31b-core-leafset.js': _B('core', 'biome', '31b-core-leafset.js'),   # 20-core-kit's leaf option calls it (check_assembly)
+            '93b-bio-31j-core-joint.js': _B('core', 'biome', '31j-core-joint.js'),
+            '93b-bio-34-core-impostor.js': _B('core', 'biome', '34-core-impostor.js'),   # the trees call it; off here (NWOW.IMPOSTORS=false: 93b-bio-80)
+            '93b-bio-40-core-place.js': _B('core', 'biome', '40-core-place.js'),
+            '93b-bio-46-biome-nwow-layout.js': _B('biomes', 'nwouterwall', 'src', '46-biome-nwow-layout.js'),
+            '93b-bio-50-biome-nwow-species.js': _B('biomes', 'nwouterwall', 'src', '50-biome-nwow-species.js'),
+            '93b-bio-55-biome-nwow-trees.js': _B('biomes', 'nwouterwall', 'src', '55-biome-nwow-trees.js'),
+            '93b-bio-60-biome-nwow-floor.js': _B('biomes', 'nwouterwall', 'src', '60-biome-nwow-floor.js'),
+            '93b-bio-70-biome-nwow.js': _B('biomes', 'nwouterwall', 'src', '70-biome-nwow.js')}
 VENDORED = {}
 # GENERATED fragments, never written to src/
-FURN_CULTURES = ['generic', 'generic-goods', 'jobs', 'scrap']   # the shared goods, the trades, scrap (a khaayken culture file comes in Y5)
+FURN_CULTURES = ['khaayken', 'eternian', 'generic', 'generic-goods', 'jobs', 'scrap']   # the Khaayken's own, the Eternians' (the war loot, PLAN.md section 5), the shared goods, the trades, scrap
 VIRTUAL = {'26-matlib-pack.js', '38-furniture-bundle.js'}
 BUNDLE_GLOBALS = ('KratorFurniture',)
 
@@ -148,6 +169,7 @@ def sources():
     paths.update(psky.paths(psky.SKY))
     paths.update(kengine.paths())
     paths.update({os.path.basename(p): p for p in CORE_FILES})
+    paths.update(BIO_BAND)
     core = dict(paths)
     paths.update({f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()})   # a src/ copy overrides the core one
     return paths, core
@@ -166,6 +188,7 @@ def main():
         decl = {}
         for f in files:
             if not f.endswith('.js') or f in VIRTUAL or f in CORE_HOST: continue   # the host's files are IIFEs: each its own scope
+            if f in BIO_BAND: continue   # the biome band: core/biome's head and the kit's fragments are closures (their column-0 names are local)
             for m in RE_DECL.finditer(bodies[f]): decl.setdefault(m.group(1), set()).add(f)
         for n in BUNDLE_GLOBALS:
             if n in decl: errs.append('top-level name `%s` in %s clashes with the generated furniture bundle' % (n, ', '.join(sorted(decl[n]))))
@@ -214,6 +237,11 @@ def main():
             print('\nOPEN ISSUES (%d) - KNOWN_ISSUES.md:' % len(op)); [print('  ' + l[6:]) for l in op]
 
 
+# src/ files that shadow a core/engine fragment on purpose (tools/check_vendor.py reads the reason): 37-wk-rec.js records a
+# 'feature' placement's boxes as well as a building's, because the winter street's and the networks' tunnels are walked
+ADAPTED = {'37-wk-rec.js': "a feature (the winter street, a tunnel network) records its walk floors and blocks too: its tunnels are walked"}
+
+
 def vendor_check():
     bad = 0
     for f, up in sorted(VENDORED.items()):
@@ -223,6 +251,8 @@ def vendor_check():
     paths, core = sources()
     for f in sorted(core):
         if paths[f] != core[f]:
+            if f in ADAPTED:   # a deliberate copy (KNOWN_ISSUES.md names it): reported, not counted
+                print('  ~  %s drifts (deliberate: %s)' % (f, ADAPTED[f])); continue
             print('  !  src/%-12s shadows %s' % (f, os.path.relpath(core[f], ROOT))); bad += 1
     print('vendor-check: ' + ('OK' if not bad else 'DRIFT'))
     return not bad

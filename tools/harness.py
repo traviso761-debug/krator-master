@@ -173,9 +173,14 @@ def pid_alive(pid):
         return code.value == 259                                            # STILL_ACTIVE
     try:
         os.kill(int(pid), 0)
-        return True
     except OSError:
         return False
+    # a zombie answers kill(0) but is dead: under a PID 1 that does not reap orphans (a container) a killed job stays one
+    try:
+        with open('/proc/%d/stat' % int(pid), encoding='utf-8') as f:
+            return f.read().rsplit(')', 1)[1].split()[0] != 'Z'
+    except (OSError, IndexError):
+        return True
 
 
 def _proc_start(pid):
@@ -1134,6 +1139,32 @@ class VerifyPage:
             U.append(("winding", True, w.get("error") or ("%d of %d geometries look inside-out (a report): %s" % (w["suspectN"], w["n"], ", ".join(
                 "%s out %.2f up %.2f, %d tris" % (x["name"], x["out"], x["up"], x["tris"]) for x in w["suspects"][:6]))
                 if w["suspectN"] else "%d geometries, none inside-out" % w["n"])))
+        try:   # the one key map and the one walk mode (core/host/92k-host-keys.js), on a page that takes them
+            kw = await pg.evaluate("() => (typeof KHOST === 'undefined' || !KHOST.keysCheck) ? null : "
+                                   "{keys: KHOST.keysCheck(), walk: KHOST.walkCheck ? KHOST.walkCheck() : null}")
+        except Exception as e:
+            kw = {"error": str(e).splitlines()[0][:200]}
+        if kw is not None:
+            if kw.get("error"):
+                U.append(("one-key-map", False, kw["error"]))
+            else:
+                k = kw["keys"]
+                bad = k["words"] + k["clashes"]
+                U.append(("one-key-map", not bad, "; ".join(bad)[:300] if bad else "standard controls %s in the key map's words, no clash"
+                          % (", ".join(k["std"]) or "(none)")))
+                w = kw.get("walk")
+                if w is not None:
+                    if not w.get("walk"):
+                        U.append(("walk", True, "the ground only (the page hands the camera no KWALK)"))
+                    else:
+                        fl, bl = w.get("floor"), w.get("block")
+                        ok = (fl is None or fl["ok"]) and (bl is None or bl["ok"])
+                        U.append(("walk", ok, "KWALK %d floors, %d blocks; %s; %s" % (
+                            w["floors"], w["blocks"],
+                            ("stood on the floor at %s (feet %s)" % (fl["at"], fl["feet"])) if fl and fl["ok"] else
+                            ("did NOT stand on the floor at %s (feet %s)" % (fl["at"], fl["feet"]) if fl else "no raised floor to stand on"),
+                            ("a wall stopped the walker %s m on, %s m from its face" % (bl["moved"], bl["gap"])) if bl and bl["ok"] else
+                            ("the walker was NOT stopped by %s: from %s to %s" % (bl["box"], bl["from"], bl["end"]) if bl else "no wall with clear ground before it"))))
         if is_gpu():
             try:
                 rn = await pg.evaluate(RENDERER_JS)

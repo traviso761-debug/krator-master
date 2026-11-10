@@ -5,8 +5,6 @@
    "inputs": {
     "core/atmos/placeholder/80-sky-hash.js": "70eba6e14ba39b5da1123e5056a9383fb55913213e24b18e75045d0e17aab31f",
     "core/atmos/placeholder/81-sky.js": "ad22fb31cdfbbd20cb1f8ad919e4720e7db54094e4e778c46e7bd8ce7780e6ab",
-    "core/atmos/placeholder/placeholder.py": "a56878038fdd42d4d41752866926a3cf59815924a08f2ef42b56484766848aab",
-    "core/catalog/catalog.py": "5d4a79810193b831fc1c686c934990afd10ecb63b5a55d05e0f3d7dd4c84d88a",
     "core/catalog/files.json": "a400e7bf3e1197698d129db83964d883fd9ea2818173fe7df3c7d1b4a054d72f",
     "core/catalog/inspector.js": "7f556b17e88d5f2b05c330acfb199ea551c55fb4542631f7e057e595294987c0",
     "core/catalog/krator-asset-engine.js": "857d45d9a71f62c958eb29dbe273d572b9e8262669c29f9f0433675451e2139d",
@@ -58,7 +56,6 @@
     "kits/catalog/src/92-hover.js": "caf2efd0b8e1c16d53f072e89f0cbc4382093bfc94178a3e0fcb06b73d4458dd",
     "kits/catalog/src/93-polygon.js": "999d4f1f1dcc7b8fcf5b48631b6365c4b117c670dfbc35156732a0e88f5be2e1",
     "kits/catalog/src/99-tail.html": "fc837380d9f5351ff0a5776c8e1f523bb2107106f2ac860e0e76535377ec5b78",
-    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
    },
    "listings": {
@@ -73,7 +70,7 @@
     "kits/catalog/dist/catalog.html": "43d112c1308747841b1f9afc6f294cd8a3f9ba6821259d0837b8f7e52feaf8df"
    },
    "outputs_raw": {
-    "kits/catalog/build-manifest.json": "9d197ad632aede808c5ecf2a6090cabfc9a06ee27151dff5dc12bdaf8c162581",
+    "kits/catalog/build-manifest.json": "25c826409d14b9eeb6e86d4492287e10a827be6f25225f4e1a42f176404c5ed5",
     "kits/catalog/dist/catalog.html": "43d112c1308747841b1f9afc6f294cd8a3f9ba6821259d0837b8f7e52feaf8df"
    }
   }

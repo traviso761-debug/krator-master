@@ -12,11 +12,15 @@
 - [ ] The Ancients' hex-lattice dome (the palace's great dome and pavilion caps: `acLatticeDome`, the Ancients core's) is
       geometry, not a card, so the hex grille is not on it; the hex pods' glazing, and the other courts (`vnPaving`
       flags) stay on the Vernacular's flags.
+      (2026-11-09: checked, the lattice itself is done; what stays open is the card, which would want a curved-UV dome in the
+      Ancients core.)
 - [ ] The folk house's balcony front is a scalloped wall in 15 straight segments, not a curve; it reads as a curve from
       the street, but steps show close up.
-- [ ] `verify.py --assert` passes every invariant but ends FAILED on `WebGL: CONTEXT_LOST_WEBGL` in the console: the
+- [x] `verify.py --assert` passes every invariant but ends FAILED on `WebGL: CONTEXT_LOST_WEBGL` in the console: the
       same as Iziz's own pages (settlements/iziz/KNOWN_ISSUES.md, 2026-10-05; checked on `iziz-vernacular.html`
       2026-10-18, same result). The harness's teardown, not the page.
+      **2026-11-09:** gone with the shared harness (`tools/harness.py` verify_page counts the console separately): `--assert`
+      ends `OK` on SwiftShader.
 - [ ] The rich villas' court walls are board-formed concrete in PYPAL.formwork grey; beside the Vernacular's sand they
       read heavy at eye level. A lighter formwork (or white render on the walls) is the owner's call.
 - [ ] The hex cells' honeycomb has its plank walks and stair at the back (a front walk would cut the offset pods), so
@@ -43,12 +47,33 @@
 - [ ] The room card is 69e5's `MAT.izRoom` with its colour converted to linear (`MAT.pyRoomS`): r128 reads a material's hex as
       linear, so `MAT.izRoom` itself (and `KGLASS.material(THREE,'room')`) draws a light beige, not the Vernacular's IZ_ROOMC
       brown. The fix belongs in 69e5 / core/door (Highlands' `hKeelDark` takes `MAT.izRoom` as it is).
-- [ ] Many doors stay locked because their bodies are solid on the sheet (no interiors item for the type: the pod stack, the
+- [x] Many doors stay locked because their bodies are solid on the sheet (no interiors item for the type: the pod stack, the
       vault house, the terrace, the neo villa, the bazaar lane, the clinic, the shrine, the guild, the palace): they open once
       the type is furnished (`kits/interiors/sets/pylon.js`).
+      **2026-11-09:** the vault house, the terrace, the neo villa, the clinic, the shrine, the guild and the palace are
+      furnished (PLAN.md P6): locked doors 39 -> 21 (the pod stack, the bazaar lane, the Ancients' families and the Vernacular's
+      own solid bodies keep theirs). The palace's rooms are explicit rooms on its blueprint; the builder draws their partitions,
+      the upper floor and the private stair from the item's `plan` (`pypInterior`).
 - [ ] Reachability (core/walk `KWALK.reach` from four points round each plot on the ground, every unlocked door open; 2026-11-03):
       200 of 244 floors reached, before and after the doors pass (no plot sealed). Unreached: the upper floors of the folk house
       (two rooms of floor 1), the folk villa (floor 1, its stair and the roof pavilion: its interior stair's foot is not met,
       and the porch's `vnStairs` head), the terrace (its flight's head), the block and the school (one upper room each), and the
       Vernacular's mixed-street houses (the same as on the Vernacular's own sheet). Interiors planner stairs and partition
       doorways, not the kit's doors: the next pass is the planner's (`kits/interiors`).
+- [ ] The palace's interior (2026-11-09) is the hall block only: the seven pavilions are solid drums (the chancery, the
+      council, the dining hall, the garden room, the guard, the household shrine, the round kitchen: they want round hollow
+      bodies), the undercroft is not drawn, and the servery, back stair, family loggia and steward (behind the block, u 24-27)
+      have no body. The audience hall's ceiling is flat under the drum (the drum and dome are solid). The private stair is a
+      spiral of 28 treads drawn as boxes: it is not in core/walk, so a walker reaches the upper storey by the outside stair only.
+      The partition doorways are open (no leaves).
+- [ ] The vaulted bodies (the vault house, the clinic's wings) have their rooms under the springing: the vaults (`pyHalf`) are
+      solid half-cylinders over a flat ceiling, so the rooms are 2.6 m boxes, not vaulted rooms.
+- [x] (2026-11-09) **The Post-Apoc row stopped the page** (`ReferenceError: KDOORHOST is not defined` in the closure's `poFlush`):
+      its openings join the host's core/door as a guest's, but hand their leaves to core/door's host, which Iziz's page does not
+      carry (it has IZDOOR). kit.json's `postApoc.extra` now reads `core/door/90-core-door-host.js` in place inside the closure,
+      and `targets/kit/90zp-apoc-row.js` has IZDOOR pose a door it did not draw (one with `D.draw`) through it. Iziz's own pages
+      are byte-identical with and without the kit's `postApoc` path in `settlements/iziz/build.py` (built both ways).
+      `verify.py dist/pylon.html --assert` ends `OK` on SwiftShader (the Post-Apoc row: 22 buildings, 17 with interiors, 49 rooms).
+- [ ] The Post-Apoc row (2026-11-09) is its own THREE.Group from the KratorPostApoc closure: its buildings are registered
+      (labels, probe) but are not in the Vernacular's KIT buckets, so core/export's sheet export does not carry them, and the
+      bundle adds about 400 KB to the page. The modified Pylon defs on the set's cores (PLAN.md section 4) are not written.

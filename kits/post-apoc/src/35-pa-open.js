@@ -66,10 +66,10 @@ function poFlush(parent){
  const L=PO.leaves;if(L.length){poGeo=poGeo||new THREE.BoxGeometry(1,1,1).translate(0,.5,0);
   const m=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.85});const im=new THREE.InstancedMesh(poGeo,m,L.length);im.name='door leaves';
   const P=new THREE.Vector3(),S=new THREE.Vector3(),M=new THREE.Matrix4();
-  L.forEach((Lf,i)=>{const p=Lf.D.p0;im.setMatrixAt(i,M.compose(P.set(p[0],p[1],p[2]),Lf.q,S.set(Lf.s[0],Lf.s[1],Lf.s[2])));im.setColorAt(i,Lf.col);KDOORHOST.instanced(Lf.D,im,i,Lf.q,Lf.s);});
+  L.forEach((Lf,i)=>{const p=Lf.D.p0;im.setMatrixAt(i,M.compose(P.set(p[0],p[1],p[2]),Lf.q,S.set(Lf.s[0],Lf.s[1],Lf.s[2])));im.setColorAt(i,Lf.col);if(typeof KDOORHOST!=='undefined')KDOORHOST.instanced(Lf.D,im,i,Lf.q,Lf.s);});   /* a guest on a page with no core/door host (Iziz's --kit pages: Pylon) draws its leaves shut (2026-11-09: it threw) */
   im.castShadow=true;im.receiveShadow=true;im.frustumCulled=false;im.userData.doorLeaves=true;im.userData.probeSkip=true;
   im.instanceMatrix.needsUpdate=true;if(im.instanceColor)im.instanceColor.needsUpdate=true;parent.add(im);PO.mesh=im;
-  for(const D of KDOOR.list)if(D.open>0)KDOORHOST.pose(D);}
+  if(typeof KDOORHOST!=='undefined')for(const D of KDOOR.list)if(D.open>0)KDOORHOST.pose(D);}
  if(PO_GUEST||typeof KWALK==='undefined')return;   /* a guest's walk blocks are the host's (its KDOOR.walk) */
  KDOOR.walk(KWALK);PO.cleared=KDOOR.clearDoorways(KWALK);
  /* a locked door on a solid face stands in a shell core/walk does not hold (only the interiors' rooms are in it, ?interiors=1): its block

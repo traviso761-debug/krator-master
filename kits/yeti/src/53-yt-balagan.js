@@ -68,7 +68,7 @@ function ytBalagan(season){const B=YT_BAL,S=B.S,hx=B.hx,hz=B.hz,tx=hx-B.bat,tz=h
   /* the season's coat: drift snow banked on the walls in winter */
   if(season==='winter')for(const [a,b,n] of [[[-hx-wt,0,-hz-wt],[hx+wt,0,-hz-wt],[0,0,-1]],[[hx+wt,0,-hz-wt],[hx+wt,0,hz+wt],[1,0,0]],[[-hx-wt,0,hz+wt],[-hx-wt,0,-hz-wt],[-1,0,0]]]){
    const o=[n[0]*1.2,0,n[2]*1.2],up=[-n[0]*.38,1.0,-n[2]*.38];ytQuad('snow',a.map((v,i)=>v+o[i]),b.map((v,i)=>v+o[i]),a.map((v,i)=>v+up[i]),b.map((v,i)=>v+up[i]),P('snow'),[n[0],1,n[2]]);}
-  FURNISH('generic_chest',hx-.6,yFl+.5,-hz+.6,-PI/2);FURNISH('generic_stew_pot',cx+.9,yFl,cz-.2,PI/2);FURNISH('generic_floor_basket',1.0,yFl,1.0,0);FURNISH('generic_fuel',cx+.2,yFl,cz-.9,0);FURNISH('generic_tea_set',-.4,yFl+.5,-hz+.55,0);});}
+  FURNISH('khaayken_common_chest',hx-.6,yFl+.5,-hz+.6,-PI/2);FURNISH('generic_stew_pot',cx+.9,yFl,cz-.2,PI/2);FURNISH('generic_floor_basket',1.0,yFl,1.0,0);FURNISH('generic_fuel',cx+.2,yFl,cz-.9,0);FURNISH('generic_tea_set',-.4,yFl+.5,-hz+.55,0);});}
 defBuilding({key:'yt_balagan',name:'Larch-and-sod house (the forest-steppe balagan)',seed:9141,w:YT_BAL.w,d:YT_BAL.d,h:YT_BAL.h,cut:true,budget:60000,
  tags:{types:['dwelling-single'],wealth:'poor',style:'poor',role:'dwelling'},
  note:'below the pycrete line: battered larch walls daubed with earth, a low sod roof, a cold porch, a clay fireplace stove, benches round the walls, ice or gut windows to the north',

@@ -4,7 +4,12 @@
 // rims, portholes, hex lattice) come with the neo-Ancient tier (PLAN.md P1); these are the folk tier's.
 
 // a cornice band round a block: a slab proud of the wall on every side (the folk houses' thick orange bands)
-function pynBand(x,y,z,w,d,h,proud,ry,c){vB('vPlaster',x,y,z,w+2*proud,h,d+2*proud,ry,c);}
+// hole (ry 0 only): [x0, x1, z0, z1], the room of the storey the band carries (its body inside the walls): over a hollow body
+// the band is open there, so the planned floor and its stair well show (2026-11-09; a solid band capped the well)
+function pynBand(x,y,z,w,d,h,proud,ry,c,hole){const W=w+2*proud,D=d+2*proud;
+ if(hole&&!ry&&VERN.cur&&VERN.cur.hollow&&typeof vnRectFill==='function'){const [a,b,e,f]=hole;
+  vnRectFill([[x-W/2,z-D/2],[x+W/2,z-D/2],[x+W/2,z+D/2],[x-W/2,z+D/2]],[[[a,e],[b,e],[b,f],[a,f]]],(p,q,r,s)=>vB('vPlaster',(p+q)/2,y,(r+s)/2,q-p,h,s-r,0,c));return;}
+ vB('vPlaster',x,y,z,W,h,D,ry,c);}
 // a nested-rectangle panel on a face: n frames of thin bars, each inset by step, standing proud of the face
 function pynPanel(x,y,z,ry,w,h,c,n,step){n=n==null?1:n;step=step==null?.12:step;const t=.07;
  for(let k=0;k<n;k++){const ww=w-2*k*step,hh=h-2*k*step;if(ww<.2||hh<.2)break;const yb=y+k*step,dz=.04+.02*k;
@@ -101,7 +106,7 @@ function pynDoorway(shape,x,y,z,ry,w,h,o){o=o||{};
  // the leaves: in the cut wall's middle (operable), or shut and locked in front of a solid face
  // (from 1.5 m wide a double door: one record, its pair of leaves swinging apart; timber panelled, steel plain: core/door's leaf styles)
  const two=w>1.5,t=.07,m=loc(x,z,0,F?-F.B.t/2:.01+t/2,ry);
- return[IZDOOR.leaf(m[0],y,m[1],ry,w-(F?.03:.01)*(two?2:1),lh-.1,t,fc,{locked:!F&&!o.gate,pair:two,style:o.metal?null:'panel'})];}
+ return[IZDOOR.leaf(m[0],y,m[1],ry,w-(F?.03:.01)*(two?2:1),lh-.1,t,fc,{locked:!F&&!o.gate,pair:two,style:o.metal?null:'panel+pull'})];}   /* panelled, a bar pull each face (core/door's hardware, 2026-11-09) */
 // a box (vB's arguments) with a doorway dw wide and dh high through the foot of its middle: two piers and a lintel (a gate's
 // block, pynDoorway's o.gate)
 function pynPierBox(item,x,y,z,w,h,d,ry,c,dw,dh){const pw=(w-dw)/2;

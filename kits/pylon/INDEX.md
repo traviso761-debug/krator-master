@@ -16,13 +16,13 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `69p-pyl-mat.js` | 7 | materials and kit items (prefix py) (19); the owner's delivery of 2026-10-18 (materials.js (53); doors in the profiles (the owner, 2026-10-18: no (64); real glass (the owner, 2026-11-03; core/door's K (70) |
-| `69q-pyl-helpers.js` | 16 | the neo-Ancient profiles (PLAN.md section 2) (29) |
-| `70p-pyl-dwellings.js` | 12 | MIDDLE (5) |
+| `69q-pyl-helpers.js` | 17 | the neo-Ancient profiles (PLAN.md section 2) (34) |
+| `70p-pyl-dwellings.js` | 14 | MIDDLE (5) |
 | `70q-pyl-poor.js` | 8 |  |
 | `70r-pyl-rich.js` | 6 |  |
 | `71p-pyl-industry.js` | 16 |  |
-| `72p-pyl-civic.js` | 10 |  |
-| `74p-pyl-palace.js` | 8 |  |
+| `72p-pyl-civic.js` | 11 |  |
+| `74p-pyl-palace.js` | 12 |  |
 | `77zp-pyl-ancients.js` | 19 | the VERN defs: one per family, the state in o.mo (137) |
 | `88yp-pyl-matlib.js` | <1 |  |
 
@@ -32,4 +32,4 @@ Each target adds its own fragments to `src/` and builds one output.
 
 | Target | Fragments | KB |
 |---|---|---|
-| `kit` | `89z-rows.js`, `91z-views.js` | 6 |
+| `kit` | `89z-rows.js`, `90zp-apoc-row.js`, `91z-views.js`, `91zp-apoc-views.js` | 8 |

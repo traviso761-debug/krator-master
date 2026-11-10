@@ -71,6 +71,7 @@ CORE = {
     '08-core-rand.js': 'core/rand/08-core-rand.js',
     '10-core-head.js': 'core/biome/10-core-head.js', '20-core-kit.js': 'core/biome/20-core-kit.js',
     '30-core-foliage.js': 'core/biome/30-core-foliage.js', '40-core-place.js': 'core/biome/40-core-place.js',
+    '35-core-anim.js': 'core/biome/35-core-anim.js',   # BIO.animMat (sedesert's fauna calls it unguarded since the anim move)
     '42-core-export.js': 'core/biome/42-core-export.js', '43-core-export-host.js': 'core/biome/43-core-export-host.js',
     '44-core-stage.js': 'core/biome/44-core-stage.js',
     '20-core-clock.js': 'core/clock/20-core-clock.js', '20-core-sched.js': 'core/sched/20-core-sched.js',
@@ -79,6 +80,7 @@ CORE = {
     '35-core-strata.js': 'biomes/sedesert/src/35-core-strata.js',
     '50-core-tags.js': 'core/tags/50-core-tags.js', '52-core-tags-vocab.js': 'core/tags/52-core-tags-vocab.js',
     '53-core-tags-host.js': 'core/tags/53-core-tags-host.js',
+    '90-core-door-host.js': 'core/door/90-core-door-host.js',   # KDOORHOST: the Vernacular's leaves posed, the tick, E (src/95-verge-doors.js)
     '50-core-furnish.js': 'core/furnish/50-core-furnish.js', '52-core-furnish-draw.js': 'core/furnish/52-core-furnish-draw.js',
     '53-core-furnish-host.js': 'core/furnish/53-core-furnish-host.js',
 }
@@ -87,7 +89,7 @@ CORE = {
 # src/99-start.js is the take; a src/ file with a host file's name would win (none)
 sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))
 import host as khost
-CORE_HOST = [f for f in khost.FULL if f not in ('20-core-space.js', '40-core-edits.js')]
+CORE_HOST = [f for f in khost.FULL if f not in ('20-core-space.js', '40-core-edits.js')] + khost.KEYS   # KEYS: the one key map and the one walk mode (core/host/92k-host-keys.js)
 for _f in CORE_HOST:
     CORE.setdefault(_f, os.path.relpath(khost.path(_f), ROOT).replace(os.sep, '/'))
 # the two biome kits: slot prefix, kit folder, the kit's fragments in its own order (a missing one is skipped)
@@ -129,6 +131,7 @@ def izv_bundle():
                 'return { VERN: VERN, kbake: kbake, KIT: KIT, REG: REG, MAT: MAT, TEX: TEX, reseed: reseed, rng: rng,\n'
                 '  TSTAT: (typeof TSTAT !== "undefined" ? TSTAT : null),\n'
                 '  FUNICULAR: (typeof FUNICULAR !== "undefined" ? FUNICULAR : null),\n'
+                '  IZDOOR: (typeof IZDOOR !== "undefined" ? IZDOOR : null),\n'
                 '  setTerrain: function(f){ terrainH = f; } };\n})();\n'), [os.path.relpath(f, ROOT).replace(os.sep, "/") for f in fs]
 
 

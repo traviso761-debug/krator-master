@@ -153,5 +153,17 @@ ok('a door at rest is not posed again',calls===0,calls!==0);
   const p0=new THREE.Vector3().setFromMatrixPosition(m0),p1=new THREE.Vector3().setFromMatrixPosition(m1),sc=new THREE.Vector3().setFromMatrixScale(m0);
   ok('a glazed double door: two leaves posed open about their jambs, each half the doorway, its glass set with its frame',
    ms.length===2&&near(Math.hypot(p0.x+1,p0.z),.5,1e-5)&&near(Math.hypot(p1.x-1,p1.z),.5,1e-5)&&near(sc.x,1,1e-5)&&m0.equals(g0),ms.length!==2);
+  // the hardware styles (2026-11-09): a third part in metal, proud of both faces, posed with the leaf; a plain style has none
+  const H=['banded','scrolled','panel+pull','glazed+pull','plank+ring'];let hwOk=true,frameIn=true;
+  for(const st of H){const G=KDOORLEAF.geometry(THREE,st),b=G.hw&&bb(G.hw),f=bb(G.frame);
+   if(!b||!(b[2]<-.5&&b[5]>.5)||[b[0],b[1],b[3],b[4]].some(v=>Math.abs(v)>.5))hwOk=false;if(f.some(v=>Math.abs(v)>.5001))frameIn=false;}
+  const hwNone=KDOORLEAF.STYLES.filter(st=>H.indexOf(st)<0&&st.indexOf('+')<0).every(st=>!KDOORLEAF.geometry(THREE,st).hw);
+  ok('the hardware styles carry a metal part on both faces within the leaf\'s outline, the plain styles none; scrolled is half-glazed',
+   hwOk&&frameIn&&hwNone&&H.every(st=>KDOORLEAF.STYLES.indexOf(st)>=0)&&!!KDOORLEAF.geometry(THREE,'scrolled').glass&&KDOORLEAF.HARDWARE.length===5,!hwOk);
+  const Db=Kh.add({id:'ger',preset:'double',style:'banded',at:[0,0,0],yaw:0,w:1.2,h:1.6,t:.05}),
+   mb=KDOORLEAF.meshes(THREE,'banded',{frame:new THREE.MeshStandardMaterial(),hw:new THREE.MeshStandardMaterial()},2);
+  KDOORHOST.instanced(Db,mb,[0,1],new THREE.Quaternion());Kh.open(Db);for(let i=0;i<40;i++)KDOORHOST.tick(.1);
+  const a0=new THREE.Matrix4(),h0=new THREE.Matrix4();mb[0].getMatrixAt(1,a0);mb[1].getMatrixAt(1,h0);
+  ok('a banded double door (the ger\'s): frame and brass posed together as it opens',mb.length===2&&/hardware/.test(mb[1].name)&&a0.equals(h0)&&!a0.equals(new THREE.Matrix4()),mb.length!==2);
   Kh.clear();}}
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);

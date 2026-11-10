@@ -43,10 +43,16 @@ Open items are lines starting `- [ ]`; `build.py` prints them on every build.
 
 ## Walking (core/walk)
 
-- [x] The walk mode (F) stands on `KWALK` (`src/92-camera.js` `paMove`): the interiors' floors, stairs, entry flights and walls that `KFURN` writes as each building is
+- [x] The viewer is core/host's (2026-11-09; `src/99-host-take.js` replaced `src/92-camera.js`, and `src/91-pa-api.js` is the probe's fields, handed to the
+      host's probe): the one key map's controls, the host's walker on `KWALK`, the cut-away of `core/engine/91i-interiors.js` (read by path for its units).
+      E stays `35-pa-open.js`'s own listener (the bundles share that file), so the take binds E to nothing and the key map's Door button calls the same.
+- [x] Every building's colliders (36-def.js `rec.coll`: oriented solids, floors, ramps) are core/walk records since 2026-11-09 (`paWalk` in
+      `src/99-host-take.js`, through `KWALKBOX`), so the walker is stopped by walls and stands on decks without the interiors; KWALK is cleared and
+      refilled at each world build (a culture rebuilds it).
+- [x] The walk mode (F) stood on `KWALK` (`src/92-camera.js` `paMove`, now the host's walker): the interiors' floors, stairs, entry flights and walls that `KFURN` writes as each building is
       furnished (`cfg.walk`), over the terrain; up 0.7 m, no stepping off a deck's edge, a 0.3 m circle that slides round blocks. Checked headless: the 17 entry
       flights of the furnished buildings are all climbed.
-- [ ] Only buildings with an interiors set are in the registry. A building without one (a solid shell, the yards, the walls) is still walked through.
+- [x] Only buildings with an interiors set were in the registry (a solid shell, the yards, the walls were walked through): the colliders above cover them.
 
 ## Doors, glass and the dark voids (core/door, 2026-11-03)
 
@@ -58,3 +64,9 @@ The owner: "remove all dark voids and make all windows, doors and portals actual
 - [ ] A locked door on a solid face is still a solid face: with ?interiors=1 the room behind it is furnished but seen only through no opening. Cutting the shells' walls behind their doors (as `wallOpen` does) would make those doors operable; the builders were not changed beyond the longhouse.
 - [ ] An operable leaf is one plain painted box (the drawn leaf's inset panels and handle do not swing, so they are not drawn on it).
 
+
+- [ ] (2026-11-09) **A guest on a page with no core/door host draws its leaves shut.** Iziz's `--kit` pages (Pylon's sheet)
+      carry KDOOR but not `90-core-door-host.js` (Iziz hosts its own doors in 95j), and `35-pa-open.js`'s `poFlush` threw
+      "KDOORHOST is not defined" at build there (the page drew nothing). It now skips `KDOORHOST.instanced`/`pose` when the
+      page has no host: the Post-Apoc leaves on those pages stand shut and do not open. Hosting them needs Iziz's 95j to pose
+      them, or the page to take the core host.

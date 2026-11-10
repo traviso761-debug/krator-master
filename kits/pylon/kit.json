@@ -19,7 +19,9 @@
   "89d3-arcube-ruin.js",
   "88yp-pyl-matlib.js",
   "94-city-export.js",
-  "44-core-stage.js"
+  "44-core-stage.js",
+  "90zp-apoc-row.js",
+  "91zp-apoc-views.js"
  ],
  "external": [
   "kits/ancients/src/88-plymouth.js",
@@ -43,6 +45,25 @@
  ],
  "interiorSets": [
   "iziz",
-  "pylon"
- ]
+  "pylon",
+  "post-apoc"
+ ],
+ "postApoc": {
+  "targets": [
+   "kit"
+  ],
+  "defs": [
+   "40-dw-small.js",
+   "42-lg-dwell.js",
+   "46-shops.js",
+   "48-industry.js",
+   "52-defence.js",
+   "54-compound.js",
+   "56-arena.js"
+  ],
+  "extra": [
+   "core/door/90-core-door-host.js",
+   "kits/pylon/apoc/81-pyl-culture.js"
+  ]
+ }
 }

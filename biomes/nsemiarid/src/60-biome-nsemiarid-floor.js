@@ -123,10 +123,14 @@ function beads(x,y,z,lv,st){const n=ri(2,4),col=leafCol(PAL.bead,1.2,.03,.08,.05
 // a SAIL CANDELABRA: a knobbed ribbed column with arms, its yellow blade leaves; some blades aloft downwind, kiting
 function sail(x,y,z,lv,st){const h=rr(1.6,3.4),r=h*rr(.08,.12),col=leafCol(PAL.sail,1.2,.03,.08,.05),bc=leafCol(PAL.sailBlade,1.3,.02,.06,.05);
  BIO.put('column',[x,y-.05,z],qEuler(0,rr(0,TAU),0),[r*2,h,r*2],col);
- for(let k=0,m=ri(1,3);k<m;k++){const a=rr(0,TAU),ay=y+h*rr(.35,.65),ax=x+Math.cos(a)*r*3,az=z+Math.sin(a)*r*3,ah=h*rr(.3,.5);
-  BIO.put('column',[x+Math.cos(a)*r,ay,z+Math.sin(a)*r],qEuler(Math.cos(a)*.0,0,0),[r*1.4,r*3,r*1.4],col);
-  BIO.put('column',[ax,ay,az],qEuler(0,rr(0,TAU),0),[r*1.4,ah,r*1.4],col);
-  for(let b=0;b<2;b++)BIO.put('blade',[ax,ay+ah*rr(.4,.9),az],qEuler(rr(-.2,.2),rr(0,TAU),rr(.1,.5)),[rr(.5,.9),.6,rr(.6,1)],bc);}
+ // (2026-11-09, the succulent columns' quality pass) each arm is an elbow out of the trunk, rising a little, and the arm's
+ // column stands ON its end, its foot sunk a third of the elbow's radius (the elbow was an upright stub beside the trunk and
+ // the arm's column stood three radii out at the same height, its foot in the air). The same draws in the same order.
+ for(let k=0,m=ri(1,3);k<m;k++){const a=rr(0,TAU),ay=y+h*rr(.35,.65),ca=Math.cos(a),sa=Math.sin(a),ax=x+ca*r*3,az=z+sa*r*3,ah=h*rr(.3,.5);
+  const p0=[x+ca*r*.5,ay,z+sa*r*.5],ey=ay+r*.8,dx=ax-p0[0],dy=ey-ay,dz=az-p0[2],L=Math.hypot(dx,dy,dz),er=r*.7*.49;
+  BIO.put('column',p0,qUp([dx/L,dy/L,dz/L]),[r*1.4,L+er*.5,r*1.4],col);
+  BIO.put('column',[ax,ey-er*.35,az],qEuler(0,rr(0,TAU),0),[r*1.4,ah+er*.35,r*1.4],col);
+  for(let b=0;b<2;b++)BIO.put('blade',[ax,ey+ah*rr(.4,.9),az],qEuler(rr(-.2,.2),rr(0,TAU),rr(.1,.5)),[rr(.5,.9),.6,rr(.6,1)],bc);}
  if(lv===2){const w=W(x,z);for(let k=0,m=ri(0,3);k<m;k++){const t=rr(4,25),px=x+w[0]*t,pz=z+w[1]*t,py=Y(px,pz)+rr(1,6);const e=qEuler(rr(-1,1),rr(0,TAU),rr(-1,1));if(py<BIO.waterH(px,pz)+.6)continue;BIO.put('kite',[px,py,pz],e,[.7,.6,.8],bc);}}   /* never under a lake's surface (the scablands' plunge lake): the same draws */
  if(st)st.sails++;}
 // a STAR DRIFTER: a pale star of fronds on a thin stalk; the whole crown is the parachute: some stalks stand bare, their

@@ -14,12 +14,8 @@
    The walk mode (83-walk.js) reads the solids the builders register here (gw* in 53-furnish.js).   */
 reseed(550001);
 (function(){
-/* the doors and glass are 54-openings.js's (core/door). kits/beast-riders seals this fragment in a closure without them
-   (kits/beast-riders/towns.py), so there a leaf is drawn shut into the plank bucket, a locked record is nothing, and a wall
-   with windows is drawn whole */
-var gaLeaf = typeof goLeaf === 'function' ? goLeaf : function(at,n,w,h,o){ o=o||{}; if(o.draw===false) return null;
-  BOX(at[0],at[1],at[2],w-0.04,h-0.02,o.t==null?0.07:o.t,Math.atan2(n[0],n[1]),o.col==null?PLANKC[3]:o.col,'plank'); return null; };
-var gaSectorWins = typeof goSectorWins === 'function' ? goSectorWins : function(fam,P,r0,r1,a0,a1,yb,yt,col,opt){ SECTOR(fam,P,r0,r1,a0,a1,yb,yt,col,opt); return 0; };
+/* the doors and glass are 54-openings.js's (core/door); kits/beast-riders seals it with this fragment (its towns.py) */
+var gaLeaf = goLeaf, gaSectorWins = goSectorWins;
 var ARCH = { dwellings:0, byKind:{}, windows:0, lamps:0, rails:0, washing:0, banners:0, roosts:0, houses:0, plots:0, stalls:0, hall:0, openSky:0 };
 
 /* ------------------------------------------------------------------ helpers */
@@ -387,7 +383,7 @@ function buildKeeper(T){
   P.keeper = { f:{ x:f.x, z:f.z, fx:f.fx, fz:f.fz }, x0:-s, x1:s, zb:-s, zf:s, y:y, H:2.2 };
   REGISTER({ name:'Keeper\'s shelter', kind:'keeper', label:'Roost keeper\'s shelter — feed and tack', x:cx, z:cz, y:y, h:3.2, r:3.0, plat:P.id });
 }
-TOWERS.forEach(function(T){ PORT('roostdeck', T.deck.id, deckFrame(T.deck), function(){ if(typeof goBuilding==='function') goBuilding('girder.keeper.'+T.id); buildKeeper(T); gaFlushWalls(); if(typeof goBuilding==='function') goBuilding(null); }); });
+TOWERS.forEach(function(T){ PORT('roostdeck', T.deck.id, deckFrame(T.deck), function(){ goBuilding('girder.keeper.'+T.id); buildKeeper(T); gaFlushWalls(); goBuilding(null); }); });
 
 /* ------------------------------------------------------------------ GROUND HOUSES */
 /* Kashyyyk-style round hut: woven wall ring, ring of posts, tall two-tier thatch cone with a smoke gap */

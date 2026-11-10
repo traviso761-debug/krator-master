@@ -66,7 +66,10 @@ var INT = { live:{}, order:[], occupied:null, cutaway:false, portals:[], matCach
      a solid body: locked as built (KDOOR.lock asBuilt, so a save keeps no delta for it). KDOOR eases the rest; each one's
      leaves are posed here as it moves (KDOORHOST.posed), and its reveal hidden while it stands open onto a live interior. */
   var KD = [];
-  FIX.doors.forEach(function(D){ var R=D._kd; if(!R) return; KD.push(R); R.fixD = D;
+  /* Yuni's leaves swing OPEN_ANG (1.4 rad, ~80 degrees), not the registry's 1.75: kept on purpose (a leaf hung in a thick adobe
+     reveal, or beside a partition, strikes the wall past ~85 degrees), and recorded on each record (R.swing), so KDOOR.angle,
+     KDOOR.leaves and KDOOR.export() (Godot) give the angle the page draws */
+  FIX.doors.forEach(function(D){ var R=D._kd; if(!R) return; KD.push(R); R.fixD = D; if(R.kind==='swing' && R.swing==null) R.swing = OPEN_ANG;
     if(D.to==='interior' && !(D.building && interiorPlan(D.building))) KDOOR.lock(R, true, { asBuilt:true });
   });
   /* the host poses them (core/door's 90-core-door-host.js loads after this fragment: 98-start.js hands each record over) */
@@ -82,7 +85,6 @@ var INT = { live:{}, order:[], occupied:null, cutaway:false, portals:[], matCach
     if(want){ if(R.target < 0.5) KDOOR.open(R, { by:by }); }
     else if(R.target > 0.5 && (R.by==='walker' || R.by==='mode')) KDOOR.close(R, { by:by }); }
 
-  var animating = {};
   function stepDoors(dt){
     var fx = WALK.on ? WALK.x : ctl.tx, fz = WALK.on ? WALK.z : ctl.tz;
     var near = doorsNear(fx, fz, 60); DOORS.near = near;
@@ -90,19 +92,12 @@ var INT = { live:{}, order:[], occupied:null, cutaway:false, portals:[], matCach
       if(DOORS.mode==='open' || DOORS.mode==='shut'){ if(DOORS.mode==='open' ? R.target < 0.5 : R.target > 0.5){ if(DOORS.mode==='open') KDOOR.open(R, { by:'mode' }); else KDOOR.close(R, { by:'mode' }); } return; }
       autoDoor(R, WALK.on && Math.hypot(D.x-WALK.x, D.z-WALK.z) < 2.6 && Math.abs(D.y-WALK.y) < 2.5, 'walker'); });
     KDOORHOST.tick(dt);
-    /* interior doors of the built interiors */
-    for(var bid in INT.live){ var I=INT.live[bid]; I.doors.forEach(function(d){
-      var w = DOORS.mode==='open' ? 1 : DOORS.mode==='shut' ? 0 : (WALK.on && WALK.bid===bid && Math.hypot(d.wx-WALK.x, d.wz-WALK.z) < 2.0 ? 1 : 0.0);
-      if(d.want!==w){ d.want=w; animating[d.id]=d; } }); }
-    var n=KDOOR.list.filter(function(R){ return R.open!==R.target; }).length;
-    for(var k in animating){ var A=animating[k], tgt=A.want||0, sp=dt*1.6;
-      A.open = A.open==null?0:A.open;
-      if(Math.abs(A.open-tgt) < 1e-3){ delete animating[k]; continue; }
-      A.open = A.open < tgt ? Math.min(tgt, A.open+sp) : Math.max(tgt, A.open-sp);
-      var e = A.open*A.open*(3-2*A.open);
-      (A._leaves||[]).forEach(function(L){ poseLeaf(L, e); });
-      n++; }
-    DOORS.stats.animating = n;
+    /* interior doors of the built interiors: KDOOR records too (buildLive), opened by the walker in the room's doorway, by the
+       control, by E or by id; a door the player or an NPC set is left as they set it */
+    for(var bid in INT.live){ var I=INT.live[bid]; I.doors.forEach(function(d){ var R=d.rec; if(!R) return;
+      if(DOORS.mode==='open' || DOORS.mode==='shut'){ if(DOORS.mode==='open' ? R.target < 0.5 : R.target > 0.5){ if(DOORS.mode==='open') KDOOR.open(R, { by:'mode' }); else KDOOR.close(R, { by:'mode' }); } return; }
+      autoDoor(R, WALK.on && WALK.bid===bid && Math.hypot(d.wx-WALK.x, d.wz-WALK.z) < 2.0, 'walker'); }); }
+    DOORS.stats.animating = KDOOR.list.filter(function(R){ return R.open!==R.target; }).length;
   }
 
   /* ---------------------------------------------------------------- interior materials */
@@ -176,14 +171,24 @@ var INT = { live:{}, order:[], occupied:null, cutaway:false, portals:[], matCach
     scene.add(G.group);
     var b=FIX.byId[bid], I={ bid:bid, plan:P, group:G.group, leaves:G.leaves, sites:G.sites, mode:'portal', doors:[] };
     G.sites.forEach(function(s){ s._int=bid; s.kind = s.kind||'furniture'; SITES.push(s); });
-    P.doors.forEach(function(d){ if(d.kind!=='interior') return; var w=intToWorld(b, d.at[0], d.at[1]);
-      I.doors.push({ id:d.id, wx:w[0], wz:w[1], open:0, want:0, _leaves:G.leaves.filter(function(L){ return L.door===d.id; }) }); });
+    /* each interior door a KDOOR record while the interior is live (id: the plan's door id, '<building>.wall.<n>.door.<i>', the
+       same every time the building streams in; dropped by id with it), its leaves posed by the host as KDOOR eases it. No walk
+       blocks (walk:false): the walker's own doorway test (intDoorOk) is what lets it through a partition */
+    P.doors.forEach(function(d){ if(d.kind!=='interior') return; var w=intToWorld(b, d.at[0], d.at[1]),
+        lv=G.leaves.filter(function(L){ return L.door===d.id; }), roll=lv.some(function(L){ return L.roll; }), R=null;
+      if(lv.length && !KDOOR.get(d.id)){
+        R = KDOOR.add({ id:d.id, at:[w[0], d.y||0, w[1]], yaw:(d.yaw||0)+(b.yaw||0), w:d.w==null?0.9:d.w, h:d.h==null?2.05:d.h, t:0.05, key:b.asset||null,
+          kind:roll?'lift':'swing', roll:roll, swing:roll?null:OPEN_ANG, walk:false, live:bid, style:d.style==='mat'?'flat':'plank', name:'interior door' });
+        KDOORHOST.posed(R, function(R){ var e=R.open*R.open*(3-2*R.open); lv.forEach(function(L){ poseLeaf(L, e); }); });
+      }
+      I.doors.push({ id:d.id, wx:w[0], wz:w[1], rec:R, _leaves:lv }); });
     I.lights = G.lights;
     INT.live[bid]=I; INT.order.push(bid);
     if(INT.cutaway){ setMode(I,'open'); showPlinths(b, false); }
     return I;
   }
   function dropLive(bid){ var I=INT.live[bid]; if(!I) return; scene.remove(I.group); showPlinths(FIX.byId[bid], true);
+    if(I.doors.some(function(d){ return d.rec; })) KDOOR.prune(function(R){ return R.live!==bid; });   /* its interior doors' records go with it */
     I.group.traverse(function(o){ if(o.geometry) o.geometry.dispose(); });
     for(var i=SITES.length-1;i>=0;i--) if(SITES[i]._int===bid) SITES.splice(i,1);
     delete INT.live[bid]; INT.order.splice(INT.order.indexOf(bid),1); }
@@ -397,6 +402,19 @@ var INT = { live:{}, order:[], occupied:null, cutaway:false, portals:[], matCach
       live:INT.order.length, portals:INT.stats.portals||0, indoors:(typeof LIFE!=='undefined' && LIFE.agents) ? LIFE.agents.filter(function(a){ return a.inside; }).length : 0,
       atDoors:(typeof LIFE!=='undefined' && LIFE.agents) ? LIFE.agents.filter(function(a){ return a.leg && a.leg.door; }).length : 0,
       legs:(typeof LIFE!=='undefined' && LIFE.agents) ? LIFE.agents.filter(function(a){ return a.leg; }).length : 0, animating:DOORS.stats.animating||0, walk:WALK.on?{ x:+WALK.x.toFixed(2), z:+WALK.z.toFixed(2), y:+WALK.y.toFixed(2), lvl:WALK.lvl, bid:WALK.bid }:null }; },
+    /* the streamed interiors' doors on core/door (verify.py --assert): a building whose plan has leaved interior doors is
+       streamed in, each door a KDOOR record that opens and shuts, then dropped, its records pruned by id */
+    intDoors:function(){ var b=null, P=null; for(var i=0;i<FIX.buildings.length&&!b;i++){ var q=interiorPlan(FIX.buildings[i].id);
+        if(q && q.doors.some(function(d){ return d.kind==='interior' && d.style!=='open'; }) && !INT.live[FIX.buildings[i].id]){ b=FIX.buildings[i]; P=q; } }
+      if(!b) return { ok:false, detail:'no building with interior doors' };
+      var n0=KDOOR.list.length, I=buildLive(b.id); if(!I) return { ok:false, detail:'buildLive failed: '+b.id };
+      var recs=I.doors.filter(function(d){ return d.rec; }).map(function(d){ return d.rec; }), moved=0;
+      recs.forEach(function(R){ KDOOR.open(R, { by:'verify' }); });
+      for(var k=0;k<40;k++) KDOORHOST.tick(0.1);
+      recs.forEach(function(R){ if(R.open===1) moved++; KDOOR.close(R); }); for(k=0;k<40;k++) KDOORHOST.tick(0.1);
+      var shut=recs.every(function(R){ return R.open===0; }), swing=recs.filter(function(R){ return R.kind==='swing'; }).every(function(R){ return R.swing===OPEN_ANG; });
+      dropLive(b.id); var gone=recs.every(function(R){ return !KDOOR.get(R.id); }) && KDOOR.list.length===n0;
+      return { ok: recs.length>0 && moved===recs.length && shut && swing && gone, building:b.id, doors:recs.length, opened:moved, shut:shut, swing:swing, pruned:gone }; },
     walk:DOORS.walk, walkTo:DOORS.walkTo, lifeSim:function(s){ if(typeof LIFE!=='undefined' && LIFE.sim) LIFE.sim(s); },
     /* fixed-step walking for headless tests, where frames are too slow for real time */
     sim:function(key, secs){ keys[key]=true; for(var t=0;t<secs;t+=1/30){ stepWalk(1/30); stepDoors(1/30); } keys[key]=false; return WALK.bid; }, cutaway:setCutaway, touch:DOORS.touch,

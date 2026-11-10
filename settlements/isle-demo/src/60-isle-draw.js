@@ -234,6 +234,7 @@ DRAW.near = function (at, force) {
   });
   DRAW.massB.instanceMatrix.needsUpdate = true; DRAW.massR.instanceMatrix.needsUpdate = true;
   if (DRAW.massB.instanceColor) DRAW.massB.instanceColor.needsUpdate = true; if (DRAW.massR.instanceColor) DRAW.massR.instanceColor.needsUpdate = true;
+  DRAW.nearSet = Object.keys(full).map(function (i) { return all[i]; });   /* the lots drawn in full (63-isle-doors.js hosts their doors) */
   DRAW.stats.near = Object.keys(full).length; DRAW.stats.massing = nb; DRAW.stats.nearTris = Math.round(tris); DRAW.stats.protos = DRAW.built;
   DRAW.stats.nearMs = Math.round(performance.now() - t0);
 };

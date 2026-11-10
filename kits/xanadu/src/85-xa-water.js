@@ -69,9 +69,10 @@ xaWaterDef('xa_rill_cascade','Rill cascade (3 m)',function(G,o){reseed(32381+(o.
  xnPave(0,-3.5,8,1,0,c,2,0);xnRill(0,0,-3.5,0,1,{c,curb,w});vnFolk(2.5,R,3,1,1);},3,'Water — slopes');
 // FALL — rise 4: the rill over a rock ledge, a waterfall into a plunge pool, the rill on from the pool
 xaWaterDef('xa_rill_fall','Rill waterfall (4 m)',function(G,o){reseed(32391+(o.v|0));const V=xV(o),c=xC(xPick(XPAL.stone)),curb=V===1?'xBTileB':'vStone',w=V===2?1.8:1.2,R=4;vnReg('Rill waterfall',0,0,4.2,R+1);
- const rock=xC(xPick([0x9a8a70,0xa89880,0x8c7c64]));vB('xRockB',0,0,2.1,8,R-.1,3.8,0,rock);for(let k=0;k<7;k++)kput('xBoulder',[rr(-3.6,3.6),R-.3,rr(.6,3.6)],qEuler(rng(),rng(),0),[rr(.6,1.2),rr(.4,.8),rr(.6,1.2)],rock.clone().multiplyScalar(rr(.8,1.1)));
+ const rock=xC(xPick([0x9a8a70,0xa89880,0x8c7c64]));vB('xRockB',0,0,2.1,8,R-.1,3.8,0,rock);for(let k=0;k<7;k++)kput('xBoulder',[rr(-2.9,2.9),R-.3,rr(.6,3.0)],qEuler(rng(),rng(),0),[rr(.6,1.0),rr(.4,.8),rr(.6,1.0)],rock.clone().multiplyScalar(rr(.8,1.1)));   // inside the tile: a boulder reaches its largest scale
  xnPave(0,2.5,8,3,0,c,2,R-.1);xnRill(0,R,2.4,0,3.2,{c,curb,w});vB('vStone',0,R-.12,.2,w+.6,.22,1.2,0,c);vB('xWaterB',0,R+.02,.2,w,.12,1.2,0,XWATER);   // the lip, proud of the rock, the water over it
- xnWaterSheet(0,.3,-.5,0,w*.95,R-.2);vB('xWaterB',0,R-.05,-.36,w*.95,.14,.4,0,XSHEET);   // the sheet hangs clear of the batterfor(let k=0;k<10;k++)vBall('vBallW',rr(-w,w),rr(.1,.9),rr(-1.2,.2),rr(.1,.22),XFOAM);   // the fall and its spray
+ xnWaterSheet(0,.3,-.5,0,w*.95,R-.2);vB('xWaterB',0,R-.05,-.36,w*.95,.14,.4,0,XSHEET);   // the sheet hangs clear of the batter
+ for(let k=0;k<10;k++)vBall('vBallW',rr(-w,w),rr(.1,.9),rr(-1.2,.2),rr(.1,.22),XFOAM);   // the fall and its spray (a comment had swallowed this loop until 2026-11-10)
  for(let k=0;k<4;k++)kput('xBoulder',[xPick([-1,1])*rr(w/2+.6,3),.2,rr(-2.6,-.2)],qEuler(rng(),rng(),0),[rr(.5,1.0),rr(.4,.7),rr(.5,1.0)],rock);
  xnRillBasin(0,0,-1.4,4.6,2.6,0,curb,c);xnPave(0,-2.5,8,3,0,c,2,0);xnRill(0,0,-3.4,0,1.2,{c,curb,w});
  for(const s of[-1,1])xnCypress(s*3.3,-3,rr(3,4.5));},4,'Water — slopes');

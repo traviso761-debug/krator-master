@@ -55,11 +55,11 @@
    const clk=/#include <atmos_waves>|uniform\s+float\s+atmWaveT\b/.test(fs)?'':'uniform float atmWaveT;\n';const A=typeof ATMOS!=='undefined'?ATMOS:null;if(clk&&A&&A.waveUniforms)A.waveUniforms(sh.uniforms);
    W.fs(sh,'wtr-breakup',[/void\s+main\s*\(/,m=>clk+ch+'\n'+m],[at,'{vec3 wtrBn=(vec4(normal,0.0)*viewMatrix).xyz;normal=normalize((viewMatrix*vec4('+call+',0.0)).xyz);}\n'+at]);},{key:'bk:'+W.hashStr(ch)});};
  W.breakupAll=Bo=>{let n=0;for(const D of W.drawn||[]){const k=D.S&&D.S.kind;if((k==='open'||k==='still')&&D.material){W.breakupOn(D.material,Bo);n++;}}return n;};
- // AUTO (2026-10-27, the core pass): WATER.BREAKUP_AUTO (false) set true before a page draws its water, and every drawing made after takes the
- // breakup as it is made: open and still water (draw, drawStill, stillMaterial, drawPools) with BREAKUP, ribbons and confluences (drawFlow,
- // drawConfluence) with BREAKUP_FLOW; a drawing's own o.breakup (an object) is laid over those numbers, o.breakup: false keeps it out. The
- // default stays false until the all-builds rebuild flips it (TODO.md, "Ride along with the next all-builds rebuild"): it moves every page.
- W.BREAKUP_AUTO=false;
+ // AUTO (2026-10-27, the core pass; ON BY DEFAULT since 2026-11-09, the owner's flip, with the all-builds rebuild): while WATER.BREAKUP_AUTO
+ // is true every drawing made takes the breakup as it is made: open and still water (draw, drawStill, stillMaterial, drawPools) with BREAKUP,
+ // ribbons and confluences (drawFlow, drawConfluence) with BREAKUP_FLOW; a drawing's own o.breakup (an object) is laid over those numbers,
+ // o.breakup: false keeps it out. A page that wants the old regular ripple sets WATER.BREAKUP_AUTO=false before it draws its water.
+ W.BREAKUP_AUTO=true;
  W.breakupWrap=()=>{const one=(name,arg,flow)=>{const f0=W[name];if(typeof f0!=='function'||f0._bk)return;
    const f1=function(){const D=f0.apply(this,arguments),o=arguments[arg]||{};if(W.BREAKUP_AUTO&&D&&o.breakup!==false){const m=D.material&&D.material.onBeforeCompile?D.material:D.onBeforeCompile?D:null;
      if(m)W.breakupOn(m,Object.assign({},flow?W.BREAKUP_FLOW:{},o.breakup&&typeof o.breakup==='object'?o.breakup:{}));}return D;};

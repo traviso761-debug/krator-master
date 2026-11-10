@@ -3,7 +3,6 @@
  "runs": {
   "build.py": {
    "inputs": {
-    "core/catalog/catalog.py": "5d4a79810193b831fc1c686c934990afd10ecb63b5a55d05e0f3d7dd4c84d88a",
     "core/catalog/files.json": "a400e7bf3e1197698d129db83964d883fd9ea2818173fe7df3c7d1b4a054d72f",
     "core/catalog/inspector.js": "7f556b17e88d5f2b05c330acfb199ea551c55fb4542631f7e057e595294987c0",
     "core/catalog/krator-asset-engine.js": "857d45d9a71f62c958eb29dbe273d572b9e8262669c29f9f0433675451e2139d",
@@ -70,7 +69,7 @@
     "kits/interiors/sets/noahs-regret.js": "8a03f4ee8cc7705cde0b04aa330fd21ebe5d64992dd3efea3e2477953ae68b62",
     "kits/interiors/src/10-core.js": "4b940cf3cadd55615825e748e9179aa06ff8984be2d92dbefc3d085ae91e24e5",
     "kits/interiors/src/20-rooms.js": "4b54dca9f15014c721897d598a55f88c9e9dace32568faab59f10ca771694498",
-    "kits/interiors/src/30-programs.js": "9af057a236981da86772dd9a8caa88b893305db70ec033986bae318002eb79e4",
+    "kits/interiors/src/30-programs.js": "57d48386287197707ed694545e22fa7b76aeb52e6e7110dc5193bddcb38087bc",
     "kits/interiors/src/40-grid.js": "a69dadb0ff525a510e51739e92b442a0f7269d4fdab164d19ca410d8f360b098",
     "kits/interiors/src/45-placer.js": "60d2ecc3c3edc9b5fc5ecd734c16f261367a2c51bbdf5a67b5c5751ac3ad7ab3",
     "kits/interiors/src/46-planner.js": "acfb0a52c6f533a53a4df2519d8598ff11b80ad430b978cd9d9707c05dfe43e0",
@@ -81,7 +80,6 @@
     "kits/interiors/src/49b-walk.js": "d90cf2cba70ac876a1831790124e5a4c5ba7072e90599572e458dca1704c16ac",
     "kits/interiors/src/50-shell.js": "28752de703b85f34a80264e15b8a8152cda63c955b8d276ff569ada0f71b8d0b",
     "kits/interiors/src/55-cutaway.js": "6ce670f34134740c43b54446f7d1b468c314868da3c0f1fb5c022d4766c5257a",
-    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
    },
    "listings": {
@@ -92,14 +90,14 @@
     "tools": "2d2fdaca850a104a2a2c553313ccb3ad18dc6bc48cb554c8c714fc1ca39607bf"
    },
    "outputs": {
-    "kits/ancients-interiors/build-manifest.json": "0f9caae9c534baa5fbb794e7ad3ac1ebaa44969c17760bde97934cff9c50321e",
+    "kits/ancients-interiors/build-manifest.json": "4df015297c99f7da571b18e432779e5325f879484e3fd0d9769baae55ab92933",
     "kits/ancients-interiors/dist/ancients-interiors-core.js": "48261396bc3742eaa94ee7a24c34fe23fca13eec6cc535fe3ecc9d00e1bc1f88",
-    "kits/ancients-interiors/dist/ancients-interiors.html": "cbb2af24c864a2cf3c828cfde7c125029eac7e0fdc78e16219a559366ff096a5"
+    "kits/ancients-interiors/dist/ancients-interiors.html": "2526ccc2449d2bbd1e978f715a71c3039bdfb9733742f70c15f0bc6dd0e6860a"
    },
    "outputs_raw": {
-    "kits/ancients-interiors/build-manifest.json": "2daac6f7822bbc41963df82c901cc97816df923a938b331571334cc7c034203a",
+    "kits/ancients-interiors/build-manifest.json": "4df015297c99f7da571b18e432779e5325f879484e3fd0d9769baae55ab92933",
     "kits/ancients-interiors/dist/ancients-interiors-core.js": "48261396bc3742eaa94ee7a24c34fe23fca13eec6cc535fe3ecc9d00e1bc1f88",
-    "kits/ancients-interiors/dist/ancients-interiors.html": "cbb2af24c864a2cf3c828cfde7c125029eac7e0fdc78e16219a559366ff096a5"
+    "kits/ancients-interiors/dist/ancients-interiors.html": "2526ccc2449d2bbd1e978f715a71c3039bdfb9733742f70c15f0bc6dd0e6860a"
    }
   }
  }

@@ -218,6 +218,14 @@ async def run_city(a):
                     seen.add(r['name'])
                     print(('  PASS  ' if r['ok'] else '  FAIL  ') + r['name'] + ' : ' + str(r['detail']))
                     if not r['ok']: tf.append(r['name'])
+                # core/door (src/63-isle-doors.js): the Vernacular's doors hosted, on their lots, posed; the negative: records left
+                # in the piece's frame (as every piece's were before 2026-11-09) are off their lots
+                r = await pg.evaluate('typeof IDOORS !== "undefined" ? IDOORS.check() : {ok:false, detail:"no IDOORS"}')
+                print(('  PASS  ' if r['ok'] else '  FAIL  ') + 'doors-hosted : ' + r['detail'])
+                if not r['ok']: tf.append('doors-hosted')
+                r = await pg.evaluate('typeof IDOORS !== "undefined" ? IDOORS.check("origin") : {ok:true, detail:"no IDOORS"}')
+                print(('  PASS  ' if not r['ok'] else '  MISSED') + ' negative (doors in the piece\'s frame) : ' + r['detail'])
+                if r['ok']: tf.append(town + ': negative doors')
                 for neg in ('overlap', 'sea', 'landmark'):
                     rs = await pg.evaluate(CITY_JS, neg)
                     caught = bool(rs) and not any(r['ok'] for r in rs)

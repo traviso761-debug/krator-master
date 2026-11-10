@@ -4,8 +4,10 @@ A generic post-apocalyptic building kit, made of **reclaimed and recycled materi
 a Voth river shanty, a Republic frontier stop) and then dressed in that culture's marks. Not to be confused with the Ancients' reclaimed buildings
 (`kits/ancients`, the Ancient Iziz Style): this set is called **post-apoc** everywhere.
 
-`dist/post-apoc.html` shows every building in rows by family. Toolbar: **Time** (Day / Dusk / Night), **Clock** (lets the sim clock run: the sky and the lit windows follow it), **Doors** (shows each building's front-door marker), view select, Inspector (hover: name, class, tags), Shadows, **Culture** (Generic /
-Iziz / Voth / Republic: rebuilds the whole set with that culture's marks), Polygon (click-to-coordinates), Walk (F).
+`dist/post-apoc.html` shows every building in rows by family. Toolbar: **Time** (Day / Dusk / Night), **Clock** (lets the sim clock run: the sky and the lit windows follow it), **Doors** (shows each building's front-door marker), view select, **Culture** (Generic /
+Iziz / Voth / Republic: rebuilds the whole set with that culture's marks), and the standard controls every viewer has (core/host, "The one key map"; 2026-11-09):
+**Cut-away (X)** (the building nearest the view storey by storey, [ ] the storey), **Interiors (U)** (reloads with `?interiors=1`), **Door (E)**, **Night (N)**, Shadows,
+Walk (F: on `core/walk`, every building's colliders and, with the interiors, their rooms), the inspector (a click), the polygon tool (L, in the inspector panel), ? for every key.
 URL parameters: `?culture=iziz`, `?only=shop-food,dw-silo`, `?night=0..1`, `?clock=N` (run the clock at N sim minutes a second), `?t=12.5` (pin the animation time, for screenshots), `?anim=0` (t = 0), `?interiors=1` (plan and furnish the rooms, below), `?furniture=0` (no furniture pieces).
 
 ## Animation and night

@@ -1,0 +1,25 @@
+# kits/construction: port audit
+
+*Written by `tools/audit_port.py` (GODOT-PLAN.md, section 3). Edit the **Tag** and **Note** cells and the text under "Notes": a rerun keeps them and refreshes the numbers. `--reset` retags everything.*
+
+Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as a .gdshader · `[G native]` Godot has it, keep for the preview · `[web]` host code, quarantine in `core/host/` · `[draw]` a three.js builder whose output crosses over as meshes. "split" in a note means the fragment mixes data with drawing or host code and needs a data pass and a draw pass.
+
+| | [G data] | [G shader] | [G native] | [web] | [draw] |
+|---|---|---|---|---|---|
+| KB | 0 (0%) | 0 (0%) | 0 (0%) | 20 (58%) | 14 (42%) |
+
+Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
+
+| Fragment | KB | Tag | THREE | canvas | DOM | events | loop | geom | shader | inst | ray | store | net | Note |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `src/00-head.html` | 0.8 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
+| `src/10-cons-site.js` | 12.1 | [draw] | 17 | 0 | 0 | 0 | 0 | 23 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/20-cons-lib.js` | 2.3 | [draw] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/80-cons-sheet.js` | 19.1 | [web] | 19 | 2 | 1 | 1 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
+
+## Notes
+
+- `10-cons-site.js` and `20-cons-lib.js` are the kit: three.js builders of a site's meshes from a record ({w, d, h, bill, f});
+  the record and the progress are the host's (core/simulation), so a Godot port is a draw of the same parts from the same numbers.
+- `80-cons-sheet.js` is the kit's own sheet: page code, never ported.

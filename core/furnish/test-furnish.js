@@ -74,4 +74,12 @@ ok(T.records.length === 2 && R2.placed.length === 3 && g1 && g1['class'] === 'fu
 ok(g1.tags.culture === 'beast-rider' && g1.tags.wealth === 'rich' && g1.tags.room === 'b1.room.0' && g1.size[0] === 1.98, 'tags: culture, wealth named, room, size from the dims');
 ok(T.get('furn_00002').tags.culture === 'yuni' && T.get('furn_00002').tags.wealth === 'poor' && T.audit().unknown === 0, 'tags: catalog cultures through the aliases, zero unknowns');
 ok(!('uid' in t1) && Object.keys(t1).join() === Object.keys(r1).concat([]).join(), 'tags: the furniture record itself is unchanged');
+
+// cfg.scale (opt-in: a people larger than human, kits/yeti's 1.15x): a scaled record carries scale, an unscaled one none
+const T3 = KT.create({ build: 'test-scale' });
+const R3 = K.create({ on: true, catalog, seed: () => 1, tags: T3, scale: (key, A) => (A.culture === 'yuni-poor' ? 1 : 1.15) });
+const s1 = R3.place('bench', 0, 0, 0, 0, {}, null, { building: 'b1' }), s2 = R3.place('forge', 0, 0, 0, 0, {}, null, { building: 'b1' });
+const s3 = R3.place('lamp', 0, 0, 0, 0, { scale: 1 }, null, { building: 'b1' });
+ok(s1.scale === 1.15 && !('scale' in s2) && !('scale' in s3), 'scale: per piece from cfg.scale, absent at 1, o.scale overrides');
+ok(Math.abs(T3.get(s1.id).size[2] - 0.45 * 1.15) < 1e-9 && T3.get(s2.id).size[2] === 1.1, 'scale: the tag size is the drawn size');
 process.exit(fails ? 1 : 0);

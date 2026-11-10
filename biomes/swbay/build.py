@@ -131,6 +131,7 @@ PATH['22b-core-water-kinds-ext.js']=os.path.normpath(os.path.join(HERE,'..','..'
 PATH['51b-core-water-kinds-ext-draw.js']=os.path.normpath(os.path.join(HERE,'..','..','core','water','ext','54b-core-water-kinds-ext-draw.js'))
 for f in CORE_WATER:
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','water',f))
+PATH.setdefault('56-core-water-breakup.js',os.path.normpath(os.path.join(HERE,'..','..','core','water','ext','56-core-water-breakup.js')))   # the breakup (core/water ext/56), on by default since 2026-11-09
 # the falls in two draw calls in all (WATER.drawFalls: ext/53 + 53b; 2026-10-25), explicit paths as biomes/nwbay does
 for f in ['53-core-water-terraces.js','53b-core-water-terraces-draw.js']:
     PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','water','ext',f))

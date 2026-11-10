@@ -16,6 +16,7 @@ const FAMILIES=[
  {name:'The shop trades (P6), street and hexagonal',keys:[{key:'et_bakehouse',o:{v:0}},{key:'et_bakehouse',o:{v:1}},{key:'et_weaver',o:{v:0}},{key:'et_weaver',o:{v:1}},{key:'et_brewhouse',o:{v:0}},{key:'et_brewhouse',o:{v:1}},{key:'et_smithy',o:{v:0}},{key:'et_smithy',o:{v:1}},{key:'et_shophouse',o:{v:0}},{key:'et_shophouse',o:{v:1}}]},
  {name:'Hospitality and stores (P6)',keys:['et_tea_house',{key:'et_inn',o:{v:0}},{key:'et_inn',o:{v:1}},'et_healer','et_market_hall','et_granary','et_warehouse','et_mushroom_cellar','et_tannery','et_butcher']},
  {name:'The land (P6)',keys:['et_farmstead','et_paddy','et_tea_garden','et_mine','et_quarry','et_stock_pens']},
+ {name:"The coast's works (Farside's backport)",keys:['et_kelp_kiln','et_lime_kiln','et_wrack_heap','et_wrack_cart','et_terraces','et_goat_fold','et_kelp_rack']},
  {name:'Hydraulics and harbour (P6)',keys:['et_lock','et_reservoir_wall','et_spillway','et_canal_landing','et_ferry_landing','et_fish_landing','et_quay','et_dock','et_lighthouse','et_factory_quarter']},
  {name:'Profile helpers (P1)',keys:['et_sample_piers','et_sample_lancets',{key:'et_sample_screens',o:{v:0}},{key:'et_sample_screens',o:{v:1}},{key:'et_sample_screens',o:{v:2}},'et_sample_block']},
  {name:'Statuary (P2): the head generator',keys:['et_sample_heads','et_sample_figures','et_sample_masks']}

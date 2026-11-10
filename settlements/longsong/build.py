@@ -101,6 +101,7 @@ for f in ('10-crop-core.js', '20-crop-records.js', '22-crop-material.js', '40-cr
 # chunk and sky light (8-export: ATMOS.export, so the export's atmos section fills)
 for f in ('20-core-water.js', '21-core-water-shore.js', '22-core-water-flow.js', '50-core-water-draw.js', '51-core-water-kinds.js'):
     PATH.setdefault(f, os.path.join(ROOT, 'core', 'water', f))
+PATH.setdefault('56-core-water-breakup.js', os.path.join(ROOT, 'core', 'water', 'ext', '56-core-water-breakup.js'))   # the breakup (core/water ext/56), on by default since 2026-11-09
 # core/simulation (SIM), read in place: the people's world (40d-ls-sim.js declares it; 68-ls-life.js draws SIM.pose)
 for f in ('77-sim-0-core.js', '77-sim-1-world.js', '77-sim-2-places.js', '77-sim-3-actors.js', '77-sim-4-nav.js', '77-sim-5-motion.js',
           '77-sim-5r-routes.js', '77-sim-6-economy.js', '77-sim-6-items.js', '77-sim-6-needs.js', '77-sim-6-population.js', '77-sim-6-trade.js',
@@ -131,7 +132,7 @@ PATH['41-world-fields.js'] = os.path.join(ROOT, 'openworld', 'isle-demo', 'src',
 # the editor, the cutaway, and the core modules they read (core/edits, core/space, core/minimap)
 sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))
 import host as khost
-khost.resolve(PATH, khost.FULL)
+khost.resolve(PATH, khost.FULL + khost.KEYS)   # KEYS: the one key map and the one walk mode (core/host/92k-host-keys.js)
 for f in ('10-core-head.js', '20-core-kit.js', '30-core-foliage.js', '40-core-place.js'):
     if f not in PATH:
         sys.exit('NO BIOME CORE: ' + f)

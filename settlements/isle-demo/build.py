@@ -278,7 +278,7 @@ def main():
 #     fields and the isle's coast, core/simulation, core/materials/record (KMAT) and the two packs' loaders
 #   the bundles: KCITY, CAT (the Beast Riders' buildings: the kit's own and its ports), ISK (the Islanders), IZV (the Vernacular), RINGSEA
 #   this page's own: 15 (the sim's tuning), 20 (ground), 30 (programme), 32 (the city plan), 34 (census, checks), 40-47 (the
-#   towns on core/simulation, the canoe line) [G data]; 57 (the sim's run loop), 59 (citizens near the camera), 60 (draw), 61 (the canoe line's vessels), 98 (start) [web]
+#   towns on core/simulation, the canoe line) [G data]; 57 (the sim's run loop), 59 (citizens near the camera), 60 (draw), 61 (the canoe line's vessels), 63 (the doors on core/door), 98 (start) [web]
 # The [G data] half (data, ground, core/simulation, KCITY, 15-49) is also written as dist/isle-city.plan.js, which the node
 # tests run.
 CITY_CORE = [os.path.join(ROOT, *p.split('/')) for p in (
@@ -295,7 +295,10 @@ CITY_DATA_JS = ['15-isle-tune.js', '20-isle-ground.js', '30-isle-programme.js', 
 # the Construction kit (kits/construction, KCONS: a building site's gear) and core/city's build-up of a kit piece
 # (KCITY.constructMesh), read in place for the empty lots' works (60, 2026-11-04)
 CITY_CONSTRUCT = [os.path.join(ROOT, 'core', 'city', '54-city-host-construct.js'), os.path.join(ROOT, 'kits', 'construction', 'src', '10-cons-site.js')]
-CITY_WEB_JS = ['57-isle-run.js', '58-isle-protos.js', '59-isle-citizens.js', '60-isle-draw.js', '61-isle-canoes.js', '62-isle-export-scene.js', '98-isle-city-start.js']
+# core/door's host (KDOORHOST: the leaves posed, the tick, E), for the Vernacular's doors the page hosts (src/63-isle-doors.js);
+# KDOOR, KGLASS and KDOORLEAF come with the IZV bundle (kits/iziz-vernacular/vernacular.py DOOR)
+CITY_CONSTRUCT.append(os.path.join(ROOT, 'core', 'door', '90-core-door-host.js'))
+CITY_WEB_JS = ['57-isle-run.js', '58-isle-protos.js', '59-isle-citizens.js', '60-isle-draw.js', '61-isle-canoes.js', '62-isle-export-scene.js', '63-isle-doors.js', '98-isle-city-start.js']
 CITY_HEAD = '''<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Isle Demo Towns</title>
 <style>

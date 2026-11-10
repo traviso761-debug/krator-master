@@ -81,11 +81,19 @@ observatory's slot shows its shutters drawn back and the telescope; the palace's
 armchairs and ottomans in orange, the white sofa, brass and walnut tables, the plaster bench and wall niche, the painted
 chest and the jar stand, bookcase, map and specimen cases, the plaster and canopy beds, the hearth, the lectern, the
 scholar's desk, the slate, the globe, the easel, the modelling stand, the kilim and the meander rug, the palm planter, the
-brass lantern, the aedicule). `kits/interiors/sets/talia.js` furnishes 32 of the kit's 45 items (one per key, the faculty's
-three sizes each) and registers Talia's room kinds, `lecture` and `studio`; the rest say why they are skipped. The page
+brass lantern, the aedicule). `kits/interiors/sets/talia.js` furnishes 35 of the kit's 45 items (one per key, the faculty's
+three sizes each; the caravanserai and the stoa since 2026-11-09) and registers Talia's room kinds, `lecture` and `studio`; the rest say why they are skipped. The page
 bundles them through `kit.json` (`furniture`, `interiorSets`). With an item, a body is hollow: `tanRoundBox` then draws one
 hollow body with round corner piers. Check: `cd kits/interiors && python3 verify.py dist/interiors-sets.html --sets
 --assert --query set=talia`.
 
-**Next** (PLAN.md section 8): P7, the Godot export check and the gallery; the interiors the set skips (the library's
-well, the anatomy theatre's tiers, the caravanserai and the stoa, the palace by its blueprint).
+**The governor's palace's rooms** (2026-11-09). The palace's item in the set is not planned but explicit: 49 rooms from the
+blueprint's sheets G and U (`palace/`), and the item's `plan` (the cells in the blueprint's (u, v), the edges between them, the
+doors, the pavilions) is what the builder draws inside (`talpInterior`, 74t): partitions with their doors on core/door, rails
+round the hall's well, glass to the light courts, the upper floor, the private and back stairs, the dais and the hall's
+coffered ceiling, and the seven pavilions as hollow drums (`talpRing`, `talpDisc`). Walkable (F): the upper floor, the
+pavilions' upper floors and the stairs are core/walk records. X cuts it away like any building. With `?interiors=0` the
+palace is the solid exterior it was.
+
+**Next** (PLAN.md section 8): the interiors the set still skips (the library's rotunda, the anatomy theatre, the glasshouse:
+KNOWN_ISSUES.md), the palace's undercroft, the owner's eye-level review of P2.

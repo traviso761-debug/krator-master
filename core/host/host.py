@@ -19,6 +19,7 @@ WHERE = {
     '90-host-camera.js': 'host',
     '91-host-loop.js': 'host',
     '92-host-panel.js': 'host',
+    '92k-host-keys.js': 'host',       # opt-in (KEYS): the one key map, the standard controls' names (KHOST.standard), the keys card (?)
     '94-host-polytool.js': 'host',   # opt-in: the authoring tools (inspect, polygon, path)
     '95-host-probe.js': 'host',
     '95b-host-seat.js': 'host',       # opt-in: the probe's seat sweeps (contact, clear, doors, stairs; core/terrain/SEAT.md)
@@ -42,6 +43,9 @@ SHELL = ['20-core-clock.js', '90-host-camera.js', '91-host-loop.js', '92-host-pa
 # and the core modules they read (core/edits, core/space, core/minimap)
 FULL = SHELL + ['93-host-inspect.js', '93-host-stocks.js', '94-host-marks.js', '96-host-pictures.js', '97-host-minimap.js', '98-host-edit.js',
                 '99-host-cutaway.js', '40-core-edits.js', '20-core-space.js', '88-core-minimap.js', '88a-core-minimap-host.js']
+# the one key map and the standard controls (TODO.md, Viewers), opt-in until the next all-builds rebuild puts it in SHELL:
+# khost.SHELL + khost.KEYS; a build then names its controls by id (KHOST.standard) and gets the same words and keys as every page
+KEYS = ['92k-host-keys.js']
 # the seat sweeps, opt-in (CORE-IMPROVEMENTS.md item 1): khost.resolve(PATH, khost.SEAT) beside the shell
 SEAT = ['38a-core-seat.js', '95b-host-seat.js']
 # core/shader goes on every page (resolve adds it whatever the list): core/atmos, core/terrain, core/water and core/biome call it

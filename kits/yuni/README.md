@@ -31,11 +31,42 @@ the colour); `F.paneBox(...)` a glazing panel (card and glass, `o.kind`, `o.out`
 opening (a smoke hole, a flue's top, a well, a pot's mouth, a trough, a shadowed floor) stays `VOIDC`.
 
 **Who takes it.**
-- Read in place: `settlements/yuni` (the city places the buildings; its `sheet` target, `yuni-assets.html`, is the kit's sheet).
+- Read in place: `settlements/yuni` (the city places the buildings; its `sheet` target, `yuni-assets.html`, still builds: the
+  kit with the city's own Ancients assets and interiors, on the city's page).
 - Read in place on Locus's frame (2026-11-03): `settlements/locus` (its own frame, `53-assets.js`, has the kit's `F.opening`,
   `F.mass` and `F.doorIds`, but no fixtures registry or interiors planner, so an opening there is a door point and a mass draws
   nothing; its doors are locked unless `?interiors=1` plans a room behind one), and through Locus Mungo and Verge's `YKIT`. Until then Locus kept an older fork of these files.
 - The interiors kit's sets `kits/interiors/sets/yuni.js` and `yuni-town.js` furnish these buildings by key.
 
-**Its own sheet.** Not yet: the sheet is Yuni's `sheet` target, on Yuni's page shell, and `verify.py yuni-assets.html
---assert` in `settlements/yuni` is its check.
+**Its own sheet** (2026-11-09): `python3 build.py` writes `dist/yuni.html` (the library maps beside it, `dist/yuni.tex.yuni.js`);
+`python3 verify.py --assert` checks it (`sheetverify.py`: every asset and variant builds and is registered, the core/tags
+vocabulary, the doors as KDOOR records, the library textures, the engine read in place). Every asset of the kit, each variant,
+in its family's row with a 1.75 m figure, fronts north; the Order's furniture (`59c`, FURN) in a row of its own; a label over
+each piece near the camera, a button per row, a select and Prev / Next (the arrows) through the pieces, Front / Back / Plan.
+
+How it is split (MODULARITY-PLAN.md step 4b: the engine is not a core module and stays in each world that forked it):
+- **The engine, read in place from `settlements/yuni/src`, never copied** (`sheetbuild.YUNI_ENGINE`): `05-palette`, `10-core`,
+  `45-kit`, `47-texture`, `50-structure`, `51-fixtures`, `53-assets`, `72-lights`, `81-glow`, `86-inspect`. The sheet target
+  (`YUNI_TARGET`, `10-core.js` `SHEET`) switches off the world those files carry (the river, the butte, the terrain).
+- **The page shell from core**: `core/host` (camera, walk, panel, probe, the inspector, marks), `core/walk` (the ground a floor,
+  each building's footprint a block, the doors' leaves), `core/door` (KDOOR, KGLASS, KDOORHOST: the E key and its tip),
+  `core/atmos/placeholder` (KratorSky), `core/tags`, `core/rand`, `core/materials/record`. The library pack is Yuni's
+  (`settlements/yuni/materials.json`, `tex/`), read in place: the engine's families are Yuni's palette (`05-palette.js` FAMMAT).
+- **The sheet's own fragments**, `targets/sheet/` (the Yuni lineage's sheet shell, which `kits/locus` and `kits/eastern-abyssal`
+  take too; `sheetbuild.py` is the recipe they share, `sheetverify.py` the checks): the head and tail, the stage (scene, camera,
+  renderer, two lights), the sky's binding, the layout, the emit and ground, the labels and controls, the take on core/host.
+  The layout follows Yuni's `70-sheet.js` and `89-sheetui.js`; the rows are narrower (420 m, not 2.5 km).
+
+Where the split is not clean, and what was done about it:
+- `50-structure.js` reads one name of Yuni's layout at load (`BRIDGES`, `30-layout.js`): `targets/sheet/30-ys-world.js` gives it
+  the empty list a sheet has.
+- Yuni's doors are bound in its `76-doors.js`, with the interiors planner (`64-interiors.js`) and the walker: the city's code,
+  not taken. The shell binds them as `settlements/locus/src/95-locus-doors.js` does: every door into a room is locked as built
+  (no room is planned behind it on a sheet), a door into a court or onto the street opens with E, its leaves posed at Yuni's
+  swing. So the kit's sheet has no interiors; Yuni's own `yuni-assets.html` plans them, with the city's planner.
+- The building records say `build:'yuni'` (`51-fixtures.js` makes `KTAGS.page` with Yuni's name).
+- Walking: the footprints are blocks, so the walker goes round a building, not into it.
+
+Yuni's `sheet` target (`settlements/yuni`, `yuni-assets.html`) still builds, byte for byte as before; it stays as long as the
+city does (it shows the kit beside the city's Ancients assets, with the city's interiors). Mungo's and Verge's pages are
+unchanged: nothing they read moved.

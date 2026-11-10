@@ -62,12 +62,14 @@ DOORS.records.forEach(function(R){ KDOORHOST.posed(R, DOORS.pose); });   /* each
 function yuniDoorEye(){ return WALK.on ? { x:WALK.x, y:WALK.y+1.7, z:WALK.z } : camera.position; }
 var yuniDoorTip = KDOORHOST.tip(yuniDoorEye, function(){ return WALK.on; });
 TICKS.push(function(){ yuniDoorTip(); });
-var YHOST = KHOST.take({
+var YHOST = KHOST.take(KHOST.standard({
   build:CAM_BUILD, title:document.title, hint:CAM_HINT,
   scene:scene, camera:camera, renderer:renderer, ground:terrainH, clampCam:camClamp, minR:0.12, maxR:9000,
   views:yuniViews, start:VIEWS.length ? VIEWS[0][0] : 'Start',
   clock:{ hour:10, running:false, scale:1, speeds:[0, 1, 2, 4, 8] },   /* the world hour is the sky's own clock (YCLOCK, 21-sky.js): no host hour */
-  keys:Object.assign({ f:function(){ DOORS.walk(); }, e:function(){ KDOORHOST.toggleNear(yuniDoorEye(), WALK.on); } }, SHEET ? { p:function(){} } : {}),   /* F: Yuni's own walk; E: the door within reach; on a sheet P steps back (89-sheetui.js) */
+  keys:Object.assign({ f:function(){ DOORS.walk(); } }, SHEET ? { p:function(){} } : {}),   /* F: Yuni's own walk (not yet the host's: TODO.md, Viewers); on a sheet P steps back (89-sheetui.js) */
+  keyNames:{ f:'Walk: Yuni\'s own walker (its streets and doors), not yet the host\'s on core/walk' },
+  std:{ door:function(){ KDOORHOST.toggleNear(yuniDoorEye(), WALK.on); } },   /* Door (E): the door within reach, through the one key map (core/host/92k-host-keys.js) */
   inspect:function(hit, hits, rec){ return inspectDescribe(hit, rec); },
   palette:{ items:yuniPal, build:function(key){ var it = yuniPal.filter(function(q){ return q.key === key; })[0]; return yuniPiece(it ? it.cls : 'furniture', key, 0, [0, 0, 0], 0); } },
   edits:SHEET ? undefined : { world:YWORLD, log:YEDIT.log,
@@ -78,7 +80,7 @@ var YHOST = KHOST.take({
   exporters:{ tags:function(){ return KTAGS.page.export(); } },
   budget:BUDGET, api:window._api,
   draw:camDraw
-});
+}));
 /* the orbit target stays over the map (the old pan clamp; not on a walk, which places it itself) */
 KHOST.on(function yuniClamp(){ if(WALK.on) return; var t = YHOST.ctl.target; t.x = clamp(t.x, -HW+60, HW-60); t.z = clamp(t.z, -HW+60, HW-60); t.y = clamp(t.y, -80, 900); }, 'tick');
 /* Yuni's own frame, after the host has placed the camera: the sky, the night, the ticks (the walk, the doors, the life

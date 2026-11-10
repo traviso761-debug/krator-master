@@ -21,7 +21,7 @@
  ],
  "06-core-khook.js": [
   "core/shader",
-  "4086274abd11"
+  "e6a2382acc0b"
  ],
  "06b-core-kcolor.js": [
   "core/shader",
@@ -29,7 +29,7 @@
  ],
  "07-core-kwarp.js": [
   "core/shader",
-  "f94bf5f60b6a"
+  "5995df925616"
  ],
  "08-core-rand.js": [
   "core/rand",
@@ -41,7 +41,7 @@
  ],
  "10-core-door.js": [
   "core/door",
-  "22190472180d"
+  "b12eb3957235"
  ],
  "10-core.js": [
   "mungo (overrides locus)",
@@ -69,7 +69,7 @@
  ],
  "20-core-water.js": [
   "core/water",
-  "96a8dcd7a691"
+  "0bb0df729de5"
  ],
  "20-stage.js": [
   "mungo (overrides locus)",
@@ -113,7 +113,7 @@
  ],
  "30-core-door-leaf.js": [
   "core/door",
-  "dc475fefea8f"
+  "b4bc21dc8a74"
  ],
  "30-layout.js": [
   "mungo (overrides locus)",
@@ -149,7 +149,7 @@
  ],
  "50-core-furnish.js": [
   "core/furnish",
-  "3474c3c8d39a"
+  "2bd26bf99a15"
  ],
  "50-core-tags.js": [
   "core/tags",
@@ -157,7 +157,7 @@
  ],
  "50-core-water-draw.js": [
   "core/water",
-  "988bae081cb5"
+  "f4225dded76d"
  ],
  "50-structure.js": [
   "locus",
@@ -165,11 +165,11 @@
  ],
  "51-core-water-kinds.js": [
   "core/water",
-  "7c9ef02c858e"
+  "49281a8dd3e8"
  ],
  "52-core-furnish-draw.js": [
   "core/furnish",
-  "949213456277"
+  "1baf4b1363ee"
  ],
  "52-core-tags-vocab.js": [
   "core/tags",
@@ -313,11 +313,11 @@
  ],
  "65z-furniture-bundle.js": [
   "virtual",
-  "77add6fb1b7d"
+  "4ed1a939f4cc"
  ],
  "66-locus-furnish.js": [
   "locus",
-  "13acf75856fa"
+  "8475badfea1f"
  ],
  "68-place.js": [
   "mungo (overrides locus)",
@@ -337,7 +337,7 @@
  ],
  "69a3-bio-core-foliage.js": [
   "core/biome",
-  "2c4da8ac56aa"
+  "7c297f752e6d"
  ],
  "69a4-bio-core-place.js": [
   "core/biome",
@@ -623,6 +623,10 @@
   "core/host",
   "8066aefad370"
  ],
+ "92k-host-keys.js": [
+  "core/host",
+  "95f7538e4448"
+ ],
  "93-host-inspect.js": [
   "core/host",
   "30374027dc5d"
@@ -637,7 +641,7 @@
  ],
  "95-host-probe.js": [
   "core/host",
-  "111c9ae5768a"
+  "4abec5c5a961"
  ],
  "95-locus-doors.js": [
   "locus",
@@ -661,7 +665,7 @@
  ],
  "98-start.js": [
   "locus",
-  "afe3809fa719"
+  "0b2d48396e8d"
  ],
  "99-host-cutaway.js": [
   "core/host",

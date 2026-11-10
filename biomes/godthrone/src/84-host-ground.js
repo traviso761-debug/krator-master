@@ -140,7 +140,7 @@ function buildGround(){
     when read, so the hooks core/atmos and core/water add after this (snow and rain cover, fog belts, the wet beds) are in it */
  /* core's count sees every sampler since 2026-11-08 (precision-qualified and 3D: core/atmos's `uniform highp sampler3D uNoise`, which
     the page counted with its own pattern until then) */
- const unitsOf=M=>typeof KSHADOW!=='undefined'&&KSHADOW.units?KSHADOW.units(M,renderer):99;
+ const unitsOf=M=>typeof KSHADOW!=='undefined'&&KSHADOW.units?KSHADOW.units(M,renderer,scene):99;
  Object.defineProperty(window,'_groundUnits',{configurable:true,enumerable:true,get:()=>({n:unitsOf(MAT),max:16,layers:GLY_LIVE.length})});
  window._horizon.mats=KHORIZON.shadeScene(scene,HZ,{filter:o=>!o.userData.farField});
  REGISTER({name:STN.title.replace('Krator Godthrone: ','The ground of ')+' (the field as drawn)',x:TERR.cx,z:TERR.cz,y:GROUND_F.stats().min-50,r:TERR.R*1.42,h:GROUND_F.max-GROUND_F.min+100,ground:true});

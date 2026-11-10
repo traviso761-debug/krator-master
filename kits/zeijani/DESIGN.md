@@ -21,7 +21,10 @@ contract is in `API.md`; what is still wrong is in `KNOWN_ISSUES.md`.
 | shared forms (domes, arches, niches, bands, fixtures) | `42-zj-forms.js` |
 
 A new def also needs: a row in `89-rows.js` (else `kit-coverage` fails), an interiors item in
-`kits/interiors/sets/zeijani.js` if it has rooms, and a `DH.FOOT` row in Dhelv's layout if Dhelv places it.
+`kits/interiors/sets/zeijani.js` if it has rooms, a `DH.FOOT` row in Dhelv's layout if Dhelv places it, and its key in
+`55-zj-trades.js` if it carries a Voth census trade (`voth-trades`; a def that fills a gap moves the row's `gap` to `keys` and
+the line in `KNOWN_ISSUES.md`). Doors and windows go through core/door (`zfLeaf`, `svDoorway`, `svPane`; README.md "Doors and
+glass"): no dark void boxes for openings.
 
 ## 1. Rock, finish and colour (PLAN.md 6.1)
 

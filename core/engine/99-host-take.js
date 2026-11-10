@@ -25,12 +25,24 @@ function describe(first,hits){const h=hits.find(q=>inWorld(q.object)&&!cutHidden
  if(!t)t='unregistered mesh';
  return t+'\n'+p.x.toFixed(1)+', '+p.y.toFixed(1)+', '+p.z.toFixed(1);}
 
-// ---------------------------------------------------------------- the cut-away (C), night (N, in 91n-night.js), shadows
+// ---------------------------------------------------------------- the standard controls: cut-away (X), night (N), door (E), interiors (U), shadows
+/* named by id from the one key map (core/host/92k-host-keys.js, KHOST.standard): the same button, words and key on every page.
+   The cut-away is the engine's own (the near half of every building with a `cut`, 27-mat.js) on a kit without interiors; on a kit
+   with them (91i-interiors.js) X is the host's cut-away (core/host/99-host-cutaway.js), storey by storey, and opens the engine's
+   with it. Before 2026-11-09 the engine's cut-away was C (the key map's X since). */
 function cutSet(on){ANIMU.uCut.value=on?1:0;WORLD.traverse(m=>{if(m.isMesh&&m.userData.mk&&SV_CUT[m.userData.mk])m.castShadow=!on;});for(const m of SV_OPEN.cutMeshes)m.visible=!on;return !!on;}   /* a tent's door leaves go with its near half */
-const CT={cut:{button:'Cut-away (C)',title:'open the near half of every tent',on:()=>{cutSet(!ANIMU.uCut.value);}},
- night:{button:'Night (N)',title:'21:30, lamps and braziers lit',on:()=>{nightSet(!NIGHT.on);}},
- shadows:{button:'Shadows',on:()=>{renderer.shadowMap.enabled=!renderer.shadowMap.enabled;scene.traverse(o=>{if(o.material)o.material.needsUpdate=true;});}}};
-function paintControls(){const on={cut:!!ANIMU.uCut.value,night:NIGHT.on,shadows:renderer.shadowMap.enabled};for(const k in CT)if(CT[k].el)CT[k].el.classList.toggle('on',on[k]);}
+if(SVIX)SVIX.units=svixUnits();
+const svDoorWalking=()=>!!(KHOST.cam&&KHOST.cam.ctl&&KHOST.cam.ctl.walk);
+const SV_STD={night:{on:()=>{nightSet(!NIGHT.on);},state:()=>NIGHT.on,title:'21:30, lamps and braziers lit'},
+ door:{on:()=>{KDOORHOST.toggleNear(camera.position,svDoorWalking());}},
+ shadows:{on:()=>{renderer.shadowMap.enabled=!renderer.shadowMap.enabled;scene.traverse(o=>{if(o.material)o.material.needsUpdate=true;});},state:()=>renderer.shadowMap.enabled}};
+if(!(SVIX&&SVIX.units.length))SV_STD.cutaway={on:()=>{cutSet(!ANIMU.uCut.value);},state:()=>!!ANIMU.uCut.value,title:'open the near half of every building that has a cut-away'};
+if(SVIX)SV_STD.interiors={on:svixToggle,state:()=>SVIX.on};
+/* a page built without core/host's 92k-host-keys.js: the same words and keys, by hand */
+const svStandard=typeof KHOST.standard==='function'?KHOST.standard:function(o){const W={cutaway:['Cut-away','x'],night:['Night','n'],door:['Door','e'],interiors:['Interiors','u'],shadows:['Shadows','']};
+ o.controls=Object.keys(W).filter(k=>o.std[k]).map(k=>({button:W[k][0]+(W[k][1]?' ('+W[k][1].toUpperCase()+')':''),title:o.std[k].title||'',on:o.std[k].on,state:o.std[k].state})).concat(o.controls||[]);
+ o.keys=o.keys||{};for(const k in W)if(o.std[k]&&W[k][1]&&!o.keys[W[k][1]])o.keys[W[k][1]]=o.std[k].on;return o;};
+function paintControls(){for(const c of SV_TAKE.controls)if(c.el&&c.state)c.el.classList.toggle('on',!!c.state());}
 
 // ---------------------------------------------------------------- the frame, around the host's: the sun and the sky follow the camera, the engine's hooks run
 /* after the camera is placed (the engine ran them after applyCam): the shader's eye, FRAME_HOOKS (animation, the night lights),
@@ -42,7 +54,6 @@ KHOST.on(function engineFrame(dt){const C=KHOST.cam,now=performance.now();ANIMU.
  atmosFrame(dt);paintControls();},'view');
 /* the doors (core/door, 36o-open.js): ease the moving leaves each frame; E (the keys below) opens or shuts the one within reach */
 FRAME_HOOKS.push(dt=>{KDOORHOST.tick(dt);});
-const svDoorWalking=()=>!!(KHOST.cam&&KHOST.cam.ctl&&KHOST.cam.ctl.walk);
 FRAME_HOOKS.push(KDOORHOST.tip(()=>camera.position,svDoorWalking));
 addEventListener('resize',()=>{skyCam.aspect=innerWidth/innerHeight;skyCam.updateProjectionMatrix();});
 
@@ -62,20 +73,26 @@ const ENGINE_API={REG,DEFS,SITES,ROWS,SV_LIFE,
  life(){return SV_LIFE;},
  setNight(v){nightSet(v);},
  setCut(v){cutSet(v);},
+ // the interiors (91i-interiors.js): the sets, the items, the cut-away's units, what ?interiors=1 placed
+ interiors(){return svixReport();},
+ // the standard controls this page shows (core/host/92k-host-keys.js): their words, for the one-key-map check
+ controls(){return SV_TAKE.controls.map(c=>c.button||null).filter(Boolean);},
  // the doors and the glass (core/door): the counts, the records (KDOOR.export), the save's deltas
  openings(){return SV_OPEN.stats();},
  doorExport(){return KDOOR.export();},
  doorState(){return KDOOR.state();}};
 
 // ---------------------------------------------------------------- the page, handed to the host
-KHOST.take({build:KIT.id,title:TITLE,
- hint:'Cut-away (C) opens the tents, Night (N) lights the lamps, E opens or shuts the door in reach; the tools in the inspector panel lay out a polygon or a path',
+const SV_TAKE=svStandard({build:KIT.id,title:TITLE,
+ hint:(SVIX&&SVIX.units.length?'Cut-away (X) opens the building nearest the view storey by storey ([ ] the storey), Interiors (U) furnishes the rooms'
+  :'Cut-away (X) opens the buildings')+', Night (N) lights the lamps, E opens or shuts the door in reach, F walks; ? lists every key',
  scene,camera,renderer,ground:terrainH,walk:typeof KWALK!=='undefined'?KWALK:null,clear:.4,minR:1,maxR:2500,
  views:VIEWS,
- controls:[CT.cut,CT.night,CT.shadows],
- keys:{c:()=>{cutSet(!ANIMU.uCut.value);},n:()=>{nightSet(!NIGHT.on);},e:()=>{KDOORHOST.toggleNear(camera.position,svDoorWalking());}},
+ std:SV_STD,
+ cutaway:SVIX&&SVIX.units.length?{units:SVIX.units,cutAt:1.4,show:(u,i)=>{cutSet(i!=null);}}:null,
  inspect:describe,
- stats:()=>'records '+REG.length+'  furniture '+SVF.placed.length+(ANIMU.uCut.value?'\ncut-away':'')+(NIGHT.on?'\nnight':''),
+ stats:()=>'records '+REG.length+'  furniture '+SVF.placed.length+(SVIX&&SVIX.on?'  interiors '+SVIX.pieces:'')+(ANIMU.uCut.value?'\ncut-away':'')+(NIGHT.on?'\nnight':''),
  draw:(sc,cam)=>{renderer.clear();renderer.render(skyScene,skyCam);renderer.render(sc,cam);},
  api:ENGINE_API});
+KHOST.take(SV_TAKE);
 paintControls();

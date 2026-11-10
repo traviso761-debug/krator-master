@@ -58,3 +58,12 @@ its `KNOWN_ISSUES.md` has the counts and the audit).
 - [ ] Left dark on purpose: the stills' roof flues (`64-locus-petroleum.js`), the kiln's mouth with its fire, the wheel pit, the
       culverts' pipes (`settlements/locus/src/68c-locus-crossings.js`).
 
+## The kit's own sheet (2026-11-09; README.md, "Its own sheet")
+
+- [ ] The kit's cultures, `abyssal-desert` and `geomancer`, are not in core/tags' vocabulary (`core/tags/52-core-tags-vocab.js`;
+      the catalog culture is `eastabyss`), so the buildings that declare them have no culture tag on the sheet (or on Locus's
+      page). `verify.py --assert` counts them and passes only when every missing culture is one of these. Adding them (or an
+      alias, e.g. to `eastabyss`) is a vocabulary decision for the owner, and a core/tags change that moves every page.
+- [ ] Locus's fork registers a building with no types (`settlements/locus/src/45-kit.js` regRecord); the sheet copies each
+      asset's declared types onto its record. Locus's own pages still lack them (a change there moves Locus, Mungo and Verge).
+

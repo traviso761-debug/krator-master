@@ -21,6 +21,63 @@
   function rrect(w, d, cx, cz, ry) { return rect(w, d).map(function (p) { return turn(p, ry, cx, cz); }); }
   const POOR = 0.2, MID = 0.5, RICH = 0.8, CIVIC = 0.65;
   const SF = ['single-family dwelling'], MF = ['multi-family dwelling'];
+  /* the Republic's room kinds for its great buildings (2026-11-09: the Hall of the Republic and the Fortress; their
+     blueprints are kits/highlands/hall/BLUEPRINT.md and kits/highlands/fortress/BLUEPRINT.md). Each takes the pieces of
+     the older kinds it aliases; the seating of the Assembly, the Speaker's chair and the war room's map table are the
+     builders' own placements (FURNISH), so a kind here asks only for what the placer can find in the catalog */
+  const SEATS = IX.SEAT_TYPES, SURFACE = IX.SURFACE_GROUP;
+  const kind = function (k, spec, alias, weight) { if (IX.PROGRAMS[k]) return; IX.PROGRAMS[k] = spec; IX.KIND_ALIAS[k] = alias; IX.KIND_WEIGHT[k] = weight; };
+  kind('chamber', { require: [], optional: [{ types: ['banner', 'art', 'statue'], max: 4 }, { types: ['lamp'], max: 4 }], extra: 40 }, ['hall', 'school'], 4);
+  kind('committee', { require: [{ need: 'table', types: ['table'], n: 1 }, { need: 'seats', types: SEATS, n: 4 }],
+    optional: [{ types: ['shelf', 'storage', 'board'], max: 2 }, { types: ['banner', 'art', 'lamp'], max: 2 }, SURFACE], extra: 5 }, ['hall', 'study'], 1.4);
+  kind('gallery', { require: [{ need: 'benches', types: ['bench', 'seating'], n: 2 }], optional: [{ types: ['bench', 'seating', 'chair'], max: 8 }, { types: ['lamp'], max: 2 }], extra: 3 },
+    ['hall', 'antechamber', 'tavern'], 1.2);
+  kind('lobby', { require: [], optional: [{ types: ['bench', 'seating'], max: 3 }, { types: ['lamp', 'banner', 'art', 'statue'], max: 3 }, { types: ['rack'], max: 1 }], extra: 8 },
+    ['antechamber', 'hall'], 0.8);
+  kind('guard', { require: [{ need: 'rack', types: ['rack', 'weapon'], n: 1 }, { need: 'seats', types: SEATS, n: 1 }],
+    optional: [{ types: ['table'], max: 1 }, { types: ['storage', 'bed'], max: 2 }, { types: ['lamp'], max: 1 }], extra: 6 }, ['barracks', 'antechamber', 'hall'], 1);
+  kind('war_room', { require: [{ need: 'table', types: ['table'], n: 1 }, { need: 'seats', types: SEATS, n: 2 }],
+    optional: [{ types: ['board', 'shelf', 'storage', 'desk'], max: 4 }, { types: ['banner', 'art', 'lamp'], max: 2 }, SURFACE], extra: 5 }, ['hall', 'study', 'barracks'], 1.6);
+  kind('armoury', { require: [{ need: 'racks', types: ['rack', 'weapon'], n: 2 }], optional: [{ types: ['rack', 'weapon', 'storage'], max: 6 }], extra: 3 },
+    ['barracks', 'store', 'workshop'], 1);
+  kind('magazine', { require: [{ need: 'stores', types: ['storage', 'stack'], n: 2 }], optional: [{ types: ['storage', 'stack', 'rack'], max: 8 }], extra: 2.5 }, ['store'], 1);
+  kind('audience', { require: [{ need: 'seat of state', types: ['seating', 'chair'], n: 1 }],
+    optional: [{ types: ['seating', 'bench', 'chair'], max: 6 }, { types: ['rug', 'banner', 'art', 'statue', 'screen'], max: 4 }, { types: ['lamp'], max: 2 }, { types: ['table'], max: 1 }], extra: 6 },
+    ['hall', 'antechamber'], 1.6);
+  kind('signals', { require: [{ need: 'desk', types: ['desk', 'table'], n: 1 }], optional: [{ types: ['board', 'shelf', 'storage', 'chair'], max: 4 }, SURFACE], extra: 5 },
+    ['study', 'workshop'], 1);
+  kind('cell', { require: [{ need: 'bed', types: ['bed'], n: 1 }], optional: [{ types: ['storage'], max: 1 }], extra: 6 }, ['bedroom', 'barracks'], 0.5);
+  /* an explicit room in a great building's own frame: x0 x1 z0 z1 its inner faces, y its floor, h its clear height.
+     o: {rail: [edges left open as a balcony's railing: 'x0' 'x1' 'z0' 'z1'], fixtures, wealth} */
+  const room = function (id, kind, x0, x1, z0, z1, y, h, o) {
+    return Object.assign({ id: id, kind: kind, poly: [[x0, z0], [x1, z0], [x1, z1], [x0, z1]], y: r3(y), h: h, doors: [] }, o || {});
+  };
+  /* a door between two of an item's rooms (listed in both, one id), or to the street: at on the wall line, w wide.
+     o: {h, drawn: the builder draws the leaf (a street door), open: an opening with no leaf (a stair's head)} */
+  const link = function (R, a, b, at, w, o) {
+    const A = R.find(function (r) { return r.id === a; }), B = b === 'street' ? null : R.find(function (r) { return r.id === b; });
+    if (!A || (b !== 'street' && !B)) throw new Error('highlands set: link ' + a + ' / ' + b);
+    const id = 'd.' + a + '.' + b + '.' + A.doors.length, base = Object.assign({ id: id, at: at, w: w }, o || {});
+    A.doors.push(Object.assign({}, base, { to: B ? '.' + b : 'street' }));
+    if (B) B.doors.push(Object.assign({}, base, { to: '.' + a, leaf: false, swing: 'out' }));
+  };
+  /* each flight of a great building's `stairs` as two fixtures (2026-11-09): the FLIGHT on the floor it starts from (the whole
+     run, its front at the foot, where a walker steps on) and the WELL in the room its head reaches (the top half of the run,
+     its front past the head, where a walker steps off); each turned along the flight (ry), as tall as its room, with a 0.9 m
+     clear front the placer keeps reachable. Without the turn and the height, a front facing a wall left the placer no way in,
+     and the keep's rooms went unfurnished (the war room had no table) */
+  const stairFixtures = function (R, ST) {
+    ST.forEach(function (S) {
+      const dx = S.b[0] - S.a[0], dz = S.b[1] - S.a[1], Ln = Math.hypot(dx, dz), ux = dx / Ln, uz = dz / Ln;
+      [[S.a[2], S.a[0] + dx / 2, S.a[1] + dz / 2, Ln, Math.atan2(-ux, -uz), '_flight'],
+        [S.b[2], S.a[0] + dx * 0.75, S.a[1] + dz * 0.75, Ln / 2, Math.atan2(ux, uz), '_well']].forEach(function (q) {
+        const r = R.find(function (r) { const P = r.poly; return Math.abs(r.y - q[0]) < 0.3 && q[1] > P[0][0] && q[1] < P[1][0] && q[2] > P[0][1] && q[2] < P[2][1]; });
+        if (!r) return;
+        (r.fixtures = r.fixtures || []).push({ id: S.id + q[5], kind: 'stair', x: r3(q[1]), z: r3(q[2]), ry: r3(q[4]), w: S.w + 0.2, d: r3(q[3]), h: r.h,
+          reach: true, clearance: { front: 0.9 } });
+      });
+    });
+  };
   const L = [];
   const add = function (it) { L.push(it); return it; };
   const byKey = function (k) { for (let i = 0; i < L.length; i++) if (L[i].key === k) return L[i]; throw new Error('highlands set: no item ' + k); };
@@ -264,24 +321,144 @@
     note: 'the principal bodies: the guildhall and the hull depot behind it (a vault of hull on plank walls, its doors on the +x end); the tank-shaft stage tower, the sorting yard, its heaps, gantry, stores and furnace are left out' });
 
   /* ================================================================ REPUBLICAN — grand works (78-rep-grand.js) */
-  add({ key: 'hl_rep_hall_republic', name: 'Hall of the Republic', culture: 'republican', wealth: CIVIC, types: ['civic'], lot: [112, 100],
-    bodies: [{ id: 'ring', poly: rect(62, 52, 0, -10), y: 2.44, levels: [{ h: 7 }], wall: 0.6, roof: 'hip', pitch: pt(0.6),
-      doors: [{ at: [0, -36], w: 2.2 }, { at: [0, 16], w: 3 }], program: ['hall', 'antechamber', 'study', 'library', 'hall', 'study', 'store', 'study'] },
-      { id: 'entrance', poly: rect(22, 14, 0, 23), y: 2.44, levels: [{ h: 8 }], wall: 0.6, roof: 'gable', pitch: pt(1.2),
-        doors: [{ at: [0, 30], w: 6 }], program: ['antechamber', 'study', 'store'] },
-      { id: 'wing_w', poly: rect(13, 22, -37.5, -9), y: 2.44, levels: [{ h: 4.2 }, { h: 3.4 }], wall: 0.45, roof: 'gable', pitch: pt(1.2),
-        doors: [{ at: [-37.5, 2], w: 1.8 }], program: [['hall', 'study', 'store'], ['study', 'library', 'study']] },
-      { id: 'wing_e', poly: rect(13, 22, 37.5, -9), y: 2.44, levels: [{ h: 4.2 }, { h: 3.4 }], wall: 0.45, roof: 'gable', pitch: pt(1.2),
-        doors: [{ at: [37.5, 2], w: 1.8 }], program: [['hall', 'study', 'store'], ['study', 'library', 'study']] }],
-    note: 'the principal bodies on the platform: the ring hall (planned as one storey round its central chamber, the door from the entrance block assumed), the portal block, the two wings; the stepped tower over the centre, the clock stage, the spire pavilions and the verandas are left out' });
-  add({ key: 'hl_rep_fortress', name: 'Fortress', culture: 'republican', wealth: CIVIC, types: ['military'], lot: [86, 78],
-    bodies: [{ id: 'keep', poly: rect(14, 14, -14, -14), y: 5.2, levels: [{ h: 3.2 }, { h: 3 }, { h: 3 }], wall: 0.6, roof: 'flat',
-      doors: [{ at: [-10.4, -7], w: 1.4 }], program: [['hall', 'store'], ['barracks', 'barracks'], ['study', 'bedroom']] },
-      { id: 'palace', poly: rect(24, 10, 15, -21), y: 1, levels: [{ h: 4 }, { h: 3.3 }], wall: 0.4, roof: 'gable', pitch: pt(1.3),
-        doors: [{ at: [15, -16], w: 1.6 }], program: [['hall', 'living', 'kitchen', 'store'], ['bedroom', 'bedroom', 'study', 'bedroom']] },
-      { id: 'barracks', poly: rect(9, 24, -26, 10), y: 0.6, levels: [{ h: 3 }, { h: 2.8 }], wall: 0.35, roof: 'gable', pitch: pt(1.1),
-        doors: [{ at: [-21.5, 10.5], w: 1.3 }], program: [['barracks', 'barracks', 'store'], ['barracks', 'barracks', 'barracks']] }],
-    note: 'the principal bodies: the keep (first-floor door up the outside stair; its lower 5 m is solid, the jettied top storey left out), the commandant\'s palace, the barracks; the four corner towers, the gatehouse, the hoarded curtain and the open stable lean-to are left out' });
+  /* the Hall of the Republic: the Assembly of Citizens' house (kits/highlands/hall/BLUEPRINT.md; 2026-11-09). The ring hall
+     round the chamber in two storeys, the chamber in the core, the public and press galleries over its south end with their
+     own stairs from the vestibule, the members' stairs in the front corners, the wings (the members' offices west, the
+     Assembly's library east) planned as bodies. The builder draws the walls, floors, stairs and doors from these rooms
+     (kits/highlands/src/72c-hl-plan.js hnPlan) and seats the Assembly on its tiers itself (78-rep-grand.js) */
+  (function () {
+    const FL = 2.44, U = FL + 4.7, G = 4.45, H = 2.7, R = [];
+    const g = function (id, k, x0, x1, z0, z1, o) { R.push(room(id, k, x0, x1, z0, z1, FL, G, o)); };
+    const u = function (id, k, x0, x1, z0, z1, o) { R.push(room(id, k, x0, x1, z0, z1, U, H, o)); };
+    /* the chamber and the vestibule; the tiers, the dais and the well are the builder's (fixtures here) */
+    R.push(room('chamber', 'chamber', -21.5, 21.5, -27.5, 7.5, FL, 12.9, { wealth: 0.85, fixtures: [
+      { id: 'tiers', kind: 'tiers', x: 0, z: -5.6, w: 25.5, d: 12.8, reach: false }, { id: 'arm_w', kind: 'tiers', x: -9, z: -16, w: 7.5, d: 8, reach: false },
+      { id: 'arm_e', kind: 'tiers', x: 9, z: -16, w: 7.5, d: 8, reach: false }, { id: 'well', kind: 'well', x: 0, z: -16, w: 10.5, d: 8, reach: false },
+      { id: 'dais', kind: 'dais', x: 0, z: -24.4, w: 12.4, d: 4.2, reach: false }] }));
+    R.push(room('vestibule', 'lobby', -10.6, 10.6, 16.5, 29.5, FL, 8.5, { wealth: 0.85, fixtures: [] }));
+    /* the ground storey of the ring: the members' side (lobby, cloakroom, writing room, the division lobbies, the party
+       room, the dining room), the Speaker's side at the back (his lobby and office, the seal room, the clerks, the
+       serjeant's guard, the kitchen) */
+    g('lobby', 'lobby', -8, 8, 8, 15.5); g('cloaks', 'lobby', -22, -8, 8, 15.5);
+    g('stair_w', 'lobby', -30.5, -22, 8, 15.5);
+    g('writing', 'study', 8, 22, 8, 15.5);
+    g('stair_e', 'lobby', 22, 30.5, 8, 15.5);
+    g('noes', 'lobby', -30.5, -22, -6, 8); g('party', 'committee', -30.5, -22, -28, -6);
+    g('ayes', 'lobby', 22, 30.5, -6, 8); g('dining', 'hall', 22, 30.5, -28, -6);
+    g('guard', 'guard', -30.5, -18, -35.5, -28); g('clerks', 'study', -18, -6, -35.5, -28); g('speaker_lobby', 'lobby', -6, 6, -35.5, -28);
+    g('speaker', 'study', 6, 14, -35.5, -28, { wealth: 0.85 }); g('seal', 'store', 14, 18, -35.5, -28, { wealth: 0.85 }); g('kitchen', 'kitchen', 18, 30.5, -35.5, -28);
+    /* the upper storey: the members' landings and corridors, the committee rooms, the members' library, the archive, the
+       journal office, the second party room; the public's gallery lobby and the press room over the front */
+    u('landing_w', 'lobby', -30.5, -22, 8, 15.5);
+    u('public', 'lobby', -22, 0, 8, 15.5); u('press', 'study', 0, 22, 8, 15.5);
+    u('landing_e', 'lobby', 22, 30.5, 8, 15.5);
+    u('corr_w', 'lobby', -24, -22, -28, 8); u('committee_1', 'committee', -30.5, -24, -10, 8); u('committee_2', 'committee', -30.5, -24, -28, -10);
+    u('corr_e', 'lobby', 22, 24, -28, 8); u('library', 'library', 24, 30.5, -10, 8); u('committee_3', 'committee', 24, 30.5, -28, -10);
+    u('archive', 'library', -30.5, -10, -35.5, -28); u('journal', 'study', -10, 10, -35.5, -28); u('party_2', 'committee', 10, 30.5, -35.5, -28);
+    /* the galleries over the chamber's south end, and the vestibule's landings at the heads of their stairs */
+    R.push(room('gallery_pub', 'gallery', -21.5, 0, 3, 7.5, U, 3, { rail: ['z0'] }), room('gallery_press', 'gallery', 0, 21.5, 3, 7.5, U, 3, { rail: ['z0'] }));
+    R.push(room('vlanding_w', 'lobby', -10.6, -7.2, 16.5, 19.5, U, 3, { rail: ['x1', 'z1'] }), room('vlanding_e', 'lobby', 7.2, 10.6, 16.5, 19.5, U, 3, { rail: ['x0', 'z1'] }));
+    /* the doors */
+    link(R, 'vestibule', 'street', [0, 29.5], 8.2, { h: 6.1, drawn: true });
+    link(R, 'speaker_lobby', 'street', [0, -35.5], 2.2, { h: 3.2, drawn: true });
+    link(R, 'vestibule', 'lobby', [0, 16], 3, { h: 3.4 }); link(R, 'lobby', 'chamber', [0, 8], 3, { h: 3.4 });
+    link(R, 'lobby', 'cloaks', [-8, 12], 1.4); link(R, 'lobby', 'writing', [8, 12], 1.4); link(R, 'cloaks', 'stair_w', [-22, 12], 1.4); link(R, 'writing', 'stair_e', [22, 12], 1.4);
+    link(R, 'noes', 'chamber', [-22, 5], 1.6); link(R, 'chamber', 'noes', [-22, -3], 1.6); link(R, 'party', 'chamber', [-22, -17], 1.6);
+    link(R, 'ayes', 'chamber', [22, 5], 1.6); link(R, 'chamber', 'ayes', [22, -3], 1.6); link(R, 'dining', 'chamber', [22, -17], 1.6);
+    link(R, 'party', 'guard', [-26, -28], 1.2); link(R, 'dining', 'kitchen', [26, -28], 1.2);
+    link(R, 'speaker_lobby', 'chamber', [0, -28], 1.6); link(R, 'speaker_lobby', 'clerks', [-6, -32], 1.2); link(R, 'speaker_lobby', 'speaker', [6, -32], 1.2);
+    link(R, 'speaker', 'seal', [14, -32], 0.9); link(R, 'clerks', 'guard', [-18, -32], 1.2);
+    link(R, 'landing_w', 'corr_w', [-23, 8], 1.4); link(R, 'corr_w', 'committee_1', [-24, -1], 1.2); link(R, 'corr_w', 'committee_2', [-24, -19], 1.2);
+    link(R, 'corr_w', 'archive', [-23, -28], 1.4); link(R, 'archive', 'journal', [-10, -32], 1.2); link(R, 'journal', 'party_2', [10, -32], 1.2);
+    link(R, 'party_2', 'corr_e', [23, -28], 1.4); link(R, 'corr_e', 'library', [24, -1], 1.2); link(R, 'corr_e', 'committee_3', [24, -19], 1.2); link(R, 'landing_e', 'corr_e', [23, 8], 1.4);
+    link(R, 'vlanding_w', 'public', [-8.9, 16], 1.2); link(R, 'public', 'gallery_pub', [-11, 8], 1.4);
+    link(R, 'vlanding_e', 'press', [8.9, 16], 1.2); link(R, 'press', 'gallery_press', [11, 8], 1.4);
+    /* the wings' doors from the ring (the wings are planned bodies: their door is the plan's, 69e6 cuts it and hangs its leaf) */
+    R.find(function (r) { return r.id === 'party'; }).doors.push({ id: 'd.party.wing_w', at: [-31, -14], w: 1.4, to: 'wing_w', drawn: true });
+    R.find(function (r) { return r.id === 'dining'; }).doors.push({ id: 'd.dining.wing_e', at: [31, -14], w: 1.4, to: 'wing_e', drawn: true });
+    link(R, 'vlanding_w', 'street', [-9.9, 19.5], 1.4, { open: true }); link(R, 'vlanding_e', 'street', [9.9, 19.5], 1.4, { open: true });   /* the stairs' heads */
+    /* a tall room's wall (the vestibule's, 8.5 m; the chamber's, 12.9 m) stands on the line an upper door pierces: a GAP in its
+       walk wall there (core/walk only: 72c draws nothing for it, no leaf), or the door into the public lobby, the press room and
+       the galleries opens on a wall (the reachability audit, 2026-11-09) */
+    const gap = function (a, at, w) { R.find(function (r) { return r.id === a; }).doors.push({ id: 'gap.' + a + '.' + at.join('_'), at: at, w: w, gap: true, leaf: false, swing: 'none' }); };
+    gap('vestibule', [-8.9, 16], 1.2); gap('vestibule', [8.9, 16], 1.2); gap('chamber', [-11, 8], 1.4); gap('chamber', [11, 8], 1.4);
+    const HST = [{ id: 'members_w', a: [-30, 14.75, FL], b: [-22.6, 14.75, U], w: 1.2 }, { id: 'members_e', a: [30, 14.75, FL], b: [22.6, 14.75, U], w: 1.2 },
+        { id: 'public', a: [-9.9, 28.9, FL], b: [-9.9, 19.6, U], w: 1.3 }, { id: 'press', a: [9.9, 28.9, FL], b: [9.9, 19.6, U], w: 1.3 }];
+    stairFixtures(R, HST);   /* each flight a way in: the room it starts from, the room its head reaches */
+    add({ key: 'hl_rep_hall_republic', name: 'Hall of the Republic', culture: 'republican', wealth: CIVIC, types: ['civic'], lot: [112, 100],
+      shells: [{ id: 'ring', at: [0, -10], w: 62, d: 52, y0: FL, h: 7.5, t: 0.5 }, { id: 'core', at: [0, -10], w: 44, d: 36, y0: FL, h: r3(20 - FL), t: 0.5, floor: false },
+        { id: 'entrance', at: [0, 23], w: 22, d: 14, y0: FL, h: 9, t: 0.5 }],
+      stairs: HST,
+      rooms: R,
+      bodies: [{ id: 'wing_w', poly: rect(13, 22, -37.5, -9), y: FL, levels: [{ h: 4.2 }, { h: 3.4 }], wall: 0.45, roof: 'gable', pitch: pt(1.2),
+        doors: [{ at: [-37.5, 2], w: 1.8 }, { at: [-31, -14], w: 1.4 }], program: [['antechamber', 'study', 'study'], ['study', 'study', 'study']] },
+        { id: 'wing_e', poly: rect(13, 22, 37.5, -9), y: FL, levels: [{ h: 4.2 }, { h: 3.4 }], wall: 0.45, roof: 'gable', pitch: pt(1.2),
+          doors: [{ at: [37.5, 2], w: 1.8 }, { at: [31, -14], w: 1.4 }], program: [['library', 'study', 'store'], ['library', 'store']] }],
+      note: 'the Assembly of Citizens\' house on its blueprint (kits/highlands/hall/BLUEPRINT.md): 37 rooms in the ring hall, the chamber, the vestibule and the galleries, the wings as planned bodies; the corner towers, the spire pavilions, the stepped tower over the chamber and the clock stage are left out' });
+  })();
+  /* the Fortress: the Republic's military headquarters and the house of the First Citizen (kits/highlands/fortress/
+     BLUEPRINT.md; 2026-11-09). The keep is the headquarters, seven storeys from the armoury under the guard hall to the
+     signal loft; the commandant's palace is the First Citizen's residence, joined to the keep's guard hall by a covered
+     bridge (the secure link from the First Citizen's study to the war room); the barracks hold the guard, its mess and
+     kitchen; the two back towers the magazine and the gaol. The builder draws the rooms from this data (72c hnPlan) */
+  (function () {
+    const R = [], KX0 = -20.4, KX1 = -7.6, KZ0 = -20.4, KZ1 = -7.6, KM = -14;
+    const k = function (id, kd, x0, x1, y, h, o) { R.push(room(id, kd, x0, x1, KZ0, KZ1, y, h, o)); };
+    const kz = function (id, kd, z0, z1, y, h, o) { R.push(room(id, kd, KX0, KX1, z0, z1, y, h, o)); };
+    /* the keep: the armoury (its way in the stair from the guard hall), the guard hall of the duty officers (the outside
+       stair's door; the bridge from the residence), intelligence and the cipher room (no windows), the war room, the rocket
+       corps' command and the signals room, the map store, the signal loft in the jettied storey */
+    k('armoury', 'armoury', KX0, KX1, 1.4, 3.5);
+    k('duty', 'guard', KX0, KX1, 5.2, 3.5);
+    k('cipher', 'signals', KX0, KM, 9.0, 3.3); k('intelligence', 'study', KM, KX1, 9.0, 3.3);
+    k('war_room', 'war_room', KX0, KX1, 12.6, 3.7, { wealth: 0.85, fixtures: [   /* the map table: the builder's (78 hnMapTable; no catalog piece) */
+      { id: 'map_table', kind: 'table', x: -17.4, z: -15.2, w: 3.6, d: 2.2, h: 1, reach: false, clearance: { front: 0.8, back: 0.8, left: 0.8, right: 0.8 } }] });
+    k('rocket_command', 'war_room', KX0, KM, 16.6, 3.7); k('signals', 'signals', KM, KX1, 16.6, 3.7);
+    k('map_store', 'library', KX0, KX1, 20.6, 3.1);
+    k('signal_loft', 'signals', KX0, KX1, 24.8, 3.1);
+    /* the bridge: a covered timber gallery from the keep's guard hall to the First Citizen's study, over the bailey */
+    R.push(room('bridge', 'lobby', -7, 3, -19.6, -17.4, 5.1, 2.7));
+    /* the First Citizen's residence (the commandant's palace: 24 x 10 m, the stair tower at its east end left solid): the
+       entrance hall and its stair, the Hall of Envoys (the audience room), the state dining room, the household's kitchen;
+       above, the First Citizen's study, the family's hearth room, the landing, the bedchamber */
+    const P0 = 3.4, P1 = 23.6, PZ0 = -25.6, PZ1 = -16.4;
+    const p = function (id, kd, x0, x1, y, h, o) { R.push(room(id, kd, x0, x1, PZ0, PZ1, y, h, o)); };
+    p('kitchen', 'kitchen', P0, 8, 1, 3.75); p('state_dining', 'hall', 8, 13, 1, 3.75, { wealth: 0.85 });
+    p('entrance', 'lobby', 13, 17.5, 1, 3.75); p('audience', 'audience', 17.5, P1, 1, 3.75, { wealth: 0.9 });
+    p('study', 'study', P0, 8.5, 5, 3.1, { wealth: 0.9 }); p('family', 'living', 8.5, 13, 5, 3.1, { wealth: 0.85 });
+    p('landing', 'lobby', 13, 17.5, 5, 3.1); p('bedchamber', 'bedroom', 17.5, P1, 5, 3.1, { wealth: 0.9 });
+    /* the magazine in the north-west tower, the gaol in the north-east: each opens on the bailey */
+    R.push(room('magazine', 'magazine', -40.4, -31.6, -36.4, -27.6, 1.32, 5.3));
+    R.push(room('gaol', 'guard', 31.6, 40.4, -31, -27.6, 1.32, 3));
+    [[31.6, 34.6], [34.6, 37.4], [37.4, 40.4]].forEach(function (c, i) { R.push(room('cell_' + (i + 1), 'cell', c[0], c[1], -36.4, -31, 1.32, 3)); });
+    /* the doors */
+    link(R, 'duty', 'street', [-10.4, -7.6], 1.4, { h: 2.4, drawn: true });
+    link(R, 'duty', 'bridge', [-7.2, -18.5], 1.2, { h: 2.3 }); link(R, 'bridge', 'study', [3.2, -18.5], 1.2, { h: 2.3 });
+    link(R, 'intelligence', 'cipher', [KM, -17.5], 1); link(R, 'rocket_command', 'signals', [KM, -17.5], 1);
+    link(R, 'entrance', 'street', [15, -16.4], 1.6, { h: 2.6, drawn: true });
+    link(R, 'entrance', 'state_dining', [13, -24.4], 1.4);   /* north of the stair's foot: the flight runs along this wall */ link(R, 'state_dining', 'kitchen', [8, -21], 1.2); link(R, 'entrance', 'audience', [17.5, -21], 1.8);
+    link(R, 'landing', 'family', [13, -24.4], 1.2); link(R, 'family', 'study', [8.5, -21], 1.2); link(R, 'landing', 'bedchamber', [17.5, -21], 1.2);
+    link(R, 'magazine', 'street', [-32.5, -27.2], 1.4, { h: 2.2 }); link(R, 'gaol', 'street', [32.5, -27.2], 1.2, { h: 2.2 });
+    [33.2, 36, 38.8].forEach(function (x, i) { link(R, 'gaol', 'cell_' + (i + 1), [x, -31], 0.8, { h: 2 }); });
+    /* the stairs: up the keep in a turn of straight flights against its walls, the palace's in its entrance hall. A flight
+       stays inside the room its head reaches on a split storey (keep_1 rises in intelligence, keep_3 in signals, each along the
+       partition, north to south, the partition's door south of its head): one that ran under the cipher room's or the
+       command's partition had a wall at head height (the reachability audit, 2026-11-09), and a head that ended at the
+       partition left its room's placer no floor to step off onto */
+    const ST = [{ id: 'keep_0', a: [-19.75, -9, 1.4], b: [-19.75, -14.6, 5.2], w: 1.1 }, { id: 'keep_1', a: [-13.2, -9, 5.2], b: [-13.2, -14.6, 9], w: 1.1 },
+      { id: 'keep_2', a: [-8.25, -19, 9], b: [-8.25, -13.4, 12.6], w: 1.1 }, { id: 'keep_3', a: [-13.2, -9, 12.6], b: [-13.2, -14.6, 16.6], w: 1.1 },
+      { id: 'keep_4', a: [-19.75, -9.5, 16.6], b: [-19.75, -15.5, 20.6], w: 1.1 }, { id: 'keep_5', a: [-18.5, -19.75, 20.6], b: [-12.5, -19.75, 24.8], w: 1.1 },
+      { id: 'residence', a: [13.95, -16.9, 1], b: [13.95, -22.7, 5], w: 1.1 }];
+    stairFixtures(R, ST);   /* each flight a way in: in the room it starts from and in the room its head reaches */
+    add({ key: 'hl_rep_fortress', name: 'Fortress', culture: 'republican', wealth: CIVIC, types: ['military'], residence: true, units: 1, lot: [86, 78],
+      shells: [{ id: 'keep', at: [-14, -14], w: 14, d: 14, y0: 1.4, h: 22.6, t: 0.6 }, { id: 'loft', at: [-14, -14], w: 14.6, d: 15.5, y0: 24.8, h: 3.4, t: 0.3, floor: false },
+        { id: 'palace', at: [15, -21], w: 24, d: 10, y0: 1, h: 7.3, t: 0.4 }, { id: 'bridge', at: [-2, -18.5], w: 10, d: 2.6, y0: 5, h: 3, t: 0.15, floor: false },
+        { id: 'magazine', at: [-36, -32], w: 10, d: 10, y0: 1.32, h: 5.82, t: 0.6 }, { id: 'gaol', at: [36, -32], w: 10, d: 10, y0: 1.32, h: 5.82, t: 0.6 }],
+      stairs: ST, rooms: R,
+      bodies: [{ id: 'barracks', poly: rect(9, 24, -26, 10), y: 0.6, levels: [{ h: 3 }, { h: 2.8 }], wall: 0.35, roof: 'gable', pitch: pt(1.1),
+        doors: [{ at: [-21.5, 10.5], w: 1.3 }], program: [['guard', 'hall', 'kitchen', 'store'], ['barracks', 'barracks', 'barracks']] }],
+      note: 'the headquarters and the First Citizen\'s house on their blueprint (kits/highlands/fortress/BLUEPRINT.md): the keep\'s seven storeys, the residence, the bridge between them, the barracks, the magazine and the gaol in the back towers; the front towers, the gatehouse\'s chamber, the hoarded wall-walk and the open stables are left out' });
+  })();
   add({ key: 'hl_rep_wall', name: 'Town wall', types: ['military', 'infrastructure'], lot: [40, 8],
     skip: 'a curtain wall with a roofed wall-walk: no room' });
   add({ key: 'hl_rep_wall_tower', name: 'Wall tower', culture: 'republican', wealth: CIVIC, types: ['military', 'infrastructure'], lot: [20, 12],

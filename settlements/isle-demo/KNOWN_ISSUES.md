@@ -1,5 +1,21 @@
 # settlements/isle-demo: known issues (the site planner)
 
+## Doors (core/door, 2026-11-09)
+
+- [x] **The city page hosted no doors, and every Vernacular piece left its doors in KDOOR at the origin.** `IZV.proto(key, v,
+      w, {doors:true})` (`bundles.py`) now takes a piece's door records back out of KDOOR as templates in its frame and leaves
+      its leaves out of the bake; `src/63-isle-doors.js` registers each near lot's doors in the world ('<lot id>.d<n>', kept
+      when the lot leaves the near set), draws the leaves as `KDOORLEAF` meshes posed by `KDOORHOST.instanced`, ticks them
+      from 98's loop and gives E at the view's target. `verify.py --assert` `doors-hosted` on Kautoa: 53 doors on 37 lots,
+      every one on its lot, ids stable on a redraw, a locked one held; the negative (records in the piece's frame) caught.
+- [ ] **Every hosted door is locked.** The pieces are built with solid bodies (no interiors on this page), and the
+      Vernacular locks a door it draws on a solid body, so E finds nothing to open. Hollow bodies (`IZV.VERN.interiors`, as
+      Verge) would unlock them but change every piece's look and cost.
+- [ ] **No walk blocks**: the page has no core/walk (the camera orbits; nobody walks), so `KDOOR.walk` is not called.
+- [ ] **The open world's hamlets** (`openworld/isle-demo`, 88h, the same 58 protos) still bake their Vernacular leaves shut:
+      their IZV.proto takes no `doors` option. The Islanders' and the Beast Riders' pieces keep their own doors.
+- [ ] **The export does not carry the doors** (`KDOOR.export()` is not a section of the page's core/export yet).
+
 - [x] **After merging main (2026-10-20): the Vernacular's workshop failed to build** (`vnPlate is not defined`): Iziz added
       `69e5-iziz-openings.js` (real doors and glass: vnPlate, vnHole, IZDOOR), which the vernacular fragments call, and
       `bundles.py izv_files` did not take it. It does now. `settlements/verge/build.py izv_files` has the same gap (its

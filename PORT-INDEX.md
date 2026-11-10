@@ -35,6 +35,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`kits/ash-nomads`](kits/ash-nomads/PORT.md) | 14 | 99 | 34 | 0 | 0 | 1 | 64 | 0 | atmos |  | yes |
 | [`kits/beast-riders`](kits/beast-riders/PORT.md) | 18 | 444 | 15 | 0 | 0 | 11 | 418 | 3 |  |  | yes |
 | [`kits/catalog`](kits/catalog/PORT.md) | 45 | 2160 | 31 | 0 | 0 | 25 | 2104 | 3 | atmos |  | yes |
+| [`kits/construction`](kits/construction/PORT.md) | 5 | 34 | 0 | 0 | 0 | 20 | 14 | 0 | atmos | yes | yes |
 | [`kits/crops`](kits/crops/PORT.md) | 7 | 63 | 56 | 0 | 0 | 7 | 0 | 0 |  | yes | yes |
 | [`kits/desert-nomads`](kits/desert-nomads/PORT.md) | 15 | 93 | 36 | 0 | 0 | 1 | 56 | 0 | atmos |  | yes |
 | [`kits/eternian`](kits/eternian/PORT.md) | 32 | 219 | 31 | 0 | 0 | 1 | 187 | 1 | atmos |  | yes |

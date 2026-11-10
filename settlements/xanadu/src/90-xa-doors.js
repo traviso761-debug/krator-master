@@ -15,3 +15,6 @@ function xaDoorsBind(){const M=Object.assign({},KIT.meshes),W=window._doors;
  return W.doors;}
 xaDoorsBind();
 FRAME_HOOKS.push(dt=>KDOORHOST.tick(dt));
+// with the interiors on (89y-xa-interiors.js), the doors' walk blocks once the world is built: here for the kit's sheet; Erewhon
+// calls it after its last chunk (90b-er-build.js)
+if(!window.CITY&&typeof xaIxWalk==='function')xaIxWalk();

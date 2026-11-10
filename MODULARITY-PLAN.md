@@ -58,6 +58,12 @@ No kit reads a settlement. No core module reads a kit or settlement (`tools/chec
 6. **Backwards edges to fix:** `kits/beast-riders -> settlements/isle-demo`, `kits/ringsea -> settlements/reedlake`,
    `kits/post-apoc <-> core/sockets`, `core/materials -> biomes/sedesert, kits/ancients, kits/ringsea` (the
    vendored-drift notes in `core/README.md`), `biomes/ringisles` and `biomes/dambasins -> settlements/*`.
+   **Added 2026-11-09 (allow-listed, to fix):** `kits/construction -> settlements/isle-demo, settlements/iziz,
+   settlements/xanadu`. The Construction kit's sheet draws three cultures' houses going up, and the only sealed bundles of
+   the Islanders kit and the Iziz Vernacular (ISK, IZV) and the kit-piece flattener (`isleFlatten`) live in the isle demo
+   (`bundles.py`, `src/58-isle-protos.js`), IZV takes Iziz's `88y-iziz-matlib.js`, and the Iziz and Xanadu texture packs are
+   still the settlements' `tex/`. The fix: `isleFlatten` to core/city beside `constructMesh`, the ISK and IZV seals to
+   `kits/islanders` and `kits/iziz-vernacular`, the packs to the kits (`kits/construction/KNOWN_ISSUES.md`).
 
 ## Plan, in order (each step is its own commit and leaves every hash baseline unchanged unless stated)
 
@@ -162,7 +168,8 @@ No kit reads a settlement. No core module reads a kit or settlement (`tools/chec
   now collide with their buildings (the step's ride-along, half done: Scyvoi, the nomads and Resources do not take
   `core/walk`). `verify.py --assert`: Eternian and Scyvoi pass; Yeti fails only `tags-vocabulary` (`khaayken`, its
   KNOWN_ISSUES.md; it fails the same before).
-- **Not yet on it:** `kits/zeijani` (its own fork: most files differ, its `92-camera.js` is the controls' reference) and
+- **Not yet on it:** `kits/zeijani` (its own fork: most files differ; its `92-camera.js`, the controls' reference, was retired
+  for core/host on 2026-10-18, `kits/zeijani/README.md` "The engine", status 2026-11-09) and
   `settlements/noahs-regret` (its own fork of everything but `30-geo.js`). Each is a port with its own fingerprint.
 - **Open, the owner's:** `core/engine/10-core.js` writes its own mulberry32, a `Math.sin` hash and a value noise (the
   check no longer counts them: it reads builds, not core; 18 baseline entries moved with the file). Yeti's `10-core.js`
@@ -245,8 +252,7 @@ leaves each settlement folder as its layout and page, building as it does today 
   from the kit, and Highlands', Dalab's and Ys's `--vendor-check` compares their copies with it (Highlands identical; Dalab's
   and Ys's drift as it did against Iziz). Proof: Iziz's seven pages, Pylon's and Talia's, 32 outputs in all, byte-identical
   to the build before; Verge's page and both `IZV` bundles differ only in the moved files' path labels. Next for the kit:
-  a `build.py` of its own (its sheet, from Iziz's `vernacular` target: it runs on Iziz's page shell, so the kit would read the
-  settlement as Pylon and Talia do; it waits for that shell to be core's), and `88y-iziz-matlib` with the matlib item.
+  ~~a `build.py` of its own~~ (done 2026-11-09 on a core shell, see the kits' own sheets under (4b)), and `88y-iziz-matlib` with the matlib item.
   **One bundle list, done 2026-11-03:** `vernacular.py bundle_files()` (the Ancients core from `kits/ancients` and
   `core/materials`, the foundation, every building fragment); Verge and the isle demo take it, plus the funicular and `88y`
   respectively. The isle demo's bundle changes only in nine core labels; Verge's gains the five building fragments it lacked
@@ -299,6 +305,39 @@ leaves each settlement folder as its layout and page, building as it does today 
     shack's frame and height, the mat rack). Their working doors come with core/door's pass.
   - Left:
     Verge's `YKIT` reading Locus's world core (`10-core`, `50-structure`), which goes when Verge is rebuilt on the open world.
+  - **The three kits' own sheets, done 2026-11-09:** `kits/yuni/dist/yuni.html`, `kits/locus/dist/locus.html` and
+    `kits/eastern-abyssal/dist/eastern-abyssal.html`, each with its `build.py` and `verify.py --assert` (every asset and variant
+    builds and is registered, the core/tags vocabulary, the doors as KDOOR records, the library textures, the engine read in
+    place). The split: the engine is read in place from the world whose fork the kit was written on (Yuni's `settlements/yuni/src`
+    for kits/yuni; Locus's `settlements/locus/src`, with its `66-locus-furnish` and `95-locus-doors`, for the other two), never
+    copied; the page shell is core's (core/host, core/walk, core/door, core/atmos/placeholder, core/tags, core/rand,
+    core/materials/record, core/furnish on Locus's fork); the sheet's own layout, labels, emit and take are one shell for the three,
+    `kits/yuni/targets/sheet` (`kits/yuni/sheetbuild.py`, `sheetverify.py`). The library packs are the towns' (their palettes own
+    the families), read in place. Where it is not clean (each kit's README, "Its own sheet"): Yuni's `50-structure.js` reads
+    `BRIDGES` at load (the sheet gives the empty list); Yuni's doors are bound in the city's `76-doors.js` with its interiors
+    planner, so the shell binds them itself and the Yuni sheet has no interiors; Locus's fork registers buildings with no types
+    (the sheet copies the assets'), and the kits' cultures `abyssal-desert` and `geomancer` are not in core/tags' vocabulary (an
+    owner's decision, KNOWN_ISSUES.md). The towns' sheet targets (`yuni-assets.html`, `locus-kit.html`, `abyss-kit.html`) still
+    build, and Yuni's, Locus's, Mungo's and Verge's 30 outputs are byte-identical to the build before. The reads of the engine in place are the
+    three backwards edges `tools/dep_allowlist.json` lists for this step (`kits/yuni -> settlements/yuni`, `kits/locus` and
+    `kits/eastern-abyssal -> settlements/locus`); they go when the engine has a home outside the towns.
+  - **The Vernacular-contract kits' own sheets, done 2026-11-09:** `kits/iziz-vernacular/dist/iziz-vernacular.html`,
+    `kits/highlands/dist/highlands.html` and `kits/xanadu/dist/xanadu.html`, each with its `build.py` (`tools/build_sources.py`
+    `report()`; `python3 tools/build.py kits/<kit>`) and `verify.py --assert` on `tools/harness.py` (every def placed, built and
+    registered, no empty volume, no NaN, the core/tags vocabulary, the doors as KDOOR records with core/walk blocks, the kit's
+    library pack, the Voth census: the Vernacular's table in the page, Highlands' and Xanadu's through `tools/check_trades.py`).
+    One sheet for the three, `kits/iziz-vernacular/sheet.py` and `sheet_verify.py`: the shell in `src/*-vsheet-*`, the Ancients
+    core read in place from `kits/ancients/src`, core/rand, core/tags, core/walk, core/door (and its host), core/host,
+    core/atmos/placeholder, core/materials; each kit's rows, library bind and tags in its `targets/sheet/`, its own pack
+    (`materials.json` -> `tex/`). No settlement is read. The bodies are solid and every door locked; a `?interiors=1` mode goes in
+    each kit's `targets/sheet/` when the kits' interiors land (the hook is there: KDOOR records, core/walk, core/door's host,
+    `KDOOR.clearDoorways`; the `doors` assert then relaxes to "locked unless a room is behind it"). The settlements' own sheet
+    targets (Iziz's `vernacular`, Highlands' `highlands`, Xanadu's `xanadu`) stay. All six kit sheets (with Yuni's, Locus's and
+    the Eastern Abyssal's) pass `--assert` headless on SwiftShader and `tools/check_core_use.py`. The settlements read none of the
+    sheets' files (their `build-inputs.json`; Verge, which lists the Vernacular's `src/`, rebuilds byte-identical with the
+    `*-vsheet-*` files moved away). Their pages do differ from `PORT-BASELINE.json`, from core changes merged since the
+    baseline (core/door, core/furnish, core/host's probe, the Vernacular's `69e5`, the biome packs), not from this step: the
+    baseline waits for the all-builds rebuild.
 - Keep out of `core/city/` and Voth's layout fragments (`15`, `30` to `35`); the city-layout work owns those.
 - Done when: no settlement holds another culture's building code, and the settlement -> settlement edges in `DEPS.json`
   are only content links (lore, the isle demo's two towns).
@@ -385,11 +424,12 @@ rebuild once, rewrite the baseline once; then take the item out of `TODO.md` in 
 **With the next all-builds rebuild** (they were step 1's; step 1 moved no byte, so it brought no rebuild: the first of
 steps 2 and 3 to move pages takes them, with the stale pages above). `TODO.md`, "Ride along with the next all-builds rebuild":
 - ~~The probes read a merged mesh's own sample points; a broad phase for `regOccupancy` on `core/space`; guard the
-  camera's pointer capture.~~ **Done on the biome rebuild** (9e86c8dad). When it lands: check the Iziz palace page's
-  own guard (`settlements/iziz/targets/palace/95q-palace-cutlabels.js`) came out, and take the three out of `TODO.md`.
+  camera's pointer capture.~~ **Done on the biome rebuild** (9e86c8dad), and in `main`: core/host's probe has the sample points
+  and the KSPACE broad phase, its camera the guarded capture; the Iziz palace page's own guard is gone and `TODO.md` has no entries
+  for them (checked 2026-11-09).
 - ~~The culture symbols: `kits/catalog` reads `core/sockets/38-symbols.js` by path and its copy goes.~~ Done in step 3
   (3d39ba47); the bundled pages take the new symbols in the rebuild (`TODO.md`'s first ride-along).
-- `core/hamlet/20-hamlet-cultures.js`: reword the `xanadu` row's comment (the kit has pens, corral and dairy now).
+- ~~`core/hamlet/20-hamlet-cultures.js`: reword the `xanadu` row's comment (the kit has pens, corral and dairy now).~~ Done (9445d626).
 - ROADMAP.md stage 3, "the sky preset moves to `core/atmos`": the kits' half is step 1 (done, as a placeholder); the
   settlements' half is SKY-PLAN's S5 and step 4.
 
@@ -415,7 +455,8 @@ core module", "Real doors and glass across the kits", and "Doors that open" (Vie
 **With step 2 (`core/engine`).** Half of the first is done (the host gets `KWALK` where the page takes `core/walk`); the
 rest waits for Zeijani's port onto the engine, whose controls are the reference.
 - One walk mode and one set of controls in every viewer (`TODO.md`, Viewers): the engine takes `core/host` and
-  `core/walk` and carries no camera of its own (`kits/zeijani/src/92-camera.js` is the reference for the controls).
+  `core/walk` and carries no camera of its own (`kits/zeijani/src/92-camera.js` was the reference for the controls; core/host's
+  `90-host-camera.js` carries them since 2026-10-18).
   GODOT-PLAN.md counts `camera.js` copied in 16 builds, `probe.js` in 15, `stats.js` in 10.
 - Interiors in every building kit that has them, with a cut-away (`TODO.md`, Viewers): done once in `core/engine`
   through `kits/interiors` and `core/furnish`, not once per kit.
@@ -424,7 +465,10 @@ rest waits for Zeijani's port onto the engine, whose controls are the reference.
 
 **With step 4 (the settlement chains).**
 - ~~`useGroupXF` (Iziz's `69c`) into `kits/ancients`' `50-registry.js`~~: done (it is in `50-registry.js`; checked 2026-11-03).
-- Ys reads the Ancients chain by path instead of its pre-69e5 copies of `70` and `71` (`TODO.md`, Port: next, item 6).
+- ~~Ys reads the Ancients chain by path instead of its pre-69e5 copies of `70` and `71` (`TODO.md`, Port: next, item 6).~~
+  **Done 2026-11-09:** every vendored fragment but the 18 adapted copies is read in place (`settlements/ys/build.py` `INPLACE`;
+  51 src/ copies gone), with the Vernacular's `69e5`, the Highlands kit's `71c` and `core/door` (10, 20, 30) on the city page;
+  `settlements/voth/foreign.py` reads Ys's Treasury files where Ys does (`settlements/ys/KNOWN_ISSUES.md`).
 - ~~The open baseline rewrite from the Ancients re-vendor session~~: done (the five pages' entries match the committed
   pages; checked 2026-11-03).
 - The chain's re-vendors since that session, done 2026-11-03: Xanadu's `69-mat-salvage.js` and Reed Lake's `69-mat-salvage.js`,
@@ -436,9 +480,12 @@ rest waits for Zeijani's port onto the engine, whose controls are the reference.
   hyperjungle and nwbay fauna copies (GODOT-PLAN.md, the fauna note).
   **Iziz done 2026-11-03:** its twelve copies were the biome closure-wrapped by `bio_wrap` and matched upstream, so the
   city wraps the biome as it reads it and the copies are gone (`iziz.html`, sidecars and manifest byte-identical; Iziz's
-  two vendored pairs off the allow-list). **Dalab, Shade and Ys left:** their copies drift from `core/biome` and their
-  biomes (Dalab: the core's four and swlowlands' five; Shade: nine; Ys: its nwbay copies among others), so reading in
-  place changes their pages: each is a re-vendor to read diff by diff, with `verify.py --assert` and a screenshot.
+  two vendored pairs off the allow-list). ~~**Dalab, Shade and Ys left**~~: **done 2026-11-03** (each build's KNOWN_ISSUES.md: Dalab
+  reads core/biome's four and swlowlands' five in place, Shade sedesert's and core/biome's, Ys core/biome's and nwbay's; no
+  biome copy is left in any src/, and no biome pair is on the allow-list). Their pages were rebuilt and checked again on
+  2026-11-10 (`verify.py --assert` on SwiftShader, one screenshot each; the results in their KNOWN_ISSUES.md): Shade OK; Ys OK
+  once its in-place biome took the core/biome fragments nwbay needs (31j-35: the city page had thrown in the bay's fauna since
+  the read in place); Dalab's set OK, its city failing only the newer `instance-cap` rule (swlowlands' glossy crowns, open).
 
 **With step 5 (backwards edges).** Nothing parked beyond the plan's own list.
 

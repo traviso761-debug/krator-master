@@ -121,7 +121,7 @@ for f in CORE_WATER:
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','water',f))
 # the planned biomes' water kinds (ext/54: the seep dams and karst springs at the seeps) and the confluences (ext/55: where the side
 # canyon's stream meets the creek), by path (2026-10-27, the final rebuild; BACKPORT.md's row)
-for f in ['54-core-water-kinds-ext.js','54b-core-water-kinds-ext-draw.js','55-core-water-confluence.js','55b-core-water-confluence-draw.js','57-core-water-audit.js']:
+for f in ['54-core-water-kinds-ext.js','54b-core-water-kinds-ext-draw.js','55-core-water-confluence.js','55b-core-water-confluence-draw.js','56-core-water-breakup.js','57-core-water-audit.js']:
     PATH.setdefault(f,os.path.normpath(os.path.join(HERE,'..','..','core','water','ext',f)))
 CORE_ATMOS=['89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-4-weather.js','89-atmos-8-export.js','89-atmos-9-host.js','89-atmos-a-waves.js','89-atmos-b-skylight.js']   # 4, 9: the weather and its selector (2026-10-26)
 for f in CORE_ATMOS:
@@ -135,7 +135,7 @@ for f in ('89-atmos-2-lights.js','89-atmos-3-particles.js'):
 # the probe. src/99-host-take.js hands it the page (KHOST.take). A local src/ copy with the same name wins (KNOWN_ISSUES.md).
 sys.path.insert(0,os.path.normpath(os.path.join(HERE,'..','..','core','host')))
 import host as khost
-CORE_HOST=khost.FULL   # the whole interface (core/host/README.md): the record-driven inspector, marks (which supersede the polygon tool), pictures, the minimap, the editor, the cutaway
+CORE_HOST=khost.FULL+khost.KEYS   # KEYS: the one key map and the one walk mode (core/host/92k-host-keys.js); the whole interface (core/host/README.md): the record-driven inspector, marks (which supersede the polygon tool), pictures, the minimap, the editor, the cutaway
 khost.resolve(PATH,CORE_HOST)
 # the shared sky (core/atmos/SKY-PLAN.md section 9, 2026-10-26): core/atmos's core where the kit had none, the sky's model,
 # presets and shader, its host and the biome call (src/89-host-sky.js: ATMOS.skyBiome); they replace the painted dome

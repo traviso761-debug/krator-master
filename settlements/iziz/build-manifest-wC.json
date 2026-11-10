@@ -1,6 +1,6 @@
 {
  "00-head.html": "f0c5179c44c7",
- "06-core-khook.js": "4086274abd11",
+ "06-core-khook.js": "e6a2382acc0b",
  "06b-core-kcolor.js": "839444135298",
  "08-core-rand.js": "4a3aa47f25da",
  "09-lod.js": "e1f7db612b83",
@@ -101,11 +101,12 @@
  "91z-views.js": "61c9e129258b",
  "92-camera.js": "d8769bbb304e",
  "92-host-panel.js": "8066aefad370",
+ "92k-host-keys.js": "95f7538e4448",
  "93-host-inspect.js": "30374027dc5d",
  "93-host-stocks.js": "27dd6b526848",
  "93-labels.js": "d78e5d807c2d",
  "94-host-marks.js": "66fcb2bedaf5",
- "95-host-probe.js": "111c9ae5768a",
+ "95-host-probe.js": "4abec5c5a961",
  "95i-iziz-interiors.js": "b2044a0dd6f1",
  "95j-iziz-doors.js": "7c4c3c709f4c",
  "96-host-pictures.js": "1c6b36cc7ca2",
@@ -113,6 +114,6 @@
  "97-lod-auto.js": "88ec9e581127",
  "98-host-edit.js": "66535c6a9cdd",
  "99-host-cutaway.js": "5fc10889d24e",
- "99-start.js": "2458c9668f37",
+ "99-start.js": "86214a1ea8b8",
  "99-tail.html": "d3aaf402992e"
 }

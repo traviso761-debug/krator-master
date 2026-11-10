@@ -1,6 +1,6 @@
 {
  "build": "xanadu",
- "note": "xanadu's adapter onto the material library (core/materials/PLAN.md). The vernacular MAT keys (69b-vern-mat.js, shared with Iziz) take Iziz's rows: wood, woodV, stone, plaster, thatch, shingle and the awning cloth, bound in place by src/88y-xanadu-matlib.js (KMAT.bindMat). The build's own families are not wired yet. Run python3 tools/textures/pack.py settlements/xanadu after any change, then python3 build.py; ?mat=proc shows the procedural look. The shared Ancients MAT (white panels, rust, verdigris, board concrete, brick, salvage corrugate/timber/tarp, talus, worn panels) takes library sets too (2026-10-06): KMAT.bindMat with KMAT.ANCIENT_TILES keeps each procedural map's feature size; means and metalness measured from the procedural maps; rust, verdigris, brick, timber and the worn panels keep their own colour. verdigris keeps 60 % of its own colour. rust stays procedural: the Ancients meshes stretch their UVs along beams and tanks, and every library rust (plate, scan) smeared into stripes there, where the procedural noise was made for it. Xanadu's own families (2026-10-06, late): rammed earth (xEarth), whitewash (xWash), the glazed tiles (xTiles: grey, so the turquoise and lapis instance tints carry), fieldstone (xRubble) and the valley rock (xRock), at the measured means (and, where the map is warm, colours) of their procedural maps. The twig band (xPenbey), the mosaics and garden tiles (colour-carrying), the jali and valance cut-outs and the palace motifs stay procedural: patterns/xanadu/* are painted on a sky-blue ground, while the motifs are alpha cut-outs on the wall. (2026-10-06, late) xEarth now earth.rammed (lifts, in place of earth.adobe), xPenbey band.xanadu.twig, xBTile (the grand bath) tile.bath.lens in full colour. The ice of the Caves of Ice (icewall, icefloor; ice.clear, ice.glacier) is bound by the cave itself (xaTexMaps, 87c), not onto MAT (round 9c).",
+ "note": "xanadu's adapter onto the material library (core/materials/PLAN.md). The vernacular MAT keys (69b-vern-mat.js, shared with Iziz) take Iziz's rows: wood, woodV, stone, plaster, thatch, shingle and the awning cloth, bound in place by src/88y-xanadu-matlib.js (KMAT.bindMat). The build's own families are not wired yet. Run python3 tools/textures/pack.py settlements/xanadu after any change, then python3 build.py; ?mat=proc shows the procedural look. The shared Ancients MAT (white panels, rust, verdigris, board concrete, brick, salvage corrugate/timber/tarp, talus, worn panels) takes library sets too (2026-10-06): KMAT.bindMat with KMAT.ANCIENT_TILES keeps each procedural map's feature size; means and metalness measured from the procedural maps; rust, verdigris, brick, timber and the worn panels keep their own colour. verdigris keeps 60 % of its own colour. rust stays procedural: the Ancients meshes stretch their UVs along beams and tanks, and every library rust (plate, scan) smeared into stripes there, where the procedural noise was made for it. Xanadu's own families (2026-10-06, late): rammed earth (xEarth), whitewash (xWash), the glazed tiles (xTiles: grey, so the turquoise and lapis instance tints carry), fieldstone (xRubble) and the valley rock (xRock), at the measured means (and, where the map is warm, colours) of their procedural maps. The twig band (xPenbey), the mosaics and garden tiles (colour-carrying), the jali and valance cut-outs and the palace motifs stay procedural: patterns/xanadu/* are painted on a sky-blue ground, while the motifs are alpha cut-outs on the wall. (2026-10-06, late) xEarth now earth.rammed (lifts, in place of earth.adobe), xPenbey band.xanadu.twig, xBTile (the grand bath) tile.bath.lens in full colour. The ice of the Caves of Ice (icewall, icefloor; ice.clear, ice.glacier) is bound by the cave itself (xaTexMaps, 87c), not onto MAT (round 9c). (2026-11-09) xMarble (rock.marble012, the colour map only) is the vein map of the Pleasure Dome's black-and-white pattern system (kits/xanadu/src/78b-xa-pattern.js reads it through KMAT.packed, not KMAT.bindMat: the two stones are made from it in the shader); a polished nero and a statuario are owed (core/materials/PROMPTS-NEEDED.md). (2026-11-10) xMarbleB (stone.marble.black), xMarbleW (stone.marble.calacatta) and xOpArt (patterns/xanadu/op-art-arcs) are the Pleasure Domes' owed sets (core/materials/PROMPTS-NEEDED.md section 41), optional until delivered: 78b's xpLib takes the two marbles in place of xMarble's lift and inversion as soon as both are packed; the op-art sheet is not read yet (the wallcovering is the shader's).",
  "size": 512,
  "families": {
   "wood": {
@@ -566,6 +566,216 @@
    },
    "metal": 0,
    "normalScale": 0.5
+  },
+  "xZel": {
+   "lib": "patterns/common/zellige-rosette-colour",
+   "owed": "patterns/xanadu/zellige-star",
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.5
+  },
+  "xHaft": {
+   "lib": "patterns/common/mosaic-arabesque-lapis",
+   "owed": "patterns/xanadu/haft-rangi",
+   "scale": [
+    1.2,
+    0.8
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.5
+  },
+  "xGiltC": {
+   "lib": "patterns/common/mosaic-star-lapis",
+   "owed": "patterns/xanadu/mughal-gilt-ceiling",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0.15,
+   "normalScale": 0.5
+  },
+  "xYes": {
+   "lib": "plaster.patterned_clay_plaster",
+   "owed": "stone.stucco.yeseria",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.72
+   },
+   "metal": 0,
+   "normalScale": 0.9
+  },
+  "xMuqT": {
+   "lib": "patterns/common/zellige-lotus-teal",
+   "owed": "tile.muqarnas.turquoise",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.5
+  },
+  "xBandR": {
+   "lib": "patterns/common/kilim-banded-brown",
+   "owed": "patterns/xanadu/peacock-band",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.5
+  },
+  "xPietra": {
+   "lib": "patterns/court/opus-sectile",
+   "owed": "stone.pietra-dura",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.5
+  },
+  "xSandR": {
+   "lib": "rock.sandstone.red",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.7
+  },
+  "xMarW": {
+   "lib": "rock.marble.white",
+   "owed": "stone.marble.calacatta",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.4
+  },
+  "xMarK": {
+   "lib": "rock.marble012",
+   "owed": "stone.marble.black",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.16
+   },
+   "metal": 0,
+   "normalScale": 0.4
+  },
+  "xJaliC": {
+   "lib": "patterns/xanadu/jali",
+   "owed": "patterns/xanadu/jali",
+   "optional": true,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.5
+  },
+  "xMarble": {
+   "lib": "rock.marble012",
+   "scale": [
+    3.2,
+    3.2
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.6,
+    "contrast": 1.7
+   },
+   "metal": 0,
+   "mapOnly": true
+  },
+  "xMarbleB": {
+   "lib": "stone.marble.black",
+   "scale": [
+    3.2,
+    3.2
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "mapOnly": true,
+   "optional": true
+  },
+  "xMarbleW": {
+   "lib": "stone.marble.calacatta",
+   "scale": [
+    3.2,
+    3.2
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "mapOnly": true,
+   "optional": true
+  },
+  "xOpArt": {
+   "lib": "patterns/xanadu/op-art-arcs",
+   "scale": [
+    2.2,
+    2.2
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "mapOnly": true,
+   "optional": true
   }
  }
 }

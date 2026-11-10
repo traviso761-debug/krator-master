@@ -26,8 +26,11 @@
 - [ ] The Baelu's cells have no interiors yet (the kits/interiors planner could take a Baelu set: stables, stores, cells, the
       gatehouse): their doors are locked core/door leaves and their slit windows glass over the room card (2026-11-03; they
       were dark panels). Planned, the doors unlock (`svDoorway` hollow) and the slits can be cut.
-- [ ] Door leaves are plain boxes (core/engine/36o-open.js): the ger's brass bands and the vardo's glazed tops and scrolls,
-      drawn on the old fixed leaves, are not carried on the moving ones. Shadows of an opening leaf follow it; a leaf in a cut
+- [x] (2026-11-09) Door leaves were plain boxes: the ger's brass bands and the vardo's scrolls were lost on the moving leaves. They
+      wear core/door's hardware styles now (`30-core-door-leaf.js`): the ger `banded` (panels under three studded brass bands, a
+      ring pull; `40-tk-tentkit.js`, re-vendored to ash-nomads and desert-nomads), the vardo `scrolled` (half-glazed, gilt scrolls
+      and a knob; `58v-cv-vardo.js`), the metal a third instanced part posed with the leaf (core/engine 36o-open.js, `hwCol`).
+- [ ] Shadows of an opening leaf follow it; a leaf in a cut
       tent hides with the near half.
 - [ ] Shadows ignore the cut-away (the cut tents stop casting while it is on, so the interiors are lit by the sky).
 - [x] The salamanders moved to `kits/fauna` (2026-10-06), with the goats: parts turn there (legs, head, tail; idle, graze, walk,

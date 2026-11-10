@@ -113,12 +113,12 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
 // ---------------------------------------------------------------- the page, handed to the host
 window._registered=REG.length;
 KHOST.on(SKY.view,'view');   /* the shared sky, its lights and fog at the hour (89-host-sky.js) */
-KHOST.take({build:'guilin',title:'Krator biome — Guilin, the South China karst',
+KHOST.take(KHOST.standard({build:'guilin',title:'Krator biome — Guilin, the South China karst',
  hint:'Guilin: limestone towers over the Li River and its paddies, the fengcong, and the stone forest. N for night',
  scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,views:VIEWS,ticks:TICKS,
  // the world hour (the panel's slider, ?hour=): the night's light, fog and dome (89n-host-night.js); N flips noon and midnight
  sky:{hour:h=>NIGHT.hour(h)},draw:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
- clock:{hour:ATMOS.SKY.viewHour},keys:{n:()=>NIGHT.flip()},
+ clock:{hour:ATMOS.SKY.viewHour},std:{night:{on:()=>NIGHT.flip(),state:()=>NIGHT.f>.5}},   /* Night (N): the one key map (core/host/92k-host-keys.js) */
  inspect:describe,stats:()=>'inst '+window._instances,
  layers:{'flora':{match:o=>!!(o.userData&&o.userData.biome)},'the rock':{match:o=>!!(o.userData&&o.userData.rock)},
   'water':{match:o=>!!(o.name&&/^water:/.test(o.name))||o===(WATER_DRAW&&WATER_DRAW.still)},'sky':{objects:()=>[SKY.mesh]}},
@@ -127,4 +127,4 @@ KHOST.take({build:'guilin',title:'Krator biome — Guilin, the South China karst
  budget:BUDGET,types:()=>BIO.stats,
  api:{hostChecks,hostNegatives,
   get totals(){const t=BIO.totals();return {tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
-  biome:()=>window._biome}});
+  biome:()=>window._biome}}));

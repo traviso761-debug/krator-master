@@ -13,6 +13,7 @@ The page is one <script> made of, in filename order:
   core/tags             50/52/53-core-tags*.js (KTAGS: every placed thing is registered with its class and tags)
   core/furnish          50/52/53-core-furnish*.js (KFURN: the catalog furniture placement pass)
   core/atmos            89-atmos-*.js (ATMOS: the sky's light on the library materials, ATMOS.skylight)
+  core/sockets          37-sockets.js, 38-symbols.js, 80-cultures.js (fillSockets: each def's signs, banners and emblems; the zeijani pack)
   core/door             10-core-door.js, 20-core-glass.js, 90-core-door-host.js (KDOOR, KGLASS, KDOORHOST: doors that open, real glass)
   core/engine           36o-open.js only (svLeaf, svDoorway, svPane: the engine's drawing of core/door, read in place by this fork)
   26-matlib-pack.js     GENERATED from tex/ (tools/textures/pack.py from materials.json): the library maps as data URLs
@@ -81,7 +82,7 @@ sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))
 import host as khost
 sys.path.insert(0, os.path.join(ROOT, 'core', 'atmos', 'placeholder'))
 import placeholder as psky   # the placeholder sky (KratorSky), read in place: MODULARITY-PLAN.md step 1
-CORE_HOST = khost.SHELL + ['94-host-polytool.js']
+CORE_HOST = khost.SHELL + khost.KEYS + ['94-host-polytool.js']   # KEYS: the one key map and the one walk mode (core/host/92k-host-keys.js)
 VENDORED = {}
 # GENERATED fragments, never written to src/
 FURN_CULTURES = ['zeijani', 'nomad', 'generic', 'generic-goods']   # the Zeijani pieces, the Eastern Nomads' (pueblo) for fallbacks, the shared goods

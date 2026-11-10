@@ -80,6 +80,7 @@ CORE_MODULES = ['shader', 'lod', 'rand', 'mask', 'clock', 'sched', 'furnish', 't
 sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))
 import host as khost                       # core/host: the camera, loop, panel, probe, inspector, marks, pictures, minimap, editor,
 CORE_HOST = khost.FULL                     # cutaway (core/host/README.md; ROADMAP.md section 10, step 5), with core/edits, core/space, core/minimap
+CORE_HOST = CORE_HOST + khost.KEYS   # the one key map and the one walk mode (core/host/92k-host-keys.js; TODO.md, Viewers)
 
 SIDE = {}   # the library packs' maps, written to dist/mungo.tex.<key>.js (tools/textures/matlib_pack.py write_sidecar)
 MATLIB_RECORD = ['23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js']   # core/materials/record (virtual_bodies)

@@ -51,7 +51,7 @@ except Exception:
 
 IX_VIEWS = ['50-shell.js', '55-cutaway.js']
 # core/door (core/door/README.md): KDOOR, KGLASS, KDOORHOST for the demo sheet's doors and glass (src/75-ai-doors.js); not in the core
-DOOR_FILES = ['10-core-door.js', '20-core-glass.js', '90-core-door-host.js']
+DOOR_FILES = ['10-core-door.js', '20-core-glass.js', '90-core-door-host.js']   # and core/walk/20-core-walk.js (KWALK.reach)
 # the arcology's own interior set: its crew, bunkroom and mess programmes (the cabins and the wardroom use them)
 IX_SETS = ['noahs-regret']
 CATALOG_LOADED = ['three.min.js', 'krator-furniture-core.js', 'krator-asset-engine.js', 'krator-symbols.js', 'krator-furniture-kit.js',
@@ -120,6 +120,7 @@ def main():
     core = [(f, read(os.path.join(HERE, f))) for f in core_files()]
     demo = [('src/' + f, read(os.path.join(SRC, f))) for f in frags if f.endswith('.js') and f >= '50']
     door = [('core/door/' + f, read(os.path.join(ROOT, 'core', 'door', f))) for f in DOOR_FILES]
+    door.append(('core/walk/20-core-walk.js', read(os.path.join(ROOT, 'core', 'walk', '20-core-walk.js'))))   # KWALK: the shells' reach (75-ai-doors.js)
     parts = ix_core + ix_rest + door + core + demo
     if '--no-checks' not in sys.argv:
         errs = check(parts)

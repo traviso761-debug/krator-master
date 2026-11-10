@@ -55,6 +55,7 @@ CORE_MODULES = ['clock', 'sched', 'simulation', 'rand', 'tags']   # core/<module
 sys.path.insert(0, os.path.normpath(os.path.join(HERE, '..', '..', 'core', 'host')))
 import host as khost
 CORE_HOST = [f for f in khost.FULL if f != '40-core-edits.js']
+CORE_HOST = CORE_HOST + khost.KEYS   # the one key map and the one walk mode (core/host/92k-host-keys.js; TODO.md, Viewers)
 WORLD_DIR = os.path.join(HERE, 'world'); WORLD_FRAG = '83-host-world-json.js'
 MATLIB_FRAG = '78a-host-matlib-pack.js'   # GENERATED: the library pack (main())
 # The south-east desert biome, READ IN PLACE (2026-11-03, MODULARITY-PLAN.md step 4's ride-along; until then src/ held

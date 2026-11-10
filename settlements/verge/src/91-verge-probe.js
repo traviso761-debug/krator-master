@@ -61,6 +61,13 @@ const C={
     if(dist([(a[0]+b[0])/2,(a[1]+b[1])/2],B)<20){run+=L;best=Math.max(best,run);}else run=0;}
    if(best>60){n++;if(best>worst){worst=best;first=A.id+' by '+B.id;}}}
   return{ok:n===0,detail:S.length+' avenues, '+n+' running beside another'+(first?' (worst '+worst.toFixed(0)+' m: '+first+')':'')};},
+ doors:L=>{if(!window._doors||!window._doors.host)return{ok:false,detail:'no door host'};const d=window._doors;
+  if(!L.length)return{ok:false,detail:d.doors+' doors, '+d.locked+' locked: none to open'};let bad=0;
+  for(const D of L){const was=D.target;KDOOR.open(D,{by:'verify'});for(let i=0;i<40;i++)KDOORHOST.tick(.1);
+   const open=D.open>.99,clear=D.blocks.every(b=>b.off);KDOOR.close(D);for(let i=0;i<40;i++)KDOORHOST.tick(.1);
+   const shut=D.open===0&&D.blocks.every(b=>!b.off);if(was>.5){KDOOR.open(D);for(let i=0;i<40;i++)KDOORHOST.tick(.1);}
+   if(!(open&&(clear||!D.blocks.length)&&shut&&D.draw))bad++;}
+  return{ok:bad===0,detail:d.doors+' doors ('+d.locked+' locked, '+d.blocks+' walk blocks, '+d.posed+' posed); '+(L.length-bad)+' of '+L.length+' opened, cleared and shut'};},
  // everything placed is registered in core/tags with known vocabulary
  tags:reg=>{const a=reg.audit(),uk=Object.keys(a.unknownKeys||{}).concat(Object.keys(a.unknownValues||{}));
   return{ok:!a.unknown&&!a.missingCulture,detail:a.records+' records'+(uk.length?', UNKNOWN '+uk.join(' '):', every key and value known')+(a.missingCulture?', '+a.missingCulture+' without a culture':'')};}};
@@ -83,6 +90,9 @@ const CASES=[
  ['one-clock',()=>C.oneClock(),null],
  ['avenues-keep-to-the-floor',()=>C.avenuesLevel(AV),()=>C.avenuesLevel([{id:'climb',pts:[[0,0,0],[40,0,4],[80,0,14],[120,0,2]]}])],
  ['avenues-merge',()=>C.avenuesMerged(AV),()=>C.avenuesMerged(AV.slice(0,1).concat(AV.slice(0,1).map(A=>({id:'twin',pts:A.pts.map(p=>[p[0]+8,p[1]+8,p[2]])}))))],
+ // core/door: the Vernacular's doors are hosted (posed, ticked, in core/walk); an unlocked one opens, clears its doorway and shuts
+ // again; a locked one does not open (the negative: a locked door counted as one that opened)
+ ['doors-open-and-shut',()=>C.doors(KDOOR.list.filter(D=>!D.locked).slice(0,3)),()=>C.doors(KDOOR.list.filter(D=>D.locked).slice(0,1))],
  ['tags-vocabulary',()=>C.tags(KTAGS.page),()=>{const r=KTAGS.create({build:'neg'});r.add({class:'building',key:'x',at:[0,0,0],tags:{culture:'no-such-culture'}});return C.tags(r);}]];
 function checks(){const out=[];for(const [name,f,neg] of CASES){let r;try{r=f();}catch(e){r={ok:false,detail:'threw: '+e.message};}
   if(neg){let n;try{n=neg();}catch(e){n={ok:false,detail:'threw'};}if(n.ok){r={ok:false,detail:'NEGATIVE CONTROL PASSED (the check cannot fail): '+n.detail};}else r.detail+='  [negative fails as it should]';}

@@ -105,6 +105,22 @@ async def run(a):
                     print('    %s: %s %s' % (r['id'], '; '.join(r['fails']), ('missing ' + ', '.join(r['missing'])) if r['missing'] else ''))
                 if badr:
                     fails.append(label)
+            # core/door and core/walk: the shells' leaves are KDOOR records the shell registered (50-shell.js), the panes KGLASS, and
+            # with every door open a walker reaches every room from the street doors (KWALK.reach over IX.walk.room's floors and walls)
+            D = await pg.evaluate("()=>{const S=window._ancientsInteriors;const o=S.openings?S.openings():null;"
+                                  "const hung=S.shells.reduce((a,E)=>a+E.room.doors.filter(d=>d.swing!=='none'&&d.leaf).length,0);"
+                                  "return {o:o,hung:hung,reach:S.reach?S.reach():null,neg:S.reach?S.reach({shut:true}):null};}")
+            o, R = D['o'] or {}, D['reach']
+            okd = bool(o) and o.get('leaves') == D['hung'] and o.get('doors', 0) >= D['hung'] > 0 and o.get('panes', 0) > 0
+            print('%s doors : %s leaves registered by the shells of %d hung, %s KDOOR records, %s panes' % ('PASS' if okd else 'FAIL', o.get('leaves'), D['hung'], o.get('doors'), o.get('panes')))
+            okr = bool(R) and not R['unreached'] and not R['capped'] and R['reached'] == R['rooms']
+            if okr and D['neg'] and D['neg']['reached'] > 0:   # the negative control: with the doors shut no room is walked into
+                okr = False; print('  reach: NEGATIVE CONTROL PASSED (%d rooms reached through shut doors)' % D['neg']['reached'])
+            print('%s reach : %s' % ('PASS' if okr else 'FAIL', R and ('%d rooms, %d reached from %d street doors (%d nodes)%s' % (R['rooms'], R['reached'], R['starts'], R['nodes'], ('; UNREACHED ' + ', '.join(R['unreached'][:12])) if R['unreached'] else '')) + ('  [negative, doors shut: %d reached]' % D['neg']['reached'] if D['neg'] else '') or 'no reach'))
+            if not okd:
+                fails.append('doors')
+            if not okr:
+                fails.append('reach')
             panel = await pg.evaluate("document.getElementById('errs').textContent")
             if panel:
                 print('ERROR PANEL after the checks:', repr(panel[:1500])); fails.append('error panel not clean after the checks')

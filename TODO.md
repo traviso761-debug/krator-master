@@ -21,6 +21,13 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 
 **Counts:** tags used: about 52 [G data], 27 [G shader], 17 [G native] and 18 [web] (some items carry two, and the legend above uses one of each).
 
+## When the branch `ccr-55bd6ee1-p1si44` is merged *(2026-11-10)*
+
+- **Drop Dhelv's stemClump wrapper.** `core/biome/30-core-foliage.js`'s `BIO.geo.stemClump` no longer leaks `bk`, `box`, `poly`
+  and `kk` as globals (fixed on `main`, every page rebuilt). That branch's `settlements/dhelv/src/45-dhelv-bio.js` wraps the
+  function to put the kit's `box` back, and its `KNOWN_ISSUES.md` notes it: remove both in the merge, rebuild Dhelv and run
+  `verify.py dist/dhelv.html --assert`.
+
 ## With the next scale-model edit *(the owner, 2026-11-09)*
 
 - **Reroute the Ostrukh Riba south into Lake Ostrukh.** The owner agreed that Mid Basin's springs and Lake Ostrukh share one aquifer, fed by the Stalker Range's snow (`biomes/midbasin/PLAN.md`). Today the river runs north from the flagship pool (2,040 m) into Region 99 and ends at 334 m, although its note says it feeds the lake (1,850 m). A southern course needs a carve about 70-80 m deep; its highest point is 2,082 m at 1588,1392. Retrace the river downhill and fix its note. The scale-model edits session (`claude/dreamy-davinci-30f3c1`, edit 5.1.1 at f1d1501cf, artifact version 92) has the details. Held for the next map edit, not done alone.
@@ -28,41 +35,46 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 
 ## Ride along with the next all-builds rebuild
 
-- **`KSHADOW.units` counts what the GPU links** (2026-11-09, found by the Throne's fix): `core/shadow/host/12-core-shadow-host.js` counts
-  declared samplers (some are never read and the GPU drops them), misses `scene.environment` on standard materials, and judges against the
-  renderer's own limit (32 in SwiftShader, so shadows turn on where the GPU cannot link them). The Throne's `samplersOf`
-  (`biomes/throne/src/89zz-host-core.js`) does all three right since 2026-11-09: move that into core, cap at min(16, GL), and drop the copies.
-  It moves every KSHADOW page.
+**Sources done 2026-11-09, verified 2026-11-10 (`ccr-55bd6ee1-p1si44-ridealongs`), awaiting the all-builds rebuild** (the coordinator
+rebuilds once, rewrites the baseline once, then deletes these items; the spot rebuilds below were checked and not committed).
+`KSHADOW.units`, the kits/interiors food anchors and `regOccupancy`'s `ground`/`far` flag are done and their pages rebuilt on
+`claude/dreamy-tesla-wzp8hw` (d31bf9b3, 632c024e), whose versions this branch takes:
+- The `dalab` pack: sources done, awaiting the all-builds rebuild (`38-symbols.js` `eye`, `80-cultures.js` appended last; Span's Line
+  and arena pass `culture:'dalab'`; core/sockets has no node test). Spot check: Span `verify.py --assert` OK. Moves the pages that
+  take core/sockets (and through 38-symbols every catalog page).
+- Water breakup on by default: sources done, awaiting the all-builds rebuild (`W.BREAKUP_AUTO=true`; ext/56 listed in all 43 builds
+  that take core/water). `node core/water/test-breakup.js` passes. `test-gaps.js` fails one case (`neutral by default`: draw.shore,
+  draw.flow2) on this branch and equally on 2d530d40, before the flip (and the test turns the breakup off): not this change.
+  Spot checks: nsemiarid, geyser, catch, savage OK. Moves every page that takes core/water.
+- (2026-11-10, not done: needs this rebuild) The catalog's detail maps have no `tile` family (`kits/catalog/materials.json`): the
+  glazed-tile furniture of the Xanadu, Iziz, Eastern Abyssal and Republican sets is the one family drawn untextured (4,128
+  triangles on the Xanadu sheet). Add a `tile` row on the library's `ceramic.glaze` (or `tile.hex.ceramic`), `python3
+  tools/textures/pack.py kits/catalog`; it moves every page bundled with `tex=True` (Iziz's palace, the isle demo, Pinnacle
+  Rock, Beast Riders, Highlands, Xanadu).
+- (2026-11-10, not done: needs this rebuild) The Highlands set's great-building room kinds (`chamber committee gallery lobby guard
+  war_room armoury magazine audience signals cell`, registered in `kits/interiors/sets/highlands.js`) move to
+  `kits/interiors/src/30-programs.js`, as the owner's brief of 2026-11-09 asked; that file reaches every furnished page.
+- The fauna runtime and the bison size table: the source is in place (pages only); rebuild the pages that bundle the kit.
 
-- **kits/interiors: a residence's food on the floor or a wall** (2026-11-09, the integration pass): `IX.sets.auditResidence` does not count
-  table-top pieces, but the placer may fill the `food` need with one (beast-rider `br_bldg_girder_dwelling` at seed 2 on the full sets
-  sheet: `br_h_stall_goods` on the low table). Add `anchors: ['floor', 'wall']` to the food requirement of `cottage`, `living` and `kitchen`
-  in `kits/interiors/src/30-programs.js` (zeijani's `cell` does already). It moves every page that furnishes rooms (every kits/ancients
-  target, beast-riders, metropolis, post-apoc, pylon, talia, zeijani, the open world, the furnished settlements): with the settlement rebuild.
-
-- **core/host's `regOccupancy` honours `ground` and `far` records** (2026-11-09, the integration pass): a volume drawn on the ground mesh
-  (a wallow, a throat on a crack's floor) or past the far field has no scene sample, so `registered-volumes-non-empty` fails it.
-  godthrone's own probe (`99-host-take.js`) counts `r.ground || r.far` as occupied; core's (`core/host/95-host-probe.js`) does not, so
-  hyperjungle's `savage` adds an empty Object3D with `userData.probePoints`, one point a wallow. Teach core the flag, then drop that
-  object and godthrone's own copy. It moves every page on core/host.
+- **Two `||` numeric defaults left for the rebuild** (2026-11-10, test_all's source lint; not changed, because each moves pages):
+  `core/furnish/50-core-furnish.js` line 65 `rec.scale || 1` (reaches 34 builds, 186 pages: `python3 tools/reach.py`) and
+  `settlements/yuni/src/76-doors.js` line 180 `d.y||0`, `d.yaw||0`, `d.w||0.9`, `d.h||2.05` (Yuni's seven pages). Write them
+  `x == null ? d : x` with the all-builds rebuild, then `python3 core/furnish/fingerprint.py`. (The other new ones, Highlands'
+  `89y-hl-furnish.js`, Xanadu's `89y-xa-interiors.js` and the Vernacular's `69e6-vern-autobody.js`, are the interiors session's.)
+- **`core/engine/fingerprint.json` is behind core/engine** (2026-11-10): Eternian's page differs from it with or without its old
+  `src/37-wk-rec.js` (the triangles by material move), so the change came with the 2026-11-09 engine merges (interiors, walk
+  records); rewrite it (`--write`) with the all-builds rebuild, after the engine kits' screenshots.
 
 Fixes to shared code that reach every build (or most of them), parked until a change that rebuilds them all anyway comes
 along: do them in that change, rebuild once, rewrite the baseline once. Take an item out when it is done.
 
-- **The fauna runtime and the bison's size table** (2026-11-01, `kits/fauna/PLAN-MESHY.md`): the runtime gained `M.mats`, fitted
-  anchors and `userData.anchorOn`, `krator-fauna-farm.js` the bison's variant 3 size, and the catalog a Bowl mantis and new model variants of the
-  ant and the staghorn (a page without models draws those variants procedurally; check a page that picks a staghorn's variant at random). Since then: family models (`spider#gilded`, `rig/family.py`), six new entries and model variants on four more, all with procedural fallbacks: the variant counts of those entries changed, so a page that draws a variant at random will draw them. The pages that bundle the kit (Voth,
-  isle-demo, ash-nomads, desert-nomads, islanders, lizardmen, scyvoi, ringisles, sedesert and its stations, longsong) were not
-  rebuilt: none takes a model that uses them, and on `claude/biome-rebuild` those pages were already behind their sources by
-  far more than this (Voth 96 KB, the isle plan 52 KB). `settlements/longsong` does not build at all there: its `build.py` reads
-  `openworld/little-demo/src/41-world-fields.js`, which d848c1577 moved to the isle demo.
-- **A `dalab` culture pack for the Post-Apoc kit's sockets** (2026-10-27, `settlements/span`): one `mkCulture({key:'dalab', ...})`
+- **A `dalab` culture pack for the Post-Apoc kit's sockets** (sources done, awaiting the all-builds rebuild; 2026-10-27, `settlements/span`): one `mkCulture({key:'dalab', ...})`
   in `core/sockets/80-cultures.js` (red ochre field `#a8382a`, earth edge, the God's single eye as the symbol, a new entry in
   `38-symbols.js`), so the barricade, the arena and anything Dalab raises from salvage fly its red. `mkCulture` draws from the
   shared stream at load (`jc`, `rr`), so the pack reaches every build that takes core/sockets (the catalog, post-apoc,
   ringsea, zeijani, dhelv, jimjam, longsong, screamers by its bundle): rebuild them with it; then Span passes `culture:'dalab'`
   for the Line and the arena (`src/8at-host-place.js`).
-- **Water breakup on by default** (the owner, 2026-10-27, `core/water/PRACTICE.md` section 2 item 5): every lake, pool and river drawn
+- **Water breakup on by default** (sources done, awaiting the all-builds rebuild; the owner, 2026-10-27, `core/water/PRACTICE.md` section 2 item 5): every lake, pool and river drawn
   from a few sines glints in stripes or a herringbone; `core/water/ext/56-core-water-breakup.js` breaks it up. Today it is opt-in
   (`WATER.breakupAll()`, `WATER.breakupFlows()`, or `WATER.BREAKUP_AUTO = true` before the water is drawn; eastabyss takes it). The flip:
   list `ext/56` in every build that takes core/water (the pooled `settlements/`/`kits/` lists and each biome's `CORE_WATER`), set
@@ -71,7 +83,13 @@ along: do them in that change, rebuild once, rewrite the baseline once. Take an 
   the core pass of the integration rebuild: 25 of the 43 builds that take core/water (by `51-core-water-kinds.js` in their `build.py`) do
   not list ext/56, and those lists are the builds' own files; the default flip alone would turn it on only in the 18 that do.
 
-- **Backport the succulent columns' quality pass** (the owner, 2026-10-26; done in `biomes/sedesert` on `claude/bowl-station-e15b2d`):
+- ~~**Backport the succulent columns' quality pass**~~ **DONE 2026-11-09** (nsemiarid: `columnGeo` in `50-biome-nsemiarid-species.js`,
+  the sail candelabra's arms seated in `60-biome-nsemiarid-floor.js`, 48 to 80 triangles a column, `column` 774,096 to 1,290,160
+  triangles over 16,127 instances, `verify.py --assert` OK, page rebuilt and committed 2026-11-10; its page and the pages that read it,
+  scablands' coulee and dambasins' graveyard, east and port, rebuilt: `biomes/nsemiarid/KNOWN_ISSUES.md`. The Throne has no succulent
+  column: its `column` is the vent coral, a 12-sided ribbed lathe planted in the ground and closed at the top, and its brimstone
+  candelabra's arms are one tube with the cup on the tip, so nothing to port. Shade reads sedesert in place since 2026-11-03, so its
+  page had the pass before this work: 80 and 36 triangles a column, 3,508,729 scene triangles, before and after; rebuilt 2026-11-10, OK.) The entry as it was (the owner, 2026-10-26; done in `biomes/sedesert` on `claude/bowl-station-e15b2d`):
   `columnGeo`'s profiles start at a narrow, rounded foot with a closed cap and per-row normals (`50-biome-sedesert-species.js`:
   `G.column` 80 triangles, `G.columnLo` 36), `columnTree` seats every column on its arm (spots three to a segment along each arm,
   the column within the arm's radius, its foot sunk a third of a radius: they stood up to 1.6 radii plus 1.5 m off, feet in the
@@ -82,25 +100,44 @@ along: do them in that change, rebuild once, rewrite the baseline once. Take an 
 
 - **Doors and glass: what is left** (the pass of 2026-11-03/04 put every building kit on `core/door`: KDOOR records with stable ids,
   the door kinds and leaf styles, KGLASS panes over the room card, E and the tip; each kit's KNOWN_ISSUES.md has its counts).
-  - Verge and the isle demo take the Vernacular's openings (69e5) but host no doors: their leaves are drawn shut and never
-    open (no KDOORHOST tick, no E, no walk blocks). Give each page the host (`90-core-door-host.js`, as Highlands' `95-hl-doors.js`).
-  - `kits/interiors`: `50-shell.js` should register its own leaves in KDOOR (a kind and style, `KDOORHOST.object` or `posed`)
+  - ~~Verge and the isle demo take the Vernacular's openings (69e5) but host no doors: their leaves are drawn shut and never
+    open (no KDOORHOST tick, no E, no walk blocks). Give each page the host (`90-core-door-host.js`, as Highlands' `95-hl-doors.js`).~~
+    Done (2026-11-09): Verge (`settlements/verge/src/95-verge-doors.js`: posed, the tick, E, walk blocks; its Vernacular bodies hollow
+    with the interiors on); the isle demo's city page (`settlements/isle-demo/src/63-isle-doors.js`: each near Vernacular lot's doors
+    registered in the world under the lot's id, the leaves posed, the tick, E at the view's target; no walk blocks, the page has no
+    core/walk, and the kit locks the doors of its solid bodies). Left: the open world's hamlets still bake their leaves shut.
+  - ~~`kits/interiors`: `50-shell.js` should register its own leaves in KDOOR (a kind and style, `KDOORHOST.object` or `posed`)
     and its glass in KGLASS (`kits/ancients-interiors/src/75-ai-doors.js` matches the shell's leaves by order meanwhile), and
-    `IX.walk` should register a `ROOM()` shell's floor, walls and doors in core/walk so a sheet can run `KWALK.reach`.
-  - Highlands and Xanadu: every body is solid (no 69e hollow walls), so every door is locked; Roketstad's `?interiors=1`
-    unlocks the doors whose sill meets a furnished room, which still open onto the box's face. Hollow walls for the furnished defs.
+    `IX.walk` should register a `ROOM()` shell's floor, walls and doors in core/walk so a sheet can run `KWALK.reach`.~~
+    Done (2026-11-09): `IX.walk.room`; Ancients-interiors' sheet reaches 48 of 48 rooms with the doors open, 0 shut.
+  - ~~Highlands and Xanadu: every body is solid (no 69e hollow walls), so every door is locked; Roketstad's `?interiors=1`
+    unlocks the doors whose sill meets a furnished room, which still open onto the box's face. Hollow walls for the furnished defs.~~
+    Done (2026-11-09, with `?interiors=1`): the Vernacular's auto bodies (`kits/iziz-vernacular/src/69e6-vern-autobody.js`) draw a
+    furnished def's matching blocks hollow, its doors unlocked into the rooms; Xanadu has its interior set
+    (`kits/interiors/sets/xanadu.js`; the citadel's defs skipped: the citadel sessions build them); the Hall of the Republic and the Fortress
+    are planned room by room (`kits/highlands/hall/`, `kits/highlands/fortress/`). What is left: the kits' KNOWN_ISSUES.md.
+    Finished and verified 2026-11-10 (the audit, `verify.py --interiors`: every floor of the Hall and the Fortress reached; the
+    furniture textured): what is left is in `settlements/highlands/KNOWN_ISSUES.md` and `settlements/xanadu/KNOWN_ISSUES.md`.
   - Locus with `?interiors=1`: 32 floors are reached only through a locked door (the interiors kit's entrance is not the
-    building's `F.door`).
-  - Mav's Refuge has no core/walk: its 1,883 operable doors block nothing, and it has no reachability audit.
-  - Yuni: the streamed interiors' room doors are not KDOOR records, and its own leaves swing 1.4 rad, not KDOOR's 1.75.
+    building's `F.door`). **2026-11-09: tried, not fixed.** `66-locus-furnish.js` `locfDoorsIn` now also unlocks the placement's
+    door nearest each planned street door, but `LDOOR.reach()` still reads 146 starts, 390 of 510 floors reached (422 with every
+    door open), as before: it unlocked nothing more. Find why (the planned doors' `at` and `floors[].y` against the placement's
+    KDOOR records) before trusting it (`settlements/locus/KNOWN_ISSUES.md`).
+  - ~~Mav's Refuge has no core/walk: its 1,883 operable doors block nothing, and it has no reachability audit.~~ Done
+    (2026-11-09): `src/83-mr-walk.js` (the units' plans in core/walk, the doors' blocks, `MRWALK.reach`); decks and bridges not yet.
+    Open: the audit leaves 86 apartments' ground floors unreached, and the first walk freezes the page (KNOWN_ISSUES.md).
+  - ~~Yuni: the streamed interiors' room doors are not KDOOR records, and its own leaves swing 1.4 rad, not KDOOR's 1.75.~~
+    Done (2026-11-09): KDOOR records while live, pruned by id. The swing stays 1.4 rad, recorded on each record (`R.swing`) so the
+    export gives what the page draws; whether to move it to 1.75 is the owner's call (`settlements/yuni/KNOWN_ISSUES.md`).
   - Beast Riders (`kits/beast-riders`): its town copies draw Girder's and Mav's leaves shut and their walls whole (fallbacks in
     their `55-arch.js` / `56-levels.js`); the faithful port bundles `54-openings.js`, the glass of `81-glow.js` and core/door.
-  - Detail the plain leaves lost: the ger's brass bands, the vardo's scrolls, Pylon's and Talia's pulls (a leaf style with
-    hardware, or a socket on the leaf).
+  - ~~Detail the plain leaves lost: the ger's brass bands, the vardo's scrolls, Pylon's and Talia's pulls (a leaf style with
+    hardware, or a socket on the leaf).~~ Done (2026-11-09): `KDOORLEAF` hardware styles (`banded`, `scrolled`, `+pull`, `+ring`).
   - The arcologies' painted windows (canvas glazing, Crescent, Monolith, Hill, ...) stay painted: real panes would be tens
     of thousands of instances a building.
-  - Godot: the exports meet new materials (`kglass:*`, `kglass:room-lit`, the leaf meshes) and KDOOR's `export()` (kinds,
-    pairs, styles); the importer should take the records and build the leaves (`godot/README.md`).
+  - ~~Godot: the exports meet new materials (`kglass:*`, `kglass:room-lit`, the leaf meshes) and KDOOR's `export()` (kinds,
+    pairs, styles); the importer should take the records and build the leaves (`godot/README.md`).~~ Done (2026-11-09):
+    `godot/krator/kdoor.gd`; `godot/tests/door/door_test.gd` passes on 4.7.2. The isle demo's export does not carry its doors yet.
 
 ## With the final biome rebuild *(the owner, 2026-10-26)*
 
@@ -154,8 +191,10 @@ The one ordered list of Godot port work. The plans hold the why: `GODOT-PLAN.md`
    records and a baked heightmap in one change, one screenshot set, one baseline rewrite. Brings `core/terrain`'s
    field with one kit as its first consumer. Needs the spike's findings on terrain.
 6. **Ys's P3 placement pass** on `KRAND` (settlements/ys/GODOT.md item 4), as two data passes and one draw pass. **First pass
-   DONE 2026-10-05** (`88-city-place.js` records, `88b-city-draw.js`): open are the bridge graph, the host types (needs
-   the Ancients chain re-vendored into Ys) and the foreign sets (settlements/ys/KNOWN_ISSUES.md).
+   DONE 2026-10-05** (`88-city-place.js` records, `88b-city-draw.js`): open are the bridge graph, the host types and the
+   foreign sets (settlements/ys/KNOWN_ISSUES.md). ~~The Ancients chain re-vendored into Ys~~: **done 2026-11-09**, Ys reads
+   the chain in place (every vendored fragment but its 18 adapted copies, with the Vernacular's 69e5, the Highlands kit's
+   71c and core/door; settlements/ys/KNOWN_ISSUES.md).
 7. **The Girder pilot** (core/materials/PLAN.md). **Material half DONE 2026-10-03:** `core/materials/record/` (`KMAT`,
    `TEX.def`, adapters), `tools/textures/pack.py`, Girder on the library (`?mat=proc` for the old look). Open: the
    four texture gaps (leafy, web, ghostwood, prism gum) and the owner's look review. **Iziz, the second pilot, DONE 2026-10-13**
@@ -213,10 +252,52 @@ loads each build's `tex/` pack, which is WebP. What is left:
 - **One walk mode and one set of controls in every viewer.** Implement walk (first person on the `core/walk`
   floors, steps and slopes, collision with its blocks) everywhere, and standardise the UI and the keys across all
   builds and kit sheets: the same buttons, names and shortcuts (inspector, cut-away, night, polygon tool, walk).
-  The Zeijani kit's page (`kits/zeijani/src/92-camera.js`) is one reference. **[web]**
+  The Zeijani kit's page (`kits/zeijani/src/92-camera.js`) is one reference (retired 2026-10-18: the kit's sheet and Dhelv
+  are on core/host, whose `90-host-camera.js` carries those controls; `kits/zeijani/README.md`, "The engine"). **[web]**
+  *Under way (2026-11-09, branch `ccr-55bd6ee1-p1si44-walk`).* The one key map and the one walk mode are
+  `core/host/92k-host-keys.js` (`khost.KEYS`; `core/host/README.md`, "The one key map" and "The one walk mode"): a build
+  names its controls by id (`KHOST.standard({std: {night, cutaway, door, interiors, shadows}})`) and gets the same button,
+  words and key; the walker is sub-stepped (it went through thin walls), `window._walk` lets `tools/harness.py walk`
+  drive any page, and every `verify.py` checks `one-key-map` and `walk` (a raised floor stood on, a wall that stops the
+  walker) on a page that takes it. A build is **adopted** when its page takes `khost.KEYS`, its controls go through `std`
+  and its `--assert` passes both checks.
+  - [x] core/engine and every kit on it (`kengine.HOST`, `CORE_DIRS` with `core/walk/box`), each `--assert` passing: Scyvoi,
+        Ash Nomads, Desert Nomads, Islanders, Lizardmen, Resources, Post-Apoc (moved onto core/host), Eternian (with interiors:
+        `?interiors=1` 58 buildings, 172 rooms, 1021 pieces, no errors), Yeti; Tents (build.py only; its own
+        `interiors-reachable` fails, as on the page before: the Tents session's verify was being rewritten)
+  - [x] build.py `khost.KEYS`, controls through `std`, `--assert` passing: Construction, Zeijani (its C became X; Night, Door,
+        Shadows), Necanyons (N), Verge (E), Span, Girder (E), Reed Lake, Shade, Jimjam, Screamers, Iziz (city and Vernacular: E),
+        Ys (city: N; kit), Longsong (its interiors re-baked on the merged kit), Locus and Mungo (E; they read one take)
+  - [x] adopted, the key map and the walk passing, the build's own checks failing as on the page before this work:
+        Guilin (fruit drawn; foliage attach 31.96%), Pinnacle Rock (N; foliage attach 1.87%), Dalab (swlowlands/glossy
+        282,687 instances over the 250,000 cap with no `capWhy`, since it reads the biome in place)
+  - [ ] Mav's Refuge (E; the key map and the walk pass): `walk-and-reach` could never read `MRWALK` (the page's script is
+        scoped; now `window.MRWALK`, 2026-11-10). Its first real run fails: 370 of 2373 floors unreached from the doors of 1480
+        units (284 units with no unlocked door), most of them the stores' floors (`mix.3.store.floor.0`, ...): the interiors'
+        stores are not entered from their units' doors (src/57a-interiors.js, 83-mr-walk.js)
+  - [ ] Yuni: E is the key map's Door, but F is Yuni's own walker (`DOORS.walk`) and the page hands the host no `KWALK`:
+        port Yuni's walker onto core/walk (Locus, Mungo, Girder and Mav's Refuge share the Yuni engine; theirs are on the host)
+  - [ ] not yet: the biome kits but Guilin and Necanyons (`khost.KEYS` in `build.py`, the take's Night through `std`;
+        Geyser and Godthrone have Day / Night buttons of their own, so N wants a std entry with no button: a 92k option);
+        crater-drylands binds L to its fire tool (the polygon tool's key: `keysCheck` reports it); Metropolis (its X);
+        Dhelv (its C and N; the Zeijani session); Highlands, Xanadu (the interiors session), Noah's Regret (C and T: record the
+        clash), Voth's city target, the isle demo; the sheets with their own camera (kits/ancients, kits/port and
+        biomes/dambasins's copy, kits/ringsea, the catalog engine's pages) move onto core/host first. Then `KEYS` joins
+        `khost.SHELL` at an all-builds rebuild.
+  - [ ] the merges of claude/dreamy-tesla-wzp8hw and ccr-55bd6ee1-p1si44 (2026-11-10) change `core/host/95-host-probe.js` and
+        `core/biome`: every core/host and biome page not rebuilt since is behind its sources until the all-builds rebuild
+  - [ ] tents and round bodies drawn from cylinders and cones register nothing in `core/walk` (the nomads' tents, Tents):
+        the walker walks through their cloth (`core/engine/README.md`, "Controls and walk")
 - **Interiors in every building kit that has them, with a cut-away.** Integrate `kits/interiors` (its sets, the
   furniture placer through `core/furnish`) into every building kit whose buildings have a corresponding interior
   set, each with a cut-away that opens them. **[G data]** for the plans.
+  - [x] Done once in `core/engine` (`91i-interiors.js`; `core/engine/README.md`, "Interiors", 2026-11-09): a kit names its sets in
+        `build.py` (`kengine.interiors([...])`); X opens the building nearest the view storey by storey (the host's cut-away),
+        `?interiors=1` / U plans and furnishes every building with an item through `core/furnish`, rooms and pieces in core/tags,
+        floors and walls in `core/walk`. Wired: Eternian (checked: 58 buildings, 172 rooms, 1021 pieces, no errors);
+        Post-Apoc takes its units for the cut-away.
+  - [ ] the other sets belong to kits on other engines (Highlands, Iziz, Talia, Pylon, Reed Lake, Yuni, Locus, the Eastern
+        Abyssal, the Beast Riders; Zeijani and Noah's Regret on their forks): each wires its own, or moves onto core/engine
 - **One flame and heat-haze effect.** Look at `biomes/crater-drylands` and `biomes/throne` (the caldera) and make a
   standard flame plus heat-shimmer effect shared by every build (fires, braziers, burners, lamps, lava). **[G shader]**
 - **Water: an audit and one best solution.** Audit the water effects across the builds and settle on the

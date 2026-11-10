@@ -14,11 +14,18 @@ import os
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.join(HERE, 'src')
-FOUNDATION = ['70-xa-tex.js', '71-xa-mat.js', '71c-xa-openings.js', '72-xa-helpers.js', '88-xa-dress.js', '89-xa-trades.js']
+FOUNDATION = ['70-xa-tex.js', '71-xa-mat.js', '71c-xa-openings.js', '72-xa-helpers.js', '78a-xa-pattern-data.js', '78b-xa-pattern.js', '78c-xa-dome-plan.js', '78d-xa-dome-in.js',
+              '88-xa-dress.js', '89-xa-trades.js']
 BUILDINGS = ['74-xa-dwell.js', '75-xa-trade.js', '76-xa-farm.js', '77-xa-sacred.js', '78-xa-palace.js', '79-xa-guild.js',
              '80-xa-military.js', '81-xa-public.js', '82-xa-hill.js', '83-xa-turk.js', '84-xa-grandbath.js', '85-xa-water.js',
              '85b-xa-garden.js', '86-xa-vizier.js', '86b-xa-plants.js', '87-xa-spicer.js', '87b-xa-andean.js', '87c-xa-erewhon.js']
 FILES = sorted(FOUNDATION + BUILDINGS)
+# Erewhon's citadel (2026-11-09; settlements/xanadu/citadel/BLUEPRINT.md and refs/citadel/STYLE.md): the Moorish and Mughal
+# parameters (78l, [G data]: XMOOR), the vocabulary (78m: the materials owed in PROMPTS-NEEDED.md section 41, the arch heads, muqarnas, star
+# ceilings, vaults, jali, iwan, water) and the citadel's hollow buildings drawn from their rooms (78n, on the interior set
+# kits/interiors/sets/xanadu-citadel.js). A world takes them by name (paths(CITADEL)): Xanadu's Erewhon does; kit_bundle.py's XAK
+# (Longsong, kits/construction) does not, so those pages are unchanged
+CITADEL = ['78l-xa-moorish-data.js', '78m-xa-moorish.js', '78n-xa-citadel.js']
 # what the kit draws through, by name, and where each now lives
 ANCIENTS_CORE = ['10-core.js', '12-stats.js', '30-kit.js', '32-surfaces.js', '34-kitdefs.js', '36-decor.js', '38-helpers2.js',
                  '50-registry.js', '54-mat-concrete.js', '69-mat-salvage.js']          # kits/ancients/src
@@ -27,6 +34,10 @@ VERNACULAR = ['69b-vern-mat.js', '69c-vern-helpers.js']                         
 # vWinClear items, kits/iziz-vernacular/src) and core/door's records and glass (KDOOR, KGLASS), read in place
 OPENINGS_VERN = ['69e5-iziz-openings.js']                                               # kits/iziz-vernacular/src
 DOOR = ['10-core-door.js', '20-core-glass.js', '30-core-door-leaf.js']                  # core/door (30: the leaves' look, KDOORLEAF)
+# the hollow walls (2026-11-09): the Vernacular's hollow bodies (69e) and auto bodies (69e6: a solid block or battered mass that
+# matches a shell of the def's interior set item, kits/interiors/sets/xanadu.js, is drawn hollow), read in place by the kit's pages
+# that take the interiors (settlements/xanadu: the sheet and Erewhon, ?interiors=1); not in kit_bundle.py's XAK
+HOLLOW_VERN = ['69e-vern-hollow.js', '69e6-vern-autobody.js']                          # kits/iziz-vernacular/src
 
 
 def path(f):

@@ -8,6 +8,11 @@
    door (to its h) and window (sill .. sill + h). A wall is drawn twice: `full`, and `stub`,
    a knee-high cut of it the cut-away shows instead of a wall that faces the camera.
    Door leaves hang from their hinge, opened 75 degrees the way they swing.
+   core/door (where the page carries it): each leaf is a KDOOR record (id '<room id>.d<n>', n its number among the hung
+   leaves; kind 'swing', style 'flat', standing open as hung), posed by KDOORHOST.posed as it moves (the page ticks
+   KDOORHOST and gives E: kits/ancients-interiors/src/75-ai-doors.js), and the panes are KGLASS 'clear'. opt.kdoor: the
+   registry (default the page's KDOOR; false: no records, the leaves stay drawn). userData.shell.doors: [{ door, mesh }].
+   IX.walk.room (49b) puts the shell's floor and walls in core/walk; KDOOR.walk(W) the shut leaves.
    ====================================================================== */
 (function (IX) {
   'use strict';
@@ -47,6 +52,9 @@
     return m;
   }
 
+  /* the open fraction KDOOR eases to a swing of `a` by (its smoothstep, inverted): the leaf stands as the shell hung it */
+  function openFor(a, SW) { let lo = 0, hi = 1; for (let k = 0; k < 40; k++) { const m = (lo + hi) / 2; if (m * m * (3 - 2 * m) * SW < a) lo = m; else hi = m; } return Math.min(1, (lo + hi) / 2); }
+  const root = typeof window !== 'undefined' ? window : globalThis;
   V.shell = function (room, opt) {
     opt = opt || {};
     const thick = opt.thick || 0.22, pal = Object.assign({}, DEFAULT_PAL, V.PALETTES[room.culture] || {}, opt.palette || {});
@@ -54,7 +62,7 @@
     const grp = new THREE.Group();
     grp.name = 'shell:' + room.id;
     const mats = { wall: V.lambert(pal.wall), floor: V.lambert(pal.floor), roof: V.lambert(pal.roof), trim: V.lambert(pal.trim),
-      glass: V.lambert(0x9fc4d8, { transparent: true, opacity: 0.35, depthWrite: false }),
+      glass: root.KGLASS ? root.KGLASS.material(THREE, 'clear') : V.lambert(0x9fc4d8, { transparent: true, opacity: 0.35, depthWrite: false }),
       fade: V.lambert(pal.wall, { transparent: true, opacity: 0.16, depthWrite: false }) };
     const outer = G.offset(room.poly, thick);
     const floor = slab(outer, y0 - 0.25, y0, mats.floor);
@@ -97,9 +105,12 @@
       [full, stub].forEach(function (g) { g.traverse(function (o) { o.userData.room = room.id; o.userData.part = 'wall'; }); grp.add(g); });
       walls.push(rec);
     });
-    /* door leaves, hung from the hinge and opened 75 degrees */
+    /* door leaves, hung from the hinge and opened 75 degrees; with core/door each is a KDOOR record the host poses */
+    const KD = opt.kdoor === false ? null : opt.kdoor || root.KDOOR || null, HOST = KD ? root.KDOORHOST || null : null, doors = [];
+    let hung = 0;
     room.doors.forEach(function (d) {
       if (d.swing === 'none' || !d.leaf) return;
+      const n = hung++;
       const left = [-d.n[1], d.n[0]], hs = d.hinge === 'right' ? -1 : 1;
       const hx = d.at[0] + left[0] * hs * d.w / 2, hz = d.at[1] + left[1] * hs * d.w / 2;
       const dir = d.swing === 'out' ? -1 : 1, a = 75 * Math.PI / 180;
@@ -112,8 +123,49 @@
       m.rotation.y = Math.atan2(-vz, vx);
       m.userData.room = room.id; m.userData.part = 'door';
       grp.add(m);
+      if (!KD) return;
+      /* the record: the face looks away from the swing (KDOOR swings a leaf to the face's -z); the sign follows the hinge's jamb */
+      const yaw = Math.atan2(-d.n[0] * dir, -d.n[1] * dir), ux = Math.cos(yaw), uz = -Math.sin(yaw), sill = y0 + 0.01, id = room.id + '.d' + n;
+      if (KD.get(id)) KD.prune(function (r) { return r.id !== id; });    /* the room's shell drawn again: its old record goes */
+      const D = KD.add({ id: id, at: [d.at[0], sill, d.at[1]], hinge: [hx, sill, hz], p0: [d.at[0], m.position.y, d.at[1]], yaw: yaw,
+        sign: (ux * (hx - d.at[0]) + uz * (hz - d.at[1])) < 0 ? 1 : -1, w: d.w - 0.04, h: leafH, t: 0.05, open: openFor(a, KD.SWING),
+        key: room.id, room: room.id, style: 'flat', name: 'door' });
+      if (HOST) HOST.posed(D, function (D, P) { const vx = P[0] - hx, vz = P[2] - hz; m.position.set(P[0], P[1], P[2]); m.rotation.set(0, Math.atan2(-vz, vx), 0); });
+      if (HOST) HOST.pose(D);
+      doors.push({ door: D, mesh: m });
     });
-    grp.userData.shell = { room: room.id, floor: floor, roof: roof, walls: walls, mats: mats };
+    grp.userData.shell = { room: room.id, floor: floor, roof: roof, walls: walls, mats: mats, doors: doors };
     return grp;
+  };
+
+  /* IX.walk.room(rooms, W, o): the shell's walk (no THREE: plain records, here beside the shell it describes, so only the pages
+     that draw shells carry it). A ROOM()'s shell into core/walk (KWALK or KWALK.create()), so a sheet of shells can run
+     KWALK.reach: the floor out to the walls' outer face (two rooms sharing a wall share a floor strip, so a doorway between
+     them is walkable), each wall as blocks along its middle line gapped at its doors (windows stay shut). The doors' leaves are
+     core/door's: the shell registers them in KDOOR above, and the sheet's KDOOR.walk(W) blocks a shut one.
+     rooms: a room or an array; o: { thick (.22, the shell's), tag, blockStep (.3) } -> { floors, blocks, doors } */
+  const WK = IX.walk = IX.walk || {};
+  WK.room = function (rooms, W, o) {
+    o = o || {};
+    const out = { floors: 0, blocks: 0, doors: 0 };
+    if (!rooms || !W) return out;
+    const L = Array.isArray(rooms) ? rooms : [rooms], t = o.thick == null ? 0.22 : o.thick, st = o.blockStep == null ? 0.3 : o.blockStep, h = Math.max(t, st) / 2;
+    for (const R of L) {
+      const tag = o.tag || 'room:' + R.id;
+      W.poly({ pts: G.offset(R.poly, t).map(function (p) { return [p[0], p[1], R.y]; }), name: R.id, tag: tag }); out.floors++;
+      for (const Wl of R.walls) {
+        if (Wl.open) continue;
+        const ox = -Wl.n[0] * t / 2, oz = -Wl.n[1] * t / 2, ax = Wl.a[0] + ox, az = Wl.a[1] + oz, dx = Wl.b[0] - Wl.a[0], dz = Wl.b[1] - Wl.a[1];
+        const gaps = R.doors.filter(function (d) { return d.wall === Wl.i; }).map(function (d) { return [d.at[0] + ox, d.at[1] + oz, d.w / 2]; });
+        const n = Math.max(1, Math.ceil(Wl.len / st));
+        for (let i = 0; i < n; i++) {
+          const u = (i + 0.5) / n, x = ax + dx * u, z = az + dz * u;
+          if (gaps.some(function (g) { return Math.hypot(x - g[0], z - g[1]) < g[2]; })) continue;
+          W.block([x - h, x + h, z - h, z + h, R.y, R.y + R.h], tag); out.blocks++;
+        }
+        out.doors += gaps.length;
+      }
+    }
+    return out;
   };
 })(KratorInteriors);

@@ -13,5 +13,7 @@ const FAMILIES=[
  {name:'Stores, the land, the stock (Y4)',keys:['yt_ice_cellar','yt_frostroot_house','yt_raised_cache','yt_ice_quarry','yt_pycrete_works','yt_muskox_byre','yt_caribou_corral']},
  {name:'War (Y4): the winter fort in autumn and in spring, the tower, the cairn',keys:[{key:'yt_winter_fort',o:{v:0}},{key:'yt_winter_fort',o:{v:1}},'yt_watch_tower','yt_signal_cairn']},
  {name:'Tunnels (Y2): the three sections, and a covered-way network',keys:[{key:'yt_tunnel_sections',o:{v:0}},{key:'yt_tunnel_sections',o:{v:2}},{key:'yt_tunnel_net',o:{v:0}}]},
- {name:'Shells (Y2): the ribbed hall dome, pycrete fresh and in spring',keys:['yt_sample_ribbed','yt_sample_slump']}
+ {name:'Shells (Y2): the ribbed hall dome, pycrete fresh and in spring',keys:['yt_sample_ribbed','yt_sample_slump']},
+ {name:'Leng (Y6): the occupation of an Ancient hall, a bay house, a plugged breach',keys:['yt_leng_hall','yt_leng_bay_house','yt_leng_plug']},
+ {name:'The forest-steppe (Y6) on the nwouterwall kit\'s flora: the balagan, the summer urasa, the khoton',keys:[{key:'yt_balagan',o:{v:1}},'yt_urasa',{key:'yt_khoton',o:{v:1}}]}
 ];

@@ -110,6 +110,7 @@ TAGS_FILES = {f: os.path.join(ROOT, 'core', d, f) for d in ('rand', 'tags') for 
 sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))
 import host as khost
 CORE_HOST = [f for f in khost.FULL if f not in ('20-core-space.js', '40-core-edits.js')]
+CORE_HOST = CORE_HOST + khost.KEYS   # the one key map and the one walk mode (core/host/92k-host-keys.js; TODO.md, Viewers)
 # the shared atmosphere (core/atmos/README.md: its core, presets, the open-water wave field and the sky's light) and core/water
 # (core/water/README.md: the open surface, its CPU twins, the CDLOD water mesh): the lake is a WATER.open surface
 # (src/90w-rl-lake.js), the troughs' and the wallow's water WATER.still (src/90x-rl-still.js). Listed by name, like core/materials/record above; a src/ copy with the same name wins.
@@ -117,6 +118,7 @@ ATMOS_DIR = os.path.join(ROOT, 'core', 'atmos')
 CORE_ATMOS = ['89-atmos-0-core.js', '89-atmos-0p-presets.js', '89-atmos-a-waves.js', '89-atmos-b-skylight.js']
 WATER_DIR = os.path.join(ROOT, 'core', 'water')
 CORE_WATER = ['20-core-water.js', '21-core-water-shore.js', '22-core-water-flow.js', '50-core-water-draw.js', '51-core-water-kinds.js']
+CORE_WATER_EXT = ['56-core-water-breakup.js']   # the breakup (core/water ext/56), on by default since 2026-11-09
 
 
 def srcpath(f, base=None):
@@ -153,7 +155,7 @@ DETERMINISTIC = {
 }
 DETERMINISTIC |= {'06-core-khook.js', '06b-core-kcolor.js'}   # core/shader (no rnd())
 DETERMINISTIC |= {'82-rl-trades.js'}   # the Voth census table (data only, read by tools/check_trades.py)
-DETERMINISTIC |= set(CORE_ATMOS) | set(CORE_WATER)   # core/atmos and core/water: IIFE-scoped, their own PRNG, nothing placed
+DETERMINISTIC |= set(CORE_ATMOS) | set(CORE_WATER) | set(CORE_WATER_EXT)   # core/atmos and core/water: IIFE-scoped, their own PRNG, nothing placed
 DETERMINISTIC |= set(CORE_HOST) | set(TAGS_FILES) | {'99-start.js', '91t-reedlake-tags.js'}   # core/host (no rnd()); core/rand, core/tags; the take; REG into core/tags (reads only)
 
 # Seed ranges known to collide, kept here so the build stays green while the
@@ -267,6 +269,7 @@ def build_one(target, do_checks, assert_origin):
     src.update({f: os.path.join(LOD_DIR, f) for f in LOD_FILES if f not in src})
     src.update({f: os.path.join(ATMOS_DIR, f) for f in CORE_ATMOS if f not in src})
     src.update({f: os.path.join(WATER_DIR, f) for f in CORE_WATER if f not in src})
+    src.update({f: os.path.join(WATER_DIR, 'ext', f) for f in CORE_WATER_EXT if f not in src})
     src.update({f: p for f, p in TAGS_FILES.items() if f not in src})
     khost.resolve(src, CORE_HOST)   # a src/ copy with a shell file's name would win (none)
     tgt = {f: os.path.join(tdir, f) for f in os.listdir(tdir) if f[0].isdigit()}

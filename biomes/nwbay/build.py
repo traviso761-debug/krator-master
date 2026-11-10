@@ -135,7 +135,7 @@ CORE_WATER=['20-core-water.js','21-core-water-shore.js','22-core-water-flow.js',
 for f in CORE_WATER:
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','water',f))
 for f in ['53-core-water-terraces.js','53b-core-water-terraces-draw.js','54-core-water-kinds-ext.js','54b-core-water-kinds-ext-draw.js',
-          '58-core-water-mirror.js','61-core-water-plume.js']:   # 58 WATER.mirrorSwitch (off at load) and 61 the river's plume (tintFlow): the catch-up pass, 2026-11-03   # 54/54b (2026-10-27): the weed in the lowland reach
+          '56-core-water-breakup.js','58-core-water-mirror.js','61-core-water-plume.js']:   # 58 WATER.mirrorSwitch (off at load) and 61 the river's plume (tintFlow): the catch-up pass, 2026-11-03   # 54/54b (2026-10-27): the weed in the lowland reach
     PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','water','ext',f))
 PATH['89-atmos-c-hostbind.js']=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','host','89-atmos-c-hostbind.js'))   # ATMOS.bindHost, in core/atmos/host/ so the kits that take core/atmos whole are not changed
 # the shared sky (core/atmos/SKY-PLAN.md section 9, 2026-10-26): core/atmos's core and binding where the kit had none, the sky's
