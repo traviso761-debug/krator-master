@@ -27,7 +27,7 @@ const HOST_VIEWS={};for(const k in VIEWS)HOST_VIEWS[k]=VIEWS[k].v;
 const LCTL=['day','dawn','night'].map(m=>({button:m[0].toUpperCase()+m.slice(1),title:m==='night'?'Night (N): the torches in the tube, the NW Twin\'s glow':'',on:()=>lightMode(m),m}));
 LIGHT_HOOKS.push(m=>{for(const c of LCTL)if(c.el)c.el.classList.toggle('on',c.m===m);});
 // ---------------------------------------------------------------- the probe's budgets and the kit's own checks (verify.py --assert)
-const BUDGET={showcase:{tris:9000000,calls:240,rendered:4500000},cls:{pass:7000000,host:6000000},type:{'twins/ground':'pass','host':'host'}};
+const BUDGET={showcase:{tris:9000000,calls:240,rendered:4500000},cls:{pass:7000000,host:6000000},type:Object.assign({'twins/ground':'pass','host':'host'},STN.budgetTypes||{})};   /* a station's own passes (the oasis, the Hearths read in place) */
 function itemPositions(name,every){const out=[],m=new THREE.Matrix4();every=every||1;
  BIO.baked.forEach(o=>{if(!o.isInstancedMesh||o.name!=='biome:'+name)return;for(let i=0;i<o.count;i+=every){o.getMatrixAt(i,m);
   const e=m.elements;out.push([e[12],e[13],e[14],Math.hypot(e[0],e[1],e[2])]);}});return out;}

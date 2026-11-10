@@ -120,6 +120,13 @@ if STN.get('region'):
 # A STATION'S READS (station.json "reads": {slot: path from the repo root}): core pieces and other kits' fragments it takes by path
 for _slot, _p in STN.get('reads', {}).items():
     PATH[_slot] = J(*_p.split('/'))
+# THE NEIGHBOURS' KITS read in place (Godshearth's lines: biomes/godshearth/build.py): station.json "kin": {"<kit>": [[fragments], "<API>"]};
+# each kit's fragments slot after the host stage (45) and before the Twins' kit (50), in their own registry, closed by a one-line kitEnd
+for _i, (_k, _v) in enumerate(sorted(STN.get('kin', {}).items())):
+    _fs, _api = _v[0], _v[1]; _c = 'mnopqrst'[_i]
+    for _j, _f in enumerate(_fs): PATH['49%s%d-%s' % (_c, _j, os.path.basename(_f))] = J('biomes', _k, *_f.split('/'))
+    VIRTUAL['49%s-%s-open.js' % (_c, _k)] = "\nBIO.kit('%s');   // its own registry\n" % _k
+    VIRTUAL['49%s9-%s-end.js' % (_c, _k)] = "\nBIO.kit('%s');BIO.kitEnd(%s);   // its registry closed\n" % (_k, _api)
 for f in VIRTUAL: PATH[f] = None
 # core/atmos: its core, presets, particles (the Twin's plume, the skylight's breath), the weather (graupel, rime-fog) and its selector,
 # export, the sky's light; bound by 89a-host-atmos.js (ATMOS.bindHost, ATMOS.bindWeather); the shared sky (89-host-sky.js); snow that
@@ -143,7 +150,7 @@ out = []; bad = []
 for f in frags:
     s = VIRTUAL[f] if PATH[f] is None else open(PATH[f], encoding='utf-8').read()
     n = int(re.match(r'(\d+)', f).group(1))
-    if 10 <= n < 80 and '-host-' not in f and not (PATH[f] and os.path.normpath(PATH[f]).startswith(J('core'))):
+    if 10 <= n < 80 and '-host-' not in f and not re.match(r'49[m-t]', f) and not (PATH[f] and os.path.normpath(PATH[f]).startswith(J('core'))):
         for w in FORBID:
             if w in s: bad.append(f'{f}: uses {w}')
     out.append(f'\n// ==================== {f}\n' if f.endswith('.js') else ''); out.append(s)

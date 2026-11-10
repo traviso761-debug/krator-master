@@ -26,11 +26,11 @@ A station's far country is the map's: `python3 biomes/godthrone/tools/region.py 
 | # | key | page | state |
 |---|---|---|---|
 | 1 | `pyroduct` | `dist/twins.html` | built: the First Breath (Route A's tube A1 at its skylight, the sprint, the dive into A2) |
-| 2 | `brazier` | | to build: the Brazier, Oasis 3 on the col (Route B) |
+| 2 | `brazier` | `dist/twins-brazier.html` | built: the Brazier, Oasis 3 on the col (Route B) |
 | 3 | `lavasump` | | to build: the Red Cistern, the active lava-pool trap (Trap L1) |
-| 4 | `shroudvale` | | to build: the Valley of the Iron Shroud, the frozen box vale (Trap F1) |
-| 5 | `erebustwin` | | to build: the Rime Twin's ice towers and tube 10 |
-| 6 | `catchlookout` | | to build: Catch-Lookout Spring, Oasis 5 above Stair |
+| 4 | `shroudvale` | `dist/twins-shroudvale.html` | built: the Valley of the Iron Shroud, Trap F1 |
+| 5 | `erebustwin` | `dist/twins-erebustwin.html` | built: the Rime Twin's ice towers and tube 10 |
+| 6 | `catchlookout` | `dist/twins-catchlookout.html` | built: Catch-Lookout Spring, Oasis 5 above Stair |
 
 ## Station 1, the First Breath (the pyroduct)
 
@@ -60,3 +60,63 @@ two pixels are 8.9 km apart; the plan's 2 km pixels are coarser than its sprint)
   nearest place to the sprint (a 300 m lattice over the square) with a clear line to the summit, found in the built scene; `The NW Twin's
   plume from the sprint` is the sprint's own sight of it. The plan's "under the looming cone" would need the map's hollow opened toward it:
   the map is the owner's call, so it is recorded here, not carved.
+
+## What the stations share (stations 2-6, 2026-11-09, `claude/twins-finish-cloud`)
+
+- **A station's own ground classes** (`45c`: `FIELD.heat`, `FIELD.cls` from the station's `MODEL.heatAt` and `MODEL.classAt`): sinter, mats, mud,
+  turf, ice, sulphur, lava crust, ash (`TWINS.GROUND`, `TWINS.XKEYS`), painted by 84 and carried to the shader as `aGO`/`aGP` (`vGO`, `vGP`).
+  Station 1 has none: its weights are unchanged.
+- **The ground's layers per station** (`STN.layers`: three library layers, fifteen texture units with the strata, the horizon and the cloud
+  noise) and **shared layers** (`STN.shareLayers`: a class that reads another layer's map, recoloured by luminance, with no unit of its own:
+  the oases' mats and mud read the sinter's or the travertine's grain; the ringisles high isle's way).
+- **The oasis** (`45a7-host-oasis.js`: `OASIS_MODEL`, data; `89c-host-oasis.js`: drawn): KTHERM's heat from a fault line vent and each spring,
+  geyser, mud pot, fumarole and rill; the relief (sinter mounds with their pools sunk in them, cone mounds, mud pits, rills); the classes by
+  the heat (the plan's section 5 zones); the pools and mud pots as `WATER.spring`, the geysers as `WATER.geyser`; the steam (`oasisSmoke`, in
+  89b's one smoke call with the station's own: `STATION_SMOKE`); the hazards (scald, gas vents, hot ground, and the CO2 that pools in the
+  fissure at night: `TWINS.nightPool`, kit-side); the oasis's air (`oasisTemp`). The oasis pass (`60`: `TWINS.buildOasis`) puts the sedge,
+  ferns, cushions, dwarf agate-pines and brimstone needles by the heat.
+- **A Twin under the station** (`89b`: within 6 km) is not drawn as a far plume: the station draws its own steam.
+- **The kit's new items** (`50`): sedge (the library's sedge card), the dwarf agate-pine's bole and flagged crown, brimstone needles, a sinter
+  cone, wreck planks and wheels, strongboxes, ice blocks.
+- **Neighbours read in place** (`build.py`, station.json `"kin"`, Godshearth's lines): the Hearths (`HEARTH`) on the Brazier.
+
+## Station 2, the Brazier (Oasis 3)
+
+Site px 1016, 1479 (4,680 m, 0.89 atm, -7 C on the col). The fissure runs NW-SE through the site (Fissure Vent NW to Fissure Vent SE: the plan's
+map), its north-east side a 16 m basalt scarp with a notch where Route B crosses; the vents rise at its foot. KTHERM: the fissure a line vent
+(34 C, reach 600 m), four pools (the Brazier's Eye 86 C, the Kettle 72, the Rust Pool 58 iron, the soaking pool 40), two geysers (the Horn-Spout,
+a cone, 3 m every 20 minutes; the Chatterer, a spouter), three mud pots (78 C), three fumaroles, four rills south-west down the runoff. Warm
+ground (over 8 C) 780 x 460 m; snow only where it is under 0-8 C. The Hearths' cold dress (1.2-3.2 m) on 25-60 C at q .45; their fans open at
+night. The Shrine of the Split Horn in the scarp's notch by Route B. Route B crosses the square from the south-west (Oasis 2) to the east-north-
+east (Oasis 4), cairned; Fissure Vents NW and SE steam on the far country 20 km either side.
+
+## Station 6, Catch-Lookout Spring (Oasis 5)
+
+Site px 1056, 1462 (3,690 m, 1.01 atm, +2 C: `STN.tempBias` 2.4 on the range's lapse). The map is a bench here; the Catch's fall begins 5-6 km
+out. The page adds a 45 m fault scarp across the bench 380 m east of the spring (its lip wandering; a breach where it has fallen into a talus
+ramp: Route B's way down), the lower bench beyond. The Lookout Spring (70 C, alkaline-chloride) and a second pool on the bench's inner fault;
+eight travertine soaking basins stepping east down the bench (`WATER.terraces`, the ground cut to hold them); the dwarf agate-pines on the
+warm margins (8-18 C), sedge, cushions; the lookout cairn on the lip. No snow lies at this height (the field's snow starts at 4,000 m), so
+the snow layer drops out (14 units).
+
+## Station 4, the Valley of the Iron Shroud (Trap F1)
+
+Site px 968, 1442 (4,720 m, 0.88 atm). The map is a near-flat upland at 2 km; the page cuts the box vale into it: a U-shaped glacial trough
+6.3 km long with 560-620 m walls of columned titanium basalt and talus at their feet, its wide gentle mouth to the south-south-east (toward
+Open Sprint 1), eased back into the map past 4.4 km. At the mouth the lie: a lukewarm iron seep (a `WATER.spring` on the iron ramp, its own
+KTHERM vent: 16 C ground, +12 C air, no snow on it). Four kilometres in, the reverse-sloped terminal moraine (its crest 45 m over the basin
+behind it); the basin sealed (its lowest way out 42 m over its floor), blue ice on its floor, the rimed wreckage of forty caravans (the kit's
+planks, wheels and strongboxes), ~400 blocks of spalled ice under the headwall, KGLACIER's seracs (158) along the hanging glacier's lip. The
+cold sink: -7 C by day, -34 C on the floor at night (a cold-pool record with `shape.pool` and the kit's night state). The Guide's Needle: a
+0.7 m chimney slot up the east wall with 1,324 iron rungs from the talus to the rim (5,322 m).
+
+## Station 5, the Rime Twin (the SE Twin's summit)
+
+Site px 1042, 1498 (5,420 m, 0.81 atm, -18 C mean: `STN.tempBias`). The station stands on the SE Twin (89b draws no far plume for it): a
+summit caldera 3.9 km across under a basalt wall 320-490 m high (its highest point 5,882 m: the map's rim), the flank eased into the map past
+4.4 km; an ice cap up to 30 m thick over the floor, melted back round the inner vent (a pit 150 m across, 55 m deep, sulphur and ash, bare
+warm ground on KTHERM, its own steam column); 24 fumarolic ice towers 6-12 m (KGLACIER's `icetower`), each on a KTHERM fumarole with its gas;
+four steam caves melted into the ice margin, lit blue (KGLACIER's caves), thin ice over them (a fall hazard); tube 10's upper mouth an ice
+cave at the south-east wall's foot; three boiling slush cauldrons (86 C); seracs and 22 crevasses along the margin. The heat, the cauldrons
+and the fumaroles go through `OASIS_MODEL` and 89c. At this site the gas giant hides the sun from about 9:30 to 12:00, so the day views
+are set to 13:36 (`STN.viewHour`).

@@ -18,7 +18,12 @@ const TWIN_CONES=(function(){const t=[{px:988,py:1458,peak:6480,floor:5980,kind:
  t.forEach(T=>{const p=pxXZ(T.px,T.py);T.x=p[0];T.z=p[1];T.d=Math.hypot(p[0],p[1]);
   REGISTER({name:T.name,x:T.x,z:T.z,y:T.floor-600,r:5500,h:T.peak-T.floor+3000,kind:'feature',far:true,tags:{volcano:'active',twin:T.kind==='plume'?'NW':'SE'}});
   if(T.d>150000)return;   /* past the far plane */
+  if(T.d<6000){T.near=true;return;}   /* the station stands on this Twin (station 5, the Rime Twin): it draws its own steam (STATION_SMOKE) */
   for(let k=0;k<5;k++){const a=KRAND.unit(KRAND.hash(WORLD,T.px,k,0x7155))*TAU,r=260*KRAND.unit(KRAND.hash(WORLD,T.py,k,0x7156));em.push([T.x+Math.cos(a)*r,T.floor+40,T.z+Math.sin(a)*r,T.kind]);}
   if(T.glow){ATMOS.glowAdd(T.x,T.floor+80,T.z,[1,.42,.12],900,-1,30);glows++;}});
+ /* A STATION'S OWN STEAM (STATION_SMOKE() -> [[x, y, z, kind], ...]: its fumaroles, springs and geysers' breath, its ice towers): in the same
+    call (one smoke system a page); the kinds steam (the preset's) and fumarole (a thicker, taller vent's, added here) */
+ SP.fumarole={index:5,n:24,rate:.18,rise:26,drift:12,wobble:2,size:[2,9],alpha:.3,rainDamp:0,color:[.9,.9,.88]};
+ const own=typeof STATION_SMOKE==='function'?STATION_SMOKE():[];own.forEach(e=>em.push(e));
  const fume=em.length?ATMOS.smoke(em):null;ATMOS.finish();
- return{cones:t,fume,emitters:em.length,glows};})();
+ return{cones:t,fume,emitters:em.length,own:own.length,glows};})();

@@ -9,7 +9,7 @@ window._biome=null;
  if(typeof stationBuild==='function'){try{window._station=stationBuild();}catch(e){reportErr('station: '+e.stack);}}
  lap('structures');
  const qp=+(new URLSearchParams(location.search).get('q')||1);   // ?q=.4 for a quick look
- try{window._biome=TWINS.build({R:TERR.R,quality:qp,box:[TERR.X0,TERR.Z0,TERR.X1,TERR.Z1],route:STN.route?STN.route():null,warm:STN.warm?STN.warm():[]});}catch(e){reportErr('biome: '+e.stack);}
+ try{window._biome=TWINS.build({R:TERR.R,quality:qp,box:[TERR.X0,TERR.Z0,TERR.X1,TERR.Z1],route:STN.route?STN.route():null,warm:STN.warm?STN.warm():[],oasis:STN.oasis?STN.oasis():null});}catch(e){reportErr('biome: '+e.stack);}
  lap('biome');
  const b=BIO.bake();lap('bake');
  try{buildGround();}catch(e){reportErr('ground: '+e.stack);}

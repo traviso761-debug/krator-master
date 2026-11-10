@@ -53,3 +53,40 @@ TWINS.buildGround=function(R,q,box,route,warmBoxes){const K=KRAND,F=BIO.host.fie
   else if(u(h,9)<smooth(.08,.5,w)*.32*q){const s=mix(.12,.42,Math.pow(u(h,10),1.4));BIO.range=200;
    BIO.put('cushion',[x,y-.03,z],qEuler(0,u(h,11)*TAU,0),[s,s*mix(.7,1.1,u(h,12)),s*mix(.8,1.2,u(h,13))],pick(P.cushion,h));st.cushions++;}},wb));
  BIO.range=null;return st;};
+// ---------------------------------------------------------------- THE OASES (stations 2 and 6: PLAN.md section 5's zonation round a vent)
+// Placed by the ground's temperature (BIO.host.fields.heat: the station's KTHERM bake), never by a noise, over the boxes the station gives
+// (opt.boxes [[x0,z0,x1,z1],...]); opt.dry(x, z) false where nothing grows (a spring, a pool, the sinter's middle). The zones (C of ground):
+//   needles   brimstone needles on the fumaroles' sulphur (70 C and over, the sulph class)
+//   sedge     bobby-sock sedge on the warm turf (15-35 C, the turf class), dense along the runoff
+//   ferns     fumarole-ferns in the warm rock (12-30 C) where it is stony
+//   cushions  cinder-cushions in the periglacial ring (3-15 C)
+//   pines     dwarf agate-pine krummholz on the drier margins (8-18 C; opt.pines), flagged downwind (opt.wind [x, z])
+TWINS.buildOasis=function(q,opt){const K=KRAND,F=BIO.host.fields,H=BIO.host.terrainH,{clamp,smooth,mix,qEuler,TAU}=BIO.fn,P=TWINS.PAL,W=BIO.host.seed>>>0;
+ q=q==null?1:q;const st={sedge:0,oasisFerns:0,oasisCushions:0,pines:0,needles:0};if(!opt||!F.heat)return st;
+ const u=(h,k)=>K.unit(K.hash(h,k)),pick=(a,h)=>a[Math.floor(u(h,99)*a.length)%a.length],X={};
+ const dry=opt.dry||(()=>true),wind=opt.wind||[1,0],wa=Math.atan2(-wind[1],wind[0]);
+ const cells=(c,salt,b,fn)=>{for(let j=Math.floor(b[1]/c);j<Math.ceil(b[3]/c);j++)for(let i=Math.floor(b[0]/c);i<Math.ceil(b[2]/c);i++)fn(i*c,j*c,K.hash(W,i,j,salt));};
+ const ok=(x,z)=>BIO.mask(x,z)>0&&dry(x,z)&&F.path(x,z)<.3&&F.face(x,z)<.5;
+ const cls=(x,z)=>{for(const k of TWINS.XKEYS)X[k]=0;F.cls(x,z,X);return X;};
+ (opt.boxes||[]).forEach(b=>{
+  // the brimstone needles
+  cells(1.4,0x5A11,b,(x0,z0,h)=>{const x=x0+1.4*u(h,1),z=z0+1.4*u(h,2),t=F.heat(x,z);if(t==null||t<70||!ok(x,z))return;const c=cls(x,z);if(c.sulph<.3||u(h,3)>c.sulph*.6*q)return;
+   const s=mix(.08,.26,u(h,4));BIO.range=140;BIO.put('needles',[x,H(x,z)-.01,z],qEuler((u(h,5)-.5)*.3,u(h,6)*TAU,(u(h,7)-.5)*.3),[s,s,s],pick(P.brim,h));st.needles++;});
+  // the sedge on the warm turf, the ferns in the warm stones
+  cells(1.1,0x5ED6,b,(x0,z0,h)=>{const x=x0+1.1*u(h,1),z=z0+1.1*u(h,2),t=F.heat(x,z);if(t==null||t<12||t>36||!ok(x,z))return;const c=cls(x,z);
+   if(c.sinter>.45||c.mud>.3||c.mat>.5||c.sulph>.3)return;const y=H(x,z);
+   if(c.turf>.2&&u(h,3)<c.turf*smooth(14,20,t)*smooth(36,30,t)*.6*q){const s=mix(.3,.6,u(h,4));BIO.range=180;
+    BIO.put('sedge',[x,y+.01,z],qEuler((u(h,5)-.5)*.2,u(h,6)*TAU,(u(h,7)-.5)*.2),[s,s*mix(.85,1.2,u(h,8)),s],pick(P.sedge,h));st.sedge++;}
+   else if(c.turf<.5&&u(h,9)<.12*q*smooth(12,18,t)*smooth(32,26,t)){const s=mix(.35,.8,u(h,10));BIO.range=200;
+    BIO.put('fern',[x,y+.02,z],qEuler((u(h,11)-.5)*.2,u(h,12)*TAU,(u(h,13)-.5)*.2),[s,s,s],pick(P.fern,h));st.oasisFerns++;}});
+  // the cushions in the periglacial ring
+  cells(2.2,0xC05A,b,(x0,z0,h)=>{const x=x0+2.2*u(h,1),z=z0+2.2*u(h,2),t=F.heat(x,z);if(t==null||t<3||t>15||!ok(x,z))return;const c=cls(x,z);if(c.sinter>.3||c.mud>.2)return;
+   if(u(h,3)>.32*q*smooth(3,6,t)*smooth(15,11,t))return;const s=mix(.15,.5,Math.pow(u(h,4),1.3));BIO.range=200;
+   BIO.put('cushion',[x,H(x,z)-.03,z],qEuler(0,u(h,5)*TAU,0),[s,s*mix(.7,1.1,u(h,6)),s*mix(.8,1.2,u(h,7))],pick(P.cushion,h));st.oasisCushions++;});
+  // the krummholz on the drier warm margins: a bole and its crown flagged downwind
+  if(opt.pines)cells(5,0x91E5,b,(x0,z0,h)=>{const x=x0+5*u(h,1),z=z0+5*u(h,2),t=F.heat(x,z);if(t==null||t<8||t>18||!ok(x,z))return;const c=cls(x,z);
+   if(c.sinter>.2||c.mud>.1||c.mat>.2||c.turf>.6||u(h,3)>.3*q*smooth(8,10,t)*smooth(18,15,t))return;
+   const Hh=mix(1.8,3.8,u(h,4)),y=H(x,z),a=wa+(u(h,5)-.5)*.5,cr=mix(.9,1.6,u(h,6));BIO.range=600;
+   BIO.put('kbole',[x,y-.1,z],qEuler(0,a,0),[Hh*.9,Hh,Hh*.9],pick(P.agate,h));
+   BIO.put('kcrown',[x+Math.cos(a)*.35*cr,y+Hh*.92,z-Math.sin(a)*.35*cr],qEuler(0,a,0),[cr,cr*mix(.7,1,u(h,7)),cr],pick(P.needle,h));st.pines++;});});
+ BIO.range=null;return st;};

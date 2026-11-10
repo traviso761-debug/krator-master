@@ -22,5 +22,37 @@
   out) the ground is the cavern's mesh under the tube's ShaderMaterial: one moss colour where it lies flat, the basalt on its walls, none of
   the host's paint or KGROUND grain. It reads as a plain band 1-3 m wide round the skylight. Drawing the host's paint there (the paint
   texture and the field's UVs on the cavern's ground vertices) would close it.
-- [ ] **Stations 2-6 are not built** (`NOTES.md`, "Stations"). Route B's oases need `core/water` (spring, terrace, geyser) and the Hearths',
-  Xanadu's and Geyser's species read in place; the traps need `core/hazard` records (lava sumps, gas pockets, the cold sink).
+- [ ] **Stations 2-6: the GPU verify is owed** (built in a cloud session, 2026-11-09, `claude/twins-finish-cloud`). Each page passes
+  `verify.py --assert` in software GL only; `KRATOR_GL=gpu` (`harness.py lock`, either lane) is owed for all five and again for station 1,
+  whose page changed with the shared fragments (the hash in `PORT-BASELINE.json` is the old page's: rewrite it after the GPU run, with the new
+  pages added).
+- [ ] **Core versions owed of what the stations draw kit-side** (the opt-in core files on `claude/core-plan-features-229d2a` are not pushed):
+  - *mud pots*: each is a `WATER.spring` with a grey-rose kaolinite ramp, boiling (`89c-host-oasis.js`); core/water has no mud-pot kind (the
+    plop, the mud's thickness, the spatter ring);
+  - *fumaroles*: the steam is core/atmos's smoke (a `fumarole` kind added to the page's preset in `89b`), the gas `KHAZ.GROUND.gasVent`, the
+    sulphur a ground class and the kit's brimstone needles; no core fumarole record ties them together;
+  - *gas that pools at night*: `shape.pool` (core/hazard/21) with the kit's own state `TWINS.nightPool` (`89c`: off by day, full 21:00-05:00
+    on the host clock), registered in `KHAZ.STATES` by the page;
+  - *a crust that breaks underfoot* (the Red Cistern), *thin ice over the steam caves* and *the crevasses* (the Rime Twin): hazard records
+    with a weight trigger and the stations' own states;
+  - *the cold-air sink* (the Iron Shroud): a cold record with `shape.pool` on the kit's night state, its temperature the page's
+    `STATION_TEMP` (-34 C on the basin's floor at night); core has no katabatic pooling for a hazard or the ambient bridge.
+- [ ] **The oases' neighbours are endemic variants, not reads in place** (but the Hearths, which are read in place on the Brazier): the dwarf
+  agate-pine is the kit's own (a bole in the agate palette under a flagged crown), not Xanadu's agate tree drawn small; the bobby-sock sedge
+  is the library's sedge card, not the geyser kit's puna turf; the mats are ground classes and core/water's spring ramps, not the geyser kit's
+  puna mats. Reading Xanadu's and the geyser kit's own (`"kin"`) needs a dwarf form in each of them.
+- [ ] **Shared layers read KGROUND's sampler by its name** (`uKG<i>`, `84-host-ground.js`, `STN.shareLayers`): core names a layer's sampler
+  that way today; if it ever renames them the shared classes fall back to their paint (no error). A `share` option in `KGROUND.hook` would
+  make it core's own.
+- [ ] **No caravans, tents or beasts** at the oases (the yaks rolling in the Brazier's sand-beds, the felt tents under the hearths' fans, the
+  outbound caravans at Catch-Lookout): owed to the life layer with the rest (`core/camp`, `kits/fauna`).
+- [ ] **Catch-Lookout's scarp is the page's, not the map's**: map 5.1 is a bench there and the Catch's fall begins 5-6 km out; the 45 m fault
+  scarp east of the spring is drawn by the page so the ledge reads as a ledge. The Catch's floor shows past it on the far country; Stair
+  (100 km) is past the far field.
+- [ ] **Faces in shadow read near-black in software GL** (the Iron Shroud's south-facing headwall and its west wall before late afternoon:
+  "The Guide's Needle" and "Up the vale" show little). The shared ground shader (`84`) gives a face in KHORIZON's shadow only the weak
+  hemisphere light. Judge it on the GPU first; if it holds there, a little sky fill on the faces in `84` (every station) is the fix.
+- [ ] **No rime-fog in the Iron Shroud's basin** (PLAN.md section 4.2: the whiteout that buries the tracks): the page binds no height fog
+  (core/atmos/host's heightfog is not taken); the weather's blizzard is the only fog there.
+- [ ] **The Rime Twin's ice cliffs are kept under ~30 degrees**: the ice margin is drawn as ground, and the faces' strata paint (now kept
+  off the ice: `gRockW *= 1 - vGP.x` in `84`) was the reason; a true serac cliff is KGLACIER's seracs, not the ground.

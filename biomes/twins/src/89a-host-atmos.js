@@ -13,6 +13,6 @@ ATMOS.bindWeather({climate:{cold:true},sun,hemi,grounds:GROUND?[GROUND.material]
 // sun (the scree stays below freezing at noon: PLAN.md section 6's -4 C is the mean); a station's own (STATION_TEMP: +13 C inside the warm tubes, an oasis's warm ground) where it says so
 if(ATMOS.provideAir)ATMOS.provideAir(SKY.preset||SKY.P||{air:{pressure:1.6,thin:{y0:0,scale:8000}}});
 else KHAZ.provide('pressure',(x,y,z)=>AIR.at(y));
-const tempMean=y=>-4-6.5*(y-4240)/1000;
+const tempMean=y=>-4-6.5*(y-4240)/1000+(STN.tempBias||0);   /* STN.tempBias: a station's own departure from the range's lapse (the Catch's warm updraught at station 6: PLAN.md section 6's +2 C) */
 KHAZ.provide('temperature',(x,y,z)=>{const own=typeof STATION_TEMP==='function'?STATION_TEMP(x,y,z):null;if(own!=null)return own;
  const s=SKY.state&&SKY.state.sunDir,e=s?(s.y==null?s[1]:s.y):0;return tempMean(y)+3.5*clamp(e*2.2,-1,1);});

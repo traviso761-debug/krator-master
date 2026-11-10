@@ -41,7 +41,13 @@ local_three = lambda folder: _harness.local_three(folder, os.path.dirname(os.pat
 # with its loose stuff (station 1: the skylight's collar, its blocks and ferns, the first cairns). No water (station 1 has none) and no
 # buckets (the kit places only instanced items).
 EXPORT_BOX = [-1716, 632, -1416, 932]          # twins.html: round the First Skylight Break
-EXPORT_BOXES = {}
+# Each station's own 300 m cell (stations 2-6), round its set-piece: the oasis's pools, the sump's rim, the vale's basin, the towers
+EXPORT_BOXES = {
+    'twins-brazier.html': [-150, -150, 150, 150],          # the Brazier: its pools, cones, sedge and hearths
+    'twins-catchlookout.html': [-180, -150, 120, 150],     # Catch-Lookout Spring: the spring, the basins, the pines
+    'twins-shroudvale.html': [-937, -1880, -637, -1580],   # the Iron Shroud: the cold sink's wreckage
+    'twins-erebustwin.html': [50, -500, 350, -200],        # the Rime Twin: a steam cave, a cauldron, the vent's rim
+}
 EXPORT_PROFILE = ['registry', 'items', 'materials', 'textures', 'terrain', 'stage', 'atmos']
 
 # Structure names contain em dashes; the Windows console default codepage

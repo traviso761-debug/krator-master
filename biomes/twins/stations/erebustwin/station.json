@@ -1,0 +1,14 @@
+{
+ "name": "The Rime Twin (station 5; PLAN.md section 6): Al-Qaran al-Saghir's glaciated summit caldera at 5,420 m (0.81 atm, EF, -18 C): an ice cap over the caldera floor under a basalt rim rising to 5,880 m, an active pit steaming through it with bare warm ground round it, Mount Erebus fumarolic ice towers 6-12 m on the fumaroles across the floor and up to the rim, steam caves melted into the ice margin and lit blue from within, boiling snow-slush cauldrons at the ice's foot, the upper mouth of tube 10 (tube_xanadu_se_10) melted into the glacier sole under the south-east wall; the NW Twin's plume 134 km off",
+ "out": "twins-erebustwin.html",
+ "region": "region.json",
+ "reads": {
+  "45a-core-therm.js": "core/terrain/47-core-therm.js",
+  "21-core-hazard-flow.js": "core/hazard/21-core-hazard-flow.js",
+  "44g-core-glacier.js": "core/terrain/44g-core-glacier.js",
+  "44h-core-glacier-draw.js": "core/terrain/host/44h-core-glacier-draw.js"
+ },
+ "water": ["20-core-water.js", "21-core-water-shore.js", "22-core-water-flow.js", "50-core-water-draw.js", "51-core-water-kinds.js",
+           "geyser/52-core-water-geyser.js", "geyser/52b-core-water-geyser-draw.js"],
+ "tex": ["scree", "ice", "lichenCrust"]
+}

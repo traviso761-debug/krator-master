@@ -19,21 +19,31 @@ function buildGround(){
  const TEX=BIO.canvasTex(TW,TW,(g0,W0,H0)=>{const w=W0/2,h=H0/2,cv=document.createElement('canvas');cv.width=w;cv.height=h;
   const g=cv.getContext('2d'),id=g.createImageData(w,h),d=id.data,c=new THREE.Color(),GR=TWINS.GROUND,col=k=>new THREE.Color(GR[k].col);
   const BAS=col('basalt'),SC=col('scree'),OB=col('obsidian'),SN=col('snow'),RI=col('rime'),PA=col('path'),MO=col('moss'),LI=col('lichen'),LI2=new THREE.Color(0xa0582a);
+  const SI=col('sinter'),MA=col('mat'),MB=new THREE.Color(0x3a2a18),MU=col('mud'),TU=col('turf'),IC=col('ice'),SU=col('sulph'),CR=col('crust'),AS=col('ash');
   for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,wx=TERR.X0+(x+.5)/w*SX,wz=TERR.Z0+(y+.5)/h*SZ,n=KRAND.h3(x,y,0,WORLD+21)-.5;
    TWINS.groundAt(wx,wz,G);
    c.copy(BAS).lerp(SC,clamp(G.scree*.9,0,1)).lerp(OB,clamp(G.obsidian,0,1));
    if(G.lichen>0)c.lerp(LI.clone().lerp(LI2,smooth(.4,.7,KRAND.vnoise(wx*.04,0,wz*.04,WORLD+22))),G.lichen*.35*smooth(.45,.7,KRAND.vnoise(wx*.09,0,wz*.09,WORLD+23)));
    if(G.path>0)c.lerp(PA,G.path*.75);if(G.moss>0)c.lerp(MO,G.moss*.85);
    if(G.rime>0)c.lerp(RI,G.rime*.35);if(G.snow>0)c.lerp(SN,clamp(G.snow*1.15,0,1));
+   /* a station's own classes (stations 2-6; all 0 on station 1): the mats orange where hotter, ochre and black where the runoff cools */
+   if(G.ash>0)c.lerp(AS,G.ash*.85);if(G.crust>0)c.lerp(CR,G.crust*.9);if(G.ice>0)c.lerp(IC,G.ice*.92);if(G.mud>0)c.lerp(MU,G.mud*.9);if(G.sinter>0)c.lerp(SI,G.sinter*.9);
+   if(G.turf>0)c.lerp(TU,G.turf*.85);if(G.mat>0)c.lerp(MA.clone().lerp(MB,smooth(.35,.75,KRAND.vnoise(wx*.05,0,wz*.05,WORLD+26))*.8),G.mat*.9);if(G.sulph>0)c.lerp(SU,G.sulph*.9);
    const k=1+n*.07;d[i]=clamp(c.r*255*k,0,255);d[i+1]=clamp(c.g*255*k,0,255);d[i+2]=clamp(c.b*255*k,0,255);d[i+3]=255;}
   g.putImageData(id,0,0);g0.imageSmoothingEnabled=true;g0.imageSmoothingQuality='high';g0.drawImage(cv,0,0,W0,H0);});
  const DET=BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
   for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,v=232+(KRAND.fbm(x/9,0,y/9,2,WORLD+24)-.5)*40+(KRAND.h3(x,y,0,WORLD+25)-.5)*24;d[i]=d[i+1]=d[i+2]=clamp(v,0,255);d[i+3]=255;}
   g.putImageData(id,0,0);});
  const MAT=new THREE.MeshStandardMaterial({map:TEX,color:0xffffff,roughness:.96,metalness:0});
- const GLY=[KGROUND.layer('twins','scree',{w:'vGL.x*(1.0-vGL.y)',amt:.75,gain:1,tint:'vec3(0.62,0.58,0.56)'}),
-  KGROUND.layer('twins','obsidian',{w:'vGL.y',amt:.8,gain:1,tint:'vec3(0.5)'}),
-  KGROUND.layer('twins','snow',{w:'vGM.x',amt:.95,gain:1,tint:'vec3(1.0)'})];
+ /* THE LAYERS: station 1's three (the scree, the obsidian, the snow), or the station's own (STN.layers: [[slot, {w, amt, gain, tint}], ...],
+    each weight a GLSL float of the vertex weights vGL (scree, obsidian, path), vGM (snow, rime, moss, lichen), vGO (sinter, mat, mud, turf)
+    and vGP (ice, sulph, crust, ash)) */
+ const GLY=(STN.layers||[['scree',{w:'vGL.x*(1.0-vGL.y)',amt:.75,gain:1,tint:'vec3(0.62,0.58,0.56)'}],['obsidian',{w:'vGL.y',amt:.8,gain:1,tint:'vec3(0.5)'}],
+  ['snow',{w:'vGM.x',amt:.95,gain:1,tint:'vec3(1.0)'}]]).map(L=>Object.assign(KGROUND.layer('twins',L[0],L[1])||{},{name:L[0]})).map(L=>L.map?L:null);
+ /* A SHARED LAYER (STN.shareLayers {name: {from: a layer above, w (GLSL weight), col: [r, g, b] (linear), amt}}: the ringisles' high isle's way,
+    2026-11-09): it reads the map of a layer already drawn (KGROUND's sampler for it, uKG<i>), recoloured to its own colour by luminance, so it
+    takes no texture unit of its own: the oases' mats and mud read the sinter's grain. Drawn after the KGROUND layers (SHARE_GLSL) */
+ let SHARE_GLSL='';
  /* THE BEDS AT A DISTANCE (the Godthrone's): the tibasalt's beds are 0.1-15 m, finer than a pixel past a few hundred metres; the column's
     colour averaged over 6 m, its contrast with the column's mean raised 1.6x, is what a far face shows (faded in from 150 to 600 m) */
  const BAND=(function(){const y0=STRATA.range[0],y1=STRATA.range[1],st=6,n=Math.ceil((y1-y0)/st),lin=new Float32Array(n*3),mean=[0,0,0];
@@ -47,15 +57,15 @@ function buildGround(){
   sh.uniforms.uBox={value:new THREE.Vector4(TERR.X0,TERR.Z0,TERR.X1,TERR.Z1)};sh.uniforms.uFarC={value:new THREE.Vector3(...FAR.C.scree)};
   sh.uniforms.uDetail={value:hostGroundLib('groundDetail',DET)};sh.uniforms.uRockFace={value:hostGroundLib('rockFace',DET)};
   STRATA_SH.inject(sh);
-  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;varying vec3 vGWN;attribute vec3 aGL;attribute vec4 aGM;varying vec3 vGL;varying vec4 vGM;')
-   .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGL=aGL;vGM=aGM;vGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vGWN=normalize(mat3(modelMatrix)*objectNormal);');
-  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail;uniform sampler2D uRockFace;varying vec3 vGWP;varying vec3 vGWN;varying vec3 vGL;varying vec4 vGM;float gRockW;uniform sampler2D uBand;'+KHOOK.EYE+'uniform vec2 uBandR;uniform vec4 uBox;uniform vec3 uFarC;')
+  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;varying vec3 vGWN;attribute vec3 aGL;attribute vec4 aGM;varying vec3 vGL;varying vec4 vGM;'+(STN.layers?'attribute vec4 aGO;attribute vec4 aGP;varying vec4 vGO;varying vec4 vGP;':''))
+   .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGL=aGL;vGM=aGM;'+(STN.layers?'vGO=aGO;vGP=aGP;':'')+'vGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vGWN=normalize(mat3(modelMatrix)*objectNormal);');
+  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail;uniform sampler2D uRockFace;varying vec3 vGWP;varying vec3 vGWN;varying vec3 vGL;varying vec4 vGM;'+(STN.layers?'varying vec4 vGO;varying vec4 vGP;':'')+'float gRockW;uniform sampler2D uBand;'+KHOOK.EYE+'uniform vec2 uBandR;uniform vec4 uBox;uniform vec3 uFarC;')
    .replace('#include <map_fragment>',['#include <map_fragment>',
     /* the detail: the library's cinder as a grey multiply, decoded from sRGB and scaled back to its mean of 0.9 (materials.json) */
     '{vec3 dt=pow(texture2D(uDetail,vGWP.xz*0.21).rgb,vec3(2.2))*1.134;vec3 dt2=pow(texture2D(uDetail,vGWP.xz*0.031+0.37).rgb,vec3(2.2))*1.134;diffuseColor.rgb*=mix(vec3(1.0),dt*dt2*1.12,0.8);',
-    '/*KGROUND*/',
+    '/*KGROUND*/',SHARE_GLSL,
     // the rock: wherever the ground is steep, its own beds (KSTRATA's tibasalt), the basalt's grain on the face's plane
-    ' float steep=1.0-clamp(vGWN.y,0.0,1.0);gRockW=smoothstep(0.30,0.58,steep);',
+    ' float steep=1.0-clamp(vGWN.y,0.0,1.0);gRockW=smoothstep(0.30,0.58,steep);'+(STN.layers?'gRockW*=1.0-vGP.x;':''),   /* ice on the steep is ice, not the basalt's beds (stations 4 and 5) */
     ' vec2 fp=abs(vGWN.x)>abs(vGWN.z)?vec2(vGWP.z,vGWP.y):vec2(vGWP.x,vGWP.y);',
     ' vec3 rf=pow(texture2D(uRockFace,fp*0.11).rgb,vec3(2.2))*1.9;',
     ' vec3 sc=strataColor(vSWP,vSWN)*mix(vec3(1.0),rf,0.7);',
@@ -67,7 +77,7 @@ function buildGround(){
     ' diffuseColor.rgb=mix(diffuseColor.rgb,vec3(0.86,0.89,0.93),vGM.x*gRockW*smoothstep(0.75,0.45,steep));',
     ' {float ed=min(min(vGWP.x-uBox.x,uBox.z-vGWP.x),min(vGWP.z-uBox.y,uBox.w-vGWP.z));',
     '  diffuseColor.rgb=mix(diffuseColor.rgb,uFarC,0.6*smoothstep(700.0,40.0,ed)*(1.0-gRockW)*(1.0-vGM.x));}}'].join('\n'))
-   .replace('#include <roughnessmap_fragment>','#include <roughnessmap_fragment>\nroughnessFactor=mix(roughnessFactor,0.84,gRockW);roughnessFactor=mix(roughnessFactor,0.42,vGL.y*0.9);roughnessFactor=mix(roughnessFactor,0.7,vGM.x*0.8);')
+   .replace('#include <roughnessmap_fragment>','#include <roughnessmap_fragment>\nroughnessFactor=mix(roughnessFactor,0.84,gRockW);roughnessFactor=mix(roughnessFactor,0.42,vGL.y*0.9);roughnessFactor=mix(roughnessFactor,0.7,vGM.x*0.8);'+(STN.layers?'roughnessFactor=mix(roughnessFactor,0.38,vGP.x*0.85);roughnessFactor=mix(roughnessFactor,0.5,vGO.z*0.8);roughnessFactor=mix(roughnessFactor,0.55,vGP.z*0.7);':''))
    .replace('#include <metalnessmap_fragment>','#include <metalnessmap_fragment>\nmetalnessFactor=mix(metalnessFactor,0.1,gRockW);metalnessFactor=mix(metalnessFactor,0.06,vGL.y);');};   /* the ilmenite sheen; the obsidian's glass */
  MAT.customProgramCacheKey=()=>'twins-ground';
  /* THE GROUND'S RELIEF (core/terrain/GROUND.md, as the Godthrone takes it): a derivative bump from the layers' blended height, cavity
@@ -75,14 +85,17 @@ function buildGround(){
  const RELIEF=new URLSearchParams(location.search).get('kgrelief')!=='0';
  // ---- the meshes: the base lattice (its cells under the insets and in the cavern's holes left out) and each inset
  const inHole=(x,z)=>!!(GROUND_HOLE&&GROUND_HOLE(x,z));
- const mkMesh=(F,skip,label)=>{const nx=F.nx,nz=F.nz,n=nx*nz,pos=new Float32Array(n*3),uv=new Float32Array(n*2),aGL=new Float32Array(n*3),aGM=new Float32Array(n*4),hole=new Uint8Array(n);
+ const mkMesh=(F,skip,label)=>{const nx=F.nx,nz=F.nz,n=nx*nz,pos=new Float32Array(n*3),uv=new Float32Array(n*2),aGL=new Float32Array(n*3),aGM=new Float32Array(n*4),hole=new Uint8Array(n),XO=STN.layers?new Float32Array(n*8):null;
   for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const k=j*nx+i,x=F.x0+i*F.step,z=F.z0+j*F.step;
    pos[k*3]=x;pos[k*3+1]=F.heights[k];pos[k*3+2]=z;uv[k*2]=(x-TERR.X0)/SX;uv[k*2+1]=1-(z-TERR.Z0)/SZ;hole[k]=inHole(x,z)?1:0;
-   TWINS.groundAt(x,z,G);aGL[k*3]=G.scree;aGL[k*3+1]=G.obsidian;aGL[k*3+2]=G.path;aGM[k*4]=G.snow;aGM[k*4+1]=G.rime;aGM[k*4+2]=G.moss;aGM[k*4+3]=G.lichen;}
+   TWINS.groundAt(x,z,G);aGL[k*3]=G.scree;aGL[k*3+1]=G.obsidian;aGL[k*3+2]=G.path;aGM[k*4]=G.snow;aGM[k*4+1]=G.rime;aGM[k*4+2]=G.moss;aGM[k*4+3]=G.lichen;
+   if(XO)['sinter','mat','mud','turf','ice','sulph','crust','ash'].forEach((q,c)=>XO[k*8+c]=G[q]);}
   const idx=[];let holes=0;for(let j=0;j<nz-1;j++)for(let i=0;i<nx-1;i++){if(skip&&skip(i,j))continue;const a=j*nx+i,b=a+1,c=a+nx,d=c+1;
    if(hole[a]&&hole[b]&&hole[c]&&hole[d]){holes++;continue;}idx.push(a,c,b,b,c,d);}
   const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('uv',new THREE.BufferAttribute(uv,2));
-  g.setAttribute('aGL',new THREE.BufferAttribute(aGL,3));g.setAttribute('aGM',new THREE.BufferAttribute(aGM,4));g.setIndex(new THREE.BufferAttribute(new Uint32Array(idx),1));
+  g.setAttribute('aGL',new THREE.BufferAttribute(aGL,3));g.setAttribute('aGM',new THREE.BufferAttribute(aGM,4));
+  if(XO){const a=new Float32Array(n*4),b=new Float32Array(n*4);for(let k=0;k<n;k++)for(let c=0;c<4;c++){a[k*4+c]=XO[k*8+c];b[k*4+c]=XO[k*8+4+c];}
+   g.setAttribute('aGO',new THREE.BufferAttribute(a,4));g.setAttribute('aGP',new THREE.BufferAttribute(b,4));}g.setIndex(new THREE.BufferAttribute(new Uint32Array(idx),1));
   g.computeVertexNormals();g.computeBoundingSphere();const m=new THREE.Mesh(g,MAT);m.userData.probeSkip=true;m.userData.inspectLabel=label;m.userData.holes=holes;scene.add(m);GROUND_MESHES.push(m);return m;};
  const ibs=INSETS.map(I=>[Math.round((I.box[0]-TERR.X0)/FIELD_STEP),Math.round((I.box[1]-TERR.Z0)/FIELD_STEP),Math.round((I.box[2]-TERR.X0)/FIELD_STEP),Math.round((I.box[3]-TERR.Z0)/FIELD_STEP)]);
  const m=mkMesh(GROUND_F,ibs.length?(i,j)=>ibs.some(ib=>i>=ib[0]&&i<ib[2]&&j>=ib[1]&&j<ib[3]):null,STN.title.replace('Krator Twins: ','')+' (ground)');
@@ -93,13 +106,20 @@ function buildGround(){
     kgLive, its GLSL weight evaluated per vertex); the count is window._groundUnits, which verify.py asserts against 16 in any GL */
  const GF={smoothstep:(a,b,x)=>{const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t);},clamp:(x,a,b)=>Math.min(b,Math.max(a,x)),
   mix:(a,b,t)=>a+(b-a)*t,step:(e,x)=>x<e?0:1,min:Math.min,max:Math.max,abs:Math.abs,pow:Math.pow,sqrt:Math.sqrt};
- const kgLive=L=>{if(!L)return false;let f;try{f=new Function(...Object.keys(GF),'return function(vGL,vGM){return '+L.w.replace(/(\d)\.0\b/g,'$1')+';};')(...Object.values(GF));}catch(e){return true;}
-  const P=[{},{}],C='xyzw',A=['aGL','aGM'];
+ const NA=STN.layers?4:2;
+ const kgLive=L=>{if(!L)return false;let f;try{f=new Function(...Object.keys(GF),'return function(vGL,vGM,vGO,vGP){return '+L.w.replace(/(\d)\.0\b/g,'$1')+';};')(...Object.values(GF));}catch(e){return true;}
+  const P=[{},{},{},{}],C='xyzw',A=['aGL','aGM','aGO','aGP'].slice(0,NA);
   try{for(const m of GROUND_MESHES){const at=A.map(k=>m.geometry.attributes[k]),n=at[0].count;
-   for(let v=0;v<n;v++){for(let a=0;a<2;a++){const s=at[a].itemSize,d=at[a].array;for(let c=0;c<s;c++)P[a][C[c]]=d[v*s+c];}
-    if(f(P[0],P[1])>1e-3)return true;}}}catch(e){return true;}
+   for(let v=0;v<n;v++){for(let a=0;a<NA;a++){const s=at[a].itemSize,d=at[a].array;for(let c=0;c<s;c++)P[a][C[c]]=d[v*s+c];}
+    if(f(P[0],P[1],P[2],P[3])>1e-3)return true;}}}catch(e){return true;}
   return false;};
  const GLY_LIVE=GLY.filter(kgLive);
+ /* the shared layers: each reads its source's sampler (uKG<i>: KGROUND's name for the i-th layer it draws), plain (no hex tiling: a
+    recoloured grain under the paint), its luminance about its mean (.5) scaling the shared colour; a source left out leaves it to the paint */
+ {const SH=STN.shareLayers||{},parts=[],out={};for(const k in SH){const o=SH[k],i=GLY_LIVE.findIndex(L=>L.name===o.from);if(i<0){out[k]=null;continue;}
+   const sc=(GLY_LIVE[i].k==null?.3:GLY_LIVE[i].k).toFixed(4),c=o.col.map(v=>v.toFixed(4)).join(',');
+   parts.push('{float w='+o.w+';if(w>0.002){float l=dot(pow(texture2D(uKG'+i+',vGWP.xz*'+sc+'+'+(.17*(parts.length+1)).toFixed(2)+').rgb,vec3(2.2)),vec3(0.2126,0.7152,0.0722));diffuseColor.rgb=mix(diffuseColor.rgb,vec3('+c+')*(0.55+0.9*l),w*'+(o.amt==null?.85:o.amt).toFixed(2)+');}}');out[k]=o.from;}
+  SHARE_GLSL=parts.join('\n');window._groundShared=out;}
  KGROUND.hook(MAT,Object.assign({layers:GLY_LIVE,key:'twins-ground'},RELIEF?{relief:{bump:.075,cavity:.8,mesh:1,strata:.45,
   strataW:'smoothstep(0.30,0.58,1.0-clamp(normalize(vGWN).y,0.0,1.0))'}}:{}));
  window._groundLayers={kept:GLY_LIVE.map(L=>L.name||L.slot||'?'),dropped:GLY.filter(L=>L&&GLY_LIVE.indexOf(L)<0).map(L=>L.name||L.slot||'?')};

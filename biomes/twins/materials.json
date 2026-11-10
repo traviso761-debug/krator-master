@@ -1,6 +1,6 @@
 {
  "build": "twins",
- "note": "The Twins kit's adapter onto the material library (core/materials/PLAN.md). Keys are the kit's MAT slots (50-biome-twins-species.js, BIO.libSwap) and the host's ground slots (84-host-ground.js: KGROUND.layer and hostGroundLib). Every station (BASE_TEX in build.py): groundDetail a grey multiply on the ground (ground.cinder); rockFace the titanium basalt's grain on every face, grey under KSTRATA's tibasalt colours (rock.basalt.titanium, as the Godthrone's: the same rock); rock the talus blocks and stones (the same grain, grey under the instance colour); obsidian the obsidian boulders' glassy grain (stone.obsidian, grey under the near-black); snow the lying snow in the hollows and the lee (ground.snow.drift, full colour). Station 1 (the pyroduct, station.json \"tex\"): scree the frost-shattered cinder and scoria of the sprint's slope (ground.scoria, a KGROUND layer); lichenCrust the rock lichens on the scree's stones (ground.lichen.crust); fern the fumarole-ferns' frond card round the skylight (card.fern.green, the sheet's middle cell, grey: the instance colour greens it). Run python3 tools/textures/pack.py biomes/twins after any change, then python3 build.py.",
+ "note": "The Twins kit's adapter onto the material library (core/materials/PLAN.md). Keys are the kit's MAT slots (50-biome-twins-species.js, BIO.libSwap) and the host's ground slots (84-host-ground.js: KGROUND.layer and hostGroundLib). Every station (BASE_TEX in build.py): groundDetail a grey multiply on the ground (ground.cinder); rockFace the titanium basalt's grain on every face, grey under KSTRATA's tibasalt colours (rock.basalt.titanium, as the Godthrone's: the same rock); rock the talus blocks and stones (the same grain, grey under the instance colour); obsidian the obsidian boulders' glassy grain (stone.obsidian, grey under the near-black); snow the lying snow in the hollows and the lee (ground.snow.drift, full colour). Station 1 (the pyroduct, station.json \"tex\"): scree the frost-shattered cinder and scoria of the sprint's slope (ground.scoria, a KGROUND layer); lichenCrust the rock lichens on the scree's stones (ground.lichen.crust); fern the fumarole-ferns' frond card round the skylight (card.fern.green, the sheet's middle cell, grey: the instance colour greens it). Run python3 tools/textures/pack.py biomes/twins after any change, then python3 build.py. Stations 2-6 (station.json \"tex\"): sinter the oases' silica sinter aprons (ground.sinter, a KGROUND layer; the mats and the mud read its map, STN.shareLayers); travertine the Catch-Lookout's alkaline terraces (ground.travertine.white); lavaCrust the Red Cistern's blister crust and its lava lake's grain (ground.lava.crust); ice the glacier ice of the Shroud's snout and the Rime Twin's cap (ice.glacier); sedge the bobby-sock sedge card (card.sedge.fen, grey: the instance colour greens it).",
  "size": 512,
  "families": {
   "groundDetail": {
@@ -108,6 +108,66 @@
     0.66,
     0.66
    ]
+  },
+  "sinter": {
+   "lib": "ground.sinter",
+   "scale": [
+    3,
+    3
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "mapOnly": true
+  },
+  "travertine": {
+   "lib": "ground.travertine.white",
+   "scale": [
+    3,
+    3
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "mapOnly": true
+  },
+  "lavaCrust": {
+   "lib": "ground.lava.crust",
+   "scale": [
+    3,
+    3
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "mapOnly": true
+  },
+  "ice": {
+   "lib": "ice.glacier",
+   "scale": [
+    6,
+    6
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "mapOnly": true
+  },
+  "sedge": {
+   "lib": "card.sedge.fen",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.7
+   },
+   "size": 512
   }
  }
 }

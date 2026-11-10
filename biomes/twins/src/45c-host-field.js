@@ -63,6 +63,10 @@ const FIELD={slope:fcAt('slope'),hollow:fcAt('hollow'),north:fcAt('north'),face:
  /* the warm breath melts the snow and the rime off (the ferns' collar is snow-free: PLAN.md section 5.2) */
  snow:(x,z)=>FC.at(FC.a.snow,x,z)*(1-MODEL.warmAt(x,z)),rime:(x,z)=>FC.at(FC.a.rime,x,z)*(1-MODEL.warmAt(x,z)),
  warm:(x,z)=>MODEL.warmAt(x,z),path:(x,z)=>MODEL.pathAt(x,z),
+ /* A STATION'S OWN GROUND (stations 2-6, read live; station 1 has none): heat (the ground's temperature, C: an oasis's KTHERM bake; null
+    where the station has no vents) and cls(x, z, o) the station's classes beyond the scree's (o.sinter, mat, mud, turf, ice, sulph, crust,
+    ash: 0..1 each, TWINS.groundAt merges them) */
+ heat:(x,z)=>MODEL.heatAt?MODEL.heatAt(x,z):null,cls:(x,z,o)=>{if(MODEL.classAt)MODEL.classAt(x,z,o);return o;},
  /* the core's own fields: a cold, high, dry stone country (the warm collars are the kit's own) */
  wet:(x,z)=>.2*MODEL.warmAt(x,z),salt:()=>0,upland:()=>1,cold:(x,z)=>1-MODEL.warmAt(x,z),rock:(x,z)=>smooth(.6,1.2,FC.at(FC.a.slope,x,z))};
 // THE AIR: the pressure by height (the model's law: 1.6 atm at the datum, a scale of 8 km; the sky's air.thin reads the same): 0.94 atm
