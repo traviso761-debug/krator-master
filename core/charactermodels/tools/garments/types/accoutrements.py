@@ -44,7 +44,7 @@ def flap(name, top_center, width, length, out, paint, cols=7, rows=10, ease=0.01
     return pt
 
 
-def blob(name, c, size, paint, n=12, rows=5, out=None, rigid_joint=None):
+def blob(name, c, size, paint, n=12, rows=5, out=None, rigid_joint=None, role=None):
     out = np.array([0, -1.0, 0]) if out is None else np.asarray(out, float) / np.linalg.norm(out)
     side = np.cross(np.array([0, 0, 1.0]), out)
     if np.linalg.norm(side) < 1e-6:
@@ -59,7 +59,7 @@ def blob(name, c, size, paint, n=12, rows=5, out=None, rigid_joint=None):
         r, z = math.sin(ph), math.cos(ph)
         Q.append([c + side * math.cos(a) * r * size[0] / 2 + out * (max(-0.25, math.sin(a)) * r * size[1] / 2) + up * (z * size[2] / 2)
                   for a in np.linspace(0, 2 * math.pi, n, endpoint=False)])
-    return Part(name, np.array(Q), True, ['body'] * rows, paint, rigid_joint=rigid_joint)
+    return Part(name, np.array(Q), True, ['body'] * rows, paint, rigid_joint=rigid_joint, role=role)
 
 
 def belt_sash(name, z_bot, z_top, paint, ease=0.038):
@@ -70,10 +70,10 @@ def belt_sash(name, z_bot, z_top, paint, ease=0.038):
 def pouch_belt(gid, paint, pouch_paint, ease=0.042):
     """Waist belt with three utility pouches (de-vendored from `izani_belt`)."""
     c = spine_at(core.WAIST - 0.015)
-    parts = [torso_tube(gid + '_belt', core.WAIST + 0.02, core.WAIST - 0.05, ease, paint, rows=3, n=40, hull_from=core.WAIST + 0.1)]
+    parts = [torso_tube(gid + '_belt', core.WAIST + 0.02, core.WAIST - 0.05, ease, paint, rows=3, n=40, hull_from=core.WAIST + 0.1, role='belt')]
     for k, d in enumerate((np.array([-0.75, -0.66, 0]), np.array([0.8, 0.6, 0]), np.array([0.98, -0.2, 0]))):
         d = d / np.linalg.norm(d)
-        parts.append(blob('%s_pouch%d' % (gid, k), surface_out(c, d, ease + 0.03), (0.075, 0.04, 0.085), pouch_paint, out=d))
+        parts.append(blob('%s_pouch%d' % (gid, k), surface_out(c, d, ease + 0.03), (0.075, 0.04, 0.085), pouch_paint, out=d, role='accessory'))
     return parts
 
 
@@ -84,7 +84,7 @@ def sash_with_tail(gid, paint, tail_paint, ease=0.026, tail=0.34):
     d /= np.linalg.norm(d)
     t = flap(gid + '_sash_tail', surface_out(c, d, ease + 0.01), 0.09, tail, d, tail_paint, cols=4, rows=8, ease=0.02, sway=0.02)
     t.cloth['layer'] = 2
-    return [torso_tube(gid + '_sash', core.WAIST + 0.03, core.WAIST - 0.045, ease, paint, rows=3, n=40, hull_from=core.WAIST + 0.1), t]
+    return [torso_tube(gid + '_sash', core.WAIST + 0.03, core.WAIST - 0.045, ease, paint, rows=3, n=40, hull_from=core.WAIST + 0.1, role='band'), t]
 
 
 def stacked_belts(gid, n_belts=3, ease=0.028):
@@ -94,11 +94,12 @@ def stacked_belts(gid, n_belts=3, ease=0.028):
     parts = []
     for i in range(n_belts):
         zb = core.WAIST + 0.03 - i * 0.032
-        parts.append(torso_tube(f'{gid}_belt{i}', zb, zb - 0.026, ease + 0.002 * i, belt_p, rows=3, n=40, hull_from=core.WAIST + 0.1))
+        # (role band, not belt: a numbered belt never took the hips' rigid skinning, its suffix is not '_belt')
+        parts.append(torso_tube(f'{gid}_belt{i}', zb, zb - 0.026, ease + 0.002 * i, belt_p, rows=3, n=40, hull_from=core.WAIST + 0.1, role='band'))
     c = spine_at(core.WAIST - 0.02)
     for k, d in enumerate((np.array([-0.85, -0.52, 0]), np.array([0.85, -0.52, 0]))):
         d = d / np.linalg.norm(d)
-        parts.append(blob(f'{gid}_pouch{k}', surface_out(c, d, ease + 0.028), (0.07, 0.038, 0.08), pouch_p, out=d))
+        parts.append(blob(f'{gid}_pouch{k}', surface_out(c, d, ease + 0.028), (0.07, 0.038, 0.08), pouch_p, out=d, role='accessory'))
     return parts
 
 
@@ -109,9 +110,9 @@ def button_row(gid, z_top, z_bot, n_buttons=5, paint=None, ease=0.024, double=Fa
     for i, z in enumerate(np.linspace(z_top, z_bot, n_buttons)):
         if double:
             for k, dx in enumerate((-0.042, 0.042)):
-                out.append(blob(f'{gid}_btn_{i}_{k}', chest_front(z, ease, x=dx), (0.018, 0.012, 0.018), bp, n=8, rows=4))
+                out.append(blob(f'{gid}_btn_{i}_{k}', chest_front(z, ease, x=dx), (0.018, 0.012, 0.018), bp, n=8, rows=4, role='trinket'))
         else:
-            out.append(blob(f'{gid}_btn_{i}', chest_front(z, ease), (0.018, 0.012, 0.018), bp, n=8, rows=4))
+            out.append(blob(f'{gid}_btn_{i}', chest_front(z, ease), (0.018, 0.012, 0.018), bp, n=8, rows=4, role='trinket'))
     return out
 
 
@@ -160,14 +161,14 @@ def tube(name, path, r, paint, n=8, rigid_joint=None):
 
 
 def strap(name, path, width, paint, rigid_joint=None):
-    return horn(name, path, width * 0.5, width * 0.5, paint, n=8, rows=max(5, len(path) * 2), rigid_joint=rigid_joint)
+    return horn(name, path, width * 0.5, width * 0.5, paint, n=8, rows=max(5, len(path) * 2), rigid_joint=rigid_joint, role='band')
 
 
 def tassel(name, top_pos, length, radius, paint, rigid_joint=None):
     bot_pos = np.asarray(top_pos, float) - np.array([0.0, 0.0, length])
-    return horn(name, [top_pos, bot_pos], radius * 0.85, radius * 1.15, paint, n=8, rows=6, rigid_joint=rigid_joint)
+    return horn(name, [top_pos, bot_pos], radius * 0.85, radius * 1.15, paint, n=8, rows=6, rigid_joint=rigid_joint, role='accessory')
 
 
 def rosette(name, center, out_vec, side_vec, radius, paint, n=14, thick=0.014, rigid_joint=None):
     return blob(name, center, (radius * 2.0, thick * 2.0, radius * 2.0), paint,
-                n=n, rows=5, out=out_vec, rigid_joint=rigid_joint)
+                n=n, rows=5, out=out_vec, rigid_joint=rigid_joint, role='accessory')

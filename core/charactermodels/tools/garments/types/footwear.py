@@ -124,7 +124,7 @@ def boot(gid, side, paint, top_f=0.45, ease=0.020, sole_paint=None, cuff_paint=N
             p_mix[2] = max(0.009, p_mix[2])
             Q_sh[r, j] = p_mix
     shaft_roles = ['top'] + ['body'] * (rows_sh - 2) + ['bottom']
-    shaft = Part(f'{gid}_shaft_{side[0]}', Q_sh, True, shaft_roles, up_p)
+    shaft = Part(f'{gid}_shaft_{side[0]}', Q_sh, True, shaft_roles, up_p, role='shaft', side=side[0])
 
     # 2. Contoured foot vamp & toe box (rows 0..9): starts at R_ank (Q_sh[-1]) and closes cleanly at toe welt
     rows_u = 10
@@ -151,7 +151,7 @@ def boot(gid, side, paint, top_f=0.45, ease=0.020, sole_paint=None, cuff_paint=N
             zj = boot_bot + arch * (z_top_use - boot_bot)
             Q_u[k, j] = [xc_j + sin_t[j] * hw_use, yj, zj]
     u_roles = ['top'] + ['body'] * (rows_u - 2) + ['bottom']
-    u = Part(f'{gid}_foot_{side[0]}', Q_u, True, u_roles, vamp_p)
+    u = Part(f'{gid}_foot_{side[0]}', Q_u, True, u_roles, vamp_p, role='foot', side=side[0])
 
     # 3. Welt-matched sole (rows 0..11): contoured to the exact (xc, hw) footprint of the boot upper
     rows_s, n_s = 12, 20
@@ -173,7 +173,7 @@ def boot(gid, side, paint, top_f=0.45, ease=0.020, sole_paint=None, cuff_paint=N
         for j, a in enumerate(angles_s):
             dy_cap = (0.003 * abs(math.cos(a))) * (1.0 if k == 0 else -1.0 if k == rows_s - 1 else 0.0)
             Q_s[k, j] = [xc_s + math.cos(a) * w_s, ys + dy_cap, 0.0075 + 0.0075 * math.sin(a)]
-    sole = Part(f'{gid}_sole_{side[0]}', Q_s, True, ['body'] * rows_s, sp)
+    sole = Part(f'{gid}_sole_{side[0]}', Q_s, True, ['body'] * rows_s, sp, role='sole', side=side[0])
 
     out = [sole, shaft, u]
     if cuff_paint is not None:
@@ -184,7 +184,7 @@ def boot(gid, side, paint, top_f=0.45, ease=0.020, sole_paint=None, cuff_paint=N
         for rc, z_c in enumerate(np.linspace(z_c1, z_c0, 3)):
             ring_c, _, _, _, _ = _leg_skin_ring(leg_v, float(z_c), e_sh_top + 0.006, thetas)
             Q_cuff[rc] = ring_c
-        out.append(Part(f'{gid}_cuff_{side[0]}', Q_cuff, True, ['top', 'body', 'bottom'], cp))
+        out.append(Part(f'{gid}_cuff_{side[0]}', Q_cuff, True, ['top', 'body', 'bottom'], cp, role='cuff', side=side[0]))
     return out
 
 
@@ -221,7 +221,7 @@ def boots(gid, paint_sole, paint_upper=None, top=0.45, wraps=0, wrap_paint=None,
                 for rw, zw in enumerate(np.linspace(float(c[2]) + 0.022, float(c[2]), 3)):
                     ring_w, _, _, _, _ = _leg_skin_ring(leg_v, float(zw), e_wrap, thetas)
                     Q_w[rw] = ring_w
-                parts.append(Part('%s_wrap%d_%s' % (gid, i, s[0]), Q_w, True, ['top', 'body', 'bottom'], wp))
+                parts.append(Part('%s_wrap%d_%s' % (gid, i, s[0]), Q_w, True, ['top', 'body', 'bottom'], wp, role='band', side=s[0]))
     return parts
 
 
@@ -253,7 +253,7 @@ def sandal(gid, paint_sole, paint_strap, guard=False, laces=0, greave=None, stra
             for j, a in enumerate(angles_s):
                 dy_cap = (0.003 * abs(math.cos(a))) * (1.0 if k == 0 else -1.0 if k == rows - 1 else 0.0)
                 Q[k, j] = [xc_s + math.cos(a) * w_s, ys + dy_cap, 0.007 + 0.007 * math.sin(a)]
-        parts.append(Part('%s_sole_%s' % (gid, s[0]), Q, True, ['body'] * rows, paint_sole))
+        parts.append(Part('%s_sole_%s' % (gid, s[0]), Q, True, ['body'] * rows, paint_sole, role='sole', side=s[0]))
 
         # Contoured dorsal straps that arch cleanly over the foot and seat into the sole at z=0.008 (never below z=0.007)
         n_st = 16

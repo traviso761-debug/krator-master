@@ -10,7 +10,8 @@ from ..core import Part, J, frame, ring_points, smooth_push, L, R
 from .torso import torso_tube
 
 
-def limb_tube(name, a, b, ease, paint, n=20, rows=8, ease_end=None, start_back=0.0, arc=None, group='body', path=None, bvh=None, rmax=0.25):
+def limb_tube(name, a, b, ease, paint, n=20, rows=8, ease_end=None, start_back=0.0, arc=None, group='body', path=None, bvh=None, rmax=0.25,
+              role=None, side=None):
     pts = np.array(path if path is not None else [a, b], float)
     t0 = (pts[1] - pts[0]) / np.linalg.norm(pts[1] - pts[0])
     pts[0] = pts[0] - t0 * start_back
@@ -48,7 +49,7 @@ def limb_tube(name, a, b, ease, paint, n=20, rows=8, ease_end=None, start_back=0
         rings.append(ring_points(c, x, y, angles, Es[k], rmin=0.02, rmax=rmax, bvh=bvh))
     P_grid = np.array(rings)
     P_grid = smooth_push(P_grid, arc is None, ease, iters=2, rows_ease=Es, bvh=bvh)
-    pt = Part(name, P_grid, arc is None, [group] * rows, paint)
+    pt = Part(name, P_grid, arc is None, [group] * rows, paint, role=role, side=side)
     pt.is_arm = (bvh is core.BVH_A)
     return pt
 
@@ -68,7 +69,7 @@ def sleeve(name, side, paint, f0=0.0, f1=0.92, ease=0.020, flare=0.008, rows=12,
         path = [pt_at(f0), pt_at(f1)]
     sb = 0.048 if f0 < 0.05 else 0.0
     return limb_tube(name, None, None, ease_c, paint, n=n, rows=rows,
-                     ease_end=ease_c + flare_c, start_back=sb, path=path, bvh=core.BVH_A, rmax=0.135)
+                     ease_end=ease_c + flare_c, start_back=sb, path=path, bvh=core.BVH_A, rmax=0.135, role='sleeve', side=side[0])
 
 
 def sleeves(gid, end, ease, paint, ease_end=None, rows=8, n=22, rmax=0.135):
@@ -78,7 +79,7 @@ def sleeves(gid, end, ease, paint, ease_end=None, rows=8, n=22, rmax=0.135):
         a, e, h = J(s + 'Arm'), J(s + 'ForeArm'), J(side + 'Hand') if False else J(s + 'Hand')
         path = [a, e] if end == 'elbow' else [a, e, h - (h - e) * 0.08] if end == 'wrist' else [a, a + (e - a) * end]
         out.append(limb_tube('%s_sleeve_%s' % (gid, s[0]), None, None, ease, paint, n=n, rows=rows, ease_end=ease_end,
-                             start_back=0.048, path=path, bvh=core.BVH_A, rmax=rmax))
+                             start_back=0.048, path=path, bvh=core.BVH_A, rmax=rmax, role='sleeve', side=s[0]))
     return out
 
 
@@ -89,14 +90,14 @@ def armbands(gid, paint, f=0.45, w=0.035):
         a, e = J(s + 'Arm'), J(s + 'ForeArm')
         c = a + (e - a) * f
         out.append(limb_tube('%s_armband_%s' % (gid, s[0]), c, c + (e - a) / np.linalg.norm(e - a) * w, 0.008, paint,
-                             n=16, rows=2, bvh=core.BVH_A))
+                             n=16, rows=2, bvh=core.BVH_A, role='band', side=s[0]))
     return out
 
 
 def trousers(gid, paint, ease=0.018, ease_end=None, cuff=None, seat_paint=None, n=22, rows=14, ankle_f=None, bag=0.025):
     """Unified trousers builder supporting both cuff height (`cuff=...`) and shin fraction (`ankle_f=...`)."""
     out = [torso_tube(gid + '_seat', core.WAIST + 0.01, core.CROTCH + 0.01, ease, seat_paint or paint,
-                      n=36, rows=6, hull_from=core.WAIST)]
+                      n=36, rows=6, hull_from=core.WAIST, role='trunk')]
     ee = ease_end if ease_end is not None else (ease + bag * 0.5)
     for s in (L, R):
         hip, knee, foot = J(s + 'UpLeg'), J(s + 'Leg'), J(s + 'Foot')
@@ -107,7 +108,7 @@ def trousers(gid, paint, ease=0.018, ease_end=None, cuff=None, seat_paint=None, 
             f = (knee[2] - z) / max(1e-6, knee[2] - foot[2])
             end = knee + (foot - knee) * min(1.0, f)
         out.append(limb_tube('%s_leg_%s' % (gid, s[0]), None, None, ease + 0.004, paint, n=n, rows=rows,
-                             ease_end=ee, start_back=0.06, path=[hip, knee, end], rmax=0.22))
+                             ease_end=ee, start_back=0.06, path=[hip, knee, end], rmax=0.22, role='leg', side=s[0]))
     return out
 
 

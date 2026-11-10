@@ -14,7 +14,7 @@ from ..paint import P
 
 def torso_tube(name, z0, z1, ease=0.020, paint=None, n=40, hang_from=None, flare=0.0, arc=None, rows=None,
                group_below=None, scale=(1.0, 1.0), ease_bottom=None, iters=3, hang_side=None, points=None,
-               hull_from=None, over_arms=False, stiff=0.12, layer=None, yoke=False, **kw):
+               hull_from=None, over_arms=False, stiff=0.12, layer=None, yoke=False, role=None, side=None, **kw):
     """Unified torso tube builder supporting both (z_top, z_bot, ease, paint) and (z_bot, z_top, paint, ease=...) call styles."""
     if isinstance(ease, dict) and (paint is None or isinstance(paint, (int, float))):
         # Called in Batch 2 order: torso_tube(name, z_bot, z_top, paint, ease=...)
@@ -113,7 +113,7 @@ def torso_tube(name, z0, z1, ease=0.020, paint=None, n=40, hang_from=None, flare
                     d[2] = 0
                     P_grid[i, j] = np.array([axes[i][0], axes[i][1], zn]) + d * (1 + (f - 1) * 0.5 * (top_z - zs[i]) / max(0.05, top_z - zs[-1]))
     grp = ['helper-skirt' if (group_below is not None and P_grid[k, :, 2].mean() < group_below) else 'body' for k in range(len(zs))]
-    pt = Part(name, P_grid, arc is None, grp, actual_paint)
+    pt = Part(name, P_grid, arc is None, grp, actual_paint, role=role, side=side)
     pt.over_arms = over_arms
     if hang_from is not None:
         pt.cloth = {'start': start, 'stiff': stiff}
@@ -151,7 +151,7 @@ def collar(name, paint, height=0.055, flare=0.018, ease=0.024, open_front=False,
         scale_r = 1.0 + (flare / max(0.065, ease + 0.05)) * u_top
         row_xy = cz[:2] + rel_xy * scale_r
         Q.append(np.column_stack([row_xy, np.full(len(angles), z)]))
-    return Part(name, np.array(Q), closed, ['body'] * rows, paint)
+    return Part(name, np.array(Q), closed, ['body'] * rows, paint, role='collar')
 
 
 def stand_collar(gid, paint, high=0.07, arc=None):
@@ -181,6 +181,8 @@ def collar_disc(name, width, paint, drop=0.05, rows=4, n=48, scallop=0.12, ease=
             row.append(c + d * r + np.array([0, 0, -drop * s * s]))
         Q.append(row)
     Q = smooth_push(np.array(Q), True, outer_ease, iters=1, fix_top=True)
+    # (no role yet: as a drape the Yuni duster's shoulder cape stood off the shoulders and showed its underside from behind,
+    # the audit's "inside" 17345 to 23853 px; as a shoulder cap it is skinned to the arms. Its right treatment is Phase 2's)
     return Part(name, Q, True, ['body'] * rows, paint, rigid_joint=rigid_joint)
 
 
@@ -229,7 +231,7 @@ def tabard(name, z_bot, z_top, paint, width=0.22, ease=0.032, front=True, back=F
                     )
             Q = Q_new
         grp = ['helper-skirt' if z < core.CROTCH + 0.02 else 'body' for z in zs]
-        pt = Part(pname, Q, False, grp, paint)
+        pt = Part(pname, Q, False, grp, paint, role='drape')
         if z0 - z1 >= 0.16:
             start_r = int(np.argmin(np.abs(zs - min(z0 - 0.02, core.WAIST))))
             pt.cloth = {'start': start_r, 'stiff': 0.10, 'layer': 2}
@@ -291,7 +293,7 @@ def band(name, z_low, z_high, width, ease, paint, high=math.pi / 2, n=48, rows=4
             row.append(pt)
         Q.append(row)
     Q = np.array(Q, dtype=np.float64)
-    return Part(name, Q, True, ['body'] * rows, paint)
+    return Part(name, Q, True, ['body'] * rows, paint, role='band')
 
 
 def crossed_sash(name, paint, width=0.06, ease=0.032):
@@ -328,4 +330,4 @@ def neck_ring(name, paint, r_tube=0.035, drop=0.02, n=32, nr=10):
         z_cur = c[2] + r_tube * math.sin(ph) * 0.75 - drop * 0.3
         row = [np.array([c[0] + math.sin(an) * r_cur, c[1] + math.cos(an) * r_cur, z_cur]) for an in angs]
         Q.append(row)
-    return Part(name, np.array(Q), True, ['body'] * nr, paint, rigid_joint='Spine2')
+    return Part(name, np.array(Q), True, ['body'] * nr, paint, rigid_joint='Spine2', role='pauldron', side=side[0])

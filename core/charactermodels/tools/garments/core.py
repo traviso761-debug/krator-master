@@ -344,6 +344,7 @@ class Part:
 #   sh_cap     skinned as a shoulder cap when it sits out past |x| 11 cm
 #   band       an overlay band: never a trunk tube
 #   overlay    Rule B pushes it outside every trunk tube (8 mm; 12 mm for a strap)
+#   neck       a collar: Rule B uses the trunk's ring at its height alone, not the trunk vertices 3.8 cm about it
 #   strap      a strap, sash or belt: Rule B's 12 mm clearance and shoulder clamp
 #   belt_sfx   a belt or buckle by suffix: skinned rigid to the hips when it has no cloth
 #   acc        a pouch, buckle, tassel...: Rule C leaves it where it is
@@ -355,14 +356,17 @@ ROLES = {
     'trunk': set(),
     'sleeve': {'arm', 'sleeve', 'arm_tube'},
     'armwear': {'arm', 'arm_tube'},
+    'cuff': {'arm', 'arm_tube'},
     'pauldron': {'arm', 'pauldron', 'sh_cap'},
     'shoulder_cap': {'sh_cap'},
     'band': {'band', 'overlay', 'strap'},
     'belt': {'band', 'overlay', 'strap', 'belt_sfx'},
-    'collar': {'band', 'overlay'},
+    'collar': {'band', 'overlay', 'neck'},   # a neck ring: never a trunk tube; Rule B stands it outside the trunk's own
+                                               # ring at its height, not the shoulder slope (neck): that threw collars 15 cm out
     'yoke': {'band'},
     'drape': {'overlay'},
     'accessory': {'acc', 'acc7'},
+    'trinket': {'acc7'},
     'leg': set(),
     'seat': {'side_sub'},
     'sole': {'sole', 'sole_cs'},
@@ -789,7 +793,7 @@ def assemble_garment(gid, label, slot, culture, parts, covers_hair=False, covers
                                 for _, z0_t, z1_t, zs_t, r_t, _ in all_tube_profiles:
                                     if z0_t - 0.010 <= pz <= z1_t + 0.035:
                                         r_req = max(r_req, _eval_tube_r(zs_t, r_t, min(pz, float(zs_t[-1])), ang) + clr)
-                                if r_cur > 1e-6:
+                                if r_cur > 1e-6 and 'neck' not in F:
                                     u_dir = np.array([dx / r_cur, dy / r_cur])
                                     z_mask_t = np.abs(trunk_all_verts[:, 2] - pz) <= 0.038
                                     if z_mask_t.any():

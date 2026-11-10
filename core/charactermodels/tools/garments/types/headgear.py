@@ -263,7 +263,7 @@ def wing(name, side, span, height, paint, rows=6, cols=9, rise=0.04, curl=0.05, 
     return Part(name, np.array(Q), False, ['body'] * rows, paint, rigid_joint='Head')
 
 
-def horn(name, path, r0, r1, paint, n=12, rows=10, rigid_joint=None):
+def horn(name, path, r0, r1, paint, n=12, rows=10, rigid_joint=None, role=None):
     """Tapering 3D tube along an arbitrary 3D path (horn, spike, plume rib, cable, or strap)."""
     pts = np.array(path, float)
     seg = np.linalg.norm(np.diff(pts, axis=0), axis=1)
@@ -280,7 +280,7 @@ def horn(name, path, r0, r1, paint, n=12, rows=10, rigid_joint=None):
         y = np.cross(t, x)
         r = r0 + (r1 - r0) * k / (rows - 1)
         Q.append([c + (x * math.cos(a) + y * math.sin(a)) * r for a in np.linspace(0, 2 * math.pi, n, endpoint=False)])
-    return Part(name, np.array(Q), True, ['body'] * rows, paint, rigid_joint=rigid_joint)
+    return Part(name, np.array(Q), True, ['body'] * rows, paint, rigid_joint=rigid_joint, role=role)
 
 
 def turban(gid, base_paint, wrap_paint=None, jewel_paint=None, size=1.0, ribbons=4, f0=0.52, f1=1.08, bulge=0.042, ease=0.018, rows=12, n=36):

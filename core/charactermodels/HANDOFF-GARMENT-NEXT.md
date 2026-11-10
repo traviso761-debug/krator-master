@@ -86,7 +86,11 @@ shader hunks could not be measured apart from the chain hunks (they were written
 
 - The thirteen vendored copies of core functions in `tools/garments/cultures/` (strip them with a before/after sheet
   of every outfit they build: it rebuilds half the kit).
-- `Part.role` on every part and the rules dispatching on it, not on names (the review, section 3, point 6).
+- `Part.role` is in (2026-11-10): the rules read `part_facts` (role and side, or the legacy name words for a part with
+  no role), and the types set roles. The culture builders that construct `Part` by hand (47 in
+  `build_inspired_outfits.py`, 24 in `build_batch2_outfits.py`...) still rely on names: give them roles as they are
+  touched. The dry-build gate for any change to the core: build every culture into a scratch root before and after
+  and compare the geometry hashes (the review, section 6, 2026-11-10).
 - Phase 2 (belts and medallions, one cloth grid per garment, the hide margin by standoff, trousers from body slices,
   the painted strips in metres, sleeves, hats, hair tails on chains).
 - The giant's four-armed coat's seven dead chains (`tests/kit-known-bad.json`): a Blender rebuild with the split

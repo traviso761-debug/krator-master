@@ -422,3 +422,26 @@ The plan takes sections 1 to 3 above whole. What to change before acting on it:
   6368, the woman 34425 to 1204, the trade man 3874 to 644, the woman 1187 to 777; "inside" up a little on the peasants'
   wider cuffs (3526 to 4264, 2290 to 2978). The pieces are not in Git: the GLBs regenerate from `yuni.py`
   (`tools/garments/build_all.py`), and `build-manifest.json` carries their hashes.
+- **Phase 2 groundwork: `Part.role` (2026-11-10).** Every rule in `assemble_garment` (the trunk tubes, Rules A, B and
+  C, the footwear fit, the skinning classes, the checks) now reads a part's facts from `part_facts`: its explicit
+  `role` and `side`, or, for a part with no role, the same words of its name the rules read before, in one function.
+  Proved a no-op first: every culture dry-built into a scratch root before and after (the session's `dry_build.py`
+  points `core.ROOT` at the root; `geo_hash.py` hashes every accessor, skin and morph), 276 pieces identical
+  (f0c68654e). Then the types set roles (sleeve, leg, trunk, band, belt, collar, drape, pauldron, accessory, trinket,
+  sole, foot, shaft, cuff): 32 of 276 pieces change, every one a part whose name had carried a fact by accident, and
+  the biggest a finding of its own. **Collars were flared to the shoulders by Rule B.** Rule B clears an overlay
+  against the trunk's vertices within 3.8 cm of its height, which at the neck is the shoulder slope: every collar
+  named `collar` stood out to 22 to 25 cm at its bottom row (the trooper tunic's rows 0.122, 0.137, 0.165, 0.192,
+  0.218 m; the commissar's high collar to 0.246). The role `collar` carries a `neck` fact: Rule B stands it outside the
+  trunk's own ring at its height alone (0.116 to 0.135 m, a slight flare), not flat at the neck (0.097, inside the
+  coat, where the audit's "inside" rose on the Yuni nobles) and not at the shoulders. The other changes: a bandana no
+  longer a strap because its name holds `band`; cravats, hoods, bevors and cowls no longer trunk tubes; canteens,
+  compasses and bezels pinned rigid as accoutrements; the chronomonk's kesa a band (pushed and shoulder-clamped as a
+  sash, 15 cm); the shoulder yoke and shoulder cape drapes over the coat rather than shoulder caps.
+  Two were taken back: `collar_disc` (the Yuni degree hood, the Order's shoulder yokes and the duster's shoulder
+  cape) keeps its name facts for now, since as a drape the hood stood open at the back and the audit's "inside" rose
+  on the Yuni nobles (18803 to 23779 px on the man); its right treatment is Phase 2's. Thirty pieces change in the
+  end, all torso garments: `handoff-shots/roles-sheet-2026-11-10.jpg` is the before/after of every one, front and
+  back, `roles-collars-2026-11-10.png` six close-ups. The audit's "inside" rises a little on garments whose collar
+  now stands as a ring (the camera looks into it: the Yuni trade duster 17345 to 23853 px) and skin falls to 0 on
+  the six Yuni outfits.
