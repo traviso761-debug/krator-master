@@ -1,4 +1,4 @@
-// ================================================================= STATION caverns — the karst under the limestone ridge: the drawing
+﻿// ================================================================= STATION caverns — the karst under the limestone ridge: the drawing
 // The plan is 44k-host-karst.js (KKARST's records, laid before the ground: src/45 bakes the dolines into it). Here, after the sky and the water:
 //   the cave        KKARST.build into one KCAVERN (rock 'limestone', 1 m cells, 16 m chunks) under the page's ground (terrainH: the dolines
 //                   baked in). The sinks' swallets are choked (no well); the cenotes' and the skylights' wells are KCAVERN openings with a
@@ -27,10 +27,18 @@ const CAVES=(function(){const K=STATION_GROUND;if(!K||!K.N){reportErr('caverns: 
  // ---------------------------------------------------------------- the material: the library's karst limestone, lit by the sky it sees
  const S=ROCK_LIB&&ROCK_LIB.scale?ROCK_LIB.scale[0]:6;
  const mat=new THREE.MeshStandardMaterial({map:ROCK_LIB?ROCK_LIB.map:ROCK_GRAIN,roughness:.9,metalness:0,vertexColors:true,side:THREE.DoubleSide,polygonOffset:true,polygonOffsetFactor:1,polygonOffsetUnits:2});
- mat.onBeforeCompile=sh=>{sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute float aSky;varying float vSky;').replace('#include <begin_vertex>','#include <begin_vertex>\nvSky=aSky;');
+ /* the map TRIPLANAR on the world position (a vertex's own projection flipped between axes across a triangle and smeared it flat) */
+ mat.onBeforeCompile=sh=>{sh.uniforms.uTs={value:1/S};
+  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute float aSky;varying float vSky;varying vec3 vWP;varying vec3 vWN;')
+   .replace('#include <begin_vertex>','#include <begin_vertex>\nvSky=aSky;vWP=(modelMatrix*vec4(transformed,1.0)).xyz;vWN=normalize(mat3(modelMatrix)*objectNormal);');
+  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform float uTs;varying vec3 vWP;varying vec3 vWN;')
+   .replace('#include <map_fragment>','#ifdef USE_MAP\n{vec3 tn=abs(normalize(vWN));tn/=tn.x+tn.y+tn.z;vec4 tt=texture2D(map,vWP.zy*uTs)*tn.x+texture2D(map,vWP.xz*uTs)*tn.y+texture2D(map,vWP.xy*uTs)*tn.z;diffuseColor*=mapTexelToLinear(tt);}\n#endif');
+  /* the SUN's light (the directional lights) scaled by the sky the point sees; the lamp at the eye (a point light) not, so it lights the dark */
+  const LB=THREE.ShaderChunk.lights_fragment_begin,LB2=LB.replace(/(directionalLight,\s*geometry,\s*directLight\s*\);)/g,'$1\n\t\tdirectLight.color*=vSky;');
   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying float vSky;')
-   .replace('#include <lights_fragment_end>','#include <lights_fragment_end>\nreflectedLight.directDiffuse*=vSky;reflectedLight.directSpecular*=vSky;reflectedLight.indirectDiffuse*=mix(.1,1.,vSky);reflectedLight.indirectSpecular*=vSky;');};
- mat.customProgramCacheKey=()=>'swhi-cave-sky';
+   .replace('#include <lights_fragment_begin>',LB2)
+   .replace('#include <lights_fragment_end>','#include <lights_fragment_end>\n'+(LB2===LB?'reflectedLight.directDiffuse*=vSky;reflectedLight.directSpecular*=vSky;':'')+'reflectedLight.indirectDiffuse*=mix(.05,1.,vSky);reflectedLight.indirectSpecular*=vSky;');};
+ mat.customProgramCacheKey=()=>'swhi-cave-sky-tri';
  const LIMEC=new THREE.Color(0xcbc4b4),WET=new THREE.Color(0x7c8a80),SOIL=new THREE.Color(0x5e5a3e),cc=new THREE.Color();
  /* the sky a point sees: its depth under the ground, and the open sky down a well (the light falls a long way down a skylight) */
  const skyAt=(x,y,z)=>{let sk=Math.max(.03,Math.min(1,1-(terrainH(x,z)-y)/22));
@@ -123,8 +131,8 @@ const CAVES=(function(){const K=STATION_GROUND;if(!K||!K.N){reportErr('caverns: 
  HZ.forEach(R=>{const h=R.tags.hazard,sh=h.shape||{},r=sh.r!=null?sh.r:Math.max(1,(sh.w==null?2:sh.w)/2),hh=sh.h!=null?sh.h:2;
   rec({name:h.kind==='drown'?'A sump (drowns a walker)':'A shaft (a fall)',x:R.at[0],y:R.at[1],z:R.at[2],ry:R.ry||0,r,h:Math.max(.5,hh),kind:'hazard',id:'karst:'+R.id,tags:{hazard:h}});});
  // ---------------------------------------------------------------- the lamp at the eye, on under the ground
- const lamp=new THREE.PointLight(0xffe2b8,0,45,1.6);scene.add(lamp);
- tick(()=>{const e=camera.position,under=e.y<terrainH(e.x,e.z)-1.5;lamp.position.copy(e);lamp.intensity=under?1.6:0;});
+ const lamp=new THREE.PointLight(0xffe2b8,0,60,1.4);scene.add(lamp);
+ tick(()=>{const e=camera.position,under=e.y<terrainH(e.x,e.z)-1.5;lamp.position.copy(e);lamp.intensity=under?2.4:0;});
  /* the rock over every passage (the ground at its ends and middle less its crown): a passage that broke out of the ground is a fault */
  const roofs=N.passages.map(p=>{const a=M_[p.a],b=M_[p.b];let m=1e9;for(const t of [0,.5,1]){const x=a.x+(b.x-a.x)*t,z=a.z+(b.z-a.z)*t,y=a.y+(b.y-a.y)*t+p.h;let r=terrainH(x,z)-y;
   for(const w of K.wells)if(Math.hypot(x-w.x,z-w.z)<w.r+4)r=1e9;m=Math.min(m,r);}return{p,roof:m};});

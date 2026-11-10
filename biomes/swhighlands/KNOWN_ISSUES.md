@@ -67,7 +67,9 @@ From `PLAN.md` section 10 and what station 1 met:
   network with `levels` of kind 'branch' throws in KCAVERN (duplicate id); the old level is built as its own network and merged with
   `old:` ids. A core fix (the level in the id for `lv > 0`, which leaves single-level pages' bytes as they are) is owed in core/terrain.
   KCAVERN still has no limestone material (KARST-SITES-5.1.md "Notes for the module"): the cave is drawn here in the page's `rockDetail`
-  (rock.limestone.karst, its albedo only: the slot is mapOnly; a full set with normals would change every station's pack). The ground
+  (rock.limestone.karst, its albedo only, sampled triplanar on the world position: the slot is mapOnly; a full set with normals would
+  change every station's pack). The sun reaches a cave point by the sky it sees (its depth, a well's light); a lamp at the eye lights the
+  rest, so a passage past 60 m of the eye reads black (the openings in a chamber's walls). The ground
   round a well is the cavern's own mesh on the page's ground material, 10 cm under the page's ground; the wells' rims (9 m) are wide so
   the 6 m grid is cut whole. The springs downstream where swlowlands' spring cypress stands are off this map. Most of the cave (8,500
   chunks) is meshed only when the eye comes within 90 m.
