@@ -99,7 +99,9 @@ BIO_BAND = {'93b-bio-05-core-space.js': _B('core', 'space', '20-core-space.js'),
             '93b-bio-10-core-head.js': _B('core', 'biome', '10-core-head.js'),
             '93b-bio-20-core-kit.js': _B('core', 'biome', '20-core-kit.js'),
             '93b-bio-30-core-foliage.js': _B('core', 'biome', '30-core-foliage.js'),
+            '93b-bio-31b-core-leafset.js': _B('core', 'biome', '31b-core-leafset.js'),   # 20-core-kit's leaf option calls it (check_assembly)
             '93b-bio-31j-core-joint.js': _B('core', 'biome', '31j-core-joint.js'),
+            '93b-bio-34-core-impostor.js': _B('core', 'biome', '34-core-impostor.js'),   # the trees call it; off here (NWOW.IMPOSTORS=false: 93b-bio-80)
             '93b-bio-40-core-place.js': _B('core', 'biome', '40-core-place.js'),
             '93b-bio-46-biome-nwow-layout.js': _B('biomes', 'nwouterwall', 'src', '46-biome-nwow-layout.js'),
             '93b-bio-50-biome-nwow-species.js': _B('biomes', 'nwouterwall', 'src', '50-biome-nwow-species.js'),
@@ -235,6 +237,11 @@ def main():
             print('\nOPEN ISSUES (%d) - KNOWN_ISSUES.md:' % len(op)); [print('  ' + l[6:]) for l in op]
 
 
+# src/ files that shadow a core/engine fragment on purpose (tools/check_vendor.py reads the reason): 37-wk-rec.js records a
+# 'feature' placement's boxes as well as a building's, because the winter street's and the networks' tunnels are walked
+ADAPTED = {'37-wk-rec.js': "a feature (the winter street, a tunnel network) records its walk floors and blocks too: its tunnels are walked"}
+
+
 def vendor_check():
     bad = 0
     for f, up in sorted(VENDORED.items()):
@@ -244,6 +251,8 @@ def vendor_check():
     paths, core = sources()
     for f in sorted(core):
         if paths[f] != core[f]:
+            if f in ADAPTED:   # a deliberate copy (KNOWN_ISSUES.md names it): reported, not counted
+                print('  ~  %s drifts (deliberate: %s)' % (f, ADAPTED[f])); continue
             print('  !  src/%-12s shadows %s' % (f, os.path.relpath(core[f], ROOT))); bad += 1
     print('vendor-check: ' + ('OK' if not bad else 'DRIFT'))
     return not bad
