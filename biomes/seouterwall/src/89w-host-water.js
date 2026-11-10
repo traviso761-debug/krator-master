@@ -27,12 +27,12 @@ const WATER_DRAW=(function(){if(!WATER_RECS)return null;try{
   m.userData.probeSkip=true;m.userData.inspectLabel=S.name;m.renderOrder=1;m.name='water:still';scene.add(m);out.still=m;}
  // THE HOT SPRINGS (station 3: core/water's spring kind, geyser/52): each a pool at its rim's level, banded from its vent out by its
  // temperature and its mineral (sinter: turquoise to amber mats; iron: rust), drawn as a disc on the dished ground (44s: siteSpring)
- if(SITE_RECS.springs&&WATER.spring){out.springs=SITE_RECS.springs.map(S=>{const R=WATER.spring({key:S.key,name:S.name,x:S.x,z:S.z,r:S.r,level:S.level,temp:S.temp,mineral:S.mineral,steam:true});
+ if(SITE_RECS.springs&&WATER.spring&&WATER.drawSpring){out.springs=SITE_RECS.springs.map(S=>{const R=WATER.spring({key:S.key,name:S.name,x:S.x,z:S.z,r:S.r,level:S.level,temp:S.temp,mineral:S.mineral,steam:true});
   const D=WATER.drawSpring(R,{THREE,scene});if(D&&D.mesh){D.mesh.userData.inspectLabel=S.name;D.mesh.name='water:spring-'+S.key;}
   REGISTER_LAND({name:S.name,key:'water.spring',x:S.x,z:S.z,y:S.level-S.depth-1,r:S.r,h:S.depth+3});return {R,D};});}
  // THE SINTER TERRACES (station 3: core/water's terraces, ext/53): the amber spring's overflow down its treads (44s: the plain treads, the
  // ground stepped under them), a still pool per tread and a fall per riser, the pools milky turquoise to cream at the rims
- if(SITE_RECS.terraces&&WATER.terraces){const Tq=SITE_RECS.terraces;
+ if(SITE_RECS.terraces&&WATER.terraces&&WATER.drawTerraces){const Tq=SITE_RECS.terraces;
   const TR=WATER.terraces({name:Tq.name,line:Tq.line,treads:Tq.treads.map(t=>({s0:t.s0,s1:t.s1,y:t.y,w:Tq.width})),speed:1.2,spread:3});
   const TD=WATER.drawTerraces(TR,{pool:{color:0xffffff,roughness:.1,metalness:.05,envMapIntensity:.5,renderOrder:1,gradient:{centre:lin(0x5ab8b4).getHex(),rim:lin(0xe8e0c8).getHex(),power:1.2}},
    fall:{color:lin(0xe6eeec),opacity:.9,rowStep:2,cols:8,spray:'drop',plungeR:6,renderOrder:3}});
