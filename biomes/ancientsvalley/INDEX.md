@@ -42,8 +42,9 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `89u-host-steam.js` | 2 |  |
 | `89v-host-smog.js` | 4 |  |
 | `89w-host-water.js` | 3 |  |
+| `89wr-host-radiation.js` | 2 |  |
 | `89x-host-oilrain.js` | 3 |  |
 | `89x-host-xp-weather.js` | <1 |  |
 | `89y-host-anomaly.js` | 6 |  |
-| `99-host-take.js` | 29 | the inspector's words (6); the probe's budgets (14); the kit's own checks (verify.py --assert) (18); the page, handed to the host (154) |
+| `99-host-take.js` | 30 | the inspector's words (6); the probe's budgets (14); the kit's own checks (verify.py --assert) (18); the page, handed to the host (156) |
 | `99-tail.html` | <1 |  |

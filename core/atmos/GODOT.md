@@ -243,6 +243,12 @@ LINEAR filter, CLAMP, given as a global `sampler2D atm_fog_mist_tex` with `atm_f
 With `FogVolume`s instead, the mist box's density texture is this same grid. The GDScript twin for placement and checks is
 `fogMistFieldAt` (bilinear on the halves), never the texture.
 
+**Radiation** (`fx/89-atmos-fx-radiation.js`, 2026-11-10). The `radiation` record carries the zones (x, y, z, r, strength, shimmer)
+and the colour. The chunk (`atmRadChord`, `atmRadShim`, `atmRad`) is a `.gdshaderinc`: in `fragment()` of the ground and plant shaders
+`EMISSION += atm_rad(camera, dir, dist)` over global arrays `atm_rad_z`, `atm_rad_k`, `atm_rad_c` and `atm_time`; the sky's share is the
+same call with no distance limit in the sky shader. With volumetric fog on, a `FogVolume` ellipsoid a zone with emission and near-zero
+density does it instead. `rad_at(zones, p)` is three lines of GDScript for the hazard field.
+
 **Thin air** (`preset.air.thin`). `krator/sky.gd` passes the camera's height to its `sky_look` port as the fourth argument
 and applies the same lines: the pressure by `air_pressure_at`, then (only with `thin`) `hemiI`, `sunC`, `sunI`, `hazeFloor`
 and `fogD`. In the Environment that is `ambient_light_energy` (the sky fill, hence the hard shadows), the sun light's colour

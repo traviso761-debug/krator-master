@@ -27,7 +27,9 @@ the pattern's own motions run, x3 by default, so they read at 1x) and **Sheet ti
 complement and its hue-rotated twin). **Shifting** hands them to `ATMOS.cloudMood` (a new episode each minute
 here: the three effects together or apart, the readout names the episode). **Smog mist** turns on a height fog whose mist has a
 field: a "city" 3 km to the north-west where the smog is universal, thinning to a tenth by 4 km out, all day. The ground and the
-test pieces take it; the sky pass does not (the far ridges stand clear of it, as they would behind a valley's smog). URL hash:
+test pieces take it; the sky pass does not (the far ridges stand clear of it, as they would behind a valley's smog). **Radiation** (`fx/89-atmos-fx-radiation.js`) lights two zones of air with a warm additive glow that wavers: one 350 m across
+1 km to the north-east (`#rad=1&az=41&el=4`), one 80 m close by to the north-west. **Sound** binds `core/audio/24-core-audio-sky.js`: thunder after each flash, a crack when it is near, a boom after a pillar, a rising
+tone with an ascent, the orbs' hum and the breathe's drone, from a stand-in synth until the catalogue's clips are chosen. URL hash:
 `#colour=brown&pattern=violent&glow=ethereal&dark=.6&smog=1&az=300&el=22&alt=80` (then the Hour slider to 22 for the glow), or the
 shortcuts `#mood=smog|ash|green|shift`.
 

@@ -34,6 +34,10 @@ A change to `core/simulation` keeps Voth's stocks proof, `test-sim.js` and the b
 meant to move them. The city-layout module work owns `core/city/` and Voth's layout fragments (`15`, `30`-`35`); keep
 out of its files, or ask.
 
+**Audio (owner, 2026-11-09).** The Audio Lab and `core/audio` (code, cue, soundscape and music records, the catalogue's text, the
+credits) are committed to this repo like any core module; the clips themselves (`krator-audio/`, outside the repo) go in only once a
+cue, soundscape or piece the game plays names them. `core/audio/README.md`, "The rule".
+
 **Rebuild what a shared change reaches.** On 2026-10-08, 29 committed pages and the hash baseline were behind
 their sources because a change to `core/` was rebuilt into one build only. After editing anything under `core/`,
 `kits/catalog/` or a kit other builds vendor, rebuild every build that takes it and commit those pages too. The

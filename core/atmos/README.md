@@ -330,8 +330,8 @@ under one patch when its locus says so.
 each drawn from a hash of (seed, episode): each of the three effects on or off on its own (`chance` {tint .6, glow .5,
 turbulence .6}: alone, together, or a quiet spell), the tint from the `palette` (or by area: `tintAt(x, z)` at the eye returns a
 colour or null), the turbulence in one of the four kinds (a ripple's epicentre latched near the eye when the episode comes,
-`turbOffset`; a glitched episode's `sheetTint` on or off by a coin), the glow in one of three, the dark riding whenever anything is on (`dark` [.35, .9]); neighbours blend over the
-last `blend` (.3) of the period. `glowKind` `ethereal` is a slow breathe over the whole sky (18 s value noise, .55..1);
+`turbOffset`; a glitched episode's `sheetTint` on or off by a coin), the glow in one of three, the dark riding whenever anything is on (`dark` [.35, .9]); neighbours cross-fade over the
+last `blend` (.6) of the period, so a colour never snaps. `glowKind` `ethereal` is a slow breathe over the whole sky (18 s value noise, .55..1);
 `lightning` fires about every second or two under a patch 2-4.5 km across within 6 km of the eye, decaying in ~0.3 s, a dim floor
 between; with `fx/89-atmos-fx-lightning.js` on the page each flash strikes a visible branched bolt from the cloud plane to the
 ground at its locus (`ATMOS.moodBolt`, through the fx's `boltFx` and `A.boltGlow`), with the fx's thunder event, else the light
@@ -341,7 +341,17 @@ The **sky events** (the owner, 2026-11-09: "a light ascending to the heavens in 
 light") run beside the episodes: `ATMOS.moodEvent(t, seed, {kinds, chance, range})` gives at most one event a 60 s slot (chance .5),
 3-8 km off at a hashed bearing, a pillar flickering out in about a second or an ascent climbing for 14 s; the host places it where
 the eye stood when it began and on the ground there (`ATMOS.moodEventAt`), `events: false` turns them off, `eventOpts` tunes them;
-`ATMOS.skyBeamAt(d, U)` is the twin of the shader's `atmSkyBeam`. `S.moodPaused = true` holds the driver while a page sets the clouds itself (the demo's toggles). `glowColour` sets every kind's colour, `glowColours` {ethereal, lightning} each kind's, else
+`ATMOS.skyBeamAt(d, U)` is the twin of the shader's `atmSkyBeam`.
+
+**Heard** (`core/audio/24-core-audio-sky.js`, `KSKYSOUND`; the owner, 2026-11-09). The driver reports what the sky did through
+`ATMOS.onSky(fn)`: a `flash` (x, z, its strength), an `event` beginning (`pillar` or `ascent`, x, z, its length), an `episode`
+change; the lightning fx's `ATMOS.onThunder` carries the thunder, already delayed by the distance; `ATMOS.skyLevel` holds the orbs'
+and the breathe's strength each frame. `ATMOS.skyDiff` and `skyLevels` are the pure side (`test-sky.js`); `ATMOS.skyTrack(S, now)`
+is what cloudMood calls each frame, and what a page setting the clouds itself calls. `KSKYSOUND.CUES` are the six cues in KCUE's
+shape (`sfx.sky.thunder`, `sfx.sky.flash`, `sfx.sky.pillar`, `sfx.sky.ascent`, `amb.sky.orbs`, `amb.sky.breathe`), their variants
+empty until the clips come through intake; `KSKYSOUND.bind({play, master})` fires them (KCUE's pick to the page's player when a cue
+has clips, else a stand-in Web Audio synth so the timing can be judged now), delayed by `dist / 343` and scaled by the sky's own
+`1 / (1 + dist / 2500)`. `node core/audio/test-sky-sound.js`. `S.moodPaused = true` holds the driver while a page sets the clouds itself (the demo's toggles). `glowColour` sets every kind's colour, `glowColours` {ethereal, lightning} each kind's, else
 `ATMOS.MOOD_GLOW`. All of it is `ATMOS.moodAt(t, o)` and `ATMOS.moodGlow(t, kind, seed, eye)`: plain numbers from the module
 clock, the same in Godot (`GODOT.md`); the host writes them into `preset.clouds` each frame and `S.mood` is the episode now.
 
@@ -352,6 +362,31 @@ ATMOS.cloudMood(SKY,{seed:7,glowColour:[1,.55,.2],tintAt:(x,z)=>F.taint(x,z)}); 
 
 The demo (`demo/`: Colour, Pattern, Glow and Dark toggles, a Shifting switch, Smog mist; `#colour=brown&pattern=violent&glow=ethereal&dark=.6&smog=1`)
 shows a dark tinted turbulent sky, the shifting episodes and a mist with a field.
+
+## Radiation: a warm glow filling a zone of air (`fx/89-atmos-fx-radiation.js`, opt-in, 2026-11-10; `test-radiation.js`)
+
+The owner's ask: "a visible 'radiation' ambient atmos effect ... fills the affected area with a subtle warm glow and heat-haze-like
+shimmer. it should not obscure anything but should be noticeable from a fair distance". A zone is a ball of glowing air (centre,
+radius; density `1 - d^2 / r^2`). Each pixel takes, ADDED in the zone's colour, the zone's strength times the density summed along
+its view ray's chord through the ball, in closed form, over the chord through the centre: 1 through the heart, 0 at the limb.
+Nothing is dimmed or hidden. A surface inside the zone stops the sum at itself, so near things glow less than the air behind
+them; from far off the whole chord shows and the zone reads as a soft warm dome. The shimmer is a slow rising waver of the glow
+itself (`shimmer`, 0..1 of the strength), a few bands to a zone.
+
+```js
+const RAD=ATMOS.radiation({zones:[{x,y,z,r:300,strength:.16,shimmer:.35}],colour:[1,.62,.25]});   /* at most 4 zones */
+ATMOS.radiationScene(scene);          /* every lit material adds the glow up to itself; the sky behind takes it from a far shell */
+RAD.k=.5;RAD.set();                   /* a master strength; edit RAD.zones and call set(); RAD.off = true clears it */
+```
+
+The geometry's share goes through `ATMOS.shaderHook` (composes with the height fog, cloud shade, snow); the sky's share is a
+back-face shell a zone drawn at the far plane after the world, so it lands only where no geometry was drawn and the two never add
+twice. A ShaderMaterial of the page's own takes `ATMOS.radGLSL()` and adds `atmRad(eye, dir, dist)` itself. The pure side:
+`ATMOS.radChord`, `radGlow`, `radAt(zones, x, y, z)` (the density at a point: placement, a meter; registered as core/hazard's
+`radiation` field when the page's KHAZ takes one). **True heat haze** (bent light) is the existing post pass:
+`ATMOS.shimmer({renderer, field: ATMOS.radiationHeat(RAD.zones)})` gives it the zones as a raster of degrees. Cost: about 40
+operations a zone a fragment, no textures, no loop but the four zones. **Not judged:** against a bright noon sky a strength of .16
+is faint (it is additive on an already bright pixel); a page may raise the strength by day or tie `RAD.k` to the hour.
 
 ## Steam in groups and the heat shimmer (`fx/`, opt-in, 2026-11-03)
 

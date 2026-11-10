@@ -57,7 +57,14 @@
  const moodFrame=()=>{if(MOOD.shift)return;const C=S.preset.clouds,g=A.moodGlow(A.clock?A.clock.t:0,MOOD.glow,1,[camera.position.x,camera.position.z]);
   C.dark=MOOD.dark;C.tint=COLOURS[MOOD.colour]||null;C.tintK=C.tint?1:0;C.turbulence=MOOD.pattern==='none'?0:.75;C.turbKind=MOOD.pattern==='none'?'violent':MOOD.pattern;
   C.glow=MOOD.glow==='none'?0:.6*g.k;C.glowColour=GLOWC[MOOD.glow]||[1,.55,.2];C.glowLocus=g.locus;C.glowLocus2=g.locus2;C.turbAt=[0,-2500];C.pace=MOOD.pace;C.sheetTint=MOOD.sheets?1:0;A.moodBolt(S,g,MOOD.glow==='lightning'?S.look.night:0,A.clock?A.clock.t:0);
-  C.event=MOOD.events==='none'?null:A.moodEventAt(A.clock?A.clock.t:0,1,[camera.position.x,camera.position.z],{chance:1,kinds:MOOD.events==='both'?['pillar','ascent']:[MOOD.events]});};   /* the ripple's epicentre: 2.5 km north */
+  C.event=MOOD.events==='none'?null:A.moodEventAt(A.clock?A.clock.t:0,1,[camera.position.x,camera.position.z],{chance:1,kinds:MOOD.events==='both'?['pillar','ascent']:[MOOD.events]});
+  A.skyTrack(S,{flash:MOOD.glow==='lightning'?g.flash:null,event:C.event,episode:null,glowKind:MOOD.glow,glow:C.glow,night:S.look.night,t:A.clock?A.clock.t:0});};
+ /* radiation (fx/89-atmos-fx-radiation.js): a far zone to judge from a distance and a near one to walk the eye into */
+ const RAD=A.radiation({zones:[{x:700,y:0,z:-800,r:350},{x:-90,y:0,z:-130,r:80}]});A.radiationScene(scene);RAD.off=true;RAD.set();
+ const setRad=on=>{RAD.off=!on;RAD.set();$('rad').checked=!!on;};$('rad').onchange=e=>setRad(e.target.checked);window._rad=RAD;
+ /* the light effects heard (core/audio/24-core-audio-sky.js): off until the Sound box is ticked (the click is the browser's gesture) */
+ const SND=typeof KSKYSOUND!=='undefined'?KSKYSOUND.bind({master:.7}):null;window._snd=SND;
+ $('sound').onchange=e=>{if(SND)SND.mute(!e.target.checked);};   /* the ripple's epicentre: 2.5 km north */
  const setMood=o=>{Object.assign(MOOD,o);$('colour').value=MOOD.colour;$('pattern').value=MOOD.pattern;$('glow').value=MOOD.glow;$('dark').value=MOOD.dark;$('darkV').textContent=(+MOOD.dark).toFixed(2);$('shift').checked=MOOD.shift;$('pace').value=MOOD.pace;$('paceV').textContent='x'+(+MOOD.pace).toFixed(1);$('sheets').checked=MOOD.sheets;$('events').value=MOOD.events;S.moodPaused=!MOOD.shift;if(MOOD.shift)S.preset.clouds.pace=MOOD.pace;};
  $('colour').onchange=e=>setMood({colour:e.target.value});$('pattern').onchange=e=>setMood({pattern:e.target.value});$('glow').onchange=e=>setMood({glow:e.target.value});
  $('dark').oninput=e=>setMood({dark:+e.target.value});$('shift').onchange=e=>setMood({shift:e.target.checked});
@@ -119,7 +126,7 @@
  setSite(site);
  const hashView=()=>{const q=new URLSearchParams(location.hash.slice(1));if(q.has('site')&&SITES[q.get('site')])setSite(q.get('site'));else if(q.has('lm'))setSite(site);
   if(q.has('mood')&&LOOKS[q.get('mood')])setMood(LOOKS[q.get('mood')]);for(const k of['colour','pattern','glow'])if(q.has(k))setMood({[k]:q.get(k)});if(q.has('dark'))setMood({dark:+q.get('dark')});if(q.has('pace'))setMood({pace:+q.get('pace')});if(q.has('sheets'))setMood({sheets:q.get('sheets')!=='0'});if(q.has('events'))setMood({events:q.get('events')});if(q.has('shift'))setMood({shift:q.get('shift')!=='0'});
-  if(q.has('smog'))setSmog(q.get('smog')!=='0');
+  if(q.has('smog'))setSmog(q.get('smog')!=='0');if(q.has('rad'))setRad(q.get('rad')!=='0');
   if(q.has('day'))clock.day=+q.get('day');if(q.has('view')&&views[q.get('view')])views[q.get('view')]();if(q.has('hour'))clock.set(+q.get('hour'));
   if(q.has('look')&&looks[q.get('look')]){S.update(0);looks[q.get('look')]();}if(q.has('fov')){camera.fov=+q.get('fov');camera.updateProjectionMatrix();}if(q.has('alt'))camera.position.y=+q.get('alt');if(q.has('pitch'))pitch=+q.get('pitch');ground.visible=q.get('ground')!=='0';scene.traverse(m=>{if(m.isMesh&&m.userData.demoPiece!==false&&m!==ground&&q.get('ground')==='0')m.visible=false;});if(q.has('az'))look(A.skyVec.fromAltAz(q.has('el')?+q.get('el'):8,+q.get('az')));};
  hashView();addEventListener('hashchange',hashView);

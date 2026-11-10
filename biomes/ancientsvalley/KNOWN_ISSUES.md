@@ -51,6 +51,10 @@
   one seed, the fallback on dry ground (no model water cell lies inside the page), so it flooded nothing and every hollow of the page's own relief
   under the lake's level was drawn dry; `89w` now seeds it from that ground too (a 120 m lattice, 264 seeds), which floods 95% of it. The stage's
   view "The core from the water" still stands outside the flood: its eye is in a pocket the lattice misses.
+- [ ] **The dead lobe view frames a spindle stump's broken top at the eye** (2026-11-10): from 900, 48, -100 the frame is filled by a
+  white banded shaft and torn concrete chunks hanging in the air, with the sky's upper right black. The nearest tower (`av.t.5.-2`, a
+  spindle stump) stands 40 m off behind and to the left; the meshes named `spindle.stump.*` round the eye are in no tier group. Taking out
+  the radiation glow or the space warp does not change the frame. The extraplanar wiring branch's shot of the same view (06:35) was clear.
 - [ ] **The House is bare** (`41c`, `75`, 2026-11-09): ash-grey boxes with dim strips, no furniture, no sound (the growl at a fixed distance
   the plan wants is `core/audio`'s), no NPC can follow the walker through a threshold (the paths need teleport edges), and rewiring opens one of
   three fixed rooms. Flying (not walking) through a door also crosses it. The visit count is this browser's (localStorage).

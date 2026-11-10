@@ -11,7 +11,7 @@
 // the last `blend` of the period. Pure: plain numbers from t (the module clock's seconds), the same on every engine.
 //   ATMOS.moodAt(t, o) -> {dark, tint, tintK, turbulence, turbKind, turbOffset [dx, dz], sheetTint, glow, glowKind, glowColour, episode, blend}
 //       turbOffset: where this episode's ripple epicentre lies from the eye (the host latches it when the episode changes)
-//       o = {seed (1), period (s, 300), blend (0..1 of the period, .3), chance {tint .6, glow .5, turbulence .6}, dark [lo, hi]
+//       o = {seed (1), period (s, 300), blend (0..1 of the period, .6: the colour and the rest cross-fade over the second half of each episode, the owner: gradual), chance {tint .6, glow .5, turbulence .6}, dark [lo, hi]
 //            ([.35, .9]), palette (ATMOS.MOOD_PALETTE), turbKinds, glowKinds, tintAt (x, z) -> [r,g,b] | null, eye [x, z],
 //            glowColour (every kind) or glowColours {ethereal, lightning} (default ATMOS.MOOD_GLOW)}
 //   ATMOS.moodGlow(t, kind, seed, eye) -> {k (the glow's factor now), locus [x, z, radius, spread], locus2 [x, z, radius, on]}: the
@@ -24,6 +24,11 @@
 //       now), h (the ascending light's height, m), top (m), width (m), t0, dur}: the SKY EVENTS (the owner, 2026-11-09: "a light
 //       ascending to the heavens in the distance or a brief distant flashing pillar of light"), one chance in each 60 s slot
 //       (o.chance .5), 3-8 km off at a hashed bearing: a pillar flickers out in about a second, an ascent climbs for 14 s
+//   ATMOS.skyDiff(prev, now) -> {events, prev}   what the sky just did, for a listener (core/audio/24-core-audio-sky.js): now = {flash
+//       (moodGlow's), event (the sky event now), episode, glowKind, turbKind, glow, night, t}; events: {kind:'flash', x, z, e, t} at a
+//       new flash, {kind:'event', event:'pillar'|'ascent', x, z, dur, t} as one begins, {kind:'episode', episode, glowKind, turbKind, t}
+//       as the episode changes; prev is what to pass next time (pure: the host keeps it on the sky)
+//   ATMOS.skyLevels(now) -> {orbs, breathe}   the two continuous lights' strength now (the glow x the night, by the glow's kind)
 //   ATMOS.skyBeamAt(d, U) -> rgb   the event as the sky draws it (U.event = the record with x, z, ground; the twin of atmSkyBeam)
 //   ATMOS.skyCloudAt(d, U) -> {rgb, a}   the JS twin of the chunk's atmSkyClouds (layer 7) with the mood, reading the same
 //       noise volume (ATMOS.skyNoiseVolume) by the same trilinear read; U from ATMOS.skyCloudUniforms(preset, look, state, o)
@@ -34,7 +39,7 @@
  const u32=(x,y,s)=>A.skyHash(x>>>0,y>>>0,s>>>0)/4294967296;
  const ss=(a,b,x)=>{const t=Math.max(0,Math.min(1,(x-a)/(b-a)));return t*t*(3-2*t);};
  const mix=(a,b,t)=>a+(b-a)*t,mix3=(a,b,t)=>[mix(a[0],b[0],t),mix(a[1],b[1],t),mix(a[2],b[2],t)];
- A.MOOD_DEFAULTS={period:300,blend:.3,chance:{tint:.6,glow:.5,turbulence:.6},dark:[.35,.9],turbKinds:['violent','ordered','glitched','ripple'],glowKinds:['ethereal','lightning','orbs']};
+ A.MOOD_DEFAULTS={period:300,blend:.6,chance:{tint:.6,glow:.5,turbulence:.6},dark:[.35,.9],turbKinds:['violent','ordered','glitched','ripple'],glowKinds:['ethereal','lightning','orbs']};
  // one episode's draw: eight hashed numbers decide what is on and how much
  const episode=(k,o)=>{const D=A.MOOD_DEFAULTS,seed=(o.seed==null?1:o.seed)+1000,K=(k+(1<<20))>>>0,u=i=>u32(K,i,seed),ch=Object.assign({},D.chance,o.chance||{});
   const pal=o.palette||A.MOOD_PALETTE,tk=o.turbKinds||D.turbKinds,gk=o.glowKinds||D.glowKinds,dk=o.dark||D.dark;
@@ -72,6 +77,12 @@
    const k=pillar?Math.max(0,Math.min(1,Math.exp(-dt*4)*(.6+.6*Math.cos(dt*31)))):Math.pow(Math.sin(Math.PI*dt/dur),.5),h=pillar?0:top*Math.pow(dt/dur,1.3);
    return{id:j,kind,dx:Math.cos(az)*dist,dz:Math.sin(az)*dist,k,h,top,width,t0,dur};}
   return null;};
+ A.skyDiff=function(prev,now){prev=prev||{};const ev=[],t=now.t==null?0:now.t,f=now.flash,e=now.event;
+  if(f&&f.id!==prev.flash)ev.push({kind:'flash',x:f.x,z:f.z,e:f.e==null?1:f.e,t});
+  if(e&&e.id!==prev.event)ev.push({kind:'event',event:e.kind,x:e.x,z:e.z,dur:e.dur,t});
+  if(now.episode!=null&&now.episode!==prev.episode)ev.push({kind:'episode',episode:now.episode,glowKind:now.glowKind,turbKind:now.turbKind,t});
+  return{events:ev,prev:{flash:f?f.id:prev.flash,event:e?e.id:prev.event,episode:now.episode==null?prev.episode:now.episode}};};
+ A.skyLevels=function(now){const g=Math.max(0,(now.glow==null?0:now.glow)*(now.night==null?1:now.night));return{orbs:now.glowKind==='orbs'?g:0,breathe:now.glowKind==='ethereal'?g:0};};
  A.skyBeamAt=function(d,U){const ev=U.event;if(!ev||!(ev.k>0))return[0,0,0];const cam=U.cam,rx=ev.x-cam[0],rz=ev.z-cam[2],D=Math.max(Math.hypot(rx,rz),50),hl=Math.hypot(d[0],d[2]);if(hl<1e-4)return[0,0,0];
   const az=Math.acos(Math.max(-1,Math.min(1,(d[0]*rx+d[2]*rz)/(hl*D)))),aw=Math.max(ev.width/D,(U.pixAng==null?.001:U.pixAng)*1.5),g=Math.exp(-az*az/(aw*aw));if(g<1e-3)return[0,0,0];
   const el=Math.atan2(d[1],hl),gy=ev.ground==null?0:ev.ground,FE=Math.atan((gy-cam[1])/D),te=Math.atan((ev.top-cam[1])/D);let v;

@@ -169,7 +169,7 @@ for f in ['89-atmos-c-hostbind.js','89-atmos-e-weatherhost.js','89-atmos-h-skyho
 PATH['89-atmos-j-fog.js']=os.path.join(CORE,'atmos','sky','89-atmos-j-fog.js')
 PATH['89-atmos-j-heightfog.js']=os.path.join(CORE,'atmos','host','89-atmos-j-heightfog.js')
 PATH['89-atmos-fx-lightning.js']=os.path.join(CORE,'atmos','fx','89-atmos-fx-lightning.js')   # the mood's lightning strikes visible bolts with it (2026-11-09)
-for f in ['89-atmos-fx-rainwall.js','89-atmos-fx-acid.js']:   # the oily rain over the polluted half (89x-host-oilrain.js, 2026-11-09): curtains on a field, the toxic dose
+for f in ['89-atmos-fx-rainwall.js','89-atmos-fx-acid.js','89-atmos-fx-radiation.js']:   # the oily rain over the polluted half (89x-host-oilrain.js, 2026-11-09): curtains on a field, the toxic dose; radiation over the scars (89wr-host-radiation.js, 2026-11-10)
     PATH[f]=os.path.join(CORE,'atmos','fx',f)
 for f in ['89-atmos-e-skymodel.js','89-atmos-f-skypresets.js','89-atmos-g-sky.js','89-atmos-k-cloudmood.js']:   # k: the clouds' mood (2026-11-09)
     PATH[f]=os.path.join(CORE,'atmos','sky',f)

@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 44 (17%) | 0 (0%) | 4 (2%) | 153 (61%) | 50 (20%) |
+| KB | 44 (17%) | 0 (0%) | 4 (2%) | 155 (61%) | 51 (20%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -33,10 +33,11 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/89u-host-steam.js` | 1.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/89v-host-smog.js` | 4.3 | [draw] | 2 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/89w-host-water.js` | 3.4 | [draw] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/89wr-host-radiation.js` | 2.1 | [web] | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/89x-host-oilrain.js` | 2.8 | [draw] | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/89x-host-xp-weather.js` | 0.9 | [G native] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/89y-host-anomaly.js` | 5.8 | [web] | 3 | 0 | 0 | 0 | 2 | 2 | 4 | 0 | 0 | 0 | 0 |  |
-| `src/99-host-take.js` | 28.9 | [draw] | 0 | 1 | 0 | 0 | 0 | 7 | 0 | 2 | 0 | 0 | 0 |  |
+| `src/99-host-take.js` | 29.5 | [draw] | 0 | 1 | 0 | 0 | 0 | 8 | 0 | 2 | 0 | 0 | 0 |  |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 
 ## Notes
