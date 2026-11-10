@@ -3,6 +3,14 @@
 Read before changing anything here. `build.py` prints the open count.
 
 ## Open
+- [x] (2026-11-09, verified 2026-11-10) **The succulent columns' quality pass, backported from `biomes/sedesert`** (TODO.md's
+  ride-along): `columnGeo` in `50-biome-nsemiarid-species.js` (a narrow rounded foot closed by a cap, a domed top, per-row normals;
+  80 triangles a column, was 48 open at both ends) and the sail candelabra's arms seated in `60-biome-nsemiarid-floor.js` (an elbow
+  out of the trunk, the arm's column standing on its end, its foot sunk a third of the elbow's radius; the same draws in the same
+  order). Per type, `column`: 16,127 instances, 774,096 to 1,290,160 triangles; the `nsemiarid/floor` layer 14,986,645 to
+  15,502,709 (16.0 M budget), 15.73 M to 16.24 M scene triangles at the showcase camera, 54 draw calls either way.
+  `verify.py --assert` on SwiftShader OK, 65 pass, before and after. The pages that read the species fragment (scablands' coulee,
+  dambasins' graveyard, east and port) were rebuilt with it on 2026-11-09.
 
 - [ ] **The final rebuild's look, for the owner's eye** (2026-11-03, pair 9; `PLAN.md` section 11). Not judged by the owner: the ground on
       KGROUND (now Standard, the eight layers hex-tiled, the desert's pavement and the bed's mud polygons as KGROUND kinds: `?kground=0` the old

@@ -28,32 +28,41 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 
 ## Ride along with the next all-builds rebuild
 
-**Sources done on `worktree-agent-ab4c79ffcb7301d42` (2026-11-09), awaiting the all-builds rebuild** (the coordinator rebuilds once,
-rewrites the baseline once, then deletes these items):
-- `KSHADOW.units`: done (core counts read samplers and `scene.environment`, `KSHADOW.maxUnits` = min(16, GL); the copies in the Throne,
-  geyser, highrift, nhighlands, cut, shighlands, catch and ringisles now call core; `node core/shadow/test-shadow.js`). Moves every KSHADOW page.
-- kits/interiors food anchors: done (`cottage`, `living`, `kitchen`). Moves every page that furnishes rooms.
-- `regOccupancy` honours `ground` / `far`: done in core/host (`node core/host/test-probe.js`); savage's probe object gone (its licks are
-  `ground` volumes now), godthrone's copy gone. Moves every page on core/host.
-- The `dalab` pack: done (`38-symbols.js` `eye`, `80-cultures.js` appended last; Span's Line and arena pass `culture:'dalab'`). Moves the
-  pages that take core/sockets (and through 38-symbols every catalog page).
-- Water breakup on by default: done (`W.BREAKUP_AUTO=true`; ext/56 now listed in all 43 builds that take core/water: 24 were missing it,
-  not 25). Moves every page that takes core/water.
+**Sources done 2026-11-09, verified 2026-11-10 (`ccr-55bd6ee1-p1si44-ridealongs`), awaiting the all-builds rebuild** (the coordinator
+rebuilds once, rewrites the baseline once, then deletes these items; the spot rebuilds below were checked and not committed):
+- `KSHADOW.units`: sources done, awaiting the all-builds rebuild (core counts read samplers and `scene.environment`, `KSHADOW.maxUnits` =
+  min(16, GL); the copies in the Throne, geyser, highrift, nhighlands, cut, shighlands, catch and ringisles now call core;
+  `node core/shadow/test-shadow.js` passes). Spot checks, `verify.py --assert` on SwiftShader: the Throne OK (committed), geyser OK,
+  catch OK. Moves every KSHADOW page.
+- kits/interiors food anchors: sources done, awaiting the all-builds rebuild (`cottage`, `living`, `kitchen`). `tests/core_test.js` and
+  `tests/test-walk.js` pass; `verify.py dist/interiors.html --assert` OK; `--sets --assert --seeds 3`: the beast-rider dwelling's
+  seed-2 residence failure is gone (the remaining residence failures are all `kits/tents`' new set, a separate WIP; the Highlands
+  reach/required failures do not involve food). Moves every page that furnishes rooms.
+- `regOccupancy` honours `ground` / `far`: sources done, awaiting the all-builds rebuild (`node core/host/test-probe.js` and
+  `test-seat-probe.js` pass). Spot checks: hyperjungle's savage station OK (its wallows read 1 by the flag, the probe object gone),
+  godthrone OK (the summit throat reads 1, its own copy gone). Moves every page on core/host.
+- The `dalab` pack: sources done, awaiting the all-builds rebuild (`38-symbols.js` `eye`, `80-cultures.js` appended last; Span's Line
+  and arena pass `culture:'dalab'`; core/sockets has no node test). Spot check: Span `verify.py --assert` OK. Moves the pages that
+  take core/sockets (and through 38-symbols every catalog page).
+- Water breakup on by default: sources done, awaiting the all-builds rebuild (`W.BREAKUP_AUTO=true`; ext/56 listed in all 43 builds
+  that take core/water). `node core/water/test-breakup.js` passes. `test-gaps.js` fails one case (`neutral by default`: draw.shore,
+  draw.flow2) on this branch and equally on 2d530d40, before the flip (and the test turns the breakup off): not this change.
+  Spot checks: nsemiarid, geyser, catch, savage OK. Moves every page that takes core/water.
 - The fauna runtime and the bison size table: the source is in place (pages only); rebuild the pages that bundle the kit.
 
-- **`KSHADOW.units` counts what the GPU links** (2026-11-09, found by the Throne's fix): `core/shadow/host/12-core-shadow-host.js` counts
+- **`KSHADOW.units` counts what the GPU links** (sources done, awaiting the all-builds rebuild; 2026-11-09, found by the Throne's fix): `core/shadow/host/12-core-shadow-host.js` counts
   declared samplers (some are never read and the GPU drops them), misses `scene.environment` on standard materials, and judges against the
   renderer's own limit (32 in SwiftShader, so shadows turn on where the GPU cannot link them). The Throne's `samplersOf`
   (`biomes/throne/src/89zz-host-core.js`) does all three right since 2026-11-09: move that into core, cap at min(16, GL), and drop the copies.
   It moves every KSHADOW page.
 
-- **kits/interiors: a residence's food on the floor or a wall** (2026-11-09, the integration pass): `IX.sets.auditResidence` does not count
+- **kits/interiors: a residence's food on the floor or a wall** (sources done, awaiting the all-builds rebuild; 2026-11-09, the integration pass): `IX.sets.auditResidence` does not count
   table-top pieces, but the placer may fill the `food` need with one (beast-rider `br_bldg_girder_dwelling` at seed 2 on the full sets
   sheet: `br_h_stall_goods` on the low table). Add `anchors: ['floor', 'wall']` to the food requirement of `cottage`, `living` and `kitchen`
   in `kits/interiors/src/30-programs.js` (zeijani's `cell` does already). It moves every page that furnishes rooms (every kits/ancients
   target, beast-riders, metropolis, post-apoc, pylon, talia, zeijani, the open world, the furnished settlements): with the settlement rebuild.
 
-- **core/host's `regOccupancy` honours `ground` and `far` records** (2026-11-09, the integration pass): a volume drawn on the ground mesh
+- **core/host's `regOccupancy` honours `ground` and `far` records** (sources done, awaiting the all-builds rebuild; 2026-11-09, the integration pass): a volume drawn on the ground mesh
   (a wallow, a throat on a crack's floor) or past the far field has no scene sample, so `registered-volumes-non-empty` fails it.
   godthrone's own probe (`99-host-take.js`) counts `r.ground || r.far` as occupied; core's (`core/host/95-host-probe.js`) does not, so
   hyperjungle's `savage` adds an empty Object3D with `userData.probePoints`, one point a wallow. Teach core the flag, then drop that
@@ -69,13 +78,13 @@ along: do them in that change, rebuild once, rewrite the baseline once. Take an 
   rebuilt: none takes a model that uses them, and on `claude/biome-rebuild` those pages were already behind their sources by
   far more than this (Voth 96 KB, the isle plan 52 KB). `settlements/longsong` does not build at all there: its `build.py` reads
   `openworld/little-demo/src/41-world-fields.js`, which d848c1577 moved to the isle demo.
-- **A `dalab` culture pack for the Post-Apoc kit's sockets** (2026-10-27, `settlements/span`): one `mkCulture({key:'dalab', ...})`
+- **A `dalab` culture pack for the Post-Apoc kit's sockets** (sources done, awaiting the all-builds rebuild; 2026-10-27, `settlements/span`): one `mkCulture({key:'dalab', ...})`
   in `core/sockets/80-cultures.js` (red ochre field `#a8382a`, earth edge, the God's single eye as the symbol, a new entry in
   `38-symbols.js`), so the barricade, the arena and anything Dalab raises from salvage fly its red. `mkCulture` draws from the
   shared stream at load (`jc`, `rr`), so the pack reaches every build that takes core/sockets (the catalog, post-apoc,
   ringsea, zeijani, dhelv, jimjam, longsong, screamers by its bundle): rebuild them with it; then Span passes `culture:'dalab'`
   for the Line and the arena (`src/8at-host-place.js`).
-- **Water breakup on by default** (the owner, 2026-10-27, `core/water/PRACTICE.md` section 2 item 5): every lake, pool and river drawn
+- **Water breakup on by default** (sources done, awaiting the all-builds rebuild; the owner, 2026-10-27, `core/water/PRACTICE.md` section 2 item 5): every lake, pool and river drawn
   from a few sines glints in stripes or a herringbone; `core/water/ext/56-core-water-breakup.js` breaks it up. Today it is opt-in
   (`WATER.breakupAll()`, `WATER.breakupFlows()`, or `WATER.BREAKUP_AUTO = true` before the water is drawn; eastabyss takes it). The flip:
   list `ext/56` in every build that takes core/water (the pooled `settlements/`/`kits/` lists and each biome's `CORE_WATER`), set
@@ -85,11 +94,12 @@ along: do them in that change, rebuild once, rewrite the baseline once. Take an 
   not list ext/56, and those lists are the builds' own files; the default flip alone would turn it on only in the 18 that do.
 
 - ~~**Backport the succulent columns' quality pass**~~ **DONE 2026-11-09** (nsemiarid: `columnGeo` in `50-biome-nsemiarid-species.js`,
-  the sail candelabra's arms seated in `60-biome-nsemiarid-floor.js`, 48 to 80 triangles a column; its page and the pages that read it,
+  the sail candelabra's arms seated in `60-biome-nsemiarid-floor.js`, 48 to 80 triangles a column, `column` 774,096 to 1,290,160
+  triangles over 16,127 instances, `verify.py --assert` OK, page rebuilt and committed 2026-11-10; its page and the pages that read it,
   scablands' coulee and dambasins' graveyard, east and port, rebuilt: `biomes/nsemiarid/KNOWN_ISSUES.md`. The Throne has no succulent
   column: its `column` is the vent coral, a 12-sided ribbed lathe planted in the ground and closed at the top, and its brimstone
   candelabra's arms are one tube with the cup on the tip, so nothing to port. Shade reads sedesert in place since 2026-11-03, so its
-  page took the pass on its rebuild of 2026-11-09.) The entry as it was (the owner, 2026-10-26; done in `biomes/sedesert` on `claude/bowl-station-e15b2d`):
+  page had the pass before this work: 80 and 36 triangles a column, 3,508,729 scene triangles, before and after; rebuilt 2026-11-10, OK.) The entry as it was (the owner, 2026-10-26; done in `biomes/sedesert` on `claude/bowl-station-e15b2d`):
   `columnGeo`'s profiles start at a narrow, rounded foot with a closed cap and per-row normals (`50-biome-sedesert-species.js`:
   `G.column` 80 triangles, `G.columnLo` 36), `columnTree` seats every column on its arm (spots three to a segment along each arm,
   the column within the arm's radius, its foot sunk a third of a radius: they stood up to 1.6 radii plus 1.5 m off, feet in the

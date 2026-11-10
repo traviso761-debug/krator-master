@@ -18,7 +18,9 @@ What follows is what the checks do not cover, or what the kit does not do yet.
   store) on its low table as the `food` need, and `IX.sets.auditResidence` skips surface pieces. The fix is `anchors: ['floor', 'wall']`
   on the food require of `cottage`, `living` and `kitchen` in `src/30-programs.js` (as sets/zeijani.js's `cell` has it), but that
   fragment reaches Dhelv, Girder (both pages), Highlands, Roketstad and the isle demo (`tools/reach.py`): it waits for a pass that
-  rebuilds them.
+  rebuilds them. **Source done 2026-11-09** (`src/30-programs.js`); checked 2026-11-10 on a spot rebuild (not committed): seed 2
+  passes the dwelling, the residence failures left at the three seeds are `kits/tents`' (a separate WIP set). The pages wait for
+  the all-builds rebuild (TODO.md).
 - [x] **Ladders and low plinths the walk could not climb (the stairs pass, 2026-11-03).** `IX.walk.register` wrote a ladder as one strip
   (about 2.7 m of rise a metre): core/walk's reach (0.45 m steps on 0.4 m cells, the reachability audit's) never got up one, so every
   storey a planner served with a ladder was unreached; it is rung floors 0.4 m apart now (`rungs()`, a flight steeper than 1.1 too).
