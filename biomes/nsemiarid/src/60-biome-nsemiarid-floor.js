@@ -320,5 +320,12 @@ NSEMIARID.buildFloor=function(R,q){
  // reeds standing in the shallows (the host's water window)
  BIO.grid(8,0,R,(x,z,d)=>{const ld=BIO.lodD(x,z);if(ld>=L.mid)return 0;const Z=zones(x,z);return .45*q*Math.max(Z.tugai,Z.rip)*smooth(1.0,.3,BIO.depth(x,z))*(1-Z.salt);},
   (x,y,z,d)=>{const lv=BIO.lodD(x,z)<L.floor[0]*1.2?2:1;reed(x,Math.max(y,BIO.waterH(x,z)-.4),z,lv);st.reeds++;},{patch:.6,patchScale:.03,noMask:true,depth:[-.1,.9],pad:1,box:BIO.window('water')});
+ // THE POND BLADDERWORT (Korona's sucking pool's cousin, 50; EXCHANGES.md): mats floating at the surface of fresh, warm water (drawn 3 cm over it:
+ // the pools' water is opaque, so a mat under it would not show; no salt: the
+ // salt lake has none; not in the high country's cold tarns), a few small yellow flowers standing over them. Last, so nothing placed before it moves
+ st.bladder=0;
+ BIO.grid(5,0,R,(x,z,d)=>{if(BIO.lodD(x,z)>=L.mid)return 0;const Z=zones(x,z);if(Z.salt>.05||Z.cold>.4)return 0;return .8*q*smooth(.15,.4,BIO.depth(x,z))*(1-smooth(.3,.7,Z.flow));},   /* still water only: not the stream */
+  (x,y,z,d)=>{const w=BIO.waterH(x,z),s=rr(.8,1.8);BIO.put('bladder',[x,w+.03,z],qEuler(0,rr(0,TAU),0),[s,1,s*rr(.7,1)],leafCol([0x6a8a3a,0x7a9a44,0x5e7e34],1.15,.02,.06,.05));st.bladder++;
+   if(rng()<.25)blooms(x,w+.12,z,rr(.3,.7),ri(2,5),[0xf0d040,0xe8c838],[.03,.05]);},{patch:.5,patchScale:.04,noMask:true,depth:[.15,1.8],pad:.4,box:BIO.window('water')});
  return{under:st};};
 })();

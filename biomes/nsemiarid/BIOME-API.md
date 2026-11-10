@@ -56,7 +56,7 @@ trees.js` says how each is made. `NSEMIARID.FLOOR_ZONES` and `floorWeights(Z)` a
 The small plants are `NSEMIARID.PLANTS` (tagged, with `items` and `travel`): wormwood, drill grass, grass, tumbler,
 crawler, resurrection ball, tulips, reeds, balloon pod, glider gourd, and the small and weird (strider, mace head, bead
 chain, sail candelabra, star drifter, censer caps, horn pipes, roll-egg, furler, hitcher, step cone, window plant, salt
-fingers, rust vine).
+fingers, rust vine), and the pond bladderwort (2026-11-09: Korona's sucking pool's cousin, `tags.kin` `korona.bladderpool`, on still fresh water).
 
 ## What the kit exports
 
