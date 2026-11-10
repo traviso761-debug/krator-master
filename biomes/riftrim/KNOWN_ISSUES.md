@@ -46,6 +46,23 @@ ground past 16 texture units in some view's mode) does not reproduce on the curr
 - [ ] **The Hearths' stations** (`biomes/hearths/PLAN.md` section 11): `hearths` is built (station 7, 2026-11-09: below). `hearths-walk` (the
   western vent's walked field) is owed; the hold's two cave pages are still `biomes/hearths`' own.
 
+## The look pass of 2026-11-09 (every station's views on the GPU, before and after)
+
+Fixed:
+- **The frozen lakes' drifts** (89w; the cold lake, station 3, and the Hearth field's lake): short slabs on a 14 m lattice tiled the ice with white
+  rectangles from any height, and their wind was passed in radians where `WATER.ice` takes degrees. Now long thin streaks down the wind, fewer.
+- **Ledge's great lake past the map** (83 `LAND.farWater`, `stations/ledge`): the far field held the lake at its level but coloured it by height,
+  and below 300 m that is the pink waste colour: from the cliff top the lake ended at the map's edge in a pink plain. It is the lake's blue now.
+
+Seen and left for the owner (each a look decision or a larger piece of work):
+- [ ] **Ledge's cloud belt reads pale**: the rift fill's beds (KSTRATA `rift`) on the W walls are pale grey and white, so the slopes behind the mist
+  frills read as snow from below (item above, "Station 1's cloud belt ground reads pale").
+- [ ] **Ledge's basin plain** reads as a flat lime lawn from its outlet view (the `grass` layer at full weight on the flat), and its cliff face is
+  a dark corrugated wall close up.
+- [ ] **The cold lake's glacier** reads as a brown ridge in its own view (no lying snow on it: `snowBase` 0 on that station).
+- [ ] **The far fields round every station are flat vertex colour** past the map, and the shared sky's snow ridges stand as a pale scalloped wall
+  over them on the high stations.
+
 ## Station 7, the Hearth field (2026-11-09; `PLAN.md`, "Station 7, the Hearth field")
 
 - [ ] **`ATMOS.snowBare` uploads its mask with three.js's default 4-byte row alignment** (core/atmos fx/snowcover): a mask whose rows are not a

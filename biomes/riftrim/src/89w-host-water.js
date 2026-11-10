@@ -22,7 +22,9 @@ const LAKE_DRAWS=LAKE_STILLS.map((S,i)=>{const L=LAKES[i],lk=Object.assign({},LA
  d.mesh.userData.probeSkip=true;d.mesh.userData.inspectLabel=L.name+' ('+L.kind+')';return d;});
 // a frozen lake: the ice over the still, its rim melting (W.ice; ext/54b draws it)
 const ICE_DRAWS=LAKES.map((L,i)=>{if(L.kind!=='frozen'||!WATER.ice||!WATER.drawIce)return null;try{const I=WATER.ice({name:L.name+' (ice)',poly:L.poly,level:L.level,seed:7300+i,
-  drifts:{wind:Math.atan2((LAND.wind||[1,0])[1],(LAND.wind||[1,0])[0]),spacing:14,chance:.5,len:[10,24],wid:[3,6],depth:[.15,.4]},cracks:{cell:22,width:.04}});const D=WATER.drawIce(I,{THREE,scene,lift:.06});return{I,D};}catch(e){reportErr('ice: '+e.stack);return null;}});
+  /* the quality pass (2026-11-09): the drifts were short slabs on a 14 m lattice, a tiled field of white rectangles from any height, and their wind
+    was passed in radians where WATER.ice takes degrees (so they lay near east whatever the wind); now long thin streaks down the wind, fewer */
+ drifts:{wind:Math.atan2((LAND.wind||[1,0])[1],(LAND.wind||[1,0])[0])*180/Math.PI,spacing:30,chance:.38,len:[22,52],wid:[1.6,3.8],depth:[.08,.26]},cracks:{cell:22,width:.04}});const D=WATER.drawIce(I,{THREE,scene,lift:.06});return{I,D};}catch(e){reportErr('ice: '+e.stack);return null;}});
 const FALL_DRAWS=FALL_RECS.map((F,i)=>{const o=FALLS[i];const d=WATER.drawFall(F,{color:lin(0xdce8e6),opacity:.9,rowStep:3,cols:12,spray:'drop',plungeR:o.plungeR==null?20:o.plungeR,footK:.8,envMapIntensity:.25,renderOrder:3,pick:true});
  d.mesh.userData.inspectLabel=o.name||'A fall';if(d.plunge)d.plunge.userData.inspectLabel=(o.name||'A fall')+' (plunge pool)';return d;});
 const BIG_DRAW=BIG_LAKE?LAKE_DRAWS[LAKES.indexOf(BIG_LAKE)]:null;

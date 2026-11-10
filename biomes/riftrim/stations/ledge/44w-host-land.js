@@ -62,7 +62,8 @@ const LAND={name:'Ledge and the great lake (riftrim station 1)',title:'Krator bi
  // the far country: the walls round the basin rising to the highland (the Outer Wall's crest over the north-west), the lake going on south-west
  far:(x,z,S0)=>{const g=terrainH(clamp(x,-S0,S0),clamp(z,-S0,S0)),dn=Math.max(0,-S0-z),dw=Math.max(0,-S0-x),de=Math.max(0,x-S0),ds=Math.max(0,z-S0);
   const lake=x<STATION.shoreX(clamp(z,-S0,S0))&&z>-S0?1:0;
-  return lake&&dn<1?Math.min(g,STATION.LAKE-2)+0*ds:g+dn*.55+dw*.45*smooth(0,3000,dw)+de*.3*smooth(0,4000,de)+260*(fbm(x*.0008,z*.0008,412,3)-.5)*smooth(0,1500,Math.max(Math.abs(x),Math.abs(z))-S0);},
+  return lake&&dn<1?STATION.LAKE-1:g+dn*.55+dw*.45*smooth(0,3000,dw)+de*.3*smooth(0,4000,de)+260*(fbm(x*.0008,z*.0008,412,3)-.5)*smooth(0,1500,Math.max(Math.abs(x),Math.abs(z))-S0);},
+ farWater:{level:STATION.LAKE-1,colour:[30,74,102]},   /* the great lake past the map: flat at its level, its own deep blue (83) */
  farBands:[300,900,1900,3300,4200],farLabel:'The walls round the great lake\'s basin',
  kin:[
   /* OWED: swlowlands.cedar (the tier cedar, Dalab's timber): its builder (swlowlands src/55, B[16]) jitters its 4 m pads up to 1.2 m off the limbs, and the attach audit failed at 2% here (4.4% of its needle cards); grown again once swlowlands holds them (BIO.holdTo). KNOWN_ISSUES.md */

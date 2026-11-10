@@ -4,6 +4,16 @@ Read before changing anything here. `build.py` prints the open count.
 
 ## Open
 
+- [ ] **The look pass of 2026-11-09** (every page's views on the GPU, before and after; shots in the session's notes). Fixed:
+  - **The far field round the stations** (`src/89f-host-far.js`, all four stations): the far bake marks the terminal sea's cells at the model's
+    floor (1 m over the sea's level) without a water flag, so they drew as flat land; a floor cell is now the sea. **The savannah** had no far
+    palette and took the default pale gold, which the ground never is: the map's square showed its edge on every high view; it takes the grass's
+    olive now (`stations/savannah/44s`). **The jungle**'s far canopy read as a lit lawn; darker and mottled (`stations/jungle/44s`).
+  - Left as they are, for the owner: **the algal lake reads pale cream from its shore** (its hue, `RIFT_LAKE.hue` .15, is the salt lake's
+    chosen colour; a weaker shoal tint was tried and changed nothing visible, so it was not kept); **the savannah's burn mosaic** reads as hard
+    dark stains from the air (fresh burns: `ABSAV.burn`, intended); **from afar every station's ground beyond the LOD spine is bare paint**
+    (the runtime LOD draws the flora near the spine only: the "From afar" views show a lawn with a forest in its middle).
+
 - [ ] **The Rift is to be rebuilt as four stations** (the owner, 2026-10-27): the savannah, the jungle, the cloud forest on its
       sky islands and Cube's plateau. `PLAN-STATIONS.md` is the plan, answered by the owner (the gallery question left); the single-page rebuild is parked on
       `claude/rift-single-page-experiment` (its parts now taken into the stations). Until the stations land, the items below are the old page's.
