@@ -15,7 +15,11 @@
 var AV={};
 AV.ENGINES={harrow:{fn:'buildHarrow',name:'The Harrow',r:175,h:210},strider:{fn:'buildStrider',name:'The Strider',r:175,h:220},breech:{fn:'buildBreech',name:'The Breech',r:200,h:200},
  gyre:{fn:'buildGyre',name:'The Gyre',r:235,h:460},press:{fn:'buildPress',name:'The Press',r:300,h:600},sleeper:{fn:'buildSleeper',name:'The Sleeper',r:160,h:260},
- carapace:{fn:'buildCarapace',name:'The Carapace',r:215,h:130},retorts:{fn:'buildRetorts',name:'The Retorts',r:200,h:270},needle:{fn:'buildNeedle',name:'The Needle',r:240,h:300},ram:{fn:'buildRam',name:'The Ram',r:320,h:110}};
+ carapace:{fn:'buildCarapace',name:'The Carapace',r:215,h:130},retorts:{fn:'buildRetorts',name:'The Retorts',r:200,h:270},needle:{fn:'buildNeedle',name:'The Needle',r:240,h:300},ram:{fn:'buildRam',name:'The Ram',r:320,h:110},
+ /* the industrial set (the owner, 2026-11-10; kits/ancients targets/engines/8aj-engines3.js, read by the station that places one: the Yards) */
+ coil:{fn:'buildCoil',name:'The Coil',r:155,h:320},procession:{fn:'buildProcession',name:'The Procession',r:400,h:270},mortar:{fn:'buildMortar',name:'The Mortar',r:230,h:260},
+ vigil:{fn:'buildVigil',name:'The Vigil',r:135,h:260},receiver:{fn:'buildReceiver',name:'The Receiver',r:430,h:270},loom:{fn:'buildLoom',name:'The Loom',r:245,h:250},
+ iris:{fn:'buildIris',name:'The Iris',r:115,h:360},hive:{fn:'buildHive',name:'The Hive',r:175,h:300},star:{fn:'buildStar',name:'The Star',r:175,h:270},abacus:{fn:'buildAbacus',name:'The Abacus',r:420,h:230}};
 AV.RUINS=['intact','gutted','crown','broken','stump','skeleton','fallen'];
 /* the owner, 2026-11-04, twice: the first cut looked far too intact, the second still too whole ("really fuck it up"). Intact 4%, gutted 8%,
    crown 10%, broken 22%, stump 22%, skeleton 14%, fallen 20%: four in five towers cut */
@@ -123,12 +127,13 @@ AV.kerbPlace=function(P,o,u,p,c,s){var K=o.kerb,gap=K.gap==null?3:K.gap,cp=K.cor
  P.forEach(function(T){var e=K.extent?K.extent(T.family):null;if(!e)return;var ang=T.yaw-Math.atan2(s,c),ca=Math.abs(Math.cos(ang)),sa=Math.abs(Math.sin(ang)),ex=[ca*e[0]+sa*e[1],sa*e[0]+ca*e[1]],node=[T.i*p,T.j*p];
   /* the four streets round the cell: axis a, side sg; its half line index, whether it is an avenue, and the slide toward it */
   var sides=[];for(var a=0;a<2;a++)for(var sg=-1;sg<=1;sg+=2){var idx=a===0?T.i:T.j,k=sg>0?idx:idx-1,v=(k+.5)*p;if(Math.abs(v)>lm)continue;var av=isAv(k),hw=av?K.avenue:K.road,sh=sg*(.5*p-hw-gap-ex[a]);if(sh*sg<=0)continue;sides.push({a:a,sg:sg,av:av,sh:sh});}
+  /* the slide on an axis the tower does not slide along (defined before its first use: a tower with no street on any side reaches it first) */
+  var fit=function(a){var idx=a===0?T.i:T.j,room=function(k){return Math.abs((k+.5)*p)>lm?.5*p:.5*p-(isAv(k)?K.avenue:K.road);},lo=-room(idx-1)+ex[a],hi=room(idx)-ex[a];return lo<=hi?Math.min(hi,Math.max(lo,0)):(lo+hi)/2;};
   if(!sides.length){var l0=[node[0]+fit(0),node[1]+fit(1)],w0=toXZ(l0[0],l0[1]);if((l0[0]!==node[0]||l0[1]!==node[1])&&Math.hypot(w0[0],w0[1])<=Rs&&o.ground(w0[0],w0[1])>=o.lakeY+1.5&&!(o.skip&&o.skip(w0[0],w0[1]))){T.x=w0[0];T.z=w0[1];T.y=o.ground(w0[0],w0[1]);}T.kerb=null;return;}
   var pick=function(L,r){var W=0;L.forEach(function(q){W+=q.av?3:1;});var t=r*W;for(var n=0;n<L.length;n++){t-=L[n].av?3:1;if(t<0)return L[n];}return L[L.length-1];};
   var A=pick(sides,u(T.i,T.j,11)),cross=sides.filter(function(q){return q.a!==A.a;}),B=cross.length&&u(T.i,T.j,12)<cp?pick(cross,u(T.i,T.j,13)):null;
   /* an axis the tower does not slide along keeps its plinth between that axis's two kerbs: a plinth wider than the node's room toward an avenue
      (the Pods, 120 m) moves off it toward the road across, and one wider than the whole cell sits in the middle of it */
-  var fit=function(a){var idx=a===0?T.i:T.j,room=function(k){return Math.abs((k+.5)*p)>lm?.5*p:.5*p-(isAv(k)?K.avenue:K.road);},lo=-room(idx-1)+ex[a],hi=room(idx)-ex[a];return lo<=hi?Math.min(hi,Math.max(lo,0)):(lo+hi)/2;};
   var land=function(B){var l=[node[0],node[1]];l[A.a]+=A.sh;if(B)l[B.a]+=B.sh;else l[1-A.a]+=fit(1-A.a);var w=toXZ(l[0],l[1]);if(Math.hypot(w[0],w[1])>Rs)return null;var y=o.ground(w[0],w[1]);if(y<o.lakeY+1.5)return null;if(o.skip&&o.skip(w[0],w[1]))return null;return{x:w[0],z:w[1],y:y};};
   var L=land(B),corner=!!B;if(!L&&B){L=land(null);corner=false;}if(!L){var l1=[node[0]+fit(0),node[1]+fit(1)],w1=toXZ(l1[0],l1[1]);if(Math.hypot(w1[0],w1[1])<=Rs&&o.ground(w1[0],w1[1])>=o.lakeY+1.5&&!(o.skip&&o.skip(w1[0],w1[1]))){T.x=w1[0];T.z=w1[1];T.y=o.ground(w1[0],w1[1]);}T.kerb=null;return;}
   T.x=L.x;T.z=L.z;T.y=L.y;T.kerb={axis:A.a,side:A.sg,avenue:A.av,corner:corner};});

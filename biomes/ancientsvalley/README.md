@@ -205,6 +205,67 @@ the boot (400 MB) and every view kept the transit cells and wreck looks it built
 a transit cell is freed 450 m past its near range and built again on the way back, and the wreck looks are capped at 72. On software GL the boot
 holds 1,451 MB (from 1,974) and the heap stays at 1.4 to 1.8 GB through every view (from 3.6 GB after twelve).
 
+## Station 2a: the Yards (2026-11-10; `stations/yards/`, `dist/ancientsvalley-yards.html`)
+
+```
+cd biomes/ancientsvalley && python3 build.py --station yards           # or: python3 tools/build.py biomes/ancientsvalley --station yards
+python3 biomes/ancientsvalley/verify.py biomes/ancientsvalley/dist/ancientsvalley-yards.html --assert --all-views --out shots
+```
+
+The industrial district (PLAN.md section 12, 2a), a station of its own; the Overlook is unchanged. `station.json` names the page, its region
+record and what it reads beyond station 0: the metropolis kit's `46e` (the third of each industrial kind) and the new `46f`/`57y` (the yards'
+pieces), the Ancients kit's industrial builders (as `kits/metropolis/build.py` lists them) and the new Engines (`targets/engines/8aj-engines3.js`).
+Its fragments replace `src/`'s of the same name: the stage (`46z`), the industry and the yard (`70y`), its checks (`98y`), and empty stand-ins for
+the Overlook's extraplanars, House and distortions (`75`, `89y`).
+
+- **The site** (`region/site.py` SITES, `region/station-yards.json`): px 470,921 on 5.1, 210 m, Af, 1,914 mm: the floor of a west-east trough in
+  the shelf 38 km east-south-east of city1 and 14 km from the shore. The trough climbs from the core's floor (105 m four cells west) toward
+  Thera and Span (332 m four cells east), 1.4% along it and 3-4.5% up its flanks: the freight line's natural grade inland, a floor wide enough
+  for a yard and the halls, flanks for the residential rings, a bowl that holds the smog. Clear of every blast basin by 11 km, no water within
+  8 km. Picked on the model by a search for flat shelf ground 8-20 km from the shore near the line from city1 toward Thera.
+- **The grid**: the lattice square to the trough (theta 0, pitch 165). In the industrial zone (u -2,227.5 to 1,732.5, w -742.5 to 742.5) only
+  the avenues run, so the halls stand in 495 m superblocks: two rows of eight either side of the yard's row; the u-avenues stop at the yard's
+  row except two that cross the line (level crossings at -1,732.5 and 1,237.5); the roads stop at the zone's avenues (58 tees). Outside it the
+  flanks keep the ordinary grid. `STAGE.yards.STREETS` holds every street as intervals on its line; `streetK`, the wrecks and the checks read it.
+- **The yard** (`MP.yards.railYard`, 46f): the cargo line along the trough at z -150 on a graded bench, eight sidings fanning south off it from x
+  -1,600 to -100 (each a transit-kit rail at grade, its turnout lengthening with each siding out), buffer stops at their ends, five trains on
+  them (three standing, two derailed with wagons on their sides) and a derailed freight on the main line east of the yard; the turntable with
+  its twelve-stall roundhouse at the yard's east end; three loading gantries over the tracks.
+- **The industry**: the twelve industrial buildings (`MP.ANCIENTS`: the Vault, the Perforated Stacks, the Assembler, the Rig, the Foundry, the
+  Pilotis Works, the Well, the Tank Yard, the Cooling Towers, the Gantry Hall, the Furnace Stacks, the Spheres) fronting the avenue on their
+  block's yard side, 3 m behind its pavement, as records of `STAGE.plan.towers`, so the city's machinery (`70`) tiers them like the towers:
+  heroes, box shells, impostors, ruin states by the shares, the lean. Their families (`MP.FAMILY`) are made at the boot (`70y`, before 70's own
+  boot reads them), since the kit makes a family from its first hero and the hero needs the Ancients' builders and the library's maps.
+- **The new pieces** (`kits/metropolis` 46f records, 57y drawing through the transit kit's builder, one mesh a family a chunk): two tank farms in
+  bunds (cylinders with cone, floating and domed roofs, and spheres on leg rings, after the owner's refinery reference; holed, burnt, collapsed
+  and gone by damage), three pipe racks (along both rows' backs and across the yard's row, their bents never in a street or on a track: the
+  pipes span them), a dish array on the north-east block, five chimneys in red and white bands behind the foundry and the furnaces, two
+  conveyors from the yard to them; each registered before it is drawn.
+- **The ground**: the floor all foul (`F.foul`, `F.industry`): spill grounds and toxic pools as dead ground (the scar), the pools still and
+  black and sunk 0.6 m; four slag heaps (`MP.yards.slagH`, ground); the wild only on the upper flanks. **The oily rain is the day's weather**
+  (`STAGE.weather`; 89x sets it), and the smog is the valley's thickest (fog .00052 against the Overlook's .00036, the mist .0016 and deeper,
+  the cloud band lower).
+- **The keepers** are the factory kinds of `kits/mechs` culture `ancient` (`STAGE.keepers`; 72): two porters (crane and pallet), the lifter, the
+  mender and the courier, each on a round of a superblock.
+- **Three of the new Engines** stand in superblocks of their own: the Hive (north row), the Star and the Iris (south row), each on its pad;
+  `70y` merges each engine's plain meshes by material (122 meshes into a few).
+- **The lines**: the elevated highway along the north flank with three ramps landing at avenue tees, the elevated passenger line along the
+  south flank with two stations, the subway under the south row's avenue with three stations.
+- **The checks** (`98y`, through `STAGE.checkList`): the industry placed (all twelve, each inside its superblock, each family made and drawn),
+  nothing in a street (no plinth, bent, trestle, tank, dish or Engine across one), the yard on the line (every siding leaving it, at its
+  spacing, no street across the yard, the turntable at its end, the gantries over the tracks), the wagons, the pieces as records first, the
+  dead ground and the heaps, the weather and the smog, the factory keepers, the Engines, the transit; and the general ones (the hand of man,
+  dry ground, the impostors, the craters, the lean, the forest, the cards, the wrecks on the streets). Each with a negative.
+
+**Numbers (2026-11-10, `verify.py --assert --all-views` on the RTX 5060 lane, 1280 x 800):** every assert and every negative passes. 188 buildings
+(176 residential on the flanks after 25 dropped by the kerb and the street filter, 12 industrial), 41 shell looks in one atlas, 658 junctions
+(58 tees), 8 sidings, 52 wagons in the yard, 22 pieces (277 tanks, 976 rack bents, 9 dishes, 5 chimneys, 2 conveyors, a turntable, 3 gantries,
+5 pools), 3 Engines (122 meshes merged), 5 keepers, 95 wrecks, 7,316 read-in trees (5,677 grown); 18.16 M triangles in the registry (budget
+20 M). Per view: the north flank 4.15 M in 860 calls, the rail yard 3.46 M in 838, the turntable 2.96 M in 653, among the halls 5.92 M in
+905, the tank farm 6.92 M in 677, the foundry 4.15 M in 574, the dish array 5.88 M in 700, the Hive 2.86 M in 613, the Star 4.64 M in 725,
+the Iris 8.14 M in 698 (the worst triangles), a spill ground 4.52 M in 924 (the worst calls), from the air 4.95 M in 816 (ceiling 1,200).
+The shells bake in about 4.8 s, everything at the boot in 6.3 s.
+
 ## Read next
 
 `PLAN.md` (the brief and the decisions), `PLAN-ANOMALIES.md`, `INDEX.md`, `KNOWN_ISSUES.md`, `PORT.md`; `kits/metropolis/README.md` for the towers.

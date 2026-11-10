@@ -4,7 +4,7 @@
 
 Docs: `KNOWN_ISSUES.md`, `LOD-WRITEUP.md`, `PLAN-ANOMALIES.md`, `PLAN.md`, `PORT.md`, `README.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/ancientsvalley.html`
+Built output (never open it; edit `src/` and rebuild): `dist/ancientsvalley-yards.html`, `dist/ancientsvalley.html`
 
 Build: `cd biomes/ancientsvalley && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -22,7 +22,7 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `41-av-field.js` | 19 |  |
+| `41-av-field.js` | 20 |  |
 | `41b-av-wrecks.js` | 9 |  |
 | `41c-av-house.js` | 6 |  |
 | `46-av-feral.js` | 13 |  |
@@ -45,5 +45,5 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `89x-host-oilrain.js` | 3 |  |
 | `89x-host-xp-weather.js` | <1 |  |
 | `89y-host-anomaly.js` | 6 |  |
-| `99-host-take.js` | 29 | the inspector's words (6); the probe's budgets (14); the kit's own checks (verify.py --assert) (18); the page, handed to the host (154) |
+| `99-host-take.js` | 29 | the inspector's words (6); the probe's budgets (14); the kit's own checks (verify.py --assert) (18); the page, handed to the host (157) |
 | `99-tail.html` | <1 |  |

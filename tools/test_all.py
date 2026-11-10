@@ -92,6 +92,10 @@ def extra_builds():
     for st in sorted(glob.glob(os.path.join(ROOT, 'biomes', 'throne', 'stations', '*', 'station.json'))):
         name = os.path.basename(os.path.dirname(st))
         out.append(('build biomes/throne --station ' + name, [PY, 'build.py', '--station', name], 'biomes/throne'))
+    # the Ancient's Valley's stations (the Yards, 2026-11-10: biomes/ancientsvalley/stations/<name>/station.json, build.py --station <name>)
+    for st in sorted(glob.glob(os.path.join(ROOT, 'biomes', 'ancientsvalley', 'stations', '*', 'station.json'))):
+        name = os.path.basename(os.path.dirname(st))
+        out.append(('build biomes/ancientsvalley --station ' + name, [PY, 'build.py', '--station', name], 'biomes/ancientsvalley'))
     if os.path.isfile(os.path.join(ROOT, 'settlements', 'girder', 'build_hero.py')):
         out.append(('build settlements/girder hero', [PY, 'build_hero.py'], 'settlements/girder'))
     return out

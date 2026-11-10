@@ -27,6 +27,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `46c-mp-planned.js` | 56 **big** |  |
 | `46d-mp-gridplan.js` | 66 **big** |  |
 | `46e-mp-industry.js` | 10 |  |
+| `46f-mp-yards.js` | 15 | the yards' pieces as records: tank farms, pipe racks, dish arrays, chimneys, conveyors, slag heaps, spills and pools, the rail yard, the turntable, loading gantries (`MP.yards`) |
 | `47-host-land.js` | 1 |  |
 | `50-mp-kit.js` | 12 |  |
 | `52-mp-hero-spindle.js` | 14 |  |
@@ -35,6 +36,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `55-mp-hero-ancients.js` | 19 |  |
 | `56-mp-interiors.js` | 23 |  |
 | `57-mp-debris.js` | 6 |  |
+| `57y-mp-yards-draw.js` | 13 | the yards' pieces drawn into one builder by family and chunk (`MP.yardsDraw`, the transit kit's builder handed in) |
 | `58-mp-cutaway.js` | 4 |  |
 | `59-mp-floors.js` | 17 |  |
 | `59b-mp-ruin-design.js` | 10 |  |

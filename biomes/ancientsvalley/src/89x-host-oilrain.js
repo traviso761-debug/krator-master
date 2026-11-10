@@ -13,6 +13,7 @@ const AV_OIL=(function(){if(!ATMOS.W||typeof ATMOS.rainWall!=='function')return 
  /* the field: the foul half's land, eased in over its edge, nothing on the water */
  const field=(x,z)=>{if(terrainH(x,z)<LY+.5)return 0;const f=F.foul(x,z);return f<.45?0:f>.75?1:(f-.45)/.3;};
  const R=ATMOS.rainWall({field,centre:[0,0],radius:STAGE.R+600,cell:240,min:.3,top:LY+520,max:600,alpha:.55,colour:[.20,.17,.14],inside:.95,seed:(STAGE.seed|0)+97});
+ if(STAGE.weather===MODE)W.mode=MODE;   /* a station whose day this is (the Yards: PLAN.md 12, 2a) starts in it */
  R.off=W.mode!==MODE;
  /* the dose only in this mode (the other modes' rain is clean, 5.6) */
  const S=ATMOS.acidRain?ATMOS.acidRain({ph:(x,z)=>W.mode===MODE?5.6-3.1*field(x,z):5.6,mmh:24}):null;

@@ -369,6 +369,11 @@ records until the streets want lots), `core/mask` (every field is a function), `
    pipe racks between the halls, the dish arrays of the references, chimneys and conveyors. The ground: the spill grounds and toxic pools
    as dead ground (`scar`, section 9), slag heaps, the oily rain over it on most days (`89x`'s mode, here the default), the smog thickest.
    The keepers here are the robots' factory kinds (`kits/mechs` culture `ancient`). Its own stage (`stations/yards/`), site and views.
+   *Built 2026-11-10* (`README.md`, "Station 2a"): px 470,921 (a west-east trough on the shelf, 210 m, the line's grade toward Thera and Span),
+   the twelve buildings in superblocks round an eight-siding yard with a turntable and gantries, the new pieces as records (`kits/metropolis`
+   46f, 57y), the oily rain and the thickest smog, the factory keepers, and three of the owner's new Engines (the same day: "cyclopean machines
+   of unclear and mysterious purpose" among the industry; `kits/ancients` targets/engines 8aj, ten of them, the Hive, the Star and the Iris here).
+   Waiting on the owner's eye.
 2b. **The Terraces: the Soleri farm belt, a station of its own** (the owner, 2026-11-10). On the terraces (300-600 m), past station 0's
    edge: Soleri's planned developments, hexagonal and terraced growing pods round a civic hub town (reference *landscape* 8), aqueducts on
    arches and pump houses, pylon lines, the crop rows and orchards gone to thicket (`kits/crops`, `CROPS.forBiome` on the Cfa/Af climate,

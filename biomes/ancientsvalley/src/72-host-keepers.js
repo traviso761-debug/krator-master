@@ -21,8 +21,10 @@ const AV_KEEPERS=(function(){if(typeof KratorMechs==='undefined')return [];const
   const role=KratorMechs.roleOf?KratorMechs.roleOf(key,variant|0):null;out.push({g,key,role,route,i:(i0+1)%4,wait:0,seed});};
  /* the porter (crane) on the Overlook's line of sight (800 m out), the watcher before the residential street's eye, the lamplighter on the shelf's
     south-east, the sweeper at the dead lobe's edge, the gardener in the park gone feral, the tripod on its round by the lake's war */
+ /* a station names its own keepers (STAGE.keepers: [{key, x, z, seed, variant}], the Yards' factory kinds); the Overlook's are these */
+ if(STAGE.keepers)STAGE.keepers().forEach(k=>mk(k.key,k.x,k.z,k.seed,k.variant));else{
  const N=STAGE.near,PV=STAGE.views()['A park gone feral'];mk('an_porter',-300,700,11,0);mk('an_watcher',N.x-300,N.z+380,12,0);mk('an_lamplighter',900,900,13,0);mk('an_sweeper',1250,-120,14,0);
- if(PV)mk('an_gardener',PV[3],PV[5],15,0);mk('an_tripod',-600,1250,16,0);
+ if(PV)mk('an_gardener',PV[3],PV[5],15,0);mk('an_tripod',-600,1250,16,0);}
  const clock={t:performance.now()};
  tick(function(){const now=performance.now(),dt=Math.min(.1,(now-clock.t)/1000)*(window.AV_TIME==null?1:window.AV_TIME);clock.t=now;if(dt<=0)return;   /* AV_TIME: a time pocket slows them (89y) */
   for(const k of out){const g=k.g,T=k.route[k.i],dx=T[0]-g.position.x,dz=T[1]-g.position.z,d=Math.hypot(dx,dz);
