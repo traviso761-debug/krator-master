@@ -456,6 +456,30 @@
    "bytes": 6134030,
    "sha256": "02f8894585f3f2ad32ffdf418edb3636edae34986abac3a21e4f24001e1bc3a2"
   },
+  "biomes/seouterwall/dist/seouterwall-ambertarn.html": {
+   "bytes": 1558277,
+   "sha256": "fe1f2cf122f7e25e5a78efb5cf6603824d0841b6b081881f0bf50982c8553cb9"
+  },
+  "biomes/seouterwall/dist/seouterwall-coppertarn.html": {
+   "bytes": 1423924,
+   "sha256": "6500c64819a222ef0c7df812a00219e95101c7fee4a2f30d06dafa92f8945eed"
+  },
+  "biomes/seouterwall/dist/seouterwall-gatetarn.html": {
+   "bytes": 1424841,
+   "sha256": "075b6f15c3ba39b14c82e3a57812a8f2487a473ff3d05a4d8fe7dcbd9915a694"
+  },
+  "biomes/seouterwall/dist/seouterwall-jadecrest.html": {
+   "bytes": 1423338,
+   "sha256": "8eb8304ca1726cf23804ac2303452ad6d92620cfbba9f9708ad824ace408f98c"
+  },
+  "biomes/seouterwall/dist/seouterwall-mirrorscarp.html": {
+   "bytes": 1423805,
+   "sha256": "97abaa84a0c3d24a1eddd0f563907c6864b11c5fefaf126eede2bc55ab1c3af0"
+  },
+  "biomes/seouterwall/dist/seouterwall.html": {
+   "bytes": 1424929,
+   "sha256": "ebbf49b837efde533999bc9e437858c7c8e21185baaab731092263661b4d7fc6"
+  },
   "biomes/shighlands/dist/shighlands-conifers.html": {
    "bytes": 4992646,
    "sha256": "cc504645a32009b42a88a3d659723b15800878aeca4f5163648670da16e697f3"
