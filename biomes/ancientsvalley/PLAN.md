@@ -327,12 +327,12 @@ needs `anomaly` in `ALL_MODULES` and a `NOT_APPLICABLE` reason wherever the over
 | `core/rand` | `KRAND.hash`, `unit`, `fbm` | every draw of the valley's own (the plan, the fields, the relief); the kits keep their streams |
 | `core/tags` | `BIO.init({tags:'ancientsvalley'})`; towers and lines as records | records before anything is drawn |
 | `core/space` | `KSPACE` | the plinths in reach of a point (the ground, the masks, the views) |
-| `core/terrain` | `KGROUND` (seven layers), `KRUBBLE` (the ruins' heaps, through the metropolis kit), `KRELIEF` listed for its noise | the ground, the rubble |
+| `core/terrain` | `KGROUND` (seven layers), `KRUBBLE` (the ruins' heaps, through the metropolis kit; the lobbies' heaps and rubble ramps, `76`), `KRELIEF` listed for its noise | the ground, the rubble |
 | `core/water` | `WATER.open` x 2 | the lake and the inlets, the far lake |
 | `core/atmos` | the shared sky with the model's ridges, `bindHost`, `bindWeather`, `skylight`, `cloudShade` | the air |
 | `core/shader` | `KHOOK.add` (the taint's tint), `KGROUND.hook` | the shader layers; the warp (`KWARP`) waits for the Bend |
 | `core/shadow` | `KSHADOW.attach` behind `?shadow=1` | off by default (the owner) |
-| `core/walk` | listed for the metropolis kit's floors | nothing walks a storey on this page yet |
+| `core/walk` | `KWALK` strips, polys, blocks and zones (`41c` `AV.lobbyWalk`); the take's `walk` is `AVL.walk` (`76`) | the lobbies' approaches, the open towers' storeys and stairs, the rubble at the blocked doors and stairs, the fallen towers' shafts, the weak floors (section 15) |
 | `core/materials` | `KMAT` packs: the valley's, the two lowlands', the metropolis's (sidecars) | the library |
 | `core/export` | `BIO.export` | the export profile |
 | `kits/metropolis` | records, plans, facades, shells, designs, heroes, rubble, floors, ruins, the shell bake and draw; not its stage, land, sky, take, interiors, cut-away or the Ancients builders | the towers |
@@ -434,3 +434,68 @@ the war bucketed into 400 m cells and drawn as the eye comes within 750 m. The t
 The ramps' feet are T junctions of the grid (`KTRANSIT.joinRamps`, the transit session's answer the same day). The family mix leans tall toward
 the lake (`AV.plan` lakeK/tall/short) and the furniture has a far tier of posts. The towers stand on the kerb lines (`AV.kerbPlace`, 41): each
 slides off its node to front a street, its plinth 3 m behind the pavement, an avenue three times as often as a road, a third of them on corners.
+
+## 15. Lobbies and climbs (the owner, 2026-11-09): a fraction of the towers enterable and climbable, the rest blocked by rubble
+
+The owner's words: "i'd like at least a fraction of the buildings here to be actually enterable and climbable; we can strategically block entrance
+or ascent to most with well-placed rubble"; "no proper ramp to get into lobby"; and later the same day, "some of these may be more climbable
+stumps" and "the more wrecked ones might have a collapsing floor hazard".
+
+**What was wrong.** A tower's plinth is a level pad at the raw ground's height under its centre (`AV.plan`), 3 m behind the pavement; the street is
+graded on its own (`KTRANSIT.road`). Measured on the page (552 kerb towers): the plinth stands within 1 m of the street at 40%, within 3 m at 85%,
+up to 7 m above or 6 m below it at the tail, a handful further. Between them the ground is a bank of the plinth's 14 m ease cut by the road's
+grading: no steps, no ramp. And nothing on the page stands a walker on anything but the ground (`core/walk` was listed, empty): the heroes' storeys
+are open frames once ruined (`MP.ruinDesign` cuts the glass and the floors), the planned families' storeys are drawn only on the kit's own page.
+
+**The records first (`41c-av-lobbies.js`, `[G data]`, node-tested).** For every tower that fronts a street (`T.kerb`) and has not fallen:
+- **A door** on its skin facing the street: a family with portals (the Spindle's three, between the fins; the Cupola's four) takes the portal
+  nearest the street, the rest the middle of the frontage. Its point, its facing, its width.
+- **An approach** from the pavement's back edge straight to the door's line on the plinth: the pavement's level (`Rd.levelAt` plus the kerb) at
+  its foot, the plinth's (`T.y`) at its head; **steps** (risers of 0.17 m, a slope of 0.55) when the rise is over 0.6 m, else a **ramp**; its run
+  as long as the rise wants, eating into the pavement and then the plinth's 6 m rim (a sunk stair) before it reaches the street; 6 m wide at an
+  open tower, 4 m at a blocked one. A rise over 6.3 m has no room for a flight: its approach is a **rubble ramp** (a long KRUBBLE heap from the
+  pavement to the plinth's edge, the steps fallen), and such a tower is never chosen open. The stage folds every approach into its ground
+  (`46z` `ground()`: the plane of the flight across its width, blended over 1.5 m at its sides), so the bank is cut or filled where the steps are
+  and the drawn steps sit on the ground mesh.
+- **Open or blocked** by `KRAND.hash(seed, tower index, salt)`, never by order. Eligible to open: not fallen, a rise of 6.3 m or less, a family
+  with storeys and a stair shaft (all sixteen have), and a climb of two floors at least (the Stalk's 50 m stem has no stair). Every ruin on the
+  page leans a little (`AV.lean`, up to 5 degrees) and the climb's plates are level, so an open tower is set plumb: its record's lean is
+  cleared before anything is drawn. The share by state:
+  **stumps 30%** (the owner: climbable stumps, five to twelve storeys to a view over the streets), skeletons 15%, broken and crown-gone 10%,
+  intact and gutted 8%; and the eligible tower nearest the Overlook's start is always open, so the owner finds one. About one tower in eight of
+  the kerb towers opens; the rest are **blocked**: seven in ten **at the door** (a heap of rubble against the skin across the doorway, 3.5 to 4 m
+  high, and blocks across the door's line), three in ten **at the stair** (the lobby open, the stair choked by a heap on its landing at the first
+  to third storey: a flight or two climbed, then nothing).
+- **A climb** for an open tower (`AV.climb(F, state, T)`): the family's storeys (`F.levels`, each `y` and `h`) up to what the ruin leaves:
+  intact and gutted to the roof, the rest to the whole skin's top (`MP.ruin`'s cut less its torn depth), at most 70 storeys. On each, **a plate**
+  (a disc of 0.8 of the skin's radius at that height, `F.envR` or the Spindle's lathe, from 2 m outside the stair to 26 m; a slab family without
+  `envR`, the Ledger, its rectangle less 2.5 m) cut into four pieces round the stair's hole; **a switchback stair** in the family's first stair
+  shaft (moved to the axis when the shaft's place leaves it outside the plate): a box 3 m by 7.2 m, two flights of 1.4 m a storey with a landing at
+  each end, the run fixed (4.6 m) and the riser the storey's (a 7.2 m lobby is steep). The top storey's plate is the roof, or the ruin's torn
+  floor: its outer bands broken off by hash.
+- **Weak floors** (the owner's hazard): in an open tower that is broken, crown-gone or a skeleton, one plate piece in about one storey in five,
+  away from the stair, never the lobby's or the top two: cracked, sagging and darker. A walker standing on one for half a second brings it
+  down: the piece falls and is gone, and the walker drops to the storey below. The stair is never weak, so the route up survives a fall.
+- **The route** of each door: the approach, the plinth to the door, and for an open tower the stair's landings and flights to its top plate, as
+  points; `AV.walkRoute(W, ground, pts)` walks it with the camera's own rules (`core/host`'s `stand`: a step up of 0.7 m at most, the highest
+  floor at or under the feet, a block stops it) against a `KWALK` registry. An open tower's route reaches its top; a blocked one's stops at its
+  rubble.
+
+**The modules.** `core/walk` carries the walking: every approach is a `KWALK.strip`, every plate piece and landing a level `KWALK.poly` (tag
+`weak` on the weak ones), every flight a `strip`, every heap's surface `KRUBBLE.walkTris` as polys and its doorway or stair as `KWALK.block`s
+(axis boxes along the door's line every 0.5 m); the weak floors are also `KWALK.zone`s of kind `collapse` for the Godot export. The take hands
+the camera `AVL.walk`, a view of `KWALK` that leaves out the floors that have fallen (`core/walk` has no way to take a floor out, and the
+records stay as built). `core/space` (`KSPACE`) finds the doors near the eye. `core/tags`: each door, each open tower's climb, each heap and each
+weak floor is `REGISTER`ed before anything is drawn. `core/rand` (`KRAND`) for every pick: open or blocked, the blocking's kind and storey, the
+weak pieces, the torn bands, the heaps' seeds. `core/terrain`'s `KRUBBLE` for every heap. Nothing is copied into the build.
+
+**The drawing (`76-host-lobbies.js`).** A door's group (its steps or ramp, its heap, and for an open tower its plates and stair) is built when the
+eye comes within 420 m, one a frame, in the metropolis kit's concrete and rubble (`MP.mats()`, shared) with vertex tints toward the page's rust;
+freed (out of the scene, geometry disposed) at 650 m, as `AVTR.freeCell` frees a street cell. The records and the walk registry stay (a few MB).
+
+**The checks (`99`).** Every kerb tower that stands has a door and an approach, its foot on the pavement's level and its head on the plinth's
+(within 0.25 m), its slope under 0.6; the open share between 8% and 25% with stumps the most open; each open tower's route continuous from the
+pavement to its top plate, rising at least two storeys (a stump's top within 2 m of its ruin's skin); each blocked tower's route stopped by its
+rubble, at the door or on the stair; the weak floors only in broken, crown-gone and skeleton towers, never on the route. Negatives: an open tower
+with a heap in its stair (the route check fails), a blocked door with its heap taken away (fails), an approach a metre short of the plinth
+(fails), a weak floor in an intact tower (fails).

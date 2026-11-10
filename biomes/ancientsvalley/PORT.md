@@ -15,6 +15,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/00-head.html` | 1.2 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `src/41-av-field.js` | 18.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/41b-av-wrecks.js` | 9.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/41c-av-lobbies.js` | 22 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the doors, approaches, climbs, rubble and routes as records; the walk registry from them; no three.js, no DOM |
 | `src/46-av-feral.js` | 13.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/46z-host-stage.js` | 31.0 | [web] | 0 | 0 | 2 | 1 | 3 | 14 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/47-host-land.js` | 8.5 | [web] | 14 | 2 | 1 | 0 | 0 | 3 | 5 | 0 | 0 | 0 | 0 | split: data inside host code |
@@ -24,6 +25,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/73-host-wrecks.js` | 7.4 | [web] | 1 | 0 | 0 | 0 | 5 | 2 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/74-host-transit.js` | 13.9 | [web] | 3 | 0 | 0 | 0 | 2 | 4 | 0 | 3 | 0 | 0 | 0 |  |
 | `src/75-host-extraplanar.js` | 14.4 | [web] | 1 | 0 | 0 | 0 | 2 | 7 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/76-host-lobbies.js` | 19 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the lobbies drawn near the eye, the walk view, the weak floors' fall, the checks |
 | `src/88-host-build.js` | 6.8 | [web] | 1 | 0 | 0 | 0 | 2 | 2 | 0 | 1 | 0 | 0 | 0 | split: data inside host code |
 | `src/89a-host-atmos.js` | 0.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/89s-host-sky.js` | 2.8 | [G native] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |

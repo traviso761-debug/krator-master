@@ -3,15 +3,16 @@
  "runs": {
   "build.py": {
    "inputs": {
-    "biomes/ancientsvalley/KNOWN_ISSUES.md": "a36cb5082f004fad31969e5211cadd78faaacb50a42a7b10df75168d6b42b3ba",
-    "biomes/ancientsvalley/PORT.md": "9a1b0433dafff3d6819f8b275b1c9e6561147ac13c5deaca4979c32d272fb4e5",
+    "biomes/ancientsvalley/KNOWN_ISSUES.md": "9fcedef9b4d4ed3a385c7c49c5ca6b1a29062d75e146685419d5e34e052649bb",
+    "biomes/ancientsvalley/PORT.md": "bf5fa2794027f37f1c682e9c2bab76127d44b5275253ac5037398024b368590a",
     "biomes/ancientsvalley/build.py": "a8ca0251f287c1fd63a6d29243857f201964d5480ffb437fdc9b6c9803f9116f",
     "biomes/ancientsvalley/region/station-overlook.json": "e8dce9536af165c67b4fbae3b4f21e825e46a57f1c1de052a3646446d2304715",
     "biomes/ancientsvalley/src/00-head.html": "265ebf3f5be223e063e402f2096920705e4d5fc2ded75532d057b60b9a451c8f",
     "biomes/ancientsvalley/src/41-av-field.js": "64bc8dd2da4136676b6ef6f8f15245af24f51821babcb9d06a8b8babbeb9f140",
     "biomes/ancientsvalley/src/41b-av-wrecks.js": "c611b3247270dfd4dd84de4214fe4c772df8c3d0f0b25e98bcd2ff375b00cbab",
+    "biomes/ancientsvalley/src/41c-av-lobbies.js": "ba20f66747b3595e93fd0ed0acd926389161ce1a13df675fbaa923a90ddd12b7",
     "biomes/ancientsvalley/src/46-av-feral.js": "730042382152dad00a4b58e754086d9601806f9d2633bc141d0981210923fcb4",
-    "biomes/ancientsvalley/src/46z-host-stage.js": "0b3a01681cace6dceb39d2abc1b64dc1d748ec867d0739c3cf788a25c1967306",
+    "biomes/ancientsvalley/src/46z-host-stage.js": "98b0d4c14908cef3cbade67a765061f5ac139b7e548b4c11bfd1a6dda9c378a0",
     "biomes/ancientsvalley/src/47-host-land.js": "f8db6275dcc9b5d557ae6dd4193c0477fc6c759bdc12090f90cd981d6c803932",
     "biomes/ancientsvalley/src/70-host-city.js": "3c0499029710de073bdd6a5f7e02b34842496478a792483abccb26bfe52bf63c",
     "biomes/ancientsvalley/src/71-host-creepers.js": "6db64568aeb216252cc28d7e0506f91e425468e7278fedd3f3956afa318d6e49",
@@ -19,6 +20,7 @@
     "biomes/ancientsvalley/src/73-host-wrecks.js": "4a916f52731c1d3d22b2c6d551072d880fffaf63bed5e4cbf0ba1e33740ecde3",
     "biomes/ancientsvalley/src/74-host-transit.js": "e27897c17bee2de61c32a049b899e6522358c5b9b709a35a7e0a5ef6cc52d608",
     "biomes/ancientsvalley/src/75-host-extraplanar.js": "3a97a9d56fd0938aec5537ec3de098e01c664e67e384e02c523b90e54445bc26",
+    "biomes/ancientsvalley/src/76-host-lobbies.js": "b769e2104ec92c62e5405067097e631a88ab3d4974c4c46fb96e339147981aaf",
     "biomes/ancientsvalley/src/88-host-build.js": "f361b2fad778236d3ffd6fe714eb41a8337012f711a525e731abc030881475b4",
     "biomes/ancientsvalley/src/89a-host-atmos.js": "8d1ee2188b59ff2fcef706153d9d2be3ca6ddada8bf63da9e68c05afda027968",
     "biomes/ancientsvalley/src/89s-host-sky.js": "f3ac19036c2276272fa151df8a9ec4b18334bd5852b4c3dfbd04daa1081a59ee",
@@ -27,7 +29,7 @@
     "biomes/ancientsvalley/src/89v-host-smog.js": "a8f3971e0a9b7f8e703388ed37dd6eb17aa3c857a9cf54d4e9553cc739be5bf4",
     "biomes/ancientsvalley/src/89w-host-water.js": "d30cb2bb009fb212eb45cd496f48f09cc7168f6599b168c53098b6eb24974fac",
     "biomes/ancientsvalley/src/89x-host-xp-weather.js": "bbde5a4b080b9e227e8d5a7af46211d5fabd7ac7340b25f3c8f293793edd6299",
-    "biomes/ancientsvalley/src/99-host-take.js": "af41fdb2e1746153248bfdd4399ef709997762813ae01460e535c9497063a5a0",
+    "biomes/ancientsvalley/src/99-host-take.js": "e7809bb30d2fc33cf15e99a4a0078fc4438e3e777bafce58e85d1b5d652e52ce",
     "biomes/ancientsvalley/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
     "biomes/ancientsvalley/tex/creeper.albedo.webp": "19576dcc43a95010df0a6588cc129e0fd7f7a3f411c28e739e509f2e68162b42",
     "biomes/ancientsvalley/tex/ground.asphalt.albedo.webp": "016032057e469def3031422aff60dc45b3b25191241d431453eea84ce0a2f7fb",
@@ -433,7 +435,7 @@
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
-    "biomes/ancientsvalley/src": "aef675ba7d3e698a350ef3dcd58de555e41f607ea24d685d2a27a9bf4e013ad9",
+    "biomes/ancientsvalley/src": "b642823bb302395ec705c26a4afa4696d72dd7018a065ecd451c0476d38b22ec",
     "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
     "kits/ancients-interiors/src": "a37d3d4820bfd1a873fe07f7f6a99a1ea42ec5b79054580eb21420730ac31164",
     "kits/extraplanar": "e9841fcc33fa3ab42d9c339434a90bfa18a92b9b496e5e871a52686dad6cefab",
@@ -444,7 +446,7 @@
     "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
    },
    "outputs": {
-    "biomes/ancientsvalley/dist/ancientsvalley.html": "36b280b75a47f4b5884a37cbf2692dd0c48e3cab0e06c7bf0b8a51b4124c6500",
+    "biomes/ancientsvalley/dist/ancientsvalley.html": "1e9ff6a64bc13fc88719d127fbd5691b572030252324ffafdf12e4a4065f47fe",
     "biomes/ancientsvalley/dist/ancientsvalley.tex.ancient-transit.js": "b13ef800cf6bbdbe4decb9cb2bc7b6f330c6685f5c68642c7ecc80478d7e8e54",
     "biomes/ancientsvalley/dist/ancientsvalley.tex.ancients.js": "17de40a4b90658fd58685b4c1ba56cedc7c6f7e238e3fcbb697cd9a1e69fdb96",
     "biomes/ancientsvalley/dist/ancientsvalley.tex.ancientsvalley.js": "c4e5e39e31dd88de3b37f96d194b1428aaa448866bf283216828658177759d75",
@@ -453,7 +455,7 @@
     "biomes/ancientsvalley/dist/ancientsvalley.tex.swlowlands.js": "7a3a86c197197df1099911a7ca138f4f5b077c48fe2fad5d8fe9ee804b4f4400"
    },
    "outputs_raw": {
-    "biomes/ancientsvalley/dist/ancientsvalley.html": "36b280b75a47f4b5884a37cbf2692dd0c48e3cab0e06c7bf0b8a51b4124c6500",
+    "biomes/ancientsvalley/dist/ancientsvalley.html": "1e9ff6a64bc13fc88719d127fbd5691b572030252324ffafdf12e4a4065f47fe",
     "biomes/ancientsvalley/dist/ancientsvalley.tex.ancient-transit.js": "b13ef800cf6bbdbe4decb9cb2bc7b6f330c6685f5c68642c7ecc80478d7e8e54",
     "biomes/ancientsvalley/dist/ancientsvalley.tex.ancients.js": "17de40a4b90658fd58685b4c1ba56cedc7c6f7e238e3fcbb697cd9a1e69fdb96",
     "biomes/ancientsvalley/dist/ancientsvalley.tex.ancientsvalley.js": "c4e5e39e31dd88de3b37f96d194b1428aaa448866bf283216828658177759d75",

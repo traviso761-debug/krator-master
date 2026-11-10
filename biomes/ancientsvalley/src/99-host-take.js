@@ -104,6 +104,7 @@ if(STAGE.transit){add('the transit stands: the grid, the highway, the lines, the
  add('the lake steams',HCHK.steam(AV_STEAM));add('the keepers walk their rounds',HCHK.keepers(AV_KEEPERS));add('the land is half wild, half foul',HCHK.halves(STAGE.F,STAGE.forest));add('the wild half is overgrown: trees on the ruins, creepers on the towers',HCHK.overgrown(STAGE.F,REG,AV_CREEPERS));
  add('the ruined vehicles stand in the streets',HCHK.wrecks(AVW.records));
  add('the extraplanar hunters walk their rounds',HCHK.hunters(AV_XP.hunters));add('the phenomena and the portals: registered, drawn, their weather bound, the water line right',HCHK.extraplanar(AV_XP));
+ if(typeof AVL!=='undefined')AVL.checks(add);   /* the lobbies and climbs (76, PLAN.md section 15) */
  if(STAGE.checks)STAGE.checks(add);return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),T=STAGE.plan.towers;
  add('a view with nothing built anywhere',HCHK.handOfMan({x:[0,30,0,0,30,-100000]},REG.filter(r=>r.kind!=='line'&&r.kind!=='tower')));
@@ -129,12 +130,13 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
   add('the void hanging over dry ground',HCHK.extraplanar(fake({phenomena:()=>RG.phenomena().map(r=>r.key==='void'?Object.assign({},r,{at:[STAGE.near.x,STAGE.lakeY,STAGE.near.z]}):r)})));
   add('a drowned portal on dry land',HCHK.extraplanar(fake({portals:()=>RG.portals().map(r=>r.key==='drowned'?Object.assign({},r,{at:[r.at[0],STAGE.lakeY+5,r.at[2]]}):r)})));
   add("a phenomenon without its weather",HCHK.extraplanar(Object.assign({},AV_XP,{drawn:AV_XP.drawn.map((g,i)=>i?g:{userData:Object.assign({},g.userData,{weather:null})})})));}
+ if(typeof AVL!=='undefined')AVL.negatives(add);
  if(STAGE.negatives)STAGE.negatives(add);return R;}
 // ---------------------------------------------------------------- the page, handed to the host
 KHOST.on(skyView,'view');
 KHOST.on(function lodTick(){camera.updateMatrixWorld();if(BIO.lodTick)BIO.lodTick(camera);},'view');
 KHOST.take({build:'ancientsvalley-'+STAGE.key,title:STAGE.title,hint:STAGE.hint,
- scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,views:VIEWS,start:STAGE.start||Object.keys(VIEWS)[0],
+ scene,camera,renderer,ground:terrainH,clear:1.8,walk:typeof AVL!=='undefined'?AVL.walk:undefined,registry:REG,views:VIEWS,start:STAGE.start||Object.keys(VIEWS)[0],
  ticks:TICKS,clock:{hour:STAGE.hour==null?9.5:STAGE.hour},draw:()=>SKY.render(),
  inspect:describe,stats:()=>'inst '+window._instances+'\nlod '+(BIO.lodShown?BIO.lodShown.meshes+'/'+BIO.lodShown.of+' chunk meshes':'')+(AVC.ready?'\ntowers '+AVC.towers.length+(AVC.tierN?': heroes '+AVC.tierN.heroes+', shells '+AVC.tierN.shells+', impostors '+AVC.tierN.impostors:'')+'\nshell bake '+AVC.bakeMs+' ms, all '+AVC.bakeAllMs+' ms':'\nbaking the towers')+(typeof AVW!=='undefined'&&AVW.ok?'\nwrecks '+AVW.drawn+'/'+AVW.records.length+', '+AVW.built+' looks built in '+AVW.buildMs+' ms':'')+(AV_XP.ok?'\nextraplanar: '+AV_XP.hunters.length+' hunters, '+AV_XP.drawn.length+' drawn, hum here '+AV_XP.hum.toFixed(2):''),
  layers:{'flora':{match:o=>!!(o.userData&&o.userData.biome)},'water':{match:o=>!!(o.userData&&o.userData.water)},'sky':{objects:()=>[SKY.mesh]}},

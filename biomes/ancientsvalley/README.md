@@ -167,6 +167,28 @@ the boot (400 MB) and every view kept the transit cells and wreck looks it built
 a transit cell is freed 450 m past its near range and built again on the way back, and the wreck looks are capped at 72. On software GL the boot
 holds 1,451 MB (from 1,974) and the heap stays at 1.4 to 1.8 GB through every view (from 3.6 GB after twelve).
 
+**The lobbies and the climbs (the owner, 2026-11-09: "at least a fraction of the buildings here to be actually enterable and climbable; we
+can strategically block entrance or ascent to most with well-placed rubble"; "no proper ramp to get into lobby"; "more climbable stumps"; "a
+collapsing floor hazard"; PLAN.md section 15).** `41c-av-lobbies.js` (`[G data]`, `tests/test-av.js`) makes the records, `46z` calls it once the
+streets are graded and folds the approaches into the ground, `76-host-lobbies.js` registers and draws them. Every tower that fronts a street and
+stands has **a door** on its skin facing the street (a portal of the Spindle's or the Cupola's, else the frontage's middle) and **an approach**
+from the pavement's back edge to half a metre onto its plinth (the plinth is an ellipse, so a door off the middle meets it further back): steps
+(risers of 0.17, cheek walls, slope under 0.55), a ramp under 0.6 m of rise, a rubble ramp over 6.3 m; the ground takes the flight's plane and a
+level path on to the door, so the bank between the street and the plinth is cut or filled there. **A fraction is open** by `KRAND` (stumps 30%,
+skeletons 15%, broken and crown-gone 10%, intact and gutted 8%; the eligible tower nearest the Overlook's start always): its storeys as plates
+(0.8 of the skin's radius, four pieces round the stair, the top one torn) and a switchback stair in the family's stair shaft up to what the ruin
+leaves (the roof, or the skin's torn top; no stair across a storey over 8 m, so the Stalk's stem stays shut); an open tower stands plumb (its lean
+cleared). **The rest are blocked** by `KRUBBLE` heaps: seven in ten across the doorway, three in ten on the stair a flight or two up, each with
+blocks on `core/walk`; a door whose way a fallen tower's shaft crosses, or whose plinth a cutting or a sinkhole breaks by more than 2.5 m, is
+cut off. **Weak floors** in the open broken, crown-gone and skeleton towers (about one storey in five, one piece away from the stair, never the
+lobby's or the top two): darker and sagging; stood on for half a second it falls and the walker drops a storey (`AVL.collapse`), and it is a
+`collapse` zone on the walk for Godot. **The fallen towers' shafts** (the crushed tubes of kits/metropolis 57, which the walker could enter at their
+open ends) are blocks along their axes. The walker (F) reads `AVL.walk`: `KWALK` less the floors that have fallen. A door's group (steps, heap,
+plates, stair) is built within 420 m of the eye, one a frame, and freed past 650 m. The checks: every standing kerb tower has a door, each
+approach's foot on the pavement and head on the plinth with the ground under it; 8 to 25% open with the stumps the most; every open tower walked
+(core/host's own step and drop rules, `AV.walkRoute`) from the pavement to its top; every blocked one stopped at its rubble; weak floors only
+where they belong; every fallen shaft blocked; six negatives.
+
 ## Read next
 
 `PLAN.md` (the brief and the decisions), `PLAN-ANOMALIES.md`, `INDEX.md`, `KNOWN_ISSUES.md`, `PORT.md`; `kits/metropolis/README.md` for the towers.
