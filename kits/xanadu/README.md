@@ -85,6 +85,12 @@ jali and KGLASS's clear pane, floors, ceilings, courts, flights and the Ramp of 
 `kits/interiors/sets/xanadu-citadel.js`, whose rooms the furnisher and core/walk take; each building's massing). A world takes
 them with `kxa.paths(kxa.CITADEL)` and the interior set `xanadu-citadel`. The style per room is the item's `style` and `ceil`
 (the set file's header). Screenshots and how they compare to the references: `settlements/xanadu/citadel/PALACES.md`.
+A fourth file, `78o-xa-golden-way.js` (2026-11-10; named in `build.py` and `settlements/xanadu/build.py` beside CITADEL, not in
+`xanadu.py`, which Longsong's build reads), is the Golden Way, `xa_cit_golden_way`: the court that descends from the
+Pleasure Dome's North Door to the palace's gate iwan and postern (`XGW`, `xgwPlan` as plain records, the builder, `xgwReach`),
+and the Dome's North Door moved to its north face for it (`XPDOME` patched where the citadel's files load; the vest's barrel cut
+back while the Dome builds; `o.gw` drops the north garden wall's east run). Erewhon places it (`xgwSite`); the sheet draws it
+alone at Erewhon's height: `settlements/xanadu/citadel/PLEASURE-DOME.md`, "The Golden Way".
 
 **Footprints** (2026-11-10; the owner: "the garden pieces ... stick out way over what their footprint is supposed to be").
 A def's footprint is its `w x d`, its lot: the sheet spaces sites by it, Erewhon's garden grid and blocks set 8 m and 16 m

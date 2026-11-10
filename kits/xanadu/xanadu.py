@@ -23,10 +23,9 @@ FILES = sorted(FOUNDATION + BUILDINGS)
 # Erewhon's citadel (2026-11-09; settlements/xanadu/citadel/BLUEPRINT.md and refs/citadel/STYLE.md): the Moorish and Mughal
 # parameters (78l, [G data]: XMOOR), the vocabulary (78m: the materials owed in PROMPTS-NEEDED.md section 41, the arch heads, muqarnas, star
 # ceilings, vaults, jali, iwan, water) and the citadel's hollow buildings drawn from their rooms (78n, on the interior set
-# kits/interiors/sets/xanadu-citadel.js), and the Golden Way between the palace and the Pleasure Dome (78o: the descending
-# court, and the Dome's North Door moved to its north face for it). A world takes them by name (paths(CITADEL)): Xanadu's Erewhon does; kit_bundle.py's XAK
+# kits/interiors/sets/xanadu-citadel.js). A world takes them by name (paths(CITADEL)): Xanadu's Erewhon does; kit_bundle.py's XAK
 # (Longsong, kits/construction) does not, so those pages are unchanged
-CITADEL = ['78l-xa-moorish-data.js', '78m-xa-moorish.js', '78n-xa-citadel.js', '78o-xa-golden-way.js']
+CITADEL = ['78l-xa-moorish-data.js', '78m-xa-moorish.js', '78n-xa-citadel.js']
 # what the kit draws through, by name, and where each now lives
 ANCIENTS_CORE = ['10-core.js', '12-stats.js', '30-kit.js', '32-surfaces.js', '34-kitdefs.js', '36-decor.js', '38-helpers2.js',
                  '50-registry.js', '54-mat-concrete.js', '69-mat-salvage.js']          # kits/ancients/src

@@ -33,12 +33,17 @@ runs, 33 star ceilings, 20 painted or tiled vaults, about 2,000 muqarnas cells.
 placement inside the citadel wall (no rooms, no furniture); it now leaves the citadel's own buildings and both Pleasure Domes to
 their builders and items, which is how the citadel sessions shot them. The Hall of Audience and the Divan show the catalog's xanadu
 court pieces (tables, chairs, a carpet, the dais furniture) where the first shots had one table. The architecture is unchanged.
-The gate iwan's preset had to move: with the palace 2 m north and the Pleasure Dome pinned against its lot, the Dome's terrace
-stands 0.3 m before the iwan's face and 18 m above its threshold (`PLEASURE-DOME.md`, "The site among the citadel's buildings").
-The old camera, 4.6 m in front of the iwan, was inside that terrace and saw the Dome's North Door floor. The camera now stands in
-the iwan's recess, 7.5 m up (local z 48.8, over the door's head), looking up; but there the gate's two open leaves box the
-view in, and the hood cannot be framed from in front while the terrace stands where it does. No new shot of it is saved: the view
-waits on the seam (the Golden Way built as a descending court would give it back its ground).
+The gate iwan's preset had to move then: with the palace 2 m north and the Pleasure Dome pinned against its lot, the Dome's
+terrace stood 0.3 m before the iwan's face and 18 m above its threshold, and no shot of the hood could be framed.
+
+**The Golden Way built (2026-11-10, later the same day; `views/golden-way-2026-11-10/`).** The owner chose the Golden Way as a
+descending court (`PLEASURE-DOME.md`, "The Golden Way"): the Dome's North Door moved 4 m in to its north face, and the slot
+between the palace's curtain and the Dome's face became the Way, with a gate court open to the sky before the iwan. The preset
+"Citadel — the gate iwan" stands in that court again, 4 m before the iwan's face at eye height, looking up: the muqarnas hood is
+framed whole, its six tiers in turquoise tile and gilt, the gold ring round the pointed opening, the pishtaq's tile borders and
+the gilt band over it, the roundel at the top of the frame. Against 04 the shortfalls are those listed below (larger, rounder
+cells; no radiating star at the crown; the stand-in tile). A new preset, "Citadel — the Golden Way", looks down the Way's lower
+flights from the turn.
 
 ### The Hall of Audience (`views/Citadel_-_the_Hall_of_Audience.jpg`) against 01 (Akbar's gilt ceiling)
 
@@ -91,9 +96,11 @@ ochre where 03 carries carving everywhere (the yeseria set will carry it). No ca
   the stand-ins: the rainbow is the texture, owed as `peacock-band`.
 - The Isfahan arcade (05) is the loggia of the Vizier's garden and the chancery: haft-rangi barrels with sandstone ribs, a
   sandstone dado. 05's vault is a run of domical bays, not one barrel.
-- The Golden Way: the palace's postern (the Golden Way's door) is dressed in black and white marble bands and gold; the Way
-  itself, the covered court between the Dome's north door and the postern, is not built (the gap between the two is open
-  ground), so the rule's narrowing to black, white and gold over a few bays is one door, not a passage yet.
+- The Golden Way (2026-11-10, `kits/xanadu/src/78o-xa-golden-way.js`): the court that descends 18 m from the Dome's North Door
+  to the gate iwan and the Harem Postern, in the slot between the two buildings; the narrowing to black, white and gold (rule 5)
+  is now a passage: by height, the palace's red sandstone under white marble and cusped arches at its foot, black and white
+  marble under pointed arches in the middle, the Dome's bands, paving, runners and voussoirs above (`PLEASURE-DOME.md`,
+  "The Golden Way").
 - Patterned light (rule 4): the jali cards are cut, but nothing casts their pattern (no projected light in this renderer);
   the lamps in niches are not placed.
 - The exteriors keep the kit's looks brought into the style: the palace's red sandstone curtain and towers, its gate iwan, the

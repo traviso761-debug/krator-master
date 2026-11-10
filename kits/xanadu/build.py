@@ -34,6 +34,8 @@ ksheet.port_lint(HERE)
 paths = kxa.paths()
 paths.update({f: os.path.join(VERN, f) for f in kxa.VERNACULAR + kxa.OPENINGS_VERN})   # what the kit draws through, read in place
 paths.update(kxa.paths(kxa.CITADEL))   # Erewhon's citadel (2026-11-10, settlements/xanadu/KNOWN_ISSUES.md): its buildings on the sheet
+# the Golden Way (2026-11-10, src/78o-xa-golden-way.js): with the citadel, named here and not in xanadu.py, which Longsong's build reads
+paths.update(kxa.paths(['78o-xa-golden-way.js']))
 generative = [f for f in kxa.BUILDINGS if f != '86b-xa-plants.js'] + ['78n-xa-citadel.js']   # the plant shim draws no rnd() (Xanadu's DETERMINISTIC); 78l, 78m draw none
 
 
