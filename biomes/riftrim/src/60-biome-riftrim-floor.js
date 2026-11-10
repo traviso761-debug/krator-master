@@ -86,18 +86,19 @@ RRIM.buildFloor=function(R,q){reseed(800031);q=q==null?1:q;R=R||3000;means();
  bands.forEach((b,bi)=>{const lv=2-bi;
   BIO.grid(b[0],0,R,(x,z)=>{const ld=BIO.lodD(x,z);if(ld>=b[1]||ld<b[2])return 0;const Z=zones(x,z);return .7*q*(lv===0?.5:1)*clamp(Z.live*(1-Z.ice),0,1);},
    (x,y,z)=>plant(x,z,lv),{patch:.55,patchScale:.014,pad:.6,box:b[1]<1e9?BIO.originBox(b[1]):null});});
- // THE SHALLOWS: sedge at every rim's lake edge; on the N rim the glass canes standing in 0.2-1.6 m of water, the algal domes under them
- BIO.grid(7,0,R,(x,z)=>{if(BIO.lodD(x,z)>=L.mid)return 0;return .5*q*smooth(1.2,.2,BIO.depth(x,z));},
+ // THE SHALLOWS: sedge at every rim's lake edge; on the N rim the glass canes standing in 0.2-1.6 m of water, the algal domes under them; none in a hot
+ // pool (the geo field: the Hearth field's springs, station 7; 0 on every other station)
+ BIO.grid(7,0,R,(x,z)=>{if(BIO.lodD(x,z)>=L.mid)return 0;return .5*q*smooth(1.2,.2,BIO.depth(x,z))*(1-smooth(.06,.2,BIO.field('geo',x,z)));},
   (x,y,z)=>{const lv=BIO.lodD(x,z)<L.floor[0]*1.2?2:1,w=BIO.waterH(x,z);around(x,z,lv===2?3:1,.3,1,(px,pz)=>{BIO.put('sedge',[px,Math.max(Y(px,pz),w-.35),pz],qEuler(rr(-.05,.05),rr(0,TAU),rr(-.05,.05)),[rr(.6,1),rr(.8,1.4),rr(.6,1)],leafCol(PAL.sedge,1.05,.03,.08,.06));});st.sedge++;},
   {patch:.6,patchScale:.03,noMask:true,depth:[-.1,.8],pad:1,box:BIO.window('water')});
  if(RRIM.rim==='n'){
-  BIO.grid(6,0,R,(x,z)=>{if(BIO.lodD(x,z)>=L.mid)return 0;const d=BIO.depth(x,z);return .55*q*smooth(.15,.35,d)*smooth(1.8,1.2,d)*smooth(.45,.6,fbm(x*.012,z*.012,9101,2));},
+  BIO.grid(6,0,R,(x,z)=>{if(BIO.lodD(x,z)>=L.mid)return 0;const d=BIO.depth(x,z);return .55*q*smooth(.15,.35,d)*smooth(1.8,1.2,d)*smooth(.45,.6,fbm(x*.012,z*.012,9101,2))*(1-smooth(.06,.2,BIO.field('geo',x,z)));},
    (x,y,z)=>{const lv=BIO.lodD(x,z)<L.floor[0]*1.4?2:1,w=BIO.waterH(x,z),n=lv===2?ri(5,11):ri(2,4);
     for(let k=0;k<n;k++){const a=rr(0,TAU),d=k?rr(.3,2.2):0,px=x+Math.cos(a)*d,pz=z+Math.sin(a)*d,g=Y(px,pz);if(w-g<.05)continue;
      const h=rr(3,6),r=rr(.035,.06),lean=rr(-.06,.06);BIO.put('cane',[px,g-.2,pz],qEuler(lean,rr(0,TAU),lean),[r*2,h+.2,r*2],bright(vary(pick(PAL.cane),.02,.04,.04),1.05));
      if(lv===2)for(let j=1;j<4;j++)BIO.put('canejoint',[px+lean*h*j/4*.5,g+h*j/4,pz],null,[r*2.3,.06,r*2.3],pick(PAL.caneJoint));st.canes++;}},
    {patch:.4,patchScale:.02,noMask:true,depth:[.15,1.8],pad:.6,box:BIO.window('water')});
-  BIO.grid(5,0,R,(x,z)=>{if(BIO.lodD(x,z)>=L.floor[1])return 0;const d=BIO.depth(x,z);return .5*q*smooth(.1,.4,d)*smooth(2.6,1.6,d);},
+  BIO.grid(5,0,R,(x,z)=>{if(BIO.lodD(x,z)>=L.floor[1])return 0;const d=BIO.depth(x,z);return .5*q*smooth(.1,.4,d)*smooth(2.6,1.6,d)*(1-smooth(.06,.2,BIO.field('geo',x,z)));},
    (x,y,z)=>{const s=rr(.4,1.3),g=Y(x,z);BIO.put('dome',[x,g-.1,z],qEuler(0,rr(0,TAU),0),[s,s*rr(.3,.55),s],bright(vary(pick(PAL.algal),.02,.06,.06),.9));st.domes++;},
    {patch:.5,patchScale:.03,noMask:true,depth:[.1,2.6],pad:.3,box:BIO.window('water')});}
  // BOULDER FIELDS on the rocky ground (the moraines, the felsenmeer); on the S rim the iris lichen on them (black, rust and violet crusts);

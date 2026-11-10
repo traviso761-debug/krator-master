@@ -32,7 +32,7 @@ function describe(hit){const p=hit.point,o=hit.object;
  const lab=o.userData.inspectLabel||o.name||'mesh',isItem=o.isInstancedMesh&&o.userData.biome;
  let name=isItem?lab+(best?'  (under '+best.name+')':''):(best?best.name+'  ·  '+lab:lab);
  // the classification and the tags (README.md, DEV TOOLS): a plant is flora of this kit, with its species' tags
- const item=isItem?(o.name||'').replace(/^biome:/,''):null,PLT=item&&RRIM.plantOfItem(item);
+ const item=isItem?(o.name||'').replace(/^biome:/,''):null,PLT=item&&(RRIM.plantOfItem(item)||(typeof HEARTH!=='undefined'&&HEARTH.plantOfItem?HEARTH.plantOfItem(item):null));   /* the Hearths' life, read in place (the Hearth field) */
  const S=o.userData.species?RRIM.byKey[o.userData.species]:(best&&best.key&&RRIM.byKey[best.key]),tg=S?S.tags:(PLT?PLT.tags:null);
  if(o.userData.species)name=S.name+'  ·  a variant ('+o.name.replace('variant:','')+')';
  if(PLT&&!S)name=PLT.name+'  ·  '+lab;
@@ -45,7 +45,7 @@ function describe(hit){const p=hit.point,o=hit.object;
 const BUDGET={
  showcase:{tris:19500000,calls:700},   // scene triangles DRAWN at the camera (variants: the level by the camera); calls: one per variant pool part on this 6.8 km map (KNOWN_ISSUES), not a target
  cls:{pass:16000000,host:900000},
- type:{'riftrim/trees':'pass','riftrim/floor':'pass','riftrim/nursery':'pass','riftrim/kin':'pass','host':'host'},
+ type:{'riftrim/trees':'pass','riftrim/floor':'pass','riftrim/nursery':'pass','riftrim/kin':'pass','hearths/field':'pass','host':'host'},
 };
 // the instanced items only (what the kit roots): a mesh's bounding-box centre is not a plant. The kit's hanging
 // things (weeper strands, stilt-pod tendrils) and the floor's flat mats are origins too, all at or above the ground.
@@ -108,6 +108,7 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P
  if(ROCK.length)add('nothing rooted on a rock body (a dome, a tor)',HCHK.offRock(P));
  add('the flora and the wet band read the shore of the water (BIO.envCheck, WATER.edgeAudit)',edgeCheck());
  add('preset cameras above the ground',HCHK.camerasOut(Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
+ if(LAND.checks)LAND.checks(add,P);   /* a station's own checks (the Hearth field's: the heat's bands) */
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),P=instPoints();
  const C=(RRIM.COUNTS||[]).slice();if(!LAND.species||LAND.species.length){C[SPI(LAND.species?LAND.species[0]:'frostfrill')]=0;add('a species never placed',LAND.species?HCHK.placedIn(LAND.species,C):HCHK.placed(C));}
@@ -122,6 +123,7 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('a fruiting species with no catalog fruit',HCHK.fruit(RRIM.SPECIES.map(S=>S.key==='bellfir'?Object.assign({},S,{tags:Object.assign({},S.tags,{harvest:Object.assign({},S.tags.harvest,{fruit:null})})}):S),RRIM.PLANTS,P));
  if(ROCK.length){const B=ROCK[0];add('a plant on a rock body',HCHK.offRock([[B.x,B.top,B.z,'test']]));}
  {const g=LAND.probes.bed?LAND.probes.bed():[0,terrainH(0,0),0];add('a camera under the ground',HCHK.camerasOut([{view:'under',x:g[0],y:terrainH(g[0],g[2])-5,z:g[2]}]));}
+ if(LAND.negatives)LAND.negatives(add,P);
  return R;}
 // ---------------------------------------------------------------- the page, handed to the host
 // the tree variants (VARIANTS) follow the eye, after the camera is placed
@@ -136,7 +138,7 @@ KHOST.on(function shadowTick(){if(window._shadow)window._shadow.update();RRIM.ni
 KHOST.take({build:LAND.build_id||'riftrim',title:LAND.title||'Krator biome — the rift rim',
  hint:LAND.hint||'The rift rim',
  scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,regHas,views:VIEWS,ticks:TICKS,
- clock:{hour:ATMOS.SKY.viewHour},draw:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
+ clock:{hour:LAND.hour==null?ATMOS.SKY.viewHour:LAND.hour},   /* a station's own hour (the Hearth field opens at dusk: LAND.hour) */draw:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
  controls:[AIR_CONTROL].filter(Boolean),   /* the air (89a-host-atmos.js); the sun's shadows are core/shadow's own button (89z) */
  inspect:describe,stats:()=>'inst '+window._instances,
  layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'rings':{objects:()=>[giantRing]}},
