@@ -22,10 +22,18 @@
     "biomes/nhighlands/tex/dwarfbirch.albedo.webp": "def8e686e6b301168e05e47a85a2469fd1d7a8018600dca0345debe83beef74e",
     "biomes/nhighlands/tex/fin.albedo.webp": "a209a39b16832f78c98cb3b0a11401342cc0a4750098d9d4aefb161c78e5104c",
     "biomes/nhighlands/tex/frond.albedo.webp": "d4efcdabe0469c96fe69d572d92f66f2f1bdeb1c7098026e20418bf1d4f62357",
+    "biomes/nhighlands/tex/ground.chaparral.albedo.webp": "2796e520848948d49b11342e49c3483c0d8e9c2077ed88c21b311aeff891fe10",
+    "biomes/nhighlands/tex/ground.fell.albedo.webp": "9429fe1cc4738da7978fa3705f8175f63df74fee39a2fc92051b4f0a9cac7ece",
+    "biomes/nhighlands/tex/ground.goldgrass.albedo.webp": "17b01e3497307376aaed6c2878544cc5977fce1ee4f4cab88dc9cd64053f0c9e",
+    "biomes/nhighlands/tex/ground.lush.albedo.webp": "65ded909b02ae97988f5a5bef7e4a1bf8908353339f86751662d98b4961bc780",
     "biomes/nhighlands/tex/ground.meadow.albedo.webp": "bae6374a078dd55098e90684357de3d9ef20ff5a8fa5b3b2853c9ebb3d5aebb5",
     "biomes/nhighlands/tex/ground.mulch.albedo.webp": "71a43926404eec76fb61d0cf06e7f34a744cda27d5e4c0794e061235efd26198",
+    "biomes/nhighlands/tex/ground.needles.albedo.webp": "7bd4cde5827538c793b12dd72be82433832b17954395fbfa91300dba0611709b",
     "biomes/nhighlands/tex/ground.peat.albedo.webp": "82caf415003385978ae50d037f6555cbcf499d3433ece8b43e03ddf6abe285d4",
     "biomes/nhighlands/tex/ground.peatflat.albedo.webp": "9d84bfaa3baa21ef5a3d33a7fab2f7b1c80c749d37a7a668cfd93b1c8c7ff6bd",
+    "biomes/nhighlands/tex/ground.scree.albedo.webp": "b4b96dbbeb9051de02b85e8d328748b401923a51906d819f024398c9a921cf07",
+    "biomes/nhighlands/tex/ground.slab.albedo.webp": "fa2b641724fb587df922ff4743042a1e0c7306f7e5c8aa6977de096dd97fc10f",
+    "biomes/nhighlands/tex/ground.snowbed.albedo.webp": "e08e202f82fabdb67226abde189242ca27b6748cbc09c8ed334fee6458800e18",
     "biomes/nhighlands/tex/ground.sphagnum.albedo.webp": "b888864f934e722d3ffd999e7296a447d6facd0d79df57cb120cd1b5faf13be8",
     "biomes/nhighlands/tex/groundCladonia.albedo.webp": "a155a74fdd26bd51f2f9291a4a5a36f73cf3b86373e4c152b48273e6e76d71c2",
     "biomes/nhighlands/tex/groundDetail.albedo.webp": "cd37cef58e199b19f7871c96280b000bdce80110699655c5d960d92616c5cbfb",
@@ -46,7 +54,7 @@
     "biomes/nhighlands/tex/needle.albedo.webp": "0360d9f2189a32a144054a27ef92dc8399923e8c750caaf11b3772bec35d302c",
     "biomes/nhighlands/tex/nrock.albedo.webp": "b1f0c732928d62e99dd6ab6a9a5d91937ef478b254c9573700aaf8d60e696f51",
     "biomes/nhighlands/tex/nwood.albedo.webp": "677160f0c90c1ee870e0e570f1ab2ccec4f5704c2488ef4a308884da10c2d6ba",
-    "biomes/nhighlands/tex/pack.json": "9fcdba40c9f2644df7520723179061bb9c02b08bc1f520b07daca06cbff1be61",
+    "biomes/nhighlands/tex/pack.json": "f62cea8d117ef8fddfc804fe0286ee3abf05723c13f64a193258f77c43606d50",
     "biomes/nhighlands/tex/paddle.albedo.webp": "9ccf476f47ba5b0abb8b02e40202fad8683b787739a03865ea7c7c7f9c9e1e35",
     "biomes/nhighlands/tex/pinnate.albedo.webp": "900252ce0bbcb604bed207935f83b117bd40fe2ef3c475a8e80de94376752f4a",
     "biomes/nhighlands/tex/pleat.albedo.webp": "d26634f88b0abd9ac11758d9af18af5d8066c4165f256e56cc1790f7ce28b2a7",
@@ -73,6 +81,7 @@
     "core/biome/31j-core-joint.js": "2b32f93de6dc08f1a5044449be80346697b2bb87cf764982ab6ab3c0a6847950",
     "core/biome/33-core-fungoid.js": "07e80dc4677ce326830d5a2318185fbf0b918dc9ff4d78f4b2c9c246e81d76a6",
     "core/biome/40-core-place.js": "f1277b48ab3c5d779bf85452c581888be7d5b2ed94a0d21e21ade12f0602c9d7",
+    "core/catalog/catalog.py": "5d4a79810193b831fc1c686c934990afd10ecb63b5a55d05e0f3d7dd4c84d88a",
     "core/catalog/files.json": "a400e7bf3e1197698d129db83964d883fd9ea2818173fe7df3c7d1b4a054d72f",
     "core/catalog/krator-furniture-core.js": "1c8bfa11d261b36895fd50645358e2c4ebe54febf67daeed700a38fbd6256fe9",
     "core/catalog/krator-furniture-detail.js": "486e0ebf0c9910043764063e48046cf1e518a6d8a7d6814a13dca9af16d64507",
@@ -97,6 +106,7 @@
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
+    "core/host/host.py": "e0c566abb47f0e84324c13407b8b2e4c0f3566037e92e00c2e92cf8f120e71c6",
     "core/lod/09-lod.js": "eb45c6a34a0131af2d973e3be72bf27b6c2fa465b2c6406edbe5a0240841375a",
     "core/lod/97-lod-auto.js": "534461fd7d6d5b3e684f7189cfa7f72ab10bb5a66c500af3cc7d45f3104155be",
     "core/mask/25-core-mask.js": "04f96f584ace3a7fd3e9bb262b02b1264b6352d8460c2af3ae9ee0a4fe31e3c2",
@@ -121,6 +131,7 @@
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
     "core/walk/20-core-walk.js": "66c2a5dfacc6e4ffc2cdc03dfa7d0f82ea991c312d5725d299e4e281fe148e03",
     "kits/ancients/src/8zo-anc-open.js": "d8ed886b9ab091fa75036c30fb424d594bf32fae45740caa952347c7a9f64fa5",
+    "kits/catalog/furniture_bundle.py": "e9de2aa4a449de0baf2a1b00842dcd03a318fc966f9bbfe618a66bd36bf9ef3a",
     "kits/catalog/krator-master-furniture-generic.js": "990b05b8404c67ab960f6649babc8143c738ea600a04c0c22564296fa7786ea4",
     "kits/catalog/krator-master-furniture-iziz.js": "99d4c2fe482800faefb309920d6e10dcf00e7d6f1f8936a203b2d871e2f1dd6e",
     "kits/catalog/krator-master-furniture-painted.js": "6810a6cd1e728f29058492ea3deee534daece6092d93552322567dc565734127",
@@ -225,6 +236,7 @@
     "kits/highlands/src/89y-hl-furnish.js": "1346a9bb74387b7c779fce2507af1637816c656f7b6ffabc713d8b990a4b4c1c",
     "kits/highlands/src/94-hl-anim.js": "87778bc82740b56c8d706296b731e5f80adecdd2dd71861a1c045ce97b2a2395",
     "kits/interiors/adapters/runtime-adapter.js": "5958f459962e0bfd8dde8490ec1b0bca3697dd3c86f9697b1c083cfe5f206a57",
+    "kits/interiors/kit_bundle.py": "db49822a3654a99d91441d6a676a69136e825e0096fdc78ffc27cd3b7b9988e5",
     "kits/interiors/sets/highlands.js": "3d9b90f6f8ff961dd5a834115fb9d590f1e9019cb9403f94aedeea545199e15e",
     "kits/interiors/src/10-core.js": "4b940cf3cadd55615825e748e9179aa06ff8984be2d92dbefc3d085ae91e24e5",
     "kits/interiors/src/20-rooms.js": "4b54dca9f15014c721897d598a55f88c9e9dace32568faab59f10ca771694498",
@@ -431,7 +443,9 @@
     "settlements/highlands/tex/woodV.albedo.webp": "e6b9faf5e0afbfbaf73d91e4264572c8433b76281b011e08244b3eb8eb577e01",
     "settlements/highlands/tex/woodV.normal.webp": "190262f7d785a01c811cb78b9227591d3b0a10dcf0e9e1c71350ff41de60e7a6",
     "settlements/highlands/tex/woodV.rough.webp": "8df792868de730da67949922940e6e1ae855351c9d3d1ae092ed812b05e91d84",
-    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
+    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
+    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
+    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
     "core/catalog": "30a9e7a2a0ea642339cc1158c3060327682167fbeb74a8c68a584185e0c6d094",
@@ -459,20 +473,20 @@
    "outputs": {
     "settlements/highlands/VENDOR.json": "5a0a0b9ddb2d1cd881256c1f5d3221c557d4a2a22b430ecebf7aeba56b194c5e",
     "settlements/highlands/build-manifest-highlands.json": "837fa52fb83ea4c6771636e19d29282766b5e778ac6eb5ecaccdfc3cb2e4fe21",
-    "settlements/highlands/build-manifest-roketstad.json": "58722cdfcf6e4d0853139eb6d30c57e50876458d1df0f986c05c740ef4d43696",
+    "settlements/highlands/build-manifest-roketstad.json": "58939a1d41cbf6dab68375e2b6686114c31e4ca3befc1fb51d8bf3270a0f9856",
     "settlements/highlands/dist/highlands.html": "1604d86e81b0536042ad369ceec99c773387e428d8d70a50d267cec2c9b6e3f6",
     "settlements/highlands/dist/highlands.tex.highlands-2.js": "ea908780eb45e3b9669013ebd5d0b87f7013508ffbff0ad0e61ca17dd85e32d2",
     "settlements/highlands/dist/highlands.tex.highlands.js": "265a9f1ca813fe8e3db41b041740eb726e29f6df615286705ebbe5744ae45cf4",
-    "settlements/highlands/dist/roketstad.html": "b3b20b583cad2b5508d863f5983c7b1c086635a82cbf5b04085f53c9837531da"
+    "settlements/highlands/dist/roketstad.html": "ec5d5f6108f5f71a1c42242c331a353922ec052f907e3370fb7e13ed692bfb83"
    },
    "outputs_raw": {
-    "settlements/highlands/VENDOR.json": "5a0a0b9ddb2d1cd881256c1f5d3221c557d4a2a22b430ecebf7aeba56b194c5e",
-    "settlements/highlands/build-manifest-highlands.json": "837fa52fb83ea4c6771636e19d29282766b5e778ac6eb5ecaccdfc3cb2e4fe21",
-    "settlements/highlands/build-manifest-roketstad.json": "58722cdfcf6e4d0853139eb6d30c57e50876458d1df0f986c05c740ef4d43696",
+    "settlements/highlands/VENDOR.json": "3fca36d50261d23363e52c1407427919b3d60666deb5a0d5dea24570260de474",
+    "settlements/highlands/build-manifest-highlands.json": "b783e68d574d32feac98fb046526b11641092d8e46245505e0c7ec1123bd1187",
+    "settlements/highlands/build-manifest-roketstad.json": "6a6911b16189e83aa1e82ec08979eff26a9d4761619dfbd4292e85ac162cbe34",
     "settlements/highlands/dist/highlands.html": "1604d86e81b0536042ad369ceec99c773387e428d8d70a50d267cec2c9b6e3f6",
     "settlements/highlands/dist/highlands.tex.highlands-2.js": "ea908780eb45e3b9669013ebd5d0b87f7013508ffbff0ad0e61ca17dd85e32d2",
     "settlements/highlands/dist/highlands.tex.highlands.js": "265a9f1ca813fe8e3db41b041740eb726e29f6df615286705ebbe5744ae45cf4",
-    "settlements/highlands/dist/roketstad.html": "b3b20b583cad2b5508d863f5983c7b1c086635a82cbf5b04085f53c9837531da"
+    "settlements/highlands/dist/roketstad.html": "ec5d5f6108f5f71a1c42242c331a353922ec052f907e3370fb7e13ed692bfb83"
    }
   }
  }

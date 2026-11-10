@@ -127,7 +127,9 @@
     "settlements/hook/build.py": "9784cd62adc2ae46a845c20c169ff85cd0ec539e0484a9792a9148ec82168366",
     "settlements/hook/targets/hook/89z-rows.js": "cbe6a0385c0899903298b515fa832cb3c93ac31edaaddbae007cd76c55e53588",
     "settlements/hook/targets/hook/91z-views.js": "6e2f0218aaae6392549aeaa0bfc7f732a72a4aaf7328fbd1afad49786550a0cf",
-    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
+    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
+    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
+    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
     "core/lod": "ce04505dcf0d6e6739a489ddb83f6692b9c08a79cfbe7ef33f6cf4585055624a",

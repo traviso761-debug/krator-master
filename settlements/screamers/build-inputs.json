@@ -3,6 +3,7 @@
  "runs": {
   "build.py": {
    "inputs": {
+    "core/catalog/catalog.py": "5d4a79810193b831fc1c686c934990afd10ecb63b5a55d05e0f3d7dd4c84d88a",
     "core/catalog/files.json": "a400e7bf3e1197698d129db83964d883fd9ea2818173fe7df3c7d1b4a054d72f",
     "core/catalog/krator-furniture-core.js": "1c8bfa11d261b36895fd50645358e2c4ebe54febf67daeed700a38fbd6256fe9",
     "core/catalog/krator-furniture-kit.js": "5220ef8dd95dd5c33960ad1452f09f437379c2e26d40c9b480877b1a4e65f16b",
@@ -26,6 +27,7 @@
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
+    "core/host/host.py": "e0c566abb47f0e84324c13407b8b2e4c0f3566037e92e00c2e92cf8f120e71c6",
     "core/lod/09-lod.js": "eb45c6a34a0131af2d973e3be72bf27b6c2fa465b2c6406edbe5a0240841375a",
     "core/lod/97-lod-auto.js": "534461fd7d6d5b3e684f7189cfa7f72ab10bb5a66c500af3cc7d45f3104155be",
     "core/materials/20-textures.js": "9488f355ee917f901c062e119de4aa5e7ac53ed620ada2555bd2e2dfe1a9a3cb",
@@ -46,12 +48,14 @@
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
     "core/walk/20-core-walk.js": "66c2a5dfacc6e4ffc2cdc03dfa7d0f82ea991c312d5725d299e4e281fe148e03",
     "kits/ancients/src/8zo-anc-open.js": "d8ed886b9ab091fa75036c30fb424d594bf32fae45740caa952347c7a9f64fa5",
+    "kits/catalog/furniture_bundle.py": "e9de2aa4a449de0baf2a1b00842dcd03a318fc966f9bbfe618a66bd36bf9ef3a",
     "kits/catalog/krator-master-furniture-beast-rider.js": "923abce1ad13434b27377fd54cdbc349ffcaf79d818a7dae99e1d83133c6ad81",
     "kits/catalog/krator-master-furniture-generic.js": "990b05b8404c67ab960f6649babc8143c738ea600a04c0c22564296fa7786ea4",
     "kits/catalog/krator-master-furniture-post-apoc.js": "3c0e4921653baad9472be5a9f4480fc00252b49e8e2e98b16c322676e645c1da",
     "kits/catalog/krator-master-furniture-scrap.js": "0ad3a75771ab03e7b22e7f558b601ac9e6208418e49275625d199bc44bde720c",
     "kits/catalog/krator-master-furniture-screamer.js": "454e4f963eca4a6a15bc2f4f7310d251d9581c5faa03f3e6d9a037f2e0915697",
     "kits/interiors/adapters/runtime-adapter.js": "5958f459962e0bfd8dde8490ec1b0bca3697dd3c86f9697b1c083cfe5f206a57",
+    "kits/interiors/kit_bundle.py": "db49822a3654a99d91441d6a676a69136e825e0096fdc78ffc27cd3b7b9988e5",
     "kits/interiors/sets/post-apoc.js": "b6af1717bddc4321cf0a8c93e80d1d96faa1ffa9800b240ac7c45e3d3c1f72ff",
     "kits/interiors/src/10-core.js": "4b940cf3cadd55615825e748e9179aa06ff8984be2d92dbefc3d085ae91e24e5",
     "kits/interiors/src/20-rooms.js": "4b54dca9f15014c721897d598a55f88c9e9dace32568faab59f10ca771694498",
@@ -240,6 +244,7 @@
     "settlements/screamers/tex/whiteWorn.albedo.webp": "4db9cf78c28a472cb2ceb844ab8f5e3c863d0b1890e0f3698267a4d8fb1ff725",
     "settlements/screamers/tex/whiteWorn.normal.webp": "6ecfa7ca0abf0adad1ad60dd5c21f15b887262643b000021d6dab37993d2b141",
     "settlements/screamers/tex/whiteWorn.rough.webp": "1edab8491d7bb602ec78b43d1568da5923b08354b0790184767d6c005b2722e8",
+    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
    },
    "listings": {
@@ -270,8 +275,8 @@
     "settlements/screamers/dist/screamers.html": "4f02a97b4f6f6011a8bd56f1d3d1834fdf6d05a1bd16c8160fd46870a70185c5"
    },
    "outputs_raw": {
-    "settlements/screamers/build-manifest-furniture.json": "f34607883eec36be7ae68468b75f667e39db346ce7ba242da2837554d63145c1",
-    "settlements/screamers/build-manifest-screamers.json": "7ba087bdb58f68ee66b85fa8fbca9a66e985cdaf098688e33502f30da200c84e",
+    "settlements/screamers/build-manifest-furniture.json": "f6aab12ee33c52c393d9cddffaa22a3e94ac8e70b73c410cf20d38926523f63a",
+    "settlements/screamers/build-manifest-screamers.json": "f2bacdb3cdd85a711adcbe1cef2ca3cb0b08c11ca20ae2ed656ed918e0596d96",
     "settlements/screamers/dist/furniture.html": "b9935c85a8f3b9e3416cb8475c9f5c331750977d024b51c730c27a0964fbab2d",
     "settlements/screamers/dist/screamers.html": "4f02a97b4f6f6011a8bd56f1d3d1834fdf6d05a1bd16c8160fd46870a70185c5"
    }

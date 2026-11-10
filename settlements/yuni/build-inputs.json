@@ -33,6 +33,7 @@
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
+    "core/host/host.py": "e0c566abb47f0e84324c13407b8b2e4c0f3566037e92e00c2e92cf8f120e71c6",
     "core/lod/09-lod.js": "eb45c6a34a0131af2d973e3be72bf27b6c2fa465b2c6406edbe5a0240841375a",
     "core/lod/97-lod-auto.js": "534461fd7d6d5b3e684f7189cfa7f72ab10bb5a66c500af3cc7d45f3104155be",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
@@ -58,6 +59,7 @@
     "kits/yuni/src/59a-civic-park.js": "e480ed154b9c5d9278310b9f7d9001deedf7f4f3a4b74a3520988dc95463462c",
     "kits/yuni/src/59b-civic-library.js": "35e85b1ae75e26046c349ba6dee9920cc66173089d6fae375190d4889557883a",
     "kits/yuni/src/59c-civic-furniture.js": "72a41310261b5e866891efe7db5ae13cc36f3bcc2b83dd41f7b00bfdb027ca89",
+    "kits/yuni/yunikit.py": "2ec162a16f62ee7f2c669281ca3ca75fd3934b5a6421490e4ff5e3210f6d85e5",
     "settlements/yuni/KNOWN_ISSUES.md": "26c0fdbf1c1279db6b1f0241a3ff841e44005877c69bdca9c627ead3b8fddbcf",
     "settlements/yuni/PORT.md": "2f127b22268d0ae795a640ce2ed79836d8f6773ad43fc2f94d291404c2998eea",
     "settlements/yuni/build.py": "6d30f6a78d1af83ff64f937c9f41dc99b1f879d75a939fabad17c24dd5a9ef1b",
@@ -188,7 +190,9 @@
     "settlements/yuni/tex/timber.albedo.webp": "17f05f68868abeddd20b0039d862b3337ca033a8d9103e02bc55402f50c081c0",
     "settlements/yuni/tex/timber.normal.webp": "2c098d726acbb980695f3f73b78546a36565d86c93d222ce0df76ff9a9e01bb0",
     "settlements/yuni/tex/timber.rough.webp": "f8f4a8fbf26c38251e333d0d39e0914f82a72e87bfe395eeb2f276a564201a1b",
-    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
+    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
+    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
+    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
     "core/clock": "b07ae9730377660ded8e58d297fc2ac9eeba90b828569bba349a69121745c9f4",
@@ -219,13 +223,13 @@
     "settlements/yuni/yuni.tex.yuni.js": "c453c51f51aa91a9081e19036725f5f87ea1577a24dde315f221c8b43ef30a8f"
    },
    "outputs_raw": {
-    "settlements/yuni/build-manifest.json": "f23c6b1e412f974767040f754c5ea6e3105e8abd9e70bf23f05417e59f4fd8fc",
-    "settlements/yuni/publish/yuni-building-kit.html": "43220163aa939b05c96f0c04daa70936d6174cf97c3afcefad47c26cdc0bc944",
-    "settlements/yuni/publish/yuni-plants.html": "777e735f9539156bd46bfe26740b2eff958f72cce32f0b628afa2e08ee655ae5",
-    "settlements/yuni/publish/yuni.html": "d32a9779e8bdcf4853364a715804ade42d444c2777b74475cd8bf92dae90a0e6",
-    "settlements/yuni/yuni-assets.html": "b081b9d9b9deedf04d6588dc4d2057d0a6958da28a2a39410a8eb220ec7d45a2",
-    "settlements/yuni/yuni-plants.html": "a333700cf24302c1f59c128ba6b3a907c48432b527eca4433d082867da1d03c9",
-    "settlements/yuni/yuni.html": "16c8237131bef8f7082f5f1418202c1516d609879db7b6b7313be0fe9e2425a2",
+    "settlements/yuni/build-manifest.json": "7131b6aeeaa7ea7ff625c29a9bc84b73334fefef321dd8a69db419721f68dec3",
+    "settlements/yuni/publish/yuni-building-kit.html": "bc661f867844d0b8f1e7b37cca2eb597fa5a87e0ab9380ba173020df9658813c",
+    "settlements/yuni/publish/yuni-plants.html": "1063faec3fc1823a0b0c3629da45c478cfe070b5e2b0f8e8bd0bbfbcb22e3907",
+    "settlements/yuni/publish/yuni.html": "f8283595d694cc602019428395dc394b591dd1bbfa17bd00f6b8625def0473bf",
+    "settlements/yuni/yuni-assets.html": "7737056c73b4203962abcedfc8ba80388996c70430de6f6fca3a8366dd1e8109",
+    "settlements/yuni/yuni-plants.html": "270ee807cc6e8d2d02368b8ca26d5c2a8c13024d651c477c7ff4709443a92aca",
+    "settlements/yuni/yuni.html": "f203a04b3de634734a6e11caaab279e9edbdca71cd57e03c9231c05cdb0d3c7e",
     "settlements/yuni/yuni.tex.yuni.js": "c453c51f51aa91a9081e19036725f5f87ea1577a24dde315f221c8b43ef30a8f"
    }
   }

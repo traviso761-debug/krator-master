@@ -71,6 +71,7 @@
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
+    "core/host/host.py": "e0c566abb47f0e84324c13407b8b2e4c0f3566037e92e00c2e92cf8f120e71c6",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
@@ -139,7 +140,9 @@
     "settlements/shade/world/factions.json": "5cc6868d471698f3d0c6ea10f86bba87e4c5bd0bb2c37674d7b0844b1215957a",
     "settlements/shade/world/orgs.json": "91e1201a3eb4816d7f34384c6bb19a5abe35e29521212c375985eb02de02947e",
     "settlements/shade/world/roles.json": "83750caac6010f9e1278a99f69ec915f8ef4e9c53a4eba1f91afc2f26db92503",
-    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
+    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
+    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
+    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
     "core/clock": "b07ae9730377660ded8e58d297fc2ac9eeba90b828569bba349a69121745c9f4",
@@ -157,7 +160,7 @@
     "settlements/shade/dist/shade.html": "a7feed970fa2dfc550a4c65b36ae7727d39469497ebb811f2a6b952bebfcea03"
    },
    "outputs_raw": {
-    "settlements/shade/dist/shade.html": "a7feed970fa2dfc550a4c65b36ae7727d39469497ebb811f2a6b952bebfcea03"
+    "settlements/shade/dist/shade.html": "a2858b3e4edc8d35678543fb4c2ddf12e4baa96a40e946529c9e964e02a14e5f"
    }
   }
  }
