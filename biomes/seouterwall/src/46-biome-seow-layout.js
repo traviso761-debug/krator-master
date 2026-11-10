@@ -21,8 +21,8 @@
 //                          fan (0..1 the fan's active channels), moraine (m), g (grade), slope (0..1), sunny (-1 a south-facing, shaded
 //                          slope .. 1 a north-facing, sunny one), wind (0 a lee .. 1 the col's open floor and the crests), mean}
 //                          shore (a tarn's gravel strand, a metre or two over its water)
-//                          road (the Ancients' highway's pavement)
-//                          -> 'water'|'road'|'heap'|'floor'|'shore'|'fan'|'crag'|'scree'|'fellfield'|'tundra'|'moraine'|'larch'|'krummholz'|'col'|'puna'
+//                          road (the Ancients' highway's pavement), heat (°C: KTHERM's, station 3), sinter (0..1)
+//                          -> 'water'|'road'|'hot'|'sinter'|'heap'|'floor'|'shore'|'fan'|'crag'|'scree'|'fellfield'|'tundra'|'moraine'|'larch'|'krummholz'|'col'|'puna'
 //   SEOW.ZONES             each zone's words, and the nwouterwall zone its flora is read as (PLAN.md section 7.1: the NW outer wall's
 //                          larch, pines, steppe and floor, read in place; SEOW.nwZone)
 //   SEOW.lay(o)            the host's binding: {fields: (x,z)=>F, R, seed}; SEOW.at(x,z) is then {zone, F, clim}
@@ -43,6 +43,9 @@ SEOW.BANDS={treeline:7.5,tundra:2.5};
 // across the col. F.wind is the host's exposure field (0 a lee, 1 the open floor and the crests); above SEOW.EXPOSED no tree stands
 // upright: the larch only in a lee, the creeping pine (krummholz) on the open ground
 SEOW.EXPOSED=.55;
+// THE HEAT (station 3: the fault's vents, core/terrain KTHERM): ground at or over SEOW.HOT °C is the Hearths' (their trees stand on 25-60 °C),
+// nothing else roots there
+SEOW.HOT=20;
 SEOW.FROM=[-.55,-.83];   /* the gale's direction of travel's opposite (where it comes from): north-north-west, unit (x, z) */
 // the zones. A CRAG is bare rock standing steep (over ~42 degrees: the megabreccia's ribs, nothing roots on the face); SCREE the steep
 // slope under it (29-42 degrees: the crags' fall, cushion plants and the creeping pine in its hollows); on the flat the meltwater's
@@ -53,6 +56,8 @@ SEOW.FROM=[-.55,-.83];   /* the gale's direction of travel's opposite (where it 
 SEOW.zoneOf=function(F){
  if(F.water)return 'water';
  if(F.road)return 'road';
+ if(F.heat!=null&&F.heat>=SEOW.HOT)return 'hot';
+ if(F.sinter>.5)return 'sinter';
  if(F.heap)return 'heap';
  if(F.melt==='floor'||F.melt==='bar'||F.melt==='pool')return 'floor';
  if(F.shore)return 'shore';
@@ -72,6 +77,8 @@ SEOW.shadeOf=function(F){const t=F.slope<.05?0:F.slope>.16?1:(F.slope-.05)/.11;r
 // each zone: its words, and the nwouterwall zone whose passes grow there (nwouterwall's 55 and 60, read in place: 'none' grows nothing)
 SEOW.ZONES={
  water:{nw:'water',name:'water (the meltwater brook)'},
+ hot:{nw:'none',name:'warm ground over the fault\'s vents (the Hearths\': nothing else roots on it)'},
+ sinter:{nw:'none',name:'the sinter terraces\' apron (opaline and iron sinter: bare)'},
  road:{nw:'none',name:'the Ancients\' highway (board-formed concrete, 30 m, graded at 4 %: the Godsgate\'s one surviving artery)'},
  heap:{nw:'none',name:'a rockfall heap (megabreccia blocks fallen from the crags)'},
  floor:{nw:'floor',name:'the meltwater gully\'s floor (braided cobble and gravel bars)'},

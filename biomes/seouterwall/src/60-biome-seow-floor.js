@@ -18,11 +18,11 @@ const D={
 // fields, worked out only when the zone has not already said no (the passes visit millions of cells)
 const PASSES=[
  ['puya',22,(Z,F)=>Z==='puna'?.22*(F().sunny>.2?1:.35):Z==='scree'?.12:Z==='col'?.03:Z==='moraine'?.04:0,'box',2],
- ['guyedstalk',3,(Z,F)=>Z==='shore'?.08:Z==='fan'?(F().fan>.3?.25:.01):Z==='floor'?(F().streamD<8?.35:.02):0,'box',.6],
+ ['guyedstalk',3,(Z,F)=>Z==='shore'?.03:Z==='fan'?(F().fan>.3?.25:.01):Z==='floor'?(F().streamD<8?.35:.02):0,'box',.6],
  ['skypoppy',2.2,(Z)=>(Z==='moraine'?.3:Z==='col'?.08:Z==='krummholz'?.12:Z==='larch'?.05:0)*SEOW.BLOOM,'floor',0],
  ['goldpoppy',2.4,(Z)=>(Z==='puna'?.12:Z==='moraine'?.1:Z==='col'?.05:Z==='scree'?.04:0)*SEOW.BLOOM,'floor',0],
  ['goldroot',2.8,(Z,F)=>Z==='scree'?.16:Z==='fellfield'?.05:Z==='puna'||Z==='krummholz'?(F().crag>12||F().wall==='talus'?.06:0):0,'floor',0]];
-SEOW.buildFloor=function(R,q){q=q==null?1:q;R=R||2000;const st={plants:0,byKind:{}},LOD=BIO.radii(),near=LOD.floor[0],far=LOD.floor[1];
+SEOW.buildFloor=function(R,q){q=q==null?1:q;R=R==null?2000:R;const st={plants:0,byKind:{}},LOD=BIO.radii(),near=LOD.floor[0],far=LOD.floor[1];
  const BOX=[-R,-R,R,R],BOXES=BIO.host.origin.map(o=>[o[0]-far,o[1]-far,o[0]+far,o[1]+far]);
  PASSES.forEach(P=>{const kind=P[0],floor=P[3]==='floor';let n=0;
   const accept=(x,z)=>{const Z=SEOW.zoneAt(x,z);if(Z==='water'||Z==='road'||Z==='heap'||Z==='crag')return 0;

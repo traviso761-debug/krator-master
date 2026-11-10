@@ -20,6 +20,12 @@ window._biome=null;window._shadow='off';
  if(Q.get('diet')==='0')NWOW.IMPOSTORS=false;   /* ?diet=0: the far trees keep their blobs (nwouterwall's 55) */
  try{window._biome=SEOW.build({R:SITE.R-40,quality:q});}catch(e){reportErr('seouterwall: '+e.stack);}
  _mark('seouterwall');
+ // THE HEARTHS (station 3: biomes/hearths, read in place): the hearth trees, their coal moss, stokers and dead stalks placed on the ground's
+ // heat (KTHERM: HEARTH.layout, never a noise), in the 'rim' dress (broad fans, few, high: the plan's dwarf alpine hearth-trees, 4-11 m)
+ if(SITE.hearths&&HEAT&&typeof HEARTH!=='undefined'){try{const Hs=SITE.hearths,q=Q.has('q')?+Q.get('q'):1;BIO.kit('hearths');HEARTH.parts(Hs.dress);BIO.kit('');
+   BIO.cur='hearths/field';window._field=HEARTH.layout({therm:HEAT.F,at:Hs.at,R:Hs.R,dress:Hs.dress,seed:Hs.seed,toward:{az:0,alt:30},ground:terrainH,
+    mask:(x,z)=>{const Z=SEOW.zoneAt(x,z);return Z==='water'||Z==='road'||Z==='sinter'?0:BIO.mask(x,z);},deadRings:Hs.dead,q});BIO.cur=null;
+   (window._field.trees||[]).forEach(T=>OBSTACLES.push({x:T.x,z:T.z,r:T.r+.8,y0:T.y-1,y1:T.y+T.H}));}catch(e){reportErr('hearths: '+e.stack);}}
  (NWOW.TREES||[]).forEach(T=>OBSTACLES.push({x:T.x,z:T.z,r:T.crownR*.4+.6,y0:T.y0-3,y1:T.y0+T.H}));
  if(Q.has('nobake')){window._stats=JSON.parse(JSON.stringify(BIO.stats));window._instances=0;window._bakeCalls=0;return;}
  const b=BIO.bake();
@@ -71,3 +77,8 @@ const AIR=(function(){const Q=new URLSearchParams(location.search),out={raincove
  if(SHADOW_ON){try{window._shadow=KSHADOW.attach({renderer,scene,camera,sun,ground:terrainH});window._shadow.cast(scene);}catch(e){reportErr('shadow: '+e.stack);}}
  return out;})();
 _mark('air');
+// THE HEARTHS' ENGINE (station 3; biomes/oidong's station): the fans open flat by night and in an eclipse (ATMOS.sunHidden), fold into
+// spindles by day; cloud closes them. One write a frame to the breath's shared state (core/biome 35, mode 'breath', shape 'fold')
+if(window._field&&typeof HEARTH!=='undefined'&&HEARTH.work&&BIO.breathState)tick(()=>{const d=new THREE.Vector3().subVectors(sun.position,sun.target.position).normalize(),alt=Math.asin(clamp(d.y,-1,1))*180/Math.PI;
+ const t=ATMOS.clock?ATMOS.clock.t||0:0,hid=ATMOS.sunHidden?ATMOS.sunHidden(t):0,W=ATMOS.W||null;
+ BIO.breathState('hearths').value=HEARTH.work(t,{sunAlt:sun.intensity<.02?-20:alt,hidden:hid,W:W?{cloud:W.cloud==null?0:W.cloud}:null,atm:ATM});});

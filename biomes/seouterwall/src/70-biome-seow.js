@@ -10,7 +10,11 @@ SEOW.build=function(opt){opt=opt||{};const R=opt.R==null?(SEOW.R==null?2000:SEOW
  // THE GOD-BORE KEEPS THE UPRIGHT TREES TO THE LEE (PLAN.md section 2.1): the NW outer wall's passes scatter a few larch and stone pine on
  // their tundra and steppe; here those are the wind-scoured krummholz, moraine, col and puna, so the upright trees' passes (sp 0, 1)
  // accept only this kit's larch zone. The passes are the read-in-place kit's data: their acceptance is wrapped, not edited
- if(!NWOW._seowLee){NWOW._seowLee=true;NWOW.PASSES.forEach(P=>{if(P.sp>1)return;const A0=P.accept;P.accept=(x,z,Z)=>SEOW.zoneAt&&SEOW.zoneAt(x,z)!=='larch'?0:A0(x,z,Z);});}
+ // The silverthorn (sp 3) is held to the hero band: past it its form draws its leaf cards without the stems that hold them (core/biome's
+ // attach audit: 8 of station 3's 13 cards afloat at the mid band, 2 of 4 on station 1), so it is placed only where its stems are drawn
+ if(!NWOW._seowLee){NWOW._seowLee=true;NWOW.PASSES.forEach(P=>{const A0=P.accept;
+  if(P.sp<=1)P.accept=(x,z,Z)=>SEOW.zoneAt&&SEOW.zoneAt(x,z)!=='larch'?0:A0(x,z,Z);
+  else if(P.sp===3)P.accept=(x,z,Z)=>BIO.lodD(x,z)>BIO.radii().hero*.9?0:A0(x,z,Z);});}
  out.nw=NWOW.build({R,quality:q});
  // the kit's own plants (50, 60: the puya, the guyed stalks, the poppies, goldroot), in its own registry and bucket
  BIO.cur='seouterwall/floor';out.floor=SEOW.buildFloor(R,q);

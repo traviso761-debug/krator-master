@@ -45,6 +45,9 @@ SITES = {
     # (build_425_master.py: whas / wlev, 45 cells at 3,680 m) lies 3-9 km west of it and 3 km either side of its row; the station
     # stands on the tarn's north-east shore, under the cirque's north wall (PLAN.md section 7.4)
     'gatetarn': {'px': 1014.5, 'py': 1234.5, 'title': 'The Tarn of the Gate-Bell'},
+    # the Amber-Sinter Tarn (Oasis 2): the model's geothermal tarn at 3,940 m (test_smodel.py: px 1061,1272), its station pin 3 px east
+    # (px 1064,1272); the page is cut at the pin, then placed on the tarn's shore once the survey says where it is (PLAN.md section 7.5)
+    'ambertarn': {'px': 1064, 'py': 1272, 'title': 'The Amber-Sinter Tarn'},
 }
 EYE = 30.0            # m over the ground: a viewer on the saddle's moraine
 R_PLANET = 84.0 * 360 / (2 * math.pi) * 1000      # m: the sky model's frame (kmPerDeg 84)

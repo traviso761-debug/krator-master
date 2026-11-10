@@ -56,8 +56,17 @@ const ROAD=(function(){const R=SITE.road;if(!R||!KFIELD.stroke)return null;const
  return {rec:{format:'seouterwall-road',version:1,id:R.id,name:R.name,w:R.w,grade:R.grade,shoulder:R.shoulder,pts,strokes:strokes.length},strokes,near,maxGrade:maxG};})();
 _mark('road');
 
+// ---------------------------------------------------------------- the ground's heat (station 3: SITE.heat; core/terrain KTHERM)
+// The fault's vents and the springs' as KTHERM records over the country's soil, baked once on SITE.heat.cell m (KTHERM.fieldAt: bilinear,
+// the nearest edge node off the box): F.heat, the hot zone (46), the snow kept off the warm ground (89a), the hearths placed on it (89z)
+const HEAT=(function(){const T=SITE.heat;if(!T||typeof KTHERM==='undefined')return null;
+ const H=KTHERM.create({soil:T.soil,vents:T.vents,detail:T.detail,world:'seouterwall-'+SITE.name}),F=H.bake({box:T.box,cell:T.cell||4});
+ const B=T.box,at=(x,z)=>x<B[0]||x>B[2]||z<B[1]||z>B[3]?T.soil:KTHERM.fieldAt(F,x,z);
+ return {H,F,box:B,at,rec:H.export({box:B,cell:16})};})();
+
 // ---------------------------------------------------------------- the water: the brook, the model's tarn (stations 2-6)
 function waterH(x,z){
+ if(typeof siteWaterAt==='function'){const w=siteWaterAt(x,z);if(w!=null)return w;}   /* a station's own water: the springs' pools, the terraces' treads */
  if(STREAM){const n=STREAM.near(x,z,STREAM.w*1.6);if(n.i>=0&&n.d<STREAM.w*1.3)return n.y;}
  if(MODEL_LAKE&&MODEL_LAKE.inside(x,z))return MODEL_LAKE.level;
  return -1e9;}
@@ -107,8 +116,9 @@ function fieldsAt(x,z){if(x===_fm.x&&z===_fm.z)return _fm.F;
  const sunny=g>.005?hz/g:0,slope=clamp(g/1.1,0,1),mean=meanAt(y)+1.5*sunny*smooth(.02,.15,g);
  const P=sitePoint(x,z),n=STREAM?STREAM.near(x,z,140):{d:1e9,i:-1},streamD=n.i>=0?n.d:1e9;
  const rd=ROAD?ROAD.near(x,z,ROAD.rec.w+20):{d:1e9},road=rd.d<ROAD_HALF+2,roadS=ROAD?smooth(ROAD_HALF+SITE.road.shoulder,ROAD_HALF,rd.d):0;
- const water=waterH(x,z)>y+.05,heap=heapAt(x,z)>.5,shore=!water&&!!MODEL_LAKE&&y<MODEL_LAKE.level+2.2&&g<.3&&MODEL_LAKE.zone(x,z);
- const F={y,g,slope,sunny,mean,perma:SEOW.climate(mean).perma,water,streamD,heap,shore,road,roadS,melt:P.melt,fan:P.fan,cobble:P.cobble,moraine:P.moraine,crag:P.crag,wall:P.wall||null,
+ const heat=HEAT?HEAT.at(x,z):null;
+ const water=waterH(x,z)>y+.05,heap=heapAt(x,z)>.5,shore=!water&&!!MODEL_LAKE&&y<MODEL_LAKE.level+.9&&g<.3&&MODEL_LAKE.zone(x,z);
+ const F={y,g,slope,sunny,mean,perma:SEOW.climate(mean).perma,water,streamD,heap,shore,road,roadS,heat,sinter:P.sinter||0,melt:P.melt,fan:P.fan,cobble:P.cobble,moraine:P.moraine,crag:P.crag,wall:P.wall||null,
   wind:windAt(x,z,y),
   // what the NW outer wall's passes read (nwouterwall's 55: no tree in a field, in water, on the aufeis or in a pocket)
   field:road,aufeis:false,pocket:false,rock:heap?1:smooth(.75,1.1,g),gully:0};   /* field: nwouterwall's 55 roots no tree in one (the road too) */
@@ -144,17 +154,19 @@ _mark('init');
 // and the lichen crust (the exposed crests, the fellfield)
 /* the rock's layer is the station's (SITE.rock.lib): the megabreccia east of the Godsgate's corridor, the Godthrone's basalt west of it */
 const ROCK_LIB=SITE.rock&&SITE.rock.lib?SITE.rock.lib:'rock.megabreccia';
-const LAYERS=['ground.puna','ground.needles','ground.cobble',ROCK_LIB,'ground.gravel','ground.tundra','ground.lichen'];
+/* the second layer is the station's (SITE.layer1): the larch's needle litter, or station 3's sinter (the terraces' apron, the vents' warm ground) */
+const LAYER1=SITE.layer1||'ground.needles';
+const LAYERS=['ground.puna',LAYER1,'ground.cobble',ROCK_LIB,'ground.gravel','ground.tundra','ground.lichen'];
 const LIB=(function(){if(typeof KMAT==='undefined'||KMAT.mode!=='lib')return {};const o={};
  LAYERS.forEach(k=>{const P=KMAT.packed('seouterwall',k);if(P)o[k]=Object.assign({scale:P.scale[0]},KMAT.textures(P,{aniso:8}));});return o;})();
 const greyTex=(fn,S)=>BIO.canvasTex(S||256,S||256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,v=clamp(fn(x,y,w,h),0,255);d[i]=d[i+1]=d[i+2]=v;d[i+3]=255;}g.putImageData(id,0,0);},true);
 const PN=(x,y,s,sd)=>KRAND.fbm(x/s,y/s,0,2,sd);
 const PROC={'ground.puna':greyTex((x,y)=>165+60*(PN(x,y,6,11)-.5)),'ground.needles':greyTex((x,y)=>140+60*(PN(x,y,5,12)-.5)),
- 'ground.cobble':greyTex((x,y)=>160+80*(PN(x,y,4,13)-.5)),'rock.basalt':greyTex((x,y)=>90+50*(PN(x,y,6,19)-.5)),'rock.megabreccia':greyTex((x,y)=>150+70*(PN(x,y,10,14)-.5)+30*(PN(x,y,3,18)-.5)),
+ 'ground.cobble':greyTex((x,y)=>160+80*(PN(x,y,4,13)-.5)),'ground.sinter':greyTex((x,y)=>205+40*(PN(x,y,5,20)-.5)),'rock.basalt':greyTex((x,y)=>90+50*(PN(x,y,6,19)-.5)),'rock.megabreccia':greyTex((x,y)=>150+70*(PN(x,y,10,14)-.5)+30*(PN(x,y,3,18)-.5)),
  'ground.gravel':greyTex((x,y)=>165+70*(PN(x,y,3,15)-.5)),'ground.tundra':greyTex((x,y)=>150+50*(PN(x,y,6,16)-.5)),
  'ground.lichen':greyTex((x,y)=>160+60*(PN(x,y,5,17)-.5))};
-const PSCALE={'ground.puna':2.4,'ground.needles':2,'ground.cobble':2,'rock.megabreccia':4,'rock.basalt':3,'ground.gravel':2.5,'ground.tundra':2.2,'ground.lichen':2};
+const PSCALE={'ground.puna':2.4,'ground.needles':2,'ground.sinter':2.5,'ground.cobble':2,'rock.megabreccia':4,'rock.basalt':3,'ground.gravel':2.5,'ground.tundra':2.2,'ground.lichen':2};
 const layer=k=>LIB[k]?{map:LIB[k].map,s:LIB[k].scale,lib:true}:{map:PROC[k],s:PSCALE[k],lib:false};
 LAYERS.forEach(k=>{const t=layer(k).map;if(t)t.wrapS=t.wrapT=THREE.RepeatWrapping;});
 // THE SEASON'S GROUND (sRGB tints over each layer's map): the puna straw-gold in autumn, a thin green-gold in summer, frost-grey in winter;
@@ -234,7 +246,7 @@ const BEDS=ROCK_SH?'{vec3 sc=strataColor(vSWP,vSWN);diffuseColor.rgb*=mix(vec3(1
 // the weights at a point: [needles, cobble, rock, gravel], [tundra, lichen, brightness, the rock's column]
 function groundW(F,x,z){const shade=SEOW.shadeOf(F),warm=F.mean+SEOW.AMP.warm,hi=smooth(8.5,6.5,warm),fell=smooth(4,1.5,warm);
  const lee=1-smooth(.4,.62,F.wind);
- const needles=.85*smooth(.06,.32,shade)*lee*(1-hi)*(1-smooth(.55,.85,F.g))*(F.melt?0:1);
+ const needles=LAYER1==='ground.sinter'?Math.max(F.sinter||0,F.heat==null?0:.85*smooth(18,45,F.heat)):.85*smooth(.06,.32,shade)*lee*(1-hi)*(1-smooth(.55,.85,F.g))*(F.melt?0:1);   /* station 3: the sinter */
  const melt=F.melt==='floor'||F.melt==='bar'||F.melt==='pool'?.95:F.melt==='bank'?.45:0;
  const cobble=Math.max(melt,F.fan*.9,F.melt==='fan'?.5:0,F.shore?.7:0,smooth(STREAM?STREAM.w*3:0,STREAM?STREAM.w:0,F.streamD));
  const rock=Math.max(smooth(.62,.95,F.g),F.crag>10?.55*smooth(.3,.55,F.g):0);   /* the crags' faces; a rib's crest on a lesser slope */
@@ -272,7 +284,7 @@ _mark('ground-near');
  for(let j=0;j<=N;j++)for(let i=0;i<=N;i++){const x=-R2+i*st,z=-R2+j*st,ax=Math.abs(x),az=Math.abs(z);
   const y=h(i,j)-(ax<inner&&az<inner?30:2.5*smooth(NEAR.S*1.6,NEAR.S,Math.max(ax,az)));pos.push(x,y,z);
   const hx=(h(i+1,j)-h(i-1,j))/(2*st),hz=(h(i,j+1)-h(i,j-1))/(2*st),g=Math.hypot(hx,hz),sunny=g>.005?hz/g:0;
-  const F={g,slope:clamp(g/1.1,0,1),sunny,mean:meanAt(y)+1.5*sunny*smooth(.02,.15,g),melt:null,fan:0,moraine:0,crag:g>.45?20:0,heap:false,shore:false,road:false,roadS:0,wall:null,wind:.6,streamD:1e9};
+  const F={g,slope:clamp(g/1.1,0,1),sunny,mean:meanAt(y)+1.5*sunny*smooth(.02,.15,g),melt:null,fan:0,moraine:0,crag:g>.45?20:0,heap:false,shore:false,road:false,roadS:0,heat:null,sinter:0,wall:null,wind:.6,streamD:1e9};
   const W=groundW(F,x,z);W[1][2]-=.22*W[0][0];   /* the larch from afar: a lee's wood reads darker than its litter alone (the mid ground has no trees) */
   w1.push(...W[0]);w2.push(...W[1]);}
  for(let j=0;j<N;j++)for(let i=0;i<N;i++){const x=-R2+(i+.5)*st,z=-R2+(j+.5)*st;if(Math.abs(x)<NEAR.S-st&&Math.abs(z)<NEAR.S-st)continue;
@@ -305,7 +317,7 @@ function REGISTER_LAND(o){REGISTER(o);const pm=new THREE.Object3D();pm.name='pro
 SITE.moraines.forEach(m=>{const x=(m.a[0]+m.b[0])/2,z=(m.a[1]+m.b[1])/2;REGISTER_LAND({name:m.name+' ('+m.h+' m of till)',key:'landform.moraine',x,z,y:terrainH(x,z)-m.h-3,r:m.w*.9,h:m.h*2+8});});
 if(STREAM)REGISTER_LAND({name:'The meltwater\'s head (the north slope\'s late snow feeds it)',key:'landform.spring',
  x:STREAM.pts[0][0],z:STREAM.pts[0][1],y:terrainH(STREAM.pts[0][0],STREAM.pts[0][1])-3,r:14,h:8});
-if(SITE_RECS.melt.fan){const F=SITE_FAN();REGISTER_LAND({name:'The meltwater fan (the brook sinks into its gravel on the outwash flat)',key:'landform.fan',x:F[0],z:F[1],y:terrainH(F[0],F[1])-3,r:120,h:12});}
+if(SITE_RECS.melt&&SITE_RECS.melt.fan){const F=SITE_FAN();REGISTER_LAND({name:'The meltwater fan (the brook sinks into its gravel on the outwash flat)',key:'landform.fan',x:F[0],z:F[1],y:terrainH(F[0],F[1])-3,r:120,h:12});}
 // the headwall (station 2): registered at its middle, on the face
 if(SITE_RECS.wall){const W=SITE_RECS.wall,P=W.pts[Math.floor(W.pts.length/2)];let x=P[0],z=P[1];for(let d=0;d<200&&!(sitePoint(x,z).wall==='face');d+=5){z+=W.side<0?5:-5;}
  REGISTER_LAND({name:'The headwall ('+W.h+' m of black basalt flows, orange glass beds between them)',key:'landform.headwall',x,z,y:terrainH(x,z)-W.h*.5,r:60,h:W.h});}
@@ -339,6 +351,9 @@ const HAZARDS=[];
 HAZARDS.push(BIO.record({name:'The God-Bore (the night\'s katabatic gale across the col: 80-130 km/h at -15 °C)',x:0,z:0,y:terrainH(0,0)-20,r:SITE.R,h:120,
  tags:{hazard:{kind:'cold',danger:.45,dose:.35,cycle:{period:86400,warn:3600,ramp:3600,on:8*3600,after:0,offset:86400-19*3600},
   tell:{colour:'#bfe6ff',fx:'spindrift',sound:'wind'}}}}));
+/* the hot springs: scalding water (station 3: 86-92 °C at the vents), and the fault's hottest ground */
+if(SITE_RECS.springs)SITE_RECS.springs.forEach(S=>HAZARDS.push(BIO.record({name:S.name.replace(/ \(.*$/,'')+' (scalding: '+Math.round(40+55*S.temp)+' °C at its vent)',x:S.x,z:S.z,y:S.level-S.depth-1,r:S.r,h:S.depth+3,
+ tags:{hazard:{kind:'heat',danger:.75,falloff:'smooth',radiant:{reach:4}}}})));
 HEAPS.forEach(H=>HAZARDS.push(BIO.record({name:'Rockfall (the chute above '+H.name.replace(/^A /,'a ')+')',x:H.x,z:H.z-H.rz*.5,y:H.y0-2,r:Math.max(H.rx,H.rz)*1.3,h:H.h+30,
  tags:{hazard:{kind:'crush',danger:.6,cycle:{period:86400,warn:3600,ramp:3600,on:3*3600,after:0,base:.25,offset:86400-10*3600}}}})));
 

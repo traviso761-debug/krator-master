@@ -209,6 +209,34 @@
     "sourceMean": 0.4571
    }
   },
+  "ground.sinter": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "ground.sinter.albedo.webp"
+   },
+   "lib": "ground.sinter",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "7c9f181f15a81b052a868fd92534c102fefb2497",
+    "normal": "9cdc1c7dc243367f299773c3c61cd03fc449ca42",
+    "roughness": "390928f132512042a05c0299a78483918c297416"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.6420382336754893,
+    "sourceMean": 0.642
+   }
+  },
   "ground.tundra": {
    "breakup": null,
    "card": false,

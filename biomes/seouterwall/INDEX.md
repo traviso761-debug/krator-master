@@ -4,7 +4,7 @@
 
 Docs: `BIOME-API.md`, `KNOWN_ISSUES.md`, `PLAN.md`, `PORT.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/seouterwall-gatetarn.html`, `dist/seouterwall.html`
+Built output (never open it; edit `src/` and rebuild): `dist/seouterwall-ambertarn.html`, `dist/seouterwall-gatetarn.html`, `dist/seouterwall.html`
 
 Build: `cd biomes/seouterwall && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -31,15 +31,15 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `44s-host-site.js` | 9 | one record a point (memo of the last): the heigh (81) |
 | `45-host-stage.js` | 7 | the station, its air and its season (24); the model's ground (bicubic over its 1 km cells) (38); the ground's height (48); renderer, light, camera (64) |
 | `46-biome-seow-layout.js` | 8 |  |
-| `47-host-land.js` | 38 **big** | the near box and a coarse look at the ground (8); the brook (its line, its water level never climb (16); the Ancients' highway (station 1: SITE.road; PLA (36); the water: the brook, the model's tarn (stations (59); the rockfall heaps (core/terrain KRUBBLE: PLAN.m (75); the wind's exposure (the God-Bore: PLAN.md secti (94); the fields (biomes/WORLD.md; BIOME-API.md) (101); the host binding (before the meshes: their paint (130); the library layers (or procedural without the pa (141); the ground material (one shader for the near and (168) |
+| `47-host-land.js` | 40 **big** | the near box and a coarse look at the ground (8); the brook (its line, its water level never climb (16); the Ancients' highway (station 1: SITE.road; PLA (36); the ground's heat (station 3: SITE.heat; core/te (59); the water: the brook, the model's tarn (stations (67); the rockfall heaps (core/terrain KRUBBLE: PLAN.m (84); the wind's exposure (the God-Bore: PLAN.md secti (103); the fields (biomes/WORLD.md; BIOME-API.md) (110); the host binding (before the meshes: their paint (140); the library layers (or procedural without the pa (151) |
 | `50-biome-seow-species.js` | 7 | textures (procedural, greyscale: the fallback wh (35); materials (the library's cards swap in: material (51); instanced items (the NW outer wall's upright car (64) |
 | `60-biome-seow-floor.js` | 4 |  |
 | `70-biome-seow.js` | 2 |  |
 | `89a-host-atmos.js` | 2 |  |
 | `89s-host-sky.js` | 4 |  |
-| `89w-host-water.js` | 3 |  |
-| `89z-host-build.js` | 8 | the air on everything drawn (once, after the bak (33) |
-| `99-host-take.js` | 17 | the inspector's words: a plant names its species (8); the probe's budgets and the kit's own checks (ve (22); the page, handed to the host (126) |
+| `89w-host-water.js` | 5 |  |
+| `89z-host-build.js` | 9 | the air on everything drawn (once, after the bak (39) |
+| `99-host-take.js` | 20 | the inspector's words: a plant names its species (8); the probe's budgets and the kit's own checks (ve (22); the page, handed to the host (137) |
 | `99-tail.html` | <1 |  |
 
 ## stations/
@@ -48,4 +48,5 @@ Each station builds one page (`build.py --station <name>`) from its own fragment
 
 | Station | Fragments | KB |
 |---|---|---|
+| ambertarn | 44s-host-site.js | 9 |
 | gatetarn | 44s-host-site.js | 8 |

@@ -12,4 +12,7 @@ BIO.bindAtmosWind();
 const SNOW={autumn:{base:.55,line:SITE.snow&&SITE.snow.autumn},winter:{base:.95,line:SITE.snow&&SITE.snow.winter},spring:{base:.42,line:SITE.snow&&SITE.snow.spring},summer:{base:.6,line:SITE.snow&&SITE.snow.summer}}[SEASON];
 ATMOS.snowCover({base:SNOW.base,line:SNOW.line||[900,1400],frozen:SEASON==='winter'});   /* winter's air never thaws the snow by day */
 window._snowDepth=d=>{ATMOS.snow.depth=d;};
+// THE WARM GROUND (station 3: the fault's vents, core/terrain KTHERM): snow that lies never lies on ground over 0 °C (KTHERM's snow mask,
+// ATMOS.snowBare), so in a snowfall the vents' ground stays bare and dark, its edge the 0 degree contour (biomes/hearths' rule)
+if(HEAT&&ATMOS.snowBare){try{ATMOS.snowBare(HEAT.H.snowMask({box:HEAT.box,cell:8}));}catch(e){reportErr('snow bare: '+e.stack);}}
 // THE WEATHER, the clouds' shade, height fog, the rain cover and the snow on the scene are bound in 89z-host-build.js, after the bake

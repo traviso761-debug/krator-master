@@ -35,7 +35,7 @@ const HCHK={
   return{ok:!bad.length,detail:want.map(w=>w[0]+' m '+T(w[0])).join(', ')+(bad.length?'; wrong: '+bad.map(w=>w[0]).join(', '):'')};},
  // the station's landforms, each where the zones say, on the near ground's zone raster; the moraines and the heaps registered
  zones(need,ZC,reg){const lack=need.filter(z=>!(ZC[z]>0)),mor=reg.filter(r=>r.key==='landform.moraine').length,hp=reg.filter(r=>r.key==='landform.rockfall').length;
-  return{ok:!lack.length&&mor>=SITE.moraines.length&&mor>=2&&hp>=3,detail:need.map(z=>z+' '+(ZC[z]||0)).join(', ')+'; '+mor+' moraines, '+hp+' rockfall heaps'+(lack.length?'; missing '+lack.join(', '):'')};},
+  return{ok:!lack.length&&mor>=SITE.moraines.length&&hp>=Math.min(3,HEAPS.length)&&(SITE.heaps?hp>=3:true),detail:need.map(z=>z+' '+(ZC[z]||0)).join(', ')+'; '+mor+' moraines, '+hp+' rockfall heaps'+(lack.length?'; missing '+lack.join(', '):'')};},
  // the meltwater: the brook runs down the gully and ends on its fan, where it sinks into the gravel (282 mm: no tarn on the col)
  sinks(S,fan){if(!S||!fan)return{ok:false,detail:'no brook or no fan'};const e=S.pts[S.pts.length-1],d=Math.hypot(e[0]-fan.x,e[1]-fan.z),drop=S.level[0]-S.level[S.level.length-1];
   return{ok:d<fan.r*.5&&drop>20,detail:'the brook falls '+drop.toFixed(0)+' m and ends '+d.toFixed(0)+' m from the fan\'s apex (its radius '+fan.r.toFixed(0)+' m)'};},
@@ -44,10 +44,10 @@ const HCHK={
   return{ok:Math.abs(end-lake.level)<4&&big.length>=1,detail:'the brook ends '+(end-lake.level).toFixed(1)+' m over the tarn ('+(BASE+lake.level).toFixed(0)+' m); falls: '+(F.map(f=>Math.round(f.drop)+' m').join(', ')||'none')};},
  // the God-Bore decides the trees' form: the larch stands only in a lee, the open shaded slopes are the creeping pine's (PLAN.md 2.1)
  lee(TREES,F){const L=TREES.filter(T=>T.sp===0),open=L.filter(T=>F(T.x,T.z).wind>=SEOW.EXPOSED+.08).length,K=TREES.filter(T=>T.sp===2).length;
-  return{ok:L.length>0&&open<=Math.max(2,L.length*.08),detail:L.length+' larches, '+open+' of them in the open; '+K+' creeping pines (krummholz)'};},
+  return{ok:(L.length>0||!(_zoneCounts().larch>0))&&open<=Math.max(2,L.length*.08),detail:L.length+' larches, '+open+' of them in the open; '+K+' creeping pines (krummholz)'};},
  // nothing roots in water, on a crag's face or on a rockfall heap (trees off cliff faces)
  roots(TREES){let wet=0,crag=0,heap=0;TREES.forEach(T=>{const F=SEOW.FIELDS(T.x,T.z);if(F.water)wet++;if(F.g>.9)crag++;if(heapAt(T.x,T.z)>.5)heap++;});
-  return{ok:wet+crag+heap===0&&TREES.length>100,detail:TREES.length+' trees; '+wet+' in water, '+crag+' on a crag\'s face, '+heap+' on a heap'};},
+  return{ok:wet+crag+heap===0&&TREES.length>(SITE.minTrees==null?100:SITE.minTrees),detail:TREES.length+' trees; '+wet+' in water, '+crag+' on a crag\'s face, '+heap+' on a heap'};},
  // the rock: the cordillera's megabreccia east of the Godsgate's corridor, the Godthrone's tibasalt west of it (KSTRATA's lateral stack),
  // read 3 km either side of the contact (ROCK_CONTACT: this page's metres)
  rock(S){if(!S)return{ok:false,detail:'no KSTRATA column'};const c=ROCK_CONTACT,e=S.at(c[0]+3000,1500,c[1]),w=S.at(c[0]-3000,1500,c[1]),o=S.at(0,100,0);
@@ -55,8 +55,8 @@ const HCHK={
  // the hazards: the God-Bore on the night's cycle (on at 02:00, off at 14:00), the rockfall under the crags
  // the hazards: the God-Bore on the night's cycle (on at 02:00, off at 14:00), the rockfall under the crags at its worst at noon
  hazards(H){if(typeof KHAZ==='undefined')return{ok:false,detail:'no core/hazard'};const gb=H.find(r=>r&&r.tags&&r.tags.hazard.kind==='cold'),R=H.filter(r=>r&&r.tags&&r.tags.hazard.kind==='crush');
-  if(!gb||!R.length)return{ok:false,detail:'no God-Bore or no rockfall record'};const n=KHAZ.state(gb,2*3600),d=KHAZ.state(gb,14*3600),rn=KHAZ.state(R[0],12.5*3600),rd=KHAZ.state(R[0],3*3600);
-  return{ok:n.k>.99&&d.k<.01&&R.length>=3&&rn.k>.99&&rd.k<.5,detail:'the God-Bore at 02:00 '+n.state+' k '+n.k.toFixed(2)+', at 14:00 '+d.state+' k '+d.k.toFixed(2)+'; '+R.length+' rockfall chutes, k '+rn.k.toFixed(2)+' at 12:30, '+rd.k.toFixed(2)+' at 03:00'};},
+  if(!gb||(HEAPS.length&&!R.length))return{ok:false,detail:'no God-Bore or no rockfall record'};const n=KHAZ.state(gb,2*3600),d=KHAZ.state(gb,14*3600),rn=R.length?KHAZ.state(R[0],12.5*3600):{k:0},rd=R.length?KHAZ.state(R[0],3*3600):{k:0};
+  return{ok:n.k>.99&&d.k<.01&&(HEAPS.length?R.length>=3&&rn.k>.99&&rd.k<.5:true),detail:'the God-Bore at 02:00 '+n.state+' k '+n.k.toFixed(2)+', at 14:00 '+d.state+' k '+d.k.toFixed(2)+'; '+R.length+' rockfall chutes, k '+rn.k.toFixed(2)+' at 12:30, '+rd.k.toFixed(2)+' at 03:00'};},
  // the Ancients' highway (station 1): its profile held to the ruling grade, the graded ground under its pavement's middle and edges within
  // half a metre of its line (the flatten strokes did their work), the road's zone on the near ground
  road(Rd,h,ZC){if(!Rd)return{ok:false,detail:'no road'};const P=Rd.rec.pts,W=Rd.rec.w;let worst=0;
@@ -66,8 +66,14 @@ const HCHK={
  // the kit's own plants (50, 60): each placed (the poppies by the season), the puya on the sunny slopes and the scree, the guyed stalks by
  // water (a brook, a fan's channel, a tarn's strand), none on the road, a heap, a crag or in water
  plants(fl,inst){if(!fl)return{ok:false,detail:'no floor'};const K=fl.byKind||{},bad=inst.filter(p=>{const Z=SEOW.zoneAt(p[0],p[2]);return Z==='road'||Z==='heap'||Z==='crag'||Z==='water';}).length;
-  const want=['puya','guyedstalk','goldroot'].concat(SEOW.BLOOM>0?['skypoppy','goldpoppy']:[]),lack=want.filter(k=>!(K[k]>0));
+  const want=(SITE.plantsNeed||['puya','guyedstalk','goldroot']).concat(SEOW.BLOOM>0?['skypoppy','goldpoppy']:[]),lack=want.filter(k=>!(K[k]>0));
   return{ok:!lack.length&&bad===0,detail:Object.keys(K).map(k=>k+' '+K[k]).join(', ')+'; '+bad+' of '+inst.length+' sampled on a road, heap, crag or water'+(lack.length?'; none of '+lack.join(', '):'')};},
+ // the heat (station 3): the vents' ground hot (KTHERM), the country's soil at its own temperature 600 m off the fault, every hearth tree on
+ // 25-60 °C (the Hearths' rule), the springs drawn at their levels, the terraces' treads descending to the tarn and ending at its level
+ heat(Ht,field,W){if(!Ht)return{ok:false,detail:'no heat'};const Tv=Ht.at(300,-350),Ts=Ht.at(-700,900),tr=(field&&field.trees)||[],off=tr.filter(T=>{const t=Ht.at(T.x,T.z);return t<24||t>61;}).length;
+  const sp=W&&W.springs?W.springs.length:0,Tt=W&&W.terraces?W.terraces.T.treads:[],desc=Tt.every((t,i)=>!i||t.y<Tt[i-1].y),endY=Tt.length?Tt[Tt.length-1].y:null;
+  return{ok:Tv>=80&&Math.abs(Ts-SITE.heat.soil)<1.6&&tr.length>=10&&off===0&&sp===SITE.springs.length&&Tt.length>=6&&desc&&endY!=null&&MODEL_LAKE&&endY-MODEL_LAKE.level<1,
+   detail:'the amber spring\'s ground '+Tv.toFixed(0)+' °C, the soil 600 m off '+Ts.toFixed(1)+' °C; '+tr.length+' hearth trees, '+off+' off 25-60 °C; '+sp+' springs drawn; '+Tt.length+' treads '+(desc?'descending':'NOT descending')+' to '+(endY==null?'?':endY.toFixed(2))+' m (the tarn at '+(MODEL_LAKE?MODEL_LAKE.level.toFixed(2):'?')+')'};},
  // the sky: the shared sky at the station's pixel, its far land cast from the model (three layers of 1024)
  sky(S){const R=S.preset.ridges||[],ok=R.length===3&&R.every(r=>r.profile&&r.profile.length===1024)&&S.preset.site.px===SEOW_REGION.site.px;
   return{ok,detail:'site px '+S.preset.site.px+','+S.preset.site.py+'; ridges '+R.map(r=>(r.dist/1000).toFixed(0)+' km').join(', ')};},
@@ -82,6 +88,8 @@ HCHK.water=(W,D)=>{if(!W)return{ok:false,detail:'no core/water records'};const c
 const ZONES_NEED=SITE.need||['col','moraine','floor','fan','crag','scree','krummholz','puna'];
 const _zoneCounts=()=>{const n={};for(let k=0;k<ZR.length;k++){const z=ZONE_IDS[ZR[k]];n[z]=(n[z]||0)+1;}return n;};
 const TREES_ALL=()=>NWOW.TREES||[];
+/* a point in water on the near ground (the negatives' bad spot when a station has no heap or road): the first grid point whose zone is water */
+const WET_PT=()=>{const W=ZONE_IDS.indexOf('water');for(let k=0;k<ZR.length;k++)if(ZR[k]===W)return [FIELD.x0+(k%FIELD.nx)*FIELD.step,FIELD.z0+Math.floor(k/FIELD.nx)*FIELD.step];return [0,0];};
 /* the kit's own instances (every item of its registry: up to 400 of each), [x, y, z] */
 const SEOW_INST=()=>{const out=[],R=BIO.kits.seouterwall,m=new THREE.Matrix4(),p=new THREE.Vector3();if(!R)return out;scene.traverse(o=>{if(!o.isInstancedMesh||!o.userData.biome||o.userData.kit!=='seouterwall')return;const n=Math.min(o.count,400);for(let i=0;i<n;i++){o.getMatrixAt(i,m);p.setFromMatrixPosition(m);out.push([p.x,p.y,p.z]);}});return out;};
 /* the hazard records as the page's registry holds them (BIO.record queued them before it was up: 47) */
@@ -91,12 +99,13 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),Z
  add('the cordillera\'s tiers and its air',HCHK.tiers(SEOW.tierOf));
  add('the brook on core/water, never climbing',HCHK.water(WATER_RECS,WATER_DRAW));
  add('the station\'s landforms on the ground (zones, moraines, heaps)',HCHK.zones(ZONES_NEED,ZC,REG));
- if(SITE_RECS.melt.fan)add('the meltwater sinks into its fan',HCHK.sinks(STREAM,SITE_RECS.melt.fan));
- if(MODEL_LAKE)add('the brook falls over the headwall into the tarn',HCHK.tarn(STREAM,MODEL_LAKE,WATER_DRAW&&WATER_DRAW.falls));
+ if(SITE_RECS.melt&&SITE_RECS.melt.fan)add('the meltwater sinks into its fan',HCHK.sinks(STREAM,SITE_RECS.melt.fan));
+ if(MODEL_LAKE&&STREAM)add('the brook falls over the headwall into the tarn',HCHK.tarn(STREAM,MODEL_LAKE,WATER_DRAW&&WATER_DRAW.falls));
  add('the larch in a lee, the krummholz in the open',HCHK.lee(TREES_ALL(),SEOW.FIELDS));
  add('no tree in water, on a crag or a heap',HCHK.roots(TREES_ALL()));
  add('the cordillera\'s own plants (puya, guyed stalks, poppies, goldroot)',HCHK.plants(window._biome&&window._biome.floor,SEOW_INST()));
  if(ROAD)add('the Ancients\' highway graded at its ruling grade',HCHK.road(ROAD,terrainH,ZC));
+ if(HEAT)add('the fault\'s heat, its springs, terraces and hearth trees',HCHK.heat(HEAT,window._field,WATER_DRAW));
  add('megabreccia east, tibasalt west (KSTRATA)',HCHK.rock(ROCK_SH));
  add('the God-Bore and the rockfall (core/hazard)',HCHK.hazards(HAZ_RECS()));
  add('the shared sky at the station, its far land from the model',HCHK.sky(SKY));
@@ -107,19 +116,21 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('the station floating over the model',HCHK.model(SEOW_REGION.site,terrainH(0,0)+40));
  add('the col in the nival tier',HCHK.tiers(h=>h<5400?'nival':SEOW.tierOf(h)));
  add('the brook climbing',WATER_RECS&&WATER_RECS.stream?HCHK.water(Object.assign({},WATER_RECS,{stream:Object.assign({},WATER_RECS.stream,{pts:WATER_RECS.stream.pts.map((p,i)=>i===5?Object.assign({},p,{y:p.y+60}):p)})}),WATER_DRAW):{ok:false,detail:'no brook'});
- add('no moraine drawn',HCHK.zones(ZONES_NEED,Object.assign({},ZC,{moraine:0}),REG));
- add('no rockfall heap',HCHK.zones(ZONES_NEED,ZC,REG.filter(r=>r.key!=='landform.rockfall')));
- if(SITE_RECS.melt.fan)add('the brook running past its fan',HCHK.sinks(STREAM,Object.assign({},SITE_RECS.melt.fan,{x:SITE_RECS.melt.fan.x+2000})));
- if(MODEL_LAKE){add('the brook ending over the tarn',HCHK.tarn(STREAM,Object.assign({},MODEL_LAKE,{level:MODEL_LAKE.level-30}),WATER_DRAW&&WATER_DRAW.falls));
+ if(ZONES_NEED.indexOf('moraine')>=0)add('no moraine drawn',HCHK.zones(ZONES_NEED,Object.assign({},ZC,{moraine:0}),REG));
+ if(HEAPS.length)add('no rockfall heap',HCHK.zones(ZONES_NEED,ZC,REG.filter(r=>r.key!=='landform.rockfall')));
+ if(SITE_RECS.melt&&SITE_RECS.melt.fan)add('the brook running past its fan',HCHK.sinks(STREAM,Object.assign({},SITE_RECS.melt.fan,{x:SITE_RECS.melt.fan.x+2000})));
+ if(MODEL_LAKE&&STREAM){add('the brook ending over the tarn',HCHK.tarn(STREAM,Object.assign({},MODEL_LAKE,{level:MODEL_LAKE.level-30}),WATER_DRAW&&WATER_DRAW.falls));
   add('no fall over the headwall',HCHK.tarn(STREAM,MODEL_LAKE,[]));}
- add('the larch in the open',HCHK.lee(TREES_ALL(),(x,z)=>Object.assign({},SEOW.FIELDS(x,z),{wind:1})));
- add('a tree on a rockfall heap',HCHK.roots(TREES_ALL().concat(SITE_HEAPS&&SITE_HEAPS[0]?[{x:SITE_HEAPS[0].x,z:SITE_HEAPS[0].z}]:[{x:1e6,z:1e6}])));
+ if(_zoneCounts().larch>0)add('the larch in the open',HCHK.lee(TREES_ALL(),(x,z)=>Object.assign({},SEOW.FIELDS(x,z),{wind:1})));
+ add('a tree on a rockfall heap, or in water',HCHK.roots(TREES_ALL().concat(SITE_HEAPS&&SITE_HEAPS[0]?[{x:SITE_HEAPS[0].x,z:SITE_HEAPS[0].z}]:[{x:WET_PT()[0],z:WET_PT()[1]}])));
  if(ROAD){add('the highway at 9 %',HCHK.road(Object.assign({},ROAD,{maxGrade:.09}),terrainH,ZC));
   add('the highway floating 2 m over the ground',HCHK.road(ROAD,(x,z)=>terrainH(x,z)-2,ZC));}
+ if(HEAT){add('a hearth tree on the cold soil',HCHK.heat(HEAT,{trees:((window._field&&window._field.trees)||[]).concat([{x:-700,z:900}])},WATER_DRAW));
+  add('the terraces climbing',HCHK.heat(HEAT,window._field,WATER_DRAW&&WATER_DRAW.terraces?Object.assign({},WATER_DRAW,{terraces:{T:{treads:WATER_DRAW.terraces.T.treads.slice().reverse()}}}):WATER_DRAW));}
  add('tibasalt on both walls',HCHK.rock(ROCK_SH?{at:(x,y,z)=>ROCK_SH.at(ROCK_CONTACT[0]-3000,y,z)}:null));
- add('the rockfall as bad at night as at noon',HCHK.hazards(HAZ_RECS().map(r=>r&&r.tags&&r.tags.hazard.kind==='crush'?Object.assign({},r,{id:r.id+'-neg',tags:{hazard:Object.assign({},r.tags.hazard,{cycle:null})}}):r)));
+ if(HEAPS.length)add('the rockfall as bad at night as at noon',HCHK.hazards(HAZ_RECS().map(r=>r&&r.tags&&r.tags.hazard.kind==='crush'?Object.assign({},r,{id:r.id+'-neg',tags:{hazard:Object.assign({},r.tags.hazard,{cycle:null})}}):r)));
  add('the God-Bore blowing by day',HCHK.hazards(HAZ_RECS().map(r=>r&&r.tags&&r.tags.hazard.kind==='cold'?Object.assign({},r,{id:r.id+'-neg',tags:{hazard:Object.assign({},r.tags.hazard,{cycle:null})}}):r)));
- add('a guyed stalk on the road',HCHK.plants(window._biome&&window._biome.floor,SEOW_INST().concat(ROAD?[[ROAD.rec.pts[50][0],0,ROAD.rec.pts[50][1]]]:[[0,0,0]].map(()=>{const H=SITE_HEAPS&&SITE_HEAPS[0];return H?[H.x,0,H.z]:[1e6,0,1e6];}))));
+ add('a guyed stalk on the road (or a heap, or in water)',HCHK.plants(window._biome&&window._biome.floor,SEOW_INST().concat(ROAD?[[ROAD.rec.pts[50][0],0,ROAD.rec.pts[50][1]]]:[(()=>{const H=SITE_HEAPS&&SITE_HEAPS[0],w=WET_PT();return H?[H.x,0,H.z]:[w[0],0,w[1]];})()])));
  add('the sky at another pixel',HCHK.sky({preset:Object.assign({},SKY.preset,{site:{px:0,py:0}})}));
  return R;}
 
@@ -135,7 +146,7 @@ const H=KHOST.take({build:'seouterwall',title:'Krator biome — the SE outer wal
  layers:{'flora':{match:o=>!!(o.userData&&o.userData.biome)},'heaps':{match:o=>!!(o.userData&&o.userData.rock)},
   'water':{match:o=>!!(o.name&&/^water:/.test(o.name))},'sky':{objects:()=>[SKY.mesh]}},
  exporters:{biome:()=>BIO.export(),landforms:()=>({format:'seouterwall-landforms',version:1,station:SITE.name,season:SEASON,
-  moraines:SITE.moraines,melt:SITE_RECS.melt,dry:SITE_RECS.dry||null,wall:SITE_RECS.wall||null,heaps:HEAPS.map(H=>({id:H.id,x:H.x,z:H.z,y0:H.y0,rx:H.rx,rz:H.rz,ry:H.ry,h:H.h,seed:H.seed})),
+  moraines:SITE.moraines,melt:SITE_RECS.melt,terraces:SITE_RECS.terraces||null,springs:SITE_RECS.springs||null,heat:HEAT?HEAT.rec:null,dry:SITE_RECS.dry||null,wall:SITE_RECS.wall||null,heaps:HEAPS.map(H=>({id:H.id,x:H.x,z:H.z,y0:H.y0,rx:H.rx,rz:H.rz,ry:H.ry,h:H.h,seed:H.seed})),
   crag:SITE.crag,road:ROAD?ROAD.rec:null,rock:ROCK_SH?ROCK_SH.strata.export?ROCK_SH.strata.export():null:null})},
  minimap:{title:'The SE outer wall: '+SITE.title},
  budget:BUDGET,types:()=>BIO.stats,

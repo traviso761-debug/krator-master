@@ -131,6 +131,19 @@ NW_KIT={'46n-nwow-layout.js':'src/46-biome-nwow-layout.js','48a-nwow-species.js'
 for slot,p in NW_KIT.items(): PATH.setdefault(slot,os.path.join(NW,p))
 # a station's other kits read in place (station.json "kits": {slot: path from this folder})
 for slot,p in STN.get('kits',{}).items(): PATH[slot]=os.path.normpath(os.path.join(HERE,p))
+# a station's extra core fragments (station.json "core": {slot: path from the repo root}): station 3's KTHERM, the hot springs, the terraces, steam
+for slot,p in STN.get('core',{}).items(): PATH.setdefault(slot,J(*p.split('/')))
+# THE NEIGHBOURS' KITS, read in place in their own registry (station.json "kin": {"<kit>": [[fragments], "<API>", [pack families]]}; biomes/oidong's
+# lines): each kit's fragments slot after the host's land (47) and before the NW outer wall's (48), opened and closed by one-line fragments, with
+# its texture pack's named families beside this kit's. Station 3 reads biomes/hearths (the hearth trees on the ground's heat)
+KIN=STN.get('kin',{})
+KIN_VIRTUAL={}
+for _i,(_k,(_fs,_api,_keep)) in enumerate(sorted(KIN.items())):
+    _d=J('biomes',_k);_c='abcdefgh'[_i]
+    for _j,_f in enumerate(_fs): PATH['47%s%d-%s'%(_c,_j,os.path.basename(_f))]=os.path.join(_d,_f)
+    KIN_VIRTUAL['47%s-%s-open.js'%(_c,_k)]="\nBIO.kit('%s');   // its own registry\n"%_k
+    KIN_VIRTUAL['47%s9-%s-end.js'%(_c,_k)]="\nBIO.kit('%s');BIO.kitEnd(%s);   // its registry closed (its own page does it in a later fragment)\n"%(_k,_api)
+    KIN_VIRTUAL['44%s-host-matlib-pack-%s.js'%(_c,_k)]=('KIN_PACK',_d,_k,_keep)
 # core/water (core/water/README.md): the meltwater brook a WATER.flow, a station's tarn a WATER.still (stations 2-6)
 CORE_WATER=['20-core-water.js','21-core-water-shore.js','22-core-water-flow.js','50-core-water-draw.js','51-core-water-kinds.js']
 for f in CORE_WATER:
@@ -176,6 +189,13 @@ VIRTUAL={'44-host-matlib-pack.js':_mp.fragment(HERE,'seouterwall',side=SIDE),
          '44m-host-matlib-pack-nwow.js':_mp.fragment(NW,'nwouterwall',side=SIDE),
          '44n-host-region.js':'// the station on the scale model (region/far.py; generated: rerun it, do not edit)\nconst SEOW_REGION='+json.dumps(REGION,separators=(',',':'))+';\n',
          khost.EDITS_JS:khost.edits_js(HERE,'seouterwall')}   # the page's edits (edits.json or this browser's draft)
+for _f,_v in KIN_VIRTUAL.items():
+    if isinstance(_v,tuple):
+        _pj=os.path.join(_v[1],'tex','pack.json');_fam=[]
+        if os.path.isfile(_pj):
+            with open(_pj,encoding='utf-8') as _fh: _fam=sorted(json.load(_fh).get('families',{}))
+        _v=_mp.fragment(_v[1],_v[2],side=SIDE,exclude=[f for f in _fam if f not in _v[3]])
+    VIRTUAL[_f]=_v
 for f in VIRTUAL: PATH[f]=None
 frags=sorted(PATH)
 out=[]; bad=[]
