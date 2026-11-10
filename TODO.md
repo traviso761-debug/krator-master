@@ -21,12 +21,13 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 
 **Counts:** tags used: about 52 [G data], 27 [G shader], 17 [G native] and 18 [web] (some items carry two, and the legend above uses one of each).
 
-## When the branch `ccr-55bd6ee1-p1si44` is merged *(2026-11-10)*
+## The Audio Lab's numeric defaults *(2026-11-10, the second integration pass)*
 
-- **Drop Dhelv's stemClump wrapper.** `core/biome/30-core-foliage.js`'s `BIO.geo.stemClump` no longer leaks `bk`, `box`, `poly`
-  and `kk` as globals (fixed on `main`, every page rebuilt). That branch's `settlements/dhelv/src/45-dhelv-bio.js` wraps the
-  function to put the kit's `box` back, and its `KNOWN_ISSUES.md` notes it: remove both in the merge, rebuild Dhelv and run
-  `verify.py dist/dhelv.html --assert`.
+- **`|| <number>` in core/audio** (check_source ORNUM, 147 findings, recorded in `tools/check_source_baseline.json` when
+  `claude/water-migration-merge` came in): `core/audio/tools/soundtrack_engine_code.js` (145, e.g. `vol: tr.vol || 0.85`, where a
+  volume of 0 is a real mute), `core/audio/26-core-audio-music.js` line 550 (`scenario.frequency || 1.0`) and
+  `core/audio/lab/serve_local.js` line 9. Write them `x == null ? d : x` with the audio work's next turn, run its node tests
+  (`core/audio/test-*.js`) and let the ratchet shrink (`python3 tools/check_source.py --write-baseline`).
 
 ## With the next scale-model edit *(the owner, 2026-11-09)*
 
