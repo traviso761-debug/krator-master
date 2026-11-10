@@ -6,7 +6,12 @@ the Arachnoids' dikes and sheared by the Outland Gate fault, with three warm tar
 mostly a very high, airless wall. Its life is in the north-western lowlands and in the three cauldrons.
 
 Gemini's sketch (2026-11-02) gave the names, the cauldrons and the four-way geology. This plan keeps those, corrects the
-heights and the air from the model, and adds the people, the hazards, the stations and the core adoption. Nothing is built.
+heights and the air from the model, and adds the people, the hazards, the stations and the core adoption.
+
+**Status (2026-11-10): station 1, Vitreous Hollow, is built** on the branch `claude/neouterwall-s1` (a cloud session: `dist/neouterwall.html`,
+`python3 build.py`), forked from the W outer wall's station 1 frame (itself from `biomes/nwouterwall`), its flora the NW outer wall's read
+in place plus the cauldron's own tree fern and reed. It passes `verify.py --assert --all-views` in software GL only: **the real-GPU verify is
+owed on the owner's machine** (`KNOWN_ISSUES.md`). Section 8 says what it takes from core; section 7 what it draws. Stations 2-5 are not built.
 The owner wants a kit here (`HANDOFF-REBUILD.md`: one of the three new-north kits allowed to go ahead). It goes in the
 rebuild's queue after the frozen integration pass. All px below are on the 5.1 canvas (1821 x 1723, 2 km/px).
 
@@ -223,35 +228,51 @@ World km = 5.1 px x 2. Each page is the usual 5.2 km square.
 | 5 **The Epidote-Steam Tarn** (opened by the owner, 2026-11-09) | 1342,338, the inner mouth at 1340,336 | tarn 2,670 m; 1.15 atm; WH, 1,929 mm, 11 °C (18/3); walls to 10.5 km | the sealed cauldron reached by the cave: the inner mouth steaming over the tarn, the hypogene cave's warm outlet, sinter and mats round it, walls rising into the airless crest on every side; the most hidden page on the map |
 | 5a **The Portal** (optional, a cave page) | 1331,302 | valley floor 5,900 m; 0.77 atm; EF | the Portal Valley's ice and the cave's mouth; inside, the dry upper level's gypsum and the Marble Hall (a `KCAVERN` page, as the Hearths' Cave of Crystals) |
 
+**Station 1 as built (2026-11-10):** the page stands on the tarn's south-east shore (px 1260.75,327.8, `region/far.py`), y = 0 at the
+water (2,950 m; the shore pixel's own bilinear height is half-way up the wall, so far.py takes the tarn's level and its WH climate, +9 °C,
+2,494 mm, 1.11 atm). The 1 km model has no shore: the tarn's cells meet the wall's, which rises ~800 m in the first 700 m. The station adds
+a **spring apron** (talus and sinter built out ~350 m from the wall's foot), three rows of **dike fins** (`KSTACKS.row`, 22 fins 30-150 m: two
+across the apron into the tarn on one strike, one across them out in the water, the cell's north side), **talus** at their feet
+(`KRELIEF.talus`), five **springs** at the wall's foot inside the cell (`WATER.spring`: the boiling main spring, a rust pool, a copper pool),
+the main spring's **sinter stair** (`WATER.terraces`, seven treads to the tarn) and the springs' **heat** (`KTHERM`: the mats over 22 °C, bare
+sinter over 40, the snow off the warm ground). The tarn is a `WATER.open` without surf; its bed sinks 60 m under the model's flat cells.
+
 **Station 1 comes first:** it is the reachable cauldron (lowest crest out 3,728 m), it holds the kit's signature (a warm
 tarn in a dike box), and its geothermal surfaces are the shared amendment the other plans want. Gemini's "Pseudotachylite
 Mirror-Scarp" over the Web-Cleaver Gorge is folded into station 4: the Web-Cleaver runs outside the polygon. **Station 5
 waits for the map edit** (section 2a) and for the cave pieces below; it comes last, with 5a if the owner wants the cave
 walked as a page.
 
-## 8. Core adoption (written first, as the working rules ask)
+## 8. Core adoption (written first, as the working rules ask; station 1 as built, 2026-11-10)
 
-| Need | Module | How |
-|---|---|---|
-| randomness | `core/rand` (`KRAND`) | every placement seeded by (world, cell, index, salt) |
-| relief | `KRELIEF` (38, 38c) | `slump`, `scarp`, `talus`, `gully`, `joints`, `waters`; `gully` for the Portal Valley's side valleys |
-| the cave | `KKARST` (`kind: 'hypogene'`), `KCAVERN` (`floorFn`, `drawRock`), `KSPELEO` (`HYPOGENE`), `KCARVE` mouths | the Epidote Cave (section 2a): stations 5 and 5a |
-| dikes | `KSTACKS.row` (`kind:'fin'`) | the dike walls on one strike; a second row across for the boxwork |
-| strata | `KSTRATA` (`create`, `vary`, `drape`) | the skarn bands and the gneiss; a skarn recipe (amendment 1) |
-| glacier and frost | `KGLACIER` (44g), `KFROST` (42) | the rim crest |
-| ground | `KGROUND` (43), `KHORIZON` (45), `KFAR` (44) | cover masks; the crest and the far wall |
-| water | `core/water` (`WATER.open`, `spring`, `terraces`, `flow`) | the tarns, springs, sinter steps, outflow streams |
-| flora | `core/biome` | read in place: geyser, Korona, swbay, nwouterwall, Copper Glacier, the Throne |
-| sky, weather | `core/atmos` | the standard sky; fog in the cauldrons |
-| hazards | `core/hazard` (`KHAZ`, `21-core-hazard-flow.js`) | section 6 |
-| camps | `core/camp` (`KCAMP`) | prospectors' camps |
-| fauna | `kits/fauna` | section 4 |
-| resources | `kits/resources` | iron and copper nodes in the skarn |
-| shadows | `core/shadow` | off at load |
-| tags, space, mask, host, export, materials | as every kit | |
-| city, hamlet | `core/city`, `core/hamlet` | no: nobody lives here |
+The table of `README.md` "CORE MODULES ARE NOT OPTIONAL", for this kit. "Taken" is what station 1's page lists in `build.py`; "later" the
+stations that will take it.
 
-`tools/check_core_use.py` must pass.
+| Need | Module | Station 1 | How |
+|---|---|---|---|
+| randomness | `core/rand` (`KRAND`) | taken | every placement seeded by (world, cell, index, salt): the NW outer wall's `NWOW.place` grid with this kit's own salts (900 on); the apron's roughness and the far crags on `KRAND.fbm` |
+| placement mask | `core/mask` | not needed | no canvas is read; the zones are fields and a raster of the baked grid (47) |
+| tags, space | `core/tags`, `core/space` (`KSPACE`) | taken | every record registered before it is drawn (the tree ferns in their builder's first line); `KSPACE` keeps the ferns clear of each other and of the NW outer wall's trees |
+| ground, field | `KFIELD` (30), `KGROUND` (43), `KHORIZON` (45) | taken | the near box baked at 8 m, the sinter stair on a 2 m inset; seven library layers (16 units or fewer: `KGROUND`'s six over the dithered base); the walls' shadows at a low sun |
+| strata | `KSTRATA` (35) and its shader | taken | the `megabreccia` recipe on the steep (the impact rim's host rock). The skarn recipe is amendment 1, owed |
+| dikes | `KSTACKS.row` (37, `kind:'fin'`) | taken | three rows, 22 fins; each fin's foot under the lowest ground round it |
+| relief | `KRELIEF` (38) | taken (`talus`) | the talus against the fins' feet. `slump`, `scarp`, `gully`, `joints` later (stations 3 and 4) |
+| the springs' heat | `KTHERM` (core/terrain 47) | taken | point vents at the springs, line vents down the stair and along the fault's seep; the zones, the ground's colour and the snow mask read the one field |
+| water | `core/water`: `WATER.open`, `WATER.spring` (geyser 52, 52b), `WATER.terraces` (ext 53, 53b), the audit (57), the shore's fields (60) | taken | the tarn without surf or breakers; the five springs; the stair. The reflections switch (58) is not taken (KNOWN_ISSUES.md) |
+| glacier, frost | `KGLACIER` (44g), `KFROST` (42) | later | the rim crest (stations 3, 5a); at station 1 the rim's ice is the far land's snow |
+| far land | `KFAR` (44) | not taken | the shared sky's ridges cast from the model (region/far.py) carry the far land, as the NW and W outer walls' |
+| the cave | `KKARST` (`hypogene`), `KCAVERN`, `KSPELEO`, `KCARVE` | later | stations 5 and 5a (section 2a) |
+| flora | `core/biome` | taken | the NW outer wall's species, trees, floor and build read in place (`48a`-`48d`), its zones mapped from this kit's (`NEOW.ZONES`' `nw`); the cauldron's own tree fern and reed (`50`). Geyser's, Korona's and swbay's flora are not read at station 1 (section 4: the podocarps are owed) |
+| sky, weather | `core/atmos` | taken | the shared sky at the station's pixel, its weather, height fog and the tarn's mist, the rain cover, snow that lies with the springs' ground bare (`ATMOS.snowBare`) |
+| hazards | `core/hazard` (`KHAZ`) | tags only | the springs registered with a `heat` hazard tag (as highrift's); the page does not load `KHAZ` yet: the gas pools, the breaking crust and the night timing are amendments 3 and 4 |
+| camps | `core/camp` (`KCAMP`) | later | prospectors' camps (station 3) |
+| fauna | `kits/fauna` | later | none at station 1 |
+| resources | `kits/resources` | later | the skarn's ore nodes (station 3) |
+| shadows | `core/shadow` | taken | off at load, `?shadow=1` |
+| host, export, materials | `core/host`, `core/export`, `core/materials` | taken | `materials.json` and `tools/textures/pack.py` (11 families); the export's `landforms` carries the site's records and the heat field |
+| city, hamlet | `core/city`, `core/hamlet` | no | nobody lives here |
+
+`tools/check_core_use.py` passes on station 1 (2026-11-10).
 
 **Core amendments needed:**
 1. **A skarn recipe for `KSTRATA`** (new): irregular, lensing bands (epidote green, garnet red-brown, magnetite black,
