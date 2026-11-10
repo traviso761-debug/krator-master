@@ -4,7 +4,7 @@
 
 Docs: `BIOME-API.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PLAN.md`, `PORT.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/neouterwall-badlands.html`, `dist/neouterwall-garnet.html`, `dist/neouterwall-portal.html`, `dist/neouterwall-shoulder.html`, `dist/neouterwall-steam.html`, `dist/neouterwall.html`
+Built output (never open it; edit `src/` and rebuild): `dist/neouterwall-badlands.html`, `dist/neouterwall-cave.html`, `dist/neouterwall-garnet.html`, `dist/neouterwall-portal.html`, `dist/neouterwall-shoulder.html`, `dist/neouterwall-steam.html`, `dist/neouterwall.html`
 
 Build: `cd biomes/neouterwall && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -49,6 +49,7 @@ Each station builds one page (`build.py --station <name>`) from its own fragment
 | Station | Fragments | KB |
 |---|---|---|
 | badlands | 44r-host-site-rec.js, 44s-host-site.js | 8 |
+| cave | 00-head.html, 44z-host-site.js, 44zs-host-station.js, 48-neow-cave.js, 49-host-stage.js, 84-host-rock.js, 85-host-crystals.js, 85b-host-speleo.js, 89x-host-air.js, 89z-host-build.js, 98u-host-eye.js, 98v-host-views.js, 99-host-take.js, 99-tail.html | 48 |
 | garnet | 44r-host-site-rec.js | 5 |
 | portal | 44r-host-site-rec.js, 44s-host-site.js | 6 |
 | shoulder | 44r-host-site-rec.js, 44s-host-site.js | 7 |

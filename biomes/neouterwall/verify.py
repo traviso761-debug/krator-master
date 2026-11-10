@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Headless verification for biomes/neouterwall (forked from biomes/nwouterwall's; the asserts are the kit's own hostChecks).
 Every station page: dist/neouterwall.html (station 1, Vitreous Hollow) and dist/neouterwall-<station>.html for garnet,
-badlands, shoulder, steam and portal (stations 2, 3, 4, 5, 5a).
+badlands, shoulder, steam, portal and cave (stations 2, 3, 4, 5, 5a and the cave page, 5b).
 
 Usage:
   python verify.py dist/neouterwall.html [--views "The Vitreous Spring,Down the sinter stair to the tarn"] [--all-views]
@@ -161,8 +161,10 @@ async def run(a):
                          "   OVER" if v["over"] else ""))
 
             print("\n--- export profile (core/export/README.md, \"Profiles\") ---")
-            prof = [s.strip() for s in a.profile.split(",") if s.strip()] if a.profile else EXPORT_PROFILE
-            box = await pg.evaluate("()=>window._exportBox||null") or EXPORT_BOX
+            # the page's own profile and box where it says them (the cave station: no flora, so no items or buckets; _api.exportProfile, exportBox)
+            own = await pg.evaluate("()=>window._api&&window._api.exportProfile?{p:window._api.exportProfile,b:window._api.exportBox||null}:null")
+            prof = [s.strip() for s in a.profile.split(",") if s.strip()] if a.profile else (own["p"] if own else EXPORT_PROFILE)
+            box = (own and own["b"]) or await pg.evaluate("()=>window._exportBox||null") or EXPORT_BOX
             pok, lines = await check_profile(pg, box, prof)
             for ln in lines:
                 print("  " + ln)

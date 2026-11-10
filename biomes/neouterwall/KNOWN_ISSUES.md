@@ -16,9 +16,17 @@ Every station of PLAN.md section 7, built 2026-11-10 in a cloud session on the b
 - [ ] **Station 4's mirror scarps are a stand-in.** The slumps' head scarps are the `scarp` zone, drawn as the wall's rock darkened to
       near black: no gloss, no slickensides. Owed: the texture (`rock.pseudotachylite.mirror`, PROMPTS-NEEDED.md section 41) and the rock
       glaze (the plan's amendment 5). The citadel the outlandgate plan proposes on the shoulder is not drawn (that kit's and the owner's).
-- [ ] **The Epidote Cave is drawn from outside only.** Station 5 cuts the Inner Mouth and 5a the Portal (`KCARVE` alcoves, 50 and 35 m
-      deep); the 71 km of passage, the Marble Hall and the hypogene crusts (`KKARST.network({kind:'hypogene'})` into a `KCAVERN` page,
-      `KSPELEO.HYPOGENE`) are not built. The cave's hazards (`KKARST.hazards`) with it.
+- [ ] **The Epidote Cave is walked at one place.** Station 5b is the Marble Hall and 400 m of cave round it (the cave page); the Inner
+      Mouth (5) and the Portal (5a) are `KCARVE` alcoves 50 and 35 m deep that open onto nothing. The other 70 km of passage are the scale
+      model's record only, and the three pages are not joined (no walk from the Portal to the hall to the tarn).
+- [ ] **The cave's network is a hypogene maze round the hall, not the record's line.** `tube_epidote_16` is one passage from the Portal to
+      the Inner Mouth; the page's `KKARST` network is a 1.8 km maze on the fault's strike, cropped round the hall. Its lower storey sits 80 m
+      under the hall (the plan's lower level only falls toward the tarn under the cauldron's rim, 8 km south); that storey's water is warm
+      (the pools read under 45 °C: none scalds) and its temperature, 14 °C rock cooled by meltwater, is the plan's proposal.
+- [ ] **The cave page's marble and skarn are stand-ins.** `rock.marble.white` for the skarn's marble band, `rock.gossan` for its
+      iron-stained bands round it (the skarn's own texture, section 41 of PROMPTS-NEEDED.md, is owed).
+- [ ] **The cave page has no lamp-lit verify on the GPU yet**: its look (the haze, the lamp's reach in a 240 m hall, the gypsum's glow) is
+      judged on the GPU only.
 - [ ] **Station 5's walls are a 1 km bicubic face.** The tarn's ring rises ~4 km within one cell of the water: on the page a smooth
       75-degree face over the apron, not the stepped skarn cliffs; the Inner Mouth is cut in its foot. The tube's px (1340,336) is a
       2 km pixel; the mouth stands at the wall's foot nearest it.

@@ -7,6 +7,7 @@ Stations, as the NW outer wall's: each is its own showcase page from the same ki
   python3 build.py --station <name>    a later station (PLAN.md section 7: Garnet-Mirror, the Epidote Badlands, the Gate Shoulder, the
                                        Epidote-Steam Tarn): stations/<name>/'s fragments replace src/'s of the same name; its station.json
                                        names the page ("out") and its cut ("name")
+  python3 build.py --station cave      station 5b, THE EPIDOTE CAVE (the Marble Hall): a cave page, its own frame (build_cave.py, stations/cave/)
   python3 build.py --all               every station
   --inline-packs                       the texture packs inside the page (one self-contained file) instead of a sidecar
 
@@ -88,6 +89,11 @@ STN={'name':'vitreous','out':'neouterwall.html'};STN_DIR=None
 if '--station' in sys.argv:
     STN_DIR=os.path.join(HERE,'stations',sys.argv[sys.argv.index('--station')+1])
     STN=json.load(open(os.path.join(STN_DIR,'station.json'),encoding='utf-8'))
+# A CAVE STATION (stations/cave: "frame": "cave"): not this heightfield frame; build_cave.py assembles the cave page from that folder, and exits
+if STN.get('frame')=='cave':
+    import runpy
+    runpy.run_path(os.path.join(HERE,'build_cave.py'),run_name='__main__')
+    sys.exit(0)
 OUT=STN['out']
 J=lambda *p:os.path.normpath(os.path.join(ROOT,*p))
 PATH={f:os.path.join(SRC,f) for f in os.listdir(SRC) if not f.startswith('.')}

@@ -51,3 +51,11 @@ change with the box). The map edit 5.1 edit 1 (`tools/scale-model/edit_511.py`) 
 `SITE_MOUTHS` (any site may give them; `47` cuts them with `KCARVE` and meshes their hoods on the ground's material, the W outer wall's
 cave-house code). The tree fern and the reeds grow only where there are springs (`NEOW.THERM`); a wall's face (grade over .95) is a
 `field` to the NW outer wall's tree passes, so none roots there.
+
+**The cave station (5b) is its own frame.** `stations/cave/station.json` says `"frame": "cave"`; `build.py` hands such a station to
+`build_cave.py`, which assembles `stations/cave/`'s fragments (forked from `biomes/hearths`' Cave of Crystals, its hold's massing and its
+selenite left out) on the cave core (KCAVERN, KSPELEO, KKARST, KTHERM, KGROUND, KHAZ). Its own material adapter and pack
+(`stations/cave/materials.json`, `tex/`: marble, the skarn stand-in, gypsum crust, alabaster for the gypsum crystals), inline in the page.
+Its checks: the hall carved to the record's size, its floor in the 5.6-5.9 km band, the cupolas open, the dress drawn, the gas pooled, the
+pools' heat, sealed (no vent), the view cameras in the open. `verify.py` takes a page's own export profile and box (`_api.exportProfile`,
+`exportBox`): the cave has no flora, so no items or buckets.
