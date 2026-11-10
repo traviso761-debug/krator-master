@@ -1,0 +1,315 @@
+{
+ "_doc": "Clips kept out of the game by the license policy, with the reason. Never use these.",
+ "clips": [
+  {
+   "id": "citizendj-tony-schwartz-favorite-sounds",
+   "title": "Tony Schwartz Oddities & Acoustic Field Cuts",
+   "creator": "",
+   "source": "https://citizen-dj.labs.loc.gov/loc-tony-schwartz/explore/",
+   "license": "unverified",
+   "licenseText": "Public Domain (Library of Congress Tony Schwartz Collection)",
+   "why": "source not verified (compilation upload, or rights page unreachable)",
+   "file": "sound-board/held/audio/citizendj-tony-schwartz-favorite-sounds.mp3"
+  },
+  {
+   "id": "ia-asian-wild-babbler",
+   "title": "Asian Wild Babbler Penetrating Call",
+   "creator": "",
+   "source": "https://archive.org/details/various-bird-sounds",
+   "license": "unverified",
+   "licenseText": "Creative Commons 0 (Public Domain)",
+   "why": "source not verified (compilation upload, or rights page unreachable)",
+   "file": "sound-board/held/audio/ia-asian-wild-babbler.mp3"
+  },
+  {
+   "id": "ia-atherton-rainforest-frog",
+   "title": "Atherton Tableland Rainforest Frog Call",
+   "creator": "",
+   "source": "https://archive.org/details/frogs-toads-spring-peepers-crickets-sound-effects",
+   "license": "unverified",
+   "licenseText": "Creative Commons 0 (Public Domain)",
+   "why": "source not verified (compilation upload, or rights page unreachable)",
+   "file": "sound-board/held/audio/ia-atherton-rainforest-frog.mp3"
+  },
+  {
+   "id": "ia-brazil-night-vegetation",
+   "title": "Brazil Dense Vegetation Night Insects",
+   "creator": "",
+   "source": "https://archive.org/details/frogs-toads-spring-peepers-crickets-sound-effects",
+   "license": "unverified",
+   "licenseText": "Creative Commons 0 (Public Domain)",
+   "why": "source not verified (compilation upload, or rights page unreachable)",
+   "file": "sound-board/held/audio/ia-brazil-night-vegetation.mp3"
+  },
+  {
+   "id": "ia-coconut-lorikeet-call",
+   "title": "Coconut Lorikeet Warning Call",
+   "creator": "",
+   "source": "https://archive.org/details/various-bird-sounds",
+   "license": "unverified",
+   "licenseText": "Creative Commons 0 (Public Domain)",
+   "why": "source not verified (compilation upload, or rights page unreachable)",
+   "file": "sound-board/held/audio/ia-coconut-lorikeet-call.mp3"
+  },
+  {
+   "id": "ia-coroico-yungas-night",
+   "title": "Coroico Yungas Cloud Forest Night",
+   "creator": "",
+   "source": "https://archive.org/details/frogs-toads-spring-peepers-crickets-sound-effects",
+   "license": "unverified",
+   "licenseText": "Creative Commons 0 (Public Domain)",
+   "why": "source not verified (compilation upload, or rights page unreachable)",
+   "file": "sound-board/held/audio/ia-coroico-yungas-night.mp3"
+  },
+  {
+   "id": "ia-couchs-spadefoot-toad",
+   "title": "Couch's Spadefoot Toad Bleat",
+   "creator": "NPS",
+   "source": "https://archive.org/details/frogs-toads-spring-peepers-crickets-sound-effects",
+   "license": "unverified",
+   "licenseText": "Public Domain (U.S. National Park Service)",
+   "why": "source not verified (compilation upload, or rights page unreachable)",
+   "file": "sound-board/held/audio/ia-couchs-spadefoot-toad.mp3"
+  },
+  {
+   "id": "ia-ecuador-tropical-night",
+   "title": "Tropical Rainforest Night Ecuador",
+   "creator": "",
+   "source": "https://archive.org/details/frogs-toads-spring-peepers-crickets-sound-effects",
+   "license": "unverified",
+   "licenseText": "Creative Commons 0 (Public Domain)",
+   "why": "source not verified (compilation upload, or rights page unreachable)",
+   "file": "sound-board/held/audio/ia-ecuador-tropical-night.mp3"
+  },
+  {
+   "id": "ia-frogs-rainforest",
+   "title": "Rainforest Frogs Chorus",
+   "creator": "SoundBible",
+   "source": "https://archive.org/details/frogs-toads-spring-peepers-crickets-sound-effects",
+   "license": "unverified",
+   "licenseText": "Creative Commons 0 (Public Domain)",
+   "why": "source not verified (compilation upload, or rights page unreachable)",
+   "file": "sound-board/held/audio/ia-frogs-rainforest.mp3"
+  },
+  {
+   "id": "ia-pig-frog-grunt",
+   "title": "Everglades Pig Frog Deep Grunts",
+   "creator": "NPS",
+   "source": "https://archive.org/details/frogs-toads-spring-peepers-crickets-sound-effects",
+   "license": "unverified",
+   "licenseText": "Public Domain (U.S. National Park Service)",
+   "why": "source not verified (compilation upload, or rights page unreachable)",
+   "file": "sound-board/held/audio/ia-pig-frog-grunt.mp3"
+  },
+  {
+   "id": "ia-screech-owl-tremolo",
+   "title": "Eastern Screech Owl Tremolo Whinny",
+   "creator": "",
+   "source": "https://archive.org/details/various-bird-sounds",
+   "license": "unverified",
+   "licenseText": "Creative Commons 0 (Public Domain)",
+   "why": "source not verified (compilation upload, or rights page unreachable)",
+   "file": "sound-board/held/audio/ia-screech-owl-tremolo.mp3"
+  },
+  {
+   "id": "ia-waterhen-rhythmic-call",
+   "title": "White-Breasted Waterhen Rhythmic Call",
+   "creator": "",
+   "source": "https://archive.org/details/various-bird-sounds",
+   "license": "unverified",
+   "licenseText": "Creative Commons 0 (Public Domain)",
+   "why": "source not verified (compilation upload, or rights page unreachable)",
+   "file": "sound-board/held/audio/ia-waterhen-rhythmic-call.mp3"
+  },
+  {
+   "id": "ia-whip-poor-will-night",
+   "title": "Whip-poor-will Rapid Night Pulse",
+   "creator": "",
+   "source": "https://archive.org/details/various-bird-sounds",
+   "license": "unverified",
+   "licenseText": "Creative Commons 0 (Public Domain)",
+   "why": "source not verified (compilation upload, or rights page unreachable)",
+   "file": "sound-board/held/audio/ia-whip-poor-will-night.mp3"
+  },
+  {
+   "id": "xc-blacksmith-frog",
+   "title": "Blacksmith Treefrog (Boana faber)",
+   "creator": "Thiago Vernaschi",
+   "source": "https://xeno-canto.org/1064785",
+   "license": "cc-by-nc",
+   "licenseText": "Creative Commons Attribution-NonCommercial 4.0",
+   "why": "non-commercial: the game will be sold",
+   "file": "sound-board/audio/xc-blacksmith-frog.mp3"
+  },
+  {
+   "id": "xc-capuchinbird",
+   "title": "Capuchinbird (Perissocephalus tricolor)",
+   "creator": "Richard E. Webster",
+   "source": "https://xeno-canto.org/1033852",
+   "license": "cc-by-nc",
+   "licenseText": "Creative Commons Attribution-NonCommercial 4.0",
+   "why": "non-commercial: the game will be sold",
+   "file": "sound-board/audio/xc-capuchinbird.mp3"
+  },
+  {
+   "id": "xc-caracara",
+   "title": "Red-throated Caracara Frenzied Alarm (Ibycter americanus)",
+   "creator": "Oswaldo Cortes",
+   "source": "https://xeno-canto.org/127242",
+   "license": "cc-by-nc",
+   "licenseText": "Creative Commons Attribution-NonCommercial 4.0",
+   "why": "non-commercial: the game will be sold",
+   "file": "sound-board/audio/xc-caracara.mp3"
+  },
+  {
+   "id": "xc-cassowary",
+   "title": "Southern Cassowary Deep Booming Rumble (Casuarius casuarius)",
+   "creator": "Terry Reis",
+   "source": "https://xeno-canto.org/1066433",
+   "license": "cc-by-nc",
+   "licenseText": "Creative Commons Attribution-NonCommercial 4.0",
+   "why": "non-commercial: the game will be sold",
+   "file": "sound-board/audio/xc-cassowary.mp3"
+  },
+  {
+   "id": "xc-channel-billed-cuckoo",
+   "title": "Channel-billed Cuckoo (Scythrops novaehollandiae)",
+   "creator": "Iain Woxvold",
+   "source": "https://xeno-canto.org/558632",
+   "license": "cc-by-nc",
+   "licenseText": "Creative Commons Attribution-NonCommercial 4.0",
+   "why": "non-commercial: the game will be sold",
+   "file": "sound-board/audio/xc-channel-billed-cuckoo.mp3"
+  },
+  {
+   "id": "xc-common-potoo",
+   "title": "Common Potoo (Nyctibius griseus)",
+   "creator": "Sjoerd Mayer",
+   "source": "https://xeno-canto.org/1092238",
+   "license": "cc-by-nc",
+   "licenseText": "Creative Commons Attribution-NonCommercial 4.0",
+   "why": "non-commercial: the game will be sold",
+   "file": "sound-board/audio/xc-common-potoo.mp3"
+  },
+  {
+   "id": "xc-great-potoo",
+   "title": "Great Potoo (Nyctibius grandis)",
+   "creator": "Sjoerd Mayer",
+   "source": "https://xeno-canto.org/1092126",
+   "license": "cc-by-nc",
+   "licenseText": "Creative Commons Attribution-NonCommercial 4.0",
+   "why": "non-commercial: the game will be sold",
+   "file": "sound-board/audio/xc-great-potoo.mp3"
+  },
+  {
+   "id": "xc-hoatzin",
+   "title": "Hoatzin Prehistoric Grunts (Opisthocomus hoazin)",
+   "creator": "Hans Matheve",
+   "source": "https://xeno-canto.org/1088028",
+   "license": "cc-by-nc",
+   "licenseText": "Creative Commons Attribution-NonCommercial 4.0",
+   "why": "non-commercial: the game will be sold",
+   "file": "sound-board/audio/xc-hoatzin.mp3"
+  },
+  {
+   "id": "xc-horned-screamer",
+   "title": "Horned Screamer (Anhima cornuta)",
+   "creator": "Frank Lambert",
+   "source": "https://xeno-canto.org/777214",
+   "license": "cc-by-nc",
+   "licenseText": "Creative Commons Attribution-NonCommercial 4.0",
+   "why": "non-commercial: the game will be sold",
+   "file": "sound-board/audio/xc-horned-screamer.mp3"
+  },
+  {
+   "id": "xc-laughing-falcon",
+   "title": "Laughing Falcon (Herpetotheres cachinnans)",
+   "creator": "Bernabe Lopez-Lanus",
+   "source": "https://xeno-canto.org/48464",
+   "license": "cc-by-nc",
+   "licenseText": "Creative Commons Attribution-NonCommercial 4.0",
+   "why": "non-commercial: the game will be sold",
+   "file": "sound-board/audio/xc-laughing-falcon.mp3"
+  },
+  {
+   "id": "xc-lyrebird",
+   "title": "Superb Lyrebird Mechanical Mimicry (Menura novaehollandiae)",
+   "creator": "Marc Anderson",
+   "source": "https://xeno-canto.org/1086971",
+   "license": "cc-by-nc",
+   "licenseText": "Creative Commons Attribution-NonCommercial 4.0",
+   "why": "non-commercial: the game will be sold",
+   "file": "sound-board/audio/xc-lyrebird.mp3"
+  },
+  {
+   "id": "xc-oilbird",
+   "title": "Oilbird Echolocation & Cave Calls (Steatornis caripensis)",
+   "creator": "David Geale",
+   "source": "https://xeno-canto.org/1143733",
+   "license": "cc-by-nc",
+   "licenseText": "Creative Commons Attribution-NonCommercial 4.0",
+   "why": "non-commercial: the game will be sold",
+   "file": "sound-board/audio/xc-oilbird.mp3"
+  },
+  {
+   "id": "xc-oropendola",
+   "title": "Montezuma Oropendola (Psarocolius montezuma)",
+   "creator": "Manuel Grosselet",
+   "source": "https://xeno-canto.org/991193",
+   "license": "cc-by-nc",
+   "licenseText": "Creative Commons Attribution-NonCommercial 4.0",
+   "why": "non-commercial: the game will be sold",
+   "file": "sound-board/audio/xc-oropendola.mp3"
+  },
+  {
+   "id": "xc-smoky-jungle-frog",
+   "title": "Smoky Jungle Frog (Leptodactylus pentadactylus)",
+   "creator": "Marc Anderson",
+   "source": "https://xeno-canto.org/979851",
+   "license": "cc-by-nc",
+   "licenseText": "Creative Commons Attribution-NonCommercial 4.0",
+   "why": "non-commercial: the game will be sold",
+   "file": "sound-board/audio/xc-smoky-jungle-frog.mp3"
+  },
+  {
+   "id": "xc-three-wattled-bellbird",
+   "title": "Three-wattled Bellbird (Procnias tricarunculatus)",
+   "creator": "William Adsett",
+   "source": "https://xeno-canto.org/30207",
+   "license": "cc-by-nc",
+   "licenseText": "Creative Commons Attribution-NonCommercial 4.0",
+   "why": "non-commercial: the game will be sold",
+   "file": "sound-board/audio/xc-three-wattled-bellbird.mp3"
+  },
+  {
+   "id": "xc-trumpeter",
+   "title": "Grey-winged Trumpeter (Psophia crepitans)",
+   "creator": "Arthur Gomes",
+   "source": "https://xeno-canto.org/536249",
+   "license": "cc-by-nc",
+   "licenseText": "Creative Commons Attribution-NonCommercial 4.0",
+   "why": "non-commercial: the game will be sold",
+   "file": "sound-board/audio/xc-trumpeter.mp3"
+  },
+  {
+   "id": "xc-umbrellabird",
+   "title": "Amazonian Umbrellabird Throat Boom (Cephalopterus ornatus)",
+   "creator": "Marc Anderson",
+   "source": "https://xeno-canto.org/982151",
+   "license": "cc-by-nc",
+   "licenseText": "Creative Commons Attribution-NonCommercial 4.0",
+   "why": "non-commercial: the game will be sold",
+   "file": "sound-board/audio/xc-umbrellabird.mp3"
+  },
+  {
+   "id": "xc-white-bellbird",
+   "title": "White Bellbird (Procnias albus)",
+   "creator": "Laurent Schmitt",
+   "source": "https://xeno-canto.org/1174396",
+   "license": "cc-by-nc",
+   "licenseText": "Creative Commons Attribution-NonCommercial 4.0",
+   "why": "non-commercial: the game will be sold",
+   "file": "sound-board/audio/xc-white-bellbird.mp3"
+  }
+ ]
+}

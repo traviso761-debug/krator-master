@@ -1,0 +1,95 @@
+{
+  "timestamp": 1730248000000,
+  "description": "Ancient's Valley Custom Cuts Collection",
+  "cuts": [
+    {
+      "id": "cut-av-signal2",
+      "name": "ancient signal2",
+      "clip": "dailysounds-ghost-ship-sonar",
+      "start": 0,
+      "end": 2.5,
+      "xf": 0.1,
+      "fx": {
+        "pitch": -6,
+        "speed": 1.0,
+        "lowcut": 200,
+        "highcut": 8000,
+        "verb": 0.4,
+        "vol": 0.95
+      },
+      "category": "Ancient's Valley"
+    },
+    {
+      "id": "cut-av-signal-speedy",
+      "name": "ancient signal 3 - speedy",
+      "clip": "pixabay-cosmic-signal-351588",
+      "start": 0,
+      "end": 3.2,
+      "xf": 0.15,
+      "fx": {
+        "pitch": 2,
+        "speed": 1.35,
+        "lowcut": 150,
+        "verb": 0.3,
+        "vol": 0.9
+      },
+      "category": "Ancient's Valley"
+    },
+    {
+      "id": "cut-av-taiko-danger",
+      "name": "Taiko Battle Cadence (Aligned)",
+      "clip": "sfxmint-taiko-drum-02",
+      "start": 0,
+      "end": 5.1,
+      "xf": 0,
+      "fx": {
+        "speed": 1.0,
+        "verb": 0.2,
+        "vol": 0.95
+      },
+      "category": "Ancient's Valley"
+    },
+    {
+      "id": "cut-av-horn-echo",
+      "name": "Ancient War Horn Echo",
+      "clip": "sfxmint-war-horn-02",
+      "start": 0,
+      "end": 4.8,
+      "xf": 0.2,
+      "fx": {
+        "pitch": -2,
+        "verb": 0.45,
+        "vol": 0.85
+      },
+      "category": "Ancient's Valley"
+    },
+    {
+      "id": "cut-av-geiger-burst",
+      "name": "Caustic Geiger Radiation Pulse",
+      "clip": "pixabay-sci-fi-geiger-mono-222759",
+      "start": 1.0,
+      "end": 4.2,
+      "xf": 0.1,
+      "fx": {
+        "lowcut": 300,
+        "highcut": 7000,
+        "vol": 0.85
+      },
+      "category": "Ancient's Valley"
+    },
+    {
+      "id": "cut-av-relic-sub",
+      "name": "Relic Harmonic Sub-Bass Pulse",
+      "clip": "adobe-drone-production-element-imaging-alien-bed-01",
+      "start": 2.0,
+      "end": 8.5,
+      "xf": 0.3,
+      "fx": {
+        "pitch": -4,
+        "verb": 0.5,
+        "vol": 0.9
+      },
+      "category": "Ancient's Valley"
+    }
+  ]
+}

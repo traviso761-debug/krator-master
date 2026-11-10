@@ -1,0 +1,213 @@
+{
+  "id": "ancients-valley",
+  "name": "Ancient's Valley (10-Min Relic Bed & Alien Vibration)",
+  "category": "culture",
+  "bed": {
+    "bpm": 120,
+    "meter": 4,
+    "quantize": "bar",
+    "transitions": {
+      "riserClip": "adobe-production-element-title-transition-swell-01",
+      "riserLeadTime": 2,
+      "hitClip": "adobe-production-element-title-transition-stab-dark-long-01",
+      "tailClip": "adobe-production-element-title-transition-descend-01",
+      "vol": 0.9,
+      "autoOnCombat": true,
+      "autoOnXfade": true,
+      "filterSweep": true
+    },
+    "major": {
+      "clip": "music-ancient-valley-toxic-relics-10min",
+      "name": "Ancient Valley Relics & Toxic Lake (10-Minute Epic Bed)",
+      "vol": 0.85,
+      "fadeIn": 6,
+      "fadeOut": 5,
+      "duty": 70,
+      "cycle": 90,
+      "speed": 1,
+      "pitch": 0,
+      "__nodeSrc": {},
+      "__nodeShifter": null,
+      "__nodeGain": {}
+    },
+    "minors": [
+      {
+        "id": "minor_av_alien_vib",
+        "clip": "pixabay-alien-exoplanetary-vibration-f-290898",
+        "name": "Alien Exoplanetary Vibration",
+        "vol": 0.65,
+        "fadeIn": 5,
+        "fadeOut": 4,
+        "lockedToMajor": true,
+        "chance": 80,
+        "every": 45,
+        "speed": 1,
+        "pitch": 0,
+        "__nodeGain": {},
+        "__nodeSrc": {},
+        "__nodeShifter": null
+      },
+      {
+        "id": "minor_av_relic_bed",
+        "clip": "adobe-drone-production-element-imaging-alien-bed-01",
+        "name": "Extraterrestrial Relic Resonance Bed",
+        "vol": 0.7,
+        "fadeIn": 6,
+        "fadeOut": 4,
+        "lockedToMajor": false,
+        "chance": 75,
+        "every": 55,
+        "speed": 1,
+        "pitch": 0,
+        "__nodeGain": {},
+        "__nodeSrc": {},
+        "__nodeShifter": null
+      },
+      {
+        "id": "minor_av_reactor_hum",
+        "clip": "adobe-drone-production-element-imaging-flange-low-tones-electrical-hum-01",
+        "name": "Flanged Plasma Reactor Harmonic Hum",
+        "vol": 0.68,
+        "fadeIn": 5,
+        "fadeOut": 5,
+        "lockedToMajor": false,
+        "chance": 70,
+        "every": 60,
+        "speed": 1,
+        "pitch": 0,
+        "__nodeGain": {},
+        "__nodeSrc": {},
+        "__nodeShifter": null
+      },
+      {
+        "id": "minor_av_space_amb",
+        "clip": "pixabay-ambient-soundscapes-006-space-303245",
+        "name": "Ambient Soundscapes 006 Space Atmosphere",
+        "vol": 0.75,
+        "fadeIn": 7,
+        "fadeOut": 5,
+        "lockedToMajor": true,
+        "chance": 85,
+        "every": 50,
+        "speed": 1,
+        "pitch": 0,
+        "__nodeGain": {},
+        "__nodeSrc": {},
+        "__nodeShifter": null
+      }
+    ]
+  },
+  "stings": [
+    {
+      "id": "sting_av_horn_echo",
+      "clip": "sfxmint-war-horn-02",
+      "name": "Distant Solitary Ancient Horn Echo",
+      "vol": 0.82,
+      "interval": 240,
+      "jitterPct": 30,
+      "chance": 85,
+      "pitch": -1,
+      "pitchVar": 1.5,
+      "pan": 0,
+      "panVar": 0.4,
+      "speed": 1
+    },
+    {
+      "id": "sting_av_horn_call",
+      "clip": "oga-their-coming-horn",
+      "name": "Ancient War Horn Call",
+      "vol": 0.85,
+      "interval": 320,
+      "jitterPct": 40,
+      "chance": 80,
+      "pitch": 0,
+      "pitchVar": 2,
+      "pan": 0,
+      "panVar": 0.5,
+      "speed": 1
+    }
+  ],
+  "combat": {
+    "intensity": 0,
+    "layerProgression": true,
+    "bedVol": 0.25,
+    "envVol": 0.35,
+    "holdTail": 5,
+    "dangerTracks": [
+      {
+        "id": "danger_av_tribal",
+        "clip": "pixabay-rhythmic-tribal-groove-by-alien-i-trust-125_bpm-275682",
+        "name": "Rhythmic Tribal Groove (Danger)",
+        "vol": 0.85,
+        "fadeIn": 3,
+        "fadeOut": 3,
+        "__nodeSrc": {},
+        "__nodeGain": {},
+        "__nodeShifter": null
+      },
+      {
+        "id": "danger_av_taiko",
+        "clip": "sfxmint-taiko-drum-02",
+        "name": "Pounding Rhythm Taiko Drum 02",
+        "vol": 0.9,
+        "fadeIn": 2,
+        "fadeOut": 3,
+        "__nodeSrc": {},
+        "__nodeGain": {},
+        "__nodeShifter": null
+      },
+      {
+        "id": "danger_av_signal",
+        "clip": "pixabay-cosmic-signal-351588",
+        "name": "Cosmic Signal Pulse Lead",
+        "vol": 0.82,
+        "fadeIn": 3,
+        "fadeOut": 3,
+        "__nodeSrc": {},
+        "__nodeGain": {},
+        "__nodeShifter": null
+      }
+    ],
+    "fullCombatTracks": [
+      {
+        "id": "combat_av_drums",
+        "clip": "mixkit-cinematic-ancient-drums-heartbeat-487",
+        "name": "Cinematic Ancient Drums Heartbeat (Full Combat)",
+        "vol": 0.95,
+        "fadeIn": 2,
+        "fadeOut": 3,
+        "__nodeSrc": {},
+        "__nodeGain": {},
+        "__nodeShifter": null
+      },
+      {
+        "id": "combat_av_war_thunder",
+        "clip": "pixabay-ancient-war-drums-thunder-groove",
+        "name": "Ancient War Drums Thunder Groove",
+        "vol": 0.92,
+        "fadeIn": 2,
+        "fadeOut": 3,
+        "__nodeSrc": {},
+        "__nodeGain": {},
+        "__nodeShifter": null
+      }
+    ]
+  },
+  "env": {
+    "duckVol": 0.4,
+    "tracks": []
+  },
+  "bpm": 120,
+  "meter": 4,
+  "quantize": "bar",
+  "transitions": {
+    "riserClip": "adobe-production-element-title-transition-swell-01",
+    "riserLeadTime": 2,
+    "hitClip": "adobe-production-element-title-transition-stab-dark-long-01",
+    "tailClip": "adobe-production-element-title-transition-descend-01",
+    "vol": 0.9,
+    "autoOnCombat": true,
+    "autoOnXfade": true,
+    "filterSweep": true
+  }
+}

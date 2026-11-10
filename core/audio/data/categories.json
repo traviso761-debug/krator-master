@@ -1,0 +1,77 @@
+{
+  "_doc": "One category per clip (core/audio/PLAN.md section 3). kind: which of the four kinds of sound it serves.",
+  "categories": [
+    {
+      "id": "sfx.combat",
+      "kind": "sfx",
+      "name": "Combat",
+      "blurb": "hits, swings, blocks, gunfire, explosions"
+    },
+    {
+      "id": "sfx.tool",
+      "kind": "sfx",
+      "name": "Tools and work",
+      "blurb": "chopping, mining, sawing, smithing"
+    },
+    {
+      "id": "sfx.move",
+      "kind": "sfx",
+      "name": "Movement",
+      "blurb": "footsteps by surface, cloth, armour, mounts"
+    },
+    {
+      "id": "sfx.creature",
+      "kind": "sfx",
+      "name": "Creature calls",
+      "blurb": "single calls and cries, played as one-shots"
+    },
+    {
+      "id": "sfx.ui",
+      "kind": "sfx",
+      "name": "Interface",
+      "blurb": "menus, notifications"
+    },
+    {
+      "id": "amb.element",
+      "kind": "amb",
+      "name": "Ambient elements",
+      "blurb": "short to medium: rain, surf, a waterfall, wind, a chorus of insects, fire"
+    },
+    {
+      "id": "amb.bed",
+      "kind": "bed",
+      "name": "Ambient beds",
+      "blurb": "long backgrounds: a biome by day or night, a city, a cave"
+    },
+    {
+      "id": "music.ambient",
+      "kind": "music",
+      "name": "Ambient music",
+      "blurb": "sparse pieces and their stems, by biome or region"
+    },
+    {
+      "id": "music.combat",
+      "kind": "music",
+      "name": "Combat music",
+      "blurb": "a biome's combat beat and its intensity layers"
+    },
+    {
+      "id": "raw",
+      "kind": "raw",
+      "name": "Raw material",
+      "blurb": "recordings to cut and process: strange sounds, giant-insect candidates"
+    },
+    {
+      "id": "inst.roundrobin",
+      "kind": "inst",
+      "name": "Sample Packs & Round-Robins",
+      "blurb": "Multi-velocity instrument hits, round-robin tines, isolated note stems, and modular hit banks for step sequencers"
+    }
+  ],
+  "status": [
+    "candidate",
+    "approved",
+    "rejected",
+    "used"
+  ]
+}

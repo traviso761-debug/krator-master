@@ -1,0 +1,227 @@
+{
+ "_doc": "The license policy (owner, 2026-10-28; core/audio/PLAN.md section 1). game: may ship in the game. share: may sit in the public repo and the published lab. credit: required (the license asks), courtesy (we credit anyway), none. match: substrings of a source's own license text, tried in ORDER below; the first license whose any match is found wins, so the disallowed ones come first.",
+ "order": [
+  "cc-by-nc",
+  "cc-by-nd",
+  "cc-by-sa",
+  "cc0",
+  "pd-usgov",
+  "pd-age",
+  "pd-author",
+  "cc-by-4.0",
+  "cc-by-3.0",
+  "cc-by-2.5",
+  "rf-sonniss",
+  "rf-ftus",
+  "rf-mixkit",
+  "rf-pixabay",
+  "rf-soundopedia",
+  "rf-adobe",
+  "rf-dailysounds",
+  "unverified"
+ ],
+ "licenses": {
+  "cc-by-nc": {
+   "name": "Creative Commons Attribution-NonCommercial",
+   "url": "https://creativecommons.org/licenses/by-nc/4.0/",
+   "game": false,
+   "share": false,
+   "credit": "required",
+   "match": [
+    "NonCommercial",
+    "Non-Commercial",
+    "/by-nc",
+    "BY-NC"
+   ],
+   "why": "non-commercial: the game will be sold"
+  },
+  "cc-by-nd": {
+   "name": "Creative Commons Attribution-NoDerivatives",
+   "url": "https://creativecommons.org/licenses/by-nd/4.0/",
+   "game": false,
+   "share": false,
+   "credit": "required",
+   "match": [
+    "NoDerivatives",
+    "NoDerivs",
+    "/by-nd",
+    "BY-ND"
+   ],
+   "why": "no derivatives: every sound is cut, pitched and filtered"
+  },
+  "cc-by-sa": {
+   "name": "Creative Commons Attribution-ShareAlike",
+   "url": "https://creativecommons.org/licenses/by-sa/4.0/",
+   "game": false,
+   "share": false,
+   "credit": "required",
+   "match": [
+    "ShareAlike",
+    "/by-sa",
+    "BY-SA"
+   ],
+   "why": "share-alike would bind the game's own sound files to the same license"
+  },
+  "cc0": {
+   "name": "CC0 1.0 Universal (public-domain dedication)",
+   "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+   "game": true,
+   "share": true,
+   "credit": "courtesy",
+   "match": [
+    "publicdomain/zero",
+    "Creative Commons 0",
+    "CC0"
+   ]
+  },
+  "pd-usgov": {
+   "name": "Public domain (work of the US federal government)",
+   "url": "https://www.usa.gov/government-copyright",
+   "game": true,
+   "share": true,
+   "credit": "courtesy",
+   "match": [
+    "U.S. Federal Government",
+    "U.S. National Park Service",
+    "PD-USGov"
+   ]
+  },
+  "pd-age": {
+   "name": "Public domain (US sound recording published before 1923)",
+   "url": "https://www.copyright.gov/music-modernization/pre1972-soundrecordings/",
+   "game": true,
+   "share": true,
+   "credit": "courtesy",
+   "match": [
+    "before 1923"
+   ]
+  },
+  "pd-author": {
+   "name": "Public domain (released by its author)",
+   "url": "https://commons.wikimedia.org/wiki/Template:PD-self",
+   "game": true,
+   "share": true,
+   "credit": "courtesy",
+   "match": [
+    "author's release",
+    "PD-self"
+   ]
+  },
+  "cc-by-4.0": {
+   "name": "Creative Commons Attribution 4.0",
+   "url": "https://creativecommons.org/licenses/by/4.0/",
+   "game": true,
+   "share": true,
+   "credit": "required",
+   "match": [
+    "Creative Commons Attribution 4.0",
+    "licenses/by/4.0"
+   ]
+  },
+  "cc-by-3.0": {
+   "name": "Creative Commons Attribution 3.0",
+   "url": "https://creativecommons.org/licenses/by/3.0/",
+   "game": true,
+   "share": true,
+   "credit": "required",
+   "match": [
+    "Creative Commons Attribution 3.0",
+    "licenses/by/3.0"
+   ]
+  },
+  "cc-by-2.5": {
+   "name": "Creative Commons Attribution 2.5",
+   "url": "https://creativecommons.org/licenses/by/2.5/",
+   "game": true,
+   "share": true,
+   "credit": "required",
+   "match": [
+    "Creative Commons Attribution 2.5",
+    "licenses/by/2.5",
+    "CC BY 2.5"
+   ]
+  },
+  "rf-sonniss": {
+   "name": "Sonniss GDC Game Audio Bundle license (royalty-free, no re-sharing)",
+   "url": "https://sonniss.com/gdc-bundle-license/",
+   "game": true,
+   "share": false,
+   "credit": "courtesy",
+   "match": [
+    "Sonniss"
+   ]
+  },
+  "rf-ftus": {
+   "name": "Free To Use Sounds license (royalty-free, no re-sharing)",
+   "url": "https://www.freetousesounds.com/faq/",
+   "game": true,
+   "share": false,
+   "credit": "required",
+   "match": [
+    "Free To Use Sounds"
+   ],
+   "why_credit": "credited as required until each pack's own terms are checked"
+  },
+  "rf-mixkit": {
+   "name": "Mixkit Sound Effects Free License (royalty-free, no re-sharing)",
+   "url": "https://mixkit.co/license/#sfxFree",
+   "game": true,
+   "share": false,
+   "credit": "courtesy",
+   "match": [
+    "Mixkit"
+   ]
+  },
+  "rf-pixabay": {
+   "name": "Pixabay Content License (royalty-free, no re-sharing)",
+   "url": "https://pixabay.com/service/license-summary/",
+   "game": true,
+   "share": false,
+   "credit": "courtesy",
+   "match": [
+    "Pixabay"
+   ]
+  },
+  "rf-soundopedia": {
+   "name": "Soundopedia license (free for commercial use, no re-sharing; recordings owned by Soundopedia)",
+   "url": "https://soundopedia.com/",
+   "game": true,
+   "share": false,
+   "credit": "courtesy",
+   "match": [
+    "Soundopedia"
+   ]
+  },
+  "unverified": {
+   "name": "Not verified at the original source",
+   "url": "",
+   "game": false,
+   "share": false,
+   "credit": "none",
+   "match": [],
+   "why": "the license could not be checked where the recording was published"
+  },
+  "rf-adobe": {
+   "name": "Adobe Audition Royalty-Free Sound Effects Software License (commercial use allowed, no re-sharing)",
+   "url": "https://helpx.adobe.com/audition/using/sound-effects-music-loop-files.html",
+   "game": true,
+   "share": false,
+   "credit": "courtesy",
+   "match": [
+    "Adobe Audition",
+    "Adobe Systems Incorporated"
+   ]
+  },
+  "rf-dailysounds": {
+   "name": "DailySounds Royalty-Free License (free for commercial and game use, no re-sharing)",
+   "url": "https://dailysounds.org",
+   "game": true,
+   "share": false,
+   "credit": "courtesy",
+   "match": [
+    "DailySounds",
+    "dailysounds"
+   ]
+  }
+ }
+}

@@ -243,7 +243,7 @@ The waterfront comes first, because the Port kit is finished and the city's shap
 1. **Settled (2026-10-17).** Hook is on the scale model at px 537,596 (section 1): the sea to the north, the Crag
    Men's cliff behind, the Vothic border 45 km west. The Crag Men themselves have no lore yet (LORE §12).
 2. **Settled (2026-10-17).** The people are the **Hukoa**; the city is *Huka* in their tongue and *Uga* in Izani
-   (`tools/scale-model/river_names.py`, `PLACE`). Their records keep the catalog culture `islander` (the West set
+   (`tools/scale-model/history/river_names.py`, `PLACE`). Their records keep the catalog culture `islander` (the West set
    builds them) and carry `layer: 'hukoa'`; no new catalog culture. Their speech is the western Islander tongue,
    Hikau (`lore/tongues-of-krator.html`, "Sikau"), which kept h and k: the regular Hikau for a fish-hook is *huku*
    (east *uʻu*), so *Huka* is a name older than the rule, like *Kautoa*.
