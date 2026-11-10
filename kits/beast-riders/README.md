@@ -83,6 +83,18 @@ python3 ../../tools/textures/pack.py kits/beast-riders   # (from the repo root) 
   and world UVs baked) and `src/60-br-ports.js` registers each as an ASSET whose build places a copy. The towns'
   library maps (their `tex/`, only the families the buildings use) are written once, `BR_TOWN_IMG`.
 
+  **The openings** (the faithful port, 2026-11-09). `towns.py` seals each town's `54-openings.js` and core/door's records
+  and glass (`core/door/10-core-door.js`, `20-core-glass.js`: `KDOOR` and `KGLASS` bound on the closure's own root, so
+  each town keeps its own registry and the page's is untouched) with its architecture, so the buildings are drawn as
+  in the town: the walls cut for the doors and windows (`goLeaf`, `goSectorWins`), each door a `KDOOR` record. The hook
+  hands each variant its doors (`doors`, in its local frame) and its panes (`panes`): each leaf is a mesh of its own,
+  posed as the town built it (Girder's stand ajar, Mav's shut), and the panes are `KGLASS` as `81-glow.js` draws them
+  (clear glass in a cut opening, or proud of a solid wall with the room card behind; unlit, the sheet has no night).
+  The sheet hands each placed copy to `BR_PORTS.host(g, base)`: its doors become records in the page's own `KDOOR`
+  (`core/door/10-core-door.js`, `90-core-door-host.js`), each leaf posed by `KDOORHOST` as it swings, and E opens or
+  shuts the nearest within reach. A build that does not call `host` (the isle demo, Pinnacle Rock) shows the leaves
+  as built.
+
 - **The rock-cut pieces** (`src/55-br-rockcut.js`, `src/56-br-rockcut-b.js`, 2026-10-19; the owner: "adapt some of the
   'carved into tree' interiors into 'carved into rock' interiors"): Mav's Refuge's carvings in its gate baobabs re-cut in
   red sandstone for Pinnacle Rock's stacks and the mesa's walls (`settlements/pinnacle-rock/PLAN.md`), as catalog ASSETs
@@ -206,6 +218,10 @@ with a reason, and two negatives (a row stripped of its buildings, a row dropped
 one's fabric, measured on the sheet, is what its marks drew; and each is its town's building: verify.py loads
 `settlements/girder/girder.html` and `settlements/mavs-refuge/mavs-refuge.html` and measures the same mark there
 (`window._ports`), the box within 0.05 m on every face and the furniture the same, piece for piece (`--no-towns` skips
-this; it loads both towns). After a change to either town's builders, rebuild the town and this kit, and run it.
+this; it loads both towns), and the doors the same, door for door (its building, its sill's middle within 1 cm, its size
+and whether it is locked; a negative moves one 5 cm). The openings: every port door's leaf turns open and shut when its record is opened and shut
+(`KDOORHOST`), every unlocked doorway and every cut window is a real opening (a short ray through its middle meets no
+fabric) and every cut window is glazed; a negative (the same rays moved along the wall past each opening) must meet
+the fabric. After a change to either town's builders, rebuild the town and this kit, and run it.
 
 See `KNOWN_ISSUES.md`.

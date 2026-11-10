@@ -37,8 +37,8 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `50-structure.js` | 18 | 12. STRUCTURE (1) |
 | `53-furnish.js` | 10 | 13a. FURNITURE: PLACED from the catalog, not dra (1) |
 | `54-openings.js` | 7 | 13d. OPENINGS: real doors and real glass on core (1) |
-| `55-arch.js` | 66 **big** | 13. ARCHITECTURE (arch-A) (1); 1. RING BUILDINGS (136); 2. FURNITURE + MIDDLE ZONES (394); 3. MAV'S CROWN (547); 4. THE COUNCIL CHAMBER (its front: the first doo (682); 5. SATELLITES (805) |
-| `56-levels.js` | 73 **big** | 13b. LEVELS + GATE CARVINGS (1); GOAL A: LEVELS (152); GOAL B: THE GATE TREES (611) |
+| `55-arch.js` | 65 **big** | 13. ARCHITECTURE (arch-A) (1); 1. RING BUILDINGS (132); 2. FURNITURE + MIDDLE ZONES (390); 3. MAV'S CROWN (543); 4. THE COUNCIL CHAMBER (its front: the first doo (678); 5. SATELLITES (801) |
+| `56-levels.js` | 72 **big** | 13b. LEVELS + GATE CARVINGS (1); GOAL A: LEVELS (148); GOAL B: THE GATE TREES (607) |
 | `57a-interiors.js` | 30 **big** | 13c. INTERIORS (DATA): rooms people live and wor (1) |
 | `57c-interiors-draw.js` | 27 | 13c. INTERIORS (DRAWING): the rooms near the cam (1) |
 | `60-trees.js` | 40 **big** | 14. TREES (1) |
@@ -52,6 +52,7 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `80-camera.js` | 7 | 25. CAMERA: MAV'S REFUGE ON core/host (1) |
 | `81-glow.js` | 7 | 26. NIGHT GLOW (1) |
 | `82-daynight.js` | 6 | 27. DAY / NIGHT (1) |
+| `83-mr-walk.js` | 4 | 25c. THE WALK: core/walk under the doors (KWALK; (1) |
 | `84-flyers.js` | 23 | 84. FLYERS (1) |
 | `84a-flyers-routes.js` | 15 |  |
 | `84b-flyers-animals.js` | 21 |  |

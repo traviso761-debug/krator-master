@@ -151,22 +151,27 @@ TRADES_JS = r"""([census,neg])=>{let T=(typeof BR_TRADES!=='undefined'?BR_TRADES
  T.forEach(r=>{if(census.indexOf(r.trade)<0)bad.push(r.trade+': not a census trade');});
  const na=T.filter(r=>r.na).length;
  return {ok:bad.length===0,detail:bad.length?bad.slice(0,4).join('; '):census.length+' census trades: '+(census.length-na)+' carried, '+na+' na'};}"""
-PORTS_JS = "()=>_kit.built.filter(b=>b.port).map(b=>({key:b.key,v:b.v,town:b.town,name:b.name,def:b.def,fabric:b.fabric,furn:b.furn,doors:(b.doors||[]).filter(d=>d.leaf).map(d=>({id:d.id,at:d.at,w:d.w,h:d.h,locked:d.locked}))}))"
-TOWN_JS = """(defs)=>defs.map(d=>{ const P=window._ports; if(!P) return {err:'no window._ports'};
+PORTS_JS = "()=>_kit.built.filter(b=>b.port).map(b=>({key:b.key,v:b.v,town:b.town,name:b.name,def:b.def,fabric:b.fabric,furn:b.furn,doors:(b.doors||[]).map(d=>({id:d.id,key:d.key,at:d.at,w:d.w,h:d.h,locked:d.locked}))}))"
+TOWN_JS = """([defs,keys])=>defs.map((d,k)=>{ const P=window._ports; if(!P) return {err:'no window._ports'};
   const ms=P.find(d); if(!ms.length) return {err:'no mark '+d.kind+' '+d.id};
   const b=P.box(d);
-  /* its doors: the KDOOR records whose leaves (54-openings.js: an instance of the doorleaf or doorlacq bucket, D.idx) the
-     mark drew, in its local frame, as built */
-  const T=window.GPORT||window.MPORT, F=d.frame||T.find(d)[0].frame, doors=[];
-  T.find(d).forEach(mk=>['doorleaf','doorlacq'].forEach(fam=>{const k='box|'+fam,a=mk.s.b[k]||0,z=mk.e.b[k]||0;
-    KDOOR.list.forEach(D=>{ if(D.fam!==fam||D.idx<a||D.idx>=z||!KPORT.keep(d,F,D.at[0],D.at[2])) return;
-      const l=KPORT.toLocal(F,D.at[0],D.at[2]); doors.push({id:D.id,at:[l[0],D.at[1]-(F.y||0),l[1]],w:D.w,h:D.h,locked:!!D.locked0}); }); }));
+  /* its doors: the page's KDOOR records (window.KDOOR: the town's tracker is private to its BUILD) of the buildings the
+     kit's copy has doors of (D.key, the town's goBuilding id), standing within the mark's fabric box (0.3 m) and its
+     clip, in its local frame, as built. A door the kit's copy lacks, of one of those buildings, shows as a difference */
+  const F=d.frame||ms[0].frame, c=Math.cos(F.ry||0), s=Math.sin(F.ry||0), doors=[], want=new Set(keys[k]);
+  const loc=(x,z)=>{const dx=x-F.x,dz=z-F.z;return [dx*c-dz*s,dx*s+dz*c];};
+  (window.KDOOR?KDOOR.list:[]).forEach(D=>{ if(!want.has(D.key)) return;
+    const l=loc(D.at[0],D.at[2]), y=D.at[1]-(F.y||0), e=0.3;
+    if(d.clip&&!(Math.abs(l[0])<=d.clip.hx&&(d.clip.hz==null||Math.abs(l[1])<=d.clip.hz))) return;
+    if(l[0]<b.min[0]-e||l[0]>b.max[0]+e||y<b.min[1]-e||y>b.max[1]+e||l[1]<b.min[2]-e||l[1]>b.max[2]+e) return;
+    doors.push({id:D.id,key:D.key,at:[l[0],y,l[1]],w:D.w,h:D.h,locked:!!D.locked0}); });
   return {box:{min:b.min,max:b.max},inst:b.inst,tris:b.tris,furn:P.furn(d),doors:doors}; })"""
 
 # the openings (the faithful port, 2026-11-09): the towns' 54-openings.js, their glass and core/door sealed with them
 #  - every port door's leaf turns open and shut when its record is opened and shut (KDOORHOST.tick posing it): open, the
 #    leaf's middle stands off the doorway's line by half its width or more; shut, it stands in the doorway
-#  - every unlocked doorway and every cut window is a real opening: a short ray through its middle meets none of the
+#  - every unlocked doorway and every cut window is a real opening: a short ray through its middle (or through one of four
+#    points 0.3 of its size out from it: a mullion or a curtain the town hangs in it stops one) meets none of the
 #    building's fabric (the walls are hollow), and a cut window's ray meets its pane (KGLASS)
 #  - negative: the same rays moved along the wall past the opening must meet the fabric
 OPEN_JS = r"""(neg)=>{const K=_kit,G=K.portGroups||{},R=[],v=new THREE.Vector3(),ray=new THREE.Raycaster();
@@ -184,14 +189,18 @@ OPEN_JS = r"""(neg)=>{const K=_kit,G=K.portGroups||{},R=[],v=new THREE.Vector3()
    detail:KDOOR.list.length+' records ('+KDOOR.list.filter(D=>D.locked).length+' locked, '+leafDoors.length+' leaves that open)'+(notOpen.length?'; not open: '+notOpen.slice(0,3).map(D=>D.id+' '+off(D).toFixed(2)).join(', '):'')+(notShut.length?'; not shut: '+notShut.slice(0,3).map(D=>D.id+' '+off(D).toFixed(2)).join(', '):'')});
  const shift=neg?1:0;let nD=0,nW=0;const blocked=[],noGlass=[];
  const hit=(g,o,dir,far,test)=>{ray.set(o,dir);ray.far=far;const ms=[];g.traverse(m=>{if(m.isMesh&&test(m))ms.push(m);});return ray.intersectObjects(ms,false).length>0;};
+ /* an opening is open when a ray through its middle, or through one of four points 0.3 of its width and height out from
+    it, meets no fabric: a mullion, a frame's sill or a curtain the town hangs in the opening stops one ray, not five */
+ const S5=[[0,0],[-0.3,0],[0.3,0],[0,-0.3],[0,0.3]];
+ const shut=(g,o,dir,far,ux,uz,w,h)=>S5.every(q=>{const p=o.clone();p.x+=ux*q[0]*w;p.z+=uz*q[0]*w;p.y+=q[1]*h;return hit(g,p,dir,far,m=>m.userData.fabric);});
  K.built.filter(b=>b.port).forEach(b=>{const g=G[b.key+'.v'+b.v];if(!g)return;g.updateMatrixWorld(true);
   const ry=g.rotation.y,c=Math.cos(ry),s=Math.sin(ry),W=p=>new THREE.Vector3(g.position.x+p[0]*c+p[2]*s,g.position.y+p[1],g.position.z-p[0]*s+p[2]*c);
   (b.doors||[]).filter(d=>!d.locked&&d.leaf).forEach(d=>{nD++;const nx=Math.sin(d.yaw+ry),nz=Math.cos(d.yaw+ry),ux=Math.cos(d.yaw+ry),uz=-Math.sin(d.yaw+ry);
    const o=W(d.at);o.y+=Math.min(d.h*0.5,1.0);o.x+=nx*0.6+ux*shift*(d.w/2+0.5);o.z+=nz*0.6+uz*shift*(d.w/2+0.5);
-   if(hit(g,o,new THREE.Vector3(-nx,0,-nz),1.2,m=>m.userData.fabric))blocked.push(b.key+' v'+b.v+' '+d.id);});
+   if(shut(g,o,new THREE.Vector3(-nx,0,-nz),1.2,ux,uz,d.w,Math.min(d.h,2.0)))blocked.push(b.key+' v'+b.v+' '+d.id);});
   (b.panes||[]).filter(p=>p.cut).forEach(p=>{nW++;const n=[p.n[0]*c+p.n[1]*s,-p.n[0]*s+p.n[1]*c],ux=n[1],uz=-n[0];
    const o=W(p.at);o.x+=n[0]*0.35+ux*shift*(p.w/2+0.5);o.z+=n[1]*0.35+uz*shift*(p.w/2+0.5);const dir=new THREE.Vector3(-n[0],0,-n[1]);
-   if(hit(g,o,dir,0.6,m=>m.userData.fabric))blocked.push(b.key+' v'+b.v+' window @'+p.at.join(','));
+   if(shut(g,o,dir,0.6,ux,uz,p.w,p.h))blocked.push(b.key+' v'+b.v+' window @'+p.at.join(','));
    else if(!shift&&!hit(g,o,dir,0.6,m=>m.userData.glass))noGlass.push(b.key+' v'+b.v+' @'+p.at.join(','));});});
  R.push({name:'every unlocked doorway and every cut window is a real opening (no fabric in it), each cut window glazed (KGLASS)',
    ok:nD>0&&nW>0&&!blocked.length&&!noGlass.length,blocked:blocked.length,n:nD+nW,
@@ -204,14 +213,28 @@ def furn_key(r):
 
 
 def door_key(d):
-    """a door as both sides give it: its town id, its sill's middle in the local frame (1 cm), its size, locked as built"""
-    return (d['id'], round(d['at'][0], 2), round(d['at'][1], 2), round(d['at'][2], 2), round(d['w'], 2), round(d['h'], 2), bool(d['locked']))
+    """a door as both sides give it: its building (the town's goBuilding id), its sill's middle in the local frame, its
+    size, locked as built. Not its id: a door drawn outside any building is numbered on the town's 'free' counter, which
+    counts doors the kit's closure does not draw"""
+    return (d['key'], d['at'][0], d['at'][1], d['at'][2], d['w'], d['h'], bool(d['locked']))
+
+
+def door_diff(da, db, tol=0.01):
+    """the doors of da with no match in db and of db with none in da, one to one: the same building and locked state, the
+    sill's middle within 1 cm on each axis and the size within 1 cm (the kit's records are rounded to 0.1 mm)"""
+    left, right = list(da), list(db)
+    for x in list(left):
+        m = next((y for y in right if x[0] == y[0] and x[6] == y[6] and all(abs(x[i] - y[i]) <= tol for i in range(1, 6))), None)
+        if m is not None:
+            left.remove(x)
+            right.remove(m)
+    return left, right
 
 
 async def town_check(b, ports):
     """each port against its town's page: the same mark measured there"""
     import harness
-    fails, lines = [], []
+    fails, lines, neg = [], [], None
     for town, page in TOWN_PAGES.items():
         mine = [p for p in ports if p['town'] == town]
         if not mine:
@@ -222,7 +245,7 @@ async def town_check(b, ports):
                 fails.append(town + ': the town page never got ready')
                 await pg.close()
                 continue
-            res = await pg.evaluate(TOWN_JS, [p['def'] for p in mine])
+            res = await pg.evaluate(TOWN_JS, [[p['def'] for p in mine], [sorted({d['key'] for d in p['doors']}) for p in mine]])
             await pg.close()
         for p, r in zip(mine, res):
             tag = '%s v%d (%s)' % (p['key'], p['v'], p['name'])
@@ -232,13 +255,20 @@ async def town_check(b, ports):
             off = max(max(abs(p['fabric']['min'][i] - r['box']['min'][i]), abs(p['fabric']['max'][i] - r['box']['max'][i])) for i in range(3))
             fa, fb = sorted(map(furn_key, p['furn'])), sorted(map(furn_key, r['furn']))
             da, db = sorted(map(door_key, p['doors'])), sorted(map(door_key, r['doors']))
-            ok = off <= TOL and fa == fb and da == db
+            ka, kb = door_diff(da, db)
+            if da and neg is None:        # negative: the kit's first door moved 5 cm along the wall must not match
+                moved = [(da[0][0], da[0][1] + 0.05) + da[0][2:]] + da[1:]
+                neg = bool(door_diff(moved, db)[0])
+            ok = off <= TOL and fa == fb and not ka and not kb
             lines.append('%s %s: box off %.3f m, %d furniture pieces%s, %d doors%s' % ('ok  ' if ok else 'FAIL', tag, off, len(fb),
                          '' if fa == fb else ' (the kit has %d, the town %d)' % (len(fa), len(fb)), len(db),
-                         '' if da == db else ' (the kit has %d, the town %d; first differing: %s)' % (
-                             len(da), len(db), next((str(x) for x in da if x not in db), next((str(x) for x in db if x not in da), '?')))))
+                         '' if not ka and not kb else ' (the kit has %d, the town %d; the kit only: %s; the town only: %s)' % (
+                             len(da), len(db), ka[:2], kb[:2])))
             if not ok:
                 fails.append(tag)
+    lines.append('%s negative (a door 5 cm off its place) : %s' % ('PASS  ' if neg else 'MISSED', 'caught' if neg else 'not caught'))
+    if not neg:
+        fails.append('negative: a door 5 cm off its place')
     return fails, lines
 
 
@@ -320,8 +350,8 @@ async def run(a):
             tf, tl = await town_check(b, ports)
             for ln in tl:
                 print('        ' + ln)
-            name = "each port is its town's building (box within %.2f m in the town's page, the same furniture)" % TOL
-            print(('  PASS  ' if not tf else '  FAIL  ') + name + ' : ' + ('%d port variants' % len(tl) if not tf else '; '.join(tf[:4])))
+            name = "each port is its town's building (box within %.2f m in the town's page, the same furniture, the same doors)" % TOL
+            print(('  PASS  ' if not tf else '  FAIL  ') + name + ' : ' + ('%d port variants' % (len(tl) - 1) if not tf else '; '.join(tf[:4])))
             if tf:
                 fails.append(name)
     return V.exit()

@@ -94,7 +94,7 @@ function brtOpenings(parts, frame, clip){
 /* a door record in the frame's local space (the page's KDOOR takes it at each copy's place: src/60-br-ports.js host) */
 function brtDoorLocal(D, frame){
   function L(p){ var l = KPORT.toLocal(frame, p[0], p[2]); return [+l[0].toFixed(4), +(p[1] - (frame.y||0)).toFixed(4), +l[1].toFixed(4)]; }
-  return { id: D.id, at: L(D.at), hinge: L(D.hinge), p0: L(D.p0), yaw: +KPORT.wrap(D.yaw - (frame.ry||0)).toFixed(5), sign: D.sign,
+  return { id: D.id, key: D.key, at: L(D.at), hinge: L(D.hinge), p0: L(D.p0), yaw: +KPORT.wrap(D.yaw - (frame.ry||0)).toFixed(5), sign: D.sign,
     w: D.w, h: D.h, t: D.t, locked: !!D.locked, open: D.open, kind: D.kind, s: D.s ? D.s.slice() : null, leaf: !!D.fam, fam: D.fam || null };
 }
 /* the panes as two merged meshes in the local frame, as 81-glow.js draws them: KGLASS 'clear' in a cut opening (W[11]) or
@@ -213,7 +213,7 @@ function BRT_API(){
         var r = brtGroup(v), def = { kind: v.parts[0].kind, id: v.parts[0].id, frame: r.frame, clip: v.clip || null };
         vs.push({ name: v.name, group: r.group, def: def, parts: v.parts, doors: r.doors, panes: r.panes,
           box: T.box(def), furn: v.parts.reduce(function(a, p){ return a.concat(T.furn({ kind: p.kind, id: p.id, frame: r.frame, clip: v.clip })); }, []) });
-        info.built++; console.log("BRTDBG", BRT_TOWN.name, D.key, v.name, r.doors.length, r.panes.length, (performance.memory||{}).usedJSHeapSize);
+        info.built++;
       });
       out[D.key] = vs;
     });

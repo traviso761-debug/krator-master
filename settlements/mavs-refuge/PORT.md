@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 62 (8%) | 0 (0%) | 16 (2%) | 331 (45%) | 332 (45%) |
+| KB | 62 (8%) | 0 (0%) | 16 (2%) | 331 (45%) | 331 (45%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -24,8 +24,8 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/50-structure.js` | 17.9 | [draw] | 0 | 0 | 0 | 0 | 0 | 16 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/53-furnish.js` | 9.5 | [draw] | 1 | 1 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | the draw adapter onto core/furnish (2026-10-05): the placement pass is core/furnish/50-core-furnish.js. Kept here: the seed rule (a hash of the spot), BRF_SHIFT (handed to core as its recentring table), brfIn/brfDone and the FRM frame, o.lamp lights, the Lambert tint per family at the flush; 2026-10-15: brfVetoed, the owner's edits log (KHOST_EDITS) vetoes a moved or removed piece at draw |
 | `src/54-openings.js` | 7.1 | [draw] | 3 | 0 | 0 | 0 | 0 | 6 | 0 | 1 | 0 | 0 | 0 | the doors and glass on core/door (Girder's fork): goLeaf registers a KDOOR record (stable id; the leaf an instance of its bucket), goSectorWins, goDoorAt. Records export through KDOOR.export() |
-| `src/55-arch.js` | 65.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 21 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/56-levels.js` | 72.8 | [draw] | 0 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/55-arch.js` | 65.2 | [draw] | 0 | 0 | 0 | 0 | 0 | 20 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/56-levels.js` | 72.2 | [draw] | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/57a-interiors.js` | 30.1 | [web] | 0 | 0 | 0 | 0 | 9 | 0 | 0 | 0 | 0 | 1 | 0 | the interiors’ data: units, plans, piece records, the bake’s adoption, the edits overlay, the slots the simulation reads; no THREE (performance.now and TICKS only); 2026-10-15: mixTag registers each piece in core/tags as its unit's record is made; piecesNow leaves out a piece the edits log moves or removes |
 | `src/57c-interiors-draw.js` | 26.6 | [web] | 18 | 1 | 0 | 0 | 10 | 12 | 0 | 0 | 0 | 2 | 0 | the interiors near the camera: geometry from 57a’s records, the light pool, the edits’ browser storage |
 | `src/60-trees.js` | 40.4 | [web] | 35 | 2 | 0 | 0 | 2 | 8 | 8 | 5 | 0 | 0 | 0 |  |
