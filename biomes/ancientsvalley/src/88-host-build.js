@@ -25,11 +25,14 @@ window._swlow=null;window._nwlow=null;
      under the cut, inset 3 m; a top under 3 m across takes no tree */
   let PR;try{PR=avProfile(t.key);}catch(e){return;}cut=Math.min(cut,PR.top);const b=PR.at(cut-1);if(!b)return;const round=F.footprint&&F.footprint.r!=null;
   const ex=round?[-b.r+3,b.r-3,-b.r+3,b.r-3]:[b.x0+3,b.x1-3,b.z0+3,b.z1-3];const hw=(ex[1]-ex[0])/2,hd=(ex[3]-ex[2])/2;if(hw<1.5||hd<1.5)return;const r=round?b.r-3:Math.min(hw,hd),area=round?Math.PI*r*r:4*hw*hd;
-  TOPS.push({t,cut,r:Math.max(4,Math.max(hw,hd)),ex,round,q:avQuat(t),n:Math.max(2,Math.min(7,Math.round(area/180))),got:0});});
+  TOPS.push({t,cut,r:Math.max(4,Math.max(hw,hd)),ex,round,q:avQuat(t),n:Math.max(2,Math.min(7,Math.round(area/180))),got:0,prof:PR});});
  const TOPIX=KSPACE.create({cell:200});TOPS.forEach(P=>TOPIX.insert(P,P.t.x,P.t.z,P.r));const tq=[];
  const perch=AVQ_ON('perch')?(T,h)=>{tq.length=0;TOPIX.query(T.x,T.z,160,tq);const out=[];for(const P of tq){if(P.got>=P.n||Math.hypot(P.t.x-T.x,P.t.z-T.z)>160)continue;
-   while(P.got<P.n&&out.length<2){const h1=KRAND.hash(STAGE.seed+53,P.t.id|0,P.got,0),a=KRAND.unit(h1)*TAU,u=KRAND.unit(KRAND.hash(h1,1,0,0)),ex=P.ex;let lx,lz;
+   while(P.got<P.n&&out.length<2&&(P.tries|0)<P.n*6){P.tries=(P.tries|0)+1;const h1=KRAND.hash(STAGE.seed+53,P.t.id|0,P.tries,0),a=KRAND.unit(h1)*TAU,u=KRAND.unit(KRAND.hash(h1,1,0,0)),ex=P.ex;let lx,lz;
     if(P.round){const rr=Math.sqrt(u)*(ex[1]-ex[0])/2;lx=Math.cos(a)*rr;lz=Math.sin(a)*rr;}else{lx=ex[0]+u*(ex[1]-ex[0]);lz=ex[2]+KRAND.unit(KRAND.hash(h1,4,0,0))*(ex[3]-ex[2]);}
+    /* a tree stands only on a roof: an upward face of the drawn ruin near the cut (70, avProfile's onRoof; Gemini's review, 8c: a courtyard or an arch's
+       span inside the band's box took trees in the air) */
+    if(P.prof&&!P.prof.onRoof(P.cut,lx,lz))continue;
     const W=new THREE.Vector3(lx,P.cut+.2,lz).applyQuaternion(P.q);   /* the top in the tower's frame, turned by its yaw and lean */
     if(!P.got)REGISTER({name:"trees on a ruin's top",kind:'rooftree',x:P.t.x,z:P.t.z,y:P.t.y+P.cut,r:P.r+3,h:28,tags:{kind:'rooftree',family:P.t.family,state:P.t.state}});   /* one volume a top: the probe samples instanced cards sparsely, so a tree's own would read empty */
     out.push({x:P.t.x+W.x,y:P.t.y+W.y,z:P.t.z+W.z,yaw:KRAND.unit(KRAND.hash(h1,2,0,0))*TAU,k:Math.min(.35+.2*KRAND.unit(KRAND.hash(h1,3,0,0)),h>0?25/h:1)});P.got++;}   /* a roof tree a third to a half of its source, under 25 m */

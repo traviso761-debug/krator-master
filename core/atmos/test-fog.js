@@ -193,6 +193,8 @@ const rampW=(x,z)=>3000+.4*x,rampL=(x,z)=>3000-.4*x;
 const rw=(x,z)=>1000+.4*x,rl=(x,z)=>1000-.4*x;
 {const R=A.rainWallMake({y0:1700,y1:2600,windward:[-1,0]});
  ok('the rain wall rains on the windward face in its band, little in the lee',A.rainWallAt(R,2500,0,rw)>.95&&near(A.rainWallAt(R,-2500,0,rl),R.lee,1e-9),A.rainWallAt(R,2500,0,rw)<=A.rainWallAt(R,-2500,0,rl));
+ {const Rf=A.rainWallMake({field:(x,z)=>x>0?1.4:x>-100?.5:-1,rain:.8});   /* a host's own field (the Ancient's Valley's oily rain, 2026-11-09): clamped, times rain, the orographic formula unused */
+  ok('a host field replaces the orographic formula, clamped to 0..1 and scaled by rain',near(A.rainWallAt(Rf,500,0,rw),.8,1e-9)&&near(A.rainWallAt(Rf,-50,0,rw),.4,1e-9)&&A.rainWallAt(Rf,-500,0,rw)===0,A.rainWallAt(A.rainWallMake({rain:.8}),500,0,rw)===.8);}
  ok('...and none below its band or above it',A.rainWallAt(R,0,0,rw)===0&&A.rainWallAt(R,7000,0,rw)===0,A.rainWallAt(R,2500,0,rw)===0);
  Object.assign(R,{extent:[-1000,-1000,6000,1000],cell:250,min:.2,top:3000,max:700});
  const c1=A.rainWallCells(R,rw,7),c2=A.rainWallCells(R,rw,7),c3=A.rainWallCells(R,rw,8);

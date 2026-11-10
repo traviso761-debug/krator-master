@@ -135,6 +135,14 @@ landing the plan forbids (the lines' corridors, the craters, the start, the lake
 roadway after every try is not built (`PLAN.kerbDropped`). The page checks it (`HCHK.kerb`: three in
 four towers on a kerb, no plinth into a roadway or pavement), the data test too.
 
+**The oily rain** (the owner, 2026-11-09: "a weather mode, oily rain over the polluted portions"; `89x-host-oilrain.js`): the Weather selector
+has an 'oily rain' mode. In it core/atmos's rain wall stands on the valley's foul field instead of a mountain face (`fx/89-atmos-fx-rainwall.js`
+takes `o.field` since this day): dark curtains hang over the polluted half, seen from the wild half as smears under the cloud, and under them
+the weather's own streaks fall, the ground wets and the fog greys, only while the eye stands in them. The streaks are the colour of oil, a
+near-black brown with a slow thin-film sheen, through core/atmos's acid rain (`fx/89-atmos-fx-acid.js`), which also provides the toxic dose to
+core/hazard (pH 2.5 under the polluted half in this mode, clean everywhere and in every other mode). Nothing is etched and no rain-cover map is
+rendered: one draw call of curtains (the heap is near Chrome's limit).
+
 **Numbers (2026-11-09, `verify.py --assert --all-views` on the Arc 140T lane, 1280 x 800, with the transit):** 824 junctions, the highway 222 spans
 and 3 ramps, the cargo line 37 crossings, the subway 3 stations, 4 trains; the war at mean damage 0.57 on 59 lakeward streets against 0.31 on 5 inland;
 129 ruins' tops with trees, 2,345 curtains, 6 keepers on their rounds; 12.5 M triangles in the registry (budget 20 M), the trees 7.3 M of their 8 M.

@@ -23,8 +23,9 @@ const AV_CREEPERS=(function(){const lib=n=>(typeof KMAT!=='undefined'&&KMAT.mode
   for(let i=0;i<n;i++){const h=KRAND.hash(STAGE.seed+67,t.id|0,i,0),u1=KRAND.unit(h),u2=KRAND.unit(KRAND.hash(h,1,0,0)),u3=KRAND.unit(KRAND.hash(h,2,0,0)),u4=KRAND.unit(KRAND.hash(h,3,0,0)),u5=KRAND.unit(KRAND.hash(h,4,0,0));
    /* hung from a height on the face (the top itself a third of the time), down a length the feral field allows; the face is the profile's band there */
    const h0=u3<.34?top-.5:top*(.25+.7*u3),len=Math.min(h0-1,6+(10+14*fe)*u4),wd=3.2+4.5*u5;if(len<4)continue;const b=PR.at(h0);if(!b)continue;
-   let lx,lz,ang;if(round){ang=u1*TAU;lx=Math.cos(ang)*(b.r+.35);lz=Math.sin(ang)*(b.r+.35);}
-   else{const f=Math.floor(u1*4),s=u2;if(f===0){lx=b.x1+.35;lz=b.z0+s*(b.z1-b.z0);ang=0;}else if(f===1){lx=b.x0-.35;lz=b.z0+s*(b.z1-b.z0);ang=Math.PI;}else if(f===2){lx=b.x0+s*(b.x1-b.x0);lz=b.z1+.35;ang=Math.PI/2;}else{lx=b.x0+s*(b.x1-b.x0);lz=b.z0-.35;ang=-Math.PI/2;}}
+   /* a direction round the tower (its frame), the curtain on the wall that direction at that height: the band's outermost radius that way (70, avProfile's
+      rAt; Gemini's review, 8c). No wall that way there (a courtyard's side, the Crescent's chord, the Pods' gap, under the Yoke's arch): no curtain */
+   const ang=u1*TAU,r=PR.rAt(h0,ang);if(!(r>2))continue;const lx=Math.cos(ang)*(r+.35),lz=Math.sin(ang)*(r+.35);
    /* in the tower's frame, then turned with it (yaw and lean) */
    Pv.set(lx,h0,lz).applyQuaternion(Qt);const x=t.x+Pv.x,y=t.y+Pv.y,z=t.z+Pv.z,yawC=ang+(t.yaw||0)+Math.PI/2;
    Pv.set(x,y,z);Q.setFromAxisAngle(Y,yawC);Sv.set(wd,len,wd);M.compose(Pv,Q,Sv);const kind=u2<.3?1:0;
