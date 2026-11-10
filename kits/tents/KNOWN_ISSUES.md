@@ -5,7 +5,7 @@ Open (the build prints each `- [ ]` line):
 - [ ] The tent toolkit is read in place from kits/scyvoi (vendored identical in three kits): move it to core (PLAN.md, Next 1)
 - [ ] No half-pitched or packed pose per tent yet (core/camp C2)
 - [ ] Verified on SwiftShader only (the cloud container has no GPU): run verify.py --assert on a GPU lane before the gallery
-- [ ] Two textures owed: the Republican army's proofed canvas and the Eternians' ripstop (PROMPTS-NEEDED.md section 41)
+- [ ] Two textures owed: the Republican army's proofed canvas and the Eternians' ripstop (PROMPTS-NEEDED.md section 42)
 
 Notes (deliberate, not bugs):
 

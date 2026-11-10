@@ -3,7 +3,7 @@
 Every texture or pattern sheet the owner still has to source or generate, each with its finished prompt. Paste a block
 as it is, one image per block. **Everything delivered lives in `PROMPTS-archived.md`** (checked against `core/materials/library/`, `patterns/` and each build's `materials.json` on `origin/main`, 2026-10-19); this file holds only what is still owed.
 
-**Count: 25 prompt blocks** (2026-11-09: +2 for the Tents kit's army and Eternian cloths, section 41; +3 for the southern highlands' upper stations, section 37; +15 for the hyperjungle's lands and the savannah rims, section 40, 2026-11-08; counted 2026-11-04 before them).
+**Count: 36 prompt blocks** (2026-11-09: +11 for Erewhon's citadel, section 41; +2 for the Tents kit's army and Eternian cloths, section 42; +3 for the southern highlands' upper stations, section 37; +15 for the hyperjungle's lands and the savannah rims, section 40, 2026-11-08; counted 2026-11-04 before them).
 
 **Delivered 2026-11-03:** section 31's five (the Gills: `rock.lamina.pipe`, `mineral.crust.ferromanganese`, `mineral.crust.brucite`,
 `card.breathfringe`, `card.turf.limed`) and ten owed on unmerged branches (High Rift, nwbay, nhighlands, ringisles, the rift rim, Copper Glacier),
@@ -490,7 +490,65 @@ Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfec
 Square, 2048x2048. Orthographic view of a single cut-out object centred in the frame, on a solid flat bright magenta (#ff00ff) background that fills everything outside the object, with no shadow cast on the background. Flat, even, shadowless lighting: no highlights, no vignette. No perspective, no text, no border, no watermark. Object: a spray of miombo leaves (Brachystegia spiciformis) seen from above: pinnate leaves of four to seven pairs of oval leaflets on a slender twig, in the copper-red to wine flush of new growth, glossy, a few leaflets turning olive at their bases. Full colour: not tinted.
 ```
 
-## 41. The Tents kit's army and expedition cloths (`kits/tents`, 2026-11-09)
+## 41. Erewhon's citadel: the Pleasure Domes and the Moorish and Mughal palaces (`kits/xanadu`, `settlements/xanadu/citadel`, 2026-11-09)
+
+The owner's references (`settlements/xanadu/citadel/refs/`) and brief: the Pleasure Domes in black and white (the citadel's dome black over white, the Dome of the Bay white over black); the rest of the citadel Moorish and Mughal, psychedelic in its own way. **Reuse, so no prompt:** `metal.gold` (gilt trim, joints, rails), `rock.sandstone.red` (Mughal red sandstone), `plaster.white_stucco_02`, `rock.marble.white` where the marble is plain. The stripes, checkers and chevrons of the domes are geometry, not images.
+
+`stone.marble.black` (the Pleasure Domes' black stone):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: polished black marble (Nero Marquina): a deep, even near-black ground with fine, sharp white and pale grey veins running in long branching lines and a few thin crackle networks, no large patches, a faint satin polish without reflections.
+```
+
+`stone.marble.calacatta` (the domes' white stone (the library's rock.marble.white is plain)):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: polished white marble (Calacatta): a warm white ground with bold grey veins, some edged in pale gold and ochre, broad soft clouds of grey between them, crisp fine veinlets branching off; satin polish without reflections.
+```
+
+`patterns/xanadu/zellige-star` (Moorish courts, fountains and dados (reference: the Moroccan court)):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Moroccan zellige mosaic seen straight on: small hand-cut glazed terracotta pieces set edge to edge in an eight-pointed star and interlace pattern, glazes in cobalt blue, emerald green, saffron orange, white and black, each piece slightly uneven and glossy with tiny chips at its edges, thin pale grout lines; the pattern repeats exactly at the tile's edges.
+```
+
+`patterns/xanadu/haft-rangi` (Isfahan-style tiled vaults and arcades (reference: the blue arcade)):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Persian haft-rangi glazed tiles seen straight on: a deep cobalt-lapis ground covered edge to edge in dense arabesque scrolls of slender tendrils, palmettes, lotus and peony blossoms in saffron yellow, turquoise, white and touches of green, outlined in thin dark lines; the square tile joints faintly visible every 20 cm; glossy glaze with fine crazing.
+```
+
+`patterns/xanadu/mughal-gilt-ceiling` (Mughal painted ceilings and vault panels (reference: Akbar's tomb ceiling)):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a painted and gilded Mughal ceiling panel seen straight on: a dark lapis-navy ground covered in a dense lattice of fine golden scrolling stems with large raised gold-leaf rosettes and leaves, the gold slightly worn to show red bole beneath, with narrow borders of white and terracotta-red floral scroll; matte paint, the gold with a soft sheen.
+```
+
+`stone.stucco.yeseria` (carved stucco on arches, spandrels and friezes (reference: the Moroccan arch)):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: carved Moorish plaster (yeseria) seen straight on: deep-cut interlaced arabesques, palmettes and small geometric star panels in high relief, warm ochre-apricot plaster with darker shadows in the cuts and lighter worn high points, a little dust in the recesses; strong relief readable for a normal map.
+```
+
+`tile.muqarnas.turquoise` (the faces of the muqarnas cells (reference: the turquoise portal)):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: small glazed tiles for muqarnas niches seen straight on: turquoise and cobalt glaze with tiny white, gold and aubergine floral motifs, each tile a pointed-arch or star-and-cross shape set in a repeating grid, glossy with fine crazing, thin white grout lines.
+```
+
+`patterns/xanadu/peacock-band` (painted vault ribs and banded plaster in the private halls (reference: the Peacock Room)):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: painted plaster with tight parallel bands of saturated colour running edge to edge horizontally: repeating sequences of crimson, orange, saffron, green, turquoise, cobalt and violet bands, each 1 to 2 cm, separated by thin black and gold lines, with a row of small black-outlined gold dots every few bands; matte tempera finish with slight brush texture.
+```
+
+`stone.pietra-dura` (inlaid white marble for tombs, fountains, piers and the throne dais (Mughal)):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: white marble inlaid flush with pietra dura: repeating stylised flowering plants and vines in cut semiprecious stones, carnelian red, lapis blue, jade green, onyx black, yellow jasper, each petal a separate polished stone with crisp edges, on a smooth white marble ground; satin polish.
+```
+
+`patterns/xanadu/jali` (pierced marble window screens (keyed card)):
+```
+Square, 2048x2048. Orthographic view of a single cut-out object centred in the frame, on a solid flat bright magenta (#ff00ff) background that fills everything outside the object, with no shadow cast on the background. Flat, even, shadowless lighting: no highlights, no vignette. No perspective, no text, no border, no watermark. Object: a rectangular pierced white marble jali screen seen straight on, 1:1, filling the frame: a dense geometric lattice of interlaced hexagons and six-pointed stars cut right through the stone, so every opening shows the magenta background; the stone's edges crisp, a thin plain border round the screen.
+```
+
+`patterns/xanadu/op-art-arcs` (the Pleasure Domes' private rooms (reference 07 in settlements/xanadu/citadel/refs/pleasure-dome)):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a black and white op-art wall pattern: bundles of parallel white stripes on black interlocking in a basket weave, alternating vertical and horizontal bundles, some bundles turning into concentric half-circles; crisp hand-painted edges, matte, exactly repeating at the edges.
+
+## 42. The Tents kit's army and expedition cloths (`kits/tents`, 2026-11-09)
 
 The kit's eleven dresses are on library sets that exist (`kits/tents/materials.json`). Two covers are stand-ins: the
 Republican army's and the Eternians' tents are drawn in `cloth.canvas.tent` (the generic bleached canvas) tinted by the

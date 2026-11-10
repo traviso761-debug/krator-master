@@ -54,4 +54,4 @@ Not taken, with the reason:
    and the stakes on real slopes.
 4. The other kits' camps onto this one where it fits: the Beast Riders keep their own tent set (`BR_CAMP`); a people with no
    tents of its own (the Republic's army, Xanadu, the Islanders, the post-apoc bands, Eternian expeditions) pitches these.
-5. The textures owed (`core/materials/PROMPTS-NEEDED.md`, section 41).
+5. The textures owed (`core/materials/PROMPTS-NEEDED.md`, section 42).
