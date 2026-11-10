@@ -529,3 +529,14 @@ The plan takes sections 1 to 3 above whole. What to change before acting on it:
   build's geometry hashes, the 66-outfit audit and both verifies, which run on the repo's real page. Fixed:
   `scratch_dist.py` now writes each root's kit entries into the page's `KCHAR_DATA` beside its pieces. The audit is
   re-run on a roles page (every culture) against the repo's final page; its result replaces the above.
+- **The night measured again, on consistent pages (2026-11-10).** The 84 outfits, a roles page (dry-b4 with dry-b6's
+  Yuni and Order, each with its own kit) against the repo's final page: "inside" 874682 to 824007 px (-5.8 %), "under"
+  100477 to 98093 (-2.4 %), skin 167660 to 163640 (-2.4 %), "hole" 76757 to 73959 (-3.6 %); 45 rows better, 30 worse.
+  Better: the Izani watch's "inside" 18908 to 8824, the Beast Rider lancer's 32496 to 22947, the dredger's 13652 to
+  7104, the sibyl's 30408 to 24440, the Yuni sentinel's skin 6068 to 1676, the Order cham's "inside" 20773 to 16820.
+  Worse, all smaller than the gains: the Yusar dronemaster's "inside" 2452 to 6798, the Abyssal trade woman's 5813 to
+  9846, the Xanadu priest man's 22832 to 26632, the Yuni trade woman's 7971 to 11609, the painted warden's 8849 to
+  11971, the heliophant's 9633 to 12266, the commissar's 4159 to 6127, the ordinator's 9178 to 11039. The islander
+  shaman and the Order cham, named as regressions by the flawed run, are not: the shaman does not appear and the
+  cham improved. Several of the worse rows are coats whose collar stands as a ring now (the dronemaster, the
+  commissar, the Yuni trade): the camera sees into the ring, which the audit counts as "inside".
