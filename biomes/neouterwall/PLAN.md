@@ -8,13 +8,21 @@ mostly a very high, airless wall. Its life is in the north-western lowlands and 
 Gemini's sketch (2026-11-02) gave the names, the cauldrons and the four-way geology. This plan keeps those, corrects the
 heights and the air from the model, and adds the people, the hazards, the stations and the core adoption.
 
-**Status (2026-11-10): stations 1-3 are built** on the branch `claude/neouterwall-s1` (a cloud session): station 1, Vitreous Hollow
-(`dist/neouterwall.html`, `python3 build.py`), station 2, the Garnet-Mirror Cauldron (`dist/neouterwall-garnet.html`,
-`python3 build.py --station garnet`: its folder replaces only the station's record, `44r`), and station 3, the Epidote Badlands
-(`dist/neouterwall-badlands.html`, `--station badlands`: its record and its own site functions, `44r` and `44s`). Forked from the W outer wall's station 1 frame
-(itself from `biomes/nwouterwall`), the flora the NW outer wall's read in place plus the cauldrons' own tree fern and reed. Both pages are
-checked with `verify.py --assert --all-views` in software GL only: **the real-GPU verify is owed on the owner's machine**
-(`KNOWN_ISSUES.md`). Section 8 says what they take from core; section 7 what they draw. Stations 4-5 are not built.
+**Status (2026-11-10): every station of section 7 is built** on the branch `claude/neouterwall-s1` (a cloud session), each its own page:
+
+| Station | Command | Page | What its folder replaces |
+|---|---|---|---|
+| 1 Vitreous Hollow | `python3 build.py` | `dist/neouterwall.html` | (the default record and site, `src/44r`, `src/44s`) |
+| 2 Garnet-Mirror Cauldron | `--station garnet` | `dist/neouterwall-garnet.html` | the record (`44r`) |
+| 3 Epidote Badlands | `--station badlands` | `dist/neouterwall-badlands.html` | the record and the site (`44r`, `44s`) |
+| 4 Gate Shoulder | `--station shoulder` | `dist/neouterwall-shoulder.html` | the record and the site |
+| 5 Epidote-Steam Tarn | `--station steam` | `dist/neouterwall-steam.html` | the record (a cauldron with the cave's inner mouth) |
+| 5a The Portal | `--station portal` | `dist/neouterwall-portal.html` | the record and the site (the outside of the portal only) |
+
+Forked from the W outer wall's station 1 frame (itself from `biomes/nwouterwall`), the flora the NW outer wall's read in place plus the
+cauldrons' own tree fern and reed. Every page is checked with `verify.py --assert --all-views` in software GL only: **the real-GPU verify
+is owed on the owner's machine** (`KNOWN_ISSUES.md`). Section 8 says what they take from core; section 7 what each draws. Not built: the
+Epidote Cave's inside as a walked `KCAVERN` page (5a draws its portal, 5 its inner mouth).
 The owner wants a kit here (`HANDOFF-REBUILD.md`: one of the three new-north kits allowed to go ahead). It goes in the
 rebuild's queue after the frozen integration pass. All px below are on the 5.1 canvas (1821 x 1723, 2 km/px).
 
@@ -59,7 +67,8 @@ The numbers were read from the model (`smodel.page`, 2026-11-09, branch `gemini/
 
   "Lowest crest out" is the lowest height a walker must climb to reach Spider Lake or Korona (a flood fill on the model).
   **The Epidote-Steam Tarn is sealed on the model:** airless walls ring it. **The owner opened it (2026-11-09)**: a cave
-  through the wall and a carved approach of small valleys (section 2a). Until the map edit lands, the model still seals it.
+  through the wall and a carved approach of small valleys (section 2a). The map edit has landed (`tools/scale-model/edit_511.py`, 5.1 edit 1: the
+  Portal Valley carved, `tube_epidote_16` recorded with the Portal, the Marble Hall and the Inner Mouth as its caverns).
 - **Water:** no river in `rivers.json` crosses the polygon. The **Web-Cleaver River** (Hām-Tsēk, `id 9102`, 1,092 km,
   380-1,650 m³/s) runs 12 km off its north-west edge, from Spider Lake west to the Ria. The **Outland Gate River** (Hau-Gèl,
   `id 9106`) runs 32 km off its east edge, in the gap. The tarns have no outflow on the model; their streams are kit work.
@@ -256,11 +265,30 @@ camp is a registered flat only: `KCAMP` needs the culture who quarries (section 
 
 **Station 1 comes first:** it is the reachable cauldron (lowest crest out 3,728 m), it holds the kit's signature (a warm
 tarn in a dike box), and its geothermal surfaces are the shared amendment the other plans want. Gemini's "Pseudotachylite
-Mirror-Scarp" over the Web-Cleaver Gorge is folded into station 4: the Web-Cleaver runs outside the polygon. **Station 5
-waits for the map edit** (section 2a) and for the cave pieces below; it comes last, with 5a if the owner wants the cave
-walked as a page.
+Mirror-Scarp" over the Web-Cleaver Gorge is folded into station 4: the Web-Cleaver runs outside the polygon. ~~Station 5
+waits for the map edit~~ (the edit landed: 5.1 edit 1); stations 5 and 5a are built as the outside of the cave (the inner mouth, the
+portal), the cave walked as a page is not.
 
-## 8. Core adoption (written first, as the working rules ask; station 1 as built, 2026-11-10)
+**Station 4 as built (2026-11-10):** px 1430,345, 2,874 m, 1.12 atm, Csa (+18 °C, 643 mm), the shoulder's east flank falling about
+100 m a km into the gap. Two slumps (`KRELIEF.slump`, 38c: five blocks under their head scarps, tilted back, a broken front and a toe)
+on the 1 km model's smooth slope; the head scarps over ~30 degrees are the mirror scarps (zone `scarp`, darkened: the pseudotachylite's
+glaze and texture are owed); 14 landslip pinnacles (KSTACKS spires) on the blocks' fronts; talus at their feet. The NW outer wall's
+steppe on the open ground (`SITE.nwMap`) and thin woods on the shaded slopes; no tree fern or reed (no spring). The gap's floor, the
+long wall at the Narrows and the proposed citadel are `biomes/outlandgate`'s and the owner's: nothing of them is drawn.
+
+**Station 5 as built (2026-11-10):** the Epidote-Steam Tarn's north shore (px 1340,336.6), y = 0 at the water (2,670 m; WH, +11 °C,
+1,929 mm, 1.15 atm). The walls rise 4 km within a kilometre of the water on the 1 km grid (a 75-degree bicubic face). The cauldron's
+landforms with its own record: the apron along the north shore and down the west; the **Inner Mouth** (`tube_epidote_16`'s
+`cav_epidote_inner_mouth`) a `KCARVE` alcove 90 m wide and 30 m high in the wall's foot, its floor ~13 m over the water; the cave's warm,
+sulphurous outlet as the main spring in front of it and its six-tread sinter stair; two lesser springs; seven dike islets out in the water.
+
+**Station 5a as built (2026-11-10):** the head of the Portal Valley (px 1331,301.6), y = 0 at the plan's 5,900 m (0.77 atm; the model
+reads -8 °C: the `ice` zone, EF). The valley is the model's own (edit 1 carved it). The station adds the headwall's cliff
+(`KRELIEF.scarp`, 70 m, across the head), the **Portal** (`cav_epidote_portal`) a `KCARVE` alcove 60 m wide and 22 m high at its foot
+facing down the valley, and seven pilgrims' cairns down the floor (proposed, section 5). The floor's highest point on the page reads
+5,787 m: under the plan's 5.9 km. The ice of the portal is the snow cover (`KGLACIER` not taken), and the cave inside is not drawn.
+
+## 8. Core adoption (written first, as the working rules ask; the stations as built, 2026-11-10)
 
 The table of `README.md` "CORE MODULES ARE NOT OPTIONAL", for this kit. "Taken" is what station 1's page lists in `build.py`; "later" the
 stations that will take it.
@@ -273,12 +301,12 @@ stations that will take it.
 | ground, field | `KFIELD` (30), `KGROUND` (43), `KHORIZON` (45) | taken | the near box baked at 8 m, the sinter stair on a 2 m inset; seven library layers (16 units or fewer: `KGROUND`'s six over the dithered base); the walls' shadows at a low sun |
 | strata | `KSTRATA` (35) and its shader | taken | the `megabreccia` recipe on the steep (the impact rim's host rock). The skarn recipe is amendment 1, owed |
 | dikes | `KSTACKS.row` (37, `kind:'fin'`) | taken | three rows, 22 fins; each fin's foot under the lowest ground round it |
-| relief | `KRELIEF` (38, 38c) | taken (`talus`; `gully` at station 3) | the talus against the fins' feet; station 3's badland gullies. `slump`, `scarp`, `joints` later (station 4) |
+| relief | `KRELIEF` (38, 38c) | taken | `talus` at the fins' and pinnacles' feet; `gully` (station 3's badlands), `slump` (station 4's blocks and mirror scarps), `scarp` (5a's headwall). `joints` not taken |
 | the springs' heat | `KTHERM` (core/terrain 47) | taken | point vents at the springs, line vents down the stair and along the fault's seep; the zones, the ground's colour and the snow mask read the one field |
 | water | `core/water`: `WATER.open`, `WATER.spring` (geyser 52, 52b), `WATER.terraces` (ext 53, 53b), the audit (57), the shore's fields (60) | taken | the tarn without surf or breakers; the five springs; the stair. The reflections switch (58) is not taken (KNOWN_ISSUES.md) |
-| glacier, frost | `KGLACIER` (44g), `KFROST` (42) | later | the rim crest (stations 3, 5a); at station 1 the rim's ice is the far land's snow |
+| glacier, frost | `KGLACIER` (44g), `KFROST` (42) | not taken | the rim's ice is the far land's snow; 5a's portal ice is the snow cover (KNOWN_ISSUES.md) |
 | far land | `KFAR` (44) | not taken | the shared sky's ridges cast from the model (region/far.py) carry the far land, as the NW and W outer walls' |
-| the cave | `KKARST` (`hypogene`), `KCAVERN`, `KSPELEO`, `KCARVE` | later | stations 5 and 5a (section 2a) |
+| the cave | `KCARVE` (36); `KKARST` (`hypogene`), `KCAVERN`, `KSPELEO` | `KCARVE` taken | the inner mouth (5) and the portal (5a) as `KCARVE` alcoves; the cave inside (`KKARST.network` into a `KCAVERN` page) is not built |
 | flora | `core/biome` | taken | the NW outer wall's species, trees, floor and build read in place (`48a`-`48d`), its zones mapped from this kit's (`NEOW.ZONES`' `nw`); the cauldron's own tree fern and reed (`50`). Geyser's, Korona's and swbay's flora are not read at station 1 (section 4: the podocarps are owed) |
 | sky, weather | `core/atmos` | taken | the shared sky at the station's pixel, its weather, height fog and the tarn's mist, the rain cover, snow that lies with the springs' ground bare (`ATMOS.snowBare`) |
 | hazards | `core/hazard` (`KHAZ`) | tags only | the springs registered with a `heat` hazard tag (as highrift's); the page does not load `KHAZ` yet: the gas pools, the breaking crust and the night timing are amendments 3 and 4 |
@@ -289,7 +317,7 @@ stations that will take it.
 | host, export, materials | `core/host`, `core/export`, `core/materials` | taken | `materials.json` and `tools/textures/pack.py` (11 families); the export's `landforms` carries the site's records and the heat field |
 | city, hamlet | `core/city`, `core/hamlet` | no | nobody lives here |
 
-`tools/check_core_use.py` passes on station 1 (2026-11-10).
+`tools/check_core_use.py` passes on every station (2026-11-10).
 
 **Core amendments needed:**
 1. **A skarn recipe for `KSTRATA`** (new): irregular, lensing bands (epidote green, garnet red-brown, magnetite black,

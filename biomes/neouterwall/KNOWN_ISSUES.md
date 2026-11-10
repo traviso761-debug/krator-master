@@ -1,19 +1,30 @@
 # neouterwall — known issues
 
-Station 1, Vitreous Hollow (`dist/neouterwall.html`), station 2, the Garnet-Mirror Cauldron (`dist/neouterwall-garnet.html`), and
-station 3, the Epidote Badlands (`dist/neouterwall-badlands.html`), built 2026-11-10 in a cloud session on the branch `claude/neouterwall-s1`.
+Every station of PLAN.md section 7, built 2026-11-10 in a cloud session on the branch `claude/neouterwall-s1`: 1 Vitreous Hollow
+(`dist/neouterwall.html`), 2 the Garnet-Mirror Cauldron (`-garnet`), 3 the Epidote Badlands (`-badlands`), 4 the Gate Shoulder (`-shoulder`),
+5 the Epidote-Steam Tarn (`-steam`), 5a the Portal (`-portal`).
 
 - [ ] **The real-GPU verify is owed.** The cloud has no GPU: both pages were checked with `verify.py --assert --all-views` in software
       GL (SwiftShader) only. Run it on the owner's machine before the merge (`python3 verify.py dist/neouterwall.html --assert --all-views`
-      and the same for `-garnet.html` and `-badlands.html`, on either lane), and set the impostors' gain (`IMP_GAIN` in `src/89z-host-build.js`, 2.4 as the W outer wall's) against the near
+      and the same for each `dist/neouterwall-<station>.html`, on either lane), and set the impostors' gain (`IMP_GAIN` in `src/89z-host-build.js`, 2.4 as the W outer wall's) against the near
       woods there. The page's frame cost and the tarn's look (its depth colour, the springs' ramps against the ground's sinter) are judged
       on the GPU only.
 - [ ] **The skarn has no texture yet.** Station 2's garnet red is a tint over the stand-in (`SITE.rockTint`). The cauldron's walls are `rock.megabreccia` under KSTRATA's `megabreccia` recipe (the impact
       rim's host rock, which the plan puts under the skarn): honest for the rim, wrong for Korona's aureole. Owed: the texture
       `rock.skarn.banded` (`core/materials/PROMPTS-NEEDED.md`, section 41) and the plan's amendment 1, a skarn recipe for `KSTRATA`
       (lensing bands of epidote, garnet, magnetite and marble; `KSTRATA.vary` is CPU-only, so the shader cannot draw them yet).
-- [ ] **No pseudotachylite mirrors.** The glassy slump faces are station 4's; their texture is owed (`rock.pseudotachylite.mirror`,
-      section 41) and the rock glaze (the plan's amendment 5) with it.
+- [ ] **Station 4's mirror scarps are a stand-in.** The slumps' head scarps are the `scarp` zone, drawn as the wall's rock darkened to
+      near black: no gloss, no slickensides. Owed: the texture (`rock.pseudotachylite.mirror`, PROMPTS-NEEDED.md section 41) and the rock
+      glaze (the plan's amendment 5). The citadel the outlandgate plan proposes on the shoulder is not drawn (that kit's and the owner's).
+- [ ] **The Epidote Cave is drawn from outside only.** Station 5 cuts the Inner Mouth and 5a the Portal (`KCARVE` alcoves, 50 and 35 m
+      deep); the 71 km of passage, the Marble Hall and the hypogene crusts (`KKARST.network({kind:'hypogene'})` into a `KCAVERN` page,
+      `KSPELEO.HYPOGENE`) are not built. The cave's hazards (`KKARST.hazards`) with it.
+- [ ] **Station 5's walls are a 1 km bicubic face.** The tarn's ring rises ~4 km within one cell of the water: on the page a smooth
+      75-degree face over the apron, not the stepped skarn cliffs; the Inner Mouth is cut in its foot. The tube's px (1340,336) is a
+      2 km pixel; the mouth stands at the wall's foot nearest it.
+- [ ] **Station 5a's ice is the snow cover.** The portal's ice (the tube record's "under the portal's ice") is not a `KGLACIER` body;
+      the headwall is a 70 m `KRELIEF.scarp` on the model's 25-degree head. The model's climate here reads -8 °C and class Dfb (the
+      plan says EF): the page takes the -8 °C (the `ice` zone: the warmest month under 0 °C).
 - [ ] **The podocarps are not drawn.** The plan's cauldron forest is "tree ferns and podocarps". The tree fern is the kit's own (50);
       the conifers are the NW outer wall's larch and stone pine, read in place, at both stations. A podocarp (Podocarpus totara,
       Phyllocladus) wants swbay's conifer builder or a species of this kit's own; station 2 (Garnet-Mirror, the wettest) was built
@@ -36,7 +47,7 @@ station 3, the Epidote Badlands (`dist/neouterwall-badlands.html`), built 2026-1
       tent program, and who quarries the skarn is the owner's question, PLAN.md section 9); the magnetite outcrops are rock bodies
       (`KSTACKS.cluster`), not `kits/resources` ore nodes with a grade. The skarn's bands are one tint, not the lensing epidote, garnet,
       magnetite and marble the badlands are named for (the texture and the KSTRATA recipe, above). The gullies are dry (no snowmelt brook).
-- [ ] **No fauna, no camps, no ore nodes** at stations 1-2 (PLAN.md sections 4-5: the ibex on the dikes, the raptors on the thermals,
+- [ ] **No fauna, no camps, no ore nodes** at the cauldrons (PLAN.md sections 4-5: the ibex on the dikes, the raptors on the thermals,
       the prospectors' camps and the skarn's nodes are stations 2-3's).
 - [ ] **The plan's open questions are still open.** Station 1 settles none of section 9's (the cave's length and keeper, the crest's
       fumaroles, the air curve, the polygon's overlaps, who quarries the skarn, the Hum names): they are the owner's.

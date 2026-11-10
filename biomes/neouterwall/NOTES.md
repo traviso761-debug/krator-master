@@ -41,3 +41,13 @@ degrees east of the W outer wall's, toward the sub-giant point) the giant eclips
 KTHERM field, no snow mask, no water records), and `99` picks its checks by the station's kind. Two frame changes it needed, harmless at
 the cauldrons: `38c` (the landform kinds) is on every page, and `groundW`'s tree line is `NEOW.BANDS.treeline` (station 3 takes Köppen's
 10 °C: ET is treeless), the gully walls bare. Station 3 also opens at noon (the eclipse, as at the cauldrons).
+
+**Stations 4-5a have their own cut** (`region/data-east`, `region/horizon-east.json`: px 1078-1600 x 168-516), written by
+`NEOW_DATA=data-east python3 region/far.py`: re-cutting `region/data` wider would have moved stations 1-3's bytes (their `places` lists
+change with the box). The map edit 5.1 edit 1 (`tools/scale-model/edit_511.py`) had already carved the Portal Valley and recorded
+`tube_epidote_16` when station 5 was built: the plan's "waits for the map edit" was stale.
+
+**Kinds.** `SITE.kind` is `cauldron` (1, 2, 5), `badlands` (3), `scarp` (4) or `portal` (5a); `99` picks its checks by it. Cave mouths are
+`SITE_MOUTHS` (any site may give them; `47` cuts them with `KCARVE` and meshes their hoods on the ground's material, the W outer wall's
+cave-house code). The tree fern and the reeds grow only where there are springs (`NEOW.THERM`); a wall's face (grade over .95) is a
+`field` to the NW outer wall's tree passes, so none roots there.
