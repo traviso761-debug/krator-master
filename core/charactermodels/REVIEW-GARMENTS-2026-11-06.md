@@ -519,3 +519,13 @@ The plan takes sections 1 to 3 above whole. What to change before acting on it:
   regression: the strip put his mantle on the core's tube), the Chichani ordinator's "inside" 4093 to 11039, the
   chosen's 16829 to 20684, the Xanadu priest man's 22832 to 26632, the Order cham's "under" 0 to 2344 (a band drawn in
   under its robe).
+- **That comparison is withdrawn: the scratch pages lied (2026-11-10, found chasing the regressions).** A scratch
+  page took a dry root's GLBs but kept the kit the repo's page embedded (`KCHAR_DATA`: hide masks, cloth chains,
+  anchor vertices), and the first version hard-linked the page itself, so it followed every later rebuild. The
+  "before" side of the 84-outfit audit therefore drew old pieces with the final kit: on the shaman's mantle the
+  chains' anchors indexed a mesh of 2861 vertices with a kit made for 3302. The numbers above (-11 %, -12 %, the five
+  regressions) are not evidence either way. The same holds, more mildly, for the night's before/after sheets:
+  their geometry is each build's own, their hide masks and chains the repo's of the moment. Not affected: the dry
+  build's geometry hashes, the 66-outfit audit and both verifies, which run on the repo's real page. Fixed:
+  `scratch_dist.py` now writes each root's kit entries into the page's `KCHAR_DATA` beside its pieces. The audit is
+  re-run on a roles page (every culture) against the repo's final page; its result replaces the above.
