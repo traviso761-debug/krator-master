@@ -46,6 +46,9 @@
       had already taken it to 271.5k (verify reports OVER: a warning, not a failure); with its rooms it is 276k (the
       interior doors are plain leaves, the stairwells' rails parapets, only the vestibule gallery's rail a balustrade), and
       the sheet 2.97M of 3M. The lower-poly upper columns are the next saving.
+      **Measured 2026-11-09** (`verify.py --assert`, SwiftShader, ends `OK`): the palace 278,068 (`OVER`, the warning), the
+      sheet 2,993,058 of 3,000,000 (`showcase-triangle-budget` passes with 7k to spare): the next type added to the sheet
+      needs that saving first.
 - [ ] The palace's outside stair is one straight flight of 22 steps (0.30 m risers, as Pylon's): the blueprint's three
       runs of at most 16 steps with landings (`SKILL.md` 5j) do not fit its 10 m footprint as a straight flight.
 - [x] **The palace's rooms (2026-11-09).** The blueprint's sheets G and U are 49 explicit rooms in `kits/interiors/sets/talia.js`
