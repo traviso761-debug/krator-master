@@ -50,7 +50,13 @@ function edgeCheck(){if(typeof WATER_F==='undefined')return{ok:true,detail:'no w
  for(const T of NSEMIARID.TREES){if(T.sp==null)continue;P.push({x:T.x,z:T.z,r:Math.min(T.rb==null?.4:T.rb,.6),name:NSEMIARID.SPECIES[T.sp].key});if(P.length>8000)break;}
  const bad=BIO.envCheck(ENV,[[0,0],[BED.x+400,BED.z+900],[POOL.x,POOL.z+80],[xS(1200)+40,1200]]),F=WATER.edgeAudit({field:WATER_F,plants:P,wet:WET_SHORE,band:4,clear:0}),N={};F.forEach(f=>{N[f.rule]=(N[f.rule]||0)+1;});
  return{ok:!bad.length&&(N['plant-in-water']||0)<=EDGE_OWED.plant&&(N['wet-short']||0)<=EDGE_OWED.wet,detail:(bad.length?'env: '+JSON.stringify(bad).slice(0,200)+'; ':'')+P.length+' trees, '+JSON.stringify(N)+' (owed '+JSON.stringify(EDGE_OWED)+')'};}
+// THE POND BLADDERWORT (EXCHANGES.md, korona -> nsemiarid): every mat floating on a fresh water's surface (within 0.1 m of it), none in the salt
+// lake; lift: the mats raised (the negative)
+function bladderCheck(lift){const B=inst(/^biome:bladder$/).map(p=>[p[0],p[1]+(lift||0),p[2]]);let salt=0,off=0;
+ for(const p of B){const w=waterH(p[0],p[2]);if(w<-1e8||Math.abs(p[1]-w)>.1)off++;else if(LAKE_W.contains(p[0],p[2]))salt++;}
+ return{ok:B.length>=20&&!off&&!salt,detail:B.length+' mats: '+off+' off a surface, '+salt+' in the salt lake'};}
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P=inst(),T=NSEMIARID.TREES;
+ add('the pond bladderwort under fresh water only (Korona\'s cousin)',bladderCheck());
  add('the flora and the wet band read the shore of the water (BIO.envCheck, WATER.edgeAudit)',edgeCheck());
  add('every species placed',HCHK.placed(NSEMIARID.COUNTS||[]));
  add('every species tagged with its Koppen classes',HCHK.tagged(NSEMIARID.SPECIES));
@@ -74,6 +80,7 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P
  add('the furlers shut with the gusts (core/atmos)',HCHK.furlers(furlerMeshes(),(window._biome&&window._biome.under&&window._biome.under.furlersShut)||0));
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),P=inst(),T=NSEMIARID.TREES;
+ add('the bladderwort lifted 1 m out of its water',bladderCheck(1));
  const C=(NSEMIARID.COUNTS||[]).slice();C[SPI('lantern')]=0;add('a species never placed',HCHK.placed(C));
  add('a species with no Koppen classes',HCHK.tagged(NSEMIARID.SPECIES.map((S,i)=>i===3?Object.assign({},S,{tags:Object.assign({},S.tags,{koppen:[]})}):S)));
  add('a species tagged outside the region',HCHK.tagged([Object.assign({},NSEMIARID.SPECIES[0],{tags:Object.assign({},NSEMIARID.SPECIES[0].tags,{koppen:['EF']})})]));

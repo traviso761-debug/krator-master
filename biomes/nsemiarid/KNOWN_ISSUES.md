@@ -12,6 +12,25 @@ Read before changing anything here. `build.py` prints the open count.
   `verify.py --assert` on SwiftShader OK, 65 pass, before and after. The pages that read the species fragment (scablands' coulee,
   dambasins' graveyard, east and port) were rebuilt with it on 2026-11-09.
 
+- [ ] **Station 2, the high country: the owner's eye and decisions** (2026-11-09; `PLAN-STATIONS.md`, "Station 2, as built"). Not judged by the
+      owner: the site (5.1 px 848,564), sandstone for the plan's granite (the geology bake: sedimentary), the park's pale golden ground and its
+      thin floor from afar, the kin's sizes (x.42-.7 of nhighlands'), the far ridges. **Not taken, the owner's to decide** (as nhighlands' station
+      2 left them): `KFIRE`, seasons, `ATMOS.snowCover` with `lee` (the snowbeds are a field and a ground layer), KSTRATA on the faces. The
+      wind-shaped facing check is off on this page (`HCHK.facing` wants 20 in view; the bench grows a few frills and trumpets).
+- [ ] **`buckthorn` to Korona is owed** (`EXCHANGES.md`, nsemiarid -> korona: "the east lobe's lake shore on Korona's side, about 830 m"). No
+      Korona station stands on that shore (the basin's lake is the Tiers' lake inside Korona, the trenches' a salt lake); it goes with the first
+      station there (the dam basins' planned station 3, the east bed inside Korona, is the nearest). This kit's `buckthorn` item and `60`'s
+      `buckthorn()` are ready to read in place.
+- [x] **`bladderpool` from Korona** (closed 2026-11-09): taken as the plan's cousin, the **pond bladderwort** (`50`: the `bladder` item and
+      `NSEMIARID.PLANTS.bladderwort`, `tags.kin` `korona.bladderpool`, danger 0; `60`: the floor's last pass), mats on still fresh warm water:
+      station 1's spring pool (46; the salt lake none, the stream none), the scablands' plunge lake, potholes and the high line's rain pond; not
+      the high country's tarns (cold). Station 1 checks it (`99`: on a fresh surface, none in the salt lake; its negative lifts them). Defined
+      after every item and placed last, its texture drawn from KRAND, so nothing else moved.
+- [x] **nhighlands' station families were not in its pack** (seen and closed 2026-11-09): its `materials.json` named `ground.needles`,
+      `ground.goldgrass`, `ground.slab`, `ground.chaparral`, `ground.fell`, `ground.scree`, `ground.snowbed`, `ground.lush`, but its
+      `tex/pack.json` had none (its stations 2-4 were built in a cloud turn with no library images). Re-packed (`pack.py biomes/nhighlands`, every
+      older file the same bytes) and its montane, foothills and alpine pages rebuilt and GPU-verified; station 1 and the bogs unchanged.
+
 - [ ] **The final rebuild's look, for the owner's eye** (2026-11-03, pair 9; `PLAN.md` section 11). Not judged by the owner: the ground on
       KGROUND (now Standard, the eight layers hex-tiled, the desert's pavement and the bed's mud polygons as KGROUND kinds: `?kground=0` the old
       floor), the far trees as impostors (gain 2.4, `?diet=0`, `?impgain=`), the basin past the map (`?far=0`), the height fog (`?hfog=0`), the

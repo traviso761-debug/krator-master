@@ -32,8 +32,35 @@ CORE = {'41-core-scour.js': os.path.join(ROOT, 'core', 'terrain', '41-core-scour
         '39e-core-cavern-draw.js': os.path.join(ROOT, 'core', 'terrain', 'host', '39e-core-cavern-draw.js'),
         '39g-core-geode-draw.js': os.path.join(ROOT, 'core', 'terrain', 'host', '39g-core-geode-draw.js')}
 
+# THE STATIONS (PLAN.md section 3): `python3 build.py --station <name>` builds dist/<name>.html from this overlay's src/ with stations/<name>/'s
+# numbered fragments over it (a name in both is the station's: its 45b its stage, its 99 its views and checks). Its station.json: "drop" (src/'s
+# fragments it leaves out: the coulee's pools and geodes), "core" ({name: path from the repo root}: in place of the coulee's CORE), "families" (this
+# overlay's pack families that go into that station's page only) and "skip" (the overlay's families it leaves out: the coulee's own). Station 1,
+# the coulee, is the overlay with no --station
+import json as _json
+def station_json(name):
+    p = os.path.join(HERE, 'stations', name, 'station.json')
+    if not os.path.isfile(p): return {}
+    with open(p, encoding='utf-8') as fh: return _json.load(fh)
+def station_families():
+    out = set(); d = os.path.join(HERE, 'stations')
+    if os.path.isdir(d):
+        for s in sorted(os.listdir(d)): out.update(station_json(s).get('families', []))
+    return out
+
 if __name__ == '__main__':
-    sys.exit(ns.build('coulee.html', overlay={'src': os.path.join(HERE, 'src'), 'core': CORE,
+    _a = sys.argv[1:]; _st = _a[_a.index('--station') + 1] if '--station' in _a and _a.index('--station') + 1 < len(_a) else None
+    if not _st:
+        sys.exit(ns.build('coulee.html', overlay={'src': os.path.join(HERE, 'src'), 'core': CORE,
+                                                  'dist': os.path.join(HERE, 'dist'), 'here': HERE,
+                                                  'tex': os.path.join(HERE, 'tex'), 'pack': 'scablands', 'packExclude': station_families(),
+                                                  'title': 'Krator biome — the scablands: a coulee and its dry falls'}))   # its own pack: materials.json
+    _sd = os.path.join(HERE, 'stations', _st)
+    if not os.path.isdir(_sd): sys.exit('build.py: no station ' + _st + ' (stations/' + _st + '/)')
+    SJ = station_json(_st)
+    sys.exit(ns.build(_st + '.html', overlay={'src': os.path.join(HERE, 'src'), 'srcs': [_sd], 'drop': SJ.get('drop', []),
+                                              'core': {f: os.path.normpath(os.path.join(ROOT, p)) for f, p in SJ.get('core', {}).items()},
                                               'dist': os.path.join(HERE, 'dist'), 'here': HERE,
                                               'tex': os.path.join(HERE, 'tex'), 'pack': 'scablands',
-                                              'title': 'Krator biome — the scablands: a coulee and its dry falls'}))   # its own pack: materials.json
+                                              'packExclude': (station_families() - set(SJ.get('families', []))) | set(SJ.get('skip', [])),
+                                              'title': SJ.get('title')}))

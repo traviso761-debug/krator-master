@@ -1,0 +1,55 @@
+{
+ "note": "Station 2, the high country (Dsb, Dfb, Csb, BSk; PLAN-STATIONS.md): the dry-summer montane at scale model 5.1 px 848,564 (~3.7 km, sedimentary). Its own stage (45b), sky (89), take (99), passes and floor (56) and trees (87k); nhighlands' station 2 trees as kin, ebadlands' juniper, pinyon, aspen, Gambel oak and bristlecone read in place.",
+ "title": "Krator biome — the northern semiarid country: the high country (station 2)",
+ "core": {
+  "31b-core-leafset.js": "core/biome/31b-core-leafset.js",
+  "32-core-variants.js": "core/biome/32-core-variants.js",
+  "33-core-fungoid.js": "core/biome/33-core-fungoid.js",
+  "38-core-relief.js": "core/terrain/38-core-relief.js"
+ },
+ "families": [
+  "ground.needles",
+  "ground.slab",
+  "ground.snowbed",
+  "ground.scree",
+  "ground.chaparral"
+ ],
+ "kin": {
+  "ebadlands": [
+   [
+    "src/50-biome-ebadlands-species.js",
+    "src/55-biome-ebadlands-trees.js"
+   ],
+   "EBADLANDS",
+   [
+    "leaf.needle",
+    "leaf.scale",
+    "leaf.round",
+    "leaf.lobed",
+    "bark.juniper",
+    "bark.ponderosa",
+    "bark.aspen",
+    "bark.spruce",
+    "wood.silver"
+   ]
+  ],
+  "nhighlands": [
+   [
+    "src/50-biome-nhighlands-species.js",
+    "src/55-biome-nhighlands-trees.js"
+   ],
+   "NHL",
+   [
+    "needle",
+    "maple",
+    "nbark0",
+    "nbark1",
+    "nbark4",
+    "nbark7",
+    "nwood",
+    "beard",
+    "moss"
+   ]
+  ]
+ }
+}

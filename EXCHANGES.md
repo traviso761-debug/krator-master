@@ -609,6 +609,13 @@ at about 6.1 km.
 | nsemiarid→korona | `buckthorn` | Sea buckthorn | birds (berries) | read in place | the east lobe's lake shore on Korona's side (about 830 m) | a temperate, semiarid, salt-tolerant shore shrub; the same shore runs on both sides |
 | korona→nsemiarid | `bladderpool` | Sucking pool | birds (fragments on their feet) | cousin: a small pond bladderwort bed, danger 0, with no sucking | fresh pools and reed margins on nsemiarid's lake shore | bladderworts grow in steppe pools on Earth; Korona's version is scaled down for richer ground |
 
+**Status (2026-11-09):** `bladderpool` **taken** (korona→nsemiarid): the cousin as the row says, the **pond bladderwort**
+(`biomes/nsemiarid/src/50`: item `bladder`, `NSEMIARID.PLANTS.bladderwort` with `tags.kin: 'korona.bladderpool'`, danger 0, no sucking; `60`'s last
+pass), mats on still, fresh, warm water: station 1's spring pool (not its salt lake, not the stream), and the overlays' fresh water (the coulee's plunge
+lake and potholes, the high line's rain pond); not the high country's cold tarns. `buckthorn` (nsemiarid→korona) **owed**: no Korona station stands on
+the east lobe's lake shore yet (the basin's lake is the Tiers' lake, the trenches' a salt lake); nsemiarid's `buckthorn` item and `60`'s `buckthorn()`
+are ready to read in place there. `biomes/nsemiarid/KNOWN_ISSUES.md`.
+
 ### korona ↔ nwouterwall
 
 **Existing exchanges: none either way.** nwouterwall names Korona only for method (stations, dithering, the mask form:

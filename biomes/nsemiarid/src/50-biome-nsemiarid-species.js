@@ -669,4 +669,18 @@ BIO.def('rod',G.rod(),M.solid,{label:'Stems'});
 BIO.def('boulder',new T3.IcosahedronGeometry(1,1),M.rock,{label:'Boulders'});
 BIO.def('stone',new T3.IcosahedronGeometry(1,0),M.rock,{label:'Stones'});
 BIO.def('fruit',new T3.IcosahedronGeometry(1,1),M.solid,{label:'Fruit (apples, apricots, pears, walnuts, pomegranates, nuts)'});
+// THE POND BLADDERWORT (2026-11-09; EXCHANGES.md korona -> nsemiarid, `bladderpool`, taken as a cousin): Korona's sucking pool scaled down to a
+// fresh pool's bladderwort bed, danger 0, nothing sucked down: a mat of fine green threads set with bladders floating just under the surface of fresh
+// water, small yellow flowers on stalks above it (the floor's last pass, 60). Defined after every other item and drawn with no draw from the kit's
+// stream (its texture's marks are KRAND hashes), so no item's index and no other plant's look moves
+TX.bladder=BIO.alphaTex(256,(g,S)=>{const u=(i,k)=>KRAND.unit(KRAND.hash(6113,i,k));g.lineCap='round';
+ for(let i=0;i<70;i++){const a=u(i,1)*TAU,d=S*.42*Math.sqrt(u(i,2)),x=S/2+Math.cos(a)*d,y=S/2+Math.sin(a)*d,b=u(i,3)*TAU,L=S*(.06+.12*u(i,4));
+  g.strokeStyle='rgb('+Math.round(110+90*u(i,5))+','+Math.round(110+90*u(i,5))+','+Math.round(110+90*u(i,5))+')';g.lineWidth=1.2+u(i,6);g.beginPath();g.moveTo(x,y);g.lineTo(x+Math.cos(b)*L,y+Math.sin(b)*L);g.stroke();
+  for(let k=0;k<4;k++){const t=u(i,10+k),r=1.6+2.2*u(i,20+k);g.fillStyle='rgb('+Math.round(150+80*u(i,30+k))+','+Math.round(150+80*u(i,30+k))+','+Math.round(150+80*u(i,30+k))+')';
+   g.beginPath();g.arc(x+Math.cos(b)*L*t,y+Math.sin(b)*L*t,r,0,TAU);g.fill();}}},[140,140,140]);
+M.bladder=BIO.leafMat(TX.bladder,'bladder',{swayW:'0.0',swayA:0,alphaTest:.3});
+BIO.def('bladder',BIO.defs.litter.raw||BIO.defs.litter.geo,M.bladder,{label:'Pond bladderwort (a mat under the surface)'});
+NSEMIARID.PLANTS.bladderwort=Object.assign(PK('Pond bladderwort','temperate','subhumid','yes',['Csa','Cfa','BSh'],['bladder'],'fragments',
+ HV('none',[],false,'A cousin of Korona\'s sucking pool, scaled down for a fresh pool: a floating mat of threads set with tiny bladders that snap up water fleas, harmless to anything larger; birds carry its fragments from pool to pool.')),{kin:'korona.bladderpool'});
+NSEMIARID.PLANTS.bladderwort.tags.kin='korona.bladderpool';
 })();

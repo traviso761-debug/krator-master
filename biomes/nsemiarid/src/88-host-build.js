@@ -35,6 +35,7 @@ const SHADOW_ON=new URLSearchParams(location.search).get('shadow')!=='0'&&typeof
  try{
   if(unique){window._biome=NSEMIARID.build({R:TERR.R-150,quality:q});}   /* the trumpets' crowns turn here too: the core's foliage spin (BIO.SPIN) */
   else{const out={R:TERR.R-150,quality:q};BIO.cur='nsemiarid/trees';Object.assign(out,NSEMIARID.buildTrees(out.R,q,{records:true}));
+   if(typeof STATION_GROW==='function')out.station=STATION_GROW(q);   /* a station's own trees (stations/high, 87k: the neighbours' kin), before the floor */
    BIO.cur='nsemiarid/floor';Object.assign(out,NSEMIARID.buildFloor(out.R,q));BIO.cur=null;window._biome=out;}}
  catch(e){reportErr('biome: '+e.stack);}
  /* the trees keep off the water by the water's own shore (WATER.fieldAt, the review's third line): a record whose bole would reach past the edge goes
