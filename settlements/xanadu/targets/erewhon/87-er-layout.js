@@ -143,7 +143,10 @@ CIT.bath=GRAND_BATH;
 {let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9;for(const p of GRAND_BATH_LOT){x0=Math.min(x0,p[0]);x1=Math.max(x1,p[0]);z0=Math.min(z0,p[1]);z1=Math.max(z1,p[1]);}PRECINCTS.push({x:(x0+x1)/2,z:(z0+z1)/2,rect:{x:(x0+x1)/2,z:(z0+z1)/2,w:x1-x0,d:z1-z0},name:'The Grand Baths'});}
 // the buildings on the grid: key, its plot (w × d m, from the def), the variant, and where it wants to stand
 const CIT_SITES=[
- {key:'xa_pleasure_dome',w:94,d:94,v:0,t:[-345,-150]},
+ // the Pleasure Dome on its blueprint precinct (105 x 110, kits/xanadu 78c), pinned on the palace's axis between the Vizier's
+ // palace (east edge x -401) and the guard (west edge -286), the palace (south edge z -207, where the Golden Way's door
+ // stands) and the court temple (north edge -97)
+ {key:'xa_pleasure_dome',w:106,d:112,v:0,t:[-344,-152],at:[-344,-152]},
  // the rest of the citadel on its blueprint (settlements/xanadu/citadel/BLUEPRINT.md, E0; 2026-11-09): the hollow Moorish and
  // Mughal buildings of kits/xanadu/src/78n-xa-citadel.js at their enlarged sizes, each wanting the blueprint's place
  // (world x = u, z = -v)

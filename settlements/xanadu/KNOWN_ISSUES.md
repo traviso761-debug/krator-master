@@ -2,6 +2,15 @@
 
 Open items are `- [ ]` lines; build.py prints them.
 
+- [ ] (2026-11-10) **The Pleasure Dome's interior: what is not there yet.** Built hollow in the black-and-white pattern system
+      (`citadel/PLEASURE-DOME.md` has the record and the table against the owner's twelve references). Open: the catalog
+      furniture is still the court set's colours (a tint in core/furnish's draw is owed) and comes only with `?interiors=1`; both
+      stones are one grey library marble, `rock.marble012` as the family `xMarble`, standing in for `stone.marble.black` and
+      `stone.marble.calacatta` (`core/materials/PROMPTS-NEEDED.md` section 41; wired as the optional families `xMarbleB` and
+      `xMarbleW`), and the op-art wallcovering is the shader's until `patterns/xanadu/op-art-arcs` (`xOpArt`) arrives; no pierced
+      plaster ceilings, round windows, rib vaults or pierced balustrades; the Sultan's lattice box and the Golden Way are not
+      drawn; two stair halls are additions to the blueprint. The Dome of the Bay is hollow too (one rotunda, no furniture). The
+      Dome's block overlaps the palace's and the temple's lots by a metre: the combined rebuild checks that seam.
 - [ ] (2026-11-09) **The citadel's textures are library stand-ins until the owed sets arrive.** Erewhon's citadel (kits/xanadu
       78l-78n, the interior set kits/interiors/sets/xanadu-citadel.js) draws its surfaces through eleven MAT keys, each a family
       in materials.json (both copies) with the set it is owed (`owed`, core/materials/PROMPTS-NEEDED.md section 41) and a library

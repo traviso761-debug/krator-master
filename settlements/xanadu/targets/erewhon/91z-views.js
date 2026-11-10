@@ -23,6 +23,12 @@ const VIEWS=(function(){const V={};const pal=_at('palace'),gd=_at('garden'),mm=_
  {const inAv=[];for(const P of ER_LINES.avenue){let run=[];for(const p of P){if(ER_INCITY(p[0],p[1]))run.push(p);else{if(run.length>1)inAv.push(run);run=[];}}if(run.length>1)inAv.push(run);}
   const B={};let best=null;for(const p of PLAN){if(p.wealth!=='rich'||!p.front)continue;const q=nearestOnLines(inAv,p.front[0],p.front[1]);if(!q||q.d>8)continue;const k=Math.round(q.x/60)+','+Math.round(q.z/60);const c=B[k]||(B[k]={n:0,q});c.n++;if(!best||c.n>best.n)best=c;}
   const n=best?best.q:nearestOnLines(ER_LINES.avenue,wh.x,wh.z);if(n){const dx=n.b[0]-n.a[0],dz=n.b[1]-n.a[1],l=Math.hypot(dx,dz)||1;V['Wealthy homes — the avenue']=_eye(n.x-dx/l*30,n.z-dz/l*30,n.x+dx/l*70,n.z+dz/l*70,1);}else V['Wealthy homes — the avenue']=_eye(wh.x-40,wh.z-60,wh.x+60,wh.z+20);}
+ // inside the Pleasure Dome (kits/xanadu 78c-78d; the def's local frame: +x east, +z the garden gate's side), from where its block stands
+ {const B=CIT_G.blocks.find(b=>b.key==='xa_pleasure_dome');if(B){const L=(n,x,y,z,tx,ty,tz)=>{V['Pleasure Dome — '+n]=[B.x+x,B.y+y,B.z+z,B.x+tx,B.y+ty,B.z+tz];};
+  L('the Hall of Feasts',0,2.3,-2.5,0,8,-36);L('the checkered door',0,2.1,-27,0,4.2,-46);L('the hall from its gallery',0,10.3,-1.6,0,10,-36);
+  L("the Valide's court",-38,2.2,-1.2,-38,5.5,-27);L('the baths',21.5,2.6,48.6,42,5.5,35);
+  L('the stair hall',-44.6,2.1,30.6,-45.2,9.5,21);L('the sweeping stair',22,2.2,9,44,7,9);L('from the garden',0,9,52,0,14,-20);}}
+ {const U=XA_CUT.find(u=>u.key==='xa_pleasure_dome_bay');if(U)for(const n in U.views)V['Pleasure Dome of the Bay — '+n]=U.views[n];}
  const g=GATES.find(g=>g.kind==='west');if(g)V['West gate — from the highway']=_eye(g.x-70,g.z+10,g.x+20,g.z,3);
  const ge=GATES.find(g=>g.kind==='east');if(ge)V['East gate — from the highway']=_eye(ge.x+70,ge.z-10,ge.x-20,ge.z,3);
  // inside the citadel (2026-11-09; kits/xanadu/src/78n-xa-citadel.js): the Sultan's Hall of Audience toward the dais under its

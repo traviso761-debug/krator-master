@@ -9,8 +9,8 @@
    back, so such a body is INSET (inset(): every storey planned on the footprint they all share, the doors moved onto it); the
    kit's pages draw its hollow walls 0.35 m thick on the blocks' faces (69e6), so their lean never reaches a room, and the
    strip of floor between is the wall's foot. The kit's pages draw these bodies hollow with the interiors on (kits/iziz-vernacular 69e6: a block matching a storey
-   here). HELD (the owner, 2026-11-09): the citadel's defs (the Sultan's Palace, both Pleasure Domes, the Grand Vizier's palace,
-   the palace gate; settlements/xanadu/citadel/BLUEPRINT.md) wait on the owner's visual references.
+   here). HELD (the owner, 2026-11-09): the citadel's defs (the Sultan's Palace, the Pleasure Dome of the Bay, the Grand Vizier's palace,
+   the palace gate; the Garden Pleasure Dome's hold is lifted: its item is below; settlements/xanadu/citadel/BLUEPRINT.md) wait on the owner's visual references.
    ====================================================================== */
 (function (IX) {
   'use strict';
@@ -142,8 +142,39 @@
   /* the citadel's own hollow buildings (2026-11-09) are other defs, planned room by room in sets/xanadu-citadel.js (xa_cit_*); these are
      the kit's older solid pieces, kept for the sheet and other worlds */
   skip('xa_palace', "Sultan's Palace", ['civic', 'military', 'single-family dwelling'], 'the kit\'s solid palace; Erewhon\'s citadel stands on xa_cit_palace (sets/xanadu-citadel.js)');
-  skip('xa_pleasure_dome', 'Garden Pleasure Dome', ['civic'], HELD);
-  skip('xa_pleasure_dome_bay', 'Pleasure Dome of the Bay', ['civic'], HELD);
+  /* the Pleasure Dome (the owner's references, 2026-11-09: settlements/xanadu/citadel/refs/pleasure-dome/STYLE.md; the hold is
+     lifted for this def only). The builder draws the palace itself, hollow (kits/xanadu/src/78c-xa-dome-plan.js is the plan,
+     78d draws it: walls, floors, stairs, doors and core/walk), so the item is explicit rooms only: each furnished room of the
+     blueprint's sheets E3 and E4 as the inner face of its largest rectangle, its doors where the plan cuts them (no leaf: the
+     builder hangs its own). The Hall of Feasts is furnished inside its arcades, under the dome. The courts, the stair halls,
+     the gallery, the checkered door and the great pool are left to the builder's own few objects. Regenerate the list from
+     the plan when the plan's rooms or doors change. */
+  add({ key: 'xa_pleasure_dome', name: 'Garden Pleasure Dome', wealth: 0.9, types: ['civic'], lot: [106, 112],
+    rooms: [
+      { id: 'hall', kind: 'hall', poly: rect(19, 19, 0, -20), y: 0.3, h: 7.5, level: 0, doors: [{ at: [-9.5, -14], w: 2.4, swing: 'none' }, { at: [9.5, -17], w: 1.5, swing: 'none' }, { at: [0, -10.5], w: 2.4, swing: 'none' }, { at: [0, -10.5], w: 2.4, swing: 'none' }, { at: [0, -29.5], w: 2.4, swing: 'none' }] },   // E3.4 The Dome: Hall of Feasts
+      { id: 'music', kind: 'hall', poly: rect(12.36, 6.36, -13.5, -49.5), y: 0.3, h: 7.5, level: 0, doors: [{ at: [-7.32, -50], w: 1.3, swing: 'none' }, { at: [-15, -52.68], w: 1.1, swing: 'none' }] },   // E3.5 Hall of the Musicians
+      { id: 'kitchen', kind: 'kitchen', poly: rect(12.36, 6.36, 13.5, -49.5), y: 0.3, h: 7.5, level: 0, doors: [{ at: [19.68, -50], w: 1.3, swing: 'none' }, { at: [7.32, -50], w: 1.3, swing: 'none' }] },   // E3.6 Harem Kitchens and Confectionery
+      { id: 'treasury', kind: 'store', poly: rect(9.36, 3.36, -15, -55), y: 0.3, h: 7.5, level: 0, doors: [{ at: [-15, -53.32], w: 1.1, swing: 'none' }] },   // E3.20 Harem Treasury and Wardrobe
+      { id: 'cage', kind: 'bedroom', poly: rect(30.36, 24.36, -35.5, -40.5), y: 0.3, h: 7.5, level: 0, doors: [{ at: [-20.32, -34], w: 1.5, swing: 'none' }, { at: [-38, -28.32], w: 1.5, swing: 'none' }] },   // E3.11 Cage of the Princes
+      { id: 'valide', kind: 'bedroom', poly: rect(7.36, 27.36, -24, -14), y: 0.3, h: 7.5, level: 0, doors: [{ at: [-20.32, -14], w: 2.4, swing: 'none' }, { at: [-27.68, -14], w: 2.4, swing: 'none' }] },   // E3.10 Valide's Apartments
+      { id: 'consorts', kind: 'bedroom', poly: rect(30.36, 17.36, -35.5, 9), y: 0.3, h: 7.5, level: 0, doors: [{ at: [-20.32, 10], w: 1.7, swing: 'none' }, { at: [-38, 0.32], w: 1.5, swing: 'none' }, { at: [-44, 17.68], w: 2.4, swing: 'none' }] },   // E3.8 Consorts' Apartments
+      { id: 'hospital', kind: 'dormitory', poly: rect(30.36, 17.36, -35.5, 41), y: 0.3, h: 7.5, level: 0, doors: [{ at: [-20.32, 41], w: 1.7, swing: 'none' }, { at: [-44, 32.32], w: 2.4, swing: 'none' }] },   // E3.7 Hospital of the Harem
+      { id: 'eunuchs', kind: 'dormitory', poly: rect(9.36, 27.36, 45, -39), y: 0.3, h: 7.5, level: 0, doors: [{ at: [40.32, -40], w: 1.3, swing: 'none' }] },   // E3.16 Eunuchs' Dormitory and the Chief Eunuch
+      { id: 'school', kind: 'school', poly: rect(29.36, 14.36, 35, -17.5), y: 0.3, h: 7.5, level: 0, doors: [{ at: [20.32, -17], w: 1.5, swing: 'none' }, { at: [35, -10.32], w: 1.3, swing: 'none' }, { at: [30, -24.68], w: 1.3, swing: 'none' }] },   // E3.14 Harem School
+      { id: 'concubines', kind: 'dormitory', poly: rect(29.36, 12.36, 35, -3.5), y: 0.3, h: 7.5, level: 0, doors: [{ at: [20.32, -4], w: 1.5, swing: 'none' }, { at: [35, -9.68], w: 1.3, swing: 'none' }, { at: [26, 2.68], w: 2.2, swing: 'none' }] },   // E3.13 Concubines' Dormitories
+      { id: 'baths', kind: 'bath', poly: rect(28, 12, 35, 22), y: 0.3, h: 7.5, level: 0, doors: [{ at: [26, 16], w: 2.2, swing: 'none' }, { at: [35, 28], w: 2.4, swing: 'none' }] },   // E3.12 Baths of the Dome: warm and hot rooms
+      { id: 'box', kind: 'hall', poly: rect(12.36, 6.36, -13.5, -49.5), y: 8.3, h: 6.5, level: 1, doors: [{ at: [-10.5, -46.32], w: 2.4, swing: 'none' }] },   // E4.3 Musicians' Box
+      { id: 'stores', kind: 'store', poly: rect(12.36, 6.36, 13.5, -49.5), y: 8.3, h: 6.5, level: 1, doors: [{ at: [10.5, -46.32], w: 2.4, swing: 'none' }] },   // E4.4 Confectionery Stores
+      { id: 'cageU', kind: 'bedroom', poly: rect(30.36, 24.36, -35.5, -40.5), y: 8.3, h: 6.5, level: 1, doors: [{ at: [-24, -28.32], w: 1.2, swing: 'none' }] },   // E4.8 Cage: upper apartments
+      { id: 'valideU', kind: 'study', poly: rect(7.36, 27.36, -24, -14), y: 8.3, h: 6.5, level: 1, doors: [{ at: [-20.32, -14], w: 1.4, swing: 'none' }, { at: [-24, -27.68], w: 1.2, swing: 'none' }, { at: [-24, -0.32], w: 1.3, swing: 'none' }] },   // E4.7 Valide's Upper Rooms
+      { id: 'favourites', kind: 'bedroom', poly: rect(30.36, 17.36, -35.5, 9), y: 8.3, h: 6.5, level: 1, doors: [{ at: [-24, 0.32], w: 1.3, swing: 'none' }] },   // E4.5 Favourites' Apartments
+      { id: 'eunuchsU', kind: 'dormitory', poly: rect(9.36, 27.36, 45, -39), y: 8.3, h: 6.5, level: 1, doors: [{ at: [45, -25.32], w: 1.2, swing: 'none' }] },   // E4.12 Eunuchs (upper)
+      { id: 'mistress', kind: 'study', poly: rect(29.36, 14.36, 35, -17.5), y: 8.3, h: 6.5, level: 1, doors: [{ at: [20.32, -17], w: 1.4, swing: 'none' }, { at: [35, -10.32], w: 1.3, swing: 'none' }, { at: [45, -24.68], w: 1.2, swing: 'none' }] },   // E4.11 Mistress of the Harem
+      { id: 'concubinesU', kind: 'dormitory', poly: rect(29.36, 12.36, 35, -3.5), y: 8.3, h: 6.5, level: 1, doors: [{ at: [35, -9.68], w: 1.3, swing: 'none' }, { at: [47.5, 2.68], w: 1.4, swing: 'none' }] },   // E4.10 Concubines' Dormitories (upper)
+      { id: 'rest', kind: 'living', poly: rect(29.36, 14.36, 35, 22.5), y: 8.3, h: 6.5, level: 1, doors: [{ at: [47.5, 15.32], w: 1.4, swing: 'none' }] },   // E4.9 Baths: rest rooms
+    ],
+    note: 'the harem palace of Erewhon\'s citadel (BLUEPRINT.md E3, E4), drawn hollow by its own builder in the black-and-white pattern system; the rooms here are for the furniture (FURNITURE.md), which is still the court set\'s own colours' });
+  skip('xa_pleasure_dome_bay', 'Pleasure Dome of the Bay', ['civic'], 'one rotunda round a pool, drawn hollow by its own builder (kits/xanadu 78d xbayBuild): its few objects are the builder\'s, no catalog furniture');
   skip('xa_vizier', "Grand Vizier's palace", ['civic', 'single-family dwelling'], 'the kit\'s solid palace; Erewhon\'s citadel stands on xa_cit_vizier (sets/xanadu-citadel.js)');
   skip('xa_palace_gate', 'Palace gate', ['military', 'civic'], HELD);
   skip('xa_barge', "Sultan's pleasure barge", ['civic'], 'a barge: an open deck pavilion on the water');
