@@ -28,6 +28,18 @@ runs, 33 star ceilings, 20 painted or tiled vaults, about 2,000 muqarnas cells.
 
 ## The views (Erewhon's presets)
 
+**The combined rebuild (2026-11-10)** shot the four again with `?interiors=1` at deviceScaleFactor 2, saved beside the first ones in
+`views/rebuild-2026-11-10/`. What changed: the rooms are furnished now. Before the rebuild, Erewhon's interiors pass held every
+placement inside the citadel wall (no rooms, no furniture); it now leaves the citadel's own buildings and both Pleasure Domes to
+their builders and items, which is how the citadel sessions shot them. The Hall of Audience and the Divan show the catalog's xanadu
+court pieces (tables, chairs, a carpet, the dais furniture) where the first shots had one table. The architecture is unchanged.
+The gate iwan's preset had to move: with the palace 2 m north and the Pleasure Dome pinned against its lot, the Dome's terrace
+stands 0.3 m before the iwan's face and 18 m above its threshold (`PLEASURE-DOME.md`, "The site among the citadel's buildings").
+The old camera, 4.6 m in front of the iwan, was inside that terrace and saw the Dome's North Door floor. The camera now stands in
+the iwan's recess, 7.5 m up (local z 48.8, over the door's head), looking up; but there the gate's two open leaves box the
+view in, and the hood cannot be framed from in front while the terrace stands where it does. No new shot of it is saved: the view
+waits on the seam (the Golden Way built as a descending court would give it back its ground).
+
 ### The Hall of Audience (`views/Citadel_-_the_Hall_of_Audience.jpg`) against 01 (Akbar's gilt ceiling)
 
 Follows: the Mughal state room's plan of the rule. A star-polygon ceiling of eight points modelled in relief (the star hangs

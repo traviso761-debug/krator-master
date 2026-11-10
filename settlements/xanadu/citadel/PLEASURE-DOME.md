@@ -126,6 +126,21 @@ the construction kit's packs.
 Pictures (2560 x 1600, software GL), in `refs/pleasure-dome/built/`: `hall.jpg` (the Hall of Feasts), `arch.jpg` (the
 checkered door), `spiral.jpg` (the rotunda), `baths.jpg` (the great pool), `gallery.jpg`, beside the references they answer. Those five are the first Dome at an even balance, under the black domes it had for a day. From the merged build (1280 x 800): `hall-black-over-white.jpg`, `bay-rotunda.jpg` (taken before its dome was opened: the dark top is the old cornice slab), `bay-dome.jpg`, `bay-dock.jpg`.
 
+## The combined rebuild (2026-11-10)
+
+Built once with the citadel, both Domes and the interiors merged (`ccr-55bd6ee1-p1si44-xarebuild`); Chromium on SwiftShader, no GPU.
+
+| Check (the eight items below) | Result |
+|---|---|
+| 1. builds after `git lfs pull` of the `tex/` folders | Xanadu 121 fragments, Erewhon 122, the kit sheet 87; textures 169/169 decoded (235 with `?interiors=1`) |
+| 2. `verify.py dist/erewhon.html --assert` | OK, error panel clean, no `citadel: no room for ...`, 1,108 draw calls at start. With `--interiors`: OK, 53,240 of 54,985 floors reached; 116 placements held inside the citadel wall (401 before: the citadel's own buildings and both Domes are no longer held) |
+| 3. `xdomeReach` | the citadel's Dome 78 of 78, the Bay's 4 of 4, with and without `?interiors=1` (with the furniture on it read 72 of 78 at first: the set item's rooms, each a room's largest rectangle, walled the L-shaped rooms off in core/walk; the item now only furnishes, into a scratch walk registry, 89y) |
+| 4. `window._xaDome`, `_xaBay` | rooms 31, segs 125, doors 29, unplaced 0, lib `rock.marble012`; the Bay's doors 1 |
+| 5. the seam | the lots clear (the palace 2 m north; the Dome shifted 1.35 m south in its lot, its garden 2.5 m shorter: "The site among the citadel's buildings" above); the 18 m level step is recorded, not fixed |
+| 6. budgets | the Dome 186,272 triangles a variant (v2 182,736) on Xanadu's sheet; the sheet 5,810,711 of its 6,000,000 (it was 9.53M with the citadel's nine buildings drawn at every variant: their builders read no `o.v`, so they are `nv:1` now, and Xanadu's sheet leaves them to the kit's own sheet, which takes them since this rebuild) |
+| 7. `kits/xanadu` `verify.py --assert` | OK; doors: 849, 593 locked, 256 unlocked in hollow defs (the citadel's 78n now declares its leaves in `_hollowDoors` as 78d does) |
+| 8. the views against the references | `refs/pleasure-dome/built/rebuild-2026-11-10/` (deviceScaleFactor 2, `?interiors=1`): the eight Dome views and the Bay's three frame as before (the views take the precinct's offset); the catalog furniture is back in the Dome's rooms (it had been held with the citadel); "from the garden" sees the shorter chahar bagh, the gate's wall 2.5 m nearer and the two front kiosks beside the parterres |
+
 ## Against the references
 
 | Reference | Follows | Not yet |
@@ -162,12 +177,26 @@ checkered door), `spiral.jpg` (the rotunda), `baths.jpg` (the great pool), `gall
   (`core/materials/PROMPTS-NEEDED.md`, section 41).
 - **Water.** The pools are the kit's own water boxes (`xWaterB`, as every Xanadu pool), not `core/water`.
 - **Trees indoors** are the Vale's whorl olive through `xaPlant`, about 3.5 m: its trunk is stout for a planter.
-- **The site among the citadel's buildings.** The citadel session pinned its palaces round a 94 m Dome. The Dome is now
-  pinned too, 106 x 112 at [-344, -152] on the palace's axis: its garden wall stands 4.5 m off the Vizier's lot (east edge
-  x -401) and 5 m off the guard's (west edge -286); north and south there is NO spare: the Dome's 112 m block overlaps the
-  palace's lot (south edge z -207) and the court temple's (north edge -97) by a metre each, and the North Door stands on
-  the palace's line at z -209. The combined rebuild must look at that seam; if it clashes, the cure is the palace 2 m north
-  or the Dome's chahar bagh 2 m shorter (`XPDOME.GD` and the rooms' south edge).
+- **The site among the citadel's buildings** (the combined rebuild, 2026-11-10). Pinned 106 x 112 at [-344, -152] on the
+  palace's axis, between the Vizier's lot (east edge x -401) and the guard's (west edge -286). The palace now stands 2 m
+  north (the owner, commit 97282b12: its lot's south edge z -209, the Dome's north edge -208), so the lots no longer
+  overlap. The Dome itself reached 1.33 m north of its lot (the North Door's range: the gold band, the wash, the door's
+  leaf, z -57.33) and its gate 0.12 m short of the south edge. The precinct now stands `XPDOME.OZ` = 1.35 m south of the
+  lot's centre (the def's frame moved as one: the group, the kit transform, VERN.cur; `xdomeShift`, 78-xa-palace.js) and
+  the chahar bagh ends 2.5 m sooner (`XPDOME.GS` 52.5: the gate's wall, the fountain, the lamps, the walk floor and the
+  cutaway box follow it; the two front kiosks moved in beside the parterres, x +-16, the wall's corners being the wings'
+  now). The rooms keep their coordinates. Measured on the sheet (`kits/xanadu/tests/test-footprints.js`): z -55.98..54.73
+  inside 112 m. In Erewhon that is z -207.98..-97.27: clear of the palace's lot (-209) and of the court temple's (north
+  edge -97). The interior views (`91z-views.js`) and the furnished rooms (`89y`) take the same offset.
+  **The seam with the palace is a level step, recorded, not fixed.** The citadel's ground gives the palace's block 153 m
+  and the Dome's 171 m (the terrain's own fall; CIT_G levels each block at its cells' mean), so at z -209/-208 the ground
+  steps 18 m in the metre between the two lots. The Dome's North Door (floor 171.3, at z -208) opens on that drop, about
+  level with the pinnacles of the palace's gate iwan (some 172.5) and 18 m over its threshold, 1.3 m in front of it; the Golden Way
+  (E0.8), which the blueprint puts between them, is not built, and the palace's Harem Postern (the Golden Way's door) is
+  at x -383, 39 m west of the North Door. The preset "Citadel — the gate iwan" stands at z -204.4, inside the Dome's
+  terrace. The cure is the owner's to choose: a stair or ramp court down the 18 m (the Golden Way built as a descending
+  court), or one level for both blocks (both at 162: the palace on 9 m of fill, the Dome's south garden 21 m under the
+  temple's 183).
 
 ## Textures asked for
 

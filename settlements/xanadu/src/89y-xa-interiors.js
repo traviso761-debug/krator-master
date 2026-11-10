@@ -23,16 +23,27 @@ function xafWealth(D){const w=D.tags&&D.tags.wealth;return w==='poor'?.2:w==='ri
 // a top-level placement with an item in the set: its rooms planned and furnished where it stands (plain data on the group)
 // THE CITADEL (2026-11-09): built by the citadel sessions (-pleasuredome, -citadel), so on Erewhon every placement inside its
 // wall (CIT_POLY, targets/erewhon/87-er-layout.js: what settlements/xanadu/citadel/BLUEPRINT.md covers, the officers' and
-// envoys' houses, the guard's barracks and the court temple with the palace) is built as it always was: no hollow walls, no rooms
+// envoys' houses, the guard's barracks and the court temple with the palace) is built as it always was: no hollow walls, no rooms.
+// The citadel sessions' OWN defs are not held (the combined rebuild, 2026-11-10): the hollow Moorish and Mughal buildings
+// (xa_cit_*, kits/xanadu 78n, planned by kits/interiors/sets/xanadu-citadel.js) and both Pleasure Domes (78c/78d) take their
+// rooms, furniture and walk floors here exactly as on those sessions' pages; what is held is the rest inside the wall
 XAF.held=0;
+const xaCitOwn=key=>/^xa_cit_|^xa_pleasure_dome/.test(key);
 {const place0=VERN.place;
  VERN.place=function(sc,key,x,z,ry,o){const top=!VERN.cur;
-  if(top&&XAF.interiors&&typeof inCitadel==='function'&&inCitadel(x,z,0)){const I=VERN.interiors;VERN.interiors=null;XAF.held++;
+  if(top&&XAF.interiors&&!xaCitOwn(key)&&typeof inCitadel==='function'&&inCitadel(x,z,0)){const I=VERN.interiors;VERN.interiors=null;XAF.held++;
    try{return place0.call(VERN,sc,key,x,z,ry,o);}finally{VERN.interiors=I;}}
-  const G=place0.call(VERN,sc,key,x,z,ry,o);
+  // the Pleasure Dome draws its own walls, openings and walk (78d): built with the Vernacular's hollow wrap off (69e would draw the
+  // set item's planned walls over it: the rest rooms' windows onto the great pool were walled up), then furnished below
+  let G;if(top&&key==='xa_pleasure_dome'){const I=VERN.interiors;VERN.interiors=null;try{G=place0.call(VERN,sc,key,x,z,ry,o);}finally{VERN.interiors=I;}}
+  else G=place0.call(VERN,sc,key,x,z,ry,o);
   if(top&&G&&XAF.interiors&&(!o||((o.scale==null?1:o.scale))===1)){const it=KratorInteriors.sets.find(key);
    if(it&&!it.skip){const pre='xa.'+XAF.buildings.length+'.';
-    try{const r=XAF.interior(it,x,z,ry||0,XAF.adapter,{baseY:(o&&o.y!=null?o.y:0),prefix:pre}).summary;
+    // the Pleasure Dome's precinct stands XPDOME.OZ south of its lot's centre (kits/xanadu 78c): its rooms are planned there
+    // and only furnished: the builder writes its own walls, floors and doors into core/walk (78d), while the item's rooms are each
+    // the largest rectangle of a room (sets/xanadu.js), whose walls would cut the L-shaped rooms off (xdomeReach 72 of 78 with them)
+    const dome=key==='xa_pleasure_dome',oz=dome&&typeof XPDOME!=='undefined'&&XPDOME.OZ!=null?XPDOME.OZ*((o&&o.scale!=null)?o.scale:1):0,at=oz?loc(x,z,0,oz,ry||0):[x,z];
+    try{const r=XAF.interior(it,at[0],at[1],ry||0,XAF.adapter,Object.assign({baseY:(o&&o.y!=null?o.y:0),prefix:pre},dome?{walk:KWALK.create()}:{})).summary;
      G.userData.interior={rooms:r.rooms,pieces:r.pieces,residence:r.residence};Object.assign(XAF.buildings[XAF.buildings.length-1],{key,interior:G.userData.interior});}
     catch(e){reportErr('interior '+key+': '+((e&&e.message)||e));}}}
   return G;};}
