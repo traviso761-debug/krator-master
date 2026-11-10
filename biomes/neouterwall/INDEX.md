@@ -4,7 +4,7 @@
 
 Docs: `BIOME-API.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PLAN.md`, `PORT.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/neouterwall.html`
+Built output (never open it; edit `src/` and rebuild): `dist/neouterwall-garnet.html`, `dist/neouterwall.html`
 
 Build: `cd biomes/neouterwall && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -28,17 +28,18 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `44s-host-site.js` | 13 | the apron: a signed distance in from its toe (59); one record a point (memo of the last): the heigh (115) |
+| `44r-host-site-rec.js` | 6 |  |
+| `44s-host-site.js` | 9 | the apron: a signed distance in from its toe (11); one record a point (memo of the last): the heigh (66) |
 | `45-host-stage.js` | 7 | the station, its air and its season (23); the model's ground (bicubic over its 1 km cells) (37); the ground's height (47); renderer, light, camera (67) |
 | `46-biome-neow-layout.js` | 6 |  |
-| `47-host-land.js` | 29 | the near box and a coarse look at the ground (7); the springs' heat (core/terrain KTHERM, 47-core- (15); the water: the tarn, the springs' pools, the sta (51); the fields (biomes/WORLD.md; BIOME-API.md) (71); the host binding (before the meshes: their paint (99); the library layers (or procedural without the pa (111); the ground material (one shader for the near and (136); the near ground: the baked field's own grid, one (207); the mid ground: the model's country to 20 km, th (240); the dikes' mesh (KSTACKS.mesh): one mesh, the ba (259) |
+| `47-host-land.js` | 29 | the near box and a coarse look at the ground (7); the springs' heat (core/terrain KTHERM, 47-core- (15); the water: the tarn, the springs' pools, the sta (51); the fields (biomes/WORLD.md; BIOME-API.md) (71); the host binding (before the meshes: their paint (99); the library layers (or procedural without the pa (111); the ground material (one shader for the near and (137); the near ground: the baked field's own grid, one (208); the mid ground: the model's country to 20 km, th (241); the dikes' mesh (KSTACKS.mesh): one mesh, the ba (260) |
 | `50-biome-neow-cauldron.js` | 11 | palettes (sRGB) (16); the species and the plants, tagged (20); textures (procedural, greyscale: the fallback wh (35); the tree fern's builder: (T, st, lv) with lv 2 n (57); the passes (data: zone, cell, acceptance by the  (71) |
 | `70-biome-neow.js` | 1 |  |
 | `89a-host-atmos.js` | 3 |  |
 | `89s-host-sky.js` | 4 |  |
 | `89w-host-water.js` | 5 | the water records (core/water): the tarn, the sp (10) |
 | `89z-host-build.js` | 7 | the air on everything drawn (once, after the bak (33) |
-| `99-host-take.js` | 11 | the inspector's words: a plant names its species (8); the probe's budgets and the kit's own checks (ve (21); the page, handed to the host (86) |
+| `99-host-take.js` | 11 | the inspector's words: a plant names its species (9); the probe's budgets and the kit's own checks (ve (22); the page, handed to the host (87) |
 | `99-tail.html` | <1 |  |
 
 ## stations/
@@ -47,3 +48,4 @@ Each station builds one page (`build.py --station <name>`) from its own fragment
 
 | Station | Fragments | KB |
 |---|---|---|
+| garnet | 44r-host-site-rec.js | 4 |

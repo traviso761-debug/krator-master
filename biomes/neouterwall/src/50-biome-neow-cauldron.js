@@ -83,7 +83,7 @@ NEOW.buildTrees=function(R,q){q=q==null?1:q;const TREES=NEOW.TREES;TREES.length=
  const ZA=(x,z)=>NEOW.zoneAt?NEOW.zoneAt(x,z):NEOW.at(x,z).zone;
  NEOW.PASSES.forEach((P,pi)=>{NWOW.place(P.cell,900+pi,(x,z)=>P.accept(x,z,ZA(x,z))*q,(x,y,z,_z,i,j)=>{const Z=ZA(x,z);
    if(NWOW.blocked&&NWOW.blocked(x,z,P.pad))return;if(SPACE.some(x,z,P.pad,o=>Math.hypot(x-o.x,z-o.z)<o.r+P.pad))return;
-   const F=NEOW.FIELDS(x,z);if(F.water||F.g>.7)return;
+   const F=NEOW.FIELDS(x,z),ZF=NEOW.zoneOf(F);if(F.water||F.g>.7||ZF==='mat'||ZF==='sinter'||ZF==='spring'||ZF==='stair'||ZF==='dike')return;   /* the candidate's own zone, not the raster's nearest point */
    const T={x,z,y0:y-.2,sp:0,H:rr(S.H[0],S.H[1]),rb:rr(S.rb[0],S.rb[1]),crownR:rr(S.crownR[0],S.crownR[1]),lean:rr(0,.16),leanA:rr(0,TAU),seed:KRAND.hash(SEED,pi,i,j,7),zone:Z};
    T.lv=BIO.lodD(x,z)<LOD.hero?2:1;TREES.push(T);SPACE.insert({x,z,r:T.crownR*.4+.3},x,z,T.crownR+2);},{R,lodMax:LOD.mid});});
  TREES.forEach(T=>{reseed(T.seed);buildFern(T,st,T.lv);st.trees++;if(T.lv===2)st.heroes++;});

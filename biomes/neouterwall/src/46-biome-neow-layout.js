@@ -37,8 +37,8 @@ NEOW.heatK=function(t){return {mat:_nst(NEOW.HEAT.mat-4,NEOW.HEAT.mat+4,t),sinte
 // gentle ground is the GROVE (the warm floor's wood: tree ferns, the NW outer wall's conifers); the wall's wooded slopes are SLOPE; the
 // gentle open ground over the cauldron MEADOW (wet: 2.5 m of rain); then the tree line's bands by the warmest month
 NEOW.zoneOf=function(F){
+ if(F.spring)return 'spring';   /* before the water: a spring's pool is water too */
  if(F.water)return 'water';
- if(F.spring)return 'spring';
  if(F.dike)return 'dike';
  if(F.stair)return 'stair';
  if(F.heat>=NEOW.HEAT.sinter)return 'sinter';

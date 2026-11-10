@@ -7,8 +7,8 @@ The cut (2026-11-10, the model's 5.1 data in tools/scale-model/model/data; the r
 model/src/51-region-store.js `defRegs` and 60-settlements.js `defSetts`, written out as JSON lists):
     python3 tools/scale-model/extract_region.py tools/scale-model/model/data regions.json settlements.json "ne outer wall" <out> \
         --add biomes/neouterwall/region/horizon.json --upsample 2
-(horizon.json: a box 160 px (320 km) round station 1's pixel, so the far land's last band (to 320 km) has ground on every side:
-the polygon's own box stops 70 px north of the station and 80 px south). Then region.json, elev, wlev, temp, rain, clim, mask and
+(horizon.json: a box 160 px (320 km) round each station's pixel, so the far land's last band (to 320 km) has ground on every side:
+the polygon's own box stops 70 px north of station 1 and 80 px south, 70 px west of station 2). Then region.json, elev, wlev, temp, rain, clim, mask and
 biome copied here (dist.png and the scarp rasters are not read by this kit and are left out: dist.png is 434 KB). The height grid is
 Option C's, 1 km a cell (upsample 2), on 5.1 map pixels.
 
@@ -43,6 +43,9 @@ SITES = {
     # 1 km grid's bilinear reads 3.4 km, half-way up the wall); 'clim': the climate is the tarn's (its WH cell, +9 C, the warm pocket),
     # not the wall's Dfc cell the shore pixel falls in
     'vitreous': {'px': 1260.75, 'py': 327.8, 'title': 'Vitreous Hollow', 'level': True, 'clim': [1258, 326]},
+    # the Garnet-Mirror Tarn's south shore (the tarn 1186,344 at 2,810 m, ~14 x 8 km; its north-west wall 4.8-6.3 km within 4 km, its
+    # south a low sill at 3.4-3.7 km): the page holds the shore and the wet south slope, the great wall across the water; station 2
+    'garnet': {'px': 1185, 'py': 345.9, 'title': 'Garnet-Mirror Cauldron', 'level': True, 'clim': [1186, 344]},
 }
 EYE = 30.0            # m over the ground: a viewer on a rise
 R_PLANET = 84.0 * 360 / (2 * math.pi) * 1000      # m: the sky model's frame (kmPerDeg 84)

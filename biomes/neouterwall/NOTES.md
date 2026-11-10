@@ -1,7 +1,7 @@
-# neouterwall — notes (station 1, 2026-11-10)
+# neouterwall — notes (stations 1 and 2, 2026-11-10)
 
 **Where it stands on the model.** The cut is `region/data` (`tools/scale-model/extract_region.py ... "ne outer wall" --add region/horizon.json
---upsample 2`: 785 x 689 cells of 1 km, the polygon 109,612 km²; the regions and settlements written out from the model's page defaults,
+--upsample 2`: 909 x 729 cells of 1 km, px 1016-1466 x 156-516, the polygon 109,612 km²; the regions and settlements written out from the model's page defaults,
 `51-region-store.js` `defRegs` and `60-settlements.js` `defSetts`). The region store already names this kit for the polygon (`kit neouterwall`).
 `region/far.py` writes `station-vitreous.json`: px 1260.75,327.8, base 2,950 m (the tarn's level), 1.11 atm, WH, +9 °C, 2,494 mm, latitude
 -31.4; the grid 49 x 49 km round it with 125 water cells (the tarn); the far land's three bands at ~21, 47 and 125 km.
@@ -26,3 +26,12 @@ line at 26 °C along the springs; the soil +9 °C). The zones, the ground's weig
 **The NW outer wall read in place** (as the W outer wall reads it): its passes run in its own registry (`BIO.kitWrap`), so this kit's passes
 that use its grid (`NWOW.place`) only note candidates inside it and draw after, in this kit's registry; and its `place` hands an accept the
 nwouterwall zone, so this kit's accepts read `NEOW.zoneAt` themselves.
+
+**Stations.** A station's folder (`stations/<name>/`) replaces `src/44r-host-site-rec.js`, the station's record (its toe, dikes, springs,
+stair, snow, hour, views, and station 2's `rockTint`); `src/44s` builds and reads the landforms from any record. `region/horizon.json` holds
+one 320 km box a station (the cut grew to px 1016-1466 for station 2's; station 1's heights and ridges came out byte-identical, only its
+`places` list gained Coyote Canyon). Station 2: px 1185,345.9, base 2,810 m, WH +10 °C, 2,212 mm.
+
+**The opening hour.** Both stations open at midday (station 1 13:00, station 2 12:00), not the frame's 10:00: at these pixels (23-25
+degrees east of the W outer wall's, toward the sub-giant point) the giant eclipses the sun from 09:00 to 10:59 on the season's day
+(`ATMOS.sunHidden`), and the page opened in the dark.

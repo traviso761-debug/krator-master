@@ -1,8 +1,9 @@
 // ================================================================= HOST — the kit's views, inspector words and probe checks, handed to core/host
 // The camera, the frame loop, the panel and window._api are core/host's (core/host/README.md): this fragment only says what this page
 // has. The views are the station's (SITE.views, 44s); the checks are the kit's and the station's. Forked from biomes/wouterwall's.
-// a view from a point to a point, each [x, z, metres over the ground]
-const VW=(c,t)=>[c[0],terrainH(c[0],c[1])+c[2],c[1],t[0],terrainH(t[0],t[1])+t[2],t[1]];
+// a view from a point to a point, each [x, z, metres over the ground, or over the water where the point is on the tarn]
+const _vwY=(x,z)=>Math.max(terrainH(x,z),waterH(x,z));
+const VW=(c,t)=>[c[0],_vwY(c[0],c[1])+c[2],c[1],t[0],_vwY(t[0],t[1])+t[2],t[1]];
 const VIEWS=SITE.views?SITE.views(VW):{'Over the station':VW([0,-900,260],[0,0,0])};
 
 // ---------------------------------------------------------------- the inspector's words: a plant names its species and its harvest
@@ -32,7 +33,7 @@ const HCHK={
  // the station's landforms, each where the zones say: the tarn, the apron's grove, the wall, the dikes, the springs, the stair, the mats and
  // the sinter, drawn on the near ground's zone raster; the dikes and the springs registered
  zones(need,ZC,reg){const lack=need.filter(z=>!(ZC[z]>0)),dk=reg.filter(r=>r.key==='landform.dike').length,sp=reg.filter(r=>r.key==='landform.spring').length;
-  return{ok:!lack.length&&dk>=12&&sp>=4,detail:need.map(z=>z+' '+(ZC[z]||0)).join(', ')+'; '+dk+' dike fins, '+sp+' springs'+(lack.length?'; missing '+lack.join(', '):'')};},
+  return{ok:!lack.length&&dk>=12&&sp>=Math.min(3,SITE.springs.length)&&sp===SITE.springs.length,detail:need.map(z=>z+' '+(ZC[z]||0)).join(', ')+'; '+dk+' dike fins, '+sp+' springs'+(lack.length?'; missing '+lack.join(', '):'')};},
  // the springs: each on the apron at the wall's foot, its water over its ground, the main spring the hottest and its ground over 60 °C
  springs(S,H){if(!S||!S.length)return{ok:false,detail:'no springs'};let bad=0;S.forEach(q=>{const y=terrainH(q.x,q.z);if(!(q.level>y-.05)||sitePoint(q.x,q.z).part==='model'&&q.d<0)bad++;});
   const hot=H(S[0].x,S[0].z),main=S[0].temp>=Math.max(...S.map(q=>q.temp));

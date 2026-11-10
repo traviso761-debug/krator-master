@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Headless verification for biomes/neouterwall (forked from biomes/nwouterwall's; the asserts are the kit's own hostChecks).
-Every station page: dist/neouterwall.html (station 1, Vitreous Hollow); the later stations' pages as they are built.
+Every station page: dist/neouterwall.html (station 1, Vitreous Hollow), dist/neouterwall-garnet.html (station 2, the Garnet-Mirror
+Cauldron); the later stations' pages as they are built.
 
 Usage:
-  python verify.py dist/neouterwall.html [--views "The gully from its rim,Down the gully to the spring"] [--all-views]
+  python verify.py dist/neouterwall.html [--views "The Vitreous Spring,Down the sinter stair to the tarn"] [--all-views]
                                           [--assert] [--baseline base.json]
                                           [--save-baseline base.json] [--out ./shots]
                                           [--cam cx,cy,cz,tx,ty,tz] [--eval "()=>..."]

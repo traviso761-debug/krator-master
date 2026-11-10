@@ -8,10 +8,12 @@ mostly a very high, airless wall. Its life is in the north-western lowlands and 
 Gemini's sketch (2026-11-02) gave the names, the cauldrons and the four-way geology. This plan keeps those, corrects the
 heights and the air from the model, and adds the people, the hazards, the stations and the core adoption.
 
-**Status (2026-11-10): station 1, Vitreous Hollow, is built** on the branch `claude/neouterwall-s1` (a cloud session: `dist/neouterwall.html`,
-`python3 build.py`), forked from the W outer wall's station 1 frame (itself from `biomes/nwouterwall`), its flora the NW outer wall's read
-in place plus the cauldron's own tree fern and reed. It passes `verify.py --assert --all-views` in software GL only: **the real-GPU verify is
-owed on the owner's machine** (`KNOWN_ISSUES.md`). Section 8 says what it takes from core; section 7 what it draws. Stations 2-5 are not built.
+**Status (2026-11-10): stations 1 and 2 are built** on the branch `claude/neouterwall-s1` (a cloud session): station 1, Vitreous Hollow
+(`dist/neouterwall.html`, `python3 build.py`), and station 2, the Garnet-Mirror Cauldron (`dist/neouterwall-garnet.html`,
+`python3 build.py --station garnet`: its folder replaces only the station's record, `44r`). Forked from the W outer wall's station 1 frame
+(itself from `biomes/nwouterwall`), the flora the NW outer wall's read in place plus the cauldrons' own tree fern and reed. Both pages are
+checked with `verify.py --assert --all-views` in software GL only: **the real-GPU verify is owed on the owner's machine**
+(`KNOWN_ISSUES.md`). Section 8 says what they take from core; section 7 what they draw. Stations 3-5 are not built.
 The owner wants a kit here (`HANDOFF-REBUILD.md`: one of the three new-north kits allowed to go ahead). It goes in the
 rebuild's queue after the frozen integration pass. All px below are on the 5.1 canvas (1821 x 1723, 2 km/px).
 
@@ -236,6 +238,13 @@ across the apron into the tarn on one strike, one across them out in the water, 
 (`KRELIEF.talus`), five **springs** at the wall's foot inside the cell (`WATER.spring`: the boiling main spring, a rust pool, a copper pool),
 the main spring's **sinter stair** (`WATER.terraces`, seven treads to the tarn) and the springs' **heat** (`KTHERM`: the mats over 22 °C, bare
 sinter over 40, the snow off the warm ground). The tarn is a `WATER.open` without surf; its bed sinks 60 m under the model's flat cells.
+
+**Station 2 as built (2026-11-10):** the page stands on the Garnet-Mirror Tarn's south shore (px 1185,345.9), y = 0 at the water (2,810 m;
+WH, +10 °C, 2,212 mm, 1.13 atm). The tarn fills the north of the box and a lobe of it its east; the south slope rises ~600 m in 700 m to the
+sill (3.4-3.7 km); across the water, 8-12 km north-west, the great wall (4.8 km within 1 km of the shore, 6.3 km within 4). The station
+takes station 1's landforms with its own record (`stations/garnet/44r-host-site-rec.js`): the apron along the south shore and round the
+lobe, two black dikes across it into the tarn and a line of dike islets down the lobe (21 fins), three springs (a rust pool among them) and
+a five-tread sinter stair; the cliffs' garnet red is a tint over the rock layer until the skarn's texture comes. The podocarps are still owed.
 
 **Station 1 comes first:** it is the reachable cauldron (lowest crest out 3,728 m), it holds the kit's signature (a warm
 tarn in a dike box), and its geothermal surfaces are the shared amendment the other plans want. Gemini's "Pseudotachylite

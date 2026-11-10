@@ -132,6 +132,7 @@ const TINT={
  summer:{grass:0x94a868,moss:0x8a9a64,gravel:0xb4aca0,rock:0xe0dcd4,sinter:0xf4f0e6,tundra:0x8e9466,mat:0xf8d0a0},
  winter:{grass:0xb0a88a,moss:0x7a8460,gravel:0xa4a09a,rock:0xd4d0c8,sinter:0xe8e6e0,tundra:0x8a8070,mat:0xd8b898},
  spring:{grass:0x9aac6c,moss:0x84925e,gravel:0xa8a49c,rock:0xd8d4cc,sinter:0xeeeae0,tundra:0x8a8064,mat:0xe8c098}}[SEASON];
+if(SITE.rockTint!=null)TINT.rock=SITE.rockTint;   /* a station's own rock colour (station 2: the garnet skarn's red) */
 
 // ---------------------------------------------------------------- the ground material (one shader for the near and the mid ground)
 // THE DITHER (nwouterwall's, from Korona's ground): each layer's map read through a hex-cell bomb, a layer's edges pushed through a noise
