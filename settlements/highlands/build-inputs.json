@@ -220,7 +220,7 @@
     "kits/highlands/src/85b-tri-salvage.js": "6e5e983fb5dc586c8c94ea4469e2e7847555455ae584dd3f7be27beb38953497",
     "kits/highlands/src/88-hl-dress.js": "f107d5626c3eb6efdf85bef33b03b4ac8920471d826e26840f4ea22dda4235cd",
     "kits/highlands/src/89-hl-trades.js": "90f27fa43fc539a7f60d27cacd803a160c01f1c78ecbc5888c666f6f2c2ed5f2",
-    "kits/highlands/src/89y-hl-furnish.js": "9b5fb6caf3c46e0934049893704119165afd6b76df1f3c3581c53a5960ec3c09",
+    "kits/highlands/src/89y-hl-furnish.js": "1346a9bb74387b7c779fce2507af1637816c656f7b6ffabc713d8b990a4b4c1c",
     "kits/highlands/src/94-hl-anim.js": "87778bc82740b56c8d706296b731e5f80adecdd2dd71861a1c045ce97b2a2395",
     "kits/interiors/adapters/runtime-adapter.js": "5958f459962e0bfd8dde8490ec1b0bca3697dd3c86f9697b1c083cfe5f206a57",
     "kits/interiors/sets/highlands.js": "62c028ea5e371c3205b2ec47d161bac9b83cb674be26b9b6d0b48309be47cc99",
@@ -237,8 +237,8 @@
     "kits/interiors/src/49b-walk.js": "d90cf2cba70ac876a1831790124e5a4c5ba7072e90599572e458dca1704c16ac",
     "kits/iziz-vernacular/src/69e-vern-hollow.js": "c71a736c2a0a2cdba5775c39899013bda48be827690a6cc133cbb3cdb0d948a8",
     "kits/iziz-vernacular/src/69e5-iziz-openings.js": "0d0a1d42179bdde0ba115fd488dc6f8b67cfd6aa15350409170015fdd9e9fa79",
-    "kits/iziz-vernacular/src/69e6-vern-autobody.js": "407df5e3d0c45e60db73c9ef07ee59da9dec194ca5a1e66975fe0164ed68b751",
-    "settlements/highlands/KNOWN_ISSUES.md": "762146d4be9191c2505b907e6b52cc57ba52faace25d7e7509af868254933d04",
+    "kits/iziz-vernacular/src/69e6-vern-autobody.js": "ba991e7c043acb9565a598b88ad117f685b367c01579477236e87042d5a17d86",
+    "settlements/highlands/KNOWN_ISSUES.md": "205318f3f90908d0ea5d7bfffa82d7499aab9f3e90a8eb59a5661f7fd3963065",
     "settlements/highlands/PORT.md": "495cd1e4cc23185592efbdd41bf6afa9a73d93c09935bfec81d9e8c4e84ff37e",
     "settlements/highlands/build.py": "b7b9b365cd76c2eeafb8cb46723b7324604b72fe3ae8145260d9d0f88ee94563",
     "settlements/highlands/src/00-head.html": "a93eb75377a47c7795c94dff078bf3c1a679760aacb311c17436bbdb5ec4b3c3",
@@ -455,21 +455,21 @@
    },
    "outputs": {
     "settlements/highlands/VENDOR.json": "5a0a0b9ddb2d1cd881256c1f5d3221c557d4a2a22b430ecebf7aeba56b194c5e",
-    "settlements/highlands/build-manifest-highlands.json": "b48df329b8bc39fbabb5b81d965c03346efe93104f227d5c1ff247a90e03ba2a",
-    "settlements/highlands/build-manifest-roketstad.json": "573ccd62203f9d0f0dc542356b1696378094421fd26f2dd38155057981e97585",
-    "settlements/highlands/dist/highlands.html": "d03fd6576584758a239d47a434c53a9460c2d5d6a207902a69615229af95b256",
+    "settlements/highlands/build-manifest-highlands.json": "845230c26c9f68521fc7f53bfa2771e34db5c9b04aced158737fc25a6669e814",
+    "settlements/highlands/build-manifest-roketstad.json": "8a9a11b6354b7fa88f83bf34126b014218d19668f9c8e3b856f4f3c80bc55a31",
+    "settlements/highlands/dist/highlands.html": "9b22010887df91272844a43bb2d672c5120ba6aca93d0b4a2f99bc3b9aaba215",
     "settlements/highlands/dist/highlands.tex.highlands-2.js": "ea908780eb45e3b9669013ebd5d0b87f7013508ffbff0ad0e61ca17dd85e32d2",
     "settlements/highlands/dist/highlands.tex.highlands.js": "265a9f1ca813fe8e3db41b041740eb726e29f6df615286705ebbe5744ae45cf4",
-    "settlements/highlands/dist/roketstad.html": "674b360704f114c62e4fb12aecc12004403ba808518cf056f1daff69bb1b0ce5"
+    "settlements/highlands/dist/roketstad.html": "2aac64459db4e4073fc380368e181ed6b286c94fb8b214e804044251e7a5bd6d"
    },
    "outputs_raw": {
     "settlements/highlands/VENDOR.json": "5a0a0b9ddb2d1cd881256c1f5d3221c557d4a2a22b430ecebf7aeba56b194c5e",
-    "settlements/highlands/build-manifest-highlands.json": "b48df329b8bc39fbabb5b81d965c03346efe93104f227d5c1ff247a90e03ba2a",
-    "settlements/highlands/build-manifest-roketstad.json": "573ccd62203f9d0f0dc542356b1696378094421fd26f2dd38155057981e97585",
-    "settlements/highlands/dist/highlands.html": "d03fd6576584758a239d47a434c53a9460c2d5d6a207902a69615229af95b256",
+    "settlements/highlands/build-manifest-highlands.json": "845230c26c9f68521fc7f53bfa2771e34db5c9b04aced158737fc25a6669e814",
+    "settlements/highlands/build-manifest-roketstad.json": "8a9a11b6354b7fa88f83bf34126b014218d19668f9c8e3b856f4f3c80bc55a31",
+    "settlements/highlands/dist/highlands.html": "9b22010887df91272844a43bb2d672c5120ba6aca93d0b4a2f99bc3b9aaba215",
     "settlements/highlands/dist/highlands.tex.highlands-2.js": "ea908780eb45e3b9669013ebd5d0b87f7013508ffbff0ad0e61ca17dd85e32d2",
     "settlements/highlands/dist/highlands.tex.highlands.js": "265a9f1ca813fe8e3db41b041740eb726e29f6df615286705ebbe5744ae45cf4",
-    "settlements/highlands/dist/roketstad.html": "674b360704f114c62e4fb12aecc12004403ba808518cf056f1daff69bb1b0ce5"
+    "settlements/highlands/dist/roketstad.html": "2aac64459db4e4073fc380368e181ed6b286c94fb8b214e804044251e7a5bd6d"
    }
   }
  }

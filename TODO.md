@@ -33,6 +33,14 @@ rewrites the baseline once, then deletes these items):
 - `KSHADOW.units`: done (core counts read samplers and `scene.environment`, `KSHADOW.maxUnits` = min(16, GL); the copies in the Throne,
   geyser, highrift, nhighlands, cut, shighlands, catch and ringisles now call core; `node core/shadow/test-shadow.js`). Moves every KSHADOW page.
 - kits/interiors food anchors: done (`cottage`, `living`, `kitchen`). Moves every page that furnishes rooms.
+- (2026-11-10, not done: needs this rebuild) The catalog's detail maps have no `tile` family (`kits/catalog/materials.json`): the
+  glazed-tile furniture of the Xanadu, Iziz, Eastern Abyssal and Republican sets is the one family drawn untextured (4,128
+  triangles on the Xanadu sheet). Add a `tile` row on the library's `ceramic.glaze` (or `tile.hex.ceramic`), `python3
+  tools/textures/pack.py kits/catalog`; it moves every page bundled with `tex=True` (Iziz's palace, the isle demo, Pinnacle
+  Rock, Beast Riders, Highlands, Xanadu).
+- (2026-11-10, not done: needs this rebuild) The Highlands set's great-building room kinds (`chamber committee gallery lobby guard
+  war_room armoury magazine audience signals cell`, registered in `kits/interiors/sets/highlands.js`) move to
+  `kits/interiors/src/30-programs.js`, as the owner's brief of 2026-11-09 asked; that file reaches every furnished page.
 - `regOccupancy` honours `ground` / `far`: done in core/host (`node core/host/test-probe.js`); savage's probe object gone (its licks are
   `ground` volumes now), godthrone's copy gone. Moves every page on core/host.
 - The `dalab` pack: done (`38-symbols.js` `eye`, `80-cultures.js` appended last; Span's Line and arena pass `culture:'dalab'`). Moves the
@@ -111,6 +119,8 @@ along: do them in that change, rebuild once, rewrite the baseline once. Take an 
     furnished def's matching blocks hollow, its doors unlocked into the rooms; Xanadu has its interior set
     (`kits/interiors/sets/xanadu.js`; the citadel held for the owner's references); the Hall of the Republic and the Fortress
     are planned room by room (`kits/highlands/hall/`, `kits/highlands/fortress/`). What is left: the kits' KNOWN_ISSUES.md.
+    Finished and verified 2026-11-10 (the audit, `verify.py --interiors`: every floor of the Hall and the Fortress reached; the
+    furniture textured): what is left is in `settlements/highlands/KNOWN_ISSUES.md` and `settlements/xanadu/KNOWN_ISSUES.md`.
   - Locus with `?interiors=1`: 32 floors are reached only through a locked door (the interiors kit's entrance is not the
     building's `F.door`).
   - Mav's Refuge has no core/walk: its 1,883 operable doors block nothing, and it has no reachability audit.

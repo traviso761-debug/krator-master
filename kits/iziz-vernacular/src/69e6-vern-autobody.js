@@ -25,7 +25,7 @@ const VAUTO={matched:0,byKey:{},busy:false,
    const L=Array.isArray(b.levels)?b.levels:Array.from({length:b.levels==null?1:b.levels},()=>({h:3}));let y=b.y==null?0:b.y;
    L.forEach((l,i)=>{const h=l.h==null?3:l.h,P=l.poly&&l.poly.length===4?l.poly:b.poly;
     S.push({poly:P,y,top:y+h,t:b.wall==null?.3:b.wall,id:b.id+'.'+i,level:i,floor:i?false:undefined,body:true,inset:!!b.inset});y+=h;});}
-  for(const s of item.shells||[]){const ry=s.ry||0,P=[[-1,-1],[1,-1],[1,1],[-1,1]].map(([a,b])=>loc(s.at[0],s.at[1],a*s.w/2,b*s.d/2,ry));
+  for(const s of item.shells||[]){const ry=(s.ry==null?0:s.ry),P=[[-1,-1],[1,-1],[1,1],[-1,1]].map(([a,b])=>loc(s.at[0],s.at[1],a*s.w/2,b*s.d/2,ry));
    S.push({poly:P,y:s.y0,top:s.y0+s.h,t:s.t==null?.4:s.t,id:s.id,floor:s.floor});}
   return item._vaS=S;},
  // the shell a box (a block standing on y, w x d turned by ry) is a storey of, or null
@@ -34,9 +34,10 @@ const VAUTO={matched:0,byKey:{},busy:false,
   for(const S of VAUTO.shells(item)){
    const ov=Math.min(y+h,S.top)-Math.max(y,S.y-.6);if(ov<Math.min(1.8,h*.6))continue;
    // an INSET body (the item's `inset: true`: Xanadu's battered and stepped stacks, planned on the footprint every storey
-   // shares, inside the builder's blocks): a block that holds the footprint, at most 1.8 m wider a side, is one of its storeys
+   // shares, inside the builder's blocks): a block that holds the footprint, at most 5 m wider a side, is one of its storeys
+   // (1.8 m until 2026-11-10: the temples', the guild halls' and the manors' blocks stayed solid, their rooms sealed in them)
    const inset=S.inset&&(()=>{const c=loc(x,z,0,0,0),q=S.poly,cx=q.reduce((a,p)=>a+p[0],0)/4,cz=q.reduce((a,p)=>a+p[1],0)/4,c2=Math.cos(ry||0),s2=Math.sin(ry||0);
-    return q.every(p=>{const dx=p[0]-c[0],dz=p[1]-c[1],lx=dx*c2-dz*s2,lz=dx*s2+dz*c2;return Math.abs(lx)<=w*m/2+.15&&Math.abs(lz)<=d*m/2+.15&&Math.abs(lx)>=w*m/2-2&&Math.abs(lz)>=d*m/2-2;})&&Math.hypot(cx-x,cz-z)<2;})();
+    return q.every(p=>{const dx=p[0]-c[0],dz=p[1]-c[1],lx=dx*c2-dz*s2,lz=dx*s2+dz*c2;return Math.abs(lx)<=w*m/2+.15&&Math.abs(lz)<=d*m/2+.15&&Math.abs(lx)>=w*m/2-5&&Math.abs(lz)>=d*m/2-5;})&&Math.hypot(cx-x,cz-z)<2;})();
    if(inset||K.every(p=>S.poly.some(q=>Math.hypot(q[0]-p[0],q[1]-p[1])<.6))){
     // a box spanning several storeys (one block for a two-storey wall) is the lowest storey's: it takes that one's floor
     if(S.level)for(const S0 of VAUTO.shells(item))if(S0.level===0&&S0.id.split('.')[0]===S.id.split('.')[0]&&y<S0.top-.6)return S0;
@@ -61,7 +62,11 @@ function vaBattered(flat,x,y,z,w,h,d,ry,c,k){const C=VERN.cur;if(!C||!C.hollow||
   for(const [S,B] of low){if(S.floor===false)continue;const t=B.t,fy=Math.max(B.y,S.y),fw=B.w*(1-B.k*Math.max(0,Math.min(1,(fy-B.y)/B.h)))-2*t+.02,
     fd=B.d*(1-B.k*Math.max(0,Math.min(1,(fy-B.y)/B.h)))-2*t+.02;
    if(fy-B.y>.06)vB(B.item,B.x,B.y,B.z,fw,fy-B.y-.04,fd,B.ry,B.c);
-   vB('vWood',B.x,fy-.04,B.z,fw,.04,fd,B.ry,vC(VPAL.woodMid[0]).multiplyScalar(.82));}}
+   vB('vWood',B.x,fy-.04,B.z,fw,.04,fd,B.ry,vC(VPAL.woodMid[0]).multiplyScalar(.82));
+   // an INSET shell's band (between the block's hollow wall and the rooms planned inside it) is floor a walker crosses from
+   // the block's door to the rooms' (2026-11-10): in core/walk, untagged as a room's, so the audit reads it as a way, not a floor
+   if(S.inset&&typeof KWALK!=='undefined'){const P=[[-1,-1],[1,-1],[1,1],[-1,1]].map(([a,b])=>{const q=loc(B.x,B.z,a*fw/2,b*fd/2,B.ry),v=IZDOOR._w(q[0],fy,q[1]);return[v[0],v[2],v[1]];});
+    KWALK.poly({pts:P,name:'band',tag:'interior:vauto-band'});}}}
  finally{VAUTO.busy=false;}};}
 // a kit's own opening on a hollow face: the face is cut (and a second body's wall right behind it), -> the face or null
 function vaOpen(x,y,z,ry,w,h,door){const F=typeof vnFaceOf==='function'?vnFaceOf(x,y,z,ry):null;if(!F)return null;
@@ -96,8 +101,8 @@ function vaPlanDoors(C){const it=C.ixItem;if(!it)return;
    t=Math.max(0,Math.min(1,((d.at[0]-a[0])*ex+(d.at[1]-a[1])*ez)/L2)),dd=Math.hypot(d.at[0]-a[0]-ex*t,d.at[1]-a[1]-ez*t);if(dd<bd){bd=dd;best=[ex,ez];}}
   if(!best||bd>.6)continue;const cx=P.reduce((s,p)=>s+p[0],0)/P.length,cz=P.reduce((s,p)=>s+p[1],0)/P.length;
   let nx=best[1],nz=-best[0];const nl=Math.hypot(nx,nz)||1;nx/=nl;nz/=nl;if(nx*(d.at[0]-cx)+nz*(d.at[1]-cz)<0){nx=-nx;nz=-nz;}
-  const ry=Math.atan2(nx,nz),F=vnFaceOf(d.at[0],y+.1,d.at[1],ry);if(!F)continue;const w=d.w||1;
+  const ry=Math.atan2(nx,nz),F=vnFaceOf(d.at[0],y+.1,d.at[1],ry);if(!F)continue;const w=(d.w==null?1:d.w);
   if(F.B.ops.some(o=>o.door&&o.face===F.face&&Math.abs(o.u-F.u)<(o.w+w)/2+.3))continue;
-  vaOpen(d.at[0],y,d.at[1],ry,w,d.h||2.2,true);const m=loc(d.at[0],d.at[1],0,-F.B.t/2,ry);IZDOOR.leaf(m[0],y,m[1],ry,w*.96,(d.h||2.2)-.04,.07,null);VAUTO.planDoors=(VAUTO.planDoors||0)+1;}}
+  vaOpen(d.at[0],y,d.at[1],ry,w,(d.h==null?2.2:d.h),true);const m=loc(d.at[0],d.at[1],0,-F.B.t/2,ry);IZDOOR.leaf(m[0],y,m[1],ry,w*.96,((d.h==null?2.2:d.h))-.04,.07,null);VAUTO.planDoors=((VAUTO.planDoors==null?0:VAUTO.planDoors))+1;}}
 {const fl1=vnHollowFlush;vnHollowFlush=function(C){if(C.ixItem)try{vaPlanDoors(C);}catch(e){reportErr('vaPlanDoors '+(C.D&&C.D.key)+': '+e);}return fl1.apply(this,arguments);};}
 function vaWrapRoom(f0){return function(x,y,z,w,h,d,ry){if(vaOpen(x,y,z,ry,w,h,false))return;return f0.apply(this,arguments);};}
