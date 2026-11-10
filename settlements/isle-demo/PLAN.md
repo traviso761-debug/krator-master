@@ -1230,7 +1230,8 @@ settlements; their off map commerce will be abstracted for now."
 - **Its countryside** (48 `hamlet-*-n`; tune `hamlets.farming.crops.nephtos`): two farming hamlets (taro, sweet potato,
   banana, coconut), the plantations (clove, cacao, indigo, annatto, tobacco), a fishing village on the nearest coast with
   a sea leg (core/hamlet's fishing focus: its landing stage and canoe shed, `fishery` grounds that restock), a lumber
-  village in the island's forest, and the copper mine on the high ground inland (a `copper` node of kits/resources' grades;
+  village in the island's forest, and the copper mine on the foothills under the plateau's escarpment (2026-11-10: `maxRise` 450 m; on the plateau its road
+  ran 100 m under the slope) (a `copper` node of kits/resources' grades;
   `hamlets.metals` makes its works' good copper, not iron ore). Their hands are hired Islanders under the colony's
   overseers: the Hykkousoi wither if they stay long in dry places (settlements/ys/DESIGN.md), so the island's interior is
   worked by others. Tobacco joins the Crops kit (`kits/crops`, a herb-bucket leaf crop that fits the ring isles' wet zone).
