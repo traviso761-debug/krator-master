@@ -5,8 +5,10 @@ Along its spine stand five volcanoes; under it lie four warm valleys, each with 
 hunters and Kimr hunters from the Labyrinth come and go by season. Its dangers are the land itself: gas, heat, ash, ice and
 thin air. A player who reaches one of its oases has found a good place for an outpost (section 6).
 
-This is a seed from the owner's brief (2026-11-09) and the map. Nothing is built; it is a kit for the rebuild's queue, after
-the frozen integration pass, and a neighbour of `biomes/labyrinth/PLAN.md`.
+This began as a seed from the owner's brief (2026-11-09) and the map, a neighbour of `biomes/labyrinth/PLAN.md`.
+
+**Built 2026-11-10** (branch `claude/firebliss-80cc25`): the four stations of section 7 on the model's own ground (section 7a), with
+the core adoption of section 8. What is owed is in `KNOWN_ISSUES.md`; how a page is made is in `README.md`.
 
 ## 1. What the map carves (Gemini, map 5.1)
 
@@ -163,7 +165,48 @@ World km = 5.1 px x 2; a page's site is the old canvas px (5.1 px less 272, 330)
 Station 1 comes first: it holds the oasis, the hazards and the hunters all at once. A fifth station could be West Bliss
 Cauldron, or the Copper-Fissure Vent's lava, if the owner wants either.
 
+### 7a. The pages as built (2026-11-10)
+
+Each page stands on the model's own ground: `model_site.py` reads a window of the 5.1 height grid (22 x 22 cells of 2 km)
+round its centre at build time and the page interpolates it with a cubic B-spline (`FB_MODEL`, `45-host-stage.js`), then
+adds only what the model's 2 km cells cannot hold (the shore's coves, the thermal ground, the Warra's channel, hollows).
+The tarns are 10-14 km across, wider than a page, so each valley's page stands on its tarn's shore, not its middle.
+
+| Station | Page | Centre (5.1 px) | What the model gives there |
+|---|---|---|---|
+| 1 Great Firebliss Vale | `dist/firebliss.html` | 189,1320 | the tarn (2,279.8 m) over the NW half; the floor rising SE at 2-3% then 10-15% to 3,180 m at the corner; Cfb, 7.8 degC (warm month 16.8), 1,120 mm |
+| 2 Solfatara Glen | `dist/firebliss-glen.html` | 238,1324.5 | the tarn (2,119.9 m) over the N half; a shallow glen rising S 100 m in 2.5 km; Cfb, 12.9 degC, 1,340 mm |
+| 3 East Bliss Vale | `dist/firebliss-east.html` | 285,1322 | the tarn (1,960 m) N; its outlet and the Weyt Warra's way S over a floor within 25 m of the tarn; Cfa |
+| 4 Firebliss Mons | `dist/firebliss-mons.html` | 206,1286 | the crater floor (5,481 m) N and W, the inner wall rising S and E to 6,370 m; EF/HT, -14.6 degC, 600 mm |
+
 ## 8. Core adoption (written first, as the working rules ask)
+
+The table as built (2026-11-10). "Branch" means read in place from `origin/claude/core-plan-features-229d2a` by `build.py`
+(`git show`) until that branch is merged: the pieces are not copied into the kit (`KNOWN_ISSUES.md`).
+
+| Need | Module | Taken | How |
+|---|---|---|---|
+| randomness | `core/rand` (`KRAND`) | yes | every placement cell seeded by `KRAND.cell(seed + salt, ix, iz)`; the camps' and hollows' by `KRAND.hash` of (world, key, index) |
+| the ground | the scale model 5.1 (`model_site.py`) | yes | the heights and water levels round each centre, baked into the page; no hand-drawn profile |
+| volcanoes, relief | `KRELIEF` (38) | yes | `KRELIEF.river` grades the Warras; the volcanoes themselves are the model's (2 km cells hold Mons' crater); `volcano`/`range` not called |
+| landforms | `KRELIEF` 38c (`maar`, `stepcut`, `terraces`) | **no** | the sinter steps are the geyser kit's terrace flights (its `GEYSER.lay` terraces); the gas hollows are KRAND-placed dish hollows on the stage |
+| thermal ground | the geyser kit (`biomes/geyser`, read in place as `biomes/ringisles` reads it) | yes | `GEYSER.lay` on each station's authored layout: springs, geysers, sinter flats and terraces, acid fields with mud pots and fumaroles, dead fringes; its relief, heat, flora and show |
+| ground temperature | `KTHERM` (47) | yes | the vents' heat between them, from the geyser layout: the snow's bare ground, the hot-ground hazard, the frost coral's warmth on Mons |
+| lava and tuff | `KLAVA`, `KSTRATA` | **no** | no station is on the Copper-Fissure Vent's flow (section 7); the walls are off the pages (the far field), so no bedded face is drawn |
+| glacier and frost | `KGLACIER` (44g), `KFROST` (42) | **KFROST yes, KGLACIER no** | KFROST's sorted circles on the ash flats over 2,900 m; Mons' crater ice is the ground's ice and snow layers (a crater floor, not a flowing glacier) |
+| ground | `KGROUND` (43), `KHORIZON` (45), `KFAR` (44) | yes | library layers on documented masks with KGROUND's relief; the far field to 14 km on the model's own heights; the walls' shadows; the plume as far sprites (`KFAR.sprites`) |
+| water | `core/water` (`open`, `flow`, ext 56-61, geyser 52/52b) | yes | the tarns (`WATER.open`, still: no surf, no breakers; the warm springs' tint), the Warras (`WATER.flow` on `KRELIEF.river`), the springs and geysers through the geyser kit's show; the reflections switch off at load |
+| flora | `core/biome` and the kits read in place | yes | the geyser kit's thermal trees and floor; the Throne's ash pine and tree fern as kin (`BIO.kin`); Copper Glacier's cushions, lichen, moss, sedge, boulders and frost coral (`COPPERG.build` on this page's fields); the kit's own meadow, reeds and stones |
+| sky, weather | `core/atmos` | yes | the standard sky at each site; height fog; rain cover; snow that lies (the station's line, bare over warm ground); the plume (`ATMOS.ashPlume`, branch) as fog, ash fall and the hazard's `ash` |
+| hazards | `core/hazard` (20, 21) and 22 (branch) | yes | heat and acid (the geyser kit's records), gas that pools at night (`KHAZ.night`), the sinter crust (`KHAZ.crust` / `under`), the gorge's flood (`KHAZ.front`, station 3), cold and thin air (`KHAZ.provide`), falls on the steep |
+| camps | `core/camp` (`KCAMP.pitch`) | yes | the hunters' camps; the two culture rows (`fellgang-hunt`, `kimr-hunt`) are the kit's data, registered on `KCAMP.CULTURES` (to move to core/camp/10 when settled) |
+| fauna | `kits/fauna` | **no** | owed: the Labyrinth's strays and the range's own animals wait for the fauna kit's Labyrinth and alpine sets (`KNOWN_ISSUES.md`) |
+| resources | `kits/resources` (`KRES`), read in place | yes | the nodes in each square from `geology.json` (Copper Glacier's `res_site.js`, read in place), registered; the data still reads the arc as crystalline with no sulphur (section 9) |
+| shadows | `core/shadow` | yes | off at load (`?shadow=1`) |
+| tags, space, mask, host, export, materials | as every kit | yes | `KTAGS`, `KSPACE` through the biome core; `KHOST` full with the polygon tool; `core/export`'s profile; `materials.json` and `pack.py` |
+| city, hamlet | `core/city`, `core/hamlet` | no | nobody lives here; the oases are offered to the open world's outpost registry as `outposts.json` (section 6), nothing drawn |
+
+### 8a. The plan's first table (2026-11-09, kept for the record)
 
 | Need | Module | How |
 |---|---|---|
@@ -197,6 +240,18 @@ Cauldron, or the Copper-Fissure Vent's lava, if the owner wants either.
    sites (section 6).
 
 ## 9. For the owner
+
+Found while building (2026-11-10):
+- **The resource data predates the arc.** `geology.json` reads the range as crystalline, with no sulphur, tuff or glass: the stations draw
+  the data's nodes (iron, gold, tin, silver, saltpeter), and the plan's sulphur, obsidian and pumice only as the kit's stones and the
+  fumaroles' crusts. A rebake giving the arc a volcanic province would make them resources.
+- **The breaches.** The model's 2 km cells do not resolve Mons' south-east breach; station 4 shows its floor and south wall.
+- **The gorges are the kit's.** No Warra has a gorge in the model's cells at the valleys' outlets; station 3 cuts a 26-40 m gorge into a
+  tuff bench it adds south of the tarn. Should the model carry the gorges?
+- **The plume misses the valleys.** With the plume to the south-east and the valleys south of the spine, the ash fall reaches none of
+  the three valley pages (Mons' own does); the Labyrinth's side of the spine takes it, as section 1 says.
+
+The plan's first questions:
 
 - **An old outpost?** Should one valley hold a ruined hunters' lodge a player could take over, registered as an abandoned
   outpost?
