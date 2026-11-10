@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 1838 (54%) | 428 (12%) | 106 (3%) | 409 (12%) | 655 (19%) |
+| KB | 1844 (53%) | 428 (12%) | 106 (3%) | 418 (12%) | 655 (19%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -262,10 +262,10 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `water/ext/61-core-water-plume.js` | 6.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `water/geyser/52-core-water-geyser.js` | 16.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `water/geyser/52b-core-water-geyser-draw.js` | 13.5 | [G shader] | 0 | 0 | 0 | 0 | 0 | 3 | 12 | 0 | 0 | 0 | 0 |  |
-| `world/41-world-fields.js` | 39.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `world/41-world-fields.js` | 40.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `world/42-world-roads.js` | 11.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `world/45-world-host.js` | 5.1 | [web] | 9 | 0 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `world/48s-world-sites.js` | 8.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `world/48s-world-sites.js` | 13.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `world/80-world-sky.js` | 9.1 | [G native] | 15 | 1 | 0 | 0 | 0 | 3 | 12 | 0 | 0 | 0 | 0 | shader hook inside |
 | `world/81-world-terrain.js` | 11.8 | [web] | 10 | 1 | 0 | 0 | 3 | 2 | 5 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `world/83-world-water.js` | 2.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
@@ -275,9 +275,9 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `world/86-world-floor.js` | 6.0 | [web] | 5 | 0 | 0 | 0 | 5 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `world/87-world-places.js` | 2.7 | [web] | 6 | 0 | 5 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `world/88-world-towns.js` | 9.0 | [web] | 20 | 0 | 0 | 0 | 2 | 2 | 0 | 3 | 0 | 0 | 2 |  |
-| `world/88s-world-sites.js` | 10.3 | [web] | 11 | 0 | 0 | 0 | 2 | 1 | 0 | 3 | 0 | 0 | 0 |  |
+| `world/88s-world-sites.js` | 18.5 | [web] | 24 | 0 | 0 | 0 | 2 | 4 | 0 | 5 | 0 | 0 | 0 |  |
 | `world/90-world-camera.js` | 13.5 | [web] | 3 | 3 | 7 | 14 | 0 | 1 | 0 | 0 | 2 | 0 | 0 |  |
-| `world/91-world-probe.js` | 12.1 | [web] | 0 | 0 | 1 | 0 | 3 | 6 | 0 | 0 | 0 | 0 | 0 |  |
+| `world/91-world-probe.js` | 12.5 | [web] | 0 | 0 | 1 | 0 | 3 | 6 | 0 | 0 | 0 | 0 | 0 |  |
 | `world/98-world-start.js` | 6.4 | [web] | 0 | 1 | 2 | 0 | 5 | 0 | 0 | 0 | 0 | 0 | 1 |  |
 
 ## Notes

@@ -60,19 +60,56 @@ function plan(spec,kit){const out={format:'krator-site-plan',version:1,region:sp
     census:{pop:cs.pop,adults:cs.adults,children:cs.children,elders:cs.elders,riders:cs.riders,mounts:cs.mounts,households:cs.households.length},
     records:c.records.map(rec),hedge:loop(c.hedge),fence:loop(c.fence),pasture:c.pasture?{pts:c.pasture.pts.map(p=>[r2(p[0]),r2(p[1])]),ha:r2(c.pasture.ha)}:null,
     short:(c.short||[]).slice()});}
-  /* the roads: each camp's gate to the site, by the world's own router (the grade held, cliffs avoided) */
-  if(SP.road&&typeof ROADS!=='undefined'){const to={name:S.id,x:S.x,z:S.z,r:SP.road.r==null?600:SP.road.r};
-   site.camps.forEach((C,i)=>{const R=ROADS.route({name:C.id,x:C.gate.x,z:C.gate.z,r:0},to);
-    if(!R||!R.pts||R.pts.length<2){out.errors.push(C.id+': no road to the site');return;}
-    /* the router starts on its own grid: the track begins at the gate itself */
-    const rest=R.pts.filter(p=>Math.hypot(p[0]-C.gate.x,p[1]-C.gate.z)>1),p1=rest[0],d1=Math.hypot(p1[0]-C.gate.x,p1[1]-C.gate.z),e1=p1[2]==null?HL(p1[0],p1[1]):p1[2];
-    /* the gate's height held to the road's grade from the router's first point (the ground is shaped to the road) */
-    const g=.075*d1,eg=e1+Math.max(-g,Math.min(g,HL(C.gate.x,C.gate.z)-e1));
-    const pts=[[C.gate.x,C.gate.z,eg]].concat(rest);
-    site.roads.push({id:S.id+'/road/'+i,from:C.id,to:S.id,hw:SP.road.hw==null?R.hw:SP.road.hw,pts:pts.map(p=>[r2(p[0]),r2(p[1]),r2(p[2]==null?0:p[2])]),
-     length_m:Math.round(R.length_m),maxGrade:Math.round((R.maxGrade||0)*1e4)/1e4});});}
+  /* the hamlets (core/hamlet): each village searched from its spot (an offset from the site, or a bearing and a
+     distance), laid out by KHAMLET.village on the world's land with the site's town as its link */
+  if(SP.hamlets)site.hamlets=[];
+  for(const Hs of SP.hamlets||[]){const id=S.id+'/hamlet/'+Hs.id,look=Hs.look==null?3000:Hs.look;
+   const near=Hs.near?[S.x+Hs.near[0],S.z+Hs.near[1]]:[S.x+Math.sin(Hs.bearing*Math.PI/180)*Hs.km*1000,S.z-Math.cos(Hs.bearing*Math.PI/180)*Hs.km*1000];
+   const at=siteFor(near,look,HAMLET_R);if(!at){out.errors.push(id+': no ground for a village within '+look+' m of its spot');continue;}
+   if(typeof KHAMLET==='undefined'){out.errors.push(id+': core/hamlet is not on the page');continue;}
+   const v=KHAMLET.village({id,world:spec.world,culture:Hs.culture||SP.culture,focus:Hs.focus,site:at,link:{x:S.x,z:S.z},dims:kit.dims,
+    ground:{ok:groundOk},popMax:Hs.pop});
+   if(v.error)out.errors.push(id+': '+v.error);
+   const main=(v.lanes||[]).find(l=>l.main)||(v.lanes||[])[0],end=main?main.pts[main.pts.length-1]:[v.site.x,v.site.z];
+   site.hamlets.push({id,name:Hs.name||(Hs.focus+' village'),focus:Hs.focus,culture:Hs.culture||SP.culture,site:{x:r2(v.site.x),z:r2(v.site.z)},
+    end:{x:r2(end[0]),z:r2(end[1])},census:{pop:v.census.pop,households:v.census.households},
+    green:v.green?{x:r2(v.green.x),z:r2(v.green.z),w:v.green.w,d:v.green.d,ry:Math.round((v.green.ry||0)*1e4)/1e4}:null,
+    records:v.records.map(r=>({id:r.id,key:r.key,role:r.role,pending:!!r.pending,x:r2(r.x),z:r2(r.z),ry:Math.round(r.ry*1e4)/1e4,w:r.w,d:r.d,h:r.h})),
+    lanes:(v.lanes||[]).map(l=>({id:l.id,w:l.w,main:!!l.main,pts:l.pts.map(p=>[r2(p[0]),r2(p[1])])})),error:v.error||null});}
+  /* the roads: each camp's gate and each village's lane end to the site, by the world's own router (the grade held,
+     cliffs avoided) */
+  if(SP.road&&typeof ROADS!=='undefined'){const to={name:S.id,x:S.x,z:S.z,r:SP.road.r==null?600:SP.road.r},hw=SP.road.hw;
+   /* road.join: each road runs to the nearest point of the site's roads already laid when that is nearer than the
+      town's reach, and takes that road's height there, so the roads share a trunk instead of meeting the town side by
+      side at different grades (busy-keller's road bake joins its network the same way) */
+   const toFor=at=>{if(!SP.road.join||!site.roads.length)return to;let best=null,bd=Math.hypot(at.x-S.x,at.z-S.z)-to.r;
+    for(const R of site.roads)for(const p of R.pts){const d=Math.hypot(p[0]-at.x,p[1]-at.z);if(d<bd){bd=d;best=p;}}
+    return best?{name:S.id+'/junction',x:best[0],z:best[1],r:0,e:best[2]}:to;};
+   const lay=(fromId,at)=>{const T=toFor(at),R=road(site.roads.length,S.id,fromId,at,T,hw);if(!R){out.errors.push(fromId+': no road to the site');return;}
+    if(T.e!=null){const L=R.pts[R.pts.length-1];L[0]=r2(T.x);L[1]=r2(T.z);L[2]=r2(T.e);R.joins=true;}site.roads.push(R);};
+   site.camps.forEach(C=>lay(C.id,C.gate));
+   (site.hamlets||[]).forEach(V=>lay(V.id,V.end));}
   out.sites.push(site);}
+ /* the roads between the towns (spec.links: [a, b, {hw, r}]): from one site's reach to the other's */
+ if(spec.links&&typeof ROADS!=='undefined'){out.links=[];
+  for(const L of spec.links){const A=out.sites.find(s=>s.id===L[0]),B=out.sites.find(s=>s.id===L[1]),o=L[2]||{};
+   if(!A||!B){out.errors.push('link '+L[0]+'-'+L[1]+': a site is missing');continue;}
+   const R=ROADS.route({name:A.id,x:A.x,z:A.z,r:o.r==null?2000:o.r},{name:B.id,x:B.x,z:B.z,r:o.r==null?2000:o.r});
+   if(!R||!R.pts||R.pts.length<2){out.errors.push('link '+A.id+'-'+B.id+': no route');continue;}
+   out.links.push({id:A.id+'/link/'+B.id,from:A.id,to:B.id,hw:o.hw==null?R.hw:o.hw,pts:R.pts.map(p=>[r2(p[0]),r2(p[1]),r2(p[2]==null?HL(p[0],p[1]):p[2])]),
+    length_m:Math.round(R.length_m),maxGrade:Math.round((R.maxGrade||0)*1e4)/1e4});}}
  out.hash=hash(out);return out;}
+/* one road from a point (a camp's gate, a village's lane end) to a site, as a record: the router starts on its own grid,
+   so the road begins at the point itself, its height there held to the road's grade from the router's first point (the
+   ground is shaped to the road) */
+function road(n,siteId,fromId,at,to,hw){const R=ROADS.route({name:fromId,x:at.x,z:at.z,r:0},to);
+ if(!R||!R.pts||R.pts.length<2)return null;
+ const rest=R.pts.filter(p=>Math.hypot(p[0]-at.x,p[1]-at.z)>1),p1=rest[0],d1=Math.hypot(p1[0]-at.x,p1[1]-at.z),e1=p1[2]==null?HL(p1[0],p1[1]):p1[2];
+ const g=.075*d1,eg=e1+Math.max(-g,Math.min(g,HL(at.x,at.z)-e1));
+ const pts=[[at.x,at.z,eg]].concat(rest);
+ return{id:siteId+'/road/'+n,from:fromId,to:siteId,hw:hw==null?R.hw:hw,pts:pts.map(p=>[r2(p[0]),r2(p[1]),r2(p[2]==null?0:p[2])]),
+  length_m:Math.round(R.length_m),maxGrade:Math.round((R.maxGrade||0)*1e4)/1e4};}
+const HAMLET_R=120;   /* a village's ground: core/hamlet wants a 45 m disc of good ground at its green; its houses, lanes and works reach farther */
 function hash(P){const s=JSON.stringify(P,(k,v)=>k==='hash'||k==='log'||k==='ms'?undefined:v);let h=0x811c9dc5;
  for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0;}return('00000000'+h.toString(16)).slice(-8);}
 /* the plan against the world as it stands (a stale bake, ground that moved): every camp whole, its records on good
@@ -85,7 +122,18 @@ function check(P,opt){opt=opt||{};const problems=[],counts={sites:0,camps:0,reco
    if(k.overlaps)problems.push(C.id+': '+k.overlaps+' overlapping boxes');if(k.offGround)problems.push(C.id+': '+k.offGround+' boxes off good ground');
    if(k.outside)problems.push(C.id+': '+k.outside+' boxes outside its hedge');
    if(!(C.census.pop>=10&&C.census.households>0))problems.push(C.id+': '+C.census.pop+' people in '+C.census.households+' households');}
-  for(const R of S.roads){counts.roads++;const a=R.pts[0],C=S.camps.find(c=>c.id===R.from);
-   if(!C||Math.hypot(a[0]-C.gate.x,a[1]-C.gate.z)>5)problems.push(R.id+': does not start at its camp\'s gate');}}
+  for(const V of S.hamlets||[]){counts.hamlets=(counts.hamlets||0)+1;counts.records+=V.records.length;
+   if(V.error)problems.push(V.id+': '+V.error);
+   /* the generator's own rules (core/hamlet's test): no two boxes overlap (touching allowed), each box's corners and
+      centre on good ground */
+   const ok=opt.groundOk||groundOk,RS=V.records.map(r=>KHAMLET.rect(r.x,r.z,Math.cos(r.ry),-Math.sin(r.ry),r.w,r.d));let ov=0,off=0;
+   for(let i=0;i<RS.length;i++){for(let j=i+1;j<RS.length;j++)if(KHAMLET.overlap(RS[i],RS[j],0))ov++;
+    if(!KHAMLET.corners(RS[i]).concat([[RS[i].x,RS[i].z]]).every(q=>ok(q[0],q[1])))off++;}
+   if(ov)problems.push(V.id+': '+ov+' overlapping boxes');if(off)problems.push(V.id+': '+off+' boxes off good ground');
+   if(!(V.census.pop>0&&V.records.length>0))problems.push(V.id+': '+V.census.pop+' people, '+V.records.length+' buildings');}
+  for(const R of S.roads){counts.roads++;const a=R.pts[0],C=S.camps.find(c=>c.id===R.from),V=(S.hamlets||[]).find(h=>h.id===R.from),p=C?C.gate:V?V.end:null;
+   if(!p||Math.hypot(a[0]-p.x,a[1]-p.z)>5)problems.push(R.id+': does not start at its '+(V?'village\'s lane end':'camp\'s gate'));}}
+ for(const L of P.links||[]){counts.links=(counts.links||0)+1;const A=P.sites.find(s=>s.id===L.from),B=P.sites.find(s=>s.id===L.to),a=L.pts[0],b=L.pts[L.pts.length-1];
+  if(!A||!B||Math.hypot(a[0]-A.x,a[1]-A.z)>4000||Math.hypot(b[0]-B.x,b[1]-B.z)>4000)problems.push(L.id+': its ends are not at its towns');}
  return{ok:!problems.length,problems,counts};}
 return{SLOPE,groundOk,discOk,siteFor,plan,hash,check,slopeAt};})();

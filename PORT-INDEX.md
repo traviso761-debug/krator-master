@@ -6,7 +6,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 
 | Build | Frags | KB | [G data] | [G shader] | [G native] | [web] | [draw] | split | exporter | probe | assert |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| [`core`](core/PORT.md) | 267 | 3436 | 1838 | 428 | 106 | 409 | 655 | 11 | atmos, biome |  |  |
+| [`core`](core/PORT.md) | 267 | 3450 | 1844 | 428 | 106 | 418 | 655 | 11 | atmos, biome |  |  |
 | [`settlements/dalab`](settlements/dalab/PORT.md) | 55 | 560 | 123 | 27 | 10 | 30 | 371 | 7 | atmos | yes | yes |
 | [`settlements/dhelv`](settlements/dhelv/PORT.md) | 18 | 230 | 72 | 0 | 0 | 152 | 6 | 2 | atmos | yes | yes |
 | [`settlements/girder`](settlements/girder/PORT.md) | 39 | 636 | 135 | 7 | 91 | 47 | 356 | 14 | atmos | yes | yes |
@@ -92,9 +92,10 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`biomes/throne`](biomes/throne/PORT.md) | 22 | 330 | 57 | 22 | 3 | 53 | 193 | 2 | biome, atmos | yes | yes |
 | [`biomes/xanadu`](biomes/xanadu/PORT.md) | 22 | 261 | 27 | 0 | 2 | 28 | 204 | 5 | biome, atmos | yes | yes |
 | [`openworld/isle-demo`](openworld/isle-demo/PORT.md) | 18 | 200 | 90 | 10 | 0 | 93 | 7 | 1 |  |  | yes |
-| [`openworld/pinnacle`](openworld/pinnacle/PORT.md) | 4 | 6 | 6 | 0 | 0 | 0 | 0 | 0 |  |  | yes |
+| [`openworld/pinnacle`](openworld/pinnacle/PORT.md) | 4 | 7 | 7 | 0 | 0 | 0 | 0 | 0 |  |  | yes |
+| [`openworld/xanadu-oidong-highrift`](openworld/xanadu-oidong-highrift/PORT.md) | 5 | 11 | 11 | 0 | 0 | 0 | 0 | 0 |  |  | yes |
 | [`core/charactermodels`](core/charactermodels/PORT.md) | 7 | 285 | 23 | 0 | 0 | 108 | 154 | 0 |  |  | yes |
-| **all** | 2813 | 34703 | 8252 (24%) | 957 (3%) | 876 (3%) | 4968 (14%) | 19651 (57%) | 312 | | | |
+| **all** | 2818 | 34728 | 8269 (24%) | 957 (3%) | 876 (3%) | 4976 (14%) | 19651 (57%) | 312 | | | |
 
 ## Host-shell copies
 
