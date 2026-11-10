@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 90 (45%) | 10 (5%) | 0 (0%) | 93 (46%) | 7 (3%) |
+| KB | 91 (45%) | 10 (5%) | 0 (0%) | 93 (46%) | 7 (3%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -15,7 +15,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/43-world-isles.js` | 9.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/46-world-config.js` | 1.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/47-world-kits.js` | 1.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/48-world-hamlets.js` | 27.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/48-world-hamlets.js` | 28.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/48f-world-found.js` | 6.1 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/48k-world-camps.js` | 9.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the bands' camps: the site, KCAMP.pitch and KCAMP.census (core/camp); no three.js, no geometry, no DOM |
 | `src/48n-world-herders.js` | 2.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
@@ -28,7 +28,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/88h-world-hamlets.js` | 27.4 | [web] | 27 | 0 | 0 | 0 | 2 | 5 | 0 | 6 | 0 | 0 | 0 |  |
 | `src/88k-world-camps.js` | 12.2 | [web] | 16 | 0 | 0 | 0 | 2 | 2 | 0 | 4 | 0 | 0 | 0 | draws 48k's records (CAT's tent set, the hedge cut by BR_RUN); core/tags; the keep-clear hook; window._camps checks |
 | `src/88p-world-colony.js` | 6.7 | [draw] | 12 | 0 | 0 | 0 | 0 | 3 | 0 | 1 | 0 | 0 | 0 |  |
-| `src/88t-world-towns.js` | 25.9 | [web] | 18 | 1 | 0 | 0 | 9 | 3 | 0 | 9 | 0 | 0 | 0 | draws the towns 48t planned (the city page's 60, read in place as a factory) with an HLOD (full near, baked proxies, massing far; the bake is a drawing step) and binds the export to one town; the plans and the sim are data (48t) |
+| `src/88t-world-towns.js` | 25.6 | [web] | 17 | 1 | 0 | 0 | 9 | 3 | 0 | 9 | 0 | 0 | 0 | draws the towns 48t planned (the city page's 60, read in place as a factory) with an HLOD (full near, baked proxies, massing far; the bake is a drawing step) and binds the export to one town; the plans and the sim are data (48t) |
 | `src/89-world-geysers.js` | 6.1 | [web] | 2 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 | 0 | 0 | lays the geyser kit at the vents and builds each site near the camera; the layout (GEYSER.cluster) is data for the port |
 
 ## Notes

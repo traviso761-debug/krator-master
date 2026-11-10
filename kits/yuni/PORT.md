@@ -27,7 +27,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `targets/sheet/75-ys-emit.js` | 2.4 | [draw] | 4 | 3 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `targets/sheet/82-ys-sky.js` | 1.3 | [web] | 4 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `targets/sheet/89-ys-sheetui.js` | 4.5 | [web] | 1 | 0 | 10 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `targets/sheet/98-ys-take.js` | 7.9 | [web] | 1 | 0 | 2 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
+| `targets/sheet/98-ys-take.js` | 8.0 | [web] | 1 | 0 | 2 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `targets/sheet/99-tail.html` | 0.1 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 
 ## Notes

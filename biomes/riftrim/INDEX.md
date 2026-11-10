@@ -6,7 +6,7 @@ The rift rim: the high country round the Rift, three biomes on one kit (RRIM.bio
 
 Docs: `BIOME-API.md`, `KNOWN_ISSUES.md`, `PLAN.md`, `PORT.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/riftrim-barrens.html`, `dist/riftrim-gorge.html`, `dist/riftrim-ice.html`, `dist/riftrim-lakes.html`, `dist/riftrim-pass.html`, `dist/riftrim.html`
+Built output (never open it; edit `src/` and rebuild): `dist/riftrim-barrens.html`, `dist/riftrim-gorge.html`, `dist/riftrim-hearths.html`, `dist/riftrim-ice.html`, `dist/riftrim-lakes.html`, `dist/riftrim-pass.html`, `dist/riftrim.html`
 
 Build: `cd biomes/riftrim && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -30,18 +30,32 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `44v-host-landlib.js` | 6 |  |
-| `45-host-stage.js` | 26 | the climate fields, cached (the land's fieldsAt: (32); the host binding (50); the ground (62); the rock bodies (KSTACKS, 44w: the plateau's sli (199); the water (221) |
+| `44v-host-landlib.js` | 7 |  |
+| `45-host-stage.js` | 27 | the climate fields, cached (the land's fieldsAt: (32); the host binding (50); the ground (63); the rock bodies (KSTACKS, 44w: the plateau's sli (205); the water (227) |
 | `50-biome-riftrim-species.js` | 26 | palettes (23); the tree species (46); harvest (biomes/FRUIT.md; plan section 7: the fr (65); the small plants (60-floor places them), tagged  (76); procedural cards (the fallback when the page car (102); bark textures (near grey, tinted from SPECIES.ba (135); geometries local to this kit (146); materials (the slots are materials.json's famili (175); instanced items (230) |
 | `55-biome-riftrim-trees.js` | 19 | zones from the fields (10); colour (the maths is the core's, BIO.col) (34); helpers (46); the builders: (T, st, lv), T={x,z,y0,sp,H,rb,cro (67); impostors (the far canopy): ebadlands' recipe (132); the pass (160); the passes (data: species, cell, acceptance from (183); one tree alone (biomes/WORLD.md: trees as varian (198) |
 | `60-biome-riftrim-floor.js` | 11 | small plants (23); the zone planters, by rim: (x,z,Z,lv,st) (49); the pass (80) |
 | `70-biome-riftrim.js` | 1 |  |
-| `83-host-far.js` | 3 |  |
+| `83-host-far.js` | 4 |  |
 | `86-host-variants.js` | 15 | materials for instancing (the open world's) (24); harvest: what the kit wrote, one geometry per ma (48); growing the variants (74); drawing: one pool of instances per prototype (91); the far level as octahedral impostors (VARIANTS. (116) |
 | `87-host-kin.js` | 3 |  |
 | `89-host-sky.js` | 2 |  |
 | `89a-host-atmos.js` | 5 |  |
 | `89w-host-water.js` | 4 |  |
 | `89z-host-build.js` | 8 |  |
-| `99-host-take.js` | 18 | the inspector's words (27); the probe's budgets and the kit's own checks (ve (43); the page, handed to the host (126) |
+| `99-host-take.js` | 18 | the inspector's words (27); the probe's budgets and the kit's own checks (ve (43); the page, handed to the host (128) |
 | `99-tail.html` | <1 |  |
+
+## stations/
+
+Each station builds one page (`build.py --station <name>`) from its own fragments, with `src/` or its `base` station.
+
+| Station | Fragments | KB |
+|---|---|---|
+| barrens | 44w-host-land.js | 5 |
+| gorge | 44w-host-land.js | 8 |
+| hearths | 44w-host-land.js, 89b-host-hearths.js | 18 |
+| ice | 44w-host-land.js | 6 |
+| lakes | 44w-host-land.js | 8 |
+| ledge | 44w-host-land.js | 9 |
+| pass | 44w-host-land.js | 6 |

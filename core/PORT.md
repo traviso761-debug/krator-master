@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 1838 (54%) | 428 (12%) | 106 (3%) | 409 (12%) | 655 (19%) |
+| KB | 2166 (48%) | 472 (10%) | 106 (2%) | 1070 (24%) | 698 (15%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -32,6 +32,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `atmos/fx/89-atmos-fx-ashplume.js` | 13.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | opt-in: ATMOS.ashPlume, a volcanic plume (fog, under for airLoad ashAt, shade, deposit, KFAR sources); export/load for Godot; fx/test-ashplume.js |
 | `atmos/fx/89-atmos-fx-deckday.js` | 4.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | opt-in (subfolder): ATMOS.deckLevel (the cloud deck's level by the hour and weather), deckDay, deckIn, provideDeck (visibility in the cloud) |
 | `atmos/fx/89-atmos-fx-dustseason.js` | 2.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `atmos/fx/89-atmos-fx-katabatic.js` | 3.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `atmos/fx/89-atmos-fx-lava.js` | 10.9 | [G shader] | 1 | 0 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 |  |
 | `atmos/fx/89-atmos-fx-lightning.js` | 5.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `atmos/fx/89-atmos-fx-raincover.js` | 9.8 | [draw] | 0 | 0 | 0 | 0 | 0 | 1 | 2 | 2 | 0 | 0 | 0 |  |
@@ -39,7 +40,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `atmos/fx/89-atmos-fx-shimmer.js` | 7.0 | [G shader] | 0 | 0 | 0 | 0 | 0 | 1 | 5 | 0 | 0 | 0 | 0 | opt-in (subfolder): ATMOS.shimmer, the heat shimmer post pass over a KTHERM bake (core/host o.draw), shimmerK its JS twin; a full-screen quad shader in Godot |
 | `atmos/fx/89-atmos-fx-slopewind.js` | 16.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | opt-in: ATMOS.slopeWind, katabatic/anabatic/gap wind and cold pools on baked grids; attach to ATMOS.windAt, provide KHAZ temperature; fx/test-slopewind.js |
 | `atmos/fx/89-atmos-fx-smokegroups.js` | 2.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | opt-in (subfolder): ATMOS.smokeGroups, one smoke cloud a group with its own strength (the gills' steam on the breath); Godot scales the group's GPUParticles3D alpha |
-| `atmos/fx/89-atmos-fx-snowcover.js` | 10.8 | [G shader] | 0 | 0 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 |  |
+| `atmos/fx/89-atmos-fx-snowcover.js` | 11.0 | [G shader] | 0 | 0 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 |  |
 | `atmos/host/89-atmos-c-hostbind.js` | 3.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `atmos/host/89-atmos-e-weatherhost.js` | 6.7 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `atmos/host/89-atmos-h-skyhost.js` | 16.4 | [G native] | 0 | 0 | 0 | 0 | 1 | 1 | 8 | 0 | 0 | 0 | 0 | the sky as a three.js background pass driving the page light; Godot: the Sky material and krator/sky.gd |
@@ -51,6 +52,51 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `atmos/sky/89-atmos-f-skypresets.js` | 7.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the standard sky preset and the colour script by sun altitude (skyLook): Environment and lights in Godot |
 | `atmos/sky/89-atmos-g-sky.js` | 44.4 | [G shader] | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | the atmos_sky chunk, every layer in one fragment: becomes atmos_sky.gdshaderinc for a shader_type sky |
 | `atmos/sky/89-atmos-j-fog.js` | 15.0 | [G native] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `audio/20-core-audio-catalog.js` | 5.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `audio/22-core-audio-cues.js` | 5.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `audio/24-core-audio-soundscape.js` | 8.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `audio/26-core-audio-music.js` | 21.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `audio/lab/build.js` | 5.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `audio/lab/serve_local.js` | 1.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `audio/tools/append_baking_to_stk.js` | 13.6 | [web] | 0 | 0 | 3 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | split: data inside host code |
+| `audio/tools/audit_downloads.js` | 1.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `audio/tools/build_soundtrack_engine.js` | 103.7 | [web] | 0 | 0 | 94 | 38 | 0 | 0 | 0 | 0 | 0 | 2 | 2 | split: data inside host code |
+| `audio/tools/catalog.js` | 8.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `audio/tools/check_five.js` | 1.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `audio/tools/find_sonniss_details.js` | 4.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `audio/tools/finish_cut_display.js` | 8.2 | [web] | 0 | 0 | 0 | 12 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
+| `audio/tools/fix_backticks.js` | 0.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `audio/tools/fix_cut_display_names.js` | 23.8 | [web] | 0 | 0 | 14 | 12 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
+| `audio/tools/fix_join.js` | 0.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `audio/tools/fix_saved_scenes_dropdown.js` | 8.8 | [web] | 0 | 0 | 8 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
+| `audio/tools/insert_matrix.js` | 1.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `audio/tools/install_cut_chain_complete.js` | 17.2 | [web] | 0 | 0 | 16 | 9 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
+| `audio/tools/install_end_to_end_stacking.js` | 14.6 | [web] | 0 | 0 | 11 | 10 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
+| `audio/tools/install_enhanced_combat.js` | 32.4 | [web] | 0 | 0 | 17 | 12 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
+| `audio/tools/install_saved_cuts_soundtrack.js` | 20.8 | [web] | 0 | 0 | 30 | 10 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | split: data inside host code |
+| `audio/tools/install_soundtrack_editor.js` | 29.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `audio/tools/install_soundtrack_js.js` | 1.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `audio/tools/install_stinger_fx.js` | 21.7 | [web] | 0 | 0 | 18 | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
+| `audio/tools/mp3_dur.js` | 1.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `audio/tools/patch_combat_multitrack.js` | 14.4 | [web] | 0 | 0 | 14 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
+| `audio/tools/patch_multi_biome.js` | 18.8 | [web] | 0 | 0 | 22 | 9 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
+| `audio/tools/patch_music_tab.js` | 23.0 | [web] | 0 | 1 | 10 | 12 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `audio/tools/patch_search.js` | 3.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `audio/tools/patch_template_cuts.js` | 2.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `audio/tools/patch_template_search.js` | 6.3 | [web] | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
+| `audio/tools/playback_limits.js` | 3.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `audio/tools/prepare_batch_d.js` | 6.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `audio/tools/prepare_dailysounds.js` | 12.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `audio/tools/soundtrack_engine_code.js` | 258.9 | [web] | 0 | 0 | 217 | 84 | 1 | 0 | 0 | 0 | 0 | 4 | 3 | split: data inside host code |
+| `audio/tools/test_search_queries.js` | 1.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `audio/tools/update_clip_picker.js` | 10.5 | [web] | 0 | 0 | 23 | 7 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | split: data inside host code |
+| `audio/tools/update_clip_picker_playback.js` | 13.4 | [web] | 0 | 0 | 27 | 9 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | split: data inside host code |
+| `audio/tools/update_durations_d.js` | 0.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `audio/tools/update_stk_env_fades.js` | 12.3 | [web] | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
+| `audio/tools/update_stk_stackable.js` | 10.2 | [web] | 0 | 0 | 14 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
+| `audio/tools/update_template_stk_js.js` | 1.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `audio/tools/verify_all_queries.js` | 1.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `audio/tools/verify_soundtrack_build.js` | 2.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `biome/10-core-head.js` | 12.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | its rng already equals KRAND.stream (test-rand.js); its sin-based h3/vnoise/fbm move to core/rand in the biome reseeding event |
 | `biome/20-core-kit.js` | 80.5 | [draw] | 1 | 0 | 0 | 0 | 0 | 4 | 3 | 15 | 0 | 0 | 0 | split: items and buckets on Float32 stores are data; the bake and LOD are three.js |
 | `biome/30-core-foliage.js` | 48.6 | [G shader] | 1 | 5 | 0 | 0 | 0 | 6 | 51 | 0 | 0 | 0 | 0 | foliage card, bark, wind: the shader library |
@@ -79,7 +125,8 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `camp/20-camp-census.js` | 4.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | a band's census (KCAMP.census): no three.js, no geometry, no DOM; test-camp.js |
 | `camp/30-camp-pitch.js` | 13.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 | the pitch (KCAMP.pitch, check): plain records, no three.js (its 'box' is a footprint's corners); test-camp.js |
 | `camp/40-camp-work.js` | 10.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | work camps that migrate: the range's stands, the op log (pitch, strike, march), the move rule, the trees' state; no three.js, no geometry, no DOM |
-| `camp/50-camp-tents.js` | 17.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | tents by role and culture for kits/tents (KCAMP.TENTS, tentFor, tentProgram, tentDims) and the caravan halt (KCAMP.halt): plain records, no three.js, no DOM; kits/tents/tests/test-tents.js |
+| `camp/50-camp-outlaw.js` | 17.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `camp/50-camp-tents.js` | 17.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | tents by role and culture for kits/tents (KCAMP.TENTS, tentFor, tentProgram, tentDims) and the caravan halt (KCAMP.halt): plain records, no three.js, no DOM; kits/tents/tests/test-tents.js |
 | `catalog/catalog-files.js` | 0.6 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | node tools only: a catalog name to its file (files.json) |
 | `catalog/inspector.js` | 19.0 | [web] | 11 | 0 | 19 | 6 | 0 | 2 | 0 | 0 | 2 | 0 | 0 |  |
 | `catalog/krator-asset-engine.js` | 11.5 | [web] | 22 | 3 | 1 | 9 | 4 | 5 | 0 | 0 | 0 | 0 | 0 |  |
@@ -103,16 +150,16 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `city/54-city-host-construct.js` | 7.6 | [draw] | 4 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `clock/20-core-clock.js` | 5.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the world clock (GODOT-PLAN.md Phase 1); becomes WorldClock.gd, tested by test-clock.js |
 | `clock/opt/21-core-clock-flush.js` | 2.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | opt-in (subfolder): KCLOCK.flush, the copper flush's pulse at the rains' onset; KSeason.flush in kseason.gd (golden-flush.json) |
-| `door/10-core-door.js` | 17.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | KDOOR: doors as records by stable id, open/close/toggle/nearest, the swing, walk blocks in KWALK, save deltas, export() |
+| `door/10-core-door.js` | 17.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | KDOOR: doors as records by stable id, open/close/toggle/nearest, the swing, walk blocks in KWALK, save deltas, export() |
 | `door/20-core-glass.js` | 3.7 | [G native] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | KGLASS: the glass kinds as data (SPEC) for a StandardMaterial3D with alpha; material(THREE, kind) is the three.js side |
-| `door/30-core-door-leaf.js` | 5.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 7 | 0 | 4 | 0 | 0 | 0 |  |
+| `door/30-core-door-leaf.js` | 8.5 | [draw] | 0 | 0 | 0 | 0 | 0 | 7 | 0 | 5 | 0 | 0 | 0 |  |
 | `door/90-core-door-host.js` | 4.9 | [web] | 1 | 0 | 4 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | KDOORHOST: pose a leaf (an instance or an Object3D), the frame tick, the E key and its tip |
 | `edits/40-core-edits.js` | 10.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the edit log (ADD, MOVE, SET, REMOVE): no three.js, no DOM |
 | `engine/10-core.js` | 3.4 | [web] | 0 | 0 | 2 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `engine/27-mat.js` | 6.4 | [G shader] | 12 | 0 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 |  |
 | `engine/30-geo.js` | 23.1 | [draw] | 44 | 0 | 0 | 0 | 0 | 25 | 0 | 0 | 0 | 0 | 0 |  |
 | `engine/36-def.js` | 6.5 | [draw] | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `engine/36o-open.js` | 13.3 | [draw] | 9 | 0 | 0 | 0 | 0 | 7 | 0 | 4 | 0 | 0 | 0 |  |
+| `engine/36o-open.js` | 14.0 | [draw] | 11 | 0 | 0 | 0 | 0 | 7 | 0 | 5 | 0 | 0 | 0 |  |
 | `engine/36s-stair.js` | 11.1 | [draw] | 1 | 0 | 0 | 0 | 0 | 10 | 0 | 0 | 0 | 0 | 0 |  |
 | `engine/37-wk-rec.js` | 2.2 | [draw] | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `engine/90-scene.js` | 6.4 | [web] | 15 | 0 | 1 | 0 | 2 | 1 | 0 | 0 | 0 | 0 | 0 |  |
@@ -125,8 +172,8 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `export/07-core-export.js` | 37.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | the krator-world container (EXPORT: register, world, check, glb, compact, terrain): no THREE, no DOM; test-export.js; read by godot/krator/world_import.gd (core/export/README.md) |
 | `export/09-core-export-adapters.js` | 14.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | core/tags', core/atmos', the material records' and core/water's parts until those modules register themselves (water: the surfaces, bed bytes, the twin's probes); EXPORT.ground for a build without its own terrain part; EXPORT.groundLayers for a ground hook's world-uv layers |
 | `export/10-core-export-scene.js` | 15.4 | [web] | 6 | 3 | 0 | 0 | 0 | 1 | 4 | 3 | 0 | 0 | 0 | the scene reader (lifted from Iziz's 94, 2026-10-20): reads a page's three.js scene at export time (canvas 2D only for the PNG bakes of procedural maps), draws nothing; Iziz's 94 and the isle demo's 62 use it |
-| `furnish/50-core-furnish.js` | 8.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `furnish/52-core-furnish-draw.js` | 2.5 | [draw] | 1 | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
+| `furnish/50-core-furnish.js` | 8.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `furnish/52-core-furnish-draw.js` | 3.5 | [draw] | 1 | 0 | 0 | 0 | 0 | 2 | 3 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `furnish/53-core-furnish-host.js` | 0.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `hamlet/10-hamlet-wood.js` | 4.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `hamlet/12-hamlet-gather.js` | 2.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
@@ -135,6 +182,8 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `hamlet/18-hamlet-names.js` | 1.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `hamlet/20-hamlet-cultures.js` | 5.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `hamlet/30-hamlet-village.js` | 25.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 | the village generator: plain records; its "geom" hits are its own box and rectangle maths, no three.js |
+| `hamlet/32-hamlet-platform.js` | 35.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 14 | 0 | 0 | 0 | 0 | 0 |  |
+| `hamlet/34-hamlet-trade.js` | 14.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `hamlet/40-hamlet-felling.js` | 2.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `hazard/20-core-hazard.js` | 48.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `hazard/21-core-hazard-flow.js` | 6.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | opt-in: KHAZ.moveAt, drift, poolK: a hazard's move read (move.pull toward its core) and gas pooled on a band's floor (shape.pool); test-hazard-flow.js; core/hazard/GODOT.md "Moving and pooling" |
@@ -142,12 +191,12 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `host/90-host-camera.js` | 11.7 | [web] | 7 | 0 | 0 | 10 | 0 | 2 | 0 | 0 | 1 | 0 | 0 |  |
 | `host/91-host-loop.js` | 8.2 | [web] | 3 | 0 | 1 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `host/92-host-panel.js` | 14.8 | [web] | 0 | 0 | 10 | 8 | 0 | 0 | 0 | 0 | 1 | 3 | 0 | split: data inside host code |
-| `host/92k-host-keys.js` | 9.6 | [web] | 0 | 0 | 7 | 2 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
+| `host/92k-host-keys.js` | 16.3 | [web] | 0 | 0 | 7 | 2 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `host/93-host-inspect.js` | 10.6 | [web] | 2 | 0 | 12 | 4 | 1 | 2 | 0 | 0 | 1 | 0 | 0 | the inspector over core/tags records (I, click): host shell |
 | `host/93-host-stocks.js` | 21.8 | [web] | 1 | 0 | 12 | 7 | 6 | 1 | 0 | 0 | 0 | 0 | 0 | what things hold and the stocks panel (O) over o.holds (core/simulation): host shell; Voth's 56e is the standard |
 | `host/94-host-marks.js` | 12.0 | [web] | 7 | 2 | 10 | 8 | 0 | 3 | 0 | 0 | 1 | 3 | 2 | marks (P): host shell; the marks file is plain data |
 | `host/94-host-polytool.js` | 5.7 | [web] | 6 | 0 | 5 | 5 | 0 | 2 | 0 | 0 | 1 | 0 | 0 |  |
-| `host/95-host-probe.js` | 6.2 | [web] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 |  |
+| `host/95-host-probe.js` | 6.5 | [web] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 |  |
 | `host/95b-host-seat.js` | 7.4 | [web] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | the probe's seat sweeps (contact, clear, doors, stairs) over the drawn scene, opt-in; the measuring is KSEAT (terrain/38a) |
 | `host/96-host-pictures.js` | 6.1 | [web] | 4 | 2 | 7 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the picture menu, drawn off screen: host shell |
 | `host/97-host-minimap.js` | 3.4 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the minimap panel from the records (KMAP.mount, the M key): host shell |
@@ -176,7 +225,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `shader/07-core-kwarp.js` | 4.4 | [G shader] | 0 | 0 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 |  |
 | `shader/r128.js` | 2.0 | [G shader] | 3 | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 |  |
 | `shadow/10-core-shadow.js` | 3.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `shadow/host/12-core-shadow-host.js` | 9.7 | [web] | 1 | 0 | 1 | 1 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | the page's renderer and sun: Godot's DirectionalLight3D shadows instead |
+| `shadow/host/12-core-shadow-host.js` | 10.7 | [web] | 1 | 0 | 1 | 1 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | the page's renderer and sun: Godot's DirectionalLight3D shadows instead |
 | `simulation/77-sim-0-core.js` | 9.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `simulation/77-sim-1-world.js` | 3.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `simulation/77-sim-2-places.js` | 9.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
@@ -200,8 +249,8 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `simulation/77-sim-8-export.js` | 4.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `simulation/77-sim-9-debug.js` | 5.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `sockets/37-sockets.js` | 2.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | socket declarations and the pack registry |
-| `sockets/38-symbols.js` | 12.5 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | canvas 2D symbol painters: bake to PNG |
-| `sockets/80-cultures.js` | 20.5 | [draw] | 2 | 1 | 0 | 0 | 0 | 19 | 0 | 0 | 0 | 0 | 0 | split: the packs are data; the drawing kit bakes |
+| `sockets/38-symbols.js` | 13.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | canvas 2D symbol painters: bake to PNG |
+| `sockets/80-cultures.js` | 21.2 | [draw] | 2 | 1 | 0 | 0 | 0 | 20 | 0 | 0 | 0 | 0 | 0 | split: the packs are data; the drawing kit bakes |
 | `space/20-core-space.js` | 4.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `tags/50-core-tags.js` | 18.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the tag registry: ids, the KRAND uid (GDScript twin ktags.gd, passing in Godot 4.5), norm, query, audit, export; test-tags.js. Used by Yuni |
 | `tags/52-core-tags-vocab.js` | 19.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the one vocabulary; the catalog's lists copied, test-tags.js fails on drift |
@@ -224,7 +273,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `terrain/38c-core-landforms.js` | 39.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | opt-in: KRELIEF.slump, runout, gully, terraces, maar, relay, stepcut (LANDFORMS.md) and KRELIEF.waters, seven kinds on KRELIEF.shape/at/apply; no Godot twin (a page bakes them into its KFIELD) |
 | `terrain/38d-core-landforms-net.js` | 21.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | opt-in: KRELIEF.grabenNet (three-trend graben net on stepcut) and KRELIEF.ripples (giant flood ripples); test-landforms-net.js |
 | `terrain/39-core-cavern.js` | 39.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `terrain/39b-core-speleo.js` | 18.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 12 | 0 | 0 | 0 | 0 | 0 | opt-in: KSPELEO, speleothems placed on a built KCAVERN by KRAND per cell, meshed as plain arrays (riftrim's hold; the limestone dress; the crystal caves' megacrystal beams, blocks and druse); an ArrayMesh in Godot |
+| `terrain/39b-core-speleo.js` | 19.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 12 | 0 | 0 | 0 | 0 | 0 | opt-in: KSPELEO, speleothems placed on a built KCAVERN by KRAND per cell, meshed as plain arrays (riftrim's hold; the limestone dress; the crystal caves' megacrystal beams, blocks and druse); an ArrayMesh in Godot |
 | `terrain/39c-core-karst.js` | 31.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | opt-in: KKARST, a solution cave's plan (branchwork or maze on joints, chambers, levels, keyholes, sumps, sinks, dolines, cenotes, the spring; or hypogene: feeders, chambers and cupolas at the table, rising maze or spongework storeys, gypsum crusts for KSPELEO, a warm spring and vents, scalding pools and pooled bad air) as records for KCAVERN, KRELIEF, core/water and core/hazard; a karst KSTRATA recipe |
 | `terrain/39d-core-cavern-floor.js` | 2.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `terrain/39f-core-geode.js` | 14.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
@@ -263,7 +312,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `water/ext/54b-core-water-kinds-ext-draw.js` | 10.7 | [G shader] | 0 | 0 | 0 | 0 | 0 | 4 | 10 | 2 | 0 | 0 | 0 |  |
 | `water/ext/55-core-water-confluence.js` | 10.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
 | `water/ext/55b-core-water-confluence-draw.js` | 5.6 | [G shader] | 0 | 0 | 0 | 0 | 0 | 1 | 5 | 0 | 0 | 0 | 0 |  |
-| `water/ext/56-core-water-breakup.js` | 8.1 | [G shader] | 0 | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 |  |
+| `water/ext/56-core-water-breakup.js` | 8.0 | [G shader] | 0 | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 |  |
 | `water/ext/57-core-water-audit.js` | 18.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |  |
 | `water/ext/58-core-water-mirror.js` | 10.3 | [web] | 0 | 0 | 1 | 1 | 0 | 0 | 3 | 1 | 0 | 0 | 0 | split: data inside host code |
 | `water/ext/58-core-water-shore.js` | 3.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
@@ -275,7 +324,9 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `water/ext/62b-core-water-flood-draw.js` | 8.0 | [G shader] | 0 | 0 | 0 | 0 | 0 | 1 | 7 | 0 | 0 | 0 | 0 | the flood ribbon lifted to the level in the vertex shader, on drawFlow's look; GLSL checked against the twin, not judged on a GPU |
 | `water/geyser/52-core-water-geyser.js` | 16.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `water/geyser/52b-core-water-geyser-draw.js` | 13.5 | [G shader] | 0 | 0 | 0 | 0 | 0 | 3 | 12 | 0 | 0 | 0 | 0 |  |
-| `world/41-world-fields.js` | 39.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `water/geyser/52c-core-water-thermal.js` | 28.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `water/geyser/52d-core-water-thermal-draw.js` | 7.7 | [G shader] | 0 | 0 | 0 | 0 | 0 | 3 | 10 | 0 | 0 | 0 | 0 |  |
+| `world/41-world-fields.js` | 40.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `world/42-world-roads.js` | 11.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `world/45-world-host.js` | 5.1 | [web] | 9 | 0 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `world/48s-world-sites.js` | 8.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |

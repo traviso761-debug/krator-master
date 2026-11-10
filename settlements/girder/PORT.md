@@ -49,7 +49,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/87-pathviz.js` | 3.0 | [web] | 5 | 0 | 4 | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/90-atmos-host.js` | 1.8 | [web] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | binds core/atmos (init, the frame hook, the sky's light): host shell, moves to core/host/ |
 | `src/90w-brook-water.js` | 1.7 | [draw] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the brook as a `WATER.flow` through `WATER.drawFlow` (core/water, 2026-10-20): the station line from 75-terrain's `brookStations` and `JUNGLE_BROOK.level` is data, the ribbon is core/water's draw; loads after `90-atmos-host.js` |
-| `src/98-start.js` | 8.9 | [web] | 1 | 0 | 1 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | KHOST.take: Girder's views, records, inspector words, palette, editor world (pieces drawn on their own; batched ones deferred), cutaway units, minimap, and its own frame (the sky's clock and two-pass draw, the ticks, the sun, atmos): host shell |
+| `src/98-start.js` | 9.0 | [web] | 1 | 0 | 1 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | KHOST.take: Girder's views, records, inspector words, palette, editor world (pieces drawn on their own; batched ones deferred), cutaway units, minimap, and its own frame (the sky's clock and two-pass draw, the ticks, the sun, atmos): host shell |
 | `src/99-tail.html` | 0.1 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 
 ## Notes

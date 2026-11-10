@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 43 (23%) | 0 (0%) | 4 (2%) | 59 (31%) | 82 (44%) |
+| KB | 43 (23%) | 0 (0%) | 4 (2%) | 59 (31%) | 83 (44%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -31,7 +31,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/rim/50-biome-savrim-species.js` | 8.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: the species records (harvest, Köppen, fire) are data; the materials and items are draw |
 | `src/rim/52-biome-savrim-east.js` | 6.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the e rim's cousins: records (harvest, Köppen, fire) at load; BIO.kin deltas made on first use (cousins()) |
 | `src/rim/55-biome-savrim-trees.js` | 3.8 | [draw] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | builders: the fan palm and the umbrella thorn (the hyperjungle's G.tree), every number from KRAND |
-| `src/rim/56-biome-savrim-southeast.js` | 12.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | split: the se rim's records (harvest, Köppen) are data; its own builders (rust miombo, incense, cloud avocado, leaning fern) and items draw; the Bowl's cousins by BIO.kin |
+| `src/rim/56-biome-savrim-southeast.js` | 12.9 | [draw] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | split: the se rim's records (harvest, Köppen) are data; its own builders (rust miombo, incense, cloud avocado, leaning fern) and items draw; the Bowl's cousins by BIO.kin |
 | `src/rim/60-biome-savrim-floor.js` | 3.5 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the grass passes (rings by the burn's age, the blind grass's lanes): placement from KRAND cells, drawn by BIO.put |
 | `src/rim/70-biome-savrim.js` | 0.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the kit's surface and kitEnd |
 | `src/rim/83-host-far.js` | 3.7 | [web] | 2 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 |  |

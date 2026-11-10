@@ -41,3 +41,11 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `89w-host-water.js` | 10 |  |
 | `99-host-take.js` | 15 | the inspector's words (67); the probe's budgets and the kit's own checks (ve (77); the page, handed to the host (127) |
 | `99-tail.html` | <1 |  |
+
+## stations/
+
+Each station builds one page (`build.py --station <name>`) from its own fragments, with `src/` or its `base` station.
+
+| Station | Fragments | KB |
+|---|---|---|
+| caverns | 44k-host-karst.js, 89x-host-caverns.js | 29 |

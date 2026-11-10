@@ -16,7 +16,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `10-isle-frame.js` | 8 | 0. A TOWN'S FRAME, AND THE GROUND VOTH'S EDITOR  (1) |
-| `15-isle-tune.js` | 76 **big** | 0b. THE SIM'S TUNING (P7b: PLAN.md section 9) (1) |
+| `15-isle-tune.js` | 78 **big** | 0b. THE SIM'S TUNING (P7b: PLAN.md section 9) (1) |
 | `20-isle-ground.js` | 7 | 1. THE CITY PAGE'S GROUND: THE REGION'S RASTERS, (1) |
 | `30-isle-programme.js` | 21 | 2. THE TOWNS' PROGRAMMES (PLAN.md SECTION 8) AS  (1) |
 | `32-isle-city.js` | 50 **big** | 3. THE CITY PLAN: ONE KCITY INSTANCE A TOWN (1) |
@@ -30,7 +30,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `45-isle-sim-checks.js` | 11 | 7f. THE SIM'S CHECKS, PER TOWN (P7b) (1) |
 | `46-isle-stocks.js` | 2 | 7g. THE STOCKS ID MAP (P7b) (1) |
 | `47-isle-trade.js` | 13 | 7h. THE CANOE LINE BETWEEN THE TOWNS (P7c) (1) |
-| `47b-isle-build.js` | 12 | 7h5. BUILDING AND UPKEEP (PLAN-POLITICS.md secti (1) |
+| `47b-isle-build.js` | 13 | 7h5. BUILDING AND UPKEEP (PLAN-POLITICS.md secti (1) |
 | `47c-isle-crime.js` | 11 | 7h1. CRIME AND PUNISHMENT (2026-11-02) (1) |
 | `47f-isle-found.js` | 27 | 7h7. FOUNDING: A FARMING CAMP THAT BECOMES A HAM (1) |
 | `47h-isle-hamlets.js` | 58 **big** | 7h2. THE HAMLETS IN THE SIM (core/hamlet H5, 202 (1) |
@@ -48,7 +48,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `57-isle-run.js` | 2 | 6b. THE SIM'S RUN LOOP ON THE CITY PAGE (P7b) (1) |
 | `58-isle-protos.js` | 10 | 4b. KIT PIECES BUILT ONCE, FLATTENED FOR INSTANC (1) |
 | `59-isle-citizens.js` | 6 | 5c. A FEW CITIZENS DRAWN NEAR THE CAMERA (P7b) (1) |
-| `60-isle-draw.js` | 29 | 5. DRAWING A TOWN: GROUND, SEA, STREETS, THE KIT (1) |
+| `60-isle-draw.js` | 32 **big** | 5. DRAWING A TOWN: GROUND, SEA, STREETS, THE KIT (1) |
 | `61-isle-canoes.js` | 3 | 5d. THE CANOE LINE'S VESSELS AT THE STOP (P7c) (1) |
 | `62-isle-export-scene.js` | 10 | 5e. THE DRAWN TOWN IN THE EXPORT (P8, 2026-10-20 (1) |
 | `63-isle-doors.js` | 10 | 4d. THE DOORS: the Vernacular's leaves on core/d (1) |

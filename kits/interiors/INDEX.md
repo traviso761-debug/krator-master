@@ -18,7 +18,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `00-head.html` | 6 |  |
 | `10-core.js` | 10 | Interiors core: namespace, rng, geometry (1) |
 | `20-rooms.js` | 6 | ROOM(): room registration (1) |
-| `30-programs.js` | 16 | Room programs: what each room kind needs (1) |
+| `30-programs.js` | 19 | Room programs: what each room kind needs (1) |
 | `40-grid.js` | 12 | Occupancy grid and walk search (1) |
 | `45-placer.js` | 30 **big** | The placer: furnishRoom() (1) |
 | `46-planner.js` | 32 **big** | The planner: planBuilding() (1) |

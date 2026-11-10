@@ -49,3 +49,15 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `98-host-views.js` | 5 |  |
 | `99-host-take.js` | 13 | the inspector's words (5); the probe's budgets and the kit's own checks (ve (18); the host's own checks (verify.py runs them), eac (26); the page, handed to the host (89) |
 | `99-tail.html` | <1 |  |
+
+## stations/
+
+Each station builds one page (`build.py --station <name>`) from its own fragments, with `src/` or its `base` station.
+
+| Station | Fragments | KB |
+|---|---|---|
+| cloud | 45b-host-land.js, 87-host-cloud.js, 89-host-sky.js, 89w-host-water.js, 98-host-views.js | 23 |
+| descent | 45a-host-descent-land.js, 45b-host-land.js, 87-host-descent.js, 89-host-sky.js, 89w-host-water.js, 98-host-views.js | 23 |
+| floor | 45b-host-land.js, 87-host-floor.js, 89-host-sky.js, 89w-host-water.js, 98-host-views.js | 23 |
+| gills | 45b-host-land.js, 87-host-gills.js, 89-host-sky.js, 89w-host-water.js, 89x-host-fountain.js, 98-host-views.js | 37 |
+| ranges | 45b-host-land.js, 87-host-ranges.js, 89-host-sky.js, 89w-host-water.js, 98-host-views.js | 36 |

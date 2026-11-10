@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 19 (19%) | 0 (0%) | 2 (2%) | 42 (43%) | 34 (35%) |
+| KB | 19 (18%) | 0 (0%) | 2 (2%) | 39 (39%) | 42 (41%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -14,19 +14,19 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `src/00-head.html` | 1.2 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `src/44v-host-landlib.js` | 8.1 | [draw] | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/45-host-stage.js` | 28.9 | [web] | 22 | 3 | 3 | 1 | 0 | 3 | 8 | 1 | 0 | 0 | 0 |  |
+| `src/45-host-stage.js` | 29.6 | [web] | 23 | 3 | 3 | 1 | 0 | 3 | 10 | 1 | 0 | 0 | 0 |  |
 | `src/50-biome-greenstep-species.js` | 9.4 | [draw] | 0 | 1 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/55-biome-greenstep-zones.js` | 3.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/60-biome-greenstep-floor.js` | 5.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/70-biome-greenstep.js` | 0.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/83-host-far.js` | 3.2 | [web] | 2 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/86-host-cavern.js` | 4.3 | [draw] | 6 | 0 | 0 | 0 | 2 | 1 | 6 | 0 | 0 | 0 | 0 | a station's KCAVERN plan meshed (the plan is data in the station's 44w; its chunks cross over as meshes) |
+| `src/86-host-cavern.js` | 6.1 | [draw] | 6 | 0 | 0 | 0 | 2 | 1 | 7 | 0 | 0 | 0 | 0 | a station's KCAVERN plan meshed (the plan is data in the station's 44w; its chunks cross over as meshes) |
 | `src/87-host-kin.js` | 4.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/89-host-sky.js` | 1.9 | [G native] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/89a-host-atmos.js` | 4.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/89w-host-water.js` | 2.8 | [draw] | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/89z-host-build.js` | 4.7 | [web] | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
-| `src/99-host-take.js` | 14.0 | [draw] | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 2 | 0 | 0 | 0 |  |
+| `src/89z-host-build.js` | 5.3 | [web] | 1 | 0 | 0 | 0 | 2 | 1 | 0 | 1 | 0 | 0 | 0 | split: data inside host code |
+| `src/99-host-take.js` | 15.5 | [draw] | 2 | 0 | 0 | 0 | 0 | 1 | 1 | 2 | 0 | 0 | 0 |  |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 
 ## Notes

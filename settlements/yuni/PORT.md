@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 130 (15%) | 13 (2%) | 18 (2%) | 167 (19%) | 539 (62%) |
+| KB | 130 (15%) | 13 (2%) | 18 (2%) | 170 (20%) | 539 (62%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -52,7 +52,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/71-catalog.js` | 3.6 | [draw] | 0 | 1 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/72-lights.js` | 5.1 | [G native] | 0 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/75-terrain.js` | 16.7 | [draw] | 32 | 1 | 0 | 0 | 0 | 5 | 5 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
-| `src/76-doors.js` | 36.1 | [web] | 14 | 0 | 5 | 1 | 0 | 1 | 6 | 2 | 0 | 0 | 0 | split: data inside host code; 2026-11-03: the doors' state is core/door's (KDOOR; this poses the leaves), DOORS.reach the audit on core/walk; 2026-10-15: its buttons (walk, doors, cutaway, export) in #ui, adopted by core/host's bar |
+| `src/76-doors.js` | 38.9 | [web] | 14 | 0 | 5 | 1 | 0 | 1 | 6 | 2 | 0 | 0 | 0 | split: data inside host code; 2026-11-03: the doors' state is core/door's (KDOOR; this poses the leaves), DOORS.reach the audit on core/walk; 2026-10-15: its buttons (walk, doors, cutaway, export) in #ui, adopted by core/host's bar |
 | `src/77-export.js` | 9.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | Yuni's part of core/export (2026-10-18): the fixtures section from the core/tags records 51-fixtures.js makes, with their host, and the interiors section (the krator-interiors contract) from the interior plans. Reads plain data at export time only |
 | `src/80-camera.js` | 11.9 | [web] | 2 | 0 | 2 | 6 | 0 | 0 | 0 | 1 | 2 | 0 | 0 | on core/host (2026-10-15): ctl shim (theta from +x), setView capture, CAM_FREE and the walk in camClamp, VIEWS, the walker's keys, camFrame and camDraw |
 | `src/81-glow.js` | 6.9 | [G native] | 11 | 2 | 0 | 0 | 0 | 2 | 3 | 1 | 0 | 0 | 0 | shader hook inside |
@@ -64,7 +64,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/88-underview.js` | 3.2 | [web] | 3 | 0 | 2 | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/88b-yuni-minimap.js` | 5.5 | [web] | 1 | 0 | 2 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code (the KMAP records are the plan; the panel and camera hooks are host) |
 | `src/89-sheetui.js` | 4.1 | [web] | 1 | 0 | 10 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/98-start.js` | 7.8 | [web] | 1 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | KHOST.take (2026-10-15): views, palette (Yuni's furniture and plants), editor world (YWORLD), cutaway units, F for Yuni's walk, the page's frame in a view subscriber |
+| `src/98-start.js` | 8.1 | [web] | 1 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | KHOST.take (2026-10-15): views, palette (Yuni's furniture and plants), editor world (YWORLD), cutaway units, F for Yuni's walk, the page's frame in a view subscriber |
 | `src/99-tail.html` | 0.1 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 
 ## Notes

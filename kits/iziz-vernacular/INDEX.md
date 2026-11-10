@@ -18,7 +18,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `69c-vern-helpers.js` | 22 | primitives (local frame; y = BASE of the piece) (51); walls, frames, plinths (60); roofs (ridge along local x unless noted) (88); openings (128); porches, stairs, yards (154) |
 | `69e-vern-hollow.js` | 15 |  |
 | `69e5-iziz-openings.js` | 19 |  |
-| `69e6-vern-autobody.js` | 11 |  |
+| `69e6-vern-autobody.js` | 12 |  |
 | `69f-iziz-fixtures.js` | 3 |  |
 | `70-vern-dwellings.js` | 24 | POOR (27); MIDDLE (86); RICH (151) |
 | `71-vern-trade.js` | 19 | shop row: three units under one salvaged-sheet r (18); tavern: the deco long hall in timber, cross-gabl (44); workshops (72); scrap smithy: forge under a salvaged roof on pip (107); market canopy: a great two-tier rain roof over r (135); warehouse: long timber shed clad in board and sh (158) |

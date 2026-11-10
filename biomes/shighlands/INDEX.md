@@ -33,7 +33,7 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `55-biome-shigh-trees.js` | 35 **big** | zones from the fields (12); colour (the maths is the core's, BIO.col) (34); spiral helpers (53); keep-clear between trees (86); foliage helpers (93); the builders (108); impostors (the far canopy) (280); the pass (305); the passes (data: species, cell, acceptance from (364); one tree alone (biomes/WORLD.md: trees as varian (382) |
 | `60-biome-shigh-floor.js` | 14 | small plants (23); the zone planters (66); the pass (126) |
 | `70-biome-shigh.js` | <1 |  |
-| `84-host-ground.js` | 15 | the ground (9); the water (the tarn, the bog pools) (104); THE CLOUD SEA (108); the mist (112) |
+| `84-host-ground.js` | 15 | the ground (13); the water (the tarn, the bog pools) (108); THE CLOUD SEA (112); the mist (116) |
 | `85-host-far.js` | 3 |  |
 | `89-host-sky.js` | 2 |  |
 | `89z-host-atmos.js` | 4 |  |
@@ -41,3 +41,13 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `89zx-host-build.js` | 6 |  |
 | `99-host-take.js` | 17 | the inspector's words (47); the probe's budgets and the kit's own checks (ve (63); the page, handed to the host (144) |
 | `99-tail.html` | <1 |  |
+
+## stations/
+
+Each station builds one page (`build.py --station <name>`) from its own fragments, with `src/` or its `base` station.
+
+| Station | Fragments | KB |
+|---|---|---|
+| common | 45-host-stage.js, 89z-host-atmos.js, 99-host-take.js | 19 |
+| conifers | 44s-host-land.js, 62-biome-shigh-conifers.js, 89-host-sky.js, 98-host-views.js | 28 |
+| fellfield | 44s-host-land.js, 62-biome-shigh-fell.js, 86-host-ice.js, 89-host-sky.js, 98-host-views.js | 25 |

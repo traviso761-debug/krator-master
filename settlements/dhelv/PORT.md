@@ -14,7 +14,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `src/00-head.html` | 1.2 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `src/41-dhelv-layout.js` | 34.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/45-dhelv-bio.js` | 10.2 | [web] | 0 | 0 | 0 | 0 | 3 | 2 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
+| `src/45-dhelv-bio.js` | 9.5 | [web] | 0 | 0 | 0 | 0 | 3 | 1 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/48-dhelv-flows.js` | 3.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the vents and THRONE.flowHistory over the layout's land: data |
 | `src/49-dhelv-grove.js` | 15.1 | [web] | 18 | 0 | 0 | 0 | 2 | 4 | 10 | 1 | 0 | 0 | 0 | the variants' growing and instancing (a port grows them in its own nursery); the placement (a seeded stream on the shelf's mask) is data |
 | `src/72-dhelv-nav.js` | 11.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the nav graph and its checks (core/walk, the cavern): data |

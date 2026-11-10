@@ -9,6 +9,10 @@ Built output (never open it; edit `src/` and rebuild): `dist/lizardmen.html`
 Build: `cd kits/lizardmen && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
 
+From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
+
+From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `94-host-polytool.js`, `92k-host-keys.js`
+
 ## src/
 
 | Fragment | KB | Sections (line) |

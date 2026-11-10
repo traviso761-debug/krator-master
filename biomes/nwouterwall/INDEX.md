@@ -42,3 +42,12 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `89z-host-build.js` | 8 | the air on everything drawn (once, after the bak (35) |
 | `99-host-take.js` | 14 | the inspector's words: a plant names its species (8); the probe's budgets and the kit's own checks (ve (21); the page, handed to the host (93) |
 | `99-tail.html` | <1 |  |
+
+## stations/
+
+Each station builds one page (`build.py --station <name>`) from its own fragments, with `src/` or its `base` station.
+
+| Station | Fragments | KB |
+|---|---|---|
+| taiga | 44s-host-site.js | 3 |
+| yeti | 44s-host-site.js, 86y-host-yeti.js | 9 |

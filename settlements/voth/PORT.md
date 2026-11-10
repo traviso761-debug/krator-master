@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 1190 (40%) | 0 (0%) | 106 (4%) | 469 (16%) | 1216 (41%) |
+| KB | 1191 (40%) | 0 (0%) | 106 (4%) | 469 (16%) | 1216 (41%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -79,7 +79,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/98-start.js` | 0.5 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the first view and the first frame, after every fragment: host shell |
 | `src/99-tail.html` | 0.1 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `targets/voth-city/00-head.html` | 5.7 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
-| `targets/voth-city/15-vc-tune.js` | 98.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `targets/voth-city/15-vc-tune.js` | 99.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/voth-city/30-vc-site.js` | 26.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | the site read into the plan: ground, landmarks, districts, avenues, highways, wall |
 | `targets/voth-city/31-vc-voth.js` | 47.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 106 | 0 | 0 | 0 | 0 | 0 | where Voth's own builders run; they push primitives (VOTH.PRIMS), no three.js |
 | `targets/voth-city/31b-vc-chinampa.js` | 8.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 18 | 0 | 0 | 0 | 0 | 0 | the chinampa beds as primitive records (VOTH.PRIMS shim) and flora and hut records; KRAND per bed, no three.js |
@@ -97,7 +97,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `targets/voth-city/40c-vc-palace-plan.js` | 35.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/voth-city/40d-vc-blueprint.js` | 34.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 28 | 0 | 0 | 0 | 0 | 0 | the Palace's storeys from its blueprint's sheets as records (rooms, halls, doors, stairs); prims for the summit (sheet F8) |
 | `targets/voth-city/40e-vc-palace-doors.js` | 8.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the Palace's terrace doors and the suites' exits as records (tunnels out through the tier's stone to its face); no three.js, no DOM |
-| `targets/voth-city/41-vc-building-interiors.js` | 34.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | every building's interior as records (VC.IX): the lots' shells from the kit models' boxes (or a model's own `ix`), the buildings off the lots from Voth's builder log and the city's models, programmes, planned and furnished once per type, residents, the residence rule's shortfall, the report and job table, the export |
+| `targets/voth-city/41-vc-building-interiors.js` | 34.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | every building's interior as records (VC.IX): the lots' shells from the kit models' boxes (or a model's own `ix`), the buildings off the lots from Voth's builder log and the city's models, programmes, planned and furnished once per type, residents, the residence rule's shortfall, the report and job table, the export |
 | `targets/voth-city/42-vc-sim-places.js` | 70.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | phase B as records: the new buildings placed (lot conversions, VC.placedLot, the berth), the wells, every building, room, well, open and outdoor place as SIM places, the 90% work-post audit |
 | `targets/voth-city/43-vc-sim-nav.js` | 30.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | phase C: the pedestrian layer as NAV records (streets, plazas, park walks, canton terraces, flights, bridges, causeways), registered with SIM.nav.layer; its audit |
 | `targets/voth-city/44-vc-sim-people.js` | 25.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | phase C: the census's people as SIM actors, jobs dealt by the walk (SIM.nav.field), slaves, the report and its checks |
@@ -105,7 +105,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `targets/voth-city/46-vc-sim-economy.js` | 9.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | phase E as records: the producers by kind and kit model, the warehouses and their opening stock, what the items are made of, the carts, the import routes; the economy report |
 | `targets/voth-city/47-vc-sim-animals.js` | 16.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the animals as records: the pens' herds (species, spots, needs), the arena's beasts, its bouts by command and their results; the report |
 | `targets/voth-city/55-vc-host.js` | 55.4 | [web] | 36 | 5 | 8 | 14 | 2 | 14 | 0 | 10 | 2 | 2 | 0 |  |
-| `targets/voth-city/56-vc-interiors-host.js` | 97.2 | [web] | 35 | 0 | 0 | 0 | 3 | 7 | 9 | 7 | 0 | 0 | 0 | the interiors furnished (kits/interiors) and drawn instanced per storey; what a canton's cut shows (the keys, bar and planes are core/host's 99) |
+| `targets/voth-city/56-vc-interiors-host.js` | 97.3 | [web] | 35 | 0 | 0 | 0 | 3 | 7 | 9 | 7 | 0 | 0 | 0 | the interiors furnished (kits/interiors) and drawn instanced per storey; what a canton's cut shows (the keys, bar and planes are core/host's 99) |
 | `targets/voth-city/56b-vc-building-interiors-host.js` | 72.8 | [web] | 26 | 1 | 7 | 5 | 4 | 4 | 13 | 6 | 2 | 0 | 0 | the kit models probed for their boxes (the one browser step the shells need), a building's interior drawn, the cutaway on every building in view (the height grid; core/host's unit VC.CUTB), the density overlay, the report |
 | `targets/voth-city/56c-vc-citizens-host.js` | 20.1 | [web] | 13 | 0 | 0 | 0 | 5 | 14 | 0 | 3 | 0 | 0 | 0 | phase C: the citizens stepped from the frame loop, the near ones drawn (instanced figures), the day run headless (VC.simDay) |
 | `targets/voth-city/56d-vc-inspect-host.js` | 19.0 | [web] | 1 | 0 | 3 | 2 | 4 | 2 | 0 | 0 | 0 | 0 | 0 | the pause (the frame hooks handed an animation time that stands still) and the citizens' inspector (the drawn bodies picked against the cursor's ray, a read-only card) |

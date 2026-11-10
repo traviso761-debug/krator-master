@@ -37,3 +37,15 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `98z-host-mirror.js` | 1 |  |
 | `99-host-take.js` | 12 | the inspector's words: a plant names its species (34); the probe's budgets and the kit's own checks (ve (52); the page, handed to the host (100) |
 | `99-tail.html` | <1 |  |
+
+## stations/
+
+Each station builds one page (`build.py --station <name>`) from its own fragments, with `src/` or its `base` station.
+
+| Station | Fragments | KB |
+|---|---|---|
+| basin | 00-head.html, 45-host-stage.js, 89-host-sky.js, 99-host-take.js | 23 |
+| gorge | 00-head.html, 45-host-stage.js, 89-host-sky.js, 99-host-take.js | 22 |
+| hoar | 00-head.html, 45-host-stage.js, 89-host-sky.js, 89s-host-snow.js, 99-host-take.js | 21 |
+| hollow | 00-head.html, 45-host-stage.js, 89-host-sky.js, 99-host-take.js | 22 |
+| trench | 00-head.html, 45-host-stage.js, 89-host-sky.js, 99-host-take.js | 25 |

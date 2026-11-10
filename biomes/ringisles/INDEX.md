@@ -6,7 +6,7 @@ The Ring Sea isles biome kit (the isle demo, settlements/isle-demo/PLAN.md): one
 
 Docs: `BIOME-API.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PLAN-STATIONS.md`, `PORT.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/ringisles-lagoon.html`, `dist/ringisles.html`
+Built output (never open it; edit `src/` and rebuild): `dist/ringisles-high.html`, `dist/ringisles-lagoon.html`, `dist/ringisles.html`
 
 Build: `cd biomes/ringisles && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -38,13 +38,22 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `66-biome-ringisles-world.js` | 6 |  |
 | `70-biome-ringisles.js` | 3 |  |
 | `82-host-sky.js` | <1 |  |
-| `84-host-ground.js` | 16 | the paint (per vertex) (21); the layers (the library, or procedural without i (49); the meshes (114); the small waters: the tide pools and the brine p (154) |
-| `88-host-build.js` | 2 |  |
+| `84-host-ground.js` | 18 | the paint (per vertex) (21); the layers (the library, or procedural without i (49); the meshes (127); the small waters: the tide pools and the brine p (167) |
+| `88-host-build.js` | 3 |  |
 | `89-host-sky.js` | 2 |  |
 | `89a-host-atmos.js` | 2 |  |
 | `89f-host-fauna.js` | 4 |  |
 | `89w-host-sea.js` | 5 |  |
-| `89zz-host-core.js` | 6 |  |
+| `89zz-host-core.js` | 5 |  |
 | `98z-host-core.js` | 1 |  |
 | `99-host-take.js` | 18 | the inspector's words (41); the probe's budgets and the kit's own checks (ve (58); the page, handed to the host (133) |
 | `99-tail.html` | <1 |  |
+
+## stations/
+
+Each station builds one page (`build.py --station <name>`) from its own fragments, with `src/` or its `base` station.
+
+| Station | Fragments | KB |
+|---|---|---|
+| high | 45-host-stage.js, 87-host-cloud.js, 87b-host-lod.js, 89x-host-streams.js | 35 |
+| lagoon | 45-host-stage.js, 89-host-sky.js | 19 |

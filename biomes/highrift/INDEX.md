@@ -33,7 +33,7 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `60-biome-hrift-place.js` | 5 |  |
 | `70-biome-hrift.js` | <1 |  |
 | `84-host-ground.js` | 11 |  |
-| `85-host-far.js` | 5 |  |
+| `85-host-far.js` | 4 |  |
 | `88-host-vents.js` | 3 |  |
 | `89-host-sky.js` | 2 |  |
 | `89a-host-atmos.js` | 3 |  |
@@ -42,3 +42,14 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `89z-host-build.js` | 5 |  |
 | `99-host-take.js` | 11 |  |
 | `99-tail.html` | <1 |  |
+
+## stations/
+
+Each station builds one page (`build.py --station <name>`) from its own fragments, with `src/` or its `base` station.
+
+| Station | Fragments | KB |
+|---|---|---|
+| coulee | 44z-host-site.js | <1 |
+| gjar | 44z-host-site.js | <1 |
+| mirror | 44z-host-site.js, 87-host-larch.js | 2 |
+| wedge | 44z-host-site.js | <1 |

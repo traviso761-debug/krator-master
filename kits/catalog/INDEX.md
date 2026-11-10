@@ -18,7 +18,7 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | File | KB | Sections (line) |
 |---|---|---|
 | `krator-master-buildings-beast-rider.js` | 69 **big** | Mav's Refuge (24); Girder (677) |
-| `krator-master-buildings-voth.js` | 128 **big** |  |
+| `krator-master-buildings-voth.js` | 142 **big** |  |
 | `krator-master-furniture-arms.js` | 54 **big** |  |
 | `krator-master-furniture-ashnomad.js` | 120 **big** | Seating (390); Tables and vessels (514); Storage (658); Light (840); Textiles and screens (934); Fire (1009); Riders and herders (1090); Work: the chitin-cutters (1226); Tanning: the hide and chitin worker (job tanning (1325); Smithy (1419) |
 | `krator-master-furniture-beast-rider.js` | 72 **big** | Harvested from kits/catalog/krator-master-buildi (101) |

@@ -28,4 +28,4 @@ Each target adds its own fragments to `src/` and builds one output.
 
 | Target | Fragments | KB |
 |---|---|---|
-| `sheet` | `00-head.html`, `20-ys-stage.js`, `30-ys-world.js`, `70-ys-sheet.js`, `75-ys-emit.js`, `82-ys-sky.js`, `89-ys-sheetui.js`, `98-ys-take.js`, `99-tail.html` | 25 |
+| `sheet` | `00-head.html`, `20-ys-stage.js`, `30-ys-world.js`, `70-ys-sheet.js`, `75-ys-emit.js`, `82-ys-sky.js`, `89-ys-sheetui.js`, `98-ys-take.js`, `99-tail.html` | 26 |

@@ -49,7 +49,7 @@ Each station builds one page (`build.py --station <name>`) from its own fragment
 | Station | Fragments | KB |
 |---|---|---|
 | belt | 45-host-stage.js, 80-host-ground.js, 89w-host-water.js, 89z-host-build.js, 99-host-take.js | 54 |
-| bench | 45-host-stage.js, 80-host-ground.js, 89w-host-water.js, 89z-host-build.js, 99-host-take.js | 55 |
+| bench | 45-host-stage.js, 80-host-ground.js, 89w-host-water.js, 89z-host-build.js, 99-host-take.js | 56 |
 | erim | 44l-host-land.js, 87e-host-own.js | 14 |
 | north | 44l-host-land.js | 3 |
 | serim | 44l-host-land.js | 3 |

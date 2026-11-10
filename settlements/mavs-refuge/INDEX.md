@@ -52,7 +52,7 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `80-camera.js` | 7 | 25. CAMERA: MAV'S REFUGE ON core/host (1) |
 | `81-glow.js` | 7 | 26. NIGHT GLOW (1) |
 | `82-daynight.js` | 6 | 27. DAY / NIGHT (1) |
-| `83-mr-walk.js` | 4 | 25c. THE WALK: core/walk under the doors (KWALK; (1) |
+| `83-mr-walk.js` | 5 | 25c. THE WALK: core/walk under the doors (KWALK; (1) |
 | `84-flyers.js` | 23 | 84. FLYERS (1) |
 | `84a-flyers-routes.js` | 15 |  |
 | `84b-flyers-animals.js` | 21 |  |
@@ -61,5 +61,5 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `85-probe.js` | <1 | 29. PROBE (1) |
 | `86-inspect.js` | 3 | 27. INSPECTOR WORDS (core/host's inspector) (1) |
 | `87-pathviz.js` | 3 | 28. PATH VISUALIZER (1) |
-| `98-start.js` | 9 | 99. START: MAV'S REFUGE ON core/host (1) |
+| `98-start.js` | 10 | 99. START: MAV'S REFUGE ON core/host (1) |
 | `99-tail.html` | <1 |  |

@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 16 (17%) | 0 (0%) | 6 (7%) | 36 (38%) | 37 (38%) |
+| KB | 8 (9%) | 0 (0%) | 6 (6%) | 36 (37%) | 47 (48%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -26,7 +26,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/89-host-sky.js` | 1.4 | [G native] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/89a-host-atmos.js` | 2.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the page's binding of core/atmos (bindHost, bindWeather) and core/hazard's ambient fields: host code, not data |
 | `src/89b-host-twins.js` | 3.2 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the Twins' records (data) and their plumes and glow on core/atmos (drawn) |
-| `src/89c-host-oasis.js` | 7.9 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: the oasis's hazard records and the kit's night-pool state (data); its springs and geysers drawn on core/water (52b) |
+| `src/89c-host-oasis.js` | 10.2 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: the oasis's hazard records and the kit's night-pool state (data); its springs and geysers drawn on core/water (52b) |
 | `src/89zz-host-shadow.js` | 1.0 | [G native] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/99-host-take.js` | 10.4 | [draw] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 |  |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |

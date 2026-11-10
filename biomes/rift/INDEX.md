@@ -36,7 +36,7 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `88-host-build.js` | 2 |  |
 | `89-host-sky.js` | 2 |  |
 | `89a-host-atmos.js` | 3 |  |
-| `89f-host-far.js` | 5 |  |
+| `89f-host-far.js` | 6 |  |
 | `89w-host-water.js` | 7 |  |
 | `99-host-take.js` | 6 | the inspector's words (6); the probe's budgets and the kit's own checks (ve (18); fruit (biomes/FRUIT.md) (26); the page, handed to the host (48) |
 | `99-tail.html` | <1 |  |
@@ -49,6 +49,6 @@ Each station builds one page (`build.py --station <name>`) from its own fragment
 |---|---|---|
 | highland | 44f-host-far-data.js, 44s-host-station.js, 45m-host-map.js, 85-host-tower.js, 87-host-families.js, 89w-host-water.js | 27 |
 | jungle | 44f-host-far-data.js, 44s-host-station.js, 45m-host-map.js, 89w-host-water.js | 29 |
-| maze | 00-head.html, 44z-host-site.js, 48-rift-maze.js, 49-host-stage.js, 84-host-rock.js, 85-host-speleo.js, 89x-host-air.js, 89z-host-build.js, 98v-host-views.js, 99-host-take.js, 99-tail.html | 63 |
+| maze | 00-head.html, 44z-host-site.js, 48-rift-maze.js, 49-host-stage.js, 84-host-rock.js, 85-host-speleo.js, 89x-host-air.js, 89z-host-build.js, 98v-host-views.js, 99-host-take.js, 99-tail.html | 62 |
 | plateau | 44c-host-ruin-data.js, 44f-host-far-data.js, 44s-host-station.js, 45m-host-map.js, 85-host-tower.js, 87-host-families.js, 89w-host-water.js | 637 |
 | savannah | 44f-host-far-data.js, 44s-host-station.js, 45m-host-map.js, 85-host-tower.js, 87-host-cousins.js, 89w-host-water.js | 21 |

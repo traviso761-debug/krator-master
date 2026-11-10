@@ -31,7 +31,7 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `70-biome-geyser.js` | 3 |  |
 | `82-host-sky.js` | <1 |  |
 | `84-host-ground.js` | 24 | the paint (per vertex) (24); the layers (the library, or procedural without i (47); the meshes (137) |
-| `85-host-far.js` | 5 |  |
+| `85-host-far.js` | 4 |  |
 | `88-host-build.js` | 3 |  |
 | `89-host-sky.js` | 2 |  |
 | `89w-host-sea.js` | 4 |  |
@@ -39,3 +39,16 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `89zz-host-shadow.js` | 1 |  |
 | `99-host-take.js` | 22 | the inspector's words (63); the probe's budgets and the kit's own checks (ve (80); the page, handed to the host (162) |
 | `99-tail.html` | <1 |  |
+
+## stations/
+
+Each station builds one page (`build.py --station <name>`) from its own fragments, with `src/` or its `base` station.
+
+| Station | Fragments | KB |
+|---|---|---|
+| basin | 44s-host-site.js | 7 |
+| corona | 44s-host-site.js | 7 |
+| field | 45-host-stage.js, 47-host-land.js, 75-biome-geyserfield-flora.js, 85-host-far.js, 88-host-build.js, 89-host-sky.js, 89w-host-sea.js, 89w-host-water.js, 98-host-field-take.js | 30 |
+| ice | 44s-host-site.js, 87-host-ice.js | 9 |
+| puna | 44s-host-site.js | 6 |
+| stills | 87-host-stills.js | 6 |

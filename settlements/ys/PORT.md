@@ -6,25 +6,15 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 313 (17%) | 42 (2%) | 105 (6%) | 110 (6%) | 1231 (68%) |
+| KB | 257 (22%) | 18 (1%) | 96 (8%) | 106 (9%) | 717 (60%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
 | Fragment | KB | Tag | THREE | canvas | DOM | events | loop | geom | shader | inst | ray | store | net | Note |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `src/00-head.html` | 1.4 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
-| `src/10-core.js` | 3.0 | [web] | 0 | 0 | 2 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
-| `src/12-stats.js` | 1.2 | [web] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 1 | 0 | 0 | 0 |  |
-| `src/30-kit.js` | 3.0 | [draw] | 9 | 0 | 0 | 0 | 0 | 2 | 2 | 5 | 0 | 0 | 0 |  |
-| `src/32-surfaces.js` | 7.7 | [draw] | 16 | 0 | 0 | 0 | 0 | 8 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/34-kitdefs.js` | 10.1 | [draw] | 25 | 2 | 0 | 0 | 0 | 27 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/35-furn-frame.js` | 7.1 | [draw] | 2 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/36-decor.js` | 13.2 | [draw] | 12 | 0 | 0 | 0 | 0 | 3 | 0 | 1 | 0 | 0 | 0 |  |
-| `src/38-helpers2.js` | 7.8 | [draw] | 14 | 0 | 0 | 0 | 0 | 9 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/42-offices.js` | 15.5 | [draw] | 12 | 0 | 0 | 0 | 0 | 11 | 0 | 2 | 0 | 0 | 0 |  |
-| `src/46-bunker.js` | 4.7 | [draw] | 6 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/48-library.js` | 3.5 | [draw] | 4 | 0 | 0 | 0 | 0 | 8 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/50-registry.js` | 0.6 | [draw] | 3 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/52-sky-abc.js` | 31.1 | [G native] | 19 | 0 | 0 | 0 | 0 | 15 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/54-mat-concrete.js` | 4.4 | [draw] | 8 | 2 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/56-sky-d.js` | 5.9 | [G native] | 3 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
@@ -34,48 +24,19 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/60-ys-registries.js` | 3.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/61-hyk-shell.js` | 15.8 | [draw] | 15 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/62-hyk-helpers.js` | 23.6 | [draw] | 5 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/62-robotics.js` | 8.3 | [draw] | 7 | 0 | 0 | 0 | 0 | 7 | 0 | 1 | 0 | 0 | 0 |  |
-| `src/64-houses-def.js` | 8.8 | [draw] | 4 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/64-hyk-accrete.js` | 16.6 | [draw] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/64b-ys-ruins.js` | 7.4 | [draw] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/65-hyk-spans.js` | 27.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | draws through the Hykkousoi shell kit (hykPut, hykLathe, hykTube): no `THREE.` for the counts to see |
 | `src/66-hyk-furniture.js` | 26.2 | [draw] | 0 | 0 | 0 | 0 | 0 | 73 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/66-office-c.js` | 4.6 | [draw] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/69-mat-salvage.js` | 16.7 | [draw] | 34 | 5 | 0 | 0 | 0 | 14 | 5 | 1 | 0 | 0 | 0 |  |
-| `src/69b-vern-mat.js` | 14.4 | [G shader] | 28 | 8 | 0 | 0 | 0 | 25 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/69c-vern-helpers.js` | 22.3 | [draw] | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/69e-vern-hollow.js` | 12.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/69h-host-0-lib.js` | 7.5 | [draw] | 3 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/69h-host-a-facet.js` | 7.5 | [draw] | 3 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/69h-host-b-bastion.js` | 11.6 | [draw] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/69h-host-c-arcades.js` | 10.1 | [draw] | 9 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/69h-host-d-stalks.js` | 8.8 | [draw] | 6 | 0 | 0 | 0 | 0 | 9 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/69h-host-e-bellhall.js` | 12.5 | [draw] | 8 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/69i-host-ancients.js` | 14.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/69j-host-offices.js` | 5.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/69w-worn.js` | 12.3 | [draw] | 8 | 1 | 0 | 0 | 0 | 1 | 0 | 1 | 0 | 0 | 0 |  |
-| `src/70-hl-tex.js` | 26.8 | [draw] | 0 | 19 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | canvas painters: TEX.def or bake |
 | `src/70-hyk-housing.js` | 68.3 | [draw] | 5 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/70-port-core.js` | 38.0 | [draw] | 10 | 0 | 0 | 0 | 0 | 7 | 0 | 2 | 0 | 0 | 0 |  |
-| `src/70-vern-dwellings.js` | 23.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/71-hl-mat.js` | 8.3 | [draw] | 15 | 0 | 0 | 0 | 0 | 25 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/71-hyk-shops.js` | 50.6 | [draw] | 2 | 0 | 0 | 0 | 0 | 39 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/71-port-terrain.js` | 21.0 | [draw] | 12 | 2 | 0 | 0 | 0 | 1 | 10 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/71-sky-h.js` | 5.4 | [G native] | 3 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/71-vern-trade.js` | 19.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/71b-hl-motif.js` | 32.9 | [draw] | 0 | 2 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | canvas painters: TEX.def or bake |
-| `src/71w-port-sea.js` | 3.9 | [G shader] | 3 | 0 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | vendored from the port kit: the sea's binding of core/water |
-| `src/72-datacenter.js` | 7.8 | [draw] | 6 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/72-hl-helpers.js` | 14.1 | [draw] | 3 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/72-hyk-hospitality.js` | 33.9 | [draw] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/72-port-kit.js` | 9.4 | [draw] | 44 | 4 | 0 | 0 | 0 | 31 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/73-hl-carve.js` | 32.0 | [draw] | 7 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/73-hyk-sacred.js` | 14.1 | [draw] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/73-police.js` | 4.7 | [draw] | 3 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/73-port-edges.js` | 17.2 | [draw] | 11 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/74-hospital.js` | 5.3 | [draw] | 3 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/74-port-dress.js` | 11.6 | [draw] | 24 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/74-rep-dwell.js` | 32.7 | [draw] | 4 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/74a-hyk-amphitriton.js` | 29.4 | [draw] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/74b-hyk-citadel.js` | 22.7 | [draw] | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | draws through the Hykkousoi shell kit (hykPut, hykLathe, hykTube): no `THREE.` for the counts to see |
 | `src/74b2-hyk-arena.js` | 11.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
@@ -83,41 +44,28 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/74d-hyk-winds.js` | 10.3 | [draw] | 1 | 0 | 0 | 0 | 0 | 8 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/74e-hyk-pharos.js` | 13.1 | [draw] | 7 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/74f-hyk-civic-minor.js` | 34.0 | [draw] | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/75-hotel.js` | 14.9 | [draw] | 10 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/75-hyk-harbour.js` | 36.9 | [draw] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/75-port-embassy.js` | 23.6 | [draw] | 17 | 4 | 0 | 0 | 0 | 14 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/76-hyk-industry.js` | 45.8 | [draw] | 6 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/76-port-chapterhouse.js` | 16.7 | [draw] | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/76b-hyk-warehouse-round.js` | 2.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/77-hyk-military.js` | 29.9 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | draws through the Hykkousoi shell kit (hykPut, hykLathe, hykTube): no `THREE.` for the counts to see |
 | `src/78-hyk-agri.js` | 14.5 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | draws through the Hykkousoi shell kit (hykPut, hykLathe, hykTube): no `THREE.` for the counts to see |
-| `src/79-government.js` | 7.7 | [draw] | 6 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/79-hyk-markets.js` | 18.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | draws through the Hykkousoi shell kit (hykPut, hykLathe, hykTube): no `THREE.` for the counts to see |
 | `src/79z-ys-matlib.js` | 6.3 | [G shader] | 2 | 0 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 |  |
-| `src/80-aa-battery.js` | 1.2 | [draw] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/81-sky.js` | 9.5 | [G native] | 23 | 4 | 0 | 0 | 0 | 3 | 6 | 0 | 0 | 0 | 0 | shader hook inside |
 | `src/82-apartments.js` | 8.9 | [draw] | 6 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/89-lab.js` | 6.8 | [draw] | 5 | 0 | 0 | 0 | 0 | 11 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/89m-sky-k.js` | 42.2 | [G native] | 42 | 1 | 0 | 0 | 0 | 23 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/89x-ys-trades.js` | 6.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/8aj-alt-a-bole.js` | 16.0 | [draw] | 14 | 0 | 0 | 0 | 0 | 9 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/8aj-alt-b-stack.js` | 9.9 | [draw] | 6 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/8aj-alt-c-hotel.js` | 7.9 | [draw] | 4 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/8ak-alt-a-houses.js` | 24.8 | [draw] | 28 | 0 | 0 | 0 | 0 | 9 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/8al-alt-00-lib.js` | 10.0 | [draw] | 11 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/8al-alt-01-office-terrace.js` | 6.9 | [draw] | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/8al-alt-05-bunker.js` | 5.1 | [draw] | 4 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/8al-alt-06-library.js` | 6.7 | [draw] | 4 | 0 | 0 | 0 | 0 | 4 | 0 | 1 | 0 | 0 | 0 |  |
-| `src/8al-alt-10-police.js` | 4.6 | [draw] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/8al-alt-11-hospital.js` | 5.1 | [draw] | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/90-ys-scene.js` | 7.7 | [web] | 11 | 0 | 1 | 0 | 0 | 4 | 0 | 1 | 0 | 0 | 0 |  |
 | `src/91-ys-probe.js` | 8.1 | [web] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 |  |
 | `src/91t-ys-tags.js` | 3.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | REG into core/tags before the take (core/tags/README.md); Ys's spellings mapped, 0 unknowns |
 | `src/92-camera.js` | 7.5 | [web] | 6 | 3 | 7 | 1 | 0 | 2 | 0 | 1 | 1 | 0 | 0 | what stays of the camera on core/host: ui, uiButton, setView with a preset's hour, compass and Inside, the inspector's words, Inside, the compass (2026-10-15) |
-| `src/93-labels.js` | 6.2 | [G shader] | 7 | 2 | 0 | 0 | 0 | 1 | 3 | 0 | 0 | 0 | 0 |  |
 | `src/93-ys-ui.js` | 3.6 | [web] | 5 | 0 | 3 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/99-start.js` | 3.1 | [web] | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | KHOST.take: views, ground and the sea's floor, records, inspector words, cutaway units from ROOMS, minimap; FRAME_HOOKS before the camera: host shell |
-| `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
+| `src/99-start.js` | 3.3 | [web] | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | KHOST.take: views, ground and the sea's floor, records, inspector words, cutaway units from ROOMS, minimap; FRAME_HOOKS before the camera: host shell |
 | `targets/city/77-voth-townhouses.js` | 11.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/city/84-city-geo.js` | 12.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/city/84b-city-shore.js` | 8.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |

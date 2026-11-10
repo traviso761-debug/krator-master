@@ -48,8 +48,8 @@ From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-
 | `86-bio-65-biome-xanadu-dress.js` | 5 |  |
 | `86-bio-70-biome-xanadu.js` | <1 |  |
 | `88y-xanadu-matlib.js` | 1 |  |
-| `89y-xa-interiors.js` | 6 |  |
-| `90-scene.js` | 7 | scene (Xanadu showcase) (1); build every site the target lists (61) |
+| `89y-xa-interiors.js` | 9 |  |
+| `90-scene.js` | 7 | scene (Xanadu showcase) (1); build every site the target lists (62) |
 | `90-xa-doors.js` | 2 |  |
 | `91-probe.js` | 3 | probe (window._api) — same contract as the Ancie (1) |
 | `91t-xanadu-tags.js` | 3 | CORE TAGS: XANADU'S REG (1) |
@@ -64,5 +64,5 @@ Each target adds its own fragments to `src/` and builds one output.
 
 | Target | Fragments | KB |
 |---|---|---|
-| `erewhon` | `83-er-data.js`, `84-er-geo.js`, `85-er-paint.js`, `86-bio-46-er-init.js`, `87-er-layout.js`, `88-er-place.js`, `89z-rows.js`, `90a-er-world.js`, `90b-er-build.js`, `91z-views.js`, `93-er-ui.js` | 313 |
+| `erewhon` | `83-er-data.js`, `84-er-geo.js`, `85-er-paint.js`, `86-bio-46-er-init.js`, `87-er-layout.js`, `88-er-place.js`, `89z-rows.js`, `90a-er-world.js`, `90b-er-build.js`, `91z-views.js`, `93-er-ui.js` | 316 |
 | `xanadu` | `89z-rows.js`, `90-xa-still.js`, `91z-views.js` | 3 |

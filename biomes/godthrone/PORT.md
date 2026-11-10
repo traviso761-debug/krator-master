@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 18 (14%) | 0 (0%) | 7 (5%) | 50 (39%) | 54 (42%) |
+| KB | 18 (14%) | 0 (0%) | 7 (5%) | 53 (40%) | 53 (41%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -23,7 +23,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/60-biome-godthrone-ground.js` | 5.5 | [draw] | 0 | 0 | 0 | 0 | 0 | 9 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/70-biome-godthrone.js` | 1.3 | [web] | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/82-host-sky.js` | 4.0 | [G native] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/84-host-ground.js` | 14.9 | [web] | 12 | 3 | 0 | 0 | 2 | 4 | 7 | 0 | 0 | 0 | 0 |  |
+| `src/84-host-ground.js` | 17.6 | [web] | 12 | 3 | 0 | 0 | 2 | 4 | 7 | 0 | 0 | 0 | 0 |  |
 | `src/86-host-portal.js` | 2.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/88-host-build.js` | 1.6 | [web] | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/89-host-sky.js` | 1.8 | [G native] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
@@ -32,7 +32,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/89c-host-lake.js` | 8.1 | [draw] | 3 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | split: the lake's model (V(L), Q(t), at(day)) is data; the surface, the hazard's state and the re-bake are the page's |
 | `src/89d-host-overflow.js` | 15.8 | [web] | 0 | 0 | 3 | 0 | 9 | 0 | 0 | 0 | 0 | 0 | 0 | the lake's overflow on core/terrain KLAVA (?overflow): the pond's hypsometry and the scaled eruption are data; the sim is KLAVA (klava.gd); the mesh edits and the checkbox are the page's |
 | `src/89zz-host-shadow.js` | 1.1 | [G native] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/99-host-take.js` | 22.4 | [draw] | 2 | 0 | 6 | 2 | 0 | 0 | 0 | 3 | 0 | 0 | 0 |  |
+| `src/99-host-take.js` | 22.1 | [draw] | 2 | 0 | 6 | 2 | 0 | 0 | 0 | 3 | 0 | 0 | 0 |  |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 
 ## Notes

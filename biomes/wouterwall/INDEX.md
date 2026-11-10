@@ -28,7 +28,7 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `44s-host-site.js` | 8 | one record a point (memo of the last): the heigh (66) |
+| `44s-host-site.js` | 9 | one record a point (memo of the last): the heigh (70) |
 | `45-host-stage.js` | 7 | the station, its air and its season (22); the model's ground (bicubic over its 1 km cells) (36); the ground's height (46); renderer, light, camera (62) |
 | `46-biome-wow-layout.js` | 7 |  |
 | `47-host-land.js` | 35 **big** | the near box and a coarse look at the ground (7); the brook (its line, its water level never climb (15); the cave houses' mouths (core/terrain KCARVE alc (26); the water: the brook, the model's water (a sag p (61); the earth pillars (core/terrain KSTACKS 'balance (73); the fields (biomes/WORLD.md; BIOME-API.md) (92); the host binding (before the meshes: their paint (124); the library layers (or procedural without the pa (137); the ground material (one shader for the near and (161); the near ground: the baked field's own grid, one (234) |

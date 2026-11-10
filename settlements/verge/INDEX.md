@@ -13,7 +13,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
 
-From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `93-host-inspect.js`, `93-host-stocks.js`, `94-host-marks.js`, `96-host-pictures.js`, `97-host-minimap.js`, `98-host-edit.js`, `99-host-cutaway.js`
+From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `93-host-inspect.js`, `93-host-stocks.js`, `94-host-marks.js`, `96-host-pictures.js`, `97-host-minimap.js`, `98-host-edit.js`, `99-host-cutaway.js`, `92k-host-keys.js`
 
 From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-core-minimap-host.js`
 
@@ -27,8 +27,8 @@ From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-
 | `46-verge-ground.js` | 11 |  |
 | `47-verge-water.js` | 12 | the cataracts (65) |
 | `70-verge-place.js` | 33 **big** | the kits' catalogue (25); a city's raster (31); streets (102); districts and what grows in them (107); the streets and lots: core/city, one instance a  (120); the trailheads: a plaza, the toll gate and palis (199); UPPER VERGE (217); the funicular's plan (the Ancients kit, kits/anc (218); LOWER VERGE (254); spill: houses beside the trail's first (or last) (281) |
-| `71-verge-furnish.js` | 5 |  |
-| `72-verge-buildings.js` | 7 |  |
+| `71-verge-furnish.js` | 6 |  |
+| `72-verge-buildings.js` | 8 |  |
 | `74-verge-sim.js` | 46 **big** | factions and organisations (31); places, from what was placed (63); slots: one body each, reserved in time (82); NAV: one graph (120); A* over the graph (179); cross-country: a coarse grid per level (206); the timetable's groups (225); the citizens (rambling pedestrians) (332); a group member's pose: a FUNCTION OF TIME (361); the checks the probe runs (data only) (397) |
 | `77-verge-rigs.js` | 30 | colour (sRGB hex in, linear out, cached) (41); geometry: parts merged into one indexed geometry (46); the material: vertex colour x mix(A, B, tw) (115); matrices (reused; no allocation per frame) (122); the pool: InstancedMeshes sharing instance i (132) |
 | `78-verge-life.js` | 5 |  |
@@ -37,6 +37,7 @@ From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-
 | `82-verge-daynight.js` | 6 | 27. DAY / NIGHT (1) |
 | `87-verge-views.js` | 4 |  |
 | `88-verge-build.js` | 1 |  |
-| `91-verge-probe.js` | 12 | the checks, each a pure function of its inputs (7); the export (for godot/: the verge case) (90) |
+| `91-verge-probe.js` | 14 | the checks, each a pure function of its inputs (7); the export (for godot/: the verge case) (100) |
+| `95-verge-doors.js` | 4 |  |
 | `99-start.js` | 8 | the inspector's words where no record holds the  (23); the ticks, after the camera (as 90-verge-camera. (38); the sky and the light, on the one clock, after t (43); the page, handed to the host (53) |
 | `99-tail.html` | <1 |  |

@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 62 (8%) | 0 (0%) | 16 (2%) | 331 (45%) | 331 (45%) |
+| KB | 62 (8%) | 0 (0%) | 16 (2%) | 332 (45%) | 331 (45%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -39,7 +39,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/80-camera.js` | 6.7 | [web] | 1 | 0 | 2 | 3 | 0 | 0 | 0 | 1 | 2 | 0 | 0 | on core/host (2026-10-15): ctl shim over the host's camera (theta from +x), setView capture for the presets, VIEWS, pickWorld, the day/night slider |
 | `src/81-glow.js` | 7.2 | [G native] | 12 | 2 | 0 | 0 | 0 | 2 | 3 | 3 | 0 | 0 | 0 | shader hook inside |
 | `src/82-daynight.js` | 6.2 | [G native] | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/83-mr-walk.js` | 4.4 | [web] | 0 | 0 | 0 | 0 | 2 | 2 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
+| `src/83-mr-walk.js` | 4.8 | [web] | 0 | 0 | 0 | 0 | 2 | 2 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/84-flyers.js` | 22.7 | [web] | 12 | 0 | 0 | 0 | 0 | 7 | 3 | 1 | 0 | 0 | 0 |  |
 | `src/84a-flyers-routes.js` | 15.2 | [web] | 32 | 0 | 0 | 0 | 0 | 1 | 3 | 2 | 0 | 0 | 0 |  |
 | `src/84b-flyers-animals.js` | 20.6 | [web] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
@@ -48,7 +48,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/85-probe.js` | 0.9 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/86-inspect.js` | 3.3 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | Mav's words for core/host's inspector (inspectDescribe(hit, rec)); SITES lookup |
 | `src/87-pathviz.js` | 3.2 | [web] | 5 | 0 | 4 | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/98-start.js` | 9.3 | [web] | 1 | 0 | 1 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | KHOST.take (2026-10-15): views, palette, editor world (MWORLD), cutaway units, minimap, two-pass sky draw, the page's per-frame work in a view subscriber |
+| `src/98-start.js` | 9.8 | [web] | 1 | 0 | 1 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | KHOST.take (2026-10-15): views, palette, editor world (MWORLD), cutaway units, minimap, two-pass sky draw, the page's per-frame work in a view subscriber |
 | `src/99-tail.html` | 0.1 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 
 ## Notes

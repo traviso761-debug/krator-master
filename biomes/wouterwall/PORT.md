@@ -6,14 +6,14 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 17 (20%) | 0 (0%) | 0 (0%) | 31 (37%) | 37 (43%) |
+| KB | 17 (20%) | 0 (0%) | 0 (0%) | 31 (36%) | 37 (43%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
 | Fragment | KB | Tag | THREE | canvas | DOM | events | loop | geom | shader | inst | ray | store | net | Note |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `src/00-head.html` | 1.2 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
-| `src/44s-host-site.js` | 8.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the station's site: the gullies, the relief, the terraces (plain functions) |
+| `src/44s-host-site.js` | 9.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the station's site: the gullies, the relief, the terraces (plain functions) |
 | `src/45-host-stage.js` | 6.6 | [web] | 7 | 0 | 3 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/46-biome-wow-layout.js` | 7.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/47-host-land.js` | 34.8 | [draw] | 20 | 1 | 0 | 0 | 0 | 5 | 10 | 0 | 0 | 0 | 0 | split: data candidate that also draws |

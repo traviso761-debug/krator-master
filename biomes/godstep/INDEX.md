@@ -45,7 +45,7 @@ Each station builds one page (`build.py --station <name>`) from its own fragment
 
 | Station | Fragments | KB |
 |---|---|---|
-| hearths | 35h-godstep-hearths-strata.js, 44a-host-station.js, 45b-host-model.js, 47a-host-hearths-open.js, 47a9-host-hearths-end.js, 55-biome-godstep-hearths.js, 87-host-hearths.js, 89b-host-hearths.js, 89w-host-water.js, 98-host-hearths.js | 42 |
+| hearths | 35h-godstep-hearths-strata.js, 44a-host-station.js, 45b-host-model.js, 47a-host-hearths-open.js, 47a9-host-hearths-end.js, 55-biome-godstep-hearths.js, 87-host-hearths.js, 89b-host-hearths.js, 89w-host-water.js, 98-host-hearths.js | 43 |
 | redlands | 35r-godstep-redlands-strata.js, 44a-host-station.js, 45b-host-model.js, 49z-host-sed-end.js, 55-biome-godstep-redlands.js, 89a-host-atmos.js, 89w-host-water.js, 98-host-redlands.js | 35 |
 | rille | 44a-host-station.js, 45b-host-model.js, 55-biome-godstep-rille.js, 87-host-tube.js, 89a-host-atmos.js, 89w-host-water.js, 98-host-rille.js, 98z-host-floor.js | 54 |
 | wall | 35w-godstep-wall-strata.js, 44a-host-station.js, 44q-host-shigh-pack.js, 45b-host-model.js, 47a0-host-shigh-open.js, 47a9-host-shigh-end.js, 52-biome-godstep-wall.js, 87-host-wall-forest.js, 89a-host-atmos.js, 89w-host-water.js, 98-host-wall.js | 41 |

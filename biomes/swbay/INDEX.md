@@ -25,7 +25,7 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `45-host-stage.js` | 31 **big** | the bay, the river, the rise (56); terrain (89); the host binding (116); the ground (140); the water (229); the far country (262) |
 | `50-biome-swbay-species.js` | 41 **big** | THE CANOPY CEILING (20); THE BAY COLOUR (26); the tree species (77); harvest (biomes/FRUIT.md) (128); leaf textures (153); bark textures (252); geometries local to this biome (318); an iridescent foliage (370); materials (374); instanced items (423) |
 | `52-biome-swbay-library.js` | 2 |  |
-| `55-biome-swbay-trees.js` | 56 **big** | zones from the fields (25); colour (46); polyline helpers (Girder's) (60); keep-clear between trees (69); epiphytes (76); foliage helpers (91); the builders (103); impostors (the far canopy) (394); the pass (437); one tree where a world puts it (504) |
+| `55-biome-swbay-trees.js` | 58 **big** | zones from the fields (25); colour (46); polyline helpers (Girder's) (60); keep-clear between trees (69); epiphytes (76); foliage helpers (91); the builders (113); impostors (the far canopy) (409); the pass (452); one tree where a world puts it (519) |
 | `60-biome-swbay-floor.js` | 16 | fields local to the floor (28); small plants (33); the zone planters (98); the pass (127); one plant where a world puts it (149) |
 | `65-biome-swbay-dress.js` | 9 |  |
 | `70-biome-swbay.js` | <1 |  |

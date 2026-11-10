@@ -20,7 +20,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/30-geo.js` | 19.5 | [draw] | 47 | 0 | 0 | 0 | 0 | 20 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/32-cores.js` | 11.6 | [draw] | 2 | 0 | 0 | 0 | 0 | 48 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/34-adds.js` | 25.0 | [draw] | 1 | 0 | 0 | 0 | 0 | 44 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/35-pa-open.js` | 8.7 | [draw] | 9 | 0 | 0 | 1 | 0 | 2 | 0 | 3 | 0 | 0 | 0 | the doors and glass on core/door: wallOpen's openings recorded, poLeaf (a KDOOR record; the operable leaves one InstancedMesh), poCard; the E key and tip are host code. Records export through KDOOR.export() |
+| `src/35-pa-open.js` | 8.9 | [draw] | 9 | 0 | 0 | 1 | 0 | 2 | 0 | 3 | 0 | 0 | 0 | the doors and glass on core/door: wallOpen's openings recorded, poLeaf (a KDOOR record; the operable leaves one InstancedMesh), poCard; the E key and tip are host code. Records export through KDOOR.export() |
 | `src/36-def.js` | 21.6 | [draw] | 10 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/40-dw-small.js` | 31.8 | [draw] | 0 | 0 | 0 | 0 | 0 | 41 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/42-lg-dwell.js` | 32.5 | [draw] | 0 | 0 | 0 | 0 | 0 | 36 | 0 | 0 | 0 | 0 | 0 |  |
@@ -35,7 +35,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/58-dock.js` | 17.6 | [draw] | 1 | 0 | 0 | 0 | 0 | 38 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/89-rows.js` | 1.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/90-scene.js` | 8.5 | [web] | 19 | 3 | 1 | 0 | 2 | 2 | 3 | 0 | 0 | 0 | 0 |  |
-| `src/91-pa-api.js` | 3.8 | [draw] | 2 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/91-pa-api.js` | 4.0 | [draw] | 2 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/91f-furnish.js` | 7.1 | [draw] | 1 | 0 | 0 | 0 | 2 | 1 | 0 | 0 | 0 | 0 | 0 | the draw adapter onto core/furnish (2026-10-05): the placement pass is core/furnish/50-core-furnish.js. Kept here: the seed rule (building seed and place in its list), the matrix frame (CM) and ax/az anchors, colliders, lights as halos, dry runs for frontOf, a fresh batch per buildWorld (its performance.now timing is host code) |
 | `src/91n-night.js` | 9.9 | [web] | 15 | 2 | 3 | 1 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/93-anim.js` | 8.6 | [web] | 14 | 0 | 0 | 0 | 3 | 4 | 6 | 3 | 0 | 0 | 0 |  |

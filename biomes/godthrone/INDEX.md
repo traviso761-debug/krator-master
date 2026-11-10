@@ -28,7 +28,7 @@ From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-k
 | `60-biome-godthrone-ground.js` | 6 |  |
 | `70-biome-godthrone.js` | 1 |  |
 | `82-host-sky.js` | 4 | light modes (35) |
-| `84-host-ground.js` | 15 |  |
+| `84-host-ground.js` | 18 |  |
 | `86-host-portal.js` | 2 |  |
 | `88-host-build.js` | 2 |  |
 | `89-host-sky.js` | 2 |  |
@@ -39,3 +39,19 @@ From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-k
 | `89zz-host-shadow.js` | 1 |  |
 | `99-host-take.js` | 22 | the inspector's words (63); the probe's budgets and the kit's own checks (ve (83); the page, handed to the host (161) |
 | `99-tail.html` | <1 |  |
+
+## stations/
+
+Each station builds one page (`build.py --station <name>`) from its own fragments, with `src/` or its `base` station.
+
+| Station | Fragments | KB |
+|---|---|---|
+| blood | 44a-host-station.js, 89w-host-water.js, 98-host-blood.js | 12 |
+| flank | 44a-host-station.js, 45b-host-model.js, 98-host-flank.js | 18 |
+| gills | 44a-host-station.js, 45b-host-model.js, 87-host-gills.js, 89y-host-gills-late.js, 98-host-gills.js | 34 |
+| gills-ladder | 44a-host-station.js, 45b-host-model.js, 98-host-ladder.js | 9 |
+| orange | 44a-host-station.js, 45b-host-model.js, 98-host-orange.js | 17 |
+| rim | 44a-host-station.js, 45b-host-model.js, 98-host-rim.js | 14 |
+| scarp | 44a-host-station.js, 45b-host-model.js, 98-host-scarp.js | 10 |
+| tube | 44a-host-station.js, 45b-host-model.js, 87-host-tube.js, 98-host-tube.js | 15 |
+| wall | 44a-host-station.js | 2 |

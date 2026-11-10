@@ -15,7 +15,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 
 From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
 
-From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `94-host-polytool.js`
+From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `92k-host-keys.js`, `94-host-polytool.js`
 
 ## src/
 
