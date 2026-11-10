@@ -93,7 +93,7 @@ at metres a second from pressure changes alone; here the thermal and barometric 
 tide is the valve that sets the phase (section 3 has the numbers).
 
 **The life.** The native lineage is fungoid: fleshy bodies carrying a partner organism in their skins, no leaves, no
-wood (`biomes/outlands/PLAN.md:51-53`; `biomes/swhighlands/PLAN.md:118-121`). In the light the partner is
+wood (`biomes/outlands/PLAN.md` section 2, "The native lineage"; `biomes/swhighlands/PLAN.md:118-121`). In the light the partner is
 photosynthetic. In the dark of a gill's throat the same body plan carries a **chemolithotrophic** partner, and the body
 has become a battery:
 
@@ -137,11 +137,11 @@ of the mountain off the pipes that have fallen.
 | Where Earth life fails, native life is the whole flora; where Earth life is strong, native life is a flavour (`throne/NOTES.md:88-89, 213, 273-275`); the Godthrone has "almost none, and that is the point" (`godthrone/PLAN.md:194`) | both countries sit in ET and EF ground where Earth plants are already nearly gone, so the gills and their breath strips are the only life for tens of kilometres; the biome is native through and through, and the Godthrone kit's bare ground stays bare between the cracks |
 | Native forms answer one physical problem each, and a kit's family reads as one because they share the problem (`biomes/riftrim/PLAN.md:109-113`; `biomes/rift/PLAN-STATIONS.md:165`) | every species here answers the breath: how to hold oxidant through the out-breath, how to feed on the in-breath, how to ride the gust |
 | Life carries state on the world clock, and the giant is the sky's fixed cue: everything in the east leans to it (`biomes/ehighlands/NOTES.md:117-122`); the sun-dial turns with the sun (`biomes/sedesert/PLAN-STEPPE.md:61`); the night rosette closes at night (`rift/PLAN-STATIONS.md:203`) | the giant is the clock rather than the compass: the Gills are the first biome whose life cycles on the giant's tide, which no kit has used (the digest of 2026-11-01: "no biome ties a native organism's cycle to the giant's tide") |
-| The native lineage is fungoid: fleshy, partnered, no leaves (`outlands/PLAN.md:51-53`) | the same body plan with a different partner, which is the point: the lineage is a **host for partners**, photosynthetic in the light, chemolithotrophic in the dark. **Canon (the owner, 2026-11-02)**: the lineage's first stated rule of biochemistry |
+| The native lineage is fungoid: fleshy, partnered, no leaves (`outlands/PLAN.md` section 2, "The native lineage") | the same body plan with a different partner, which is the point: the lineage is a **host for partners**, photosynthetic in the light, chemolithotrophic in the dark. **Canon (the owner, 2026-11-02)**: the lineage's first stated rule of biochemistry |
 | Lineages cross kits as cousins, never copies (`BIO.kin`; `hyperjungle/PLAN-LANDS.md:49-56`); the Rift's sky islands diverge by band (`rift/PLAN-STATIONS.md:141-165`) | the red and white countries are sister forms of one lineage, diverged by chemistry as the Rift's islands diverged by pressure; the rust collar is kin of the Godthrone's iron-eaters; the breath fringe is the trumpet line's dark branch |
 | Native life is the natives' armoury, medicine and trade (`throne/NOTES.md:109-134`; `riftrim/PLAN.md:287-288`) | one medicine, one ore, one fuel (section 9), on the Catch-to-Xanadu caravan road |
 | Dispersal by what the air does (nsemiarid: "everything travels", `biomes/nsemiarid/PLAN.md:154`; spores on plume thermals, implied and unbuilt: `throne/NOTES.md:195`) | the spores ride the out-breath and are sown by the in-breath of the next gill downwind: the breath is the pollinator, so nothing here glows to call one |
-| Native fauna are vertebrate-grade hexapods coevolved with the flora, never insects (`outlands/PLAN.md:57-58, 209`; `kits/fauna/BIOME-FAUNA-PLAN.md:52-54`) | three hexapods on the breath (section 8) |
+| Native fauna are vertebrate-grade hexapods coevolved with the flora, never insects (`outlands/PLAN.md` sections 2 and 7; `kits/fauna/BIOME-FAUNA-PLAN.md:52-54`) | three hexapods on the breath (section 8) |
 | The Godthrone's dry-cold line at 8-9 km is "a hard edge no life crosses yet" (`godthrone/PLAN.md:103, 196-201`; the digest's open hook 6) | the Gills bring their own water and heat up from below, so they are the one life that approaches the line and the first to show how it ends (section 3, "How far up") |
 
 ### Where it breaks a trend, and why the break is earned

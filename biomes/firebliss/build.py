@@ -67,7 +67,7 @@ J=lambda *p:os.path.normpath(os.path.join(ROOT,*p))
 import json as _json
 # a STATION (PLAN.md section 7a): stations/<name>/'s numbered fragments are added to src/'s (a name in both is the station's: every station has its
 # own 44z-host-site.js), and its station.json names its centre on the 5.1 map ("site")
-SJ={'site':[188,1319.2],'key':'vale'}   # station 1, the Great Firebliss Vale: the tarn's south-east shore (PLAN.md section 7a)
+SJ={'site':[183,1315],'key':'vale'}   # station 1, the Great Firebliss Vale: the lake's north shore (PLAN.md sections 7, 7a)
 _sd=None
 if STATION:
     _sd=os.path.join(HERE,'stations',STATION)

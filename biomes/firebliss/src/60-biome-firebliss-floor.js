@@ -17,6 +17,8 @@ const floor=F('floor'),meadow=F('meadow'),grove=F('grove'),ash=F('ash'),shore=F(
  snow=F('snow'),ice=F('ice'),sinter=F('sinter'),dead=F('dead'),acid=F('acid'),film=F('film'),gheat=F('heat');
 // the hot, the crusted and the dead ground: nothing of this kit's roots there (the geyser kit's own heat, finer than the host's therm grid, as well)
 const bare=(x,z)=>Math.max(smooth(.15,.35,therm(x,z)),smooth(.18,.36,gheat(x,z)),smooth(.2,.5,sinter(x,z)),smooth(.3,.6,dead(x,z)),smooth(.1,.3,acid(x,z)),smooth(.05,.2,film(x,z)));
+// the ground's own slope at a point (4 m either side): the field grid's 14 m cells cannot see a gorge's walls, so the floor's cards test it here
+const steepAt=(x,z)=>Math.hypot(Y(x+2,z)-Y(x-2,z),Y(x,z+2)-Y(x,z-2))/4;
 FIREBLISS.build=function(R,q){q=q==null?1:q;R=R==null?2500:R;
  const st={pines:0,treeferns:0,grass:0,ferns:0,flowers:0,fireweed:0,reeds:0,ashgrass:0,pumice:0,obsidian:0,scoria:0,sulphur:0,birds:0},seed=KRAND.child(620029,'firebliss/'+BIO.host.tags);
  const L=BIO.LOD(),c0=BIO.center(),site=FIREBLISS.SITE||{};
@@ -28,7 +30,7 @@ FIREBLISS.build=function(R,q){q=q==null?1:q;R=R==null?2500:R;
   fn(px,Y(px,pz),pz,ld<L.floor[0]?2:ld<L.floor[1]?1:0);}};
  // ---- the kin: a lattice, every cell its own hash (as eastabyss' cousins: 87-host-kin.js there), clear of the obstacles (the geyser kit's trees)
  const S=KSPACE.create({cell:60});(BIO.host.obstacles||[]).forEach(o=>S.insert(o,o.x,o.z,o.r==null?2:o.r));
- const clear=(x,z,r)=>!S.some(x,z,r,()=>true)&&BIO.clearOf(x,z,r)&&BIO.mask(x,z)>.9&&Y(x,z)-BIO.waterH(x,z)>.5&&bare(x,z)<.2&&rock(x,z)<.5&&snow(x,z)<.4;
+ const clear=(x,z,r)=>steepAt(x,z)<.55&&!S.some(x,z,r,()=>true)&&BIO.clearOf(x,z,r)&&BIO.mask(x,z)>.9&&Y(x,z)-BIO.waterH(x,z)>.5&&bare(x,z)<.2&&rock(x,z)<.5&&snow(x,z)<.4;
  const LT=900;   /* the kin's near trees to 900 m, the Throne's impostor past it */
  function lattice(Kn,cell,salt,accept,minR,key){if(!Kn)return 0;let n=0;const N=Math.ceil(R/cell);
   for(let j=-N;j<=N;j++)for(let i=-N;i<=N;i++){const h=KRAND.hash(4481,i,j,salt),u=k=>KRAND.unit(KRAND.hash(h,k,0,salt));
@@ -48,7 +50,7 @@ FIREBLISS.build=function(R,q){q=q==null?1:q;R=R==null?2500:R;
  st.treeferns=lattice(FIREBLISS.KIN.fern,30,0x7f02,(x,z)=>.45*floor(x,z)*Math.max(smooth(.55,.85,wet(x,z)),smooth(.03,.1,therm(x,z))*smooth(.2,.12,therm(x,z)))*smooth(.6,.3,slope(x,z)),2);
  BIO.cur='firebliss/floor';
  // ---- the meadow: grass, ferns, flowers, fireweed
- cellPass(5.5,11,L.floor[1],(x,y,z,lv)=>{const m=meadow(x,z)*(1-bare(x,z))*(1-smooth(.4,.7,rock(x,z)));if(m<.05)return;
+ cellPass(5.5,11,L.floor[1],(x,y,z,lv)=>{const m=meadow(x,z)*(1-bare(x,z))*(1-smooth(.4,.7,rock(x,z)));if(m<.05||steepAt(x,z)>.7)return;
   const a=.7*m*q*(lv===0?.35:1);if(rng()>a)return;const r=rng(),gw=grove(x,z);
   if(r<.6-gw*.25){const n=lv===2?ri(1,3):1;for(let i=0;i<n;i++){const ang=rr(0,TAU),d=i?rr(.3,1.2):0,px=x+Math.cos(ang)*d,pz=z+Math.sin(ang)*d,h=rr(.35,.8);if(!ok(px,pz))continue;
     BIO.put('grass',[px,Y(px,pz)-.04,pz],qEuler(rr(-.06,.06),rr(0,TAU),rr(-.06,.06)),[h*1.1,h,h*1.1],vary(C(pick(PAL.grass)).lerp(C(pick(PAL.grassAsh)),ash(x,z)*.6),.02,.05,.05));st.grass++;}}
@@ -56,11 +58,11 @@ FIREBLISS.build=function(R,q){q=q==null?1:q;R=R==null?2500:R;
   else if(r<.93){const h=rr(.25,.55);BIO.put('flower',[x,y-.03,z],qEuler(0,rr(0,TAU),0),[h*.8,h,h*.8],vary(C(pick(PAL.flower)),.03,.05,.05));st.flowers++;}
   else{const h=rr(.6,1.3);BIO.put('fireweed',[x,y-.03,z],qEuler(rr(-.05,.05),rr(0,TAU),rr(-.05,.05)),[h*.5,h,h*.5],vary(C(pick(PAL.fireweed)),.02,.05,.05));st.fireweed++;}});
  // ---- the reeds: the warm margins of the water
- cellPass(3.6,12,L.floor[1],(x,y,z,lv)=>{const s=shore(x,z)*floor(x,z)*(1-bare(x,z));if(s<.3)return;if(rng()>.75*smooth(.3,.75,s)*q)return;
+ cellPass(3.6,12,L.floor[1],(x,y,z,lv)=>{const s=shore(x,z)*floor(x,z)*(1-bare(x,z));if(s<.3||steepAt(x,z)>.6)return;if(rng()>.75*smooth(.3,.75,s)*q)return;
   const n=lv===2?ri(3,6):2,col=C(pick(PAL.reed));for(let i=0;i<n;i++){const ang=rr(0,TAU),d=i?rr(.2,1.2):0,px=x+Math.cos(ang)*d,pz=z+Math.sin(ang)*d,h=rr(1.2,2.4);if(!ok(px,pz))continue;
    BIO.put('reed',[px,Y(px,pz)-.08,pz],qEuler(rr(-.06,.06),rr(0,TAU),rr(-.06,.06)),[h*.7,h,h*.7],vary(col,.02,.05,.05));st.reeds++;}});
  // ---- the ash: tussock, stones, fireweed on the new ash
- cellPass(7,13,L.floor[1],(x,y,z,lv)=>{const a=ash(x,z)*(1-floor(x,z)*.7)*(1-smooth(.5,.8,snow(x,z)))*(1-smooth(.55,.85,rock(x,z)))*(1-bare(x,z));if(a<.1)return;
+ cellPass(7,13,L.floor[1],(x,y,z,lv)=>{const a=ash(x,z)*(1-floor(x,z)*.7)*(1-smooth(.5,.8,snow(x,z)))*(1-smooth(.55,.85,rock(x,z)))*(1-bare(x,z));if(a<.1||steepAt(x,z)>.8)return;
   if(rng()>.5*a*q*(lv===0?.5:1))return;
   if(rng()<.75){const n=lv===2?ri(1,3):1;for(let i=0;i<n;i++){const ang=rr(0,TAU),d=i?rr(.4,1.4):0,px=x+Math.cos(ang)*d,pz=z+Math.sin(ang)*d,h=rr(.3,.7);if(!ok(px,pz))continue;
     BIO.put('ashgrass',[px,Y(px,pz)-.04,pz],qEuler(rr(-.06,.06),rr(0,TAU),rr(-.06,.06)),[h*1.2,h,h*1.2],vary(C(pick(PAL.ashgrass)),.02,.05,.05));st.ashgrass++;}}

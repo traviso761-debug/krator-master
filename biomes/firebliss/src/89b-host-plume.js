@@ -7,7 +7,7 @@
 //   THE HAZARD     'ash' (P.provide: mg/m3 where the plume is) and the rain's pH under it (KHAZ.provide 'ph': the plume's sulphate)
 const PLUME=(function(){if(!ATMOS.ashPlume||!MODEL.vents.length)return null;
  const RATE={'Firebliss Mons':1,'Copper-Fissure Vent':.9,'Mount Pyre':.7,'Cinder-Crown':.6,'Brimstone Spire':.7};
- const P=ATMOS.ashPlume({vents:MODEL.vents.map((v,i)=>({id:'vent:'+i,x:v.at[0],z:v.at[1],y:dv(v.peak,5500)-500,top:2500,rate:dv(RATE[v.name],.6)})),
+ const P=ATMOS.ashPlume({vents:MODEL.vents.map((v,i)=>({id:'vent:'+i,x:v.at[0],z:v.at[1],y:dv(v.floor,dv(v.peak,5500)-500),top:2500,rate:dv(RATE[v.name],.6)})),
   azimuth:135*Math.PI/180,speed:10,spread:.09,reach:60000,settle:1,lean:.4,ground:(x,z)=>land0(x,z),world:4501});
  const out={P,sprites:null};
  // the ground's ash fall (the paint) and the flora's

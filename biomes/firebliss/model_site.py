@@ -68,7 +68,7 @@ def window(px, py):
     with open(os.path.join(DATA, 'vents.json'), encoding='utf-8') as fh:
         V = json.load(fh)
     V = V if isinstance(V, list) else V.get('vents', [])
-    vents = [{'name': v['name'], 'px': v['px'], 'peak': v.get('peak')} for v in V if v.get('region') == 'Firebliss Range']
+    vents = [{'name': v['name'], 'px': v['px'], 'peak': v.get('peak'), 'floor': v.get('floor'), 'radius': v.get('radius')} for v in V if v.get('region') == 'Firebliss Range']
     return {'px': px, 'py': py, 'cell': 2000, 'i0': i0, 'j0': j0, 'n': n, 'h': hs, 'wl': ws, 'vents': vents,
             'clim': {'tm': mean(tm), 'tw': mean(tw), 'tc': mean(tc), 'rain': round(mean(rain) or 0), 'koppen': koppen}}
 

@@ -70,8 +70,8 @@
     "kits/resources/KNOWN_ISSUES.md": "55ddc8535fa13338843ff1c0a9064f2369ace9e8e70732e375038600a229b5ed",
     "kits/resources/PORT.md": "5e98d12d17ee61dd04af7bd1fbf107343851ca51458fada022cdd2d11d7a12f9",
     "kits/resources/build.py": "93bd0f608fb0e90c36944115a36fcfe60f0542e51ef8d997e8ea5cb414d23cc9",
-    "kits/resources/data/geology.json": "19058fbb95a026cb5106840a13bd93b341ad9557f65304bc9e68c0b873a11292",
-    "kits/resources/data/ledger.json": "63bece6cc7b2b033da8512b4476ae250f6d7b172420ca7ac19c43a17523681b5",
+    "kits/resources/data/geology.json": "ec832a80ef152e30adf99404f7ee90336a1d51a805c368cef51274acf112f1b8",
+    "kits/resources/data/ledger.json": "9b9e720845a0bbaf6e46aca8ca4cc6f350f71ba8a825dc888e69fb1e1481e713",
     "kits/resources/src/00-head.html": "6881b3d04acb3667ea877cc3480990284f27fc0f74e01197f1872ed461e906a7",
     "kits/resources/src/26k-kit.js": "92d4998c100ffc83c79c1383087faa9a4757ac583e0cd6188f7c84afa97f63bb",
     "kits/resources/src/42r-res-ore.js": "795b57d189506369e35b7e2b3de5795d940d8bff91bb51e6dedb7df3f2432a04",
@@ -152,13 +152,13 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/resources/build-manifest.json": "0607ff857ad36efd93d4c6ccc87c816de666c7dd355e0c34612179acd10960f0",
-    "kits/resources/dist/resources.html": "6ea46649bb724a490bf96d5c0c1726b92327fbff237aa35306dc4defa7f88045",
+    "kits/resources/build-manifest.json": "2f4290ecf27539eeefb0b0252cca743aaf49629af29b5037257a3587f9b2d49e",
+    "kits/resources/dist/resources.html": "130ee01404988516b196032936396fe70b501b00c36e1264f361ca16cb1fe475",
     "kits/resources/dist/resources.tex.resources.js": "71a4d5020e9e8fa48901bd901b654606f85d081fd2fbc187e79f75463e3c8224"
    },
    "outputs_raw": {
-    "kits/resources/build-manifest.json": "0607ff857ad36efd93d4c6ccc87c816de666c7dd355e0c34612179acd10960f0",
-    "kits/resources/dist/resources.html": "6ea46649bb724a490bf96d5c0c1726b92327fbff237aa35306dc4defa7f88045",
+    "kits/resources/build-manifest.json": "2f4290ecf27539eeefb0b0252cca743aaf49629af29b5037257a3587f9b2d49e",
+    "kits/resources/dist/resources.html": "130ee01404988516b196032936396fe70b501b00c36e1264f361ca16cb1fe475",
     "kits/resources/dist/resources.tex.resources.js": "71a4d5020e9e8fa48901bd901b654606f85d081fd2fbc187e79f75463e3c8224"
    }
   }

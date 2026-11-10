@@ -1,0 +1,119 @@
+{
+ "build": "godstep",
+ "note": "The Godstep kit's adapter onto the material library (core/materials/PLAN.md; PLAN.md section 8). Keys are the kit's MAT slots (50-biome-godstep-species.js, BIO.libSwap: rock the talus blocks, the fallen columns, the stones and the cairns, grey under the instance's near-black; cushion and crust the pioneers' detail, grey under their vertex shades) and the host's ground slots (84-host-ground.js: KGROUND.layer and hostGroundLib): groundDetail a grey multiply of the old flows' weathered crust (ground.lava.crust: every flow is old, the owner 2026-11-03), rockFace the colonnades' grain on every face under KSTRATA's tibasalt-ponded colours (rock.columnar), sandBlack step 2's black sand as KGROUND's sand kind (ground.sand.black), snow late winter's (ground.snow.drift), moss the cones' moss skins (ground.moss002), lichenCrust the crusts on the old rock (ground.lichen.crust). Station 1's sets; the later stations add theirs (station.json \"tex\"). Run python3 tools/textures/pack.py biomes/godstep after any change, then python3 build.py.",
+ "size": 512,
+ "families": {
+  "groundDetail": {
+   "lib": "ground.lava.crust",
+   "scale": [
+    5,
+    5
+   ],
+   "size": 256,
+   "tint": {
+    "keep": 0,
+    "mean": 0.9,
+    "contrast": 1.2
+   },
+   "mapOnly": true
+  },
+  "rockFace": {
+   "lib": "rock.columnar",
+   "scale": [
+    8,
+    8
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.5,
+    "contrast": 1.15
+   },
+   "mapOnly": true
+  },
+  "rock": {
+   "lib": "rock.basalt.titanium",
+   "scale": [
+    3,
+    3
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.62
+   },
+   "mapOnly": true
+  },
+  "sandBlack": {
+   "lib": "ground.sand.black",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.2,
+   "mapOnly": true
+  },
+  "snow": {
+   "lib": "ground.snow.drift",
+   "scale": [
+    4,
+    4
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "mapOnly": true
+  },
+  "moss": {
+   "lib": "ground.moss002",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "mapOnly": true
+  },
+  "lichenCrust": {
+   "lib": "ground.lichen.crust",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "mapOnly": true
+  },
+  "cushion": {
+   "lib": "ground.moss001",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.7
+   },
+   "mapOnly": true
+  },
+  "crust": {
+   "lib": "ground.lichen.crust",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.7
+   },
+   "mapOnly": true
+  }
+ }
+}

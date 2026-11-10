@@ -19,8 +19,9 @@ connection to the Godthrone's network and Pluton as lore, and the Talovolci use 
 for harvesting near the mouths, never deep into the mountain** (the owner, later the same day); **every flow is old**, none fresh and black; the **Talovolci names** are coined from the tongue (section 5a); and **core
 proposals 1-3 are taken**, owed before the kit's D2 (section "Core adoption").
 
-**Status: plan, settled; awaiting station 1's turn** (after the biome rebuild's pairs). Nothing built. No change to `LORE.md`
-or the model is made here: lore sentences and the Talovolci words are *proposed* wording.
+**Status: station 1 (the stair) built, 2026-11-09** (`dist/godstep.html`; section "Station 1, as built" at the end); stations 2-5
+are later turns. Verified in software GL only (a cloud session). No change to `LORE.md` or the model is made here: lore sentences and
+the Talovolci words are *proposed* wording.
 
 ## What changed on 5.1, and why the plan moved
 
@@ -446,3 +447,29 @@ Everything this plan needs is in the library: `ground.lava.aa`, `ground.lava.cru
   `LORE.md` and the tongue sheet.
 - Whether the Hearths' plan should name its Godstep station's trees by section 5a's *Harđotreoi* (the Hearths' plan asks for the
   Talovolci's word: this is the offer).
+
+## Station 1, as built (2026-11-09)
+
+`python3 build.py` -> `dist/godstep.html`; station 1 is `src/` itself (`src/station.json`), started from `biomes/godthrone`'s host
+(`NOTES.md`). What it draws, on the page's frame at 5.1 px 903,1116 (DOWN the valley's ENE axis):
+
+- **The trap stair** on core's `KRELIEF.stair`: the head step's floor at ~3,140 m and step 2's at ~2,425 m (each within 35 m of the
+  model's flat floors on the same axis, checked), one lobate front ~3 km in run falling ~720 m in ~18 benches, each flow a steep
+  colonnade riser over its bench (`riser` .1), the old frozen lava falls (`tongues`) where flows poured over the lip. The floors tilt
+  1.8 m/km downstream; the rock is the stair's own flows (one `KSTRATA` formation a flow, `src/35g-godstep-strata.js`: tibasalt-ponded
+  with its bead partings already palagonite) dipping with them.
+- **The plains' flows** baked at build time (`KLAVA.bakeLayers`, `src/bake-flows.js` -> `src/flows.json`): two lobes on the head step,
+  two breakouts on step 2's floor; **~1,100 tumuli and pressure ridges** on them (`KRELIEF.tumuli`, filed in `KSPACE`).
+- **Step 2's floor**: black sand in transverse dunes across the down-valley wind, three old scoria cones with moss skins on their
+  north faces (refs/08).
+- **A playa behind a lobe** on the head step, its meltwater pond iced (`WATER.still`).
+- **The procession's way** (*Godostera*), cairned every ~110 m down the nearest frozen fall.
+- **The lava pioneers** (section 3: cushions and crusts on `BIO.fung`), the talus under every riser with whole fallen columns, the
+  plains' stones; late winter's snow on the upper benches and the head step's hollows, none below ~2,850 m.
+- **The far country** from the model (`src/region.json`), the Godthrone's mass to the south-west.
+
+Checks (`verify.py --assert`, section 9): the floors against 5.1, the stair stepping down monotonically, the front's rock (ponded
+flows, palagonite partings, no fresh bead), the pioneers off the faces, the sand and the pan and the moss on the cones, snow above
+and none below, the air on the lip (1.08 atm), `BIO.envCheck`, the tumuli, the items resting on the ground, each with a broken input
+that must fail. Not yet: the GPU's measures, `--all-views`, and the adoption items `KNOWN_ISSUES.md` lists.
+

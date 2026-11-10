@@ -38,7 +38,7 @@
   },
   "biomes/copperglacier/dist/copperglacier-icefield.html": {
    "bytes": 5135671,
-   "sha256": "a7334ef5b4d036cf57542ba8eb6c7f81c260eac2335c52aaec6af37e22cff429"
+   "sha256": "6b0f7976d7624576022ce40f97752aa2956b18d1c08130ada713eb80eaae3711"
   },
   "biomes/copperglacier/dist/copperglacier-pass.html": {
    "bytes": 5136413,
@@ -184,6 +184,14 @@
    "bytes": 1435970,
    "sha256": "bde19b15dd720c9580493f15f8b4c3b8b6f0606f74ee388a7b8457d1b5a1dfb4"
   },
+  "biomes/godshearth/dist/godshearth.html": {
+   "bytes": 1477759,
+   "sha256": "009eabf1db30079207418477e44da2293e5229239b9e0a38e234d56f23403f29"
+  },
+  "biomes/godstep/dist/godstep.html": {
+   "bytes": 2795037,
+   "sha256": "68821a59c82db267963bd365398f09dbbe1f2e8b27564c86b0ea187cad849033"
+  },
   "biomes/godthrone/dist/godthrone-blood.html": {
    "bytes": 3408108,
    "sha256": "70a53552fa3cf168a363714a507e8a3108fa6831c25608ecaf6037828177c99b"
@@ -223,6 +231,10 @@
   "biomes/godthrone/dist/godthrone.html": {
    "bytes": 2656607,
    "sha256": "b27afd37c8867067bf071f80cf3ccc420b0b1bcf9b040fe40d6b81cd9c43d1f0"
+  },
+  "biomes/greenstep/dist/greenstep.html": {
+   "bytes": 11923141,
+   "sha256": "c2869c0652067af1fbc2a212aa33c05798b4d3a3377b8e48584bea14cc1eae98"
   },
   "biomes/guilin/dist/guilin.html": {
    "bytes": 675886,
@@ -379,6 +391,10 @@
   "biomes/oidong/dist/oidong.html": {
    "bytes": 3643337,
    "sha256": "8f9968ae2635680365d8793464b252210fd82b53dd723929cdddd67325be755b"
+  },
+  "biomes/outlands/dist/outlands.html": {
+   "bytes": 1828528,
+   "sha256": "6f30a8e1caf694ccaae62c27758e6eb19213363b7dc26972f1041e655e9e6a9d"
   },
   "biomes/rift/dist/rift-highland.html": {
    "bytes": 7521099,
@@ -555,6 +571,14 @@
   "biomes/throne/dist/throne.html": {
    "bytes": 1208278,
    "sha256": "b3618758c70692ecb2ceeba6fe4ae346b13fcadef27351a989e38495284f6e49"
+  },
+  "biomes/twins/dist/twins.html": {
+   "bytes": 2253503,
+   "sha256": "4ecf09e10f31552312f35290418d8711789f2a45d3e2fe8f317da562ab33c46b"
+  },
+  "biomes/wouterwall/dist/wouterwall.html": {
+   "bytes": 1457588,
+   "sha256": "942cb8b9a61b9c2e8d97e21d0731f8f542a8a92b9b7f462c8650423fc181009e"
   },
   "biomes/xanadu/dist/xanadu-cloud.html": {
    "bytes": 8387583,
@@ -977,8 +1001,8 @@
    "sha256": "bf855d052d7a0f64d405e0703d9544ab471ab3823fbf6458722a0f092af59c14"
   },
   "kits/resources/dist/resources.html": {
-   "bytes": 5250600,
-   "sha256": "6ea46649bb724a490bf96d5c0c1726b92327fbff237aa35306dc4defa7f88045"
+   "bytes": 5512910,
+   "sha256": "130ee01404988516b196032936396fe70b501b00c36e1264f361ca16cb1fe475"
   },
   "kits/ringsea/dist/ringsea.html": {
    "bytes": 5033320,

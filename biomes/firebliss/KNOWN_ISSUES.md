@@ -18,12 +18,11 @@ Open items are `- [ ]`; build.py counts them.
 - [ ] **The fumarolic ice caves** on Mons (PLAN.md section 7, station 4): `KGLACIER.drawer`'s cave shells need a glacier's frame
   (`KGLACIER.create`), which a crater's ice is not. Owed: a cave shell that stands alone (core/terrain), or Mons' crater ice as a KGLACIER
   flowing out of the breach once the model resolves it (next item).
-- [ ] **Mons' breach.** The plan has every crater breached south-east (130-140 deg); the model's 2 km cells show only a low notch between
-  rim cells of 5,616 and 6,203 m. The page shows the floor and the south wall as the model has them.
-- [ ] **The resource data predates the arc.** `kits/resources/data/geology.json` reads the range as crystalline (province `crystalline`,
-  sulphur 0, tuff 0): the stations draw the data's nodes (iron, gold, tin, silver, saltpeter, copper), not the plan's sulphur, obsidian and
-  pumice. Those are drawn as the kit's stones and the fumaroles' crusts, not as resource nodes, until a rebake gives the arc a volcanic
-  province (for the owner: PLAN.md section 9).
+- [ ] **Mons' notch.** Each rim's notch is 180 m deep on its south-west side (PLAN.md section 1); on Mons' page the wall is lowest toward
+  the south-west corner, as the model has it. No crater glacier flows out of it yet (the caves' item above).
+- [ ] **The valleys hold no sulphur in the resource data.** The rebaked `geology.json` (5.1 edit 3) puts sulphur at the vents: Mons'
+  page draws four sulphur nodes, the valley pages none (the Glen's sulphur is its fumaroles' crusts, drawn, not a resource node). The
+  plateau between the cones still reads sedimentary and granite (PLAN.md section 10, `VOLCANIC_REGIONS`).
 - [ ] **The outpost registry.** `outposts.json` is written ahead of `openworld/outposts` (on `claude/outpost-registry-6c40e9`, unpushed);
   its field names are this kit's guess at the registry's shape: check them against its README when it is merged.
 - [ ] **Acid rain.** The plume gives the rain's pH (`KHAZ.provide('ph')`), but nothing provides `'rain'` yet (no kit does: the weather's
@@ -39,10 +38,12 @@ Open items are `- [ ]`; build.py counts them.
 ## The pages
 
 - [ ] **Sub-cell features are the kit's.** The model's 2 km cells hold no gorge, bench, hollow or cove: East Bliss Vale's tuff bench and
-  the Weyt Warra's gorge (~26-40 m), the hollows, the camps' pads and the shore's coves are drawn on the model's ground by the stage
+  the Weyt Warra's gorge (~26-40 m, inside edit 3's 2 km outlet channel), the hollows, the camps' pads and the shore's coves are drawn on the model's ground by the stage
   (`45-host-stage.js`), in keeping with it but not from it.
-- [ ] **The Tlahn Warra on station 1** leaves the Great Vale's tarn 2-3 km off the page's north-east corner (the model's `r_fb_central`
-  starts at 190,1319): the page has no river. Station 2 draws it coming into Solfatara Glen's tarn.
+- [ ] **The Tlahn Warra on station 1** leaves the Great Vale's lake on its east side (189,1318), 12 km off the page: the page has no river.
+  Station 2 draws it coming into Solfatara Glen's lake.
+- [ ] **Two stations stand off the plan's points** (PLAN.md section 7a): the Glen on the Tlahn Warra's mouth, East Bliss on the Weyt Warra's
+  outlet (the gorge is its content).
 - [ ] **The flood's period** is a page's (90 minutes), not the range's (a lahar every few years): it shows the front; the world clock
   will set the real one.
 - [ ] **Shadows** are off at load (`?shadow=1`): only the kin pines and tree ferns cast. Not measured on this kit yet.

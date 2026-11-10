@@ -26,11 +26,11 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `44z-host-site.js` | 5 |  |
-| `45-host-stage.js` | 9 | the land (39) |
+| `44z-host-site.js` | 6 |  |
+| `45-host-stage.js` | 10 | the land (40) |
 | `47-host-land.js` | 10 | the fields (cached below; these are the definiti (49); the host binding (88) |
 | `50-biome-firebliss-species.js` | 15 | palettes (22); the plants and pieces, tagged (60 and 65 place t (31); textures (the procedural fallbacks: a page with  (51); materials (BIO.libSwap gives each slot its libra (61); geometries local to this kit (77); instanced items (108); the kin (core/biome 32: grown by the Throne's ow (131); the hunters' culture rows (core/camp, KCAMP.CULT (141) |
-| `60-biome-firebliss-floor.js` | 9 |  |
+| `60-biome-firebliss-floor.js` | 10 |  |
 | `65-biome-firebliss-hunters.js` | 7 |  |
 | `70-biome-firebliss.js` | <1 |  |
 | `84-host-ground.js` | 11 |  |
@@ -41,7 +41,7 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `89b-host-plume.js` | 3 |  |
 | `89w-host-water.js` | 3 |  |
 | `89z-host-build.js` | 8 |  |
-| `99-host-take.js` | 15 |  |
+| `99-host-take.js` | 16 |  |
 | `99-tail.html` | <1 |  |
 
 ## stations/
@@ -50,6 +50,6 @@ Each station builds one page (`build.py --station <name>`) from its own fragment
 
 | Station | Fragments | KB |
 |---|---|---|
-| east | 44z-host-site.js | 4 |
+| east | 44z-host-site.js | 5 |
 | glen | 44z-host-site.js | 4 |
 | mons | 44z-host-site.js | 3 |
