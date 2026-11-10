@@ -28,6 +28,10 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
   volume of 0 is a real mute), `core/audio/26-core-audio-music.js` line 550 (`scenario.frequency || 1.0`) and
   `core/audio/lab/serve_local.js` line 9. Write them `x == null ? d : x` with the audio work's next turn, run its node tests
   (`core/audio/test-*.js`) and let the ratchet shrink (`python3 tools/check_source.py --write-baseline`).
+- **`node core/audio/test-audio.js` fails two checks as the branch committed it** (core/audio is byte-identical to
+  `claude/water-migration-merge`): "every clip has a known category" (68 of the 1,007 clips name categories
+  `data/categories.json` lacks: `sfx.interface`, `sfx.impact`, `music.motif`, `sfx.voice`, `mus.loop`, `sfx.env`) and "every clip has a
+  source page and a creator". Add the categories (or map the clips onto existing ones) and fix the sources in the audio work's next turn.
 
 ## With the next scale-model edit *(the owner, 2026-11-09)*
 
