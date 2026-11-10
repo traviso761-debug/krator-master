@@ -10,7 +10,8 @@ Open items are `- [ ]` lines; build.py prints them.
       on the sheet 52 of 52 and 33 of 33; the sheet as a whole 1,322 of 1,367 floors (87 slivers beside stairwells counted
       apart), 45 unreached in 24 buildings (the container stacks', the tank row's, the radome tower's, the gasholder's and the
       kontor's upper units, which have no stair in their set item; the market halls', the smithies' and the windmills' floors
-      with no kit door near; the cliff village's huts; the astronomers' tower). Roketstad: RK_RESULT.
+      with no kit door near; the cliff village's huts; the astronomers' tower). Roketstad (`verify.py dist/roketstad.html --assert --interiors`, 2026-11-10: OK): 17,555 of 18,101 floors reached (17,187 before
+      this pass), 851 slivers apart, the Hall and the Fortress whole.
       Left: (1) the room kinds `chamber committee gallery lobby guard war_room armoury magazine audience signals cell` are
       registered by `kits/interiors/sets/highlands.js`, as the other sets register theirs, not in `kits/interiors/src/30-programs.js`
       as the owner's brief asked: that file reaches 30 builds and 184 pages (`tools/reach.py`), a rebuild this change did not
