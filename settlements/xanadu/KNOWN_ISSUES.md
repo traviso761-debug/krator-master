@@ -52,8 +52,8 @@ Open items are `- [ ]` lines; build.py prints them.
       (`verify.py dist/erewhon.html --assert --interiors`, 2026-11-10, a local build not committed: Erewhon is rebuilt once
       after the citadel sessions merge; OK): 52,321 of 54,062 floors reached (47,538 on the WIP),
       3,644 slivers apart, 236 buildings with a gap, 401 placements held inside the citadel. The citadel belongs to the citadel sessions (`-pleasuredome`, `-citadel`; 2026-11-09): every placement inside its
-      wall (CIT_POLY) builds as before here, with no hollow walls and no rooms from this set (`XAF.held`). The furniture is textured (the catalog's detail maps, `tex=True`) but for the
-      `tile` family, which the catalog's maps lack (TODO.md, ride-along).
+      wall (CIT_POLY) builds as before here, with no hollow walls and no rooms from this set (`XAF.held`). The furniture is textured (the catalog's detail maps, `tex=True`; the `tile` family on
+      the library's `ceramic.glaze` since 2026-11-10).
 - [ ] (2026-11-03) **Doors and glass: the kit's bodies are solid.** The kit takes core/door and the Vernacular's openings
       (69e5) and `kits/xanadu/src/71c-xa-openings.js` (kits/xanadu/README.md, "Doors and glass"): on the sheet 599 doors (each a
       real leaf in KDOOR, locked, with an id from its def and placement) and 5,912 panes where there were black plates and dark

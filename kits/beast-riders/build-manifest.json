@@ -1,6 +1,6 @@
 {
- "KF_TEX (GENERATED)": "6315ac977eac",
- "TOWNS: Girder and Mav's Refuge sealed (GENERATED: towns.py)": "6461a5fcf97e",
+ "KF_TEX (GENERATED)": "0f27e1e2a525",
+ "TOWNS: Girder and Mav's Refuge sealed (GENERATED: towns.py)": "3e87689b2b77",
  "core/catalog/inspector.js": "b2c275da7b7d",
  "core/catalog/krator-asset-engine.js": "ea11ad7890ea",
  "core/catalog/krator-furniture-core.js": "414859e90d67",
@@ -35,7 +35,7 @@
  "src/90-br-sheet.js": "1264ee4afbef",
  "towns: core/door/10-core-door.js": "b12eb3957235",
  "towns: core/door/20-core-glass.js": "53ceb6333ccb",
- "towns: core/furnish/50-core-furnish.js": "2bd26bf99a15",
+ "towns: core/furnish/50-core-furnish.js": "9c00fd0ef224",
  "towns: core/furnish/52-core-furnish-draw.js": "1baf4b1363ee",
  "towns: core/furnish/53-core-furnish-host.js": "9ed629d45803",
  "towns: core/materials/record/23-mat-record.js": "ea9d418382b6",

@@ -24,7 +24,7 @@
 "core/clock/20-core-clock.js": "5967f73401fa74c0521f5aceaf52aca09470e3c4",
 "core/export/07-core-export.js": "f0dd372fc7ed3029c3976d280aa7b346a4062d5f",
 "core/export/09-core-export-adapters.js": "e6827d413d1f2ddbb274c240aa545759451b5b74",
-"core/furnish/50-core-furnish.js": "2bd26bf99a1535f93e65974d3986abe430d0e12c",
+"core/furnish/50-core-furnish.js": "9c00fd0ef2249cd0f7f2b7fb01ac7bf0df84a393",
 "core/furnish/52-core-furnish-draw.js": "1baf4b1363ee6179c3cc04021c41bed288364026",
 "core/host/90-host-camera.js": "001a896ff26fb12ffd206d55a58128a3b329edd4",
 "core/host/91-host-loop.js": "3c7fb5c1f35a1e483155a75c7f12e38966fad4bc",

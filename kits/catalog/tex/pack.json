@@ -1653,6 +1653,34 @@
     "sourceMean": 0.4643
    }
   },
+  "tile": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "tile.albedo.webp"
+   },
+   "lib": "ceramic.glaze",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    0.3,
+    0.3
+   ],
+   "size": 256,
+   "source": {
+    "albedo": "8a42e14e93bc72a01e8d1a4abffea999db1efb32",
+    "normal": "7fb1e735ec59353769f5e917bdf3bb05e13b97e7",
+    "roughness": "007873fcab9dadeb1f7e1025dc344779d467bd79"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.6,
+    "sourceMean": 0.8618
+   }
+  },
   "wax": {
    "breakup": null,
    "card": false,
