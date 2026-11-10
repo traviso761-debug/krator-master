@@ -9,8 +9,9 @@ The checks, each with a negative:
   - the world's own (core/world/91-world-probe.js, round the site): order-free seeding, the land continuous, nothing
     rooted in water or outside the region, spacing across tiles, the highways (here the bands' tracks) on the land at
     their grade, nothing growing on a track or a cleared place, no NaN;
-  - the region: the site where the cut put it (WORLD_DATA.meta.sites: Pinnacle Rock at map px 1027,681, the frame's
-    origin), on dry land in the NE rim, and the kit growing there (the negative reads the site 40 km off, out of the cut);
+  - the region: the site where the cut put it (WORLD_DATA.meta.sites: Pinnacle Rock at map px 1007,686 since the owner's
+    move of 2026-11-10, the frame's origin), on dry land in the savage hyperjungle, and its kit growing there (the
+    negative reads the site 40 km off, out of the cut);
   - the sites (core/world/88s-world-sites.js _sites.checks): the baked plan is the plan made again in the browser (the
     negative changes the world seed), every camp whole and apart on good ground with its track at its gate (the negative
     stacks two tents), every camp cleared of flora, tagged and drawn with the kit's pieces (the negative reads the world
@@ -31,14 +32,14 @@ APPLIES = {'flora placement is seeded by cell (order-free)': 'kits', 'nothing ro
            'trees keep their spacing, across tile edges': 'kits', 'the named rivers carry water to their mouths': 'rivers',
            'the highways lie on the land and keep their grade': 'roads', 'nothing grows on a highway or in a town': 'kits'}
 HAS = "({kits:WORLD_KITS.length>0,rivers:(WORLD_DATA.meta.rivers||[]).length>0,roads:!!WORLD_DATA.roads,towns:!!WORLD_DATA.towns})"
-REGION = r"""(neg)=>{const R=[],M=WORLD_DATA.meta,S=(M.sites||[])[0],bad=[];
+REGION = r"""(neg)=>{const R=[],M=WORLD_DATA.meta,S=(M.sites||[])[0],bad=[],HJ=WORLD_KITS.findIndex(k=>k.name==='hyperjungle');
  if(!S)bad.push('no site in region.json');else{const x=neg==='site'?S.x+40000:S.x,z=S.z;
-  if(S.id!=='staiytii0y')bad.push('the site is '+S.id);if(S.px!==1027||S.py!==681)bad.push('the site at px '+S.px+','+S.py);
+  if(S.id!=='staiytii0y')bad.push('the site is '+S.id);if(S.px!==1007||S.py!==686)bad.push('the site at px '+S.px+','+S.py);
   if(!WORLD.inside(x,z))bad.push('the site outside the cut');else{const A=WORLD.at(x,z);if(!(A.depth<0))bad.push('the site in water');
-   const b=WORLD.biomeAt(x,z);if(!b||b.name.toLowerCase()!=='ne rim')bad.push('the site in '+(b&&b.name));
-   if(!(WORLD.kitW(0,x,z)>.5))bad.push('the savannah kit weighs '+WORLD.kitW(0,x,z).toFixed(2)+' there');}}
- R.push({name:'the region: the site where the cut put it, on dry land in the NE rim, its kit growing there',ok:!bad.length,
-  detail:bad.length?bad.join('; '):S.name+' ('+S.id+') at px '+S.px+','+S.py+', the frame\'s origin; '+WORLD.biomeAt(S.x,S.z).name+', the savannah kit weighs '+WORLD.kitW(0,S.x,S.z).toFixed(2)});
+   const b=WORLD.biomeAt(x,z);if(!b||b.name.toLowerCase()!=='savage hyperjungle')bad.push('the site in '+(b&&b.name));
+   if(!(WORLD.kitW(HJ,x,z)>.5))bad.push('the hyperjungle kit weighs '+WORLD.kitW(HJ,x,z).toFixed(2)+' there');}}
+ R.push({name:'the region: the site where the cut put it, on dry land in the savage hyperjungle, its kit growing there',ok:!bad.length,
+  detail:bad.length?bad.join('; '):S.name+' ('+S.id+') at px '+S.px+','+S.py+', the frame\'s origin; '+WORLD.biomeAt(S.x,S.z).name+', the hyperjungle kit weighs '+WORLD.kitW(HJ,S.x,S.z).toFixed(2)});
  return R;}"""
 
 

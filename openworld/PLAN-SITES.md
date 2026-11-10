@@ -29,6 +29,16 @@
   - The page's verify plans again in the browser and gets the bake's hash. The nine Beast Rider bands' camps and their
     tracks pass every check.
 
+**Pinnacle Rock moved (the owner, 2026-11-10: "a spot not too far that's got a bit more forest").**
+- **Why it moved.** Map 5.1 had left the rock in the NE rim's savanna, and no spot on the rim is more wooded: the kit's
+  own tree index put the old spot near the rim's best.
+- **The survey.** The nearest real forest is the savage hyperjungle, about 900 m below the rim. The owner chose the
+  nearest knoll on its north-east edge: px 1007,686, 41 km west, 110 m over its round, 77 % jungle within 9 km.
+- **The model's record moved** (`model/src/60-settlements.js`, `SETT_MOVED['5.1e2']`).
+- **The region followed it:** the region was recut, the hyperjungle joined its kits, the bands were rebaked on the new
+  ground (hash `8ad035b1`), and every check passes in the browser.
+- **Not moved yet:** Pinnacle Rock's own page and the published model (`openworld/pinnacle/KNOWN_ISSUES.md`).
+
 **Not yet:**
 - Step 3 (the generic town steps lifted out of `ISLE`): the first site has no town.
 - Step 6 (the region's planner page).

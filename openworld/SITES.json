@@ -30,7 +30,7 @@
   }
  },
  "sites": {
-  "staiytii0y": {"name": "Pinnacle Rock", "type": "city", "region": "pinnacle", "reach_km": 30, "culture": "beast-rider", "page": "settlements/pinnacle-rock", "state": "planned"},
+  "staiytii0y": {"name": "Pinnacle Rock", "type": "city", "region": "pinnacle", "reach_km": 30, "moved": "2026-11-10: 1027,681 -> 1007,686 (the owner: more forest; the savage hyperjungle's north-east edge)", "culture": "beast-rider", "page": "settlements/pinnacle-rock", "state": "planned"},
   "s57bkv9741": {"name": "Erehwon", "type": "city", "region": "xanadu-oidong-highrift", "reach_km": 30, "culture": "xanadu", "page": "settlements/xanadu", "state": "planned"},
   "sq80bzd7ep": {"name": "Longsong", "type": "village", "region": "xanadu-oidong-highrift", "reach_km": 15, "culture": "xanadu", "page": "settlements/longsong", "state": "planned"},
   "skm4jjo2vl": {"name": "Qiblai", "type": "city", "region": "xanadu-oidong-highrift", "reach_km": 30, "culture": "xanadu", "page": null, "state": "planned"},

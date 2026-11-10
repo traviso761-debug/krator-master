@@ -58,7 +58,7 @@ const STYLES={
  savanna: {hills:.9,  ridge:.6, terr:.45,step:40,dune:0,  gully:.6, rough:.9, rock:.2, wallK:.7}};
 const SKEYS=['hills','ridge','terr','step','dune','gully','rough','rock','wallK'];
 // the overlay's name (lower case) -> its style; an overlay not listed takes 'desert'
-const BIOME_STYLE={'sedesert':'desert','e badlands':'badland','e abysss':'abyss','hyperjungle':'jungle','e highlands':'highland',
+const BIOME_STYLE={'sedesert':'desert','e badlands':'badland','e abysss':'abyss','hyperjungle':'jungle','savage hyperjungle':'jungle','hyperjungle n':'jungle','hyperjungle s':'jungle','e highlands':'highland',
  'n highlands':'highland','korona / ne':'korona','throne/volcano':'volcanic','crater drylands':'dryland','ring sea':'sea',
  'oidong valley':'vale','ne rim':'savanna','e savannah rim':'savanna','se savannah rim':'savanna'};
 // the ground palettes (sRGB), from the kits' own ground painters where a kit exists (sedesert, eastabyss: 45-host-stage)

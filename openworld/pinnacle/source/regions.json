@@ -12160,20 +12160,20 @@
 "kind": "tool",
 "points": [
 [
-1012.0,
-666.0
+992.0,
+671.0
 ],
 [
-1042.0,
-666.0
+1022.0,
+671.0
 ],
 [
-1042.0,
-696.0
+1022.0,
+701.0
 ],
 [
-1012.0,
-696.0
+992.0,
+701.0
 ]
 ],
 "notes": "openworld/SITES.json pinnacle: site Pinnacle Rock (staiytii0y) (tools/scale-model/cut_site.py)"

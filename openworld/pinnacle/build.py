@@ -2,7 +2,8 @@
 """Build the Pinnacle region of the open world: dist/pinnacle.html (openworld/PLAN-SITES.md, the first site).
 
 The scale model round Pinnacle Rock (openworld/SITES.json 'pinnacle': a 60 km square on map 5.1, cut by
-tools/scale-model/cut_site.py) at 1:1 on core/world, with the NE rim's kit (biomes/abyssal-savannah) growing on it, and
+tools/scale-model/cut_site.py) at 1:1 on core/world, the rock on the savage hyperjungle's north-east edge since the owner's
+move of 2026-11-10, with the hyperjungle and the NE rim's kit (biomes/abyssal-savannah) growing on it, and
 the site planned on that ground (core/world/48s-world-sites.js, baked by core/world/bake_sites.py to plan/sites.json):
 the nine bands that camp on the floor round the rock (core/camp, kits/beast-riders) and a track from each to the rock.
 The town on the mesa is settlements/pinnacle-rock's own page.
@@ -38,14 +39,19 @@ if os.path.isfile(_cp) and '--no-checks' not in sys.argv and \
 # the kits: the eastern abyss's whole (the savannah borrows its species; its fauna fragment closes its registry), then the
 # abyssal savannah's species, trees, floor and its kitEnd (biomes/abyssal-savannah/src 50-70)
 KIT_FRAGS = (
-    [('biomes/eastabyss/src', f) for f in ('50-biome-eastabyss-species.js', '55-biome-eastabyss-trees.js', '60-biome-eastabyss-floor.js',
+    # the hyperjungle (the savage hyperjungle's overlay: the rock stands on its north-east edge since 2026-11-10)
+    [('biomes/hyperjungle/src', f) for f in ('50-biome-hyperjungle-species.js', '52-biome-hyperjungle-library.js', '54-biome-hyperjungle-lands.js',
+                                             '55-biome-hyperjungle-trees.js', '56-biome-hyperjungle-savage.js', '57-biome-hyperjungle-north.js',
+                                             '58-biome-hyperjungle-fauna.js', '60-biome-hyperjungle-floor.js', '65-biome-hyperjungle-dress.js',
+                                             '70-biome-hyperjungle.js')]
+    +     [('biomes/eastabyss/src', f) for f in ('50-biome-eastabyss-species.js', '55-biome-eastabyss-trees.js', '60-biome-eastabyss-floor.js',
                                            '65-biome-eastabyss-dress.js', '70-biome-eastabyss.js', '75-biome-eastabyss-fauna.js')]
     + [('biomes/abyssal-savannah/src', f) for f in ('50-biome-absav-species.js', '55-biome-absav-trees.js', '60-biome-absav-floor.js',
                                                     '70-biome-absav.js')])
-KIT_LAST = {'eastabyss': '75-biome-eastabyss-fauna.js', 'abyssal-savannah': '70-biome-absav.js'}
+KIT_LAST = {'hyperjungle': '70-biome-hyperjungle.js', 'eastabyss': '75-biome-eastabyss-fauna.js', 'abyssal-savannah': '70-biome-absav.js'}
 sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
 import matlib_pack as _mp   # noqa: E402
-PACK_KITS = ['eastabyss', 'abyssal-savannah']
+PACK_KITS = ['hyperjungle', 'eastabyss', 'abyssal-savannah']
 SIDE = None if '--inline-packs' in sys.argv else {}
 def _fams(kit):
     pj = os.path.join(ROOT, 'biomes', kit, 'tex', 'pack.json')
@@ -87,7 +93,7 @@ ORDER = (
     + LDF('90-world-camera.js', '91-world-probe.js', '98-world-start.js', '99-tail.html')
 )
 HEAD = [('<title>Krator Little Demo</title>', '<title>Krator: Pinnacle Rock</title>'),
-        ("<b>Little Demo</b> · the scale model's eastern desert at 1:1", "<b>Pinnacle Rock</b> · the scale model's NE rim round the rock at 1:1")]
+        ("<b>Little Demo</b> · the scale model's eastern desert at 1:1", "<b>Pinnacle Rock</b> · the hyperjungle's edge round the rock at 1:1")]
 FORBID = ['kdef(', 'kput(', 'kbake(', 'BUCKET[', 'MBK[', 'FAMMAT[', 'PLATS', 'BRIDGES', 'TOWERS', 'RIVER', 'PALISADE', 'KOFF']
 
 
