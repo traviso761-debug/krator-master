@@ -350,6 +350,7 @@
  "settlements/pinnacle-rock/dist/pinnacle-rock.html: MISSING BIO.leafOn": 1,
  "settlements/pinnacle-rock/dist/pinnacle-rock.html: MISSING BIO.leafQ": 1,
  "settlements/screamers/dist/screamers.html: CLASH _api": 1,
+ "kits/pylon/dist/pylon.html: CLASH _api": 1,
  "settlements/span/dist/span.html: CLASH _materials": 1,
  "settlements/verge/dist/verge.html: CLASH onerror": 1,
  "settlements/verge/dist/verge.html: MISSING BIO.animMat": 2,

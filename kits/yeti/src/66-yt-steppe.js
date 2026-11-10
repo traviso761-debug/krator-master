@@ -50,7 +50,7 @@ defBuilding({key:'yt_khoton',name:'Byre (the khoton), its hay and its corral',se
     [[hx,0,-hz],[hx,0,hz],[tx,H,-tz],[tx,H,tz],[-1,0,0],null],[[-hx,0,hz],[-hx,0,-hz],[-tx,H,tz],[-tx,H,-tz],[1,0,0],null]];
    for(const [a,b,c,d,n,dd] of sides){const g=dd?{u0:1-dg.u1,u1:1-dg.u0,v0:dg.v0}:null,off=[-n[0]*wt,0,-n[2]*wt],sh=q=>q.map((v,i)=>v+off[i]);
     ytQuad('larch',a,b,c,d,P('larch'),n,g);ytQuad('earth',sh(a),sh(b),sh(c),sh(d),P('earth'),[-n[0],.3,-n[2]],g);ytQuad('larch',c,d,sh(c),sh(d),P('larch'),[0,1,0]);}
-   for(const s of [-1,1])box('larch',s*(B.door.w/2+.06),0,hz-.1+wt/2,.12,B.door.h,wt+.25,P('larch'));box('larch',0,B.door.h-.05,hz-.1+wt/2,B.door.w+.3,.18,wt+.3,P('larch'));
+   for(const s of [-1,1])box('larch',s*(B.door.w/2+.06),0,hz-.1+wt/2,.12,B.door.h,wt+.25,P('larch'));WKOFF=1;box('larch',0,B.door.h-.05,hz-.1+wt/2,B.door.w+.3,.18,wt+.3,P('larch'));WKOFF=0;   /* the lintel: overhead, not a floor over the threshold (it hid the ground the walker steps out on) */
    /* the roof: larch poles, sod over them, low-pitched */
    const rx=tx+wt,rz=tz+wt,rh=.5,rl=Math.max(.3,rx-rz);
    ytQuad('larch',[-tx,H,-tz],[tx,H,-tz],[-tx,H,tz],[tx,H,tz],P('larch'),[0,-1,0]);
