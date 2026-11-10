@@ -10,7 +10,7 @@ const VIEWS=SITE.views?SITE.views(VW):{'Over the station':VW([0,-900,260],[0,0,0
 function describe(hit){const p=hit.point,o=hit.object;
  let best=null;for(const r of REG){const dx=p.x-r.x,dz=p.z-r.z;if(dx*dx+dz*dz<=r.r*r.r&&p.y>=(r.y||0)-2&&p.y<=(r.y||0)+r.h+5){if(!best||r.r<best.r)best=r;}}
  const item=o.isInstancedMesh&&o.userData.biome?(o.name||'').replace(/^biome:/,'').replace(/^[^|]*\|/,''):null;
- const PLT=item&&NWOW.plantOfItem(item),SB=best&&NWOW.SPECIES.find(s=>best.key===s.key),F=PLT||SB,hv=F&&F.tags?F.tags.harvest:null;
+ const PLT=item&&(NWOW.plantOfItem(item)||(SEOW.plantOfItem&&SEOW.plantOfItem(item))),SB=best&&NWOW.SPECIES.find(s=>best.key===s.key),F=PLT||SB,hv=F&&F.tags?F.tags.harvest:null;
  const A=inNear(p.x,p.z)?SEOW.at(p.x,p.z):null,hz=typeof KTAGS!=='undefined'&&KTAGS.hazardAt?KTAGS.hazardAt(p.x,p.y,p.z):'';
  return(F?F.name:best?best.name:(o.userData.inspectLabel||item||o.name||'mesh'))+'  ·  '+(o.userData.inspectLabel||item||'')+
   (hv?'\nharvest: wood '+hv.wood+' · edible '+(hv.edible.join(', ')||'none')+(hv.medicinal?' · medicinal':''):'')+
@@ -23,7 +23,7 @@ function describe(hit){const p=hit.point,o=hit.object;
 const BUDGET={
  showcase:{tris:14000000,calls:260},
  cls:{pass:7000000,host:3000000},
- type:{'nwouterwall/trees':'pass','nwouterwall/floor':'pass','nwouterwall/fields':'pass','host':'host'},
+ type:{'nwouterwall/trees':'pass','nwouterwall/floor':'pass','nwouterwall/fields':'pass','seouterwall/floor':'pass','host':'host'},
 };
 const HCHK={
  // the station on the scale model (PLAN.md sections 5, 7.2 and 7.4): the page's pixel within 8 px (16 km) of the plan's and its height within
@@ -63,6 +63,11 @@ const HCHK={
   for(let i=1;i<P.length-1;i+=5){const a=P[i-1],b=P[i+1],dx=b[0]-a[0],dz=b[1]-a[1],L=Math.hypot(dx,dz)||1;for(const q of [-W*.45,0,W*.45]){const x=P[i][0]-dz/L*q,z=P[i][1]+dx/L*q;worst=Math.max(worst,Math.abs(h(x,z)-P[i][2]));}}
   const ok=Rd.maxGrade<=Rd.rec.grade+.002&&worst<.5&&ZC.road>0;
   return{ok,detail:P.length+' points, '+(P.length*10/1000).toFixed(1)+' km; steepest '+(Rd.maxGrade*100).toFixed(1)+' % (ruling '+(Rd.rec.grade*100).toFixed(0)+' %); the ground under its pavement within '+worst.toFixed(2)+' m; '+(ZC.road||0)+' road points on the zone raster'};},
+ // the kit's own plants (50, 60): each placed (the poppies by the season), the puya on the sunny slopes and the scree, the guyed stalks by
+ // water (a brook, a fan's channel, a tarn's strand), none on the road, a heap, a crag or in water
+ plants(fl,inst){if(!fl)return{ok:false,detail:'no floor'};const K=fl.byKind||{},bad=inst.filter(p=>{const Z=SEOW.zoneAt(p[0],p[2]);return Z==='road'||Z==='heap'||Z==='crag'||Z==='water';}).length;
+  const want=['puya','guyedstalk','goldroot'].concat(SEOW.BLOOM>0?['skypoppy','goldpoppy']:[]),lack=want.filter(k=>!(K[k]>0));
+  return{ok:!lack.length&&bad===0,detail:Object.keys(K).map(k=>k+' '+K[k]).join(', ')+'; '+bad+' of '+inst.length+' sampled on a road, heap, crag or water'+(lack.length?'; none of '+lack.join(', '):'')};},
  // the sky: the shared sky at the station's pixel, its far land cast from the model (three layers of 1024)
  sky(S){const R=S.preset.ridges||[],ok=R.length===3&&R.every(r=>r.profile&&r.profile.length===1024)&&S.preset.site.px===SEOW_REGION.site.px;
   return{ok,detail:'site px '+S.preset.site.px+','+S.preset.site.py+'; ridges '+R.map(r=>(r.dist/1000).toFixed(0)+' km').join(', ')};},
@@ -77,6 +82,8 @@ HCHK.water=(W,D)=>{if(!W)return{ok:false,detail:'no core/water records'};const c
 const ZONES_NEED=SITE.need||['col','moraine','floor','fan','crag','scree','krummholz','puna'];
 const _zoneCounts=()=>{const n={};for(let k=0;k<ZR.length;k++){const z=ZONE_IDS[ZR[k]];n[z]=(n[z]||0)+1;}return n;};
 const TREES_ALL=()=>NWOW.TREES||[];
+/* the kit's own instances (every item of its registry: up to 400 of each), [x, y, z] */
+const SEOW_INST=()=>{const out=[],R=BIO.kits.seouterwall,m=new THREE.Matrix4(),p=new THREE.Vector3();if(!R)return out;scene.traverse(o=>{if(!o.isInstancedMesh||!o.userData.biome||o.userData.kit!=='seouterwall')return;const n=Math.min(o.count,400);for(let i=0;i<n;i++){o.getMatrixAt(i,m);p.setFromMatrixPosition(m);out.push([p.x,p.y,p.z]);}});return out;};
 /* the hazard records as the page's registry holds them (BIO.record queued them before it was up: 47) */
 const HAZ_RECS=()=>typeof KHAZ==='undefined'?[]:KHAZ.list().filter(r=>r&&r.tags&&r.tags.hazard&&(r.tags.hazard.kind==='cold'||r.tags.hazard.kind==='crush'));
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),ZC=_zoneCounts();
@@ -88,6 +95,7 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),Z
  if(MODEL_LAKE)add('the brook falls over the headwall into the tarn',HCHK.tarn(STREAM,MODEL_LAKE,WATER_DRAW&&WATER_DRAW.falls));
  add('the larch in a lee, the krummholz in the open',HCHK.lee(TREES_ALL(),SEOW.FIELDS));
  add('no tree in water, on a crag or a heap',HCHK.roots(TREES_ALL()));
+ add('the cordillera\'s own plants (puya, guyed stalks, poppies, goldroot)',HCHK.plants(window._biome&&window._biome.floor,SEOW_INST()));
  if(ROAD)add('the Ancients\' highway graded at its ruling grade',HCHK.road(ROAD,terrainH,ZC));
  add('megabreccia east, tibasalt west (KSTRATA)',HCHK.rock(ROCK_SH));
  add('the God-Bore and the rockfall (core/hazard)',HCHK.hazards(HAZ_RECS()));
@@ -111,6 +119,7 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('tibasalt on both walls',HCHK.rock(ROCK_SH?{at:(x,y,z)=>ROCK_SH.at(ROCK_CONTACT[0]-3000,y,z)}:null));
  add('the rockfall as bad at night as at noon',HCHK.hazards(HAZ_RECS().map(r=>r&&r.tags&&r.tags.hazard.kind==='crush'?Object.assign({},r,{id:r.id+'-neg',tags:{hazard:Object.assign({},r.tags.hazard,{cycle:null})}}):r)));
  add('the God-Bore blowing by day',HCHK.hazards(HAZ_RECS().map(r=>r&&r.tags&&r.tags.hazard.kind==='cold'?Object.assign({},r,{id:r.id+'-neg',tags:{hazard:Object.assign({},r.tags.hazard,{cycle:null})}}):r)));
+ add('a guyed stalk on the road',HCHK.plants(window._biome&&window._biome.floor,SEOW_INST().concat(ROAD?[[ROAD.rec.pts[50][0],0,ROAD.rec.pts[50][1]]]:[[0,0,0]].map(()=>{const H=SITE_HEAPS&&SITE_HEAPS[0];return H?[H.x,0,H.z]:[1e6,0,1e6];}))));
  add('the sky at another pixel',HCHK.sky({preset:Object.assign({},SKY.preset,{site:{px:0,py:0}})}));
  return R;}
 

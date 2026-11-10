@@ -32,12 +32,14 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `45-host-stage.js` | 7 | the station, its air and its season (24); the model's ground (bicubic over its 1 km cells) (38); the ground's height (48); renderer, light, camera (64) |
 | `46-biome-seow-layout.js` | 8 |  |
 | `47-host-land.js` | 38 **big** | the near box and a coarse look at the ground (8); the brook (its line, its water level never climb (16); the Ancients' highway (station 1: SITE.road; PLA (36); the water: the brook, the model's tarn (stations (59); the rockfall heaps (core/terrain KRUBBLE: PLAN.m (75); the wind's exposure (the God-Bore: PLAN.md secti (94); the fields (biomes/WORLD.md; BIOME-API.md) (101); the host binding (before the meshes: their paint (130); the library layers (or procedural without the pa (141); the ground material (one shader for the near and (168) |
+| `50-biome-seow-species.js` | 7 | textures (procedural, greyscale: the fallback wh (35); materials (the library's cards swap in: material (51); instanced items (the NW outer wall's upright car (64) |
+| `60-biome-seow-floor.js` | 4 |  |
 | `70-biome-seow.js` | 2 |  |
 | `89a-host-atmos.js` | 2 |  |
 | `89s-host-sky.js` | 4 |  |
 | `89w-host-water.js` | 3 |  |
 | `89z-host-build.js` | 8 | the air on everything drawn (once, after the bak (33) |
-| `99-host-take.js` | 16 | the inspector's words: a plant names its species (8); the probe's budgets and the kit's own checks (ve (22); the page, handed to the host (117) |
+| `99-host-take.js` | 17 | the inspector's words: a plant names its species (8); the probe's budgets and the kit's own checks (ve (22); the page, handed to the host (126) |
 | `99-tail.html` | <1 |  |
 
 ## stations/

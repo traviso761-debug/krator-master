@@ -33,6 +33,8 @@ const SITE={
  melt:{pts:[[420,-2600],[300,-2100],[260,-1760],[230,-1600],[60,-1250],[-300,-900],[-700,-500],[-1050,-150]],w:3.2,bank:1.6,bankW:3,braids:1,fan:false},
  // the rockfall heaps at the headwall's foot (the ground there, metres over the origin)
  heaps:{n:4,foot:[24,40],x:[-1700,1500],rx:[18,36],seed:6221},
+ // the LOD spine (47: the floor's dense band round each point): the shore, the fall's foot, the headwall's foot west and east
+ spine:[[-300,-250],[230,-1450],[-1200,-1300],[900,-1250]],
  // the zones a check looks for on this station's near ground (99)
  need:['water','shore','moraine','crag','scree','larch','puna'],
  snow:{autumn:[1200,1700],winter:[-2000,-1900],spring:[400,800],summer:[1800,2400]},
