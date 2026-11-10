@@ -14,9 +14,12 @@
 - [x] **The flora was the NW outer wall's alone.** The plant turn (2026-11-10, PLAN.md 7.7): the kit's own puya, red guyed stalk, sky and
       gold poppies and goldroot, on the library's cards, placed by zone. Still the NW outer wall's for the trees and the shrubs; the plan's
       snow lotus is its woolly snowball, its cushions its moss cushions; the crag pine and candle birch of station 6 are not drawn.
-- [ ] **The God-Bore is a hazard record, not yet weather.** The night's katabatic gale is a `cold` hazard on the day's cycle (on 21:00 to
-      05:00) over the col, and the wind's exposure decides the trees' form (`F.wind`); the wind core/atmos blows the foliage with is its
-      own field, not turned downslope at night (a core/atmos setting no page has yet: outside this kit).
+- [x] **The God-Bore was a hazard record, not yet weather.** Fixed 2026-11-10 (the owner: "add the core atmos change as an opt-in"):
+      `core/atmos/fx/89-atmos-fx-katabatic.js` (`ATMOS.katabatic`, `ATMOS.katabaticAt`; opt-in by path, no core file edited, its node test
+      `core/atmos/fx/test-katabatic.js` with negatives) turns the one wind field's base toward the gale by night and raises the gusts, so the
+      foliage, the smoke, the rain and the snow all ride it. Every station binds it after the weather on the hazard record's hours (21:00 to
+      05:00, eased an hour either side) from the north-north-west at 3.2 times the calm; a check holds the wind and the hazard to the same
+      hours, with a negative (the gale by day).
 - [x] **The rockfall was steady.** Fixed 2026-11-10: each chute is a `crush` hazard on the day's cycle, at its worst from 12:00 to 15:00
       as the sun melts the night's ice cement (PLAN.md section 2.4), a quarter of that otherwise (`cycle.base`); the check reads it at
       12:30 and 03:00, with a negative (the same chute steady).

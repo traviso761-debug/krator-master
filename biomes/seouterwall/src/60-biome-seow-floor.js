@@ -31,7 +31,7 @@ SEOW.buildFloor=function(R,q){q=q==null?1:q;R=R==null?2000:R;const st={plants:0,
   (floor?BOXES:[BOX]).forEach((B,bi)=>{n+=BIO.grid('seow.'+kind+(floor?'.'+bi:''),P[1],accept,(x,y,z)=>{
    /* a floor pass visits each spine point's box; a cell two boxes share takes only the first (its nearest spine point's) */
    if(floor&&bi>0&&BOXES.slice(0,bi).some(Q=>x>=Q[0]&&x<=Q[2]&&z>=Q[1]&&z<=Q[3]))return;
-   D[kind](x,y,z);},{box:B,pad:P[4]||0});});
+   D[kind](x,y,z);},{box:B,pad:P[4]==null?0:P[4]});});
   st.byKind[kind]=n;st.plants+=n;});
  return st;};
 // the kit's exports run in its registry (core/biome kits: BIO.kitEnd wraps them); the default kit is current again. The layout's own

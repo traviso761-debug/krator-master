@@ -74,6 +74,10 @@ const HCHK={
   const sp=W&&W.springs?W.springs.length:0,Tt=W&&W.terraces?W.terraces.T.treads:[],desc=Tt.every((t,i)=>!i||t.y<Tt[i-1].y),endY=Tt.length?Tt[Tt.length-1].y:null;
   return{ok:Tv>=80&&Math.abs(Ts-SITE.heat.soil)<1.6&&tr.length>=10&&off===0&&sp===SITE.springs.length&&Tt.length>=6&&desc&&endY!=null&&MODEL_LAKE&&endY-MODEL_LAKE.level<1,
    detail:'the amber spring\'s ground '+Tv.toFixed(0)+' °C, the soil 600 m off '+Ts.toFixed(1)+' °C; '+tr.length+' hearth trees, '+off+' off 25-60 °C; '+sp+' springs drawn; '+Tt.length+' treads '+(desc?'descending':'NOT descending')+' to '+(endY==null?'?':endY.toFixed(2))+' m (the tarn at '+(MODEL_LAKE?MODEL_LAKE.level.toFixed(2):'?')+')'};},
+ // the God-Bore as the wind (core/atmos's katabatic, opt-in): full at 02:00 from SEOW.FROM, none at 14:00, on the same hours as its hazard
+ godbore(at,haz){if(!at||!haz)return{ok:false,detail:'no katabatic wind or no God-Bore record'};const n=at(2),d=at(14),u=SEOW.FROM,m=Math.hypot(n.wind[0],n.wind[1])||1,dot=-(n.wind[0]*u[0]+n.wind[1]*u[1])/m;
+  const hn=KHAZ.state(haz,2*3600).k,hd=KHAZ.state(haz,14*3600).k;
+  return{ok:n.k>.99&&d.k<.01&&dot>.99&&Math.abs(n.k-hn)<.01&&Math.abs(d.k-hd)<.01,detail:'02:00 k '+n.k.toFixed(2)+' (the hazard '+hn.toFixed(2)+'), down from the north-north-west ('+dot.toFixed(3)+'), '+m.toFixed(1)+' m/s base; 14:00 k '+d.k.toFixed(2)+' (the hazard '+hd.toFixed(2)+')'};},
  // the sky: the shared sky at the station's pixel, its far land cast from the model (three layers of 1024)
  sky(S){const R=S.preset.ridges||[],ok=R.length===3&&R.every(r=>r.profile&&r.profile.length===1024)&&S.preset.site.px===SEOW_REGION.site.px;
   return{ok,detail:'site px '+S.preset.site.px+','+S.preset.site.py+'; ridges '+R.map(r=>(r.dist/1000).toFixed(0)+' km').join(', ')};},
@@ -108,6 +112,7 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),Z
  if(HEAT)add('the fault\'s heat, its springs, terraces and hearth trees',HCHK.heat(HEAT,window._field,WATER_DRAW));
  add('megabreccia east, tibasalt west (KSTRATA)',HCHK.rock(ROCK_SH));
  add('the God-Bore and the rockfall (core/hazard)',HCHK.hazards(HAZ_RECS()));
+ add('the God-Bore blows by night (core/atmos katabatic) on its hazard\'s hours',HCHK.godbore(AIR.katabatic?h=>AIR.katabatic.at(h):null,HAZ_RECS().find(r=>r.tags.hazard.kind==='cold')));
  add('the shared sky at the station, its far land from the model',HCHK.sky(SKY));
  add('the season\'s larch and snow',HCHK.season());
  return R;}
@@ -131,6 +136,7 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  if(HEAPS.length)add('the rockfall as bad at night as at noon',HCHK.hazards(HAZ_RECS().map(r=>r&&r.tags&&r.tags.hazard.kind==='crush'?Object.assign({},r,{id:r.id+'-neg',tags:{hazard:Object.assign({},r.tags.hazard,{cycle:null})}}):r)));
  add('the God-Bore blowing by day',HCHK.hazards(HAZ_RECS().map(r=>r&&r.tags&&r.tags.hazard.kind==='cold'?Object.assign({},r,{id:r.id+'-neg',tags:{hazard:Object.assign({},r.tags.hazard,{cycle:null})}}):r)));
  add('a guyed stalk on the road (or a heap, or in water)',HCHK.plants(window._biome&&window._biome.floor,SEOW_INST().concat(ROAD?[[ROAD.rec.pts[50][0],0,ROAD.rec.pts[50][1]]]:[(()=>{const H=SITE_HEAPS&&SITE_HEAPS[0],w=WET_PT();return H?[H.x,0,H.z]:[w[0],0,w[1]];})()])));
+ add('the God-Bore blowing by day',HCHK.godbore(h=>ATMOS.katabaticAt(h,{from:SEOW.FROM,speed:3.2,on:9,off:17,ramp:1}),HAZ_RECS().find(r=>r.tags.hazard.kind==='cold')));
  add('the sky at another pixel',HCHK.sky({preset:Object.assign({},SKY.preset,{site:{px:0,py:0}})}));
  return R;}
 

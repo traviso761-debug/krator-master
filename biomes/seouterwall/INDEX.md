@@ -38,8 +38,8 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `89a-host-atmos.js` | 2 |  |
 | `89s-host-sky.js` | 4 |  |
 | `89w-host-water.js` | 5 |  |
-| `89z-host-build.js` | 9 | the air on everything drawn (once, after the bak (39) |
-| `99-host-take.js` | 20 | the inspector's words: a plant names its species (8); the probe's budgets and the kit's own checks (ve (22); the page, handed to the host (137) |
+| `89z-host-build.js` | 10 | the air on everything drawn (once, after the bak (39) |
+| `99-host-take.js` | 21 | the inspector's words: a plant names its species (8); the probe's budgets and the kit's own checks (ve (22); the page, handed to the host (143) |
 | `99-tail.html` | <1 |  |
 
 ## stations/

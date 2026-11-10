@@ -71,7 +71,7 @@ _mark('road');
 // The fault's vents and the springs' as KTHERM records over the country's soil, baked once on SITE.heat.cell m (KTHERM.fieldAt: bilinear,
 // the nearest edge node off the box): F.heat, the hot zone (46), the snow kept off the warm ground (89a), the hearths placed on it (89z)
 const HEAT=(function(){const T=SITE.heat;if(!T||typeof KTHERM==='undefined')return null;
- const H=KTHERM.create({soil:T.soil,vents:T.vents,detail:T.detail,world:'seouterwall-'+SITE.name}),F=H.bake({box:T.box,cell:T.cell||4});
+ const H=KTHERM.create({soil:T.soil,vents:T.vents,detail:T.detail,world:'seouterwall-'+SITE.name}),F=H.bake({box:T.box,cell:T.cell==null?4:T.cell});
  const B=T.box,at=(x,z)=>x<B[0]||x>B[2]||z<B[1]||z>B[3]?T.soil:KTHERM.fieldAt(F,x,z);
  return {H,F,box:B,at,rec:H.export({box:B,cell:16})};})();
 
@@ -124,7 +124,7 @@ function fieldsAt(x,z){if(x===_fm.x&&z===_fm.z)return _fm.F;
  const rd=ROAD?ROAD.near(x,z,ROAD.rec.w+20):{d:1e9},road=rd.d<ROAD_HALF+2,roadS=ROAD?smooth(ROAD_HALF+SITE.road.shoulder,ROAD_HALF,rd.d):0;
  const heat=HEAT?HEAT.at(x,z):null;
  const water=waterH(x,z)>y+.05,heap=heapAt(x,z)>.5,shore=!water&&!!MODEL_LAKE&&y<MODEL_LAKE.level+.9&&g<.3&&MODEL_LAKE.zone(x,z);
- const F={y,g,slope,sunny,mean,perma:SEOW.climate(mean).perma,water,streamD,heap,shore,road,roadS,heat,sinter:P.sinter||0,melt:P.melt,fan:P.fan,cobble:P.cobble,moraine:P.moraine,crag:P.crag,wall:P.wall||null,
+ const F={y,g,slope,sunny,mean,perma:SEOW.climate(mean).perma,water,streamD,heap,shore,road,roadS,heat,sinter:P.sinter==null?0:P.sinter,melt:P.melt,fan:P.fan,cobble:P.cobble,moraine:P.moraine,crag:P.crag,wall:P.wall||null,
   wind:windAt(x,z,y),
   // what the NW outer wall's passes read (nwouterwall's 55: no tree in a field, in water, on the aufeis or in a pocket)
   field:road,aufeis:false,pocket:false,rock:heap?1:smooth(.75,1.1,g),gully:0};   /* field: nwouterwall's 55 roots no tree in one (the road too) */
@@ -173,7 +173,7 @@ const PROC={'ground.puna':greyTex((x,y)=>165+60*(PN(x,y,6,11)-.5)),'ground.needl
  'ground.gravel':greyTex((x,y)=>165+70*(PN(x,y,3,15)-.5)),'ground.tundra':greyTex((x,y)=>150+50*(PN(x,y,6,16)-.5)),
  'ground.lichen':greyTex((x,y)=>160+60*(PN(x,y,5,17)-.5))};
 const PSCALE={'ground.puna':2.4,'ground.needles':2,'ground.sinter':2.5,'ground.cobble':2,'rock.megabreccia':4,'rock.basalt':3,'ground.gravel':2.5,'ground.tundra':2.2,'ground.lichen':2};
-const layer=k=>LIB[k]?{map:LIB[k].map,s:LIB[k].scale,lib:true}:{map:PROC[k]||PROC['rock.megabreccia'],s:PSCALE[k]||4,lib:false};   /* a rock with no procedural map of its own takes the breccia's */
+const layer=k=>LIB[k]?{map:LIB[k].map,s:LIB[k].scale,lib:true}:{map:PROC[k]||PROC['rock.megabreccia'],s:PSCALE[k]==null?4:PSCALE[k],lib:false};   /* a rock with no procedural map of its own takes the breccia's */
 LAYERS.forEach(k=>{const t=layer(k).map;if(t)t.wrapS=t.wrapT=THREE.RepeatWrapping;});
 // THE SEASON'S GROUND (sRGB tints over each layer's map): the puna straw-gold in autumn, a thin green-gold in summer, frost-grey in winter;
 // the larch litter gold under the autumn larch; the cobble and the gravel grey all year (darker wet in the spring melt)

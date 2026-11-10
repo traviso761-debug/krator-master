@@ -307,7 +307,7 @@ outer wall's flora in place.
 | `core/tags` | every item set, tree, plant volume, landform and hazard is a record (`BIO.init({tags:'seouterwall'})`, `BIO.record`) before it is drawn |
 | `core/space` (`KSPACE`) | keep-clear between trees (the read-in-place passes) and the brook's segment index |
 | `core/host` (`KHOST.FULL`) | camera, loop, panel, inspector, marks (the polygon tool), probe, pictures, minimap, editor |
-| `core/atmos` | `ATMOS.bindHost`; the shared sky at the station's pixel with its far land cast from the model (`region/far.py`); `ATMOS.bindWeather` (`{cold:true}`); snow that lies; height fog (the col's dawn mist); the rain cover; lightning; cloud shade; the skylight for the brook; `BIO.bindAtmosWind` |
+| `core/atmos` | `ATMOS.bindHost`; the shared sky at the station's pixel with its far land cast from the model (`region/far.py`); `ATMOS.bindWeather` (`{cold:true}`); snow that lies; height fog (the col's dawn mist); the rain cover; lightning; cloud shade; the skylight for the brook; `BIO.bindAtmosWind`; **the God-Bore as the wind** (`fx/89-atmos-fx-katabatic.js`, a new opt-in written for this kit, 2026-11-10: the night's gale turns the one wind field); station 3's steam (`89-atmos-3-particles.js`) and its warm ground bare of snow (`ATMOS.snowBare`) |
 | `core/water` | the meltwater brook (`WATER.flow`) down the north slope's wadi, drawn on core/atmos; the ext 56, 57, 60 (glint, audit, the water's fields) |
 | `core/terrain` | `KFIELD` (the baked near ground the export carries), `KRELIEF` (`range` for the moraines, `wadi` for the meltwater gully and its fan), `KRUBBLE` (`37c`: the rockfall heaps under the crags), `KSTRATA` and its shade (`megabreccia` with the Godthrone's `tibasalt` as its lateral stack to the west: section 1.2), `KGROUND` (the library layers, hex-tiled, height-blended, triplanar on the steep), `KHORIZON` (the walls' shadows at a low sun) |
 | `core/hazard` (`KHAZ`) | the God-Bore (the night's katabatic gale on the col: `cold`, on the day's cycle) and the rockfall heaps (`crush`): `tags.hazard` records (section 2) |
@@ -350,8 +350,7 @@ the mid ground to 20 km on the model's 1 km cells with the far roughness; the fa
   grade through the col, its board-formed cuttings, the parabolic wind-baffle crescent and the 40 m vent-shaft collar of Bab al-Hawa with
   the caravanserai in its lee (section 3.3). The road's line wants the model's corridor (7.2) or a re-pinned station first: a question for
   the owner (KNOWN_ISSUES.md).
-- **The katabatic wind as weather** (section 2.1): the God-Bore is a hazard record on the day's cycle; the wind field itself
-  (`ATMOS.windAt` turning downslope at night) is core/atmos's, not yet a per-page setting.
+- ~~The katabatic wind as weather~~: done 2026-11-10, `core/atmos/fx/89-atmos-fx-katabatic.js` (opt-in), on every station.
 - **The kit's own species** (the plan's borrowings: puya, snow lotus, cushion domes from wouterwall, oidong, ehighlands) and stations 2-6.
 - **The real-GPU verify** of station 1 (the cloud session ran SwiftShader only).
 

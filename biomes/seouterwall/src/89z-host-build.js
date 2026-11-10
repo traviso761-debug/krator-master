@@ -57,6 +57,11 @@ const AIR=(function(){const Q=new URLSearchParams(location.search),out={raincove
  // fog of its own to scale: a stand-in fog takes its writes (the sky's own fog is the page's). Lightning rides with its storms
  // (fx/89-atmos-fx-lightning.js). R9 (puddles, WATER.hollows) not taken: a dry country, and oidong's finding on a KGROUND floor
  ATMOS.bindWeather({climate:{cold:true},fog:{color:new THREE.Color(0x9aa0a6),density:.00005},grounds:[MAT_GROUND]});
+ // THE GOD-BORE AS THE WIND (core/atmos/fx/89-atmos-fx-katabatic.js, opt-in; PLAN.md section 2.1): from 21:00 to 05:00 (easing over the hour
+ // either side: the same hours as its hazard record, 47) the base wind turns to blow down from the north-north-west (SEOW.FROM: off the
+ // Godthrone and the crest) at 3.2 times the calm, the gusts raised with it; by day the wind is the presets' own. After the weather, so its
+ // scale still multiplies the gale (a storm's God-Bore is worse)
+ if(ATMOS.katabatic){try{out.katabatic=ATMOS.katabatic({from:SEOW.FROM,speed:3.2,on:21,off:5,ramp:1,gust:.95,name:'the God-Bore'});}catch(e){reportErr('katabatic: '+e.stack);}}
  // HEIGHT FOG (R1, core/atmos/sky/89-atmos-j-fog.js + host/89-atmos-j-heightfog.js): the air's fog thins above the ground under the eye
  // (dry air: a long falloff), and the dawn's cold air pools as a shallow mist on the col's flat (the God-Bore's cold air drains into
  // the hollow every night). ?hfog=0 leaves the page's fog as it was

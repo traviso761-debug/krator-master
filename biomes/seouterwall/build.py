@@ -166,6 +166,9 @@ PATH['89-atmos-fx-snowcover.js']=J('core','atmos','fx','89-atmos-fx-snowcover.js
 PATH['89-atmos-j-fog.js']=J('core','atmos','sky','89-atmos-j-fog.js')
 PATH['89-atmos-j-heightfog.js']=J('core','atmos','host','89-atmos-j-heightfog.js')
 for f in ['89-atmos-fx-raincover.js','89-atmos-fx-lightning.js']: PATH[f]=J('core','atmos','fx',f)
+# the God-Bore as the wind itself (core/atmos/fx/89-atmos-fx-katabatic.js, opt-in: the night's gale turns the one wind field the foliage, the
+# smoke, the rain and the snow ride; 89z binds it after the weather)
+PATH['89-atmos-fx-katabatic.js']=J('core','atmos','fx','89-atmos-fx-katabatic.js')
 # the host shell from core/host (core/host/README.md), the whole interface. src/99-host-take.js hands it the page (KHOST.take)
 sys.path.insert(0,J('core','host'))
 import host as khost
