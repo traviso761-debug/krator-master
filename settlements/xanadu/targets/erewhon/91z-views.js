@@ -25,4 +25,12 @@ const VIEWS=(function(){const V={};const pal=_at('palace'),gd=_at('garden'),mm=_
   const n=best?best.q:nearestOnLines(ER_LINES.avenue,wh.x,wh.z);if(n){const dx=n.b[0]-n.a[0],dz=n.b[1]-n.a[1],l=Math.hypot(dx,dz)||1;V['Wealthy homes — the avenue']=_eye(n.x-dx/l*30,n.z-dz/l*30,n.x+dx/l*70,n.z+dz/l*70,1);}else V['Wealthy homes — the avenue']=_eye(wh.x-40,wh.z-60,wh.x+60,wh.z+20);}
  const g=GATES.find(g=>g.kind==='west');if(g)V['West gate — from the highway']=_eye(g.x-70,g.z+10,g.x+20,g.z,3);
  const ge=GATES.find(g=>g.kind==='east');if(ge)V['East gate — from the highway']=_eye(ge.x+70,ge.z-10,ge.x-20,ge.z,3);
+ // inside the citadel (2026-11-09; kits/xanadu/src/78n-xa-citadel.js): the Sultan's Hall of Audience toward the dais under its
+ // star ceiling, the Divan in the Vizier's palace, the Treasurer's court with its fountain, the palace's gate iwan from the Golden
+ // Way under it. Each from its building's block (CIT_G; the citadel's buildings stand unturned), local + the block's level
+ {const cb=k=>CIT_G.blocks.find(B=>B.key===k),at=(B,c,t)=>[B.x+c[0],B.y+c[1],B.z+c[2],B.x+t[0],B.y+t[1],B.z+t[2]];
+  const P=cb('xa_cit_palace'),Vz=cb('xa_cit_vizier'),T=cb('xa_cit_treasurer');
+  if(P){V['Citadel — the Hall of Audience']=at(P,[0,2.1,0.6],[0,4.6,-21]);V['Citadel — the gate iwan']=at(P,[0,1.8,53.6],[0,10.5,45.5]);}
+  if(Vz)V['Citadel — the Divan']=at(Vz,[3.5,2.1,-15.2],[-19,3.9,-38]);
+  if(T)V['Citadel — the Treasurer\'s court']=at(T,[-2.5,1.9,8.2],[2.5,2.8,-7]);}
  return V;})();

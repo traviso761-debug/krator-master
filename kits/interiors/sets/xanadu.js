@@ -139,10 +139,12 @@
     note: 'the domed prayer hall, one room 15 m high; the madrasa wing beside it, one tall storey' });
 
   /* ================================================================ the Sultan (78-xa-palace.js, 86-xa-vizier.js, 87c-xa-erewhon.js): HELD */
-  skip('xa_palace', "Sultan's Palace", ['civic', 'military', 'single-family dwelling'], HELD);
+  /* the citadel's own hollow buildings (2026-11-09) are other defs, planned room by room in sets/xanadu-citadel.js (xa_cit_*); these are
+     the kit's older solid pieces, kept for the sheet and other worlds */
+  skip('xa_palace', "Sultan's Palace", ['civic', 'military', 'single-family dwelling'], 'the kit\'s solid palace; Erewhon\'s citadel stands on xa_cit_palace (sets/xanadu-citadel.js)');
   skip('xa_pleasure_dome', 'Garden Pleasure Dome', ['civic'], HELD);
   skip('xa_pleasure_dome_bay', 'Pleasure Dome of the Bay', ['civic'], HELD);
-  skip('xa_vizier', "Grand Vizier's palace", ['civic', 'single-family dwelling'], HELD);
+  skip('xa_vizier', "Grand Vizier's palace", ['civic', 'single-family dwelling'], 'the kit\'s solid palace; Erewhon\'s citadel stands on xa_cit_vizier (sets/xanadu-citadel.js)');
   skip('xa_palace_gate', 'Palace gate', ['military', 'civic'], HELD);
   skip('xa_barge', "Sultan's pleasure barge", ['civic'], 'a barge: an open deck pavilion on the water');
 

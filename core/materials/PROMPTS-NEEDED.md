@@ -549,6 +549,11 @@ Square, 2048x2048. Orthographic view of a single cut-out object centred in the f
 Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a black and white op-art wall pattern: bundles of parallel white stripes on black interlocking in a basket weave, alternating vertical and horizontal bundles, some bundles turning into concentric half-circles; crisp hand-painted edges, matte, exactly repeating at the edges.
 ```
 
+`wood.cedar.moorish` (the citadel's door leaves, shutters and painted ceiling beams: carved and painted cedar (asked 2026-11-09 by the citadel session; until it is delivered the leaves are core/door's panel leaf in the kit's dark wood, the beams flat paint)):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: carved and painted Moorish cedar wood seen straight on: shallow-carved interlaced eight-pointed star and polygon panels framed by raised strapwork, the strapwork natural honey-brown cedar with visible grain, the sunken panels painted in faded red, deep green, ochre and blue with small white and gold floral sprigs, the paint worn at the high points to show the wood; strong relief readable for a normal map.
+```
+
 ## Gaps with no prompt yet
 
 Owed, but a prompt waits on something first; listed so they are not lost.

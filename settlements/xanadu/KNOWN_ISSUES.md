@@ -2,6 +2,34 @@
 
 Open items are `- [ ]` lines; build.py prints them.
 
+- [ ] (2026-11-09) **The citadel's textures are library stand-ins until the owed sets arrive.** Erewhon's citadel (kits/xanadu
+      78l-78n, the interior set kits/interiors/sets/xanadu-citadel.js) draws its surfaces through eleven MAT keys, each a family
+      in materials.json (both copies) with the set it is owed (`owed`, core/materials/PROMPTS-NEEDED.md section 41) and a library
+      fallback (`lib`) packed now: xZel zellige (owed patterns/xanadu/zellige-star; stand-in patterns/common/zellige-rosette-colour),
+      xHaft haft-rangi (patterns/xanadu/haft-rangi; mosaic-arabesque-lapis), xGiltC the Mughal gilt ceiling
+      (patterns/xanadu/mughal-gilt-ceiling; mosaic-star-lapis), xYes yeseria (stone.stucco.yeseria; plaster.patterned_clay_plaster
+      tinted ochre), xMuqT muqarnas tile (tile.muqarnas.turquoise; zellige-lotus-teal), xBandR the rainbow band
+      (patterns/xanadu/peacock-band; kilim-banded-brown: brown, not a rainbow, the weakest stand-in), xPietra pietra dura
+      (stone.pietra-dura; patterns/court/opus-sectile), xMarW white marble (stone.marble.calacatta; rock.marble.white), xMarK black
+      marble (stone.marble.black; rock.marble012 darkened), xJaliC the jali card (patterns/xanadu/jali, `optional`: the procedural
+      jali alpha until the card is delivered and keyed by tools/textures/cards.py). xSandR (red sandstone) is the library's own
+      rock.sandstone.red, owed nothing. On delivery: set `lib` to the `owed` id in both materials.json, pack, rebuild. The door
+      leaves and beams want carved cedar (wood.cedar.moorish, added to section 41). tex/ was packed for the new families only
+      (pack.py's own process(); the other families' sources were not pulled in this checkout).
+- [ ] (2026-11-09) **Erewhon's citadel: what is built and what is not.** Built (kits/xanadu/src/78n-xa-citadel.js): the Sultan's
+      palace (E1, E2a, E2b: 46 rooms, the forecourt, the two ranges, the palace block, the Sultan's floor, the roof terrace and
+      the ochre block under the twin domes, the Ramp of the Sultan as two laps from the Hall of Gifts to the bath and the roof),
+      the Grand Vizier's palace (E5a, E5b, the Divan, the pool garden), the Treasurer's, the Chancellor's and the Master of
+      Mines' houses, the envoys' house and the barracks (Moorish dars round fountain courts), the court temple (its great iwan,
+      the prayer hall under a star ceiling and a dome), the citadel kitchens; all hollow, walkable, storeyed. Not built: the
+      Golden Way (the covered court between the Dome's north door and the palace's postern: the 6 m gap is open ground; the
+      Pleasure Dome session owns its door), the citadel gate (xa_palace_gate, still the kit's solid piece, held), the curtain
+      walk and the palace's north curtain (the palace is pinned on the Dome's axis with its back on the citadel wall, which is
+      narrower there than the blueprint's 110 m curtain: CIT_SITES `at`), the corner towers' and the roof guard's rooms, the
+      upper floors' windows onto the courts' porticoes as galleries. The blueprint's NEW furniture (the Great Divan, the
+      palanquin, the hoist, the lattice boxes) is not in the catalog; the rooms take the catalog's xanadu court pieces by kind.
+      The furniture follows the page's switch (?interiors=1), as the rest of Erewhon. The kit's own sheet (kits/xanadu/build.py,
+      the -sheets session) does not take the citadel files yet: add kxa.CITADEL and the 'xanadu-citadel' interior set there.
 - [ ] (2026-11-03) **Doors and glass: the kit's bodies are solid.** The kit takes core/door and the Vernacular's openings
       (69e5) and `kits/xanadu/src/71c-xa-openings.js` (kits/xanadu/README.md, "Doors and glass"): on the sheet 599 doors (each a
       real leaf in KDOOR, locked, with an id from its def and placement) and 5,912 panes where there were black plates and dark
