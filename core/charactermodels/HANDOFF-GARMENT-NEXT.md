@@ -70,9 +70,10 @@ Gemini's checkpoint widened the fade of a chain root's rigid offset in `rigidTar
 offset", which swept robes' lower rows through the legs (the Beast Rider and Hykkousoi nobles' "inside" doubled).
 Restored in both runtimes: on the 66, "inside" -12 %, "under" -5 %, every noble back at its baseline figure. The set-wide
 "under" rise against the round-4 baseline was never a regression: six Yuni outfits changed to Gemini's new garments
-at the checkpoint, and their trousers show under the new shirts and dusters (a hide mask). Two kit fixes are owed from
-the same bisection: the Yuni trousers' mask, and the Hykkousoi trade pair's mask, which hides too much ("hole" 169 to
-6930). Two smaller, mixed chain changes from the checkpoint remain as they are (the row clamp with its second collide
+at the checkpoint, and their trousers show under the new shirts and dusters (a hide mask). The two kit fixes it owed
+are in: the Hykkousoi trade greaves' masks rederived by the rays' rule ("hole" back to the baseline), and the Yuni
+trousers' cuff eases set against their boots (the stockman over, the riding tucked in: "under" 53690 to 6368 on the
+peasant man). Two smaller, mixed chain changes from the checkpoint remain as they are (the row clamp with its second collide
 pass, hunk 26 of the checkpoint's `50-figure.js` diff; the collide and capsule changes, hunks 19-21 and 27-34): each
 a few per cent on "inside" or "under" either way, not worth a revert without a shot sheet.
 

@@ -411,3 +411,14 @@ The plan takes sections 1 to 3 above whole. What to change before acting on it:
   19861, the Order monk's 4287 to 8714, the Beast Rider peasant man's "under" 4541 to 7621, the Republic noble woman's
   2211 to 5263. Over the 60 unchanged outfits the build now stands at "inside" 633651 against the round-4 baseline
   commit's 773095 and "under" 162767 against 185425. Applied in both runtimes (`rigidTargets`, `kchar_figure.gd`).
+- **The two kit fixes the bisection owed (2026-11-09).** The Hykkousoi trade greaves' hide masks were not the rays'
+  rule's: the checkpoint's new greaves GLBs came with masks of 4430 and 4464 triangles where `covered()` at its
+  defaults gives 1862 and 2782 (the man's is the baseline's number), hiding shin skin the greaves do not cover.
+  Rederived through `write_kit`: "hole" 6704 to 352 px on the man, 6980 to 169 on the woman (the baseline's 352 and
+  169), nothing else moved. The Yuni trousers showed their boots through the trouser legs (the audit's "under", class
+  feet: the boot shaft's ease, 1.8 to 3.2 cm, exceeded the trousers' cuff ease, 2.6 cm, up the shaft). Two cuff eases in
+  `tools/garments/cultures/yuni.py`, rebuilt alone and registered: the stockman trousers straight-leg over the boots
+  (cuff ease 3.8 cm), the riding trousers tucked into the gaitered boots (0.6 cm). "Under": the peasant man 53690 to
+  6368, the woman 34425 to 1204, the trade man 3874 to 644, the woman 1187 to 777; "inside" up a little on the peasants'
+  wider cuffs (3526 to 4264, 2290 to 2978). The pieces are not in Git: the GLBs regenerate from `yuni.py`
+  (`tools/garments/build_all.py`), and `build-manifest.json` carries their hashes.

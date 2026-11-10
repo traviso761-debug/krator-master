@@ -182,7 +182,9 @@ def _build_yuni_peasant(sex, body_id):
         B('bottom', 0.0, 0.03, 'solid', 'saddle'),
         B('bottom', 0.03, 0.05, 'solid', 'ochre'),
     ], fabric='cloth.weave.twill')
-    parts_l = trousers(gid_l, trou_p, ease=0.012, ease_end=0.022, cuff=core.ANKLE + 0.05)
+    # (straight-leg, worn over the elastic-sided boots: the cuff ease clears the boot shaft's 3.2 cm, so the boots do not
+    # come through the trouser legs; at 2.2 cm they did, the audit's "under" 0 to 53652 px on the man, 2026-11-09)
+    parts_l = trousers(gid_l, trou_p, ease=0.012, ease_end=0.038, cuff=core.ANKLE + 0.05)
     entries.append(assemble_garment(gid_l, 'Outback Moleskin Stockman Trousers', 'legs', 'yuni', parts_l, legged=True))
 
     # --- FEET: Elastic-sided Stockman Boots ---
@@ -253,7 +255,8 @@ def _build_yuni_trade(sex, body_id):
     # --- LEGS: Corded Riding Trousers ---
     gid_l = f'yuni_{sex}_trade_trousers'
     trou_p = P('sand', 0.05, [B('bottom', 0.0, 0.025, 'solid', 'yuniyellow')], fabric='cloth.weave.twill')
-    parts_l = trousers(gid_l, trou_p, ease=0.012, ease_end=0.020, cuff=core.ANKLE + 0.06)
+    # (riding trousers tucked into the gaitered boots: the cuff ease stays inside the boot shaft's 1.8 to 4.6 cm)
+    parts_l = trousers(gid_l, trou_p, ease=0.012, ease_end=0.006, cuff=core.ANKLE + 0.06)
     entries.append(assemble_garment(gid_l, 'Drover Corded Riding Trousers', 'legs', 'yuni', parts_l, legged=True))
 
     # --- FEET: Gaitered Drover Riding Boots ---
