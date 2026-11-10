@@ -137,3 +137,11 @@ page as it was, its leaves in no walk) 422 reached; with the locked ones shut 39
       `stilt_mid#1` (`lc.18`) has its whole upper storey and its stair unreached (the stair's foot is not reached from its ground
       floor), the warehouse's entry flight and hall, the refinery's still-house. Not traced further in this pass.
 
+
+## The sheets fail the one key map (2026-11-10, the all-builds rebuild)
+
+- [ ] `locus-kit.html` and `abyss-kit.html` (`verify.py --assert`): every check passes but the harness's universal `one-key-map`:
+      "P is Marks on every page; this page: its own". The sheet binds P to step back through the assets on purpose
+      (`src/98-start.js` `keys: SHEET ? { p: ... }`, 89-sheetui.js), and the key map (`core/host/92k-host-keys.js`) reserves P for
+      Marks. The check came with this round's key-map merge; the town page (`locus.html`) passes. Move the sheet's step-back
+      to a key the map leaves to builds (or to a `std` entry), then rebuild Locus.
