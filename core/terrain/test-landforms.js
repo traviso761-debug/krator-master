@@ -140,6 +140,39 @@ const Fa=R.stepcut({disc:{c:[0,0],r:200},floor:-30,steps:2});ok('an absolute flo
 const El=R.stepcut({ell:{c:[0,0],rx:300,rz:120,ry:.4},depth:20,warp:{amp:15}});ok('an ellipse, its edge warped',y(El,0,0)===-20&&y(El,500,0)===0,false);
 ok('JSON-safe; a pit too small for its steps throws',same(P,json(P),grid(-250,250,-250,250,20))&&throws(()=>R.stepcut({disc:{c:[0,0],r:20},tread:20,steps:3}))&&throws(()=>R.stepcut({depth:5})),throws(()=>R.stepcut({disc:{c:[0,0],r:200}})));
 
+// ---- stepcut's chasm head (2026-11-09): opt-in, so every record without head draws exactly as before the head was added
+const digest=recs=>{const h=require('crypto').createHash('sha1'),r6=v=>v==null?'n':typeof v==='number'?v.toFixed(6):typeof v==='object'?'{'+Object.keys(v).map(k=>k+':'+r6(v[k])).join(',')+'}':String(v);
+  for(const [rec,b] of recs){h.update(JSON.stringify(rec));for(let i=0;i<=60;i++)for(let j=0;j<=60;j++){const x=b[0]+(b[1]-b[0])*i/60,z=b[2]+(b[3]-b[2])*j/60,g=g0(x,z);h.update(r6(R.shape(rec,x,z,g))+r6(R.at(rec,x,z,g)));}}return h.digest('hex');};
+const oldCuts=o=>[[R.stepcut({disc:{c:[0,0],r:200},depth:60,steps:3,tread:20,riser:1,seed:5}),[-250,250,-250,250]],
+  [R.stepcut(Object.assign({line:{pts:[[-1000,0],[1000,0]],w:50},depth:40,steps:2,tread:15,riser:1.5,seed:5},o||{})),[-1150,1150,-120,120]],
+  [R.stepcut({disc:{c:[0,0],r:200},floor:-30,steps:2}),[-250,250,-250,250]],[R.stepcut({ell:{c:[0,0],rx:300,rz:120,ry:.4},depth:20,warp:{amp:15}}),[-350,350,-350,350]],
+  [R.stepcut({line:{pts:[[-500,-200],[0,100],[600,0]],w:30},depth:25,steps:4,tread:10,riser:2,rim:1.5,warp:{amp:8,scale:1/150},seed:11}),[-620,720,-320,220]],
+  [R.stepcut({line:{pts:[[0,0],[400,300]],w:20},floor:60,steps:3,seed:2}),[-120,520,-120,420]]];
+const FROZEN_STEPCUT='55247ac00376126645b164b8331c25a245243288';
+ok('records without head draw exactly as before the head (frozen digest of shape and at on six cuts)',digest(oldCuts())===FROZEN_STEPCUT,digest(oldCuts({head:{len:300}}))===FROZEN_STEPCUT);
+const ChH=R.stepcut({line:{pts:[[0,0],[2000,0]],w:40},depth:60,steps:3,tread:12,riser:1.5,seed:5,head:{at:'end',len:400,amph:.6}}),WoH=ChH.line.w+ChH.edge;
+const cenH=[];for(let x=1500;x<=2100;x+=5)cenH.push(y(ChH,x,0));
+ok('the depth tapers over the head\'s length: full before it, never deeper toward the tip, nothing past it',y(ChH,1550,0)===-60&&cenH.every((v,i)=>!i||v>=cenH[i-1]-1e-9)&&y(ChH,2000+ChH.head.rb+4,0)===0&&y(ChH,1900,0)>-40,
+  (()=>{const N=R.stepcut({line:{pts:[[0,0],[2000,0]],w:40},depth:60,steps:3,tread:12,riser:1.5,seed:5});return y(N,1900,0)>-40;})());
+const hwid=(rec,x)=>{let q=0;while(q<300&&y(rec,x,q)<0)q+=.5;return q;};
+ok('the outline narrows to the bowl ('+hwid(ChH,1600).toFixed(1)+' m half-width before the head, '+hwid(ChH,2000).toFixed(1)+' at the line\'s end; rb '+ChH.head.rb.toFixed(1)+')',Math.abs(hwid(ChH,1500)-WoH)<1&&Math.abs(hwid(ChH,2000)-ChH.head.rb)<1.5&&hwid(ChH,1800)<hwid(ChH,1650),false);
+const radialH=rec=>{const s=new Set();for(let r=0;r<WoH+4;r+=.5){const a=R.at(rec,2000+r*Math.cos(.6),r*Math.sin(.6));if(a)s.add(a.part);}return s;},RbH=radialH(ChH);
+const BxH=R.stepcut({line:{pts:[[0,0],[2000,0]],w:40},depth:60,steps:3,tread:12,riser:1.5,seed:5,head:{at:'end',len:400,amph:1,wall:.4}});
+ok('an amphitheatre: the walls and their steps wrap round the bowl past the line\'s end',(()=>{const s=radialH(BxH);return s.has('riser')&&s.has('tread')&&s.has('floor');})()&&RbH.has('riser'),
+  radialH(R.stepcut({line:{pts:[[0,0],[2000,0]],w:40},depth:60,steps:3,tread:12,riser:1.5,seed:5,head:{at:'end',len:400,amph:0}})).has('tread'));
+ok('amph sets the bowl: a box-canyon bowl (amph 1) is as wide as the cut, a smaller amph narrower',Math.abs(BxH.head.rb-WoH)<1e-9&&ChH.head.rb<BxH.head.rb&&hwid(BxH,2000)>hwid(ChH,2000)+10,false);
+ok('wall: a sapped headwall keeps a share of the depth round the bowl ('+(-y(BxH,2000,0)).toFixed(1)+' m against '+(-y(R.stepcut({line:{pts:[[0,0],[2000,0]],w:40},depth:60,steps:3,tread:12,riser:1.5,seed:5,head:{at:'end',len:400,amph:1}}),2000,0)).toFixed(1)+')',
+  -y(BxH,2000,0)>=.4*60-1e-9&&-y(BxH,2000,0)>-y(R.stepcut({line:{pts:[[0,0],[2000,0]],w:40},depth:60,steps:3,tread:12,riser:1.5,seed:5,head:{at:'end',len:400,amph:1}}),2000,0)+10,false);
+ok('at names the head\'s taper (the depth\'s share lost) and nothing before it',R.at(ChH,1900,0).head>0&&R.at(ChH,1900,0).head<1&&!('head' in R.at(ChH,1000,0))&&!('head' in R.at(Gr,0,0)),R.at(ChH,1000,0).head!=null);
+const BoH=R.stepcut({line:{pts:[[0,0],[2000,0]],w:40},depth:60,steps:3,seed:5,head:{at:'both',len:400}}),StH=R.stepcut({line:{pts:[[0,0],[2000,0]],w:40},depth:60,steps:3,seed:5,head:{at:'start',len:400}});
+ok('both ends taper alike; start tapers the first end only',[0,50,150,300,390].every(s=>Math.abs(y(BoH,s,10)-y(BoH,2000-s,10))<1e-9)&&y(StH,100,0)>-60&&y(StH,1900,0)===-60&&y(BoH,1000,0)===-60,y(StH,1900,0)>-60);
+const FhH=R.stepcut({line:{pts:[[0,0],[2000,0]],w:40},floor:-30,steps:2,seed:5,head:{len:400}});
+ok('an absolute floor rises to the ground over the head',y(FhH,1000,0,10)===-30&&y(FhH,1900,0,10)>-30&&y(FhH,1900,0,10)<10&&y(FhH,2000+FhH.head.rb+4,0,10)===10,false);
+ok('a curved line takes a head too, and the record stays JSON-safe',same(ChH,json(ChH),grid(1400,2100,-120,120,24))&&y(R.stepcut({line:{pts:[[-500,-200],[0,100],[600,0]],w:30},depth:25,seed:11,head:{at:'both',len:200}}),590,0)>-25,false);
+ok('bad heads throw (a pit, a head longer than the line, amph out of 0..1)',throws(()=>R.stepcut({disc:{c:[0,0],r:200},head:{}}))&&throws(()=>R.stepcut({line:{pts:[[0,0],[300,0]],w:20},head:{len:400}}))&&
+  throws(()=>R.stepcut({line:{pts:[[0,0],[300,0]],w:20},head:{at:'both',len:200}}))&&throws(()=>R.stepcut({line:{pts:[[0,0],[2000,0]],w:20},head:{amph:2}}))&&throws(()=>R.stepcut({line:{pts:[[0,0],[2000,0]],w:20},head:{at:'middle'}})),
+  throws(()=>R.stepcut({line:{pts:[[0,0],[2000,0]],w:20},head:{len:300}})));
+
 // ---- the composition: apply takes the new kinds with the old, in order
 const ap=R.apply(g0,[sc,P]);ok('apply composes old and new kinds in order',ap(0,0)===R.shape(P,0,0,R.shape(sc,0,0,g0(0,0)))&&ap(0,0)!==R.shape(sc,0,0,g0(0,0)),false);
 ok('waters is [] for a kind with no water, old or new',R.waters(P,flat).length===0&&R.waters(sc,flat).length===0,false);
