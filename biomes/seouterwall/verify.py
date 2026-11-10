@@ -42,7 +42,8 @@ import harness as _harness
 from harness import GL_ARGS, LOAD_MS, CHROME_ENV, launch_chromium, parse_views, check_profile, verify_page, Abort
 local_three = lambda folder: _harness.local_three(folder, os.path.dirname(os.path.abspath(__file__)))
 # The export profile (core/export/README.md, "Profiles"): the sections a tile of this kit must fill, checked under --assert
-# over EXPORT_BOX (300 m round the station's middle: every station's origin is its pixel on the scale model). The ground is a
+# over the page's own box (window._api.exportBox: 300 m round its standing tree nearest the origin, so the tile holds the bark's buckets; a
+# station's origin is its pixel on the scale model, on a tarn's open shore for most), else EXPORT_BOX. The ground is a
 # krator-field (KFIELD, baked). --profile a,b,c replaces the list for one run. atmos: core/atmos (the water's clock and sky light).
 EXPORT_BOX = [-150, -150, 150, 150]
 EXPORT_PROFILE = ['registry', 'items', 'buckets', 'materials', 'textures', 'terrain', 'stage', 'atmos']
@@ -160,10 +161,11 @@ async def run(a):
 
             print("\n--- export profile (core/export/README.md, \"Profiles\") ---")
             prof = [s.strip() for s in a.profile.split(",") if s.strip()] if a.profile else EXPORT_PROFILE
-            pok, lines = await check_profile(pg, EXPORT_BOX, prof)
+            box = await pg.evaluate("()=>{try{return window._api&&window._api.exportBox||null;}catch(e){return null;}}") or EXPORT_BOX   # the page's own (99-host-take.js: round its nearest tree)
+            pok, lines = await check_profile(pg, box, prof)
             for ln in lines:
                 print("  " + ln)
-            print(("  PASS  " if pok else "  FAIL  ") + "export-profile : box %s" % EXPORT_BOX)
+            print(("  PASS  " if pok else "  FAIL  ") + "export-profile : box %s" % box)
             if not pok:
                 fails.append("assert export-profile")
 

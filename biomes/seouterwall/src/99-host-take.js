@@ -158,6 +158,10 @@ const H=KHOST.take({build:'seouterwall',title:'Krator biome — the SE outer wal
  budget:BUDGET,types:()=>BIO.stats,
  api:{hostChecks,hostNegatives,
   get totals(){const t=BIO.totals();return {rendered:BIO.lodShown?BIO.lodShown.tris:null,tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
-  biome:()=>window._biome,season:()=>SEASON,zoneAt:(x,z)=>SEOW.zoneAt(x,z)}});
+  biome:()=>window._biome,season:()=>SEASON,zoneAt:(x,z)=>SEOW.zoneAt(x,z),
+  /* the export profile's box (verify.py): 300 m round the standing tree (larch or stone pine, near-drawn) nearest the origin, so the tile holds
+     the bark's buckets; the origin itself where none stands (a station's origin is its pixel: on a tarn's open shore it holds no tree) */
+  get exportBox(){let b=null,bd=1e18;for(const T of NWOW.TREES||[]){if(T.sp>1||T.lv<2)continue;const d=T.x*T.x+T.z*T.z;if(d<bd){bd=d;b=T;}}
+   const c=b?[Math.round(b.x),Math.round(b.z)]:[0,0];return [c[0]-150,c[1]-150,c[0]+150,c[1]+150];}}});
 KHOST.on(function lodTick(){camera.updateMatrixWorld();if(BIO.lodTick)BIO.lodTick(camera);},'view');
 {const s=document.getElementById('seasonsel');if(s)s.value=SEASON;}

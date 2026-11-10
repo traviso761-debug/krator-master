@@ -457,28 +457,28 @@
    "sha256": "02f8894585f3f2ad32ffdf418edb3636edae34986abac3a21e4f24001e1bc3a2"
   },
   "biomes/seouterwall/dist/seouterwall-ambertarn.html": {
-   "bytes": 1564226,
-   "sha256": "cf1d7607ebe0a4bb4c7efdc4dd46acff7e9d8c9657d02b71f3c407f47235c71a"
+   "bytes": 1564751,
+   "sha256": "0ceff72db289d5fa9989a30061d4ea8910e3530f382a8d8b9d2173a442d79441"
   },
   "biomes/seouterwall/dist/seouterwall-coppertarn.html": {
-   "bytes": 1429873,
-   "sha256": "e4c84f87df6ef156ae2a2823144bdbb30d846e9ec13be69d30b7deb4faf1e5ef"
+   "bytes": 1430398,
+   "sha256": "83b0c5895e621999801c767c12800ffd2ec34b9251cd56d497c0626409da6b29"
   },
   "biomes/seouterwall/dist/seouterwall-gatetarn.html": {
-   "bytes": 1430790,
-   "sha256": "c1b1e3c090653427d27316077a5b56f50c911db16088ff2d38ffb2dbdc69919c"
+   "bytes": 1431315,
+   "sha256": "321db1eb4fbe0b3daf86fed65fa161817d68842ff09bb8630f521ee12a312c81"
   },
   "biomes/seouterwall/dist/seouterwall-jadecrest.html": {
-   "bytes": 1429287,
-   "sha256": "c957b149b568c6ceeefe02c2085c74f95f6d84e407c7a84af6f54917966bfd77"
+   "bytes": 1429812,
+   "sha256": "a8a4a132ec774f1fe22572e513ecc92e5d681005232662cd0860ada1e023a8c9"
   },
   "biomes/seouterwall/dist/seouterwall-mirrorscarp.html": {
-   "bytes": 1429754,
-   "sha256": "e73f928c18aee52a195411f2d0fad8ed82f3745c1ab6e8af8a9159eadfac0f94"
+   "bytes": 1430279,
+   "sha256": "db645d288ca30a8e96d2b5b3b3525ed4280c39f598e603188f2eeaf58de7fde0"
   },
   "biomes/seouterwall/dist/seouterwall.html": {
-   "bytes": 1430878,
-   "sha256": "72029775723da6d943118664a9eeab2b1a5104f82ad7633e837020fa5e5b3e51"
+   "bytes": 1431403,
+   "sha256": "2d73ea95e6f92d5b9488adfc149d6f52ead1e31bd75a015420641916a1c3c602"
   },
   "biomes/shighlands/dist/shighlands-conifers.html": {
    "bytes": 4992646,
