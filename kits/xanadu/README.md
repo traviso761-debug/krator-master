@@ -43,10 +43,29 @@ a plain one that holds a storey of an item's body is four walls cut at the doors
 the rooms. A battered or stepped stack is planned INSET (every storey on the footprint they all share), so its walls'
 lean never reaches a room. `kit_bundle.py`'s `XAK` (Longsong) does not take it.
 
-**HELD: the citadel** (the owner, 2026-11-09). The Sultan's Palace (`xa_palace`), both Pleasure Domes (`xa_pleasure_dome`,
-`xa_pleasure_dome_bay`), the Grand Vizier's palace (`xa_vizier`) and the palace gate (`xa_palace_gate`), the citadel of
+**HELD: the citadel** (the owner, 2026-11-09). The Sultan's Palace (`xa_palace`), the Pleasure Dome of the Bay
+(`xa_pleasure_dome_bay`), the Grand Vizier's palace (`xa_vizier`) and the palace gate (`xa_palace_gate`), the citadel of
 `settlements/xanadu/citadel/BLUEPRINT.md`, wait on the owner's visual references: their items are skips that say so, and
-their builders are unchanged.
+their builders are unchanged. The Garden Pleasure Dome's hold is lifted (below).
+
+**The Pleasure Dome and the black-and-white pattern system** (the owner's references, 2026-11-09:
+`settlements/xanadu/citadel/refs/pleasure-dome/STYLE.md`; the build's record is `settlements/xanadu/citadel/PLEASURE-DOME.md`).
+`xa_pleasure_dome` is the harem palace of the blueprint's sheets E3 and E4 on its 105 x 110 m precinct, hollow and walkable,
+dressed in two stones and gold. Four fragments:
+
+| File | Tag | What |
+|---|---|---|
+| `78a-xa-pattern-data.js` | [G data] | `XPAT`: the stones, every pattern's sizes, the dress of each kind of room (STYLE.md rule 4), the arch curves (`xpArchCurve`), the Greek key |
+| `78b-xa-pattern.js` | [draw] | the patterns as materials (WORLD-ALIGNED: a fragment's stone comes from where it is, so courses run unbroken round walls, piers, drums and columns), their kit items, and the helpers: `xpBox`, `xpCol`, `xpStone`, `xpVoussoirs`, `xpSpandrel`, `xpOrders` (receding checkered orders), `xpTunnel`, `xpGoreDome`, `xpShellDome`, `xpRings`, `xpRunner` (Greek key), `xpSqHole`, `xpBalustrade`, `xpChandelier`, `xpPlanter`, `xpTable` |
+| `78c-xa-dome-plan.js` | [G data] | `XPDOME`: the rooms and openings as records in the def's frame; `xdomePlan()` works every wall out of them (a segment between two rooms, its openings, the windows an outside wall gets) |
+| `78d-xa-dome-in.js` | [draw] | `xdomeBuild`: the walls as two skins (each side its own room's pattern, whitewash and the gold frieze outside), floors and ceilings, the Hall of Feasts, the checkered north door, the stairs, the baths, the courts; core/walk floors, strips and blocks, core/door leaves (unlocked), KGLASS panes; `XA_CUT`, the cutaway's unit |
+
+The patterns (`XPAT.pat`): `band` (courses up a wall; stripes on a floor), `bandFine`, `checker`, `chevron`, `pave` (crazy paving
+with gold joints), `op` (the op-art wallcovering), `key` (the Greek-key runner, a strip in its own frame) and `solid` (one stone
+per instance: white, black or gold by the instance colour, `xpInk`). Any builder may use them: `xpBox('band', x, y, z, w, h, d)`
+is a banded block wherever it stands. The veining of both stones is one library set (`materials.json` family `xMarble`); the
+two proper marbles are owed (`core/materials/PROMPTS-NEEDED.md`, section 41). The furniture is the set item's
+(`kits/interiors/sets/xanadu.js`: explicit rooms, with `?interiors=1`), still in the court set's own colours.
 
 **Who takes it.** `settlements/xanadu` reads it in place (its `xanadu` target is the kit's sheet; its `erewhon` target is the
 city of Erewhon); `settlements/longsong` takes `kit_bundle.py`'s `XAK` (with Xanadu's texture pack).

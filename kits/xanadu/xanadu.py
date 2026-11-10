@@ -14,7 +14,8 @@ import os
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.join(HERE, 'src')
-FOUNDATION = ['70-xa-tex.js', '71-xa-mat.js', '71c-xa-openings.js', '72-xa-helpers.js', '88-xa-dress.js', '89-xa-trades.js']
+FOUNDATION = ['70-xa-tex.js', '71-xa-mat.js', '71c-xa-openings.js', '72-xa-helpers.js', '78a-xa-pattern-data.js', '78b-xa-pattern.js', '78c-xa-dome-plan.js', '78d-xa-dome-in.js',
+              '88-xa-dress.js', '89-xa-trades.js']
 BUILDINGS = ['74-xa-dwell.js', '75-xa-trade.js', '76-xa-farm.js', '77-xa-sacred.js', '78-xa-palace.js', '79-xa-guild.js',
              '80-xa-military.js', '81-xa-public.js', '82-xa-hill.js', '83-xa-turk.js', '84-xa-grandbath.js', '85-xa-water.js',
              '85b-xa-garden.js', '86-xa-vizier.js', '86b-xa-plants.js', '87-xa-spicer.js', '87b-xa-andean.js', '87c-xa-erewhon.js']

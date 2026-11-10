@@ -1,6 +1,6 @@
 {
  "build": "xanadu",
- "note": "The Xanadu kit's adapter onto the material library (core/materials/PLAN.md), for the kit's own sheet (build.py, 2026-11-09): settlements/xanadu/materials.json's rows copied unchanged (every family is the kit's). targets/sheet/88y-xasheet-matlib.js binds them (KMAT.bindMat). Longsong's XAK still takes Xanadu's pack. Keep it in step with Xanadu's until the matlib item (MODULARITY-PLAN.md step 4) gives the kit one adapter.",
+ "note": "The Xanadu kit's adapter onto the material library (core/materials/PLAN.md), for the kit's own sheet (build.py, 2026-11-09): settlements/xanadu/materials.json's rows copied unchanged (every family is the kit's). targets/sheet/88y-xasheet-matlib.js binds them (KMAT.bindMat). Longsong's XAK still takes Xanadu's pack. Keep it in step with Xanadu's until the matlib item (MODULARITY-PLAN.md step 4) gives the kit one adapter. (2026-11-09) xMarble (rock.marble012, the colour map only) is the vein map of the Pleasure Dome's black-and-white pattern system (kits/xanadu/src/78b-xa-pattern.js reads it through KMAT.packed, not KMAT.bindMat: the two stones are made from it in the shader); a polished nero and a statuario are owed (core/materials/PROMPTS-NEEDED.md).",
  "size": 512,
  "families": {
   "wood": {
@@ -566,6 +566,20 @@
    },
    "metal": 0,
    "normalScale": 0.5
+  },
+  "xMarble": {
+   "lib": "rock.marble012",
+   "scale": [
+    3.2,
+    3.2
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.6,
+    "contrast": 1.7
+   },
+   "metal": 0,
+   "mapOnly": true
   }
  }
 }

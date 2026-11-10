@@ -3,7 +3,7 @@
 Every texture or pattern sheet the owner still has to source or generate, each with its finished prompt. Paste a block
 as it is, one image per block. **Everything delivered lives in `PROMPTS-archived.md`** (checked against `core/materials/library/`, `patterns/` and each build's `materials.json` on `origin/main`, 2026-10-19); this file holds only what is still owed.
 
-**Count: 23 prompt blocks** (2026-11-09: +3 for the southern highlands' upper stations, section 37; +15 for the hyperjungle's lands and the savannah rims, section 40, 2026-11-08; counted 2026-11-04 before them).
+**Count: 25 prompt blocks** (2026-11-09: +2 for the Pleasure Dome's two marbles, section 41; +3 for the southern highlands' upper stations, section 37; +15 for the hyperjungle's lands and the savannah rims, section 40, 2026-11-08; counted 2026-11-04 before them).
 
 **Delivered 2026-11-03:** section 31's five (the Gills: `rock.lamina.pipe`, `mineral.crust.ferromanganese`, `mineral.crust.brucite`,
 `card.breathfringe`, `card.turf.limed`) and ten owed on unmerged branches (High Rift, nwbay, nhighlands, ringisles, the rift rim, Copper Glacier),
@@ -503,3 +503,23 @@ Owed, but a prompt waits on something first; listed so they are not lost.
   generator will not keep those letterforms, so the band is a bake from the chart's paths (a PNG or a `TEX.def`, not a
   generated image), cut into the lintel's stone (`stone.soapstone` or `stone.corbel.slab`, already in the library). No
   clan's name is fixed in the kit yet; the bake needs the names.
+
+## 41. The Pleasure Dome's two stones (`kits/xanadu`, `settlements/xanadu/citadel/refs/pleasure-dome/STYLE.md`, 2026-11-09)
+
+The Dome's interior is two stones and gold (STYLE.md rule 1). The stripes, checkers, chevrons, paving and fret are geometry or a
+world-aligned pattern (`kits/xanadu/src/78a-xa-pattern-data.js`, `78b-xa-pattern.js`), not images; only the stones' veining is a map.
+Today both stones are made in the shader from ONE library set, `rock.marble012` (grey veined marble; family `xMarble` in both Xanadu
+`materials.json` files, the colour map only): the white is it lifted, the black is it inverted, so the veins of the two are the same
+veins and neither is polished-slab marble. Gold needs no image: the gilt is the kit's `MAT.xGold` (the library's `metal.gold` exists if a
+hammered gilt is wanted later). Two sets are owed; when they land, give each stone its own family (`xMarbleW`, `xMarbleB`) and read
+them in `xpHook` in place of the lift and the inversion.
+
+`stone.marble.nero` (the black stone: bands, voussoirs, treads, planters; neutral enough that the gold line reads on it):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic view looking straight at a perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no reflections, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: polished Nero Marquina marble, one continuous slab with no joints or tile lines: a deep near-black ground (#141416) with sparse, sharp, irregular white veins (#e8e6e0) that branch and wander diagonally, a few thick and lightning-like, most hair-fine, and faint smoky grey clouding between them; about eight strong veins across the frame, none running straight edge to edge, evenly distributed with no large empty area and no single dominant feature.
+```
+
+`stone.marble.statuario` (the white stone: bands, voussoirs, balusters, tables, basins):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic view looking straight at a perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no reflections, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: polished Statuario marble, one continuous slab with no joints or tile lines: a clean cool white ground (#f2efe8) with soft pale-grey clouding and a few bold, flowing grey veins (#8a8a8e to #5a5a60) running diagonally with fine branching offshoots, a faint warm gold-brown thread (#b89a6a) beside one or two of them; about six main veins across the frame, evenly distributed, no large empty area and no single dominant feature.
+```

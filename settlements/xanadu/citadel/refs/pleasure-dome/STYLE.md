@@ -17,6 +17,11 @@ Vizier's palace and the rest of the citadel stay held until the owner says other
 | `05-striped-rotunda-stair.jpg` | a rotunda striped from floor to vault, the stripes turning into ribs and chevrons up the vault; a spiral stair in black marble with white balusters; tall arched windows; a crystal chandelier; gold trim at the edges |
 | `06-greek-key-marble-runner.jpg` | a corridor floor of black and white marble panels framed by gold fret (Greek key) borders |
 | `07-op-art-arc-wallcovering.jpg` | an op-art wall pattern of interlocking stripe bundles and half-circles, for the lesser rooms' walls |
+| `08-white-palace-black-domes.jpg` | (2026-11-10, "more inspo") the OUTSIDE: a white palace under black domes with gold ribs, round windows in deep white frames, a black-and-gold grille door, black spheres on white fluted pedestals, paving of white stones in black with gold coins |
+| `09-black-gothic-hall-white-vault.jpg` | (2026-11-10) the dark take: black columns under white capitals, a white vault between black ribs, galleries behind black iron lace, a black stair between gold rails; a calm floor: white with small black diamonds inside a black border |
+| `10-black-rib-vault-tall-windows.jpg` | (2026-11-10) a white vault on black ribs, tall windows in black glazing bars and tracery, white veined marble underfoot; white upholstery piped in black, a black lacquer table |
+| `11-stacked-slat-arch-tunnel.jpg` | (2026-11-10) arches made of stacked slats stepping in, repeated down a corridor: the receding arch as a screen you see through |
+| `12-black-columns-gold-stair-medallion.jpg` | (2026-11-10) black marble columns under gold capitals, a black stair between gold balustrades, a floor of round inlaid medallions |
 
 ## The rules
 
