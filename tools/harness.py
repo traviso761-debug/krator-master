@@ -173,9 +173,15 @@ def pid_alive(pid):
         return code.value == 259                                            # STILL_ACTIVE
     try:
         os.kill(int(pid), 0)
-        return True
     except OSError:
         return False
+    # a zombie (killed, not yet reaped) has exited: a container whose PID 1 is not an init leaves a killed job's orphans as
+    # zombies for good, and os.kill(pid, 0) still finds them (tests/test_gpu_lanes.py, "its children are killed too")
+    try:
+        with open("/proc/%d/stat" % int(pid), "rb") as fh:
+            return fh.read().rsplit(b")", 1)[1].split()[0] != b"Z"
+    except (OSError, IndexError):
+        return True
 
 
 def _proc_start(pid):

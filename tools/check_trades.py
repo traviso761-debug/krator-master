@@ -111,6 +111,9 @@ EXTRA_SRC = {
     'kits/iziz-vernacular': ['settlements/iziz/src'],
     # Locus's census (67-lo-trades.js) names the buildings that carry each trade, most of them in its two kits
     'settlements/locus': ['kits/locus/src', 'kits/eastern-abyssal/src', 'kits/yuni/src'],
+    # Ys reads Iziz's foreign quarter in place (settlements/ys/build.py INPLACE, 2026-11-09): its census (89x-ys-trades.js) names
+    # the Historians' chapterhouse, settlements/iziz/src/76-port-chapterhouse.js, with no src/ copy any more
+    'settlements/ys': ['settlements/iziz/src'],
     # Yuni's census (67-yu-trades.js) names its houses, compounds and civic buildings, in the Yuni kit (step 4b)
     'settlements/yuni': ['kits/yuni/src'],
 }
