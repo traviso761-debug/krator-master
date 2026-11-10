@@ -749,6 +749,23 @@ so the other cuts are unchanged. `openworld/north-basin/` is the first user.
   (`DATA.ancient_roads`), routed over the heights between the Ancient sites, with its tunnels (the Rift line under the
   Outer Wall, at least one route under the Inner Wall), shown as a layer for the owner to review, and carried by
   `extract_region.py` as the rivers are.
+- **Pinnacle Rock's mesa, at its new spot** (the owner, 2026-11-10: "add mesa change to list for next scale model run";
+  `openworld/PLAN-SITES.md`, `openworld/pinnacle/KNOWN_ISSUES.md`). The record moved on 2026-11-10 from 1027,681 (where 5.1
+  had left it in the NE rim's savanna) to **1007,686**, a knoll on the savage hyperjungle's north-east edge (-1,287 m,
+  110 m over its round). The move is in `model/src/60-settlements.js` (the default and `SETT_MOVED['5.1e2']`), but not
+  yet in the published page or its database. The open world's ground there has no mesa: the rock is
+  `settlements/pinnacle-rock`'s own landform, built from its layout (`src/40-pr-layout.js`). The mesa is about
+  1.2 x 0.8 km (r ≈ 490 m, elongation 1.5, turned 90°), 250 m to its cap rock with a 30 m stepped shoulder, the Garden's
+  mesa (55 m) and the Heart (110 m) on top. That is smaller than one 2 km pixel, so the model alone cannot carry it at
+  1:1. On the next run:
+  - **Raise the knoll's cell** so the 2 km heights hold the mesa's mass.
+  - **Record the mesa as a landform** (`DATA.landforms`, with its centre, outline numbers and heights as the layout gives
+    them), and have `extract_region.py` carry it into `region.json`, as it carries the vents. Then `core/world` can stamp
+    it onto `WORLD.H` at 1:1 (core/terrain's relief stamp, as the rock's page builds it), and the camps, tracks and
+    flora plan round a real rock.
+  - **Republish** the page with the record's move.
+  - **Recut** `openworld/pinnacle` and `settlements/pinnacle-rock/region/` at the new pixel, then rebake the site
+    (`core/world/bake_sites.py pinnacle`).
 - **Record edits waiting on the owner** (offered 2026-10-23, not done):
   - rename the political region **"Crag Men"** to **"Talovolci"** (`LORE.md` §6.21);
   - rename the biome polygons **`e inner wall` → `e highlands`** and **`e highlands` → `painted highlands`**, so the
