@@ -23,9 +23,9 @@ const SITE={
  // the dikes (KSTACKS.row): black basalt, the cauldron's boxwork. Two across the apron from the slope into the tarn, a line of islets
  // down the lobe
  dikes:[
-  {id:'dikeW',a:[-900,350],b:[-700,-1500],n:8,H:[70,170],r:[9,15],e:[3.5,5.5],seed:6211},
-  {id:'dikeE',a:[300,300],b:[420,-1400],n:7,H:[60,140],r:[8,14],e:[3.5,5],seed:6212},
-  {id:'dikeL',a:[1150,-700],b:[1500,1150],n:6,H:[25,60],r:[8,13],e:[3,4.5],seed:6213}],
+  {id:'dikeW',a:[-900,350],b:[-700,-1500],n:15,H:[70,170],r:[9,15],e:[3.5,5.5],seed:6211},
+  {id:'dikeE',a:[300,300],b:[420,-1400],n:13,H:[60,140],r:[8,14],e:[3.5,5],seed:6212},
+  {id:'dikeL',a:[1150,-700],b:[1500,1150],n:10,H:[25,60],r:[8,13],e:[3,4.5],seed:6213}],
  // the springs: along the slope's foot between the two dikes (u: 0 the west dike .. 1 the east); the cell's span along the toe between
  // the dikes' crossings (APRON_PT's t: they cross the toe at -.32 and .10), kept 60 m off each
  springT:[-.30,.38],

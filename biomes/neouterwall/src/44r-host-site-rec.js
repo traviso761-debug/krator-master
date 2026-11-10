@@ -31,9 +31,9 @@ const SITE={
  // the dikes (KSTACKS.row): a, b the strike's ends (page metres), n fins, H their height over the lowest ground round the foot, r the
  // foot's half-width, e the elongation (half-length r*e)
  dikes:[
-  {id:'dikeW',a:[-1180,120],b:[-560,-1240],n:9,H:[60,150],r:[9,15],e:[3.5,5.5],seed:6111},
-  {id:'dikeE',a:[260,60],b:[640,-860],n:6,H:[50,130],r:[8,13],e:[3.5,5],seed:6112},
-  {id:'dikeN',a:[-1500,-1420],b:[380,-1560],n:7,H:[30,70],r:[8,14],e:[3,5],seed:6113}],
+  {id:'dikeW',a:[-1180,120],b:[-560,-1240],n:16,H:[60,150],r:[9,15],e:[3.5,5.5],seed:6111},
+  {id:'dikeE',a:[260,60],b:[640,-860],n:11,H:[50,130],r:[8,13],e:[3.5,5],seed:6112},
+  {id:'dikeN',a:[-1500,-1420],b:[380,-1560],n:14,H:[30,70],r:[8,14],e:[3,5],seed:6113}],   /* n: the fins overlapping into a broken wall, not posts */
  // the springs: along the wall's foot between the two dikes (u: 0 the west dike .. 1 the east), the first the main spring
  // the cell's span along the toe between the two dikes' crossings (APRON_PT's t: the dikes cross the toe at -.29 and .24), kept 60 m off each
  springT:[-.26,.47],

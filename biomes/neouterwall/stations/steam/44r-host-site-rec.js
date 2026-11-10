@@ -16,7 +16,7 @@ const SITE={
  // the apron's toe: east to west along the north shore (inland: north), then south down the west shore (inland: west)
  apron:{toe:[[2600,-150],[1500,-140],[800,-150],[300,-120],[0,0],[-250,350],[-500,620],[-700,900],[-800,1400],[-900,2200]],
   rise:.11,front:.5,lift:1.6,reach:320},
- dikes:[{id:'dikeN',a:[500,700],b:[2300,1000],n:7,H:[20,55],r:[8,13],e:[3,4.5],seed:6511}],
+ dikes:[{id:'dikeN',a:[500,700],b:[2300,1000],n:12,H:[20,55],r:[8,13],e:[3,4.5],seed:6511}],
  need:[5],
  // the springs at the wall's foot (springT: the toe's stations from the north-east of the page to the north-west corner); the first is
  // the cave's outlet, in front of the mouth

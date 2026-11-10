@@ -11,11 +11,13 @@
 // Made here, not with the land (47): the springs' and the stair's records are core/water's opt-in fragments (geyser 52, ext 53), which
 // slot after the land in the page's order
 const WATER_RECS=typeof WATER==='undefined'?null:(function(){const out={};
- // THE TARN (WATER.open over the ground's bed, no surf and no breakers: still water; its mask the model's water cells and their neighbours)
+ // THE TARN (WATER.open over the ground's bed, no surf and no breakers: still water). Its mask: 60 m cells by the model's water cells and their
+ // neighbours where the ground lies under the level (+2 m): the outline follows the ground, not the 1 km grid (a 250 m mask drew a stepped shore)
  if(MODEL_LAKE){const G=NEOW_REGION.grid,xs=MODEL_WATER.map(w=>w.x),zs=MODEL_WATER.map(w=>w.z),R2=20000;
   const box=[Math.max(-R2,Math.min(...xs)-G.dx*1.5),Math.max(-R2,Math.min(...zs)-G.dz*1.5),Math.min(R2,Math.max(...xs)+G.dx*1.5),Math.min(R2,Math.max(...zs)+G.dz*1.5)];
-  const cell=250,nx=Math.ceil((box[2]-box[0])/cell),nz=Math.ceil((box[3]-box[1])/cell),data=new Uint8Array(nx*nz);
-  for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const x=box[0]+(i+.5)*cell,z=box[1]+(j+.5)*cell;if(MODEL_LAKE.near(x,z))data[j*nx+i]=255;}
+  const cell=60,nx=Math.ceil((box[2]-box[0])/cell),nz=Math.ceil((box[3]-box[1])/cell),data=new Uint8Array(nx*nz);
+  for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const x=box[0]+(i+.5)*cell,z=box[1]+(j+.5)*cell;if(!MODEL_LAKE.near(x,z))continue;
+   let lo=1e9;for(const q of [[0,0],[-.5,-.5],[.5,-.5],[-.5,.5],[.5,.5]])lo=Math.min(lo,terrainH(x+q[0]*cell,z+q[1]*cell));if(lo<LAKE_LV+2)data[j*nx+i]=255;}
   out.box=box;
   out.lake=WATER.open({name:(SITE.tarn||'The tarn')+' (warm, '+(BASE+LAKE_LV).toFixed(0)+' m)',level:LAKE_LV,swell:[[.006,4,30,0,.01],[.004,2.5,-60,1.1,.01]],field:0,bounds:box,bed:terrainH,bedCell:40,
    mask:{x0:box[0],z0:box[1],cell,nx,nz,data}});}
