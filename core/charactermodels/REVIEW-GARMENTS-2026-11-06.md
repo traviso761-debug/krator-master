@@ -483,3 +483,22 @@ The plan takes sections 1 to 3 above whole. What to change before acting on it:
   radius (the closed rows at skull height), which these numbers do not separate; the owner's eye on the eight widest
   decides the bound before a build fails on it. Issue 4's half that is a cap went in: `limb_tube` caps an arm tube's
   ease at 2 cm and its flare at 2.8 cm for every caller, not `sleeve()` alone.
+- **Issue 5 tried and taken back (2026-11-10).** `covered()` was given a margin at every open edge of the garment,
+  scaled by the edge's standoff from the skin (none within 10 mm, the full 3.5 cm from 25 mm). Dry-built, it unhid
+  a quarter of the mask on coats and cuirasses (the guild coat 4748 to 3644 triangles, the sibyl's drape 5036 to 3682,
+  the praetorian's lorica 4448 to 3402): a garment is many grids, and every grid's edge is "open" by topology, the
+  sleeve's top ring inside the shoulder, each band's rows, the hem, so the armholes, waist and hem all shed their
+  mask, and the island shaman's arm wrap failed Check 8 (the skirt weights follow the hide). The holes of issue 5
+  want an edge that the eye can see past, which topology does not give: a visibility test (the skin's triangles a
+  camera round the figure sees through an opening), or the hole patches of the audit mapped back to triangles. Left
+  as the opt-in neckline margin it was.
+- **A gate that lied, caught (2026-11-10, late).** Every dry build from issue 13 on stopped at the island shaman's
+  mantle: its arm wraps carry the word `wrap`, so the belt conform took them for bands, copied trunk weights onto an
+  arm part and Check 8 failed the build. The crash came after 135 of 268 pieces, the hash comparison counted only
+  the pieces both roots held, and the commits for issues 13, 1 and 9 (6266bfd0c, 35eb45f68, 082edc53d) adopted the
+  cultures built before the crash only: Yuni, Yusar, Eternian and the Order were left at the strip's state. Fixed:
+  an arm part (`arm` or `arm_tube` fact, or `is_arm`: the wraps are an arm tube by suffix, not an arm word) is never
+  a band to issue 13; the sleeve cap of issue 4 applies to arm tubes
+  18 cm or longer and never to a pauldron (the first cut moved pauldrons 6 to 9 cm); the dry build now reports
+  its piece count against the last complete one. The completion commit rebuilds every culture and adopts every
+  piece that differs from the repo's.

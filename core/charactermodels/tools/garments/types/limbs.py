@@ -12,6 +12,15 @@ from .torso import torso_tube
 
 def limb_tube(name, a, b, ease, paint, n=20, rows=8, ease_end=None, start_back=0.0, arc=None, group='body', path=None, bvh=None, rmax=0.25,
               role=None, side=None):
+    _plen = float(np.linalg.norm(np.diff(np.array(path if path is not None else [a, b], float), axis=0), axis=1).sum())
+    if bvh is core.BVH_A and role != 'pauldron' and _plen >= 0.18:
+        # issue 4 (REVIEW-GARMENTS-2026-11-06.md): a sleeve's ease is capped at 2 cm and its flare at 2.8 cm here, in
+        # the tube every arm part is built on, not only in sleeve(): sleeves() and the builders' own calls bypassed
+        # the cap, and the push has no trunk capsule to catch a sleeve that stands too far off the arm. A sleeve is an
+        # arm tube 18 cm or longer: a pauldron or an armband stands off by design
+        ease = min(float(ease), 0.020)
+        if ease_end is not None:
+            ease_end = min(float(ease_end), ease + 0.028)
     pts = np.array(path if path is not None else [a, b], float)
     t0 = (pts[1] - pts[0]) / np.linalg.norm(pts[1] - pts[0])
     pts[0] = pts[0] - t0 * start_back
