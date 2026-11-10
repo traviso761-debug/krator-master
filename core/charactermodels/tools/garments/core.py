@@ -310,7 +310,11 @@ _front = chest_front
 
 
 class Part:
-    def __init__(self, name, P, closed, group, paint, rigid_joint=None):
+    """One grid of a garment. `role` says what the part is to the assembly rules (ROLES below) and `side` which side
+    of the body a one-sided part is on ('L' or 'R'); with no role, the rules fall back to reading the part's name
+    (part_facts), which is how every part was classified before 2026-11-09. New types set a role."""
+
+    def __init__(self, name, P, closed, group, paint, rigid_joint=None, role=None, side=None):
         self.name = name
         self.P = np.asarray(P, dtype=np.float64)
         self.closed = closed
@@ -319,6 +323,8 @@ class Part:
         self.cloth = None
         self.rigid_joint = rigid_joint
         self.is_arm = False
+        self.role = role
+        self.side = side
 
     def lengths(self):
         P = self.P
@@ -326,6 +332,98 @@ class Part:
         R_grid = np.concatenate([P, P[:, :1]], 1) if self.closed else P
         rows = np.linalg.norm(np.diff(R_grid, axis=1), axis=2).sum(1).mean()
         return rows, cols
+
+
+# What a part is to the assembly rules. Each role stands for a set of facts the rules test (part_facts); a part with
+# no role gets its facts from the words in its name, exactly as the rules read names before (the review's section 3,
+# point 6: a rule dispatches on a role, not on a name). The facts:
+#   arm        counts as arm wear when the trunk tubes are picked (sleeves, cuffs, vambraces, pauldrons)
+#   sleeve     a sleeve: Rule A tucks its root rings into the main trunk tube
+#   arm_tube   skinned to the arm alone (no trunk weights)
+#   pauldron   a shoulder piece: Rule B pushes it outside the trunk and 6 mm clear of the sleeves
+#   sh_cap     skinned as a shoulder cap when it sits out past |x| 11 cm
+#   band       an overlay band: never a trunk tube
+#   overlay    Rule B pushes it outside every trunk tube (8 mm; 12 mm for a strap)
+#   strap      a strap, sash or belt: Rule B's 12 mm clearance and shoulder clamp
+#   belt_sfx   a belt or buckle by suffix: skinned rigid to the hips when it has no cloth
+#   acc        a pouch, buckle, tassel...: Rule C leaves it where it is
+#   acc7       a small accoutrement: skinned rigid to the spine joint at its height (Check 7)
+#   side_sfx   a one-sided part by suffix (a sleeve or a trouser leg): never a trunk tube
+#   side_sub   a one-sided part or the seat: Rule C's inner layer on a legged garment
+#   sole, upper, foot, foot_us, sole_L/R, foot_L/R, shaft_L/R   footwear: the sole, a closed upper, the foot part
+ROLES = {
+    'trunk': set(),
+    'sleeve': {'arm', 'sleeve', 'arm_tube'},
+    'armwear': {'arm', 'arm_tube'},
+    'pauldron': {'arm', 'pauldron', 'sh_cap'},
+    'shoulder_cap': {'sh_cap'},
+    'band': {'band', 'overlay', 'strap'},
+    'belt': {'band', 'overlay', 'strap', 'belt_sfx'},
+    'collar': {'band', 'overlay'},
+    'yoke': {'band'},
+    'drape': {'overlay'},
+    'accessory': {'acc', 'acc7'},
+    'leg': set(),
+    'seat': {'side_sub'},
+    'sole': {'sole', 'sole_cs'},
+    'foot': {'upper', 'foot', 'foot_us'},
+    'shaft': set(),
+    'headgear': set(),
+}
+_ARM_WORDS = ('sleeve', 'cuff', 'vambrace', 'wrist', 'gauntlet', 'bracer', 'pauldron', 'spaulder', 'epaulette')
+_BAND_WORDS = ('strap', 'sash', 'harness', 'baldric', 'bandolier', 'belt', 'obi', 'swag', 'wrap', 'band', 'cummerbund')
+_TRUNK_BAND_WORDS = _BAND_WORDS + ('collar', 'scarf', 'trim', 'yoke', 'gorget', 'pectoral')
+_PAULDRON_WORDS = ('pauldron', 'epaulette', 'spaulder')
+_OVERLAY_WORDS = ('strap', 'sash', 'harness', 'baldric', 'bandolier', 'belt', 'obi', 'collar', 'scarf',
+                  'cowl', 'mantle', 'cape', 'poncho', 'kilt', 'stole', 'tabard', 'pectoral',
+                  'swag', 'shawl', 'drape', 'wrap', 'band', 'apron', 'trim', 'waist', 'cummerbund')
+_ACC_WORDS = ('pouch', 'satchel', 'holster', 'buckle', 'rosette', 'horn', 'tassel')
+_ARM_TUBE_SFX = ('sleeve', 'cuff', 'vambrace', 'wrist', 'bangle', 'bracelet', 'gauntlet', 'wraps', 'bracer')
+_SH_CAP_SFX = ('pauldron', 'epaulette', '_sh_', 'shoulder_', 'bellcap_', 'hex_plate_', 'spaulder_')
+_BELT_SFX = ('_belt', '_gunbelt', '_obi', '_furbelt', '_cinch', '_war_belt', '_waist', '_buckle')
+_ACC7_SFX = ('pouch', 'btn', 'button', 'rosette', 'buckle', 'disc', 'iris', 'medallion', 'brooch', 'clasp', 'canister',
+             'vial', 'node', 'badge', 'seal', 'eye', 'pendant', 'bell', 'tassel')
+_SIDE_SFX = ('_Left', '_Right', '_L', '_R', '_leg_l', '_leg_r')
+_SIDE_SUB = ('_Left', '_Right', '_L', '_R', '_leg', '_pelvis')
+
+
+def part_facts(p, gid):
+    """the facts of a part for the assembly rules: from its role and side when it has a role, else from its name"""
+    role = getattr(p, 'role', None)
+    if role is not None:
+        f = set(ROLES[role])
+        side = getattr(p, 'side', None)
+        if side in ('L', 'R'):
+            f |= {'side_sfx', 'side_sub'}
+            if role in ('sole', 'foot', 'shaft'):
+                f.add(role + '_' + side)
+        return f
+    name = p.name
+    nl = name.lower()
+    sfx = name[len(gid):] if name.startswith(gid) else name
+    f = set()
+    if any(k in nl for k in _ARM_WORDS): f.add('arm')
+    if 'sleeve' in nl: f.add('sleeve')
+    if any(k in sfx for k in _ARM_TUBE_SFX): f.add('arm_tube')
+    if any(k in nl for k in _PAULDRON_WORDS): f.add('pauldron')
+    if any(k in sfx for k in _SH_CAP_SFX): f.add('sh_cap')
+    if any(k in nl for k in _TRUNK_BAND_WORDS): f.add('band')
+    if any(k in nl for k in _OVERLAY_WORDS): f.add('overlay')
+    if any(k in nl for k in _BAND_WORDS): f.add('strap')
+    if any(sfx.endswith(x) or (x + '_') in sfx for x in _BELT_SFX): f.add('belt_sfx')
+    if any(k in nl for k in _ACC_WORDS): f.add('acc')
+    if any(k in sfx for k in _ACC7_SFX): f.add('acc7')
+    if any(name.endswith(x) or (x + '_') in name for x in _SIDE_SFX): f.add('side_sfx')
+    if any(x in name for x in _SIDE_SUB): f.add('side_sub')
+    if 'sole' in nl: f.add('sole')
+    if 'sole' in name: f.add('sole_cs')
+    if any(k in nl for k in ('_foot', '_vamp', 'boot', 'sabaton', 'shoe')): f.add('upper')
+    if any(k in nl for k in ('_foot', '_vamp', '_toe')): f.add('foot')
+    if '_foot_' in name: f.add('foot_us')
+    for x in ('L', 'R'):
+        for r in ('sole', 'foot', 'shaft'):
+            if '_%s_%s' % (r, x) in name: f.add('%s_%s' % (r, x))
+    return f
 
 
 def ring_points(c, x, y, angles, ease, rmin=0.0, rmax=0.6, scale=(1.0, 1.0), bvh=None):
@@ -493,6 +591,13 @@ def assemble_garment(gid, label, slot, culture, parts, covers_hair=False, covers
         elif item is not None:
             flat_parts.append(item)
     parts = flat_parts
+    _facts = {}
+
+    def fx(p):
+        k = id(p)
+        if k not in _facts:
+            _facts[k] = part_facts(p, gid)
+        return _facts[k]
 
     # Check #5 (Concentric Layer, Sleeve-Root Tucking & Overlay Clearance Check):
     # 1. When a torso or legs garment has >= 2 closed trunk tubes overlapping vertically by >= 0.12 m,
@@ -541,18 +646,10 @@ def assemble_garment(gid, label, slot, culture, parts, covers_hair=False, covers
         trunk_tubes = []
         for idx_p, pt in enumerate(parts):
             if getattr(pt, 'closed', False) and pt.P.ndim == 3 and pt.P.shape[0] >= 5 and pt.P.shape[1] >= 24:
-                pname_l = pt.name.lower()
-                is_arm_pt = getattr(pt, 'is_arm', False) or any(k in pname_l for k in (
-                    'sleeve', 'cuff', 'vambrace', 'wrist', 'gauntlet', 'bracer', 'pauldron', 'spaulder', 'epaulette'
-                ))
-                is_leg_limb = (
-                    any(pt.name.endswith(s) or (s + '_') in pt.name for s in ('_Left', '_Right', '_L', '_R', '_leg_l', '_leg_r'))
-                    or abs(float(pt.P[:, :, 0].mean())) > 0.035
-                )
-                is_overlay_band = any(k in pname_l for k in (
-                    'strap', 'sash', 'harness', 'baldric', 'bandolier', 'belt', 'obi', 'collar', 'scarf',
-                    'swag', 'wrap', 'band', 'cummerbund', 'trim', 'yoke', 'gorget', 'pectoral'
-                ))
+                F = fx(pt)
+                is_arm_pt = getattr(pt, 'is_arm', False) or 'arm' in F
+                is_leg_limb = 'side_sfx' in F or abs(float(pt.P[:, :, 0].mean())) > 0.035
+                is_overlay_band = 'band' in F
                 if not is_arm_pt and not is_leg_limb and not is_overlay_band:
                     z_vals = pt.P[:, :, 2]
                     z_min, z_max = float(z_vals.min()), float(z_vals.max())
@@ -608,8 +705,7 @@ def assemble_garment(gid, label, slot, culture, parts, covers_hair=False, covers
                 for pt in parts:
                     if id(pt) in trunk_pt_ids or pt.P.ndim != 3:
                         continue
-                    pname_l = pt.name.lower()
-                    is_slv = (getattr(pt, 'is_arm', False) or 'sleeve' in pname_l) and getattr(pt, 'closed', False)
+                    is_slv = (getattr(pt, 'is_arm', False) or 'sleeve' in fx(pt)) and getattr(pt, 'closed', False)
                     if is_slv:
                         slv_parts.append(pt)
                         # Rule A: Smoothly tuck the deep medial anchor rings (r_i in (0, 1), |x| < x_sh_piv - 0.010)
@@ -662,20 +758,14 @@ def assemble_garment(gid, label, slot, culture, parts, covers_hair=False, covers
                 for pt in parts:
                     if id(pt) in trunk_pt_ids or pt.P.ndim != 3:
                         continue
-                    pname_l = pt.name.lower()
-                    is_slv = (getattr(pt, 'is_arm', False) or 'sleeve' in pname_l) and getattr(pt, 'closed', False)
+                    is_slv = (getattr(pt, 'is_arm', False) or 'sleeve' in fx(pt)) and getattr(pt, 'closed', False)
                     if is_slv:
                         continue
-                    is_pauldron = any(k in pname_l for k in ('pauldron', 'epaulette', 'spaulder'))
-                    if is_pauldron or any(k in pname_l for k in (
-                        'strap', 'sash', 'harness', 'baldric', 'bandolier', 'belt', 'obi', 'collar', 'scarf',
-                        'cowl', 'mantle', 'cape', 'poncho', 'kilt', 'stole', 'tabard', 'pectoral',
-                        'swag', 'shawl', 'drape', 'wrap', 'band', 'apron', 'trim', 'waist', 'cummerbund'
-                    )):
+                    F = fx(pt)
+                    is_pauldron = 'pauldron' in F
+                    if is_pauldron or 'overlay' in F:
                         # Rule B: Push outer overlay straps/sashes/swags/collars/capes/belts/pauldrons outside all trunk_tubes
-                        is_strap_band = (not is_pauldron) and any(k in pname_l for k in (
-                            'strap', 'sash', 'harness', 'baldric', 'bandolier', 'belt', 'obi', 'swag', 'wrap', 'band', 'cummerbund'
-                        ))
+                        is_strap_band = (not is_pauldron) and 'strap' in F
                         clr = 0.012 if is_strap_band else 0.008
                         for r_i in range(pt.P.shape[0]):
                             for c_i in range(pt.P.shape[1]):
@@ -741,7 +831,7 @@ def assemble_garment(gid, label, slot, culture, parts, covers_hair=False, covers
             leg_limb_pts = [
                 pt for pt in parts
                 if pt.P.ndim == 3 and getattr(pt, 'closed', False)
-                and any(s in pt.name for s in ('_Left', '_Right', '_L', '_R', '_leg', '_pelvis'))
+                and 'side_sub' in fx(pt)
             ]
             if legged and leg_limb_pts:
                 inner_verts = np.vstack([lp.P.reshape(-1, 3) for lp in leg_limb_pts])
@@ -750,7 +840,7 @@ def assemble_garment(gid, label, slot, culture, parts, covers_hair=False, covers
                         continue
                     if getattr(pt, 'cloth', None) is not None:
                         pt.cloth = None
-                    if not any(k in pt.name.lower() for k in ('pouch', 'satchel', 'holster', 'buckle', 'rosette', 'horn', 'tassel')):
+                    if 'acc' not in fx(pt):
                         for r_o in range(pt.P.shape[0]):
                             for c_o in range(pt.P.shape[1]):
                                 px, py, pz = float(pt.P[r_o, c_o, 0]), float(pt.P[r_o, c_o, 1]), float(pt.P[r_o, c_o, 2])
@@ -779,11 +869,11 @@ def assemble_garment(gid, label, slot, culture, parts, covers_hair=False, covers
         # 2. Ensure closed foot/shaft uppers cover the bare heel and toes on their side.
         # 3. Contour-fit every sole part to the anatomical foot/upper footprint (+2mm lateral welt, +3mm heel/toe welt).
         for pt in parts:
-            if pt.P.ndim == 3 and 'sole' not in pt.name.lower():
+            if pt.P.ndim == 3 and 'sole' not in fx(pt):
                 pt.P[:, :, 2] = np.maximum(pt.P[:, :, 2], 0.008)
         has_closed_upper = any(
-            pt.P.ndim == 3 and any(k in pt.name.lower() for k in ('_foot', '_vamp', 'boot', 'sabaton', 'shoe'))
-            and 'sole' not in pt.name.lower()
+            pt.P.ndim == 3 and 'upper' in fx(pt)
+            and 'sole' not in fx(pt)
             for pt in parts
         )
         for side_name, sgn in (('Left', 1.0), ('Right', -1.0)):
@@ -795,12 +885,12 @@ def assemble_garment(gid, label, slot, culture, parts, covers_hair=False, covers
             y_toe_sk = float(fv_side[:, 1].min())
             side_uppers = [
                 pt for pt in parts
-                if pt.P.ndim == 3 and 'sole' not in pt.name.lower()
+                if pt.P.ndim == 3 and 'sole' not in fx(pt)
                 and float(pt.P[:, :, 0].mean()) * sgn > 0.0
             ]
             if has_closed_upper and side_uppers:
                 # Ensure closed foot part reaches behind bare heel and in front of bare toes
-                foot_pts = [pt for pt in side_uppers if any(k in pt.name.lower() for k in ('_foot', '_vamp', '_toe'))]
+                foot_pts = [pt for pt in side_uppers if 'foot' in fx(pt)]
                 for fpt in foot_pts:
                     y_min_f, y_max_f = float(fpt.P[:, :, 1].min()), float(fpt.P[:, :, 1].max())
                     if y_max_f - y_min_f > 0.08:
@@ -828,7 +918,7 @@ def assemble_garment(gid, label, slot, culture, parts, covers_hair=False, covers
             # Fit sole parts on this side to the upper/bare-foot contour
             side_soles = [
                 pt for pt in parts
-                if pt.P.ndim == 3 and 'sole' in pt.name.lower()
+                if pt.P.ndim == 3 and 'sole' in fx(pt)
                 and float(pt.P[:, :, 0].mean()) * sgn > 0.0
             ]
             if side_soles:
@@ -939,14 +1029,10 @@ def assemble_garment(gid, label, slot, culture, parts, covers_hair=False, covers
         vn /= np.maximum(np.linalg.norm(vn, axis=1, keepdims=True), 1e-12)
         flat_N = vn[local_vi].astype(np.float32)
 
-        part_sfx = p.name[len(gid):] if p.name.startswith(gid) else p.name
+        F = fx(p)
         spans_both_sides = bool(flat_P[:, 0].min() < -0.09 and flat_P[:, 0].max() > 0.09)
-        is_true_arm_tube = getattr(p, 'is_arm', False) or any(k in part_sfx for k in (
-            'sleeve', 'cuff', 'vambrace', 'wrist', 'bangle', 'bracelet', 'gauntlet', 'wraps', 'bracer'
-        ))
-        is_shoulder_cap = any(k in part_sfx for k in (
-            'pauldron', 'epaulette', '_sh_', 'shoulder_', 'bellcap_', 'hex_plate_', 'spaulder_'
-        )) and float(np.abs(flat_P[:, 0]).min()) >= 0.11
+        is_true_arm_tube = getattr(p, 'is_arm', False) or 'arm_tube' in F
+        is_shoulder_cap = 'sh_cap' in F and float(np.abs(flat_P[:, 0]).min()) >= 0.11
         is_arm_part = (is_true_arm_tube or is_shoulder_cap) and not spans_both_sides
         if getattr(p, 'row_joints', None):
             for r_i, jn in enumerate(p.row_joints):
@@ -958,9 +1044,7 @@ def assemble_garment(gid, label, slot, culture, parts, covers_hair=False, covers
         elif p.rigid_joint:
             rigid_overrides.append((gi_offset, gi_offset + len(flat_P), p.rigid_joint))
             hip_ranges.append([vi_offset, vi_offset + n_part_vi])
-        elif slot in ('torso', 'legs') and not is_arm_part and any(part_sfx.endswith(sfx) or (sfx + '_') in part_sfx for sfx in (
-            '_belt', '_gunbelt', '_obi', '_furbelt', '_cinch', '_war_belt', '_waist', '_buckle'
-        )) and getattr(p, 'cloth', None) is None:
+        elif slot in ('torso', 'legs') and not is_arm_part and 'belt_sfx' in F and getattr(p, 'cloth', None) is None:
             rigid_overrides.append((gi_offset, gi_offset + len(flat_P), 'Hips'))
             hip_ranges.append([vi_offset, vi_offset + n_part_vi])
         elif (
@@ -970,7 +1054,7 @@ def assemble_garment(gid, label, slot, culture, parts, covers_hair=False, covers
             and getattr(p, 'cloth', None) is None
             and len(flat_P) <= 260
             and float(np.ptp(flat_P, axis=0).max()) <= 0.22
-            and any(k in part_sfx for k in ('pouch', 'btn', 'button', 'rosette', 'buckle', 'disc', 'iris', 'medallion', 'brooch', 'clasp', 'canister', 'vial', 'node', 'badge', 'seal', 'eye', 'pendant', 'bell', 'tassel'))
+            and 'acc7' in F
         ):
             # Check #7 (Auto-rigid_joint on small 3D accoutrements): prevent pouches/buttons/rosettes from shearing across spine/leg joints
             y_mean = float(flat_P[:, 1].mean())
@@ -1373,7 +1457,7 @@ def assemble_garment(gid, label, slot, culture, parts, covers_hair=False, covers
         entry['hide_by'] = 'rays'
     elif slot == 'feet':
         tris = make_mpfb.covered(BP_GL, BT, str(out_glb), out=0.040, inward=0.022)
-        if any('_foot_' in p.name for p in parts):
+        if any('foot_us' in fx(p) for p in parts):
             # Closed boots completely enclose the bare foot and ankle below the top of the shaft;
             # always hide all bare foot triangles inside the closed boot volume so heels/toes never clip.
             y_boot_top = min(float(P_arr[:, 1].max()) - 0.025, float(RIG.jpos[RIG.J['LeftLeg']][1]) - 0.04)
@@ -1410,7 +1494,7 @@ def assemble_garment(gid, label, slot, culture, parts, covers_hair=False, covers
         #    and must not protrude > 8mm laterally beyond the upper.
         # 3. Every vertex must have >= 99% ipsilateral leg/foot/toe weight with zero contralateral bleed.
         for p in parts:
-            if 'sole' not in p.name:
+            if 'sole_cs' not in fx(p):
                 z_min_p = float(p.P[:, :, 2].min())
                 if z_min_p < 0.006:
                     p.P[:, :, 2] = np.maximum(p.P[:, :, 2], 0.007)
@@ -1418,10 +1502,10 @@ def assemble_garment(gid, label, slot, culture, parts, covers_hair=False, covers
                 assert z_min_p >= 0.004, (
                     f'[GARMENT CHECK FAIL] {gid}/{p.name}: footwear upper dips to z={z_min_p:.4f}m (below sole bottom)!'
                 )
-        if any('_foot_' in p.name for p in parts):
+        if any('foot_us' in fx(p) for p in parts):
             for s_tag in ('_L', '_R'):
-                sole_pts = [p.P.reshape(-1, 3) for p in parts if f'_sole{s_tag}' in p.name]
-                upper_pts = [p.P.reshape(-1, 3) for p in parts if (f'_foot{s_tag}' in p.name or f'_shaft{s_tag}' in p.name)]
+                sole_pts = [p.P.reshape(-1, 3) for p in parts if ('sole' + s_tag) in fx(p)]
+                upper_pts = [p.P.reshape(-1, 3) for p in parts if (('foot' + s_tag) in fx(p) or ('shaft' + s_tag) in fx(p))]
                 if sole_pts and upper_pts:
                     sp_all = np.vstack(sole_pts)
                     up_all = np.vstack(upper_pts)
