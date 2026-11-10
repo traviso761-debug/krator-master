@@ -4,7 +4,7 @@
 const fs=require('fs'),path=require('path'),vm=require('vm');
 const ROOT=path.join(__dirname,'..','..','..');
 const ctx={console,Math,JSON};vm.createContext(ctx);
-for(const f of ['core/rand/08-core-rand.js','biomes/ancientsvalley/src/41-av-field.js','biomes/ancientsvalley/src/41b-av-wrecks.js'])vm.runInContext(fs.readFileSync(path.join(ROOT,f),'utf8'),ctx,{filename:f});
+for(const f of ['core/rand/08-core-rand.js','biomes/ancientsvalley/src/41-av-field.js','biomes/ancientsvalley/src/41b-av-wrecks.js','biomes/ancientsvalley/src/41c-av-house.js'])vm.runInContext(fs.readFileSync(path.join(ROOT,f),'utf8'),ctx,{filename:f});
 const RG=JSON.parse(fs.readFileSync(path.join(__dirname,'..','region','station-overlook.json'),'utf8'));
 const AV=ctx.AV,KRAND=ctx.KRAND;
 /* ok(name, c, neg): c the check on the real input (must hold); neg the same check on a broken input (must be false) */
@@ -54,6 +54,18 @@ ok('every tower has a key, a yaw and a kind',P.towers.every(t=>/^\w+\.\w+$/.test
   if(!t.kerb)return;on++;if(t.kerb.corner)corner++;if(Math.abs(gs[t.kerb.axis]-3)<.01)gapOk++;});
  ok('the towers front the kerb lines ('+on+' of '+K.towers.length+', '+corner+' on corners, '+gapOk+' 3 m behind the pavement, '+cross+' plinths into a street)',on>K.towers.length*.6&&!cross&&gapOk===on&&corner>on*.15&&corner<on*.55,N.towers.filter(t=>t.kerb).length>N.towers.length*.6);
  ok('the kerb pass is deterministic',JSON.stringify(mkK({avenue:16.5,road:9,gap:3,corner:.35,R:2900,lineMax:2850,extent:ext}).towers)===JSON.stringify(K.towers));}
+// the House (41c): every threshold maps a doorway line onto its twin, the walker lands on a floor, the loop never ends, the descent keeps its slope
+{const D={x:300,z:-150,y:12},H=AV.house({origin:[40000,3000,0],door:D,seed:7,visits:3}),X=40000,Y=3000,Z=0,st={},on=(p)=>AV.houseFloor(H,p[0],p[2])!=null;
+ const go=(a,b)=>{const r=AV.houseCross(H,a,b,st);return r?{r,p:[b[0]+r.d[0],b[1]+r.d[1],b[2]+r.d[2]]}:null;};
+ const i1=go([D.x,D.y,D.z-2],[D.x,D.y,D.z-1.45]),o1=go([X,Y,Z+.3],[X,Y,Z-.05]),back=go([D.x,D.y,D.z-1.4],[D.x,D.y,D.z-2]);
+ ok('through the hut door into the foyer, and out of the foyer door to the hut (and not back the wrong way)',i1&&i1.r.id==='in'&&on(i1.p)&&Math.abs(i1.p[2]-(Z+.05))<1e-6&&o1&&o1.r.id==='out'&&Math.abs(o1.p[2]-(D.z-1.55))<1e-6&&!back&&st.inside===false,!!back);
+ let p=[X,Y,Z+60+12*3.5],loops=0;for(let k=0;k<40;k++){const n=[p[0],p[1],p[2]+1];const r=go(p,n);p=r?r.p:n;if(r&&r.r.id==='loop')loops++;}
+ ok('the north corridor never ends ('+loops+' loops in 40 m, still in it)',loops>=3&&on(p)&&p[2]<Z+60+12*7,loops===0);
+ const rooms=new Set();for(let k=0;k<12;k++){const r=go([X+34.8,Y,H.doorZ],[X+35.2,Y,H.doorZ]);rooms.add(r.r.room);const bk=go([r.p[0]+.4,Y,H.doorZ],[r.p[0]-.2,Y,H.doorZ]);if(!bk||bk.r.id!=='back'||!on(bk.p))rooms.add('lost');}
+ ok('the east door opens on '+rooms.size+' rooms by the visit, and every room leads back',rooms.size===3&&!rooms.has('lost'),rooms.size===1);
+ const top=[X+602,AV.houseFloor(H,X+602,H.doorZ+73.8),H.doorZ+73.8],lv=go(top,[X+602,top[1],H.doorZ+74.2]),f0=AV.houseFloor(H,X+602,H.doorZ+74.2),f1=lv?AV.houseFloor(H,lv.p[0],lv.p[2]):NaN;
+ ok('the descent has no bottom: its foot leads to the same place on the slope higher up (level '+st.depth+')',lv&&lv.r.id==='level'&&Math.abs((f0+lv.r.d[1])-f1)<1e-6&&st.depth===1,false);
+ const H2=AV.house({origin:[40000,3000,0],door:D,seed:7,visits:4});ok('the west hallway is longer each visit ('+H.tape.toFixed(2)+' m, then '+H2.tape.toFixed(2)+' m)',H2.tape>H.tape&&H2.tape-H.tape<.1,H2.tape===H.tape);}
 // the craters: on the page, apart, and the bowl below its rim
 {const C=AV.craters({R:2800,n:12,seed:3,ok:(x,z,r)=>ground(x,z)>LAKE+10});ok('craters struck ('+C.length+')',C.length>=8&&C.every(c=>Math.hypot(c.x,c.z)<=2800));
  let apart=true;for(let i=0;i<C.length;i++)for(let j=i+1;j<C.length;j++)if(Math.hypot(C[i].x-C[j].x,C[i].z-C[j].z)<C[i].r+C[j].r)apart=false;ok('no two craters overlap',apart);

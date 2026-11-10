@@ -48,7 +48,7 @@ const AV_KEEPERS=(function(){if(typeof KratorMechs==='undefined')return [];const
  const N=STAGE.near,PV=STAGE.views()['A park gone feral'];mk('an_porter',-300,700,11,0);mk('an_watcher',N.x-300,N.z+380,12,0);mk('an_lamplighter',900,900,13,0);mk('an_sweeper',1250,-120,14,0);
  if(PV)mk('an_gardener',PV[3],PV[5],15,0);mk('an_tripod',-600,1250,16,0);
  const clock={t:performance.now()};
- tick(function(){const now=performance.now(),dt=Math.min(.1,(now-clock.t)/1000);clock.t=now;if(dt<=0)return;
+ tick(function(){const now=performance.now(),dt=Math.min(.1,(now-clock.t)/1000)*(window.AV_TIME==null?1:window.AV_TIME);clock.t=now;if(dt<=0)return;   /* AV_TIME: a time pocket slows them (89y) */
   for(const k of out){const g=k.g,T=k.route[k.i],dx=T[0]-g.position.x,dz=T[1]-g.position.z,d=Math.hypot(dx,dz);
    if(k.wait>0){k.wait-=dt;if(k.wait<=0)KratorMechs.setState(g,'walk');}
    else if(d<3+k.R*.5||k.stall>25){k.i=(k.i+1)%k.route.length;k.best=1e9;k.stall=0;let len=0;if(k.role==='keeper'&&KratorMechs.attack){try{const n=KratorMechs.attack(g);len=n==null?0:n;}catch(e){len=0;}}   /* the routine at the corner; a corner it cannot reach for 25 s (a pier stands on it) is given up */

@@ -51,6 +51,12 @@
   one seed, the fallback on dry ground (no model water cell lies inside the page), so it flooded nothing and every hollow of the page's own relief
   under the lake's level was drawn dry; `89w` now seeds it from that ground too (a 120 m lattice, 264 seeds), which floods 95% of it. The stage's
   view "The core from the water" still stands outside the flood: its eye is in a pocket the lattice misses.
+- [ ] **The House is bare** (`41c`, `75`, 2026-11-09): ash-grey boxes with dim strips, no furniture, no sound (the growl at a fixed distance
+  the plan wants is `core/audio`'s), no NPC can follow the walker through a threshold (the paths need teleport edges), and rewiring opens one of
+  three fixed rooms. Flying (not walking) through a door also crosses it. The visit count is this browser's (localStorage).
+- [ ] **The distortions' known limits** (`89y`, 2026-11-09): the warp bends vertices, so the coarse far country and a long flat mesh bend in
+  steps; three.js culls on unbent bounds, so near the Gyre a chunk lifted into view can vanish early; the lens turns a shell's cage but not the
+  trace inside it, so a shell right behind the lens shears; the warp installs once the city is built, recompiling every material once.
 - [x] **The renderer ran near V8's 4 GB heap** (2026-11-09, found wiring the extraplanars; closed the same day): a fourteen-view `--all-views` tour
   ran out of heap at the thirteenth view on the Arc lane (Chrome's 0xe0000008 in the event log, "Connection closed while reading from the driver"
   in the verify). V8's sampling heap profiler from before the page loads, and a census of the geometry by owner, found two causes. The boot held

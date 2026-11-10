@@ -32,22 +32,32 @@ const avImpKey=t=>t.family+'.'+AV_LOOK[t.state];
    into. A tower's shell key is its family and look (a skeleton's and a fallen tower's shell is the stump's: a skeleton's bare frame bakes to
    nothing a heightfield can hold) */
 MP.families().concat(Object.values(MP.FAMILY).filter(F=>F.design)).forEach(F=>{if(!F||F.shell)return;const fp=F.footprint||(F.footprint={});if(fp.w==null){fp.w=fp.d=(fp.r==null?30:fp.r)*2;}F.shell={mode:'box',inset:1.2,texel:1.0,ruinTexel:1.25,box:true};});
-const avCanShell=t=>!!t.skey&&t.state!=='skeleton';
-AVC.towerAt={};AVC.towers.forEach(t=>{AVC.towerAt[t.x+','+t.z]=t;t.shelled=AVC.keys.indexOf(t.key)>=0;t.ikey=avImpKey(t);t.skey=t.ikey;t.nearR=AV_NEAR*(AV_NEARK[t.family]==null?1:AV_NEARK[t.family]);});
+/* a fallen tower is a heap 12 to 18 m high: its look is the stump's (AV_LOOK), an upright 40 to 54 m stub, so it takes no shell and no impostor (Gemini's
+   review, 8a, 2026-11-09): its hero to its band, its rubble past that */
+const avCanShell=t=>!!t.skey&&t.state!=='skeleton'&&t.state!=='fallen';
+/* the towers by position, keyed by the FLOAT32 values: the impostors' instance matrices are a Float32Array, so a key from the float64 coordinates never
+   matched a lattice tower's (17 degrees), the lookup found no tower and no tower's impostor was ever hidden: every tower's billboard stood inside
+   its own hero or shell, unseen in a solid one and showing through a skeleton's frame, over a fallen heap and above a broken top (2026-11-09) */
+AVC.towerAt={};AVC.towers.forEach(t=>{AVC.towerAt[Math.fround(t.x)+','+Math.fround(t.z)]=t;t.shelled=AVC.keys.indexOf(t.key)>=0;t.ikey=avImpKey(t);t.skey=t.ikey;t.nearR=AV_NEAR*(AV_NEARK[t.family]==null?1:AV_NEARK[t.family]);});
 AVC.skeys=[];{const seen=new Set();AVC.towers.forEach(t=>{if(!seen.has(t.skey)){seen.add(t.skey);AVC.skeys.push(t.skey);}});}
 /* a hero flattened for the shell's bake (KSHELL.bake reads a hero's direct children at identity): every mesh of the tree with its world transform
    baked into a geometry copy, an instanced mesh with its instance matrices premultiplied */
 function avFlat(H){H.updateMatrixWorld(true);const G=new THREE.Group(),I=new THREE.Matrix4(),M=new THREE.Matrix4();
  H.traverse(m=>{if(!m.isMesh||!m.geometry||!m.material||m.userData.door)return;const W=m.matrixWorld,id=W.equals(I);
   if(m.isInstancedMesh){const k=new THREE.InstancedMesh(m.geometry,m.material,m.count);if(id){k.instanceMatrix=m.instanceMatrix;}else{const a=new Float32Array(m.count*16);for(let i=0;i<m.count;i++){m.getMatrixAt(i,M);M.premultiply(W);M.toArray(a,i*16);}k.instanceMatrix=new THREE.InstancedBufferAttribute(a,16);}k.instanceColor=m.instanceColor;G.add(k);}
-  else{const g=id?m.geometry:m.geometry.clone().applyMatrix4(W);G.add(new THREE.Mesh(g,m.material));}});return G;}
+  else{const g=id?m.geometry:m.geometry.clone().applyMatrix4(W);if(!id)g.userData.avOwn=true;G.add(new THREE.Mesh(g,m.material));}});return G;}
 /* the bake source of a shell key (the owner, 2026-11-08: no floors hanging in the air in any baked form). A ruin's hero is an open frame once its
    glass is gone (the Wedge's broken state: slabs and mullions), and a frame baked to a box or a card is dashes in the air at range, the mullions
    gone sub-pixel. So every look but intact bakes from the family's INTACT hero (its skin on), cut at the state's height (MP.ruin's cut; gutted
    uncut): a solid stub with a torn top. The heroes inside AV_NEAR are the real ruins; the switch at the band is from frame to skinned stub */
+/* the height a ruin's stand-in is cut at (2026-11-09, Gemini's review, 8b): the HERO's skin stops at MP.ruin's `cut` (only a narrow core and fins reach
+   `top`), so a shell or an impostor cut at `top` stood up to 22 m of full-width wall over the model it stands for; a gutted tower is cut too where its
+   cut is under the tip (its lamp and needle gone) */
+const avCutTop=(F,look)=>{try{const R=MP.ruin(F,look),tip=F.height&&F.height.tip?F.height.tip:Infinity;if(R.cut!=null&&(look!=='gutted'||R.cut<tip-.5))return Math.max(8,R.cut);
+ if(look==='gutted')return Infinity;return Math.max(8,R.top!=null?R.top:8);}catch(e){return look==='gutted'?Infinity:20;}};
 function avStub(k){const p=k.split('.'),fam=p[0],look=p[1];if(look==='intact'){const H=AVC.hero[k];return H.userData.avFlat||(H.userData.avFlat=avFlat(H));}
  const F=MP.FAMILY[fam],ik=fam+'.intact',src=AVC.hero[ik]||(AVC.hero[ik]=heroOf(ik));let top=Infinity;
- if(look!=='gutted'){try{const R=MP.ruin(F,look);top=Math.max(8,R.top!=null?R.top:(R.cut==null?8:R.cut));}catch(e){top=20;}}
+ top=avCutTop(F,look);
  const G=avFlat(src);if(top===Infinity)return G;const out=new THREE.Group(),M=new THREE.Matrix4();
  G.children.forEach(m=>{if(m.isInstancedMesh){const keep=[];for(let i=0;i<m.count;i++){m.getMatrixAt(i,M);if(M.elements[13]<=top)keep.push(i);}if(!keep.length)return;
    const k2=new THREE.InstancedMesh(m.geometry,m.material,keep.length),C=m.instanceColor?new Float32Array(keep.length*3):null,ca=C?m.instanceColor.array:null;
@@ -56,7 +66,7 @@ function avStub(k){const p=k.split('.'),fam=p[0],look=p[1];if(look==='intact'){c
 /* a geometry's triangles whose every vertex (in the mesh's world frame) lies under `top`, as a new non-indexed geometry; null when nothing is left */
 function clipGeoY(g,m,top){const P=g.attributes.position,idx=g.index,n=idx?idx.count:P.count,v=new THREE.Vector3(),W=m.matrixWorld,keep=[];
  for(let t=0;t<n;t+=3){let ok=true;for(let j=0;j<3&&ok;j++){const i=idx?idx.getX(t+j):t+j;v.set(P.getX(i),P.getY(i),P.getZ(i)).applyMatrix4(W);if(v.y>top)ok=false;}if(ok)keep.push(t);}
- if(!keep.length)return null;if(keep.length*3===n&&!idx)return g;const out=new THREE.BufferGeometry();
+ if(!keep.length)return null;if(keep.length*3===n&&!idx)return g;const out=new THREE.BufferGeometry();out.userData.avOwn=true;
  for(const name in g.attributes){const A=g.attributes[name],sz=A.itemSize,arr=new Float32Array(keep.length*3*sz);let o=0;for(const t of keep)for(let j=0;j<3;j++){const i=idx?idx.getX(t+j):t+j;for(let c=0;c<sz;c++)arr[o++]=A.array[i*sz+c];}out.setAttribute(name,new THREE.BufferAttribute(arr,sz));}
  return out;}
 // ---------------------------------------------------------------- the rust (the owner, 2026-11-04: more rust)
@@ -106,24 +116,27 @@ const heroOf=(key,lite)=>{const p=key.split('.'),F=MP.FAMILY[p[0]];let H=MP.hero
    and its shaft 15 m across at its break, so a curtain hung at the footprint's radius 140 m up floated 30 m off the ruin (the owner,
    2026-11-09: floating flora at the Overlook). A band holds its largest radius and its box; `at(h)` is the band at h or the nearest full one
    below it; `top` the highest full band's ceiling (the hero is clipped at the record's top, so this is the drawn top) */
-const AV_PROF={};function avProfile(key){if(AV_PROF[key])return AV_PROF[key];const H=AVC.hero[key]||(AVC.hero[key]=heroOf(key));H.updateMatrixWorld(true);const BAND=6,B=[],v=new THREE.Vector3(),M=new THREE.Matrix4();
- const take=(x,y,z)=>{const i=Math.floor(y/BAND);if(i<0||i>150)return;const b=B[i]||(B[i]={y0:i*BAND,r:0,x0:1e9,x1:-1e9,z0:1e9,z1:-1e9,n:0});b.n++;const r=Math.hypot(x,z);if(r>b.r)b.r=r;if(x<b.x0)b.x0=x;if(x>b.x1)b.x1=x;if(z<b.z0)b.z0=z;if(z>b.z1)b.z1=z;};
+const AV_PROF={},AV_PROF_N=36;function avProfile(key){if(AV_PROF[key])return AV_PROF[key];const H=AVC.hero[key]||(AVC.hero[key]=heroOf(key));H.updateMatrixWorld(true);const BAND=6,B=[],v=new THREE.Vector3(),M=new THREE.Matrix4();
+ /* each band also keeps its outermost radius in AV_PROF_N directions (Gemini's review, 8c: one radius and one box a band made a courtyard, the Crescent's
+    chord, the Pods' gap and the Yoke's arch solid, so creepers hung in air): a direction with no wall at that height reads 0 */
+ const NA=AV_PROF_N,take=(x,y,z)=>{const i=Math.floor(y/BAND);if(i<0||i>150)return;const b=B[i]||(B[i]={y0:i*BAND,r:0,x0:1e9,x1:-1e9,z0:1e9,z1:-1e9,n:0,ang:new Float32Array(NA)});b.n++;const r=Math.hypot(x,z);if(r>b.r)b.r=r;if(x<b.x0)b.x0=x;if(x>b.x1)b.x1=x;if(z<b.z0)b.z0=z;if(z>b.z1)b.z1=z;
+  const k=Math.min(NA-1,Math.floor((Math.atan2(z,x)+Math.PI)/(2*Math.PI)*NA));if(r>b.ang[k])b.ang[k]=r;};
  H.traverse(m=>{if(!m.isMesh||!m.geometry||/debris|rubble/.test(m.name||''))return;const P=m.geometry.attributes.position;if(!P)return;
   if(m.isInstancedMesh){for(let k=0;k<m.count;k++){m.getMatrixAt(k,M);M.premultiply(m.matrixWorld);take(M.elements[12],M.elements[13],M.elements[14]);}return;}
   const st=Math.max(1,Math.floor(P.count/6000));for(let i=0;i<P.count;i+=st){v.fromBufferAttribute(P,i).applyMatrix4(m.matrixWorld);take(v.x,v.y,v.z);}});
  let top=0;for(let i=B.length-1;i>=0;i--)if(B[i]&&B[i].n>=6){top=B[i].y0+BAND;break;}
- const P={band:BAND,B,top,at(h){let i=Math.min(B.length-1,Math.floor(h/BAND));for(;i>=0;i--){const b=B[i];if(b&&b.n>=6)return b;}return null;}};return AV_PROF[key]=P;}
-/* the drawn surface of a look, by rays at the hero itself in the tower's own frame (the owner, 2026-11-09, again: "still floating trees",
-   "floating flora": a band's extent is its widest point all round, so a curtain hung at a round family's radius on any bearing hung 34 m out
-   where one broken slab reached, and a roof tree stood over a gap in a broken top). side(h, a, r0): the first face a horizontal ray meets coming
-   in from r0 m out on the bearing a at the height h, {x, y, z, d} or null where no wall stands; down(x, z, y0, y1): the first surface a ray
-   down from y0 meets above y1, its height or null. Debris and the rubble heap are left out (as avProfile does) */
-const AV_SURF={};function avSurface(key){if(AV_SURF[key])return AV_SURF[key];const H=AVC.hero[key]||(AVC.hero[key]=heroOf(key));H.updateMatrixWorld(true);
- const meshes=[];H.traverse(m=>{if(m.isMesh&&m.geometry&&!/debris|rubble/.test(m.name||''))meshes.push(m);});
- const rc=new THREE.Raycaster(),o=new THREE.Vector3(),d=new THREE.Vector3();
- return AV_SURF[key]={side(h,a,r0){const c=Math.cos(a),s=Math.sin(a);o.set(c*r0,h,s*r0);d.set(-c,0,-s);rc.set(o,d);rc.far=r0;const hit=rc.intersectObjects(meshes,false)[0];
-   return hit?{x:hit.point.x,y:hit.point.y,z:hit.point.z,d:r0-hit.distance}:null;},
-  down(x,z,y0,y1){o.set(x,y0,z);d.set(0,-1,0);rc.set(o,d);rc.far=y0-y1;const hit=rc.intersectObjects(meshes,false)[0];return hit?hit.point.y:null;}};}
+ /* the outermost radius toward angle a at height h (0: no wall that way there); the roof cells at height h: the 4 m cells (in the tower's frame) under an
+    upward face whose height is within 3 m under to 1.5 m over h, from the hero's triangles, made the first time they are asked for */
+ const roofs={};
+ const P={band:BAND,B,top,at(h){let i=Math.min(B.length-1,Math.floor(h/BAND));for(;i>=0;i--){const b=B[i];if(b&&b.n>=6)return b;}return null;},
+  rAt(h,a){const b=this.at(h);if(!b||!b.ang)return 0;const k=Math.min(NA-1,Math.floor((((a+Math.PI)%(2*Math.PI)+2*Math.PI)%(2*Math.PI))/(2*Math.PI)*NA));return b.ang[k];},
+  roofAt(h){const key=Math.round(h);if(roofs[key])return roofs[key];const S=new Set(),C=4,a=new THREE.Vector3(),b2=new THREE.Vector3(),c=new THREE.Vector3(),e1=new THREE.Vector3(),e2=new THREE.Vector3(),nn=new THREE.Vector3();
+   H.traverse(m=>{if(!m.isMesh||m.isInstancedMesh||!m.geometry||/debris|rubble/.test(m.name||''))return;const Pp=m.geometry.attributes.position,I=m.geometry.index,n=I?I.count:Pp.count,W=m.matrixWorld;
+    for(let t=0;t+2<n;t+=3){const i0=I?I.getX(t):t,i1=I?I.getX(t+1):t+1,i2=I?I.getX(t+2):t+2;a.fromBufferAttribute(Pp,i0).applyMatrix4(W);b2.fromBufferAttribute(Pp,i1).applyMatrix4(W);c.fromBufferAttribute(Pp,i2).applyMatrix4(W);
+     const yc=(a.y+b2.y+c.y)/3;if(yc<h-3||yc>h+1.5)continue;nn.crossVectors(e1.subVectors(b2,a),e2.subVectors(c,a));const L=nn.length();if(L<1e-6||Math.abs(nn.y)/L<.6)continue;
+     const st=Math.max(2,Math.ceil(Math.max(a.distanceTo(b2),b2.distanceTo(c),c.distanceTo(a))/C));for(let u=0;u<=st;u++)for(let w=0;w+u<=st;w++){const p=u/st,q=w/st,x=a.x+(b2.x-a.x)*p+(c.x-a.x)*q,z=a.z+(b2.z-a.z)*p+(c.z-a.z)*q;S.add(Math.floor(x/C)+','+Math.floor(z/C));}}});
+   S.cell=C;return roofs[key]=S;},
+  onRoof(h,x,z){const S=this.roofAt(h),C=S.cell;return S.has(Math.floor(x/C)+','+Math.floor(z/C));}};return AV_PROF[key]=P;}
 // the towers as records before anything is drawn: the family's name, its footprint, the state
 AVC.towers.forEach(T=>{const F=MP.FAMILY[T.family]||MP.DESIGNS[T.family];if(!F)return;const r=F.footprint?(F.footprint.r||Math.max(F.footprint.w||0,F.footprint.d||0)/2):30;
  REGISTER({name:F.name+' ('+T.state+')',kind:'tower',x:T.x,z:T.z,y:T.y,r:r,h:T.state==='intact'||T.state==='gutted'?F.height.tip:F.height.tip*.6,tags:{kind:'tower',family:T.family,state:T.state,zone:T.kind}});});
@@ -137,11 +150,16 @@ AVC.boot=function(){if(AVC.ready)return true;if(window._texPending>0)return fals
   if(!packed||!n){reportErr('shells: '+left[0]+' fits no atlas');left.shift();continue;}const at=KSHELL.atlas(size,renderer),mat=KSHELL.material(at,{steps}),ai=AVC.atlases.length;AVC.atlases.push(at);AVC.mats.push(mat);
   packed.forEach(s=>{AVC.slot[s.id]=s;});left.slice(0,n).forEach(k=>{AVC.atlasOf[k]=ai;});left=left.slice(n);}}
  AVC.packed=Object.values(AVC.slot);
- if(!/[?&]nobake/.test(location.search))AVC.shellKeys.forEach(k=>{const at=AVC.atlases[AVC.atlasOf[k]],H=AVC.stub[k]||(AVC.stub[k]=avStub(k));KSHELL.bake(at,AVC.rec[k],AVC.slot[k],H,AVC.slot[k+'.top'],AVC.slot[k+'.bot']);});
+ /* a stub is a bake source only: once baked, its own geometries (the clipped and the moved copies, not the heroes' shared ones) are disposed and the stub
+    dropped (Gemini's review, 10a: they were kept for the page's life, hundreds of MB of non-indexed arrays) */
+ if(!/[?&]nobake/.test(location.search))AVC.shellKeys.forEach(k=>{const at=AVC.atlases[AVC.atlasOf[k]],H=AVC.stub[k]||(AVC.stub[k]=avStub(k));KSHELL.bake(at,AVC.rec[k],AVC.slot[k],H,AVC.slot[k+'.top'],AVC.slot[k+'.bot']);
+  H.traverse(m=>{if(m.geometry&&m.geometry.userData.avOwn)m.geometry.dispose();});delete AVC.stub[k];const hk=AVC.hero[k];if(hk&&hk.userData.avFlat===H)delete hk.userData.avFlat;});
  if(!/[?&]nomip/.test(location.search))AVC.atlases.forEach(at=>KSHELL.finish(at));
- AVC.mats.forEach(m=>{m.userData.U.uPx.value=pxOf();m.userData.U.uBand.value.set(AV_NEAR,0,.15);});AVC.mat=AVC.mats[0];
+ /* the shells fade in over the band their heroes fade out over (kits/metropolis 60, aBand: 2026-11-09): each family's own band (AV_NEARK), and the LOD scale
+    the heroes' fade reads (BIO._lodU.s, the same uniform object); uBand.x stays AV_NEAR for a shell drawn without one */
+ AVC.mats.forEach(m=>{m.userData.U.uPx.value=pxOf();m.userData.U.uBand.value.set(AV_NEAR,0,.15);if(BIO._lodU)m.userData.U.uBandS=BIO._lodU.s;});AVC.mat=AVC.mats[0];
  const capOf={},cap=Math.max(16,AVC.towers.length);AVC.towers.forEach(t=>{capOf[t.skey]=(capOf[t.skey]||0)+1;});
- if(!/[?&]noshell\b/.test(location.search))AVC.shellKeys.forEach(k=>{const at=AVC.atlases[AVC.atlasOf[k]],im=KSHELL.draw(at,AVC.rec[k],AVC.slot[k],AVC.mats[AVC.atlasOf[k]],new Array(Math.max(1,capOf[k]||1)).fill([0,0,0]),AVC.slot[k+'.top'],AVC.slot[k+'.bot']);im.count=0;im.frustumCulled=false;scene.add(im);AVC.mesh[k]=im;});
+ if(!/[?&]noshell\b/.test(location.search))AVC.shellKeys.forEach(k=>{const at=AVC.atlases[AVC.atlasOf[k]],im=KSHELL.draw(at,AVC.rec[k],AVC.slot[k],AVC.mats[AVC.atlasOf[k]],new Array(Math.max(1,capOf[k]||1)).fill([0,0,0]),AVC.slot[k+'.top'],AVC.slot[k+'.bot'],AV_NEAR*(AV_NEARK[k.split('.')[0]]==null?1:AV_NEARK[k.split('.')[0]]));im.count=0;im.frustumCulled=false;scene.add(im);AVC.mesh[k]=im;});
  AVC.towers.forEach(t=>{if(!AVC.mesh[t.skey])t.skey=null;});
  AVC.debris={};AVC.debrisFar={};AVC.debrisTris={};AVC.keys.forEach(k=>{const p=k.split('.'),G=MP.debris(MP.FAMILY[p[0]],p[1]);if(!G)return;AVC.debrisTris[k]=G.userData.tris;
   AVC.debris[k]=G.children.map(m=>{const im=new THREE.InstancedMesh(m.geometry,m.material,cap);im.count=0;im.frustumCulled=false;im.name=m.name;im.castShadow=im.receiveShadow=!!MP.shadow;scene.add(im);return im;});
@@ -154,9 +172,9 @@ AVC.boot=function(){if(AVC.ready)return true;if(window._texPending>0)return fals
  /* the owner, 2026-11-09: a ruin's impostor showed its floors as dashes hanging in the air (the slabs inside under the tear, and the storeys' plates,
     read at a texel while the piers between them do not): the impostor is baked without them, the skin and the frame alone */
  const heroMeshes=H=>{const out=[];H.updateMatrixWorld(true);H.traverse(m=>{if(!m.isMesh||!m.geometry||!m.material||m.userData.door)return;let o=m,skip=false;while(o&&o!==H){if(/slab|floor|storey|plate/i.test(o.name||''))skip=true;o=o.parent;}if(!skip)out.push(m);});return out;};
- const impOf=(k,S)=>{const pk=k.split('.'),fam=pk[0],look=pk[1],solid=look!=='intact'&&look!=='gutted',F=MP.FAMILY[fam];let top=Infinity;
-  if(solid){try{const R=MP.ruin(F,look);top=Math.max(8,R.top!=null?R.top:(R.cut==null?8:R.cut));}catch(e){top=20;}}
-  const H=heroOf(look==='intact'?k:fam+'.intact',true),names=[];heroMeshes(H).forEach((m,i)=>{let g=m.geometry;if(solid&&!m.isInstancedMesh){g=clipGeoY(g,m,top);if(!g)return;}const n='av.'+k+'.'+i;BIO.def(n,g,m.material,{indexed:false});names.push([n,m]);});
+ const impOf=(k,S)=>{const pk=k.split('.'),fam=pk[0],look=pk[1],F=MP.FAMILY[fam];let top=Infinity;
+  if(look!=='intact')top=avCutTop(F,look);
+  const H=heroOf(look==='intact'?k:fam+'.intact',true),names=[];heroMeshes(H).forEach((m,i)=>{let g=m.geometry;if(top<Infinity&&!m.isInstancedMesh){g=clipGeoY(g,m,top);if(!g)return;}const n='av.'+k+'.'+i;BIO.def(n,g,m.material,{indexed:false});names.push([n,m]);});
   return BIO.impostor('av.'+k,function(){const M=new THREE.Matrix4(),W=new THREE.Matrix4(),p=new THREE.Vector3(),q=new THREE.Quaternion(),s=new THREE.Vector3(),c=new THREE.Color();
    names.forEach(function(e){const n=e[0],m=e[1];W.copy(m.matrixWorld);if(!m.isInstancedMesh){W.decompose(p,q,s);BIO.put(n,[p.x,p.y,p.z],q,[s.x,s.y,s.z],null);return;}
     for(let i=0;i<m.count;i++){m.getMatrixAt(i,M);M.premultiply(W).decompose(p,q,s);if(p.y>top)continue;if(m.instanceColor)m.getColorAt(i,c);else c.setRGB(1,1,1);BIO.put(n,[p.x,p.y,p.z],q,[s.x,s.y,s.z],c.clone().convertLinearToSRGB());}});},{set:S,label:k});};
@@ -183,9 +201,12 @@ function avFade(g,key,x,y,z,yaw,nearR){const h=avHalf(key,yaw),H=AVC.rec[key].fr
  g.traverse(m=>{if(!m.isMesh||!m.geometry)return;const S=m.geometry,G=new THREE.BufferGeometry(),buf=new THREE.InstancedInterleavedBuffer(a.slice(),12,Math.max(1,m.isInstancedMesh?m.count:1));for(const n in S.attributes)G.setAttribute(n,S.attributes[n]);G.setIndex(S.index);if(!S.boundingSphere)S.computeBoundingSphere();G.boundingSphere=S.boundingSphere;
   G.setAttribute('aLodA',new THREE.InterleavedBufferAttribute(buf,4,0));G.setAttribute('aLodB',new THREE.InterleavedBufferAttribute(buf,4,4));G.setAttribute('aLodC',new THREE.InterleavedBufferAttribute(buf,4,8));m.geometry=G;
   let k=cache.get(m.material);if(!k){k=m.material.clone();k.onBeforeCompile=m.material.onBeforeCompile;k.customProgramCacheKey=m.material.customProgramCacheKey;k.userData=Object.assign({},m.material.userData);delete k.userData._lodFade;BIO.lodFade(k);cache.set(m.material,k);}m.material=k;});BIO._lodU.f.value=BIO.LOD.fade;}
-function avShells(list){const n={};AVC.shellKeys.forEach(k=>n[k]=0);const M=new THREE.Matrix4(),one=new THREE.Vector3(1,1,1),p=new THREE.Vector3();
- list.forEach(T=>{const im=AVC.mesh[T.skey];if(!im)return;M.compose(p.set(T.x,T.y,T.z),avQuat(T),one);im.setMatrixAt(n[T.skey]++,M);});
- AVC.shellKeys.forEach(k=>{if(!AVC.mesh[k])return;AVC.mesh[k].count=n[k];AVC.mesh[k].instanceMatrix.needsUpdate=true;});}
+/* each shell instance carries its fade band (kits/metropolis 60, aBand): its family's band where the tower's hero is held (the two cross-fade), -1 where it
+   is not (a tower past the hero pool's cap inside its band: an opaque shell, not a shell dithered half away with no hero behind it; Gemini's review, Q1) */
+function avShells(list,held){const n={};AVC.shellKeys.forEach(k=>n[k]=0);const M=new THREE.Matrix4(),one=new THREE.Vector3(1,1,1),p=new THREE.Vector3();
+ list.forEach(T=>{const im=AVC.mesh[T.skey];if(!im)return;const i=n[T.skey]++;M.compose(p.set(T.x,T.y,T.z),avQuat(T),one);im.setMatrixAt(i,M);
+  const B=im.geometry.attributes.aBand;if(B&&i<B.count)B.setX(i,held&&held.has(T.id)?(T.nearR==null?AV_NEAR:T.nearR):-1);});
+ AVC.shellKeys.forEach(k=>{const im=AVC.mesh[k];if(!im)return;im.count=n[k];im.instanceMatrix.needsUpdate=true;if(im.geometry.attributes.aBand)im.geometry.attributes.aBand.needsUpdate=true;});}
 function avDebris(list,far){const DB=far?AVC.debrisFar:AVC.debris,n={},M=new THREE.Matrix4(),Q=new THREE.Quaternion(),Y=new THREE.Vector3(0,1,0),one=new THREE.Vector3(1,1,1),p=new THREE.Vector3();
  list.forEach(T=>{const D=DB[T.key];if(!D)return;const i=n[T.key]=(n[T.key]||0);M.compose(p.set(T.x,T.y,T.z),Q.setFromAxisAngle(Y,T.yaw||0),one);D.forEach(im=>im.setMatrixAt(i,M));n[T.key]++;});   /* the rubble lies on the ground: no lean */
  for(const k in DB)DB[k].forEach(im=>{im.count=n[k]||0;im.instanceMatrix.needsUpdate=true;});}
@@ -206,7 +227,7 @@ AVC.tiersTick=function(){if(!AVC.ready)return;const now=performance.now(),e=came
  const dnear=[],up=e.y-terrainH(e.x,e.z),steepEye=up>60;
  for(const t of T){const d=avBoxDist(t,e),hz=Math.hypot(e.x-t.x,e.z-t.z),H=avH(t.skey||t.key),steep=(e.y-t.y-H*.5)>.7*Math.max(hz,1),above=e.y>t.y+H+25;t.d=d;t.shell=false;t.above=above;
   const shellable=avCanShell(t)&&!above;t.shellable=shellable;
-  if(!shellable){if(d<AV_DNEAR||(steep&&d<AV_IMPFAR))dnear.push(t);continue;}
+  if(!shellable){if(d<Math.max(AV_DNEAR,t.nearR==null?0:t.nearR)||(steep&&d<AV_IMPFAR))dnear.push(t);continue;}   /* a family whose band passes 1 km keeps its hero to its band (Gemini's review, 8e.2) */
   const nr=t.nearR==null?AV_NEAR:t.nearR;if(d<nr)near.push(t);if(d>=nr*.85&&(d<AV_FAR||(steep&&d<AV_IMPFAR))){mid.push(t);t.shell=true;}}
  near.sort((a,b)=>a.d-b.d);dnear.sort((a,b)=>a.d-b.d);
  /* every tower inside its band (before the dither) is a hero whatever the pool holds; the pool's cap falls on the band itself */
@@ -215,13 +236,20 @@ AVC.tiersTick=function(){if(!AVC.ready)return;const now=performance.now(),e=came
  const fadeOf=t=>t.shellable;
  G.forEach((g,id)=>{const t=keep.find(t=>t.id===id);if(!t||g.userData.fade!==fadeOf(t)){scene.remove(g);G.delete(id);AVC.live.splice(AVC.live.indexOf(g),1);}});
  /* a shellable hero fades over the band toward its shell's frame (the shell key's record); a skeleton's hero, whose shell is the stump's, fades to that */
- keep.forEach(t=>{if(!G.has(t.id)){const f=fadeOf(t),g=avHero(t.key,t.x,t.y,t.z,t.yaw,f?t.skey:false,t.nearR);g.userData.fade=f;if(t.lean)g.quaternion.copy(avQuat(t));G.set(t.id,g);}});
+ keep.forEach(t=>{if(!G.has(t.id)){const f=fadeOf(t),g=avHero(t.key,t.x,t.y,t.z,t.yaw,f?t.skey:false,t.nearR);g.userData.fade=f;if(t.lean){g.quaternion.copy(avQuat(t));
+   /* the design heroes carry their rubble in the group: it lies on the ground, so it takes the lean back off (Gemini's review, 8d: tilted 5 degrees it
+      lifted pieces 12 m into the air 140 m out) */
+   const inv=new THREE.Matrix4().makeRotationFromQuaternion(avQuat(t).clone().invert());g.children.forEach(c=>{if(/debris|rubble/i.test(c.name||''))c.applyMatrix4(inv);});}G.set(t.id,g);}});
  /* a shellable tower past the hero pool's cap within 255 m stands as its shell (rare: the pool is the nearest 16 and shells begin at 255 m) */
  rest.slice(room).forEach(t=>{if(!t.shell){mid.push(t);t.shell=true;}});
  /* a hero the pool still holds past the dither band has no shell */
  {const held=new Set(keep.map(t=>t.id));for(let i=mid.length-1;i>=0;i--){const t=mid[i];if(held.has(t.id)&&t.d>=(t.nearR==null?AV_NEAR:t.nearR)){t.shell=false;mid.splice(i,1);}}}
- avShells(mid);avDebris(T.filter(t=>t.shelled&&t.d<AV_RUBBLE));avDebris(T.filter(t=>t.shelled&&t.d>=AV_RUBBLE&&t.d<AV_IMPFAR),true);
- AVC.impMeshes.forEach(o=>{const A=o.instanceMatrix.array,F=o.userData.full;for(let i=0,n=F.length/16;i<n;i++){const t=AVC.towerAt[F[i*16+12]+','+F[i*16+14]],nr=t?(t.shell||G.has(t.id)):false;for(let k=0;k<16;k++)A[i*16+k]=nr?0:F[i*16+k];}o.instanceMatrix.needsUpdate=true;});
+ avShells(mid,G);avDebris(T.filter(t=>t.shelled&&t.d<AV_RUBBLE));avDebris(T.filter(t=>t.shelled&&t.d>=AV_RUBBLE&&t.d<AV_IMPFAR),true);
+ /* a fallen tower's billboard (the stump's look) is hidden where its hero or its rubble draws; past the far rubble it stands squashed to the heap's
+    height (16 m), so a fallen tower does not vanish from the far city (2026-11-09: once the impostors hid, 55 fallen towers past 3.2 km drew nothing) */
+ AVC.impMeshes.forEach(o=>{const A=o.instanceMatrix.array,F=o.userData.full;for(let i=0,n=F.length/16;i<n;i++){const t=AVC.towerAt[F[i*16+12]+','+F[i*16+14]];
+  const heap=!!t&&t.state==='fallen'&&!G.has(t.id)&&!(t.shelled&&t.d<AV_IMPFAR),nr=t?(t.shell||G.has(t.id)||(t.state==='fallen'&&!heap)):false;
+  for(let k=0;k<16;k++)A[i*16+k]=nr?0:F[i*16+k];if(heap){const f=Math.min(1,16/Math.max(1,avH(t.skey||t.key)));A[i*16+4]*=f;A[i*16+5]*=f;A[i*16+6]*=f;}}o.instanceMatrix.needsUpdate=true;});
  AVC.tierN={heroes:keep.length,shells:mid.length,impostors:T.filter(t=>!t.shell&&!G.has(t.id)).length,towers:T.length,looks:AVC.impKeys,shellKeys:AVC.shellKeys.length,atlases:AVC.atlases.length,steep:steepEye};};
 tick(function(){if(!AVC.ready)AVC.boot();else{const px=2*Math.tan(camera.fov*Math.PI/360)/Math.max(1,innerHeight);AVC.mats.forEach(m=>{m.userData.U.uPx.value=px;});AVC.impTick();AVC.tiersTick();}});
 // ---------------------------------------------------------------- the engines (kits/ancients 8ah, 8ai, read in place: the owner, 2026-11-04)

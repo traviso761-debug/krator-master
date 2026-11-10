@@ -32,6 +32,27 @@ const HCHK={
  // the grid runs between the buildings (the owner, 2026-11-08): no plinth's centre on a street, and the street under no plinth
  /* the kerb lines (the owner, 2026-11-09; 41 AV.kerbPlace): most towers front a street, their plinths 3 m behind its pavement, and no plinth reaches into
     a roadway or a pavement (the plinth's extent across each of the cell's half lines against the line's half width plus its pavement, inside the network) */
+ /* the oily rain (the owner, 2026-11-09: a weather mode, oily rain over the polluted portions; 89x): the mode offered, its curtains standing over the
+    foul half only, the wall off in any other mode, the dose dirty under it and clean elsewhere */
+ oilRain(O){if(!O||!O.R)return{ok:false,detail:'no oily rain'};const R=O.R,F=STAGE.F,cells=R.cells||[];let foul=0;cells.forEach(q=>{if(O.field(q.x,q.z)>=.3&&F.foul(q.x,q.z)>.45)foul++;});
+  const W=ATMOS.W,offered=W.MODES.indexOf(O.mode)>=0,off=W.mode===O.mode?true:R.off;
+  const ok=offered&&cells.length>=30&&foul===cells.length&&off;return{ok,detail:(offered?'offered':'not offered')+'; '+cells.length+' curtains, '+foul+' over the foul half'+(off?'':'; the wall stands in mode '+W.mode)};},
+ /* the cosmetic distortions (89y): the three records registered, the warp installed on the scene's materials, the bend and the time pocket switched on
+    inside their zones and off outside (the state read at each zone's centre and 5 km away) */
+ anomalies(A){if(!A||!A.records||!A.records.length)return{ok:false,detail:'no anomaly records'};const r=A.warp?A.warp.report():null,n=r?r.warped:0,kinds=A.records.map(a=>a.kind).join(', ');
+  return{ok:n>=40&&A.records.length>=3,detail:A.records.length+' records ('+kinds+'), '+n+' programs warped'+(r?', '+r.left.length+' left out':'')};},
+ /* the House (41c, 75): the hut and the spaces registered, the walker's registry holding the House's floors, and the hut's door leading onto a floor the
+    walker can stand on (the crossing run on the records, then the walker's own floor query at the landing) */
+ house(S){if(!S||!S.H)return{ok:false,detail:'no House'};const H=S.H,D=H.door,a=[D.x,D.y,D.z-2],b=[D.x,D.y,D.z-1.45],st={},r=AV.houseCross(H,a,b,st);
+  const land=r?[b[0]+r.d[0],b[1]+r.d[1],b[2]+r.d[2]]:null,f=land?KWALK.floorsAt(land[0],land[2]+.5):[],onF=f.some(q=>Math.abs(q[0]-land[1])<.05);
+  return{ok:!!r&&r.id==='in'&&onF&&S.blocks>20,detail:H.spaces.length+' spaces, '+H.thresholds.length+' thresholds, '+S.blocks+' wall blocks; the hut door '+(onF?'lands on the foyer floor':'lands on nothing')+'; the west hallway '+H.tape.toFixed(2)+' m'};},
+ /* the impostors hide where their tower stands as a hero or a shell (2026-11-09: the lookup by position never matched, so every billboard stood inside its
+    tower): every impostor instance finds its tower (key) and none is drawn whose tower is a hero, a shell or fallen */
+ impHidden(key){if(!AVC.impMeshes)return{ok:false,detail:'no impostors'};const G=AVC.tierGroups,ex=[];let n=0,lost=0,shown=0;
+  AVC.impMeshes.forEach(o=>{const A=o.instanceMatrix.array,F=o.userData.full;for(let i=0;i<F.length/16;i++){n++;const t=AVC.towerAt[key(F[i*16+12],F[i*16+14])];if(!t){lost++;continue;}
+   const drawn=A[i*16]!==0||A[i*16+5]!==0||A[i*16+10]!==0,f=Math.min(1,16/Math.max(1,avH(t.skey||t.key))),heap=t.state==='fallen'&&!G.has(t.id)&&!(t.shelled&&t.d<AV_IMPFAR)&&Math.abs(A[i*16+5]-F[i*16+5]*f)<=1e-3*Math.abs(F[i*16+5])+1e-6;
+   if(drawn&&(t.shell||G.has(t.id)||(t.state==='fallen'&&!heap))){shown++;if(ex.length<4)ex.push(t.family+' '+t.state+' '+Math.round(t.d)+' m'+(t.shell?' shell':'')+(G.has(t.id)?' hero':''));}}});   /* a fallen tower past its rubble stands as its billboard squashed to the heap */
+  return{ok:n>0&&!lost&&!shown,detail:n+' impostor instances, '+lost+' matched to no tower, '+shown+' drawn over a hero, a shell or a heap'+(ex.length?' ('+ex.join('; ')+')':'')};},
  kerb(T){const L=STAGE.lattice,p=L.pitch,th=Math.atan2(L.s,L.c),R=STAGE.R-110;let on=0,bad=0,ex0=null,gaps=[];
   for(const t of T){if(t.kerb)on++;if(t.rx==null)continue;const lx=t.x*L.c+t.z*L.s,lz=-t.x*L.s+t.z*L.c,ang=t.yaw-th,ca=Math.abs(Math.cos(ang)),sa=Math.abs(Math.sin(ang)),ex=[ca*t.rx+sa*t.rz,sa*t.rx+ca*t.rz];
    [lx,lz].forEach((v,a)=>{if(Math.hypot(t.x,t.z)>R)return;const k=Math.round(v/p-.5),d=Math.abs(v-(k+.5)*p),av=((k%3)+3)%3===1,hw=av?16.5:9,g=d-ex[a]-hw;if(Math.abs((k+.5)*p)>STAGE.R-140)return;if(g<-.5){bad++;if(!ex0)ex0=t.id+' '+g.toFixed(1)+' m';}else if(t.kerb&&g<10)gaps.push(g);});}
@@ -96,7 +117,7 @@ const HCHK={
   for(const r of O){if(r.key==='drowned'){drowned++;if(!(r.at[1]<LY-1&&r.at[1]+r.h>LY+1))bad.push("a drowned portal's arch is not cut by the lake's line");if(!drawnWater(r))bad.push('no lake drawn at a drowned portal');}else if(STAGE.rawGround(r.at[0],r.at[2])<LY+1)bad.push('the '+r.key+' under the lake');}
   return{ok:P.length>=3&&O.length>=3&&voids>=1&&drowned>=2&&!bad.length,detail:P.length+' phenomena ('+voids+' over the water), '+O.length+' portals ('+drowned+' drowned halls), '+c.drawn+' drawn after registering'+(bad.length?'; '+bad.slice(0,4).join('; '):'; the weather bound on core/atmos; the void on the water, the drowned arches cut by the lake')};}};
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),T=STAGE.plan.towers;
- add('the hand of man in every view',HCHK.handOfMan(VIEWS,REG));add('the towers stand on dry ground',HCHK.standing(T));add('the towers front the kerb lines',HCHK.kerb(T));add('10-15% of the towers stand to full height',HCHK.ruinShare(T));
+ add('the hand of man in every view',HCHK.handOfMan(VIEWS,REG));add('the towers stand on dry ground',HCHK.standing(T));add('the towers front the kerb lines',HCHK.kerb(T));add('the impostors hide behind their heroes and shells',HCHK.impHidden((x,z)=>x+','+z));if(typeof AV_HOUSE!=='undefined'&&AV_HOUSE)add('the House: larger inside than out, its door onto its floor',HCHK.house(AV_HOUSE));if(typeof AV_ANOM!=='undefined'&&AV_ANOM)add('the distortions of space and time are in place',HCHK.anomalies(AV_ANOM));if(typeof AV_OIL!=='undefined'&&AV_OIL)add('the oily rain stands over the polluted half',HCHK.oilRain(AV_OIL));add('10-15% of the towers stand to full height',HCHK.ruinShare(T));
  add('the forest is feral and tinted',HCHK.feral(AV.FERAL,window._tinted||0));add('no tree on a street, a plinth or a scar',HCHK.clear(REG));add('the cards are cut: every alpha map is tested',HCHK.cardsCut());
 if(STAGE.transit){add('the transit stands: the grid, the highway, the lines, the subway',HCHK.transit(STAGE.transit,typeof AVTR!=='undefined'?AVTR.n:null));add('the war rises toward the lake',HCHK.warToLake(STAGE.transit));add('the towers rise toward the lake (the lake-front property values)',HCHK.lakeFront(STAGE.transit));}else add('the viaduct stands',HCHK.lines(AV_LINES.V));
  add('the craters are struck and empty',HCHK.craters(STAGE.craters,T));add('the broken towers lean, a little',HCHK.lean(T));
@@ -115,7 +136,7 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  else add('a deck under the water',HCHK.lines({decks:AV_LINES.V.decks.map((d,i)=>i?d:Object.assign({},d,{y:STAGE.lakeY})),piers:AV_LINES.V.piers}));
  add('a tower in a crater',HCHK.craters(STAGE.craters,T.concat([{x:STAGE.craters[0].x,z:STAGE.craters[0].z}])));
  add('an intact tower leaning twenty degrees',HCHK.lean(T.map((t,i)=>i?t:Object.assign({},t,{lean:20,state:'intact'}))));
- add('the towers on their nodes, no kerb',HCHK.kerb(T.map(t=>Object.assign({},t,{kerb:null}))));add('a plinth across a road',HCHK.kerb(T.filter(t=>Math.hypot(t.x,t.z)<1500&&t.rx!=null).slice(0,1).map(t=>{const L=STAGE.lattice,p=L.pitch,v=(Math.round((t.x*L.c+t.z*L.s)/p-.5)+.5)*p,w=-t.x*L.s+t.z*L.c;return Object.assign({},t,{x:v*L.c-w*L.s,z:v*L.s+w*L.c,kerb:{}});}).concat(T)));
+ if(typeof AV_OIL!=='undefined'&&AV_OIL)add('oily rain over the wild half',HCHK.oilRain(Object.assign({},AV_OIL,{field:(x,z)=>1-AV_OIL.field(x,z)})));if(typeof AV_ANOM!=='undefined'&&AV_ANOM)add('no anomaly at all',HCHK.anomalies({records:[],warp:null}));if(typeof AV_HOUSE!=='undefined'&&AV_HOUSE)add('a House whose door leads nowhere',HCHK.house({H:Object.assign({},AV_HOUSE.H,{thresholds:[]}),blocks:AV_HOUSE.blocks}));add('impostors looked up by the float64 key',HCHK.impHidden((x,z)=>(x+1e-3)+','+z));add('the towers on their nodes, no kerb',HCHK.kerb(T.map(t=>Object.assign({},t,{kerb:null}))));add('a plinth across a road',HCHK.kerb(T.filter(t=>Math.hypot(t.x,t.z)<1500&&t.rx!=null).slice(0,1).map(t=>{const L=STAGE.lattice,p=L.pitch,v=(Math.round((t.x*L.c+t.z*L.s)/p-.5)+.5)*p,w=-t.x*L.s+t.z*L.c;return Object.assign({},t,{x:v*L.c-w*L.s,z:v*L.s+w*L.c,kerb:{}});}).concat(T)));
  add('a tower standing in an avenue',HCHK.grid(T.concat([{x:(STAGE.avenueLines()[2]||0)*STAGE.lattice.c,z:(STAGE.avenueLines()[2]||0)*STAGE.lattice.s}])));
  if(!STAGE.transit)add('every lamp standing',HCHK.lamps(AV_LAMPS.map(l=>Object.assign({},l,{state:'up'}))));
  add('no steam on the water',HCHK.steam({banks:0,plumes:0}));add('no keeper on a round',HCHK.keepers([]));
@@ -131,10 +152,12 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
   add("a phenomenon without its weather",HCHK.extraplanar(Object.assign({},AV_XP,{drawn:AV_XP.drawn.map((g,i)=>i?g:{userData:Object.assign({},g.userData,{weather:null})})})));}
  if(STAGE.negatives)STAGE.negatives(add);return R;}
 // ---------------------------------------------------------------- the page, handed to the host
-KHOST.on(skyView,'view');
+KHOST.on(skyView,'view');if(window.AV_AIR)KHOST.on(AV_AIR.view,'view');   /* the colour of the air after the sky's own update (89v) */
 KHOST.on(function lodTick(){camera.updateMatrixWorld();if(BIO.lodTick)BIO.lodTick(camera);},'view');
 KHOST.take({build:'ancientsvalley-'+STAGE.key,title:STAGE.title,hint:STAGE.hint,
- scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,views:VIEWS,start:STAGE.start||Object.keys(VIEWS)[0],
+ scene,camera,renderer,ground:(typeof AV_HOUSE!=='undefined'&&AV_HOUSE)?((x,z)=>{const g=AV_HOUSE.groundAt(x,z);return g==null?terrainH(x,z):g;}):terrainH,clear:1.8,registry:REG,
+ walk:(typeof AV_HOUSE!=='undefined'&&AV_HOUSE)?KWALK:undefined,   /* the House's floors and walls (75); the walker stands on the valley's ground everywhere else */
+views:VIEWS,start:STAGE.start||Object.keys(VIEWS)[0],
  ticks:TICKS,clock:{hour:STAGE.hour==null?9.5:STAGE.hour},draw:()=>SKY.render(),
  inspect:describe,stats:()=>'inst '+window._instances+'\nlod '+(BIO.lodShown?BIO.lodShown.meshes+'/'+BIO.lodShown.of+' chunk meshes':'')+(AVC.ready?'\ntowers '+AVC.towers.length+(AVC.tierN?': heroes '+AVC.tierN.heroes+', shells '+AVC.tierN.shells+', impostors '+AVC.tierN.impostors:'')+'\nshell bake '+AVC.bakeMs+' ms, all '+AVC.bakeAllMs+' ms':'\nbaking the towers')+(typeof AVW!=='undefined'&&AVW.ok?'\nwrecks '+AVW.drawn+'/'+AVW.records.length+', '+AVW.built+' looks built in '+AVW.buildMs+' ms':'')+(AV_XP.ok?'\nextraplanar: '+AV_XP.hunters.length+' hunters, '+AV_XP.drawn.length+' drawn, hum here '+AV_XP.hum.toFixed(2):''),
  layers:{'flora':{match:o=>!!(o.userData&&o.userData.biome)},'water':{match:o=>!!(o.userData&&o.userData.water)},'sky':{objects:()=>[SKY.mesh]}},
