@@ -14,7 +14,7 @@ stages, and anything only one of them needs travels with that one.
 The front page at `/` lists whatever the server is serving, and every scene carries a Home button and a menu
 of the others. Both read `/scenes.json`, which the server builds from `site.toml`.
 
-**Site:** `http://<this computer's address>:8000/` (`./sitectl url` prints it for the computer it runs on)
+**Site:** `http://<this computer's address>:8001/`, served by Krator's site (`../sitectl url` prints it)
 
 ## Controls
 
@@ -2058,7 +2058,7 @@ wireframe and menagerie menu every other page has.
     tractor and adapts to whichever weapon it takes most of, so the way to beat it is to change weapons; a Sere
     survey ship (a quiet, exact people's) that keeps station alongside and fires on whatever is attacking you; a
     trader convoy that crosses the bow; and a derelict, tumbling. **Battle** is now three waves: two raiders, then
-    two and a Varr cruiser, then a Lattice ship. At home there is a **starbase** (`extras.js`, this project's own
+    two and a Varr cruiser, then a Lattice ship. At home there is a **starbase** (now `starbases.js`, this project's own
     design: a spindle, a habitat ring on four spokes, a lit docking arm, small craft looping round it): K, or
     **Dock at the starbase**, hands the helm to approach control, which flies a curve out beyond the arm's end and
     in along it to the clamps (any touch on the helm cancels; K again casts off). With the shields down, hull hits
@@ -2066,6 +2066,77 @@ wireframe and menagerie menu every other page has.
     escape pods out of their hatches on the saucer), **Self-destruct** (ten seconds, cancelled by pressing again;
     then a flash, a shock ring across the ship's plane, wreckage, and the ship again), a **torpedo spread**
     (Shift+T), and a **Grand tour** (every place in turn, the flyby camera at each).
+  - **Sixth pass: finding your way, and company.** **Numbered starbases** (`starbases.js`): Starbase 1 is the yard
+    the page opens beside; Starbase 2 is in a high orbit over the home world, 12 over the gas giant inside its rings,
+    23 over the ice world, 47 over the water world, 74 off the lava world and 9 in the asteroid belt (`STATIONS`:
+    each over a planet, on the side you arrive from, so the planet is behind it as you come in). The same design
+    each time, some with a second ring. **Docking works at all of them**: K, from the turntable or the helm, docks
+    at the nearest one in the place you are at, and from far off the ship flies there first. The **impulse
+    autopilot** (`W.goto` in `cartography.js`) runs up to full impulse and brakes on a steady deceleration it can
+    actually hold (asked to slow in proportion to the distance instead, it came in at 8 km/s with half a kilometre
+    to go), then hands over to approach control, or puts the ship in orbit over a planet. **Markers** round each
+    starbase on screen, with its name and range, and an arrow at the screen's edge when it is off it; L cycles
+    them (the starbases, everything, none), and a marker is a button that takes you there. **Stellar cartography**
+    (P, or the **Cartography** button): a sector chart in light-years (the starbases at each place, rings of range
+    round the ship with the time to them at the warp factor set, labels placed clear of one another) and a system
+    chart of the place you are at from above, to scale (planets, moons, starbases, ships, you, the autopilot's
+    line; scroll to zoom in round the ship). Click anything on either to read about it and go there: a course to a
+    place, docking at a starbase, orbit over a planet, alongside a ship. **Federation traffic** (`traffic.js`, four
+    classes of this project's own design, folded to a few meshes each and cloned: the Kestrel frigate, the
+    Meridian cruiser, the Tamar science vessel, the Halyard transport, all with made-up names and registries):
+    ships patrol round the starbases, lie docked at them, orbit the planets, survey the stranger places, and pass
+    through at impulse and go to warp, coming back later somewhere else. Click one for its card. **F** takes the
+    helm from the turntable. For tests: `#ev=dock`, `#ev=carto`, `#ev=system`, `#ev=marks`, and `#dbg` reports the
+    autopilot, the markers and the traffic.
+  - **Seventh pass: a ship to captain.** **Orders** (`orders.js`, J or the **Orders** button): Starfleet sends missions
+    in turn (a rescue, a survey, an escort, raiders to drive off, a delivery, the far side of the wormhole), each a few
+    steps with a button for the obvious next move, the step's target always marked on screen, and each step ticked off
+    by what the other modules report happening (a small event bus, `W.on`/`W.emit` in `ship.js`). A rescue finds the
+    stricken ship drifting dark and venting, and raiders may follow her distress call; the survivors go to a starbase,
+    whose crews repair the ship while she is docked. A finished mission is a commendation, kept in the browser. The
+    **captain's log** keeps itself by stardate (arrivals, docking, fights, rescues, scans, the wormhole). **Sensors**
+    (`sensors.js`, N, or Scan on a chart's card): a pulse goes out from the ship and the readout comes up: a world's
+    class, gravity, air and life signs, a starbase's stores, a ship's crew, a hostile's real shields and hull (made-up
+    readings, but the same every time, from a hash of the name). **Comms** (`comms.js`, H): Starfleet Command, the
+    starbases here and every ship in range, each answering in its own voice; ask a Federation ship to form up and it
+    becomes an **escort** (up to three: in formation off the quarters, through warp and the wormhole, firing on whatever
+    you fight); a hostile with its hull failing may give up if you demand it. The **transporter** (`transporter.js`, B):
+    a crew off a wreck, an away team down from standard orbit and back (they report what they found), or a courtesy
+    party across; each end is a column of sparkling light with its shimmer of sound. **The wormhole** (`wormhole.js`):
+    a stable one with a mouth 3.9 light-years from home and the other out past the nebula; the mouth is a sphere
+    showing the far side's light wound round the throat, a bright ring at its rim and dust spiralling in, and flying
+    into it brings you out of the other at once, at speed; the far side has an uncharted world. The **director**
+    camera (V, the fourth): it cuts by itself between pacing alongside, low and looking up, a long lens from astern, a
+    slow swing round, and over her shoulder at a hostile or a starbase. And the interface is **dressed as the ship's
+    displays** (`lcars.js`): bands of colour on black with rounded ends, panels framed by an elbow of colour, condensed
+    capitals, going to reds under red alert; this page's own CSS and palette, no font fetched, scoped to
+    `enterprise.html` alone. For tests: `#mission=rescue` (or survey, escort, defend, deliver, wormhole) accepts those
+    orders at once, `#ev=orders,comms,scan,sweep,beam,formup,wormhole,hailhq,accept,next`, and `#dbg` reports them.
+  - **Eighth pass: more of everything, and a fresh run each time.** Every visit is dealt its own run of orders (a seed
+    of its own, the kinds shuffled, each drawing its places, ships, cargo, ambushes and odds from it; `#mseed=` fixes it
+    for tests), from fourteen kinds: the six before, and a **patrol** of three places (raiders may be waiting at one), a
+    **first contact** with the **Ossari** (a people who grow their ships: pearl-white pods on a curved spine, sails of
+    faint light; hail them until they answer properly), **recovering a probe** (beam it aboard; something may have
+    followed its signal), an **evacuation** (orbit, a medical team down, the injured up, then a starbase), a **Kethri
+    swarm** (darts of forty metres in fives and sixes, fast and fragile), **hunting** a named Varr raider-captain, the
+    **ion storm**'s eye, and the **ancient ring**'s hub, which has woken up. Mission objects are put ahead of the ship
+    only once she has stopped coasting out of warp (she runs on about a hundred kilometres). Four new places
+    (`wilds.js` for two): **a colony world**, New Arden, with **Starbase 88** over it; **an ion storm**, violet murk and
+    lightning round a calm eye; **an ancient ring** seventy kilometres across, turning round a glowing hub you can orbit
+    and send a team into; and **a shattered world**, its core glowing through the cracks, its pieces strewn round it.
+    Two new Federation classes (the Corvid scout, the Anvil fleet tender). At the helm, **Z** raises and lowers the
+    shields, and a strip of quick controls down the right (`helm.js`: shields, red alert, phasers, torpedo, scan, hail,
+    energise, dock, lit while on); every panel has a Close of its own, and Escape closes them. For tests:
+    `#ev=swarm`, `#ev=ossari`, `#mission=patrol` (or contact, probe, evacuate, swarm, hunt, storm, relic).
+  - **Performance.** The hull's grids keep only the rows they need (`rows()` in `hull.js`): each part is sampled
+    on its old even grid, and a row is dropped wherever every sample between the rows kept either side lies within
+    2 cm of the straight line between them. The kept rows are still exact (u, v), so the textures land where they
+    did, and the saucer's top, rim and underside share their rows round the edge so it has no gaps. The ship went
+    from 490,000 triangles to 210,000 with no difference you can see from any distance. The **shadow map** is drawn
+    again only when it would come out different (something that casts a shadow in the light's box has moved, or the
+    light has; the light follows the ship, so flying straight changes nothing): it was a fifth of every frame, and
+    orbiting the camera never changes it. On the Adreno X1 at 2049 x 1023 a frame went from 11.6 ms to 6.9 ms
+    (9.4 ms while turning, when the shadow has to follow).
   - **Events** (`events.js`, the **Events** button): warp (from the turntable the ship stretches, flashes
     and is gone, and comes back a few seconds later), red alert (the windows go red and pulse, with a
     klaxon), shields (an ellipsoid with a fresnel rim and a hexagonal weave, seen when raised and wherever it
@@ -3050,27 +3121,20 @@ uses `hash3(x, z, k)` or its own `mkRng(seed)` stream.
 
 ## Managing the server
 
-Use `./sitectl` from this folder. Never run it with `sudo`; it refuses.
+The Menagerie has no server of its own. The one site is Krator's, on port 8001: the `krator` user service, run by
+`../sitectl` (krator-master's `host/`; `host/HOSTING.md`). After a change, `../sitectl sync && ../sitectl reload`.
+This folder's `./sitectl` builds, checks and tests; asked for a service command, it points there.
 
 | Command | What it does |
 |---|---|
-| `./sitectl status` | Service state and the site URLs |
-| `./sitectl reload` | Build, check `site.toml`, then apply it with no downtime (alias `apply`) |
-| `./sitectl restart` | Build, check, restart. Use after editing `server.py`, host or port. |
-| `./sitectl start` / `stop` | Start or stop the server |
-| `./sitectl enable` / `disable` | Start now and at every login / stop and don't start at login |
 | `./sitectl build` | Assemble `src/<city>/build.js` from the stage files |
 | `./sitectl check` | Build, validate `site.toml`, list every URL. Nothing else changes. |
 | `./sitectl test [seconds]` | Module tests under gjs, then a headless build of every golden page/seed |
 | `./sitectl probe …` | `tools/probe.py` with your arguments (metrics, fingerprints, screenshots) |
-| `./sitectl logs [N]` / `follow` | Last N log lines / live log |
-| `./sitectl url` / `health` | Print the URLs / ask the running server if it's up |
-| `./sitectl install` | Rewrite the systemd unit for this folder (after moving the project) |
-| `./sitectl boot` | How to start the site at boot without a login |
 
 Editing HTML, CSS, data files or images needs no command: files are read on every request and the
 server sends `304 Not Modified` when the browser's copy is current. Editing a stage file needs
-`./sitectl build` (or any command that runs it). Editing `server.py` needs `restart`.
+`./sitectl build`, then `../sitectl sync` to reach the site.
 
 ### Testing
 
@@ -3133,24 +3197,20 @@ for text when the client accepts it, `ETag`/`Last-Modified` with `304`, `HEAD`, 
 reload, one log line per request in the journal. No `Range` support, no TLS, no authentication:
 fine on the LAN, never port-forward it to the internet.
 
-The systemd **user** service `menagerie` (`~/.config/systemd/user/menagerie.service`) runs it; the unit
-runs `server.py --check` before starting, so a missing page file stops start-up. Raw commands, without
-`sudo`: `systemctl --user status|start|stop|restart|reload menagerie`, `journalctl --user -fu menagerie`. With
-`sudo` they fail with `Failed to connect to user scope bus`. The service starts at login; for boot
-without a login run `sudo loginctl enable-linger $USER` once.
+Krator's `krator` user service runs it on port 8001 (`host/HOSTING.md`); there is no `menagerie` service.
 
 ## Network notes
 
 - The router assigns this computer's address and may change it (`hostname -I` shows it; reserve it in the router).
-- The firewall is off. If you enable one: `sudo ufw allow 8000/tcp`.
+- The firewall is off. If you enable one: `sudo ufw allow 8001/tcp`.
 - Everything is served locally; no page needs the internet.
 
 ## Troubleshooting
 
 | Symptom | Check |
 |---|---|
-| Page doesn't load | `./sitectl status`, `./sitectl health` |
-| Service won't start | `./sitectl logs 20`: a `problem:` line names the missing file |
+| Page doesn't load | `../sitectl status`, `../sitectl health` |
+| Service won't start | `../sitectl logs 20`: a `problem:` line names the missing file |
 | A stage edit has no effect | `./sitectl build` (the served file is `build.js`) |
 | Red box on the page | that stage failed; the rest still builds. `./sitectl probe --page …` shows the same text |
 | `LAYOUT CHANGED` from `test` | a random draw moved: see Seeds above; if intended, re-save the golden with `--save-golden` |

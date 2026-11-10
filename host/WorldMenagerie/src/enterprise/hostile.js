@@ -19,6 +19,7 @@ export function hostile(W,E){
   const KINDS={
     raider:{name:'raider',mesh:()=>raiderMesh(),sh:100,hp:100,R:[2200,1400],w:[0.08,0.06],hy:[200,300],fire:[2.2,1.8],bolt:{},glow:0xb8ffc8,flee:true,cap:900,spawnD:5200,debris:0x5a665c,boom:1},
     varr:{name:'Varr cruiser',mesh:FA.varr,sh:150,hp:130,R:[1500,700],w:[0.13,0.05],hy:[120,180],fire:[1.6,1.2],volley:2,bolt:{colour:0xff5a20,dmg:1.15},glow:0xffa070,flee:false,cap:1400,spawnD:2600,cloak:true,debris:0x5e4636,boom:1.5},
+    kethri:{name:'Kethri dart',mesh:FA.kethri,sh:25,hp:40,R:[900,700],w:[0.22,0.1],hy:[90,160],fire:[1.5,1.2],bolt:{colour:0x40ffd0,dmg:0.45},glow:0x60ffe0,flee:false,cap:2600,spawnD:3800,debris:0x1f6a64,boom:0.5},
     lattice:{name:'Lattice ship',mesh:FA.lattice,sh:300,hp:420,R:[5200,800],w:[0.022,0.01],hy:[300,200],fire:[3.2,1.6],bolt:{colour:0xa070ff,dmg:2.2,size:2},glow:0xc8a0ff,flee:false,cap:500,spawnD:11000,adapt:true,drag:true,debris:0x2a2c30,boom:4},
   };
 
@@ -61,7 +62,7 @@ export function hostile(W,E){
   const shipQ=()=>ROOT.getWorldQuaternion(new THREE.Quaternion());
   // every raider in the fight; W.enemy is the nearest one still in it (what the phasers and torpedoes go for)
   const foes=[];
-  const live=()=>foes.filter(f=>!f.gone);
+  const live=()=>foes.filter(f=>!f.gone);W.foes=live;W.FA=FA;
   Object.defineProperty(W,'enemy',{configurable:true,get(){const c=E.shipCentre();let b=null,bd=1e18;
     for(const f of live()){const d=f.m.g.getWorldPosition(V()).distanceToSquared(c);if(d<bd){bd=d;b=f;}}return b;}});
   const rr=a=>a[0]+Math.random()*a[1];
@@ -224,5 +225,7 @@ export function hostile(W,E){
     E.run((t,dt)=>{if(wreck===m&&W.flight.warp){W.FX.remove(m.g);wreck=null;}if(wreck!==m)return false;m.g.rotation.z+=dt*0.006;m.g.rotation.x+=dt*0.003;
       m.g.traverse(o=>{if(o.userData.flick!=null)o.material.opacity=Math.sin(t*3+o.userData.flick)>0.6||Math.sin(t*17+o.userData.flick*3)>0.95?0.9:0.1;});});
   }
-  return {contact:(kind)=>contact(null,kind),hit,hud:()=>[hud(),ally.on?'a Sere ship alongside':'',wreck?'a derelict':''].filter(Boolean).join(' · '),battle:startBattle,count:()=>live().length,sere,convoy,derelict};
+  // a Kethri swarm: n darts out of warp round the ship, a moment apart
+  function swarm(n){n=n||5;E.note('Multiple contacts: a Kethri swarm, '+n+' darts. They do not answer hails.');for(let i=0;i<n;i++)setTimeout(()=>contact(i,'kethri'),i*450);}
+  return {swarm,contact:(kind)=>contact(null,kind),hit,hud:()=>[hud(),ally.on?'a Sere ship alongside':'',wreck?'a derelict':''].filter(Boolean).join(' · '),battle:startBattle,count:()=>live().length,sere,convoy,derelict};
 }

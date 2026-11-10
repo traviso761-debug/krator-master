@@ -8,8 +8,8 @@ Open `index.html` from a local server rooted at the repo root, because the page
 loads `../three.min.js`, the engine from `../../../core/catalog/` and the Voth buildings from `../../../kits/catalog/`:
 
 ```
-python3 -m http.server 8000          # from the repo root
-# http://localhost:8000/settlements/voth/catalog/index.html
+python3 -m http.server 0 --bind 127.0.0.1   # from the repo root: a free port, printed at start-up
+# http://localhost:<port>/settlements/voth/catalog/index.html
 #   ?src=voth-shops   ?fam=military   ?only=voth_tavern_b   ?lod=off|auto|0|1|2
 ```
 

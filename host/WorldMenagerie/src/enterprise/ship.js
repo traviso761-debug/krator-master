@@ -21,13 +21,22 @@
 // neck), an environment map of the planet's glow and the dark, and ACES tone mapping for the hull only, so the
 // backdrop keeps the colours it has on the other ship pages.
 import {SAUCER,NACELLE,DEFLECTOR,BAYS,TORPEDO} from './dims.js';
-import {surface,saucerSurf,rimSurf,engSurf,neckSurf,nacSurf,pylonSurf,bridgeSurf,MODTOP,patch,nacPhi,nacHalf,rho,saucerTop,saucerBot,
+import {surface,thinSurface,rows,saucerSurf,rimSurf,engSurf,neckSurf,nacSurf,pylonSurf,bridgeSurf,MODTOP,patch,nacPhi,nacHalf,rho,saucerTop,saucerBot,
         deflPlane,smooth,ND0,ND1,NACZ,NACY,neckLead,NECKY,normalAt} from './hull.js';
 import {saucerTextures,loftTex,hullPainter,hullMaterial,planUV} from './skin.js';
 import {flight} from './flight.js';
 import {events} from './events.js';
 import {nav} from './nav.js';
 import {extras} from './extras.js';
+import {starbases} from './starbases.js';
+import {cartography} from './cartography.js';
+import {traffic} from './traffic.js';
+import {wormholes} from './wormhole.js';
+import {sensors} from './sensors.js';
+import {comms} from './comms.js';
+import {transporter} from './transporter.js';
+import {orders} from './orders.js';
+import {helm} from './helm.js';
 import {PLACES} from './places.js';
 
 export function model(api){
@@ -47,10 +56,36 @@ export function model(api){
   const dir=(a,e)=>new THREE.Vector3(Math.cos(a)*Math.cos(e),Math.sin(e),Math.sin(a)*Math.cos(e));
   const SL=C.space&&C.space.starLight||{},B0=(C.space&&C.space.bodies||[])[0];
   let key=null;scene.traverse(o=>{if(!key&&o.isDirectionalLight)key=o;});
+  // what runs just before each frame is drawn, after everything has moved and the camera is set (the shadow map's
+  // check, the markers on the screen)
+  const preRender=[];scene.onBeforeRender=(r,s,cam)=>{for(const f of preRender)f(cam);};
   if(key){
     key.castShadow=true;key.shadow.mapSize.set(4096,4096);
     const sc=key.shadow.camera;sc.left=sc.bottom=-400;sc.right=sc.top=400;sc.near=9000;sc.far=11000;sc.updateProjectionMatrix();
     key.shadow.bias=-0.0004;key.shadow.normalBias=0.6;key.target.position.set(0,0,0);scene.add(key.target);
+    // The shadow map is drawn again only when it would come out different: when something in the light's box that
+    // casts a shadow has moved, turned, come or gone, or the light has. Orbiting the camera changes nothing in it,
+    // and redrawing the whole ship into a 4096 map every frame was a fifth of the frame. The light follows the
+    // ship in flight, so where things are is taken from its target: the ship flying straight changes nothing either.
+    renderer.shadowMap.autoUpdate=false;
+    let sig=new Float64Array(0),cur=new Float64Array(256),n=0;
+    const push=x=>{if(n===cur.length){const c=new Float64Array(n*2);c.set(cur);cur=c;}cur[n++]=x;};
+    const t=new THREE.Vector3(),fr=key.shadow.getFrustum();
+    const walk=o=>{if(!o.visible)return;
+      if(o.castShadow&&(o.isMesh||o.isLine||o.isPoints)&&(!o.frustumCulled||fr.intersectsObject(o))){
+        const e=o.matrixWorld.elements;push(o.id);push(o.geometry.id);push(o.material.id||0);
+        for(let i=0;i<16;i++)push(i>11&&i<15?e[i]-t.getComponent(i-12):e[i]);}
+      for(const c of o.children)walk(c);};
+    preRender.push(()=>{
+      if(!key.castShadow||!renderer.shadowMap.enabled)return;
+      key.shadow.updateMatrices(key);t.setFromMatrixPosition(key.target.matrixWorld);n=0;
+      const e=key.matrixWorld.elements;for(let i=12;i<15;i++)push(e[i]-t.getComponent(i-12));
+      for(const x of key.shadow.camera.projectionMatrix.elements)push(x);
+      walk(scene);
+      let same=n===sig.length;for(let i=0;same&&i<n;i++)same=cur[i]===sig[i];
+      if(!same){sig=cur.slice(0,n);renderer.shadowMap.needsUpdate=true;}
+    });
+    renderer.domElement.addEventListener('webglcontextrestored',()=>{sig=new Float64Array(0);});
   }
   // The environment: what a polished hull would show of its surroundings. Nearly all of it is black; the world
   // below fills a quarter of the sky with blue, and the star is a point.
@@ -89,9 +124,11 @@ export function model(api){
     impulse:{name:'The main impulse engine',info:'Across the trailing edge of the saucer, under the dorsal stem.'},
   };
   const saucerMat=t=>hullMaterial(THREE,t,env);
-  {const g=surface(THREE,saucerSurf(true),384,128,false);planUV(g);add(g,saucerMat(T.top),INFO.saucer);}
-  {const g=surface(THREE,saucerSurf(false),384,112,true);planUV(g);add(g,saucerMat(T.bot),INFO.saucer);}
-  add(surface(THREE,rimSurf,1024,8,false),hullMaterial(THREE,T.rim,env,{bump:0.25}),INFO.saucer);
+  // the top, the underside and the rim between them meet round the edge, so they share their rows round the saucer
+  {const sT=saucerSurf(true),sB=saucerSurf(false),U=rows([sT,sB,rimSurf],1024,128,0);
+   {const g=surface(THREE,sT,U,rows([sT],128,384,1),false);planUV(g);add(g,saucerMat(T.top),INFO.saucer);}
+   {const g=surface(THREE,sB,U,rows([sB],112,384,1),true);planUV(g);add(g,saucerMat(T.bot),INFO.saucer);}
+   add(surface(THREE,rimSurf,U,rows([rimSurf],8,1024,1),false),hullMaterial(THREE,T.rim,env,{bump:0.25}),INFO.saucer);}
   into=G;
   // the stardrive: the engineering hull and the neck share one painter, so the decks run on across the join
   const DF=DEFLECTOR;
@@ -106,16 +143,16 @@ export function model(api){
       ctx.fillStyle='rgb(36,40,48)';ctx.fillText('NCC-1701-D',0,0);ctx.restore();}
   };
   const engT=loftTex(THREE,renderer,engSurf,true,2048,1024,hullPainter({seed:51,skip:nearDefl,spine:true,ventral:true}),engLetters);
-  add(surface(THREE,engSurf,256,128,true),hullMaterial(THREE,engT,env),INFO.eng);
+  add(thinSurface(THREE,engSurf,256,128,true),hullMaterial(THREE,engT,env),INFO.eng);
   const neckT=loftTex(THREE,renderer,neckSurf,false,1024,1024,hullPainter({seed:51,spine:true}));
-  add(surface(THREE,neckSurf,96,128,false),hullMaterial(THREE,neckT,env),INFO.neck);
+  add(thinSurface(THREE,neckSurf,96,128,false),hullMaterial(THREE,neckT,env),INFO.neck);
   // the nacelles and pylons: one texture each, both sides
   const nacT=loftTex(THREE,renderer,nacSurf(1),true,2048,512,hullPainter({windows:false,seed:71,cw:12,ch:5,nacelle:true}));
   const pyT=loftTex(THREE,renderer,pylonSurf(1),false,512,256,hullPainter({windows:false,seed:81,cw:10,ch:6}));
   const nacMat=hullMaterial(THREE,nacT,env,{metal:0.22}),pyMat=hullMaterial(THREE,pyT,env);
   for(const side of [1,-1]){
-    add(surface(THREE,nacSurf(side),320,96,side>0),nacMat,INFO.nacelle);
-    add(surface(THREE,pylonSurf(side),96,48,side<0),pyMat,INFO.pylon);
+    add(thinSurface(THREE,nacSurf(side),320,96,side>0),nacMat,INFO.nacelle);
+    add(thinSurface(THREE,pylonSurf(side),96,48,side<0),pyMat,INFO.pylon);
   }
 
   // ---------- the lights it makes ----------
@@ -141,7 +178,7 @@ export function model(api){
     const map=(u,v,m)=>{const a=v*Math.PI*2,yf=Math.sin(a),k=Math.pow(Math.max(0,1-Math.pow(yf/0.66,2)),0.75);
       const d=d0+u*(4+(d1-d0-4)*k);m[0]=dToU(d);m[1]=v;};
     const dToU=d=>{let lo=0,hi=1;for(let i=0;i<30;i++){const u=(lo+hi)/2,t=0.5-0.5*Math.cos(Math.PI*u),dd=ND0+span*(0.4*u+0.6*t);if(dd<d)lo=u;else hi=u;}return lo;};
-    lit(surface(THREE,patch(f,side>0,map,0.25),64,192,side>0),bussMat,INFO.bussard);
+    lit(thinSurface(THREE,patch(f,side>0,map,0.25),64,192,side>0),bussMat,INFO.bussard);
     {const tip=new THREE.Mesh(new THREE.SphereGeometry(1.4,12,8),bussMat);tip.position.set(192-ND0-0.3,NACY,side*NACZ);tip.userData.noWire=true;G.add(tip);}
     bussGlows.push(glow(-206,NACY,side*NACZ,0xff5a2a,95,0.9));
     // the gold rings behind it
@@ -183,7 +220,7 @@ export function model(api){
     const map=new THREE.CanvasTexture(cv),emap=new THREE.CanvasTexture(ev);map.flipY=emap.flipY=false;
     map.anisotropy=emap.anisotropy=renderer.capabilities.getMaxAnisotropy();
     const mat=new THREE.MeshStandardMaterial({map,emissiveMap:emap,emissive:0xffffff,emissiveIntensity:2.2,roughness:0.45,metalness:0.2,envMap:env,envMapIntensity:1.3});
-    add(surface(THREE,bridgeSurf,192,40,true),mat,INFO.bridge);
+    add(thinSurface(THREE,bridgeSurf,192,40,true),mat,INFO.bridge);
     // the two escape-pod ports and the thrusters either side of it, small domes on the plate
     for(const z of [-26,26]){const m=new THREE.Mesh(new THREE.SphereGeometry(2.4,20,10,0,Math.PI*2,0,Math.PI/2),
       new THREE.MeshStandardMaterial({color:0x9aa2aa,roughness:0.4,metalness:0.3,envMap:env}));
@@ -279,22 +316,43 @@ export function model(api){
 
   // ---------- flying it, and the events ----------
   const W={THREE,scene,camera:api.camera,renderer,animHooks,C,api,ROOT,G,SAU,env,glowTex,grilleMat:grilleMat(),bussMat,bussGlows,impGlows,bayGlow,
-    hullMats:[...hullMats]};
+    hullMats:[...hullMats],pick,preRender};
+  // something other than the ship that can be clicked for its card: only while it is in the scene and showing (a place
+  // that is not the one you are at is out of the scene, and the raycaster would find it anyway)
+  W.pickable=root=>{const live=o=>{for(;o;o=o.parent){if(!o.visible)return false;if(!o.parent)return !!o.isScene;}return false;};
+    root.traverse(o=>{if(o.isMesh){const r=o.raycast;o.raycast=function(a,b){if(live(this))r.call(this,a,b);};}});pick.push(root);};
   // the rim of the saucer at an angle round from the bow (the thrusters' puffs sit on it)
   W.bridgeTop=SAUCER.bridge.top;
   W.rimAt=a=>{const r=rho(a);return {x:r*Math.cos(a),y:0,z:r*Math.sin(a)};};
+  // a small event bus: what the modules tell one another happened (scan, beam, hail, docked, arrive, battle won),
+  // which the orders and the captain's log listen for
+  {const L={};W.on=(n,f)=>{(L[n]=L[n]||[]).push(f);};W.emit=(n,d)=>{for(const f of (L[n]||[]))try{f(d);}catch(e){console.error(e);}};}
   const FL=flight(W);window.__ent=W;   // for tests
   const EV=events(W);
   const NV=nav(W);
+  const CA=cartography(W);
+  const SBM=starbases(W);
   const EX=extras(W);
+  const TR=traffic(W);
+  const WH=wormholes(W);
+  const SE=sensors(W);
+  const CO=comms(W);
+  const BT=transporter(W);
+  const OR=orders(W);
+  const HE=helm(W);
+  // the interface goes red under red alert (lcars.js)
+  {let was=null;animHooks.push(()=>{const r=EV.state().red;if(r!==was){was=r;document.documentElement.classList.toggle('alert',r);}});}
   // the extras' buttons go in the events panel
-  for(const [lab,fn] of EX.buttons){const b=document.createElement('button');b.type='button';b.textContent=lab;b.onclick=()=>{W.audio&&W.audio();fn();};EV.panel.appendChild(b);}
+  for(const [lab,fn] of [...SBM.buttons,...EX.buttons]){const b=document.createElement('button');b.type='button';b.textContent=lab;b.onclick=()=>{W.audio&&W.audio();fn();};EV.panel.appendChild(b);}
   let flyBtn=null;
   const btn=t=>[...document.querySelectorAll('#ui button')].find(b=>b.textContent===t);
   const fly=()=>{if(W.flight.on)FL.stop();else{W.audio&&W.audio();FL.start();}if(!flyBtn)flyBtn=btn('Fly');
     if(flyBtn)flyBtn.setAttribute('aria-pressed',String(W.flight.on));};
   W.startFlight=()=>{if(!W.flight.on)fly();};
   W.onNavToggle=o=>{const b=btn('Course');if(b)b.setAttribute('aria-expanded',String(o));};
+  W.onCartoToggle=o=>{const b=btn('Cartography');if(b)b.setAttribute('aria-expanded',String(o));};
+  W.onLogToggle=o=>{const b=btn('Orders');if(b)b.setAttribute('aria-expanded',String(o));};
+  W.onCommsToggle=o=>{const b=btn('Comms');if(b)b.setAttribute('aria-expanded',String(o));};
   const evBtn=()=>{const o=!EV.panel.classList.contains('open');EV.panel.classList.toggle('open',o);
     const b=[...document.querySelectorAll('#ui button')].find(b=>b.textContent==='Events');if(b)b.setAttribute('aria-expanded',String(o));};
   // #fly opens at the helm; #ev=name[,name...] runs events once the page is up (Warp, red, shields, phasers,
@@ -305,7 +363,7 @@ export function model(api){
    // #dbg: the events' state in the probe's report
    const hist=[];if(h.has('dbg'))setInterval(()=>{hist.push([W.heading().hd,Math.round(ROOT.position.x),Math.round(ROOT.position.z),+W.flight.rate.y.toFixed(3)].join('/'));if(hist.length>12)hist.shift();},1000);
    if(h.has('dbg'))setInterval(()=>{(window._details=window._details||{}).ent={root:[ROOT.scale.x,ROOT.position.x,ROOT.visible],sau:SAU.position.toArray(),
-     fx:W.FX.children.map(o=>o.type+(o.visible?'':'-hid')+':'+o.scale.toArray().map(Math.round)+'@'+o.position.toArray().map(Math.round)),fl:W.flight.on,v:Math.round(W.flight.v),warp:W.flight.warp,map:W.flight.map.toArray().map(x=>+x.toFixed(2)),here:NV.here().P.id,hist:hist.join(' '),ad:(()=>{const a=W.autoDir&&W.autoDir();const f=new THREE.Vector3(1,0,0).applyQuaternion(ROOT.quaternion);return a&&[a.toArray().map(x=>+x.toFixed(2)),f.toArray().map(x=>+x.toFixed(2))];})(),dock:EX.state(),err:W.flight.steerErr,rate:W.flight.rate.toArray().map(x=>+x.toFixed(3)),hud:(document.getElementById('side')||{}).textContent,orb:W.orbitInfo(),near:(()=>{const b=W.nearest();return b&&[b.name,Math.round(b.d),Math.round(b.r)];})(),thr:W.flight.thr,bank:+W.flight.bank.toFixed(3),sys:W.SYS.position.toArray().map(Math.round),cam:api.camera.position.toArray().map(Math.round),sky:W.SKY.quaternion.toArray().map(x=>x.toFixed(2))};},200);
+     fx:W.FX.children.map(o=>o.type+(o.visible?'':'-hid')+':'+o.scale.toArray().map(Math.round)+'@'+o.position.toArray().map(Math.round)),fl:W.flight.on,v:Math.round(W.flight.v),warp:W.flight.warp,map:W.flight.map.toArray().map(x=>+x.toFixed(2)),here:NV.here().P.id,hist:hist.join(' '),ad:(()=>{const a=W.autoDir&&W.autoDir();const f=new THREE.Vector3(1,0,0).applyQuaternion(ROOT.quaternion);return a&&[a.toArray().map(x=>+x.toFixed(2)),f.toArray().map(x=>+x.toFixed(2))];})(),dock:Object.assign(EX.state(),SBM.state()),carto:CA.state(),traffic:TR.state(),orders:OR.state(),sensors:SE.state(),comms:CO.state(),beam:BT.state(),worm:WH.state(),helm:HE.state(),err:W.flight.steerErr,rate:W.flight.rate.toArray().map(x=>+x.toFixed(3)),hud:(document.getElementById('side')||{}).textContent,orb:W.orbitInfo(),near:(()=>{const b=W.nearest();return b&&[b.name,Math.round(b.d),Math.round(b.r)];})(),thr:W.flight.thr,bank:+W.flight.bank.toFixed(3),sys:W.SYS.position.toArray().map(Math.round),cam:api.camera.position.toArray().map(Math.round),sky:W.SKY.quaternion.toArray().map(x=>x.toFixed(2))};},200);
    // #course=<place id>[&warpf=n]: set a course at once (giant, ice, comet, binary, belt, nebula, hole, home)
    if(h.has('warpf'))NV.course.w=+h.get('warpf');
    if(h.has('course')){const P=PLACES.find(p=>p.id===h.get('course'));if(P)setTimeout(()=>NV.course.set(P),+(h.get('evt')||1.5)*1000);}
@@ -316,13 +374,13 @@ export function model(api){
      const p=f.m.g.getWorldPosition(new THREE.Vector3());api.view({az,el,d,tx:p.x,ty:p.y,tz:p.z});},100);}
    // #keys=a,w: hold keys down from evt on (for tests of the helm)
    if(h.has('keys'))setTimeout(()=>{for(const k of h.get('keys').split(','))dispatchEvent(new KeyboardEvent('keydown',{key:k}));},+(h.get('evt')||1.5)*1000+500);
-   const act={...EV.act,...EX.act,fly,drop:()=>W.dropOut(),orbit:()=>window.dispatchEvent(new KeyboardEvent('keydown',{key:'o'})),chart:()=>W.openNav(),engage:()=>W.engage(6),stop:()=>{if(W.flight.on)fly();}};
+   const act={...EV.act,...SBM.act,...EX.act,...CA.act,...SE.act,...CO.act,...BT.act,...OR.act,...WH.act,fly,drop:()=>W.dropOut(),orbit:()=>window.dispatchEvent(new KeyboardEvent('keydown',{key:'o'})),chart:()=>W.openNav(),engage:()=>W.engage(6),stop:()=>{if(W.flight.on)fly();}};
    // name@secs runs that one at that many seconds after evt, instead of a second after the one before
    const ev=(h.get('ev')||'').split(',').map(k=>k.split('@')).filter(([k])=>act[k]);const t0=+(h.get('evt')||1.5)*1000;ev.forEach(([k,at],i)=>setTimeout(()=>{act[k]();EV.sync();},t0+(at!=null?+at*1000:i*1000)));}
   return {radius:LEN*0.5,group:ROOT,pick,minD:60,
-    buttons:{'Fly':fly,'Course':()=>W.openNav(),'Events':evBtn},
+    buttons:{'Fly':fly,'Course':()=>W.openNav(),'Cartography':()=>{W.audio&&W.audio();W.openCarto();},'Orders':()=>{W.audio&&W.audio();OR.toggle();},'Comms':()=>{W.audio&&W.audio();CO.toggle();},'Events':evBtn},
     camFrame:FL.camFrame,ownsInput:()=>W.flight.on,
     // a viewpoint chosen while flying hands the helm back first, so the view is of the ship where it is
     onView:()=>{if(W.flight.on)fly();},
-    hud:()=>[FL.hud(),NV.hud(),EV.hud(),EX.hud()].filter(Boolean).join(' · ')};
+    hud:()=>[FL.hud(),NV.hud(),CA.hud(),SBM.hud(),OR.hud(),SE.hud(),BT.hud(),CO.hud(),EV.hud(),EX.hud()].filter(Boolean).join(' · ')};
 }
