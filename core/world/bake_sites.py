@@ -1,0 +1,118 @@
+#!/usr/bin/env python3
+"""Bake a region's site plan: openworld/<region>/plan/sites.json (openworld/PLAN-SITES.md section 3).
+
+    python3 core/world/bake_sites.py <region>            # write openworld/<region>/plan/sites.json
+    python3 core/world/bake_sites.py <region> --check    # plan again and compare with the baked file (exit 1 if stale)
+
+The planners are [G data], so the plan is made in node, not in a browser: the region's rasters decoded here
+(core/world/world_data.py), the world's land and roads (core/world 41, 42), core/space, core/camp, the Beast Riders'
+camp table (kits/beast-riders 79-br-camp.js) and the boxes the kit declares for its tents and pens (read from its
+source, as settlements/isle-demo/build.py reads its kits' boxes), the region's SITE_SPEC (openworld/<region>/src/
+48-world-site.js), then KSITES.plan (core/world/48s-world-sites.js). The page reads the baked file (WORLD_DATA.sites) and
+its verify plans again in the browser and compares the hash, so the bake, the page and Godot read one plan."""
+import json, os, re, subprocess, sys, tempfile
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+ROOT = os.path.normpath(os.path.join(HERE, '..', '..'))
+sys.path.insert(0, HERE)
+import world_data as WD   # noqa: E402
+
+# the kits whose boxes a site's camps take (a key's box: its own, or its variant's: variantDims)
+DIMS_SOURCES = [os.path.join(ROOT, 'kits', 'beast-riders', 'src', f) for f in
+                ('70-br-tent-kit.js', '71-br-tents-dwell.js', '72-br-tents-trade.js', '73-br-tents-pens.js', '74-br-tents-bands.js', '75-br-tents-bounds.js')]
+JS = [('core', 'rand', '08-core-rand.js'), ('core', 'terrain', '38-core-relief.js'), None,
+      ('core', 'world', '41-world-fields.js'), ('core', 'world', '42-world-roads.js'), ('core', 'space', '20-core-space.js'),
+      ('core', 'camp', '10-camp-cultures.js'), ('core', 'camp', '20-camp-census.js'), ('core', 'camp', '30-camp-pitch.js'),
+      ('kits', 'beast-riders', 'src', '79-br-camp.js'), ('core', 'world', '48s-world-sites.js')]
+
+
+def node():
+    import shutil
+    for c in (os.environ.get('NODE'), shutil.which('node'), r'C:\Program Files\nodejs\node.exe'):
+        if c and (shutil.which(c) or os.path.isfile(c)):
+            return c
+    sys.exit('bake_sites: node not found (set NODE)')
+
+
+def kit_dims(files=DIMS_SOURCES):
+    """{key: {w, d, h, variants: [{w, d, h}] | None}} from the ASSET({...}) blocks' declared boxes"""
+    out = {}
+    num = r'(-?[\d.]+)'
+    box = re.compile(r'\bw:\s*' + num + r',\s*d:\s*' + num + r',\s*h:\s*' + num)
+    for f in files:
+        s = open(f, encoding='utf-8').read()
+        for m in re.finditer(r'ASSET\(\{', s):
+            end = s.find('build:', m.end())
+            head = s[m.end(): end if end > 0 else m.end() + 3000]
+            k = re.search(r"key:\s*'([^']+)'", head)
+            vd = re.search(r'variantDims:\s*\[(.*?)\]', head, re.S)
+            main = box.search(re.sub(r'variantDims:\s*\[.*?\]', '', head, flags=re.S))
+            if not k or not main:
+                continue
+            out[k.group(1)] = {'w': float(main.group(1)), 'd': float(main.group(2)), 'h': float(main.group(3)),
+                               'variants': [{'w': float(a), 'd': float(b), 'h': float(c)} for a, b, c in box.findall(vd.group(1))] if vd else None}
+    return out
+
+
+def script(region):
+    base = os.path.join(ROOT, 'openworld', region)
+    parts = ['"use strict";var window=globalThis;\n']
+    for j in JS:
+        if j is None:
+            parts.append(WD.fragment(os.path.join(base, 'data'), 'var WORLD_KITS=[];\n', 'the region (core/world/bake_sites.py)',
+                                     'openworld/%s/data, decoded by core/world/world_data.py' % region))
+            continue
+        parts.append('\n// ---- %s\n' % '/'.join(j) + open(os.path.join(ROOT, *j), encoding='utf-8').read())
+    parts.append('\n// ---- openworld/%s/src/48-world-site.js\n' % region + open(os.path.join(base, 'src', '48-world-site.js'), encoding='utf-8').read())
+    parts.append('\nvar KIT_DIMS=' + json.dumps(kit_dims(), separators=(',', ':')) + ';\n' + r'''
+WORLD.init(WORLD_R);
+const dims=(k,v)=>{const A=KIT_DIMS[k];if(!A)return null;const q=A.variants&&A.variants[v];return q?{w:q.w,d:q.d,h:q.h}:{w:A.w,d:A.d,h:A.h};};
+const programs=t=>{const T=BR_CAMP[t];return T&&T.grounds&&T.grounds.lower||null;};
+const P=KSITES.plan(SITE_SPEC,{dims,programs});
+P.check=KSITES.check(P);
+process.stdout.write(JSON.stringify(P));
+''')
+    return ''.join(parts)
+
+
+def plan(region):
+    with tempfile.NamedTemporaryFile('w', suffix='.js', delete=False, encoding='utf-8') as f:
+        f.write(script(region))
+        tmp = f.name
+    try:
+        r = subprocess.run([node(), '--stack-size=8000', tmp], capture_output=True, text=True, encoding='utf-8')
+    finally:
+        os.remove(tmp)
+    if r.returncode:
+        sys.exit('bake_sites: node failed:\n' + r.stderr[-4000:])
+    return json.loads(r.stdout)
+
+
+def main():
+    a = sys.argv[1:]
+    if not a or a[0].startswith('-'):
+        sys.exit(__doc__)
+    region = a[0]
+    P = plan(region)
+    chk = P.pop('check')
+    dst = os.path.join(ROOT, 'openworld', region, 'plan', 'sites.json')
+    if '--check' in a:
+        old = json.load(open(dst, encoding='utf-8')) if os.path.isfile(dst) else {}
+        same = old.get('hash') == P['hash']
+        print(('fresh' if same else 'STALE') + ': baked %s, planned now %s' % (old.get('hash'), P['hash']))
+        sys.exit(0 if same else 1)
+    os.makedirs(os.path.dirname(dst), exist_ok=True)
+    with open(dst, 'w', encoding='utf-8', newline='\n') as f:
+        json.dump(P, f, ensure_ascii=False, separators=(',', ':'))
+    n = sum(len(S['camps']) for S in P['sites'])
+    print('baked %s: %d sites, %d camps, %d roads, hash %s' % (os.path.relpath(dst, ROOT).replace(os.sep, '/'), len(P['sites']), n,
+          sum(len(S['roads']) for S in P['sites']), P['hash']))
+    for e in P['errors']:
+        print('  error: ' + e)
+    print('  check: %s %s' % ('ok' if chk['ok'] else 'PROBLEMS', json.dumps(chk['counts'])))
+    for p in chk['problems'][:20]:
+        print('  problem: ' + p)
+
+
+if __name__ == '__main__':
+    main()

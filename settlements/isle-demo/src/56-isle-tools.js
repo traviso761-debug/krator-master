@@ -46,7 +46,7 @@ ISLE.tools = function () {
   $('town').textContent = T;
   document.title = T + ' · Isle Demo Site Planner';
   $('b-copy').onclick = function () { TOOL.copy(ISLE.townJSON()); };
-  ISLE.TOWNS.forEach(function (n) {
+  ISLE.PLAN_TOWNS.forEach(function (n) {
     var b = $('t-' + n); if (!b) return;
     b.classList.toggle('on', n === T);
     b.onclick = function () {

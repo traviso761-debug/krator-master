@@ -26,10 +26,18 @@ negative):
   `40-hamlet-felling.js` gives each tree's state as a pure function of the day. At the default rate (0.1 trees a
   worker-day) the lumber village fells its stand in 340 days, less than the year a tree takes to regrow, so the stand is
   nearly all saplings: `KHAMLET.FELL.treesPerWorkerDay` is the dial.
-- **Next:** the `gather` tag on the other biome kits; fishing and farming villages (H6); the villages in the sim (H5,
-  after P7a).
+- **H5 is done** (2026-10-26, settlements/isle-demo `47h`) and **H6's farming half** (2026-11-09): `14-hamlet-farmland.js`
+  lays a farming village's farmland (parcels in crop and fallow, sized from the land estimate `KHAMLET.farmNeed`), and the
+  isle demo's open world has six farming hamlets and two plantations on it (settlements/isle-demo/PLAN.md section 11).
+- **A village grows, lands and is founded** (2026-11-09, settlements/isle-demo/PLAN.md section 11 step 5): `30` lays empty
+  house plots (`spec.vacant`, the lots a village grows by on core's building) and a landing (`spec.landing`: the culture's
+  `landing` building at the water's edge with a lane to it; `islander_east`'s is the quay and cargo shed, the host finds
+  the shore); the sim founds a farming camp that converts to a village laid by `village` on the camp's site, its people
+  the campers first (`47f`, `47h` `people`). The founding is the isle demo's; the camp as a record kind of its own
+  (`core/camp`'s pitch for the tents) is still to do.
+- **Next:** the `gather` tag on the other biome kits; fishing villages (H6's other half).
 
-A core module that makes the small settlements round a town: **resource villages** (salt, mining, lumber, ranching)
+A core module that makes the small settlements round a town: **resource villages** (salt, mining, lumber, ranching; a quarry and a clay pit since)
 and, by the same machinery, **fishing and farming villages**. Placing a village also places what it works, on the map.
 The first case is the isle demo (`settlements/isle-demo/PLAN.md` section 8): four villages in the hinterland of
 Kautoa and Valapo. Nothing is built yet; this is the plan for the owner to settle.
@@ -262,7 +270,7 @@ demo's plan (section 9).
 | H3 | **The Islanders' missing buildings** (section 3), after the owner's textures | islanders `verify.py --assert`; a sheet shot per new building |
 | H4 | **The four isle villages** placed on the open world from their specs, with their resources; timber regrowth as deltas | the isle world's checks in the browser pane; a felled tree is a stump, then a sapling, then whole after the tunable |
 | H5 | **The villages in the sim** once P7a lands: settlements with a parent; goods to the parent's books. **Done 2026-10-26** (settlements/isle-demo `47h-isle-hamlets.js`: each village its town's settlement at the abstract level, its works producers, its people dealt, two carted roads (its goods out, its town's foods in); the towns put the goods to use: salt, Kautoa's tannery on the ranch's hides, its dockyard and building on the timber, Valapo's smithies smelting the mine's ore with the lumber village's charcoal, the iron sold to the Hykkousoi) | `tests/test-isle-hamlets.js` (stand-in ground) and openworld/isle-demo `verify.py` (the villages on the map): staffed, making, every load landed or on the road and booked imported, each village fed; each with a negative; the towns' two-week checks hold with them |
-| H6 | **Fishing and farming villages** round Kautoa from spec rows | the same tests; the farm ring's crops match `CROPS.at` at each site |
+| H6 | **Fishing and farming villages** round Kautoa from spec rows. **Farming done 2026-11-09** (`14-hamlet-farmland.js`; the isle demo's six farming hamlets and two plantations, sited by its hinterland survey, settlements/isle-demo/PLAN.md section 11); fishing villages to do | the same tests; `test-hamlet.js` holds the land estimate and the parcels' rules; the isle demo's node test and the open world's verify hold the land in crop against the estimate and the towns fed by road. The crops are the towns' rows of PLAN 8c (read from `CROPS.at` by hand); matching `CROPS.at` at each site is still to do |
 
 ## 7. Questions for the owner
 

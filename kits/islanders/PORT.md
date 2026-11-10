@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 28 (8%) | 0 (0%) | 0 (0%) | 1 (0%) | 313 (91%) |
+| KB | 28 (8%) | 0 (0%) | 0 (0%) | 1 (0%) | 326 (92%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -36,8 +36,9 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/66-ip-palace.js` | 36.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 58 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/67-ie-trades.js` | 20.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/68-is-trades.js` | 6.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/69-ie-hamlet.js` | 8.9 | [draw] | 0 | 0 | 0 | 0 | 0 | 13 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/89-rows.js` | 2.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/69-ie-hamlet.js` | 11.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 20 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/70-ie-camp.js` | 8.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 14 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/89-rows.js` | 3.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/90h-is-shore.js` | 5.2 | [draw] | 7 | 0 | 0 | 0 | 0 | 2 | 6 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 
 ## Notes

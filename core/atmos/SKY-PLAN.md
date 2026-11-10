@@ -38,7 +38,7 @@ and night, the sun and stars drawn analytically, a real 35 km far-country mesh, 
 hidden behind the planet. It also reads canvas pixels (`getImageData` x3, its own findings).
 
 The newest kits (korona, necanyons, guilin) and four settlements (Pinnacle Rock, Longsong, Shade, and the isle demo's
-open world, `openworld/isle-demo/src/world/80-world-sky.js`) **read another kit's sky in place** (hyperjungle's,
+open world, `core/world/80-world-sky.js`) **read another kit's sky in place** (hyperjungle's,
 oidong's, sedesert's), so they change when that file does.
 
 Voth's `settlements/voth/src/21-sky.js` (the 21-sky.js lineage, 11 copies across Voth, Girder, Mav's Refuge, Locus,

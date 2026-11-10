@@ -2,13 +2,13 @@
 """Build the 'isle demo' open world: one self-contained page, dist/isle-demo.html (settlements/isle-demo/PLAN.md, P3).
 
 The scale model's "isle demo" polygon (an archipelago in the East Ring Isles, about 128 x 250 km) at 1:1, on the open
-world's machinery. The world's fragments live in src/world/ (moved from openworld/little-demo, now deprecated): the fields, terrain,
+world's machinery. The world's fragments live in core/world/ (moved from openworld/little-demo, now deprecated): the fields, terrain,
 water, sky, nursery, flora, floor, places, towns, camera and probe. This build adds only what is the region's own:
 
   data/         region.json and the rasters, written by tools/scale-model/extract_region.py (README.md says how)
   src/          43-world-isles.js (the isles' fields: the climate classes as weights, the coast), 46-world-config.js
                 (the settlements built here, the Go-to order and views), 47-world-kits.js (the kits that grow here)
-  src/world/    the world (00-head.html with this region's title, 41, 42, 45, 80-99)
+  core/world/    the world (00-head.html with this region's title, 41, 42, 45, 80-99)
   ../../core/   rand, terrain, biome, space, atmos, water
 
   python3 build.py            # dist/isle-demo.html
@@ -23,7 +23,7 @@ SRC = os.path.join(HERE, 'src')
 DATA = os.path.join(HERE, 'data')
 DIST = os.path.join(HERE, 'dist')
 OUT = 'isle-demo.html'
-WORLD_SRC = os.path.join(SRC, 'world')   # the world's fragments
+WORLD_SRC = os.path.join(ROOT, 'core', 'world')   # the world's fragments (core/world, read in place)
 
 # Port lint (GODOT-PLAN.md, Phase 0): a fragment PORT.md tags [G data] must not touch the browser.
 _cp = os.path.join(ROOT, 'tools', 'check_port.py')
@@ -75,7 +75,7 @@ LDF = lambda *fs: [('ld', f) for f in fs]
 # the city page's [G data] half, as settlements/isle-demo/build.py lists it (CITY_DATA_JS)
 ISLE_DATA_JS = ['15-isle-tune.js', '20-isle-ground.js', '30-isle-programme.js', '32-isle-city.js', '33-isle-spurs.js', '34-isle-census.js',
                 '40-isle-sim.js', '41-isle-nav.js', '42-isle-people.js', '43-isle-items.js', '44-isle-economy.js', '45-isle-sim-checks.js',
-                '46-isle-stocks.js', '47-isle-trade.js', '47b-isle-build.js', '47c-isle-crime.js', '47h-isle-hamlets.js', '47m-isle-money.js', '47u-isle-unrest.js', '47r-isle-refugees.js', '48-isle-week.js', '49-isle-govern.js', '50-isle-export.js']
+                '46-isle-stocks.js', '47-isle-trade.js', '47b-isle-build.js', '47c-isle-crime.js', '47f-isle-found.js', '47h-isle-hamlets.js', '47k-isle-colony.js', '47x-isle-expeditions.js', '47y-isle-houses.js', '47n-isle-herders.js', '47m-isle-money.js', '47u-isle-unrest.js', '47r-isle-refugees.js', '48-isle-week.js', '49-isle-govern.js', '50-isle-export.js']
 def _isle_build():
     """settlements/isle-demo/build.py as a module (its data fragments: dims, trades, site), loaded once"""
     import importlib.util
@@ -107,8 +107,8 @@ ORDER = (
     # bundles.py, as the city page takes them), their packs, core/city's primitives, the village generator, the resource
     # fields, the kit-piece instancer the city page shares (58-isle-protos.js), and this world's hamlet specs
     + [('islpack', 'islanders'), ('bundle', 'isk'), ('bundle', 'cat'),
-       ('core/city', '33-city-strategies.js'), ('core/hamlet', '10-hamlet-wood.js'), ('core/hamlet', '12-hamlet-gather.js'),
-       ('core/hamlet', '20-hamlet-cultures.js'), ('core/hamlet', '30-hamlet-village.js'), ('core/hamlet', '40-hamlet-felling.js'), ('kits/resources/src', '43r-res-fields.js'),
+       ('core/city', '33-city-strategies.js'), ('core/hamlet', '10-hamlet-wood.js'), ('core/hamlet', '12-hamlet-gather.js'), ('core/hamlet', '14-hamlet-farmland.js'),
+       ('core/hamlet', '16-hamlet-names.js'), ('core/hamlet', '18-hamlet-names.js'), ('core/hamlet', '20-hamlet-cultures.js'), ('core/hamlet', '30-hamlet-village.js'), ('core/hamlet', '40-hamlet-felling.js'), ('kits/resources/src', '43r-res-fields.js'),
        ('settlements/isle-demo/src', '58-isle-protos.js'), ('src', '48-world-hamlets.js')]
     # the camps (core/camp, PLAN.md section 10, "the first build"): the census and the pitch, the Beast Riders' camp table
     # (BR_CAMP, read in place: [G data]), and this world's bands; CAT carries the kit's tent set (cat_bundle(tents=True))
@@ -120,19 +120,19 @@ ORDER = (
     # then this world's towns (48t: planned on the world's ground, a registry each in its frame, the ground hook);
     # 88t draws them with the city page's 60 and exports one town with its 62 (both read in place as factories)
     # 88c runs the sim on the world's clock and draws its citizens (the city page's 59 for their colours) and the canoe line
-    + [('isle', 'data'), ('izpack', 'iziz'), ('bundle', 'kcity'), ('bundle', 'izv'), ('bundle', 'ringsea')]
+    + [('isle', 'data'), ('izpack', 'iziz'), ('bundle', 'kcity'), ('bundle', 'izv'), ('yspack', 'ys'), ('bundle', 'hyk'), ('bundle', 'ringsea')]   # ys, hyk: Nephtos's Hykkousoi
     + [('core/simulation', f) for f in sorted(os.listdir(os.path.join(ROOT, 'core', 'simulation'))) if re.match(r'77-sim-.*\.js$', f)]
     + [('core/export', '07-core-export.js'), ('core/export', '09-core-export-adapters.js'), ('core/export', '10-core-export-scene.js'),
        ('core/biome', '44-core-stage.js')]
-    + [('settlements/isle-demo/src', f) for f in ISLE_DATA_JS] + [('src', '48t-world-towns.js')]
+    + [('settlements/isle-demo/src', f) for f in ISLE_DATA_JS] + [('src', '48p-world-colony.js'), ('src', '48t-world-towns.js'), ('src', '48r-world-roads.js'), ('src', '48f-world-found.js'), ('src', '48x-world-expeditions.js'), ('src', '48n-world-herders.js')]
     + LDF('80-world-sky.js', '81-world-terrain.js', '83-world-water.js', '83w-world-seas.js', '84-world-nursery.js',
           '85-world-flora.js', '86-world-floor.js', '87-world-places.js', '88-world-towns.js')
     + [('core/city', '54-city-host-construct.js'), ('kits/construction/src', '10-cons-site.js')]   # the empty lots' works (settlements/isle-demo 60): a building site and a piece going up
-    + [('src', '88h-world-hamlets.js'), ('isledraw', '60-isle-draw.js'), ('isleexport', '62-isle-export-scene.js'), ('src', '88a-world-atlas.js'), ('src', '88t-world-towns.js'), ('src', '88k-world-camps.js'),
+    + [('src', '88h-world-hamlets.js'), ('isledraw', '60-isle-draw.js'), ('isleexport', '62-isle-export-scene.js'), ('src', '88a-world-atlas.js'), ('src', '88t-world-towns.js'), ('src', '88k-world-camps.js'), ('src', '88p-world-colony.js'),
        ('settlements/isle-demo/src', '59-isle-citizens.js'), ('src', '88c-world-life.js'), ('src', '89-world-geysers.js')]
     + LDF('90-world-camera.js', '91-world-probe.js', '98-world-start.js', '99-tail.html')
 )
-# the page's own words in the world's head (src/world/00-head.html) (its title and caption), replaced: each must be found exactly once
+# the page's own words in the world's head (core/world/00-head.html) (its title and caption), replaced: each must be found exactly once
 HEAD = [('<title>Krator Little Demo</title>', '<title>Krator Isle Demo</title>'),
         ("<b>Little Demo</b> · the scale model's eastern desert at 1:1", "<b>Isle Demo</b> · the scale model's Ring Sea isles at 1:1")]
 # names a biome fragment must not use (a host engine's kit): the same list every kit's build.py checks
@@ -181,6 +181,15 @@ def main():
             out.append('\n// ==================== the city page\'s data (settlements/isle-demo/build.py: dims, trades, site)\n')
             out.append(B.dims_fragment() + B.trades_fragment() + B.site_fragment())
             continue
+        if where == 'yspack':    # Ys's pack for Nephtos's Hykkousoi: the families the free-standing pieces use (bundles.py HYK_PACK_SKIP)
+            if os.path.join(ROOT, 'settlements', 'isle-demo') not in sys.path:
+                sys.path.insert(0, os.path.join(ROOT, 'settlements', 'isle-demo'))
+            import bundles as _bd
+            ysp = os.path.join(ROOT, 'settlements', 'ys')
+            fams = json.load(open(os.path.join(ysp, 'tex', 'pack.json'), encoding='utf-8')).get('families', {})
+            out.append('\n// ==================== the library pack: settlements/ys (the Hykkousoi families)\n')
+            out.append(_mp.fragment(ysp, 'ys', exclude=[k for k in fams if k.startswith(_bd.HYK_PACK_SKIP)], side=SIDE))
+            continue
         if where == 'izpack':    # the Iziz pack as the city page takes it (its Vernacular's families, no fauna, no city)
             izp = os.path.join(ROOT, 'settlements', 'iziz')
             fams = json.load(open(os.path.join(izp, 'tex', 'pack.json'), encoding='utf-8')).get('families', {})
@@ -207,6 +216,8 @@ def main():
                 js, _ = _bd.ringsea_fragment()
             elif f == 'izv':
                 js, _ = _bd.izv_bundle()
+            elif f == 'hyk':
+                js, _ = _bd.hyk_bundle()
             else:
                 js, _ = _bd.isk_bundle() if f == 'isk' else _bd.cat_bundle(SIDE, tents=True)
             out.append('\n// ==================== the %s bundle (settlements/isle-demo/bundles.py)\n' % f.upper())
@@ -217,7 +228,7 @@ def main():
         if where == 'ld' and f == '00-head.html':
             for old, new in HEAD:
                 if s.count(old) != 1:
-                    sys.exit("src/world/00-head.html changed: '%s' not found once; update HEAD in build.py" % old)
+                    sys.exit("core/world/00-head.html changed: '%s' not found once; update HEAD in build.py" % old)
                 s = s.replace(old, new)
         if where.startswith('biomes/') and '-biome-' in f:
             for w in FORBID:

@@ -111,10 +111,10 @@ function isleMatPack(G, pack) {
 function isleProto(kit, key, v, C) {
   var id = kit + ':' + key + '#' + (v | 0); if (C.protos[id] !== undefined) return C.protos[id];
   var G = null, t0 = performance.now();
-  try { G = kit === 'isk' ? ISK.proto(key, v) : kit === 'izv' ? IZV.proto(key, v, 1, C.doors ? { doors: true } : null) : kit === 'cat' ? CAT.proto(key, v) : null; } catch (e) { C.failed[id] = String(e && e.message || e); }
+  try { G = kit === 'isk' ? ISK.proto(key, v) : kit === 'izv' ? IZV.proto(key, v, 1, C.doors ? { doors: true } : null) : kit === 'cat' ? CAT.proto(key, v) : kit === 'hyk' && typeof HYKB !== 'undefined' ? HYKB.proto(key, v) : null; }   /* hyk: Nephtos's Hykkousoi (bundles.py HYKB, the world only) */ catch (e) { C.failed[id] = String(e && e.message || e); }
   if (!G) { C.failed[id] = C.failed[id] || 'no build'; return (C.protos[id] = null); }
   if (G.userData.port) islePortMats(G);
-  isleMatPack(G, kit === 'isk' ? 'islanders' : kit === 'izv' ? 'iziz' : G.userData.port ? ISLE_PORT_PACK[G.userData.port.town] || null : null);
+  isleMatPack(G, kit === 'isk' ? 'islanders' : kit === 'izv' ? 'iziz' : kit === 'hyk' ? 'ys' : G.userData.port ? ISLE_PORT_PACK[G.userData.port.town] || null : null);
   var parts = isleFlatten(G), tris = parts.reduce(function (a, p) { return a + p.tris; }, 0);
   C.built++;
   return (C.protos[id] = { id: id, parts: parts, tris: tris, ms: Math.round(performance.now() - t0), w: G.userData.w, d: G.userData.d, h: G.userData.h,

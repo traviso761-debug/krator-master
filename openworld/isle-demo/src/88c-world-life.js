@@ -51,17 +51,36 @@ function pose(){const t=poseT();if(CIT.t===t)return;CIT.t=t;
 const stops={};
 W.plans.forEach(P=>{const L=(P.R.landings||[])[0],F=P.G.frame;if(!L)return;
  stops[TS.towns[P.town].id]={town:P.town,sea:F.sea,berths:(L.berths||[]).map(B=>({key:B.key,x:B.x+F.x,z:B.z+F.z,h:B.heading}))};});
+{const CO=W.stats.colony;if(CO&&!CO.error){const L=CO.R.landings[0],F=CO.frame;   /* Nephtos's quay (48p): its villages' boats and its pearl ships end there */
+  if(L)stops[TS.towns[CO.town].id]={town:CO.town,sea:F.sea,berths:L.berths.map(B=>({key:B.key,x:B.x+F.x,z:B.z+F.z,h:B.heading}))};}}
 const order=W.plans.map(P=>TS.towns[P.town].id);   /* ISLE.TOWNS order: a route is found from the first town's stop to the second's */
 const berthOf=(s,key)=>{const X=stops[s];return X?X.berths.find(B=>B.key===key)||X.berths[0]||null:null;};
-const routeOf=key=>{const a=berthOf(order[0],key),b=berthOf(order[1],key);return a&&b?W.seaPath([a.x,a.z],[b.x,b.z]):null;};
+const routeOf=b=>{const e=b.ends||order,a=berthOf(e[0],b.key),c=berthOf(e[1],b.key);return a&&c?W.seaPath([a.x,a.z],[c.x,c.z]):null;};
 const boats=[];
 (TS.trade?TS.trade.lines:[]).forEach(L=>{const R=SIM.TRADE&&SIM.TRADE.routes[L.id];if(!R)return;
  R.carriers.forEach((C,k)=>{const r=typeof RINGSEA!=='undefined'?RINGSEA.make(L.vessel):null;if(!r){st.errors.push('no '+L.vessel+' build');return;}
-  r.group.name=L.id+' '+k;scene.add(r.group);boats.push({line:L,R,k,key:L.vessel,g:r.group,where:null});});});
-function canoes(){const m=S.clock.m+st.frac,dock={};
+  r.group.name=L.id+' '+k;scene.add(r.group);boats.push({line:L,R,k,key:L.vessel,g:r.group,where:null,ends:order});});});
+/* the coastal hamlets' sea legs (settlements/isle-demo 47h `sea`; the owner, 2026-11-09): a lakatoi each, berthed off the quay
+   (a boat's length seaward of it) or under way on the route from the quay to its town's trade landing */
+/* moored where the water is MOOR_DEEP m deep, MOOR_MIN to MOOR_MAX m off the quay (a sandbar off Nephtos's fishing village, 2026-11-09) */
+const MOOR_MIN=22,MOOR_MAX=300,MOOR_DEEP=2,moorAt=(q,ux,uz)=>{for(let r=MOOR_MIN;r<=MOOR_MAX;r+=6){const x=q.x+ux*r,z=q.z+uz*r;if(WORLD.lakeWater(x,z)-WORLD.H(x,z)>=MOOR_DEEP)return r;}return MOOR_MIN;};
+((S.hamlets&&S.hamlets.villages)||[]).filter(X=>X.sea&&X.quayAt).forEach(X=>{const q=X.quayAt,ql=Math.hypot(q.ux,q.uz)||1,ux=q.ux/ql,uz=q.uz/ql,mr=moorAt(q,ux,uz);
+ stops[X.id]={town:X.id,sea:WORLD.water(q.x+ux*mr,q.z+uz*mr),berths:[{key:X.sea.vessel,x:q.x+ux*mr,z:q.z+uz*mr,h:Math.atan2(ux,uz)}]};
+ const R=SIM.TRADE&&SIM.TRADE.routes[X.sea.route];if(!R)return;
+ R.carriers.forEach((C,k)=>{const r=typeof RINGSEA!=='undefined'?RINGSEA.make(X.sea.vessel):null;if(!r){st.errors.push('no '+X.sea.vessel+' build');return;}
+  r.group.name=X.sea.route+' '+k;scene.add(r.group);boats.push({line:{id:X.sea.route,vessel:X.sea.vessel},R,k,key:X.sea.vessel,g:r.group,where:null,ends:[X.id,X.parent]});});});
+/* the expeditions' sea legs (settlements/isle-demo 47x): a camp's boats appear when its crew sails, the goods boat and the food
+   boat each on the route between the camp's shore and the town's landing; their stop on the shore a boat's length out */
+const EXP=new Set();
+function expBoats(){const X=typeof ISLE!=='undefined'&&ISLE.SIM&&ISLE.SIM.exp;if(!X)return;for(const C of X.camps){if(EXP.has(C.id))continue;EXP.add(C.id);
+ const sh=C.shore,l=Math.hypot(sh.ux,sh.uz)||1,ux=sh.ux/l,uz=sh.uz/l;stops[C.id]={town:C.id,sea:WORLD.water(sh.x+ux*22,sh.z+uz*22),berths:[{key:C.vessel,x:sh.x+ux*22,z:sh.z+uz*22,h:Math.atan2(ux,uz)}]};
+ for(const [rid,ends] of [[C.out,[C.id,C.town]],[C['in'],[C.town,C.id]]]){const R=SIM.TRADE&&SIM.TRADE.routes[rid];if(!R)continue;
+  R.carriers.forEach((K,k)=>{const r=typeof RINGSEA!=='undefined'?RINGSEA.make(C.vessel):null;if(!r){st.errors.push('no '+C.vessel+' build');return;}
+   r.group.name=rid+' '+k;scene.add(r.group);boats.push({line:{id:rid,vessel:C.vessel},R,k,key:C.vessel,g:r.group,where:null,ends});});}}}
+function canoes(){expBoats();const m=S.clock.m+st.frac,dock={};
  boats.forEach(b=>{const C=b.R.carriers[b.k],g=b.g;let x,z,h,y=null;
-  if(C.phase==='sail'&&C.from!=null&&C.to!=null){const from=b.R.stops[C.from].settlement,P=routeOf(b.key);
-   if(P){const f=Math.min(1,Math.max(0,(m-C.departs)/Math.max(1,C.eta-C.departs))),A=W.along(P,f,from!==order[0]);x=A.x;z=A.z;h=A.h;y=stops[from].sea;
+  if(C.phase==='sail'&&C.from!=null&&C.to!=null){const from=b.R.stops[C.from].settlement,P=routeOf(b);
+   if(P){const f=Math.min(1,Math.max(0,(m-C.departs)/Math.max(1,C.eta-C.departs))),A=W.along(P,f,from!==(b.ends||order)[0]);x=A.x;z=A.z;h=A.h;y=stops[from].sea;
     b.where={phase:'sail',from,to:b.R.stops[C.to].settlement,f};}}
   else if(C.at!=null){const s=b.R.stops[C.at].settlement,B=berthOf(s,b.key);
    if(B){const n=dock[s+b.key]=(dock[s+b.key]||0)+1;x=B.x-Math.sin(B.h)*28*(n-1);z=B.z-Math.cos(B.h)*28*(n-1);h=B.h;y=stops[s].sea;b.where={phase:'docked',at:s,n};}}
@@ -97,18 +116,18 @@ function citizensCheck(o){o=o||{};choose();const t=poseT(),M=new THREE.Matrix4()
 function canoesCheck(o){o=o||{};canoes();if(o.shift&&boats.length)boats[0].g.position.x+=500;
  const bad=[],seen=[],m=S.clock.m+st.frac;
  boats.forEach(b=>{const C=b.R.carriers[b.k],g=b.g;if(!g.visible){bad.push(b.line.id+b.k+' not drawn');return;}
-  if(C.phase==='sail'){const from=b.R.stops[C.from].settlement,P=routeOf(b.key),A=W.along(P,Math.min(1,Math.max(0,(m-C.departs)/Math.max(1,C.eta-C.departs))),from!==order[0]);
+  if(C.phase==='sail'){const from=b.R.stops[C.from].settlement,P=routeOf(b),A=W.along(P,Math.min(1,Math.max(0,(m-C.departs)/Math.max(1,C.eta-C.departs))),from!==(b.ends||order)[0]);   /* a hamlet's boat on its own sea leg */
    const d=Math.hypot(g.position.x-A.x,g.position.z-A.z),wet=WORLD.lakeWater(g.position.x,g.position.z)-WORLD.H(g.position.x,g.position.z);
    if(d>1)bad.push(b.line.id+b.k+' '+d.toFixed(0)+' m off its route');if(!(wet>W.SEA.shoal))bad.push(b.line.id+b.k+' on land ('+wet.toFixed(1)+' m of water)');seen.push(b.line.id+b.k+' under way');}
   else{const s=b.R.stops[C.at].settlement,B=berthOf(s,b.key),d=Math.hypot(g.position.x-B.x,g.position.z-B.z);if(d>60)bad.push(b.line.id+b.k+' '+d.toFixed(0)+' m from its berth');seen.push(b.line.id+b.k+' docked at '+s);}});
  if(o.shift)canoes();
  return{ok:boats.length>=3&&!bad.length,detail:boats.length+' carriers: '+seen.join(', ')+(bad.length?'; WRONG: '+bad.join('; '):'')};}
-function routeCheck(o){o=o||{};const out=[];Object.keys(stops).length&&boats.forEach(b=>{if(out.some(r=>r.key===b.key))return;const a=berthOf(order[0],b.key),c=berthOf(order[1],b.key);
-  const P=o.straight?{pts:[[a.x,a.z],[c.x,c.z]],ok:true,len:Math.hypot(c.x-a.x,c.z-a.z)}:routeOf(b.key);let dry=0,n=0;
+function routeCheck(o){o=o||{};const out=[];Object.keys(stops).length&&boats.forEach(b=>{const e=b.ends||order,id=b.key+(b.ends?' '+e[0]+' - '+e[1]:'');if(out.some(r=>r.id===id))return;const a=berthOf(e[0],b.key),c=berthOf(e[1],b.key);if(!a||!c)return;
+  const P=o.straight?{pts:[[a.x,a.z],[c.x,c.z]],ok:true,len:Math.hypot(c.x-a.x,c.z-a.z)}:routeOf(b);let dry=0,n=0;
   for(let i=1;i<P.pts.length;i++){const p=P.pts[i-1],r=P.pts[i],L=Math.hypot(r[0]-p[0],r[1]-p[1]),k=Math.ceil(L/200);
    for(let j=1;j<k;j++){n++;const x=p[0]+(r[0]-p[0])*j/k,z=p[1]+(r[1]-p[1])*j/k;if(WORLD.lakeWater(x,z)-WORLD.H(x,z,W.SEA.cell)<=W.SEA.shoal)dry++;}}
-  out.push({key:b.key,ok:P.ok,dry,n,len:P.len,straight:Math.hypot(c.x-a.x,c.z-a.z),legs:P.pts.length-1});});
- return{ok:out.length>0&&out.every(r=>r.ok&&!r.dry&&r.len<r.straight*1.8),detail:out.map(r=>r.key+': '+(r.len/1000).toFixed(1)+' km in '+r.legs+' legs (straight '+(r.straight/1000).toFixed(1)+' km), '+r.dry+' of '+r.n+' samples dry').join('; ')};}
+  out.push({id,key:b.key,ok:P.ok,dry,n,len:P.len,straight:Math.hypot(c.x-a.x,c.z-a.z),legs:P.pts.length-1});});
+ return{ok:out.length>0&&out.every(r=>r.ok&&!r.dry&&r.len<r.straight*1.8),detail:out.map(r=>r.id+': '+(r.len/1000).toFixed(1)+' km in '+r.legs+' legs (straight '+(r.straight/1000).toFixed(1)+' km), '+r.dry+' of '+r.n+' samples dry').join('; ')};}
 function clockCheck(o){o=o||{};CL.set(CL.hour+.25);follow(Infinity);const want=Math.floor(clockMin())+(o.off?60:0);
  return{ok:S.clock.m===want,detail:'the clock at '+hm(clockMin())+', the towns at '+hm(S.clock.m)+(o.off?' (read an hour off)':'')+'; '+st.ran+' minutes run on the clock so far'};}
 st.ms=Math.round(performance.now()-t0);

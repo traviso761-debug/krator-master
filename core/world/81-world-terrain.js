@@ -127,4 +127,8 @@ function update(budgetMs){frame++;const P=camera.position;want.length=0;const dr
 // the drawn chunk under (x,z): the leaf the frame draws there, for anything that must sit on the drawn surface
 function drawnAt(x,z){for(const n of drawn){const c=n.chunk;if(x>=c.x0&&z>=c.z0&&x<=c.x0+n.s&&z<=c.z0+n.s)return n;}return null;}
 function heightDrawn(x,z){const n=drawnAt(x,z);return n?chunkH(n.chunk,x,z):WORLD.H(x,z);}
-return{OVERLAY,stats:S,update,chunkH,drawnAt,heightDrawn,MAT,STRATA,meshes:()=>drawn.map(n=>n.chunk.mesh),pending:()=>want.length,NSEG,MAXL,ROOT};})();});
+// the land changed under a box (a road built, farmland cleared: 48f, 88h): every chunk over it is dropped and built again
+// by the next frames' update (coarse first, nearest first, within the frame's budget)
+function refresh(x0,z0,x1,z1){let n=0;for(const q of [...ALL]){const c=q.chunk;if(!c)continue;if(c.x0>x1||c.x0+q.s<x0||c.z0>z1||c.z0+q.s<z0)continue;freeChunk(q);n++;}
+ drawn=drawn.filter(q=>q.chunk);S.refreshed=(S.refreshed||0)+n;return n;}
+return{OVERLAY,stats:S,update,refresh,chunkH,drawnAt,heightDrawn,MAT,STRATA,meshes:()=>drawn.map(n=>n.chunk.mesh),pending:()=>want.length,NSEG,MAXL,ROOT};})();});

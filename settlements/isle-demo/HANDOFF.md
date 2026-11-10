@@ -16,6 +16,8 @@ status at the top, then sections 7 to 10. `core/hamlet/PLAN.md` holds the hinter
 | P7c | Done: a canoe stop at each trade landing (berths on the plan, a place with a store), the lakatoi line (two a day, one each way) and the oruwa on SIM.trade, each town's hourly use of the other's goods as the want, the docked vessel drawn; verify checks with negatives | `src/32` (canoeStops), `47-isle-trade.js`, `61-isle-canoes.js`, `15` (`trade`) |
 | P7b | Done: the citizens near the camera (`59`, stand-ins, with a verify check). Both towns declared (Kautoa 6,235 people on its farm ring, Valapo 2,155), the run loop (`57`, held at first), the stocks id map (`46`); verify's Valapo page checks both towns. Before that, Valapo done: declared on core/simulation from its plan (619 places, one walking graph, 2,155 people, 805 workers, its own economy: crops, fish, pork, bread, 14 carts, 39 warehouses); verify's Valapo page and `tests/test-isle-sim.js` check every census trade's lot a place, every resident housed and every worker employed in the town, the food made, hauled and eaten with nothing short for a day (each with a negative). No core/simulation change | `src/15-isle-tune.js`, `40`-`45`, `verify.py` `SIM_JS` |
 | Hamlets H1-H4 | done: four resource villages in the open world (salt 112, mine 307, lumber 263, ranch 245), felling on the 72-minute clock | `core/hamlet`, `openworld/isle-demo/src/48-world-hamlets.js`, `88h-world-hamlets.js` |
+| The countryside (PLAN.md 11) | done 2026-11-09, steps 1-4: no fields in Valapo, the ring kept, six farming hamlets and two plantations sized from the census and sited by the hinterland survey, their farmland in crop and fallow, a farmhouse and a track on every holding, the towns fed by road (Valapo wholly); every hamlet on the baked highway network (`bake.py roads`); hamlets named from the Sikau list | `core/hamlet/14-hamlet-farmland.js`, `16`, `18`, `src/47h`, `40`, `44`, `15` (`farms`, `hamlets.farming`), `openworld/isle-demo/src/48`, `48r`, `88h`, `bake.py`, `tools/names/sikau.py` |
+| Step 5 and the coast (PLAN.md 11) | done 2026-11-09: every village grows by empty plots on core's building (`47h`); a farming camp founded from a town's waiting refugees converts to a hamlet whose highway its own hands build (`47f`; the world's hooks `openworld/isle-demo/src/48f`, `ISLE_ROADS.join`, `WORLD.addRoad`); coastal villages a quay and a sea leg (`sea`). Tests: `tests/test-isle-hamlets.js`, `tests/test-isle-found.js` | `src/47f`, `47h`, `15` (`grow`, `found`, `sea`), `core/hamlet/30` |
 
 **Decided by the owner (2026-10-19):** the M6 export case is the region's open world, not a page per city (PLAN.md
 section 7, "Where the export case lives"). A city is its site file and programme on `core/city`; `core/city` itself
@@ -46,8 +48,8 @@ registers the export's `city` section for every instance on a page.
    there): one region registry, the world's light on the clock, the frame rate over Kautoa; then grow the profile.
 3. **The compliance items** in PLAN.md section 10: the city page onto `core/host`, its sky and sea, `terrain=field`, and
    little-demo's shared fragments (ask: both worlds' hashes move).
-4. **Hamlets:** the `gather` tag on the other biome kits (only ringisles has it); fishing and farming villages (H6); the
-   villages in the sim once P7a's trade lands (H5).
+4. **Hamlets:** the `gather` tag on the other biome kits (only ringisles has it); fishing villages (H6's other half: the
+   farming villages are built, PLAN.md section 11); the hamlets growing and a work crew founding one (section 11, step 5).
 
 ## Watch out for
 

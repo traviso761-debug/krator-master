@@ -215,6 +215,72 @@ def izv_bundle():
                 '})();' + NL), [rel(f) for f in fs]
 
 
+# ---------------------------------------------------------------- the Hykkousoi buildings (settlements/ys), for Nephtos
+# The owner (2026-11-09): "can we get real hykkousoi buildings in there? we don't need all the barnacle skyscrapers Ys does".
+# Ys's kit read in place, sealed like the Vernacular: the Ancients core, the Hykkousoi materials, shell kit, helpers and
+# furniture, and the free-standing pieces (housing, shops, hospitality, sacred, the minor civic, harbour, industry,
+# military, agriculture, markets, spans); NOT the Scallop Stack hosts (69h-*), the grown-on pods (each def's `grown`, left
+# out of hykDims and refused by hykProto), the Ys landmarks (the Amphitriton, the citadel, the arena, the temples of the
+# Tides and the Winds), the Ys port, its towers, ruins and offices. 64-hyk-accrete.js comes for its pure helpers (the
+# pods under a house); the boat shed's moored skiffs are the Ys port's (74-port-dress.js), so a stub draws none.
+YS = os.path.join(ROOT, 'settlements', 'ys')
+HYK_NAMES = ['10-core.js', '12-stats.js', '20-textures.js', '22-materials.js', '30-kit.js', '32-surfaces.js', '34-kitdefs.js', '35-furn-frame.js',
+             '36-decor.js', '38-helpers2.js', '50-registry.js', '54-mat-concrete.js', '68-mat-v5.js', '69-mat-salvage.js', '69a-world-uv.js',
+             '69b-vern-mat.js', '69c-vern-helpers.js', '60-hyk-mat.js', '60-ys-registries.js', '61-hyk-shell.js', '62-hyk-helpers.js',
+             '64-hyk-accrete.js', '66-hyk-furniture.js', '69w-worn.js',
+             '65-hyk-spans.js', '70-hyk-housing.js', '71-hyk-shops.js', '72-hyk-hospitality.js', '73-hyk-sacred.js', '74f-hyk-civic-minor.js',
+             '75-hyk-harbour.js', '76-hyk-industry.js', '76b-hyk-warehouse-round.js', '77-hyk-military.js', '78-hyk-agri.js', '79-hyk-markets.js',
+             '79z-ys-matlib.js']
+# the library families the pieces use (settlements/ys/tex: its pack beside the page, the rest left out)
+HYK_PACK_SKIP = ('kelp', 'pk', 'rubble', 'concrete', 'corrugate', 'pipeRust', 'rust', 'trav', 'verdigris', 'tarp', 'scale', 'vp', 'sandR')
+
+
+def hyk_files():
+    def ys(f):   # Ys's own copy wins over core/materials (its build's srcpath rule)
+        for d in (os.path.join(YS, 'src'), MATS, os.path.join(MATS, 'opt')):
+            p = os.path.join(d, f)
+            if os.path.exists(p):
+                return p
+        raise SystemExit('bundles.py: no ' + f + ' in settlements/ys/src or core/materials')
+    return [ys(f) for f in HYK_NAMES]
+
+
+HYK_HEAD = IZV_HEAD.replace('IZV_ERRS', 'HYKB_ERRS')
+HYK_SHIM = r'''
+/* the Ys port's skiffs (74-port-dress.js, not taken): the boat shed draws none */
+if (typeof portSkiff === 'undefined') var portSkiff = function () {};
+'''
+HYK_TAIL = r'''
+reportErr = function (m) { HYKB_ERRS.push(String(m).slice(0, 600)); if (typeof console !== 'undefined') console.error('HYKB: ' + m); };
+/* HYKB.proto(key, v): a free-standing def built once at the origin on flat ground into a new group, its kit items baked
+   (as IZV's: the kit's items emptied before and after, so a piece never carries another's) */
+function hykKitClear() { KIT.order.forEach(function (n) { KIT.items[n].length = 0; }); }
+function hykProto(key, v) {
+  var D = HYK.defs[key]; if (!D || D.grown) return null;
+  var G = new THREE.Group(); G.name = key + '#' + (v | 0); var r0 = REG.length;
+  hykKitClear();
+  withFlatGround(function () { HYK.place(G, key, 0, 0, 0, { y: 0, v: v | 0 }); });
+  /* the shell's merged buckets (61-hyk-shell.js: Ys flushes them once a page) into this piece: its outer skins; the
+     interiors (floors, inner skins: `in`) are never seen in the world and are dropped */
+  hykFlush(G); for (var i = G.children.length - 1; i >= 0; i--) { var c = G.children[i]; if (c.userData && c.userData.interior) { G.remove(c); c.geometry.dispose(); } }
+  HYK_MESHES.length = 0;
+  kbake(G); hykKitClear(); REG.length = r0; if (typeof HYK_PLACED !== 'undefined') HYK_PLACED.length = 0;
+  G.userData = { key: key, v: v | 0, w: D.w, d: D.d, h: D.h };
+  return G;
+}
+function hykDims() { var out = {}; HYK.order.forEach(function (k) { var D = HYK.defs[k]; if (D.grown) return;
+  out[k] = { w: D.w, d: D.d, h: D.h, name: D.name, row: D.row, family: D.family, types: [].concat(D.tags.type || []), wealth: D.tags.wealth }; }); return out; }
+return { proto: hykProto, dims: hykDims, HYK: HYK, MAT: MAT, errors: HYKB_ERRS };
+'''
+
+
+def hyk_bundle():
+    fs = hyk_files()
+    return safe('/* HYKB: the Hykkousoi buildings of settlements/ys (free-standing only) and their Ancients core in one closure '
+                '(settlements/isle-demo/bundles.py). GENERATED: edit settlements/ys/src or core/materials. */' + NL + 'var HYKB = (function(){' + NL +
+                HYK_HEAD + body(fs[:-1]) + HYK_SHIM + body(fs[-1:]) + HYK_TAIL + '})();' + NL), [rel(f) for f in fs]
+
+
 # ---------------------------------------------------------------- the Beast Riders' buildings
 # Ridertown's: the Beast Riders kit's own (kits/beast-riders src/50-br-mounts.js: the stables, the byre, the rookery tower)
 # and its ports of Girder's and Mav's Refuge's own buildings (br_port_*: the towns' engines sealed by

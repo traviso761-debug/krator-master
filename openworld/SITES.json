@@ -1,0 +1,41 @@
+{
+ "format": "krator-sites",
+ "version": 1,
+ "map": "5.1",
+ "note": "openworld/PLAN-SITES.md section 2. A site is one settlement of the scale model (its id in tools/scale-model/model/src/60-settlements.js, on the 5.1 canvas) and its hinterland; a region is the cut that holds one or more sites (tools/scale-model/cut_site.py <region>). reach_km is the half-size of a site's square (city 30, village 15, outpost or camp 8 by default); polygons are regions of the model (by id) that join the cut. state: planned | cut | built.",
+ "regions": {
+  "pinnacle": {
+   "name": "Pinnacle Rock",
+   "order": 1,
+   "sites": ["staiytii0y"],
+   "polygons": [],
+   "upsample": "auto",
+   "note": "the first site (the owner, 2026-11-09): the town on its mesa stays settlements/pinnacle-rock's own; the site holds its countryside, bands and roads planned on the world's ground"
+  },
+  "xanadu-oidong-highrift": {
+   "name": "Xanadu, Oidong and the High Rift",
+   "order": 2,
+   "sites": ["s57bkv9741", "sq80bzd7ep", "skm4jjo2vl"],
+   "polygons": ["rmufcgvtxatfx", "rmuklrcae6jb5", "rmvhighrift100"],
+   "upsample": "auto",
+   "note": "the owner, 2026-11-09: one region over the Xanadu Sultanate (political), the Oidong Valley and the High Rift (biomes); about 1,740 x 540 km, so the sub-continental cut (1 km cells)"
+  },
+  "iziz-cluster": {
+   "name": "The Iziz cluster",
+   "order": 3,
+   "sites": ["seed07", "skukf2qmmq", "sor1zqih8x"],
+   "polygons": [],
+   "upsample": "auto",
+   "note": "the owner, 2026-11-09: Girder, Mav's Refuge and Talia as three sites in one region, with the roads between them"
+  }
+ },
+ "sites": {
+  "staiytii0y": {"name": "Pinnacle Rock", "type": "city", "region": "pinnacle", "reach_km": 30, "moved": "2026-11-10: 1027,681 -> 1007,686 (the owner: more forest; the savage hyperjungle's north-east edge)", "culture": "beast-rider", "page": "settlements/pinnacle-rock", "state": "planned"},
+  "s57bkv9741": {"name": "Erehwon", "type": "city", "region": "xanadu-oidong-highrift", "reach_km": 30, "culture": "xanadu", "page": "settlements/xanadu", "state": "planned"},
+  "sq80bzd7ep": {"name": "Longsong", "type": "village", "region": "xanadu-oidong-highrift", "reach_km": 15, "culture": "xanadu", "page": "settlements/longsong", "state": "planned"},
+  "skm4jjo2vl": {"name": "Qiblai", "type": "city", "region": "xanadu-oidong-highrift", "reach_km": 30, "culture": "xanadu", "page": null, "state": "planned"},
+  "seed07": {"name": "Girder", "type": "village", "region": "iziz-cluster", "reach_km": 15, "culture": "beast-rider", "page": "settlements/girder", "state": "planned"},
+  "skukf2qmmq": {"name": "Mav's Refuge", "type": "city", "region": "iziz-cluster", "reach_km": 30, "culture": "beast-rider", "page": "settlements/mavs-refuge", "state": "planned"},
+  "sor1zqih8x": {"name": "Talia", "type": "city", "region": "iziz-cluster", "reach_km": 30, "culture": "talia", "page": "kits/talia", "state": "planned"}
+ }
+}

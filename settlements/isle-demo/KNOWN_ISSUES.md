@@ -246,15 +246,35 @@
       core/simulation on `claude/isle-p7a-rest` and merged here. The checks read each town's own meals
       (`SIM.ITEMS.statsBy[town].meals`), every role takes `work.near`, the 01:00 start is gone; `SIM.REACH` (6 km) stays
       as a walking limit (nobody looks for a place in the other town).
-- [ ] **The islands farm about a twentieth of the land they need** (2026-11-04: PLAN.md section 11): about 81 ha in crop
-      for some 8,100 people, against about 610 ha in crop and 2,400 ha of farmed countryside on historical yields; the
-      governor raises a handful of parcels' rates instead. Valapo still has 49 fields inside the village. Planned (not
-      built): the fields within the walls removed, the farm ring left as it is, about four farming hamlets for Kautoa and
-      two for Valapo, and a plantation each for the cash crops.
+- [x] **The islands farm about a twentieth of the land they need** (2026-11-04: PLAN.md section 11; built 2026-11-09): on the
+      open world six farming hamlets and two plantations now farm about 610 ha in crop (2,400 ha with the fallow) for
+      some 8,100 people, the historical estimate; Valapo's 49 fields inside the village are gone, and the farm ring is
+      left as it is. Open from it:
+      - [ ] **The city page's Valapo eats from a stand-in** (its programme's `farms` record, 25 holdings beyond the
+            village, `ISLE.TUNE.sim.farms`), since that page declares no hamlets; the open world's Valapo eats by road.
+      - [ ] **The hamlets' orchards have no trees** on the open world (ground colour only); the farmsteads stand round the
+            farmland's centre, the parcels are not fenced or pathed; the ground is not flattened under them.
+      - [ ] **The freed ground in Valapo is not yet lots**: the builders take only the plan's empty lots (`47b`).
+      - [ ] **The fallow is a dial** (`KHAMLET.FARM.fallow`: three years for each in crop) pending the owner's answer.
+      - [x] **The lumber village is 171 km from Kautoa by road** (the baked highway network, 2026-11-09): 20 km of sea 140 m
+            deep lies between them, so the road runs round the gulf by the north trunk (the ranch at 72 km and the salt
+            village at 101 km share it). **Answered the same day (the owner: "a little port and cargo stop at lumber
+            village ... any hamlets near the coast"):** the village stands on a coastal stand with a quay, and a SEA LEG
+            (47h `sea`: a lakatoi of its own on `SIM.trade`, 25 km by sea) carries its timber to Kautoa's canoe stop; the
+            road stays as the owner asked (every hamlet on the network) and carries the food back.
+      - [x] **Valapo's lumber village has no landing** (2026-11-09). The owner asked for a reef passage; the depth map showed
+            the obstacle was not the reef: the village stood on the open EAST coast of Valapo's landmass, 35 km of land from
+            the harbour on the west, and no cut through a reef joins them. Fixed the same day by siting instead: the spec's
+            patch now covers the town's whole coast (`near` the town, `look` 16 km) and a lumber village prefers the
+            coastal stand nearest its town WHOSE SHORE HAS A SEA ROUTE to its landing (`48`: `shoreOf` tried on the nearest
+            forested coastal stands: the peninsula across the inlet had a sea route but a lone tree-cell for a stand, so the
+            crew's near range must be two fifths forest), so Valapo's stands on the north-west coast, 15 km by sea. The reef's passes
+            are the noise's (`43` `landHook`): a hand-cut pass is not needed anywhere yet; add one as a record there when a
+            sea leg is held to a long detour by the crest.
+      - [ ] **The farm tracks are ribbons** on the ground (as the villages' lanes), not graded roads; the highways are.
 - [ ] **Kautoa's farm ring is a stand-in.** The programme leaves it a world record beyond the wall (40 sites) for the open
       world; the sim declares each site a holding (`ISLE.TUNE.sim.ring`: one crop by a hash, 20 or 13 hands) with a track
-      from the highways, until core/hamlet's farming villages (H6) take it. Valapo's farms beyond the village (its
-      `farms` record) are not in the sim: its parcels inside the zone feed it.
+      from the highways. The owner (2026-11-04) keeps it as it is beside the farming hamlets (PLAN.md section 11).
 - [ ] **The walking graph is built here** (`41-isle-nav.js`) from `{cls, w, pts}` of the plan's ways: it fits any
       core/city plan, so it belongs on core/city's data side (asked of the city-layout work) or core/simulation; kept here
       until then so no other page moves.
@@ -340,3 +360,39 @@
 - [ ] **The ranch's mounts:** its stables and rookery employ grooms but make nothing in the sim.
 - [ ] **Road loads are lumpy:** a village's goods and its town's food come a cart convoy's load at a time (one carrier a way),
       so the towns' stock-steady check skips the villages' goods (as the ships' and the imported foods).
+
+## The expedition camps (PLAN.md 12, 2026-11-09)
+
+- [ ] **Kapok is stocked, not used** (2026-11-09): the camps bring it and the towns hold it to its ceiling; the lamps' second
+      oil and the weavers' stuffing (PLAN.md 12's table) need an input that may be either of two goods, which the economy's
+      `inputs` maps cannot say yet. Mahogany and gum are used (the canoe sheds' canoes).
+- [ ] **The canoes go nowhere** (2026-11-09): the canoe sheds' canoes pile to their ceiling of ten; the fleet that should take
+      them (the trade lines' vessels, the fishing docks' boats, a town's war canoes) is not a thing the sim counts yet.
+- [ ] **The jungle stands through an expedition camp** on the page as through a farming camp (openworld/isle-demo
+      KNOWN_ISSUES.md): the flora tiles built before the boat landed are not rebuilt; the crew's stumps are the lumber
+      village's drawing, read from the tiles near the camera only.
+- [ ] **No politics yet** (PLAN.md 12 step 4): the two towns' camps never meet; a camp on the other's island raises nothing.
+- [x] **Valapo's merchant house never sailed** (2026-11-09): its provisions were priced at money's placeholder, because
+      the world page's cost tables were fixed before Valapo's farming hamlets existed. Fixed the same day (`47h` recomputes
+      them); both houses now plan 50-day seasons on the world.
+- [ ] **The houses' seasons are sized to the mahogany ceiling** (600, `expeditions.stockpile`): the ceiling is a guess,
+      and with nothing but the canoe sheds using mahogany a town fills it in one season and its house stops sailing.
+      The fishers' canoes (worn out and replaced like nets) or the house buying its own lakatoi would give it steady
+      buyers (the owner, 2026-11-09).
+- [ ] **The houses' expected haul is a guess until they have sailed** (`house.prior`, a hand a day); a house that never
+      sails never learns better. A second house, or a town's treasury sending a first crew, would.
+- [ ] **Valapo's reef camp has no beach** (2026-11-09): its forest island's one routed beach is its forest camp's, and the
+      jungle island's beach point stands in the water; its house sends the vents instead (137 km by sea). A second
+      candidate point on each island's coast would give it one.
+- [ ] **The money's cost-table quirk is worked round, not fixed** (core/simulation/PLAN-MONEY.md): `47m` recomputes the
+      tables in turn; the fix belongs in core's `costs`.
+- [ ] **The vent and reef works are not drawn**: the camp's shelters are, the diggers' pit and the divers' bed are records
+      with no piece yet (the Resources kit's sulfur node would do for the pit).
+- [ ] Nephtos (47k, PLAN.md section 15, 2026-11-09) is a PLACEHOLDER: a radial plan of stand-in boxes, not the owner's layout
+      nor the Ys kit's Hykkousoi buildings (`settlements/ys`, not bundled into the world). Only 12 % of its people have a post
+      in the town (its countryside does the work); its pearl ships camp ashore like the Islanders' reef crews; the Tethyan,
+      Ysian and Pontic ships are tallied, not drawn sailing (two Hykkousoi vessels stand moored at its quay).
+- [ ] Hykkousoi pieces (bundles.py HYKB, 2026-11-09): every house is one household (the Ys kit's multi-family homes are the
+      stacks' grown pods, not taken), the boat shed has no moored skiffs (they are the Ys port's), and a piece is heavy (up to
+      130k triangles; the towns' distance levels carry it). The colony's programme (30 PROG.Nephtos) was tried only on a test
+      drawing (tests/fixtures/nephtos-test-site.json) until the owner draws Nephtos.
