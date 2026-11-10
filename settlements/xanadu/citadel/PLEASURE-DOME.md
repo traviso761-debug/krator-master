@@ -89,6 +89,14 @@ position (a `.gdshader` each); the walk, door and glass records are core's.
 
 ## Checked (cloud: Chromium on SwiftShader, no GPU)
 
+**After the merge (2026-11-10), one local build of Erewhon, not committed:** error panel clean with the citadel's ten pinned
+buildings and the Dome at [-344, -152]; `xdomeReach`: the citadel's Dome 78 of 78 floors, the Bay's 4 of 4; the citadel's Dome
+186,272 triangles (231,464 before the savings), the Bay's 27,652 (15,706 solid); the scene 20.70M of 25M triangles, 1107 of
+1800 draw calls at the opening view. Looked at: the Hall of Feasts (black over white), the Bay's rotunda and its dome from
+below. Lints (`check_source`, `check_port`, `check_core_use`): nothing new. NOT run after the merge: `verify.py --assert` on
+either page, the kit's sheet, `test_all.py` (the combined rebuild's job). The table below is the first Dome alone, before
+the merge, at an even balance.
+
 | Check | Result |
 |---|---|
 | `python3 verify.py dist/erewhon.html --assert` with the seven "Pleasure Dome — ..." views | exit 0; error panel clean; every invariant PASS; eye checks clear at all seven views. Scene 21.26M of 25M triangles (21.39M before: the larger Dome took 52 garden tiles' place), 1083 of 1800 draw calls at the opening view (1047 before); worst inside view (the sweeping stair) 1026 calls |
@@ -116,7 +124,7 @@ earlier cloud session, so its surfaces were black; it is rebuilt from the real `
 the construction kit's packs.
 
 Pictures (2560 x 1600, software GL), in `refs/pleasure-dome/built/`: `hall.jpg` (the Hall of Feasts), `arch.jpg` (the
-checkered door), `spiral.jpg` (the rotunda), `baths.jpg` (the great pool), `gallery.jpg`, beside the references they answer.
+checkered door), `spiral.jpg` (the rotunda), `baths.jpg` (the great pool), `gallery.jpg`, beside the references they answer. Those five are the first Dome at an even balance, under the black domes it had for a day. From the merged build (1280 x 800): `hall-black-over-white.jpg`, `bay-rotunda.jpg` (taken before its dome was opened: the dark top is the old cornice slab), `bay-dome.jpg`, `bay-dock.jpg`.
 
 ## Against the references
 

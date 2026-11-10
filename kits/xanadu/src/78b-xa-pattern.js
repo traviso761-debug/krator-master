@@ -104,7 +104,8 @@ const XP_RUN=new THREE.PlaneGeometry(1,1).rotateX(-Math.PI/2);
 for(const n of['band','bandFine','checker','pave','op','chevron','diamond']){kdef('xp_'+n,VBOX,xpMat(n));for(const k in XP_SPAN)kdef('xpS_'+k+'_'+n,XP_SPAN[k],xpMat(n));}
 for(const k in XP_SPAN)kdef('xpS_'+k+'_wash',XP_SPAN[k],MAT.xWash);
 kdef('xp_solid',VBOX,xpMat('solid'));kdef('xpCol_solid',XCOL,xpMat('solid'));kdef('xpCol_band',XCOL,xpMat('band'));kdef('xpCol_bandFine',XCOL,xpMat('bandFine'));
-kdef('xpOct_solid',XOCT,xpMat('solid'));kdef('xpDisc',XP_DISC,xpMat('solid'));kdef('xpGore',XP_GORE,xpMat('solid'));kdef('xpGoreT',XP_GORE,MAT.xTiles);kdef('xpGoreGlass',XP_GORE,KGLASS.material(THREE,'clear'));kdef('xpRib',XP_RIB,MAT.xGoldDS);kdef('xpRibO',XP_RIBO,MAT.xGoldDS);kdef('xpBall',VBALL,xpMat('solid'));
+kdef('xpOct_solid',XOCT,xpMat('solid'));kdef('xpDisc',XP_DISC,xpMat('solid'));kdef('xpGore',XP_GORE,xpMat('solid'));kdef('xpAnnG',new THREE.RingGeometry(.57,1,48).rotateX(-Math.PI/2),MAT.xGoldDS);   // a flat gilt ring (the Bay pavilion's architrave, open over its rotunda)
+kdef('xpGoreT',XP_GORE,MAT.xTiles);kdef('xpGoreGlass',XP_GORE,KGLASS.material(THREE,'clear'));kdef('xpRib',XP_RIB,MAT.xGoldDS);kdef('xpRibO',XP_RIBO,MAT.xGoldDS);kdef('xpBall',VBALL,xpMat('solid'));
 kdef('xpHole_chevron',XP_SQHOLE,xpMat('chevron'));kdef('xpHole_band',XP_SQHOLE,xpMat('band'));kdef('xpHole_wash',XP_SQHOLE,MAT.xWash);
 kdef('xpKey',XP_RUN,xpMat('key'));
 kdef('xpBal',new THREE.CylinderGeometry(1,1,1,6).translate(0,.5,0),xpMat('solid'));   // a baluster: six sides are enough at 11 cm

@@ -164,7 +164,9 @@ function buildXaPleasureDomeBay(G,o){reseed(32941+(o.v|0));const V=xV(o),R=22,li
  for(const [r,y] of[[R+6,-.8],[R+4,0],[R+2,.8]])kput('xDiscS',[0,y,0],null,[r,.8,r],stone);kput('xDiscS',[0,1.6,0],null,[R+1,.4,R+1],stone);const y0=2.0;
  const NC=20,CR=R-1.2,CH=11;for(let i=0;i<NC;i++){const a=i/NC*TAU,x=Math.cos(a)*CR,z=Math.sin(a)*CR;xnCol(x,y0,z,CH,.36,-a,stone,gold);}
  for(let i=0;i<NC;i++){const a=(i+.5)/NC*TAU,x=Math.cos(a)*CR,z=Math.sin(a)*CR;xnArch('xArchP',x,y0+CH-3.6,z,Math.atan2(x,z),TAU*CR/NC-.4,4.2,.6,stone,{open:true});}
- kput('xDiscG',[0,y0+CH+.5,0],null,[CR+1.4,.4,CR+1.4],gold);xvFr(0,y0+CH+.1,0,.1,.1,.1,0);   // the gilt architrave ring
+ // the gilt architrave: a ring now (it was a disc through the solid drum's dome), open over the rotunda
+ for(const dy of[.3,.7])kput('xpAnnG',[0,y0+CH+dy,0],null,[CR+1.4,1,CR+1.4],gold);for(let i=0;i<40;i++){const a=i/40*TAU;vB('xGoldB',Math.cos(a)*(CR+1.4),y0+CH+.3,Math.sin(a)*(CR+1.4),TAU*(CR+1.4)/40+.05,.4,.1,Math.atan2(Math.cos(a),Math.sin(a)),gold);}
+ xvFr(0,y0+CH+.1,0,.1,.1,.1,0);
  // the drum is a hollow rotunda in the black-and-white pattern system, white over black (the owner, 2026-11-09; 78d xbayBuild)
  const DR=R*.62,DH=8;xbayBuild(o,{y0,DR,DH,R,turq,wash:xC(xPick(XPAL.wash)),gold,stone,band:xC(xPick(XPAL.maroon))});
  // (the twig band and the cornice are rings round the hollow drum now: xbayBuild draws them)
