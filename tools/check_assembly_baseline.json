@@ -222,6 +222,7 @@
  "kits/interiors/dist/interiors-walk.html: CLASH _onWalkChange": 1,
  "kits/interiors/dist/interiors-walk.html: ORDER KratorSky": 1,
  "kits/interiors/dist/interiors.html: ORDER KratorSky": 1,
+ "kits/yuni/dist/yuni.html: CLASH FIX": 1,
  "openworld/isle-demo/dist/isle-demo.artifact.html: CLASH _branches": 1,
  "openworld/isle-demo/dist/isle-demo.artifact.html: CLASH _layout": 1,
  "openworld/isle-demo/dist/isle-demo.artifact.html: CLASH _materials": 1,

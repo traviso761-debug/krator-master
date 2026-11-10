@@ -80,8 +80,8 @@
 - **`src/10-core.js` on core/rand.** The Scyvoi engine's `10-core.js` writes its own mulberry32 stream, a `Math.sin`
   hash and a value noise, which `tools/check_core_use.py` counts against a new build. This kit's copy keeps the engine's
   API (`reseed`, `rng`, `rr`, `pick`, `h3`, `vnoise`, `fbm`) and draws it from `KRAND`: the stream is the same mulberry32
-  (`KRAND.stream`), the hash and noise are KRAND's portable ones. It is the one engine file this kit keeps in `src/`
-  (it shadows `core/engine/10-core.js`). The fix belongs upstream in `core/engine/10-core.js` (every kit on the engine:
+  (`KRAND.stream`), the hash and noise are KRAND's portable ones. It is one of the two engine files this kit keeps in
+  `src/` (it shadows `core/engine/10-core.js`; the other is `37-wk-rec.js`, above). The fix belongs upstream in `core/engine/10-core.js` (every kit on the engine:
   Scyvoi, Islanders, Lizardmen, Eternian, the nomads, Resources), each a "moving rubble" change with its own screenshot set (GODOT-PLAN.md section 7).
 
 ## Doors, glass and the reachability audit (core/door, 2026-11-03)

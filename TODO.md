@@ -41,6 +41,15 @@ rewrites the baseline once, then deletes these items):
   not 25). Moves every page that takes core/water.
 - The fauna runtime and the bison size table: the source is in place (pages only); rebuild the pages that bundle the kit.
 
+- **Two `||` numeric defaults left for the rebuild** (2026-11-10, test_all's source lint; not changed, because each moves pages):
+  `core/furnish/50-core-furnish.js` line 65 `rec.scale || 1` (reaches 34 builds, 186 pages: `python3 tools/reach.py`) and
+  `settlements/yuni/src/76-doors.js` line 180 `d.y||0`, `d.yaw||0`, `d.w||0.9`, `d.h||2.05` (Yuni's seven pages). Write them
+  `x == null ? d : x` with the all-builds rebuild, then `python3 core/furnish/fingerprint.py`. (The other new ones, Highlands'
+  `89y-hl-furnish.js`, Xanadu's `89y-xa-interiors.js` and the Vernacular's `69e6-vern-autobody.js`, are the interiors session's.)
+- **`core/engine/fingerprint.json` is behind core/engine** (2026-11-10): Eternian's page differs from it with or without its old
+  `src/37-wk-rec.js` (the triangles by material move), so the change came with the 2026-11-09 engine merges (interiors, walk
+  records); rewrite it (`--write`) with the all-builds rebuild, after the engine kits' screenshots.
+
 - **`KSHADOW.units` counts what the GPU links** (2026-11-09, found by the Throne's fix): `core/shadow/host/12-core-shadow-host.js` counts
   declared samplers (some are never read and the GPU drops them), misses `scene.environment` on standard materials, and judges against the
   renderer's own limit (32 in SwiftShader, so shadows turn on where the GPU cannot link them). The Throne's `samplersOf`
