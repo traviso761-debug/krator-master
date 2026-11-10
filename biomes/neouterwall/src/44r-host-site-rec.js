@@ -21,7 +21,7 @@
 // The site is DATA the stage (45) reads: siteBuild(ground) makes the records once the model's ground exists; siteRelief(x, z) is then
 // metres over the model; sitePoint(x, z) each record's part there (the zones' fields: 47).
 const SITE={
- name:'vitreous',title:'Vitreous Hollow',R:1600,step:8,seed:6101,
+ name:'vitreous',title:'Vitreous Hollow',kind:'cauldron',tarn:'The Vitreous Boxwork Tarn',R:1600,step:8,seed:6101,
  // the climate is the tarn's warm pocket (region/far.py 'clim': the WH cell, +9 °C at the water); its swing (PLAN.md section 3: 16 / 2)
  amp:{warm:7,cold:7},
  // the apron's toe (the new shoreline, page metres, west to north-east round the cauldron's south-east corner), its rise inland (m a m)

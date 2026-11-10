@@ -17,7 +17,7 @@ const WATER_RECS=typeof WATER==='undefined'?null:(function(){const out={};
   const cell=250,nx=Math.ceil((box[2]-box[0])/cell),nz=Math.ceil((box[3]-box[1])/cell),data=new Uint8Array(nx*nz);
   for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const x=box[0]+(i+.5)*cell,z=box[1]+(j+.5)*cell;if(MODEL_LAKE.near(x,z))data[j*nx+i]=255;}
   out.box=box;
-  out.lake=WATER.open({name:'The Vitreous Boxwork Tarn (warm, 2,950 m)',level:LAKE_LV,swell:[[.006,4,30,0,.01],[.004,2.5,-60,1.1,.01]],field:0,bounds:box,bed:terrainH,bedCell:40,
+  out.lake=WATER.open({name:(SITE.tarn||'The tarn')+' (warm, '+(BASE+LAKE_LV).toFixed(0)+' m)',level:LAKE_LV,swell:[[.006,4,30,0,.01],[.004,2.5,-60,1.1,.01]],field:0,bounds:box,bed:terrainH,bedCell:40,
    mask:{x0:box[0],z0:box[1],cell,nx,nz,data}});}
  // THE SPRINGS (core/water/geyser 52: WATER.spring, banded by their heat and mineral; the main one boils)
  out.springs=SITE_SPRINGS.map(S=>WATER.spring({key:S.key,name:S.name,x:S.x,z:S.z,r:S.r,level:S.level,temp:S.temp,mineral:S.mineral,milky:.2,boil:S.temp>.9?1:0,steam:0}));

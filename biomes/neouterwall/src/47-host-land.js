@@ -18,7 +18,8 @@ _mark('coarse');
 // its length, and the fault's seep along the wall's foot between the springs a weak line. The soil is the cauldron's annual mean at the
 // water (+9 °C). One field: the zones (46: mats over 22 °C, bare sinter over 40), the ground's colour, the snow (89a: KTHERM.snowMask), the
 // hazards and a walker all read it, so they cannot disagree
-const THERM=(function(){if(typeof KTHERM==='undefined')return null;const V=[],S=SITE_SPRINGS,T=SITE_STAIR;
+const THERM=(function(){if(typeof KTHERM==='undefined'||!SITE_SPRINGS.length)return null;   /* a station with no springs (3: the badlands) has the soil's mean */
+ const V=[],S=SITE_SPRINGS,T=SITE_STAIR;
  S.forEach(q=>V.push({id:q.key,kind:'point',x:q.x,z:q.z,T:40+q.temp*55,reach:q.r*3.4+14,decay:2.4}));
  if(T){const N=8,pts=[];for(let k=0;k<=N;k++){const t=k/N;pts.push([T.a[0]+(T.b[0]-T.a[0])*t,T.a[1]+(T.b[1]-T.a[1])*t]);}
   V.push({id:'stair-head',kind:'line',pts:pts.slice(0,4),T:62,reach:T.w*.5+16,decay:1.6},{id:'stair-foot',kind:'line',pts:pts.slice(3),T:38,reach:T.w*.5+12,decay:1.6});}
@@ -78,11 +79,13 @@ function fieldsAt(x,z){if(x===_fm.x&&z===_fm.z)return _fm.F;
  const sunny=g>.005?hz/g:0,slope=clamp(g/1.1,0,1),mean=meanAt(y)+1.5*sunny*smooth(.02,.15,g);
  const P=sitePoint(x,z),w=waterH(x,z),water=w>y+.05,heat=heatAt(x,z);
  const F={y,g,slope,sunny,mean,perma:NEOW.climate(mean).perma,water,heat,spring:!!springAt(x,z),stair:P.part==='stair',dike:P.part==='dike',
-  talus:P.talus,apron:siteApron(x,z),part:P.part,shoreD:y,
+  talus:P.talus,apron:siteApron(x,z),part:P.part,shoreD:MODEL_LAKE?y:1e9,   /* the shore: height over the tarn (no tarn, no shore: station 3) */
+ 
   // what the NW outer wall's passes read (nwouterwall's 55: no tree in a field, in water, on the aufeis or in a pocket)
-  field:false,aufeis:false,pocket:false,floor:false,gully:0,rock:P.part==='dike'?1:smooth(.75,1.1,g)};
+  field:false,aufeis:false,pocket:false,floor:false,gully:P.part==='floor'||P.part==='head'?1:0,rock:P.part==='dike'?1:smooth(.75,1.1,g)};
  _fm.x=x;_fm.z=z;_fm.F=F;return F;}
 if(SITE.amp)NEOW.AMP=SITE.amp;
+if(SITE.bands)NEOW.BANDS=SITE.bands;   /* a station's own tree line (3: Koppen's ET, the warmest month under 10 °C, treeless) */
 NEOW.lay({fields:fieldsAt,R:SITE.R,seed:SITE.seed});
 // THE NW OUTER WALL'S FLORA, read in place (PLAN.md section 4; build.py slots its layout and its passes): its passes ask NWOW for the
 // fields and the zone; they get this page's fields, its swing, and each NEOW zone as the nwouterwall zone that grows there (NEOW.ZONES' nw)
@@ -194,16 +197,17 @@ const BEDS=ROCK_SH?'{vec3 sc=strataColor(vSWP,vSWN);diffuseColor.rgb*=mix(vec3(1
   KGROUND.hook(MAT_GROUND,{key:'neouterwall-ground',layers:KG_LY,at:'/*KGROUND*/',tri:{from:.3,to:.65,far:400}});
   MAT_GROUND.userData.kgroundOn=true;}}
 // the weights at a point: [moss, gravel, rock, sinter], [tundra, mats, brightness, the rock's blocks]
-function groundW(F,x,z){const warm=F.mean+NEOW.AMP.warm,hi=smooth(8.5,6.5,warm),HK=NEOW.heatK(F.heat);
+function groundW(F,x,z){const warm=F.mean+NEOW.AMP.warm,TL=NEOW.BANDS.treeline,hi=smooth(TL+1,TL-1,warm),HK=NEOW.heatK(F.heat);
  const steep=smooth(.7,1.05,F.g),wood=(F.apron>.5||F.g>.3?1:.35)*(1-hi)*(1-steep);
  const moss=wood*(1-HK.mat)*.85;
  const gravel=Math.max(F.y<2.6&&!F.water?.7:0,F.talus>1?smooth(1,6,F.talus)*.8:0,F.dike?.6:0,F.water?.6:0);
- const rock=Math.max(steep,F.dike?.9:0,F.talus>4?.25:0);
+ const bare=F.part==='wall'||F.part==='rim'||F.part==='head'?.8*smooth(.25,.6,F.g):0;   /* a badland gully's walls: bare skarn (station 3) */
+ const rock=Math.max(steep,F.dike?.9:0,F.talus>4?.25:0,bare);
  const sinter=Math.max(HK.sinter,F.stair?1:0,F.spring?1:0)*(1-steep*.6);
  const mat=HK.mat*(1-HK.scald*.7)*(1-steep);
  const tun=hi*.75*(1-steep);
  let br=.8+.32*KRAND.fbm(x*.0045,z*.0045,0,3,6197)+.1*(KRAND.vnoise(x*.06,z*.06,0,6192)-.5)-.1*moss;
- return [[moss,gravel,rock,sinter],[tun,mat,br,Math.max(steep,F.dike?1:0)]];}
+ return [[moss*(1-bare),Math.max(gravel,F.gully?.75:0),rock,sinter],[tun*(1-bare),mat,br,Math.max(steep,F.dike?1:0,bare)]];}
 
 // ---------------------------------------------------------------- the near ground: the baked field's own grid, one mesh
 // THE ZONE RASTER: each grid point's zone (46) kept as it is worked out here, so the passes read a candidate's zone at the nearest grid
@@ -246,7 +250,7 @@ _mark('ground-near');
  for(let j=0;j<=N;j++)for(let i=0;i<=N;i++){const x=-R2+i*st,z=-R2+j*st,ax=Math.abs(x),az=Math.abs(z);
   const y=h(i,j)-(ax<inner&&az<inner?30:2.5*smooth(NEAR.S*1.6,NEAR.S,Math.max(ax,az)));pos.push(x,y,z);
   const hx=(h(i+1,j)-h(i-1,j))/(2*st),hz=(h(i,j+1)-h(i,j-1))/(2*st),g=Math.hypot(hx,hz),sunny=g>.005?hz/g:0;
-  const F={y,g,slope:clamp(g/1.1,0,1),sunny,mean:meanAt(y)+1.5*sunny*smooth(.02,.15,g),heat:NEOW_REGION.site.mean,apron:0,talus:0,dike:false,stair:false,spring:false,water:y<LAKE_LV-.5};
+  const F={y,g,slope:clamp(g/1.1,0,1),sunny,mean:meanAt(y)+1.5*sunny*smooth(.02,.15,g),heat:NEOW_REGION.site.mean,apron:0,talus:0,gully:0,dike:false,stair:false,spring:false,water:!!MODEL_LAKE&&y<LAKE_LV-.5};
   const W=groundW(F,x,z);W[1][2]-=.22*W[0][0];   /* the woods from afar: a wooded slope reads darker than its moss alone (the mid ground has no trees) */
   w1.push(...W[0]);w2.push(...W[1]);}
  for(let j=0;j<N;j++)for(let i=0;i<N;i++){const x=-R2+(i+.5)*st,z=-R2+(j+.5)*st;if(Math.abs(x)<NEAR.S-st&&Math.abs(z)<NEAR.S-st)continue;
@@ -264,11 +268,12 @@ _mark('ground-mid');
   L=DP?Object.assign({scale:DP.scale[0]},KMAT.textures(DP,{aniso:8})):null,pos=[],uv=[],col=[],idx=[],c=new THREE.Color(),
   BA=new THREE.Color(L?0xb8b4b0:0x3e3c3a),BB=new THREE.Color(L?0x9a948e:0x34302e);
  DIKES.forEach(B=>{const m=KSTACKS.mesh(B,{step:3}),n0=pos.length/3;
+  const CA=B.col?new THREE.Color(B.col[0]):BA,CB=B.col?new THREE.Color(B.col[1]):BB;   /* a body's own colours (station 3's magnetite outcrops) */
   for(let v=0;v<m.pos.length/3;v++){const x=m.pos[3*v],y=m.pos[3*v+1],z=m.pos[3*v+2];pos.push(x,y,z);uv.push(m.uv[2*v]/(L?L.scale:4),m.uv[2*v+1]/(L?L.scale:4));
-   c.copy(BA).lerp(BB,KRAND.h3(Math.floor(x*.1),Math.floor(y*.12),Math.floor(z*.1),6194));
-   c.multiplyScalar((.55+.45*m.occ[v])*(y<LAKE_LV+1.5?.7:1));c.convertSRGBToLinear();col.push(c.r,c.g,c.b);}
+   c.copy(CA).lerp(CB,KRAND.h3(Math.floor(x*.1),Math.floor(y*.12),Math.floor(z*.1),6194));
+   c.multiplyScalar((.55+.45*m.occ[v])*(MODEL_LAKE&&y<LAKE_LV+1.5?.7:1));c.convertSRGBToLinear();col.push(c.r,c.g,c.b);}
   for(let i=0;i<m.idx.length;i++)idx.push(n0+m.idx[i]);
-  REGISTER({name:B.name,key:'landform.dike',x:B.x,z:B.z,y:B.y0,r:B.R*.6,h:B.top-B.y0});});
+  REGISTER({name:B.name,key:B.key||'landform.dike',x:B.x,z:B.z,y:B.y0,r:B.R*.6,h:B.top-B.y0});});
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));
  g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));g.setIndex(idx);g.computeVertexNormals();
  const mat=new THREE.MeshStandardMaterial({map:L?L.map:null,normalMap:L?L.normalMap||null:null,roughnessMap:L?L.roughnessMap||null:null,roughness:.95,metalness:0,vertexColors:true});
@@ -280,7 +285,9 @@ _mark('ground-mid');
 // crust's sink waits for the shared breaking-crust amendment (KNOWN_ISSUES.md)
 SITE_SPRINGS.forEach(S=>REGISTER({name:S.name,key:'landform.spring',x:S.x,z:S.z,y:S.level-3,r:S.r+3,h:6,
  tags:{hazard:{kind:'heat',danger:S.temp>.9?.9:.5,shape:{type:'cyl',r:S.r+2,h:3}}}}));
-if(SITE_STAIR){const T=SITE_STAIR;REGISTER({name:'The sinter stair (the Vitreous Spring\'s run-off: '+T.levels.length+' terraced pools behind sinter dams)',key:'landform.stair',
+if(SITE.camp){const K=SITE.camp;REGISTER({name:'The prospectors\' flat (a camp ground on the liang by the ore: its tents are owed, PLAN.md section 9)',key:'landform.camp',
+ x:K.c[0],z:K.c[1],y:terrainH(K.c[0],K.c[1])-1,r:K.r,h:4});}
+if(SITE_STAIR){const T=SITE_STAIR;REGISTER({name:'The sinter stair (the main spring\'s run-off: '+T.levels.length+' terraced pools behind sinter dams)',key:'landform.stair',
  x:(T.a[0]+T.b[0])/2,z:(T.a[1]+T.b[1])/2,y:T.levels[T.levels.length-1]-2,r:T.len/2,h:T.levels[0]-T.levels[T.levels.length-1]+5});}
 
 _mark('meshes');

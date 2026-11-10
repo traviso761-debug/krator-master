@@ -14,7 +14,7 @@
 //                          mats from 22 °C, the bare sinter from 40, a scald from 60
 //   NEOW.zoneOf(F)         the zone of a point from its fields F: {water, spring, dike, stair, heat (°C), shoreD (m), apron (0..1), talus
 //                          (m), g (grade), slope (0..1), sunny (-1 a south-facing, shaded slope .. 1 a north-facing, sunny one), mean}
-//                          -> 'water'|'spring'|'dike'|'stair'|'sinter'|'mat'|'shore'|'wall'|'talus'|'fellfield'|'tundra'|'grove'|
+//                          -> 'spring'|'water'|'dike'|'stair'|'sinter'|'mat'|'shore'|'wall'|'talus'|'gully'|'fellfield'|'tundra'|'grove'|
 //                             'slope'|'meadow'
 //   NEOW.ZONES             each zone's words, and the nwouterwall zone its flora is read as (PLAN.md section 4: the NW outer wall's
 //                          woods and floor, read in place; NEOW.nwZone); 'grove' also holds this kit's own tree ferns (50)
@@ -46,6 +46,7 @@ NEOW.zoneOf=function(F){
  if(F.shoreD<14&&F.y<3)return 'shore';
  if(F.g>1.0)return 'wall';
  if(F.talus>2.5&&F.g>.35)return 'talus';
+ if(F.gully>.5)return 'gully';   /* a badland gully's floor (station 3) */
  const warm=F.mean+NEOW.AMP.warm;
  if(warm<NEOW.BANDS.tundra)return 'fellfield';
  if(warm<NEOW.BANDS.treeline)return 'tundra';
@@ -65,6 +66,7 @@ NEOW.ZONES={
  shore:{nw:'floor',name:'the tarn\'s warm shore (reeds, willow, cottongrass)'},
  wall:{nw:'none',name:'the cauldron\'s wall (banded skarn and gneiss: no tree holds on the face)'},
  talus:{nw:'rock',name:'talus against a dike\'s foot'},
+ gully:{nw:'floor',name:'a badland gully\'s floor (skarn gravel, willow and cottongrass in its damp)'},
  fellfield:{nw:'fellfield',name:'fellfield'},tundra:{nw:'tundra',name:'shrub tundra'},
  grove:{nw:'larch',name:'the apron\'s grove (tree ferns, larch and stone pine on the warm, wet floor)'},
  slope:{nw:'larch',name:'the wall\'s wooded slope'},

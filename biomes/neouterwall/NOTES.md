@@ -35,3 +35,9 @@ one 320 km box a station (the cut grew to px 1016-1466 for station 2's; station 
 **The opening hour.** Both stations open at midday (station 1 13:00, station 2 12:00), not the frame's 10:00: at these pixels (23-25
 degrees east of the W outer wall's, toward the sub-giant point) the giant eclipses the sun from 09:00 to 10:59 on the season's day
 (`ATMOS.sunHidden`), and the page opened in the dark.
+
+**Station 3 is a different kind of page** (`SITE.kind:'badlands'`): no tarn, no springs, no stair. Its folder replaces the site functions
+(`44s`) as well as the record; the frame's other fragments read the same interface and do nothing where a station has no springs (no
+KTHERM field, no snow mask, no water records), and `99` picks its checks by the station's kind. Two frame changes it needed, harmless at
+the cauldrons: `38c` (the landform kinds) is on every page, and `groundW`'s tree line is `NEOW.BANDS.treeline` (station 3 takes Köppen's
+10 °C: ET is treeless), the gully walls bare. Station 3 also opens at noon (the eclipse, as at the cauldrons).

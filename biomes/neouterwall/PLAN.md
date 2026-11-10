@@ -8,12 +8,13 @@ mostly a very high, airless wall. Its life is in the north-western lowlands and 
 Gemini's sketch (2026-11-02) gave the names, the cauldrons and the four-way geology. This plan keeps those, corrects the
 heights and the air from the model, and adds the people, the hazards, the stations and the core adoption.
 
-**Status (2026-11-10): stations 1 and 2 are built** on the branch `claude/neouterwall-s1` (a cloud session): station 1, Vitreous Hollow
-(`dist/neouterwall.html`, `python3 build.py`), and station 2, the Garnet-Mirror Cauldron (`dist/neouterwall-garnet.html`,
-`python3 build.py --station garnet`: its folder replaces only the station's record, `44r`). Forked from the W outer wall's station 1 frame
+**Status (2026-11-10): stations 1-3 are built** on the branch `claude/neouterwall-s1` (a cloud session): station 1, Vitreous Hollow
+(`dist/neouterwall.html`, `python3 build.py`), station 2, the Garnet-Mirror Cauldron (`dist/neouterwall-garnet.html`,
+`python3 build.py --station garnet`: its folder replaces only the station's record, `44r`), and station 3, the Epidote Badlands
+(`dist/neouterwall-badlands.html`, `--station badlands`: its record and its own site functions, `44r` and `44s`). Forked from the W outer wall's station 1 frame
 (itself from `biomes/nwouterwall`), the flora the NW outer wall's read in place plus the cauldrons' own tree fern and reed. Both pages are
 checked with `verify.py --assert --all-views` in software GL only: **the real-GPU verify is owed on the owner's machine**
-(`KNOWN_ISSUES.md`). Section 8 says what they take from core; section 7 what they draw. Stations 3-5 are not built.
+(`KNOWN_ISSUES.md`). Section 8 says what they take from core; section 7 what they draw. Stations 4-5 are not built.
 The owner wants a kit here (`HANDOFF-REBUILD.md`: one of the three new-north kits allowed to go ahead). It goes in the
 rebuild's queue after the frozen integration pass. All px below are on the 5.1 canvas (1821 x 1723, 2 km/px).
 
@@ -246,6 +247,13 @@ takes station 1's landforms with its own record (`stations/garnet/44r-host-site-
 lobe, two black dikes across it into the tarn and a line of dike islets down the lobe (21 fins), three springs (a rust pool among them) and
 a five-tread sinter stair; the cliffs' garnet red is a tint over the rock layer until the skarn's texture comes. The podocarps are still owed.
 
+**Station 3 as built (2026-11-10):** px 1200,330, 4,784 m, 0.88 atm, ET (+4 °C, 1,867 mm), a slope rising south-west ~7%. Two gully
+systems (`KRELIEF.gully`, `liang` tops, 38c) drain it north-east; three rows of dike ribs (`KSTACKS.row`, 8-30 m) cross it ENE, a fin left
+out wherever a gully has cut the dike through; a field of magnetite outcrops (`KSTACKS.cluster`, black and rust); talus at their feet. The
+tree line is Köppen's (the warmest month under 10 °C: no tree), so the NW outer wall's tundra and fellfield grow here, its willow and
+cottongrass on the gullies' damp floors; the gully walls are bare skarn (the green-grey `rockTint` over the stand-in). The prospectors'
+camp is a registered flat only: `KCAMP` needs the culture who quarries (section 9). The ore nodes of `kits/resources` are not placed.
+
 **Station 1 comes first:** it is the reachable cauldron (lowest crest out 3,728 m), it holds the kit's signature (a warm
 tarn in a dike box), and its geothermal surfaces are the shared amendment the other plans want. Gemini's "Pseudotachylite
 Mirror-Scarp" over the Web-Cleaver Gorge is folded into station 4: the Web-Cleaver runs outside the polygon. **Station 5
@@ -265,7 +273,7 @@ stations that will take it.
 | ground, field | `KFIELD` (30), `KGROUND` (43), `KHORIZON` (45) | taken | the near box baked at 8 m, the sinter stair on a 2 m inset; seven library layers (16 units or fewer: `KGROUND`'s six over the dithered base); the walls' shadows at a low sun |
 | strata | `KSTRATA` (35) and its shader | taken | the `megabreccia` recipe on the steep (the impact rim's host rock). The skarn recipe is amendment 1, owed |
 | dikes | `KSTACKS.row` (37, `kind:'fin'`) | taken | three rows, 22 fins; each fin's foot under the lowest ground round it |
-| relief | `KRELIEF` (38) | taken (`talus`) | the talus against the fins' feet. `slump`, `scarp`, `gully`, `joints` later (stations 3 and 4) |
+| relief | `KRELIEF` (38, 38c) | taken (`talus`; `gully` at station 3) | the talus against the fins' feet; station 3's badland gullies. `slump`, `scarp`, `joints` later (station 4) |
 | the springs' heat | `KTHERM` (core/terrain 47) | taken | point vents at the springs, line vents down the stair and along the fault's seep; the zones, the ground's colour and the snow mask read the one field |
 | water | `core/water`: `WATER.open`, `WATER.spring` (geyser 52, 52b), `WATER.terraces` (ext 53, 53b), the audit (57), the shore's fields (60) | taken | the tarn without surf or breakers; the five springs; the stair. The reflections switch (58) is not taken (KNOWN_ISSUES.md) |
 | glacier, frost | `KGLACIER` (44g), `KFROST` (42) | later | the rim crest (stations 3, 5a); at station 1 the rim's ice is the far land's snow |
@@ -274,9 +282,9 @@ stations that will take it.
 | flora | `core/biome` | taken | the NW outer wall's species, trees, floor and build read in place (`48a`-`48d`), its zones mapped from this kit's (`NEOW.ZONES`' `nw`); the cauldron's own tree fern and reed (`50`). Geyser's, Korona's and swbay's flora are not read at station 1 (section 4: the podocarps are owed) |
 | sky, weather | `core/atmos` | taken | the shared sky at the station's pixel, its weather, height fog and the tarn's mist, the rain cover, snow that lies with the springs' ground bare (`ATMOS.snowBare`) |
 | hazards | `core/hazard` (`KHAZ`) | tags only | the springs registered with a `heat` hazard tag (as highrift's); the page does not load `KHAZ` yet: the gas pools, the breaking crust and the night timing are amendments 3 and 4 |
-| camps | `core/camp` (`KCAMP`) | later | prospectors' camps (station 3) |
+| camps | `core/camp` (`KCAMP`) | not yet | station 3 registers the prospectors' flat; the camp's pitch needs a culture's tent program (who quarries: section 9) |
 | fauna | `kits/fauna` | later | none at station 1 |
-| resources | `kits/resources` | later | the skarn's ore nodes (station 3) |
+| resources | `kits/resources` | not yet | station 3 draws the magnetite outcrops as rock (`KSTACKS.cluster`); the kit's ore nodes (iron, copper; their grade) are owed |
 | shadows | `core/shadow` | taken | off at load, `?shadow=1` |
 | host, export, materials | `core/host`, `core/export`, `core/materials` | taken | `materials.json` and `tools/textures/pack.py` (11 families); the export's `landforms` carries the site's records and the heat field |
 | city, hamlet | `core/city`, `core/hamlet` | no | nobody lives here |

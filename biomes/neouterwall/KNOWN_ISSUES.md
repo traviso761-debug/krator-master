@@ -1,11 +1,11 @@
 # neouterwall — known issues
 
-Station 1, Vitreous Hollow (`dist/neouterwall.html`), and station 2, the Garnet-Mirror Cauldron (`dist/neouterwall-garnet.html`), built
-2026-11-10 in a cloud session on the branch `claude/neouterwall-s1`.
+Station 1, Vitreous Hollow (`dist/neouterwall.html`), station 2, the Garnet-Mirror Cauldron (`dist/neouterwall-garnet.html`), and
+station 3, the Epidote Badlands (`dist/neouterwall-badlands.html`), built 2026-11-10 in a cloud session on the branch `claude/neouterwall-s1`.
 
 - [ ] **The real-GPU verify is owed.** The cloud has no GPU: both pages were checked with `verify.py --assert --all-views` in software
       GL (SwiftShader) only. Run it on the owner's machine before the merge (`python3 verify.py dist/neouterwall.html --assert --all-views`
-      and the same for `dist/neouterwall-garnet.html`, on either lane), and set the impostors' gain (`IMP_GAIN` in `src/89z-host-build.js`, 2.4 as the W outer wall's) against the near
+      and the same for `-garnet.html` and `-badlands.html`, on either lane), and set the impostors' gain (`IMP_GAIN` in `src/89z-host-build.js`, 2.4 as the W outer wall's) against the near
       woods there. The page's frame cost and the tarn's look (its depth colour, the springs' ramps against the ground's sinter) are judged
       on the GPU only.
 - [ ] **The skarn has no texture yet.** Station 2's garnet red is a tint over the stand-in (`SITE.rockTint`). The cauldron's walls are `rock.megabreccia` under KSTRATA's `megabreccia` recipe (the impact
@@ -32,6 +32,10 @@ Station 1, Vitreous Hollow (`dist/neouterwall.html`), and station 2, the Garnet-
       the wall's Dfc (+3 °C). Recorded in `station-vitreous.json` (`site.level`, `site.clim_px`).
 - [ ] **Station 2's great wall is the model's slope.** The 4.8-6.3 km north-west wall stands 8-12 km off, on the mid ground's 220 m
       cells and the far land: the 1 km model's bowl with the far crags' noise, not the sheer garnet cliffs of the plan.
+- [ ] **Station 3's camp and ore are stand-ins.** The prospectors' camp is a registered flat (no tents: `KCAMP.pitch` needs a culture's
+      tent program, and who quarries the skarn is the owner's question, PLAN.md section 9); the magnetite outcrops are rock bodies
+      (`KSTACKS.cluster`), not `kits/resources` ore nodes with a grade. The skarn's bands are one tint, not the lensing epidote, garnet,
+      magnetite and marble the badlands are named for (the texture and the KSTRATA recipe, above). The gullies are dry (no snowmelt brook).
 - [ ] **No fauna, no camps, no ore nodes** at stations 1-2 (PLAN.md sections 4-5: the ibex on the dikes, the raptors on the thermals,
       the prospectors' camps and the skarn's nodes are stations 2-3's).
 - [ ] **The plan's open questions are still open.** Station 1 settles none of section 9's (the cave's length and keeper, the crest's

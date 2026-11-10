@@ -53,34 +53,52 @@ const HCHK={
  sky(S){const R=S.preset.ridges||[],ok=R.length===3&&R.every(r=>r.profile&&r.profile.length===1024)&&S.preset.site.px===NEOW_REGION.site.px;
   return{ok,detail:'site px '+S.preset.site.px+','+S.preset.site.py+'; ridges '+R.map(r=>(r.dist/1000).toFixed(0)+' km').join(', ')};},
  // the season: the NW outer wall's larch (read in place) and the snow; the springs' ground bare of it
- season(){const lab=BIO.kits.nwouterwall.defs.larchspray.label,want=SEASON==='winter'?/bare/:SEASON==='autumn'?/gold/:/green/;const ok=want.test(lab)&&!!ATMOS.snow&&!!SNOW_BARE;
+ season(){const lab=BIO.kits.nwouterwall.defs.larchspray.label,want=SEASON==='winter'?/bare/:SEASON==='autumn'?/gold/:/green/;const ok=want.test(lab)&&!!ATMOS.snow&&(!SITE_SPRINGS.length||!!SNOW_BARE);
   return{ok,detail:SEASON+': '+lab+'; snow base '+(ATMOS.U.snowBase?ATMOS.U.snowBase.value:'?')+'; the springs\' ground bare: '+(SNOW_BARE?SNOW_BARE.n+' cells':'no mask')};}};
 // the water: core/water's records (the tarn an open surface at the model's level, the springs, the stair) and drawn
 HCHK.water=(W,D)=>{if(!W)return{ok:false,detail:'no core/water records'};const L=W.lake,ok=!!L&&L.kind==='open'&&Math.abs(LAKE_LV)<1&&W.springs.length===SITE_SPRINGS.length&&!!D&&!!D.lake&&D.springs.length===W.springs.length&&!!D.stair;
  return{ok,detail:'the tarn '+(L?L.kind+' at '+LAKE_LV.toFixed(2)+' m':'missing')+'; '+W.springs.length+' springs; drawn: '+(D?Object.keys(D).join(', '):'none')};};
-const ZONES_NEED=['water','grove','wall','dike','spring','stair','mat','shore'];
+// THE BADLANDS (station 3): the gullies' floors never climb downstream; the ribs and the ore outcrops registered where the zones say
+HCHK.gullies=(R)=>{if(!R||!R.lines)return{ok:false,detail:'no gully record'};let climb=0,n=0;R.lines.forEach(L=>{for(let i=1;i<L.pts.length;i++){n++;if(L.pts[i][2]>L.pts[i-1][2]+1e-6)climb++;}});
+ return{ok:R.lines.length>=3&&climb===0,detail:R.lines.length+' gully lines, '+n+' floor steps, '+climb+' climbing'};};
+HCHK.ribs=(reg,need)=>{const dk=reg.filter(r=>r.key==='landform.dike').length,ore=reg.filter(r=>r.key==='landform.ore').length;
+ return{ok:dk>=need[0]&&ore>=need[1],detail:dk+' dike ribs, '+ore+' ore outcrops (want '+need[0]+' and '+need[1]+')'};};
+const CAULDRON=SITE.kind!=='badlands';
+const ZONES_NEED=CAULDRON?['water','grove','wall','dike','spring','stair','mat','shore']:['gully','wall','dike','tundra'];
 const _zoneCounts=()=>{const n={};for(let k=0;k<ZR.length;k++){const z=ZONE_IDS[ZR[k]];n[z]=(n[z]||0)+1;}return n;};
 const _allTrees=()=>(NWOW.TREES||[]).concat(NEOW.TREES||[]);
+HCHK.zonesOnly=(need,ZC)=>{const lack=need.filter(z=>!(ZC[z]>0));return{ok:!lack.length,detail:need.map(z=>z+' '+(ZC[z]||0)).join(', ')+(lack.length?'; missing '+lack.join(', '):'')};};
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),ZC=_zoneCounts();
- add('the tarn, the springs and the stair on core/water',HCHK.water(WATER_RECS,WATER_DRAW));
- add('the springs\' heat bands (mats, sinter, scald)',HCHK.heat(NEOW.heatK));
- add('the station\'s landforms on the ground (zones, dikes, springs)',HCHK.zones(ZONES_NEED,ZC,REG));
- add('the springs at the wall\'s foot, the main one hottest',HCHK.springs(SITE_SPRINGS,heatAt));
- add('the sinter stair steps down to the tarn',HCHK.stair(SITE_STAIR,WATER_RECS&&WATER_RECS.stair));
- add('tree ferns on the warm grove',HCHK.ferns(NEOW.TREES,NEOW.FIELDS));
+ if(CAULDRON){
+  add('the tarn, the springs and the stair on core/water',HCHK.water(WATER_RECS,WATER_DRAW));
+  add('the springs\' heat bands (mats, sinter, scald)',HCHK.heat(NEOW.heatK));
+  add('the station\'s landforms on the ground (zones, dikes, springs)',HCHK.zones(ZONES_NEED,ZC,REG));
+  add('the springs at the wall\'s foot, the main one hottest',HCHK.springs(SITE_SPRINGS,heatAt));
+  add('the sinter stair steps down to the tarn',HCHK.stair(SITE_STAIR,WATER_RECS&&WATER_RECS.stair));
+  add('tree ferns on the warm grove',HCHK.ferns(NEOW.TREES,NEOW.FIELDS));}
+ else{
+  add('the badlands\' landforms on the ground (gullies, walls, ribs, tundra)',HCHK.zonesOnly(ZONES_NEED,ZC));
+  add('the gullies\' floors never climb downstream',HCHK.gullies(SITE_RECS&&SITE_RECS.gully));
+  add('the dike ribs and the ore outcrops registered',HCHK.ribs(REG,SITE.need||[20,6]));}
  add('no tree in water, on a wall, a dike or a spring',HCHK.roots(_allTrees()));
  add('the shared sky at the station, its far land from the model',HCHK.sky(SKY));
- add('the season\'s larch and snow, the springs bare',HCHK.season());
+ add('the season\'s larch and snow'+(CAULDRON?', the springs bare':''),HCHK.season());
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),ZC=_zoneCounts();
- add('the tarn missing',HCHK.water(Object.assign({},WATER_RECS,{lake:null}),WATER_DRAW));
- add('the mats on cold ground',HCHK.heat(t=>Object.assign({},NEOW.heatK(t),{mat:1})));
- add('no dike drawn',HCHK.zones(ZONES_NEED,ZC,REG.filter(r=>r.key!=='landform.dike')));
- add('no spring on the ground',HCHK.zones(ZONES_NEED,Object.assign({},ZC,{spring:0}),REG));
- add('the main spring cold',HCHK.springs(SITE_SPRINGS,()=>NEOW_REGION.site.mean));
- add('the stair climbing',HCHK.stair(Object.assign({},SITE_STAIR,{levels:SITE_STAIR.levels.map((y,k)=>k===2?y+5:y)}),WATER_RECS&&WATER_RECS.stair));
- add('a tree fern on the sinter',HCHK.ferns(NEOW.TREES.concat([{x:SITE_SPRINGS[0].x,z:SITE_SPRINGS[0].z,zone:'grove'}]),NEOW.FIELDS));
- add('a tree in the tarn',HCHK.roots(_allTrees().concat([{x:-1200,z:-1500}])));
+ if(CAULDRON){
+  add('the tarn missing',HCHK.water(Object.assign({},WATER_RECS,{lake:null}),WATER_DRAW));
+  add('the mats on cold ground',HCHK.heat(t=>Object.assign({},NEOW.heatK(t),{mat:1})));
+  add('no dike drawn',HCHK.zones(ZONES_NEED,ZC,REG.filter(r=>r.key!=='landform.dike')));
+  add('no spring on the ground',HCHK.zones(ZONES_NEED,Object.assign({},ZC,{spring:0}),REG));
+  add('the main spring cold',HCHK.springs(SITE_SPRINGS,()=>NEOW_REGION.site.mean));
+  add('the stair climbing',HCHK.stair(Object.assign({},SITE_STAIR,{levels:SITE_STAIR.levels.map((y,k)=>k===2?y+5:y)}),WATER_RECS&&WATER_RECS.stair));
+  add('a tree fern on the sinter',HCHK.ferns(NEOW.TREES.concat([{x:SITE_SPRINGS[0].x,z:SITE_SPRINGS[0].z,zone:'grove'}]),NEOW.FIELDS));
+  add('a tree in the tarn',HCHK.roots(_allTrees().concat([{x:-1200,z:-1500}])));}
+ else{
+  add('no gully cut',HCHK.zonesOnly(ZONES_NEED,Object.assign({},ZC,{gully:0})));
+  add('a gully climbing',HCHK.gullies(Object.assign({},SITE_RECS.gully,{lines:SITE_RECS.gully.lines.map((L,i)=>i?L:Object.assign({},L,{pts:L.pts.map((p,k)=>k===3?[p[0],p[1],p[2]+40]:p)}))})));
+  add('no ore outcrop',HCHK.ribs(REG.filter(r=>r.key!=='landform.ore'),SITE.need||[20,6]));
+  const D0=DIKES[0];add('a tree on a dike',HCHK.roots(_allTrees().concat([{x:D0.x,z:D0.z}])));}
  add('the sky at another pixel',HCHK.sky({preset:Object.assign({},SKY.preset,{site:{px:0,py:0}})}));
  return R;}
 

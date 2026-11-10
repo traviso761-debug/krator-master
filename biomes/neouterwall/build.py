@@ -99,8 +99,8 @@ if STN_DIR:
 # strike), KRELIEF (38: the talus against the fins' feet), KGROUND (the ground's library layers hex-tiled and height-blended, with triplanar
 # sides on the walls), KHORIZON (the terrain's shadows at a low sun) with its shade, KTHERM (47: the ground's temperature between the
 # springs: the zones, the colour, the snow). Not taken at station 1: KCARVE (no cave until station 5a), KFROST and KGLACIER (the rim's
-# ice is off the page: the far land carries it), 38c (no landform kind of it here: the apron is the site's own, 44s)
-CORE_TERRAIN=['30-core-field.js','35-core-strata.js','37-core-stacks.js','38-core-relief.js','43-core-ground.js','45-core-horizon.js','47-core-therm.js']
+# ice is off the page: the far land carries it). 38c, the landform kinds: station 3's badland gullies (KRELIEF.gully, `liang` tops)
+CORE_TERRAIN=['30-core-field.js','35-core-strata.js','37-core-stacks.js','38-core-relief.js','38c-core-landforms.js','43-core-ground.js','45-core-horizon.js','47-core-therm.js']
 for f in CORE_TERRAIN:
     if f not in PATH: PATH[f]=J('core','terrain',f)
 PATH.setdefault('45-core-horizon-shade.js',J('core','terrain','host','45-core-horizon-shade.js'))

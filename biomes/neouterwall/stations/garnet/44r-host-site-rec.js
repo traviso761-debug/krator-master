@@ -13,7 +13,7 @@
 // the slope's foot between the two dikes, the main one's sinter stair (five treads). The cliffs' garnet red is the rock layer's tint
 // (SITE.rockTint) over the megabreccia stand-in until the skarn's own texture comes (KNOWN_ISSUES.md).
 const SITE={
- name:'garnet',title:'Garnet-Mirror Cauldron',R:1600,step:8,seed:6201,
+ name:'garnet',title:'Garnet-Mirror Cauldron',kind:'cauldron',tarn:'The Garnet-Mirror Tarn',R:1600,step:8,seed:6201,
  // the climate is the tarn's (region/far.py 'clim': its WH cell, +10 °C at the water); its swing (PLAN.md section 3: 17 / 3)
  amp:{warm:7,cold:7},
  // the apron's toe: west to east along the south shore, then south down the lobe's west shore (inland: south of the first run, west

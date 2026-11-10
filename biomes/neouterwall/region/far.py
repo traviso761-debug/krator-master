@@ -46,6 +46,9 @@ SITES = {
     # the Garnet-Mirror Tarn's south shore (the tarn 1186,344 at 2,810 m, ~14 x 8 km; its north-west wall 4.8-6.3 km within 4 km, its
     # south a low sill at 3.4-3.7 km): the page holds the shore and the wet south slope, the great wall across the water; station 2
     'garnet': {'px': 1185, 'py': 345.9, 'title': 'Garnet-Mirror Cauldron', 'level': True, 'clim': [1186, 344]},
+    # the skarn ribs between the two cauldrons (4.78 km, ET, 0.88 atm): a slope rising south-west ~7%, the model smooth at 1 km; the
+    # station cuts its gullies and stands its ribs on it (station 3; inside the cut's box, which already reaches 320 km round it)
+    'badlands': {'px': 1200, 'py': 330, 'title': 'The Epidote Badlands'},
 }
 EYE = 30.0            # m over the ground: a viewer on a rise
 R_PLANET = 84.0 * 360 / (2 * math.pi) * 1000      # m: the sky model's frame (kmPerDeg 84)
