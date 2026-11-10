@@ -113,6 +113,8 @@ EXTRA_SRC = {
     'settlements/locus': ['kits/locus/src', 'kits/eastern-abyssal/src', 'kits/yuni/src'],
     # Yuni's census (67-yu-trades.js) names its houses, compounds and civic buildings, in the Yuni kit (step 4b)
     'settlements/yuni': ['kits/yuni/src'],
+    # Ys reads the foreign quarter's embassy and chapterhouse in place from Iziz (its build.py VENDORED_IZIZ_FQ, 2026-11-09)
+    'settlements/ys': ['settlements/iziz/src'],
 }
 
 
