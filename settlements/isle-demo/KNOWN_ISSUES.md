@@ -396,3 +396,7 @@
       stacks' grown pods, not taken), the boat shed has no moored skiffs (they are the Ys port's), and a piece is heavy (up to
       130k triangles; the towns' distance levels carry it). The colony's programme (30 PROG.Nephtos) was tried only on a test
       drawing (tests/fixtures/nephtos-test-site.json) until the owner draws Nephtos.
+- [ ] Nephtos's shell and nacre come only with its pearl ships' catch (2026-11-10, tune `expeditions.kinds.pearl` `by`): while
+      no pearl ship is out its upkeep in them is owed from the stock it holds (a ceiling of 3,000 shells, 600 nacre, about
+      five months of upkeep). A shell-gathering village or a midden would give it a steadier source. Its houses stay one
+      household each, so `hyk-great` is declared but nothing is kept as one yet.

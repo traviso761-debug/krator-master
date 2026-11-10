@@ -167,18 +167,35 @@ DRAW.records = function (R) {
   var body = new THREE.BoxGeometry(1, 1, 1); body.translate(0, 0.5, 0);
   var roof = new THREE.ConeGeometry(0.72, 1, 4, 1); roof.rotateY(Math.PI / 4); roof.translate(0, 0.5, 0);
   var mb = new THREE.MeshLambertMaterial({ color: 0xffffff }), mr = new THREE.MeshLambertMaterial({ color: 0xffffff });
-  DRAW.massB = new THREE.InstancedMesh(body, mb, all.length); DRAW.massR = new THREE.InstancedMesh(roof, mr, all.length);
+  /* the Hykkousoi (kit hyk, the Ys pieces) massed as they are built: a white-limed drum under a sea-green dome, not a box
+     under a hall roof (their own InstancedMeshes; DRAW.massOf[i] says which pair and slot holds lot i) */
+  var hk = all.filter(function (L) { return L.kit === 'hyk' && L.cls !== 'wall'; }), nk = all.length - hk.length;
+  DRAW.massB = new THREE.InstancedMesh(body, mb, Math.max(1, nk)); DRAW.massR = new THREE.InstancedMesh(roof, mr, Math.max(1, nk));
   DRAW.massB.name = 'massing bodies'; DRAW.massR.name = 'massing roofs';
-  var KC = { isk: [0xb39a74, 0xc9ac6e], izv: [0xe4dccb, 0xc0703c], cat: [0x7a5e40, 0x5f6e3a] }, c = new THREE.Color();
-  all.forEach(function (L, i) { var k = KC[L.kit] || KC.isk; DRAW.massB.setColorAt(i, c.setHex(L.cls === 'wall' ? 0xb8ab90 : k[0])); DRAW.massR.setColorAt(i, c.setHex(L.cls === 'wall' ? 0xb8ab90 : k[1])); });
-  scene.add(DRAW.massB); scene.add(DRAW.massR);
+  var drum = new THREE.CylinderGeometry(0.5, 0.5, 1, 12, 1); drum.translate(0, 0.5, 0);
+  var dome = new THREE.SphereGeometry(0.5, 12, 6, 0, Math.PI * 2, 0, Math.PI / 2); dome.scale(1, 2, 1);   /* a unit-high cap */
+  DRAW.massHB = new THREE.InstancedMesh(drum, new THREE.MeshLambertMaterial({ color: 0xffffff }), Math.max(1, hk.length));
+  DRAW.massHR = new THREE.InstancedMesh(dome, new THREE.MeshLambertMaterial({ color: 0xffffff }), Math.max(1, hk.length));
+  DRAW.massHB.name = 'massing bodies (Hykkousoi)'; DRAW.massHR.name = 'massing domes (Hykkousoi)';
+  DRAW.massMeshes = [DRAW.massB, DRAW.massR, DRAW.massHB, DRAW.massHR];
+  var KC = { isk: [0xb39a74, 0xc9ac6e], izv: [0xe4dccb, 0xc0703c], cat: [0x7a5e40, 0x5f6e3a], hyk: [0xe6e0d0, 0x2f6e66] }, c = new THREE.Color(), nb0 = 0, nh0 = 0;
+  DRAW.massOf = all.map(function (L) {
+    var k = KC[L.kit] || KC.isk, h = L.kit === 'hyk' && L.cls !== 'wall', B = h ? DRAW.massHB : DRAW.massB, R2 = h ? DRAW.massHR : DRAW.massR, j = h ? nh0++ : nb0++;
+    B.setColorAt(j, c.setHex(L.cls === 'wall' ? 0xb8ab90 : k[0])); R2.setColorAt(j, c.setHex(L.cls === 'wall' ? 0xb8ab90 : k[1])); return [B, R2, j];
+  });
+  DRAW.massMeshes.forEach(function (m) { if (m.instanceColor == null) m.count = 0; scene.add(m); });   /* a pair no lot uses: drawn empty, not one box at the origin */
   /* footings on the slope */
-  var fl = R.lots.filter(function (L) { return L.drop > 0.35; }), fg = new THREE.BoxGeometry(1, 1, 1); fg.translate(0, -0.5, 0);
-  var foot = new THREE.InstancedMesh(fg, new THREE.MeshLambertMaterial({ color: 0x7b7366 }), Math.max(1, fl.length)), m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), e = new THREE.Euler();
-  fl.forEach(function (L, i) { q.setFromEuler(e.set(0, L.ry, 0)); m4.compose(new THREE.Vector3(L.x, L.y + 0.05, L.z), q, new THREE.Vector3(L.w * 0.92, L.drop + 0.6, L.d * 0.92)); foot.setMatrixAt(i, m4); });
-  foot.count = fl.length; foot.name = 'footings'; scene.add(foot); DRAW.stats.footings = fl.length;
+  /* the Hykkousoi's a terrace of dark coral rag under the piece (inset, so a round piece does not stand on a pale square) */
+  var fg = new THREE.BoxGeometry(1, 1, 1); fg.translate(0, -0.5, 0);
+  var m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), e = new THREE.Euler(); DRAW.stats.footings = 0;
+  [[false, 0x7b7366, 0.92, 'footings'], [true, 0x3a352d, 0.84, 'footings (Hykkousoi terraces)']].forEach(function (F) {
+    var fl = R.lots.filter(function (L) { return L.drop > 0.35 && (L.kit === 'hyk') === F[0]; });
+    var foot = new THREE.InstancedMesh(fg, new THREE.MeshLambertMaterial({ color: F[1] }), Math.max(1, fl.length));
+    fl.forEach(function (L, i) { q.setFromEuler(e.set(0, L.ry, 0)); m4.compose(new THREE.Vector3(L.x, L.y + 0.05, L.z), q, new THREE.Vector3(L.w * F[2], L.drop + 0.6, L.d * F[2])); foot.setMatrixAt(i, m4); });
+    foot.count = fl.length; foot.name = F[3]; scene.add(foot); DRAW.stats.footings += fl.length;
+  });
   /* the compound walls: a low stone wall round each house's lot (its yard), a gate's gap in the side toward the street */
-  var yl = R.lots.filter(function (L) { return L.yard && L.yard.hw > L.w / 2 + 1.5 && /^(poor|middle|rich|manor|vpoor|vmiddle|vrich)$/.test(L.cls); });
+  var yl = R.lots.filter(function (L) { return L.kit !== 'hyk' && L.yard && L.yard.hw > L.w / 2 + 1.5 && /^(poor|middle|rich|manor|vpoor|vmiddle|vrich)$/.test(L.cls); });   /* an Islander yard; the Hykkousoi wall no compounds */
   var wg = new THREE.BoxGeometry(1, 1, 1); wg.translate(0, 0.5, 0);
   var walls = new THREE.InstancedMesh(wg, new THREE.MeshLambertMaterial({ color: 0x8c8170 }), Math.max(1, yl.length * 5)), nw = 0, G = ISLE.cur.G;
   var seg = function (a, b) {
@@ -204,6 +221,11 @@ DRAW.matOf = function (L, s) {
   var m4 = new THREE.Matrix4(), q = new THREE.Quaternion().setFromEuler(new THREE.Euler(0, L.ry, 0));
   return m4.compose(new THREE.Vector3(L.x, L.y, L.z), q, new THREE.Vector3(s[0], s[1], s[2]));
 };
+/* lot i's massing: hidden (drawn by a piece), or shown with its body and roof matrices; shown(i) for the checks */
+DRAW.massZ = null;
+DRAW.massHide = function (i) { var M = DRAW.massOf[i], z = DRAW.massZ || (DRAW.massZ = new THREE.Matrix4().makeScale(0, 0, 0)); M[0].setMatrixAt(M[2], z); M[1].setMatrixAt(M[2], z); };
+DRAW.massShown = function (i) { var M = DRAW.massOf[i], m = new THREE.Matrix4(); M[0].getMatrixAt(M[2], m); return m.elements[0] !== 0 || m.elements[5] !== 0; };
+DRAW.massDirty = function () { DRAW.massMeshes.forEach(function (m) { m.instanceMatrix.needsUpdate = true; if (m.instanceColor) m.instanceColor.needsUpdate = true; }); };
 /* the near set round a point: full pieces there, massing everywhere else */
 DRAW.near = function (at, force) {
   at = at || [0, 0];
@@ -225,15 +247,19 @@ DRAW.near = function (at, force) {
       im.instanceMatrix.needsUpdate = true; im.name = id; scene.add(im); DRAW.inst.push(im); tris += pt.tris * B.L.length;
     });
   }
-  var nb = 0, z0 = new THREE.Matrix4().makeScale(0, 0, 0);
+  var nb = 0;
   all.forEach(function (L, i) {
-    if (full[i] || L.vacant) { DRAW.massB.setMatrixAt(i, z0); DRAW.massR.setMatrixAt(i, z0); return; }
+    if (full[i] || L.vacant) { DRAW.massHide(i); return; }
+    var M = DRAW.massOf[i], r;
+    if (M[0] === DRAW.massHB) {   /* a drum under a dome, inside the declared box (the Ys pieces are round and stand well inside it) */
+      var s = Math.min(L.w, L.d) * 0.72, dh = Math.min(s * 0.5, Math.max(1.5, L.h * 0.35)), bh = Math.max(2.5, L.h * 0.8 - dh);
+      M[0].setMatrixAt(M[2], DRAW.matOf(L, [s, bh, s])); r = DRAW.matOf(L, [s * 1.04, dh, s * 1.04]); r.elements[13] += bh; M[1].setMatrixAt(M[2], r); nb++; return;
+    }
     var wh = L.cls === 'wall' ? L.h : Math.max(2.5, L.h * 0.45), rh = L.cls === 'wall' ? 0.01 : Math.max(1.5, L.h - wh);
-    DRAW.massB.setMatrixAt(i, DRAW.matOf(L, [L.w * 0.9, wh, L.d * 0.9]));
-    var r = DRAW.matOf(L, [L.w * 1.02, rh, L.d * 1.02]); r.elements[13] += wh; DRAW.massR.setMatrixAt(i, r); nb++;
+    M[0].setMatrixAt(M[2], DRAW.matOf(L, [L.w * 0.9, wh, L.d * 0.9]));
+    r = DRAW.matOf(L, [L.w * 1.02, rh, L.d * 1.02]); r.elements[13] += wh; M[1].setMatrixAt(M[2], r); nb++;
   });
-  DRAW.massB.instanceMatrix.needsUpdate = true; DRAW.massR.instanceMatrix.needsUpdate = true;
-  if (DRAW.massB.instanceColor) DRAW.massB.instanceColor.needsUpdate = true; if (DRAW.massR.instanceColor) DRAW.massR.instanceColor.needsUpdate = true;
+  DRAW.massDirty();
   DRAW.nearSet = Object.keys(full).map(function (i) { return all[i]; });   /* the lots drawn in full (63-isle-doors.js hosts their doors) */
   DRAW.stats.near = Object.keys(full).length; DRAW.stats.massing = nb; DRAW.stats.nearTris = Math.round(tris); DRAW.stats.protos = DRAW.built;
   DRAW.stats.nearMs = Math.round(performance.now() - t0);
@@ -248,7 +274,7 @@ DRAW.near = function (at, force) {
    progress is the sim's record */
 DRAW.lotWork = function (L) {
   if (typeof KCONS === 'undefined' || !KCITY.constructMesh) { DRAW.failed['lot works'] = 'no Construction kit or core/city construct'; return null; }
-  var B = ISLE.TUNE.sim.build, kind = ISLE.households(L.key) >= 3 ? 'longhouse' : 'house', bill = B && B.kinds[kind] ? B.kinds[kind].bill : null;
+  var B = ISLE.TUNE.sim.build, kind = ISLE.lotKind ? ISLE.lotKind(L.key) : ISLE.households(L.key) >= 3 ? 'longhouse' : 'house', bill = B && B.kinds[kind] ? B.kinds[kind].bill : null;
   var P = DRAW.proto(L.kit, L.key, L.v), C = P ? KCITY.constructMesh(P.parts) : null, g = new THREE.Group();
   var bb = P ? DRAW.protoBox(P) : null;   /* the piece's own extent (its geometry, not its declared box) */
   var S = KCONS.site({ w: bb ? bb.w : L.w * 0.7, d: bb ? bb.d : L.d * 0.7, h: bb ? bb.h : L.h, eaves: bb ? bb.h * 0.5 : null, plot: [L.w, L.d], bill: bill });   /* the scaffold round the piece, the plot the lot */

@@ -6,7 +6,7 @@ KCONS.site({w, d, h, eaves?, plot?, bill?, palette?, mats?}) -> {group, set(f, o
 - `w`, `d`, `h`: the building's own box (metres), in the piece's frame (origin at its footprint's centre, +z its front).
 - `eaves`: the scaffold's top (default 0.6 h). `plot`: the cleared ground's `[w, d]` (default the box and a metre round).
 - `bill`: `{good: n}`, the goods to pile (one pile a good, in the bill's order, along the +x side, its near end half a metre
-  past the scaffold); a good's pile kind is `KCONS.PILES[good]` (`logs`, `planks`, `blocks`, `bricks`, `heap`, `bundles`,
+  past the scaffold); a good's pile kind is `KCONS.PILES[good]` (`logs`, `planks`, `blocks`, `bricks`, `heap` (sand, lime, clay, shells), `slabs` (nacre, tiles, slate), `bundles`,
   `coils`, else `crates` under a tarp).
 - `palette`: colours over `KCONS.PALETTE` (`earth`, `stake`, `string`, `pole`, `board`, `log`, `block`, `bundle`, `crate`,
   `brick`, `sand`, `rope`, `canvas`): each site makes its own Lambert materials from them.

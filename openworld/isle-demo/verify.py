@@ -261,6 +261,12 @@ COLONY_SIM_JS = r"""(neg)=>{const R=[],S=ISLE.SIM,X=S&&S.towns.nephtos,St=SIM.R.
  ok('its villages at work for it: its staples, its plantations\' clove, cacao, indigo, annatto and tobacco, fish, timber and copper ('+Object.keys(made).map(g=>g+' '+made[g]).join(', ')+')',V.length===6&&['taro','indigo','annatto','tobacco','fish','copper'].every(g=>made[g]>0),V.map(v=>v.id).join(','));
  const at=Object.assign({},S.shipsAt||{});if(neg==='unvisited')delete at['tethys|nephtos'];
  ok('the poleis\' fleets: Tethys\'s merchantmen call at its colony (Tethys '+(at['tethys|nephtos']||0)+', Ys '+(at['hykkousoi|nephtos']||0)+', Pontus '+(at['pontus|nephtos']||0)+' calls at Nephtos so far)',(at['tethys|nephtos']||0)>0,JSON.stringify((S.ships||{}).tethys||{}),neg==='unvisited'?'unvisited':null);
+ /* built and kept in shell, nacre and pearl, little timber (the owner, 2026-11-10; tune build.byKit), its pearl ships bringing
+    the oysters' nacre and the bed's shell up with the pearls (expeditions.kinds.pearl `by`) */
+ const U=((SIM.buildReport('nephtos').towns.nephtos||{}).upkeep||{day:{}}).day,f=g=>(U[g]||0).toFixed(1),u=Object.assign({},U);if(neg==='timber')u.timber=(u.shells||0);
+ ok('kept in shells, nacre and pearls, little timber (a day: shells '+f('shells')+', nacre '+f('nacre')+', pearls '+f('pearls')+', timber '+f('timber')+')',u.shells>0&&u.nacre>0&&u.pearls>0&&(u.timber||0)<u.shells/5&&!u.mats,JSON.stringify(U),neg==='timber'?'timber':null);
+ const EB=ISLE.expBooks().camps.filter(c=>c.town==='nephtos'),got={};EB.forEach(c=>['pearls','nacre','shells'].forEach(g=>{got[g]=(got[g]||0)+((c.made||{})[g]||0);}));
+ ok('its pearl ships bring up nacre and shell with the pearls ('+EB.length+' out; made '+Object.keys(got).map(g=>g+' '+Math.round(got[g])).join(', ')+')',EB.length>0&&got.pearls>0&&got.nacre>0&&got.shells>0,JSON.stringify(got));
  return R;}"""
 HAMLETS_SIM_JS = r"""(()=>{const err=ISLE_TOWNS_W.stats.hamletError;if(err||!ISLE.SIM.hamlets)return{checks:[{name:'the hamlets: in the sim',ok:false,detail:err||'not declared'}],negs:[]};
  const a=ISLE.simHamletBooks();ISLE.simRun(2*1440);const b=ISLE.simHamletBooks(),cp=x=>JSON.parse(JSON.stringify(x)),pick=(rs,re)=>rs.filter(c=>re.test(c.name))[0];

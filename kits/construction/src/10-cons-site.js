@@ -9,7 +9,7 @@
                      cleared ground's size, the box and a metre round) (origin at the footprint's centre, +z its front):
                      a CLEARED PLOT (levelled earth a little past the footprint) with corner STAKES and a string line; the
                      MATERIALS beside it, one pile a good of the bill (KCONS.PILES: timber a stack of logs, planks a stack of
-                     boards, stone a heap of blocks, bricks a stacked pallet, sand and lime a heap, mats and thatch rolled
+                     boards, stone a heap of blocks, bricks a stacked pallet, sand, lime and shells a heap, nacre, tiles and slate a stack of slabs, mats and thatch rolled
                      bundles, rope coils, anything else crates under a tarp), each shown by what is still on site (onSite:
                      {good: share 0..1}, default all of it); the SCAFFOLD round the building a metre out (poles, ledgers every
                      2 m with the transoms a hand lower, a board walk and a ladder leaning on it), rising with the walls to
@@ -19,14 +19,14 @@
                      the library's maps), which then wins. Every box and pole carries world-unit UVs (a metre is one UV
                      unit), so a library map tiles by its own scale whatever the piece's size. Every mesh is named and
                      carries userData.cons (its palette key) and userData.consPart (plot, pile, scaffold, ladder)
-     KCONS.PILES      good -> pile kind ('logs', 'planks', 'blocks', 'bricks', 'heap', 'bundles', 'coils', 'crates'); a host adds its goods
+     KCONS.PILES      good -> pile kind ('logs', 'planks', 'blocks', 'bricks', 'heap', 'slabs', 'bundles', 'coils', 'crates'); a host adds its goods
      KCONS.PALETTE    the palette's keys and colours */
 var KCONS = (function () {
   'use strict';
   var PILES = { timber: 'logs', logs: 'logs', poles: 'logs', planks: 'planks', boards: 'planks', stone: 'blocks', blocks: 'blocks', brick: 'bricks', bricks: 'bricks',
-    sand: 'heap', lime: 'heap', clay: 'heap', gravel: 'heap', mortar: 'heap', mats: 'bundles', thatch: 'bundles', reeds: 'bundles', cloth: 'bundles', rope: 'coils' };
+    sand: 'heap', lime: 'heap', clay: 'heap', gravel: 'heap', mortar: 'heap', shells: 'heap', nacre: 'slabs', tiles: 'slabs', slate: 'slabs', mats: 'bundles', thatch: 'bundles', reeds: 'bundles', cloth: 'bundles', rope: 'coils' };
   var PAL = { earth: 0x6e5a40, stake: 0x8a6a48, string: 0xe8e0c8, pole: 0x8c6c48, board: 0xa88a5e, log: 0x7a5a3a, block: 0x8a8478, bundle: 0xc2a868, crate: 0x9a7a50,
-    brick: 0x9a5040, sand: 0xc8b48a, rope: 0xb8a070, canvas: 0xc8bca0 };
+    brick: 0x9a5040, sand: 0xc8b48a, rope: 0xb8a070, canvas: 0xc8bca0, slab: 0xe2ded6 };
   function mats(pal) { var o = {}; for (var k in pal) o[k] = new THREE.MeshLambertMaterial({ color: pal[k] }); return o; }
   /* world-unit UVs: a box's faces in metres (BoxGeometry's faces: +x -x (d by h), +y -y (w by d), +z -z (w by h)); a
      cylinder's side round its girth and along its length */
@@ -47,6 +47,7 @@ var KCONS = (function () {
       [-0.24, 0.24].forEach(function (x) { g.add(box(0.46 * s, 0.6 * s, 0.86 * s, M, 'brick', x * s, 0.4 * s, 0)); }); }
     else if (kind === 'heap') { var cg = new THREE.ConeGeometry(0.9 * s, 0.7 * s, 10, 1, true); cg.translate(0, 0.35 * s, 0); wuvCyl(cg, 0.45 * s, 0.9 * s);
       g.add(tag(new THREE.Mesh(cg, M.sand), 'sand', 'pile')); }
+    else if (kind === 'slabs') { for (var sq = 0; sq < 6; sq++) g.add(box(0.9 * s, 0.07 * s, 0.6 * s, M, 'slab', 0, 0.04 * s + sq * 0.08 * s, 0)); }   /* plates stacked (nacre, tiles, slate) */
     else if (kind === 'bundles') { for (var b = 0; b < 3; b++) g.add(cyl(0.3 * s, 1.2 * s, M, 'bundle', 0, 0.3 * s + (b === 2 ? 0.52 * s : 0), (b === 2 ? 0 : b - 0.5) * 0.62 * s, 'z')); }
     else if (kind === 'coils') { for (var c = 0; c < 3; c++) { var tg = new THREE.TorusGeometry(0.28 * s, 0.07 * s, 6, 14); tg.rotateX(Math.PI / 2); wuvCyl(tg, 0.28 * s, 2 * Math.PI * 0.07 * s);
       var t = tag(new THREE.Mesh(tg, M.rope), 'rope', 'pile'); t.position.set((c === 2 ? 0 : c - 0.5) * 0.7 * s, 0.07 * s + (c === 2 ? 0.14 * s : 0), 0); g.add(t); } }
