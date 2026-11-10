@@ -35,17 +35,17 @@
     "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
     "core/shader/06-core-khook.js": "263ba824c45b1f350a27ef1c2db3b89a022679fae4b9af234a6c2c6bfb740a04",
     "core/shader/06b-core-kcolor.js": "ededfc6b8a1a8aae5bf3c6ab40863478f9beb8e1aaf2acf4ba9da25ef6392115",
-    "core/shader/07-core-kwarp.js": "27e1014d2d75059016cb42523062a762ac26fb018516d0aa08e537a90358ced5",
+    "core/shader/07-core-kwarp.js": "54c1f1306c89a2b3c6600a4ed49f76f0e85dc1f116fbcdf0ff36f57945d2177b",
     "core/tags/50-core-tags.js": "5d506746c4b5142f76e932cbd798d4ba6926e3865919d7ecd6d39a16e4e5b882",
     "core/tags/52-core-tags-vocab.js": "ad882d6dc96ad881fb8ddf10f3264e11314b0a69225c3203c78978795354cbd4",
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
-    "kits/catalog/furniture_bundle.py": "135255efe723f53104607e50ce1a9d30779aeeaa46b2411605fdd191472f9c38",
+    "kits/catalog/furniture_bundle.py": "0fb8aeb1bbb407109550670362f515bc43632ca2a23526c34b65e12814c28836",
     "kits/catalog/krator-furniture-core.js": "f3810ba604216f194de8fab7aa58d8991e18a99f31387e3acee5d879445e256f",
     "kits/catalog/krator-furniture-kit.js": "cdb40849f12aabed723a669862cea5c9891d238f4e2e00f3b9d8b89fa7fa6674",
     "kits/catalog/krator-furniture-runtime.js": "5bd95301145e7adfb6528e85de8d2fb39206b0cf558409718dbd85db437e57c9",
     "kits/catalog/krator-master-furniture-generic.js": "990b05b8404c67ab960f6649babc8143c738ea600a04c0c22564296fa7786ea4",
     "kits/catalog/krator-symbols.js": "8fbd9a7487e06d800b69a081751f0b580cf75285b6c46e701549e1fbb50eceb4",
-    "kits/resources/KNOWN_ISSUES.md": "fc496c000ede0a4692f8ff58a7d96561ad55589ef0655ed701f09cc01d56e767",
+    "kits/resources/KNOWN_ISSUES.md": "d98afcbf8ecaa7001c8d8928924ab1d1430e2f4ea5cbcfe19263bd93a562bcbf",
     "kits/resources/PORT.md": "3d79cc6c2428ba8d0843638f05018137a523fdbb12b69fe82c44da82d8fb14d4",
     "kits/resources/build.py": "e149a07426c7f80e68b8a960932aa1e9ed80957729fe83122c8d4760b9c581a8",
     "kits/resources/data/geology.json": "19058fbb95a026cb5106840a13bd93b341ad9557f65304bc9e68c0b873a11292",
@@ -131,18 +131,18 @@
     "core/rand": "2174a8e3e509270343eb7e2c6e69ec9c0a221daa415e05d960123007b253bc77",
     "core/shader": "4cde9d6d1fd8ecb088b14292257e62fb7ae4991d6c90172efa900ad30bec4f2d",
     "core/tags": "fad9660e6ae68d96bab011b1a69b5df0207cd315c163f70bcdf1e3bd1f5ed4bc",
-    "kits/catalog": "82ffc64a98257150f3e5ac4c4e945ee010a1de96491403d04a1cbdfba4f68d69",
+    "kits/catalog": "707e7b4a9c367625e5bd6981645fd823de52c815163b8fcf26ce2c6c346a0061",
     "kits/resources/src": "c0a4311e06dc6ee952cdf661f229cf59a13893c9d4e5e3aff05787909d0545b3",
     "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
    },
    "outputs": {
-    "kits/resources/build-manifest.json": "8d10a7df3543fa09b15ccfd4d88852e8246c239b016de637f02cabe4383caf7d",
-    "kits/resources/dist/resources.html": "c1b056912e66fa13b88b045843816ccc3119ac5cb667dcb939c4a57df0005e86",
+    "kits/resources/build-manifest.json": "607111f6579baa5790c1fa0f801e885c99341c88b64770f3682022812973f174",
+    "kits/resources/dist/resources.html": "86f469c3be2a02dd551deb93e0bad5974a7af75f9948b16b329ce623db13aa84",
     "kits/resources/dist/resources.tex.resources.js": "71a4d5020e9e8fa48901bd901b654606f85d081fd2fbc187e79f75463e3c8224"
    },
    "outputs_raw": {
-    "kits/resources/build-manifest.json": "8d10a7df3543fa09b15ccfd4d88852e8246c239b016de637f02cabe4383caf7d",
-    "kits/resources/dist/resources.html": "c1b056912e66fa13b88b045843816ccc3119ac5cb667dcb939c4a57df0005e86",
+    "kits/resources/build-manifest.json": "607111f6579baa5790c1fa0f801e885c99341c88b64770f3682022812973f174",
+    "kits/resources/dist/resources.html": "86f469c3be2a02dd551deb93e0bad5974a7af75f9948b16b329ce623db13aa84",
     "kits/resources/dist/resources.tex.resources.js": "71a4d5020e9e8fa48901bd901b654606f85d081fd2fbc187e79f75463e3c8224"
    }
   }

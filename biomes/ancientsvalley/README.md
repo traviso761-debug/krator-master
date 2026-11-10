@@ -149,6 +149,36 @@ and 3 ramps, the cargo line 37 crossings, the subway 3 stations, 4 trains; the w
 Per view: the Overlook 8.87 M in 999, a residential street 7.50 M in 974, among the towers 7.06 M in 974, the viaduct 6.20 M in 758, the core from the water 6.34 M in 915, the dead lobe 6.17 M in 822, a crater 5.93 M in 846, the Gyre 5.72 M in 544, the Strider 7.04 M in 804, the park gone feral 8.46 M in 1101, from the air 6.47 M in 826 (the ceiling 1,200 calls). **The camera rides with a keeper** on R (again for the next, Escape, a drag or the wheel to let go;
 `AV_FOLLOW.follow(i)`).
 
+**The colour of the air** (the owner, 2026-11-09: "the distant buildings just always look greenish blue and it doesn't look right against a yellow
+sky"; "make them more similar to cloud color during storm and fog"; `89v-host-smog.js`). The far towers take their colour from the fog, the mist
+and the hemisphere light. Three things made them blue-green under a yellow sky: the weather pulled the fog toward a fixed blue-grey in rain and fog,
+the mist took 45% of the sky's zenith blue, and the hemisphere's sky colour is blue by its preset; the smog's own purple pull ran in a tick, before
+the sky's update, so the sky overwrote it every frame. Now `AV_AIR.view` runs after the sky in the frame's view phase: the fog is the sky's own
+horizon colour, moved toward the clouds' colour (the deck's tint, darkened by its darkness) as the cover, the rain and the fog rise, with a fifth
+of the smog's purple-grey; under a storm the hemisphere leans to the same cloud colour; the mist takes 12% of the zenith.
+
+**The tower impostors hide where they should** (2026-11-09). The impostors are hidden per tower by matching each instance's position against
+`AVC.towerAt`, which was keyed by the float64 coordinates while the instances are read back from a Float32Array: on the 17-degree lattice no key
+ever matched, so no tower's billboard was ever hidden. It stood inside every hero and shell, unseen in a solid one, but showing through a
+skeleton's frame, over a fallen heap and above a broken top: a share of the "shells clipping through models" reported for a week. The table is
+keyed by `Math.fround` now, and a check holds it (every instance finds its tower; none is drawn over a hero, a shell or a heap). With the
+billboards hidden, a fallen tower past the far rubble (3.2 km) drew nothing at all: there its billboard stands squashed to the heap's height (16 m).
+
+**The cosmetic distortions of space and time** (the owner, 2026-11-09; `89y-host-anomaly.js`; PLAN-ANOMALIES.md section 5). Three records, one
+vertex warp on every material (core/shader `KWARP`, written for this valley) and a time scale; none changes collision, placement or the walker's
+ground. THE BEND round the Gyre: as the eye comes within 800 m of the engine the land rises round it like a bowl (`y += k d^2`, d the horizontal
+distance from the eye). THE LENS over the Strider: a small dark body with a violet rim bends what lies behind it outward round itself, a point
+seen at angle theta from it turned away by thetaE^2 / theta, readable to 4 km. THE TIME POCKET in the park gone feral: inside it the rain, the
+clouds, the steam, the sway (core/atmos's clock scale) and the keepers slow to a fifth, eased over its edge.
+
+**The House** (the owner, 2026-11-09: "a House of Leaves style bigger-on-the-inside facility, looping corridors"; `41c-av-house.js` the records,
+`75-host-house.js` the drawing and the walking). A concrete hut 3 m square stands on the residential plaza, its door to the south. Walk through it
+(F to walk) and you are in a foyer 30 x 60 m and 12 m high, far outside the world's coordinates, lit only round the eye, so every far end is black.
+North, a corridor in 12 m segments that never ends (crossing the fourth moves you back one); east, a corridor whose far door opens on a closet, a
+hall too large to see across or the descent, by the visit; the descent's ramp has no bottom (its foot leads to the same place on the slope higher
+up, and a level is counted); west, a dead-end hallway 4 cm longer each visit, which the readout's tape reports without comment. Back out through
+the foyer's door, you step out of the hut. The House's floors and walls are the walker's registry (core/walk `KWALK`, now handed to the host).
+
 ## Read next
 
 `PLAN.md` (the brief and the decisions), `PLAN-ANOMALIES.md`, `INDEX.md`, `KNOWN_ISSUES.md`, `PORT.md`; `kits/metropolis/README.md` for the towers.

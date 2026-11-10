@@ -48,6 +48,12 @@
 - [ ] **The melt glass is a stand-in** (`ground.obsidian`): the basins' trinitite set is owed (`core/materials/PROMPTS-NEEDED.md`).
 - [ ] **The water on this page is at its corners:** the ridge is wider on the model than the plan read it (2 km cells), so the inlets lie just past the
   page's edge; the far lake carries them. A station on the shore (city3, the drowned city) is the water's.
+- [ ] **The House is bare** (`41c`, `75`, 2026-11-09): ash-grey boxes with dim strips, no furniture, no sound (the growl at a fixed distance
+  the plan wants is `core/audio`'s), no NPC can follow the walker through a threshold (the paths need teleport edges), and rewiring opens one of
+  three fixed rooms. Flying (not walking) through a door also crosses it. The visit count is this browser's (localStorage).
+- [ ] **The distortions' known limits** (`89y`, 2026-11-09): the warp bends vertices, so the coarse far country and a long flat mesh bend in
+  steps; three.js culls on unbent bounds, so near the Gyre a chunk lifted into view can vanish early; the lens turns a shell's cage but not the
+  trace inside it, so a shell right behind the lens shears; the warp installs once the city is built, recompiling every material once.
 - [ ] **No mutants, Cyberliches or extraplanars yet** (`PLAN.md` section 6: each when its kit exists; `kits/extraplanar` is being built in the
   session valley-extraplanar, 2026-11-09), no Soleri farmland (the terraces are off this page). The keepers are kits/mechs' Ancients (culture
   `ancient`, session valley-robots, 2026-11-09): the porter, the watcher, the lamplighter, the sweeper and the gardener at their routines, the

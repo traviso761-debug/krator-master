@@ -1,8 +1,8 @@
 {
  "pages": {
   "biomes/ancientsvalley/dist/ancientsvalley.html": {
-   "bytes": 4409696,
-   "sha256": "57baf8572c9fb3b7135ea1006d76789c5406cef6d640eb1c8a82888c8ff05be5"
+   "bytes": 4444967,
+   "sha256": "d672cd4ef32199a43eecf910e19098f93e90c688d79ae91baa77870c55be0fc8"
   },
   "biomes/crater-drylands/dist/crater-drylands.html": {
    "bytes": 4190377,
@@ -513,8 +513,8 @@
    "sha256": "cf5c96c2c14c91cc6a99127488d6f410a689d68446b73d331b9d1798a56badd4"
   },
   "kits/islanders/dist/islanders.html": {
-   "bytes": 1680912,
-   "sha256": "a5a3a0d97dfe42c341b373f97d6bfb2ea0e2cfb46c781afa6316bed5ec18270b"
+   "bytes": 1681288,
+   "sha256": "24487d45f8b4deb82842179b21ddbc862b36fa8d4bdd72c8343c5598271262ce"
   },
   "kits/lizardmen/dist/lizardmen.html": {
    "bytes": 1588821,
@@ -541,8 +541,8 @@
    "sha256": "a4a80fd4eec9827ec13b96c6182ac08c016a4e8595fe1db753ea2591dafeb3d7"
   },
   "kits/resources/dist/resources.html": {
-   "bytes": 5187128,
-   "sha256": "c1b056912e66fa13b88b045843816ccc3119ac5cb667dcb939c4a57df0005e86"
+   "bytes": 5187504,
+   "sha256": "86f469c3be2a02dd551deb93e0bad5974a7af75f9948b16b329ce623db13aa84"
   },
   "kits/ringsea/dist/ringsea.html": {
    "bytes": 4937437,

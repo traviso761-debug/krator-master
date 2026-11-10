@@ -518,3 +518,9 @@ Each claim below was checked against the code before anything was changed. Commi
 - **8e.3 (150 ms tick lag)** and the **Q1 preload from 0.80 R**: worth trying if the cross-fade still shows a frame of lag after the above.
 - **Q4 (plants on `meshH`, ground refined along the carvings)** and **Q5's three checks**: the next floating-flora pass.
 - **10d** (rust in a shader chunk, distance-adaptive trace steps, chunked creepers): later passes.
+
+**Found after the review (2026-11-09):** the tower impostors were never hidden behind their heroes and shells. `tiersTick` hides an impostor
+instance by looking its tower up in `AVC.towerAt` by position, keyed by the float64 coordinates, while the instance positions are read from a
+Float32Array; on the 17-degree lattice no key ever matched. Every tower's billboard stood inside its own model: invisible in a solid one, but
+showing through a skeleton's frame, over a fallen heap and above a broken top. A diagnostic at the owner's camera found impostors drawn at 88 m and
+200 m. The table is keyed by `Math.fround` now, and a page check holds it, with a negative on the old key.

@@ -35,13 +35,13 @@
     "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
     "core/shader/06-core-khook.js": "263ba824c45b1f350a27ef1c2db3b89a022679fae4b9af234a6c2c6bfb740a04",
     "core/shader/06b-core-kcolor.js": "ededfc6b8a1a8aae5bf3c6ab40863478f9beb8e1aaf2acf4ba9da25ef6392115",
-    "core/shader/07-core-kwarp.js": "27e1014d2d75059016cb42523062a762ac26fb018516d0aa08e537a90358ced5",
+    "core/shader/07-core-kwarp.js": "54c1f1306c89a2b3c6600a4ed49f76f0e85dc1f116fbcdf0ff36f57945d2177b",
     "core/tags/50-core-tags.js": "5d506746c4b5142f76e932cbd798d4ba6926e3865919d7ecd6d39a16e4e5b882",
     "core/tags/52-core-tags-vocab.js": "ad882d6dc96ad881fb8ddf10f3264e11314b0a69225c3203c78978795354cbd4",
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
     "core/walk/20-core-walk.js": "4a23de56ebb1041068616bdb1baf04aa407f280c0240606e0b6107737f7d7a34",
     "core/walk/box/24-core-walk-box.js": "8ce6535b7271e644399c6c864494fbf0c085549999b98d9995b80e272ce3d573",
-    "kits/catalog/furniture_bundle.py": "135255efe723f53104607e50ce1a9d30779aeeaa46b2411605fdd191472f9c38",
+    "kits/catalog/furniture_bundle.py": "0fb8aeb1bbb407109550670362f515bc43632ca2a23526c34b65e12814c28836",
     "kits/catalog/krator-furniture-core.js": "f3810ba604216f194de8fab7aa58d8991e18a99f31387e3acee5d879445e256f",
     "kits/catalog/krator-furniture-kit.js": "cdb40849f12aabed723a669862cea5c9891d238f4e2e00f3b9d8b89fa7fa6674",
     "kits/catalog/krator-furniture-runtime.js": "5bd95301145e7adfb6528e85de8d2fb39206b0cf558409718dbd85db437e57c9",
@@ -329,20 +329,20 @@
     "core/tags": "fad9660e6ae68d96bab011b1a69b5df0207cd315c163f70bcdf1e3bd1f5ed4bc",
     "core/walk": "c6769307f01d663d946e7a69638ff7e4fee9c46e1ff5bc8acc98125dd4bb4619",
     "core/walk/box": "640d3e2f0368a531fc4c1f0be0fdca8de1f41b5e2f176112f6212377ea41494d",
-    "kits/catalog": "82ffc64a98257150f3e5ac4c4e945ee010a1de96491403d04a1cbdfba4f68d69",
+    "kits/catalog": "707e7b4a9c367625e5bd6981645fd823de52c815163b8fcf26ce2c6c346a0061",
     "kits/fauna": "48fbee377f9ee7cfec7f573fe62b8d919d153e60cf4dfe98187bdbea63544603",
     "kits/islanders/src": "01854cab0e7b29920476cc02cf4a76a5c7a526b4c8b70f95cd3c4c9f82bca12e",
     "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
    },
    "outputs": {
-    "kits/islanders/build-manifest.json": "62530aa955e5a808e922517dc507ad97f01d9e4ea60cb796066db105d2ba525a",
-    "kits/islanders/dist/islanders.html": "a5a3a0d97dfe42c341b373f97d6bfb2ea0e2cfb46c781afa6316bed5ec18270b",
+    "kits/islanders/build-manifest.json": "d056023674be6260a58d3a2fb697efeb74605f7adb47521ab5e72ba4e461b87d",
+    "kits/islanders/dist/islanders.html": "24487d45f8b4deb82842179b21ddbc862b36fa8d4bdd72c8343c5598271262ce",
     "kits/islanders/dist/islanders.tex.islanders-2.js": "26c0e90661ed9cc1b2ba1ea5d58a5cb8b8a222a12d1971619f1364858dbed605",
     "kits/islanders/dist/islanders.tex.islanders.js": "8d5ef2e0357e31b27dfe18d43477277130fde6a4940738320abf666cbad7416e"
    },
    "outputs_raw": {
-    "kits/islanders/build-manifest.json": "62530aa955e5a808e922517dc507ad97f01d9e4ea60cb796066db105d2ba525a",
-    "kits/islanders/dist/islanders.html": "a5a3a0d97dfe42c341b373f97d6bfb2ea0e2cfb46c781afa6316bed5ec18270b",
+    "kits/islanders/build-manifest.json": "d056023674be6260a58d3a2fb697efeb74605f7adb47521ab5e72ba4e461b87d",
+    "kits/islanders/dist/islanders.html": "24487d45f8b4deb82842179b21ddbc862b36fa8d4bdd72c8343c5598271262ce",
     "kits/islanders/dist/islanders.tex.islanders-2.js": "26c0e90661ed9cc1b2ba1ea5d58a5cb8b8a222a12d1971619f1364858dbed605",
     "kits/islanders/dist/islanders.tex.islanders.js": "8d5ef2e0357e31b27dfe18d43477277130fde6a4940738320abf666cbad7416e"
    }

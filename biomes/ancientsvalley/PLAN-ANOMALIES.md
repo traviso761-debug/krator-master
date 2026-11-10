@@ -121,6 +121,10 @@ any rooms.
 `core/water/ext/58` already renders a second camera with an oblique near plane, and its live pass costs about 2.4-3.4 ms on the Arc 140T on eastabyss. A portal is the same pass
 through a door. At most one or two in view. Godot uses a `SubViewport`. Only needed where a player must see *through* a seam; teleports cover the rest.
 
+**Built on the valley's page (2026-11-09):** larger inside than out, loops, rewiring and depth in `41c-av-house.js` and `75-host-house.js` (a hut on
+the residential plaza; the House at x 40 km, y 3 km; the walker on `KWALK`), with the tape that drifts. Not yet: a see-through portal, `KANOM` as
+a core module (the House's records are the valley's own for now), furniture, sound.
+
 ### The Bend
 
 A view-space vertex warp centred on the camera: `y += k·d²` turned upward, so the land rises round you like the inside of a bowl and the horizon climbs the sky. The ground
@@ -130,6 +134,9 @@ under your feet stays true, so **collision, placement and the walker don't chang
 - Needs: mesh culling widened near a bend (chunks vanish early otherwise), the same warp in the impostors' own shader, the sky's horizon, and water's. Shadows can stay
   unwarped at modest strength: check by eye.
 - **Cracking:** a screen-space crack pattern at high strength, where the warped ground splits along bright seams. Cheap, but judge it early: it may look like a bug.
+
+**Built as cosmetic distortions on the valley's page (2026-11-09, `89y-host-anomaly.js`):** the Bend round the Gyre, a lens over the Strider and a
+time pocket in the park, on `KWARP` and core/atmos's clock scale. Not yet: the sky's horizon climbing, the cracking, the impostors' own shader.
 
 ### The Broken Country (the Escher set-piece)
 

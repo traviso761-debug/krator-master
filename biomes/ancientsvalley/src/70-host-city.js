@@ -35,7 +35,10 @@ MP.families().concat(Object.values(MP.FAMILY).filter(F=>F.design)).forEach(F=>{i
 /* a fallen tower is a heap 12 to 18 m high: its look is the stump's (AV_LOOK), an upright 40 to 54 m stub, so it takes no shell and no impostor (Gemini's
    review, 8a, 2026-11-09): its hero to its band, its rubble past that */
 const avCanShell=t=>!!t.skey&&t.state!=='skeleton'&&t.state!=='fallen';
-AVC.towerAt={};AVC.towers.forEach(t=>{AVC.towerAt[t.x+','+t.z]=t;t.shelled=AVC.keys.indexOf(t.key)>=0;t.ikey=avImpKey(t);t.skey=t.ikey;t.nearR=AV_NEAR*(AV_NEARK[t.family]==null?1:AV_NEARK[t.family]);});
+/* the towers by position, keyed by the FLOAT32 values: the impostors' instance matrices are a Float32Array, so a key from the float64 coordinates never
+   matched a lattice tower's (17 degrees), the lookup found no tower and no tower's impostor was ever hidden: every tower's billboard stood inside
+   its own hero or shell, unseen in a solid one and showing through a skeleton's frame, over a fallen heap and above a broken top (2026-11-09) */
+AVC.towerAt={};AVC.towers.forEach(t=>{AVC.towerAt[Math.fround(t.x)+','+Math.fround(t.z)]=t;t.shelled=AVC.keys.indexOf(t.key)>=0;t.ikey=avImpKey(t);t.skey=t.ikey;t.nearR=AV_NEAR*(AV_NEARK[t.family]==null?1:AV_NEARK[t.family]);});
 AVC.skeys=[];{const seen=new Set();AVC.towers.forEach(t=>{if(!seen.has(t.skey)){seen.add(t.skey);AVC.skeys.push(t.skey);}});}
 /* a hero flattened for the shell's bake (KSHELL.bake reads a hero's direct children at identity): every mesh of the tree with its world transform
    baked into a geometry copy, an instanced mesh with its instance matrices premultiplied */
@@ -242,7 +245,11 @@ AVC.tiersTick=function(){if(!AVC.ready)return;const now=performance.now(),e=came
  /* a hero the pool still holds past the dither band has no shell */
  {const held=new Set(keep.map(t=>t.id));for(let i=mid.length-1;i>=0;i--){const t=mid[i];if(held.has(t.id)&&t.d>=(t.nearR==null?AV_NEAR:t.nearR)){t.shell=false;mid.splice(i,1);}}}
  avShells(mid,G);avDebris(T.filter(t=>t.shelled&&t.d<AV_RUBBLE));avDebris(T.filter(t=>t.shelled&&t.d>=AV_RUBBLE&&t.d<AV_IMPFAR),true);
- AVC.impMeshes.forEach(o=>{const A=o.instanceMatrix.array,F=o.userData.full;for(let i=0,n=F.length/16;i<n;i++){const t=AVC.towerAt[F[i*16+12]+','+F[i*16+14]],nr=t?(t.shell||G.has(t.id)||t.state==='fallen'):false;for(let k=0;k<16;k++)A[i*16+k]=nr?0:F[i*16+k];}o.instanceMatrix.needsUpdate=true;});
+ /* a fallen tower's billboard (the stump's look) is hidden where its hero or its rubble draws; past the far rubble it stands squashed to the heap's
+    height (16 m), so a fallen tower does not vanish from the far city (2026-11-09: once the impostors hid, 55 fallen towers past 3.2 km drew nothing) */
+ AVC.impMeshes.forEach(o=>{const A=o.instanceMatrix.array,F=o.userData.full;for(let i=0,n=F.length/16;i<n;i++){const t=AVC.towerAt[F[i*16+12]+','+F[i*16+14]];
+  const heap=!!t&&t.state==='fallen'&&!G.has(t.id)&&!(t.shelled&&t.d<AV_IMPFAR),nr=t?(t.shell||G.has(t.id)||(t.state==='fallen'&&!heap)):false;
+  for(let k=0;k<16;k++)A[i*16+k]=nr?0:F[i*16+k];if(heap){const f=Math.min(1,16/Math.max(1,avH(t.skey||t.key)));A[i*16+4]*=f;A[i*16+5]*=f;A[i*16+6]*=f;}}o.instanceMatrix.needsUpdate=true;});
  AVC.tierN={heroes:keep.length,shells:mid.length,impostors:T.filter(t=>!t.shell&&!G.has(t.id)).length,towers:T.length,looks:AVC.impKeys,shellKeys:AVC.shellKeys.length,atlases:AVC.atlases.length,steep:steepEye};};
 tick(function(){if(!AVC.ready)AVC.boot();else{const px=2*Math.tan(camera.fov*Math.PI/360)/Math.max(1,innerHeight);AVC.mats.forEach(m=>{m.userData.U.uPx.value=px;});AVC.impTick();AVC.tiersTick();}});
 // ---------------------------------------------------------------- the engines (kits/ancients 8ah, 8ai, read in place: the owner, 2026-11-04)
