@@ -174,6 +174,21 @@
             ],
             "port": 8871,
             "autoPort": false
+        },
+        {
+            "name": "longsong-dist",
+            "runtimeExecutable": "python",
+            "runtimeArgs": [
+                "-m",
+                "http.server",
+                "8873",
+                "--bind",
+                "127.0.0.1",
+                "--directory",
+                "settlements/longsong/dist"
+            ],
+            "port": 8873,
+            "autoPort": false
         }
     ]
 }

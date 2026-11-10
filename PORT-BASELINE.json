@@ -357,12 +357,12 @@
    "sha256": "229d45fb91d2ea93f71c7f2ce137399c84ed7ed34df96670df8572c4e1d6ee3d"
   },
   "biomes/nwouterwall/dist/nwouterwall-taiga.html": {
-   "bytes": 1333668,
-   "sha256": "bb7ee21fd4859ab44c2313e145f48892d9df43f6a8154e04cdb8634bcf192375"
+   "bytes": 1333963,
+   "sha256": "8b253bd92d9677af2a30922642cc283cd8a7c8f36256dc9d6c8d3b2f61cdec64"
   },
   "biomes/nwouterwall/dist/nwouterwall-yeti.html": {
-   "bytes": 1593274,
-   "sha256": "f51e956a98376e49f14b601530e30020f75827658c558b846dda767a7d57873b"
+   "bytes": 1593569,
+   "sha256": "e7f9016b34ff1431bdd5984ea37a622656fec27f37722f13ba9fd496eb7b5251"
   },
   "biomes/nwouterwall/dist/nwouterwall.html": {
    "bytes": 1338538,
@@ -1109,8 +1109,8 @@
    "sha256": "e6c31625003c38418a1cecaf53bdb0d412b7eedde603f6943c1fb0ad09da713d"
   },
   "settlements/longsong/dist/longsong.html": {
-   "bytes": 5297116,
-   "sha256": "88bd9da9cc169bb53814ad2d0f072243ade6363a65c1b9f86c5edf943348a1e4"
+   "bytes": 5304086,
+   "sha256": "ee4f1b042f680e7b3fb6b19effb84fd33f2ea0760e3113e857e0c19f2d8b1be1"
   },
   "settlements/mavs-refuge/mavs-refuge.html": {
    "bytes": 9075103,
