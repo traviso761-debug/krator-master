@@ -6,7 +6,7 @@ shadows"); `kits/metropolis` takes it first.
 | File | Tag | What |
 |---|---|---|
 | `10-core-shadow.js` | [G data] | `KSHADOW.basis`, `KSHADOW.fit`, `KSHADOW.radiusFor`: where the sun's shadow camera stands and how big its box is, as plain arrays |
-| `host/12-core-shadow-host.js` | [web] | `KSHADOW.attach(o)`: the renderer's shadow map readied (off), the switch, the page's sun moved each frame, `cast(root)` |
+| `host/12-core-shadow-host.js` | [web] | `KSHADOW.attach(o)`: the renderer's shadow map readied (off), the switch, the page's sun moved each frame, `cast(root)`; `KSHADOW.units(material, renderer, scene)`: the texture units a material will link (read samplers only, the scene's environment); `KSHADOW.maxUnits(renderer)`: min(16, the GL's), the limit a page judges against (a host's `samplersOf` calls these) |
 | `test-shadow.js` | node | the basis, the texel snapping, the radius steps, the switch (on stubs); each check with a negative |
 
 ## Off by default

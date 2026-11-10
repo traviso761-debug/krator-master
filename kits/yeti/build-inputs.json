@@ -19,8 +19,6 @@
     "core/atmos/89-atmos-b-skylight.js": "fdd81ff12eb4e98d7d9bc07691b033a71cd2add1b8a0d23d7ffb6149d781c6d0",
     "core/atmos/89-atmos-d-clouddeck.js": "70751e6c85e4dd65ffbb6648873be56fdb604130df4507e8e6afb020384b4dc8",
     "core/atmos/placeholder/81-sky.js": "ad22fb31cdfbbd20cb1f8ad919e4720e7db54094e4e778c46e7bd8ce7780e6ab",
-    "core/atmos/placeholder/placeholder.py": "a56878038fdd42d4d41752866926a3cf59815924a08f2ef42b56484766848aab",
-    "core/catalog/catalog.py": "5d4a79810193b831fc1c686c934990afd10ecb63b5a55d05e0f3d7dd4c84d88a",
     "core/catalog/files.json": "a400e7bf3e1197698d129db83964d883fd9ea2818173fe7df3c7d1b4a054d72f",
     "core/catalog/krator-furniture-core.js": "1c8bfa11d261b36895fd50645358e2c4ebe54febf67daeed700a38fbd6256fe9",
     "core/catalog/krator-furniture-kit.js": "5220ef8dd95dd5c33960ad1452f09f437379c2e26d40c9b480877b1a4e65f16b",
@@ -43,7 +41,6 @@
     "core/engine/93-anim.js": "a55c92af37244e4be8a691d465ae7bae010d2ff21be66a9bc91fa3dce78d73bb",
     "core/engine/99-host-take.js": "84c1e0b4c6550d834897c98f30fe79e5a740fc5d8e3d0ae1b9846a0c3055f5e0",
     "core/engine/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
-    "core/engine/engine.py": "b50cee3c7410b2a7ecd2ce43ce4586cf5718937e8501f2e4ce7a78f102f3ce9a",
     "core/furnish/50-core-furnish.js": "dbd7e1f0ab77a3f1489d87e8fabce7e17800025964c33f67346384e722bda269",
     "core/furnish/52-core-furnish-draw.js": "726a95d620342e433b3d7d80558ee0b0dd648b0a991b276127803d955d19d35e",
     "core/furnish/53-core-furnish-host.js": "81927a949cd6d0e5b9da71bfb6b6f4c1d7e6add5e1606b08b0b8a199d5633aea",
@@ -51,8 +48,7 @@
     "core/host/91-host-loop.js": "240f833bc2e031506de36b503594acd2939e3f45aee21115effd00666fa66986",
     "core/host/92-host-panel.js": "3d65cd6c0bb873e48eb4189fffad906ab21aef1950164a454254a4fefe7a0b88",
     "core/host/94-host-polytool.js": "73178f8a6f8632fa25802d8024ce753a209e29af018ae4b2297cea6e1b84d730",
-    "core/host/95-host-probe.js": "8713ba26cc8356af1f242beec35b3c55688baff96b9ca67f54a873c76f1de9fc",
-    "core/host/host.py": "323a7dc0adb48ff4f9668c3a562be28b76dcb56a944f7bfe0e1dcc982144b84c",
+    "core/host/95-host-probe.js": "91a9ef729db002716d0e840ebd6e0efc799f2ae0c99419fb06c3f44eda5f6471",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/24-tex-def.js": "1016dd8a57911fba8405bb4b8f050561d8ed24ab98e7993c9fc58c12d3ce3a95",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
@@ -67,7 +63,6 @@
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
     "core/walk/20-core-walk.js": "66c2a5dfacc6e4ffc2cdc03dfa7d0f82ea991c312d5725d299e4e281fe148e03",
     "core/walk/box/24-core-walk-box.js": "88b4370c232270dd428cf1ddbcd7fd5771a947cfd196e6c8a27e63d39f0c17bc",
-    "kits/catalog/furniture_bundle.py": "e9de2aa4a449de0baf2a1b00842dcd03a318fc966f9bbfe618a66bd36bf9ef3a",
     "kits/catalog/krator-master-furniture-generic-goods.js": "1436ca9a4c6d8556cb1c6e1647150f5ec7f80c8ab0ded0ba54638805b6c750de",
     "kits/catalog/krator-master-furniture-generic.js": "990b05b8404c67ab960f6649babc8143c738ea600a04c0c22564296fa7786ea4",
     "kits/catalog/krator-master-furniture-jobs.js": "598ea1c1eeeeb4c30206d397021a579b281399ba4bea85fdaf0060d6a433674d",
@@ -238,9 +233,7 @@
     "kits/yeti/tex/turfCap.albedo.webp": "f611eb6a47706226b6fb8d6da72324fe8f1fb747105f3b9932a653ccd9b21869",
     "kits/yeti/tex/turfCap.normal.webp": "0fd3a0fa1a491376adb674a4c85dd76dbf2cc92996f771ce75f6d612d878d25b",
     "kits/yeti/tex/turfCap.rough.webp": "08b2423d5ea70b0648ed65c0171a4cbbeb8af3512812be35218b6ea9cb5d189f",
-    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
-    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
-    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
+    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
    },
    "listings": {
     "core/atmos": "30a642030efd42bcc162ce8cf40be0758482952e7e901e4d500b8129ebb12ccb",
@@ -262,14 +255,14 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/yeti/build-manifest.json": "50909a684417d299e8edf7f199481d45180b76d43f4b120471f9d552e8cb7362",
-    "kits/yeti/dist/yeti.html": "c59a54aa67de7995f7412b7917e0af952f18a3f274103fe762859f17b10b47eb",
+    "kits/yeti/build-manifest.json": "8989940d1843eea5354e74123ed462c0147746df062856cab5520eee91fff49a",
+    "kits/yeti/dist/yeti.html": "a23dd9a97975bb392bba0be8afccfdb9d9fe73359d22e00222faa1f2ac4e18ac",
     "kits/yeti/dist/yeti.tex.yeti-2.js": "815972c41015fc1679b8206309b0562d469b1dafd7f0b852fff84efbdb2ba4e3",
     "kits/yeti/dist/yeti.tex.yeti.js": "61f8f6f4c099dbbf0bc7c4b9cfe23949531ce289288fe0aa0cf123ba689b71f3"
    },
    "outputs_raw": {
-    "kits/yeti/build-manifest.json": "50909a684417d299e8edf7f199481d45180b76d43f4b120471f9d552e8cb7362",
-    "kits/yeti/dist/yeti.html": "c59a54aa67de7995f7412b7917e0af952f18a3f274103fe762859f17b10b47eb",
+    "kits/yeti/build-manifest.json": "8989940d1843eea5354e74123ed462c0147746df062856cab5520eee91fff49a",
+    "kits/yeti/dist/yeti.html": "a23dd9a97975bb392bba0be8afccfdb9d9fe73359d22e00222faa1f2ac4e18ac",
     "kits/yeti/dist/yeti.tex.yeti-2.js": "815972c41015fc1679b8206309b0562d469b1dafd7f0b852fff84efbdb2ba4e3",
     "kits/yeti/dist/yeti.tex.yeti.js": "61f8f6f4c099dbbf0bc7c4b9cfe23949531ce289288fe0aa0cf123ba689b71f3"
    }

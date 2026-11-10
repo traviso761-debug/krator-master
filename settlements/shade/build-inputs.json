@@ -5,7 +5,7 @@
    "inputs": {
     "biomes/sedesert/src/35-core-strata.js": "0b9d9dca17939ced4f1c6c7be69f2a9db949853d9de0e6045bcfd369375087f5",
     "biomes/sedesert/src/50-biome-sedesert-species.js": "b04ddad3aea8ff4a0c4a7105a7bd561445d0a815916841136e8641cec3452b15",
-    "biomes/sedesert/src/55-biome-sedesert-trees.js": "485eab97efbe3671932e0e822081bb0fc3d132ad973c9d73c1fc5d49c3243e19",
+    "biomes/sedesert/src/55-biome-sedesert-trees.js": "7e33caf4a07bc5f335dcb47ee565ad0a71cdb7ddd7f76d3a0ae2c5912bd0c232",
     "biomes/sedesert/src/60-biome-sedesert-floor.js": "cad75f2f49764af618b944b6f4a4bb4f645b9a339c2e4bfe36fcc4f6dae91298",
     "biomes/sedesert/src/65-biome-sedesert-dress.js": "a62d183d561363388de39bec66418427031d7ac9d508331f25be50098aff54c3",
     "biomes/sedesert/src/70-biome-sedesert.js": "95d3436b5eacd3292632c0b3293fd5f3cbdd28db4d36e0ca65179fbad2ccae39",
@@ -53,7 +53,7 @@
     "core/atmos/sky/89-atmos-g-sky.js": "32b6b6e04be15df728ca7ad3502d2035f2c750426deb3dae964273228ea5a6eb",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "ee63cf4e901c960b91743ffdb2b49c72dcae54d5325e0ce0d46e3a1ae30450d6",
+    "core/biome/30-core-foliage.js": "60d066abf6678b08bff3be1c66a075ad93e27fe242c8d0e4b78e79e5111a24d5",
     "core/biome/31b-core-leafset.js": "e58ebcc03d77e6da79d54c90eb7582fb806775454c8ed0879e1d7f2359a2788f",
     "core/biome/34-core-impostor.js": "b67d538fbcb5c7a4b077a20c1cffab6bdc48e0e157ea3e240696041403468f53",
     "core/biome/35-core-anim.js": "22fb42a40a972749b03260cff244169c7148df6161cbc6171ebf2e4d537a2cef",
@@ -65,19 +65,18 @@
     "core/host/93-host-inspect.js": "cf7e676324297688199a85d9a26c34381732955955985462aa3dbd2c12431f90",
     "core/host/93-host-stocks.js": "ee986893621f17b4419db1feb1edbc01b7e28f067e85fd8b811112ec65456a69",
     "core/host/94-host-marks.js": "a57a2a38ef92f4d06232659773249de63296e79e200da27a24f0253eff3f0284",
-    "core/host/95-host-probe.js": "8713ba26cc8356af1f242beec35b3c55688baff96b9ca67f54a873c76f1de9fc",
+    "core/host/95-host-probe.js": "91a9ef729db002716d0e840ebd6e0efc799f2ae0c99419fb06c3f44eda5f6471",
     "core/host/96-host-pictures.js": "643e50e72e0586f75e2e56461fd58b14445099b551a591b839cf99dbbb5cf458",
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
-    "core/host/host.py": "323a7dc0adb48ff4f9668c3a562be28b76dcb56a944f7bfe0e1dcc982144b84c",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
     "core/minimap/88a-core-minimap-host.js": "af98407f9b7bbec2742cb7bbbb9f8ff2d8c18952d5a35a02d023273a0d7e6fcc",
     "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
     "core/sched/20-core-sched.js": "441ce27891b8e5e3f61dc799cf030086b3ce59ae81cb3c64e1f2a9ffb11b4d03",
-    "core/shader/06-core-khook.js": "263ba824c45b1f350a27ef1c2db3b89a022679fae4b9af234a6c2c6bfb740a04",
+    "core/shader/06-core-khook.js": "eb1a0436d3d5dbaab81c3e43de2b642c96d9c3b44331a8960801880e5e20c56d",
     "core/shader/06b-core-kcolor.js": "ededfc6b8a1a8aae5bf3c6ab40863478f9beb8e1aaf2acf4ba9da25ef6392115",
     "core/simulation/77-sim-0-core.js": "31d97155bb301076456f9efacc265f9c124cbde85103630214be874ce4134341",
     "core/simulation/77-sim-1-world.js": "9cd27ca489746cd6bb3ea7fbcfa605d335237167e27b1781f07dd6d7d3b200a7",
@@ -139,9 +138,7 @@
     "settlements/shade/world/factions.json": "5cc6868d471698f3d0c6ea10f86bba87e4c5bd0bb2c37674d7b0844b1215957a",
     "settlements/shade/world/orgs.json": "91e1201a3eb4816d7f34384c6bb19a5abe35e29521212c375985eb02de02947e",
     "settlements/shade/world/roles.json": "83750caac6010f9e1278a99f69ec915f8ef4e9c53a4eba1f91afc2f26db92503",
-    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
-    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
-    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
+    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
    },
    "listings": {
     "core/clock": "b07ae9730377660ded8e58d297fc2ac9eeba90b828569bba349a69121745c9f4",
@@ -156,10 +153,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "settlements/shade/dist/shade.html": "e4c98a6702e1ad7e506911772bd7ad0c6a8aa9bf26aff66cec52dd188f92a424"
+    "settlements/shade/dist/shade.html": "3a97421b3205d814fc7b0a2738c17b085b07f94f05cb7be76d0d2437417bda23"
    },
    "outputs_raw": {
-    "settlements/shade/dist/shade.html": "2a1b3a7585d0fedcb06e0ceaf3173dcb8bfad0e9e4d80ac2a90e1828841456ef"
+    "settlements/shade/dist/shade.html": "3a97421b3205d814fc7b0a2738c17b085b07f94f05cb7be76d0d2437417bda23"
    }
   }
  }

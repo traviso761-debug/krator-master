@@ -5,7 +5,6 @@
    "inputs": {
     "core/atmos/placeholder/80-sky-hash.js": "70eba6e14ba39b5da1123e5056a9383fb55913213e24b18e75045d0e17aab31f",
     "core/atmos/placeholder/81-sky.js": "ad22fb31cdfbbd20cb1f8ad919e4720e7db54094e4e778c46e7bd8ce7780e6ab",
-    "core/atmos/placeholder/placeholder.py": "a56878038fdd42d4d41752866926a3cf59815924a08f2ef42b56484766848aab",
     "core/catalog/krator-asset-engine.js": "857d45d9a71f62c958eb29dbe273d572b9e8262669c29f9f0433675451e2139d",
     "core/catalog/krator-furniture-core.js": "1c8bfa11d261b36895fd50645358e2c4ebe54febf67daeed700a38fbd6256fe9",
     "core/sockets/38-symbols.js": "cea0673f7b5bdc52886497f9a452fda756d4d17b0d2fd7e692bfcab5610822db",
@@ -33,7 +32,6 @@
     "kits/mechs/krator-mechs-stalker-blade.js": "eaf092f47f7fb3d311699c010e86bd1cdf04444a43d7cdf05c0186a101761fb4",
     "kits/mechs/krator-mechs-stalker-harpooner.js": "161e3472040c299c28b11971b7e0b7fa7b1a1d8a80ef712645c696c75972604c",
     "kits/mechs/krator-mechs-stalker.js": "afbb1b5de9812e8338c192bf8a3ac2308d56f5346f822c1ba7ede55c109f6ed2",
-    "kits/mechs/mech_bundle.py": "4aa5d2262f452e8d667a928e187a11dcdfa11d4f09d912a01921f750aa05d39d",
     "kits/mechs/mechs-core.js": "17e55f98452817ade42e252073c7f56c82d44694eb145981bafd96667d71af4b",
     "kits/mechs/mechs-parts.js": "b1b9533034d537e6283ab7886c374833734f0a9f3c605735f62158d392e83e63",
     "kits/mechs/mechs-runtime.js": "8f8d534ab9253ff4cfac0fdab4f06d97be68ab1b1a4138e93ea69a6528c4d075",
@@ -52,7 +50,6 @@
     "kits/mechs/tex/plate.albedo.webp": "5da438689601eaa550b8b2522c70e9c82fa13f93a53810a537f07ccd6183d0d3",
     "kits/mechs/tex/sunbanner.albedo.webp": "7ab86d89d9df6cd059ca4bc8dfd55c262b653d576dabc0f5f05904b5fc3887a3",
     "kits/motor-vehicles/vehicles-core.js": "3ef2b2ba7ba37ada7e633706bd92bf55f1c41122b902e9f2cb461ba5fef0c22e",
-    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
    },
    "listings": {
@@ -67,7 +64,7 @@
     "kits/mechs/dist/mechs.html": "ba00e9294660255830ed63a1e1c8784c4d253676b63fcd0178268d868243cbc6"
    },
    "outputs_raw": {
-    "kits/mechs/build-manifest.json": "e46665007e90443d0615299b06e84cbadf18d8423012666d24e6270dd1d345ab",
+    "kits/mechs/build-manifest.json": "d765510d05ffc395c5c9edce39c5be1739f9c110d1818a67881e19ecb3f1f7f0",
     "kits/mechs/dist/krator-mechs.js": "b7cc2868d0600764077eddad96293e05621c16fc069df9d7827033bc5c954f1b",
     "kits/mechs/dist/mechs.html": "ba00e9294660255830ed63a1e1c8784c4d253676b63fcd0178268d868243cbc6"
    }

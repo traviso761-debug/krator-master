@@ -5,7 +5,7 @@
  ],
  "06-core-khook.js": [
   "core/shader/06-core-khook.js",
-  "4086274abd11"
+  "e6a2382acc0b"
  ],
  "06b-core-kcolor.js": [
   "core/shader/06b-core-kcolor.js",
@@ -57,7 +57,7 @@
  ],
  "30-core-foliage.js": [
   "core/biome/30-core-foliage.js",
-  "2c4da8ac56aa"
+  "7c297f752e6d"
  ],
  "35-core-strata.js": [
   "biomes/sedesert/src/35-core-strata.js",
@@ -137,7 +137,7 @@
  ],
  "54b-bio-biome-sedesert-trees.js": [
   "biomes/sedesert/src/55-biome-sedesert-trees.js",
-  "7f1efc8dbd4f"
+  "afb44d54a05a"
  ],
  "54c-bio-biome-sedesert-floor.js": [
   "biomes/sedesert/src/60-biome-sedesert-floor.js",
@@ -185,7 +185,7 @@
  ],
  "62-catalog-bundle.js": [
   "GENERATED: kits/catalog (iziz, eastabyss, nomad, generic, generic-goods, scrap, jobs) + kits/interiors (sets iziz, locus, abyss, yuni, yuni-town)",
-  "7d358af8065a"
+  "2c78777b0906"
  ],
  "64-izv-bundle.js": [
   "GENERATED: core/door/10-core-door.js, core/door/20-core-glass.js, core/door/30-core-door-leaf.js, kits/ancients/src/10-core.js, kits/ancients/src/12-stats.js, core/materials/20-textures.js, core/materials/22-materials.js, kits/ancients/src/30-kit.js, kits/ancients/src/32-surfaces.js, kits/ancients/src/34-kitdefs.js, kits/ancients/src/38-helpers2.js, kits/ancients/src/50-registry.js, kits/ancients/src/54-mat-concrete.js, core/materials/68-mat-v5.js, kits/ancients/src/69-mat-salvage.js, core/materials/opt/69a-world-uv.js, kits/iziz-vernacular/src/69b-vern-mat.js, kits/iziz-vernacular/src/69c-vern-helpers.js, kits/iziz-vernacular/src/69e-vern-hollow.js, kits/iziz-vernacular/src/69e5-iziz-openings.js, kits/iziz-vernacular/src/70-vern-dwellings.js, kits/iziz-vernacular/src/71-vern-trade.js, kits/iziz-vernacular/src/71a-vern-food.js, kits/iziz-vernacular/src/71b-vern-cloth.js, kits/iziz-vernacular/src/71c-vern-craft.js, kits/iziz-vernacular/src/72-vern-civic.js, kits/iziz-vernacular/src/73-vern-infra.js, kits/iziz-vernacular/src/73b-vern-works.js, kits/iziz-vernacular/src/73c-vern-land.js, kits/iziz-vernacular/src/74-vern-guilds.js, kits/iziz-vernacular/src/74b-vern-frontier.js, kits/iziz-vernacular/src/74z-vern-trades.js, kits/ancients/src/8ap-funicular.js",
@@ -281,7 +281,7 @@
  ],
  "95-host-probe.js": [
   "core/host/95-host-probe.js",
-  "111c9ae5768a"
+  "4abec5c5a961"
  ],
  "96-host-pictures.js": [
   "core/host/96-host-pictures.js",

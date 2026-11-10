@@ -21,6 +21,13 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 
 **Counts:** tags used: about 52 [G data], 27 [G shader], 17 [G native] and 18 [web] (some items carry two, and the legend above uses one of each).
 
+## When the branch `ccr-55bd6ee1-p1si44` is merged *(2026-11-10)*
+
+- **Drop Dhelv's stemClump wrapper.** `core/biome/30-core-foliage.js`'s `BIO.geo.stemClump` no longer leaks `bk`, `box`, `poly`
+  and `kk` as globals (fixed on `main`, every page rebuilt). That branch's `settlements/dhelv/src/45-dhelv-bio.js` wraps the
+  function to put the kit's `box` back, and its `KNOWN_ISSUES.md` notes it: remove both in the merge, rebuild Dhelv and run
+  `verify.py dist/dhelv.html --assert`.
+
 ## With the next scale-model edit *(the owner, 2026-11-09)*
 
 - **Reroute the Ostrukh Riba south into Lake Ostrukh.** The owner agreed that Mid Basin's springs and Lake Ostrukh share one aquifer, fed by the Stalker Range's snow (`biomes/midbasin/PLAN.md`). Today the river runs north from the flagship pool (2,040 m) into Region 99 and ends at 334 m, although its note says it feeds the lake (1,850 m). A southern course needs a carve about 70-80 m deep; its highest point is 2,082 m at 1588,1392. Retrace the river downhill and fix its note. The scale-model edits session (`claude/dreamy-davinci-30f3c1`, edit 5.1.1 at f1d1501cf, artifact version 92) has the details. Held for the next map edit, not done alone.
@@ -28,34 +35,9 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 
 ## Ride along with the next all-builds rebuild
 
-- **`KSHADOW.units` counts what the GPU links** (2026-11-09, found by the Throne's fix): `core/shadow/host/12-core-shadow-host.js` counts
-  declared samplers (some are never read and the GPU drops them), misses `scene.environment` on standard materials, and judges against the
-  renderer's own limit (32 in SwiftShader, so shadows turn on where the GPU cannot link them). The Throne's `samplersOf`
-  (`biomes/throne/src/89zz-host-core.js`) does all three right since 2026-11-09: move that into core, cap at min(16, GL), and drop the copies.
-  It moves every KSHADOW page.
-
-- **kits/interiors: a residence's food on the floor or a wall** (2026-11-09, the integration pass): `IX.sets.auditResidence` does not count
-  table-top pieces, but the placer may fill the `food` need with one (beast-rider `br_bldg_girder_dwelling` at seed 2 on the full sets
-  sheet: `br_h_stall_goods` on the low table). Add `anchors: ['floor', 'wall']` to the food requirement of `cottage`, `living` and `kitchen`
-  in `kits/interiors/src/30-programs.js` (zeijani's `cell` does already). It moves every page that furnishes rooms (every kits/ancients
-  target, beast-riders, metropolis, post-apoc, pylon, talia, zeijani, the open world, the furnished settlements): with the settlement rebuild.
-
-- **core/host's `regOccupancy` honours `ground` and `far` records** (2026-11-09, the integration pass): a volume drawn on the ground mesh
-  (a wallow, a throat on a crack's floor) or past the far field has no scene sample, so `registered-volumes-non-empty` fails it.
-  godthrone's own probe (`99-host-take.js`) counts `r.ground || r.far` as occupied; core's (`core/host/95-host-probe.js`) does not, so
-  hyperjungle's `savage` adds an empty Object3D with `userData.probePoints`, one point a wallow. Teach core the flag, then drop that
-  object and godthrone's own copy. It moves every page on core/host.
-
 Fixes to shared code that reach every build (or most of them), parked until a change that rebuilds them all anyway comes
 along: do them in that change, rebuild once, rewrite the baseline once. Take an item out when it is done.
 
-- **The fauna runtime and the bison's size table** (2026-11-01, `kits/fauna/PLAN-MESHY.md`): the runtime gained `M.mats`, fitted
-  anchors and `userData.anchorOn`, `krator-fauna-farm.js` the bison's variant 3 size, and the catalog a Bowl mantis and new model variants of the
-  ant and the staghorn (a page without models draws those variants procedurally; check a page that picks a staghorn's variant at random). Since then: family models (`spider#gilded`, `rig/family.py`), six new entries and model variants on four more, all with procedural fallbacks: the variant counts of those entries changed, so a page that draws a variant at random will draw them. The pages that bundle the kit (Voth,
-  isle-demo, ash-nomads, desert-nomads, islanders, lizardmen, scyvoi, ringisles, sedesert and its stations, longsong) were not
-  rebuilt: none takes a model that uses them, and on `claude/biome-rebuild` those pages were already behind their sources by
-  far more than this (Voth 96 KB, the isle plan 52 KB). `settlements/longsong` does not build at all there: its `build.py` reads
-  `openworld/little-demo/src/41-world-fields.js`, which d848c1577 moved to the isle demo.
 - **A `dalab` culture pack for the Post-Apoc kit's sockets** (2026-10-27, `settlements/span`): one `mkCulture({key:'dalab', ...})`
   in `core/sockets/80-cultures.js` (red ochre field `#a8382a`, earth edge, the God's single eye as the symbol, a new entry in
   `38-symbols.js`), so the barricade, the arena and anything Dalab raises from salvage fly its red. `mkCulture` draws from the

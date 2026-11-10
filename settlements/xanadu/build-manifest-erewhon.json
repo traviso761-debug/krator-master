@@ -1,6 +1,6 @@
 {
  "00-head.html": "708a77399ad2",
- "06-core-khook.js": "4086274abd11",
+ "06-core-khook.js": "e6a2382acc0b",
  "06b-core-kcolor.js": "839444135298",
  "08-core-rand.js": "4a3aa47f25da",
  "09-lod.js": "e1f7db612b83",
@@ -98,7 +98,7 @@
  "93-host-stocks.js": "27dd6b526848",
  "93-labels.js": "d78e5d807c2d",
  "94-host-marks.js": "66fcb2bedaf5",
- "95-host-probe.js": "111c9ae5768a",
+ "95-host-probe.js": "4abec5c5a961",
  "96-host-pictures.js": "1c6b36cc7ca2",
  "97-host-minimap.js": "bb80eeaa8a43",
  "97-lod-auto.js": "88ec9e581127",
