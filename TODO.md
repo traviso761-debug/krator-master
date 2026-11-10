@@ -256,8 +256,10 @@ loads each build's `tex/` pack, which is WebP. What is left:
   - [x] adopted, the key map and the walk passing, the build's own checks failing as on the page before this work:
         Guilin (fruit drawn; foliage attach 31.96%), Pinnacle Rock (N; foliage attach 1.87%), Dalab (swlowlands/glossy
         282,687 instances over the 250,000 cap with no `capWhy`, since it reads the biome in place)
-  - [ ] Mav's Refuge (E): `walk-and-reach` could never read `MRWALK` (the page's script is scoped; now `window.MRWALK`); its
-        reach audit's first real run is pending
+  - [ ] Mav's Refuge (E; the key map and the walk pass): `walk-and-reach` could never read `MRWALK` (the page's script is
+        scoped; now `window.MRWALK`, 2026-11-10). Its first real run fails: 370 of 2373 floors unreached from the doors of 1480
+        units (284 units with no unlocked door), most of them the stores' floors (`mix.3.store.floor.0`, ...): the interiors'
+        stores are not entered from their units' doors (src/57a-interiors.js, 83-mr-walk.js)
   - [ ] Yuni: E is the key map's Door, but F is Yuni's own walker (`DOORS.walk`) and the page hands the host no `KWALK`:
         port Yuni's walker onto core/walk (Locus, Mungo, Girder and Mav's Refuge share the Yuni engine; theirs are on the host)
   - [ ] not yet: the biome kits but Guilin and Necanyons (`khost.KEYS` in `build.py`, the take's Night through `std`;
