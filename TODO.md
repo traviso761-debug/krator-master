@@ -123,6 +123,7 @@ along: do them in that change, rebuild once, rewrite the baseline once. Take an 
     KDOOR records) before trusting it (`settlements/locus/KNOWN_ISSUES.md`).
   - ~~Mav's Refuge has no core/walk: its 1,883 operable doors block nothing, and it has no reachability audit.~~ Done
     (2026-11-09): `src/83-mr-walk.js` (the units' plans in core/walk, the doors' blocks, `MRWALK.reach`); decks and bridges not yet.
+    Open: the audit leaves 86 apartments' ground floors unreached, and the first walk freezes the page (KNOWN_ISSUES.md).
   - ~~Yuni: the streamed interiors' room doors are not KDOOR records, and its own leaves swing 1.4 rad, not KDOOR's 1.75.~~
     Done (2026-11-09): KDOOR records while live, pruned by id. The swing stays 1.4 rad, recorded on each record (`R.swing`) so the
     export gives what the page draws; whether to move it to 1.75 is the owner's call (`settlements/yuni/KNOWN_ISSUES.md`).
