@@ -53,12 +53,14 @@ const STYLES={
  dryland: {hills:.8,  ridge:.5, terr:.3, step:40,dune:.4, gully:.6, rough:.9, rock:.2, wallK:1.0},
  sea:     {hills:.5,  ridge:.3, terr:0,  step:40,dune:0,  gully:0,  rough:.5, rock:.05,wallK:2},
  // the Oidong Valley (biomes/oidong; settlements/longsong): a green high vale, its floor swelling gently, no terraces or dunes
- vale:    {hills:.8,  ridge:.8, terr:0,  step:40,dune:0,  gully:.35,rough:.7, rock:.3, wallK:.9}};
+ vale:    {hills:.8,  ridge:.8, terr:0,  step:40,dune:0,  gully:.35,rough:.7, rock:.3, wallK:.9},
+ // the abyssal savannah's rims (biomes/abyssal-savannah; openworld/pinnacle): gold grass parkland, caprock benches, few dunes
+ savanna: {hills:.9,  ridge:.6, terr:.45,step:40,dune:0,  gully:.6, rough:.9, rock:.2, wallK:.7}};
 const SKEYS=['hills','ridge','terr','step','dune','gully','rough','rock','wallK'];
 // the overlay's name (lower case) -> its style; an overlay not listed takes 'desert'
 const BIOME_STYLE={'sedesert':'desert','e badlands':'badland','e abysss':'abyss','hyperjungle':'jungle','e highlands':'highland',
  'n highlands':'highland','korona / ne':'korona','throne/volcano':'volcanic','crater drylands':'dryland','ring sea':'sea',
- 'oidong valley':'vale'};
+ 'oidong valley':'vale','ne rim':'savanna','e savannah rim':'savanna','se savannah rim':'savanna'};
 // the ground palettes (sRGB), from the kits' own ground painters where a kit exists (sedesert, eastabyss: 45-host-stage)
 const PAL={
  desert:  {a:0xa85a42,b:0x884834,pale:0xc99a72,scrub:0x9e6a4c,sand:0xdca070,sand2:0xeab888,gravel:0xc7b08e,silt:0x9a8a68,damp:0x5a5040,mtn:0x7a6a5e,rock:0x8f4f3a},
@@ -71,7 +73,9 @@ const PAL={
  dryland: {a:0xb09a6a,b:0x9a845a,pale:0xc8b488,scrub:0x8a8048,sand:0xd0b888,sand2:0xdcc498,gravel:0xb8a888,silt:0x9a8a68,damp:0x5a5040,mtn:0x8a7a68,rock:0x8a6a52},
  sea:     {a:0x8a7a62,b:0x7a6a54,pale:0xb0a080,scrub:0x6a6a48,sand:0xc8b494,sand2:0xd4c0a0,gravel:0x9a8c74,silt:0x6a5e4a,damp:0x3a342a,mtn:0x6a6058,rock:0x6a5a4e},
  // the Oidong Valley's (biomes/oidong/src/84-host-ground.js: meadow, moss, the pale flats, granite)
- vale:    {a:0x9cb070,b:0x76964a,pale:0xb4c08a,scrub:0x56722e,sand:0xeeeadf,sand2:0xe2dccd,gravel:0xb0aca4,silt:0x8a8a6a,damp:0x5a7a4a,mtn:0x98a882,rock:0xb0aca4}};
+ vale:    {a:0x9cb070,b:0x76964a,pale:0xb4c08a,scrub:0x56722e,sand:0xeeeadf,sand2:0xe2dccd,gravel:0xb0aca4,silt:0x8a8a6a,damp:0x5a7a4a,mtn:0x98a882,rock:0xb0aca4},
+ // the abyssal savannah's (biomes/abyssal-savannah/src/45-host-stage.js GROUND: the gold grass, the benches, the foot's loam)
+ savanna: {a:0xb39552,b:0x9c8048,pale:0xb8a06a,scrub:0x6e7a3a,sand:0xb8a06a,sand2:0xa48e5c,gravel:0x8c8478,silt:0x4e4a2a,damp:0x4a3424,mtn:0x8a7a62,rock:0x7a6a54}};
 const SNOW=0xeef1f4,ICE=0xd8e4ee,SALT=0xf1ede6;
 const lin=h=>{const r=(h>>16&255)/255,g=(h>>8&255)/255,b=(h&255)/255,f=c=>c<.04045?c/12.92:Math.pow((c+.055)/1.055,2.4);return[f(r),f(g),f(b)];};
 

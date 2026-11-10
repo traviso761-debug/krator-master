@@ -6,7 +6,7 @@
 // origin is this region's: map px 1027,681), and a track from each camp's gate to the rock (core/world ROADS). KSITES
 // (core/world/48s-world-sites.js) plans it; core/world/bake_sites.py bakes it to plan/sites.json.
 var SITE_SPEC={region:'pinnacle',world:1027681,
- sites:{staiytii0y:{road:{r:700},camps:[
+ sites:{staiytii0y:{road:{r:700,hw:1.6},camps:[
   {tribe:'threehorn',near:[-1230,200]},{tribe:'hardshell',near:[-870,-500]},{tribe:'longcrawler',near:[-1120,800]},
   {tribe:'staghorn',near:[-860,1350]},{tribe:'raptor',near:[1100,1080]},{tribe:'tiger',near:[1180,480]},
   {tribe:'mammoth',near:[-170,1480]},{tribe:'spider',near:[930,-330]},{tribe:'dragonfly',near:[815,1385]}]}}};

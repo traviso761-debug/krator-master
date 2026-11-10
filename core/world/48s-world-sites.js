@@ -5,6 +5,7 @@
 // record the page draws and Godot reads. No THREE, no DOM, no Math.random: the same spec, world fields and seeds give the
 // same plan in node (core/world/bake_sites.py), in the page and in Godot.
 //
+//   (every height read is WORLD.Hland: the land without the roads, as the road bake reads it)
 //   KSITES.groundOk(x, z)           good ground for a camp or a village: inside the region, dry (1.2 m over any water), not
 //                                   steeper than SLOPE, not a town's or a cleared place's (WORLD.townW)
 //   KSITES.discOk(x, z, R)          a whole disc of good ground (rings from the middle out: the middle fails first)
@@ -24,8 +25,10 @@
 var KSITES=(function(){'use strict';
 const SLOPE=.3,RINGS=[0,.3,.6,1],SPOKES=12,GRID=50;
 const r2=v=>Math.round(v*100)/100;
-function slopeAt(x,z){const e=6,h=WORLD.H(x,z);return Math.max(Math.abs(WORLD.H(x+e,z)-h),Math.abs(WORLD.H(x,z+e)-h))/e;}
-function groundOk(x,z){if(!WORLD.inside(x,z))return false;const h=WORLD.H(x,z);
+/* the land the planners read: without the roads (WORLD.Hland), so a road laid after the plan does not move it */
+const HL=(x,z)=>WORLD.Hland?WORLD.Hland(x,z):WORLD.H(x,z);
+function slopeAt(x,z){const e=6,h=HL(x,z);return Math.max(Math.abs(HL(x+e,z)-h),Math.abs(HL(x,z+e)-h))/e;}
+function groundOk(x,z){if(!WORLD.inside(x,z))return false;const h=HL(x,z);
  if(WORLD.water(x,z)>h-1.2)return false;if(slopeAt(x,z)>SLOPE)return false;return !WORLD.townW(x,z);}
 function discOk(x,z,R){for(const k of RINGS){const r=k*R,n=r?SPOKES:1;
   for(let i=0;i<n;i++){const a=i/n*Math.PI*2;if(!groundOk(x+Math.cos(a)*r,z+Math.sin(a)*r))return false;}}return true;}
@@ -62,8 +65,11 @@ function plan(spec,kit){const out={format:'krator-site-plan',version:1,region:sp
    site.camps.forEach((C,i)=>{const R=ROADS.route({name:C.id,x:C.gate.x,z:C.gate.z,r:0},to);
     if(!R||!R.pts||R.pts.length<2){out.errors.push(C.id+': no road to the site');return;}
     /* the router starts on its own grid: the track begins at the gate itself */
-    const pts=[[C.gate.x,C.gate.z,WORLD.H(C.gate.x,C.gate.z)]].concat(R.pts.filter(p=>Math.hypot(p[0]-C.gate.x,p[1]-C.gate.z)>1));
-    site.roads.push({id:S.id+'/road/'+i,from:C.id,to:S.id,hw:R.hw,pts:pts.map(p=>[r2(p[0]),r2(p[1]),r2(p[2]==null?0:p[2])]),
+    const rest=R.pts.filter(p=>Math.hypot(p[0]-C.gate.x,p[1]-C.gate.z)>1),p1=rest[0],d1=Math.hypot(p1[0]-C.gate.x,p1[1]-C.gate.z),e1=p1[2]==null?HL(p1[0],p1[1]):p1[2];
+    /* the gate's height held to the road's grade from the router's first point (the ground is shaped to the road) */
+    const g=.075*d1,eg=e1+Math.max(-g,Math.min(g,HL(C.gate.x,C.gate.z)-e1));
+    const pts=[[C.gate.x,C.gate.z,eg]].concat(rest);
+    site.roads.push({id:S.id+'/road/'+i,from:C.id,to:S.id,hw:SP.road.hw==null?R.hw:SP.road.hw,pts:pts.map(p=>[r2(p[0]),r2(p[1]),r2(p[2]==null?0:p[2])]),
      length_m:Math.round(R.length_m),maxGrade:Math.round((R.maxGrade||0)*1e4)/1e4});});}
   out.sites.push(site);}
  out.hash=hash(out);return out;}

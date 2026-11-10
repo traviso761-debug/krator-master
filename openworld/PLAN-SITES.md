@@ -11,6 +11,31 @@
    ground is already the model's), then the Oidong-Xanadu-High Rift region, then the Iziz cluster.
 5. Site size: the defaults by type until the owner draws a polygon.
 
+## Status (2026-11-09, branch `claude/openworld-sites-24defd`)
+
+**Built:**
+- **busy-keller merged in.** Its new `.x || n` defaults were rewritten for the source lint.
+- **Step 1, `core/world`.**
+  - The runtime moved out of the isle demo; every page that reads it came out byte-identical but for a path in a
+    comment.
+  - `98-world-start.js` takes `WORLD_R` and a region's first view.
+  - `world_data.py` is the build-time decoder.
+- **Step 2, `openworld/SITES.json` and `tools/scale-model/cut_site.py`.** The owner's three regions are listed, and the
+  Pinnacle cut is made on 5.1.
+- **Steps 4 and 5 for one site: `openworld/pinnacle`.**
+  - `core/world/48s-world-sites.js` (`KSITES`) plans on `WORLD.Hland`.
+  - `core/world/bake_sites.py` bakes the plan in node to `plan/sites.json`.
+  - `core/world/88s-world-sites.js` draws it.
+  - The page's verify plans again in the browser and gets the bake's hash. The nine Beast Rider bands' camps and their
+    tracks pass every check.
+
+**Not yet:**
+- Step 3 (the generic town steps lifted out of `ISLE`): the first site has no town.
+- Step 6 (the region's planner page).
+- Step 7 (Godot reading `plan/`).
+- The other two regions.
+- The mesa in the world: `openworld/pinnacle/PLAN.md`, "What is left".
+
 **The owner's brief (2026-11-09):** take sites off the scale map straight into the open world, and plan settlements
 directly on that open-world ground, instead of each settlement inventing its own terrain. The open world and the Godot
 port then share one source of truth: the scale model's land, and one plan per settlement written as records.

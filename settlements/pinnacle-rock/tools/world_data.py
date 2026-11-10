@@ -9,8 +9,12 @@ The decoding is 98-world-start.js's, in Python: heights 16 bits in R,G (lo..hi),
 byte each. Arrays go in as base64 of little-endian Float32 / Uint8, decoded by atob into typed arrays."""
 import os, sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..', 'core', 'world'))
-import world_data as _core   # noqa: E402  (core/world/world_data.py: the decoder, lifted from here 2026-11-09)
+import importlib.util
+# core/world/world_data.py: the decoder, lifted from here 2026-11-09. Loaded by path under its own name: this file is
+# also called world_data, so a plain import would find this module again.
+_spec = importlib.util.spec_from_file_location('core_world_data', os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..', 'core', 'world', 'world_data.py'))
+_core = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(_core)
 
 HJ_KITS = "var WORLD_KITS=[{name:'hyperjungle',global:'HYPERJUNGLE',overlay:'hyperjungle'}];\n"
 
