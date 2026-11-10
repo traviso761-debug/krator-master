@@ -1003,7 +1003,9 @@ def assemble_garment(gid, label, slot, culture, parts, covers_hair=False, covers
         h = TEX - y0 if k == len(parts) - 1 else max(4, int(round(share[k] * TEX)))
         if y0 + h > TEX:
             h = max(1, TEX - y0)
-        img[y0:y0 + h] = paint_strip(p.paint, TEX, h, max(circ, 0.02), max(length, 0.02))
+        R_grid_c = np.concatenate([p.P, p.P[:, :1]], 1) if p.closed else p.P
+        circ_rows = np.linalg.norm(np.diff(R_grid_c, axis=1), axis=2).sum(1) if p.P.ndim == 3 else None
+        img[y0:y0 + h] = paint_strip(p.paint, TEX, h, max(circ, 0.02), max(length, 0.02), circ_rows=circ_rows)
         v_top, v_bot = y0 / TEX, (y0 + h) / TEX
         pad = 1.5 / TEX
         R_cnt, C_cnt = p.P.shape[:2]

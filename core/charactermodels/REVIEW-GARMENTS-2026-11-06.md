@@ -470,3 +470,16 @@ The plan takes sections 1 to 3 above whole. What to change before acting on it:
   caftan, the dredger's robe, the heliophant's mantle, the aedile's agbada, Phil's trousers, the praetorian's lorica,
   the patriarch's robe, the commissar's coat, the cantor's gorget: `handoff-shots/fix1-2026-11-10.jpg`, a walk.
   Blender-built garments take it at their next build.
+- **Issue 9 (2026-11-10): motifs on flared skirts.** `paint_strip` painted a part's strip at its mean circumference,
+  so a hem band's motif repeated the same number of times on every row, stretched at a flared hem and squeezed at the
+  waist. The call passes the part's circumference row by row now and each row of a band is tiled at its own (the
+  cell's row resampled across that row's repeats), so a motif keeps its size in metres from waist to hem. Geometry
+  identical (138 of 138 pieces); 96 pieces' textures change, every part with a band whose rows differ in girth:
+  `handoff-shots/fix9-2026-11-10.jpg`, the hips.
+- **Issue 6 measured, not yet asserted (2026-11-10).** The widest radius of each of the 45 head pieces about the
+  head's axis (brims included): the patriarch's cap 0.438 m, the magistrate's hat 0.420, the lancer's casque 0.416,
+  the dredger's kasa 0.394, the chosen's hat 0.342, the heliophant's crown 0.337, the cataphract's helm 0.320, the
+  heliarch's halo 0.311; the median 0.204. A brim or a halo is wide by design, so the assertion wants the crown ring's
+  radius (the closed rows at skull height), which these numbers do not separate; the owner's eye on the eight widest
+  decides the bound before a build fails on it. Issue 4's half that is a cap went in: `limb_tube` caps an arm tube's
+  ease at 2 cm and its flare at 2.8 cm for every caller, not `sleeve()` alone.
