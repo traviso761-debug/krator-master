@@ -177,7 +177,7 @@ var INT = { live:{}, order:[], occupied:null, cutaway:false, portals:[], matCach
     P.doors.forEach(function(d){ if(d.kind!=='interior') return; var w=intToWorld(b, d.at[0], d.at[1]),
         lv=G.leaves.filter(function(L){ return L.door===d.id; }), roll=lv.some(function(L){ return L.roll; }), R=null;
       if(lv.length && !KDOOR.get(d.id)){
-        R = KDOOR.add({ id:d.id, at:[w[0], d.y||0, w[1]], yaw:(d.yaw||0)+(b.yaw||0), w:d.w==null?0.9:d.w, h:d.h==null?2.05:d.h, t:0.05, key:b.asset||null,
+        R = KDOOR.add({ id:d.id, at:[w[0], d.y==null?0:d.y, w[1]], yaw:(d.yaw==null?0:d.yaw)+(b.yaw==null?0:b.yaw), w:d.w==null?0.9:d.w, h:d.h==null?2.05:d.h, t:0.05, key:b.asset||null,
           kind:roll?'lift':'swing', roll:roll, swing:roll?null:OPEN_ANG, walk:false, live:bid, style:d.style==='mat'?'flat':'plank', name:'interior door' });
         KDOORHOST.posed(R, function(R){ var e=R.open*R.open*(3-2*R.open); lv.forEach(function(L){ poseLeaf(L, e); }); });
       }
