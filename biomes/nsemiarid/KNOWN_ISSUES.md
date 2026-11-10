@@ -4,6 +4,21 @@ Read before changing anything here. `build.py` prints the open count.
 
 ## Open
 
+- [ ] **Station 2, the high country: the owner's eye and decisions** (2026-11-09; `PLAN-STATIONS.md`, "Station 2, as built"). Not judged by the
+      owner: the site (5.1 px 848,564), sandstone for the plan's granite (the geology bake: sedimentary), the park's pale golden ground and its
+      thin floor from afar, the kin's sizes (x.42-.7 of nhighlands'), the far ridges. **Not taken, the owner's to decide** (as nhighlands' station
+      2 left them): `KFIRE`, seasons, `ATMOS.snowCover` with `lee` (the snowbeds are a field and a ground layer), KSTRATA on the faces. The
+      wind-shaped facing check is off on this page (`HCHK.facing` wants 20 in view; the bench grows a few frills and trumpets).
+- [ ] **The flora exchanges with Korona are owed** (`EXCHANGES.md`, korona ↔ nsemiarid). `bladderpool` (Korona -> here, "fresh pools and reed
+      margins on nsemiarid's lake shore") wants station 1's lake shore, whose lake is salt: a fresh pool there (or the spring pool's margin) is
+      its place, not the high country's tarns. `buckthorn` (here -> Korona, "the east lobe's lake shore on Korona's side") is a Korona station's
+      take: this kit's `buckthorn` item is ready to read in place (`50` and `60`'s `buckthorn()`), and Korona has no buckthorn yet. Neither
+      receiving station was in the 2026-11-09 turn.
+- [ ] **nhighlands' station families are not in its pack** (seen 2026-11-09): its `materials.json` names `ground.needles`, `ground.goldgrass`,
+      `ground.slab`, `ground.chaparral`, `ground.fell`, `ground.scree`, `ground.snowbed`, but its `tex/pack.json` has none of them (the cloud turn
+      that built its stations 2-4 had no library images), so those stations' ground layers have no textures. This station packs the same sets in
+      its own pack. nhighlands' to fix: `python3 tools/textures/pack.py biomes/nhighlands`, rebuild its stations.
+
 - [ ] **The final rebuild's look, for the owner's eye** (2026-11-03, pair 9; `PLAN.md` section 11). Not judged by the owner: the ground on
       KGROUND (now Standard, the eight layers hex-tiled, the desert's pavement and the bed's mud polygons as KGROUND kinds: `?kground=0` the old
       floor), the far trees as impostors (gain 2.4, `?diet=0`, `?impgain=`), the basin past the map (`?far=0`), the height fog (`?hfog=0`), the

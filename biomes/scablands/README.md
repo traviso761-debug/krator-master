@@ -9,6 +9,7 @@ biome that is there (n semiarid; the flood lake's dry bed lies over NW lowlands 
 ```
 cd biomes/scablands
 python3 build.py                                   # dist/coulee.html (station 1)
+python3 build.py --station highline                # dist/highline.html (station 2: the flood lake's high line; stations/highline/, PLAN.md section 7)
 python3 verify.py dist/coulee.html --assert --views "The dry falls from the rim,The plunge-pool lake" --out shots/x
 ```
 

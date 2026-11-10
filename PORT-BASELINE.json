@@ -336,9 +336,13 @@
    "bytes": 8694255,
    "sha256": "84789844916aac5f404401b7cbb09ca24954833d0371d84091efee5c688e4d8c"
   },
+  "biomes/nsemiarid/dist/nsemiarid-high.html": {
+   "bytes": 9238207,
+   "sha256": "ae08079362c52f5c894ad079f0383e14b140b2d355d7b780b92a0715961f0734"
+  },
   "biomes/nsemiarid/dist/nsemiarid.html": {
-   "bytes": 5690446,
-   "sha256": "07c78eb735358bba6e3ca1d9f92b2e62473376622393e2c1be56e0329a1ed620"
+   "bytes": 5691478,
+   "sha256": "dfca7ef6b4f232d61bb99ab523327eebf061d3cfbed9e4b14c3a95961c9e4cdc"
   },
   "biomes/nwbay/dist/nwbay-caverns.html": {
    "bytes": 9632452,
@@ -437,8 +441,12 @@
    "sha256": "2ddb10a1127889ab1073f239724e48882f7801a949acc20442002f091d6704d1"
   },
   "biomes/scablands/dist/coulee.html": {
-   "bytes": 7855331,
-   "sha256": "664d0d1e6ab2e8cd1802f94e2c3fd6fdc7d743adddd44f31c52f7be81cdc4267"
+   "bytes": 7856363,
+   "sha256": "567197097764b2cfeae55026339830ca7622a38e7e86af6e77933ceb6cff5012"
+  },
+  "biomes/scablands/dist/highline.html": {
+   "bytes": 7440290,
+   "sha256": "6c8059c186cd3f48a05b9421a25aabc221ef976bb55091d88ffe34d6678fe241"
   },
   "biomes/sedesert/dist/sedesert-bowl.html": {
    "bytes": 8347668,

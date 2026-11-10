@@ -606,6 +606,11 @@ at about 6.1 km.
 | nsemiarid→korona | `buckthorn` | Sea buckthorn | birds (berries) | read in place | the east lobe's lake shore on Korona's side (about 830 m) | a temperate, semiarid, salt-tolerant shore shrub; the same shore runs on both sides |
 | korona→nsemiarid | `bladderpool` | Sucking pool | birds (fragments on their feet) | cousin: a small pond bladderwort bed, danger 0, with no sucking | fresh pools and reed margins on nsemiarid's lake shore | bladderworts grow in steppe pools on Earth; Korona's version is scaled down for richer ground |
 
+**Status (2026-11-09, nsemiarid's station 2 and the scablands' station 2):** both rows **owed**; checked with `git grep` in each receiver (no
+`buckthorn` in Korona, no `bladderpool` in nsemiarid). Neither receiving place was in that turn's stations: `buckthorn` goes to a Korona station on
+the east lobe's shore (nsemiarid's `buckthorn` item is ready to read in place: its `50` and `60`'s `buckthorn()`); `bladderpool` to station 1's lake
+shore (its lake is salt: the spring pool's margin or a fresh pool there), not the high country's tarns. `biomes/nsemiarid/KNOWN_ISSUES.md`.
+
 ### korona ↔ nwouterwall
 
 **Existing exchanges: none either way.** nwouterwall names Korona only for method (stations, dithering, the mask form:

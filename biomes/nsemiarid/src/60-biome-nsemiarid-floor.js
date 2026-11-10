@@ -276,7 +276,7 @@ function plantRip(x,y,z,Z,lv,st){const t=rng(),nearW=smooth(.4,.9,Z.flow);
  else if(t<.72){blooms(x,y+.2,z,rr(.6,1.4),lv===2?ri(4,9):2,[0xf0c030,0xe8e0f0,0xe8302a]);st.flowers++;}
  else if(t<.8){buckthorn(x,y,z,lv,st);}
  else{stone(x,y,z,lv,PAL.rockBasalt,st,.7);}}
-NSEMIARID.small={tuft,card,stipa,grass,wormwood,tumbler,drift,crawler,strider,dewGarden};
+NSEMIARID.small={tuft,card,stipa,grass,wormwood,tumbler,drift,crawler,strider,dewGarden,stone,boulder,buckthorn,sedge,tulips,blooms,okGround};
 
 // ---------------------------------------------------------------- the pass
 NSEMIARID.FLOOR_ZONES=['desert','pan','steppe','med','forest','tugai','rip'];
@@ -287,6 +287,7 @@ NSEMIARID.buildFloor=function(R,q){
  const st={tufts:0,shrubs:0,flowers:0,ferns:0,litter:0,reeds:0,stones:0,boulders:0,tumblers:0,drifts:0,seedDrifts:0,crawlers:0,balls:0,striders:0,maces:0,beads:0,sails:0,stars:0,censers:0,horns:0,eggs:0,
   furlers:0,furlersShut:0,hitchers:0,stepcones:0,windows:0,fingers:0,balloons:0,gourds:0,gardens:0,vines:0,pods:0,aloft:0,windfall:0,deadSaxaul:0,saltbush:0,buckthorn:0};
  function plant(x,y,z,lv){if(blocked(x,z,.6))return;const Z=zones(x,z);if(Z.cliff>.6)return;
+  if(NSEMIARID.STATION_PLANT&&NSEMIARID.STATION_PLANT(x,y,z,Z,lv,st))return;   /* a station's own floor (stations/high) where it grows one; false: the kit's */
   const w=NSEMIARID.floorWeights(Z);let tot=0;for(let i=0;i<w.length;i++)tot+=w[i];if(tot<=0)return;
   let r=rng()*Math.max(1,tot),k=0;for(;k<w.length;k++){if(r<w[k])break;r-=w[k];}if(k>=w.length)return;
   PLANTERS[k](x,y,z,Z,lv,st);}

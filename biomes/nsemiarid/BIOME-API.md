@@ -72,6 +72,20 @@ NSEMIARID.hangVine, seedsAloft, blooms, small.{...}   // shared by trees and flo
 NSEMIARID.canopyH(x,z), nearestTree(sp,x,z,minH,pred), COUNTS, TREES
 ```
 
+**A station's hooks** (2026-11-09, station 2 `stations/high`; each null or absent by default, so station 1 and the scablands' coulee draw as before):
+
+```js
+NSEMIARID.ZONE_HOOK = (Z, x, z) => {...}   // reweights the zones in place (55): high mutes all but the bench; the scablands' highline thins the bed's desert
+NSEMIARID.STATION_PLANT = (x,y,z,Z,lv,st) => bool  // the floor's planter first (60): true, the station planted (or chose nothing); false, the kit's
+NSEMIARID.keepClear({x,z,r})              // a station's own tree claims its ground from the kit's floor (55's keep-clear)
+NSEMIARID.small.{stone, boulder, buckthorn, sedge, tulips, blooms, okGround}   // more of the floor's helpers, for a station's planter
+STATION_GROW(q)                           // host: 88 calls it after the kit's trees, before its floor (high: the neighbours' kin and in-place trees, 87k)
+STAGE_GROUND.layers = [[name, w(F)], ...] // up to eight of the pack's ground.<name> on their weights, in place of the kit's eight (45c)
+FAR_COLOR(x, z, y, q)                     // the far field's colour past the map (87), beside FAR_LAND
+```
+`build.py --station <name>`: `stations/<name>/` over `src/`, with its `station.json` ("core", "families": its page only, "kin": a neighbour
+kit's fragments read in place in its own registry with its pack's named families). `PLAN-STATIONS.md`, "Station 2, as built".
+
 No fauna (one fauna kit for every biome, `biomes/README.md`).
 
 ## File layout
