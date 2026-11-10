@@ -110,6 +110,8 @@ KITS={'48a-swlow-species.js':(SW,'src/50-biome-swlowlands-species.js'),'48b-swlo
 MPD=os.path.join(ROOT,'kits','metropolis')
 MP_FRAGS=['40-mp-records.js','41-mp-plans.js','42-mp-facade.js','43-mp-shell.js','44-mp-audit.js','46-mp-designs.js','46b-mp-ancients.js','46c-mp-planned.js','46d-mp-gridplan.js',
           '50-mp-kit.js','52-mp-hero-spindle.js','53-mp-hero-ledger.js','54-mp-hero-designs.js','55-mp-hero-ancients.js','57-mp-debris.js','59-mp-floors.js','59b-mp-ruin-design.js','60-mp-shell-host.js']
+# a station's own fragments of the kit (station.json "mp"; the Yards: 46e, the industry's third of each kind, and the yards' pieces)
+MP_FRAGS=MP_FRAGS+[f for f in STN.get('mp',[]) if f not in MP_FRAGS]
 # THE ANCIENTS KIT, read in place for THE ENGINES (the owner, 2026-11-04: an Ancient Engine or two, sparingly, for the sense of scale; kits/ancients
 # 8ah-engines.js, 8ai-engines2.js: cyclopean machines the size of a town), as kits/metropolis/build.py reads it: its runtime, the two engine files,
 # its materials (a copy in the kit's src/ wins, else core/materials), and its names renamed where this page has them (the registry to ANC_REG /
@@ -117,8 +119,10 @@ MP_FRAGS=['40-mp-records.js','41-mp-plans.js','42-mp-facade.js','43-mp-shell.js'
 ANC=os.path.join(ROOT,'kits','ancients')
 ANC_RUNTIME=['10-core.js','12-stats.js','30-kit.js','32-surfaces.js','34-kitdefs.js','36-decor.js','38-helpers2.js','50-registry.js','54-mat-concrete.js','69-mat-salvage.js','69w-worn.js','88y-ancients-matlib.js','8ap-host-0-lib.js']
 ANC_BUILDERS=['8ah-engines.js','8ai-engines2.js']
+# a station's own builders of the kit (station.json "anc"; the Yards: the industry, as kits/metropolis/build.py lists them)
+ANC_BUILDERS=ANC_BUILDERS+[f for f in STN.get('anc',[]) if f not in ANC_BUILDERS]
 ANC_FILES={}
-for f in ANC_RUNTIME+ANC_BUILDERS: ANC_FILES[f]=os.path.join(ANC,'src',f)
+for f in ANC_RUNTIME+ANC_BUILDERS: ANC_FILES[os.path.basename(f)]=os.path.join(ANC,f) if '/' in f else os.path.join(ANC,'src',f)   # a path (targets/engines/8aj-engines3.js) is the kit's target fragment
 for f in ['20-textures.js','22-materials.js','68-mat-v5.js']:
     p=os.path.join(ANC,'src',f); ANC_FILES[f]=p if os.path.isfile(p) else os.path.join(CORE,'materials',f)
 ANC_SUBST=[(r'\bREGISTER\b','ANC_REGISTER'),(r'\bREG\b','ANC_REG')]

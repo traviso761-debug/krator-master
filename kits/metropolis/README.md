@@ -326,6 +326,19 @@ triangles). A part's storeys above its core's run (the Rig's deck on its legs, 2
 200 m2 of floor (`MP.floors`). All twenty-five Ancients buildings' plans pass the audit. Views `Inside the Vault, a server floor` and
 `Inside the Gantry Hall, the floor`.
 
+**The yards' pieces** (the owner, 2026-11-10: the Ancient's Valley's industrial district, its Yards station; `46f-mp-yards.js` records,
+`57y-mp-yards-draw.js` drawing). What stands between the industrial halls, as plain records first (`MP.yards`, [G data]: numbers in, records
+out, every figure fixed or a KRAND position hash, the ruin by `o.damage`): `tankFarm` (a bund and its tanks in rows: upright cylinders with
+cone, floating or domed roofs, and a share of spheres on leg rings after the owner's refinery reference; whole, holed, burnt, collapsed or
+gone), `pipeRack` (bents along a polyline carrying one or two tiers of pipes; `o.skip` leaves a bent out where a street or a track runs, so
+the pipes span it; runs of bents down sag the pipes to the ground), `dishArray`, `chimney` (tapered, banded, broken at a height by damage),
+`conveyor` (an enclosed gallery on trestles, `o.skip` for the trestles, a section down), `slagHeap` and `slagH` (heaps the host adds to its
+ground), `spill` (dead ground and pools), `turntable` (the pit, its bridge and a fan of roundhouse stalls), `gantry` (a loading gantry over
+tracks), `railYard` (sidings fanning off a line's path at a spacing, each turnout longer than the last, buffer stops, the yard's outline)
+and `inside`. `MP.yardsDraw(records, {kt: KTRANSIT})` draws them into one builder (the transit kit's, handed in: its library families rust,
+steel, concrete, corrugated, white, paint) by family and chunk, so a district of them is a few calls a chunk. The kit's own sheet does not
+show them yet; the valley's Yards station is where they stand (`biomes/ancientsvalley/stations/yards/`).
+
 **Which shapes shell well** (from these two and the geometry; only the first two are measured):
 
 | Shape | Expected | Why |

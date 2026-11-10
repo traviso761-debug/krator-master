@@ -163,3 +163,24 @@
 - [ ] **The ground's detail map is sampled raw** (`47-host-land.js`, the lint's one RAWTEX on this build, locked in the baseline): the library's
   `groundDetail` albedo multiplies the ground's colour without an sRGB decode, as the two lowlands' pages do (the valley copies their ground). A
   decode darkens the ground a fifth; do it with the lowlands together and retune the gain, not here alone.
+
+## The Yards (station 2a, `stations/yards/`, 2026-11-10)
+
+- [ ] **`AV.kerbPlace` checks only the nearest line on each axis** (found building the Yards): a tower slid to one street's kerb is dropped if
+  its plinth reaches that street, but a wide slab (a Ledger, 126 m) can overrun the street behind it, and the Overlook's `HCHK.kerb` reads the
+  same nearest line, so neither sees it. On the Yards the stage drops those towers with a check of every line in reach (`inStreet`, the
+  streets as intervals: `PLAN.streetDropped`). The Overlook is untouched (dropping them there would change its city); fix it in `AV.kerbPlace`
+  with the Overlook's next rebuild, and its check with it. Also fixed on the way: `fit` was called before its `var` line in the branch for a
+  tower with no street on any side (a TypeError the Overlook never reached).
+- [ ] **The industrial halls are the kit's buildings at the kit's scale:** the Vault and the Assembler are 400 m across, so a superblock holds one;
+  the smaller (the Well, the Tank Yard, the Spheres, the Cooling Towers, the Gantry Hall) share a block along its avenue. Their ruins are the kit's
+  design ruins (`MP.ruinDesign`), cut at the record's top here as the designs' are; their box shells are made from the first hero at the boot.
+- [ ] **The yard's sidings are eight separate rails** (the transit kit draws one rail a call per family): about 30 draw calls for the yard. A
+  yard builder in the transit kit (one builder for all the tracks, the switches as pieces) would cut that and draw the turnouts' frogs.
+- [ ] **The turntable has no track to it from the yard** (its entry is a record, not drawn), and the roundhouse's stalls are open boxes.
+- [ ] **Wrecks are fewer here** (an industrial district has a street every 495 m inside the zone): the wreck check's floor is 60, not the
+  Overlook's 150; none stands in a superblock or the yard's row (they have no street).
+- [ ] **The Engines' masses are merged by material at the boot** (`70y`), not in the kit: the engines sheet draws them unmerged.
+- [ ] **On software GL the shell bake's programs fail to link** (the first with an empty log, every one after it with INVALID_OPERATION: the
+  signature of a lost context), seen headless under SwiftShader; on both GPU lanes every program links and the page passes. The GPU lanes are
+  the check for this page (`verify.py` with `KRATOR_GL=gpu`); `harness.py smoke` on software GL reports it dirty.

@@ -39,5 +39,17 @@ const VIEWS={
  'The broken top':         ENW('needle',420,5,-260).concat(ENW('needle',0,200,0)),
  'The Ram':                ENW('ram',-280,90,440).concat(ENW('ram',40,50,0)),
  'The torn tail':          ENW('ram',-250,4,70).concat(ENW('ram',-150,50,0)),
+ // THE INDUSTRIAL SET (8aj-engines3.js), north of the first ten
+ 'The industrial set':     [-300,1.8,-3400, -300,160,-6000],
+ 'The Coil':               ENW('coil',-300,90,380).concat(ENW('coil',0,150,0)),
+ 'The Procession':         ENW('procession',-620,30,380).concat(ENW('procession',100,110,0)),
+ 'The Mortar':             ENW('mortar',-320,60,360).concat(ENW('mortar',60,110,0)),
+ 'The Vigil':              ENW('vigil',-200,40,320).concat(ENW('vigil',0,130,0)),
+ 'The Receiver':           ENW('receiver',520,30,240).concat(ENW('receiver',0,90,0)),
+ 'The Loom':               ENW('loom',-360,60,420).concat(ENW('loom',0,150,0)),
+ 'The Iris':               ENW('iris',0,1.8,240).concat(ENW('iris',0,90,0)),
+ 'The Hive':               ENW('hive',-200,20,300).concat(ENW('hive',0,160,0)),
+ 'The Star':               ENW('star',-260,60,300).concat(ENW('star',0,110,0)),
+ 'The Abacus':             ENW('abacus',-260,20,260).concat(ENW('abacus',60,140,0)),
  'Night on the plain':     [-250,1.8,1000, 60,230,-700, 1],
 };

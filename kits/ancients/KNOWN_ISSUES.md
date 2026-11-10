@@ -1023,3 +1023,18 @@ volumes; the beam's `rotation.y` advances frame to frame. Details in
 - [ ] The portal's hood is broken by hash in a ruin; a toppled mouth is a rubble mound, with no collapsed lining slabs.
 - [ ] Dalab's own additions (the Line, salvage parapets, gates in the portal) are not here: they are the Dalab set's, in
       settlements/span (SP4). The rehabilitated state is the kit's generic `repairPass`.
+
+## The industrial set of Engines (`--target engines`, `targets/engines/8aj-engines3.js`; the owner, 2026-11-10)
+
+Ten more machines after the owner's two reference sheets (the Coil, the Procession, the Mortar, the Vigil, the Receiver, the Loom, the
+Iris, the Hive, the Star, the Abacus), north of the first ten on the engines sheet. They live in the target's folder, so they reach
+`engines.html` and the Ancient's Valley's Yards (which reads the fragment by path), no other target.
+- [ ] **A first pass, decay 1 only checked.** Each builder takes d like the others (whole at 0), but only the ruined state has been
+  looked at. The masses are plain meshes (a hundred to an engine, the Star and the Abacus the most): a host merges them by material
+  (the Yards does, `stations/yards/70y-host-yards.js`); the sheet draws them as they are (about 400 calls in the industrial view).
+- [ ] **`MAT.dark` is a pale plaster in this kit** (the "no dark voids" round above), so the set brings its own dark iron (`EN_IRON`,
+  a plain MeshStandardMaterial, not a library set): the Iris, the Hive's core, the Mortar's sphere and barrels, the Star's caps.
+- [ ] **The kit's `qEuler` turns about the world's axes (XYZ)**, so a plate on a sphere or a leaning sail is placed with `enQn` (a turn
+  from the face's normal); the earlier engines' plates are untouched.
+- The Coil's sails are plates, not the reference's triangles; the Vigil's eyes are lit squares behind a round port; the Procession's
+  inner machinery is boxes. Detail passes to come with the owner's eye.

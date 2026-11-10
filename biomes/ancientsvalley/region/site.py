@@ -30,8 +30,14 @@ import smodel.page as page   # noqa: E402
 
 # the stations (PLAN.md section 12): px, py, title. The Overlook stands on the ridge east of city1 over the drowned inlet
 # (83-132 m on the model: the shelf's edge, residential under B), looking south-west over city1's floor to the lake.
+# The Yards (PLAN.md section 12, 2a; picked 2026-11-10 on the 5.1 model): px 470,921, 209 m, the floor of a west-east trough in the shelf
+# 38 km east-south-east of city1 and 14 km from the shore, Af. The trough climbs from the core's floor (105 m four cells west) toward Thera
+# and Span (332 m four cells east), 1.4% along it and 3-4.5% up its flanks: the freight line's natural grade inland, a floor wide enough for
+# a rail yard and the halls, flanks for the residential rings, and a bowl that holds the smog. Clear of every blast basin by 11 km (the
+# Press's edge), no water within 8 km.
 SITES = {
     'overlook': {'px': 457, 'py': 907, 'title': 'The Overlook: the city on a normal day'},
+    'yards': {'px': 470, 'py': 921, 'title': 'The Yards: the industrial district on the freight line'},
 }
 EYE = 30.0
 R_PLANET = 84.0 * 360 / (2 * math.pi) * 1000      # m: the sky model's frame (kmPerDeg 84)

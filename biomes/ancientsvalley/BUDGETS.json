@@ -6,6 +6,12 @@
    "why": "the owner (2026-11-09) raised the triangle budget twice, to 15 M for the wild half's overgrowth and to 20 M so the heroes stand to 600 m (a shell at 390 m read too close); the kits' chunk meshes take the park view to about 800 draw calls, so the per-view call ceiling is 900; measured on the RTX lane; calls 900 -> 1,200 on 2026-11-09 with the transit pass (kits/ancient-transit on the page: the surfaces and the kit's draws in 1.5 km chunks, the furniture and war cells within 750 m; the park view 1,085, the Overlook 999 on the RTX lane)",
    "raised": "2026-11-09",
    "calls": 1200
+  },
+  "ancientsvalley-yards.html": {
+   "tris": 20000000,
+   "calls": 1200,
+   "why": "the Yards (PLAN.md 12, 2a; the task's ceiling, 2026-11-10): the Overlook's 20 M and 1,200 calls, kept; the industry's heroes, the yard's rails and the transit's chunked draws",
+   "raised": "2026-11-10"
   }
  }
 }
