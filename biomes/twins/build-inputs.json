@@ -4,7 +4,7 @@
   "build.py": {
    "inputs": {
     "biomes/twins/KNOWN_ISSUES.md": "1ffed71ba98f32c3926a9a42168fa3496b2aac0c8e63f98d638c22fccc964488",
-    "biomes/twins/PORT.md": "5bef3871488afee9778be0cc911ac092495faabebfc20fad02a4375a76146434",
+    "biomes/twins/PORT.md": "01eb757652e7f6a6c059ef0d9d6b94c181b484ea2aa2eab5fa17b193a4a09239",
     "biomes/twins/build.py": "b48c584770c41c1b36218a4e94f1267ab58e85671fcd5395e7edb2a1d4472408",
     "biomes/twins/src/00-head.html": "b4a8af585454132d8b0bd43b1e56c39a4910fa15c5be1fd3173d83ace0f428cc",
     "biomes/twins/src/45-host-stage.js": "1666945704fc559b0f8cf6c1ea2f73ff8baabeab17330921671c642886ec16a7",
@@ -34,7 +34,7 @@
     "biomes/twins/tex/groundDetail.albedo.webp": "fc8fdc8d358bc8fbbd8fbd87e1abc7b329eb199faceb1b407d38eb8e084deee5",
     "biomes/twins/tex/lichenCrust.albedo.webp": "27f7b666c6de2644be564cb6e7fec7d04f8dcb4feb8d087b453a5afbc198c2f7",
     "biomes/twins/tex/obsidian.albedo.webp": "fcfafd284bb5b116cb9769bcfdc338b8fc1335429353e412c91449a6faef511e",
-    "biomes/twins/tex/pack.json": "11c0fe400c66ce483592bd833fc7f9c3dda6007cb34bcd417512215d5cbd12ad",
+    "biomes/twins/tex/pack.json": "2f803087b35c2858e159d98904847dd90bd718ac22567bc8a99df000138081df",
     "biomes/twins/tex/rock.albedo.webp": "084ec9769dae98f1ecd7ea118d06496441637ff8c18f4abc78123021a9c69a74",
     "biomes/twins/tex/rockFace.albedo.webp": "86cc89af7974935f21709b86f7434ff835ca8f8be4ec38d6e5ede4c391dd2f75",
     "biomes/twins/tex/scree.albedo.webp": "d1ab2f354e6cd6566c0d73808f563fde58354302ac9fc84604aa8c9907770957",
@@ -111,7 +111,6 @@
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
-    "biomes/twins": "6fdecef50212fe839ef0f8fb9b32af14aa3684d3a6633e2919e2184f05ed667d",
     "biomes/twins/src": "77794b5e073551208114d183c16168e3465bdcde197cae5e7f4984700c97462e",
     "biomes/twins/stations": "5b395db558f62fcba01648ee007e71fb1d778be6e52893557383a994d5d54a43",
     "biomes/twins/stations/pyroduct": "4a2368391659a9696dfbbbd039ab1c15ba937308fce9bbaf69ce0e15bf7bf357",
@@ -120,10 +119,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/twins/dist/twins.html": "78a7811e1a01a8fc47b6e3be6e5283a60cc0fb5377871dbbb172e6a07f048649"
+    "biomes/twins/dist/twins.html": "d39786ae8c5fbbfada06d2ef1aba97e227b43c92ca4d957f432ec9128c6ec360"
    },
    "outputs_raw": {
-    "biomes/twins/dist/twins.html": "78a7811e1a01a8fc47b6e3be6e5283a60cc0fb5377871dbbb172e6a07f048649"
+    "biomes/twins/dist/twins.html": "d39786ae8c5fbbfada06d2ef1aba97e227b43c92ca4d957f432ec9128c6ec360"
    }
   },
   "build.py --station brazier": {
@@ -131,7 +130,7 @@
     "biomes/hearths/src/50-biome-hearths-species.js": "e5d86542ef60897ac552bc34b63a67efa440eb57aa964181bd3cb72de0828df1",
     "biomes/hearths/src/55-biome-hearths-place.js": "c3f9fe77156a33211b51ffc6b5a03644ccd84360a7f4001c55baf34702e0e74e",
     "biomes/twins/KNOWN_ISSUES.md": "1ffed71ba98f32c3926a9a42168fa3496b2aac0c8e63f98d638c22fccc964488",
-    "biomes/twins/PORT.md": "5bef3871488afee9778be0cc911ac092495faabebfc20fad02a4375a76146434",
+    "biomes/twins/PORT.md": "01eb757652e7f6a6c059ef0d9d6b94c181b484ea2aa2eab5fa17b193a4a09239",
     "biomes/twins/build.py": "b48c584770c41c1b36218a4e94f1267ab58e85671fcd5395e7edb2a1d4472408",
     "biomes/twins/src/00-head.html": "b4a8af585454132d8b0bd43b1e56c39a4910fa15c5be1fd3173d83ace0f428cc",
     "biomes/twins/src/45-host-stage.js": "1666945704fc559b0f8cf6c1ea2f73ff8baabeab17330921671c642886ec16a7",
@@ -161,7 +160,7 @@
     "biomes/twins/tex/groundDetail.albedo.webp": "fc8fdc8d358bc8fbbd8fbd87e1abc7b329eb199faceb1b407d38eb8e084deee5",
     "biomes/twins/tex/lichenCrust.albedo.webp": "27f7b666c6de2644be564cb6e7fec7d04f8dcb4feb8d087b453a5afbc198c2f7",
     "biomes/twins/tex/obsidian.albedo.webp": "fcfafd284bb5b116cb9769bcfdc338b8fc1335429353e412c91449a6faef511e",
-    "biomes/twins/tex/pack.json": "11c0fe400c66ce483592bd833fc7f9c3dda6007cb34bcd417512215d5cbd12ad",
+    "biomes/twins/tex/pack.json": "2f803087b35c2858e159d98904847dd90bd718ac22567bc8a99df000138081df",
     "biomes/twins/tex/rock.albedo.webp": "084ec9769dae98f1ecd7ea118d06496441637ff8c18f4abc78123021a9c69a74",
     "biomes/twins/tex/rockFace.albedo.webp": "86cc89af7974935f21709b86f7434ff835ca8f8be4ec38d6e5ede4c391dd2f75",
     "biomes/twins/tex/scree.albedo.webp": "d1ab2f354e6cd6566c0d73808f563fde58354302ac9fc84604aa8c9907770957",
@@ -262,16 +261,16 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/twins/dist/twins-brazier.html": "fe6ab06496808c229bc514528273d9b82d9f0e41b1596e813ce0cd40659113e2"
+    "biomes/twins/dist/twins-brazier.html": "20484136c3130b6dcbc04b1a5208d9c82079a6f713465a0409df6c3fd6c4115b"
    },
    "outputs_raw": {
-    "biomes/twins/dist/twins-brazier.html": "fe6ab06496808c229bc514528273d9b82d9f0e41b1596e813ce0cd40659113e2"
+    "biomes/twins/dist/twins-brazier.html": "20484136c3130b6dcbc04b1a5208d9c82079a6f713465a0409df6c3fd6c4115b"
    }
   },
   "build.py --station catchlookout": {
    "inputs": {
     "biomes/twins/KNOWN_ISSUES.md": "1ffed71ba98f32c3926a9a42168fa3496b2aac0c8e63f98d638c22fccc964488",
-    "biomes/twins/PORT.md": "5bef3871488afee9778be0cc911ac092495faabebfc20fad02a4375a76146434",
+    "biomes/twins/PORT.md": "01eb757652e7f6a6c059ef0d9d6b94c181b484ea2aa2eab5fa17b193a4a09239",
     "biomes/twins/build.py": "b48c584770c41c1b36218a4e94f1267ab58e85671fcd5395e7edb2a1d4472408",
     "biomes/twins/src/00-head.html": "b4a8af585454132d8b0bd43b1e56c39a4910fa15c5be1fd3173d83ace0f428cc",
     "biomes/twins/src/45-host-stage.js": "1666945704fc559b0f8cf6c1ea2f73ff8baabeab17330921671c642886ec16a7",
@@ -302,7 +301,7 @@
     "biomes/twins/tex/groundDetail.albedo.webp": "fc8fdc8d358bc8fbbd8fbd87e1abc7b329eb199faceb1b407d38eb8e084deee5",
     "biomes/twins/tex/lichenCrust.albedo.webp": "27f7b666c6de2644be564cb6e7fec7d04f8dcb4feb8d087b453a5afbc198c2f7",
     "biomes/twins/tex/obsidian.albedo.webp": "fcfafd284bb5b116cb9769bcfdc338b8fc1335429353e412c91449a6faef511e",
-    "biomes/twins/tex/pack.json": "11c0fe400c66ce483592bd833fc7f9c3dda6007cb34bcd417512215d5cbd12ad",
+    "biomes/twins/tex/pack.json": "2f803087b35c2858e159d98904847dd90bd718ac22567bc8a99df000138081df",
     "biomes/twins/tex/rock.albedo.webp": "084ec9769dae98f1ecd7ea118d06496441637ff8c18f4abc78123021a9c69a74",
     "biomes/twins/tex/rockFace.albedo.webp": "86cc89af7974935f21709b86f7434ff835ca8f8be4ec38d6e5ede4c391dd2f75",
     "biomes/twins/tex/scree.albedo.webp": "d1ab2f354e6cd6566c0d73808f563fde58354302ac9fc84604aa8c9907770957",
@@ -402,16 +401,16 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/twins/dist/twins-catchlookout.html": "73371def5ba0cefad82a4581cbeb7c48b51bce75f334307eafa3d5188abe95af"
+    "biomes/twins/dist/twins-catchlookout.html": "2dc371f34bbd02ac113acad4bb03060822c50632e391abb55c190867be7e8540"
    },
    "outputs_raw": {
-    "biomes/twins/dist/twins-catchlookout.html": "73371def5ba0cefad82a4581cbeb7c48b51bce75f334307eafa3d5188abe95af"
+    "biomes/twins/dist/twins-catchlookout.html": "2dc371f34bbd02ac113acad4bb03060822c50632e391abb55c190867be7e8540"
    }
   },
   "build.py --station erebustwin": {
    "inputs": {
     "biomes/twins/KNOWN_ISSUES.md": "1ffed71ba98f32c3926a9a42168fa3496b2aac0c8e63f98d638c22fccc964488",
-    "biomes/twins/PORT.md": "5bef3871488afee9778be0cc911ac092495faabebfc20fad02a4375a76146434",
+    "biomes/twins/PORT.md": "01eb757652e7f6a6c059ef0d9d6b94c181b484ea2aa2eab5fa17b193a4a09239",
     "biomes/twins/build.py": "b48c584770c41c1b36218a4e94f1267ab58e85671fcd5395e7edb2a1d4472408",
     "biomes/twins/src/00-head.html": "b4a8af585454132d8b0bd43b1e56c39a4910fa15c5be1fd3173d83ace0f428cc",
     "biomes/twins/src/45-host-stage.js": "1666945704fc559b0f8cf6c1ea2f73ff8baabeab17330921671c642886ec16a7",
@@ -441,7 +440,7 @@
     "biomes/twins/tex/ice.albedo.webp": "63b8079427e5ea259208720355ba7a89e248f305577f726bc6122c23582fec14",
     "biomes/twins/tex/lichenCrust.albedo.webp": "27f7b666c6de2644be564cb6e7fec7d04f8dcb4feb8d087b453a5afbc198c2f7",
     "biomes/twins/tex/obsidian.albedo.webp": "fcfafd284bb5b116cb9769bcfdc338b8fc1335429353e412c91449a6faef511e",
-    "biomes/twins/tex/pack.json": "11c0fe400c66ce483592bd833fc7f9c3dda6007cb34bcd417512215d5cbd12ad",
+    "biomes/twins/tex/pack.json": "2f803087b35c2858e159d98904847dd90bd718ac22567bc8a99df000138081df",
     "biomes/twins/tex/rock.albedo.webp": "084ec9769dae98f1ecd7ea118d06496441637ff8c18f4abc78123021a9c69a74",
     "biomes/twins/tex/rockFace.albedo.webp": "86cc89af7974935f21709b86f7434ff835ca8f8be4ec38d6e5ede4c391dd2f75",
     "biomes/twins/tex/scree.albedo.webp": "d1ab2f354e6cd6566c0d73808f563fde58354302ac9fc84604aa8c9907770957",
@@ -548,7 +547,7 @@
   "build.py --station lavasump": {
    "inputs": {
     "biomes/twins/KNOWN_ISSUES.md": "1ffed71ba98f32c3926a9a42168fa3496b2aac0c8e63f98d638c22fccc964488",
-    "biomes/twins/PORT.md": "5bef3871488afee9778be0cc911ac092495faabebfc20fad02a4375a76146434",
+    "biomes/twins/PORT.md": "01eb757652e7f6a6c059ef0d9d6b94c181b484ea2aa2eab5fa17b193a4a09239",
     "biomes/twins/build.py": "b48c584770c41c1b36218a4e94f1267ab58e85671fcd5395e7edb2a1d4472408",
     "biomes/twins/src/00-head.html": "b4a8af585454132d8b0bd43b1e56c39a4910fa15c5be1fd3173d83ace0f428cc",
     "biomes/twins/src/45-host-stage.js": "1666945704fc559b0f8cf6c1ea2f73ff8baabeab17330921671c642886ec16a7",
@@ -580,7 +579,7 @@
     "biomes/twins/tex/lavaCrust.albedo.webp": "91702a42e2eba2fd77753834e88c74091e0261a8b490bd73d0d978c5c62cfa5d",
     "biomes/twins/tex/lichenCrust.albedo.webp": "27f7b666c6de2644be564cb6e7fec7d04f8dcb4feb8d087b453a5afbc198c2f7",
     "biomes/twins/tex/obsidian.albedo.webp": "fcfafd284bb5b116cb9769bcfdc338b8fc1335429353e412c91449a6faef511e",
-    "biomes/twins/tex/pack.json": "11c0fe400c66ce483592bd833fc7f9c3dda6007cb34bcd417512215d5cbd12ad",
+    "biomes/twins/tex/pack.json": "2f803087b35c2858e159d98904847dd90bd718ac22567bc8a99df000138081df",
     "biomes/twins/tex/rock.albedo.webp": "084ec9769dae98f1ecd7ea118d06496441637ff8c18f4abc78123021a9c69a74",
     "biomes/twins/tex/rockFace.albedo.webp": "86cc89af7974935f21709b86f7434ff835ca8f8be4ec38d6e5ede4c391dd2f75",
     "biomes/twins/tex/scree.albedo.webp": "d1ab2f354e6cd6566c0d73808f563fde58354302ac9fc84604aa8c9907770957",
@@ -677,7 +676,7 @@
   "build.py --station pyroduct": {
    "inputs": {
     "biomes/twins/KNOWN_ISSUES.md": "1ffed71ba98f32c3926a9a42168fa3496b2aac0c8e63f98d638c22fccc964488",
-    "biomes/twins/PORT.md": "5bef3871488afee9778be0cc911ac092495faabebfc20fad02a4375a76146434",
+    "biomes/twins/PORT.md": "01eb757652e7f6a6c059ef0d9d6b94c181b484ea2aa2eab5fa17b193a4a09239",
     "biomes/twins/build.py": "b48c584770c41c1b36218a4e94f1267ab58e85671fcd5395e7edb2a1d4472408",
     "biomes/twins/src/00-head.html": "b4a8af585454132d8b0bd43b1e56c39a4910fa15c5be1fd3173d83ace0f428cc",
     "biomes/twins/src/45-host-stage.js": "1666945704fc559b0f8cf6c1ea2f73ff8baabeab17330921671c642886ec16a7",
@@ -707,7 +706,7 @@
     "biomes/twins/tex/groundDetail.albedo.webp": "fc8fdc8d358bc8fbbd8fbd87e1abc7b329eb199faceb1b407d38eb8e084deee5",
     "biomes/twins/tex/lichenCrust.albedo.webp": "27f7b666c6de2644be564cb6e7fec7d04f8dcb4feb8d087b453a5afbc198c2f7",
     "biomes/twins/tex/obsidian.albedo.webp": "fcfafd284bb5b116cb9769bcfdc338b8fc1335429353e412c91449a6faef511e",
-    "biomes/twins/tex/pack.json": "11c0fe400c66ce483592bd833fc7f9c3dda6007cb34bcd417512215d5cbd12ad",
+    "biomes/twins/tex/pack.json": "2f803087b35c2858e159d98904847dd90bd718ac22567bc8a99df000138081df",
     "biomes/twins/tex/rock.albedo.webp": "084ec9769dae98f1ecd7ea118d06496441637ff8c18f4abc78123021a9c69a74",
     "biomes/twins/tex/rockFace.albedo.webp": "86cc89af7974935f21709b86f7434ff835ca8f8be4ec38d6e5ede4c391dd2f75",
     "biomes/twins/tex/scree.albedo.webp": "d1ab2f354e6cd6566c0d73808f563fde58354302ac9fc84604aa8c9907770957",
@@ -792,16 +791,16 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/twins/dist/twins.html": "78a7811e1a01a8fc47b6e3be6e5283a60cc0fb5377871dbbb172e6a07f048649"
+    "biomes/twins/dist/twins.html": "d39786ae8c5fbbfada06d2ef1aba97e227b43c92ca4d957f432ec9128c6ec360"
    },
    "outputs_raw": {
-    "biomes/twins/dist/twins.html": "78a7811e1a01a8fc47b6e3be6e5283a60cc0fb5377871dbbb172e6a07f048649"
+    "biomes/twins/dist/twins.html": "d39786ae8c5fbbfada06d2ef1aba97e227b43c92ca4d957f432ec9128c6ec360"
    }
   },
   "build.py --station shroudvale": {
    "inputs": {
     "biomes/twins/KNOWN_ISSUES.md": "1ffed71ba98f32c3926a9a42168fa3496b2aac0c8e63f98d638c22fccc964488",
-    "biomes/twins/PORT.md": "5bef3871488afee9778be0cc911ac092495faabebfc20fad02a4375a76146434",
+    "biomes/twins/PORT.md": "01eb757652e7f6a6c059ef0d9d6b94c181b484ea2aa2eab5fa17b193a4a09239",
     "biomes/twins/build.py": "b48c584770c41c1b36218a4e94f1267ab58e85671fcd5395e7edb2a1d4472408",
     "biomes/twins/src/00-head.html": "b4a8af585454132d8b0bd43b1e56c39a4910fa15c5be1fd3173d83ace0f428cc",
     "biomes/twins/src/45-host-stage.js": "1666945704fc559b0f8cf6c1ea2f73ff8baabeab17330921671c642886ec16a7",
@@ -832,7 +831,7 @@
     "biomes/twins/tex/ice.albedo.webp": "63b8079427e5ea259208720355ba7a89e248f305577f726bc6122c23582fec14",
     "biomes/twins/tex/lichenCrust.albedo.webp": "27f7b666c6de2644be564cb6e7fec7d04f8dcb4feb8d087b453a5afbc198c2f7",
     "biomes/twins/tex/obsidian.albedo.webp": "fcfafd284bb5b116cb9769bcfdc338b8fc1335429353e412c91449a6faef511e",
-    "biomes/twins/tex/pack.json": "11c0fe400c66ce483592bd833fc7f9c3dda6007cb34bcd417512215d5cbd12ad",
+    "biomes/twins/tex/pack.json": "2f803087b35c2858e159d98904847dd90bd718ac22567bc8a99df000138081df",
     "biomes/twins/tex/rock.albedo.webp": "084ec9769dae98f1ecd7ea118d06496441637ff8c18f4abc78123021a9c69a74",
     "biomes/twins/tex/rockFace.albedo.webp": "86cc89af7974935f21709b86f7434ff835ca8f8be4ec38d6e5ede4c391dd2f75",
     "biomes/twins/tex/scree.albedo.webp": "d1ab2f354e6cd6566c0d73808f563fde58354302ac9fc84604aa8c9907770957",
