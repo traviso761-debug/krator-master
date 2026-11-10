@@ -67,7 +67,7 @@
     "core/atmos/89-atmos-d-clouddeck.js": "70751e6c85e4dd65ffbb6648873be56fdb604130df4507e8e6afb020384b4dc8",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "ee63cf4e901c960b91743ffdb2b49c72dcae54d5325e0ce0d46e3a1ae30450d6",
+    "core/biome/30-core-foliage.js": "60d066abf6678b08bff3be1c66a075ad93e27fe242c8d0e4b78e79e5111a24d5",
     "core/biome/40-core-place.js": "f1277b48ab3c5d779bf85452c581888be7d5b2ed94a0d21e21ade12f0602c9d7",
     "core/catalog/files.json": "a400e7bf3e1197698d129db83964d883fd9ea2818173fe7df3c7d1b4a054d72f",
     "core/catalog/krator-furniture-core.js": "1c8bfa11d261b36895fd50645358e2c4ebe54febf67daeed700a38fbd6256fe9",
@@ -531,16 +531,16 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "settlements/mungo/build-manifest.json": "b887e7c286c36665fece7b6388eb797ba0cf9662f4fd2f8120c451a2afcfc602",
-    "settlements/mungo/dist/mungo.html": "9aa8b7b4ea42cd876616267c14adc3b41b81509d4a5d6154f4f5bbe89e073c29",
+    "settlements/mungo/build-manifest.json": "59748fab5589059e974d7a9d8ec0db39500df3e7aff369ffe4730318cafa9731",
+    "settlements/mungo/dist/mungo.html": "c1ca9bbb880026c8aa52b2f627edf6d9e625b6ef9b42e47d1fc025dbbcb92d98",
     "settlements/mungo/dist/mungo.tex.eastabyss.js": "fa81f60aa81dace6b5d91e5a06e535243ae6a8d33c9e4f8be02a3c781cf5934f",
     "settlements/mungo/dist/mungo.tex.locus.js": "d54d818fecfc9c5c32feb714a3f7568bc1d03aade459b83553271d22a142c330",
     "settlements/mungo/dist/mungo.tex.reedlake-2.js": "8bfecb53c2f4e62fe89a865610df54b5ca7c806f0e1fde71087b3685f6fa3c95",
     "settlements/mungo/dist/mungo.tex.reedlake.js": "bfc93e8ee9ed4fb3fd7eb4161573982c155a9862e53eb014117744e7d378b372"
    },
    "outputs_raw": {
-    "settlements/mungo/build-manifest.json": "b887e7c286c36665fece7b6388eb797ba0cf9662f4fd2f8120c451a2afcfc602",
-    "settlements/mungo/dist/mungo.html": "9aa8b7b4ea42cd876616267c14adc3b41b81509d4a5d6154f4f5bbe89e073c29",
+    "settlements/mungo/build-manifest.json": "59748fab5589059e974d7a9d8ec0db39500df3e7aff369ffe4730318cafa9731",
+    "settlements/mungo/dist/mungo.html": "c1ca9bbb880026c8aa52b2f627edf6d9e625b6ef9b42e47d1fc025dbbcb92d98",
     "settlements/mungo/dist/mungo.tex.eastabyss.js": "fa81f60aa81dace6b5d91e5a06e535243ae6a8d33c9e4f8be02a3c781cf5934f",
     "settlements/mungo/dist/mungo.tex.locus.js": "d54d818fecfc9c5c32feb714a3f7568bc1d03aade459b83553271d22a142c330",
     "settlements/mungo/dist/mungo.tex.reedlake-2.js": "8bfecb53c2f4e62fe89a865610df54b5ca7c806f0e1fde71087b3685f6fa3c95",

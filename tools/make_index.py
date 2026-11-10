@@ -139,8 +139,12 @@ def core_lists(build):
             import importlib.util
             spec = importlib.util.spec_from_file_location('khost', os.path.join(ROOT, 'core', 'host', 'host.py'))
             mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
+            env = {'khost': mod}
+            if 'kengine' in m.group(1):   # the building-kit engine's host list (core/engine/engine.py HOST: kits/yeti, kits/scyvoi...)
+                spec2 = importlib.util.spec_from_file_location('kengine', os.path.join(ROOT, 'core', 'engine', 'engine.py'))
+                env['kengine'] = importlib.util.module_from_spec(spec2); spec2.loader.exec_module(env['kengine'])
             try:
-                files = list(eval(m.group(1).strip(), {'__builtins__': {}}, {'khost': mod}))
+                files = list(eval(m.group(1).strip(), {'__builtins__': {}}, env))
             except Exception:
                 continue
             for where in sorted(set(mod.WHERE.get(f, 'host') for f in files)):

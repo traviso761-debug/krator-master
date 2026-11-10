@@ -72,6 +72,7 @@
     "kits/catalog/krator-master-furniture-generic.js": "990b05b8404c67ab960f6649babc8143c738ea600a04c0c22564296fa7786ea4",
     "kits/catalog/krator-master-furniture-lizardmen.js": "bdd8097b606d8db4ab79324b8c322e4ec3125bad412714ca48b101bd3a632a0d",
     "kits/interiors/adapters/runtime-adapter.js": "5958f459962e0bfd8dde8490ec1b0bca3697dd3c86f9697b1c083cfe5f206a57",
+    "kits/interiors/kit_bundle.py": "db49822a3654a99d91441d6a676a69136e825e0096fdc78ffc27cd3b7b9988e5",
     "kits/interiors/sets/beast-rider.js": "88f45c32379f7bbf2a0695ee26b4e20157a6baedd7403c01e0f64e0cf44ebbcd",
     "kits/interiors/src/10-core.js": "4b940cf3cadd55615825e748e9179aa06ff8984be2d92dbefc3d085ae91e24e5",
     "kits/interiors/src/20-rooms.js": "4b54dca9f15014c721897d598a55f88c9e9dace32568faab59f10ca771694498",

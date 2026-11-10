@@ -415,7 +415,7 @@
     "core/atmos/sky/89-atmos-j-fog.js": "60ab4f8d18bd785cd18fbfea54ae4730bc30dad66fd97531e1d7eff2b7058560",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "ee63cf4e901c960b91743ffdb2b49c72dcae54d5325e0ce0d46e3a1ae30450d6",
+    "core/biome/30-core-foliage.js": "60d066abf6678b08bff3be1c66a075ad93e27fe242c8d0e4b78e79e5111a24d5",
     "core/biome/31j-core-joint.js": "2b32f93de6dc08f1a5044449be80346697b2bb87cf764982ab6ab3c0a6847950",
     "core/biome/34-core-impostor.js": "b67d538fbcb5c7a4b077a20c1cffab6bdc48e0e157ea3e240696041403468f53",
     "core/biome/40-core-place.js": "f1277b48ab3c5d779bf85452c581888be7d5b2ed94a0d21e21ade12f0602c9d7",
@@ -501,7 +501,7 @@
     "kits/yeti/src/63-yt-land.js": "1d13ff4944d0f407e4a3f0a7a4fd2ed483fa18b43a2f441e38cb7e6776b051dd",
     "kits/yeti/src/64-yt-war.js": "d8d3f0ba3a74011eeb5b9aadd4f29a8cbeea29a6a1450e47920473a4b4e5fbaf",
     "kits/yeti/src/65-yt-leng.js": "cebd9b926557486e6c0fb6a814d514a650d364aa02e5aab6dbf4b07ca477ec75",
-    "kits/yeti/src/66-yt-steppe.js": "c4f51050e6506b987f48911bcdb225b221664263f5126c6acff036f147d3c3f2",
+    "kits/yeti/src/66-yt-steppe.js": "3e42e6fe57ad3f1b4faf4c5c55c8b5fcc151390b70f82c5886819db3b51d7c08",
     "kits/yeti/src/68-yt-trades.js": "e8de7e2bc17e3247077f368b8d858158594cb909b3d771fdb1f23d9cb6ad9c58",
     "kits/yeti/tex/amur.albedo.webp": "e881ad548126e9cd4485f42fce368998419f149deb9e3a029c0b7ba8b36cb92d",
     "kits/yeti/tex/amur.normal.webp": "fa70dd0c9cab8a9016348613c52935ba7454b8f13357f0456ce29a6f33b2d6e8",
@@ -650,7 +650,6 @@
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
    },
    "listings": {
-    "biomes/nwouterwall": "34f5d0d1328135fb48da7eeff86b5a2a7374b7e645f5ebb6b74d889b72930f05",
     "biomes/nwouterwall/src": "5b5bd35bb0c448f38cafb13f50587bf0c690b957897110cd0088df3cb4aa8870",
     "biomes/nwouterwall/stations": "84cac0064dc1250f2ff52fcf0c5f0d86da5a669ea9aa8ee6303612b322bf75f7",
     "biomes/nwouterwall/stations/yeti": "f65ac7bdc0bddf9c46dbcd702428836494a16a75826e8bcbc3c833bc122577c5",
@@ -660,13 +659,13 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/nwouterwall/dist/nwouterwall-yeti.html": "19cd72152b21581bc0260f3b085fc4d58cf74caf10d3f780f44edc4eab0f4cf1",
+    "biomes/nwouterwall/dist/nwouterwall-yeti.html": "6c37ae909d7f0e45c72302c602275cdf16f291046ccd12692d275e5e47d2be3f",
     "biomes/nwouterwall/dist/nwouterwall.tex.nwouterwall.js": "08175bef64624e00e3c15d3d315bf6ca255b4193475dab0f8ccb7f7e19794677",
     "biomes/nwouterwall/dist/nwouterwall.tex.yeti-2.js": "d43cff90f4cdcfe68db28ecbfe4b90a2948cf656c0df3026118049b3d4b25fc9",
     "biomes/nwouterwall/dist/nwouterwall.tex.yeti.js": "598c64e3cd54ed77848b7265bcd8d0ba744bf411a94e9717c44455c4784cd387"
    },
    "outputs_raw": {
-    "biomes/nwouterwall/dist/nwouterwall-yeti.html": "19cd72152b21581bc0260f3b085fc4d58cf74caf10d3f780f44edc4eab0f4cf1",
+    "biomes/nwouterwall/dist/nwouterwall-yeti.html": "6c37ae909d7f0e45c72302c602275cdf16f291046ccd12692d275e5e47d2be3f",
     "biomes/nwouterwall/dist/nwouterwall.tex.nwouterwall.js": "08175bef64624e00e3c15d3d315bf6ca255b4193475dab0f8ccb7f7e19794677",
     "biomes/nwouterwall/dist/nwouterwall.tex.yeti-2.js": "d43cff90f4cdcfe68db28ecbfe4b90a2948cf656c0df3026118049b3d4b25fc9",
     "biomes/nwouterwall/dist/nwouterwall.tex.yeti.js": "598c64e3cd54ed77848b7265bcd8d0ba744bf411a94e9717c44455c4784cd387"
