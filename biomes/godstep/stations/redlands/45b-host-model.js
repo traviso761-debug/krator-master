@@ -25,9 +25,9 @@ const swell=(x,z)=>1.6*(fb(x*.0004,z*.0004,2,WORLD+30)-.5)+.6*(vn(x*.015,z*.015,
 const STAIR=KRELIEF.stair({a:xzDA(-30000,0),b:xzDA(30000,0),steps:[{y:ST.y3,at:30000+ST.lip},{y:ST.y0,at:30000+ST.lip+20000}],w:20000,
  lobes:{amp:380,wave:2100},slope:ST.slope,tongues:{per:.45,len:[300,800],w:[80,220]},flows:[18,62],riser:.1,colonnade:.42,wrinkle:1.2,seed:KR.hash(WORLD,4,0,0x5747)});
 const relStair=(x,z)=>dOf(x,z)>-300?0:Math.max(0,KRELIEF.shape(STAIR,x,z,-1e9)-ST.y0-1.3);   /* 0 on step 4's floor (its wrinkle is the floor's own swell) */
-// THE BREAKAWAYS: the rim north-west of the pan (the plateau on its north side), a 22 m fall over a short steep run, gullied
+// THE BREAKAWAYS: the rim north-west of the pan (the plateau on its north side), a 22 m cliff over a 30 m run, gullied
 const BRK=(function(){const pts=[[300,300],[1100,0],[2200,50],[3300,450],[4100,1100]].map(p=>xzDA(p[0],p[1]));
- const rec=KRELIEF.scarp({pts,side:-1,h:ST.brkH,run:75,power:2.4,drop:true,ravines:{n:7,w:[14,30],head:[25,70],depth:[5,12],power:1.4},
+ const rec=KRELIEF.scarp({pts,side:-1,h:ST.brkH,run:30,power:2.2,drop:true,ravines:{n:7,w:[14,30],head:[25,70],depth:[5,12],power:1.4},
   talus:{h:2.4,reach:45},rim:{lip:.6,w:6},warp:{amp:60,scale:1/500},rough:.03,ends:400,seed:KR.hash(WORLD,4,1,0xB4E)});
  /* the inset's view: the face at the line's middle, from its foot */
  const p=xzDA(1650,40),n=ACROSS,bb=[Math.min(...pts.map(q=>q[0]))-300,Math.min(...pts.map(q=>q[1]))-300,Math.max(...pts.map(q=>q[0]))+300,Math.max(...pts.map(q=>q[1]))+300];return{rec,pts,bb,view:{x:p[0]+n[0]*90,z:p[1]+n[1]*90,fx:p[0],fz:p[1]},name:'The breakaways: relict laterite hardpan standing 22 m over pale gullied kaolin (Western Australia\'s kind, refs/05)'};})();

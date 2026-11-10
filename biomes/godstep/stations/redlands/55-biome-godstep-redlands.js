@@ -22,6 +22,10 @@ GSTEP.PASSES.push({name:'redlands',fn(R,q,box){const F=BIO.host.fields,MIX=SEDES
     cards reach past their rods' range); left out of the steppe's and the rim's mixes here until the sedesert kit's turn (KNOWN_ISSUES.md) */
  MIX.scrub[2][0]=0;MIX.rim[0][0]=0;
  /* at .6 of the page's quality: the kit's own floor is drawn for a 3 km map at 1, this one is 9.6 km */
+ /* the mask while the kit plants: none on a slope over .45 by the ground as drawn (the cached fields are a 20 m lattice, which blurs a
+    breakaway's 16 m cliff, and a cluster's satellites take their centre's height: off the rim they would hang in the air) */
+ const H=BIO.host.terrainH,m0=BIO.mask,sl=(x,z)=>Math.hypot(H(x+1.5,z)-H(x-1.5,z),H(x,z+1.5)-H(x,z-1.5))/3;
  let edge=0;const put0=BIO.put;BIO.put=function(n,p){if(F.edge(p[0],p[2])>.3)edge++;return put0.apply(this,arguments);};
- let st;try{BIO.cur='desert/floor';st=SEDESERT.buildFloor(R,q*.6);}finally{BIO.put=put0;}st=st&&st.under||st||{};
+ BIO.mask=function(x,z){return sl(x,z)>.45?0:m0.apply(this,arguments);};
+ let st;try{BIO.cur='desert/floor';st=SEDESERT.buildFloor(R,q*.6);}finally{BIO.put=put0;BIO.mask=m0;}st=st&&st.under||st||{};
  return{shrubs:st.shrubs,tufts:st.tufts,hummocks:st.hummocks,rosettes:st.rosettes,cacti:st.cacti,desertStones:st.stones,desertBoulders:st.boulders,edge};}});
