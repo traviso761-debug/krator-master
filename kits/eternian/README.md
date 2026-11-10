@@ -17,7 +17,7 @@ Forked from the Scyvoi engine as `kits/islanders` was (`PLAN.md` §0): the engin
 `core/atmos/placeholder`, and `build.py --vendor-check` reports a `src/` copy as a shadow. The shared modules are read in
 place: `core/rand`, `core/materials/record`, `core/tags`, `core/furnish`, `core/walk`, `core/atmos`, `core/host`, and the
 catalog's `eternian`, `generic`, `generic-goods`, `jobs` and `scrap` furniture as one bundle. What is the kit's own:
-`26k-kit.js` (identity, library families, palette), `37-wk-rec.js` (walk records, from the Islanders kit), `40-et-kit.js`
+`26k-kit.js` (identity, library families, palette), `37-wk-rec.js` (walk records: core/engine's, read in place), `40-et-kit.js`
 (the toolkit), `44-et-roof.js` (the roofs), `50`-`53` (the dwellings and the court), `70-et-canal.js` (the canal street),
 `89-rows.js` (the sheet's rows).
 
