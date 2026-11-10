@@ -371,7 +371,9 @@ radius; density `1 - d^2 / r^2`). Each pixel takes, ADDED in the zone's colour, 
 its view ray's chord through the ball, in closed form, over the chord through the centre: 1 through the heart, 0 at the limb.
 Nothing is dimmed or hidden. A surface inside the zone stops the sum at itself, so near things glow less than the air behind
 them; from far off the whole chord shows and the zone reads as a soft warm dome. The shimmer is a slow rising waver of the glow
-itself (`shimmer`, 0..1 of the strength), a few bands to a zone.
+itself (`shimmer`, 0..1 of the strength), concentric rings about the zone's centre that expand, always outward and never drawing back (the owner's eye, 2026-11-10), a ring
+taking about 5 s to cross its own width; and the glow breathes: `pulse` (default .3) swells and ebbs it over about 11 s with a
+slower swell under it, each zone out of step, the zone's edge holding still (`ATMOS.radPulse` is the twin).
 
 ```js
 const RAD=ATMOS.radiation({zones:[{x,y,z,r:300,strength:.16,shimmer:.35}],colour:[1,.62,.25]});   /* at most 4 zones */
@@ -383,8 +385,13 @@ The geometry's share goes through `ATMOS.shaderHook` (composes with the height f
 back-face shell a zone drawn at the far plane after the world, so it lands only where no geometry was drawn and the two never add
 twice. A ShaderMaterial of the page's own takes `ATMOS.radGLSL()` and adds `atmRad(eye, dir, dist)` itself. The pure side:
 `ATMOS.radChord`, `radGlow`, `radAt(zones, x, y, z)` (the density at a point: placement, a meter; registered as core/hazard's
-`radiation` field when the page's KHAZ takes one). **True heat haze** (bent light) is the existing post pass:
-`ATMOS.shimmer({renderer, field: ATMOS.radiationHeat(RAD.zones)})` gives it the zones as a raster of degrees. Cost: about 40
+`radiation` field when the page's KHAZ takes one). **True heat haze** (the owner, 2026-11-10: "try it like a true bent light heat haze") is `ATMOS.radiationHaze({renderer, amp, speed,
+scale})`, a post pass: `H.draw(() => drawTheFrame(), camera, dt)` draws the page's frame into its target, then each pixel reads
+from a little beside itself, the offset swinging to and fro and swelling with the breath, by how much zone air its ray crosses up to what it shows
+(`ATMOS.radHazeK`: shimmer x chord, summed and doubled, capped at 1; the sky takes the whole chord). What lies behind a zone swims,
+what stands in front of it holds still, and it reads from as far off as the glow does. The target is not multisampled, as the
+shimmer pass's. (The older ground pass also works: `ATMOS.shimmer({renderer, field: ATMOS.radiationHeat(RAD.zones)})`, near the
+eye and on the ground only.) Cost: about 40
 operations a zone a fragment, no textures, no loop but the four zones. **Not judged:** against a bright noon sky a strength of .16
 is faint (it is additive on an already bright pixel); a page may raise the strength by day or tie `RAD.k` to the hour.
 

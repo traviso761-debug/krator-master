@@ -61,7 +61,8 @@
   A.skyTrack(S,{flash:MOOD.glow==='lightning'?g.flash:null,event:C.event,episode:null,glowKind:MOOD.glow,glow:C.glow,night:S.look.night,t:A.clock?A.clock.t:0});};
  /* radiation (fx/89-atmos-fx-radiation.js): a far zone to judge from a distance and a near one to walk the eye into */
  const RAD=A.radiation({zones:[{x:700,y:0,z:-800,r:350},{x:-90,y:0,z:-130,r:80}]});A.radiationScene(scene);RAD.off=true;RAD.set();
- const setRad=on=>{RAD.off=!on;RAD.set();$('rad').checked=!!on;};$('rad').onchange=e=>setRad(e.target.checked);window._rad=RAD;
+ const HAZE=A.radiationHaze({renderer});let radOn=false;window._haze=HAZE;
+ const setRad=on=>{radOn=!!on;RAD.off=!on;RAD.set();$('rad').checked=!!on;};$('rad').onchange=e=>setRad(e.target.checked);window._rad=RAD;
  /* the light effects heard (core/audio/24-core-audio-sky.js): off until the Sound box is ticked (the click is the browser's gesture) */
  const SND=typeof KSKYSOUND!=='undefined'?KSKYSOUND.bind({master:.7}):null;window._snd=SND;
  $('sound').onchange=e=>{if(SND)SND.mute(!e.target.checked);};   /* the ripple's epicentre: 2.5 km north */
@@ -132,7 +133,7 @@
  hashView();addEventListener('hashchange',hashView);
  let last=null,frames=0;
  const frame=now=>{const dt=last==null?1/60:Math.min(.1,(now-last)/1000);last=now;
-  clock.step(dt);camera.rotation.set(pitch,yaw,0);moodFrame();S.update(dt);for(const f of hooks)f(dt);S.render();
+  clock.step(dt);camera.rotation.set(pitch,yaw,0);moodFrame();S.update(dt);for(const f of hooks)f(dt);if(radOn&&$('haze').checked)HAZE.draw(()=>S.render(),camera,dt);else S.render();
   if(frames%6===0)readout();if(++frames===3)window._ready=true;requestAnimationFrame(frame);};
  requestAnimationFrame(frame);
 })();
