@@ -3,8 +3,11 @@
 The owner's brief: **black and white patterns, almost psychedelic in their intricacy, dream-like in their omnipresence
 and enormity.** The pattern is everywhere (walls, vaults, arches, floors, stairs, columns) and it is the architecture,
 not a finish laid on it. The room plan stays the blueprint's (`../../BLUEPRINT.md`, E3 and E4); this file sets how it is
-dressed. These references lift the hold on the Pleasure Dome only (`xa_pleasure_dome`); the Sultan's palace, the
-Vizier's palace and the rest of the citadel stay held until the owner says otherwise.
+dressed.
+
+**Both domes take this style** (owner, 2026-11-09): **the citadel's Pleasure Dome (`xa_pleasure_dome`) favours black over
+white**; **the Pleasure Dome of the Bay (`xa_pleasure_dome_bay`, on Erewhon's island) favours white over black.** The rest
+of the citadel is Moorish and Mughal (`../citadel/STYLE.md`).
 
 ## The references
 
@@ -27,7 +30,8 @@ Vizier's palace and the rest of the citadel stay held until the owner says other
 
 1. **Two stones and gold.** A black (veined, near-black marble or slate) and a white (veined marble); gold only as a
    thin line: joints, borders, rails, capitals, lamp fittings. No third colour on the structure; colour comes from
-   textiles, glass, plants and water.
+   textiles, glass, plants and water. The balance differs by dome: in the citadel's, black is the ground and white the
+   figure (about two to one); in the Bay's, white is the ground and black the figure, under more skylight.
 2. **Banding follows the geometry.** Walls in alternating courses that wrap curves; arches with alternating voussoirs;
    columns and piers in drums; vaults with stripes that converge to ribs and break into chevrons at the creases.
    Courses are real geometry or world-aligned, never a texture that slides.
@@ -43,6 +47,6 @@ Vizier's palace and the rest of the citadel stay held until the owner says other
 
 ## Textures
 
-Veined black and white marble and a gold trim are needed. Check `core/materials/PLAN.md` for the library's marbles
+Asked of the owner 2026-11-09: `core/materials/PROMPTS-NEEDED.md` section 41 (`stone.marble.black`, `stone.marble.calacatta`, `patterns/xanadu/op-art-arcs`); the gold is `metal.gold`. Check `core/materials/PLAN.md` for the library.s marbles
 first; any gap goes to `core/materials/PROMPTS-NEEDED.md` with a prompt. The stripes, checkers and chevrons themselves
 are geometry or a world-aligned pattern, not images.

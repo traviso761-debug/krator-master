@@ -20,6 +20,12 @@ BUILDINGS = ['74-xa-dwell.js', '75-xa-trade.js', '76-xa-farm.js', '77-xa-sacred.
              '80-xa-military.js', '81-xa-public.js', '82-xa-hill.js', '83-xa-turk.js', '84-xa-grandbath.js', '85-xa-water.js',
              '85b-xa-garden.js', '86-xa-vizier.js', '86b-xa-plants.js', '87-xa-spicer.js', '87b-xa-andean.js', '87c-xa-erewhon.js']
 FILES = sorted(FOUNDATION + BUILDINGS)
+# Erewhon's citadel (2026-11-09; settlements/xanadu/citadel/BLUEPRINT.md and refs/citadel/STYLE.md): the Moorish and Mughal
+# parameters (78l, [G data]: XMOOR), the vocabulary (78m: the materials owed in PROMPTS-NEEDED.md section 41, the arch heads, muqarnas, star
+# ceilings, vaults, jali, iwan, water) and the citadel's hollow buildings drawn from their rooms (78n, on the interior set
+# kits/interiors/sets/xanadu-citadel.js). A world takes them by name (paths(CITADEL)): Xanadu's Erewhon does; kit_bundle.py's XAK
+# (Longsong, kits/construction) does not, so those pages are unchanged
+CITADEL = ['78l-xa-moorish-data.js', '78m-xa-moorish.js', '78n-xa-citadel.js']
 # what the kit draws through, by name, and where each now lives
 ANCIENTS_CORE = ['10-core.js', '12-stats.js', '30-kit.js', '32-surfaces.js', '34-kitdefs.js', '36-decor.js', '38-helpers2.js',
                  '50-registry.js', '54-mat-concrete.js', '69-mat-salvage.js']          # kits/ancients/src

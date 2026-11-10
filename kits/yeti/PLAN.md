@@ -14,7 +14,7 @@ furs, tapestry and sculpture after Inuit and native Siberian work.
 Everything marked *proposed* is this draft's and waits on the owner. Read `kits/eternian/PLAN.md` for the precedent this
 kit follows (a culture kit on the vendored Scyvoi engine, every census trade carried, interiors and the export last).
 
-**Status (2026-11-09): Y1 to Y6 built** (Y5 the interiors, the figure generator, the war loot, the 1.15x furniture scale and the interiors set; Y6 Leng's occupation pieces and the forest-steppe set on the nwouterwall kit's flora: section 9). Earlier: **(2026-10-26) Y1 to Y4 built** (the scaffold; the toolkit, the mass heater, the tunnels; the dwellings of every tier and the winter street; the state, the trades, the stores, the stock and war; `README.md`). Every
+**Status (2026-11-09): Y1 to Y6 built and verified** (`verify.py --assert` ends `OK` on SwiftShader after the khoton's lintel fix; `node core/furnish/test-furnish.js` passes; the eye-level reviews stay the owner's) (Y5 the interiors, the figure generator, the war loot, the 1.15x furniture scale and the interiors set; Y6 Leng's occupation pieces and the forest-steppe set on the nwouterwall kit's flora: section 9). Earlier: **(2026-10-26) Y1 to Y4 built** (the scaffold; the toolkit, the mass heater, the tunnels; the dwellings of every tier and the winter street; the state, the trades, the stores, the stock and war; `README.md`). Every
 `verify.py --assert` check passes but `tags-vocabulary`: the culture is registered in core/tags in Y5 with its catalog
 file, one all-builds rebuild for both (the owner, 2026-10-25; `KNOWN_ISSUES.md`).
 

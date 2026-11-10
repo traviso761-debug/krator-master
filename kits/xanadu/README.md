@@ -69,6 +69,21 @@ two proper marbles are owed (`core/materials/PROMPTS-NEEDED.md`, section 41). Th
 Its doors are the kit's only UNLOCKED ones: the builder declares them (`window._hollowDoors`), and the sheet's `doors` check
 (`kits/iziz-vernacular/sheet_verify.py`) asks every other door to be locked.
 
+**Erewhon's citadel, Moorish and Mughal** (2026-11-09; `settlements/xanadu/citadel/refs/citadel/STYLE.md`, the owner's five
+references). Everything in the citadel but the two Pleasure Domes is new defs, hollow and walkable, room by room on the
+blueprint: `xa_cit_palace`, `xa_cit_vizier`, `xa_cit_treasurer`, `xa_cit_chancellor`, `xa_cit_mines`, `xa_cit_envoys`,
+`xa_cit_barracks`, `xa_cit_temple`, `xa_cit_kitchens` (the older `xa_palace` and `xa_vizier` stay for the sheet and other
+worlds). Three files, listed apart (`xanadu.py` CITADEL, so XAK, Longsong and kits/construction are unchanged):
+`78l-xa-moorish-data.js` ([G data] `XMOOR`: arch outlines pointed, horseshoe and cusped; muqarnas hood and cornice cells;
+star-polygon ceilings; the pointed barrel), `78m-xa-moorish.js` (the materials, each wired in `materials.json` to the texture
+it is owed with a library stand-in: settlements/xanadu/KNOWN_ISSUES.md; the instanced items; the helpers `xmArchHead`,
+`xmMuqHood`, `xmMuqCornice`, `xmStarCeiling`, `xmVault`, `xmJali`, `xmBalustrade`, `xmColumnPair`, `xmIwan`, `xmBasin`,
+`xmFountain`, `xmRill`), `78n-xa-citadel.js` (`xcPlan`: walls, skins, arched doors with unlocked core/door leaves, windows with
+jali and KGLASS's clear pane, floors, ceilings, courts, flights and the Ramp of the Sultan, all drawn from the item in
+`kits/interiors/sets/xanadu-citadel.js`, whose rooms the furnisher and core/walk take; each building's massing). A world takes
+them with `kxa.paths(kxa.CITADEL)` and the interior set `xanadu-citadel`. The style per room is the item's `style` and `ceil`
+(the set file's header). Screenshots and how they compare to the references: `settlements/xanadu/citadel/PALACES.md`.
+
 **Who takes it.** `settlements/xanadu` reads it in place (its `xanadu` target is the kit's sheet; its `erewhon` target is the
 city of Erewhon); `settlements/longsong` takes `kit_bundle.py`'s `XAK` (with Xanadu's texture pack).
 
