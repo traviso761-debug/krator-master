@@ -81,13 +81,8 @@
   hash and a value noise, which `tools/check_core_use.py` counts against a new build. This kit's copy keeps the engine's
   API (`reseed`, `rng`, `rr`, `pick`, `h3`, `vnoise`, `fbm`) and draws it from `KRAND`: the stream is the same mulberry32
   (`KRAND.stream`), the hash and noise are KRAND's portable ones. It is one of the two engine files this kit keeps in
-  `src/` (it shadows `core/engine/10-core.js`; the other is `37-wk-rec.js`, below). The fix belongs upstream in `core/engine/10-core.js` (every kit on the engine:
+  `src/` (it shadows `core/engine/10-core.js`; the other is `37-wk-rec.js`, above). The fix belongs upstream in `core/engine/10-core.js` (every kit on the engine:
   Scyvoi, Islanders, Lizardmen, Eternian, the nomads, Resources), each a "moving rubble" change with its own screenshot set (GODOT-PLAN.md section 7).
-
-- **`src/37-wk-rec.js`, the walk records, also for features.** core/engine took the walk records on 2026-11-09
-  (`core/engine/37-wk-rec.js`, from the identical copies in Islanders, Lizardmen and Eternian), recording the boxes of a
-  `building` only. This kit's copy records a `feature` too (a street, a tunnel network: its tunnels are walked), so it keeps
-  its own and shadows the core file. The fix belongs upstream: a list of the classes that record, which a kit can extend.
 
 ## Doors, glass and the reachability audit (core/door, 2026-11-03)
 
