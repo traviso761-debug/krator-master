@@ -3,7 +3,7 @@
 
   python3 verify.py dist/isle-demo.html [--list] [--assert] [--views 0,1,14] [--out ./shots] [--size 1280x800]
 
-The world's fragments are in src/world/ (moved from the deprecated little-demo), so its probe's checks (_api.hostChecks) run here too; a check
+The world's fragments are in core/world/ (moved from the deprecated little-demo), so its probe's checks (_api.hostChecks) run here too; a check
 is NOT APPLICABLE while this region has none of what it checks (no biome kit yet: the flora checks; no named river, no
 highway, no town tile). The isle's own checks:
   - the isle fields: every field 43-world-isles.js adds is a number at both towns, and the class weights sum to 1 on land
@@ -68,7 +68,7 @@ try:
 except Exception:
     pass
 
-# the world probe's checks (src/world/91-world-probe.js) and what this region must have for each to apply
+# the world probe's checks (core/world/91-world-probe.js) and what this region must have for each to apply
 APPLIES = {'flora placement is seeded by cell (order-free)': 'kits', 'nothing roots in the water or outside the region': 'kits',
            'trees keep their spacing, across tile edges': 'kits', 'the named rivers carry water to their mouths': 'rivers',
            'the highways lie on the land and keep their grade': 'roads', 'nothing grows on a highway or in a town': 'kits'}
@@ -298,7 +298,7 @@ async def run(a):
             # does not have) falls back to (-6000, 2500), deep sea, where no tile holds a record; so over Kautoa first, settled
             await pg.evaluate("(()=>{const K=WORLD_DATA.meta.settlements.find(s=>s.name==='Kautoa');CAM.setView(K.x+2500,K.z-2500,300,0,-.2);})()")
             await pg.evaluate('_api.settle(240000)')
-            print('--- the world\'s checks (src/world/91-world-probe.js, over Kautoa) ---')
+            print('--- the world\'s checks (core/world/91-world-probe.js, over Kautoa) ---')
             for r in await pg.evaluate('_api.hostChecks()'):
                 need = APPLIES.get(r['name'])
                 if need and not has[need]:

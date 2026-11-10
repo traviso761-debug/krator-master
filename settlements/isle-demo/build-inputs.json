@@ -81,6 +81,8 @@
     "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
     "core/terrain/38-core-relief.js": "7b05a027e7258a2bb412cadbe67beb6bab878f88e6f18eeb5fdddf96fb9ae21f",
+    "core/world/41-world-fields.js": "100935a2eabb003f033bd4ea844bcb959eb548ce3ebf46c881430c0ef7cd726f",
+    "core/world/42-world-roads.js": "8b9b8bf77763f7f8c1507f103352c821d1032021ec73218b96aa4a5783451277",
     "kits/ancients/src/10-core.js": "7c31cf7eb63a1666c0f1c8cd97fd810c1531d10e8d014c105f807a2ad521138b",
     "kits/ancients/src/12-stats.js": "67d17e87faa80d6e5503dd3dc0d53cb2b9e0d68ce77f256187968ee914f881bd",
     "kits/ancients/src/30-kit.js": "8ee3b80e8e193d25f98b21c2c3e75724dba596160e589f43c77df0f2fde7db96",
@@ -540,8 +542,6 @@
     "openworld/isle-demo/data/temp.png": "62d1b19913f753f795d67c44a557c119634d01b20d988a8afbb7f7ba4941d384",
     "openworld/isle-demo/data/wlev.png": "14b59d76a29a97f7cf474f969a108ed79e3fa4e6c5e029154dd4cf557b48b720",
     "openworld/isle-demo/src/43-world-isles.js": "72c5965b3ac5644f09423a3047859310ef89c76c22d7bd55bcf2945cf10b6c32",
-    "openworld/isle-demo/src/world/41-world-fields.js": "100935a2eabb003f033bd4ea844bcb959eb548ce3ebf46c881430c0ef7cd726f",
-    "openworld/isle-demo/src/world/42-world-roads.js": "8b9b8bf77763f7f8c1507f103352c821d1032021ec73218b96aa4a5783451277",
     "settlements/girder/src/05-palette.js": "3afc1f53de2f208c548d951f99d96bc5517c9c33703b16b0f073846c6b14deb8",
     "settlements/girder/src/10-core.js": "fd5492097ae57c82d2bcdf540c179b6c6194dfdd71bb6c821db4787dc474589e",
     "settlements/girder/src/30-layout.js": "1d6d9b96a7b58677a1aa98a2fbef5f286297c03ed0927371f040cd389944d5bd",
@@ -627,8 +627,8 @@
     "settlements/girder/tex/wall.albedo.webp": "6720ad26b3a53004c4fde80615b23f94188e6d6dc8c5153688169747f972e048",
     "settlements/girder/tex/wall.normal.webp": "10538c0561a575ac090eeb9b12658116d7f9a698f4ef2c179e456da435b1f95f",
     "settlements/girder/tex/wall.rough.webp": "7b7d15580f9a3172b41867c437c4414b07578e2c381a2a1b19c0c60f65d9d201",
-    "settlements/isle-demo/PORT.md": "c5a99445a8d9825bcaa990c93d4b13a870aceb16775a295cf6475967ac5df84e",
-    "settlements/isle-demo/build.py": "6d1a602c696d822a3e4695a70af46d15b170ebb64eee8d2f75e280c9179c9020",
+    "settlements/isle-demo/PORT.md": "3dd7e254a4a7422c11b6a430f45ae876f5084a8ed1fc8b78593bc2dfe806dc87",
+    "settlements/isle-demo/build.py": "688955437dcf9b91ff8a6b09afd063f6dd3ed9609d329e3ebc4d9d31b6e3a385",
     "settlements/isle-demo/bundles.py": "8ef5b1298670a42cdb6ad38b52cbfaf99ef159099a38c81031cbe164daef1325",
     "settlements/isle-demo/site/isle-site.json": "c37c7210b8387beb77780536097e88d09f7112f2d94da31b4c4c6d1098a00b48",
     "settlements/isle-demo/src/10-isle-frame.js": "4282341c683aac53268951bd919a41f6cf1c54bc5ba8074959e61bfff6331e95",
@@ -648,14 +648,14 @@
     "settlements/isle-demo/src/47-isle-trade.js": "22557524815c1062a9b670e97ff645310ec143e744f437087cc01508f45996ad",
     "settlements/isle-demo/src/47b-isle-build.js": "bb1998b45769197d66f7682e678094d625c639de792d4761c3a921f34bdfd753",
     "settlements/isle-demo/src/47c-isle-crime.js": "c9bee726fe3b3b2c25ab47b68be5b26561c063047a99d36b7a76e5f97316defc",
-    "settlements/isle-demo/src/47f-isle-found.js": "d32038fd670cc268dfb742f3a442f27b5717ad9dd1a19562eb38f08e783f8c84",
-    "settlements/isle-demo/src/47h-isle-hamlets.js": "dc2975fc3aa7b845a1af0c77b4f284741ab8fbf6bb872a2da67bec0c16e38a1c",
+    "settlements/isle-demo/src/47f-isle-found.js": "6aefe6883cb6f3f347eaee8fe0e7d81a34ec246e2942a01bef4707ac64750930",
+    "settlements/isle-demo/src/47h-isle-hamlets.js": "25ae05a9d2500d1d2dde925e9627be650c79651ea0a3aa0ba0624d52964780b3",
     "settlements/isle-demo/src/47k-isle-colony.js": "36a799a8d38a73eba865d300949f1d38d6d46d73dbbdc51433c817ce2e8668ac",
     "settlements/isle-demo/src/47m-isle-money.js": "15b9826b7654e009882f4c15f564f0a0e1ba7fd47d88770645569bf8c20bb57f",
-    "settlements/isle-demo/src/47n-isle-herders.js": "9726b9c3ce6dc72a6129a7d9399f0e679e76dd8538f253521215b0b4155e6ae8",
+    "settlements/isle-demo/src/47n-isle-herders.js": "c9a576ba683c3b0fbf219f5db70e3d0acf4d092b6fc12870735f881c29dca683",
     "settlements/isle-demo/src/47r-isle-refugees.js": "8547bb962f80766e12e66b03e3f650312d4dad0f05a3106b345e813e79e9028a",
     "settlements/isle-demo/src/47u-isle-unrest.js": "5de62789043c9330a2f55b8642e08f458aaac42e8bb11efe0b431be9ee5c310a",
-    "settlements/isle-demo/src/47x-isle-expeditions.js": "2c0d4c2232d0fa29ad7ae058b60b914e5c884a67e5355f64e2b31b61de090d61",
+    "settlements/isle-demo/src/47x-isle-expeditions.js": "e23663ea1ccf710809ee5cad5ac257a749a94169707f31825db8f40cb415e086",
     "settlements/isle-demo/src/47y-isle-houses.js": "fadad338c6c70337575a2a0917d7599e82ddf336ce069be9e1b8c37317c76c65",
     "settlements/isle-demo/src/48-isle-week.js": "801c83e2093a638af255e24045413f6fbb1118a02cdfc53f65f9b884499ee9c8",
     "settlements/isle-demo/src/49-isle-govern.js": "2944567297afad68ecb965ce3e73e70075900656d3dc9f8bbe7b229379b5140b",
@@ -973,8 +973,8 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "settlements/isle-demo/dist/isle-city.html": "25bb7eb26804d796872a2e7fa804b2c5e832270b99370eb6e6fcab89f738fe73",
-    "settlements/isle-demo/dist/isle-city.plan.js": "c1e318a14cb288f4b8efffbeb013e769519af8f90b502ebe838b155effbc6d2d",
+    "settlements/isle-demo/dist/isle-city.html": "20e66943534e65165f655a6e80dd7c99eae30db9d3840e38a6774f230c14f47b",
+    "settlements/isle-demo/dist/isle-city.plan.js": "e424ca12c3f9f87c6d816198bd5184e612407f4c70227f8827917f84681c67c7",
     "settlements/isle-demo/dist/isle-city.tex.brtowns.js": "7e593dd1b45394583a5fb854cf7186f70472a71c929c365a495d3ef0748d6c5d",
     "settlements/isle-demo/dist/isle-city.tex.islanders-2.js": "a869e63f728e5f1ad426a9ab6bbbb2e84ef86800b51c1c78cbe72b0b1ec606d8",
     "settlements/isle-demo/dist/isle-city.tex.islanders.js": "5386bac4f108b5a05c35cb85da341c4b042296a3f5cfb51b9989a216db6834ed",
@@ -982,11 +982,11 @@
     "settlements/isle-demo/dist/isle-city.tex.iziz-2.js": "a72f21f7246adc71915e3a195604f618bdf4c2fe06d0bf116a961dd53cf1d6f6",
     "settlements/isle-demo/dist/isle-city.tex.iziz.js": "f049c3fa049d1d4b24c6559748e6af688d3585812c5b1e2c9ea1737642c0a636",
     "settlements/isle-demo/dist/isle-city.tex.kftex.js": "ada9d35ced40aa35f55730ba33925bf54e6285e2d3b5ab8b9679342b3315c5b4",
-    "settlements/isle-demo/dist/isle-site.html": "c1510e2714e4336fb94198f4d7087cb3d53b610b83c07ccd24da662cddd17180"
+    "settlements/isle-demo/dist/isle-site.html": "4819e63250fdf73b6fff5cc441300321acae59f4d07d2a05ee6f51e7b9c915ab"
    },
    "outputs_raw": {
-    "settlements/isle-demo/dist/isle-city.html": "25bb7eb26804d796872a2e7fa804b2c5e832270b99370eb6e6fcab89f738fe73",
-    "settlements/isle-demo/dist/isle-city.plan.js": "c1e318a14cb288f4b8efffbeb013e769519af8f90b502ebe838b155effbc6d2d",
+    "settlements/isle-demo/dist/isle-city.html": "20e66943534e65165f655a6e80dd7c99eae30db9d3840e38a6774f230c14f47b",
+    "settlements/isle-demo/dist/isle-city.plan.js": "e424ca12c3f9f87c6d816198bd5184e612407f4c70227f8827917f84681c67c7",
     "settlements/isle-demo/dist/isle-city.tex.brtowns.js": "7e593dd1b45394583a5fb854cf7186f70472a71c929c365a495d3ef0748d6c5d",
     "settlements/isle-demo/dist/isle-city.tex.islanders-2.js": "a869e63f728e5f1ad426a9ab6bbbb2e84ef86800b51c1c78cbe72b0b1ec606d8",
     "settlements/isle-demo/dist/isle-city.tex.islanders.js": "5386bac4f108b5a05c35cb85da341c4b042296a3f5cfb51b9989a216db6834ed",
@@ -994,7 +994,7 @@
     "settlements/isle-demo/dist/isle-city.tex.iziz-2.js": "a72f21f7246adc71915e3a195604f618bdf4c2fe06d0bf116a961dd53cf1d6f6",
     "settlements/isle-demo/dist/isle-city.tex.iziz.js": "f049c3fa049d1d4b24c6559748e6af688d3585812c5b1e2c9ea1737642c0a636",
     "settlements/isle-demo/dist/isle-city.tex.kftex.js": "ada9d35ced40aa35f55730ba33925bf54e6285e2d3b5ab8b9679342b3315c5b4",
-    "settlements/isle-demo/dist/isle-site.html": "c1510e2714e4336fb94198f4d7087cb3d53b610b83c07ccd24da662cddd17180"
+    "settlements/isle-demo/dist/isle-site.html": "4819e63250fdf73b6fff5cc441300321acae59f4d07d2a05ee6f51e7b9c915ab"
    }
   },
   "build.py --accept": {

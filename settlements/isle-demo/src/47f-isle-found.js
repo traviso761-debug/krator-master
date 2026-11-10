@@ -40,12 +40,12 @@ ISLE.foundStep = function (minute) {
     ISLE.foundCamp(s, hhs.slice(0, F.households), minute);
   });
   S.found.camps.forEach(function (C) { if (!C.converted && minute >= C.founded + F.days * 1440 && (C.retryAt == null || minute >= C.retryAt)) ISLE.foundConvert(C, minute); });
-  if (F.settle && minute % (F.settle.every || 1440) === 0) ISLE.foundSettle(minute);
+  if (F.settle && minute % (F.settle.every > 0 ? F.settle.every : 1440) === 0) ISLE.foundSettle(minute);
 };
 /* the town's first staple row (15 hamlets.farming.crops) as the camp's crop */
 ISLE.foundCrop = function (s) {
   var T = ISLE.TUNE.sim, rows = (T.hamlets.farming.crops[s] || {}).staples || [], best = null;
-  rows.forEach(function (C) { if (!best || (C.w || 1) > (best.w || 1)) best = C; });
+  rows.forEach(function (C) { if (!best || (C.w > 0 ? C.w : 1) > (best.w > 0 ? best.w : 1)) best = C; });
   return best ? { row: best, good: T.economy.crops[best.crop], rows: rows } : null;
 };
 ISLE.foundCamp = function (s, hhs, minute) {

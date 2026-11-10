@@ -57,7 +57,7 @@ ISLE.simHerdBand = function (B) {
   SIM.store(store.id, { kind: 'warehouse' });
   ISLE.carryFood(s, id, store, foods.filter(function (f) { return f !== 'meat'; }), mine.length * I.meals * I.perMeal * HB.startDays);
   var life = ISLE.simCrewStart(cr, CR, id);
-  for (var c = 0; c < (HB.carts || 1); c++) { var a = SIM.actor({ id: id + '.cart' + c, role: 'cart', org: id + '.folk', home: store.id, cls: 'cart', job: 'carters' }); a.pos = { x: store.x, y: store.y || 0, z: store.z }; SIM.cart(a); }
+  for (var c = 0; c < (HB.carts > 0 ? HB.carts : 1); c++) { var a = SIM.actor({ id: id + '.cart' + c, role: 'cart', org: id + '.folk', home: store.id, cls: 'cart', job: 'carters' }); a.pos = { x: store.x, y: store.y || 0, z: store.z }; SIM.cart(a); }
   /* the roads: its meat and hides to its town's nearest warehouse, the staples back (meat it makes itself) */
   var R = HT.road, ship = cr.goods.concat(Object.keys(CR.batch.by || {})), Wp = null, bd = Infinity; EP.warehouses.forEach(function (P) { var d = Math.hypot(P.x - store.x, P.z - store.z); if (d < bd) { bd = d; Wp = P; } });
   var mins = ISLE.herdMinutes(store, Wp), gO = {}, gI = {}, eO = {}, eI = {}; gO[id] = ship.slice(); gO[s] = []; gI[s] = foods.filter(function (f) { return f !== 'meat'; }); gI[id] = []; eO[s] = {}; ship.forEach(function (g) { eO[s][g] = 1; }); eI[id] = {};

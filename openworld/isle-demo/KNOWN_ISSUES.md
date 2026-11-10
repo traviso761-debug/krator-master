@@ -5,7 +5,7 @@
       still at the start view. That view comes from little-demo: "west of Shade". This region has no Shade, so it falls back
       to (-6000, 2500), 1.6 km deep in the Ring Sea. `verify.py` now sets the view over Kautoa and settles before
       the world's checks. Checked there: 269,676 records, seeding identical in three orders, 25,313 trees spaced. The page
-      still opens over that sea: an isle start view in `src/world/98-world-start.js` is owed.
+      still opens over that sea: an isle start view in `core/world/98-world-start.js` is owed.
 
 - [x] **The towns' buildings read washed out next to their kits** (the owner, 2026-10-20, on the Governor's House). Two
       losses, both in the flatten every town piece goes through (settlements/isle-demo 58), so the city page had them
@@ -55,8 +55,8 @@
       match the city page); the hamlets keep theirs. A region registry in world coordinates is still to do.
 
 - [ ] **The world's light ignores the clock** (2026-10-19). `core/clock` runs here now (the hamlets' felling reads it), but
-      the sun (`HOST.SUN_DIR`) and the atmosphere (`ATMOS.init`'s `hour: () => 11.5`, little-demo's `src/world/83-world-water.js`)
-      are still pinned at 11:30. Moving them onto `HOST.clock.hour` is a change to `src/world/` (little-demo is deprecated).
+      the sun (`HOST.SUN_DIR`) and the atmosphere (`ATMOS.init`'s `hour: () => 11.5`, little-demo's `core/world/83-world-water.js`)
+      are still pinned at 11:30. Moving them onto `HOST.clock.hour` is a change to `core/world/` (little-demo is deprecated).
 - [ ] **The hamlets were seen in the browser only at the lumber village** (2026-10-19). The salt village, the mine and the
       ranch are checked by their data (`verify.py`'s hamlet check), not yet by eye.
 - [ ] **The lumber village's stand is nearly all saplings** at the default felling rate (`core/hamlet/PLAN.md`, H4): a
@@ -89,7 +89,7 @@
       seen from 260 km up.
 - [ ] **Headless verify fails on this machine** (2026-10-15). SwiftShader throws "Cannot read properties of null
       (reading 'trim')" compiling the sky's capture (`ATMOS.skylight`'s PMREMGenerator, called from
-      `src/world/83w-world-seas.js`), so the page stops at start.
+      `core/world/83w-world-seas.js`), so the page stops at start.
       - **The same happened to little-demo's own page here, before it was deprecated, committed sources included.** It comes from this machine,
         not from this build.
       - **In the browser pane (a real GPU) both pages load clean.** The isle's checks and negatives were run there,

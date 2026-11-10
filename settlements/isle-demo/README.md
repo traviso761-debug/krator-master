@@ -20,7 +20,7 @@ python3 verify.py dist/isle-site.html --assert [--shots DIR]
 
 **On the open world's ground.** The page carries:
 - the region (`openworld/isle-demo/data`);
-- the world's own height and colour fragments: `openworld/isle-demo/src/world/41-world-fields.js` and `42-world-roads.js`, and
+- the world's own height and colour fragments: `core/world/41-world-fields.js` and `42-world-roads.js`, and
   `openworld/isle-demo/src/43-world-isles.js` (the coast as terrain, the climate classes' colours).
 
 So the planner's ground is the world's, to the centimetre (a verify check). What the owner draws here will stand where

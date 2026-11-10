@@ -111,7 +111,7 @@ No kit reads a settlement. No core module reads a kit or settlement (`tools/chec
   Allow-list: seven lines deleted (the comment-only and never-read edges above); two added, `kits/beast-riders ->
   settlements/girder` and `-> settlements/mavs-refuge`, real reads the scan never saw (step 5).
   Found on the way: `settlements/pinnacle-rock`, `settlements/longsong` and `openworld/little-demo` name
-  `openworld/little-demo/src/41-world-fields.js`, which moved to `openworld/isle-demo/src/world/` (d848c157), so they
+  `openworld/little-demo/src/41-world-fields.js`, which moved to `core/world/` (d848c157), so they
   do not build; their lists report the path they name. `settlements/yuni/build_fragments.py` fails its own build rules.
   (Fixed by the session `claude/great-hopper-7f0rbq`: both read the fields from the isle demo, little-demo is archived,
   `build_fragments.py` is gone; merged into this branch 2026-11-03.)

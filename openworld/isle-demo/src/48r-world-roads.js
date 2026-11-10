@@ -1,7 +1,7 @@
 // ================================================================= ISLE DEMO — the regional highway network: every hamlet joined to its town
 // [G data] The owner (2026-11-09): "the hamlets should all connect to the regional highway network as well to facilitate
 // cart travel". The network is routed once by bake.py (`python3 bake.py roads`) in a headless page, after the towns are
-// planned and the hamlets made (48t), with the world's own road routing (src/world/42-world-roads.js ROADS.route: least
+// planned and the hamlets made (48t), with the world's own road routing (core/world/42-world-roads.js ROADS.route: least
 // cost over the land, the grade held to 8 %, cuts and fills), and written to data/roads.json; the page then reads it as
 // WORLD_DATA.roads (41-world-fields.js shapes the ground to it, the terrain draws the carriageway, the flora and the floor
 // keep off it, the probe checks its grade). Nothing here runs when the page starts.
@@ -89,7 +89,7 @@ function bake(){const HD=heads(),made=ISLE_HAMLETS.made,roads=[],errors=[],net=h
   /* steep within its first few points: the lane end it left from is the trouble (Nephtos's plantation: a 57 m drop beside it), else its far end */
   /* or no route to it at all (Nephtos's copper mine: "no fine route" to a junction): the next nearest point */
   /* or its first stretch (the lane end's approach) crosses one of its own village's buildings (a retried lane end past a granary) */
-  const overOwn=r=>!r.error&&(v.E.village.records||[]).some(b=>!b.vacant&&r.pts.slice(0,4).some((p,i,P)=>{if(!i)return false;const a=P[i-1],dx=p[0]-a[0],dz=p[1]-a[1],l2=dx*dx+dz*dz||1,t=Math.max(0,Math.min(1,((b.x-a[0])*dx+(b.z-a[1])*dz)/l2));return Math.hypot(a[0]+dx*t-b.x,a[1]+dz*t-b.z)<=Math.hypot(b.w,b.d)/2*.6+(r.hw||3);}));
+  const overOwn=r=>!r.error&&(v.E.village.records||[]).some(b=>!b.vacant&&r.pts.slice(0,4).some((p,i,P)=>{if(!i)return false;const a=P[i-1],dx=p[0]-a[0],dz=p[1]-a[1],l2=dx*dx+dz*dz||1,t=Math.max(0,Math.min(1,((b.x-a[0])*dx+(b.z-a[1])*dz)/l2));return Math.hypot(a[0]+dx*t-b.x,a[1]+dz*t-b.z)<=Math.hypot(b.w,b.d)/2*.6+(r.hw>0?r.hw:3);}));
   /* every attempt kept; the first that is neither steep nor over its village wins, else the least steep that is not over it */
   const maxG=r=>r.error?Infinity:r.pts.reduce((m,p,i)=>i?Math.max(m,Math.abs(p[2]-r.pts[i-1][2])/Math.max(1e-6,Math.hypot(p[0]-r.pts[i-1][0],p[1]-r.pts[i-1][1]))):m,0);
   const bad=r=>r.error?3:overOwn(r)?2:steepAt(r)>=0?1:0,att=[r];

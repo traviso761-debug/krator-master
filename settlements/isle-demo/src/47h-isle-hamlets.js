@@ -123,10 +123,10 @@ ISLE.simHamlet = function (sp, v, res, name, o) {
     var role = r.role, K = role === 'landing' ? T.stop : HT.kinds[role === 'works' ? r.key : role]; if (!K) return;
     var acts = Object.assign({}, K[1]), y = h(r.x, r.z);
     if (role === 'house' && r.vacant && GW && SIM.BUILD) {   /* an empty plot: a lot of the village's, built on when its turn comes */
-      var hh = r.households || 1, Pl = SIM.place({ id: r.id, name: (name || sp.name) + ': an empty plot', kind: 'lot', x: r.x, y: y, z: r.z, ry: r.ry || 0, door: { x: r.x, y: y, z: r.z },
+      var hh = r.households > 0 ? r.households : 1, Pl = SIM.place({ id: r.id, name: (name || sp.name) + ': an empty plot', kind: 'lot', x: r.x, y: y, z: r.z, ry: r.ry || 0, door: { x: r.x, y: y, z: r.z },
         activities: {}, indoor: {}, wander: 4, settlement: id, tags: { key: r.key, lot: r.id, hamlet: id, focus: sp.focus, vacant: true, hh: hh, role: 'lot' } });   /* its posts set below: the first lot's only */
       Pl.cls = 'poor'; (S.lotRecs || (S.lotRecs = {}))[r.id] = r; places.push(Pl); lots.push(Pl); kinds.lot = (kinds.lot || 0) + 1; return; }
-    if (role === 'house') { var b = Math.round((r.households || 1) * row.household); Object.keys(acts).forEach(function (a) { acts[a] = b; }); beds += b; }
+    if (role === 'house') { var b = Math.round((r.households > 0 ? r.households : 1) * row.household); Object.keys(acts).forEach(function (a) { acts[a] = b; }); beds += b; }
     else if (role === 'works') acts.WORK = jobsOf[r.key] || 4;
     else if (role === 'landing') acts.WORK = row.landing && row.landing.jobs != null ? row.landing.jobs : 3;
     else acts.WORK = (row.services[role] || 2);
@@ -154,7 +154,7 @@ ISLE.simHamlet = function (sp, v, res, name, o) {
   var crew = CR ? ISLE.simCrewPlace(id, sp, places, res, CR, h) : null; if (crew) kinds.fellcamp = 1;
   /* the builders' posts: on the first lot only (the road project first, so the founders' hands go to it; core's rebalance
      moves them to each project in turn and takes the posts with them; a post on every lot would empty the farms) */
-  if (lots.length) { lots.sort(function (a, b) { return (b.tags.road ? 1 : 0) - (a.tags.road ? 1 : 0); }); lots[0].activities.WORK = lots[0].tags.road ? ((T.found || {}).road || {}).posts || 8 : GW.posts == null ? 4 : GW.posts; }
+  if (lots.length) { lots.sort(function (a, b) { return (b.tags.road ? 1 : 0) - (a.tags.road ? 1 : 0); }); lots[0].activities.WORK = lots[0].tags.road ? (((T.found || {}).road || {}).posts > 0 ? T.found.road.posts : 8) : GW.posts == null ? 4 : GW.posts; }
   /* the people: the workers for every post, the kin to fill the beds; a founded hamlet's founders first (47f: the campers,
      housed household by household and set to the posts, the roles' counts the remainder for the settlers who follow) */
   var posts = 0, wk = {}; places.forEach(function (P) { if (P.activities.WORK && P.kind !== 'home') { posts += P.activities.WORK; wk[P.kind] = 1; } });
@@ -188,7 +188,7 @@ ISLE.simHamlet = function (sp, v, res, name, o) {
     meal: { per: I.perMeal, foods: foods.slice() }, useShort: true }, rules), { settlement: id });
   /* the lots on core's building, now the village has an economy for their recipes (SIM.buildLot's build recipe goes in the
      lot's settlement's economy: declared before it, it is lost and the lot never gets an hour) */
-  lots.forEach(function (Pl) { SIM.buildLot({ id: Pl.id, kind: Pl.tags.road ? roadProject.kind : (Pl.tags.hh || 1) >= 3 ? 'longhouse' : 'house' }); });
+  lots.forEach(function (Pl) { SIM.buildLot({ id: Pl.id, kind: Pl.tags.road ? roadProject.kind : (Pl.tags.hh > 0 ? Pl.tags.hh : 1) >= 3 ? 'longhouse' : 'house' }); });
   /* the resource it works, by the map record's own id: its grade the yield (nothing runs out: the owner's rule) */
   var outs = {}; places.forEach(function (P) { var Pr = HT.producers[P.kind]; if (Pr && P.activities.WORK) (Pr.out === 'crops' ? FG : outsOf(Pr, 0, 1)).forEach(function (g) { outs[g] = 1; }); });
   var siteId = res && res.id && !crew ? res.id : null;   /* a crew's range is its stands' sites (below) */
@@ -247,9 +247,9 @@ ISLE.simHamlet = function (sp, v, res, name, o) {
   foods.forEach(function (f) { if (!makes[f]) expIn[f] = people * I.meals * I.perMeal / foods.length; });
   /* the bill of the lot going up, a day's worth at its posts' hours (so the carts bring it ahead of the builders' draws,
      which alone would book too little a tick for a load; the road's timber the same) */
-  if (lots.length && SIM.BUILD) { var K0 = SIM.BUILD.cfg.kinds[lots[0].tags.road ? roadProject.kind : (lots[0].tags.hh || 1) >= 3 ? 'longhouse' : 'house'], hrsDay = 0, wsch = T.sched.work;
+  if (lots.length && SIM.BUILD) { var K0 = SIM.BUILD.cfg.kinds[lots[0].tags.road ? roadProject.kind : (lots[0].tags.hh > 0 ? lots[0].tags.hh : 1) >= 3 ? 'longhouse' : 'house'], hrsDay = 0, wsch = T.sched.work;
     for (var si = 0; si < wsch.length; si++) if (wsch[si][1] === 'WORK') hrsDay += (si + 1 < wsch.length ? wsch[si + 1][0] : 24) - wsch[si][0];
-    var perDay = (lots[0].activities.WORK || 1) * hrsDay / Math.max(1, K0.hours || 1);
+    var perDay = (lots[0].activities.WORK > 0 ? lots[0].activities.WORK : 1) * hrsDay / Math.max(1, K0.hours > 0 ? K0.hours : 1);
     Object.keys(K0.bill || {}).forEach(function (g) { if (!makes[g] && EP.goods[g]) expIn[g] = (expIn[g] || 0) + K0.bill[g] * perDay; }); }
   var gOut = {}, gIn = {}, eOut = {}, eIn = {}; gOut[id] = goodsOut; gOut[ps] = []; gIn[ps] = foods.filter(function (f) { return !makes[f]; }); gIn[id] = []; eOut[ps] = expect; eIn[id] = expIn;   /* not what it makes (the ranch's meat) */
   if (lots.length && GW && GW.goods) GW.goods.forEach(function (g) { if (!makes[g] && EP.goods[g] && gIn[ps].indexOf(g) < 0) gIn[ps].push(g); });   /* the lots' and the road's bill comes with the food (the lumber village's timber is its own) */
@@ -481,7 +481,7 @@ ISLE.hamletChecks = function (a, b) {
     crews.map(function (q) { return q.id + ': ' + q.C.state + ' at ' + q.C.stand + (q.C.site === q.C.stand ? '' : ' (felling ' + q.C.site + ')') + (q.C.held ? ', ' + q.C.held : '') + ', ' + q.C.moves + ' moves, ' + q.fell + ' logs'; }).join('; '));
   /* the owner's rule (2026-11-02): each village's resource lasts at least `life.years`, flat out (its amount at the start
      against its full day's draw less its regrowth) and at the draw this run measured (what is left against the day's net take) */
-  var LY = (ISLE.TUNE.sim.hamlets.life || {}).years || 5, days = Math.max(1e-9, (b.minute - a.minute) / 1440);
+  var LY = ((ISLE.TUNE.sim.hamlets.life || {}).years > 0 ? ISLE.TUNE.sim.hamlets.life.years : 5), days = Math.max(1e-9, (b.minute - a.minute) / 1440);
   var lives = ids.map(function (id) { var X = b.villages[id], A = a.villages[id], Si = X.site || {}, A0 = A.site || {}, Lf = X.life || {};
     var net = ((Si.taken || 0) - (A0.taken || 0)) / days - (Lf.regen || 0), flat = Lf.full > Lf.regen ? (Si.start || 0) / (Lf.full - Lf.regen) / 365 : Infinity;
     return { id: id, flat: flat, run: Si.amount == null ? Infinity : net > 0 ? Si.amount / net / 365 : Infinity, left: Si.amount, full: Lf.full, regen: Lf.regen }; });

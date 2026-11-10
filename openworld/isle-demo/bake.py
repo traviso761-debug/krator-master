@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bake the isle world's regional highway network (src/48r-world-roads.js ISLE_ROADS.bake over src/world/42-world-roads.js),
+"""Bake the isle world's regional highway network (src/48r-world-roads.js ISLE_ROADS.bake over core/world/42-world-roads.js),
 in a headless page (tools/harness.py: the shared Chromium launcher), to data/roads.json; the page then reads it as
 WORLD_DATA.roads (41-world-fields.js shapes the ground to the roads, the terrain draws them).
 

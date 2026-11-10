@@ -38,7 +38,7 @@ ISLE.expUses = function (minute) {
 ISLE.expYards = function () {
   var S = ISLE.SIM, X = ISLE.TUNE.sim.expeditions, out = {}; if (!X) return null;
   S.order.forEach(function (s) { var E = SIM.econ(s), Xs = S.towns[s]; out[s] = 0;
-    Object.keys(X.yards || {}).forEach(function (kind) { var Y = X.yards[kind], i = 0, ev = Y.every || 1, from = Y.from || 0;
+    Object.keys(X.yards || {}).forEach(function (kind) { var Y = X.yards[kind], i = 0, ev = Y.every > 0 ? Y.every : 1, from = Y.from || 0;
       if (Y.expOnly && !ISLE.hooks.expeditionShore) return;   /* a page with no expeditions keeps its makers as they were */
       Xs.places.places.forEach(function (P) { if (P.kind !== kind || !P.activities.WORK || (E.recipes[P.id] && E.recipes[P.id].batch && kind !== 'canoeshed')) return; if ((i++ % ev) !== from) return;
         SIM.recipe(P.id, { batch: Y.batch, cap: Y.cap }); out[s]++;
@@ -54,7 +54,7 @@ ISLE.expStep = function (minute) {
   if (ISLE.hooks.expeditionShore) S.order.forEach(function (s) {
     if (minute < X.firstDay * 1440) return;
     var H = S.houses && S.houses[s], outK = S.exp.camps.filter(function (C) { return C.town === s && !C.struck; }).map(function (C) { return C.kind; });
-    if (outK.length >= (H ? (X.house.maxOut || 1) : 1)) return;   /* a house runs `maxOut` camps at once; a town without one, one */
+    if (outK.length >= (H ? (X.house.maxOut > 0 ? X.house.maxOut : 1) : 1)) return;   /* a house runs `maxOut` camps at once; a town without one, one */
     if ((S.exp.n[s] || 0) >= X.maxPerTown) return;
     if (S.exp.rest[s] != null && minute < S.exp.rest[s]) return;   /* a house that declined tries again later */
     /* the kinds it may send: none of that kind out, rested since the last came home, a shore found (or not yet asked) */
@@ -63,7 +63,7 @@ ISLE.expStep = function (minute) {
     if (!free.length) return;
     /* the town's merchant house decides (47y): the kind with the best expected margin, with the purse to pay for it */
     var kind = free[0];
-    if (H) { var D = ISLE.houseDecide(s, minute, free); if (!D.go) { S.exp.rest[s] = minute + (X.house.retryDays || 7) * 1440; return; } kind = D.kind; }
+    if (H) { var D = ISLE.houseDecide(s, minute, free); if (!D.go) { S.exp.rest[s] = minute + (X.house.retryDays > 0 ? X.house.retryDays : 7) * 1440; return; } kind = D.kind; }
     ISLE.expSail(s, minute, kind);
   });
   S.exp.camps.forEach(function (C) { if (C.struck) return;

@@ -9,7 +9,9 @@ const M=WORLD_DATA.meta,$=id=>document.getElementById(id),msg=t=>{$('loadmsg').t
 function decode(b64){return new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=()=>rej(new Error('a raster did not decode'));i.src='data:image/png;base64,'+b64;});}
 function pixels(img){const c=document.createElement('canvas');c.width=img.width;c.height=img.height;const g=c.getContext('2d',{willReadFrequently:true});g.drawImage(img,0,0);return g.getImageData(0,0,img.width,img.height).data;}
 const ch=(px,n)=>{const a=new Uint8Array(n);for(let i=0;i<n;i++)a[i]=px[i*4];return a;};
-async function start(){
+/* the rasters decoded in the page from the PNGs (a region whose build.py decoded them already hands in WORLD_R instead:
+   core/world/world_data.py, no canvas read) */
+async function decodeAll(){
  msg('decoding the scale model ('+M.frame.size_px.join(' x ')+' px at 2 km)');
  const im={};for(const k in WORLD_DATA.png)im[k]=await decode(WORLD_DATA.png[k]);
  const lo=M.heights.lo,hi=M.heights.hi,nh=im.elev.width*im.elev.height,nm=im.biome.width*im.biome.height;
@@ -19,6 +21,9 @@ async function start(){
  // the escarpments, on the height grid: the floor's and the plateau's levels (16 bits in R,G) and the weight
  const d16=img=>{const p=pixels(img),a=new Float32Array(nh);for(let i=0;i<nh;i++)a[i]=lo+((p[i*4]<<8)|p[i*4+1])/65535*(hi-lo);return a;};
  R.scarpL=d16(im.scarpl);R.scarpU=d16(im.scarpu);R.scarpW=new Float32Array(ch(pixels(im.scarpw),nh));
+ return R;}
+async function start(){
+ const R=typeof WORLD_R!=='undefined'&&WORLD_R?WORLD_R:await decodeAll();
  // the towns' tiles are files beside the page: where the page cannot fetch them (the gallery's frame blocks fetch) the
  // towns are dropped before the land is laid out, so it keeps its own ground instead of empty town footprints
  const T=WORLD_DATA.towns&&WORLD_DATA.towns.towns;
@@ -28,9 +33,12 @@ async function start(){
  WORLD.init(R);
  msg('laying out the land');for(const f of LATE)f();
  CAM.paintBase(R);
- // the first view: the sedesert plateau west of Shade, looking east over the scrub toward the abyss's rim
- const sh=PLACES.list.find(p=>p.name==='Shade')||{x:0,z:0};
- CAM.setView(sh.x-6000,sh.z+2500,140,0,-.12);CAM.lookAt(sh.x,WORLD.H(sh.x,sh.z)+60,sh.z);
+ // the first view: the region's own (WORLD_CONFIG.start: {view: [x, z, height above ground, yaw, pitch], look?: [x, z,
+ // height above ground]}), else little-demo's: the sedesert plateau west of Shade, looking east toward the abyss's rim
+ const S0=typeof WORLD_CONFIG!=='undefined'&&WORLD_CONFIG.start;
+ if(S0){CAM.setView.apply(CAM,S0.view);if(S0.look)CAM.lookAt(S0.look[0],WORLD.H(S0.look[0],S0.look[1])+S0.look[2],S0.look[1]);}
+ else{const sh=PLACES.list.find(p=>p.name==='Shade')||{x:0,z:0};
+  CAM.setView(sh.x-6000,sh.z+2500,140,0,-.12);CAM.lookAt(sh.x,WORLD.H(sh.x,sh.z)+60,sh.z);}
  requestAnimationFrame(frame);}
 let last=performance.now(),fpsN=0,fpsT=performance.now(),fps=0,lastDraw=null;
 const camera=HOST.camera,renderer=HOST.renderer,scene=HOST.scene;

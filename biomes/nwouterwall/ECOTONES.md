@@ -74,7 +74,7 @@ plants: its taiga and tundra have no niche in a Csa/Cfa lowland.
 ## How it would be built
 
 1. **The shared records.** Add the alias entries above. Then a band never plants two look-alikes.
-2. **The open world.** `openworld/isle-demo/src/world/41-world-fields.js` already blends kits with `WORLD.kitW` (overlays
+2. **The open world.** `core/world/41-world-fields.js` already blends kits with `WORLD.kitW` (overlays
    blended over ~3 km and warped by noise), and `85-world-flora.js` multiplies each kit's passes by it. The crossings above
    become **climate envelopes** on each species record: an elevation band plus the Köppen tags most `PK` records already
    carry. A species then plants wherever its envelope holds, in whichever kit owns the ground, so the crossing follows the

@@ -61,7 +61,7 @@ north (`core/hamlet/PLAN.md` section 4).
   the sim's countryside checks, each with a negative. A farmhouse stands on every holding with a farm track to it (the
   tracks a tree from the village's works lane), and every village is named at load from the Sikau list (core/hamlet 16, 18).
 - **The highway network (2026-11-09):** `python3 bake.py roads` routes every village to its town's network in a headless
-  page (`src/48r-world-roads.js` over `src/world/42-world-roads.js`) and writes `data/roads.json`; `build.py` puts it in
+  page (`src/48r-world-roads.js` over `core/world/42-world-roads.js`) and writes `data/roads.json`; `build.py` puts it in
   the page as `WORLD_DATA.roads`, so the ground is shaped to the roads, the terrain draws them and the flora keeps off.
   Rebake after anything that moves a village (`verify.py` says when a village's lane end is no longer a road's end). The
   sim takes each road's length to the town as the village's cart time.
@@ -175,7 +175,7 @@ boats at sea.
 
 ## How it is made
 
-The world's fragments are **in `src/world/`**: the fields, terrain, water, sky, nursery, flora, floor, places, towns,
+The world's fragments are **in `core/world/`**: the fields, terrain, water, sky, nursery, flora, floor, places, towns,
 camera and probe, and the head (`00-head.html`, whose title and caption `build.py` swaps for this region's). They were
 moved here from `openworld/little-demo/src` in October 2026, when little-demo was deprecated (its `DEPRECATED.md`):
 this build no longer reads anything from it. The region's own fragments, beside them in `src/`:

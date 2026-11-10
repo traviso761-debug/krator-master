@@ -119,7 +119,7 @@ the floor is `vale` and `rip` (gambel oak, bigtooth maple, cottonwoods, rose wee
   every item drawn through the variants (the stilt pod's head, its tendrils, the trees' leaf clumps and fruit) came out as scrambled triangles: the
   pod's head was 30 of its 180. The harvest expands an indexed item first. The attach audit could not see it: it samples BIO's baked items, and the
   variant trees are 86's own pools; a check does now (`the variants keep every triangle of their items`, with its negative). **A trap for the open
-  world:** `openworld/isle-demo/src/world/84-world-nursery.js` harvests the same way; it is safe only while no open world sets `INDEX_ITEMS`.
+  world:** `core/world/84-world-nursery.js` harvests the same way; it is safe only while no open world sets `INDEX_ITEMS`.
 - [x] **The ember crown's joins and the needle bloom's seat** (the owner, 2026-11-03): every limb in this kit now leaves its parent through
   `BIO.flareJoin` (core/biome 31j: the root sunk into the parent, a collar, 6-8 sides at the joint; a reader without the fragment draws the old
   tube); the ember crown's bottle has a shoulder over the limbs' roots. The needle bloom's head stood .55 of its size over its stem's tip; it sits

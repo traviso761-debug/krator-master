@@ -2,13 +2,13 @@
 """Build the 'isle demo' open world: one self-contained page, dist/isle-demo.html (settlements/isle-demo/PLAN.md, P3).
 
 The scale model's "isle demo" polygon (an archipelago in the East Ring Isles, about 128 x 250 km) at 1:1, on the open
-world's machinery. The world's fragments live in src/world/ (moved from openworld/little-demo, now deprecated): the fields, terrain,
+world's machinery. The world's fragments live in core/world/ (moved from openworld/little-demo, now deprecated): the fields, terrain,
 water, sky, nursery, flora, floor, places, towns, camera and probe. This build adds only what is the region's own:
 
   data/         region.json and the rasters, written by tools/scale-model/extract_region.py (README.md says how)
   src/          43-world-isles.js (the isles' fields: the climate classes as weights, the coast), 46-world-config.js
                 (the settlements built here, the Go-to order and views), 47-world-kits.js (the kits that grow here)
-  src/world/    the world (00-head.html with this region's title, 41, 42, 45, 80-99)
+  core/world/    the world (00-head.html with this region's title, 41, 42, 45, 80-99)
   ../../core/   rand, terrain, biome, space, atmos, water
 
   python3 build.py            # dist/isle-demo.html
@@ -23,7 +23,7 @@ SRC = os.path.join(HERE, 'src')
 DATA = os.path.join(HERE, 'data')
 DIST = os.path.join(HERE, 'dist')
 OUT = 'isle-demo.html'
-WORLD_SRC = os.path.join(SRC, 'world')   # the world's fragments
+WORLD_SRC = os.path.join(ROOT, 'core', 'world')   # the world's fragments (core/world, read in place)
 
 # Port lint (GODOT-PLAN.md, Phase 0): a fragment PORT.md tags [G data] must not touch the browser.
 _cp = os.path.join(ROOT, 'tools', 'check_port.py')
@@ -132,7 +132,7 @@ ORDER = (
        ('settlements/isle-demo/src', '59-isle-citizens.js'), ('src', '88c-world-life.js'), ('src', '89-world-geysers.js')]
     + LDF('90-world-camera.js', '91-world-probe.js', '98-world-start.js', '99-tail.html')
 )
-# the page's own words in the world's head (src/world/00-head.html) (its title and caption), replaced: each must be found exactly once
+# the page's own words in the world's head (core/world/00-head.html) (its title and caption), replaced: each must be found exactly once
 HEAD = [('<title>Krator Little Demo</title>', '<title>Krator Isle Demo</title>'),
         ("<b>Little Demo</b> · the scale model's eastern desert at 1:1", "<b>Isle Demo</b> · the scale model's Ring Sea isles at 1:1")]
 # names a biome fragment must not use (a host engine's kit): the same list every kit's build.py checks
@@ -228,7 +228,7 @@ def main():
         if where == 'ld' and f == '00-head.html':
             for old, new in HEAD:
                 if s.count(old) != 1:
-                    sys.exit("src/world/00-head.html changed: '%s' not found once; update HEAD in build.py" % old)
+                    sys.exit("core/world/00-head.html changed: '%s' not found once; update HEAD in build.py" % old)
                 s = s.replace(old, new)
         if where.startswith('biomes/') and '-biome-' in f:
             for w in FORBID:
