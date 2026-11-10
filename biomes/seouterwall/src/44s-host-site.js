@@ -14,6 +14,8 @@
 // metres over the model; sitePoint(x, z) each record's part there (the zones' fields: 47).
 const SITE={
  name:'godsgate',title:'The Godsgate saddle',R:2000,step:10,seed:6101,
+ // the plan's station (PLAN.md section 5): its pixel and height (the model pins both: build_425_master.py, seow_station_pins)
+ plan:{px:1031,py:1252,base:3620},
  // the crags: ridged noise (core/rand) on a wave of `wave` m, up to `amp` m, where the model's grade runs from `from` to `to`
  crag:{amp:42,wave:190,from:.1,to:.38},
  // the moraines (KRELIEF.range: a wall along a-b, h tall, w its half-width at the foot): the recessional ridge across the flat (two arms

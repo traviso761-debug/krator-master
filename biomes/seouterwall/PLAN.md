@@ -1,6 +1,6 @@
 # SE Outer Wall (`seouterwall`) — Scenic Alpine Cordillera, The Godsgate Pass & Hidden Highland Tarn Oases (`PLAN.md`)
 
-> **Status: station 1 (`godsgate`, the saddle) built on a branch, 2026-11-10 (a cloud session: software-GL verify only; the GPU verify is owed on the owner's machine). Stations 2-6 not started. Section 7 is the build: its Core adoption, station 1 on the model, and what is owed.** Proposed 2026-11-06 as a biome kit and scale-model `5.1` sculpting blueprint; the model's pass (`build_425_master.py`, "SE outer wall") has since run, taller than this plan's numbers (section 7.2).
+> **Status: stations 1 (`godsgate`, the saddle) and 2 (`gatetarn`, the Tarn of the Gate-Bell) built on a branch, 2026-11-10 (a cloud session: software-GL verify only; the GPU verify is owed on the owner's machine). Stations 3-6 not started. Section 7 is the build: its Core adoption, stations 1 and 2 on the model (7.2, 7.4), and what is owed (7.3).** Proposed 2026-11-06 as a biome kit and scale-model `5.1` sculpting blueprint; the model's pass (`build_425_master.py`, "SE outer wall") has since run, taller than this plan's numbers (section 7.2).
 >
 > **Polygon:** `SE outer wall` (`id: "rmw4xy4tp9b29"`, `kind: "biome"`, `20` vertices: `[[1329,1136],[1356,1201],[1336,1222],[1299,1228],[1267,1254],[1245,1276],[1224,1300],[1201,1346],[1130,1352],[1092,1340],[1060,1310],[1039,1292],[1009,1305],[997,1207],[1032,1205],[1091,1204],[1164,1198],[1249,1188],[1300,1160],[1324,1141]]`).
 > - **Bounding Box:** `X = 997..1356`, `Y = 1136..1352` (`359 × 216 px` span; `38,207` cells = **`152,828 km²`** on the `1821 × 1723` `2 km/px` Scale Model `5.1` master grid, or `~224 km E–W × 135 km N–S` / `14,925 km²` at the `625 m/px` regional detail scale). All `px, py` coordinates below are on the unified **Scale Model `5.1` (`X = 997..1356, Y = 1136..1352`)** grid (subtract `DX = 272, DY = 330` for legacy `4.23` coordinates).
@@ -352,3 +352,24 @@ the mid ground to 20 km on the model's 1 km cells with the far roughness; the fa
   (`ATMOS.windAt` turning downslope at night) is core/atmos's, not yet a per-page setting.
 - **The kit's own species** (the plan's borrowings: puya, snow lotus, cushion domes from wouterwall, oidong, ehighlands) and stations 2-6.
 - **The real-GPU verify** of station 1 (the cloud session ran SwiftShader only).
+
+### 7.4 Station 2 on the scale model: the Tarn of the Gate-Bell (`python3 build.py --station gatetarn`, 2026-11-10)
+
+- **The plan's pixel, px 1016,1236, is the model's pin at 3,680 m, but the model's tarn is not under it.** The model's pass filled a tarn
+  of 45 cells at 3,680 m (about 7 km across, not the plan's 4 x 3 km) on a flat cirque floor of 13 x 8 km at 3,660-3,690 m, lying
+  3-9 km west of the pixel and 3 km either side of its row; the floor's walls rise to 4.4-5.4 km 4-8 km out.
+- **So station 2 stands on the tarn's north-east shore, px 1014.5,1234.5** (`region/far.py`: 3,695 m, 1.01 atm, Dsc, mean +7 °C,
+  408 mm; the tarn 15 m under the page's y = 0, its shore 300-700 m south-west). The check holds the page's pixel within 4 px and its
+  height within 150 m of the plan's (`HCHK.model`, `SITE.plan`).
+- **Its landforms** (`stations/gatetarn/44s-host-site.js`, the same interface as station 1's site): the cirque's headwall, a horseshoe
+  of black basalt 140 m tall bowed north across the near box (`KRELIEF.scarp`, buttresses, talus at its foot; the hanging bench above
+  it), the Gate-Bell brook off the bench's snow, over the lip (core/water finds the fall on its line: `WATER.fallsOf`, the curtain, its
+  plunge and spray) and across the floor into the tarn (`KRELIEF.wadi` on a resampled line); the moraine damming the tarn's east shore
+  and an older one behind it (`KRELIEF.range`); rockfall heaps at the headwall's foot (`KRUBBLE`); the tarn itself, the model's water
+  as one `WATER.still`, its strand a zone of its own (`shore`).
+- **The rock is the Godthrone's here.** The Godsgate's corridor (the strata's contact) lies 25 km east of the page's origin
+  (`SITE.rock.contact`), so the headwall and the far walls read KSTRATA's `tibasalt`: black flows with orange glass-bead beds, ochre
+  palagonite where the beads are altered (section 4, Oasis 1's "orange-striped palagonite cliff").
+- **Not built here**: the toppled Ancient fog-bell on the moraine lip and the Historian's cache (kits/ancients: 7.3), the plan's red
+  guyed stalks and goldroot (the flora is the NW outer wall's, read in place: its larch in the cirque's lee, the creeping pine, the
+  floor's shrubs and herbs), the wild ibex at dawn (fauna: a later turn).

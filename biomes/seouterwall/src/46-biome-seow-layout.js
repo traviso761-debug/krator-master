@@ -20,7 +20,8 @@
 //   SEOW.zoneOf(F)         the zone of a point from its fields F: {water, heap, melt (the gully's part: floor, bar, pool, bank, fan),
 //                          fan (0..1 the fan's active channels), moraine (m), g (grade), slope (0..1), sunny (-1 a south-facing, shaded
 //                          slope .. 1 a north-facing, sunny one), wind (0 a lee .. 1 the col's open floor and the crests), mean}
-//                          -> 'water'|'heap'|'floor'|'fan'|'crag'|'scree'|'fellfield'|'tundra'|'moraine'|'larch'|'krummholz'|'col'|'puna'
+//                          shore (a tarn's gravel strand, a metre or two over its water)
+//                          -> 'water'|'heap'|'floor'|'shore'|'fan'|'crag'|'scree'|'fellfield'|'tundra'|'moraine'|'larch'|'krummholz'|'col'|'puna'
 //   SEOW.ZONES             each zone's words, and the nwouterwall zone its flora is read as (PLAN.md section 7.1: the NW outer wall's
 //                          larch, pines, steppe and floor, read in place; SEOW.nwZone)
 //   SEOW.lay(o)            the host's binding: {fields: (x,z)=>F, R, seed}; SEOW.at(x,z) is then {zone, F, clim}
@@ -52,6 +53,7 @@ SEOW.zoneOf=function(F){
  if(F.water)return 'water';
  if(F.heap)return 'heap';
  if(F.melt==='floor'||F.melt==='bar'||F.melt==='pool')return 'floor';
+ if(F.shore)return 'shore';
  if(F.g>.9)return 'crag';
  if(F.melt==='fan')return 'fan';
  if(F.g>.55)return 'scree';
@@ -70,6 +72,7 @@ SEOW.ZONES={
  water:{nw:'water',name:'water (the meltwater brook)'},
  heap:{nw:'none',name:'a rockfall heap (megabreccia blocks fallen from the crags)'},
  floor:{nw:'floor',name:'the meltwater gully\'s floor (braided cobble and gravel bars)'},
+ shore:{nw:'floor',name:'a tarn\'s strand (gravel and black basalt sand washed down from the wall: willows, sedge)'},
  fan:{nw:'floor',name:'the meltwater fan (gravel spread into the hollow\'s low: the brook sinks into it)'},
  crag:{nw:'none',name:'a crag (megabreccia: blocks of every rock in a grey matrix flecked with impact glass)'},
  scree:{nw:'fellfield',name:'scree under the crags (the freeze-thaw\'s fall)'},

@@ -35,9 +35,9 @@ window._biome=null;window._shadow='off';
 // weather (its wet on the ground), height fog, the snow last (snowOn wraps each material's hooks as they are), then the terrain's
 // horizon and the sun's shadows. The water's own meshes are left as they were drawn (89w: no shade, no snow on them).
 /* the dawn mist's floor: the col's outwash flat (the night's cold air pools in the hollow), the lowest of the brook and the flat's middle */
-const lowWater=()=>{const L=[terrainH(0,0)];if(STREAM)L.push(Math.min(...STREAM.level));return Math.min(...L);};
+const lowWater=()=>{const L=[terrainH(0,0)];if(STREAM)L.push(Math.min(...STREAM.level));if(MODEL_LAKE)L.push(MODEL_LAKE.level);return Math.min(...L);};
 const AIR=(function(){const Q=new URLSearchParams(location.search),out={raincover:false,hfog:false,horizon:false};
- const WM=new Set(WATER_DRAW?[WATER_DRAW.stream&&WATER_DRAW.stream.mesh].filter(Boolean):[]);
+ const WM=new Set(WATER_DRAW?[WATER_DRAW.stream&&WATER_DRAW.stream.mesh,WATER_DRAW.still].concat((WATER_DRAW.falls||[]).map(f=>f.D&&f.D.mesh)).filter(Boolean):[]);
  const isWater=o=>WM.has(o)||/^water:/.test(o.name||'');   /* 89w's meshes */
  // THE RAIN OCCLUSION MAP (R10, core/atmos/fx/89-atmos-fx-raincover.js): no rain, wet or fresh snow under the larch's crowns
  if(ATMOS.rainCover){try{out.raincover=!!ATMOS.rainCover({renderer});}catch(e){reportErr('rain cover: '+e.stack);}}

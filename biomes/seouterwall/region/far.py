@@ -40,6 +40,10 @@ SITES = {
     # the Godsgate's saddle: the drainage divide between Guli rrija (north, to the Bowl) and the Wadi al-Qamar (south, to the Catch);
     # the model pins it (build_425_master.py, seow_station_pins) and test_smodel.py checks it (+-150 m of 3,620)
     'godsgate': {'px': 1031, 'py': 1252, 'title': 'The Godsgate saddle'},
+    # the Tarn of the Gate-Bell (Oasis 1): the plan's pixel is 1016,1236 (3,680 m, the model's pin), but the model's tarn
+    # (build_425_master.py: whas / wlev, 45 cells at 3,680 m) lies 3-9 km west of it and 3 km either side of its row; the station
+    # stands on the tarn's north-east shore, under the cirque's north wall (PLAN.md section 7.4)
+    'gatetarn': {'px': 1014.5, 'py': 1234.5, 'title': 'The Tarn of the Gate-Bell'},
 }
 EYE = 30.0            # m over the ground: a viewer on the saddle's moraine
 R_PLANET = 84.0 * 360 / (2 * math.pi) * 1000      # m: the sky model's frame (kmPerDeg 84)
