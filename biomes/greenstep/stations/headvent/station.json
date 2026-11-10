@@ -1,0 +1,19 @@
+{
+ "note": "Station 6, the Fissure Shield (PLAN.md section 6; 5.1 px 668,1338, the crater floor 3,280 m, +7 degC, 769 mm): Terrace V, the shield (KRELIEF.volcano) and its warm crater bog (KTHERM's fumaroles, core/water/geyser's hot springs), the spatter fissure, the Headwall Falls off the Outer Wall's headscarp, the Clodosriba's source and its run to riser 4's lip. reads: KTHERM and core/water/geyser, by path. kin: the S highlands' paramo rosettes and tree ferns, read in place (BIO.kin; 87-host-kin.js); the SW lowlands' kit is not on this page. KTHERM is keyed 43t so it loads before the land (44w), which plans the vents",
+ "reads": {
+  "43t-core-therm.js": "core/terrain/47-core-therm.js",
+  "52-core-water-geyser.js": "core/water/geyser/52-core-water-geyser.js",
+  "52b-core-water-geyser-draw.js": "core/water/geyser/52b-core-water-geyser-draw.js"
+ },
+ "kin": {
+  "shighlands": [
+   [
+    "src/50-biome-shigh-species.js",
+    "src/55-biome-shigh-trees.js"
+   ],
+   "SHIGH",
+   "*",
+   "shigh"
+  ]
+ }
+}

@@ -9,8 +9,8 @@
   99-tail.html      closes <script>
 
   python3 build.py                     dist/greenstep.html: station 3, the Citadel Step and the Great Veil (stations/tallwalls/)
-  python3 build.py --station <name>    dist/greenstep-<name>.html: stations/<name>/ added to src/ (PLAN.md section 6): the
-                                       other five stations are later turns (gatestep, loamstep, rilleforge, cloudstep, headvent)
+  python3 build.py --station <name>    dist/greenstep-<name>.html: stations/<name>/ added to src/ (PLAN.md section 6): gatestep (1),
+                                       loamstep (2), rilleforge (4), cloudstep (5), headvent (6)
   python3 build.py --all               every station
 
 The core and the biome leaf never reference a host global except through
@@ -53,7 +53,7 @@ def find_node():
     return None
 
 HERE=os.path.dirname(os.path.abspath(__file__)); SRC=os.path.join(HERE,'src'); DIST=os.path.join(HERE,'dist')
-STATIONS=['tallwalls']
+STATIONS=['gatestep','loamstep','tallwalls','rilleforge','cloudstep','headvent']
 if '--all' in sys.argv:
     _rc=0
     for _s in STATIONS:
@@ -103,6 +103,11 @@ for f in CORE_EXPORT:
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','export',f))
 for f in CORE_SPACE:
     if f not in PATH: PATH[f]=os.path.join(CORE_S,f)
+# core/mask (KMASK, core/mask/README.md; the universal set, 2026-11-09): the Free Giants' paddy plots and a settlement's footprint are painted on a
+# KMASK canvas and read through its exact distance transform (44v maskField), never through a document canvas's pixels
+CORE_MASK=['25-core-mask.js','27-core-mask-distance.js']
+for f in CORE_MASK:
+    if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','mask',f))
 # core/hazard (KHAZ): the air's dust, alkali and visibility reach the walker through it (89a-host-atmos.js); KTRAPS.cycle, the clock its export reads
 PATH.setdefault('20-core-hazard.js',os.path.normpath(os.path.join(HERE,'..','..','core','hazard','20-core-hazard.js')))
 PATH.setdefault('37-core-traps.js',os.path.normpath(os.path.join(HERE,'..','..','core','biome','37-core-traps.js')))
@@ -165,7 +170,10 @@ NEIGH={}
 if STATION:
     _sj=os.path.join(HERE,'stations',STATION,'station.json')
     if os.path.isfile(_sj):
-        with open(_sj,encoding='utf-8') as _fh: NEIGH={k:tuple(v) for k,v in _json.load(_fh).get('kin',{}).items()}
+        with open(_sj,encoding='utf-8') as _fh: _SJ=_json.load(_fh)
+        NEIGH={k:tuple(v) for k,v in _SJ.get('kin',{}).items()}
+        # "reads": the core fragments a station takes beyond src/'s (the tube stations' KCAVERN and KRELIEF's lava forms, the shield's KTHERM), by path
+        for _f,_p in _SJ.get('reads',{}).items(): PATH[_f]=os.path.normpath(os.path.join(HERE,'..','..',_p))
 for _i,(_k,_row) in enumerate(sorted(NEIGH.items())):
     _fs,_api,_keep=_row[:3];_reg=_row[3] if len(_row)>3 else _k.split('/')[0]   # a 4th entry: the kit's registry name when it differs from its folder (shighlands' is 'shigh')
     _d=os.path.normpath(os.path.join(HERE,'..',_k.split('/')[0]));_c='abcdefgh'[_i];_kk=_k.replace('/','-')

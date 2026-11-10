@@ -56,11 +56,30 @@ const HCHK={
   return{ok:!bad.length,detail:bad.length?bad.length+' trees on cliff faces (first '+(bad[0].key||'?')+' at '+[bad[0].x|0,bad[0].z|0]+')':T.length+' trees, none on a columnar face'};},
  // Tallwalls' promontory is the settlement build's ground: no plant and no tree roots on it (the site field over .7)
  site(P,T){const bad=P.filter(p=>FIELD.site(p[0],p[2])>.7&&!/^biome:(boulder|column)$/.test(p[3])).concat(T.filter(t=>FIELD.site(t.x,t.z)>.7).map(t=>[t.x,t.y0,t.z,t.key]));
-  return{ok:!bad.length,detail:bad.length?bad.length+' on Tallwalls\' site (first '+bad[0][3]+' at '+bad.slice(0,1)[0].slice(0,3).map(v=>v|0)+')':'the promontory kept clear ('+P.length+' instances, '+T.length+' trees)'};},
+  return{ok:!bad.length,detail:bad.length?bad.length+' on '+(LAND.siteName||'Tallwalls\' site')+' (first '+bad[0][3]+' at '+bad.slice(0,1)[0].slice(0,3).map(v=>v|0)+')':'kept clear ('+P.length+' instances, '+T.length+' trees)'};},
+ /* the ground's fragment program within the units the GPUs link (KSHADOW.units: its maps and every sampler its hooks declare; the first GPU verify,
+    2026-11-09: 17 did not link on the Arc, 15 is the most ANGLE links there) */
+ units(U){if(!U)return{ok:false,detail:'no count (window._groundUnits)'};return{ok:U.n<=GROUND_UNITS_MAX,detail:U.n+' of '+GROUND_UNITS_MAX+' units ('+(U.how?U.how+'; ':'')+U.layers+' library layers with a map'+(U.shared?', '+U.shared+' shared':'')+')'};},
+ /* the station's cavern (KCAVERN): its plan built, its chunks meshed, and the ground open over each opening */
+ cavern(C){if(!C)return{ok:false,detail:'no cavern drawn (window._cavern)'};const ok=C.tris>0&&C.chunks>0&&(C.openings===0||C.holes>0);
+  return{ok,detail:C.tris+' triangles in '+C.chunks+' chunks ('+C.meshes+' meshes), '+C.openings+' openings, '+C.holes+' ground quads left to them, '+C.ms+' ms'};},
+ /* a plant rooted in an opening: the floor's items and the trees' trunks (a crown may hang over a skylight); one standing in the water is on the
+    stream's bed (a reed under a bridge's mouth), not on the ground the cavern cut */
+ holes(P,T){const H=STATION.noRoot?(x,z)=>STATION.noRoot(x,z):(x,z)=>STATION.hole(x,z,0),FL=/^biome:(fern|grass|sedge|mossC|mossH|begonia|rice|boulder|column)$/,bad=P.filter(p=>FL.test(p[3])&&H(p[0],p[2],0)&&!(waterH(p[0],p[2])>p[1]-.5)).concat(T.filter(t=>H(t.x,t.z,0)).map(t=>[t.x,t.y0,t.z,t.key]));
+  return{ok:!bad.length,detail:bad.length?bad.length+' in an opening (first '+bad[0][3]+' at '+bad[0].slice(0,3).map(v=>v|0)+')':'the openings kept clear ('+P.length+' instances, '+T.length+' trees)'};},
  camerasOut(C){const bad=C.filter(c=>c.y<terrainH(c.x,c.z)+.5);return{ok:!bad.length,detail:bad.length?'under the ground: '+bad.map(c=>c.view).join(', '):C.length+' cameras above the ground'};}};
 // the flora and the ground's wet band read the water's own shore: the env fields in the contract, no tree standing in the water, and the
 // wet band wet at the water's edge (WATER.edgeAudit). EDGE_OWED: what this turn leaves (a ratchet)
 const EDGE_OWED=LAND.edgeOwed||{plant:0,wet:0};
+const GROUND_UNITS_MAX=15;
+/* the count: the samplers ACTIVE in the ground's linked program (what the GPU links), read from the GL; before the program exists, the unique names its
+   hooks declare (KSHADOW.units counts a sampler two hooks both declare twice: core/atmos's atmRainOcc, 2026-11-09, read 16 on this page that links 15) */
+function groundUnits(){const gl=renderer.getContext(),pr=renderer.properties.get(MAT_GROUND),P=pr&&pr.currentProgram;
+ const T=[gl.SAMPLER_2D,gl.SAMPLER_CUBE,0x8B5F,0x8DC1,0x8B62,0x8DC4,0x8DC5];
+ if(P&&P.program){const n=gl.getProgramParameter(P.program,gl.ACTIVE_UNIFORMS);let k=0;for(let i=0;i<n;i++){const u=gl.getActiveUniform(P.program,i);if(u&&T.indexOf(u.type)>=0)k+=u.size;}return{n:k,how:'active'};}
+ try{const L=THREE.ShaderLib[MAT_GROUND.isMeshStandardMaterial?'standard':'lambert'],sh={uniforms:{},vertexShader:L.vertexShader,fragmentShader:L.fragmentShader},N=new Set();MAT_GROUND.onBeforeCompile(sh,renderer);
+  sh.fragmentShader.replace(/uniform\s+(?:(?:lowp|mediump|highp)\s+)?[iu]?sampler(?:2D|3D|Cube)\w*\s+([^;]+);/g,(m,b)=>{b.split(',').forEach(q=>N.add(q.trim()));return m;});return{n:N.size+(MAT_GROUND.map?1:0),how:'declared'};}catch(e){return{n:99,how:'failed'};}}
+Object.defineProperty(window,'_groundUnits',{configurable:true,enumerable:true,get:()=>Object.assign(groundUnits(),{layers:GL?GL.length:0,shared:GL_SHARED.length})});
 function edgeCheck(){const P=[];for(const T of GSTEP.TREES){P.push({x:T.x,z:T.z,r:Math.min(T.rb==null?.4:T.rb,.6),name:T.key});if(P.length>6000)break;}
  const bad=BIO.envCheck(ENV,LAND.envPoints||[[0,0],[-1400,-200],[800,300]]),F=WATER.edgeAudit({field:WATER_F,plants:P,wet:(x,z)=>WET_SHORE(x,z),band:4,clear:0}),N={};F.forEach(f=>{N[f.rule]=(N[f.rule]||0)+1;});
  return{ok:!bad.length&&(N['plant-in-water']||0)<=EDGE_OWED.plant&&(N['wet-short']||0)<=EDGE_OWED.wet,detail:(bad.length?'env: '+JSON.stringify(bad).slice(0,200)+'; ':'')+P.length+' trees, '+JSON.stringify(N)+' (owed '+JSON.stringify(EDGE_OWED)+')'};}
@@ -70,7 +89,10 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P
  add('every plant tagged with its Koppen classes',HCHK.tagged(GSTEP.PLANTS));
  add('nothing rooted under the water',HCHK.dry(P));
  add('no tree on a columnar riser face',HCHK.cliffs(GSTEP.TREES));
- if(LAND.site)add('Tallwalls\' promontory kept clear (the settlement build\'s)',HCHK.site(P,GSTEP.TREES));
+ if(LAND.site||LAND.sites)add((LAND.siteName||'Tallwalls\' promontory')+' kept clear (the settlement build\'s)',HCHK.site(P,GSTEP.TREES));
+ add('the ground within the GPU\'s texture units (at most '+GROUND_UNITS_MAX+': the Arc links 15)',HCHK.units(window._groundUnits));
+ if(STATION.CAVERN){add('the cavern built and drawn (KCAVERN: the tube under the roof, its openings in the ground)',HCHK.cavern(window._cavern));
+  add('nothing rooted in a cavern\'s opening (a skylight, a portal)',HCHK.holes(P,GSTEP.TREES));}
  add('the flora and the wet band read the shore of the water (BIO.envCheck, WATER.edgeAudit)',edgeCheck());
  add('preset cameras above the ground',HCHK.camerasOut(Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
  return R;}
@@ -81,7 +103,10 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  {const PL={x:{tags:Object.assign({},GSTEP.PLANTS.grass.tags,{koppen:['EF']})}};add('a plant tagged with the ice cap',HCHK.tagged(PL));}
  if(LAND.probes.wall){const w=LAND.probes.wall();add('a tree on a riser\'s colonnade',HCHK.cliffs([{x:w[0],z:w[1],key:'test'}]));}
  if(LAND.probes.bed){const b=LAND.probes.bed();add('a plant on the river bed',HCHK.dry([[b[0],b[1],b[2],'test']]));}
- if(LAND.site){const s=LAND.site;add('a plant on Tallwalls\' site',HCHK.site([[s.x,terrainH(s.x,s.z),s.z,'biome:fern']],[]));}
+ if(LAND.site||LAND.sites){const s=LAND.site||LAND.sites[0];add('a plant on '+(LAND.siteName||'Tallwalls\' site'),HCHK.site([[s.x,terrainH(s.x,s.z),s.z,'biome:fern']],[]));}
+ add('a ground reading 17 texture units (the first GPU verify\'s)',HCHK.units({n:17,layers:5}));
+ if(STATION.CAVERN){add('a cavern with no mesh',HCHK.cavern(Object.assign({},window._cavern,{tris:0})));
+  const o=STATION.NOROOT_PROBE||((STATION.CAVERN_OPENINGS||[])[0]||{}).c;if(o)add('a plant in a cavern\'s opening',HCHK.holes([[o[0],terrainH(o[0],o[1]),o[1],'biome:fern']],[]));}
  {const g=LAND.probes.bed?LAND.probes.bed():[0,terrainH(0,0),0];add('a camera under the ground',HCHK.camerasOut([{view:'under',x:g[0],y:terrainH(g[0],g[2])-5,z:g[2]}]));}
  return R;}
 // ---------------------------------------------------------------- the page, handed to the host

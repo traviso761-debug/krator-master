@@ -27,11 +27,15 @@ const SHADOW_Q=new URLSearchParams(location.search).get('shadow');
   for(const r of REG){if(!r.label||r.label.indexOf('read in place')<0)continue;const d=BIO.lodD(r.x,r.z)+(RIVERS.length&&!wet(r.x,r.z)?1e5:0);if(d<bd){bd=d;best=r;}}
   if(best)LAND.exportBox=[Math.round(best.x-150),Math.round(best.z-150),Math.round(best.x+150),Math.round(best.z+150)];}
  if(LAND.build){try{window._station=LAND.build();}catch(e){reportErr('station: '+e.stack);}}   /* a station's own records (Tallwalls' site) */
+ /* an invisible anchor in each published site (as the rock bodies have, 45): a site is kept clear of flora, so the probe's registered-volume check
+    finds this in it; the site's record is data for the settlement build, its volume where the settlement will stand */
+ {const S=REG.filter(r=>r.kind==='site');if(S.length){const A=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),new THREE.MeshBasicMaterial({visible:false}),S.length),M4=new THREE.Matrix4();
+  S.forEach((r,i)=>{M4.makeTranslation(r.x,(r.y||0)+Math.min(8,r.h/2),r.z);A.setMatrixAt(i,M4);});A.userData.host=true;A.userData.inspectLabel='site anchors';A.frustumCulled=false;scene.add(A);}}
  if(Q.has('nobake')){window._stats=JSON.parse(JSON.stringify(BIO.stats));window._instances=0;window._bakeCalls=0;return;}
  const b=BIO.bake();
  window._instances=b.inst;window._bakeCalls=b.calls;
  BIO.setA2C(renderer);{const G=TERR.R*1.1;BIO.setGround(TEX_GROUND,[-G,G,G,-G]);}   /* R7; R5: the floor's cover takes the ground's colour at its root */
- if(typeof GROUND_HZ!=='undefined'&&GROUND_HZ){try{window._horizon.mats=KHORIZON.shadeScene(scene,GROUND_HZ,{filter:m=>!m.userData.farField&&m!==MAT_GROUND});}catch(e){reportErr('horizon: '+e.stack);}}
+ if(typeof GROUND_HZ!=='undefined'&&GROUND_HZ){try{window._horizon.mats=KHORIZON.shadeScene(scene,GROUND_HZ,{filter:m=>!m.userData.farField&&!m.userData.cavern&&m!==MAT_GROUND});}catch(e){reportErr('horizon: '+e.stack);}}
  /* THE SUN'S SHADOWS (core/shadow, KSHADOW: toggleable and OFF by default; core's panel button or ?shadow=1 turns it on, ?shadow=0 none of it) */
  if(typeof KSHADOW!=='undefined'&&KSHADOW.attach&&SHADOW_Q!=='0'){try{window._shadow=KSHADOW.attach({renderer,scene,camera,sun,ground:terrainH});
   window._shadow.cast(scene);window._shadow.cast(GROUND,{cast:false});if(typeof FAR!=='undefined'&&FAR&&FAR.mesh)FAR.mesh.castShadow=FAR.mesh.receiveShadow=false;

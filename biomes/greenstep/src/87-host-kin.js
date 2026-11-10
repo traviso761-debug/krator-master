@@ -15,7 +15,7 @@ function growKin(){
  const S=KSPACE.create({cell:40});GSTEP.SPACE=S;
  const shore=(x,z)=>typeof WATER_FN!=='undefined'?WATER_FN.shore(x,z):9;
  const clear=(x,z,r)=>!S.some(x,z,r+8,o=>Math.hypot(x-o.x,z-o.z)<r+o.r)&&BIO.clearOf(x,z,r)&&BIO.mask(x,z)>.9&&terrainH(x,z)-waterH(x,z)>.5&&!(shore(x,z)<r);
- const R=TERR.R-150;BIO.cur='greenstep/kin';let heroes=0,fars=0;
+ const R=TERR.R-150,SITES=LAND.sites||(LAND.site?[LAND.site]:[]);BIO.cur='greenstep/kin';let heroes=0,fars=0;
  LAND.kin.forEach((row,ri)=>{const kit=row.ref.split('.')[0];if(!BIO.kits||!BIO.kits[kit]||!BIO.kits[kit].api){missing.push(row.ref);out[row.key]=0;return;}
   const dl={key:row.key,name:row.name,tags:Object.assign({greenstep:LAND.station||'',borrowed:true},row.tags||{})};if(row.scale!=null)dl.scale=row.scale;if(row.colour)dl.colour=row.colour;const K=BIO.kin(row.ref,dl);if(!K){missing.push(row.ref);out[row.key]=0;return;}
   const cell=row.cell==null?30:row.cell,N=Math.ceil(R/cell),salt=0x7e00+ri;let n=0;
@@ -25,7 +25,7 @@ function growKin(){
    /* the crown's reach, not only the bole's: no crown over the water (row.overWater, the share of crownR it may reach over: a willow's veils
       lean over the bank, an 80 m sprawl oak's do not dip in the river) and none over a settlement's site (LAND.site: the settlement build's) */
    const cr=T.crownR==null?3:T.crownR;if(shore(x,z)<cr*(row.overWater==null?.75:1-row.overWater))continue;
-   if(LAND.site){const s=LAND.site;if(Math.hypot(x-s.x,(z-s.z)*1.1)<s.r*1.3+cr)continue;}
+   if(SITES.some(s=>Math.hypot(x-s.x,(z-s.z)*(s.ez==null?1.1:s.ez))<s.r*1.3+cr))continue;   /* LAND.sites: a station may publish several (station 1's watch-towers) */
    BIO.owner=[x,z];
    if(near){BIO.range=LT;BIO.minRange=0;K.grow(T,2);BIO.range=1e9;BIO.minRange=LT;K.grow(Object.assign({},T),0);T.lv=2;heroes++;}
    else{BIO.range=1e9;BIO.minRange=0;K.grow(T,0);T.lv=0;fars++;}

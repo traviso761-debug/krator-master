@@ -25,12 +25,27 @@ function landBoulders(k,o){const cell=o.cell==null?20:o.cell,R=TERR.R-150,N=Math
    if(Math.abs(x)>R||Math.abs(z)>R||u(3)>k(x,z)*(o.dens==null?.7:o.dens))continue;if(waterH(x,z)>terrainH(x,z)-.2||BIO.mask(x,z)<=0)continue;
    const r=(o.r==null?1.2:o.r)*(.6+1.6*u(4)*u(4)),y=terrainH(x,z);BIO.put('boulder',[x,y+r*.15,z],new THREE.Quaternion().setFromEuler(new THREE.Euler(u(5),u(6)*6.28,u(7))),[r*(.9+.5*u(8)),r*.7,r],rt(o.tint==null?0x7a7672:o.tint),{label:o.label||'Fallen rock'});n++;}}
  finally{BIO.kit(pv);BIO.cur=c0;BIO.range=r0;BIO.minRange=m0;}return n;}
+// A REGION PAINTED ON core/mask (KMASK; the universal set): paint(ctx, P) fills the region on a KMASK canvas n x n over the page's square
+// [-R, R] (P(x, z) -> the pixel's [u, v]; P.poly(pts) and P.disc(x, z, r) fill in world metres), and the region is read back through KMASK's exact
+// distance transform, both ways, as a signed distance in metres (negative inside), so its edge is soft by distance, not by a canvas's anti-aliasing,
+// and the same in a page, a node test and Godot. Used for the Free Giants' paddy plots (the farm field) and a settlement's footprint (the site).
+//   -> sd(x, z) metres;  sd.hash: KMASK.hash of the canvas (the export's proof);  sd.n, sd.R
+function maskField(paint,o){o=o||{};const R=o.R==null?3000:o.R,n=o.n==null?512:o.n,cv=KMASK.canvas(n,n),g=cv.getContext('2d'),k=n/(2*R);
+ const P=(x,z)=>[(x+R)*k,(z+R)*k];
+ P.poly=pts=>{g.beginPath();pts.forEach((q,i)=>{const u=P(q[0],q[1]);if(i)g.lineTo(u[0],u[1]);else g.moveTo(u[0],u[1]);});g.closePath();g.fill();};
+ P.disc=(x,z,r)=>{const u=P(x,z);g.beginPath();g.arc(u[0],u[1],r*k,0,TAU);g.fill();};
+ g.fillStyle='#000000';g.fillRect(0,0,n,n);g.fillStyle='#ffffff';paint(g,P);
+ const Fo=KMASK.distance(cv),Fi=KMASK.distance({width:n,height:n,data:new Uint8Array(n*n)},{inside:(i,j)=>Fo.d2[j*n+i]>0});
+ const sd=(x,z)=>{const u=(x+R)*k,v=(z+R)*k;return(Fo.sample(u,v)-(Fi.empty?0:Fi.sample(u,v)))/k;};
+ sd.hash=KMASK.hash(cv);sd.n=n;sd.R=R;sd.empty=Fo.empty;return sd;}
 // THE STATION'S LAND. o:
 //   R (3000), ground(x,z) the whole dry ground (the station carves its own channels, plunge pools and risers into it)
 //   lakes [{name, kind: deep|glacial|algal|peat, level, poly [[x,z]], inside(x,z), colour}]; rivers [{pts [[x,z,y]] (the water's line and
 //          level, downstream), width, half(x,z), name, speed}]; falls [{name, lip, dir, drop, foot, plungeR}]
 //   tm(x,z,h) mean temperature (degC), wet(x,z,h), fog(x,z,h), barren(x,z,h), farm(x,z), rockAt(x,z,h,slope), snowAt(x,z,h,slope),
-//   strataK(x,z,h,slope), talus(x,z), strata (a KSTRATA stack), rock() -> KSTACKS bodies; spine [[x,z]]
+//   strataK(x,z,h,slope), talus(x,z), geo(x,z,h) (the ground's warmth, 0..1: the shield's KTHERM), strata (a KSTRATA stack), rock() -> KSTACKS
+//   bodies; spine [[x,z]]; hole(x,z) (where a cavern's opening takes the ground: KCAVERN's wells; 45 leaves the ground mesh open there);
+//   pools [{x, z, r, level}] (water a station draws itself, the shield's hot springs on core/water/geyser: in waterH, not in LAKES)
 function stepLand(o){
  const R=o.R==null?3000:o.R,LK=(o.lakes||[]).map((L,i)=>Object.assign({i,kind:'deep'},L)),RIVS=(o.rivers||[]).map(r=>Object.assign({},r,{P:r.pts.map(p=>[p[0],p[1]])}));
  const inPoly=(P,x,z)=>{let c=false;for(let i=0,j=P.length-1;i<P.length;j=i++){const a=P[i],b=P[j];if((a[1]>z)!==(b[1]>z)&&x<(b[0]-a[0])*(z-a[1])/(b[1]-a[1])+a[0])c=!c;}return c;};
@@ -39,15 +54,16 @@ function stepLand(o){
  function terrainH(x,z){if(x===_tm.x&&z===_tm.z)return _tm.h;const h=o.ground(x,z);_tm.x=x;_tm.z=z;_tm.h=h;return h;}
  /* a river's level where (x, z) is over it: the nearest point of each river's line within its half-width (river.half(x, z): where it narrows) */
  function riverAt(x,z){let w=null;for(const V of RIVS){const n=nearLine(V.P,x,z),hw=V.half?V.half(x,z):V.width*.5;if(n.d>hw*1.05)continue;const a=V.pts[n.i],b=V.pts[Math.min(V.pts.length-1,n.i+1)],y=mix(a[2],b[2],n.u);if(w==null||y>w)w=y;}return w;}
- function waterH(x,z){let w=-1e9;for(const L of LK)if(L.inside(x,z))w=Math.max(w,L.level);const r=riverAt(x,z);if(r!=null)w=Math.max(w,r);return w;}
+ const PO=o.pools||[];
+ function waterH(x,z){let w=-1e9;for(const L of LK)if(L.inside(x,z))w=Math.max(w,L.level);for(const q of PO)if(Math.hypot(x-q.x,z-q.z)<q.r)w=Math.max(w,q.level);const r=riverAt(x,z);if(r!=null)w=Math.max(w,r);return w;}
  const RIVERS_SPEC=RIVS.map(V=>({name:V.name||'The river',pts:V.pts,width:V.width==null?24:V.width,speed:V.speed==null?1.4:V.speed}));
  function fieldsAt(x,z,h,slope){const wd=waterH(x,z),under=wd>-1e8&&h<wd;
   const tm=o.tm(x,z,h),cold=coldOf(tm),fog=o.fog?clamp(o.fog(x,z,h),0,1):0;
   let wet=clamp(o.wet(x,z,h),0,1);for(const V of RIVS){const n=nearLine(V.P,x,z);wet=Math.max(wet,smooth(80,V.width*.5,n.d)*.9);}
   const barren=clamp(o.barren?o.barren(x,z,h):0,0,1),rk=o.rockAt?o.rockAt(x,z,h,slope):smooth(.45,.8,slope),tal=o.talus?o.talus(x,z)*smooth(.1,.3,slope):0;
-  const F={wet,flow:under?1:0,upland:clamp((h+500)/6000,0,1),canyon:0,rim:0,rock:clamp(Math.max(rk,tal*.6),0,1),dune:0,oasis:0,slope,abyss:0,salt:0,cold,geo:0,barren,
+  const F={wet,flow:under?1:0,upland:clamp((h+500)/6000,0,1),canyon:0,rim:0,rock:clamp(Math.max(rk,tal*.6),0,1),dune:0,oasis:0,slope,abyss:0,salt:0,cold,geo:o.geo?clamp(o.geo(x,z,h),0,1):0,barren,
    strata:o.strataK?o.strataK(x,z,h,slope):0,crack:0,snow:clamp(o.snowAt?o.snowAt(x,z,h,slope):0,0,1),pave:0,polyg:0,talus:tal,wash:0,char:0,
    fog,farm:o.farm?clamp(o.farm(x,z),0,1):0,ice:0,site:o.site?clamp(o.site(x,z),0,1):0};
   return F;}
  return{TERR:{R},terrainH,waterH,fieldsAt,LAKES:LK,RIVERS_SPEC,FALLS:o.falls||[],riverAt,
-  SPINE:o.spine||[[0,0]],STRATA:o.strata||BIO.strata({recipe:'tibasalt-ponded',seed:7101,range:[-500,6500],res:.5,private:true}),ROCK:o.rock?o.rock(o.ground):[]};}
+  hole:o.hole||null,SPINE:o.spine||[[0,0]],STRATA:o.strata||BIO.strata({recipe:'tibasalt-ponded',seed:7101,range:[-500,6500],res:.5,private:true}),ROCK:o.rock?o.rock(o.ground):[]};}

@@ -42,3 +42,26 @@ nearest-point search. The falls' notches are the channel cut through the riser t
   Terrace III ~.03-.05 and Terrace IV ~.16; riftrim's bands put the trumpets on Terrace IV and no frill anywhere.
 - **The ground's grain is decoded** (`pow(.., 2.2) * 1.26`): riftrim samples its detail map raw (its RAWTEX finding is baselined);
   a new file may not add one (`tools/check_source.py`).
+
+## The other five stations (2026-11-09, the second cloud session)
+
+- **Every riser is `KRELIEF.stair`** (station 3's own `stair()` stays, as it was GPU-verified): a station gives the stair its steps and buries
+  the stair's lowest step under its own lower plain (`max(plain, stair)`), so the plain carries its dish and its fall and the stair carries the
+  cliff, its lobes, its lava-fall tongues and a bench on each flow's top. The same `flowTops` step station 1's gorge walls (`KRELIEF.rille tops`).
+- **A floor that is set, not found.** `KRELIEF.rille` and `KRELIEF.tube` find their floor from the ground (the lowest across, less a depth,
+  never climbing). Station 1's gorge would then ramp down the scarp, and station 5's tube would lie flat on a flat bench; both overwrite the
+  record's `pts[i].y` before its first use (the records are plain data; the spatial index is keyed on x and z). Station 4 steps its tube's
+  floor 14 m the same way (the lava fall).
+- **A tube station's cavern is planned in the land** (44w: KCAVERN.create, the tubes as chains of short tubes, the shafts, the wells,
+  `C.build()`), because the ground (45) must know the openings before it is built. Two ways the cavern meets the ground: at a **skylight** the
+  ground's shader discards an exact circle (`STATION.SKYHOLES`: the shaft's radius where it meets the ground, less a half-metre lip) and the
+  cavern draws none of the ground; at a **portal** (and over a bridge) the ground mesh leaves out the cells whose centre is within the well's
+  radius plus half its rim (`STATION.hole`), and the cavern draws its own finer ground in exactly those cells (the same cell test in its
+  shader). The first try (the ground mesh cut round every opening, the cavern's ground pushed back by a polygon offset) showed a wide, flat,
+  untextured disc round the great skylight. 86-host-cavern.js meshes the cavern, merged into 160 m bins (a mesh a chunk was 774 draw calls).
+- **A bridge's deck grows; a mouth does not.** A well over a whole bridge (station 5) would keep the deck bare; `STATION.noRoot` asks the
+  cavern whether a void lies just under the ground (`C.voidSD`), so only the arch's mouths are kept clear.
+- **The shared layers** (45): a shared layer's weight joins its host's slot (normalised with the rest) and its share of the two (`aGS`) turns
+  the host's colour, in the KGROUND layer's tint, to the shared layer's colour times the host map's luminance over its mean. No sampler.
+- **Water a station draws itself** (station 6's springs, `WATER.spring`) goes to `stepLand`'s `pools`: in `waterH` (so the flora and the
+  checks see it) but not in `LAKES` (so 45 and 89w do not draw a second still over it).
