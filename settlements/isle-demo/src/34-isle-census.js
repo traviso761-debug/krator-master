@@ -21,6 +21,14 @@ ISLE.EXPECT = {
     districts: {},
     vessels: { civilian: ['islanderOruwa', 'islanderLakatoi'] }, origins: ['ringsea-islander'],
     wall: null, landing: 1, citizens: [1700, 2300]
+  },
+  /* Nephtos from the owner's drawing (30 PROG.Nephtos; the brief, 2026-11-09: about half Valapo's size, run by Tethys's
+     merchant family): its palazzo, temple and council hall at their markers, a landing for the Tethyan ships */
+  Nephtos: {
+    roles: { palazzo: 1, temple: 1, 'council hall': 1 },
+    districts: {},
+    vessels: { civilian: ['hykCorbita', 'hykPearl'] }, origins: ['hykkousoi'],
+    wall: null, landing: 1, citizens: [800, 1400]
   }
 };
 /* a dwelling's households by its declared types: a multi-family house three, a single house one, else none (the sim's

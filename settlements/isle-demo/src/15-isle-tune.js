@@ -33,7 +33,7 @@ ISLE.TUNE.sim = {
     Valapo: { id: 'valapo', name: 'Valapo', faction: 'islanders', prefix: 'v', carts: 20, inputs: { bread: { 'sweet-potato': 1 } } },
     /* Kautoa grows nothing inside its wall: its farms are the programme's farm ring beyond it (`ring`), its bread is taro */
     Kautoa: { id: 'kautoa', name: 'Kautoa', faction: 'islanders', prefix: 'k', carts: 40, inputs: { bread: { taro: 1 } } },
-    /* NEPHTOS (47k; the owner, 2026-11-09): the Hykkousoi port colony of Tethys on the forest island east, about half
+    /* NEPHTOS (47k; the owner, 2026-11-09): the Hykkousoi port colony of Tethys on the west coast of the forest island west (north-west of Valapo), about half
        Valapo's size, run by Tethys's merchant family; declared only where a page hands its plan in (ISLE.simDeclare
        opts.colonies: the open world). Its bread is taro; its carts are fewer than Valapo's */
     Nephtos: { id: 'nephtos', name: 'Nephtos', faction: 'hykkousoi', factionName: 'The Hykkousoi of Tethys', prefix: 'n',   /* its books in Tethyan drachmae (money.extra) */ carts: 12, inputs: { bread: { taro: 1 } },
@@ -88,7 +88,28 @@ ISLE.TUNE.sim = {
     'hyk-bakehouse': ['bakehouse', { WORK: 2.5, BUY: 3 }, { open: [5, 18], shop: 'bread' }], 'hyk-warehouse': ['warehouse', { WORK: 2.5 }],
     'hyk-fishdock': ['fishdock', { WORK: 2.5, BUY: 1 }, { out: true, wander: 6, shop: 'fish' }], 'hyk-shipyard': ['dockyard', { WORK: 1 }, { out: true, wander: 10 }],
     'hyk-potter': ['potter', { WORK: 2.5 }], 'hyk-weaver': ['weaver', { WORK: 2.5 }], 'hyk-smithy': ['smithy', { WORK: 2.5 }], 'hyk-healer': ['healer', { WORK: 2.5 }],
-    'hyk-school': ['school', { WORK: 2.5, STUDY: 60 }, { open: [6, 16] }], 'hyk-barracks': ['barracks', { WORK: 0 }, { mess: true, posts: 'beds' }], vern_tavern: ['tavern', { WORK: 2.5, EAT: 6, SOCIALIZE: 16, BUY: 6 }, { open: [10, 24], shop: 'meal' }],
+    'hyk-school': ['school', { WORK: 2.5, STUDY: 60 }, { open: [6, 16] }], 'hyk-barracks': ['barracks', { WORK: 0 }, { mess: true, posts: 'beds' }],
+    /* Nephtos from the owner's drawing (30 PROG.Nephtos): the Ys kit's free-standing Hykkousoi pieces (bundles.py HYKB) */
+    hyk_house_poor_1: ['home', {}, { cls: 'poor' }], hyk_house_poor_2: ['home', {}, { cls: 'poor' }], hyk_house_poor_3: ['home', {}, { cls: 'poor' }],
+    hyk_house_mid_1: ['home', {}, { cls: 'middle' }], hyk_house_mid_2: ['home', {}, { cls: 'middle' }], hyk_house_mid_3: ['home', {}, { cls: 'middle' }],
+    hyk_house_rich_1: ['home', {}, { cls: 'rich' }], hyk_house_rich_2: ['home', {}, { cls: 'rich' }], hyk_house_rich_3: ['residence', { WORK: 1, SOCIALIZE: 0.3 }, { cls: 'rich' }],
+    hyk_farmhouse_1: ['home', {}, { cls: 'poor' }], hyk_farmhouse_2: ['home', {}, { cls: 'poor' }],
+    hyk_shop_general: ['shop', { WORK: 3, BUY: 4 }, { open: [6, 21], shop: 'staples' }], hyk_shop_food: ['shop', { WORK: 3, BUY: 4 }, { open: [6, 21], shop: 'staples' }],
+    hyk_shop_chandler: ['shop', { WORK: 3, BUY: 4 }, { open: [6, 21], shop: 'staples' }], hyk_shop_salt: ['shop', { WORK: 3, BUY: 4 }, { open: [6, 21], shop: 'staples' }],
+    hyk_fishmonger: ['fishdock', { WORK: 2.5, BUY: 1 }, { out: true, wander: 6, shop: 'fish' }], hyk_shop_cloth: ['weaver', { WORK: 2.5 }], hyk_shop_potter: ['potter', { WORK: 2.5 }],
+    hyk_shop_pearl: ['workshop', { WORK: 2.5 }], hyk_shop_weapon: ['workshop', { WORK: 2.5 }], hyk_shop_armour: ['smithy', { WORK: 2.5 }], hyk_shop_alchemy: ['healer', { WORK: 2.5 }],
+    hyk_tavern_1: ['tavern', { WORK: 2.5, EAT: 6, SOCIALIZE: 16, BUY: 6 }, { open: [10, 24], shop: 'meal' }], hyk_inn: ['inn', { WORK: 2.5, EAT: 5, SOCIALIZE: 8 }, { open: [6, 23], shop: 'meal' }],
+    hyk_caravanserai: ['inn', { WORK: 2.5, EAT: 5, SOCIALIZE: 8 }, { open: [6, 23], shop: 'meal' }],
+    hyk_market_main: ['market', { WORK: 3, BUY: 5, SOCIALIZE: 12 }, { open: [6, 21], out: true, wander: 4, shop: 'market' }],
+    hyk_market_nbhd_1: ['market', { WORK: 3, BUY: 5, SOCIALIZE: 12 }, { open: [6, 21], out: true, wander: 4, shop: 'market' }],
+    hyk_market_nbhd_2: ['market', { WORK: 3, BUY: 5, SOCIALIZE: 12 }, { open: [6, 21], out: true, wander: 4, shop: 'market' }],
+    hyk_shrine_seagods: ['temple', { WORK: 2.5, WORSHIP: 8, STUDY: 10 }, { open: [5, 21] }], hyk_shrine_tides: ['temple', { WORK: 2.5, WORSHIP: 8 }, { open: [5, 21] }],
+    hyk_treasury: ['hall', { WORK: 2.5 }], hyk_navigators_guild: ['hall', { WORK: 2.5, SOCIALIZE: 8, STUDY: 10 }, { open: [7, 21] }], hyk_pearlmongers_guild: ['customs', { WORK: 2.5 }],
+    hyk_quay: ['quay', { WORK: 1.7 }, { out: true, wander: 6 }], hyk_pier: ['quay', { WORK: 1.7 }, { out: true, wander: 6 }], hyk_wet_landing: ['quay', { WORK: 1.7 }, { out: true, wander: 6 }],
+    hyk_boat_shed: ['canoeshed', { WORK: 2.5 }], hyk_aquaculture_pen: ['fishdock', { WORK: 2.5 }, { out: true, wander: 6 }],
+    hyk_warehouse_small: ['warehouse', { WORK: 2.5 }], hyk_warehouse_large: ['warehouse', { WORK: 2.5 }], hyk_warehouse_round: ['warehouse', { WORK: 2.5 }], hyk_granary: ['granary', { WORK: 1 }],
+    hyk_smithy_small: ['smithy', { WORK: 2.5 }], hyk_smithy_large: ['smithy', { WORK: 2.5 }], hyk_shipwright: ['dockyard', { WORK: 1 }, { out: true, wander: 10 }], hyk_windmill: ['mill', { WORK: 2 }],
+    hyk_barracks: ['watchtower', { WORK: 4 }], hyk_ballista: ['watchtower', { WORK: 2 }], hyk_muster: ['square', { WORK: 0.2, SOCIALIZE: 6 }, { out: true, wander: 15 }], vern_tavern: ['tavern', { WORK: 2.5, EAT: 6, SOCIALIZE: 16, BUY: 6 }, { open: [10, 24], shop: 'meal' }],
     vern_smithy: ['smithy', { WORK: 2.5 }], vern_workshop_a: ['workshop', { WORK: 2.5 }], vern_workshop_b: ['workshop', { WORK: 2.5 }]
   },
   /* the canoe stop (P7c): its dockers' posts per 100 m2 of the landing (the last number: its area, m2) */

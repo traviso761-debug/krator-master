@@ -22,14 +22,14 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `48f-world-found.js` | 6 |  |
 | `48k-world-camps.js` | 10 |  |
 | `48n-world-herders.js` | 2 |  |
-| `48p-world-colony.js` | 5 |  |
-| `48r-world-roads.js` | 11 |  |
+| `48p-world-colony.js` | 6 |  |
+| `48r-world-roads.js` | 12 |  |
 | `48t-world-towns.js` | 10 |  |
 | `48x-world-expeditions.js` | 10 |  |
 | `88a-world-atlas.js` | 10 |  |
 | `88c-world-life.js` | 15 |  |
 | `88h-world-hamlets.js` | 27 |  |
 | `88k-world-camps.js` | 12 |  |
-| `88p-world-colony.js` | 6 |  |
+| `88p-world-colony.js` | 7 |  |
 | `88t-world-towns.js` | 26 |  |
 | `89-world-geysers.js` | 6 |  |

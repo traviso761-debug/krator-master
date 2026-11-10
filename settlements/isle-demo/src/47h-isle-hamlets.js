@@ -457,12 +457,14 @@ ISLE.hamletChecks = function (a, b) {
      (over a run of a day or more), nothing lost between its quay and the stop */
   var coast = ids.filter(function (id) { return b.villages[id].sea; });
   if (coast.length) {
-    var legs = coast.map(function (id) { var X = b.villages[id], A = a.villages[id], sh = 0, la = 0, sea = 0;
+    /* what was at sea when the window opened lands in it too (2026-11-09: Nephtos's farm hamlet's loads): sent + at sea then = landed + at sea now */
+    var legs = coast.map(function (id) { var X = b.villages[id], A = a.villages[id], sh = 0, la = 0, sea = 0, sea0 = 0;
       Object.keys(X.sea.shipped).forEach(function (g) { sh += X.sea.shipped[g] - ((A.sea && A.sea.shipped[g]) || 0); la += (X.sea.landed[g] || 0) - ((A.sea && A.sea.landed[g]) || 0); sea += X.sea.atSea[g] || 0; });
-      return { id: id, km: X.sea.km, sh: sh, la: la, sea: sea }; });
+      if (A && A.sea && A.sea.atSea) Object.keys(A.sea.atSea).forEach(function (g) { sea0 += A.sea.atSea[g] || 0; });
+      return { id: id, km: X.sea.km, sh: sh, la: la, sea: sea, sea0: sea0 }; });
     var longRun = (b.minute - a.minute) >= 1440;
-    ok('each coastal village\'s sea leg carries its goods to its town\'s canoe stop' + (longRun ? '' : ' (a short run: a load at sea counts)'), legs.every(function (L) { return (L.la > 0 || (!longRun && L.sea > 0)) && L.sh === L.la + L.sea; }),
-      legs.map(function (L) { return L.id + ' ' + L.km + ' km by sea: ' + L.sh + ' sent, ' + L.la + ' landed, ' + L.sea + ' at sea'; }).join('; '));
+    ok('each coastal village\'s sea leg carries its goods to its town\'s canoe stop' + (longRun ? '' : ' (a short run: a load at sea counts)'), legs.every(function (L) { return (L.la > 0 || (!longRun && L.sea > 0)) && L.sh + L.sea0 === L.la + L.sea; }),
+      legs.map(function (L) { return L.id + ' ' + L.km + ' km by sea: ' + L.sh + ' sent' + (L.sea0 ? ' and ' + L.sea0 + ' at sea before' : '') + ', ' + L.la + ' landed, ' + L.sea + ' at sea'; }).join('; '));
   }
   /* Phase 1: each village works the record the map gave it, its grade setting the yield, its take what its books made;
      nothing past its stockpile ceiling by more than a load already on its way */

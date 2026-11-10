@@ -1214,9 +1214,12 @@ settlements; their off map commerce will be abstracted for now."
   outer rings; every lot on dry ground. 1,065 people in 213 households (Valapo: 2,095). The buildings are stand-ins
   (`ISLE.COLONY_DIMS`, each carrying its Islander counterpart's census trade): the Ys kit's Hykkousoi buildings
   (`settlements/ys`) are a 2 MB engine of their own, not bundled into the world for a placeholder.
-- **On the world** (`openworld/isle-demo` `48p`, `88p`): sited on the forest island east's north-west coast, facing the
-  Hykkousoi homeland: the survey's pick (81.5, -90.5 km) and round it the beach with the open sea off it and the most dry,
-  gentle ground behind it (it stands at 81.5, -96.1 km, 86 % of its ground dry). Drawn as white-limed walls under sea-green
+- **On the world** (`openworld/isle-demo` `48p`, `88p`): on the west coast of the forest island west, the island north-west
+  of Valapo (the owner, 2026-11-09: "that's in the wrong place, i wanted it on the island NW of valapo", its west coast;
+  first built on the forest island east, my misreading of the survey's names): the survey's pick (-56.5, 20.1 km) and round
+  it, within 9 km, the beach with the open sea off it and the most dry, gentle ground behind it (it stands at -54.2,
+  15.2 km, its beach facing north-west, 82 % of its ground dry). Valapo's clove plantation is on the same island's
+  south-east corner, 33 km away; its six villages all stand on the island. Drawn as white-limed walls under sea-green
   roofs, the civic four domed, streets of pale stone, a stone quay with the Ring Sea kit's Hykkousoi corbita and pearl ship
   at its berths. Its ground is kept from the flora and the villages; its spokes are road heads (the bake routes its
   villages to them).
@@ -1250,3 +1253,37 @@ settlements; their off map commerce will be abstracted for now."
   water doors a Hykkousoi town would have); its people seen walking its streets (not yet
   looked at: its nav is the placeholder's); the Tethyan ships drawn coming and going (they are moored at the quay); the hulls sailing away; the
   colony's trade with the Islander towns (a line of its own); the merchant family as people of the house; Trigon's fleet.
+
+### 15a. The real Hykkousoi buildings, and Nephtos from the owner's drawing (2026-11-09)
+
+**The owner:** "i'm home so i can do a real layout. can we get real hykkousoi buildings in there? we don't need all the
+barnacle skyscrapers Ys does".
+
+- **The bundle** (`bundles.py` `HYKB`, read in place from `settlements/ys/src`, sealed like the Iziz Vernacular's IZV): the
+  Ancients core, the Hykkousoi materials, shell kit, helpers and furniture, and the 63 free-standing pieces (houses, shops,
+  taverns and inn, the two shrines, markets, the treasury and guilds, harbour pieces, warehouses, smithies, shipwright,
+  windmill, barracks, farm pieces, spans); NOT the Scallop Stack hosts and their grown-on pods, the Ys landmarks (the
+  Amphitriton, the citadel, the arena, the temples of the Tides and the Winds), the Ys port, towers, ruins or offices.
+  `HYKB.proto(key)` builds a piece once on flat ground, its shells flushed into it (exterior skins only), its kit items
+  baked; `58-isle-protos.js` knows the kit `hyk`. The world takes it and Ys's texture pack (the Hykkousoi families and the
+  plain ones, 18 MB beside the page, as Iziz's 21 MB). The boat shed's moored skiffs are the Ys port's: none drawn.
+  The pieces' boxes join `ISLE_DIMS` (build.py, kit `hyk`, Ys's type words as the vocabulary's).
+- **The site planner** has Nephtos as a third town (`?town=Nephtos`; its frame at the colony's site; `serve.py` saves it
+  into `site/isle-site.json` under `towns.Nephtos`).
+- **The programme** (`30` `ISLE.PROG.Nephtos`): laid out as Valapo is, every lot a Hykkousoi piece. The names it reads:
+  markers AGORA (the centre), PALAZZO, TEMPLE, COUNCIL HALL, CUSTOMS HOUSE, SHIPYARD, BARRACKS, GRANARY, WINDMILL, INN;
+  districts `harbor` / `harbor 2` (the quay, piers, wet landing and sheds on the shore, warehouses, guilds and the
+  shipwright inland), `Market 1` / `Market 2`, `Funerary 1`; parks and plazas by core/city's roles. Every Hykkousoi house
+  is one household (the kit's multi-family homes are the stacks' pods), so the colony is a town of small houses.
+  `34` `ISLE.EXPECT.Nephtos`: about half Valapo's people, a landing, the palazzo, temple and council hall.
+- **The world** plans Nephtos with the towns when the site file has a drawing (48t), draws it with them (88t), and the
+  colony's record follows that plan (48p `drawn`: the placeholder steps aside); the sim declares it with the towns
+  (`simDeclare` sorts a non-Islander town after them). Without a drawing the placeholder radial plan stands, as before.
+- **The road bake** (48r) routes a road again to the next network point, or from another lane end, when it comes out
+  steeper than the grade or finds no route (the island's highland: a plantation lane ending at a 57 m drop).
+- **Checked:** tests/test-isle-nephtos-plan.js plans a TEST drawing (`tests/fixtures/nephtos-test-site.json`, not the
+  owner's) with the programme: no box missing, every lot Hykkousoi, the markers' landmarks, the harbour and its landing,
+  declared, housed, staffed, fed; on the world the same drawing built 373 lots for 1,480 people (looked at, not committed).
+- **Not yet:** the pale plinths and kerbs the town drawing lays under lots (the Islanders' look) and the towns' far level
+  of detail, which draws a cone-roofed box per lot (it reads as a tent); the Hykkousoi canals, drowned streets and water
+  doors; the triangles (a piece up to 130k; the towns' distance levels carry it).

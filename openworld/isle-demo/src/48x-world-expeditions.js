@@ -20,8 +20,9 @@ const ISLANDS={
          {name:'the islet north-east',pts:[[62000,-82500]]}],
  Valapo:[{name:'the forest island west',pts:[[-24400,33084],[-26500,30000],[-22500,36500],[-29000,27000]]},   /* 1,234 km2, 93 % forest, half rainforest */
          {name:'the jungle island far west',pts:[[-59970,48948],[-61500,45000]]}],   /* 599 km2, 99 % forest, 60 % hypertropic */
- /* Nephtos's pearl ships (48p, settlements/isle-demo 47k `pearl`: a reef's shore): the islet north-east and its own island's west coast */
- Nephtos:[{name:'the forest island east',pts:[[78000,-99000],[75563,-69723],[66513,-76749],[64500,-65000]]},{name:'the islet north-east',pts:[[62000,-82500]]}]};   /* its own coast first */
+ /* Nephtos's pearl ships (48p, settlements/isle-demo 47k `pearl`: a reef's shore): its own island's west coast first, then the
+    jungle island far west (2026-11-09: the colony on the forest island west's west coast) */
+ Nephtos:[{name:'the forest island west',pts:[[-55051,30839],[-54484,15325],[-51414,11539],[-59314,26248]]},{name:'the jungle island far west',pts:[[-61500,45000],[-59970,48948]]}]};
 const FOREST_MIN=.5,FOREST_R=1500,APART=3000,INLAND=150;
 const shores={},pitchL=[],strikeL=[];
 const H=(x,z)=>WORLD.H(x,z),HL=(x,z)=>WORLD.Hland?WORLD.Hland(x,z):WORLD.H(x,z),wet=(x,z)=>WORLD.water(x,z)>HL(x,z)-1.2;

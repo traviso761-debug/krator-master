@@ -182,3 +182,62 @@ ISLE.PROG.Valapo = {
     { kind: 'farms', note: 'the farms beyond the village (8b, 8c: coffee upland, sugar cane, cotton); the city page\'s food stand-in since 2026-11-09 (15 `farms`), kept within a track of the streets', ring: [200, 1200], count: 25 }
   ]
 };
+
+/* NEPHTOS (PLAN.md section 15; the owner, 2026-11-09: "i'm home so i can do a real layout. can we get real hykkousoi
+   buildings in there? we don't need all the barnacle skyscrapers Ys does"): the Hykkousoi colony of Tethys, from the
+   owner's drawing in the site planner (towns.Nephtos), in the Ys kit's free-standing pieces (bundles.py HYKB; keys hyk_*,
+   their boxes ISLE_DIMS). Laid out as Valapo is: no build area needed (the drawing's outline grown by zonePad, unless a
+   'build area' is drawn), the town growing from its AGORA marker (else the drawing's middle); every Hykkousoi house is a
+   single household (the kit's multi-family homes are the Ys stacks' grown pods, not taken), so the colony is a town of
+   small houses. The owner's names it reads:
+     markers  AGORA (the centre), PALAZZO (the merchant family's house), TEMPLE, COUNCIL HALL, CUSTOMS HOUSE, SHIPYARD,
+              BARRACKS, GRANARY, WINDMILL, INN; a marker not drawn is skipped
+     districts 'harbor' (and 'harbor 2'): the quay, piers, wet landing and sheds on its shore, the warehouses, guilds and
+              the shipwright inland; 'Market 1', 'Market 2': the main and the neighbourhood markets with shops round them;
+              'Funerary 1': the shrine of the tides; parks, plazas and the rest by core/city's roles */
+ISLE.PROG.Nephtos = {
+  cell: 2.5, half: 4400, gridCell: 5, wall: false, maxSlope: 0.34, maxDrop: 8,
+  zoneFrom: 'drawing', zonePad: 260, centreMarker: 'AGORA', reach: 700,
+  addDistricts: [],
+  grow: { R: 240, hug: 60 },
+  dens: { harbour: 0.9, res: [0.95, 0.72] },
+  lot: { side: 5, setback: 2.5, rear: 6, inset: 1.0, step: 3 },
+  classes: {
+    poor: [['hyk_house_poor_1', 0], ['hyk_house_poor_2', 0], ['hyk_house_poor_3', 0]],
+    middle: [['hyk_house_mid_1', 0], ['hyk_house_mid_2', 0], ['hyk_house_mid_3', 0]],
+    rich: [['hyk_house_rich_1', 0], ['hyk_house_rich_2', 0]], manor: [['hyk_house_rich_3', 0]],
+    shop: [['hyk_shop_general', 0], ['hyk_shop_food', 0], ['hyk_shop_chandler', 0], ['hyk_shop_cloth', 0], ['hyk_shop_potter', 0], ['hyk_shop_salt', 0], ['hyk_fishmonger', 0]],   /* the specialists at the markets */
+    tavern: [['hyk_tavern_1', 0], ['hyk_inn', 0]],
+    industrial: [['hyk_warehouse_small', 0], ['hyk_warehouse_large', 0], ['hyk_granary', 0], ['hyk_smithy_small', 0]],
+    works: [['hyk_smithy_large', 0], ['hyk_smithy_small', 0], ['hyk_shipwright', 0], ['hyk_warehouse_round', 0]],
+    farm: [['hyk_farmhouse_1', 0], ['hyk_farmhouse_2', 0], ['hyk_granary', 0]],
+    military: [['hyk_barracks', 0], ['hyk_ballista', 0]]
+  },
+  tune: { voidMax: 45, voidIters: 18, sideSpacing: 50, interiorDepth: 9, interiorRounds: 2 },
+  aligned: [],
+  fixed: [
+    { marker: 'PALAZZO', keys: ['hyk_house_rich_3', 'hyk_treasury'], role: 'palazzo', name: 'The palazzo of the house of Pherekles', spread: 26 },
+    { marker: 'TEMPLE', keys: ['hyk_shrine_seagods'], role: 'temple', name: 'Shrine of the Sea-gods' },
+    { marker: 'COUNCIL HALL', keys: ['hyk_navigators_guild'], role: 'council hall', name: "The colony's council hall" },
+    { marker: 'CUSTOMS HOUSE', keys: ['hyk_pearlmongers_guild'], role: 'customs', name: 'Customs and the Pearlmongers' },
+    { marker: 'SHIPYARD', keys: ['hyk_shipwright', 'hyk_boat_shed'], role: 'shipyard', name: 'The shipyard', spread: 30 },
+    { marker: 'BARRACKS', keys: ['hyk_barracks', 'hyk_muster'], role: 'barracks', name: "The marines' barracks", spread: 40 },
+    { marker: 'GRANARY', keys: ['hyk_granary', 'hyk_warehouse_round'], role: 'granary', spread: 25 },
+    { marker: 'WINDMILL', keys: ['hyk_windmill'], role: 'windmill' },
+    { marker: 'INN', keys: ['hyk_inn', 'hyk_caravanserai'], role: 'inn', spread: 35 },
+    { district: 'Funerary 1', keys: ['hyk_shrine_tides'], role: 'shrine' }
+  ],
+  markets: { 'Market 1': { keys: ['hyk_market_main', 'hyk_shop_pearl', 'hyk_shop_alchemy', 'hyk_shop_armour', 'hyk_shop_weapon', 'hyk_shop_salt', 'hyk_tavern_1'], gap: 8 },
+    'Market 2': { keys: ['hyk_market_nbhd_1', 'hyk_market_nbhd_2', 'hyk_fishmonger', 'hyk_shop_food'], gap: 8 } },
+  rings: [], routes: [], gates: [],
+  civic: [{ key: 'hyk_shop_alchemy', near: 'res' }, { key: 'hyk_granary', near: 'res' }, { key: 'hyk_smithy_small', near: 'res' }],
+  harbours: [
+    { district: 'harbor', shore: ['hyk_quay', 'hyk_pier', 'hyk_wet_landing', 'hyk_boat_shed', 'hyk_pier'],
+      inland: [['hyk_warehouse_large', 'warehouse'], ['hyk_warehouse_large', 'warehouse'], ['hyk_pearlmongers_guild', 'pearlmongers'], ['hyk_shipwright', 'shipwright']],
+      vessels: [['hykCorbita', 2], ['hykPearl', 2], ['hykGalley', 1], ['islanderLakatoi', 2]], use: 'civilian', landing: true },
+    { district: 'harbor 2', shore: ['hyk_wet_landing', 'hyk_aquaculture_pen', 'hyk_pier'],
+      inland: [['hyk_warehouse_small', 'warehouse'], ['hyk_fishmonger', 'fish market']],
+      vessels: [['hykPearl', 2], ['islanderOruwa', 2]], use: 'civilian' }
+  ],
+  beyond: []
+};

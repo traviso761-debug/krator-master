@@ -69,9 +69,9 @@ const SPECS=[
     on its staples, its plantations (clove, cacao, indigo, annatto, tobacco), a fishing village on the nearest coast with a
     sea leg, a lumber village in the island's forest (apart from Kautoa's) and the copper mine on the high ground inland
     (`rel`: the survey patch's point from the colony's centre, metres east and south) */
- {id:'hamlet-farm-n1',name:'Nephtos farming hamlet 1',focus:'farming',parent:'Nephtos',crops:'staples',share:1/2},
- {id:'hamlet-farm-n2',name:'Nephtos farming hamlet 2',focus:'farming',parent:'Nephtos',crops:'staples',share:1/2},
- {id:'hamlet-plant-n',name:'Nephtos plantations',focus:'farming',parent:'Nephtos',crops:'cash',plantation:true,hands:90},
+ {id:'hamlet-farm-n1',name:'Nephtos farming hamlet 1',focus:'farming',parent:'Nephtos',crops:'staples',share:1/2,maxRise:250},   /* maxRise: the lowland by the colony, */
+ {id:'hamlet-farm-n2',name:'Nephtos farming hamlet 2',focus:'farming',parent:'Nephtos',crops:'staples',share:1/2,maxRise:250},   /* not the island's highland plateau a road */
+ {id:'hamlet-plant-n',name:'Nephtos plantations',focus:'farming',parent:'Nephtos',crops:'cash',plantation:true,hands:90,maxRise:250},   /* cannot climb to (2026-11-09) */
  {id:'hamlet-fish-n',name:'Nephtos fishing village',focus:'fishing',parent:'Nephtos',rel:[0,0],look:9000},
  {id:'hamlet-lumber-n',name:'Nephtos lumber village',focus:'lumber',parent:'Nephtos',rel:[9000,9000],look:12000,apart:2500},
  {id:'hamlet-copper-n',name:'Nephtos copper mine',focus:'mine',parent:'Nephtos',rel:[14000,8000],look:6000,metal:'copper',grade:'medium',apart:2500}];
@@ -85,6 +85,10 @@ const H=(x,z)=>WORLD.Hland?WORLD.Hland(x,z):WORLD.H(x,z),wet=(x,z)=>WORLD.water(
 const slope=(x,z)=>Math.max(Math.abs(H(x+4,z)-H(x-4,z)),Math.abs(H(x,z+4)-H(x,z-4)))/8;
 const G=(x,z)=>RINGISLES.gather(x,z),Z=(x,z)=>RINGISLES.zones(x,z);
 const colonyAt=(x,z)=>typeof ISLE_COLONY!=='undefined'&&ISLE_COLONY.inside(x,z);   /* Nephtos's ground (48p) */
+/* a fishing village on the shore reads the sea's level only (WORLD.lakeWater, from the raster): WORLD.water samples the ground,
+   which the baked roads reshape, so the bake (no roads) and the page (roads) laid it 11 m apart (2026-11-09, Nephtos's) */
+const wetSea=(x,z)=>WORLD.lakeWater(x,z)>H(x,z)-DRY;
+function groundOkSea(x,z){if(wetSea(x,z)||slope(x,z)>SLOPE)return false;const z0=Z(x,z);if(z0.cliff>.3||z0.pan>.3||z0.mangal>.3)return false;return !WORLD.townW(x,z)&&!colonyAt(x,z);}
 function groundOk(x,z){if(wet(x,z)||slope(x,z)>SLOPE)return false;const z0=Z(x,z);if(z0.cliff>.3||z0.pan>.3||z0.mangal>.3)return false;return !WORLD.townW(x,z)&&!colonyAt(x,z);}
 const parentOf=n=>{const s=WORLD_DATA.meta.settlements.find(q=>q.name===n);if(s)return[s.x,s.z];const C=typeof ISLE_COLONY!=='undefined'?ISLE_COLONY.made:null;return C&&!C.error&&C.town===n?C.centre.slice():null;};
 /* the colony's centre as one more place a village keeps FARM.apart from (48p) */
@@ -113,7 +117,7 @@ function farmSite(sp,P,out,crops){const half=typeof ISLE!=='undefined'&&ISLE.PRO
  const taken=out.villages.filter(V=>V.village&&V.village.site).map(V=>V.village.site).concat(out.resources.filter(r=>r.x!=null).map(r=>({x:r.x,z:r.z}))).concat(colonyTaken());
  let best=null;
  for(let j=-n;j<=n;j++)for(let i=-n;i<=n;i++){const x=P[0]+i*FARM.cell,z=P[1]+j*FARM.cell,d=Math.hypot(i*FARM.cell,j*FARM.cell);if(d<r0||d>FARM.rMax||!WORLD.inside(x,z))continue;
-  if(taken.some(t=>Math.hypot(t.x-x,t.z-z)<FARM.apart))continue;const fit=farmFit(x,z,crops);if(fit<FARM.minFit)continue;const score=fit-.5*d/FARM.rMax;
+  if(taken.some(t=>Math.hypot(t.x-x,t.z-z)<FARM.apart))continue;if(sp.maxRise!=null&&H(x,z)-H(P[0],P[1])>sp.maxRise)continue;const fit=farmFit(x,z,crops);if(fit<FARM.minFit)continue;const score=fit-.5*d/FARM.rMax;
   if(!best||score>best.score+1e-9)best={x,z,d,fit,score};}
  return best;}
 
@@ -128,13 +132,14 @@ function islandSite(sp,out,crops,berth){const n=Math.ceil(sp.look/FARM.cell),C=[
  let k=0;for(const c of C){if(!nearSea(c.x,c.z))continue;if(++k>8)break;const sh=shoreOf({x:c.x,z:c.z},berth);if(sh&&sh.path)return c;}   /* the sea route tried on the first eight coastal cells */
  return null;}
 /* the sea within SHORE_R of a point: a quick look along eight bearings (the siting of a lumber village) */
-function nearSea(x,z){for(let a=0;a<8;a++){const ux=Math.cos(a*Math.PI/4),uz=Math.sin(a*Math.PI/4);for(let r=150;r<=SHORE_R;r+=150){const px=x+ux*r,pz=z+uz*r;if(WORLD.water(px,pz)>H(px,pz)-.4&&WORLD.water(px+ux*200,pz+uz*200)>H(px+ux*200,pz+uz*200)+1)return true;}}return false;}
+/* the sea by its level only (WORLD.lakeWater): WORLD.water samples the ground the baked roads reshape (2026-11-09) */
+function nearSea(x,z){for(let a=0;a<8;a++){const ux=Math.cos(a*Math.PI/4),uz=Math.sin(a*Math.PI/4);for(let r=150;r<=SHORE_R;r+=150){const px=x+ux*r,pz=z+uz*r;if(WORLD.lakeWater(px,pz)>H(px,pz)-.4&&WORLD.lakeWater(px+ux*200,pz+uz*200)>H(px+ux*200,pz+uz*200)+1)return true;}}return false;}
 /* the shore nearest a village's site (above): -> {x, z (the beach, the last dry point), ux, uz (seaward), d, path} or null */
 function shoreOf(site,berth){const C=[];
  for(let a=0;a<360;a+=10){const ux=Math.cos(a*Math.PI/180),uz=Math.sin(a*Math.PI/180);let last=null;
   for(let r=40;r<=SHORE_R;r+=SHORE_STEP){const x=site.x+ux*r,z=site.z+uz*r;
-   if(WORLD.water(x,z)>H(x,z)-.4){/* water: the sea when it goes on a metre deep 200 m further; a tidal flat or a pool is marched across */
-    if(last&&WORLD.water(x+ux*200,z+uz*200)>H(x+ux*200,z+uz*200)+1){C.push({x:last[0],z:last[1],ux,uz,d:r});break;}continue;}
+   if(WORLD.lakeWater(x,z)>H(x,z)-.4){/* water: the sea when it goes on a metre deep 200 m further; a tidal flat or a pool is marched across */
+    if(last&&WORLD.lakeWater(x+ux*200,z+uz*200)>H(x+ux*200,z+uz*200)+1){C.push({x:last[0],z:last[1],ux,uz,d:r});break;}continue;}
    last=[x,z];}}
  C.sort((p,q)=>p.d-q.d||p.ux-q.ux||p.uz-q.uz);
  for(const c of C.slice(0,8)){if(!berth)return c;const P=ISLE_TOWNS_W.seaPath([c.x+c.ux*40,c.z+c.uz*40],[berth.x,berth.z]);if(P&&P.ok){c.path=P;return c;}}
@@ -180,7 +185,7 @@ function make(dims,opt){opt=opt||{};const out={villages:[],resources:[],errors:[
       route to the town's landing; its grounds the water FISH_OUT m off its beach */
    const C0=typeof ISLE_COLONY!=='undefined'&&ISLE_COLONY.made&&!ISLE_COLONY.made.error&&ISLE_COLONY.made.town===sp.parent?ISLE_COLONY.made:null;
    const half0=C0?C0.reach:typeof ISLE!=='undefined'&&ISLE.PROG&&ISLE.PROG[sp.parent]?ISLE.PROG[sp.parent].half:4400,r0=half0+FARM.rMin,taken=out.villages.filter(V=>V.village&&V.village.site).map(V=>V.village.site).concat(colonyTaken());
-   const L=cells(sp,(x,z)=>{const d=Math.hypot(x-P[0],z-P[1]);if(d<r0||!WORLD.inside(x,z)||wet(x,z)||WORLD.townW(x,z)||colonyAt(x,z)||slope(x,z)>SLOPE)return 0;if(taken.some(t=>Math.hypot(t.x-x,t.z-z)<FARM.apart))return 0;return nearSea(x,z)?d:0;}).sort((a,b)=>a.v-b.v);
+   const L=cells(sp,(x,z)=>{const d=Math.hypot(x-P[0],z-P[1]);if(d<r0||!WORLD.inside(x,z)||wetSea(x,z)||WORLD.townW(x,z)||colonyAt(x,z)||slope(x,z)>SLOPE)return 0;if(taken.some(t=>Math.hypot(t.x-x,t.z-z)<FARM.apart))return 0;return nearSea(x,z)?d:0;}).sort((a,b)=>a.v-b.v);
    const berth=opt.berths&&opt.berths[sp.parent]||null;let sh=null,seed=null;for(const c of L.slice(0,12)){sh=shoreOf({x:c.x,z:c.z},berth);if(sh&&(!berth||sh.path)){seed=c;break;}}
    if(!seed){out.errors.push(sp.id+': no coast with a sea route to '+sp.parent+' within '+sp.look+' m');continue;}
    res={id:sp.id+':grounds',kind:'fishery',grade:'medium',x:Math.round(sh.x+sh.ux*FISH_OUT),z:Math.round(sh.z+sh.uz*FISH_OUT),key:null,node:true};start=[sh.x-sh.ux*150,sh.z-sh.uz*150];shoreSite=true;}
@@ -202,7 +207,7 @@ function make(dims,opt){opt=opt||{};const out={villages:[],resources:[],errors:[
   const site={x:start[0]+ux*off,z:start[1]+uz*off},rp=res?{x:res.x,z:res.z}:{x:start[0]-ux*FARM.off,z:start[1]-uz*FARM.off};
   const berth=opt.berths&&opt.berths[sp.parent]||null,vspec={id:sp.id,world:opt.world==null?4242:opt.world,culture:'islander_east',focus:sp.focus,site,
    link:{x:site.x+ux*400,z:site.z+uz*400},resource:{x:rp.x,z:rp.z,workers:workers==null?undefined:workers},dims,
-   ground:{ok:groundOk},siteReach:sp.focus==='mine'||sp.focus==='quarry'||sp.focus==='clay'?300:900,worksOut:farmCrops?['ie-farm']:undefined,   /* the farmsteads stand on their holdings (core/hamlet 14) */
+   ground:{ok:sp.focus==='fishing'?groundOkSea:groundOk},siteReach:sp.focus==='mine'||sp.focus==='quarry'||sp.focus==='clay'?300:900,worksOut:farmCrops?['ie-farm']:undefined,   /* the farmsteads stand on their holdings (core/hamlet 14) */
    vacant:typeof ISLE!=='undefined'&&ISLE.TUNE&&ISLE.TUNE.sim.hamlets.grow?ISLE.TUNE.sim.hamlets.grow.vacant:0};   /* the empty plots the village grows by (step 5) */
   /* the coast: the shore from the site the village settles on (laid again when siteFor moved it) */
   let ld=shoreOf(site,berth);if(ld)vspec.landing=ld;

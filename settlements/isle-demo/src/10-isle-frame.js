@@ -16,7 +16,7 @@ var ISLE = { TOWNS: ['Kautoa', 'Valapo'], F: null };
    the towns the pages plan from the site file) */
 ISLE.PLAN_TOWNS = ['Kautoa', 'Valapo', 'Nephtos'];
 /* settlements the region does not hold: Nephtos at the placeholder's agora (openworld/isle-demo 48p's site, 2026-11-09) */
-ISLE.EXTRA_SETTLEMENTS = [{ name: 'Nephtos', x: 81623, z: -96180 }];
+ISLE.EXTRA_SETTLEMENTS = [{ name: 'Nephtos', x: -54204, z: 15203 }];   /* the west coast of the forest island west, north-west of Valapo (the owner, 2026-11-09) */
 ISLE.settlement = function (name) { return WORLD_DATA.meta.settlements.concat(ISLE.EXTRA_SETTLEMENTS).filter(function (s) { return s.name === name; })[0] || null; };
 /* the water's level nearest (x, z): rings out from the point until one meets water (the Ring Sea is one level) */
 ISLE.seaNear = function (x, z) {

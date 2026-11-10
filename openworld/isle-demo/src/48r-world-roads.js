@@ -51,15 +51,15 @@ function grounds(V){const GROUND=[],FARMS=[];
  return{GROUND,FARMS};}
 /* one village joined to its town's network N (the heads and the stations so far): the lane end and the network point
    nearest each other, the approach, the routed line; the record, or {error} */
-const LOOP=15,LOOP_GRADE=.08;
-function joinOne(v, town, N, G){const nearFarm=(x,z,pad)=>G.FARMS.some(f=>Math.hypot(f.x-x,f.z-z)<f.r+(pad||0)),id=v.id;
+const LOOP=15,LOOP_GRADE=.08,RETRY=8;
+function joinOne(v, town, N, G, skip){const nearFarm=(x,z,pad)=>G.FARMS.some(f=>Math.hypot(f.x-x,f.z-z)<f.r+(pad||0)),id=v.id;
  if(!N||!N.length)return{error:id+': no road head for '+town};
- let best=null;for(const q of N){if(q.name.indexOf('junction:')===0&&nearFarm(q.x,q.z,JUNCTION_OFF))continue;for(const x of exits(v)){const d=Math.hypot(q.x-x.x,q.z-x.z);if(!best||d<best.d)best={d,q,x};}}
+ let best=null;const XS=exits(v);for(const q of N){if(skip&&skip.indexOf(q.name)>=0)continue;if(q.name.indexOf('junction:')===0&&nearFarm(q.x,q.z,JUNCTION_OFF))continue;XS.forEach((x,xi)=>{if(skip&&skip.indexOf('exit:'+xi)>=0)return;const d=Math.hypot(q.x-x.x,q.z-x.z);if(!best||d<best.d)best={d,q,x,xi};});}
  if(!best)return{error:id+': no network point clear of the farmhouses'};
  const X=best.x,a0={x:X.x,z:X.z},a1={x:X.x+X.ux*APPROACH,z:X.z+X.uz*APPROACH},tgt={x:best.q.x,z:best.q.z};
  const avoid=(x,z)=>nearFarm(x,z)||(Math.hypot(a1.x-x,a1.z-z)>=260&&Math.hypot(tgt.x-x,tgt.z-z)>=160&&G.GROUND.some(g=>Math.hypot(g.x-x,g.z-z)<g.r));   /* open round the road's own ends */
  const r=ROADS.route({name:id,x:a1.x,z:a1.z,r:END_R},{name:best.q.name,x:tgt.x,z:tgt.z,r:best.q.r},{avoid});
- if(r.error)return{error:id+' - '+best.q.name+': '+r.error};
+ if(r.error)return{error:id+' - '+best.q.name+': '+r.error,to:best.q.name,xi:best.xi};
  /* the exact ends: the lane end, the approach's far point, the routed line, the network point; the far end's height is the
     network's there (a trunk road's own finished height at the junction, a head's ground) */
  const P=r.pts,h0=WORLD.Hland(a0.x,a0.z),h1=WORLD.Hland(a1.x,a1.z),hT=best.q.e==null?WORLD.Hland(tgt.x,tgt.z):best.q.e;
@@ -71,7 +71,7 @@ function joinOne(v, town, N, G){const nearFarm=(x,z,pad)=>G.FARMS.some(f=>Math.h
  for(let i=0;i<r.pts.length-3;i++)for(let j=r.pts.length-2;j>i+1;j--){const A=r.pts[i],B=r.pts[j],C=r.pts[j+1];if(Math.hypot(A[0]-B[0],A[1]-B[1])>=LOOP)continue;
   const dC=Math.hypot(A[0]-C[0],A[1]-C[1]);if(dC>0&&Math.abs(C[2]-A[2])/dC<=LOOP_GRADE){r.pts.splice(i+1,j-i);r.loops=(r.loops||0)+1;break;}}
  let len=0;for(let i=1;i<r.pts.length;i++)len+=Math.hypot(r.pts[i][0]-r.pts[i-1][0],r.pts[i][1]-r.pts[i-1][1]);r.length_m=Math.round(len);r.lane=X.lane;
- r.town=town;r.townKm=Math.round((r.length_m/1000+best.q.townKm)*100)/100;Object.defineProperty(r,'_tk',{value:r.length_m/1000+best.q.townKm,enumerable:false});return r;}   /* the unrounded km, for its stations (not written) */
+ r.town=town;Object.defineProperty(r,'_exit',{value:best.xi,enumerable:false});r.townKm=Math.round((r.length_m/1000+best.q.townKm)*100)/100;Object.defineProperty(r,'_tk',{value:r.length_m/1000+best.q.townKm,enumerable:false});return r;}   /* the unrounded km, for its stations (not written) */
 /* a road's stations join the network, each with its km to the town along it and its height; not the village's own lane end
    and approach (another road meeting there would run in through the village) */
 function stations(r, N){const Q=r.pts,tk=r._tk==null?r.townKm:r._tk;let acc=0;for(let i=Q.length-1;i>=0;i--){if(i<Q.length-1)acc+=Math.hypot(Q[i][0]-Q[i+1][0],Q[i][1]-Q[i+1][1]);if(i<3)continue;
@@ -82,7 +82,20 @@ function bake(){const HD=heads(),made=ISLE_HAMLETS.made,roads=[],errors=[],net=h
  const V=made.villages.filter(E=>E.village&&E.village.site&&!E.village.error&&!E.spec.overseas).map(E=>({E,town:E.spec.parent,d:Math.hypot(E.village.site.x-E.parent[0],E.village.site.z-E.parent[1])}))
   .sort((a,b)=>a.d-b.d||(a.E.spec.id<b.E.spec.id?-1:1));
  const G=grounds(V.map(v=>v.E.village));
- for(const v of V){const r=joinOne(v.E.village,v.town,net[v.town],G);if(r.error){errors.push(r.error);continue;}roads.push(r);stations(r,net[v.town]);}
+ /* a road steeper anywhere than the grade allows (2026-11-09: Nephtos's plantation's, joined to a junction 62 m below its
+    route) is routed again to the next nearest network point, up to RETRY times */
+ const steepAt=r=>r.error?-1:r.pts.findIndex((p,i)=>i>0&&Math.abs(p[2]-r.pts[i-1][2])>ROADS.G*Math.hypot(p[0]-r.pts[i-1][0],p[1]-r.pts[i-1][1])*1.05+.05);
+ for(const v of V){let r=joinOne(v.E.village,v.town,net[v.town],G);const tried=[];let k;
+  /* steep within its first few points: the lane end it left from is the trouble (Nephtos's plantation: a 57 m drop beside it), else its far end */
+  /* or no route to it at all (Nephtos's copper mine: "no fine route" to a junction): the next nearest point */
+  /* or its first stretch (the lane end's approach) crosses one of its own village's buildings (a retried lane end past a granary) */
+  const overOwn=r=>!r.error&&(v.E.village.records||[]).some(b=>!b.vacant&&r.pts.slice(0,4).some((p,i,P)=>{if(!i)return false;const a=P[i-1],dx=p[0]-a[0],dz=p[1]-a[1],l2=dx*dx+dz*dz||1,t=Math.max(0,Math.min(1,((b.x-a[0])*dx+(b.z-a[1])*dz)/l2));return Math.hypot(a[0]+dx*t-b.x,a[1]+dz*t-b.z)<=Math.hypot(b.w,b.d)/2*.6+(r.hw||3);}));
+  /* every attempt kept; the first that is neither steep nor over its village wins, else the least steep that is not over it */
+  const maxG=r=>r.error?Infinity:r.pts.reduce((m,p,i)=>i?Math.max(m,Math.abs(p[2]-r.pts[i-1][2])/Math.max(1e-6,Math.hypot(p[0]-r.pts[i-1][0],p[1]-r.pts[i-1][1]))):m,0);
+  const bad=r=>r.error?3:overOwn(r)?2:steepAt(r)>=0?1:0,att=[r];
+  while(bad(r)&&r.to!=null&&tried.length<RETRY){k=r.error?99:steepAt(r);tried.push(r.error||overOwn(r)?(r.error?r.to:'exit:'+r._exit):k>4?r.to:'exit:'+r._exit);const r2=joinOne(v.E.village,v.town,net[v.town],G,tried);if(r2.error&&r2.to==null)break;r=r2;att.push(r);}
+  if(bad(r))r=att.slice().sort((p,q)=>bad(p)-bad(q)||maxG(p)-maxG(q))[0];
+  if(r.error){errors.push(r.error);continue;}roads.push(r);stations(r,net[v.town]);}
  return{format:'krator-openworld-roads',version:1,grade:ROADS.G,roads,errors,heads:HD};}
 /* A ROAD AFTER THE BAKE (48f: a founded hamlet's highway, routed live when its camp converts): the village joined to the
    network as it stands (the heads, every baked and built road's stations; the villages' and farmhouses' ground as now),

@@ -4,7 +4,8 @@ in a headless page (tools/harness.py: the shared Chromium launcher), to data/roa
 WORLD_DATA.roads (41-world-fields.js shapes the ground to the roads, the terrain draws them).
 
     python3 bake.py roads      drop the old roads, build the page, route every hamlet to its town's network, write
-                               data/roads.json, build the page again
+                               data/roads.json, build the page again; then route once more on that page (the villages'
+                               lanes as they lie with the roads) and write and build again
 
 Rerun it whenever a village moves (the survey in src/48-world-hamlets.js, a town's plan): verify.py fails when a village's
 lane end is no longer a road's end. The routing reads the land without roads (WORLD.Hland), so a rebake over the old
@@ -22,10 +23,10 @@ PAGE = os.path.join(HERE, 'dist', 'isle-demo.html')
 WAIT = "(typeof CAM==='object'&&CAM&&window._api&&typeof ISLE_HAMLETS!=='undefined'&&ISLE_HAMLETS.made&&typeof ISLE_ROADS!=='undefined')||(document.getElementById('errs')&&document.getElementById('errs').textContent.length>0)"
 
 
-async def bake_roads():
+async def bake_roads(fresh=True):
     from playwright.async_api import async_playwright
     out = os.path.join(DATA, 'roads.json')
-    if os.path.isfile(out):
+    if fresh and os.path.isfile(out):
         os.remove(out)      # route over the land without the old roads
     subprocess.check_call([sys.executable, os.path.join(HERE, 'build.py')])
     folder, name = os.path.split(PAGE)
@@ -61,4 +62,8 @@ if __name__ == '__main__':
     what = sys.argv[1] if len(sys.argv) > 1 else 'roads'
     if what != 'roads':
         raise SystemExit(__doc__)
-    sys.exit(asyncio.run(bake_roads()))
+    # two passes (2026-11-09): the fresh one, then one routed from the villages' lanes as they lie with the roads in place.
+    # The routes read the land without roads (WORLD.Hland), but a shore village's lanes follow the world's fields, which the
+    # roads reshape: Nephtos's fishing village's lane ended 11 m short of the road baked from the road-free page
+    rc = asyncio.run(bake_roads(True))
+    sys.exit(rc or asyncio.run(bake_roads(False)))

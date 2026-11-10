@@ -118,7 +118,7 @@ ORDER = (
     # then this world's towns (48t: planned on the world's ground, a registry each in its frame, the ground hook);
     # 88t draws them with the city page's 60 and exports one town with its 62 (both read in place as factories)
     # 88c runs the sim on the world's clock and draws its citizens (the city page's 59 for their colours) and the canoe line
-    + [('isle', 'data'), ('izpack', 'iziz'), ('bundle', 'kcity'), ('bundle', 'izv'), ('bundle', 'ringsea')]
+    + [('isle', 'data'), ('izpack', 'iziz'), ('bundle', 'kcity'), ('bundle', 'izv'), ('yspack', 'ys'), ('bundle', 'hyk'), ('bundle', 'ringsea')]   # ys, hyk: Nephtos's Hykkousoi
     + [('core/simulation', f) for f in sorted(os.listdir(os.path.join(ROOT, 'core', 'simulation'))) if re.match(r'77-sim-.*\.js$', f)]
     + [('core/export', '07-core-export.js'), ('core/export', '09-core-export-adapters.js'), ('core/export', '10-core-export-scene.js'),
        ('core/biome', '44-core-stage.js')]
@@ -179,6 +179,15 @@ def main():
             out.append('\n// ==================== the city page\'s data (settlements/isle-demo/build.py: dims, trades, site)\n')
             out.append(B.dims_fragment() + B.trades_fragment() + B.site_fragment())
             continue
+        if where == 'yspack':    # Ys's pack for Nephtos's Hykkousoi: the families the free-standing pieces use (bundles.py HYK_PACK_SKIP)
+            if os.path.join(ROOT, 'settlements', 'isle-demo') not in sys.path:
+                sys.path.insert(0, os.path.join(ROOT, 'settlements', 'isle-demo'))
+            import bundles as _bd
+            ysp = os.path.join(ROOT, 'settlements', 'ys')
+            fams = json.load(open(os.path.join(ysp, 'tex', 'pack.json'), encoding='utf-8')).get('families', {})
+            out.append('\n// ==================== the library pack: settlements/ys (the Hykkousoi families)\n')
+            out.append(_mp.fragment(ysp, 'ys', exclude=[k for k in fams if k.startswith(_bd.HYK_PACK_SKIP)], side=SIDE))
+            continue
         if where == 'izpack':    # the Iziz pack as the city page takes it (its Vernacular's families, no fauna, no city)
             izp = os.path.join(ROOT, 'settlements', 'iziz')
             fams = json.load(open(os.path.join(izp, 'tex', 'pack.json'), encoding='utf-8')).get('families', {})
@@ -205,6 +214,8 @@ def main():
                 js, _ = _bd.ringsea_fragment()
             elif f == 'izv':
                 js, _ = _bd.izv_bundle()
+            elif f == 'hyk':
+                js, _ = _bd.hyk_bundle()
             else:
                 js, _ = _bd.isk_bundle() if f == 'isk' else _bd.cat_bundle(SIDE, tents=True)
             out.append('\n// ==================== the %s bundle (settlements/isle-demo/bundles.py)\n' % f.upper())

@@ -88,7 +88,9 @@ north (`core/hamlet/PLAN.md` section 4).
   up to three camps a town one at a time) a founding takes weeks of the sim, so `verify.py` checks only the hooks and the
   survey; `settlements/isle-demo/tests/test-isle-found.js` runs one through at its fast pace.
 - **Nephtos, the Hykkousoi colony of Tethys (2026-11-09; settlements/isle-demo/PLAN.md section 15):** a placeholder radial
-  town of 1,065 people on the forest island east's north-west coast (`src/48p-world-colony.js` sites it and lays
+  town of about 1,075 people on the west coast of the forest island west, north-west of Valapo; once the owner draws it in the
+  site planner (towns.Nephtos), planned and drawn with the towns in the Ys kit's Hykkousoi pieces (settlements/isle-demo bundles.py HYKB)
+  (`src/48p-world-colony.js` sites the placeholder and lays
   settlements/isle-demo 47k's plan; `src/88p-world-colony.js` draws stand-ins, the streets and the quay with the Ring Sea
   kit's Hykkousoi corbita and pearl ship), declared on the sim after the two towns with its six villages (48: two farming
   hamlets, the plantations, a fishing village, a lumber village and the copper mine), its roads baked to its spokes.

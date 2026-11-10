@@ -376,3 +376,7 @@
       nor the Ys kit's Hykkousoi buildings (`settlements/ys`, not bundled into the world). Only 12 % of its people have a post
       in the town (its countryside does the work); its pearl ships camp ashore like the Islanders' reef crews; the Tethyan,
       Ysian and Pontic ships are tallied, not drawn sailing (two Hykkousoi vessels stand moored at its quay).
+- [ ] Hykkousoi pieces (bundles.py HYKB, 2026-11-09): every house is one household (the Ys kit's multi-family homes are the
+      stacks' grown pods, not taken), the boat shed has no moored skiffs (they are the Ys port's), and a piece is heavy (up to
+      130k triangles; the towns' distance levels carry it). The colony's programme (30 PROG.Nephtos) was tried only on a test
+      drawing (tests/fixtures/nephtos-test-site.json) until the owner draws Nephtos.

@@ -36,6 +36,9 @@ function ground(x,z){GW.w=0;GW.h=0;
 function select(town){const P=plans.find(p=>p.town===town);if(!P)return null;ISLE.cur=P;KTAGS.page=P.tags;return P;}
 function lay(){if(plans.length)return plans;ISLE.worldReady=true;   /* WORLD.init ran (98-world-start.js): no WORLD_RAW on this page */
  for(const town of ISLE.TOWNS){try{plans.push(plan(town));}catch(e){S.errors.push(town+': '+(e&&e.stack?e.stack:e));}}
+ /* Nephtos from the owner's drawing (the site file's towns.Nephtos; settlements/isle-demo 30 PROG.Nephtos, PLAN.md section 15):
+    planned and drawn as the towns are; without a drawing the colony is 48p's placeholder */
+ {const NS=ISLE.townSite(SITE_INIT,'Nephtos');if(NS&&(NS.districts||[]).length+(NS.avenues||[]).length&&ISLE.PROG.Nephtos){try{plans.push(plan('Nephtos'));}catch(e){S.errors.push('Nephtos: '+(e&&e.stack?e.stack:e));}}}
  const prev=WORLD.landHook;
  WORLD.landHook=(x,z,h,mw)=>{if(prev)h=prev(x,z,h,mw);const g=ground(x,z);return g.w>0?h+(g.h-h)*g.w:h;};
  /* the sim declared with the villages' specs (settlements/isle-demo 40: Valapo drops its farms stand-in, both towns count
@@ -43,7 +46,7 @@ function lay(){if(plans.length)return plans;ISLE.worldReady=true;   /* WORLD.ini
  const HSPECS=typeof ISLE_HAMLETS!=='undefined'?ISLE_HAMLETS.SPECS:[];
  /* Nephtos, the Hykkousoi colony (48p, settlements/isle-demo 47k: PLAN.md section 15), declared after the two towns */
  let COL=null;if(typeof ISLE_COLONY!=='undefined'){try{COL=ISLE_COLONY.make();if(COL.error)S.errors.push('Nephtos: '+COL.error);}catch(e){S.errors.push('Nephtos: '+(e&&e.stack?e.stack:e));COL=null;}}
- S.colony=COL;const colonies=COL&&!COL.error?[COL.plan]:[];
+ S.colony=COL;const colonies=COL&&!COL.error&&!COL.drawn?[COL.plan]:[];   /* a drawn Nephtos is among the plans */
  try{S.sim=ISLE.simDeclare(plans.map(P=>({R:P.R,G:P.G})),null,{hamlets:HSPECS,colonies});}catch(e){S.simError=String(e&&e.stack?e.stack:e);}
  /* the hamlets on the map (48: ISLE_HAMLETS.make, here once; 88h draws the same villages) join the sim as their towns'
     settlements (settlements/isle-demo 47h: core/hamlet H5); the farming hamlets sized from each town's census */

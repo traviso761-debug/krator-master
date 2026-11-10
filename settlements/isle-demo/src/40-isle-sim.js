@@ -136,7 +136,8 @@ ISLE.simPlaces = function (TS, R, G, nav) {
 ISLE.simDeclare = function (plans, clock, opts) {
   var S = ISLE.simInit(clock), T = ISLE.TUNE.sim, t0 = Date.now();
   if (opts && opts.hamlets) S.hamletSpecs = opts.hamlets.slice();
-  plans = plans.slice().sort(function (a, b) { return ISLE.TOWNS.indexOf(a.R.town) - ISLE.TOWNS.indexOf(b.R.town); });
+  var rank = function (p) { var i = ISLE.TOWNS.indexOf(p.R.town); return i < 0 ? 1e3 : i; };   /* the towns first; a drawn colony (47k) after them */
+  plans = plans.slice().sort(function (a, b) { return rank(a) - rank(b) || (a.R.town < b.R.town ? -1 : a.R.town > b.R.town ? 1 : 0); });
   if (opts && opts.colonies) plans = plans.concat(opts.colonies);   /* the colonies' plans (47k: Nephtos), after the towns, in the order given */
   var navs = plans.map(function (p) { var TS = T.towns[p.R.town]; return ISLE.navOf(p.R, p.G, TS.prefix + 'n'); });
   plans.forEach(function (p, i) {

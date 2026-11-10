@@ -26,7 +26,7 @@ highway, no town tile). The isle's own checks:
     sim: tests/test-isle-found.js runs it. The camp shelters: a stand-in camp pitched from the kit, every piece a proto.
   - Valapo's clove plantation overseas (48 islandSite, 47h `overseas`): on the forest island west with a landing and no road,
     cloves and its own staples, both its routes sea legs in the sim (the negative moves it 20 km off its island)
-  - Nephtos (48p, 88p; settlements/isle-demo 47k, PLAN.md section 15): the Hykkousoi colony on the forest island east's coast,
+  - Nephtos (48p, 88p; settlements/isle-demo 47k, PLAN.md section 15): the Hykkousoi colony on the forest island west's coast,
     half Valapo's people, every lot dry and off the towns and villages, tagged, drawn with its quay's Hykkousoi ships, its
     villages its own (the negative puts a lot out to sea); in the sim after the hamlets' two days: declared, housed,
     staffed and fed, its villages at work, Tethys's merchantmen calling (negatives: meals without food, no Tethyan call)
@@ -177,13 +177,13 @@ ISLE = r"""(neg)=>{const R=[],M=WORLD_DATA.meta,F=WORLD.ISLE_FIELDS,KF=F.filter(
     const inG=(R2&&R2.goods&&R2.goods.valapo)||[];if(own.some(g=>inG.indexOf(g)>=0))bad.push(v.id+': its town ships it a staple it grows');
     lines.push((v.name||v.id)+' ('+v.label+'): '+v.census.pop+' people '+Math.round(d)+' m from the island\'s point, '+X.sea.km+' km by sea ('+Math.round(X.sea.minutes/60)+' h), crops '+[...crops].join(', ')+'; farmsteads '+Object.keys(by).map(g=>g+' '+by[g]).join(', '));}}
   R.push({name:'Valapo\'s clove plantation overseas: on the forest island west with a landing and no road, cloves and its own staples, both routes by sea',ok:!bad.length,detail:bad.length?bad.join('; '):lines.join('; ')});}
- /* Nephtos (48p, 88p; settlements/isle-demo 47k): on the forest island east's coast, about half Valapo's people, every lot
+ /* Nephtos (48p, 88p; settlements/isle-demo 47k): on the forest island west's coast (north-west of Valapo), about half Valapo's people, every lot
     on dry ground and none on a town or a village, its records clean in core/tags, drawn with the Hykkousoi vessels at its
     quay; its villages its own (the negative puts a lot 300 m out to sea) */
  {const CO=ISLE_TOWNS_W.stats.colony,DC=window._colony,bad=[];let line='';
   if(!CO||CO.error)bad.push('no colony: '+(CO?CO.error:'not made'));else{
    const F=CO.frame,c=CO.centre,V=(window._isleTowns&&window._isleTowns.towns||[]).find(t=>t.town==='Valapo'),vp=V&&V.census?V.census.citizens:2095,pp=CO.census.citizens;
-   if(!(c[0]>56000&&c[0]<128000&&c[1]>-109000&&c[1]<-22000))bad.push('the colony at '+c.map(Math.round).join(',')+', off the forest island east');
+   if(!(c[0]>-59500&&c[0]<-16000&&c[1]>-1500&&c[1]<39500))bad.push('the colony at '+c.map(Math.round).join(',')+', off the forest island west');   /* its box: 2026-11-09's survey */
    if(!(pp>=.4*vp&&pp<=.6*vp))bad.push(pp+' people against Valapo\'s '+vp);
    const lots=CO.R.lots.map(l=>({x:F.x+l.x+(neg==='colony'&&l===CO.R.lots[0]?-CO.site.sea[0]*-300:0),z:F.z+l.z,key:l.key})),HL=(x,z)=>WORLD.Hland?WORLD.Hland(x,z):WORLD.H(x,z);
    const wetL=lots.filter(l=>WORLD.water(l.x,l.z)>HL(l.x,l.z)-.5);if(wetL.length)bad.push(wetL.length+' lots in the water');
@@ -191,9 +191,12 @@ ISLE = r"""(neg)=>{const R=[],M=WORLD_DATA.meta,F=WORLD.ISLE_FIELDS,KF=F.filter(
    const HM=window._hamlets,nearV=HM?HM.villages.filter(v=>v.site&&Math.hypot(v.site.x-c[0],v.site.z-c[1])<CO.reach+200):[];if(nearV.length)bad.push(nearV.map(v=>v.id).join(',')+' on its ground');
    if(!DC||DC.error)bad.push('not drawn: '+(DC?DC.error:'no 88p'));else{if(DC.lots!==CO.R.lots.length)bad.push(DC.lots+' of '+CO.R.lots.length+' lots drawn');const A=DC.tags();if(A.problems&&A.problems.length)bad.push('tags: '+A.problems.slice(0,2).join('; '));
     if(DC.ships.indexOf('hykCorbita')<0||DC.ships.indexOf('hykPearl')<0)bad.push('its berths hold '+DC.ships.join(','));}
+   /* the Hykkousoi pieces' declared boxes (settlements/isle-demo build.py, ISLE_DIMS kit hyk) are the bundle's own (HYKB) */
+   if(typeof HYKB==='undefined')bad.push('no Hykkousoi bundle (HYKB)');else{const HD=HYKB.dims(),hk=Object.keys(ISLE_DIMS).filter(k=>ISLE_DIMS[k].kit==='hyk'),off=hk.filter(k=>!HD[k]||Math.abs(HD[k].w-ISLE_DIMS[k].w)>1e-6||Math.abs(HD[k].d-ISLE_DIMS[k].d)>1e-6||Math.abs(HD[k].h-ISLE_DIMS[k].h)>1e-6);
+    if(off.length||hk.length!==Object.keys(HD).length||HYKB.errors.length)bad.push('Hykkousoi boxes: '+hk.length+' declared, '+Object.keys(HD).length+' in HYKB'+(off.length?', differ: '+off.slice(0,4).join(','):'')+(HYKB.errors.length?', errors: '+HYKB.errors[0].slice(0,120):''));}
    const own=HM?HM.villages.filter(v=>v.parent==='Nephtos').map(v=>v.focus):[];['farming','fishing','lumber','mine'].forEach(f=>{if(own.indexOf(f)<0)bad.push('no '+f+' village of its own');});
    line=CO.town+' at '+c.map(Math.round).join(',')+' (its beach facing '+CO.site.sea.map(v=>v.toFixed(2)).join(',')+', '+Math.round(CO.site.share*100)+' % of its ground dry): '+pp+' people (Valapo '+vp+'), '+CO.R.lots.length+' lots, '+(DC?DC.domes+' domes, '+DC.streets+' streets, at its quay '+DC.ships.join(' and '):'')+'; its villages '+own.join(', ');}
-  R.push({name:'Nephtos: the Hykkousoi colony on the forest island east\'s coast, half Valapo\'s size, every lot dry and off the towns and villages, tagged, drawn with its quay\'s ships, its villages its own',ok:!bad.length,detail:bad.length?bad.join('; '):line});}
+  R.push({name:'Nephtos: the Hykkousoi colony on the forest island west\'s coast, half Valapo\'s size, every lot dry and off the towns and villages, tagged, drawn with its quay\'s ships, its villages its own',ok:!bad.length,detail:bad.length?bad.join('; '):line});}
  /* the clay villages (48: the potters' clay, 2026-11-09): one a town, its pit on dry flat ground beside the mangrove flats,
     its clay pits the Islanders kit's (the negative moves a pit inland) */
  {const HM=window._hamlets,bad=[],lines=[];const L=HM?HM.villages.filter(v=>v.focus==='clay'):[];
@@ -324,7 +327,7 @@ async def run(a):
                                 ('herd', "the herding bands: one a town, its camp on dry pasture, named, drawn with its shelters and its herd"),
                                 ('clay', "the clay villages: one a town, its pit on dry ground beside the mangrove flats, its clay pits the kit's"),
                                 ('overseas', "Valapo's clove plantation overseas: on the forest island west with a landing and no road, cloves and its own staples, both routes by sea"),
-                                ('colony', "Nephtos: the Hykkousoi colony on the forest island east's coast, half Valapo's size, every lot dry and off the towns and villages, tagged, drawn with its quay's ships, its villages its own")):
+                                ('colony', "Nephtos: the Hykkousoi colony on the forest island west's coast, half Valapo's size, every lot dry and off the towns and villages, tagged, drawn with its quay's ships, its villages its own")):
                     r = [x for x in await pg.evaluate(ISLE, neg) if x['name'] == nm][0]
                     print(('  PASS  ' if not r['ok'] else '  MISSED') + nm + ' (' + neg + ') : ' + r['detail'])
                     if r['ok']: fails.append('negative ' + neg)

@@ -104,3 +104,7 @@
       land hook: its lots stand where the slope allows); its whole reach is cleared of flora, gardens and streets alike.
       Its thieves' guild (settlements/isle-demo 47c) runs in the sim and has a mark on the region map, but no landmark or sign:
       its tavern is a stand-in with no registry record in the towns' sense (verify checks the two Islander towns' guilds).
+- [ ] Nephtos's copper mine (2026-11-09) stands on the highest ground of its patch (the mine survey's rule) and its road keeps
+      low, cutting up to 104 m into the hill rather than climbing: within the grade and on the ground, but a deep cutting.
+      A drawn Nephtos (the owner's layout) is drawn with the towns: the pale lot plinths and kerbs and the far level of
+      detail (a cone-roofed box per lot, which reads as an Islander tent) are the Islanders' look, not yet the Hykkousoi's.

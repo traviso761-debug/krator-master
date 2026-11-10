@@ -16,12 +16,12 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `10-isle-frame.js` | 8 | 0. A TOWN'S FRAME, AND THE GROUND VOTH'S EDITOR  (1) |
-| `15-isle-tune.js` | 73 **big** | 0b. THE SIM'S TUNING (P7b: PLAN.md section 9) (1) |
+| `15-isle-tune.js` | 76 **big** | 0b. THE SIM'S TUNING (P7b: PLAN.md section 9) (1) |
 | `20-isle-ground.js` | 7 | 1. THE CITY PAGE'S GROUND: THE REGION'S RASTERS, (1) |
-| `30-isle-programme.js` | 16 | 2. THE TOWNS' PROGRAMMES (PLAN.md SECTION 8) AS  (1) |
+| `30-isle-programme.js` | 21 | 2. THE TOWNS' PROGRAMMES (PLAN.md SECTION 8) AS  (1) |
 | `32-isle-city.js` | 50 **big** | 3. THE CITY PLAN: ONE KCITY INSTANCE A TOWN (1) |
 | `33-isle-spurs.js` | 11 | 3a. THE STREETS OUTSIDE THE GATES (2026-11-04) (1) |
-| `34-isle-census.js` | 11 | 4. THE CENSUS AND THE CHECKS, PER TOWN (1) |
+| `34-isle-census.js` | 12 | 4. THE CENSUS AND THE CHECKS, PER TOWN (1) |
 | `40-isle-sim.js` | 16 | 7. THE TOWNS ON core/simulation: THE BINDING, TH (1) |
 | `41-isle-nav.js` | 9 | 7b. THE PEDESTRIAN NAV FROM THE PLAN'S WAYS (P7b (1) |
 | `42-isle-people.js` | 11 | 7c. THE PEOPLE: ROLES BY KIND OF WORK AND BY AGE (1) |
@@ -46,7 +46,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `50-isle-export.js` | 10 | 7k. THE SIM EXPORT SECTION (P7e, 2026-10-20) (1) |
 | `56-isle-tools.js` | 5 | 3b. THE ISLE'S TOOLS: TOWNS, SAVING, VIEWS (1) |
 | `57-isle-run.js` | 2 | 6b. THE SIM'S RUN LOOP ON THE CITY PAGE (P7b) (1) |
-| `58-isle-protos.js` | 9 | 4b. KIT PIECES BUILT ONCE, FLATTENED FOR INSTANC (1) |
+| `58-isle-protos.js` | 10 | 4b. KIT PIECES BUILT ONCE, FLATTENED FOR INSTANC (1) |
 | `59-isle-citizens.js` | 6 | 5c. A FEW CITIZENS DRAWN NEAR THE CAMERA (P7b) (1) |
 | `60-isle-draw.js` | 29 | 5. DRAWING A TOWN: GROUND, SEA, STREETS, THE KIT (1) |
 | `61-isle-canoes.js` | 3 | 5d. THE CANOE LINE'S VESSELS AT THE STOP (P7c) (1) |

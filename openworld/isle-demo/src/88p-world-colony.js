@@ -11,6 +11,9 @@ var COLONY_DRAW;LATE.push(()=>{COLONY_DRAW=(function(){   /* after the world is 
 const scene=HOST.scene;
 const C=typeof ISLE_COLONY!=='undefined'?ISLE_COLONY.make():null;
 if(!C||C.error){window._colony={error:C?C.error:'no colony (48p)'};return;}
+/* drawn by the owner: 88t draws it with the towns (its Hykkousoi pieces, its harbour's vessels); this page's view of it */
+if(C.drawn){window._colony={drawn:true,made:{town:C.town,centre:C.centre,reach:C.reach,frame:C.frame,site:C.site,census:C.census},lots:C.R.lots.length,domes:0,
+ streets:C.R.plan.ways.length,ships:[...new Set((C.R.vessels||[]).map(v=>v.key))],tags:()=>({problems:[]}),recs:()=>[]};return window._colony;}
 const F=C.frame,H=(x,z)=>WORLD.H(x,z),TAGS=KTAGS.create({build:'isle-demo:'+C.town}),D=ISLE.COLONY_DIMS;
 const W2=l=>({x:F.x+l.x,z:F.z+l.z});
 /* the records */
