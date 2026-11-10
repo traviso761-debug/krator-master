@@ -92,12 +92,12 @@ PATH={f:os.path.join(SRC,f) for f in os.listdir(SRC) if not f.startswith('.')}
 if STN_DIR:
     for f in os.listdir(STN_DIR):
         if f.endswith('.js') or f.endswith('.html'): PATH[f]=os.path.join(STN_DIR,f)
-# core/terrain: KFIELD (the baked ground the export carries), KSTRATA and its shader (35: `megabreccia`, the cordillera's patchwork rock,
+# core/terrain: KFIELD (the baked ground the export carries; its flatten strokes, 31, grade the Ancients' highway into it), KSTRATA and its shader (35: `megabreccia`, the cordillera's patchwork rock,
 # with the Godthrone's `tibasalt` as its lateral stack to the west, on the crags and the walls), KRUBBLE (37c: the rockfall heaps under the
 # crags), KRELIEF (38: `range` for the moraines, `wadi` for the meltwater gully and its fan), KGROUND (the ground's library layers
 # hex-tiled and height-blended, with triplanar sides on the crags), KHORIZON (the terrain's shadows at a low sun) with its shade. KFROST and
 # KGLACIER are not taken at station 1 (+4 °C on the col: no permafrost; the glaciers hang on the walls 6-12 km out: PLAN.md section 7.1)
-CORE_TERRAIN=['30-core-field.js','35-core-strata.js','37c-core-rubble.js','38-core-relief.js','43-core-ground.js','45-core-horizon.js']
+CORE_TERRAIN=['30-core-field.js','31-core-field-brush.js','35-core-strata.js','37c-core-rubble.js','38-core-relief.js','43-core-ground.js','45-core-horizon.js']
 for f in CORE_TERRAIN:
     if f not in PATH: PATH[f]=J('core','terrain',f)
 PATH.setdefault('45-core-horizon-shade.js',J('core','terrain','host','45-core-horizon-shade.js'))

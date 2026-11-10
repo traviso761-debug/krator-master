@@ -1,6 +1,6 @@
 {
  "build": "seouterwall",
- "note": "The seouterwall kit's adapter onto the material library (core/materials/PLAN.md). The host's ground layers (47-host-land.js): ground.puna (the col's dry bunchgrass, the base, tinted by season), ground.cobble (ground.wadi.cobble: the meltwater gully's floor and its fan, the outwash flat), ground.gravel (ground.gravel019: the moraines' till and the scree), ground.tundra (the moraines' turf, the dwarf shrubs in the lee), ground.lichen (ground.lichen.crust: the crags' fellfield and the high slopes), ground.needles (the larch's litter in the sheltered shaded hollows), rock.megabreccia (the crags and the walls, read from the side on the steep: KGROUND's triplanar sides; tinted by KSTRATA's megabreccia and tibasalt columns; the rockfall heaps' blocks), rock.basalt (rock.basalt.titanium: the same on the Godthrone's side of the corridor, station 2's headwall: SITE.rock.lib). The flora's cards and barks are the NW outer wall's pack, read in place. Run python3 tools/textures/pack.py biomes/seouterwall after any change, then python3 build.py.",
+ "note": "The seouterwall kit's adapter onto the material library (core/materials/PLAN.md). The host's ground layers (47-host-land.js): ground.puna (the col's dry bunchgrass, the base, tinted by season), ground.cobble (ground.wadi.cobble: the meltwater gully's floor and its fan, the outwash flat), ground.gravel (ground.gravel019: the moraines' till and the scree), ground.tundra (the moraines' turf, the dwarf shrubs in the lee), ground.lichen (ground.lichen.crust: the crags' fellfield and the high slopes), ground.needles (the larch's litter in the sheltered shaded hollows), rock.megabreccia (the crags and the walls, read from the side on the steep: KGROUND's triplanar sides; tinted by KSTRATA's megabreccia and tibasalt columns; the rockfall heaps' blocks), rock.basalt (rock.basalt.titanium: the same on the Godthrone's side of the corridor, station 2's headwall: SITE.rock.lib). The flora's cards and barks are the NW outer wall's pack, read in place. Run python3 tools/textures/pack.py biomes/seouterwall after any change, then python3 build.py. road.ancient (concrete.ancient: the Ancients' highway's pavement, station 1; its own mesh, not a ground layer).",
  "size": 512,
  "families": {
   "ground.puna": {
@@ -105,6 +105,19 @@
    "scale": [
     3.0,
     3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "road.ancient": {
+   "lib": "concrete.ancient",
+   "scale": [
+    4.0,
+    4.0
    ],
    "tint": {
     "keep": 1.0,

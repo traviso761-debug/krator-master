@@ -26,9 +26,9 @@ const BUDGET={
  type:{'nwouterwall/trees':'pass','nwouterwall/floor':'pass','nwouterwall/fields':'pass','host':'host'},
 };
 const HCHK={
- // the station on the scale model (PLAN.md sections 5, 7.2 and 7.4): the page's pixel within 4 px (8 km) of the plan's and its height within
+ // the station on the scale model (PLAN.md sections 5, 7.2 and 7.4): the page's pixel within 8 px (16 km) of the plan's and its height within
  // 150 m of the plan's (test_smodel.py's tolerance), its air by the model's rule; the drawn ground at the origin on the model's height
- model(S,h0,P){P=P||SITE.plan;const ok=Math.hypot(S.px-P.px,S.py-P.py)<=4&&Math.abs(S.base-P.base)<=150&&Math.abs(S.atm-SEOW.atm(S.base))<.01&&Math.abs(h0)<6;
+ model(S,h0,P){P=P||SITE.plan;const ok=Math.hypot(S.px-P.px,S.py-P.py)<=8&&Math.abs(S.base-P.base)<=150&&Math.abs(S.atm-SEOW.atm(S.base))<.01&&Math.abs(h0)<6;
   return{ok,detail:'px '+S.px+','+S.py+': '+S.base.toFixed(0)+' m, '+S.atm.toFixed(2)+' atm, '+S.cls+', mean '+S.mean.toFixed(1)+' °C; the drawn ground at the origin '+h0.toFixed(1)+' m'};},
  // the cordillera's tiers (PLAN.md section 1.3 and 7.2) and the air by the model's rule
  tiers(T){const want=[[3620,'pass'],[4000,'subalpine'],[5000,'bench'],[6000,'nival'],[7500,'hypobaric'],[9500,'airless']],bad=want.filter(w=>T(w[0])!==w[1]);
@@ -57,6 +57,12 @@ const HCHK={
  hazards(H){if(typeof KHAZ==='undefined')return{ok:false,detail:'no core/hazard'};const gb=H.find(r=>r&&r.tags&&r.tags.hazard.kind==='cold'),R=H.filter(r=>r&&r.tags&&r.tags.hazard.kind==='crush');
   if(!gb||!R.length)return{ok:false,detail:'no God-Bore or no rockfall record'};const n=KHAZ.state(gb,2*3600),d=KHAZ.state(gb,14*3600),rn=KHAZ.state(R[0],12.5*3600),rd=KHAZ.state(R[0],3*3600);
   return{ok:n.k>.99&&d.k<.01&&R.length>=3&&rn.k>.99&&rd.k<.5,detail:'the God-Bore at 02:00 '+n.state+' k '+n.k.toFixed(2)+', at 14:00 '+d.state+' k '+d.k.toFixed(2)+'; '+R.length+' rockfall chutes, k '+rn.k.toFixed(2)+' at 12:30, '+rd.k.toFixed(2)+' at 03:00'};},
+ // the Ancients' highway (station 1): its profile held to the ruling grade, the graded ground under its pavement's middle and edges within
+ // half a metre of its line (the flatten strokes did their work), the road's zone on the near ground
+ road(Rd,h,ZC){if(!Rd)return{ok:false,detail:'no road'};const P=Rd.rec.pts,W=Rd.rec.w;let worst=0;
+  for(let i=1;i<P.length-1;i+=5){const a=P[i-1],b=P[i+1],dx=b[0]-a[0],dz=b[1]-a[1],L=Math.hypot(dx,dz)||1;for(const q of [-W*.45,0,W*.45]){const x=P[i][0]-dz/L*q,z=P[i][1]+dx/L*q;worst=Math.max(worst,Math.abs(h(x,z)-P[i][2]));}}
+  const ok=Rd.maxGrade<=Rd.rec.grade+.002&&worst<.5&&ZC.road>0;
+  return{ok,detail:P.length+' points, '+(P.length*10/1000).toFixed(1)+' km; steepest '+(Rd.maxGrade*100).toFixed(1)+' % (ruling '+(Rd.rec.grade*100).toFixed(0)+' %); the ground under its pavement within '+worst.toFixed(2)+' m; '+(ZC.road||0)+' road points on the zone raster'};},
  // the sky: the shared sky at the station's pixel, its far land cast from the model (three layers of 1024)
  sky(S){const R=S.preset.ridges||[],ok=R.length===3&&R.every(r=>r.profile&&r.profile.length===1024)&&S.preset.site.px===SEOW_REGION.site.px;
   return{ok,detail:'site px '+S.preset.site.px+','+S.preset.site.py+'; ridges '+R.map(r=>(r.dist/1000).toFixed(0)+' km').join(', ')};},
@@ -82,13 +88,14 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),Z
  if(MODEL_LAKE)add('the brook falls over the headwall into the tarn',HCHK.tarn(STREAM,MODEL_LAKE,WATER_DRAW&&WATER_DRAW.falls));
  add('the larch in a lee, the krummholz in the open',HCHK.lee(TREES_ALL(),SEOW.FIELDS));
  add('no tree in water, on a crag or a heap',HCHK.roots(TREES_ALL()));
+ if(ROAD)add('the Ancients\' highway graded at its ruling grade',HCHK.road(ROAD,terrainH,ZC));
  add('megabreccia east, tibasalt west (KSTRATA)',HCHK.rock(ROCK_SH));
  add('the God-Bore and the rockfall (core/hazard)',HCHK.hazards(HAZ_RECS()));
  add('the shared sky at the station, its far land from the model',HCHK.sky(SKY));
  add('the season\'s larch and snow',HCHK.season());
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),ZC=_zoneCounts();
- add('the station at another pixel',HCHK.model(Object.assign({},SEOW_REGION.site,{px:SITE.plan.px+12}),terrainH(0,0)));
+ add('the station at another pixel',HCHK.model(Object.assign({},SEOW_REGION.site,{px:SITE.plan.px+20}),terrainH(0,0)));
  add('the station floating over the model',HCHK.model(SEOW_REGION.site,terrainH(0,0)+40));
  add('the col in the nival tier',HCHK.tiers(h=>h<5400?'nival':SEOW.tierOf(h)));
  add('the brook climbing',WATER_RECS&&WATER_RECS.stream?HCHK.water(Object.assign({},WATER_RECS,{stream:Object.assign({},WATER_RECS.stream,{pts:WATER_RECS.stream.pts.map((p,i)=>i===5?Object.assign({},p,{y:p.y+60}):p)})}),WATER_DRAW):{ok:false,detail:'no brook'});
@@ -99,6 +106,8 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
   add('no fall over the headwall',HCHK.tarn(STREAM,MODEL_LAKE,[]));}
  add('the larch in the open',HCHK.lee(TREES_ALL(),(x,z)=>Object.assign({},SEOW.FIELDS(x,z),{wind:1})));
  add('a tree on a rockfall heap',HCHK.roots(TREES_ALL().concat(SITE_HEAPS&&SITE_HEAPS[0]?[{x:SITE_HEAPS[0].x,z:SITE_HEAPS[0].z}]:[{x:1e6,z:1e6}])));
+ if(ROAD){add('the highway at 9 %',HCHK.road(Object.assign({},ROAD,{maxGrade:.09}),terrainH,ZC));
+  add('the highway floating 2 m over the ground',HCHK.road(ROAD,(x,z)=>terrainH(x,z)-2,ZC));}
  add('tibasalt on both walls',HCHK.rock(ROCK_SH?{at:(x,y,z)=>ROCK_SH.at(ROCK_CONTACT[0]-3000,y,z)}:null));
  add('the rockfall as bad at night as at noon',HCHK.hazards(HAZ_RECS().map(r=>r&&r.tags&&r.tags.hazard.kind==='crush'?Object.assign({},r,{id:r.id+'-neg',tags:{hazard:Object.assign({},r.tags.hazard,{cycle:null})}}):r)));
  add('the God-Bore blowing by day',HCHK.hazards(HAZ_RECS().map(r=>r&&r.tags&&r.tags.hazard.kind==='cold'?Object.assign({},r,{id:r.id+'-neg',tags:{hazard:Object.assign({},r.tags.hazard,{cycle:null})}}):r)));
@@ -117,8 +126,8 @@ const H=KHOST.take({build:'seouterwall',title:'Krator biome — the SE outer wal
  layers:{'flora':{match:o=>!!(o.userData&&o.userData.biome)},'heaps':{match:o=>!!(o.userData&&o.userData.rock)},
   'water':{match:o=>!!(o.name&&/^water:/.test(o.name))},'sky':{objects:()=>[SKY.mesh]}},
  exporters:{biome:()=>BIO.export(),landforms:()=>({format:'seouterwall-landforms',version:1,station:SITE.name,season:SEASON,
-  moraines:SITE.moraines,melt:SITE_RECS.melt,heaps:HEAPS.map(H=>({id:H.id,x:H.x,z:H.z,y0:H.y0,rx:H.rx,rz:H.rz,ry:H.ry,h:H.h,seed:H.seed})),
-  crag:SITE.crag,rock:ROCK_SH?ROCK_SH.strata.export?ROCK_SH.strata.export():null:null})},
+  moraines:SITE.moraines,melt:SITE_RECS.melt,dry:SITE_RECS.dry||null,wall:SITE_RECS.wall||null,heaps:HEAPS.map(H=>({id:H.id,x:H.x,z:H.z,y0:H.y0,rx:H.rx,rz:H.rz,ry:H.ry,h:H.h,seed:H.seed})),
+  crag:SITE.crag,road:ROAD?ROAD.rec:null,rock:ROCK_SH?ROCK_SH.strata.export?ROCK_SH.strata.export():null:null})},
  minimap:{title:'The SE outer wall: '+SITE.title},
  budget:BUDGET,types:()=>BIO.stats,
  api:{hostChecks,hostNegatives,

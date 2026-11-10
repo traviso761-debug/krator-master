@@ -169,6 +169,36 @@
     "sourceMean": 0.4259
    }
   },
+  "road.ancient": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "road.ancient.albedo.webp",
+    "normalMap": "road.ancient.normal.webp",
+    "roughnessMap": "road.ancient.rough.webp"
+   },
+   "lib": "concrete.ancient",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "fff71497f561d8f7a3804e407e8c8e47f1008423",
+    "normal": "d5730d5c2c700bf1251b34271385cbc3345eaff4",
+    "roughness": "cfe34f0e85b169652acf9faec8d1e1f0fb8b3cca"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.6171084436005236,
+    "sourceMean": 0.6171
+   }
+  },
   "rock.basalt": {
    "breakup": null,
    "card": false,

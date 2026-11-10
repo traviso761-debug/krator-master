@@ -9,9 +9,9 @@ Built output (never open it; edit `src/` and rebuild): `dist/seouterwall-gatetar
 Build: `cd biomes/seouterwall && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
 
-From `core/terrain/` (shared; see `core/README.md`): `30-core-field.js`, `35-core-strata.js`, `37c-core-rubble.js`, `38-core-relief.js`, `43-core-ground.js`, `45-core-horizon.js`
+From `core/terrain/` (shared; see `core/README.md`): `30-core-field.js`, `31-core-field-brush.js`, `35-core-strata.js`, `37c-core-rubble.js`, `38-core-relief.js`, `43-core-ground.js`, `45-core-horizon.js`
 
-From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `31j-core-joint.js`, `34-core-impostor.js`, `40-core-place.js`, `41-core-env.js`, `42-core-export.js`, `43-core-export-host.js`, `44-core-stage.js`
+From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `31j-core-joint.js`, `34-core-impostor.js`, `37-core-traps.js`, `40-core-place.js`, `41-core-env.js`, `42-core-export.js`, `43-core-export-host.js`, `44-core-stage.js`
 
 From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
 
@@ -28,16 +28,16 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `44s-host-site.js` | 8 | one record a point (memo of the last): the heigh (71) |
+| `44s-host-site.js` | 9 | one record a point (memo of the last): the heigh (81) |
 | `45-host-stage.js` | 7 | the station, its air and its season (24); the model's ground (bicubic over its 1 km cells) (38); the ground's height (48); renderer, light, camera (64) |
-| `46-biome-seow-layout.js` | 7 |  |
-| `47-host-land.js` | 33 **big** | the near box and a coarse look at the ground (8); the brook (its line, its water level never climb (16); the water: the brook, the model's tarn (stations (36); the rockfall heaps (core/terrain KRUBBLE: PLAN.m (52); the wind's exposure (the God-Bore: PLAN.md secti (69); the fields (biomes/WORLD.md; BIOME-API.md) (76); the host binding (before the meshes: their paint (104); the library layers (or procedural without the pa (115); the ground material (one shader for the near and (142); the near ground: the baked field's own grid, one (221) |
-| `70-biome-seow.js` | 1 |  |
+| `46-biome-seow-layout.js` | 8 |  |
+| `47-host-land.js` | 38 **big** | the near box and a coarse look at the ground (8); the brook (its line, its water level never climb (16); the Ancients' highway (station 1: SITE.road; PLA (36); the water: the brook, the model's tarn (stations (59); the rockfall heaps (core/terrain KRUBBLE: PLAN.m (75); the wind's exposure (the God-Bore: PLAN.md secti (94); the fields (biomes/WORLD.md; BIOME-API.md) (101); the host binding (before the meshes: their paint (130); the library layers (or procedural without the pa (141); the ground material (one shader for the near and (168) |
+| `70-biome-seow.js` | 2 |  |
 | `89a-host-atmos.js` | 2 |  |
 | `89s-host-sky.js` | 4 |  |
 | `89w-host-water.js` | 3 |  |
 | `89z-host-build.js` | 8 | the air on everything drawn (once, after the bak (33) |
-| `99-host-take.js` | 14 | the inspector's words: a plant names its species (8); the probe's budgets and the kit's own checks (ve (22); the page, handed to the host (108) |
+| `99-host-take.js` | 16 | the inspector's words: a plant names its species (8); the probe's budgets and the kit's own checks (ve (22); the page, handed to the host (117) |
 | `99-tail.html` | <1 |  |
 
 ## stations/

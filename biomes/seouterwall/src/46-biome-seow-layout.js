@@ -21,7 +21,8 @@
 //                          fan (0..1 the fan's active channels), moraine (m), g (grade), slope (0..1), sunny (-1 a south-facing, shaded
 //                          slope .. 1 a north-facing, sunny one), wind (0 a lee .. 1 the col's open floor and the crests), mean}
 //                          shore (a tarn's gravel strand, a metre or two over its water)
-//                          -> 'water'|'heap'|'floor'|'shore'|'fan'|'crag'|'scree'|'fellfield'|'tundra'|'moraine'|'larch'|'krummholz'|'col'|'puna'
+//                          road (the Ancients' highway's pavement)
+//                          -> 'water'|'road'|'heap'|'floor'|'shore'|'fan'|'crag'|'scree'|'fellfield'|'tundra'|'moraine'|'larch'|'krummholz'|'col'|'puna'
 //   SEOW.ZONES             each zone's words, and the nwouterwall zone its flora is read as (PLAN.md section 7.1: the NW outer wall's
 //                          larch, pines, steppe and floor, read in place; SEOW.nwZone)
 //   SEOW.lay(o)            the host's binding: {fields: (x,z)=>F, R, seed}; SEOW.at(x,z) is then {zone, F, clim}
@@ -51,6 +52,7 @@ SEOW.FROM=[-.55,-.83];   /* the gale's direction of travel's opposite (where it 
 // exposed shaded slope, the puna's bunchgrass on the sunny ones
 SEOW.zoneOf=function(F){
  if(F.water)return 'water';
+ if(F.road)return 'road';
  if(F.heap)return 'heap';
  if(F.melt==='floor'||F.melt==='bar'||F.melt==='pool')return 'floor';
  if(F.shore)return 'shore';
@@ -62,7 +64,7 @@ SEOW.zoneOf=function(F){
  if(warm<SEOW.BANDS.treeline)return 'tundra';
  if(F.moraine>3)return 'moraine';
  const sh=SEOW.shadeOf(F);
- if(sh>.18)return F.wind<SEOW.EXPOSED?'larch':'krummholz';
+ if(sh>.18)return F.wind<SEOW.EXPOSED-.06?'larch':'krummholz';   /* a margin under the exposure: a tree stands a few metres from its grid point */
  if(F.g<.06)return 'col';
  return 'puna';};
 // how shaded a point is (0..1 a south-facing slope; the stations stand near 53 S, so the shaded slopes face SOUTH): only a real slope counts
@@ -70,6 +72,7 @@ SEOW.shadeOf=function(F){const t=F.slope<.05?0:F.slope>.16?1:(F.slope-.05)/.11;r
 // each zone: its words, and the nwouterwall zone whose passes grow there (nwouterwall's 55 and 60, read in place: 'none' grows nothing)
 SEOW.ZONES={
  water:{nw:'water',name:'water (the meltwater brook)'},
+ road:{nw:'none',name:'the Ancients\' highway (board-formed concrete, 30 m, graded at 4 %: the Godsgate\'s one surviving artery)'},
  heap:{nw:'none',name:'a rockfall heap (megabreccia blocks fallen from the crags)'},
  floor:{nw:'floor',name:'the meltwater gully\'s floor (braided cobble and gravel bars)'},
  shore:{nw:'floor',name:'a tarn\'s strand (gravel and black basalt sand washed down from the wall: willows, sedge)'},

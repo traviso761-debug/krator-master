@@ -33,6 +33,29 @@ _mark('bake-ground');
 const inNear=(x,z)=>x>=NEAR.box[0]&&x<=NEAR.box[2]&&z>=NEAR.box[1]&&z<=NEAR.box[3];
 function terrainH(x,z){return inNear(x,z)?FIELD.h(x,z):groundH(x,z);}
 
+// ---------------------------------------------------------------- the Ancients' highway (station 1: SITE.road; PLAN.md section 3.3)
+// A road is DATA: its line (resampled every 10 m inside the near box), its width and its ruling grade. Its profile is the baked ground
+// along the line, smoothed over 300 m and held to the grade both ways (a forward and a backward pass: no step steeper than the Ancients'
+// 4 %); it is then GRADED INTO THE BAKED GROUND with core/terrain's flatten strokes (KFIELD.stroke, 31-core-field-brush.js: plain records,
+// {x, z, r, mode:'flatten', strength, y}, applied in order, so Godot replays the same ground): cut where the ground stands over it, filled
+// where it lies under, its shoulders eased over SITE.road.shoulder m. The pavement is drawn on the graded ground (47, below)
+const ROAD=(function(){const R=SITE.road;if(!R||!KFIELD.stroke)return null;const lim=NEAR.S-30,P=[];
+ for(let i=0;i<R.pts.length-1;i++){const a=R.pts[i],b=R.pts[i+1],n=Math.max(1,Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1])/10));
+  for(let k=0;k<n;k++){const t=k/n,x=a[0]+(b[0]-a[0])*t,z=a[1]+(b[1]-a[1])*t;if(Math.abs(x)<=lim&&Math.abs(z)<=lim)P.push([x,z]);}}
+ if(P.length<3)return null;
+ const n=P.length,ds=P.map((p,i)=>i?Math.hypot(p[0]-P[i-1][0],p[1]-P[i-1][1]):0),g0=P.map(p=>FIELD.h(p[0],p[1])),y=new Array(n);
+ for(let i=0;i<n;i++){let s=0,c=0;for(let k=Math.max(0,i-15);k<=Math.min(n-1,i+15);k++){s+=g0[k];c++;}y[i]=s/c;}
+ for(let i=1;i<n;i++)y[i]=clamp(y[i],y[i-1]-R.grade*ds[i],y[i-1]+R.grade*ds[i]);
+ for(let i=n-2;i>=0;i--)y[i]=clamp(y[i],y[i+1]-R.grade*ds[i+1],y[i+1]+R.grade*ds[i+1]);
+ const r=R.w/2+R.shoulder,strokes=[];for(let pass=0;pass<3;pass++)for(let i=0;i<n;i++)strokes.push({x:P[i][0],z:P[i][1],r,mode:'flatten',strength:1,y:y[i]});
+ strokes.forEach(st=>KFIELD.stroke(FIELD,st));
+ const pts=P.map((p,i)=>[p[0],p[1],y[i]]);let maxG=0;for(let i=1;i<n;i++)maxG=Math.max(maxG,Math.abs(y[i]-y[i-1])/(ds[i]||1));
+ const idx=KSPACE.create({cell:60});for(let i=0;i<n-1;i++)idx.insert(i,(P[i][0]+P[i+1][0])/2,(P[i][1]+P[i+1][1])/2,10+R.w);
+ const near=(x,z,pad)=>{let best=1e18,bi=-1,by=0;idx.query(x,z,pad,[]).forEach(i=>{const a=pts[i],b=pts[i+1],dx=b[0]-a[0],dz=b[1]-a[1],L2=dx*dx+dz*dz||1,
+  t=clamp(((x-a[0])*dx+(z-a[1])*dz)/L2,0,1),qx=a[0]+dx*t-x,qz=a[1]+dz*t-z,d2=qx*qx+qz*qz;if(d2<best){best=d2;bi=i;by=a[2]+(b[2]-a[2])*t;}});return {d:Math.sqrt(best),i:bi,y:by};};
+ return {rec:{format:'seouterwall-road',version:1,id:R.id,name:R.name,w:R.w,grade:R.grade,shoulder:R.shoulder,pts,strokes:strokes.length},strokes,near,maxGrade:maxG};})();
+_mark('road');
+
 // ---------------------------------------------------------------- the water: the brook, the model's tarn (stations 2-6)
 function waterH(x,z){
  if(STREAM){const n=STREAM.near(x,z,STREAM.w*1.6);if(n.i>=0&&n.d<STREAM.w*1.3)return n.y;}
@@ -50,17 +73,19 @@ const MODEL_LAKE=(function(){if(!MODEL_WATER.length)return null;const G=SEOW_REG
 
 const OBSTACLES=[];   // cylinders nothing grows inside (the heaps; the trees after the build: 89z)
 // ---------------------------------------------------------------- the rockfall heaps (core/terrain KRUBBLE: PLAN.md section 2.4)
-// The freeze-thaw prises blocks off the north slope's crags every noon; they pile at the slope's foot in heaps of megabreccia blocks.
-// Each heap stands where the ground first rises SITE.heaps.foot m over the flat, walking north from the divide, its foot set under the
-// lowest ground round it (a heap on a slope is buried on its upper side, never floating on its lower)
+// The freeze-thaw prises blocks off the crags every noon; they pile at the wall's foot in heaps of blocks. Each heap stands where the
+// ground first rises SITE.heaps.foot m over the floor, walking toward the wall (SITE.heaps.dir from x0 along rows z; or north from the
+// floor, along columns x), its foot set under the lowest ground round it (a heap on a slope is buried on its upper side, never floating)
 const HEAPS=(function(){const T=SITE.heaps;if(!T||typeof KRUBBLE==='undefined')return [];const L=[],n=T.n;
  const footY=(x,z,r)=>{let m=1e9;for(let i=0;i<16;i++){const a=i/16*TAU;for(const k of [.4,.8,1.05])m=Math.min(m,terrainH(x+Math.cos(a)*r*k,z+Math.sin(a)*r*k));}return m-.3;};
- for(let k=0;k<n;k++){const u=KRAND.unit(KRAND.hash(T.seed,k,1)),x=T.x[0]+(T.x[1]-T.x[0])*(k+.2+.6*u)/n;
-  const want=T.foot[0]+(T.foot[1]-T.foot[0])*KRAND.unit(KRAND.hash(T.seed,k,2));let z=-500;for(;z>-NEAR.S+80;z-=10){if(terrainH(x,z)>=want)break;}
-  if(z<=-NEAR.S+80)continue;
+ const lim=NEAR.S-80,inBox=(x,z)=>Math.abs(x)<lim&&Math.abs(z)<lim;
+ for(let k=0;k<n;k++){const u=KRAND.unit(KRAND.hash(T.seed,k,1)),want=T.foot[0]+(T.foot[1]-T.foot[0])*KRAND.unit(KRAND.hash(T.seed,k,2));let x,z;
+  if(T.dir){z=T.z[0]+(T.z[1]-T.z[0])*(k+.2+.6*u)/n;x=T.x0;while(inBox(x,z)&&terrainH(x,z)<want){x+=T.dir[0]*10;z+=T.dir[1]*10;}}
+  else{x=T.x[0]+(T.x[1]-T.x[0])*(k+.2+.6*u)/n;z=-500;while(inBox(x,z)&&terrainH(x,z)<want)z-=10;}
+  if(!inBox(x,z))continue;
   const rx=T.rx[0]+(T.rx[1]-T.rx[0])*KRAND.unit(KRAND.hash(T.seed,k,3)),rz=rx*(.55+.3*KRAND.unit(KRAND.hash(T.seed,k,4)));
   const H=KRUBBLE.heap({id:'heap'+k,x,z,y0:footY(x,z,rx),rx,rz,ry:(KRAND.unit(KRAND.hash(T.seed,k,5))-.5)*.6,h:rx*.32,lumps:6,blocks:16,size:[1.2,4.5],seed:KRAND.hash(T.seed,k,6)});
-  H.name='A rockfall heap (megabreccia blocks off the crags, '+(rx*2).toFixed(0)+' m across)';L.push(H);}
+  H.name='A rockfall heap ('+(SITE.rock&&SITE.rock.lib==='rock.basalt'?'basalt':'megabreccia')+' blocks off the crags, '+(rx*2).toFixed(0)+' m across)';L.push(H);}
  return L;})();
 SITE_HEAPS=HEAPS;
 const heapAt=HEAPS.length?(x,z)=>{for(const H of HEAPS){if(Math.abs(x-H.x)>H.rx+2||Math.abs(z-H.z)>H.rx+2)continue;if(KRUBBLE.heightAt(H,x,z)>.25)return 1;}return 0;}:()=>0;
@@ -76,16 +101,17 @@ function windAt(x,z,y){let m=0;for(let i=0;i<8;i++){const a=i/8*TAU;m+=terrainH(
 // ---------------------------------------------------------------- the fields (biomes/WORLD.md; BIOME-API.md)
 // One record a point (memo of the last): the height, the grade and aspect off the baked field, the climate (the mean with the aspect's
 // degree and a half), the site's crags, moraines and meltwater gully, the wind's exposure, the heaps, the brook's distance
-const _fm={x:NaN,z:NaN,F:null};
+const _fm={x:NaN,z:NaN,F:null},ROAD_HALF=ROAD?ROAD.rec.w/2:0;
 function fieldsAt(x,z){if(x===_fm.x&&z===_fm.z)return _fm.F;
  const y=terrainH(x,z),e=inNear(x,z)?NEAR.step:20,hx=(terrainH(x+e,z)-terrainH(x-e,z))/(2*e),hz=(terrainH(x,z+e)-terrainH(x,z-e))/(2*e),g=Math.hypot(hx,hz);
  const sunny=g>.005?hz/g:0,slope=clamp(g/1.1,0,1),mean=meanAt(y)+1.5*sunny*smooth(.02,.15,g);
  const P=sitePoint(x,z),n=STREAM?STREAM.near(x,z,140):{d:1e9,i:-1},streamD=n.i>=0?n.d:1e9;
+ const rd=ROAD?ROAD.near(x,z,ROAD.rec.w+20):{d:1e9},road=rd.d<ROAD_HALF+2,roadS=ROAD?smooth(ROAD_HALF+SITE.road.shoulder,ROAD_HALF,rd.d):0;
  const water=waterH(x,z)>y+.05,heap=heapAt(x,z)>.5,shore=!water&&!!MODEL_LAKE&&y<MODEL_LAKE.level+2.2&&g<.3&&MODEL_LAKE.zone(x,z);
- const F={y,g,slope,sunny,mean,perma:SEOW.climate(mean).perma,water,streamD,heap,shore,melt:P.melt,fan:P.fan,cobble:P.cobble,moraine:P.moraine,crag:P.crag,wall:P.wall||null,
+ const F={y,g,slope,sunny,mean,perma:SEOW.climate(mean).perma,water,streamD,heap,shore,road,roadS,melt:P.melt,fan:P.fan,cobble:P.cobble,moraine:P.moraine,crag:P.crag,wall:P.wall||null,
   wind:windAt(x,z,y),
   // what the NW outer wall's passes read (nwouterwall's 55: no tree in a field, in water, on the aufeis or in a pocket)
-  field:false,aufeis:false,pocket:false,rock:heap?1:smooth(.75,1.1,g),gully:0};
+  field:road,aufeis:false,pocket:false,rock:heap?1:smooth(.75,1.1,g),gully:0};   /* field: nwouterwall's 55 roots no tree in one (the road too) */
  _fm.x=x;_fm.z=z;_fm.F=F;return F;}
 if(SITE.amp)SEOW.AMP=SITE.amp;
 SEOW.lay({fields:fieldsAt,R:SITE.R,seed:SITE.seed});
@@ -99,7 +125,7 @@ const FIELDS={
  flow:(x,z)=>smooth(STREAM?STREAM.w*6:0,STREAM?STREAM.w:0,fieldsAt(x,z).streamD),
  cold:(x,z)=>clamp((2-fieldsAt(x,z).mean)/12,0,1),rock:(x,z)=>fieldsAt(x,z).rock,
  upland:(x,z)=>clamp((fieldsAt(x,z).y+200)/400,0,1),slope:(x,z)=>fieldsAt(x,z).slope,
- sunny:(x,z)=>fieldsAt(x,z).sunny,mean:(x,z)=>fieldsAt(x,z).mean,wind:(x,z)=>fieldsAt(x,z).wind,moraine:(x,z)=>fieldsAt(x,z).moraine};
+ sunny:(x,z)=>fieldsAt(x,z).sunny,mean:(x,z)=>fieldsAt(x,z).mean,wind:(x,z)=>fieldsAt(x,z).wind,moraine:(x,z)=>fieldsAt(x,z).moraine,road:(x,z)=>fieldsAt(x,z).road?1:0};
 
 // ---------------------------------------------------------------- the host binding (before the meshes: their painters and records need it)
 const waterMask=(x,z)=>{const w=waterH(x,z);if(w<-1e8)return 1;const d=terrainH(x,z)-w;return d<.15?0:d<.7?(d-.15)/.55:1;};
@@ -212,7 +238,7 @@ function groundW(F,x,z){const shade=SEOW.shadeOf(F),warm=F.mean+SEOW.AMP.warm,hi
  const melt=F.melt==='floor'||F.melt==='bar'||F.melt==='pool'?.95:F.melt==='bank'?.45:0;
  const cobble=Math.max(melt,F.fan*.9,F.melt==='fan'?.5:0,F.shore?.7:0,smooth(STREAM?STREAM.w*3:0,STREAM?STREAM.w:0,F.streamD));
  const rock=Math.max(smooth(.62,.95,F.g),F.crag>10?.55*smooth(.3,.55,F.g):0);   /* the crags' faces; a rib's crest on a lesser slope */
- const gravel=Math.max(smooth(.32,.6,F.g)*(1-rock)*.9,smooth(3,10,F.moraine)*.5,F.heap?1:0,F.wall==='talus'?.8:0);
+ const gravel=Math.max(smooth(.32,.6,F.g)*(1-rock)*.9,smooth(3,10,F.moraine)*.5,F.heap?1:0,F.wall==='talus'?.8:0,(F.roadS||0)*.85);   /* the road's shoulders: its graded fill */
  const tun=Math.max(hi*.7,smooth(1,7,F.moraine)*.45,shade>.18&&F.wind>=SEOW.EXPOSED?.4:0);
  const lich=Math.max(fell,smooth(.62,.9,F.wind)*.35,smooth(.45,.7,F.g)*.3);
  let br=.8+.32*KRAND.fbm(x*.0045,z*.0045,0,3,6197)+.1*(KRAND.vnoise(x*.06,z*.06,0,6192)-.5)-.1*needles;
@@ -246,7 +272,7 @@ _mark('ground-near');
  for(let j=0;j<=N;j++)for(let i=0;i<=N;i++){const x=-R2+i*st,z=-R2+j*st,ax=Math.abs(x),az=Math.abs(z);
   const y=h(i,j)-(ax<inner&&az<inner?30:2.5*smooth(NEAR.S*1.6,NEAR.S,Math.max(ax,az)));pos.push(x,y,z);
   const hx=(h(i+1,j)-h(i-1,j))/(2*st),hz=(h(i,j+1)-h(i,j-1))/(2*st),g=Math.hypot(hx,hz),sunny=g>.005?hz/g:0;
-  const F={g,slope:clamp(g/1.1,0,1),sunny,mean:meanAt(y)+1.5*sunny*smooth(.02,.15,g),melt:null,fan:0,moraine:0,crag:g>.45?20:0,heap:false,shore:false,wall:null,wind:.6,streamD:1e9};
+  const F={g,slope:clamp(g/1.1,0,1),sunny,mean:meanAt(y)+1.5*sunny*smooth(.02,.15,g),melt:null,fan:0,moraine:0,crag:g>.45?20:0,heap:false,shore:false,road:false,roadS:0,wall:null,wind:.6,streamD:1e9};
   const W=groundW(F,x,z);W[1][2]-=.22*W[0][0];   /* the larch from afar: a lee's wood reads darker than its litter alone (the mid ground has no trees) */
   w1.push(...W[0]);w2.push(...W[1]);}
  for(let j=0;j<N;j++)for(let i=0;i<N;i++){const x=-R2+(i+.5)*st,z=-R2+(j+.5)*st;if(Math.abs(x)<NEAR.S-st&&Math.abs(z)<NEAR.S-st)continue;
@@ -286,6 +312,21 @@ if(SITE_RECS.wall){const W=SITE_RECS.wall,P=W.pts[Math.floor(W.pts.length/2)];le
 // the tarn (the model's water), registered by its shore nearest the origin
 if(MODEL_LAKE){let best=null,bd=1e9;for(let x=-NEAR.S;x<=NEAR.S;x+=50)for(let z=-NEAR.S;z<=NEAR.S;z+=50){if(!MODEL_LAKE.inside(x,z))continue;const d=Math.hypot(x,z);if(d<bd){bd=d;best=[x,z];}}
  if(best)REGISTER_LAND({name:(SITE.tarn||'A tarn')+' ('+(BASE+MODEL_LAKE.level).toFixed(0)+' m: cobalt snowmelt in the cirque)',key:'water.tarn',x:best[0],z:best[1],y:MODEL_LAKE.level-6,r:40,h:10});}
+
+// ---------------------------------------------------------------- the road's pavement (station 1): a ribbon on the graded ground
+// across the road's width in 6 strips every 10 m, each vertex on the drawn (graded) ground 12 cm up, the Ancients' board-formed concrete
+// (the library's concrete.ancient, its own material: no ground layer spent); the shoulders are the ground's gravel (groundW)
+const ROAD_MESH=(function(){if(!ROAD)return null;const P=ROAD.rec.pts,n=P.length,W=ROAD.rec.w,C=6,pos=[],uv=[],idx=[];let s=0;
+ const Lr=typeof KMAT!=='undefined'&&KMAT.mode==='lib'?KMAT.packed('seouterwall','road.ancient'):null,T=Lr?KMAT.textures(Lr,{aniso:8}):null,sc=Lr?Lr.scale[0]:4;
+ for(let i=0;i<n;i++){const a=P[Math.max(0,i-1)],b=P[Math.min(n-1,i+1)],dx=b[0]-a[0],dz=b[1]-a[1],L=Math.hypot(dx,dz)||1,nx=-dz/L,nz=dx/L;if(i)s+=Math.hypot(P[i][0]-P[i-1][0],P[i][1]-P[i-1][1]);
+  for(let c=0;c<=C;c++){const q=(c/C-.5)*W,x=P[i][0]+nx*q,z=P[i][1]+nz*q;pos.push(x,FIELD.h(x,z)+.12,z);uv.push(q/sc,s/sc);}}
+ for(let i=0;i<n-1;i++)for(let c=0;c<C;c++){const a=i*(C+1)+c,b=a+1,d=a+C+1,e=d+1;idx.push(a,d,b,b,d,e);}
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.setIndex(idx);g.computeVertexNormals();
+ const mat=new THREE.MeshStandardMaterial({color:T?0xd8d4cc:0x8c8882,map:T?T.map:null,normalMap:T?T.normalMap||null:null,roughnessMap:T?T.roughnessMap||null:null,roughness:1,metalness:0,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-2});
+ [mat.map,mat.normalMap,mat.roughnessMap].forEach(t=>{if(t)t.wrapS=t.wrapT=THREE.RepeatWrapping;});
+ const m=new THREE.Mesh(g,mat);m.name='road:ancient';m.userData.host=true;m.userData.inspectLabel=ROAD.rec.name;scene.add(m);
+ [.2,.5,.8].forEach(u=>{const p=P[Math.round(u*(n-1))];REGISTER_LAND({name:ROAD.rec.name,key:'infrastructure.road',x:p[0],z:p[1],y:p[2]-1,r:ROAD.rec.w*.6,h:4});});
+ return m;})();
 
 // ---------------------------------------------------------------- the hazards (core/hazard: tags.hazard records; PLAN.md section 2)
 // core/tags records the hazard module reads (KHAZ.list, KHAZ.at, the export's `hazards`), not the inspector's volumes. THE GOD-BORE: the

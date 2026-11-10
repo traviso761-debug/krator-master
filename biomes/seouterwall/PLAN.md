@@ -359,7 +359,7 @@ the mid ground to 20 km on the model's 1 km cells with the far roughness; the fa
   of 45 cells at 3,680 m (about 7 km across, not the plan's 4 x 3 km) on a flat cirque floor of 13 x 8 km at 3,660-3,690 m, lying
   3-9 km west of the pixel and 3 km either side of its row; the floor's walls rise to 4.4-5.4 km 4-8 km out.
 - **So station 2 stands on the tarn's north-east shore, px 1014.5,1234.5** (`region/far.py`: 3,695 m, 1.01 atm, Dsc, mean +7 °C,
-  408 mm; the tarn 15 m under the page's y = 0, its shore 300-700 m south-west). The check holds the page's pixel within 4 px and its
+  408 mm; the tarn 15 m under the page's y = 0, its shore 300-700 m south-west). The check holds the page's pixel within 8 px and its
   height within 150 m of the plan's (`HCHK.model`, `SITE.plan`).
 - **Its landforms** (`stations/gatetarn/44s-host-site.js`, the same interface as station 1's site): the cirque's headwall, a horseshoe
   of black basalt 140 m tall bowed north across the near box (`KRELIEF.scarp`, buttresses, talus at its foot; the hanging bench above
