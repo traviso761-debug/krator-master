@@ -8,7 +8,7 @@
 //   the TALUS     KRELIEF.talus (38) against the ribs' and the outcrops' feet
 // The site is DATA the stage (45) reads: siteBuild(ground) makes the records once the model's ground exists; siteRelief(x, z) is then
 // metres over the model's ground; sitePoint(x, z) each record's part there (the zones' fields: 47).
-let SITE_RECS=null,SITE_SPRINGS=[],SITE_STAIR=null,DIKES=[],TALUS=null;
+let SITE_RECS=null,SITE_SPRINGS=[],SITE_STAIR=null,DIKES=[],TALUS=null,SITE_MOUTHS=[];
 // the slope's own swells and its fine roughness, under the gullies: core/rand's noise, never a page fbm
 function siteSwell(x,z){return 6*(KRAND.fbm(x*.0009+3.1,z*.0009-7.3,0,3,6302)-.5)*2+1.4*(KRAND.fbm(x*.008-2.2,z*.008+5.8,0,2,6303)-.5)*2;}
 const _cut=p=>p==='floor'||p==='head'||p==='wall'||p==='rim';

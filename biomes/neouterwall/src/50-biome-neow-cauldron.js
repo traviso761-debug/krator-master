@@ -52,8 +52,8 @@ NEOW.plantOfItem=item=>{for(const k in NEOW.PLANTS)if(NEOW.PLANTS[k].items.index
  BIO.bucket('fernbark',M.bark,{label:'Tree-fern trunks',uvScale:[1.2,1.6]});
  BIO.def('frond',BIO.geo.frond(4),M.frond,{label:'Steam tree fern (its fronds)'});
  BIO.def('reed',NWOW.G.tuft(),M.reed,{label:'Warm-shore reed'});}
-// a library card carries its own colour: its tint a pale grey; the procedural card takes the palette
-const libCol=(slot,c)=>NEOW.LIB[slot]?bright(C(0xffffff),.85+.15*rng()):c;
+// the cards are greyscale (the pack keeps none of the card's colour: materials.json tint keep 0), so a library card takes the palette too
+const libCol=(slot,c)=>c;
 // ---------------------------------------------------------------- the tree fern's builder: (T, st, lv) with lv 2 near, 1 mid
 // a trunk of matted roots (a tube, widest at its foot), a crown of arching fronds held at its top (each frond's base at the crown), a few
 // young croziers curled up in the middle and the dead fronds' skirt hanging under it
@@ -80,6 +80,7 @@ NEOW.PASSES=[{key:'treefern',cell:7,accept:(x,z,Z)=>Z==='grove'?.16+.6*warmK(x,z
 // and only note the candidates there; the drawing is done after, in this kit's registry
 const SPACE=KSPACE.create({cell:16});
 NEOW.buildTrees=function(R,q){q=q==null?1:q;const TREES=NEOW.TREES;TREES.length=0;SPACE.clear();const st={trunk:0,fronds:0,trees:0,heroes:0};const LOD=BIO.radii(),S=NEOW.SPECIES[0];
+ if(!NEOW.THERM)return {trees:0,heroes:0,fronds:0,tris:{trunk:0},why:'no springs: the steam tree fern lives on their warm ground'};   /* the cauldrons' plant only */
  const ZA=(x,z)=>NEOW.zoneAt?NEOW.zoneAt(x,z):NEOW.at(x,z).zone;
  NEOW.PASSES.forEach((P,pi)=>{NWOW.place(P.cell,900+pi,(x,z)=>P.accept(x,z,ZA(x,z))*q,(x,y,z,_z,i,j)=>{const Z=ZA(x,z);
    if(NWOW.blocked&&NWOW.blocked(x,z,P.pad))return;if(SPACE.some(x,z,P.pad,o=>Math.hypot(x-o.x,z-o.z)<o.r+P.pad))return;
@@ -88,9 +89,9 @@ NEOW.buildTrees=function(R,q){q=q==null?1:q;const TREES=NEOW.TREES;TREES.length=
    T.lv=BIO.lodD(x,z)<LOD.hero?2:1;TREES.push(T);SPACE.insert({x,z,r:T.crownR*.4+.3},x,z,T.crownR+2);},{R,lodMax:LOD.mid});});
  TREES.forEach(T=>{reseed(T.seed);buildFern(T,st,T.lv);st.trees++;if(T.lv===2)st.heroes++;});
  return {trees:st.trees,heroes:st.heroes,fronds:st.fronds,tris:{trunk:st.trunk}};};
-// the reeds: dense in the shore's band, a few in the mats' cool edge and the wet meadow, in the floor's band round the LOD spine
+// the reeds: dense in the shore's band, a few in the mats' cool edge, in the floor's band round the LOD spine
 NEOW.buildFloor=function(R,q){q=q==null?1:q;let n=0;const LOD=BIO.radii(),far=LOD.floor[1],BOXES=BIO.host.origin.map(o=>[o[0]-far,o[1]-far,o[0]+far,o[1]+far]);
- const ZA=(x,z)=>NEOW.zoneAt?NEOW.zoneAt(x,z):NEOW.at(x,z).zone,ACC=Z=>Z==='shore'?.55:Z==='mat'?.06:Z==='meadow'?.015:0,PTS=[];
+ const ZA=(x,z)=>NEOW.zoneAt?NEOW.zoneAt(x,z):NEOW.at(x,z).zone,ACC=Z=>Z==='shore'?.55:Z==='mat'?.06:0,PTS=[];   /* the warm shore and the mats' edge: no reed on a dry slope (station 4) */
  NWOW.place(1.3,950,(x,z)=>ACC(ZA(x,z))*q,(x,y,z,_z,i,j)=>{PTS.push([x,y,z,ZA(x,z),i,j]);},{R,lodMax:far,boxes:BOXES});
  PTS.forEach(p=>{reseed(KRAND.hash(SEED,950,p[4],p[5]));const h=rr(1.4,2.6)*(p[3]==='shore'?1:.7);
   BIO.put('reed',[p[0],p[1]-.05,p[2]],qEuler(rr(-.06,.06),rr(0,TAU),rr(-.06,.06)),[h*rr(.45,.7),h,h*rr(.45,.7)],libCol('reed',bright(vary(pick(PAL.reed),.03,.08,.06),1)));n++;});

@@ -33,7 +33,7 @@ const HCHK={
  // the station's landforms, each where the zones say: the tarn, the apron's grove, the wall, the dikes, the springs, the stair, the mats and
  // the sinter, drawn on the near ground's zone raster; the dikes and the springs registered
  zones(need,ZC,reg){const lack=need.filter(z=>!(ZC[z]>0)),dk=reg.filter(r=>r.key==='landform.dike').length,sp=reg.filter(r=>r.key==='landform.spring').length;
-  return{ok:!lack.length&&dk>=12&&sp>=Math.min(3,SITE.springs.length)&&sp===SITE.springs.length,detail:need.map(z=>z+' '+(ZC[z]||0)).join(', ')+'; '+dk+' dike fins, '+sp+' springs'+(lack.length?'; missing '+lack.join(', '):'')};},
+  return{ok:!lack.length&&dk>=(SITE.need?SITE.need[0]:12)&&sp===SITE.springs.length,detail:need.map(z=>z+' '+(ZC[z]||0)).join(', ')+'; '+dk+' dike fins, '+sp+' springs'+(lack.length?'; missing '+lack.join(', '):'')};},
  // the springs: each on the apron at the wall's foot, its water over its ground, the main spring the hottest and its ground over 60 °C
  springs(S,H){if(!S||!S.length)return{ok:false,detail:'no springs'};let bad=0;S.forEach(q=>{const y=terrainH(q.x,q.z);if(!(q.level>y-.05)||sitePoint(q.x,q.z).part==='model'&&q.d<0)bad++;});
   const hot=H(S[0].x,S[0].z),main=S[0].temp>=Math.max(...S.map(q=>q.temp));
@@ -48,7 +48,7 @@ const HCHK={
   return{ok:n>=40&&grove>n*.5&&bad===0&&warm>0,detail:n+' steam tree ferns: '+grove+' in the grove, '+warm+' on ground the springs warm; '+bad+' in water, on the mats or the sinter'};},
  // nothing roots in water, on a wall, on a dike or in a spring
  roots(TREES){let wet=0,wall=0,dike=0,hot=0;TREES.forEach(T=>{const F=NEOW.FIELDS(T.x,T.z),z=NEOW.zoneOf(F);if(F.water)wet++;if(z==='wall')wall++;if(F.dike)dike++;if(F.spring||F.stair)hot++;});
-  return{ok:wet+wall+dike+hot===0&&TREES.length>100,detail:TREES.length+' trees; '+wet+' in water, '+wall+' on a wall, '+dike+' on a dike, '+hot+' in a spring or the stair'};},
+  return{ok:wet+wall+dike+hot===0&&(KIND==='portal'||TREES.length>100),detail:TREES.length+' trees; '+wet+' in water, '+wall+' on a wall, '+dike+' on a dike, '+hot+' in a spring or the stair'};},
  // the sky: the shared sky at the station's pixel, its far land cast from the model (three layers of 1024)
  sky(S){const R=S.preset.ridges||[],ok=R.length===3&&R.every(r=>r.profile&&r.profile.length===1024)&&S.preset.site.px===NEOW_REGION.site.px;
   return{ok,detail:'site px '+S.preset.site.px+','+S.preset.site.py+'; ridges '+R.map(r=>(r.dist/1000).toFixed(0)+' km').join(', ')};},
@@ -63,8 +63,19 @@ HCHK.gullies=(R)=>{if(!R||!R.lines)return{ok:false,detail:'no gully record'};let
  return{ok:R.lines.length>=3&&climb===0,detail:R.lines.length+' gully lines, '+n+' floor steps, '+climb+' climbing'};};
 HCHK.ribs=(reg,need)=>{const dk=reg.filter(r=>r.key==='landform.dike').length,ore=reg.filter(r=>r.key==='landform.ore').length;
  return{ok:dk>=need[0]&&ore>=need[1],detail:dk+' dike ribs, '+ore+' ore outcrops (want '+need[0]+' and '+need[1]+')'};};
-const CAULDRON=SITE.kind!=='badlands';
-const ZONES_NEED=CAULDRON?['water','grove','wall','dike','spring','stair','mat','shore']:['gully','wall','dike','tundra'];
+const CAULDRON=SITE.kind==='cauldron'||SITE.kind==null,KIND=SITE.kind||'cauldron';
+const ZONES_NEED={cauldron:['water','grove','wall','dike','spring','stair','mat','shore'],badlands:['gully','wall','dike','tundra'],
+ scarp:['scarp','dike','meadow'],portal:['mouth','ice','wall']}[KIND];   /* the cairns are under a raster cell: the registry counts them */
+// THE MIRROR SCARP (station 4): slump blocks under their head scarps, the mirrors bared on them, pinnacles on the fronts
+HCHK.slumps=(R,ZC,reg,need)=>{const S=R&&R.slumps||[],pin=reg.filter(r=>r.key==='landform.pinnacle').length,blocks=S.reduce((a,q)=>a+q.n,0);
+ return{ok:S.length>=1&&blocks>=3&&(ZC.scarp||0)>20&&pin>=need,detail:S.length+' slumps, '+blocks+' blocks; '+(ZC.scarp||0)+' mirror-scarp cells; '+pin+' landslip pinnacles (want '+need+')'};};
+// THE PORTAL (station 5a): the cave's mouth cut and registered at the valley's head, the floor under 5.9 km (PLAN.md section 2a: no point
+// of the walk stands over it), the cairns down the floor
+HCHK.portal=(reg,floor,need)=>{const m=reg.filter(r=>r.key==='landform.mouth').length,c=reg.filter(r=>r.key==='landform.cairn').length,hi=Math.max(...floor.map(p=>BASE+p[2]));
+ return{ok:m===1&&c>=need&&hi<=5900+15,detail:m+' portal, '+c+' cairns; the valley floor\'s highest point on the page '+hi.toFixed(0)+' m'};};
+// a cauldron's cave mouth (station 5): cut, registered, its floor over the water
+HCHK.mouths=(reg,M)=>{const m=reg.filter(r=>r.key==='landform.mouth').length;const ok=m===M.length&&M.every(q=>q.floorY>LAKE_LV+5);
+ return{ok,detail:m+' mouths registered of '+M.length+(M.length?'; floors '+M.map(q=>q.floorY.toFixed(0)+' m over the tarn').join(', '):'')};};
 const _zoneCounts=()=>{const n={};for(let k=0;k<ZR.length;k++){const z=ZONE_IDS[ZR[k]];n[z]=(n[z]||0)+1;}return n;};
 const _allTrees=()=>(NWOW.TREES||[]).concat(NEOW.TREES||[]);
 HCHK.zonesOnly=(need,ZC)=>{const lack=need.filter(z=>!(ZC[z]>0));return{ok:!lack.length,detail:need.map(z=>z+' '+(ZC[z]||0)).join(', ')+(lack.length?'; missing '+lack.join(', '):'')};};
@@ -76,7 +87,10 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),Z
   add('the springs at the wall\'s foot, the main one hottest',HCHK.springs(SITE_SPRINGS,heatAt));
   add('the sinter stair steps down to the tarn',HCHK.stair(SITE_STAIR,WATER_RECS&&WATER_RECS.stair));
   add('tree ferns on the warm grove',HCHK.ferns(NEOW.TREES,NEOW.FIELDS));}
- else{
+ if(CAULDRON&&SITE_MOUTHS.length)add('the cave\'s mouth cut over the water',HCHK.mouths(REG,SITE_MOUTHS));
+ if(KIND==='scarp'){add('the mirror scarp\'s landforms on the ground',HCHK.zonesOnly(ZONES_NEED,ZC));add('the slumps, their mirrors and pinnacles',HCHK.slumps(SITE_RECS,ZC,REG,SITE.need[0]));}
+ if(KIND==='portal'){add('the portal\'s landforms on the ground',HCHK.zonesOnly(ZONES_NEED,ZC));add('the portal cut at the valley\'s head, the floor under 5.9 km',HCHK.portal(REG,SITE_RECS.floor,SITE.need[0]));}
+ if(KIND==='badlands'){
   add('the badlands\' landforms on the ground (gullies, walls, ribs, tundra)',HCHK.zonesOnly(ZONES_NEED,ZC));
   add('the gullies\' floors never climb downstream',HCHK.gullies(SITE_RECS&&SITE_RECS.gully));
   add('the dike ribs and the ore outcrops registered',HCHK.ribs(REG,SITE.need||[20,6]));}
@@ -93,8 +107,12 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
   add('the main spring cold',HCHK.springs(SITE_SPRINGS,()=>NEOW_REGION.site.mean));
   add('the stair climbing',HCHK.stair(Object.assign({},SITE_STAIR,{levels:SITE_STAIR.levels.map((y,k)=>k===2?y+5:y)}),WATER_RECS&&WATER_RECS.stair));
   add('a tree fern on the sinter',HCHK.ferns(NEOW.TREES.concat([{x:SITE_SPRINGS[0].x,z:SITE_SPRINGS[0].z,zone:'grove'}]),NEOW.FIELDS));
-  add('a tree in the tarn',HCHK.roots(_allTrees().concat([{x:-1200,z:-1500}])));}
- else{
+  const W0=MODEL_WATER.filter(w=>Math.hypot(w.x,w.z)<6000).reduce((a,w)=>terrainH(w.x,w.z)<terrainH(a.x,a.z)?w:a,MODEL_WATER[0]);   /* the tarn's deepest cell near the page */
+  add('a tree in the tarn',HCHK.roots(_allTrees().concat([{x:W0.x,z:W0.z}])));}
+ if(CAULDRON&&SITE_MOUTHS.length)add('the mouth not cut',HCHK.mouths(REG.filter(r=>r.key!=='landform.mouth'),SITE_MOUTHS));
+ if(KIND==='scarp'){add('no mirror scarp',HCHK.slumps(SITE_RECS,Object.assign({},ZC,{scarp:0}),REG,SITE.need[0]));add('no pinnacle',HCHK.slumps(SITE_RECS,ZC,REG.filter(r=>r.key!=='landform.pinnacle'),SITE.need[0]));}
+ if(KIND==='portal'){add('the floor over 5.9 km',HCHK.portal(REG,SITE_RECS.floor.map(p=>[p[0],p[1],p[2]+400]),SITE.need[0]));add('no portal cut',HCHK.portal(REG.filter(r=>r.key!=='landform.mouth'),SITE_RECS.floor,SITE.need[0]));}
+ if(KIND==='badlands'){
   add('no gully cut',HCHK.zonesOnly(ZONES_NEED,Object.assign({},ZC,{gully:0})));
   add('a gully climbing',HCHK.gullies(Object.assign({},SITE_RECS.gully,{lines:SITE_RECS.gully.lines.map((L,i)=>i?L:Object.assign({},L,{pts:L.pts.map((p,k)=>k===3?[p[0],p[1],p[2]+40]:p)}))})));
   add('no ore outcrop',HCHK.ribs(REG.filter(r=>r.key!=='landform.ore'),SITE.need||[20,6]));

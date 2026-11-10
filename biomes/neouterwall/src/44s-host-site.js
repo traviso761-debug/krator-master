@@ -24,7 +24,7 @@ function APRON_PT(t,inland){const L=[0];for(let i=1;i<_toe.length;i++)L.push(L[i
  const s=(t+1)/2*L[L.length-1];let i=0;while(i<_toe.length-2&&L[i+1]<s)i++;const a=_toe[i],b=_toe[i+1],k=(s-L[i])/(L[i+1]-L[i]),dx=b[0]-a[0],dz=b[1]-a[1],n=Math.hypot(dx,dz);
  return [a[0]+dx*k-dz/n*inland,a[1]+dz*k+dx/n*inland];}
 // THE RECORDS (made once the model's ground exists: 45 calls siteBuild): plain data, JSON-safe
-let SITE_RECS=null,SITE_SPRINGS=[],SITE_STAIR=null,DIKES=[],TALUS=null;
+let SITE_RECS=null,SITE_SPRINGS=[],SITE_STAIR=null,DIKES=[],TALUS=null,SITE_MOUTHS=[];
 const _g0={f:null};
 // the apron and the model: the higher wins inland (the wall's foot is the model's), the apron's front lakeward; past its reach the model
 function apronGround(x,z,m){const d=apronD(x,z),A=SITE.apron;if(d>A.reach||d<-80)return m;const y=apronY(x,z,d);
@@ -53,7 +53,13 @@ function siteBuild(ground){_g0.f=ground;const g1=(x,z)=>apronGround(x,z,ground(x
  const a=[S0.x-nx*(S0.r+2),S0.z-nz*(S0.r+2)],b=[S0.toe[0]-nx*6,S0.toe[1]-nz*6],top=apronY(a[0],a[1],apronD(a[0],a[1]))-.6;
  const N=SITE.stair.treads,lv=[];for(let k=0;k<N;k++)lv.push(top-(top-.6)*k/(N-1));
  SITE_STAIR={a,b,levels:lv,w:SITE.stair.w,n:[nx,nz],len:Math.hypot(b[0]-a[0],b[1]-a[1])};
- SITE_RECS={apron:SITE.apron,dikes:DIKES.map(B=>({id:B.id,dike:B.dike,x:B.x,z:B.z,y0:B.y0,top:B.top})),springs:SITE_SPRINGS,stair:SITE_STAIR};
+ // a cave's mouth (station 5: the Epidote Cave's inner mouth): from its station on the toe, in across the apron to the wall's foot (where
+ // the ground rises 2 m over the apron), facing out of the rock; its floor the apron's there (47 cuts it: KCARVE)
+ SITE_MOUTHS=(SITE.mouths||[]).map(M=>{const tA=APRON_PT(M.t,0),tB=APRON_PT(M.t,1),nx=tB[0]-tA[0],nz=tB[1]-tA[1];let c=null;
+  for(let d=10;d<SITE.apron.reach+200;d+=2){const x=tA[0]+nx*d,z=tA[1]+nz*d,dd=Math.min(d,SITE.apron.reach);if(ground(x,z)>apronY(x,z,dd)+2){c=[x,z,dd];break;}}
+  if(!c)c=[tA[0]+nx*200,tA[1]+nz*200,Math.min(200,SITE.apron.reach)];
+  return {id:M.id,name:M.name,c:[c[0],c[1]],n:[-nx,-nz],hw:M.hw,depth:M.depth,h:M.h,floorY:apronY(c[0],c[1],c[2])+.2};});
+ SITE_RECS={mouths:SITE_MOUTHS,apron:SITE.apron,dikes:DIKES.map(B=>({id:B.id,dike:B.dike,x:B.x,z:B.z,y0:B.y0,top:B.top})),springs:SITE_SPRINGS,stair:SITE_STAIR};
  return SITE_RECS;}
 // a spring's station on the toe (APRON_PT's t) from its place in the cell (u: 0 the west dike .. 1 the east): SITE.springT [from, span]
 function SPRING_T(u){const T=SITE.springT||[-.26,.47];return T[0]+T[1]*u;}

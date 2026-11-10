@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """The stations' ground and horizon, cut from the scale model (region/data: tools/scale-model/extract_region.py 'ne outer wall', 5.1).
 
-    python3 biomes/neouterwall/region/far.py             # writes region/station-<name>.json for every station in SITES
+    python3 biomes/neouterwall/region/far.py             # writes region/station-<name>.json for stations 1-3 (region/data)
+    NEOW_DATA=data-east python3 biomes/neouterwall/region/far.py   # stations 4, 5 and 5a (region/data-east: horizon-east.json's cut)
 
 The cut (2026-11-10, the model's 5.1 data in tools/scale-model/model/data; the regions and settlements from the page's defaults,
 model/src/51-region-store.js `defRegs` and 60-settlements.js `defSetts`, written out as JSON lists):
@@ -34,7 +35,10 @@ import numpy as np
 from PIL import Image
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-D = os.path.join(HERE, 'data')
+# the cut this run reads (NEOW_DATA, default 'data'): stations 1-3 read region/data, stations 4-5a region/data-east (horizon-east.json;
+# a separate cut so the first stations' bytes do not move). Each SITES entry names its cut ('data'); only this run's are written
+CUT = os.environ.get('NEOW_DATA', 'data')
+D = os.path.join(HERE, CUT)
 # the stations (PLAN.md section 7, the build plan of 2026-11-09: its 5.1 pixels)
 SITES = {
     # the Vitreous Boxwork Tarn's south-east shore (the tarn 1258,326 at 2,950 m, ~15 x 11 km on the 1 km grid): the page holds the shore,
@@ -49,6 +53,13 @@ SITES = {
     # the skarn ribs between the two cauldrons (4.78 km, ET, 0.88 atm): a slope rising south-west ~7%, the model smooth at 1 km; the
     # station cuts its gullies and stands its ribs on it (station 3; inside the cut's box, which already reaches 320 km round it)
     'badlands': {'px': 1200, 'py': 330, 'title': 'The Epidote Badlands'},
+    # (NEOW_DATA=data-east python3 region/far.py) the Gate shoulder's east flank above the Narrows (2.87 km, Csa): station 4
+    'shoulder': {'px': 1430, 'py': 345, 'title': 'The Gate Shoulder', 'data': 'data-east'},
+    # the Epidote-Steam Tarn's north shore by the cave's inner mouth (1340,336; the tarn 2,670 m, WH +11): station 5
+    'steam': {'px': 1340, 'py': 336.6, 'title': 'The Epidote-Steam Tarn', 'level': True, 'clim': [1342, 338], 'data': 'data-east'},
+    # the Portal Valley's head at the cave's portal (1331,302): 'base' is the valley floor the plan sets there (5,900 m, section 2a), not
+    # the model's uncut wall (the map edit that carves it is owed): station 5a
+    'portal': {'px': 1331, 'py': 301.6, 'title': 'The Portal', 'base': 5900.0, 'data': 'data-east'},
 }
 EYE = 30.0            # m over the ground: a viewer on a rise
 R_PLANET = 84.0 * 360 / (2 * math.pi) * 1000      # m: the sky model's frame (kmPerDeg 84)
@@ -107,7 +118,7 @@ def tarn_level(S):
 
 def site_of(name, S):
     px, py = S['px'], S['py']
-    h = tarn_level(S) if S.get('level') else height(px, py)
+    h = S['base'] if S.get('base') else tarn_level(S) if S.get('level') else height(px, py)
     cpx, cpy = S.get('clim', (px, py))
     lat = -40 - (py - 690) * 2000 / 1000 / 84          # the sky model's frame (89-atmos-e-skymodel.js: refLat -40 at py 690)
     cls = R['classes'][int(full(CL, cpx, cpy))]['code']
@@ -173,6 +184,8 @@ def places_of(S):
 
 def main():
     for name, S in SITES.items():
+        if S.get('data', 'data') != CUT:
+            continue
         site = site_of(name, S)
         base = site['base']
         rec = {'format': 'neouterwall-station', 'version': 1, 'source': R.get('source'), 'site': site, 'eye': EYE, 'planetR': round(R_PLANET),

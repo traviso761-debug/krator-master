@@ -28,6 +28,16 @@ const THERM=(function(){if(typeof KTHERM==='undefined'||!SITE_SPRINGS.length)ret
 const heatAt=THERM?(x,z)=>THERM.heatAt(x,z):()=>NEOW_REGION.site.mean;
 NEOW.THERM=THERM;
 
+// ---------------------------------------------------------------- the caves' mouths (core/terrain KCARVE alcoves; stations 5 and 5a)
+// A station's site gives its mouths (44s: SITE_MOUTHS, each {id, name, c, n (out of the rock), hw, depth, h, floorY}): each an alcove whose
+// mouth is on the rock's face, its floor the site's, folded into the ground before the bake (KCARVE.fold), its hood meshed on the ground's
+// material (below), on a 1 m inset (KFIELD) so the mouth is drawn and no ramp of spikes is cut (the W outer wall's cave houses' code)
+const CAVES=(typeof SITE_MOUTHS==='undefined'||!SITE_MOUTHS.length||typeof KCARVE==='undefined')?[]:SITE_MOUTHS.map(M=>KCARVE.add({id:M.id,kind:'alcove',c:M.c,n:M.n,hw:M.hw,
+ depth:M.depth,h:M.h,floorY:M.floorY,base:(x,z)=>groundH(x,z),margin:4.5,pad:1.6,cell:.4,mouth:1.5,name:M.name}));
+const CAVE_STEEP=CAVES.length?Math.max(40,...CAVES.map(Q=>KCARVE.minSteep(Q)*1.2)):40;
+const CAVE_BOX=CAVES.map(Q=>{const R=Q.depth+Q.hw+8,q=v=>Math.round(v/NEAR.step)*NEAR.step;return [q(Q.c[0]-R-NEAR.step),q(Q.c[1]-R-NEAR.step),q(Q.c[0]+R+NEAR.step),q(Q.c[1]+R+NEAR.step)];});
+NEOW.CAVES=CAVES;
+const cutH=(x,z)=>{const h=groundH(x,z);return CAVES.length?KCARVE.fold(h,x,z,{steep:CAVE_STEEP}):h;};
 // THE BAKED GROUND: the near box on KFIELD (the mesh's grid); terrainH reads it there and the function beyond. THE STAIR'S INSET (KFIELD
 // opt.insets): a finer grid over the sinter stair (SITE.stair.step, 2 m: it divides the base's 8 m, so the inset's edge lies on the base's
 // lattice lines); terrainH reads the inset there, so a tread's still sits in its cut and its dam is drawn, not smoothed into the 8 m grid
@@ -38,8 +48,9 @@ const ST_BOX=ST_STEP&&SITE_STAIR?(()=>{const T=SITE_STAIR,p=T.w/2+20,xs=[T.a[0],
 // inset does not already hold them; each box on the base's lattice
 const SP_BOX=ST_STEP?SITE_SPRINGS.map(S=>{const p=S.r+8,q=v=>Math.round(v/NEAR.step)*NEAR.step;return [q(S.x-p-NEAR.step),q(S.z-p-NEAR.step),q(S.x+p+NEAR.step),q(S.z+p+NEAR.step)];})
  .filter(b=>!ST_BOX||b[2]<=ST_BOX[0]||b[0]>=ST_BOX[2]||b[3]<=ST_BOX[1]||b[1]>=ST_BOX[3]).filter((b,i,A)=>!A.slice(0,i).some(c=>!(b[2]<=c[0]||b[0]>=c[2]||b[3]<=c[1]||b[1]>=c[3]))):[];
-const INSETS=(ST_BOX?[{box:ST_BOX,step:ST_STEP,name:'neouterwall.stair'}]:[]).concat(SP_BOX.map((b,i)=>({box:b,step:ST_STEP,name:'neouterwall.spring'+i})));
-const FIELD=KFIELD.bake((x,z)=>groundH(x,z),NEAR.box,NEAR.step,{name:'neouterwall.'+SITE.name,insets:INSETS});
+const INSETS=(ST_BOX?[{box:ST_BOX,step:ST_STEP,name:'neouterwall.stair'}]:[]).concat(SP_BOX.map((b,i)=>({box:b,step:ST_STEP,name:'neouterwall.spring'+i})))
+ .concat(CAVE_BOX.map((b,i)=>({box:b,step:1,name:'neouterwall.mouth'+i})));
+const FIELD=KFIELD.bake(cutH,NEAR.box,NEAR.step,{name:'neouterwall.'+SITE.name,insets:INSETS});
 // the inset's edge pinned to the base's line between its lattice points (the base mesh's triangle edge there), so the two meshes meet
 // without a crack; the stair has eased back into the apron by its edge, so nothing drawn moves
 FIELD.insets.forEach(g=>{const B=FIELD,lin=(x,z)=>{const u=(x-B.x0)/B.step,v=(z-B.z0)/B.step,i=Math.floor(u+1e-9),j=Math.floor(v+1e-9),fu=u-i,fv=v-j;
@@ -79,13 +90,15 @@ function fieldsAt(x,z){if(x===_fm.x&&z===_fm.z)return _fm.F;
  const sunny=g>.005?hz/g:0,slope=clamp(g/1.1,0,1),mean=meanAt(y)+1.5*sunny*smooth(.02,.15,g);
  const P=sitePoint(x,z),w=waterH(x,z),water=w>y+.05,heat=heatAt(x,z);
  const F={y,g,slope,sunny,mean,perma:NEOW.climate(mean).perma,water,heat,spring:!!springAt(x,z),stair:P.part==='stair',dike:P.part==='dike',
-  talus:P.talus,apron:siteApron(x,z),part:P.part,shoreD:MODEL_LAKE?y:1e9,   /* the shore: height over the tarn (no tarn, no shore: station 3) */
+  talus:P.talus,apron:siteApron(x,z),part:P.part,cave:CAVES.length?KCARVE.recessD(x,z)<1:false,mirror:P.part==='head'&&g>.55,shoreD:MODEL_LAKE?y:1e9,   /* the shore: height over the tarn (no tarn, no shore: station 3) */
  
   // what the NW outer wall's passes read (nwouterwall's 55: no tree in a field, in water, on the aufeis or in a pocket)
-  field:false,aufeis:false,pocket:false,floor:false,gully:P.part==='floor'||P.part==='head'?1:0,rock:P.part==='dike'?1:smooth(.75,1.1,g)};
+  field:g>.95,aufeis:false,pocket:false,floor:false,   /* field: the NW outer wall's tree passes skip it: here a wall's face (no tree there) */
+ gully:P.part==='floor'||P.part==='head'?1:0,rock:P.part==='dike'?1:smooth(.75,1.1,g)};
  _fm.x=x;_fm.z=z;_fm.F=F;return F;}
 if(SITE.amp)NEOW.AMP=SITE.amp;
-if(SITE.bands)NEOW.BANDS=SITE.bands;   /* a station's own tree line (3: Koppen's ET, the warmest month under 10 °C, treeless) */
+if(SITE.bands)NEOW.BANDS=SITE.bands;
+if(SITE.nwMap)for(const k in SITE.nwMap)NEOW.ZONES[k].nw=SITE.nwMap[k];   /* a station's own reading of the NW outer wall's flora (4: its steppe on a dry Csa slope) */   /* a station's own tree line (3: Koppen's ET, the warmest month under 10 °C, treeless) */
 NEOW.lay({fields:fieldsAt,R:SITE.R,seed:SITE.seed});
 // THE NW OUTER WALL'S FLORA, read in place (PLAN.md section 4; build.py slots its layout and its passes): its passes ask NWOW for the
 // fields and the zone; they get this page's fields, its swing, and each NEOW zone as the nwouterwall zone that grows there (NEOW.ZONES' nw)
@@ -107,8 +120,9 @@ const SPINE=SITE.spine||[[SITE_SPRINGS[0].x,SITE_SPRINGS[0].z],SITE_STAIR?SITE_S
 BIO.init({tags:'neouterwall',THREE:THREE,scene:scene,terrainH:terrainH,field:FIELD,waterH:waterH,mask:(x,z)=>waterMask(x,z),
  obstacles:OBSTACLES,ticks:tick,seed:SITE.seed,origin:SPINE,center:[0,0],fields:FIELDS,register:REGISTER,err:reportErr,
  eye:()=>[camera.position.x,camera.position.y,camera.position.z],
- lod:{hero:400,mid:950,far:SITE.R*1.2,floor:[260,600]}});
+ lod:{hero:400,mid:950,far:SITE.R*1.2,floor:SITE.floor||[260,600]}});   /* SITE.floor: a station's floor band (4: the dry steppe's plumegrass under its cap) */
 BIO.setSun([sun.position.x,sun.position.y,sun.position.z]);
+window._exportBox=[Math.round(SPINE[0][0])-150,Math.round(SPINE[0][1])-150,Math.round(SPINE[0][0])+150,Math.round(SPINE[0][1])+150];   /* verify.py's export profile: where the page grows */
 _mark('init');
 
 // ---------------------------------------------------------------- the library layers (or procedural without the pack)
@@ -202,11 +216,13 @@ function groundW(F,x,z){const warm=F.mean+NEOW.AMP.warm,TL=NEOW.BANDS.treeline,h
  const moss=wood*(1-HK.mat)*.85;
  const gravel=Math.max(F.y<2.6&&!F.water?.7:0,F.talus>1?smooth(1,6,F.talus)*.8:0,F.dike?.6:0,F.water?.6:0);
  const bare=F.part==='wall'||F.part==='rim'||F.part==='head'?.8*smooth(.25,.6,F.g):0;   /* a badland gully's walls: bare skarn (station 3) */
- const rock=Math.max(steep,F.dike?.9:0,F.talus>4?.25:0,bare);
+ const rock=Math.max(steep,F.dike?.9:0,F.talus>4?.25:0,bare,F.mirror?1:0,F.cave?1:0);
  const sinter=Math.max(HK.sinter,F.stair?1:0,F.spring?1:0)*(1-steep*.6);
  const mat=HK.mat*(1-HK.scald*.7)*(1-steep);
  const tun=hi*.75*(1-steep);
  let br=.8+.32*KRAND.fbm(x*.0045,z*.0045,0,3,6197)+.1*(KRAND.vnoise(x*.06,z*.06,0,6192)-.5)-.1*moss;
+ if(F.mirror)br*=.42;   /* the mirror scarp's pseudotachylite: near black (a stand-in: the glaze and the texture are owed, KNOWN_ISSUES.md) */
+ if(F.cave)br*=KCARVE.floorOcc(x,z)*.8;   /* a mouth's floor sees little sky (KCARVE's own occlusion) */
  return [[moss*(1-bare),Math.max(gravel,F.gully?.75:0),rock,sinter],[tun*(1-bare),mat,br,Math.max(steep,F.dike?1:0,bare)]];}
 
 // ---------------------------------------------------------------- the near ground: the baked field's own grid, one mesh
@@ -240,6 +256,16 @@ NWOW.zoneAt=(x,z)=>NEOW.nwZone(NEOW.zoneAt(x,z));
  g.setAttribute('aW2',new THREE.Float32BufferAttribute(w2,4));g.setIndex(idx);g.computeVertexNormals();
  const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.host=true;m.name='ground:stair';
  m.userData.inspectLabel='The sinter stair and the springs\' basins (cut on '+ST_STEP+' m KFIELD insets)';scene.add(m);})();
+// the mouths' hoods (KCARVE.mesh): the rock put back over each alcove's void, on the ground's own material (all rock, dark by how far in)
+function caveBr(x,y,z){let k=1;for(const Q of CAVES){const L=KCARVE.local(Q,x,z);if(L.q<-1.5||Math.abs(L.u)>Q.hw+1.5||y>Q.floorY+Q.h+1.5)continue;
+  k=Math.min(k,1-.8*smooth(-1,Q.depth*.6,L.q));}return .9*k;}
+const CAVE_MESHES=(function(){if(!CAVES.length)return [];let M=[];try{M=KCARVE.mesh(MAT_GROUND,{sun:[sun.position.x,sun.position.y,sun.position.z],ao:true,cast:'hood',gridNormals:true,
+  attrs:{aW:{size:4,fn:()=>[0,0,1,0]},aW2:{size:4,fn:(x,y,z)=>[0,0,caveBr(x,y,z),1]}}});}catch(e){reportErr('mouths: '+e.stack);return [];}
+ M.forEach((m,i)=>{const Q=CAVES[i];m.userData.host=true;m.userData.rock=true;m.name='rock:mouth'+i;m.userData.inspectLabel=Q.name;
+  m.userData.probePoints=[Q.c[0]-Q.n[0]*Q.depth*.4,Q.floorY+Q.h*.5,Q.c[1]-Q.n[1]*Q.depth*.4];scene.add(m);
+  REGISTER({name:Q.name,key:'landform.mouth',x:Q.c[0]-Q.n[0]*Q.depth*.4,z:Q.c[1]-Q.n[1]*Q.depth*.4,y:Q.floorY-.5,r:Q.depth*.6,h:Q.h+3});});
+ return M;})();
+CAVES.forEach(Q=>OBSTACLES.push({x:Q.c[0]-Q.n[0]*Q.depth*.5,z:Q.c[1]-Q.n[1]*Q.depth*.5,r:Q.depth*.55+Q.hw,y0:Q.floorY,y1:Q.floorY+Q.h+2}));   /* nothing grows in a mouth */
 _mark('ground-near');
 
 // ---------------------------------------------------------------- the mid ground: the model's country to 20 km, the near box cut out

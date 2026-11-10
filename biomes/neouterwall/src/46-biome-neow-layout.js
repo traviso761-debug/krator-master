@@ -14,7 +14,8 @@
 //                          mats from 22 °C, the bare sinter from 40, a scald from 60
 //   NEOW.zoneOf(F)         the zone of a point from its fields F: {water, spring, dike, stair, heat (°C), shoreD (m), apron (0..1), talus
 //                          (m), g (grade), slope (0..1), sunny (-1 a south-facing, shaded slope .. 1 a north-facing, sunny one), mean}
-//                          -> 'spring'|'water'|'dike'|'stair'|'sinter'|'mat'|'shore'|'wall'|'talus'|'gully'|'fellfield'|'tundra'|'grove'|
+//                          -> 'spring'|'water'|'dike'|'stair'|'sinter'|'mat'|'shore'|'mouth'|'scarp'|'wall'|'talus'|'gully'|'ice'|'fellfield'|
+//                             'tundra'|'grove'|
 //                             'slope'|'meadow'
 //   NEOW.ZONES             each zone's words, and the nwouterwall zone its flora is read as (PLAN.md section 4: the NW outer wall's
 //                          woods and floor, read in place; NEOW.nwZone); 'grove' also holds this kit's own tree ferns (50)
@@ -38,16 +39,19 @@ NEOW.heatK=function(t){return {mat:_nst(NEOW.HEAT.mat-4,NEOW.HEAT.mat+4,t),sinte
 // gentle open ground over the cauldron MEADOW (wet: 2.5 m of rain); then the tree line's bands by the warmest month
 NEOW.zoneOf=function(F){
  if(F.spring)return 'spring';   /* before the water: a spring's pool is water too */
+ if(F.dike)return 'dike';   /* before the water too: a fin standing in the tarn is rock */
  if(F.water)return 'water';
- if(F.dike)return 'dike';
  if(F.stair)return 'stair';
  if(F.heat>=NEOW.HEAT.sinter)return 'sinter';
  if(F.heat>=NEOW.HEAT.mat)return 'mat';
  if(F.shoreD<14&&F.y<3)return 'shore';
+ if(F.cave)return 'mouth';   /* a cave's mouth (stations 5, 5a: KCARVE) */
+ if(F.mirror)return 'scarp';   /* a slump's bared head scarp (station 4) */
  if(F.g>1.0)return 'wall';
  if(F.talus>2.5&&F.g>.35)return 'talus';
  if(F.gully>.5)return 'gully';   /* a badland gully's floor (station 3) */
  const warm=F.mean+NEOW.AMP.warm;
+ if(warm<0)return 'ice';   /* EF: the warmest month under 0 °C (station 5a's portal): snow and ice, nothing grows */
  if(warm<NEOW.BANDS.tundra)return 'fellfield';
  if(warm<NEOW.BANDS.treeline)return 'tundra';
  if(F.apron>.5&&F.g<.45)return 'grove';
@@ -67,6 +71,9 @@ NEOW.ZONES={
  wall:{nw:'none',name:'the cauldron\'s wall (banded skarn and gneiss: no tree holds on the face)'},
  talus:{nw:'rock',name:'talus against a dike\'s foot'},
  gully:{nw:'floor',name:'a badland gully\'s floor (skarn gravel, willow and cottongrass in its damp)'},
+ mouth:{nw:'none',name:'a cave\'s mouth (the Epidote Cave: hypogene, dissolved out of the skarn\'s marble by water rising up the fault)'},
+ scarp:{nw:'none',name:'a mirror scarp (a slump\'s head scarp: the fault surface bared, its black pseudotachylite polished)'},
+ ice:{nw:'none',name:'snow and ice (EF: the warmest month under 0 °C)'},
  fellfield:{nw:'fellfield',name:'fellfield'},tundra:{nw:'tundra',name:'shrub tundra'},
  grove:{nw:'larch',name:'the apron\'s grove (tree ferns, larch and stone pine on the warm, wet floor)'},
  slope:{nw:'larch',name:'the wall\'s wooded slope'},

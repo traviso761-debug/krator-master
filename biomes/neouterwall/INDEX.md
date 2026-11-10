@@ -4,12 +4,12 @@
 
 Docs: `BIOME-API.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PLAN.md`, `PORT.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/neouterwall-badlands.html`, `dist/neouterwall-garnet.html`, `dist/neouterwall.html`
+Built output (never open it; edit `src/` and rebuild): `dist/neouterwall-badlands.html`, `dist/neouterwall-garnet.html`, `dist/neouterwall-portal.html`, `dist/neouterwall-shoulder.html`, `dist/neouterwall-steam.html`, `dist/neouterwall.html`
 
 Build: `cd biomes/neouterwall && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
 
-From `core/terrain/` (shared; see `core/README.md`): `30-core-field.js`, `35-core-strata.js`, `37-core-stacks.js`, `38-core-relief.js`, `38c-core-landforms.js`, `43-core-ground.js`, `45-core-horizon.js`, `47-core-therm.js`
+From `core/terrain/` (shared; see `core/README.md`): `30-core-field.js`, `35-core-strata.js`, `36-core-carve.js`, `37-core-stacks.js`, `38-core-relief.js`, `38c-core-landforms.js`, `43-core-ground.js`, `45-core-horizon.js`, `47-core-therm.js`
 
 From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `31b-core-leafset.js`, `31j-core-joint.js`, `34-core-impostor.js`, `40-core-place.js`, `41-core-env.js`, `42-core-export.js`, `43-core-export-host.js`, `44-core-stage.js`
 
@@ -29,17 +29,17 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 |---|---|---|
 | `00-head.html` | 1 |  |
 | `44r-host-site-rec.js` | 6 |  |
-| `44s-host-site.js` | 9 | the apron: a signed distance in from its toe (11); one record a point (memo of the last): the heigh (66) |
+| `44s-host-site.js` | 10 | the apron: a signed distance in from its toe (11); one record a point (memo of the last): the heigh (72) |
 | `45-host-stage.js` | 7 | the station, its air and its season (23); the model's ground (bicubic over its 1 km cells) (37); the ground's height (47); renderer, light, camera (67) |
-| `46-biome-neow-layout.js` | 6 |  |
-| `47-host-land.js` | 30 | the near box and a coarse look at the ground (7); the springs' heat (core/terrain KTHERM, 47-core- (15); the water: the tarn, the springs' pools, the sta (52); the fields (biomes/WORLD.md; BIOME-API.md) (72); the host binding (before the meshes: their paint (102); the library layers (or procedural without the pa (114); the ground material (one shader for the near and (140); the near ground: the baked field's own grid, one (212); the mid ground: the model's country to 20 km, th (245); the dikes' mesh (KSTACKS.mesh): one mesh, the ba (264) |
+| `46-biome-neow-layout.js` | 7 |  |
+| `47-host-land.js` | 33 **big** | the near box and a coarse look at the ground (7); the springs' heat (core/terrain KTHERM, 47-core- (15); the caves' mouths (core/terrain KCARVE alcoves;  (31); the water: the tarn, the springs' pools, the sta (63); the fields (biomes/WORLD.md; BIOME-API.md) (83); the host binding (before the meshes: their paint (115); the library layers (or procedural without the pa (128); the ground material (one shader for the near and (154); the near ground: the baked field's own grid, one (228); the mid ground: the model's country to 20 km, th (271) |
 | `50-biome-neow-cauldron.js` | 11 | palettes (sRGB) (16); the species and the plants, tagged (20); textures (procedural, greyscale: the fallback wh (35); the tree fern's builder: (T, st, lv) with lv 2 n (57); the passes (data: zone, cell, acceptance by the  (71) |
 | `70-biome-neow.js` | 1 |  |
 | `89a-host-atmos.js` | 3 |  |
 | `89s-host-sky.js` | 4 |  |
 | `89w-host-water.js` | 5 | the water records (core/water): the tarn, the sp (10) |
 | `89z-host-build.js` | 7 | the air on everything drawn (once, after the bak (33) |
-| `99-host-take.js` | 13 | the inspector's words: a plant names its species (9); the probe's budgets and the kit's own checks (ve (22); the page, handed to the host (105) |
+| `99-host-take.js` | 16 | the inspector's words: a plant names its species (9); the probe's budgets and the kit's own checks (ve (22); the page, handed to the host (123) |
 | `99-tail.html` | <1 |  |
 
 ## stations/
@@ -50,3 +50,6 @@ Each station builds one page (`build.py --station <name>`) from its own fragment
 |---|---|---|
 | badlands | 44r-host-site-rec.js, 44s-host-site.js | 8 |
 | garnet | 44r-host-site-rec.js | 5 |
+| portal | 44r-host-site-rec.js, 44s-host-site.js | 6 |
+| shoulder | 44r-host-site-rec.js, 44s-host-site.js | 7 |
+| steam | 44r-host-site-rec.js | 4 |
