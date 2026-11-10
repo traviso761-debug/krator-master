@@ -5,6 +5,7 @@
    "inputs": {
     "core/atmos/placeholder/80-sky-hash.js": "70eba6e14ba39b5da1123e5056a9383fb55913213e24b18e75045d0e17aab31f",
     "core/atmos/placeholder/81-sky.js": "ad22fb31cdfbbd20cb1f8ad919e4720e7db54094e4e778c46e7bd8ce7780e6ab",
+    "core/atmos/placeholder/placeholder.py": "a56878038fdd42d4d41752866926a3cf59815924a08f2ef42b56484766848aab",
     "core/catalog/krator-asset-engine.js": "857d45d9a71f62c958eb29dbe273d572b9e8262669c29f9f0433675451e2139d",
     "core/catalog/krator-furniture-core.js": "1c8bfa11d261b36895fd50645358e2c4ebe54febf67daeed700a38fbd6256fe9",
     "kits/motor-vehicles/KNOWN_ISSUES.md": "bf71a140019e64c89f68f89e0046e4ab21062e4cdafd7541004c93b8840c3f2b",
@@ -83,8 +84,10 @@
     "kits/motor-vehicles/tex/wood.albedo.webp": "8006f36a9405a8057d18b9810bde262ae67e2cbabe057ac7679fdd460385fc15",
     "kits/motor-vehicles/tex/wood.normal.webp": "f3d886ba4e6f5b61569086d975c88f423410d23178794ffe2c3eb0e315079c05",
     "kits/motor-vehicles/tex/wood.rough.webp": "4f07725b9fb784a09cb06f46b35f5384d79ba2521057e8c5ca60ca7f3c3fc84a",
+    "kits/motor-vehicles/vehicle_bundle.py": "d95510624126420525e2d84e5d27baa0fac336fdbe30c17b7afd601406403c5c",
     "kits/motor-vehicles/vehicles-core.js": "3ef2b2ba7ba37ada7e633706bd92bf55f1c41122b902e9f2cb461ba5fef0c22e",
     "kits/motor-vehicles/vehicles-detail.js": "ae99131ebe1bc97edcb993a1dfdd204b44dd5f92db27bc3bfb0ee5cddb1bf782",
+    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
    },
    "listings": {
@@ -99,7 +102,7 @@
     "kits/motor-vehicles/dist/motor-vehicles.html": "9f6b2b8fac066129c9138f90d0a3e07aa61c38625e85495ec1cac055b196bb2c"
    },
    "outputs_raw": {
-    "kits/motor-vehicles/build-manifest.json": "141136adea78fb7328413720e1647ddf14752f3cfd61daff6cb9134526f9c96a",
+    "kits/motor-vehicles/build-manifest.json": "93be88851ca50acd5ef1423bbc457553e6167c529e7a69109b2c8a4df48a17e5",
     "kits/motor-vehicles/dist/krator-vehicles.js": "a48a0d82a8028782f6f38805b750ff2fb69a473ddd407d98e887b39d717fb4d3",
     "kits/motor-vehicles/dist/motor-vehicles.html": "9f6b2b8fac066129c9138f90d0a3e07aa61c38625e85495ec1cac055b196bb2c"
    }

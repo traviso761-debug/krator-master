@@ -5,6 +5,7 @@
    "inputs": {
     "core/atmos/placeholder/80-sky-hash.js": "70eba6e14ba39b5da1123e5056a9383fb55913213e24b18e75045d0e17aab31f",
     "core/atmos/placeholder/81-sky.js": "ad22fb31cdfbbd20cb1f8ad919e4720e7db54094e4e778c46e7bd8ce7780e6ab",
+    "core/atmos/placeholder/placeholder.py": "a56878038fdd42d4d41752866926a3cf59815924a08f2ef42b56484766848aab",
     "core/clock/20-core-clock.js": "27f205a2e908a21cb5d07f07431352d7a02a214baf543fc94cd545d7d588ddbe",
     "core/door/10-core-door.js": "00ceccdcc016793a0ce0fbfd52a03142670c9426edf316878c829ef9e7ac34ea",
     "core/door/20-core-glass.js": "17f20fc659de9954d1f0ce5f8dece35834b575ae342a68c66af71c05949b3ea2",
@@ -16,6 +17,7 @@
     "core/host/93-host-inspect.js": "cf7e676324297688199a85d9a26c34381732955955985462aa3dbd2c12431f90",
     "core/host/94-host-marks.js": "a57a2a38ef92f4d06232659773249de63296e79e200da27a24f0253eff3f0284",
     "core/host/95-host-probe.js": "91a9ef729db002716d0e840ebd6e0efc799f2ae0c99419fb06c3f44eda5f6471",
+    "core/host/host.py": "e0c566abb47f0e84324c13407b8b2e4c0f3566037e92e00c2e92cf8f120e71c6",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/24-tex-def.js": "1016dd8a57911fba8405bb4b8f050561d8ed24ab98e7993c9fc58c12d3ce3a95",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
@@ -29,6 +31,7 @@
     "core/walk/20-core-walk.js": "66c2a5dfacc6e4ffc2cdc03dfa7d0f82ea991c312d5725d299e4e281fe148e03",
     "kits/yuni/PORT.md": "746417a8c082ee7c9161b4648cb5f7714712a832a7b6ab674f08b8657582b032",
     "kits/yuni/build.py": "950b91d1554cf91bee76027529506cb9fae827e7b8da6f38882f6e35a64eafb1",
+    "kits/yuni/sheetbuild.py": "f7951a7be34bcbb8b33ee003ca05a783a9b94775ba0550af3bd490eab7827b9a",
     "kits/yuni/src/55-mid-example.js": "c229ef8ce0974e8127732acbb05199feb349f4ccbd55f0b35237323ec4a14c72",
     "kits/yuni/src/56-mid.js": "9194cc2a44a9fde15fb7d4dd94a50da28d341d7a7fa8516274d4c9fb9948460e",
     "kits/yuni/src/57-poor.js": "682328b3d825b6a26b6474a3b0248cdf8ceff9ec21b4ae73d3184c4ed81d1022",
@@ -46,6 +49,7 @@
     "kits/yuni/targets/sheet/89-ys-sheetui.js": "72c1b7f0e54ec9e76db7a5a6cb8b88f98d3b7b9920c0440bae238eb570cc86d5",
     "kits/yuni/targets/sheet/98-ys-take.js": "b5628affc9147f7b666640aafda5b9fe8b3740c52a3fc52ddaeffba8f57ca5fd",
     "kits/yuni/targets/sheet/99-tail.html": "cf70092548bab2c35f91ad14cfdea97df6fb937a6872e35ad7275ff73b37bdb6",
+    "kits/yuni/yunikit.py": "2ec162a16f62ee7f2c669281ca3ca75fd3934b5a6421490e4ff5e3210f6d85e5",
     "settlements/yuni/src/05-palette.js": "32ca496dbbe26e9b09c48ae167302a045260fc5ba8e8a088e3c13d9feda2da74",
     "settlements/yuni/src/10-core.js": "1e3fe0dc1646424ee99c251cb3977cb0aed78b600740a928b3d54e8e7201a989",
     "settlements/yuni/src/45-kit.js": "66c74843e2163e0f6fa974c27bc8175bc80d1f4a5321d3857d9d48116539577d",
@@ -129,7 +133,9 @@
     "settlements/yuni/tex/timber.albedo.webp": "17f05f68868abeddd20b0039d862b3337ca033a8d9103e02bc55402f50c081c0",
     "settlements/yuni/tex/timber.normal.webp": "2c098d726acbb980695f3f73b78546a36565d86c93d222ce0df76ff9a9e01bb0",
     "settlements/yuni/tex/timber.rough.webp": "f8f4a8fbf26c38251e333d0d39e0914f82a72e87bfe395eeb2f276a564201a1b",
-    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
+    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
+    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
+    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
     "core/atmos/placeholder": "93e72701f4f204e698b400c25d1989704d985203b33d5a076ec9e170c3bb9552",

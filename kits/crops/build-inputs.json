@@ -65,6 +65,7 @@
     "kits/crops/tex/card_vine.albedo.webp": "980232d55af9a9a89cc70c3b9fcfba331f2f2aca1d7f4c7deb36fc0cfa61c362",
     "kits/crops/tex/card_weeper.albedo.webp": "7ef86069f5079e75e54d94af13d1993f5d5babadc9dbb731b13b7a6076c516e7",
     "kits/crops/tex/pack.json": "3eeb40b45a192fbe9218361a774a5d505b1198e46fd542cea0ed8db72193af4a",
+    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
    },
    "listings": {

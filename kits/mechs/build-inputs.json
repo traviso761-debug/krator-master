@@ -5,6 +5,7 @@
    "inputs": {
     "core/atmos/placeholder/80-sky-hash.js": "70eba6e14ba39b5da1123e5056a9383fb55913213e24b18e75045d0e17aab31f",
     "core/atmos/placeholder/81-sky.js": "ad22fb31cdfbbd20cb1f8ad919e4720e7db54094e4e778c46e7bd8ce7780e6ab",
+    "core/atmos/placeholder/placeholder.py": "a56878038fdd42d4d41752866926a3cf59815924a08f2ef42b56484766848aab",
     "core/catalog/krator-asset-engine.js": "857d45d9a71f62c958eb29dbe273d572b9e8262669c29f9f0433675451e2139d",
     "core/catalog/krator-furniture-core.js": "1c8bfa11d261b36895fd50645358e2c4ebe54febf67daeed700a38fbd6256fe9",
     "core/sockets/38-symbols.js": "ed5b3086d1034e1c289dd79bb816833cbcbcb11d0719f3a1eafc6c302de837b0",
@@ -51,6 +52,7 @@
     "kits/mechs/tex/plate.albedo.webp": "5da438689601eaa550b8b2522c70e9c82fa13f93a53810a537f07ccd6183d0d3",
     "kits/mechs/tex/sunbanner.albedo.webp": "7ab86d89d9df6cd059ca4bc8dfd55c262b653d576dabc0f5f05904b5fc3887a3",
     "kits/motor-vehicles/vehicles-core.js": "3ef2b2ba7ba37ada7e633706bd92bf55f1c41122b902e9f2cb461ba5fef0c22e",
+    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
    },
    "listings": {
@@ -65,7 +67,7 @@
     "kits/mechs/dist/mechs.html": "417c8aeed55e429b148e3d40f0c9b70be352e9487aa037c1b6c2dec57969e94c"
    },
    "outputs_raw": {
-    "kits/mechs/build-manifest.json": "be6329089fdff2cb511091f0e5816954689909de5101c778130b9af8fe32a524",
+    "kits/mechs/build-manifest.json": "8abaf8dc684234a36d0e1cf1d2d9e3b9a904bb0e3b55ea4d4ba2277a59b625e8",
     "kits/mechs/dist/krator-mechs.js": "c1f5506693cc92f4c98443966f84de161baa1239c7671e4032c6582d1b9d52c1",
     "kits/mechs/dist/mechs.html": "417c8aeed55e429b148e3d40f0c9b70be352e9487aa037c1b6c2dec57969e94c"
    }

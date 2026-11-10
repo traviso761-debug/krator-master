@@ -99,7 +99,9 @@
     "kits/ringsea/tex/wood.albedo.webp": "e338ce05cdb287219dc9e4b00ad5f646e91dc3888b9e735c6cf90d1915baf8a1",
     "kits/ringsea/tex/wood.normal.webp": "e82688ef6e445f828250b4768e7ba2e943bf43a2d0ecbbfe13e6949853310c37",
     "kits/ringsea/tex/wood.rough.webp": "57c012b483efd2b1a4c7459d010adc5611ebb734539112acb46eeecf88c153e7",
-    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
+    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
+    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
+    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
     "core/materials": "3342416a526793b328fa0871f795bdf98d2084292aa7bcb917fecc405076716c",
@@ -113,7 +115,7 @@
     "kits/ringsea/dist/ringsea.html": "7a7b5ef2833f17948559ad2f7b1d300e832c5fb4a77e587b21c7dc26af1f5c04"
    },
    "outputs_raw": {
-    "kits/ringsea/build-manifest.json": "5dcda40881e0b0110c7b1ff278f21e3fc594518272facebeef6db479e8a1922a",
+    "kits/ringsea/build-manifest.json": "0c89a286b8d2bc2884493e9d7202689685e542ca0d3ccf53308dd579b244c827",
     "kits/ringsea/dist/ringsea.html": "7a7b5ef2833f17948559ad2f7b1d300e832c5fb4a77e587b21c7dc26af1f5c04"
    }
   }

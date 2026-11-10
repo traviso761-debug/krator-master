@@ -3,6 +3,7 @@
  "runs": {
   "build.py": {
    "inputs": {
+    "core/catalog/catalog.py": "5d4a79810193b831fc1c686c934990afd10ecb63b5a55d05e0f3d7dd4c84d88a",
     "core/catalog/files.json": "a400e7bf3e1197698d129db83964d883fd9ea2818173fe7df3c7d1b4a054d72f",
     "core/catalog/inspector.js": "7f556b17e88d5f2b05c330acfb199ea551c55fb4542631f7e057e595294987c0",
     "core/catalog/krator-asset-engine.js": "857d45d9a71f62c958eb29dbe273d572b9e8262669c29f9f0433675451e2139d",
@@ -81,6 +82,7 @@
     "kits/interiors/src/49b-walk.js": "d90cf2cba70ac876a1831790124e5a4c5ba7072e90599572e458dca1704c16ac",
     "kits/interiors/src/50-shell.js": "a1c3d43db79368d8df78da83870d247903528f2c5f64f6b1d11db2582eba73ee",
     "kits/interiors/src/55-cutaway.js": "6ce670f34134740c43b54446f7d1b468c314868da3c0f1fb5c022d4766c5257a",
+    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
    },
    "listings": {
@@ -96,7 +98,7 @@
     "kits/ancients-interiors/dist/ancients-interiors.html": "e6b171deac1d8d3ece6e582bae677bec30a878484dbadb6d68997e7d2bc0a8e2"
    },
    "outputs_raw": {
-    "kits/ancients-interiors/build-manifest.json": "fda816814eecd7af9370d1a6b13dc0ef369d8f221545b0309ec840fd1ec34aa9",
+    "kits/ancients-interiors/build-manifest.json": "e2cacfe8c6001dd9dab52acb8b52afa5834f1d51320433aaabd89df785322905",
     "kits/ancients-interiors/dist/ancients-interiors-core.js": "48261396bc3742eaa94ee7a24c34fe23fca13eec6cc535fe3ecc9d00e1bc1f88",
     "kits/ancients-interiors/dist/ancients-interiors.html": "e6b171deac1d8d3ece6e582bae677bec30a878484dbadb6d68997e7d2bc0a8e2"
    }

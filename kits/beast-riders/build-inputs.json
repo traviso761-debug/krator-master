@@ -3,6 +3,7 @@
  "runs": {
   "build.py": {
    "inputs": {
+    "core/catalog/catalog.py": "5d4a79810193b831fc1c686c934990afd10ecb63b5a55d05e0f3d7dd4c84d88a",
     "core/catalog/files.json": "a400e7bf3e1197698d129db83964d883fd9ea2818173fe7df3c7d1b4a054d72f",
     "core/catalog/inspector.js": "7f556b17e88d5f2b05c330acfb199ea551c55fb4542631f7e057e595294987c0",
     "core/catalog/krator-asset-engine.js": "857d45d9a71f62c958eb29dbe273d572b9e8262669c29f9f0433675451e2139d",
@@ -76,9 +77,11 @@
     "kits/beast-riders/tex/timber.albedo.webp": "912c7267cd27a04730f55e735b4af3f442a3513c742e9b0d48b8486de341edc0",
     "kits/beast-riders/tex/wood.albedo.webp": "835342100de6f5d3551ca646045166b34989a47c43caec57aac9a9193314464a",
     "kits/beast-riders/tex/yard.albedo.webp": "b7d00b7e9b989094e4767da53477dfed1235820f5001ecbdd9573f086cabba40",
+    "kits/beast-riders/towns.py": "63b4c3ec25932c88bb8a8ed55e05268d6ab70ecd5099501caca1d22e2c9118b0",
     "kits/beast-riders/towns/girder-ports.js": "8b218d26d03ac965fc77e9480959b629bca4f86223abc85a67acf1849825a775",
     "kits/beast-riders/towns/hook.js": "a922d389ad237ba5d9bf2c9f1fbb26e30755910eed32675c59c93e241b7863ca",
     "kits/beast-riders/towns/mavs-ports.js": "5e372ea147014cfb1a44563adeed3c02ab1a992f6cd9d7ecc9a9c96a7e5f19b9",
+    "kits/catalog/furniture_bundle.py": "e9de2aa4a449de0baf2a1b00842dcd03a318fc966f9bbfe618a66bd36bf9ef3a",
     "kits/catalog/krator-master-furniture-beast-rider.js": "923abce1ad13434b27377fd54cdbc349ffcaf79d818a7dae99e1d83133c6ad81",
     "kits/catalog/krator-master-furniture-generic-fruit.js": "858ded98e076a6c6f96b5350718a514da4ecf5b161bcaed0805b837999b5dba5",
     "kits/catalog/krator-master-furniture-generic-goods.js": "1436ca9a4c6d8556cb1c6e1647150f5ec7f80c8ab0ded0ba54638805b6c750de",
@@ -152,6 +155,7 @@
     "kits/catalog/tex/wicker.albedo.webp": "88010bf97a4e66158e7db9fca32a3c010a8e4c19a04a01fcbc4ba914229a4f52",
     "kits/catalog/tex/wood.albedo.webp": "bdf1af0b681f77edfadda2ac8e991cbd0b9bb44a8abf65a1a17690da70e7112c",
     "kits/interiors/adapters/runtime-adapter.js": "5958f459962e0bfd8dde8490ec1b0bca3697dd3c86f9697b1c083cfe5f206a57",
+    "kits/interiors/kit_bundle.py": "db49822a3654a99d91441d6a676a69136e825e0096fdc78ffc27cd3b7b9988e5",
     "kits/interiors/sets/beast-rider.js": "88f45c32379f7bbf2a0695ee26b4e20157a6baedd7403c01e0f64e0cf44ebbcd",
     "kits/interiors/src/10-core.js": "4b940cf3cadd55615825e748e9179aa06ff8984be2d92dbefc3d085ae91e24e5",
     "kits/interiors/src/20-rooms.js": "4b54dca9f15014c721897d598a55f88c9e9dace32568faab59f10ca771694498",
@@ -293,6 +297,7 @@
     "settlements/mavs-refuge/tex/wall.albedo.webp": "6720ad26b3a53004c4fde80615b23f94188e6d6dc8c5153688169747f972e048",
     "settlements/mavs-refuge/tex/wall.normal.webp": "10538c0561a575ac090eeb9b12658116d7f9a698f4ef2c179e456da435b1f95f",
     "settlements/mavs-refuge/tex/wall.rough.webp": "7b7d15580f9a3172b41867c437c4414b07578e2c381a2a1b19c0c60f65d9d201",
+    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
    },
    "listings": {
