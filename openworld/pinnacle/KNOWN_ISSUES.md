@@ -14,6 +14,10 @@
 - [x] **The NE rim's ground was the default desert's** (red, shaped as a desert). Fixed 2026-11-09: `core/world`
       `BIOME_STYLE` gained a 'savanna' style for the three savannah rims, coloured from the kit's own `GROUND` palette.
       The plan was rebaked on the new land (the stale check caught the move).
+- [ ] **The hyperjungle's giants are heavy.** Over the threehorn camp on the RTX 5060 (verify's view 2, 120 m up),
+      the frame drew 4,607 records (162 hero, 4,276 far), 17.8 M triangles, at about 1 fps. The isle demo's town HLOD has
+      no equivalent here. The hyperjungle's far level and hero reach (`src/47-world-kits.js`, little-demo's numbers) want a
+      performance pass before the region is looked at in motion.
 - [ ] **No grass.** The kit's floor (its thatch, bunchgrass and vain fronds) is not on the world's floor yet, so the
       parkland reads as bare gold ground between the trees.
 - [ ] **The savannah kit's world adapter lives here** (`src/49-world-absav.js`), not in the kit. A new fragment in
