@@ -1,0 +1,17 @@
+{
+ "name": "Station 4, the redlands (PLAN.md section 7): step 4's floor at ~900 m, the closed valley's low end; the dry terminal salt playa with its polygon crust, a storm's sheet water and its old shorelines, relict laterite breakaways over pale kaolin with their mesas, the sedesert's shrubs, front 3's trap stair ~700 m above to the west; a hot steppe",
+ "out": "godstep-redlands.html",
+ "region": "region.json",
+ "water": [],
+ "tex": ["groundDetail", "rockFace", "rock", "cushion", "crust", "salt", "pavement", "playaPale", "laterite"],
+ "packs": [["biomes/sedesert", ["grass", "small", "needle", "rock"]]],
+ "reads": {
+  "25-core-mask.js": "core/mask/25-core-mask.js",
+  "27-core-mask-distance.js": "core/mask/27-core-mask-distance.js",
+  "37-core-stacks.js": "core/terrain/37-core-stacks.js",
+  "40-core-basin.js": "core/terrain/40-core-basin.js",
+  "49a-sed-species.js": "biomes/sedesert/src/50-biome-sedesert-species.js",
+  "49b-sed-trees.js": "biomes/sedesert/src/55-biome-sedesert-trees.js",
+  "49c-sed-floor.js": "biomes/sedesert/src/60-biome-sedesert-floor.js"
+ }
+}
