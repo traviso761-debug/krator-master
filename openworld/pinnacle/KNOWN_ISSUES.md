@@ -2,6 +2,9 @@
 
 - [ ] **No mesa in the world.** The rock is `settlements/pinnacle-rock`'s own landform (KSTACKS records from its layout).
       The world's ground is the model's: the bands' camps stand round a knoll, not round a 500 m mesa. `PLAN.md`, "What is left" 1.
+      On the list for the next scale-model run (the owner, 2026-11-10: `tools/scale-model/README.md`, "To do on the
+      model", "Pinnacle Rock's mesa"): a landform record the cut carries and core/world stamps at 1:1.
+- [ ] **The frame rate over the camps** (about 1 fps) is being worked in its own session (pinnacle-perf, 2026-11-10).
 - [x] **The savage hyperjungle grew nothing** while the rock stood on the rim. Since the move of 2026-11-10 the
       hyperjungle is in the registry on that overlay (little-demo's pass table). The cut's two overlays (the savage
       hyperjungle and the NE rim) both grow now.
