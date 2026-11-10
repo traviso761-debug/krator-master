@@ -362,6 +362,31 @@ ATMOS.cloudMood(SKY,{seed:7,glowColour:[1,.55,.2],tintAt:(x,z)=>F.taint(x,z)}); 
 The demo (`demo/`: Colour, Pattern, Glow and Dark toggles, a Shifting switch, Smog mist; `#colour=brown&pattern=violent&glow=ethereal&dark=.6&smog=1`)
 shows a dark tinted turbulent sky, the shifting episodes and a mist with a field.
 
+## Radiation: a warm glow filling a zone of air (`fx/89-atmos-fx-radiation.js`, opt-in, 2026-11-10; `test-radiation.js`)
+
+The owner's ask: "a visible 'radiation' ambient atmos effect ... fills the affected area with a subtle warm glow and heat-haze-like
+shimmer. it should not obscure anything but should be noticeable from a fair distance". A zone is a ball of glowing air (centre,
+radius; density `1 - d^2 / r^2`). Each pixel takes, ADDED in the zone's colour, the zone's strength times the density summed along
+its view ray's chord through the ball, in closed form, over the chord through the centre: 1 through the heart, 0 at the limb.
+Nothing is dimmed or hidden. A surface inside the zone stops the sum at itself, so near things glow less than the air behind
+them; from far off the whole chord shows and the zone reads as a soft warm dome. The shimmer is a slow rising waver of the glow
+itself (`shimmer`, 0..1 of the strength), a few bands to a zone.
+
+```js
+const RAD=ATMOS.radiation({zones:[{x,y,z,r:300,strength:.16,shimmer:.35}],colour:[1,.62,.25]});   /* at most 4 zones */
+ATMOS.radiationScene(scene);          /* every lit material adds the glow up to itself; the sky behind takes it from a far shell */
+RAD.k=.5;RAD.set();                   /* a master strength; edit RAD.zones and call set(); RAD.off = true clears it */
+```
+
+The geometry's share goes through `ATMOS.shaderHook` (composes with the height fog, cloud shade, snow); the sky's share is a
+back-face shell a zone drawn at the far plane after the world, so it lands only where no geometry was drawn and the two never add
+twice. A ShaderMaterial of the page's own takes `ATMOS.radGLSL()` and adds `atmRad(eye, dir, dist)` itself. The pure side:
+`ATMOS.radChord`, `radGlow`, `radAt(zones, x, y, z)` (the density at a point: placement, a meter; registered as core/hazard's
+`radiation` field when the page's KHAZ takes one). **True heat haze** (bent light) is the existing post pass:
+`ATMOS.shimmer({renderer, field: ATMOS.radiationHeat(RAD.zones)})` gives it the zones as a raster of degrees. Cost: about 40
+operations a zone a fragment, no textures, no loop but the four zones. **Not judged:** against a bright noon sky a strength of .16
+is faint (it is additive on an already bright pixel); a page may raise the strength by day or tie `RAD.k` to the hour.
+
 ## Steam in groups and the heat shimmer (`fx/`, opt-in, 2026-11-03)
 
 **`ATMOS.smokeGroups`** (`fx/89-atmos-fx-smokegroups.js`, `test-smokegroups.js`): one `ATMOS.smoke` cloud a group, each with its own
