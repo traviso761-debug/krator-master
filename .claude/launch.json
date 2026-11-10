@@ -185,6 +185,18 @@
                                    "kits/extraplanar"
                                ],
                                "port": 8797
+                           },
+                           {
+                               "name":  "fxdemo",
+                               "runtimeExecutable":  "python",
+                               "runtimeArgs":  [
+                                                   "-m",
+                                                   "http.server",
+                                                   "8859",
+                                                   "--directory",
+                                                   "core/atmos/fxdemo/dist"
+                                               ],
+                               "port":  8859
                            }
 ]
 }

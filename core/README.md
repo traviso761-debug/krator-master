@@ -582,6 +582,15 @@ BIO.init({..., terrainH, field: F});          // a biome kit: BIO.export's groun
 **Used by** `biomes/sedesert` (its ground, flora, camera and export; `biomes/sedesert/KNOWN_ISSUES.md` has the measured
 error). The other 41 `terrainH` closures are still closures.
 
+## `anomaly/`
+
+`KANOM` (2026-11-10, `anomaly/README.md`; `biomes/ancientsvalley/PLAN-ANOMALIES.md` 4 and 14): zones where physics fails, as
+records (`gravity`, `time`, `bend`, `space`, `portal`; a circle or a polygon, a rim ramp, a strength), registered in core/tags
+with their hazards on core/hazard before they are drawn. `KANOM.at` (gravity and time multiplied in log scale), `walk` (the heavy
+and the slow walk, never stuck), `squash` (the Press's placement), `owed` (the world's time on leaving, capped at a day). Free when
+absent: no record in reach and every reader gets the same frozen NORMAL. Its hazard rows (`crushing`, `aging`, `lift`) go into the
+vocabulary when the file loads, so a page without it is byte-identical. `host/90-anomaly-walker.js` binds the host camera's
+walker. `[G data]`; `node core/anomaly/test-anomaly.js`. The particles it holds or presses are core/atmos's `fx/89-atmos-fx-localtime.js`.
 ## `atmos/`
 
 The atmosphere and street-dressing module: evening lights and a glow layer, particles, weather, ivy and window boxes,

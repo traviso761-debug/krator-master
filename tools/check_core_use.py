@@ -60,7 +60,7 @@ OWN_OK = {
     'biomes/ancientsvalley': {('getImageData', 'src/99-host-take.js'): 'the cards-cut audit (HCHK.cardsCut, the owner 2026-11-09) reads a 32 x 32 downsample of each map for its alpha share at verify time; nothing is placed from it'},
 }
 
-ALL_MODULES = ['atmos', 'biome', 'city', 'clock', 'export', 'furnish', 'hamlet', 'host', 'lod', 'mask', 'materials', 'minimap', 'rand',
+ALL_MODULES = ['anomaly', 'atmos', 'biome', 'city', 'clock', 'export', 'furnish', 'hamlet', 'host', 'lod', 'mask', 'materials', 'minimap', 'rand',
                'sched', 'simulation', 'space', 'tags', 'terrain', 'walk', 'water']
 
 # Settlements already PLACED on a site of the world map, with that site's biome data (the owner, 2026-10-23). They read the

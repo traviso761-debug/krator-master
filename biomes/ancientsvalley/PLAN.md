@@ -450,3 +450,21 @@ the war bucketed into 400 m cells and drawn as the eye comes within 750 m. The t
 The ramps' feet are T junctions of the grid (`KTRANSIT.joinRamps`, the transit session's answer the same day). The family mix leans tall toward
 the lake (`AV.plan` lakeK/tall/short) and the furniture has a far tier of posts. The towers stand on the kerb lines (`AV.kerbPlace`, 41): each
 slides off its node to front a street, its plinth 3 m behind the pavement, an avenue three times as often as a road, a third of them on corners.
+
+## 15. The effects for the Yards and the Terraces (the owner, 2026-11-10)
+
+The owner's "work on effects we're gonna need for stations 1 and 2", then "both pairs" (the other pair is `PLAN-ANOMALIES.md` 14). Shared
+pieces on `core/atmos/fx/`, each a record first (a pure function fills it, seeded on `core/rand` by its id), drawn after, freed or hidden past
+its reach, and shown on `core/atmos/fxdemo/` (`#scene=yards`, `#scene=terraces`). **Built 2026-11-10 on `claude/wizardly-cerf-605ac6`.**
+
+| Effect | Where | What |
+|---|---|---|
+| the plumes | `fx/89-atmos-fx-plumes.js` | `ATMOS.plumes(list)`: a **stack**'s soot, thin and long, bent over downwind and seen for kilometres; a **cooling** tower's white cloud, fat and slow, billowing and evaporating as it rises; a **flare**'s flame at a pipe's mouth; a **vent**'s steam from a broken main. A plume may be intermittent (its duty from its id) |
+| sparks and arcs | `fx/89-atmos-fx-sparks.js` | `ATMOS.sparks(list)`: a dead machine's showers on a hashed period, falling and fading; `ATMOS.arcs(list)`: a pylon line's arc between two points, a jagged bolt re-drawn each flash from an integer hash of (id, flash, segment), with its flicker light. Each may register a `trap`-like `shock` hazard |
+| toxic pools and spill ground | `fx/89-atmos-fx-sludge.js` | `ATMOS.sludgeMaterial(o)`: a pool's surface (yellow-green foam rafts drifting and joining, an oily sheen in bands, slow bubbles); `ATMOS.spillOn(material, spills)`: a `KHOOK` layer on the ground's material for the spill ground (black oily stains with crusted rims and a bleached fringe, up to 16 records); `ATMOS.sludgeFume(pools)`: the low haze over them. Pools register an `acid` hazard |
+| the slag glow | `fx/89-atmos-fx-slag.js` | `ATMOS.slagOn(material, o)`: glowing seams in a heap's dark crust (an integer-hash Voronoi in world space), hottest at the fresh pour, breathing slowly, brighter at night |
+| the aqueduct spills | `fx/89-atmos-fx-spill.js` | `ATMOS.spillRec(o)` from an aqueduct's deck line and its break: the curtain's lip, direction, speed and drop (also as `WATER.fall`'s options for a page with `core/water`), drips from the cracks along the span, the spray and the wet stain at the foot; `ATMOS.spill(rec)` draws them on `localFx` and the smoke's `spray` |
+| wind over the crop rows | `fx/89-atmos-fx-gustsheen.js` | `ATMOS.gustSheenOn(material)`: the paler band that runs across a field as a gust front bends the stems (the foliage's own `atmGust`, so the sheen and the sway agree); `ATMOS.chaff(fields)`: seed heads and chaff lifted along the front |
+
+The Yards' smog and oily rain are the Overlook's (`89v`, `89x`) with the Yards' defaults; the stations place these records on their own
+ground (the tank farms' pools, the stacks of the twelve industrial buildings, the aqueduct's breaks, the farm pods' crops).
