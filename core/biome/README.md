@@ -694,3 +694,42 @@ this table names: `BIO.envInto` copies only the 0..1 fields into a host's table,
 2. `const E = BIO.env({ground: terrainH, water: WATER.fieldFns(F), therm: H, wet: kitWet, rock: (x, z) => KRELIEF.scarpRock(W, x, z), bands: {upland: [800, 1600]}})`.
 3. `BIO.envInto(host.fields, E, {wet: 'marsh'})` for the kit's own name; read the rest from `E`.
 4. In the kit's checks: `BIO.envCheck(E, points)` must be empty, and `WATER.edgeAudit` gets `wet: E.wet`.
+
+## Animal sign on the ground (`46-core-sign.js`, `KSIGN`, opt-in, 2026-11-09; `test-sign.js`)
+
+The Labyrinth's amendment 1 (`biomes/labyrinth/PLAN.md` section 7): the sign herds leave, drawn from the herd records, so a herd's
+range becomes `KGROUND` masks and decals and its trails follow the graben corridors. The open world wants it wherever herds live.
+Plain data (`[G data]`), on core/rand; no THREE, no DOM, no canvas.
+
+`KSIGN.make({herds, ground, cost, box, cell, world, water})` takes kits/fauna's herd records as they are (`FAUNALANDS.register`'s
+`{id, key, at, r, n}`, or `plan`'s groups by `gid`), or plain `{id, species, x, z, r, n, mass, water, browse, bed, pasture,
+predators}`, and returns:
+- **trails**: least-cost paths on a lattice (`cell`, 25 m; 8 neighbours, no corner cut past a cliff) from each herd's bedding ground
+  to its water and its pastures. The cost is the run, the slope (over `slopeMax` is a cliff) and the page's `cost(x, z)`: Infinity
+  impassable, negative cheaper (a graben's floor, `KRELIEF.grabenNet`'s corridors). Herds go in id order and prefer ground already
+  worn, so they share trails; a shared trail is wider (`w`) and worn deeper (`d`), `use` the herds that share it.
+- **wallows** by the water of the heavy herds (mass 200 kg and over), on flat cells no higher than their neighbours;
+- **dung** along the trails (by wear) and on the bedding ground, its `kind` by the beast (`heap`, `pat`, `pellet`);
+- **browse**: the browse line per herd (`y`, .4 x mass^.25 unless given), for the flora to cut its trees to;
+- **trample**: the box's cells, from the bedding ground's load (head x mass over the range) and the trails' wear;
+- **boneyards** at the water and at kill sites on a hunted herd's trails (`predators`).
+
+Every draw is `KRAND.hash(world, cell i, cell j, salt)` on one global lattice, and each herd's paths are searched in its own window
+(its points plus `margin`), never the box's: the box only chooses what is returned (everything that reaches it), so a tile made alone
+with the same herds returns the whole box's sign there, and `maskAt` agrees to the bit across a tile's edge.
+
+`KSIGN.maskAt(S, x, z)` -> `{trail, trample, wallow, dung, bone}`, each 0..1, for the ground's layer weights; `KSIGN.export(S)` and
+`KSIGN.load(J)` round-trip it as plain JSON.
+
+### Adopting it
+
+1. `CORE_BIOME`: add `'46-core-sign.js'` (anywhere after core/rand).
+2. After the herds are registered (`FAUNALANDS.register(T, plan)`): `const S = KSIGN.make({herds: plan.groups, ground: terrainH,
+   cost: (x, z) => cliff(x, z) ? Infinity : onCorridor(x, z) ? -.5 : 0, water: lakes.map(l => [l.x, l.z]), box, world})`.
+3. Per ground vertex, bake `KSIGN.maskAt(S, x, z)` into the attributes the page's `KGROUND` layers read their weights from (`trail` a
+   trodden-earth layer, `trample` cropped grass, `wallow` mud); place dung and bone decals from `S.dung` and `S.boneyards`, and cut the
+   trees under `S.browse[i].y` within its range.
+4. A streamed world exports `S` once per region (`KSIGN.export`) and loads it per tile.
+
+**Not done.** No decal or mesh drawing (the page's host); no Godot twin (the lattice, the hash and the search are plain arithmetic, so a
+port is direct). Trails run on the lattice's eight directions: a page that wants a smoother line rounds `pts` itself.

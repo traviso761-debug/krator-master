@@ -242,14 +242,14 @@
    "name": "humid subtropical",
    "color": "#c8ff50",
    "pct": 9.65,
-   "km2": 1210532
+   "km2": 1210552
   },
   {
    "code": "ET",
    "name": "tundra",
    "color": "#b2b2b2",
-   "pct": 9.55,
-   "km2": 1199124
+   "pct": 9.56,
+   "km2": 1199272
   },
   {
    "code": "WS",
@@ -263,7 +263,7 @@
    "name": "ice cap",
    "color": "#666666",
    "pct": 6.15,
-   "km2": 771356
+   "km2": 771428
   },
   {
    "code": "HF",
@@ -276,8 +276,8 @@
    "code": "Csa",
    "name": "hot-summer Mediterranean",
    "color": "#ffff00",
-   "pct": 5.54,
-   "km2": 695368
+   "pct": 5.55,
+   "km2": 696356
   },
   {
    "code": "BSk",
@@ -291,14 +291,14 @@
    "name": "dry-summer subarctic",
    "color": "#963296",
    "pct": 3.36,
-   "km2": 421092
+   "km2": 421124
   },
   {
    "code": "Dfc",
    "name": "subarctic (boreal)",
    "color": "#007d7d",
    "pct": 3.25,
-   "km2": 407804
+   "km2": 407352
   },
   {
    "code": "BSh",
@@ -312,7 +312,7 @@
    "name": "dry-summer warm continental",
    "color": "#c800c8",
    "pct": 2.81,
-   "km2": 353132
+   "km2": 353280
   },
   {
    "code": "BWk",
@@ -332,8 +332,8 @@
    "code": "Dfb",
    "name": "warm-summer continental",
    "color": "#37c8ff",
-   "pct": 2.19,
-   "km2": 274920
+   "pct": 2.2,
+   "km2": 276172
   },
   {
    "code": "HT",
@@ -367,8 +367,8 @@
    "code": "Cfb",
    "name": "oceanic",
    "color": "#64ff50",
-   "pct": 1.43,
-   "km2": 179576
+   "pct": 1.4,
+   "km2": 175988
   },
   {
    "code": "Af",
@@ -381,8 +381,8 @@
    "code": "Csb",
    "name": "warm-summer Mediterranean",
    "color": "#c8c800",
-   "pct": 0.72,
-   "km2": 89992
+   "pct": 0.73,
+   "km2": 91336
   },
   {
    "code": "XV",
@@ -480,7 +480,7 @@
    "name": "cold-summer Mediterranean",
    "color": "#969600",
    "pct": 0.0,
-   "km2": 324
+   "km2": 360
   },
   {
    "code": "Dwa",

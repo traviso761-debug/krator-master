@@ -1,0 +1,28 @@
+{
+ "name": "The Valley of the Iron Shroud (station 4, Trap F1; PLAN.md sections 4.2 and 6): Wadi al-Kafan, a dead-end glacial box-canyon 6 km long cut into the fault blocks north-west of Open Sprint 1 at 4,720 m (0.88 atm): a wide gentle mouth with a lukewarm iron seep that promises an oasis, 600 m walls of columned titanium basalt, a 35 m reverse moraine lip 4 km in, behind it the sealed katabatic cold sink (-8 C by day, -34 C at night) on blue ice littered with the rimed wreckage of betrayed caravans, the hanging glacier's seracs over the headwall, and the Guide's Needle, the iron-runged chimney up the east wall by which the guide leaves",
+ "out": "twins-shroudvale.html",
+ "region": "region.json",
+ "reads": {
+  "45a-core-therm.js": "core/terrain/47-core-therm.js",
+  "21-core-hazard-flow.js": "core/hazard/21-core-hazard-flow.js",
+  "44g-core-glacier.js": "core/terrain/44g-core-glacier.js",
+  "44h-core-glacier-draw.js": "core/terrain/host/44h-core-glacier-draw.js",
+  "22-core-hazard-env.js": "core/hazard/22-core-hazard-env.js"
+ },
+ "water": [
+  "20-core-water.js",
+  "21-core-water-shore.js",
+  "22-core-water-flow.js",
+  "50-core-water-draw.js",
+  "51-core-water-kinds.js",
+  "geyser/52-core-water-geyser.js",
+  "geyser/52b-core-water-geyser-draw.js",
+  "geyser/52c-core-water-thermal.js",
+  "geyser/52d-core-water-thermal-draw.js"
+ ],
+ "tex": [
+  "scree",
+  "ice",
+  "lichenCrust"
+ ]
+}

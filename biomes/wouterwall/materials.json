@@ -1,0 +1,104 @@
+{
+ "build": "wouterwall",
+ "note": "The wouterwall kit's adapter onto the material library (core/materials/PLAN.md). The host's ground layers (47-host-land.js): ground.steppe (the feather-grass steppe, the base, tinted by season), ground.needles (the larch's litter on the shaded slopes), ground.gravel (ground.gravel019: the gully floor, the brook's bed), rock.loess (the loess walls, the terraces' risers and the earth pillars, read from the side on the steep: KGROUND's triplanar sides), ground.terrace (ground.terrace.field: the terraced fields, furrows along the contour), ground.tundra and ground.lichen (ground.lichen.crust: the upper bench). The flora at W1 is the NW outer wall's, read in place with its own pack (build.py). Still to wire (PLAN.md section 8): rock.megabreccia (the slump scarps, station 2), rock.rubble.sturzstrom (station 3), card.puya (W3). Run python3 tools/textures/pack.py biomes/wouterwall after any change, then python3 build.py.",
+ "size": 512,
+ "families": {
+  "ground.steppe": {
+   "lib": "ground.steppe",
+   "scale": [
+    2.2,
+    2.2
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "ground.needles": {
+   "lib": "ground.needles",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "ground.gravel": {
+   "lib": "ground.gravel019",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "rock.loess": {
+   "lib": "rock.loess",
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "ground.terrace": {
+   "lib": "ground.terrace.field",
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "ground.tundra": {
+   "lib": "ground.tundra",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "ground.lichen": {
+   "lib": "ground.lichen.crust",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  }
+ }
+}

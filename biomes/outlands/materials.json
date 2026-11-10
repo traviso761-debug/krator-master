@@ -1,0 +1,13 @@
+{
+ "build": "outl",
+ "note": "The Outlands kit's adapter onto the material library (core/materials/PLAN.md; biomes/outlands/PLAN.md section 11). Station 1, the Fog Wall: organic.cap.violet on the veil caps' tops (the disc cap's planar uv, a near-white instance colour over it), organic.pleat.skin on the pleat columns, card.fogcomber's first cell on the veil caps' thread fringes and the curtain weed (cut in 50's libCell), and three ground layers (84-host-ground.js, KGROUND): ground.biocrust.fog (the fog pelt under the belt), ground.wadi.cobble (the wadis' floors), ground.gravelly_sand (the gem shoulder). Run python3 tools/textures/pack.py biomes/outlands after any change, then python3 build.py. ?mat=proc shows the procedural textures.",
+ "size": 512,
+ "families": {
+  "cap.violet": {"lib": "organic.cap.violet", "scale": [1.0, 1.0], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.2, "specular": 0.25, "mapOnly": true},
+  "pleat.skin": {"lib": "organic.pleat.skin", "scale": [1.0, 1.0], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.2, "specular": 0.25, "mapOnly": true},
+  "fogcomber": {"lib": "card.fogcomber", "scale": [1.0, 1.0], "tint": {"keep": 0.0, "mean": 0.8}, "roughLift": 0, "specular": 0.2, "cell": [0.0, 0.0, 0.3333, 0.3333]},
+  "ground.fogcrust": {"lib": "ground.biocrust.fog", "scale": [2.8, 2.8], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.35, "specular": 0.25, "mapOnly": true},
+  "ground.cobble": {"lib": "ground.wadi.cobble", "scale": [3.0, 3.0], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.3, "specular": 0.25, "mapOnly": true},
+  "ground.gravel": {"lib": "ground.gravelly_sand", "scale": [3.0, 3.0], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.35, "specular": 0.25, "mapOnly": true}
+ }
+}

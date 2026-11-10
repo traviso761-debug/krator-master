@@ -103,8 +103,8 @@ The fragment families `core/host/` (Phase 1) and the `core/atmos` sky preset rep
 
 | Family | Builds | Versions | KB total |
 |---|---|---|---|
-| `host-sky` | 45 | 44 | 118 |
-| `host-stage` | 41 | 41 | 693 |
+| `host-sky` | 46 | 45 | 120 |
+| `host-stage` | 42 | 42 | 706 |
 | `host-build` | 37 | 37 | 146 |
 | `camera` | 20 | 16 | 148 |
 | `probe` | 18 | 16 | 81 |

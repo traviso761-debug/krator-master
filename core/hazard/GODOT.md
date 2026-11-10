@@ -87,6 +87,20 @@ its probes.
   page does (a host passes the walker's breathing height, about 1.6 m over its feet). The
   `Area3D` is the whole band; the ramp is in the dose.
 
+## Crusts, night and fronts (`22-core-hazard-env.js`, 2026-11-09)
+
+The fields arrive in the export's filled `hazard` (`crust`, `under`, `night`, `front`, `charge`); the state functions
+port with `KHazard` by name.
+- `crust` / `under`: two Area3Ds at one place. The crust's `body_entered` passes the body's mass to `KHazard.load`
+  (the same `trigger.mass`); the broken set (`{id: {t, heal}}`, `KHAZ.saveCrusts`' shape) goes in the save game. The
+  harm below keeps `monitoring` off while its crust is `intact`.
+- `night`: `KHazard.state` reads the `WorldClock`'s hour and the wind the atmos port gives at the point; the rest is the
+  same smoothsteps. A cold pool's vertical ramp is `shape.pool`, as in "Moving and pooling".
+- `front`: the law in the fragment's header, transliterated (plan arc length, smoothsteps, the period's wrap); a
+  status passes the body's height straight to `KHazard.state` (the page threads it through its queries instead). The
+  Area3D is the box round the path; the water mesh reads the same `front`. A bound herd (`bindHerd`) is the herd's own
+  bodies: their `Area3D`s, not the path.
+
 ## Navigation: NavigationRegion3D
 
 Each zone of `krator-walk`'s `zones` (or each `registry.hazards` record's `hazard.nav`):

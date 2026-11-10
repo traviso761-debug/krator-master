@@ -1,0 +1,224 @@
+{
+ "build": "greenstep",
+ "note": "Greenstep's adapter onto the material library (core/materials/PLAN.md). Card slots are 50-biome-greenstep-species.js's materials (BIO.libSwap): keep 0 a grey detail map the instance colour colours (the ferns, grass, sedge, rice, hanging moss), keep .6 the begonia's own spiral pattern under its tint. rock: the boulders and fallen columns (titanium basalt). ground.* the host's ground layers on KGROUND (45-host-stage.js GLW: a station names the five it shows, LAND.groundLayers). The kin trees draw with their own kits' packs (station.json kin). Run python3 tools/textures/pack.py biomes/greenstep after any change, then python3 build.py.",
+ "size": 512,
+ "families": {
+  "fern": {
+   "lib": "card.fern.green",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.7
+   },
+   "size": 512,
+   "base": "bottom",
+   "cell": [
+    0.345,
+    0.329,
+    0.648,
+    0.671
+   ]
+  },
+  "mossH": {
+   "lib": "card.moss.hanging",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.7
+   },
+   "size": 512,
+   "base": "top",
+   "cell": [
+    0.339,
+    0.329,
+    0.663,
+    0.663
+   ]
+  },
+  "sedge": {
+   "lib": "card.reed",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.7
+   },
+   "size": 512,
+   "base": "bottom",
+   "cell": [
+    0.329,
+    0.329,
+    0.667,
+    0.671
+   ]
+  },
+  "grass": {
+   "lib": "card.grass.panic",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.7
+   },
+   "size": 512,
+   "base": "bottom",
+   "cell": [
+    0.378,
+    0.343,
+    0.618,
+    0.657
+   ]
+  },
+  "begonia": {
+   "lib": "card.begonia.escargot",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.6,
+    "mean": 0.66
+   },
+   "size": 512,
+   "cell": [
+    0.356,
+    0.329,
+    0.651,
+    0.671
+   ]
+  },
+  "rice": {
+   "lib": "card.grass.panic",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.72
+   },
+   "size": 512,
+   "base": "bottom",
+   "cell": [
+    0.378,
+    0.343,
+    0.618,
+    0.657
+   ]
+  },
+  "rock": {
+   "lib": "rock.basalt.titanium",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.4
+   },
+   "roughLift": 0.2,
+   "specular": 0.15,
+   "mapOnly": true
+  },
+  "ground.grass": {
+   "lib": "ground.grass.lush",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 0.7,
+    "mean": null
+   },
+   "roughLift": 0.15,
+   "mapOnly": true
+  },
+  "ground.leafy": {
+   "lib": "ground.leafy_grass",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 0.6,
+    "mean": null
+   },
+   "roughLift": 0.15,
+   "mapOnly": true
+  },
+  "ground.moss": {
+   "lib": "ground.moss002",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 0.8,
+    "mean": null
+   },
+   "roughLift": 0.15,
+   "mapOnly": true
+  },
+  "ground.redsoil": {
+   "lib": "ground.redsoil",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 0.7,
+    "mean": null
+   },
+   "roughLift": 0.15,
+   "mapOnly": true
+  },
+  "ground.peat": {
+   "lib": "ground.peat.black",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 0.7,
+    "mean": null
+   },
+   "roughLift": 0.15,
+   "mapOnly": true
+  },
+  "ground.lichen": {
+   "lib": "ground.lichen.crust",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 0.6,
+    "mean": null
+   },
+   "roughLift": 0.15,
+   "mapOnly": true
+  },
+  "groundDetail": {
+   "lib": "ground.gravelly_sand",
+   "scale": [
+    4,
+    4
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.9
+   },
+   "mapOnly": true
+  }
+ }
+}

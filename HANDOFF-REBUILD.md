@@ -22,6 +22,54 @@
 Nothing was rebuilt and `PORT-BASELINE.json` is untouched. The ORNUM rewrites touch `core/engine/91i-interiors.js` and
 `core/furnish/50-core-furnish.js`; they change behaviour only when a 0 is passed. When the all-builds rebuild runs, check
 `python3 core/engine/fingerprint.py` and `python3 core/furnish/fingerprint.py` with it.
+## Twins onto the core plan features (2026-11-10, `claude/twins-finish-cloud`)
+
+`claude/core-plan-features-229d2a` (pushed by the owner's word) is merged in. The Twins stations' mud pots (`WATER.mudpot`), fumaroles'
+steam (`WATER.fumarole`), breaking crusts (`KHAZ.ENV.crust`: the Red Cistern's blister crust, the Rime Twin's snow bridges and thin ice) and
+night-pooling gas and cold (`KHAZ.ENV.nightGas`, `coldPool`, on `KHAZ.bindClock` and `KHAZ.bindWind`) now run on it; nothing kit-side is
+left of those (`biomes/twins/KNOWN_ISSUES.md`). The thermal aprons, run-off, slope wind and ash plume on the same branch are not yet taken.
+
+## Twins stations 2-6 (2026-11-10, `claude/twins-finish-cloud`, from `claude/cloud-kits-verify` 6546a3eee; a cloud session, no GPU)
+
+**Built** (`biomes/twins`, `NOTES.md` has each): station 2 the Brazier (`dist/twins-brazier.html`: Oasis 3 on the col, KTHERM heat, core/water
+springs, geysers and mud pots, the Hearths' pocket-hearths read in place, the Shrine of the Split Horn); 3 the Red Cistern (`twins-lavasump.html`:
+the decoy tube on KCAVERN, a lava pond on `ATMOS.lavaMaterial`, the breaking crust and the night gas); 4 the Valley of the Iron Shroud
+(`twins-shroudvale.html`: the box vale, the moraine, the -34 C sink, KGLACIER's seracs, the Guide's Needle); 5 the Rime Twin
+(`twins-erebustwin.html`: the summit caldera, KGLACIER's ice towers and caves, tube 10's mouth, slush cauldrons); 6 Catch-Lookout Spring
+(`twins-catchlookout.html`: `WATER.terraces` soaking basins, krummholz, the scarp and the Catch below). **Shared** (every Twins page, station 1's
+included): the ground's station layers and `STN.shareLayers` (`84`), the station ground classes (`45c`, `50`), the oasis model and drawing
+(`45a7`, `89c`), the oasis pass (`60`), the kit's new items, `build.py`'s `"kin"`. Each page passes `verify.py --assert` in software GL.
+**Owed:** the GPU verify of all six (`KRATOR_GL=gpu`; station 1's page changed with the shared fragments) and then `PORT-BASELINE.json` for
+`biomes/twins/dist/` (not rewritten here); the life layer; the rest in `biomes/twins/KNOWN_ISSUES.md`.
+
+## The cloud kits merged and GPU-verified (2026-11-09, `claude/cloud-kits-verify`, from `claude/biome-rebuild` 0e2f6649d; not pushed)
+
+**Merged** (sources; pages and the baseline rebuilt here): twins (`ccr-906e567d`), godshearth (`ccr-b9d1a178`), godstep and greenstep
+(`ccr-f2b9901e`), outlands (`ccr-37c777fb`), firebliss (`ccr-661d8fa0`), wouterwall (`ccr-4715cb9c`). By hand: `biomes/outlands/PLAN.md` and
+`biomes/wouterwall/PLAN.md` against main's 5.1 decisions (both kept); godshearth and firebliss each wrote a scale model "5.1 edit 2": Godshearth's
+(earlier) keeps `edit_512.py`, Firebliss's is `edit_513.py` ("5.1 edit 3", reconcile key `krator.regMerged.5.1e3`), `vents.json` both.
+**Shared files touched:** `core/atmos/fx/89-atmos-fx-katabatic.js` (new, godshearth only), `tools/scale-model/` (both edits; `test_smodel.py`
+233 checks pass), `kits/resources` data (Firebliss's rebake; its page and copperglacier's three rebuild unchanged), `biomes/godthrone/tools/region.py`
+(`--kit`), `tools/check_assembly_baseline.json` (godshearth's and wouterwall's known leafOn/leafQ entries, godshearth's geyser `_shadow` clash).
+**GPU** (`KRATOR_GL=gpu` with `harness.py lock`: the lock alone runs SwiftShader): `--assert --all-views` passes on twins, godstep, greenstep,
+wouterwall (Arc) and outlands, godshearth (RTX). **Fixed:** greenstep's ground at 17 samplers (three ground layers now), wouterwall's brook view
+under the mid ground, the harvest.wood tags of greenstep and outlands (`core/hamlet`'s test). **Open:** godshearth logs a cross-context WebGL
+delete under SwiftShader only; `kits/port` UNRECORDED and the isle-demo / interiors node tests fail in a fresh LFS-skipped checkout (pre-existing).
+Firebliss is a plan and a model edit, no page. Gallery: five new biomes await the owner's publish.
+
+## Godstep station 1 and Greenstep's first page (2026-11-09, branch `ccr-f2b9901e-grrx3e`, a cloud session with no GPU; merged above)
+
+- **Godstep station 1, the stair** (`biomes/godstep/dist/godstep.html`; `biomes/godstep/PLAN.md` "Station 1, as built"): the kit's first page,
+  on the owner's queue ("build station 1 of godstep"). A 719 m trap stair of 18 benches (`KRELIEF.stair`), four flows baked at build
+  (`KLAVA.bakeLayers`, `src/flows.json`), tumuli (`KRELIEF.tumuli`), step 2's black sand and moss cones, the cairned way, late-winter snow.
+  `verify.py --assert` passes in software GL only. Open (`KNOWN_ISSUES.md`): the front's beds from the bake are wired but no baked lobe
+  reaches the lip; snow cover (16/16 texture units), aura geodes, mirror switch and the Godthrone's crusts not taken; the overview shows the map's square.
+- **Greenstep** (`biomes/greenstep`, a new kit; the owner said "proceed" on its plan, 2026-11-09): its first page `dist/greenstep.html` is
+  station 3's ground (`--station tallwalls` is the default): Terrace III, the Great Veil with the Clodosriba and the Western Rille falling
+  side by side, the rilles' confluence, Terraces II and IV; swlowlands' and shighlands' trees read in place. **Tallwalls' fortress is not
+  drawn**: the kit publishes its site (`site.tallwalls`) and its buildings are owed to a settlement build on `core/city`. `verify.py --assert`
+  passes in software GL only; 11.6 MB page (the neighbours' packs taken whole: narrow them). Model 5.1's divergences from the plan are in its PLAN.md.
+- **Owed:** GPU `--assert --all-views` on both pages; the gallery when they reach `main` (both are new biomes).
 
 ## The integration pass (2026-11-08 to 2026-11-09, `claude/integration-b91c04`; read first)
 

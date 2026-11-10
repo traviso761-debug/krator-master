@@ -21,3 +21,5 @@ the same code). New edits use smodel, not these scripts:
 | `edit_rivers.py`, `hydro.py`, `river_names.py`, `lake_compare.py`, `sat_audit.py` | 4.21 |
 | `edit_422.py` | 4.22 (its `main()` is still the worked example of a full river reroute) |
 | `edit_423.py` | 4.23 |
+| `edit_424.py` | 4.24 (Region 99 and the Siphon Pits) |
+| `edit_511.py` | 5.1 edit 1 (the owner's decisions on the biome plans, 2026-11-09; written on smodel, so it runs from here with `tools/scale-model` on the path) |

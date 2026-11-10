@@ -30,8 +30,7 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 
 ## With the next scale-model edit *(the owner, 2026-11-09)*
 
-- **Reroute the Ostrukh Riba south into Lake Ostrukh.** The owner agreed that Mid Basin's springs and Lake Ostrukh share one aquifer, fed by the Stalker Range's snow (`biomes/midbasin/PLAN.md`). Today the river runs north from the flagship pool (2,040 m) into Region 99 and ends at 334 m, although its note says it feeds the lake (1,850 m). A southern course needs a carve about 70-80 m deep; its highest point is 2,082 m at 1588,1392. Retrace the river downhill and fix its note. The scale-model edits session (`claude/dreamy-davinci-30f3c1`, edit 5.1.1 at f1d1501cf, artifact version 92) has the details. Held for the next map edit, not done alone.
-- **Reed, Nazar and Mungo:** the biome plans' coordinates for them add the canvas shift twice (Reed really stands at 1277,676). Correct the plans when the next edit lands.
+- **Reroute the Ostrukh Riba south into Lake Ostrukh.** The owner agreed that Mid Basin's springs and Lake Ostrukh share one aquifer, fed by the Stalker Range's snow (`biomes/midbasin/PLAN.md`). Today the river runs north from the flagship pool (2,040 m) into Region 99 and ends at 334 m, although its note says it feeds the lake (1,850 m). A southern course needs a carve about 70-80 m deep; its highest point is 2,082 m at 1588,1392. Retrace the river downhill and fix its note. The scale-model edits session (`claude/dreamy-davinci-30f3c1`, edit 5.1.1 at f1d1501cf, artifact version 92) has the details. Held for the next map edit, not done alone. **Not taken by 5.1 edit 3** (`edit_513.py`, 2026-11-09: the Firebliss Range's decisions); its least-cut router and channel carve (`route`, `carve`) are the tools for it. Reed, Nazar and Mungo's plans were corrected with it (`biomes/loom-chasms`, `biomes/godshearth`).
 
 ## Ride along with the next all-builds rebuild
 
@@ -55,6 +54,9 @@ rebuilds once, rewrites the baseline once, then deletes these items; the spot re
   war_room armoury magazine audience signals cell`, registered in `kits/interiors/sets/highlands.js`) move to
   `kits/interiors/src/30-programs.js`, as the owner's brief of 2026-11-09 asked; that file reaches every furnished page.
 - The fauna runtime and the bison size table: the source is in place (pages only); rebuild the pages that bundle the kit.
+- **KSTRATA recipe `obsidian`** (`scoria` has since landed) (2026-11-09, `biomes/twins/PLAN.md` section 0.1): the Twins' plan names them for its coulees and
+  spatter cones; `core/terrain/35-core-strata.js` has `tibasalt` as the nearest. Adding a recipe changes every page that inlines the file, so
+  it waits here; station 1 draws its faces as `tibasalt` and its obsidian as items and a ground class until then.
 
 - **Two `||` numeric defaults left for the rebuild** (2026-11-10, test_all's source lint; not changed, because each moves pages):
   `core/furnish/50-core-furnish.js` line 65 `rec.scale || 1` (reaches 34 builds, 186 pages: `python3 tools/reach.py`) and
