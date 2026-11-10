@@ -14,4 +14,9 @@ if(typeof KratorPostApoc!=='undefined'&&!window.CITY){const K=KratorPostApoc,z=R
  const W=K.build(sites,{culture:'pylon'});scene.add(W);
  for(const R of K.REG()){REGISTER({name:'Post-Apoc (Pylon) — '+R.name,x:R.x,z:R.z,r:R.r,h:R.h});REG[REG.length-1].type='apoc:'+R.key;
   const d=D[keys.indexOf(R.key)]||{w:10,d:10,h:8};PYL_APOC.push({key:R.key,name:R.name,x:R.x,z:R.z,w:d.w,d:d.d,h:d.h||R.h});}
+ /* its doors join core/door's KDOOR as a guest's (35-pa-open.js): their leaves are one InstancedMesh posed by core/door's host
+    (KDOORHOST, kit.json "extra": read in place; Iziz's page has IZDOOR instead), so IZDOOR poses a door it did not draw through it */
+ if(typeof IZDOOR!=='undefined'&&typeof KDOORHOST!=='undefined'){const pose0=IZDOOR._pose;
+  IZDOOR._pose=function(D){if(!D.draw)return pose0.call(IZDOOR,D);KDOORHOST.pose(D);
+   for(const im of D.draw.ims||[]){const m=typeof im==='function'?im():im;if(m)m.instanceMatrix.needsUpdate=true;}};}
  window._registered=REG.length;window._apoc=Object.assign({buildings:PYL_APOC.length},K.furniture());}

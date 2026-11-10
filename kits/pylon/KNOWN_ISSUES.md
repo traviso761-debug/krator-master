@@ -68,6 +68,12 @@
       The partition doorways are open (no leaves).
 - [ ] The vaulted bodies (the vault house, the clinic's wings) have their rooms under the springing: the vaults (`pyHalf`) are
       solid half-cylinders over a flat ceiling, so the rooms are 2.6 m boxes, not vaulted rooms.
+- [x] (2026-11-09) **The Post-Apoc row stopped the page** (`ReferenceError: KDOORHOST is not defined` in the closure's `poFlush`):
+      its openings join the host's core/door as a guest's, but hand their leaves to core/door's host, which Iziz's page does not
+      carry (it has IZDOOR). kit.json's `postApoc.extra` now reads `core/door/90-core-door-host.js` in place inside the closure,
+      and `targets/kit/90zp-apoc-row.js` has IZDOOR pose a door it did not draw (one with `D.draw`) through it. Iziz's own pages
+      are byte-identical with and without the kit's `postApoc` path in `settlements/iziz/build.py` (built both ways).
+      `verify.py dist/pylon.html --assert` ends `OK` on SwiftShader (the Post-Apoc row: 22 buildings, 17 with interiors, 49 rooms).
 - [ ] The Post-Apoc row (2026-11-09) is its own THREE.Group from the KratorPostApoc closure: its buildings are registered
       (labels, probe) but are not in the Vernacular's KIT buckets, so core/export's sheet export does not carry them, and the
       bundle adds about 400 KB to the page. The modified Pylon defs on the set's cores (PLAN.md section 4) are not written.
