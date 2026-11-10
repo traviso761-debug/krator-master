@@ -236,8 +236,11 @@ HYK_PACK_SKIP = ('kelp', 'pk', 'rubble', 'concrete', 'corrugate', 'pipeRust', 'r
 
 
 def hyk_files():
-    def ys(f):   # Ys's own copy wins over core/materials (its build's srcpath rule)
-        for d in (os.path.join(YS, 'src'), MATS, os.path.join(MATS, 'opt')):
+    def ys(f):   # Ys's own copy wins over core/materials (its build's srcpath rule); then the kits Ys reads in place
+        # since 6c04e275 (settlements/ys/build.py VENDORED: kits/ancients/src first)
+        for d in (os.path.join(YS, 'src'), MATS, os.path.join(MATS, 'opt'), os.path.join(ROOT, 'kits', 'ancients', 'src'),
+                  os.path.join(ROOT, 'kits', 'port', 'src'), os.path.join(ROOT, 'settlements', 'iziz', 'src'),
+                  os.path.join(ROOT, 'kits', 'iziz-vernacular', 'src')):
             p = os.path.join(d, f)
             if os.path.exists(p):
                 return p
