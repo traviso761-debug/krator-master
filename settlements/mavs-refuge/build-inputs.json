@@ -91,7 +91,7 @@
     "settlements/mavs-refuge/src/80-camera.js": "8386abf72e3a61a82e3bac6e7f91e0c22ce9f7d7d9996334c07e54d0644f093c",
     "settlements/mavs-refuge/src/81-glow.js": "e74ae5e0a8e8a624dd2f2041be3632ce09ea11f9b9289a72ae1ff960d803113c",
     "settlements/mavs-refuge/src/82-daynight.js": "eed7319f071186b3007aa8e174bc347227c2c9167eefefb3533cc685eabc8d4d",
-    "settlements/mavs-refuge/src/83-mr-walk.js": "9862a1b33f5ea7877c61ea94c3923e16f23caef5d32937203371811f2505c3e1",
+    "settlements/mavs-refuge/src/83-mr-walk.js": "1de39f61219444df405f7a60de8631181aa9b3ff5a89ddfc574facad5b9edf9d",
     "settlements/mavs-refuge/src/84-flyers.js": "7fc497669f3536f3ebdc8c673dd3774a692161e3445d00faeaf7b803f4016e8b",
     "settlements/mavs-refuge/src/84a-flyers-routes.js": "fa46c6d3a3f7c812276567e6bf687728d0b232018fa4be3a89f6e668bc165cfd",
     "settlements/mavs-refuge/src/84b-flyers-animals.js": "216665d231f68c34fc1a9497a394f7f83ebf32e2fdd2c5e050c328ad42153f3f",
@@ -161,12 +161,12 @@
     "tools": "24cc9a0d867a37d71596ec8a001087a35735c498125de4e336dde163318589d8"
    },
    "outputs": {
-    "settlements/mavs-refuge/build-manifest.json": "a78dd11f296610d496465974fc857aaa2962268df00a9a925cee00b0af54fb14",
-    "settlements/mavs-refuge/mavs-refuge.html": "e8f0ab995f8b22c95875ef2a8eb6447d0b43a8d37ee5f23d4cbc9a4c5023165a"
+    "settlements/mavs-refuge/build-manifest.json": "e315cac078a748542eaddcd4261c4531e3f48ebcd7fb2c48dd768619d8095dde",
+    "settlements/mavs-refuge/mavs-refuge.html": "5d6d20c91bf648affea1d5a6bb9b77ce10363f994f093ff4a39c9427616261b5"
    },
    "outputs_raw": {
-    "settlements/mavs-refuge/build-manifest.json": "a78dd11f296610d496465974fc857aaa2962268df00a9a925cee00b0af54fb14",
-    "settlements/mavs-refuge/mavs-refuge.html": "e8f0ab995f8b22c95875ef2a8eb6447d0b43a8d37ee5f23d4cbc9a4c5023165a"
+    "settlements/mavs-refuge/build-manifest.json": "e315cac078a748542eaddcd4261c4531e3f48ebcd7fb2c48dd768619d8095dde",
+    "settlements/mavs-refuge/mavs-refuge.html": "5d6d20c91bf648affea1d5a6bb9b77ce10363f994f093ff4a39c9427616261b5"
    }
   }
  }

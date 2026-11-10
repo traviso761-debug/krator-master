@@ -133,7 +133,7 @@ R.push({name:'nav-connected', ok:A.NAV.reachable===A.NAV.nodes.length, detail:A.
 { const M=window.MRWALK; if(!M||!M.on) R.push({name:'walk-and-reach', ok:false, detail:'no core/walk (MRWALK off)'});
   else { const w=M.ensure(), a=M.reach(), n=M.reach({shut:true}), d=window._doors||{};
     const ok=w.units>0 && w.doors>=d.doors && a.unreachedN===0 && !a.capped && n.reached<a.reached;
-    R.push({name:'walk-and-reach', ok, detail:w.units+' units in core/walk ('+w.floors+' floors, '+w.blocks+' wall blocks, '+w.strips+' stairs, '+w.ms+' ms), '+w.doors+' doors with walk blocks, '+w.cleared+' blocks cleared from doorways; reach: '+a.reached+' of '+a.floors+' floors from the doors of '+(a.units-a.noDoor)+' units ('+a.noDoor+' with no unlocked door)'+(a.unreachedN?', UNREACHED '+a.unreachedN+' '+JSON.stringify(a.unreached.slice(0,8)):'')+(a.capped?', '+a.capped+' floods capped':'')+'; doors shut: '+n.reached+' reached'}); } }
+    R.push({name:'walk-and-reach', ok, detail:w.units+' units in core/walk ('+w.floors+' floors, '+w.blocks+' wall blocks, '+w.strips+' stairs, '+w.ms+' ms), '+w.doors+' doors with walk blocks, '+w.cleared+' blocks cleared from doorways; reach: '+a.reached+' of '+(a.floors-a.noDoorFloors)+' floors from the doors of '+(a.units-a.noDoor)+' units ('+a.noDoor+' with no unlocked door, their '+a.noDoorFloors+' floors kept shut as built)'+(a.unreachedN?', UNREACHED '+a.unreachedN+' '+JSON.stringify(a.unreached.slice(0,8)):'')+(a.capped?', '+a.capped+' floods capped':'')+'; doors shut: '+n.reached+' reached'}); } }
 return R;}"""
 
 # The catalog furniture (53-furnish.js: the 'catalog-furniture' group, meshes tagged userData.furniture) has
