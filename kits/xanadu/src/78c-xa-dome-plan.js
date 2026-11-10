@@ -13,7 +13,10 @@
 //                    c, a, b, A, B (the rooms on its -/+ side, null outside), ops [{s, w, y0, ys, type, arch, lv}]}
 //   xdomeRoomAt(lv,x,z)
 const XPDOME={
- GW:105,GD:110,                       // the precinct inside its garden wall
+ GW:105,GD:110,GS:52.5,OZ:1.35,      // the precinct inside its garden wall: the north wall at -GD/2, the gate's wall at GS (the chahar
+                                      // bagh 2.5 m short of the blueprint's); OZ: the precinct stands this far south of its lot's centre,
+                                      // so the North Door's range and the gate both keep inside the def's 106 x 112 lot (2026-11-10;
+                                      // kits/xanadu/tests/test-footprints.js). The rooms' coordinates are the precinct's, unchanged
  Y0:.3,Y1:8.3,Y2:14.8,SLAB:.5,T:.6,   // the ground floor, the upper floor, the upper ceiling; a floor's and a wall's thickness
  HALL:{c:[0,-20],half:14,aisle:6,top:16.3,clere:24,drum:4,r:14,bays:5,pier:1.6},   // the Hall of Feasts: the dome's square, its aisles, the clerestory, the drum
  ROT:{c:[-44,25],r:7,r0:3.5,r1:6.5,a0:Math.PI/2+.35,a1:Math.PI*2},             // the spiral stair's rotunda: the well, the flight's radii and its turn

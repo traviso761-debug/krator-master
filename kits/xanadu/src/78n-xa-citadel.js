@@ -32,6 +32,7 @@ const XC_STYLE={
  moorish:{rank:2,dado:'xmZel',up:'xmYes',upC:XM_C.ochre,band:'xmBand',head:['horseshoe','Yes','Band'],floor:'xmZel',win:'glass'},
  plain:  {rank:0,dado:null,up:null,band:null,head:['pointed','Wash',null],floor:'vStone',win:'glass'}};
 window._citadel={buildings:0,rooms:0,walls:0,doors:0,windows:0,stairs:0,cells:0,stars:0,vaults:0};
+// every citadel def has ONE variant (nv:1): its builder draws the blueprint and reads no o.v, so a sheet's variants were copies
 function xcItem(key){return typeof KratorInteriors!=='undefined'&&KratorInteriors.sets?KratorInteriors.sets.find(key):null;}
 const xcBox=r=>{const xs=r.poly.map(p=>p[0]),zs=r.poly.map(p=>p[1]);return[Math.min(...xs),Math.max(...xs),Math.min(...zs),Math.max(...zs)];};
 // a rectangle less rectangular holes, as boxes: cb(x0, x1, z0, z1) for every cell of the grid the holes cut that is not in one
@@ -45,7 +46,7 @@ const xcW=(x,z,y)=>{const v=IZDOOR._w(x,y,z);return[v[0],v[2],v[1]];};
 
 // ---------------------------------------------------------------- the plan drawer
 // o: {ext: {core, coreC, dado, dadoC, band, bandC} the outer faces, partC (the partitions' core), wallT (.6), partT (.3)}
-function xcPlan(it,o){o=o||{};const S=window._citadel,R=it.rooms,out={walls:0,doors:0,windows:0};S.buildings++;S.rooms+=R.length;
+function xcPlan(it,o){o=o||{};const S=window._citadel,R=it.rooms,out={walls:0,doors:0,windows:0},kd0=typeof KDOOR!=='undefined'?KDOOR.list.length:0;S.buildings++;S.rooms+=R.length;
  const TE=(o.wallT==null?.6:o.wallT),TP=(o.partT==null?.3:o.partT),ext=o.ext||{core:'xWashB',coreC:xC(XPAL.wash[1])},partC=o.partC||xC(0xe8dcc8),SL=.35;
  const st=r=>XC_STYLE[r.style]||XC_STYLE.plain,isCourt=r=>r.ceil==='open';
  const B=new Map();for(const r of R)B.set(r,xcBox(r));
@@ -158,7 +159,10 @@ function xcPlan(it,o){o=o||{};const S=window._citadel,R=it.rooms,out={walls:0,do
    vB('xmSand',b[0],b[2]-.4,b[1],Sx.w,.4,Sx.w,0,XM_C.sand);}
   else{const n=Math.max(2,Math.ceil(rise/.19)),tr=L/n;for(let k=0;k<n;k++){const f=(k+.5)/n;vB(k%2?'xmMarW':'xmSand',a[0]+dx*f,a[2],a[1]+dz*f,Sx.w,rise*(k+1)/n,tr+.01,ry,k%2?null:XM_C.red);}}
   if(typeof KWALK!=='undefined')KWALK.strip({a:xcW(a[0]-dx/L*.3,a[1]-dz/L*.3,a[2]),b:xcW(b[0]+dx/L*.25,b[1]+dz/L*.25,b[2]),w:Math.max(.6,Sx.w-.1),name:(Sx.id||'stair')+(Sx.ramp?' ramp':' flight'),tag:'interior:xa-citadel'});}
- S.walls+=out.walls;return out;}
+ S.walls+=out.walls;
+ // the unlocked leaves of a hollow def, declared (as 78d's: the kit sheet's doors check counts them, kits/iziz-vernacular/sheet_verify.py)
+ if(typeof KDOOR!=='undefined')window._hollowDoors=(window._hollowDoors|0)+KDOOR.list.slice(kd0).filter(D=>!D.locked).length;
+ return out;}
 // a court's paving: a zellige field in a marble frame, marble walks on the axes
 function xcCourtFloor(r,bx){const W=bx[1]-bx[0],D=bx[3]-bx[2],cx=(bx[0]+bx[1])/2,cz=(bx[2]+bx[3])/2,y=r.y;
  vB('xmMarW',cx,y-.04,cz,W+.1,.04,D+.1,0,null);if(W<4||D<4)return;vB('xmZel',cx,y-.02,cz,W-2.4,.03,D-2.4,0,null);
@@ -200,7 +204,7 @@ function buildXaCitPalace(G,o){reseed(33001);const it=xcItem('xa_cit_palace'),C=
  const cw=C.curtain[0]/2,cd=C.curtain[1]/2,CH=11,sand=xC(0xc0644a);
  xnXECurtain([-cw+3,cd],[-41.2,cd],CH,sand,1);xnXECurtain([-36.8,cd],[-7.5,cd],CH,sand,1);xnXECurtain([7.5,cd],[cw-3,cd],CH,sand,1);
  xnXECurtain([-cw,-39.5],[-cw,cd-3],CH,sand,1);xnXECurtain([cw,cd-3],[cw,-39.5],CH,sand,1);
- for(const sx of[-1,1]){xnXETower(sx*cw,0,cd,3.6,CH+2,sand,tile);xnChhatri(sx*cw,CH+4.4,cd,1.3,2.6,xC(XPAL.white),tile,8);vB('xmSand',sx*cw,0,-40.5,4,CH+1,3,0,sand);}
+ for(const sx of[-1,1]){xnXETower(sx*cw,0,cd,3.6,CH+2,sand,tile);xnChhatri(sx*cw,CH+4.4,cd,1.3,2.6,xC(XPAL.white),tile,8);vB('xmSand',sx*cw,0,-39.25,3,CH+1,1.5,0,sand);}   // the back piers 3 x 1.5 (were 4 x 3 at -40.5): in Erewhon they stand inside the citadel wall's 3.4 m, not through it (2026-11-10)
  xcParapet([-cw,-38.6],[cw,-38.6],C.rangeTop,'white');
  // the postern through the curtain (the Golden Way's door: black, white and gold), its passage
  {const x=-39,z0=41,z1=cd+1.6;vB('xmMarK',x-2.2,0,(z0+z1)/2,.5,4.6,z1-z0,0,null);vB('xmMarK',x+2.2,0,(z0+z1)/2,.5,4.6,z1-z0,0,null);vB('xmMarW',x,C.FL-.03,(z0+z1)/2,4.4,.03,z1-z0,0,null);
@@ -230,7 +234,7 @@ function buildXaCitPalace(G,o){reseed(33001);const it=xcItem('xa_cit_palace'),C=
  // the forecourt's cypresses and lamps
  for(const s of[-1,1])for(const z of[8,14,20,26]){xnCypress(s*9,z,7,C.FL);if(lit&&z%12===8)vnLampPost(s*6,C.FL,z,3.6);}
  vnFolk(0,24,4,5);}
-XA.def({key:'xa_cit_palace',name:"Sultan's Palace (the citadel)",family:'The Sultan',tags:{type:['civic','military','single-family dwelling'],wealth:'civic',lit:true,landmark:true},
+XA.def({key:'xa_cit_palace',name:"Sultan's Palace (the citadel)",family:'The Sultan',nv:1,tags:{type:['civic','military','single-family dwelling'],wealth:'civic',lit:true,landmark:true},
  w:112,d:100,h:30,fw:110,fd:90,eye:[0,60,60,-10],eyes:[['audience',0,2.5,-1,-14],['forecourt',0,2,36,0],['gate',0,3,62,40]],build:buildXaCitPalace});
 
 // ---------------------------------------------------------------- the Grand Vizier's palace (E5a, E5b)
@@ -251,7 +255,7 @@ function buildXaCitVizier(G,o){reseed(33011);const it=xcItem('xa_cit_vizier'),C=
  for(const s of[-1,1]){xnXMBed(s*11,28,8,22,0,.05);for(let k=0;k<6;k++)xnCypress(s*5,14+k*4.8,7,.05);xnXMPalm(s*18,18,6,.05);xnXMPalm(s*18,38,6.5,.05);}
  if(lit)for(const s of[-1,1])vnLampPost(s*4,.05,44,3.4);
  void lemon;vnFolk(0,24,4,3);}
-XA.def({key:'xa_cit_vizier',name:"Grand Vizier's palace (the citadel)",family:'The Sultan',tags:{type:['civic','single-family dwelling'],wealth:'civic',lit:true,landmark:true},
+XA.def({key:'xa_cit_vizier',name:"Grand Vizier's palace (the citadel)",family:'The Sultan',nv:1,tags:{type:['civic','single-family dwelling'],wealth:'civic',lit:true,landmark:true},
  w:46,d:94,h:20,fw:45,fd:93,eye:[0,30,60,-10],eyes:[['divan',-8,2.2,-17,-36],['garden',0,2,44,0]],build:buildXaCitVizier});
 
 // ---------------------------------------------------------------- the dars: the great officers' houses, the envoys', the guard
@@ -281,7 +285,7 @@ for(const [key,name,b,w,d,type,wealth] of[['xa_cit_treasurer','House of the Trea
  ['xa_cit_mines','House of the Master of Mines and Mints',buildXaCitMines,42,42,['civic','single-family dwelling'],'rich'],
  ['xa_cit_envoys',"Envoys' House",buildXaCitEnvoys,30,42,['multi-family dwelling'],'rich'],
  ['xa_cit_barracks','Barracks of the Citadel Guard',buildXaCitBarracks,44,42,['military'],'civic']])
- XA.def({key,name,family:'The Sultan',tags:{type,wealth,lit:true,landmark:true},w,d,h:14,fw:w-4,fd:d-4,eye:[0,26,d,-4],eyes:[['court',0,2,4,-6]],build:b});
+ XA.def({key,name,family:'The Sultan',nv:1,tags:{type,wealth,lit:true,landmark:true},w,d,h:14,fw:w-4,fd:d-4,eye:[0,26,d,-4],eyes:[['court',0,2,4,-6]],build:b});
 
 // ---------------------------------------------------------------- the court temple and the citadel kitchens
 function buildXaCitTemple(G,o){reseed(33071);const it=xcItem('xa_cit_temple'),FL=it?it.cit.FL:.6,tile=xC(XPAL.turquoise);
@@ -298,7 +302,7 @@ function buildXaCitTemple(G,o){reseed(33071);const it=xcItem('xa_cit_temple'),FL
 function buildXaCitKitchens(G,o){reseed(33081);const it=xcItem('xa_cit_kitchens');vnReg('Citadel Kitchens',0,0,14,8);
  if(it)xcPlan(it,{ext:{core:'xWashB',coreC:xC(XPAL.wash[2]),dado:'vStone',dadoC:xC(XPAL.stone[1])},partC:xC(0xe0d4c0)});
  xcParapetRect(-12.8,12.8,-19.3,19.3,5.65,'red',xC(XPAL.stone[1]));for(const x of[-6,6])vB('xRubB',x,5.3,15,1.4,3,1.4,0,xC(XPAL.rubble[0]));}
-XA.def({key:'xa_cit_temple',name:'Court Temple (the citadel)',family:'The Sultan',tags:{type:['religious'],wealth:'civic',lit:true,landmark:true},
+XA.def({key:'xa_cit_temple',name:'Court Temple (the citadel)',family:'The Sultan',nv:1,tags:{type:['religious'],wealth:'civic',lit:true,landmark:true},
  w:62,d:56,h:30,fw:60,fd:54,eye:[0,30,60,-4],eyes:[['iwan',0,2,40,20],['hall',0,2,10,-10]],build:buildXaCitTemple});
-XA.def({key:'xa_cit_kitchens',name:'Citadel Kitchens, Ice House and Stables',family:'The Sultan',tags:{type:['industry'],wealth:'civic',lit:true,landmark:true},
+XA.def({key:'xa_cit_kitchens',name:'Citadel Kitchens, Ice House and Stables',family:'The Sultan',nv:1,tags:{type:['industry'],wealth:'civic',lit:true,landmark:true},
  w:28,d:42,h:12,fw:26,fd:40,eye:[0,20,40,0],build:buildXaCitKitchens});

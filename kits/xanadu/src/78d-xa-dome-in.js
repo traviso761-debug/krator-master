@@ -75,8 +75,8 @@ function xdomeBuild(o,cols){xpBalance(XPAT.balance.citadel);const D=XPDOME,P=xdo
  xdomeStairs(o,cols,{glass,wFloor,wStrip,wBlock});
  xdomeRooms(o,cols,{glass,wFloor,wStrip,wBlock});
  // the garden between the wings is ground a walker crosses (the gate to the hall's door, the wings' garden doors)
- wFloor([-20,20,0,D.GD/2],0,'Chahar Bagh');wFloor([-D.GW/2,D.GW/2,50,D.GD/2],0,'Chahar Bagh');
- if(C){const w=IZDOOR._w(0,0,0);XA_CUT.push({id:'xa-dome.'+XA_CUT.length,name:'Pleasure Dome',x:w[0],z:w[2],ry:C.ry==null?0:C.ry,w:D.GW,d:D.GD,key:'xa_pleasure_dome',tag:'interior:xa-dome',gate:IZDOOR._w(0,0,D.GD/2-4),
+ wFloor([-20,20,0,D.GS],0,'Chahar Bagh');wFloor([-D.GW/2,D.GW/2,50,D.GS],0,'Chahar Bagh');
+ if(C){const w=IZDOOR._w(0,0,(D.GS-D.GD/2)/2);XA_CUT.push({id:'xa-dome.'+XA_CUT.length,name:'Pleasure Dome',x:w[0],z:w[2],ry:C.ry==null?0:C.ry,w:D.GW,d:D.GS+D.GD/2,key:'xa_pleasure_dome',tag:'interior:xa-dome',gate:IZDOOR._w(0,0,D.GS-4),
   levels:[{y:w[1]+Y0,h:Y1-Y0,name:'ground: the harem palace (E3)'},{y:w[1]+Y1,h:Y2-Y1,name:'upper: the galleries and the favourites (E4)'},{y:w[1]+D.HALL.top,h:8,name:'the clerestory and the drum'}]});}
  ST.rooms=P.rooms.filter(r=>!r.void).length;ST.segs=P.segs.length;ST.unplaced=(D.unplaced||[]).length;ST.lib=XP_T.bound||null;ST.walk=!!WK;window._xaDome=ST;
  window._hollowDoors=(window._hollowDoors|0)+ST.doors;xpBalance(null);}   // the unlocked leaves of a hollow def, declared (the kit sheet's doors check counts them: kits/iziz-vernacular/sheet_verify.py)

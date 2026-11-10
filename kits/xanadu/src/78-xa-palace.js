@@ -59,16 +59,20 @@ function buildXaPalace(G,o){reseed(31001+(o.v|0));const V=xV(o),CW=52,CD=42,CH=7
 // and the baths east), the north range with the Golden Way's door. Outside it keeps the kit's look: whitewash under a gold
 // frieze, the mosaic drum, the great dome and its four turrets, the baths' domes with gold oculus bosses, the tiled garden
 // wall, its gate and kiosks. Inside it is hollow and walkable, in the black-and-white pattern system (78a-78d: xdomeBuild).
-function buildXaPleasureDome(G,o){reseed(31011+(o.v|0));const V=xV(o),GW=XPDOME.GW,GD=XPDOME.GD;
+// the precinct's frame: the def's own, moved dz metres to its local south (XPDOME.OZ): the group, the kit transform every
+// kput and door goes through, and VERN.cur (vnReg), so the whole Dome moves together and its rooms keep their coordinates
+function xdomeShift(G,dz){const P=VERN.cur;if(!dz||!P||!KXF)return;const s=P.o.scale==null?1:P.o.scale,p=loc(P.x,P.z,0,dz*s,P.ry);
+ G.position.x=p[0];G.position.z=p[1];G.updateMatrix();KXF.m=G.matrix.clone();P.x=p[0];P.z=p[1];}
+function buildXaPleasureDome(G,o){reseed(31011+(o.v|0));xdomeShift(G,XPDOME.OZ);const V=xV(o),GW=XPDOME.GW,GD=XPDOME.GD,GS=XPDOME.GS,GZ=(GS-GD/2)/2,GL=GS+GD/2;
  const stone=xC(xPick(XPAL.stone)),wash=xC(xPick(XPAL.wash)),tim=xC(xPick(XPAL.dark)),gold=xC(xPick(XPAL.gold)),tile=xC(XPAL.turquoise);
- vnReg('Pleasure Dome',0,-20,22,44);vnReg('Pleasure Dome — gardens',0,26,20,3);vnReg('Pleasure Dome — baths',35,32,16,20);vnReg('Pleasure Dome — gate',0,GD/2-2,4,6);
- // the garden wall: whitewash with a tiled coping, an arched gate in the front, kiosks at the front corners
+ vnReg('Pleasure Dome',0,-20,22,44);vnReg('Pleasure Dome — gardens',0,26,20,3);vnReg('Pleasure Dome — baths',35,32,16,20);vnReg('Pleasure Dome — gate',0,GS-2,4,6);
+ // the garden wall: whitewash with a tiled coping, an arched gate in the front, kiosks at the garden's front corners
  // (the north range and the Golden Way's door stand through the north wall: it stops either side of them)
- for(const s of[-1,1]){vB('xWashB',s*(GW/2-.3),0,0,.6,2.6,GD,0,wash);vB('xTilesB',s*(GW/2-.3),2.6,0,.9,.22,GD+.3,0,tile);}
- vB('xWashB',0,0,GD/2-.3,GW,2.6,.6,0,wash);vB('xTilesB',0,2.6,GD/2-.3,GW+.3,.22,.9,0,tile);
+ for(const s of[-1,1]){vB('xWashB',s*(GW/2-.3),0,GZ,.6,2.6,GL,0,wash);vB('xTilesB',s*(GW/2-.3),2.6,GZ,.9,.22,GL+.3,0,tile);}
+ vB('xWashB',0,0,GS-.3,GW,2.6,.6,0,wash);vB('xTilesB',0,2.6,GS-.3,GW+.3,.22,.9,0,tile);
  for(const q of[[-GW/2,-20.3],[7.3,GW/2]]){vB('xWashB',(q[0]+q[1])/2,0,-GD/2+.3,q[1]-q[0],2.6,.6,0,wash);vB('xTilesB',(q[0]+q[1])/2,2.6,-GD/2+.3,q[1]-q[0]+.3,.22,.9,0,tile);}
- xnDoorway(0,0,GD/2,0,4.4,2.6);xnArch('xArchS',0,0,GD/2+.1,0,6.2,3.4,.8,stone,{open:true});for(const s of[-1,1])vPst('xColS',s*3.4,0,GD/2-.3,.35,3.8,stone);
- for(const sx of[-1,1])xnChhatri(sx*(GW/2-3.2),0,GD/2-3,1.5,3.6,stone,tile,6);
+ xnDoorway(0,0,GS,0,4.4,2.6);xnArch('xArchS',0,0,GS+.1,0,6.2,3.4,.8,stone,{open:true});for(const s of[-1,1])vPst('xColS',s*3.4,0,GS-.3,.35,3.8,stone);
+ for(const sx of[-1,1])xnChhatri(sx*16,0,GS-2.8,1.5,3.6,stone,tile,6);   // between the parterres and the wings' south rooms (the wall's own corners are the wings')
  // the palace: its rooms, walls, stairs and domes
  xdomeBuild(o,{stone,wash,tim,gold,tile});
  // kiosks on the wings' roofs (the roof terraces, E4.15)
@@ -78,8 +82,8 @@ function buildXaPleasureDome(G,o){reseed(31011+(o.v|0));const V=xV(o),GW=XPDOME.
  else{xnPool(0,.02,28,8,36,0,stone);
   for(const s of[-1,1])xnCharBagh(s*12.6,0,28,12.4,36,0,{channel:1,r:1.5});
   for(const s of[-1,1])for(let k=0;k<8;k++)xnCypress(s*5.4,11+k*4.8,rr(6,8));}
- xnFountain(0,0,50.5,2.2,stone);xnPave(0,5,9,6,0,stone,2.2);
- if(xLit()){for(const s of[-1,1]){vnLampPost(s*4.5,0,4.5,3.6);vnLampPost(s*4.5,0,47,3.6);vnLampPost(s*3.6,0,GD/2-4,3.6);}}
+ xnFountain(0,0,GS-3.2,2.2,stone);xnPave(0,5,9,6,0,stone,2.2);
+ if(xLit()){for(const s of[-1,1]){vnLampPost(s*4.5,0,4.5,3.6);vnLampPost(s*4.5,0,47,3.6);vnLampPost(s*3.6,0,GS-4,3.6);}}
  vnFolk(0,49,5,4);vnFolk(0,5,3,2);}
 
 XA.def({key:'xa_palace',name:"Sultan's Palace",family:'The Sultan',tags:{type:['civic','military','single-family dwelling'],wealth:'civic',lit:true,landmark:true},w:60,d:56,h:40,fw:52,fd:42,build:buildXaPalace});

@@ -37,8 +37,16 @@ Open items are `- [ ]` lines; build.py prints them.
       narrower there than the blueprint's 110 m curtain: CIT_SITES `at`), the corner towers' and the roof guard's rooms, the
       upper floors' windows onto the courts' porticoes as galleries. The blueprint's NEW furniture (the Great Divan, the
       palanquin, the hoist, the lattice boxes) is not in the catalog; the rooms take the catalog's xanadu court pieces by kind.
-      The furniture follows the page's switch (?interiors=1), as the rest of Erewhon. The kit's own sheet (kits/xanadu/build.py,
-      the -sheets session) does not take the citadel files yet: add kxa.CITADEL and the 'xanadu-citadel' interior set there.
+      The furniture follows the page's switch (?interiors=1), as the rest of Erewhon. The kit's own sheet (kits/xanadu/build.py)
+      takes the citadel files (kxa.CITADEL) and the 'xanadu-citadel' interior set (2026-11-10, the combined rebuild). In Erewhon the
+      palace's two back piers now stand inside the citadel wall's thickness (3 x 1.5 m, were 4 x 3: with the palace 2 m north they
+      reached 1.5 to 2 m past the wall's outer face); its lot's back corners (z -307) lie outside CIT_POLY (6.9 m NW, 10.4 m NE of
+      the wall line), but nothing of it is built there: the rooms' back (z -296) is 2.3 to 7 m inside the line.
+- [ ] (2026-11-10) **The seam between the palace and the Pleasure Dome: an 18 m step.** The palace's block is levelled at 153 m,
+      the Dome's at 171 m (CIT_G: each block at its cells' mean of the terrain), so the ground steps 18 m at z -209/-208, and the
+      Dome's North Door opens 18 m above the palace's gate iwan, 1.3 m in front of it. The preset "Citadel — the gate iwan" stands
+      inside the Dome's terrace. Recorded for the owner (`citadel/PLEASURE-DOME.md`, "The site among the citadel's buildings":
+      the Golden Way as a descending court, or one level for both blocks).
 - [ ] (2026-11-10) **Interiors (`?interiors=1`): hollow walls, the set, the reachability audit.** The furnished defs are drawn
       hollow by the Vernacular's auto bodies (69e6) round the set's rooms (`kits/interiors/sets/xanadu.js`), their doors unlocked;
       `verify.py --interiors` runs `tools/ix_reach_audit.js`. Fixed 2026-11-10: a battered block up to 5 m wider a side than its
@@ -49,10 +57,14 @@ Open items are `- [ ]` lines; build.py prints them.
       konaks (`xa_rich_b`, `xa_rich_c`, their `_palopo`), the shop rows (`xa_shops`, `xa_shop_turk_a`), the monastery's hall,
       the grand temple (its door 7.2 m up its flights), the fortress's keep, the baths' rooms, the granary, the farmhouse: in
       each the builder's door is on a block the set's body does not match, or a raised door with no flight in core/walk. Erewhon
-      (`verify.py dist/erewhon.html --assert --interiors`, 2026-11-10, a local build not committed: Erewhon is rebuilt once
-      after the citadel sessions merge; OK): 52,321 of 54,062 floors reached (47,538 on the WIP),
-      3,644 slivers apart, 236 buildings with a gap, 401 placements held inside the citadel. The citadel belongs to the citadel sessions (`-pleasuredome`, `-citadel`; 2026-11-09): every placement inside its
-      wall (CIT_POLY) builds as before here, with no hollow walls and no rooms from this set (`XAF.held`). The furniture is textured (the catalog's detail maps, `tex=True`) but for the
+      (`verify.py dist/erewhon.html --assert --interiors`, the combined rebuild, 2026-11-10; OK): 53,240 of 54,985 floors
+      reached. The citadel belongs to the citadel sessions (`-pleasuredome`, `-citadel`; 2026-11-09): every placement inside its
+      wall (CIT_POLY) builds as before here, with no hollow walls and no rooms from this set (`XAF.held`: 116), EXCEPT the
+      citadel's own buildings (`xa_cit_*`, 78n) and both Pleasure Domes, which take their items as on those sessions' pages
+      (the hold had taken their furniture and planned floors: the citadel's audit, 133 floors, could not run). The citadel:
+      133 of 133 floors reached (the palace 46, the Vizier's 13, the temple 6, the barracks, the Master of Mines', the
+      Treasurer's, the Chancellor's and the envoys' 13 each, the kitchens 3). The Garden Pleasure Dome is built with the hollow
+      wrap off and only furnished by its item (its walk is its builder's, 78d): `xdomeReach` 78 of 78. The furniture is textured (the catalog's detail maps, `tex=True`) but for the
       `tile` family, which the catalog's maps lack (TODO.md, ride-along).
 - [ ] (2026-11-03) **Doors and glass: the kit's bodies are solid.** The kit takes core/door and the Vernacular's openings
       (69e5) and `kits/xanadu/src/71c-xa-openings.js` (kits/xanadu/README.md, "Doors and glass"): on the sheet 599 doors (each a
