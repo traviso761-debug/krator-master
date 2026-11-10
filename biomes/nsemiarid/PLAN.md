@@ -347,8 +347,11 @@ owner's call); seasons and KFIRE (their rows are for station 2, the high country
 judged not worth a redraw before the owner sees the first passes); a runtime range on the floor's bands (it would move what is drawn where: a
 performance pass of its own).
 
-**Station 2 (`--station high`)** waits, as its plan says, for nhighlands' station 2 (pair 7), so its trees are written once and this side takes kin
-of them. Map 5.1 asks nothing of this kit (`biomes/STATIONS-MAP-5.1.md`).
+**Station 2 (`--station high`)** waited, as its plan says, for nhighlands' station 2 (pair 7), so its trees are written once and this side takes kin
+of them. **Built 2026-11-09** (`PLAN-STATIONS.md`, "Station 2, as built"): the high country at 5.1 px 848,564 on the universal set (KGROUND with
+relief and its own layers, KSHADOW off at load, core/rand, core/tags, core/water's tarns, KRELIEF's scarp and talus; nothing reads a canvas, so no
+KMASK), nhighlands' station 2
+trees as kin and ebadlands' Great Basin trees read in place. Map 5.1 asks nothing of this kit (`biomes/STATIONS-MAP-5.1.md`).
 
 **The 5.1 geology** (`kits/resources/data/geology.json`, the province layer, read 2026-11-03): in a box round the region's old canvas px 360-560 x
 60-180, basalt 58%, evaporite 27% (the dam-lake beds), water 8%, the rest sedimentary, crystalline, impact and granite at 1-3% each; the kit's site

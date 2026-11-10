@@ -18,7 +18,7 @@ const FAR=(function(){
  const G=KFAR.grid({lines:KFAR.lines({cell:60,inner:S0+20,out:ROUT,grow:1.03}),dense:true,
   h:(x,z)=>{if(Math.abs(x)<S0&&Math.abs(z)<S0)return terrainH(x,z)-SINK;return land(x,z);},
   skip:(x0,z0,x1,z1)=>x0>-S0+100&&x1<S0-100&&z0>-S0+100&&z1<S0-100,   /* none under the ground's square */
-  color:colr});
+  color:typeof FAR_COLOR==='function'?FAR_COLOR:colr});   /* a station's own colours past the map (stations/high) */
  const geo=KFAR.geometry(G),mat=new THREE.MeshLambertMaterial({vertexColors:true});mat.userData.farField=true;mat.customProgramCacheKey=()=>'nsemiarid-far';
  const mesh=new THREE.Mesh(geo,mat);mesh.userData.host=true;mesh.userData.farField=true;mesh.userData.probeSkip=true;mesh.frustumCulled=false;
  mesh.userData.inspectLabel=STAGE_GROUND.label+' past the map';scene.add(mesh);

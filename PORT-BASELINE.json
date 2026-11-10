@@ -317,28 +317,32 @@
    "sha256": "e364154c49a3e1d3c26e0df1addf9e3351fa585de36987f7272c0f2c5b6621e4"
   },
   "biomes/nhighlands/dist/nhighlands-alpine.html": {
-   "bytes": 8146037,
-   "sha256": "6c1592525a5f40eb62902e0e7d207888d57c0ec7f0835e2d08b3eafddbce9dee"
+   "bytes": 8867308,
+   "sha256": "1b64d634c8e1b930803e5a17fbee420901e8cc6fa3fbeba9f31c9f54871bc404"
   },
   "biomes/nhighlands/dist/nhighlands-bogs.html": {
    "bytes": 9158815,
    "sha256": "dee61b2fcb889c1b6d66995707efa14662c8bbb768ca6de413f4c61d10d7fbc3"
   },
   "biomes/nhighlands/dist/nhighlands-foothills.html": {
-   "bytes": 9795672,
-   "sha256": "a48283c4aef64336a85b04e411cadc1370819756f0bb2d2049d00b7be15a6cb1"
+   "bytes": 10473593,
+   "sha256": "bef44273e2094c930fab33d543b223bbf42973a4e017f0c985828cebb35753a6"
   },
   "biomes/nhighlands/dist/nhighlands-montane.html": {
-   "bytes": 8150503,
-   "sha256": "ac8e496248f7d14cfe332e7418e1e3ef05b6533e853ba710a7d11744ae22e6e7"
+   "bytes": 8535859,
+   "sha256": "fe637cf2222199514ca85528ffc6ca81f164c5f2c36395511d681fed5926a866"
   },
   "biomes/nhighlands/dist/nhighlands.html": {
    "bytes": 8694255,
    "sha256": "84789844916aac5f404401b7cbb09ca24954833d0371d84091efee5c688e4d8c"
   },
+  "biomes/nsemiarid/dist/nsemiarid-high.html": {
+   "bytes": 9241140,
+   "sha256": "177f639e37ceb6c797bb4ce2fd6bd756e7cbb88d304bcc7920072e8580b0474d"
+  },
   "biomes/nsemiarid/dist/nsemiarid.html": {
-   "bytes": 5690446,
-   "sha256": "07c78eb735358bba6e3ca1d9f92b2e62473376622393e2c1be56e0329a1ed620"
+   "bytes": 5695112,
+   "sha256": "5a6dad1e82b5b0ba15a0c3ceaab07fda142f2c1b804b30c6ed1db5b79c1c8104"
   },
   "biomes/nwbay/dist/nwbay-caverns.html": {
    "bytes": 9632452,
@@ -437,8 +441,12 @@
    "sha256": "2ddb10a1127889ab1073f239724e48882f7801a949acc20442002f091d6704d1"
   },
   "biomes/scablands/dist/coulee.html": {
-   "bytes": 7855331,
-   "sha256": "664d0d1e6ab2e8cd1802f94e2c3fd6fdc7d743adddd44f31c52f7be81cdc4267"
+   "bytes": 7859296,
+   "sha256": "1cc11ec0f7974d1f855867ba27b9c57a058b122481fea1f499cfa19f05c52a8c"
+  },
+  "biomes/scablands/dist/highline.html": {
+   "bytes": 7443223,
+   "sha256": "07851e441f58c15ce9359e5514242f649ef64e8e297726e89352b1d09293a344"
   },
   "biomes/sedesert/dist/sedesert-bowl.html": {
    "bytes": 8347668,

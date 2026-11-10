@@ -28,13 +28,16 @@ function zones(x,z){const F=n=>BIO.field(n,x,z);
  const cliff=smooth(.75,.95,slope)*smooth(.3,.6,rock),live=1-cliff,hot=smooth(.45,.15,cold);
  const pan=smooth(.3,.6,salt),open=(1-dune*.85)*live*(1-pan),gentle=smooth(.6,.28,slope);
  const tugai=Math.max(flow*smooth(.5,.8,wet),smooth(.82,.95,wet))*smooth(.5,.15,up)*hot*live*(1-pan*.6);
- return{wet,flow,up,rock,dune,slope,salt,cold,bed,silt,scour,cliff,hot,pan:pan*live,
+ const Z={wet,flow,up,rock,dune,slope,salt,cold,bed,silt,scour,cliff,hot,pan:pan*live,
   desert:open*smooth(.17,.09,wet)*(1-rock*.5),
   steppe:open*smooth(.1,.18,wet)*smooth(.36,.27,wet)*(1-rock*.6)*(1-scour*.5),
   med:open*smooth(.27,.36,wet)*smooth(.56,.46,wet)*hot*(1-rock*.5),
   forest:open*smooth(.46,.58,wet)*(1-flow*.5)*gentle*(1-rock*.6),
   tugai:tugai,
-  rip:flow*(1-tugai)*live*gentle};}
+  rip:flow*(1-tugai)*live*gentle};
+ /* a station's own country (stations/high: the high country): it reweights the kit's zones where its own flora grows instead (null: the zones as they are) */
+ if(NSEMIARID.ZONE_HOOK)NSEMIARID.ZONE_HOOK(Z,x,z);
+ return Z;}
 NSEMIARID.zones=zones;
 NSEMIARID.standOf=(x,z,n,seed)=>BIO.standAt(x,z,n||2,.0024,seed||87);
 
@@ -83,7 +86,7 @@ const HC=120,HASH={};
 function hkey(x,z){return Math.floor(x/HC)+','+Math.floor(z/HC);}
 function hadd(o){const R=o.r+30;for(let z=Math.floor((o.z-R)/HC);z<=Math.floor((o.z+R)/HC);z++)for(let x=Math.floor((o.x-R)/HC);x<=Math.floor((o.x+R)/HC);x++){const k=x+','+z;(HASH[k]||(HASH[k]=[])).push(o);}}
 function blocked(x,z,pad){const L=HASH[hkey(x,z)];if(!L)return false;for(let i=0;i<L.length;i++){const o=L[i];if(Math.hypot(x-o.x,z-o.z)<o.r+pad)return true;}return false;}
-NSEMIARID.blocked=blocked;
+NSEMIARID.blocked=blocked;NSEMIARID.keepClear=hadd;   /* a station's own trees (stations/high, 87k) claim their ground before the floor */
 
 // ---------------------------------------------------------------- foliage helpers
 function clumpAt(item,x,y,z,size,flat,col,cx,cy,cz,ex,ey){

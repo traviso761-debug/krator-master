@@ -276,7 +276,7 @@ function plantRip(x,y,z,Z,lv,st){const t=rng(),nearW=smooth(.4,.9,Z.flow);
  else if(t<.72){blooms(x,y+.2,z,rr(.6,1.4),lv===2?ri(4,9):2,[0xf0c030,0xe8e0f0,0xe8302a]);st.flowers++;}
  else if(t<.8){buckthorn(x,y,z,lv,st);}
  else{stone(x,y,z,lv,PAL.rockBasalt,st,.7);}}
-NSEMIARID.small={tuft,card,stipa,grass,wormwood,tumbler,drift,crawler,strider,dewGarden};
+NSEMIARID.small={tuft,card,stipa,grass,wormwood,tumbler,drift,crawler,strider,dewGarden,stone,boulder,buckthorn,sedge,tulips,blooms,okGround};
 
 // ---------------------------------------------------------------- the pass
 NSEMIARID.FLOOR_ZONES=['desert','pan','steppe','med','forest','tugai','rip'];
@@ -287,6 +287,7 @@ NSEMIARID.buildFloor=function(R,q){
  const st={tufts:0,shrubs:0,flowers:0,ferns:0,litter:0,reeds:0,stones:0,boulders:0,tumblers:0,drifts:0,seedDrifts:0,crawlers:0,balls:0,striders:0,maces:0,beads:0,sails:0,stars:0,censers:0,horns:0,eggs:0,
   furlers:0,furlersShut:0,hitchers:0,stepcones:0,windows:0,fingers:0,balloons:0,gourds:0,gardens:0,vines:0,pods:0,aloft:0,windfall:0,deadSaxaul:0,saltbush:0,buckthorn:0};
  function plant(x,y,z,lv){if(blocked(x,z,.6))return;const Z=zones(x,z);if(Z.cliff>.6)return;
+  if(NSEMIARID.STATION_PLANT&&NSEMIARID.STATION_PLANT(x,y,z,Z,lv,st))return;   /* a station's own floor (stations/high) where it grows one; false: the kit's */
   const w=NSEMIARID.floorWeights(Z);let tot=0;for(let i=0;i<w.length;i++)tot+=w[i];if(tot<=0)return;
   let r=rng()*Math.max(1,tot),k=0;for(;k<w.length;k++){if(r<w[k])break;r-=w[k];}if(k>=w.length)return;
   PLANTERS[k](x,y,z,Z,lv,st);}
@@ -319,5 +320,12 @@ NSEMIARID.buildFloor=function(R,q){
  // reeds standing in the shallows (the host's water window)
  BIO.grid(8,0,R,(x,z,d)=>{const ld=BIO.lodD(x,z);if(ld>=L.mid)return 0;const Z=zones(x,z);return .45*q*Math.max(Z.tugai,Z.rip)*smooth(1.0,.3,BIO.depth(x,z))*(1-Z.salt);},
   (x,y,z,d)=>{const lv=BIO.lodD(x,z)<L.floor[0]*1.2?2:1;reed(x,Math.max(y,BIO.waterH(x,z)-.4),z,lv);st.reeds++;},{patch:.6,patchScale:.03,noMask:true,depth:[-.1,.9],pad:1,box:BIO.window('water')});
+ // THE POND BLADDERWORT (Korona's sucking pool's cousin, 50; EXCHANGES.md): mats floating at the surface of fresh, warm water (drawn 3 cm over it:
+ // the pools' water is opaque, so a mat under it would not show; no salt: the
+ // salt lake has none; not in the high country's cold tarns), a few small yellow flowers standing over them. Last, so nothing placed before it moves
+ st.bladder=0;
+ BIO.grid(5,0,R,(x,z,d)=>{if(BIO.lodD(x,z)>=L.mid)return 0;const Z=zones(x,z);if(Z.salt>.05||Z.cold>.4)return 0;return .8*q*smooth(.15,.4,BIO.depth(x,z))*(1-smooth(.3,.7,Z.flow));},   /* still water only: not the stream */
+  (x,y,z,d)=>{const w=BIO.waterH(x,z),s=rr(.8,1.8);BIO.put('bladder',[x,w+.03,z],qEuler(0,rr(0,TAU),0),[s,1,s*rr(.7,1)],leafCol([0x6a8a3a,0x7a9a44,0x5e7e34],1.15,.02,.06,.05));st.bladder++;
+   if(rng()<.25)blooms(x,w+.12,z,rr(.3,.7),ri(2,5),[0xf0d040,0xe8c838],[.03,.05]);},{patch:.5,patchScale:.04,noMask:true,depth:[.15,1.8],pad:.4,box:BIO.window('water')});
  return{under:st};};
 })();

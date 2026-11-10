@@ -2,9 +2,16 @@
 
 Open items are `- [ ]`; `build.py` counts them. Close an item when the fix is in and verified.
 
-- [ ] **One station.** The flood lake's high line over NW lowlands (station 2) needs NW lowlands' rock zone and its
-  response to `bed` and `silt` (`biomes/nsemiarid/PLAN.md` section 8).
-  Stays open (2026-10-25): waits for NW lowlands' rock zone (a design task in another kit).
+- [ ] **The high line's lowlands half.** Station 2 (`highline`, 2026-11-09) is built on n semiarid's share of the flood lake (43,600 km²,
+  the larger), on this overlay's engine. The plan's version over NW lowlands still needs NW lowlands' rock zone and its response to `bed`
+  and `silt` (`biomes/nsemiarid/PLAN.md` section 8) and an overlay build of that kit: owed with nwlowlands' next turn.
+- [ ] **The high line's hulks are owed.** The plan strands hulks and Ancient flotsam on the line; the station has the flotsam (the dam basins'
+  `DBF`, read in place: plating, beams, containers) and the dam's concrete erratics, not hulks (the Ancient Port kit's vessels, as the dam
+  basins draw them: a heavy read for one line). The site and the levels are the plan's (834 and 430 m), not scale model 5.1's, which moved
+  the trough: the owner's eye on both.
+- [ ] **The high line's flood lake bed is on the kit's desert, thinned** (`stations/highline/56`: `NSEMIARID.ZONE_HOOK`, two fifths): the
+  crawler fields put the floor at 22.8 M triangles, over its 16 M budget. No salt on a fresh-water bed is the reason given; the look is the
+  owner's to judge.
 - [ ] **The coulee is drawn by the station, not the world.** In the open world the scale model's heights hold the
   channel at 4 km and `KSCOUR.land` adds what lies under a cell; the station cuts its own coulee (walls, the fall's
   cliff) so the falls can be seen at all. `WORLD_OVERLAYS` (PLAN.md, S3) is where the two meet.

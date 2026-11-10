@@ -1,0 +1,25 @@
+{
+ "note": "Station 2, the flood lake's high line and the west breach's fan (PLAN.md section 3), over n semiarid's share of the flood lake: its own stage (45b), take (99) and wrack (87w); the coulee's erratics drawn as there (87); the dam basins' flotsam kind read in place (45a: DBF). Leaves out the coulee's pools flora and geodes.",
+ "title": "Krator biome — the scablands: the flood lake's high line (station 2)",
+ "drop": [
+  "72-biome-scablands-pools.js",
+  "87a-host-pools.js",
+  "87g-host-geodes.js"
+ ],
+ "core": {
+  "31b-core-leafset.js": "core/biome/31b-core-leafset.js",
+  "41-core-scour.js": "core/terrain/41-core-scour.js",
+  "45a-db-flotsam.js": "biomes/dambasins/src/52-db-flotsam.js"
+ },
+ "families": [
+  "rust"
+ ],
+ "skip": [
+  "card.lily",
+  "card.quill",
+  "card.sedge",
+  "card.fern",
+  "agate",
+  "amethyst"
+ ]
+}

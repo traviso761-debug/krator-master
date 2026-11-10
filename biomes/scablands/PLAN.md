@@ -17,7 +17,7 @@ nothing without it. Its weight comes from physics: the ground under the flood's 
 | the water: the plunge-pool lake under the falls (Dry Falls Lake), potholes holding rain | `core/water` still records |**built** (2026-10-23) |
 | erratics: dam concrete with rebar, carried kilometres; basalt boulders | this build (`ERRATICS` in the stage, `87-host-erratics.js`; its own library pack) | **built** (2026-10-23) |
 | its own flora: the pothole pools' plants (kolk lilies, pothole quills, seep sedge, spray ferns at the falls' foot) | this build (`72-biome-scablands-pools.js`, its own kit registry and pack) | **built** (2026-10-23) |
-| the flood lake's high line and its rafted wreckage (station 2, over NW lowlands) | | later |
+| the flood lake's high line and its rafted wreckage (station 2) | `stations/highline/`: KBASIN's flood lake (kind `flood`), KSCOUR's fan, the dam basins' flotsam (`DBF`) read in place | **built** (2026-11-09) over n semiarid's share; the NW lowlands half owed |
 
 ## 2. The engine
 
@@ -43,13 +43,16 @@ For that, n semiarid's page was split (2026-10-23) along the line a stage crosse
    a horseshoe cliff ~107 m high across the coulee, with its plunge-pool lake; the lower coulee 260 m deep under the
    plateau, bars and giant current ripples on its margins, a loess island standing in it like Steamboat Rock; the
    plateau's steppe above the rims.
-2. **`highline`: the flood lake's high line over NW lowlands** (later).
+2. **`highline`: the flood lake's high line and the west breach's fan** (built 2026-11-09, `python3 build.py --station highline` ->
+   `dist/highline.html`; "Station 2, as built" below). Built over **n semiarid's** share of the flood lake (43,600 km², the larger); the
+   plan's half over NW lowlands waits on that kit's rock zone and bed response (`KNOWN_ISSUES.md`).
 
 ## 4. Order of work
 
 - **S0** the split of n semiarid's page; the build; the coulee station (terrain, water, fields, tint, views); the checks.
 - **S1** erratics; the pothole pools' own flora.
-- **S2** the second station (needs NW lowlands' rock zone and bed response: `biomes/nsemiarid/PLAN.md` section 8).
+- **S2** the second station: **built 2026-11-09** on n semiarid's side; its NW lowlands half still needs NW lowlands' rock zone and bed
+  response (`biomes/nsemiarid/PLAN.md` section 8).
 - **S3** `WORLD_OVERLAYS` in the north-basin open world.
 
 ## 5. Checks (`verify.py --assert`: n semiarid's harness, on this page)
@@ -117,3 +120,26 @@ the edge audit (`99-host-take.js` `edgeCheck`), `BIO.flareJoin`, and the species
 page load (`?mirror=probe|live`). The rock stays `KSCOUR.strata` (the basalt flows that step the walls): KSTRATA would be a second copy of the same
 beds. **Not taken:** karst site 10's spring line at the basalt's base (`biomes/KARST-SITES-5.1.md`, "low gain": a note for the coulee's next pass);
 the overhanging lip (KNOWN_ISSUES.md).
+
+## 7. Station 2, as built: the flood lake's high line (2026-11-09)
+
+`stations/highline/` over this overlay's `src/` (`build.py --station highline`, new: the station's `station.json` drops the coulee's pools flora and
+geodes, names its own core and its pack family). On n semiarid's side of the flood lake, in small (R 3 km), on the plan's levels (834 m, the trough
+at 430: scale model 5.1 has moved the trough, so the levels are the plan's, not the model's).
+
+- **The land**: a plateau east (~880-980 m, the steppe the water never reached) falling west into the old basin (~600 m at the edge). The **west
+  breach's mouth** enters from the NE (`KSCOUR`, no falls, its bed 800 to 700 m, under the lake all the way) cut ~170 m into the plateau and spreads
+  its **fan** of bars and giant current ripples onto the bed. Over it, **KBASIN**'s flood lake (kind `flood`: no ring, no fast drain; the scour
+  first, the lake's marks over it, as its strandlines came after): the **high line** at 834 m with its wrack band, and **63 strandlines** of the slow
+  recession from 814 m down, the ground benched on them.
+- **The wreckage**: the **wrack** stranded in a band just under the line (the dam basins' flotsam kind, `DBF`, read in place as `45a-db-flotsam.js`:
+  torn plating, I-beams, containers), a few further down on the strandlines; the coulee's **erratics** (the dam's concrete with its rebar, basalt) on
+  the fan's bars. Textured from this overlay's pack (`rust`: `metal.rust.plate`, packed into this page only).
+- **The ground**: the slackwater **silt** under the line, banded where a bank is cut (the rhythmites); the wrack line dark; the fan's gravel and its
+  ripples; the kit's steppe above. A **rain pond** behind a bar (a `core/water` still).
+- **The flora**: the n semiarid kit read in place on the fields (the bed its lowland desert, thinned to two fifths: `56`, KNOWN_ISSUES.md; the plateau
+  its steppe): step cones on the bed reading the years dry (the line came out first), crawlers, dew gardens, the steppe's frills and trumpets.
+- **Checked** (`99`, each with a negative): the kit's (the water's edge, tagged, dry, no tree on a rock face, the variants, the cameras, the bed's dust,
+  the step cones by the years dry) and the station's: the wrack in its band and none over the line; the strandlines all under it and the bed benched on
+  them; the silt under the line and none over it; the fan's bars at the mouth, not up the coulee; the wrack and the erratics half buried; the wrack drawn.
+- **Owed**: the hulks (the Ancient Port kit's vessels) on the line; the half over NW lowlands (KNOWN_ISSUES.md).
