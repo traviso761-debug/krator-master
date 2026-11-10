@@ -114,7 +114,7 @@ const LAND={name:'The Loam-Step (greenstep station 2)',station:'loamstep',title:
   'The paddies':look(P.farm[0]-90,P.farm[1]-120,34,P.farm[0]+80,P.farm[1]+60,0),
   'The tube barn\'s pit':[B.x+60,gh(B.x+60,B.z+50,22),B.z+50,B.x,B.y,B.z],
   'Cork groves':atTree(nearTree('corkoak',-500,-1200),30,2.4,3),
-  'Oaks on Terrace II':look(P.lower[0]-60,P.lower[1]+40,8,P.lower[0]+60,P.lower[1]-30,6),
+  'Oaks on Terrace II':look(P.lower[0]-90,P.lower[1]+70,22,P.lower[0]+60,P.lower[1]-30,6),
   'From afar':look(-2600,-2900,420,200,600,300)};},
  envPoints:[[0,0],[-900,400],[600,-2300],[300,2500]],
  probes:{bed(){const z=-2400,x=STATION.cxLo(z);return[x,terrainH(x,z)+.2,z];},

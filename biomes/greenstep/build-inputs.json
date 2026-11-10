@@ -223,7 +223,7 @@
   "build.py --station cloudstep": {
    "inputs": {
     "biomes/greenstep/KNOWN_ISSUES.md": "3f7a99b6d7f482988ed747c3991a1916bdcf6b65fcbaead137a51df81ac43a23",
-    "biomes/greenstep/PORT.md": "dd105f1126f021c5b09ce9533410e32b4bfd7b9b0bb325ea2178e0bf38e7915b",
+    "biomes/greenstep/PORT.md": "295cab494308216bb1101078f4aa0c62c2be6587da28b2118bb5715150284039",
     "biomes/greenstep/build.py": "043eb8025235614dac5611e664a1244b184bf1a952c9769f35ce26d51514e4bd",
     "biomes/greenstep/src/00-head.html": "b3f4da024c86f485d6f7384564b964276f51661e79deef6d8fd28e11e0b44695",
     "biomes/greenstep/src/44v-host-landlib.js": "2c39cc3ee702d1b5bd8bc0f15057988d3385a505e040db378958c9e593b960e6",
@@ -392,7 +392,7 @@
   "build.py --station gatestep": {
    "inputs": {
     "biomes/greenstep/KNOWN_ISSUES.md": "3f7a99b6d7f482988ed747c3991a1916bdcf6b65fcbaead137a51df81ac43a23",
-    "biomes/greenstep/PORT.md": "dd105f1126f021c5b09ce9533410e32b4bfd7b9b0bb325ea2178e0bf38e7915b",
+    "biomes/greenstep/PORT.md": "295cab494308216bb1101078f4aa0c62c2be6587da28b2118bb5715150284039",
     "biomes/greenstep/build.py": "043eb8025235614dac5611e664a1244b184bf1a952c9769f35ce26d51514e4bd",
     "biomes/greenstep/src/00-head.html": "b3f4da024c86f485d6f7384564b964276f51661e79deef6d8fd28e11e0b44695",
     "biomes/greenstep/src/44v-host-landlib.js": "2c39cc3ee702d1b5bd8bc0f15057988d3385a505e040db378958c9e593b960e6",
@@ -610,7 +610,7 @@
   "build.py --station headvent": {
    "inputs": {
     "biomes/greenstep/KNOWN_ISSUES.md": "3f7a99b6d7f482988ed747c3991a1916bdcf6b65fcbaead137a51df81ac43a23",
-    "biomes/greenstep/PORT.md": "dd105f1126f021c5b09ce9533410e32b4bfd7b9b0bb325ea2178e0bf38e7915b",
+    "biomes/greenstep/PORT.md": "295cab494308216bb1101078f4aa0c62c2be6587da28b2118bb5715150284039",
     "biomes/greenstep/build.py": "043eb8025235614dac5611e664a1244b184bf1a952c9769f35ce26d51514e4bd",
     "biomes/greenstep/src/00-head.html": "b3f4da024c86f485d6f7384564b964276f51661e79deef6d8fd28e11e0b44695",
     "biomes/greenstep/src/44v-host-landlib.js": "2c39cc3ee702d1b5bd8bc0f15057988d3385a505e040db378958c9e593b960e6",
@@ -781,7 +781,7 @@
   "build.py --station loamstep": {
    "inputs": {
     "biomes/greenstep/KNOWN_ISSUES.md": "3f7a99b6d7f482988ed747c3991a1916bdcf6b65fcbaead137a51df81ac43a23",
-    "biomes/greenstep/PORT.md": "dd105f1126f021c5b09ce9533410e32b4bfd7b9b0bb325ea2178e0bf38e7915b",
+    "biomes/greenstep/PORT.md": "295cab494308216bb1101078f4aa0c62c2be6587da28b2118bb5715150284039",
     "biomes/greenstep/build.py": "043eb8025235614dac5611e664a1244b184bf1a952c9769f35ce26d51514e4bd",
     "biomes/greenstep/src/00-head.html": "b3f4da024c86f485d6f7384564b964276f51661e79deef6d8fd28e11e0b44695",
     "biomes/greenstep/src/44v-host-landlib.js": "2c39cc3ee702d1b5bd8bc0f15057988d3385a505e040db378958c9e593b960e6",
@@ -799,7 +799,7 @@
     "biomes/greenstep/src/89z-host-build.js": "3b7085a933e0c4f0739aebb0b12d114d66a5823f9471d3bc080016e788f3db93",
     "biomes/greenstep/src/99-host-take.js": "9827957e5b5684802c8f5184445ff1443c96d4b00404234181239c17bd68686b",
     "biomes/greenstep/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
-    "biomes/greenstep/stations/loamstep/44w-host-land.js": "4c82cbc6ef2e6663a711a4f2972c84fbb716152260db0f9777ddf27665009295",
+    "biomes/greenstep/stations/loamstep/44w-host-land.js": "6daf7c38c85960edfa8a46ba976f4145b5a7590558e3f388608ed09a78461ef2",
     "biomes/greenstep/stations/loamstep/station.json": "b1814b5e19abee17713e6f51fe4dc1fafe6751f7659b5dc10e089a04c40fafa7",
     "biomes/greenstep/tex/begonia.albedo.webp": "21ee3bc2941551367ccd17efde3c91c0b7381ac37410b386a753fd4eeec63802",
     "biomes/greenstep/tex/fern.albedo.webp": "76099989c6972f5531d648d15e7ed0a62acc7f26761d64cbbbdeb41a6992b91d",
@@ -990,16 +990,16 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/greenstep/dist/greenstep-loamstep.html": "b70c30a8e1d5fb9ac8773d4bcf4c53a53a04a957a7705ddc9c9d8a98f8149f00"
+    "biomes/greenstep/dist/greenstep-loamstep.html": "fd996cc62eb5043202fec8706279d128ddbe92587d11ee362e116d2565f0e1ff"
    },
    "outputs_raw": {
-    "biomes/greenstep/dist/greenstep-loamstep.html": "b70c30a8e1d5fb9ac8773d4bcf4c53a53a04a957a7705ddc9c9d8a98f8149f00"
+    "biomes/greenstep/dist/greenstep-loamstep.html": "fd996cc62eb5043202fec8706279d128ddbe92587d11ee362e116d2565f0e1ff"
    }
   },
   "build.py --station rilleforge": {
    "inputs": {
     "biomes/greenstep/KNOWN_ISSUES.md": "3f7a99b6d7f482988ed747c3991a1916bdcf6b65fcbaead137a51df81ac43a23",
-    "biomes/greenstep/PORT.md": "dd105f1126f021c5b09ce9533410e32b4bfd7b9b0bb325ea2178e0bf38e7915b",
+    "biomes/greenstep/PORT.md": "295cab494308216bb1101078f4aa0c62c2be6587da28b2118bb5715150284039",
     "biomes/greenstep/build.py": "043eb8025235614dac5611e664a1244b184bf1a952c9769f35ce26d51514e4bd",
     "biomes/greenstep/src/00-head.html": "b3f4da024c86f485d6f7384564b964276f51661e79deef6d8fd28e11e0b44695",
     "biomes/greenstep/src/44v-host-landlib.js": "2c39cc3ee702d1b5bd8bc0f15057988d3385a505e040db378958c9e593b960e6",
@@ -1219,7 +1219,7 @@
   "build.py --station tallwalls": {
    "inputs": {
     "biomes/greenstep/KNOWN_ISSUES.md": "3f7a99b6d7f482988ed747c3991a1916bdcf6b65fcbaead137a51df81ac43a23",
-    "biomes/greenstep/PORT.md": "dd105f1126f021c5b09ce9533410e32b4bfd7b9b0bb325ea2178e0bf38e7915b",
+    "biomes/greenstep/PORT.md": "295cab494308216bb1101078f4aa0c62c2be6587da28b2118bb5715150284039",
     "biomes/greenstep/build.py": "043eb8025235614dac5611e664a1244b184bf1a952c9769f35ce26d51514e4bd",
     "biomes/greenstep/src/00-head.html": "b3f4da024c86f485d6f7384564b964276f51661e79deef6d8fd28e11e0b44695",
     "biomes/greenstep/src/44v-host-landlib.js": "2c39cc3ee702d1b5bd8bc0f15057988d3385a505e040db378958c9e593b960e6",
