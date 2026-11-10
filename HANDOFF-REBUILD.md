@@ -42,6 +42,19 @@ included): the ground's station layers and `STN.shareLayers` (`84`), the station
 **Owed:** the GPU verify of all six (`KRATOR_GL=gpu`; station 1's page changed with the shared fragments) and then `PORT-BASELINE.json` for
 `biomes/twins/dist/` (not rewritten here); the life layer; the rest in `biomes/twins/KNOWN_ISSUES.md`.
 
+## Godstep finished in the cloud (2026-11-10, `claude/godstep-finish-cloud`, from `claude/cloud-kits-verify` 6546a3eee; not merged)
+
+**Built**: Godstep's stations 2-5 (`biomes/godstep/PLAN.md`, each "Station N, as built"): `--station rille` (`KRELIEF.rille`, `tube`, `tubeRille`,
+`KSTACKS` hornitos, a skylight walked into `KCAVERN`'s bore and the gathered caves, the spring's `WATER.flow` and the red stalk fields),
+`--station hearths` (vent 77's pit on `KRELIEF.scarp`, `KTHERM`, the Hearths' `HEARTH.layout` and breath read in place, the two tube mouths in
+`KCAVERN`, the older crater's lake and walled fields), `--station redlands` (front 3 on `KRELIEF.stair`, laterite breakaways, the salt playa on
+`KBASIN` with the mirror switch off at load, the sedesert's shrubs read in place), `--station wall` (the north wall's `KRELIEF.stair`, Guli Blaca's
+falls by `WATER.fallsOf`, the shighlands' forest read in place, the terraces). The shared hooks in `src/` (`STN.kground`, `STN.pack`,
+`GROUND_HOLE`, `GSTEP.PASSES`, the red guyed stalk). **Every ground at 15 texture units**: station 1 dropped its lichen-crust layer (16 -> 15).
+**Checks**: each page passes `verify.py --assert` in software GL; `check_core_use`, `check_port`, `test_all.py --no-build` (its result in the
+branch's last commit message). **Owed**: the GPU verify (`KRATOR_GL=gpu`, `--assert --all-views`) on all five pages, `PORT-BASELINE.json` (not
+rewritten here: godstep.html changed on purpose, four pages are new), `KNOWN_ISSUES.md`'s station items, the gallery when Godstep reaches `main`.
+
 ## The cloud kits merged and GPU-verified (2026-11-09, `claude/cloud-kits-verify`, from `claude/biome-rebuild` 0e2f6649d; not pushed)
 
 **Merged** (sources; pages and the baseline rebuilt here): twins (`ccr-906e567d`), godshearth (`ccr-b9d1a178`), godstep and greenstep

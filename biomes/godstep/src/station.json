@@ -3,6 +3,7 @@
  "out": "godstep.html",
  "region": "region.json",
  "water": [],
+ "tex": ["groundDetail", "rockFace", "rock", "sandBlack", "snow", "moss", "lichenCrust", "cushion", "crust"],
  "bake": {
   "script": "bake-flows.js",
   "out": "flows.json",

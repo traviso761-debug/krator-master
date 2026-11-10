@@ -1,0 +1,26 @@
+{
+ "name": "Station 3, the head: the stair's hearth (PLAN.md section 7.3; biomes/hearths/PLAN.md section 11.5): vent 77's pit crater at the valley's head, its floor at ~2,700 m under a wall of stacked flows and red scoria, the warm spring and its moss lawn (the nemetos), one disc of broad-fanned hearth trees round it, the two tube mouths (tube_god_07 ENE, the cross-conduit SW), the older crater with its lake and the Talovolci's walled fields, the procession's way down; a winter night",
+ "out": "godstep-hearths.html",
+ "region": "region.json",
+ "water": [],
+ "tex": [
+  "groundDetail",
+  "rockFace",
+  "rock",
+  "snow",
+  "scoria",
+  "mossLawn",
+  "cushion",
+  "crust"
+ ],
+ "reads": {
+  "25-core-mask.js": "core/mask/25-core-mask.js",
+  "35-core-anim.js": "core/biome/35-core-anim.js",
+  "39-core-lean.js": "core/biome/39-core-lean.js",
+  "39c-core-cavern.js": "core/terrain/39-core-cavern.js",
+  "45a0-core-therm.js": "core/terrain/47-core-therm.js",
+  "47a1-biome-hearths-species.js": "biomes/hearths/src/50-biome-hearths-species.js",
+  "47a2-biome-hearths-place.js": "biomes/hearths/src/55-biome-hearths-place.js",
+  "89-atmos-fx-smokegroups.js": "core/atmos/fx/89-atmos-fx-smokegroups.js"
+ }
+}

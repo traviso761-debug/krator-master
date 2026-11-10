@@ -1,0 +1,16 @@
+{
+ "name": "Station 5, the north wall (PLAN.md section 7): Rrivar Cistal's head at ~5.1 px 939,1069 (2,268 m, 1.21 atm, 957 mm, Csa; Cfa ~990 mm at px 930,1070): the valley's wet side, a stair of ponded flows under the southern highlands' spiral forest on living red soil, the springs at the flows' palagonite partings, Guli Blaca's falls dropping off the benches through the banded flows, wild red stalk along the streams and the Talovolci's terraces; the steps' dry country below to the south. The wet season",
+ "out": "godstep-wall.html",
+ "region": "region.json",
+ "water": [],
+ "tex": ["groundDetail", "rockFace", "rock", "redsoil", "litter", "grass", "cushion", "crust"],
+ "reads": {
+  "25-core-mask.js": "core/mask/25-core-mask.js",
+  "27-core-mask-distance.js": "core/mask/27-core-mask-distance.js",
+  "31j-core-joint.js": "core/biome/31j-core-joint.js",
+  "32-core-variants.js": "core/biome/32-core-variants.js",
+  "47a1-biome-shigh-species.js": "biomes/shighlands/src/50-biome-shigh-species.js",
+  "47a2-biome-shigh-trees.js": "biomes/shighlands/src/55-biome-shigh-trees.js"
+ },
+ "packs": [["biomes/shighlands", ["bark.banded", "bark.helix", "bark.palm", "bark.ribbed", "bark.rind", "bark.rope", "bark.scars", "bark.skirt", "bark.wrung", "leaf.small", "leaf.moss", "strap", "fern", "escargot"]]]
+}

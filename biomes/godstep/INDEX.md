@@ -4,7 +4,7 @@
 
 Docs: `BIOME-API.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PLAN.md`, `PORT.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/godstep.html`
+Built output (never open it; edit `src/` and rebuild): `dist/godstep-hearths.html`, `dist/godstep-redlands.html`, `dist/godstep-rille.html`, `dist/godstep-wall.html`, `dist/godstep.html`
 
 Build: `cd biomes/godstep && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -23,17 +23,29 @@ From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-k
 | `45-host-stage.js` | 3 | the frame (30) |
 | `45a5-host-region.js` | 1 |  |
 | `45b-host-model.js` | 12 |  |
-| `45c-host-field.js` | 8 | the fields (cached on a 20 m lattice) (30); the host binding (67) |
+| `45c-host-field.js` | 8 | the fields (cached on a 20 m lattice) (30); the host binding (71) |
 | `50-biome-godstep-species.js` | 7 | the ground classes (sRGB; PLAN.md sections 2 and (11); the items (28) |
+| `51-biome-godstep-stalk.js` | 5 |  |
 | `60-biome-godstep-ground.js` | 5 |  |
-| `70-biome-godstep.js` | 1 |  |
+| `70-biome-godstep.js` | 2 |  |
 | `82-host-sky.js` | 4 | light modes (32) |
-| `84-host-ground.js` | 16 |  |
+| `84-host-ground.js` | 18 |  |
 | `88-host-build.js` | 1 |  |
 | `89-host-sky.js` | 1 |  |
 | `89a-host-atmos.js` | 2 |  |
 | `89w-host-water.js` | 1 |  |
 | `89zz-host-shadow.js` | 1 |  |
 | `98-host-stair.js` | 10 |  |
-| `99-host-take.js` | 6 | the inspector's words (8); the probe's budgets and the kit's own checks (ve (24); the page, handed to the host (44) |
+| `99-host-take.js` | 7 | the inspector's words (8); the probe's budgets and the kit's own checks (ve (24); the page, handed to the host (46) |
 | `99-tail.html` | <1 |  |
+
+## stations/
+
+Each station builds one page (`build.py --station <name>`) from its own fragments, with `src/` or its `base` station.
+
+| Station | Fragments | KB |
+|---|---|---|
+| hearths | 35h-godstep-hearths-strata.js, 44a-host-station.js, 45b-host-model.js, 47a-host-hearths-open.js, 47a9-host-hearths-end.js, 55-biome-godstep-hearths.js, 87-host-hearths.js, 89b-host-hearths.js, 89w-host-water.js, 98-host-hearths.js | 42 |
+| redlands | 35r-godstep-redlands-strata.js, 44a-host-station.js, 45b-host-model.js, 49z-host-sed-end.js, 55-biome-godstep-redlands.js, 89a-host-atmos.js, 89w-host-water.js, 98-host-redlands.js | 35 |
+| rille | 44a-host-station.js, 45b-host-model.js, 55-biome-godstep-rille.js, 87-host-tube.js, 89a-host-atmos.js, 89w-host-water.js, 98-host-rille.js, 98z-host-floor.js | 54 |
+| wall | 35w-godstep-wall-strata.js, 44a-host-station.js, 44q-host-shigh-pack.js, 45b-host-model.js, 47a0-host-shigh-open.js, 47a9-host-shigh-end.js, 52-biome-godstep-wall.js, 87-host-wall-forest.js, 89a-host-atmos.js, 89w-host-water.js, 98-host-wall.js | 41 |

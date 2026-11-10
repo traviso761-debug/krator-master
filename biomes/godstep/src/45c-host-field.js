@@ -36,7 +36,8 @@ MODEL.after();
 // snow     late winter's snow (the upper benches, the head step's hollows)   playa  the pan behind the lobe
 // path     the procession's way                                    cone    the old cones' bodies
 // flow     the bake's frozen thickness (m)                         age     which eruption froze on top (0: older ground)
-const GSTEP_FIELDS=['face','talus','skin','palag','soil','lichen','sand','moss','snow','playa','path','cone','flow','age'];
+// a station adds its own (STN.fields: the rille's spring wet, the playa's salt, the wall's forest; each one its MODEL.fieldsAt sets)
+const GSTEP_FIELDS=['face','talus','skin','palag','soil','lichen','sand','moss','snow','playa','path','cone','flow','age'].concat(STN.fields||[]);
 const FC=(function(){const N=481,SX=TERR.X1-TERR.X0,st=SX/(N-1),K=['h','slope','hollow','north'].concat(GSTEP_FIELDS),a={};K.forEach(k=>a[k]=new Float32Array(N*N));
  for(let j=0;j<N;j++)for(let i=0;i<N;i++){a.h[j*N+i]=terrainH(TERR.X0+i*st,TERR.Z0+j*st);}
  const H=a.h,hb=new Float32Array(N*N),R=6;   // the hollows: the ground less its 120 m box blur
@@ -57,9 +58,12 @@ const FIELD={};
    on this step (the playa's salt is step 4's); upland and cold everywhere here; rock where it is steep */
 FIELD.wet=(x,z)=>clamp(FIELD.playa(x,z)*.8+FIELD.snow(x,z)*.3,0,1);FIELD.salt=()=>0;FIELD.upland=()=>1;FIELD.cold=()=>1;
 FIELD.rock=(x,z)=>smooth(.6,1.2,FIELD.slope(x,z));
+/* a station's own (MODEL.coreFields(FIELD): the rille's springs wet, step 4's salt and heat, the north wall's rain) */
+if(MODEL.coreFields)MODEL.coreFields(FIELD);
 // THE FIELD CONTRACT (core/biome/41-core-env.js, PLAN.md "Core adoption"): one table placement, the ground and the hazards read. temp is
 // the country's mean by height from the model (PLAN.md section 1: +7 C on the head step at ~3,120 m, +11 C on step 2 at ~2,345 m)
-const ENV=BIO.env({ground:terrainH,temp:(x,z)=>7+(3121-terrainH(x,z))*.0052,wet:FIELD.wet,salt:FIELD.salt,rock:FIELD.rock,bands:{upland:[2200,3300],cold:[-8,4]}});
+// (a station's own: STN.env {temp, bands}: step 4's +22 C at 880 m, the north wall's)
+const ENV=BIO.env({ground:terrainH,temp:(STN.env&&STN.env.temp)||((x,z)=>7+(3121-terrainH(x,z))*.0052),wet:FIELD.wet,salt:FIELD.salt,rock:FIELD.rock,bands:(STN.env&&STN.env.bands)||{upland:[2200,3300],cold:[-8,4]}});
 BIO.envInto(FIELD,ENV);
 // THE AIR: the pressure by height (the model's law: 1.6 atm at the datum, a scale of 8 km; the sky's air.thin reads the same)
 const AIR={p0:1.6,scale:8000,at:y=>1.6*Math.exp(-y/8000)};

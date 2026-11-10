@@ -7,7 +7,7 @@ const VIEWS={};
 if(typeof STATION_VIEWS==='function')STATION_VIEWS(VIEWS);
 // ---------------------------------------------------------------- the inspector's words
 function groundWords(p){const g=GSTEP.groundAt(p.x,p.z,{}),k=GSTEP.CLASSES.slice().sort((a,b)=>g[b]-g[a])[0];
- const steep=slopeAt(p.x,p.z)>.75,bed=STRATA.at(p.x,p.y,p.z),fl=KRELIEF.flowAt(STAIR,p.y-swell(p.x,p.z));
+ const steep=slopeAt(p.x,p.z)>.75,bed=STRATA.at(p.x,p.y,p.z),fl=typeof STAIR!=='undefined'&&STAIR.kind==='stair'&&typeof swell==='function'?KRELIEF.flowAt(STAIR,p.y-swell(p.x,p.z)):null;   /* a station with no stair of its own */
  return steep?'the rock: '+bed.kind+' bed of the titanium basalt ('+bed.recipe+')'+(fl?', a flow\'s '+fl.part:''):(g[k]>.2?GSTEP.GROUND[k].name:GSTEP.GROUND.basalt.name);}
 function airWords(p){if(typeof KHAZ==='undefined'||!KHAZ.here)return'';const H=KHAZ.here(p.x,p.y,p.z,0);const pa=ATMOS.airPressureAt?ATMOS.airPressureAt(SKY.preset||{air:{pressure:1.6,thin:{y0:0,scale:8000}}},p.y):AIR.at(p.y);
  return '\nair '+pa.toFixed(3)+' atm'+(H.ambient&&H.ambient.length?' · '+H.ambient.map(a=>a.kind+' '+(a.k*100).toFixed(0)+'%').join(', '):'');}
@@ -22,7 +22,9 @@ const HOST_VIEWS={};for(const k in VIEWS)HOST_VIEWS[k]=VIEWS[k].v;
 const LCTL=['day','dawn','night'].map(m=>({button:m[0].toUpperCase()+m.slice(1),title:'',on:()=>lightMode(m),m}));
 LIGHT_HOOKS.push(m=>{for(const c of LCTL)if(c.el)c.el.classList.toggle('on',c.m===m);});
 // ---------------------------------------------------------------- the probe's budgets and the kit's own checks (verify.py --assert)
-const BUDGET={showcase:{tris:9000000,calls:220,rendered:4500000},cls:{pass:7000000,host:6000000},type:{'godstep/ground':'pass','host':'host'}};
+/* a station's passes (GSTEP.PASSES) and its read-in-place neighbours are typed by STN.budgetTypes {type: class}; STN.budget overrides the showcase */
+const BUDGET={showcase:Object.assign({tris:9000000,calls:220,rendered:4500000},STN.budget||{}),cls:{pass:7000000,host:6000000},
+ type:Object.assign({'godstep/ground':'pass','host':'host'},STN.budgetTypes||{})};
 function itemPositions(name,every){const out=[],m=new THREE.Matrix4();every=every||1;
  BIO.baked.forEach(o=>{if(!o.isInstancedMesh||o.name!=='biome:'+name)return;for(let i=0;i<o.count;i+=every){o.getMatrixAt(i,m);
   const e=m.elements;out.push([e[12],e[13],e[14],Math.hypot(e[0],e[1],e[2])]);}});return out;}
