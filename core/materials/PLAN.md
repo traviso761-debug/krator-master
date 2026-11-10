@@ -213,6 +213,24 @@ Normal maps use the OpenGL convention (+Y up), which three.js and Godot both exp
 
 Scan-library sets skip steps 1-3 and only get resized, muted and checked.
 
+### A card's colour under its alpha (checked 2026-11-10: no fix needed)
+
+A card's transparent texels must carry its leaf colour, or the mipmaps bleed dark into every leaf's edge at range (the core's
+procedural cards fill them on purpose: `BIO.alphaTex`). The library cards already do, end to end: `tools/textures/cards.py`
+leaves the leaf colour under alpha 0 (card.creeper.beach's source: 110, 117, 60 under alpha 0, against 102, 128, 46 for the
+leaves), `pack.py` keeps it (it resizes colour and alpha apart, because Pillow resizes RGBA premultiplied, and writes WebP with
+`exact`), and WebGL samples it (a probe that uploads the valley's packed creeper as a page does, `UNPACK_PREMULTIPLY_ALPHA` off,
+read back through a shader: 97, 102, 66 under alpha 0, leaves 94, 108, 60, its 32 px mip 96, 103, 64; RTX lane). A sweep of all
+710 committed card packs (every build's `tex/`, read from the LFS store) found none near black: the darkest leaf card, the Throne's
+`card.frond.frill`, keeps 0.62 of its leaf's brightness under its alpha; Reed Lake's lattice pattern sheet keeps 0.37 (not a card).
+So neither a dilation in `pack.py` nor a refill in `BIO.libSwap` is owed.
+
+**Do not measure a card through a 2D canvas.** `drawImage` then `getImageData` reads a premultiplied canvas, which zeroes the
+colour wherever alpha is 0, so every card looks black-fringed that way (the report that started this check read 14, 13, 7 under the
+creeper's alpha). Read the WebP with Pillow, or sample the texture in a shader. If leaf cards look dark or speckled at range,
+look first at alpha coverage in the far mips (a sparse card's alpha averages under its `alphaTest`, so it thins to speckle:
+`BIO.setA2C`) and at a double-sided card's back face, lit from behind.
+
 ## Poly Haven ingest (the S rows, and bark and leaf variants)
 
 The owner's Poly Haven download is many gigabytes, so the reduction runs on the owner's machine and only a small
