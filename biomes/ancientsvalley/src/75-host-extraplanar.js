@@ -53,7 +53,7 @@ const AV_XP=(function(){const out={hunters:[],drawn:[],registry:null,t:0,hum:0,f
  {let best=null,bs=0;for(let x=-R+200;x<=R-200;x+=40)for(let z=-R+200;z<=R-200;z+=40){if(Math.hypot(x,z)>R-200||!dry(x,z)||F.scar(x,z)>.1||F.foul(x,z)<.6||F.zone(x,z)!=='floor')continue;
    if(STAGE.street(x,z)>.05||STAGE.built(x,z)>.02||STAGE.built(x+25,z)>.02||STAGE.built(x-25,z)>.02||STAGE.built(x,z+25)>.02||STAGE.built(x,z-25)>.02||Math.hypot(x-STAGE.near.x,z-STAGE.near.z)<STAGE.near.r)continue;
    const s=F.foul(x,z)*F.density(x,z)*(1-STAGE.forest(x,z))*(1-Math.hypot(x,z)/(2*R));if(s>bs){bs=s;best=[x,z];}}
-  if(best){recs.push(KE.phenomenon('solid',{at:[best[0],terrainH(best[0],best[1]),best[1]],seed:seed0+2,drift:'orbit',driftR:8,form:'icosahedron',name:'a solid with its own weather, humming in a plaza of the foul half'}));out.spots.solid=best;}
+  if(best){recs.push(KE.phenomenon('solid',{at:[best[0],terrainH(best[0],best[1]),best[1]],seed:seed0+2,drift:'orbit',driftR:8,form:'icosahedron',tint:'bruise',   /* its tint takes the clouds over it (89s): the taint's purple, never the verdigris green (the owner: no green in the storms) */name:'a solid with its own weather, humming in a plaza of the foul half'}));out.spots.solid=best;}
   else reportErr('extraplanar: no plaza in the foul half for the solid');}
  /* the presence in the park gone feral: a third of the way from the view's mark toward its eye, on open ground */
  {const PV=STAGE.views()['A park gone feral'];if(PV){const tx=PV[3],tz=PV[5],ex=PV[0],ez=PV[2];let at=null;for(const k of [.3,.45,.6,.15]){const x=tx+(ex-tx)*k,z=tz+(ez-tz)*k;if(dry(x,z)&&STAGE.built(x,z)<.05&&STAGE.street(x,z)<.3){at=[x,z];break;}}

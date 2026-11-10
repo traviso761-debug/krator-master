@@ -16,17 +16,17 @@ const AV_AVOID=(function(){let IX=null;const out={discs:0,
  index(){if(IX)return IX;IX=KSPACE.create({cell:60});const add=(x,z,r,kind)=>{IX.insert({x,z,r,kind},x,z,r);out.discs++;};const T=STAGE.transit;
   const deck=(S,w)=>{if(!S.fall)return;const n=Math.max(1,Math.ceil(S.len/6)),fx=Math.sin(S.fall.yaw),fz=Math.cos(S.fall.yaw);for(let i=0;i<n;i++){const t=(i+.5)/n-.5;add(S.fall.x+fx*t*S.len,S.fall.z+fz*t*S.len,w/2+.5,'deck');}};
   if(T){const lines=[T.highway].concat(T.highway?T.highway.ramps:[]).concat([T.pax]).filter(Boolean);
-   lines.forEach(L=>{(L.piers||[]).forEach(p=>{if(p.state!=='none')add(p.x,p.z,L===T.pax?1.8:2.8,'pier');});(L.spans||[]).forEach(S=>deck(S,S.width||L.width||10));});
+   lines.forEach(L=>{(L.piers||[]).forEach(p=>{if(p.state!=='none')add(p.x,p.z,L===T.pax?1.8:2.8,'pier');});(L.spans||[]).forEach(S=>deck(S,S.width!=null?S.width:L.width!=null?L.width:10));});
    (T.trains||[]).forEach(tr=>(tr.cars||[]).forEach(c=>{const n=Math.max(1,Math.ceil(c.len/4)),fx=Math.sin(c.yaw),fz=Math.cos(c.yaw);for(let i=0;i<n;i++){const t=(i+.5)/n-.5;add(c.x+fx*t*c.len,c.z+fz*t*c.len,c.w/2+.3,'car');}}));}
   (STAGE.engines||[]).forEach(E=>add(E.x,E.z,E.r,'engine'));
-  if(typeof AVW!=='undefined'&&AVW.records)AVW.records.forEach(r=>add(r.x,r.z,Math.max(r.w||2,r.d||4)/2,'wreck'));return IX;},
+  if(typeof AVW!=='undefined'&&AVW.records)AVW.records.forEach(r=>add(r.x,r.z,Math.max(r.w==null?2:r.w,r.d==null?4:r.d)/2,'wreck'));return IX;},
  /* the nearest point of everything within `reach` of (x, z), each as [px, pz, its own radius to subtract] */
  near(x,z,reach,acc){acc.length=0;const q=[];this.index().query(x,z,reach,q);for(const o of q)acc.push([o.x,o.z,o.r]);
   q.length=0;STAGE.pads.query(x,z,reach,q);for(const P of q){if(P.family==='engine')continue;const dx=x-P.x,dz=z-P.z,u=dx*P.c+dz*P.s,v=-dx*P.s+dz*P.c,cu=Math.max(-P.rx,Math.min(P.rx,u)),cv=Math.max(-P.rz,Math.min(P.rz,v));
    acc.push([P.x+cu*P.c-cv*P.s,P.z+cu*P.s+cv*P.c,0]);}return acc;},
  steer(g,want,R){const x=g.position.x,z=g.position.z,reach=R+14,A=this.near(x,z,reach,this._a||(this._a=[]));let vx=Math.sin(want),vz=Math.cos(want);
   for(const [px,pz,r] of A){const dx=x-px,dz=z-pz,d=Math.hypot(dx,dz)-r;if(d>=reach-R)continue;const ahead=-(dx*Math.sin(want)+dz*Math.cos(want));if(ahead<-r-2)continue;   /* behind: no matter */
-   const w=2.2*(1-Math.max(0,d-R)/(reach-R)),l=Math.hypot(dx,dz)||1;vx+=dx/l*w;vz+=dz/l*w;}return Math.atan2(vx,vz);},
+   const w=2.2*(1-Math.max(0,d-R)/(reach-R)),l=Math.max(1e-6,Math.hypot(dx,dz));vx+=dx/l*w;vz+=dz/l*w;}return Math.atan2(vx,vz);},
  push(g,R){const A=this.near(g.position.x,g.position.z,R+4,this._b||(this._b=[]));let n=0;for(const [px,pz,r] of A){const dx=g.position.x-px,dz=g.position.z-pz,l=Math.hypot(dx,dz),d=l-r;if(d<R&&l>1e-3){g.position.x+=dx/l*(R-d);g.position.z+=dz/l*(R-d);n++;}}return n;}};
  return out;})();
 /* a walker's body radius: its plan box's half-width, a little under (a hunter's feet stand wide of its body) */

@@ -20,6 +20,29 @@
   5 degrees at the top. The impostor bake would need a slot per lean, or the lean kept under 2 degrees.
 - [ ] **The boot takes several seconds and the first half minute janks:** 14 shelled keys and 28 design keys build their heroes at the boot (about 4 s
   on the Arc), then 42 impostors bake one a frame. A later pass bakes the designs' impostors at build time or shows a loading note.
+- [x] **The owner's reports of 2026-11-09 and 10, closed on `claude/sad-mcclintock-f211c2`:**
+  *The green in the storms:* core/atmos's cloud-mood palette holds a sickly green and a jaundice yellow; with the deck at .74 cover a green episode
+  turned the whole sky pale green, and in a storm the air (89v, AV_AIR) carried the clouds' colour onto the far towers, the mist and the sky
+  light, the dark and the lightning making it olive. The valley passes its own palette (46z `STAGE.cloudMood.palette`: brown, dull red, ash,
+  ghostly purple) and the extraplanar solid's tint is bruise purple; a check samples 200 episodes for a green-leaning tint, its negative core's
+  whole palette. *Floating flora:* a probe through the floating crowns found roof oaks on a broken Wedge and on the Pods' crown, stood on 4 m roof
+  cells that a rim or a beam fills; every roof tree's footing (five rays: the trunk and four points 1.5 m round it) and every curtain's head is
+  now found by rays at the drawn hero (70 `avSurface`), and a check holds both with a 6 m lift as its negative. Seven bearings in ten met the drawn
+  wall more than 1.5 m inside the profile's radius, so a curtain hangs where its ray meets the wall, and a tower tries up to three bearings a
+  curtain (1,860 curtains, 493 roof trees, all held). The rays read a per-look triangle index bucketed by 3 m band and 4 m cell, freed after the
+  boot: three's raycaster on the whole heroes took the boot from 100 s to 350 s; the index brings it to about 165 s. *The creepers' cut-out:* the library card's transparent texels were near
+  black, so its mipmaps fringed every leaf; the curtains take `BIO.leafMat` on the card refilled with its leaf colour (`BIO.alphaTex`).
+  *The street lamps:* every furniture piece is dead (`KratorTransitFurniture.dead`: dark lenses, rusted metal), the highway's lamps too.
+  *The walkers:* the keepers and the hunters steer round the piers, the fallen decks, the train cars, the Engines, the wrecks and the plinths
+  (72 `AV_AVOID`) and give up a corner they cannot reach in 25 s; a check with a negative on a pier. *The towers' turn:* every drawn form turned
+  by +yaw where the plan, the plinths and the kerbs read (cos yaw, sin yaw) (found by the lobbies session): the slab families stood 34 degrees
+  askew to their streets; now -yaw throughout 70.
+- [ ] **The library cards' black fringe is core-wide:** `BIO.libSwap` (core/biome 20) hands a kit the library card as packed, and a card's
+  transparent texels are near black, so any library card's mipmaps fringe its leaves at range (found on the creepers, 2026-11-10). The
+  valley refills its own curtains (71); the fix for every kit is a fill in `libSwap` or in `tools/textures/pack.py` (a dilation of the
+  colour into the transparent texels), which reaches every build that takes a library card.
+- [ ] **The walkers steer locally:** `AV_AVOID` bends a heading away from what is ahead and pushes a walker out of what it entered; there is no
+  path search, so a corner behind a long obstacle is given up after 25 s rather than walked round.
 - [ ] **The core's attach audit counts about 1% of the cards floating** (the gum's foliage clumps, 'lance', and nwlowlands' blooms), with or
   without the feral wrap: the kits' own placement on this page's fields. The gum is kept at its own size (`swKeep`), the floor's plants are not
   grown (`AV.feralKit` takes `floor:true` to turn that on); the audit sits at its 1% limit. Find the gum's fault in the kit next.

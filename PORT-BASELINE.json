@@ -1,8 +1,8 @@
 {
  "pages": {
   "biomes/ancientsvalley/dist/ancientsvalley.html": {
-   "bytes": 4751873,
-   "sha256": "9893ceaec6512a3ded385bf3e2e6d4199cf05b0a894b39735668f161e2f86f26"
+   "bytes": 4768090,
+   "sha256": "3c30237d53d98c3c9a93f9343fc019b19c28902f8ec06d54a81c27ea8bae9442"
   },
   "biomes/crater-drylands/dist/crater-drylands.html": {
    "bytes": 4190377,
@@ -279,6 +279,10 @@
   "core/sockets/example/sockets-example.html": {
    "bytes": 184370,
    "sha256": "b3bc24644b4dffdc5ed00100131fdae5f409ba18dd428cc24e80e2b320afa220"
+  },
+  "kits/ancient-transit/dist/ancient-transit.html": {
+   "bytes": 2373600,
+   "sha256": "9e201e901ee0cf89d2742ed60f932048c48dcc04090ed248be77bc8d1a00d973"
   },
   "kits/ancients-interiors/dist/ancients-interiors.html": {
    "bytes": 305740,

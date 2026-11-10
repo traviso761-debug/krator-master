@@ -205,6 +205,12 @@ the boot (400 MB) and every view kept the transit cells and wreck looks it built
 a transit cell is freed 450 m past its near range and built again on the way back, and the wreck looks are capped at 72. On software GL the boot
 holds 1,451 MB (from 1,974) and the heap stays at 1.4 to 1.8 GB through every view (from 3.6 GB after twelve).
 
+**The owner's reports of 2026-11-09 and 10** (KNOWN_ISSUES has each in full): the clouds' mood keeps the valley's own hues (no green or
+jaundice episode, which the storm's air carried onto the far towers); every roof tree and creeper is confirmed by rays at the drawn ruin (70
+`avSurface`); the creepers are on the core's leaf material with their card's fringe refilled; the street furniture is dead and rusted
+(`KratorTransitFurniture.dead`); the keepers and hunters steer round the piers, plinths, wrecks and trains (72 `AV_AVOID`); every tower is drawn
+turned the way its plinth and its street are (-yaw in three's sense).
+
 ## Read next
 
 `PLAN.md` (the brief and the decisions), `PLAN-ANOMALIES.md`, `INDEX.md`, `KNOWN_ISSUES.md`, `PORT.md`; `kits/metropolis/README.md` for the towers.
