@@ -223,15 +223,19 @@ skeletons 15%, broken and crown-gone 10%, intact and gutted 8%; the eligible tow
 (0.8 of the skin's radius, four pieces round the stair, the top one torn) and a switchback stair in the family's stair shaft up to what the ruin
 leaves (the roof, or the skin's torn top; no stair across a storey over 8 m, so the Stalk's stem stays shut); an open tower stands plumb (its lean
 cleared). **The rest are blocked** by `KRUBBLE` heaps: seven in ten across the doorway, three in ten on the stair a flight or two up, each with
-blocks on `core/walk`; a door whose way a fallen tower's shaft crosses, or whose plinth a cutting or a sinkhole breaks by more than 2.5 m, is
-cut off. **Weak floors** in the open broken, crown-gone and skeleton towers (about one storey in five, one piece away from the stair, never the
+blocks on `core/walk`; a door whose way a fallen tower's shaft or a neighbour's doorway rubble crosses (two towers on a corner), or whose plinth
+a cutting or a sinkhole breaks by more than 2.5 m, is cut off. **Weak floors** in the open broken, crown-gone and skeleton towers (about one storey in five, one piece away from the stair, never the
 lobby's or the top two): darker and sagging; stood on for half a second it falls and the walker drops a storey (`AVL.collapse`), and it is a
 `collapse` zone on the walk for Godot. **The fallen towers' shafts** (the crushed tubes of kits/metropolis 57, which the walker could enter at their
 open ends) are blocks along their axes. The walker (F) reads `AVL.walk`: `KWALK` less the floors that have fallen. A door's group (steps, heap,
 plates, stair) is built within 420 m of the eye, one a frame, and freed past 650 m. The checks: every standing kerb tower has a door, each
 approach's foot on the pavement and head on the plinth with the ground under it; 8 to 25% open with the stumps the most; every open tower walked
 (core/host's own step and drop rules, `AV.walkRoute`) from the pavement to its top; every blocked one stopped at its rubble; weak floors only
-where they belong; every fallen shaft blocked; six negatives.
+where they belong; every fallen shaft blocked; six negatives. **Numbers (2026-11-10, GPU `--assert --all-views`, every assert passing on the Arc lane):** 444 doors
+(317 steps, 95 ramps, 17 rubble ramps), 61 open (the highest climb 234 m), 269 blocked at the door, 114 on the stair, 26 cut off, 102 weak
+floors, 560 fallen shaft sections blocked; about 38,700 walk floors and 9,300 blocks, registered in about 120 ms; the worst view 8.47 M
+triangles and 1,176 calls (the park; budgets 20 M and 1,200, unchanged). Seen on the GPU: a blocked door's steps and heap, a skeleton's storey
+with its stair rising to the next, the torn top 104 m up over the city.
 
 ## Read next
 

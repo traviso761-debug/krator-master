@@ -167,7 +167,7 @@ var AV = (typeof AV !== 'undefined') ? AV : {};
     });
     if (nearest && nearest.D.mode !== 'open') { nearest.D.mode = 'open'; nearest.D.climb = nearest.climb; nearest.D.choke = null; nearest.D.approach.w = 6; nearest.D.forced = true; }
     /* the blocking: a heap against the skin across the doorway and blocks along its line; or a heap on the stair's B landing under the choke's floor */
-    doors.forEach(function (D) {
+    var blockOf = function (D) {
       var T = o.towers[D.ti];
       if (D.mode === 'door') {
         var hc = [D.x + D.nx * 2.2, D.z + D.nz * 2.2];
@@ -182,6 +182,20 @@ var AV = (typeof AV !== 'undefined') ? AV : {};
           var pu = S.ax === 0 ? S.su + al : S.su + ac, pv = S.ax === 0 ? S.sv + ac : S.sv + al, pw = AV.doorWorld(T, pu, pv);
           D.blocks.push([pw[0] - 0.3, pw[0] + 0.3, pw[1] - 0.3, pw[1] + 0.3, T.y + ym - 1.2, T.y + ym + 3]); }
       }
+    };
+    doors.forEach(blockOf);
+    /* a door whose way (the flight, the plinth, the doorway) crosses another door's rubble, two towers on a corner with their doors facing,
+       is cut off by it (D.cut 'rubble'); an open one there is shut at its own door */
+    var near = function (P, Q, D2) { var L = Math.hypot(Q[0] - P[0], Q[1] - P[1]); for (var s = 0; s <= L; s += 0.5) { var x = P[0] + (Q[0] - P[0]) * s / Math.max(L, 1e-6), z = P[1] + (Q[1] - P[1]) * s / Math.max(L, 1e-6);
+      for (var b = 0; b < D2.blocks.length; b++) { var Bx = D2.blocks[b]; if (x > Bx[0] - 0.4 && x < Bx[1] + 0.4 && z > Bx[2] - 0.4 && z < Bx[3] + 0.4) return true; } } return false; };
+    doors.forEach(function (D) {
+      if (D.cut || (D.approach.kind !== 'steps' && D.approach.kind !== 'ramp')) return;
+      var A = D.approach.a, B = D.approach.b, P = D.path.b;
+      for (var j = 0; j < doors.length; j++) { var E = doors[j]; if (E === D || !E.blocks || E.mode !== 'door' || Math.hypot(E.x - D.x, E.z - D.z) > 200) continue;
+        if (near(A, B, E) || near(B, P, E)) { D.cut = 'rubble'; counts.cut = (counts.cut || 0) + 1; if (D.mode === 'open') { D.mode = 'door'; D.climb = null; D.forced = false; blockOf(D); } break; } }
+    });
+    doors.forEach(function (D) {
+      var T = o.towers[D.ti];
       /* an open tower stands plumb: its record's lean goes before anything is drawn (the hero, shell and rubble read it at draw time) */
       if (D.mode === 'open' && T.lean) { D.unleaned = T.lean; T.lean = 0; T.q = null; }
       if (D.mode === 'open') { open.push(D.id); counts.open++; } else counts[D.mode]++;

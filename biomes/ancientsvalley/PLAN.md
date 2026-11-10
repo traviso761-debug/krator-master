@@ -466,6 +466,10 @@ are open frames once ruined (`MP.ruinDesign` cuts the glass and the floors), the
   the kerb towers opens; the rest are **blocked**: seven in ten **at the door** (a heap of rubble against the skin across the doorway, 3.5 to 4 m
   high, and blocks across the door's line), three in ten **at the stair** (the lobby open, the stair choked by a heap on its landing at the first
   to third storey: a flight or two climbed, then nothing).
+- **Cut off** (found building it, 2026-11-10): a door whose flight, plinth path or doorway is crossed by a fallen tower's shaft, by a neighbour's
+  doorway rubble (two towers on a corner, doors facing), or by a cutting or sinkhole deeper than 2.5 m in its plinth is never open and is left out
+  of the blocked check (its way is shut by something else). A door within 1.6 m of its flight's head may stand past its plinth's edge (the slab
+  towers were drawn turned against their plinths until the parent session's -yaw fix); its flight ends at the door and a level path runs 4 m in.
 - **A climb** for an open tower (`AV.climb(F, state, T)`): the family's storeys (`F.levels`, each `y` and `h`) up to what the ruin leaves:
   intact and gutted to the roof, the rest to the whole skin's top (`MP.ruin`'s cut less its torn depth), at most 70 storeys. On each, **a plate**
   (a disc of 0.8 of the skin's radius at that height, `F.envR` or the Spindle's lathe, from 2 m outside the stair to 26 m; a slab family without
@@ -485,8 +489,10 @@ are open frames once ruined (`MP.ruinDesign` cuts the glass and the floors), the
 `weak` on the weak ones), every flight a `strip`, every heap's surface `KRUBBLE.walkTris` as polys and its doorway or stair as `KWALK.block`s
 (axis boxes along the door's line every 0.5 m); the weak floors are also `KWALK.zone`s of kind `collapse` for the Godot export. The take hands
 the camera `AVL.walk`, a view of `KWALK` that leaves out the floors that have fallen (`core/walk` has no way to take a floor out, and the
-records stay as built). `core/space` (`KSPACE`) finds the doors near the eye. `core/tags`: each door, each open tower's climb, each heap and each
-weak floor is `REGISTER`ed before anything is drawn. `core/rand` (`KRAND`) for every pick: open or blocked, the blocking's kind and storey, the
+records stay as built). `core/space` (`KSPACE`) finds the doors near the eye. `core/tags`: one record a 400 m cell, `REGISTER`ed before anything is
+drawn, its tags counting the cell's doors by fate, its climbs, heaps and weak floors (the wrecks' and street cells' way: a door's pieces are
+drawn only near the eye, so a record of its own stands empty in every other view and the probe's occupancy check fails it); the doors themselves
+are `STAGE.lobbies`' records, keyed by id. `core/rand` (`KRAND`) for every pick: open or blocked, the blocking's kind and storey, the
 weak pieces, the torn bands, the heaps' seeds. `core/terrain`'s `KRUBBLE` for every heap. Nothing is copied into the build.
 
 **The drawing (`76-host-lobbies.js`).** A door's group (its steps or ramp, its heap, and for an open tower its plates and stair) is built when the

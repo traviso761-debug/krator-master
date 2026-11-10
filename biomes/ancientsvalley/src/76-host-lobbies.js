@@ -12,15 +12,18 @@ AVL.walk={floorsAt:(x,z)=>KWALK.floorsAt(x,z).filter(f=>!f[1].gone),
  blocked:(x,y,z,r,h)=>KWALK.blocked(x,y,z,r,h),push:(x,y,z,r,h)=>KWALK.push(x,y,z,r,h)};
 /* the records first: every door, heap, open climb and weak floor in core/tags, then the walk (core/walk), then the hazards' zones */
 AVL.init=function(){const LB=STAGE.lobbies,TW=STAGE.plan.towers;if(!LB)return;AVL.doors=LB.doors;
- LB.doors.forEach(D=>{const T=TW[D.ti],A=D.approach,r=Math.max(8,A.run/2+A.w);
-  REGISTER({name:(D.mode==='open'?'an open lobby: the way in and up':D.mode==='stair'?'a lobby open, its stair choked with rubble':'a doorway blocked by rubble')+' ('+(A.kind==='steps'?'steps':A.kind==='ramp'?'a ramp':A.kind==='rubble'?'a rubble ramp':'no way up')+' from the street, '+(A.rise>0?'up ':'down ')+Math.abs(A.rise).toFixed(1)+' m)',
-   kind:'door',x:(A.a[0]+D.x)/2,z:(A.a[1]+D.z)/2,y:Math.min(A.a[2],D.y)-1,r:r,h:Math.abs(A.rise)+6,tags:{kind:'door',mode:D.mode,approach:A.kind,family:D.family,state:D.state,choke:D.choke==null?null:D.choke}});
-  if(D.climb&&D.mode==='open')REGISTER({name:'a climb: '+D.climb.floors.length+' storeys by the stair to '+Math.round(D.climb.top)+' m'+(D.climb.weak?' ('+D.climb.weak+' weak floors)':''),kind:'climb',x:T.x,z:T.z,y:T.y-1,r:12,h:D.climb.top+3,tags:{kind:'climb',floors:D.climb.floors.length,top:Math.round(D.climb.top),weak:D.climb.weak,family:D.family,state:D.state}});
-  if(D.heap)REGISTER({name:D.mode==='stair'?'rubble choking the stair':'rubble heaped across the doorway',kind:'rubble',x:D.heap.x,z:D.heap.z,y:D.heap.y0-.5,r:Math.max(D.heap.rx,D.heap.rz)+1,h:D.heap.h+1,tags:{kind:'rubble',blocks:'door'===D.mode?'door':'stair'}});});
+ /* core/tags: one record a 400 m cell (the wrecks' and the street cells' way: a door's heap, steps and climb are drawn only near the eye, so a
+    record of its own would stand empty in every other view), its tags counting the cell's doors by fate, its climbs, heaps and weak floors; the
+    doors themselves are STAGE.lobbies' records, keyed by id */
+ const CELL=400,cells=new Map(),cellOf=(x,z)=>{const k=Math.floor(x/CELL)+','+Math.floor(z/CELL);let C=cells.get(k);if(!C){C={k,cx:(Math.floor(x/CELL)+.5)*CELL,cz:(Math.floor(z/CELL)+.5)*CELL,y0:Infinity,y1:-Infinity,doors:0,open:0,door:0,stair:0,cut:0,climbs:0,top:0,heaps:0,weak:0};cells.set(k,C);}return C;};
+ LB.doors.forEach(D=>{const C=cellOf(D.x,D.z);C.doors++;C[D.mode]++;if(D.cut)C.cut++;if(D.heap)C.heaps++;C.y0=Math.min(C.y0,D.y,D.approach.a[2]);C.y1=Math.max(C.y1,D.y+(D.climb&&D.mode==='open'?D.climb.top:6));if(D.climb&&D.mode==='open'){C.climbs++;C.top=Math.max(C.top,Math.round(D.climb.top));C.weak+=D.climb.weak;}});
+ cells.forEach(C=>REGISTER({name:'the lobbies about '+Math.round(C.cx)+', '+Math.round(C.cz)+': '+C.doors+' doors, '+C.open+' open'+(C.top?' (a climb to '+C.top+' m)':'')+', '+C.door+' blocked at the door, '+C.stair+' on the stair'+(C.cut?', '+C.cut+' cut off':'')+(C.weak?'; '+C.weak+' weak floors':''),
+  kind:'lobby',x:C.cx,z:C.cz,y:C.y0-6,r:CELL*.71+4,h:C.y1-C.y0+12,tags:{kind:'lobby',doors:C.doors,open:C.open,door:C.door,stair:C.stair,cut:C.cut,climbs:C.climbs,top:C.top,heaps:C.heaps,weak:C.weak}}));
  const out=AV.lobbyWalk(KWALK,LB,TW,{rubble:KRUBBLE});out.heaps.forEach(H=>{AVL.heaps[H.id]=H;});
+ /* the weak floors: core/walk's collapse zones (the hazard's record for Godot), counted in their cell's record above */
  out.weak.forEach(rec=>{const k=rec.weak.join('.');AVL.weak[k]=rec;let cx=0,cz=0;rec.pts.forEach(p=>{cx+=p[0];cz+=p[1];});cx/=rec.pts.length;cz/=rec.pts.length;const rr=Math.max(...rec.pts.map(p=>Math.hypot(p[0]-cx,p[1]-cz)));
-  REGISTER({name:'a weak floor: it gives way under a walker',kind:'hazard',x:cx,z:cz,y:rec.pts[0][2]-.5,r:rr,h:2,tags:{kind:'hazard',hazard:'collapse',door:rec.weak[0],floor:rec.weak[1]}});
   KWALK.zone({id:'collapse.'+k,kind:'collapse',shape:{type:'cyl',at:[cx,rec.pts[0][2],cz],r:rr,h:1},travel:4,enter:2});});
+ AVL.cells=cells.size;
  /* the fallen towers' shafts: blocks on the walk (41c AV.fallenBlocks, registered by lobbyWalk above) */
  AVL.fallen={blocks:out.fallen};
  AVL.n={cut:LB.counts.cut||0,doors:LB.doors.length,open:LB.counts.open,door:LB.counts.door,stair:LB.counts.stair,rubbleRamps:LB.counts.rubble,floors:out.floors,blocks:out.blocks,weak:out.weak.length,heaps:out.heaps.length};
