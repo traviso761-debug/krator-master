@@ -6,6 +6,8 @@ const SWHI_IMP_GAIN=1.6;   /* station 1's measured gain (PERF.md); this station'
 (function(){const t0=performance.now();let tp=t0;const PH=window._phases={pre:Math.round(t0),field:window._fieldMs},lap=k=>{const t=performance.now();PH[k]=Math.round(t-tp);tp=t;};
  const Q=new URLSearchParams(location.search),qp=+(Q.get('q')||1);
  try{window._biome=SWHI.build({station:'tableland',quality:qp,box:[TERR.X0,TERR.Z0,TERR.X1,TERR.Z1]});}catch(e){reportErr('biome: '+e.stack);}
+ try{const k=STATION_GROW();if(window._biome)window._biome.kin=k;}catch(e){reportErr('kin: '+e.stack);}   /* swlowlands' cedar and madrone (87-host-kin.js) */
+ try{const n=STATION_LAMPS();if(window._biome)window._biome.lamps=n;}catch(e){reportErr('lamps: '+e.stack);}   /* the cell lamps in every seep pool */
  lap('biome');if(window._biome&&window._biome.ms)Object.assign(PH,window._biome.ms);
  const b=BIO.bake();lap('bake');
  if(BIO.impostorLook)BIO.impostorLook({gain:+(Q.get('impgain')||SWHI_IMP_GAIN),wrap:+(Q.get('impwrap')||1)});

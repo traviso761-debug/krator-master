@@ -25,10 +25,24 @@ const CAVES=(function(){const K=STATION_GROUND;if(!K||!K.N){reportErr('caverns: 
  K.sky.forEach(s=>C.opening({id:s.sh.id+':well',c:[s.well.x,s.well.z],r:s.well.r,rim:K.RIM,kind:'well'}));
  C.build();
  // ---------------------------------------------------------------- the material: the library's karst limestone, lit by the sky it sees
- const S=ROCK_LIB&&ROCK_LIB.scale?ROCK_LIB.scale[0]:6;
- const mat=new THREE.MeshStandardMaterial({map:ROCK_LIB?ROCK_LIB.map:ROCK_GRAIN,roughness:.9,metalness:0,vertexColors:true,side:THREE.DoubleSide,polygonOffset:true,polygonOffsetFactor:1,polygonOffsetUnits:2});
- /* the map TRIPLANAR on the world position (a vertex's own projection flipped between axes across a triangle and smeared it flat) */
- mat.onBeforeCompile=sh=>{sh.uniforms.uTs={value:1/S};
+ /* the cave's own set (materials.json caveRock, `own`: packed for this station only as 'swhighlands-own'): albedo, normals and roughness;
+    without it the page's rockDetail albedo alone */
+ const CR=(function(){const L=(typeof KMAT!=='undefined'&&KMAT.mode==='lib'&&KMAT.packed)?KMAT.packed('swhighlands-own','caveRock'):null;return L?Object.assign({s:L.scale[0]},KMAT.textures(L,{aniso:8})):null;})();
+ const S=CR?CR.s:ROCK_LIB&&ROCK_LIB.scale?ROCK_LIB.scale[0]:6,NM=CR&&CR.normalMap?CR.normalMap:null,RM=CR&&CR.roughnessMap?CR.roughnessMap:null;
+ const mat=new THREE.MeshStandardMaterial({map:CR?CR.map:ROCK_LIB?ROCK_LIB.map:ROCK_GRAIN,roughness:.9,metalness:0,vertexColors:true,side:THREE.DoubleSide,polygonOffset:true,polygonOffsetFactor:1,polygonOffsetUnits:2});
+ /* the maps TRIPLANAR on the world position (a vertex's own projection flipped between axes across a triangle and smeared it flat): the
+    albedo; the normals blended per axis in world space (each plane's tangent swizzled on to its axis) and turned to view space; the
+    roughness. Three samplers in all */
+ mat.onBeforeCompile=sh=>{sh.uniforms.uTs={value:1/S};sh.uniforms.uNM={value:NM};sh.uniforms.uRM={value:RM};
+  if(NM)sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n#define CAVE_NM\nuniform sampler2D uNM;')
+   .replace('#include <normal_fragment_maps>',['#include <normal_fragment_maps>',
+    '{vec3 wn=normalize(vWN);if(!gl_FrontFacing)wn=-wn;vec3 tn=abs(wn);tn/=tn.x+tn.y+tn.z;',
+    ' vec3 nx=texture2D(uNM,vWP.zy*uTs).xyz*2.0-1.0,ny=texture2D(uNM,vWP.xz*uTs).xyz*2.0-1.0,nz=texture2D(uNM,vWP.xy*uTs).xyz*2.0-1.0;',
+    ' vec3 b=vec3(0.0,nx.y,nx.x)*tn.x+vec3(ny.x,0.0,ny.y)*tn.y+vec3(nz.x,nz.y,0.0)*tn.z;',
+    ' normal=normalize((viewMatrix*vec4(normalize(wn+b*0.9),0.0)).xyz);}'].join('\n'));
+  if(RM)sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uRM;')
+   .replace('#include <roughnessmap_fragment>',['#include <roughnessmap_fragment>',
+    '{vec3 tn=abs(normalize(vWN));tn/=tn.x+tn.y+tn.z;float rr=texture2D(uRM,vWP.zy*uTs).g*tn.x+texture2D(uRM,vWP.xz*uTs).g*tn.y+texture2D(uRM,vWP.xy*uTs).g*tn.z;roughnessFactor=clamp(rr+.15,.35,1.0);}'].join('\n'));
   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute float aSky;varying float vSky;varying vec3 vWP;varying vec3 vWN;')
    .replace('#include <begin_vertex>','#include <begin_vertex>\nvSky=aSky;vWP=(modelMatrix*vec4(transformed,1.0)).xyz;vWN=normalize(mat3(modelMatrix)*objectNormal);');
   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform float uTs;varying vec3 vWP;varying vec3 vWN;')

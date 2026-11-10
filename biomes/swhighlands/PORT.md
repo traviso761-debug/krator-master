@@ -52,4 +52,9 @@ no THREE; it reads `performance.now` for its timing), 89x [draw] (KCAVERN's chun
 chambers and the hazards are records: KKARST's and KCAVERN's exports cross over). `stations/shared/89zz-host-shadow.js` [web]
 (KSHADOW's switch) goes on stations 2, 3 and 7.
 
+Station 5 (the fan coast, `--station coast`) overlays `stations/coast/*.js`: 45 [web] (the scarp, the wadis and their fans: KRELIEF
+records baked into KFIELD), 47 [draw] (the arches' and stacks' KSTACKS meshes; the fields), 82 [draw], 84 [web], 87 [draw] (the crater
+drylands' plants grown by their own builders, placed by KRAND cell: split), 88/89a/99 [web], 89s [G native], 89w [draw] (the sea's open
+water). Stations 3 and 5 read a neighbour's 50/55 in place (`station.json` `kin`): those fragments keep their own kits' tags.
+
 (none yet: the split lists and the overrides go here)

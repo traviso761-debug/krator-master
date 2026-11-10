@@ -11,10 +11,10 @@ the landslide lake, the sandstone tableland at Span, its pillar rim (the paintin
 Ring Sea's level has not changed, so **no raised reef terraces**. The flora is alien and fungoid, the native highland
 counterpart of the bay; the references are in `refs/`. Some of it is backfilled into the bay (`biomes/swbay/PLAN-FLORA.md`).
 
-**Status (2026-11-09, branch `claude/swhighlands-rest-f8a7ee`):** stations 1 (the ring folds), 2 (the rain wall, `-rainwall`),
-3 (Span's tableland, `-span`), 4 (the pillar rim, `-pillars`), 6 (the treeline, `-treeline`) and 7 (the ridge karst, `-caverns`:
-the owner's limestone caverns, section 7) are built. **Station 5 (the fan coast) is owed**: its flora is in `src/59c` (with a preview
-sheet), its stage is not built. The plan's open questions stay open (section 10, and the stations' own in `KNOWN_ISSUES.md`).
+**Status (2026-11-09, branch `claude/swhighlands-rest-f8a7ee`):** every station is built: 1 (the ring folds), 2 (the rain wall,
+`-rainwall`), 3 (Span's tableland, `-span`), 4 (the pillar rim, `-pillars`), 5 (the fan coast, `-coast`), 6 (the treeline, `-treeline`)
+and 7 (the ridge karst, `-caverns`: the owner's limestone caverns, section 7). The plan's open questions stay open (section 10, and the
+stations' own in `KNOWN_ISSUES.md`).
 
 ## 0. What the kit is
 
@@ -79,7 +79,14 @@ reads nothing of `settlements/span` and draws nothing of it. What a settlement m
   (nothing placed from a canvas). The drowned trees are a kit pass shipped with the station (`58b`, KRAND by cell).
 - **Span's tableland (station 3)** stands on station 4's ground whole (`stations/span/INHERIT`: the table, its eroded joints,
   `KRELIEF.tableland`, `KSTACKS.pillars`, Span's canyon and reservoir, Pan Riba) and adds its fields (table, dome, swamp, pool), the
-  seep pools (core/water stills) and the twin falls (flows and falls) in `48-host-tableland.js`. Not taken: `38c` (no landform it owes).
+  seep pools (core/water stills) and the twin falls (flows and falls) in `48-host-tableland.js`; **swlowlands read in place**
+  (`station.json` `kin`: its 50 and 55, the tier cedar and the flayed madrone by `SWLOW.make`/`grow`). Not taken: `38c` (no landform it owes).
+- **The fan coast (station 5)**: its own stage (`stations/coast/`) on `KRELIEF.range` (the scarp's spurs) and **`KRELIEF.wadi` with its
+  fan** (the wadis' floors and their cones, run on under the sea), `KSTACKS` (the sea arches, `KSTACKS.archRound`, and the stacks),
+  **core/water's open water** (`WATER.open`: the Ring Sea with its swell and the shared wave field, the bed from the ground, the shore
+  flooded from out at sea; a flat outer sea for the far country) and `ATMOS.skylight`; **the crater drylands read in place**
+  (`kin`: its 50, 52 and 55, the yucca and the sword spire by `CRATERDRY.make`/`grow`); its beach's sand is this kit's own family
+  (`ground.sand`, `own`). Not taken: `KCARVE` (the sea caves are owed), `38c` (a fan delta's foreset is no core form yet).
 - **The ridge karst (station 7, the limestone caverns)** is station 1's ground with **`KKARST`** (`39c-core-karst.js`: the branchwork's
   plan, its dolines through KRELIEF), **`KCAVERN`** (`39-core-cavern.js`: the voids meshed in 16 m chunks) and **`KSPELEO`**
   (`39b-core-speleo.js`, `LIMESTONE`), and `core/hazard` (the sumps' drowning, the shafts' falls); `src/45` and `src/99` hand a station
@@ -309,8 +316,10 @@ scarp's foot.
    Station 1's rules carry over (KRAND by cell, KFIELD ground, impostors past 800 m); the cirque is the kit's own bowl on the field
    (no core cirque form yet).
 5. **The fan coast** (`-coast`, optional, the ecotone): the dry scarp with the star-fruit caudex, arrowheads and coral
-   melons, a fan delta into the Ring Sea, sea arches along a beach, Drum's lights along the shore. **Owed**: its flora is built
-   (`src/59c`), its stage is not; EXCHANGES.md's crater drylands rows (sword spire, chaparral yucca) land here.
+   melons, a fan delta into the Ring Sea, sea arches along a beach, Drum's lights along the shore. Built 2026-11-09
+   (`stations/coast/`): a 4.8 km map at the sea's level, the scarp rising west to ~1.7 km, three wadis and their fan deltas, two sea
+   arches and four stacks on the beach, two flysch platforms in the wave-cut band; the crater drylands' yucca and its sword spire
+   (a glaucous cousin) with 59c's flora. Owed: the sea caves, and Drum's lights (the city is `settlements/drum`'s).
 7. **The ridge karst** (`-caverns`; the owner, 2026-11-03: limestone caverns, "maybe a new station"; `biomes/KARST-SITES-5.1.md`
    site 2): station 1's ground with the cave under its limestone ridge (`KKARST` branchwork, `KCAVERN`, `KSPELEO`). The river cave
    is the system's spring (a sump riser under its alcove's floor); sinks and dolines on the ridge's up-dip side and in the east

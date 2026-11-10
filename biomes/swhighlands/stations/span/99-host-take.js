@@ -33,6 +33,8 @@ const VIEWS={};
    for(let s=.08;s<.92&&clear;s+=.04){const px=x+(fx-x)*s,pz=z+(tz-z)*s,py=y+(ty-y)*s,t=towerTop(px,pz,0);if(nearTower(px,pz,3)&&(!t||t.top>py-2))clear=false;}if(clear)cam=[x,y,z];}
   if(!cam)cam=[fx,G(fx,tz+600)+60,tz+600];add('The twin falls over the rim',[cam[0],cam[1],cam[2],fx,ty,tz]);
   const t=TWIN[0].pts[Math.floor(TWIN[0].pts.length*.4)];add('The twin falls\' streams on the slickrock',[t[0]+30,G(t[0]+30,t[1]-30)+4,t[1]-30,t[0],G(t[0],t[1]),t[1]+40]);}}
+ {const C=(STATION_KIN.cedar||[]).filter(T=>T.lv===2),T=C[Math.floor(C.length/2)];if(T){const x=T.x+T.crownR*2.2,z=T.z+T.crownR*.8;add('A tier cedar on the slickrock',[x,G(x,z)+3,z,T.x,T.y0+T.H*.5,T.z]);}}
+ {const C=(STATION_KIN.madrone||[]).filter(T=>T.lv===2),T=C[Math.floor(C.length/2)];if(T){const x=T.x+T.crownR*2,z=T.z-T.crownR;add('A flayed madrone on the sunny side',[x,G(x,z)+2.5,z,T.x,T.y0+T.H*.4,T.z]);}}
  {const x=-300,z=rimZ(x)-500;add('Torch spikes on the slickrock',[x,G(x,z)+2.2,z,x+40,G(x+40,z+25)+.6,z+25]);}
  {const x=-600,z=rimZ(x)-150;add('Dawn over the tableland',[x,tableTop(x,z)+20,z,x+900,tableTop(x+900,z-400),z-400],'dawn');}
  {const Q=SEEP_POOLS[0];if(Q)add('The cell lamps at night',[Q.x+Q.r+5,Q.level+1.8,Q.z,Q.x,Q.level,Q.z],'night');}})();
@@ -66,7 +68,8 @@ function hostNegatives(){const r=(name,c)=>({name,failed:!c.ok,detail:c.detail})
   r('a seep pool on the open slickrock',HCHK.swamps(SEEP_POOLS.concat([{x:-300,z:rimZ(-300)-500,r:3,level:tableTop(-300,rimZ(-300)-500)-1}]))),
   r('cell lamps on dry rock',HCHK.lamps(itemPositions('celllamp').map(p=>[p[0]+40,p[1],p[2]+40])))];}
 function biomeChecks(){const R={},sp=['anemonetree'];
- R.missing=sp.filter(k=>!SWHI.TREES.some(T=>T.sp===SWHI.KEY[k]));R.bySpecies=sp.map(k=>k+':'+SWHI.TREES.filter(T=>T.sp===SWHI.KEY[k]).length).join(' ');
+ R.missing=sp.filter(k=>!SWHI.TREES.some(T=>T.sp===SWHI.KEY[k])).concat(['cedar','madrone'].filter(k=>!(STATION_KIN[k]||[]).length));
+ R.bySpecies=sp.map(k=>k+':'+SWHI.TREES.filter(T=>T.sp===SWHI.KEY[k]).length).concat(['cedar','madrone'].map(k=>k+':'+(STATION_KIN[k]||[]).length)).join(' ');
  R.treesOnCliffs=SWHI.TREES.filter(T=>T.lv>0&&!towerTop(T.x,T.z,0)&&FC.at(FC.a.slope,T.x,T.z)>1.2).length;R.towers=PILLARS.length;
  R.floor={lamp:itemPositions('celllamp').length,reed:itemPositions('wingreed').length,trumpets:itemPositions('trumpets').length,torch:itemPositions('torch').length,beadcoral:itemPositions('beadcoral').length,cushion:itemPositions('cushion').length};
  R.pools=SEEP_POOLS.length;R.falls=TWIN.reduce((s,C)=>s+C.falls.length,0);return R;}

@@ -44,10 +44,18 @@ const TWIN=(function(){const starts=[[560,rimZ(560)-320],[690,rimZ(690)-300]];
    if(!best){const nx=x+dir[0]*4,nz=z+dir[1]*4;best=[nx,nz,dir[0],dir[1]];}   /* over a pan's lip: straight on, toward the rim */
    dir=[mix(dir[0],best[2],.6),mix(dir[1],best[3],.6)];const dl=Math.hypot(dir[0],dir[1])||1;dir=[dir[0]/dl,dir[1]/dl+.08];
    x=best[0];z=best[1];pts.push([x,z]);}
-  const lv=KRELIEF.river(pts,groundH,{depth:.3,sample:3}),C={key:'twin'+k,name:k?'The twin falls (the eastern)':'The twin falls (the western)',pts,y:lv.map(p=>p.y+.12),slope:lv.map(p=>p.slope),w:[1.4,2.4]};
+  const lv=KRELIEF.river(pts,groundH,{depth:.3,sample:3}),C={key:'twin'+k,name:k?'The twin falls (the eastern)':'The twin falls (the western)',pts,y:lv.map(p=>p.y+.12),slope:lv.map(p=>p.slope),w:[2.2,3.6]};
   C.S=[0];for(let i=1;i<pts.length;i++)C.S.push(C.S[i-1]+Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]));C.LEN=C.S[C.S.length-1];C.halfW=i=>mix(C.w[0],C.w[1],C.S[i]/C.LEN);
-  C.flow=WATER.flow({name:C.name,pts:pts.map((p,i)=>[p[0],p[1],C.y[i]]),width:pts.map((p,i)=>2*(C.halfW(i)+1)),speed:pts.map((p,i)=>1.2+3*smooth(.05,.6,C.slope[i]))});
-  C.falls=WATER.fallsOf(C.flow,{steep:.7,minDrop:12,fit:true}).map(f=>WATER.fall(f));return C;});})();
+  /* ONE CURTAIN (the look pass, 2026-11-09: WATER.fallsOf broke it into two or three steps down the cap and the apron): the lip where the
+     stream drops fastest over 12 m (the caprock's edge), the foot where it next runs at under a 30% fall; the table's flow ends at the lip,
+     the floor's begins at the foot, and one WATER.fall joins them, following the cliff's face (core/water's `face`) */
+  let li=0,best=-1;for(let i=0;i+3<pts.length;i++){const d=C.y[i]-C.y[i+3];if(d>best&&zone(pts[i][0],pts[i][1])<.33){best=d;li=i;}}
+  let fi=li+1;while(fi+1<pts.length&&(C.y[fi]-C.y[fi+1])/(Math.hypot(pts[fi+1][0]-pts[fi][0],pts[fi+1][1]-pts[fi][1])||1)>.3)fi++;
+  const seg=(a,b)=>WATER.flow({name:C.name,pts:pts.slice(a,b+1).map((p,j)=>[p[0],p[1],C.y[a+j]]),width:pts.slice(a,b+1).map((p,j)=>2*(C.halfW(a+j)+1)),speed:pts.slice(a,b+1).map((p,j)=>1.2+3*smooth(.05,.6,C.slope[a+j]))});
+  C.flows=[seg(0,li),seg(fi,pts.length-1)];C.flow=C.flows[0];C.lipI=li;C.footI=fi;
+  {const a=pts[li],b=pts[Math.min(pts.length-1,li+1)],dl=Math.hypot(b[0]-a[0],b[1]-a[1])||1,dx=(b[0]-a[0])/dl,dz=(b[1]-a[1])/dl,hw=C.halfW(li)+.6,f=pts[fi];
+   C.falls=[WATER.fall({name:C.name+' (the curtain)',lip:[[a[0]-dz*hw,a[1]+dx*hw,C.y[li]],[a[0]+dz*hw,a[1]-dx*hw,C.y[li]]],dir:[dx,dz],drop:C.y[li]-C.y[fi],foot:[f[0],f[1],C.y[fi]],fit:true,face:(x,z)=>groundH(x,z)})];}
+  return C;});})();
 const TWIN_IX=(function(){const S=KSPACE.create({cell:30});TWIN.forEach((C,ci)=>{for(let i=0;i<C.pts.length-1;i++){const a=C.pts[i],b=C.pts[i+1];S.insert({ci,i},(a[0]+b[0])/2,(a[1]+b[1])/2,Math.hypot(b[0]-a[0],b[1]-a[1])/2+6);}});return S;})();
 const _tq=[];
 function twinNear(x,z){TWIN_IX.query(x,z,0,_tq);let best=1e9;for(const q of _tq){const C=TWIN[q.ci],a=C.pts[q.i],b=C.pts[q.i+1],dx=b[0]-a[0],dz=b[1]-a[1],l2=dx*dx+dz*dz||1,t=clamp(((x-a[0])*dx+(z-a[1])*dz)/l2,0,1);
