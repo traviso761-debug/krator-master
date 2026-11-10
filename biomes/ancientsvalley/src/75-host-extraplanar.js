@@ -87,10 +87,9 @@ const AV_XP=(function(){const out={hunters:[],drawn:[],registry:null,t:0,hum:0,f
  if(out.spots.drowned&&out.spots.drowned[0]){const p=out.spots.drowned[0],v=stand(p[0],p[1],24,2.4,LY+3,true);if(v)out.views['A drowned hall: the portal on the shore']=v;}
  if(out.spots.void){const p=out.spots.void,v=stand(p[0],p[1],45,5,LY+4,true);if(v)out.views['The void over the inlet']=v;}
  if(out.spots.solid){const p=out.spots.solid,v=stand(p[0],p[1],34,3,terrainH(p[0],p[1])+6);if(v)out.views['The solid in its plaza']=v;}
- /* 46z's views() merges these into the station's list (the stage's own are made after the build). Only the drowned hall: the page's renderer sits near
-    V8's 4 GB heap after its boot and each view keeps the transit cells and wreck looks it built, so a fourteen-view tour ran out of heap at the
-    thirteenth on the Arc lane (2026-11-09, 0xe0000008; KNOWN_ISSUES). The void's and the solid's views stay in AV_XP.views for a --cam shot or the API */
- const VK='A drowned hall: the portal on the shore';STAGE.extraViews=out.views[VK]?{[VK]:out.views[VK]}:{};
+ /* 46z's views() merges these into the station's list (the stage's own are made after the build). A fourteen-view tour ran the renderer out of
+    V8's 4 GB heap at first (2026-11-09: every view kept its transit cells and wreck looks); since the heap diet (74, 73) it holds 1.4 to 1.8 GB */
+ STAGE.extraViews=out.views;
  /* ---- the frame: the rounds, the attacks at the corners, the gaze flown, the phenomena posed, the hum at the eye */
  let GAZE=null;const loose=ev=>{const o=(GAZE||(GAZE=KE.projectile('gaze'))).clone(),v=new THREE.Vector3().fromArray(ev.dir).multiplyScalar(ev.speed==null?60:ev.speed);o.position.fromArray(ev.pos);o.lookAt(o.position.clone().add(v));o.userData.host=true;scene.add(o);out.fx.push({o,v,t:0,life:1.2});};
  const clock={t:performance.now()};

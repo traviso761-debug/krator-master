@@ -14,7 +14,7 @@
 // pop-in at 750 m): every standing piece 3 m and taller (lamp standards, signals, signs, kiosks, shelters, the gantries' and footbridges'
 // legs, sentry posts) is a dark post in ONE InstancedMesh from the boot, its instances zeroed in a cell while the cell's real pieces are
 // drawn, so a street keeps its lamps to the fog's edge.
-const AV_TR_NEAR=750,AV_TR_CELL=400,AV_TR_CHUNK=1500,AV_TR_FAR=3600;
+const AV_TR_NEAR=750,AV_TR_CELL=400,AV_TR_CHUNK=1500,AV_TR_FAR=3600,AV_TR_FREE=450;
 const AVTR={ready:false,groups:[],cells:{},cellList:[],ms:0,n:{},built:0,cache:{},far:null};
 const AV_TR_FAR_H=3;   /* a piece this tall and standing (not fallen or crushed) has a far post */
 AVTR.build=function(){if(AVTR.ready)return true;if(window._texPending>0)return false;if(typeof KTRANSIT==='undefined'||!STAGE.transit)return AVTR.ready=true;
@@ -30,7 +30,9 @@ AVTR.build=function(){if(AVTR.ready)return true;if(window._texPending>0)return f
  const space=KSPACE.create({cell:12});let pieces=0,warPieces=0;
  const cellOf=(x,z)=>{const k=Math.floor(x/AV_TR_CELL)+','+Math.floor(z/AV_TR_CELL);let C=AVTR.cells[k];if(!C){C=AVTR.cells[k]={key:k,cx:(Math.floor(x/AV_TR_CELL)+.5)*AV_TR_CELL,cz:(Math.floor(z/AV_TR_CELL)+.5)*AV_TR_CELL,dress:[],war:[],scorch:[],vehicles:[],rubble:[],built:false,g:null,streets:{}};C.cellIndex=AVTR.cellList.length;AVTR.cellList.push(C);}return C;};
  /* the streets: every surface into one builder at its graded level, stopped at the junctions; the furniture and war records bucketed by cell */
- const mkB=KTRANSIT.builder;KTRANSIT.builder=function(){const B=mkB.apply(this,arguments),f=B.finish;B.finish=(name,o)=>f.call(B,name,Object.assign({chunk:AV_TR_CHUNK},o||{}));return B;};
+ /* the builder's arrays go once it is finished (the heap, 2026-11-09: they are plain arrays of doubles, eight bytes a number, and the boot's closures
+    kept the streets' builder alive: 400 MB of the 2 GB the boot held). Every caller finishes a builder last (the rail reads B.ties after, not B.b) */
+ const mkB=KTRANSIT.builder;KTRANSIT.builder=function(){const B=mkB.apply(this,arguments),f=B.finish;B.finish=(name,o)=>{const G=f.call(B,name,Object.assign({chunk:AV_TR_CHUNK},o||{}));B.b={};return G;};return B;};
  const SB=KTRANSIT.builder();
  T.streets.forEach((st,i)=>{const Rd=T.net.roads[i],W=T.wars[i],D=KTRANSIT.dress(st,{seed:KRAND.hash(STAGE.seed|0,81,i,0),space,blocked,war:W,damage:W.damageAt,network:T.net,road:i});pieces+=D.pieces.length;warPieces+=W.pieces.length;
   KTRANSIT.draw.road(SB,Rd,terrainH,{pavement:Rd.pavement==null?3.5:Rd.pavement,network:T.net,road:i});
@@ -69,13 +71,19 @@ AVTR.buildCell=function(C){const T=STAGE.transit,KT=KTRANSIT,B=KT.builder(),col=
  if(AVTR.furn)C.dress.concat(C.war).forEach(e=>{const p=e[0],g=AVTR.piece(p.kind+'.'+p.state+'.'+p.variant+'.'+p.seed+'.'+(p.span==null?0:p.span),p);if(!g){failed++;return;}const m=KT.draw.pieceFrame(p,T.net.roads[e[1]].levelAt);g.children.forEach(ch=>B.mesh(null,ch,m));n++;});
  const vk=C.vehicles.length?KT.draw.vehicles(B,C.vehicles,{vehicles:AVTR.veh,err:reportErr}):{real:0,hulks:0};
  const G=B.finish('transit cell '+C.key,{chunk:0}),im=C.rubble.length?KT.draw.rubble(C.rubble,{seed:KRAND.hash(STAGE.seed|0,83,C.cellIndex|0,0),name:'transit cell '+C.key+'.rubble'}):null;if(im)G.add(im);
- const y=terrainH(C.cx,C.cz);REGISTER({name:'the furniture and war of the streets about '+Math.round(C.cx)+', '+Math.round(C.cz),kind:'street-dress',x:C.cx,z:C.cz,y:y-6,r:AV_TR_CELL*.71+4,h:36,tags:{kind:'street-dress',pieces:n,vehicles:vk.real+vk.hulks,rubble:C.rubble.length,streets:Object.keys(C.streets).length}});
+ AVTR.cache={};   /* the furniture pieces are merged into this cell's builder: their prototypes go with it (keyed by seed, they are seldom wanted twice) */
+ const y=terrainH(C.cx,C.cz);if(!C.reg){C.reg=true;REGISTER({name:'the furniture and war of the streets about '+Math.round(C.cx)+', '+Math.round(C.cz),kind:'street-dress',x:C.cx,z:C.cz,y:y-6,r:AV_TR_CELL*.71+4,h:36,tags:{kind:'street-dress',pieces:n,vehicles:vk.real+vk.hulks,rubble:C.rubble.length,streets:Object.keys(C.streets).length}});}   /* once: a freed cell is built again when the eye comes back */
  if(AVTR.sh)AVTR.sh.cast(G);G.userData.host=true;G.traverse(m=>{if(m.isMesh){m.userData.host=true;m.userData.inspectLabel='the streets\' furniture and war';m.frustumCulled=true;}});
  G.userData.pieces=n;G.userData.failed=failed;G.userData.vehicles=vk.real;G.userData.hulks=vk.hulks;scene.add(G);return G;};
+/* a cell the eye has left by AV_TR_FREE past its near range goes: its meshes leave the scene and their geometry is freed (the heap, 2026-11-09: a
+   view kept every cell it built, 130 MB a view, and a fourteen-view tour ran the renderer out of V8's 4 GB); it is built again when the eye comes
+   back, one cell a frame as before. Its geometry is its own (the builder's merge and the rubble's box); the materials are the kit's, shared, kept */
+AVTR.freed=0;AVTR.freeCell=function(C){const G=C.g;if(!G)return;scene.remove(G);G.traverse(m=>{if(m.isInstancedMesh&&m.dispose)m.dispose();if(m.geometry)m.geometry.dispose();});C.g=null;C.built=false;AVTR.freed++;};
 AVTR.frame=0;AVTR.farTick=function(){const e=camera.position,R=AV_TR_FAR+AV_TR_CHUNK*.71;for(const m of AVTR.chunked){const a=m.userData.chunkAt;m.visible=Math.hypot(a[0]-e.x,a[1]-e.z)<R;}};
 AVTR.dressTick=function(){if(!AVTR.ready)return;if(!(AVTR.frame++%15))AVTR.farTick();if(!AVTR.cellList.length)return;const e=camera.position;let builtOne=false;
  for(const C of AVTR.cellList){const near=Math.hypot(C.cx-e.x,C.cz-e.z)<AV_TR_NEAR;
   if(near&&!C.built&&!builtOne){builtOne=true;C.built=true;try{C.g=AVTR.buildCell(C);AVTR.built++;}catch(err){reportErr('transit cell '+C.key+': '+(err.message||err));}}
+  if(C.g&&!near&&Math.hypot(C.cx-e.x,C.cz-e.z)>AV_TR_NEAR+AV_TR_FREE)AVTR.freeCell(C);
   if(C.g)C.g.visible=near;
   /* the far posts of a cell go while its pieces are drawn, and come back when they are not */
   if(C.farI&&AVTR.far){const hide=!!(C.g&&near);if(C.farHid!==hide){C.farHid=hide;const A=AVTR.far.instanceMatrix.array;for(const k of C.farI){if(hide){if(!C.farSave)C.farSave={};C.farSave[k]=Array.prototype.slice.call(A,k*16,k*16+16);for(let q=0;q<16;q++)A[k*16+q]=0;}else if(C.farSave&&C.farSave[k]){const s=C.farSave[k];for(let q=0;q<16;q++)A[k*16+q]=s[q];}}AVTR.far.instanceMatrix.needsUpdate=true;}}}};

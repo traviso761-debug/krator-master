@@ -31,8 +31,8 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `71-host-creepers.js` | 5 |  |
 | `72-host-keepers.js` | 6 |  |
 | `73-host-wrecks.js` | 7 |  |
-| `74-host-transit.js` | 13 |  |
-| `75-host-extraplanar.js` | 15 |  |
+| `74-host-transit.js` | 14 |  |
+| `75-host-extraplanar.js` | 14 |  |
 | `88-host-build.js` | 7 |  |
 | `89a-host-atmos.js` | <1 |  |
 | `89s-host-sky.js` | 3 |  |

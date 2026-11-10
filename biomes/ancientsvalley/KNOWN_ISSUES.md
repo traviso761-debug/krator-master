@@ -51,12 +51,15 @@
   one seed, the fallback on dry ground (no model water cell lies inside the page), so it flooded nothing and every hollow of the page's own relief
   under the lake's level was drawn dry; `89w` now seeds it from that ground too (a 120 m lattice, 264 seeds), which floods 95% of it. The stage's
   view "The core from the water" still stands outside the flood: its eye is in a pocket the lattice misses.
-- [ ] **The renderer sits near V8's 4 GB heap** (2026-11-09, found wiring the extraplanars): 3.85 GB of 4.19 GB used in the browser pane after the
-  boot and six views, and every view keeps what it built (the transit's furniture and war cells, the wreck looks). A fourteen-view `--all-views`
-  tour ran out of heap at the thirteenth view on the Arc lane (Chrome's 0xe0000008 in the event log, "Connection closed while reading from the
-  driver" in the verify); the eleven-view tour passed. So the station lists twelve views (the extraplanars' drowned hall the only new one) and
-  keeps the void's and the solid's views in `AV_XP.views`. The extraplanars' own geometry is 2.4 MB. Owed: a heap diet (free a transit cell and
-  a wreck look when the eye leaves; measure what the boot holds with the sampling heap profiler) before the next view or pass is added.
+- [x] **The renderer ran near V8's 4 GB heap** (2026-11-09, found wiring the extraplanars; closed the same day): a fourteen-view `--all-views` tour
+  ran out of heap at the thirteenth view on the Arc lane (Chrome's 0xe0000008 in the event log, "Connection closed while reading from the driver"
+  in the verify). V8's sampling heap profiler from before the page loads, and a census of the geometry by owner, found two causes. The boot held
+  400 MB of the transit builder's plain arrays (eight bytes a number), which a closure kept after `finish`; the valley's builder wrapper (74)
+  now drops them. And every view kept what it built, the transit's furniture and war cells and the wreck looks, about 130 MB a view. A cell
+  is now freed 450 m past its near range and built again on the way back (74 `AVTR.freeCell`), the furniture pieces go with each cell, and the
+  wreck looks are capped at 72 with the oldest unworn ones freed (73). On software GL the boot fell from 1,974 to 1,451 MB, and twelve views
+  from 3,589 to 1,704 MB, flat at 1.4 to 1.8 GB; the fourteen-view tour stands again. Not freed: a cell's shadow casters under `?shadow=1`
+  (KSHADOW keeps its list); the towers' heroes and the kits' chunks are the census's other large holders (the forest 258 MB, the streets 169 MB).
 - [ ] **No mutants or Cyberliches yet** (`PLAN.md` section 6: each when its kit exists), no Soleri farmland (the terraces are off this page). The
   keepers are kits/mechs' Ancients (culture `ancient`, session valley-robots, 2026-11-09): the porter, the watcher, the lamplighter, the sweeper
   and the gardener at their routines, the tripod on a round by the lake; the feigners (a keeper's last variant, with its tell) and the other
