@@ -16,16 +16,17 @@
     "core/export/07-core-export.js": "b50800e8f1f2ab9f566c877d24c112c3d12899d5589a63fbb9aa283ca9c16f2c",
     "core/export/09-core-export-adapters.js": "bb08d2140882dc07c0a9c33787d103c67301e4444b31dce0f6d53e4fd8938316",
     "core/export/10-core-export-scene.js": "03619886c6bcc3426f0d261e9187cc06766b0bf1dca1ddcec33b6d56aff4814d",
-    "core/furnish/50-core-furnish.js": "6519283a13a25711e4acff7f03356f5e0d41f3437f19835bad02cdcd1a6cfb18",
+    "core/furnish/50-core-furnish.js": "2c81c2c24d3f2c26a5d67cfcbe2ff1398a0884ab0032dd3596d589c2bd15756b",
     "core/furnish/52-core-furnish-draw.js": "e87c79babef49dedde3f5dc4fa0daae11aaae6a3976955d6c51cabd49ca92146",
     "core/furnish/53-core-furnish-host.js": "81927a949cd6d0e5b9da71bfb6b6f4c1d7e6add5e1606b08b0b8a199d5633aea",
     "core/host/90-host-camera.js": "6ad6af57adcf1fb2facd04968db769350c0d27de1d2fe20829d9948be75a2847",
     "core/host/91-host-loop.js": "240f833bc2e031506de36b503594acd2939e3f45aee21115effd00666fa66986",
     "core/host/92-host-panel.js": "3d65cd6c0bb873e48eb4189fffad906ab21aef1950164a454254a4fefe7a0b88",
+    "core/host/92k-host-keys.js": "d3eaefd605d5ac360f205e7628bba245fbcfcd518c8fc8d79d2743556143df06",
     "core/host/93-host-inspect.js": "cf7e676324297688199a85d9a26c34381732955955985462aa3dbd2c12431f90",
     "core/host/93-host-stocks.js": "ee986893621f17b4419db1feb1edbc01b7e28f067e85fd8b811112ec65456a69",
     "core/host/94-host-marks.js": "a57a2a38ef92f4d06232659773249de63296e79e200da27a24f0253eff3f0284",
-    "core/host/95-host-probe.js": "a44f84c2364f546283048e28866342ab3d1e8c8c4da369b713f0f6cc430506dd",
+    "core/host/95-host-probe.js": "91a9ef729db002716d0e840ebd6e0efc799f2ae0c99419fb06c3f44eda5f6471",
     "core/host/96-host-pictures.js": "643e50e72e0586f75e2e56461fd58b14445099b551a591b839cf99dbbb5cf458",
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
@@ -60,7 +61,7 @@
     "kits/interiors/sets/talia.js": "69ea56a045f5fda248e1c0ccc03c554ad745b93a4aab4bf16b6d1d906f4f0275",
     "kits/interiors/src/10-core.js": "4b940cf3cadd55615825e748e9179aa06ff8984be2d92dbefc3d085ae91e24e5",
     "kits/interiors/src/20-rooms.js": "4b54dca9f15014c721897d598a55f88c9e9dace32568faab59f10ca771694498",
-    "kits/interiors/src/30-programs.js": "81e38433a7cd97fe4b7c7c1097830c692f37a0eab5315796472eccffd703a0a4",
+    "kits/interiors/src/30-programs.js": "1993bfbcf3e14c59003c3ec58af0ad8dc8e9304cca67d83fac842684c08616cb",
     "kits/interiors/src/40-grid.js": "a69dadb0ff525a510e51739e92b442a0f7269d4fdab164d19ca410d8f360b098",
     "kits/interiors/src/45-placer.js": "60d2ecc3c3edc9b5fc5ecd734c16f261367a2c51bbdf5a67b5c5751ac3ad7ab3",
     "kits/interiors/src/46-planner.js": "acfb0a52c6f533a53a4df2519d8598ff11b80ad430b978cd9d9707c05dfe43e0",
@@ -125,7 +126,7 @@
     "kits/talia/tex/taTile.normal.webp": "88ed88f0b58fc9ccdd8595e9e2021e3361a1e9c07dd49a2651f48a52c63d7e7a",
     "kits/talia/tex/taTile.rough.webp": "d8888a017461cd1d65b50138d79099eeac75a4cee6cb4361d820bb21b65c27ae",
     "settlements/iziz/PORT.md": "edccf5aaaafb0a121f606659062e3af0f5fc545d0c851f5f27a2b870625c3702",
-    "settlements/iziz/build.py": "1316bc3c99ee4154663c7ee507799233762c53f98bb54d0759c47e974d479f98",
+    "settlements/iziz/build.py": "b0f288be3e7763e850a00fc48fdbf2b20ab321f1bb4efd61a5887666c58041db",
     "settlements/iziz/src/00-head.html": "a93eb75377a47c7795c94dff078bf3c1a679760aacb311c17436bbdb5ec4b3c3",
     "settlements/iziz/src/10-core.js": "7c31cf7eb63a1666c0f1c8cd97fd810c1531d10e8d014c105f807a2ad521138b",
     "settlements/iziz/src/12-stats.js": "67d17e87faa80d6e5503dd3dc0d53cb2b9e0d68ce77f256187968ee914f881bd",
@@ -186,7 +187,7 @@
     "settlements/iziz/src/93-labels.js": "24da8de07387f42b59fa38d331ae5d2f534a08b8c7e05e4d1e584b6a39a389c4",
     "settlements/iziz/src/95i-iziz-interiors.js": "fe8ca61fd0bded200670d21f733052c8ce3f3f20991d7e299b1dd19e30d4c37c",
     "settlements/iziz/src/95j-iziz-doors.js": "49f7532305ecb9389d7fd0d91ff90c338fd8801239db0862ce16c678e5965c99",
-    "settlements/iziz/src/99-start.js": "59981a770941dcdc46ca3f90665b67415100c231e3a0d57d2efc23faade99ab8",
+    "settlements/iziz/src/99-start.js": "9ab2b470470f39c2831cd37b232ebf34641c783b4be5f475776aa6355755c3cd",
     "settlements/iziz/src/99-tail.html": "65abfb642de580808a65c6ec8bf3bc2c410397558a5ac28e825accdb7c590d3b",
     "settlements/iziz/targets/city/84-city-geo.js": "19dfe3fa2535122e0e8bfde87f06992752023aded917b126bcd6ca5f6f32cc70",
     "settlements/iziz/targets/city/86-bio-45-init.js": "28755bc1a57799a4d1b9eb4e3850e5fca531ed7af4f7afe0cc284762686d0106",
@@ -429,9 +430,9 @@
     "core/walk": "c6769307f01d663d946e7a69638ff7e4fee9c46e1ff5bc8acc98125dd4bb4619",
     "kits/catalog": "10322ea778934242b7ce59b2a1b14f40befde097c5b9b80081f11fd0cb8a57ce",
     "kits/interiors": "c343f7e77884e1f4a489c5a2327ea3c5a7a54a1f9bc070a21766131363cf07f7",
-    "kits/interiors/sets": "1bdefc8c84d12d89305c3191a37cb67874320bdf687403427b51b5eaff9c5b17",
+    "kits/interiors/sets": "25e1fa66e47b9b929bd298c5bc39a8afb287b6cc27aee48c82a238a7c99fc191",
     "kits/interiors/src": "fe72f6be1b5eb6012c769b91a5fc7c558f24144155f758942db210e347392bab",
-    "kits/iziz-vernacular": "3d9b6912855451a527c9ba273aef73fe1d1c0b412f400bdd5abfcc20cddd70ba",
+    "kits/iziz-vernacular": "4a1c35741a306f725b4dbc4e35c5987534d6fd34a8045e1851e67ecb5b264cee",
     "kits/talia/src": "a82f492ceb8a0c972882c0d8160dae8655b8decf50fe971189371472239ac4fe",
     "kits/talia/targets": "cbc8a597a67c465497550c4a4a7eebdb138442c06be06a78cc1ee8715658ff44",
     "kits/talia/targets/kit": "110dafb507a2d12553bf9fae67bff24f62ea606ee3c6843801219bd84ed1cdc4",
@@ -448,18 +449,18 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/talia/build-manifest-kit.json": "fbd727709a8ca4ce62620210509a3994c08f8e558b50994c8d22e212734c035c",
+    "kits/talia/build-manifest-kit.json": "5cba0232d4e8ecfa7c1c1531421b60e4c0f8569075bb889edb730ec3a35d85ae",
     "kits/talia/dist/iziz.tex.iziz-2.js": "f27df1fdbfaa2e7ed56d95e3ec67187e805e1e4bc2e474dd46b3943338e4e97a",
     "kits/talia/dist/iziz.tex.iziz.js": "9b74cdccfe69db90b0e7bca164088a5f5522477e63706715e53ef47e9c65d1dc",
     "kits/talia/dist/iziz.tex.talia.js": "c00b89c380f4e3bc0345efb8a95f2ec8721fbf793b37bcbd33a390556ac23e34",
-    "kits/talia/dist/talia.html": "6c237c356af9a7ec4d8ef9b953f4a6fec255d6261cec9b6297893d2d93b977c3"
+    "kits/talia/dist/talia.html": "220e53204a46c4cf62ab414b35483e951079b4c4c1bc184d8f72941537f3d62e"
    },
    "outputs_raw": {
-    "kits/talia/build-manifest-kit.json": "fbd727709a8ca4ce62620210509a3994c08f8e558b50994c8d22e212734c035c",
+    "kits/talia/build-manifest-kit.json": "5cba0232d4e8ecfa7c1c1531421b60e4c0f8569075bb889edb730ec3a35d85ae",
     "kits/talia/dist/iziz.tex.iziz-2.js": "f27df1fdbfaa2e7ed56d95e3ec67187e805e1e4bc2e474dd46b3943338e4e97a",
     "kits/talia/dist/iziz.tex.iziz.js": "9b74cdccfe69db90b0e7bca164088a5f5522477e63706715e53ef47e9c65d1dc",
     "kits/talia/dist/iziz.tex.talia.js": "c00b89c380f4e3bc0345efb8a95f2ec8721fbf793b37bcbd33a390556ac23e34",
-    "kits/talia/dist/talia.html": "6c237c356af9a7ec4d8ef9b953f4a6fec255d6261cec9b6297893d2d93b977c3"
+    "kits/talia/dist/talia.html": "220e53204a46c4cf62ab414b35483e951079b4c4c1bc184d8f72941537f3d62e"
    }
   }
  }
