@@ -30,7 +30,10 @@
   no tube mouth in the rille's head wall (the rille's floor is ~70 m under where the tube's would meet it); the moss along the stream reads
   too saturated; "The spring and the stalk fields" view wants re-aiming at the fields; the eye stands in the tube through a wrapper of
   `KHOST.take` (`98z-host-floor.js`): `src/99` should pass a station's `STATION_FLOOR`.
-- [ ] **The hearths**: see the station's own notes in `PLAN.md`, "Station 3, as built"; the hearth trees are the Hearths' `rim` dress, not a
+- [ ] **The hearths**: soft budgets over (`godstep/ground` 7.28 M against 7 M, the scene 9.38 M against 9 M: station 1's passes on the pit's
+  floor and dish); the scoria's paint reads speckled close up in software GL (judge on a GPU); the rim view was blocked by the lip's crest
+  until 2026-11-10 (now it stands on the crest with a checked sightline); the dark band at the dish's edge in the rim view is the far
+  country's seam (as station 1's "far country's edge"); the hearth trees are the Hearths' `rim` dress, not a
   broad-fanned dress of the stair's own (the Hearths' plan asks for broad fans: a `HEARTH.DRESS` entry in `biomes/hearths` is that kit's).
 - [ ] **The redlands**: the talus under the breakaways and mesas takes the kit's basalt palette (reads black, not laterite red); the
   sedesert's creosote is left out of its scrub and rim mixes on this page (its near tier failed core's one-LOD-key audit here, 2 of 61 tall

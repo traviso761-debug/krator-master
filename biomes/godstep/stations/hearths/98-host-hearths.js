@@ -21,7 +21,11 @@ function STATION_VIEWS(VIEWS){const G=(x,z)=>terrainH(x,z),add=(k,v,mode)=>{if(v
  {const n=T.slice().sort((a,b)=>Math.hypot(a.x-VENT.x-60,a.z-VENT.z-40)-Math.hypot(b.x-VENT.x-60,b.z-VENT.z-40))[0];
   if(n)add('A hearth tree',[n.x+9,G(n.x+9,n.z+6)+1.8,n.z+6,n.x,n.y+n.H*.8,n.z],'night');}
  {const c=[SPRING.x-60,SPRING.z+70],t=[SPRING.x,SPRING.z];add('The spring and its moss lawn',[c[0],G(c[0],c[1])+1.8,c[1],t[0],G(t[0],t[1]),t[1]],'dawn');}
- {const a=PIT.aW,r=PIT.Rr(a)-15,c=[Math.cos(a)*r,Math.sin(a)*r];add('The pit from its rim',[c[0],G(c[0],c[1])+12,c[1],VENT.x,PIT.floor,VENT.z]);}
+ {/* stand on the lip's crest on the WNW (its highest), found along the ray, with a clear sightline down to the floor's centre */
+  const a=PIT.aW,ca=Math.cos(a),sa=Math.sin(a),R0=PIT.Rr(a);let rc=R0,hc=-1e9;for(let r=R0-400;r<R0+700;r+=5){const h=G(ca*r,sa*r);if(h>hc){hc=h;rc=r;}}
+  const c=[ca*(rc-6),sa*(rc-6)],tx=ca*Math.min(rc*.35,1200),tz=sa*Math.min(rc*.35,1200),ty=G(tx,tz);let ey=G(c[0],c[1])+3;
+  for(let k=0;k<40;k++){let ok=true;for(let f=.02;f<1;f+=.02){const x=c[0]+(tx-c[0])*f,z=c[1]+(tz-c[1])*f;if(G(x,z)>ey+(ty-ey)*f-1){ok=false;break;}}if(ok)break;ey+=3;}
+  add('The pit from its rim',[c[0],ey,c[1],tx,ty,tz]);}
  MOUTHS.forEach((M,i)=>{const s=M.s-120,c=[M.dir[0]*s-M.dir[1]*8,M.dir[1]*s+M.dir[0]*8];add(i?'The cross-conduit\'s mouth':'The mouth of tube_god_07',[c[0],G(c[0],c[1])+1.8,c[1],M.wx,M.floorY+M.h*.4,M.wz]);});
  {const c=[OLD.x-OLD.r*.95,OLD.z+OLD.r*.5];add('The older crater and its fields',[c[0],G(c[0],c[1])+40,c[1],OLD.x+OLD.r*.2,OLD.level,OLD.z-OLD.r*.1]);}
  {const P=PATH.pts,c=P[2],t=P[5];add('The procession\'s way down',[c[0],G(c[0],c[1])+1.7,c[1],t[0],G(t[0],t[1]),t[1]]);}
