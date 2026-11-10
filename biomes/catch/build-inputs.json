@@ -5,7 +5,7 @@
    "inputs": {
     "biomes/catch/KNOWN_ISSUES.md": "f2d81063a9d1fbeac6c12a42bbe80db24b5351988e8fcf8ca89c20a646d74be4",
     "biomes/catch/PORT.md": "5400e11ebf862d61dcabc7cc73f0c5ede3f72f0d3728153b5ff7bdf33a545476",
-    "biomes/catch/build.py": "64f9d01a29763088d86936ce6c96b796619c36662d0ad11c7cea48cf42a34c9d",
+    "biomes/catch/build.py": "9b38b4b6192af41cbea22093d05a4854516ae72b45c6f1d53c035abdcf619c55",
     "biomes/catch/src/00-head.html": "170e275ac5cf954835455afe78b4f53f341fef03bb438f2bd83a2ca5161275ee",
     "biomes/catch/src/45-host-scene.js": "44c82a47d92b43addcf4ba20e858f1c97d11a39e044bd2a316eb4ef8c3574526",
     "biomes/catch/src/45b-host-stage.js": "fb97fba54a933cf6095c2dbbd1883b0b0eb2cf1112e6ecdf993fdf7d3f1dfc12",
@@ -138,7 +138,7 @@
     "core/shader/06b-core-kcolor.js": "ededfc6b8a1a8aae5bf3c6ab40863478f9beb8e1aaf2acf4ba9da25ef6392115",
     "core/shadow/10-core-shadow.js": "9fe58c9d540efd8bc94c12d0d164ed1f92888dc08df85ac9a9b455e2d346bd0a",
     "core/shadow/host/12-core-shadow-host.js": "dbcd74523c159e1702abb5fad1cb5ccc8a7a67a71bb8c45e2f363778fd856dc1",
-    "core/sockets/38-symbols.js": "cea0673f7b5bdc52886497f9a452fda756d4d17b0d2fd7e692bfcab5610822db",
+    "core/sockets/38-symbols.js": "ed5b3086d1034e1c289dd79bb816833cbcbcb11d0719f3a1eafc6c302de837b0",
     "core/space/20-core-space.js": "68068f0da30b9115d098604315be2364735b86833a6743ef4444e5e6adbe5780",
     "core/tags/50-core-tags.js": "5d506746c4b5142f76e932cbd798d4ba6926e3865919d7ecd6d39a16e4e5b882",
     "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
@@ -153,6 +153,7 @@
     "core/water/22-core-water-flow.js": "eab9b6ee42e8747dfd1082a1b6d76804b4659d5fd3a2b3d4bc1a566af13dbed7",
     "core/water/50-core-water-draw.js": "9b487271223b64c2935b3336667963139dddcc055b852ac4f0a1912b2a9dd7e0",
     "core/water/51-core-water-kinds.js": "e0c2edba19b476b4b46a4e08a63f0af695423d88b1da15b380795b2e4d07ead4",
+    "core/water/ext/56-core-water-breakup.js": "30c6de1a8913f7fa59ac92cd40526eb148d683b02dc31b6b521a3a768a2926bb",
     "core/water/ext/57-core-water-audit.js": "6dd616a15a7804c615c4e1638b250cb709a85e1f219ae9ea03f8c4faa20374c1",
     "core/water/ext/58-core-water-mirror.js": "abf23c31ba18ba7f4890646bb539fa41652a3331977cc0c6ed6bcda9c646083f",
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
@@ -168,23 +169,23 @@
    "listings": {
     "biomes/catch": "e380a51837fbe6bed1fde5efe36ac4be8a44c95b1308acb2912b19a8a7988ae6",
     "biomes/catch/src": "34bfb62e51dcdd0c64f60f266ed3d78b5a58b63a26b9a87e5b808816fd3784ff",
-    "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
+    "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
     "kits/mechs": "54a0b7ef668394931f9b11510c2d35127f23a245ff15f5feb5dd237081028cbd",
-    "tools": "2d2fdaca850a104a2a2c553313ccb3ad18dc6bc48cb554c8c714fc1ca39607bf",
+    "tools": "24cc9a0d867a37d71596ec8a001087a35735c498125de4e336dde163318589d8",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/catch/dist/catch.html": "f6630252d6b9d30ed9793bc08b72ee68b21e3e38d07f9ba88efc98aa437b1058"
+    "biomes/catch/dist/catch.html": "4b74ee8e8abb8a9128ad1de521abde2e022b163ec3553f44d9acd40e356950c5"
    },
    "outputs_raw": {
-    "biomes/catch/dist/catch.html": "f6630252d6b9d30ed9793bc08b72ee68b21e3e38d07f9ba88efc98aa437b1058"
+    "biomes/catch/dist/catch.html": "4b74ee8e8abb8a9128ad1de521abde2e022b163ec3553f44d9acd40e356950c5"
    }
   },
   "build.py --station fan": {
    "inputs": {
     "biomes/catch/KNOWN_ISSUES.md": "f2d81063a9d1fbeac6c12a42bbe80db24b5351988e8fcf8ca89c20a646d74be4",
     "biomes/catch/PORT.md": "5400e11ebf862d61dcabc7cc73f0c5ede3f72f0d3728153b5ff7bdf33a545476",
-    "biomes/catch/build.py": "64f9d01a29763088d86936ce6c96b796619c36662d0ad11c7cea48cf42a34c9d",
+    "biomes/catch/build.py": "9b38b4b6192af41cbea22093d05a4854516ae72b45c6f1d53c035abdcf619c55",
     "biomes/catch/src/45-host-scene.js": "44c82a47d92b43addcf4ba20e858f1c97d11a39e044bd2a316eb4ef8c3574526",
     "biomes/catch/src/45c-host-ground.js": "0d66eea66d9db1bb0599ef88252868a929fa4418403edd554730de217546ad6f",
     "biomes/catch/src/46-host-rock.js": "02620607c041928dbb0ac96de815e57a001e5e7a4531faed44b2e59427aa15ef",
@@ -318,7 +319,7 @@
     "core/shader/06b-core-kcolor.js": "ededfc6b8a1a8aae5bf3c6ab40863478f9beb8e1aaf2acf4ba9da25ef6392115",
     "core/shadow/10-core-shadow.js": "9fe58c9d540efd8bc94c12d0d164ed1f92888dc08df85ac9a9b455e2d346bd0a",
     "core/shadow/host/12-core-shadow-host.js": "dbcd74523c159e1702abb5fad1cb5ccc8a7a67a71bb8c45e2f363778fd856dc1",
-    "core/sockets/38-symbols.js": "cea0673f7b5bdc52886497f9a452fda756d4d17b0d2fd7e692bfcab5610822db",
+    "core/sockets/38-symbols.js": "ed5b3086d1034e1c289dd79bb816833cbcbcb11d0719f3a1eafc6c302de837b0",
     "core/space/20-core-space.js": "68068f0da30b9115d098604315be2364735b86833a6743ef4444e5e6adbe5780",
     "core/tags/50-core-tags.js": "5d506746c4b5142f76e932cbd798d4ba6926e3865919d7ecd6d39a16e4e5b882",
     "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
@@ -333,6 +334,7 @@
     "core/water/22-core-water-flow.js": "eab9b6ee42e8747dfd1082a1b6d76804b4659d5fd3a2b3d4bc1a566af13dbed7",
     "core/water/50-core-water-draw.js": "9b487271223b64c2935b3336667963139dddcc055b852ac4f0a1912b2a9dd7e0",
     "core/water/51-core-water-kinds.js": "e0c2edba19b476b4b46a4e08a63f0af695423d88b1da15b380795b2e4d07ead4",
+    "core/water/ext/56-core-water-breakup.js": "30c6de1a8913f7fa59ac92cd40526eb148d683b02dc31b6b521a3a768a2926bb",
     "core/water/ext/57-core-water-audit.js": "6dd616a15a7804c615c4e1638b250cb709a85e1f219ae9ea03f8c4faa20374c1",
     "core/water/ext/58-core-water-mirror.js": "abf23c31ba18ba7f4890646bb539fa41652a3331977cc0c6ed6bcda9c646083f",
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
@@ -348,23 +350,23 @@
    "listings": {
     "biomes/catch/src": "34bfb62e51dcdd0c64f60f266ed3d78b5a58b63a26b9a87e5b808816fd3784ff",
     "biomes/catch/stations/fan": "ceb80754fedd650ee2223b7858c263e380baf56728549d76cc9f09ea669ba4d0",
-    "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
+    "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
     "kits/mechs": "54a0b7ef668394931f9b11510c2d35127f23a245ff15f5feb5dd237081028cbd",
-    "tools": "2d2fdaca850a104a2a2c553313ccb3ad18dc6bc48cb554c8c714fc1ca39607bf",
+    "tools": "24cc9a0d867a37d71596ec8a001087a35735c498125de4e336dde163318589d8",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/catch/dist/catch-fan.html": "df85eeb6a6ae2531438430878cbb3916d9773333c78c57e6fc86371231a6e0fe"
+    "biomes/catch/dist/catch-fan.html": "0b01ad6f931eeafcb076ec637a58fe39a7628dc597ae5610206e67a30d21de8a"
    },
    "outputs_raw": {
-    "biomes/catch/dist/catch-fan.html": "df85eeb6a6ae2531438430878cbb3916d9773333c78c57e6fc86371231a6e0fe"
+    "biomes/catch/dist/catch-fan.html": "0b01ad6f931eeafcb076ec637a58fe39a7628dc597ae5610206e67a30d21de8a"
    }
   },
   "build.py --station lake": {
    "inputs": {
     "biomes/catch/KNOWN_ISSUES.md": "f2d81063a9d1fbeac6c12a42bbe80db24b5351988e8fcf8ca89c20a646d74be4",
     "biomes/catch/PORT.md": "5400e11ebf862d61dcabc7cc73f0c5ede3f72f0d3728153b5ff7bdf33a545476",
-    "biomes/catch/build.py": "64f9d01a29763088d86936ce6c96b796619c36662d0ad11c7cea48cf42a34c9d",
+    "biomes/catch/build.py": "9b38b4b6192af41cbea22093d05a4854516ae72b45c6f1d53c035abdcf619c55",
     "biomes/catch/src/45-host-scene.js": "44c82a47d92b43addcf4ba20e858f1c97d11a39e044bd2a316eb4ef8c3574526",
     "biomes/catch/src/45c-host-ground.js": "0d66eea66d9db1bb0599ef88252868a929fa4418403edd554730de217546ad6f",
     "biomes/catch/src/46-host-rock.js": "02620607c041928dbb0ac96de815e57a001e5e7a4531faed44b2e59427aa15ef",
@@ -498,7 +500,7 @@
     "core/shader/06b-core-kcolor.js": "ededfc6b8a1a8aae5bf3c6ab40863478f9beb8e1aaf2acf4ba9da25ef6392115",
     "core/shadow/10-core-shadow.js": "9fe58c9d540efd8bc94c12d0d164ed1f92888dc08df85ac9a9b455e2d346bd0a",
     "core/shadow/host/12-core-shadow-host.js": "dbcd74523c159e1702abb5fad1cb5ccc8a7a67a71bb8c45e2f363778fd856dc1",
-    "core/sockets/38-symbols.js": "cea0673f7b5bdc52886497f9a452fda756d4d17b0d2fd7e692bfcab5610822db",
+    "core/sockets/38-symbols.js": "ed5b3086d1034e1c289dd79bb816833cbcbcb11d0719f3a1eafc6c302de837b0",
     "core/space/20-core-space.js": "68068f0da30b9115d098604315be2364735b86833a6743ef4444e5e6adbe5780",
     "core/tags/50-core-tags.js": "5d506746c4b5142f76e932cbd798d4ba6926e3865919d7ecd6d39a16e4e5b882",
     "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
@@ -513,6 +515,7 @@
     "core/water/22-core-water-flow.js": "eab9b6ee42e8747dfd1082a1b6d76804b4659d5fd3a2b3d4bc1a566af13dbed7",
     "core/water/50-core-water-draw.js": "9b487271223b64c2935b3336667963139dddcc055b852ac4f0a1912b2a9dd7e0",
     "core/water/51-core-water-kinds.js": "e0c2edba19b476b4b46a4e08a63f0af695423d88b1da15b380795b2e4d07ead4",
+    "core/water/ext/56-core-water-breakup.js": "30c6de1a8913f7fa59ac92cd40526eb148d683b02dc31b6b521a3a768a2926bb",
     "core/water/ext/57-core-water-audit.js": "6dd616a15a7804c615c4e1638b250cb709a85e1f219ae9ea03f8c4faa20374c1",
     "core/water/ext/58-core-water-mirror.js": "abf23c31ba18ba7f4890646bb539fa41652a3331977cc0c6ed6bcda9c646083f",
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
@@ -528,23 +531,23 @@
    "listings": {
     "biomes/catch/src": "34bfb62e51dcdd0c64f60f266ed3d78b5a58b63a26b9a87e5b808816fd3784ff",
     "biomes/catch/stations/lake": "ceb80754fedd650ee2223b7858c263e380baf56728549d76cc9f09ea669ba4d0",
-    "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
+    "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
     "kits/mechs": "54a0b7ef668394931f9b11510c2d35127f23a245ff15f5feb5dd237081028cbd",
-    "tools": "2d2fdaca850a104a2a2c553313ccb3ad18dc6bc48cb554c8c714fc1ca39607bf",
+    "tools": "24cc9a0d867a37d71596ec8a001087a35735c498125de4e336dde163318589d8",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/catch/dist/catch-lake.html": "496431701f71acb28a4826bf017c397749820fff6f4db2702636cf43d3129b4c"
+    "biomes/catch/dist/catch-lake.html": "95cf6ee26792d7f4a11cb72b1baecfa87861d0360d2eaeeb6fb642543ccd51a2"
    },
    "outputs_raw": {
-    "biomes/catch/dist/catch-lake.html": "496431701f71acb28a4826bf017c397749820fff6f4db2702636cf43d3129b4c"
+    "biomes/catch/dist/catch-lake.html": "95cf6ee26792d7f4a11cb72b1baecfa87861d0360d2eaeeb6fb642543ccd51a2"
    }
   },
   "build.py --station oasis": {
    "inputs": {
     "biomes/catch/KNOWN_ISSUES.md": "f2d81063a9d1fbeac6c12a42bbe80db24b5351988e8fcf8ca89c20a646d74be4",
     "biomes/catch/PORT.md": "5400e11ebf862d61dcabc7cc73f0c5ede3f72f0d3728153b5ff7bdf33a545476",
-    "biomes/catch/build.py": "64f9d01a29763088d86936ce6c96b796619c36662d0ad11c7cea48cf42a34c9d",
+    "biomes/catch/build.py": "9b38b4b6192af41cbea22093d05a4854516ae72b45c6f1d53c035abdcf619c55",
     "biomes/catch/src/45-host-scene.js": "44c82a47d92b43addcf4ba20e858f1c97d11a39e044bd2a316eb4ef8c3574526",
     "biomes/catch/src/45c-host-ground.js": "0d66eea66d9db1bb0599ef88252868a929fa4418403edd554730de217546ad6f",
     "biomes/catch/src/46-host-rock.js": "02620607c041928dbb0ac96de815e57a001e5e7a4531faed44b2e59427aa15ef",
@@ -678,7 +681,7 @@
     "core/shader/06b-core-kcolor.js": "ededfc6b8a1a8aae5bf3c6ab40863478f9beb8e1aaf2acf4ba9da25ef6392115",
     "core/shadow/10-core-shadow.js": "9fe58c9d540efd8bc94c12d0d164ed1f92888dc08df85ac9a9b455e2d346bd0a",
     "core/shadow/host/12-core-shadow-host.js": "dbcd74523c159e1702abb5fad1cb5ccc8a7a67a71bb8c45e2f363778fd856dc1",
-    "core/sockets/38-symbols.js": "cea0673f7b5bdc52886497f9a452fda756d4d17b0d2fd7e692bfcab5610822db",
+    "core/sockets/38-symbols.js": "ed5b3086d1034e1c289dd79bb816833cbcbcb11d0719f3a1eafc6c302de837b0",
     "core/space/20-core-space.js": "68068f0da30b9115d098604315be2364735b86833a6743ef4444e5e6adbe5780",
     "core/tags/50-core-tags.js": "5d506746c4b5142f76e932cbd798d4ba6926e3865919d7ecd6d39a16e4e5b882",
     "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
@@ -693,6 +696,7 @@
     "core/water/22-core-water-flow.js": "eab9b6ee42e8747dfd1082a1b6d76804b4659d5fd3a2b3d4bc1a566af13dbed7",
     "core/water/50-core-water-draw.js": "9b487271223b64c2935b3336667963139dddcc055b852ac4f0a1912b2a9dd7e0",
     "core/water/51-core-water-kinds.js": "e0c2edba19b476b4b46a4e08a63f0af695423d88b1da15b380795b2e4d07ead4",
+    "core/water/ext/56-core-water-breakup.js": "30c6de1a8913f7fa59ac92cd40526eb148d683b02dc31b6b521a3a768a2926bb",
     "core/water/ext/57-core-water-audit.js": "6dd616a15a7804c615c4e1638b250cb709a85e1f219ae9ea03f8c4faa20374c1",
     "core/water/ext/58-core-water-mirror.js": "abf23c31ba18ba7f4890646bb539fa41652a3331977cc0c6ed6bcda9c646083f",
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
@@ -708,16 +712,16 @@
    "listings": {
     "biomes/catch/src": "34bfb62e51dcdd0c64f60f266ed3d78b5a58b63a26b9a87e5b808816fd3784ff",
     "biomes/catch/stations/oasis": "ceb80754fedd650ee2223b7858c263e380baf56728549d76cc9f09ea669ba4d0",
-    "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
+    "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
     "kits/mechs": "54a0b7ef668394931f9b11510c2d35127f23a245ff15f5feb5dd237081028cbd",
-    "tools": "2d2fdaca850a104a2a2c553313ccb3ad18dc6bc48cb554c8c714fc1ca39607bf",
+    "tools": "24cc9a0d867a37d71596ec8a001087a35735c498125de4e336dde163318589d8",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/catch/dist/catch-oasis.html": "37cc031263718599ac8689744fcdf1bbee4b1631dbbdea5773a78c6cffcec9f7"
+    "biomes/catch/dist/catch-oasis.html": "7a8ff864ac76e61203fc57e77283764157895b2bba68bf38ddf97bc9992188f8"
    },
    "outputs_raw": {
-    "biomes/catch/dist/catch-oasis.html": "37cc031263718599ac8689744fcdf1bbee4b1631dbbdea5773a78c6cffcec9f7"
+    "biomes/catch/dist/catch-oasis.html": "7a8ff864ac76e61203fc57e77283764157895b2bba68bf38ddf97bc9992188f8"
    }
   }
  }

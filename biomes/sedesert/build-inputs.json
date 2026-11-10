@@ -139,7 +139,7 @@
     "core/water/ext/54b-core-water-kinds-ext-draw.js": "e5c69d41f55e2aaf3b285876491858e379d42f377ff37b0a70a7288ba7004b42",
     "core/water/ext/55-core-water-confluence.js": "2128f82bc419c3a2efbe16c4eb4b0a1a50557aa2b8f018778bf4e7d645b6cbcb",
     "core/water/ext/55b-core-water-confluence-draw.js": "a28ff05647a423d73bfa38cc2bb6b6870db967fdb22768015bc5d4a5cd19bc79",
-    "core/water/ext/56-core-water-breakup.js": "6da0151ca4469a677d0436267a53b2b9460bdd73261896886f242244872cbf5c",
+    "core/water/ext/56-core-water-breakup.js": "30c6de1a8913f7fa59ac92cd40526eb148d683b02dc31b6b521a3a768a2926bb",
     "kits/fauna/fauna-core.js": "c7acf79776905d200371271bfd9e634bed33d3f40fa215fc91a8189b7bc8d10c",
     "kits/fauna/krator-fauna-desert.js": "05d338574f70c20e8f67fefb923181e6ac1522db7683cd7a27e3353a50c13ad7",
     "kits/fauna/krator-fauna-runtime.js": "9e4b6ba0f3c429c4927a8371d6ee4d4c8a11c509644a938c437ce4f6fadf1a7d",
@@ -148,16 +148,16 @@
    "listings": {
     "biomes/sedesert": "8af05204edf03916eebce752ef0e657b865f4fa581df35b01e680bc82bc2168b",
     "biomes/sedesert/src": "a6da70ddc780ee444dcca50e34f0039527902b6429fe1cb32a01c70479155dc6",
-    "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
+    "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
     "kits/fauna": "15ddf75514bc2fb08858cc3e94a1fff2bf1cafb60c1014a7cdc4463763fb2e5c",
-    "tools": "2d2fdaca850a104a2a2c553313ccb3ad18dc6bc48cb554c8c714fc1ca39607bf",
+    "tools": "24cc9a0d867a37d71596ec8a001087a35735c498125de4e336dde163318589d8",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/sedesert/dist/sedesert.html": "fc88ad4110d2fe23a69d6abb9ce2e62b161d8dcd3df7a62a308e5645d9db4350"
+    "biomes/sedesert/dist/sedesert.html": "56604682c6267841d7a9496a1a4420bfdb8641ef9c9021200cc01ef6fe541d58"
    },
    "outputs_raw": {
-    "biomes/sedesert/dist/sedesert.html": "fc88ad4110d2fe23a69d6abb9ce2e62b161d8dcd3df7a62a308e5645d9db4350"
+    "biomes/sedesert/dist/sedesert.html": "56604682c6267841d7a9496a1a4420bfdb8641ef9c9021200cc01ef6fe541d58"
    }
   },
   "build.py --station bowl": {
@@ -324,7 +324,7 @@
     "core/water/ext/54b-core-water-kinds-ext-draw.js": "e5c69d41f55e2aaf3b285876491858e379d42f377ff37b0a70a7288ba7004b42",
     "core/water/ext/55-core-water-confluence.js": "2128f82bc419c3a2efbe16c4eb4b0a1a50557aa2b8f018778bf4e7d645b6cbcb",
     "core/water/ext/55b-core-water-confluence-draw.js": "a28ff05647a423d73bfa38cc2bb6b6870db967fdb22768015bc5d4a5cd19bc79",
-    "core/water/ext/56-core-water-breakup.js": "6da0151ca4469a677d0436267a53b2b9460bdd73261896886f242244872cbf5c",
+    "core/water/ext/56-core-water-breakup.js": "30c6de1a8913f7fa59ac92cd40526eb148d683b02dc31b6b521a3a768a2926bb",
     "kits/fauna/fauna-core.js": "c7acf79776905d200371271bfd9e634bed33d3f40fa215fc91a8189b7bc8d10c",
     "kits/fauna/krator-fauna-desert.js": "05d338574f70c20e8f67fefb923181e6ac1522db7683cd7a27e3353a50c13ad7",
     "kits/fauna/krator-fauna-runtime.js": "9e4b6ba0f3c429c4927a8371d6ee4d4c8a11c509644a938c437ce4f6fadf1a7d",
@@ -333,16 +333,16 @@
    "listings": {
     "biomes/sedesert/src": "a6da70ddc780ee444dcca50e34f0039527902b6429fe1cb32a01c70479155dc6",
     "biomes/sedesert/stations/bowl": "dfa6aaef3e3fffc83b9d3de44b9b03aedb920563a37e5aee146e0da45b010681",
-    "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
+    "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
     "kits/fauna": "15ddf75514bc2fb08858cc3e94a1fff2bf1cafb60c1014a7cdc4463763fb2e5c",
-    "tools": "2d2fdaca850a104a2a2c553313ccb3ad18dc6bc48cb554c8c714fc1ca39607bf",
+    "tools": "24cc9a0d867a37d71596ec8a001087a35735c498125de4e336dde163318589d8",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/sedesert/dist/sedesert-bowl.html": "efc5942e9b6376d71ba8982fdafa8a6bfccbec7ab34454af510ef08038476d65"
+    "biomes/sedesert/dist/sedesert-bowl.html": "1a5645123d3a9ac552d0bfcf32c1534ea059e88e70ce38450c2e04e88a1226b3"
    },
    "outputs_raw": {
-    "biomes/sedesert/dist/sedesert-bowl.html": "efc5942e9b6376d71ba8982fdafa8a6bfccbec7ab34454af510ef08038476d65"
+    "biomes/sedesert/dist/sedesert-bowl.html": "1a5645123d3a9ac552d0bfcf32c1534ea059e88e70ce38450c2e04e88a1226b3"
    }
   },
   "build.py --station mantis": {
@@ -519,7 +519,7 @@
     "core/water/ext/54b-core-water-kinds-ext-draw.js": "e5c69d41f55e2aaf3b285876491858e379d42f377ff37b0a70a7288ba7004b42",
     "core/water/ext/55-core-water-confluence.js": "2128f82bc419c3a2efbe16c4eb4b0a1a50557aa2b8f018778bf4e7d645b6cbcb",
     "core/water/ext/55b-core-water-confluence-draw.js": "a28ff05647a423d73bfa38cc2bb6b6870db967fdb22768015bc5d4a5cd19bc79",
-    "core/water/ext/56-core-water-breakup.js": "6da0151ca4469a677d0436267a53b2b9460bdd73261896886f242244872cbf5c",
+    "core/water/ext/56-core-water-breakup.js": "30c6de1a8913f7fa59ac92cd40526eb148d683b02dc31b6b521a3a768a2926bb",
     "kits/fauna/fauna-core.js": "c7acf79776905d200371271bfd9e634bed33d3f40fa215fc91a8189b7bc8d10c",
     "kits/fauna/krator-fauna-desert.js": "05d338574f70c20e8f67fefb923181e6ac1522db7683cd7a27e3353a50c13ad7",
     "kits/fauna/krator-fauna-runtime.js": "9e4b6ba0f3c429c4927a8371d6ee4d4c8a11c509644a938c437ce4f6fadf1a7d",
@@ -529,16 +529,16 @@
     "biomes/sedesert/src": "a6da70ddc780ee444dcca50e34f0039527902b6429fe1cb32a01c70479155dc6",
     "biomes/sedesert/stations/bowl": "dfa6aaef3e3fffc83b9d3de44b9b03aedb920563a37e5aee146e0da45b010681",
     "biomes/sedesert/stations/mantis": "4290396b982836fa9da798be40940d40194be05017d215e98343b2ef490d6fe6",
-    "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
+    "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
     "kits/fauna": "15ddf75514bc2fb08858cc3e94a1fff2bf1cafb60c1014a7cdc4463763fb2e5c",
-    "tools": "2d2fdaca850a104a2a2c553313ccb3ad18dc6bc48cb554c8c714fc1ca39607bf",
+    "tools": "24cc9a0d867a37d71596ec8a001087a35735c498125de4e336dde163318589d8",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/sedesert/dist/sedesert-mantis.html": "1d3a9b986e00f336c7b91c009d45a91803945894fae61ad7cb0984045cda966c"
+    "biomes/sedesert/dist/sedesert-mantis.html": "9c5fc0f72ad0001c385acbc4a6459f5f1f07ea8a445433c3281a4dbae2331e6e"
    },
    "outputs_raw": {
-    "biomes/sedesert/dist/sedesert-mantis.html": "1d3a9b986e00f336c7b91c009d45a91803945894fae61ad7cb0984045cda966c"
+    "biomes/sedesert/dist/sedesert-mantis.html": "9c5fc0f72ad0001c385acbc4a6459f5f1f07ea8a445433c3281a4dbae2331e6e"
    }
   },
   "build.py --station steppe": {
@@ -725,7 +725,7 @@
     "core/water/ext/54b-core-water-kinds-ext-draw.js": "e5c69d41f55e2aaf3b285876491858e379d42f377ff37b0a70a7288ba7004b42",
     "core/water/ext/55-core-water-confluence.js": "2128f82bc419c3a2efbe16c4eb4b0a1a50557aa2b8f018778bf4e7d645b6cbcb",
     "core/water/ext/55b-core-water-confluence-draw.js": "a28ff05647a423d73bfa38cc2bb6b6870db967fdb22768015bc5d4a5cd19bc79",
-    "core/water/ext/56-core-water-breakup.js": "6da0151ca4469a677d0436267a53b2b9460bdd73261896886f242244872cbf5c",
+    "core/water/ext/56-core-water-breakup.js": "30c6de1a8913f7fa59ac92cd40526eb148d683b02dc31b6b521a3a768a2926bb",
     "kits/fauna/fauna-core.js": "c7acf79776905d200371271bfd9e634bed33d3f40fa215fc91a8189b7bc8d10c",
     "kits/fauna/krator-fauna-desert.js": "05d338574f70c20e8f67fefb923181e6ac1522db7683cd7a27e3353a50c13ad7",
     "kits/fauna/krator-fauna-runtime.js": "9e4b6ba0f3c429c4927a8371d6ee4d4c8a11c509644a938c437ce4f6fadf1a7d",
@@ -736,16 +736,16 @@
     "biomes/sedesert/stations/bowl": "dfa6aaef3e3fffc83b9d3de44b9b03aedb920563a37e5aee146e0da45b010681",
     "biomes/sedesert/stations/mantis": "4290396b982836fa9da798be40940d40194be05017d215e98343b2ef490d6fe6",
     "biomes/sedesert/stations/steppe": "f298fecf44f60dc525a0f5b00ffc714b59699cbc34607fa2ddb45a4ec14a569d",
-    "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
+    "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
     "kits/fauna": "15ddf75514bc2fb08858cc3e94a1fff2bf1cafb60c1014a7cdc4463763fb2e5c",
-    "tools": "2d2fdaca850a104a2a2c553313ccb3ad18dc6bc48cb554c8c714fc1ca39607bf",
+    "tools": "24cc9a0d867a37d71596ec8a001087a35735c498125de4e336dde163318589d8",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/sedesert/dist/sedesert-steppe.html": "f8ad24b0c903c120c86eb0f806d0657faa5d903f4f3755a2045d94e7dca00f3d"
+    "biomes/sedesert/dist/sedesert-steppe.html": "6f7ce656fc08b700269aef54565fed8f244442d40806c55591da77942d3e9da9"
    },
    "outputs_raw": {
-    "biomes/sedesert/dist/sedesert-steppe.html": "f8ad24b0c903c120c86eb0f806d0657faa5d903f4f3755a2045d94e7dca00f3d"
+    "biomes/sedesert/dist/sedesert-steppe.html": "6f7ce656fc08b700269aef54565fed8f244442d40806c55591da77942d3e9da9"
    }
   }
  }

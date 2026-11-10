@@ -4,13 +4,14 @@
   "build.py": {
    "inputs": {
     "biomes/nsemiarid/PORT.md": "b637a33d34a19ea5edd746d50f37f3166c9c252c9a8527edd6f09880fbf11135",
+    "biomes/nsemiarid/build.py": "8c4d4c6d2417a49acf398968b00d90fb631f819e663d628d3654b7a9f9bb554e",
     "biomes/nsemiarid/src/00-head.html": "bbcd8a810a84dcb11b165552181c6a1cf5a078f6c2cd6c48d54ce957c22a5a88",
     "biomes/nsemiarid/src/45-host-scene.js": "29dd8ca0268ebdfa3154a333a983807ce42ea69da8df344405a205e74925466f",
     "biomes/nsemiarid/src/45c-host-ground.js": "86075c9c5b83976f95656396d5f1085b695bea28d0e420c903c216f48eeeae38",
     "biomes/nsemiarid/src/46-host-graphics.js": "42f4f48cab9c69f5d8b65ba1e9b8b3e90ad4817e5bd29146d7379b192cff1ebc",
-    "biomes/nsemiarid/src/50-biome-nsemiarid-species.js": "c83ec8d63a1e5ad4fd54a8bacea7244bf3a2b58dc993a0734753526dbf197eb1",
+    "biomes/nsemiarid/src/50-biome-nsemiarid-species.js": "5e8c9f944cf93678a3a91d3fb3c42aae188e01a593f003144d421e5296bd7883",
     "biomes/nsemiarid/src/55-biome-nsemiarid-trees.js": "68ee47a19843e9bacb26fa5da2ad7cc6f682c6ddf0460e28547f7007c5e3f7f6",
-    "biomes/nsemiarid/src/60-biome-nsemiarid-floor.js": "576399e928dcc897282a9299d08dc96f350774940edfd69a424962a074cfdf70",
+    "biomes/nsemiarid/src/60-biome-nsemiarid-floor.js": "cad60dd46af51d1e32a667b3e1373fb2176b6a28d8c72180809ee7e4e23a7c29",
     "biomes/nsemiarid/src/70-biome-nsemiarid.js": "7fd233ff843885d19133072ed3af5ef04628b36177c9d2c1275c8c17a62721d4",
     "biomes/nsemiarid/src/86-host-variants.js": "4e803d5ddfee167d64aa0aff96ed219dd4a695ea23e60b7271f5e5bf1ae47f0a",
     "biomes/nsemiarid/src/87-host-far.js": "f4f7f0417770a3c7dae64693e5fa5e36425e537749de62d9070f65430ff2c20c",
@@ -156,7 +157,7 @@
     "core/water/51-core-water-kinds.js": "e0c2edba19b476b4b46a4e08a63f0af695423d88b1da15b380795b2e4d07ead4",
     "core/water/ext/54-core-water-kinds-ext.js": "a7b5d500a917cb481a1d61d73e88c8236c57288bfad4726a9ae9635c49e2dcdf",
     "core/water/ext/54b-core-water-kinds-ext-draw.js": "e5c69d41f55e2aaf3b285876491858e379d42f377ff37b0a70a7288ba7004b42",
-    "core/water/ext/56-core-water-breakup.js": "6da0151ca4469a677d0436267a53b2b9460bdd73261896886f242244872cbf5c",
+    "core/water/ext/56-core-water-breakup.js": "30c6de1a8913f7fa59ac92cd40526eb148d683b02dc31b6b521a3a768a2926bb",
     "core/water/ext/57-core-water-audit.js": "6dd616a15a7804c615c4e1638b250cb709a85e1f219ae9ea03f8c4faa20374c1",
     "core/water/ext/58-core-water-mirror.js": "abf23c31ba18ba7f4890646bb539fa41652a3331977cc0c6ed6bcda9c646083f",
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
@@ -166,14 +167,14 @@
     "biomes/nsemiarid/src": "173e5867262fc2c4f83ebbbda13dbac2133fb9f4aa188ffb045de92fc885b6fb",
     "biomes/scablands": "38605e49c4d966b142c9699a386dc73a98c31be4f8cff84a86226fc89598c533",
     "biomes/scablands/src": "e3b594d881d2f8985e54b85700d571bbc47a1307382fd19c6ca29bbf2e14e3c5",
-    "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
-    "tools": "2d2fdaca850a104a2a2c553313ccb3ad18dc6bc48cb554c8c714fc1ca39607bf"
+    "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
+    "tools": "24cc9a0d867a37d71596ec8a001087a35735c498125de4e336dde163318589d8"
    },
    "outputs": {
-    "biomes/scablands/dist/coulee.html": "302149e5269da84125aaf0842862b1cf861b10d436658f68e79fc9d38d267fa7"
+    "biomes/scablands/dist/coulee.html": "c594656245957afce27e052d40565c9694f967e2613470c82037e03b5c7da9c9"
    },
    "outputs_raw": {
-    "biomes/scablands/dist/coulee.html": "302149e5269da84125aaf0842862b1cf861b10d436658f68e79fc9d38d267fa7"
+    "biomes/scablands/dist/coulee.html": "c594656245957afce27e052d40565c9694f967e2613470c82037e03b5c7da9c9"
    }
   }
  }

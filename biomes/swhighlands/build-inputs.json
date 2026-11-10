@@ -5,7 +5,7 @@
    "inputs": {
     "biomes/swhighlands/KNOWN_ISSUES.md": "f7a40713ca0531bb7b3a7a4adf19fef823709983bd08c0a138de7ea5decf9429",
     "biomes/swhighlands/PORT.md": "20ce084ed1fd20647eeec310040953953941b7d9da92018757cf34c047cf2a73",
-    "biomes/swhighlands/build.py": "102a0848d530caa5d00d65f99a811a888e0a22e630806d1dfb63b88f50236008",
+    "biomes/swhighlands/build.py": "78bbbf13e8a0a759fbf80b410699bfaecc9d2aa1289a945635982635d1fc717f",
     "biomes/swhighlands/src/00-head.html": "a7d45e268b3b2b7b2800f3935abf3e0f802aa419d4ce97fee713f97921e20e8d",
     "biomes/swhighlands/src/45-host-stage.js": "c3ccb7b984d21a7cd5c5e4145485f457444adb49fc113534d355cf053e165292",
     "biomes/swhighlands/src/47-host-land.js": "89a784d37431253ebbc5f53a3789d434ebbae39ac6b6a415f31eb0fe378d49a9",
@@ -128,26 +128,27 @@
     "core/water/51-core-water-kinds.js": "e0c2edba19b476b4b46a4e08a63f0af695423d88b1da15b380795b2e4d07ead4",
     "core/water/ext/55-core-water-confluence.js": "2128f82bc419c3a2efbe16c4eb4b0a1a50557aa2b8f018778bf4e7d645b6cbcb",
     "core/water/ext/55b-core-water-confluence-draw.js": "a28ff05647a423d73bfa38cc2bb6b6870db967fdb22768015bc5d4a5cd19bc79",
+    "core/water/ext/56-core-water-breakup.js": "30c6de1a8913f7fa59ac92cd40526eb148d683b02dc31b6b521a3a768a2926bb",
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
    },
    "listings": {
     "biomes/swhighlands": "4f4d5344eaaea58a1d764ee1ca78ed1d8108775c7bc3920ae9ece133c38c310a",
     "biomes/swhighlands/src": "60442b12b7a1ddab7f9b3086ef8fee642a99572a17d81b2310698306edc604f2",
-    "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
+    "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/swhighlands/dist/swhighlands.html": "c1e849a833ddd808aa16a3d099b0d6bb745df29f662bf559b61f5ffb85c62e0f"
+    "biomes/swhighlands/dist/swhighlands.html": "048ea18b2537c2276c63c50261b02baf9be41287c0e80baca6bf1f54288afc56"
    },
    "outputs_raw": {
-    "biomes/swhighlands/dist/swhighlands.html": "c1e849a833ddd808aa16a3d099b0d6bb745df29f662bf559b61f5ffb85c62e0f"
+    "biomes/swhighlands/dist/swhighlands.html": "048ea18b2537c2276c63c50261b02baf9be41287c0e80baca6bf1f54288afc56"
    }
   },
   "build.py --station pillars": {
    "inputs": {
     "biomes/swhighlands/KNOWN_ISSUES.md": "f7a40713ca0531bb7b3a7a4adf19fef823709983bd08c0a138de7ea5decf9429",
     "biomes/swhighlands/PORT.md": "20ce084ed1fd20647eeec310040953953941b7d9da92018757cf34c047cf2a73",
-    "biomes/swhighlands/build.py": "102a0848d530caa5d00d65f99a811a888e0a22e630806d1dfb63b88f50236008",
+    "biomes/swhighlands/build.py": "78bbbf13e8a0a759fbf80b410699bfaecc9d2aa1289a945635982635d1fc717f",
     "biomes/swhighlands/src/00-head.html": "a7d45e268b3b2b7b2800f3935abf3e0f802aa419d4ce97fee713f97921e20e8d",
     "biomes/swhighlands/src/50-biome-swhighlands-species.js": "c81196f13104efa0cf60a73a370c9a15e949059d7b0725b5ff5ffb4c964b8ca9",
     "biomes/swhighlands/src/55-biome-swhighlands-trees.js": "291d7f7daa3c0e172ecfb89b550c138b71aa595dd1442aab2f62e8d09e14ff3f",
@@ -271,26 +272,27 @@
     "core/water/51-core-water-kinds.js": "e0c2edba19b476b4b46a4e08a63f0af695423d88b1da15b380795b2e4d07ead4",
     "core/water/ext/55-core-water-confluence.js": "2128f82bc419c3a2efbe16c4eb4b0a1a50557aa2b8f018778bf4e7d645b6cbcb",
     "core/water/ext/55b-core-water-confluence-draw.js": "a28ff05647a423d73bfa38cc2bb6b6870db967fdb22768015bc5d4a5cd19bc79",
+    "core/water/ext/56-core-water-breakup.js": "30c6de1a8913f7fa59ac92cd40526eb148d683b02dc31b6b521a3a768a2926bb",
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
    },
    "listings": {
     "biomes/swhighlands/src": "60442b12b7a1ddab7f9b3086ef8fee642a99572a17d81b2310698306edc604f2",
     "biomes/swhighlands/stations/pillars": "706ec01a9b579415e54190b84eecea017d724a8276351195e99290a732259205",
-    "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
+    "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/swhighlands/dist/swhighlands-pillars.html": "eaceb0e2af009696f69a27cc5a43e75d258521eab7a18ace3cb395b0a91298cf"
+    "biomes/swhighlands/dist/swhighlands-pillars.html": "0356b1e0d096b9b6a57b6e01fb60805f6838aafcacaf13d96a119f78ebba6881"
    },
    "outputs_raw": {
-    "biomes/swhighlands/dist/swhighlands-pillars.html": "eaceb0e2af009696f69a27cc5a43e75d258521eab7a18ace3cb395b0a91298cf"
+    "biomes/swhighlands/dist/swhighlands-pillars.html": "0356b1e0d096b9b6a57b6e01fb60805f6838aafcacaf13d96a119f78ebba6881"
    }
   },
   "build.py --station pillars --preview span": {
    "inputs": {
     "biomes/swhighlands/KNOWN_ISSUES.md": "f7a40713ca0531bb7b3a7a4adf19fef823709983bd08c0a138de7ea5decf9429",
     "biomes/swhighlands/PORT.md": "20ce084ed1fd20647eeec310040953953941b7d9da92018757cf34c047cf2a73",
-    "biomes/swhighlands/build.py": "102a0848d530caa5d00d65f99a811a888e0a22e630806d1dfb63b88f50236008",
+    "biomes/swhighlands/build.py": "78bbbf13e8a0a759fbf80b410699bfaecc9d2aa1289a945635982635d1fc717f",
     "biomes/swhighlands/src/00-head.html": "a7d45e268b3b2b7b2800f3935abf3e0f802aa419d4ce97fee713f97921e20e8d",
     "biomes/swhighlands/src/50-biome-swhighlands-species.js": "c81196f13104efa0cf60a73a370c9a15e949059d7b0725b5ff5ffb4c964b8ca9",
     "biomes/swhighlands/src/55-biome-swhighlands-trees.js": "291d7f7daa3c0e172ecfb89b550c138b71aa595dd1442aab2f62e8d09e14ff3f",
@@ -417,19 +419,20 @@
     "core/water/51-core-water-kinds.js": "e0c2edba19b476b4b46a4e08a63f0af695423d88b1da15b380795b2e4d07ead4",
     "core/water/ext/55-core-water-confluence.js": "2128f82bc419c3a2efbe16c4eb4b0a1a50557aa2b8f018778bf4e7d645b6cbcb",
     "core/water/ext/55b-core-water-confluence-draw.js": "a28ff05647a423d73bfa38cc2bb6b6870db967fdb22768015bc5d4a5cd19bc79",
+    "core/water/ext/56-core-water-breakup.js": "30c6de1a8913f7fa59ac92cd40526eb148d683b02dc31b6b521a3a768a2926bb",
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
    },
    "listings": {
     "biomes/swhighlands/src": "60442b12b7a1ddab7f9b3086ef8fee642a99572a17d81b2310698306edc604f2",
     "biomes/swhighlands/stations/pillars": "706ec01a9b579415e54190b84eecea017d724a8276351195e99290a732259205",
-    "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
+    "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/swhighlands/dist/swhighlands-pillars-span.html": "b2b1cd5a9e5e5d6908a5fdd5060eaeed07c801500a04c6def0d2279a39a7bd33"
+    "biomes/swhighlands/dist/swhighlands-pillars-span.html": "02d29a40f287d646dfa808f429bffa415e5d802f4124ab4e142231237cf4f94d"
    },
    "outputs_raw": {
-    "biomes/swhighlands/dist/swhighlands-pillars-span.html": "b2b1cd5a9e5e5d6908a5fdd5060eaeed07c801500a04c6def0d2279a39a7bd33"
+    "biomes/swhighlands/dist/swhighlands-pillars-span.html": "02d29a40f287d646dfa808f429bffa415e5d802f4124ab4e142231237cf4f94d"
    }
   },
   "build.py --station treeline": {
@@ -467,7 +470,7 @@
     "biomes/ehighlands/tex/stone.basalt.albedo.webp": "0058a7c75db23a735260b0c2f0627e87625469312879e58da9cd641148c54f60",
     "biomes/swhighlands/KNOWN_ISSUES.md": "f7a40713ca0531bb7b3a7a4adf19fef823709983bd08c0a138de7ea5decf9429",
     "biomes/swhighlands/PORT.md": "20ce084ed1fd20647eeec310040953953941b7d9da92018757cf34c047cf2a73",
-    "biomes/swhighlands/build.py": "102a0848d530caa5d00d65f99a811a888e0a22e630806d1dfb63b88f50236008",
+    "biomes/swhighlands/build.py": "78bbbf13e8a0a759fbf80b410699bfaecc9d2aa1289a945635982635d1fc717f",
     "biomes/swhighlands/src/00-head.html": "a7d45e268b3b2b7b2800f3935abf3e0f802aa419d4ce97fee713f97921e20e8d",
     "biomes/swhighlands/src/50-biome-swhighlands-species.js": "c81196f13104efa0cf60a73a370c9a15e949059d7b0725b5ff5ffb4c964b8ca9",
     "biomes/swhighlands/src/55-biome-swhighlands-trees.js": "291d7f7daa3c0e172ecfb89b550c138b71aa595dd1442aab2f62e8d09e14ff3f",
@@ -592,19 +595,20 @@
     "core/water/51-core-water-kinds.js": "e0c2edba19b476b4b46a4e08a63f0af695423d88b1da15b380795b2e4d07ead4",
     "core/water/ext/55-core-water-confluence.js": "2128f82bc419c3a2efbe16c4eb4b0a1a50557aa2b8f018778bf4e7d645b6cbcb",
     "core/water/ext/55b-core-water-confluence-draw.js": "a28ff05647a423d73bfa38cc2bb6b6870db967fdb22768015bc5d4a5cd19bc79",
+    "core/water/ext/56-core-water-breakup.js": "30c6de1a8913f7fa59ac92cd40526eb148d683b02dc31b6b521a3a768a2926bb",
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
    },
    "listings": {
     "biomes/swhighlands/src": "60442b12b7a1ddab7f9b3086ef8fee642a99572a17d81b2310698306edc604f2",
     "biomes/swhighlands/stations/treeline": "28496528f101eb7c97ff44e904f6e1888ac84dea6e2e2753547260b3e822b3bd",
-    "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
+    "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/swhighlands/dist/swhighlands-treeline.html": "5b1bf238dc8f1fc71b99685ddeb9473df273932b03b9872c7da912d2e604bb26"
+    "biomes/swhighlands/dist/swhighlands-treeline.html": "e0400f798076e34a61f53d784bcabe563bc50ae46fd0d713e25fee575df73ec3"
    },
    "outputs_raw": {
-    "biomes/swhighlands/dist/swhighlands-treeline.html": "5b1bf238dc8f1fc71b99685ddeb9473df273932b03b9872c7da912d2e604bb26"
+    "biomes/swhighlands/dist/swhighlands-treeline.html": "e0400f798076e34a61f53d784bcabe563bc50ae46fd0d713e25fee575df73ec3"
    }
   }
  }
