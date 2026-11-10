@@ -1748,9 +1748,12 @@ function KCharFigure(body, sliders, load){
       var Hm = rtW.setFromMatrixPosition(rtS.copy(inv[byName.Hips]).invert()), Hw = rtU.setFromMatrixPosition(bones[byName.Hips].matrixWorld);
       F.set(fz, 0, fx, 0, 0, fs, 0, 0, -fx, 0, fz, 0, 0, 0, 0, 1);
       rtX.copy(Hm).applyMatrix4(F); F.setPosition(Hw.x - rtX.x, Hw.y - rtX.y, Hw.z - rtX.z);
-      var off = rtX.copy(ch.p[0]).applyMatrix4(F).negate().add(ch.tw[0]), y0 = ch.p[0].y, hy = Hm.y, span = Math.max(1e-4, y0 - hy, off.length() * 3.5);
+      // (the fade runs to the hips whatever the offset's size: widened to 3.5 x the offset, the rows below the hips
+      // carried a far-flung root's offset too and a robe's lower rows swept through the legs; the bisection in
+      // REVIEW-GARMENTS-2026-11-06.md, section 6, the Beast Rider and Hykkousoi nobles' "inside" doubled)
+      var off = rtX.copy(ch.p[0]).applyMatrix4(F).negate().add(ch.tw[0]), y0 = ch.p[0].y, hy = Hm.y;
       for(var k = 1; k < ch.p.length; k++){
-        var fk = THREE.MathUtils.clamp(1 - (y0 - ch.p[k].y) / span, 0, 1);
+        var fk = THREE.MathUtils.clamp((ch.p[k].y - hy) / Math.max(1e-4, y0 - hy), 0, 1);
         (ch.tw[k] = ch.tw[k] || new THREE.Vector3()).copy(ch.p[k]).applyMatrix4(F).addScaledVector(off, fk);
       }
     }

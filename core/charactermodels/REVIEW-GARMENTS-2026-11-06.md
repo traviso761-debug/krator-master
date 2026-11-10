@@ -317,3 +317,97 @@ The plan takes sections 1 to 3 above whole. What to change before acting on it:
   Hykkousoi, Beast Rider and Republic ones. Not applied. The "under" regressions against the baseline (the Izani
   peasant 0 to 3616 in motion, the Beast Rider trade 55 to 4341 at rest) want their own bisection over the round-5
   commits, outfit by outfit, with the page copies the sweeps used.
+- **The bisection, first two steps (2026-11-09).** Pages assembled from a commit's `src/` and `data/` (pieces shared
+  from the current build; the assembler reproduces the committed page byte for byte), swept with today's audit on the
+  66. The baseline commit's own page (644bea198) reproduces the stored baseline ("under" in motion 64889 to 59529 px,
+  at rest 14519 to 13455): the audit's method is not the cause. Gemini's checkpoint (dd244ac22) is the step: against
+  the baseline commit, "under" 186660 to 315755 px (+69 %), "inside" 806234 to 971226 (+20 %), skin 15064 to 24785,
+  113 outfit-class rows worse (the Yuni peasants' "under" 0 to 53652 and 0 to 34425, the Beast Rider noble man's
+  "inside" 27009 to 61589, the Free Giant warrior's 12565 to 30804) against 47 better (the Dalab nobles' "inside"
+  56785 to 20252 and 37978 to 15388, the Chichani trade's "under" 7418 to 1827). The commits after it recover part
+  ("under" 315755 to 271462, "inside" to 796283). Next: the checkpoint's code with the baseline's data, and the reverse,
+  to tell the shader and chain code from the rewritten kits.
+- **The regression split by outfit.** Nine of the 66 outfits changed their garments at the checkpoint (`peoples.json`):
+  the six Yuni outfits wear Gemini's new pieces (bush shirt, duster, trousers, boots, akubra) in place of the boubous,
+  wrappers and sandals, the Dalab nobles gained a type, the Xanadu town woman a cap. The Yuni's new garments alone
+  carry "under" from 1235 to 95269 px (the trousers under the bush shirt and duster: a hide mask, not a push) and
+  "inside" from 33139 to 68519: new garments' defects, not a regression of old ones, and they are the whole of the
+  set-wide "under" rise. Over the other 60 outfits the current build is better than the baseline commit on "under"
+  (185425 to 176574) and "inside" (773095 to 726040), level on skin, and worse on "hole" (66661 to 78275); the
+  checkpoint had put them to 220486 / 902707 / 23646 skin, and the commits after it brought them back. What stays worse
+  on unchanged garments: the Beast Rider nobles' "inside" (man 27009 to 54974, woman 25290 to 40520), the Hykkousoi
+  nobles' (10240 to 28846, 15191 to 27327), the Hykkousoi trade woman's "under" (2199 to 12527), the Free Giant chief's
+  "inside" (56723 to 68277). The checkpoint also rewrote 82 existing kit entries' hide masks (`hide`, `hides`); the
+  code-against-data sweeps say which side those belong to.
+- **The code, not the kits.** The checkpoint's code on the baseline commit's kits reproduces every outfit that stays
+  worse (the Beast Rider noble man's "inside" 27009 to 61676, with the checkpoint's kits 61589; the Hykkousoi trade
+  woman's "under" 2199 to 17052, with the kits 18112; the Free Giant warrior's "inside" 12565 to 30804 either way).
+  Over the 60 unchanged outfits the code alone takes "under" 185425 to 222117 and "inside" 773095 to 960714; the
+  rewritten hide masks move "hole" (68654 to 81484) and little else. The checkpoint's `50-figure.js` diff is 55 hunks;
+  next, two page copies from the baseline's page with hunk groups applied (`hunks_at.py`, which rebuilds the
+  checkpoint's fragment exactly from all 55): the chain code (placeChains, clothStep, collide, rigidTargets, footFace,
+  afterClip: hunks 13-35, 53-55) and the push shader with its uniforms (hunks 1, 7-8, 36-52).
+- **The reverse split confirms it.** The baseline's code on the checkpoint's kits is better than the baseline commit
+  on the 60 unchanged outfits (skin 14011 to 7651 px, "inside" 773095 to 716874, "under" level at 183040): Gemini's
+  rewritten hide masks are a gain, except the Hykkousoi trade pair's "hole" (169 to 6930 and 352 to 6616: a mask that
+  hides too much) and the Beast Rider trade woman's "under" (344 to 2692). The Yuni's new garments carry their own
+  "under" (1235 to 94701) on either code. So every regression on an unchanged garment is in the checkpoint's
+  `50-figure.js`, and the hide masks owe two fixes of their own (the Hykkousoi trade's hole, the Yuni trousers).
+- **The chain code carries most of it.** The checkpoint's chain hunks alone (placeChains, clothStep, collide,
+  rigidTargets, footFace, afterClip) on the baseline's page take the 60 unchanged outfits' "inside" from 773095 to
+  916275 px of the whole code's 960714, and "under" 185425 to 197777 of 222117: the Hykkousoi nobles' doubling is all
+  theirs (10240 to 21979, 15191 to 27957), the Free Giant chief's (56723 to 78232) and half the Beast Rider noble
+  man's (27009 to 42623 of 61676). The Hykkousoi trade woman's "under" (2199 to 2599 of 17052), the Beast Rider
+  peasant's and the Free Giant warrior's "inside" wait on the shader half. Next, the chain hunks in three: the row
+  clamp with the second collide pass and the ring constraint (hunk 26), the capsules and collide (19-21, 27-34), the
+  rest (upCrest, the layer sort, the heading span, the breeze, footFace, the step order).
+- **The shader half does not stand alone.** The checkpoint's shader hunks on the baseline's chain code put "inside"
+  at 2039096 px on the 60 (the Republic festival peasant woman 9743 to 118615, the Order novice 2679 to 100347) and
+  "hole" at 133490: the shader's new terms (the layered pad `l0`, `cflap`, `cloose`, the hull at rest, the capsule
+  tiers) were written against the checkpoint's chain code and are wrong without it, so the two halves are not
+  additive and the shader's own share cannot be read this way. What the shader alone does show is the gains the
+  checkpoint made: the Free Giants' and the Dalab noble's "under" (10441 to 699, 5121 to 18) and the Dalab noble's
+  skin (4624 to 0). The chain hunks stand on their own (b1j had no such blow-up), so the three-way split of the chain
+  code goes ahead; the shader is bisected after, on top of the whole chain code.
+- **The chain code in three, two measured.** The row clamp with its second collide pass and the ring constraint
+  (hunk 26) alone: "inside" 773095 to 840048 on the 60, almost all of it the Dalab noble woman (37978 to 77767) and
+  the giants (the chief 56723 to 66754), against the chief's "under" 10441 to 4223 and the Dalab noble's 5121 to 1770.
+  The capsules and collide (hunks 19-21, 27-34) alone: "inside" to 836182 and "under" 185425 to 213819 (the Izani
+  trade man's "inside" 33366 to 42381, the Republic noble woman's "under" 4306 to 10238, the Chichani trade woman's
+  2240 to 7901), against the Chichani noble man's "inside" 21867 to 17539. Neither moves the Hykkousoi nobles or the
+  Beast Rider nobles, whose "inside" doubling is the chain code's largest item: it is in the third group (upCrest, the
+  layer sort, the heading span, the breeze, footFace, the step order), sweeping now and split six ways after.
+- **The third group confirmed.** Those hunks alone (13-18, 22-25, 35, 53-55) take the Beast Rider nobles' "inside"
+  27009 to 39614 and 25290 to 36080, the Hykkousoi nobles' 15191 to 25142 and 10240 to 17633, the Izani noble man's
+  21821 to 37425 and the Republic noble woman's "under" 4306 to 10582; on the 60, "inside" 773095 to 837401, "under"
+  185425 to 200685, skin down (14011 to 12491). Split six ways, one sweep each: the layer sort of the items (18), the
+  heading span (16-17), upCrest (14, 15, 24, 25, 35), the breeze (22-23), the step order (55), SLOT_RANK with footFace
+  and the toes (13, 53, 54).
+- **Found: the heading span (hunks 16-17, `rigidTargets`).** In the baseline a chain row's share of its root's rigid
+  offset fell from 1 at the root to 0 at the hips (`fk = (p.y - hy) / (y0 - hy)`); the checkpoint widened the span to
+  `max(y0 - hy, 3.5 x |off|)`, so when the root is carried far from its rest, the rows below the hips carry the
+  offset too, and a robe's lower rows are swept through the legs. Those two hunks alone on the baseline's page give the
+  whole group's "inside" (841219 of 837401 on the 60) and every noble doubling (the Beast Rider noble man 27009 to
+  42100, the woman 25290 to 37343, the Hykkousoi noble man 15191 to 23613, the Izani noble man 21821 to 35132, the
+  Republic festival noble woman 17791 to 29238), with two gains (the Dalab noble woman's "inside" 37978 to 28196, the
+  Free Giant chief's "under" 10441 to 5852). The layer sort alone (hunk 18) changes nothing (773095 to 773696). Next:
+  the current page with the baseline's formula restored, measured against the reference sweep.
+- **Two more of the six, null.** upCrest (hunks 14, 15, 24, 25, 35) alone changes nothing on the 60 (773095 to
+  772687). The breeze (22-23) alone is noise either way (the Republic noble woman's "under" 4306 to 8964, the Beast
+  Rider peasant man's 4006 to 1527): it is already gone from the current build. The step order and SLOT_RANK with
+  footFace are still to come, then the restored span on the current page.
+- **The last two of the six, null.** The step order (hunk 55: the cloth stepped after the tail and jaw) changes
+  nothing (773095 to 772944). SLOT_RANK with footFace and the toes (13, 53, 54) is small and mixed (the Republic
+  festival trade woman's "under" 6960 to 9027 against the Hykkousoi trade man's 8660 to 6674). So of the checkpoint's
+  chain code, the heading span is the one regression that matters; the row clamp and the collide changes are the two
+  smaller, mixed ones (hunks 26 and 19-21, 27-34, each a few per cent on "inside" or "under").
+- **The span restored on the current build, measured and applied (2026-11-09).** The current page with the
+  baseline's fade (to the hips, whatever the offset's size), against the reference sweep on the 66: "inside" 796283 to
+  703894 px (-12 %), "under" 271462 to 257655 (-5 %), "hole" level, skin 15218 to 17553 (+15 %, spread over small
+  rows: the Chichani noble woman 0 to 2402 is the largest). Every noble is back at its baseline figure: the Beast Rider
+  noble man's "inside" 54974 to 27038 (baseline 27009), the woman's 40520 to 22646, the Hykkousoi nobles' 28846 to 10920
+  and 27327 to 12155, the Izani noble man's 19004 to 10773, the Chichani noble man's 17416 to 11025; the Izani trade
+  woman's "under" 4761 to 0, the Free Giant warrior's 4622 to 406. Worse: the Free Giant warrior's "inside" 13543 to
+  19861, the Order monk's 4287 to 8714, the Beast Rider peasant man's "under" 4541 to 7621, the Republic noble woman's
+  2211 to 5263. Over the 60 unchanged outfits the build now stands at "inside" 633651 against the round-4 baseline
+  commit's 773095 and "under" 162767 against 185425. Applied in both runtimes (`rigidTargets`, `kchar_figure.gd`).

@@ -1801,9 +1801,9 @@ func _rigid(ch: Dictionary) -> Transform3D:
 		F = Transform3D(hb, _gp(hi).origin - hb * hm)
 		var off: Vector3 = (tw[0] as Vector3) - F * (ch["p"][0] as Vector3)
 		var y0: float = (ch["p"][0] as Vector3).y
-		var span := maxf(maxf(1e-4, y0 - hm.y), off.length() * 3.5)
+		# (the fade runs to the hips whatever the offset's size: rigidTargets in 50-figure.js)
 		for k in range(1, tw.size()):
-			var fk := clampf(1.0 - (y0 - (ch["p"][k] as Vector3).y) / span, 0.0, 1.0)
+			var fk := clampf(((ch["p"][k] as Vector3).y - hm.y) / maxf(1e-4, y0 - hm.y), 0.0, 1.0)
 			tw[k] = F * (ch["p"][k] as Vector3) + off * fk
 	ch["tw"] = tw
 	# the root joint where its point is

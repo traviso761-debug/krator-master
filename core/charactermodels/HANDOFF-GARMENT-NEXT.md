@@ -65,9 +65,21 @@ none is applied:
 - an open part's two lips held to 1.2 x their rest distance (issue 12): mixed (skin down 12 %, six outfits worse), the
   owner's call on a shot sheet of the ten affected outfits;
 - the hull on chained garments gated by the stride again (round 5's gate): worse, rejected.
-The reference build is worse than the round-4 baseline on "under" for several outfits outside the Chichani (the Izani
-peasant 0 to 3616 px in motion, the Beast Rider trade 55 to 4341 at rest): the next step is a bisection over the
-round-5 commits, one page copy per commit, run through the audit with `--known` and compared outfit by outfit.
+The bisection of the round-5 commits (2026-11-09, the review's section 6) found the one regression that mattered:
+Gemini's checkpoint widened the fade of a chain root's rigid offset in `rigidTargets` from "to the hips" to "3.5 x the
+offset", which swept robes' lower rows through the legs (the Beast Rider and Hykkousoi nobles' "inside" doubled).
+Restored in both runtimes: on the 66, "inside" -12 %, "under" -5 %, every noble back at its baseline figure. The set-wide
+"under" rise against the round-4 baseline was never a regression: six Yuni outfits changed to Gemini's new garments
+at the checkpoint, and their trousers show under the new shirts and dusters (a hide mask). Two kit fixes are owed from
+the same bisection: the Yuni trousers' mask, and the Hykkousoi trade pair's mask, which hides too much ("hole" 169 to
+6930). Two smaller, mixed chain changes from the checkpoint remain as they are (the row clamp with its second collide
+pass, hunk 26 of the checkpoint's `50-figure.js` diff; the collide and capsule changes, hunks 19-21 and 27-34): each
+a few per cent on "inside" or "under" either way, not worth a revert without a shot sheet.
+
+The bisection's method, for the next one: a page assembled from any commit's `src/` and `data/` (pieces shared;
+`page_at.py` in the session scratch reproduced the committed page byte for byte), then page copies of the baseline
+with chosen hunks of the diff applied (`hunks_at.py`), each swept with `--known` and compared outfit by outfit. The
+shader hunks could not be measured apart from the chain hunks (they were written against them); the chain hunks could.
 
 ## Left after that
 
