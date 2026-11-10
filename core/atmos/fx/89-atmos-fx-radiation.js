@@ -7,7 +7,7 @@
 // That number times the zone's strength is ADDED to the pixel in the zone's colour: nothing is ever darkened or hidden, a wall
 // inside the zone stops the sum at the wall (so near things glow less than the air behind them), and from far off the whole
 // chord shows: a soft warm dome on the land. The shimmer is a slow wavering of the glow itself, rising, in bands a few to a zone.
-//   ATMOS.radiation({zones: [{x, y, z, r, strength (.16), shimmer (.35), pulse (.15: the glow swells and ebbs by this share, a slow breath of about 6 s with a slower one under it, each zone out of step)}] (at most 4), colour (display [1, .62, .25])}) -> R
+//   ATMOS.radiation({zones: [{x, y, z, r, strength (.16), shimmer (.35), pulse (.3: the zone breathes IN AND OUT: its glow swells and ebbs by this share and its edge moves out and back by half of it, a breath of about 6 s with a slower one under it, each zone out of step; the shimmer's rings swing out and in with it, nothing travels upward)}] (at most 4), colour (display [1, .62, .25])}) -> R
 //       R.zones (edit a zone and call R.set()), R.k (a master strength, 1: fade it in and out), R.on(material), R.off
 //   ATMOS.radiationScene(scene)   every lit material with fog on takes the glow, once (as heightFogScene): its fragments add the
 //                                 chord up to themselves. The sky behind a zone takes it from a shell the call draws at the far
@@ -20,7 +20,7 @@
 //   ATMOS.radiationHaze({renderer, amp (.006 of the screen's height at full), speed (1.2), scale (38: the waver's cells across the
 //                         screen)}) -> H   TRUE HEAT HAZE (the owner, 2026-11-10: "try it like a true bent light heat haze"): a
 //       post pass. H.draw(render, camera, dt): `render` draws the page's frame as usual (it lands in H's target, with depth); each
-//       pixel then takes its colour from a little beside and below itself, the offset wavering upward, by how much zone air its ray
+//       pixel then takes its colour from a little beside itself, the offset swinging to and fro and swelling with the breath, by how much zone air its ray
 //       crosses up to what it shows (ATMOS.radHazeK: the zones' shimmer x chord, summed, capped at 1; the sky the whole chord). So
 //       the land and sky BEHIND a zone swim, things in front of it hold still, and it reads from as far as the zone does. H.k
 //       {value} is a master strength. The target is not multisampled (the shimmer pass's note). H.setSize, H.dispose
@@ -35,7 +35,7 @@
   const h=Math.sqrt(R2-d2),s0=Math.max(-b-h,0)+b,s1=Math.min(-b+h,L)+b;if(s1<=s0)return 0;return((1-d2/R2)*(s1-s0)-(s1*s1*s1-s0*s0*s0)/(3*R2))/(4/3*z.r);};
  A.radGlow=(ro,rd,L,zones)=>zones.reduce((s,z)=>s+(z.strength==null?.16:z.strength)*A.radChord(ro,rd,L,z),0);
  A.radHazeK=(ro,rd,L,zones)=>Math.min(1,zones.reduce((s,z)=>s+(z.shimmer==null?.35:z.shimmer)*A.radChord(ro,rd,L,z),0)*2);
- A.radPulse=(t,pulse,i)=>1+(pulse==null?.15:pulse)*(.65*Math.sin(t*1.1+i*2.1)+.35*Math.sin(t*.43+i*2.1*2.3));   /* the twin of the chunk's pulse: zone i's factor at t seconds */
+ A.radPulse=(t,pulse,i)=>1+(pulse==null?.3:pulse)*(.65*Math.sin(t*1.1+i*2.1)+.35*Math.sin(t*.43+i*2.1*2.3));   /* the twin of the chunk's pulse: zone i's factor at t seconds */
  A.radAt=(zones,x,y,z)=>zones.reduce((m,q)=>{const dx=x-q.x,dy=y-(q.y==null?0:q.y),dz=z-q.z;return Math.max(m,q.r>0?Math.max(0,1-(dx*dx+dy*dy+dz*dz)/(q.r*q.r)):0);},0);
  A.radiationHeat=(zones,o)=>{o=o||{};const cell=o.cell==null?8:o.cell,t0=o.t0==null?25:o.t0,t1=o.t1==null?70:o.t1;let x0=1e9,z0=1e9,x1=-1e9,z1=-1e9;
   for(const q of zones){x0=Math.min(x0,q.x-q.r);z0=Math.min(z0,q.z-q.r);x1=Math.max(x1,q.x+q.r);z1=Math.max(z1,q.z+q.r);}
@@ -48,17 +48,18 @@
   /* atmRadZ: a zone's centre and radius (0: none); atmRadK: its strength, its shimmer, its pulse (0..1 of the strength), the pulse's phase; atmRadC: the glow, display RGB; atmRadT: seconds */
   'float atmRadChord(vec3 ro,vec3 rd,float L,vec4 z){vec3 oc=ro-z.xyz;float b=dot(oc,rd),d2=dot(oc,oc)-b*b,R2=z.w*z.w;if(z.w<=0.0||d2>=R2)return 0.0;',
   ' float h=sqrt(R2-d2),s0=max(-b-h,0.0)+b,s1=min(-b+h,L)+b;if(s1<=s0)return 0.0;return ((1.0-d2/R2)*(s1-s0)-(s1*s1*s1-s0*s0*s0)/(3.0*R2))/(1.3333333*z.w);}',
-  'float atmRadShim(vec3 q,float t){return sin(q.x*5.0+1.7*sin(q.y*7.0-t*1.1)+t*0.3)*sin(q.z*4.6+q.y*9.0-t*1.6);}',
-  'float atmRadOne(vec3 ro,vec3 rd,float L,int i){vec4 z=atmRadZ[i];float c=atmRadChord(ro,rd,L,z);if(c<=0.0)return 0.0;',
-  ' vec3 pm=ro+rd*clamp(-dot(ro-z.xyz,rd),0.0,L);float pu=1.0+atmRadK[i].z*(0.65*sin(atmRadT*1.1+atmRadK[i].w)+0.35*sin(atmRadT*0.43+atmRadK[i].w*2.3));return atmRadK[i].x*pu*c*(1.0+atmRadK[i].y*atmRadShim((pm-z.xyz)/z.w,atmRadT));}',
+  /* the shimmer: rings about the zone's centre that swell out and draw back in (their phase swings, it does not travel), broken round the compass */
+  'float atmRadShim(vec3 q,float t,float ph){float r=length(q);return sin(r*11.0-2.6*sin(t*0.9+ph))*(0.6+0.4*sin(q.x*4.0+q.z*3.3+q.y*2.1));}',
+  'float atmRadOne(vec3 ro,vec3 rd,float L,int i){vec4 z=atmRadZ[i];float pw=0.65*sin(atmRadT*1.1+atmRadK[i].w)+0.35*sin(atmRadT*0.43+atmRadK[i].w*2.3);z.w*=1.0+0.5*atmRadK[i].z*pw;float c=atmRadChord(ro,rd,L,z);if(c<=0.0)return 0.0;',
+  ' vec3 pm=ro+rd*clamp(-dot(ro-z.xyz,rd),0.0,L);float pu=1.0+atmRadK[i].z*pw;return atmRadK[i].x*pu*c*(1.0+atmRadK[i].y*atmRadShim((pm-z.xyz)/z.w,atmRadT,atmRadK[i].w));}',
   'vec3 atmRad(vec3 ro,vec3 rd,float L){float g=0.0;for(int i=0;i<'+A.RAD_MAX+';i++)g+=atmRadOne(ro,rd,L,i);return atmRadC*g;}',
   'float atmRadHazeK(vec3 ro,vec3 rd,float L){float k=0.0;for(int i=0;i<'+A.RAD_MAX+';i++)k+=atmRadK[i].y*atmRadChord(ro,rd,L,atmRadZ[i]);return min(1.0,k*2.0);}',
   '#endif'].join('\n');
  A.radiation=function(o){o=o||{};const T=A.T,U=A.U,N=A.RAD_MAX;
   U.radZ={value:Array.from({length:N},()=>new T.Vector4())};U.radK={value:Array.from({length:N},()=>new T.Vector4())};U.radC={value:new T.Vector3()};U.radT={value:0};
-  const R=A.rad={zones:(o.zones||[]).slice(0,N).map(z=>Object.assign({y:0,strength:.16,shimmer:.35,pulse:.15},z)),colour:o.colour||[1,.62,.25],k:1,off:false,shells:[]};
+  const R=A.rad={zones:(o.zones||[]).slice(0,N).map(z=>Object.assign({y:0,strength:.16,shimmer:.35,pulse:.3},z)),colour:o.colour||[1,.62,.25],k:1,off:false,shells:[]};
   R.set=()=>{for(let i=0;i<N;i++){const z=R.zones[i],on=z&&!R.off;U.radZ.value[i].set(on?z.x:0,on?z.y:0,on?z.z:0,on?z.r:0);U.radK.value[i].set(on?z.strength*R.k:0,on?z.shimmer:0,on?z.pulse:0,i*2.1);
-    const s=R.shells[i];if(s){s.visible=!!on;if(on){s.position.set(z.x,z.y,z.z);s.scale.setScalar(z.r);}}}
+    const s=R.shells[i];if(s){s.visible=!!on;if(on){s.position.set(z.x,z.y,z.z);s.scale.setScalar(z.r*(1+.5*z.pulse)+1);}}}
    U.radC.value.set(R.colour[0],R.colour[1],R.colour[2]);return R;};
   R.on=m=>A.radiationOn(m);
   /* the sky's share: a shell a zone at the far plane, drawn after the world, so it shows only where nothing else was drawn */
@@ -83,8 +84,9 @@
     /* how much zone air lies between the eye and what this pixel shows (the sky: the whole chord) */
     'float hzK(vec2 uv){float d=texture2D(tD,uv).x;vec4 v=uInvP*vec4(uv*2.0-1.0,min(d,0.99999)*2.0-1.0,1.0);v/=v.w;vec3 w=(uCam*vec4(v.xyz,1.0)).xyz-uEye;float L=length(w);return atmRadHazeK(uEye,w/max(L,1e-4),d>=0.99999?1e9:L);}',
     'void main(){float k=hzK(vUv)*uK;vec4 c=texture2D(tC,vUv);',
-    ' if(k>0.0){vec2 p=vec2(vUv.x*uAmp.w,vUv.y)*uAmp.z;vec2 q=vec2(hzN(p+vec2(0.0,-uT*uAmp.y*3.0))-0.5,hzN(p*1.7+vec2(5.2,-uT*uAmp.y*4.1))-0.5);',
-    '  vec2 uv2=vUv+vec2(q.x,q.y*0.7-0.15)*uAmp.x*k*2.0;float k2=hzK(uv2)*uK;if(k2>0.0)c=texture2D(tC,mix(vUv,uv2,min(1.0,k2/k)));}',   /* never pull in a pixel that stands in front of the zone */
+    /* the bend swings to and fro and swells and ebbs with the breath: no upward drift */
+    ' if(k>0.0){vec2 p=vec2(vUv.x*uAmp.w,vUv.y)*uAmp.z;float w=uT*uAmp.y;vec2 q=vec2(hzN(p+0.55*vec2(sin(w*0.9),cos(w*0.7)))-0.5,hzN(p*1.7+vec2(5.2,0.0)+0.55*vec2(cos(w*0.8),sin(w*1.1)))-0.5);',
+    '  vec2 uv2=vUv+q*uAmp.x*k*2.0*(0.65+0.35*sin(w*0.9));float k2=hzK(uv2)*uK;if(k2>0.0)c=texture2D(tC,mix(vUv,uv2,min(1.0,k2/k)));}',   /* never pull in a pixel that stands in front of the zone */
     ' gl_FragColor=c;}'].join('\n')});
   const quad=new T.Mesh(new T.PlaneGeometry(2,2),m),cam=new T.OrthographicCamera(-1,1,1,-1,0,1),post=new T.Scene();quad.frustumCulled=false;post.add(quad);
   const setSize=(w,h)=>{rt.setSize(w,h);rt.depthTexture.image.width=w;rt.depthTexture.image.height=h;HU.uAmp.value.w=w/h;};
