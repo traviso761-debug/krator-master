@@ -1,6 +1,6 @@
 # SE Outer Wall (`seouterwall`) — Scenic Alpine Cordillera, The Godsgate Pass & Hidden Highland Tarn Oases (`PLAN.md`)
 
-> **Status: Proposed Biome Kit & Scale-Model `5.1` Sculpting Blueprint (`2026-11-06`).**
+> **Status: station 1 (`godsgate`, the saddle) built on a branch, 2026-11-10 (a cloud session: software-GL verify only; the GPU verify is owed on the owner's machine). Stations 2-6 not started. Section 7 is the build: its Core adoption, station 1 on the model, and what is owed.** Proposed 2026-11-06 as a biome kit and scale-model `5.1` sculpting blueprint; the model's pass (`build_425_master.py`, "SE outer wall") has since run, taller than this plan's numbers (section 7.2).
 >
 > **Polygon:** `SE outer wall` (`id: "rmw4xy4tp9b29"`, `kind: "biome"`, `20` vertices: `[[1329,1136],[1356,1201],[1336,1222],[1299,1228],[1267,1254],[1245,1276],[1224,1300],[1201,1346],[1130,1352],[1092,1340],[1060,1310],[1039,1292],[1009,1305],[997,1207],[1032,1205],[1091,1204],[1164,1198],[1249,1188],[1300,1160],[1324,1141]]`).
 > - **Bounding Box:** `X = 997..1356`, `Y = 1136..1352` (`359 × 216 px` span; `38,207` cells = **`152,828 km²`** on the `1821 × 1723` `2 km/px` Scale Model `5.1` master grid, or `~224 km E–W × 135 km N–S` / `14,925 km²` at the `625 m/px` regional detail scale). All `px, py` coordinates below are on the unified **Scale Model `5.1` (`X = 997..1356, Y = 1136..1352`)** grid (subtract `DX = 272, DY = 330` for legacy `4.23` coordinates).
@@ -288,3 +288,67 @@ Carve 5 circular-to-elliptical cirque/graben depressions (`r_tarn = 1.8..2.6 px`
      - **`EF` / `HT` (Glaciated Horns & Arêtes, `~18%`):** `+5,500–6,450 m` crest (`tm = -9 to -16 °C`, `tw < 0 °C`, **0% Class O / 0% HF**).
      - **`Dsc` / `Dsb` / `Dfc` (Subalpine Pass & Cirque Pockets, `~20%`):** `+3,350–4,250 m` Godsgate floor, northern slump toes, and Tarn Oases #1, #3, #5 (`tm = +1 to +6 °C`, `tw = +12 to +16 °C`).
      - **`BSk` / `Csb` (Dry Steppe Thresholds & Geothermal Tarn #2, `~4%`):** Southern Godsgate fan mouth and Amber-Sinter Tarn (`tm = +4 to +13.5 °C`).
+
+---
+
+## 7. The build (2026-11-10)
+
+### 7.1 Core adoption (written before the first fragment)
+
+Station 1 starts from the nearest finished kit of the family: the W outer wall's station 1 (`biomes/wouterwall`, the loess tablelands,
+on `origin/claude/cloud-kits-verify`), itself forked from `biomes/nwouterwall`. Same host shape (`44s` the site, `45` the stage on the
+model, `46` the kit's layout as data, `47` the land, `89*` the air and the water, `99` the hand-over to core/host), same reading of the NW
+outer wall's flora in place.
+
+| Module | Takes it for |
+|---|---|
+| `core/biome` | the kit contract (`BIO.init`, items, cards, bark, bake, LOD, impostors, export, `44-core-stage`) |
+| `core/rand` (`KRAND`) | every draw: the site's crags and swells (`KRAND.fbm`), the moraines' and the rockfall heaps' seeds, the ground's mottle; placement reseeded per cell by the read-in-place passes. No page noise, no `Math.random` |
+| `core/tags` | every item set, tree, plant volume, landform and hazard is a record (`BIO.init({tags:'seouterwall'})`, `BIO.record`) before it is drawn |
+| `core/space` (`KSPACE`) | keep-clear between trees (the read-in-place passes) and the brook's segment index |
+| `core/host` (`KHOST.FULL`) | camera, loop, panel, inspector, marks (the polygon tool), probe, pictures, minimap, editor |
+| `core/atmos` | `ATMOS.bindHost`; the shared sky at the station's pixel with its far land cast from the model (`region/far.py`); `ATMOS.bindWeather` (`{cold:true}`); snow that lies; height fog (the col's dawn mist); the rain cover; lightning; cloud shade; the skylight for the brook; `BIO.bindAtmosWind` |
+| `core/water` | the meltwater brook (`WATER.flow`) down the north slope's wadi, drawn on core/atmos; the ext 56, 57, 60 (glint, audit, the water's fields) |
+| `core/terrain` | `KFIELD` (the baked near ground the export carries), `KRELIEF` (`range` for the moraines, `wadi` for the meltwater gully and its fan), `KRUBBLE` (`37c`: the rockfall heaps under the crags), `KSTRATA` and its shade (`megabreccia` with the Godthrone's `tibasalt` as its lateral stack to the west: section 1.2), `KGROUND` (the library layers, hex-tiled, height-blended, triplanar on the steep), `KHORIZON` (the walls' shadows at a low sun) |
+| `core/hazard` (`KHAZ`) | the God-Bore (the night's katabatic gale on the col: `cold`, on the day's cycle) and the rockfall heaps (`crush`): `tags.hazard` records (section 2) |
+| `core/materials` | the library through `materials.json` and `tools/textures/pack.py` (`tex/`), and the NW outer wall's pack read in place for its flora |
+| `core/shadow` (`KSHADOW`) | the sun's shadows, toggleable and off by default (`?shadow=1`) |
+| `core/export`, `core/minimap`, `core/edits` | through core/host's full interface, as every biome |
+| `biomes/nwouterwall` | **read in place**: its layout, species, trees (the larch, the stone pine, the creeping pine: the krummholz, silverthorn) and floor, bound to this page's fields; each of this kit's zones names the NW zone that grows there (section 4's "read in place") |
+| `core/mask` | not taken: placement reads plain functions of (x, z) (the fields, the landforms), never a canvas |
+| `core/city`, `core/hamlet`, `core/simulation`, `core/camp` | not taken at station 1: the caravanserai at Bab al-Hawa is the owed Ancients turn (7.3), and its camp would be `core/camp`'s when it is built |
+| `kits/ancients` | **not taken at station 1** (owed, 7.3): the 30 m highway cutting, the parabolic wind-baffles and the vent-shaft collar are buildings; no biome page reads the Ancients kit yet but ancientsvalley, and the road needs its line on the model first |
+| `core/terrain` `KFROST`, `KGLACIER` | not at station 1: the col (mean +4 °C) has no permafrost, and the hanging glaciers stand on the walls 6-12 km out (the mid ground and the sky's far land). The benches' stations (5, `jadecrest`) take them |
+| `kits/crops` | not taken: nothing is farmed on the col |
+
+### 7.2 Station 1 on the scale model
+
+`region/far.py` (forked from the W outer wall's) cuts the model (`extract_region.py 'SE outer wall'`, upsample 2: 1 km cells, plus
+`region/farland.json`, a box west to px 870 so the far land holds the Godthrone's flank) and writes `region/station-godsgate.json`:
+
+- **The pixel, px 1031,1252: 3,620 m, 1.02 atm, Dsc, mean +4 °C, 282 mm** (the model pins it: `build_425_master.py`'s
+  `seow_station_pins`; `test_smodel.py` checks it). The plan's 3,620 m, Dsc and 285 mm hold.
+- **The ground there is not the plan's U-trough.** The model's pass ran taller than section 6 (the cordillera at 6.2-11 km, not 3.8-6.5),
+  and the Godsgate's carved corridor runs N-S **7.5 km west of the pin** (px ~1027, floor 3,630-3,680 m all along). The pin is a 7x7
+  stamp at 3,620 m, so the station stands in **a closed hollow about 2 km across**: its floor within 60 m of the pin, rising 140 m to the
+  north rim 2 km out (570 m at 3 km), 100-200 m to the south, 400 m to the east at 3 km and 280 m to the west at 3 km, between the low
+  rise that hides the corridor and the cordillera's slopes. The walls (6.3-7.5 km) stand 6-12 km out, on the mid ground.
+- **So station 1 is drawn on the model as it is** (KNOWN_ISSUES.md): the hollow is the saddle's outwash flat, a glacier's scour at the
+  divide, where the north slope's meltwater runs out on a fan and sinks into the gravel (282 mm, a dry pass: no tarn). A recessional
+  moraine crosses the flat at the divide; lateral moraines lie along the foot of the east and west slopes; the north slope carries crags
+  (megabreccia ribs on core/rand's ridged noise, scaled by the model's slope) with rockfall heaps at their foot. The corridor, the
+  Godthrone's black wall (tibasalt, west) and the megabreccia cordillera (east) are the mid ground and the far land.
+
+**Layout on the page** (axes as every station: metres, x east, z south, y up, y = 0 at 3,620 m): the near box +-2.3 km on a 10 m KFIELD;
+the mid ground to 20 km on the model's 1 km cells with the far roughness; the far land in the sky from 18 to 320 km.
+
+### 7.3 Owed (the next turns)
+
+- **The Ancients' side of station 1** (kits/ancients read in place, as ancientsvalley reads it): the 30 m surface highway at a 4 % ruling
+  grade through the col, its board-formed cuttings, the parabolic wind-baffle crescent and the 40 m vent-shaft collar of Bab al-Hawa with
+  the caravanserai in its lee (section 3.3). The road's line wants the model's corridor (7.2) or a re-pinned station first: a question for
+  the owner (KNOWN_ISSUES.md).
+- **The katabatic wind as weather** (section 2.1): the God-Bore is a hazard record on the day's cycle; the wind field itself
+  (`ATMOS.windAt` turning downslope at night) is core/atmos's, not yet a per-page setting.
+- **The kit's own species** (the plan's borrowings: puya, snow lotus, cushion domes from wouterwall, oidong, ehighlands) and stations 2-6.
+- **The real-GPU verify** of station 1 (the cloud session ran SwiftShader only).

@@ -1,0 +1,104 @@
+{
+ "build": "seouterwall",
+ "note": "The seouterwall kit's adapter onto the material library (core/materials/PLAN.md). The host's ground layers (47-host-land.js): ground.puna (the col's dry bunchgrass, the base, tinted by season), ground.cobble (ground.wadi.cobble: the meltwater gully's floor and its fan, the outwash flat), ground.gravel (ground.gravel019: the moraines' till and the scree), ground.tundra (the moraines' turf, the dwarf shrubs in the lee), ground.lichen (ground.lichen.crust: the crags' fellfield and the high slopes), ground.needles (the larch's litter in the sheltered shaded hollows), rock.megabreccia (the crags and the walls, read from the side on the steep: KGROUND's triplanar sides; tinted by KSTRATA's megabreccia and tibasalt columns; the rockfall heaps' blocks). The flora's cards and barks are the NW outer wall's pack, read in place. Run python3 tools/textures/pack.py biomes/seouterwall after any change, then python3 build.py.",
+ "size": 512,
+ "families": {
+  "ground.puna": {
+   "lib": "ground.puna",
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "ground.cobble": {
+   "lib": "ground.wadi.cobble",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "ground.gravel": {
+   "lib": "ground.gravel019",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "ground.tundra": {
+   "lib": "ground.tundra",
+   "scale": [
+    2.2,
+    2.2
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "ground.lichen": {
+   "lib": "ground.lichen.crust",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "ground.needles": {
+   "lib": "ground.needles",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "rock.megabreccia": {
+   "lib": "rock.megabreccia",
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  }
+ }
+}
