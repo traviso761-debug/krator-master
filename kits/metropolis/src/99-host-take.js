@@ -13,9 +13,12 @@ function hostChecks(){const R=[],add=(name,ok,detail)=>R.push({name,ok:!!ok,deta
  add(MPS.keys.length+' impostors baked',MPS.impN===MPS.keys.length,''+MPS.impN);
  /* the ruins: each state but intact and gutted has its rubble, under 25k triangles (it stands at every ruin within 1 km); every shell's slots in the one atlas */
  MPS.keys.filter(k=>MP.RUINS.indexOf(k.split('.')[1])>1).forEach(k=>add(k+': rubble under 25k triangles',MPS.debris[k]&&MPS.debrisTris[k]<=25000,''+MPS.debrisTris[k]));
- add('every shell packs one atlas',MPS.packed.length===MPS.keys.reduce((n,k)=>n+KSHELL.slots(MPS.rec[k]).length,0),MPS.packed.length+' slots');return R;}
+ add('every shell packs one atlas',MPS.packed.length===MPS.keys.reduce((n,k)=>n+KSHELL.slots(MPS.rec[k]).length,0),MPS.packed.length+' slots');
+ /* a family set's own checks (70f, the farm belt: MP.EXTRA_CHECKS), each add(name, ok, detail) */
+ (MP.EXTRA_CHECKS||[]).forEach(f=>f(add));return R;}
 function hostNegatives(){const R=[];{const F=JSON.parse(JSON.stringify(MP.SPINDLE));F.core.shafts[0].x=9;R.push({name:'a shaft out of the core',failed:!MP.audit(F).ok});}
- R.push({name:'a cage over the budget',failed:(()=>{const r=KSHELL.record(Object.assign({},MP.SPINDLE,{shell:Object.assign({},MP.SPINDLE.shell,{sides:16})}),'x');return r.tris>60;})()});return R;}
+ R.push({name:'a cage over the budget',failed:(()=>{const r=KSHELL.record(Object.assign({},MP.SPINDLE,{shell:Object.assign({},MP.SPINDLE.shell,{sides:16})}),'x');return r.tris>60;})()});
+ (MP.EXTRA_NEGATIVES||[]).forEach(f=>f((name,failed)=>R.push({name,failed:!!failed})));return R;}
 KHOST.on(SKY.view,'view');KHOST.on(()=>MP.rideView(),'view');
 const STOREY_SELECT=[['','take the lift to...']].concat(MP.SPINDLE.levels.map(L=>[String(L.k),'L'+L.k+' '+L.use]));
 /* the Ancient dress's statue, rug and cold frame are the post-apoc set's pieces: build.py bundles that culture's file */

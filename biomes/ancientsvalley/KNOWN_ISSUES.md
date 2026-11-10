@@ -111,6 +111,20 @@
 - [ ] **A tower retiers at once only on a jump of 60 m or more** (`AVC.tiersTick`, 2026-11-09): a frame drawn with the last eye's tiers once
   showed a far telescope's impostor, its 4 m stalk lost to the sheet's resolution, where its hero belonged ("floating structural elements"); a
   walker crossing the 3.2 km shell boundary still sees a thin stalk thin out on the impostor sheet.
+- [ ] **The Terraces (2026-11-10; `stations/terraces/`):** a first cut for the owner's eye. **The city below is plain prisms**
+  (`70t-host-farm.js`: one rusted box a tower on the model's ground, 3 to 16 km out, under the fog), not the families' impostors: `AVC`'s impostors
+  stop at 3.2 km and a far tier of the real silhouettes (the extraplanar kit's shared cards are the pattern) is owed. **No keepers, wrecks or
+  extraplanars** (the station stubs them: `72`, `73`, `75`); a gardener keeper on rounds of the fields would suit. **The thicket's cards** are the
+  crops kit's sheets cut to one plant a cell (`BIO.geo.cells`) on three crossed quads, on core's foliage material (`BIO.leafMat`); no impostor, so
+  the crops stop at 650 m and the orchards at 1.3 km (the paint carries the fields past that). **The measure melon is left out of the fields**:
+  its card (`card.crop.melon`) is in the material library but not in the crops kit's pack (`kits/crops/materials.json`); adding it there (the crops
+  kit's own change) brings it back. The station checks that every card has its map and stays inside one cell of its sheet. **The pylons' wires are straight sagging lengths** between standing pylons; a leaning pylon's
+  wires attach where it would stand upright. **Roads are paint and asphalt on the ground** (KGROUND), no kerbs; a spoke laid nearly along the
+  aqueduct is not built (`41d`: no crossing can square it), so a few clusters have no road. **The aqueduct is level on a contour** with a bed under
+  its arches levelled up to 6.6 m (its modules are one height): where the contour wanders the bed reads as a cut or an embankment. Shells and
+  impostors of the eight families come from `70-host-city.js` unchanged (box shells): a pod's dome is a box at 600 m and beyond.
+- [ ] **The shared checks are the Overlook's** (`99-host-take.js`): a station names the ones it runs (`STAGE.shared`) and adds its own
+  (`STAGE.checks`); the lattice, transit, wreck, keeper and extraplanar checks stay the Overlook's.
 - [ ] **The build takes about 50 s in the browser** (two kits' rainforest at R 2,740 and the bake): the lowlands' own pages take as long.
 - [ ] **The ground's detail map is sampled raw** (`47-host-land.js`, the lint's one RAWTEX on this build, locked in the baseline): the library's
   `groundDetail` albedo multiplies the ground's colour without an sRGB decode, as the two lowlands' pages do (the valley copies their ground). A

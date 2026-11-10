@@ -5,7 +5,7 @@ const load = p => vm.runInContext(fs.readFileSync(path.join(ROOT, p), 'utf8'), c
 load('core/rand/08-core-rand.js');
 for (const d of ['kits/interiors/src', 'kits/ancients-interiors/src']) for (const f of fs.readdirSync(path.join(ROOT, d)).sort()) if (/^[1-4]\d.*\.js$/.test(f) && !/view|shell|building|outline|cutaway|figures/.test(f)) load(d + '/' + f);
 load('kits/ancients-interiors/opt/38-ai-reception.js');   /* the reception recipe, opt-in until the next interiors update */
-for (const f of ['40-mp-records.js', '41-mp-plans.js', '42-mp-facade.js', '43-mp-shell.js', '44-mp-audit.js', '46-mp-designs.js', '46b-mp-ancients.js', '46c-mp-planned.js', '46d-mp-gridplan.js']) load('kits/metropolis/src/' + f);
+for (const f of ['40-mp-records.js', '41-mp-plans.js', '42-mp-facade.js', '43-mp-shell.js', '44-mp-audit.js', '46-mp-designs.js', '46b-mp-ancients.js', '46c-mp-planned.js', '46d-mp-gridplan.js', '46f-mp-farm.js']) load('kits/metropolis/src/' + f);
 const MP = vm.runInContext('MP', ctx), KS = vm.runInContext('KSHELL', ctx), AI = vm.runInContext('KratorAncientsInteriors', ctx);
 let bad = 0; const ok = (c, m) => { if (!c) { bad++; console.log('FAIL ' + m); } };
 AI.install(vm.runInContext('KratorInteriors', ctx));
@@ -74,5 +74,26 @@ for (const k of MP.PLANNED_KEYS) { const F = MP.FAMILY[k], A = MP.audit(F); ok(F
     if (name === 'disc') { const sk = st.rooms.filter(r => r.mpKind === 'office' || r.mpKind === 'meeting'), area = p => { let a = 0; for (let i = 0; i < p.length; i++) { const u = p[i], v = p[(i + 1) % p.length]; a += u[0] * v[1] - v[0] * u[1]; } return Math.abs(a / 2); }, as = sk.map(r => area(r.poly)).sort((a, b) => a - b);
       ok(sk.length >= 20 && sk.length <= 60 && as[Math.floor(as.length / 2)] >= 20, 'grid plan, disc: wedges (' + sk.length + ' rooms, median ' + (as[Math.floor(as.length / 2)] || 0).toFixed(0) + ' m2)'); }
     delete MP.FAMILY[id]; delete MP.ANCIENT_USES[id]; } }
-ok(MP.families().every(F => !F.design) && MP.planned().length === MP.families().length + MP.PLANNED_KEYS.length, 'families() are the shelled ones, planned() adds the designs');
+/* the farm belt (46f; biomes/ancientsvalley PLAN.md 12, 2b): eight families of Soleri's planned developments, each a design with plans. Every storey
+   audited (with a negative: a shaft moved out of the pod's core), sane numbers, every ruin state designed and heaped, what stands under the intact,
+   a box shell record per state that packs; the aqueduct's modules meet end to end and its arches clear a road (with negatives) */
+ok(MP.FARM_KEYS.length === 8 && MP.FARM_KEYS.every(k => MP.DESIGNS[k] && MP.FAMILY[k] && MP.FAMILY[k].design && MP.FAMILY[k].farm && MP.DESIGN_KEYS.indexOf(k) < 0 && MP.PLANNED_KEYS.indexOf(k) < 0), 'eight farm families, keyed, each a design with a family');
+ok(MP.FARM_KEYS.every(k => designOk(MP.DESIGNS[k]) || k === 'aqueduct' || k === 'stack'), "the farm designs' numbers are sane");
+for (const k of MP.FARM_KEYS) { const F = MP.FAMILY[k], A = MP.audit(F); A.fails.slice(0, 6).forEach(t => console.log('  ' + t));
+  ok(A.ok, k + ': the farm plans pass the audit (' + A.storeys + ' storeys, ' + A.rooms + ' rooms, ' + (A.ok ? 0 : A.fails.length) + ' fails)');
+  ok(!F.levels.length || F.levels[F.levels.length - 1].y + F.levels[F.levels.length - 1].h <= F.height.tip + 0.01, k + ': storeys under the tip');
+  ok(MP.RUINS.every(s => F.ruins[s]), k + ': every ruin state is designed');
+  const box = Object.assign({}, F, { shell: { mode: 'box', inset: 1.2, texel: 1, ruinTexel: 1.25, box: true } });
+  for (const s of MP.RUINS) { const R = MP.ruin(F, s), P = MP.debrisPlan(F, s), S = KS.record(box, s);
+    ok(R.top <= F.height.tip + 0.01 && R.skin <= R.top, k + '.' + s + ': what stands is under the intact');
+    ok(MP.RUINS.indexOf(s) > 1 ? P && P.mounds.length > 0 : P === null, k + '.' + s + ': rubble as the state says');
+    ok(S.tris === 10 && S.map.w > 0 && S.map.h > 0, k + '.' + s + ': a box shell record'); } }
+{ const all = []; for (const k of MP.FARM_KEYS) for (const s of ['intact', 'gutted']) all.push(...KS.slots(KS.record(Object.assign({}, MP.FAMILY[k], { shell: { mode: 'box', inset: 1.2, texel: 1, box: true } }), s)));
+  let fits = true; try { KS.pack(all, 2048); } catch (e) { fits = false; } ok(fits, 'the farm shells (intact, gutted) pack one 2048 atlas'); }
+{ const F = JSON.parse(JSON.stringify(MP.FAMILY.pod)); F.envR = MP.FAMILY.pod.envR; F.core.shafts[0].x = 6; ok(!MP.audit(F).ok, 'negative: a shaft out of the pod\'s core fails'); }
+{ const J = MP.aqueductJoin, chain = (n, gap) => { const M = []; for (let i = 0; i < n; i++) M.push({ x: i * (J.len + (i === 2 ? gap : 0)), y: 0 }); return M; },
+    meets = M => M.every((m, i) => !i || Math.abs((M[i - 1].x + J.len / 2) - (m.x - J.len / 2)) < 0.05);
+  ok(meets(chain(5, 0)), 'the aqueduct: modules laid at its length meet end to end'); ok(!meets(chain(5, 3)), 'negative: a 3 m gap does not');
+  ok(J.archAt(-J.len / 2 + J.span / 2) && !J.archAt(-J.len / 2 + J.span) && J.clear >= 12, 'the aqueduct: an arch clears a road (' + J.clear.toFixed(1) + ' m), a pier does not'); }
+ok(MP.families().every(F => !F.design) && MP.planned().length === MP.families().length + MP.PLANNED_KEYS.length + MP.FARM_KEYS.length, 'families() are the shelled ones, planned() adds the designs');
 console.log(bad ? bad + ' failed' : 'all passed'); process.exit(bad ? 1 : 0);

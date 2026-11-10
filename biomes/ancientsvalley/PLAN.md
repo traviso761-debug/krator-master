@@ -341,6 +341,11 @@ needs `anomaly` in `ALL_MODULES` and a `NOT_APPLICABLE` reason wherever the over
 | `kits/mechs` | bundled (`39k`, culture `ancient`) | the keepers (`72`) |
 | `kits/extraplanar` | bundled (`39x`: `KratorExtraplanar`, the mechs machinery in its own closure) | the hunters, the phenomena and the portals (`75`), their weather (`89x`) |
 
+**The Terraces (2026-11-10)** take the same modules through the shared fragments, and: `core/rand` and `core/space` in its plan (`41d`, [G data]:
+every placement a hash of (seed, index, salt), the pads, roads and fields on `KSPACE`); `kits/crops` read in place (`10`, `20`, `22`, `40` as `38a`-`38d`:
+`AV.farmCrops` on `CROPS.forBiome('swlowlands')`) with its pack as a sidecar; `core/biome` for the thicket (a kit of its own, `farmcrops`, its cards cut
+by `BIO.geo.cells`, wrapped by `AV.feralKit`); `kits/metropolis`'s farm families (`46f`, `54f`) through the city stage's tiers.
+
 Not taken yet: `core/anomaly` (none on station 0), `core/hazard`, `core/clock` beyond the host's, `core/city` (the plan is a lattice on
 records until the streets want lots), `core/mask` (every field is a function), `core/furnish`, `core/hamlet`, `core/camp`, `core/charactermodels`,
 `kits/fauna`, `kits/crops`.
@@ -375,6 +380,12 @@ records until the streets want lots), `core/mask` (every field is a function), `
    run wild), the city's skyline below toward the lake. Needs the farm families in `kits/metropolis` first (settled 2026-11-04, section 13
    question 9): the pods, the terrace stacks, the hub's civic buildings, the aqueduct and the pump house, each with ruin states, shells
    and impostors by the towers' machinery. Its own stage (`stations/terraces/`), site and views.
+   *Built 2026-11-10* (`README.md`, "The Terraces"; `python3 build.py --station terraces`): the eight farm families in `kits/metropolis` (`46f`,
+   `54f`: pod, vault house, growing stack, hub hall, market, water tower, aqueduct module, pump house); the site at **px 455,899** (330 m, Cfa,
+   1,694 mm), the south face of the ridge north of city1, the page falling about 180 m to the shelf, city1 and the Overlook's ridge 16-18 km due
+   south; the plan as records (`stations/terraces/41d-av-farm.js`, `tests/test-farm.js`): a hub town, the aqueduct on a contour, 36 clusters of
+   pods, vault houses and stacks, 33 roads crossing under arches, two pylon lines, about 1,900 parcels of crops and orchards from `kits/crops`
+   gone to thicket under the feral wrap, and the city below as a far skyline. Waiting on the owner's eye.
 3. `core/anomaly`, then **the Stilled Ground and the Press** (cheap, as `PLAN-ANOMALIES.md` 11 has it), each as a district with its basin.
 4. **The House at Babel**, with the subway.
 5. The Lake That Falls, the Fast Water, the Bend; radiation and portals as they come.

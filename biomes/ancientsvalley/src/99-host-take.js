@@ -116,7 +116,17 @@ const HCHK={
    else if(terrainH(r.at[0],r.at[2])<LY+1)bad.push(r.key+' under the lake');}
   for(const r of O){if(r.key==='drowned'){drowned++;if(!(r.at[1]<LY-1&&r.at[1]+r.h>LY+1))bad.push("a drowned portal's arch is not cut by the lake's line");if(!drawnWater(r))bad.push('no lake drawn at a drowned portal');}else if(STAGE.rawGround(r.at[0],r.at[2])<LY+1)bad.push('the '+r.key+' under the lake');}
   return{ok:P.length>=3&&O.length>=3&&voids>=1&&drowned>=2&&!bad.length,detail:P.length+' phenomena ('+voids+' over the water), '+O.length+' portals ('+drowned+' drowned halls), '+c.drawn+' drawn after registering'+(bad.length?'; '+bad.slice(0,4).join('; '):'; the weather bound on core/atmos; the void on the water, the drowned arches cut by the lake')};}};
+/* a station other than the Overlook names the shared checks it runs (STAGE.shared: the Terraces have no lattice, transit, keepers or wrecks) and
+   adds its own (STAGE.checks, STAGE.negatives); the Overlook runs them all, as before */
+const HCHK_SHARED={handOfMan:['the hand of man in every view',()=>HCHK.handOfMan(VIEWS,REG)],standing:['the towers stand on dry ground',()=>HCHK.standing(STAGE.plan.towers)],
+ impHidden:['the impostors hide behind their heroes and shells',()=>HCHK.impHidden((x,z)=>x+','+z)],feral:['the forest is feral and tinted',()=>HCHK.feral(AV.FERAL,window._tinted||0)],
+ clear:['no tree on a street, a plinth or a scar',()=>HCHK.clear(REG)],cardsCut:['the cards are cut: every alpha map is tested',()=>HCHK.cardsCut()]};
+const HNEG_SHARED={handOfMan:['a view with nothing built anywhere',()=>HCHK.handOfMan({x:[0,30,0,0,30,-100000]},REG.filter(r=>r.kind!=='line'&&r.kind!=='tower'))],
+ standing:['a tower under the lake',()=>HCHK.standing(STAGE.plan.towers.slice(0,80).map((t,i)=>i?t:Object.assign({},t,{y:STAGE.lakeY-5})))],
+ impHidden:['impostors looked up by the float64 key',()=>HCHK.impHidden((x,z)=>(x+1e-3)+','+z)],feral:['no tree grown',()=>HCHK.feral({trees:AV.FERAL.trees,grown:0,floor:0,dropped:0},window._tinted||0)],
+ clear:['a tenth of the trees on the plinths',()=>HCHK.clear(REG.filter(r=>r.kind==='tree').map((r,i)=>i%10?r:Object.assign({},r,{x:STAGE.plan.towers[0].x,z:STAGE.plan.towers[0].z})))]};
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),T=STAGE.plan.towers;
+ if(STAGE.shared){STAGE.shared.forEach(k=>{const e=HCHK_SHARED[k];if(e)add(e[0],e[1]());});if(STAGE.checks)STAGE.checks(add);return R;}
  add('the hand of man in every view',HCHK.handOfMan(VIEWS,REG));add('the towers stand on dry ground',HCHK.standing(T));add('the towers front the kerb lines',HCHK.kerb(T));add('the impostors hide behind their heroes and shells',HCHK.impHidden((x,z)=>x+','+z));if(typeof AV_HOUSE!=='undefined'&&AV_HOUSE)add('the House: larger inside than out, its door onto its floor',HCHK.house(AV_HOUSE));if(typeof AV_ANOM!=='undefined'&&AV_ANOM)add('the distortions of space and time are in place',HCHK.anomalies(AV_ANOM));if(typeof AV_OIL!=='undefined'&&AV_OIL)add('the oily rain stands over the polluted half',HCHK.oilRain(AV_OIL));add('10-15% of the towers stand to full height',HCHK.ruinShare(T));
  add('the forest is feral and tinted',HCHK.feral(AV.FERAL,window._tinted||0));add('no tree on a street, a plinth or a scar',HCHK.clear(REG));add('the cards are cut: every alpha map is tested',HCHK.cardsCut());
 if(STAGE.transit){add('the transit stands: the grid, the highway, the lines, the subway',HCHK.transit(STAGE.transit,typeof AVTR!=='undefined'?AVTR.n:null));add('the war rises toward the lake',HCHK.warToLake(STAGE.transit));add('the towers rise toward the lake (the lake-front property values)',HCHK.lakeFront(STAGE.transit));}else add('the viaduct stands',HCHK.lines(AV_LINES.V));
@@ -127,6 +137,7 @@ if(STAGE.transit){add('the transit stands: the grid, the highway, the lines, the
  add('the extraplanar hunters walk their rounds',HCHK.hunters(AV_XP.hunters));add('the phenomena and the portals: registered, drawn, their weather bound, the water line right',HCHK.extraplanar(AV_XP));
  if(STAGE.checks)STAGE.checks(add);return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),T=STAGE.plan.towers;
+ if(STAGE.shared){STAGE.shared.forEach(k=>{const e=HNEG_SHARED[k];if(e)add(e[0],e[1]());});if(STAGE.negatives)STAGE.negatives(add);return R;}
  add('a view with nothing built anywhere',HCHK.handOfMan({x:[0,30,0,0,30,-100000]},REG.filter(r=>r.kind!=='line'&&r.kind!=='tower')));
  add('a tower under the lake',HCHK.standing(T.slice(0,80).map((t,i)=>i?t:Object.assign({},t,{y:STAGE.lakeY-5}))));
  add('every tower intact',HCHK.ruinShare(T.map(t=>Object.assign({},t,{state:'intact'}))));
