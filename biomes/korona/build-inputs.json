@@ -1615,7 +1615,7 @@
     "biomes/nhighlands/tex/needle.albedo.webp": "0360d9f2189a32a144054a27ef92dc8399923e8c750caaf11b3772bec35d302c",
     "biomes/nhighlands/tex/nrock.albedo.webp": "b1f0c732928d62e99dd6ab6a9a5d91937ef478b254c9573700aaf8d60e696f51",
     "biomes/nhighlands/tex/nwood.albedo.webp": "677160f0c90c1ee870e0e570f1ab2ccec4f5704c2488ef4a308884da10c2d6ba",
-    "biomes/nhighlands/tex/pack.json": "9fcdba40c9f2644df7520723179061bb9c02b08bc1f520b07daca06cbff1be61",
+    "biomes/nhighlands/tex/pack.json": "f62cea8d117ef8fddfc804fe0286ee3abf05723c13f64a193258f77c43606d50",
     "biomes/nhighlands/tex/paddle.albedo.webp": "9ccf476f47ba5b0abb8b02e40202fad8683b787739a03865ea7c7c7f9c9e1e35",
     "biomes/nhighlands/tex/pinnate.albedo.webp": "900252ce0bbcb604bed207935f83b117bd40fe2ef3c475a8e80de94376752f4a",
     "biomes/nhighlands/tex/pleat.albedo.webp": "d26634f88b0abd9ac11758d9af18af5d8066c4165f256e56cc1790f7ce28b2a7",
@@ -1732,6 +1732,7 @@
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
    },
    "listings": {
+    "biomes/korona": "6fdecef50212fe839ef0f8fb9b32af14aa3684d3a6633e2919e2184f05ed667d",
     "biomes/korona/src": "43c5b6b08790100fc4bd16a5c8adaed0458b03fc38e161b3b7d5fee292a42786",
     "biomes/korona/stations": "13e11120b1265d22bd0b470ae92f4205b32b3bf11117975470ea216cc40cab9e",
     "biomes/korona/stations/trench": "470db5b4777783af24c0d7ef5c801ffd950241d25208a03db43ccf22e3fd3ff9",
