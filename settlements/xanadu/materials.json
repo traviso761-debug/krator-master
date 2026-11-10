@@ -566,6 +566,160 @@
    },
    "metal": 0,
    "normalScale": 0.5
+  },
+  "xZel": {
+   "lib": "patterns/common/zellige-rosette-colour",
+   "owed": "patterns/xanadu/zellige-star",
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.5
+  },
+  "xHaft": {
+   "lib": "patterns/common/mosaic-arabesque-lapis",
+   "owed": "patterns/xanadu/haft-rangi",
+   "scale": [
+    1.2,
+    0.8
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.5
+  },
+  "xGiltC": {
+   "lib": "patterns/common/mosaic-star-lapis",
+   "owed": "patterns/xanadu/mughal-gilt-ceiling",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0.15,
+   "normalScale": 0.5
+  },
+  "xYes": {
+   "lib": "plaster.patterned_clay_plaster",
+   "owed": "stone.stucco.yeseria",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.72
+   },
+   "metal": 0,
+   "normalScale": 0.9
+  },
+  "xMuqT": {
+   "lib": "patterns/common/zellige-lotus-teal",
+   "owed": "tile.muqarnas.turquoise",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.5
+  },
+  "xBandR": {
+   "lib": "patterns/common/kilim-banded-brown",
+   "owed": "patterns/xanadu/peacock-band",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.5
+  },
+  "xPietra": {
+   "lib": "patterns/court/opus-sectile",
+   "owed": "stone.pietra-dura",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.5
+  },
+  "xSandR": {
+   "lib": "rock.sandstone.red",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.7
+  },
+  "xMarW": {
+   "lib": "rock.marble.white",
+   "owed": "stone.marble.calacatta",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.4
+  },
+  "xMarK": {
+   "lib": "rock.marble012",
+   "owed": "stone.marble.black",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.16
+   },
+   "metal": 0,
+   "normalScale": 0.4
+  },
+  "xJaliC": {
+   "lib": "patterns/xanadu/jali",
+   "owed": "patterns/xanadu/jali",
+   "optional": true,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.5
   }
  }
 }

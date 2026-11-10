@@ -21,6 +21,9 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/76-xa-farm.js` | 18.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/77-xa-sacred.js` | 11.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/78-xa-palace.js` | 11.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/78l-xa-moorish-data.js` | 4.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | XMOOR: the citadel's arch outlines, muqarnas cells, star ceilings, barrel section as plain numbers (Godot builds from them) |
+| `src/78m-xa-moorish.js` | 16.0 | [draw] | 10 | 0 | 0 | 0 | 0 | 15 | 0 | 0 | 0 | 0 | 0 | the Moorish and Mughal materials, geometry items and helpers (arch heads, muqarnas, star ceilings, vaults, jali, iwan, water) |
+| `src/78n-xa-citadel.js` | 34.7 | [web] | 0 | 0 | 1 | 0 | 0 | 9 | 0 | 0 | 0 | 0 | 0 | the citadel's builders: walls, floors, doors and stairs drawn from the interior set's rooms (sets/xanadu-citadel.js); window._citadel |
 | `src/79-xa-guild.js` | 17.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/80-xa-military.js` | 15.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/81-xa-public.js` | 11.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
