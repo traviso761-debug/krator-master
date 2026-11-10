@@ -4,7 +4,7 @@
 
 Docs: `KNOWN_ISSUES.md`, `LOD-WRITEUP.md`, `PLAN-ANOMALIES.md`, `PLAN.md`, `PORT.md`, `README.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/ancientsvalley.html`
+Built output (never open it; edit `src/` and rebuild): `dist/ancientsvalley-terraces.html`, `dist/ancientsvalley-yards.html`, `dist/ancientsvalley.html`
 
 Build: `cd biomes/ancientsvalley && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -22,20 +22,22 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `41-av-field.js` | 19 |  |
+| `41-av-field.js` | 20 |  |
 | `41b-av-wrecks.js` | 9 |  |
 | `41c-av-house.js` | 6 |  |
+| `41c-av-lobbies.js` | 27 |  |
 | `46-av-feral.js` | 13 |  |
-| `46z-host-stage.js` | 31 **big** |  |
+| `46z-host-stage.js` | 34 **big** |  |
 | `47-host-land.js` | 9 | the ground (27); the far ground (the model's country out to 24 km (61) |
-| `70-host-city.js` | 46 **big** | the rust (the owner, 2026-11-04: more rust) (72); the engines (kits/ancients 8ah, 8ai, read in pla (255); the lines: the viaduct (AV.viaduct's records dra (270) |
-| `71-host-creepers.js` | 5 |  |
-| `72-host-keepers.js` | 7 |  |
+| `70-host-city.js` | 51 **big** | the rust (the owner, 2026-11-04: more rust) (72); the engines (kits/ancients 8ah, 8ai, read in pla (284); the lines: the viaduct (AV.viaduct's records dra (299) |
+| `71-host-creepers.js` | 7 |  |
+| `72-host-keepers.js` | 10 |  |
 | `73-host-wrecks.js` | 7 |  |
 | `74-host-transit.js` | 14 |  |
-| `75-host-extraplanar.js` | 14 |  |
+| `75-host-extraplanar.js` | 15 |  |
 | `75-host-house.js` | 11 |  |
-| `88-host-build.js` | 7 |  |
+| `76-host-lobbies.js` | 19 | the geometry: flat-shaded prisms in the kit's co (31); the checks (verify.py --assert; 99 calls them),  (95) |
+| `88-host-build.js` | 8 |  |
 | `89a-host-atmos.js` | <1 |  |
 | `89s-host-sky.js` | 3 |  |
 | `89t-host-weather.js` | <1 |  |
@@ -46,5 +48,6 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `89x-host-oilrain.js` | 3 |  |
 | `89x-host-xp-weather.js` | <1 |  |
 | `89y-host-anomaly.js` | 6 |  |
-| `99-host-take.js` | 30 | the inspector's words (6); the probe's budgets (14); the kit's own checks (verify.py --assert) (18); the page, handed to the host (156) |
+| `98-host-atmos-ui.js` | 4 |  |
+| `99-host-take.js` | 35 **big** | the inspector's words (6); the probe's budgets (14); the kit's own checks (verify.py --assert) (18); the page, handed to the host (192) |
 | `99-tail.html` | <1 |  |

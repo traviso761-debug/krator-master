@@ -46,6 +46,7 @@ const AV_ANOM=(function(){if(typeof KWARP==='undefined'||typeof KHOOK==='undefin
    if(a.kind==='bend'){const w=ss(a.r*1.6,a.r,d);bend=Math.max(bend,a.k*w);}
    else if(a.kind==='lens'){const w=ss(a.reach,a.reach*.75,Math.hypot(d,e.y-a.y));if(w>lens){lens=w;U.uAvLens.value.set(a.x,a.y,a.z,a.te*w);}}
    else if(a.kind==='time'){const w=ss(a.r*1.4,a.r*.7,d);time=Math.min(time,1+(a.scale-1)*w);}}
-  U.uAvBend.value=bend;if(lens<=0)U.uAvLens.value.w=0;S.state={bend,lens,time};
+  if(S.off){bend=0;lens=0;time=1;}   /* the atmosphere panel's switch (98) */
+  U.uAvBend.value=bend;if(lens<=0)U.uAvLens.value.w=0;S.state={bend,lens,time};if(body)body.visible=!S.off;
   if(ATMOS.clock)ATMOS.clock.scale=time;window.AV_TIME=time;});
  return S;})();

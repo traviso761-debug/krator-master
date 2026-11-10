@@ -5,7 +5,7 @@
    "inputs": {
     "core/atmos/89-atmos-0-core.js": "d7207293ab01d6a6e3cf3440fd6f83febaddabff7f0e753c10284fa11ec881be",
     "core/atmos/89-atmos-0p-presets.js": "1b55a3fc68023876348af4fcca6c19eafb623657a906089694c89767ea47abc0",
-    "core/atmos/host/89-atmos-h-skyhost.js": "aab15c11113a4f3d516a78c9c67cc23afff3a2e1746a38b78c5d7b9cfb111430",
+    "core/atmos/host/89-atmos-h-skyhost.js": "62401272c4ae693a9ce80a3aec3611833e0b31792ac2e0e69b37d1b52a5ee425",
     "core/atmos/host/89-atmos-i-skybiome.js": "40dde8c1cd5b19ff2436106b9db5f003334f4052fba1239cca767b1d10974bd1",
     "core/atmos/sky/89-atmos-e-skymodel.js": "a88e93cffe596d5362daa08d693c63795713514f850125feff8f2f9ee2b8e258",
     "core/atmos/sky/89-atmos-f-skypresets.js": "5f55cc174ba0ce60c681e76c5f2c8213c68c9c3c434c5bd85b234ea7e00b2fd0",
@@ -156,13 +156,13 @@
     "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
    },
    "outputs": {
-    "kits/ancient-transit/build-manifest.json": "8418b286cc26f9bc2d4aecd2596b34f5ec2ceaf0815da498b04559eb01043f70",
-    "kits/ancient-transit/dist/ancient-transit.html": "9e201e901ee0cf89d2742ed60f932048c48dcc04090ed248be77bc8d1a00d973",
+    "kits/ancient-transit/build-manifest.json": "f09896200f23debe7acbe501e14b1840b416be813883da98ac967ddcd1424969",
+    "kits/ancient-transit/dist/ancient-transit.html": "025d234b8631293099ae7e280062af9424dea379a6161617263c0a328f9f059f",
     "kits/ancient-transit/dist/ancient-transit.tex.ancient-transit.js": "006858241b75ab6107bbac839d32b32b193f166df8aa30816d70ab975c61a306"
    },
    "outputs_raw": {
-    "kits/ancient-transit/build-manifest.json": "8418b286cc26f9bc2d4aecd2596b34f5ec2ceaf0815da498b04559eb01043f70",
-    "kits/ancient-transit/dist/ancient-transit.html": "9e201e901ee0cf89d2742ed60f932048c48dcc04090ed248be77bc8d1a00d973",
+    "kits/ancient-transit/build-manifest.json": "f09896200f23debe7acbe501e14b1840b416be813883da98ac967ddcd1424969",
+    "kits/ancient-transit/dist/ancient-transit.html": "025d234b8631293099ae7e280062af9424dea379a6161617263c0a328f9f059f",
     "kits/ancient-transit/dist/ancient-transit.tex.ancient-transit.js": "006858241b75ab6107bbac839d32b32b193f166df8aa30816d70ab975c61a306"
    }
   }

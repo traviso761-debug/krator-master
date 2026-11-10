@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 228 (49%) | 4 (1%) | 0 (0%) | 24 (5%) | 204 (44%) |
+| KB | 246 (47%) | 4 (1%) | 0 (0%) | 42 (8%) | 233 (44%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -24,12 +24,14 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/46c-mp-planned.js` | 56.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/46d-mp-gridplan.js` | 65.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/46e-mp-industry.js` | 10.2 | [draw] | 4 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/46f-mp-yards.js` | 15.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/46f-mp-farm.js` | 17.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/46f-mp-yards.js` | 15.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/47-host-land.js` | 1.4 | [draw] | 2 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/50-mp-kit.js` | 12.0 | [draw] | 18 | 0 | 0 | 0 | 0 | 7 | 3 | 1 | 0 | 0 | 0 |  |
 | `src/52-mp-hero-spindle.js` | 13.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 42 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/53-mp-hero-ledger.js` | 13.8 | [draw] | 0 | 0 | 0 | 0 | 0 | 28 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/54-mp-hero-designs.js` | 38.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 71 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/54f-mp-hero-farm.js` | 28.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 36 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/55-mp-hero-ancients.js` | 18.5 | [draw] | 11 | 0 | 0 | 0 | 0 | 5 | 0 | 8 | 4 | 0 | 0 |  |
 | `src/56-mp-interiors.js` | 22.6 | [draw] | 8 | 0 | 0 | 0 | 5 | 17 | 0 | 2 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/57-mp-debris.js` | 5.7 | [draw] | 12 | 0 | 0 | 0 | 0 | 6 | 0 | 1 | 0 | 0 | 0 |  |
@@ -40,8 +42,9 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/59d-mp-flora.js` | 3.6 | [draw] | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/60-mp-shell-host.js` | 23.9 | [draw] | 14 | 0 | 0 | 0 | 0 | 1 | 15 | 4 | 0 | 0 | 0 |  |
 | `src/70-mp-stage.js` | 21.5 | [web] | 9 | 0 | 0 | 0 | 5 | 2 | 1 | 6 | 0 | 0 | 0 |  |
+| `src/70f-mp-stage-farm.js` | 17.4 | [web] | 7 | 0 | 0 | 0 | 2 | 1 | 0 | 4 | 0 | 0 | 0 |  |
 | `src/89-host-sky.js` | 0.4 | [G native] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/99-host-take.js` | 5.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/99-host-take.js` | 5.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 
 ## Notes

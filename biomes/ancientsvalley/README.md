@@ -347,6 +347,12 @@ orchard trees, every one grown by the feral wrap; 14.97 M scene triangles (budge
 held at .9 and .7: at 1.6 and 1.1 it was 13.9 M and two items passed the 250k instance cap). Per view 530 to 695 calls (ceiling 1,200) and 3.1 to
 5.2 M triangles, the hub town the worst. Every assert and negative passes.
 
+**The atmosphere panel** (the owner, 2026-11-10: "in the viewer for ancients' valley pages, add controls for the atmospheric effects";
+`98-host-atmos-ui.js`). A foldable panel at the bottom right of every station's page: haze (the fog's density, scaled after the sky writes the
+hour's fog each frame), the smog's mist and its cloud band (the height fog, 89v), the cloud cover, the radiation's strength (89wr) and the
+distortions on or off (89y), each a multiplier on what the page set; a control shows only where its object is on the page. The weather mode
+stays the bar's selector. A viewer's control: nothing is saved or exported.
+
 ## Read next
 
 `PLAN.md` (the brief and the decisions), `PLAN-ANOMALIES.md`, `INDEX.md`, `KNOWN_ISSUES.md`, `PORT.md`; `kits/metropolis/README.md` for the towers.
