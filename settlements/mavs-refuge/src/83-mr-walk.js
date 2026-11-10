@@ -10,9 +10,13 @@
    MRWALK.reach(o): the reachability audit (KWALK.reach): each unit flooded from the step outside each of its unlocked doors (on
    a plane at the door's sill: the deck or the ground it stands on) over the unit's box, with its doors open; returns the floors
    no walker gets to. o.shut: the doors left shut (the negative: a shut door's floors are not reached through it). */
-var MRWALK = { on: typeof KWALK !== 'undefined' && typeof KratorInteriors !== 'undefined' && !!(KratorInteriors.walk && KratorInteriors.walk.register) && typeof MIX !== 'undefined' && MIX.on };
+var MRWALK = window.MRWALK = { on: typeof KWALK !== 'undefined' && typeof KratorInteriors !== 'undefined' && !!(KratorInteriors.walk && KratorInteriors.walk.register) && typeof MIX !== 'undefined' && MIX.on };
 (function(){
   if(!MRWALK.on) return;
+  /* registered on demand (2026-11-09): MRWALK.ensure(), from the first walk (KHOST.onWalk, 98-start.js) or the audit. At load it
+     cost minutes of script time (1,764 units, ~340,000 wall blocks: 259 s in headless Chromium), so the page no longer pays it
+     until someone walks */
+  MRWALK.ensure = function(){ if(window._mrwalk) return window._mrwalk;
   var t0 = performance.now(), IX = KratorInteriors, out = { units:0, floors:0, blocks:0, strips:0, failed:0 };
   MRWALK.units = [];
   MIX.units.forEach(function(u){ var r = null; try{ r = MIX.record(u.i); }catch(e){ out.failed++; return; } if(!r || !r.B) return;
@@ -23,10 +27,11 @@ var MRWALK = { on: typeof KWALK !== 'undefined' && typeof KratorInteriors !== 'u
   out.cleared = KDOOR.clearDoorways(KWALK);
   out.ms = Math.round(performance.now() - t0);
   window._mrwalk = out;
+  return out; };
   /* each unit's box (its storeys' outlines), and its unlocked doors: the ones whose sill stands within 1.5 m of the box, at a storey */
   function box(E){ var b = [1e9, -1e9, 1e9, -1e9]; (E.B.floors || []).forEach(function(F){ F.poly.forEach(function(p){ b[0] = Math.min(b[0], p[0]); b[1] = Math.max(b[1], p[0]); b[2] = Math.min(b[2], p[1]); b[3] = Math.max(b[3], p[1]); }); }); return b; }
   MRWALK.reach = function(o){
-    o = o || {}; var res = { units:0, floors:0, reached:0, noDoor:0, capped:0, nodes:0, unreached:[], shut:!!o.shut };
+    MRWALK.ensure(); o = o || {}; var res = { units:0, floors:0, reached:0, noDoor:0, noDoorFloors:0, capped:0, nodes:0, unreached:[], shut:!!o.shut };
     var was = KDOOR.list.map(function(D){ return D.target; });
     KDOOR.list.forEach(function(D){ if(o.shut) KDOOR.close(D); else KDOOR.open(D, { by:'audit' }); }); for(var k=0;k<60;k++) KDOOR.step(0.1);
     MRWALK.units.forEach(function(E){ var b = box(E); if(!(b[1] > b[0])) return;
@@ -34,7 +39,7 @@ var MRWALK = { on: typeof KWALK !== 'undefined' && typeof KratorInteriors !== 'u
         (E.B.floors || []).some(function(F){ return Math.abs(F.y - D.at[1]) < 1.2; }); });
       var fl = KWALK.floors.filter(function(F){ return F.tag === 'mix:' + E.u.id && /\.floor\./.test(F.name || ''); });
       res.units++; res.floors += fl.length;
-      if(!L.length){ res.noDoor++; fl.forEach(function(F){ res.unreached.push(F.name); }); return; }
+      if(!L.length){ res.noDoor++; res.noDoorFloors += fl.length; return; }   /* a unit with every door locked as built: kept shut on purpose, listed apart */
       var hit = new Set();
       L.forEach(function(D){ var nx = Math.sin(D.yaw), nz = Math.cos(D.yaw), sy = D.at[1];
         var r = KWALK.reach([[D.at[0] + nx*0.9, sy, D.at[2] + nz*0.9]], { ground:function(){ return sy; }, box:[b[0]-4, b[1]+4, b[2]-4, b[3]+4], limit:400000 });

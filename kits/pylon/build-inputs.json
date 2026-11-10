@@ -103,7 +103,7 @@
     "kits/post-apoc/src/30-geo.js": "c4129bdde242a3dcd9297b1380549ad9736077b37169ff3bff44133eed8fc6d1",
     "kits/post-apoc/src/32-cores.js": "bf164c6773f6706114af4fecc32a57efabb407f146fc6ed3577fb68ade80cc1b",
     "kits/post-apoc/src/34-adds.js": "c8d71fa314340fa7a19aab3bd51a3d67ff5ccbe4a1d2941428b0af9748307d00",
-    "kits/post-apoc/src/35-pa-open.js": "242c6bc3067401233ce962279d4fbfd3f36521b2ac6559ebb4dae3f74fb768aa",
+    "kits/post-apoc/src/35-pa-open.js": "a15dd057ffb09b13e4fe325975bbb95b71ead5ab97de87932f2838af3a1ded7b",
     "kits/post-apoc/src/36-def.js": "5a5bcb9eea787681ab2a24e7de76641a254f2640a2857546e18f4ea745a1c0db",
     "kits/post-apoc/src/40-dw-small.js": "20b63f80952d15775145e7aee8464eaab56c9329ca324b0e5f3c6e17bedd7d83",
     "kits/post-apoc/src/42-lg-dwell.js": "dc960ed31b79caafbc8a7c7c0fde980f3bb285500eda5592d5a12b814b4004f3",
@@ -113,7 +113,7 @@
     "kits/post-apoc/src/54-compound.js": "ec5af0c4cff3ae2e2514b4c33ba7561851f2d2b9a9fe113ec58d0fdcabb760ec",
     "kits/post-apoc/src/56-arena.js": "620a8dd4f7c44b36fd31dc8d82aa44de72fd04e5d014e80b2e72338ceb5ff513",
     "kits/post-apoc/src/91f-furnish.js": "06809e367c86eb19d99a5a93ea941c237ac69a9691d9037d4ffe619999c99ff2",
-    "kits/pylon/KNOWN_ISSUES.md": "a0c73ee4cc8f50856473ecf6ea59fe3a27164cfec5151545379de05c4d08279c",
+    "kits/pylon/KNOWN_ISSUES.md": "aef8221e14e222725502ced5908f567a4c34f03c97d67081a98d52cb58dce3e2",
     "kits/pylon/PORT.md": "e905ccbc32bdcd55f9fdd89970478f4d97843b776626012160fa3e493609d1fd",
     "kits/pylon/apoc/81-pyl-culture.js": "c7d867674f913c61f8d2600a8861aaa73c5d8fbfb486fca56e131e574d80b6e7",
     "kits/pylon/build.py": "2062fdff9c918c268bd0f0f9002ff89e5da91a126bae1769d443eb469cca7dda",
@@ -478,18 +478,18 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/pylon/build-manifest-kit.json": "3c8580de98de0ee539f40e853a280c203811d10268b81ca8d77b899e1320f9c5",
+    "kits/pylon/build-manifest-kit.json": "01bfd52797a5fa608af6a7260e690befb3243e8055b4f46b8e59b8526f32134b",
     "kits/pylon/dist/iziz.tex.iziz-2.js": "f27df1fdbfaa2e7ed56d95e3ec67187e805e1e4bc2e474dd46b3943338e4e97a",
     "kits/pylon/dist/iziz.tex.iziz.js": "9b74cdccfe69db90b0e7bca164088a5f5522477e63706715e53ef47e9c65d1dc",
     "kits/pylon/dist/iziz.tex.pylon.js": "b55002cc7cadea946a90eae4ae8210246a5635dab63c413e1ea803b75d05fa6f",
-    "kits/pylon/dist/pylon.html": "77627ffc8d5a9bf70dffd0d6bbe7320d252f25ea429aeccdf92f5437e674b97d"
+    "kits/pylon/dist/pylon.html": "46d63e23d0db7edd0a570d823e29e5ceea42aaad583fd346ae30a1096f0e820d"
    },
    "outputs_raw": {
-    "kits/pylon/build-manifest-kit.json": "3c8580de98de0ee539f40e853a280c203811d10268b81ca8d77b899e1320f9c5",
+    "kits/pylon/build-manifest-kit.json": "01bfd52797a5fa608af6a7260e690befb3243e8055b4f46b8e59b8526f32134b",
     "kits/pylon/dist/iziz.tex.iziz-2.js": "f27df1fdbfaa2e7ed56d95e3ec67187e805e1e4bc2e474dd46b3943338e4e97a",
     "kits/pylon/dist/iziz.tex.iziz.js": "9b74cdccfe69db90b0e7bca164088a5f5522477e63706715e53ef47e9c65d1dc",
     "kits/pylon/dist/iziz.tex.pylon.js": "b55002cc7cadea946a90eae4ae8210246a5635dab63c413e1ea803b75d05fa6f",
-    "kits/pylon/dist/pylon.html": "77627ffc8d5a9bf70dffd0d6bbe7320d252f25ea429aeccdf92f5437e674b97d"
+    "kits/pylon/dist/pylon.html": "46d63e23d0db7edd0a570d823e29e5ceea42aaad583fd346ae30a1096f0e820d"
    }
   }
  }

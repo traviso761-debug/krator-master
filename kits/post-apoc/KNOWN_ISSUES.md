@@ -64,3 +64,9 @@ The owner: "remove all dark voids and make all windows, doors and portals actual
 - [ ] A locked door on a solid face is still a solid face: with ?interiors=1 the room behind it is furnished but seen only through no opening. Cutting the shells' walls behind their doors (as `wallOpen` does) would make those doors operable; the builders were not changed beyond the longhouse.
 - [ ] An operable leaf is one plain painted box (the drawn leaf's inset panels and handle do not swing, so they are not drawn on it).
 
+
+- [ ] (2026-11-09) **A guest on a page with no core/door host draws its leaves shut.** Iziz's `--kit` pages (Pylon's sheet)
+      carry KDOOR but not `90-core-door-host.js` (Iziz hosts its own doors in 95j), and `35-pa-open.js`'s `poFlush` threw
+      "KDOORHOST is not defined" at build there (the page drew nothing). It now skips `KDOORHOST.instanced`/`pose` when the
+      page has no host: the Post-Apoc leaves on those pages stand shut and do not open. Hosting them needs Iziz's 95j to pose
+      them, or the page to take the core host.

@@ -53,7 +53,7 @@
     "kits/interiors/src/48b-sets.js": "9da457a25bc3e0fd5732c13b569f63ccd0138ac50d84ddc02c47e005709e8889",
     "kits/interiors/src/49-exports.js": "96edc46b9aa75036235144bdbff17c505fc0678217cf2cf7d6f8442b89d55ca9",
     "kits/interiors/src/49b-walk.js": "d90cf2cba70ac876a1831790124e5a4c5ba7072e90599572e458dca1704c16ac",
-    "kits/post-apoc/KNOWN_ISSUES.md": "3827cd75e36e2f27ceed7bf1ef2dd0413a4b47a69885d29647a8a80745b483fc",
+    "kits/post-apoc/KNOWN_ISSUES.md": "2273cee95c8c469076cf21b68dbd39e67515ffdf15ab9a6d2fc54d7339556670",
     "kits/post-apoc/PORT.md": "6e06bcc49bb23f022d24eec9b09fe4ee7c06fb0d83ddbfe4febcbf35c28ab9f2",
     "kits/post-apoc/build.py": "038a5cdcfc752d25aaba69d930007b3c2b6c855b9b4f10a2325d2b874acca79f",
     "kits/post-apoc/src/00-head.html": "6a18fdf88270b1213f9b7387f839dbdf73486577d3d860f4872c706e1aa28a70",
@@ -64,7 +64,7 @@
     "kits/post-apoc/src/30-geo.js": "c4129bdde242a3dcd9297b1380549ad9736077b37169ff3bff44133eed8fc6d1",
     "kits/post-apoc/src/32-cores.js": "bf164c6773f6706114af4fecc32a57efabb407f146fc6ed3577fb68ade80cc1b",
     "kits/post-apoc/src/34-adds.js": "c8d71fa314340fa7a19aab3bd51a3d67ff5ccbe4a1d2941428b0af9748307d00",
-    "kits/post-apoc/src/35-pa-open.js": "242c6bc3067401233ce962279d4fbfd3f36521b2ac6559ebb4dae3f74fb768aa",
+    "kits/post-apoc/src/35-pa-open.js": "a15dd057ffb09b13e4fe325975bbb95b71ead5ab97de87932f2838af3a1ded7b",
     "kits/post-apoc/src/36-def.js": "5a5bcb9eea787681ab2a24e7de76641a254f2640a2857546e18f4ea745a1c0db",
     "kits/post-apoc/src/40-dw-small.js": "20b63f80952d15775145e7aee8464eaab56c9329ca324b0e5f3c6e17bedd7d83",
     "kits/post-apoc/src/42-lg-dwell.js": "dc960ed31b79caafbc8a7c7c0fde980f3bb285500eda5592d5a12b814b4004f3",
@@ -147,18 +147,17 @@
     "kits/interiors": "c343f7e77884e1f4a489c5a2327ea3c5a7a54a1f9bc070a21766131363cf07f7",
     "kits/interiors/sets": "1bdefc8c84d12d89305c3191a37cb67874320bdf687403427b51b5eaff9c5b17",
     "kits/interiors/src": "fe72f6be1b5eb6012c769b91a5fc7c558f24144155f758942db210e347392bab",
-    "kits/post-apoc": "0ec8020e60cc954729a885f0fb01aa77233f1ed2e5d01e11eb59e668d24869ad",
     "kits/post-apoc/src": "61e87631fb0b5650d4c004d17c7f5adfe7a81021ac0f2be144f3f8378d22ca84",
     "tools": "24cc9a0d867a37d71596ec8a001087a35735c498125de4e336dde163318589d8",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/post-apoc/build-manifest.json": "881205636d7abee899949e6b355b2b941cf03379e2d17aa9629530e07ba35aec",
-    "kits/post-apoc/dist/post-apoc.html": "ad259047b99eb928546d0cb89c9471849eb04e06606283293a6c7b8c19508661"
+    "kits/post-apoc/build-manifest.json": "845aba35585d4b7a2ce6389eccb8b974f4ae45e8aafe0f2df15b7fcd62fe0bfd",
+    "kits/post-apoc/dist/post-apoc.html": "a5ef5cb59aa52fde90107afeac3ce610d660ee688ef777c5fea797004ba22402"
    },
    "outputs_raw": {
-    "kits/post-apoc/build-manifest.json": "881205636d7abee899949e6b355b2b941cf03379e2d17aa9629530e07ba35aec",
-    "kits/post-apoc/dist/post-apoc.html": "ad259047b99eb928546d0cb89c9471849eb04e06606283293a6c7b8c19508661"
+    "kits/post-apoc/build-manifest.json": "845aba35585d4b7a2ce6389eccb8b974f4ae45e8aafe0f2df15b7fcd62fe0bfd",
+    "kits/post-apoc/dist/post-apoc.html": "a5ef5cb59aa52fde90107afeac3ce610d660ee688ef777c5fea797004ba22402"
    }
   }
  }

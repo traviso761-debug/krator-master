@@ -67,6 +67,8 @@ var mDoorTip = KDOORHOST.tip(function(){ return camera.position; }, goWalking), 
 window._doors = { doors:KDOOR.list.length, locked:KDOOR.list.filter(function(D){ return D.locked; }).length, open:KDOOR.list.filter(function(D){ return D.open>0; }).length,
   leaves:KDOOR.list.filter(function(D){ return !!D.fam; }).length, panes:NL_WINDOWS.length, cut:NL_WINDOWS.filter(function(W){ return W[11]; }).length,
   cards:(window._panes ? window._panes.cards : 0) + (GOPEN.cards||0), voids:0 };
+/* core/walk is filled on the first walk (83-mr-walk.js MRWALK.ensure): the walker meets the units' walls and the shut doors */
+if(typeof MRWALK !== 'undefined' && MRWALK.on){ var mrOnWalk0 = KHOST.onWalk; KHOST.onWalk = function(on){ if(on) MRWALK.ensure(); if(mrOnWalk0) mrOnWalk0(on); }; }
 var MHOST = KHOST.take({
   build:'mavs-refuge', title:"Mav's Refuge", hint:'a Beast Rider refuge in the canopy of the hyperjungle',
   scene:scene, camera:camera, renderer:renderer, ground:terrainH, clear:1.6, minR:4, maxR:5000,
