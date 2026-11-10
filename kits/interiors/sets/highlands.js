@@ -61,6 +61,23 @@
     A.doors.push(Object.assign({}, base, { to: B ? '.' + b : 'street' }));
     if (B) B.doors.push(Object.assign({}, base, { to: '.' + a, leaf: false, swing: 'out' }));
   };
+  /* each flight of a great building's `stairs` as two fixtures (2026-11-09): the FLIGHT on the floor it starts from (the whole
+     run, its front at the foot, where a walker steps on) and the WELL in the room its head reaches (the top half of the run,
+     its front past the head, where a walker steps off); each turned along the flight (ry), as tall as its room, with a 0.9 m
+     clear front the placer keeps reachable. Without the turn and the height, a front facing a wall left the placer no way in,
+     and the keep's rooms went unfurnished (the war room had no table) */
+  const stairFixtures = function (R, ST) {
+    ST.forEach(function (S) {
+      const dx = S.b[0] - S.a[0], dz = S.b[1] - S.a[1], Ln = Math.hypot(dx, dz), ux = dx / Ln, uz = dz / Ln;
+      [[S.a[2], S.a[0] + dx / 2, S.a[1] + dz / 2, Ln, Math.atan2(-ux, -uz), '_flight'],
+        [S.b[2], S.a[0] + dx * 0.75, S.a[1] + dz * 0.75, Ln / 2, Math.atan2(ux, uz), '_well']].forEach(function (q) {
+        const r = R.find(function (r) { const P = r.poly; return Math.abs(r.y - q[0]) < 0.3 && q[1] > P[0][0] && q[1] < P[1][0] && q[2] > P[0][1] && q[2] < P[2][1]; });
+        if (!r) return;
+        (r.fixtures = r.fixtures || []).push({ id: S.id + q[5], kind: 'stair', x: r3(q[1]), z: r3(q[2]), ry: r3(q[4]), w: S.w + 0.2, d: r3(q[3]), h: r.h,
+          reach: true, clearance: { front: 0.9 } });
+      });
+    });
+  };
   const L = [];
   const add = function (it) { L.push(it); return it; };
   const byKey = function (k) { for (let i = 0; i < L.length; i++) if (L[i].key === k) return L[i]; throw new Error('highlands set: no item ' + k); };
@@ -318,24 +335,23 @@
       { id: 'tiers', kind: 'tiers', x: 0, z: -5.6, w: 25.5, d: 12.8, reach: false }, { id: 'arm_w', kind: 'tiers', x: -9, z: -16, w: 7.5, d: 8, reach: false },
       { id: 'arm_e', kind: 'tiers', x: 9, z: -16, w: 7.5, d: 8, reach: false }, { id: 'well', kind: 'well', x: 0, z: -16, w: 10.5, d: 8, reach: false },
       { id: 'dais', kind: 'dais', x: 0, z: -24.4, w: 12.4, d: 4.2, reach: false }] }));
-    R.push(room('vestibule', 'lobby', -10.6, 10.6, 16.5, 29.5, FL, 8.5, { wealth: 0.85, fixtures: [
-      { id: 'stair_pub', kind: 'stair', x: -9.9, z: 24.2, w: 1.5, d: 9.4, reach: true }, { id: 'stair_press', kind: 'stair', x: 9.9, z: 24.2, w: 1.5, d: 9.4, reach: true }] }));
+    R.push(room('vestibule', 'lobby', -10.6, 10.6, 16.5, 29.5, FL, 8.5, { wealth: 0.85, fixtures: [] }));
     /* the ground storey of the ring: the members' side (lobby, cloakroom, writing room, the division lobbies, the party
        room, the dining room), the Speaker's side at the back (his lobby and office, the seal room, the clerks, the
        serjeant's guard, the kitchen) */
     g('lobby', 'lobby', -8, 8, 8, 15.5); g('cloaks', 'lobby', -22, -8, 8, 15.5);
-    g('stair_w', 'lobby', -30.5, -22, 8, 15.5, { fixtures: [{ id: 'flight_w', kind: 'stair', x: -26.3, z: 14.75, w: 7.4, d: 1.4, reach: true }] });
+    g('stair_w', 'lobby', -30.5, -22, 8, 15.5);
     g('writing', 'study', 8, 22, 8, 15.5);
-    g('stair_e', 'lobby', 22, 30.5, 8, 15.5, { fixtures: [{ id: 'flight_e', kind: 'stair', x: 26.3, z: 14.75, w: 7.4, d: 1.4, reach: true }] });
+    g('stair_e', 'lobby', 22, 30.5, 8, 15.5);
     g('noes', 'lobby', -30.5, -22, -6, 8); g('party', 'committee', -30.5, -22, -28, -6);
     g('ayes', 'lobby', 22, 30.5, -6, 8); g('dining', 'hall', 22, 30.5, -28, -6);
     g('guard', 'guard', -30.5, -18, -35.5, -28); g('clerks', 'study', -18, -6, -35.5, -28); g('speaker_lobby', 'lobby', -6, 6, -35.5, -28);
     g('speaker', 'study', 6, 14, -35.5, -28, { wealth: 0.85 }); g('seal', 'store', 14, 18, -35.5, -28, { wealth: 0.85 }); g('kitchen', 'kitchen', 18, 30.5, -35.5, -28);
     /* the upper storey: the members' landings and corridors, the committee rooms, the members' library, the archive, the
        journal office, the second party room; the public's gallery lobby and the press room over the front */
-    u('landing_w', 'lobby', -30.5, -22, 8, 15.5, { fixtures: [{ id: 'well_w', kind: 'stair', x: -24.4, z: 14.75, w: 4.2, d: 1.5, reach: true }] });
+    u('landing_w', 'lobby', -30.5, -22, 8, 15.5);
     u('public', 'lobby', -22, 0, 8, 15.5); u('press', 'study', 0, 22, 8, 15.5);
-    u('landing_e', 'lobby', 22, 30.5, 8, 15.5, { fixtures: [{ id: 'well_e', kind: 'stair', x: 24.4, z: 14.75, w: 4.2, d: 1.5, reach: true }] });
+    u('landing_e', 'lobby', 22, 30.5, 8, 15.5);
     u('corr_w', 'lobby', -24, -22, -28, 8); u('committee_1', 'committee', -30.5, -24, -10, 8); u('committee_2', 'committee', -30.5, -24, -28, -10);
     u('corr_e', 'lobby', 22, 24, -28, 8); u('library', 'library', 24, 30.5, -10, 8); u('committee_3', 'committee', 24, 30.5, -28, -10);
     u('archive', 'library', -30.5, -10, -35.5, -28); u('journal', 'study', -10, 10, -35.5, -28); u('party_2', 'committee', 10, 30.5, -35.5, -28);
@@ -361,11 +377,18 @@
     R.find(function (r) { return r.id === 'party'; }).doors.push({ id: 'd.party.wing_w', at: [-31, -14], w: 1.4, to: 'wing_w', drawn: true });
     R.find(function (r) { return r.id === 'dining'; }).doors.push({ id: 'd.dining.wing_e', at: [31, -14], w: 1.4, to: 'wing_e', drawn: true });
     link(R, 'vlanding_w', 'street', [-9.9, 19.5], 1.4, { open: true }); link(R, 'vlanding_e', 'street', [9.9, 19.5], 1.4, { open: true });   /* the stairs' heads */
+    /* a tall room's wall (the vestibule's, 8.5 m; the chamber's, 12.9 m) stands on the line an upper door pierces: a GAP in its
+       walk wall there (core/walk only: 72c draws nothing for it, no leaf), or the door into the public lobby, the press room and
+       the galleries opens on a wall (the reachability audit, 2026-11-09) */
+    const gap = function (a, at, w) { R.find(function (r) { return r.id === a; }).doors.push({ id: 'gap.' + a + '.' + at.join('_'), at: at, w: w, gap: true, leaf: false, swing: 'none' }); };
+    gap('vestibule', [-8.9, 16], 1.2); gap('vestibule', [8.9, 16], 1.2); gap('chamber', [-11, 8], 1.4); gap('chamber', [11, 8], 1.4);
+    const HST = [{ id: 'members_w', a: [-30, 14.75, FL], b: [-22.6, 14.75, U], w: 1.2 }, { id: 'members_e', a: [30, 14.75, FL], b: [22.6, 14.75, U], w: 1.2 },
+        { id: 'public', a: [-9.9, 28.9, FL], b: [-9.9, 19.6, U], w: 1.3 }, { id: 'press', a: [9.9, 28.9, FL], b: [9.9, 19.6, U], w: 1.3 }];
+    stairFixtures(R, HST);   /* each flight a way in: the room it starts from, the room its head reaches */
     add({ key: 'hl_rep_hall_republic', name: 'Hall of the Republic', culture: 'republican', wealth: CIVIC, types: ['civic'], lot: [112, 100],
       shells: [{ id: 'ring', at: [0, -10], w: 62, d: 52, y0: FL, h: 7.5, t: 0.5 }, { id: 'core', at: [0, -10], w: 44, d: 36, y0: FL, h: r3(20 - FL), t: 0.5, floor: false },
         { id: 'entrance', at: [0, 23], w: 22, d: 14, y0: FL, h: 9, t: 0.5 }],
-      stairs: [{ id: 'members_w', a: [-30, 14.75, FL], b: [-22.6, 14.75, U], w: 1.2 }, { id: 'members_e', a: [30, 14.75, FL], b: [22.6, 14.75, U], w: 1.2 },
-        { id: 'public', a: [-9.9, 28.9, FL], b: [-9.9, 19.6, U], w: 1.3 }, { id: 'press', a: [9.9, 28.9, FL], b: [9.9, 19.6, U], w: 1.3 }],
+      stairs: HST,
       rooms: R,
       bodies: [{ id: 'wing_w', poly: rect(13, 22, -37.5, -9), y: FL, levels: [{ h: 4.2 }, { h: 3.4 }], wall: 0.45, roof: 'gable', pitch: pt(1.2),
         doors: [{ at: [-37.5, 2], w: 1.8 }, { at: [-31, -14], w: 1.4 }], program: [['antechamber', 'study', 'study'], ['study', 'study', 'study']] },
@@ -388,7 +411,8 @@
     k('armoury', 'armoury', KX0, KX1, 1.4, 3.5);
     k('duty', 'guard', KX0, KX1, 5.2, 3.5);
     k('cipher', 'signals', KX0, KM, 9.0, 3.3); k('intelligence', 'study', KM, KX1, 9.0, 3.3);
-    k('war_room', 'war_room', KX0, KX1, 12.6, 3.7, { wealth: 0.85 });
+    k('war_room', 'war_room', KX0, KX1, 12.6, 3.7, { wealth: 0.85, fixtures: [   /* the map table: the builder's (78 hnMapTable; no catalog piece) */
+      { id: 'map_table', kind: 'table', x: -17.4, z: -15.2, w: 3.6, d: 2.2, h: 1, reach: false, clearance: { front: 0.8, back: 0.8, left: 0.8, right: 0.8 } }] });
     k('rocket_command', 'war_room', KX0, KM, 16.6, 3.7); k('signals', 'signals', KM, KX1, 16.6, 3.7);
     k('map_store', 'library', KX0, KX1, 20.6, 3.1);
     k('signal_loft', 'signals', KX0, KX1, 24.8, 3.1);
@@ -410,25 +434,22 @@
     /* the doors */
     link(R, 'duty', 'street', [-10.4, -7.6], 1.4, { h: 2.4, drawn: true });
     link(R, 'duty', 'bridge', [-7.2, -18.5], 1.2, { h: 2.3 }); link(R, 'bridge', 'study', [3.2, -18.5], 1.2, { h: 2.3 });
-    link(R, 'intelligence', 'cipher', [KM, -12], 1); link(R, 'rocket_command', 'signals', [KM, -12], 1);
+    link(R, 'intelligence', 'cipher', [KM, -17.5], 1); link(R, 'rocket_command', 'signals', [KM, -17.5], 1);
     link(R, 'entrance', 'street', [15, -16.4], 1.6, { h: 2.6, drawn: true });
-    link(R, 'entrance', 'state_dining', [13, -21], 1.4); link(R, 'state_dining', 'kitchen', [8, -21], 1.2); link(R, 'entrance', 'audience', [17.5, -21], 1.8);
-    link(R, 'landing', 'family', [13, -21], 1.2); link(R, 'family', 'study', [8.5, -21], 1.2); link(R, 'landing', 'bedchamber', [17.5, -21], 1.2);
+    link(R, 'entrance', 'state_dining', [13, -24.4], 1.4);   /* north of the stair's foot: the flight runs along this wall */ link(R, 'state_dining', 'kitchen', [8, -21], 1.2); link(R, 'entrance', 'audience', [17.5, -21], 1.8);
+    link(R, 'landing', 'family', [13, -24.4], 1.2); link(R, 'family', 'study', [8.5, -21], 1.2); link(R, 'landing', 'bedchamber', [17.5, -21], 1.2);
     link(R, 'magazine', 'street', [-32.5, -27.2], 1.4, { h: 2.2 }); link(R, 'gaol', 'street', [32.5, -27.2], 1.2, { h: 2.2 });
     [33.2, 36, 38.8].forEach(function (x, i) { link(R, 'gaol', 'cell_' + (i + 1), [x, -31], 0.8, { h: 2 }); });
-    /* the stairs: up the keep in a turn of straight flights against its walls, the palace's in its entrance hall */
-    const ST = [{ id: 'keep_0', a: [-19.75, -9, 1.4], b: [-19.75, -14.6, 5.2], w: 1.1 }, { id: 'keep_1', a: [-18.5, -19.75, 5.2], b: [-12.9, -19.75, 9], w: 1.1 },
-      { id: 'keep_2', a: [-8.25, -19, 9], b: [-8.25, -13.4, 12.6], w: 1.1 }, { id: 'keep_3', a: [-9, -8.25, 12.6], b: [-15, -8.25, 16.6], w: 1.1 },
+    /* the stairs: up the keep in a turn of straight flights against its walls, the palace's in its entrance hall. A flight
+       stays inside the room its head reaches on a split storey (keep_1 rises in intelligence, keep_3 in signals, each along the
+       partition, north to south, the partition's door south of its head): one that ran under the cipher room's or the
+       command's partition had a wall at head height (the reachability audit, 2026-11-09), and a head that ended at the
+       partition left its room's placer no floor to step off onto */
+    const ST = [{ id: 'keep_0', a: [-19.75, -9, 1.4], b: [-19.75, -14.6, 5.2], w: 1.1 }, { id: 'keep_1', a: [-13.2, -9, 5.2], b: [-13.2, -14.6, 9], w: 1.1 },
+      { id: 'keep_2', a: [-8.25, -19, 9], b: [-8.25, -13.4, 12.6], w: 1.1 }, { id: 'keep_3', a: [-13.2, -9, 12.6], b: [-13.2, -14.6, 16.6], w: 1.1 },
       { id: 'keep_4', a: [-19.75, -9.5, 16.6], b: [-19.75, -15.5, 20.6], w: 1.1 }, { id: 'keep_5', a: [-18.5, -19.75, 20.6], b: [-12.5, -19.75, 24.8], w: 1.1 },
       { id: 'residence', a: [13.95, -16.9, 1], b: [13.95, -22.7, 5], w: 1.1 }];
-    /* each flight a way in (a fixture) in the room it starts from and in the room its head reaches */
-    ST.forEach(function (S) {
-      [[S.a[2], (S.a[0] + S.b[0]) / 2, (S.a[1] + S.b[1]) / 2], [S.b[2], S.b[0] * 0.75 + S.a[0] * 0.25, S.b[1] * 0.75 + S.a[1] * 0.25]].forEach(function (q, j) {
-        const r = R.find(function (r) { const P = r.poly; return Math.abs(r.y - q[0]) < 0.3 && q[1] > P[0][0] && q[1] < P[1][0] && q[2] > P[0][1] && q[2] < P[2][1]; });
-        if (!r) return; const along = Math.abs(S.b[0] - S.a[0]) > 0.1, L = Math.hypot(S.b[0] - S.a[0], S.b[1] - S.a[1]) * (j ? 0.5 : 1);
-        (r.fixtures = r.fixtures || []).push({ id: S.id + (j ? '_well' : '_flight'), kind: 'stair', x: r3(q[1]), z: r3(q[2]), w: along ? L : S.w + 0.2, d: along ? S.w + 0.2 : L, reach: true });
-      });
-    });
+    stairFixtures(R, ST);   /* each flight a way in: in the room it starts from and in the room its head reaches */
     add({ key: 'hl_rep_fortress', name: 'Fortress', culture: 'republican', wealth: CIVIC, types: ['military'], residence: true, units: 1, lot: [86, 78],
       shells: [{ id: 'keep', at: [-14, -14], w: 14, d: 14, y0: 1.4, h: 22.6, t: 0.6 }, { id: 'loft', at: [-14, -14], w: 14.6, d: 15.5, y0: 24.8, h: 3.4, t: 0.3, floor: false },
         { id: 'palace', at: [15, -21], w: 24, d: 10, y0: 1, h: 7.3, t: 0.4 }, { id: 'bridge', at: [-2, -18.5], w: 10, d: 2.6, y0: 5, h: 3, t: 0.15, floor: false },

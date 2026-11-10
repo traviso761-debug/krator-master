@@ -9,8 +9,9 @@
    back, so such a body is INSET (inset(): every storey planned on the footprint they all share, the doors moved onto it); the
    kit's pages draw its hollow walls 0.35 m thick on the blocks' faces (69e6), so their lean never reaches a room, and the
    strip of floor between is the wall's foot. The kit's pages draw these bodies hollow with the interiors on (kits/iziz-vernacular 69e6: a block matching a storey
-   here). HELD (the owner, 2026-11-09): the citadel's defs (the Sultan's Palace, the Pleasure Dome of the Bay, the Grand Vizier's palace,
-   the palace gate; the Garden Pleasure Dome's hold is lifted: its item is below; settlements/xanadu/citadel/BLUEPRINT.md) wait on the owner's visual references.
+   here). THE CITADEL (the owner, 2026-11-09): its defs (the Sultan's Palace, the Pleasure Dome of the Bay, the Grand Vizier's
+   palace, the palace gate; settlements/xanadu/citadel/BLUEPRINT.md) are built by the citadel sessions (the Bay's dome hollow by its
+   builder, 78d; the rest kits/interiors/sets/xanadu-citadel.js), so they stay skipped here; the Garden Pleasure Dome's item is below.
    ====================================================================== */
 (function (IX) {
   'use strict';
@@ -18,7 +19,7 @@
   const r3 = function (v) { return Math.round(v * 1000) / 1000; };
   const POOR = 0.2, MID = 0.5, RICH = 0.8, CIVIC = 0.65;
   const SF = ['single-family dwelling'], MF = ['multi-family dwelling'];
-  const HELD = 'held: the owner will send visual references (2026-11-09)';
+  const HELD = 'built by the citadel sessions (2026-11-09)';   /* the Pleasure Domes: -pleasuredome; the palace, the Vizier's, the gate: -citadel */
   /* the kit's batter (72-xa-helpers.js xnBatterK): the top of a w x h x d block is k times its base */
   function batK(w, h, d) { const want = 1 - 2 * h * 0.088 / Math.min(w, d); return want > 0.94 ? 0.96 : want > 0.89 ? 0.92 : want > 0.83 ? 0.86 : 0.8; }
   /* a body planned INSIDE the builder's blocks (inset: kits/iziz-vernacular 69e6): every storey on the one footprint they all
@@ -95,8 +96,8 @@
       doors: [{ at: [-5.2, 4], w: 1.6 }, { at: [0, 4], w: 1.6 }, { at: [5.2, 4], w: 1.6 }], program: [['shop', 'shop', 'shop'], ['living', 'bedroom']] }],
     note: 'three open shop fronts (their counters on the street are the builder\'s); the shopkeepers\' flat over the back half' });
   add({ key: 'xa_workshop', name: 'Workshop', wealth: POOR, types: ['industry', 'market/shop'], lot: [22, 18],
-    bodies: [stack(-4, -4, 10, 7, [3, 2.6], { doors: [{ at: [-2, -0.5], w: 1.1 }], program: [['workshop', 'shop'], ['store', 'study']] })],
-    note: 'the shop and its loft; the yard\'s open sheds are left out' });
+    bodies: [stack(-4, -4, 10, 7, [3, 2.6], { doors: [{ at: [-2, -0.5], w: 1.1 }], program: [['workshop'], ['store', 'study']] })],
+    note: 'the workshop, which sells from its bench, and its loft; the yard\'s open sheds are left out (2026-11-10: split into a workshop and a shop, the shop half had no wall for a counter beside the stair: the sets gate)' });
   skip('xa_smithy', 'Scrap smithy', ['industry'], 'a forge house open at the front between two piers (three rubble walls under a sheet roof): no enclosed room; the forge and anvil are the yard\'s furniture');
 
   /* ================================================================ farms and mills (76-xa-farm.js) */

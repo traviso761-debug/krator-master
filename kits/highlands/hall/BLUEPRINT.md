@@ -46,12 +46,12 @@ the Republic's red hanging; the division doors open off the side aisles (8.75 m 
 | Public | citizens who come to listen, petitioners | the forecourt, the great portal, the **Vestibule** (the Hall of Citizens), the public stair, the public gallery lobby and the **public gallery** |
 | Press | the broadsheets' writers | the press stair from the Vestibule, the **press room** and the **press gallery** |
 | Members | the 300 | the **Members' Lobby** off the Vestibule (kept by the doorkeepers), the chamber, the division lobbies, the cloakroom, the writing room, the dining room, the party rooms, the members' stairs to the committee floor, the wings |
-| The Speaker and the clerks | the Speaker, the clerks, the serjeant | the back of the ring: the Speaker's Lobby (the back door from the service yard), his office and the seal room, the clerks' office, the guard |
+| The Speaker and the clerks | the Speaker, the clerks, the serjeant | the back of the ring: the Speaker's Lobby (the back door from the service yard), the Speaker's office and the seal room, the clerks' office, the guard |
 | Service | cooks, porters, guards | the back door, the kitchen behind the dining room, the serjeant's guard room |
 
 The public never meets the members' routes: the Vestibule's two stairs rise along its side walls to landings at the upper
 storey, and from there to the public lobby (west) and the press room (east), which open only on their galleries; the wall
-between them and the members' landings is blind. The Speaker reaches the chamber from his own lobby behind the dais.
+between them and the members' landings is blind. The Speaker reaches the chamber from their own lobby behind the dais.
 
 ## Storeys and sizes
 
@@ -84,7 +84,7 @@ the clock stage stay solid.
 | The Veterans' room | committee | -30.5 to -22 | -28 to -6 | the old faction's party room; to the members' offices (west wing) and the chamber |
 | Members' dining room | hall | 22 to 30.5 | -28 to -6 | to the library wing, the kitchen and the chamber |
 | Serjeant's guard | guard | -30.5 to -18 | -35.5 to -28 | the Assembly's own guard |
-| Clerks' office | study | -18 to -6 | -35.5 to -28 | the Clerk of the Assembly and his clerks |
+| Clerks' office | study | -18 to -6 | -35.5 to -28 | the Clerk of the Assembly and the under-clerks |
 | Speaker's Lobby | lobby | -6 to 6 | -35.5 to -28 | the back door; the Speaker's way to the dais |
 | Speaker's office | study | 6 to 14 | -35.5 to -28 | |
 | Seal room | store | 14 to 18 | -35.5 to -28 | the Great Seal and the Republic's charter, off the Speaker's office only |
@@ -155,3 +155,11 @@ shell wall cut and hung (core/door, unlocked); four stairs in core/walk; the hor
 members' benches (catalog benches on the tiers), the Speaker's chair, the clerks' table, the banners. The cut-away (X)
 opens the Hall storey by storey. Catalog pieces the Hall would want and the catalog lacks: a curved members' bench with a
 desk front, a rostrum, the mace and its table, the division clerks' desks (settlements/highlands/KNOWN_ISSUES.md).
+
+**2026-11-10 (the WIP finished).** The public and the press could not reach their lobbies or galleries: the vestibule's
+walk wall (8.5 m) and the chamber's (12.9 m) stood across the upper doors on their lines, and no floor bridged the far side
+of the two shells' walls at the landings' doors. The set gives those tall rooms a walk-only `gap` at each such door and
+`../src/72c-hl-plan.js` lays the sill's floor on both sides of an upper door through back-to-back walls. Every flight is two
+fixtures derived from `stairs` (turned along it, a clear front), the hand-written ones gone. All 52 floors are reached from
+the doors and every room is furnished (the committee rooms and party rooms 11 pieces each, the galleries 12); the
+furniture carries the library's detail maps (`tex=True`).

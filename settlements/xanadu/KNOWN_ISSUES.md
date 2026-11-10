@@ -39,6 +39,21 @@ Open items are `- [ ]` lines; build.py prints them.
       palanquin, the hoist, the lattice boxes) is not in the catalog; the rooms take the catalog's xanadu court pieces by kind.
       The furniture follows the page's switch (?interiors=1), as the rest of Erewhon. The kit's own sheet (kits/xanadu/build.py,
       the -sheets session) does not take the citadel files yet: add kxa.CITADEL and the 'xanadu-citadel' interior set there.
+- [ ] (2026-11-10) **Interiors (`?interiors=1`): hollow walls, the set, the reachability audit.** The furnished defs are drawn
+      hollow by the Vernacular's auto bodies (69e6) round the set's rooms (`kits/interiors/sets/xanadu.js`), their doors unlocked;
+      `verify.py --interiors` runs `tools/ix_reach_audit.js`. Fixed 2026-11-10: a battered block up to 5 m wider a side than its
+      INSET plan is drawn hollow (1.8 m before: the temples', guild halls' and manors' blocks stayed solid, their rooms sealed),
+      the band between such a wall and the rooms is walk floor, and an iwan on a hollow building is a passage with the door in
+      the wall behind it (89y; the held palace is never hollow, so untouched). The sheet: 3,671 of 3,972 floors reached (3,453
+      before), 391 slivers beside stairwells counted apart; 43 buildings keep an unreached floor: the hillside manors and the
+      konaks (`xa_rich_b`, `xa_rich_c`, their `_palopo`), the shop rows (`xa_shops`, `xa_shop_turk_a`), the monastery's hall,
+      the grand temple (its door 7.2 m up its flights), the fortress's keep, the baths' rooms, the granary, the farmhouse: in
+      each the builder's door is on a block the set's body does not match, or a raised door with no flight in core/walk. Erewhon
+      (`verify.py dist/erewhon.html --assert --interiors`, 2026-11-10, a local build not committed: Erewhon is rebuilt once
+      after the citadel sessions merge; OK): 52,321 of 54,062 floors reached (47,538 on the WIP),
+      3,644 slivers apart, 236 buildings with a gap, 401 placements held inside the citadel. The citadel belongs to the citadel sessions (`-pleasuredome`, `-citadel`; 2026-11-09): every placement inside its
+      wall (CIT_POLY) builds as before here, with no hollow walls and no rooms from this set (`XAF.held`). The furniture is textured (the catalog's detail maps, `tex=True`) but for the
+      `tile` family, which the catalog's maps lack (TODO.md, ride-along).
 - [ ] (2026-11-03) **Doors and glass: the kit's bodies are solid.** The kit takes core/door and the Vernacular's openings
       (69e5) and `kits/xanadu/src/71c-xa-openings.js` (kits/xanadu/README.md, "Doors and glass"): on the sheet 599 doors (each a
       real leaf in KDOOR, locked, with an id from its def and placement) and 5,912 panes where there were black plates and dark

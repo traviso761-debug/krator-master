@@ -149,6 +149,9 @@ TARGET_BIO = {'roketstad': {'kit': 'nhighlands', 'files': {
     '86-bio-10-core-head.js': _BIO('core', 'biome', '10-core-head.js'),
     '86-bio-20-core-kit.js': _BIO('core', 'biome', '20-core-kit.js'),
     '86-bio-30-core-foliage.js': _BIO('core', 'biome', '30-core-foliage.js'),
+    '86-bio-31b-core-leafset.js': _BIO('core', 'biome', '31b-core-leafset.js'),   # the kit's cores as biomes/nhighlands takes
+    '86-bio-31j-core-joint.js': _BIO('core', 'biome', '31j-core-joint.js'),       # them (2026-11-09: its species call BIO.fung,
+    '86-bio-33-core-fungoid.js': _BIO('core', 'biome', '33-core-fungoid.js'),     # and Roketstad failed at load without 33)
     '86-bio-40-core-place.js': _BIO('core', 'biome', '40-core-place.js'),
     '86-bio-50-biome-nhighlands-species.js': _BIO('biomes', 'nhighlands', 'src', '50-biome-nhighlands-species.js'),
     '86-bio-55-biome-nhighlands-trees.js': _BIO('biomes', 'nhighlands', 'src', '55-biome-nhighlands-trees.js'),
@@ -226,7 +229,7 @@ def virtual_bodies():
     sys.path.insert(0, os.path.join(ROOT, 'kits', 'catalog'))
     sys.path.insert(0, os.path.join(ROOT, 'kits', 'interiors'))
     import furniture_bundle, kit_bundle
-    return {'69d-furniture-bundle.js': furniture_bundle.bundle(FURN_CULTURES) + kit_bundle.bundle(['highlands'])}
+    return {'69d-furniture-bundle.js': furniture_bundle.bundle(FURN_CULTURES, tex=True) + kit_bundle.bundle(['highlands'])}   # tex: the library's detail maps on every piece (2026-11-10)
 def scoped(f):
     return f.startswith(SCOPED_PREFIXES) or f in VIRTUAL or f in CORE_HOST   # core/host: each file one IIFE (KHOST)
 
