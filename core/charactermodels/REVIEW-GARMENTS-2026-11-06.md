@@ -510,3 +510,12 @@ The plan takes sections 1 to 3 above whole. What to change before acting on it:
   trade duster (17254 to 23346, the standing collar seen from above). The 66 cannot measure the night's builder
   fixes: the 84 outfits that wear a changed piece are audited before and after for that (`night_audit.sh` in the
   session scratch; the result is appended below when it lands).
+- **The night measured on the outfits it touched (2026-11-10).** The 84 outfits that wear a changed piece, the roles
+  build's pieces against the final ones (idle, walk, run, crouch; four views): "inside" 929600 to 828238 px (-11 %),
+  "under" 109038 to 96372 (-12 %), skin 171138 to 165559 (-3 %), "hole" 75273 to 73606; 59 outfit-class rows better,
+  37 worse. Better: the Beast Rider lancer's "inside" 67664 to 22947, the Izani praetorian's 27527 to 16109, the
+  watch's 19928 to 8824, the aedile's 16863 to 8860, the dredger's 14881 to 7104, the Order warden's "under" 5153 to
+  25. Worse, each wanting a look: the islander shaman's "inside" 39351 to 80079 and "hole" 1444 to 3348 (the largest
+  regression: the strip put his mantle on the core's tube), the Chichani ordinator's "inside" 4093 to 11039, the
+  chosen's 16829 to 20684, the Xanadu priest man's 22832 to 26632, the Order cham's "under" 0 to 2344 (a band drawn in
+  under its robe).
