@@ -90,10 +90,13 @@ ISLE.navOf = function (R, G, pre) {
   var out = { pre: pre, town: R.town, frame: F, N: N, E: E, stats: { ways: lines.length, joins: joins, crossings: cross, bridged: bridged, bodies: B0.size.length } };
   /* a door on the street nearest (x, z), town metres, within `far`: the index of its node (a split of the way), or -1.
      o.track: a place farther than that from every way (a farm parcel, a holding beyond the wall) gets a track, a node at
-     (x, z) joined to the split; o.prefer: a way class tried first (the highways out of the gates, for the farm ring) */
+     (x, z) joined to the split; o.prefer: a way class tried first (the highways out of the gates, for the farm ring);
+     o.skip: an edge kind never taken (the refugee camp and the spur lots open on a street, never on a holding's track:
+     2026-11-09, when Valapo's stand-in farms came within reach of its camp and its people stalled on the track) */
   out.door = function (x, z, far, o) {
     o = o || {}; far = far == null ? 800 : far;
-    var h = (o.prefer && nearest(x, z, far, function (e) { return e.kind !== o.prefer; })) || nearest(x, z, far); if (!h) return -1;
+    var skip = o.skip ? function (e) { return e.kind === o.skip; } : null;
+    var h = (o.prefer && nearest(x, z, far, function (e) { return e.kind !== o.prefer || (skip && skip(e)); })) || nearest(x, z, far, skip); if (!h) return -1;
     var j = split(h, 'door'); if (o.track == null || h.d <= o.track) return j;
     var n = node(x, z, 'track'); edge(j, n, 'track', 3); out.stats.tracks = (out.stats.tracks || 0) + 1; return n;
   };

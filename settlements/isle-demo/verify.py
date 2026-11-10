@@ -67,7 +67,8 @@ CITY_JS = r"""(neg)=>{const C=window._city,out=[],town=C.town,R=C.cur.R,G=C.cur.
  if(!neg){
   for(const t in C.checks)C.checks[t].forEach(c=>out.push(c));
   const bad=[],ik=ISK.dims(),iz=IZV.dims();
-  for(const k in ISLE_DIMS){const D=ISLE_DIMS[k],B=D.kit==='isk'?ik[k]:D.kit==='izv'?iz[k]:D.kit==='cat'?CAT.ASSET_BY_KEY[k]:null;
+  for(const k in ISLE_DIMS){const D=ISLE_DIMS[k];if(D.kit==='hyk'&&typeof HYKB==='undefined')continue;   /* Nephtos's Hykkousoi: the world page carries HYKB and checks them there */
+   const B=D.kit==='isk'?ik[k]:D.kit==='izv'?iz[k]:D.kit==='cat'?CAT.ASSET_BY_KEY[k]:D.kit==='hyk'?HYKB.dims()[k]:null;
    if(!B||Math.abs(B.w-D.w)>1e-6||Math.abs(B.d-D.d)>1e-6||Math.abs((B.h||8)-D.h)>1e-6)bad.push(k);}
   for(const k in ISLE_VDIMS){const B=RINGSEA.dims[k];if(B&&(B.L!==ISLE_VDIMS[k].L||B.B!==ISLE_VDIMS[k].B))bad.push(k);}
   const used=new Set(R.vessels.map(v=>v.key));const lack=[...used].filter(k=>!RINGSEA.dims[k]);

@@ -247,6 +247,9 @@ function buildRoads(){const R=(WORLD_DATA.roads&&WORLD_DATA.roads.roads)||[],S=[
   for(let iz=Math.floor(z0/RDC);iz<=Math.floor(z1/RDC);iz++)for(let ix=Math.floor(x0/RDC);ix<=Math.floor(x1/RDC);ix++){const k=(ix+32768)*65536+(iz+32768);
    let a=RHASH.get(k);if(!a){a=[];RHASH.set(k,a);}a.push(s);}}
  W.roadCount=R.length;W.roadSegments=n;}
+// a road built after the bake (a founded hamlet's highway, 48f): into the network at once, the ground shaped to it from
+// the next height read (the terrain's chunks over it are rebuilt by the caller: 81 TERRAIN.refresh)
+W.addRoad=function(r){if(!WORLD_DATA.roads)WORLD_DATA.roads={format:'krator-openworld-roads',version:1,roads:[]};WORLD_DATA.roads.roads.push(r);buildRoads();return WORLD_DATA.roads.roads.length;};
 // the roads' bounds at (x,z): fills RD {lo, hi: the envelopes, w: how much they apply (0 beyond reach), d, hw and e of
 // the nearest segment}. bound(h) is the ground h held between them
 function roadAt(x,z,h,o){o.w=0;o.d=1e9;o.hw=0;o.e=h;o.lo=-1e9;o.hi=1e9;if(!RHASH)return o;

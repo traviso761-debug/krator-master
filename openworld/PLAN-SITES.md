@@ -1,4 +1,15 @@
-# Sites: settlements planned on the open world's ground (draft, 2026-11-09)
+# Sites: settlements planned on the open world's ground (agreed 2026-11-09)
+
+**The owner's answers (2026-11-09)** to section 9:
+1. **busy-keller:** this work branches from it (`origin/claude/busy-keller-lstwje` merged into this branch); its generic
+   pieces are lifted into core from there, and `main` gets both when the owner merges.
+2. **The world runtime goes to `core/world/`**, a core module; `WORLD.H`'s land rule becomes core/terrain `KLAND`.
+3. **Plans are baked to JSON** (`openworld/<region>/plan/`), read by the page and by Godot; verify re-plans and fails on a
+   stale bake.
+4. **The first sites:** (a) a region over **Oidong, the Xanadu Sultanate and the High Rift**; (b) **Pinnacle Rock**;
+   (c) **the Iziz cluster** (Girder, Mav's Refuge, Talia). Pinnacle Rock goes first (the smallest proof of the path: its
+   ground is already the model's), then the Oidong-Xanadu-High Rift region, then the Iziz cluster.
+5. Site size: the defaults by type until the owner draws a polygon.
 
 **The owner's brief (2026-11-09):** take sites off the scale map straight into the open world, and plan settlements
 directly on that open-world ground, instead of each settlement inventing its own terrain. The open world and the Godot

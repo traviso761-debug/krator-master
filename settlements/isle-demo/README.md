@@ -54,7 +54,7 @@ it, then run `build.py --accept`, or vendor the file and track its drift.
 
 - **The buttons and keys are Voth's** (the hint line explains each tool). 1-6 draw districts, 7 places a marker, 8 an
   avenue, 9 a causeway or jetty, R/L/M edit the ground, B places a canoe landing, N a land stop, K makes a line.
-- **Kautoa / Valapo** switch towns. The page reloads on the other town; unsaved changes stay as that town's draft.
+- **Kautoa / Valapo / Nephtos** switch towns (Nephtos: the Hykkousoi colony, PLAN.md section 15a; its markers and district names). The page reloads on the other town; unsaved changes stay as that town's draft.
 - **save** writes this town into `site/isle-site.json` (serve.py must be running), else downloads it.
   **export JSON** / **copy JSON** give this town's site with its frame. **import** takes a town's site or the whole file.
 

@@ -101,3 +101,17 @@
       Checked on a real GPU in the browser pane: 14 vents, 43 geysers and 62 springs build, the world clock ticks (`GEYSER.SHOW.t`),
       a geyser in its column phase erupts with spray, the console has no errors. Headless `verify.py` fails with the same
       SwiftShader `trim` error as before the change (identical output), so no new failures.
+- [ ] **The jungle stands through a farming camp pitched live** (2026-11-09): a camp's shelters (88h, kits/islanders 70-ie-camp.js)
+      and a founded hamlet's buildings are drawn where the sim puts them, and the ground over the parcels is repainted
+      (TERRAIN.refresh), but the flora tiles already built there are not rebuilt, so the trees placed before the founding stay
+      among the shelters until the tile is dropped and rebuilt (leave and come back). The baked hamlets are clear because
+      `WORLD.clearHook` knew their ground before the tiles were built. A live clear needs the flora module to drop the tiles
+      over a box as the terrain does; the camp should also fell what stands on its site (the felling of core/hamlet 40).
+- [ ] Nephtos (48p, 88p, 2026-11-09): stand-in boxes on a placeholder radial plan, on the natural ground (no terraces, no
+      land hook: its lots stand where the slope allows); its whole reach is cleared of flora, gardens and streets alike.
+      Its thieves' guild (settlements/isle-demo 47c) runs in the sim and has a mark on the region map, but no landmark or sign:
+      its tavern is a stand-in with no registry record in the towns' sense (verify checks the two Islander towns' guilds).
+- [ ] Nephtos's copper mine (2026-11-09) stands on the highest ground of its patch (the mine survey's rule) and its road keeps
+      low, cutting up to 104 m into the hill rather than climbing: within the grade and on the ground, but a deep cutting.
+      A drawn Nephtos (the owner's layout) is drawn with the towns: the pale lot plinths and kerbs and the far level of
+      detail (a cone-roofed box per lot, which reads as an Islander tent) are the Islanders' look, not yet the Hykkousoi's.

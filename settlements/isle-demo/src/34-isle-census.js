@@ -13,20 +13,28 @@ ISLE.EXPECT = {
     vessels: { naval: ['islanderDrua', 'islanderKorakora', 'islanderKarakoa', 'islanderLanong'], fishing: ['islanderOruwa', 'islanderLakatoi'],
       civilian: ['vothDhow', 'hykCorbita', 'izizDhoni', 'beastWaa', 'salvageTug'] },
     origins: ['ringsea-islander', 'voth', 'hykkousoi', 'iziz-vernacular', 'beast-rider', 'ancients-salvage'],
-    wall: { gates: 2 }, landing: 1, citizens: [5500, 6500], fields: 0, built: 0.66
+    wall: { gates: 2 }, landing: 1, citizens: [5500, 6500], built: 0.66
   },
   Valapo: {
     /* the owner's redrawing (2026-10-18): about a third of Kautoa, built from the centre out */
     roles: { 'village hall': 1, 'ancestor temple': 1, garrison: 2, smelter: 1, caravanserai: 1 },
     districts: {},
     vessels: { civilian: ['islanderOruwa', 'islanderLakatoi'] }, origins: ['ringsea-islander'],
-    wall: null, landing: 1, citizens: [1700, 2300], fields: 0
+    wall: null, landing: 1, citizens: [1700, 2300]
+  },
+  /* Nephtos from the owner's drawing (30 PROG.Nephtos; the brief, 2026-11-09: about half Valapo's size, run by Tethys's
+     merchant family): its palazzo, temple and council hall at their markers, a landing for the Tethyan ships */
+  Nephtos: {
+    roles: { palazzo: 1, temple: 1, 'council hall': 1 },
+    districts: {},
+    vessels: { civilian: ['hykCorbita', 'hykPearl'] }, origins: ['hykkousoi'],
+    wall: null, landing: 1, citizens: [800, 1400]
   }
 };
 /* a dwelling's households by its declared types: a multi-family house three, a single house one, else none (the sim's
    homes take five people a household from here: 40-isle-sim.js) */
 ISLE.households = function (key) {
-  var D = ISLE_DIMS[key] || {}, types = D.types || [];
+  var D = ISLE_DIMS[key] || (ISLE.COLONY_DIMS && ISLE.COLONY_DIMS[key]) || {}, types = D.types || [];   /* a colony's stand-in's (47k) */
   return types.indexOf('dwelling-multi') >= 0 ? 3 : (types.indexOf('dwelling-single') >= 0 || D.family === 'dwelling') ? 1 : 0;
 };
 ISLE.census = function (R) {
@@ -115,7 +123,8 @@ ISLE.checks = function (R, ground, o) {
     R.cover ? Math.round(R.cover.share * 100) + '% built: lots ' + Math.round(R.cover.lots * 100) + '%, streets ' + Math.round(R.cover.streets * 100) + '%, landmarks and markets ' + Math.round(R.cover.landmarksAndMarkets * 100) +
       '%, street verges ' + Math.round(R.cover.verges * 100) + '%; open ' + Math.round(R.cover.open * 100) + '%, parks ' + Math.round(R.cover.parks * 100) + '%, steep or walled ' + Math.round(R.cover.steepOrOut * 100) + '%; roofs alone ' + Math.round(R.cover.roofs * 100) + '% of ' + R.cover.landKm2 + ' km2' : 'no cover');
   var fc = {}; (R.fields || []).forEach(function (F) { fc[F.crop] = (fc[F.crop] || 0) + 1; });
-  ok('farms and orchards on the open ground (' + E.fields + ' parcels or more)', (R.fields || []).length >= E.fields, (R.fields || []).length + ' parcels: ' + JSON.stringify(fc));
+  /* the owner (2026-11-04; PLAN.md section 11): no fields within a town; the countryside's farming hamlets grow its food */
+  ok('no farm parcel within the town (its food grows in the countryside: PLAN.md section 11)', (R.fields || []).length === 0, (R.fields || []).length + ' parcels: ' + JSON.stringify(fc));
   ok('every key in the kits (none missing)', Object.keys(R.missing).length === 0, JSON.stringify(R.missing));
   return out;
 };
