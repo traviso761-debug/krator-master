@@ -64,8 +64,8 @@ Open items are `- [ ]` lines; build.py prints them.
       (the hold had taken their furniture and planned floors: the citadel's audit, 133 floors, could not run). The citadel:
       133 of 133 floors reached (the palace 46, the Vizier's 13, the temple 6, the barracks, the Master of Mines', the
       Treasurer's, the Chancellor's and the envoys' 13 each, the kitchens 3). The Garden Pleasure Dome is built with the hollow
-      wrap off and only furnished by its item (its walk is its builder's, 78d): `xdomeReach` 78 of 78. The furniture is textured (the catalog's detail maps, `tex=True`) but for the
-      `tile` family, which the catalog's maps lack (TODO.md, ride-along).
+      wrap off and only furnished by its item (its walk is its builder's, 78d): `xdomeReach` 78 of 78. The furniture is textured (the catalog's detail maps, `tex=True`; the `tile` family on
+      the library's `ceramic.glaze` since 2026-11-10).
 - [ ] (2026-11-03) **Doors and glass: the kit's bodies are solid.** The kit takes core/door and the Vernacular's openings
       (69e5) and `kits/xanadu/src/71c-xa-openings.js` (kits/xanadu/README.md, "Doors and glass"): on the sheet 599 doors (each a
       real leaf in KDOOR, locked, with an id from its def and placement) and 5,912 panes where there were black plates and dark
