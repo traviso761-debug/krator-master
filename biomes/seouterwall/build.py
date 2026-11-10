@@ -105,8 +105,8 @@ PATH.setdefault('35z-core-strata-shade.js',J('core','terrain','host','35-core-st
 # core/hazard (KHAZ): the God-Bore (the night's katabatic gale on the col) and the rockfall heaps are tags.hazard records (89z)
 PATH.setdefault('20-core-hazard.js',J('core','hazard','20-core-hazard.js'))
 # the biome core from core/biome (core/README.md): one copy for every kit, as the NW outer wall takes it (31j the limbs' joints, 34 the
-# impostors, 41 the environmental fields, 44 KSTAGE)
-CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','31j-core-joint.js','34-core-impostor.js','40-core-place.js','41-core-env.js','42-core-export.js','43-core-export-host.js','44-core-stage.js']
+# impostors, 37 KTRAPS.cycle: the one clock core/hazard's cycles run on (the God-Bore, the rockfall), 41 the environmental fields, 44 KSTAGE)
+CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','31j-core-joint.js','34-core-impostor.js','37-core-traps.js','40-core-place.js','41-core-env.js','42-core-export.js','43-core-export-host.js','44-core-stage.js']
 for f in CORE_BIOME:
     if f not in PATH: PATH[f]=J('core','biome',f)
 # core/rand and core/tags (core/tags/README.md): with BIO.init({tags}) every item set, instance and registered volume the kit
