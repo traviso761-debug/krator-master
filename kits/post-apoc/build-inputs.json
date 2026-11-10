@@ -19,9 +19,9 @@
     "core/host/90-host-camera.js": "6ad6af57adcf1fb2facd04968db769350c0d27de1d2fe20829d9948be75a2847",
     "core/host/91-host-loop.js": "240f833bc2e031506de36b503594acd2939e3f45aee21115effd00666fa66986",
     "core/host/92-host-panel.js": "3d65cd6c0bb873e48eb4189fffad906ab21aef1950164a454254a4fefe7a0b88",
-    "core/host/92k-host-keys.js": "368527337f64d23c5019a85a0ba929062671b8f3f138c53944d728ff26a491a7",
+    "core/host/92k-host-keys.js": "d3eaefd605d5ac360f205e7628bba245fbcfcd518c8fc8d79d2743556143df06",
     "core/host/94-host-polytool.js": "73178f8a6f8632fa25802d8024ce753a209e29af018ae4b2297cea6e1b84d730",
-    "core/host/95-host-probe.js": "a44f84c2364f546283048e28866342ab3d1e8c8c4da369b713f0f6cc430506dd",
+    "core/host/95-host-probe.js": "91a9ef729db002716d0e840ebd6e0efc799f2ae0c99419fb06c3f44eda5f6471",
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
@@ -44,7 +44,7 @@
     "kits/interiors/sets/post-apoc.js": "b6af1717bddc4321cf0a8c93e80d1d96faa1ffa9800b240ac7c45e3d3c1f72ff",
     "kits/interiors/src/10-core.js": "4b940cf3cadd55615825e748e9179aa06ff8984be2d92dbefc3d085ae91e24e5",
     "kits/interiors/src/20-rooms.js": "4b54dca9f15014c721897d598a55f88c9e9dace32568faab59f10ca771694498",
-    "kits/interiors/src/30-programs.js": "81e38433a7cd97fe4b7c7c1097830c692f37a0eab5315796472eccffd703a0a4",
+    "kits/interiors/src/30-programs.js": "57d48386287197707ed694545e22fa7b76aeb52e6e7110dc5193bddcb38087bc",
     "kits/interiors/src/40-grid.js": "a69dadb0ff525a510e51739e92b442a0f7269d4fdab164d19ca410d8f360b098",
     "kits/interiors/src/45-placer.js": "60d2ecc3c3edc9b5fc5ecd734c16f261367a2c51bbdf5a67b5c5751ac3ad7ab3",
     "kits/interiors/src/46-planner.js": "acfb0a52c6f533a53a4df2519d8598ff11b80ad430b978cd9d9707c05dfe43e0",
@@ -53,7 +53,7 @@
     "kits/interiors/src/48b-sets.js": "9da457a25bc3e0fd5732c13b569f63ccd0138ac50d84ddc02c47e005709e8889",
     "kits/interiors/src/49-exports.js": "96edc46b9aa75036235144bdbff17c505fc0678217cf2cf7d6f8442b89d55ca9",
     "kits/interiors/src/49b-walk.js": "d90cf2cba70ac876a1831790124e5a4c5ba7072e90599572e458dca1704c16ac",
-    "kits/post-apoc/KNOWN_ISSUES.md": "2273cee95c8c469076cf21b68dbd39e67515ffdf15ab9a6d2fc54d7339556670",
+    "kits/post-apoc/KNOWN_ISSUES.md": "3827cd75e36e2f27ceed7bf1ef2dd0413a4b47a69885d29647a8a80745b483fc",
     "kits/post-apoc/PORT.md": "6e06bcc49bb23f022d24eec9b09fe4ee7c06fb0d83ddbfe4febcbf35c28ab9f2",
     "kits/post-apoc/build.py": "038a5cdcfc752d25aaba69d930007b3c2b6c855b9b4f10a2325d2b874acca79f",
     "kits/post-apoc/src/00-head.html": "6a18fdf88270b1213f9b7387f839dbdf73486577d3d860f4872c706e1aa28a70",
@@ -64,7 +64,7 @@
     "kits/post-apoc/src/30-geo.js": "c4129bdde242a3dcd9297b1380549ad9736077b37169ff3bff44133eed8fc6d1",
     "kits/post-apoc/src/32-cores.js": "bf164c6773f6706114af4fecc32a57efabb407f146fc6ed3577fb68ade80cc1b",
     "kits/post-apoc/src/34-adds.js": "c8d71fa314340fa7a19aab3bd51a3d67ff5ccbe4a1d2941428b0af9748307d00",
-    "kits/post-apoc/src/35-pa-open.js": "a15dd057ffb09b13e4fe325975bbb95b71ead5ab97de87932f2838af3a1ded7b",
+    "kits/post-apoc/src/35-pa-open.js": "242c6bc3067401233ce962279d4fbfd3f36521b2ac6559ebb4dae3f74fb768aa",
     "kits/post-apoc/src/36-def.js": "5a5bcb9eea787681ab2a24e7de76641a254f2640a2857546e18f4ea745a1c0db",
     "kits/post-apoc/src/40-dw-small.js": "20b63f80952d15775145e7aee8464eaab56c9329ca324b0e5f3c6e17bedd7d83",
     "kits/post-apoc/src/42-lg-dwell.js": "dc960ed31b79caafbc8a7c7c0fde980f3bb285500eda5592d5a12b814b4004f3",
@@ -152,12 +152,12 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/post-apoc/build-manifest.json": "845aba35585d4b7a2ce6389eccb8b974f4ae45e8aafe0f2df15b7fcd62fe0bfd",
-    "kits/post-apoc/dist/post-apoc.html": "a5ef5cb59aa52fde90107afeac3ce610d660ee688ef777c5fea797004ba22402"
+    "kits/post-apoc/build-manifest.json": "3d7bc65696531bc3aa771d2325b1eec600b2000b7a851c8012b3252c64d5cc05",
+    "kits/post-apoc/dist/post-apoc.html": "b3bb0b7373519a4761deacf6c54245cc47c9c8bcfacef723874982a20357454a"
    },
    "outputs_raw": {
-    "kits/post-apoc/build-manifest.json": "845aba35585d4b7a2ce6389eccb8b974f4ae45e8aafe0f2df15b7fcd62fe0bfd",
-    "kits/post-apoc/dist/post-apoc.html": "a5ef5cb59aa52fde90107afeac3ce610d660ee688ef777c5fea797004ba22402"
+    "kits/post-apoc/build-manifest.json": "3d7bc65696531bc3aa771d2325b1eec600b2000b7a851c8012b3252c64d5cc05",
+    "kits/post-apoc/dist/post-apoc.html": "b3bb0b7373519a4761deacf6c54245cc47c9c8bcfacef723874982a20357454a"
    }
   }
  }

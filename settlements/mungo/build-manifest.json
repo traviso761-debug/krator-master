@@ -313,7 +313,7 @@
  ],
  "65z-furniture-bundle.js": [
   "virtual",
-  "2e308e32ac7c"
+  "4ed1a939f4cc"
  ],
  "66-locus-furnish.js": [
   "locus",
@@ -623,6 +623,10 @@
   "core/host",
   "8066aefad370"
  ],
+ "92k-host-keys.js": [
+  "core/host",
+  "95f7538e4448"
+ ],
  "93-host-inspect.js": [
   "core/host",
   "30374027dc5d"
@@ -637,7 +641,7 @@
  ],
  "95-host-probe.js": [
   "core/host",
-  "4c60a9746384"
+  "4abec5c5a961"
  ],
  "95-locus-doors.js": [
   "locus",
@@ -661,7 +665,7 @@
  ],
  "98-start.js": [
   "locus",
-  "afe3809fa719"
+  "0b2d48396e8d"
  ],
  "99-host-cutaway.js": [
   "core/host",

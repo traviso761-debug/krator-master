@@ -17,6 +17,18 @@
 //   L                            the polygon tool (94-host-polytool.js) when the page has it: Polygon, Path, then Inspect
 // The host modules' buttons are renamed to the standard words on the first frame (the cut-away's 'cutaway (X)' reads
 // 'Cut-away (X)'), so every page shows the same names whichever module drew the button.
+//
+// The one walk mode (the camera's F, 90-host-camera.js, with o.walk a KWALK), made the same on every page that takes this file:
+//   - the walker moves in steps no longer than its radius (a sprint at 0.1 s a frame is 3 m: it went through a 0.2 m wall)
+//   window._walk                 {on, toggle(on), setPose(x,z,yaw) -> pose, pose() -> {x,y,z,feet,yaw,support}, blocked(x,z,feet)}:
+//                                tools/harness.py's scripted walk (`harness.py walk <page> --route KeyW:20f --start auto`) and
+//                                its auto start read it; a page that sets its own (Girder, Verge) keeps it
+//   KHOST.keysCheck()            {std, clashes, words}: the standard buttons' words as the key map has them, and a build key that
+//                                takes a standard key for something else (tools/harness.py's `one-key-map` assert)
+//   KHOST.walkCheck()            {walk, floors, blocks, floor, block}: the walker set on a raised KWALK floor stands on it, and
+//                                walked 4 s at a wall (a block whose face is 0.8 m wider than the walker: it slides round a
+//                                post) from 3 m off it stops at it (tools/harness.py's `walk` assert); the camera
+//                                is put back as it was
 (function(root){
 'use strict';
 const K=root.KHOST=root.KHOST||{},doc=root.document;
@@ -49,7 +61,7 @@ const BY={};M.forEach(r=>{BY[r.id]=r;});
 const words=r=>r.name+(r.label&&r.label!=='mouse'?' ('+r.label+')':'');
 K.std=function(id,on,more){const r=BY[id];if(!r)throw new Error('KHOST.std: no standard control '+id);
  return Object.assign({button:words(r),title:r.what,on:on,id:'khost-std-'+id,std:id},more||{});};
-K.standard=function(o){const S=o.std||{},ctl=[],keys=Object.assign({},o.keys||{});
+K.standard=function(o){const S=o.std||{},ctl=[],keys=Object.assign({},o.keys||{});o._ownKeys=Object.assign({},o.keys||{});
  M.forEach(r=>{const s=S[r.id];if(s==null||r.owner!=='build')return;const fn=typeof s==='function'?s:s.on;
   const c=K.std(r.id,()=>fn(),{state:s.state,title:s.title||r.what});ctl.push(c);
   if(r.key&&!(o.keys&&o.keys[r.key]))keys[r.key]=()=>fn();});
@@ -84,5 +96,62 @@ K.onTake(function keysTake(H){
  const RENAME={'khost-cut-btn':words(BY.cutaway)};let renamed=false;
  if(K.on)K.on(function keysPaint(){if(!renamed){for(const id in RENAME){const b=doc.getElementById(id);if(b){b.textContent=RENAME[id];b.title=BY.cutaway.what;}}renamed=true;}
   (K._std||[]).forEach(c=>{if(c.el&&c.state)c.el.classList.toggle('on',!!c.state());});},'after');
+ /* the check: every standard button in the key map's words; a build's own key on a standard key's letter is a clash */
+ K.keysCheck=function(){const out={std:[],clashes:[],words:[]},S=o.std||{};
+  (K._std||[]).forEach(c=>{const r=BY[c.std],t=c.el?c.el.textContent:c.button;out.std.push(c.std);if(t!==words(r))out.words.push(c.std+': "'+t+'", not "'+words(r)+'"');});
+  const mine=o._ownKeys||(K._std?{}:o.keys||{});for(const k in mine){const r=M.find(q=>q.key===k);if(r&&!(r.owner==='build'&&S[r.id]!=null))out.clashes.push(k.toUpperCase()+' is '+r.name+' on every page; this page: '+((o.keyNames||{})[k]||'its own'));}
+  return out;};
+});
+// ---------------------------------------------------------------- the one walk mode: sub-steps, window._walk, the walker's check
+K.onTake(function walkTake(H){
+ const C=K.cam,o=H.o,ctl=C.ctl,W=o.walk||null,WK=Object.assign({step:.7,drop:1.4,r:.35,h:1.7},o.walker||{});
+ const gh=typeof o.ground==='function'?o.ground:(o.ground&&o.ground.h?(x,z)=>o.ground.h(x,z):()=>0);
+ /* walking, a frame's move in steps no longer than the walker's radius, each stood (pushed out of the blocks) before the next */
+ const move0=C.move;
+ C.move=function(dt){if(!ctl.walk||!W)return move0(dt);
+  const x0=ctl.target.x,z0=ctl.target.z;move0(dt);const dx=ctl.target.x-x0,dz=ctl.target.z-z0,d=Math.hypot(dx,dz);
+  const n=Math.min(40,Math.ceil(d/Math.max(.1,WK.r*.9)));if(n<=1)return;
+  ctl.target.x=x0;ctl.target.z=z0;for(let i=1;i<=n;i++){ctl.target.x+=dx/n;ctl.target.z+=dz/n;C.stand();}};
+ const pose=()=>{const A=C.walkAt||[ctl.target.x,ctl.target.z,ctl.target.y-ctl.eye],g=gh(A[0],A[1]);
+  return {x:ctl.target.x,y:ctl.target.y,z:ctl.target.z,feet:A[2],yaw:ctl.theta,support:Math.abs(A[2]-g)<.05?'ground':'floor'};};
+ if(!root._walk)root._walk={get on(){return !!ctl.walk;},
+  toggle(on){C.walk(on==null?!ctl.walk:!!on,true);return !!ctl.walk;},
+  setPose(x,z,yaw){if(!ctl.walk)C.walk(true,true);const g=gh(x,z);C.walkAt=[x,z,g];ctl.target.set(x,g+ctl.eye,z);if(yaw!=null)ctl.theta=yaw;C.stand();return pose();},
+  pose,
+  blocked(x,z,feet){return !!(W&&W.blocked(x,feet==null?gh(x,z):feet,z,WK.r,WK.h));}};
+ /* the check (tools/harness.py `walk`): stand on a raised floor; walk at a wall and be stopped by it */
+ K.walkCheck=function(){
+  if(!W)return {walk:false};
+  const E={floors:W.floors||[],blocks:W.blocks||[]},out={walk:true,floors:(E.floors||[]).length,blocks:(E.blocks||[]).length,floor:null,block:null};
+  const save={walk:ctl.walk,t:ctl.target.clone(),theta:ctl.theta,phi:ctl.phi,radius:ctl.radius,at:C.walkAt,keys:Object.assign({},C.keys)};
+  for(const k in C.keys)C.keys[k]=false;
+  try{
+   ctl.walk=true;
+   /* a floor: the first registered one, in order, a body's width across, 0.3 m or more over the ground, clear for a walker */
+   for(const f of E.floors||[]){let x,z,y;
+    if(f.rect){x=(f.rect[0]+f.rect[1])/2;z=(f.rect[2]+f.rect[3])/2;y=f.y;if(f.rect[1]-f.rect[0]<.8||f.rect[3]-f.rect[2]<.8)continue;}
+    else if(f.pts&&f.pts.length>=3&&f.pts.every(p=>Math.abs(p[2]-f.pts[0][2])<1e-3)){x=0;z=0;for(const p of f.pts){x+=p[0];z+=p[1];}x/=f.pts.length;z/=f.pts.length;y=f.pts[0][2];
+     let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9;for(const p of f.pts){x0=Math.min(x0,p[0]);x1=Math.max(x1,p[0]);z0=Math.min(z0,p[1]);z1=Math.max(z1,p[1]);}if(x1-x0<.8||z1-z0<.8)continue;}
+    else continue;
+    if(y-gh(x,z)<.3||W.blocked(x,y,z,WK.r,WK.h))continue;const top=W.floorsAt(x,z).find(q=>q[0]<=y+.01);if(!top||Math.abs(top[0]-y)>.01)continue;
+    C.walkAt=[x,z,y];ctl.target.set(x,y+ctl.eye,z);C.stand();const ft=C.walkAt[2];
+    out.floor={at:[+x.toFixed(2),+y.toFixed(2),+z.toFixed(2)],feet:+ft.toFixed(2),ground:+gh(x,z).toFixed(2),ok:Math.abs(ft-y)<.05};break;}
+   /* a wall: a block 1.5 m or more tall standing on what a walker stands on beside it; the walker 3 m off its middle, facing it */
+   for(const b of E.blocks||[]){if(b.off)continue;const B=b.box;const x0=B[0],x1=B[1],z0=B[2],z1=B[3],y0=B[4],y1=B[5];
+    const cx=(x0+x1)/2,cz=(z0+z1)/2,sides=[[x0-3,cz,1,0],[x1+3,cz,-1,0],[cx,z0-3,0,1],[cx,z1+3,0,-1]];let done=false;
+    for(const s of sides){const sx=s[0],sz=s[1],st=C.standY(sx,sz,y0+.5);if(y1-st<1.5||st<y0-.5||W.blocked(sx,st,sz,WK.r,WK.h))continue;
+     /* a wall, not a post: its face as wide as the walker and 0.8 m more (the walker slides round a post, as it should) */
+     if((s[2]?z1-z0:x1-x0)<2*WK.r+.8)continue;
+     /* nothing else in the way, and the ground level to the wall: the walk is a test of this wall only */
+     let clear=true;for(let t=.5;t<3-WK.r-.05;t+=.25){const px=sx+s[2]*t,pz=sz+s[3]*t,py=C.standY(px,pz,st+WK.step);if(Math.abs(py-st)>.3||W.blocked(px,py,pz,WK.r,WK.h)){clear=false;break;}}
+     if(!clear)continue;
+     C.walkAt=[sx,sz,st];ctl.target.set(sx,st+ctl.eye,sz);ctl.theta=Math.atan2(-s[2],-s[3]);C.stand();
+     C.keys.w=true;for(let i=0;i<40;i++){C.move(.1);C.stand();}C.keys.w=false;
+     const ex=ctl.target.x,ez=ctl.target.z,along=(ex-sx)*s[2]+(ez-sz)*s[3],face=s[2]?(s[2]>0?x0:x1):(s[3]>0?z0:z1),gap=s[2]?Math.abs(face-ex):Math.abs(face-ez);
+     out.block={box:B.map(v=>+v.toFixed(2)),from:[+sx.toFixed(2),+sz.toFixed(2)],end:[+ex.toFixed(2),+ez.toFixed(2)],moved:+along.toFixed(2),gap:+gap.toFixed(2),
+      ok:along>1&&along<3.2&&!W.blocked(ex,C.walkAt[2],ez,WK.r,WK.h)&&gap<WK.r+.6};done=true;break;}
+    if(done)break;}
+  }finally{ctl.walk=save.walk;ctl.target.copy(save.t);ctl.theta=save.theta;ctl.phi=save.phi;ctl.radius=save.radius;C.walkAt=save.at;for(const k in C.keys)C.keys[k]=false;Object.assign(C.keys,save.keys);}
+  return out;};
 });
 })(typeof window!=='undefined'?window:globalThis);

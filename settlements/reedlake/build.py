@@ -110,6 +110,7 @@ TAGS_FILES = {f: os.path.join(ROOT, 'core', d, f) for d in ('rand', 'tags') for 
 sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))
 import host as khost
 CORE_HOST = [f for f in khost.FULL if f not in ('20-core-space.js', '40-core-edits.js')]
+CORE_HOST = CORE_HOST + khost.KEYS   # the one key map and the one walk mode (core/host/92k-host-keys.js; TODO.md, Viewers)
 # the shared atmosphere (core/atmos/README.md: its core, presets, the open-water wave field and the sky's light) and core/water
 # (core/water/README.md: the open surface, its CPU twins, the CDLOD water mesh): the lake is a WATER.open surface
 # (src/90w-rl-lake.js), the troughs' and the wallow's water WATER.still (src/90x-rl-still.js). Listed by name, like core/materials/record above; a src/ copy with the same name wins.

@@ -62,6 +62,7 @@
     "core/host/90-host-camera.js": "6ad6af57adcf1fb2facd04968db769350c0d27de1d2fe20829d9948be75a2847",
     "core/host/91-host-loop.js": "240f833bc2e031506de36b503594acd2939e3f45aee21115effd00666fa66986",
     "core/host/92-host-panel.js": "3d65cd6c0bb873e48eb4189fffad906ab21aef1950164a454254a4fefe7a0b88",
+    "core/host/92k-host-keys.js": "d3eaefd605d5ac360f205e7628bba245fbcfcd518c8fc8d79d2743556143df06",
     "core/host/93-host-inspect.js": "cf7e676324297688199a85d9a26c34381732955955985462aa3dbd2c12431f90",
     "core/host/93-host-stocks.js": "ee986893621f17b4419db1feb1edbc01b7e28f067e85fd8b811112ec65456a69",
     "core/host/94-host-marks.js": "a57a2a38ef92f4d06232659773249de63296e79e200da27a24f0253eff3f0284",
@@ -105,9 +106,9 @@
     "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
     "core/terrain/36-core-carve.js": "782cd16a5ff9bbaf22739f9d9b25085c13d9d439718762aa70a6addfbe0da2a5",
-    "settlements/shade/KNOWN_ISSUES.md": "7f6a835f7fd8582a793ca931027c0cb9c22641da403ac17ac1f6fb8a023df147",
+    "settlements/shade/KNOWN_ISSUES.md": "5d6ef49c43de6ad5e9977f0a4ea3a34c3dcaee261640b912acec19ff0d9220bc",
     "settlements/shade/PORT.md": "4d54710b0df100a4c3446f2866090f89aa7c0ce644a001bb086d735d6eaaac97",
-    "settlements/shade/build.py": "7539e65b5d3fd78d16308dfe49a5cee8e15b57891835cba00dc9fc94962b964e",
+    "settlements/shade/build.py": "ced7fd8f45a904ff03e7d23d7e8b1861111c3c6847f664aadb820361e89fb126",
     "settlements/shade/src/00-head.html": "95644831964f8bb0145376b84ab76f95b7db78b6ec3a6b1072d951478200eaa5",
     "settlements/shade/src/44-host-layout.js": "e0eabcd95b04038ff8426434ae4a8b4bcb91dba3550c7d593166e4f9d1cf5e9a",
     "settlements/shade/src/45-host-stage.js": "d70c318600880606201efc50d78748831395102759903a2c32cde9791045fa76",
@@ -153,10 +154,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "settlements/shade/dist/shade.html": "3a97421b3205d814fc7b0a2738c17b085b07f94f05cb7be76d0d2437417bda23"
+    "settlements/shade/dist/shade.html": "a7feed970fa2dfc550a4c65b36ae7727d39469497ebb811f2a6b952bebfcea03"
    },
    "outputs_raw": {
-    "settlements/shade/dist/shade.html": "3a97421b3205d814fc7b0a2738c17b085b07f94f05cb7be76d0d2437417bda23"
+    "settlements/shade/dist/shade.html": "a7feed970fa2dfc550a4c65b36ae7727d39469497ebb811f2a6b952bebfcea03"
    }
   }
  }

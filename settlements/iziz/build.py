@@ -114,7 +114,7 @@ sys.path.insert(0, os.path.join(ROOT, 'core', 'atmos', 'placeholder'))
 import placeholder as psky
 sys.path.insert(0, os.path.join(ROOT, 'kits', 'iziz-vernacular'))
 import vernacular as kvern   # the Iziz Vernacular kit, read in place (MODULARITY-PLAN.md step 4)
-CORE_HOST = [f for f in khost.FULL if f not in ('20-core-space.js', '40-core-edits.js')]
+CORE_HOST = [f for f in khost.FULL if f not in ('20-core-space.js', '40-core-edits.js')] + khost.KEYS   # KEYS: the one key map and the one walk mode (core/host/92k-host-keys.js)
 # the material library for the vernacular (core/materials/record: KMAT, the loader and the in-place bind; not 24-tex-def.js,
 # whose TEX clashes with core/materials 20-textures.js). materials.json's non-fauna families are packed into the GENERATED
 # 69d-matlib-pack.js, and src/88y-iziz-matlib.js binds them onto MAT (KMAT.bindMat). Every target takes them.

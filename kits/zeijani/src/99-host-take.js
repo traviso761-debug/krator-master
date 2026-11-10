@@ -53,15 +53,15 @@ ZJ_API.openings=()=>SV_OPEN.stats();ZJ_API.doorExport=()=>KDOOR.export();ZJ_API.
 addEventListener('resize',()=>{skyCam.aspect=innerWidth/innerHeight;skyCam.updateProjectionMatrix();});
 
 // ---------------------------------------------------------------- the page, handed to the host
-KHOST.take({build:'zeijani',title:TITLE,
- hint:'Cut-away (C) opens the buildings and the rock, Night (N) lights the lamps, E opens or shuts the door in reach; the tools in the inspector panel lay out a polygon or a path',
+KHOST.take(KHOST.standard({build:'zeijani',title:TITLE,
+ hint:'Cut-away (X) opens the buildings and the rock, Night (N) lights the lamps, E opens or shuts the door in reach; the tools in the inspector panel lay out a polygon or a path',
  scene,camera,renderer,ground:terrainH,clear:.4,minR:1,maxR:2500,
  walk:KWALK,walker:{step:.6,r:.3,h:1.7},   /* the walker stands on the core/walk floors the page registered: a step that finds no floor within 0.6 m, or walks into a block, is refused */
  views:VIEWS,
- controls:[CT.cut,CT.night,CT.shadows],
- keys:{c:()=>{cutSet(!ANIMU.uCut.value);},n:()=>{nightSet(!NIGHT.on);},e:()=>{KDOORHOST.toggleNear(camera.position,svDoorWalking());}},
+ std:{cutaway:{on:CT.cut.on,state:()=>!!ANIMU.uCut.value,title:CT.cut.title},night:{on:CT.night.on,state:()=>NIGHT.on,title:CT.night.title},   /* the one key map (core/host/92k-host-keys.js): */
+  door:()=>{KDOORHOST.toggleNear(camera.position,svDoorWalking());},shadows:{on:CT.shadows.on,state:()=>renderer.shadowMap.enabled}},   /* Cut-away X (C before 2026-11-09), Night N, Door E, Shadows */
  inspect:describe,
  stats:()=>'records '+REG.length+'  furniture '+ZJF.placed.length+(ANIMU.uCut.value?'\ncut-away':'')+(NIGHT.on?'\nnight':''),
  draw:(sc,cam)=>{renderer.clear();renderer.render(skyScene,skyCam);renderer.render(sc,cam);},
- api:ZJ_API});
+ api:ZJ_API}));
 paintControls();

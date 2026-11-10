@@ -17,10 +17,11 @@
     "core/host/90-host-camera.js": "6ad6af57adcf1fb2facd04968db769350c0d27de1d2fe20829d9948be75a2847",
     "core/host/91-host-loop.js": "240f833bc2e031506de36b503594acd2939e3f45aee21115effd00666fa66986",
     "core/host/92-host-panel.js": "3d65cd6c0bb873e48eb4189fffad906ab21aef1950164a454254a4fefe7a0b88",
+    "core/host/92k-host-keys.js": "d3eaefd605d5ac360f205e7628bba245fbcfcd518c8fc8d79d2743556143df06",
     "core/host/93-host-inspect.js": "cf7e676324297688199a85d9a26c34381732955955985462aa3dbd2c12431f90",
     "core/host/93-host-stocks.js": "ee986893621f17b4419db1feb1edbc01b7e28f067e85fd8b811112ec65456a69",
     "core/host/94-host-marks.js": "a57a2a38ef92f4d06232659773249de63296e79e200da27a24f0253eff3f0284",
-    "core/host/95-host-probe.js": "a44f84c2364f546283048e28866342ab3d1e8c8c4da369b713f0f6cc430506dd",
+    "core/host/95-host-probe.js": "91a9ef729db002716d0e840ebd6e0efc799f2ae0c99419fb06c3f44eda5f6471",
     "core/host/96-host-pictures.js": "643e50e72e0586f75e2e56461fd58b14445099b551a591b839cf99dbbb5cf458",
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
@@ -54,7 +55,7 @@
     "kits/interiors/sets/post-apoc.js": "b6af1717bddc4321cf0a8c93e80d1d96faa1ffa9800b240ac7c45e3d3c1f72ff",
     "kits/interiors/src/10-core.js": "4b940cf3cadd55615825e748e9179aa06ff8984be2d92dbefc3d085ae91e24e5",
     "kits/interiors/src/20-rooms.js": "4b54dca9f15014c721897d598a55f88c9e9dace32568faab59f10ca771694498",
-    "kits/interiors/src/30-programs.js": "81e38433a7cd97fe4b7c7c1097830c692f37a0eab5315796472eccffd703a0a4",
+    "kits/interiors/src/30-programs.js": "57d48386287197707ed694545e22fa7b76aeb52e6e7110dc5193bddcb38087bc",
     "kits/interiors/src/40-grid.js": "a69dadb0ff525a510e51739e92b442a0f7269d4fdab164d19ca410d8f360b098",
     "kits/interiors/src/45-placer.js": "60d2ecc3c3edc9b5fc5ecd734c16f261367a2c51bbdf5a67b5c5751ac3ad7ab3",
     "kits/interiors/src/46-planner.js": "acfb0a52c6f533a53a4df2519d8598ff11b80ad430b978cd9d9707c05dfe43e0",
@@ -69,14 +70,14 @@
     "kits/post-apoc/src/30-geo.js": "c4129bdde242a3dcd9297b1380549ad9736077b37169ff3bff44133eed8fc6d1",
     "kits/post-apoc/src/32-cores.js": "bf164c6773f6706114af4fecc32a57efabb407f146fc6ed3577fb68ade80cc1b",
     "kits/post-apoc/src/34-adds.js": "c8d71fa314340fa7a19aab3bd51a3d67ff5ccbe4a1d2941428b0af9748307d00",
-    "kits/post-apoc/src/35-pa-open.js": "a15dd057ffb09b13e4fe325975bbb95b71ead5ab97de87932f2838af3a1ded7b",
+    "kits/post-apoc/src/35-pa-open.js": "242c6bc3067401233ce962279d4fbfd3f36521b2ac6559ebb4dae3f74fb768aa",
     "kits/post-apoc/src/36-def.js": "5a5bcb9eea787681ab2a24e7de76641a254f2640a2857546e18f4ea745a1c0db",
     "kits/post-apoc/src/40-dw-small.js": "20b63f80952d15775145e7aee8464eaab56c9329ca324b0e5f3c6e17bedd7d83",
     "kits/post-apoc/src/42-lg-dwell.js": "dc960ed31b79caafbc8a7c7c0fde980f3bb285500eda5592d5a12b814b4004f3",
     "kits/post-apoc/src/91f-furnish.js": "06809e367c86eb19d99a5a93ea941c237ac69a9691d9037d4ffe619999c99ff2",
     "settlements/screamers/KNOWN_ISSUES.md": "c42c921bcca540961c076e793d1fa957083c34ac5c8c2483578b5173e258b10b",
     "settlements/screamers/PORT.md": "3c84fc5968a9e4f61dfffd5747342a9c6b142dc8069834d5158c1e2f2903de67",
-    "settlements/screamers/build.py": "6cc46eb5cceec20f5da63a71c2fedb2c9ff46d6108b3cbb1aa7fe7652a03b27e",
+    "settlements/screamers/build.py": "11641452358d2b3c0e160c15ee7078dc56c873d6c21d63b19b3d5a96bfb5f1d5",
     "settlements/screamers/materials.json": "ee1b90f4bfc71207ecd12fcd352787b2126ae1c5d1efd155cc1ded4a8c7f0a5e",
     "settlements/screamers/src/00-head.html": "9d87407b3925afc158dd6c516ad3c385c55bf55a992e4a58b3dcf556bafd2ffc",
     "settlements/screamers/src/10-core.js": "b2f74948a7376b748bfa983ecec7021c88fcb998f98d3bf8323f6dd30762850a",
@@ -261,16 +262,16 @@
     "tools": "24cc9a0d867a37d71596ec8a001087a35735c498125de4e336dde163318589d8"
    },
    "outputs": {
-    "settlements/screamers/build-manifest-furniture.json": "0e6948c788e31df61853324ab92205e36a399b00bc6a8a435d2c98003c45d293",
-    "settlements/screamers/build-manifest-screamers.json": "dd12ade3e6bf2a82ed0a2e75e808b99f32d0573fe3ae417677d6612201455803",
-    "settlements/screamers/dist/furniture.html": "f248f05f5c71d499fe0333af0b616b78b4f1561601973c45f36ebe476a6ad77d",
-    "settlements/screamers/dist/screamers.html": "7ccc4ce57456d0ac163def79d49c25c25ed396f3e0e564b272bd08369ff810bc"
+    "settlements/screamers/build-manifest-furniture.json": "f34607883eec36be7ae68468b75f667e39db346ce7ba242da2837554d63145c1",
+    "settlements/screamers/build-manifest-screamers.json": "2b333c5d579d6679df17d2b6e6fcb256aecbc79b039c4910924bef86f6178e1f",
+    "settlements/screamers/dist/furniture.html": "b9935c85a8f3b9e3416cb8475c9f5c331750977d024b51c730c27a0964fbab2d",
+    "settlements/screamers/dist/screamers.html": "1cb9d6904adb92700aa25e1c4acb8282d70883bdcfe49ddeefc5372a37f3de9e"
    },
    "outputs_raw": {
-    "settlements/screamers/build-manifest-furniture.json": "0e6948c788e31df61853324ab92205e36a399b00bc6a8a435d2c98003c45d293",
-    "settlements/screamers/build-manifest-screamers.json": "dd12ade3e6bf2a82ed0a2e75e808b99f32d0573fe3ae417677d6612201455803",
-    "settlements/screamers/dist/furniture.html": "f248f05f5c71d499fe0333af0b616b78b4f1561601973c45f36ebe476a6ad77d",
-    "settlements/screamers/dist/screamers.html": "7ccc4ce57456d0ac163def79d49c25c25ed396f3e0e564b272bd08369ff810bc"
+    "settlements/screamers/build-manifest-furniture.json": "f34607883eec36be7ae68468b75f667e39db346ce7ba242da2837554d63145c1",
+    "settlements/screamers/build-manifest-screamers.json": "2b333c5d579d6679df17d2b6e6fcb256aecbc79b039c4910924bef86f6178e1f",
+    "settlements/screamers/dist/furniture.html": "b9935c85a8f3b9e3416cb8475c9f5c331750977d024b51c730c27a0964fbab2d",
+    "settlements/screamers/dist/screamers.html": "1cb9d6904adb92700aa25e1c4acb8282d70883bdcfe49ddeefc5372a37f3de9e"
    }
   }
  }

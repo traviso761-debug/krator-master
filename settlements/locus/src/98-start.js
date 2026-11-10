@@ -59,13 +59,13 @@ var locCut = SITES.filter(function(S){ return S.box && S.ah >= 2.5; }).map(funct
   var n = Math.max(1, Math.round(S.ah/3.4)), hh = S.ah/n, lv = [];
   for(var k=0;k<n;k++) lv.push({ y:S.y+1+k*hh, h:hh, name:n > 1 ? 'storey '+(k+1) : null });
   return { id:'asset-'+i, name:S.name, x:S.x, z:S.z, ry:S.box[2]||0, w:S.box[0]+1, d:S.box[1]+1, levels:lv }; });
-var LOCHOST = KHOST.take({
+var LOCHOST = KHOST.take(KHOST.standard({
   build:CAM_BUILD, title:document.title, hint:CAM_HINT,
   scene:scene, camera:camera, renderer:renderer, ground:terrainH, walk:KWALK, clampCam:camClamp, minR:4, maxR:9000,
   views:locViews, start:VIEWS.length ? VIEWS[0][0] : 'Start',
   clock:{ hour:10, running:false, scale:1, speeds:[0, 1, 2, 4, 8] },   /* the world hour is the page's own clock (80-camera.js): no host hour */
-  keys:Object.assign(SHEET ? { p:function(){} } : {},                  /* the sheet's P steps back (89-sheetui.js): marks stay on their button */
-    LDOOR.on ? { e:function(){ KDOORHOST.toggleNear(LDOOR.eye(), LDOOR.walking()); } } : {}),   /* E: the door within reach (95-locus-doors.js); flying, E still climbs */
+  keys:SHEET ? { p:function(){} } : {},                  /* the sheet's P steps back (89-sheetui.js): marks stay on their button */
+  std:LDOOR.on ? { door:function(){ KDOORHOST.toggleNear(LDOOR.eye(), LDOOR.walking()); } } : {},   /* Door (E), the door within reach (95-locus-doors.js), through the one key map (core/host/92k-host-keys.js) */   /* E: the door within reach (95-locus-doors.js); flying, E still climbs */
   inspect:function(hit, hits, rec){ return inspectDescribe(hit, rec); },
   palette:{ items:locPal, build:function(key){ var b = KratorFurniture.batch({ indexed:true }); b.place(key, 0, 0, 0, 0, { variant:0, seed:1, wealth:0.5 }); return b.flush(); } },
   edits:SHEET ? undefined : { world:LWORLD, log:LEDIT.log,
@@ -76,7 +76,7 @@ var LOCHOST = KHOST.take({
   exporters:{ tags:function(){ return KTAGS.page.export(); } },
   budget:BUDGET, api:window._api,
   draw:camDraw
-});
+}));
 /* the orbit target stays over the map (the old pan clamp) */
 KHOST.on(function locClamp(){ var t = LOCHOST.ctl.target; t.x = clamp(t.x, -HW+60, HW-60); t.z = clamp(t.z, -HW+60, HW-60); t.y = clamp(t.y, -80, 900); }, 'tick');
 /* the page's own frame, after the host has placed the camera: the world clock, the sky, the night, the ticks, the sun.

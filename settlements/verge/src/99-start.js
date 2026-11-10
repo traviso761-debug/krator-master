@@ -51,7 +51,7 @@ KHOST.on(function vergeSky(){const now=performance.now(),rdt=Math.min(.1,Math.ma
  MAT_WATER.uniforms.fogDensity.value=scene.fog.density;MAT_FALL.uniforms.fogDensity.value=scene.fog.density;MAT_FALL.uniforms.uLit.value=.25+.75*clamp(SKY_STATE.dayK,0,1);
  if(VERGE_GLOW)VERGE_GLOW.updateGlow(rdt,CLOCK.hour,DAYNIGHT_NIGHT_K);},'view');
 // ---------------------------------------------------------------- the page, handed to the host
-KHOST.take({build:'verge',title:'Verge — the twin cities on the cataracts',
+KHOST.take(KHOST.standard({build:'verge',title:'Verge — the twin cities on the cataracts',
  hint:'Twin cities where the high desert falls ~860 m into the Eastern Abyss: Upper Verge in the canyon (the Governor of Iziz), the switchback and the seven cataracts, Lower Verge by the plunge pool (its elected Mayor)',
  scene,camera,renderer,ground:terrainH,walk:KWALK,clear:1.7,minR:2,maxR:16000,views:VIEWS,start:INITIAL_VIEW,
  clock:{hour:CLOCK.hour,running:CLOCK.running},
@@ -70,6 +70,6 @@ KHOST.take({build:'verge',title:'Verge — the twin cities on the cataracts',
  minimap:{title:'Verge'},
  api:window._api,
  // E opens or shuts the door within reach (core/door: KDOORHOST.toggleNear; 95-verge-doors.js); flying, E still climbs as well
- keys:{e:()=>{if(VERGE_DOORS)KDOORHOST.toggleNear(camera.position,vergeWalking());}}});
+ std:VERGE_DOORS?{door:()=>{KDOORHOST.toggleNear(camera.position,vergeWalking());}}:{}   /* Door (E): the one key map (core/host/92k-host-keys.js) */}));
 if(VERGE_DOORS)tick(KDOORHOST.tip(()=>camera.position,vergeWalking));   // "E: open the door" at the foot of the page
 KHOST.hover(true);   // the inspector's hover tip on, as Verge's 'Inspector (hover)' box was

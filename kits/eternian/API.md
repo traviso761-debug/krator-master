@@ -11,7 +11,7 @@ Units are metres; x east, y up, z south. A def's local frame: origin on the grou
 | Fragment | Prefix | What |
 |---|---|---|
 | `26k-kit.js` | | `KIT`, `ET_STYLES`, `SV_LIB` (the library families P1 maps), `SV_TILE0`, `SV_CLOTH`, `SV_CUT`, `KIT_HAS(k)`, `SVPAL`, `P(k)` |
-| `37-wk-rec.js` | wk | walk records: every box a building draws is a core/walk floor or block (from `kits/islanders`) |
+| `37-wk-rec.js` | wk | walk records: every box a building draws is a core/walk floor or block (core/engine, read in place since 2026-11-09) |
 | `28-et-mat.js` | | what the vendored `27-mat.js` does not know: the screens alpha-tested and two-sided, the onyx and alabaster glowing (their map as their emissive map) |
 | `38-et-alt.js` | | **alternates**: `ET_ALTS` (`screen`: screen, screenB; `maze`: maze, mazeB, mazeC), the take per placed instance (a KRAND hash of the def's seed, variant and place; it wraps `place` and `emit`, the engine untouched); `etAltOf(key, mk, x, z, v)` |
 | `40-et-kit.js` | et | the toolkit: `etWall(L, y0, h, mk, col, opens, o)`, `etWalls(w, d, y0, h, mk, col, {front, back, left, right})`, `etOculus`, `etStepHead`, `etFlutes`, `etParapet`, `etBlockScreen`, `etStair`, `etNoCut`, `etCutFloor`, `etFace`, `ET_T`, `ET_WATER` |

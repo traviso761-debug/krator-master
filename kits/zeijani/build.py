@@ -82,7 +82,7 @@ sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))
 import host as khost
 sys.path.insert(0, os.path.join(ROOT, 'core', 'atmos', 'placeholder'))
 import placeholder as psky   # the placeholder sky (KratorSky), read in place: MODULARITY-PLAN.md step 1
-CORE_HOST = khost.SHELL + ['94-host-polytool.js']
+CORE_HOST = khost.SHELL + khost.KEYS + ['94-host-polytool.js']   # KEYS: the one key map and the one walk mode (core/host/92k-host-keys.js)
 VENDORED = {}
 # GENERATED fragments, never written to src/
 FURN_CULTURES = ['zeijani', 'nomad', 'generic', 'generic-goods']   # the Zeijani pieces, the Eastern Nomads' (pueblo) for fallbacks, the shared goods

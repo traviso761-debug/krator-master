@@ -45,7 +45,7 @@
     "biomes/hyperjungle/tex/wood.albedo.webp": "3610e134252bf8faaa5f8cc9932c13808694f728521f15fc06370841bca54045",
     "biomes/necanyons/KNOWN_ISSUES.md": "6039cdf4e34df4320b4d57ae17def7330d0e9b83e3773c044a92233c61343270",
     "biomes/necanyons/PORT.md": "55e3aa7adc44cee3cabc435c836fcbb83048f5cc77e93a66a1ff173ce072ef3d",
-    "biomes/necanyons/build.py": "e68d850e445b421d60b3aeb25d48508087b4fc411b913becb26ae7e78b6d17ec",
+    "biomes/necanyons/build.py": "1503f969cc1b685a771e91685abf36b1a5e2af4eb35c22aa9156ef4651fbcb59",
     "biomes/necanyons/src/00-head.html": "5ac3e7776a2efd6866d6d3da74d83086900a65f2761fc429b1f2286db9363ae0",
     "biomes/necanyons/src/45-host-stage.js": "90f79aeb9ec237699166ef48550d5a5406fadc2b652c79f81304a5906a29d284",
     "biomes/necanyons/src/46-biome-necanyons-layout.js": "0600b23aceb94d6684abdaf7bc13a80f4e08db17e61eba83098ea5275d16a829",
@@ -62,7 +62,7 @@
     "biomes/necanyons/src/89g-host-nightlife.js": "d2beb154e7908ecbeeed4b3dd799ce3e8e9f0f78742248e1811764bb36d88719",
     "biomes/necanyons/src/89n-host-night.js": "019c51fa4db40ca5b69f785ed3dc1108f3dadd01f25a2807e46395cf9fdf51a7",
     "biomes/necanyons/src/89w-host-water.js": "5d82d3377732f660a938f40197a383bbfaf59aeafc20507afbe4387726b3ff10",
-    "biomes/necanyons/src/99-host-take.js": "c73b5326b2f32c79d915c8f59228fd000246e79ba4ce09ae90c9262f4739aaf8",
+    "biomes/necanyons/src/99-host-take.js": "89109da9b9f6378c3973746c3e0bb0ecbbe2d299888f61267589f35305049290",
     "biomes/necanyons/src/99-tail.html": "65abfb642de580808a65c6ec8bf3bc2c410397558a5ac28e825accdb7c590d3b",
     "biomes/necanyons/tex/bark.caudex.albedo.webp": "cd8a993d4d1cf05e1e87251a678b2e2b27d41770863d8ca9f9a4dcfdcddfa7e5",
     "biomes/necanyons/tex/bark.fig.albedo.webp": "4884d9aa52f78eef877b7617164257937fa07129ad2fcdc64502ddb4bb5f07aa",
@@ -152,6 +152,7 @@
     "core/host/90-host-camera.js": "6ad6af57adcf1fb2facd04968db769350c0d27de1d2fe20829d9948be75a2847",
     "core/host/91-host-loop.js": "240f833bc2e031506de36b503594acd2939e3f45aee21115effd00666fa66986",
     "core/host/92-host-panel.js": "3d65cd6c0bb873e48eb4189fffad906ab21aef1950164a454254a4fefe7a0b88",
+    "core/host/92k-host-keys.js": "d3eaefd605d5ac360f205e7628bba245fbcfcd518c8fc8d79d2743556143df06",
     "core/host/93-host-inspect.js": "cf7e676324297688199a85d9a26c34381732955955985462aa3dbd2c12431f90",
     "core/host/93-host-stocks.js": "ee986893621f17b4419db1feb1edbc01b7e28f067e85fd8b811112ec65456a69",
     "core/host/94-host-marks.js": "a57a2a38ef92f4d06232659773249de63296e79e200da27a24f0253eff3f0284",
@@ -190,24 +191,24 @@
     "core/water/ext/54b-core-water-kinds-ext-draw.js": "e5c69d41f55e2aaf3b285876491858e379d42f377ff37b0a70a7288ba7004b42",
     "core/water/ext/55-core-water-confluence.js": "2128f82bc419c3a2efbe16c4eb4b0a1a50557aa2b8f018778bf4e7d645b6cbcb",
     "core/water/ext/55b-core-water-confluence-draw.js": "a28ff05647a423d73bfa38cc2bb6b6870db967fdb22768015bc5d4a5cd19bc79",
+    "core/water/ext/56-core-water-breakup.js": "30c6de1a8913f7fa59ac92cd40526eb148d683b02dc31b6b521a3a768a2926bb",
     "core/water/ext/57-core-water-audit.js": "6dd616a15a7804c615c4e1638b250cb709a85e1f219ae9ea03f8c4faa20374c1",
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
    },
    "listings": {
-    "biomes/necanyons": "825e627e626f51c8bc3a8d49103084707d75fa06b943ffd36db6bf2323adbf8c",
     "biomes/necanyons/dist": "379307a5641cca885b9b5dc007346f4bd5d1ce8c4d808f7864752efc5fa89050",
     "biomes/necanyons/src": "f8737b4c07039ae8847d79ddb08a335729b8eff7967e39941b488c8497d6a95a",
-    "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
-    "tools": "2d2fdaca850a104a2a2c553313ccb3ad18dc6bc48cb554c8c714fc1ca39607bf",
+    "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
+    "tools": "24cc9a0d867a37d71596ec8a001087a35735c498125de4e336dde163318589d8",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/necanyons/dist/necanyons.html": "8f14acb407fb83e6e83d7b2bf1f6627575063b03158c73c4e30f223045d7ca5d",
+    "biomes/necanyons/dist/necanyons.html": "383d73aa92f575acb677fc7d96e6546daadac8cac5dc45fc4217a82812d9e0ab",
     "biomes/necanyons/dist/necanyons.tex.hyperjungle.js": "fb8c15e07052806b71c9359c0c751747b857a7e6163b9caaac488c8f7c45dd7f",
     "biomes/necanyons/dist/necanyons.tex.necanyons.js": "62e53597d74616360437b80b4751a8d1e10b04adf64366533786f7d5fdf71419"
    },
    "outputs_raw": {
-    "biomes/necanyons/dist/necanyons.html": "8f14acb407fb83e6e83d7b2bf1f6627575063b03158c73c4e30f223045d7ca5d",
+    "biomes/necanyons/dist/necanyons.html": "383d73aa92f575acb677fc7d96e6546daadac8cac5dc45fc4217a82812d9e0ab",
     "biomes/necanyons/dist/necanyons.tex.hyperjungle.js": "fb8c15e07052806b71c9359c0c751747b857a7e6163b9caaac488c8f7c45dd7f",
     "biomes/necanyons/dist/necanyons.tex.necanyons.js": "62e53597d74616360437b80b4751a8d1e10b04adf64366533786f7d5fdf71419"
    }

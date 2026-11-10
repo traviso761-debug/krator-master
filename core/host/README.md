@@ -176,11 +176,29 @@ modules on the page, the build's standard controls, then its own keys (`o.keyNam
 | ? | Keys | the card | 92k |
 
 A build key that means something else on its page (Noah's Regret's C for its own cut cycle and T for the tip) is listed
-under "this page" on the card; record the clash in its `KNOWN_ISSUES.md`. **Adopted:** the building-kit engine
-(`core/engine`, every kit on it: Scyvoi, Ash and Desert Nomads, Eternian, Islanders, Lizardmen, Yeti, Resources). **To adopt:**
-every other take: list `khost.KEYS` and pass `std` for the controls it already has (the biome kits' Night buttons, Ys's N,
-Girder's and Mav's Refuge's E, Metropolis's X); the kit sheets that still carry their own camera (kits/ancients, kits/port and
-biomes/dambasins's copy, kits/post-apoc, kits/ringsea, the catalog engine's pages) move onto the host first.
+under "this page" on the card; record the clash in its `KNOWN_ISSUES.md`. `KHOST.keysCheck()` reports such a key when it takes
+a standard key's letter (crater-drylands' L for its fire tool is one), and a standard button not in the key map's words.
+
+### The one walk mode (2026-11-09)
+
+The walker is the camera's (F, `90-host-camera.js`, on `o.walk`, a `KWALK`); `92k-host-keys.js` makes it the same everywhere:
+
+- a walking frame is moved in steps no longer than the walker's radius, each stood (pushed out of the blocks) before the next.
+  Before, a frame's whole move (0.9 m walking, 3 m sprinting at 0.1 s a frame) was taken at once and then pushed out: a 0.2 m
+  wall or a post was crossed, not stopped at.
+- `window._walk` (`on`, `toggle`, `setPose(x, z, yaw)`, `pose()`, `blocked(x, z, feet)`) over the camera, unless the page set its
+  own (Girder, Verge): `python3 tools/harness.py walk <page> --route KeyW:20f --start auto` drives any page that takes the key map
+  with real keys.
+- `KHOST.walkCheck()`: the walker set on a raised `KWALK` floor stands on it, and walked 4 s at a wall from 3 m off it stops at
+  its face; the camera is put back. `tools/harness.py`'s universal asserts run it and `keysCheck` on every page that has them
+  (`one-key-map`, `walk`): a page that hands the camera no `KWALK` passes `walk` as "the ground only".
+
+**Adopted** (`khost.KEYS` on the page; the list is kept in TODO.md, "Viewers"): the building-kit engine (`core/engine` through
+`kengine.HOST`: Scyvoi, Ash and Desert Nomads, Eternian, Islanders, Lizardmen, Resources, Post-Apoc, Yeti, Tents), Construction,
+Zeijani, the settlements on core/host and two biome kits (TODO.md has which). **To adopt:** every other take: list
+`khost.KEYS` and pass `std` for the controls it already has (the biome kits' Night keys, Metropolis's X); the kit sheets that
+still carry their own camera (kits/ancients, kits/port and biomes/dambasins's copy, kits/ringsea, the catalog engine's pages)
+move onto the host first. When most builds take it, `KEYS` joins `SHELL` at an all-builds rebuild.
 
 ## The verify contracts kept
 

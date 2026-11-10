@@ -7,6 +7,7 @@
     "core/host/90-host-camera.js": "6ad6af57adcf1fb2facd04968db769350c0d27de1d2fe20829d9948be75a2847",
     "core/host/91-host-loop.js": "240f833bc2e031506de36b503594acd2939e3f45aee21115effd00666fa66986",
     "core/host/92-host-panel.js": "3d65cd6c0bb873e48eb4189fffad906ab21aef1950164a454254a4fefe7a0b88",
+    "core/host/92k-host-keys.js": "d3eaefd605d5ac360f205e7628bba245fbcfcd518c8fc8d79d2743556143df06",
     "core/host/93-host-inspect.js": "cf7e676324297688199a85d9a26c34381732955955985462aa3dbd2c12431f90",
     "core/host/93-host-stocks.js": "ee986893621f17b4419db1feb1edbc01b7e28f067e85fd8b811112ec65456a69",
     "core/host/94-host-marks.js": "a57a2a38ef92f4d06232659773249de63296e79e200da27a24f0253eff3f0284",
@@ -33,7 +34,7 @@
     "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
     "settlements/jimjam/PORT.md": "b51b5921811f6d45c90b74d6c6d0b7b0938ddeffc04434e80fe6c76b0861effe",
-    "settlements/jimjam/build.py": "2a89a916938f25a89ad7265294610c10b1039b3f3f81edd48f926d74dcdb6a9d",
+    "settlements/jimjam/build.py": "d212c4918b2a1c3aea099f50853b71348c13f917e25c62ea8de8dc9efbecf3b8",
     "settlements/jimjam/src/00-head.html": "0451fecaa606f8b8bf0e05eecdc54213c947dc43658f921494286d4785d77e0e",
     "settlements/jimjam/src/10-core.js": "7c31cf7eb63a1666c0f1c8cd97fd810c1531d10e8d014c105f807a2ad521138b",
     "settlements/jimjam/src/12-stats.js": "67d17e87faa80d6e5503dd3dc0d53cb2b9e0d68ce77f256187968ee914f881bd",
@@ -142,24 +143,24 @@
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
    },
    "listings": {
-    "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
+    "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
     "core/lod": "ce04505dcf0d6e6739a489ddb83f6692b9c08a79cfbe7ef33f6cf4585055624a",
     "core/rand": "2174a8e3e509270343eb7e2c6e69ec9c0a221daa415e05d960123007b253bc77",
     "core/tags": "cd6f040d0e4dc63956ba50d287f27cda97e471bfd15ee98f2638981d4f9e1127",
     "settlements/jimjam/src": "2ed4c32a2df05baa2061d098e8c63e91070663193d3810b66e45f1d61a844e54",
     "settlements/jimjam/targets": "cbc8a597a67c465497550c4a4a7eebdb138442c06be06a78cc1ee8715658ff44",
     "settlements/jimjam/targets/kit": "110dafb507a2d12553bf9fae67bff24f62ea606ee3c6843801219bd84ed1cdc4",
-    "tools": "2d2fdaca850a104a2a2c553313ccb3ad18dc6bc48cb554c8c714fc1ca39607bf"
+    "tools": "24cc9a0d867a37d71596ec8a001087a35735c498125de4e336dde163318589d8"
    },
    "outputs": {
     "settlements/jimjam/VENDOR.json": "0deb21032d5bdba31a9cec357bbddaf48f0bd72fee63f27f473976b9aab6bc3a",
-    "settlements/jimjam/build-manifest.json": "7da66a6a83faa82ada5e60aaea8e195754bb50b11c516378d0387f60dc0fdffa",
-    "settlements/jimjam/dist/jimjam-kit.html": "9cf612b338fcd466120abfd697a4a4c52f1d472bac5ccecae5290c17d696fe20"
+    "settlements/jimjam/build-manifest.json": "6ec43008e92b82f00e77eefa142d21b9467a235ea5c45653176318511a79dc08",
+    "settlements/jimjam/dist/jimjam-kit.html": "ddb060508a612d8300a78968a902d37cd8b21cf26e752d0a2e18b0e4f14b0837"
    },
    "outputs_raw": {
     "settlements/jimjam/VENDOR.json": "0deb21032d5bdba31a9cec357bbddaf48f0bd72fee63f27f473976b9aab6bc3a",
-    "settlements/jimjam/build-manifest.json": "7da66a6a83faa82ada5e60aaea8e195754bb50b11c516378d0387f60dc0fdffa",
-    "settlements/jimjam/dist/jimjam-kit.html": "9cf612b338fcd466120abfd697a4a4c52f1d472bac5ccecae5290c17d696fe20"
+    "settlements/jimjam/build-manifest.json": "6ec43008e92b82f00e77eefa142d21b9467a235ea5c45653176318511a79dc08",
+    "settlements/jimjam/dist/jimjam-kit.html": "ddb060508a612d8300a78968a902d37cd8b21cf26e752d0a2e18b0e4f14b0837"
    }
   }
  }

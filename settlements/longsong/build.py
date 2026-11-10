@@ -132,7 +132,7 @@ PATH['41-world-fields.js'] = os.path.join(ROOT, 'openworld', 'isle-demo', 'src',
 # the editor, the cutaway, and the core modules they read (core/edits, core/space, core/minimap)
 sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))
 import host as khost
-khost.resolve(PATH, khost.FULL)
+khost.resolve(PATH, khost.FULL + khost.KEYS)   # KEYS: the one key map and the one walk mode (core/host/92k-host-keys.js)
 for f in ('10-core-head.js', '20-core-kit.js', '30-core-foliage.js', '40-core-place.js'):
     if f not in PATH:
         sys.exit('NO BIOME CORE: ' + f)

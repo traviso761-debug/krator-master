@@ -49,9 +49,9 @@
     "core/host/90-host-camera.js": "6ad6af57adcf1fb2facd04968db769350c0d27de1d2fe20829d9948be75a2847",
     "core/host/91-host-loop.js": "240f833bc2e031506de36b503594acd2939e3f45aee21115effd00666fa66986",
     "core/host/92-host-panel.js": "3d65cd6c0bb873e48eb4189fffad906ab21aef1950164a454254a4fefe7a0b88",
-    "core/host/92k-host-keys.js": "368527337f64d23c5019a85a0ba929062671b8f3f138c53944d728ff26a491a7",
+    "core/host/92k-host-keys.js": "d3eaefd605d5ac360f205e7628bba245fbcfcd518c8fc8d79d2743556143df06",
     "core/host/94-host-polytool.js": "73178f8a6f8632fa25802d8024ce753a209e29af018ae4b2297cea6e1b84d730",
-    "core/host/95-host-probe.js": "a44f84c2364f546283048e28866342ab3d1e8c8c4da369b713f0f6cc430506dd",
+    "core/host/95-host-probe.js": "91a9ef729db002716d0e840ebd6e0efc799f2ae0c99419fb06c3f44eda5f6471",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/24-tex-def.js": "1016dd8a57911fba8405bb4b8f050561d8ed24ab98e7993c9fc58c12d3ce3a95",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
@@ -264,12 +264,12 @@
     "tools": "24cc9a0d867a37d71596ec8a001087a35735c498125de4e336dde163318589d8"
    },
    "outputs": {
-    "kits/ash-nomads/build-manifest.json": "e2cbd166d337b59eb62ede15c122cc30b00878811efc683df72bc0f73ceb1302",
-    "kits/ash-nomads/dist/ash-nomads.html": "d45e96794dd3d83e50e1a0609a1870d4323f9f904a5d9fec992c2571e3a37f8e"
+    "kits/ash-nomads/build-manifest.json": "d7645b765a64502073dcfbee29dff813df7cca841b25f9850189fadfd1a46fae",
+    "kits/ash-nomads/dist/ash-nomads.html": "bb8953f98bddaecddf05b180821b148f460775a49c3fcb1953b5282e0b38f869"
    },
    "outputs_raw": {
-    "kits/ash-nomads/build-manifest.json": "e2cbd166d337b59eb62ede15c122cc30b00878811efc683df72bc0f73ceb1302",
-    "kits/ash-nomads/dist/ash-nomads.html": "d45e96794dd3d83e50e1a0609a1870d4323f9f904a5d9fec992c2571e3a37f8e"
+    "kits/ash-nomads/build-manifest.json": "d7645b765a64502073dcfbee29dff813df7cca841b25f9850189fadfd1a46fae",
+    "kits/ash-nomads/dist/ash-nomads.html": "bb8953f98bddaecddf05b180821b148f460775a49c3fcb1953b5282e0b38f869"
    }
   }
  }

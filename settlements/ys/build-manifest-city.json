@@ -118,10 +118,6 @@
  "86-bio-10-core-head.js": "26885abe5023",
  "86-bio-20-core-kit.js": "454a2792c69f",
  "86-bio-30-core-foliage.js": "7c297f752e6d",
- "86-bio-31j-core-joint.js": "e94ca7ba7740",
- "86-bio-32-core-variants.js": "def8e5bd4c30",
- "86-bio-33-core-fungoid.js": "39db59a90128",
- "86-bio-34-core-impostor.js": "225d8380d19a",
  "86-bio-35-core-anim.js": "5ffb84c40f4b",
  "86-bio-40-core-place.js": "957d59ca34d8",
  "86-bio-45-city-init.js": "cc4e04dd9fc4",
@@ -172,6 +168,7 @@
  "91z-views.js": "9013d0806272",
  "92-camera.js": "adc505981d87",
  "92-host-panel.js": "8066aefad370",
+ "92k-host-keys.js": "95f7538e4448",
  "93-host-inspect.js": "30374027dc5d",
  "93-host-stocks.js": "27dd6b526848",
  "93-labels.js": "d78e5d807c2d",
@@ -184,6 +181,6 @@
  "97-host-minimap.js": "bb80eeaa8a43",
  "98-host-edit.js": "66535c6a9cdd",
  "99-host-cutaway.js": "5fc10889d24e",
- "99-start.js": "324da898043b",
+ "99-start.js": "628a442f8543",
  "99-tail.html": "d3aaf402992e"
 }

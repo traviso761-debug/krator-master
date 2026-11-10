@@ -101,6 +101,7 @@
  "91z-views.js": "4d2312a0eb27",
  "92-camera.js": "d8769bbb304e",
  "92-host-panel.js": "8066aefad370",
+ "92k-host-keys.js": "95f7538e4448",
  "93-host-inspect.js": "30374027dc5d",
  "93-host-stocks.js": "27dd6b526848",
  "93-labels.js": "d78e5d807c2d",
@@ -113,6 +114,6 @@
  "97-lod-auto.js": "88ec9e581127",
  "98-host-edit.js": "66535c6a9cdd",
  "99-host-cutaway.js": "5fc10889d24e",
- "99-start.js": "2458c9668f37",
+ "99-start.js": "86214a1ea8b8",
  "99-tail.html": "d3aaf402992e"
 }
