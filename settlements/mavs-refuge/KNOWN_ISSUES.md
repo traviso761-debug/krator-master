@@ -170,7 +170,7 @@ The owner: "remove all dark voids and make all windows, doors and portals actual
 
 ## walk-and-reach fails: 370 floors unreached (2026-11-10)
 
-`98-start.js` now puts `MRWALK` on `window`, so `verify.py`'s `walk-and-reach` assert finally runs (before, it read a
+`98-start.js` now puts `MRWALK` on `window` (as `_mrwalkApi`), so `verify.py`'s `walk-and-reach` assert finally runs (before, it read a
 local and always reported "no core/walk"). It fails honestly: 1764 units walled, but 370 of 2373 floors are not reached
 from any unlocked door (mostly `mix.N.store.floor.0`, the mixed-use buildings' ground-floor stores; 284 units have no
 unlocked door). Open: find whether those stores' doors are locked, missing, or their doorway blocks not cleared
