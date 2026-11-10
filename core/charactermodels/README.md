@@ -32,7 +32,9 @@ blender -b --python tools/make_garments.py -- male --only <ids> [--render <dir>]
 blender -b --python tools/mpfb_build.py -- male <export dir> --only <ids>
 python3 tools/make_mpfb.py male <export dir> --merge                # -> pieces/mpfb_male/<id>.*, new entries in kit.json
 tools/rebuild.sh [--only <male ids> <female ids>]                  # all of the above in order, both bodies at once, then the pages
-python3 build.py [--thumbs]                                        # dist/cosmetic-lab.html, dist/animation-lab.html (+ .artifact.html); runs tests/test-rig.js
+python3 build.py [--thumbs]                                        # dist/cosmetic-lab.html, dist/animation-lab.html (+ .artifact.html); runs tests/test-rig.js,
+                                                                   # tests/check_kit.py (the kits against their pieces) and tools/check_twin.py (the push shader against Godot's)
+python3 tools/import_props.py [<downloads dir>]                    # Meshy weapon models as hand-held props (Tzintzun's), into data/props.json and clips.json
 python3 build.py --pages-only                                      # the pages alone where pieces/ is missing (the manifest keeps the pieces' hashes)
 python3 verify.py dist/cosmetic-lab.html --assert [--out shots/]
 python3 verify.py dist/animation-lab.html --assert
@@ -585,7 +587,11 @@ what lies outside the outer part (a belt across an open coat's gap) keep their o
 and skirts, the kimono, the long skirts) has every vertex pushed out of the thighs, shins and feet on the GPU after
 skinning (`pushOut` / `kchar_push.gdshader`, which in Godot also carries the garment's own look: albedo, alpha
 cutoff, normal map), so a knee cannot come through between two chains, and out of the seat, so a robe's back covers
-the buttocks. Each capsule's radius runs from `ra` to `rb` along it (the thigh from about 12 cm at the hip to 8 cm
+the buttocks. Over trousers a top's push takes 3.5 cm more (`PAD_OVER`), but only as much of it as the stride asks (`kcM`,
+none standing still, all of it by a walk's swing), and only cloth inside the bare limb of a hanging leg counts as deep
+(HANDOFF-GARMENT-DEFECTS.md). In a stride the legs' capsules hand over to the hull: six points on each leg set how far out from the body's axis the cloth must reach at their bearing, so a kicked-back shin goes under the cloth rather than through it. A loose piece with no chains (the kimono) hangs from the hips alone and has the hull at rest too.
+A slit garment's cloth below the slit's top would not be pushed off the legs (`kcSl`, kit part `slit`, metres above the knee; `make_garments.py torso_tube(slit=)`); no garment has one now.
+Each capsule's radius runs from `ra` to `rb` along it (the thigh from about 12 cm at the hip to 8 cm
 at the knee, the shin from 8.6 cm at the calf to 5.3 at the ankle on the man): at one radius the calves and the tops
 of the thighs came through the robes. The upper arms and forearms keep one radius (tapered, they drew a tunic's
 sleeve and the mantle over it into the same shell, and the mantle broke up jagged). They are hard
@@ -740,10 +746,17 @@ bodyparts06 (CC-BY: `CREDITS.md`).
 | `tools/layers.py` | what lies over what: slot ranks, the outfits of `data/peoples.json`, items worn over a higher slot (`OVER`); for `make_garments.py`'s settle, `make_mpfb.py`'s kit and `ease.py` | |
 | `tools/ease.py` | under-items standing outside the item over them, per outfit (`--objs`: from the generator's output) | |
 | `tools/shots.py` | close-ups of the Cosmetic Lab, the same every run (`tools/shots-clipping.json`: the open clipping issues) | |
+| `tools/garment_audit.py` | every people's outfit drawn in flat colours and counted: skin through cloth, a lower layer through a higher, cloth folded through itself. `--report` ranks a sweep, `--check` compares it with `tests/garment-audit.json` (`AUDIT_GL=d3d11`: the GPU, about ten minutes for all 66) | |
 | `tools/lab_shots.py` | shots of the Animation Lab: a clip at a time on each body framed close and put side by side, the same every run (`--gpu`: the machine's GPU, not SwiftShader) | |
 | `tools/thumbs.mjs` | the chip pictures (`dist/thumbs/`) | |
 | `tools/npcs.js` | strangers in bulk from the command line (`KCHAR.crowd`) | |
 | `tests/test-rig.js` | node test of `KCHAR` (build.py runs it) | |
+| `tests/check_kit.py` | every kit entry against its pieces: the GLB and morphs present, its cloth chains' bones in the skin, their anchors inside the mesh and bound on them (build.py runs it; `tests/kit-known-bad.json` names what may fail, with the reason) | |
+| `tools/check_twin.py` | the push shader in `50-figure.js` against `godot/krator/character/kchar_push.gdshaderinc`: the uniforms must match, the literals' gap is held to `tests/twin-baseline.json` (build.py runs it; `--baseline` after a port that narrows it) | |
+| `tools/cloth_probe.py` | verify.py's court-skirt check taken apart: which cloth item the count is on, the deepest chain points against the thigh's median and tapered radius, with the wind, the dynamics or the torso off | |
+| `tests/ui-inventory.json` | the lab's sections per tab, which `verify.py --assert` requires to still be there (`--ui-baseline` rewrites it) | |
+| `tools/import_props.py` | Meshy weapon models as props in the grip frame: scaled to a real length, the handle found from the width profile, the edge turned to +Z; textures re-encoded small | |
+| `tools/garments/` | the Python garment pipeline (Gemini, 2026-11): `core.py` fits and skins parts on the base body and registers kit entries (`made_by: garments`), `types/` the part builders, `paint.py` the textures, `cultures/` every outfit builder, `build_all.py` runs them by culture. `REVIEW-GARMENTS-2026-11-06.md` is its audit | |
 | `tests/make-golden.js` | writes `golden-mpfb.json` (morphs, strangers, parts), which `godot/tests/character/kchar_test.gd` checks Godot against | |
 | `CREDITS.md` | the CC-BY items | |
 

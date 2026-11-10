@@ -98,7 +98,11 @@ function KCharFigure(body, sliders, load){
       if(part.role === 'armour' && (part.slot === 'torso' || part.slot === 'legs')){
         var it0 = itemByKey[part.key] || {};
         var slot0 = it0.over || part.slot;      // pteruges push as the top they hang over does
-        m.userData.pad = pushOut(m.material, it0.loose ? (slot0 === 'torso' ? PAD_TOP : PAD_SKIRT) : 0, !!it0.loose, slot0 === 'legs');
+        var l0 = it0.loose ? 1 : (it0.cloth && it0.cloth.parts && it0.cloth.parts[0] && it0.cloth.parts[0].layer >= 4 ? 0.25 : 0);
+        m.userData.pad = pushOut(m.material, it0.loose ? (slot0 === 'torso' ? PAD_TOP : PAD_SKIRT) : 0, l0, slot0 === 'legs');
+        m.userData.pad.slit.value = it0.cloth ? it0.cloth.parts.reduce(function(s, q){ return q.slit == null ? s : Math.max(s, q.slit); }, -1) : -1;
+        geo.computeBoundingBox(); m.userData.hem0 = m.userData.pad.hem.value = geo.boundingBox.min.y;
+        m.userData.pad.only.value = it0.loose && !it0.cloth ? 1 : 0;
       } else if(part.role === 'armour' && part.slot === 'feet') pushOut(m.material, 0, false, false, true);   // boots: the squeeze only
       if(part.role === 'armour' || part.role === 'mod') furShells(m, itemByKey[part.key]);
       self.inner.add(m);
@@ -168,7 +172,7 @@ function KCharFigure(body, sliders, load){
         var s = new THREE.SkinnedMesh(geo, mat);
         s.name = m.name + '|fur:' + kind + ':' + k; s.frustumCulled = false; s.castShadow = false;
         s.bind(m.skeleton, new THREE.Matrix4());
-        s.userData.fur = true;
+        s.userData.fur = true; s.userData.index0 = idx;
         m.add(s);
       }
     });
@@ -420,6 +424,512 @@ function KCharFigure(body, sliders, load){
     u.kpOn.value = 1;
   }
 
+  /* ---- Face Paint & Makeup (rec.facepaint, rec.makeup) on the MakeHuman base skin mesh ---- */
+  var FP_KIND = {
+    none:0, woad_raider:1, eternian_court:2, voth_jaguar:3, skull_visage:4,
+    tear_blades:5, shaman_dots:6, chichani_drow:7, half_split:8, jaw_fangs:9, cyber_circuit:10,
+    opera_swirl:11, war_tears:12, harlequin_geo:13, labyrinth_mandala:14, frost_raider:15,
+    island_boar:16, ghost_stripes:17, teal_chevron:18, sky_cat_stripes:19, ash_gold_pillar:20,
+    seeker_chevrons:21, ochre_y_smudge:22, handprint_visor:23, lotus_tendrils:24, ancestral_comb:25,
+    half_spiral_fret:26, blackwork_triskelion:27, maya_temple_fret:28, halo_star_dots:29, marigold_skull:30
+  };
+  var EYE_MAKEUP_KIND = { none:0, kohl:1, winged:2, smoky:3, court_gold:4, gothic:5 };
+  function faceCosmeticsInit(m){
+    var g = m.geometry, mat = m.material, isLips = m.userData.srcMaterial === 'Human.lips';
+    if(!g.attributes.aFaceCoord){
+      var M = m.userData.morph, P = M ? M.pos0 : g.attributes.position.array;
+      var si = g.attributes.skinIndex, sw = g.attributes.skinWeight, n = P.length / 3;
+      var sc = SCALE || 1, rx = 0.072 * sc, ry = 0.085 * sc;
+      var ny, nz;
+      if(n > 5250){
+        ny = P[3 * 5250 + 1]; nz = P[3 * 5250 + 2];
+        self.noseRef = { ny:ny, nz:nz };
+      } else if(self.noseRef){
+        ny = self.noseRef.ny; nz = self.noseRef.nz;
+      } else {
+        ny = (kit.body === 'mpfb_female' ? 1.4486 : 1.6238) * sc;
+        nz = (kit.body === 'mpfb_female' ? 0.1485 : 0.1685) * sc;
+      }
+      var fc = new Float32Array(4 * n);
+      for(var i = 0; i < n; i++){
+        var hw = 0;
+        if(isLips) hw = 1;
+        else if(si && sw){
+          for(var k = 0; k < 4; k++){
+            var j = si.getComponent ? si.getComponent(i, k) : si.array[4 * i + k], w = sw.array[4 * i + k];
+            if(w && J[j] && (J[j].name === 'Head' || J[j].name === 'Neck')) hw += w;
+          }
+        } else hw = 1;
+        var fx = P[3 * i] / rx, fy = (P[3 * i + 1] - ny) / ry, fz = (P[3 * i + 2] - nz) / ry;
+        var mask = 0;
+        if(isLips) mask = 1;
+        else if(hw > 0.25 && fz > -0.95 && fy > -0.78 && fy < 1.26 && Math.abs(fx) < 1.05){
+          var mz = smooth(-0.90, -0.42, fz);
+          var myBot = smooth(-0.72, -0.52, fy - 0.32 * fx * fx);
+          var myTop = 1 - smooth(0.96, 1.20, fy + 0.15 * fx * fx);
+          var mx = 1 - smooth(0.86, 1.02, Math.abs(fx));
+          mask = hw * mz * myBot * myTop * mx;
+        }
+        fc[4 * i] = fx; fc[4 * i + 1] = fy; fc[4 * i + 2] = fz; fc[4 * i + 3] = mask;
+      }
+      g.setAttribute('aFaceCoord', new THREE.BufferAttribute(fc, 4));
+    }
+    if(mat.userData.kfc) return mat.userData.kfc;
+    var u = mat.userData.kfc = {
+      kfcOn:{ value:0 }, kfcIsLips:{ value:isLips ? 1 : 0 },
+      kfcFpKind:{ value:0 }, kfcFpAmt:{ value:0 },
+      kfcFpC1:{ value:new THREE.Color('#2b5b84') }, kfcFpC2:{ value:new THREE.Color('#e8e2d5') },
+      kfcLipAmt:{ value:0 }, kfcLipCol:{ value:new THREE.Color('#a82438') },
+      kfcEyeKind:{ value:0 }, kfcEyeAmt:{ value:0 }, kfcEyeCol:{ value:new THREE.Color('#1c1824') },
+      kfcBlushAmt:{ value:0 }, kfcBlushCol:{ value:new THREE.Color('#c85a64') }
+    };
+    var prev = mat.onBeforeCompile;
+    mat.onBeforeCompile = function(sh, r){
+      if(prev && prev !== mat.onBeforeCompile) prev(sh, r);
+      Object.keys(u).forEach(function(k){ sh.uniforms[k] = u[k]; });
+      sh.vertexShader = 'attribute vec4 aFaceCoord;\nvarying vec4 vFaceCoord;\n' +
+        sh.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\n\tvFaceCoord = aFaceCoord;');
+      var fragHead = [
+        'varying vec4 vFaceCoord;',
+        'uniform float kfcOn, kfcIsLips, kfcFpKind, kfcFpAmt, kfcLipAmt, kfcEyeKind, kfcEyeAmt, kfcBlushAmt;',
+        'uniform vec3 kfcFpC1, kfcFpC2, kfcLipCol, kfcEyeCol, kfcBlushCol;'
+      ].join('\n') + '\n';
+      var fragBody = [
+        '#include <map_fragment>',
+        '\tif(kfcOn > 0.5 && vFaceCoord.w > 0.005){',
+        '\t\tfloat fx = vFaceCoord.x, afx = abs(fx), fy = vFaceCoord.y, fz = vFaceCoord.z, fm = clamp(vFaceCoord.w, 0.0, 1.0);',
+        '\t\tfloat luma = dot(diffuseColor.rgb, vec3(0.299, 0.587, 0.114));',
+        '\t\tvec3 shade = clamp(diffuseColor.rgb / max(luma, 0.08), 0.55, 1.45) * (0.35 + 0.65 * clamp(luma * 1.4, 0.0, 1.2));',
+        '\t\t// 1. Face Paint (15 procedural styles)',
+        '\t\tif(kfcFpKind > 0.5 && kfcFpAmt > 0.01){',
+        '\t\t\tfloat m1 = 0.0, m2 = 0.0, m3 = 0.0;',
+        '\t\t\tif(kfcFpKind < 1.5){',
+        '\t\t\t\t// 1: Woad Raider War Band & Drips',
+        '\t\t\t\tfloat bandY = 0.30 + 0.04 * cos(fx * 4.5);',
+        '\t\t\t\tm1 = (1.0 - smoothstep(0.14, 0.21, abs(fy - bandY))) * (1.0 - smoothstep(0.76, 0.90, afx));',
+        '\t\t\t\tfloat drip = (1.0 - smoothstep(0.035, 0.065, abs(afx - 0.42))) * (1.0 - smoothstep(-0.28, -0.15, -fy)) * step(fy, 0.32);',
+        '\t\t\t\tm1 = max(m1, drip * 0.9);',
+        '\t\t\t\tm2 = (1.0 - smoothstep(0.025, 0.05, abs(fx))) * (1.0 - smoothstep(0.45, 0.85, abs(fy - 0.65))) * step(0.42, fy);',
+        '\t\t\t} else if(kfcFpKind < 2.5){',
+        '\t\t\t\t// 2: Eternian Sun Disc & Cheek Stripes',
+        '\t\t\t\tfloat sunD = length(vec2(fx * 1.1, (fy - 0.68) * 1.2));',
+        '\t\t\t\tm1 = 1.0 - smoothstep(0.13, 0.17, sunD);',
+        '\t\t\t\tm2 = (1.0 - smoothstep(0.20, 0.24, sunD)) * step(0.15, sunD);',
+        '\t\t\t\tfloat cLine = fy - (-0.02 - 0.28 * (afx - 0.28));',
+        '\t\t\t\tfloat inCheek = step(0.22, afx) * (1.0 - smoothstep(0.72, 0.82, afx));',
+        '\t\t\t\tfloat s1 = (1.0 - smoothstep(0.024, 0.042, abs(cLine))) * inCheek;',
+        '\t\t\t\tfloat s2 = (1.0 - smoothstep(0.022, 0.040, abs(cLine + 0.11))) * inCheek;',
+        '\t\t\t\tm1 = max(m1, s1); m2 = max(m2, s2);',
+        '\t\t\t} else if(kfcFpKind < 3.5){',
+        '\t\t\t\t// 3: Voth Jaguar Bridge Bar & Rosettes',
+        '\t\t\t\tfloat bar = (1.0 - smoothstep(0.04, 0.07, abs(fy - 0.14))) * (1.0 - smoothstep(0.55, 0.72, afx));',
+        '\t\t\t\tvec2 g = fract(vec2(afx * 4.2, (fy + 0.4) * 3.8)) - 0.5;',
+        '\t\t\t\tfloat rSpot = length(g);',
+        '\t\t\t\tfloat spotZone = smoothstep(0.24, 0.36, afx) * (1.0 - smoothstep(0.75, 0.88, afx)) * smoothstep(-0.35, -0.15, fy) * (1.0 - smoothstep(0.65, 0.85, fy));',
+        '\t\t\t\tm1 = max(bar, (1.0 - smoothstep(0.24, 0.32, rSpot)) * step(0.12, rSpot) * spotZone);',
+        '\t\t\t\tm2 = (1.0 - smoothstep(0.10, 0.15, rSpot)) * spotZone;',
+        '\t\t\t} else if(kfcFpKind < 4.5){',
+        '\t\t\t\t// 4: Ritual Skull Visage',
+        '\t\t\t\tfloat eyeHole = 1.0 - smoothstep(0.15, 0.21, length(vec2((afx - 0.41) * 1.15, (fy - 0.31) * 1.45)));',
+        '\t\t\t\tfloat noseHole = (1.0 - smoothstep(0.0, 0.09, afx - 0.08 * clamp(0.12 - fy, 0.0, 1.0))) * smoothstep(-0.06, 0.0, fy) * (1.0 - smoothstep(0.08, 0.15, fy));',
+        '\t\t\t\tfloat skullShape = (1.0 - smoothstep(0.70, 0.84, length(vec2(fx * 0.95, (fy - 0.18) * 0.85))));',
+        '\t\t\t\tfloat teeth = step(0.45, cos(fx * 38.0)) * (1.0 - smoothstep(0.14, 0.20, abs(fy + 0.29))) * (1.0 - smoothstep(0.32, 0.42, afx));',
+        '\t\t\t\tm1 = clamp(skullShape - eyeHole - noseHole, 0.0, 1.0) * 0.85 + teeth * 0.25;',
+        '\t\t\t\tm2 = max(eyeHole, noseHole);',
+        '\t\t\t} else if(kfcFpKind < 5.5){',
+        '\t\t\t\t// 5: Twin Eye-Blade Vertical Strikes',
+        '\t\t\t\tfloat wBlade = 0.085 * (1.0 - 0.55 * clamp((0.35 - fy) / 0.85, 0.0, 1.0));',
+        '\t\t\t\tm1 = (1.0 - smoothstep(wBlade, wBlade + 0.03, abs(afx - 0.41))) * smoothstep(-0.55, -0.38, fy) * (1.0 - smoothstep(0.68, 0.82, fy));',
+        '\t\t\t\tm2 = (1.0 - smoothstep(0.018, 0.035, abs(afx - 0.41))) * smoothstep(-0.48, -0.35, fy) * (1.0 - smoothstep(0.62, 0.75, fy));',
+        '\t\t\t} else if(kfcFpKind < 6.5){',
+        '\t\t\t\t// 6: Shamanic Brow Arc & Ritual Dots',
+        '\t\t\t\tfloat arcY = 0.64 - 0.22 * fx * fx;',
+        '\t\t\t\tm1 = (1.0 - smoothstep(0.035, 0.06, abs(fy - arcY))) * (1.0 - smoothstep(0.62, 0.74, afx));',
+        '\t\t\t\tfloat chinStripe = (1.0 - smoothstep(0.035, 0.06, afx)) * smoothstep(-0.65, -0.55, fy) * (1.0 - smoothstep(-0.36, -0.32, fy));',
+        '\t\t\t\tm1 = max(m1, chinStripe);',
+        '\t\t\t\tfor(int k = 0; k < 4; k++){',
+        '\t\t\t\t\tfloat dx = 0.24 + float(k) * 0.13, dy = 0.08 - float(k) * 0.05;',
+        '\t\t\t\t\tm2 = max(m2, 1.0 - smoothstep(0.028, 0.045, length(vec2(afx - dx, fy - dy))));',
+        '\t\t\t\t}',
+        '\t\t\t} else if(kfcFpKind < 7.5){',
+        '\t\t\t\t// 7: Chichani Arachnid Sigil',
+        '\t\t\t\tfloat web1 = (1.0 - smoothstep(0.022, 0.042, abs(fy - (0.52 + 0.35 * sin((afx - 0.15) * 6.0))))) * step(0.15, afx) * (1.0 - smoothstep(0.75, 0.85, afx));',
+        '\t\t\t\tfloat fang = (1.0 - smoothstep(0.025, 0.048, abs(afx - (0.42 - 0.18 * (0.28 - fy))))) * smoothstep(-0.22, -0.10, fy) * step(fy, 0.28);',
+        '\t\t\t\tfloat browGem = 1.0 - smoothstep(0.05, 0.08, abs(fx) + abs(fy - 0.62) * 0.7);',
+        '\t\t\t\tm1 = max(web1, fang); m2 = browGem;',
+        '\t\t\t} else if(kfcFpKind < 8.5){',
+        '\t\t\t\t// 8: Half-Face Duality Split',
+        '\t\t\t\tm1 = smoothstep(-0.02, 0.02, fx) * (1.0 - smoothstep(0.78, 0.92, length(vec2(fx * 0.9, (fy - 0.15) * 0.82))));',
+        '\t\t\t\tm2 = (1.0 - smoothstep(-0.02, 0.02, fx)) * (1.0 - smoothstep(0.11, 0.16, length(vec2(fx + 0.41, fy - 0.31))));',
+        '\t\t\t} else if(kfcFpKind < 9.5){',
+        '\t\t\t\t// 9: Lower-Jaw War Fangs',
+        '\t\t\t\tfloat jaw = (1.0 - smoothstep(-0.05, 0.05, fy - 0.12 * cos(fx * 9.0))) * smoothstep(-0.68, -0.52, fy - 0.25 * fx * fx);',
+        '\t\t\t\tfloat tusk = (1.0 - smoothstep(0.03, 0.06, abs(afx - 0.28 + 0.08 * (fy + 0.25)))) * smoothstep(-0.35, -0.25, fy) * (1.0 - smoothstep(0.02, 0.08, fy));',
+        '\t\t\t\tm1 = jaw; m2 = tusk;',
+        '\t\t\t} else if(kfcFpKind < 10.5){',
+        '\t\t\t\t// 10: Luminescent Cyber Circuit Traces',
+        '\t\t\t\tfloat tr1 = (1.0 - smoothstep(0.018, 0.034, abs(fy - (0.04 + 0.35 * step(0.46, afx) * (afx - 0.46))))) * step(0.24, afx) * (1.0 - smoothstep(0.78, 0.88, afx));',
+        '\t\t\t\tfloat tr2 = (1.0 - smoothstep(0.018, 0.034, abs(afx - 0.46))) * smoothstep(0.04, 0.06, fy) * (1.0 - smoothstep(0.55, 0.62, fy));',
+        '\t\t\t\tfloat node = 1.0 - smoothstep(0.032, 0.052, length(vec2(afx - 0.24, fy - 0.04)));',
+        '\t\t\t\tm1 = max(tr1, tr2); m2 = node;',
+        '\t\t\t} else if(kfcFpKind < 11.5){',
+        '\t\t\t\t// 11: Opera Monkey King Swirl Mask (Porcelain base + Crimson volutes + Black ink)',
+        '\t\t\t\tm3 = 0.94;',
+        '\t\t\t\tfloat heartY = 0.34 + 0.38 * smoothstep(0.0, 0.38, afx) - 0.22 * smoothstep(0.38, 0.78, afx);',
+        '\t\t\t\tvec2 sp1 = vec2(afx - 0.38, fy - 0.72);',
+        '\t\t\t\tfloat r1 = length(sp1), a1 = atan(sp1.y, sp1.x);',
+        '\t\t\t\tfloat sw1 = (1.0 - smoothstep(0.22, 0.28, r1)) * smoothstep(-0.15, 0.35, sin(r1 * 34.0 - a1 * 1.5));',
+        '\t\t\t\tvec2 sp2 = vec2(afx - 0.56, fy - 0.05);',
+        '\t\t\t\tfloat r2 = length(sp2), a2 = atan(sp2.y, sp2.x);',
+        '\t\t\t\tfloat sw2 = (1.0 - smoothstep(0.20, 0.25, r2)) * smoothstep(-0.15, 0.35, sin(r2 * 36.0 + a2 * 1.5));',
+        '\t\t\t\tfloat eyeR = length(vec2((afx - 0.41) * 1.05, (fy - 0.30) * 1.35));',
+        '\t\t\t\tfloat redOrb = (1.0 - smoothstep(0.18, 0.24, eyeR)) * smoothstep(0.08, 0.12, eyeR);',
+        '\t\t\t\tfloat redCrown = smoothstep(heartY + 0.05, heartY + 0.12, fy) * (1.0 - 0.85 * sw1);',
+        '\t\t\t\tfloat jawRibs = smoothstep(0.36, 0.48, afx) * (1.0 - smoothstep(-0.02, 0.10, fy)) * smoothstep(-0.10, 0.30, cos((afx - fy * 0.45) * 44.0));',
+        '\t\t\t\tm1 = clamp(max(max(redCrown, redOrb), max(sw2, jawRibs)), 0.0, 1.0);',
+        '\t\t\t\tfloat blkBrow = (1.0 - smoothstep(0.024, 0.048, abs(fy - heartY))) * (1.0 - smoothstep(0.74, 0.84, afx));',
+        '\t\t\t\tfloat blkMid = (1.0 - smoothstep(0.08, 0.18, afx)) * smoothstep(0.36, 0.52, fy);',
+        '\t\t\t\tfloat blkEye = (1.0 - smoothstep(0.11, 0.16, eyeR)) * smoothstep(0.06, 0.09, eyeR);',
+        '\t\t\t\tfloat simMouth = (1.0 - smoothstep(0.022, 0.042, abs(length(vec2(afx - 0.15, (fy + 0.16) * 1.25)) - 0.14))) * step(-0.32, fy) * step(fy, 0.04);',
+        '\t\t\t\tfloat blkLip = kfcIsLips > 0.5 ? 0.92 : (1.0 - smoothstep(0.05, 0.08, length(vec2(fx * 0.55, fy + 0.28))));',
+        '\t\t\t\tm2 = clamp(max(max(blkBrow, blkMid * 0.85), max(max(blkEye, simMouth), blkLip)), 0.0, 1.0);',
+        '\t\t\t} else if(kfcFpKind < 12.5){',
+        '\t\t\t\t// 12: Plains Red War-Mask, Black Lightning Tears & White Pearl Dots',
+        '\t\t\t\tfloat maskBot = 0.08 + 0.22 * afx - 0.14 * cos(fx * 5.5) - 0.45 * smoothstep(0.46, 0.72, afx);',
+        '\t\t\t\tfloat redMask = smoothstep(maskBot - 0.03, maskBot + 0.03, fy);',
+        '\t\t\t\tfloat redChin = (1.0 - smoothstep(0.036, 0.055, abs(afx - 0.16))) * step(fy, -0.34) * smoothstep(-0.70, -0.62, fy);',
+        '\t\t\t\tm1 = max(redMask, redChin);',
+        '\t\t\t\tfloat s0 = (1.0 - smoothstep(0.024, 0.042, afx)) * (step(-0.02, fy) + step(fy, -0.34));',
+        '\t\t\t\tfloat x1 = 0.27 + 0.035 * sin(fy * 8.5), x2 = 0.52 + 0.035 * cos(fy * 7.5);',
+        '\t\t\t\tfloat s1 = (1.0 - smoothstep(0.022, 0.040, abs(afx - x1))) * smoothstep(-0.56, -0.44, fy);',
+        '\t\t\t\tfloat s2 = (1.0 - smoothstep(0.022, 0.040, abs(afx - x2))) * smoothstep(-0.38, -0.26, fy);',
+        '\t\t\t\tm2 = clamp(max(s0, max(s1, s2)), 0.0, 1.0);',
+        '\t\t\t\tfloat dY = fract((fy + 0.65) * 5.2) - 0.5;',
+        '\t\t\t\tfloat d0 = 1.0 - smoothstep(0.018, 0.030, length(vec2(fx, dY / 5.2))) * step(-0.62, fy);',
+        '\t\t\t\tfloat d1 = 1.0 - smoothstep(0.018, 0.030, length(vec2(afx - x1, dY / 5.2))) * step(0.12, fy);',
+        '\t\t\t\tfloat d2 = 1.0 - smoothstep(0.018, 0.030, length(vec2(afx - x2, dY / 5.2))) * step(0.02, fy);',
+        '\t\t\t\tfloat dChin = (1.0 - smoothstep(0.018, 0.030, length(vec2(afx - 0.16, (fract((fy + 0.62) * 6.5) - 0.5) / 6.5)))) * step(fy, -0.36) * step(-0.62, fy);',
+        '\t\t\t\tm3 = clamp(max(max(d0 * s0, d1 * s1), max(d2 * s2, dChin)), 0.0, 1.0);',
+        '\t\t\t\tm1 = clamp(m1 - m2 - m3, 0.0, 1.0);',
+        '\t\t\t\tm2 = clamp(m2 - m3, 0.0, 1.0);',
+        '\t\t\t} else if(kfcFpKind < 13.5){',
+        '\t\t\t\t// 13: Avant-Garde Asymmetric Geometric Harlequin',
+        '\t\t\t\tfloat hairCut = 0.88 + 0.14 * afx - 0.24 * exp(-abs(fx + 0.22) * 11.0);',
+        '\t\t\t\tm1 = 1.0 - smoothstep(hairCut - 0.03, hairCut + 0.03, fy);',
+        '\t\t\t\tfloat cLine = (1.0 - smoothstep(0.020, 0.034, abs(fx))) * step(-0.68, fy);',
+        '\t\t\t\tfloat archLo = 0.46 + 0.85 * (fx - 0.34) * (fx - 0.34);',
+        '\t\t\t\tfloat archHi = 0.80 - 0.65 * (fx - 0.38) * (fx - 0.38);',
+        '\t\t\t\tfloat lArch = step(0.02, fx) * (1.0 - smoothstep(0.74, 0.80, fx)) * smoothstep(archLo - 0.02, archLo + 0.02, fy) * (1.0 - smoothstep(archHi - 0.02, archHi + 0.02, fy));',
+        '\t\t\t\tfloat chevY = -0.08 + 0.78 * abs(fx - 0.44);',
+        '\t\t\t\tfloat lChev = step(0.02, fx) * (1.0 - smoothstep(0.76, 0.82, fx)) * (1.0 - smoothstep(0.055, 0.085, abs(fy - chevY)));',
+        '\t\t\t\tfloat rTri = step(fx, -0.16) * smoothstep(0.0, 0.03, fy) * (1.0 - smoothstep(0.32, 0.36, fy)) * (1.0 - smoothstep(0.0, 0.03, abs(fx + 0.41) - 0.22 * clamp((fy - 0.02) / 0.32, 0.0, 1.0)));',
+        '\t\t\t\tfloat rBolt = step(fx, -0.18) * smoothstep(0.32, 0.35, fy) * (1.0 - smoothstep(0.78, 0.82, fy)) * (1.0 - smoothstep(0.018, 0.032, abs(fx + 0.36 - 0.32 * (fy - 0.35) + 0.08 * step(0.56, fy))));',
+        '\t\t\t\tfloat mDia = 1.0 - smoothstep(0.30, 0.34, abs(fx - 0.05) * 0.85 + abs(fy + 0.29) * 1.35);',
+        '\t\t\t\tfloat wBars = (1.0 - smoothstep(0.018, 0.030, min(abs(fx + 0.06), abs(fx - 0.05)))) * smoothstep(-0.39, -0.36, fy) * (1.0 - smoothstep(-0.19, -0.16, fy));',
+        '\t\t\t\tm2 = clamp(max(max(cLine, lArch), max(max(lChev, rTri), max(rBolt, mDia))) - wBars, 0.0, 1.0);',
+        '\t\t\t\tm3 = wBars;',
+        '\t\t\t} else if(kfcFpKind < 14.5){',
+        '\t\t\t\t// 14: Solar Labyrinth & Third-Eye Mandala',
+        '\t\t\t\tm3 = 0.90;',
+        '\t\t\t\tvec2 mp = vec2(fx, fy - 0.60);',
+        '\t\t\t\tfloat mr = length(mp), ma = atan(mp.y, mp.x);',
+        '\t\t\t\tfloat gem = (1.0 - smoothstep(0.10, 0.125, mr)) * (0.78 + 0.22 * cos(fx * 85.0) * cos(fy * 85.0));',
+        '\t\t\t\tfloat ringB = (1.0 - smoothstep(0.165, 0.195, mr)) * smoothstep(0.135, 0.155, mr);',
+        '\t\t\t\tfloat mazeZone = smoothstep(0.21, 0.24, mr) * smoothstep(0.26, 0.32, fy);',
+        '\t\t\t\tfloat mRings = smoothstep(-0.10, 0.20, sin(mr * 44.0));',
+        '\t\t\t\tfloat mGates = smoothstep(-0.45, -0.15, cos(ma * 7.0 + floor(mr * 14.0) * 1.9));',
+        '\t\t\t\tfloat mSpokes = (1.0 - mRings) * smoothstep(0.55, 0.75, cos(ma * 7.0 + floor(mr * 14.0 + 0.5) * 1.9));',
+        '\t\t\t\tfloat maze = clamp((mRings * mGates + mSpokes) * mazeZone, 0.0, 1.0);',
+        '\t\t\t\tfloat uEyeY = 0.18 - 0.20 * abs(afx - 0.42);',
+        '\t\t\t\tfloat uTicks = (1.0 - smoothstep(0.035, 0.065, abs(fy - uEyeY - 0.03 * step(0.0, cos(afx * 38.0))))) * smoothstep(0.16, 0.22, afx) * (1.0 - smoothstep(0.68, 0.74, afx)) * smoothstep(-0.15, 0.15, cos(afx * 52.0));',
+        '\t\t\t\tfloat darkLip = kfcIsLips > 0.5 ? 0.90 : 0.0;',
+        '\t\t\t\tm1 = gem;',
+        '\t\t\t\tm2 = clamp(max(max(ringB, maze), max(uTicks, darkLip)), 0.0, 1.0);',
+        '\t\t\t} else if(kfcFpKind < 15.5){',
+        '\t\t\t\t// 15: Frost-Ash Raider Mask & Ochre Brow Tallies',
+        '\t\t\t\tm3 = 0.88;',
+        '\t\t\t\tfloat bBot = 0.05 + 0.24 * abs(afx - 0.36);',
+        '\t\t\t\tfloat bTop = 0.45 - 0.08 * cos(fx * 5.0);',
+        '\t\t\t\tfloat blkBand = smoothstep(bBot - 0.04, bBot + 0.03, fy) * (1.0 - smoothstep(bTop - 0.03, bTop + 0.04, fy)) * (1.0 - smoothstep(0.74, 0.86, afx));',
+        '\t\t\t\tfloat blkNose = (1.0 - smoothstep(0.10, 0.16, afx)) * smoothstep(-0.05, 0.02, fy) * (1.0 - smoothstep(0.42, 0.48, fy));',
+        '\t\t\t\tfloat blkPhil = (1.0 - smoothstep(0.025, 0.050, afx)) * smoothstep(-0.26, -0.20, fy) * (1.0 - smoothstep(-0.02, 0.04, fy));',
+        '\t\t\t\tfloat blkCheek = 1.0 - smoothstep(0.08, 0.13, length(vec2((afx - 0.54) * 1.1, (fy + 0.18) * 1.35)));',
+        '\t\t\t\tfloat blkLip = kfcIsLips > 0.5 ? 0.92 : (1.0 - smoothstep(0.045, 0.075, length(vec2(fx * 0.55, fy + 0.28))));',
+        '\t\t\t\tm2 = clamp(max(max(blkBand, blkNose), max(max(blkPhil, blkCheek), blkLip)), 0.0, 1.0);',
+        '\t\t\t\tfloat t1 = (1.0 - smoothstep(0.020, 0.038, abs(afx - (0.19 + 0.08 * (fy - 0.38))))) * smoothstep(0.36, 0.42, fy) * (1.0 - smoothstep(0.72, 0.78, fy));',
+        '\t\t\t\tfloat t2 = (1.0 - smoothstep(0.022, 0.040, abs(afx - (0.43 + 0.20 * (fy - 0.38))))) * smoothstep(0.34, 0.40, fy) * (1.0 - smoothstep(0.82, 0.88, fy));',
+        '\t\t\t\tm1 = max(t1, t2);',
+        '\t\t\t} else if(kfcFpKind < 16.5){',
+        '\t\t\t\t// 16: Island Boar Tusked Spirit Mask',
+        '\t\t\t\tfloat redCheek = smoothstep(0.12, 0.18, afx) * (1.0 - smoothstep(0.74, 0.84, afx)) * smoothstep(-0.36, -0.28, fy) * (1.0 - smoothstep(0.24, 0.32, fy));',
+        '\t\t\t\tfloat wNose = (1.0 - smoothstep(0.07, 0.11, afx)) * smoothstep(-0.04, 0.02, fy) * (1.0 - smoothstep(0.72, 0.80, fy));',
+        '\t\t\t\tfloat wBrow = smoothstep(0.42, 0.48, fy) * (1.0 - smoothstep(0.76, 0.84, fy)) * (1.0 - smoothstep(0.55, 0.68, afx));',
+        '\t\t\t\tfloat wStache = (1.0 - smoothstep(0.035, 0.060, abs(fy - (-0.11 - 0.24 * afx * afx)))) * (1.0 - smoothstep(0.38, 0.46, afx));',
+        '\t\t\t\tfloat wJaw = (1.0 - smoothstep(0.028, 0.050, abs(fy - (-0.42 + 0.32 * afx)))) * smoothstep(0.18, 0.24, afx) * (1.0 - smoothstep(0.58, 0.66, afx));',
+        '\t\t\t\tfloat wTusk = (1.0 - smoothstep(0.025, 0.045, abs(length(vec2(afx - 0.42, fy - 0.12)) - 0.10))) * step(fy, 0.14);',
+        '\t\t\t\tm3 = clamp(max(max(wNose, wBrow), max(max(wStache, wJaw), wTusk)), 0.0, 1.0);',
+        '\t\t\t\tfloat blkEye = smoothstep(0.20, 0.26, fy) * (1.0 - smoothstep(0.46, 0.54, fy)) * smoothstep(0.08, 0.14, afx) * (1.0 - smoothstep(0.70, 0.80, afx));',
+        '\t\t\t\tfloat blkChin = (1.0 - smoothstep(-0.24, -0.18, fy)) * (1.0 - smoothstep(0.32, 0.42, afx));',
+        '\t\t\t\tfloat blkNost = smoothstep(0.08, 0.11, afx) * (1.0 - smoothstep(0.18, 0.23, afx)) * smoothstep(0.0, 0.04, fy) * (1.0 - smoothstep(0.28, 0.34, fy));',
+        '\t\t\t\tfloat blkRays = (1.0 - smoothstep(0.28, 0.48, abs(sin((fy - 0.24 - 0.25 * (afx - 0.35)) * 28.0)))) * smoothstep(0.34, 0.40, afx) * (1.0 - smoothstep(0.66, 0.74, afx)) * smoothstep(0.04, 0.10, fy) * (1.0 - smoothstep(0.34, 0.40, fy));',
+        '\t\t\t\tm1 = clamp(redCheek - m3, 0.0, 1.0);',
+        '\t\t\t\tm2 = clamp(max(max(blkEye, blkChin), max(blkNost, blkRays)) - wTusk, 0.0, 1.0);',
+        '\t\t\t} else if(kfcFpKind < 17.5){',
+        '\t\t\t\t// 17: Ghost-Face Band, Red Tear-Forks & Chin Stripes',
+        '\t\t\t\tm3 = 0.92;',
+        '\t\t\t\tfloat bTop = 0.58 - 0.12 * fx * fx, bBot = 0.16 + 0.12 * cos(fx * 5.0);',
+        '\t\t\t\tfloat blkMask = smoothstep(bBot - 0.03, bBot + 0.03, fy) * (1.0 - smoothstep(bTop - 0.03, bTop + 0.03, fy)) * (1.0 - smoothstep(0.74, 0.84, afx));',
+        '\t\t\t\tfloat topBars = smoothstep(bTop - 0.02, bTop + 0.02, fy) * smoothstep(0.35, 0.65, cos(fx * 28.0)) * (1.0 - smoothstep(0.68, 0.78, afx));',
+        '\t\t\t\tfloat noseBar = (1.0 - smoothstep(0.030, 0.050, afx)) * smoothstep(-0.02, 0.02, fy) * (1.0 - smoothstep(0.24, 0.28, fy));',
+        '\t\t\t\tfloat chinBars = (1.0 - smoothstep(-0.34, -0.30, fy)) * smoothstep(0.08, 0.12, afx) * (1.0 - smoothstep(0.38, 0.44, afx)) * smoothstep(0.30, 0.65, cos(afx * 46.0));',
+        '\t\t\t\tfloat blkMouth = kfcIsLips > 0.5 ? 0.94 : (1.0 - smoothstep(0.055, 0.085, length(vec2(fx * 0.52, fy + 0.27))));',
+        '\t\t\t\tm2 = clamp(max(max(blkMask, topBars), max(max(noseBar, chinBars), blkMouth)), 0.0, 1.0);',
+        '\t\t\t\tfloat rTear1 = (1.0 - smoothstep(0.022, 0.042, abs(afx - (0.27 + 0.04 * sin(fy * 9.0))))) * smoothstep(-0.46, -0.38, fy) * (1.0 - smoothstep(0.22, 0.28, fy));',
+        '\t\t\t\tfloat rTear2 = (1.0 - smoothstep(0.020, 0.038, abs(afx - (0.45 + 0.04 * cos(fy * 8.0))))) * smoothstep(-0.38, -0.30, fy) * (1.0 - smoothstep(0.20, 0.26, fy));',
+        '\t\t\t\tfloat rChin = (1.0 - smoothstep(0.035, 0.055, afx)) * (1.0 - smoothstep(-0.34, -0.30, fy));',
+        '\t\t\t\tm1 = clamp(max(max(rTear1, rTear2), rChin), 0.0, 1.0);',
+        '\t\t\t} else if(kfcFpKind < 18.5){',
+        '\t\t\t\t// 18: Porcelain & Teal Cheek-Wedges with Tear Line',
+        '\t\t\t\tm3 = 1.0 - smoothstep(0.34, 0.40, fy);',
+        '\t\t\t\tfloat wDot1 = 1.0 - smoothstep(0.022, 0.036, length(vec2(afx - 0.48, fy - 0.16)));',
+        '\t\t\t\tfloat wDot2 = 1.0 - smoothstep(0.022, 0.036, length(vec2(afx - 0.48, fy - 0.01)));',
+        '\t\t\t\tfloat tealWedge = smoothstep(0.12, 0.16, afx) * (1.0 - smoothstep(0.68, 0.76, afx)) * (1.0 - smoothstep(0.26, 0.30, fy)) * smoothstep(-0.18, -0.14, fy - (-0.42 * (afx - 0.16)));',
+        '\t\t\t\tfloat tDot1 = 1.0 - smoothstep(0.020, 0.034, length(vec2(afx - 0.46, fy + 0.18)));',
+        '\t\t\t\tfloat tDot2 = 1.0 - smoothstep(0.020, 0.034, length(vec2(afx - 0.46, fy + 0.32)));',
+        '\t\t\t\tm1 = clamp(max(tealWedge, max(tDot1, tDot2)) - max(wDot1, wDot2), 0.0, 1.0);',
+        '\t\t\t\tfloat blkBrow = smoothstep(0.26, 0.30, fy) * (1.0 - smoothstep(0.42, 0.48, fy)) * (1.0 - smoothstep(0.70, 0.78, afx));',
+        '\t\t\t\tfloat blkTear = (1.0 - smoothstep(0.018, 0.034, abs(afx - 0.35))) * smoothstep(-0.38, -0.32, fy) * (1.0 - smoothstep(0.30, 0.34, fy));',
+        '\t\t\t\tfloat blkSide = (1.0 - smoothstep(0.020, 0.036, abs(afx - 0.68))) * smoothstep(-0.18, -0.12, fy) * (1.0 - smoothstep(0.32, 0.38, fy));',
+        '\t\t\t\tfloat mDot = 1.0 - smoothstep(0.018, 0.032, length(vec2(afx - 0.25, fy + 0.27)));',
+        '\t\t\t\tfloat blkLip = kfcIsLips > 0.5 ? 0.92 : (1.0 - smoothstep(0.04, 0.065, length(vec2(fx * 0.55, fy + 0.27))));',
+        '\t\t\t\tm2 = clamp(max(max(blkBrow, blkTear), max(max(blkSide, mDot), blkLip)), 0.0, 1.0);',
+        '\t\t\t} else if(kfcFpKind < 19.5){',
+        '\t\t\t\t// 19: Cerulean Sky-Mask & Feline Tribal Whiskers',
+        '\t\t\t\tm1 = 0.92;',
+        '\t\t\t\tfloat cPil = (1.0 - smoothstep(0.055, 0.085, afx)) * smoothstep(0.02, 0.06, fy) * (1.0 - smoothstep(0.88, 0.94, fy));',
+        '\t\t\t\tfloat noseTip = (1.0 - smoothstep(0.10, 0.14, afx)) * smoothstep(-0.04, 0.0, fy) * (1.0 - smoothstep(0.05, 0.09, fy));',
+        '\t\t\t\tfloat bTick1 = (1.0 - smoothstep(0.022, 0.040, abs(fy - (0.62 + 0.06 * cos((afx - 0.34) * 8.0))))) * smoothstep(0.18, 0.22, afx) * (1.0 - smoothstep(0.54, 0.60, afx));',
+        '\t\t\t\tfloat bTick2 = (1.0 - smoothstep(0.020, 0.038, abs(fy - (0.74 + 0.05 * cos((afx - 0.34) * 8.0))))) * smoothstep(0.22, 0.26, afx) * (1.0 - smoothstep(0.50, 0.56, afx));',
+        '\t\t\t\tfloat eyeWing = (1.0 - smoothstep(0.025, 0.048, abs(fy - (0.36 + 0.18 * (afx - 0.35))))) * smoothstep(0.16, 0.22, afx) * (1.0 - smoothstep(0.72, 0.78, afx));',
+        '\t\t\t\tfloat whiskers = (1.0 - smoothstep(0.28, 0.48, abs(sin((fy + 0.06 - 0.42 * (afx - 0.35)) * 26.0)))) * smoothstep(0.28, 0.34, afx) * (1.0 - smoothstep(0.74, 0.80, afx)) * smoothstep(-0.22, -0.16, fy) * (1.0 - smoothstep(0.20, 0.26, fy));',
+        '\t\t\t\tfloat jawBlock = smoothstep(0.20, 0.25, afx) * (1.0 - smoothstep(0.42, 0.48, afx)) * smoothstep(-0.34, -0.28, fy) * (1.0 - smoothstep(-0.02, 0.04, fy));',
+        '\t\t\t\tm2 = clamp(max(max(cPil, noseTip), max(max(bTick1, bTick2), max(eyeWing, max(whiskers, jawBlock)))), 0.0, 1.0);',
+        '\t\t\t} else if(kfcFpKind < 20.5){',
+        '\t\t\t\t// 20: Bone-Ash Visage, Center Gold Pillar & Hollow Pits',
+        '\t\t\t\tm3 = 0.86;',
+        '\t\t\t\tfloat pilW = 0.21 - 0.03 * cos(fy * 4.5);',
+        '\t\t\t\tfloat goldPil = 1.0 - smoothstep(pilW - 0.03, pilW + 0.03, afx);',
+        '\t\t\t\tfloat eyeShade = 1.0 - smoothstep(0.12, 0.22, length(vec2((afx - 0.38) * 1.05, (fy - 0.30) * 1.45)));',
+        '\t\t\t\tfloat p1 = 1.0 - smoothstep(0.055, 0.095, length(vec2(afx - 0.62, fy - 0.30)));',
+        '\t\t\t\tfloat p2 = 1.0 - smoothstep(0.060, 0.100, length(vec2(afx - 0.56, fy - 0.05)));',
+        '\t\t\t\tfloat p3 = 1.0 - smoothstep(0.065, 0.105, length(vec2(afx - 0.48, fy + 0.19)));',
+        '\t\t\t\tm1 = goldPil;',
+        '\t\t\t\tm2 = clamp(max(eyeShade * 0.82, max(p1, max(p2, p3))), 0.0, 1.0);',
+        '\t\t\t} else if(kfcFpKind < 21.5){',
+        '\t\t\t\t// 21: Seeker Asymmetric Woad Chevrons & Under-Eye Rim',
+        '\t\t\t\tfloat uRim = (1.0 - smoothstep(0.75, 1.15, length(vec2((afx - 0.38) / 0.18, (fy - 0.24) / 0.065)))) * step(fy, 0.31);',
+        '\t\t\t\tfloat lCorner = max(fx - 0.12, (0.48 - fy) * 0.85 + (fx - 0.24) * 0.55);',
+        '\t\t\t\tfloat lStripes = (1.0 - smoothstep(0.30, 0.50, abs(sin(lCorner * 30.0)))) * step(0.10, fx) * (1.0 - smoothstep(0.62, 0.70, fx)) * smoothstep(0.32, 0.38, fy) * (1.0 - smoothstep(0.80, 0.88, fy));',
+        '\t\t\t\tfloat rCorner = max(-fx - 0.30, (fy - 0.18) * 0.80 + (-fx - 0.36) * 0.60);',
+        '\t\t\t\tfloat rStripes = (1.0 - smoothstep(0.30, 0.50, abs(sin(rCorner * 30.0)))) * step(fx, -0.26) * (1.0 - smoothstep(0.68, 0.76, -fx)) * smoothstep(-0.22, -0.14, fy) * (1.0 - smoothstep(0.22, 0.28, fy));',
+        '\t\t\t\tm1 = clamp(max(uRim, max(lStripes, rStripes)), 0.0, 1.0);',
+        '\t\t\t} else if(kfcFpKind < 22.5){',
+        '\t\t\t\t// 22: White Inverted-Y Wishbone & Red-Ochre Finger Stripes',
+        '\t\t\t\tfloat wStem = (1.0 - smoothstep(0.040, 0.065, afx)) * smoothstep(0.30, 0.35, fy) * (1.0 - smoothstep(0.84, 0.90, fy));',
+        '\t\t\t\tfloat wFork = (1.0 - smoothstep(0.038, 0.062, abs(fy - (0.34 - 0.68 * afx)))) * step(fy, 0.36) * (1.0 - smoothstep(0.54, 0.62, afx));',
+        '\t\t\t\tm2 = clamp(max(wStem, wFork), 0.0, 1.0);',
+        '\t\t\t\tfloat fBar1 = (1.0 - smoothstep(0.035, 0.060, abs(fy - (0.50 + 0.40 * (afx - 0.30))))) * smoothstep(0.20, 0.26, afx) * (1.0 - smoothstep(0.60, 0.68, afx));',
+        '\t\t\t\tfloat fBar2 = (1.0 - smoothstep(0.035, 0.060, abs(fy - (0.68 + 0.40 * (afx - 0.34))))) * smoothstep(0.24, 0.30, afx) * (1.0 - smoothstep(0.62, 0.70, afx));',
+        '\t\t\t\tfloat eyeSmudge = (1.0 - smoothstep(0.08, 0.14, abs(fy - 0.31))) * smoothstep(0.20, 0.28, afx) * (1.0 - smoothstep(0.66, 0.76, afx));',
+        '\t\t\t\tfloat lowCheek = (1.0 - smoothstep(0.24 - 0.68 * afx, 0.28 - 0.68 * afx, fy)) * smoothstep(0.14, 0.20, afx) * (1.0 - smoothstep(0.64, 0.74, afx)) * smoothstep(-0.56, -0.44, fy) * (0.65 + 0.35 * cos(afx * 32.0));',
+        '\t\t\t\tm1 = clamp(max(max(fBar1, fBar2), max(eyeSmudge, lowCheek)) * 0.88 - m2, 0.0, 1.0);',
+        '\t\t\t} else if(kfcFpKind < 23.5){',
+        '\t\t\t\t// 23: Crimson Eye-Visor & Black Handprint Over Mouth',
+        '\t\t\t\tfloat vBot = 0.10 + 0.06 * cos(fx * 5.0), vTop = 0.46;',
+        '\t\t\t\tfloat visor = smoothstep(vBot - 0.04, vBot + 0.03, fy) * (1.0 - smoothstep(vTop - 0.02, vTop + 0.03, fy)) * (1.0 - smoothstep(0.70, 0.80, afx));',
+        '\t\t\t\tfloat palm = 1.0 - smoothstep(0.22, 0.27, length(vec2((fx + 0.06) * 0.92, (fy + 0.36) * 1.10)));',
+        '\t\t\t\tfloat thumb = (1.0 - smoothstep(0.035, 0.058, abs(fx + 0.28 - 0.52 * (fy + 0.28)))) * smoothstep(-0.30, -0.24, fy) * (1.0 - smoothstep(0.14, 0.20, fy));',
+        '\t\t\t\tvec2 hp = vec2(fx + 0.02, fy + 0.32);',
+        '\t\t\t\tfloat hr = length(hp), ha = atan(hp.y, hp.x);',
+        '\t\t\t\tfloat fingers = (1.0 - smoothstep(0.35, 0.58, abs(sin((ha - 0.15) * 11.5)))) * step(0.12, ha) * step(ha, 1.12) * smoothstep(0.18, 0.24, hr) * (1.0 - smoothstep(0.64, 0.72, hr));',
+        '\t\t\t\tfloat blkHand = clamp(max(palm, max(thumb, fingers)), 0.0, 1.0);',
+        '\t\t\t\tm1 = clamp(visor - blkHand, 0.0, 1.0);',
+        '\t\t\t\tm2 = blkHand;',
+        '\t\t\t} else if(kfcFpKind < 24.5){',
+        '\t\t\t\t// 24: White Under-Eye Tendrils, Nasal Bars & Brow-Dot Triad',
+        '\t\t\t\tfloat d1 = 1.0 - smoothstep(0.018, 0.030, length(vec2(fx, fy - 0.46)));',
+        '\t\t\t\tfloat d2 = 1.0 - smoothstep(0.018, 0.030, length(vec2(fx, fy - 0.60)));',
+        '\t\t\t\tfloat d3 = 1.0 - smoothstep(0.018, 0.030, length(vec2(fx, fy - 0.74)));',
+        '\t\t\t\tfloat nBar = (1.0 - smoothstep(0.012, 0.024, abs(afx - 0.065))) * smoothstep(0.05, 0.08, fy) * (1.0 - smoothstep(0.26, 0.30, fy));',
+        '\t\t\t\tfloat uLine = (1.0 - smoothstep(0.014, 0.026, abs(fy - (0.22 - 0.05 * sin((afx - 0.16) * 7.0))))) * smoothstep(0.15, 0.19, afx) * (1.0 - smoothstep(0.70, 0.76, afx));',
+        '\t\t\t\tfloat tInner = (1.0 - smoothstep(0.015, 0.028, abs(afx - (0.24 + 0.08 * sin((0.20 - fy) * 9.0))))) * smoothstep(-0.08, -0.04, fy) * (1.0 - smoothstep(0.20, 0.24, fy));',
+        '\t\t\t\tfloat tMid = (1.0 - smoothstep(0.014, 0.026, abs(fy - (0.12 - 0.25 * (afx - 0.22) + 0.04 * sin(afx * 16.0))))) * smoothstep(0.20, 0.24, afx) * (1.0 - smoothstep(0.66, 0.72, afx));',
+        '\t\t\t\tfloat chinBar = (1.0 - smoothstep(0.024, 0.040, afx)) * smoothstep(-0.64, -0.58, fy) * (1.0 - smoothstep(-0.40, -0.36, fy));',
+        '\t\t\t\tm1 = clamp(max(max(max(d1, d2), max(d3, nBar)), max(max(uLine, tInner), max(tMid, chinBar))), 0.0, 1.0);',
+        '\t\t\t} else if(kfcFpKind < 25.5){',
+        '\t\t\t\t// 25: Ancestral Third-Eye Ring, Cheek Comb-Ticks & Maroon Forehead Stripe',
+        '\t\t\t\tfloat mStripe = (1.0 - smoothstep(0.065, 0.095, afx)) * smoothstep(0.46, 0.52, fy);',
+        '\t\t\t\tfloat cRingD = length(vec2(fx * 1.35, (fy - 0.37) * 0.95));',
+        '\t\t\t\tfloat cRing = (1.0 - smoothstep(0.075, 0.098, cRingD)) * smoothstep(0.042, 0.060, cRingD);',
+        '\t\t\t\tfloat bDots = (1.0 - smoothstep(0.018, 0.032, abs(fy - (0.45 + 0.05 * sin((afx - 0.14) * 6.0))))) * smoothstep(0.16, 0.20, afx) * (1.0 - smoothstep(0.62, 0.68, afx)) * smoothstep(0.45, 0.75, cos((afx - 0.18) * 48.0));',
+        '\t\t\t\tfloat nDots = (1.0 - smoothstep(0.020, 0.034, afx)) * smoothstep(-0.02, 0.02, fy) * (1.0 - smoothstep(0.24, 0.28, fy)) * smoothstep(0.35, 0.70, cos(fy * 82.0));',
+        '\t\t\t\tfloat cDots = (1.0 - smoothstep(0.022, 0.036, afx)) * smoothstep(-0.58, -0.54, fy) * (1.0 - smoothstep(-0.38, -0.34, fy)) * smoothstep(0.30, 0.65, cos(fy * 68.0));',
+        '\t\t\t\tfloat combY = 0.19 - 0.09 * sin((afx - 0.16) * 5.5);',
+        '\t\t\t\tfloat combSpine = (1.0 - smoothstep(0.012, 0.024, abs(fy - combY))) * smoothstep(0.16, 0.20, afx) * (1.0 - smoothstep(0.68, 0.74, afx));',
+        '\t\t\t\tfloat combTeeth = smoothstep(combY - 0.11, combY - 0.08, fy) * step(fy, combY) * smoothstep(0.18, 0.22, afx) * (1.0 - smoothstep(0.66, 0.72, afx)) * smoothstep(0.40, 0.72, cos(afx * 68.0));',
+        '\t\t\t\tfloat jRingD = length(vec2((afx - 0.46) * 1.45, (fy + 0.16) * 1.0));',
+        '\t\t\t\tfloat jRing = (1.0 - smoothstep(0.048, 0.065, jRingD)) * smoothstep(0.025, 0.038, jRingD);',
+        '\t\t\t\tm1 = clamp(max(max(cRing, bDots), max(max(nDots, cDots), max(max(combSpine, combTeeth), jRing))), 0.0, 1.0);',
+        '\t\t\t\tm2 = clamp(mStripe - cRing, 0.0, 1.0);',
+        '\t\t\t} else if(kfcFpKind < 26.5){',
+        '\t\t\t\t// 26: Asymmetric White Half-Face Spiral & Temple Fret',
+        '\t\t\t\tfloat nAng = (1.0 - smoothstep(0.018, 0.032, abs(fx - 0.25 * (fy - 0.02)))) * smoothstep(0.0, 0.03, fy) * (1.0 - smoothstep(0.22, 0.25, fy));',
+        '\t\t\t\tfloat uEye = (1.0 - smoothstep(0.020, 0.036, abs(fy - (0.24 - 0.14 * (fx - 0.06))))) * smoothstep(0.04, 0.08, fx) * (1.0 - smoothstep(0.66, 0.72, fx));',
+        '\t\t\t\tfloat tFrame = (1.0 - smoothstep(0.020, 0.036, abs(fx - 0.64))) * smoothstep(0.14, 0.18, fy) * (1.0 - smoothstep(0.62, 0.68, fy));',
+        '\t\t\t\tfloat fFret = (1.0 - smoothstep(0.30, 0.50, abs(sin((fy - 0.44 - 0.35 * (fx - 0.12)) * 24.0)))) * smoothstep(0.08, 0.14, fx) * (1.0 - smoothstep(0.62, 0.68, fx)) * smoothstep(0.42, 0.48, fy) * (1.0 - smoothstep(0.84, 0.90, fy));',
+        '\t\t\t\tvec2 sp = vec2(fx - 0.46, fy + 0.06);',
+        '\t\t\t\tfloat sr = length(sp), sa = atan(sp.y, sp.x);',
+        '\t\t\t\tfloat cSwirl = (1.0 - smoothstep(0.18, 0.22, sr)) * smoothstep(0.0, 0.40, sin(sr * 38.0 - sa * 1.5)) * step(0.12, fx);',
+        '\t\t\t\tfloat jBlade = (1.0 - smoothstep(0.024, 0.042, abs(fy - (-0.46 + 0.95 * (fx - 0.22))))) * smoothstep(0.20, 0.24, fx) * (1.0 - smoothstep(0.58, 0.64, fx));',
+        '\t\t\t\tfloat chinLine = (1.0 - smoothstep(0.022, 0.038, abs(fx))) * smoothstep(-0.66, -0.60, fy) * (1.0 - smoothstep(-0.38, -0.34, fy));',
+        '\t\t\t\tm1 = clamp(max(max(max(nAng, uEye), max(tFrame, fFret)), max(cSwirl, max(jBlade, chinLine))), 0.0, 1.0);',
+        '\t\t\t} else if(kfcFpKind < 27.5){',
+        '\t\t\t\t// 27: Ritual Blackwork Eye-Pillar, Triskelion & Crown Dots',
+        '\t\t\t\tfloat rPil = smoothstep(-0.50, -0.46, fx) * (1.0 - smoothstep(-0.26, -0.22, fx)) * smoothstep(-0.56, -0.48, fy) * (1.0 - smoothstep(0.80, 0.86, fy));',
+        '\t\t\t\tfloat rGap = smoothstep(-0.14, -0.10, fy) * (1.0 - smoothstep(0.06, 0.10, fy)) * smoothstep(0.20, 0.55, cos(fy * 72.0));',
+        '\t\t\t\tfloat rFrame = (1.0 - smoothstep(0.012, 0.024, abs(abs(fx + 0.56) - 0.04))) * smoothstep(-0.36, -0.28, fy) * (1.0 - smoothstep(0.76, 0.82, fy));',
+        '\t\t\t\tvec2 tp = vec2(fx, fy - 0.55);',
+        '\t\t\t\tfloat tr = length(tp), ta = atan(tp.y, tp.x);',
+        '\t\t\t\tfloat trisk = (1.0 - smoothstep(0.085, 0.105, tr)) * (smoothstep(0.065, 0.080, tr) + (1.0 - smoothstep(0.055, 0.070, tr)) * smoothstep(-0.10, 0.30, sin(tr * 48.0 - ta * 3.0)));',
+        '\t\t\t\tfloat nLine = (1.0 - smoothstep(0.012, 0.024, abs(fx))) * smoothstep(-0.02, 0.02, fy) * (1.0 - smoothstep(0.40, 0.44, fy));',
+        '\t\t\t\tfloat cLines = (1.0 - smoothstep(0.015, 0.028, min(abs(fx), abs(afx - 0.09)))) * (1.0 - smoothstep(-0.34, -0.30, fy));',
+        '\t\t\t\tfloat lTemp = (1.0 - smoothstep(0.014, 0.026, abs(fy - (0.52 - 0.16 * (fx - 0.14))))) * smoothstep(0.12, 0.16, fx) * (1.0 - smoothstep(0.70, 0.76, fx));',
+        '\t\t\t\tfloat cCrown = (1.0 - smoothstep(0.022, 0.038, abs(fy - (0.88 - 0.22 * fx * fx)))) * (1.0 - smoothstep(0.60, 0.70, afx)) * smoothstep(0.35, 0.70, cos(fx * 28.0));',
+        '\t\t\t\tm1 = clamp(max(max(rPil * (1.0 - rGap), rFrame), max(max(trisk, nLine), max(cLines, max(lTemp, cCrown)))), 0.0, 1.0);',
+        '\t\t\t} else if(kfcFpKind < 28.5){',
+        '\t\t\t\t// 28: Maya Stepped Temple-Spiral & Jaw Greca',
+        '\t\t\t\tvec2 mp = vec2(afx - 0.48, fy - 0.46);',
+        '\t\t\t\tfloat boxR = max(abs(mp.x), abs(mp.y)), ma = atan(mp.y, mp.x);',
+        '\t\t\t\tfloat tSpiral = (1.0 - smoothstep(0.24, 0.27, boxR)) * smoothstep(-0.05, 0.30, cos(boxR * 46.0 - ma * 0.75)) * smoothstep(0.18, 0.22, afx);',
+        '\t\t\t\tfloat cStep = smoothstep(0.42, 0.46, afx) * (1.0 - smoothstep(0.70, 0.74, afx)) * smoothstep(-0.04, 0.0, fy) * (1.0 - smoothstep(0.20, 0.24, fy));',
+        '\t\t\t\tfloat jY = fy - (-0.22 - 0.22 * (0.56 - afx));',
+        '\t\t\t\tvec2 jp = vec2(fract((afx - 0.16) * 5.5) - 0.5, jY * 5.5);',
+        '\t\t\t\tfloat jBox = max(abs(jp.x), abs(jp.y));',
+        '\t\t\t\tfloat jGreca = (1.0 - smoothstep(0.42, 0.48, jBox)) * smoothstep(-0.10, 0.30, cos(jBox * 18.0 - atan(jp.y, jp.x) * 0.75)) * smoothstep(0.18, 0.22, afx) * (1.0 - smoothstep(0.68, 0.74, afx));',
+        '\t\t\t\tm1 = clamp(max(tSpiral, max(cStep, jGreca)), 0.0, 1.0);',
+        '\t\t\t} else if(kfcFpKind < 29.5){',
+        '\t\t\t\t// 29: White Forehead Halo-Arch, Nasal Pillar & Starburst Cheek Dots',
+        '\t\t\t\tfloat haloY = 0.76 - 0.58 * fx * fx;',
+        '\t\t\t\tfloat halo = (1.0 - smoothstep(0.026, 0.045, abs(fy - haloY))) * (1.0 - smoothstep(0.74, 0.82, afx));',
+        '\t\t\t\tfloat bLine = (1.0 - smoothstep(0.018, 0.032, abs(fy - (0.48 - 0.08 * (afx - 0.18))))) * smoothstep(0.16, 0.20, afx) * (1.0 - smoothstep(0.56, 0.62, afx));',
+        '\t\t\t\tfloat cPil = (1.0 - smoothstep(0.032, 0.052, afx)) * smoothstep(-0.66, -0.60, fy) * (1.0 - smoothstep(0.44, 0.48, fy));',
+        '\t\t\t\tvec2 cp = vec2(afx - 0.14, fy - 0.10);',
+        '\t\t\t\tfloat cr = length(cp), ca = atan(cp.y, cp.x);',
+        '\t\t\t\tfloat sRays = (1.0 - smoothstep(0.28, 0.48, abs(sin((ca + 0.15) * 9.0)))) * step(-1.05, ca) * step(ca, -0.05) * smoothstep(0.08, 0.12, cr) * (1.0 - smoothstep(0.46, 0.52, cr)) * smoothstep(0.15, 0.55, cos(cr * 48.0));',
+        '\t\t\t\tfloat wBars = (1.0 - smoothstep(0.018, 0.032, min(abs(fy + 0.10 - 0.12 * (afx - 0.50)), abs(fy + 0.20 - 0.12 * (afx - 0.50))))) * smoothstep(0.46, 0.50, afx) * (1.0 - smoothstep(0.72, 0.78, afx));',
+        '\t\t\t\tm1 = clamp(max(max(halo, bLine), max(cPil, max(sRays, wBars))), 0.0, 1.0);',
+        '\t\t\t} else {',
+        '\t\t\t\t// 30: Graphic Marigold Cutout Skull Mask',
+        '\t\t\t\tfloat uDome = 1.0 - smoothstep(0.60, 0.65, length(vec2(fx * 0.95, (fy - 0.36) * 0.92)));',
+        '\t\t\t\tfloat cArch = smoothstep(0.0, 0.04, fy) * (1.0 - smoothstep(0.58, 0.63, afx)) * (1.0 - smoothstep(0.74, 0.80, fy));',
+        '\t\t\t\tfloat jBox = (1.0 - smoothstep(0.32, 0.36, afx)) * smoothstep(-0.54, -0.48, fy) * (1.0 - smoothstep(0.04, 0.08, fy));',
+        '\t\t\t\tfloat outerSkull = max(uDome * step(0.02, fy), max(cArch, jBox));',
+        '\t\t\t\tfloat eyeCut = 1.0 - smoothstep(0.88, 1.02, max(abs(afx - 0.35) / 0.18, abs(fy - 0.27) / 0.12));',
+        '\t\t\t\tfloat noseCut = (1.0 - smoothstep(0.0, 0.03, afx - 0.14 * clamp((0.18 - fy) / 0.24, 0.0, 1.0))) * smoothstep(-0.06, -0.02, fy) * (1.0 - smoothstep(0.16, 0.20, fy));',
+        '\t\t\t\tfloat mouthCut = (1.0 - smoothstep(0.24, 0.27, afx)) * smoothstep(-0.44, -0.40, fy) * (1.0 - smoothstep(-0.14, -0.10, fy));',
+        '\t\t\t\tfloat teeth = mouthCut * smoothstep(0.15, 0.45, cos(fx * 38.0)) * (1.0 - smoothstep(0.042, 0.060, min(abs(fy + 0.21), abs(fy + 0.36))));',
+        '\t\t\t\tm1 = clamp(outerSkull - eyeCut - noseCut - mouthCut + teeth, 0.0, 1.0);',
+        '\t\t\t}',
+        '\t\t\tdiffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.93, 0.91, 0.88) * shade, clamp(m3 * fm * kfcFpAmt, 0.0, 1.0));',
+        '\t\t\tdiffuseColor.rgb = mix(diffuseColor.rgb, kfcFpC1 * shade, clamp(m1 * fm * kfcFpAmt, 0.0, 1.0));',
+        '\t\t\tdiffuseColor.rgb = mix(diffuseColor.rgb, kfcFpC2 * shade, clamp(m2 * fm * kfcFpAmt, 0.0, 1.0));',
+        '\t\t}',
+        '\t\t// 2. Makeup: Cheek Blush',
+        '\t\tif(kfcBlushAmt > 0.01){',
+        '\t\t\tfloat bDist = length(vec2((afx - 0.48) / 0.26, (fy - 0.02) / 0.20));',
+        '\t\t\tfloat bMask = (1.0 - smoothstep(0.25, 1.0, bDist)) * fm * kfcBlushAmt * 0.65;',
+        '\t\t\tdiffuseColor.rgb = mix(diffuseColor.rgb, kfcBlushCol * shade, clamp(bMask, 0.0, 1.0));',
+        '\t\t}',
+        '\t\t// 3. Makeup: Eye Shadow & Eyeliner',
+        '\t\tif(kfcEyeKind > 0.5 && kfcEyeAmt > 0.01){',
+        '\t\t\tvec2 ep = vec2(afx - 0.41, fy - 0.315);',
+        '\t\t\tfloat er = length(vec2(ep.x / 0.16, ep.y / 0.085));',
+        '\t\t\tfloat eMask = 0.0;',
+        '\t\t\tif(kfcEyeKind < 1.5){',
+        '\t\t\t\t// Kohl liner rim',
+        '\t\t\t\teMask = (1.0 - smoothstep(0.88, 1.35, er)) * smoothstep(0.42, 0.72, er);',
+        '\t\t\t} else if(kfcEyeKind < 2.5){',
+        '\t\t\t\t// Winged cat-eye liner + upper lid',
+        '\t\t\t\tfloat rim = (1.0 - smoothstep(0.85, 1.45, er)) * smoothstep(0.42, 0.70, er) * smoothstep(-0.03, 0.02, ep.y);',
+        '\t\t\t\tfloat wing = (1.0 - smoothstep(0.016, 0.035, abs(ep.y - (0.01 + 0.35 * (ep.x - 0.12))))) * smoothstep(0.10, 0.13, ep.x) * (1.0 - smoothstep(0.24, 0.28, ep.x));',
+        '\t\t\t\teMask = max(rim, wing);',
+        '\t\t\t} else if(kfcEyeKind < 3.5){',
+        '\t\t\t\t// Smoky orbital shadow',
+        '\t\t\t\tfloat erSm = length(vec2((ep.x - 0.02) / 0.21, (ep.y - 0.025) / 0.12));',
+        '\t\t\t\teMask = (1.0 - smoothstep(0.55, 1.45, erSm)) * smoothstep(0.35, 0.62, er);',
+        '\t\t\t} else if(kfcEyeKind < 4.5){',
+        '\t\t\t\t// Courtly upper-lid & brow highlight',
+        '\t\t\t\tfloat erHi = length(vec2(ep.x / 0.19, (ep.y - 0.045) / 0.095));',
+        '\t\t\t\teMask = (1.0 - smoothstep(0.50, 1.35, erHi)) * smoothstep(-0.01, 0.03, ep.y) * smoothstep(0.38, 0.65, er);',
+        '\t\t\t} else {',
+        '\t\t\t\t// Gothic dark orbital smudge',
+        '\t\t\t\tfloat erGo = length(vec2(ep.x / 0.20, (ep.y + 0.01) / 0.13));',
+        '\t\t\t\teMask = (1.0 - smoothstep(0.65, 1.50, erGo)) * smoothstep(0.35, 0.60, er);',
+        '\t\t\t}',
+        '\t\t\tdiffuseColor.rgb = mix(diffuseColor.rgb, kfcEyeCol * shade, clamp(eMask * fm * kfcEyeAmt * 0.90, 0.0, 1.0));',
+        '\t\t}',
+        '\t\t// 4. Makeup: Lipstick (locked to Human.lips primitive + vermilion contour)',
+        '\t\tif(kfcLipAmt > 0.01){',
+        '\t\t\tfloat lx = afx / 0.305;',
+        '\t\t\tfloat lipMask = 0.0;',
+        '\t\t\tif(kfcIsLips > 0.5){',
+        '\t\t\t\tlipMask = 1.0 - smoothstep(0.92, 1.15, lx);',
+        '\t\t\t} else {',
+        '\t\t\t\tfloat cupidsBow = 0.038 * cos(min(lx * 3.14159, 3.14159)) - 0.016 * exp(-pow(lx / 0.22, 2.0));',
+        '\t\t\t\tfloat lyUp = -0.258 + cupidsBow - 0.035 * lx * lx;',
+        '\t\t\t\tfloat lyBot = -0.342 + 0.062 * pow(lx, 1.75);',
+        '\t\t\t\tfloat inLipBox = step(lx, 1.05) * smoothstep(lyBot - 0.025, lyBot + 0.012, fy) * (1.0 - smoothstep(lyUp - 0.010, lyUp + 0.022, fy)) * (1.0 - smoothstep(0.88, 1.04, lx));',
+        '\t\t\t\t#ifdef USE_MAP',
+        '\t\t\t\tfloat lipRed = smoothstep(0.018, 0.055, (texelColor.r - texelColor.g) / max(texelColor.r, 0.05));',
+        '\t\t\t\tlipMask = inLipBox * (0.45 + 0.55 * lipRed);',
+        '\t\t\t\t#else',
+        '\t\t\t\tlipMask = inLipBox;',
+        '\t\t\t\t#endif',
+        '\t\t\t}',
+        '\t\t\tdiffuseColor.rgb = mix(diffuseColor.rgb, kfcLipCol * shade * 1.08, clamp(lipMask * fm * kfcLipAmt, 0.0, 1.0));',
+        '\t\t}',
+        '\t}'
+      ].join('\n');
+      sh.fragmentShader = fragHead + sh.fragmentShader.replace('#include <map_fragment>', fragBody);
+    };
+    mat.customProgramCacheKey = function(){ return 'kfc-skin' + (isLips ? '-lips' : '') + (mat.userData.kp ? '-kp' : ''); };
+    mat.needsUpdate = true;
+    return u;
+  }
+  function faceCosmeticsSet(m, rec, gain){
+    var fp = rec.facepaint || {}, mk = rec.makeup || {};
+    var fpKind = FP_KIND[fp.style || 'none'] || 0, fpAmt = fp.amount == null ? 0.85 : +fp.amount;
+    var lipAmt = +(mk.lips_amount || 0), eyeKind = EYE_MAKEUP_KIND[mk.eyes_style || 'none'] || 0, eyeAmt = +(mk.eyes_amount || 0), blushAmt = +(mk.blush_amount || 0);
+    var active = (fpKind > 0 && fpAmt > 0.01) || lipAmt > 0.01 || (eyeKind > 0 && eyeAmt > 0.01) || blushAmt > 0.01;
+    if(!active){
+      if(m.material.userData.kfc) m.material.userData.kfc.kfcOn.value = 0;
+      return;
+    }
+    var u = faceCosmeticsInit(m);
+    u.kfcOn.value = 1;
+    u.kfcFpKind.value = fpKind;
+    u.kfcFpAmt.value = fpAmt;
+    u.kfcFpC1.value.set(fp.color1 || '#2b5b84').convertSRGBToLinear();
+    u.kfcFpC2.value.set(fp.color2 || '#e8e2d5').convertSRGBToLinear();
+    u.kfcLipAmt.value = lipAmt;
+    u.kfcLipCol.value.set(mk.lips_color || '#a82438').convertSRGBToLinear();
+    u.kfcEyeKind.value = eyeKind;
+    u.kfcEyeAmt.value = eyeAmt;
+    u.kfcEyeCol.value.set(mk.eyes_color || '#1c1824').convertSRGBToLinear();
+    u.kfcBlushAmt.value = blushAmt;
+    u.kfcBlushCol.value.set(mk.blush_color || '#c85a64').convertSRGBToLinear();
+  }
+
   var S = new THREE.Matrix4(), T = new THREE.Matrix4();
   function skinScale(m, pose, d){
     var inv = m.skeleton.boneInverses, ibm = m.userData.ibm;
@@ -489,8 +999,8 @@ function KCharFigure(body, sliders, load){
       var N = g.attributes.normal.array;
       if(!any) N.set(M.nrm0);
       else {
-        // face normals summed per source vertex, so the halves of a UV seam agree
-        var acc = new Float32Array(3 * M.nsrc), ix = g.index ? g.index.array : null, nt = ix ? ix.length : P.length / 3;
+        // face normals summed per source vertex over the full unfiltered mesh (index0), so hidden regions keep valid normals when revealed
+        var acc = new Float32Array(3 * M.nsrc), ix = m.userData.index0 || (g.index ? g.index.array : null), nt = ix ? ix.length : P.length / 3;
         var ax, ay, az, bx, by, bz;
         for(var t=0;t<nt;t+=3){
           var a = ix ? ix[t] : t, b = ix ? ix[t+1] : t + 1, c = ix ? ix[t+2] : t + 2;
@@ -548,6 +1058,42 @@ function KCharFigure(body, sliders, load){
     for(var t=0;t<n;t++) if(!hide[t]) keep.push(i0[3*t], i0[3*t+1], i0[3*t+2]);
     m.geometry.setIndex(keep);
   }
+  var ARM_UP_BONE = /^(Left|Right)(Arm|ForeArm|Hand)/;
+  function filterArmourMods(m, bareUp, hasTail){
+    var key = (bareUp ? 'A' : '') + (hasTail ? 'T' : '');
+    if((m.userData.cutKey || '') === key) return;
+    m.userData.cutKey = key;
+    var i0 = m.userData.index0, g = m.geometry;
+    if(!i0) return;
+    if(!key){
+      g.setIndex(i0);
+      m.children.forEach(function(s){ if(s.userData.fur && s.userData.index0) s.geometry.setIndex(s.userData.index0); });
+      return;
+    }
+    var n = g.attributes.position.count, aw = m.userData.armW;
+    if(bareUp && !aw){
+      aw = m.userData.armW = new Float32Array(n);
+      var si = g.attributes.skinIndex, sw = g.attributes.skinWeight;
+      if(si && sw) for(var i = 0; i < n; i++) for(var k = 0; k < 4; k++){
+        var j = si.getComponent ? si.getComponent(i, k) : si.array[4 * i + k], w = sw.array[4 * i + k];
+        if(w && J[j] && ARM_UP_BONE.test(J[j].name)) aw[i] += w;
+      }
+    }
+    var P0 = m.userData.morph ? m.userData.morph.pos0 : g.attributes.position.array;
+    function dropTri(a, b, c){
+      if(bareUp && (aw[a] > 0.35 || aw[b] > 0.35 || aw[c] > 0.35)) return true;
+      return false;
+    }
+    var keep = [];
+    for(var t = 0; t < i0.length; t += 3) if(!dropTri(i0[t], i0[t+1], i0[t+2])) keep.push(i0[t], i0[t+1], i0[t+2]);
+    if(keep.length) g.setIndex(keep);
+    m.children.forEach(function(s){
+      if(!s.userData.fur || !s.userData.index0) return;
+      var si0 = s.userData.index0, sk = [];
+      for(var t = 0; t < si0.length; t += 3) if(!dropTri(si0[t], si0[t+1], si0[t+2])) sk.push(si0[t], si0[t+1], si0[t+2]);
+      s.geometry.setIndex(sk);
+    });
+  }
 
   var token = 0;
   this.apply = function(rec){
@@ -583,17 +1129,21 @@ function KCharFigure(body, sliders, load){
           pushU.kcT.value = top && top.tucks ? TUCK : 0;
           // trousers (legs, not loose) under a loose top: the top's push clears them too (PAD_OVER more)
           var legs = rec.armour && rec.armour.legs && kit.items && kit.items.filter(function(it){ return it.id === rec.armour.legs; })[0];
+          var feet = rec.armour && rec.armour.feet && kit.items && kit.items.filter(function(it){ return it.id === rec.armour.feet; })[0];
           // and under a loose top they are drawn in to the legs, so wide ones (harem pants) stay under it: all the way
           // under one that reaches below the knees (kit item long: a robe, the kimono), else down to its hem (kit item
           // hem: a fraction of the hip-to-ankle length), so below a shirt's hem they are as wide as they are (the
           // festive shirt showed the trousers through its front in a stride)
-          pushU.kcS.value = top && top.loose && legs && !legs.loose ? SQUEEZE : 0;
+          pushU.kcS.value = top && top.loose && legs && (!legs.loose || (top.long && !top.cloth)) ? SQUEEZE : 0;
           pushU.kcSH.value = top && top.long ? 1e3 : top && top.hem != null ? top.hem : 0;
           // and boots under one, whatever the legs wear: their cuffs came through a kimono's hem at the shins
           pushU.kcSF.value = top && top.loose && top.long ? SQUEEZE_FEET : 0;
           // (a loose top over a loose skirt by the skirt's own pad more, so its hem stays outside it)
+          // (every loose layer takes the hull from the lowest hem worn: from its own, a gown left a skirt's tent to come through it)
+          var hemLow = 1e3;
+          Object.keys(want).forEach(function(k){ var u = want[k].userData.pad; if(u && u.base) hemLow = Math.min(hemLow, want[k].userData.hem0); });
           Object.keys(want).forEach(function(k){ var u = want[k].userData.pad, pt = want[k].userData.part;
-            if(u && u.base) u.value = u.base + (pt.slot !== 'torso' ? 0 : legs && !legs.loose ? PAD_OVER : legs && legs.loose ? PAD_SKIRT : 0); });
+            if(u && u.base){ u.value = u.base + (pt.slot === 'torso' && legs && legs.loose ? PAD_SKIRT : 0); u.over.value = pt.slot === 'torso' && ((legs && !legs.loose) || (feet && top && top.long)) ? PAD_OVER : 0; u.hem.value = hemLow; } });
           var p = self.pose = KCHAR.pose(skel, sliders, kit.style === 'mpfb' ? {} : rec.sliders, head && head.face), mj = null;
           if(mpfb){
             var w = KCHAR.morphWeights(rec, kit), wkey = Array.prototype.join.call(w, ',');
@@ -630,9 +1180,13 @@ function KCharFigure(body, sliders, load){
           // a frog's head's pattern over the body (kit item skin_detail mask: the texture of a primitive with no area)
           var maskSrc = det && det.mask && Object.keys(want).map(function(k){ return want[k]; }).filter(function(x){ return x.userData.srcMaterial === det.mask; })[0];
           var detSrc = det && Object.keys(want).map(function(k){ return want[k]; }).filter(function(x){ return x.userData.srcMaterial === det.material; })[0];
+          var bareUp = mpfb && worn.some(function(x){ return x.group === 'arms_up'; });
           Object.keys(want).forEach(function(k){
             var m = want[k], part = m.userData.part;
             skinScale(m, p, mj && mj.d);
+            if(part.role === 'armour'){
+              filterArmourMods(m, part.slot === 'torso' && bareUp, (part.slot === 'torso' || part.slot === 'legs') && !!wt && m.userData.hem0 !== undefined && m.userData.hem0 < 0.88 && !!(m.userData.pad && m.userData.pad.base));
+            }
             var role = roles[m.userData.srcMaterial];
             if(part.role === 'base'){
               // a MakeHuman base: only its skin primitive is masked; brows, lashes and nails stay
@@ -641,9 +1195,11 @@ function KCharFigure(body, sliders, load){
                 filterBase(m, hide.base); skinDetail(m, detSrc ? det : null, detSrc); coatShells(m, rec, gain, hide.base, coatEdge(rec));
                 if(pat && maskSrc && maskSrc.material.map) patternSet(patternMat(m.material, true), rec, pat, gain, maskSrc.material.map);
                 else if(m.material.userData.kp) m.material.userData.kp.kpOn.value = 0;
+                faceCosmeticsSet(m, rec, gain);
               }
               else if(hideParts[m.userData.srcMaterial] || coatHides(rec)[m.userData.srcMaterial]) m.visible = false;     // the nipples under a top (kit hide_parts) or a coat
               else if(m.userData.srcMaterial === 'Human.nipple') skinDetail(m, detSrc ? det : null, detSrc);    // (the skin has holes under them)
+              else if(m.userData.srcMaterial === 'Human.lips') faceCosmeticsSet(m, rec, gain);
             }
             // a lizard's crest down the neck under a worn item that covers the skin there (kit item crest_neck) is left out
             if(neckCrest && m.userData.srcMaterial === neckCrest.material) m.visible = !neckCrest.under.some(function(t){ return hide.base[t]; });
@@ -1061,13 +1617,16 @@ function KCharFigure(body, sliders, load){
      move them, so a stride still cannot open a skirt (with no clip playing they hang rigid) */
   this.cloth = true;
   this.clothState = function(){ return { items:clothItems, caps:caps }; };      // verify.py, the labs
+  // the cloth as if the figure had just been dressed: the chains at their rigid rest, the clock and the step accumulator
+  // at zero, so a shot (tools/shots.py, tools/garment_audit.py) is the same whatever ran before it
+  this.clothReset = function(){ clothStep(); clothAcc = 0; nhT = 0; };
   this.pushState = function(){ return pushU; };                                  // tools: the push's capsules (w 0: off)
   var GRAV = 7.4, DRAG = 1.6, DAMP = 0.04, STEP = 1 / 60, PAD = 0.022;
   var clothItems = {}, itemByKey = {}, caps = [], groundY = 0, clothAcc = 0;
   (kit.items || []).forEach(function(it){ itemByKey[KCHAR.key(it.glb)] = it; });
   // a joint's name as three's loader leaves it (PropertyBinding.sanitizeNodeName: no [ ] . : /, spaces to _)
   function clothKey(n){ return n.replace(/\s/g, '_').replace(/[\[\]\.:\/]/g, ''); }
-  var SLOT_RANK = { legs:0, torso:1, head:2 };
+  var SLOT_RANK = { legs:0, torso:1, back:2, head:3 };
   function clothOf(part){
     var it = itemByKey[part.key];
     if(!it || !it.cloth) return null;
@@ -1110,7 +1669,10 @@ function KCharFigure(body, sliders, load){
         });
       });
       var hipY = new THREE.Vector3().setFromMatrixPosition(prS.copy(m.skeleton.boneInverses[byName.Hips]).invert()).y;
-      c.chains.forEach(function(ch){ ch.whole = ch.p.every(function(q){ return q.y > hipY; }); });
+      c.chains.forEach(function(ch){
+        ch.whole = ch.p.every(function(q){ return q.y > hipY; });
+        ch.upCrest = ch.p.length > 1 && ch.p[ch.p.length - 1].y > ch.p[0].y + 0.005;
+      });
       posedRests(c, m);
       c.posed = null;
       placeChains(c, !!self.action);         // and the ring's rest distances (neighbours round each part)
@@ -1163,7 +1725,7 @@ function KCharFigure(body, sliders, load){
     // how loose it is (stiffness 0.1 and under wholly, 0.3 and over not at all: a mantle that lies on the shoulders
     // follows the body, or it tore at the shoulder blades). Followed point by point, the Chichani tilma's front tilted
     // out 45 degrees with the idle's forward lean and stood off like a shelf (its fitted shape hangs within 5)
-    var GW = THREE.MathUtils.clamp((0.3 - ch.stiff) / 0.2, 0, 1);
+    var GW = (ch.parent === byName.Head || ch.upCrest) ? 0 : THREE.MathUtils.clamp((0.3 - ch.stiff) / 0.2, 0, 1);
     if(ch.whole && GW > 0){
       var He = rtH.multiplyMatrices(bones[byName.Hips].matrixWorld, inv[byName.Hips]).elements;
       var hs = Math.hypot(He[8], He[9], He[10]), hh = Math.hypot(He[8], He[10]) || 1, hx = He[8] / hh * hs, hz = He[10] / hh * hs;
@@ -1186,6 +1748,9 @@ function KCharFigure(body, sliders, load){
       var Hm = rtW.setFromMatrixPosition(rtS.copy(inv[byName.Hips]).invert()), Hw = rtU.setFromMatrixPosition(bones[byName.Hips].matrixWorld);
       F.set(fz, 0, fx, 0, 0, fs, 0, 0, -fx, 0, fz, 0, 0, 0, 0, 1);
       rtX.copy(Hm).applyMatrix4(F); F.setPosition(Hw.x - rtX.x, Hw.y - rtX.y, Hw.z - rtX.z);
+      // (the fade runs to the hips whatever the offset's size: widened to 3.5 x the offset, the rows below the hips
+      // carried a far-flung root's offset too and a robe's lower rows swept through the legs; the bisection in
+      // REVIEW-GARMENTS-2026-11-06.md, section 6, the Beast Rider and Hykkousoi nobles' "inside" doubled)
       var off = rtX.copy(ch.p[0]).applyMatrix4(F).negate().add(ch.tw[0]), y0 = ch.p[0].y, hy = Hm.y;
       for(var k = 1; k < ch.p.length; k++){
         var fk = THREE.MathUtils.clamp((ch.p[k].y - hy) / Math.max(1e-4, y0 - hy), 0, 1);
@@ -1207,8 +1772,13 @@ function KCharFigure(body, sliders, load){
   var prM = new THREE.Matrix4(), prS = new THREE.Matrix4(), prV = new THREE.Vector3();
   function posedRests(c, m){
     if(!c.chains.some(function(ch){ return ch.bw; })){ c.chains.forEach(function(ch){ ch.r = ch.p; }); return; }
-    var saved = bones.map(function(b){ return b.quaternion.clone(); });
+    var saved = bones.map(function(b){ return b.quaternion.clone(); }), hipsAt = self.hips.position.clone();
     bones.forEach(function(b, i){ b.quaternion.fromArray(J[i].r); });
+    // and the hips at their rest, with the morph alone: left where the clip playing at dressing had them, the rests
+    // came out a few ulps apart from one page load to the next (the frame they are taken back into cancels a
+    // translation exactly on paper, not in floating point), and a run grew that into a shin through a skirt in one
+    // audit sweep and not the next (REVIEW-GARMENTS-2026-11-06.md, section 6)
+    self.hips.position.fromArray(J[byName.Hips].t); hipsMorph();
     self.group.updateMatrixWorld(true);
     posture(true);
     self.group.updateMatrixWorld(true);
@@ -1226,6 +1796,7 @@ function KCharFigure(body, sliders, load){
       });
     });
     bones.forEach(function(b, i){ b.quaternion.copy(saved[i]); });
+    self.hips.position.copy(hipsAt);
     self.group.updateMatrixWorld(true);
   }
   // the chains' bones at the postured rest while a clip plays, at the A-pose's otherwise (no posture there)
@@ -1249,6 +1820,9 @@ function KCharFigure(body, sliders, load){
       var g = pt.chains, n = g.length;
       for(var a = 0; a < (pt.closed ? n : n - 1); a++){
         var A = c.chains[g[a]], Bc = c.chains[g[(a + 1) % n]], kk = Math.min(A.rest.length, Bc.rest.length);
+        // a slit's two lips part from its top down (make_mpfb.py gaps)
+        var gp = (pt.gaps || []).filter(function(x){ return x[0] === a; })[0];
+        if(gp) kk = Math.min(kk, gp[1]);
         for(var k = 1; k < kk; k++) c.ring.push([A, Bc, k, A.rest[k].distanceTo(Bc.rest[k])]);
       }
     });
@@ -1257,6 +1831,7 @@ function KCharFigure(body, sliders, load){
   function clothStep(dt){
     var items = Object.keys(clothItems).map(function(k){ return clothItems[k]; }).filter(function(c){ return c.on && c.chains.length && c.chains[0].p.length; });
     if(!items.length) return;
+    items.sort(function(a, b){ return (a.chains[0].layer || 0) - (b.chains[0].layer || 0); });
     self.group.updateMatrixWorld(true);
     var dyn = self.cloth;
     if(dt === undefined){
@@ -1269,7 +1844,8 @@ function KCharFigure(body, sliders, load){
     var sc = self.group.getWorldScale(cS).x, W = caps.filter(function(cp){ return !/Arm/.test(bones[cp.a].name); }).map(function(cp){
       var A = new THREE.Vector3(), B = new THREE.Vector3();
       capEnds(cp, A, B);
-      return { a:A, b:B, r:cp.r * sc + PAD, r0:cp.r * sc, leg:LEGJ.test(bones[cp.a].name), seat:!!cp.pa };
+      var rMax = Math.max(cp.r, cp.ra || 0, cp.rb || 0);
+      return { a:A, b:B, aBone:cp.a, r:rMax * sc + PAD, r0:cp.r * sc, ra:(cp.ra || cp.r) * sc, rb:(cp.rb || cp.r) * sc, leg:LEGJ.test(bones[cp.a].name), seat:!!cp.pa };
     });
     // the seat's two upright capsules as one across the buttocks, for the chains: a skirt's point at the back between
     // them went out of one toward the other and out of that, sideways, and its chain kinked at the top (the fold)
@@ -1279,10 +1855,37 @@ function KCharFigure(body, sliders, load){
       W.push({ a:seats[0].a.clone().add(seats[0].b).multiplyScalar(0.5), b:seats[1].a.clone().add(seats[1].b).multiplyScalar(0.5),
                r:seats[0].r, leg:false });
     }
+    // and the feet (footEnds): a chain knew the shin and not the heel kicked up past it
+    FOOTSIDE.forEach(function(sd, i){
+      var cp = caps.filter(function(c){ return c.a === byName[sd + 'Leg'] && c.b === byName[sd + 'Foot']; })[0];
+      if(!cp) return;
+      var A = bones[byName[sd + 'Foot']].getWorldPosition(new THREE.Vector3()), B = bones[byName[sd + 'ToeBase']].getWorldPosition(new THREE.Vector3()), fr = footR(cp) * sc;
+      footEnds(i, null, sc, A, B);
+      W.push({ a:A, b:B, r:fr + PAD, r0:fr, ra:fr, rb:fr, leg:true, seat:false });
+      var thW = W.filter(function(w){ return w.aBone === byName[sd + 'UpLeg']; })[0], shW = W.filter(function(w){ return w.aBone === byName[sd + 'Leg']; })[0];
+      if(thW && shW && Math.abs(shW.b.y - shW.a.y) < 0.7 * shW.a.distanceTo(shW.b)){
+        W.push({ a:thW.a.clone().add(thW.b).multiplyScalar(0.5), b:shW.a.clone().add(shW.b).multiplyScalar(0.5),
+                 r:shW.rb + PAD, r0:shW.rb, ra:shW.ra, rb:shW.rb, leg:true, seat:false });
+      }
+    });
     groundY = self.group.getWorldPosition(cV3).y + 0.008;
-    // the air: still, or the wind of walking in place
+    // the air: still, or the wind of walking in place, plus core/atmos wind (ATMOS.windAt / ATMOS.U.wind) or self.wind
     var meta0 = self.action && meta[self.action.getClip().name], wind = new THREE.Vector3();
     if(meta0 && meta0.loop !== false && meta0.root_speed) wind.fromArray(meta0.root_speed).applyQuaternion(self.group.getWorldQuaternion(cQ3)).multiplyScalar(-sc);
+    if(self.wind){
+      if(Array.isArray(self.wind)) wind.x += self.wind[0] || 0, wind.y += self.wind[1] || 0, wind.z += self.wind[2] || 0;
+      else wind.add(self.wind);
+    } else if(typeof window !== 'undefined' && window.ATMOS){
+      var atm = window.ATMOS, tAtm = (atm.U && atm.U.time ? atm.U.time.value : nhT) || 0;
+      if(typeof atm.windAt === 'function'){
+        var w2 = atm.windAt(tAtm, cV3.x, cV3.z);
+        if(w2){ wind.x += (w2[0] || 0) * sc; wind.z += (w2[1] || 0) * sc; }
+      } else if(atm.U && atm.U.wind && atm.U.wind.value){
+        wind.x += (atm.U.wind.value.x || 0) * sc; wind.z += (atm.U.wind.value.y || 0) * sc;
+      }
+    }
+    // (no made-up breeze without ATMOS: one ran on the page's clock here from 2026-11-02 to 06, so robes never rested in
+    // the lab and the audit's shots depended on how long the sweep had run: REVIEW-GARMENTS-2026-11-06.md, issue 10)
     items.forEach(function(c){
       placeChains(c, !!self.action);
       c.chains.forEach(function(ch){
@@ -1301,12 +1904,18 @@ function KCharFigure(body, sliders, load){
         c.chains.forEach(function(ch){
           var kS = 1 - Math.pow(1 - ch.stiff, h * 60);
           if(!dyn){ ch.x.forEach(function(x, k){ x.copy(ch.tw[k]); ch.xp[k].copy(ch.tw[k]); }); return; }
+          var upCrest = !!ch.upCrest, dragK = upCrest ? DRAG * 2.2 : DRAG, gravK = upCrest ? GRAV * 0.14 : GRAV;
           ch.x[0].copy(ch.tw[0]); ch.xp[0].copy(ch.tw[0]);
           for(var k = 1; k < ch.x.length; k++){
             var x = ch.x[k], xp = ch.xp[k];
             cV.subVectors(x, xp);                                     // velocity x h
-            cV2.copy(wind).multiplyScalar(h).sub(cV).multiplyScalar(DRAG * h);   // drag toward the air's motion
-            cV2.y -= GRAV * h * h;
+            cV2.copy(wind).multiplyScalar(h).sub(cV).multiplyScalar(dragK * h);  // drag toward the air's motion
+            if(upCrest){
+              var fl = (k / ch.x.length) * h * h;
+              cV2.x += 1.4 * Math.sin(nhT * 4.6 + k * 0.7 + (ch.pts[0] || 0) * 0.3) * fl;
+              cV2.z += 1.1 * Math.cos(nhT * 3.8 + k * 0.6) * fl;
+            }
+            cV2.y -= gravK * h * h;
             xp.copy(x);
             x.addScaledVector(cV, 1 - DAMP).add(cV2);
             x.lerp(ch.tw[k], kS);
@@ -1323,7 +1932,23 @@ function KCharFigure(body, sliders, load){
           });
           c.chains.forEach(function(ch){ collide(ch, W); });
         }
-        c.chains.forEach(function(ch){ for(var k = 1; k < ch.x.length; k++) keepLen(ch, k); collide(ch, W); });
+        c.chains.forEach(function(ch){
+          for(var k = 1; k < ch.x.length; k++) keepLen(ch, k);
+          collide(ch, W);
+          if(!ch.upCrest){
+            for(var k2 = ch.x.length - 2; k2 > 0; k2--){
+              if(ch.x[k2].y < ch.x[k2 + 1].y + 0.015) ch.x[k2].y = Math.min(ch.x[k2 - 1].y - 0.01, ch.x[k2 + 1].y + 0.015);
+            }
+          }
+          collide(ch, W);
+        });
+        c.ring.forEach(function(r){
+          var a = r[0].x[r[2]], b = r[1].x[r[2]], d = a.distanceTo(b), lo = r[3] * 0.6, hi = r[3] * 1.2;
+          if(d > hi || (d < lo && d > 1e-6)){
+            var want = d > hi ? hi : lo, f = (d - want) / d * 0.5;
+            cV.subVectors(b, a).multiplyScalar(f); a.add(cV); b.sub(cV);
+          }
+        });
         layered(c, items);
       });
     }
@@ -1338,6 +1963,16 @@ function KCharFigure(body, sliders, load){
           cV2.subVectors(ch.x[k + 1], ch.x[k]).normalize();
           var Wq = new THREE.Quaternion().setFromUnitVectors(cV, cV2).multiply(cQ);
           b.quaternion.copy(prev).invert().multiply(Wq);
+          // the joint where its point is: its offset from the rest (placeChains, the postured rest) turned by this frame, built
+          // on the A-pose's, left it up to 30 cm off on the man at an idle, each joint a step: the skirts' staircase
+          // (a segment the last collide stretched gives a third of the stretch to the joint: all of it, it fell in the two rows
+          // of the weights' blend under the joint and smeared a cape's border; the rest of each segment keeps its length)
+          if(k > 0){
+            cV.subVectors(ch.x[k], ch.x[k - 1]);
+            var dk = cV.length(), Lk = ch.len[k - 1];
+            if(dk > Lk) cV.multiplyScalar((Lk + 0.35 * (dk - Lk)) / dk);
+            b.position.copy(cV).applyQuaternion(cQ3.copy(prev).invert()).divideScalar(sc);
+          }
           prev = Wq;
         });
       });
@@ -1358,12 +1993,13 @@ function KCharFigure(body, sliders, load){
         // no further out than the point's own rest lies: a robe's chain roots sit inside the trunk's and hips' capsules
         // (the cloth there lies on the body), and the point below each was thrown out sideways to the capsule's
         // surface, a Z at every chain's top (the fold: 60 to 90 bones past 1.5 rad on the court robe)
-        var rt = cV3.subVectors(rw, cp.a).dot(cV) / lsq;
-        cV3.copy(cp.a).addScaledVector(cV, THREE.MathUtils.clamp(rt, 0, 1));
+        var rt = THREE.MathUtils.clamp(cV3.subVectors(rw, cp.a).dot(cV) / lsq, 0, 1);
+        cV3.copy(cp.a).addScaledVector(cV, rt);
         // (on a leg, no less than the bare limb: a skirt's rest follows the hips, and the thigh swung forward in a stride
         // over it would take the cloth in)
-        var r = Math.min(cp.r, Math.max(rw.distanceTo(cV3), cp.leg ? cp.r0 : 0));
         var t = THREE.MathUtils.clamp(cV2.subVectors(x, cp.a).dot(cV) / lsq, 0, 1);
+        var rLimb = cp.leg ? (cp.ra !== undefined ? cp.ra + (cp.rb - cp.ra) * t : cp.r0) + 0.015 : 0;
+        var r = Math.min(cp.r, Math.max(rw.distanceTo(cV3), rLimb));
         cAx.copy(cV).normalize();
         cV2.copy(cp.a).addScaledVector(cV, t);
         var d = x.distanceTo(cV2);
@@ -1373,14 +2009,17 @@ function KCharFigure(body, sliders, load){
           // upright limb, out the side away from the body's axis, so cloth never ends up behind a leg in a stride
           cV.subVectors(x, cV2);
           cO.subVectors(up, cV2); cO.addScaledVector(cAx, -cO.dot(cAx));
-          var ol = Math.abs(cAx.y) < 0.7 ? cO.length() : 0, cs = 0;
+          var ol = Math.abs(cAx.y) < 0.7 && cO.y > 0 ? cO.length() : 0, cs = 0;
           if(ol > 1e-4){ cO.divideScalar(ol); cs = cV.dot(cO); if(cs < 0) cV.addScaledVector(cO, -2 * cs); }
-          if(ol <= 1e-4 && cp.leg && cO.subVectors(rw, cV2).dot(cLat) * Math.sign((cV2.x - hipW.x) * cLat.x + (cV2.z - hipW.z) * cLat.z) > -0.5 * cp.r){
+          if(cp.leg && cO.subVectors(rw, cV2).dot(cLat) * Math.sign((cV2.x - hipW.x) * cLat.x + (cV2.z - hipW.z) * cLat.z) > -0.5 * cp.r){
             // (the legs only: on the trunk's capsules, the chest leaning forward of the hips in a clip, it threw a
             // mantle's points at the back of the neck through the body to the front; and not for a point whose rest
             // lies on the thigh's inner side, between the legs: a skirt's back centre, thrown out through the thigh)
+            var mid = 1.0 - THREE.MathUtils.smoothstep(Math.abs((rw.x - hipW.x) * cLat.x + (rw.z - hipW.z) * cLat.z), 0.03, 0.11);
             cO.set(cV2.x - hipW.x, 0, cV2.z - hipW.z);
+            cO.addScaledVector(cLat, -cO.dot(cLat) * mid * 0.85);
             if(cO.lengthSq() > 9e-4){ cO.normalize(); cs = cV.dot(cO); if(cs < 0) cV.addScaledVector(cO, -2 * cs); }
+            if(mid > 0) cV.addScaledVector(cLat, (cO.subVectors(rw, cV2).dot(cLat) - cV.dot(cLat)) * mid * 0.7);
           }
           x.copy(cV2).addScaledVector(cV.normalize(), r);
         }
@@ -1403,7 +2042,7 @@ function KCharFigure(body, sliders, load){
     items.forEach(function(o){ o.chains.forEach(function(ch){ for(var k = 0; k + 1 < ch.x.length; k++) segs.push([ch.x[k], ch.x[k + 1], ch.layer || 0]); }); });
     c.chains.forEach(function(ch){
       var L = ch.layer || 0;
-      if(!L) return;
+      if(!L || ch.upCrest) return;
       for(var k = 1; k < ch.x.length; k++){
         var x = ch.x[k], best = null, bd = 0.14;
         segs.forEach(function(sg){
@@ -1425,17 +2064,17 @@ function KCharFigure(body, sliders, load){
      pushed out of the thighs and shins on the GPU, after skinning, so no knee comes through between two cloth chains.
      The capsules (legCaps: thighs, shins, feet, and hard ones for the arms, so a raised arm lifts a mantle's hem) are
      the body's, in the figure's inner space, padded by the cloth's
-     thickness, and a torso garment by 2 cm more (PAD_TOP), so a robe's hem lies over the skirt it covers, and 3.5 cm more again over
-     trousers (PAD_OVER), which stand out of the capsules more than a skirt's chains do. The push is a thin band,
+     thickness, and a torso garment by 2 cm more (PAD_TOP), so a robe's hem lies over the skirt it covers, and up to 3.5 cm more again over
+     trousers (PAD_OVER, as the limb swings), which stand out of the capsules more than a skirt's chains do. The push is a thin band,
      not a projection: a vertex d from the bone within r + 1.5 cm lands at r - 1.5 cm + d * 3 cm / (r + 1.5 cm), so
      two tiers of one skirt keep their order instead of meeting on one surface, and cloth that already lies right
      barely moves */
   // NCAP capsules: the ten of LEGS, four more for a giant's lower arms (left at radius 0, so skipped, on other bodies)
   // and the two of the seat (14, 15: skeleton.json colliders with rest ends, soft like the legs')
-  var NCAP = 16, capV = function(){ var a = []; for(var i = 0; i < NCAP; i++) a.push(new THREE.Vector4()); return a; };
+  var NCAP = 16, NHULL = 12, capV = function(n){ var a = []; for(var i = 0; i < (n || NCAP); i++) a.push(new THREE.Vector4()); return a; };
   var pushU = { kcA:{ value:capV() }, kcR:{ value:new Array(NCAP).fill(0) },
-                kcB:{ value:capV() }, kcH:{ value:new THREE.Vector3() },
-                kcT:{ value:0 }, kcS:{ value:0 }, kcSF:{ value:0 }, kcSH:{ value:0 }, kcU:{ value:new THREE.Vector3(0, 1, 0) } }, noTuck = { value:0 }, TUCK = 0.025, PAD_TOP = 0.02, PAD_SKIRT = 0.02, PAD_OVER = 0.035,
+                kcB:{ value:capV() }, kcH:{ value:new THREE.Vector3() }, kcE:{ value:capV(NHULL) }, kcTl:{ value:new THREE.Matrix3() },
+                kcT:{ value:0 }, kcS:{ value:0 }, kcSF:{ value:0 }, kcSH:{ value:0 }, kcM:{ value:0 }, kcK:{ value:0 }, kcU:{ value:new THREE.Vector3(0, 1, 0) } }, noTuck = { value:0 }, TUCK = 0.025, PAD_TOP = 0.02, PAD_SKIRT = 0.02, PAD_OVER = 0.035,
       SQUEEZE = 0.008, SQUEEZE_FEET = 0.014;
   /* every top and every pair of trousers or skirt goes through here: loose ones (kcL) are pushed out of the limbs;
      under a top that closes round the waist (kit item tucks) trousers' and skirts' bands above the hips are drawn in
@@ -1446,14 +2085,17 @@ function KCharFigure(body, sliders, load){
      one (ra to rb): at one radius per capsule (a median of the leg's surface) the trousers sank into the calves and,
      the skin under them hidden, the court's legs read thin; a looser squeeze (2.5 cm) put them out through the robes'
      knees instead. Each vertex is drawn to its nearest capsule only: drawn to all six, a shin's was pulled into a ball
-     round the knee (the thigh's end) and the inside of each leg toward the other, and the court's legs came out thin */
+     round the knee (the thigh's end) and the inside of each leg toward the other, and the court's legs came out thin.
+     Up to 30 cm out: at 15 cm a harem pants' bulge was left as it was below a kimono, and the boots' tops (drawn in
+     to SQUEEZE_FEET, outside the trousers' SQUEEZE) came through it at the shin */
   var BACK_DEPTH = 0.01;
-  var KNEE = 0.04;      // how far a fully bent knee's corner stands out of its two capsules (kchar_push.gdshader)
+  var KNEE = 0.04;     // how far a fully bent knee's corner stands out of its two capsules (kchar_push.gdshader)
   function pushOut(mat, pad, loose, legs, feet){
-    var prev = mat.onBeforeCompile, padU = { value:pad || 0, base:pad || 0 }, looseU = { value:loose ? 1 : 0 };
+    var prev = mat.onBeforeCompile, padU = { value:pad || 0, base:pad || 0, over:{ value:0 }, slit:{ value:-1 }, hem:{ value:0 }, only:{ value:0 } }, looseU = { value:typeof loose === 'number' ? loose : (loose ? 1 : 0) };
     mat.onBeforeCompile = function(sh, r){
       if(prev) prev(sh, r);
-      sh.uniforms.kcA = pushU.kcA; sh.uniforms.kcB = pushU.kcB; sh.uniforms.kcR = pushU.kcR; sh.uniforms.kcH = pushU.kcH; sh.uniforms.kcU = pushU.kcU; sh.uniforms.kcP = padU;
+      sh.uniforms.kcA = pushU.kcA; sh.uniforms.kcB = pushU.kcB; sh.uniforms.kcR = pushU.kcR; sh.uniforms.kcH = pushU.kcH; sh.uniforms.kcU = pushU.kcU; sh.uniforms.kcP = padU; sh.uniforms.kcPO = padU.over; sh.uniforms.kcM = pushU.kcM; sh.uniforms.kcK = pushU.kcK; sh.uniforms.kcSl = padU.slit;
+      sh.uniforms.kcE = pushU.kcE; sh.uniforms.kcHm = padU.hem; sh.uniforms.kcEO = padU.only; sh.uniforms.kcTl = pushU.kcTl;
       sh.uniforms.kcL = looseU; sh.uniforms.kcT = legs ? pushU.kcT : noTuck; sh.uniforms.kcS = legs ? pushU.kcS : feet ? pushU.kcSF : noTuck; sh.uniforms.kcSH = feet ? { value:1e3 } : pushU.kcSH;
       // a vertex inside a leg goes out the side away from the body's axis (kcH), so a stride cannot leave the
       // cloth behind the knee; an arm's capsule (kcB.w 1) is hard: only what is inside it moves, to its surface. The
@@ -1465,48 +2107,101 @@ function KCharFigure(body, sliders, load){
       // is a thin band (1.5 cm either side of the capsule's surface: d in [0, r + 1.5 cm] lands in [r - 1.5, r + 1.5]),
       // so cloth that already lies right barely moves; the 4 cm shell outside it moved everything within 4 cm of a
       // capsule out by up to 3 cm, and a loincloth's flaps, a kilt's seat and a robe's back crumpled at rest
-      sh.vertexShader = 'uniform vec4 kcA[' + NCAP + '];\nuniform vec4 kcB[' + NCAP + '];\nuniform float kcR[' + NCAP + '];\nuniform vec3 kcH;\nuniform vec3 kcU;\nuniform float kcP;\nuniform float kcL;\nuniform float kcT;\nuniform float kcS;\nuniform float kcSH;\n' + sh.vertexShader.replace('#include <skinning_vertex>',
-        '#include <skinning_vertex>\n\tvec3 cbk = (kcA[14].xyz + kcA[15].xyz) * 0.5 - kcH; cbk.y = 0.0; cbk *= kcA[14].w > 0.0 ? 1.0 / max(length(cbk), 1e-5) : 0.0;\n' +
-        '\tfor(int ci = 0; ci < ' + NCAP + '; ci++){\n\t\tif(kcL < 0.5 || kcA[ci].w <= 0.0) continue;\n' +
+      sh.vertexShader = 'uniform vec4 kcA[' + NCAP + '];\nuniform vec4 kcB[' + NCAP + '];\nuniform vec4 kcE[' + NHULL + '];\nuniform float kcHm;\nuniform float kcEO;\nuniform mat3 kcTl;\nuniform float kcR[' + NCAP + '];\nuniform vec3 kcH;\nuniform vec3 kcU;\nuniform float kcP;\nuniform float kcPO;\nuniform float kcM;\nuniform float kcK;\nuniform float kcSl;\nuniform float kcL;\nuniform float kcT;\nuniform float kcS;\nuniform float kcSH;\n' + sh.vertexShader.replace('#include <skinning_vertex>',
+        '#include <skinning_vertex>\n\tvec3 cbk = (kcA[14].xyz + kcA[15].xyz) * 0.5 - kcH; cbk.y = 0.0; cbk *= kcA[14].w > 0.0 ? 1.0 / max(length(cbk), 1e-5) : 0.0; vec3 clat = vec3(cbk.z, 0.0, -cbk.x);\n' +
+        '\tfloat cflap = kcL > 0.1 && kcL < 0.5 && kcS > 0.0 && kcSH < 1.0 && length(position.xz) > 0.142 && position.y > 0.45 && abs(dot(transformed - kcH, cbk)) > abs(dot(transformed - kcH, clat)) * 1.1 ? 1.0 : 0.0;\n' +
+        '\tfloat cloose = (kcL > 0.5 && !(kcS > 0.0 && kcSH > 10.0)) || cflap > 0.5 ? 1.0 : 0.0, ceo = kcEO > 0.5 && cloose > 0.5 && (abs(position.x) < 0.22 || position.y < 0.88) ? 1.0 : 0.0, cstr = smoothstep(0.35, 0.85, kcM), cshort = smoothstep(0.32, 0.44, kcHm);\n' +
+        '\tfloat crr = length(position.xz), ctier = clamp(crr - (0.24 - 0.12 * clamp(position.y, 0.0, 0.80)), 0.0, 0.16) * smoothstep(0.15, 0.32, position.y) * (1.0 - smoothstep(0.82, 1.04, position.y));\n' +
+        '\tfor(int ci = 0; ci < ' + NCAP + '; ci++){\n\t\tif(cloose < 0.5 || kcA[ci].w <= 0.0 || (ceo > 0.5 && ci < 14) || (kcB[ci].w > 0.5 && (kcEO > 0.5 || abs(position.x) < 0.20 || position.y < 1.05))) continue;\n' +
         '\t\tvec3 ca = kcA[ci].xyz, cab = kcB[ci].xyz - ca; float csh = kcB[ci].w > 0.5 ? 0.0 : 0.015;\n' +
         // (faded, over 5 cm behind and down the thigh from a third to two fifths: cut off hard, the cloth either side of the
         // line was pushed and not, and a shirt over trousers tore down the side of the hip in a stride)
+        // (a slit garment's cloth below the slit's top, kit part slit, metres above the knee, is not pushed off the legs: the leg
+        // comes out through the slit, its chains keep off it as a flap's do, and pushed its lips tore and flew out like
+        // wings; above the slit the hip still needs it)
         '\t\tfloat ct = dot(transformed - ca, cab) / max(dot(cab, cab), 1e-8), cup = 1.0;\n' +
+        '\t\tfloat csl = kcSl > -0.5 && ci < 6 ? smoothstep(kcK + kcSl - 0.08, kcK + kcSl + 0.02, position.y) : 1.0;\n\t\tif(csl <= 0.0) continue;\n' +
+        '\t\tint cth = ci < 2 ? ci : ci - 2; vec3 ctd = ci < 4 ? kcB[cth].xyz - kcA[cth].xyz : cab;\n' +
+        '\t\tfloat clf = smoothstep(0.12, 0.4, 1.0 - abs(ctd.y) / max(length(ctd), 1e-5));\n' +
+        '\t\tif(ci >= 2 && ci < 4) clf = max(clf, smoothstep(0.3, 0.6, 1.0 - abs(cab.y) / max(length(cab), 1e-5)));\n' +
         '\t\tif(ci < 2){ cup = kcA[14].w <= 0.0 ? 0.0 : 1.0 - smoothstep(-0.05, 0.0, dot(transformed - ca, cbk));\n' +
         '\t\t\tcup = max(cup, smoothstep(0.3, 0.4, ct)); if(cup <= 0.0) continue; }\n\t\tct = clamp(ct, 0.0, 1.0);\n' +
-        '\t\tfloat cr = mix(kcA[ci].w, kcR[ci] > 0.0 ? kcR[ci] : kcA[ci].w, ct) + (csh > 0.0 ? kcP : 0.0);\n' +
+        '\t\tvec3 cq = ca + cab * ct, cd = transformed - cq; float cl = length(cd);\n' +
+        '\t\tfloat ccr = ci < 2 ? smoothstep(0.42, 0.68, 1.0 - abs(cab.y) / max(length(cab), 1e-5)) * smoothstep(-0.04, 0.03, cd.y) : (ci >= 10 && kcB[ci].w < 0.5 ? smoothstep(-0.02, 0.04, position.y - 0.88) : 0.0);\n' +
+        // how far the limb has left hanging (a shin takes its thigh's too: in a crouch it stands upright, the knee well forward).
+        // Cloth round a hanging limb has not been passed through. And standing still the fit already clears the trousers, so
+        // PAD_OVER (kcPO) comes in with the stride (kcM, legCaps), on both legs: at full strength at rest it held an open robe's
+        // panels 5.5 cm off the thigh and they parted at the seam (the boubou, the agent's coat); per limb, the leg a
+        // runner stands on took none, and the other leg's swing threw the cloth through it
+        '\t\tfloat cpd = csh > 0.0 ? kcP + cflap * 0.035 + kcPO * kcM + (ci >= 14 ? (ctier + cflap * 0.035) * 0.9 * kcM : 0.0) + smoothstep(0.03, 0.04, kcP) * 0.075 * ccr : 0.0;\n' +
+        '\t\tfloat cr = mix(kcA[ci].w, kcR[ci] > 0.0 ? kcR[ci] : kcA[ci].w, ct) + cpd;\n' +
         // a bent knee's corner, which the thigh's and the shin's capsules leave uncovered: the radius grows toward the knee
         // by up to KNEE as the leg bends (an Order robe's front showed the whole knee in a run)
         '\t\tif(ci < 4 && csh > 0.0){ int th = ci < 2 ? ci : ci - 2;\n' +
         '\t\t\tfloat bend = clamp(1.0 - dot(normalize(kcB[th].xyz - kcA[th].xyz), normalize(kcB[th + 2].xyz - kcA[th + 2].xyz)), 0.0, 1.0);\n' +
         '\t\t\tcr += ' + KNEE.toFixed(3) + ' * bend * (ci < 2 ? smoothstep(0.7, 1.0, ct) : 1.0 - smoothstep(0.0, 0.3, ct)); }\n' +
         '\t\tfloat cR = cr + csh;\n' +
-        '\t\tvec3 cq = ca + cab * ct, cd = transformed - cq; float cl = length(cd);\n' +
         '\t\tif(cl < cR && cl > 1e-5){\n' +
-        '\t\t\tvec3 co = vec3(cq.x - kcH.x, 0.0, cq.z - kcH.z); float col = length(co);\n' +
+        '\t\t\tfloat cmid = ci < 6 ? 1.0 - smoothstep(0.03, 0.11, abs(dot(transformed - kcH, clat))) : 0.0;\n' +
+        '\t\t\tvec3 co = vec3(cq.x - kcH.x, 0.0, cq.z - kcH.z); co -= clat * dot(co, clat) * cmid * 0.85; float col = length(co);\n' +
         // and the deeper it lies the more it goes straight out that side: near the bone the way out from it is noise, and a
         // robe's front, left inside a raised thigh in a run, split left and right round the knee and showed it. The side
         // is the one the cloth faces (objectNormal, skinned): a leg swung back has the body's axis in front of it, and
         // a skirt's front, sent out the back, left the leg bare down its side
-        '\t\t\tif(cl < cr && csh > 0.0 && col > 1e-4){ co /= col; if(dot(objectNormal, co) < 0.0) co = -co; float cs = dot(cd, co); if(cs < 0.0) cd -= 2.0 * cs * co;\n' +
-        '\t\t\t\tfloat cw = 1.0 - cl / cr; cw *= cw; cd = normalize(cd) * (1.0 - cw) + co * cw; }\n' +
-        '\t\t\ttransformed = mix(transformed, cq + normalize(cd) * (cr - csh + cl * 2.0 * csh / cR), cup);\n\t\t}\n\t}\n' +
-        '\tif(kcS > 0.0 && transformed.y < kcH.y){\n\t\tfloat sb = 1e9; vec3 sbq = vec3(0.0); float sbr = 0.0, sbt = 0.0; int sbi = 0;\n' +
+        // (deep is measured from the bare limb on a hanging leg: from the padded radius ordinary cloth round the leg counted as
+        // deep, and the mirror folded the tube's inner half onto its outer, baring a calf through a court skirt and a
+        // thigh through a coat in a walk)
+        '\t\t\tfloat cr0 = cr - cpd * (1.0 - clf);\n' +
+        '\t\t\tif(cl < cr0 && csh > 0.0 && col > 1e-4){ co = normalize(mix(co / col, vec3(0.0, 1.0, 0.0), ccr)); if(ci < 14 && dot(objectNormal, co) < 0.0 && ccr < 0.5) co = -co; float cs = dot(cd, co); if(cs < 0.0) cd -= 2.0 * cs * co;\n' +
+        '\t\t\t\tfloat cw = 1.0 - cl / cr0; cw *= cw; cd = normalize(cd) * (1.0 - cw) + co * cw; }\n' +
+        // (the legs' capsules hand over to the hull in a stride: the two together tore the cloth where they disagreed)
+        // (held at full strength in a stride beside the hull, 2026-11-02 to 06, the two together put the trade skirt's shin
+        // through its back in a run and the court gown's underskirt through the gown: the audit, REVIEW-GARMENTS-2026-11-06.md)
+        '\t\t\ttransformed = mix(transformed, cq + normalize(cd) * (cr - csh + cl * 2.0 * csh / cR), cup * csl * (ci < 6 ? 1.0 - max(kcM, ceo) : 1.0));\n\t\t}\n\t}\n' +
+        // the hull: pushed out of a capsule, cloth a limb has gone through opens round it like a collar and the limb stays
+        // through (a run's shin kicked straight back through a robe, with the sole on the end of it). So the leg's points
+        // (legCaps) also set how far out from the body's axis the cloth must reach at their bearing: the row of the point
+        // and all below hang from it, the rows above run up to the waist, the bearings beside it fall away, as a sheet
+        // over a raised foot. Out along the axis's radius, two panels at one bearing go together, and a front seam
+        // stays shut. For a garment with no chains (kcEO: the kimono, the library's skirts) in place of the legs' capsules;
+        // on garments with chains (ceo < 0.5), the chains and the legs' capsules carry the cloth so textures move with the folds
+        '\tif(ceo > 0.5) transformed = mix(transformed, kcH + kcTl * (transformed - kcH), smoothstep(0.06, 0.58, kcH.y - transformed.y));\n' +
+        '\tif(cloose > 0.5 && (abs(position.x) < 0.22 || position.y < 0.88)){\n\t\tvec2 ep = transformed.xz - kcH.xz; float er = length(ep), ew = 0.0, ehy = kcH.y + (ceo > 0.5 ? 0.06 : 0.12);\n' +
+        '\t\tif(er > 1e-4 && transformed.y < ehy){\n\t\t\tvec2 eu = ep / er;\n\t\t\tfor(int ei = 0; ei < 18; ei++){\n' +
+        '\t\t\t\tvec4 es = ei < 12 ? kcE[ei] : 0.5 * (kcE[ei - 12] + kcE[ei - 6]);\n' +
+        '\t\t\t\tif(es.w <= 0.0) continue;\n' +
+        '\t\t\t\tvec2 esp = es.xz - kcH.xz;\n' +
+        '\t\t\t\tfloat esR = es.w + kcP + (ceo > 0.5 ? 0.020 : 0.022) + cflap * 0.035 + kcPO * max(kcM, 0.45);\n' +
+        // (a point's reach round its bearing 6 cm wider than its padded circle, 2026-11-08: at the circle alone a run's trailing
+        // shin came out through the trade skirt's back, 2740 px in the audit; widened, none, and the underskirt through less)
+        '\t\t\t\tfloat erpad = esR + 0.055, eproj = dot(esp, eu), eperp2 = max(0.0, dot(esp, esp) - eproj * eproj);\n' +
+        '\t\t\t\tif(eperp2 >= (erpad + 0.06) * (erpad + 0.06)) continue;\n' +
+        '\t\t\t\tfloat ehit = max(0.0, eproj + sqrt(max(0.0, erpad * erpad - eperp2)) - 0.055) * (1.0 - smoothstep(esR * esR * 0.65, (erpad + 0.06) * (erpad + 0.06), eperp2));\n' +
+        '\t\t\t\tint ej = ei >= 12 ? ei - 12 : ei >= 6 ? ei - 6 : ei;\n' +
+        '\t\t\t\tfloat eytop = ceo > 0.5 && ej == 0 ? es.y + 0.42 * es.w : es.y + (1.0 - ceo * cshort) * es.w;\n' +
+        '\t\t\t\tfloat ewy = 1.0 - smoothstep(0.0, max(ehy - eytop, 0.14), transformed.y - eytop);\n' +
+        '\t\t\t\tfloat eh0 = kcHm - (ej == 0 ? 0.08 : 0.04);\n' +
+        '\t\t\t\tew = max(ew, smoothstep(eh0, eh0 + 0.08, es.y + es.w) * ewy * ehit);\n\t\t\t}\n' +
+        '\t\t\tif(ew > 0.0){ float elayer = clamp(length(position.xz) - 0.165, -0.045, 0.045) * 0.25;\n' +
+        '\t\t\t\tfloat ed = (ew + elayer) - er;\n' +
+        '\t\t\t\ttransformed.xz = kcH.xz + eu * (er + 0.5 * (ed + sqrt(ed * ed + 0.00025))); }\n\t\t}\n\t}\n' +
+        '\tif(kcS > 0.0 && cflap < 0.5 && transformed.y < max(kcH.y + 0.08, max(kcB[0].y, kcB[1].y) + 0.08)){\n\t\tfloat sb = 1e9; vec3 sbq = vec3(0.0); float sbr = 0.0, sbt = 0.0; int sbi = 0;\n' +
         '\t\tfor(int ci = 0; ci < 6; ci++){\n\t\t\tif(kcA[ci].w <= 0.0) continue;\n' +
         '\t\t\tvec3 sa = kcA[ci].xyz, sab = kcB[ci].xyz - sa; float st = clamp(dot(transformed - sa, sab) / max(dot(sab, sab), 1e-8), 0.0, 1.0);\n' +
-        '\t\t\tfloat sr = mix(kcA[ci].w, kcR[ci] > 0.0 ? kcR[ci] : kcA[ci].w, st) + kcS;\n' +
+        '\t\t\tfloat sr = (mix(kcA[ci].w, kcR[ci] > 0.0 ? kcR[ci] : kcA[ci].w, st) - (kcSH > 10.0 ? 0.01 : 0.0)) * (ci >= 4 && kcSH > 10.0 && kcM > 0.3 ? 0.72 : (kcSH > 10.0 ? 0.92 : 1.0)) + kcS;\n' +
         '\t\t\tvec3 sq = sa + sab * st; float sl = length(transformed - sq);\n' +
         '\t\t\tif(sl - sr < sb){ sb = sl - sr; sbq = sq; sbr = sr; sbt = st; sbi = ci; }\n\t\t}\n' +
         // how far down the leg it is (thigh, then shin, then foot), against the top's hem (kcSH, of the hip to the ankle)
         '\t\tint sdi = sbi < 2 ? sbi : sbi < 4 ? sbi - 2 : sbi - 4;\n' +
         '\t\tfloat slt = length(kcB[sdi].xyz - kcA[sdi].xyz), sls = length(kcB[sdi + 2].xyz - kcA[sdi + 2].xyz);\n' +
-        '\t\tfloat sdd = sbi < 2 ? sbt * slt : sbi < 4 ? slt + sbt * sls : slt + sls + sbt * 0.1, shm = kcSH * (slt + sls);\n' +
+        '\t\tfloat slift = sbi < 2 && kcSH < 1.0 ? smoothstep(0.1, 0.5, 1.0 - abs(kcB[sdi].y - kcA[sdi].y) / max(slt, 1e-5)) : 0.0;\n' +
+        '\t\tfloat sdd = sbi < 2 ? sbt * slt : sbi < 4 ? slt + sbt * sls : slt + sls + sbt * 0.1, shm = (kcSH + slift * 0.28) * (slt + sls);\n' +
         '\t\tfloat sf = 1.0 - smoothstep(shm - 0.02, shm + 0.02, sdd);\n' +
-        '\t\tvec3 sd = transformed - sbq; float sl = length(sd);\n\t\tif(sb > 0.0 && sb < 0.15) transformed = mix(transformed, sbq + sd * (sbr / sl), sf);\n\t}\n' +
+        '\t\tvec3 sd = transformed - sbq; float sl = length(sd);\n\t\tif(sb > 0.0 && sb < 0.6) transformed = mix(transformed, sbq + sd * (sbr / sl), sf);\n\t}\n' +
         // (the way in is the trunk's, kcU (legCaps), not the world's, and the height above the hips the greater of the two:
         // in a forward bend, a heavy push or a swim, the band at the small of the back came out through a T-shirt, drawn
         // in level; measured up the trunk alone, the back of the band sat low in a crouch and stood out of the hem)
-        '\tif(kcT > 0.0){\n\t\tvec3 tr = transformed - kcH; float th = dot(tr, kcU); vec3 tq = tr - th * kcU;\n' +
+        '\tif(kcT > 0.0 && cflap < 0.5){\n\t\tvec3 tr = transformed - kcH; float th = dot(tr, kcU); vec3 tq = tr - th * kcU;\n' +
         '\t\tfloat tf = smoothstep(-0.02, 0.06, max(th, tr.y)), tl = length(tq);\n' +
         '\t\tif(tf > 0.0 && tl > 1e-4) transformed = kcH + th * kcU + tq * (max(tl - kcT * tf, 0.5 * tl) / tl);\n\t}');
       // a garment's back faces are drawn BACK_DEPTH further from the eye than they are: where the cloth folds over
@@ -1530,18 +2225,46 @@ function KCharFigure(body, sliders, load){
     if(!caps.length) return;
     self.inner.updateMatrixWorld(true);
     legInv.copy(self.inner.matrixWorld).invert();
+    var stride = 0;       // the most any leg joint has left hanging (kcM: how much of PAD_OVER is on)
+    if(capRest !== self.pose){          // the knee at rest in this body (kcK: where a slit's height counts from)
+      capRest = self.pose;
+      pushU.kcK.value = KCHAR.fk(skel, self.pose.t).P[byName.LeftLeg][1];
+    }
     LEGS.forEach(function(lg, i){
-      // a foot has no collider of its own: it takes its shin's radius
+      // a foot has no collider of its own: footEnds
       var foot = i === 4 || i === 5, a = byName[lg[0]], b = byName[lg[1]], sh = foot ? byName[LEGS[i - 2][0]] : a;
       var cp = caps.filter(function(c){ return c.a === sh && c.b === (foot ? a : b); })[0];
-      if(!cp || b === undefined || (i >= 10 && !self.fourArms)){ pushU.kcA.value[i].w = 0; return; }
+      if(!cp || b === undefined || (i >= 10 && !self.fourArms)){
+        if(i >= 10 && !self.fourArms && TL && TL.x && TL.x.length > 2 * (i - 10) + 1){
+          var t0 = 2 * (i - 10), t1 = Math.min(t0 + 2, TL.x.length - 1), trad = TL.spec.radius || [];
+          cV.copy(TL.x[t0]).applyMatrix4(legInv); cV2.copy(TL.x[t1]).applyMatrix4(legInv);
+          var tra = (trad[Math.min(t0, trad.length - 1)] || 0.04) + 0.035, trb = (trad[Math.min(t1, trad.length - 1)] || 0.03) + 0.035;
+          pushU.kcA.value[i].set(cV.x, cV.y, cV.z, tra); pushU.kcB.value[i].set(cV2.x, cV2.y, cV2.z, 0);
+          pushU.kcR.value[i] = trb;
+        } else pushU.kcA.value[i].w = 0;
+        return;
+      }
       bones[a].getWorldPosition(cV).applyMatrix4(legInv); bones[b].getWorldPosition(cV2).applyMatrix4(legInv);
-      // the radius at each end (a foot takes its shin's at the ankle, all along); an arm keeps one radius: its taper
+      if(foot) footEnds(i - 4, legInv, 1, cV, cV2);
+      // the radius at each end; an arm keeps one radius: its taper
       // measured the deltoid into the upper arm's, and the hard push crushed a tunic and the mantle over it together
-      var ra = i >= 6 ? cp.r : foot ? cp.rb : cp.ra, rb = i >= 6 ? cp.r : cp.rb;
+      var ra = (i === 6 || i === 7) ? cp.r : foot ? footR(cp) : cp.ra, rb = i >= 6 ? cp.rb : foot ? ra : cp.rb;
       pushU.kcA.value[i].set(cV.x, cV.y, cV.z, ra + 0.01); pushU.kcB.value[i].set(cV2.x, cV2.y, cV2.z, i >= 6 ? 1 : 0);
       pushU.kcR.value[i] = rb + 0.01;
+      if(i < 4) stride = Math.max(stride, 1 - Math.abs(cV2.y - cV.y) / Math.max(cV.distanceTo(cV2), 1e-5));
     });
+    pushU.kcM.value = THREE.MathUtils.smoothstep(stride, 0.02, 0.1);
+    // the hull's points (the shader, the hull), six a leg: mid-thigh, knee, mid-shin, ankle, heel, toes (the fourth
+    // moved up the shin to 0.8, 2026-11-02 to 06, the hull stopped short of a kicked-back ankle and the shin came through
+    // the trade skirt in a run: back at the ankle)
+    for(var e = 0; e < 2; e++){
+      var eT = [[e, 0.5], [e, 1], [2 + e, 0.5], [2 + e, 1], [4 + e, 0], [4 + e, 1]];
+      eT.forEach(function(q, j){
+        var ca = pushU.kcA.value[q[0]], cb = pushU.kcB.value[q[0]], o = pushU.kcE.value[e * 6 + j];
+        o.set(ca.x + (cb.x - ca.x) * q[1], ca.y + (cb.y - ca.y) * q[1], ca.z + (cb.z - ca.z) * q[1],
+              ca.w > 0 ? ca.w + (pushU.kcR.value[q[0]] - ca.w) * q[1] : 0);
+      });
+    }
     // the seat: the buttocks, which neither the thighs' nor the trunk's capsule covers (a robe's back went through)
     var seat = caps.filter(function(c){ return c.pa; });
     for(var q = 0; q < 2; q++){
@@ -1552,6 +2275,35 @@ function KCharFigure(body, sliders, load){
       pushU.kcR.value[14 + q] = sp.r + 0.01;
     }
     bones[byName.Hips].getWorldPosition(pushU.kcH.value).applyMatrix4(legInv);
+    // what hangs a piece with no chains straight below the pelvis (kcTl). Standing: the hips' whole turn from their rest
+    // undone, then turned the way the feet face, at most TILT_MAX; hung on the hips, a wide stance's roll lifted a kimono's
+    // back off the calves and an idle's twist swung its hem round the legs. In a stride (kcM) it eases to the turn from
+    // the way down between the hip joints now to its rest's: undone in full, a run's lean folded the cloth over itself
+    // across the band it turns in, and capped, it drew the front back off the leading knee
+    if(!tiltRest || tiltRest.pose !== self.pose){
+      var tF = KCHAR.fk(skel, self.pose.t), tL = tF.P[byName.LeftUpLeg], tR = tF.P[byName.RightUpLeg], tS = tF.P[byName.Hips];
+      tiltRest = { pose:self.pose, q:new THREE.Quaternion().fromArray(tF.R[byName.Hips]),
+                   v:new THREE.Vector3((tL[0] + tR[0]) / 2 - tS[0], (tL[1] + tR[1]) / 2 - tS[1], (tL[2] + tR[2]) / 2 - tS[2]).normalize(),
+                   f:footFace(function(n){ return new THREE.Vector3().fromArray(tF.P[byName[n]]); }) };
+    }
+    var fNow = footFace(function(n){ return bones[byName[n]].getWorldPosition(new THREE.Vector3()).applyMatrix4(legInv); });
+    self.inner.getWorldQuaternion(tuckQ).invert();
+    bones[byName.Hips].getWorldQuaternion(tiltQ).premultiply(tuckQ).multiply(tuckQ.copy(tiltRest.q).invert()).invert();
+    tuckQ.setFromAxisAngle(tiltY, Math.atan2(fNow.x, fNow.z) - Math.atan2(tiltRest.f.x, tiltRest.f.z));
+    tiltQ.premultiply(tuckQ);
+    var tA = 2 * Math.acos(Math.min(1, Math.abs(tiltQ.w)));
+    if(tA > TILT_MAX) tiltQ.copy(tuckQ.identity().slerp(tiltQ, TILT_MAX / tA));
+    bones[byName.LeftUpLeg].getWorldPosition(cV).applyMatrix4(legInv); bones[byName.RightUpLeg].getWorldPosition(cV2).applyMatrix4(legInv);
+    cV.add(cV2).multiplyScalar(0.5).sub(pushU.kcH.value).normalize();
+    // (how far the thighs are apart fore and aft, the way the feet face: a stride. Not kcM, which a wide stance's thighs
+    // set too, nor one thigh's lean, which a stance's bent knees set)
+    var tSw = 0;
+    for(var tk = 0; tk < 2; tk++){
+      var ta = pushU.kcA.value[tk], tb = pushU.kcB.value[tk];
+      tSw += (tk ? -1 : 1) * cV2.set(tb.x - ta.x, tb.y - ta.y, tb.z - ta.z).normalize().dot(fNow);
+    }
+    tiltQ.slerp(tuckQ.setFromUnitVectors(cV, tiltRest.v), THREE.MathUtils.smoothstep(Math.abs(tSw), 0.2, 0.5));
+    pushU.kcTl.value.setFromMatrix4(tiltM.makeRotationFromQuaternion(tiltQ));
     // the trunk's up (kcU, for the tuck): the way from the hips to TUCK_UP, turned from its rest way, applied to +y; so
     // standing as at rest it is +y (the tuck as it was), and in a bend it leans with the small of the back
     if(byName[TUCK_UP] !== undefined){
@@ -1562,7 +2314,37 @@ function KCharFigure(body, sliders, load){
       pushU.kcU.value.set(0, 1, 0).applyQuaternion(tuckQ.setFromUnitVectors(tuckRest, tuckV));
     }
   }
-  var TUCK_UP = 'Spine1', tuckRest = null, tuckQ = new THREE.Quaternion(), tuckV = new THREE.Vector3();
+  var capRest = null, TUCK_UP = 'Spine1', tuckRest = null, tuckQ = new THREE.Quaternion(), tuckV = new THREE.Vector3(), tiltRest = null, tiltM = new THREE.Matrix4(), tiltQ = new THREE.Quaternion(), tiltY = new THREE.Vector3(0, 1, 0), TILT_MAX = 0.35;
+  // the way the feet face, level: heel to toes, both feet (at gets a joint's position by name)
+  function footFace(at){
+    var hL = at('LeftUpLeg'), hR = at('RightUpLeg'), hF = new THREE.Vector3(hR.z - hL.z, 0, hL.x - hR.x);
+    if(hF.lengthSq() > 1e-8) hF.normalize(); else hF.set(0, 0, 1);
+    var v = new THREE.Vector3();
+    ['Left', 'Right'].forEach(function(sd){
+      var d = at(sd + 'ToeBase').sub(at(sd + 'Foot')); d.y = 0;
+      if(d.dot(hF) > 0.02) v.add(d);
+    });
+    return v.lengthSq() > 1e-8 ? v.normalize() : hF;
+  }
+  /* A foot's capsule (0 left, 1 right): the bones run along the top of the foot, ankle to ball, so a capsule on them left
+     the heel, the sole and the toes bare, and a run's kicked-up sole came through the back of every long robe as a flat
+     patch. Moved down to the sole (the way the shin comes in, square to the foot; the shoe's sole counted) and out to
+     the toes. fA, fB the ankle and the ball, in the frame M takes the world to (s its scale), become the capsule's ends */
+  var FOOTSIDE = ['Left', 'Right'], FOOT_SOLE = 0.012, FOOT_TOE = 0.03, fN = new THREE.Vector3(), fF = new THREE.Vector3(), footY = null;
+  function footR(cp){ return Math.max(cp.rb, 0.05); }
+  function footEnds(sd, M, s, fA, fB){
+    if(!footY || footY.pose !== self.pose){
+      var rP = KCHAR.fk(skel, self.pose.t).P;
+      footY = { pose:self.pose, a:rP[byName.LeftFoot][1], b:rP[byName.LeftToeBase][1] };
+    }
+    var cp = caps.filter(function(c){ return c.a === byName[FOOTSIDE[sd] + 'Leg'] && c.b === byName[FOOTSIDE[sd] + 'Foot']; })[0], r = footR(cp);
+    bones[byName[FOOTSIDE[sd] + 'Leg']].getWorldPosition(fN);
+    if(M) fN.applyMatrix4(M);
+    fN.subVectors(fA, fN).normalize(); fF.subVectors(fB, fA).normalize();
+    fN.addScaledVector(fF, -fN.dot(fF)).normalize();
+    fA.addScaledVector(fN, (footY.a + FOOT_SOLE - r) * s).addScaledVector(fF, -0.022 * s);
+    fB.addScaledVector(fN, (footY.b + FOOT_SOLE - r) * s).addScaledVector(fF, FOOT_TOE * s);
+  }
 
   /* bodyFix: clips retargeted from slighter bodies (or made for none in particular) put limbs through the body. After
      the clip, each limb is a segment with its capsule's radius (skeleton.json colliders: the body's tapered ra to rb,
@@ -1987,7 +2769,7 @@ function KCharFigure(body, sliders, load){
   this.posture = POSTURE;
   this.postureClips = CLIPP;
 
-  function afterClip(dt){ posture(); arms2(dt); bodyFix(); toesFlat(); grip(); bladeClear(dt); twoHands(dt); toFace(); standUp(); clothStep(dt); nhT += dt || 0; tail(dt); jaw(); legCaps(); bowString(dt); hang(); }
+  function afterClip(dt){ posture(); arms2(dt); bodyFix(); toesFlat(); grip(); bladeClear(dt); twoHands(dt); toFace(); standUp(); nhT += dt || 0; tail(dt); jaw(); clothStep(dt); legCaps(); bowString(dt); hang(); }
 
   /* arms2: the lower arms of a body with a second pair (a mod, tools/mods.py: Left2Arm..., copies of the upper pair's
      joints hung lower on the ribs, on every skeleton). No clip

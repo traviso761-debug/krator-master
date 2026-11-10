@@ -105,7 +105,7 @@ def neutral(img, role):
     return Image.fromarray(np.rint(a * 255).astype(np.uint8), img.mode)
 
 
-def turn_glb(src, out, max_px=1024, role=lambda mat: None, skirt=None, cloth=None, body=None, head_above=None):
+def turn_glb(src, out, max_px=1024, role=lambda mat: None, skirt=None, cloth=None, body=None, head_above=None, rigid=False):
     """role(material name) -> 'skin', 'hair' or None: that material's colour texture is made neutral (neutral()).
     skirt: a height (glTF y) below which the item hangs as one piece (skirt_weights). cloth: (item id, its
     make_garments.py chain spec): bone chains are added (cloth_bones), and what the kit needs of them is put in
@@ -156,7 +156,7 @@ def turn_glb(src, out, max_px=1024, role=lambda mat: None, skirt=None, cloth=Non
         M = M @ R4.T                                # IBM' = IBM inv(R): vertices and joints both turned by R
         b[off:off + arr.nbytes] = M.transpose(0, 2, 1).astype(np.float32).tobytes()
     if skirt is not None:
-        skirt_weights(j, b, skirt)
+        skirt_weights(j, b, skirt, rigid=rigid)
     if head_above is not None:
         head_weights(j, b, head_above)
     cloth_blobs = {}
@@ -313,12 +313,14 @@ SKIRT_KEEP = 0.8           # the share of the legs' pull a skirt keeps (split ev
 SKIRT_POOL = 0.65          # how much of a vertex's own pull gives way to the pooled one (the rest still follows its side's leg)
 
 
-def skirt_weights(j, b, y0, band=0.12):
+def skirt_weights(j, b, y0, band=0.12, rigid=False):
     """a garment hanging below the crotch (a skirt, a robe's or a cloak's hem) takes its skin weights from MakeHuman's
     skirt helper, which follows each thigh: in a stride the cloth parts like trousers. Below y0 (fading in over 'band')
     the legs' weights are partly pooled (SKIRT_POOL): SKIRT_KEEP of them shared evenly by both thighs (the hem still
     sways front to back), the rest given to the hips; the remainder still follows its own side's leg, so a stride
-    stretches the cloth instead of splitting it. Edits JOINTS_0 / WEIGHTS_0 in place (b: the GLB's bytearray)"""
+    stretches the cloth instead of splitting it. rigid (a garment with no chains: LOOSE): all of it to the hips: it was
+    the shins' pull that lifted the kimono's back with a kicked-up leg and each thigh's that parted its front, and the
+    hull in the page (50-figure.js pushOut) moves it off the legs. Edits JOINTS_0 / WEIGHTS_0 in place (b: the GLB's bytearray)"""
     def arr(ai):
         a = j['accessors'][ai]
         v = j['bufferViews'][a['bufferView']]
@@ -336,6 +338,7 @@ def skirt_weights(j, b, y0, band=0.12):
         hips = idx('Hips')
         lup, rup = idx('LeftUpLeg'), idx('RightUpLeg')
         chain = {k for key in ('LeftUpLeg', 'LeftLeg', 'LeftFoot', 'LeftToeBase', 'RightUpLeg', 'RightLeg', 'RightFoot', 'RightToeBase') for k in idx(key)}
+        arms = {k for key in ('LeftArm', 'LeftForeArm', 'LeftHand', 'RightArm', 'RightForeArm', 'RightHand') for k in idx(key)} if rigid else set()
         if not (hips and lup and rup):
             continue
         for p in j['meshes'][node['mesh']]['primitives']:
@@ -346,18 +349,20 @@ def skirt_weights(j, b, y0, band=0.12):
             aj, dj, oj, JJ = arr(at['JOINTS_0'])
             aw, dw, ow, WW = arr(at['WEIGHTS_0'])
             Wf = WW.astype(np.float64) / (np.iinfo(dw).max if aw.get('normalized') else 1.0)
-            f = np.clip((y0 - P[:, 1]) / band, 0, 1) * SKIRT_POOL
+            f = np.ones(len(P)) if rigid else np.clip((y0 - P[:, 1]) / band, 0, 1) * SKIRT_POOL
             for v in np.nonzero(f > 0)[0]:
                 dense = {}
                 for jj, ww in zip(JJ[v], Wf[v]):
                     if ww > 0: dense[int(jj)] = dense.get(int(jj), 0) + ww
-                legs = sum(w for k, w in dense.items() if k in chain)
+                drop = chain | (arms if (P[v, 1] < y0 and abs(P[v, 0]) < 0.21) else set())
+                legs = sum(w for k, w in dense.items() if k in drop)
                 if legs <= 0:
                     continue
-                want = {k: w for k, w in dense.items() if k not in chain}
-                want[hips[0]] = want.get(hips[0], 0) + legs * (1 - SKIRT_KEEP)
-                want[lup[0]] = want.get(lup[0], 0) + legs * SKIRT_KEEP / 2
-                want[rup[0]] = want.get(rup[0], 0) + legs * SKIRT_KEEP / 2
+                want = {k: w for k, w in dense.items() if k not in drop}
+                keep = 0.0 if rigid else SKIRT_KEEP
+                want[hips[0]] = want.get(hips[0], 0) + legs * (1 - keep)
+                want[lup[0]] = want.get(lup[0], 0) + legs * keep / 2
+                want[rup[0]] = want.get(rup[0], 0) + legs * keep / 2
                 mix = {k: dense.get(k, 0) * (1 - f[v]) + want.get(k, 0) * f[v] for k in set(dense) | set(want)}
                 top = sorted(mix.items(), key=lambda kv: -kv[1])[:4]
                 tot = sum(w for _, w in top) or 1.0
@@ -410,12 +415,34 @@ def head_weights(j, b, y0):
                         lab[ra] = rb
                 comp = np.array([root(x) for x in range(n)])[wid]
                 low = np.full(n, np.inf); np.minimum.at(low, comp, P[:, 1])
-                up |= low[comp] > y0 - 0.06
+                up |= low[comp] > y0 - 0.03
             if not up.any():
                 continue
             one = np.iinfo(WW.dtype).max if np.issubdtype(WW.dtype, np.integer) else 1.0
-            JJ[up] = 0; WW[up] = 0
-            JJ[up, 0] = hj; WW[up, 0] = one
+            # Components whose lowest vertex reaches down onto the neck/shoulders (low[comp] <= y0 - 0.03, e.g. a hood or cowl)
+            # smoothly blend from Spine2/Neck at their bottom collar rim up to 100% Head above the jaw (y0 + 0.065),
+            # so turning the head does not swing the hood's neck/shoulder skirt out sideways like rigid wings!
+            cowl_comp = (low[comp] <= y0 - 0.03) if 'indices' in prim else np.zeros(len(P), bool)
+            rigid_up = up & (~cowl_comp)
+            JJ[rigid_up] = 0; WW[rigid_up] = 0
+            JJ[rigid_up, 0] = hj; WW[rigid_up, 0] = one
+            if cowl_comp.any() and 'Neck' in names:
+                nj = names.index('Neck')
+                sj = names.index('Spine2') if 'Spine2' in names else nj
+                y_top = y0 + 0.065
+                for v in np.nonzero(cowl_comp)[0]:
+                    y_bot = float(low[comp[v]])
+                    t = float(np.clip((P[v, 1] - y_bot) / max(y_top - y_bot, 0.05), 0.0, 1.0))
+                    s = t * t * (3.0 - 2.0 * t)
+                    w_head = s
+                    w_neck = (1.0 - s) * (0.28 + 0.48 * math.sin(s * math.pi))
+                    w_spine = max(0.0, 1.0 - w_head - w_neck)
+                    JJ[v] = [hj, nj, sj, 0]
+                    w_vec = np.array([w_head, w_neck, w_spine, 0.0])
+                    if np.issubdtype(WW.dtype, np.integer):
+                        WW[v] = np.round(w_vec * one).astype(WW.dtype)
+                    else:
+                        WW[v] = w_vec.astype(WW.dtype)
             for acc, arr in ((aj, JJ), (aw, WW)):
                 bv = j['bufferViews'][acc['bufferView']]
                 if bv.get('byteStride') and bv['byteStride'] != arr.itemsize * 4:
@@ -439,9 +466,10 @@ def take_weights(JJ, WW, gi, src, f):
 
 
 def cover_weights(P, V, where, spec, JJ, WW, names=()):
-    """a skirt (layer 0) under an over-tier or an apron of the same garment (layer 1): each of its vertices the outer
-    part covers takes the nearest outer vertex's weights, faded in over 6 cm above the outer hem and out past 6 cm
-    from it, so where the two overlap they move as one and the under-tier cannot swing through.
+    """a skirt (layer 0) under an over-tier or an apron of the same garment (layer 1), or a tunic's skirt (layer 1)
+    under a coat, apron or mantle (layer 2): each of its vertices the outer part covers takes the nearest outer
+    vertex's weights, faded in over 6 cm above the outer hem and out past 6 cm from it, so where the two overlap they
+    move as one and the under-tier cannot swing through.
     A part that does not hang (the grand boubou's under-tunic, a robe's body under its mantle) under one that does
     over the arms (layer 2): each of its vertices inside the outer part and within 8 cm of it takes the nearest outer
     vertex's weights (in full within 5 cm), so a seated or crouching body cannot carry it out through the sheet the
@@ -449,11 +477,12 @@ def cover_weights(P, V, where, spec, JJ, WW, names=()):
     layer = [pt.get('layer', 0) for pt in spec['parts']]
     part = np.array([where.get(int(v), (-1,))[0] for v in V])
     arm = [any(s in n for s in ('Arm', 'Hand')) for n in names]
-    # what does not hang: a part without chains, and a hanging part's rows above where its chains start (a tunic's
-    # body, which hangs below the waist only: counted as hanging whole, the trader's tunic kept the shoulders' weights
-    # under the mantle and came out through it at the shoulder blades as the posture drew them back)
+    hip_v = set()
+    for h_rng in spec.get('hips', []):
+        if len(h_rng) == 2:
+            hip_v.update(range(int(h_rng[0]), int(h_rng[1])))
     top = {pi: min((ch['rows'][0] for ch in pt['chains']), default=1 << 30) for pi, pt in enumerate(spec['parts'])}
-    still = np.array([part[gi] == -1 or (layer[part[gi]] != 2 and where[int(V[gi])][1] < top[part[gi]])
+    still = np.array([int(V[gi]) not in hip_v and (part[gi] == -1 or (layer[part[gi]] != 2 and where[int(V[gi])][1] < top[part[gi]]))
                       for gi in range(len(V))])
     free = [gi for gi in np.nonzero(still)[0]
             if sum(w for jj, w in zip(JJ[gi], WW[gi]) if int(jj) < len(arm) and arm[int(jj)]) < 0.5]
@@ -465,23 +494,36 @@ def cover_weights(P, V, where, spec, JJ, WW, names=()):
         for gi in free:
             d = np.linalg.norm(P[O] - P[gi], axis=1)
             k = int(np.argmin(d))
-            f = float(np.clip((0.08 - d[k]) / 0.03, 0, 1))
+            f = float(np.clip((0.085 - d[k]) / 0.035, 0, 1))
             out = np.array([P[gi, 0], 0, P[gi, 2]]) / max(rad[gi], 1e-6)
             # covered: the outer vertex lies outward of it, not off to one side (a belt across an open coat's gap)
-            if f > 0 and rad[gi] < rad[O[k]] - 0.005 and (P[O[k]] - P[gi]) @ out > 0.6 * d[k]:
+            if f > 0 and rad[gi] < rad[O[k]] - 0.002 and (P[O[k]] - P[gi]) @ out > 0.25 * d[k]:
                 take_weights(JJ, WW, gi, O[k], f)
-    for po in [q for q in range(len(layer)) if layer[q] == 1]:
-        O = np.nonzero(part == po)[0]
-        if not len(O):
-            continue
-        hem = P[O, 1].min()
-        for pi in [q for q in range(len(layer)) if layer[q] == 0]:
-            for gi in np.nonzero(part == pi)[0]:
-                d = np.linalg.norm(P[O] - P[gi], axis=1)
-                k = int(np.argmin(d))
-                f = float(np.clip((P[gi, 1] - hem - 0.02) / 0.06, 0, 1) * np.clip((0.09 - d[k]) / 0.03, 0, 1))
-                if f > 0:
-                    take_weights(JJ, WW, gi, O[k], f)
+    for lo_lay, hi_lay in ((0, 1), (1, 2)):
+        for po in [q for q in range(len(layer)) if layer[q] == hi_lay]:
+            O = np.nonzero(part == po)[0]
+            if not len(O):
+                continue
+            hem = P[O, 1].min()
+            for pi in [q for q in range(len(layer)) if layer[q] == lo_lay]:
+                for gi in np.nonzero(part == pi)[0]:
+                    if int(V[gi]) in hip_v:
+                        continue
+                    d = np.linalg.norm(P[O] - P[gi], axis=1)
+                    k = int(np.argmin(d))
+                    f = float(np.clip((P[gi, 1] - hem - 0.02) / 0.06, 0, 1) * np.clip((0.09 - d[k]) / 0.03, 0, 1))
+                    if f > 0:
+                        take_weights(JJ, WW, gi, O[k], f)
+    cloth_v = np.nonzero(part >= 0)[0]
+    if len(cloth_v):
+        ctree = cKDTree(P[cloth_v])
+        for gi in free:
+            if part[gi] == -1:
+                d, k = ctree.query(P[gi])
+                ck = cloth_v[int(k)]
+                f = float(np.clip((0.065 - float(d)) / 0.020, 0.0, 1.0))
+                if f > 0 and rad[gi] >= rad[ck] - 0.008:
+                    take_weights(JJ, WW, gi, ck, f)
 
 
 # metres off the skin: cloth nearer than the first keeps the body's weights, past the second the chains'. Wide: a cloak
@@ -549,6 +591,11 @@ def cloth_bones(j, b, item, spec, blobs, body=None):
                            'rows': ch['rows'], 'joints': jidx})
             ids.append(g)
         parts_out.append({'closed': part['closed'], 'chains': ids, 'stiff': part['stiff'], 'layer': part.get('layer', 0)})
+        # a slit: [a, k], chain a of the part and the next stop being held together from their point k down (the ring)
+        gaps = [[a, next((k for k, r in enumerate(chains[g]['rows']) if r >= row), len(chains[g]['rows']))]
+                for col, row in part.get('gaps', []) for a, g in enumerate(ids) if chains[g]['col'] == col]
+        if gaps:
+            parts_out[-1]['gaps'], parts_out[-1]['slit'] = gaps, part['slit']     # slit: its top, in metres above the knee
     if not chains:
         return None
     skin['joints'] += new_nodes
@@ -595,7 +642,12 @@ def cloth_bones(j, b, item, spec, blobs, body=None):
         top = {pi: min(ch['rows'][0] for ch in chains if ch['part'] == pi) for pi in by_part}
         hang = np.array([int(v) in where and where[int(v)][0] in top and where[int(v)][1] >= top[where[int(v)][0]]
                          for v in V])
-        under = ~outer & ~hang
+        arm_j = np.array([any(s in n for s in ('Arm', 'Hand')) for n in names], dtype=bool)
+        has_arm_w = np.array([
+            sum(w for jj, w in zip(JJ[gi], WW[gi]) if int(jj) < len(arm_j) and arm_j[int(jj)]) >= 0.15
+            for gi in range(len(P))
+        ], dtype=bool)
+        under = ~outer & ~hang & ~has_arm_w
         # nor does a mantle lie on an arm: a cape's flared side near the A-posed forearm took its weights, and at the
         # idle, the hand at the hip, it was drawn out into a spike
         gap[outer & (body[2][near] > 0.5)] = 1.0
@@ -821,12 +873,16 @@ def seat(c, J, P, V, npz, tgts, bones):
     return out
 
 
-def covered(BP, BT, path, out=0.025, inward=0.02, enclose=0.0):
+def covered(BP, BT, path, out=0.025, inward=0.02, enclose=0.0, boundary_margin=0.0):
     """the base triangles an item covers when it has no delete group: each base vertex casts a ray out along its normal
     (the garment lies over it) and one in (the skin already pokes through it); a triangle whose three vertices both
     find the garment close is hidden. enclose > 0 also takes a vertex the garment closes round front and back (rays
     along +z and -z both meet it within enclose): the crotch and the cleft of the buttocks, whose normals point between
-    the legs, where a trouser seam bridges them"""
+    the legs, where a trouser seam bridges them.
+    boundary_margin > 0 keeps the upper-chest skin within boundary_margin of the garment's open neckline drawn (a lapel
+    that stands off the skin showed a hole into the body: the kimono's V-neck). Opt in per garment, never the default:
+    at 2.2 cm on every top it left a band of 100 to 180 triangles bare under the Chichani huipils, gown, robe and
+    cloak, and the skin came through them in a run (the audit, 2026-11-06: the trade huipil 0 to 4887 px)."""
     from make_kit import ray_hits
     N = np.zeros_like(BP)
     fn = np.cross(BP[BT[:, 1]] - BP[BT[:, 0]], BP[BT[:, 2]] - BP[BT[:, 0]])
@@ -840,6 +896,28 @@ def covered(BP, BT, path, out=0.025, inward=0.02, enclose=0.0):
     if enclose > 0:
         Z = np.tile([0.0, 0.0, 1.0], (len(BP), 1))
         hit |= np.isfinite(ray_hits(BP, Z, AP, AT, enclose, step=0.01)[0]) & np.isfinite(ray_hits(BP, -Z, AP, AT, enclose, step=0.01)[0])
+    if boundary_margin > 0 and len(AT) > 0:
+        # Weld garment vertices by 0.1mm to find true open boundary edges (excluding UV seams)
+        _, wid = np.unique(np.round(AP, 4), axis=0, return_inverse=True)
+        wid = wid.ravel()
+        tw = wid[AT]
+        edges = np.vstack([tw[:, [0, 1]], tw[:, [1, 2]], tw[:, [2, 0]]])
+        edges_sorted = np.sort(edges, axis=1)
+        edges_sorted_view = np.ascontiguousarray(edges_sorted).view(np.dtype((np.void, edges_sorted.dtype.itemsize * 2)))
+        _, idx_u, counts = np.unique(edges_sorted_view, return_index=True, return_counts=True)
+        b_edges = edges_sorted[idx_u[counts == 1]]
+        if len(b_edges) > 0:
+            # Map welded IDs back to garment vertex positions
+            u_pos = np.zeros((int(wid.max()) + 1, 3), dtype=float)
+            u_pos[wid] = AP
+            b_mids = 0.5 * (u_pos[b_edges[:, 0]] + u_pos[b_edges[:, 1]])
+            # Only consider open neckline/collar/shoulder boundaries in the upper chest/neck zone (y >= 1.24)
+            upper_b = b_mids[(b_mids[:, 1] >= 1.24) & (np.abs(b_mids[:, 0]) <= 0.25)]
+            if len(upper_b) > 0:
+                upper_skin = np.nonzero(hit & (BP[:, 1] >= 1.24) & (np.abs(BP[:, 0]) <= 0.25))[0]
+                if len(upper_skin) > 0:
+                    d_bnd, _ = cKDTree(upper_b).query(BP[upper_skin])
+                    hit[upper_skin[d_bnd < boundary_margin]] = False
     return np.nonzero(hit[BT].all(1))[0]
 
 
@@ -1310,6 +1388,47 @@ def rot_axis(a, t):
     return np.eye(3) + math.sin(t) * K + (1 - math.cos(t)) * K @ K
 
 
+def write_kit(path, kit):
+    """the one writer of data/<body>/kit.json (main, merge_kit, tools/garments register_entries): LF, one indent, so a
+    change to one entry is one readable diff (written two ways, the whole 260k-line file changed on every build and
+    the Dalab robe's broken chains were not seen: REVIEW-GARMENTS-2026-11-06.md)"""
+    with open(path, 'w', encoding='utf-8', newline='\n') as f:
+        json.dump(kit, f, indent=1)
+
+
+# who made an entry (kit item made_by): 'mpfb' this file from a Blender export, 'mods' tools/mods.py and tools/heads.py,
+# 'garments' tools/garments (register_entries). main and merge_kit leave 'garments' entries and their pieces alone
+# unless --force-replace names them: a stale .cloth.json in MPFB's user data overwrote the Dalab robe's chains
+MADE_BY = 'made_by'
+
+
+def force_replace():
+    a = sys.argv
+    return set(a[a.index('--force-replace') + 1].split(',')) if '--force-replace' in a else set()
+
+
+def owned(kit):
+    """the entries tools/garments made, by id"""
+    return {e['id']: e for e in kit.get('items', []) if e.get(MADE_BY) == 'garments'}
+
+
+def mark_made_by(kit, body):
+    """made_by on a kit written before there was one: 'mods' by slot, 'mpfb' for what mpfb_build.py's table and giant.py
+    name, 'garments' for the rest (tools/garments registered them with no mark)"""
+    import re
+    src = open(os.path.join(HERE, 'tools', 'mpfb_build.py'), encoding='utf-8').read()
+    blender = {m.group(1) for m in re.finditer(r"\('\w+',\s*(?:'[^']*'|\"[^\"]*\"),\s*'([\w.\-]+)'\)", src)}
+    n = {'mpfb': 0, 'mods': 0, 'garments': 0}
+    for e in kit['items']:
+        if e.get(MADE_BY):
+            continue
+        who = 'mods' if e.get('slot') == 'mods' or e['id'].startswith('mod_') else \
+              'mpfb' if e['id'] in blender or e['id'].startswith(giant.PREFIX) or body == 'giant' else 'garments'
+        e[MADE_BY] = who
+        n[who] += 1
+    return n
+
+
 def merge_kit(body, src, pieces, data, items, roles, mat, ntris):
     """main()'s --merge: the partial export's items, their morph deltas packed, into data/<body>/kit.json, and their pieces
     into pieces/<body>/ beside the rest. The Godot twin's base cover regions (base.gshapes.bin) are not remade: a merged
@@ -1325,18 +1444,24 @@ def merge_kit(body, src, pieces, data, items, roles, mat, ntris):
             open(os.path.join(pieces, it['id'] + '.morph.bin'), 'wb').write(pack_morphs(mesh_entries(g, lambda n: it['id']), npz))
             open(os.path.join(pieces, it['id'] + '.gshapes.bin'), 'wb').write(godot_shapes(g, lambda n: it['id'], npz))
     have = {e['id']: i for i, e in enumerate(kit['items'])}
+    keep, force = owned(kit), force_replace()
+    kept = [e['id'] for e in items if e['id'] in keep and e['id'] not in force]
+    items = [e for e in items if e['id'] not in kept]
     for e in items:
+        e[MADE_BY] = 'mpfb'
         if e['id'] in have:
             kit['items'][have[e['id']]] = e
         else:
             kit['items'].append(e)
+    if kept:
+        print(name, 'kept as tools/garments made them (--force-replace to overwrite):', ', '.join(kept))
     kit['tint']['roles'].update({k: v for k, v in roles.items() if k not in kit['tint']['roles']})
     out = os.path.join(HERE, 'pieces', name)
     os.makedirs(out, exist_ok=True)
     for f in os.listdir(pieces):
         if f.split('.')[0] in {e['id'] for e in items}:
             shutil.copy(os.path.join(pieces, f), os.path.join(out, f))
-    json.dump(kit, open(os.path.join(data, 'kit.json'), 'w'), indent=1)
+    write_kit(os.path.join(data, 'kit.json'), kit)
     print(name, 'merged', len(items), 'items:', len(kit['items']), 'in the kit')
 
 
@@ -1351,8 +1476,16 @@ def main():
     data = os.path.join(HERE, 'data', name)
     if merge:
         pieces = os.path.join(src, 'pieces')
+    # the entries tools/garments made, and their pieces, stay through a whole Blender build
+    kit_path = os.path.join(data, 'kit.json')
+    keep = owned(json.load(open(kit_path, encoding='utf-8'))) if os.path.exists(kit_path) else {}
+    for k in force_replace():
+        keep.pop(k, None)
     if os.path.isdir(pieces):          # nothing left over from items no longer in the export
-        shutil.rmtree(pieces)
+        for f in os.listdir(pieces):
+            if f.split('.')[0] not in keep:
+                q = os.path.join(pieces, f)
+                shutil.rmtree(q) if os.path.isdir(q) else os.remove(q)
     os.makedirs(pieces, exist_ok=True)
     os.makedirs(data, exist_ok=True)
     man = json.load(open(os.path.join(src, 'manifest.json')))
@@ -1393,12 +1526,12 @@ def main():
         # down, from the hip joint (with its thighs' weights from there to the crotch, a loincloth's front flap swung
         # forward with the thigh in a stride and stood off it like a plank), and the library's loose garments too (the
         # kimono's two front panels followed one thigh each and parted at the midline in the idle's sway)
-        pool_from = c.jpos[c.J['Hips']][1] if it['id'] in FLAPS else crotch
+        pool_from = (c.jpos[c.J['Hips']][1] + 0.10) if it['id'] in LOOSE else c.jpos[c.J['Hips']][1] if it['id'] in FLAPS else crotch
         if it.get('cloth') and os.path.exists(os.path.join(src, it['cloth'])):
             cl = {'id': it['id'], 'spec': json.load(open(os.path.join(src, it['cloth'])))}
         r = turn_glb(os.path.join(src, it['glb']), os.path.join(pieces, it['id'] + '.glb'),
                      role=lambda m: 'hair' if it['slot'] in ('hair', 'beard') else None,
-                     skirt=pool_from if hangs(it) or it['id'] in LOOSE else None, cloth=cl, body=contact if it['slot'] != 'legs' else None,
+                     skirt=pool_from if hangs(it) or it['id'] in LOOSE else None, rigid=it['id'] in LOOSE, cloth=cl, body=contact if it['slot'] != 'legs' else None,
                      head_above=c.jpos[c.J['Neck']][1] + 0.06 if it['slot'] == 'head' else None)
         roles.update(r)
         if it['id'] in DECIMATE:
@@ -1472,9 +1605,16 @@ def main():
             entry['hide_parts'] = hide_parts(entry, under, len(BT))
         items.append(entry)
         print('%-8s %-6s %-34s hides %5d' % (name, it['slot'], it['id'], entry.get('hides', 0)))
+    for e in items:
+        e[MADE_BY] = 'mpfb'
+    for e in mod_items:
+        e[MADE_BY] = 'mods'
     items += mod_items
     if merge:
         return merge_kit(body, src, pieces, data, items, roles, mat, len(BT))
+    if keep:
+        items += [e for e in keep.values() if e['id'] not in {x['id'] for x in items}]
+        print(name, 'kept as tools/garments made them:', len(keep), 'entries')
     npz_path = os.path.join(src, 'morphs.npz')
     morph = {}
     if os.path.exists(npz_path):
@@ -1543,12 +1683,75 @@ def main():
         kit['tint']['gain']['coat'] = round(kit['tint']['gain']['hair'] / heads.SHADE, 4)
     if big:
         kit.update(giant.kit_extra())
-    json.dump(kit, open(os.path.join(data, 'kit.json'), 'w'), indent=1)
+    write_kit(os.path.join(data, 'kit.json'), kit)
     print(name, 'height %.2f m' % (c.jpos[c.J['HeadTop_End']][1] if 'HeadTop_End' in c.J else -1), len(items), 'items')
 
 
+def rebind_chains(body, ids=None, tol=0.0015):
+    """python3 tools/make_mpfb.py anchors <body> [id,id]: every cloth chain bone's inverse bind put back on the vertex it
+    anchors (cloth_bones: T(-p) at pts[k]). The settle pass moved the vertices of ten legacy garments after their
+    chains were bound, by 8 to 85 mm (tests/check_kit.py found them: REVIEW-GARMENTS-2026-11-06.md), so each chain
+    hung from a point beside its cloth. Rewrites the GLB in place; the kit entry is unchanged"""
+    name = 'mpfb_' + body
+    kit = json.load(open(os.path.join(HERE, 'data', name, 'kit.json'), encoding='utf-8'))
+    for it in kit['items']:
+        if 'cloth' not in it or (ids and it['id'] not in ids):
+            continue
+        path = os.path.join(HERE, it['glb'])
+        if not os.path.exists(path):
+            continue
+        j, b = glbio.read_glb(open(path, 'rb').read())
+        b = bytearray(b)
+        node = next(n for n in j['nodes'] if 'mesh' in n and 'skin' in n)
+        skin = j['skins'][node['skin']]
+        names = [j['nodes'][k].get('name', '') for k in skin['joints']]
+        prim = j['meshes'][node['mesh']]['primitives'][0]
+        P = glbio.accessor(j, bytes(b), prim['attributes']['POSITION'])
+        a = j['accessors'][skin['inverseBindMatrices']]
+        v = j['bufferViews'][a['bufferView']]
+        off = v.get('byteOffset', 0) + a.get('byteOffset', 0)
+        ibm = np.frombuffer(bytes(b), np.float32, a['count'] * 16, off).reshape(-1, 4, 4).copy()
+        worst, moved = 0.0, 0
+        for g, ch in enumerate(it['cloth']['chains']):
+            if max(ch['pts']) >= len(P):
+                continue
+            for k in range(len(ch['pts']) - 1):
+                jn = 'cloth:%s:%d:%d' % (it['id'], g, k)
+                if jn not in names:
+                    continue
+                q = names.index(jn)
+                d = float(np.linalg.norm(-ibm[q][3, :3] - P[ch['pts'][k]]))
+                worst = max(worst, d)
+                if d > tol:
+                    ibm[q][3, :3] = -P[ch['pts'][k]]
+                    moved += 1
+        if moved:
+            b[off:off + ibm.nbytes] = ibm.astype(np.float32).tobytes()
+            open(path, 'wb').write(glbio.write_glb(j, b) if hasattr(glbio, 'write_glb') else _glb_bytes(j, b))
+            print('%-8s %-34s %d chain bones rebound, the worst was %.3f m off' % (name, it['id'], moved, worst))
+
+
+def _glb_bytes(j, b):
+    js = json.dumps(j, separators=(',', ':')).encode()
+    js += b' ' * ((-len(js)) % 4)
+    b = bytes(b) + b'\0' * ((-len(b)) % 4)
+    j_len, b_len = len(js), len(b)
+    return (struct.pack('<III', 0x46546C67, 2, 12 + 8 + j_len + 8 + b_len) + struct.pack('<II', j_len, 0x4E4F534A) + js
+            + struct.pack('<II', b_len, 0x004E4942) + b)
+
+
 if __name__ == '__main__':
-    if sys.argv[1] == 'hides':
+    if sys.argv[1] == 'anchors':
+        rebind_chains(sys.argv[2], set(sys.argv[3].split(',')) if len(sys.argv) > 3 else None)
+    elif sys.argv[1] == 'made_by':
+        # python3 tools/make_mpfb.py made_by: made_by on every kit's entries written before there was one
+        for b in sorted(os.listdir(os.path.join(HERE, 'data'))):
+            kp = os.path.join(HERE, 'data', b, 'kit.json')
+            if b.startswith('mpfb_') and os.path.exists(kp):
+                k = json.load(open(kp, encoding='utf-8'))
+                print(b, mark_made_by(k, b.replace('mpfb_', '')))
+                write_kit(kp, k)
+    elif sys.argv[1] == 'hides':
         refresh_hides(sys.argv[2], sys.argv[3])
     elif sys.argv[1] == 'gshapes':
         refresh_gshapes(sys.argv[2])
