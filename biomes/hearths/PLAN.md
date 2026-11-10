@@ -777,10 +777,9 @@ Not taken: `core/mask` (no canvas placement), `core/city`, `core/hamlet`, `core/
 (the walls are textured, not bedded), `KFAR`, `KHORIZON`, the sky, the weather, the clock's season (no sky reaches in but
 the vent's).
 
-**Textures.** `rock.gossan` (iron-stained) is the roofs' and walls' rust; `ground.gypsum.crust` the floors' gypsum;
-`stone.alabaster` (massive gypsum) stands in for the selenite until a set is delivered: **selenite** (`mineral.selenite`)
-and **iron-stained cave limestone** (`rock.limestone.ironstained`) are owed, with paste-ready prompts in
-`core/materials/PROMPTS-NEEDED.md` section 36.
+**Textures.** `rock.limestone.ironstained` (iron-stained cave limestone) is the roofs' and walls' rust; `ground.gypsum.crust` the
+floors' gypsum; `mineral.selenite` the beams' and blades' grain (both delivered 2026-11-10, `core/materials/PLAN.md` "Delivered
+2026-11-10"; before them `rock.gossan` toned down and `stone.alabaster` tinted pale green stood in).
 
 ## 19. The hold's active storey: `build.py --station hold` (planned and built 2026-11-09)
 

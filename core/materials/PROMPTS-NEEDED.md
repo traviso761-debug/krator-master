@@ -3,12 +3,19 @@
 Every texture or pattern sheet the owner still has to source or generate, each with its finished prompt. Paste a block
 as it is, one image per block. **Everything delivered lives in `PROMPTS-archived.md`** (checked against `core/materials/library/`, `patterns/` and each build's `materials.json` on `origin/main`, 2026-10-19); this file holds only what is still owed.
 
-**Count: 36 prompt blocks** (2026-11-09: +11 for Erewhon's citadel, section 41; +2 for the Tents kit's army and Eternian cloths, section 42; +3 for the southern highlands' upper stations, section 37; +15 for the hyperjungle's lands and the savannah rims, section 40, 2026-11-08; counted 2026-11-04 before them).
+**Count: 37 prompt blocks** (counted 2026-11-10 at the second integration merge: the owner's delivery of that day -5; 2026-11-09: +11 for Erewhon's citadel, section 41; +2 for the Tents kit's army and Eternian cloths, section 42; the gypsum maze and the Hearth field, sections 43-44; raw clay, section 45; +3 for the southern highlands' upper stations, section 37; +15 for the hyperjungle's lands and the savannah rims, section 40, 2026-11-08).
 
 **Delivered 2026-11-03:** section 31's five (the Gills: `rock.lamina.pipe`, `mineral.crust.ferromanganese`, `mineral.crust.brucite`,
 `card.breathfringe`, `card.turf.limed`) and ten owed on unmerged branches (High Rift, nwbay, nhighlands, ringisles, the rift rim, Copper Glacier),
 `PLAN.md` "Delivered 2026-11-03": the ten are wired at their merge, and their entries are deleted on their branches then. Still owed from that
 day: `rock.megabreccia` (nhighlands' branch) and `card.umbrella.plate` (the abyssal savannah).
+
+**Delivered 2026-11-10** (`PLAN.md` "Delivered 2026-11-10"): `mineral.selenite` and `rock.limestone.ironstained` (section 36, the Cave
+of Crystals), `rock.megabreccia.polished` (section 33, the Cut's face), `ground.bench` (section 14, Farside's scour bench) and
+`card.umbrella.plate` (section 24, the abyssal savannah): installed and wired, their entries deleted here. Also `metal.scorched`, whose
+entry lives only on the Ancient's Valley branches (`claude/ancient-vehicles-935f93`, `claude/ancientsvalley-7f521c`, their section 36):
+in the library, not wired (the Motor Vehicles kit's `scorched` slot is on those branches); **delete that entry and wire the slot at
+their merge**. Still owed: `rock.megabreccia` (section 32, nhighlands' crater wall: the polished slab is not it).
 
 Open prompt files elsewhere in this folder (`PROMPTS-ready.md`, `PROMPTS-nomads.md`, `PROMPTS-iziz-beast-riders.md`) are older history; their open rows were copied here.
 
@@ -108,24 +115,6 @@ the prism heath (the kit tints it by season), `ground.sphagnum` for the moor spo
 `ground.lichen.crust`, the snows and ices, and the Rift's, the SW lowlands' and the S highlands' own sets for the borrowed
 species.
 
-## 14. Farside (`biomes/farside`, planned 2026-10-23)
-
-The ocean coast where the sea's plants are invading the land (`biomes/farside/PLAN.md` section 9, which lists the many
-marine sets the library already has: the kelp cards, seaweed, seagrass, reef and coral sets).
-
-**Owed by the final rebuild (pair 10, 2026-11-04): the tsunami's scour bench** (station 1, `biomes/farside/src/47-host-land.js`: drawn
-today as the wet-rock layer `ground.rock` whitened by the vertex tint, a procedural stand-in for the bleached bedrock). Slot
-`ground.bench` in `biomes/farside/materials.json` (the ground's eighth layer when it lands; the weight is `FIELD.bench` times the rock's).
-Prompt (the base template, then):
-
-```
-Material: wave-planed coastal bedrock scoured by a tsunami, seen from directly above: a flat, smoothed surface of grey-brown
-volcanic and sedimentary rock bleached pale by salt, a fine white salt crust in the hollows and along hairline cracks, shallow
-scour grooves all running one way, scattered rounded cobbles and a few half-buried boulders worn smooth, patches of dried
-brown wrack and small dark limpet scars. Keep colours natural but slightly muted and even, so the texture can be tinted to
-different palettes without looking stained.
-```
-
 ## 15. Crop and garden cards: the Ring Sea isles and Guilin (2026-10-26)
 
 `biomes/ringisles/KNOWN_ISSUES.md` (rice and cane blades procedural; greens and sweet potato on a wrong `card.paddle` cell)
@@ -173,17 +162,6 @@ umbrella tree), `card.heartleaf` (the tongue tree), `card.broadleaf` (the kopje 
 fronds), `bark.cork`, `bark.lepido`, `bark.armored`, `bark.smooth`, `rock.granite.tor`, `rock.sandstone.bedded.red`,
 `ground.redsoil`. Two gaps: the ground under the tall grass and the tall grass itself (its stand-ins: `ground.redsoil`,
 and `card.grass.dry`'s knee-high bunchgrass drawn three metres tall).
-
-**Owed from the final rebuild's turn (pair 8, 2026-11-03):** the umbrella tree's crown plate (slot `plate`, `G.plate` in
-`50-biome-absav-species.js`: a flat disc 5-14 m across, its UVs radial over the whole card). `check_cells.py --fix` cut `card.acacia`'s
-sheet to one plant (`cell` [.343, .345, .663, .655]), so the plate now shows one sprig stretched over the disc; before, it showed all
-nine sprigs at once. Wire it as `plate` in `biomes/abyssal-savannah/materials.json` (keep 0, mean .7, no `cell`: the whole sheet is the
-plate), then `pack.py` and rebuild.
-
-`card.umbrella.plate`:
-```
-Square, 2048x2048. Orthographic view looking straight down on a single cut-out object centred in the frame, on a solid flat bright magenta (#ff00ff) background that fills everything outside the object, with no shadow cast on the background. Flat, even, shadowless lighting: no highlights, no vignette. No perspective, no text, no border, no watermark. Object: the flat-topped crown layer of an umbrella thorn tree (Vachellia tortilis) seen from directly above, one roughly circular, slightly lobed plate filling about 90% of the frame: a dense, flat mat of tiny bipinnate leaflets on fine interlaced twigs, thick and even in the middle, breaking up toward the rim into separate sprays with magenta showing between them, a few small gaps inside, no trunk or branches showing. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
-```
 
 ## 27. The southern highlands' last canvases (`biomes/shighlands`, 2026-10-26)
 
@@ -301,54 +279,6 @@ rock is still owed. Until it comes the megabreccia is KSTRATA's and KGROUND's pr
 `rock.megabreccia` (the crater wall's rock: a grain map for KGROUND's `clast` blocks and KSTRATA's megabreccia on station 1's crag steps and pillars):
 ```
 Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a polished-looking but natural weathered rock face of impact megabreccia, angular clasts of many different rocks from fist size to a metre packed together at every angle in a fine grey crushed matrix: black basalt, rusty red basalt, banded pale grey gneiss, cream tuff, brick-red sandstone and pale grey limestone, a few clasts themselves made of smaller clasts, thin black glassy veins (pseudotachylite) cutting across several clasts, scattered tiny bottle-green and black glass flecks in the matrix, light grey-green lichen patches on a few clasts; every rock type clearly different in colour.
-```
-
-## 33. The Cut's polished face (`biomes/cut`, station `face`, the final rebuild pair 10, 2026-11-04)
-
-The geology bake puts the Cut's west lip in the `impact` province, so the sphere's clean section through it is megabreccia sawn flat and polished
-(KSTRATA's blocks, `stations/face/48z-host-face.js`). Its grain is the library's `rock.megabreccia` for now: a weathered face with lichen, true to the
-rock but not to the polish. Wire it as `ground.breccia` in `biomes/cut/materials.json` (replace the lib) and rerun `pack.py biomes/cut`.
-
-`rock.megabreccia.polished` (the cut face's grain under KSTRATA's block colours; seen close up from the face's views, satin-polished, never weathered):
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no reflections, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a sawn and finely polished slab of impact megabreccia, like a polished breccia countertop, perfectly flat and smooth: angular clasts of many different rocks from fist size to half a metre packed together at every angle in a fine grey crushed matrix, each clast cut clean through so its inner texture shows: black basalt with tiny pale crystals, rusty red basalt, banded pale grey gneiss with fine wavy foliation, cream tuff, brick-red sandstone with faint lamination, pale grey limestone, a few clasts themselves made of smaller clasts; thin black glassy veins (pseudotachylite) cutting straight across several clasts; scattered tiny bottle-green and black glass flecks in the matrix; sharp crisp clast edges; no lichen, no dirt, no weathering, no cracks, no pits, no saw marks; every rock type clearly different in colour.
-```
-
-## 36. The Cave of Crystals (`biomes/hearths --station crystals`, 2026-11-03)
-
-`biomes/hearths/PLAN.md` section 18. Stand-ins until these arrive: `stone.alabaster` (massive gypsum, tinted pale green) for the
-selenite beams and blades, `rock.gossan` toned down for the iron-stained walls (`biomes/hearths/materials.json`). Both are full
-colour (the colour is the point). Wire them as `crystal.selenite` and `rock.ironstain` in that file, re-pack and rebuild.
-
-`mineral.selenite` (2 m; up is the crystal's length):
-
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view,
-perfectly flat surface filling the whole frame edge to edge. Flat, even,
-shadowless lighting, as if scanned: no highlights, no vignette, no shading
-gradient across the image. No perspective, no objects, no text, no border,
-no watermark. The left edge must continue into the right edge and the top
-into the bottom. Material: the side face of a giant selenite (gypsum)
-crystal, milky translucent white to the palest green (#dfe8da), long straight
-growth striations and fine parallel cleavage lines running from top to
-bottom, faint cloudy veils and inclusions deeper inside, a few thin hairline
-fractures across the grain, a soft satin sheen, no bubbles and no colour
-patches.
-```
-
-`rock.limestone.ironstained` (3 m):
-
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view,
-perfectly flat surface filling the whole frame edge to edge. Flat, even,
-shadowless lighting, as if scanned: no highlights, no vignette, no shading
-gradient across the image. No perspective, no objects, no text, no border,
-no watermark. The left edge must continue into the right edge and the top
-into the bottom. Material: a damp limestone cave wall stained by iron oxide:
-dull rust red and red-brown staining (#7a3a22, #9a5a34) in irregular
-blotches and runs over grey-buff limestone (#8a8478), small solution pits
-and shallow scallops, crusts of tiny white gypsum crystals in the hollows,
-a thin wet film with darker damp patches, matte.
 ```
 
 ## 38. The Ring Sea isles' lagoon station (`biomes/ringisles --station lagoon`, 2026-11-03)

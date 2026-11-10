@@ -25,8 +25,10 @@ What the first build (2026-10-26) left open, against `PLAN.md`. `- [ ]` open, `-
   its ground out of the horizon (`STAGE.horizon:'scene'`; the flora and the rock take it); `?horizon=all` puts it back, `?horizon=ground` alone.
 - [ ] **Exchanges 1 and 2** (the tree aloe and the parasol pine, read in place from the crater drylands): wait for the crater drylands' turn (pair 12)
   and its shared sky; the wall station's `station.json` gains its kit then.
-- [ ] **The face's polished grain** is `rock.megabreccia` (a weathered face, lichen patches and all), normalised to its mean; a sawn and polished slab
-  would be truer close up (`core/materials/PROMPTS-NEEDED.md` section 33, `rock.megabreccia.polished`).
+- [x] **The face's polished grain** is `rock.megabreccia.polished` (delivered 2026-11-10: a sawn and polished slab, normalised to its mean), in place
+  of `rock.megabreccia`'s weathered face. Two clasts carry a hairline crack the prompt ruled out; too small to redo for. The grain is
+  read through the core hex-cell dither (`BIO.DITHER`'s `kdither`, `31-core-dither.js` now in `CORE_BIOME`), so the 3 m tile no longer
+  repeats in rows across the face from afar (the owner, 2026-11-10).
 
 ## The warp
 

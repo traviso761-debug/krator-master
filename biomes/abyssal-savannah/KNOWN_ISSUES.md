@@ -20,9 +20,9 @@ Read before changing anything here. `build.py` prints the open count.
 - [ ] **Fire is a static mosaic** (`ABSAV.burn`): no front that moves, no smoke, no people who burn (PLAN.md S6). BACKPORT.md's
       row asks for `KFIRE` (core/biome 38): its `history` would replace the mosaic, which re-rolls every patch and so every plant,
       lily, charred stem and ground colour that reads it. Not taken in this turn: it is S6's, a deliberate placement change.
-- [ ] **The umbrella's crown plate shows one sprig** (for the owner): `check_cells.py --fix` (2026-11-03) cut the plate's
-      `card.acacia` sheet to one plant, so one sprig is stretched over a disc 5-14 m across (before, all nine at once). A plate
-      texture is owed: `card.umbrella.plate`, its prompt in `core/materials/PROMPTS-NEEDED.md` section 24.
+- [x] **The umbrella's crown plate** is `card.umbrella.plate` (delivered 2026-11-10: one flat crown seen from above, the whole
+      sheet, keyed with `vlahos`), in place of one `card.acacia` sprig stretched over the disc. Its rim's sprays came half
+      blended into the magenta and key to a dry tan, not green.
 - [ ] **The caprock's talus assumes downslope is -x** (`60`, `caprock`): fine on this host; a world with the rim facing
       another way must hand the direction (add `rim.down`).
 - [ ] **No fauna.** Grazers and the eastern abyss's frilled lizards on the rocks belong to `kits/fauna` (PLAN.md Q6).

@@ -584,7 +584,7 @@
     "biomes/abyssal-savannah/src/70-biome-absav.js": "83593b44f4ea30ed8b287608c969e4fcf5c9cb5dc541d927e41835aec4d1e548",
     "biomes/abyssal-savannah/tex/charred.albedo.webp": "7e0d5dd6cae78f725514d54a2856ee3123ffe678fb904d341da13cc713ed3133",
     "biomes/abyssal-savannah/tex/lily.albedo.webp": "9034cb7576e11a6b23713e109f8f48b53215a99360120345a5c34bf0475b39d5",
-    "biomes/abyssal-savannah/tex/pack.json": "eea0fcf9e42e1f914bec09d1ae41953f70fadda850f9dcc583c58737190b69ab",
+    "biomes/abyssal-savannah/tex/pack.json": "3479c0304385bede6f52ee217d8b85396784c01507f51bae5bf98b106ff318b1",
     "biomes/abyssal-savannah/tex/thatch.albedo.webp": "1e934c5e230d47fbc5fdf0686bd4291d5a61c5395a21de727b9078e2ee14262a",
     "biomes/rift/KNOWN_ISSUES.md": "99e32f22274862b5f30b5f57745ce2327163fade3ad247ca8513e4a88b2c5cf0",
     "biomes/rift/PORT.md": "5031c8ba7da66a7f00a99bdfc6934dee3a63f4eab2ee3f0fee2cabf9e52584a6",
@@ -717,6 +717,7 @@
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
    },
    "listings": {
+    "biomes/rift": "34430fe307af1ab7aa8f7616e032adb5a7f8f425c9236feca3b7499c64087b4c",
     "biomes/rift/src": "a37105eb48f8c0a14e64ab4e26d5fd2ab819c5ee335c8725f6d6017a36dcea61",
     "biomes/rift/stations/savannah": "29d378ba2d6d6df9b52f3f1bcac32551c199af433181c2b7232612a990a43718",
     "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",

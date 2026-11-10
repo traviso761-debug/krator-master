@@ -293,7 +293,7 @@
     "biomes/abyssal-savannah/src/rim/60-biome-savrim-floor.js": "21e8feabfacf07b5a9aafa5edd2ed59d94b052024bea68231b188e67b4f5b415",
     "biomes/abyssal-savannah/tex/blind.albedo.webp": "6e9ee7909b552a580e4fd9a02f14cda0951292489d2dffb012f02563714575ce",
     "biomes/abyssal-savannah/tex/grass.albedo.webp": "1c6bea28bcb10a6d44808af6ac9d29340e0c13c178febc30c63a01173ebe7e5b",
-    "biomes/abyssal-savannah/tex/pack.json": "eea0fcf9e42e1f914bec09d1ae41953f70fadda850f9dcc583c58737190b69ab",
+    "biomes/abyssal-savannah/tex/pack.json": "3479c0304385bede6f52ee217d8b85396784c01507f51bae5bf98b106ff318b1",
     "biomes/hyperjungle/KNOWN_ISSUES.md": "67f106ceadd2fb0810832603568714514672609b951a326c3f8776d6875035cf",
     "biomes/hyperjungle/PORT.md": "f89e0836359a95005584b39dc2270fcd3c1169dc1df23809e1e3b959401cb623",
     "biomes/hyperjungle/build.py": "b6bb2ce5a4f077e1a7ec114872dda6c3ea91d980f46d51b9d5715651275ee56a",
@@ -430,6 +430,7 @@
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
    },
    "listings": {
+    "biomes/hyperjungle": "71995386b1cb26681ccaf5517dea713ba9e316a160d52ec51a79b993dbbde356",
     "biomes/hyperjungle/src": "f74b92072f15d6b3d2ee5734dfceff762993c23f17e3c604ad7607756a64bcd6",
     "biomes/hyperjungle/stations/north": "87957a18d6f1573ea63a1deb2e118cfe681b9c2454996b84098cecfb4105de99",
     "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
