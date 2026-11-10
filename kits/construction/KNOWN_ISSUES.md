@@ -17,10 +17,21 @@
       per lift would fix it.
 - [ ] The sheet's stage f is read off the piece's own build order (core/city's keys): a piece whose footing phase holds
       most of its triangles (the Islanders' rumah on its piles: 69% at "footing") shows most of itself early. That is
-      core/city's order (CONSTRUCT.foot), not this kit's.
+      core/city's order (CONSTRUCT.foot), not this kit's. Likewise Xanadu's corner house at "frame" (49%) already shows
+      both storeys' walls with their windows and tiles (its piece has no separate frame members for the order to put
+      first), so frame and infill read alike on that row (screenshot 2026-11-09).
 - [ ] The sheet carries the three pieces' families only (`build.py` KEEP, read off the page 2026-11-09). A new row or another
       variant may draw a family left out: it then shows the kit's procedural look; add the family to KEEP.
 - [ ] The sheet reads the isle demo's `bundles.py` and `58-isle-protos.js` in place (a kit page reading a settlement's
       files, as Longsong does) and the Iziz and Xanadu packs from the settlements' `tex/`: three backwards edges,
       allow-listed in `tools/dep_allowlist.json` with the reason in MODULARITY-PLAN.md (step 6). The fix: `isleFlatten`
       to core/city beside `constructMesh`, the ISK and IZV seals to their kits, the packs to the kits; then delete the lines.
+- [ ] `tools/check_assembly.py` finds three things on the sheet, baselined 2026-11-09 (`tools/check_assembly_baseline.json`):
+      `CLASH onerror` x2 and `CLASH _projectFire` (each sealed bundle, ISK, IZV and XAK, carries its own engine's error
+      panel and the Ancients' salvage fragment: the same code set twice, as on the isle demo's city page), and `ORDER KCITY`
+      (core/city's `54-city-host-construct.js` reads `KCITY` behind a `typeof` test in the same expression that declares
+      it: the checker's approximation, the page takes no other core/city file). They go with the bundles' seals moving to
+      their kits (below).
+- [ ] The isle demo's pages (`settlements/isle-demo`: isle-city, isle-site; `openworld/isle-demo`) were not rebuilt with
+      this kit's `10-cons-site.js` (2026-11-09): they are behind on several other shared changes too (the repo-wide
+      rebuild after the parallel merges); they take this fragment's change on that rebuild (the lots' changes above).

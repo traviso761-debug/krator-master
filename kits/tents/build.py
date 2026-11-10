@@ -14,14 +14,15 @@ The page is one <script> made of, in filename order:
   core/sockets/38-symbols.js
                         the culture symbols (SYMBOLS) the dresses' pennants carry (src/88-tn-emblem.js)
   core/walk, core/space, core/camp
-                        KWALK (the tents' floors and walls, the doors' blocks, the reachability audit), KSPACE and KCAMP (the two
+                        KWALK and KWALKBOX (the tents' floors and walls, the doors' blocks, the reachability audit; the engine's
+                        CORE_DIRS), KSPACE and KCAMP (the two
                         sample camps are pitched by core/camp; 50-camp-tents.js is the tents-by-role mapping)
   core/engine           the engine (engine.py: 10-core ... 99-host-take, 99-tail.html), read in place
   core/rand             08-core-rand.js (KRAND: core/tags' uid is its hash)
   core/materials/record 23-mat-record.js, 24-tex-def.js, 25-matlib-host.js (KMAT: the material records and the library loader)
   core/tags             50/52/53-core-tags*.js (KTAGS: every placed thing is registered with its class and tags)
   core/furnish          50/52/53-core-furnish*.js (KFURN: the catalog furniture placement pass)
-  core/host             the shell (CORE_HOST: 20-core-clock, 90 camera, 91 loop, 92 panel, 95 probe, 94 polytool)
+  core/host             the shell (CORE_HOST: khost.SHELL and core/engine's HOST, the polytool and the key map)
   core/atmos            89-atmos-*.js (ATMOS: the sky's light on the library materials, ATMOS.skylight)
   core/door             10-core-door.js, 20-core-glass.js, 90-core-door-host.js (KDOOR, KGLASS, KDOORHOST: doors that open, real glass;
                         core/engine/36o-open.js draws them)
@@ -80,8 +81,7 @@ ROOT = os.path.dirname(os.path.dirname(HERE))
 sys.path.insert(0, os.path.join(ROOT, 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 OUT = os.path.join(DIST, 'tents.html')
 TEX_DIR = os.path.join(HERE, 'tex')
-CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('shader', 'rand', 'materials/record', 'tags', 'furnish', 'atmos', 'door',
-                                                                    'walk', 'space', 'camp')]
+
 # read in place from outside the core folders the build pools: the tent toolkit (kits/scyvoi's copy of the three vendored ones)
 # and the culture symbols (core/sockets: only this file; its packs need an engine this kit does not run)
 READ_IN_PLACE = {'40-tk-tentkit.js': os.path.join(ROOT, 'kits', 'scyvoi', 'src', '40-tk-tentkit.js'),
@@ -95,7 +95,13 @@ sys.path.insert(0, os.path.join(ROOT, 'core', 'atmos', 'placeholder'))
 import placeholder as psky   # the placeholder sky (KratorSky), read in place: MODULARITY-PLAN.md step 1
 sys.path.insert(0, os.path.join(ROOT, 'core', 'engine'))
 import engine as kengine   # the building-kit engine, read in place: MODULARITY-PLAN.md step 2
-CORE_HOST = khost.SHELL + ['94-host-polytool.js']
+CORE_HOST = khost.SHELL + kengine.HOST   # the polygon tool and the one key map (core/host/92k-host-keys.js)
+# the engine's core folders (core/engine/engine.py CORE_DIRS, written out: core/walk and its box reader among them, so 37-wk-rec.js registers the
+# boxes the tents draw), then core/space and core/camp (KSPACE, KCAMP: the two sample camps and the tents-by-role mapping)
+CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('shader', 'rand', 'materials/record', 'tags', 'furnish', 'atmos', 'door', 'walk', 'walk/box',
+                                                                    'space', 'camp')]
+assert set(kengine.CORE_DIRS) <= {d for d in ('shader', 'rand', 'materials/record', 'tags', 'furnish', 'atmos', 'door', 'walk', 'walk/box')}, \
+    'core/engine/engine.py CORE_DIRS grew: list the new folder here'
 VENDORED = {}
 # GENERATED fragments, never written to src/
 # the furniture cultures the dresses furnish from (src/41-tn-dress.js `furn`), their fallbacks, and the shared goods

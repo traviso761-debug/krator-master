@@ -44,13 +44,13 @@
   var over = function (o) { var r = {}, k; for (k in base) r[k] = base[k]; for (k in o) r[k] = o[k]; return r; };
   T.CULTURES = {
     generic: row('generic', over({})),
-    scyvoi: row('scyvoi', over({family: 'yurt-m', sleeping: 'yurt-s', chief: 'yurt-l', guard: 'bell-s'}), {seer: 'yurt-s'}),
+    scyvoi: row('scyvoi', over({family: 'yurt-m', sleeping: 'yurt-s', chief: 'yurt-l'}), {seer: 'yurt-m'}),
     desert: row('desert', over({family: 'black-m', sleeping: 'black-m', chief: 'black-l', workshop: 'black-m', mess: 'black-m'}), {seer: 'bell-m'}),
-    ash: row('ash', over({family: 'cone-m', sleeping: 'cone-s', chief: 'cone-l', workshop: 'cone-m', supply: 'ridge-m', trade: 'fly-m', guard: 'wedge-s'}), {seer: 'cone-m'}),
-    'beast-rider': row('beast-rider', over({family: 'cone-m', sleeping: 'cone-s', chief: 'cone-l', council: 'bell-l', supply: 'ridge-m', mess: 'fly-l'}), {seer: 'cone-m'}),
+    ash: row('ash', over({family: 'cone-m', sleeping: 'cone-l', chief: 'cone-l', workshop: 'cone-m', supply: 'ridge-m', trade: 'fly-m', guard: 'wedge-s'}), {seer: 'cone-m'}),
+    'beast-rider': row('beast-rider', over({family: 'cone-m', sleeping: 'cone-l', chief: 'cone-l', council: 'bell-l', supply: 'ridge-m', mess: 'fly-l'}), {seer: 'cone-m'}),
     iziz: row('iziz', over({family: 'ridge-m', supply: 'wagon-m', mess: 'fly-l'}), {seer: 'bell-m'}),
     republican: row('republican', over({family: 'ridge-m', sleeping: 'ridge-m', chief: 'ridge-l', mess: 'roundend-l'}), {seer: 'ridge-s'}),
-    xanadu: row('xanadu', over({sleeping: 'bell-s', workshop: 'bell-m', guard: 'bell-s'}), {seer: 'bell-m'}),
+    xanadu: row('xanadu', over({sleeping: 'bell-m', workshop: 'bell-m'}), {seer: 'bell-m'}),
     islander: row('islander', over({family: 'ridge-m', chief: 'roundend-l', council: 'roundend-m', workshop: 'fly-l', supply: 'ridge-m', guard: 'wedge-s', mess: 'fly-l', stable: 'fly-m'}), {seer: 'bell-m'}),
     postapoc: row('postapoc', over({family: 'ridge-m', chief: 'roundend-m', workshop: 'fly-l', mess: 'fly-l'}), {seer: 'ridge-s'}),
     eternian: row('eternian', over({family: 'ridge-m'}), {seer: 'bell-m'})
@@ -96,9 +96,9 @@
     add(tents, 'sleeping', o.sleeping == null ? 1 : o.sleeping);
     (o.trades || []).forEach(function (tr) { add(tents, 'workshop', 1, tr); });
     add(tents, 'supply', o.supply == null ? 1 : o.supply);
-    add(tents, 'trade', o.trade || 0);
+    add(tents, 'trade', o.trade == null ? 0 : o.trade);
     add(tents, 'guard', o.guard == null ? 1 : o.guard);
-    add(tents, 'mess', o.mess || 0);
+    add(tents, 'mess', o.mess == null ? 0 : o.mess);
     add(pens, 'stable', o.stable == null ? 1 : o.stable);
     add(pens, 'latrine', o.latrine == null ? 1 : o.latrine);
     var kindOf = function (pkey) {
@@ -122,7 +122,7 @@
     return function (pkey, v) {
       var q = KCAMP.tentParse(pkey), D = dims(q.key, v);
       if (!D) return null;
-      var y = T.YARD[q.role] || 0;
+      var y = T.YARD[q.role] == null ? 0 : T.YARD[q.role];
       return {w: D.w + y, d: D.d + y, h: D.h};
     };
   };
@@ -131,8 +131,8 @@
   KCAMP.halt = function (o) {
     var c = rowOf(o.culture) || 'generic', id = o.id, GAP = o.gap == null ? 1.2 : o.gap, form = o.formation || 'laager';
     var ok = (o.ground && o.ground.ok) || function () { return true; }, site = {x: o.site.x, z: o.site.z};
-    var L = Math.hypot((o.way || [0, 1])[0], (o.way || [0, 1])[1]) || 1, u = [(o.way || [0, 1])[0] / L, (o.way || [0, 1])[1] / L], v = [-u[1], u[0]];
-    var wind = o.wind || [0.7071, 0.7071], WL = Math.hypot(wind[0], wind[1]) || 1; wind = [wind[0] / WL, wind[1] / WL];
+    var way = o.way || [0, 1], L = Math.max(1e-9, Math.hypot(way[0], way[1])), u = [way[0] / L, way[1] / L], v = [-u[1], u[0]];
+    var wind = o.wind || [0.7071, 0.7071], WL = Math.max(1e-9, Math.hypot(wind[0], wind[1])); wind = [wind[0] / WL, wind[1] / WL];
     var space = KSPACE.create({cell: 16}), placed = [], short = [], seen = {};
     var rec = function (role, trade, x, z, ry, tent) {
       var t = tent || (role === 'wagon' ? {key: 'tn-wagon-m', pkey: KCAMP.tentKey('tn-wagon-m', 'supply'), kind: 'trade'} : KCAMP.tentFor(role, {culture: c, trade: trade}));
@@ -160,6 +160,8 @@
     var tryPutT = function (t, x, z, ry, out) { return tryPut(t.role, t.trade, x, z, ry, out, t); };
     var at = function (a, b) { return [site.x + u[0] * a + v[0] * b, site.z + u[1] * a + v[1] * b]; };   /* a along the road (toward the way), b across */
     var yawOf = function (d) { return Math.atan2(d[0], d[1]); };   /* the ry that turns a record's +z (its front) to d */
+    var mess = KCAMP.tentFor('mess', {culture: c, size: 'm'});
+    var GD = o.dims(KCAMP.tentFor('guard', {culture: c}).pkey, 0) || {w: 4, d: 6};   /* the guards' tent's box */   /* a caravan's mess is a medium one, whatever its people's camp mess is */
     var nW = o.wagons == null ? 6 : o.wagons, W0 = o.dims(KCAMP.tentKey('tn-wagon-m', 'supply'), 0) || {w: 2.5, d: 6};
     var gate = null;
     if (form === 'line') {
@@ -168,8 +170,8 @@
       for (var i = 0; i < nW; i++) { var p = at((i - half) * step, side); tryPut('wagon', null, p[0], p[1], yawOf(u), v); }
       for (var a = 0; a < Math.ceil(nW / 2); a++) { var q = at((a * 2 - half) * step, -6); tryPut('trade', null, q[0], q[1], yawOf(v), [-v[0], -v[1]]); }
       var hd = at((half + 1) * step + 6, side + 2); tryPut('chief', null, hd[0], hd[1], yawOf([-v[0], -v[1]]), u);
-      var ms = at(0, side + W0.w / 2 + 9); tryPut('mess', null, ms[0], ms[1], yawOf([-v[0], -v[1]]), v);
-      [-1, 1].forEach(function (s) { var g = at(s * ((half + 1) * step + 2), -5); tryPut('guard', null, g[0], g[1], yawOf([s * u[0], s * u[1]]), [s * u[0], s * u[1]]); });
+      var ms = at(0, side + W0.w / 2 + 9); tryPutT(mess, ms[0], ms[1], yawOf([-v[0], -v[1]]), v);
+      [-1, 1].forEach(function (s) { var g = at(s * ((half + 1) * step + 2), -Math.max(5, GD.d / 2 + 1)); tryPut('guard', null, g[0], g[1], yawOf([s * u[0], s * u[1]]), [s * u[0], s * u[1]]); });
       gate = {x: site.x, z: site.z};
     } else {
       /* the laager: the wagons round a square, their long sides along it; the gate on the side toward the way */
@@ -189,14 +191,15 @@
       /* filled side by side from the gate's side round, so a short train leaves the back open */
       for (var w = 0; w < nW; w++) {
         var S = slots[w];
-        if (!S) { var r1 = rec('wagon', null, site.x, site.z, 0); short.push(r1.id); seen[r1.key] = (seen[r1.key] || 0) + 1; continue; }
+        if (!S) { var r1 = rec('wagon', null, site.x, site.z, 0); short.push(r1.id); seen[r1.key] = (seen[r1.key] == null ? 0 : seen[r1.key]) + 1; continue; }
         tryPut('wagon', null, S.x, S.z, S.ry, S.n);
       }
       var g0 = at(hs, 0); gate = {x: g0[0], z: g0[1]};
       var hm = at(-hs + W0.w + HD.d / 2 + 1.5, 0); tryPutT(KCAMP.tentFor('chief', {culture: c, size: 'm'}), hm[0], hm[1], yawOf(u), [-u[0], -u[1]]);
-      var mf = at(-hs * 0.05, -hs * 0.45); tryPut('mess', null, mf[0], mf[1], yawOf(v), [-v[0], -v[1]]);
-      [-1, 1].forEach(function (s) { var aw = at(hs * 0.45, s * hs * 0.4); tryPut('trade', null, aw[0], aw[1], yawOf([-s * v[0], -s * v[1]]), [s * v[0], s * v[1]]); });
-      [-1, 1].forEach(function (s) { var g = at(hs + 4.5, s * 5); tryPut('guard', null, g[0], g[1], yawOf(u), u); });
+      var mf = at(-hs * 0.15, -hs * 0.45); tryPutT(mess, mf[0], mf[1], yawOf(v), [-v[0], -v[1]]);
+      [-1, 1].forEach(function (s) { var aw = at(hs * 0.6, s * hs * 0.4);   /* toward the gate: a long mess (a round-ended tent) clears them */ tryPut('trade', null, aw[0], aw[1], yawOf([-s * v[0], -s * v[1]]), [s * v[0], s * v[1]]); });
+      /* the guards' tents either side of the gate, clear of each other and the wagons */
+      [-1, 1].forEach(function (s) { var g = at(Math.max(hs + 4.5, hs + W0.w / 2 + GAP + GD.d / 2), s * Math.max(5, GD.w / 2 + GAP)); tryPut('guard', null, g[0], g[1], yawOf(u), u); });
       /* the picket line behind, the latrine downwind, both outside the wagons */
       var pk = at(-hs - 6, 0); tryPut('stable', null, pk[0], pk[1], yawOf([-u[0], -u[1]]), [-u[0], -u[1]]);
     }

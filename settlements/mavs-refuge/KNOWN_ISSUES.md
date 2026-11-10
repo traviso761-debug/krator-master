@@ -167,3 +167,11 @@ The owner: "remove all dark voids and make all windows, doors and portals actual
 - [ ] A door of the levels (56-levels.js) takes its id from the furniture's open building when there is one (`brfIn`), else `mavs.free.d<n>` in the order drawn: stable while the build is, but not tied to a room. Give `lvlApt`, `lvlSatApt` and `lvlStore` a `goBuilding(...)` from their room when the levels get records of their own.
 - [ ] Not changed, by choice: the gate carvings' recess back (`dark`, the carved colour at -0.66) is the recess wall the door and windows stand in, not an opening; the storehouses drawn "doors open" keep their leaves folded flat back against the wall (a 180 degree fold, past KDOOR's 1.75 rad swing): a real opening with static leaves. A window's hole is exactly its glass width (`winAt`), so the frame ring's jambs share a face with the cut; unchanged, as the interiors read those holes as their windows.
 - [x] kits/beast-riders sealed 55-arch.js and 56-levels.js in a closure without 54-openings.js and core/door, its leaves drawn shut, a locked record nothing and the council wall whole through shims at the top of each fragment's IIFE. Closed 2026-11-09: towns.py seals 54-openings.js and core/door (KDOOR, KGLASS on the closure's own root) with them, the kit draws the panes as 81-glow.js does and its doors open (kits/beast-riders/README.md); the shims are gone (`mvLeaf`/`mvSectorWins` are `goLeaf`/`goSectorWins`).
+
+## walk-and-reach fails: 370 floors unreached (2026-11-10)
+
+`98-start.js` now puts `MRWALK` on `window` (as `_mrwalkApi`), so `verify.py`'s `walk-and-reach` assert finally runs (before, it read a
+local and always reported "no core/walk"). It fails honestly: 1764 units walled, but 370 of 2373 floors are not reached
+from any unlocked door (mostly `mix.N.store.floor.0`, the mixed-use buildings' ground-floor stores; 284 units have no
+unlocked door). Open: find whether those stores' doors are locked, missing, or their doorway blocks not cleared
+(`83-mr-walk.js`, from WIP 5d10c87b).

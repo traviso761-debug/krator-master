@@ -61,6 +61,7 @@ var mCut = PLATS.map(function(P, i){ return [P, i]; }).filter(function(q){ retur
   return { id:'plat-'+q[1], name:P.name, x:P.x, z:P.z, r:P.R*Math.max(P.sx||1, P.sz||1)+2,
     levels:P.levels.slice().sort(function(a, b){ return a.y - b.y; }).map(function(L){ return { y:L.y, h:L.H, name:L.kind }; }) }; });
 var mLast = performance.now(), mTmp = new THREE.Vector3();
+window._mrwalkApi = typeof MRWALK !== 'undefined' ? MRWALK : null;   /* the probe's handle on core/walk (83-mr-walk.js): verify.py's walk-and-reach reads it */
 goHost();   /* each door leaf handed to core/door's host, which eases the moving ones on the frame (54-openings.js) */
 var mDoorTip = KDOORHOST.tip(function(){ return camera.position; }, goWalking), mDoorLast = performance.now();   /* "E: open the door" at the foot of the page */
 window._doors = { doors:KDOOR.list.length, locked:KDOOR.list.filter(function(D){ return D.locked; }).length, open:KDOOR.list.filter(function(D){ return D.open>0; }).length,

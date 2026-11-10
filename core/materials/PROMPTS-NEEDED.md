@@ -3,7 +3,7 @@
 Every texture or pattern sheet the owner still has to source or generate, each with its finished prompt. Paste a block
 as it is, one image per block. **Everything delivered lives in `PROMPTS-archived.md`** (checked against `core/materials/library/`, `patterns/` and each build's `materials.json` on `origin/main`, 2026-10-19); this file holds only what is still owed.
 
-**Count: 34 prompt blocks** (2026-11-09: +11 for Erewhon's citadel, section 41; 2026-11-09: +3 for the southern highlands' upper stations, section 37; +15 for the hyperjungle's lands and the savannah rims, section 40, 2026-11-08; counted 2026-11-04 before them).
+**Count: 36 prompt blocks** (2026-11-09: +11 for Erewhon's citadel, section 41; +2 for the Tents kit's army and Eternian cloths, section 42; +3 for the southern highlands' upper stations, section 37; +15 for the hyperjungle's lands and the savannah rims, section 40, 2026-11-08; counted 2026-11-04 before them).
 
 **Delivered 2026-11-03:** section 31's five (the Gills: `rock.lamina.pipe`, `mineral.crust.ferromanganese`, `mineral.crust.brucite`,
 `card.breathfringe`, `card.turf.limed`) and ten owed on unmerged branches (High Rift, nwbay, nhighlands, ringisles, the rift rim, Copper Glacier),
@@ -547,6 +547,22 @@ Square, 2048x2048. Orthographic view of a single cut-out object centred in the f
 `patterns/xanadu/op-art-arcs` (the Pleasure Domes' private rooms (reference 07 in settlements/xanadu/citadel/refs/pleasure-dome)):
 ```
 Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a black and white op-art wall pattern: bundles of parallel white stripes on black interlocking in a basket weave, alternating vertical and horizontal bundles, some bundles turning into concentric half-circles; crisp hand-painted edges, matte, exactly repeating at the edges.
+
+## 42. The Tents kit's army and expedition cloths (`kits/tents`, 2026-11-09)
+
+The kit's eleven dresses are on library sets that exist (`kits/tents/materials.json`). Two covers are stand-ins: the
+Republican army's and the Eternians' tents are drawn in `cloth.canvas.tent` (the generic bleached canvas) tinted by the
+dress (`src/41-tn-dress.js`, `republican` and `eternian`). Each would be a family in `materials.json` (`armyc`, `ripstop`)
+and the dress's `cover.key`; both near-colourless (the dress tints them).
+
+`cloth.canvas.duck.army` (the Republican army's ridge and wedge tents):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: heavy proofed cotton duck tent canvas of a military tent, a tight plain weave with a slightly waxy, water-proofed sheen, a straight double-stitched flat-felled seam running vertically through the frame and a second one parallel to it, a few faint stencil-ink smudges and scuffs, a little dust in the weave, no lettering, no grommets. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
+```
+
+`cloth.ripstop` (the Eternians' expedition tents):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a lightweight technical tent fabric, fine ripstop nylon with its reinforcing threads forming a regular grid of small squares about one centimetre apart, a faint even satin sheen of a coated fabric, a few soft creases, no logos, no seams. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
 ```
 
 `wood.cedar.moorish` (the citadel's door leaves, shutters and painted ceiling beams: carved and painted cedar (asked 2026-11-09 by the citadel session; until it is delivered the leaves are core/door's panel leaf in the kit's dark wood, the beams flat paint)):

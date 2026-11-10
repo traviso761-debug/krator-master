@@ -11,7 +11,9 @@
    declares here are the def's natural role's (the kit's TN_ROLE_OF), which the sets sheet audits.
      IX.TENTS.KINDS     the role -> room kind table the kit uses (kits/tents/src/33-tn-table.js TN_ROLES, TN_TRADES)
      IX.TENTS.item(key, o) -> a copy of the item: rooms as o.kind, culture o.culture, wealth o.wealth; types and the
-                         residence flag from the kind (a cottage or dormitory is a residence)
+                         residence flag from the kind: a family tent (cottage) is a residence; a sleeping tent (dormitory) is
+                         a camp's bunkhouse, beds and a chest, whose sleepers eat at the mess or their household's tent
+                         (core/camp deals them), so the residence rule (a bed, food and a chest a unit) is not its
    Uses only room kinds IX.PROGRAMS already has (cottage dormitory hall kitchen workshop smithy shrine store shop barracks
    stable): this file adds no programme. */
 (function (IX) {
@@ -27,35 +29,35 @@
       const kind = o.kind || base.rooms[0].kind, res = RES[kind];
       return Object.assign({}, base, {
         culture: o.culture == null ? base.culture : o.culture, wealth: o.wealth == null ? base.wealth : o.wealth,
-        types: res || ['civic'], residence: !!res,
+        types: res || ['civic'], residence: !!res && kind !== 'dormitory',
         rooms: base.rooms.map(function (r) { return Object.assign({}, r, { kind: kind }); })
       });
     }
   };
   IX.sets.add({ set: 'tents', title: 'Tents (kits/tents): every form and size, culture-neutral', culture: 'generic', wealth: 0.45, items: [
-    { key: 'tn-ridge-s', name: 'Ridge tent, small', types: ['dwelling-multi'], lot: [6.6, 6.8],
+    { key: 'tn-ridge-s', name: 'Ridge tent, small', types: ['dwelling-multi'], lot: [6.6, 6.8], residence: false,
       rooms: [{ id: 'in', kind: 'dormitory', poly: [[-1.4, -1.9], [1.4, -1.9], [1.4, 1.9], [-1.4, 1.9]], y: 0, h: 1.5,
         doors: [{ at: [0, 1.9], w: 1, swing: 'none' }] }] },
-    { key: 'tn-ridge-m', name: 'Ridge tent, medium', types: ['dwelling-multi'], lot: [7.6, 8.4],
+    { key: 'tn-ridge-m', name: 'Ridge tent, medium', types: ['dwelling-multi'], lot: [7.6, 8.4], residence: false,
       rooms: [{ id: 'in', kind: 'dormitory', poly: [[-1.9, -2.7], [1.9, -2.7], [1.9, 2.7], [-1.9, 2.7]], y: 0, h: 1.7,
         doors: [{ at: [0, 2.7], w: 1.1, swing: 'none' }] }] },
-    { key: 'tn-ridge-l', name: 'Ridge tent, large', types: ['dwelling-multi'], lot: [8.6, 10.8],
+    { key: 'tn-ridge-l', name: 'Ridge tent, large', types: ['dwelling-multi'], lot: [8.6, 10.8], residence: false,
       rooms: [{ id: 'in', kind: 'dormitory', poly: [[-2.4, -3.9], [2.4, -3.9], [2.4, 3.9], [-2.4, 3.9]], y: 0, h: 1.9,
         doors: [{ at: [0, 3.9], w: 1.2, swing: 'none' }] }] },
-    { key: 'tn-bell-s', name: 'Bell tent, small', types: ['dwelling-single'], lot: [7.7, 7.7],
-      rooms: [{ id: 'in', kind: 'cottage', poly: [[0.4, 2.011], [1.139, 1.705], [1.705, 1.139], [2.011, 0.4], [2.011, -0.4], [1.705, -1.139], [1.139, -1.705], [0.4, -2.011], [-0.4, -2.011], [-1.139, -1.705], [-1.705, -1.139], [-2.011, -0.4], [-2.011, 0.4], [-1.705, 1.139], [-1.139, 1.705], [-0.4, 2.011]], y: 0, h: 1.35,
-        doors: [{ at: [0, 2.05], w: 1, swing: 'none' }],
+    { key: 'tn-bell-s', name: 'Bell tent, small', types: ['dwelling-single'], lot: [9.3, 9.3],
+      rooms: [{ id: 'in', kind: 'cottage', poly: [[0.556, 2.795], [1.583, 2.37], [2.37, 1.583], [2.795, 0.556], [2.795, -0.556], [2.37, -1.583], [1.583, -2.37], [0.556, -2.795], [-0.556, -2.795], [-1.583, -2.37], [-2.37, -1.583], [-2.795, -0.556], [-2.795, 0.556], [-2.37, 1.583], [-1.583, 2.37], [-0.556, 2.795]], y: 0, h: 1.35,
+        doors: [{ at: [0, 2.85], w: 1, swing: 'none' }],
         fixtures: [{ id: 'pole0', kind: 'post', x: 0, z: 0, w: 0.2, d: 0.2, reach: false }] }] },
-    { key: 'tn-bell-m', name: 'Bell tent, medium', types: ['dwelling-single'], lot: [9.3, 9.3],
-      rooms: [{ id: 'in', kind: 'cottage', poly: [[0.556, 2.795], [1.583, 2.37], [2.37, 1.583], [2.795, 0.556], [2.795, -0.556], [2.37, -1.583], [1.583, -2.37], [0.556, -2.795], [-0.556, -2.795], [-1.583, -2.37], [-2.37, -1.583], [-2.795, -0.556], [-2.795, 0.556], [-2.37, 1.583], [-1.583, 2.37], [-0.556, 2.795]], y: 0, h: 1.45,
-        doors: [{ at: [0, 2.85], w: 1.1, swing: 'none' }],
+    { key: 'tn-bell-m', name: 'Bell tent, medium', types: ['dwelling-single'], lot: [10.5, 10.5],
+      rooms: [{ id: 'in', kind: 'cottage', poly: [[0.673, 3.384], [1.917, 2.869], [2.869, 1.917], [3.384, 0.673], [3.384, -0.673], [2.869, -1.917], [1.917, -2.869], [0.673, -3.384], [-0.673, -3.384], [-1.917, -2.869], [-2.869, -1.917], [-3.384, -0.673], [-3.384, 0.673], [-2.869, 1.917], [-1.917, 2.869], [-0.673, 3.384]], y: 0, h: 1.45,
+        doors: [{ at: [0, 3.45], w: 1.1, swing: 'none' }],
         fixtures: [{ id: 'pole0', kind: 'post', x: 0, z: 0, w: 0.2, d: 0.2, reach: false }] }] },
-    { key: 'tn-bell-l', name: 'Bell tent, large', types: ['dwelling-single'], lot: [11.3, 11.3],
-      rooms: [{ id: 'in', kind: 'cottage', poly: [[0.751, 3.776], [2.139, 3.201], [3.201, 2.139], [3.776, 0.751], [3.776, -0.751], [3.201, -2.139], [2.139, -3.201], [0.751, -3.776], [-0.751, -3.776], [-2.139, -3.201], [-3.201, -2.139], [-3.776, -0.751], [-3.776, 0.751], [-3.201, 2.139], [-2.139, 3.201], [-0.751, 3.776]], y: 0, h: 1.55,
-        doors: [{ at: [0, 3.85], w: 1.2, swing: 'none' }],
+    { key: 'tn-bell-l', name: 'Bell tent, large', types: ['dwelling-single'], lot: [11.9, 11.9],
+      rooms: [{ id: 'in', kind: 'cottage', poly: [[0.81, 4.07], [2.306, 3.451], [3.451, 2.306], [4.07, 0.81], [4.07, -0.81], [3.451, -2.306], [2.306, -3.451], [0.81, -4.07], [-0.81, -4.07], [-2.306, -3.451], [-3.451, -2.306], [-4.07, -0.81], [-4.07, 0.81], [-3.451, 2.306], [-2.306, 3.451], [-0.81, 4.07]], y: 0, h: 1.55,
+        doors: [{ at: [0, 4.15], w: 1.2, swing: 'none' }],
         fixtures: [{ id: 'pole0', kind: 'post', x: 0, z: 0, w: 0.2, d: 0.2, reach: false }] }] },
     { key: 'tn-yurt-s', name: 'Yurt, small', types: ['dwelling-single'], lot: [6, 6.1],
-      rooms: [{ id: 'in', kind: 'cottage', poly: [[0.472, 2.374], [1.344, 2.012], [2.012, 1.344], [2.374, 0.472], [2.374, -0.472], [2.012, -1.344], [1.344, -2.012], [0.472, -2.374], [-0.472, -2.374], [-1.344, -2.012], [-2.012, -1.344], [-2.374, -0.472], [-2.374, 0.472], [-2.012, 1.344], [-1.344, 2.012], [-0.472, 2.374]], y: 0, h: 1.5,
+      rooms: [{ id: 'in', kind: 'cottage', poly: [[0.926, 2.236], [2.236, 0.926], [2.236, -0.926], [0.926, -2.236], [-0.926, -2.236], [-2.236, -0.926], [-2.236, 0.926], [-0.926, 2.236]], y: 0, h: 1.5,
         doors: [{ at: [0, 2.42], w: 0.9, swing: 'in' }] }] },
     { key: 'tn-yurt-m', name: 'Yurt, medium', types: ['dwelling-single'], lot: [7.4, 7.5],
       rooms: [{ id: 'in', kind: 'cottage', poly: [[0.609, 3.06], [1.733, 2.594], [2.594, 1.733], [3.06, 0.609], [3.06, -0.609], [2.594, -1.733], [1.733, -2.594], [0.609, -3.06], [-0.609, -3.06], [-1.733, -2.594], [-2.594, -1.733], [-3.06, -0.609], [-3.06, 0.609], [-2.594, 1.733], [-1.733, 2.594], [-0.609, 3.06]], y: 0, h: 1.6,
@@ -64,9 +66,9 @@
       rooms: [{ id: 'in', kind: 'cottage', poly: [[0.843, 4.237], [2.4, 3.592], [3.592, 2.4], [4.237, 0.843], [4.237, -0.843], [3.592, -2.4], [2.4, -3.592], [0.843, -4.237], [-0.843, -4.237], [-2.4, -3.592], [-3.592, -2.4], [-4.237, -0.843], [-4.237, 0.843], [-3.592, 2.4], [-2.4, 3.592], [-0.843, 4.237]], y: 0, h: 1.8,
         doors: [{ at: [0, 4.32], w: 1, swing: 'in' }],
         fixtures: [{ id: 'pole0', kind: 'post', x: -0.382, z: 0, w: 0.2, d: 0.2, reach: false }, { id: 'pole1', kind: 'post', x: 0.383, z: 0, w: 0.2, d: 0.2, reach: false }] }] },
-    { key: 'tn-cone-s', name: 'Conical tent, small', types: ['dwelling-single'], lot: [4.9, 4.9],
-      rooms: [{ id: 'in', kind: 'cottage', poly: [[0.41, 1.53], [1.12, 1.12], [1.53, 0.41], [1.53, -0.41], [1.12, -1.12], [0.41, -1.53], [-0.41, -1.53], [-1.12, -1.12], [-1.53, -0.41], [-1.53, 0.41], [-1.12, 1.12], [-0.41, 1.53]], y: 0, h: 1.134,
-        doors: [{ at: [0, 1.584], w: 0.8, swing: 'none' }] }] },
+    { key: 'tn-cone-s', name: 'Conical tent, small', types: ['dwelling-single'], lot: [5.7, 5.7],
+      rooms: [{ id: 'in', kind: 'cottage', poly: [[0.716, 1.73], [1.73, 0.716], [1.73, -0.716], [0.716, -1.73], [-0.716, -1.73], [-1.73, -0.716], [-1.73, 0.716], [-0.716, 1.73]], y: 0, h: 1.134,
+        doors: [{ at: [0, 1.872], w: 0.8, swing: 'none' }] }] },
     { key: 'tn-cone-m', name: 'Conical tent, medium', types: ['dwelling-single'], lot: [6.5, 6.5],
       rooms: [{ id: 'in', kind: 'cottage', poly: [[0.559, 2.086], [1.527, 1.527], [2.086, 0.559], [2.086, -0.559], [1.527, -1.527], [0.559, -2.086], [-0.559, -2.086], [-1.527, -1.527], [-2.086, -0.559], [-2.086, 0.559], [-1.527, 1.527], [-0.559, 2.086]], y: 0, h: 1.512,
         doors: [{ at: [0, 2.16], w: 0.9, swing: 'none' }] }] },
@@ -85,15 +87,15 @@
       rooms: [{ id: 'in', kind: 'hall', poly: [[-2.85, -2.85], [2.85, -2.85], [2.85, 2.85], [-2.85, 2.85]], y: 0, h: 2.2,
         doors: [{ at: [0, 2.85], w: 2, swing: 'none' }],
         fixtures: [{ id: 'pole0', kind: 'post', x: 0, z: 0, w: 0.2, d: 0.2, reach: false }] }] },
-    { key: 'tn-marquee-l', name: 'Marquee, large', types: ['civic', 'dwelling-single'], lot: [14, 14],
+    { key: 'tn-marquee-l', name: 'Marquee, large', types: ['civic', 'dwelling-single'], lot: [14, 14], residence: false,
       rooms: [{ id: 'in', kind: 'hall', poly: [[-4.35, -4.35], [4.35, -4.35], [4.35, 4.35], [-4.35, 4.35]], y: 0, h: 2.4,
         doors: [{ at: [0, 4.35], w: 2.4, swing: 'none' }],
         fixtures: [{ id: 'pole0', kind: 'post', x: 0, z: 0, w: 0.2, d: 0.2, reach: false }] }] },
-    { key: 'tn-wedge-s', name: 'Wedge tent, small', types: ['infrastructure'], lot: [2.7, 4.6], skip: 'too low to furnish: two bedrolls are its own (FURNISH)' },
-    { key: 'tn-wedge-m', name: 'Wedge tent, medium', types: ['infrastructure'], lot: [3.2, 5.199999999999999], skip: 'too low to furnish: two bedrolls are its own (FURNISH)' },
-    { key: 'tn-fly-m', name: 'Fly (lean-to), medium', types: ['infrastructure'], lot: [4.2, 6.4], skip: 'open-sided: its gear is placed by the builder' },
-    { key: 'tn-fly-l', name: 'Fly (lean-to), large', types: ['infrastructure'], lot: [5.6, 7.4], skip: 'open-sided: its gear is placed by the builder' },
-    { key: 'tn-awning-m', name: 'Awning (stall), medium', types: ['infrastructure'], lot: [5.4, 5], skip: 'open-sided: a stall; its gear is placed by the builder' },
+    { key: 'tn-wedge-s', name: 'Wedge tent, small', types: ['military'], lot: [2.7, 4.6], skip: 'too low to furnish: two bedrolls are its own (FURNISH)' },
+    { key: 'tn-wedge-m', name: 'Wedge tent, medium', types: ['military'], lot: [3.2, 5.2], skip: 'too low to furnish: two bedrolls are its own (FURNISH)' },
+    { key: 'tn-fly-m', name: 'Fly (lean-to), medium', types: ['farm'], lot: [4.2, 6.4], skip: 'open-sided: its gear is placed by the builder' },
+    { key: 'tn-fly-l', name: 'Fly (lean-to), large', types: ['farm'], lot: [5.6, 7.4], skip: 'open-sided: its gear is placed by the builder' },
+    { key: 'tn-awning-m', name: 'Awning (stall), medium', types: ['market'], lot: [5.4, 5], skip: 'open-sided: a stall; its gear is placed by the builder' },
     { key: 'tn-roundend-m', name: 'Round-ended tent, medium', types: ['civic'], lot: [11.2, 7.4],
       rooms: [{ id: 'in', kind: 'kitchen', poly: [[2, -1.85], [2.925, -1.602], [3.602, -0.925], [3.85, 0], [3.602, 0.925], [2.925, 1.602], [2, 1.85], [-2, 1.85], [-2.925, 1.602], [-3.602, 0.925], [-3.85, 0], [-3.602, -0.925], [-2.925, -1.602], [-2, -1.85]], y: 0, h: 1.6,
         doors: [{ at: [0, 1.85], w: 1.2, swing: 'none' }],

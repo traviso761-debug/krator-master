@@ -5,8 +5,8 @@
 // The bell, the yurt, the black tent and the marquee are the Scyvoi tent toolkit's shapes (kits/scyvoi/src/40-tk-tentkit.js,
 // read in place), their material keys swapped to the dress's (tnKeys); ridge, cone, wedge, fly, awning, round-ended, wagon
 // tilt and screen are drawn here on the same primitives.
-function tnPanels(L,per){const p=TN_CUR.dress.pattern;return p==='stripes'?Math.max(4,Math.round(L/(per||.7))):p==='panels'?Math.max(3,Math.round(L/1.3)):1;}
-function tnPole(a,b,r,seg){pole(TN_CUR.poleKey,a,b,r||.06,TN_CUR.poleCol,seg||8);}
+function tnPanels(L,per){const p=TN_CUR.dress.pattern;return p==='stripes'?Math.max(4,Math.round(L/(per==null?.7:per))):p==='panels'?Math.max(3,Math.round(L/1.3)):1;}
+function tnPole(a,b,r,seg){pole(TN_CUR.poleKey,a,b,r==null?.06:r,TN_CUR.poleCol,seg==null?8:seg);}
 /* ---------------------------------------------------------------- ridge (wall) tent: walls, a gabled roof on a ridge pole and
    shear poles at each end, the door in the front gable */
 function tnRidge(S){const C=TN_CUR,W2=S.W/2,D2=S.D/2,wl=S.wall,rg=S.ridge,ov=.15,ea=.12,dw=S.door,dh=Math.min(1.95,rg-.3),np=tnPanels(S.D);

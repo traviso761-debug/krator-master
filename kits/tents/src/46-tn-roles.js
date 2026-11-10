@@ -36,7 +36,7 @@ function tnGearKey(cands){const D=TN_CUR.dress,c=D.furn,t=c==='beast-rider'?'br'
  for(const k0 of cands){const k=k0.replace('{c}',c).replace('{t}',t);if(KratorFurniture.has(k))return k;}return null;}
 function tnGear(role,trade,zf){const L=(trade&&TN_GEAR[trade])||TN_GEAR[role]||[];let n=0;
  for(const g of L){const k=tnGearKey(g.k);if(!k)continue;const x=g.at[0],z=g.under?g.at[1]:zf+g.at[1];
-  if(FURNISH(k,x,tnGroundY(x,z),z,g.ry||0,{v:g.v|0,setting:'outdoor'}))n++;}
+  if(FURNISH(k,x,tnGroundY(x,z),z,g.ry==null?0:g.ry,{v:g.v|0,setting:'outdoor'}))n++;}
  return n;}
 function tnTags(role,trade,D,form){const R=TN_ROLES[role]||TN_ROLES.family,T=trade&&TN_TRADES[trade],w=tnWealthOf(role,D);
  const t={culture:D.culture,types:(T&&T.types)||R.types,role:trade?role+':'+trade:role,style:TN_FORMS[form].style,wealth:w<.35?'poor':w<.7?'middle':'rich'};
@@ -60,6 +60,6 @@ function tnInterior(key,role,trade,D){if(PLACE_DRY||GTARGET!==GB||!CURREC||typeo
   IX.buildRoom(P,SVF.adapter,Rm);}
  const res=IX.sets.auditResidence(inst,plans);
  const sum={key,role,trade:trade||null,kind,culture:D.furn,rooms:inst.rooms.length,pieces,missing,residence:res.residence,fails:res.fails,walkTag:'built:'+inst.id,
-  floors:inst.walkRecords?inst.walkRecords.floors.length:0};
+  floors:inst.walkRecords?inst.walkRecords.floors|0:0};
  rec.interior=sum;TN_INTERIORS.push(Object.assign({tid:rec.tid,x:rec.x,z:rec.z,ry:rec.ry,y:rec.y},sum));
  return sum;}

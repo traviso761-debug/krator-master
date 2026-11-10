@@ -16,7 +16,8 @@ with the walls to the eaves while the work is under way. Every box and pole carr
 library's sets bound (`materials.json`, packed into `tex/` by `python3 tools/textures/pack.py kits/construction`): the
 plot `ground.dirt`, poles and logs `bark.bark_brown_01`, the board walks and planks `wood.weathered_brown_planks`, stakes
 and crates `wood.timber`, blocks `stone.cut`, bricks `brick.red`, bundles `reed.bundle`, rope and the string line
-`fibre.rope`, the tarp `cloth.tarp`, sand `ground.park_sand`; the sheet's ground `ground.sparse_grass` (its own). Pass the
+`fibre.rope`, the tarp `cloth.tarp`, sand `ground.park_sand` (the two neutral sets, `reed.bundle` and `cloth.tarp`, are
+grey by design and are tinted in the pack: straw `#bea776`, weathered canvas `#b8a27e`; the rest keep their own colours); the sheet's ground `ground.sparse_grass` (its own). Pass the
 table as `mats` to every site. A host that does not load this fragment keeps the plain palette colours.
 
 **What it does not draw: the building.** The building is the settlement's own kit piece, revealed in build order by

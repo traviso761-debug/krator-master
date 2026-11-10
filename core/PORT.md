@@ -76,6 +76,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `camp/20-camp-census.js` | 4.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | a band's census (KCAMP.census): no three.js, no geometry, no DOM; test-camp.js |
 | `camp/30-camp-pitch.js` | 13.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 | the pitch (KCAMP.pitch, check): plain records, no three.js (its 'box' is a footprint's corners); test-camp.js |
 | `camp/40-camp-work.js` | 10.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | work camps that migrate: the range's stands, the op log (pitch, strike, march), the move rule, the trees' state; no three.js, no geometry, no DOM |
+| `camp/50-camp-tents.js` | 17.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | tents by role and culture for kits/tents (KCAMP.TENTS, tentFor, tentProgram, tentDims) and the caravan halt (KCAMP.halt): plain records, no three.js, no DOM; kits/tents/tests/test-tents.js |
 | `catalog/catalog-files.js` | 0.6 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | node tools only: a catalog name to its file (files.json) |
 | `catalog/inspector.js` | 19.0 | [web] | 11 | 0 | 19 | 6 | 0 | 2 | 0 | 0 | 2 | 0 | 0 |  |
 | `catalog/krator-asset-engine.js` | 11.5 | [web] | 22 | 3 | 1 | 9 | 4 | 5 | 0 | 0 | 0 | 0 | 0 |  |
