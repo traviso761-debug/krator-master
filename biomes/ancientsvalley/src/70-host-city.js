@@ -113,6 +113,17 @@ const AV_PROF={};function avProfile(key){if(AV_PROF[key])return AV_PROF[key];con
   const st=Math.max(1,Math.floor(P.count/6000));for(let i=0;i<P.count;i+=st){v.fromBufferAttribute(P,i).applyMatrix4(m.matrixWorld);take(v.x,v.y,v.z);}});
  let top=0;for(let i=B.length-1;i>=0;i--)if(B[i]&&B[i].n>=6){top=B[i].y0+BAND;break;}
  const P={band:BAND,B,top,at(h){let i=Math.min(B.length-1,Math.floor(h/BAND));for(;i>=0;i--){const b=B[i];if(b&&b.n>=6)return b;}return null;}};return AV_PROF[key]=P;}
+/* the drawn surface of a look, by rays at the hero itself in the tower's own frame (the owner, 2026-11-09, again: "still floating trees",
+   "floating flora": a band's extent is its widest point all round, so a curtain hung at a round family's radius on any bearing hung 34 m out
+   where one broken slab reached, and a roof tree stood over a gap in a broken top). side(h, a, r0): the first face a horizontal ray meets coming
+   in from r0 m out on the bearing a at the height h, {x, y, z, d} or null where no wall stands; down(x, z, y0, y1): the first surface a ray
+   down from y0 meets above y1, its height or null. Debris and the rubble heap are left out (as avProfile does) */
+const AV_SURF={};function avSurface(key){if(AV_SURF[key])return AV_SURF[key];const H=AVC.hero[key]||(AVC.hero[key]=heroOf(key));H.updateMatrixWorld(true);
+ const meshes=[];H.traverse(m=>{if(m.isMesh&&m.geometry&&!/debris|rubble/.test(m.name||''))meshes.push(m);});
+ const rc=new THREE.Raycaster(),o=new THREE.Vector3(),d=new THREE.Vector3();
+ return AV_SURF[key]={side(h,a,r0){const c=Math.cos(a),s=Math.sin(a);o.set(c*r0,h,s*r0);d.set(-c,0,-s);rc.set(o,d);rc.far=r0;const hit=rc.intersectObjects(meshes,false)[0];
+   return hit?{x:hit.point.x,y:hit.point.y,z:hit.point.z,d:r0-hit.distance}:null;},
+  down(x,z,y0,y1){o.set(x,y0,z);d.set(0,-1,0);rc.set(o,d);rc.far=y0-y1;const hit=rc.intersectObjects(meshes,false)[0];return hit?hit.point.y:null;}};}
 // the towers as records before anything is drawn: the family's name, its footprint, the state
 AVC.towers.forEach(T=>{const F=MP.FAMILY[T.family]||MP.DESIGNS[T.family];if(!F)return;const r=F.footprint?(F.footprint.r||Math.max(F.footprint.w||0,F.footprint.d||0)/2):30;
  REGISTER({name:F.name+' ('+T.state+')',kind:'tower',x:T.x,z:T.z,y:T.y,r:r,h:T.state==='intact'||T.state==='gutted'?F.height.tip:F.height.tip*.6,tags:{kind:'tower',family:T.family,state:T.state,zone:T.kind}});});

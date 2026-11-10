@@ -34,7 +34,7 @@ const AV_XP=(function(){const out={hunters:[],drawn:[],registry:null,t:0,hum:0,f
   const cx0=(route[0][0]+route[2][0])/2,cz0=(route[0][1]+route[2][1])/2,gs=route.map(p=>terrainH(p[0],p[1])),g0=Math.min(...gs),g1=Math.max(...gs),h=g.userData.h==null?(E?E.h:8):g.userData.h;
   REGISTER({name:label,kind:'hunter',x:cx0,z:cz0,y:g0-3,r:Math.hypot(route[0][0]-cx0,route[0][1]-cz0)+30,h:g1-g0+h+8,tags:{kind:'hunter',origin:'extraplanar',mech:key,corners:route.length,silhouette:sil?sil.set:null,lake:Math.round(lakeK(cx0,cz0)*100)/100}});
   scene.add(g);KE.update(g,0,{ground:terrainH});KE.setState(g,'walk');
-  out.hunters.push({g,key,name,route,i:(i0+1)%4,wait:0,seed,sil});};
+  out.hunters.push({g,key,name,route,i:(i0+1)%4,wait:0,seed,sil,R:avBodyR(g),best:1e9,stall:0});};
  const south=(x,z)=>smooth(0,900,z),north=(x,z)=>smooth(0,-700,z);
  mk('xp_stilter',pickRound((x,z)=>lakeK(x,z)*south(x,z)),71);                                   /* the lake to the south: the pull strongest there */
  mk('xp_haloed',pickRound((x,z)=>lakeK(x,z)*north(x,z)),72);                                    /* the drowned inlet to the north-west, under the viaduct */
@@ -96,10 +96,11 @@ const AV_XP=(function(){const out={hunters:[],drawn:[],registry:null,t:0,hum:0,f
  tick(function(){const now=performance.now(),dt=Math.min(.1,(now-clock.t)/1000);clock.t=now;if(dt<=0)return;out.t+=dt;
   for(const k of out.hunters){const g=k.g,Tg=k.route[k.i],dx=Tg[0]-g.position.x,dz=Tg[1]-g.position.z,d=Math.hypot(dx,dz);
    if(k.wait>0){k.wait-=dt;if(k.wait<=0)KE.setState(g,'walk');}
-   else if(d<3){k.i=(k.i+1)%k.route.length;let len=0;try{const n=KE.attack(g);len=n==null?0:n;}catch(e){len=0;}k.wait=len+2+3*KRAND.unit(KRAND.hash(k.seed,k.i,9,0));if(!len)KE.setState(g,'idle');}   /* the tell, then the blow, at the corner */
-   else{const want=Math.atan2(dx,dz);let a=want-g.rotation.y;a=Math.atan2(Math.sin(a),Math.cos(a));g.rotation.y+=Math.max(-1.1*dt,Math.min(1.1*dt,a));
-    const sp=KE.speed(g)*Math.max(0,Math.cos(a));g.position.x+=Math.sin(g.rotation.y)*sp*dt;g.position.z+=Math.cos(g.rotation.y)*sp*dt;}
-   g.position.y=terrainH(g.position.x,g.position.z);const ev=KE.update(g,dt,{ground:terrainH});if(ev)for(const e of ev)if(e.type==='fire')loose(e);}
+   else if(d<3+k.R*.5||k.stall>25){k.i=(k.i+1)%k.route.length;k.best=1e9;k.stall=0;let len=0;try{const n=KE.attack(g);len=n==null?0:n;}catch(e){len=0;}k.wait=len+2+3*KRAND.unit(KRAND.hash(k.seed,k.i,9,0));if(!len)KE.setState(g,'idle');}   /* the tell, then the blow, at the corner; one it cannot reach in 25 s is given up */
+   else{const want=AV_AVOID.steer(g,Math.atan2(dx,dz),k.R);let a=want-g.rotation.y;a=Math.atan2(Math.sin(a),Math.cos(a));g.rotation.y+=Math.max(-1.1*dt,Math.min(1.1*dt,a));   /* round the piers, the plinths, the wrecks (72, AV_AVOID) */
+    const sp=KE.speed(g)*Math.max(0,Math.cos(a));g.position.x+=Math.sin(g.rotation.y)*sp*dt;g.position.z+=Math.cos(g.rotation.y)*sp*dt;
+    if(d<k.best-.5){k.best=d;k.stall=0;}else k.stall+=dt;}
+   AV_AVOID.push(g,k.R);g.position.y=terrainH(g.position.x,g.position.z);const ev=KE.update(g,dt,{ground:terrainH});if(ev)for(const e of ev)if(e.type==='fire')loose(e);}
   const eye=[camera.position.x,camera.position.z];for(const g of out.drawn)KE.draw.tick(g,out.t,eye);
   for(let i=out.fx.length-1;i>=0;i--){const f=out.fx[i];f.t+=dt;f.o.position.addScaledVector(f.v,dt);if(f.t>=f.life){scene.remove(f.o);out.fx.splice(i,1);}}
   out.hum=KE.humAt(eye[0],eye[1],out.t,REGY);});
