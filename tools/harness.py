@@ -59,6 +59,13 @@ from a harness that is no longer running. Do not take a lock in bash around a ve
     python3 tools/harness.py lock --lane rtx -- godot --path godot ...                # Godot GPU runs (not --headless)
     python3 tools/harness.py lanes                                                    # who holds each lane, who waits
 
+The cloud lanes (2026-11-10; tools/CLOUD-LANE.md, tools/cloud_lane.py): vast0, vast1, one per GPU of a rented machine,
+on when %LOCALAPPDATA%/krator-cloud.json says so (`harness.py cloud on|off|status|setup`). Then a verify.py run on the GPU
+queues for arc, rtx and the cloud lanes that answer (auto), or for one by name (KRATOR_GPU_LANE=vast0, or cloud for
+either); its wrapper takes the lane and, on a cloud lane, sends a snapshot of the working tree and the LFS files it needs
+over SSH, streams the run, and brings back what it wrote and a verify cache entry. Timing runs and `lock` stay local. With
+no config the harness behaves exactly as before.
+
 The stall watchdog: `lock` runs its command, and a verify.py that imports this harness at its top re-runs itself as a
 child (verify_wrap), under run_watched: no output and no file written in its --out folder for KRATOR_GPU_STALL_MIN
 (default 25) minutes kills the job's process tree, releases its lock and exits 124 ("STALLED": rerun it). While the
@@ -117,6 +124,37 @@ GPU_LOCK_RTX = os.environ.get("KRATOR_GPU_LOCK_RTX") or os.path.join(TMP, "krato
 LANES = {"arc": GPU_LOCK, "rtx": GPU_LOCK_RTX}
 LANE_ARGS = {"arc": [], "rtx": ["--force_high_performance_gpu"]}
 LANE_VENDOR = {"arc": "intel", "rtx": "nvidia"}
+# The cloud lanes (tools/CLOUD-LANE.md, tools/cloud_lane.py; 2026-11-10): vast0, vast1, ... one per GPU of a rented machine,
+# switched on by a config outside the repo. Their locks sit beside arc's and rtx's; only verify.py runs take them.
+CLOUD_LANE_NAMES = ("vast0", "vast1")
+# ANGLE on the NVIDIA driver's EGL: passes real pages on the RTX PRO 5000. ANGLE on Vulkan reports the GPU on a blank page
+# but loses the context on a real one (2026-11-10); the Linux default above (--use-angle=gl) falls back to SwiftShader.
+CLOUD_LANE_ARGS = ["--use-gl=angle", "--use-angle=gl-egl"]
+
+
+def is_cloud_lane(lane):
+    return bool(lane) and re.match(r"^vast\d+$", lane) is not None
+
+
+def lock_path(lane):
+    return LANES.get(lane) or os.path.join(os.environ.get("KRATOR_CLOUD_STATE") or TMP, "krator-verify-gpu-%s.lock" % lane)
+
+
+def all_locks():
+    """Every lane's lock: the local lanes', then the cloud lanes' (a lock nobody holds is skipped by its readers)."""
+    return list(LANES.values()) + [lock_path(ln) for ln in CLOUD_LANE_NAMES]
+
+
+def lane_vendor(lane):
+    return LANE_VENDOR.get(lane) or ("nvidia" if is_cloud_lane(lane) else "")
+
+
+def _cloud():
+    here = os.path.dirname(os.path.abspath(__file__))
+    if here not in sys.path:
+        sys.path.insert(0, here)
+    import cloud_lane
+    return cloud_lane
 # timing runs stay on arc unless KRATOR_GPU_LANE says otherwise, so their numbers stay comparable
 TIMING_SCRIPTS = ("perf_views.py", "ground_shots.py")
 STALL_MIN = float(os.environ.get("KRATOR_GPU_STALL_MIN") or 25)
@@ -341,7 +379,7 @@ def pick_lane(lane=None):
     """The lane asked for (`lane`, else KRATOR_GPU_LANE): arc, rtx or auto (whichever frees first). Unset: arc for a
     timing run (--timing, perf_views.py, ground_shots.py), auto for everything else."""
     lane = (lane or os.environ.get("KRATOR_GPU_LANE") or "").lower()
-    if lane in LANES or lane == "auto":
+    if lane in LANES or lane in ("auto", "cloud") or is_cloud_lane(lane):
         return lane
     return "arc" if timing_run() else "auto"
 
@@ -362,7 +400,7 @@ def _ticket_live(path):
 
 def lane_queue(lane):
     """The lane's live tickets, first come first: <lock>.queue/<time_ns>-<pid>.ticket. Dead waiters' tickets are removed."""
-    q = LANES[lane] + ".queue"
+    q = lock_path(lane) + ".queue"
     out = []
     for n in sorted(os.listdir(q)) if os.path.isdir(q) else []:
         if not n.endswith(".ticket"):
@@ -387,8 +425,34 @@ def _owner_note(lock):
     return " (taken %.0f min ago; no watchdog or heartbeat: check it by hand, CLAUDE.md)" % age
 
 
+def _lanes_for(lane, cloud):
+    """The lanes a waiter queues for. `cloud` (a verify.py run, verify_wrap): auto adds the cloud lanes that answer, and
+    cloud or vastN asks for them; anything else never takes a cloud lane (a note, then auto)."""
+    if not cloud:
+        if lane == "cloud" or is_cloud_lane(lane):
+            print("harness: only verify.py runs take the cloud lanes (tools/CLOUD-LANE.md); this one takes a local lane", flush=True)
+            lane = "auto"
+        return lane, (list(LANES) if lane == "auto" else [lane])
+    up = _cloud().lanes_up()
+    if lane == "auto":
+        return lane, list(LANES) + up
+    if lane == "cloud" or is_cloud_lane(lane):
+        want = [ln for ln in up if lane == "cloud" or ln == lane]
+        if not want:
+            cl = _cloud()
+            cfg = cl.load_config()
+            if not cfg:
+                why = "the cloud lanes are off (harness.py cloud on)"
+            else:
+                ok, w = cl.reachable(cfg)
+                why = "not one of %s" % ", ".join(cfg["lanes"]) if ok else "the machine does not answer: %s" % (w or "stopped?")
+            raise cl.CloudDown("cloud lane %s: %s" % (lane, why))
+        return lane, want
+    return lane, [lane]
+
+
 @contextlib.contextmanager
-def gpu_lock(timeout=None, what="", lane=None):
+def gpu_lock(timeout=None, what="", lane=None, cloud=False):
     """The GPU locks (HANDOFF-REBUILD.md, "Practical rules"; one per lane, LANES): a directory made with mkdir, an `owner`
     file inside. Waiters queue first come first served (a ticket per waiter in <lock>.queue; a dead waiter's is dropped);
     the head of a lane's queue takes the lock when it is free. An older harness copy that takes the arc lock directly is
@@ -400,11 +464,10 @@ def gpu_lock(timeout=None, what="", lane=None):
         yield os.environ.get("KRATOR_GPU_LANE_HELD") or "arc"
         return
     timeout = float(os.environ.get("KRATOR_GPU_LOCK_TIMEOUT") or 28800) if timeout is None else timeout
-    lane = pick_lane(lane)
-    lanes = list(LANES) if lane == "auto" else [lane]
+    lane, lanes = _lanes_for(pick_lane(lane), cloud)
     me = {"pid": os.getpid(), "start": _proc_start(os.getpid()), "what": what[:200], "lanes": lanes}
     name = "%020d-%d.ticket" % (time.time_ns(), os.getpid())
-    tickets = [os.path.join(LANES[ln] + ".queue", name) for ln in lanes]
+    tickets = [os.path.join(lock_path(ln) + ".queue", name) for ln in lanes]
 
     def write_tickets():
         for t in tickets:
@@ -424,7 +487,7 @@ def gpu_lock(timeout=None, what="", lane=None):
                 places[ln] = q.index(name) if name in q else 0
                 if places[ln]:
                     continue
-                lk = LANES[ln]
+                lk = lock_path(ln)
                 try:
                     os.mkdir(lk)
                     got = ln
@@ -452,11 +515,11 @@ def gpu_lock(timeout=None, what="", lane=None):
             if waited >= timeout:
                 raise GpuLockTimeout("GPU lock (%s) still not free after %.0f s: %s. If a holder is dead (no process of it "
                                      "running), remove its directory; if it is your own shell, stop taking the lock in bash."
-                                     % (lane, waited, "; ".join("%s held by %s, place %d" % (ln, _lock_owner(LANES[ln]) or "(no owner file)",
+                                     % (lane, waited, "; ".join("%s held by %s, place %d" % (ln, _lock_owner(lock_path(ln)) or "(no owner file)",
                                                                                               places.get(ln, 0)) for ln in lanes)))
             if waited >= said:
                 print("harness: waiting for the GPU (%s) %.0f s: %s" % (lane, waited, "; ".join(
-                    "%s: %d ahead, held by %s%s" % (ln, places.get(ln, 0), _lock_owner(LANES[ln]) or "(nobody)", _owner_note(LANES[ln]))
+                    "%s: %d ahead, held by %s%s" % (ln, places.get(ln, 0), _lock_owner(lock_path(ln)) or "(nobody)", _owner_note(lock_path(ln)))
                     for ln in lanes)), flush=True)
                 said = waited + 120
             time.sleep(min(LOCK_POLL, 0.5) if 0 in places.values() else LOCK_POLL)   # the head of a queue races older copies, which poll every 5 s
@@ -464,7 +527,7 @@ def gpu_lock(timeout=None, what="", lane=None):
         for t in tickets:
             with contextlib.suppress(OSError):
                 os.remove(t)
-    lk = LANES[got]
+    lk = lock_path(got)
     with open(os.path.join(lk, "owner"), "w", encoding="utf-8", newline="\n") as fh:
         fh.write("harness pid=%d %s lane=%s %s\n" % (os.getpid(), time.strftime("%Y-%m-%dT%H:%M:%S"), got, what))
     os.environ["KRATOR_GPU_LOCK_HELD"] = "harness pid=%d" % os.getpid()
@@ -527,13 +590,19 @@ def _newest(dirs, cap=20000):
     return best
 
 
-def run_watched(argv, stall_min=None, watch=(), env=None, cwd=None):
+def run_watched(argv, stall_min=None, watch=(), env=None, cwd=None, feed=None):
     """Run `argv`, relaying its output, under the stall watchdog: when it writes nothing to stdout or stderr and no file
     in `watch` for `stall_min` minutes (KRATOR_GPU_STALL_MIN, default 25), kill its whole process tree (kill_tree),
     release any GPU lock it holds and return 124. While it progresses, touch the owner file of a lock it or this process
-    holds once a minute: the 30-minute heartbeat (CLAUDE.md)."""
+    holds once a minute: the 30-minute heartbeat (CLAUDE.md). `feed`: bytes written to its stdin, which then stays open
+    until it ends (a cloud lane's SSH job stops when its stdin closes)."""
     stall = (STALL_MIN if stall_min is None else stall_min) * 60
-    p = subprocess.Popen(argv, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env, cwd=cwd)
+    p = subprocess.Popen(argv, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env, cwd=cwd,
+                         **({} if feed is None else {"stdin": subprocess.PIPE}))
+    if feed is not None:
+        with contextlib.suppress(OSError):
+            p.stdin.write(feed)
+            p.stdin.flush()
     last = [time.time()]
 
     def relay(src, dst):
@@ -565,19 +634,22 @@ def run_watched(argv, stall_min=None, watch=(), env=None, cwd=None):
             pids = kill_tree(p.pid)
             with contextlib.suppress(subprocess.TimeoutExpired):
                 p.wait(timeout=10)
-            for lk in LANES.values():
+            for lk in all_locks():
                 _release(lk, p.pid)
             print("\nharness: STALLED: no output and no file written for %.0f min; killed the job's process tree (%s) and released "
                   "its GPU lock. Rerun it (a stall is the GPU hanging, not a failed check)." % (stall / 60, pids), flush=True)
             return 124
         if now - beat >= 60:
             beat = now
-            for lk in LANES.values():
+            for lk in all_locks():
                 if re.match(r"harness pid=(%d|%d)\b" % (os.getpid(), p.pid), _lock_owner(lk)):
                     with contextlib.suppress(OSError):
                         os.utime(os.path.join(lk, "owner"))
     for t in th:
         t.join(5)
+    if feed is not None:
+        with contextlib.suppress(OSError):
+            p.stdin.close()
     return p.returncode
 
 
@@ -604,7 +676,7 @@ def lock_main(argv):
         return 2
     try:
         with gpu_lock(timeout, what=" ".join(argv)[:120], lane=lane or os.environ.get("KRATOR_GPU_LANE") or "arc") as got:
-            print("harness: lane %s (%s)" % (got, LANES[got]), flush=True)
+            print("harness: lane %s (%s)" % (got, lock_path(got)), flush=True)
             if stall == 0:
                 return subprocess.call(argv)
             return run_watched(argv, stall, watch + out_dirs(argv))
@@ -614,14 +686,24 @@ def lock_main(argv):
 
 
 def lanes_main(argv):
-    """python3 tools/harness.py lanes: each lane's holder, its heartbeat and its queue."""
-    for ln, lk in LANES.items():
+    """python3 tools/harness.py lanes: each lane's holder, its heartbeat and its queue; the cloud lanes when they are on."""
+    cl = _cloud()
+    cfg = cl.load_config()
+    cloud = list(cfg["lanes"]) if cfg else []
+    for ln in list(LANES) + cloud:
+        lk = lock_path(ln)
         print("%s  %s\n  held by: %s%s" % (ln, lk, _lock_owner(lk) or ("(free)" if not os.path.isdir(lk) else "(no owner file)"), _owner_note(lk)))
         for n in lane_queue(ln):
             with contextlib.suppress(OSError, ValueError):
                 with open(os.path.join(lk + ".queue", n), encoding="utf-8") as fh:
                     t = json.load(fh)
                 print("  waiting: pid %s %s" % (t["pid"], t.get("what", "")))
+    if not cfg:
+        print("cloud lanes: off (tools/CLOUD-LANE.md)")
+    else:
+        ok, why = cl.reachable(cfg, fresh=True)
+        print("cloud lanes %s: machine %s %s" % (", ".join(cloud), cfg.get("instance") or cfg.get("host"),
+                                                 "answers" if ok else "DOES NOT ANSWER (%s): verifies take arc and rtx" % why))
     return 0
 
 
@@ -640,8 +722,12 @@ async def launch_chromium(p, args=GL_ARGS):
 
 
 def lane_args(args):
-    """`args` plus the held lane's adapter switch (LANE_ARGS) when they launch on the real GPU (ANGLE)."""
-    extra = LANE_ARGS.get(os.environ.get("KRATOR_GPU_LANE_HELD") or "arc", [])
+    """`args` plus the held lane's adapter switch (LANE_ARGS) when they launch on the real GPU (ANGLE). On a cloud lane
+    (Linux, NVIDIA) the ANGLE backend is replaced by the one that renders there (CLOUD_LANE_ARGS: GL on EGL)."""
+    held = os.environ.get("KRATOR_GPU_LANE_HELD") or "arc"
+    if is_cloud_lane(held) and any(a.startswith("--use-angle") for a in args):
+        return [a for a in args if not a.startswith(("--use-angle", "--use-gl"))] + CLOUD_LANE_ARGS
+    extra = LANE_ARGS.get(held, [])
     if any(a.startswith("--use-angle") for a in args):
         return list(args) + [a for a in extra if a not in args]
     return list(args)
@@ -1140,7 +1226,7 @@ class VerifyPage:
             except Exception as e:
                 rn = "unknown: " + str(e)[:80]
             ln = os.environ.get("KRATOR_GPU_LANE_HELD") or ""   # the vendor is checked only where a lane was taken
-            U.append(("gpu-renderer", "swiftshader" not in rn.lower() and LANE_VENDOR.get(ln, "") in rn.lower(), "lane %s: %s" % (ln or "-", rn)))
+            U.append(("gpu-renderer", "swiftshader" not in rn.lower() and lane_vendor(ln) in rn.lower(), "lane %s: %s" % (ln or "-", rn)))
             _touched({"lane": ln, "renderer": rn})
         if not self.eyes:
             await self.eye("as loaded")
@@ -1761,6 +1847,60 @@ def verify_wrap(script, args, no_cache=False):
                   "--no-cache to rerun." % (e["script"], " ".join(e["args"]), e["passed"], e["lane"],
                                              ", " + e["renderer"] if e.get("renderer") else ""), flush=True)
             return 0
+    if is_gpu() and not timing_run([script] + args) and _cloud().load_config():
+        return _verify_routed(script, args, cacheable)
+    return _run_child(script, args, cacheable)
+
+
+def _verify_routed(script, args, cacheable):
+    """The cloud lanes are on: this wrapper takes the lane (auto: the first of arc, rtx and the cloud lanes to free), then
+    runs the verify here (the child finds the lock held) or on the machine (cloud_lane.run_job). A machine that does not
+    answer drops out of auto; asked for by name it fails with exit 3."""
+    cl = _cloud()
+    page = next((a for a in args if a.endswith(".html")), "")
+    what = _rel(os.path.join(os.getcwd(), page), _repo_root(script)) if page else _rel(script, _repo_root(script))
+    for attempt in (0, 1):
+        try:
+            with gpu_lock(what=what, cloud=True) as got:
+                if not is_cloud_lane(got):
+                    return _run_child(script, args, cacheable)
+                print("harness: on the %s lane (the cloud machine)" % got, flush=True)
+                code, info = cl.run_job(got, script, args, cwd=os.getcwd(), run_watched=run_watched)
+        except GpuLockTimeout as e:
+            print("FAILED: " + str(e), flush=True)
+            return 3
+        except cl.CloudDown as e:
+            if pick_lane() == "auto" and not attempt and cl.load_config():
+                cl.mark_down(cl.load_config(), str(e))
+                print("harness: %s; taking a local lane" % e, flush=True)
+                continue
+            print("FAILED: %s (tools/CLOUD-LANE.md)" % e, flush=True)
+            return 3
+        if code == 0 and cacheable and info:
+            _cache_cloud_pass(script, args, info)
+        return code
+    return 3
+
+
+def _cache_cloud_pass(script, args, info):
+    """Record a cloud pass in the local verify cache, when every file the machine read has the same content here (git's
+    object ids, so a CRLF checkout here matches the machine's LF one)."""
+    root, hashes = info["root"], info.get("hashes", {})
+    if not hashes:
+        print("harness: not cached: the machine sent no hashes", flush=True)
+        return
+    here = _cloud().object_ids(root, [rel for rel in hashes if os.path.isfile(os.path.join(root, rel))])
+    changed = [rel for rel, h in hashes.items() if here.get(rel) != h]
+    if changed:
+        print("harness: not cached: %d file(s) changed here during the cloud run (%s)" % (len(changed), ", ".join(changed[:3])), flush=True)
+        return
+    lines = [json.dumps({"f": os.path.join(root, rel)}) for rel in info.get("touched", [])]
+    lines.append(json.dumps({"lane": info.get("lane"), "renderer": info.get("renderer", "")}))
+    with contextlib.suppress(Exception):
+        cache_record(script, args, lines)
+
+
+def _run_child(script, args, cacheable):
     os.makedirs(BROWSERS_DIR, exist_ok=True)
     touched = os.path.join(BROWSERS_DIR, "touched-%d.jsonl" % os.getpid())
     with contextlib.suppress(OSError):
@@ -1829,7 +1969,7 @@ def _watch_parent(spec):
             print("harness: the verify wrapper (pid %s) is gone: stopping this run" % pid, flush=True)
         with contextlib.suppress(Exception):
             _forget_browsers(kill=True)
-        for lk in LANES.values():
+        for lk in all_locks():
             _release(lk)
         os._exit(130)
     with contextlib.suppress(ValueError):
@@ -1857,4 +1997,6 @@ if __name__ == "__main__":
         sys.exit(lock_main(sys.argv[2:]))
     if len(sys.argv) > 1 and sys.argv[1] == "lanes":
         sys.exit(lanes_main(sys.argv[2:]))
+    if len(sys.argv) > 1 and sys.argv[1] == "cloud":
+        sys.exit(_cloud().cli(sys.argv[2:]))
     print(__doc__)

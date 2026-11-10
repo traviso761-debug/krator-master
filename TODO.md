@@ -28,6 +28,11 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 
 ## Ride along with the next all-builds rebuild
 
+- **The `tools/` listing** (2026-11-10, the cloud lanes): `tools/cloud_lane.py` and `tools/CLOUD-LANE.md` are new names in `tools/`, which
+  eight builds record as a listing input (kits/catalog, crops, interiors, mechs, motor-vehicles, port; settlements/isle-demo, longsong), so
+  `check_stale` calls them stale though no file they read changed. Their next rebuild clears it. Worth a look: the listing likely comes from
+  Python's importer reading `tools/` when a build imports from it, so any new tool file does this.
+
 - **`KSHADOW.units` counts what the GPU links** (2026-11-09, found by the Throne's fix): `core/shadow/host/12-core-shadow-host.js` counts
   declared samplers (some are never read and the GPU drops them), misses `scene.environment` on standard materials, and judges against the
   renderer's own limit (32 in SwiftShader, so shadows turn on where the GPU cannot link them). The Throne's `samplersOf`
