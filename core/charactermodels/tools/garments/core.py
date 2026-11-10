@@ -602,6 +602,7 @@ def assemble_garment(gid, label, slot, culture, parts, covers_hair=False, covers
         if k not in _facts:
             _facts[k] = part_facts(p, gid)
         return _facts[k]
+    trunk_tubes = []
 
     # Check #5 (Concentric Layer, Sleeve-Root Tucking & Overlay Clearance Check):
     # 1. When a torso or legs garment has >= 2 closed trunk tubes overlapping vertically by >= 0.12 m,
@@ -789,6 +790,30 @@ def assemble_garment(gid, label, slot, culture, parts, covers_hair=False, covers
                                         continue
                                 r_cur = math.hypot(dx, dy)
                                 ang = math.atan2(dx, dy) % (2.0 * math.pi)
+                                if is_strap_band and pz < SHOULDER - 0.06 and r_cur > 1e-6 and getattr(pt, 'closed', False) and pt.P.shape[1] >= 24:
+                                    # issue 13: a belt, sash or obi conforms to the trunk at its own height, 3 mm out,
+                                    # drawn in as well as out (stood off the largest radius within 3.8 cm it hung in the air
+                                    # over a pleated tunic; REVIEW-GARMENTS-2026-11-06.md, issue 13). Rings only: a sash's
+                                    # hanging tail or its knot carries the word and is not a band round the body
+                                    r_t = 0.0
+                                    for _, z0_t, z1_t, zs_t, r_t_prof, _ in all_tube_profiles:
+                                        if z0_t - 0.010 <= pz <= z1_t + 0.010:
+                                            r_t = max(r_t, _eval_tube_r(zs_t, r_t_prof, min(pz, float(zs_t[-1])), ang))
+                                    u_dir = np.array([dx / r_cur, dy / r_cur])
+                                    z_mask_b = np.abs(trunk_all_verts[:, 2] - pz) <= 0.010
+                                    if z_mask_b.any():
+                                        tv = trunk_all_verts[z_mask_b]
+                                        tv_d = tv[:, :2] - c2[None, :]
+                                        tv_r = np.hypot(tv_d[:, 0], tv_d[:, 1])
+                                        sec_b = (tv_d @ u_dir) / np.maximum(tv_r, 1e-6) >= math.cos(0.32)
+                                        if sec_b.any():
+                                            r_t = max(r_t, float(tv_r[sec_b].max()))
+                                    if r_t > 0.0:
+                                        r_req = r_t + 0.003
+                                        if abs(r_cur - r_req) > 0.001:
+                                            pt.P[r_i, c_i, 0] = c2[0] + dx * (r_req / r_cur)
+                                            pt.P[r_i, c_i, 1] = c2[1] + dy * (r_req / r_cur)
+                                        continue
                                 r_req = 0.0
                                 for _, z0_t, z1_t, zs_t, r_t, _ in all_tube_profiles:
                                     if z0_t - 0.010 <= pz <= z1_t + 0.035:
@@ -965,6 +990,8 @@ def assemble_garment(gid, label, slot, culture, parts, covers_hair=False, covers
 
     all_P, all_N, all_UV, all_VI, all_T, all_use_trunk = [], [], [], [], [], []
     rigid_overrides = []
+    trunk_ranges, band_ranges, acc_ranges = [], [], []     # issue 13: what takes its weights from the trunk
+    trunk_ids = {id(t[1]) for t in trunk_tubes}
     arm_part_ranges = []
     c_specs = []
     hip_ranges = []
@@ -1034,6 +1061,10 @@ def assemble_garment(gid, label, slot, culture, parts, covers_hair=False, covers
         flat_N = vn[local_vi].astype(np.float32)
 
         F = fx(p)
+        if id(p) in trunk_ids:
+            trunk_ranges.append((gi_offset, gi_offset + len(flat_P)))
+        elif 'strap' in F and slot in ('torso', 'legs') and not getattr(p, 'row_joints', None) and not p.rigid_joint:
+            band_ranges.append((gi_offset, gi_offset + len(flat_P)))
         spans_both_sides = bool(flat_P[:, 0].min() < -0.09 and flat_P[:, 0].max() > 0.09)
         is_true_arm_tube = getattr(p, 'is_arm', False) or 'arm_tube' in F
         is_shoulder_cap = 'sh_cap' in F and float(np.abs(flat_P[:, 0]).min()) >= 0.11
@@ -1073,6 +1104,7 @@ def assemble_garment(gid, label, slot, culture, parts, covers_hair=False, covers
             )
             rigid_overrides.append((gi_offset, gi_offset + len(flat_P), auto_jn))
             hip_ranges.append([vi_offset, vi_offset + n_part_vi])
+            acc_ranges.append((gi_offset, gi_offset + len(flat_P)))
 
         cs = cloth_spec(p, vi_offset, slot)
         if cs:
@@ -1149,6 +1181,22 @@ def assemble_garment(gid, label, slot, culture, parts, covers_hair=False, covers
             _, near_arm = ARM_TREE_GL.query(P_arr[gs:ge])
             near_base[gs:ge] = ARM_ONLY_IDX[near_arm]
             near_morph[gs:ge] = ARM_ONLY_IDX[near_arm]
+    band_src, acc_src = [], []
+    if trunk_ranges and (band_ranges or acc_ranges):
+        trunk_gi = np.concatenate([np.arange(gs, ge) for gs, ge in trunk_ranges])
+        trunk_tree = cKDTree(P_arr[trunk_gi])
+        for gs, ge in band_ranges:
+            _, nn = trunk_tree.query(P_arr[gs:ge])
+            src = trunk_gi[nn]
+            near_base[gs:ge] = near_base[src]
+            near_morph[gs:ge] = near_morph[src]
+            band_src.append((gs, ge, src))
+        for gs, ge in acc_ranges:
+            _, nn = trunk_tree.query(P_arr[gs:ge].mean(axis=0))
+            src = int(trunk_gi[int(nn)])
+            near_base[gs:ge] = near_base[src]
+            near_morph[gs:ge] = near_morph[src]
+            acc_src.append((gs, ge, src))
     JJ_arr = BASE_JJ[near_base].copy()
     WW_arr = BASE_WW[near_base].copy()
 
@@ -1274,6 +1322,12 @@ def assemble_garment(gid, label, slot, culture, parts, covers_hair=False, covers
             WW_arr[gs:ge] = 0.0
             JJ_arr[gs:ge, 0] = j_idx
             WW_arr[gs:ge, 0] = 1.0
+    for gs, ge, src in band_src:
+        JJ_arr[gs:ge] = JJ_arr[src]
+        WW_arr[gs:ge] = WW_arr[src]
+    for gs, ge, src in acc_src:
+        JJ_arr[gs:ge] = JJ_arr[src]
+        WW_arr[gs:ge] = WW_arr[src]
 
     node['name'] = gid
     j_tpl['meshes'][node['mesh']]['name'] = gid
