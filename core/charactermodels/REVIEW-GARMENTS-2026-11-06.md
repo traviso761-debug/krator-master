@@ -502,3 +502,11 @@ The plan takes sections 1 to 3 above whole. What to change before acting on it:
   18 cm or longer and never to a pauldron (the first cut moved pauldrons 6 to 9 cm); the dry build now reports
   its piece count against the last complete one. The completion commit rebuilds every culture and adopts every
   piece that differs from the repo's.
+- **The baseline audit after the night (2026-11-10).** The 66 baseline outfits on the final page against the sweep
+  before the night: the 60 outside the Yuni are unchanged to the pixel class (skin 16414 to 16430, "under" 162767
+  both, "inside" 633651 to 633648), as they should be, since they are Blender-built and no builder fix reaches them;
+  only the Hykkousoi trade's "hole" moved (the greaves' mask, earlier). The Yuni carry the night: "under" 53690 to
+  6327 and 34425 to 586 on the peasants (the trousers), skin to 0 on the man's noble and peasant, "inside" up on the
+  trade duster (17254 to 23346, the standing collar seen from above). The 66 cannot measure the night's builder
+  fixes: the 84 outfits that wear a changed piece are audited before and after for that (`night_audit.sh` in the
+  session scratch; the result is appended below when it lands).
