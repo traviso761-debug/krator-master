@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 31 (26%) | 0 (0%) | 0 (0%) | 43 (36%) | 45 (38%) |
+| KB | 31 (25%) | 0 (0%) | 0 (0%) | 43 (36%) | 47 (39%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -16,15 +16,15 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/44s-host-site.js` | 9.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the station's site: the crags, the moraines, the meltwater gully and its fan (plain functions and records) |
 | `src/45-host-stage.js` | 6.9 | [web] | 7 | 0 | 3 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/46-biome-seow-layout.js` | 8.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the kit's layout: tiers, climate, the wind's exposure, zones (plain functions) |
-| `src/47-host-land.js` | 39.5 | [draw] | 20 | 1 | 0 | 0 | 0 | 4 | 10 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
+| `src/47-host-land.js` | 41.1 | [draw] | 20 | 1 | 0 | 0 | 0 | 4 | 10 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/50-biome-seow-species.js` | 7.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/60-biome-seow-floor.js` | 3.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/70-biome-seow.js` | 2.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/89a-host-atmos.js` | 2.2 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | core/atmos's bindings (bindHost, snowCover): host code |
 | `src/89s-host-sky.js` | 4.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the shared sky's host (ATMOS.sky, the far land's ridges, the fill light); its preset and ridges are data (region/far.py) |
-| `src/89w-host-water.js` | 5.2 | [draw] | 5 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/89w-host-water.js` | 5.5 | [draw] | 5 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/89z-host-build.js` | 9.1 | [web] | 2 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 | 0 | the build order, then the air on everything: host code |
-| `src/99-host-take.js` | 19.5 | [web] | 1 | 0 | 1 | 0 | 0 | 2 | 0 | 2 | 0 | 0 | 0 | split: data inside host code |
+| `src/99-host-take.js` | 19.6 | [web] | 1 | 0 | 1 | 0 | 0 | 2 | 0 | 2 | 0 | 0 | 0 | split: data inside host code |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 
 ## Notes

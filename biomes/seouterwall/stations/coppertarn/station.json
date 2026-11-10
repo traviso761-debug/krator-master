@@ -1,0 +1,5 @@
+{
+ "name": "coppertarn",
+ "out": "seouterwall-coppertarn.html",
+ "note": "Station 6 (PLAN.md section 4, Oasis 5; section 7.6): the Copper-Vein Tarn at the model's pin px 1288,1184 (region/station-coppertarn.json). Its 44s-host-site.js replaces src/'s: the copper-stained megabreccia headwall (KRELIEF.scarp) and its fall, the moraine dam, rockfall."
+}

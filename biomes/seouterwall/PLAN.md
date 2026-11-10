@@ -1,6 +1,6 @@
 # SE Outer Wall (`seouterwall`) — Scenic Alpine Cordillera, The Godsgate Pass & Hidden Highland Tarn Oases (`PLAN.md`)
 
-> **Status: stations 1 (`godsgate`, the saddle) and 2 (`gatetarn`, the Tarn of the Gate-Bell) built on a branch, 2026-11-10 (a cloud session: software-GL verify only; the GPU verify is owed on the owner's machine). Stations 3-6 not started. Section 7 is the build: its Core adoption, stations 1 and 2 on the model (7.2, 7.4), and what is owed (7.3).** Proposed 2026-11-06 as a biome kit and scale-model `5.1` sculpting blueprint; the model's pass (`build_425_master.py`, "SE outer wall") has since run, taller than this plan's numbers (section 7.2).
+> **Status: all six stations built on a branch, 2026-11-10 (a cloud session: each page's own checks pass in software GL; the full `verify.py --assert --all-views` runs in software GL; the real-GPU verify is owed on the owner's machine). Section 7 is the build: its Core adoption (7.1), the stations on the model (7.2, 7.4-7.6), the road and the plants (7.7), what is owed (7.3).** Proposed 2026-11-06 as a biome kit and scale-model `5.1` sculpting blueprint; the model's pass (`build_425_master.py`, "SE outer wall") has since run, taller than this plan's numbers (section 7.2).
 >
 > **Polygon:** `SE outer wall` (`id: "rmw4xy4tp9b29"`, `kind: "biome"`, `20` vertices: `[[1329,1136],[1356,1201],[1336,1222],[1299,1228],[1267,1254],[1245,1276],[1224,1300],[1201,1346],[1130,1352],[1092,1340],[1060,1310],[1039,1292],[1009,1305],[997,1207],[1032,1205],[1091,1204],[1164,1198],[1249,1188],[1300,1160],[1324,1141]]`).
 > - **Bounding Box:** `X = 997..1356`, `Y = 1136..1352` (`359 × 216 px` span; `38,207` cells = **`152,828 km²`** on the `1821 × 1723` `2 km/px` Scale Model `5.1` master grid, or `~224 km E–W × 135 km N–S` / `14,925 km²` at the `625 m/px` regional detail scale). All `px, py` coordinates below are on the unified **Scale Model `5.1` (`X = 997..1356, Y = 1136..1352`)** grid (subtract `DX = 272, DY = 330` for legacy `4.23` coordinates).
@@ -333,11 +333,13 @@ outer wall's flora in place.
   stamp at 3,620 m, so the station stands in **a closed hollow about 2 km across**: its floor within 60 m of the pin, rising 140 m to the
   north rim 2 km out (570 m at 3 km), 100-200 m to the south, 400 m to the east at 3 km and 280 m to the west at 3 km, between the low
   rise that hides the corridor and the cordillera's slopes. The walls (6.3-7.5 km) stand 6-12 km out, on the mid ground.
-- **So station 1 is drawn on the model as it is** (KNOWN_ISSUES.md): the hollow is the saddle's outwash flat, a glacier's scour at the
-  divide, where the north slope's meltwater runs out on a fan and sinks into the gravel (282 mm, a dry pass: no tarn). A recessional
-  moraine crosses the flat at the divide; lateral moraines lie along the foot of the east and west slopes; the north slope carries crags
-  (megabreccia ribs on core/rand's ridged noise, scaled by the model's slope) with rockfall heaps at their foot. The corridor, the
-  Godthrone's black wall (tibasalt, west) and the megabreccia cordillera (east) are the mid ground and the far land.
+- **So station 1 stands on the corridor (moved 2026-11-10, the owner's word: "move the stations to be appropriate to the map")**, at the
+  thalweg's high point, the drainage divide: **px 1027.5,1256, 3,672 m** (52 m over the plan's pin; the page's check holds it within 8 px
+  and 150 m of the plan's station). There the corridor is a north-south U-trough, its floor about 2 km wide within 30 m of the divide,
+  falling 26 m in 4 km north and 50 m south, its walls 160-540 m up 3 km out. Its site (`src/44s-host-site.js`): laterals at both walls'
+  feet and the divide moraine, dry braided channels north (Guli rrija's head) and south (the Wadi al-Qamar's), the meltwater gully off
+  the east wall and its fan, rockfall heaps under the west wall's crags, the Ancients' highway down the floor (7.7). The model's pin and
+  `test_smodel.py`'s row stay at px 1031,1252 (the model's files are another session's): re-pinning them is the model's turn.
 
 **Layout on the page** (axes as every station: metres, x east, z south, y up, y = 0 at 3,620 m): the near box +-2.3 km on a 10 m KFIELD;
 the mid ground to 20 km on the model's 1 km cells with the far roughness; the far land in the sky from 18 to 320 km.
@@ -373,3 +375,47 @@ the mid ground to 20 km on the model's 1 km cells with the far roughness; the fa
 - **Not built here**: the toppled Ancient fog-bell on the moraine lip and the Historian's cache (kits/ancients: 7.3), the plan's red
   guyed stalks and goldroot (the flora is the NW outer wall's, read in place: its larch in the cirque's lee, the creeping pine, the
   floor's shrubs and herbs), the wild ibex at dawn (fauna: a later turn).
+
+### 7.5 Station 3 on the scale model: the Amber-Sinter Tarn (`python3 build.py --station ambertarn`)
+
+- The model's geothermal tarn (53 cells at 3,940 m, about 8 x 6 km, Csb, mean +13 °C: the model's boost) lies 1 km west of its station
+  pin, **px 1064,1272**, which is on its east shore at the water's level: the page stands at the pin.
+- **The heat**: a fault under the east shore (the plan's feeder dike) as KTHERM records (`SITE.heat`: a line vent and the two springs'
+  points over a +2 °C soil), baked on a 4 m lattice: the hot zone (nothing roots on 20 °C and over but the Hearths), the snow kept off the
+  warm ground (`ATMOS.snowBare`), heat hazards on the springs.
+- **The water**: two hot springs (`WATER.spring`, the sinter and iron ramps), the amber one's overflow down twelve rimstone sinter terraces
+  to the tarn (`WATER.terraces`, the ground stepped under each tread), steam (`ATMOS.smoke`).
+- **The Hearths** (`biomes/hearths`, read in place as oidong's station reads them: `station.json` "kin"): the hearth trees in the 'rim'
+  dress (broad fans, 4-11 m stalks: the plan's dwarf alpine hearth-trees), coal moss, stokers and the dead in rings, placed on the heat by
+  `HEARTH.layout` (every tree on 25-60 °C: a check), the fans folding by day and opening by night (`HEARTH.work`).
+- Not here: the warm sinter caves behind the fall and the Talovolci camp (a settlement's), the orange glass sandbars.
+
+### 7.6 Stations 4-6 on the scale model
+
+The model stamps every tarn the same way: 53 cells, a flat floor round it, walls 5-6 km out, the station pin on its east shore at the
+water's level, the tarn 3 px west. Each station stands at its pin; its landforms are its own (`stations/<name>/44s-host-site.js`, from
+station 2's):
+
+- **4, `mirrorscarp`, the Mirror-Slump Tarn** (px 1134,1218, 4,120 m, ET, +4 °C): the slump block's uphill-facing **fault mirror**, 150 m
+  of polished black glass over the breccia (KRELIEF.scarp, run 70 m, rough .005; `rock.basalt.titanium`'s dark tinted by the megabreccia
+  column) south of the trench, facing north into the sun; the block's crest north of it; the glass's spall at its foot. The geodetic bunker
+  is owed (kits/ancients).
+- **5, `jadecrest`, the Jade-Karst Polje** (px 1208,1254, 4,380 m, ET, +3 °C): the polje's **limestone cliffs** north and east
+  (`rock.limestone.karst`), the **resurgence** brook from their foot to the jade tarn, the cliffs' fallen blocks. The cave behind the
+  resurgence and the ponor (`KKARST`), the felsenmeer and the rock glaciers (`KFROST`) are owed.
+- **6, `coppertarn`, the Copper-Vein Tarn** (px 1288,1184, 3,820 m, Dsc, +6 °C): the cirque's megabreccia headwall and **the Copper-Vein
+  fall** (127 m, its water verdigris), the peacock tarn, the moraine dam, rockfall, larch and stone pine in the lee. The Geomancers' winch,
+  the Stalker wreck and the live pair are owed (kits/mechs, the Catch's Stalkers).
+
+### 7.7 The road and the plants (2026-11-10)
+
+- **The Ancients' highway** (station 1, `SITE.road`, 47): a road record (its line down the floor's east half, 30 m, a 4 % ruling grade),
+  its profile the baked ground smoothed over 300 m and held to the grade both ways, **graded into the baked ground by KFIELD's flatten
+  strokes** (`31-core-field-brush.js`: plain records applied in order, so Godot replays the same ground), its board-formed concrete pavement
+  (`concrete.ancient`) a ribbon on the graded ground; its zone grows nothing; a check (grade, the ground under the pavement) with negatives.
+  It runs out of both ends of the near box along the corridor (the trunk the plan's section 3.3 describes). The wind-baffles and the
+  vent-shaft collar are kits/ancients' (owed).
+- **The plants** (`src/50-biome-seow-species.js`, `src/60-biome-seow-floor.js`, the kit's own registry): the puya (rosettes, and one in five
+  in flower on a 4-9 m spike), the red guyed stalk (godstep's, by the water), the sky and gold poppies (by the season), goldroot (in the
+  scree), tagged and harvested as every kit's, on the library's cards, placed on core/biome's cell-form grid by zone. The NW outer wall's
+  flora stays read in place; its upright trees are held to the lee, its silverthorn to the hero band.

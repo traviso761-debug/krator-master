@@ -41,7 +41,7 @@ const HCHK={
   return{ok:d<fan.r*.5&&drop>20,detail:'the brook falls '+drop.toFixed(0)+' m and ends '+d.toFixed(0)+' m from the fan\'s apex (its radius '+fan.r.toFixed(0)+' m)'};},
  // the tarn and its fall (station 2): the brook reaches the tarn's level at its end and falls over the headwall on the way
  tarn(S,lake,falls){if(!S||!lake)return{ok:false,detail:'no brook or no tarn'};const end=S.level[S.level.length-1],F=(falls||[]).map(f=>f.F),big=F.filter(f=>f.drop>=80);
-  return{ok:Math.abs(end-lake.level)<4&&big.length>=1,detail:'the brook ends '+(end-lake.level).toFixed(1)+' m over the tarn ('+(BASE+lake.level).toFixed(0)+' m); falls: '+(F.map(f=>Math.round(f.drop)+' m').join(', ')||'none')};},
+  return{ok:Math.abs(end-lake.level)<4&&(SITE.fallName?big.length>=1:true),detail:'the brook ends '+(end-lake.level).toFixed(1)+' m over the tarn ('+(BASE+lake.level).toFixed(0)+' m); falls: '+(F.map(f=>Math.round(f.drop)+' m').join(', ')||'none')};},
  // the God-Bore decides the trees' form: the larch stands only in a lee, the open shaded slopes are the creeping pine's (PLAN.md 2.1)
  lee(TREES,F){const L=TREES.filter(T=>T.sp===0),open=L.filter(T=>F(T.x,T.z).wind>=SEOW.EXPOSED+.08).length,K=TREES.filter(T=>T.sp===2).length;
   return{ok:(L.length>0||!(_zoneCounts().larch>0))&&open<=Math.max(2,L.length*.08),detail:L.length+' larches, '+open+' of them in the open; '+K+' creeping pines (krummholz)'};},
@@ -120,7 +120,7 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  if(HEAPS.length)add('no rockfall heap',HCHK.zones(ZONES_NEED,ZC,REG.filter(r=>r.key!=='landform.rockfall')));
  if(SITE_RECS.melt&&SITE_RECS.melt.fan)add('the brook running past its fan',HCHK.sinks(STREAM,Object.assign({},SITE_RECS.melt.fan,{x:SITE_RECS.melt.fan.x+2000})));
  if(MODEL_LAKE&&STREAM){add('the brook ending over the tarn',HCHK.tarn(STREAM,Object.assign({},MODEL_LAKE,{level:MODEL_LAKE.level-30}),WATER_DRAW&&WATER_DRAW.falls));
-  add('no fall over the headwall',HCHK.tarn(STREAM,MODEL_LAKE,[]));}
+  if(SITE.fallName)add('no fall over the headwall',HCHK.tarn(STREAM,MODEL_LAKE,[]));}
  if(_zoneCounts().larch>0)add('the larch in the open',HCHK.lee(TREES_ALL(),(x,z)=>Object.assign({},SEOW.FIELDS(x,z),{wind:1})));
  add('a tree on a rockfall heap, or in water',HCHK.roots(TREES_ALL().concat(SITE_HEAPS&&SITE_HEAPS[0]?[{x:SITE_HEAPS[0].x,z:SITE_HEAPS[0].z}]:[{x:WET_PT()[0],z:WET_PT()[1]}])));
  if(ROAD){add('the highway at 9 %',HCHK.road(Object.assign({},ROAD,{maxGrade:.09}),terrainH,ZC));

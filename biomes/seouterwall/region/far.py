@@ -48,6 +48,11 @@ SITES = {
     # the Amber-Sinter Tarn (Oasis 2): the model's geothermal tarn at 3,940 m (test_smodel.py: px 1061,1272), its station pin 3 px east
     # (px 1064,1272); the page is cut at the pin, then placed on the tarn's shore once the survey says where it is (PLAN.md section 7.5)
     'ambertarn': {'px': 1064, 'py': 1272, 'title': 'The Amber-Sinter Tarn'},
+    # the Mirror-Slump Tarn (Oasis 3), the Jade-Karst Polje (Oasis 4), the Copper-Vein Tarn (Oasis 5): each the model's station pin, its tarn
+    # 3 px west (test_smodel.py), PLAN.md section 7.6
+    'mirrorscarp': {'px': 1134, 'py': 1218, 'title': 'The Mirror-Slump Tarn'},
+    'jadecrest': {'px': 1208, 'py': 1254, 'title': 'The Jade-Karst Polje'},
+    'coppertarn': {'px': 1288, 'py': 1184, 'title': 'The Copper-Vein Tarn'},
 }
 EYE = 30.0            # m over the ground: a viewer on the saddle's moraine
 R_PLANET = 84.0 * 360 / (2 * math.pi) * 1000      # m: the sky model's frame (kmPerDeg 84)

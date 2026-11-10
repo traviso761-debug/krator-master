@@ -427,6 +427,36 @@
     "sourceMean": 0.2265
    }
   },
+  "rock.limestone.karst": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "rock.limestone.karst.albedo.webp",
+    "normalMap": "rock.limestone.karst.normal.webp",
+    "roughnessMap": "rock.limestone.karst.rough.webp"
+   },
+   "lib": "rock.limestone.karst",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "fc656f156a4c85a44f0d3d771833a4adfc43b66c",
+    "normal": "f79e592dcf2cf2461f852967b007fe26087aa4c5",
+    "roughness": "70c5e10abb0f713e50b14700bc439b7446ffc487"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.537025637177112,
+    "sourceMean": 0.537
+   }
+  },
   "rock.megabreccia": {
    "breakup": null,
    "card": false,

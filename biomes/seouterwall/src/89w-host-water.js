@@ -12,14 +12,16 @@ const WATER_DRAW=(function(){if(!WATER_RECS)return null;try{
  if(WATER_RECS.stream){out.stream=WATER.drawFlow(WATER_RECS.stream,{rapids:[.05,.14],shallow:lin(0x74828a),deep:lin(0x2a3a44),color:0xffffff,roughness:.2,metalness:.02,
   envMapIntensity:.25,step:8,across:4,margin:1,renderOrder:2});out.stream.mesh.userData.inspectLabel=WATER_RECS.stream.name;
   out.falls=WATER.fallsOf?WATER.fallsOf(WATER_RECS.stream,{steep:.5,minDrop:20,fit:true}).map(o=>WATER.fall(Object.assign(o,{name:SITE.fallName||'A fall',face:terrainH,faceLift:.6}))).map(F=>{
-   const D=WATER.drawFall(F,{color:lin(0xd0dade),opacity:.9,rows:30,cols:6,margin:1.2,lipK:.85,spray:'drop',envMapIntensity:.25,renderOrder:3});
+   const D=WATER.drawFall(F,{color:lin(SITE.fallColor==null?0xd0dade:SITE.fallColor),opacity:.9,rows:30,cols:6,margin:1.2,lipK:.85,spray:'drop',envMapIntensity:.25,renderOrder:3});
    if(D&&D.mesh){D.mesh.userData.inspectLabel=F.name+' ('+Math.round(F.drop)+' m)';
     /* the curtain arcs out past a small volume, so the probe's point is the lip's middle halfway down, on a marker of its own (core/water's meshes are probeSkip; ehighlands' finding) */
     const pm=new THREE.Object3D();pm.userData.probePoints=[(F.lip[0][0]+F.lip[1][0])/2,F.lip[0][2]-F.drop/2,(F.lip[0][1]+F.lip[1][1])/2];scene.add(pm);}
    REGISTER({name:F.name+' ('+Math.round(F.drop)+' m over the headwall)',key:'water.fall',x:(F.lip[0][0]+F.lip[1][0])/2,z:(F.lip[0][1]+F.lip[1][1])/2,y:F.lip[0][2]-F.drop-4,r:14,h:F.drop+8});
    return {F,D};}):[];}
- if(WATER_RECS.lake){const S=WATER_RECS.lake,P=S.poly,n=P.length,pos=[];let cx=0,cz=0;P.forEach(q=>{cx+=q[0];cz+=q[1];});cx/=n;cz/=n;
-  for(let k=0;k<n;k++){const a=P[k],b=P[(k+1)%n];pos.push(cx,S.level,cz,b[0],S.level,b[1],a[0],S.level,a[1]);}
+ if(WATER_RECS.lake){const S=WATER_RECS.lake,pos=[],G=SEOW_REGION.grid,hx=G.dx/2,hz=G.dz/2;
+  /* one quad a cell of the tarn's dilated cells (47: LAKE0), the ground showing through where it stands over the level: the drawn water
+     and MODEL_LAKE.inside are the same set */
+  (S.cells||[]).forEach(c=>{const x0=c[0]-hx,x1=c[0]+hx,z0=c[1]-hz,z1=c[1]+hz,y=S.level;pos.push(x0,y,z0,x0,y,z1,x1,y,z0,x1,y,z0,x0,y,z1,x1,y,z1);});
   const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.computeVertexNormals();
   const tc=SITE.tarnColor||[.03,.08,.16],m=new THREE.Mesh(g,WATER.stillMaterial({color:new THREE.Color(tc[0],tc[1],tc[2]),roughness:.05,metalness:.1,envMapIntensity:.6}));
   m.userData.probeSkip=true;m.userData.inspectLabel=S.name;m.renderOrder=1;m.name='water:still';scene.add(m);out.still=m;}

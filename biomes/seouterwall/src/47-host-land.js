@@ -14,11 +14,22 @@ const COARSE=(function(){const st=20,n=Math.ceil(NEAR.S*2.2/st)+1,x0=-NEAR.S*1.1
 _mark('coarse');
 
 // ---------------------------------------------------------------- the brook (its line, its water level never climbing downstream)
+// THE TARN'S CELLS (the model's water: MODEL_WATER, 45): their mean level, and whether a point is on them or one cell round (the drawn
+// still and the tarn's `inside` are both this: 89w draws a quad a cell, the ground showing through where it stands over the level)
+const LAKE0=(function(){if(!MODEL_WATER.length)return null;const G=SEOW_REGION.grid,lv=MODEL_WATER.reduce((a,w)=>a+w.level,0)/MODEL_WATER.length;
+ const cells=new Set(G.water.map(w=>w[0]+','+w[1])),cellOf=(x,z)=>[Math.round((x-G.x0)/G.dx),Math.round((z-G.z0)/G.dz)];
+ const near=(x,z,r)=>{const c=cellOf(x,z);for(let a=-r;a<=r;a++)for(let b=-r;b<=r;b++)if(cells.has((c[0]+a)+','+(c[1]+b)))return true;return false;};
+ const dil=new Set();G.water.forEach(w=>{for(let a=-1;a<=1;a++)for(let b=-1;b<=1;b++)dil.add((w[0]+a)+','+(w[1]+b));});
+ return {lv,cells,near,dil:[...dil].map(k=>k.split(',').map(Number)),G};})();
 const STREAM=(function(){const S=SITE_STREAM,P=S?S.pts():[];if(P.length<2)return null;
  // the gully's floor (KRELIEF.wadi: never climbing downstream), its water a few decimetres over it, resampled every ~10 m
  const pts=[],L=[];for(let i=0;i<P.length-1;i++){const a=P[i],b=P[i+1],n=Math.max(1,Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1])/10));
   for(let k=0;k<n;k++){const t=k/n;pts.push([a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t]);L.push(a[2]+(b[2]-a[2])*t+.2);}}
  const e=P[P.length-1];pts.push([e[0],e[1]]);L.push(e[2]+.2);for(let i=1;i<L.length;i++)L[i]=Math.min(L[i],L[i-1]-.01);
+ // a brook that reaches a tarn ends there: the first point on its cells (or one round) whose ground lies under the water's level; its level
+ // never under the tarn's (it runs into the water, not beneath it)
+ if(LAKE0){for(let i=1;i<pts.length;i++){if(LAKE0.near(pts[i][0],pts[i][1],1)&&groundH(pts[i][0],pts[i][1])<LAKE0.lv){pts.length=i+1;L.length=i+1;break;}}
+  for(let i=0;i<L.length;i++)L[i]=Math.max(L[i],LAKE0.lv+.02*(L.length-1-i)/Math.max(1,L.length-1));}
  const idx=KSPACE.create({cell:40});for(let i=0;i<pts.length-1;i++){const a=pts[i],b=pts[i+1];idx.insert(i,(a[0]+b[0])/2,(a[1]+b[1])/2,10*.6+S.width*3);}
  // the nearest point on the line: {d, y (the water's level there), i}
  const near=(x,z,pad)=>{let best=1e18,by=0,bi=-1;idx.query(x,z,pad,[]).forEach(i=>{const a=pts[i],b=pts[i+1],dx=b[0]-a[0],dz=b[1]-a[1],L2=dx*dx+dz*dz||1,
@@ -70,15 +81,9 @@ function waterH(x,z){
  if(STREAM){const n=STREAM.near(x,z,STREAM.w*1.6);if(n.i>=0&&n.d<STREAM.w*1.3)return n.y;}
  if(MODEL_LAKE&&MODEL_LAKE.inside(x,z))return MODEL_LAKE.level;
  return -1e9;}
-// THE TARN: the model's water cells (45: MODEL_WATER, region/far.py) at their mean level; a point is in it on a water cell, or on a cell
-// beside one where the drawn ground lies under the level (the shore follows the ground, not the 1 km cells). `zone` (two cells round
-// them) is where its strand can be. Forked from biomes/wouterwall's
-const MODEL_LAKE=(function(){if(!MODEL_WATER.length)return null;const G=SEOW_REGION.grid,lv=MODEL_WATER.reduce((a,w)=>a+w.level,0)/MODEL_WATER.length;
- const cells=new Set(SEOW_REGION.grid.water.map(w=>w[0]+','+w[1]));
- const cellOf=(x,z)=>[Math.round((x-G.x0)/G.dx),Math.round((z-G.z0)/G.dz)];
- const near=(x,z,r)=>{const c=cellOf(x,z);for(let a=-r;a<=r;a++)for(let b=-r;b<=r;b++)if(cells.has((c[0]+a)+','+(c[1]+b)))return true;return false;};
- const inside=(x,z)=>{const c=cellOf(x,z);if(cells.has(c[0]+','+c[1]))return terrainH(x,z)<lv+.05;return near(x,z,1)&&terrainH(x,z)<lv-.2;};
- return {level:lv,inside,zone:(x,z)=>near(x,z,2),cells};})();
+// THE TARN: the model's water cells (LAKE0) at their mean level; a point is in it on a water cell or one round where the drawn ground lies
+// under the level (the shore follows the ground, not the 1 km cells: as 89w draws it). `zone` (two cells round) is where its strand can be
+const MODEL_LAKE=LAKE0?{level:LAKE0.lv,inside:(x,z)=>LAKE0.near(x,z,1)&&terrainH(x,z)<LAKE0.lv-.03,zone:(x,z)=>LAKE0.near(x,z,2),cells:LAKE0.cells}:null;
 
 const OBSTACLES=[];   // cylinders nothing grows inside (the heaps; the trees after the build: 89z)
 // ---------------------------------------------------------------- the rockfall heaps (core/terrain KRUBBLE: PLAN.md section 2.4)
@@ -89,7 +94,8 @@ const HEAPS=(function(){const T=SITE.heaps;if(!T||typeof KRUBBLE==='undefined')r
  const footY=(x,z,r)=>{let m=1e9;for(let i=0;i<16;i++){const a=i/16*TAU;for(const k of [.4,.8,1.05])m=Math.min(m,terrainH(x+Math.cos(a)*r*k,z+Math.sin(a)*r*k));}return m-.3;};
  const lim=NEAR.S-80,inBox=(x,z)=>Math.abs(x)<lim&&Math.abs(z)<lim;
  for(let k=0;k<n;k++){const u=KRAND.unit(KRAND.hash(T.seed,k,1)),want=T.foot[0]+(T.foot[1]-T.foot[0])*KRAND.unit(KRAND.hash(T.seed,k,2));let x,z;
-  if(T.dir){z=T.z[0]+(T.z[1]-T.z[0])*(k+.2+.6*u)/n;x=T.x0;while(inBox(x,z)&&terrainH(x,z)<want){x+=T.dir[0]*10;z+=T.dir[1]*10;}}
+  if(T.dir&&T.dir[1]){x=T.x[0]+(T.x[1]-T.x[0])*(k+.2+.6*u)/n;z=T.z0;while(inBox(x,z)&&terrainH(x,z)<want){x+=T.dir[0]*10;z+=T.dir[1]*10;}}   /* along columns from row z0 */
+  else if(T.dir){z=T.z[0]+(T.z[1]-T.z[0])*(k+.2+.6*u)/n;x=T.x0;while(inBox(x,z)&&terrainH(x,z)<want){x+=T.dir[0]*10;z+=T.dir[1]*10;}}
   else{x=T.x[0]+(T.x[1]-T.x[0])*(k+.2+.6*u)/n;z=-500;while(inBox(x,z)&&terrainH(x,z)<want)z-=10;}
   if(!inBox(x,z))continue;
   const rx=T.rx[0]+(T.rx[1]-T.rx[0])*KRAND.unit(KRAND.hash(T.seed,k,3)),rz=rx*(.55+.3*KRAND.unit(KRAND.hash(T.seed,k,4)));
@@ -167,7 +173,7 @@ const PROC={'ground.puna':greyTex((x,y)=>165+60*(PN(x,y,6,11)-.5)),'ground.needl
  'ground.gravel':greyTex((x,y)=>165+70*(PN(x,y,3,15)-.5)),'ground.tundra':greyTex((x,y)=>150+50*(PN(x,y,6,16)-.5)),
  'ground.lichen':greyTex((x,y)=>160+60*(PN(x,y,5,17)-.5))};
 const PSCALE={'ground.puna':2.4,'ground.needles':2,'ground.sinter':2.5,'ground.cobble':2,'rock.megabreccia':4,'rock.basalt':3,'ground.gravel':2.5,'ground.tundra':2.2,'ground.lichen':2};
-const layer=k=>LIB[k]?{map:LIB[k].map,s:LIB[k].scale,lib:true}:{map:PROC[k],s:PSCALE[k],lib:false};
+const layer=k=>LIB[k]?{map:LIB[k].map,s:LIB[k].scale,lib:true}:{map:PROC[k]||PROC['rock.megabreccia'],s:PSCALE[k]||4,lib:false};   /* a rock with no procedural map of its own takes the breccia's */
 LAYERS.forEach(k=>{const t=layer(k).map;if(t)t.wrapS=t.wrapT=THREE.RepeatWrapping;});
 // THE SEASON'S GROUND (sRGB tints over each layer's map): the puna straw-gold in autumn, a thin green-gold in summer, frost-grey in winter;
 // the larch litter gold under the autumn larch; the cobble and the gravel grey all year (darker wet in the spring melt)
@@ -204,9 +210,12 @@ const ROCK_SH=typeof KSTRATA!=='undefined'&&KSTRATA.shade?KSTRATA.shade(KSTRATA.
  lateral:{formations:[{recipe:'tibasalt'}],dir:[-1,0],at:ROCK_CONTACT,d0:-450,d1:450}}),{res:.5}):null;
 /* the tint's reference is the rock layer's own colour in the column: the megabreccia's matrix, or the basalt's flows (so its orange glass
    beds come up bright against the black, a ratio of up to 6) */
-const ROCK_BASALT=ROCK_LIB==='rock.basalt';
-const ROCK_REF=(()=>{const c=new THREE.Color(ROCK_BASALT?0x25232a:0x6d6a66).convertSRGBToLinear();return 'vec3('+[c.r,c.g,c.b].map(v=>v.toFixed(4)).join(',')+')';})();
-const BEDS=ROCK_SH?'{vec3 sc=strataColor(vSWP,vSWN);diffuseColor.rgb*=mix(vec3(1.0),clamp(sc/'+ROCK_REF+',vec3(0.28),vec3('+(ROCK_BASALT?'6.0':'1.6')+')),vW2.w*0.9);}':
+/* (a station may set its own: SITE.rock.ref, the colour its layer is in the column; SITE.rock.max, the ceiling: station 4's black glass over
+   the breccia's blocks, station 5's limestone) */
+const ROCK_BASALT=ROCK_LIB==='rock.basalt'&&!(SITE.rock&&SITE.rock.ref!=null);
+const ROCK_REF=(()=>{const c=new THREE.Color(SITE.rock&&SITE.rock.ref!=null?SITE.rock.ref:ROCK_BASALT?0x25232a:0x6d6a66).convertSRGBToLinear();return 'vec3('+[c.r,c.g,c.b].map(v=>v.toFixed(4)).join(',')+')';})();
+const ROCK_MAX=SITE.rock&&SITE.rock.max!=null?SITE.rock.max:ROCK_BASALT?6:1.6;
+const BEDS=ROCK_SH?'{vec3 sc=strataColor(vSWP,vSWN);diffuseColor.rgb*=mix(vec3(1.0),clamp(sc/'+ROCK_REF+',vec3(0.28),vec3('+ROCK_MAX.toFixed(2)+')),vW2.w*0.9);}':
  'diffuseColor.rgb*=1.0-vW2.w*0.25*smoothstep(0.5,0.8,nvn(vGWP.xz*0.04));';
 {const U={},Ls=LAYERS.map(layer);LAYERS.forEach((k,i)=>U['uL'+i]={value:Ls[i].map});
  const T=Object.values(TINT).map(h=>{const c=new THREE.Color(h).convertSRGBToLinear();return 'vec3('+[c.r,c.g,c.b].map(v=>v.toFixed(4)).join(',')+')';});
@@ -361,7 +370,8 @@ HEAPS.forEach(H=>HAZARDS.push(BIO.record({name:'Rockfall (the chute above '+H.na
 const WATER_RECS=typeof WATER==='undefined'?null:(function(){const out={};
  if(STREAM){const P=STREAM.pts.map((p,i)=>[p[0],p[1],STREAM.level[i]]);out.stream=WATER.flow({name:STREAM.name,pts:P,width:STREAM.w*2,speed:.7});}
  if(MODEL_LAKE){const G=SEOW_REGION.grid,xs=MODEL_WATER.map(w=>w.x),zs=MODEL_WATER.map(w=>w.z);
-  out.lake=WATER.still({name:(SITE.tarn||'A tarn')+' (the model\'s water)',level:MODEL_LAKE.level,poly:[[Math.min(...xs)-G.dx,Math.min(...zs)-G.dz],[Math.max(...xs)+G.dx,Math.min(...zs)-G.dz],
-   [Math.max(...xs)+G.dx,Math.max(...zs)+G.dz],[Math.min(...xs)-G.dx,Math.max(...zs)+G.dz]]});}
+  out.lake=WATER.still({name:(SITE.tarn||'A tarn')+' (the model\'s water)',level:MODEL_LAKE.level,poly:[[Math.min(...xs)-G.dx*1.5,Math.min(...zs)-G.dz*1.5],[Math.max(...xs)+G.dx*1.5,Math.min(...zs)-G.dz*1.5],
+   [Math.max(...xs)+G.dx*1.5,Math.max(...zs)+G.dz*1.5],[Math.min(...xs)-G.dx*1.5,Math.max(...zs)+G.dz*1.5]]});
+  out.lake.cells=LAKE0.dil.map(c=>[G.x0+c[0]*G.dx,G.z0+c[1]*G.dz]);}   /* the cells it is drawn on (89w): its extent for the export stays the box */
  return out;})();
 _mark('meshes');

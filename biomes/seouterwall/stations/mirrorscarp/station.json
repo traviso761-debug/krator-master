@@ -1,0 +1,5 @@
+{
+ "name": "mirrorscarp",
+ "out": "seouterwall-mirrorscarp.html",
+ "note": "Station 4 (PLAN.md section 4, Oasis 3; section 7.6): the Mirror-Slump Tarn at the model's pin px 1134,1218 (region/station-mirrorscarp.json). Its 44s-host-site.js replaces src/'s: the fault mirror (KRELIEF.scarp, black glass), the slump block's crest, the glass's spall."
+}
