@@ -32,7 +32,8 @@
   `KHOST.take` (`98z-host-floor.js`): `src/99` should pass a station's `STATION_FLOOR`.
 - [ ] **The hearths**: soft budgets over (`godstep/ground` 7.28 M against 7 M, the scene 9.38 M against 9 M: station 1's passes on the pit's
   floor and dish); the scoria's paint reads speckled close up in software GL (judge on a GPU); the rim view was blocked by the lip's crest
-  until 2026-11-10 (now it stands on the crest with a checked sightline); the dark band at the dish's edge in the rim view is the far
+  until 2026-11-10 (now it stands on the WNW crest with a checked sightline: the 6.4 km pit reads as a band of floor under the far wall,
+  the snow-covered dish filling the foreground; a higher eye or a nearer crest would frame it better); the dark band at the dish's edge in the rim view is the far
   country's seam (as station 1's "far country's edge"); the hearth trees are the Hearths' `rim` dress, not a
   broad-fanned dress of the stair's own (the Hearths' plan asks for broad fans: a `HEARTH.DRESS` entry in `biomes/hearths` is that kit's).
 - [ ] **The redlands**: the talus under the breakaways and mesas takes the kit's basalt palette (reads black, not laterite red); the
