@@ -382,8 +382,13 @@ The geometry's share goes through `ATMOS.shaderHook` (composes with the height f
 back-face shell a zone drawn at the far plane after the world, so it lands only where no geometry was drawn and the two never add
 twice. A ShaderMaterial of the page's own takes `ATMOS.radGLSL()` and adds `atmRad(eye, dir, dist)` itself. The pure side:
 `ATMOS.radChord`, `radGlow`, `radAt(zones, x, y, z)` (the density at a point: placement, a meter; registered as core/hazard's
-`radiation` field when the page's KHAZ takes one). **True heat haze** (bent light) is the existing post pass:
-`ATMOS.shimmer({renderer, field: ATMOS.radiationHeat(RAD.zones)})` gives it the zones as a raster of degrees. Cost: about 40
+`radiation` field when the page's KHAZ takes one). **True heat haze** (the owner, 2026-11-10: "try it like a true bent light heat haze") is `ATMOS.radiationHaze({renderer, amp, speed,
+scale})`, a post pass: `H.draw(() => drawTheFrame(), camera, dt)` draws the page's frame into its target, then each pixel reads
+from a little beside and below itself, the offset wavering upward, by how much zone air its ray crosses up to what it shows
+(`ATMOS.radHazeK`: shimmer x chord, summed and doubled, capped at 1; the sky takes the whole chord). What lies behind a zone swims,
+what stands in front of it holds still, and it reads from as far off as the glow does. The target is not multisampled, as the
+shimmer pass's. (The older ground pass also works: `ATMOS.shimmer({renderer, field: ATMOS.radiationHeat(RAD.zones)})`, near the
+eye and on the ground only.) Cost: about 40
 operations a zone a fragment, no textures, no loop but the four zones. **Not judged:** against a bright noon sky a strength of .16
 is faint (it is additive on an already bright pixel); a page may raise the strength by day or tie `RAD.k` to the hour.
 
