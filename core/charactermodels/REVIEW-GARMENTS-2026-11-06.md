@@ -445,3 +445,12 @@ The plan takes sections 1 to 3 above whole. What to change before acting on it:
   back, `roles-collars-2026-11-10.png` six close-ups. The audit's "inside" rises a little on garments whose collar
   now stands as a ring (the camera looks into it: the Yuni trade duster 17345 to 23853 px) and skin falls to 0 on
   the six Yuni outfits.
+- **The vendored copies stripped (2026-11-10).** `build_inspired_outfits.py` defined 25 of the package's functions
+  itself (the measurement of 2026-11-08 had counted the wrappers and missed the copies with the same names: its own
+  `torso_tube`, `limb_tube`, `smooth_push`, `flap`, `blob`, `horn`, `pauldron`, `collar_disc`, `band`, `head_rings`,
+  `hood`, the arm and limb masks, and twelve identical ones). They are imported from the package now (5461 lines to
+  5029). Dry-built against the roles build: 71 of 276 pieces change, most by millimetres (the old arm and limb masks
+  set different thresholds, so every tube fitted against them shifts), five trunk garments by their row count (the
+  core's tube spaces rows by height) and four big robes by up to 17 cm inside the drape (the rustic envoy's gambeson
+  174 mm, the hierophant's robe 168, the aedile's agbada 167, the heliarch's mantle 163: the same silhouette from the
+  front and back, `handoff-shots/strip-2026-11-10.jpg`). The labs' verify runs with the next commit's rebuild.
