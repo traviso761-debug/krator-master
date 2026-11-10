@@ -6,17 +6,20 @@
 //   lower    Terraces I-II (Cfa, under ~1.85 km): the SW lowlands' broadleaves, the paddies
 //   spiral   Terrace III and the rille gorges (Cfa/Cfb, ~1.85-2.25 km): tier cedar and the right-handed spiral flora planted round Tallwalls
 //   cloud    Terrace IV (Cfb/Dfb, ~2.5-2.75 km): the S highlands' cloud forest in the deck
+//   paramo   Terrace V and the shield's rim (Dfc/ET, over ~3 km, cold over ~.22 at the shield's lapse): the S highlands' rosettes (station 6)
+//   warm     the shield's warm ground (the geo field: KTHERM's vents, station 6): fumarole moss, the rosettes thickest on the warm rims
 //   bank     a river's or a basin's banks (the flow and wet fields)
 //   cliff    steep bare rock (a riser's colonnade): nothing roots there; every zone above is multiplied by 1 - cliff
 GSTEP.TREES=[];   /* the kin trees' records (87-host-kin.js fills it: the inspector, the views and the checks read it) */
 (function(){const {clamp,smooth,pick}=BIO.fn;
 function zones(x,z){const F=n=>BIO.field(n,x,z);
- const wet=F('wet'),flow=F('flow'),slope=F('slope'),rock=F('rock'),cold=F('cold'),barren=F('barren'),fog=F('fog'),farm=F('farm'),site=F('site');
+ const wet=F('wet'),flow=F('flow'),slope=F('slope'),rock=F('rock'),cold=F('cold'),barren=F('barren'),fog=F('fog'),farm=F('farm'),site=F('site'),geo=F('geo');
  const cliff=smooth(.72,.92,slope)*smooth(.3,.6,rock),live=(1-barren)*(1-cliff)*(1-smooth(.35,.7,site)),gentle=smooth(.6,.28,slope);
- return{wet,flow,slope,rock,cold,barren,fog,farm,site,cliff,live,gentle,
+ const paramo=live*smooth(.2,.26,cold);
+ return{wet,flow,slope,rock,cold,barren,fog,farm,site,geo,cliff,live,gentle,paramo,warm:live*smooth(.08,.45,geo),
   lower:live*smooth(.02,.006,cold)*(1-farm),                        /* under ~1.85 km at this lapse (+16 degC and warmer: cold 0) */
   spiral:live*smooth(.006,.02,cold)*smooth(.12,.09,cold)*(1-rock*.5),  /* ~1.85-2.4 km: Terrace III and the rilles */
-  cloud:live*smooth(.1,.14,cold)*(1-rock*.35),                       /* over ~2.4 km: Terrace IV in the deck */
+  cloud:live*smooth(.1,.14,cold)*(1-rock*.35)*(1-paramo*.85),        /* over ~2.4 km: Terrace IV in the deck (giving way to the paramo over ~3 km) */
   bank:Math.max(flow,smooth(.75,.95,wet))*live,
   tree:live*(1-farm)*(1-rock*.6)};}
 GSTEP.zones=zones;

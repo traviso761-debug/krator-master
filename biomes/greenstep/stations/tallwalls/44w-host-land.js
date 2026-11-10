@@ -100,7 +100,8 @@ const STATION=(function(){const R=3000;
   talus:(x,z)=>{const zl=lipZ(x),d=zl-z;return d>R2RUN-30&&d<R2RUN+80?smooth(R2RUN+80,R2RUN+10,d):0;},
   strata:BIO.strata({recipe:'tibasalt-ponded',seed:7103,range:[1200,2800],res:.5,private:true}),
   spine:[[SITE.x,SITE.z],[-720,lipZ(-720)+60],[XC+60,ZLC+200],[XW-120,ZLW+260],[0,POOL.z-260],[-300,POOL.z-700],[cx(800),800],[cx(Z3C)-140,Z3C-160],[-900,400],[900,-200],[300,-2400],[-1200,-2100],[600,2500]]});
- Object.assign(L,{H3c:H3(-720,lipZ(-720)),lipZ,r3Z,cx,wzOf,cLevel,wLevel,XC,XW,ZLC,ZLW,Z3C,POOL,SITE,BASIN,LEDGE,T4,T1,T2,R2RUN,R3RUN});return L;})();
+ /* the leaf litter on the grass's map and the lichen on the moss's (45: shared layers, no sampler of their own: the ground stays at 15 units) */
+ Object.assign(L,{shareLayers:{leafy:'grass',lichen:'moss'},H3c:H3(-720,lipZ(-720)),lipZ,r3Z,cx,wzOf,cLevel,wLevel,XC,XW,ZLC,ZLW,Z3C,POOL,SITE,BASIN,LEDGE,T4,T1,T2,R2RUN,R3RUN});return L;})();
 const TERR=STATION.TERR,LAKES=STATION.LAKES,RIVERS_SPEC=STATION.RIVERS_SPEC,FALLS=STATION.FALLS,SPINE=STATION.SPINE,STRATA=STATION.STRATA,ROCK=STATION.ROCK;
 function terrainH(x,z){return STATION.terrainH(x,z);}
 function waterH(x,z){return STATION.waterH(x,z);}
@@ -109,9 +110,9 @@ const LAND={name:'The Citadel Step (greenstep station 3)',station:'tallwalls',ti
  hint:'Station 3 of Greenstep: Terrace III between the Great Veil and the Upper Citadel Scarp, the Clodosriba and the Western Rille falling side by side at Tallwalls\' promontory (its site only: the settlement build\'s), the S highlands\' spiral flora and the SW lowlands\' oaks read in place (scale model 5.1, px 650,1268)',
  region:{name:'The Citadel Step (station 3)',x:0,z:0,r:TERR.R},wind:[.6,.8],sky:{px:650,py:1268},atm:1.25,cloud:.65,dust:false,
  fog:{falloff:1/650,sun:.3,sky:.5},climate:{cold:false,dry:false},wet:true,groundN:640,lod:{hero:450},kinLT:650,kinHero:440,   /* the kin's hero forms within 440 m of the spine (the SW lowlands' oak leaves stay under the 250k instance cap) */
- /* three layers, not five: this land is wet, and the wet ground's hollow map, the cloud noise (2) take the units the transect's count left free;
-    the GPU verify (2026-11-09) found 17 samplers on the ground, ANGLE links 15 at most (45). The forest litter is the paint's forest noise,
-    the lichen the strata's basalt */
+ /* three layers with a map, not five: this land is wet, and the wet ground's hollow map, the cloud noise (2) take the units the transect's count left
+    free; the GPU verify (2026-11-09) found 17 samplers on the ground, ANGLE links 15 at most (45). The forest litter and the lichen are drawn on the
+    grass's and the moss's maps (STATION.shareLayers, above) */
  groundLayers:['grass','moss','redsoil'],
  plants:['fern','grass','sedge','moss','begonia','rice'],
  riverLook:[0x3a7a6e,0x163e3a],

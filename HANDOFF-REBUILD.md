@@ -1,5 +1,20 @@
 # Handoff: the all-builds rebuild
 
+## Greenstep finished in the cloud (2026-11-09, `claude/greenstep-finish-cloud`, from `claude/cloud-kits-verify` 6546a3eee; a cloud session, no GPU)
+
+- **Stations 1, 2, 4, 5 and 6** of `biomes/greenstep` built (`build.py --station gatestep|loamstep|rilleforge|cloudstep|headvent`, `--all` the
+  six; `PLAN.md` "Stations 1, 2, 4, 5 and 6, as built"): the Gate-Step (riser 1 on `KRELIEF.stair`, the Gate Falls at a `KRELIEF.rille` gorge's
+  head, the Gate Mere, the watch-towers' sites), the Loam-Step (the Great Veil from below, paddies on `core/mask`, a `KRELIEF.tube`'s pits and the
+  tube barn's site), the Hollow Way (`KRELIEF.tube` + `tubeRille` + `KCAVERN`: the trench, a lava fall, the west portal, the great 90 m skylight,
+  the rille-forges' site), the Cloud Bench (the upper Clodosriba's trench under three `KCAVERN` bridges between risers 4 and 3) and the Fissure
+  Shield (`KRELIEF.volcano`, `KTHERM`'s warm ground, `WATER.spring`, the Headwall Falls). Kin read in place from swlowlands and shighlands.
+- **Shared in the kit:** every ground at 15 texture units with the litter and the lichen back on shared samplers (`STATION.shareLayers`), checked
+  under `--assert` (`window._groundUnits`: the linked program's active samplers; `KSHADOW.units` double-counts core/atmos's `atmRainOcc`);
+  `core/mask` on every page; site anchors. **Station 3's page changed** (these shared parts): its GPU pass no longer covers its bytes.
+- **Checks:** `verify.py --assert` on all six pages in software GL (SwiftShader); `tools/test_all.py --no-build`, `check_core_use`, `check_port`.
+  **Owed:** the GPU verify of all six (`KRATOR_GL=gpu`, `--assert --all-views`); `PORT-BASELINE.json` was not rewritten (greenstep.html differs
+  from it, the five new pages are not in it); the gallery when Greenstep reaches `main`. Not merged.
+
 ## The cloud kits merged and GPU-verified (2026-11-09, `claude/cloud-kits-verify`, from `claude/biome-rebuild` 0e2f6649d; not pushed)
 
 **Merged** (sources; pages and the baseline rebuilt here): twins (`ccr-906e567d`), godshearth (`ccr-b9d1a178`), godstep and greenstep

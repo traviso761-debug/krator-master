@@ -51,7 +51,9 @@ const OBSTACLES=[];
 // THE MASK: the core's default (nothing rooted where the water is over the ground, a ramp over the first .7 m: a host's own mask replaces it, so it is
 // written out here) and nothing on a rock body (KSTACKS: a dome, a tor) or within a metre and a half of its foot
 /* and nothing on Tallwalls' promontory (the site field: the settlement build's ground, PLAN.md "Decided at the build") */
-const ROCK_MASK=(x,z)=>{const d=terrainH(x,z)-waterH(x,z);let w=d<.15?0:d<.7?(d-.15)/.55:1;w*=1-smooth(.35,.7,FIELD.site(x,z));if(w<=0||!ROCK.length)return w;const f=KSTACKS.foot(ROCK,x,z);return f&&f.d<1.5?0:w;};
+/* and nothing in a cavern's opening (a skylight, a tube's portal: STATION.hole, the station's KCAVERN wells with a margin past their rim; or STATION.noRoot,
+   where a station says more finely: station 5's bridges' decks are rock and grow, their arches' mouths do not) */
+const ROCK_MASK=(x,z)=>{const d=terrainH(x,z)-waterH(x,z);let w=d<.15?0:d<.7?(d-.15)/.55:1;w*=1-smooth(.35,.7,FIELD.site(x,z));if(w>0&&(STATION.noRoot?STATION.noRoot(x,z):STATION.hole&&STATION.hole(x,z,6)))return 0;if(w<=0||!ROCK.length)return w;const f=KSTACKS.foot(ROCK,x,z);return f&&f.d<1.5?0:w;};
 BIO.init({tags:'greenstep',THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,mask:ROCK_MASK,
  obstacles:OBSTACLES,ticks:tick,seed:13,origin:SPINE,center:[0,0],fields:FIELD,register:REGISTER,err:reportErr,
  lod:{hero:LAND.lod&&LAND.lod.hero!=null?LAND.lod.hero:400,mid:1000,far:2600,floor:[360,880]},
@@ -124,6 +126,16 @@ const GLW=(function(){
    too: the playa's mud polygons (KGROUND's polygon kind) and the sulphur crust carry what it drew. Wet ground (R9) adds two more: a land that has it
    (LAND.wet) shows fewer layers (89a) */
 const GL_USE=(LAND.groundLayers||['grass','leafy','moss','redsoil','lichen']);
+/* SHARED LAYERS (STATION.shareLayers {layer: the layer whose map it reads}, ringisles' way, 2026-11-09): a shared layer keeps no sampler of its own. It
+   draws in its host's KGROUND layer: the host's weight takes the shared one's too (normalised with the rest), and where the shared one has the larger
+   share (aGS, per vertex) the host's map is recoloured by its luminance to the shared layer's colour (GL_SHARE_COL, linear), as ringisles' wet sand reads
+   the sand's map. So the leaf litter (on the grass's map) and the lichen (on the moss's) come back on a ground held at fifteen units (the GPU verify's
+   limit, 2026-11-09: ANGLE on the Arc links 15). At most two shared layers (aGS.xy) */
+const GL_SHARE=(typeof STATION!=='undefined'&&STATION.shareLayers)||LAND.shareLayers||{};
+const GL_SHARE_COL={leafy:0x5e4c30,lichen:0x8a9278};
+const GL_SHARED=(function(){if(typeof KMAT==='undefined'||KMAT.mode!=='lib')return[];
+ return Object.keys(GL_SHARE).slice(0,2).map((k,si)=>{const host=GL_SHARE[k],e=KMAT.packed('greenstep','ground.'+k),W=GLW.find(l=>l[0]===k);
+  if(!e||!W||GL_USE.indexOf(host)<0||GL_USE.indexOf(k)>=0)return null;return{name:k,host,w:W[1],keep:e.tint,slot:si,col:new THREE.Color(GL_SHARE_COL[k]==null?0x808080:GL_SHARE_COL[k]).convertSRGBToLinear()};}).filter(Boolean);})();
 const GL=(function(){if(typeof KMAT==='undefined'||KMAT.mode!=='lib')return null;
  const P=n=>KMAT.packed('greenstep','ground.'+n);if(GLW.some(l=>!P(l[0])))return null;
  return GLW.filter(l=>GL_USE.indexOf(l[0])>=0).map(l=>{const e=P(l[0]);return{name:l[0],w:l[1],tex:KMAT.textures(e,{aniso:8}).map,scale:e.scale[0],keep:e.tint,mean:e.mean};});})();
@@ -131,7 +143,13 @@ const GL=(function(){if(typeof KMAT==='undefined'||KMAT.mode!=='lib')return null
 /* the grain (uDetail: the library's groundDetail, or the procedural canvas) is decoded from sRGB and normalised by its mean (~.9 sRGB, ~.79
    linear: x1.26), so it keeps riftrim's level and is shaded as a linear map (tools/check_source.py RAWTEX) */
 const MAT_GROUND=USE_KG?new THREE.MeshStandardMaterial({map:TEX_GROUND,color:0xa8a29a,roughness:.96,metalness:0}):new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0xa8a29a});
+/* A SKYLIGHT'S HOLE (a station's cavern, STATION.SKYHOLES [[x, z, r]]: r the shaft's radius where it meets the ground, less a lip): the ground
+   discards an exact circle there, so the cavern's shaft wall meets it and the cavern draws none of the ground round it (86) */
+const SKYHOLES=(typeof STATION!=='undefined'&&STATION.SKYHOLES)||[];
 MAT_GROUND.onBeforeCompile=sh=>{STRATA.inject(sh);sh.uniforms.uDetail={value:hostGroundLib('groundDetail',TEX_DETAIL)};
+ if(SKYHOLES.length){sh.uniforms.uSkyHoles={value:SKYHOLES.map(h=>new THREE.Vector3(h[0],h[1],h[2]))};
+  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform vec3 uSkyHoles['+SKYHOLES.length+'];')
+   .replace('#include <clipping_planes_fragment>','#include <clipping_planes_fragment>\nfor(int i=0;i<'+SKYHOLES.length+';i++){if(distance(vGWP.xz,uSkyHoles[i].xy)<uSkyHoles[i].z)discard;}');}
  let lay='';
  // the old plain mix (?kground=0): a custom sampler is not decoded from sRGB for us (as the strata note says): pow 2.2 by hand; a keep-0 layer is
  // its relief, normalised by the pack's mean brightness so the painted colour keeps its level
@@ -140,9 +158,9 @@ MAT_GROUND.onBeforeCompile=sh=>{STRATA.inject(sh);sh.uniforms.uDetail={value:hos
     w='vGL'+Math.floor(i/4)+'.'+'xyzw'[i%4];
    return 'if('+w+'>0.003){vec3 t=pow(texture2D(uGL'+i+',_p*'+(1/l.scale).toFixed(4)+').rgb,vec3(2.2));_a+='+w+'*mix(_b*t/'+m+',t,'+l.keep.toFixed(2)+');_s+='+w+';}';}).join('')+
    'diffuseColor.rgb=mix(_b,_a/max(_s,0.001),clamp(_s,0.0,1.0));vGLs=_s;}';}
- sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute float aCrack;attribute float aRock;varying float vCrack;varying float vRock;attribute vec4 aGL0,aGL1,aGL2;varying vec4 vGL0,vGL1,vGL2;attribute vec4 aGM;varying vec4 vGM;attribute float aAO;varying float vAO;')
-  .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vCrack=aCrack;vRock=aRock;vGL0=aGL0;vGL1=aGL1;vGL2=aGL2;vGM=aGM;vAO=aAO;');
- sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail;varying vec3 vGWP;varying float vCrack;varying float vRock;varying vec4 vGL0,vGL1,vGL2;varying vec4 vGM;varying float vAO;'+
+ sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute float aCrack;attribute float aRock;varying float vCrack;varying float vRock;attribute vec4 aGL0,aGL1,aGL2;varying vec4 vGL0,vGL1,vGL2;attribute vec4 aGM;varying vec4 vGM;attribute float aAO;varying float vAO;attribute vec2 aGS;varying vec2 vGS;')
+  .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vCrack=aCrack;vRock=aRock;vGL0=aGL0;vGL1=aGL1;vGL2=aGL2;vGM=aGM;vAO=aAO;vGS=aGS;');
+ sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail;varying vec3 vGWP;varying float vCrack;varying float vRock;varying vec4 vGL0,vGL1,vGL2;varying vec4 vGM;varying float vAO;varying vec2 vGS;'+
    (GL&&!USE_KG?GL.map((l,i)=>'uniform sampler2D uGL'+i+';').join(''):''))
   .replace('#include <map_fragment>','#include <map_fragment>\n{float vGLs=clamp(dot(vGL0,vec4(1.0))+dot(vGL1,vec4(1.0))+dot(vGL2,vec4(1.0)),0.0,1.0)*'+(GL?'1.0':'0.0')+';vec3 dt=pow(texture2D(uDetail,vGWP.xz*0.165).rgb,vec3(2.2))*1.26;vec3 dt2=pow(texture2D(uDetail,vGWP.xz*0.021+0.37).rgb,vec3(2.2))*1.26;'+
   'vec3 bc=strataColor(vSWP,vSWN);'+
@@ -154,7 +172,10 @@ MAT_GROUND.onBeforeCompile=sh=>{STRATA.inject(sh);sh.uniforms.uDetail={value:hos
 // curled plates, ?polygon=0) and the TALUS's red scree (`clast` in 3D cells, blocks a hand to a metre across)
 const KG_Q=GQ,KG_PAVE=KG_Q.get('pave')!=='0',KG_POLY=KG_Q.get('polygon')!=='0';
 if(USE_KG)KGROUND.hook(MAT_GROUND,{key:'greenstep-ground'+(KG_PAVE?'p':'')+(KG_POLY?'g':''),at:'/*KGROUND*/',relief:KG_RELIEF?{bump:.075,cavity:.8,mesh:1}:null,layers:(GL?GL.map((l,i)=>{const m=Math.pow(l.mean==null?.78:l.mean,2.2),w='vGL'+Math.floor(i/4)+'.'+'xyzw'[i%4];
-  return KGROUND.layer('greenstep','ground.'+l.name,{w,amt:1,gain:1,tint:'mix(_gP*'+(1/m).toFixed(4)+',vec3(1.0),'+l.keep.toFixed(2)+')',name:l.name});}):[]).concat([
+  const t0='mix(_gP*'+(1/m).toFixed(4)+',vec3(1.0),'+l.keep.toFixed(2)+')',S=GL_SHARED.filter(q=>q.host===l.name);
+  /* a host of a shared layer: its tint turns, by the shared one's share (vGS), to the shared colour times the map's luminance over its mean */
+  const tint=S.reduce((acc,q)=>'mix('+acc+',mix(_gP,vec3('+[q.col.r,q.col.g,q.col.b].map(v=>v.toFixed(4)).join(',')+'),'+q.keep.toFixed(2)+')*(kgLum(pow(kgT.rgb,vec3(2.2)))*'+(1/m).toFixed(4)+')/max(pow(kgT.rgb,vec3(2.2)),vec3(0.004)),vGS.'+'xy'[q.slot]+')',t0);
+  return KGROUND.layer('greenstep','ground.'+l.name,{w,amt:1,gain:1,tint,name:l.name+(S.length?'+'+S.map(q=>q.name).join('+'):'')});}):[]).concat([
  KG_PAVE?{kind:'clast',w:'vGM.x*(1.0-vRock)',amt:.72,proj:'xz',size:.06,matrix:.24,matrixColor:0xb08a6a,sub:0,fleck:0,jitter:.95,vary:.3,
   palette:[0x2a1e18,0x3e2a20,0x553828,0x1e1814,0x4a3226,0x6a4a34],seed:311,name:'pavement'}:null,
  KG_POLY?{kind:'polygon',w:'vGM.y*(1.0-vRock)',amt:.85,size:3.2,width:.05,edgeTint:'vec3(0.62,0.56,0.5)',warp:.14,seed:312,name:'mud polygons'}:null,
@@ -166,18 +187,26 @@ if(USE_KG)KGROUND.hook(MAT_GROUND,{key:'greenstep-ground'+(KG_PAVE?'p':'')+(KG_P
    shore, filled after the water is drawn), w the talus (talus) */
 const GROUND=(function(){const N=ST_GROUND_N(),S=TERR.R*2.2,cs=S/N,nx=N+1;
  const pos=new Float32Array(nx*nx*3),uv=new Float32Array(nx*nx*2),ck=new Float32Array(nx*nx),rk=new Float32Array(nx*nx),gm=new Float32Array(nx*nx*4);
- const g0=new Float32Array(nx*nx*4),g1=new Float32Array(nx*nx*4),g2=new Float32Array(nx*nx*4),F={};
+ const g0=new Float32Array(nx*nx*4),g1=new Float32Array(nx*nx*4),g2=new Float32Array(nx*nx*4),gs=new Float32Array(nx*nx*2),F={};
+ const shIdx=GL?GL_SHARED.map(q=>GL.findIndex(l=>l.name===q.host)):[];
  for(let j=0;j<nx;j++)for(let i=0;i<nx;i++){const k=j*nx+i,x=-S/2+i*cs,z=-S/2+j*cs,y=terrainH(x,z);pos[k*3]=x;pos[k*3+1]=y;pos[k*3+2]=z;uv[k*2]=x/S+.5;uv[k*2+1]=.5-z/S;
   FNAMES.forEach(n=>F[n]=FC.at(FC.a[n],x,z));ck[k]=F.crack;rk[k]=F.strata*(1-F.snow);
   gm[k*4]=Math.max(F.pave,F.wash*.8);gm[k*4+1]=F.polyg;gm[k*4+3]=F.talus;
   if(GL){const wl=waterH(x,z);F.under=wl>-1e8&&y<wl?1:0;F.depth=F.under?wl-y:0;F.x=x;F.z=z;
-   let s=0;const w=GL.map(l=>{const v=clamp(l.w(F),0,1)*(1-F.char);s+=v;return v;}),k1=s>1?1/s:1;   /* a burn (a station's char field) keeps its paint: no litter or turf over the ash */
+   let s=0;const w=GL.map(l=>{const v=clamp(l.w(F),0,1)*(1-F.char);s+=v;return v;});   /* a burn (a station's char field) keeps its paint: no litter or turf over the ash */
+   /* a shared layer's weight joins its host's slot; its share of the two (aGS) turns the host's colour to its own */
+   GL_SHARED.forEach((q,si)=>{const v=clamp(q.w(F),0,1)*(1-F.char),hi=shIdx[si];if(hi<0)return;gs[k*2+q.slot]=v/Math.max(1e-4,v+w[hi]);w[hi]+=v;s+=v;});
+   const k1=s>1?1/s:1;
    for(let q=0;q<4;q++){g0[k*4+q]=w[q]*k1;g1[k*4+q]=w[q+4]*k1;g2[k*4+q]=(w[q+8]||0)*k1;}}}
  const idx=new Uint32Array(N*N*6);let t=0;
- for(let j=0;j<N;j++)for(let i=0;i<N;i++){const a=j*nx+i,b=a+nx,c=b+1,d=a+1;idx[t++]=a;idx[t++]=b;idx[t++]=d;idx[t++]=b;idx[t++]=c;idx[t++]=d;}
+ /* a cavern's openings (STATION.hole: a skylight, a tube's portal) are the cavern's to draw: the quads whose centre is within them are left out (the
+    station's wells reach past them by their rim, so the cavern's own ground overlaps the cut's edge) */
+ const HOLE=typeof STATION!=='undefined'&&STATION.hole?STATION.hole:null;let holes=0;
+ for(let j=0;j<N;j++)for(let i=0;i<N;i++){if(HOLE&&HOLE(-S/2+(i+.5)*cs,-S/2+(j+.5)*cs,0)){holes++;continue;}const a=j*nx+i,b=a+nx,c=b+1,d=a+1;idx[t++]=a;idx[t++]=b;idx[t++]=d;idx[t++]=b;idx[t++]=c;idx[t++]=d;}
+ window._groundHoles=holes;
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('uv',new THREE.BufferAttribute(uv,2));
  g.setAttribute('aCrack',new THREE.BufferAttribute(ck,1));g.setAttribute('aRock',new THREE.BufferAttribute(rk,1));g.setAttribute('aGM',new THREE.BufferAttribute(gm,4));
- g.setAttribute('aGL0',new THREE.BufferAttribute(g0,4));g.setAttribute('aGL1',new THREE.BufferAttribute(g1,4));g.setAttribute('aGL2',new THREE.BufferAttribute(g2,4));
+ g.setAttribute('aGS',new THREE.BufferAttribute(gs,2));g.setAttribute('aGL0',new THREE.BufferAttribute(g0,4));g.setAttribute('aGL1',new THREE.BufferAttribute(g1,4));g.setAttribute('aGL2',new THREE.BufferAttribute(g2,4));
  /* THE GROUND'S CAVITY (aAO; the owner, 2026-11-03: the painted badlands "too uniformly bright, looks painted on"): each vertex darkened by how far
     it lies under its neighbours' mean (a gully's floor, a crease under a ledge, the foot of a rib) and lifted a little where it stands over them (a
     rib, a ridge), the bedded rock's steep faces a shade darker than its benches; from the mesh itself, so it follows what is drawn. ?cavity=0 none */
@@ -186,7 +215,7 @@ const GROUND=(function(){const N=ST_GROUND_N(),S=TERR.R*2.2,cs=S/N,nx=N+1;
    const sl=Math.hypot(pos[(k+1)*3+1]-pos[(k-1)*3+1],pos[(k+nx)*3+1]-pos[(k-nx)*3+1])/(2*cs),bed=rk[k];
    ao[k]=clamp(1-clamp(lap/cs*1.6,0,.42)*(.6+.4*bed)+clamp(-lap/cs*.5,0,.08)-.14*bed*smooth(.35,.85,sl),.5,1.08);}
   g.setAttribute('aAO',new THREE.BufferAttribute(ao,1));}
- g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);if(KG_RELIEF)KGROUND.cavityMesh(m);m.userData.probeSkip=true;m.userData.inspectLabel=LAND.name.replace(' (ideal type)','');scene.add(m);return m;})();
+ g.setIndex(new THREE.BufferAttribute(t<idx.length?idx.subarray(0,t):idx,1));g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);if(KG_RELIEF)KGROUND.cavityMesh(m);m.userData.probeSkip=true;m.userData.inspectLabel=LAND.name.replace(' (ideal type)','');scene.add(m);return m;})();
 function ST_GROUND_N(){return LAND.groundN==null?560:LAND.groundN;}
 
 // ---------------------------------------------------------------- the rock bodies (KSTACKS, 44w: the plateau's slickrock domes, the tundra's tors)

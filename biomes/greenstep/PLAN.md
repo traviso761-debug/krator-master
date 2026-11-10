@@ -7,8 +7,10 @@
 > *"give me a plan for Green Valley (renamed Greenstep) to be a rainer, lusher version of the Godstep, with multiple levels of lava terraces. it is the greatest refuge of the free Giants, home to their greatest haven, the fortress of Tallwalls"*
 > *"tallwalls is not just a home to free giants but other escaped slaves from Voth and Dalab as well"*
 
-**Status: the owner said proceed (2026-11-09).** First page built: station 3's ground, the Citadel Step (`dist/greenstep.html`,
-section "Station 3, as built"). Tallwalls' buildings are not the biome kit's (below, and "Still open"). Stations 1, 2, 4, 5 and 6 are later turns.
+**Status: the owner said proceed (2026-11-09).** All six stations built (2026-11-09, two cloud sessions): station 3's ground, the Citadel
+Step (`dist/greenstep.html`, section "Station 3, as built"), and stations 1, 2, 4, 5 and 6 (`dist/greenstep-<name>.html`, section "Stations 1,
+2, 4, 5 and 6, as built"). Tallwalls' buildings are not the biome kit's (below, and "Still open"); nor are the watch-towers, the tube barn or
+the rille-forges: each station publishes their sites.
 
 **Decided at the build (2026-11-09):**
 - **The first page is station 3's ground**: the Citadel Step (Terrace III) round 5.1 px 650,1268, the Great Veil riser with the Clodosriba's
@@ -57,11 +59,23 @@ takes, and for each it does not, why:
 | `core/export` | `07`, `09` | the krator-world container |
 | `core/shadow` | `KSHADOW`, off at load | the sun's shadows on the switch |
 
-Not taken: `core/mask` (nothing is placed from a canvas), `core/city` (**Tallwalls is the settlement build's**: the kit only publishes its
+**Added for stations 1, 2, 4, 5 and 6 (2026-11-09, the second cloud session):**
+
+| Module | Takes | For |
+|---|---|---|
+| `core/mask` | `25-core-mask`, `27-core-mask-distance` (every page) | the Free Giants' paddy plots (stations 1 and 2) painted on a `KMASK.canvas` and read through `KMASK.distance` both ways, as a signed distance (44v `maskField`): the farm field, the plots' levelling and bunds; the canvas's hash in the farm's record |
+| `core/terrain` | `KRELIEF.stair` (every new station's risers), `KRELIEF.rille` (station 1's gorge), `KRELIEF.tube` (stations 2, 4, 5), `38b-core-relief-lava` (`KRELIEF.tubeRille`: stations 4, 5), `KRELIEF.volcano` and `KRELIEF.range` (station 6's shield, spatter cones, fissure rampart and headscarp), `39-core-cavern` (`KCAVERN`: stations 4, 5), `47-core-therm` (`KTHERM`: station 6) | the risers as the god's stair (ponded flats, lobate fronts, a bench on each flow's top), the gorge's walls stepping on the same flows' tops, the tubes and their fallen roofs, the cavern under the roofs, the shield's warm ground |
+| `core/water` | `geyser/52`, `52b` (station 6) | the crater bog's hot springs (`WATER.spring`, `WATER.drawSpring`) |
+
+A station names what it reads beyond `src/` in its `station.json` (`"reads"`, by path; build.py). The ground's units: three library layers
+with a map on every page, the leaf litter and the lichen drawn on the grass's and the moss's maps (`STATION.shareLayers`, 45), so every
+ground is fifteen units (`window._groundUnits`, checked by `verify.py --assert`).
+
+Not taken: `core/city` (**Tallwalls is the settlement build's**: the kit only publishes its
 site), `core/hamlet`, `core/camp`, `core/simulation`, `core/furnish`, `core/lod` (the biome core's runtime LOD covers it), `36-core-carve`,
-`39-core-cavern` and `KRELIEF.tubeRille` (**the Hollow Way's roofed tube and skylights are station 4's**, `rilleforge`: on this page the
-Western Rille is the open, collapsed stretch where it meets the Clodosriba), `46-core-lava` (every flow is old: the ground is drawn as the
-model's benches, not baked), `47-core-therm` (no heat here: the fissure shield is station 6's), `42-core-frost`, `41-core-scour`,
+`39-core-cavern` and `KRELIEF.tubeRille` on station 3 (**the Hollow Way's roofed tube and skylights are station 4's**, `rilleforge`: on station
+3's page the Western Rille is the open, collapsed stretch where it meets the Clodosriba), `46-core-lava` (every flow is old: the ground is drawn as the
+model's benches, not baked), `47-core-therm` on stations 1-5 (no heat there: the fissure shield is station 6's), `42-core-frost`, `41-core-scour`,
 `38-core-fire`, the seasons beyond the wet and dry.
 
 `tools/check_core_use.py` runs on the page before it is called done; `tools/check_port.py` before every build.
@@ -116,6 +130,35 @@ highlands' coilbark, spiral trumpet, volute tree and crozier tree fern on Terrac
 palms in the deck. The kit's floor: ground fern, spray moss, hanging moss, sedge and reed, bench grass, escargot begonia, paddy rice,
 basalt boulders and fallen columns. The wet season's sky (`LAND.climate` wet; rain cover and wet ground on), the falls' spray and the
 deck as height fog.
+
+## Stations 1, 2, 4, 5 and 6, as built (2026-11-09, the second cloud session)
+
+Each station is one page (`python3 build.py --station <name>`, `dist/greenstep-<name>.html`; `--all` builds the six) from `src/` and its own
+`stations/<name>/` (`44w-host-land.js`, the land on `stepLand()`; `station.json`, the kin kits and the core it reads). Like station 3, each
+compresses its stretch of the staircase into one page (6 km for stations 1 and 2, 4.8 km for 4, 5 and 6) and follows the model's numbers at its
+point (the table in "Station 3, as built"); each riser is `KRELIEF.stair`, its flows' tops the strata's benches.
+
+| # | Station | The page | Its own records |
+|---|---|---|---|
+| 1 | `gatestep` (638,1212; ~805-920 m, +23 degC) | Terrace I under **riser 1, the Outer Gate-Scarp** (~620 m of columnar fronts). The Clodosriba is not a curtain here: its fall has cut back ~640 m into Terrace II, so **the Gate Falls** (~600 m) stand at the head of **a gorge** (`KRELIEF.rille`, its walls stepping on the stair's flows' tops, its floor set level with Terrace I) that breaches the scarp; the river runs out of its mouth into **the Gate Mere** (805 m: the model's flat bed) and on north toward Tallhouse. The Free Giants' gardens by the mere on `core/mask` | the two **watch-towers' sites** on the crest either side of the gorge's mouth (`site.watchtower.west`, `.east`: footprints, level, sighted toward Tallhouse), kept clear; the gardens' record (the KMASK hash) |
+| 2 | `loamstep` (644,1242; 1,465 m, +19 degC) | Terrace II under **the Great Veil** seen from below: the twin curtains into the Veil Basin, the joined Clodosriba crossing the bench through **the wet paddies** (70 bunded plots on `core/mask`, levelled and sunk inside their bunds) and **the cork groves** (a denser cork-oak row off the paddies); **a lava tube** under the bench (`KRELIEF.tube`, Terrace II's own flow drained), its roof fallen in a chain of pits | **the tube barn's site** in the largest pit (`site.tubebarn`), kept clear; the tube's and the paddies' records |
+| 4 | `rilleforge` (636,1274; the bench ~1,975 m, the tube's floor ~1,930) | **The Hollow Way**: the Western Rille's tube (`KRELIEF.tube`, 35 m wide, ~30 m high, its crown ~18 m down), its roof fallen in the west and in a short window (`KRELIEF.tubeRille`: a vertical-walled trench cut to the tube's floor), standing elsewhere; **a 14 m lava fall** where the tube's floor steps down (the stream leaps it in the trench); the stream sinks into the breakdown at **the west portal**; **KCAVERN** carves the roofed gallery to the window and 420 m past it (closed there), with **the great 90 m skylight** over a breakdown mound (`C.shaft`, `C.monolith`) and the small skylights `tubeRille` found where the roof is thin; a `well` opening at each skylight and portal (the ground mesh left open there, the cavern meshing the ground with the mouth cut in it) | **the rille-forges' site** (`site.rilleforge`: the Four-Arm Smithies, underground on the gallery's floor; no surface field) |
+| 5 | `cloudstep` (662,1304; 2,595 m, +11 degC) | Terrace IV in the cloud deck between **riser 4** (the Mist-Curtain Scarp, the Clodosriba leaping it into the head of its rille) and **riser 3** (the Upper Citadel Scarp, the stream leaping it from the trench's mouth); the upper Clodosriba in **its tube's trench** (`KRELIEF.tubeRille`), fern-choked and steaming (the fog field), under **three natural bridges** (45-75 m of roof left standing: KCAVERN carves the arch under each, one `well` over each bridge, its deck rock that grows: `STATION.noRoot` keeps plants only off a mouth) | the bridges as cavern records |
+| 6 | `headvent` (668,1338; the crater floor 3,280 m, +7 degC) | Terrace V: **the fissure shield** (`KRELIEF.volcano`, its rim ~3,420 m), its crater a flat **warm bog** round **the tarn** (the Clodosriba's source, peat) and **three hot springs** (`WATER.spring`, iron and sulphur); **the fissure** across it, a low spatter rampart (`KRELIEF.range`) with its cleft and three **spatter cones**; **the warm ground** (`KTHERM`: five fumaroles on the crater floor, the fissure a line vent, the cones) read by the zones (the geo field: the rosettes thickest on the warm rims, tree ferns in the steam, moss); the Clodosriba out through **the rim's northern breach** in a gorge down the shield's flank to **riser 4's lip**; to the south **the Outer Wall's headscarp** (`KRELIEF.range`, ~1,100 m on the page) with **the Headwall Falls**, two spring lines breaking from its face into **the Mist-Wall fen** and a pool | the crater (its KTHERM export) and the fissure as feature records |
+
+**Flora by station** (all read in place; `LAND.kin`): 1 and 2, the SW lowlands' sprawl oak, cork oak, red bay and veil willow, the S
+highlands' crozier tree fern in the spray (and coilbark at station 2's lips); 4, the S highlands' coilbark, spiral trumpet, volute tree and
+crozier on the roof and in the trench, the SW lowlands' red bay and willow; 5, the S highlands' cloud forest (frill tree, screw palm, coilbark,
+crozier, volute) and giant groundsels on Terrace V's edge; 6, the S highlands' paramo (ruffle-crown, giant groundsel, spiral lobelia, spiral
+aloe) and crozier in the crater's steam. The zones gained **paramo** (cold over ~.22) and **warm** (the geo field) for station 6; stations 5
+and 6 do not load the SW lowlands' kit (pages ~6 MB).
+
+**Where the stations part from the plan** (each the ground as drawn, as station 3 does): station 1's falls stand at a gorge's head, not on
+the scarp's face (the plan's own "breached by the Lower Clodosriba gorge"); station 4's tube floor is ~1,930 m (the plan's 1,860 m is under
+Tallwalls' rock, off this page), the forges' wheels and hammers and the plan's subterranean waterfalls are the settlement build's (the stream
+here sinks at the west portal); station 5's bridges are 45, 60 and 75 m long; station 6 stands at the model's warm floor (668,1338), not the
+plan's 668,1344 (4,656 m), and its rain is the model's 769 mm with the deck drawn by fog. The plan's corkscrew bells, giant lotus and
+tuber-gourds have no species yet (the paddies are the kit's paddy rice).
 
 ---
 
