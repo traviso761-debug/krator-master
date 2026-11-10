@@ -499,6 +499,26 @@ def cover_weights(P, V, where, spec, JJ, WW, names=()):
             # covered: the outer vertex lies outward of it, not off to one side (a belt across an open coat's gap)
             if f > 0 and rad[gi] < rad[O[k]] - 0.002 and (P[O[k]] - P[gi]) @ out > 0.25 * d[k]:
                 take_weights(JJ, WW, gi, O[k], f)
+    # issue 1 (REVIEW-GARMENTS-2026-11-06.md): a chainless tier inside a chained tier of layer 1 (the inner of two
+    # overlapping trunk tubes, whose chains the concentric check dropped) takes the outer's chain weights where the
+    # outer covers it, between the outer's hem and its top row; what is weighted to the legs keeps its own
+    leg = [any(s in n for s in ('UpLeg', 'Leg', 'Foot')) for n in names]
+    for po in [q for q in range(len(layer)) if layer[q] == 1]:
+        O = np.nonzero(part == po)[0]
+        if not len(O):
+            continue
+        top_y, hem_y = float(P[O, 1].max()), float(P[O, 1].min())
+        for gi in free:
+            if part[gi] != -1 or not (hem_y - 0.02 <= P[gi, 1] <= top_y - 0.01):
+                continue
+            if sum(w for jj, w in zip(JJ[gi], WW[gi]) if int(jj) < len(leg) and leg[int(jj)]) >= 0.5:
+                continue
+            d = np.linalg.norm(P[O] - P[gi], axis=1)
+            k = int(np.argmin(d))
+            f = float(np.clip((0.085 - d[k]) / 0.035, 0, 1))
+            out = np.array([P[gi, 0], 0, P[gi, 2]]) / max(rad[gi], 1e-6)
+            if f > 0 and rad[gi] < rad[O[k]] - 0.002 and (P[O[k]] - P[gi]) @ out > 0.25 * d[k]:
+                take_weights(JJ, WW, gi, O[k], f)
     for lo_lay, hi_lay in ((0, 1), (1, 2)):
         for po in [q for q in range(len(layer)) if layer[q] == hi_lay]:
             O = np.nonzero(part == po)[0]

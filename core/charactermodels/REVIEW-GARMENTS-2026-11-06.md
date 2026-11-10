@@ -454,3 +454,19 @@ The plan takes sections 1 to 3 above whole. What to change before acting on it:
   core's tube spaces rows by height) and four big robes by up to 17 cm inside the drape (the rustic envoy's gambeson
   174 mm, the hierophant's robe 168, the aedile's agbada 167, the heliarch's mantle 163: the same silhouette from the
   front and back, `handoff-shots/strip-2026-11-10.jpg`). The labs' verify runs with the next commit's rebuild.
+- **Issue 13 (2026-11-10): belts, sashes and medallions.** Rule B stood a band off the largest trunk radius within
+  3.8 cm of its height plus 12 mm, mid-air on a pleated tunic. A closed band below the shoulders (a belt, sash, obi,
+  cummerbund, baldric, swag) now conforms to the trunk at its own height, the tube's ring there or a trunk vertex
+  within 1 cm, plus 3 mm, drawn in as well as out; its base vertex (skin weights and morph source) is the trunk's
+  under each of its vertices; a small accoutrement of Check 7 (a medallion, a buckle, a button) takes one weight
+  vector from the trunk vertex nearest its centre instead of a rigid spine joint. Rings only: the first cut also
+  flattened the heliophant's hanging sash tail (17 cm) and the knot, which carry the word. 22 pieces move, their
+  bands by 2.5 to 6.4 cm inward (the askari cuirass band 64 mm, the Xanadu penbey band 47, the sibyl's swags 45, the
+  axeman's belt 45): `handoff-shots/fix13-2026-11-10.jpg`, the waist from the front and the side.
+- **Issue 1 (2026-11-10), the builder half.** A tier that lost its chains to the tier over it (the concentric check)
+  kept the body's weights and swung through the chained tier in a stride. `cover_weights` gives such a vertex the
+  outer tier's chain weights when it lies inside a layer-1 chained tier between its hem and its top row, faded over
+  3.5 cm from 8.5 cm; what is weighted to the legs keeps its own. Nine pieces re-weight, none moves: the pleasure
+  caftan, the dredger's robe, the heliophant's mantle, the aedile's agbada, Phil's trousers, the praetorian's lorica,
+  the patriarch's robe, the commissar's coat, the cantor's gorget: `handoff-shots/fix1-2026-11-10.jpg`, a walk.
+  Blender-built garments take it at their next build.
