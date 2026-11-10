@@ -7,7 +7,13 @@ in a second cloud session (2026-11-09, `claude/greenstep-finish-cloud`), again i
 - [ ] **GPU verify of all six pages is owed** (a local session, `KRATOR_GL=gpu` through `harness.py lock`): `verify.py --assert --all-views` on
   `dist/greenstep.html` and the five `dist/greenstep-<station>.html`. Station 3's page changed too (the shared layers, the units check, the sites
   list, core/mask on the page), so its GPU pass on `claude/cloud-kits-verify` no longer covers its bytes. Watch: the ground's program linking
-  (the new units check counts what the page declares, not what the GPU links), the caverns' material on stations 4 and 5, the springs on 6.
+  (the units check counts the active samplers of the program SwiftShader linked; ANGLE on the Arc may count otherwise), the caverns' material
+  on stations 4 and 5, the springs on 6.
+- [x] **Software GL** (2026-11-10, second session): `verify.py --assert` passes on all six pages as built (SwiftShader, three presets each):
+  station 1 9.4 M scene triangles, 6,610 kin trees; station 3 13.1 M, 15,734; station 4 10.4 M, 10,459, the cavern 135k triangles in 16 meshes;
+  station 5 15.2 M, 26,071, the bridges 62k in 7 meshes; station 6 10.7 M, 18,089; station 2 passes as well. Every ground at 15 active texture
+  units; no item past the instance cap (stations 1 and 2's oak leaves and station 5's frill fins were thinned to get there: `kinHero` and the
+  rows' cells).
 
 - [x] **GPU verify** (2026-11-09, `claude/cloud-kits-verify`): on the GPU the ground's program did not link (17 samplers: five KGROUND
   layers, the strata's five, the horizon's two, the paint, the grain, the rain cover, the wet ground's hollow map and the cloud noise;

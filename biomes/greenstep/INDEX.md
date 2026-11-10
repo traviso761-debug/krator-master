@@ -29,19 +29,19 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 |---|---|---|
 | `00-head.html` | 1 |  |
 | `44v-host-landlib.js` | 8 |  |
-| `45-host-stage.js` | 29 | the climate fields, cached (the land's fieldsAt: (32); the host binding (49); the ground (63); the rock bodies (KSTACKS, 44w: the plateau's sli (215); the water (237) |
+| `45-host-stage.js` | 30 | the climate fields, cached (the land's fieldsAt: (32); the host binding (49); the ground (63); the rock bodies (KSTACKS, 44w: the plateau's sli (221); the water (243) |
 | `50-biome-greenstep-species.js` | 9 | palettes (sRGB, written a stop dark: the sun and (19); the plants (each a record: its items, its tags) (25); textures (the procedural fallbacks; the library' (42); geometries local to this kit (60); materials (the slots are materials.json's famili (79); instanced items (93) |
 | `55-biome-greenstep-zones.js` | 4 | colour (the maths is the core's, BIO.col) (26) |
 | `60-biome-greenstep-floor.js` | 6 | the plants (17); the planter: (x,z,Z,lv,st) (26); the pass (35) |
 | `70-biome-greenstep.js` | <1 |  |
 | `83-host-far.js` | 3 |  |
-| `86-host-cavern.js` | 4 |  |
+| `86-host-cavern.js` | 6 |  |
 | `87-host-kin.js` | 4 |  |
 | `89-host-sky.js` | 2 |  |
 | `89a-host-atmos.js` | 5 |  |
 | `89w-host-water.js` | 3 |  |
 | `89z-host-build.js` | 5 |  |
-| `99-host-take.js` | 14 | the inspector's words (20); the probe's budgets and the kit's own checks (ve (31); the page, handed to the host (103) |
+| `99-host-take.js` | 16 | the inspector's words (20); the probe's budgets and the kit's own checks (ve (31); the page, handed to the host (112) |
 | `99-tail.html` | <1 |  |
 
 ## stations/
@@ -54,5 +54,5 @@ Each station builds one page (`build.py --station <name>`) from its own fragment
 | gatestep | 44w-host-land.js | 15 |
 | headvent | 44w-host-land.js, 89x-host-springs.js | 16 |
 | loamstep | 44w-host-land.js | 13 |
-| rilleforge | 44w-host-land.js | 14 |
+| rilleforge | 44w-host-land.js | 15 |
 | tallwalls | 44w-host-land.js | 19 |
