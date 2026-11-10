@@ -14,7 +14,7 @@ const STN={key:'hearths',title:'Krator Godstep: the stair\'s hearth',
  env:{temp:(x,z)=>typeof THERM!=='undefined'?THERM.heatAt(x,z)+(2700-terrainH(x,z))*.0052:12+(2700-terrainH(x,z))*.0052,bands:{upland:[2200,3300],cold:[-8,4]}},
  /* the ground's three library layers (15 texture units): the snow, the pit's red scoria, the spring's moss lawn (84-host-ground.js, STN.kground) */
  kground:()=>[KGROUND.layer('godstep','snow',{w:'vGY.x',amt:.95,gain:1,tint:'vec3(1.0)'}),
-  KGROUND.layer('godstep','scoria',{w:'vGX.x',amt:.85,gain:1,tint:'vec3(1.0,0.86,0.8)'}),
+  KGROUND.layer('godstep','scoria',{w:'vGX.x',amt:.6,gain:1,tint:'vec3(1.0,0.86,0.8)'}),
   KGROUND.layer('godstep','mossLawn',{w:'vGM.x',amt:.9,gain:1.05,tint:'vec3(1.0)'})],
  /* the attributes: vGL.x (a dark cover on the faces) none here; vGM.x the lawn (green on a face too), vGM.y the lichen, vGM.z the farms, vGM.w the
     lawn again (soft: the rock eased off it); vGX the scoria, talus, 0, the path; vGY the snow, the skin, the warm ground */
