@@ -246,17 +246,29 @@ loads each build's `tex/` pack, which is WebP. What is left:
   drive any page, and every `verify.py` checks `one-key-map` and `walk` (a raised floor stood on, a wall that stops the
   walker) on a page that takes it. A build is **adopted** when its page takes `khost.KEYS`, its controls go through `std`
   and its `--assert` passes both checks.
-  - [x] core/engine and every kit on it (`kengine.HOST`, `CORE_DIRS` with `core/walk/box`): Scyvoi, Ash Nomads, Desert
-        Nomads, Islanders, Lizardmen, Resources, Post-Apoc (moved onto core/host), Eternian (with interiors), Yeti (its own
-        `walk-reach` fails before and after: Y5/Y6), Tents (its own `interiors-reachable` fails before and after)
-  - [x] Construction (build.py only)
-  - [ ] the rest of this list is filled in as the verifies end (see below)
+  - [x] core/engine and every kit on it (`kengine.HOST`, `CORE_DIRS` with `core/walk/box`), each `--assert` passing: Scyvoi,
+        Ash Nomads, Desert Nomads, Islanders, Lizardmen, Resources, Post-Apoc (moved onto core/host), Eternian (with interiors:
+        `?interiors=1` 58 buildings, 172 rooms, 1021 pieces, no errors), Yeti; Tents (build.py only; its own
+        `interiors-reachable` fails, as on the page before: the Tents session's verify was being rewritten)
+  - [x] build.py `khost.KEYS`, controls through `std`, `--assert` passing: Construction, Zeijani (its C became X; Night, Door,
+        Shadows), Necanyons (N), Verge (E), Span, Girder (E), Reed Lake, Shade, Jimjam, Screamers, Iziz (city and Vernacular: E),
+        Ys (city: N; kit), Longsong (its interiors re-baked on the merged kit), Locus and Mungo (E; they read one take)
+  - [x] adopted, the key map and the walk passing, the build's own checks failing as on the page before this work:
+        Guilin (fruit drawn; foliage attach 31.96%), Pinnacle Rock (N; foliage attach 1.87%), Dalab (swlowlands/glossy
+        282,687 instances over the 250,000 cap with no `capWhy`, since it reads the biome in place)
+  - [ ] Mav's Refuge (E): `walk-and-reach` could never read `MRWALK` (the page's script is scoped; now `window.MRWALK`); its
+        reach audit's first real run is pending
+  - [ ] Yuni: E is the key map's Door, but F is Yuni's own walker (`DOORS.walk`) and the page hands the host no `KWALK`:
+        port Yuni's walker onto core/walk (Locus, Mungo, Girder and Mav's Refuge share the Yuni engine; theirs are on the host)
   - [ ] not yet: the biome kits but Guilin and Necanyons (`khost.KEYS` in `build.py`, the take's Night through `std`;
         Geyser and Godthrone have Day / Night buttons of their own, so N wants a std entry with no button: a 92k option);
         crater-drylands binds L to its fire tool (the polygon tool's key: `keysCheck` reports it); Metropolis (its X);
-        Dhelv (its C and N; the Zeijani session); Highlands, Xanadu, Noah's Regret (C and T: record the clash), Voth's
-        city target; the sheets with their own camera (kits/ancients, kits/port and biomes/dambasins's copy, kits/ringsea,
-        the catalog engine's pages) move onto core/host first. Then `KEYS` joins `khost.SHELL` at an all-builds rebuild.
+        Dhelv (its C and N; the Zeijani session); Highlands, Xanadu (the interiors session), Noah's Regret (C and T: record the
+        clash), Voth's city target, the isle demo; the sheets with their own camera (kits/ancients, kits/port and
+        biomes/dambasins's copy, kits/ringsea, the catalog engine's pages) move onto core/host first. Then `KEYS` joins
+        `khost.SHELL` at an all-builds rebuild.
+  - [ ] the merges of claude/dreamy-tesla-wzp8hw and ccr-55bd6ee1-p1si44 (2026-11-10) change `core/host/95-host-probe.js` and
+        `core/biome`: every core/host and biome page not rebuilt since is behind its sources until the all-builds rebuild
   - [ ] tents and round bodies drawn from cylinders and cones register nothing in `core/walk` (the nomads' tents, Tents):
         the walker walks through their cloth (`core/engine/README.md`, "Controls and walk")
 - **Interiors in every building kit that has them, with a cut-away.** Integrate `kits/interiors` (its sets, the
