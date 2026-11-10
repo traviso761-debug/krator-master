@@ -7,7 +7,7 @@
 // That number times the zone's strength is ADDED to the pixel in the zone's colour: nothing is ever darkened or hidden, a wall
 // inside the zone stops the sum at the wall (so near things glow less than the air behind them), and from far off the whole
 // chord shows: a soft warm dome on the land. The shimmer is a slow wavering of the glow itself, rising, in bands a few to a zone.
-//   ATMOS.radiation({zones: [{x, y, z, r, strength (.16), shimmer (.35)}] (at most 4), colour (display [1, .62, .25])}) -> R
+//   ATMOS.radiation({zones: [{x, y, z, r, strength (.16), shimmer (.35), pulse (.15: the glow swells and ebbs by this share, a slow breath of about 6 s with a slower one under it, each zone out of step)}] (at most 4), colour (display [1, .62, .25])}) -> R
 //       R.zones (edit a zone and call R.set()), R.k (a master strength, 1: fade it in and out), R.on(material), R.off
 //   ATMOS.radiationScene(scene)   every lit material with fog on takes the glow, once (as heightFogScene): its fragments add the
 //                                 chord up to themselves. The sky behind a zone takes it from a shell the call draws at the far
@@ -35,6 +35,7 @@
   const h=Math.sqrt(R2-d2),s0=Math.max(-b-h,0)+b,s1=Math.min(-b+h,L)+b;if(s1<=s0)return 0;return((1-d2/R2)*(s1-s0)-(s1*s1*s1-s0*s0*s0)/(3*R2))/(4/3*z.r);};
  A.radGlow=(ro,rd,L,zones)=>zones.reduce((s,z)=>s+(z.strength==null?.16:z.strength)*A.radChord(ro,rd,L,z),0);
  A.radHazeK=(ro,rd,L,zones)=>Math.min(1,zones.reduce((s,z)=>s+(z.shimmer==null?.35:z.shimmer)*A.radChord(ro,rd,L,z),0)*2);
+ A.radPulse=(t,pulse,i)=>1+(pulse==null?.15:pulse)*(.65*Math.sin(t*1.1+i*2.1)+.35*Math.sin(t*.43+i*2.1*2.3));   /* the twin of the chunk's pulse: zone i's factor at t seconds */
  A.radAt=(zones,x,y,z)=>zones.reduce((m,q)=>{const dx=x-q.x,dy=y-(q.y==null?0:q.y),dz=z-q.z;return Math.max(m,q.r>0?Math.max(0,1-(dx*dx+dy*dy+dz*dz)/(q.r*q.r)):0);},0);
  A.radiationHeat=(zones,o)=>{o=o||{};const cell=o.cell==null?8:o.cell,t0=o.t0==null?25:o.t0,t1=o.t1==null?70:o.t1;let x0=1e9,z0=1e9,x1=-1e9,z1=-1e9;
   for(const q of zones){x0=Math.min(x0,q.x-q.r);z0=Math.min(z0,q.z-q.r);x1=Math.max(x1,q.x+q.r);z1=Math.max(z1,q.z+q.r);}
@@ -44,19 +45,19 @@
   return{x0,z0,cell,nx,nz,T};};
  A.radGLSL=()=>['#ifndef ATM_RAD_CHUNK','#define ATM_RAD_CHUNK',
   'uniform vec4 atmRadZ['+A.RAD_MAX+'];uniform vec4 atmRadK['+A.RAD_MAX+'];uniform vec3 atmRadC;uniform float atmRadT;',
-  /* atmRadZ: a zone's centre and radius (0: none); atmRadK: its strength, its shimmer, 0, 0; atmRadC: the glow, display RGB; atmRadT: seconds */
+  /* atmRadZ: a zone's centre and radius (0: none); atmRadK: its strength, its shimmer, its pulse (0..1 of the strength), the pulse's phase; atmRadC: the glow, display RGB; atmRadT: seconds */
   'float atmRadChord(vec3 ro,vec3 rd,float L,vec4 z){vec3 oc=ro-z.xyz;float b=dot(oc,rd),d2=dot(oc,oc)-b*b,R2=z.w*z.w;if(z.w<=0.0||d2>=R2)return 0.0;',
   ' float h=sqrt(R2-d2),s0=max(-b-h,0.0)+b,s1=min(-b+h,L)+b;if(s1<=s0)return 0.0;return ((1.0-d2/R2)*(s1-s0)-(s1*s1*s1-s0*s0*s0)/(3.0*R2))/(1.3333333*z.w);}',
   'float atmRadShim(vec3 q,float t){return sin(q.x*5.0+1.7*sin(q.y*7.0-t*1.1)+t*0.3)*sin(q.z*4.6+q.y*9.0-t*1.6);}',
   'float atmRadOne(vec3 ro,vec3 rd,float L,int i){vec4 z=atmRadZ[i];float c=atmRadChord(ro,rd,L,z);if(c<=0.0)return 0.0;',
-  ' vec3 pm=ro+rd*clamp(-dot(ro-z.xyz,rd),0.0,L);return atmRadK[i].x*c*(1.0+atmRadK[i].y*atmRadShim((pm-z.xyz)/z.w,atmRadT));}',
+  ' vec3 pm=ro+rd*clamp(-dot(ro-z.xyz,rd),0.0,L);float pu=1.0+atmRadK[i].z*(0.65*sin(atmRadT*1.1+atmRadK[i].w)+0.35*sin(atmRadT*0.43+atmRadK[i].w*2.3));return atmRadK[i].x*pu*c*(1.0+atmRadK[i].y*atmRadShim((pm-z.xyz)/z.w,atmRadT));}',
   'vec3 atmRad(vec3 ro,vec3 rd,float L){float g=0.0;for(int i=0;i<'+A.RAD_MAX+';i++)g+=atmRadOne(ro,rd,L,i);return atmRadC*g;}',
   'float atmRadHazeK(vec3 ro,vec3 rd,float L){float k=0.0;for(int i=0;i<'+A.RAD_MAX+';i++)k+=atmRadK[i].y*atmRadChord(ro,rd,L,atmRadZ[i]);return min(1.0,k*2.0);}',
   '#endif'].join('\n');
  A.radiation=function(o){o=o||{};const T=A.T,U=A.U,N=A.RAD_MAX;
   U.radZ={value:Array.from({length:N},()=>new T.Vector4())};U.radK={value:Array.from({length:N},()=>new T.Vector4())};U.radC={value:new T.Vector3()};U.radT={value:0};
-  const R=A.rad={zones:(o.zones||[]).slice(0,N).map(z=>Object.assign({y:0,strength:.16,shimmer:.35},z)),colour:o.colour||[1,.62,.25],k:1,off:false,shells:[]};
-  R.set=()=>{for(let i=0;i<N;i++){const z=R.zones[i],on=z&&!R.off;U.radZ.value[i].set(on?z.x:0,on?z.y:0,on?z.z:0,on?z.r:0);U.radK.value[i].set(on?z.strength*R.k:0,on?z.shimmer:0,0,0);
+  const R=A.rad={zones:(o.zones||[]).slice(0,N).map(z=>Object.assign({y:0,strength:.16,shimmer:.35,pulse:.15},z)),colour:o.colour||[1,.62,.25],k:1,off:false,shells:[]};
+  R.set=()=>{for(let i=0;i<N;i++){const z=R.zones[i],on=z&&!R.off;U.radZ.value[i].set(on?z.x:0,on?z.y:0,on?z.z:0,on?z.r:0);U.radK.value[i].set(on?z.strength*R.k:0,on?z.shimmer:0,on?z.pulse:0,i*2.1);
     const s=R.shells[i];if(s){s.visible=!!on;if(on){s.position.set(z.x,z.y,z.z);s.scale.setScalar(z.r);}}}
    U.radC.value.set(R.colour[0],R.colour[1],R.colour[2]);return R;};
   R.on=m=>A.radiationOn(m);
@@ -67,7 +68,7 @@
    const s=new T.Mesh(new T.SphereGeometry(1,32,16),m);s.name='atmos:radiation-sky-'+i;s.renderOrder=900;s.frustumCulled=false;s.visible=false;A.noRay(s);A.add(s);R.shells.push(s);}
   R.set();A.hook(t=>{U.radT.value=t;});
   A.khaz('radiation',(x,y,z)=>R.off?0:A.radAt(R.zones,x,y,z)*R.k);
-  A.rec('radiation',{zones:R.zones.map(z=>({x:z.x,y:z.y,z:z.z,r:z.r,strength:z.strength,shimmer:z.shimmer})),colour:R.colour,
+  A.rec('radiation',{zones:R.zones.map(z=>({x:z.x,y:z.y,z:z.z,r:z.r,strength:z.strength,shimmer:z.shimmer,pulse:z.pulse})),colour:R.colour,
    note:'additive glow = colour * sum of strength * (the chord integral of 1 - d^2/r^2 through each zone, over 4r/3), wavering by shimmer; nothing is dimmed (fx/89-atmos-fx-radiation.js)'});
   return R;};
  A.radiationHaze=function(o){o=o||{};const T=A.T,U=A.U,R=o.renderer;if(!R)throw new Error('ATMOS.radiationHaze: renderer');if(!U.radZ)throw new Error('ATMOS.radiationHaze: call ATMOS.radiation first');
