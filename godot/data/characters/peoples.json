@@ -1,24 +1,3616 @@
 {
- "about": "Peoples: the range a culture's strangers are drawn from (KCHAR.stranger, src/10-rig.js). ancestry: each MakeHuman race share drawn from [lo, hi] (then normalised). skin: colour stops, light to dark; a stranger's tone falls anywhere along them. hair and eyes: the colours drawn from; grey: the age slider value above which hair greys. beard: odds a man wears one. morph: a slider drawn from [lo, hi] instead of the default spread. styles: hair ids drawn first (three times in four) per body. Sources: LORE.md section 6 and 7, and the owner's notes (Chichani: ashen-brown skin, dark hair; Beast Riders: vaguely Asiatic or Amerindian, blond to brown hair). Chichani eyes run to amber and red (night vision, after the Dunmer); a proposal. The rest are proposals from each culture's real-world references; change them freely. outfits: per body, per tier, the clothes (torso, legs, feet) a people's strangers wear, and the body mods a tier has (mods: a temple guard's second pair of arms); mods (of a people): the mods all its strangers have (the Hykkousoi's rib gills, tools/mods.py); a four-armed tier wears a four-armed top (KCHAR.fits); tiers: [tier, share] in draw order (KCHAR.stranger). style_share: the share of strangers whose hair is one of its styles (0.75 when absent; 1: only its styles). coat: a furred people's coat (data/fur.json coats), every stranger's.",
- "peoples": [
-  {"id": "chichani", "name": "Chichani", "note": "Voth's people. Ashen-brown to ashen-grey skin, dark hair; Aztec and Dunmer look", "ancestry": {"african": [0.15, 0.35], "asian": [0.35, 0.6], "caucasian": [0.15, 0.35]}, "skin": ["#9a8c82", "#857669", "#6e6158", "#5a4f49"], "hair": ["#16120f", "#221a15", "#2c221b", "#3a2d24"], "eyes": ["#8a3a1c", "#a0521c", "#6b2a18", "#3b2414"], "grey": 0.55, "beard": 0.15, "morph": {"cheek-bones-decr-incr": [0.1, 0.6], "eye-eyefold-angle-down-up": [0.0, 0.5], "nose-hump-decr-incr": [0.0, 0.6]}, "styles": {"male": ["short02", "long01", "ponytail01", "braid01", "culturalibre_hair_02", "punkduck_alpha7_long", "fourstrandbraid", "Low_Fade"], "female": ["braid01", "long01", "ponytail01", "elvs_double_mh_braid", "o4saken_long01", "rehmanpolanski_hair_bun_brown", "brunhilde", "fourstrandbraid", "elvs_braid_bun"]}, "tiers": [["peasant", 0.6], ["trade", 0.3], ["noble", 0.1]], "outfits": {"male": {"peasant": {"torso": "voth_m_peasant_cloak", "legs": "voth_m_peasant_maxtlatl", "feet": "voth_m_sandals"}, "trade": {"torso": "voth_m_trade_xicolli", "legs": "voth_m_trade_kilt", "feet": "voth_m_trade_sandals", "head": "voth_m_trade_wrap"}, "noble": {"torso": "voth_m_noble_robe", "legs": "voth_m_noble_skirt", "feet": "voth_m_noble_sandals", "head": "voth_m_noble_headdress"}}, "female": {"peasant": {"torso": "voth_f_peasant_huipil", "legs": "voth_f_peasant_cueitl", "feet": "voth_f_sandals"}, "trade": {"torso": "voth_f_trade_huipil", "legs": "voth_f_trade_skirt", "feet": "voth_f_trade_sandals", "head": "voth_f_trade_wrap"}, "noble": {"torso": "voth_f_noble_gown", "legs": "voth_f_noble_skirt", "feet": "voth_f_noble_sandals", "head": "voth_f_noble_headdress"}}}, "tier_labels": {"peasant": "Peasant", "trade": "Tradesfolk", "noble": "Court"}},
-  {"id": "beast_riders", "name": "Beast Riders", "note": "Hyperjungle tribes, quetzal riders. Vaguely Asiatic or Amerindian, blond to brown hair. Clothes: Mongol and Apache, animal belts (tools/make_garments.py)", "ancestry": {"african": [0.0, 0.15], "asian": [0.5, 0.85], "caucasian": [0.1, 0.4]}, "skin": ["#d9ae86", "#c48f62", "#a8744a", "#8c5c38"], "hair": ["#d8b56a", "#c49a52", "#a87b3e", "#86602f", "#6a4a26", "#4e3720"], "eyes": ["#3b2414", "#5a3a22", "#7a5a2a", "#8a6a2a"], "grey": 0.5, "beard": 0.3, "morph": {"muscle": [0.0, 0.6], "cheek-bones-decr-incr": [0.0, 0.5]}, "styles": {"male": ["sonntag78_junglebook_hair", "ponytail01", "braid01", "long01", "culturalibre_hair_02", "cortu_short_messy_hair", "braided_curly_beads4", "fourstrandbraid", "elvs_unkempt_french_braid", "Dreads_with_Fade"], "female": ["braid01", "ponytail01", "elvs_double_mh_braid", "long01", "elvs_lady_hippy_hair", "braided_curly_beads4", "chrissy_piggies_2025", "elvs_unkempt_french_braid"]}, "tiers": [["peasant", 0.6], ["trade", 0.3], ["noble", 0.1]], "tier_labels": {"peasant": "Tribesfolk", "trade": "Rider", "noble": "Chief"}, "outfits": {"male": {"peasant": {"torso": "beast_m_peasant_shirt", "legs": "beast_m_peasant_trousers", "feet": "beast_m_peasant_moccasins", "head": "beast_m_peasant_headband"}, "trade": {"torso": "beast_m_trade_deel", "legs": "beast_m_trade_trousers", "feet": "beast_m_trade_boots", "head": "beast_m_trade_hat"}, "noble": {"torso": "beast_m_noble_deel", "legs": "beast_m_trade_trousers", "feet": "beast_m_noble_boots", "head": "beast_m_noble_horns"}}, "female": {"peasant": {"torso": "beast_f_peasant_shirt", "legs": "beast_f_peasant_trousers", "feet": "beast_f_peasant_moccasins", "head": "beast_f_peasant_headband"}, "trade": {"torso": "beast_f_trade_deel", "legs": "beast_f_trade_trousers", "feet": "beast_f_trade_boots", "head": "beast_f_trade_hat"}, "noble": {"torso": "beast_f_noble_deel", "legs": "beast_f_trade_trousers", "feet": "beast_f_noble_boots", "head": "beast_f_noble_wings"}}}},
-  {"id": "izani", "name": "Izani", "note": "The Empire of Iziz (Rome in the jungle). Olive to brown, dark hair (proposal). Clothes: tools/make_garments.py, science fantasy without the machines", "ancestry": {"african": [0.15, 0.4], "asian": [0.15, 0.35], "caucasian": [0.35, 0.6]}, "skin": ["#d8b08c", "#bf9068", "#9c6e4a", "#7a5235"], "hair": ["#1a1410", "#2a1f17", "#3d2c1f", "#5a3e27"], "eyes": ["#2a1a10", "#3b2414", "#5a3a22"], "grey": 0.5, "beard": 0.35, "styles": {"male": ["Short_Hair_B", "mhair02", "elvs_maxwell_hair", "culturalibre_hair_05", "short02"], "female": ["elvs_50s_updo", "elvs_braid_bun", "Messy_Bun", "elvs_island_princess_hair", "braid01"]}, "tiers": [["peasant", 0.55], ["trade", 0.32], ["noble", 0.13]], "outfits": {"male": {"peasant": {"torso": "iziz_m_peasant_tunic", "legs": "iziz_m_peasant_trousers", "feet": "iziz_m_peasant_wraps", "head": "iziz_m_peasant_hood"}, "trade": {"torso": "iziz_m_trade_coat", "legs": "iziz_m_trade_trousers", "feet": "iziz_m_trade_boots"}, "noble": {"torso": "iziz_m_noble_robe", "legs": "iziz_m_noble_trousers", "feet": "iziz_m_noble_boots", "head": "iziz_m_noble_crown"}}, "female": {"peasant": {"torso": "iziz_f_peasant_tunic", "legs": "iziz_f_peasant_trousers", "feet": "iziz_f_peasant_wraps", "head": "iziz_f_peasant_hood"}, "trade": {"torso": "iziz_f_trade_coat", "legs": "iziz_f_trade_trousers", "feet": "iziz_f_trade_boots"}, "noble": {"torso": "iziz_f_noble_gown", "legs": "iziz_f_noble_skirt", "feet": "iziz_f_noble_boots", "head": "iziz_f_noble_crown"}}}, "tier_labels": {"peasant": "Commoner", "trade": "Guild", "noble": "Court"}},
-  {"id": "dalabites", "name": "Dalabites", "note": "Mound-builders: the photosynthesis mod, green skin. Clothes: Cahokian and Tiwanaku in the Moebius line, the skin bare to the sun (tools/make_garments.py)", "ancestry": {"african": [0.2, 0.5], "asian": [0.2, 0.5], "caucasian": [0.2, 0.4]}, "skin": ["#9cae78", "#7f9a5c", "#647f46", "#4c6436"], "hair": ["#1a1712", "#2b2618", "#3c3420", "#24301c"], "eyes": ["#2a1a10", "#3b2414", "#6e5a2e", "#7a6a1a"], "grey": 0.6, "beard": 0.25, "styles": {}, "tiers": [["peasant", 0.6], ["trade", 0.28], ["noble", 0.12]], "tier_labels": {"peasant": "Commoner", "trade": "Trader", "noble": "Genepriest"}, "outfits": {"male": {"peasant": {"torso": "dalab_m_peasant_sash", "legs": "dalab_m_peasant_kilt", "feet": "dalab_m_sandals"}, "trade": {"torso": "dalab_m_trade_tabard", "legs": "dalab_m_trade_trousers", "feet": "dalab_m_trade_sandals", "head": "dalab_m_trade_cap"}, "noble": {"torso": "dalab_m_noble_robe", "feet": "dalab_m_noble_sandals", "head": "dalab_m_noble_mitre"}}, "female": {"peasant": {"torso": "dalab_f_peasant_sash", "legs": "dalab_f_peasant_kilt", "feet": "dalab_f_sandals"}, "trade": {"torso": "dalab_f_trade_tabard", "legs": "dalab_f_trade_trousers", "feet": "dalab_f_trade_sandals", "head": "dalab_f_trade_cap"}, "noble": {"torso": "dalab_f_noble_robe", "feet": "dalab_f_noble_sandals", "head": "dalab_f_noble_mitre"}}}},
-  {"id": "iron_republic", "name": "Iron Republic", "note": "Highland state; Russian and Transylvanian Saxon, over a salvage culture. Austere and military: citizens dress as a citizen army in field grey, drab and iron black, the Republic's red only as piping; a festive folk set (*_fest tiers, about one in ten) for feast days and the Hall's ceremonies (tools/make_garments.py)", "ancestry": {"african": [0.0, 0.1], "asian": [0.05, 0.3], "caucasian": [0.6, 0.95]}, "skin": ["#f1d6c4", "#e3bfa5", "#cfa385"], "hair": ["#d9c08a", "#a8834f", "#7a5733", "#4d3522", "#241a14"], "eyes": ["#3b2414", "#5a3a22", "#4a5a3a", "#4e6a80", "#6a7a86"], "grey": 0.45, "beard": 0.5, "morph": {"height": [-0.1, 0.5]}, "styles": {"male": ["short02", "short01", "mhair02", "elvs_grump_hair", "elvs_maxwell_hair", "Short_Hair_B"], "female": ["elvs_braid_bun", "Messy_Bun", "elvs_50s_updo", "braid01", "ponytail01"]}, "tiers": [["peasant", 0.54], ["trade", 0.27], ["noble", 0.09], ["peasant_fest", 0.06], ["trade_fest", 0.03], ["noble_fest", 0.01]], "tier_labels": {"peasant": "Citizen", "trade": "Guildsfolk", "noble": "Hall of the Republic", "peasant_fest": "Citizen, festive", "trade_fest": "Guildsfolk, festive", "noble_fest": "Hall of the Republic, in state"}, "outfits": {"male": {"peasant": {"torso": "rep_m_peasant_tunic", "legs": "rep_m_peasant_trousers", "feet": "rep_m_peasant_boots", "head": "rep_m_peasant_cap"}, "trade": {"torso": "rep_m_trade_jacket", "legs": "rep_m_trade_breeches", "feet": "rep_m_trade_boots", "head": "rep_m_trade_ushanka"}, "noble": {"torso": "rep_m_noble_greatcoat", "legs": "rep_m_noble_breeches", "feet": "rep_m_noble_boots", "head": "rep_m_noble_papakha"}, "peasant_fest": {"torso": "rep_m_fest_peasant_shirt", "legs": "rep_m_fest_peasant_trousers", "feet": "rep_m_fest_valenki", "head": "rep_m_fest_peasant_cap"}, "trade_fest": {"torso": "rep_m_fest_trade_jacket", "legs": "rep_m_fest_trade_breeches", "feet": "rep_m_trade_boots", "head": "rep_m_fest_trade_ushanka"}, "noble_fest": {"torso": "rep_m_fest_noble_greatcoat", "legs": "rep_m_fest_noble_breeches", "feet": "rep_m_fest_noble_boots", "head": "rep_m_fest_noble_papakha"}}, "female": {"peasant": {"torso": "rep_f_peasant_dress", "feet": "rep_f_peasant_boots", "head": "rep_f_peasant_platok"}, "trade": {"torso": "rep_f_trade_jacket", "legs": "rep_f_trade_skirt", "feet": "rep_f_trade_boots", "head": "rep_f_trade_ushanka"}, "noble": {"torso": "rep_f_noble_greatcoat", "legs": "rep_f_noble_skirt", "feet": "rep_f_noble_boots", "head": "rep_f_noble_papakha"}, "peasant_fest": {"torso": "rep_f_fest_peasant_sarafan", "feet": "rep_f_fest_valenki", "head": "rep_f_fest_peasant_platok"}, "trade_fest": {"torso": "rep_f_fest_trade_coat", "legs": "rep_f_fest_trade_skirt", "feet": "rep_f_trade_boots", "head": "rep_f_fest_trade_borten"}, "noble_fest": {"torso": "rep_f_fest_noble_gown", "feet": "rep_f_fest_noble_boots", "head": "rep_f_fest_noble_kokoshnik"}}}},
-  {"id": "rustic_clansmen", "name": "Rustic Clansmen", "note": "Norse and Alpine villages northeast of the Republic (proposal)", "ancestry": {"african": [0.0, 0.05], "asian": [0.0, 0.15], "caucasian": [0.8, 1.0]}, "skin": ["#f4dccb", "#e8c6ad", "#d6ab8c"], "hair": ["#e3cf9a", "#cfae6a", "#b07a43", "#8e4f2a", "#6d4a2c"], "eyes": ["#4e6a80", "#5a7a9a", "#6a7a86", "#4a5a3a", "#5a3a22"], "grey": 0.45, "beard": 0.75, "morph": {"height": [0.0, 0.6], "muscle": [0.0, 0.5]}, "styles": {"male": ["long01", "braid01", "ponytail01", "elvs_that_80s_babe_hair", "short02", "scalpviking", "fourstrandbraid", "elvs_unkempt_french_braid"], "female": ["braid01", "elvs_double_mh_braid", "elvs_reverse_french_braid_bun", "long01", "brunhilde", "fourstrandbraid"]}},
-  {"id": "painted_men", "name": "Painted Men", "note": "Raider tribes of the northeast high country; PNW-coast references (proposal)", "ancestry": {"african": [0.0, 0.1], "asian": [0.6, 0.85], "caucasian": [0.1, 0.3]}, "skin": ["#c99a72", "#b07e57", "#916342"], "hair": ["#120f0d", "#1c1612", "#2a2018"], "eyes": ["#2a1a10", "#3b2414"], "grey": 0.5, "beard": 0.15, "styles": {"male": ["long01", "braid01", "ponytail01", "punkduck_alpha7_long", "fourstrandbraid"], "female": ["long01", "braid01", "elvs_double_mh_braid", "o4saken_long01", "fourstrandbraid"]}},
-  {"id": "eastern_nomads", "name": "Eastern Nomads", "note": "Shade and the high desert; Petra and Bedouin references (proposal)", "ancestry": {"african": [0.1, 0.3], "asian": [0.05, 0.2], "caucasian": [0.5, 0.75]}, "skin": ["#d6ad86", "#bb8d63", "#9a6e48", "#7a5436"], "hair": ["#120e0c", "#1f1813", "#2f231a"], "eyes": ["#2a1a10", "#3b2414", "#5a3a22", "#6e5a2e"], "grey": 0.45, "beard": 0.7, "styles": {"male": ["short02", "Short_Hair_B", "long01"], "female": ["long01", "braid01", "fhair01", "elvs_island_princess_hair"]}},
-  {"id": "abyssal", "name": "Abyssal and Reed Lake people", "note": "Salt-marsh scavengers and the lake people; Andean references (proposal)", "ancestry": {"african": [0.05, 0.2], "asian": [0.6, 0.85], "caucasian": [0.05, 0.2]}, "skin": ["#c69870", "#aa7b54", "#8a603e"], "hair": ["#110e0c", "#1b1612", "#2a2119"], "eyes": ["#2a1a10", "#3b2414"], "grey": 0.5, "beard": 0.1, "morph": {"height": [-0.6, 0.0]}, "styles": {"male": ["short02", "long01"], "female": ["braid01", "elvs_double_mh_braid", "long01"]}},
-  {"id": "xanadu", "name": "Xanadu", "note": "The southern Sultanate (the owner, 2026-10-19): vaguely Chinese and South Asian; dress a mix of Persian, Indian and Tibetan (tools/make_garments.py, 'xan_'): townsfolk in the kurta or the chuba and apron, felt boots; the rich in the silk jama and the great wrapped turban", "ancestry": {"african": [0.05, 0.2], "asian": [0.35, 0.7], "caucasian": [0.25, 0.55]}, "skin": ["#d7ae88", "#bc8e66", "#9b6f4b"], "hair": ["#110e0c", "#1d1713", "#2d231b"], "eyes": ["#2a1a10", "#3b2414", "#5a3a22", "#6e5a2e"], "grey": 0.5, "beard": 0.55, "styles": {"male": ["short02", "long01"], "female": ["o4saken_chinesebob01", "elvs_braid_bun", "braid01", "long01"]}, "tiers": [["town", 0.8], ["rich", 0.2]], "tier_labels": {"town": "Townsfolk", "rich": "Wealthy"}, "outfits": {"male": {"town": {"torso": "xan_m_town_tunic", "legs": "xan_m_town_trousers", "feet": "xan_m_town_boots", "head": "xan_m_town_cap"}, "rich": {"torso": "xan_m_rich_jama", "legs": "xan_m_rich_trousers", "feet": "xan_m_rich_slippers", "head": "xan_m_rich_turban"}}, "female": {"town": {"torso": "xan_f_town_tunic", "legs": "xan_f_town_trousers", "feet": "xan_f_town_boots"}, "rich": {"torso": "xan_f_rich_jama", "legs": "xan_f_rich_trousers", "feet": "xan_f_rich_slippers", "head": "xan_f_rich_turban"}}}},
-  {"id": "jimjam", "name": "Jimjam", "note": "The Raja's city; South Asian references (proposal)", "ancestry": {"african": [0.15, 0.35], "asian": [0.1, 0.3], "caucasian": [0.4, 0.6]}, "skin": ["#c0926b", "#a0744f", "#80583a", "#64432c"], "hair": ["#0f0c0b", "#1a1511", "#271f18"], "eyes": ["#2a1a10", "#3b2414", "#5a3a22"], "grey": 0.5, "beard": 0.5, "styles": {}},
-  {"id": "hykkousoi", "name": "Hykkousoi", "mods": ["mod_gills"], "note": "Seafarers of Ys; Greek and Polynesian references (proposal); rib gills (mods.py). Clothes: Greek and Roman with a Moebius line (tools/make_garments.py)", "ancestry": {"african": [0.1, 0.25], "asian": [0.25, 0.45], "caucasian": [0.35, 0.6]}, "skin": ["#d4a982", "#b88b62", "#966b47"], "hair": ["#16120e", "#2a2017", "#4a3524", "#6b4c2f"], "eyes": ["#3b2414", "#5a3a22", "#3a5a5a", "#4a6a6a"], "grey": 0.5, "beard": 0.55, "styles": {"male": ["afro01", "cortu_short_messy_hair", "short02", "long01", "elvs_keylth_hair"], "female": ["punkduck_alpha7_curly", "long01", "elvs_lady_hippy_hair", "rehmanpolanski_hair_bun_brown", "southernbelleringlets", "punkduck_alpha7_curly2"]}, "tiers": [["peasant", 0.55], ["trade", 0.3], ["noble", 0.15]], "tier_labels": {"peasant": "Sailor", "trade": "Marine", "noble": "Archon's court"}, "outfits": {"male": {"peasant": {"torso": "hykk_m_peasant_exomis", "feet": "hykk_m_sandals", "head": "hykk_m_peasant_hat"}, "trade": {"torso": "hykk_m_trade_lorica", "legs": "hykk_m_trade_pteruges", "feet": "hykk_m_trade_greaves", "head": "hykk_m_trade_helm"}, "noble": {"torso": "hykk_m_noble_chiton", "feet": "hykk_m_noble_sandals", "head": "hykk_m_noble_crown"}}, "female": {"peasant": {"torso": "hykk_f_peasant_exomis", "feet": "hykk_f_sandals", "head": "hykk_f_peasant_hat"}, "trade": {"torso": "hykk_f_trade_lorica", "legs": "hykk_f_trade_pteruges", "feet": "hykk_f_trade_greaves", "head": "hykk_f_trade_helm"}, "noble": {"torso": "hykk_f_noble_chiton", "feet": "hykk_f_noble_sandals", "head": "hykk_f_noble_crown"}}}},
-  {"id": "islanders", "name": "Ring Sea Islanders", "note": "Polynesian and Ashlander references (proposal)", "ancestry": {"african": [0.2, 0.4], "asian": [0.4, 0.65], "caucasian": [0.05, 0.2]}, "skin": ["#b98a62", "#9c704b", "#7c5537"], "hair": ["#0f0c0a", "#1a1410", "#2a2018"], "eyes": ["#2a1a10", "#3b2414"], "grey": 0.5, "beard": 0.3, "morph": {"weight": [0.0, 0.5], "muscle": [0.0, 0.5]}, "styles": {"male": ["afro01", "long01", "culturalibre_hair_02", "punkduck_alpha7_long", "Dreads_with_Fade", "braided_curly_beads4"], "female": ["punkduck_alpha7_curly", "long01", "afro01", "elvs_lady_hippy_hair", "AfroPonytail", "braided_curly_beads4"]}},
-  {"id": "yuni", "name": "Yuni", "note": "The butte city of the Outer Wall. Its people range from white Australian to Aboriginal Australian (the owner's note; MakeHuman has no Aboriginal ancestry, so that end is African-leaning with some European and a little Asian). Clothes: Sahelian, Gaudi and Burmecia in the Moebius line (tools/make_garments.py)", "ancestry": {"african": [0.0, 0.65], "asian": [0.0, 0.2], "caucasian": [0.2, 1.0]}, "skin": ["#f0d4bf", "#d9ae8a", "#b07a52", "#7a4a2c", "#4e2e1c"], "hair": ["#dcc28a", "#b48c52", "#7a5634", "#3a281a", "#15110e"], "eyes": ["#5a7a98", "#6a7a6a", "#7a5a32", "#3b2414", "#1e140c"], "grey": 0.5, "beard": 0.35, "styles": {"male": ["afro01", "short04", "short02", "Low_Fade", "Dreads_with_Fade", "Two_Braided_Cornrows_Male", "long01", "short01", "mhair02"], "female": ["afro01", "elvs_micky_afro", "punkduck_alpha7_curly", "short03", "Two_Braided_Cornrows_Female", "AfroPonytail", "Afro_Ponytail_-_Slick_Down", "long01", "ponytail01", "braid01", "bob02"]}, "tiers": [["peasant", 0.6], ["trade", 0.3], ["noble", 0.1]], "tier_labels": {"peasant": "Commoner", "trade": "Merchant", "noble": "Family"}, "outfits": {"male": {"peasant": {"torso": "yuni_m_peasant_boubou", "legs": "yuni_m_peasant_trousers", "feet": "yuni_m_sandals", "head": "yuni_m_peasant_hat"}, "trade": {"torso": "yuni_m_trade_boubou", "legs": "yuni_m_trade_trousers", "feet": "yuni_m_trade_slippers", "head": "yuni_m_trade_kufi"}, "noble": {"torso": "yuni_m_noble_gown", "feet": "yuni_m_noble_slippers", "head": "yuni_m_noble_hyperboloid"}}, "female": {"peasant": {"torso": "yuni_f_peasant_boubou", "legs": "yuni_f_peasant_wrapper", "feet": "yuni_f_sandals", "head": "yuni_f_peasant_wrap"}, "trade": {"torso": "yuni_f_trade_boubou", "legs": "yuni_f_trade_trousers", "feet": "yuni_f_trade_slippers", "head": "yuni_f_trade_gele"}, "noble": {"torso": "yuni_f_noble_gown", "feet": "yuni_f_noble_slippers", "head": "yuni_f_noble_hyperboloid"}}}},
-  {"id": "giants", "name": "Giants of Dalab", "note": "Engineered at Dalab, green as their makers and twice a man's height (kit.scale): the priests keep them as temple guards (four-armed) and street patrols (two-armed, in threes). Only the Giant body wears their clothes (tools/giant.py)", "ancestry": {"african": [0.2, 0.5], "asian": [0.2, 0.5], "caucasian": [0.2, 0.4]}, "skin": ["#7f9a5c", "#6a8a4c", "#58773e", "#465f31"], "hair": ["#1a1712", "#2b2618", "#24301c"], "eyes": ["#3b2414", "#6e5a2e", "#7a6a1a"], "grey": 0.7, "beard": 0.2, "morph": {"muscle": [0.45, 1.0], "weight": [-0.1, 0.6]}, "styles": {}, "tiers": [["patrol", 0.7], ["temple", 0.3]], "tier_labels": {"patrol": "Street patrol", "temple": "Temple guard"}, "outfits": {"giant": {"patrol": {"torso": "dalab_m_peasant_sash", "legs": "dalab_m_peasant_kilt", "feet": "dalab_m_sandals"}, "temple": {"torso": "giant_dalab_m_harness4", "legs": "voth_m_peasant_maxtlatl", "feet": "dalab_m_noble_sandals", "mods": ["mod_arms_flesh"]}}}},
-  {"id": "free_giants", "name": "Free Giants", "note": "The giants who rebelled against Dalab and left for Giant Country: the same green stock, dressed as Gauls (checked wool, braccae, a sagum and torc for a chief, limed hair and long moustaches). Temple guards who escaped kept their second pair of arms and fight as warriors (tools/make_garments.py, the Giants)", "ancestry": {"african": [0.15, 0.4], "asian": [0.15, 0.4], "caucasian": [0.3, 0.6]}, "skin": ["#8a9e66", "#7f9a5c", "#6a8a4c", "#55703f"], "hair": ["#c9b27a", "#b8743a", "#8a4a22", "#5a3a1e", "#2b2618"], "eyes": ["#3b2414", "#5a6a3a", "#6e5a2e", "#4a6a7a"], "grey": 0.65, "beard": 0.85, "morph": {"muscle": [0.4, 1.0], "weight": [-0.1, 0.7]}, "styles": {"giant": ["long01", "braid01", "ponytail01", "cortu_short_messy_hair"]}, "tiers": [["clan", 0.55], ["clan4", 0.15], ["warrior", 0.22], ["chief", 0.08]], "tier_labels": {"clan": "Clansman", "clan4": "Clansman, four-armed", "warrior": "Warrior (four-armed)", "chief": "Chief (four-armed)"}, "outfits": {"giant": {"clan": {"torso": "giant_free_m_tunic", "legs": "giant_free_m_braccae", "feet": "giant_free_m_boots"}, "clan4": {"torso": "giant_free_m_tunic4", "legs": "giant_free_m_braccae", "feet": "giant_free_m_boots", "mods": ["mod_arms_flesh"]}, "warrior": {"torso": "giant_free_m_jerkin4", "legs": "giant_free_m_braccae", "feet": "giant_free_m_boots", "head": "giant_free_m_helmet", "mods": ["mod_arms_flesh"]}, "chief": {"torso": "giant_free_m_chief4", "legs": "giant_free_m_braccae", "feet": "giant_free_m_boots", "mods": ["mod_arms_flesh"]}}}},
-  {"id": "historians", "name": "The Order of Historians (Longsong)", "note": "The History Monks of Longsong (settlements/longsong): recruited from every people of Krator, so a wide range, leaning a little to the Xanadui round them (the owner, 2026-10-19); heads kept short (the men cropped, the women to a bob: style_share 1, the owner, 2026-10-20); older than most. Four sets by standing (tools/make_garments.py, 'order_'): the novice's saffron shirt and maroon wrap skirt, the monk's saffron robe, the elder's maroon robe, saffron shawl and crested hat, the field agent's quilted coat in the Order's blue", "ancestry": {"african": [0.05, 0.6], "asian": [0.2, 0.7], "caucasian": [0.1, 0.65]}, "skin": ["#f1d2bd", "#d7ae88", "#a87650", "#6a4630", "#4a2e20"], "hair": ["#110e0c", "#2a1d15", "#3b2a1e", "#5a3a22"], "eyes": ["#2a1a10", "#3b2414", "#5a3a22", "#4e6a80"], "grey": 0.25, "beard": 0.2, "styles": {"male": ["Low_Fade", "short04", "short01"], "female": ["bob02", "o4saken_chinesebob01", "short03"]}, "tiers": [["novice", 0.3], ["monk", 0.45], ["elder", 0.1], ["agent", 0.15]], "tier_labels": {"novice": "Novice", "monk": "Monk", "elder": "Elder", "agent": "Field agent"}, "outfits": {"male": {"novice": {"torso": "order_m_novice_shirt", "legs": "order_m_novice_skirt", "feet": "order_m_sandals"}, "monk": {"torso": "order_m_monk_robe", "feet": "order_m_sandals"}, "elder": {"torso": "order_m_elder_robe", "feet": "order_m_sandals", "head": "order_m_elder_hat"}, "agent": {"torso": "order_m_agent_coat", "legs": "order_m_agent_trousers", "feet": "order_m_agent_boots"}}, "female": {"novice": {"torso": "order_f_novice_shirt", "legs": "order_f_novice_skirt", "feet": "order_f_sandals"}, "monk": {"torso": "order_f_monk_robe", "feet": "order_f_sandals"}, "elder": {"torso": "order_f_elder_robe", "feet": "order_f_sandals", "head": "order_f_elder_hat"}, "agent": {"torso": "order_f_agent_coat", "legs": "order_f_agent_trousers", "feet": "order_f_agent_boots"}}}, "style_share": 1},
-  {"id": "khaayken", "name": "Khaayken", "note": "The Yeti Kingdom, Khaay Qantir, on the Outer Wall above Farside: cold-adapted and furred all over (a shaggy pelt; the owner, 2026-10-26), heavy-set, dark-skinned under the fur. Pelt colours and the rest are proposals; their 1.15 scale and their own clothes wait on the Yeti kit's Y5 (kits/yeti/PLAN.md)", "coat": "pelt", "ancestry": {"african": [0.2, 0.5], "asian": [0.3, 0.6], "caucasian": [0.1, 0.3]}, "skin": ["#7a6e66", "#5e544e", "#46403c"], "hair": ["#e6e2d8", "#d8d0bf", "#c4b8a2", "#a99a84", "#8a8278", "#6c625a"], "eyes": ["#7a8ea0", "#9a8a5a", "#a87a3a", "#5a4a3a"], "grey": 0.7, "beard": 0.0, "morph": {"muscle": [0.3, 1.0], "weight": [0.2, 0.8], "height": [0.3, 1.0]}, "styles": {"male": ["long01", "short02"], "female": ["long01", "braid01"]}, "style_share": 1},
-  {"id": "coyote_men", "name": "Coyote Men", "note": "The Outlands' therian tribes (Sunset, Sunrise, Valley, Peak; biomes/outlands/PLAN.md section 6): furred (a coyote's brush coat; the owner, 2026-10-26), lean. The coyote head is a mod (tools/heads.py); the digitigrade legs are not built yet. Coat colours (tawny to grey, agouti) and the rest are proposals", "coat": "coyote", "mods": ["mod_head_coyote"], "ancestry": {"african": [0.2, 0.5], "asian": [0.2, 0.5], "caucasian": [0.1, 0.4]}, "skin": ["#8a7262", "#6e5a4c", "#54463c"], "hair": ["#b08a5a", "#9a7a52", "#a08866", "#8a7058", "#7a6a5a", "#c2a27a"], "eyes": ["#c08a2a", "#a87020", "#8a6a2a", "#d0a040"], "grey": 0.6, "beard": 0.0, "morph": {"weight": [-0.8, -0.2], "muscle": [0.0, 0.6]}, "styles": {"male": ["short02", "spiky"], "female": ["short03", "ponytail01"]}, "style_share": 1}
- ]
+  "about": "Peoples: the range a culture's strangers are drawn from (KCHAR.stranger, src/10-rig.js). ancestry: each MakeHuman race share drawn from [lo, hi] (then normalised). skin: colour stops, light to dark; a stranger's tone falls anywhere along them. hair and eyes: the colours drawn from; grey: the age slider value above which hair greys. beard: odds a man wears one. morph: a slider drawn from [lo, hi] instead of the default spread. styles: hair ids drawn first (three times in four) per body. Sources: LORE.md section 6 and 7, and the owner's notes (Chichani: ashen-brown skin, dark hair; Beast Riders: vaguely Asiatic or Amerindian, blond to brown hair). Chichani eyes run to amber and red (night vision, after the Dunmer); a proposal. The rest are proposals from each culture's real-world references; change them freely. outfits: per body, per tier, the clothes (torso, legs, feet) a people's strangers wear, and the body mods a tier has (mods: a temple guard's second pair of arms); mods (of a people): the mods all its strangers have (the Hykkousoi's rib gills, tools/mods.py); a four-armed tier wears a four-armed top (KCHAR.fits); tiers: [tier, share] in draw order (KCHAR.stranger). style_share: the share of strangers whose hair is one of its styles (0.75 when absent; 1: only its styles). coat: a furred people's coat (data/fur.json coats), every stranger's.",
+  "peoples": [
+    {
+      "id": "chichani",
+      "name": "Chichani (Voth)",
+      "note": "Voth's people. Ashen-brown to ashen-grey skin, dark hair; Aztec and Dunmer look",
+      "ancestry": {
+        "african": [
+          0.15,
+          0.35
+        ],
+        "asian": [
+          0.35,
+          0.6
+        ],
+        "caucasian": [
+          0.15,
+          0.35
+        ]
+      },
+      "skin": [
+        "#9a8c82",
+        "#857669",
+        "#6e6158",
+        "#5a4f49"
+      ],
+      "hair": [
+        "#16120f",
+        "#221a15",
+        "#2c221b",
+        "#3a2d24"
+      ],
+      "eyes": [
+        "#8a3a1c",
+        "#a0521c",
+        "#6b2a18",
+        "#3b2414"
+      ],
+      "grey": 0.55,
+      "beard": 0.15,
+      "morph": {
+        "cheek-bones-decr-incr": [
+          0.1,
+          0.6
+        ],
+        "eye-eyefold-angle-down-up": [
+          0.0,
+          0.5
+        ],
+        "nose-hump-decr-incr": [
+          0.0,
+          0.6
+        ]
+      },
+      "styles": {
+        "male": [
+          "short02",
+          "long01",
+          "ponytail01",
+          "braid01",
+          "culturalibre_hair_02",
+          "punkduck_alpha7_long",
+          "fourstrandbraid",
+          "Low_Fade"
+        ],
+        "female": [
+          "braid01",
+          "long01",
+          "ponytail01",
+          "elvs_double_mh_braid",
+          "o4saken_long01",
+          "rehmanpolanski_hair_bun_brown",
+          "brunhilde",
+          "fourstrandbraid",
+          "elvs_braid_bun"
+        ]
+      },
+      "tiers": [
+        [
+          "peasant",
+          0.3
+        ],
+        [
+          "trade",
+          0.16
+        ],
+        [
+          "noble",
+          0.08
+        ],
+        [
+          "scout",
+          0.1
+        ],
+        [
+          "ordinator",
+          0.09
+        ],
+        [
+          "priest",
+          0.07
+        ],
+        [
+          "chosen",
+          0.07
+        ],
+        [
+          "confessor",
+          0.05
+        ],
+        [
+          "cantor",
+          0.04
+        ],
+        [
+          "tzintzun",
+          0.04
+        ]
+      ],
+      "outfits": {
+        "male": {
+          "peasant": {
+            "torso": "voth_m_peasant_cloak",
+            "legs": "voth_m_peasant_maxtlatl",
+            "feet": "voth_m_sandals"
+          },
+          "trade": {
+            "torso": "voth_m_trade_xicolli",
+            "legs": "voth_m_trade_kilt",
+            "feet": "voth_m_trade_sandals",
+            "head": "voth_m_trade_wrap"
+          },
+          "noble": {
+            "torso": "voth_m_noble_robe",
+            "legs": "voth_m_noble_skirt",
+            "feet": "voth_m_noble_sandals",
+            "head": "voth_m_noble_headdress"
+          },
+          "scout": {
+            "torso": "voth_m_scout_harness",
+            "legs": "voth_m_scout_trousers",
+            "feet": "voth_m_scout_sandals",
+            "head": "voth_m_scout_wrap"
+          },
+          "ordinator": {
+            "torso": "voth_m_ordinator_cuirass",
+            "legs": "voth_m_ordinator_pants",
+            "feet": "voth_m_ordinator_greaves",
+            "head": "voth_m_ordinator_helm"
+          },
+          "priest": {
+            "torso": "voth_m_priest_robe",
+            "feet": "voth_m_priest_boots",
+            "head": "voth_m_priest_helm"
+          },
+          "chosen": {
+            "torso": "voth_m_chosen_tunic",
+            "legs": "voth_m_chosen_pants",
+            "feet": "voth_m_chosen_greaves",
+            "head": "voth_m_chosen_hat"
+          },
+          "confessor": {
+            "torso": "voth_m_confessor_coat",
+            "feet": "iziz_m_noble_boots",
+            "head": "voth_m_confessor_hood"
+          },
+          "cantor": {
+            "torso": "voth_m_cantor_gorget",
+            "feet": "voth_m_priest_boots",
+            "head": "voth_m_cantor_head"
+          },
+          "tzintzun": {
+            "head": "voth_m_tzintzun_mask",
+            "torso": "voth_m_tzintzun_regalia",
+            "gloves": "voth_m_tzintzun_gloves",
+            "legs": "voth_m_tzintzun_pants",
+            "feet": "voth_m_tzintzun_boots",
+            "beard": null,
+            "hair": null,
+            "type": "important_npc"
+          }
+        },
+        "female": {
+          "peasant": {
+            "torso": "voth_f_peasant_huipil",
+            "legs": "voth_f_peasant_cueitl",
+            "feet": "voth_f_sandals"
+          },
+          "trade": {
+            "torso": "voth_f_trade_huipil",
+            "legs": "voth_f_trade_skirt",
+            "feet": "voth_f_trade_sandals",
+            "head": "voth_f_trade_wrap"
+          },
+          "noble": {
+            "torso": "voth_f_noble_gown",
+            "legs": "voth_f_noble_skirt",
+            "feet": "voth_f_noble_sandals",
+            "head": "voth_f_noble_headdress"
+          },
+          "tzintzun": {
+            "head": "voth_f_tzintzun_mask",
+            "torso": "voth_f_tzintzun_regalia",
+            "gloves": "voth_f_tzintzun_gloves",
+            "legs": "voth_f_tzintzun_pants",
+            "feet": "voth_f_tzintzun_boots",
+            "beard": null,
+            "hair": null,
+            "type": "important_npc"
+          }
+        }
+      },
+      "tier_labels": {
+        "peasant": "Peasant",
+        "trade": "Tradesfolk",
+        "noble": "Court",
+        "scout": "Caldera Ash-Scout (Goggle-Wrapped Outrider)",
+        "ordinator": "Temple Ordinator (Emerald-Gold Indoril Guard)",
+        "priest": "Sun-Temple High Priest (Crimson Hierophant)",
+        "chosen": "Chosen of Tzintzun (Solar Praetorian Guard)",
+        "confessor": "Ash-Cowl Confessor (Caldera Justiciar)",
+        "cantor": "Dhelv Scripture-Cantor (Inscribed-Skull Archon)",
+        "tzintzun": "Tzintzun (High Sovereign of the Sun)"
+      }
+    },
+    {
+      "id": "beast_riders",
+      "name": "Beast Riders",
+      "note": "Hyperjungle tribes, quetzal riders. Vaguely Asiatic or Amerindian, blond to brown hair. Clothes: Mongol and Apache, animal belts (tools/make_garments.py)",
+      "ancestry": {
+        "african": [
+          0.0,
+          0.15
+        ],
+        "asian": [
+          0.5,
+          0.85
+        ],
+        "caucasian": [
+          0.1,
+          0.4
+        ]
+      },
+      "skin": [
+        "#d9ae86",
+        "#c48f62",
+        "#a8744a",
+        "#8c5c38"
+      ],
+      "hair": [
+        "#d8b56a",
+        "#c49a52",
+        "#a87b3e",
+        "#86602f",
+        "#6a4a26",
+        "#4e3720"
+      ],
+      "eyes": [
+        "#3b2414",
+        "#5a3a22",
+        "#7a5a2a",
+        "#8a6a2a"
+      ],
+      "grey": 0.5,
+      "beard": 0.3,
+      "morph": {
+        "muscle": [
+          0.0,
+          0.6
+        ],
+        "cheek-bones-decr-incr": [
+          0.0,
+          0.5
+        ]
+      },
+      "styles": {
+        "male": [
+          "sonntag78_junglebook_hair",
+          "ponytail01",
+          "braid01",
+          "long01",
+          "culturalibre_hair_02",
+          "cortu_short_messy_hair",
+          "braided_curly_beads4",
+          "fourstrandbraid",
+          "elvs_unkempt_french_braid",
+          "Dreads_with_Fade"
+        ],
+        "female": [
+          "braid01",
+          "ponytail01",
+          "elvs_double_mh_braid",
+          "long01",
+          "elvs_lady_hippy_hair",
+          "braided_curly_beads4",
+          "chrissy_piggies_2025",
+          "elvs_unkempt_french_braid"
+        ]
+      },
+      "tiers": [
+        [
+          "peasant",
+          0.38
+        ],
+        [
+          "trade",
+          0.2
+        ],
+        [
+          "noble",
+          0.08
+        ],
+        [
+          "amazon",
+          0.1
+        ],
+        [
+          "stalker",
+          0.09
+        ],
+        [
+          "lancer",
+          0.09
+        ],
+        [
+          "cataphract",
+          0.06
+        ]
+      ],
+      "tier_labels": {
+        "peasant": "Tribesfolk",
+        "trade": "Rider",
+        "noble": "Chief",
+        "amazon": "Jungle Amazon (Leopard-Pelt Dual-Blade Huntress)",
+        "stalker": "Canopy Stalker (Tiger-Pelt Outrider)",
+        "lancer": "Raptor Lancer (Horn-Lamellar Saddle Guard)",
+        "cataphract": "Quetzal-Noyan (Carapace Sky-Cataphract)"
+      },
+      "outfits": {
+        "male": {
+          "peasant": {
+            "torso": "beast_m_peasant_shirt",
+            "legs": "beast_m_peasant_trousers",
+            "feet": "beast_m_peasant_moccasins",
+            "head": "beast_m_peasant_headband"
+          },
+          "trade": {
+            "torso": "beast_m_trade_deel",
+            "legs": "beast_m_trade_trousers",
+            "feet": "beast_m_trade_boots",
+            "head": "beast_m_trade_hat"
+          },
+          "noble": {
+            "torso": "beast_m_noble_deel",
+            "legs": "beast_m_trade_trousers",
+            "feet": "beast_m_noble_boots",
+            "head": "beast_m_noble_horns"
+          },
+          "amazon": {
+            "torso": "beast_m_stalker_harness",
+            "legs": "beast_m_stalker_kilt",
+            "feet": "beast_m_peasant_moccasins",
+            "head": "beast_m_stalker_crest"
+          },
+          "stalker": {
+            "torso": "beast_m_stalker_harness",
+            "legs": "beast_m_stalker_kilt",
+            "feet": "beast_m_peasant_moccasins",
+            "head": "beast_m_stalker_crest"
+          },
+          "lancer": {
+            "torso": "beast_m_lancer_hauberk",
+            "legs": "beast_m_lancer_chaps",
+            "feet": "beast_m_trade_boots",
+            "head": "beast_m_lancer_casque"
+          },
+          "cataphract": {
+            "torso": "beast_m_cataphract_cuirass",
+            "legs": "beast_m_trade_trousers",
+            "feet": "beast_m_cataphract_boots",
+            "head": "beast_m_cataphract_helm"
+          }
+        },
+        "female": {
+          "peasant": {
+            "torso": "beast_f_peasant_shirt",
+            "legs": "beast_f_peasant_trousers",
+            "feet": "beast_f_peasant_moccasins",
+            "head": "beast_f_peasant_headband"
+          },
+          "trade": {
+            "torso": "beast_f_trade_deel",
+            "legs": "beast_f_trade_trousers",
+            "feet": "beast_f_trade_boots",
+            "head": "beast_f_trade_hat"
+          },
+          "noble": {
+            "torso": "beast_f_noble_deel",
+            "legs": "beast_f_trade_trousers",
+            "feet": "beast_f_noble_boots",
+            "head": "beast_f_noble_wings"
+          },
+          "amazon": {
+            "torso": "beast_f_amazon_harness",
+            "legs": "beast_f_amazon_kilt",
+            "feet": "beast_f_amazon_boots",
+            "head": "beast_f_amazon_torc",
+            "hair": "braided_curly_beads4"
+          }
+        }
+      }
+    },
+    {
+      "id": "izani",
+      "name": "Izani",
+      "note": "The Empire of Iziz (Rome in the jungle). Olive to brown, dark hair (proposal). Clothes: tools/make_garments.py, science fantasy without the machines",
+      "ancestry": {
+        "african": [
+          0.15,
+          0.4
+        ],
+        "asian": [
+          0.15,
+          0.35
+        ],
+        "caucasian": [
+          0.35,
+          0.6
+        ]
+      },
+      "skin": [
+        "#d8b08c",
+        "#bf9068",
+        "#9c6e4a",
+        "#7a5235"
+      ],
+      "hair": [
+        "#1a1410",
+        "#2a1f17",
+        "#3d2c1f",
+        "#5a3e27"
+      ],
+      "eyes": [
+        "#2a1a10",
+        "#3b2414",
+        "#5a3a22"
+      ],
+      "grey": 0.5,
+      "beard": 0.35,
+      "styles": {
+        "male": [
+          "Short_Hair_B",
+          "mhair02",
+          "elvs_maxwell_hair",
+          "culturalibre_hair_05",
+          "short02"
+        ],
+        "female": [
+          "elvs_50s_updo",
+          "elvs_braid_bun",
+          "Messy_Bun",
+          "elvs_island_princess_hair",
+          "braid01"
+        ]
+      },
+      "tiers": [
+        [
+          "peasant",
+          0.28
+        ],
+        [
+          "trade",
+          0.14
+        ],
+        [
+          "noble",
+          0.08
+        ],
+        [
+          "phil",
+          0.06
+        ],
+        [
+          "aedile",
+          0.07
+        ],
+        [
+          "hierophant",
+          0.06
+        ],
+        [
+          "heliarch",
+          0.06
+        ],
+        [
+          "heliophant",
+          0.06
+        ],
+        [
+          "skirmisher",
+          0.06
+        ],
+        [
+          "watch",
+          0.07
+        ],
+        [
+          "praetorian",
+          0.06
+        ]
+      ],
+      "outfits": {
+        "male": {
+          "peasant": {
+            "torso": "iziz_m_peasant_tunic",
+            "legs": "iziz_m_peasant_trousers",
+            "feet": "iziz_m_peasant_wraps",
+            "head": "iziz_m_peasant_hood"
+          },
+          "trade": {
+            "torso": "iziz_m_trade_coat",
+            "legs": "iziz_m_trade_trousers",
+            "feet": "iziz_m_trade_boots"
+          },
+          "noble": {
+            "torso": "iziz_m_noble_robe",
+            "legs": "iziz_m_noble_trousers",
+            "feet": "iziz_m_noble_boots",
+            "head": "iziz_m_noble_crown"
+          },
+          "phil": {
+            "head": "iziz_m_phil_hood",
+            "torso": "iziz_m_phil_jacket",
+            "gloves": "iziz_m_phil_gloves",
+            "legs": "iziz_m_phil_trousers",
+            "feet": "iziz_m_phil_boots",
+            "beard": null,
+            "hair": null,
+            "type": "important_npc"
+          },
+          "aedile": {
+            "torso": "iziz_m_aedile_agbada",
+            "legs": "iziz_m_noble_trousers",
+            "feet": "xan_m_rich_slippers",
+            "head": "iziz_m_aedile_fila"
+          },
+          "hierophant": {
+            "torso": "hykk_m_hierophant_robe",
+            "feet": "hykk_m_noble_sandals",
+            "head": "hykk_m_hierophant_polos"
+          },
+          "heliarch": {
+            "torso": "hykk_m_heliarch_mantle",
+            "feet": "hykk_m_noble_sandals",
+            "head": "hykk_m_heliarch_halo"
+          },
+          "heliophant": {
+            "torso": "dalab_m_heliophant_mantle",
+            "feet": "dalab_m_noble_sandals",
+            "head": "dalab_m_heliophant_crown"
+          },
+          "skirmisher": {
+            "torso": "iziz_m_skirmisher_harness",
+            "legs": "iziz_m_skirmisher_kilt",
+            "feet": "iziz_m_peasant_wraps",
+            "head": "iziz_m_skirmisher_crest"
+          },
+          "watch": {
+            "torso": "iziz_m_watch_cuirass",
+            "legs": "iziz_m_trade_trousers",
+            "feet": "iziz_m_watch_boots",
+            "head": "iziz_m_watch_sallet"
+          },
+          "praetorian": {
+            "torso": "iziz_m_praetorian_lorica",
+            "legs": "iziz_m_noble_trousers",
+            "feet": "iziz_m_praetorian_greaves",
+            "head": "iziz_m_praetorian_helm"
+          }
+        },
+        "female": {
+          "peasant": {
+            "torso": "iziz_f_peasant_tunic",
+            "legs": "iziz_f_peasant_trousers",
+            "feet": "iziz_f_peasant_wraps",
+            "head": "iziz_f_peasant_hood"
+          },
+          "trade": {
+            "torso": "iziz_f_trade_coat",
+            "legs": "iziz_f_trade_trousers",
+            "feet": "iziz_f_trade_boots"
+          },
+          "noble": {
+            "torso": "iziz_f_noble_gown",
+            "legs": "iziz_f_noble_skirt",
+            "feet": "iziz_f_noble_boots",
+            "head": "iziz_f_noble_crown"
+          },
+          "phil": {
+            "head": "iziz_f_phil_hood",
+            "torso": "iziz_f_phil_jacket",
+            "gloves": "iziz_f_phil_gloves",
+            "legs": "iziz_f_phil_trousers",
+            "feet": "iziz_f_phil_boots",
+            "beard": null,
+            "hair": null,
+            "type": "important_npc"
+          }
+        }
+      },
+      "tier_labels": {
+        "peasant": "Commoner",
+        "trade": "Guild",
+        "noble": "Court",
+        "phil": "Phil (Izani Corsair Lord)",
+        "aedile": "Curule Aedile (Crimson Factor)",
+        "hierophant": "Port-Sun Hierophant (Hook & Talia Archpriest)",
+        "heliarch": "Temple-Hill Heliarch (Solar Net-Celebrant)",
+        "heliophant": "Heliophant Sovereign (Solar-Horned Arch-Augur)",
+        "skirmisher": "Sun-Spear Skirmisher (Mirror-Harness)",
+        "watch": "Watch Auxilia (Salvage-Scale Lamellar)",
+        "praetorian": "Relic-Guard Praetorian (Hex-Plate Cataphract)"
+      }
+    },
+    {
+      "id": "dalabites",
+      "name": "Dalabites",
+      "note": "Mound-builders: the photosynthesis mod, green skin. Clothes: Cahokian and Tiwanaku in the Moebius line, the skin bare to the sun (tools/make_garments.py)",
+      "ancestry": {
+        "african": [
+          0.2,
+          0.5
+        ],
+        "asian": [
+          0.2,
+          0.5
+        ],
+        "caucasian": [
+          0.2,
+          0.4
+        ]
+      },
+      "skin": [
+        "#9cae78",
+        "#7f9a5c",
+        "#647f46",
+        "#4c6436"
+      ],
+      "hair": [
+        "#1a1712",
+        "#2b2618",
+        "#3c3420",
+        "#24301c"
+      ],
+      "eyes": [
+        "#2a1a10",
+        "#3b2414",
+        "#6e5a2e",
+        "#7a6a1a"
+      ],
+      "grey": 0.6,
+      "beard": 0.25,
+      "styles": {},
+      "tiers": [
+        [
+          "peasant",
+          0.6
+        ],
+        [
+          "trade",
+          0.28
+        ],
+        [
+          "noble",
+          0.12
+        ]
+      ],
+      "tier_labels": {
+        "peasant": "Commoner",
+        "trade": "Trader",
+        "noble": "Genepriest"
+      },
+      "outfits": {
+        "male": {
+          "peasant": {
+            "torso": "dalab_m_peasant_sash",
+            "legs": "dalab_m_peasant_kilt",
+            "feet": "dalab_m_sandals"
+          },
+          "trade": {
+            "torso": "dalab_m_trade_tabard",
+            "legs": "dalab_m_trade_trousers",
+            "feet": "dalab_m_trade_sandals",
+            "head": "dalab_m_trade_cap"
+          },
+          "noble": {
+            "torso": "dalab_m_noble_robe",
+            "feet": "dalab_m_noble_sandals",
+            "head": "dalab_m_noble_mitre",
+            "type": "important_npc"
+          }
+        },
+        "female": {
+          "peasant": {
+            "torso": "dalab_f_peasant_sash",
+            "legs": "dalab_f_peasant_kilt",
+            "feet": "dalab_f_sandals"
+          },
+          "trade": {
+            "torso": "dalab_f_trade_tabard",
+            "legs": "dalab_f_trade_trousers",
+            "feet": "dalab_f_trade_sandals",
+            "head": "dalab_f_trade_cap"
+          },
+          "noble": {
+            "torso": "dalab_f_noble_robe",
+            "feet": "dalab_f_noble_sandals",
+            "head": "dalab_f_noble_mitre",
+            "type": "important_npc"
+          }
+        }
+      }
+    },
+    {
+      "id": "iron_republic",
+      "name": "Iron Republic",
+      "note": "Highland state; Russian and Transylvanian Saxon, over a salvage culture. Austere and military: citizens dress as a citizen army in field grey, drab and iron black, the Republic's red only as piping; a festive folk set (*_fest tiers, about one in ten) for feast days and the Hall's ceremonies (tools/make_garments.py)",
+      "ancestry": {
+        "african": [
+          0.0,
+          0.1
+        ],
+        "asian": [
+          0.05,
+          0.3
+        ],
+        "caucasian": [
+          0.6,
+          0.95
+        ]
+      },
+      "skin": [
+        "#f1d6c4",
+        "#e3bfa5",
+        "#cfa385"
+      ],
+      "hair": [
+        "#d9c08a",
+        "#a8834f",
+        "#7a5733",
+        "#4d3522",
+        "#241a14"
+      ],
+      "eyes": [
+        "#3b2414",
+        "#5a3a22",
+        "#4a5a3a",
+        "#4e6a80",
+        "#6a7a86"
+      ],
+      "grey": 0.45,
+      "beard": 0.5,
+      "morph": {
+        "height": [
+          -0.1,
+          0.5
+        ]
+      },
+      "styles": {
+        "male": [
+          "short02",
+          "short01",
+          "mhair02",
+          "elvs_grump_hair",
+          "elvs_maxwell_hair",
+          "Short_Hair_B"
+        ],
+        "female": [
+          "elvs_braid_bun",
+          "Messy_Bun",
+          "elvs_50s_updo",
+          "braid01",
+          "ponytail01"
+        ]
+      },
+      "tiers": [
+        [
+          "peasant",
+          0.48
+        ],
+        [
+          "trade",
+          0.24
+        ],
+        [
+          "noble",
+          0.08
+        ],
+        [
+          "magistrate",
+          0.05
+        ],
+        [
+          "commissar",
+          0.05
+        ],
+        [
+          "peasant_fest",
+          0.06
+        ],
+        [
+          "trade_fest",
+          0.03
+        ],
+        [
+          "noble_fest",
+          0.01
+        ],
+        [
+          "pc_patchwork_sheriff",
+          0.04
+        ],
+        [
+          "crimson_technomancer",
+          0.02
+        ]
+      ],
+      "tier_labels": {
+        "peasant": "Citizen",
+        "trade": "Guildsfolk",
+        "noble": "Hall of the Republic",
+        "magistrate": "High Magistrate (Salvage Court)",
+        "commissar": "Line-Commissar & Salvage Inspector",
+        "peasant_fest": "Citizen, festive",
+        "trade_fest": "Guildsfolk, festive",
+        "noble_fest": "Hall of the Republic, in state",
+        "pc_patchwork_sheriff": "Iron Republic Patchwork Sheriff (PC)",
+        "crimson_technomancer": "Crimson Technomancer (Arc-Furnace Magus)"
+      },
+      "outfits": {
+        "male": {
+          "peasant": {
+            "torso": "rep_m_peasant_tunic",
+            "legs": "rep_m_peasant_trousers",
+            "feet": "rep_m_peasant_boots",
+            "head": "rep_m_peasant_cap"
+          },
+          "trade": {
+            "torso": "rep_m_trade_jacket",
+            "legs": "rep_m_trade_breeches",
+            "feet": "rep_m_trade_boots",
+            "head": "rep_m_trade_ushanka"
+          },
+          "noble": {
+            "torso": "rep_m_noble_greatcoat",
+            "legs": "rep_m_noble_breeches",
+            "feet": "rep_m_noble_boots",
+            "head": "rep_m_noble_papakha"
+          },
+          "magistrate": {
+            "torso": "rep_m_magistrate_coat",
+            "legs": "rep_m_noble_breeches",
+            "feet": "rep_m_noble_boots",
+            "head": "rep_m_magistrate_hat"
+          },
+          "commissar": {
+            "torso": "rep_m_commissar_coat",
+            "back": "rep_m_commissar_pack",
+            "legs": "rep_m_noble_breeches",
+            "feet": "rep_m_commissar_boots",
+            "head": "rep_m_commissar_cap"
+          },
+          "peasant_fest": {
+            "torso": "rep_m_fest_peasant_shirt",
+            "legs": "rep_m_fest_peasant_trousers",
+            "feet": "rep_m_fest_valenki",
+            "head": "rep_m_fest_peasant_cap"
+          },
+          "trade_fest": {
+            "torso": "rep_m_fest_trade_jacket",
+            "legs": "rep_m_fest_trade_breeches",
+            "feet": "rep_m_trade_boots",
+            "head": "rep_m_fest_trade_ushanka"
+          },
+          "noble_fest": {
+            "torso": "rep_m_fest_noble_greatcoat",
+            "legs": "rep_m_fest_noble_breeches",
+            "feet": "rep_m_fest_noble_boots",
+            "head": "rep_m_fest_noble_papakha"
+          },
+          "pc_patchwork_sheriff": {
+            "head": "rep_m_pc_sheriff_hat",
+            "torso": "rep_m_pc_sheriff_poncho",
+            "gloves": "rep_m_pc_sheriff_gloves",
+            "legs": "rep_m_pc_sheriff_pants",
+            "feet": "rep_m_pc_sheriff_boots",
+            "hair": null,
+            "beard": null,
+            "type": "pc",
+            "label": "Iron Republic Patchwork Sheriff (PC)"
+          },
+          "crimson_technomancer": {
+            "head": "rep_m_crimson_technomancer_hat",
+            "torso": "rep_m_crimson_technomancer_coat",
+            "gloves": "rep_m_crimson_technomancer_gloves",
+            "legs": "rep_m_crimson_technomancer_trousers",
+            "feet": "rep_m_crimson_technomancer_boots",
+            "beard": null,
+            "hair": null,
+            "type": "important_npc"
+          }
+        },
+        "female": {
+          "peasant": {
+            "torso": "rep_f_peasant_dress",
+            "feet": "rep_f_peasant_boots",
+            "head": "rep_f_peasant_platok"
+          },
+          "trade": {
+            "torso": "rep_f_trade_jacket",
+            "legs": "rep_f_trade_skirt",
+            "feet": "rep_f_trade_boots",
+            "head": "rep_f_trade_ushanka"
+          },
+          "noble": {
+            "torso": "rep_f_noble_greatcoat",
+            "legs": "rep_f_noble_skirt",
+            "feet": "rep_f_noble_boots",
+            "head": "rep_f_noble_papakha"
+          },
+          "peasant_fest": {
+            "torso": "rep_f_fest_peasant_sarafan",
+            "feet": "rep_f_fest_valenki",
+            "head": "rep_f_fest_peasant_platok"
+          },
+          "trade_fest": {
+            "torso": "rep_f_fest_trade_coat",
+            "legs": "rep_f_fest_trade_skirt",
+            "feet": "rep_f_trade_boots",
+            "head": "rep_f_fest_trade_borten"
+          },
+          "noble_fest": {
+            "torso": "rep_f_fest_noble_gown",
+            "feet": "rep_f_fest_noble_boots",
+            "head": "rep_f_fest_noble_kokoshnik"
+          },
+          "pc_patchwork_sheriff": {
+            "head": "rep_f_pc_sheriff_hat",
+            "torso": "rep_f_pc_sheriff_poncho",
+            "gloves": "rep_f_pc_sheriff_gloves",
+            "legs": "rep_f_pc_sheriff_pants",
+            "feet": "rep_f_pc_sheriff_boots",
+            "hair": null,
+            "beard": null,
+            "type": "pc",
+            "label": "Iron Republic Patchwork Sheriff (PC)"
+          },
+          "crimson_technomancer": {
+            "head": "rep_f_crimson_technomancer_hat",
+            "torso": "rep_f_crimson_technomancer_coat",
+            "gloves": "rep_f_crimson_technomancer_gloves",
+            "legs": "rep_f_crimson_technomancer_trousers",
+            "feet": "rep_f_crimson_technomancer_boots",
+            "beard": null,
+            "hair": null,
+            "type": "important_npc"
+          }
+        }
+      }
+    },
+    {
+      "id": "rustic_clansmen",
+      "name": "Free Clans (Rustic Clansmen)",
+      "note": "Copper-and-tin highland clans around Ardent, northeast of the Republic (LORE.md \u00a76.4)",
+      "ancestry": {
+        "african": [
+          0.0,
+          0.05
+        ],
+        "asian": [
+          0.0,
+          0.15
+        ],
+        "caucasian": [
+          0.8,
+          1.0
+        ]
+      },
+      "skin": [
+        "#f4dccb",
+        "#e8c6ad",
+        "#d6ab8c"
+      ],
+      "hair": [
+        "#e3cf9a",
+        "#cfae6a",
+        "#b07a43",
+        "#8e4f2a",
+        "#6d4a2c"
+      ],
+      "eyes": [
+        "#4e6a80",
+        "#5a7a9a",
+        "#6a7a86",
+        "#4a5a3a",
+        "#5a3a22"
+      ],
+      "grey": 0.45,
+      "beard": 0.75,
+      "morph": {
+        "height": [
+          0.0,
+          0.6
+        ],
+        "muscle": [
+          0.0,
+          0.5
+        ]
+      },
+      "styles": {
+        "male": [
+          "long01",
+          "braid01",
+          "ponytail01",
+          "elvs_that_80s_babe_hair",
+          "short02",
+          "scalpviking",
+          "fourstrandbraid",
+          "elvs_unkempt_french_braid"
+        ],
+        "female": [
+          "braid01",
+          "elvs_double_mh_braid",
+          "elvs_reverse_french_braid_bun",
+          "long01",
+          "brunhilde",
+          "fourstrandbraid"
+        ]
+      },
+      "tiers": [
+        [
+          "axeman",
+          0.55
+        ],
+        [
+          "envoy",
+          0.45
+        ],
+        [
+          "pc_torgo_couture",
+          0.04
+        ]
+      ],
+      "tier_labels": {
+        "axeman": "Free Clans Axeman (Ardent Bronze-Medallion Huscarl)",
+        "envoy": "Glacier-Pass Envoy (White-Gambeson Chevalier)",
+        "pc_torgo_couture": "Free Clans Torgo Gold-Brocade Couture (PC)"
+      },
+      "outfits": {
+        "male": {
+          "axeman": {
+            "torso": "rustic_m_axeman_tunic",
+            "legs": "rustic_m_axeman_trousers",
+            "feet": "rustic_m_axeman_boots",
+            "beard": "rustic_m_axeman_stache"
+          },
+          "envoy": {
+            "torso": "rustic_m_envoy_gambeson",
+            "legs": "order_m_agent_trousers",
+            "feet": "rustic_m_envoy_boots",
+            "head": "rustic_m_envoy_visor"
+          },
+          "pc_torgo_couture": {
+            "head": "rustic_m_pc_torgo_hat",
+            "torso": "rustic_m_pc_torgo_coat",
+            "legs": "rustic_m_pc_torgo_tights",
+            "feet": "rustic_m_pc_torgo_heels",
+            "type": "pc",
+            "label": "Free Clans Torgo Gold-Brocade Couture (PC)"
+          }
+        },
+        "female": {
+          "pc_torgo_couture": {
+            "head": "rustic_f_pc_torgo_hat",
+            "torso": "rustic_f_pc_torgo_coat",
+            "legs": "rustic_f_pc_torgo_tights",
+            "feet": "rustic_f_pc_torgo_heels",
+            "type": "pc",
+            "label": "Free Clans Torgo Gold-Brocade Couture (PC)"
+          }
+        }
+      }
+    },
+    {
+      "id": "painted_men",
+      "name": "Painted Men",
+      "note": "Raider tribes of the northeast high country; PNW-coast references (proposal)",
+      "ancestry": {
+        "african": [
+          0.0,
+          0.1
+        ],
+        "asian": [
+          0.6,
+          0.85
+        ],
+        "caucasian": [
+          0.1,
+          0.3
+        ]
+      },
+      "skin": [
+        "#c99a72",
+        "#b07e57",
+        "#916342"
+      ],
+      "hair": [
+        "#120f0d",
+        "#1c1612",
+        "#2a2018"
+      ],
+      "eyes": [
+        "#2a1a10",
+        "#3b2414"
+      ],
+      "grey": 0.5,
+      "beard": 0.15,
+      "styles": {
+        "male": [
+          "long01",
+          "braid01",
+          "ponytail01",
+          "punkduck_alpha7_long",
+          "fourstrandbraid"
+        ],
+        "female": [
+          "long01",
+          "braid01",
+          "elvs_double_mh_braid",
+          "o4saken_long01",
+          "fourstrandbraid"
+        ]
+      },
+      "tiers": [
+        [
+          "warden",
+          1.0
+        ]
+      ],
+      "tier_labels": {
+        "warden": "Totem-Warden (Slat-Armour Warleader)"
+      },
+      "outfits": {
+        "male": {
+          "warden": {
+            "torso": "painted_m_warden_cuirass",
+            "legs": "beast_m_trade_trousers",
+            "feet": "beast_m_peasant_moccasins",
+            "head": "painted_m_warden_helm"
+          }
+        }
+      }
+    },
+    {
+      "id": "eastern_nomads",
+      "name": "Eastern Nomads",
+      "note": "Shade and the high desert; Petra and Bedouin references (proposal)",
+      "ancestry": {
+        "african": [
+          0.1,
+          0.3
+        ],
+        "asian": [
+          0.05,
+          0.2
+        ],
+        "caucasian": [
+          0.5,
+          0.75
+        ]
+      },
+      "skin": [
+        "#d6ad86",
+        "#bb8d63",
+        "#9a6e48",
+        "#7a5436"
+      ],
+      "hair": [
+        "#120e0c",
+        "#1f1813",
+        "#2f231a"
+      ],
+      "eyes": [
+        "#2a1a10",
+        "#3b2414",
+        "#5a3a22",
+        "#6e5a2e"
+      ],
+      "grey": 0.45,
+      "beard": 0.7,
+      "styles": {
+        "male": [
+          "short02",
+          "Short_Hair_B",
+          "long01"
+        ],
+        "female": [
+          "long01",
+          "braid01",
+          "fhair01",
+          "elvs_island_princess_hair"
+        ]
+      },
+      "tiers": [
+        [
+          "walker",
+          0.55
+        ],
+        [
+          "oracle",
+          0.25
+        ],
+        [
+          "patriarch",
+          0.2
+        ]
+      ],
+      "tier_labels": {
+        "walker": "Shade-Walker (Cistern Guide)",
+        "oracle": "Dune-Cantor (Anvil-Cowl Oracle)",
+        "patriarch": "Star-Reckoner (Caravan Patriarch)"
+      },
+      "outfits": {
+        "male": {
+          "walker": {
+            "torso": "nomad_m_walker_robe",
+            "legs": "iziz_m_peasant_trousers",
+            "feet": "xan_m_town_boots",
+            "head": "nomad_m_walker_cowl"
+          },
+          "oracle": {
+            "torso": "nomad_m_oracle_shroud",
+            "legs": "iziz_m_peasant_trousers",
+            "feet": "xan_m_town_boots",
+            "head": "nomad_m_oracle_cowl"
+          },
+          "patriarch": {
+            "torso": "nomad_m_patriarch_robe",
+            "legs": "xan_m_town_trousers",
+            "feet": "xan_m_town_boots",
+            "head": "nomad_m_patriarch_cap"
+          }
+        }
+      }
+    },
+    {
+      "id": "abyssal",
+      "name": "Abyssal and Reed Lake people",
+      "note": "Salt-marsh scavengers, stilt-village weavers, and the lake people; Sahelian & Andean-lacquer references in teal, red-lacquer, gold, and cream (tools/garments/cultures/yuni.py)",
+      "ancestry": {
+        "african": [
+          0.05,
+          0.2
+        ],
+        "asian": [
+          0.6,
+          0.85
+        ],
+        "caucasian": [
+          0.05,
+          0.2
+        ]
+      },
+      "skin": [
+        "#c69870",
+        "#aa7b54",
+        "#8a603e"
+      ],
+      "hair": [
+        "#110e0c",
+        "#1b1612",
+        "#2a2119"
+      ],
+      "eyes": [
+        "#2a1a10",
+        "#3b2414"
+      ],
+      "grey": 0.5,
+      "beard": 0.1,
+      "morph": {
+        "height": [
+          -0.6,
+          0.0
+        ]
+      },
+      "styles": {
+        "male": [
+          "short02",
+          "long01"
+        ],
+        "female": [
+          "braid01",
+          "elvs_double_mh_braid",
+          "long01"
+        ]
+      },
+      "tiers": [
+        [
+          "peasant",
+          0.45
+        ],
+        [
+          "trade",
+          0.3
+        ],
+        [
+          "dredger",
+          0.25
+        ],
+        [
+          "pc_azure_emir",
+          0.04
+        ]
+      ],
+      "tier_labels": {
+        "peasant": "Marsh-Stilt Weaver (Salt-Delta Commoner)",
+        "trade": "Salt-Delta Factor (Grand Boubou Merchant)",
+        "dredger": "Miasma-Dredger (Alchemical Scavenger)",
+        "pc_azure_emir": "Abyssal Azure-Boubou Emir (PC)"
+      },
+      "outfits": {
+        "male": {
+          "peasant": {
+            "torso": "abyssal_m_peasant_boubou",
+            "legs": "abyssal_m_peasant_trousers",
+            "feet": "abyssal_m_sandals",
+            "head": "abyssal_m_peasant_hat"
+          },
+          "trade": {
+            "torso": "abyssal_m_trade_boubou",
+            "legs": "abyssal_m_trade_trousers",
+            "feet": "abyssal_m_trade_slippers",
+            "head": "abyssal_m_trade_kufi"
+          },
+          "dredger": {
+            "torso": "abyssal_m_dredger_robe",
+            "back": "abyssal_m_dredger_pack",
+            "legs": "iziz_m_peasant_trousers",
+            "feet": "iziz_m_peasant_wraps",
+            "head": "abyssal_m_dredger_kasa"
+          },
+          "pc_azure_emir": {
+            "head": "abyssal_m_pc_azure_fez",
+            "torso": "abyssal_m_pc_azure_boubou",
+            "legs": "abyssal_m_pc_azure_pants",
+            "feet": "abyssal_m_pc_azure_boots",
+            "type": "pc",
+            "label": "Abyssal Azure-Boubou Emir (PC)"
+          }
+        },
+        "female": {
+          "peasant": {
+            "torso": "abyssal_f_peasant_boubou",
+            "legs": "abyssal_f_peasant_wrapper",
+            "feet": "abyssal_f_sandals",
+            "head": "abyssal_f_peasant_wrap"
+          },
+          "trade": {
+            "torso": "abyssal_f_trade_boubou",
+            "legs": "abyssal_f_trade_trousers",
+            "feet": "abyssal_f_trade_slippers",
+            "head": "abyssal_f_trade_gele"
+          },
+          "pc_azure_emir": {
+            "head": "abyssal_f_pc_azure_fez",
+            "torso": "abyssal_f_pc_azure_boubou",
+            "legs": "abyssal_f_pc_azure_pants",
+            "feet": "abyssal_f_pc_azure_boots",
+            "type": "pc",
+            "label": "Abyssal Azure-Boubou Emir (PC)"
+          }
+        }
+      }
+    },
+    {
+      "id": "xanadu",
+      "name": "Xanadu",
+      "note": "The southern Sultanate of Erewhon, Pearl of Xanadu (the owner, 2026-10-19; LORE.md \u00a76.13, settlements/xanadu): vaguely Chinese and South Asian; dress a mix of Persian, Indian, Ottoman, Tibetan and Andean Cholet/Palopo (tools/make_garments.py & tools/garments/cultures/xanadu.py): townsfolk in the kurta or chuba and pangden apron; Guildmasters of the Six Guilds (Goldsmiths, Spicers, Alchemists, Miners, Masons, Farmers) in mosaic qaba coats; the rich in silk jama and great turbans; Karavan-Bashi & Master of Mines magnates in sable-fur pelisse coats; Kora Wheel-Priests & Temple Grammarians in Tocharian-syllabary sanctum robes; Pleasure-Dome Courtesans, Musicians & Courtiers in gilded entari caftans; the Grand Vizier & Divan Chancellors in imperial khalat robes and kallavi crowns; Dzong Citadel Askari infantry in gold-damascened Chahar-Aina mirror armor; and Wardens of the Caves of Ice in fur-lined lamellar",
+      "ancestry": {
+        "african": [
+          0.05,
+          0.2
+        ],
+        "asian": [
+          0.35,
+          0.7
+        ],
+        "caucasian": [
+          0.25,
+          0.55
+        ]
+      },
+      "skin": [
+        "#d7ae88",
+        "#bc8e66",
+        "#9b6f4b"
+      ],
+      "hair": [
+        "#110e0c",
+        "#1d1713",
+        "#2d231b"
+      ],
+      "eyes": [
+        "#2a1a10",
+        "#3b2414",
+        "#5a3a22",
+        "#6e5a2e"
+      ],
+      "grey": 0.5,
+      "beard": 0.55,
+      "styles": {
+        "male": [
+          "short02",
+          "long01"
+        ],
+        "female": [
+          "o4saken_chinesebob01",
+          "elvs_braid_bun",
+          "braid01",
+          "long01"
+        ]
+      },
+      "tiers": [
+        [
+          "town",
+          0.24
+        ],
+        [
+          "guild",
+          0.16
+        ],
+        [
+          "rich",
+          0.12
+        ],
+        [
+          "magnate",
+          0.09
+        ],
+        [
+          "priest",
+          0.09
+        ],
+        [
+          "pleasure",
+          0.08
+        ],
+        [
+          "vizier",
+          0.06
+        ],
+        [
+          "askari",
+          0.09
+        ],
+        [
+          "icewarden",
+          0.07
+        ],
+        [
+          "pc_floral_envoy",
+          0.04
+        ]
+      ],
+      "tier_labels": {
+        "town": "Townsfolk (Kurta / Chuba & Pangden)",
+        "guild": "Guildmaster & Bazaar Factor (Goldsmith, Spicer & Alchemist)",
+        "rich": "Wealthy (Silk Jama & Great Turban)",
+        "magnate": "Grand Karavan-Bashi & Master of Mines (Sable Pelisse Magnate)",
+        "priest": "Temple Grammarian & Kora Wheel-Priest (Tocharian Syllabary)",
+        "pleasure": "Pleasure-Dome Courtesan, Musician & Courtier (Topkapi Harem)",
+        "vizier": "Grand Vizier & Divan Chancellor (Imperial Khalat & Kallavi)",
+        "askari": "Dzong Citadel Askari (Chahar-Aina Four-Mirror Infantry)",
+        "icewarden": "Warden of the Caves of Ice (High-Pass Stalker-Hunter)",
+        "pc_floral_envoy": "Xanadu Peony-Brocade Envoy (PC)"
+      },
+      "outfits": {
+        "male": {
+          "town": {
+            "torso": "xan_m_town_tunic",
+            "legs": "xan_m_town_trousers",
+            "feet": "xan_m_town_boots",
+            "head": "xan_m_town_cap"
+          },
+          "guild": {
+            "torso": "xan_m_guild_coat",
+            "back": "xan_m_guild_pack",
+            "legs": "xan_m_guild_trousers",
+            "feet": "xan_m_guild_boots",
+            "head": "xan_m_guild_hat"
+          },
+          "rich": {
+            "torso": "xan_m_rich_jama",
+            "legs": "xan_m_rich_trousers",
+            "feet": "xan_m_rich_slippers",
+            "head": "xan_m_rich_turban"
+          },
+          "magnate": {
+            "torso": "xan_m_magnate_pelisse",
+            "legs": "xan_m_rich_trousers",
+            "feet": "xan_m_magnate_boots",
+            "head": "xan_m_magnate_kufi"
+          },
+          "priest": {
+            "torso": "xan_m_priest_robe",
+            "feet": "xan_m_priest_boots",
+            "head": "xan_m_priest_crown"
+          },
+          "pleasure": {
+            "torso": "xan_m_pleasure_caftan",
+            "legs": "xan_m_pleasure_shalwar",
+            "feet": "xan_m_rich_slippers",
+            "head": "xan_m_pleasure_headdress"
+          },
+          "vizier": {
+            "torso": "xan_m_vizier_robe",
+            "legs": "xan_m_rich_trousers",
+            "feet": "xan_m_vizier_slippers",
+            "head": "xan_m_vizier_kavuk"
+          },
+          "askari": {
+            "torso": "xan_m_askari_cuirass",
+            "legs": "xan_m_askari_trousers",
+            "feet": "xan_m_askari_greaves",
+            "head": "xan_m_askari_helm"
+          },
+          "icewarden": {
+            "torso": "xan_m_icewarden_coat",
+            "back": "xan_m_icewarden_pack",
+            "legs": "xan_m_icewarden_trousers",
+            "feet": "xan_m_icewarden_boots",
+            "head": "xan_m_icewarden_hat"
+          },
+          "pc_floral_envoy": {
+            "torso": "xan_m_pc_envoy_jacket",
+            "legs": "xan_m_pc_envoy_pants",
+            "feet": "xan_m_pc_envoy_boots",
+            "type": "pc",
+            "label": "Xanadu Peony-Brocade Envoy (PC)"
+          }
+        },
+        "female": {
+          "town": {
+            "torso": "xan_f_town_tunic",
+            "legs": "xan_f_town_trousers",
+            "feet": "xan_f_town_boots",
+            "head": "xan_f_town_cap"
+          },
+          "guild": {
+            "torso": "xan_f_guild_coat",
+            "back": "xan_f_guild_pack",
+            "legs": "xan_f_guild_trousers",
+            "feet": "xan_f_guild_boots",
+            "head": "xan_f_guild_hat"
+          },
+          "rich": {
+            "torso": "xan_f_rich_jama",
+            "legs": "xan_f_rich_trousers",
+            "feet": "xan_f_rich_slippers",
+            "head": "xan_f_rich_turban"
+          },
+          "magnate": {
+            "torso": "xan_f_magnate_pelisse",
+            "legs": "xan_f_rich_trousers",
+            "feet": "xan_f_magnate_boots",
+            "head": "xan_f_magnate_kufi"
+          },
+          "priest": {
+            "torso": "xan_f_priest_robe",
+            "feet": "xan_f_priest_boots",
+            "head": "xan_f_priest_crown"
+          },
+          "pleasure": {
+            "torso": "xan_f_pleasure_caftan",
+            "legs": "xan_f_pleasure_shalwar",
+            "feet": "xan_f_rich_slippers",
+            "head": "xan_f_pleasure_headdress"
+          },
+          "vizier": {
+            "torso": "xan_f_vizier_robe",
+            "legs": "xan_f_rich_trousers",
+            "feet": "xan_f_vizier_slippers",
+            "head": "xan_f_vizier_kavuk"
+          },
+          "askari": {
+            "torso": "xan_f_askari_cuirass",
+            "legs": "xan_f_askari_trousers",
+            "feet": "xan_f_askari_greaves",
+            "head": "xan_f_askari_helm"
+          },
+          "icewarden": {
+            "torso": "xan_f_icewarden_coat",
+            "back": "xan_f_icewarden_pack",
+            "legs": "xan_f_icewarden_trousers",
+            "feet": "xan_f_icewarden_boots",
+            "head": "xan_f_icewarden_hat"
+          },
+          "pc_floral_envoy": {
+            "torso": "xan_f_pc_envoy_jacket",
+            "legs": "xan_f_pc_envoy_pants",
+            "feet": "xan_f_pc_envoy_boots",
+            "type": "pc",
+            "label": "Xanadu Peony-Brocade Envoy (PC)"
+          }
+        }
+      }
+    },
+    {
+      "id": "jimjam",
+      "name": "Jimjam",
+      "note": "The Raja's city; South Asian references (proposal)",
+      "ancestry": {
+        "african": [
+          0.15,
+          0.35
+        ],
+        "asian": [
+          0.1,
+          0.3
+        ],
+        "caucasian": [
+          0.4,
+          0.6
+        ]
+      },
+      "skin": [
+        "#c0926b",
+        "#a0744f",
+        "#80583a",
+        "#64432c"
+      ],
+      "hair": [
+        "#0f0c0b",
+        "#1a1511",
+        "#271f18"
+      ],
+      "eyes": [
+        "#2a1a10",
+        "#3b2414",
+        "#5a3a22"
+      ],
+      "grey": 0.5,
+      "beard": 0.5,
+      "styles": {},
+      "tiers": [
+        [
+          "sibyl",
+          1.0
+        ]
+      ],
+      "tier_labels": {
+        "sibyl": "Ruby Zenana Sibyl (Coin-Veiled Seer)"
+      },
+      "outfits": {
+        "male": {
+          "sibyl": {
+            "torso": "jimjam_m_sibyl_drape",
+            "feet": "xan_m_rich_slippers",
+            "head": "jimjam_m_sibyl_veil"
+          }
+        }
+      }
+    },
+    {
+      "id": "hykkousoi",
+      "name": "Hykkousoi",
+      "mods": [
+        "mod_gills"
+      ],
+      "note": "Seafarers of Ys; Greek and Polynesian references (proposal); rib gills (mods.py). Clothes: Greek and Roman with a Moebius line (tools/make_garments.py)",
+      "ancestry": {
+        "african": [
+          0.1,
+          0.25
+        ],
+        "asian": [
+          0.25,
+          0.45
+        ],
+        "caucasian": [
+          0.35,
+          0.6
+        ]
+      },
+      "skin": [
+        "#d4a982",
+        "#b88b62",
+        "#966b47"
+      ],
+      "hair": [
+        "#16120e",
+        "#2a2017",
+        "#4a3524",
+        "#6b4c2f"
+      ],
+      "eyes": [
+        "#3b2414",
+        "#5a3a22",
+        "#3a5a5a",
+        "#4a6a6a"
+      ],
+      "grey": 0.5,
+      "beard": 0.55,
+      "styles": {
+        "male": [
+          "afro01",
+          "cortu_short_messy_hair",
+          "short02",
+          "long01",
+          "elvs_keylth_hair"
+        ],
+        "female": [
+          "punkduck_alpha7_curly",
+          "long01",
+          "elvs_lady_hippy_hair",
+          "rehmanpolanski_hair_bun_brown",
+          "southernbelleringlets",
+          "punkduck_alpha7_curly2"
+        ]
+      },
+      "tiers": [
+        [
+          "peasant",
+          0.55
+        ],
+        [
+          "trade",
+          0.3
+        ],
+        [
+          "noble",
+          0.15
+        ],
+        [
+          "crested_guardian",
+          0.02
+        ]
+      ],
+      "tier_labels": {
+        "peasant": "Sailor",
+        "trade": "Marine",
+        "noble": "Archon's court",
+        "crested_guardian": "Crested Guardian (Pelagic Hoplite Champion)"
+      },
+      "outfits": {
+        "male": {
+          "peasant": {
+            "torso": "hykk_m_peasant_exomis",
+            "feet": "hykk_m_sandals",
+            "head": "hykk_m_peasant_hat"
+          },
+          "trade": {
+            "torso": "hykk_m_trade_lorica",
+            "legs": "hykk_m_trade_pteruges",
+            "feet": "hykk_m_trade_greaves",
+            "head": "hykk_m_trade_helm"
+          },
+          "noble": {
+            "torso": "hykk_m_noble_chiton",
+            "feet": "hykk_m_noble_sandals",
+            "head": "hykk_m_noble_crown"
+          },
+          "crested_guardian": {
+            "head": "hykk_m_crested_guardian_helm",
+            "torso": "hykk_m_crested_guardian_cuirass",
+            "gloves": "hykk_m_crested_guardian_gauntlets",
+            "legs": "hykk_m_crested_guardian_greaves",
+            "feet": "hykk_m_crested_guardian_boots",
+            "beard": null,
+            "hair": null,
+            "type": "important_npc"
+          }
+        },
+        "female": {
+          "peasant": {
+            "torso": "hykk_f_peasant_exomis",
+            "feet": "hykk_f_sandals",
+            "head": "hykk_f_peasant_hat"
+          },
+          "trade": {
+            "torso": "hykk_f_trade_lorica",
+            "legs": "hykk_f_trade_pteruges",
+            "feet": "hykk_f_trade_greaves",
+            "head": "hykk_f_trade_helm"
+          },
+          "noble": {
+            "torso": "hykk_f_noble_chiton",
+            "feet": "hykk_f_noble_sandals",
+            "head": "hykk_f_noble_crown"
+          },
+          "crested_guardian": {
+            "head": "hykk_f_crested_guardian_helm",
+            "torso": "hykk_f_crested_guardian_cuirass",
+            "gloves": "hykk_f_crested_guardian_gauntlets",
+            "legs": "hykk_f_crested_guardian_greaves",
+            "feet": "hykk_f_crested_guardian_boots",
+            "beard": null,
+            "hair": null,
+            "type": "important_npc"
+          }
+        }
+      }
+    },
+    {
+      "id": "islanders",
+      "name": "Ring Sea Islanders",
+      "note": "Polynesian and Ashlander references (proposal)",
+      "ancestry": {
+        "african": [
+          0.2,
+          0.4
+        ],
+        "asian": [
+          0.4,
+          0.65
+        ],
+        "caucasian": [
+          0.05,
+          0.2
+        ]
+      },
+      "skin": [
+        "#b98a62",
+        "#9c704b",
+        "#7c5537"
+      ],
+      "hair": [
+        "#0f0c0a",
+        "#1a1410",
+        "#2a2018"
+      ],
+      "eyes": [
+        "#2a1a10",
+        "#3b2414"
+      ],
+      "grey": 0.5,
+      "beard": 0.3,
+      "morph": {
+        "weight": [
+          0.0,
+          0.5
+        ],
+        "muscle": [
+          0.0,
+          0.5
+        ]
+      },
+      "styles": {
+        "male": [
+          "afro01",
+          "long01",
+          "culturalibre_hair_02",
+          "punkduck_alpha7_long",
+          "Dreads_with_Fade",
+          "braided_curly_beads4"
+        ],
+        "female": [
+          "punkduck_alpha7_curly",
+          "long01",
+          "afro01",
+          "elvs_lady_hippy_hair",
+          "AfroPonytail",
+          "braided_curly_beads4"
+        ]
+      },
+      "tiers": [
+        [
+          "shaman",
+          1.0
+        ]
+      ],
+      "tier_labels": {
+        "shaman": "Kiln-Mask Bell-Shaman (Ash-Spirit Caller)"
+      },
+      "outfits": {
+        "male": {
+          "shaman": {
+            "torso": "island_m_shaman_mantle",
+            "legs": "island_m_shaman_kilt",
+            "head": "island_m_shaman_mask"
+          }
+        }
+      }
+    },
+    {
+      "id": "yuni",
+      "name": "Yuni",
+      "note": "The butte city of the Outer Wall (corrupted from UNIV., the Ancient Agricultural & Mechanical College). Its people range from white Australian to Aboriginal Australian (the owner's note; MakeHuman has no Aboriginal ancestry, so that end is African-leaning with some European and a little Asian). Clothes: Australian Outback stockmen & drovers, ANZAC Light-Horse troopers in butternut & tan, Oxbridge/Gaudi trencadis academic regalia for the Emmo's court, and British-explorer alchemical geomancers (tools/garments/cultures/yuni.py)",
+      "ancestry": {
+        "african": [
+          0.0,
+          0.65
+        ],
+        "asian": [
+          0.0,
+          0.2
+        ],
+        "caucasian": [
+          0.2,
+          1.0
+        ]
+      },
+      "skin": [
+        "#f0d4bf",
+        "#d9ae8a",
+        "#b07a52",
+        "#7a4a2c",
+        "#4e2e1c"
+      ],
+      "hair": [
+        "#dcc28a",
+        "#b48c52",
+        "#7a5634",
+        "#3a281a",
+        "#15110e"
+      ],
+      "eyes": [
+        "#5a7a98",
+        "#6a7a6a",
+        "#7a5a32",
+        "#3b2414",
+        "#1e140c"
+      ],
+      "grey": 0.5,
+      "beard": 0.35,
+      "styles": {
+        "male": [
+          "afro01",
+          "short04",
+          "short02",
+          "Low_Fade",
+          "Dreads_with_Fade",
+          "Two_Braided_Cornrows_Male",
+          "long01",
+          "short01",
+          "mhair02"
+        ],
+        "female": [
+          "afro01",
+          "elvs_micky_afro",
+          "punkduck_alpha7_curly",
+          "short03",
+          "Two_Braided_Cornrows_Female",
+          "AfroPonytail",
+          "Afro_Ponytail_-_Slick_Down",
+          "long01",
+          "ponytail01",
+          "braid01",
+          "bob02"
+        ]
+      },
+      "tiers": [
+        [
+          "peasant",
+          0.3
+        ],
+        [
+          "trade",
+          0.18
+        ],
+        [
+          "trooper",
+          0.14
+        ],
+        [
+          "geomancer",
+          0.12
+        ],
+        [
+          "noble",
+          0.1
+        ],
+        [
+          "emmo",
+          0.04
+        ],
+        [
+          "sentinel",
+          0.06
+        ],
+        [
+          "breacher",
+          0.06
+        ],
+        [
+          "yuni_outback_scout",
+          0.04
+        ],
+        [
+          "yuni_tassel_heavy",
+          0.04
+        ],
+        [
+          "yuni_field_medic",
+          0.04
+        ],
+        [
+          "yuni_comms_ranger",
+          0.04
+        ],
+        [
+          "yuni_desert_elder",
+          0.04
+        ]
+      ],
+      "tier_labels": {
+        "peasant": "Outback Jackaroo & Bush-Hand (Cork-Hat Stockman)",
+        "trade": "Caravan Drover & Station Factor (Oilskin Duster & Goggles)",
+        "trooper": "Light-Horse Trooper (Butternut & Tan Slouch-Hat Cavalry)",
+        "geomancer": "Alchemical Geomancer (Pith-Helmet Ley-Scanner Explorer)",
+        "noble": "UNIV. Convocation Fellow (Trencadis Hood & Mortarboard)",
+        "emmo": "High Emmo / Emeritus Court (Hyperboloid Crown Regalia)",
+        "sentinel": "Outer-Wall Sentinel (Butte-Gate Warden)",
+        "breacher": "Vault-Breacher (Hazmat Salvage Corps)",
+        "yuni_outback_scout": "Yuni Outback Desert Scout",
+        "yuni_tassel_heavy": "Yuni Tassel-Hat Heavy Vanguard",
+        "yuni_field_medic": "Yuni Expedition Field Medic",
+        "yuni_comms_ranger": "Yuni Comms & Condenser Ranger",
+        "yuni_desert_elder": "Yuni Desert Path-Elder & Signalman"
+      },
+      "outfits": {
+        "male": {
+          "peasant": {
+            "torso": "yuni_m_peasant_bushshirt",
+            "legs": "yuni_m_peasant_trousers",
+            "feet": "yuni_m_peasant_boots",
+            "head": "yuni_m_peasant_akubra"
+          },
+          "trade": {
+            "torso": "yuni_m_trade_duster",
+            "legs": "yuni_m_trade_trousers",
+            "feet": "yuni_m_trade_boots",
+            "head": "yuni_m_trade_akubra"
+          },
+          "trooper": {
+            "torso": "yuni_m_trooper_tunic",
+            "legs": "yuni_m_trooper_breeches",
+            "feet": "yuni_m_trooper_puttees",
+            "head": "yuni_m_trooper_slouch"
+          },
+          "geomancer": {
+            "torso": "yuni_m_geomancer_coat",
+            "back": "yuni_m_geomancer_pack",
+            "legs": "yuni_m_geomancer_breeches",
+            "feet": "yuni_m_geomancer_boots",
+            "head": "yuni_m_geomancer_pith"
+          },
+          "noble": {
+            "torso": "yuni_m_noble_gown",
+            "legs": "yuni_m_noble_trousers",
+            "feet": "yuni_m_noble_slippers",
+            "head": "yuni_m_noble_mortarboard"
+          },
+          "emmo": {
+            "torso": "yuni_m_noble_gown",
+            "legs": "yuni_m_noble_trousers",
+            "feet": "yuni_m_noble_slippers",
+            "head": "yuni_m_noble_hyperboloid",
+            "type": "important_npc"
+          },
+          "sentinel": {
+            "head": "yuni_m_sentinel_helm",
+            "torso": "yuni_m_sentinel_mantle",
+            "legs": "yuni_m_trooper_breeches",
+            "feet": "yuni_m_trooper_puttees"
+          },
+          "breacher": {
+            "head": "yuni_m_breacher_collar",
+            "torso": "yuni_m_breacher_coat",
+            "legs": "yuni_m_trooper_breeches",
+            "feet": "yuni_m_breacher_boots"
+          },
+          "yuni_outback_scout": {
+            "head": "yuni_m_scout_slouch_hat",
+            "torso": "yuni_m_scout_patch_poncho",
+            "back": "yuni_m_scout_tattered_cloak",
+            "legs": "yuni_m_scout_cargo_pants",
+            "feet": "yuni_m_scout_combat_boots",
+            "gloves": "yuni_m_scout_gloves",
+            "label": "Yuni Outback Desert Scout"
+          },
+          "yuni_tassel_heavy": {
+            "head": "yuni_m_scout_tassel_hat",
+            "torso": "yuni_m_scout_heavy_cuirass",
+            "back": "yuni_m_scout_ochre_mantle",
+            "legs": "yuni_m_scout_cargo_pants",
+            "feet": "yuni_m_scout_combat_boots",
+            "gloves": "yuni_m_scout_gloves",
+            "label": "Yuni Tassel-Hat Heavy Vanguard"
+          },
+          "yuni_field_medic": {
+            "head": "yuni_m_scout_slouch_hat",
+            "torso": "yuni_m_scout_medic_coat",
+            "back": "yuni_m_scout_medic_pack",
+            "legs": "yuni_m_scout_cargo_pants",
+            "feet": "yuni_m_scout_combat_boots",
+            "gloves": "yuni_m_scout_gloves",
+            "label": "Yuni Expedition Field Medic"
+          },
+          "yuni_comms_ranger": {
+            "head": "yuni_m_scout_comms_helm",
+            "torso": "yuni_m_scout_sash_tunic",
+            "back": "yuni_m_scout_canister_pack",
+            "legs": "yuni_m_scout_cargo_pants",
+            "feet": "yuni_m_scout_combat_boots",
+            "gloves": "yuni_m_scout_gloves",
+            "label": "Yuni Comms & Condenser Ranger"
+          },
+          "yuni_desert_elder": {
+            "head": "yuni_m_scout_turban_keffiyeh",
+            "torso": "yuni_m_scout_greatcloak",
+            "back": "yuni_m_scout_radio_pack",
+            "legs": "yuni_m_scout_cargo_pants",
+            "feet": "yuni_m_scout_combat_boots",
+            "gloves": "yuni_m_scout_gloves",
+            "label": "Yuni Desert Path-Elder & Signalman",
+            "type": "important_npc"
+          }
+        },
+        "female": {
+          "peasant": {
+            "torso": "yuni_f_peasant_bushshirt",
+            "legs": "yuni_f_peasant_trousers",
+            "feet": "yuni_f_peasant_boots",
+            "head": "yuni_f_peasant_akubra"
+          },
+          "trade": {
+            "torso": "yuni_f_trade_duster",
+            "legs": "yuni_f_trade_trousers",
+            "feet": "yuni_f_trade_boots",
+            "head": "yuni_f_trade_akubra"
+          },
+          "trooper": {
+            "torso": "yuni_f_trooper_tunic",
+            "legs": "yuni_f_trooper_breeches",
+            "feet": "yuni_f_trooper_puttees",
+            "head": "yuni_f_trooper_slouch"
+          },
+          "geomancer": {
+            "torso": "yuni_f_geomancer_coat",
+            "back": "yuni_f_geomancer_pack",
+            "legs": "yuni_f_geomancer_breeches",
+            "feet": "yuni_f_geomancer_boots",
+            "head": "yuni_f_geomancer_pith"
+          },
+          "noble": {
+            "torso": "yuni_f_noble_gown",
+            "legs": "yuni_f_noble_trousers",
+            "feet": "yuni_f_noble_slippers",
+            "head": "yuni_f_noble_mortarboard"
+          },
+          "emmo": {
+            "torso": "yuni_f_noble_gown",
+            "legs": "yuni_f_noble_trousers",
+            "feet": "yuni_f_noble_slippers",
+            "head": "yuni_f_noble_hyperboloid",
+            "type": "important_npc"
+          },
+          "yuni_outback_scout": {
+            "head": "yuni_f_scout_slouch_hat",
+            "torso": "yuni_f_scout_patch_poncho",
+            "back": "yuni_f_scout_tattered_cloak",
+            "legs": "yuni_f_scout_cargo_pants",
+            "feet": "yuni_f_scout_combat_boots",
+            "gloves": "yuni_f_scout_gloves",
+            "label": "Yuni Outback Desert Scout"
+          },
+          "yuni_tassel_heavy": {
+            "head": "yuni_f_scout_tassel_hat",
+            "torso": "yuni_f_scout_heavy_cuirass",
+            "back": "yuni_f_scout_ochre_mantle",
+            "legs": "yuni_f_scout_cargo_pants",
+            "feet": "yuni_f_scout_combat_boots",
+            "gloves": "yuni_f_scout_gloves",
+            "label": "Yuni Tassel-Hat Heavy Vanguard"
+          },
+          "yuni_field_medic": {
+            "head": "yuni_f_scout_tassel_hat",
+            "torso": "yuni_f_scout_medic_coat",
+            "back": "yuni_f_scout_medic_pack",
+            "legs": "yuni_f_scout_cargo_pants",
+            "feet": "yuni_f_scout_combat_boots",
+            "gloves": "yuni_f_scout_gloves",
+            "label": "Yuni Expedition Field Medic"
+          },
+          "yuni_comms_ranger": {
+            "head": "yuni_f_scout_comms_helm",
+            "torso": "yuni_f_scout_sash_tunic",
+            "back": "yuni_f_scout_canister_pack",
+            "legs": "yuni_f_scout_cargo_pants",
+            "feet": "yuni_f_scout_combat_boots",
+            "gloves": "yuni_f_scout_gloves",
+            "label": "Yuni Comms & Condenser Ranger"
+          },
+          "yuni_desert_elder": {
+            "head": "yuni_f_scout_hood_cowl",
+            "torso": "yuni_f_scout_greatcloak",
+            "back": "yuni_f_scout_radio_pack",
+            "legs": "yuni_f_scout_cargo_pants",
+            "feet": "yuni_f_scout_combat_boots",
+            "gloves": "yuni_f_scout_gloves",
+            "label": "Yuni Desert Path-Elder & Signalman",
+            "type": "important_npc"
+          }
+        }
+      }
+    },
+    {
+      "id": "eternian",
+      "name": "The Eternal State",
+      "note": "Qing-style bureaucratic paper state ruled from the Sanctum by the metallic-skinned True Heirs over human ministers who paint their faces white and add standardized black rank/merit/demerit markings, wearing robes embroidered with circuit-maze brocade and logographs derived from Ancient UI icons (LORE.md \u00a76.19)",
+      "ancestry": {
+        "african": [
+          0.05,
+          0.25
+        ],
+        "asian": [
+          0.55,
+          0.85
+        ],
+        "caucasian": [
+          0.1,
+          0.35
+        ]
+      },
+      "skin": [
+        "#ebd3be",
+        "#d8b496",
+        "#c09674"
+      ],
+      "hair": [
+        "#120f0d",
+        "#1c1714",
+        "#2a221d"
+      ],
+      "eyes": [
+        "#2a1a10",
+        "#3b2414",
+        "#4a3520"
+      ],
+      "grey": 0.45,
+      "beard": 0.25,
+      "styles": {
+        "male": [
+          "short02",
+          "long01",
+          "ponytail01"
+        ],
+        "female": [
+          "o4saken_chinesebob01",
+          "elvs_braid_bun",
+          "long01"
+        ]
+      },
+      "tiers": [
+        [
+          "prefect",
+          0.25
+        ],
+        [
+          "censor",
+          0.25
+        ],
+        [
+          "archivist",
+          0.2
+        ],
+        [
+          "minister",
+          0.15
+        ],
+        [
+          "warden",
+          0.15
+        ],
+        [
+          "heir_juggernaut",
+          0.04
+        ],
+        [
+          "heir_sentinel",
+          0.04
+        ],
+        [
+          "heir_stalker",
+          0.04
+        ],
+        [
+          "gilded_sentinel",
+          0.02
+        ]
+      ],
+      "tier_labels": {
+        "prefect": "Torus-Collar Prefect",
+        "censor": "Circuit-Maze Censor & Examiner",
+        "archivist": "Vermilion Mortarboard Grand Archivist",
+        "minister": "Hologram-Crowned Arch-Minister",
+        "warden": "Sanctum Porcelain Cuirassier (Wardens' Relic-Guard)",
+        "heir_juggernaut": "True Heir's Juggernaut-Praetorian (Sanctum Bodyguard)",
+        "heir_sentinel": "True Heir's Cyber-Ronin Sentinel (Sanctum Bodyguard)",
+        "heir_stalker": "True Heir's Cyber-Mantis Blade-Stalker (Sanctum Bodyguard)",
+        "gilded_sentinel": "Gilded Sentinel (Imperial Sun-Guard)"
+      },
+      "outfits": {
+        "male": {
+          "prefect": {
+            "torso": "eternian_m_prefect_robe",
+            "feet": "xan_m_town_boots",
+            "head": "eternian_m_prefect_cap"
+          },
+          "censor": {
+            "torso": "eternian_m_censor_robe",
+            "feet": "xan_m_town_boots",
+            "head": "eternian_m_censor_crown"
+          },
+          "archivist": {
+            "torso": "eternian_m_archivist_robe",
+            "feet": "xan_m_town_boots",
+            "head": "eternian_m_archivist_hat"
+          },
+          "minister": {
+            "torso": "eternian_m_minister_robe",
+            "feet": "xan_m_town_boots",
+            "head": "eternian_m_minister_halo"
+          },
+          "warden": {
+            "torso": "eternian_m_warden_cuirass",
+            "legs": "xan_m_rich_trousers",
+            "feet": "eternian_m_warden_greaves",
+            "head": "eternian_m_warden_mitre"
+          },
+          "heir_juggernaut": {
+            "head": "eternian_m_heir_juggernaut_helm",
+            "torso": "eternian_m_heir_juggernaut_cuirass",
+            "back": "eternian_m_heir_juggernaut_reactor",
+            "gloves": "eternian_m_heir_juggernaut_gauntlets",
+            "feet": "eternian_m_heir_juggernaut_sabatons",
+            "type": "important_npc",
+            "label": "True Heir's Juggernaut-Praetorian (Sanctum Bodyguard)"
+          },
+          "heir_sentinel": {
+            "head": "eternian_m_heir_sentinel_kasa",
+            "torso": "eternian_m_heir_sentinel_chassis",
+            "gloves": "eternian_m_heir_sentinel_cyberhands",
+            "legs": "eternian_m_heir_sentinel_cyberlegs",
+            "feet": "eternian_m_heir_sentinel_cyberboots",
+            "type": "important_npc",
+            "label": "True Heir's Cyber-Ronin Sentinel (Sanctum Bodyguard)"
+          },
+          "heir_stalker": {
+            "head": "eternian_m_heir_stalker_kasa",
+            "torso": "eternian_m_heir_stalker_armor",
+            "gloves": "eternian_m_heir_stalker_gauntlets",
+            "legs": "eternian_m_heir_stalker_breeches",
+            "feet": "eternian_m_heir_stalker_greaves",
+            "type": "important_npc",
+            "label": "True Heir's Cyber-Mantis Blade-Stalker (Sanctum Bodyguard)"
+          },
+          "gilded_sentinel": {
+            "head": "eternian_m_gilded_sentinel_helm",
+            "torso": "eternian_m_gilded_sentinel_cuirass",
+            "gloves": "eternian_m_gilded_sentinel_gauntlets",
+            "legs": "eternian_m_gilded_sentinel_greaves",
+            "feet": "eternian_m_gilded_sentinel_sabatons",
+            "beard": null,
+            "hair": null,
+            "type": "important_npc"
+          }
+        },
+        "female": {
+          "heir_juggernaut": {
+            "head": "eternian_f_heir_juggernaut_helm",
+            "torso": "eternian_f_heir_juggernaut_cuirass",
+            "back": "eternian_f_heir_juggernaut_reactor",
+            "gloves": "eternian_f_heir_juggernaut_gauntlets",
+            "feet": "eternian_f_heir_juggernaut_sabatons",
+            "type": "important_npc",
+            "label": "True Heir's Juggernaut-Praetorian (Sanctum Bodyguard)"
+          },
+          "heir_sentinel": {
+            "head": "eternian_f_heir_sentinel_kasa",
+            "torso": "eternian_f_heir_sentinel_chassis",
+            "gloves": "eternian_f_heir_sentinel_cyberhands",
+            "legs": "eternian_f_heir_sentinel_cyberlegs",
+            "feet": "eternian_f_heir_sentinel_cyberboots",
+            "type": "important_npc",
+            "label": "True Heir's Cyber-Ronin Sentinel (Sanctum Bodyguard)"
+          },
+          "heir_stalker": {
+            "head": "eternian_f_heir_stalker_kasa",
+            "torso": "eternian_f_heir_stalker_armor",
+            "gloves": "eternian_f_heir_stalker_gauntlets",
+            "legs": "eternian_f_heir_stalker_breeches",
+            "feet": "eternian_f_heir_stalker_greaves",
+            "type": "important_npc",
+            "label": "True Heir's Cyber-Mantis Blade-Stalker (Sanctum Bodyguard)"
+          },
+          "gilded_sentinel": {
+            "head": "eternian_f_gilded_sentinel_helm",
+            "torso": "eternian_f_gilded_sentinel_cuirass",
+            "gloves": "eternian_f_gilded_sentinel_gauntlets",
+            "legs": "eternian_f_gilded_sentinel_greaves",
+            "feet": "eternian_f_gilded_sentinel_sabatons",
+            "beard": null,
+            "hair": null,
+            "type": "important_npc"
+          }
+        }
+      }
+    },
+    {
+      "id": "yusar",
+      "name": "Yusar (Carcosa & Henge)",
+      "note": "Cybernetics tribe inhabiting the ruined arcologies of Carcosa and Henge along the Eternal State frontier, speaking an avoidance dialect of swapped compounds ('Sp\u0113k-Stak') and maintaining vacuum-tube, induction-coil, drone-sensor, and server-stack tech (LORE.md \u00a76.19)",
+      "ancestry": {
+        "african": [
+          0.1,
+          0.35
+        ],
+        "asian": [
+          0.35,
+          0.65
+        ],
+        "caucasian": [
+          0.2,
+          0.5
+        ]
+      },
+      "skin": [
+        "#d8b496",
+        "#be926e",
+        "#9e7250"
+      ],
+      "hair": [
+        "#14110f",
+        "#241d18",
+        "#3a2e25"
+      ],
+      "eyes": [
+        "#2a1a10",
+        "#4a3520",
+        "#5a6a70"
+      ],
+      "grey": 0.5,
+      "beard": 0.3,
+      "styles": {
+        "male": [
+          "short02",
+          "Dreads_with_Fade",
+          "Low_Fade"
+        ],
+        "female": [
+          "bob02",
+          "short03",
+          "braid01"
+        ]
+      },
+      "tiers": [
+        [
+          "lightkeeper",
+          0.2
+        ],
+        [
+          "dronemaster",
+          0.18
+        ],
+        [
+          "electropriest",
+          0.18
+        ],
+        [
+          "electromonk",
+          0.16
+        ],
+        [
+          "corsair",
+          0.16
+        ],
+        [
+          "hierophant",
+          0.12
+        ],
+        [
+          "crescent_vigilant",
+          0.02
+        ]
+      ],
+      "tier_labels": {
+        "lightkeeper": "Carcosa Light-Keeper (Vacuum-Tube Mystic)",
+        "dronemaster": "Henge Drone-Caller (Multi-Lens Sensor Rig)",
+        "electropriest": "Carcosa Electro-Priest (Induction-Ring Celebrant)",
+        "electromonk": "Henge Electro-Monk (Live-Conduit Ascetic)",
+        "corsair": "Carcosa Hive-Corsair (Linked-Node Enforcer)",
+        "hierophant": "Stack-Hierophant (Memory-Tower Speaker)",
+        "crescent_vigilant": "Crescent Vigilant (Astral Night-Watcher)"
+      },
+      "outfits": {
+        "male": {
+          "lightkeeper": {
+            "torso": "yusar_m_lightkeeper_robe",
+            "feet": "rep_m_peasant_boots",
+            "head": "yusar_m_lightkeeper_turban"
+          },
+          "dronemaster": {
+            "torso": "yusar_m_dronemaster_coat",
+            "legs": "order_m_agent_trousers",
+            "feet": "yusar_m_dronemaster_boots",
+            "head": "yusar_m_dronemaster_helm"
+          },
+          "electropriest": {
+            "torso": "yusar_m_electropriest_robe",
+            "feet": "rep_m_peasant_boots",
+            "head": "yusar_m_electropriest_hood"
+          },
+          "electromonk": {
+            "torso": "yusar_m_electromonk_harness",
+            "legs": "yusar_m_electromonk_pants",
+            "feet": "yusar_m_electromonk_wraps",
+            "head": "yusar_m_electromonk_mask"
+          },
+          "corsair": {
+            "torso": "yusar_m_corsair_coat",
+            "legs": "yusar_m_corsair_pants",
+            "feet": "yusar_m_corsair_boots",
+            "head": "yusar_m_corsair_helm"
+          },
+          "hierophant": {
+            "torso": "yusar_m_hierophant_robe",
+            "feet": "rep_m_peasant_boots",
+            "head": "yusar_m_hierophant_stack"
+          },
+          "crescent_vigilant": {
+            "head": "yusar_m_crescent_vigilant_hat",
+            "torso": "yusar_m_crescent_vigilant_cloak",
+            "gloves": "yusar_m_crescent_vigilant_bracers",
+            "legs": "yusar_m_crescent_vigilant_trousers",
+            "feet": "yusar_m_crescent_vigilant_boots",
+            "beard": null,
+            "hair": null,
+            "type": "important_npc"
+          }
+        },
+        "female": {
+          "crescent_vigilant": {
+            "head": "yusar_f_crescent_vigilant_hat",
+            "torso": "yusar_f_crescent_vigilant_cloak",
+            "gloves": "yusar_f_crescent_vigilant_bracers",
+            "legs": "yusar_f_crescent_vigilant_trousers",
+            "feet": "yusar_f_crescent_vigilant_boots",
+            "beard": null,
+            "hair": null,
+            "type": "important_npc"
+          }
+        }
+      }
+    },
+    {
+      "id": "giants",
+      "name": "Giants of Dalab",
+      "note": "Engineered at Dalab, green as their makers and twice a man's height (kit.scale): the priests keep them as temple guards (four-armed) and street patrols (two-armed, in threes). Only the Giant body wears their clothes (tools/giant.py)",
+      "ancestry": {
+        "african": [
+          0.2,
+          0.5
+        ],
+        "asian": [
+          0.2,
+          0.5
+        ],
+        "caucasian": [
+          0.2,
+          0.4
+        ]
+      },
+      "skin": [
+        "#7f9a5c",
+        "#6a8a4c",
+        "#58773e",
+        "#465f31"
+      ],
+      "hair": [
+        "#1a1712",
+        "#2b2618",
+        "#24301c"
+      ],
+      "eyes": [
+        "#3b2414",
+        "#6e5a2e",
+        "#7a6a1a"
+      ],
+      "grey": 0.7,
+      "beard": 0.2,
+      "morph": {
+        "muscle": [
+          0.45,
+          1.0
+        ],
+        "weight": [
+          -0.1,
+          0.6
+        ]
+      },
+      "styles": {},
+      "tiers": [
+        [
+          "patrol",
+          0.7
+        ],
+        [
+          "temple",
+          0.3
+        ]
+      ],
+      "tier_labels": {
+        "patrol": "Street patrol",
+        "temple": "Temple guard"
+      },
+      "outfits": {
+        "giant": {
+          "patrol": {
+            "torso": "dalab_m_peasant_sash",
+            "legs": "dalab_m_peasant_kilt",
+            "feet": "dalab_m_sandals"
+          },
+          "temple": {
+            "torso": "giant_dalab_m_harness4",
+            "legs": "voth_m_peasant_maxtlatl",
+            "feet": "dalab_m_noble_sandals",
+            "mods": [
+              "mod_arms_flesh"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "free_giants",
+      "name": "Free Giants",
+      "note": "The giants who rebelled against Dalab and left for Giant Country: the same green stock, dressed as Gauls (checked wool, braccae, a sagum and torc for a chief, limed hair and long moustaches). Temple guards who escaped kept their second pair of arms and fight as warriors (tools/make_garments.py, the Giants)",
+      "ancestry": {
+        "african": [
+          0.15,
+          0.4
+        ],
+        "asian": [
+          0.15,
+          0.4
+        ],
+        "caucasian": [
+          0.3,
+          0.6
+        ]
+      },
+      "skin": [
+        "#8a9e66",
+        "#7f9a5c",
+        "#6a8a4c",
+        "#55703f"
+      ],
+      "hair": [
+        "#c9b27a",
+        "#b8743a",
+        "#8a4a22",
+        "#5a3a1e",
+        "#2b2618"
+      ],
+      "eyes": [
+        "#3b2414",
+        "#5a6a3a",
+        "#6e5a2e",
+        "#4a6a7a"
+      ],
+      "grey": 0.65,
+      "beard": 0.85,
+      "morph": {
+        "muscle": [
+          0.4,
+          1.0
+        ],
+        "weight": [
+          -0.1,
+          0.7
+        ]
+      },
+      "styles": {
+        "giant": [
+          "long01",
+          "braid01",
+          "ponytail01",
+          "cortu_short_messy_hair"
+        ]
+      },
+      "tiers": [
+        [
+          "clan",
+          0.55
+        ],
+        [
+          "clan4",
+          0.15
+        ],
+        [
+          "warrior",
+          0.22
+        ],
+        [
+          "chief",
+          0.08
+        ]
+      ],
+      "tier_labels": {
+        "clan": "Clansman",
+        "clan4": "Clansman, four-armed",
+        "warrior": "Warrior (four-armed)",
+        "chief": "Chief (four-armed)"
+      },
+      "outfits": {
+        "giant": {
+          "clan": {
+            "torso": "giant_free_m_tunic",
+            "legs": "giant_free_m_braccae",
+            "feet": "giant_free_m_boots"
+          },
+          "clan4": {
+            "torso": "giant_free_m_tunic4",
+            "legs": "giant_free_m_braccae",
+            "feet": "giant_free_m_boots",
+            "mods": [
+              "mod_arms_flesh"
+            ]
+          },
+          "warrior": {
+            "torso": "giant_free_m_jerkin4",
+            "legs": "giant_free_m_braccae",
+            "feet": "giant_free_m_boots",
+            "head": "giant_free_m_helmet",
+            "mods": [
+              "mod_arms_flesh"
+            ]
+          },
+          "chief": {
+            "torso": "giant_free_m_chief4",
+            "legs": "giant_free_m_braccae",
+            "feet": "giant_free_m_boots",
+            "mods": [
+              "mod_arms_flesh"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "historians",
+      "name": "The Order of Historians (Longsong)",
+      "note": "The History Monks of Longsong (settlements/longsong): recruited from every people of Krator, so a wide range, leaning a little to the Xanadui round them (the owner, 2026-10-19); heads kept short (the men cropped, the women to a bob: style_share 1, the owner, 2026-10-20); older than most. Full Longsong & Keepwell cast (tools/make_garments.py & tools/garments/cultures/historians.py): novices, monks, elders, field agents, grand cartographers, Listeners of The Ear, Keepers of the Vault & Procrastinator, Chrono-Monks (Masters of Arms), Citadel Wardens, Festival of the Register Cham dancers, and Oidong Lower-Ward lay servants & scholars",
+      "ancestry": {
+        "african": [
+          0.05,
+          0.6
+        ],
+        "asian": [
+          0.2,
+          0.7
+        ],
+        "caucasian": [
+          0.1,
+          0.65
+        ]
+      },
+      "skin": [
+        "#f1d2bd",
+        "#d7ae88",
+        "#a87650",
+        "#6a4630",
+        "#4a2e20"
+      ],
+      "hair": [
+        "#110e0c",
+        "#2a1d15",
+        "#3b2a1e",
+        "#5a3a22"
+      ],
+      "eyes": [
+        "#2a1a10",
+        "#3b2414",
+        "#5a3a22",
+        "#4e6a80"
+      ],
+      "grey": 0.25,
+      "beard": 0.2,
+      "styles": {
+        "male": [
+          "Low_Fade",
+          "short04",
+          "short01"
+        ],
+        "female": [
+          "bob02",
+          "o4saken_chinesebob01",
+          "short03"
+        ]
+      },
+      "tiers": [
+        [
+          "novice",
+          0.14
+        ],
+        [
+          "monk",
+          0.22
+        ],
+        [
+          "servant",
+          0.14
+        ],
+        [
+          "elder",
+          0.08
+        ],
+        [
+          "agent",
+          0.1
+        ],
+        [
+          "cartographer",
+          0.07
+        ],
+        [
+          "listener",
+          0.07
+        ],
+        [
+          "keeper",
+          0.05
+        ],
+        [
+          "chronomonk",
+          0.05
+        ],
+        [
+          "warden",
+          0.05
+        ],
+        [
+          "cham",
+          0.03
+        ],
+        [
+          "pc_relic_lancer",
+          0.04
+        ]
+      ],
+      "tier_labels": {
+        "novice": "Novice",
+        "monk": "Monk",
+        "servant": "Oidong Lower-Ward Servant, Artisan & Lay Scholar",
+        "elder": "Elder",
+        "agent": "Field agent (Keepwell Operative)",
+        "cartographer": "Grand Cartographer (Relic-Surveyor)",
+        "listener": "Listener of The Ear (Radio-Dish Astrologer)",
+        "keeper": "Keeper of the Vault & The Procrastinator",
+        "chronomonk": "Master of Arms (Procrastinator Chrono-Monk)",
+        "warden": "Longsong Citadel Warden (Dob-dob Guard)",
+        "cham": "Festival of the Register Cham Dancer (Shanag Black-Hat)",
+        "pc_relic_lancer": "Order of Historians Relic-Lancer (PC)"
+      },
+      "outfits": {
+        "male": {
+          "novice": {
+            "torso": "order_m_novice_shirt",
+            "legs": "order_m_novice_skirt",
+            "feet": "order_m_sandals"
+          },
+          "monk": {
+            "torso": "order_m_monk_robe",
+            "feet": "order_m_sandals"
+          },
+          "servant": {
+            "torso": "order_m_servant_chuba",
+            "legs": "order_m_agent_trousers",
+            "feet": "xan_m_town_boots",
+            "head": "order_m_servant_cap"
+          },
+          "elder": {
+            "torso": "order_m_elder_robe",
+            "feet": "order_m_sandals",
+            "head": "order_m_elder_hat"
+          },
+          "agent": {
+            "torso": "order_m_agent_coat",
+            "legs": "order_m_agent_trousers",
+            "feet": "order_m_agent_boots"
+          },
+          "cartographer": {
+            "torso": "order_m_cartographer_coat",
+            "back": "order_m_cartographer_pack",
+            "legs": "order_m_agent_trousers",
+            "feet": "order_m_cartographer_boots",
+            "head": "order_m_cartographer_cap"
+          },
+          "listener": {
+            "torso": "order_m_listener_coat",
+            "legs": "order_m_agent_trousers",
+            "feet": "order_m_sandals",
+            "head": "order_m_listener_headset"
+          },
+          "keeper": {
+            "torso": "order_m_keeper_robe",
+            "back": "order_m_keeper_pack",
+            "feet": "order_m_keeper_boots",
+            "head": "order_m_keeper_cowl"
+          },
+          "chronomonk": {
+            "torso": "order_m_chronomonk_robe",
+            "legs": "order_m_chronomonk_pants",
+            "feet": "order_m_chronomonk_puttees",
+            "head": "order_m_chronomonk_band"
+          },
+          "warden": {
+            "torso": "order_m_warden_cuirass",
+            "legs": "order_m_warden_trousers",
+            "feet": "order_m_warden_boots",
+            "head": "order_m_warden_helm"
+          },
+          "cham": {
+            "torso": "order_m_cham_robe",
+            "feet": "order_m_warden_boots",
+            "head": "order_m_cham_hat"
+          },
+          "pc_relic_lancer": {
+            "head": "order_m_pc_lancer_helm",
+            "torso": "order_m_pc_lancer_armor",
+            "gloves": "order_m_pc_lancer_gloves",
+            "legs": "order_m_pc_lancer_greaves",
+            "feet": "order_m_pc_lancer_boots",
+            "hair": null,
+            "beard": null,
+            "type": "pc",
+            "label": "Order of Historians Relic-Lancer (PC)"
+          }
+        },
+        "female": {
+          "novice": {
+            "torso": "order_f_novice_shirt",
+            "legs": "order_f_novice_skirt",
+            "feet": "order_f_sandals"
+          },
+          "monk": {
+            "torso": "order_f_monk_robe",
+            "feet": "order_f_sandals"
+          },
+          "servant": {
+            "torso": "order_f_servant_chuba",
+            "feet": "xan_f_town_boots",
+            "head": "order_f_servant_cap"
+          },
+          "elder": {
+            "torso": "order_f_elder_robe",
+            "feet": "order_f_sandals",
+            "head": "order_f_elder_hat"
+          },
+          "agent": {
+            "torso": "order_f_agent_coat",
+            "legs": "order_f_agent_trousers",
+            "feet": "order_f_agent_boots"
+          },
+          "cartographer": {
+            "torso": "order_f_cartographer_coat",
+            "back": "order_f_cartographer_pack",
+            "legs": "order_f_agent_trousers",
+            "feet": "order_f_cartographer_boots",
+            "head": "order_f_cartographer_cap"
+          },
+          "listener": {
+            "torso": "order_f_listener_coat",
+            "legs": "order_f_agent_trousers",
+            "feet": "order_f_sandals",
+            "head": "order_f_listener_headset"
+          },
+          "keeper": {
+            "torso": "order_f_keeper_robe",
+            "back": "order_f_keeper_pack",
+            "feet": "order_f_keeper_boots",
+            "head": "order_f_keeper_cowl"
+          },
+          "chronomonk": {
+            "torso": "order_f_chronomonk_robe",
+            "legs": "order_f_chronomonk_pants",
+            "feet": "order_f_chronomonk_puttees",
+            "head": "order_f_chronomonk_band"
+          },
+          "warden": {
+            "torso": "order_f_warden_cuirass",
+            "legs": "order_f_warden_trousers",
+            "feet": "order_f_warden_boots",
+            "head": "order_f_warden_helm"
+          },
+          "cham": {
+            "torso": "order_f_cham_robe",
+            "feet": "order_f_warden_boots",
+            "head": "order_f_cham_hat"
+          },
+          "pc_relic_lancer": {
+            "head": "order_f_pc_lancer_helm",
+            "torso": "order_f_pc_lancer_armor",
+            "gloves": "order_f_pc_lancer_gloves",
+            "legs": "order_f_pc_lancer_greaves",
+            "feet": "order_f_pc_lancer_boots",
+            "hair": null,
+            "beard": null,
+            "type": "pc",
+            "label": "Order of Historians Relic-Lancer (PC)"
+          }
+        }
+      },
+      "style_share": 1
+    },
+    {
+      "id": "khaayken",
+      "name": "Khaayken",
+      "note": "The Yeti Kingdom, Khaay Qantir, on the Outer Wall above Farside: cold-adapted and furred all over (a shaggy pelt; the owner, 2026-10-26), heavy-set, dark-skinned under the fur. Pelt colours and the rest are proposals; their 1.15 scale and their own clothes wait on the Yeti kit's Y5 (kits/yeti/PLAN.md)",
+      "coat": "pelt",
+      "ancestry": {
+        "african": [
+          0.2,
+          0.5
+        ],
+        "asian": [
+          0.3,
+          0.6
+        ],
+        "caucasian": [
+          0.1,
+          0.3
+        ]
+      },
+      "skin": [
+        "#7a6e66",
+        "#5e544e",
+        "#46403c"
+      ],
+      "hair": [
+        "#e6e2d8",
+        "#d8d0bf",
+        "#c4b8a2",
+        "#a99a84",
+        "#8a8278",
+        "#6c625a"
+      ],
+      "eyes": [
+        "#7a8ea0",
+        "#9a8a5a",
+        "#a87a3a",
+        "#5a4a3a"
+      ],
+      "grey": 0.7,
+      "beard": 0.0,
+      "morph": {
+        "muscle": [
+          0.3,
+          1.0
+        ],
+        "weight": [
+          0.2,
+          0.8
+        ],
+        "height": [
+          0.3,
+          1.0
+        ]
+      },
+      "styles": {
+        "male": [
+          "long01",
+          "short02"
+        ],
+        "female": [
+          "long01",
+          "braid01"
+        ]
+      },
+      "style_share": 1
+    },
+    {
+      "id": "coyote_men",
+      "name": "Coyote Men",
+      "note": "The Outlands' therian tribes (Sunset, Sunrise, Valley, Peak; biomes/outlands/PLAN.md section 6): furred (a coyote's brush coat; the owner, 2026-10-26), lean. The coyote head is a mod (tools/heads.py); the digitigrade legs are not built yet. Coat colours (tawny to grey, agouti) and the rest are proposals",
+      "coat": "coyote",
+      "mods": [
+        "mod_head_coyote"
+      ],
+      "ancestry": {
+        "african": [
+          0.2,
+          0.5
+        ],
+        "asian": [
+          0.2,
+          0.5
+        ],
+        "caucasian": [
+          0.1,
+          0.4
+        ]
+      },
+      "skin": [
+        "#8a7262",
+        "#6e5a4c",
+        "#54463c"
+      ],
+      "hair": [
+        "#b08a5a",
+        "#9a7a52",
+        "#a08866",
+        "#8a7058",
+        "#7a6a5a",
+        "#c2a27a"
+      ],
+      "eyes": [
+        "#c08a2a",
+        "#a87020",
+        "#8a6a2a",
+        "#d0a040"
+      ],
+      "grey": 0.6,
+      "beard": 0.0,
+      "morph": {
+        "weight": [
+          -0.8,
+          -0.2
+        ],
+        "muscle": [
+          0.0,
+          0.6
+        ]
+      },
+      "styles": {
+        "male": [
+          "short02",
+          "spiky"
+        ],
+        "female": [
+          "short03",
+          "ponytail01"
+        ]
+      },
+      "style_share": 1
+    },
+    {
+      "id": "geomancers",
+      "name": "Geomancers (Lithomancer Guild)",
+      "note": "Heroic & faction scholar-engineers who attune resonant crystal, brass astrolabes, and tectonic strata.",
+      "ancestry": {
+        "african": [
+          0.2,
+          0.45
+        ],
+        "asian": [
+          0.25,
+          0.55
+        ],
+        "caucasian": [
+          0.2,
+          0.5
+        ]
+      },
+      "skin": [
+        "#c8a68a",
+        "#b38b6d",
+        "#8d6548",
+        "#5e402c"
+      ],
+      "hair": [
+        "#1a1512",
+        "#2c2018",
+        "#4a3222",
+        "#6e3b1e"
+      ],
+      "eyes": [
+        "#3b6e8c",
+        "#4a7c59",
+        "#8a5a2c",
+        "#3a2818"
+      ],
+      "grey": 0.5,
+      "beard": 0.35,
+      "styles": {
+        "male": [
+          "short02",
+          "long01",
+          "ponytail01",
+          "braid01"
+        ],
+        "female": [
+          "braid01",
+          "long01",
+          "ponytail01",
+          "elvs_braid_bun"
+        ]
+      },
+      "tiers": [
+        [
+          "geo_01_sultan_strider",
+          0.056
+        ],
+        [
+          "geo_02_obelisk_acolyte",
+          0.056
+        ],
+        [
+          "geo_03_ochre_lithomancer",
+          0.056
+        ],
+        [
+          "geo_04_crystal_warden",
+          0.056
+        ],
+        [
+          "geo_05_dune_chevalier",
+          0.056
+        ],
+        [
+          "geo_06_chime_oracle",
+          0.056
+        ],
+        [
+          "geo_07_exo_rig_engineer",
+          0.056
+        ],
+        [
+          "geo_08_calcified_nomad",
+          0.056
+        ],
+        [
+          "geo_09_amber_alchemist",
+          0.056
+        ],
+        [
+          "geo_10_basalt_veteran",
+          0.056
+        ],
+        [
+          "geo_13_bamboo_surveyor",
+          0.056
+        ],
+        [
+          "geo_14_lantern_mason",
+          0.056
+        ],
+        [
+          "geo_15_crescent_sage",
+          0.056
+        ],
+        [
+          "geo_19_field_cartographer",
+          0.056
+        ],
+        [
+          "geo_20_geode_delver",
+          0.056
+        ],
+        [
+          "geo_23_aether_scout",
+          0.056
+        ],
+        [
+          "geo_24_jade_resonance_sage",
+          0.056
+        ],
+        [
+          "geo_25_sphere_atlas",
+          0.056
+        ]
+      ],
+      "tier_labels": {
+        "geo_01_sultan_strider": "Geomancer 01 Sultan Strider",
+        "geo_02_obelisk_acolyte": "Geomancer 02 Obelisk Acolyte",
+        "geo_03_ochre_lithomancer": "Geomancer 03 Ochre Lithomancer",
+        "geo_04_crystal_warden": "Geomancer 04 Crystal Warden",
+        "geo_05_dune_chevalier": "Geomancer 05 Dune Chevalier",
+        "geo_06_chime_oracle": "Geomancer 06 Chime Oracle",
+        "geo_07_exo_rig_engineer": "Geomancer 07 Exo Rig Engineer",
+        "geo_08_calcified_nomad": "Geomancer 08 Calcified Nomad",
+        "geo_09_amber_alchemist": "Geomancer 09 Amber Alchemist",
+        "geo_10_basalt_veteran": "Geomancer 10 Basalt Veteran",
+        "geo_13_bamboo_surveyor": "Geomancer 13 Bamboo Surveyor",
+        "geo_14_lantern_mason": "Geomancer 14 Lantern Mason",
+        "geo_15_crescent_sage": "Geomancer 15 Crescent Sage",
+        "geo_19_field_cartographer": "Geomancer 19 Field Cartographer",
+        "geo_20_geode_delver": "Geomancer 20 Geode Delver",
+        "geo_23_aether_scout": "Geomancer 23 Aether Scout",
+        "geo_24_jade_resonance_sage": "Geomancer 24 Jade Resonance Sage",
+        "geo_25_sphere_atlas": "Geomancer 25 Sphere Atlas"
+      },
+      "outfits": {
+        "male": {
+          "geo_01_sultan_strider": {
+            "type": "geomancer",
+            "head": "geo_01_sultan_strider_head",
+            "torso": "geo_01_sultan_strider_torso",
+            "legs": "geo_01_sultan_strider_legs",
+            "feet": "geo_01_sultan_strider_feet",
+            "label": "Geomancer 01 Sultan Strider"
+          },
+          "geo_02_obelisk_acolyte": {
+            "type": "geomancer",
+            "head": "geo_02_obelisk_acolyte_head",
+            "torso": "geo_02_obelisk_acolyte_torso",
+            "legs": "geo_02_obelisk_acolyte_legs",
+            "feet": "geo_02_obelisk_acolyte_feet",
+            "label": "Geomancer 02 Obelisk Acolyte"
+          },
+          "geo_03_ochre_lithomancer": {
+            "type": "geomancer",
+            "torso": "geo_03_ochre_lithomancer_torso",
+            "legs": "geo_03_ochre_lithomancer_legs",
+            "feet": "geo_03_ochre_lithomancer_feet",
+            "label": "Geomancer 03 Ochre Lithomancer"
+          },
+          "geo_04_crystal_warden": {
+            "type": "geomancer",
+            "head": "geo_04_crystal_warden_head",
+            "torso": "geo_04_crystal_warden_torso",
+            "gloves": "geo_04_crystal_warden_gloves",
+            "legs": "geo_04_crystal_warden_legs",
+            "feet": "geo_04_crystal_warden_feet",
+            "label": "Geomancer 04 Crystal Warden"
+          },
+          "geo_05_dune_chevalier": {
+            "type": "geomancer",
+            "head": "geo_05_dune_chevalier_head",
+            "torso": "geo_05_dune_chevalier_torso",
+            "legs": "geo_05_dune_chevalier_legs",
+            "feet": "geo_05_dune_chevalier_feet",
+            "label": "Geomancer 05 Dune Chevalier"
+          },
+          "geo_06_chime_oracle": {
+            "type": "geomancer",
+            "head": "geo_06_chime_oracle_head",
+            "torso": "geo_06_chime_oracle_torso",
+            "legs": "geo_06_chime_oracle_legs",
+            "feet": "geo_06_chime_oracle_feet",
+            "label": "Geomancer 06 Chime Oracle"
+          },
+          "geo_07_exo_rig_engineer": {
+            "type": "geomancer",
+            "head": "geo_07_exo_rig_engineer_head",
+            "torso": "geo_07_exo_rig_engineer_torso",
+            "back": "geo_07_exo_rig_engineer_back",
+            "gloves": "geo_07_exo_rig_engineer_gloves",
+            "legs": "geo_07_exo_rig_engineer_legs",
+            "feet": "geo_07_exo_rig_engineer_feet",
+            "label": "Geomancer 07 Exo Rig Engineer"
+          },
+          "geo_08_calcified_nomad": {
+            "type": "geomancer",
+            "head": "geo_08_calcified_nomad_head",
+            "torso": "geo_08_calcified_nomad_torso",
+            "legs": "geo_08_calcified_nomad_legs",
+            "feet": "geo_08_calcified_nomad_feet",
+            "label": "Geomancer 08 Calcified Nomad"
+          },
+          "geo_09_amber_alchemist": {
+            "type": "geomancer",
+            "head": "geo_09_amber_alchemist_head",
+            "torso": "geo_09_amber_alchemist_torso",
+            "back": "geo_09_amber_alchemist_back",
+            "legs": "geo_09_amber_alchemist_legs",
+            "feet": "geo_09_amber_alchemist_feet",
+            "label": "Geomancer 09 Amber Alchemist"
+          },
+          "geo_10_basalt_veteran": {
+            "type": "geomancer",
+            "head": "geo_10_basalt_veteran_head",
+            "torso": "geo_10_basalt_veteran_torso",
+            "legs": "geo_10_basalt_veteran_legs",
+            "feet": "geo_10_basalt_veteran_feet",
+            "label": "Geomancer 10 Basalt Veteran"
+          },
+          "geo_13_bamboo_surveyor": {
+            "type": "geomancer",
+            "torso": "geo_13_bamboo_surveyor_torso",
+            "back": "geo_13_bamboo_surveyor_back",
+            "legs": "geo_13_bamboo_surveyor_legs",
+            "feet": "geo_13_bamboo_surveyor_feet",
+            "label": "Geomancer 13 Bamboo Surveyor"
+          },
+          "geo_14_lantern_mason": {
+            "type": "geomancer",
+            "head": "geo_14_lantern_mason_head",
+            "torso": "geo_14_lantern_mason_torso",
+            "gloves": "geo_14_lantern_mason_gloves",
+            "legs": "geo_14_lantern_mason_legs",
+            "feet": "geo_14_lantern_mason_feet",
+            "label": "Geomancer 14 Lantern Mason"
+          },
+          "geo_15_crescent_sage": {
+            "type": "geomancer",
+            "head": "geo_15_crescent_sage_head",
+            "torso": "geo_15_crescent_sage_torso",
+            "legs": "geo_15_crescent_sage_legs",
+            "feet": "geo_15_crescent_sage_feet",
+            "label": "Geomancer 15 Crescent Sage"
+          },
+          "geo_19_field_cartographer": {
+            "type": "geomancer",
+            "torso": "geo_19_field_cartographer_torso",
+            "legs": "geo_19_field_cartographer_legs",
+            "feet": "geo_19_field_cartographer_feet",
+            "label": "Geomancer 19 Field Cartographer"
+          },
+          "geo_20_geode_delver": {
+            "type": "geomancer",
+            "head": "geo_20_geode_delver_head",
+            "torso": "geo_20_geode_delver_torso",
+            "back": "geo_20_geode_delver_back",
+            "gloves": "geo_20_geode_delver_gloves",
+            "legs": "geo_20_geode_delver_legs",
+            "feet": "geo_20_geode_delver_feet",
+            "label": "Geomancer 20 Geode Delver"
+          },
+          "geo_23_aether_scout": {
+            "type": "geomancer",
+            "head": "geo_23_aether_scout_head",
+            "torso": "geo_23_aether_scout_torso",
+            "back": "geo_23_aether_scout_back",
+            "legs": "geo_23_aether_scout_legs",
+            "feet": "geo_23_aether_scout_feet",
+            "label": "Geomancer 23 Aether Scout"
+          },
+          "geo_24_jade_resonance_sage": {
+            "type": "geomancer",
+            "head": "geo_24_jade_resonance_sage_head",
+            "torso": "geo_24_jade_resonance_sage_torso",
+            "legs": "geo_24_jade_resonance_sage_legs",
+            "feet": "geo_24_jade_resonance_sage_feet",
+            "label": "Geomancer 24 Jade Resonance Sage"
+          },
+          "geo_25_sphere_atlas": {
+            "type": "geomancer",
+            "head": "geo_25_sphere_atlas_head",
+            "torso": "geo_25_sphere_atlas_torso",
+            "back": "geo_25_sphere_atlas_back",
+            "legs": "geo_25_sphere_atlas_legs",
+            "feet": "geo_25_sphere_atlas_feet",
+            "label": "Geomancer 25 Sphere Atlas"
+          }
+        },
+        "female": {
+          "geo_01_sultan_strider": {
+            "type": "geomancer",
+            "head": "geo_01_sultan_strider_head",
+            "torso": "geo_01_sultan_strider_torso",
+            "legs": "geo_01_sultan_strider_legs",
+            "feet": "geo_01_sultan_strider_feet",
+            "label": "Geomancer 01 Sultan Strider"
+          },
+          "geo_02_obelisk_acolyte": {
+            "type": "geomancer",
+            "head": "geo_02_obelisk_acolyte_head",
+            "torso": "geo_02_obelisk_acolyte_torso",
+            "legs": "geo_02_obelisk_acolyte_legs",
+            "feet": "geo_02_obelisk_acolyte_feet",
+            "label": "Geomancer 02 Obelisk Acolyte"
+          },
+          "geo_03_ochre_lithomancer": {
+            "type": "geomancer",
+            "torso": "geo_03_ochre_lithomancer_torso",
+            "legs": "geo_03_ochre_lithomancer_legs",
+            "feet": "geo_03_ochre_lithomancer_feet",
+            "label": "Geomancer 03 Ochre Lithomancer"
+          },
+          "geo_04_crystal_warden": {
+            "type": "geomancer",
+            "head": "geo_04_crystal_warden_head",
+            "torso": "geo_04_crystal_warden_torso",
+            "gloves": "geo_04_crystal_warden_gloves",
+            "legs": "geo_04_crystal_warden_legs",
+            "feet": "geo_04_crystal_warden_feet",
+            "label": "Geomancer 04 Crystal Warden"
+          },
+          "geo_05_dune_chevalier": {
+            "type": "geomancer",
+            "head": "geo_05_dune_chevalier_head",
+            "torso": "geo_05_dune_chevalier_torso",
+            "legs": "geo_05_dune_chevalier_legs",
+            "feet": "geo_05_dune_chevalier_feet",
+            "label": "Geomancer 05 Dune Chevalier"
+          },
+          "geo_06_chime_oracle": {
+            "type": "geomancer",
+            "head": "geo_06_chime_oracle_head",
+            "torso": "geo_06_chime_oracle_torso",
+            "legs": "geo_06_chime_oracle_legs",
+            "feet": "geo_06_chime_oracle_feet",
+            "label": "Geomancer 06 Chime Oracle"
+          },
+          "geo_07_exo_rig_engineer": {
+            "type": "geomancer",
+            "head": "geo_07_exo_rig_engineer_head",
+            "torso": "geo_07_exo_rig_engineer_torso",
+            "back": "geo_07_exo_rig_engineer_back",
+            "gloves": "geo_07_exo_rig_engineer_gloves",
+            "legs": "geo_07_exo_rig_engineer_legs",
+            "feet": "geo_07_exo_rig_engineer_feet",
+            "label": "Geomancer 07 Exo Rig Engineer"
+          },
+          "geo_08_calcified_nomad": {
+            "type": "geomancer",
+            "head": "geo_08_calcified_nomad_head",
+            "torso": "geo_08_calcified_nomad_torso",
+            "legs": "geo_08_calcified_nomad_legs",
+            "feet": "geo_08_calcified_nomad_feet",
+            "label": "Geomancer 08 Calcified Nomad"
+          },
+          "geo_09_amber_alchemist": {
+            "type": "geomancer",
+            "head": "geo_09_amber_alchemist_head",
+            "torso": "geo_09_amber_alchemist_torso",
+            "back": "geo_09_amber_alchemist_back",
+            "legs": "geo_09_amber_alchemist_legs",
+            "feet": "geo_09_amber_alchemist_feet",
+            "label": "Geomancer 09 Amber Alchemist"
+          },
+          "geo_10_basalt_veteran": {
+            "type": "geomancer",
+            "head": "geo_10_basalt_veteran_head",
+            "torso": "geo_10_basalt_veteran_torso",
+            "legs": "geo_10_basalt_veteran_legs",
+            "feet": "geo_10_basalt_veteran_feet",
+            "label": "Geomancer 10 Basalt Veteran"
+          },
+          "geo_13_bamboo_surveyor": {
+            "type": "geomancer",
+            "torso": "geo_13_bamboo_surveyor_torso",
+            "back": "geo_13_bamboo_surveyor_back",
+            "legs": "geo_13_bamboo_surveyor_legs",
+            "feet": "geo_13_bamboo_surveyor_feet",
+            "label": "Geomancer 13 Bamboo Surveyor"
+          },
+          "geo_14_lantern_mason": {
+            "type": "geomancer",
+            "head": "geo_14_lantern_mason_head",
+            "torso": "geo_14_lantern_mason_torso",
+            "gloves": "geo_14_lantern_mason_gloves",
+            "legs": "geo_14_lantern_mason_legs",
+            "feet": "geo_14_lantern_mason_feet",
+            "label": "Geomancer 14 Lantern Mason"
+          },
+          "geo_15_crescent_sage": {
+            "type": "geomancer",
+            "head": "geo_15_crescent_sage_head",
+            "torso": "geo_15_crescent_sage_torso",
+            "legs": "geo_15_crescent_sage_legs",
+            "feet": "geo_15_crescent_sage_feet",
+            "label": "Geomancer 15 Crescent Sage"
+          },
+          "geo_19_field_cartographer": {
+            "type": "geomancer",
+            "torso": "geo_19_field_cartographer_torso",
+            "legs": "geo_19_field_cartographer_legs",
+            "feet": "geo_19_field_cartographer_feet",
+            "label": "Geomancer 19 Field Cartographer"
+          },
+          "geo_20_geode_delver": {
+            "type": "geomancer",
+            "head": "geo_20_geode_delver_head",
+            "torso": "geo_20_geode_delver_torso",
+            "back": "geo_20_geode_delver_back",
+            "gloves": "geo_20_geode_delver_gloves",
+            "legs": "geo_20_geode_delver_legs",
+            "feet": "geo_20_geode_delver_feet",
+            "label": "Geomancer 20 Geode Delver"
+          },
+          "geo_23_aether_scout": {
+            "type": "geomancer",
+            "head": "geo_23_aether_scout_head",
+            "torso": "geo_23_aether_scout_torso",
+            "back": "geo_23_aether_scout_back",
+            "legs": "geo_23_aether_scout_legs",
+            "feet": "geo_23_aether_scout_feet",
+            "label": "Geomancer 23 Aether Scout"
+          },
+          "geo_24_jade_resonance_sage": {
+            "type": "geomancer",
+            "head": "geo_24_jade_resonance_sage_head",
+            "torso": "geo_24_jade_resonance_sage_torso",
+            "legs": "geo_24_jade_resonance_sage_legs",
+            "feet": "geo_24_jade_resonance_sage_feet",
+            "label": "Geomancer 24 Jade Resonance Sage"
+          },
+          "geo_25_sphere_atlas": {
+            "type": "geomancer",
+            "head": "geo_25_sphere_atlas_head",
+            "torso": "geo_25_sphere_atlas_torso",
+            "back": "geo_25_sphere_atlas_back",
+            "legs": "geo_25_sphere_atlas_legs",
+            "feet": "geo_25_sphere_atlas_feet",
+            "label": "Geomancer 25 Sphere Atlas"
+          }
+        }
+      }
+    }
+  ]
 }

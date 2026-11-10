@@ -60,9 +60,9 @@ def main():
     if CHECKS and not BSRC.LISTING and subprocess.call(['node', os.path.join(HERE, 'tests', 'test-rig.js')]) != 0:
         sys.exit('build.py: tests/test-rig.js failed')
     # the kits against their pieces (chains, anchors, files), and the push shader against its Godot twin
-    if CHECKS and subprocess.call([sys.executable, os.path.join(HERE, 'tests', 'check_kit.py')]) != 0:
+    if CHECKS and not BSRC.LISTING and subprocess.call([sys.executable, os.path.join(HERE, 'tests', 'check_kit.py')]) != 0:
         sys.exit('build.py: tests/check_kit.py failed (a kit entry and its GLB disagree; tests/kit-known-bad.json lists what is allowed)')
-    if CHECKS and subprocess.call([sys.executable, os.path.join(HERE, 'tools', 'check_twin.py')]) != 0:
+    if CHECKS and not BSRC.LISTING and subprocess.call([sys.executable, os.path.join(HERE, 'tools', 'check_twin.py')]) != 0:
         sys.exit('build.py: tools/check_twin.py failed (the push shader and kchar_push.gdshaderinc have drifted apart)')
     J = lambda *p: json.loads(read(os.path.join(HERE, 'data', *p)))
     peoples_raw = J('peoples.json')
