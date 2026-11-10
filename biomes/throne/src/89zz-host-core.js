@@ -29,10 +29,8 @@ if(THERM&&typeof ATMOS!=='undefined'&&ATMOS.snowBare&&typeof STATION_SNOW!=='und
 // After the air, so the count below sees every layer: a ground takes it only where its fragment shader keeps two texture units free for it (the
 // horizon's two maps). Station 1's floor reads fifteen (the paint, the detail, the macro and twelve library layers): the limit is sixteen, so its
 // ground keeps the plain light and its flora takes the horizon (window._horizon.skipped names what was left out)
-/* the texture units a program links: core/shadow's dry run of its hooks (KSHADOW.units: its maps, scene.environment on a standard material,
-   every sampler a hook declares and reads; this page's samplersOf moved into core on 2026-11-09), +1 for the sun's shadow map in every lit
-   material once the switch is offered (three adds it at compile); the limit is this GL's and never more than the GPUs' 16 (KSHADOW.maxUnits) */
-const samplersOf=m=>KSHADOW.units(m,renderer,scene)+(SHADOW_ON&&!(m.isShaderMaterial)?1:0);
+const samplersOf=m=>KSHADOW.units(m,renderer,scene)+(SHADOW_ON&&!(m.isShaderMaterial)?1:0);   /* core/shadow's count (2026-11-09); +1: the sun's shadow map, in every lit material once it is on (three adds it at compile) */
+/* the texture units a lit program may read: this GL's, and never more than the GPUs' 16 (SwiftShader's 32 would offer what the GPU cannot link) */
 const TEX_UNITS=KSHADOW.maxUnits(renderer);
 let SHADOW_ON=false;   /* the switch is offered (KSHADOW attached): the map's texture unit is kept free whether it is on or off */
 // THE SUN'S SHADOWS (core/shadow, KSHADOW; the owner, 2026-11-03): one box that follows the view (90-600 m), every placed mesh casting and receiving.

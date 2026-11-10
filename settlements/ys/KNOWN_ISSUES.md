@@ -39,6 +39,14 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
   new name clash upstream shows up as the build's duplicate-name error.
 
 ## Open
+- [x] (2026-11-10) **The city page threw in the biome** (`BIO.phaseAnimMat is not a function` in nwbay's fauna): Ys read nwbay
+  in place with only four of core/biome's fragments (10, 20, 30, 40), and the bay's fauna calls 35's `phaseAnimMat`, so the biome
+  never built (858 of 2219 volumes empty, 891 untagged: prism gum and the rest). It predates the chain's read in place (the
+  page of 2d530d40 has the same call and no definition). `BIO_INPLACE` now takes the five nwbay's own build lists between 30
+  and 40 (31j, 32, 33, 34, 35). And the `voth-trades` check lost `port_order_chapterhouse` when src/ dropped its copy of
+  Iziz's chapterhouse: `tools/check_trades.py` `EXTRA_SRC` names the dirs Ys reads in place, and `verify.py` passes them.
+  `verify.py dist/ys.html --assert` on SwiftShader: error panel clean, OK, 54 pass, 2474 volumes, all tagged; `kit.html` and `mock.html` OK, 24
+  pass each.
 - [x] (2026-11-03) **The biome is read in place** under the names `src/86-bio-*` had: `core/biome` (10, 20, 30, 40) and
       `biomes/nwbay/src` (species, trees, variants, floor, dress, assembly, fauna), the city target only; src/ keeps no copy.
       The leaves were identical to the kit's but its fauna, which predated `BIO.dynamic` (the flocks and pods registered, exported

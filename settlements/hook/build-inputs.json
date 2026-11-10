@@ -7,7 +7,7 @@
     "core/atmos/89-atmos-0p-presets.js": "1b55a3fc68023876348af4fcca6c19eafb623657a906089694c89767ea47abc0",
     "core/atmos/89-atmos-a-waves.js": "77ab3264db6d412a82c8d7b2f0f1e643a1cc65537c3456248f9193b6621dbc98",
     "core/atmos/89-atmos-b-skylight.js": "fdd81ff12eb4e98d7d9bc07691b033a71cd2add1b8a0d23d7ffb6149d781c6d0",
-    "core/door/10-core-door.js": "00ceccdcc016793a0ce0fbfd52a03142670c9426edf316878c829ef9e7ac34ea",
+    "core/door/10-core-door.js": "ea311c818042be40ee41ac69acd3d7fdf3960c8ddae477fbfda007a3e6882f00",
     "core/door/20-core-glass.js": "17f20fc659de9954d1f0ce5f8dece35834b575ae342a68c66af71c05949b3ea2",
     "core/door/90-core-door-host.js": "e54b3d68b7550ea68ae7ab67828ec5ec6873ad8efc30b85684c4cd0212ff9870",
     "core/lod/09-lod.js": "eb45c6a34a0131af2d973e3be72bf27b6c2fa465b2c6406edbe5a0240841375a",
@@ -141,13 +141,13 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "settlements/hook/build-manifest-hook.json": "7a048f68d2f799d86b6f8227b49925769b73aee06a5c9ec321372152e8ab83a7",
-    "settlements/hook/dist/hook.html": "190c14fc1252a8508dfddb66de0e8e086a8d6a9b26cc10bb733b1b46f4c1ddeb",
+    "settlements/hook/build-manifest-hook.json": "a6e960ecdb1b606a53fa0b26676009c3c009bb4e2efeb7b818542e1cbd3e0f98",
+    "settlements/hook/dist/hook.html": "de3e0022c8ee73cf53217c3ffc70f23f2617893dffd71254c33b1e4ec2d4f7d6",
     "settlements/hook/dist/hook.tex.port.js": "b8c17bdd6e016374c0da0a81cf4754ec99c8e6a4e0c5a71f18ac8c720a1e85f0"
    },
    "outputs_raw": {
-    "settlements/hook/build-manifest-hook.json": "7a048f68d2f799d86b6f8227b49925769b73aee06a5c9ec321372152e8ab83a7",
-    "settlements/hook/dist/hook.html": "190c14fc1252a8508dfddb66de0e8e086a8d6a9b26cc10bb733b1b46f4c1ddeb",
+    "settlements/hook/build-manifest-hook.json": "a6e960ecdb1b606a53fa0b26676009c3c009bb4e2efeb7b818542e1cbd3e0f98",
+    "settlements/hook/dist/hook.html": "de3e0022c8ee73cf53217c3ffc70f23f2617893dffd71254c33b1e4ec2d4f7d6",
     "settlements/hook/dist/hook.tex.port.js": "b8c17bdd6e016374c0da0a81cf4754ec99c8e6a4e0c5a71f18ac8c720a1e85f0"
    }
   }

@@ -483,7 +483,9 @@ rest waits for Zeijani's port onto the engine, whose controls are the reference.
   two vendored pairs off the allow-list). ~~**Dalab, Shade and Ys left**~~: **done 2026-11-03** (each build's KNOWN_ISSUES.md: Dalab
   reads core/biome's four and swlowlands' five in place, Shade sedesert's and core/biome's, Ys core/biome's and nwbay's; no
   biome copy is left in any src/, and no biome pair is on the allow-list). Their pages were rebuilt and checked again on
-  2026-11-09 (`verify.py --assert`, one screenshot each; the results in their KNOWN_ISSUES.md).
+  2026-11-10 (`verify.py --assert` on SwiftShader, one screenshot each; the results in their KNOWN_ISSUES.md): Shade OK; Ys OK
+  once its in-place biome took the core/biome fragments nwbay needs (31j-35: the city page had thrown in the bay's fauna since
+  the read in place); Dalab's set OK, its city failing only the newer `instance-cap` rule (swlowlands' glossy crowns, open).
 
 **With step 5 (backwards edges).** Nothing parked beyond the plan's own list.
 

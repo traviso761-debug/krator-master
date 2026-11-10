@@ -102,18 +102,12 @@ KSHADOW.attach = function (o) {
   KSHADOW.host = H;
   return H;
 };
-/* KSHADOW.units(material, renderer, scene): the texture units a material's fragment program links, by a dry run of its onBeforeCompile on the
-   library shader (a ShaderMaterial: its own text). The Throne's samplersOf moved here (2026-11-09, the all-builds ride-along), with what it
-   learned: its own maps; scene.environment on a standard material without its own envMap (three gives it the scene's at compile); and every
-   sampler its hooks declare (2D, 3D, Cube and their array, shadow and integer forms, with or without a precision qualifier: core/atmos's
-   cloud shade declares `uniform highp sampler3D`), counted only when the text reads the name again: a sampler declared and never read (the
-   delta's uMacro under KGROUND) is dropped by the GLSL compiler and takes no unit. A failure counts as 99.
-   KSHADOW.maxUnits(renderer): the units a lit program may read, this GL's and never more than the GPUs' 16 (SwiftShader allows 32, which
-   offered shadows the Arc and the RTX could not link) */
-KSHADOW.maxUnits = function (r) {
-  const c = (r && r.capabilities) || {};
-  return Math.min(16, c.maxTextures == null ? 16 : c.maxTextures);
-};
+/* KSHADOW.units(material, renderer, scene?): the texture units a material's fragment program will link, by a dry run of its onBeforeCompile on
+   the library shader (the Throne's samplersOf, moved here 2026-11-09): its own maps; the scene's environment on a standard material without
+   its own envMap (three gives it one at compile: pass the scene); and every sampler its hooks declare (2D, 3D, Cube and their array, shadow
+   and integer forms, with or without a precision qualifier: core/atmos's cloud shade declares `uniform highp sampler3D`, 2026-11-08) that
+   the text reads again: a sampler declared and never read (the delta's uMacro under KGROUND) is dropped by the GLSL compiler and takes no
+   unit. A material with no library shader (a ShaderMaterial) is read from its own text. A failure counts as 99 */
 KSHADOW.units = function (M, r, scene) {
   const LIB = { MeshLambertMaterial: 'lambert', MeshStandardMaterial: 'standard', MeshPhysicalMaterial: 'physical', MeshPhongMaterial: 'phong', MeshBasicMaterial: 'basic', MeshToonMaterial: 'toon' };
   try {
@@ -124,10 +118,12 @@ KSHADOW.units = function (M, r, scene) {
     let n = 0;
     ['map', 'emissiveMap', 'alphaMap', 'lightMap', 'aoMap', 'normalMap', 'bumpMap', 'roughnessMap', 'metalnessMap', 'specularMap', 'envMap'].forEach(k => { if (M[k]) n++; });
     if (!M.envMap && M.isMeshStandardMaterial && scene && scene.environment) n++;
-    const fs = sh.fragmentShader || '';
+    const fs = sh.fragmentShader;
     fs.replace(/uniform\s+(?:(?:lowp|mediump|highp)\s+)?[iu]?sampler(?:2D|3D|Cube)\w*\s+([^;]+);/g, (a, b) => {
-      b.split(',').forEach(x => { const k = x.trim().replace(/\[.*$/, ''); if (k && (fs.match(new RegExp('\\b' + k + '\\b', 'g')) || []).length > 1) n++; });
-      return a; });
+      b.split(',').forEach(x => { const k = x.trim().replace(/\[.*$/, ''); if (k && (fs.match(new RegExp('\\b' + k + '\\b', 'g')) || []).length > 1) n++; }); return a; });
     return n;
   } catch (e) { return 99; }
 };
+/* KSHADOW.maxUnits(renderer): the texture units a lit program may read: this GL's, and never more than the GPUs' 16 (the Arc's and the RTX's;
+   SwiftShader allows 32, which would turn on what the GPU cannot link) */
+KSHADOW.maxUnits = function (r) { const c = (r && r.capabilities) || {}; return Math.min(16, c.maxTextures == null ? 16 : c.maxTextures); };

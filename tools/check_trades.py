@@ -111,14 +111,11 @@ EXTRA_SRC = {
     'kits/iziz-vernacular': ['settlements/iziz/src'],
     # Locus's census (67-lo-trades.js) names the buildings that carry each trade, most of them in its two kits
     'settlements/locus': ['kits/locus/src', 'kits/eastern-abyssal/src', 'kits/yuni/src'],
-    # Ys reads Iziz's foreign quarter in place (settlements/ys/build.py INPLACE, 2026-11-09): its census (89x-ys-trades.js) names
-    # the Historians' chapterhouse, settlements/iziz/src/76-port-chapterhouse.js, with no src/ copy any more
-    'settlements/ys': ['settlements/iziz/src'],
     # Yuni's census (67-yu-trades.js) names its houses, compounds and civic buildings, in the Yuni kit (step 4b)
     'settlements/yuni': ['kits/yuni/src'],
-    # Ys's census (89x-ys-trades.js) names the Historians' chapterhouse, which Ys reads in place from Iziz
-    # (settlements/ys/build.py VENDORED_IZIZ_FQ, 76-port-chapterhouse.js) since its copy went
-    'settlements/ys': ['settlements/iziz/src'],
+    # Ys reads its vendored chain in place since 2026-11-09 (settlements/ys/build.py INPLACE): its census names the Order's
+    # chapterhouse (settlements/iziz/src/76-port-chapterhouse.js) and buildings of the kits it reads by path
+    'settlements/ys': ['settlements/iziz/src', 'kits/ancients/src', 'kits/iziz-vernacular/src', 'kits/highlands/src', 'kits/port/src'],
 }
 
 

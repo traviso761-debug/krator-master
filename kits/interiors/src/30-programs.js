@@ -73,7 +73,7 @@
     bedroom:  { require: [{ need: 'bed', types: ['bed'], n: 1 }, { need: 'chest', types: ['storage'], roles: ITEM, n: 1 }],
                 optional: [{ types: ['storage'], max: 1 }, { types: ['lamp'], max: 1 }, { types: ['screen'], max: 1 }, { types: ['chair', 'desk'], max: 1 }, { types: ['art', 'banner'], max: 1 }, SURFACE],
                 extra: 5 },
-    kitchen:  { require: [{ need: 'hearth', types: ['stove'], n: 1 }, { need: 'food', types: ['storage', 'vessel', 'stack'], roles: FOOD, n: 1, anchors: ['floor', 'wall'] }],
+    kitchen:  { require: [{ need: 'hearth', types: ['stove'], n: 1 }, { need: 'food', types: ['storage', 'vessel', 'stack'], roles: FOOD, anchors: ['floor', 'wall'], n: 1 }],
                 optional: [{ types: ['storage', 'shelf', 'rack', 'stack'], max: 2 }, { types: ['table'], max: 1 }, SURFACE],
                 extra: 5 },
     /* RESIDENCE kinds (the interiors sets, sets/README.md): every residence must hold a bed, a FOOD
@@ -82,14 +82,14 @@
        sleeping rooms are `bedroom`s (each with a chest). KIND_ALIAS lets catalog pieces listing
        hall / kitchen / bedroom qualify for them. */
     /* the chest before the food: a food slot has compact pieces (jars, a larder) as well as wide ones (bins,
-       a barrel cradle), and a small hut has room for a chest only if the food slot leaves it. The food stands
-       on the floor or a wall (anchors, as zeijani's cell): IX.sets.auditResidence counts no table-top piece (2026-11-09) */
+       a barrel cradle), and a small hut has room for a chest only if the food slot leaves it. The food store stands
+       on the floor or hangs on a wall (anchors): IX.sets.auditResidence does not count a table-top piece (2026-11-09) */
     cottage:  { require: [{ need: 'bed', types: ['bed'], n: 1 }, { need: 'hearth', types: ['stove', 'brazier'], n: 1 },
-                          { need: 'chest', types: ['storage'], roles: ITEM, n: 1 }, { need: 'food', types: ['storage', 'vessel', 'stack'], roles: FOOD, n: 1, anchors: ['floor', 'wall'] }],
+                          { need: 'chest', types: ['storage'], roles: ITEM, n: 1 }, { need: 'food', types: ['storage', 'vessel', 'stack'], roles: FOOD, anchors: ['floor', 'wall'], n: 1 }],
                 optional: [{ types: ['table'], max: 1 }, { types: SEATS, max: 2 }, { types: ['shelf', 'rack'], max: 1 }, { types: ['lamp'], max: 1 }, { types: ['rug'], max: 1 }, { types: ['art', 'banner'], max: 1 }, SURFACE],
                 extra: 5 },
     living:   { require: [{ need: 'hearth', types: ['stove', 'brazier'], n: 1 }, { need: 'table', types: ['table'], n: 1 }, { need: 'seats', types: SEATS, n: 2 },
-                          { need: 'food', types: ['storage', 'vessel', 'stack'], roles: FOOD, n: 1, anchors: ['floor', 'wall'] }],
+                          { need: 'food', types: ['storage', 'vessel', 'stack'], roles: FOOD, anchors: ['floor', 'wall'], n: 1 }],
                 optional: [{ types: ['storage', 'shelf', 'rack'], max: 2 }, { types: SEATS, max: 2 }, { types: ['lamp'], max: 1 }, { types: ['rug'], max: 1 }, { types: ['screen', 'statue', 'banner'], max: 1 }, { types: ['art', 'banner'], max: 2 }, SURFACE],
                 extra: 6 },
     dormitory: { require: [{ need: 'beds', types: ['bed'], n: 2 }, { need: 'chest', types: ['storage'], roles: ITEM, n: 1 }],

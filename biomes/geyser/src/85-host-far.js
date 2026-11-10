@@ -23,7 +23,7 @@ const FAR=(function(){
 // THE GROUND'S TEXTURE UNITS (the Throne's and ringisles' samplersOf, 89zz): KGROUND's nine surfaces leave the Lambert ground few of the Arc's sixteen, and
 // SwiftShader's 32 hid it (the cloud build). Counted from a dry run of its onBeforeCompile; the sun's shadow map takes one (88), the horizon two: the shadow
 // first, then the horizon on the ground where both fit (the flora takes the horizon either way). window._units says what the ground reads.
-const samplersOf=m=>KSHADOW.units(m,renderer,scene);   /* core/shadow's count (the Throne's samplersOf moved into core, 2026-11-09) */
+const samplersOf=m=>KSHADOW.units(m,renderer,scene);   /* core/shadow (2026-11-09): read samplers only, the scene's environment, the 3D forms */
 const MAXT=KSHADOW.maxUnits(renderer);
 const SHADOW_WANT=new URLSearchParams(location.search).get('shadow')!=='0'&&typeof KSHADOW!=='undefined'&&!!KSHADOW.attach;
 window._units={ground:samplersOf(MAT_GROUND),max:MAXT};
