@@ -10,7 +10,7 @@ const REG=[];function REGISTER(o){if(o&&o.kind==='tree'&&AV.feralDenied&&AV.fera
 const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);
 renderer.outputEncoding=THREE.sRGBEncoding;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.02;document.body.appendChild(renderer.domElement);
 const scene=new THREE.Scene();scene.fog=new THREE.FogExp2(0xc4c6c8,.00011);
-const camera=new THREE.PerspectiveCamera(50,innerWidth/innerHeight,.6,42000);
+const camera=new THREE.PerspectiveCamera(50,innerWidth/innerHeight,1,42000);   /* near 1 m (was .6; Gemini's review, Q2): the 24-bit depth's step at 2 km from 0.4 m to 0.24 m, under a creeper's 0.35 m offset */
 const HEMI=new THREE.HemisphereLight(0xc8d0d8,0x4a4438,.62);scene.add(HEMI);
 const SUN_POS=[-1100,900,700];
 const sun=new THREE.DirectionalLight(0xfff0d8,1.45);sun.position.set(...SUN_POS);scene.add(sun);

@@ -1,8 +1,8 @@
 {
  "pages": {
   "biomes/ancientsvalley/dist/ancientsvalley.html": {
-   "bytes": 4688154,
-   "sha256": "36b280b75a47f4b5884a37cbf2692dd0c48e3cab0e06c7bf0b8a51b4124c6500"
+   "bytes": 4768090,
+   "sha256": "3c30237d53d98c3c9a93f9343fc019b19c28902f8ec06d54a81c27ea8bae9442"
   },
   "biomes/crater-drylands/dist/crater-drylands.html": {
    "bytes": 4190377,
@@ -280,6 +280,10 @@
    "bytes": 184370,
    "sha256": "b3bc24644b4dffdc5ed00100131fdae5f409ba18dd428cc24e80e2b320afa220"
   },
+  "kits/ancient-transit/dist/ancient-transit.html": {
+   "bytes": 2373600,
+   "sha256": "9e201e901ee0cf89d2742ed60f932048c48dcc04090ed248be77bc8d1a00d973"
+  },
   "kits/ancients-interiors/dist/ancients-interiors.html": {
    "bytes": 305740,
    "sha256": "ca3624c2b87b3ad1610469f045cf155250da9d02393c5283c6245497cad9a0c6"
@@ -513,8 +517,8 @@
    "sha256": "cf5c96c2c14c91cc6a99127488d6f410a689d68446b73d331b9d1798a56badd4"
   },
   "kits/islanders/dist/islanders.html": {
-   "bytes": 1680912,
-   "sha256": "a5a3a0d97dfe42c341b373f97d6bfb2ea0e2cfb46c781afa6316bed5ec18270b"
+   "bytes": 1681288,
+   "sha256": "24487d45f8b4deb82842179b21ddbc862b36fa8d4bdd72c8343c5598271262ce"
   },
   "kits/lizardmen/dist/lizardmen.html": {
    "bytes": 1588821,
@@ -525,8 +529,8 @@
    "sha256": "ff6cdf1d23a993828e0a1791cb891f4c3aa030bfb1061f0fa2d46231cadb5c14"
   },
   "kits/metropolis/dist/metropolis.html": {
-   "bytes": 4116563,
-   "sha256": "92676bf80f28d31ae0f6c0832c8c47a913d3a697a1b5c477121ccdf1fe8506d5"
+   "bytes": 4118321,
+   "sha256": "79880374c08c0e7a94d65805e4fc94a43a231eea9ccf43028f42640d1fb42102"
   },
   "kits/motor-vehicles/dist/motor-vehicles.html": {
    "bytes": 2289813,
@@ -541,8 +545,8 @@
    "sha256": "a4a80fd4eec9827ec13b96c6182ac08c016a4e8595fe1db753ea2591dafeb3d7"
   },
   "kits/resources/dist/resources.html": {
-   "bytes": 5187128,
-   "sha256": "c1b056912e66fa13b88b045843816ccc3119ac5cb667dcb939c4a57df0005e86"
+   "bytes": 5187504,
+   "sha256": "86f469c3be2a02dd551deb93e0bad5974a7af75f9948b16b329ce623db13aa84"
   },
   "kits/ringsea/dist/ringsea.html": {
    "bytes": 4937437,

@@ -213,7 +213,8 @@ page is where the thin end is tuned (the plan's G4).
 
 **The rain wall** (the SW highlands, `biomes/swhighlands/PLAN.md`: 2,600-4,000 mm at ~2 km on the windward ramp):
 orographic rain, a field on the ground, not a weather mode: rain where the ground lies in the band, on faces turned to the
-wind (`ATMOS.rainWallAt`). Inside it the weather's own rain falls (it lifts `W.rain`, so the streaks, the wet ground, the grey
+wind (`ATMOS.rainWallAt`), or a host's own field (`o.field(x, z)` -> 0..1, since 2026-11-09: the Ancient's Valley's oily rain stands on its
+polluted half). Inside it the weather's own rain falls (it lifts `W.rain`, so the streaks, the wet ground, the grey
 sky and the rain cover all follow); seen from outside it is curtains of grey falling streaks standing on the ground up into
 the cloud, one per cell of the field, seeded by `KRAND.hash` of the cell. Build: list `fx/89-atmos-fx-rainwall.js` (station.json
 `"fx/89-atmos-fx-rainwall.js"`) and core/rand (`08-core-rand.js`, which every biome page has); then, after `ATMOS.weather` /

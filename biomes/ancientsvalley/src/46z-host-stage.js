@@ -177,7 +177,12 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
   /* core/atmos's smog additions (2026-11-09, session atmos-smog): the cloud's mood (dark, the taint's brown-purple tint, violent turbulence, the
      fires' glow at night, shifting episodes) and the mist's density field: F.density, universal in the cores, thin on the terraces */
   clouds:{cover:.74,cumulus:1.25,cirrus:.3,bank:.7,height:950,scale:1500,drift:.022,dark:.8,tint:[.42,.33,.30],turbulence:.7,turbKind:'violent',glow:.5,glowColour:[1,.55,.2]},
-  cloudMood:{period:300,glowColour:[1,.55,.2]},airLook:{turbidity:2.8,dust:[.58,.47,.54]},fogDensity:.00036,
+  cloudMood:{period:300,glowColour:[1,.55,.2],
+   /* the valley's own palette (the owner, 2026-11-09, again: "still getting the green shader during storms"): core/atmos's MOOD_PALETTE holds a sickly
+      green and a jaundice yellow, which tinted the whole cloud deck (cover .74) pale green in a clear spell, and in a storm the air (89v, AV_AIR: the fog
+      drawn toward the clouds' colour) carried that green onto the far towers, the mist and the sky light, the storm's dark and its lightning making it
+      olive. The valley's clouds keep the taint's hues: brown, dull red, ash grey, ghostly purple */
+   palette:[[.42,.33,.30],[.48,.26,.24],[.46,.45,.44],[.52,.44,.66]]},airLook:{turbidity:2.8,dust:[.58,.47,.54]},fogDensity:.00036,
   smog:{colour:[.36,.30,.36],mix:.85,mist:{density:.0011,above:110,depth:110,noise:.85,day:1,field:true},band:{density:.0032,y:[430,690],cover:.6,noise:1}},seed:SEED,model:M,region:RG,
   ground,rawGround,modelY,F,plan:PLAN,pads:PADS,engines:ENGINES,craters:CRATERS,debris:DEBRIS,scorch,viaduct:{pts:VIAS,deckY:viaDeckY,d:viaD},transit:AVT,lobbies:LOB,relief,railD,near:NEAR,street,streetK,streetD,avenueLines,lattice:{c:ct,s:snt,pitch:PLAN.pitch,AW,SW},built,forest,scars,cities,basins,
   water:{level:LAKE_Y,shallow:0x4f7a74,deep:0x1a3440,name:'The valley lake (17.4 m: brackish, the drowned city under it)'},

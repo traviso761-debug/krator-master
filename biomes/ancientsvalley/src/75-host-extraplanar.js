@@ -34,7 +34,7 @@ const AV_XP=(function(){const out={hunters:[],drawn:[],registry:null,t:0,hum:0,f
   const cx0=(route[0][0]+route[2][0])/2,cz0=(route[0][1]+route[2][1])/2,gs=route.map(p=>terrainH(p[0],p[1])),g0=Math.min(...gs),g1=Math.max(...gs),h=g.userData.h==null?(E?E.h:8):g.userData.h;
   REGISTER({name:label,kind:'hunter',x:cx0,z:cz0,y:g0-3,r:Math.hypot(route[0][0]-cx0,route[0][1]-cz0)+30,h:g1-g0+h+8,tags:{kind:'hunter',origin:'extraplanar',mech:key,corners:route.length,silhouette:sil?sil.set:null,lake:Math.round(lakeK(cx0,cz0)*100)/100}});
   scene.add(g);KE.update(g,0,{ground:terrainH});KE.setState(g,'walk');
-  out.hunters.push({g,key,name,route,i:(i0+1)%4,wait:0,seed,sil});};
+  out.hunters.push({g,key,name,route,i:(i0+1)%4,wait:0,seed,sil,R:avBodyR(g),best:1e9,stall:0});};
  const south=(x,z)=>smooth(0,900,z),north=(x,z)=>smooth(0,-700,z);
  mk('xp_stilter',pickRound((x,z)=>lakeK(x,z)*south(x,z)),71);                                   /* the lake to the south: the pull strongest there */
  mk('xp_haloed',pickRound((x,z)=>lakeK(x,z)*north(x,z)),72);                                    /* the drowned inlet to the north-west, under the viaduct */
@@ -53,7 +53,7 @@ const AV_XP=(function(){const out={hunters:[],drawn:[],registry:null,t:0,hum:0,f
  {let best=null,bs=0;for(let x=-R+200;x<=R-200;x+=40)for(let z=-R+200;z<=R-200;z+=40){if(Math.hypot(x,z)>R-200||!dry(x,z)||F.scar(x,z)>.1||F.foul(x,z)<.6||F.zone(x,z)!=='floor')continue;
    if(STAGE.street(x,z)>.05||STAGE.built(x,z)>.02||STAGE.built(x+25,z)>.02||STAGE.built(x-25,z)>.02||STAGE.built(x,z+25)>.02||STAGE.built(x,z-25)>.02||Math.hypot(x-STAGE.near.x,z-STAGE.near.z)<STAGE.near.r)continue;
    const s=F.foul(x,z)*F.density(x,z)*(1-STAGE.forest(x,z))*(1-Math.hypot(x,z)/(2*R));if(s>bs){bs=s;best=[x,z];}}
-  if(best){recs.push(KE.phenomenon('solid',{at:[best[0],terrainH(best[0],best[1]),best[1]],seed:seed0+2,drift:'orbit',driftR:8,form:'icosahedron',name:'a solid with its own weather, humming in a plaza of the foul half'}));out.spots.solid=best;}
+  if(best){recs.push(KE.phenomenon('solid',{at:[best[0],terrainH(best[0],best[1]),best[1]],seed:seed0+2,drift:'orbit',driftR:8,form:'icosahedron',tint:'bruise',   /* its tint takes the clouds over it (89s): the taint's purple, never the verdigris green (the owner: no green in the storms) */name:'a solid with its own weather, humming in a plaza of the foul half'}));out.spots.solid=best;}
   else reportErr('extraplanar: no plaza in the foul half for the solid');}
  /* the presence in the park gone feral: a third of the way from the view's mark toward its eye, on open ground */
  {const PV=STAGE.views()['A park gone feral'];if(PV){const tx=PV[3],tz=PV[5],ex=PV[0],ez=PV[2];let at=null;for(const k of [.3,.45,.6,.15]){const x=tx+(ex-tx)*k,z=tz+(ez-tz)*k;if(dry(x,z)&&STAGE.built(x,z)<.05&&STAGE.street(x,z)<.3){at=[x,z];break;}}
@@ -96,10 +96,11 @@ const AV_XP=(function(){const out={hunters:[],drawn:[],registry:null,t:0,hum:0,f
  tick(function(){const now=performance.now(),dt=Math.min(.1,(now-clock.t)/1000);clock.t=now;if(dt<=0)return;out.t+=dt;
   for(const k of out.hunters){const g=k.g,Tg=k.route[k.i],dx=Tg[0]-g.position.x,dz=Tg[1]-g.position.z,d=Math.hypot(dx,dz);
    if(k.wait>0){k.wait-=dt;if(k.wait<=0)KE.setState(g,'walk');}
-   else if(d<3){k.i=(k.i+1)%k.route.length;let len=0;try{const n=KE.attack(g);len=n==null?0:n;}catch(e){len=0;}k.wait=len+2+3*KRAND.unit(KRAND.hash(k.seed,k.i,9,0));if(!len)KE.setState(g,'idle');}   /* the tell, then the blow, at the corner */
-   else{const want=Math.atan2(dx,dz);let a=want-g.rotation.y;a=Math.atan2(Math.sin(a),Math.cos(a));g.rotation.y+=Math.max(-1.1*dt,Math.min(1.1*dt,a));
-    const sp=KE.speed(g)*Math.max(0,Math.cos(a));g.position.x+=Math.sin(g.rotation.y)*sp*dt;g.position.z+=Math.cos(g.rotation.y)*sp*dt;}
-   g.position.y=terrainH(g.position.x,g.position.z);const ev=KE.update(g,dt,{ground:terrainH});if(ev)for(const e of ev)if(e.type==='fire')loose(e);}
+   else if(d<3+k.R*.5||k.stall>25){k.i=(k.i+1)%k.route.length;k.best=1e9;k.stall=0;let len=0;try{const n=KE.attack(g);len=n==null?0:n;}catch(e){len=0;}k.wait=len+2+3*KRAND.unit(KRAND.hash(k.seed,k.i,9,0));if(!len)KE.setState(g,'idle');}   /* the tell, then the blow, at the corner; one it cannot reach in 25 s is given up */
+   else{const want=AV_AVOID.steer(g,Math.atan2(dx,dz),k.R);let a=want-g.rotation.y;a=Math.atan2(Math.sin(a),Math.cos(a));g.rotation.y+=Math.max(-1.1*dt,Math.min(1.1*dt,a));   /* round the piers, the plinths, the wrecks (72, AV_AVOID) */
+    const sp=KE.speed(g)*Math.max(0,Math.cos(a));g.position.x+=Math.sin(g.rotation.y)*sp*dt;g.position.z+=Math.cos(g.rotation.y)*sp*dt;
+    if(d<k.best-.5){k.best=d;k.stall=0;}else k.stall+=dt;}
+   AV_AVOID.push(g,k.R);g.position.y=terrainH(g.position.x,g.position.z);const ev=KE.update(g,dt,{ground:terrainH});if(ev)for(const e of ev)if(e.type==='fire')loose(e);}
   const eye=[camera.position.x,camera.position.z];for(const g of out.drawn)KE.draw.tick(g,out.t,eye);
   for(let i=out.fx.length-1;i>=0;i--){const f=out.fx[i];f.t+=dt;f.o.position.addScaledVector(f.v,dt);if(f.t>=f.life){scene.remove(f.o);out.fx.splice(i,1);}}
   out.hum=KE.humAt(eye[0],eye[1],out.t,REGY);});

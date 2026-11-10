@@ -40,4 +40,11 @@ ok(maxTris < 9000, 'the biggest piece under 9000 triangles (' + maxTris + ')');
 ok(KTF.build('tr_zeppelin', {}) === null, 'negative: an unknown kind is null');
 let threw = false; try { KTF.build('tr_bench', { state: 'bent' }); } catch (e) { threw = true; } ok(threw, 'negative: a state a kind has not throws');
 { const a = KTF.build('tr_lamp', { state: 'intact', seed: 3 }), b = KTF.build('tr_lamp', { state: 'intact', seed: 3, linear: false }); const ca = a.children[0].geometry.attributes.color.array, cb = b.children[0].geometry.attributes.color.array; ok(ca[0] < cb[0] - 1e-3, 'negative: linear colours are darker than sRGB'); }
+/* dead (the Ancient's Valley, 2026-11-09): an intact lamp keeps no glowing lens and its metal goes to rust, by o.dead or KTF.dead; the default still glows */
+{ const fams = g => g.children.map(m => m.userData.family || (m.material && m.material.userData && m.material.userData.family) || '');
+  const lit = KTF.build('tr_lamp', { state: 'intact', seed: 3 }), dead = KTF.build('tr_lamp', { state: 'intact', seed: 3, dead: true });
+  KTF.dead = true; const dead2 = KTF.build('tr_lamp', { state: 'intact', seed: 3 }), back = KTF.build('tr_lamp', { state: 'intact', seed: 3, dead: false }); KTF.dead = false;
+  ok(fams(dead).indexOf('glow') < 0 && fams(dead).indexOf('metal') < 0 && fams(dead).indexOf('rust') >= 0, 'a dead intact lamp: no glow, its metal rust (' + fams(dead).join(',') + ')');
+  ok(JSON.stringify(fams(dead2)) === JSON.stringify(fams(dead)), 'KTF.dead does the same for every build');
+  ok(fams(lit).indexOf('glow') >= 0 && fams(back).indexOf('glow') >= 0, 'negative: by default, and with dead: false, the intact lamp still glows'); }
 console.log(n + ' pieces built, biggest ' + maxTris + ' triangles'); console.log(bad ? bad + ' FAILED' : 'all passed'); process.exit(bad ? 1 : 0);

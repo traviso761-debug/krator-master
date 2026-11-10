@@ -56,12 +56,16 @@ KSHELL.bake=function(at,rec,slot,hero,top,bot){const R=at.renderer,f=rec.frame,p
 // the mips, once every slot is baked
 KSHELL.finish=function(at){const R=at.renderer,gl=R.getContext(),old=R.getRenderTarget();[at.A,at.B,at.C].forEach(t=>{t.texture.generateMipmaps=true;const tx=R.properties.get(t.texture).__webglTexture;gl.bindTexture(gl.TEXTURE_2D,tx);gl.generateMipmap(gl.TEXTURE_2D);gl.bindTexture(gl.TEXTURE_2D,null);});R.setRenderTarget(old);R.state.reset&&0;};
 
-const DV=['attribute vec4 aSlot;attribute vec4 aFrame;attribute vec4 aTop;attribute vec4 aBot;varying vec4 vMpTop;varying vec4 vMpBot;varying vec3 vMpP;varying vec3 vMpE;varying vec2 vMpRot;varying vec4 vMpSlot;varying vec4 vMpFrame;varying vec2 vLodK;uniform vec3 uBand;'].join('\n');
+const DV=['attribute vec4 aSlot;attribute vec4 aFrame;attribute vec4 aTop;attribute vec4 aBot;varying vec4 vMpTop;varying vec4 vMpBot;varying vec3 vMpP;varying vec3 vMpE;varying vec2 vMpRot;varying vec4 vMpSlot;varying vec4 vMpFrame;varying vec2 vLodK;uniform vec3 uBand;attribute float aBand;uniform float uBandS;'].join('\n');
+/* the fade band (2026-11-09, the Ancient's Valley): a shell fades in over the band its HERO fades out over (core/biome BIO.lodFade: the same box distance from
+   the base to the top, the same screen hash, complementary thresholds), so the two never draw over each other. aBand is the band's far edge per instance (a
+   host whose families have bands of their own), 0 for uBand.x, below 0 for no band (an opaque shell where the host holds no hero); uBandS is the host's LOD scale (BIO._lodU.s), 1 by default. The height is measured from the
+   instance's base (it was from y 0, so a tower on low ground faded at another distance than its hero) */
 const DM=['vMpP=position;',
  'vec3 mpC=-(transpose(mat3(viewMatrix))*viewMatrix[3].xyz);vMpE=(inverse(instanceMatrix)*vec4(mpC,1.0)).xyz;vMpRot=instanceMatrix[0].xz;vMpSlot=aSlot;vMpFrame=aFrame;vMpTop=aTop;vMpBot=aBot;',
- '{vec3 c=instanceMatrix[3].xyz,e=mpC;vec2 hb=aFrame.x<0.5?vec2(aFrame.z*.6):vec2(aFrame.z,aFrame.w);if(abs(instanceMatrix[0].x)<0.5)hb=hb.yx;float dx=max(abs(e.x-c.x)-hb.x,0.0),dz=max(abs(e.z-c.z)-hb.y,0.0),dy=max(e.y-aFrame.y,max(-e.y,0.0)),ld=length(vec3(dx,dy,dz));',
- ' vLodK=vec2(uBand.y>0.0?smoothstep(uBand.y*(1.0-uBand.z),uBand.y,ld):0.0,uBand.x>0.0?smoothstep(uBand.x*(1.0-uBand.z),uBand.x,ld):1.0);}'].join('\n');
-const DF=['uniform sampler2D uA,uB,uC;uniform float uAt;uniform float uPx;uniform float uTexel;uniform float uDbg;','varying vec3 vMpP;varying vec3 vMpE;varying vec2 vMpRot;varying vec4 vMpSlot;varying vec4 vMpFrame;varying vec2 vLodK;varying vec4 vMpTop;varying vec4 vMpBot;',
+ '{vec3 c=instanceMatrix[3].xyz,e=mpC;vec2 hb=aFrame.x<0.5?vec2(aFrame.z*.6):vec2(aFrame.z,aFrame.w);if(abs(instanceMatrix[0].x)<0.5)hb=hb.yx;float dx=max(abs(e.x-c.x)-hb.x,0.0),dz=max(abs(e.z-c.z)-hb.y,0.0),dy=max(e.y-(c.y+aFrame.y),max(c.y-e.y,0.0)),ld=length(vec3(dx,dy,dz)),bx=aBand<0.0?0.0:(aBand>0.0?aBand:uBand.x)*uBandS;',
+ ' vLodK=vec2(uBand.y>0.0?smoothstep(uBand.y*(1.0-uBand.z),uBand.y,ld):0.0,bx>0.0?smoothstep(bx*(1.0-uBand.z),bx,ld):1.0);}'].join('\n');
+const DF=['uniform sampler2D uA,uB,uC;uniform float uAt;uniform float uPx;uniform float uTexel;uniform float uDbg;uniform mat4 projectionMatrix;\n#define mpProj projectionMatrix','varying vec3 vMpP;varying vec3 vMpE;varying vec2 vMpRot;varying vec4 vMpSlot;varying vec4 vMpFrame;varying vec2 vLodK;varying vec4 vMpTop;varying vec4 vMpBot;',
  'vec2 mpUV;float mpLod;float mpGeo;vec3 mpHP;vec3 mpRd;float mpBr;float mpCl;vec2 mpTUV;float mpTCl;',MP.ROOM_GLSL,
  // the gap: how far p is outside the surface along the map's axis, and the uv it sampled
  /* a side map is read half a texel (at its mip) inside its slot in height: at the foot the filter blended in the atlas's empty gutter, which took the radius at the ground
@@ -120,13 +124,18 @@ const DF=['uniform sampler2D uA,uB,uC;uniform float uAt;uniform float uPx;unifor
  '  float s=max(gs*.85,mn);if(rd.y<0.0&&ta>0.05){if(g<mn*.5)s=clamp((p.y-ty-ey*.4)/(-rd.y),mn,2.0);else if(p.y>ty-ey)s=min(s,max((p.y-ty)/(-rd.y),mn*.5));}if(rd.y<0.0&&p.y>.05)s=min(s,max((p.y-.05)/(-rd.y),mn*.5));t+=s;',
  '  if(F.x<0.5){vec2 q=p.xz;if(length(q)>lim&&dot(q,rd.xz)>0.0)return false;}else if((abs(p.x)>F.z||abs(p.z)>F.w)&&((abs(p.x)>F.z&&p.x*rd.x>0.0)||(abs(p.z)>F.w&&p.z*rd.z>0.0)))return false;}',
  ' return false;}'].join('\n');
-KSHELL.material=function(at,o){o=o||{};const steps=o.steps==null?24:o.steps,m=new THREE.MeshStandardMaterial({color:0xffffff,roughness:1,metalness:0,side:THREE.FrontSide}),U={uA:{value:at.A.texture},uB:{value:at.B.texture},uC:{value:at.C.texture},uAt:{value:at.size},uPx:{value:.0012},uTexel:{value:.33},uBand:{value:new THREE.Vector3(0,0,.15)},uDbg:{value:0}};m.userData.U=U;
+KSHELL.material=function(at,o){o=o||{};const steps=o.steps==null?24:o.steps,m=new THREE.MeshStandardMaterial({color:0xffffff,roughness:1,metalness:0,side:THREE.FrontSide}),U={uA:{value:at.A.texture},uB:{value:at.B.texture},uC:{value:at.C.texture},uAt:{value:at.size},uPx:{value:.0012},uTexel:{value:.33},uBand:{value:new THREE.Vector3(0,0,.15)},uBandS:{value:1},uDbg:{value:0}};m.userData.U=U;
  m.onBeforeCompile=function(sh){Object.assign(sh.uniforms,U);
   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n'+DV).replace('#include <begin_vertex>','#include <begin_vertex>\n'+DM);
   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n#define MP_STEPS '+steps+'\n'+DF)
    /* the colour is read a quarter mip under the distance's level, and up to 1.25 coarser where the surface is seen edge-on (the distance alone left a grazing face's windows
       sparkling from above); the shape (mpGeo) at the distance's level. Sharper (three quarters, and the shape a level under: 2026-11-03) aliased into a dither */
-   .replace('#include <map_fragment>',['{float _lh=fract(52.9829189*fract(dot(gl_FragCoord.xy,vec2(0.06711056,0.00583715))));if(_lh<vLodK.x||_lh>=vLodK.y)discard;}','if(!mpTrace())discard;vec2 sUV=mpUV;vec3 gN=mpBr==1.0?vec3(0.0,1.0,0.0):mpBr==2.0?vec3(0.0,-1.0,0.0):vMpFrame.x<0.5?normalize(vec3(mpHP.x,0.0,mpHP.z)):(abs(mpHP.x)/vMpFrame.z>abs(mpHP.z)/vMpFrame.w?vec3(sign(mpHP.x),0.0,0.0):vec3(0.0,0.0,sign(mpHP.z)));float sL=mpCl>0.5?0.0:max(0.0,mpLod-.25+.5*clamp(-log2(max(abs(dot(gN,mpRd)),.05)),0.0,2.5));vec4 mA=textureLod(uA,sUV,sL),mB=textureLod(uB,sUV,sL),mC=textureLod(uC,sUV,sL);diffuseColor.rgb=pow(mA.rgb,vec3(2.2));'].join('\n'))
+   .replace('#include <map_fragment>',['{float _lh=fract(52.9829189*fract(dot(gl_FragCoord.xy,vec2(0.06711056,0.00583715))));if(_lh<vLodK.x||_lh>=vLodK.y)discard;}','if(!mpTrace())discard;',
+    /* the depth of the surface the ray found, not of the cage (2026-11-09, the Ancient's Valley: the cage's depth hid or cut whatever stood between the cage's face
+       and the traced wall: creepers hung off a face, trees on a broken top, rubble at the plinth, a neighbour's corner). The hit's distance from the eye is the same
+       in the instance's frame (no scale), so the hit in view space is the cage fragment's view position stretched to it. WebGL1 keeps the cage's depth */
+    '#if __VERSION__ >= 300','{vec3 _vp=-vViewPosition;float _dc=length(_vp),_dh=length(mpHP-vMpE);vec4 _cl=mpProj*vec4(_vp*(_dh/max(_dc,1e-4)),1.0);gl_FragDepth=clamp(_cl.z/_cl.w*0.5+0.5,0.0,1.0);}','#endif',
+    'vec2 sUV=mpUV;vec3 gN=mpBr==1.0?vec3(0.0,1.0,0.0):mpBr==2.0?vec3(0.0,-1.0,0.0):vMpFrame.x<0.5?normalize(vec3(mpHP.x,0.0,mpHP.z)):(abs(mpHP.x)/vMpFrame.z>abs(mpHP.z)/vMpFrame.w?vec3(sign(mpHP.x),0.0,0.0):vec3(0.0,0.0,sign(mpHP.z)));float sL=mpCl>0.5?0.0:max(0.0,mpLod-.25+.5*clamp(-log2(max(abs(dot(gN,mpRd)),.05)),0.0,2.5));vec4 mA=textureLod(uA,sUV,sL),mB=textureLod(uB,sUV,sL),mC=textureLod(uC,sUV,sL);diffuseColor.rgb=pow(mA.rgb,vec3(2.2));'].join('\n'))
    .replace('#include <roughnessmap_fragment>','float roughnessFactor=mC.r;').replace('#include <metalnessmap_fragment>','float metalnessFactor=mC.g;')
    .replace('#include <normal_fragment_begin>',['vec3 mN=normalize(mB.xyz*2.0-1.0),mW=vec3(vMpRot.x*mN.x-vMpRot.y*mN.z,mN.y,vMpRot.y*mN.x+vMpRot.x*mN.z);vec3 normal=normalize((viewMatrix*vec4(mW,0.0)).xyz);vec3 geometryNormal=normal;'].join('\n'))
    .replace('#include <normal_fragment_maps>','')
@@ -134,9 +143,10 @@ KSHELL.material=function(at,o){o=o||{};const steps=o.steps==null?24:o.steps,m=ne
    .replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>\nif(mC.b>0.5){totalEmissiveRadiance+=mpRoom(mpHP,mpRd,mN,0.0)*(mC.g>.2?0.55:1.0);}');};
  m.customProgramCacheKey=()=>'kshell'+steps;return m;};
 // placements: [[x, z, yaw], ...]
-KSHELL.draw=function(at,rec,slot,mat,places,top,bot){const g=new THREE.BufferGeometry(),C=rec.cage,S=at.size,f=rec.frame,n=places.length;g.setAttribute('position',new THREE.Float32BufferAttribute(C.pos,3));g.setIndex(C.idx);g.computeVertexNormals();
+/* band (optional): the fade band's far edge for these instances (aBand, above); omitted or 0, the material's uBand.x */
+KSHELL.draw=function(at,rec,slot,mat,places,top,bot,band){const g=new THREE.BufferGeometry(),C=rec.cage,S=at.size,f=rec.frame,n=places.length;g.setAttribute('position',new THREE.Float32BufferAttribute(C.pos,3));g.setIndex(C.idx);g.computeVertexNormals();
  const im=new THREE.InstancedMesh(g,mat,Math.max(n,1)),a=new Float32Array(Math.max(n,1)*4),b=new Float32Array(Math.max(n,1)*4),ta=new Float32Array(Math.max(n,1)*4),ba=new Float32Array(Math.max(n,1)*4),M=new THREE.Matrix4(),Q=new THREE.Quaternion(),Y=new THREE.Vector3(0,1,0),one=new THREE.Vector3(1,1,1);
  for(let i=0;i<n;i++){const p=places[i];M.compose(new THREE.Vector3(p[0],0,p[1]),Q.setFromAxisAngle(Y,p[2]==null?0:p[2]),one);im.setMatrixAt(i,M);}
  for(let i=0;i<Math.max(n,1);i++){a.set([slot.x/S,slot.y/S,slot.w/S,slot.h/S],i*4);b.set([f.mode,f.H,f.a,f.b],i*4);ta.set([top.x/S,top.y/S,top.w/S,top.h/S],i*4);ba.set(bot?[bot.x/S,bot.y/S,bot.w/S,bot.h/S]:[0,0,0,0],i*4);}
- g.setAttribute('aSlot',new THREE.InstancedBufferAttribute(a,4));g.setAttribute('aFrame',new THREE.InstancedBufferAttribute(b,4));g.setAttribute('aTop',new THREE.InstancedBufferAttribute(ta,4));g.setAttribute('aBot',new THREE.InstancedBufferAttribute(ba,4));im.count=n;im.frustumCulled=false;im.name='shell.'+rec.id;return im;};
+ g.setAttribute('aSlot',new THREE.InstancedBufferAttribute(a,4));g.setAttribute('aFrame',new THREE.InstancedBufferAttribute(b,4));g.setAttribute('aTop',new THREE.InstancedBufferAttribute(ta,4));g.setAttribute('aBot',new THREE.InstancedBufferAttribute(ba,4));g.setAttribute('aBand',new THREE.InstancedBufferAttribute(new Float32Array(Math.max(n,1)).fill(band>0?band:0),1));im.count=n;im.frustumCulled=false;im.name='shell.'+rec.id;return im;};
 })();

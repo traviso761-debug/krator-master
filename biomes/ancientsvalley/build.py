@@ -169,6 +169,8 @@ for f in ['89-atmos-c-hostbind.js','89-atmos-e-weatherhost.js','89-atmos-h-skyho
 PATH['89-atmos-j-fog.js']=os.path.join(CORE,'atmos','sky','89-atmos-j-fog.js')
 PATH['89-atmos-j-heightfog.js']=os.path.join(CORE,'atmos','host','89-atmos-j-heightfog.js')
 PATH['89-atmos-fx-lightning.js']=os.path.join(CORE,'atmos','fx','89-atmos-fx-lightning.js')   # the mood's lightning strikes visible bolts with it (2026-11-09)
+for f in ['89-atmos-fx-rainwall.js','89-atmos-fx-acid.js']:   # the oily rain over the polluted half (89x-host-oilrain.js, 2026-11-09): curtains on a field, the toxic dose
+    PATH[f]=os.path.join(CORE,'atmos','fx',f)
 for f in ['89-atmos-e-skymodel.js','89-atmos-f-skypresets.js','89-atmos-g-sky.js','89-atmos-k-cloudmood.js']:   # k: the clouds' mood (2026-11-09)
     PATH[f]=os.path.join(CORE,'atmos','sky',f)
 # the host shell from core/host (core/host/README.md). src/99-host-take.js hands it the page (KHOST.take)
@@ -176,6 +178,8 @@ sys.path.insert(0,os.path.join(CORE,'host'))
 import host as khost
 CORE_HOST=khost.SHELL+['94-host-polytool.js']
 khost.resolve(PATH,CORE_HOST)
+PATH['20-core-walk.js']=os.path.join(CORE,'walk','20-core-walk.js')   # KWALK: the House's floors and walls for the walker (75-host-house.js, 2026-11-09)
+PATH['07-core-kwarp.js']=os.path.join(CORE,'shader','07-core-kwarp.js')   # KWARP, the warp the cosmetic distortions bend with (89y-host-anomaly.js, 2026-11-09)
 miss=[f for f in ('10-core-head.js','20-core-kit.js','30-core-foliage.js','40-core-place.js') if f not in PATH]
 if miss: print('NO BIOME CORE: '+', '.join(miss)+' (list them in CORE_BIOME or keep a src/ copy)'); sys.exit(1)
 # the material library (core/materials/record) and the packs: this kit's (tex/, from materials.json by tools/textures/pack.py),
