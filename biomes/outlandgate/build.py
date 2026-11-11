@@ -12,7 +12,9 @@
   99-tail.html      closes <script>
 
   python3 build.py                     dist/outlandgate.html: station 1, the Narrows and the Gate
-  python3 build.py --station <name>    dist/outlandgate-<name>.html: stations/<name>/ added to src/ (none yet)
+  python3 build.py --station <name>    dist/outlandgate-<name>.html: stations/<name>/ added to src/ (seeps: station 2, the West Bench's
+                                       warm seeps; tarn: station 3, the Upper Gate Tarn; mouth: station 4, the Spider Lake Threshold),
+                                       with stations/_shared/'s host fragments its station.json "use"s
 """
 import os, re, subprocess, sys
 
@@ -76,6 +78,9 @@ if STATION:
     for f in os.listdir(_sd):
         if re.match(r'\d',f): PATH[f]=os.path.join(_sd,f)
     for f,pth in SJ.get('core',{}).items(): PATH.setdefault(f,J(pth))
+    # "use": the host fragments every later station shares (stations/_shared/: the common stage, the painted ground, the rock bodies, the far
+    # field, the works, the hazards, the fauna, the sky, the air and its wind, the water, the build, the views and checks), each driven by STAGE
+    for f in SJ.get('use',[]): PATH[f]=os.path.join(_SD,'_shared',f)
 # core/terrain, opt-in by name (core/README.md "terrain/"): 38 KRELIEF (the river's meander, its bars), 43 KGROUND (the ground's library
 # layers), 44 KFAR (the walls past the map, on the model's own heights), 45 KHORIZON (the walls' shadow on the floor)
 CORE_TERRAIN=['38-core-relief.js','43-core-ground.js','44-core-farfield.js','45-core-horizon.js']
@@ -103,20 +108,28 @@ khost.resolve(PATH,CORE_HOST)
 for f in ('23-mat-record.js','25-matlib-host.js'): PATH.setdefault(f,J('core','materials','record',f))
 sys.path.insert(0,J('tools','textures'))
 import matlib_pack
-VIRTUAL={'44-host-matlib-pack.js':matlib_pack.fragment(HERE,'ogate',own=True),khost.EDITS_JS:khost.edits_js(HERE,'outlandgate')}
+# the pack's families on this page only: station 1's three, or the station's own list (station.json "families")
+FAM1=['ground.grass','ground.shingle','ground.mud']
+_pjo=os.path.join(HERE,'tex','pack.json')
+with open(_pjo,encoding='utf-8') as _fh: _famo=sorted(_json.load(_fh).get('families',{})) if os.path.isfile(_pjo) else []
+_keepo=SJ.get('families',FAM1)
+VIRTUAL={'44-host-matlib-pack.js':matlib_pack.fragment(HERE,'ogate',exclude=[f for f in _famo if f not in _keepo],own=True),khost.EDITS_JS:khost.edits_js(HERE,'outlandgate')}
 # THE NEIGHBOURS' SPECIES, read in place (as biomes/eastabyss and ebadlands' stations read theirs): ebadlands' Fremont cottonwood (the braid
 # bars and the banks), Gambel oak and bigtooth maple (the floor's edges), grown by core/biome's BIO.kin in src/60. Each kit's species and
 # tree builders slot after the host stage (45) and before this kit (50), in their own registry, closed by a one-line kitEnd; its pack
 # carries only the families those builders draw with
 KIN={'ebadlands':(['50-biome-ebadlands-species.js','55-biome-ebadlands-trees.js'],'EBADLANDS',['bark.aspen','leaf.round','leaf.lobed','wood.silver'])}
 KIN.update({k:tuple(v) for k,v in SJ.get('kin',{}).items()})
+for _k in SJ.get('kinDrop',[]): KIN.pop(_k,None)   # a station that grows none of station 1's kin leaves its kit off the page
 for _i,(_k,(_fs,_api,_keep)) in enumerate(sorted(KIN.items())):
     _d=os.path.normpath(os.path.join(HERE,'..',_k));_c='abcdefgh'[_i]
     for _j,_f in enumerate(_fs): PATH['47%s%d-%s'%(_c,_j,_f)]=os.path.join(_d,'src',_f)
     VIRTUAL['47%s9-%s-end.js'%(_c,_k)]=chr(10)+'BIO.kitEnd(%s);   // its registry closed (its own page does it in a later fragment)'%_api+chr(10)
-    _pj=os.path.join(_d,'tex','pack.json')
+    _pj=os.path.join(_d,'tex','pack.json');_mj=os.path.join(_d,'materials.json');_pk=_k
+    if os.path.isfile(_mj):
+        with open(_mj,encoding='utf-8') as _fh: _pk=_json.load(_fh).get('build',_k)   # the kit's own pack name (the Outlands': 'outl')
     with open(_pj,encoding='utf-8') as _fh: _fam=sorted(_json.load(_fh).get('families',{})) if os.path.isfile(_pj) else []
-    VIRTUAL['44%s-host-matlib-pack-%s.js'%(_c,_k)]=matlib_pack.fragment(_d,_k,exclude=[f for f in _fam if f not in _keep])
+    VIRTUAL['44%s-host-matlib-pack-%s.js'%(_c,_k)]=matlib_pack.fragment(_d,_pk,exclude=[f for f in _fam if f not in _keep])
 # core/hazard (KHAZ, PLAN.md section 6): the river's drowning, the outburst flood on its cycle, the summer heat (87-host-hazards.js)
 PATH.setdefault('20-core-hazard.js',J('core','hazard','20-core-hazard.js'))
 # THE FAUNA (kits/fauna, PLAN.md section 4): the bundle's groups this land draws from (its own 'outlands': the hexapods, the ostrich, the
@@ -124,7 +137,7 @@ PATH.setdefault('20-core-hazard.js',J('core','hazard','20-core-hazard.js'))
 # (no packed detail maps); placed by FAUNALANDS (kits/fauna's fauna by land, read by path) in 87b-host-fauna.js
 sys.path.insert(0,J('kits','fauna'))
 import fauna_bundle as _fb
-VIRTUAL['86f-host-fauna-bundle.js']=_fb.bundle(['hyperjungle','wild','livestock','outlands'],tex=False)
+VIRTUAL['86f-host-fauna-bundle.js']=_fb.bundle(SJ.get('fauna',['hyperjungle','wild','livestock','outlands']),tex=False)
 for f,pth in {'86g-fauna-lands.js':'kits/fauna/fauna-lands.js','86h-fauna-lands-host.js':'kits/fauna/fauna-lands-host.js'}.items(): PATH.setdefault(f,J(pth))
 for f in VIRTUAL: PATH[f]=None
 # the shared atmosphere (core/atmos/README.md): its core, presets, export, the sky's light, the weather, the shared sky; height fog and

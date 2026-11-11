@@ -7,7 +7,9 @@ its walls climb to 10-14 km of airless rock on both sides.
 Gemini's sketch (2026-11-02) gave the idea, the river and the stations. This plan keeps those, corrects the heights, the
 air, the climate and the river from the model, and adds the people, the hazards and the core adoption. **Station 1, the Narrows
 and the Gate, is built (2026-11-11, `dist/outlandgate.html`; verified in software GL only: the GPU verify is owed;
-`KNOWN_ISSUES.md`, `BIOME-API.md`).** Station 5, the Nursery Bench, is built by the Outlands kit. The map edit (section 9) is
+`KNOWN_ISSUES.md`, `BIOME-API.md`). Stations 2-4, the West Bench's seeps, the Upper Gate Tarn and the Spider Lake Threshold, are built
+the same day (`python3 build.py --station seeps | tarn | mouth`; software GL only), each at a moved pixel (section 7, as built).** Station
+5, the Nursery Bench, is built by the Outlands kit. The map edit (section 9) is
 not made. The
 owner wants a kit here (2026-11-02, `HANDOFF-GEMINI-5.1.md` item 5). It goes in the rebuild's queue after the frozen
 integration pass. All px below are on the 5.1 canvas (1821 x 1723, 2 km/px).
@@ -188,9 +190,9 @@ side is the same open question.
 | Station | 5.1 px | Ground | What |
 |---|---|---|---|
 | 1 **The Narrows and the Gate** (**built** 2026-11-11) | **1438,326** (was 1442,336) | floor 1,423 m; 1.34 atm; Cfa, 988 mm, 19 °C (29/8) | the gap itself: the braided river on a 30 km floor, walls climbing to 4-5 km 48-54 km out on either side and to 10-14 km beyond (`KFAR`); the wind; **the Tierhounds' long wall across the floor, the toll fort and water gate on the river, the shrine** (plain records until `kits/coyote`) |
-| 2 **West Bench** | 1441,306 | 2,100 m bench (125 cells); 1.23 atm; Cfa, ~1,100 mm | the warm seeps and travertine alcoves on the west wall; the proposed caravanserai outside the wall; the dike ribs |
-| 3 **Upper Gate Tarn** | 1544,474 | tarn 1,521 m; 1.33 atm; WH (the 313 mm is the lake cell's; the shores take 1,300-1,600 mm) | the south end: the tarn, flood-scoured ground (ripple bars, erratics), the fungoid flora coming in from the Outlands; the Nursery Bench's scarp on the skyline to the south |
-| 4 **Spider Lake Threshold** | 1331,230 | 1,396 m; 1.35 atm; Cfa, 1,929 mm | the mouth: the river into Spider Lake's eastern bay, silk in the woods |
+| 2 **West Bench** (**built** 2026-11-11: `--station seeps`) | **1416,312** (was 1441,306: that pixel is on the EAST flank, the river at 1427 on its row; no bench on the model is flat) | 2,016 m on a 5 % slope; 1.23 atm; Cfa, 1,020 mm, 17 °C (27/7) | the warm seeps and travertine alcoves on the west wall (three springs, their rimstone stairs on WATER.terraces); the proposed caravanserai outside the wall (north of it); the dike ribs (KSTACKS fins); banner larch, iron birch, wind spruce, brook willow, tree ferns read in place |
+| 3 **Upper Gate Tarn** (**built** 2026-11-11: `--station tarn`) | **1538,472**, the outlet (was 1544,474: the tarn's middle) | tarn 1,521.46 m; 1.33 atm; WH (the 313 mm is the lake cell's; the shores take 1,300-1,600 mm) | the south end: the tarn, flood-scoured ground (three flood terraces, the outlet coulee, giant current ripples, erratics), the fungoid flora coming in from the Outlands (young colonies, read in place); the god's road and the trickster's shrine; the Nursery Bench's scarp on the skyline to the south |
+| 4 **Spider Lake Threshold** (**built** 2026-11-11: `--station mouth`) | **1328,228**, the mouth (was 1331,230: 6 km up the carved channel) | the lake 1,460 m (the model's 1,396 m floor lies under it: `KNOWN_ISSUES.md`); 1.35 atm; Cfa, 1,929 mm | the mouth: the river into Spider Lake's eastern bay over a delta, warm coves, silk in the woods (the gilded orb spiders' webs); Spider Lake's people's silk landing |
 | 5 **The Nursery Bench** (shared; **owned by `biomes/outlands`**, its station 5; **built** there 2026-11-11) | **1558,516**, the rim at 1558,513 | 3,960-4,007 m; 0.98 atm; BWk/BSk, 94-109 mm, 6 °C (19/-7) | the old Nursery Plateau's idea on the gap's head: pod towers, brood pads and gall stacks on desert pavement, yardangs cut by the gap's night wind, the rim and the 2.2 km scarp down to the gap's upper floor; this kit reads it in place and draws the floor below it as its far field |
 
 **Station 1 comes first:** it shows what the kit is (a low, wide gap under airless walls) and now the Gate, the reason the
@@ -242,6 +244,13 @@ temperature) and `kits/fauna` (the land `outlandgate.narrows` on FAUNALANDS; the
 fort's goats; the Outlands' hexapods are the fauna kit's new `outlands` group). Not yet: `KRELIEF.gap` (the page lies
 wholly on the floor: the gap's walls are the far field), `KSTRATA`, `KSTACKS`, `KGLACIER`, `KFROST` (the walls), `core/hazard`'s runtime
 `KCAMP` (the caravans are tents), the shared gorge-flood amendment (the flood here is the page's compressed cycle, kit work).
+
+**As built, stations 2-4 (2026-11-11).** On `stations/_shared/`'s host (one STAGE record a station; `44z-host-common.js` says which
+fragment reads what). Taken besides station 1's: `KSTACKS` (the seeps' dike ribs, the tarn's erratics), `WATER.terraces` (the seeps'
+rimstone stairs), `WATER.open` (the tarn, Spider Lake's bay), `WATER.still` pools (the warm coves), `KHAZ`'s `slip`, `fall`, `crush`, `hunter`
+and `heat` records, `BIO.kin` from the north highlands (larch, birch, wind spruce, brook willow) and the north-west lowlands (tree fern,
+paperbark, glow-willow, ghost gum), and the Outlands kit's forms read in place (the tarn's young colonies). The giant current ripples and the
+flood terraces are kit work (amendment 3 is not a `KRELIEF` form yet).
 
 **Core amendments needed:**
 1. **Gap wind** (shared: cold-air and katabatic wind), with a day up-valley mode. **Done** in core/atmos (`89-atmos-fx-katabatic.js`);

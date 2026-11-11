@@ -29,6 +29,34 @@
     "sourceMean": 0.44
    }
   },
+  "ground.moss": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "ground.moss.albedo.webp"
+   },
+   "lib": "ground.moss002",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "57b330b007e924316c17969a72280e2019e7c974",
+    "normal": "e3270d69eeffde5b7733d148b5a67c49a6469cb1",
+    "roughness": "c33e7b0ea414d71af876f760b48448a72f935e3d"
+   },
+   "specular": 0.25,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.3530806867442411,
+    "sourceMean": 0.3531
+   }
+  },
   "ground.mud": {
    "breakup": null,
    "card": false,
@@ -57,6 +85,34 @@
     "sourceMean": 0.271
    }
   },
+  "ground.reedbed": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "ground.reedbed.albedo.webp"
+   },
+   "lib": "ground.reedbed",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "cad9fd4f89526454ece5caf426baba9cac60177d",
+    "normal": "b2350e4b4ad939466504a6716f8ffb51339f3d69",
+    "roughness": "26a80bf75156e1e8c1841689cfd556297bbf1c5c"
+   },
+   "specular": 0.25,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.5349599620235668,
+    "sourceMean": 0.535
+   }
+  },
   "ground.shingle": {
    "breakup": null,
    "card": false,
@@ -83,6 +139,34 @@
     "keep": 1.0,
     "mean": 0.5735421724656049,
     "sourceMean": 0.5735
+   }
+  },
+  "ground.travertine": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "ground.travertine.albedo.webp"
+   },
+   "lib": "ground.travertine.white",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "251a8ea99d0d153564e456a30406289e2060fe0d",
+    "normal": "27e6b99fdf69f303cf3531889636bd0c0411b5c4",
+    "roughness": "940f718121ab6a52fa74e3c716e1c4f9d1829b26"
+   },
+   "specular": 0.25,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.7930494135478898,
+    "sourceMean": 0.793
    }
   }
  },

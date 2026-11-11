@@ -1,0 +1,10 @@
+{
+ "title": "Station 3, the Upper Gate Tarn (5.1 px 1538,472)",
+ "use": ["44z-host-common.js", "84-host-ground.js", "84b-host-rock.js", "85-host-far.js", "86-host-works.js", "87-host-hazards.js", "87b-host-fauna.js",
+         "89-host-sky.js", "89z-host-atmos.js", "89zw-host-water.js", "89zx-host-build.js", "98-host-views.js", "99-host-take.js"],
+ "drop": ["86-host-gate.js"],
+ "core": {"37-core-stacks.js": "core/terrain/37-core-stacks.js"},
+ "kin": {
+  "outlands": [["50-outl-species.js"], "OUTL", ["cap.glossy", "cap.violet", "flesh.cells", "fogcomber"]]
+ }
+}
