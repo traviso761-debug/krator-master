@@ -14,7 +14,7 @@ const Y=(x,z)=>BIO.host.terrainH(x,z);
 const WHITE=[0xf4f2ec,0xeeeae0,0xf8f6f0];
 PAINTED.buildFloor=function(R,q,o){o=o||{};q=q==null?1:q;R=R==null?2500:R;
  const st={grass:0,sage:0,rabbit:0,flowers:0,drifts:0,boulders:0,byFlower:B.FLOWERS.map(()=>0)},seed=KRAND.child(2000017,'paintedhighlands/floor'),
-  keep=o.keep||(()=>1),bed=o.bed||(()=>null),talus=o.talus||(()=>0),grass=o.grass==null?1:o.grass,bloomK=o.bloom==null?1:o.bloom;
+  keep=o.keep||(()=>1),bed=o.bed||(()=>null),talus=o.talus||(()=>0),grass=o.grass==null?1:o.grass,bloomK=o.bloom==null?1:o.bloom,bloomAt=o.bloomAt||null;
  const F=n=>(x,z)=>BIO.field(n,x,z),wet=F('wet'),rock=F('rock'),slope=F('slope'),bare=F('bare'),flow=F('flow'),flat=F('flat'),rim=F('rim');
  const Lv=BIO.LOD(),c0=BIO.center();
  const cellPass=(cell,salt,maxD,fn)=>{const N=Math.ceil(R*2/cell);for(let iz=0;iz<N;iz++)for(let ix=0;ix<N;ix++){
@@ -34,14 +34,14 @@ PAINTED.buildFloor=function(R,q,o){o=o||{};q=q==null?1:q;R=R==null?2500:R;
  // THE BLOOM: drifts on the washes' floors, the playa, the gentle dip slopes and the rims; each drift one flower, the one its bed's clay favours
  // (B.flowerFor) most of the time, a neighbour's now and then; a drift is a cluster of 3-9 plants of it about the cell's point
  cellPass(2.2,4,Lv.floor[1],(x,y,z,lv)=>{const sl=slope(x,z),gentle=(1-smooth(.08,.16,sl))*(1-bare(x,z));
-  const zone=Math.max(flow(x,z)*.95,flat(x,z)*.3,gentle*.3,rim(x,z)*.25*(1-rock(x,z)));const a=zone*(1-rock(x,z))*q*bloomK;if(rng()>a)return;   /* the playa's drifts at a third: its colour from afar is the ground's (84: aBl) */
+  const zone=Math.max(flow(x,z)*.95,bloomAt?bloomAt(x,z):0,flat(x,z)*.3,gentle*.3,rim(x,z)*.25*(1-rock(x,z)));const a=zone*(1-rock(x,z))*q*bloomK;if(rng()>a)return;   /* the playa's drifts at a third: its colour from afar is the ground's (84: aBl) */
   const kind=bed(x,y,z),fi=rng()<.78?B.flowerFor(kind,rng()):B.flowerFor(null,rng()),n=lv===2?ri(3,8):lv===1?ri(1,3):1,f=B.FLOWERS[fi];
   for(let k=0;k<n;k++){const ang=rr(0,TAU),d=k?rr(.2,1.1):0,px=x+Math.cos(ang)*d,pz=z+Math.sin(ang)*d;if(BIO.mask(px,pz)<=0||keep(px,pz)<=0)continue;
    const s=rr(.28,.55)*(f.key==='skylupin'||f.key==='ravenspike'||f.key==='scarletbeard'||f.key==='paintbrush'?1.3:1);
    BIO.put('phfl'+fi,[px,Y(px,pz)-.03,pz],qEuler(rr(-.06,.06),rr(0,TAU),rr(-.06,.06)),[s,s,s],pickC(WHITE,.01));st.flowers++;st.byFlower[fi]++;}
   st.drifts++;});
  // FALLEN BLOCKS: the danxia's spall at a cliff's foot (the rockfall's sign)
- cellPass(9,5,Lv.mid,(x,y,z,lv)=>{const t=talus(x,z);if(rng()>t*.5*q)return;const s=rr(.4,2.4)*(rng()<.1?2.2:1);
+ cellPass(9,5,Lv.mid,(x,y,z,lv)=>{const t=talus(x,z)*(1-flow(x,z));if(rng()>t*.3*q)return;const s=rr(.3,1.3)*(rng()<.08?1.8:1);
   BIO.put('phboulder',[x,y+s*.15,z],qEuler(rr(-.4,.4),rr(0,TAU),rr(-.4,.4)),[s,s,s],pickC(PAL.boulder,.03));st.boulders++;});
  return st;};
 // THE STONE CIRCLES (the Painted Men's, on the playas' rims: PLAN.md section 5): rings of standing stones as the host's site records give them

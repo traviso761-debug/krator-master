@@ -77,7 +77,7 @@ const L=(function(){const S=SITE;
   const WADI=KRELIEF.wadi({pts:wpts,ground:floor0,w:W.w,bank:W.bank,bankW:14,seed:4412});
   function land(x,z){let h=scarpH(x,z,dip(x,z),valley(x,z),S.scarp);
    h=KRELIEF.shape(WADI,x,z,h);return h;}
-  return{land,dip,valley,floor0,WADI,wpts,farBase:2870,spine:[[0,0],[NRM[0]*S.scarp.u,NRM[1]*S.scarp.u],[NRM[0]*W.u,NRM[1]*W.u],[-1600,600],[1500,-600]]};}
+  return{land,dip,valley,floor0,WADI,wpts,farBase:2870,spine:[[0,0],[NRM[0]*S.scarp.u,NRM[1]*S.scarp.u],[NRM[0]*W.u,NRM[1]*W.u],[-1600,600],[1500,-600]].concat(WADI.pools.filter(p=>Math.abs(p.x)<2400&&Math.abs(p.z)<2400).map(p=>[p.x,p.z]))};}   /* the melt pools: the export's box and the near detail */
  if(SKEY==='bloom'){const P=S.playa;
   const eD=(x,z)=>Math.hypot((x-P.x)/P.rx,(z-P.z)/P.rz)*(1+.08*n2(x,z,.0015,21));
   const dip=(x,z)=>contactAt(x,z)+S.scarp.cap+5*n2(x,z,.003,22);

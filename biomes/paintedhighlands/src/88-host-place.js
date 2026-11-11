@@ -13,7 +13,7 @@ const TREE_AT=(x,z)=>{const rk=FIELD.rock(x,z),br=FIELD.bare(x,z),sl=FIELD.slope
  if(SKEY==='canyon'){const a=Math.abs(z-L.cz(x)),bench=Math.abs(terrainH(x,z)-contactAt(x,z))<14?1:0;return open*(bench*.45+rim*.3+.06*FIELD.canyon(x,z));}
  return open*(.08+.12*FIELD.wet(x,z));};
 const STATION_BUILD=function(Q){Q=Q==null?1:Q;const st={};
- BIO.cur='paintedhighlands/floor';Object.assign(st,PAINTED.buildFloor(TERR.R-150,Q,{bed:BED_AT,talus:TALUS_AT,keep:DRY,grass:GRASS,bloom:BLOOM_K}));
+ BIO.cur='paintedhighlands/floor';Object.assign(st,PAINTED.buildFloor(TERR.R-150,Q,{bed:BED_AT,talus:TALUS_AT,keep:DRY,grass:GRASS,bloom:BLOOM_K,bloomAt:SKEY==='stripes'?(x,z)=>{const a=KRELIEF.at(L.WADI,x,z,L.floor0(x,z));return a&&(a.part==='floor'||a.part==='bar')?.9:0;}:null}));
  BIO.cur='paintedhighlands/trees';st.trees=PAINTED.buildTrees(TERR.R-150,Q,{accept:TREE_AT,keep:DRY,ecotone:SKEY==='cliff',wetAt:(x,z)=>FIELD.wet(x,z)});
  if(SKEY==='bloom'){BIO.cur='paintedhighlands/sites';st.stones=PAINTED.circles(SITE.circles);}
  if(SKEY==='cliff'&&SEEPS.length){BIO.cur='paintedhighlands/floor';st.gardens=PAINTED.dress(SEEPS,{anywhere:true,reach:9,n:18});}
