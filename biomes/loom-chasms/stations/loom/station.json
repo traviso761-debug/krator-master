@@ -7,6 +7,7 @@
  "water": [],
  "slot": {"width_top": 230.0, "depth": 180.0, "strike": "NNE-SSW", "length": 4000.0},
  "cable_canopy": {"span_m": [140, 230], "tiers": 4, "canopy_over_floor_m": [80, 150], "species": "cablespinner"},
+ "fauna": ["hyperjungle", "wild", "loom"],
  "kin": {
   "greatchasm": [
    ["src/50-biome-greatchasm-species.js", "src/60-biome-greatchasm-floor.js", "src/70-biome-greatchasm.js"],

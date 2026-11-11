@@ -57,11 +57,19 @@ const CRADLE=(function(){const S=STATION,V=S.VILLAGE,W=99560;
    return{ok,detail:V&&!V.error?V.records.length+' Yuni records (pop '+V.census.pop+', '+V.census.households+' households), every one pending: drawn as stand-ins':'no village: '+(V?V.error:'none')};},
   crops(F){const ids=CROPS.at(BANDS).map(r=>r.crop.id),bad=Object.values(F).filter(f=>f.crop&&ids.indexOf(f.crop.id)<0),n=Object.keys(F).length;
    return{ok:n>0&&!bad.length,detail:bad.length?bad.length+' fields growing a crop the Cradle\'s bands do not ('+bad[0].crop.id+')':n+' fields, each a crop kits/crops gives the Cradle\'s bands: '+[...new Set(Object.values(F).map(f=>f.crop&&f.crop.id))].join(', ')};},
+  /* the canal: its water falls downstream and runs between its banks (the drawn ground both sides over its water, its bed under it) */
+  canal(C){if(!C||C.pts.length<3)return{ok:false,detail:'no canal'};let up=0,spill=0;const P=C.pts,hw=C.width*.5;
+   for(let i=1;i<P.length;i++)if(P[i][2]>P[i-1][2]+1e-6)up++;
+   for(let i=1;i<P.length-1;i+=3){const a=P[i-1],b=P[i+1],dx=b[0]-a[0],dz=b[1]-a[1],l=Math.hypot(dx,dz)||1,nx=-dz/l,nz=dx/l,y=P[i][2];
+    const L=terrainH(P[i][0]+nx*hw*1.8,P[i][1]+nz*hw*1.8),R=terrainH(P[i][0]-nx*hw*1.8,P[i][1]-nz*hw*1.8),bed=terrainH(P[i][0],P[i][1]);if(Math.min(L,R)<y-.02||bed>y-.2)spill++;}
+   let len=0;for(let i=1;i<P.length;i++)len+=Math.hypot(P[i][0]-P[i-1][0],P[i][1]-P[i-1][1]);
+   return{ok:!up&&!spill,detail:up?up+' places the canal climbs':spill?spill+' places the canal\'s water over a bank or its bed':'the spring canal, '+(len/1000).toFixed(2)+' km falling '+(P[0][2]-P[P.length-1][2]).toFixed(2)+' m, its water between its banks'};},
   water(L){let up=0;for(let i=1;i<L.length;i++)if(L[i][2]>L[i-1][2]+1e-6)up++;return{ok:L.length>2&&!up,detail:up?up+' places Aina Bruk climbs downstream':L.length+' points, the water never climbing downstream ('+L[0][2].toFixed(1)+' to '+L[L.length-1][2].toFixed(1)+' m)'};}};
- function checks(add){add('the Yuni farms are core/hamlet records (the Yuni row), pending stand-ins',CK.village(V));add('every field\'s crop fits the Cradle\'s bands (kits/crops)',CK.crops(FIELD));add('Aina Bruk runs downhill',CK.water(S.RLEV));}
+ function checks(add){add('the Yuni farms are core/hamlet records (the Yuni row), pending stand-ins',CK.village(V));add('every field\'s crop fits the Cradle\'s bands (kits/crops)',CK.crops(FIELD));add('Aina Bruk runs downhill',CK.water(S.RLEV));add('the spring canal falls and holds its water (the fields\' irrigation)',CK.canal(S.CANAL));}
  function negatives(add){add('a village with no culture row',CK.village(KHAMLET.village({id:'x',world:1,culture:'nonesuch',focus:'farming',site:{x:0,z:0}})));
   const hot=CROPS.LIST.find(c=>CROPS.at(BANDS).every(r=>r.crop.id!==c.id));add('a field of a crop from another climate',CK.crops({x:{crop:hot}}));
-  add('a river climbing',CK.water([[0,0,10],[10,0,9],[20,0,11]]));}
+  add('a river climbing',CK.water([[0,0,10],[10,0,9],[20,0,11]]));
+  add('a canal on an embankment over the ground',CK.canal(Object.assign({},S.CANAL,{pts:S.CANAL.pts.map(p=>[p[0],p[1],p[2]+3])})));}
  // ---------------------------------------------------------------- the views
  function views(H){const {look}=H,P=S.POOL,Vs=V&&V.site?V.site:{x:0,z:0},PX=S.PX,head=R.find(r=>r.key==='rich_tower_house')||R[0]||{x:Vs.x,z:Vs.z};
   /* the terraces: the field tread nearest the village, the camera standing at its edge and looking up the terraces toward the zone's middle */
@@ -77,6 +85,7 @@ const CRADLE=(function(){const S=STATION,V=S.VILLAGE,W=99560;
   'The Yuni farms':look(head.x-90,head.z+70,4,head.x,head.z,6),
   'Along Aina Bruk':[mid[0]-40,mid[2]+4,mid[1]+30,mid2[0],mid2[2],mid2[1]],
   'The road east':look(PX(1558.6,1140.35)[0]-30,PX(1558.6,1140.35)[1]+12,1.8,PX(1559.5,1140.12)[0],PX(1559.5,1140.12)[1],2),
+  'Along the canal':(()=>{const P=S.CANAL.pts,i=Math.min(P.length-1,40),j=Math.min(P.length-1,i+25);return look(P[i][0]-3,P[i][1]+3,2.2,P[j][0],P[j][1],0);})(),
   'Down the dry wadi':look(wa[0],wa[1],2,wb[0],wb[1],0),
   'The Stalker Range from the fan':look(-1500,-200,3,-120000,0,4000),
   'From afar':look(2700,2700,350,-200,-600,0)};}

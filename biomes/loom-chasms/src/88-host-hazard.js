@@ -17,7 +17,7 @@ const HAZ=(function(){if(typeof KHAZ==='undefined')return null;const out={record
  try{KHAZ.provide('pressure',(x,y,z)=>atmAt(y));KHAZ.provide('temperature',(x,y,z)=>tempAt(x,y,z));out.ambient=KHAZ.provided();}catch(e){reportErr('hazard (ambient): '+e.stack);}
  out.tempAt=tempAt;
  const list=LAND.hazards?LAND.hazards():[];out.list=list;
- list.forEach((H,i)=>{const hz={kind:H.kind};['danger','dose','effect','falloff','shape','tell','nav','cycle'].forEach(k=>{if(H[k]!=null)hz[k]=H[k];});
+ list.forEach((H,i)=>{const hz={kind:H.kind};['danger','dose','effect','effects','falloff','shape','tell','nav','cycle','hunter'].forEach(k=>{if(H[k]!=null)hz[k]=H[k];});
   try{KHAZ.make(hz);}catch(e){reportErr('hazard '+H.name+': '+e.message);return;}
   BIO.record({name:H.name,key:'hazard.'+H.kind,x:H.x,z:H.z,y:H.y==null?terrainH(H.x,H.z)-2:H.y,r:H.r,h:H.h==null?6:H.h,tags:{hazard:hz}});out.records++;});
  return out;})();

@@ -61,8 +61,31 @@ const SLOT_SITE=(function(){const S=STATION.SLOT,P=S.pts,W=99331,u=(k,q)=>KRAND.
     out.maxPull=Math.max(out.maxPull,C.pull);out.beards+=d.beards;out.bladders+=d.bladders;if(C.stage==='shoot')out.shoots++;else out.cables++;}
    BIO.cur='loom-chasms/walls';for(const R of CURTAINS)out.curtains+=LOOM.drawCurtain(R);}
   finally{BIO.cur=c0;BIO.range=r0;BIO.minRange=m0;}
-  out.maxPullMN=+(out.maxPull/1e6).toFixed(2);window._slot=out;return out;}
- function hazards(){const H=[];for(let s=200;s<L-200;s+=420){const c=at(s);for(const sd of [1,-1])H.push({name:'The slot\'s lip (a fall of 180 m)',kind:'fall',x:c.x+c.nx*sd*(lipOff+4),z:c.z+c.nz*sd*(lipOff+4),r:200,h:25,danger:.95,
+  out.maxPullMN=+(out.maxPull/1e6).toFixed(2);stryders();out.stryders=STRYDERS.length;window._slot=out;return out;}
+ // THE CABLE-STRYDERS (kits/fauna, the `loom` group: PLAN.md section 4): nocturnal, so at the page's hour each sleeps hanging under a grown cable,
+ // turned onto the span's tangent and rolled over, its feet on the cable's underside. Three, on the grown cables the hash ranks first (KRAND: world,
+ // cable, salt), each at a point of its span by the same hash. Each is a core/tags record before it is built, and holds the floor under it as a
+ // `hunter` hazard (KHAZ.PREDATOR.lair: what crosses below is what it drops on)
+ const STRYDERS=[];
+ /* the plan (before 88 reads the hazards): which cables, where on each, the pose; the span solved as the kit's builder solves it (KSPAN, the record's slack) */
+ function planStryders(){if(typeof KratorFauna==='undefined'||!KratorFauna.has('cable-stryder'))return;
+  const g=CABLES.filter(c=>c.stage==='grown').map((c,i)=>({c,h:KRAND.hash(W,CABLES.indexOf(c),0x57)})).sort((a,b)=>a.h-b.h).slice(0,3);
+  const UP=new THREE.Vector3(0,1,0),F=new THREE.Vector3(),X=new THREE.Vector3(),Y=new THREE.Vector3(),M=new THREE.Matrix4();
+  for(const e of g){const C=e.c,S=KSPAN.solve(C.a,C.b,{slack:C.slack}),t=.3+.4*KRAND.unit(KRAND.hash(e.h,1,0x58)),p=KSPAN.at(S,t),p2=KSPAN.at(S,Math.min(1,t+.01));
+   F.set(p2[0]-p[0],p2[1]-p[1],p2[2]-p[2]).normalize();X.crossVectors(UP,F).normalize();Y.crossVectors(F,X).normalize();
+   /* rolled over: its up is the world's down, its left the other side; forward along the cable */
+   M.makeBasis(X.clone().negate(),Y.clone().negate(),F);
+   STRYDERS.push({id:'stryder:'+C.id,C,S,t,p:[p[0],p[1]-C.r*.9,p[2]],q:new THREE.Quaternion().setFromRotationMatrix(M),floor:drawnH(p[0],p[2]),seed:(e.h>>>8)%99991+1,variant:e.h%2});}}
+ planStryders();
+ function stryders(){for(const d of STRYDERS){const o=d.p;
+   REGISTER({name:'A cable-stryder, asleep under its cable (kits/fauna)',key:d.id,x:o[0],z:o[2],y:o[1]-1.2,r:1.8,h:1.6,tags:{fauna:'cable-stryder',kit:'kits/fauna',on:d.C.id,pose:'rest'}});
+   let gr;try{gr=KratorFauna.build('cable-stryder',{seed:d.seed,variant:d.variant})}catch(err){reportErr('fauna cable-stryder: '+err.message);continue;}
+   gr.position.set(o[0],o[1],o[2]);gr.quaternion.copy(d.q);try{KratorFauna.animate(gr,0,'rest',{phase:0});}catch(err){}
+   gr.traverse(m=>{if(m.isMesh){m.userData.probeSkip=true;m.userData.inspectLabel='Cable-stryder (kits/fauna)';}});gr.userData.fauna=true;scene.add(gr);d.g=gr;}}
+ function hazards(){const H=[];
+  for(const D of STRYDERS){const r=14,h=D.p[1]-D.floor+4;H.push(Object.assign(KHAZ.PREDATOR.lair(r,{fauna:'cable-stryder',count:1,note:'drops from the canopy on what crosses the floor below'}),
+   {name:'Under a cable-stryder (it drops on what crosses)',x:D.p[0],z:D.p[2],y:D.floor-1,r,h:h,shape:{type:'cyl',r,h:h},tell:{fx:'bones',sound:null,sign:'bones on the slot\'s floor under a cable'}}));}
+for(let s=200;s<L-200;s+=420){const c=at(s);for(const sd of [1,-1])H.push({name:'The slot\'s lip (a fall of 180 m)',kind:'fall',x:c.x+c.nx*sd*(lipOff+4),z:c.z+c.nz*sd*(lipOff+4),r:200,h:25,danger:.95,
    tell:{sign:'the mesa\'s edge, the cables\' tubers on it'}});
   H.push({name:'Rockfall off the slot\'s walls',kind:'crush',x:c.x,z:c.z,r:S.w,h:20,danger:.4,tell:{sign:'fresh blocks on the slot\'s floor'}});}return H;}
  // ---------------------------------------------------------------- the station's checks, each with a broken input that must fail
@@ -76,17 +99,24 @@ const SLOT_SITE=(function(){const S=STATION.SLOT,P=S.pts,W=99331,u=(k,q)=>KRAND.
    return{ok:g.length>0&&!bad.length,detail:bad.length?bad.length+' grown cables outside the canopy\'s band (first '+bad[0].id+')':g.length+' grown cables, their low points 40-170 m over the slot\'s floor (the tiers 80-150 m at the anchors)'};},
   both(C){const s=C.filter(c=>c.stage==='shoot').length,g=C.length-s;return{ok:s>0&&g>0,detail:g+' grown cables, '+s+' pioneer shoots'};},
   held(C){const g=C.filter(c=>c.stage==='grown'),bad=g.filter(c=>!(c.pull<=Math.min(c.holdA,c.holdB)));
-   return{ok:g.length>0&&!bad.length,detail:bad.length?bad.length+' cables pulling harder than their rock holds (first '+bad[0].id+')':g.length+' grown cables, each pull within its anchors\' beds (the most '+(Math.max(...g.map(c=>c.pull))/1e6).toFixed(2)+' MN; '+REJECT.weak+' stations left ungrown on weak rock)'};}};
+   return{ok:g.length>0&&!bad.length,detail:bad.length?bad.length+' cables pulling harder than their rock holds (first '+bad[0].id+')':g.length+' grown cables, each pull within its anchors\' beds (the most '+(Math.max(...g.map(c=>c.pull))/1e6).toFixed(2)+' MN; '+REJECT.weak+' stations left ungrown on weak rock)'};},
+  /* each stryder hangs within its cable's radius and a metre under the span, and holds the floor below as a hunter hazard bound to it */
+  stryders(D,H){if(typeof KratorFauna==='undefined')return{ok:true,detail:'no fauna bundle (--no-fauna): none placed'};
+   const off=D.filter(d=>{const q=KSPAN.at(d.S,d.t);return Math.hypot(d.p[0]-q[0],d.p[1]-q[1],d.p[2]-q[2])>d.C.r+1;}),hz=H.filter(h=>h.kind==='hunter'&&h.hunter&&h.hunter.fauna.indexOf('cable-stryder')>=0);
+   const lone=D.filter(d=>!hz.some(h=>Math.hypot(h.x-d.p[0],h.z-d.p[2])<2));
+   return{ok:D.length>0&&!off.length&&!lone.length,detail:!D.length?'no cable-stryder placed':off.length?off.length+' stryders off their cables (first '+off[0].id+')':lone.length?lone.length+' stryders with no hunter hazard under them':D.length+' cable-stryders asleep under grown cables, each over a hunter hazard (KHAZ.PREDATOR.lair) bound to it'};}};
  function checks(add){add('the cables anchored on the drawn rock (rays at the drawn walls)',CK.anchors(CABLES));add('the wall curtains seated on the drawn walls',CK.seated(CURTAINS));
   add('every span clear of the drawn rock',CK.clear(CABLES));add('the grown cables in the canopy\'s tiers',CK.tiers(CABLES));add('grown cables and pioneer shoots both',CK.both(CABLES));
-  add('every grown cable held by its anchors\' rock',CK.held(CABLES));}
+  add('every grown cable held by its anchors\' rock',CK.held(CABLES));add('the cable-stryders hang on grown cables over their hunter hazards (kits/fauna)',CK.stryders(STRYDERS,hazards()));}
  function negatives(add){const C=CABLES[0];if(!C)return;
   add('a cable anchored a metre off the rock',CK.anchors([Object.assign({},C,{a:[C.a[0],C.a[1]+1,C.a[2]]})]));
   add('a curtain a metre off its wall',CK.seated([{p:[CURTAINS[0].p[0],CURTAINS[0].p[1]+1,CURTAINS[0].p[2]]}]));
   const g=CABLES.find(c=>c.stage==='grown'&&c.S);if(g){add('a cable sagging through the floor',CK.clear([Object.assign({},g,{S:KSPAN.solve(g.a,g.b,{sag:400})})]));
    add('a cable outside the tiers',CK.tiers([Object.assign({},g,{floor:g.floor-500})]));}
   add('a canopy of one stage',CK.both(CABLES.filter(c=>c.stage==='grown')));
-  if(g)add('a cable on rock that will not hold it',CK.held([Object.assign({},g,{holdA:g.pull*.5})]));}
+  if(g)add('a cable on rock that will not hold it',CK.held([Object.assign({},g,{holdA:g.pull*.5})]));
+  if(STRYDERS.length){const d=STRYDERS[0];add('a stryder five metres off its cable',CK.stryders([Object.assign({},d,{p:[d.p[0]+5,d.p[1],d.p[2]]})],hazards()));
+   add('a stryder with no hazard under it',CK.stryders([d],[]));}}
  // ---------------------------------------------------------------- the views (each camera over the drawn ground: 99's check)
  function views(H){const {look}=H,mid=at(L*.5),c2=at(L*.35),g=CABLES.filter(c=>c.stage==='grown'),sh=CABLES.find(c=>c.stage==='shoot'),C0=g[Math.floor(g.length/2)]||CABLES[0];
   const V={};
@@ -97,6 +127,7 @@ const SLOT_SITE=(function(){const S=STATION.SLOT,P=S.pts,W=99331,u=(k,q)=>KRAND.
   if(C0)V['A cable\'s anchor']=[C0.a[0]+C0.na[0]*14+mid.ux*8,C0.a[1]+4,C0.a[2]+C0.na[2]*14+mid.uz*8,C0.a[0],C0.a[1],C0.a[2]];
   if(sh&&sh.S){const c=at(sh.s),side=(sh.a[0]-c.x)*c.nx+(sh.a[2]-c.z)*c.nz<0?-1:1,ex=c.x+c.nx*side*(lipOff+30)-c.ux*90,ez=c.z+c.nz*side*(lipOff+30)-c.uz*90,top=KSPAN.low(sh.S).p;   /* from the lip behind a shoot's anchor, to the top of its arch */
    V['Pioneer shoots on the up-draft']=[ex,solidH(ex,ez)+2,ez,top[0],top[1],top[2]];}
+  if(STRYDERS.length){const d=STRYDERS[0],q=KSPAN.at(d.S,Math.min(1,d.t+.06));V['A cable-stryder asleep']=[q[0],q[1]+2.5,q[2],d.p[0],d.p[1]-.4,d.p[2]];}
   V['The chasm opening below']=look(-900,-300,2,-40000,2000,-1200);
   V['Mount Caelum from the mesa']=look(-600,600,3,-84000,10000,2400);
   V['From afar']=look(-2700,2700,500,1100,0,0);

@@ -17,5 +17,7 @@ const BIG_DRAW=BIG_LAKE?LAKE_DRAWS[LAKES.indexOf(BIG_LAKE)]:null;
 const RIVER_DRAW=RIVER?WATER.drawFlow(RIVER,{shallow:lin(LAND.riverLook?LAND.riverLook[0]:0x6aa0a0),deep:lin(LAND.riverLook?LAND.riverLook[1]:0x2e6468),
  color:0xffffff,roughness:.1,metalness:.05,envMapIntensity:.5,step:12,across:4,margin:1.5,renderOrder:1}):null;
 if(RIVER_DRAW){RIVER_DRAW.mesh.userData.probeSkip=true;RIVER_DRAW.mesh.userData.inspectLabel=RIVER.name||'The river';}
-{const WQ=new URLSearchParams(location.search);if(WQ.get('breakup')!=='0'&&WATER.breakupAll&&(LAKES.length||RIVER)){WATER.breakupAll();if(RIVER&&WATER.breakupFlows)WATER.breakupFlows();}}
-window._water={stills:LAKES.map(L=>L.name+' '+L.kind+' '+L.level),river:!!RIVER};
+const CANAL_DRAWS=CANALS.map(C=>{const d=WATER.drawFlow(C,{shallow:lin(0x7aa8a0),deep:lin(0x3a6a64),color:0xffffff,roughness:.12,metalness:.05,envMapIntensity:.45,step:6,across:2,margin:.4,renderOrder:1});
+ d.mesh.userData.probeSkip=true;d.mesh.userData.inspectLabel=C.name||'A canal';return d;});
+{const WQ=new URLSearchParams(location.search);if(WQ.get('breakup')!=='0'&&WATER.breakupAll&&(LAKES.length||RIVER||CANALS.length)){WATER.breakupAll();if((RIVER||CANALS.length)&&WATER.breakupFlows)WATER.breakupFlows();}}
+window._water={stills:LAKES.map(L=>L.name+' '+L.kind+' '+L.level),river:!!RIVER,canals:CANALS.length};

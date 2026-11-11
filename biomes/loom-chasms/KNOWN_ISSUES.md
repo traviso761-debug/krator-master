@@ -38,12 +38,16 @@ view looked at the orchard, not the terraces (it stands in a field now).
 
 - [x] **The chasm head** (2026-11-11): `KRELIEF.stepcut`'s opt-in `head: {len, minW}` (core/terrain 38c, its tests in test-landforms.js);
   the slot pinches out over its last 700 m.
-- [ ] **The cable-stryder** (kits/fauna) on the canopy, and its `hunter` hazard: not placed.
+- [x] **The cable-stryder** (2026-11-11): kits/fauna's new `loom` group (`krator-fauna-loom.js`, on the `wild` group's hexapod builder:
+  the bundle takes `hyperjungle`, `wild`, `loom`, vertex colours only, through station.json's `fauna`). Three sleep hanging under grown
+  cables (nocturnal; the page opens at 14:00), each a core/tags record over a `hunter` hazard (KHAZ.PREDATOR.lair) on the floor below;
+  the station's check holds each to its span and its hazard, with two negatives. Awake, running the cables, is the runtime's to animate
+  (KratorFauna's walk is on the ground). The halite sifter is in the same group, for the White Loom.
 - [x] **The anchors' rock** (2026-11-11): a grown cable is grown only where both anchors' beds hold its pull (KSPAN.tension against
   0.3 MN plus 1.2 MN times KSTRATA's hardness of the bed at the anchor); the station's check holds every cable to it, with a negative.
   The numbers are the kit's; a geotechnical figure for a fused root mat is the owner's to set.
 - [ ] **The cable's texture** is `bark.cord.braided` tinted iron (a stand-in for the iron-silica fibre); the bladders `organic.pleat.skin`.
-  A dedicated set can wait for the owner's look pass.
+  Its prompt is owed: `organic.cable.ironsilica`, `core/materials/PROMPTS-NEEDED.md` section 44.
 - [ ] The slot's floor gathers the wadi plants of the Great Chasm's kit (the wash field); the plan's "shade lovers on the slot walls"
   are the wall curtains (card.moss.hanging), one form for now.
 
@@ -54,8 +58,11 @@ view looked at the orchard, not the terraces (it stands in a field now).
   (core/hamlet/ext/21), so a page that can read the kit answers `dims(key)` and draws them.
 - [ ] **The farms' books** (core/simulation: the stock, the harvest, the road's trade with Spindle Fan) and the draught animals
   (kits/fauna) are owed.
-- [ ] **Irrigation**: the fields are terraced and cropped by the river's corridor, but no canal is drawn from the spring to them; the
-  fan falls north and east, so a contour canal from the spring reaches them.
+- [x] **Irrigation** (2026-11-11): the spring canal, led off the pool's south side along the contour (falling 1.5 m a km, traced on the
+  ground's gradient, bent downhill where its cut runs deep), 3.6 km south-east across the terraces; its bed cut in the ground, its water a
+  core/water flow (chasmLand's `canals`: the page's water and wet ground), the fields kept off it. The check: it never climbs and its water
+  stays between its banks, with a negative. Not yet: its offtakes to each field and which fields it commands (the crops are picked
+  irrigated or not by kits/crops; the canal does not yet change the pick).
 - [ ] **The wadis' floods**: the gorge flood (a timed `drown`/`crush`) is a shared core/hazard amendment; the wadis are dry here.
 - [ ] `check_assembly` carries one MISSING on the Cradle's page (`KCITY.stance`, in its baseline): core/city's strategies fragment
   (33, which core/hamlet reads for its frontage cursor) names the stance path of core/city's ground (15), which core/hamlet never takes;

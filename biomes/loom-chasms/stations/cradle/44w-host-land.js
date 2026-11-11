@@ -27,15 +27,31 @@ const STATION=(function(){
  const RIVW=18,RLEV=KRELIEF.river(RLINE,g1,{depth:1.3,sample:6}).map(p=>[p.x,p.z,p.y]);
  const POOL={x:SPRING[0],z:SPRING[1],r:34,level:RLEV[0][2]+.25};
  function wet(x,z){const n=nearLine(RLINE,x,z);return{d:n.d,y:(()=>{const a=RLEV[n.i],b=RLEV[Math.min(RLEV.length-1,n.i+1)];return mix(a[2],b[2],n.u);})()};}
+ // THE CANAL (the Yuni's irrigation: the fan falls north and east, so a channel led off the spring's pool along the contour, falling 1.5 m a km,
+ // commands the fields below it, between it and the river). Traced on the fan before the terraces: every 8 m it follows the contour (across the
+ // ground's fall line, on the fields' side), bent downhill where its cut runs deeper than 0.6 m and uphill where the ground drops toward its water; it ends at the page's edge, the river, or a wadi.
+ const CANAL=(function(){const step=8,grade=.0015,goal=PX(1559.4,1139.95),pts=[];let hd=Math.atan2(goal[1]-SPRING[1],goal[0]-SPRING[0]);
+  /* off the pool's south side (the river leaves its east side), turning toward the fields */
+  let x=SPRING[0],z=SPRING[1]+34*.9,y=RLEV[0][2]+.25-.15;hd=Math.PI/2;pts.push([x,z,y]);
+  const inWadi=(x,z)=>{for(const W of [W1,W2]){const a=KRELIEF.at(W,x,z,base(x,z));if(a&&a.part!=='out')return true;}return false;};
+  for(let s=0;s<3600;s+=step){const ny=y-grade*step,e=10,gx=(g1(x+e,z)-g1(x-e,z))/(2*e),gz=(g1(x,z+e)-g1(x,z-e))/(2*e),gl=Math.hypot(gx,gz);
+   /* the contour (across the fall line) on the goal's side, bent downhill where the cut runs deep and uphill where the ground drops under the water */
+   let want=Math.atan2(goal[1]-z,goal[0]-x);if(gl>1e-5){let cx=-gz/gl,cz=gx/gl;if(cx*Math.cos(want)+cz*Math.sin(want)<0){cx=-cx;cz=-cz;}
+    const err=clamp((g1(x,z)-(ny+.6))*1.5,-1.2,1.2),dx=cx-gx/gl*err,dz=cz-gz/gl*err;want=Math.atan2(dz,dx);}
+   let dh=want-hd;dh=Math.atan2(Math.sin(dh),Math.cos(dh));hd+=clamp(dh,-.26,.26);const best={qx:x+Math.cos(hd)*step,qz:z+Math.sin(hd)*step};
+   x=best.qx;z=best.qz;y=ny;if(Math.abs(x)>2350||Math.abs(z)>2350||(s>150&&(inWadi(x,z)||nearLine(RLINE,x,z).d<RIVW)))break;pts.push([x,z,y]);}
+  return{name:'The spring canal (the Yuni\'s irrigation, off Aina Bruk\'s pool)',pts,width:2.2,depth:.75,speed:.4};})();
+ const CIX=lineIndex(CANAL.pts),canalCut=(x,z,h)=>{const hw=CANAL.width*.5,n=CIX.near(x,z,hw*3);if(!n)return h;const a=CANAL.pts[n.i],b=CANAL.pts[Math.min(CANAL.pts.length-1,n.i+1)],y=mix(a[2],b[2],n.u),bed=y-CANAL.depth;
+  return n.d<hw?Math.min(h,bed+(CANAL.depth+.15)*(n.d/hw)*(n.d/hw)):mix(Math.min(h,y+.15+(n.d-hw)*.3),h,smooth(hw*1.4,hw*3,n.d));};
  // the terraces: east of the spring on both banks, a 30 m strip kept wild along the river and the wadis
  const ZONE=[PX(1557.9,1138.6),PX(1559.45,1138.6),PX(1559.45,1140.25),PX(1558.5,1140.45),PX(1557.95,1140.0)];
  const TER=KRELIEF.terraces({rise:.5,riser:.18,bund:.22,field:60,wobble:.1,fill:.5,zone:{poly:ZONE},fade:40,seed:99520});
- function ground(x,z){let h=KRELIEF.shape(TER,x,z,g1(x,z));
+ function ground(x,z){let h=canalCut(x,z,KRELIEF.shape(TER,x,z,g1(x,z)));
   const r=wet(x,z),hw=RIVW*.5;if(r.d<hw*3.2){const bed=r.y-1.3;h=r.d<hw?Math.min(h,bed+1.0*(r.d/hw)*(r.d/hw)):mix(Math.min(h,r.y+.5+(r.d-hw)*.06),h,smooth(hw*1.6,hw*3.2,r.d));}
   const dp=Math.hypot(x-POOL.x,z-POOL.z);if(dp<POOL.r*1.8)h=mix(Math.min(h,POOL.level-2.2*smooth(POOL.r,POOL.r*.3,dp)-.2),h,smooth(POOL.r,POOL.r*1.8,dp));
   return h;}
  const terAt=(x,z)=>{const a=KRELIEF.at(TER,x,z,g1(x,z));return a&&a.w>.5?a:null;};
- const farm=(x,z)=>{const a=terAt(x,z);if(!a||a.part!=='tread')return 0;const r=wet(x,z);return smooth(26,40,r.d)*smooth(.5,.9,a.w)*(washAt(x,z)?0:1);};
+ const farm=(x,z)=>{const a=terAt(x,z);if(!a||a.part!=='tread')return 0;const r=wet(x,z);return smooth(26,40,r.d)*smooth(.5,.9,a.w)*(washAt(x,z)||CIX.near(x,z,CANAL.width*1.4)?0:1);};
  const washAt=(x,z)=>{for(const W of [W1,W2]){const a=KRELIEF.at(W,x,z,base(x,z));if(a&&(a.part==='floor'||a.part==='bar'||a.part==='bank'))return true;}return false;};
  // THE FARMS: core/hamlet's village on the Yuni row, laid here as data (its records drawn in 86); its works reach the fields
  const site=PX(1557.55,1140.4),link=PX(1559.5,1140.0);
@@ -49,12 +65,13 @@ const STATION=(function(){
  const L=chasmLand({R:2600,ground,
   lakes:[{name:'The spring of Aina Bruk',kind:'spring',level:POOL.level,poly:discPolyL(POOL.x,POOL.z,POOL.r,40)}],
   river:{pts:RLEV,width:RIVW,name:'Aina Bruk (from its spring)',speed:1.1},
+  canals:[CANAL],
   rockAt:(x,z,h,sl)=>smooth(.5,.85,sl),strataK:(x,z,h,sl)=>smooth(.45,.8,sl),
   wash:(x,z)=>washAt(x,z)?1:0,farm,road:(x,z)=>smooth(1.6,.6,laneD(x,z)),
   pave:(x,z)=>(washAt(x,z)||terAt(x,z))?0:PAVE(x,z)*.5,
   strata:GCH_STRATA({seed:99550}),
   spine:[[POOL.x,POOL.z],[site[0],site[1]],[0,0],PX(1558.4,1139.5),PX(1559,1139.3),PX(1558.8,1140.1),PX(1556.9,1139.6),PX(1557,1140.8)]});
- Object.assign(L,{PX,SPRING,POOL,APA,NORTA:NORTA_W,W1,W2,RLINE,RLEV,RIVW,TER,terAt,farm,washAt,VILLAGE,ROAD,laneD,ZONE,wet});return L;})();
+ Object.assign(L,{PX,SPRING,POOL,APA,NORTA:NORTA_W,W1,W2,RLINE,RLEV,RIVW,TER,terAt,farm,washAt,VILLAGE,ROAD,laneD,ZONE,wet,CANAL});return L;})();
 const TERR=STATION.TERR,LAKES=STATION.LAKES,RIVER_SPEC=STATION.RIVER_SPEC,FALLS=[],SPINE=STATION.SPINE,STRATA=STATION.STRATA,ROCK=STATION.ROCK;
 function terrainH(x,z){return STATION.terrainH(x,z);}
 function waterH(x,z){return STATION.waterH(x,z);}

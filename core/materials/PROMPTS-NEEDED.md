@@ -3,7 +3,7 @@
 Every texture or pattern sheet the owner still has to source or generate, each with its finished prompt. Paste a block
 as it is, one image per block. **Everything delivered lives in `PROMPTS-archived.md`** (checked against `core/materials/library/`, `patterns/` and each build's `materials.json` on `origin/main`, 2026-10-19); this file holds only what is still owed.
 
-**Count: 20 prompt blocks** (2026-11-11: +1, the Great Chasm's floor, section 43 (41 is the Line's, 42 the Ancient Transit's); +1, `metal.scorched` for the Motor Vehicles kit's burnt ruins, section 36; 2026-11-10: -5, the owner's delivery of that day; 2026-11-09: +3 for the southern highlands' upper stations, section 37; +15 for the hyperjungle's lands and the savannah rims, section 40, 2026-11-08; counted 2026-11-04 before them).
+**Count: 21 prompt blocks** (2026-11-11: +1, the Loom-Chasms' cable fibre, section 44; +1, the Great Chasm's floor, section 43 (41 is the Line's, 42 the Ancient Transit's); +1, `metal.scorched` for the Motor Vehicles kit's burnt ruins, section 36; 2026-11-10: -5, the owner's delivery of that day; 2026-11-09: +3 for the southern highlands' upper stations, section 37; +15 for the hyperjungle's lands and the savannah rims, section 40, 2026-11-08; counted 2026-11-04 before them).
 
 **Delivered 2026-11-03:** section 31's five (the Gills: `rock.lamina.pipe`, `mineral.crust.ferromanganese`, `mineral.crust.brucite`,
 `card.breathfringe`, `card.turf.limed`) and ten owed on unmerged branches (High Rift, nwbay, nhighlands, ringisles, the rift rim, Copper Glacier),
@@ -452,6 +452,17 @@ name).
 `ground.komatiite.pavement`:
 ```
 Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a hot desert pavement on an ancient ultramafic lava floor: closely packed angular to sub-rounded pebbles and small cobbles of dark green-black komatiite (#24261f, #2e3128, #3a3c31) with a few with a faint bladed spinifex texture of crossed needle-like crystals on their faces, a dull desert varnish sheen on the stones' tops (#4a4232, #3e3628), scattered chips of black glassy obsidian (#121214, #1c1a1e), a fine grey-brown dust (#6a6254, #7a7062) in the gaps between the stones, and here and there a pale white salt crust (#d8d2c4) in the lowest gaps. No plants. Full colour.
+```
+
+## 44. The Loom-Chasms (`biomes/loom-chasms`, 2026-11-11)
+
+The living cable's fibre (`biomes/loom-chasms/PLAN.md` section 4: the cable spinner's line "thickens with iron-silica fibre into a cable 15-40 cm
+thick"). Until it comes, the cables draw `bark.cord.braided` tinted iron (`biomes/loom-chasms/materials.json`, `cable` and `shoot`): a named
+stand-in. Full colour; it wraps a cylinder, so the strands run along the image's vertical axis, 0.5 m a tile.
+
+`organic.cable.ironsilica`:
+```
+Seamless tileable texture, square, 2048x2048. Orthographic straight-on view of a surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: the surface of a living plant cable grown in tension, seen close: long fibrous strands running top to bottom, slightly twisted and braided into one another, a fungoid flesh between them gone hard and mineral; the strands a dark rust-brown iron (#4a2e1e, #5e3a24, #6e4630) with a dull metallic grey sheen on the strands' crowns (#6a6662, #7a7470), thin glassy pale silica threads woven through them (#b8b4a4, #c8c2b0) catching a faint glint, rust-orange stains seeping along the grooves (#8a4a22, #a05a2a), and here and there a pale grey-green lichen crust in small patches (#8a907a). No plants other than the lichen. Full colour.
 ```
 
 ## Gaps with no prompt yet

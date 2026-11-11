@@ -16,7 +16,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `44v-host-landlib.js` | 7 |  |
+| `44v-host-landlib.js` | 9 |  |
 | `45-host-stage.js` | 26 | the climate fields, cached (the land's fieldsAt: (34); the host binding (52); the ground (63); the rock bodies (KSTACKS, 44w: the chaos's mesas (196); the water (220) |
 | `45d-host-drawn.js` | 3 |  |
 | `50-biome-loom-species.js` | 7 | procedural cards (the fallback when the page car (37); geometries (44); materials (the slots are materials.json's famili (58); instanced items (67) |
@@ -28,7 +28,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `88-host-hazard.js` | 3 |  |
 | `89-host-sky.js` | 2 |  |
 | `89a-host-atmos.js` | 7 |  |
-| `89w-host-water.js` | 2 |  |
+| `89w-host-water.js` | 3 |  |
 | `89z-host-build.js` | 6 |  |
 | `99-host-take.js` | 14 | the inspector's words (15); the probe's budgets and the kit's own checks (ve (28); the page, handed to the host (103) |
 | `99-tail.html` | <1 |  |
@@ -40,6 +40,6 @@ Each station builds one page (`build.py --station <name>`) from its own fragment
 | Station | Fragments | KB |
 |---|---|---|
 | caelum |  | <1 |
-| cradle | 44f-host-far-data.js, 44w-host-land.js, 86-host-farms.js | 104 |
-| loom | 44f-host-far-data.js, 44w-host-land.js, 86-host-slot.js | 97 |
+| cradle | 44f-host-far-data.js, 44w-host-land.js, 86-host-farms.js | 108 |
+| loom | 44f-host-far-data.js, 44w-host-land.js, 86-host-slot.js | 101 |
 | monocline |  | <1 |

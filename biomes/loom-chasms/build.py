@@ -176,6 +176,12 @@ for _i, (_k, _row) in enumerate(sorted(NEIGH.items())):
     if os.path.isfile(_pj):
         with open(_pj, encoding='utf-8') as _fh: _fam = sorted(_json.load(_fh).get('families', {}))
     VIRTUAL['44%s-host-matlib-pack-%s.js' % (_c, _kk)] = matlib_pack.fragment(_d, _reg, exclude=[] if _keep == '*' else [f for f in _fam if f not in _keep])
+# THE FAUNA (kits/fauna, one kit for every animal): a station's groups (station.json "fauna": [group...]), bundled as KratorFauna with vertex
+# colours only; the station's host places them. --no-fauna leaves the bundle out (the host then places none)
+if SJ.get('fauna') and '--no-fauna' not in sys.argv:
+    sys.path.insert(0, P('kits', 'fauna'))
+    import fauna_bundle
+    VIRTUAL['39-host-fauna.js'] = fauna_bundle.bundle(SJ['fauna'], tex=False)
 for f in VIRTUAL: PATH[f] = None
 frags = sorted(PATH)
 out = []; bad = []

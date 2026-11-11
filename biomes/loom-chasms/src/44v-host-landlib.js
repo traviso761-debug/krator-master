@@ -37,12 +37,23 @@ const discPolyL=(X,Z,R,n)=>{const N=n==null?40:n;return Array.from({length:N},(_
 const boxPoly=(x0,z0,x1,z1)=>[[x0,z0],[x1,z0],[x1,z1],[x0,z1]];
 // a flat pad cut and filled into the ground (the post's terrace, a camp's floor): the ground eased to y within r, over `feather` metres
 function padTo(g,x,z,P){const d=Math.hypot((x-P.x)/(P.ex==null?1:P.ex),(z-P.z)/(P.ez==null?1:P.ez));if(d>P.r+P.feather)return g;return mix(P.y,g,smooth(P.r,P.r+P.feather,d));}
+/* a line's segments bucketed by cell (64 m): near(x, z, maxD) -> {d, i, u} of the nearest segment within maxD, or null. For a long line read on
+   every ground sample (a canal: the ground's cut, the water's level), where nearLine would walk every segment */
+function lineIndex(pts,cell){const C=cell==null?64:cell,B=new Map(),key=(i,j)=>i*100003+j;
+ for(let k=0;k<pts.length-1;k++){const a=pts[k],b=pts[k+1],i0=Math.floor(Math.min(a[0],b[0])/C),i1=Math.floor(Math.max(a[0],b[0])/C),j0=Math.floor(Math.min(a[1],b[1])/C),j1=Math.floor(Math.max(a[1],b[1])/C);
+  for(let i=i0;i<=i1;i++)for(let j=j0;j<=j1;j++){const q=key(i,j);if(!B.has(q))B.set(q,[]);B.get(q).push(k);}}
+ return{near(x,z,maxD){const r=Math.ceil(maxD/C),ci=Math.floor(x/C),cj=Math.floor(z/C);let best=null;
+  for(let i=ci-r;i<=ci+r;i++)for(let j=cj-r;j<=cj+r;j++){const L=B.get(key(i,j));if(!L)continue;
+   for(const k of L){const a=pts[k],b=pts[k+1],dx=b[0]-a[0],dz=b[1]-a[1],l2=dx*dx+dz*dz,u=l2>0?clamp(((x-a[0])*dx+(z-a[1])*dz)/l2,0,1):0,d=Math.hypot(x-a[0]-dx*u,z-a[1]-dz*u);
+    if(d<=maxD&&(!best||d<best.d))best={d,i:k,u};}}
+  return best;}};}
 // THE STATION'S LAND. o:
 //   R (2600), ground(x,z) the whole ground (the model's surface with the station's landforms), lakes [] (stills: {name, kind, level, poly}),
 //   rockAt(x,z,h,slope), strataK(x,z,h,slope), talus(x,z), pave(x,z), salt(x,z) (a salt crust), polyg(x,z) (its polygons), wash(x,z) (a wadi's
 //   cobble floor), road(x,z) (the bench road's worn track, 0..1), barren(x,z,h), snowAt(x,z,h,slope), rock() -> KSTACKS bodies, spine [[x,z]],
 //   strata (a KSTRATA stack), river {pts [[x,z,y]] (the water's line and level, downstream), width, half(x,z), name, speed} | null (riftrim's form:
-//   the Cradle's Aina Bruk; the water is wet ground beside it)
+//   the Cradle's Aina Bruk; the water is wet ground beside it), canals [{name, pts [[x,z,y]], width}] (dug channels: their water is the
+//   page's water where they run, wet ground beside them, each drawn as a core/water flow; the station cuts their beds in its ground)
 function chasmLand(o){
  const R=o.R==null?2600:o.R,LK=(o.lakes||[]).map((L,i)=>Object.assign({i,kind:'cistern'},L));
  const inPoly=(P,x,z)=>{let c=false;for(let i=0,j=P.length-1;i<P.length;j=i++){const a=P[i],b=P[j];if((a[1]>z)!==(b[1]>z)&&x<(b[0]-a[0])*(z-a[1])/(b[1]-a[1])+a[0])c=!c;}return c;};
@@ -51,16 +62,19 @@ function chasmLand(o){
  function terrainH(x,z){if(x===_tm.x&&z===_tm.z)return _tm.h;const h=o.ground(x,z);_tm.x=x;_tm.z=z;_tm.h=h;return h;}
  const RIV=o.river||null,RP=RIV?RIV.pts.map(p=>[p[0],p[1]]):null;
  function riverAt(x,z){if(!RIV)return null;const n=nearLine(RP,x,z),hw=RIV.half?RIV.half(x,z):RIV.width*.5;if(n.d>hw*1.05)return null;const a=RIV.pts[n.i],b=RIV.pts[Math.min(RIV.pts.length-1,n.i+1)];return mix(a[2],b[2],n.u);}
- function waterH(x,z){let w=-1e9;for(const L of LK)if(L.inside(x,z))w=Math.max(w,L.level);const r=riverAt(x,z);if(r!=null)w=Math.max(w,r);return w;}
+ const CN=(o.canals||[]).map(c=>Object.assign({width:2.4},c,{IX:lineIndex(c.pts)}));
+ function canalAt(x,z){let w=null;for(const c of CN){const n=c.IX.near(x,z,c.width*.525);if(!n)continue;const a=c.pts[n.i],b=c.pts[Math.min(c.pts.length-1,n.i+1)],y=mix(a[2],b[2],n.u);if(w==null||y>w)w=y;}return w;}
+ function canalD(x,z){let d=1e9;for(const c of CN){const n=c.IX.near(x,z,30);if(n)d=Math.min(d,n.d-c.width*.5);}return d;}
+ function waterH(x,z){let w=-1e9;for(const L of LK)if(L.inside(x,z))w=Math.max(w,L.level);const r=riverAt(x,z);if(r!=null)w=Math.max(w,r);const c=CN.length?canalAt(x,z):null;if(c!=null)w=Math.max(w,c);return w;}
  const f0=(fn,...a)=>fn?clamp(fn(...a),0,1):0;
  function fieldsAt(x,z,h,slope){const wd=waterH(x,z),under=wd>-1e8&&h<wd;
   const tm=tmAt(h),cold=coldOf(tm),hot=hotOf(tm);
   const rk=o.rockAt?o.rockAt(x,z,h,slope):smooth(.5,.82,slope),tal=f0(o.talus,x,z)*smooth(.08,.3,slope);
   const barren=clamp(Math.max(smooth(8600,8900,h),o.barren?o.barren(x,z,h):0),0,1);   /* over 8.8 km the air will not hold a plant (PLAN.md section 4: nothing over 8.8 km) */
-  const F={wet:clamp(Math.max(.04+.06*smooth(2600,1200,h),RP?smooth(90,RIV.width*.5,nearLine(RP,x,z).d)*.85:0,o.wet?o.wet(x,z,h):0),0,1),flow:under?1:0,upland:clamp((h+1500)/12000,0,1),canyon:0,rim:0,rock:clamp(Math.max(rk,tal*.6),0,1),dune:0,oasis:0,slope,
+  const F={wet:clamp(Math.max(.04+.06*smooth(2600,1200,h),RP?smooth(90,RIV.width*.5,nearLine(RP,x,z).d)*.85:0,CN.length?smooth(24,0,canalD(x,z))*.7:0,o.wet?o.wet(x,z,h):0),0,1),flow:under?1:0,upland:clamp((h+1500)/12000,0,1),canyon:0,rim:0,rock:clamp(Math.max(rk,tal*.6),0,1),dune:0,oasis:0,slope,
    abyss:smooth(-150,-350,h),salt:f0(o.salt,x,z),cold,hot,geo:0,barren,strata:o.strataK?o.strataK(x,z,h,slope):0,crack:0,
    snow:clamp(o.snowAt?o.snowAt(x,z,h,slope):0,0,1),pave:f0(o.pave,x,z),polyg:f0(o.polyg,x,z),talus:tal,wash:f0(o.wash,x,z),char:0,fog:0,farm:f0(o.farm,x,z),ice:0,road:f0(o.road,x,z)};
   F.pave*=1-F.road;return F;}
  const RIVER_SPEC=RIV?{name:RIV.name||'The river',pts:RIV.pts,width:RIV.width==null?20:RIV.width,speed:RIV.speed==null?1.2:RIV.speed}:null;
- return{TERR:{R},terrainH,waterH,fieldsAt,LAKES:LK,RIVER_SPEC,riverAt,FALLS:[],SPINE:o.spine||[[0,0]],
+ return{TERR:{R},terrainH,waterH,fieldsAt,LAKES:LK,RIVER_SPEC,riverAt,CANALS:CN.map(c=>({name:c.name,pts:c.pts,width:c.width})),canalAt,canalD,FALLS:[],SPINE:o.spine||[[0,0]],
   STRATA:o.strata||BIO.strata({recipe:'canyon',seed:6813,range:[-1500,7500],res:.5,private:true}),ROCK:o.rock?o.rock(o.ground):[]};}

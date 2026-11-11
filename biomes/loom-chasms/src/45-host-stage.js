@@ -221,6 +221,8 @@ const ROCK_MESHES=[];
 // core/water records (drawn in 89w-host-water.js): every lake of the land a WATER.still at its own level over its outline (the ground under the
 // level shows it), the river a WATER.flow from the land's RIVER_SPEC, each fall a WATER.fall. BIO.waterH is the land's waterH.
 const RIVER=RIVER_SPEC?WATER.flow({name:RIVER_SPEC.name||'The river',pts:RIVER_SPEC.pts,width:RIVER_SPEC.width,speed:RIVER_SPEC.speed}):null;
+/* the station's canals (chasmLand's canals: dug channels, each a WATER.flow like the river) */
+const CANALS=(typeof STATION!=='undefined'&&STATION.CANALS?STATION.CANALS:[]).map(c=>WATER.flow({name:c.name,pts:c.pts,width:c.width,speed:c.speed==null?.5:c.speed}));
 const LAKE_STILLS=LAKES.map(L=>WATER.still({name:L.name,level:L.level,poly:L.poly}));
 const FALL_RECS=FALLS.map(f=>WATER.fall(Object.assign({fit:true,spread:6,face:terrainH,faceLift:.8,faceN:48},f)));
 // the largest still: the mirror's (99: the reflections switch, off at page load)
