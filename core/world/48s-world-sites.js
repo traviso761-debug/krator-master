@@ -10,7 +10,8 @@
 //                                   steeper than SLOPE, not a town's or a cleared place's (WORLD.townW)
 //   KSITES.discOk(x, z, R)          a whole disc of good ground (rings from the middle out: the middle fails first)
 //   KSITES.siteFor(near, look, R)   the nearest point to `near` (a 50 m grid out to `look` m) with a disc of R m
-//   KSITES.plan(spec, kit)          -> the region's plan (below). spec: the region's SITE_SPEC
+//   KSITES.plan(spec, kit)          -> the region's plan (below). spec: the region's SITE_SPEC (a hamlet's `link`
+//                                   [dx, dz] aims its main lane, `road: false` lays it no road: a page-less site's own house)
 //                                   {region, world, sites: {<site id>: {camps: [{tribe, near: [dx, dz] from the site, look?}],
 //                                   road?: {r}}}}; kit: {dims(key, v) -> {w, d, h}, programs(tribe) -> a band's program}
 //   KSITES.hash(plan)               FNV-1a of the plan's canonical text (no log, no hash): the bake and a re-plan agree
@@ -69,7 +70,10 @@ function plan(spec,kit){const out={format:'krator-site-plan',version:1,region:sp
    const near=Hs.near?[S.x+Hs.near[0],S.z+Hs.near[1]]:[S.x+Math.sin(Hs.bearing*Math.PI/180)*Hs.km*1000,S.z-Math.cos(Hs.bearing*Math.PI/180)*Hs.km*1000];
    const at=siteFor(near,look,HAMLET_R);if(!at){out.errors.push(id+': no ground for a village within '+look+' m of its spot');continue;}
    if(typeof KHAMLET==='undefined'){out.errors.push(id+': core/hamlet is not on the page');continue;}
-   const v=KHAMLET.village({id,world:spec.world,culture:Hs.culture||SP.culture,focus:Hs.focus,site:at,link:{x:S.x,z:S.z},dims:kit.dims,
+   /* link: where the village's main lane points (the site, or an offset from it: a house that is itself the site's
+      heart points its lane down its road, not at its own green) */
+   const lk=Hs.link?{x:S.x+Hs.link[0],z:S.z+Hs.link[1]}:{x:S.x,z:S.z};
+   const v=KHAMLET.village({id,world:spec.world,culture:Hs.culture||SP.culture,focus:Hs.focus,site:at,link:lk,dims:kit.dims,
     ground:{ok:groundOk},popMax:Hs.pop});
    if(v.error)out.errors.push(id+': '+v.error);
    const main=(v.lanes||[]).find(l=>l.main)||(v.lanes||[])[0],end=main?main.pts[main.pts.length-1]:[v.site.x,v.site.z];
@@ -77,7 +81,8 @@ function plan(spec,kit){const out={format:'krator-site-plan',version:1,region:sp
     end:{x:r2(end[0]),z:r2(end[1])},census:{pop:v.census.pop,households:v.census.households},
     green:v.green?{x:r2(v.green.x),z:r2(v.green.z),w:v.green.w,d:v.green.d,ry:Math.round((v.green.ry||0)*1e4)/1e4}:null,
     records:v.records.map(r=>({id:r.id,key:r.key,role:r.role,pending:!!r.pending,x:r2(r.x),z:r2(r.z),ry:Math.round(r.ry*1e4)/1e4,w:r.w,d:r.d,h:r.h})),
-    lanes:(v.lanes||[]).map(l=>({id:l.id,w:l.w,main:!!l.main,pts:l.pts.map(p=>[r2(p[0]),r2(p[1])])})),error:v.error||null});}
+    lanes:(v.lanes||[]).map(l=>({id:l.id,w:l.w,main:!!l.main,pts:l.pts.map(p=>[r2(p[0]),r2(p[1])])})),error:v.error||null});
+   if(Hs.road===false)site.hamlets[site.hamlets.length-1].noRoad=true;}
   /* the roads: each camp's gate and each village's lane end to the site, by the world's own router (the grade held,
      cliffs avoided) */
   if(SP.road&&typeof ROADS!=='undefined'){const to={name:S.id,x:S.x,z:S.z,r:SP.road.r==null?600:SP.road.r},hw=SP.road.hw;
@@ -90,7 +95,7 @@ function plan(spec,kit){const out={format:'krator-site-plan',version:1,region:sp
    const lay=(fromId,at)=>{const T=toFor(at),R=road(site.roads.length,S.id,fromId,at,T,hw);if(!R){out.errors.push(fromId+': no road to the site');return;}
     if(T.e!=null){const L=R.pts[R.pts.length-1];L[0]=r2(T.x);L[1]=r2(T.z);L[2]=r2(T.e);R.joins=true;}site.roads.push(R);};
    site.camps.forEach(C=>lay(C.id,C.gate));
-   (site.hamlets||[]).forEach(V=>lay(V.id,V.end));}
+   (site.hamlets||[]).forEach(V=>{if(!V.noRoad)lay(V.id,V.end);});}
   out.sites.push(site);}
  /* the roads between the towns (spec.links: [a, b, {hw, r}]): from one site's reach to the other's */
  if(spec.links&&typeof ROADS!=='undefined'){out.links=[];

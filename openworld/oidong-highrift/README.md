@@ -1,0 +1,71 @@
+# The Oidong Valley and the High Rift: Longsong's world at 1:1
+
+The fourth region of sites cut off the scale model into the open world (`openworld/PLAN-SITES.md`; the owner, 2026-11-11:
+"Longsong moves onto the open world's ground"). `PLAN.md` says what it takes and why; `core/simulation/
+PROPOSAL-LONGSONG-PINNACLE.md` holds the economy it is planned for.
+
+- **The cut:** two model regions on map 5.1, cut by `tools/scale-model/cut_site.py oidong-highrift`.
+  - the Oidong Valley (17,257 px inside the cut);
+  - the High Rift (21,261 px);
+  - four sites' squares.
+
+  The box is 1,302 x 322 km (651 x 161 px) at 500 m cells, with Verdigris Beck, Brant-Fell Gill and the valley's rivers.
+  The frame's origin is px 1311,1634. Three sites are not on the model's list yet (`"model": false` in
+  `openworld/SITES.json`: their own pixel).
+- **The sites** (`openworld/SITES.json`), on core/hamlet's `xanadu` row (the valley folk, the work camps) and `order` row
+  (the History Monks' houses), drawn with the Xanadu building kit (`XAK`):
+
+  | Site | Px | What is planned | People |
+  |---|---|---|---|
+  | **Longsong** (`sq80bzd7ep`) | 1226,1626 | the ring of 15 villages: Shar, Nub and Dzo-ling where its page lays them, ten more farming villages 4 to 8.5 km out, Drok-ri's high pastures, Dar-ling's silk and paper | 3,279 (the house itself is `settlements/longsong`'s, 1,344) |
+  | **The Singing Gjár** (`ssinggjar01`) | 1572,1643 | the Order's house (350), the Beck Fields (89), the Vein Camp (49) | 488 |
+  | **The Mirror Grange** (`smirrorgrange01`) | 1430,1644 | the Order's grange (80), its growers (200), the graben's herders (145) | 425 |
+  | **The Caldron House** (`scaldronhouse01`) | 1366,1668 | the Order's hospice at the staircase foot (60), its shelf village (149) | 209 |
+
+- **The roads:**
+  - **Village roads:** each village's lane end has a road to its site, the grade held to 8 %; they join the roads
+    already laid, so they share a trunk. A house that is its site's heart lays none (`road: false`).
+  - **The Order's road:** Longsong to the Caldron House (356 km), to the Mirror Grange (137 km), to the Singing Gjár
+    (284 km). It is kept inside the cut and off the rivers' beds (`keep: true`), with an Order rest house or a teahouse
+    every 12.5 km (59 stops). It is planned as records, not laid on the ground: the region's other links wait on bridges
+    too (`KNOWN_ISSUES.md`).
+- **The flora:**
+  - the Oidong kit on the valley (its own `OIDONG.PASSES`);
+  - the High Rift kit's floor on the rift (`src/49-world-highrift.js`): tussock, steam heath, opal cane, bead caps and
+    Verdigris wort, by four ground profiles (cold, graben, warm and hot round the vents).
+- **The resources:** the census and panel (`core/world` 49r, 89r; `plan/resources.json`), and the propose-a-site tool
+  (93).
+- **Longsong's page reads the plan:** `settlements/longsong/build.py` writes `LS.RING` from `plan/sites.json`. The
+  house's provision check counts the ring's tithe against its 1,344.
+- **Built output:** `dist/oidong-highrift.html` (about 9 MB, the rasters as PNGs), with its texture sidecars.
+
+```
+python3 tools/scale-model/cut_site.py oidong-highrift     # the cut (data/, source/): about 30 s
+python3 core/world/bake_sites.py oidong-highrift          # the plan (plan/sites.json); --check fails on a stale bake
+python3 core/world/bake_sites.py oidong-highrift --resources
+python3 build.py                                          # dist/oidong-highrift.html
+python3 verify.py dist/oidong-highrift.html --assert --views 1,3,6
+```
+
+On the GPU, set `KRATOR_GL=gpu`; a verify takes a harness lane itself. A fresh worktree needs the packs from LFS:
+`git lfs pull --include="biomes/highrift/tex/*,biomes/oidong/tex/*,settlements/xanadu/tex/*"`.
+
+## Fragments
+
+| Fragment | Tag | What |
+|---|---|---|
+| `src/43-world-ohr.js` | [G data] | the fields the kits read that the world does not make: the Oidong kit's `flat`, the High Rift floor's `hrheat`, `hracid`, `hrgrass` |
+| `src/46-world-config.js` | [G data] | the sites' markers, "Go to" (the region, each site, each village and house), the first view over Longsong's ring |
+| `src/47-world-kits.js` | [G data] | the kits that grow here: Oidong on the valley, the High Rift's floor on the rift (its four ground profiles) |
+| `src/48-world-site.js` | [G data] | the sites' spec (`SITE_SPEC`): each site's villages and houses (focus, spot, ceiling), its roads, the Order's road with its stops |
+| `src/49-world-highrift.js` | [G data] | the High Rift kit's world adapter (`HRIFT_WORLD`): no trees; its floor through `HRIFT.buildRift`, the profiles picked by the vents' distance and the world's warmth |
+
+## Checks (`verify.py --assert`)
+
+Each check has a negative:
+- **The world's checks**, round Longsong's village Lho.
+- **The region:** each site at its pixel, on dry land, in its overlay, with its kit growing there.
+- **The sites:** the baked plan is the plan made again in the browser; every village and house whole, its buildings
+  apart and on good ground, with every road at its lane end; every village cleared of flora, tagged and drawn with the
+  kit's pieces.
+- **The resources and the propose tool** (`core/world/verify_world.py`).

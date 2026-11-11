@@ -51,6 +51,8 @@ if(typeof XAK!=='undefined'){try{XAK.bind(typeof KMAT!=='undefined'?KMAT:null);}
 if(typeof IZV!=='undefined'&&typeof isleProto==='function')VK.iziz={dims:IZV.dims(),piece:(key,v,drop)=>{const P=isleProto('izv',key,v,CACHE);if(!P)return null;
  const D=VK.iziz.dims[key],g=new THREE.BoxGeometry(D.w,drop,D.d).translate(0,-drop/2+.05,0);return P.parts.concat([{geo:g,mat:footM,tris:12}]);}};
 const KD=Object.assign({},...Object.keys(VK).map(k=>VK[k].dims));
+/* a village's kit: its core/hamlet row's `kit` (the Order's row draws in the Xanadu kit's pieces), else its culture's name */
+const vkit=c=>{const R=typeof KHAMLET!=='undefined'&&KHAMLET.CULTURES&&KHAMLET.CULTURES[c];return R&&R.kit&&VK[R.kit]?R.kit:c;};
 const vhash=s=>{let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;};
 /* a link's stops (48s stops()) are drawn as villages of one building and a lane: the same footing, merge, keep-clear,
    tags and checks */
@@ -59,7 +61,7 @@ const STOPV=[];for(const Lk of PLAN.links||[])for(const s of Lk.stops||[])STOPV.
 for(const E of PLAN.sites.flatMap(St=>(St.hamlets||[]).map(V=>({St,V}))).concat(STOPV)){const St=E.St,V=E.V;
  const base=TAGS.add({class:'landmark',kind:E.stop?'waystation':'village',key:V.id,name:E.stop?V.name:V.name+' ('+St.name+')',at:[V.site.x,H(V.site.x,V.site.z),V.site.z],r:E.stop?60:220,h:14,
   tags:{culture:V.culture,types:E.stop?['inn']:['dwelling-multi','farm'],role:E.stop?'waystation':'village'},note:E.stop?'core/world 48s stops: '+V.census.pop+' keepers':'core/hamlet ('+V.focus+'): '+V.census.pop+' people, '+V.census.households+' households'});
- const VD=VK[V.culture]?VK[V.culture].dims:{};
+ const VKit=vkit(V.culture),VD=VK[VKit]?VK[VKit].dims:{};
  const B=V.records.map(r=>{const K=VD[r.key],kit=!!K&&!r.pending,fw=kit&&K.fw?K.fw:r.w,fd=kit&&K.fd?K.fd:r.d,c=Math.cos(r.ry),s=Math.sin(r.ry);
   const hs=[[-1,-1],[1,-1],[1,1],[-1,1],[0,0]].map(([u,w])=>H(r.x+u*fw/2*c+w*fd/2*s,r.z-u*fw/2*s+w*fd/2*c)),top=Math.max.apply(null,hs),low=Math.min.apply(null,hs);
   const nv=kit?Math.max(1,Math.min(3,K.variants|0)):1;
@@ -130,7 +132,7 @@ function vmerge(list,G){const byMat=new Map(),v3=new THREE.Vector3(),n3=new THRE
   const mesh=new THREE.Mesh(geo,Q.mat);mesh.matrixAutoUpdate=false;G.add(mesh);S.vtris=(S.vtris||0)+ni/3;}}
 function villageFull(W){const G=new THREE.Group(),copies=[],boxes=[],ox=W.V.site.x,oz=W.V.site.z;
  for(const b of W.B){const r=b.r,m=new THREE.Matrix4().compose(new THREE.Vector3(r.x-ox,b.y,r.z-oz),q.setFromEuler(e.set(0,r.ry,0)).clone(),new THREE.Vector3(1,1,1));
-  const parts=b.kit?vproto(W.V.culture,r.key,b.v,b.drop):null;if(parts)copies.push({parts,m});else boxes.push(b);}
+  const parts=b.kit?vproto(vkit(W.V.culture),r.key,b.v,b.drop):null;if(parts)copies.push({parts,m});else boxes.push(b);}
  if(copies.length)vmerge(copies,G);
  if(boxes.length){const im=new THREE.InstancedMesh(boxG,wallM,boxes.length);boxes.forEach((b,i)=>{const r=b.r;im.setMatrixAt(i,m4.compose(v3.set(r.x-ox,b.low-.3,r.z-oz),q.setFromEuler(e.set(0,r.ry,0)),new THREE.Vector3(r.w,r.h+.3,r.d)));});G.add(im);}
  /* the lanes: packed earth, a quad a 4 m step, 0.1 m over the ground */
