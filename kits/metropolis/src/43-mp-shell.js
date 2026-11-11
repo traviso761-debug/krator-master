@@ -44,8 +44,10 @@ var KSHELL = {};
   }
   // the record. state names the bake; what it holds is the same in a Godot port: a cage, a map size, the frame of the map. A ruin's frame is as tall as what stands
   // of it (MP.ruin), and the five states past gutted take a coarser map (ruinTexel, 0.5 m) and none from below (they hold no lamp): fourteen records fit one atlas
+  // a look's record ('crown.wild', the overgrown crown: 44b, 59e) is its state's, under the look's own id, so a wild shell packs and bakes beside the clean one
   KSHELL.record = function (F, state) {
-    var o = F.shell, rough = MP.RUINS.indexOf(state) > 1, tx = rough ? (o.ruinTexel == null ? 0.5 : o.ruinTexel) : o.texel, H = MP.ruin(F, state).top, cage, w, h = Math.ceil(H / tx), frame;
+    var base = MP.look(state).state;
+    var o = F.shell, rough = MP.RUINS.indexOf(base) > 1, tx = rough ? (o.ruinTexel == null ? 0.5 : o.ruinTexel) : o.texel, H = MP.ruin(F, base).top, cage, w, h = Math.ceil(H / tx), frame;
     if (o.mode === 'polar') {
       cage = polarCage(F, H);
       var Rm = 0; for (var y = 0; y <= H; y += 1) Rm = Math.max(Rm, MP.envelope(F, y));
@@ -57,7 +59,7 @@ var KSHELL = {};
     }
     // the hull maps, seen from straight above and straight below: what the side map cannot hold (a roof, a soffit, a column with nothing in it)
     var hx = frame.a, hz = o.mode === 'polar' ? frame.a : frame.b, hull = { w: Math.ceil(2 * hx / tx), h: Math.ceil(2 * hz / tx) };
-    return { id: F.id + '.' + state, family: F.id, state: state, mode: o.mode, cage: cage, tris: cage.idx.length / 3, map: { w: w, h: h }, frame: frame, hull: hull, hx: hx, hz: hz, bot: !rough, soffit: F.crown && F.crown.neck ? F.crown.neck[0] : 0 };
+    return { id: F.id + '.' + state, family: F.id, state: base, look: state, mode: o.mode, cage: cage, tris: cage.idx.length / 3, map: { w: w, h: h }, frame: frame, hull: hull, hx: hx, hz: hz, bot: !rough, soffit: F.crown && F.crown.neck ? F.crown.neck[0] : 0 };
   };
   // the three slots of a record, as things KSHELL.pack can pack
   KSHELL.slots = function (r) { return [r, { id: r.id + '.top', map: r.hull }].concat(r.bot ? [{ id: r.id + '.bot', map: r.hull }] : []); };

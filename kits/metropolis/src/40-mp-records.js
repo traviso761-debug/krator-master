@@ -13,6 +13,15 @@ MP.idHash = function (s) { return KRAND.child(MP.SEED, s) >>> 0; };
 // The ruin states every record answers (the brief's seven). keep: the top of what stands, a share of the roof height;
 // bare: the share of the height above the stump that is steel; glass: what is left of it; the rest are per-building notes
 MP.RUINS = ['intact', 'gutted', 'crown', 'broken', 'stump', 'skeleton', 'fallen'];
+// A look is a state, or a state with a variant: 'crown.wild' is the crown state overgrown (44b, 59e). MP.look splits a look into its
+// base state and its variant, so every reader of a state (MP.ruin, the debris plan, the shell record, the heroes) takes a look too
+MP.WILD = 'wild';
+MP.look = function (s) {
+  var i = s == null ? -1 : String(s).indexOf('.');
+  if (i < 0) return { state: s, variant: null, wild: false };
+  var v = String(s).slice(i + 1);
+  return { state: String(s).slice(0, i), variant: v, wild: v === MP.WILD };
+};
 
 // ---- the zones: a run of storeys with one use. use names a plan (41) and a facade rule (42).
 function mpLevels(zones) {
@@ -131,6 +140,7 @@ MP.arcadePiers = function (F) { var hw = F.footprint.w / 2, n = Math.max(1, Math
 // storeys, deeper here and there); skin: the top of the whole skin (a storey under it can open); frame: [y0, y1] of a skeleton's bare steel, patchy below it from
 // the plant floor; top: the highest thing that stands (the shell's frame); core, fins, ends: what stands above the cut (a stump's core and fins, a fallen slab's end walls)
 MP.ruin = function (F, state) {
+  state = MP.look(state).state;
   var S = F.ruins[state], roof = F.height.roof, plant = F.levels.filter(function (L) { return L.use === 'plant'; })[0], plantTop = plant ? plant.y + plant.h : 0, round = F.core.kind === 'round';
   if (!S || state === 'intact') return { state: 'intact', cut: Infinity, torn: 0, skin: F.height.tip, top: F.height.tip, frame: null, patchy: null, core: 0, fins: F.fins ? F.fins.y1 : 0, ends: 0, span: null };
   var cut = S.keep * roof, torn = ({ gutted: 0, crown: 1.5, broken: 3, stump: 1, skeleton: 2, fallen: 1.5 })[state] * MP.STOREY, skin = cut - torn, frame = null, patchy = null;
@@ -159,6 +169,7 @@ MP.tearAtXZ = function (F, R, x, z) {
 // what lies at a ruin's foot, as records (the tower's own frame; the stage turns it with the tower). mounds: KRUBBLE heaps (centre, half-lengths, strike, crest, a seed); pieces:
 // a shaft's section lying (r, len, along the yaw ry, tipped by tilt), the lamp's disc on its side, a slab tipped up. A Spindle falls along a fin, the Ledger in on itself
 MP.debrisPlan = function (F, state) {
+  state = MP.look(state).state;
   var R = MP.ruin(F, state); if (R.state === 'intact' || state === 'gutted') return null;
   var seed = function (i) { return MP.idHash(F.id + '.' + state + '.' + i) >>> 0; }, M = [], P = [];
   /* a heap's crest from the old tiers' rise (hs: the plan's numbers), its loose blocks by its area */

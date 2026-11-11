@@ -107,7 +107,9 @@ BIO._fadeInject=function(sh,kind){const F=BIO.FADE;if(!F)return;if(typeof F==='f
 // draw(g,S) paints GREYSCALE leaves on a transparent canvas; the material's
 // per-instance colour tints them. fillRGB fills the transparent texels.
 BIO.alphaTex=function(S,draw,fillRGB){const T=BIO.host.THREE;
- const c=document.createElement('canvas');c.width=c.height=S;const g=c.getContext('2d');g.clearRect(0,0,S,S);draw(g,S);
+ /* willReadFrequently: a canvas read back whole is kept in CPU memory, so getImageData copies instead of stalling on the GPU for every card (the
+    valley's 2026-11-10 profile: 52 cards, about 1 s each; the owner, "the station pages really seem to take forever to load") */
+ const c=document.createElement('canvas');c.width=c.height=S;const g=c.getContext('2d',{willReadFrequently:true});g.clearRect(0,0,S,S);draw(g,S);
  const d=g.getImageData(0,0,S,S).data,out=new Uint8Array(S*S*4);
  for(let o=0;o<out.length;o+=4){const a=d[o+3];
   if(a<48){out[o]=fillRGB[0];out[o+1]=fillRGB[1];out[o+2]=fillRGB[2];}else{out[o]=d[o];out[o+1]=d[o+1];out[o+2]=d[o+2];}

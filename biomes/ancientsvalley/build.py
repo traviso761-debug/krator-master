@@ -240,9 +240,20 @@ if bad: print('BIOME FRAGMENT DEPENDS ON A HOST ENGINE:\n  '+'\n  '.join(bad)); 
 os.makedirs(DIST,exist_ok=True)
 html=''.join(out)
 if SIDE: html=_mp.write_sidecar(SIDE,html,DIST,'ancientsvalley.tex.js',prune=False)
+# THE BUILD YIELDS (2026-11-10): 88-host-build.js builds the forest in stages that give the browser a turn between them, so what follows it on the page
+# must wait: the fragments after it go in a text block (av-after) that the build runs when it finishes (88's AV_AFTER). Classic scripts share the
+# page's globals, so the block runs as if it had followed in place. The split is checked: nothing after it may close a script itself.
+SPLIT='\n</script>\n<script type="text/plain" id="av-after">'
+_after=[f for f in frags if f>'88-host-build.js' and f.endswith('.js')]
+if '88-host-build.js' in frags and _after:
+    _mk=f'\n// ==================== {_after[0]}\n'
+    _i=html.find(_mk)
+    if _i<0: print('BUILD SPLIT: no marker for '+_after[0]); sys.exit(1)
+    if len(re.findall(r'</script',html[_i:],re.I))!=1: print('BUILD SPLIT: the fragments after 88 close a script themselves; the deferred block would break'); sys.exit(1)
+    html=html[:_i]+SPLIT+html[_i:]
 open(os.path.join(DIST,OUT),'w',encoding='utf-8',newline='\n').write(html)
 # syntax check on the script body
-m=re.search(r'<script>\n(?!document)(.*)</script>\s*</body>',html,re.S)
+m=re.search(r'<script>\n(?!document)(.*)</script>\s*</body>',html.replace(SPLIT,''),re.S)
 js=m.group(1) if m else ''
 chk=os.path.join(HERE,'.syntax.js'); open(chk,'w',encoding='utf-8',newline='\n').write(js)
 node=find_node()

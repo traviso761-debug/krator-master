@@ -3,8 +3,23 @@
 // south-west lowlands' forest on the floor, the shelf and the parks, the north-west's trees mixed in; then one bake; then the taint's
 // tint on what was baked. The metropolis kit's towers come after, on the first frame (70-av-city.js boots them when the library maps are in).
 window._swlow=null;window._nwlow=null;
-(function(){const t0=performance.now();const Q=new URLSearchParams(location.search),q=Q.has('q')?+Q.get('q'):1;
+/* THE BUILD YIELDS (the owner, 2026-11-10: "the station pages really seem to take forever to load ... station 0 keeps freezing on load"). The
+   lowland kits' passes ran as one task of a minute or more and the page froze until the end. Now each pass (a kit's trees, its floor) and the bake
+   is a stage of its own: before each, the page shows where it is and gives the browser a turn (a paint, input), then goes on. The kits' build is
+   the same calls in the same order (each kit's build() is its trees then its floor, under its own BIO.cur), so the page is the same. What follows
+   this fragment on the page waits for it: the build splits the page there (build.py: the fragments after 88 are a text block, run when this
+   finishes, AV_AFTER), so the towers, the atmosphere and the host's take start on the finished forest as before */
+const avLoadNote=(()=>{let el=null;return t=>{if(!el){el=document.createElement('div');el.id='av-loading';el.style.cssText='position:fixed;left:50%;top:46%;transform:translate(-50%,-50%);z-index:50;background:rgba(24,21,15,.88);color:#f3ecd8;font:13px Georgia,serif;padding:10px 16px;border-radius:8px;pointer-events:none';document.body.appendChild(el);}
+  if(t==null){el.remove();el=null;return;}el.textContent='Building the valley: '+t+'…';};})();
+const avYield=t=>{avLoadNote(t);return new Promise(r=>setTimeout(r,0));};
+const AV_AFTER=()=>{avLoadNote(null);const el=document.getElementById('av-after');if(!el)return;const s=document.createElement('script');s.textContent=el.textContent;el.remove();document.body.appendChild(s);};
+(async function(){const t0=performance.now();const Q=new URLSearchParams(location.search),q=Q.has('q')?+Q.get('q'):1;
  const adjust=(T,w)=>{for(let i=REG.length-1;i>=0&&i>=REG.length-400;i--){const r=REG[i];if(r.kind==='tree'&&r.x===T.x&&r.z===T.z){if(!w){REG.splice(i,1);break;}r.h=w.h;r.r=r.r*w.kx;break;}}};
+ /* a kit's build() in its two passes, each a stage: the same calls, BIO.cur and output as the kit's own build (each lowland kit's 70 fragment) */
+ const kitStages=async(K,cur,label,f,o)=>{const R=o.R==null?2850:o.R,qq=o.quality==null?1:o.quality,out={R,quality:qq,trees:0,heroes:0,far:0};
+  if(K.buildTrees){await avYield(label+', the trees');masked(f,()=>{BIO.cur=cur+'/trees';Object.assign(out,K.buildTrees(R,qq,o));});}
+  if(K.buildFloor){await avYield(label+', the floor');masked(f,()=>{BIO.cur=cur+'/floor';Object.assign(out,K.buildFloor(R,qq));});}
+  BIO.cur=null;return out;};
  const masked=(f,fn)=>{const old=BIO.host.mask;BIO.host.mask=(x,z)=>Math.min(old(x,z),f(x,z));try{return fn();}finally{BIO.host.mask=old;}};
  const feral=AVQ_ON('feral')?(x,z)=>STAGE.F.feral(x,z):(x,z)=>0;
  /* the perches (the owner, 2026-11-09: overgrown like Midgar at the end of FF7): in the wild half every stump, broken tower and tower with its
@@ -47,15 +62,15 @@ window._swlow=null;window._nwlow=null;
  const perched=(T,pc,h)=>{AV.FERAL.perchedH=Math.max(AV.FERAL.perchedH||0,h);};
  window.AV_TOPS=TOPS;   /* ?feral=0: the kits as they are (the species kept, nothing grown), to tell the wrap's faults from the kits' */
  if(typeof SWLOW!=='undefined'&&STAGE.swQ){AV.feralKit(SWLOW,{ground:terrainH,feral,capH,allow:STAGE.swAllow?new Set(STAGE.swAllow):null,keep:new Set(STAGE.swKeep||[]),adjust,perch,perched,seed:STAGE.seed+31});
-  try{window._swlow=masked((x,z)=>clamp(STAGE.zone(x,z).sw,0,1),()=>SWLOW.build({R:STAGE.R-60,quality:q*STAGE.swQ,avenues:[]}));}catch(e){reportErr('swlowlands: '+e.stack);}}
+  try{window._swlow=await kitStages(SWLOW,'lowlands','the south-western forest',(x,z)=>clamp(STAGE.zone(x,z).sw,0,1),{R:STAGE.R-60,quality:q*STAGE.swQ,avenues:[]});}catch(e){BIO.cur=null;reportErr('swlowlands: '+e.stack);}}
  _mark('swlowlands');
  if(typeof NWLOW!=='undefined'&&STAGE.nwQ){AV.feralKit(NWLOW,{ground:terrainH,feral,capH,allow:STAGE.nwAllow?new Set(STAGE.nwAllow):null,adjust,perch,perched,seed:STAGE.seed+37});
-  try{window._nwlow=masked((x,z)=>clamp(STAGE.zone(x,z).nw,0,1),()=>NWLOW.build({R:STAGE.R-60,quality:q*STAGE.nwQ,avenues:[]}));}catch(e){reportErr('nwlowlands: '+e.stack);}}
+  try{window._nwlow=await kitStages(NWLOW,'nwlow','the north-western forest',(x,z)=>clamp(STAGE.zone(x,z).nw,0,1),{R:STAGE.R-60,quality:q*STAGE.nwQ,avenues:[]});}catch(e){BIO.cur=null;reportErr('nwlowlands: '+e.stack);}}
  _mark('nwlowlands');
  if(typeof avSurfaceFree==='function')avSurfaceFree();   /* the creepers (71) and the roof trees are placed: the rays' buckets go (70) */
  if(Q.has('nobake')){window._instances=0;window._bakeCalls=0;return;}
- const b=BIO.bake();_mark('bake');window._instances=b.inst;window._bakeCalls=b.calls;
+ await avYield('the bake');const b=BIO.bake();_mark('bake');window._instances=b.inst;window._bakeCalls=b.calls;
  if(AVQ_ON('tint'))window._tinted=AV.tint(scene,{strength:1});_mark('tint');
  window._buildMs=Math.round(performance.now()-t0);
  REGISTER({name:STAGE.name+' (a piece of it)',x:0,z:0,r:STAGE.R,h:600});
-})();
+})().catch(e=>reportErr('build: '+(e&&e.stack||e))).then(AV_AFTER);

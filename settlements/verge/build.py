@@ -74,6 +74,7 @@ CORE = {
     '35-core-anim.js': 'core/biome/35-core-anim.js',   # BIO.animMat (sedesert's fauna calls it unguarded since the anim move)
     '42-core-export.js': 'core/biome/42-core-export.js', '43-core-export-host.js': 'core/biome/43-core-export-host.js',
     '44-core-stage.js': 'core/biome/44-core-stage.js',
+    '35-core-anim.js': 'core/biome/35-core-anim.js',   # BIO.animMat: sedesert's fauna is drawn on it (since the biome rebuild)
     '20-core-clock.js': 'core/clock/20-core-clock.js', '20-core-sched.js': 'core/sched/20-core-sched.js',
     '20-core-walk.js': 'core/walk/20-core-walk.js', '25-core-mask.js': 'core/mask/25-core-mask.js',
     '20-core-space.js': 'core/space/20-core-space.js',

@@ -34,7 +34,7 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `71-host-creepers.js` | 7 |  |
 | `72-host-keepers.js` | 10 |  |
 | `73-host-wrecks.js` | 7 |  |
-| `74-host-transit.js` | 14 |  |
+| `74-host-transit.js` | 15 |  |
 | `75-host-extraplanar.js` | 15 |  |
 | `75-host-house.js` | 11 |  |
 | `76-host-lobbies.js` | 19 | the geometry: flat-shaded prisms in the kit's co (31); the checks (verify.py --assert; 99 calls them),  (95) |

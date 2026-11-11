@@ -68,13 +68,30 @@ const FCHK={
  /* the fields gone to thicket (87t): the crops' plants and the orchards' trees drawn in their fields, none on a road or a plinth */
  thicket(Th){if(!Th||!Th.ok)return{ok:false,detail:'no thicket'};const P=STAGE.plan;let bad=0;for(const r of Th.sample){if(P.roadD(r[0],r[1])<0||STAGE.built(r[0],r[1])>.8)bad++;}
   const um=Th.unmapped||[],cb=Th.cellBad||[];return{ok:Th.plants>=20000&&Th.trees>=2000&&Th.crops.length>=4&&!bad&&!um.length&&!cb.length,detail:(um.length?um.length+' cards with no map ('+um.slice(0,3).join(', ')+'); ':'')+(cb.length?cb.length+' cards wider than a cell ('+cb.slice(0,3).join(', ')+'); ':'')+Th.fields+' fields: '+Th.plants+' crop clumps, '+Th.trees+' orchard trees ('+Th.grown+' grown feral) of '+Th.crops.join(', ')+'; '+bad+' of '+Th.sample.length+' sampled on a road or a plinth'};},
+ /* the pods overgrown on top (87t): every standing pod with a dome left under its mat (thirty quads or more; a broken pod's ring, eight; a stump
+    none: their heaps carry fifteen clumps or more), and every clump's foot within 0.5 m of its own pod's mat as drawn (the quads the mesh was made of: each foot's nearest triangle, BIO.triDist) */
+ podTops(L,lift){if(!L||!L.length)return{ok:false,detail:'no pod tops'};const dy=lift==null?0:lift,pods=STAGE.plan.towers.filter(t=>t.family==='pod'&&t.state!=='fallen').length;
+  const need=t=>t.state==='stump'||t.state==='broken'?0:30;let thin=0,feet=0,off=0,quads=0,heap=0;const A={},B={},C={},v=(p,o)=>(o.x=p[0],o.y=p[1],o.z=p[2],o);
+  for(const P of L){quads+=P.quads.length;const hp=P.heap||[];heap+=hp.length;if(P.quads.length<need(P.t)||(P.t.state==='broken'||P.t.state==='stump')&&hp.length<15)thin++;
+   /* a heap's clump on the heap's own surface (KRUBBLE.at on MP.heaps, the function its mesh is drawn from), within 0.3 m */
+   if(hp.length){const HP=MP.heaps(MP.FAMILY.pod,P.t.state);for(const f of hp){feet++;if(Math.abs(KRUBBLE.at(HP,f[0],f[2])-.15-(f[1]+dy))>.3)off++;}}for(const f of P.feet){feet++;const x=f[0],y=f[1]+dy,z=f[2];let d=1e9;
+    for(const q of P.quads){d=Math.min(d,BIO.triDist(x,y,z,v(q[0],A),v(q[1],B),v(q[2],C)),BIO.triDist(x,y,z,v(q[0],A),v(q[2],B),v(q[3],C)));if(d<.5)break;}if(d>.5)off++;}}
+  return{ok:L.length===pods&&!thin&&feet>=pods*20&&!off,detail:L.length+' of '+pods+' pods, '+quads+' quads of vines, '+heap+' clumps on the heaps, '+thin+' bare (a dome or a heap left uncovered); '+feet+' clumps, '+off+' off their mat or heap'};},
+ /* the streets (46z STAGE.transit, drawn by 74): every plan road a transit road with its junctions, the furniture dead, a riot's war at most
+    (no crater), weeds through the asphalt each on its road's surface (within 0.1 m of levelAt, inside the carriageway and pavements) */
+ streets(TR,n,Th){if(!TR||!TR.net)return{ok:false,detail:'no streets'};const P=STAGE.plan,need=P.roads.length+P.roads.filter(r=>r.kind==='ring').length*3;let off=0;
+  for(const q of (Th&&Th.weedSample)||[]){const Rd=TR.net.roads[q[3]],pr=Rd.path.project(q[0],q[2]);if(Math.abs(Rd.levelAt(q[0],q[2])-q[1])>.1||pr.d>Rd.width/2+(Rd.pavement==null?0:Rd.pavement)+.8)off++;}
+  const dead=typeof KratorTransitFurniture!=='undefined'&&KratorTransitFurniture.dead===true,ready=!!(n&&n.roads);
+  return{ok:TR.net.roads.length===need&&TR.net.junctions.length>=10&&ready&&n.pieces>100&&dead&&!TR.craters&&Th&&Th.weeds>=20000&&!off,
+   detail:TR.net.roads.length+' roads of '+need+', '+TR.net.junctions.length+' junctions, '+(ready?n.pieces+' furniture pieces and '+n.warPieces+' of war drawn by cell':'not drawn')+(dead?', dead':', LIT')+'; '+TR.craters+' craters; '+(Th?Th.weeds+' weeds ('+Th.roadBush+' bushes), '+off+' of '+(Th.weedSample||[]).length+' sampled off their road':'no weeds')};},
  /* the ruins of the farm belt: a few whole, most of the glass gone, some down */
  ruins(T){const B=T.filter(t=>t.family!=='aqueduct'),n=B.length,f=s=>B.filter(t=>t.state===s).length/Math.max(1,n);return{ok:n>40&&f('intact')<=.12&&f('gutted')>=.15&&(f('fallen')+f('stump'))>=.08,detail:Math.round(f('intact')*100)+'% whole, '+Math.round(f('gutted')*100)+'% gutted, '+Math.round((f('fallen')+f('stump'))*100)+'% down of '+n}; }};
 STAGE.checks=function(add){const P=STAGE.plan,T=P.towers;add('the farm buildings stand on their plinths',FCHK.plinths(T));add('nothing stands in a road',FCHK.roads(T,AV_FARM.pylons));add('the aqueduct is continuous on its bed',FCHK.aqueduct(P.aqueduct.modules));
  add('every road crosses the aqueduct under an arch',FCHK.crossings(P.crossings));add('the pylon lines carry their wires clear of the ground',FCHK.wires(AV_FARM.wires));add('the city lies below toward the lake',FCHK.farCity(AV_FARM.far));
- add('the fields and orchards have gone to thicket',FCHK.thicket(typeof AV_THICKET!=='undefined'?AV_THICKET:null));add('the farm belt is ruined',FCHK.ruins(T));};
+ add('the fields and orchards have gone to thicket',FCHK.thicket(typeof AV_THICKET!=='undefined'?AV_THICKET:null));add('the farm belt is ruined',FCHK.ruins(T));add('the pods are overgrown on top',FCHK.podTops(window.AV_POD_TOPS));
+ add('the streets are the transit kit streets, ruined and grassed over',FCHK.streets(STAGE.transit,typeof AVTR!=='undefined'?AVTR.n:null,typeof AV_THICKET!=='undefined'?AV_THICKET:null));};
 STAGE.negatives=function(add){const P=STAGE.plan,T=P.towers,pod=T.find(t=>t.family==='pod'),tr=P.roads.find(r=>r.kind==='trunk')||P.roads[0],q=tr.pts[Math.min(3,tr.pts.length-1)];
- add('a pod moved 40 m off its plinth',FCHK.plinths([Object.assign({},pod,{x:pod.x+40,z:pod.z+40})].concat(T)));
+ add('a pod moved 300 m off its plinth',FCHK.plinths([Object.assign({},pod,{x:pod.x+300,z:pod.z+300})].concat(T)));   /* 40 m set a honeycomb's pod on its neighbour's level */
  add('a pod standing on the trunk road',FCHK.roads([Object.assign({},pod,{x:q[0],z:q[1]})],[]));
  {const A=P.aqueduct.modules;add('a module missing from the aqueduct',FCHK.aqueduct(A.filter((t,i)=>i!==Math.floor(A.length/2))));}
  add('a crossing beside its arch',FCHK.crossings(P.crossings.map((x,i)=>i?x:Object.assign({},x,{good:false}))));
@@ -83,4 +100,8 @@ STAGE.negatives=function(add){const P=STAGE.plan,T=P.towers,pod=T.find(t=>t.fami
  add('no thicket in the fields',FCHK.thicket(typeof AV_THICKET!=='undefined'&&AV_THICKET?Object.assign({},AV_THICKET,{plants:0,trees:0}):null));
  add('a card drawn with no map (a solid quad)',FCHK.thicket(typeof AV_THICKET!=='undefined'&&AV_THICKET?Object.assign({},AV_THICKET,{unmapped:['thicket.card_crop_melon']}):null));
  add('a card smeared across its sheet',FCHK.thicket(typeof AV_THICKET!=='undefined'&&AV_THICKET?Object.assign({},AV_THICKET,{cellBad:['thk.cotton.a']}):null));
+ add('the pod clumps lifted 3 m off the domes',FCHK.podTops(window.AV_POD_TOPS,3));
+ add('a gutted pod left bare',FCHK.podTops((window.AV_POD_TOPS||[]).map(P=>P.t.state!=='gutted'?P:Object.assign({},P,{quads:[],feet:[]}))));
+ add('the weeds lifted 2 m off the streets',FCHK.streets(STAGE.transit,typeof AVTR!=='undefined'?AVTR.n:null,typeof AV_THICKET!=='undefined'&&AV_THICKET?Object.assign({},AV_THICKET,{weedSample:AV_THICKET.weedSample.map(q=>[q[0],q[1]+2,q[2],q[3]])}):null));
+ add('the street lamps lit',(()=>{const K=typeof KratorTransitFurniture!=='undefined'?KratorTransitFurniture:null,d=K&&K.dead;if(K)K.dead=false;try{return FCHK.streets(STAGE.transit,typeof AVTR!=='undefined'?AVTR.n:null,typeof AV_THICKET!=='undefined'?AV_THICKET:null);}finally{if(K)K.dead=d;}})());
  add('every farm building whole',FCHK.ruins(T.map(t=>Object.assign({},t,{state:'intact'}))));};
