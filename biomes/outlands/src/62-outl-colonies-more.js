@@ -119,7 +119,7 @@ OUTL.placeMore=function(has,pass,M,A,lab,note,Q,opt){const F=OUTL.byKey,sq=Math.
 // ======================================================== THE DECAY LAYER (solitary: no colony)
 // opt: {R, quality}. Placed on BIO.grid's cell form where the host's deadwood, carrion or dark field says; each instance noted with no colony.
 OUTL.buildDecay=function(R,q){const F=OUTL.byKey,sq=Math.sqrt(q==null?1:q),count=OUTL.PLACED,forms=OUTL.INST,out={logcrust:0,bonebloom:0,glowtubes:0};
- const note=(S,x,z,y,ex)=>{count[S.key]=(count[S.key]||0)+1;forms.push(Object.assign({key:S.key,role:S.role,type:null,colony:null,x,z,y},ex||{}));out[S.key]++;};
+ const note=(S,x,z,y,ex)=>{count[S.key]=(count[S.key]==null?0:count[S.key])+1;forms.push(Object.assign({key:S.key,role:S.role,type:null,colony:null,x,z,y},ex||{}));out[S.key]++;};
  const box={box:[-R,-R,R,R],patch:.3};
  // log crust: a fallen mast lying on the ground, smothered in plates and fans
  if(typeof HF().deadwood==='function')BIO.grid('outl:logcrust',30/sq,(x,z)=>smooth(.2,.7,fd('deadwood',x,z))*.8*(1-smooth(.3,.5,fd('slope',x,z))),(x,y,z)=>{

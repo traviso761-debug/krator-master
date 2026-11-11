@@ -26,7 +26,7 @@ window.addEventListener('unhandledrejection',e=>reportErr('promise: '+(e.reason&
 const TICKS=[];
 function tick(fn){TICKS.push(fn);}
 const REG=[];function REGISTER(o){REG.push(o);BIO.record(o);}
-function regHas(r,x,y,z){const dx=x-r.x,dz=z-r.z;return dx*dx+dz*dz<=r.r*r.r&&y>=(r.y||0)-2&&y<=(r.y||0)+r.h+5;}
+function regHas(r,x,y,z){const dx=x-r.x,dz=z-r.z;return dx*dx+dz*dz<=r.r*r.r&&y>=(r.y==null?0:r.y)-2&&y<=(r.y==null?0:r.y)+r.h+5;}
 const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);
 renderer.outputEncoding=THREE.sRGBEncoding;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.0;document.body.appendChild(renderer.domElement);
 const scene=new THREE.Scene();const HAZE=new THREE.Color(0xc9ccd2);scene.fog=new THREE.FogExp2(HAZE.getHex(),.00011);
@@ -40,7 +40,7 @@ const TERR={R:3400};
 const STAGEKIT={
  // the fields on an N x N lattice over S metres (18 m cells at N 400): fieldsAt(x, z, h, slope) -> {name: 0..1}; every name in `names`
  // a bilinear lookup; the station's FIELD carries them plus the zero fields the kit's roles may ask for and the station has none of
- fields(names,fieldsAt,ground,o){o=o||{};const N=o.N||400,S=o.S||TERR.R*2.2,a={};names.forEach(n=>a[n]=new Float32Array(N*N));a.h=new Float32Array(N*N);
+ fields(names,fieldsAt,ground,o){o=o||{};const N=o.N==null?400:o.N,S=o.S==null?TERR.R*2.2:o.S,a={};names.forEach(n=>a[n]=new Float32Array(N*N));a.h=new Float32Array(N*N);
   const cs=S/(N-1);
   for(let j=0;j<N;j++)for(let i=0;i<N;i++)a.h[j*N+i]=ground((i/(N-1)-.5)*S,(j/(N-1)-.5)*S);
   for(let j=0;j<N;j++)for(let i=0;i<N;i++){const x=(i/(N-1)-.5)*S,z=(j/(N-1)-.5)*S,k=j*N+i;

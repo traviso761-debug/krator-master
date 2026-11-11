@@ -4,7 +4,7 @@
 // and the far rims' shadows on the map). ?far=0, ?hz=0 off.
 const FAR=(function(){
  if(new URLSearchParams(location.search).get('far')==='0'||typeof KFAR==='undefined'||!STAGE.far)return null;
- const S0=TERR.R*1.1,ROUT=STAGE.far.out||10000,SINK=STAGE.far.sink==null?14:STAGE.far.sink;
+ const S0=TERR.R*1.1,ROUT=STAGE.far.out==null?10000:STAGE.far.out,SINK=STAGE.far.sink==null?14:STAGE.far.sink;
  const G=KFAR.grid({lines:KFAR.lines({cell:50,inner:S0+20,out:ROUT,grow:1.03}),dense:true,
   h:(x,z)=>Math.abs(x)<S0&&Math.abs(z)<S0?terrainH(x,z)-SINK:STAGE.far.h(x,z),
   skip:(x0,z0,x1,z1)=>x0>-S0+100&&x1<S0-100&&z0>-S0+100&&z1<S0-100,color:STAGE.far.col});

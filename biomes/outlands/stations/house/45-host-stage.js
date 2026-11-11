@@ -24,7 +24,7 @@ const LAKE_L=2132;
 const GX=-520,GZ=-470,GY=LAKE_L-6;
 const toW=(xl,zl)=>[GX+zl,GZ-xl],toL=(x,z)=>[GZ-z,x-GX];
 const SITE={x0:GX-1250,x1:GX+760,z0:GZ-570,z1:GZ+1500};
-const inSite=(x,z,m)=>{m=m||0;return x>SITE.x0-m&&x<SITE.x1+m&&z>SITE.z0-m&&z<SITE.z1+m;};
+const inSite=(x,z,m)=>{m=m==null?0:m;return x>SITE.x0-m&&x<SITE.x1+m&&z>SITE.z0-m&&z<SITE.z1+m;};
 // the wall west of the lake (rising west), the east shore rising to the BSk tableland
 function baseH(x,z){const w=-x-350+120*Math.sin(z*.0011+.5)+80*(fbm(x*.0012,z*.0012,571,2)-.5);   /* metres west of the shore line */
  const wall=w>0?690*smooth(0,1500,w)+.18*Math.max(0,w-1500)+60*smooth(200,1400,w)*(fbm(x*.003,z*.003,573,2)-.5):-18*smooth(0,300,-w);
@@ -73,7 +73,12 @@ function houseBuild(){const out={};
  holder.traverse(m=>{if(m.isMesh){m.userData.host=true;if(!m.userData.inspectLabel)m.userData.inspectLabel='Trickster\'s House (Arcoindian II, ruined)';}});
  scene.add(holder);holder.updateMatrixWorld(true);RUIN=holder;
  /* the kit's own volumes (ANC_REG, in its builder frame) become this page's records, turned with the ruin */
- out.volumes=0;ANC_REG.splice(r0).forEach(v=>{const w=toW(v.x||0,v.z||0);REGISTER({name:'Trickster\'s House: '+v.name,kind:'ruin',x:w[0],z:w[1],y:GY+(v.y||0),r:v.r,h:v.h});out.volumes++;});
+ /* each a record; a page volume (the inspector's names, the registry's occupancy) only where the ruin, at decay 1, still has fabric in it:
+    three rays down its axis and either side (the kit's own page checks them at decay 0, where every one is full) */
+ out.volumes=0;out.gone=0;const RC=new THREE.Raycaster(),DN=new THREE.Vector3(0,-1,0);
+ ANC_REG.splice(r0).forEach(v=>{const w=toW(v.x==null?0:v.x,v.z==null?0:v.z),y0=GY+(v.y==null?0:v.y),r=v.r==null?5:v.r,h=v.h==null?10:v.h,rec={name:'Trickster\'s House: '+v.name,kind:'ruin',x:w[0],z:w[1],y:y0,r,h};
+  let hit=false;for(const d of[0,-.5,.5]){RC.set(new THREE.Vector3(w[0]+d*r,y0+h+2,w[1]),DN);RC.far=h+6;if(RC.intersectObject(holder,true).length){hit=true;break;}}
+  if(hit){REGISTER(rec);out.volumes++;}else{BIO.record(Object.assign({},rec,{name:rec.name+' (fallen: the ruin holds nothing there now)'}));out.gone++;}});
  let tris=0;holder.traverse(m=>{if(m.isMesh&&m.geometry){const g=m.geometry,n=g.index?g.index.count/3:g.attributes.position.count/3;tris+=n*(m.isInstancedMesh?m.count:1);}});out.tris=Math.round(tris);window._ruinTris=out.tris;
  // the ruin's up-facing faces, sampled by hash (a point a 6 m cell of the plan at most): where the House colony grows; the hollow's (under
  // the crown, behind the mouth, in the kit's frame) are its dark rooms
@@ -107,7 +112,7 @@ function houseBuild(){const out={};
 function houseAfter(){const prev=BIO.kit('outl');try{return houseAfter0();}finally{BIO.kit(prev);}}
 function houseAfter0(){BIO.cur='outl/house';const M=OUTL.COLONY,A={},F=OUTL.byKey,PAL=OUTL.PAL,C=OUTL.C,lab=(S,c)=>S.name+' (the House colony, '+c.id+')',out={lacecrust:0,tqshelf:0,greenfan:0,drums:0,glowtubes:0};
  const house=M.colonies.find(c=>c.id==='shouse');if(!house)return out;
- const col=(set,u)=>{const c=C(set[Math.floor(u*set.length)%set.length]);return c;},note=(S,c,x,z,y,ex)=>{OUTL.PLACED[S.key]=(OUTL.PLACED[S.key]||0)+1;OUTL.INST.push(Object.assign({key:S.key,role:S.role,type:S.type,colony:c?c.id:null,x,z,y},ex||{}));out[S.key]++;};
+ const col=(set,u)=>{const c=C(set[Math.floor(u*set.length)%set.length]);return c;},note=(S,c,x,z,y,ex)=>{OUTL.PLACED[S.key]=(OUTL.PLACED[S.key]==null?0:OUTL.PLACED[S.key])+1;OUTL.INST.push(Object.assign({key:S.key,role:S.role,type:S.type,colony:c?c.id:null,x,z,y},ex||{}));out[S.key]++;};
  const Q=(ax,ay,az)=>new THREE.Quaternion().setFromEuler(new THREE.Euler(ax,ay,az));
  HOUSE.samples.forEach((p,i)=>{if(p.up<0)return;M.at(p.x,p.z,A);if(!A.c||A.c.type!=='copper'||A.seam)return;const u=k=>KRAND.unit(KRAND.hash(5721,i,k));if(u(0)>.55)return;
   const pick=u(1),ry=u(2)*TAU;
@@ -143,7 +148,7 @@ Object.assign(STAGE,{
    L1=OUTL.INST.find(f=>f.key==='lacecrust'&&f.onRuin)||{x:GX,y:GY+500,z:GZ},G1=OUTL.INST.find(f=>f.key==='glowtubes'&&f.hollow)||{x:GX,y:GY+400,z:GZ},R0=RING[Math.floor(RING.length*.5)]||{x:1500,z:1500};
   const cam=(a,b)=>a.concat(b);
   return{
-   'Trickster\'s House from the inlet':cam(P(-200,90,620),P(-200,430,-80)),
+   'Trickster\'s House from the inlet':cam(P(420,140,560),P(-180,430,-80)),
    'The half-cave from across the inlet':cam(P(-100,330,640),P(-150,470,-120)),
    'The ruin\'s hollow':cam(P(-60,520,180),P(-250,450,-250)),
    'The House colony on the decks':[L1.x+14,L1.y+6,L1.z+10,L1.x,L1.y,L1.z],
@@ -158,6 +163,6 @@ Object.assign(STAGE,{
  negatives(add){add('a House colony with no form on the ruin',HSCHK.ruin(OUTL.INST.filter(f=>!f.onRuin)));add('no luck hazard',HSCHK.recs({pranks:[]}));add('a glow tube on the plateau',HSCHK.glow([{key:'glowtubes',hollow:false}]));},
 });
 const HSCHK={
- ruin(I){const on=I.filter(f=>f.onRuin&&f.colony==='shouse');return{ok:!!RUIN&&on.length>50&&on.some(f=>f.key==='lacecrust'),detail:(RUIN?'Arcoindian II read in place ('+(window._ruinTris||0)+' triangles), ':'NO RUIN, ')+on.length+' House colony forms on its surfaces'};},
+ ruin(I){const on=I.filter(f=>f.onRuin&&f.colony==='shouse');return{ok:!!RUIN&&on.length>50&&on.some(f=>f.key==='lacecrust'),detail:(RUIN?'Arcoindian II read in place ('+(window._ruinTris==null?0:window._ruinTris)+' triangles), ':'NO RUIN, ')+on.length+' House colony forms on its surfaces'};},
  recs(R){const p=(R.pranks||[]).filter(Boolean).length;return{ok:!!R.luck&&!!R.taboo&&p>=4,detail:(R.luck?'luck ':'no luck, ')+(R.taboo?'taboo ':'no taboo, ')+p+' pranks (core/tags records)'};},
  glow(I){const g=I.filter(f=>f.key==='glowtubes'),bad=g.filter(f=>!f.hollow);return{ok:g.length>0&&!bad.length,detail:bad.length?bad.length+' glow tubes outside the hollow':g.length+' glow tubes, every one in the hollow'};}};

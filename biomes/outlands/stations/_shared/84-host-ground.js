@@ -9,7 +9,7 @@
 window._groundMs=0;
 OUTL.SEEDS=STAGE.seeds||[];OUTL.STATION_TYPES=STAGE.types.slice();OUTL.SIZE=STAGE.size||{};OUTL.SHARE=STAGE.share||{};OUTL.REACH=STAGE.reach||{};
 if(STAGE.cell)OUTL.CELL=STAGE.cell;
-const TEX_GROUND=(function(){const t0=performance.now(),S=TERR.R*2.2,COL=OUTL.colonyMap(TERR.R-150),A={},SA={},RES=STAGE.paintRes||1280;
+const TEX_GROUND=(function(){const t0=performance.now(),S=TERR.R*2.2,COL=OUTL.colonyMap(TERR.R-150),A={},SA={},RES=STAGE.paintRes==null?1280:STAGE.paintRes;
  const c=new THREE.Color(),t=new THREE.Color(),SEAM=new THREE.Color(STAGE.seamCol==null?0x2a2026:STAGE.seamCol),RING=new THREE.Color(0xd8d0b8),tint={};
  for(const k in (STAGE.tint||{}))tint[k]=new THREE.Color(STAGE.tint[k]);
  let wx=0,wz=0;const f=n=>FC.at(FC.a[n],wx,wz);

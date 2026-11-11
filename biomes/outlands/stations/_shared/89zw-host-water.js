@@ -15,14 +15,14 @@ const WAT=STAGE.water||{};
 const POOL_STILLS=(WAT.pools||[]).map((P,i)=>WATER.still({name:P.name||('A pool '+(i+1)),level:P.l,poly:P.poly||circ(P.x,P.z,P.r*1.05,16)}));
 const POOL_DRAW=POOL_STILLS.length?WATER.drawPools(POOL_STILLS,{color:lin(WAT.poolCol==null?0x5a5040:WAT.poolCol),roughness:.1,metalness:.04,envMapIntensity:.35,renderOrder:1,pick:true,name:'Pools'}):null;
 if(POOL_DRAW)POOL_DRAW.mesh.userData.inspectLabel=WAT.poolLabel||'A pool';
-const LAKE_DRAWS=(WAT.lakes||[]).map(L=>{const look=L.look&&WATER.lookTint?{tint:WATER.lookTint({look:L.look,box:L.box,cell:L.cell||8,depth:(x,z)=>{const d=L.level-terrainH(x,z);return d>0?d:null;}})}:{};
- const W=WATER.open(Object.assign({name:L.name,level:L.level,field:L.field==null?.1:L.field,bounds:L.box,bed:terrainH,bedBox:L.box,shore:{cell:L.shoreCell||4,band:L.band||40,seeds:[L.seed],land:L.land||(()=>false)}},look));
+const LAKE_DRAWS=(WAT.lakes||[]).map(L=>{const look=L.look&&WATER.lookTint?{tint:WATER.lookTint({look:L.look,box:L.box,cell:L.cell==null?8:L.cell,depth:(x,z)=>{const d=L.level-terrainH(x,z);return d>0?d:null;}})}:{};
+ const W=WATER.open(Object.assign({name:L.name,level:L.level,field:L.field==null?.1:L.field,bounds:L.box,bed:terrainH,bedBox:L.box,shore:{cell:L.shoreCell==null?4:L.shoreCell,band:L.band==null?40:L.band,seeds:[L.seed],land:L.land||(()=>false)}},look));
  if(L.look&&WATER.withLook)WATER.withLook(W,L.look);
- const D=WATER.draw(W,Object.assign({renderOrder:1,roughness:L.roughness==null?.12:L.roughness,metalness:.05,envMapIntensity:.4,surf:false,breakers:false,pick:true,shallow:lin(L.shallow||0x6a8a84),deep:lin(L.deep||0x2a4a50)},
+ const D=WATER.draw(W,Object.assign({renderOrder:1,roughness:L.roughness==null?.12:L.roughness,metalness:.05,envMapIntensity:.4,surf:false,breakers:false,pick:true,shallow:lin(L.shallow==null?0x6a8a84:L.shallow),deep:lin(L.deep==null?0x2a4a50:L.deep)},
   L.look&&WATER.lookDraw?WATER.lookDraw(L.look,'open',{}):{}));
  D.mesh.userData.inspectLabel=L.label||L.name;D.mesh.userData.probeSkip=true;return{L,W,D};});
 const FLOW_DRAWS=(WAT.flows||[]).filter(F=>F.pts.length>=3).map(F=>{const S=WATER.flow({name:F.name,pts:F.pts,width:F.width,speed:F.speed==null?1.2:F.speed});
- const d=WATER.drawFlow(S,{rapids:[.12,.3],shallow:lin(F.shallow||0x7a8a74),deep:lin(F.deep||0x4a5a50),color:0xffffff,roughness:.25,metalness:.05,envMapIntensity:.35,step:F.step||6,across:F.across||3,margin:F.margin==null?1.2:F.margin,renderOrder:2});
+ const d=WATER.drawFlow(S,{rapids:[.12,.3],shallow:lin(F.shallow==null?0x7a8a74:F.shallow),deep:lin(F.deep==null?0x4a5a50:F.deep),color:0xffffff,roughness:.25,metalness:.05,envMapIntensity:.35,step:F.step==null?6:F.step,across:F.across==null?3:F.across,margin:F.margin==null?1.2:F.margin,renderOrder:2});
  d.mesh.userData.probeSkip=true;d.mesh.userData.inspectLabel=F.name;return{F,S,d};});
 const PANS=(WAT.pans||[]).map(P=>WATER.pan?WATER.pan(P):null).filter(Boolean);
 window._water={pools:POOL_STILLS.length,lakes:LAKE_DRAWS.length,flows:FLOW_DRAWS.length,pans:PANS.length};

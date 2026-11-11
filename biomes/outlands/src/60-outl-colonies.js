@@ -42,7 +42,7 @@ OUTL.SIZE={};
 // the colony map alone (no puts): the host's ground paints its seams from it before the build (84-host-ground.js)
 OUTL.colonyMap=function(R){if(OUTL.COLONY&&OUTL.COLONY._R===R)return OUTL.COLONY;
  const SH=OUTL.SHARE||{},types=OUTL.STATION_TYPES.map(k=>({key:k,reach:(OUTL.REACH||{})[k]||OUTL.byType[k].reach,share:SH[k]!=null?SH[k]:k==='wadi'?3:1}));
- const M=OUTLCOL.create({seed:KRAND.child(BIO.host.seed>>>0,'outl:colonies'),box:[-R,-R,R,R],cell:OUTL.CELL||220,p:.8,types,allow,seamW:[2,8],warp:24,seeds:OUTL.SEEDS||[]});
+ const M=OUTLCOL.create({seed:KRAND.child(BIO.host.seed>>>0,'outl:colonies'),box:[-R,-R,R,R],cell:OUTL.CELL==null?220:OUTL.CELL,p:.8,types,allow,seamW:[2,8],warp:24,seeds:OUTL.SEEDS||[]});
  M._R=R;OUTL.COLONY=M;return M;};
 OUTL.buildColonies=function(R,q,opt){opt=opt||{};
  const M=OUTL.colonyMap(R);
@@ -96,7 +96,7 @@ OUTL.buildColonies=function(R,q,opt){opt=opt||{};
 
  }
  // ======================================================== THE MAST COLONY (the wet band under the belt)
- if(has('mast')){const mz=hasZ('mast')?((x,z)=>Z('mast',x,z)):mast,sz=OUTL.SIZE.mast||1;
+ if(has('mast')){const mz=hasZ('mast')?((x,z)=>Z('mast',x,z)):mast,sz=OUTL.SIZE.mast==null?1:OUTL.SIZE.mast;
  pass(F.deckcap,26/Math.sqrt(Q),(x,z,A)=>(.5+.5*mz(x,z))*(.6+.4*A.c.age),(x,y,z,c,A)=>{
   const H=rr(6,10)*sz,r=rr(.18,.3),y0=y-.25,n=ri(3,4),S=F.deckcap,lb=lab(S,c),bend=rr(-.04,.04);
   BIO.put('stalk',[x,y0,z],qEuler(bend,rr(0,TAU),rr(-.04,.04)),[r/.08,H,r/.08],col(PAL.deckStalk),{label:lb});

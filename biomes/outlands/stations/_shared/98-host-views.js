@@ -18,7 +18,7 @@ const COLCHK={
  ore(I){const m=I.filter(f=>f.role==='miner'),bad=m.filter(f=>!(FIELD.oreX(f.x,f.z)>.2));return{ok:m.length>0&&!bad.length,detail:bad.length?bad.length+' of '+m.length+' miners off the ore':m.length+' miners, every one on a copper or turquoise bed, a pit or its spoil'};},
  reach(I){const A={},r=I.filter(f=>f.role==='runner'),bad=r.filter(f=>{OUTL.COLONY.at(f.x,f.z,A);return f.type==='wadi'?!(OUTL.allow('wadi',f.x,f.z)===1||(FIELD.wadiX(f.x,f.z)>=.5&&FIELD.wadiX(f.x,f.z)<.99)):A.level!==1;});
   return{ok:r.length>0&&!bad.length,detail:bad.length?bad.length+' of '+r.length+' runners on their colony\'s core':r.length+' runners, each on its colony\'s reach (cords only)'};},
- nurse(I){const n=I.filter(f=>f.role==='nurse'),near=n.filter(f=>(f.nest||0)>.05);return{ok:n.length>0&&near.length/n.length>.6,detail:near.length+' of '+n.length+' brood pads within a nest\'s ground (over 60% must be)'};},
+ nurse(I){const n=I.filter(f=>f.role==='nurse'),near=n.filter(f=>(f.nest==null?0:f.nest)>.05);return{ok:n.length>0&&near.length/n.length>.6,detail:near.length+' of '+n.length+' brood pads within a nest\'s ground (over 60% must be)'};},
  floats(I){const fl=I.filter(f=>f.float),bad=fl.filter(f=>!(waterH(f.x,f.z)-terrainH(f.x,f.z)>.2)||Math.abs(f.y-waterH(f.x,f.z))>.05);
   return{ok:fl.length>0&&!bad.length,detail:bad.length?bad.length+' of '+fl.length+' floating forms off the water':fl.length+' mire pads afloat, each on water over .2 m deep at its level'};},
  unlike(W,pairs){const got=new Set();W.forEach(f=>{if(f.c2type&&f.c2type!==f.type)got.add([f.type,f.c2type].sort().join('|'));});const miss=pairs.map(p=>p.slice().sort().join('|')).filter(p=>!got.has(p));

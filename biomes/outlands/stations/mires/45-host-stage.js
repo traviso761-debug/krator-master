@@ -40,7 +40,7 @@ const POOLS=(function(){const out=[];for(let i=-52;i<=52;i++)for(let j=-40;j<=40
   if(Math.abs(x)>TERR.R-120||Math.abs(z)>TERR.R-120)continue;const sp=_sIdx(x,z);if(sp.d<60)continue;
   if(PALSA.some(P=>Math.hypot(x-P.x,z-P.z)<P.r*2.2))continue;const rx=14+8*u(3),rz=26+20*u(4);out.push({x,z,rx,rz,r:Math.max(rx,rz),l:0,name:'A flark pool'});}return out;})();
 const poolD=(P,x,z)=>Math.hypot((x-P.x)/P.rx,(z-P.z)/P.rz);
-function land0(x,z){let h=baseH(x,z)+strH(strF(x,z))*(1-smooth(.2,.6,FROST.sample(x,z,{}).pingo||0))+FROST.h(x,z);return h;}
+function land0(x,z){let h=baseH(x,z)+strH(strF(x,z))*(1-smooth(.2,.6,(FROST.sample(x,z,{}).pingo==null?0:FROST.sample(x,z,{}).pingo)))+FROST.h(x,z);return h;}
 POOLS.forEach(P=>{P.l=land0(P.x,P.z)-.15;P.poly=[];for(let k=0;k<16;k++){const a=k/16*TAU;P.poly.push([P.x+Math.cos(a)*P.rx*1.12,P.z+Math.sin(a)*P.rz*1.12]);}});
 const _pIdx=KSPACE.create({cell:60});POOLS.forEach(P=>_pIdx.insert(P,P.x,P.z,P.r*1.3));
 const _pq=[];
@@ -56,7 +56,7 @@ const CAMP=(function(){const p=STREAM[Math.floor(STREAM.length*.58)];return{x:p[
 // ---------------------------------------------------------------- the fields
 const SPINE=[];for(let x=-2800;x<=2800;x+=800)for(const z of[-2600,-1400,-200,1000,2200])SPINE.push([x,z]);SPINE.push([CAMP.x,CAMP.z]);PALSA.forEach(P=>SPINE.push([P.x,P.z]));
 const NEAR=STAGEKIT.nearField(SPINE,90,260);
-function fieldsAt(x,z,h,slope){const f=strF(x,z),S=FROST.sample(x,z,{}),pal=S.pingo||0,q=poolAt(x,z),s=_sIdx(x,z),pool=q?smooth(1.25,.9,q.d):0,stream=smooth(40,16,s.d);
+function fieldsAt(x,z,h,slope){const f=strF(x,z),S=FROST.sample(x,z,{}),pal=S.pingo==null?0:S.pingo,q=poolAt(x,z),s=_sIdx(x,z),pool=q?smooth(1.25,.9,q.d):0,stream=smooth(40,16,s.d);
  const str=(f<.32?1:0)*(1-pal)*(1-stream),flark=(f>.4&&f<.92?1:0)*(1-pal),shore=q?smooth(.5,0,Math.abs(q.d-1.05)):0,face=stream*smooth(.2,.5,slope);
  const pr=PALSA.reduce((b,P)=>Math.max(b,smooth(P.r*2.4,P.r*1.2,Math.hypot(x-P.x,z-P.z))),0),inC=Math.hypot(x-CAMP.x,z-CAMP.z)<CAMP.r?1:0;
  return{near:NEAR(x,z),wet:clamp(.6+.3*flark+.4*pool,0,1),flow:stream*.5,upland:.9,rock:0,slope,seep:clamp(face*.9+flark*.2,0,1),mast:str,cold:.7+.3*pal,

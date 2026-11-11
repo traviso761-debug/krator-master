@@ -49,6 +49,9 @@ EXPORT_BOX = [-300, -1800, 0, -1500]   # the fog wall's veil colonies
 # every form is instanced (no merged mesh): buckets are left out of the profile, not failed. No water in the box.
 EXPORT_PROFILE = ['registry', 'items', 'materials', 'textures', 'terrain', 'stage', 'atmos']
 EXPORT_PROFILES = {}
+# the later stations' pages (stations/<name>/): the box is the densest 300 m cell of the page's own placed forms (OUTL.INST), found in the page
+EXPORT_BOX_JS = """()=>{const I=(window.OUTL&&OUTL.INST)||[],C=new Map();for(const f of I){const k=Math.floor(f.x/300)+','+Math.floor(f.z/300);C.set(k,(C.get(k)||0)+1);}
+ let b=null,n=-1;for(const [k,v] of C)if(v>n){n=v;b=k;}if(!b)return null;const [i,j]=b.split(',').map(Number);return[i*300,j*300,i*300+300,j*300+300];}"""
 
 # Structure names contain em dashes; the Windows console default codepage
 # mangles them, which makes a failing assertion hard to read.
@@ -163,10 +166,11 @@ async def run(a):
 
             print("\n--- export profile (core/export/README.md, \"Profiles\") ---")
             prof = [s.strip() for s in a.profile.split(",") if s.strip()] if a.profile else EXPORT_PROFILES.get(os.path.basename(a.html), EXPORT_PROFILE)
-            pok, lines = await check_profile(pg, EXPORT_BOX, prof)
+            box = EXPORT_BOX if os.path.basename(a.html) == 'outlands.html' else (await pg.evaluate(EXPORT_BOX_JS) or EXPORT_BOX)
+            pok, lines = await check_profile(pg, box, prof)
             for ln in lines:
                 print("  " + ln)
-            print(("  PASS  " if pok else "  FAIL  ") + "export-profile : box %s" % EXPORT_BOX)
+            print(("  PASS  " if pok else "  FAIL  ") + "export-profile : box %s" % box)
             if not pok:
                 fails.append("assert export-profile")
 
