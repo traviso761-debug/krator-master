@@ -296,7 +296,6 @@
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
-    "biomes/ancientsvalley": "02f12fded14bb1ecc43f2307ec875ed649306058ad7a476391e29504b26bfd55",
     "biomes/ancientsvalley/src": "508f2a5ba4af5c6ac69a54d946179889e9f5cb97df3341407e50d441680f635b",
     "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
     "kits/ancients-interiors/src": "909eb0c4a1cb98caa84bc495cc9410b3ecd5c2a0ca2e36d4b1e59d7447d9f89d",

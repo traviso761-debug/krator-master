@@ -296,7 +296,7 @@
     "settlements/dalab/tex/woodV.albedo.webp": "e6b9faf5e0afbfbaf73d91e4264572c8433b76281b011e08244b3eb8eb577e01",
     "settlements/dalab/tex/woodV.normal.webp": "190262f7d785a01c811cb78b9227591d3b0a10dcf0e9e1c71350ff41de60e7a6",
     "settlements/dalab/tex/woodV.rough.webp": "8df792868de730da67949922940e6e1ae855351c9d3d1ae092ed812b05e91d84",
-    "settlements/span/PORT.md": "311f5c04c7287f2160b5939f97fdf39bb0529428a9651309fe6fd119e4090e49",
+    "settlements/span/PORT.md": "f18735f93903d840076c4cde41affc76fbb7e2128a35a3b7da5666e6e1deac69",
     "settlements/span/build.py": "1da8bcc37ebbcacd8760b9b9415053976f55980da34fc7cb2ca362740c795184",
     "settlements/span/site/swhighlands-pillars-site.json": "8eba059a6bbf0f6be52700f85929e44fd65a78f6897abc421f964ce35757c6f0",
     "settlements/span/src/00-head.html": "5f5a5b9d8c43c9c3a1ee2d2dde671ce91ac162da513c4352b5dbb1fb1353cf63",
@@ -326,7 +326,6 @@
     "kits/interiors/sets": "25e1fa66e47b9b929bd298c5bc39a8afb287b6cc27aee48c82a238a7c99fc191",
     "kits/interiors/src": "fe72f6be1b5eb6012c769b91a5fc7c558f24144155f758942db210e347392bab",
     "kits/post-apoc": "19071375fa232acb6833543345098ce4eae840d12e6ddcdc5402c9e877e0ca29",
-    "settlements/span": "c9846c655ffffc86f95eed9cd660fcd79520bd820b8b3f174508f9b75c815608",
     "settlements/span/dist": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "settlements/span/src": "0b2e8d7c4405bdba1dd77240fbaaca729d0b2be7587a7ab28ba5d34e3c4b5594",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"

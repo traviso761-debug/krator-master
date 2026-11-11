@@ -10,7 +10,7 @@
     "biomes/eastabyss/tex/pack.json": "c397f8d98758c3eba25e6902fba4120d01ec61b4394110080fc69cc9d43a48e9",
     "biomes/eastabyss/tex/paddle.albedo.webp": "bc03a6f5ee597a2986e35a60a3be3f597bfa2c49a65c3bc55e8e306a3853ed61",
     "biomes/sedesert/KNOWN_ISSUES.md": "d16cfe6df18f62c1c572aa7eeae929aacd0f11a0b744372cb1a4134511ca0172",
-    "biomes/sedesert/PORT.md": "97c5bcae6330f5dce42922d2075810a96e617db5194cd0e195bf96aeb7311fad",
+    "biomes/sedesert/PORT.md": "aeaa27341cf9ff06a9f6528e946c87f913a86f0e3c1891d2fca9e2a3174e8fae",
     "biomes/sedesert/build.py": "5a99ae98671e0a5034dae1fef7313db2bf0c45a04c233f36eba59a719eca7981",
     "biomes/sedesert/src/00-head.html": "b4d3f2fd06e4486fcb7200714471684f404e0a4e8d286f7c71ff9c87233784ed",
     "biomes/sedesert/src/45-host-stage.js": "463d5bcc6e45f5c52072a9f775f4e327df6c92e3277f45c308938af5e8e1b9f5",
@@ -150,7 +150,6 @@
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
-    "biomes/sedesert": "8af05204edf03916eebce752ef0e657b865f4fa581df35b01e680bc82bc2168b",
     "biomes/sedesert/src": "a6da70ddc780ee444dcca50e34f0039527902b6429fe1cb32a01c70479155dc6",
     "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
     "kits/fauna": "15ddf75514bc2fb08858cc3e94a1fff2bf1cafb60c1014a7cdc4463763fb2e5c",
@@ -167,7 +166,7 @@
   "build.py --station bowl": {
    "inputs": {
     "biomes/sedesert/KNOWN_ISSUES.md": "d16cfe6df18f62c1c572aa7eeae929aacd0f11a0b744372cb1a4134511ca0172",
-    "biomes/sedesert/PORT.md": "97c5bcae6330f5dce42922d2075810a96e617db5194cd0e195bf96aeb7311fad",
+    "biomes/sedesert/PORT.md": "aeaa27341cf9ff06a9f6528e946c87f913a86f0e3c1891d2fca9e2a3174e8fae",
     "biomes/sedesert/build.py": "5a99ae98671e0a5034dae1fef7313db2bf0c45a04c233f36eba59a719eca7981",
     "biomes/sedesert/src/50-biome-sedesert-species.js": "b04ddad3aea8ff4a0c4a7105a7bd561445d0a815916841136e8641cec3452b15",
     "biomes/sedesert/src/55-biome-sedesert-trees.js": "7e33caf4a07bc5f335dcb47ee565ad0a71cdb7ddd7f76d3a0ae2c5912bd0c232",
@@ -356,7 +355,7 @@
   "build.py --station mantis": {
    "inputs": {
     "biomes/sedesert/KNOWN_ISSUES.md": "d16cfe6df18f62c1c572aa7eeae929aacd0f11a0b744372cb1a4134511ca0172",
-    "biomes/sedesert/PORT.md": "97c5bcae6330f5dce42922d2075810a96e617db5194cd0e195bf96aeb7311fad",
+    "biomes/sedesert/PORT.md": "aeaa27341cf9ff06a9f6528e946c87f913a86f0e3c1891d2fca9e2a3174e8fae",
     "biomes/sedesert/build.py": "5a99ae98671e0a5034dae1fef7313db2bf0c45a04c233f36eba59a719eca7981",
     "biomes/sedesert/src/50-biome-sedesert-species.js": "b04ddad3aea8ff4a0c4a7105a7bd561445d0a815916841136e8641cec3452b15",
     "biomes/sedesert/src/55-biome-sedesert-trees.js": "7e33caf4a07bc5f335dcb47ee565ad0a71cdb7ddd7f76d3a0ae2c5912bd0c232",
@@ -556,7 +555,7 @@
   "build.py --station steppe": {
    "inputs": {
     "biomes/sedesert/KNOWN_ISSUES.md": "d16cfe6df18f62c1c572aa7eeae929aacd0f11a0b744372cb1a4134511ca0172",
-    "biomes/sedesert/PORT.md": "97c5bcae6330f5dce42922d2075810a96e617db5194cd0e195bf96aeb7311fad",
+    "biomes/sedesert/PORT.md": "aeaa27341cf9ff06a9f6528e946c87f913a86f0e3c1891d2fca9e2a3174e8fae",
     "biomes/sedesert/build.py": "5a99ae98671e0a5034dae1fef7313db2bf0c45a04c233f36eba59a719eca7981",
     "biomes/sedesert/src/50-biome-sedesert-species.js": "b04ddad3aea8ff4a0c4a7105a7bd561445d0a815916841136e8641cec3452b15",
     "biomes/sedesert/src/55-biome-sedesert-trees.js": "7e33caf4a07bc5f335dcb47ee565ad0a71cdb7ddd7f76d3a0ae2c5912bd0c232",

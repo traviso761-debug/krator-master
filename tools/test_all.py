@@ -91,23 +91,29 @@ def builds():
 
 def extra_builds():
     """Pages a build writes only when asked: every station kit's stations (build.py --station <name>; the plain build.py
-    writes station 1 only, or none). The baseline hashes them, so they are rebuilt too. A station folder marked
-    "baseOnly" is a shared stage, never built alone; a kit with stations but no build.py is a plan (2026-11-10: the
+    writes station 1 only, or none). The baseline hashes them, so they are rebuilt too. A station is a folder under
+    stations/ with a station.json or its own fragments; one marked "baseOnly" is a shared stage, never built alone; a kit with stations but no build.py is a plan (2026-11-10: the
     second integration pass found --all had skipped about a hundred station pages; Girder's hero page is retired to
     archive/girder-hero)."""
     import json
     out = []
-    for sj in sorted(glob.glob(os.path.join(ROOT, 'biomes', '*', 'stations', '*', 'station.json'))):
-        kit = os.path.dirname(os.path.dirname(os.path.dirname(sj)))
+    for sd in sorted(glob.glob(os.path.join(ROOT, 'biomes', '*', 'stations', '*', ''))):
+        sd = sd.rstrip('/' + os.sep)
+        kit = os.path.dirname(os.path.dirname(sd))
         b = os.path.relpath(kit, ROOT).replace(os.sep, '/')
-        name = os.path.basename(os.path.dirname(sj))
-        if not os.path.isfile(os.path.join(kit, 'build.py')) or (b == 'biomes/hearths' and name == 'crystals'):
-            continue   # a plan with no build yet; the Hearths' default page is the crystals'
+        name = os.path.basename(sd)
+        sj = os.path.join(sd, 'station.json')
+        # a station is a folder with a station.json or its own fragments (several kits keep no station.json); a plan with
+        # no build.py yet, the shared fragments of a kit's stations (`common`) and a "baseOnly" stage are not
+        if not os.path.isfile(os.path.join(kit, 'build.py')) or name == 'common':
+            continue
+        if not os.path.isfile(sj) and not glob.glob(os.path.join(sd, '[0-9]*.js')):
+            continue
         try:
             with open(sj, encoding='utf-8') as fh:
                 if json.load(fh).get('baseOnly'):
                     continue
-        except ValueError:
+        except (OSError, ValueError):
             pass
         out.append(('build %s --station %s' % (b, name), [PY, 'build.py', '--station', name], b))
     return out

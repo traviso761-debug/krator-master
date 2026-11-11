@@ -89,8 +89,8 @@
     "kits/interiors/src/48b-sets.js": "9da457a25bc3e0fd5732c13b569f63ccd0138ac50d84ddc02c47e005709e8889",
     "kits/interiors/src/49-exports.js": "96edc46b9aa75036235144bdbff17c505fc0678217cf2cf7d6f8442b89d55ca9",
     "kits/interiors/src/49b-walk.js": "d90cf2cba70ac876a1831790124e5a4c5ba7072e90599572e458dca1704c16ac",
-    "settlements/girder/KNOWN_ISSUES.md": "769268576819f5c5107818fd864831d3088c596bf3365ecfeacf34fb86303a42",
-    "settlements/girder/PORT.md": "6ec4728a7c5e13b795242dd1af60122b9d51e4ef6a751aef2267182f98fa476d",
+    "settlements/girder/KNOWN_ISSUES.md": "713331aefb3bf1e2c715e084488caca90388b7bbe38efb726c5e0f161e038f32",
+    "settlements/girder/PORT.md": "240a19780352f4f2ebcbdf5d67bcf025d4a5aa2815e7b3b7dd2ff2ceab1b19e1",
     "settlements/girder/build.py": "081cbdbff297c068f35901cb53716cced1b5e6781e92bbfc06912053325aed08",
     "settlements/girder/src/00-head.html": "2a4d5ee9bffd42cbcfafb5ee734ff769d213629f29b9819b95269fbead40e722",
     "settlements/girder/src/05-palette.js": "3afc1f53de2f208c548d951f99d96bc5517c9c33703b16b0f073846c6b14deb8",
@@ -286,7 +286,6 @@
     "kits/interiors": "c343f7e77884e1f4a489c5a2327ea3c5a7a54a1f9bc070a21766131363cf07f7",
     "kits/interiors/sets": "25e1fa66e47b9b929bd298c5bc39a8afb287b6cc27aee48c82a238a7c99fc191",
     "kits/interiors/src": "fe72f6be1b5eb6012c769b91a5fc7c558f24144155f758942db210e347392bab",
-    "settlements/girder": "5d1fdbb03d4b7690b0e654a86a07e68eee4442f7e71d92a7c83359d7311d9740",
     "settlements/girder/src": "f9541fe2ad5d3c6a2f7ec509b7faeb96ed638a0a452d328c0dd43185683ca1e7",
     "tools": "24cc9a0d867a37d71596ec8a001087a35735c498125de4e336dde163318589d8",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"

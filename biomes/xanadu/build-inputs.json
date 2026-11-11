@@ -170,7 +170,6 @@
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
-    "biomes/xanadu": "b05092eab5075817230e42345c841e1828b349162a30819aa397a508a58ab866",
     "biomes/xanadu/src": "f9d415f82e07a3434da1ef3db3b1ebd8d2deef558843c7e6c815790c13d62912",
     "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
     "tools": "24cc9a0d867a37d71596ec8a001087a35735c498125de4e336dde163318589d8",

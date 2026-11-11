@@ -5,7 +5,7 @@
    "inputs": {
     "biomes/hyperjungle/src/41-hyperjungle-globals.js": "522689f321f04ca138230497b065907019b16731915fc5e40c4b348f7f26ca1c",
     "biomes/k-guilin/KNOWN_ISSUES.md": "f5f97cf170c8247ac935c5df2eb1f3733a4993bf5822c40da7806a9d17e4a2ed",
-    "biomes/k-guilin/PORT.md": "b356919bc9c392b6976a85626e440497118f703266ed23dfa78d9a26deae8d0f",
+    "biomes/k-guilin/PORT.md": "1480be719e2a1654178f77c63d8994b06e3d702d7e8c37f5843d39466792ad27",
     "biomes/k-guilin/build.py": "2f6b745c6b5991967ad9cede6c0384b55f58d2ad9b7fb5c61abc4f543e0bd33f",
     "biomes/k-guilin/src/00-head.html": "1b9d2a42624e0c737ff0804a027d8a3e2790b2c1442ae2a920457e4552630698",
     "biomes/k-guilin/src/45-host-stage.js": "d7a72fc139895828b27f61493cb0e6dc97b44439b4c2c5246d9acb09d9fdad4d",
@@ -189,7 +189,6 @@
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
-    "biomes/k-guilin": "ae8ccb39dfc39b0254af45ec11e5d7f3cfbbcb0fb3b57f867476ba2174fb1c55",
     "biomes/k-guilin/dist": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "biomes/k-guilin/src": "ebcb772ee5fadb0ace7b4873d224793e194ded8a66040ec20955f47dc600cf5f",
     "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",

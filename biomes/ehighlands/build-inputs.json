@@ -4,7 +4,7 @@
   "build.py": {
    "inputs": {
     "biomes/ehighlands/KNOWN_ISSUES.md": "071abb832c4687a175f5ae21f40f7e08aa183c80eadc1b2475183b8701d4ff98",
-    "biomes/ehighlands/PORT.md": "8e28e271e81b3c60a855973f58c47c324dce97605aeab16e90da7e9c84d15223",
+    "biomes/ehighlands/PORT.md": "6131f73ccd7c6ea975a0131ce85cd79d659f1e06c096712e7feac1c715eb049d",
     "biomes/ehighlands/build.py": "1800acd9a99ed4e5ed0834e60d3408e9d177f9396bcda186b03423e40792884e",
     "biomes/ehighlands/src/00-head.html": "1258aecbd21a8f6fdd42173c8c5f5b67e98f375d0a0bb7132ce5a8f4e252ed7c",
     "biomes/ehighlands/src/45-host-stage.js": "58a5351eb9e6a132c2aee4e72fb6ddaad0ac6d1a78650335cf691988d3652443",
@@ -119,7 +119,6 @@
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
    },
    "listings": {
-    "biomes/ehighlands": "d00e1171a0e1b06383c0aef4a90f16e925658f5d68a2cb251b299f76e7fb32f5",
     "biomes/ehighlands/src": "bfcf0e83189fc3ee7bced7841251bcf64d8baf2300e43cad0c94c8a177e42fcd",
     "biomes/ehighlands/stations": "a98fcbb7031a1f9776a4e45247385dad79ed699debaa3060c6cb9dc701cc4a0d",
     "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
@@ -135,7 +134,7 @@
   "build.py --station face": {
    "inputs": {
     "biomes/ehighlands/KNOWN_ISSUES.md": "071abb832c4687a175f5ae21f40f7e08aa183c80eadc1b2475183b8701d4ff98",
-    "biomes/ehighlands/PORT.md": "8e28e271e81b3c60a855973f58c47c324dce97605aeab16e90da7e9c84d15223",
+    "biomes/ehighlands/PORT.md": "6131f73ccd7c6ea975a0131ce85cd79d659f1e06c096712e7feac1c715eb049d",
     "biomes/ehighlands/build.py": "1800acd9a99ed4e5ed0834e60d3408e9d177f9396bcda186b03423e40792884e",
     "biomes/ehighlands/src/00-head.html": "1258aecbd21a8f6fdd42173c8c5f5b67e98f375d0a0bb7132ce5a8f4e252ed7c",
     "biomes/ehighlands/src/45-host-stage.js": "58a5351eb9e6a132c2aee4e72fb6ddaad0ac6d1a78650335cf691988d3652443",
@@ -273,7 +272,7 @@
   "build.py --station lesser": {
    "inputs": {
     "biomes/ehighlands/KNOWN_ISSUES.md": "071abb832c4687a175f5ae21f40f7e08aa183c80eadc1b2475183b8701d4ff98",
-    "biomes/ehighlands/PORT.md": "8e28e271e81b3c60a855973f58c47c324dce97605aeab16e90da7e9c84d15223",
+    "biomes/ehighlands/PORT.md": "6131f73ccd7c6ea975a0131ce85cd79d659f1e06c096712e7feac1c715eb049d",
     "biomes/ehighlands/build.py": "1800acd9a99ed4e5ed0834e60d3408e9d177f9396bcda186b03423e40792884e",
     "biomes/ehighlands/src/00-head.html": "1258aecbd21a8f6fdd42173c8c5f5b67e98f375d0a0bb7132ce5a8f4e252ed7c",
     "biomes/ehighlands/src/45-host-stage.js": "58a5351eb9e6a132c2aee4e72fb6ddaad0ac6d1a78650335cf691988d3652443",
@@ -407,7 +406,7 @@
   "build.py --station mixed": {
    "inputs": {
     "biomes/ehighlands/KNOWN_ISSUES.md": "071abb832c4687a175f5ae21f40f7e08aa183c80eadc1b2475183b8701d4ff98",
-    "biomes/ehighlands/PORT.md": "8e28e271e81b3c60a855973f58c47c324dce97605aeab16e90da7e9c84d15223",
+    "biomes/ehighlands/PORT.md": "6131f73ccd7c6ea975a0131ce85cd79d659f1e06c096712e7feac1c715eb049d",
     "biomes/ehighlands/build.py": "1800acd9a99ed4e5ed0834e60d3408e9d177f9396bcda186b03423e40792884e",
     "biomes/ehighlands/src/00-head.html": "1258aecbd21a8f6fdd42173c8c5f5b67e98f375d0a0bb7132ce5a8f4e252ed7c",
     "biomes/ehighlands/src/45-host-stage.js": "58a5351eb9e6a132c2aee4e72fb6ddaad0ac6d1a78650335cf691988d3652443",
@@ -548,7 +547,7 @@
   "build.py --station montane": {
    "inputs": {
     "biomes/ehighlands/KNOWN_ISSUES.md": "071abb832c4687a175f5ae21f40f7e08aa183c80eadc1b2475183b8701d4ff98",
-    "biomes/ehighlands/PORT.md": "8e28e271e81b3c60a855973f58c47c324dce97605aeab16e90da7e9c84d15223",
+    "biomes/ehighlands/PORT.md": "6131f73ccd7c6ea975a0131ce85cd79d659f1e06c096712e7feac1c715eb049d",
     "biomes/ehighlands/build.py": "1800acd9a99ed4e5ed0834e60d3408e9d177f9396bcda186b03423e40792884e",
     "biomes/ehighlands/src/00-head.html": "1258aecbd21a8f6fdd42173c8c5f5b67e98f375d0a0bb7132ce5a8f4e252ed7c",
     "biomes/ehighlands/src/45-host-stage.js": "58a5351eb9e6a132c2aee4e72fb6ddaad0ac6d1a78650335cf691988d3652443",
@@ -685,7 +684,7 @@
   "build.py --station treeline": {
    "inputs": {
     "biomes/ehighlands/KNOWN_ISSUES.md": "071abb832c4687a175f5ae21f40f7e08aa183c80eadc1b2475183b8701d4ff98",
-    "biomes/ehighlands/PORT.md": "8e28e271e81b3c60a855973f58c47c324dce97605aeab16e90da7e9c84d15223",
+    "biomes/ehighlands/PORT.md": "6131f73ccd7c6ea975a0131ce85cd79d659f1e06c096712e7feac1c715eb049d",
     "biomes/ehighlands/build.py": "1800acd9a99ed4e5ed0834e60d3408e9d177f9396bcda186b03423e40792884e",
     "biomes/ehighlands/src/00-head.html": "1258aecbd21a8f6fdd42173c8c5f5b67e98f375d0a0bb7132ce5a8f4e252ed7c",
     "biomes/ehighlands/src/45-host-stage.js": "58a5351eb9e6a132c2aee4e72fb6ddaad0ac6d1a78650335cf691988d3652443",

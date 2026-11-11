@@ -58,7 +58,7 @@
     "kits/interiors/src/49-exports.js": "96edc46b9aa75036235144bdbff17c505fc0678217cf2cf7d6f8442b89d55ca9",
     "kits/interiors/src/49b-walk.js": "d90cf2cba70ac876a1831790124e5a4c5ba7072e90599572e458dca1704c16ac",
     "kits/post-apoc/KNOWN_ISSUES.md": "2273cee95c8c469076cf21b68dbd39e67515ffdf15ab9a6d2fc54d7339556670",
-    "kits/post-apoc/PORT.md": "6e06bcc49bb23f022d24eec9b09fe4ee7c06fb0d83ddbfe4febcbf35c28ab9f2",
+    "kits/post-apoc/PORT.md": "f8aa15a8fda63cd84567c97f689ccca98ccc5fe70c6e85fb9f0d25451e69bb73",
     "kits/post-apoc/build.py": "038a5cdcfc752d25aaba69d930007b3c2b6c855b9b4f10a2325d2b874acca79f",
     "kits/post-apoc/src/00-head.html": "6a18fdf88270b1213f9b7387f839dbdf73486577d3d860f4872c706e1aa28a70",
     "kits/post-apoc/src/10-core.js": "674334cefa9c57737ee957c856abf9f5fb538603109e053e0970dc813996e85b",
@@ -153,7 +153,6 @@
     "kits/interiors": "c343f7e77884e1f4a489c5a2327ea3c5a7a54a1f9bc070a21766131363cf07f7",
     "kits/interiors/sets": "25e1fa66e47b9b929bd298c5bc39a8afb287b6cc27aee48c82a238a7c99fc191",
     "kits/interiors/src": "fe72f6be1b5eb6012c769b91a5fc7c558f24144155f758942db210e347392bab",
-    "kits/post-apoc": "0ec8020e60cc954729a885f0fb01aa77233f1ed2e5d01e11eb59e668d24869ad",
     "kits/post-apoc/src": "61e87631fb0b5650d4c004d17c7f5adfe7a81021ac0f2be144f3f8378d22ca84",
     "tools": "24cc9a0d867a37d71596ec8a001087a35735c498125de4e336dde163318589d8",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"

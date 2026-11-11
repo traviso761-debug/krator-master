@@ -4,7 +4,7 @@
   "build.py": {
    "inputs": {
     "biomes/farside/KNOWN_ISSUES.md": "1dcba7c8f03689551e34c16ad4a0b1d3692408702c276fc23c7cd3c89c8aa5b5",
-    "biomes/farside/PORT.md": "e09b13e0f29cdce493b9e1644c8146eb62f374ddeb5ee100e9b49ce66b80fa34",
+    "biomes/farside/PORT.md": "354b81d2ed174e4a97179ccaa69244ad18e3805783059e1a298750670173c556",
     "biomes/farside/build.py": "9656909768619bd59526e1c39850984249af71344b5ea0fc2d94092ea825cbab",
     "biomes/farside/src/00-head.html": "25ccc6f61dd75783092277f686095b936f9bfe864d6cc0171a15ab59424b71e3",
     "biomes/farside/src/44z-host-shell.js": "5bce9b49e5abeff0dec2bfc7f24cffecd5c84b65ea7874894a88c6f745bcbf1f",
@@ -186,7 +186,6 @@
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
-    "biomes/farside": "e245dd6768300b379375d79c21a4117b0f2de813ff1a6b7d3d216efe5e32324d",
     "biomes/farside/src": "6e8b8d98dea96e2f5ecf92fa99d0b85bc08a3fddcf7ac3d1f1cd00034efe76c9",
     "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
@@ -205,7 +204,7 @@
   "build.py --station cloud": {
    "inputs": {
     "biomes/farside/KNOWN_ISSUES.md": "1dcba7c8f03689551e34c16ad4a0b1d3692408702c276fc23c7cd3c89c8aa5b5",
-    "biomes/farside/PORT.md": "e09b13e0f29cdce493b9e1644c8146eb62f374ddeb5ee100e9b49ce66b80fa34",
+    "biomes/farside/PORT.md": "354b81d2ed174e4a97179ccaa69244ad18e3805783059e1a298750670173c556",
     "biomes/farside/build.py": "9656909768619bd59526e1c39850984249af71344b5ea0fc2d94092ea825cbab",
     "biomes/farside/src/00-head.html": "25ccc6f61dd75783092277f686095b936f9bfe864d6cc0171a15ab59424b71e3",
     "biomes/farside/src/44z-host-shell.js": "5bce9b49e5abeff0dec2bfc7f24cffecd5c84b65ea7874894a88c6f745bcbf1f",
@@ -407,7 +406,7 @@
   "build.py --station front": {
    "inputs": {
     "biomes/farside/KNOWN_ISSUES.md": "1dcba7c8f03689551e34c16ad4a0b1d3692408702c276fc23c7cd3c89c8aa5b5",
-    "biomes/farside/PORT.md": "e09b13e0f29cdce493b9e1644c8146eb62f374ddeb5ee100e9b49ce66b80fa34",
+    "biomes/farside/PORT.md": "354b81d2ed174e4a97179ccaa69244ad18e3805783059e1a298750670173c556",
     "biomes/farside/build.py": "9656909768619bd59526e1c39850984249af71344b5ea0fc2d94092ea825cbab",
     "biomes/farside/src/00-head.html": "25ccc6f61dd75783092277f686095b936f9bfe864d6cc0171a15ab59424b71e3",
     "biomes/farside/src/44z-host-shell.js": "5bce9b49e5abeff0dec2bfc7f24cffecd5c84b65ea7874894a88c6f745bcbf1f",
@@ -609,7 +608,7 @@
   "build.py --station strand": {
    "inputs": {
     "biomes/farside/KNOWN_ISSUES.md": "1dcba7c8f03689551e34c16ad4a0b1d3692408702c276fc23c7cd3c89c8aa5b5",
-    "biomes/farside/PORT.md": "e09b13e0f29cdce493b9e1644c8146eb62f374ddeb5ee100e9b49ce66b80fa34",
+    "biomes/farside/PORT.md": "354b81d2ed174e4a97179ccaa69244ad18e3805783059e1a298750670173c556",
     "biomes/farside/build.py": "9656909768619bd59526e1c39850984249af71344b5ea0fc2d94092ea825cbab",
     "biomes/farside/src/00-head.html": "25ccc6f61dd75783092277f686095b936f9bfe864d6cc0171a15ab59424b71e3",
     "biomes/farside/src/44z-host-shell.js": "5bce9b49e5abeff0dec2bfc7f24cffecd5c84b65ea7874894a88c6f745bcbf1f",

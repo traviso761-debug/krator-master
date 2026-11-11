@@ -66,7 +66,7 @@
     "kits/interiors/src/49-exports.js": "96edc46b9aa75036235144bdbff17c505fc0678217cf2cf7d6f8442b89d55ca9",
     "kits/interiors/src/49b-walk.js": "d90cf2cba70ac876a1831790124e5a4c5ba7072e90599572e458dca1704c16ac",
     "settlements/mavs-refuge/KNOWN_ISSUES.md": "bae2ed56054805a92f22e051a0bf79f889ea6ec84abd6644589d0c77ee55db69",
-    "settlements/mavs-refuge/PORT.md": "faefee0d71b360d448eed6298e48f577a0b4f9875be257b2e6ef49dbc882999d",
+    "settlements/mavs-refuge/PORT.md": "00782cf868131e28818ce91eb9336a4674df4cd6cf17ac39ca9e98da2f4f1947",
     "settlements/mavs-refuge/build.py": "00ca99d654fb7956ec67466b720e88d68bf06d953350b472d3e0da2f82920bbe",
     "settlements/mavs-refuge/interiors-bake.json": "87110bf38440396e6ea8bb04c3a320b6b5825ae87e8d978d00ea689fa682a707",
     "settlements/mavs-refuge/src/00-head.html": "bd9c12b1ebe8f79aed5f4bff7ec080f7b8b645e94b40f5c6dcda7a9b7b7d8ed5",
@@ -163,7 +163,6 @@
     "kits/interiors": "c343f7e77884e1f4a489c5a2327ea3c5a7a54a1f9bc070a21766131363cf07f7",
     "kits/interiors/sets": "25e1fa66e47b9b929bd298c5bc39a8afb287b6cc27aee48c82a238a7c99fc191",
     "kits/interiors/src": "fe72f6be1b5eb6012c769b91a5fc7c558f24144155f758942db210e347392bab",
-    "settlements/mavs-refuge": "451f32662aedf6b3ce475682ad6daec32f214bbca93795165dcc739085a68075",
     "settlements/mavs-refuge/src": "73084f9bdc086ca68371ce6600d3837e70c2256938a0f421838be53f45e29b76",
     "tools": "24cc9a0d867a37d71596ec8a001087a35735c498125de4e336dde163318589d8"
    },

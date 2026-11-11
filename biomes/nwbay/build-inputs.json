@@ -159,7 +159,6 @@
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
-    "biomes/nwbay": "089978572050d96c530ac4013a9900d45f53188b47842ab1ab38ad859ad3e07e",
     "biomes/nwbay/src": "3521c2f6e959c0e2a209611563676db7cdbb5b6c7f8f4887fd04af1a3f4f8996",
     "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
     "tools": "24cc9a0d867a37d71596ec8a001087a35735c498125de4e336dde163318589d8",

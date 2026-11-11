@@ -61,7 +61,7 @@
     "kits/yuni/src/59c-civic-furniture.js": "72a41310261b5e866891efe7db5ae13cc36f3bcc2b83dd41f7b00bfdb027ca89",
     "kits/yuni/yunikit.py": "2ec162a16f62ee7f2c669281ca3ca75fd3934b5a6421490e4ff5e3210f6d85e5",
     "settlements/yuni/KNOWN_ISSUES.md": "26c0fdbf1c1279db6b1f0241a3ff841e44005877c69bdca9c627ead3b8fddbcf",
-    "settlements/yuni/PORT.md": "2f127b22268d0ae795a640ce2ed79836d8f6773ad43fc2f94d291404c2998eea",
+    "settlements/yuni/PORT.md": "f7d96179a7da15025ab25cec864209119669dbe19024f6a8b3c0172ecb770289",
     "settlements/yuni/build.py": "6d30f6a78d1af83ff64f937c9f41dc99b1f879d75a939fabad17c24dd5a9ef1b",
     "settlements/yuni/src/00-head.html": "e5bd8c39d472f2bc239d3f2cbb0a8c7049b669898a86b5f58223e0467ca23024",
     "settlements/yuni/src/05-palette.js": "32ca496dbbe26e9b09c48ae167302a045260fc5ba8e8a088e3c13d9feda2da74",
@@ -207,7 +207,6 @@
     "core/tags": "cd6f040d0e4dc63956ba50d287f27cda97e471bfd15ee98f2638981d4f9e1127",
     "core/walk": "c6769307f01d663d946e7a69638ff7e4fee9c46e1ff5bc8acc98125dd4bb4619",
     "kits/yuni": "42740c9a5971ea85e2d704c15f1f90f72979a7ad85723c246a5e582c9178670f",
-    "settlements/yuni": "b51a6378f59eb76941cef8b2b3c1d30d499d9fbd51e2ccf71a4c1a6e9436c19d",
     "settlements/yuni/src": "b5632eecd4797f518260d692224b767163bac72506bcb2be6d2fe133e400717c",
     "tools": "24cc9a0d867a37d71596ec8a001087a35735c498125de4e336dde163318589d8",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"

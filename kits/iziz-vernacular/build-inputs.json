@@ -48,7 +48,7 @@
     "kits/ancients/src/50-registry.js": "f87f8d9e27ee59e030b2cc59f317085427809aa5e24de2e13292398271f156ec",
     "kits/ancients/src/54-mat-concrete.js": "2d389333570d294e50e2e8d93681b2e6f203971467e451804c851d0d8f0c1b83",
     "kits/ancients/src/69-mat-salvage.js": "0730715865d221e3309d62f5886d38a9922a4872d5b9f5fce3730c5351a0ed62",
-    "kits/iziz-vernacular/PORT.md": "01bc718de00c3123d4477362eb281ec4fddab64555514e5e2190a8a6106f62c6",
+    "kits/iziz-vernacular/PORT.md": "d519d0043172cfef5f3b4e25ec7b5a362b271db71af74d382bdcf08db3d043a8",
     "kits/iziz-vernacular/build.py": "4d4a58804af4070e4ab75a1be8c5d0b53dab181e8987340c4daac4882410a4a7",
     "kits/iziz-vernacular/sheet.py": "696888734ff9a8859c86b357988c3c2c471cce1de919950b38647e3fbd60ab88",
     "kits/iziz-vernacular/src/00-vsheet-head.html": "de0050458c16c8726081840b975fd656a70f2e1afae19ba1fc2098d2405860cf",
@@ -143,7 +143,6 @@
    "listings": {
     "core/atmos/placeholder": "93e72701f4f204e698b400c25d1989704d985203b33d5a076ec9e170c3bb9552",
     "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
-    "kits/iziz-vernacular": "39cd34f0aedc4bfd6257b51c30de2f4c03a6e6fe52148aee456be32b8535914a",
     "kits/iziz-vernacular/dist": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "kits/iziz-vernacular/src": "4add7a31b18bd16063818ad685970c0660bd99fccbc27c50037561a45189976d",
     "kits/iziz-vernacular/targets": "78af7bdb5626eb0a046772b3edda705ca9e60ba7af0960eea89f7fa201d685a8",

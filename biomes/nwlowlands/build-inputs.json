@@ -180,7 +180,6 @@
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
-    "biomes/nwlowlands": "db00be4a7ce9573dc93f4c064efd39413086391a0f06f3f174aeede95943cba3",
     "biomes/nwlowlands/src": "82937487a4f4fd6f57b34edc726b6bc38ea76257f11e72350c9983fa7f901b52",
     "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
     "tools": "24cc9a0d867a37d71596ec8a001087a35735c498125de4e336dde163318589d8",
@@ -336,6 +335,7 @@
     "core/host/91-host-loop.js": "240f833bc2e031506de36b503594acd2939e3f45aee21115effd00666fa66986",
     "core/host/92-host-panel.js": "3d65cd6c0bb873e48eb4189fffad906ab21aef1950164a454254a4fefe7a0b88",
     "core/host/95-host-probe.js": "91a9ef729db002716d0e840ebd6e0efc799f2ae0c99419fb06c3f44eda5f6471",
+    "core/host/host.py": "e0c566abb47f0e84324c13407b8b2e4c0f3566037e92e00c2e92cf8f120e71c6",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
@@ -368,7 +368,9 @@
     "core/water/ext/59-core-water-network.js": "c29d35b449dcc9b1b8e2863f8aacbdb41465e4038b014b300ed9df7a4b8794b1",
     "core/water/ext/59b-core-water-network-draw.js": "fe2e6f3b7d49c2522671d534a6badea0d3f3819287b141e67efa40cbc81cf593",
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
-    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
+    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
+    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
+    "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
     "biomes/nwlowlands/src": "82937487a4f4fd6f57b34edc726b6bc38ea76257f11e72350c9983fa7f901b52",
