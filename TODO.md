@@ -33,39 +33,29 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
   `data/categories.json` lacks: `sfx.interface`, `sfx.impact`, `music.motif`, `sfx.voice`, `mus.loop`, `sfx.env`) and "every clip has a
   source page and a creator". Add the categories (or map the clips onto existing ones) and fix the sources in the audio work's next turn.
 
+## Left red by the second integration pass *(2026-11-11; HANDOFF-REBUILD.md)*
+
+- **Eleven view names with an apostrophe** (check_views, over its baseline), from the merged stations: rift maze (`A spring at the
+  scarp's foot`, `The Ancients' cut gallery ...`, `The scarp's lip ...`; `biomes/rift/verify.py` names the first), scablands highline
+  and highline-nw, swhighlands span (two) and rainwall, abyssal-savannah belt (two), Erewhon's `Citadel — the Treasurer's court`.
+  Rename as Firebliss's were (`2f6a92dcb`), rebuild those five builds, re-verify the pages, update their baseline rows.
+- **The NE wall's `HV('thatch, mats, arrow shafts', ...)`**: `core/hamlet/test-hamlet.js` cannot read "arrow shafts". Add it to the
+  craft rule in `core/hamlet/10-hamlet-wood.js` with the next rebuild that takes core/hamlet (54 pages), or call it `poles` in the kit.
+
 ## With the next scale-model edit *(the owner, 2026-11-09)*
 
 - **Reroute the Ostrukh Riba south into Lake Ostrukh.** The owner agreed that Mid Basin's springs and Lake Ostrukh share one aquifer, fed by the Stalker Range's snow (`biomes/midbasin/PLAN.md`). Today the river runs north from the flagship pool (2,040 m) into Region 99 and ends at 334 m, although its note says it feeds the lake (1,850 m). A southern course needs a carve about 70-80 m deep; its highest point is 2,082 m at 1588,1392. Retrace the river downhill and fix its note. The scale-model edits session (`claude/dreamy-davinci-30f3c1`, edit 5.1.1 at f1d1501cf, artifact version 92) has the details. Held for the next map edit, not done alone. **Not taken by 5.1 edit 3** (`edit_513.py`, 2026-11-09: the Firebliss Range's decisions); its least-cut router and channel carve (`route`, `carve`) are the tools for it. Reed, Nazar and Mungo's plans were corrected with it (`biomes/loom-chasms`, `biomes/godshearth`).
 
 ## Ride along with the next all-builds rebuild
 
-**Sources done 2026-11-09, verified 2026-11-10 (`ccr-55bd6ee1-p1si44-ridealongs`), awaiting the all-builds rebuild** (the coordinator
-rebuilds once, rewrites the baseline once, then deletes these items; the spot rebuilds below were checked and not committed).
-`KSHADOW.units`, the kits/interiors food anchors and `regOccupancy`'s `ground`/`far` flag are done and their pages rebuilt on
-`claude/dreamy-tesla-wzp8hw` (d31bf9b3, 632c024e), whose versions this branch takes:
-- The `dalab` pack: sources done, awaiting the all-builds rebuild (`38-symbols.js` `eye`, `80-cultures.js` appended last; Span's Line
-  and arena pass `culture:'dalab'`; core/sockets has no node test). Spot check: Span `verify.py --assert` OK. Moves the pages that
-  take core/sockets (and through 38-symbols every catalog page).
-- Water breakup on by default: sources done, awaiting the all-builds rebuild (`W.BREAKUP_AUTO=true`; ext/56 listed in all 43 builds
-  that take core/water). `node core/water/test-breakup.js` passes. `test-gaps.js` fails one case (`neutral by default`: draw.shore,
-  draw.flow2) on this branch and equally on 2d530d40, before the flip (and the test turns the breakup off): not this change.
-  Spot checks: nsemiarid, geyser, catch, savage OK. Moves every page that takes core/water.
-- (2026-11-10, not done: needs this rebuild) The catalog's detail maps have no `tile` family (`kits/catalog/materials.json`): the
-  glazed-tile furniture of the Xanadu, Iziz, Eastern Abyssal and Republican sets is the one family drawn untextured (4,128
-  triangles on the Xanadu sheet). Add a `tile` row on the library's `ceramic.glaze` (or `tile.hex.ceramic`), `python3
-  tools/textures/pack.py kits/catalog`; it moves every page bundled with `tex=True` (Iziz's palace, the isle demo, Pinnacle
-  Rock, Beast Riders, Highlands, Xanadu).
-- (2026-11-10, not done: needs this rebuild) The Highlands set's great-building room kinds (`chamber committee gallery lobby guard
-  war_room armoury magazine audience signals cell`, registered in `kits/interiors/sets/highlands.js`) move to
-  `kits/interiors/src/30-programs.js`, as the owner's brief of 2026-11-09 asked; that file reaches every furnished page.
-- The fauna runtime and the bison size table: the source is in place (pages only); rebuild the pages that bundle the kit.
+**Taken by the second integration pass** (`claude/integration-2`, 2026-11-10 and 11; HANDOFF-REBUILD.md): the `dalab` sockets pack,
+water breakup on by default, the catalog's `tile` detail family, the Highlands great-building room kinds in `30-programs.js`, the fauna
+runtime and bison table, and the `tools/` listing staleness (every build rebuilt): all rebuilt and GPU-verified, items deleted.
 - **KSTRATA recipe `obsidian`** (`scoria` has since landed) (2026-11-09, `biomes/twins/PLAN.md` section 0.1): the Twins' plan names them for its coulees and
   spatter cones; `core/terrain/35-core-strata.js` has `tibasalt` as the nearest. Adding a recipe changes every page that inlines the file, so
   it waits here; station 1 draws its faces as `tibasalt` and its obsidian as items and a ground class until then.
-- **The `tools/` listing** (2026-11-10, the cloud lanes): `tools/cloud_lane.py` and `tools/CLOUD-LANE.md` are new names in `tools/`, which
-  eight builds record as a listing input (kits/catalog, crops, interiors, mechs, motor-vehicles, port; settlements/isle-demo, longsong), so
-  `check_stale` calls them stale though no file they read changed. Their next rebuild clears it. Worth a look: the listing likely comes from
-  Python's importer reading `tools/` when a build imports from it, so any new tool file does this.
+- **Any new file in `tools/` stales eight builds** (kits/catalog, crops, interiors, mechs, motor-vehicles, port; settlements/isle-demo,
+  longsong record `tools/` as a listing input, likely Python's importer reading it): a rebuild clears it; worth a fix in `build_sources`.
 - **Switch on checks 22-31 everywhere** (the survey of 2026-11-11, CORE-IMPROVEMENTS.md items 22-31; landed opt-in on
   `claude/survey-checks` with no page moved). Items 22 (lane without `KRATOR_GL=gpu`), 24 (DOCS-ONLY) and 31 (STALE PASS) are on
   already. The rest is `tools/checks_optin.json`; set each check's `"builds"` to `"*"` in this order, inside the rebuild:

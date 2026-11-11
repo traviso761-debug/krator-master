@@ -38,12 +38,14 @@ The Audio Lab branch carried an older copy of the scale-model build: HEAD's 5.1 
 `41-world-fields.js`, which is now `core/world` that five builds read; and `claude/review-round-3` (contains `pelvis-tilt`,
 `sleeve-cover`, `clothing-round-3`, `hand-props-3`, `limb-fixes-3`): the 2026-10-26 posture round 3, real and not superseded, but
 its kit masks clash with the garment session's and need re-running in Blender from the local pieces: hand it to the garment work.
-**Firebliss** (`claude/firebliss-80cc25`, asked in by the owner) was merged, built and verified, then reverted (9375e188a):
+**Firebliss** (`claude/firebliss-80cc25`, asked in by the owner) was merged, built and verified, then reverted (9375e188a; **merged
+again in the sweep below, its failures fixed**):
 station 1 passes; east (the Weyt Warra's lahar volume) and mons (the crater hollow's gas volume) fail `registered-volumes-non-empty`;
 glen runs the geyser kit's floor over the glen, three items past the cap with no `capWhy` (strap 301k, fern 402k, grass 303k).
 
 **The outer walls** (`origin/claude/neouterwall-s1`, `origin/claude/seouterwall-s1`, asked in by the owner as whole kits) were merged, built and
-verified, then reverted (b0fc0b069, d5fccd6f8). NE: cave (11 of 15 roof-cupola volumes empty), portal and shoulder (`export-profile`: no
+verified, then reverted (b0fc0b069, d5fccd6f8; **the NE wall merged again in the sweep below, its failures fixed; the SE wall stays
+out**). NE: cave (11 of 15 roof-cupola volumes empty), portal and shoulder (`export-profile`: no
 tree buckets in the box) fail; badlands, garnet, steam and the main page pass. SE: ambertarn (`export-profile`) and gatetarn
 (nwouterwall's stipa 293,954 past the instance cap, no `capWhy`) fail; coppertarn passes; the rest were stopped. The SE wall and
 Godshearth both added `core/atmos/fx/89-atmos-fx-katabatic.js` with different `ATMOS.katabatic` APIs: at its next merge, give the SE
@@ -82,7 +84,37 @@ Fixed on the way: the isle-demo world's Nephtos bundle (`bundles.py` reads the A
 fern and sedge cards held by their stems (`check_cells --fix`); `core/charactermodels/build.py --list-sources` (dep_graph) and the
 Godot character data synced; Greenstep loamstep's oak view out of the crowns.
 
-**Verified on the GPU** (`KRATOR_GL=gpu`, `--assert`, plus `--all-views` on every biome and station page, `--interiors` on Erewhon):
+**Verified again after the sweep** (2026-11-11, the same arguments): the sweep's rebuild (262 commands, Longsong blocked) changed 290
+pages; **277 pass on these bytes**, 212 of them on the cloud lanes (two vast.ai machines, six lanes: `vast0`-`vast1` on 2x RTX PRO 4000,
+`vast2`-`vast5` on 4x RTX 4060 Ti), 36 RTX, 13 Arc, 15 cached passes, 1 with no renderer line; `PORT-BASELINE.json` rewritten for
+those 277 only. The 13 left are the known failures listed below (guilin, Dalab, Mav's, Locus x3 with locus-plants now failing only the
+key map, Yuni x3, Pinnacle Rock, Voth city, sockets-example) plus the isle demo's unchecked artifact copy. The cloud's first try of a
+page often fails `page-errors` on "Unexpected identifier 'https'": the machine lacked an LFS file and ran its pointer; the lane sends the
+file and reruns, and the rerun is the result. Dhelv fails `shader-errors` (99) on the 4060 Ti machine and passes on the local RTX: a
+driver difference, not the page. sedesert's two animal views follow a moving animal and once stood 0.43 m from a boulder: they now take
+the roomiest of 16 eyes round it (`99-host-take.js`, `eyeRoom`). Wall time about 2.25 h for 290 pages (the first pass: about 9 h for 350
+on two local lanes); build times per command fell (659 s to 446 s summed over the 208 commands in both rebuilds).
+`PORT-BASELINE.json` still holds 35 rows for pages no longer built here (`settlements/port/dist/*`, now `kits/port`; little-demo, archived;
+`core/sockets/example`, now `kits/post-apoc`): a `--write --prune` once the tree is clean drops them.
+After the sweep: fingerprints (engine, furnish) read `same`; Godot 4.7.2 37/37 (klava timed out once under the verify load and passes
+alone in 114 s). `test_all.py --no-build` (210 steps) after these fixes: `check_insulation` read only core's source files, not its
+texture library (1347 s to 34 s; a `host/site` probe in a core .js still fails it); Firebliss's and the NE cave's view names without an
+apostrophe (pages rebuilt, re-verified); `core/atmos/fxdemo` reports its sources through `build_sources` (its stale page rebuilt and
+verified); the Godot character kits synced; the transit furniture test reads `core/catalog/krator-furniture-core.js` (the merge kept
+the valley's old path); `core/hamlet/test-hamlet.js` skips a kit whose `HV` is not the wood tag (Firebliss's `HV(use, ...)` for rocks);
+the span preview (`swhighlands --station pillars --preview span`, missed by the rebuild list) rebuilt and verified on the Arc. Baselined as
+deliberate, each read: the radiation pass's `CAMPOS` and `RAWTEX` x3 (a full ShaderMaterial; a depth texture and the encoded frame), the
+vehicles' `2 / (s.n || 2)` (0 would divide by zero), the valley's creeper and mosshang cells (picked in code), the W wall's puyaspike
+cut, riftrim's `KCITY.stance` (behind `TUNE.stance`, which riftrim never sets), engines' `EN_HEX.computeBoundingBox` (a three.js
+method), iziz-cluster's five window clashes (Girder's and Mav's sources together, as `beast-riders.html` already carries). **Left
+failing, owed:** `check_views`, eleven view names with an apostrophe from the merged stations (rift maze x3, scablands highline and
+highline-nw, swhighlands span x2 and rainwall, abyssal-savannah belt x2, Erewhon's Treasurer's court): a rename means rebuilding five
+builds and re-verifying their pages; `core/hamlet`, the NE wall's "arrow shafts" (a craft rule in `10-hamlet-wood.js` reaches 54
+pages); `core/audio/test-audio.js`, 68 clips in categories `categories.json` lacks (`sfx.interface`, `sfx.impact`, `music.motif`) and
+5 clips without a source URL (two Drones pack beds, three user uploads), as `a1e202d37` committed them (the Audio Lab's call);
+`check_stale` for Longsong (blocked, below).
+
+**Verified on the GPU, first pass** (`KRATOR_GL=gpu`, `--assert`, plus `--all-views` on every biome and station page, `--interiors` on Erewhon):
 350 pages run, **336 pass on these bytes (281 RTX, 54 Arc, 1 metropolis on the RTX lane whose verify prints no renderer line)**;
 `PORT-BASELINE.json` rewritten for those 336 only. Still failing, rows left as they were, none from this pass's merges:
 - known: guilin (frozen), Dalab's instance cap, Mav's walk-and-reach, Locus's three sheets and Yuni's three pages on the one key map
@@ -106,7 +138,8 @@ and Gemini's second opinion (`OPTIMIZATION-PLAN-2026-11-10.md`), with the cloud 
 **Owed:** Longsong's rebuild (the garment branch's 112 new Xanadu and Order outfit pieces are published only in the garment
 session's worktree: rebuild once they are; its page stays the allbuilds one, verified there); the Audio Lab's 147 `||` defaults and its
 catalogue test's two failing checks (TODO.md); the gallery republish (a wide change: ask the owner); the cloud's `-goldenway` branch;
-the Ancient's Valley family; Firebliss, hook-p1 and review-round-3 above.
+hook-p1, review-round-3, the SE outer wall and dreamy-davinci's model edit (above); Voth city's embassies and Arena flight (the
+city-layout work); `PERF-PLAN.md`'s owner gates.
 
 ## Triage of the 14 parallel merges (2026-11-09, `ccr-55bd6ee1-p1si44-triage`)
 
