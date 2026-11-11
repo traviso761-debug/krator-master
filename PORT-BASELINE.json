@@ -109,16 +109,16 @@
    "sha256": "60162058150c01a7b44188eba4740b3835723b98e1576d700ad471afe1f3f7e3"
   },
   "biomes/ebadlands/dist/ebadlands-canyons.html": {
-   "bytes": 5856896,
-   "sha256": "3e115827e0dfe04425c39e909204247524c9118cfeec43798848f27efa1f707b"
+   "bytes": 5857069,
+   "sha256": "63c8895de1c4f6f5455e5e3b0557b96d66c6f1552f4d85b59fd3526fad89520d"
   },
   "biomes/ebadlands/dist/ebadlands-montane.html": {
-   "bytes": 5856872,
-   "sha256": "aba9dab96720e62fb5ffecab9b65416671a207315dfbc92a17ec77626a458398"
+   "bytes": 5857045,
+   "sha256": "89064af836599dee60e2e3d7ffc7d41de17d47a16c8da7559b0cc8d92057da36"
   },
   "biomes/ebadlands/dist/ebadlands-tundra.html": {
-   "bytes": 5857382,
-   "sha256": "382b877aed5c1852ad8afdc0f1e64a6e118bfb6300b4c7e92891126f94050e76"
+   "bytes": 5857555,
+   "sha256": "40308beadf5ab47efcb47e93862f064d741ac0818bb558ae898910a8b38bcad3"
   },
   "biomes/ebadlands/dist/ebadlands-waste.html": {
    "bytes": 6043152,
@@ -293,20 +293,20 @@
    "sha256": "c7184a41298dcb257e8c00022ae66ef83afe0518dcbe6ad60cc5788bc810ef43"
   },
   "biomes/highrift/dist/highrift-coulee.html": {
-   "bytes": 5130531,
-   "sha256": "14accd9cc13cde1ef65de90f546826628ff891952ab3b4d6be1ec4eb802abecd"
+   "bytes": 5130704,
+   "sha256": "93457531596207335a635ca785a4ab58c86619c4da23ee3d6b7f721977d98505"
   },
   "biomes/highrift/dist/highrift-gjar.html": {
-   "bytes": 5130525,
-   "sha256": "393c90de3d9c412741e5130bcb5dadce8571b178fd6573cd3359321e0f66d899"
+   "bytes": 5130698,
+   "sha256": "700927a5d1b38f623438b0f0c14f080a05bdf8ee72bfc5706247c16626c42bba"
   },
   "biomes/highrift/dist/highrift-mirror.html": {
    "bytes": 6188977,
    "sha256": "b9e44cb532693cccadeafe48914684f67bbe92d4eac857fb14c6a0570be68a56"
   },
   "biomes/highrift/dist/highrift-wedge.html": {
-   "bytes": 5130528,
-   "sha256": "111d3c96458f1be602f7493807e4cd1710ed626a3d51c2c2aed42affc213060d"
+   "bytes": 5130701,
+   "sha256": "d11115ced14486287f01880ba4e853bf001e971ebbbe66301ef4eb5761e7f2f3"
   },
   "biomes/highrift/dist/highrift.html": {
    "bytes": 5130453,
@@ -433,8 +433,8 @@
    "sha256": "a615f36ca12e5e3366b64663321a75a3e69f588215ee5b3e066c415018834ae7"
   },
   "biomes/oidong/dist/oidong-passes.html": {
-   "bytes": 3621631,
-   "sha256": "ee87664ce2ea97526df98e37ae87153ae67e57229c87f890b4a5a2795ddbecf0"
+   "bytes": 3621804,
+   "sha256": "d33eaacd32693f864e64780d87513431a6937a69e43d18093e17f708f06b48e5"
   },
   "biomes/oidong/dist/oidong.html": {
    "bytes": 3644954,
@@ -445,24 +445,24 @@
    "sha256": "89f5fe506d528ee6ece3af12ddfabf6afb66afab34add2cecedd85fd5996e4a7"
   },
   "biomes/rift/dist/rift-highland.html": {
-   "bytes": 7529757,
-   "sha256": "fca5b7ea64b005f096db9055d4b7f6540770554d7e1e592be422dc75c8cd556d"
+   "bytes": 7530032,
+   "sha256": "33e6b9c0fbc993b539cf2e8f7a9aadc6a3e1523b9a79a1270f904476d306f20a"
   },
   "biomes/rift/dist/rift-jungle.html": {
-   "bytes": 7537753,
-   "sha256": "a70cd3bb7d06d44d3bf5ab236a4bcfa8a7e5b2612dd363b5c5dedfedac1dedd2"
+   "bytes": 7538162,
+   "sha256": "f22554bb6bb0c8a5ccf8acd1c9e70ffc1528a9b67ccd84ffafb5201d138ab272"
   },
   "biomes/rift/dist/rift-maze.html": {
    "bytes": 1390544,
    "sha256": "bfaf1d62ed4733629dc394bdafe3f15d7c69b937f8b8b0baa2ee25429ab0b07b"
   },
   "biomes/rift/dist/rift-plateau.html": {
-   "bytes": 8154857,
-   "sha256": "a29f31bef5e7c506308b9ec393a55f0982afb3a24d856cde0f81c4e3b2cab843"
+   "bytes": 8155132,
+   "sha256": "4fe04cbbdf3cd0e81069a70bc93d1aeed34493deaade396425a2e501015d5c05"
   },
   "biomes/rift/dist/rift-savannah.html": {
-   "bytes": 7971233,
-   "sha256": "8da7f9db7df138988d5cf40447d1c92ccc0d6106f74bad19da6d7502ac1713b2"
+   "bytes": 7971827,
+   "sha256": "326cf42c65bd309756bbad245470bdb12c7b29dd75c577a71f10e56cddc385e0"
   },
   "biomes/rift/dist/rift.html": {
    "bytes": 7521805,
@@ -565,16 +565,16 @@
    "sha256": "0356b1e0d096b9b6a57b6e01fb60805f6838aafcacaf13d96a119f78ebba6881"
   },
   "biomes/swhighlands/dist/swhighlands-rainwall.html": {
-   "bytes": 4715204,
-   "sha256": "2b8b4cf148fc7713487fcbfecd8e960ad49be4ee014e9b75c808cd352b0a1a80"
+   "bytes": 4727740,
+   "sha256": "fa313e0b39f939e51416f8175787842ac107283a2f734f3f08fd1eb89983c6ab"
   },
   "biomes/swhighlands/dist/swhighlands-span.html": {
    "bytes": 5917098,
    "sha256": "7d4ac7caac43e09d0719b2d4008ff252a24598c34cdef5a0eb311eb8d45217f6"
   },
   "biomes/swhighlands/dist/swhighlands-treeline.html": {
-   "bytes": 8813732,
-   "sha256": "e0400f798076e34a61f53d784bcabe563bc50ae46fd0d713e25fee575df73ec3"
+   "bytes": 8813905,
+   "sha256": "3b922c0fb4accc64c55095e7cf309961bc00850a951ed09c8d35a576a55d31fc"
   },
   "biomes/swhighlands/dist/swhighlands.html": {
    "bytes": 4681419,
