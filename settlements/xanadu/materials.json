@@ -568,8 +568,7 @@
    "normalScale": 0.5
   },
   "xZel": {
-   "lib": "patterns/common/zellige-rosette-colour",
-   "owed": "patterns/xanadu/zellige-star",
+   "lib": "patterns/xanadu/zellige-star",
    "scale": [
     1.6,
     1.6
@@ -582,8 +581,7 @@
    "normalScale": 0.5
   },
   "xHaft": {
-   "lib": "patterns/common/mosaic-arabesque-lapis",
-   "owed": "patterns/xanadu/haft-rangi",
+   "lib": "patterns/xanadu/haft-rangi",
    "scale": [
     1.2,
     0.8
@@ -596,8 +594,7 @@
    "normalScale": 0.5
   },
   "xGiltC": {
-   "lib": "patterns/common/mosaic-star-lapis",
-   "owed": "patterns/xanadu/mughal-gilt-ceiling",
+   "lib": "patterns/xanadu/mughal-gilt-ceiling",
    "scale": [
     1.2,
     1.2
@@ -610,8 +607,7 @@
    "normalScale": 0.5
   },
   "xYes": {
-   "lib": "plaster.patterned_clay_plaster",
-   "owed": "stone.stucco.yeseria",
+   "lib": "stone.stucco.yeseria",
    "scale": [
     1.5,
     1.5
@@ -624,8 +620,7 @@
    "normalScale": 0.9
   },
   "xMuqT": {
-   "lib": "patterns/common/zellige-lotus-teal",
-   "owed": "tile.muqarnas.turquoise",
+   "lib": "tile.muqarnas.turquoise",
    "scale": [
     1.2,
     1.2
@@ -638,8 +633,7 @@
    "normalScale": 0.5
   },
   "xBandR": {
-   "lib": "patterns/common/kilim-banded-brown",
-   "owed": "patterns/xanadu/peacock-band",
+   "lib": "patterns/xanadu/peacock-band",
    "scale": [
     1.5,
     1.5
@@ -652,8 +646,7 @@
    "normalScale": 0.5
   },
   "xPietra": {
-   "lib": "patterns/court/opus-sectile",
-   "owed": "stone.pietra-dura",
+   "lib": "stone.pietra-dura",
    "scale": [
     1.2,
     1.2
@@ -679,8 +672,7 @@
    "normalScale": 0.7
   },
   "xMarW": {
-   "lib": "rock.marble.white",
-   "owed": "stone.marble.calacatta",
+   "lib": "stone.marble.calacatta",
    "scale": [
     2,
     2
@@ -693,8 +685,7 @@
    "normalScale": 0.4
   },
   "xMarK": {
-   "lib": "rock.marble012",
-   "owed": "stone.marble.black",
+   "lib": "stone.marble.black",
    "scale": [
     2,
     2

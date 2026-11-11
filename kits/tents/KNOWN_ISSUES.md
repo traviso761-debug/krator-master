@@ -5,7 +5,10 @@ Open (the build prints each `- [ ]` line):
 - [ ] The tent toolkit is read in place from kits/scyvoi (vendored identical in three kits): move it to core (PLAN.md, Next 1)
 - [ ] No half-pitched or packed pose per tent yet (core/camp C2)
 - [ ] Verified on SwiftShader only (the cloud container has no GPU): run verify.py --assert on a GPU lane before the gallery
-- [ ] Two textures owed: the Republican army's proofed canvas and the Eternians' ripstop (PROMPTS-NEEDED.md section 42)
+- [ ] The Republican army's and the Eternians' covers are on their own sets since 2026-11-10 (`cloth.canvas.duck.army` as the family `armyc`,
+      `cloth.ripstop` as `ripstop`: materials.json, the two dresses' `cover.key` in `41-tn-dress.js`, the key tables and KIT_FALLBACK in `26k-kit.js`;
+      tex/ packed; PROMPTS-NEEDED.md section 42 pruned). The page is not rebuilt yet: check both dresses at the next rebuild (the ripstop's
+      roughLift is .15 for its coated sheen; the army canvas keeps the canvas family's breakup)
 
 Notes (deliberate, not bugs):
 

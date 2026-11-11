@@ -43,7 +43,7 @@ const TN_DRESS={
   emblem:'sun',field:'#e07a2a',ink:'#f3e2c0',ink2:'#2f8f8a',door:'tieback',rope:0xd8c49a,stake:{key:'iron',col:0x4a4440},floor:{key:'rug',col:0x2f8f8a},
   wear:{new:2,worn:3,patched:1,ragged:0}},
  republican:{name:'Highlands Republican army',culture:'republican',furn:'republican',
-  cover:{key:'canvas',cols:[0x6e6a4a,0x74704e,0x66624a]},alt:[0x5a5640],pattern:'none',band:null,lining:null,valance:null,
+  cover:{key:'armyc',cols:[0x6e6a4a,0x74704e,0x66624a]},alt:[0x5a5640],pattern:'none',band:null,lining:null,valance:null,
   pole:{key:'wood',col:0x4a3a28},finial:{kind:'spear',key:'iron',col:0x3a3632},emblem:'triskele',field:'#7a2028',ink:'#f0e6cc',ink2:'#2a8a86',
   door:'roll',rope:0x8a7a5a,stake:{key:'iron',col:0x3a3632},floor:{key:'earth',col:0x7a6a4a},wear:{new:3,worn:2,patched:0,ragged:0}},
  xanadu:{name:'Xanadu (Sultanate silk)',culture:'xanadu',furn:'xanadu',
@@ -60,7 +60,7 @@ const TN_DRESS={
   pole:{key:'scrapm',col:0x8a7a6a},finial:{kind:'none'},emblem:'gear',field:'#5a4a3a',ink:'#d0c0a0',ink2:'#2a2420',door:'roll',
   rope:0x7a6a50,stake:{key:'iron',col:0x6a4a3a},floor:{key:'earth',col:0x6a5a48},wear:{new:0,worn:1,patched:3,ragged:2}},
  eternian:{name:'Eternians',culture:'eternian',furn:'eternian',
-  cover:{key:'canvas',cols:[0xc8a860,0xbc9c58]},alt:[0x1c1a18],pattern:'border',band:'patEter',lining:'patEter',
+  cover:{key:'ripstop',cols:[0xc8a860,0xbc9c58]},alt:[0x1c1a18],pattern:'border',band:'patEter',lining:'patEter',
   valance:{cols:[0x1c1a18,0x24201c],tassels:0xd8b060},pole:{key:'wood',col:0x2a2420},finial:{kind:'ball',key:'brass',col:0xd8b060},
   emblem:'scroll',field:'#1c1a18',ink:'#d8b060',ink2:'#c8a860',door:'tieback',rope:0x6a5a40,stake:{key:'iron',col:0x3a3632},floor:{key:'rug',col:0x5a3a28},
   wear:{new:3,worn:2,patched:0,ragged:0}}

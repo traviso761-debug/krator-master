@@ -5,26 +5,23 @@ Open items are `- [ ]` lines; build.py prints them.
 - [ ] (2026-11-10) **The Pleasure Dome's interior: what is not there yet.** Built hollow in the black-and-white pattern system
       (`citadel/PLEASURE-DOME.md` has the record and the table against the owner's twelve references). Open: the catalog
       furniture is still the court set's colours (a tint in core/furnish's draw is owed) and comes only with `?interiors=1`; both
-      stones are one grey library marble, `rock.marble012` as the family `xMarble`, standing in for `stone.marble.black` and
-      `stone.marble.calacatta` (`core/materials/PROMPTS-NEEDED.md` section 41; wired as the optional families `xMarbleB` and
-      `xMarbleW`), and the op-art wallcovering is the shader's until `patterns/xanadu/op-art-arcs` (`xOpArt`) arrives; no pierced
+      stones' sets (`stone.marble.black`, `stone.marble.calacatta`) and the op-art sheet (`patterns/xanadu/op-art-arcs`) arrived 2026-11-10
+      and are packed (`xMarbleB`, `xMarbleW`, `xOpArt`), so the built page shows them at its next rebuild (until then it is on
+      `rock.marble012` as `xMarble` and the shader's op-art): check their scale and the black stone's gloss then; no pierced
       plaster ceilings, round windows, rib vaults or pierced balustrades; the Sultan's lattice box and the Golden Way are not
       drawn; two stair halls are additions to the blueprint. The Dome of the Bay is hollow too (one rotunda, no furniture). The
       Dome's block overlaps the palace's and the temple's lots by a metre: the combined rebuild checks that seam.
-- [ ] (2026-11-09) **The citadel's textures are library stand-ins until the owed sets arrive.** Erewhon's citadel (kits/xanadu
-      78l-78n, the interior set kits/interiors/sets/xanadu-citadel.js) draws its surfaces through eleven MAT keys, each a family
-      in materials.json (both copies) with the set it is owed (`owed`, core/materials/PROMPTS-NEEDED.md section 41) and a library
-      fallback (`lib`) packed now: xZel zellige (owed patterns/xanadu/zellige-star; stand-in patterns/common/zellige-rosette-colour),
-      xHaft haft-rangi (patterns/xanadu/haft-rangi; mosaic-arabesque-lapis), xGiltC the Mughal gilt ceiling
-      (patterns/xanadu/mughal-gilt-ceiling; mosaic-star-lapis), xYes yeseria (stone.stucco.yeseria; plaster.patterned_clay_plaster
-      tinted ochre), xMuqT muqarnas tile (tile.muqarnas.turquoise; zellige-lotus-teal), xBandR the rainbow band
-      (patterns/xanadu/peacock-band; kilim-banded-brown: brown, not a rainbow, the weakest stand-in), xPietra pietra dura
-      (stone.pietra-dura; patterns/court/opus-sectile), xMarW white marble (stone.marble.calacatta; rock.marble.white), xMarK black
-      marble (stone.marble.black; rock.marble012 darkened), xJaliC the jali card (patterns/xanadu/jali, `optional`: the procedural
-      jali alpha until the card is delivered and keyed by tools/textures/cards.py). xSandR (red sandstone) is the library's own
-      rock.sandstone.red, owed nothing. On delivery: set `lib` to the `owed` id in both materials.json, pack, rebuild. The door
-      leaves and beams want carved cedar (wood.cedar.moorish, added to section 41). tex/ was packed for the new families only
-      (pack.py's own process(); the other families' sources were not pulled in this checkout).
+- [ ] (2026-11-09, delivered 2026-11-10) **The citadel's textures: nine of the eleven owed sets are wired, the page not yet rebuilt.** Erewhon's
+      citadel (kits/xanadu 78l-78n, the interior set kits/interiors/sets/xanadu-citadel.js) draws its surfaces through eleven MAT keys, each a
+      family in materials.json (both copies). On 2026-11-10 the owner delivered ten of section 41's eleven (`core/materials/PLAN.md`, "Delivered
+      2026-11-10") and nine families went onto their sets (`owed` dropped): xZel patterns/xanadu/zellige-star, xHaft patterns/xanadu/haft-rangi,
+      xGiltC patterns/xanadu/mughal-gilt-ceiling, xYes stone.stucco.yeseria, xMuqT tile.muqarnas.turquoise, xBandR patterns/xanadu/peacock-band,
+      xPietra stone.pietra-dura, xMarW stone.marble.calacatta, xMarK stone.marble.black (the Domes' xMarbleB, xMarbleW and xOpArt were already on
+      those ids). Still a stand-in: xJaliC (patterns/xanadu/jali, `optional`: the procedural jali alpha until the card is delivered and keyed by
+      tools/textures/cards.py). xSandR (red sandstone) is the library's own rock.sandstone.red, owed nothing. `wood.cedar.moorish` (the door
+      leaves, shutters and painted beams) is in the library since 2026-11-10 but has no family yet: the leaves are core/door's panel leaf in the
+      kit's dark wood and the beams flat paint until the kit takes it up. tex/ of both copies is packed; rebuild and verify Xanadu and Erewhon,
+      and check the families' scales (haft-rangi and the peacock band tile a non-square period squeezed square) and the marbles' gloss.
 - [ ] (2026-11-09) **Erewhon's citadel: what is built and what is not.** Built (kits/xanadu/src/78n-xa-citadel.js): the Sultan's
       palace (E1, E2a, E2b: 46 rooms, the forecourt, the two ranges, the palace block, the Sultan's floor, the roof terrace and
       the ochre block under the twin domes, the Ramp of the Sultan as two laps from the Hall of Gifts to the bath and the roof),

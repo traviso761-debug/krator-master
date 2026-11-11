@@ -34,6 +34,42 @@
     "cell": 4
    }
   },
+  "armyc": {
+   "lib": "cloth.canvas.duck.army",
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": {
+    "keep": 0.15,
+    "mean": 0.8
+   },
+   "roughLift": 0.35,
+   "specular": 0.2,
+   "breakup": {
+    "mix": 0.4,
+    "macro": 0.06,
+    "cell": 4
+   }
+  },
+  "ripstop": {
+   "lib": "cloth.ripstop",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 0.15,
+    "mean": 0.8
+   },
+   "roughLift": 0.15,
+   "specular": 0.2,
+   "breakup": {
+    "mix": 0.4,
+    "macro": 0.06,
+    "cell": 4
+   }
+  },
   "goat": {
    "lib": "cloth.tent.black",
    "scale": [

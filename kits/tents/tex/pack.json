@@ -1,6 +1,40 @@
 {
  "build": "tents",
  "families": {
+  "armyc": {
+   "breakup": {
+    "cell": 4,
+    "macro": 0.06,
+    "mix": 0.4
+   },
+   "card": false,
+   "files": {
+    "map": "armyc.albedo.webp",
+    "normalMap": "armyc.normal.webp",
+    "roughnessMap": "armyc.rough.webp"
+   },
+   "lib": "cloth.canvas.duck.army",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.35,
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "42b7c58afae35f440640de7bce50c320ad5d6cba",
+    "normal": "83e643a33869a651de9f39eef659a3b83337d84b",
+    "roughness": "01057bd9b0136a7626876bc5a5a57540d9d9da37"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.15,
+    "mean": 0.8,
+    "sourceMean": 0.5039
+   }
+  },
   "ashc": {
    "breakup": null,
    "card": false,
@@ -1367,6 +1401,40 @@
     "keep": 1.0,
     "mean": 0.6041541282833324,
     "sourceMean": 0.6042
+   }
+  },
+  "ripstop": {
+   "breakup": {
+    "cell": 4,
+    "macro": 0.06,
+    "mix": 0.4
+   },
+   "card": false,
+   "files": {
+    "map": "ripstop.albedo.webp",
+    "normalMap": "ripstop.normal.webp",
+    "roughnessMap": "ripstop.rough.webp"
+   },
+   "lib": "cloth.ripstop",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.15,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "0ea044a6c95620ee4e0909abfecfc37658191c37",
+    "normal": "797f0b28357c1e1cd1b31aa069e661ade7161cef",
+    "roughness": "559fafbe3d015c4766f9d6744c321bbc72fe66bb"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.15,
+    "mean": 0.8,
+    "sourceMean": 0.6071
    }
   },
   "rope": {
