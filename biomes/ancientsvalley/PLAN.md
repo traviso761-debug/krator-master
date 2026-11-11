@@ -507,6 +507,11 @@ are open frames once ruined (`MP.ruinDesign` cuts the glass and the floors), the
   doorway rubble (two towers on a corner, doors facing), or by a cutting or sinkhole deeper than 2.5 m in its plinth is never open and is left out
   of the blocked check (its way is shut by something else). A door within 1.6 m of its flight's head may stand past its plinth's edge (the slab
   towers were drawn turned against their plinths until the parent session's -yaw fix); its flight ends at the door and a level path runs 4 m in.
+- **Walls** (the second pass, 2026-11-10): every standing tower's ground outline as `KWALK` blocks every 1.5 m (the design heroes' own lobby
+  outlines, `userData.walk`; the Spindle's skirt and fins and the Ledger's arcade from their records), open only in the door's corridor of an open
+  or stair-blocked tower; a blocked tower is then blocked everywhere, not only at its rubble. A door whose way in its own walls cut (an inner
+  lobby ring, known only off the hero) is shut at its door before anything is registered (76). The families of several bodies (`F.towers`: the
+  Organ, the Pods, the Crescent) have no climb, and intact towers never open.
 - **A climb** for an open tower (`AV.climb(F, state, T)`): the family's storeys (`F.levels`, each `y` and `h`) up to what the ruin leaves:
   intact and gutted to the roof, the rest to the whole skin's top (`MP.ruin`'s cut less its torn depth), at most 70 storeys. On each, **a plate**
   (a disc of 0.8 of the skin's radius at that height, `F.envR` or the Spindle's lathe, from 2 m outside the stair to 26 m; a slab family without
