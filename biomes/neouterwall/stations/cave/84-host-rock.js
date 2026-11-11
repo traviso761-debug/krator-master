@@ -23,6 +23,10 @@ const ROCK=(function(){const G=65535,Y1=SITE.net.levels[0].y,Y0=SITE.net.level,T
    w[1]=clamp(smooth(.55,.75,KRAND.fbm(x*.01,y*.08,z*.01,2,73))*(.4+.6*n1)*(up?.8:.5),0,1);   /* the skarn's bands: lenses round the marble */
    w[0]=ch.prim[i]===G?0:clamp(Math.max(smooth(.45,.85,ny)*smooth(9,1.5,hf)*.8,smooth(2.6,.4,hf)*.7,crust*.6,up?0:smooth(TB+7,TB+1,y)*.85),0,1);}});
  const grp=R.group;scene.add(grp);
+ /* the probe's samples (core/host 95, regOccupancy): one merged chunk is one box centre, so the cupolas and the pools, open air bounded by this
+    rock, read empty; every 24th vertex of each chunk is a sample, so a volume counts the rock drawn round it */
+ grp.traverse(o=>{const P=o.isMesh&&o.geometry&&o.geometry.attributes.position;if(!P||o.userData.probeSkip)return;const a=[];
+  for(let i=0;i<P.count;i+=24)a.push(P.getX(i),P.getY(i),P.getZ(i));o.userData.probePoints=a;});
  /* the daylight at each vent's top and the fumarole's: a disc of sky over the throat (unlit, unfogged) */
  const sky=new THREE.MeshBasicMaterial({color:0xe9eef4,fog:false});
  CAVE.throats.concat(CAVE.fumarole?[Object.assign({fum:true},CAVE.fumarole,{r:CAVE.fumarole.r*1.3})]:[]).forEach(T=>{const d=new THREE.Mesh(new THREE.CircleGeometry(T.r+1.2,24),sky);d.rotation.x=Math.PI/2;d.position.set(T.c[0],T.ground+2.5,T.c[1]);

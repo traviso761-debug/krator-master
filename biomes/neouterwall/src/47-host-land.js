@@ -122,7 +122,6 @@ BIO.init({tags:'neouterwall',THREE:THREE,scene:scene,terrainH:terrainH,field:FIE
  eye:()=>[camera.position.x,camera.position.y,camera.position.z],
  lod:{hero:400,mid:950,far:SITE.R*1.2,floor:SITE.floor||[260,600]}});   /* SITE.floor: a station's floor band (4: the dry steppe's plumegrass under its cap) */
 BIO.setSun([sun.position.x,sun.position.y,sun.position.z]);
-window._exportBox=[Math.round(SPINE[0][0])-150,Math.round(SPINE[0][1])-150,Math.round(SPINE[0][0])+150,Math.round(SPINE[0][1])+150];   /* verify.py's export profile: where the page grows */
 _mark('init');
 
 // ---------------------------------------------------------------- the library layers (or procedural without the pack)

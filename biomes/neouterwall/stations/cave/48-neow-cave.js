@@ -38,6 +38,7 @@ const CAVE=(function(S){
  C.hall({id:Hh.id,owner:'neouterwall',c:[cx,hy,cz],rx:Hh.rx,rz:Hh.rz,h:Hh.h,belly:Hh.belly});
  const hallCupolas=Hh.cupolas.map((q,i)=>{const x=cx+q[0],z=cz+q[1],e=Math.hypot(q[0]/Hh.rx,q[1]/Hh.rz),top=hy+Hh.h*Math.sqrt(Math.max(0,1-e*e))-2;
   C.hall({id:Hh.id+':cupola:'+i,owner:'neouterwall',c:[x,top,z],rx:q[2],rz:q[2],h:q[3],belly:.1});return {id:Hh.id+':cupola:'+i,c:[x,top,z],r:q[2],h:q[3]};});
+ C.build();   /* every primitive is in: write the floors and list the chunks (without it the rock has no chunk and none is drawn) */
  const focus={id:Hh.id,c:[cx,hy,cz],rx:Hh.rx,rz:Hh.rz,h:Hh.h,storey:TOP,name:Hh.name,net:F0.id};
  // ---------------------------------------------------------------- the warmth (KTHERM over the hot chambers' feeders: one field)
  const feeders=[...new Set(hot.map(c=>c.feeder))].map(id=>N.feeders.find(q=>q.id===id)).filter(Boolean);
