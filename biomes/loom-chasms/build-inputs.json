@@ -225,7 +225,7 @@
     "biomes/loom-chasms/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
     "biomes/loom-chasms/stations/cradle/44f-host-far-data.js": "3d9cda8aa18d6c564703d10f1c2fb846f31ed9887c766f16f237a0fc89e0cc02",
     "biomes/loom-chasms/stations/cradle/44w-host-land.js": "7e02964b99520a77383f54d48de5941337fe22a87cf07f6d2ba44e97d19aa594",
-    "biomes/loom-chasms/stations/cradle/86-host-farms.js": "34f66cc6995bf8a592361208d62404259a46ef4a3928eb5ce5ff05a8f653a69c",
+    "biomes/loom-chasms/stations/cradle/86-host-farms.js": "60b88c74b69e3981fd4ef67f8040b503f7b286b16f9d6643a5fb3fdc14673d17",
     "biomes/loom-chasms/stations/cradle/station.json": "666c776354fa723e677c006bc462226b5c3ad1a3fb47ab8d4c268e9e6174230c",
     "biomes/loom-chasms/tex/beard.albedo.webp": "7b5df02c6dc4337153f6473e4fc88c9b0a8d6146681aa5df408c607ec285cfbc",
     "biomes/loom-chasms/tex/bladder.albedo.webp": "9adcc0c13607b3d855cfc6866837a36cce7ef4e304a6386d7db3dabb3e9aa3c0",
@@ -389,10 +389,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/loom-chasms/dist/loom-chasms-cradle.html": "7c15dc7a866b58387af2121757488e217287dc783c9d355e6d23061f2ddb7a51"
+    "biomes/loom-chasms/dist/loom-chasms-cradle.html": "c5f5f2faef8828934161550ac29cd1e8960718ba0f3412e33f1b7c5d365cf55b"
    },
    "outputs_raw": {
-    "biomes/loom-chasms/dist/loom-chasms-cradle.html": "7c15dc7a866b58387af2121757488e217287dc783c9d355e6d23061f2ddb7a51"
+    "biomes/loom-chasms/dist/loom-chasms-cradle.html": "c5f5f2faef8828934161550ac29cd1e8960718ba0f3412e33f1b7c5d365cf55b"
    }
   }
  }

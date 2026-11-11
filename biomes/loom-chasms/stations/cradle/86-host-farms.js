@@ -64,14 +64,20 @@ const CRADLE=(function(){const S=STATION,V=S.VILLAGE,W=99560;
   add('a river climbing',CK.water([[0,0,10],[10,0,9],[20,0,11]]));}
  // ---------------------------------------------------------------- the views
  function views(H){const {look}=H,P=S.POOL,Vs=V&&V.site?V.site:{x:0,z:0},PX=S.PX,head=R.find(r=>r.key==='rich_tower_house')||R[0]||{x:Vs.x,z:Vs.z};
+  /* the terraces: the field tread nearest the village, the camera standing at its edge and looking up the terraces toward the zone's middle */
+  const zc=S.ZONE.reduce((a,p)=>[a[0]+p[0]/S.ZONE.length,a[1]+p[1]/S.ZONE.length],[0,0]);let fv=null,fd=1e18;
+  for(let gx=-3000;gx<=3000;gx+=40)for(let gz=-3000;gz<=3000;gz+=40)if(S.farm(gx,gz)>.6){const d=Math.hypot(gx-Vs.x,gz-Vs.z);if(d<fd){fd=d;fv=[gx,gz];}}
+  if(!fv)fv=[Vs.x,Vs.z];
+  /* the wadi Apa runs west out of the near field: stand on its first points inside the drawn ground and look down it, west */
+  const ia=Math.max(0,S.APA.findIndex(p=>Math.abs(p[0])<1800&&Math.abs(p[1])<1800)),wa=S.APA[Math.min(S.APA.length-1,ia+3)],wb=S.APA[Math.max(0,ia-4)];
   const mid=S.RLEV[Math.floor(S.RLEV.length*.35)],mid2=S.RLEV[Math.floor(S.RLEV.length*.6)];
   return{
   'The spring of Aina Bruk':look(P.x-P.r*2.4,P.z+P.r*1.8,1.8,P.x+60,P.z-10,0),
-  'The fields from the village':look(Vs.x+40,Vs.z-70,6,Vs.x+700,Vs.z-500,0),
+  'The fields from the village':look(fv[0],fv[1],4,fv[0]+(zc[0]-fv[0])*.4,fv[1]+(zc[1]-fv[1])*.4,0),
   'The Yuni farms':look(head.x-90,head.z+70,4,head.x,head.z,6),
   'Along Aina Bruk':[mid[0]-40,mid[2]+4,mid[1]+30,mid2[0],mid2[2],mid2[1]],
   'The road east':look(PX(1558.6,1140.35)[0]-30,PX(1558.6,1140.35)[1]+12,1.8,PX(1559.5,1140.12)[0],PX(1559.5,1140.12)[1],2),
-  'Down the dry wadi':look(S.APA[3][0],S.APA[3][1]+25,2,P.x,P.z,0),
+  'Down the dry wadi':look(wa[0],wa[1],2,wb[0],wb[1],0),
   'The Stalker Range from the fan':look(-1500,-200,3,-120000,0,4000),
   'From afar':look(2700,2700,350,-200,-600,0)};}
  return{build,plant,occupied,hazards,checks,negatives,views,FIELD,RESULTS};})();
