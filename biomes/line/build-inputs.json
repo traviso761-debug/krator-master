@@ -3,7 +3,7 @@
  "runs": {
   "build.py": {
    "inputs": {
-    "biomes/line/KNOWN_ISSUES.md": "4adebc2a782ed368fc88f5baff06918850a037a34cc1e4f0f3a698ac6bd5c175",
+    "biomes/line/KNOWN_ISSUES.md": "1faa1f7f43b3a163d888d91667ea88ec037b0d849ebd8198838477ce2f0d3ba7",
     "biomes/line/PORT.md": "7c4aed253023c97e4560b65c1d21636e5270dae543b6954f701fe3f254aae343",
     "biomes/line/build.py": "a6913cc0c1019c852a7723d757ac06155be99f62fe9a9c512a756d04ef11961c",
     "biomes/line/stations/bore/00-head.html": "22fdc4b472063b0f201a43324bf734621d40766fd9de2e76609062d6fe118d43",
@@ -15,13 +15,13 @@
     "biomes/line/stations/common/47-line-core.js": "fa9f396952d9ef899fe5a99489f8661ce5d9c074151923671c739e83c0eea316",
     "biomes/line/stations/common/47b-line-help.js": "ecbfe631252cf05343025f4ae93c7d13f416a7951966fa440f1460c9e6286756",
     "biomes/line/stations/common/49-host-stage.js": "b6b692b56db4e7b188e71eaddd61d3d0ec06cf9dda8649c879ba3d587a89c0ad",
-    "biomes/line/stations/common/84-host-rock.js": "150955523cd87c052d2eb0af70b9558195ca82478f5f68b6027e5b6018788c06",
+    "biomes/line/stations/common/84-host-rock.js": "23dda5edba76b1b8877c32737ac9f418df57a4d21596c7d3d100e48d978d3b35",
     "biomes/line/stations/common/85-host-lining.js": "45d538ec85c633b262c4319947c9f7a34b9ecf2b77d6ba0bb3e557925c091845",
-    "biomes/line/stations/common/86-host-way.js": "065f9d738c86d95af4034350ee3e5c031f6a363b9473dc4a4a904fbe3bcf9b62",
-    "biomes/line/stations/common/87-host-train.js": "977a8875ed4d96a59521e611f197b44f9d54dc8ebec41926649af84ef57afb9e",
+    "biomes/line/stations/common/86-host-way.js": "5c79afd66b7862bd118eae81411a67ce07513bb85a948b47c01bdf55f41a1d36",
+    "biomes/line/stations/common/87-host-train.js": "076049c7427d6172c852e2b586c2310e6f888b92551633642aac4f59225ac56c",
     "biomes/line/stations/common/89x-host-air.js": "86f066a3666fbf068256187ee15a63875ad357e8ee31c1adff9d1eb0f12a712d",
     "biomes/line/stations/common/89z-host-build.js": "0d626cad3730100576a5305886847ac439e7617c9ac5304884187698a2465cfb",
-    "biomes/line/stations/common/99-host-take.js": "5afc8a24cea12e2c7a129e7094bbb0993a8d1c607f72149b8e1406d1d0c25f68",
+    "biomes/line/stations/common/99-host-take.js": "338e07d86516bb74c3ad8dbbbf1e7d760c91cbdb4097169f9b77c61a85accf7e",
     "biomes/line/stations/common/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
     "biomes/line/tex/bronze.albedo.webp": "20c48c97ed5d8ce4a70c088b53c814cc498ccc6ac1036f9aab9ecb1bd170098a",
     "biomes/line/tex/bronze.normal.webp": "8b3da6f34ee8ec4560c09f727701c2468481ba662c2c000547bef9e9fb0e7c18",
@@ -41,13 +41,15 @@
     "biomes/line/tex/metal.albedo.webp": "c26401a7af69da1139f2d213e9d5cc25d5292bf1363cea6660df5545cc6f09fc",
     "biomes/line/tex/metal.normal.webp": "c83065f15a75b1b271c3408beb51062e72ce1e2be13f6c7039d9186afc34140f",
     "biomes/line/tex/metal.rough.webp": "1860581b77fb38349428fcd8f10442b178ea9dbf293a3862e840b7161cafd1d1",
-    "biomes/line/tex/pack.json": "9b7dc2409ba43454aca0006ff64788284476bf603e9d1b901804122b311e3061",
+    "biomes/line/tex/pack.json": "39d0bdf656a5b4083619b7ca8a9594d8267e06bf4a094d025d9c6f17979bdcec",
     "biomes/line/tex/paint.albedo.webp": "3a6aea8bcc6d5c5ebd334b3eb1a63267cd6345c6b080721ac031bf27cfa88efa",
     "biomes/line/tex/paint.normal.webp": "0cd28856f5d519e0c5099cee294cb502ed2ce73a7419fc8bebe0e8e4196790d1",
     "biomes/line/tex/paint.rough.webp": "1aeb41a3876a994972240f341a0b390fda499033f6f7344080525204ab5ced0c",
     "biomes/line/tex/road.albedo.webp": "60046aff16f56e7898fe007ec1c07218e5fc3c0b1e0a2c9c709e15340f48fc2a",
     "biomes/line/tex/road.normal.webp": "7222fed9858777ea3858385c72df99c60ca032b7521efaf90e8866747225fb1e",
     "biomes/line/tex/road.rough.webp": "5911b9f2d12d10291c43fc8c49ed4eb29f0a7810c970c3f7835f1f8eb8d469d9",
+    "biomes/line/tex/rock.breccia.albedo.webp": "cf1a151caea7818260fe0f98a1e54a344f0da096dd906c470e72db9f02914f42",
+    "biomes/line/tex/rock.granite.albedo.webp": "f1e18788b4d0fd360c8538ca9197fe17ebb034c0a5bd97b2b728dd4fb12e73a1",
     "biomes/line/tex/rock.riftfill.albedo.webp": "3300c3bcd28150a936dbfc7ba55d8d7f84da150d8de6f93efaa06bd6d59bf79e",
     "biomes/line/tex/rubble.albedo.webp": "627923e29b8bf38b909217442dd97ecb3ff62088ee30fbb4da24d04176bc64d1",
     "biomes/line/tex/rubble.normal.webp": "da6907124b9a767feb2a4ed6267a6524be1e99e46d1089d2e8e3aa59d60edc86",
@@ -177,10 +179,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/line/dist/line-bore.html": "f7b9857f27c56f3d8d85b45976a72d632b02eb6ff843b61f2cfb3510f76c983f"
+    "biomes/line/dist/line-bore.html": "8c834afc535e80f535bd86c6f556c91a3a0765eb54bf0145d63ef6d9cd2527bc"
    },
    "outputs_raw": {
-    "biomes/line/dist/line-bore.html": "f7b9857f27c56f3d8d85b45976a72d632b02eb6ff843b61f2cfb3510f76c983f"
+    "biomes/line/dist/line-bore.html": "8c834afc535e80f535bd86c6f556c91a3a0765eb54bf0145d63ef6d9cd2527bc"
    }
   }
  }

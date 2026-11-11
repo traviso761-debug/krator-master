@@ -34,3 +34,11 @@
   comes down (PLAN.md section 2.1).
 - [ ] **Abandoned keeps the Ancients' guideways sound** (`cond` state `built`, unkept: no plate patches, no lamp code), so the clearance and
   car-pose checks run on every state; a station whose tracks are blocked or fallen is the `fault` page's.
+- [ ] **The hot door's machinery stands still and its heat has no haze.** The generators, fans and leaves do not move; the heat past the inner door
+  is a hazard record and a warm describe line, not a shimmer (a heat-haze pass is owed); the cyan strips are lit but faint at a distance.
+- [ ] **The cleft shrine's quartz is this page's** (`88-host-hotdoor.js` draws six-sided points on the pocket's wall): `KSPELEO` druse with a
+  smoky-quartz preset is the owed core way (`openworld/ANCIENT-TUNNELS.md` cave 7). The shrine is barred by its rail, so the walk does not enter it.
+- [ ] **The breach's maze is drawn rock only.** `KKARST` lays the maze and `KKARST.build` carves it, but its floors are not walk floors (only the
+  chamber's are), its pools and spring are not drawn (core/water's), its hazards are not registered (one gas pool on the chamber's floor is), and
+  KSPELEO's hypogene dress (gypsum crust as crystals) is a shader band only.
+

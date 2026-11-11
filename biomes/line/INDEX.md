@@ -14,6 +14,8 @@ The Rift line's biome (`PLAN.md`): stations, each a window of the one Line recor
 | `stations/bore/` | station 1: a kept kilometre of the long run (bore km 208-209.2) |
 | `stations/gap/` | station 2: G2, the long run's last platform, the fall into the chamber, the walk to S1 (bore km 235.55-236.95) |
 | `stations/station/` | station 3: the Twenny junction, in three states (`?state=built\|kept\|abandoned`; bore km 217.55-218.75) |
+| `stations/hotdoor/` | station 4: the hot section's north door: the airlock, the plant, the deep stretch, the cleft shrine (bore km 54.35-55.55) |
+| `stations/breach/` | station 5: the bore beside a hypogene chamber: the bulkhead, the window, the stair, the maze beyond (bore km 224.55-225.75) |
 
 ## stations/common
 
@@ -42,6 +44,8 @@ The Rift line's biome (`PLAN.md`): stations, each a window of the one Line recor
 | `48-line-window.js` (bore) | | plus the vein and its work train, the crossover |
 | `88-host-gap.js` (gap) | [draw] | the falls' rubble, the Fixers' ramp and stair, the platforms, the shed, the porters' hold |
 | `89y-host-water.js` (gap) | [web] | the sump's water (core/water; needs core/atmos bound) |
+| `88-host-hotdoor.js` (hotdoor) | [draw] | the door walls and their leaves, the pipes, the plant's hall (generators, cooling banks, cells), the crossing, the cleft shrine's rail, candles and quartz, the spalls |
+| `88-host-breach.js` (breach) | [draw] | the bulkhead, the landing, the window's glass, the stair's treads and rails, the plank path, the gypsum blocks |
 | `88-host-station.js` (station) | [draw] | the invert, the platforms, the road's and walkway's jogs, the stairs, footbridges and mezzanine, the doors, the branch, the shaft's cage, what each state leaves |
 | `98v-host-views.js` | [web] | the views |
 

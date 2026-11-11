@@ -12,6 +12,8 @@
   "bronze": {"lib": "metal.bronze", "scale": [1.0, 1.0], "tint": {"keep": 0.4, "mean": 0.55}, "metal": 0.6, "roughLift": 0.0, "specular": 0.5, "note": "the bands where the structure transfers"},
   "paint": {"lib": "metal.painted.chipped", "scale": [1.0, 1.0], "tint": {"keep": 0.15, "mean": 0.72}, "metal": 0.1, "roughLift": 0.05, "specular": 0.4, "note": "the enamel plates, the road's line"},
   "rubble": {"lib": "ground.rubble.demolition", "scale": [2.0, 2.0], "tint": {"keep": 0.6, "mean": 0.5}, "roughLift": 0.05, "specular": 0.3, "note": "the vein's spoil"},
-  "rock.riftfill": {"lib": "rock.limestone.karst", "scale": [4.0, 4.0], "tint": {"keep": 0.6, "mean": 0.52}, "roughLift": 0.2, "specular": 0.2, "mapOnly": true, "note": "the rift fill where the lining opens (KGROUND)"}
+  "rock.riftfill": {"lib": "rock.limestone.karst", "scale": [4.0, 4.0], "tint": {"keep": 0.6, "mean": 0.52}, "roughLift": 0.2, "specular": 0.2, "mapOnly": true, "note": "the rift fill where the lining opens (KGROUND)"},
+  "rock.granite": {"lib": "rock.granite.tor", "scale": [4.0, 4.0], "tint": {"keep": 0.6, "mean": 0.5}, "roughLift": 0.15, "specular": 0.25, "mapOnly": true, "note": "the granite of the hot door (km 54-57) where the lining opens (KGROUND)"},
+  "rock.breccia": {"lib": "rock.megabreccia", "scale": [5.0, 5.0], "tint": {"keep": 0.6, "mean": 0.48}, "roughLift": 0.15, "specular": 0.2, "mapOnly": true, "note": "the impact breccia of the fault (km 33-53) where the lining opens (KGROUND)"}
  }
 }
