@@ -34,7 +34,9 @@ grid, in a blockier but still ornate Xanadu. This plan is for the owner to appro
 
 ## 2. Lore (proposed, for the owner to keep or change)
 
-### 2a. The faith: the Decree (*Ḍikrī*)
+### 2a. The faith: the Decree (*Ḍikrī*), and the Broken Wheel it will mend
+
+The owner chose both (2026-11-11): the Decree is the scripture, the Broken Wheel what the Song is for. Both are below.
 
 **The idea in one line.** The Xanadui's scripture is the Ancient poem their land is named from, Coleridge's *Kubla Khan*,
 kept for a thousand years by sound alone after the Latin letters were lost. The temple grammarians invented their
@@ -84,13 +86,25 @@ is why Qiblai's grid is strict (below).
 - **Jimjam's day-keepers** count the sky. The Decree sings to the sky: two eastern ways of reading heaven, without a
   shared calendar.
 
-**An alternative, if the owner prefers the sky to the poem: the Broken Wheel.**
+**The Broken Wheel: the Song mends the Wheel** (the owner, 2026-11-11: "do both"). The Decree and the sky are one faith.
 - Krator's sky holds **the Station**, the Ancients' broken wheel, which crosses the night out of step with every counted
-  moon (§6.14).
-- The faith would hold that the eight-spoked wheel is the Station as it was, whole. Every turn of a prayer wheel is a turn
-  the broken one cannot make, keeping the world going until it is mended.
-- It is simpler and more cosmic, but it ties less to Xanadu's own names. **The Decree** is this plan's recommendation; the
-  two could also be one: the Song is what will mend the Wheel.
+  moon (§6.14; Jimjam does not count it).
+- To the Ḍikrīn the Station is **the dome in air**: the dome the Khan decreed, built by the Ancients above the world. **The
+  eight-spoked wheel is the Station as it was, whole**, and the faith's sign is its picture.
+- **The Fall** is the Wheel breaking: the Ancients did not heed the voices prophesying war, and the dome in air broke.
+  Its broken ring still crosses the sky as a warning.
+- **The prayer wheels turn for it.** Every turn of a wheel is a turn the broken one cannot make, and each sings the Song
+  once. When the Song is sung whole, every syllable true and enough voices, **the Wheel will be mended** and the world made
+  right. The great wheels on the Ālph never stop, because the sky's wheel must not be left unturned.
+- **The dome on earth** is the Song's other half: the "stately pleasure-dome" the Khan decreed on the ground. The Xanadui
+  descend from **Theodiga**, the Ancient dam arcology at the valley mouth (§6.13), so Theodiga is that first dome on earth.
+  This is *proposed*, and asks for Theodiga to be redesigned with a dome or a series of domes (the owner, 2026-11-11:
+  "maybe"). Then the Sultan's Pleasure Dome is a copy of the holy one, built for feasts: the council's grievance has a
+  model to point at.
+- **The Station's passes are holy hours.** When it crosses overhead, the wheels are turned faster and the kora is walked.
+  When it goes dark in Krator's shadow (Jimjam's ill omen at a birth), the Ḍikrīn sing louder, not quieter.
+- **The Monks' Ear** can point at the sky (§4). What the Historians see of the Station is the second thing they do not
+  tell Qiblai.
 
 **Names in Xanadui** (proposed; the language's sounds, §6.13):
 - *Ḍikrī*, the Decree, and *Ḍikrīn*, its faithful;
@@ -243,7 +257,9 @@ This is the open world region's next re-plan when Qiblai's city goes on its grou
 
 ## 9. Still open
 
-1. **The faith:** the Decree (section 2a, proposed) or the Broken Wheel; then the eight monasteries' names and the council's title.
+1. **The faith** is the Decree and the Broken Wheel together (section 2a). Still to name: the eight monasteries and the
+   council's title. **Theodiga's domes:** a redesign of `kits/ancients/targets/theodiga` with a dome or a series of
+   domes, so it can be the Song's dome on earth.
 2. **The textures,** if the Xanadu pack is not enough. Candidates:
    - dressed ashlar for the terrace platforms and ring walls (the pack has rammed earth, stucco and rubble);
    - a beaten-gold roof sheet distinct from Xanadu's gilt;

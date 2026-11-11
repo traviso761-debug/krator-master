@@ -319,7 +319,12 @@ Raptor programme.
   | **Nusidi** | ruin (lived in?) | 996,870 | ~370 km south |
   | **Coyote Canyon** | village; the coyotemen? | 1265,500 | ~640 km north-east |
 
-  The **Dasri** have no settlement on the list. Where do they trade from?
+  **The Dasri trade from Shade** (the owner, 2026-11-11):
+  - It is an outpost at 5.1 px 1229,885, ~600 km south-east of Pinnacle Rock: a sunken sandstone basin of ~1,000 people,
+    with the Khan caravanserai and camel lines (LORE.md §6.8).
+  - They should also have **at least one other village in a hospitable spot farther north**, not yet on the model. Place
+    it with the open world's propose tool or on the scale model, then `tools/scale-model/propose_site.py`. It would be
+    the Pinnacle bands' nearer Dasri market.
 - The Singing Gjár outpost's purpose. The listening house and the crystal works are this proposal's reading; no lore text
   was found.
 - The new region's exact cut (`openworld/SITES.json`). It could keep the Mirror Graben and the beck road whole, so the
