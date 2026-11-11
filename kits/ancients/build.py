@@ -116,14 +116,19 @@ INTERIOR_CORE = [(CORE_RAND, '08-core-rand.js'), (CORE_TAGS, '50-core-tags.js'),
                  (CORE_FURNISH, '53-core-furnish-host.js')]
 # A target listed here takes the shared core/rand and core/tags (no interiors): its placement draws from KRAND and it
 # registers what it places with KTAGS before drawing it (CLAUDE.md, "Write code that is the same on every machine").
-TAGS_TARGETS = {'podium', 'sanctum', 'span', 'arcpile'}
+TAGS_TARGETS = {'podium', 'sanctum', 'span', 'arcpile', 'parabola'}
 TAGS_CORE = INTERIOR_CORE[:4]
 # fragments a target reads in place from another kit: the Sanctum's statuary is the Eternian kit's head generator
 # (kits/eternian/src/42-et-head.js, [G data]: one generator for every build that carries the Eternians' faces)
+PB_ATMOS = ['89-atmos-0-core.js', '89-atmos-0p-presets.js', '89-atmos-a-waves.js', '89-atmos-b-skylight.js']
+PB_WATER = ['20-core-water.js', '21-core-water-shore.js', '22-core-water-flow.js', '50-core-water-draw.js', '51-core-water-kinds.js']
 TARGET_READS = {'podium': [(os.path.join(ROOT, 'kits', 'eternian', 'src'), '42-et-head.js')],
                 # the Sanctum (2026-10-22) shares the Podium's skins and materials (MAT.sn*), read in place
                 'sanctum': [(os.path.join(ROOT, 'kits', 'eternian', 'src'), '42-et-head.js'),
-                            (os.path.join(HERE, 'targets', 'podium'), '8aq2-podium-skins.js')]}
+                            (os.path.join(HERE, 'targets', 'podium'), '8aq2-podium-skins.js')],
+                # Parabola (2026-11-11): its rain lake is core/water still water, on core/atmos's clock and skylight, read in place
+                # as Xanadu's kit page reads them (settlements/xanadu/build.py TARGET_FILES; targets/parabola/90p-parabola-lake.js)
+                'parabola': [(os.path.join(ROOT, 'core', 'atmos'), f) for f in PB_ATMOS] + [(os.path.join(ROOT, 'core', 'water'), f) for f in PB_WATER]}
 # the furniture an intact Ancient building takes: the harvested registry (the ancient pieces) and the goods
 INTERIOR_FURN = ['generic-goods']
 
@@ -175,6 +180,7 @@ TARGET_OUT = {
     'arcube': 'arcube.html',                 # the 1 km cube on its diagonal
     'lozenge': 'lozenge.html',               # the cube at a quarter height, its upper faces terraced (targets/lozenge)
     'arcpile': 'arcpile.html',               # the pile of blocks, the Rift's ruin (targets/arcpile)
+    'parabola': 'parabola.html',             # the Bowl's arcology, a terraced paraboloid dish (targets/parabola)
     'wing': 'wing.html',                     # memorial group: the Wing
     'drum': 'drum.html',                     # memorial group: the Drum
     'blades': 'blades.html',                 # memorial group: the Blades
@@ -229,8 +235,10 @@ DETERMINISTIC = {
     '42-et-head.js',                                   # kits/eternian's head generator, read by the Sanctum: seeded by KRAND
     '8aq5-kept-pass.js',                               # targets/kept: a material pass, no placement
     '8at0-arcpile-plan.js',                            # targets/arcpile: KRAND-hashed records, no rng()
+    '8av0-parabola-plan.js', '90p-parabola-lake.js',   # targets/parabola: KRAND-hashed records; the lake's still record
 }
 DETERMINISTIC |= {'06-core-khook.js', '06b-core-kcolor.js'}   # core/shader (no rnd())
+DETERMINISTIC |= set(PB_ATMOS) | set(PB_WATER)   # core/atmos and core/water, read by targets/parabola: nothing placed
 
 # PARTS: a fragment cut at its section markers so it can be read (ROADMAP 3.4: none over 80 KB) -> the fragment it
 # continues. A part may open in the middle of a builder: the rules read it joined to the fragment it continues, as one
