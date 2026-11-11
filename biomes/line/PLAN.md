@@ -135,12 +135,60 @@ the long run's 200 km in about 4 h with its stops, one departure each way per tu
 to 4 h (G1 the block caves 3 km, 2-3 h; G2 the chamber and the sump 3 km, 3-4 h at low water; G3 the bypass 2 km, 1 h).
 Dalab to Ledge in about two days. The timetable is the Tungangs' rite and the data that runs the trains (section 7).
 
-**The Line's power** (*proposed*, question 6): the trains draw power from the guideway, and the cooling plant still turns,
-so something still makes power. *Proposed*: **the hot section powers the Line**: the Ancients ran geothermal plant off
-the deep rock's 130 degC at the ghost stations, and the doors' cooling plant is the same machinery's cold side. The heat
-that makes the middle deadly is what runs the trains: the Tungangs' rite of upkeep is literally keeping the lights on.
-It also explains why **the cyan strips still glow** in the hot section ("perhaps sometimes glow in forgotten corners",
-`LORE.md` §4) and nowhere else.
+**The Line's power** (*proposed*, question 6; the owner, 2026-11-11: "maybe something more exotic maintains the power
+sources", `kits/tungang/PLAN.md` §1.2.1): the trains draw power from the guideway, and the cooling plant still turns,
+so something still makes power. *Proposed*: **the hot section powers the Line**. The Ancients' power plant stands
+**at the hot doors**: heat exchangers reach past the inner door into the 60 to 130 degC rock, and the doors' cooling
+plant is the same machinery's cold side. The heat that makes the middle deadly is what runs the trains: the Tungangs'
+rite of upkeep is literally keeping the lights on. **The exotic part is rare earths**: the generators' magnets, which
+the Tungangs re-wind and patch with the rift fill's rare-earth ore (section 2.1). A few salvaged Ancient power cells are
+recharged there. It also explains why **the cyan strips still glow** in the hot section ("perhaps sometimes glow in
+forgotten corners", `LORE.md` §4) and nowhere else: it is the one stretch the plant feeds whole.
+
+### 2.1 Ore, power and air (the owner's lore of 2026-11-11)
+
+The owner (2026-11-11, written up in `kits/tungang/PLAN.md` §1.2.1): the Tungangs have more to trade than copper; they
+likely reach **veins of metal** through the Line's tunnels and the caverns it passes, since they need metal to keep the
+trains running; they may source **ice and other things from the mountains**; and there are probably **at least a few
+ventilation tunnels to the surface**. The kit's buildings for it (`tg_vein_working`, `tg_refinery`, `tg_power_hall`,
+`tg_shaft_foot`, `tg_shaft_head`) are the Tungang kit's; the Line gives them their places.
+
+**Ore along the bore** (the geology bake's prospectivity bytes, 0-255, sampled by `survey_line.py`; the bytes follow
+the province):
+
+| Bore km | Rock | Iron | Copper | Gold | Silver | Tin | Rare earths | Nickel | The Fixers' workings (*proposed*) |
+|---|---|---|---|---|---|---|---|---|---|
+| 0-16, 33-53 | impact breccia | 120 | 50 | 90 | 80 | 40 | 60 | **60** (the only nickel on the Line) | iron and a little gold and nickel in the breccia's melt veins; unstable ground |
+| 17-32 | sedimentary | **180** | 10 | 0 | 0 | 0 | 0 | 0 | **the Line's iron**: ironstone beds under the valley, near the adit |
+| 54-57, 82-97 | granite | 120 | 50 | 110 | 110 | **200** | 160 | 0 | **tin** (greisen veins) and rare earths; inside the hot section, so worked only from the north door's end (km 54-57) |
+| 58-81, 98-186 | gneiss | 160 | 50 | 110 | 110 | 60 | 100 | 0 | iron, gold and silver in quartz veins; all inside the hot section: Ancient-era workings, sealed |
+| 187-304 | rift fill | 70 | **120** | 90 | 80 | 50 | **190** | 0 | **copper and rare earths** (the carbonatites): the Tungangs' main workings, where they live |
+
+So the heartland gives copper and the rare earths for the magnets; iron comes from the valley at the north end (Dalab's
+side) and tin from the north door's granite; gold and silver from the gneiss are behind the hot doors. *Proposed*: the
+metals move along the Line as the Tungangs' own cargo (the riding plan's consignments), and iron and tin from the north
+are why the Tungangs need the long run to stay whole.
+
+**Veins are records, not paintings.** `LN.veins` is derived, as the segments are: `kits/resources`' node field
+(`KRES.nodesIn`, the nearest-node rule every works uses) run over a corridor of the bore, keeping the nodes the bore
+crosses or passes within 300 m. Each vein is `{id, s, side, family, grade, node, working: {state, len}}`, its grade the
+node's, so the open world and the Line agree on where the metal is. Where a vein crosses outside the hot section, a
+**Fixers' side gallery** follows it (a `KCAVERN` tube off a refuge niche, its state kept, worked out or abandoned).
+
+**Shafts to the surface** (*proposed*, where the cover is thin; the survey's cover):
+
+| Bore km | Cover | Surface | Shaft |
+|---|---|---|---|
+| 4, 10 | 0.2, 0.7 km | 3.9-4.4 km, the foothills under Shelf | the north end's air |
+| 24 | 1.1 km | 4.8 km, the sedimentary valley | the valley's adit and shaft |
+| 218 | 2.2 km | 5.8 km, the fells over the rift fill | **the great shaft**: the hot section's southern exhaust, at the Twenny junction; the deepest the Ancients sank |
+| 250, 260 | 1.1, 0.7 km | 4.7, 4.2 km | the rift end's air |
+| 270-304, every 400 m | 30-280 m | 3.5-3.8 km, the tableland | the shallow south's light and air shafts |
+
+None inside the hot section: the crest over it is near-airless, so a shaft there would vent the section (the `seal`
+hazard; the `hot-sealed` check). **The shaft heads** on the mountain have a winch house, an ice store and a hooded white
+lamp; the Fellgang road families porter there (the tungang plan's Travellers): the mountains' ice comes down the shafts to
+the hot holds. `LN.shafts` gives each `{id, s, side, top: [x, y, z], depth, r, kind: air | adit | winch, state}`.
 
 **The numbering** (question 2). Canon has the lojes numbered "after the Line's original stations north to south (Ledge's
 lifts are Loj Fower)", but Ledge is the Line's southern end, and Loj Twenny lies north of it. *Proposed*: the Ancients
@@ -233,7 +281,10 @@ LN { id, kind: 'line', seed, path, L, floorAt(s), guideAt(s, track), axisAt(s),
      stations: [{ id: 'rift.st8', num, s, s0, s1, kind: station | ghost | door | gap | portal, state: built | kept | abandoned | sealed,
                   platforms: [{ id, side, track, from, to, y }], sidings: [...], sheds: [...], rooms: [{ id, kind, box }], loj? }],
      doors:    [{ id, s, kind: 'hot', leaves: [{ track | 'walk', w, h, state }], plant }],
-     shafts, adits: [{ id, s, side, to: [x, y, z], state }],
+     shafts:   [{ id, s, side, top: [x, y, z], depth, r, kind: air | adit | winch, state }],                  section 2.1
+     adits:    [{ id, s, side, to: [x, y, z], state }],
+     veins:    [{ id, s, side, family, grade, node, working: { state: kept | worked-out | abandoned, len } }],  derived (KRES)
+     plant:    [{ id, s, door, kind: 'geothermal', state, cells }],                                          at the hot doors
      crossings: [{ id, s, kind: hypogene | maze | breccia | cleft | karst, ref }],
      branches:  [{ id, s, side, to, kind: 'gallery' }],
      gaps:      [{ id, s0, s1, kind: fall | flood | shear, walk: { id, pts, len, minutes, hazards } }],     derived
@@ -262,13 +313,13 @@ question.
 
 | # | Station | Bore km (px) | What | Settles |
 |---|---|---|---|---|
-| 1 | `bore` | 208-209.2 (445.5,1262) | a kept straight kilometre of the long run, south of the south door: the four-track gallery, its lining, guideways, central strip and walkways; a crossover; the Tungangs' green lamps running to a point; a train passing (on its timetable) and a Fixers' trolley; refuge niches; warm (rock 55 degC) | **the section, the scale, the light**; the long view down the bore |
+| 1 | `bore` | 208-209.2 (445.5,1262) | a kept straight kilometre of the long run, south of the south door: the four-track gallery, its lining, guideways, central strip and walkways; a crossover; the Tungangs' green lamps running to a point; a train passing (on its timetable) and a Fixers' trolley; refuge niches; warm (rock 55 degC); **a vein working**: a Fixers' side gallery off a refuge niche following a copper and rare-earth vein (section 2.1), its spoil on a flat wagon | **the section, the scale, the light**; the long view down the bore |
 | 2 | `gap` | 235-240 (443.5,1277) | G2: the long run's southern end: its gap station (the last platform, the trains' turning crossover, the shed), the gallery fallen whole into a hypogene chamber; the walk down the slope into the chamber, green lamps on posts across it, a sump waded, a Fixers' stair up the far fall, and S1's platform with its own train | **the walk between segments**, the game's commonest underground journey |
-| 3 | `station` | 218 (445,1266) | the Twenny junction: an Ancient station cavern in three states (`?state=built`, `kept`, `abandoned`): platforms, the mezzanine, sidings and sheds, workshops, cistern, ventilation, the branch gallery's mouth toward Loj Twenny; **empty of the Tungang kit's rooms** (kept shows only catalog pieces already built: benches, lamps, signs) | the Ancient station's architecture; the hold view's test bed (T3) |
-| 4 | `hotdoor` | 55 (455,1186) | the hot section's north doors: two door walls a train's length apart (an airlock), each a bulkhead across the gallery with four train leaves and a walkway hatch; the cooling plant hall kept by rite; a sealed train waiting; through the inner door the deep stretch, spalls on the lining, the heat haze, the cyan strips still lit; a granite cleft shrine behind a rail (`ANCIENT-TUNNELS.md` cave 7) | **heat and machinery**; the one place the Ancients' light still burns |
+| 3 | `station` | 218 (445,1266) | the Twenny junction: an Ancient station cavern in three states (`?state=built`, `kept`, `abandoned`): platforms, the mezzanine, sidings and sheds, workshops, cistern, ventilation, the branch gallery's mouth toward Loj Twenny; **the great shaft's foot** (2.2 km up to the fells: the hoist, the draught, the ice coming down); **empty of the Tungang kit's rooms** (kept shows only catalog pieces already built: benches, lamps, signs) | the Ancient station's architecture; the hold view's test bed (T3) |
+| 4 | `hotdoor` | 55 (455,1186) | the hot section's north doors: two door walls a train's length apart (an airlock), each a bulkhead across the gallery with four train leaves and a walkway hatch; **the power plant and the cooling plant** kept by rite (the heat exchangers' pipes through the inner door, the generators' rare-earth magnets, power cells on charge: section 2); a sealed train waiting; through the inner door the deep stretch, spalls on the lining, the heat haze, the cyan strips still lit; a granite cleft shrine behind a rail (`ANCIENT-TUNNELS.md` cave 7) | **heat and machinery**; the one place the Ancients' light still burns |
 | 5 | `breach` | 225 (444.5,1270) | the bore cuts a hypogene chamber in the rift fill (`KKARST` `hypogene`, as the Hearths): a bulkhead in the lining, a window, a stair down into the natural cave | **the join of built and natural** |
 | 6 | `fault` | 40-48 (455.5,1180) | the gallery split into two twin bores through the impact breccia; a slump fault shears one bore (its two tracks cut, the beams offset 3 m), the trains crossing over in the junction hall to the other; a low point flooded over two tracks; CO2 pooled | **the ruin states by track** |
-| 7 | `portal` | 280-304 (440.5,1305) | the shallow south: the cut-and-cover gallery under 30-60 m of fill, light shafts, one stretch fallen in to an open cutting with the sky over it, and the portal onto the tableland, the guideway running on toward Ledge | **daylight to the dark**: the exposure ramp |
+| 7 | `portal` | 280-304 (440.5,1305) | the shallow south: the cut-and-cover gallery under 30-60 m of fill, light shafts, one stretch fallen in to an open cutting with the sky over it, and the portal onto the tableland, the guideway running on toward Ledge; **a shaft head** on the tableland (a stand-in for the kit's winch house, ice store and hooded lamp) | **daylight to the dark**: the exposure ramp |
 
 **The order** (*proposed*): `bore` first (the section must be right before anything else), then `station`, `gap`,
 `hotdoor`, `fault`, `breach`, `portal`.
@@ -422,6 +473,7 @@ follow camera's long view, `gap` for a narrow walk), but nothing here waits on i
 | `core/lod`, `core/export` | yes | the gallery's far chunks; the krator-world container and the Godot export |
 | `kits/ancient-transit` (`KTRANSIT`) | **yes, the `line` kind** (settled) | the record and its drawing (section 12: built on the transit kit's branch or after its merge, agreed with its session) |
 | `kits/motor-vehicles` | **yes** (settled) | the Line cars in the `ancient` culture, the Tungang stock (section 7) |
+| `kits/resources` (`KRES`) | the node field, read in place | the veins the bore crosses (section 2.1): the same nodes the open world places |
 | `core/simulation` + `core/simulation/ride`, `core/walk/frame` | at phase L5, opt-in | riders and cargo (the riding plan's) |
 | `core/minimap` | later (the tungang plan's T3) | the line map |
 
@@ -526,8 +578,10 @@ question 14):
    halls; crossovers as flexing beams?
 5. **The north approach**: the Line goes underground on Dalab's plain and climbs on spirals inside the Wall under
    **Shelf**, which was the Line's northern station town?
-6. **The Line's power**: the hot section's heat runs the Line (geothermal plant at the ghost stations), which is why the
-   trains and the cooling plant still work and **the cyan strips still glow inside the hot section** and nowhere else?
+6. **The Line's power**: the hot section's heat runs the Line, through an Ancient power plant at the hot doors kept by
+   rite, its exotic part the generators' rare-earth magnets (re-wound from the rift fill's ore), a few Ancient power cells
+   recharged there; which is why the trains and the cooling plant still work and **the cyan strips still glow inside the
+   hot section** and nowhere else?
 7. **The stations**: `bore`, `gap`, `station`, `hotdoor`, `breach`, `fault`, `portal`, at the chainages of section 5, `bore`
    first? `hotdoor` at the **north** door (granite, with the cleft shrine), or the south door (nearer the Tungang
    heartland, no granite)?
@@ -546,3 +600,9 @@ question 14):
     `metal.plate.riveted.painted`): write their prompts into `PROMPTS-NEEDED.md`?
 15. **The portal**: the shallow south's 25 km under 30-60 m of cover is cut-and-cover with shafts, one stretch fallen open
     to the sky, and the Line runs 42 km on the surface from the portal to Ledge?
+16. **The ore** (section 2.1): veins taken from `kits/resources`' node field where the bore crosses them, so the open
+    world agrees; the heartland gives copper and rare earths, the north end iron (the valley) and tin (the north door's
+    granite), the gneiss's gold and silver lie behind the hot doors; the metals move along the Line as cargo?
+17. **The shafts** (section 2.1): air shafts only where the cover is thin (both ends, the valley, the great shaft at the
+    Twenny junction, the shallow south), none over the hot section; their heads with a winch house, an ice store and a
+    hooded lamp, portered by the Fellgang road families?

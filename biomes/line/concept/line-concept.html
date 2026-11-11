@@ -106,6 +106,7 @@ code { font: 13px var(--mono); color: var(--amber); }
     <span><i style="background:#8a5a3c"></i>rift fill</span>
     <span><i style="background:var(--amber)"></i>bore floor</span>
   </div>
+  <p class="cap"><b>Ore along the bore</b> (the geology bake's bytes, 0-255): rift fill copper 120 and rare earths 190 · granite tin 200 and rare earths 160 · gneiss iron 160, gold and silver 110 · the north valley iron 180 · breccia the only nickel, 60. <b>Shafts</b> only where the cover is thin: km 4, 10, 24, 218 (the 2.2 km great shaft), 250, 260 and every 400 m in the shallow south; none over the hot section.</p>
   <p class="cap"><b>From the survey</b> (<code>biomes/line/tools/survey_line.py</code>): 304 km bored · cover over 4 km for 113 km, over 6 km for 36 km · deepest 6,881 m at bore km 124 · rock over 60 °C from km 57 to 201 · shallowest point south of the crest km 215 (2,126 m), 25 km west of Loj Twenny.</p>
 </section>
 
@@ -156,7 +157,7 @@ code { font: 13px var(--mono); color: var(--amber); }
     <li><b>Loj Twenny</b> by a 25 km side gallery from the junction at km 218 (it is not on <code>tube_rift_08</code>, which lies 300 km off)?</li>
     <li><b>The section:</b> the 32 m gallery, guideways with a guide slot and no rails, twin-track bores in bad ground, crossovers as flexing beams?</li>
     <li><b>The north approach</b> underground from Dalab's plain, climbing on spirals under Shelf, the Line's northern station town?</li>
-    <li><b>The Line's power</b> from the hot section's heat, so the trains and the cooling plant still run and the cyan strips still glow inside the hot section only?</li>
+    <li><b>The Line's power</b> from the hot section's heat, through an Ancient plant at the hot doors kept by rite; its exotic part the generators' rare-earth magnets, re-wound from the rift fill's ore; a few Ancient power cells recharged there. So the trains and the cooling plant still run, and the cyan strips still glow inside the hot section only?</li>
     <li><b>The stations</b> at these chainages, <code>bore</code> first; <code>hotdoor</code> at the north door (granite and the cleft shrine) or the south?</li>
     <li><b>The train:</b> 24 m cars, 3.6 m wide, sealed; kept trains at 15 m/s (the long run in about four hours)?</li>
     <li><b>The car states</b> built, kept, derelict, wreck, with "kept" a new idea for the vehicles kit (one culture's upkeep over another's vehicle)?</li>
@@ -166,6 +167,8 @@ code { font: 13px var(--mono); color: var(--amber); }
     <li><b>Hazards:</b> add rockburst, inrush and seal to <code>core/hazard</code> as opt-in kinds?</li>
     <li><b>Textures:</b> write prompts for the lining segment, the guideway's surface and riveted painted plate?</li>
     <li><b>The portal:</b> the shallow south as cut-and-cover with shafts and one stretch fallen open to the sky, then 42 km on the surface to Ledge?</li>
+    <li><b>The ore:</b> veins taken from the resources kit's nodes where the bore crosses them; copper and rare earths in the heartland, iron from the north valley, tin from the north door's granite, gold and silver behind the hot doors; the metals carried as cargo?</li>
+    <li><b>The shafts:</b> only where the cover is thin (both ends, the valley, a 2.2 km great shaft at the Twenny junction, the shallow south), none over the hot section; their heads with a winch house, an ice store and a hooded lamp, portered by the Fellgang road families?</li>
   </ol>
 </section>
 
@@ -498,13 +501,13 @@ const SEGS = [{ s0: 0, s1: 33, id: 'N' }, { s0: 36, s1: 236, id: 'M · the long 
 /* ---- station cards */
 (function cards() {
   const ST = [
-    ['bore', '208-209', 'A kept straight kilometre of the long run south of the south door: four tracks, the lining, a crossover, green lamps running to a point, a train passing on its timetable, a Fixers\' trolley.', 'the section, the scale and the light'],
+    ['bore', '208-209', 'A kept straight kilometre of the long run south of the south door: four tracks, the lining, a crossover, green lamps running to a point, a train passing on its timetable, a Fixers\' trolley, a side gallery following a copper and rare-earth vein.', 'the section, the scale and the light'],
     ['gap', '235-240', 'G2: the long run\'s last platform and turning crossover, the gallery fallen into a hypogene chamber, the walk down into it, lamps on posts, a sump waded, a stair up to S1\'s platform and its own train.', 'the walk between segments'],
-    ['station', '218', 'The Twenny junction, an Ancient station cavern in three states (built, kept, abandoned): platforms, mezzanine, sidings, sheds, cistern, the branch toward Loj Twenny. Empty of the kit\'s rooms.', 'the Ancients\' station architecture'],
-    ['hotdoor', '55', 'The north doors: two door walls a train apart (an airlock), the cooling plant kept by rite, a sealed train waiting; beyond, the deep stretch, spalls, haze, the cyan strips still lit; a granite cleft shrine.', 'heat and machinery'],
+    ['station', '218', 'The Twenny junction, an Ancient station cavern in three states (built, kept, abandoned): platforms, mezzanine, sidings, sheds, cistern, the branch toward Loj Twenny, the foot of the 2.2 km great shaft. Empty of the kit\'s rooms.', 'the Ancients\' station architecture'],
+    ['hotdoor', '55', 'The north doors: two door walls a train apart (an airlock), the power and cooling plant kept by rite (rare-earth magnets, cells on charge), a sealed train waiting; beyond, the deep stretch, spalls, haze, the cyan strips still lit; a granite cleft shrine.', 'heat and machinery'],
     ['breach', '225', 'Where the bore cut a hypogene chamber in the rift fill: a bulkhead in the lining, a window, a stair down into the natural cave.', 'the join of built and natural'],
     ['fault', '40-48', 'The gallery split into twin bores through the impact breccia; a slump fault shears one bore and its two tracks, the trains cross over to the other; a low point floods two tracks; CO₂ pools.', 'the ruin states by track'],
-    ['portal', '280-304', 'The shallow south under 30-60 m of fill: light shafts, one stretch fallen open to the sky, the portal onto the tableland and the guideway running on toward Ledge.', 'daylight to the dark']];
+    ['portal', '280-304', 'The shallow south under 30-60 m of fill: light shafts, one stretch fallen open to the sky, the portal onto the tableland and the guideway running on toward Ledge, a shaft head with its winch house.', 'daylight to the dark']];
   const box = document.getElementById('stations');
   ST.forEach(([id, km, what, settles], i) => {
     const c = document.createElement('div'); c.className = 'card';

@@ -110,6 +110,23 @@ def main():
     out['cover_minima'] = mins
     out['sites_near'] = sorted({(r['site'], min(q['site_km'] for q in rows if q['site'] == r['site'])) for r in rows}, key=lambda s: s[1])
     # every 10 km of bore, for the plan's table
+    # the ore along the bore: each metal family's prospectivity byte (0-255) at the bore's cells, and its best stretches
+    # (runs of km over VEIN_BYTE: where the bore most likely cut a vein the Fixers would follow)
+    VEIN_BYTE = 120
+    fams = ['iron', 'copper', 'gold', 'tin', 'silver', 'rare-earth', 'nickel', 'sulfur', 'coal']
+    lay = {f: unrle(G['layers'][f], gw * gh).reshape(gh, gw) for f in fams if f in G['layers']}
+    ore = {}
+    for f, lyr in lay.items():
+        vals = [(r['km'] - kn, int(near(lyr, *r['px']))) for r in bored]
+        runs, cur = [], None
+        for km, v in vals:
+            if v >= VEIN_BYTE:
+                if cur and km == cur['to'] + 1:
+                    cur['to'] = km; cur['max'] = max(cur['max'], v)
+                else:
+                    cur = {'from': km, 'to': km, 'max': v}; runs.append(cur)
+        ore[f] = {'mean': round(sum(v for _, v in vals) / len(vals)), 'max': max(v for _, v in vals), 'runs': runs}
+    out['ore'] = ore
     out['every10'] = [{'km': r['km'] - kn, 'px': r['px'], 'surf': round(r['surf']), 'cover': round(r['cover']), 'prov': r['prov'],
                        'rain': round(r['rain']), 'rockT': round(r['rockT']), 'site': '%s %.0f km' % (r['site'], r['site_km'])}
                       for r in bored if (r['km'] - kn) % 10 == 0]
