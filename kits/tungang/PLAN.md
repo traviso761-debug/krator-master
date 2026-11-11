@@ -651,6 +651,45 @@ shrine, a crystal cleft on the grand scale, entered rarely in cooling suits pack
 | Rank | **shine**: the steward's tabard, a faded copy of the crews' orange with stripes of **ground-glass beads** sewn on that flash in any lamp (the Ancients' reflective strips, remembered); a berth number on the back; enamel crew badges | trophies worn: plate pauldrons from Ancient white metal, a Labber's helmet, a Lizard's scale on a cord; the family's rope worn coiled across the chest (the Fowlers) | an opal set in the turban's front, gilt on the sash, the register's blue; the steward still wears the orange, as a sash |
 | Carry | the bait tin, the lamp pole, the long spanner | spear, sling, pick-and-hook, crossbow | a wax-cloth dust mask, a tea brick, the potch knife |
 
+#### 1.5.1 The Tungang palette for dress and props (2026-11-11, for the outfit and furniture sessions)
+
+One set of colours, so the clothes, the props and the hold furniture match. The furniture's own palette is the catalog
+file's (`kits/catalog/krator-master-furniture-tungang.js`); these extend it.
+
+| What | Hex | Note |
+|---|---|---|
+| The steward's tabard, the crews' orange faded | `0xc8783e` (worn `0xb46a3a`) | the one bright accent a Tungang wears |
+| The shine (ground-glass bead strips) | `0xdcdcd4` | low roughness (about 0.25), high specular: it should flash in a lamp's light; a true retroreflective look (bright toward the eye's own lamp) is owed to a shader later |
+| Fungus felt (the mat) | `0x6a5a48` | the catalog's `fungusMat` |
+| Fungus leather | `0xb59a72` | pale tan, aprons, satchels, gloves |
+| Smoked visor glass | `0x2e3438` at about 60% opacity | the goggles' lenses |
+| The Bookmen's coat | `0x2c2a30` | soot-black with a blue cast |
+| Canvas, blankets | `0x8a8264`; grey `0x6a6a64`, brown `0x5e4a3a`, red `0x8a3028` | the catalog's |
+| Enamel badges | cream `0xe2d8bc`, red `0xa8382c`, chipped `0x2a2826`; brass `0xb08a48` | the catalog's |
+| Rust-pink (the berth numbers' paint) | `0xc88478` | the catalog's `paintRose` |
+
+**The lamp code** (emissive colours, for lamps, lamp poles and door lamps everywhere):
+
+| Lamp | Hex |
+|---|---|
+| red, a home | `0xd8462e` |
+| green, the Line | `0x46c27a` |
+| amber, work | `0xf0a63a` |
+| glow-cap, passages and the poor | `0x9fe8c0` (the catalog's `glowcap`; its blue `0x8ad0e8` for older caps) |
+| white, the surface and danger (hooded) | `0xf6f3ea` |
+
+**Props** (at the Tungangs' 0.94 scale):
+
+| Prop | Size |
+|---|---|
+| The lamp pole | 1.9 m overall, a hook at the top, the lamp hung about 0.25 m below the hook |
+| The long spanner | 0.85 m, its jaw 0.12 m across |
+| The bait tin | 0.25 x 0.15 x 0.10 m (as the catalog piece) |
+| The Bookmen's satchel | about 0.35 x 0.1 x 0.28 m, fungus leather |
+
+**The goggles** are **two head pieces**, `goggles_up` (on the brow) and `goggles_down` (over the eyes), chosen by place:
+up indoors and in the holds, down on the surface by day. Two pieces swap cleanly where a pose of one piece would not.
+
 ## 2. Material culture
 
 ### 2.1 The salvage vocabulary (the shared foundation)
