@@ -31,15 +31,9 @@ const EN_HEX_S=(()=>{EN_HEX.computeBoundingBox();const b=EN_HEX.boundingBox;retu
 // world's axes in XYZ order, so a plate on a sphere or a leaning sail cannot be said with it)
 function enQn(n,up){const Z=new THREE.Vector3(n[0],n[1],n[2]).normalize(),U=new THREE.Vector3().fromArray(up||(Math.abs(Z.y)>.95?[1,0,0]:[0,1,0]));
  const X=new THREE.Vector3().crossVectors(U,Z).normalize(),Y=new THREE.Vector3().crossVectors(Z,X);return new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(X,Y,Z));}
-// the height a piece's centre stands at so its lowest point is `sink` (0.25) m into the ground at y0: q its turn, s its full extents in its own
-// frame (a unit box scaled by s; a unit-radius piece passes twice its scale). The quality pass (the owner, 2026-11-10: "detached pieces lie on
-// the ground properly"): a wreck rests on its lowest points, neither hanging above the ground nor buried in it
-function enSeatY(q,s,y0,sink){const e=new THREE.Matrix4().makeRotationFromQuaternion(q).elements;return (y0||0)+Math.abs(e[1])*s[0]/2+Math.abs(e[5])*s[1]/2+Math.abs(e[9])*s[2]/2-(sink==null?.25:sink);}
-// 8ah's enDebris, seated: the same scatter of plates and rubble round (x, z), each plate tilted a little and resting on its lowest corner (8ah's
-// stood them at 0.12 of their size whatever the tilt, which sank some 5 m and lifted others clear); the rubble is the kit's decoration
-function en3Debris(x,z,r,n,pl){for(let i=0;i<n;i++){const a=rng()*TAU,q0=Math.sqrt(rng())*r,s=rr(2,9),px=x+q0*Math.cos(a),pz=z+q0*Math.sin(a);
- if(rng()<.55){const q=qEuler(rr(-.18,.18),rng()*TAU,rr(-.18,.18)),sc=[s*rr(1,2.2),s*.18,s*rr(.8,1.6)];kput(pl,[px,enSeatY(q,sc,0),pz],q,sc);}
- else kput('rubble',[px,s*.3,pz],qEuler(rng()*3,rng()*3,rng()*3),[s*.8,s*.5,s*.7],new THREE.Color().setHSL(rr(.05,.09),rr(.1,.3),rr(.3,.5)));}}
+// enSeatY (8ah) seats a piece on its lowest points; 8ah's enDebris now seats its plates with it (the owner, 2026-11-10: "detached pieces
+// lie on the ground properly"). en3Debris is that scatter, kept by name for this set's calls
+function en3Debris(x,z,r,n,pl){enDebris(x,z,r,n,pl);}
 
 // ---------------------------------------------------------------- THE COIL
 function buildCoil(scene,gx,gz,d){reseed(10200+d);KOFF=[gx,0,gz];

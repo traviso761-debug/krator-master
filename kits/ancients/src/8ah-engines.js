@@ -92,9 +92,12 @@ function enDeck(acc,cx,y0,cz,sx,h,sz,rib,slot,pl){enBlk(acc,cx,y0+h/2,cz,sx,h,sz
 function enBreach(cx,cy,cz,sx,sz,n,pl){for(let i=0;i<n;i++){const s=rng()<.5?-1:1,x=cx+rr(-.4,.4)*sx,y=cy+rr(-6,6),w=rr(8,26),h=rr(5,13);
  kput('boxD',[x,y,cz+s*(sz/2+.2)],null,[w,h,1]);
  if(rng()<.6)kput(pl,[x+rr(-w/3,w/3),y-h/2-rr(2,5),cz+s*(sz/2+2.2)],qEuler(s*rr(.3,.9),0,rr(-.4,.4)),[w*.5,h*.8,.8]);}}
-// Rubble and plate shards scattered round a fall site, r m across.
+// The height that seats a piece on its lowest points: centre y for rotation q and extents s over ground y0, sunk `sink` (0.25 m)
+// (core/ruins: a wreck lies between 0.3 m above and 1 m below the ground; a plate stood at a fixed height whatever its tilt is buried or hovers)
+function enSeatY(q,s,y0,sink){const e=new THREE.Matrix4().makeRotationFromQuaternion(q).elements;return (y0||0)+Math.abs(e[1])*s[0]/2+Math.abs(e[5])*s[1]/2+Math.abs(e[9])*s[2]/2-(sink==null?.25:sink);}
+// Rubble and plate shards scattered round a fall site, r m across, each seated on its lowest points.
 function enDebris(x,z,r,n,pl){for(let i=0;i<n;i++){const a=rng()*TAU,q=Math.sqrt(rng())*r,s=rr(2,9),px=x+q*Math.cos(a),pz=z+q*Math.sin(a);
- if(rng()<.55)kput(pl,[px,s*.12,pz],qEuler(rr(-.5,.5),rng()*TAU,rr(-.5,.5)),[s*rr(1,2.2),s*.18,s*rr(.8,1.6)]);
+ if(rng()<.55){const q=qEuler(rr(-.18,.18),rng()*TAU,rr(-.18,.18)),sc=[s*rr(1,2.2),s*.18,s*rr(.8,1.6)];kput(pl,[px,enSeatY(q,sc,0),pz],q,sc);}
  else kput('rubble',[px,s*.3,pz],qEuler(rng()*3,rng()*3,rng()*3),[s*.8,s*.5,s*.7],new THREE.Color().setHSL(rr(.05,.09),rr(.1,.3),rr(.3,.5)));}}
 // The plain taking a machine back: moss on what faces the sky, vines off the
 // ledges, stains down the walls. geos are in the frame kput is in right now.
@@ -114,11 +117,11 @@ function enTrack(cx,cz,len,rad,wid,pl,brk){const st=len-2*rad,per=2*st+TAU*rad,n
   else if(s<2*st+Math.PI*rad){x=st/2-(s-st-Math.PI*rad);y=2*rad;a=Math.PI;}
   else{const q=(s-2*st-Math.PI*rad)/rad;x=-st/2-Math.sin(q)*rad;y=rad+Math.cos(q)*rad;a=Math.PI+q;}
   if(brk&&s>st+Math.PI*rad*.6&&s<2*st+Math.PI*rad*1.2){lost++;continue;}
-  kput(pl,[cx+x,y+1.2,cz],qEuler(0,0,a),[4.5,2.4,wid]);
+  kput(pl,[cx+x,y+1.2,cz],qEuler(0,0,a),[5,2.4,wid]);
   if(i%2===0)kput('boxD',[cx+x,y+1.2,cz],qEuler(0,0,a),[1.2,3.4,wid*.7]);}   // the grouser
  if(brk){let px=cx+st/2+rad+3,pz=cz,h=.25;
   for(let k=0;k<lost;k++){h+=rr(-.12,.12);px+=Math.cos(h)*5.2;pz+=Math.sin(h)*5.2*Math.sign(cz||1);
-   kput(pl,[px,1.2,pz],qEuler(rr(-.08,.08),-h*Math.sign(cz||1),rr(-.1,.1)),[4.5,2.4,wid]);}}
+   {const q=qEuler(rr(-.08,.08),-h*Math.sign(cz||1),rr(-.1,.1)),sc=[5,2.4,wid];kput(pl,[px,enSeatY(q,sc,0),pz],q,sc);}}}
  kput('boxD',[cx,rad+1.2,cz],null,[st+rad*.9,rad*1.5,wid*.84]);
  for(let k=0;k<6;k++)kput('pipeR',[cx-st/2+rad*.6+k*(st-rad*1.2)/5,rad*.5+1,cz],qEuler(Math.PI/2,0,0),[rad*.42,wid*.92,rad*.42]);
  for(const e of[-1,1])kput('pipeR',[cx+e*st/2,rad+1.2,cz],qEuler(Math.PI/2,0,0),[rad*.82,wid*.96,rad*.82]);}
@@ -151,8 +154,9 @@ function buildHarrow(scene,gx,gz,d){reseed(10100+d);KOFF=[gx,0,gz];
  for(const x of dd?[-95,-70]:[-95,-70,-45]){kput('pipeR',[x,237,20],null,[5,70,5]);
   for(let y=214;y<270;y+=14)kput('ringR',[x,y,20],qEuler(Math.PI/2,0,0),[5.6,5.6,14]);}
  if(dd){kput('pipeR',[-45,210,20],null,[5,16,5]);beam('pipeR',[-38,177,-26],[34,176,44],5,5);}
- // the rear counterweight on two truss arms; in the ruin one arm has torn and
+ // the rear counterweight on two truss arms, bolted to deck 2 by a bracket each; in the ruin one arm has torn and
  // the block lies on the ground, half sunk, where it fell
+ for(const s of[-1,1])enBlk(hull,-117,146,s*32,8,14,14);
  if(dd){enTruss('strutR',[-118,146,-32],[-212,150,-32],10,10,1.2,.3);enTruss('strutR',[-118,146,32],[-150,147,32],10,10,1.2,.3);
   enRotBlk(G,MAT.rust,[-238,22,20],[44,60,100],.1,.3,.45);rubbleRing(-238,0,20,34,90,40,5);enDebris(-238,20,80,20,PL);}
  else{for(const s of[-1,1])enTruss('strutR',[-118,146,s*32],[-212,150,s*32],10,10,1.2);
@@ -202,7 +206,7 @@ function buildHarrow(scene,gx,gz,d){reseed(10100+d);KOFF=[gx,0,gz];
   WC=[E[0],E[1],WZ];}
  for(const s of[-1,1])beam('tube',[AP[0],AP[1],s*3],dd&&s>0?[-150,148,34]:[-232,175,s*40],.8,.8);
  // chains hanging off the standing boom
- const hang=[];for(let i=0;i<9;i++){const t=rr(.12,dd?.5:.92),p=BP(t);hang.push([p[0],p[1]-11,rr(-10,10)]);}
+ const hang=[];for(let i=0;i<9;i++){const t=rr(.12,dd?.5:.92),p=BP(t),z=rr(-10,10);hang.push([p[0],p[1]-11,z<0?-11:11]);}   /* off the bottom chords */
  enHang('tube',hang,20,95,.9);
  if(dd)enOvergrow(hull,170,34,0,0);
  meshMerged(hull,MAT.rust,G);
@@ -285,14 +289,14 @@ function buildStrider(scene,gx,gz,d){reseed(10110+d);KOFF=[gx,0,gz];
    kput('slabCR',[-206,6,-168],qEuler(.3,0,.9),[18,6,18]);
    enDebris(-150,-110,70,34,'plateW');rubbleRing(-110,0,-90,14,50,26,4);
    continue;}
-  const ank=[foot[0],foot[1]+9,foot[2]];
+  const ank=[foot[0],foot[1]+5,foot[2]];   /* the shin seated in its pad, the toes on the pad's rim: a lifted foot is one piece */
   beam('plateW',knee,ank,12,10);
   beam('plateR',[lerp(knee[0],ank[0],.5),lerp(knee[1],ank[1],.5),lerp(knee[2],ank[2],.5)],ank,17,15);
   beam('pipeR',[lerp(hip[0],knee[0],.7),lerp(hip[1],knee[1],.7)-7,lerp(hip[2],knee[2],.7)],[lerp(knee[0],ank[0],.35),lerp(knee[1],ank[1],.35),lerp(knee[2],ank[2],.35)],2.6,2.6);
   // the pad and three toes
   kput('slabCR',[foot[0],foot[1]+3,foot[2]],null,[18,6,18]);
   const ya=Math.atan2(sz,sx);
-  for(const o of[-.6,0,.6]){const a=ya+o;kput('plateR',[foot[0]+22*Math.cos(a),foot[1]+2,foot[2]+22*Math.sin(a)],qEuler(0,-a,0),[16,4,6]);}
+  for(const o of[-.6,0,.6]){const a=ya+o;kput('plateR',[foot[0]+17*Math.cos(a),foot[1]+2,foot[2]+17*Math.sin(a)],qEuler(0,-a,0),[16,4,6]);}
   if(!up)rubbleRing(foot[0],0,foot[2],16,40,14,3);}
  // cables hanging from the belly, plumb whatever the hull's lean; the probe
  // to the ground and the ring of stones round its foot
