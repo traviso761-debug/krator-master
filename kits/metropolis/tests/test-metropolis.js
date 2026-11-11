@@ -5,7 +5,7 @@ const load = p => vm.runInContext(fs.readFileSync(path.join(ROOT, p), 'utf8'), c
 load('core/rand/08-core-rand.js');
 for (const d of ['kits/interiors/src', 'kits/ancients-interiors/src']) for (const f of fs.readdirSync(path.join(ROOT, d)).sort()) if (/^[1-4]\d.*\.js$/.test(f) && !/view|shell|building|outline|cutaway|figures/.test(f)) load(d + '/' + f);
 load('kits/ancients-interiors/opt/38-ai-reception.js');   /* the reception recipe, opt-in until the next interiors update */
-for (const f of ['40-mp-records.js', '41-mp-plans.js', '42-mp-facade.js', '43-mp-shell.js', '44-mp-audit.js', '46-mp-designs.js', '46b-mp-ancients.js', '46c-mp-planned.js', '46d-mp-gridplan.js']) load('kits/metropolis/src/' + f);
+for (const f of ['40-mp-records.js', '41-mp-plans.js', '42-mp-facade.js', '43-mp-shell.js', '44-mp-audit.js', '44b-mp-sockets.js', '46-mp-designs.js', '46b-mp-ancients.js', '46c-mp-planned.js', '46d-mp-gridplan.js']) load('kits/metropolis/src/' + f);
 const MP = vm.runInContext('MP', ctx), KS = vm.runInContext('KSHELL', ctx), AI = vm.runInContext('KratorAncientsInteriors', ctx);
 let bad = 0; const ok = (c, m) => { if (!c) { bad++; console.log('FAIL ' + m); } };
 AI.install(vm.runInContext('KratorInteriors', ctx));
@@ -75,4 +75,29 @@ for (const k of MP.PLANNED_KEYS) { const F = MP.FAMILY[k], A = MP.audit(F); ok(F
       ok(sk.length >= 20 && sk.length <= 60 && as[Math.floor(as.length / 2)] >= 20, 'grid plan, disc: wedges (' + sk.length + ' rooms, median ' + (as[Math.floor(as.length / 2)] || 0).toFixed(0) + ' m2)'); }
     delete MP.FAMILY[id]; delete MP.ANCIENT_USES[id]; } }
 ok(MP.families().every(F => !F.design) && MP.planned().length === MP.families().length + MP.PLANNED_KEYS.length, 'families() are the shelled ones, planned() adds the designs');
+/* the sockets (44b): for every family and every state, deterministic by (family, state, seed), every one on its skin part (a heap's on its mound) and
+   under the state's top, the kinds a state should carry present; a look's record and ruin are its state's */
+{ const SOCK = {}; let total = 0;
+  for (const F of MP.planned()) for (const s of MP.RUINS) {
+    const R = MP.ruin(F, s), S = MP.sockets(F, s, 1), K = {}, again = JSON.stringify(MP.sockets(F, s, 1)) === JSON.stringify(S); S.forEach(q => { K[q.kind] = (K[q.kind] || 0) + 1; q.state = s; }); SOCK[F.id + '.' + s] = S.length; total += S.length;
+    ok(S.length > 20, F.id + '.' + s + ': sockets (' + S.length + ')');
+    ok(again, F.id + '.' + s + ': the sockets are deterministic');
+    ok(S.every(q => MP.socketInside(F, q)), F.id + '.' + s + ': every socket on its skin (' + S.filter(q => !MP.socketInside(F, q)).length + ' off)');
+    ok(S.every(q => q.kind === 'heap' || q.y <= R.top + 0.05), F.id + '.' + s + ': every socket under the state\'s top');
+    { const badQ = S.filter(q => !(['vine', 'shrub', 'tree'].indexOf(q.size) >= 0 && q.r > 0 && q.u >= 0 && q.u < 1 && Math.abs(Math.hypot(q.nx, q.ny, q.nz) - 1) < 0.01)); ok(!badQ.length, F.id + '.' + s + ': sizes, room, unit and normals ' + JSON.stringify(badQ[0] || null)); }
+    ok(K.root > 0, F.id + '.' + s + ': roots at the foot');
+    if (s === 'intact' || s === 'gutted') ok(K.ledge > 0, F.id + '.' + s + ': sills carry ledges');
+    if (s !== 'intact') ok(K.floor > 0 || K.heap > 0, F.id + '.' + s + ': open storeys carry floors');
+    if (s !== 'intact' && s !== 'gutted') ok(K.heap > 0, F.id + '.' + s + ': the rubble carries heaps');
+    if (s === 'crown' || s === 'broken' || s === 'stump' || s === 'skeleton') ok(K.top > 0, F.id + '.' + s + ': the cut top carries top sockets');
+    if (s === 'crown' || s === 'broken') ok(K.edge > 0 || F.id === 'terrarium', F.id + '.' + s + ': the torn rim carries edge sockets');
+  }
+  console.log('sockets', total, 'in all;', Object.keys(SOCK).filter(k => /\.crown$/.test(k)).map(k => k.replace('.crown', '') + ' ' + SOCK[k]).join(', '), '(crown)');
+  const A = MP.sockets(MP.SPINDLE, 'crown', 3), B = MP.sockets(MP.SPINDLE, 'crown', 4); ok(JSON.stringify(A) !== JSON.stringify(B), 'negative: another seed moves the sockets');
+  ok(MP.socketsAt(MP.SPINDLE, 'crown', 3, 0.3).length < A.length * 0.4 && MP.socketsAt(MP.SPINDLE, 'crown', 3, 0.3).every(q => q.u < 0.3), 'a density keeps the sockets under it');
+  { const q = Object.assign({}, A.filter(s => s.kind === 'ledge')[0]); q.x += 40; ok(!MP.socketInside(MP.SPINDLE, q), 'negative: a socket moved off the skin fails the inside test'); }
+  ok(MP.look('crown.wild').state === 'crown' && MP.look('crown.wild').wild && MP.look('crown').state === 'crown' && !MP.look('crown').wild, 'a look splits into its state and variant');
+  ok(MP.ruin(MP.SPINDLE, 'crown.wild').top === MP.ruin(MP.SPINDLE, 'crown').top, 'a wild look\'s ruin is its state\'s');
+  const W = KS.record(MP.SPINDLE, 'crown.wild'), C = KS.record(MP.SPINDLE, 'crown'); ok(W.id === 'spindle.crown.wild' && W.state === 'crown' && W.map.w === C.map.w && W.map.h === C.map.h && W.tris === C.tris, 'a wild look\'s shell record is its state\'s under its own id');
+  ok(JSON.stringify(MP.sockets(MP.SPINDLE, 'crown.wild', 3)) === JSON.stringify(A), 'a wild look\'s sockets are its state\'s'); }
 console.log(bad ? bad + ' failed' : 'all passed'); process.exit(bad ? 1 : 0);

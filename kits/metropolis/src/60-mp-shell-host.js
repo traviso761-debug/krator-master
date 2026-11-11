@@ -36,7 +36,8 @@ KSHELL.atlas=function(size,renderer){const mk=()=>{const t=new THREE.WebGLRender
  const a={size,A:mk(),B:mk(),C:mk(),renderer};const old=renderer.getRenderTarget(),oc=renderer.getClearColor(new THREE.Color()),oa=renderer.getClearAlpha();renderer.setClearColor(0,0);
  [a.A,a.B,a.C].forEach(t=>{renderer.setRenderTarget(t);renderer.clear(true,true,true);});renderer.setRenderTarget(old);renderer.setClearColor(oc,oa);return a;};
 KSHELL.bake=function(at,rec,slot,hero,top,bot){const R=at.renderer,f=rec.frame,pad=8,P={mode:{value:f.mode},H:{value:f.H},A:{value:f.mode?f.D:f.a},wrap:{value:0},clip:{value:0},xs:{value:1},ys:{value:1},faceN:{value:new THREE.Vector3(0,0,1)},faceD:{value:0},vp:{value:new THREE.Matrix4()}};
- const sc=new THREE.Scene(),meshes=[];hero.children.forEach(m=>{const k=m.isInstancedMesh?new THREE.InstancedMesh(m.geometry,m.material,m.count):new THREE.Mesh(m.geometry,m.material);if(m.isInstancedMesh){k.instanceMatrix=m.instanceMatrix;k.instanceColor=m.instanceColor;}k.frustumCulled=false;k._src=m.material;sc.add(k);meshes.push(k);});
+ /* a hero's direct meshes; a child that is no mesh (a group of the biome kits' plants, 59e) or marked noShell (leaf cards, which would bake as solid quads) is left out */
+ const sc=new THREE.Scene(),meshes=[];hero.children.forEach(m=>{if(!m.isMesh||!m.geometry||!m.material||m.userData.noShell)return;const k=m.isInstancedMesh?new THREE.InstancedMesh(m.geometry,m.material,m.count):new THREE.Mesh(m.geometry,m.material);if(m.isInstancedMesh){k.instanceMatrix=m.instanceMatrix;k.instanceColor=m.instanceColor;}k.frustumCulled=false;k._src=m.material;sc.add(k);meshes.push(k);});
  const mats=[0,1,2].map(p=>meshes.map(k=>bakeMat(k._src,P,p)));
  const old=R.getRenderTarget(),oAuto=R.autoClear,oc=R.getClearColor(new THREE.Color()),oa=R.getClearAlpha(),tm=R.toneMapping;R.autoClear=false;R.setClearColor(0,0);R.toneMapping=THREE.NoToneMapping;
  const cam=new THREE.Camera(),targets=[at.A,at.B,at.C];
