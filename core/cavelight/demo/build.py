@@ -6,7 +6,8 @@
 A test page for the module (core/cavelight/README.md, "demo/"): an 800 m bore under a hill, its portal onto daylight, a light
 shaft, the Tungang lamp code, a wax-lit refuge with a smoky-quartz cleft shrine (KSPELEO.SMOKY), the hot stretch's still-lit
 strips, and the tunnels' hazards (core/hazard/22-core-hazard-tunnel.js) registered on core/tags. Stand-in geometry: it tests the
-light, not the Line's look. three.js r128 is inlined from a local copy. Deterministic.
+light, not the Line's look. three.js r128 loads from its CDN URL (tools/harness.py serves the local copy in its place,
+so the build reads nothing outside core/). Deterministic.
 """
 import argparse, os, sys
 
@@ -31,13 +32,6 @@ FRAGMENTS = [
 ]
 
 
-def find_three():
-    for c in (J('kits', 'ancients', 'three.min.js'), J('kits', 'ringsea', 'three.min.js'), J('kits', 'motor-vehicles', 'three.min.js')):
-        if os.path.isfile(c) and os.path.getsize(c) > 100000:
-            return c
-    sys.exit('build.py: no local three.min.js (r128) found (an LFS pointer is not enough: git lfs pull)')
-
-
 def read(p):
     with open(p, encoding='utf-8') as f:
         return f.read()
@@ -48,7 +42,7 @@ def main():
     ap.add_argument('--out', default=os.path.join(HERE, 'dist', 'cavelight-demo.html'))
     a = ap.parse_args()
     js = '\n'.join('// ---- ' + os.path.relpath(p, ROOT).replace(os.sep, '/') + '\n' + read(p) for p in FRAGMENTS)
-    page = read(os.path.join(HERE, 'src', '00-head.html')).replace('/*THREE*/', read(find_three())).replace('/*JS*/', js)
+    page = read(os.path.join(HERE, 'src', '00-head.html')).replace('/*JS*/', js)
     os.makedirs(os.path.dirname(a.out), exist_ok=True)
     with open(a.out, 'w', encoding='utf-8', newline='\n') as f:
         f.write(page)
