@@ -452,7 +452,10 @@ better than anyone.** "The Shift" is not the name; the name is open (below).
   | To Dalab | the bargain at the lifts and in the tunnels | the raids on the supply trains' surface stretches |
   | To each other | the Fellgangs are lapsed members at best, *scabs* at worst | the Tungangs are the stewards who sold the fells to Dalab |
 
-### Two more Fellgang villages (*proposed*, 2026-11-11, for the owner)
+### Two more Fellgang villages (**chosen**, 2026-11-11)
+
+**Both chosen by the owner** (2026-11-11, on the two proposals below: "that sounds good for both"), to be built in that order: the Fowlers
+as station 8 (`--station fowlers`), then the Ice-cutters as station 9 (`--station icecut`). Their names stay placeholders (section 12, question 6).
 
 The owner (2026-11-11): "propose me 2 more scenic sites for fellgang villages with a unique theme". Surveyed on scale model 5.1
 (heights, `wl`, the classes, `p` rain, the `tm`/`tw`/`tc`/`tl` temperatures, `basins.json`, `rivers.json`, `vents.json`,
@@ -514,6 +517,8 @@ name). The page's first stations carry birds, insects over the lakes and grazing
    sailwort swinging in the wind, iris lichen on the boulders, snowblood on the summer snow, one lantern lobelia standing
    over it all at dusk, the Rift's trough falling away at the edge.
 7. **The Hearth field** (N; `-hearths`; built 2026-11-09): the Hearths' showcase on the N rim's shelf, 5.1 px 525,1400 (below).
+8. **The Fowlers** (N; `-fowlers`; chosen 2026-11-11): a Fellgang village of fowlers on the bench under the N rim's 3.7 km wall, 5.1 px 571,1397 (section 6).
+9. **The Ice-cutters** (S; `-icecut`; chosen 2026-11-11): a Fellgang village of ice-cutters on the S rim's 3,570 m lake, 5.1 px 470,1521 (section 6).
 
 ## 10. Textures
 

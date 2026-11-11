@@ -53,7 +53,7 @@ def find_node():
     return None
 
 HERE=os.path.dirname(os.path.abspath(__file__)); SRC=os.path.join(HERE,'src'); DIST=os.path.join(HERE,'dist')
-STATIONS=['ledge','lakes','ice','gorge','pass','barrens','hearths']
+STATIONS=['ledge','lakes','ice','gorge','pass','barrens','hearths','fowlers','icecut']
 if '--all' in sys.argv:
     _rc=0
     for _s in STATIONS:
