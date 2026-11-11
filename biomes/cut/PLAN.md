@@ -341,3 +341,26 @@ their tiers now switch at the culms' distances. No read-in tree stands in the cr
 **Readers of this kit** (nhighlands, exchanges 7 and 8, reads `41`, `50`, `55`, `57`, `70`): `41`'s lip table (5.1's numbers), `50`'s culm defs (on
 `BIO.bamboo` when the page has it, else `G.culm`: the same vertices) and `55`'s spray tiers changed; nhighlands draws none of the groves, so its pages
 move by source bytes only, and they are rebuilt here.
+
+## Fauna (proposed 2026-11-11, awaiting the owner)
+
+Drawn by `kits/fauna` and tagged by biome (`biomes/README.md`, "A fauna kit"); placed by `FAUNALANDS` (`kits/fauna/fauna-lands.js`).
+The brief (`kits/fauna/BIOME-FAUNA-PLAN.md`): two grazers, a predator, a flyer and a water creature, with **at least one animal
+found nowhere else**. **New** = to be built in the kit; *shared* = an existing key that also gets this biome's tag, because its
+range plausibly runs across the border. Nothing here is built.
+
+| Role | Animal | Status | Where | Why it is here |
+|---|---|---|---|---|
+| grazer | **chamber climber** | **new, unique** | the hyperbamboo groves on the lakes' shores and in the ravines | a six-limbed climber (`faWdHex`, `amb`, `hands`, `climbs`, centaur gait) the size of a large dog that feeds on hyperbamboo shoots and young culms and **nests in the culms the warp bit open** (section 3, clean bites): a bitten culm with its chambers showing is a den. Because the internodes are all one length, its climbing stride is too: a grove's climbers move in step |
+| flyer | **lodestar moth** | **new, unique** | the floor and the walls, at dusk | a moth with a 1 m span that flies **straight along the field's axis** (radial in one ring, round in the next, section 3) and swarms the dusk echoes. A swarm draws the field's spokes and rings in the air. Built as one of the hyperjungle file's moths with a new heading rule |
+| grazer | *lowland-aurochs*, *swift-pronghorn* | shared (nwlowlands) | the walls' Cfa and the floor's forest strips; the pronghorn on the rankgrass flats | the floor and walls already read nwlowlands' flora |
+| grazer | *ridge-ibex* | shared (nhighlands) | the lip | |
+| predator | *red-dire-fox* | shared (nwlowlands) | the floor and the walls | |
+| flyer | *marsh-harrier* | shared (nwlowlands) | the ring reeds round the lakes | |
+| water | *giant-catfish*, *marsh-strider* | shared (nwlowlands) | the hot lakes (+35-39 °C) and their reed margins | the catfish takes warm, still water |
+
+**The warp on animals** (an extension of section 3, mostly harmless like the plants'; a shared hook in `kits/fauna`, which the Ancients'
+Valley's mutant variants also want, `biomes/ancientsvalley/PLAN.md`): where `s` > 0.3 **a group's members snap to one of the three
+size steps** (0.7, 1.0, 1.4: a herd all of one size), where `s` > 0.5 **resting animals face along the axis** (a herd lying down reads as a
+compass rose), and a share of young **stay young** (the stuck fruit's animal twin: adult behaviour at juvenile size). Every rule is a
+transform on `FAUNALANDS.plan`'s records, plain arithmetic on `CUT.field`, no per-frame cost.

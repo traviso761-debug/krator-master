@@ -356,3 +356,23 @@ of them. Map 5.1 asks nothing of this kit (`biomes/STATIONS-MAP-5.1.md`).
 crust): **it agrees**, as `kits/resources/ROCK-PROPOSAL.md` says. Karst site 10 (`biomes/KARST-SITES-5.1.md`: limestone under the basalt near Jimjam,
 "low gain") is not taken: no station stands on a notch where the basement shows; the coulee's spring line at the basalt's base is a note for its
 next pass.
+
+## Fauna (proposed 2026-11-11, awaiting the owner)
+
+Drawn by `kits/fauna` and tagged by biome (`biomes/README.md`, "A fauna kit"); placed by `FAUNALANDS` (`kits/fauna/fauna-lands.js`).
+The brief (`kits/fauna/BIOME-FAUNA-PLAN.md`): two grazers, a predator, a flyer and a water creature, with **at least one animal
+found nowhere else**. **New** = to be built in the kit; *shared* = an existing key that also gets this biome's tag, because its
+range plausibly runs across the border. Nothing here is built.
+
+| Role | Animal | Status | Where | Why it is here |
+|---|---|---|---|---|
+| grazer | **burrcoat** | **new, unique** | the steppe and desert (BSh, BWh), migrating with the walking plants | a long-legged six-limbed herd grazer (`faWdHex`, `amb`, `stock`), shaggy and matted. It follows the walkers and the seed weather toward water, and its coat combs **hitchers** (section 7) out of the scrub: a herd sows the steppe behind it. Herds of 20-40, the burrs drawn as a coat variant |
+| flyer | **gale kite** | **new, unique** | ridges, dam walls and hulks to windward; over the seed weather | a fox-sized six-limbed glider (`faWdHex` `limbWeb`, `climbs`, centaur gait) that launches into the steppe's strong wind (median 228 W/m²) and feeds on the drifting seeds and drift lanterns. Dense air lets a web this small hold it up; it never flaps, it only hangs and slides |
+| grazer | *swift-pronghorn*, *plains-hopper*, *lowland-aurochs* | shared (nwlowlands) | the steppe; the aurochs on the Csa and the fruit forest | the seam with NW lowlands runs 200 px; the open-plains grazers cross it |
+| grazer | *ridge-ibex*, *badland-bighorn* | shared (nhighlands, ebadlands) | the highland spurs over 2.5 km | the spurs already read those kits' flora in place |
+| predator | *red-dire-fox*, *grey-highland-wolf* | shared (nwlowlands, nhighlands) | the fox on the steppe; the wolf in the uplands and the fruit forest | |
+| flyer | *marsh-harrier*, *crag-eagle* | shared | the harrier on the golden-poplar margins and reeds; the eagle on the spurs | |
+| water | *lake-sturgeon*, *giant-catfish*, *lake-diver* | shared (nwlowlands, nhighlands) | the two trapped lakes (-81 and -60 m) and the poplar margins | the Aral's sturgeon is the Earth basis; the catfish takes the warm, shrinking margins |
+| domestic | *horse*, *bactrian-camel*, *sheep*, *goat* | shared | wherever there are herders | the Central Asian basis |
+
+The burrcoat's burrs are the one fauna-flora tie: a host check can ask that hitcher seedlings lie along the herds' trails.

@@ -170,3 +170,23 @@ To realize this plan cleanly and honestly in [`build_425_master.py`](../../tools
 | **4** | `rilleforge` | **The Hollow Way Skylight & Four-Arm Rille-Forges** (*Da-Holwey*) | `(636, 1274)` | **`+1,860 m`** (`1.27 atm`, `Cfb`, `~1,680 mm/yr`) | Inside the `35 m`-wide collapsed/uncollapsed transition of the **Western & Central Lava Tubes** beneath Tallwalls: a `90 m` circular roof skylight pouring rain and sunbeams onto tree ferns, underscored by four `14 m` subterranean waterfall waterwheels driving the trip-hammers of the four-armed Giant smiths |
 | **5** | `cloudstep` | **The Spiral-Fern Cloud Bench & Basalt Bridges** (*Da-Klaudstep*) | `(662, 1304)` | **`+2,580 m`** (`1.15 atm`, `Cfb` / `Dfb`, `~1,540 mm/yr`) | **Terrace IV**: mist-drenched montane cloud forest of right-handed **coilbarks**, **spiral frill trees**, **crozier tree ferns**, and **screw palms** (`biomes/shighlands`) arching over three natural columnar-basalt roof bridges spanning the steaming upper Clodosriba rille |
 | **6** | `headvent` | **The Greenstep Fissure Shield & Mist-Wall Amphitheater** (*Da-Fayerhed*) | `(668, 1338)` | **`+3,280 m`** (`1.05 atm`, `Dfc`, `~1,220 mm/yr`) | **Terrace V**: the low basaltic spatter-and-fissure shield (`+3,420 m` rim around the `+3,280 m` warm crater-bog source of the *Clodosriba*) where the five flood-basalt flows erupted, ringed by **ruffle-crowns**, **giant groundsels**, and steaming fumarolic moss mounds under the Outer Wall headscarp |
+
+## Fauna (proposed 2026-11-11, awaiting the owner)
+
+Drawn by `kits/fauna` and tagged by biome (`biomes/README.md`, "A fauna kit"); placed by `FAUNALANDS` (`kits/fauna/fauna-lands.js`).
+The brief (`kits/fauna/BIOME-FAUNA-PLAN.md`): two grazers, a predator, a flyer and a water creature, with **at least one animal
+found nowhere else**. **New** = to be built in the kit; *shared* = an existing key that also gets this biome's tag, because its
+range plausibly runs across the border. Nothing here is built.
+
+| Role | Animal | Status | Where | Why it is here |
+|---|---|---|---|---|
+| flyer | **veil swift** | **new, unique** | behind the curtain waterfalls of the four risers; over the terraces | a swift that nests on the wet basalt **behind** the 350-460 m curtains, flying through the falling water to reach its nest, as Earth's black swifts do. Thousands at each riser; at dusk they pour out of the mist plumes. Built on `faHiBird` |
+| grazer | **mosshorn** | **new, unique** | Terrace IV's cloud forest and the moss-padded basalt bridges | a slow, heavy six-limbed browser (`faWdHex`, `amb`, `stock`) with a shaggy, moss-holding coat and a low swept horn it uses to rake the half-metre moss off the bridges and colonnades. Its coat grows moss of its own in the fog, so a standing mosshorn is hard to tell from a boulder. The Free Giants keep some half-tame |
+| grazer | *duckbill-browser*, *cypress-glider* | shared (swlowlands) | Terraces I-II, the lower rainforest | the lower belts are the SW lowlands' flora, and the valley opens onto them |
+| grazer | *argali*, *chamois* | shared (shighlands) | the paramo on Terrace V and the rim shoulders | the upper belts are the southern highlands' |
+| predator | *ridge-raptor* | shared (swlowlands) | Terraces I-II | |
+| predator | *mountain-lion* | shared (shighlands) | Terraces III-V | |
+| flyer | *sail-wing* | shared (swlowlands) | over the risers' updrafts | |
+| water | *giant-hellbender* | shared (shighlands) | the plunge basins and the rille streams | the highlands' giant salamander in clean, cold, fast water |
+| water | *long-snout-gharial*, *sail-skimmer* | shared (swlowlands) | the Clodosriba's lower course toward the Lake of Shim | |
+| domestic | *goat*, *sheep*, *burden-beast* | shared | the Giants' terrace farms and Tallwalls | runaways bring the stock of every people; the burden beast for the Giants' loads |

@@ -152,3 +152,21 @@ When the owner approves reshaping the terrain for `opal valley` (`rmw52q8d7prwz`
 4. **Climate & Satellite (`st`) Opaline-Iridescent Palette:**
    - Reclassify the valley floor from `Class O` into a realistic elevation-graduated sequence (`EF` glacier head -> `ET` periglacial -> `Dfc`/`Dsc` Upper Terrace -> `Cfb`/`Csb` Middle Terrace -> `Cfa`/`Csa` Lower Terrace -> `Af`/`Cfa` Rift mouth, with `WH` on the 10 lakes).
    - Paint the satellite (`st`) map with the eastern blue-white glacier tongue, pearlescent turquoise-opal lake waters, iridescent teal-and-violet Xanadu-kin forest slopes, and warm copper-rose opaline sinter scarps.
+
+## Fauna (proposed 2026-11-11, awaiting the owner)
+
+Drawn by `kits/fauna` and tagged by biome (`biomes/README.md`, "A fauna kit"); placed by `FAUNALANDS` (`kits/fauna/fauna-lands.js`).
+The brief (`kits/fauna/BIOME-FAUNA-PLAN.md`): two grazers, a predator, a flyer and a water creature, with **at least one animal
+found nowhere else**. **New** = to be built in the kit; *shared* = an existing key that also gets this biome's tag, because its
+range plausibly runs across the border. Nothing here is built.
+
+| Role | Animal | Status | Where | Why it is here |
+|---|---|---|---|---|
+| grazer | **opal tahr** | **new, unique** | the sinter ledges and the fault-step risers of the upper and middle terraces | a goat-antelope (`faWdQuad`) that eats the silica-armoured leaves (section 3) with ever-growing, self-sharpening teeth; the silica it takes in sheathes its long guard hairs, so **its coat shimmers** teal to violet like the trees. Its shed winter wool is gathered from the scrub and sold in Xanadu beside the opals. Small herds on the cliffs |
+| water | **opal mussel** | **new, unique** | the beds of all ten terraced lakes, thickest in the middle terrace's sinter lakes | a freshwater mussel (a new small shell build, or a `faWdCrab`-family part) that filters the silica-rich water and lays **opaline nacre**: its shell and its rare pearls throw opal fire. A second gem trade beside the mines, and a reason the lakes are fished |
+| grazer | *plateau-kiang* | shared (xanadu) | the upper terrace's moraines and the glacier's foot | the flora is Xanadu's kin, and the valley opens onto Xanadu's basin |
+| grazer | *yak* | shared (xanadu; domestic) | the miners' and pilgrims' camps | |
+| predator | *cloud-leopard* | shared (xanadu) | the upper and middle terraces | |
+| flyer | *bone-eater* | shared (xanadu) | over the headwall and the cliffs | |
+| flyer | *lamp-glider* | shared (rift) | the rift-floor mouth only, at night | the Rift's glider reaches up out of the Rift floor |
+| water | *ice-lake-char*, *lake-diver* | shared (xanadu) | the char in the upper tarns; the diver on all the lakes | |

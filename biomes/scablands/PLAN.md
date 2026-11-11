@@ -117,3 +117,19 @@ the edge audit (`99-host-take.js` `edgeCheck`), `BIO.flareJoin`, and the species
 page load (`?mirror=probe|live`). The rock stays `KSCOUR.strata` (the basalt flows that step the walls): KSTRATA would be a second copy of the same
 beds. **Not taken:** karst site 10's spring line at the basalt's base (`biomes/KARST-SITES-5.1.md`, "low gain": a note for the coulee's next pass);
 the overhanging lip (KNOWN_ISSUES.md).
+
+## Fauna (proposed 2026-11-11, awaiting the owner)
+
+Drawn by `kits/fauna` and tagged by biome (`biomes/README.md`, "A fauna kit"); placed by `FAUNALANDS` (`kits/fauna/fauna-lands.js`).
+The brief (`kits/fauna/BIOME-FAUNA-PLAN.md`): for an overlay, only the animals that mean nothing without the channels (n semiarid and NW lowlands bring the rest), and **at least one animal
+found nowhere else**. **New** = to be built in the kit; *shared* = an existing key that also gets this biome's tag, because its
+range plausibly runs across the border. Nothing here is built.
+
+| Role | Animal | Status | Where | Why it is here |
+|---|---|---|---|---|
+| grazer | **colonnade pika** | **new, unique** | the coulee walls: the columns at each flow's foot and the talus under them | a rabbit-sized six-limbed climber (`faWdHex`, `amb`, `hands`, `climbs`) living in colonies in the joints between the basalt columns. It cuts grass on the loess islands and stacks it as haypiles in the column joints (dress records), and whistles from the dry falls' lip. It needs the cut rock the flood left, so it lives nowhere else |
+| water | *giant-spadefoot* | shared (ebadlands) | the potholes (kolks) after rain | the badlands' ephemeral-pool toad; the potholes are the same kind of pool |
+| water | *giant-pike* | shared (nwlowlands, nhighlands) | Dry Falls Lake, the plunge pool under the falls | |
+| flyer | *crag-eagle*, *wadi-swift* | shared (nhighlands, sedesert) | the eagle on the coulee walls; the swifts nesting in the dry falls' horseshoe | |
+| predator | *red-dire-fox* | shared (nwlowlands) | the coulee floor; it hunts the pikas' colonies | |
+| everything else | the host's: `nsemiarid` (its Fauna section); NW lowlands' on the flood lake's bed (station 2) | | | |
