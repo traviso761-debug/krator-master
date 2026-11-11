@@ -1,0 +1,60 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>verify_page fixture: the WebGL context and the program that fails</title>
+<style>html,body{margin:0;background:#202428}#errs{position:fixed;left:0;top:0;color:#f88;font:12px monospace}</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head><body><div id="errs"></div>
+<script>
+/* What a shader failure was, for tools/harness.py's gl-context line and the names in shader-errors
+   (tools/tests/test_gl_diagnosis.py):
+     ?case=clean       nothing lost, nothing broken
+     ?case=lost        the context lost and restored once (WEBGL_lose_context), every program built again: passes
+     ?case=broken      a ShaderMaterial that never links: named, with its mesh
+     ?case=transient   a program that failed to link and is valid by the end, no context lost
+     ?case=lost-links  the same, and the context of its canvas lost and restored: the signature of 2026-11-11 */
+const CASE = new URLSearchParams(location.search).get('case') || 'clean';
+const renderer = new THREE.WebGLRenderer({antialias: false});
+renderer.setSize(innerWidth, innerHeight);
+document.body.appendChild(renderer.domElement);
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.1, 2000);
+camera.position.set(0, 12, 30); camera.lookAt(0, 0, 0);
+scene.add(new THREE.HemisphereLight(0xffffff, 0x404040, 1));
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(200, 200, 8, 8).rotateX(-Math.PI / 2), new THREE.MeshLambertMaterial({color: 0x557744}));
+ground.name = 'ground'; scene.add(ground);
+const box = new THREE.Mesh(new THREE.BoxGeometry(4, 4, 4), new THREE.MeshLambertMaterial({color: 0xaa8855}));
+box.name = 'crate'; box.position.set(0, 2, 0); scene.add(box);
+const VS = 'void main(){ gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }';
+const GOOD = 'void main(){ gl_FragColor = vec4(0.8, 0.3, 0.2, 1.0); }';
+const BAD = 'void main(){ gl_FragColor = vec4(NaN_is_not_glsl, 0.0, 0.0, 1.0); }';
+let sign = null;
+const broken = () => { sign = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 2), new THREE.ShaderMaterial({name: 'bad glsl', vertexShader: VS, fragmentShader: BAD}));
+  sign.name = 'broken sign'; sign.position.set(-5, 1, 0); scene.add(sign); };
+if (CASE === 'broken') broken();
+function frame() { renderer.render(scene, camera); requestAnimationFrame(frame); }
+frame();
+const ready = () => { window._ready = true; };
+/* Headless Chromium on software GL may lose the first context by itself as its GPU process starts, and restore it a second
+   later. Each case starts once the context has been whole for 1.5 s, so its own failure stands clear of that loss. */
+let whole = performance.now();
+renderer.domElement.addEventListener('webglcontextrestored', () => { whole = performance.now(); });
+const settled = (then) => { const t = setInterval(() => { const lost = renderer.getContext().isContextLost(); if (lost) whole = performance.now();
+  if (!lost && performance.now() - whole > 1500) { clearInterval(t); then(); } }, 100); };
+/* the program that failed is gone and one that links draws in its place, as after a rebuilt context (r128 keeps every
+   program a material ever had until the material is disposed) */
+const mend = () => { const old = sign.material; sign.material = new THREE.ShaderMaterial({name: 'mended', vertexShader: VS, fragmentShader: GOOD}); old.dispose(); };
+/* restoreContext is refused until the lost event has been delivered, so it waits for it; it is asked again if the
+   context has not come back (a GPU process restarting just then), and a case that never settles is ready after 30 s,
+   to fail in its test rather than wait out the harness's ten minutes */
+const lose = (then) => { const cv = renderer.domElement, x = renderer.getContext().getExtension('WEBGL_lose_context'); let back = false;
+  cv.addEventListener('webglcontextrestored', () => { back = true; setTimeout(then, 300); }, {once: true});
+  cv.addEventListener('webglcontextlost', () => { const again = () => { if (back) return; try { x.restoreContext(); } catch (e) {} setTimeout(again, 2000); };
+    setTimeout(again, 100); }, {once: true});
+  x.loseContext(); };
+setTimeout(ready, 30000);
+settled(() => {
+  if (CASE === 'lost') lose(ready);
+  else if (CASE === 'transient') { broken(); setTimeout(() => { mend(); setTimeout(ready, 300); }, 300); }
+  else if (CASE === 'lost-links') { broken(); setTimeout(() => { mend(); setTimeout(() => lose(ready), 200); }, 300); }
+  else ready();
+});
+</script></body></html>

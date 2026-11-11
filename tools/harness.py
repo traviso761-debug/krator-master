@@ -38,13 +38,32 @@ verify can pass a broken page:
     return V.exit()                                      # prints the universal results, returns the exit code
 
 The universal asserts: the page is not an LFS pointer; it got ready; the error panel and page errors are clean; no
-shader compile or WebGL errors in the console (r128 sends them to console.error only); every texture decoded; the real
+shader compile or WebGL errors in the console (r128 sends them to console.error only; the failing program is named, and
+a `gl-context` line counts the context losses: "What a shader failure was", below); every texture decoded; the real
 GPU when KRATOR_GL=gpu; no NaN geometry and no empty registered volume (when the page has the probe, `_api`); no
 instanced item past the instance cap (3c); the eye of every view is not inside geometry (10a); the budget in the
 build's BUDGETS.json; BIO.capReport and _api.seatSweeps when the page has them; a winding report (item 15, never a
 failure). `await V.sheet(out)` or `harness.py sheet <page>` draws every BIO item alone on a grid. A page that fails one today is listed in tools/verify_ratchet.json and only warns; anything not
 listed fails. `python3 tools/harness.py ratchet <pages>` reruns the universal asserts and lists a page's failures
 (--write records them; a page is taken out of the ratchet at its own rebuild turn).
+
+What a shader failure was (2026-11-11). r128's "THREE.WebGLProgram: shader error" names no material, and a burst of link
+failures with empty logs is also what a lost WebGL context or a driver under load gives a page with nothing wrong in it.
+Two records tell them apart; neither changes what passes or fails (tools/tests/test_gl_diagnosis.py has a case each):
+  1. The context. From before the page loads (GL_HOOK_JS, window.__kgl), every canvas that takes a WebGL context is
+     watched: each `webglcontextlost` and `webglcontextrestored` event is kept with its time and canvas, and each program
+     as it fails to link with its time, canvas, three's SHADER_NAME and whether its log was empty. The line `gl-context`
+     (a report, never a failure) gives the count: "no WebGL context lost (1 canvas watched)", or "the WebGL context was
+     lost 1 time and restored 1 time: canvas 1 (1280x800) lost at 41.2 s, canvas 1 restored at 42.2 s". Headless
+     Chromium on software GL often loses the first context by itself as its GPU process starts; that is counted too.
+  2. The program. A failing `shader-errors` line ends, after " || ", with "programs that do not link now (N): ..." (each
+     renderer.info.programs entry whose LINK_STATUS is false at the end of the run: its shader type, the start of its
+     cache key, the materials and meshes that draw with it, found as KHOOK.checkPrograms finds them, and its log), or
+     with "link errors were logged but every program is valid now", and with "as they failed: N links (...)". When
+     every program drawn at the end links and the link failures came on a canvas whose context was lost within
+     LOSS_LEAD_S after them (or before it was whole again), the line opens with "the WebGL context was lost N times
+     during the run: the link errors below follow from it; rerun with --no-cache": do not go looking for a bad material.
+     A material that is broken stays broken after a restore, and is named instead. V.gl holds the record.
 
 The GPU lanes (item 16; 2026-11-03): with KRATOR_GL=gpu, verify_page takes a GPU lane's lock, a directory with an
 `owner` file. Two lanes: `arc`, the Intel Arc 140T (KRATOR_GPU_LOCK, default <temp>/claude/krator-verify-gpu.lock, the
@@ -748,6 +767,31 @@ IMG_HOOK_JS = """(()=>{ window.__kimgErr=[]; const d=Object.getOwnPropertyDescri
  set(v){ if(!this.__kw){ this.__kw=1; this.addEventListener('error',()=>{ const s=String(this.src||'');
    window.__kimgErr.push(s.startsWith('data:')?s.slice(0,40)+'... ('+s.length+' chars)':s.slice(-120)); }); }
    return d.set.call(this,v); }}); })();"""
+# What a shader failure was (2026-11-11: 22 "shader error: 0 35715 false" lines with empty logs, on a page that passed an hour
+# later). From before the page loads, on window.__kgl: every canvas that takes a WebGL context is watched, and each
+# webglcontextlost and webglcontextrestored event is kept in `ev` with its time (ms since the page's start), its canvas and
+# whether the page asked for the loss itself (WEBGL_lose_context.loseContext, a renderer disposed with forceContextLoss);
+# and each program as it fails to link is kept in `links` (getProgramParameter LINK_STATUS false, which r128 reads once after
+# every link) with its time, its canvas, three's SHADER_NAME and whether its log was empty (no GLSL error: the driver or the
+# context). The listeners prevent nothing and every call returns what it returned before.
+GL_HOOK_JS = """(()=>{ const L=window.__kgl={ev:[],links:[],linkN:0,canvases:0,done:false}; const now=()=>Math.round(performance.now());
+ const watch=(cv)=>{ if(!cv||cv.__kglId) return; try{ cv.__kglId=++L.canvases; }catch(e){ return; }
+  cv.addEventListener('webglcontextlost',()=>{ L.ev.push({e:'lost',t:now(),canvas:cv.__kglId,size:cv.width+'x'+cv.height,asked:!!cv.__kglAsked}); cv.__kglAsked=0; });
+  cv.addEventListener('webglcontextrestored',()=>{ L.ev.push({e:'restored',t:now(),canvas:cv.__kglId}); }); };
+ for(const C of [window.HTMLCanvasElement,window.OffscreenCanvas]){ if(!C||!C.prototype||!C.prototype.getContext) continue; const g=C.prototype.getContext;
+  C.prototype.getContext=function(type){ const c=g.apply(this,arguments); try{ if(c&&/webgl/i.test(String(type))) watch(this); }catch(e){} return c; }; }
+ for(const G of [window.WebGLRenderingContext,window.WebGL2RenderingContext]){ if(!G||!G.prototype) continue;
+  const P=G.prototype, gp=P.getProgramParameter, ge=P.getExtension, seen=new WeakSet();
+  P.getProgramParameter=function(p,n){ const r=gp.call(this,p,n);
+   if(n===35714&&r===false&&!L.done&&p&&!seen.has(p)){ try{ seen.add(p); L.linkN++; if(L.links.length<64){ let name='?', lost=false, empty=false;
+     for(const s of (this.getAttachedShaders(p)||[])){ const m=/#define SHADER_NAME (\\S+)/.exec(this.getShaderSource(s)||''); if(m){ name=m[1]; break; } }
+     try{ lost=this.isContextLost(); empty=!String(this.getProgramInfoLog(p)||'').replace(/[\\s\\0]+/g,''); }catch(e){}
+     L.links.push({t:now(),canvas:(this.canvas&&this.canvas.__kglId)||0,name,lost,empty}); } }catch(e){} }
+   return r; };
+  P.getExtension=function(name){ const x=ge.call(this,name);
+   try{ if(x&&/lose_context/i.test(String(name))&&!x.__kgl&&typeof x.loseContext==='function'){ const cv=this.canvas, lc=x.loseContext;
+     x.__kgl=1; x.loseContext=function(){ if(cv) cv.__kglAsked=1; return lc.apply(x,arguments); }; } }catch(e){}
+   return x; }; } })();"""
 
 
 def watch_console(pg):
@@ -775,6 +819,7 @@ async def open_page(browser, html, port, size="1280x800", here=None, query="", r
     pg.on("pageerror", lambda e: errs.append(str(e)))
     watch_console(pg)
     await pg.add_init_script(IMG_HOOK_JS)
+    await pg.add_init_script(GL_HOOK_JS)
     for f in init:
         with open(f, encoding='utf-8') as fh:
             await pg.add_init_script(fh.read())
@@ -873,6 +918,122 @@ UNIVERSAL_JS = "(cap)=>{" + FIND_JS + """
    o[k]={n:x.n, nFails:x.nFails||0, first:JSON.stringify((x.fails||[]).slice(0,2)).slice(0,160)}; } o.neg=!S.contact||S.contact.neg===true; return o; }catch(e){ return {error:String(e)}; } })():null;
  try{ R.sceneTris=(A&&A.totals&&A.totals.tris!=null)?A.totals.tris:null; }catch(e){ R.sceneTris=null; }
  return R; }"""
+# The programs that do not link at the end of the run, named: r128's "THREE.WebGLProgram: shader error" carries no material.
+# The renderers are the page's `renderer` (top level, window or _api) and every one KHOOK compiled a layer on; a program is
+# an entry of renderer.info.programs whose LINK_STATUS reads false (null, a lost context, is not a failure); the materials
+# and meshes that draw with it are found as KHOOK.checkPrograms finds them, through renderer.properties over the scene
+# (r128 keeps every program a material ever had: `held` is a failed one its material no longer draws with). It also hands
+# back what GL_HOOK_JS kept, and closes its list of link failures (this read is not one).
+PROGRAMS_JS = "()=>{" + FIND_JS + """
+ const L=window.__kgl||null; if(L) L.done=true; const {sc}=__kfind(); const rs=[];
+ const add=(r)=>{ try{ if(r&&r.info&&Array.isArray(r.info.programs)&&typeof r.getContext==='function'&&rs.indexOf(r)<0) rs.push(r); }catch(e){} };
+ try{ if(typeof renderer!=='undefined') add(renderer); }catch(e){}
+ add(window.renderer); add((window._api||{}).renderer);
+ try{ if(typeof KHOOK!=='undefined') (KHOOK.renderers||[]).forEach(add); }catch(e){}
+ const out={hooked:!!L, ev:L?L.ev.slice(0,40):[], evN:L?L.ev.length:0, canvases:L?L.canvases:0, links:L?L.links:[], linkN:L?L.linkN:0,
+  renderers:rs.length, programs:0, lostNow:0, scene:!!sc, bad:[], badN:0, heldN:0};
+ const nm=(o)=>String(o.name||(o.userData&&(o.userData.item||o.userData.tag))||o.type||'?').slice(0,60);
+ const put=(a,s,cap)=>{ if(a.indexOf(s)<0&&a.length<cap) a.push(s); };
+ for(const R of rs){ let gl=null; try{ gl=R.getContext(); }catch(e){} if(!gl) continue; if(gl.isContextLost()){ out.lostNow++; continue; }
+  const by=new Map();
+  for(const p of R.info.programs){ out.programs++; let st=null; try{ st=gl.getProgramParameter(p.program,gl.LINK_STATUS); }catch(e){}
+   if(st!==false) continue; let log=''; try{ log=(gl.getProgramInfoLog(p.program)||'').replace(/[\\s\\0]+/g,' ').trim(); }catch(e){}
+   by.set(p,{name:p.name||'?', key:String(p.cacheKey||'').replace(/\\s+/g,' ').slice(0,72), log:log.slice(0,120), materials:[], meshes:[], meshN:0, held:[]}); }
+  if(by.size&&sc&&R.properties) sc.traverse((o)=>{ const ms=o.material?(Array.isArray(o.material)?o.material:[o.material]):[];
+   for(const m of ms){ let pr=null; try{ pr=R.properties.get(m); }catch(e){} if(!pr) continue;
+    const mn=m.type+(m.name?' "'+String(m.name).slice(0,60)+'"':''), rec=by.get(pr.currentProgram||pr.program);
+    if(rec){ put(rec.materials,mn,4); rec.meshN++; put(rec.meshes,nm(o),6); }
+    if(pr.programs&&typeof pr.programs.forEach==='function') pr.programs.forEach((x)=>{ const h=by.get(x); if(h&&h!==rec) put(h.held,mn,4); }); } });
+  by.forEach((rec)=>{ if(!rec.meshN&&rec.held.length){ out.heldN++; if(out.bad.length<8) out.bad.push(rec); return; } out.badN++; if(out.bad.length<8) out.bad.push(rec); }); }
+ return out; }"""
+LINK_ERR = re.compile(r"THREE\.WebGLProgram: shader error", re.I)
+# A context loss explains a link failure on its canvas from LOSS_LEAD_S before the lost event (the GPU side is gone before
+# the page is told: links fail with empty logs) until LOSS_LAG_S after the context is restored.
+LOSS_LEAD_S, LOSS_LAG_S = 10.0, 1.0
+
+
+def _times(n):
+    return "%d time%s" % (n, "" if n == 1 else "s")
+
+
+def gl_diagnosis(P, sh):
+    """What the run's WebGL record says about its shader failures: (the `gl-context` line, what `shader-errors` says before
+    its console lines, what it says after them). P: PROGRAMS_JS's result (None when the page could not be read); sh: the
+    console's shader and WebGL failures (gl_errors). Nothing is said before or after when sh is empty.
+    Link failures are put down to a context loss only when every program drawn at the end links and they came inside
+    the loss's window on their own canvas (LOSS_LEAD_S before it, to LOSS_LAG_S after its restore): a material that is
+    broken stays broken after a restore and is named instead, whatever the context did."""
+    if not P or not P.get("hooked"):
+        return "not watched: the page could not be read at the end of the run", "", ""
+    ev, links = P.get("ev") or [], P.get("links") or []
+    bad = [b for b in P.get("bad") or [] if b["meshN"] or not b["held"]]    # drawn now, or on no material the scene shows
+    held = [b for b in P.get("bad") or [] if not b["meshN"] and b["held"]]  # failed, kept by a material that draws with another
+    lost = [e for e in ev if e["e"] == "lost"]
+    if lost:
+        asked = sum(1 for e in lost if e.get("asked"))
+        ctx = "the WebGL context was lost %s and restored %s: %s%s%s%s" % (
+            _times(len(lost)), _times(sum(1 for e in ev if e["e"] == "restored")),
+            ", ".join("canvas %s%s %s at %.1f s" % (e["canvas"], " (%s)" % e["size"] if e.get("size") else "", e["e"], e["t"] / 1000.0) for e in ev[:8]),
+            ", and %d more events" % (P.get("evN", len(ev)) - 8) if P.get("evN", len(ev)) > 8 else "",
+            "; %d asked for by the page (WEBGL_lose_context.loseContext)" % asked if asked else "",
+            "; still lost at the end on %d renderer%s" % (P["lostNow"], "" if P["lostNow"] == 1 else "s") if P.get("lostNow") else "")
+    else:
+        n = P.get("canvases", 0)
+        ctx = "no WebGL context lost (%d canvas%s watched)" % (n, "" if n == 1 else "es")
+    if not sh:
+        return ctx, "", ""
+    # each loss's window on its canvas, and the link failures inside one
+    wins = []
+    for i, e in enumerate(ev):
+        if e["e"] == "lost":
+            back = next((x["t"] for x in ev[i + 1:] if x["e"] == "restored" and x["canvas"] == e["canvas"]), None)
+            wins.append((e["canvas"], e["t"] - LOSS_LEAD_S * 1000, float("inf") if back is None else back + LOSS_LAG_S * 1000))
+    hit = [w for w in wins if any(l["canvas"] == w[0] and w[1] <= l["t"] <= w[2] for l in links)]
+    inside = [l for l in links if any(l["canvas"] == w[0] and w[1] <= l["t"] <= w[2] for w in wins)]
+    logged = links or any(LINK_ERR.search(t) for t in sh)
+    pre, post = "", []
+    if inside and not bad:
+        pre = "the WebGL context was lost %s during the run: %s below follow from it; rerun with --no-cache. " % (
+            _times(len(hit)), "the link errors" if len(inside) == len(links) else "%d of the %d link errors" % (len(inside), len(links)))
+    if bad:
+        def prog(b):
+            more = b["meshN"] - len(b["meshes"])
+            return "%s (key '%s'%s; %s; %s)" % (
+                b["name"], b["key"], "; material " + ", ".join(b["materials"]) if b["materials"] else "",
+                ("on " + ", ".join("'%s'" % m for m in b["meshes"]) + (" and %d more" % more if more > 0 else "")) if b["meshes"]
+                else ("on no mesh of the scene" if P.get("scene") else "no scene reachable to name its meshes"),
+                "log: " + b["log"] if b["log"] else "an empty log: no GLSL error, so the driver or the context")
+        n = P.get("badN", len(bad))
+        post.append("programs that do not link now (%d): %s%s" % (n, "; ".join(prog(b) for b in bad[:3]), "; and %d more" % (n - 3) if n > 3 else ""))
+    elif logged:
+        if P.get("lostNow"):
+            post.append("the context is still lost at the end of the run, so no program could be read")
+        elif not P.get("renderers"):
+            post.append("no renderer was reachable to name the program (no `renderer` at the top level, on window or on _api, none from KHOOK)")
+        else:
+            post.append("link errors were logged but every program %s (%d program%s on %d renderer%s%s)%s" % (
+                "drawn now is valid" if held else "is valid now", P["programs"], "" if P["programs"] == 1 else "s",
+                P["renderers"], "" if P["renderers"] == 1 else "s",
+                "; %d that failed %s kept by a material that draws with another: %s" % (
+                    P.get("heldN", len(held)), "is" if P.get("heldN", len(held)) == 1 else "are",
+                    ", ".join("%s of %s" % (b["name"], ", ".join(b["held"])) for b in held[:3])) if held else "",
+                ": they were built again after the context came back" if inside and len(inside) == len(links)
+                else ": a context loss or a transient driver failure; rerun with --no-cache" if inside
+                else ", and no context loss explains them: a transient driver failure; rerun with --no-cache"))
+    if links:
+        n, cnt = P.get("linkN", len(links)), {}
+        for l in links:
+            cnt[l["name"]] = cnt.get(l["name"], 0) + 1
+        names = ", ".join(k if len(links) == 1 else "%s x%d" % (k, v) for k, v in sorted(cnt.items(), key=lambda kv: (-kv[1], kv[0])))
+        t0, t1 = links[0]["t"] / 1000.0, links[-1]["t"] / 1000.0
+        empty = sum(1 for l in links if l.get("empty"))
+        post.append("as they failed: %d link%s (%s%s) at %s after the page's start, on canvas %s%s%s" % (
+            n, "" if n == 1 else "s", names, ", the first %d named" % len(links) if n > len(links) else "",
+            "%.1f s" % t0 if round(t1 - t0, 1) == 0 else "%.1f to %.1f s" % (t0, t1),
+            ", ".join(str(c) for c in sorted({l["canvas"] for l in links})),
+            ", %s with an empty log" % ("all" if empty == len(links) else "%d" % empty) if empty else "",
+            ", the context already reading as lost" if any(l.get("lost") for l in links) else ""))
+    return ctx, pre, " || " + "; ".join(post) if post else ""
 # Item 10a: from the eye, rays up, down and four ways level, against the solid meshes drawn (instances prefiltered by
 # their bounds; materials made two-sided only for the duration of the call, so a ray sees the inside of a closed mesh).
 # Fails when the eye is inside a closed mesh (four of six rays meet a back face first), under the drawn ground (the ray
@@ -1031,7 +1192,7 @@ class VerifyPage:
         self.page = self.browser = self.port = self.code = None
         self.errs, self.fails, self.ready = [], [], False
         self.samples, self.eyes, self.universal = [], [], []   # (view, calls, tris); (view, result); (name, ok, detail)
-        self.winding = None
+        self.winding = self.gl = None   # the winding sweep; the WebGL record (PROGRAMS_JS: context events, link failures, programs)
 
     async def sample(self, view):
         s = await self.page.evaluate(SAMPLE_JS)
@@ -1086,9 +1247,16 @@ class VerifyPage:
             U.append(("page-alive", False, "the page could not be read: " + str(e).splitlines()[0][:200]))
             R = None
         cons = getattr(pg, "krator_console", [])
-        sh = gl_errors(cons)
-        U.append(("shader-errors", not sh, "%d shader or WebGL errors in the console: %s" % (len(sh), " | ".join(t[:160] for t in sh[:3]))
-                  if sh else "console clean of shader and WebGL errors (%d other errors or warnings)" % len(cons)))
+        sh, ncons = gl_errors(cons), len(cons)
+        try:   # after the console is read: what this evaluate itself logs is not the page's
+            P = await pg.evaluate(PROGRAMS_JS)
+        except Exception:
+            P = None
+        self.gl = P
+        ctx, pre, post = gl_diagnosis(P, sh)
+        U.append(("gl-context", True, ctx))   # a report: it never fails, and says why shader-errors may have
+        U.append(("shader-errors", not sh, pre + "%d shader or WebGL errors in the console: %s" % (len(sh), " | ".join(t[:160] for t in sh[:3])) + post
+                  if sh else "console clean of shader and WebGL errors (%d other errors or warnings)" % ncons))
         try:
             bad = await pg.evaluate("() => typeof KHOOK === 'undefined' ? null : KHOOK.checkPrograms().map(r => r.kind === 'anchor' ? r.layer + ': ' + r.anchor : 'program ' + r.name + ': ' + (r.programLog || r.fragmentLog || r.vertexLog).slice(0, 120))")
         except Exception:
