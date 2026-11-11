@@ -83,6 +83,11 @@ def _isle_build():
         spec = importlib.util.spec_from_file_location('_isle_city_build', os.path.join(ROOT, 'settlements', 'isle-demo', 'build.py'))
         m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m); globals()['_isle_city_build'] = m
     return globals()['_isle_city_build']
+# the region's resources (core/world/world_data.py: the geology cropped to the box; kits/resources' field, read in place)
+import importlib.util as _ilu   # noqa: E402
+_wds = _ilu.spec_from_file_location('core_world_data', os.path.join(ROOT, 'core', 'world', 'world_data.py'))
+_WD = _ilu.module_from_spec(_wds); _wds.loader.exec_module(_WD)
+RES_FRAGS = _WD.RES_FRAGS
 ORDER = (
     LDF('00-head.html') + [('gen', '05-world-data.js'),
      ('core/shader', '06-core-khook.js'), ('core/shader', '06b-core-kcolor.js'),
@@ -130,7 +135,8 @@ ORDER = (
     + [('core/city', '54-city-host-construct.js'), ('kits/construction/src', '10-cons-site.js')]   # the empty lots' works (settlements/isle-demo 60): a building site and a piece going up
     + [('src', '88h-world-hamlets.js'), ('isledraw', '60-isle-draw.js'), ('isleexport', '62-isle-export-scene.js'), ('src', '88a-world-atlas.js'), ('src', '88t-world-towns.js'), ('src', '88k-world-camps.js'), ('src', '88p-world-colony.js'),
        ('settlements/isle-demo/src', '59-isle-citizens.js'), ('src', '88c-world-life.js'), ('src', '89-world-geysers.js')]
-    + LDF('90-world-camera.js', '91-world-probe.js', '98-world-start.js', '99-tail.html')
+    + [('resgeo', 'geology')] + RES_FRAGS + [('ld', '49r-world-resources.js'), ('ld', '89r-world-resources-map.js')]   # the resources: census, layers, markers
+    + LDF('90-world-camera.js', '91-world-probe.js', '93-world-propose.js', '98-world-start.js', '99-tail.html')   # 93: proposing a site
 )
 # the page's own words in the world's head (core/world/00-head.html) (its title and caption), replaced: each must be found exactly once
 HEAD = [('<title>Krator Little Demo</title>', '<title>Krator Isle Demo</title>'),
@@ -165,6 +171,9 @@ def data_fragment():
 def main():
     out, bad = [], []
     for where, f in ORDER:
+        if where == 'resgeo':   # the region's geology (core/world/world_data.py geology_fragment: kits/resources' data cropped to the box)
+            out.append(_WD.geology_fragment(DATA))
+            continue
         if where == 'gen':
             out.append(data_fragment())
             continue

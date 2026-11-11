@@ -22,3 +22,8 @@
       searched for good ground within 3 km. busy-keller's hinterland survey, lifted into core, would place them by the
       land's fitness. They have no farmland yet.
 - [ ] **The villages are not on core/simulation.**
+- [ ] **Farmland is a reading, not a crop map.** The resources panel's farmland is warmth x water x flat x soil from the world's
+      fields (core/world/49r-world-resources.js `farm`); it does not ask kits/crops what grows there (no climate-to-band
+      mapper exists yet) and the scale model has no soil layer.
+- [ ] **Proposals live in the browser until they are sent or exported.** `93-world-propose.js` keeps them in localStorage
+      per region; clearing the site data loses unsent ones.

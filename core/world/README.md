@@ -20,9 +20,19 @@ page that reads it came out byte-identical after the move.
 | `85-world-flora.js` | [web] | the flora tile by tile, seeded by cell with `KRAND.hash` (the same tile in any order) |
 | `86-world-floor.js` | [web] | the kits' floor patches under the zones |
 | `87-world-places.js`, `88-world-towns.js` | [web] | the "Go to" list and the scale model's settlement markers |
-| `90-world-camera.js` | [web] | the camera |
+| `48s-world-sites.js`, `88s-world-sites.js` | [G data], [web] | `KSITES`: a region's sites planned (camps, hamlets, roads, links and their stops); drawn |
+| `49r-world-resources.js` | [G data] | `WRES`: the region's resources. The scale model's geology (`kits/resources/data/geology.json`, cropped to the region by `world_data.geology_crop`, read through `KRES`) and farmland from the world's fields: `census`, `markers` (the richest mining, farmland and unique spots), `layers`, `assess(x, z, reach)` |
+| `89r-world-resources-map.js` | [web] | the "resources" panel: the census table, a map of any layer with the markers, the markers' list and beacons; the markers join `MAP_MARKS` ("Go to", the minimap) and the layers `MAP_LAYERS` (the minimap's overlays) |
+| `90-world-camera.js` | [web] | the camera, the minimap (its overlays: Köppen, biome regions, a page's `MAP_LAYERS`), "Go to", the inspector, the polygon tool, `pick` |
 | `91-world-probe.js` | [web] | the camera, the probe and its checks (`_api.hostChecks`: order-free seeding, land continuous, nothing in water, spacing across tiles, roads, towns, no NaN) |
+| `93-world-propose.js` | [web] | "propose": place a new site on the ground or the minimap, name and type it, see its ground and resources (`WRES.assess`), keep it, export it or send it to the edit queue; `tools/scale-model/propose_site.py` takes it into `openworld/SITES.json` and the scale model |
 | `98-world-start.js`, `99-tail.html` | [web] | start-up and the page's tail |
+
+**Resources and proposals in a region's build:** list `('resgeo', 'geology')` (a generated fragment:
+`world_data.geology_fragment(DATA)`), `world_data.RES_FRAGS` (kits/resources' `42r`, `45r`), `49r` and `89r` before
+`90`, and `93` after `91`; its verify calls `verify_world.resources(pg, V, out, fails)` (the census and markers, the
+proposal tool, each with a negative, and a shot of the panel). `python3 core/world/bake_sites.py <region> --resources`
+writes the census and markers to `plan/resources.json` (what Godot reads).
 
 **Who reads it:**
 - `openworld/isle-demo/build.py`: all of it (`WORLD_SRC`);

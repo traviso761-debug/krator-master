@@ -63,6 +63,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, '..', '..', 'tools'))
 import harness
 from harness import verify_page, Abort
+sys.path.insert(0, os.path.join(HERE, '..', '..', 'core', 'world'))
+import verify_world as VW  # noqa: E402  (the resources' and proposals' checks every region shares)
 try:
     sys.stdout.reconfigure(encoding='utf-8')
 except Exception:
@@ -401,6 +403,8 @@ async def run(a):
                     elif r.get('neg') == neg:
                         print(('  PASS  ' if not r['ok'] else '  MISSED') + ' negative (' + neg + ') : ' + r['detail'])
                         if r['ok']: fails.append('negative colony ' + neg)
+        if a.assert_:
+            await VW.resources(pg, V, a.out, fails)
         for v in [int(t) for t in a.views.split(',') if t.strip()]:
             await pg.evaluate('_api.go(%d)' % v)
             s = await pg.evaluate('_api.settle(240000)')

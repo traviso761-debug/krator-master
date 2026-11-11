@@ -23,6 +23,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, '..', '..', 'tools'))
 import harness  # noqa: F401
 from harness import verify_page, Abort
+sys.path.insert(0, os.path.join(HERE, '..', '..', 'core', 'world'))
+import verify_world as VW  # noqa: E402  (the resources' and proposals' checks every region shares)
 try:
     sys.stdout.reconfigure(encoding='utf-8')
 except Exception:
@@ -89,6 +91,8 @@ async def run(a):
             for neg, key in (('plan', 'the baked plan'), ('ground', "on the world's ground"), ('clear', 'cleared of flora')):
                 r = [x for x in await pg.evaluate('_sites.checks(%r)' % neg) if key in x['name']][0]
                 if say(r, neg): fails.append('negative ' + neg)
+        if a.assert_:
+            await VW.resources(pg, V, a.out, fails)
         for v in [int(t) for t in a.views.split(',') if t.strip()]:
             await pg.evaluate('_api.go(%d)' % v)
             s = await pg.evaluate('_api.settle(240000)')

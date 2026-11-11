@@ -29,3 +29,8 @@
       bundle (as `kits/xanadu` owns `XAK`). Until it does, this build reads the isle demo's bundler and its piece
       instancer (`58-isle-protos.js`) in place: a lateral dependency, allow-listed.
 - [ ] **No floor patches.** `floor: null` for both kits, so the world's floor skips them.
+- [ ] **Farmland is a reading, not a crop map.** The resources panel's farmland is warmth x water x flat x soil from the world's
+      fields (core/world/49r-world-resources.js `farm`); it does not ask kits/crops what grows there (no climate-to-band
+      mapper exists yet) and the scale model has no soil layer.
+- [ ] **Proposals live in the browser until they are sent or exported.** `93-world-propose.js` keeps them in localStorage
+      per region; clearing the site data loses unsent ones.

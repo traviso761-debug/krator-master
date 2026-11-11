@@ -63,9 +63,23 @@
 - **Core changes on the way:** `88s` picks a village's drawing by its row's kit (`VK`); the bake reads `VERN.def` boxes.
   One kit on several overlays is a shim in the region until `41` takes a list (`TODO.md`, "Ride along").
 
+**Resources and proposing a site (the owner, 2026-11-11), in every open-world page** (the isle demo's world page, Pinnacle,
+region 2, the Iziz cluster):
+- **"resources":** the region's census, from the scale model's geology (`kits/resources/data/geology.json`: 26 families
+  and the rock provinces per 4 km cell, cropped to the region) and farmland from the world's own climate and ground.
+  It shows a map of any layer, the richest mining, farmland and unique spots (placers, vents, rare rock, Ancient ruin
+  ground) as markers, and those markers in "Go to". The minimap takes the same layers as overlays.
+  `core/world/49r-world-resources.js`, `89r-world-resources-map.js`; `bake_sites.py <region> --resources` writes
+  `plan/resources.json`.
+- **"propose":** place a new site on the ground or the minimap, name and type it, and read its ground and resources within
+  its reach. It is kept in the browser, and can be exported or sent to the edit queue (`tools/edits/serve.py`).
+  `python3 tools/scale-model/propose_site.py <file> | --edits` lists them. `--accept <id> --region <r> --write` makes one a
+  site of `SITES.json` (state `proposed`) and a settlement of the scale model (its default list and a `SETT_ADDED`
+  version). Then `cut_site.py` and the region's spec take it up. Step 6's planner page grows from this.
+
 **Not yet:**
 - Step 3 (the generic town steps lifted out of `ISLE`): no region plans a town yet.
-- Step 6 (the region's planner page).
+- Step 6 (the region's planner page): proposing a site is its first part; laying out what stands round it is next.
 - Step 7 (Godot reading `plan/`).
 - Bridges (the Iziz cluster's links ride their rivers as causeways; region 2's stay unlaid).
 - The mesa in the world: `openworld/pinnacle/PLAN.md`, "What is left".

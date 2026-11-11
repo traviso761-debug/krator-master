@@ -104,24 +104,30 @@ let RAS=null,MODE=0;
 function paintBase(R){RAS=R||RAS;R=RAS;const g=base.getContext('2d'),id=g.createImageData(W,Hh),d=id.data;
  const hex=c=>{const k=new THREE.Color(c||'#888');return[k.r*255,k.g*255,k.b*255];};
  const cols=MODE===1?M.classes.map(c=>hex(c.color)):M.biomes.map(b=>hex(b.colour));const src=MODE===1?R.clim:R.biome;
+ /* modes past 2: a page's own layers (window.MAP_LAYERS: {label, color(k) -> [r,g,b] at the map pixel k, legend}) */
+ const LY=MODE>=3?(window.MAP_LAYERS||[])[MODE-3]:null;
  for(let j=0;j<Hh;j++)for(let i=0;i<W;i++){const k=j*W+i,[x,z]=WORLD.fromPx(M.frame.box_px[0]+i,M.frame.box_px[1]+j);
   const h=WORLD.baseH(x,z),hx=WORLD.baseH(x+2000,z)-h,hz=WORLD.baseH(x,z+2000)-h,sh=Math.max(.35,Math.min(1.35,.85-(hx-hz)*.0012));
-  const c=cols[src[k]]||[128,128,128],wet=MODE!==1&&WORLD.water(x,z)>h,ins=R.mask[k]>127?1:.55;
+  const c=LY?LY.color(k):cols[src[k]]||[128,128,128],wet=MODE===0||MODE===2?WORLD.water(x,z)>h:false,ins=R.mask[k]>127?1:.55;
   const col=wet?[60,100,150]:c;d[k*4]=col[0]*sh*ins;d[k*4+1]=col[1]*sh*ins;d[k*4+2]=col[2]*sh*ins;d[k*4+3]=255;}
  g.putImageData(id,0,0);
  g.strokeStyle='rgba(120,220,255,.6)';g.lineWidth=1;for(const L of M.drainage.lines){if(L[0][2]<M.drainage.min_accum*3)continue;g.beginPath();L.forEach((p,i)=>{const X=WORLD.px(p[0])-M.frame.box_px[0],Y=WORLD.py(p[1])-M.frame.box_px[1];i?g.lineTo(X,Y):g.moveTo(X,Y);});g.stroke();}
  g.strokeStyle='#fff';g.lineWidth=1.5;g.beginPath();M.region.points_px.forEach((p,i)=>{const X=p[0]-M.frame.box_px[0],Y=p[1]-M.frame.box_px[1];i?g.lineTo(X,Y):g.moveTo(X,Y);});g.closePath();g.stroke();
  for(const p of PLACES.list){const X=p.px-M.frame.box_px[0],Y=p.py-M.frame.box_px[1];g.fillStyle=p.cand?'#7fd0ff':p.build?'#ffc070':'#e8e0d0';g.beginPath();g.arc(X,Y,p.build||p.cand?4:2.5,0,Math.PI*2);g.fill();}
- if(MODE===1){const n={};for(let k=0;k<R.clim.length;k++)if(R.mask[k]>127)n[R.clim[k]]=(n[R.clim[k]]||0)+1;
+ if(LY)$('maplegend').innerHTML=LY.legend||('<b>'+LY.label+'</b>');
+ else if(MODE===1){const n={};for(let k=0;k<R.clim.length;k++)if(R.mask[k]>127)n[R.clim[k]]=(n[R.clim[k]]||0)+1;
   $('maplegend').innerHTML='<b>Köppen classes in the region</b><br>'+Object.keys(n).sort((a,b)=>n[b]-n[a]).map(c=>{const C=M.classes[c];return '<span style="color:'+C.color+'">■</span> '+C.code+' '+C.name+' ('+Math.round(n[c]*4/1000)+'k km²)';}).join('<br>');}
  else $('maplegend').innerHTML=(MODE===2?'<b>Biome regions</b><br>':'')+M.biomes.filter(b=>b.px_in_region>0).map(b=>'<span style="color:'+b.colour+'">■</span> '+b.name+(b.kit?'':' (bare)')).join(MODE===2?'<br>':' · ');
- {const ML=[...new Set((window.MAP_MARKS||[]).map(m=>m.legend).filter(Boolean))];if(ML.length)$('maplegend').innerHTML+='<br>'+ML.map(l=>'<span style="color:#c050a0">◆</span> '+l).join(' · ');}   /* the page's marks (window.MAP_MARKS) */
+ {const MM=window.MAP_MARKS||[],ML=[...new Set(MM.map(m=>m.legend).filter(Boolean))];   /* the page's marks (window.MAP_MARKS), each legend in its marks' colour */
+  if(ML.length)$('maplegend').innerHTML+='<br>'+ML.map(l=>'<span style="color:'+((MM.find(m=>m.legend===l)||{}).color||'#c050a0')+'">◆</span> '+l).join(' · ');}
 }
-$('ov').onchange=()=>{MODE=+$('ov').value;TERRAIN.OVERLAY.value=MODE;paintBase();$('ov').blur();};
+/* a page's own layers join the overlay list (the terrain keeps its plain colours under them) */
+(window.MAP_LAYERS||[]).forEach((L,i)=>{const o=document.createElement('option');o.value=String(3+i);o.textContent='overlay: '+L.label;$('ov').appendChild(o);});
+$('ov').onchange=()=>{MODE=+$('ov').value;TERRAIN.OVERLAY.value=MODE>=3?0:MODE;paintBase();$('ov').blur();};
 function drawMap(){mg.drawImage(base,0,0);const C=camera.position,X=WORLD.px(C.x)-M.frame.box_px[0],Y=WORLD.py(C.z)-M.frame.box_px[1];
  for(const m of (window.MAP_MARKS||[])){const mx=WORLD.px(m.x)-M.frame.box_px[0],my=WORLD.py(m.z)-M.frame.box_px[1];   /* a page's marks: a diamond, outlined */
   mg.fillStyle=m.color||'#c050a0';mg.strokeStyle='#000';mg.lineWidth=1;mg.beginPath();mg.moveTo(mx,my-5);mg.lineTo(mx+4,my);mg.lineTo(mx,my+5);mg.lineTo(mx-4,my);mg.closePath();mg.fill();mg.stroke();}
  mg.save();mg.translate(X,Y);mg.rotate(-st.yaw);mg.fillStyle='#ff4030';mg.strokeStyle='#000';mg.beginPath();mg.moveTo(0,-11);mg.lineTo(6,6);mg.lineTo(0,2);mg.lineTo(-6,6);mg.closePath();mg.fill();mg.stroke();mg.restore();}
 mm.addEventListener('click',e=>{const r=mm.getBoundingClientRect(),px=M.frame.box_px[0]+(e.clientX-r.left)/r.width*W,py=M.frame.box_px[1]+(e.clientY-r.top)/r.height*Hh;
  const [x,z]=WORLD.fromPx(px,py),agl=Math.max(300,camera.position.y-ground(camera.position.x,camera.position.z));setView(x,z,Math.min(agl,8000),st.yaw,st.pitch);});
-return{update,setView,lookAt,paintBase,drawMap,st,GO};})();});
+return{update,setView,lookAt,paintBase,drawMap,st,GO,pick};})();});

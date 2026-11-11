@@ -3,6 +3,7 @@
 
     python3 core/world/bake_sites.py <region>            # write openworld/<region>/plan/sites.json
     python3 core/world/bake_sites.py <region> --check    # plan again and compare with the baked file (exit 1 if stale)
+    python3 core/world/bake_sites.py <region> --resources   # the region's resources: plan/resources.json (census, markers)
 
 The planners are [G data], so the plan is made in node, not in a browser: the region's rasters decoded here
 (core/world/world_data.py), the world's land and roads (core/world 41, 42), core/space, core/camp, the Beast Riders'
@@ -85,6 +86,41 @@ process.stdout.write(JSON.stringify(P));
     return ''.join(parts)
 
 
+def resources_script(region):
+    """the region's land, its geology (world_data.geology_fragment) and core/world/49r-world-resources.js: WRES.census()
+    and WRES.markers(), as the page makes them"""
+    base = os.path.join(ROOT, 'openworld', region)
+    parts = ['"use strict";var window=globalThis;\n']
+    for j in JS[:5]:
+        if j is None:
+            parts.append(WD.fragment(os.path.join(base, 'data'), 'var WORLD_KITS=[];\n', 'the region (core/world/bake_sites.py)',
+                                     'openworld/%s/data, decoded by core/world/world_data.py' % region))
+            continue
+        parts.append('\n// ---- %s\n' % '/'.join(j) + open(os.path.join(ROOT, *j), encoding='utf-8').read())
+    parts.append(WD.geology_fragment(os.path.join(base, 'data')))
+    for where, f in WD.RES_FRAGS + [('core/world', '49r-world-resources.js')]:
+        parts.append('\n// ---- %s/%s\n' % (where, f) + open(os.path.join(ROOT, where, f), encoding='utf-8').read())
+    parts.append(r'''
+WORLD.init(WORLD_R);
+process.stdout.write(JSON.stringify({format:'krator-region-resources',version:1,region:WORLD_DATA.meta.cut?WORLD_DATA.meta.cut.region:null,
+ census:WRES.census(),markers:WRES.markers()}));
+''')
+    return ''.join(parts)
+
+
+def run(js):
+    with tempfile.NamedTemporaryFile('w', suffix='.js', delete=False, encoding='utf-8') as f:
+        f.write(js)
+        tmp = f.name
+    try:
+        r = subprocess.run([node(), '--stack-size=8000', '--max-old-space-size=8000', tmp], capture_output=True, text=True, encoding='utf-8')
+    finally:
+        os.remove(tmp)
+    if r.returncode:
+        sys.exit('bake_sites: node failed:\n' + r.stderr[-4000:])
+    return json.loads(r.stdout)
+
+
 def plan(region):
     with tempfile.NamedTemporaryFile('w', suffix='.js', delete=False, encoding='utf-8') as f:
         f.write(script(region))
@@ -103,6 +139,16 @@ def main():
     if not a or a[0].startswith('-'):
         sys.exit(__doc__)
     region = a[0]
+    if '--resources' in a:
+        R = run(resources_script(region))
+        dst = os.path.join(ROOT, 'openworld', region, 'plan', 'resources.json')
+        os.makedirs(os.path.dirname(dst), exist_ok=True)
+        with open(dst, 'w', encoding='utf-8', newline='\n') as f:
+            json.dump(R, f, ensure_ascii=False, indent=1)
+        C = R['census']
+        print('resources %s: %d km2, farmland mean %.2f (%d km2 good), %d markers -> %s' % (region, C['area_km2'], C['farm']['mean'],
+              C['farm']['good_km2'], len(R['markers']), os.path.relpath(dst, ROOT).replace(os.sep, '/')))
+        return
     P = plan(region)
     chk = P.pop('check')
     dst = os.path.join(ROOT, 'openworld', region, 'plan', 'sites.json')
