@@ -167,7 +167,7 @@ var KANOM = (function(root){
     return { sy: Math.pow(g, -P.sy), sxz: Math.pow(g, P.sxz), sink: Math.min(.5, P.sink * (g - 1)), floors: 1 / g };
   }
   function owed(S, rate, dt){
-    S.owed = S.owed || 0; S.aged = S.aged || 0; if (!(dt > 0) || !(rate > 0)) return S;
+    S.owed = S.owed == null ? 0 : S.owed; S.aged = S.aged == null ? 0 : S.aged; if (!(dt > 0) || !(rate > 0)) return S;
     if (rate < 1) S.owed = Math.min(d(S.cap, PRESETS.owedCap), S.owed + dt * (1 / rate - 1)); else if (rate > 1) S.aged += dt * (rate - 1);
     return S;
   }
@@ -181,7 +181,7 @@ var KANOM = (function(root){
     R.list = function(){ return recs.slice(); };
     R.get = function(id){ return byId[id] || null; };
     R.at = function(x, y, z){ return recs.length ? combine(recs, x, y, z) : NORMAL; };
-    R.near = function(x, z, r){ return recs.filter(function(q){ var b = q.bound; return Math.hypot(b.x - x, b.z - z) <= b.r + (r || 0); }); };
+    R.near = function(x, z, r){ return recs.filter(function(q){ var b = q.bound; return Math.hypot(b.x - x, b.z - z) <= b.r + (r == null ? 0 : r); }); };
     function reg(T, rec){ var h = hazardOf(rec), b = rec.bound, tags = { anomaly: { kind: rec.kind, g: rec.g, time: rec.time, bend: rec.bend, strength: rec.strength, rim: rec.rim, tell: rec.tell, to: rec.to } };
       if (h) { if (root.KHAZ && root.KHAZ.make) try { h = root.KHAZ.make(h); } catch (e) { throw new Error('KANOM.register: ' + e.message); } tags.hazard = h; }
       return T.add({ class: 'feature', kind: 'anomaly', key: 'anomaly.' + rec.kind, name: rec.id, at: [b.x, rec.y, b.z], r: b.r, h: 2500, tags: tags }); }

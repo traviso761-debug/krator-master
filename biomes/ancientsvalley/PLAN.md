@@ -561,5 +561,7 @@ them yet.*
 | the aqueduct spills | `fx/89-atmos-fx-spill.js` | `ATMOS.spillRec(o)` from an aqueduct's deck line and its break: the curtain's lip, direction, speed and drop (also as `WATER.fall`'s options for a page with `core/water`), drips from the cracks along the span, the spray and the wet stain at the foot; `ATMOS.spill(rec)` draws them on `localFx` and the smoke's `spray` |
 | wind over the crop rows | `fx/89-atmos-fx-gustsheen.js` | `ATMOS.gustSheenOn(material)`: the paler band that runs across a field as a gust front bends the stems (the foliage's own `atmGust`, so the sheen and the sway agree); `ATMOS.chaff(fields)`: seed heads and chaff lifted along the front |
 
+**Checked 2026-11-10** (`core/atmos/fxdemo/verify.py --assert`): every effect recorded for the export, the pools' acid and the arcs' shock on core/hazard where they are and nowhere else, the slag glowing at night against its heat turned off, the plumes moving, the crop rows moving with the gust against the gust turned off, both spills landing on the ground over their wet stains. `node core/atmos/fx/test-industry.js` holds the records and the JS twins (and the GLSL KRAND chunk against `KRAND.h3`).
+
 The Yards' smog and oily rain are the Overlook's (`89v`, `89x`) with the Yards' defaults; the stations place these records on their own
 ground (the tank farms' pools, the stacks of the twelve industrial buildings, the aqueduct's breaks, the farm pods' crops).

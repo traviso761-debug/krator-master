@@ -5,7 +5,9 @@
 
 The scenes (`#scene=`): `stilled` (the Stilled Ground: rain, dust, steam, a fall, an explosion and birds held by a time
 zone of core/anomaly, against the same things running outside it), `press` (the Press: the heavy walk, stunted and sunk
-growth, a pancaked ruin, a short hard fall, the flat pall). biomes/ancientsvalley/PLAN-ANOMALIES.md 14 and PLAN.md 15 say
+growth, a pancaked ruin, a short hard fall, the flat pall), `yards` (plumes, toxic pools, spill ground, slag glow, sparks and
+an arc) and `terraces` (the crop rows in the wind, chaff, a broken aqueduct's spills, a pylon line arcing).
+biomes/ancientsvalley/PLAN-ANOMALIES.md 14 and PLAN.md 15 say
 what each is for. Nothing here is a runtime dependency: the page is a viewer. three.js r128 is inlined from a local copy.
 Deterministic.
 """
@@ -31,6 +33,12 @@ FRAGMENTS = [
     os.path.join(ATMOS, '89-atmos-0p-presets.js'),
     os.path.join(ATMOS, '89-atmos-3-particles.js'),
     os.path.join(ATMOS, 'fx', '89-atmos-fx-localtime.js'),
+    os.path.join(ATMOS, 'fx', '89-atmos-fx-plumes.js'),
+    os.path.join(ATMOS, 'fx', '89-atmos-fx-sparks.js'),
+    os.path.join(ATMOS, 'fx', '89-atmos-fx-sludge.js'),
+    os.path.join(ATMOS, 'fx', '89-atmos-fx-slag.js'),
+    os.path.join(ATMOS, 'fx', '89-atmos-fx-spill.js'),
+    os.path.join(ATMOS, 'fx', '89-atmos-fx-gustsheen.js'),
     os.path.join(HERE, 'src', '10-demo.js'),
 ]
 

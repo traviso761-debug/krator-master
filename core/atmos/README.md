@@ -482,6 +482,23 @@ field is read on the circle, so a flock round a zone runs while one inside hangs
 (`localFxData`) and the motion's JS twin (`localFxAt`) are plain arithmetic, seeded on `KRAND.hash(seed, emitter, particle, salt)`;
 the test holds them to it and `core/atmos/fxdemo` shows them on the GPU. The handle frees its geometry (`dispose()`) and hides
 past `reach`.
+## The works and the fields (`fx/`, opt-in, 2026-11-10; `fx/test-industry.js`)
+
+The Ancient's Valley's Yards and Terraces (`biomes/ancientsvalley/PLAN.md` 15). Each is a record first (a pure `*Rec` fills and
+checks it, seeded on `KRAND.hash` by its index), drawn after; every handle frees its geometry (`dispose()`) and hides past `reach`.
+The shader noise is an integer hash (lowbias32), never sin.
+
+| File | Calls | What |
+|---|---|---|
+| `fx/89-atmos-fx-plumes.js` | `ATMOS.plumes(list)`, `plumeRec`, `plumeOn`, `plumeAt` (the twin) | a stack's soot bent downwind for a kilometre, a cooling tower's cloud evaporating as it rises, a flare, a vent; a plume on a duty cycle shows only the particles that left the mouth while it ran |
+| `fx/89-atmos-fx-sparks.js` | `ATMOS.sparks(list)`, `ATMOS.arcs(list)`, `sparkEpoch`, `arcPoint` (the twin), `arcHazard` | a dead machine's showers on a hashed period; a jagged arc re-drawn each flicker from (seed, flash, flicker, segment), its strike throwing sparks; the arc's shock as a core/hazard record on the arc's own cycle |
+| `fx/89-atmos-fx-sludge.js` | `ATMOS.sludgePools(list)`, `sludgeMaterial`, `spillOn(material, spills)`, `spillAt` (the twin), `poolHazard`, `krandGLSL` | a toxic pool's surface (foam rafts, thin-film sheen, bubbles); a ground layer of oil spills (black, crusted rim, bleached fringe) and wet stains, at most 16 a material; the stain's broken edge is KRAND's value noise in GLSL, bit for bit (`krandGLSL`, held to `KRAND.h3` by the test) |
+| `fx/89-atmos-fx-slag.js` | `ATMOS.slagOn(material, rec)`, `slagRec`, `slagHeat` (the twin) | a heap's crust split by glowing seams (a 3D Voronoi in world space), hottest at the pour, breathing plate by plate |
+| `fx/89-atmos-fx-spill.js` | `ATMOS.aqueductSpill(o)`, `ATMOS.spill(rec)` | a broken aqueduct (an open span or a breach): the lip, direction, speed and the drop to where the arc lands, as `WATER.fall`'s options for a page with core/water, drawn otherwise on `localFx`; drips from the cracks, spray and a wet stain at the foot |
+| `fx/89-atmos-fx-gustsheen.js` | `ATMOS.gustOn(material, {sheen, sway, height})`, `gustAt` (the twin) | the paler band that runs over a field as a gust front bends the stems, on the foliage's own `atmGust`; a sway for crop meshes that have none (`sway: 0` on the kits' foliage) |
+
+`localFx` gained two kinds for them: `fume` (a pool's low haze) and `chaff` (seed heads lifted and carried as a gust front passes).
+`core/atmos/fxdemo` shows them (`#scene=yards`, `#scene=terraces`).
 ## Tags
 
 The module registers nothing itself, because a host's registry is its own. The Iziz city adds REG entries for what it

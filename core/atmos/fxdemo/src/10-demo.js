@@ -9,7 +9,7 @@
  renderer.outputEncoding=T.sRGBEncoding;document.body.appendChild(renderer.domElement);window.renderer=renderer;
  const scene=new T.Scene();const sky=new T.Color(0x8d9aa3);scene.background=sky;scene.fog=new T.FogExp2(sky,.0018);
  const camera=new T.PerspectiveCamera(60,innerWidth/innerHeight,.2,6000);
- const sun=new T.DirectionalLight(0xfff1dc,1.1);sun.position.set(300,500,200);scene.add(sun);scene.add(new T.HemisphereLight(0xbfd0e0,0x4a4236,.65));
+ const sun=new T.DirectionalLight(0xfff1dc,1.1);sun.position.set(300,500,200);scene.add(sun);const hemi=new T.HemisphereLight(0xbfd0e0,0x4a4236,.65);scene.add(hemi);
  const mat=c=>new T.MeshLambertMaterial({color:c});
  const ground=new T.Mesh(new T.PlaneGeometry(4000,4000,1,1),mat(0x55513f));ground.rotation.x=-Math.PI/2;scene.add(ground);
  const grid=new T.GridHelper(1200,60,0x4d4a3c,0x5d5a4a);grid.position.y=.02;scene.add(grid);
@@ -21,7 +21,7 @@
  const TG=KTAGS.create({build:'fxdemo'});N.reset({seed:1});N.register(TG);
  const C=KHOST.camera({THREE:T,camera,renderer,scene,ground:()=>0,eye:1.7});
  const Wk=N.bindWalker(C);
- const fx=[];
+ const fx=[],fxB=[];   /* localFx handles (the frozen check reads them); the other effects' handles */
  // ---- the scenes
  const SCENES={
   stilled:{name:'The Stilled Ground',about:'A time zone of core/anomaly (rate 1e-4 at the core, ring 140 m, rim 70 m): rain, dust, steam, a waterfall, an Ancient machine mid-explosion and birds hang where time stops; the same things run outside it (east). The birds circling the zone never cross it.',
@@ -60,12 +60,64 @@
      {kind:'curtain',lip:[[-52,67.5,31.5],[-28,67.5,31.5]],dir:[0,1],speed:4,drop:31.5,n:3000},{kind:'curtain',lip:[[288,67.5,31.5],[312,67.5,31.5]],dir:[0,1],speed:4,drop:31.5,n:3000}],{g:gAt,seed:12}));
     return {zones:[Z],kept:[keptIn,keptOut],views:[
      {name:'Overview',v:[200,110,300,120,5,0]},{name:'The pancaked tower',v:[40,12,48,0,6,0]},{name:'Stunted and sunk',v:[-90,9,-150,-40,4,-60]},
-     {name:'The short fall',v:[-10,8,120,-40,12,70]},{name:'Outside: the long fall',v:[330,8,120,300,12,70]},{name:'The core (walking)',walk:[-20,-30,2.4]}]};}}};
+     {name:'The short fall',v:[-10,8,120,-40,12,70]},{name:'Outside: the long fall',v:[330,8,120,300,12,70]},{name:'The core (walking)',walk:[-20,-30,2.4]}]};}},
+  yards:{name:'The Yards',about:'The industrial district\'s effects (PLAN.md 15): stacks trailing soot downwind, cooling towers billowing (one on a duty cycle), a flare, a vent from a broken main, toxic pools with foam and sheen and their low fume, oil spills on the ground with crusted rims, a slag heap glowing at its pour, sparks from dead machines, an arc off a gantry.',
+   build(){const steel=mat(0x6a6660),conc=mat(0x8a857c);
+    for(const s of [[-60,-80,62],[-40,-90,70],[-20,-80,55]]){put(new T.CylinderGeometry(2.2,3,s[2],16),conc,s[0],s[2]/2,s[1]);}
+    const tower=(x,z)=>{const pts=[];for(let i=0;i<=12;i++){const t=i/12;pts.push(new T.Vector2(34-14*Math.sin(t*Math.PI*.8)+6*t,t*90));}const m=new T.Mesh(new T.LatheGeometry(pts,40),new T.MeshLambertMaterial({color:0x9c978e,side:T.DoubleSide}));m.position.set(x,0,z);scene.add(m);};
+    tower(90,-120);tower(170,-110);
+    put(new T.CylinderGeometry(.6,.8,26,10),steel,30,13,-30);put(new T.CylinderGeometry(.5,.5,8,10),steel,-80,4,30);
+    const heap=new T.Mesh(new T.ConeGeometry(26,18,48,6),new T.MeshLambertMaterial({color:0x3a302a}));heap.position.set(-110,9,-10);scene.add(heap);
+    const machines=[[40,20],[60,35],[-10,60]];machines.forEach(m=>put(new T.BoxGeometry(7,5,9),steel,m[0],2.5,m[1]));
+    put(new T.BoxGeometry(2,24,2),steel,110,12,40);put(new T.BoxGeometry(30,2,2),steel,96,24,40);
+    const plumes=A.plumes([{at:[-60,62,-80],kind:'stack'},{at:[-40,70,-90],kind:'stack'},{at:[-20,55,-80],kind:'stack',duty:.6,period:240},
+     {at:[90,90,-120],kind:'cooling'},{at:[170,90,-110],kind:'cooling',duty:.7,period:300},{at:[30,26,-30],kind:'flare',r:.7},{at:[-80,8,30],kind:'vent'}],{seed:21});
+    const pools=A.sludgePools([{at:[0,.05,40],r:14},{at:[-40,.05,70],r:9},{at:[25,.05,80],r:7,toxic:.6}],{seed:21});
+    const pr=pools.recs.map(R=>TG.add({class:'feature',kind:'pool',key:'sludge.pool',name:R.id,at:R.at,r:R.r,h:1,tags:{hazard:KHAZ.make(A.poolHazard(R))}}));
+    const spills=A.spillOn(ground.material,[{at:[-30,20],r:22},{at:[60,60],r:16,k:.8},{at:[-70,60],r:12},{at:[120,0],r:10,kind:'wet'}],{seed:21});
+    const slag=A.slagRec({at:[-110,14,2],r:12,heat:1,base:.15,cell:1.1},1,21),slagU=A.slagOn(heap.material,slag);
+    const sparks=A.sparks(machines.map((m,i)=>({at:[m[0]+3.6,3.5,m[1]],dir:[1,.6,0],period:3+i,burst:.8})),{seed:21});
+    const arcs=A.arcs([{a:[96,24,40],b:[100,0,48],period:4,on:.6}],{seed:21});
+    arcs.recs.forEach(R=>TG.add({class:'feature',kind:'arc',key:'sparks.arc',name:R.id,at:R.b,r:3,h:4,tags:{hazard:KHAZ.make(A.arcHazard(R))}}));
+    fx.push(A.localFx(pools.recs.map(R=>({kind:'fume',at:R.at,r:R.r*.8,h:2.5,n:Math.round(R.r*3)})),{seed:22}));
+    fxB.push(plumes,pools,sparks,arcs);
+    return {plumes:plumes.recs,pools:pools.recs,spills:spills.recs,slag,slagU,arcs:arcs.recs,views:[
+     {name:'Overview',v:[260,90,260,0,30,-40]},{name:'The stacks and towers',v:[60,20,140,20,60,-100]},{name:'The pools and spills',v:[10,14,110,0,0,40]},
+     {name:'The slag heap at night',v:[-70,10,40,-110,10,-5],hour:22},{name:'Sparks and the arc at night',v:[70,9,75,92,8,40],hour:22}]};}},
+  terraces:{name:'The Terraces',about:'The farm belt\'s effects (PLAN.md 15): the crop rows bending and paling as gust fronts roll across them, chaff lifted on the fronts, a broken aqueduct pouring from its open span and from a breach in its wall, with drips from its cracks and a wet stain below, and a pylon line arcing where a pylon leans and a wire hangs.',
+   build(){const stone=mat(0x9a8f7c),steel=mat(0x5d5a55);
+    const card=new T.PlaneGeometry(.22,1.1);card.translate(0,.55,0);const cmat=new T.MeshLambertMaterial({color:0x9a944e,side:T.DoubleSide});
+    const N2=24000,crops=new T.InstancedMesh(card,cmat,N2),M4=new T.Matrix4(),q=new T.Quaternion(),e=new T.Euler();let n=0;
+    for(let r=0;r<120&&n<N2;r++)for(let j=0;j<200&&n<N2;j++){const x=-120+j*1.2+(KRAND.unit(KRAND.hash(5,r,j,1))-.5)*.5,z=10+r*.9,h=.7+.6*KRAND.unit(KRAND.hash(5,r,j,2));
+     e.set(0,KRAND.unit(KRAND.hash(5,r,j,3))*3.14,0);q.setFromEuler(e);M4.compose(new T.Vector3(x,0,z),q,new T.Vector3(1,h,1));crops.setMatrixAt(n++,M4);}
+    crops.count=n;scene.add(crops);A.gustOn(cmat,{sway:.3,height:1.1,sheen:.45});
+    for(let i=0;i<9;i++){const x=-110+i*28;put(new T.CylinderGeometry(.3,.4,3,8),mat(0x4b3a2a),x,1.5,135);put(new T.SphereGeometry(3,10,8),mat(0x52663a),x,5,135);}
+    const deckY=18,deck=[[-200,-40,deckY],[200,-40,deckY]];
+    for(let x=-196;x<=196;x+=16){if(Math.abs(x-20)<14)continue;put(new T.BoxGeometry(3,deckY,3),stone,x,deckY/2,-40);}
+    put(new T.BoxGeometry(206,2.4,4),stone,-97,deckY+1.2,-40);put(new T.BoxGeometry(170,2.4,4),stone,115,deckY+1.2,-40);
+    const span=A.aqueductSpill({deck,at:206,width:2.4,depth:.7,kind:'span',ground:()=>0,seed:31}),breach=A.aqueductSpill({deck,at:330,width:2.4,depth:.7,kind:'breach',side:1,breach:3,ground:()=>0,seed:32});
+    const s1=A.spill(span,{seed:31}),s2=A.spill(breach,{seed:32});fx.push(s1.fx,s2.fx);fxB.push(s1,s2);
+    A.spillOn(ground.material,[span.wet,breach.wet],{seed:31});
+    const wires=[],pyl=[];for(let i=0;i<5;i++){const x=-160+i*80,lean=i===3?.35:0,g=new T.Group();g.position.set(x,0,-110);g.rotation.z=lean;
+     const p=new T.Mesh(new T.BoxGeometry(1.2,30,1.2),steel);p.position.y=15;g.add(p);const arm=new T.Mesh(new T.BoxGeometry(10,.6,.6),steel);arm.position.y=29;g.add(arm);scene.add(g);g.updateMatrixWorld();
+     pyl.push([-4.5,4.5].map(dx=>new T.Vector3(dx,29,0).applyMatrix4(g.matrixWorld)));}
+    const wm=new T.LineBasicMaterial({color:0x222222});
+    for(let i=0;i<4;i++)for(let s=0;s<2;s++){if(i===3&&s===1)continue;const a=pyl[i][s],b=pyl[i+1][s],pts=[];for(let k=0;k<=16;k++){const t=k/16;pts.push(new T.Vector3(a.x+(b.x-a.x)*t,a.y+(b.y-a.y)*t-6*Math.sin(Math.PI*t),a.z+(b.z-a.z)*t));}
+     scene.add(new T.Line(new T.BufferGeometry().setFromPoints(pts),wm));}
+    const hang=pyl[3][1],pts=[hang.clone(),new T.Vector3(hang.x+6,8,hang.z+2),new T.Vector3(hang.x+9,1.5,hang.z+3)];scene.add(new T.Line(new T.BufferGeometry().setFromPoints(pts),wm));
+    const arcs=A.arcs([{a:[hang.x+9,1.5,hang.z+3],b:[hang.x+12,0,hang.z+3],period:3,on:.7,jag:.6,segs:10},{a:pyl[3][0].toArray(),b:pyl[3][1].toArray(),period:7,on:.4,jag:1.2}],{seed:33});
+    arcs.recs.forEach(R=>TG.add({class:'feature',kind:'arc',key:'sparks.arc',name:R.id,at:R.b,r:3,h:4,tags:{hazard:KHAZ.make(A.arcHazard(R))}}));
+    fx.push(A.localFx([{kind:'chaff',at:[0,0,60],r:110,h:4,drift:9,n:1500}],{seed:34}));fxB.push(arcs);
+    return {spills:[span,breach],arcs:arcs.recs,crops:n,views:[
+     {name:'Overview',v:[220,70,240,0,10,0]},{name:'The crop rows in the wind',v:[-40,6,180,20,0,40]},{name:'The broken span',v:[60,10,10,20,12,-40]},
+     {name:'The breach and the drips',v:[160,8,10,130,10,-40]},{name:'The pylon line arcing',v:[110,10,-60,85,8,-110]}]};}}};
  const key=SCENES[Q.get('scene')]?Q.get('scene'):'stilled',S=SCENES[key],built=S.build();
  // ---- the panel
  for(const k in SCENES){const o=document.createElement('option');o.value=k;o.textContent=SCENES[k].name;$('scene').appendChild(o);}
  $('scene').value=key;$('scene').onchange=e=>{location.hash='scene='+e.target.value;location.reload();};$('about').textContent=S.about;
- const setView=i=>{const v=built.views[i];if(!v)return;if(v.walk){C.setView(v.walk[0]+5,10,v.walk[1]+5,v.walk[0],0,v.walk[1]);C.walk(true,true);
+ const sky0=sky.clone(),night=new T.Color(0x0c1018);
+ const setHour=h=>{hour=h;const n=A.night?A.night(h):0;sun.intensity=1.1*(1-.92*n);hemi.intensity=.65*(1-.8*n);sky.copy(sky0).lerp(night,n);scene.fog.color.copy(sky);};
+ const setView=i=>{const v=built.views[i];if(!v)return;setHour(v.hour==null?15:v.hour);if(v.walk){C.setView(v.walk[0]+5,10,v.walk[1]+5,v.walk[0],0,v.walk[1]);C.walk(true,true);
    C.ctl.target.set(v.walk[0],1.7,v.walk[1]);C.walkAt=null;C.ctl.theta=v.walk[2];C.ctl.phi=Math.PI/2-.05;}
   else C.setView(...v.v);};
  built.views.forEach((v,i)=>{const b=document.createElement('button');b.textContent=v.name;b.onclick=()=>setView(i);$('views').appendChild(b);});
@@ -78,7 +130,7 @@
  function frame(now){const dt=Math.min(.1,Math.max(0,(now-last)/1000));last=now;   /* rAF's stamp can precede the start */
   for(const f of hooks)f(dt);C.move(dt);C.apply();renderer.render(scene,camera);if(++frames%10===0)info();
   if(frames===3)window._ready=true;requestAnimationFrame(frame);}
- window._api={sceneKey:key,scene,camera,scenes:Object.keys(SCENES),built,C,Wk,fx,tags:TG,anom:N,hooks,setView,views:built.views.map(v=>v.name),
+ window._api={sceneKey:key,scene,camera,scenes:Object.keys(SCENES),built,C,Wk,fx,fxB,tags:TG,setHour,records:()=>A.fx.map(r=>r.type),anom:N,hooks,setView,views:built.views.map(v=>v.name),
   // the GPU checks: walk to (x, z), let the hooks step, read the walker's state
   walkAt(x,z){C.walk(true,true);C.ctl.target.set(x,1.7,z);C.walkAt=null;for(let i=0;i<3;i++){for(const f of hooks)f(1/60);C.apply();}
    return {inside:Wk.state.inside,speed:Wk.state.walk.speed,ctlSpeed:C.ctl.speed,eye:C.ctl.eye,g:Wk.state.at.g,time:Wk.state.at.time};},
