@@ -16,7 +16,7 @@ const AV_AFTER=()=>{avLoadNote(null);const el=document.getElementById('av-after'
 (async function(){const t0=performance.now();const Q=new URLSearchParams(location.search),q=Q.has('q')?+Q.get('q'):1;
  const adjust=(T,w)=>{for(let i=REG.length-1;i>=0&&i>=REG.length-400;i--){const r=REG[i];if(r.kind==='tree'&&r.x===T.x&&r.z===T.z){if(!w){REG.splice(i,1);break;}r.h=w.h;r.r=r.r*w.kx;break;}}};
  /* a kit's build() in its two passes, each a stage: the same calls, BIO.cur and output as the kit's own build (each lowland kit's 70 fragment) */
- const kitStages=async(K,cur,label,f,o)=>{const R=o.R||2850,qq=o.quality==null?1:o.quality,out={R,quality:qq,trees:0,heroes:0,far:0};
+ const kitStages=async(K,cur,label,f,o)=>{const R=o.R==null?2850:o.R,qq=o.quality==null?1:o.quality,out={R,quality:qq,trees:0,heroes:0,far:0};
   if(K.buildTrees){await avYield(label+', the trees');masked(f,()=>{BIO.cur=cur+'/trees';Object.assign(out,K.buildTrees(R,qq,o));});}
   if(K.buildFloor){await avYield(label+', the floor');masked(f,()=>{BIO.cur=cur+'/floor';Object.assign(out,K.buildFloor(R,qq));});}
   BIO.cur=null;return out;};
