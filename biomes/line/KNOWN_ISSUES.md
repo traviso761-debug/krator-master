@@ -4,8 +4,8 @@
 
 - [ ] **The line record is this build's until the transit kit is on main** (2026-11-11). `stations/common/47-line-core.js` (`LK`) and each station's
   `48-line-window.js` hold the window's records (the section, the tracks, the lamps, the niches, the vein, the trains and their timelines, the car pose) as the
-  `KTRANSIT.line` kind will (PLAN.md section 4). When `kits/ancient-transit` reaches main (the owner: merge it first), the record moves
-  into the line kind and these fragments read it, keeping their output.
+  `KTRANSIT.line` kind will (PLAN.md section 4). The kind is written (`kits/ancient-transit/src/43c-tr-line.js`, `56c-tr-draw-line.js`, 2026-11-11) and sent to the
+  transit session for review; once agreed, each station's window becomes `KTRANSIT.lineWindow` of one `KTRANSIT.line`, keeping its output.
 - [ ] **The drawing is this build's builder** (`85-host-lining.js`, `LB`): quads and boxes by family and 100 m chunk, UVs in metres. It
   moves to `KTRANSIT.draw` with the line kind (the transit kit's `B.sweep` and the subway's swept bore are its model).
 - [ ] **Three surfaces stand in for owed sets** (`core/materials/PROMPTS-NEEDED.md` section 41): the lining on `concrete.ancient` (owed

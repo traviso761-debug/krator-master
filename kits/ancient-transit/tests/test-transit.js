@@ -4,7 +4,7 @@ const fs = require('fs'), path = require('path'), vm = require('vm'), ROOT = pat
 const ctx = { console, Math }; ctx.window = ctx; ctx.globalThis = ctx; vm.createContext(ctx);
 const load = p => vm.runInContext(fs.readFileSync(path.join(ROOT, p), 'utf8'), ctx, { filename: p });
 load('core/rand/08-core-rand.js'); load('core/space/20-core-space.js');
-for (const f of ['40-tr-records.js', '41-tr-path.js', '42-tr-highway.js', '43-tr-rail.js', '41b-tr-network.js', '43b-tr-subway.js', '44-tr-dress.js', '44b-tr-war.js', '44c-tr-quake.js']) load('kits/ancient-transit/src/' + f);
+for (const f of ['40-tr-records.js', '41-tr-path.js', '42-tr-highway.js', '43-tr-rail.js', '41b-tr-network.js', '43b-tr-subway.js', '43c-tr-line.js', '44-tr-dress.js', '44b-tr-war.js', '44c-tr-quake.js']) load('kits/ancient-transit/src/' + f);
 const T = vm.runInContext('KTRANSIT', ctx), KRAND = vm.runInContext('KRAND', ctx), KSPACE = vm.runInContext('KSPACE', ctx);
 let bad = 0; const ok = (c, m) => { if (!c) { bad++; console.log('FAIL ' + m); } };
 const throws = (fn, m) => { let t = false; try { fn(); } catch (e) { t = true; } ok(t, 'negative: ' + m); };
@@ -226,5 +226,45 @@ const ground = (x, z) => 4 * Math.sin(x / 130) * Math.cos(z / 170) + (Math.hypot
   throws(() => T.pick(1, 'tr_zeppelin'), 'an unknown kind throws'); throws(() => T.pick(1, 'tr_bench', 'bent'), 'a state a kind has not throws');
   const pk = T.pick(77, 'tr_lamp'); ok(T.STATES.indexOf(pk.state) >= 0 && pk.variant < 2 && JSON.stringify(T.pick(77, 'tr_lamp')) === JSON.stringify(pk), 'pick is a hash of its seed');
   const sh = T.shares({ a: 0.5, b: 0.5 }); let na = 0; for (let i = 0; i < 1000; i++) if (sh(KRAND.unit(KRAND.hash(3, i))) === 'a') na++; ok(na > 420 && na < 580, 'shares pick by cumulative share'); }
+
+/* the deep line (43c): the whole line and a window of it; the tracks' runs, the gaps and segments derived, the sections on the whole line's grid,
+   the stations' platforms, the trains' car pose */
+{ const def = { id: 'rift', ground, pts: [[0, -3000, 0], [0, -3010, 5000], [800, -3020, 9000]], radius: 600,
+    cond: [{ s0: 0, s1: 2000, track: 't1', state: 'kept' }, { s0: 3000, s1: 3540, track: '*', state: 'cut' }, { s0: 4000, s1: 4100, track: 't4', state: 'flooded', depth: 0.3 }],
+    stations: [{ num: 3, s: 1500, len: 460, state: 'kept', platforms: [{ track: 't2', side: -1 }, { track: 't3', side: 1 }] }],
+    shafts: [{ s: 1600, side: -1, r: 3.5 }], crossovers: [{ s: 2500, a: 't2', b: 't3' }], forms: [{ s0: 0, s1: 6000, kind: 'gallery' }, { s0: 6000, s1: 6400, kind: 'shallow' }, { s0: 6400, s1: 9100, kind: 'gallery' }] };
+  const LN = T.line(def);
+  ok(LN.kind === 'line' && LN.L > 9000 && LN.L < 9100 && LN.pavement === 0 && LN.deckAt === LN.floorAt, 'the line is a line like the others: ' + LN.L.toFixed(1));
+  ok(Math.abs(LN.floorAt(0) + 3000) < 1e-6 && Math.abs(LN.floorAt(2500) + 3005) < 0.01, 'the invert follows the given heights by arc length');
+  ok(LN.gaps.length === 1 && LN.gaps[0].s0 === 3000 && LN.gaps[0].s1 === 3540 && LN.gaps[0].id === 'rift.g3000' && LN.segments.length === 2, 'one gap where every track is cut, two segments');
+  ok(T.line(Object.assign({}, def, { cond: def.cond.concat([{ s0: 3000, s1: 3540, track: 't1', state: 'kept' }]) })).gaps.length === 0, 'negative: one track left kept across the cut, no gap');
+  ok(T.line(Object.assign({}, def, { cond: [{ s0: 100, s1: 200, track: '*', state: 'flooded', depth: 1.2 }] })).gaps.length === 1 && LN.gaps.length === 1, 'a flood over 0.6 m is a gap, the 0.3 m one is not');
+  ok(LN.sections.filter(S => S.state === 'fallen').every(S => S.s0 >= 3000 && S.s1 <= 3540) && LN.sections.filter(S => S.state === 'fallen').length === 27, 'the sections over the gap are fallen, none elsewhere');
+  ok(LN.sections.every((S, i) => !i || Math.abs(S.s0 - LN.sections[i - 1].s1) < 1e-9) && LN.sections.every(S => S.id === 'rift.t' + S.i), 'the sections run end to end on the 20 m grid, ids by index');
+  const g = LN.guideAt(1700, 't2'); ok(Math.abs(g.x - 4.5) < 1e-6 && Math.abs(g.z - 1700) < 1e-6 && Math.abs(g.y - (LN.floorAt(1700) + 0.6)) < 1e-9, 'guideAt: the track at its offset (side +1 of a +z heading is +x), on the guideway');
+  ok(LN.railAt(1700) === g.y && LN.axisAt(10).y === LN.floorAt(10) + LN.sec.spring, 'railAt and axisAt');
+  ok(LN.niches.length > 100 && LN.niches.every(n => !(n.s >= 1270 && n.s <= 1730) && !(n.s >= 3000 && n.s < 3540) && LN.formAt(n.s) === 'gallery'), 'niches every 50 m, none in the station, the gap or the shallow form');
+  ok(LN.stations[0].id === 'rift.st3' && LN.stations[0].platforms.every(pl => Math.abs(pl.edge - 1.9) < 1e-9) && LN.stations[0].furniture.length > 10, 'the station: its platforms 0.1 m off the car, furniture on them');
+  ok(LN.shafts[0].foot === LN.floorAt(1600) + 14 && Math.abs(LN.shafts[0].x + 18.5) < 1e-6, 'the shaft: its foot at the vault, its head off the west wall');
+  ok(T.lineCarveH(LN, LN.shafts[0].x, LN.shafts[0].z) === -3 && T.lineCarveH(LN, 500, 500) === 0, 'the shaft\'s collar is carved, nothing far off');
+  throws(() => T.line({ pts: [[0, 0, 0]] }), 'one point throws'); throws(() => T.line({ pts: [[0, 0, 0], [0, 0, 100]], cond: [{ s0: 0, s1: 50, state: 'melted' }] }), 'a state not in the vocabulary throws');
+  throws(() => T.line({ pts: [[0, 0, 0], [0, 0, 100]], forms: [{ s0: 0, s1: 100, kind: 'tube' }] }), 'a form not in the vocabulary throws');
+  throws(() => T.line({ pts: [[0, 0, 0], [0, 0, 100]], cond: [{ s0: 0, s1: 50, track: 't9', state: 'cut' }] }), 'an unknown track throws');
+  ok(JSON.stringify(T.line(def).sections) === JSON.stringify(LN.sections), 'the same def gives the same line');
+  /* the window */
+  const W = T.lineWindow(LN, 1200, 2400);
+  ok(W.base === 1200 && Math.abs(W.L - 1200) < 1e-6 && W.stations.length === 1 && W.stations[0].id === 'rift.st3' && Math.abs(W.stations[0].s - 300) < 1e-6, 'the window: its s from 0, its station kept with its id');
+  ok(W.sections.every(S => { const Z = LN.sections.find(q => q.id === S.id); return Z && Z.state === S.state && Math.abs(Z.s0 - 1200 - S.s0) < 1e-6; }), 'the window\'s sections are the whole line\'s (ids, states, places)');
+  ok(W.niches.every(n => LN.niches.some(q => q.id === n.id)) && W.cond.t1.every(r => LN.cond.t1.some(q => q.id === r.id)), 'the window\'s niches and runs keep the whole line\'s ids');
+  const gw = W.guideAt(500, 't2'), gl = LN.guideAt(1700, 't2'); ok(Math.hypot(gw.x - gl.x, gw.z - gl.z) < 1e-6 && Math.abs(gw.y - gl.y) < 1e-6, 'the window stands where the line does');
+  const lw = W.toLocal(...W.toWorld(3, 2, 100)); ok(Math.abs(lw[0] - 3) < 1e-9 && Math.abs(lw[1] - 2) < 1e-9 && Math.abs(lw[2] - 100) < 1e-9, 'toWorld and toLocal invert each other');
+  throws(() => T.lineWindow(LN, 9000, 9500), 'a window past the end throws');
+  /* the trains */
+  const Tn = T.lineTrain(W, { track: 't2', s: 400, seed: 81 }); ok(Tn.cars.length === 8 && Math.abs(Tn.len - (22 + 24 * 5 + 22 + 22 + 7)) < 1e-9 && Tn.cars[7].flip, 'the consist: eight cars, the rear power car turned');
+  let onG = true; Tn.cars.forEach((c, k) => { const p = T.carPose(Tn, k, 0); [p.front, p.rear].forEach(q => { const pr = W.path.project(q[0], q[2]); if (Math.abs(pr.off - W.offAt('t2', pr.s)) > 0.05 || Math.abs(q[1] - W.railAt(pr.s)) > 0.05) onG = false; }); }); ok(onG, 'every bogie rides its guideway (the car pose)');
+  { const SP = T.line(Object.assign({}, def, { offAt: (id, s) => id === 't2' && s > 1300 && s < 1700 ? 4.5 + 2.9 * Math.min(1, (s - 1300) / 80, (1700 - s) / 80) : null })), R2 = T.lineTrain(SP, { track: 't2', s: 1600 }); let sp = true;
+    R2.cars.forEach((c, k) => { const p = T.carPose(R2, k, 0); [p.front, p.rear].forEach(q => { const pr = SP.path.project(q[0], q[2]); if (Math.abs(pr.off - SP.offAt('t2', pr.s)) > 0.05) sp = false; }); }); ok(sp, 'a train on a splaying track rides it (the route measured by arc length)'); }
+  const off = Object.assign({}, Tn, { route: T.lineRoute(W, 't3') }), p3 = T.carPose(off, 0, 0); ok(Math.abs(p3.x - T.carPose(Tn, 0, 0).x + 9) < 1e-6, 'negative: on t3\'s route the car stands 9 m west');
+  const TL = Object.assign({}, Tn, { timeline: { at: t => ({ value: 100 + 15 * t }) } }); ok(Math.abs(T.carPose(TL, 0, 10).s - (250 - 11)) < 1e-9, 'a timeline moves the train (its front at s(t))'); }
 
 console.log(bad ? bad + ' FAILED' : 'all passed'); process.exit(bad ? 1 : 0);

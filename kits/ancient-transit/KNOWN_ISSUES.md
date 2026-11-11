@@ -2,6 +2,11 @@
 
 `verify.py --assert` passes on the GPU lane (2026-11-08; the numbers are in `README.md`). What is open:
 
+- [ ] **The deep line (`KTRANSIT.line`, 2026-11-11) is first drawn, not finished.** The `twin` form is in the vocabulary but drawn as the gallery
+  (two bores side by side are owed); the lining is the library's `concrete` (biomes/line owes `concrete.lining.segment`, PROMPTS-NEEDED section 41)
+  with ribs every 10 m, not segment joints; the hot doors are a bulkhead or a frame, with no leaves; the demo draws no trains on it (the cars are the
+  vehicles kit's `anc_line_*`, which the demo does not bundle: `lineTrain` and `carPose` are checked as data). The Line biome's stations still run
+  their own copy (`biomes/line/stations/common/47-line-core.js`) until this kind is reviewed; they then become windows of one `KTRANSIT.line`.
 - [ ] **The overgrowth's plants are stand-in domes** (`KTRANSIT.draw.growth`: a plain green material, no map): the kit has no flora of its own
   (flora belongs to the biome kits). The records are the point: `span.growth.plants` has a world position, a radius and a height for each,
   so the valley plants its feral forest's species there (`plants: false` on the draw keeps the soil and the creepers). The soil is a sweep on
