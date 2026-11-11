@@ -687,7 +687,110 @@ The Ancient network is 60 sites and 20,524 km, 3,310 km of it in tunnel, with no
 **Bore geometry: unchanged.** Mouths at 458.2,1158.6 (3,614 m) and 439.5,1309.5 (3,501 m); 304 km bored; the hot
 section at bore km 55-203; 42 km on the surface to Ledge. This routing moves none of it.
 
-### 8.9 Still open
+### 8.10 The owner, 2026-11-11 (the last round)
+
+**Decisions:**
+- **The Izani frontier highway** does not run straight from Jimjam to Shell.
+  - It goes round through the north basin where the other former lakebed lies (the east dam's lake).
+  - It passes **an abandoned Ancient port** on that old shore (**Old port (north basin)**, 907,415).
+  - It leads on **through northern Korona to the Ancient facility**, crossing scenic bridges over the tepui and Arachnoid
+    gorges.
+- **The Korona facility is the Pit** (1135,466, proposed place).
+- **A trade highway from Jimjam to Lux**, spottily kept: class `trade`.
+- **Spirladunon** (800,1017) is a node on the old Izani highway.
+- **Yuni roads to Mungo and to Mantis**: class `yuni`.
+- **Dalab's dirt roads** between its settlements: Dalab, Daranch, Blade, Span and Shelf.
+- **Amaro**, Shumar's capital, and **Driyan** lie on the Ancient highway. *Proposed* places:
+  - Driyan at 596,1068, on the lakeshore on the Nazar-Wing trunk.
+  - Amaro at 652,1266, on the Dalab-Pluton trunk. That is the trunk's nearest point to Shumar: no Ancient route now
+    crosses Shumar, so this is follow-up question 6.
+- **Talia moves** onto the Ancient trunk, 6.3 km, from 1073,939 to 1072,936 (edit M12).
+- **The Hykkousoi cities** are the League of Amphitriton's towns: confirmed.
+- **The Beast Riders' sites** (Mav's Refuge, Pinnacle Rock, Girder, Talon) are joined by **undergrowth trails**, and each
+  trail also leads to the nearest Ancient highway (class `trail`).
+- **Modern highways and trails join the Ancient network where it is close.** The router adds a spur from any town within
+  40 km of an Ancient route.
+- **Temora and Zey'danin** on the Throne's shore have **their own Vothic highway, not joined to the mainland**. A **dirt
+  path** links it to **Nereus**, the Hykkousoi town to their north-west.
+- **Izani highways to Cascade** from Drum and from Pontus.
+- **No route between Theodiga and Pluton.**
+- **Farport is an Ancient node.** Part of its plateau is hollowed out as an Ancient storage depot; the Ancient port it
+  served was washed away long ago. The west extension is now a trunk, Farport to Fulcrum.
+- **A dirt road from Pinnacle Rock to Coyote Canyon** (1265,500), by the basin where it can.
+- **Roads favour the lowland path**, the road from Trickster's House to the Outland Gate included. Every route's surface now
+  costs more the higher it runs above 1,500 m.
+- **An Izani road from Mantis to the Bowl arcology.**
+
+**The network now:**
+
+| Class | Routes | km | in tunnel |
+|---|---|---|---|
+| Lines (the Rift line, the Inner Wall) | 12 | 2,655 | 1,510 |
+| The Twenny gallery | 1 | 25 | 14 |
+| Trunks | 59 | 18,408 | 1,884 |
+| *Possible*: Strongbow, Stair, the Bowl | 2 | 1,070 | 499 |
+| *Izani highways* | 47 | 11,234 | (bridges only) |
+| *Trade highway*, Jimjam to Lux | 1 | 583 | |
+| *Yuni roads* (Mungo, Mantis, a spur) | 3 | 1,036 | |
+| *Vothic highways* | 6 | 1,186 | |
+| *Dirt roads* (Dalab, Nereus, Coyote Canyon) | 5 | 1,222 | |
+| *Beast Rider trails* | 7 | 576 | |
+| *Extension* (south-west) | 1 | 982 | 50 |
+
+The Ancient network is 62 sites and 21,088 km, 3,408 km of it in tunnel, with no open stretch over 8 km.
+
+**Scale-model edit M12**:
+- move Talia to 1072,936;
+- add Amaro and Driyan;
+- add the north-basin port;
+- rename the Korona site to **the Pit**;
+- mark Farport's depot in its notes.
+
+### 8.11 The Bowl arcology: a design proposal
+
+The owner: "Bowl will be a new arcology; propose me a design."
+
+**The site:**
+- 970,1186, on the Bowl's south-western rim near the Godsgate;
+- 1,716 m, 15 degC mean, 314 mm of rain: temperate, dry, windy;
+- below it, the Bowl's hot salt floor and Mantis's oasis.
+
+**Its place on the network:**
+- *possibly* the Rift line's last station (13), at the end of its leg from Stair;
+- the Godsgate highway;
+- the Izani road from Mantis.
+
+The existing targets in `kits/ancients/targets` are hill, ring, spire, wheel, lozenge, monolith, lighthouse, crescent,
+canyon, forest, blades and the rest. None is a dish, so the recommended form is new.
+
+**A. Recommended: Parabola** (working name; others: the Dish, the Lens). A city that was a solar furnace.
+
+| | |
+|---|---|
+| Form | a **terraced paraboloid**: a dish about 1.8 km across the rim and 320 m deep, tilted about 30 degrees to face the noon sun, standing on **three Cyclopean piers** on the rim's slope. Its inner face is stepped terraces. Its outer face is the Ancients' white seamed shell on great organic ribs (Soleri, Gaudi), with bronze bands where the ribs land on the piers |
+| The focus | a **receiver** on a tripod mast over the dish: a sphere of bronze and blue glass that gathered the light of the dish's mirrored terraces. It was the city's power and its emblem |
+| Inside | the terraces are dwellings behind glazed fronts, with farm terraces on their roofs, all facing the focus. The cyan strips run along the terrace edges. At the dish's lowest point, inside the shell, is the **terminus hall**, where the Rift line would end (station 13) and the Godsgate way arrives |
+| People | about 120,000 as built, of the Pile's order (153,700) |
+| Ruin | most of the mirror panels have fallen and glitter in the scree below. The receiver is cracked and leaning in its mast. A quarter of the shell on the windward side is down. The lower decks are drifted with Bowl sand. The inner terraces have gone to wild orchard and garden in the mild climate. **Rain gathered by the dish has made a lake at its bottom**, the only standing fresh water for a day's march |
+| Now (*proposed*) | an Izani customs post and caravanserai at the terminus hall, since the Izani road from Mantis ends there. Yuni and Izani prospectors work the mirror scree for Ancient glass. The receiver is a prize no one has reached: the mast's stairs are gone |
+| The delve | down the terraces to the lake, and up the mast to the receiver |
+| Build | a target `kits/ancients/targets/parabola` on the Pile's pattern: the plan as `[G data]` records (terraces, piers, ribs, the mast, the hall), ruin deltas by id, `KTAGS` registered, a blueprint folder of sheets |
+
+**B. The Escarpment**: an arcology stepped down the Bowl's south wall in long terraced bands, like Ledge but horizontal,
+looking north over the salt lake. It is quieter, and it reads as part of the rim.
+
+**C. The Gnomon**: a single leaning blade of a tower, 900 m high. Its shadow on the Bowl's floor was the Ancients'
+calendar, and the floor is still marked with the hour lines. It is striking, but it is close to `blades` and `spire`.
+
+### 8.12 Still open
+
+1. **The Bowl arcology**: which design (A Parabola, B the Escarpment, C the Gnomon), and its name.
+2. **Amaro**: should an Ancient route cross Shumar (the Wing-Pluton trunk through the plateau), with Amaro on it, or does
+   Amaro sit at the Dalab-Pluton trunk's nearest point (652,1266)?
+3. **Driyan's place** (596,1068): right?
+4. **The Pit's place** (1135,466): right?
+
+### 8.9 Still open (earlier list; items 2 to 5 answered in 8.10)
 
 1. **The Stair tunnel's canon: done** (the owner: "Yes, rewrite it"). `LORE.md` §4's Catch passage now says that no
    Ancient tunnel reaches Stair, which the Ancients reached by the Godsgate highway. *Proposed* there: the divers dive the

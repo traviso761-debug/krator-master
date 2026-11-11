@@ -34,13 +34,21 @@ def runs(r):
         while j < len(pts) - 1 and (fm[j], up[j]) == key: j += 1
         yield [P(p) for p in pts[i:j + 1]], fm[i], up[i]
         i = j
-order = ['extension', 'vothic', 'izani', 'trunk', 'possible', 'branch', 'line']
+order = ['extension', 'trail', 'dalab', 'dirt', 'yuni', 'trade', 'vothic', 'izani', 'trunk', 'possible', 'branch', 'line']
 for cls in order:
     for r in d['routes']:
         if r['class'] != cls: continue
         allp = [P(p) for p in r['px']]
         if cls == 'extension':
             dashed(allp, (12, 14, 16), 5.5, 12, 8); dashed(allp, (225, 228, 232), 3, 12, 8); continue
+        if cls == 'trail':
+            dashed(allp, (12, 14, 16), 4, 3, 3); dashed(allp, (120, 205, 95), 2.2, 3, 3); continue
+        if cls in ('dalab', 'dirt'):
+            dashed(allp, (12, 14, 16), 4.5, 6, 4); dashed(allp, (205, 165, 110), 2.4, 6, 4); continue
+        if cls == 'yuni':
+            dr.line(allp, fill=(12, 14, 16), width=5 * K); dr.line(allp, fill=(240, 205, 80), width=int(2.4 * K)); continue
+        if cls == 'trade':
+            dashed(allp, (12, 14, 16), 5, 10, 6); dashed(allp, (236, 96, 214), 2.6, 10, 6); continue
         if cls == 'vothic':
             dr.line(allp, fill=(12, 14, 16), width=5 * K); dr.line(allp, fill=(250, 250, 250), width=int(2.2 * K)); continue
         if cls == 'izani':
@@ -73,9 +81,9 @@ for n in d['nodes']:
 nodenames = {n['name'] for n in d['nodes']}
 towns = {}
 for r in d['routes']:
-    if r['class'] in ('izani', 'vothic'):
+    if r['class'] in ('izani', 'vothic', 'trade', 'yuni', 'dalab', 'trail', 'dirt'):
         for nm, q in ((r['from'], r['px'][0]), (r['to'], r['px'][-1])):
-            if nm not in nodenames: towns[nm] = q
+            if nm not in nodenames and nm not in ('the Ancient highway', 'the Temora highway'): towns[nm] = q
 for nm, q in towns.items():
     x, y = P(q); r = 4 * K
     dr.ellipse([x - r, y - r, x + r, y + r], fill=(236, 96, 214), outline=(10, 12, 14), width=2 * K)
@@ -86,12 +94,12 @@ for nm, p in d['extra'].items():
 # legend
 leg = [('The Rift line, the Inner Wall and Stair lines: centre = keeper', 'line'), ('Trunk, coloured by keeper', 'trunk'), ('Kept (Iziz, the State, Voth, Republic, Tungangs)', UP['kept']),
        ('Partly kept (Yuni, Xanadu)', UP['partly']), ('Lapsed since the Empire broke', UP['lapsed']), ('Badly decayed', UP['decayed']), ('Tunnel (none open over 8 km)', 'tun'),
-       ('Causeway / viaduct', 'wat'), ('Possible: the line on by Stair to the Bowl', 'pos'), ('Izani highway (not Ancient)', 'iz'), ('Vothic highway (not Ancient)', 'vo'), ('Extension, lore to come', 'ext')]
+       ('Causeway / viaduct', 'wat'), ('Possible: the line on by Stair to the Bowl', 'pos'), ('Izani highway (not Ancient)', 'iz'), ('Vothic highway (not Ancient)', 'vo'), ('Trade highway, Jimjam to Lux (spottily kept)', 'tr'), ("Yuni's road to Mungo", 'yu'), ("Dirt roads (Dalab's; the path to Nereus)", 'da'), ('Beast Rider undergrowth trail', 'trl'), ('Extension, lore to come', 'ext')]
 x0, y0 = 18 * K, 56 * K
-dr.rectangle([x0, y0, x0 + 520 * K, y0 + (30 * len(leg) + 70) * K], fill=(14, 17, 16), outline=(70, 80, 76), width=2 * K)
+dr.rectangle([x0, y0, x0 + 520 * K, y0 + (24 * len(leg) + 66) * K], fill=(14, 17, 16), outline=(70, 80, 76), width=2 * K)
 dr.text((x0 + 14 * K, y0 + 12 * K), 'The proposed Ancient network, scale model 5.1', font=f22, fill=(244, 242, 234))
 for k, (lab, s) in enumerate(leg):
-    yy = y0 + (56 + 30 * k) * K; a, b = (x0 + 16 * K, yy + 9 * K), (x0 + 76 * K, yy + 9 * K)
+    yy = y0 + (52 + 24 * k) * K; a, b = (x0 + 16 * K, yy + 9 * K), (x0 + 76 * K, yy + 9 * K)
     if s == 'line': dr.line([a, b], fill=(245, 245, 250), width=int(6.5 * K)); dr.line([a, b], fill=UP['kept'], width=int(2.2 * K))
     elif s == 'trunk': dr.line([a, b], fill=UP['lapsed'], width=int(4.2 * K))
     elif s == 'tun': dashed([a, b], TUN, 4.2, 9, 5)
@@ -99,6 +107,10 @@ for k, (lab, s) in enumerate(leg):
     elif s == 'pos': dashed([a, b], (255, 214, 120), 4.5, 14, 8)
     elif s == 'iz': dr.line([a, b], fill=(236, 96, 214), width=int(2.4 * K))
     elif s == 'vo': dr.line([a, b], fill=(250, 250, 250), width=int(2.2 * K))
+    elif s == 'tr': dashed([a, b], (236, 96, 214), 2.6, 10, 6)
+    elif s == 'yu': dr.line([a, b], fill=(240, 205, 80), width=int(2.4 * K))
+    elif s == 'da': dashed([a, b], (205, 165, 110), 2.4, 6, 4)
+    elif s == 'trl': dashed([a, b], (120, 205, 95), 2.2, 3, 3)
     elif s == 'ext': dashed([a, b], (225, 228, 232), 3, 12, 8)
     else: dr.line([a, b], fill=s, width=int(4.2 * K))
     dr.text((x0 + 90 * K, yy), lab, font=f14, fill=(230, 232, 228))

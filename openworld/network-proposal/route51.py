@@ -25,6 +25,7 @@ for dj, di in ((0, 1), (1, 0), (1, 1), (1, -1)):
     d = CELL * math.hypot(dj, di)
     g = np.abs(eb - ea) / (d * 1000)
     surf = d * (1 + 0.5 * (g / G) ** 2)
+    surf = surf * (1 + np.maximum(0, np.maximum(ea, eb) - 1500) / 2500)   # the lowland path
     surf[(ea > AIR) | (eb > AIR)] = np.inf
     c = np.minimum(surf, d * TUN)
     c[wa | wb] = d * WATER
@@ -52,6 +53,8 @@ for n, px, t in (('Wheel', (406, 886), 'ruined arcology'), ('Thera', (526, 955),
 FORT_STOPS = ('Fort Kalor', 'Fort Kreia', 'Fort Ordo')      # built by Iziz beside the way: stops on it
 for n in FORT_STOPS:
     s = S[n]; nodes[n] = {'id': s['id'], 'name': n, 'type': 'fort', 'px': [s['px'], s['py']], 'kind': 'site', 'note': 'built by Iziz beside the Ancient way'}
+nodes['Farport'] = {'id': S['Farport']['id'], 'name': 'Farport', 'type': 'city', 'px': [S['Farport']['px'], S['Farport']['py']], 'kind': 'site',
+                    'note': 'an Ancient node (the owner): part of its plateau hollowed out as an Ancient storage depot; the Ancient port it served long since washed away'}
 nodes['Quintagon'] = {'id': 'new.quintagon', 'name': 'Quintagon', 'type': 'arcology', 'px': [1349, 830], 'kind': 'site', 'note': 'new (the owner): NE of Verge in the eastern badlands; 2,320 m, 14 degC'}
 nodes['Bowl arcology'] = {'id': 'tbd.bowl', 'name': 'Bowl arcology (to be named)', 'type': 'arcology', 'px': [970, 1186], 'kind': 'site',
                           'note': "the Bowl's most temperate ground near the Godsgate: 15 degC, 1,716 m, 314 mm"}
@@ -63,8 +66,8 @@ _gy, _gx = np.gradient(E2); _sl = np.hypot(_gx, _gy) / 2000
 _yy, _xx = np.mgrid[0:H2, 0:W2w]
 _km = _mask('Korona / NE') & ~_mask('Tiers') & ~_mask('The Tiers') & ~W2 & (_sl < 0.02) & (_xx < 1150)
 _s = np.where(_km, np.abs(_tm - 12) + np.hypot(_xx - 1090, _yy - 520) / 40, 1e9); _j, _i = np.unravel_index(_s.argmin(), _s.shape)
-nodes['Korona site'] = {'id': 'tbd.korona', 'name': 'Korona site (to be named)', 'type': 'ruin', 'px': [int(_i), int(_j)], 'kind': 'site',
-                        'note': 'proposed: level ground in Korona beyond the Tiers, %d m, %d degC' % (E2[_j, _i], _tm[_j, _i])}
+nodes['Korona site'] = {'id': 'tbd.korona', 'name': 'the Pit', 'type': 'ruin', 'px': [int(_i), int(_j)], 'kind': 'site',
+                        'note': 'the Pit (the owner, 2026-11-11), the Ancient facility in Korona; proposed place: level ground beyond the Tiers, %d m, %d degC' % (E2[_j, _i], _tm[_j, _i])}
 # ---- the stranded Ancient ports on the dam lakes' former shores
 pl = json.load(open('model/data/palaeolakes.json', encoding='utf8'))
 from scipy.ndimage import label, binary_dilation
@@ -118,12 +121,15 @@ for i in range(N):
         if not any(max(C[i, k], C[k, j]) < C[i, j] for k in range(N) if k not in (i, j) and names[k] not in NOT_RNG):
             edges.add((i, j))
 edges -= pinned
+BAN = {tuple(sorted((ix['Pluton'], ix['Theodiga'])))}
+edges -= BAN
 A = np.zeros((N, N))
 for i, j in edges | pinned: A[i, j] = A[j, i] = 1
 nc, lab_ = connected_components(A, directed=False)
 if nc > 1:
     CC = np.where(np.isfinite(C), C, 0).copy()
     for n in NOT_RNG: CC[ix[n], :] = 0; CC[:, ix[n]] = 0
+    for i_, j_ in BAN: CC[i_, j_] = CC[j_, i_] = 0
     T = minimum_spanning_tree(CC).toarray()
     for i, j in zip(*np.nonzero(T)):
         if lab_[i] != lab_[j]: edges.add(tuple(sorted((int(i), int(j)))))
@@ -260,6 +266,7 @@ def graph(Gm, tun, wat):
         ea, eb = E.flat[a.ravel()], E.flat[b.ravel()]; wa, wb = W.flat[a.ravel()], W.flat[b.ravel()]
         d = CELL * math.hypot(dj, di); g = np.abs(eb - ea) / (d * 1000)
         c = np.minimum(d * (1 + 0.5 * (g / Gm) ** 2), d * tun)
+        c = c * (1 + np.maximum(0, np.maximum(ea, eb) - 1500) / 2500)   # the lowland path
         c[(ea > AIR) | (eb > AIR)] = np.inf; c[wa | wb] = d * wat
         rows += [a.ravel(), b.ravel()]; cols += [b.ravel(), a.ravel()]; cost += [c, c]
     return coo_matrix((np.concatenate(cost), (np.concatenate(rows), np.concatenate(cols))), shape=(VW * VH, VW * VH)).tocsr()
@@ -296,20 +303,90 @@ for n, s in S.items():
     if emp[s['py'], s['px']] or (lea[s['py'], s['px']] and s['type'] in ('city', 'village', 'arcology')): IZM[n.replace('  ', ' ')] = [s['px'], s['py']]
 for n in ('Pinnacle Rock', 'Girder', 'Shim', 'Kautoa', 'Nusidi', 'Fort Ebon', 'Port Goto', 'Port Visas', "Mav's Refuge"):
     IZM[n] = PXOF(n)
+IZM['Spirladunon'] = PXOF('Spirladunon')
+IZM['Talia'] = [1072, 936]
 IZM = {('the Pile' if n == 'Cube' else n): p for n, p in IZM.items()}
 n_iz = mesh('izani', IZM, 'izani', 'Izani highway', 2, ancient_pairs)
 # the Iziz highway to Jimjam through Dilihan, then east into the anarchic frontier (less well kept)
-for a, b, note in (('Iziz', 'Dilihan', None), ('Dilihan', 'Jimjam', None), ('Jimjam', 'Shell', 'the frontier: less well kept'), ('Shell', 'Crescent', 'the frontier: less well kept')):
-    pts = mtrace(cellof(*PXOF(a)), cellof(*PXOF(b)))
-    add('izani.north.%s' % a.lower(), 'izani', a, b, pts, name='Izani highway north: %s to %s' % (a, b), note=note)
-    if note: routes[-1]['up'] = ['lapsed' if u == 'kept' else u for u in routes[-1]['up']]
+for a, b in (('Iziz', 'Dilihan'), ('Dilihan', 'Jimjam')):
+    add('izani.north.%s' % a.lower(), 'izani', a, b, mtrace(cellof(*PXOF(a)), cellof(*PXOF(b))), name='Izani highway north: %s to %s' % (a, b))
+# the abandoned Ancient port on the east dam lake's old shore, where the frontier road passes (nearest the road's way north-east)
+L2 = [L for L in pl if L['basin'] == 'dam 2'][0]
+sx, sy = map(int, map(round, L2['seed_px'])); rad = 1.6 * math.sqrt(L2['km2'] / math.pi) / 2.0
+disk = (_xx - sx) ** 2 + (_yy - sy) ** 2 < rad ** 2
+lab2, _ = label((E2 < L2['level_m']) & disk); lake2 = lab2 == lab2[sy, sx]
+sh = binary_dilation(lake2, iterations=1) & ~lake2 & ((_xx - sx) ** 2 + (_yy - sy) ** 2 < (rad - 3) ** 2)
+ys_, xs_ = np.nonzero(sh); k_ = int(np.hypot(xs_ - 905, ys_ - 430).argmin()); NB = [int(xs_[k_]), int(ys_[k_])]
+nodes['Old port (north basin)'] = {'id': 'dock.northbasin', 'name': 'Old port (north basin)', 'type': 'stranded port', 'px': NB, 'kind': 'dock',
+                                   'note': "the owner: an abandoned Ancient port in the north basin, on the east dam lake's old shore (1,050 m), on the frontier road"}
+FR = []
+for q0, q1 in ((PXOF('Jimjam'), [800, 480]), ([800, 480], NB), (NB, [1000, 400]), ([1000, 400], P('Korona site'))):
+    seg = mtrace(cellof(*q0), cellof(*q1)); FR += seg if not FR else seg[1:]
+add('izani.frontier', 'izani', 'Jimjam', 'Korona site', FR, name='Izani highway into the frontier: Jimjam, round the north basin by the old port, through northern Korona (bridges over the tepui and Arachnoid gorges) to the Ancient facility',
+    note='the frontier: less well kept')
+routes[-1]['up'] = ['lapsed' if u in ('kept', 'decayed') else u for u in routes[-1]['up']]
+# the trade highway from Jimjam to Lux (spottily kept)
+add('trade.jimjam-lux', 'trade', 'Jimjam', 'Lux', mtrace(cellof(*PXOF('Jimjam')), cellof(*PXOF('Lux'))), name='Trade highway: Jimjam to Lux (spottily kept)')
+# Yuni's road to Mungo
+add('yuni.mungo', 'yuni', 'Yuni', 'Mungo', mtrace(cellof(*PXOF('Yuni')), cellof(*PXOF('Mungo'))), name="Yuni's road to Mungo")
+add('yuni.mantis', 'yuni', 'Yuni', 'Mantis', mtrace(cellof(*PXOF('Yuni')), cellof(*PXOF('Mantis'))), name="Yuni's highway to Mantis")
+# Dalab's dirt roads between its settlements
+DM = {n: PXOF(n) for n in ('Dalab', 'Daranch', 'Blade', 'Span', 'Shelf')}
+n_da = mesh('dalab', DM, 'dalab', 'Dalab dirt road', 1, ancient_pairs)
 # Voth: new, less elaborate highways between its major settlements
 vk = _mask('Vothic Kingdom')
 VM = {n: [s['px'], s['py']] for n, s in S.items() if vk[s['py'], s['px']] and s['type'] in ('city', 'arcology')}
+ISLE = ('Temora', "Zey'danin")
+for n in ISLE: VM.pop(n, None)
 n_vo = mesh('vothic', VM, 'voth', 'Vothic highway', 1, ancient_pairs)
+ISL = mtrace(cellof(*PXOF('Temora')), cellof(*PXOF("Zey'danin")))
+add('vothic.isle', 'vothic', 'Temora', "Zey'danin", ISL, name="Vothic highway on the Throne's shore: Temora to Zey'danin (not joined to the mainland)")
+iv = np.array(ISL); nq = PXOF('Nereus'); kk = int(np.hypot(iv[:, 0] - nq[0], iv[:, 1] - nq[1]).argmin())
+add('dirt.nereus', 'dirt', 'Nereus', 'the Temora highway', mtrace(cellof(*nq), cellof(*[int(iv[kk][0]), int(iv[kk][1])])), name='Dirt path: Nereus to the Temora-Zey\'danin highway')
+# Izani highways to Cascade, from Drum and from Pontus
+for a in ('Drum', 'Pontus'):
+    add('izani.cascade.%s' % a.lower(), 'izani', a, 'Cascade', mtrace(cellof(*PXOF(a)), cellof(*PXOF('Cascade'))), name='Izani highway: %s to Cascade' % a)
+
 print('izani', n_iz, 'vothic', n_vo, 'Voth members', sorted(VM), 'Izani members', len(IZM))
 IZ = [n for n in IZM if n in S or n.replace(' ', '  ') in S]
 IZ = [n if n in S else n.replace(' ', '  ') for n in IZ]
+add('izani.mantis-bowl', 'izani', 'Mantis', nodes['Bowl arcology']['name'], mtrace(cellof(*PXOF('Mantis')), cellof(*P('Bowl arcology'))), name='Izani road: Mantis to the Bowl arcology')
+add('dirt.coyote', 'dirt', 'Pinnacle Rock', 'Coyote Canyon', mtrace(cellof(*PXOF('Pinnacle Rock')), cellof(*PXOF('Coyote Canyon'))), name='Dirt road: Pinnacle Rock to Coyote Canyon, by the basin')
+# ---- the Beast Riders' undergrowth trails between their sites, and from each to the nearest Ancient highway (the owner, 2026-11-11)
+BR = {n: PXOF(n) for n in ("Mav's Refuge", 'Pinnacle Rock', 'Girder', 'Talon')}
+n_tr = mesh('trail', BR, 'trail', 'Beast Rider trail', 1, ())
+anc_pts = np.array([q for r in routes if r['class'] in ('trunk', 'line') for k, q in enumerate(r['px']) if r['form'][min(k, len(r['form']) - 1)] != 'tunnel'])
+def spur(cls, name, q, limit_px, label):
+    d = np.hypot(anc_pts[:, 0] - q[0], anc_pts[:, 1] - q[1]); k = int(d.argmin())
+    if 1.5 < d[k] <= limit_px:
+        tgt = [float(anc_pts[k][0]), float(anc_pts[k][1])]
+        add('%s.spur.%s' % (cls, name.replace(' ', '').lower()), cls, name, 'the Ancient highway', mtrace(cellof(*q), cellof(*tgt)), name='%s: %s to the Ancient highway' % (label, name))
+for n, q in BR.items(): spur('trail', n, q, 60, 'Beast Rider trail')
+# ---- the owner: "if convenient, modern highways and trails should try to connect to the ancient network if it is not too far" (40 km)
+done = set(BR) | {'Temora', "Zey'danin", 'the Temora highway'}
+for r in list(routes):
+    if r['class'] not in ('izani', 'vothic', 'trade', 'yuni', 'dalab', 'dirt'): continue
+    for nm, q in ((r['from'], r['px'][0]), (r['to'], r['px'][-1])):
+        if nm in done or nm in {v['name'] for v in nodes.values()} or nm == 'the Ancient highway': continue
+        done.add(nm); spur(r['class'], nm, q, 20, {'izani': 'Izani spur', 'vothic': 'Vothic spur', 'trade': 'Trade spur', 'yuni': 'Yuni spur', 'dalab': 'Dalab dirt road', 'dirt': 'Dirt path'}[r['class']])
+# ---- Amaro (Shumar's capital) and Driyan on the Ancient highway (the owner, 2026-11-11): placed on the nearest Ancient route
+shm = _mask('Shumar')
+anc_v = [(r, k, q) for r in routes if r['class'] in ('trunk', 'line') for k, q in enumerate(r['px']) if r['form'][min(k, len(r['form']) - 1)] != 'tunnel']
+cand = [(abs(E2[int(q[1]), int(q[0])] - 3200), q, r['name']) for r, k, q in anc_v if shm[int(q[1]), int(q[0])]]
+if not cand:   # no Ancient route crosses Shumar: the route's nearest point to it
+    from scipy.ndimage import distance_transform_edt
+    dshm = distance_transform_edt(~shm)
+    cand = [(dshm[int(q[1]), int(q[0])], q, r['name']) for r, k, q in anc_v]
+if cand:
+    _, q, rn = min(cand, key=lambda c: c[0])
+    nodes['Amaro'] = {'id': 'new.amaro', 'name': 'Amaro', 'type': 'city', 'px': [int(q[0]), int(q[1])], 'kind': 'site',
+                      'note': "proposed: Shumar's capital, on the Ancient route %s at %d m, %s" % (rn, E2[int(q[1]), int(q[0])], 'inside Shumar' if shm[int(q[1]), int(q[0])] else 'at the route\'s nearest point to Shumar')}
+wet = binary_dilation(W2, iterations=2) & ~W2
+cand = [(math.hypot(q[0] - 600, q[1] - 1085), q, r['name']) for r, k, q in anc_v if wet[int(q[1]), int(q[0])] and 520 < q[0] < 720 and 1030 < q[1] < 1140]
+if cand:
+    _, q, rn = min(cand, key=lambda c: c[0])
+    nodes['Driyan'] = {'id': 'new.driyan', 'name': 'Driyan', 'type': 'city', 'px': [int(q[0]), int(q[1])], 'kind': 'site',
+                       'note': 'proposed: the old Shumari lakeshore city, Vothic now, on the Ancient route %s' % rn}
 # ---- candidates to move onto the network (the owner: "in some cases, we might want to move the settlement onto an existing highway")
 vt = np.array([p for r in routes if r['class'] in ('line', 'trunk') for k, p in enumerate(r['px']) if r['form'][min(k, len(r['form']) - 1)] != 'tunnel'])
 moves = []
@@ -319,11 +396,14 @@ for n in IZ:
     if 1.5 < d[k] <= 5: moves.append({'name': n.replace('  ', ' '), 'type': s0['type'], 'px': [s0['px'], s0['py']], 'to': [float(vt[k][0]), float(vt[k][1])], 'km': round(2 * float(d[k]), 1)})
 moves.sort(key=lambda m: m['km'])
 # ---- extensions into the new west (lore to come); the north is now the Outland Gate highway's
-EXT = [('west', 'Farport and the Crook', [294, 588]), ('southwest', 'the Silent Vales', [194, 982])]
+EXT = [('southwest', 'the Silent Vales', [194, 982])]
 for k, label_, pt in EXT:
     c0 = cellof(*pt); d0 = dijkstra(GR, indices=c0, directed=False)
     best = min((m for m in names if m not in NOT_RNG and nodes[m]['kind'] == 'site'), key=lambda m: d0[src[ix[m]]])
     add('ext.' + k, 'extension', nodes[best]['name'], label_, trace(src[ix[best]], c0), name='Extension (lore to come): ' + nodes[best]['name'] + ' toward ' + label_)
+for r in routes:
+    r['from'] = 'the Pit' if r['from'] == 'Korona site' else r['from']; r['to'] = 'the Pit' if r['to'] == 'Korona site' else r['to']
+    r['name'] = r['name'].replace('the Korona site', 'the Pit').replace('Korona site', 'the Pit')
 out = {'nodes': [dict(v) for v in nodes.values()], 'routes': routes, 'extra': EXTRA_PTS, 'move_candidates': moves,
        'excluded': {'zeijani': list(ZEIJ), 'forts_off_the_way': ['Fort Ebon', 'Fort Vaklu'], 'ports': PORTS}}
 json.dump(out, open(SP + '/net51.json', 'w', encoding='utf8'), ensure_ascii=False, separators=(',', ':'))
