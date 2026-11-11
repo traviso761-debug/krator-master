@@ -69,9 +69,8 @@ the stacks on).
   - the topographies' decks look out over the paddock.
 - **The stacks' mines and works** say the Ancients worked the knobs' rock, and the smelter galleries are a reason the place was
   self-sufficient. A Kimr legend can remember them (asked: section 9).
-- **The state (asked).** `PLAN.md` section 6 has it ruined and partly reused by the natives. This plan builds **worn** (decay 5:
-  whole, weathered and overgrown) as the main row, plus a **ruined** row (decay 1), in the kit's usual way. The station shows the
-  one the owner picks.
+- **The state: ruined** (the owner, section 9), and the Kimr's necropolis, **the Hall of Heroes**. The kit's sheet shows it
+  intact (decay 0) and ruined (decay 1) side by side; the station shows the ruin.
 
 ## 4. The arcology at real scale (the working id `gatearc`; the name is TBD)
 
@@ -194,3 +193,19 @@ tilted flat-topped mesas and knobby spires (the chaos's kinds, `PLAN.md` section
    px 360,1476?
 3. **The stacks:** five as in section 5, or a denser karst garden (eight to twelve)?
 4. **The name** of the arcology, and does a Kimr legend remember the stacks' mines?
+
+**The owner's answers (2026-11-11):**
+1. **Ruined.** Station 1 shows the ruin (decay 1); the kit's sheet shows it intact beside it, for reference.
+2. **The neck**, px 376.5,1473.5. The pin edit moves the region polygon's corner east to take it in.
+3. **Five stacks**, as in section 5.
+4. **The Hall of Heroes. The Kimr bury their dead there.** The ruin is their necropolis:
+   - **The dead in the ruin:** burial niches cut in rows into the broken cells of the residential skin (the cells are the tombs);
+     bundled dead on the topographies' fallen decks; ossuaries in the columns' halls.
+   - **Their marks:** Aurochs skulls and horns over the niches and on poles along the causeways; ochre hand-prints; offerings
+     of horn vessels and melons on ledges.
+   - **The way in:** the causeways across the pond are the funeral road. A Kimr pueblo is not built at the Hall: the living
+     stay out. Their village on a knob above the gate is a later station item (`PLAN.md` section 5).
+   - **In the records:** the niches and markers are records tagged `funerary`, `religious` and culture `kimr`, registered before
+     they are drawn, so `core/simulation` can later send funeral processions along the causeways.
+
+   The working id stays `gatearc` in code, so the files keep a stable name. Its title is "the Hall of Heroes".
