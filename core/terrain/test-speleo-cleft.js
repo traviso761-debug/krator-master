@@ -1,0 +1,32 @@
+// node core/terrain/test-speleo-cleft.js — the cleft's smoky quartz (39b2-core-speleo-cleft.js, KSPELEO.SMOKY), each check with a negative.
+'use strict';
+const fs=require('fs'),path=require('path');
+global.window=global;
+eval(fs.readFileSync(path.join(__dirname,'..','rand','08-core-rand.js'),'utf8'));
+eval(fs.readFileSync(path.join(__dirname,'39-core-cavern.js'),'utf8'));
+let bad=0;const ok=(name,pass,neg)=>{const r=!!pass&&!neg;if(!r)bad++;console.log((r?'PASS  ':'FAIL  ')+name+(neg?' (its negative passed)':''));};
+const throws=f=>{try{f();return false;}catch(e){return true;}};
+const src=fs.readFileSync(path.join(__dirname,'39b2-core-speleo-cleft.js'),'utf8');
+ok('it refuses to load before KSPELEO',throws(()=>eval(src)),!throws(()=>eval(src)));
+eval(fs.readFileSync(path.join(__dirname,'39b-core-speleo.js'),'utf8'));
+const S=KSPELEO,presets=()=>JSON.stringify(Object.keys(S).filter(k=>/^[A-Z]+$/.test(k)&&k!=='SMOKY').sort().map(k=>[k,S[k]]));
+// a granite cleft: a narrow, tall crack 30 m long, 2.5 m wide and 5 m high, 60 m under the ground; a hall beside it for the negative
+const C=KCAVERN.create({ground:()=>60,cell:.5,chunk:16,seed:7});
+C.tube({id:'cleft',pts:[[0,0,0],[30,0,0]],w:2.5,h:5});C.tube({id:'side',pts:[[0,0,20],[30,0,20]],w:8,h:5});C.build();
+const box=[-1,-2,31,2],w0=S.place(C,{box,y:1,world:3,cell:1,kinds:S.VUG}),p0=presets(),keys0=Object.keys(S).join();
+eval(src);
+ok('the presets in 39b do not move, and the vug places the same',presets()===p0&&JSON.stringify(S.place(C,{box,y:1,world:3,cell:1,kinds:S.VUG}))===JSON.stringify(w0),presets()!==p0);
+ok('one preset and its look added, nothing else',Object.keys(S).join()===keys0+',SMOKY,SMOKY_LOOK',false);
+const R=S.place(C,{box,y:1,world:3,cell:1,kinds:S.SMOKY}),by=k=>R.filter(r=>r.kind===k);
+ok('the cleft is lined ('+R.length+': druse '+by('druse').length+', block '+by('block').length+', beam '+by('beam').length+')',by('druse').length>=8&&by('block').length>=1,R.length<5);
+ok('every record is smoky quartz, and only the crystal kinds',R.every(r=>r.mineral==='smoky-quartz'&&/^(beam|block|druse)$/.test(r.kind)),R.some(r=>r.mineral!=='smoky-quartz'));
+ok('druse is the commonest (a cleft is mostly small points)',by('druse').length>by('block').length&&by('block').length>=by('beam').length,by('druse').length<=by('block').length);
+ok('a point no longer than the preset allows; a beam ends at the rock or its length (KSPELEO marches it in .5 m steps)',by('druse').every(r=>r.pts.every(p=>p.len<=.25+1e-9))&&by('beam').every(r=>r.len<=1.2+.5+1e-9),by('druse').some(r=>r.pts.some(p=>p.len>.25)));
+let fixed=true;by('block').concat(by('beam')).forEach(r=>{if(!(C.sdf(r.x,r.y-.1,r.z)<=0&&C.sdf(r.x,r.y+.1,r.z)>0))fixed=false;});
+ok('the floor ones stand on the cleft\'s floor',fixed,false);
+const tile=S.place(C,{box:[10,-2,20,2],y:1,world:3,cell:1,kinds:S.SMOKY}),crop=R.filter(r=>r.x>=10&&r.x<20&&r.z>=-2&&r.z<2);
+ok('a tile placed alone is the cleft cropped (by cell, not by draws)',JSON.stringify(tile)===JSON.stringify(crop)&&tile.length>0,tile.length===0);
+ok('in rock (between the cleft and the side hall) nothing',S.place(C,{box:[2,6,28,14],y:1,world:3,cell:1,kinds:S.SMOKY}).length===0,false);
+const L=S.SMOKY_LOOK['smoky-quartz'];
+ok('its look: a dark smoke body, a paler tip, sRGB hex',/^#[0-9a-f]{6}$/.test(L.body)&&parseInt(L.body.slice(1),16)<parseInt(L.tip.slice(1),16)&&L.clarity>0&&L.clarity<1,!L.body);
+console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);

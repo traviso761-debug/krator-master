@@ -340,6 +340,7 @@ Placement takes `H.contour(25, {box})`; the snow takes `ATMOS.snowBare(H.snowMas
 *Adopting it:* `make` it, draw `mesh(B, {bore: 'open'})` when a shaft goes on below (without it a plug closes the foot), and add `bore(B).shafts` and `.opening` to the cavern.
 
 **`KHAZ` moving and pooling** (`core/hazard/21-core-hazard-flow.js`, 2026-11-03): a hazard's `move` read at last, `move.pull` toward its core (the Gills' in-breath), and `shape.pool` (gas that kills on the floor and is nothing a few metres up); `core/hazard/README.md`, "Moving and pooling".
+**`KHAZ` the tunnels' kinds** (`core/hazard/22-core-hazard-tunnel.js`, opt-in, 2026-11-11): `rockburst` (a crush on a cycle, one cell of the stretch a period), `inrush` (a drown whose water rises on a cycle or once) and `seal` (a section that bleeds to the surface's pressure while its door is open), for the Line; their rows join the vocabulary at first use, so pages without the file are unchanged; `core/hazard/README.md`, "The tunnels' kinds".
 
 **`KSPELEO`** (`core/terrain/39b-core-speleo.js`, `test-speleo.js`, 2026-11-03): what grows in a built KCAVERN's voids (riftrim's hold:
 gypsum chandeliers, stalactites, stalagmites, columns where the two meet), placed by `KRAND` per cell from the cavern's own `sdf` and
@@ -396,6 +397,9 @@ Each in a new file, opt-in, node-tested with negatives, except `KCAVERN.pipe`, w
   `CALCITE` (Mississippi Valley: calcite, celestine) and `VUG` (thundereggs, rhyolite vugs). Beams and blocks block a walker.
   The old presets' records, meshes and blocks are byte-identical (`test-speleo.js` holds their digests). `KKARST`'s hypogene kind
   takes `crystal: {storeys, speleo}` to dress the storeys that grew megacrystals with a crystal preset.
+- **`KSPELEO.SMOKY`** (`39b2-core-speleo-cleft.js`, opt-in, 2026-11-11; `test-speleo-cleft.js`): an Alpine granite cleft's smoky quartz for the
+  Line's cleft shrine (druse, big points as blocks, a few long points), with `KSPELEO.SMOKY_LOOK` (the mineral's colours for a draw). A
+  separate file listed after `39b-core-speleo.js`, so the pages that take 39b are byte-identical; 39b's presets do not move.
 - **A cave page's floor and rock** (2026-11-09, lifted from the Hearths' Cave of Crystals for every cave page): `KCAVERN.floorFn(C, {from,
   to, step, fallback})` (`39d-core-cavern-floor.js`, `[G data]`, `test-cavern-floor.js`): the lowest open point of a column read off the
   cavern's `sdf` on a cached 1 m lattice, bilinear (a cave page's camera floor, its BIO ground, a water's bed); `KCAVERN.openAt(C, x, y, z,
