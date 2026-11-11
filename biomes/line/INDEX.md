@@ -16,6 +16,7 @@ The Rift line's biome (`PLAN.md`): stations, each a window of the one Line recor
 | `stations/station/` | station 3: the Twenny junction, in three states (`?state=built\|kept\|abandoned`; bore km 217.55-218.75) |
 | `stations/hotdoor/` | station 4: the hot section's north door: the airlock, the plant, the deep stretch, the cleft shrine (bore km 54.35-55.55) |
 | `stations/fault/` | station 6: the junction hall and the twin bores, the east sheared by a slump fault and flooded (bore km 43.85-45.05) |
+| `stations/portal/` | station 7: the shallow south, the fallen stretch open to the sky, the portal onto the tableland (bore km 303.35-304.55) |
 | `stations/breach/` | station 5: the bore beside a hypogene chamber: the bulkhead, the window, the stair, the maze beyond (bore km 224.55-225.75) |
 
 ## stations/common
@@ -49,6 +50,9 @@ The Rift line's biome (`PLAN.md`): stations, each a window of the one Line recor
 | `88-host-breach.js` (breach) | [draw] | the bulkhead, the landing, the window's glass, the stair's treads and rails, the plank path, the gypsum blocks |
 | `88-host-fault.js` (fault) | [draw] | the junction's and the bores' floors, the jogs, the east walkway, the west road, the fault's rubble and the scramble |
 | `89y-host-water.js` (gap, fault) | [web] | still water (core/water): the gap's sump, the fault's low point |
+| `88-host-portal.js` (portal) | [draw] | the land (KFIELD baked, meshed: turf and the cuttings' faces), the portal's headwall, the fallen stretch's rubble, the shaft head |
+| `89s-host-sky.js` (portal) | [web] | the shared sky (ATMOS.skyBiome) and the eye's exposure ramp |
+| `99-host-view-sky.js` (portal) | [web] | the sky's per-frame update on the host's view, after KHOST.take |
 | `88-host-station.js` (station) | [draw] | the invert, the platforms, the road's and walkway's jogs, the stairs, footbridges and mezzanine, the doors, the branch, the shaft's cage, what each state leaves |
 | `98v-host-views.js` | [web] | the views |
 

@@ -324,6 +324,10 @@
    "bytes": 7872302,
    "sha256": "60515e289e9e70bdddc096f0be74dca1e5492741cac5a174b61478e1ca12b131"
   },
+  "biomes/line/dist/line-portal.html": {
+   "bytes": 8004738,
+   "sha256": "d27fa3292ebadb52dc6c849bcccf7c2410e6d48c467b711d7650b14573e79e44"
+  },
   "biomes/line/dist/line-station.html": {
    "bytes": 7874917,
    "sha256": "97b1ea6bd93e1efa2e57fc71afd16663190f62574a1ecd223d65a62defe0ef7c"

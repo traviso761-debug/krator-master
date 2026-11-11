@@ -109,6 +109,13 @@ CORE_ATMOS=['89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-2-lights.js'
  '89-atmos-a-waves.js']   # the waves' uniforms core/water's surface reads
 for f in CORE_ATMOS: PATH.setdefault(f,J('core','atmos',f))
 PATH['89-atmos-c-hostbind.js']=J('core','atmos','host','89-atmos-c-hostbind.js')
+# the shared sky (core/atmos/SKY-PLAN.md section 9), only for a station that opens to the day ("sky": true in its station.json: the portal):
+# its model, presets, shader and fog, its host and the biome call (the station's own 89s-host-sky.js calls ATMOS.skyBiome)
+if SJ.get('sky'):
+    for f in ['89-atmos-e-skymodel.js','89-atmos-f-skypresets.js','89-atmos-g-sky.js','89-atmos-j-fog.js']: PATH[f]=J('core','atmos','sky',f)
+    for f in ['89-atmos-h-skyhost.js','89-atmos-i-skybiome.js']: PATH[f]=J('core','atmos','host',f)
+    PATH.setdefault('89-atmos-b-skylight.js',J('core','atmos','89-atmos-b-skylight.js'))
+    PATH.setdefault('30-core-field.js',J('core','terrain','30-core-field.js'))   # KFIELD: the land baked for its mesh and its eye
 # core/water: the sumps and the flooded tracks (the gap and fault stations; the bore has none)
 CORE_WATER=['20-core-water.js','21-core-water-shore.js','22-core-water-flow.js','50-core-water-draw.js','51-core-water-kinds.js']
 for f in CORE_WATER: PATH.setdefault(f,J('core','water',f))

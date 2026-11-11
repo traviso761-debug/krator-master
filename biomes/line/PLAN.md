@@ -446,7 +446,7 @@ question.
 | 4 | `hotdoor` | 55 (455,1186) | the hot section's north doors: two door walls a train's length apart (an airlock), each a bulkhead across the gallery with four train leaves and a walkway hatch; **the power plant and the cooling plant** kept by rite (the heat exchangers' pipes through the inner door, the generators' rare-earth magnets, power cells on charge: section 2); a sealed train waiting; through the inner door the deep stretch, spalls on the lining, the heat haze, the cyan strips still lit; a granite cleft shrine behind a rail (`ANCIENT-TUNNELS.md` cave 7) | **heat and machinery**; the one place the Ancients' light still burns (built 2026-11-11: section 14) |
 | 5 | `breach` | 225 (444.5,1270) | the bore cuts a hypogene chamber in the rift fill (`KKARST` `hypogene`, as the Hearths): a bulkhead in the lining, a window, a stair down into the natural cave | **the join of built and natural** (built 2026-11-11: section 14) |
 | 6 | `fault` | 40-48 (455.5,1180) | the gallery split into two twin bores through the impact breccia; a slump fault shears one bore (its two tracks cut, the beams offset 3 m), the trains crossing over in the junction hall to the other; a low point flooded over two tracks; CO2 pooled | **the ruin states by track** (built 2026-11-11: section 14) |
-| 7 | `portal` | 280-304 (440.5,1305) | the shallow south: the cut-and-cover gallery under 30-60 m of fill, light shafts, one stretch fallen in to an open cutting with the sky over it, and the portal onto the tableland, the guideway running on toward Ledge; **a shaft head** on the tableland (a stand-in for the kit's winch house, ice store and hooded lamp) | **daylight to the dark**: the exposure ramp |
+| 7 | `portal` | 280-304 (440.5,1305) | the shallow south: the cut-and-cover gallery under 30-60 m of fill, light shafts, one stretch fallen in to an open cutting with the sky over it, and the portal onto the tableland, the guideway running on toward Ledge; **a shaft head** on the tableland (a stand-in for the kit's winch house, ice store and hooded lamp) | **daylight to the dark**: the exposure ramp (built 2026-11-11: section 14) |
 
 **The order** (*proposed*): `bore` first (the section must be right before anything else), then `station`, `gap`,
 `hotdoor`, `fault`, `breach`, `portal`.
@@ -735,6 +735,14 @@ question 14):
   the rubble. A ring may now hold several sections (`LINE.sectionsAt`): the shared lining draws each, with the end wall from one gallery into
   two bores; the clearance and lining checks take each. Its checks: the shear, the trains on through the west, the flood over 0.6 m, the
   pillar between the bores, no gap; each with its negative.
+- **The `portal` station** (7, km 304): the cut-and-cover gallery under 38 m of wet tableland, its four light wells; a stretch fallen in to an
+  open cutting with the sky over the tracks; the portal's headwall at the escarpment's foot and its approach cutting, the line running on at
+  grade toward Ledge; the Tungangs' shaft head over a well (stand-ins for the kit's winch house, ice store, hooded lamp). The only station
+  under the sky: `"sky": true` in its `station.json` adds the shared sky's fragments (`ATMOS.skyBiome`) and `KFIELD`; the land is
+  `LINE.groundAt` baked and meshed by the station. The eye's exposure follows `LINE.exposureAt` (dark-adapted under cover, the day's out of
+  it, ramped over 300 m). Its checks: the ramp, the fallen stretch open with its tracks running, the wells open, the line at grade past the
+  portal; each with its negative.
+- **All seven stations are built** (2026-11-11), each passing `verify.py --assert` on the GPU.
 - **The bore hazards**: `core/hazard/22-core-hazard-bore.js` (`KHAZ.rockburst`, `inrush`, `seal`), opt-in, as presets on the kinds the
   vocabulary has (`crush`, `drown`, `gas`), so no other page changes; `test-hazard-bore.js`.
 

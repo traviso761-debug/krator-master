@@ -1,0 +1,4 @@
+// ================================================================= HOST — the station: which window of the Line this page draws
+// biomes/line/PLAN.md section 5, station 7, `portal`: daylight to the dark, the exposure ramp.
+const STATION={key:'portal',name:'The portal (station 7)',num:7,state:'kept',
+ hint:"Station 7 of the Line: the south portal (bore km 304): the cut-and-cover gallery 38 m under the wet tableland, its light wells; a stretch fallen in to an open cutting with the sky over the tracks; the portal face at the escarpment's foot and its approach cutting, the guideway, walkway and road running on at grade toward Ledge; the Tungangs' shaft head on the tableland over a well (winch, hut, ice store, the hooded lamp); the eye's exposure ramping over 300 m between the dark and the day"};

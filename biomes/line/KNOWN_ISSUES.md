@@ -44,4 +44,8 @@
 - [ ] **The fault's bores have no step at the shear.** The east bore's two pieces meet at the fault with no wall between their offset rings (the
   shared lining draws an end wall only between one section and several); the rubble mound and the cut lining hide the join. The twin bores are
   each a vaulted room with the gallery's lining profile, not the round bores of `KTRANSIT.line`'s owed `twin` form.
+- [ ] **The portal draws its own land.** No core module meshes a ground (each build draws its own): `88-host-portal.js` bakes `LINE.groundAt`
+  through `KFIELD` and meshes it at 2 m, turf by vertex colour (no library set: a tableland grass set is owed) and the cuttings' faces on the rock
+  material. The page opens at the host clock's 06:00 (the owner's start), so the first look is dawn; the exposure ramp is a plain lerp by distance
+  from the openings (the wells add a little), not core/atmos's eye adaptation.
 
