@@ -74,16 +74,15 @@ const dewG=(function(){const P=[];for(let k=0;k<=10;k++)P.push(new T3.Vector3(0,
 const rimeG=(function(){const g=new T3.SphereGeometry(1,14,6,0,TAU,0,Math.PI*.5);const p=g.attributes.position,n=p.count,c=new Float32Array(n*3);
  for(let i=0;i<n;i++){const x=p.getX(i),y=p.getY(i),z=p.getZ(i),a=Math.atan2(z,x),f=1+.08*Math.cos(5*a+6*y);p.setXYZ(i,x*f,y*.42,z*f);const w=smooth(.55,.95,y),v=.55+.4*w;c[i*3]=v;c[i*3+1]=v;c[i*3+2]=v+.04*w;}
  g.setAttribute('color',new T3.BufferAttribute(c,3));g.computeVertexNormals();return g;})();
-/* the fall-out lawn: crossed cards of jungle seedlings. A CANVAS STAND-IN (KNOWN_ISSUES.md): card.fallout.lawn is owed (PROMPTS-NEEDED.md) */
-const lawnTex=BIO.canvasTex(256,256,(g,w,h)=>{g.clearRect(0,0,w,h);const u=k=>KRAND.unit(KRAND.hash(0x1A6,k,0,0xF00));
- for(let k=0;k<26;k++){const x=w*(.1+.8*u(k*5)),hh=h*(.35+.55*u(k*5+1)),lean=(u(k*5+2)-.5)*30,leaf=8+18*u(k*5+3),g0=110+90*u(k*5+4);
-  g.strokeStyle='rgb(70,'+Math.round(g0*.8)+',40)';g.lineWidth=2;g.beginPath();g.moveTo(x,h);g.lineTo(x+lean,h-hh);g.stroke();
-  g.fillStyle='rgb('+Math.round(60+g0*.3)+','+Math.round(g0)+','+Math.round(40+g0*.15)+')';
-  [-1,1].forEach(sd=>{g.beginPath();g.ellipse(x+lean+sd*leaf*.7,h-hh,leaf,leaf*.55,sd*.5,0,TAU);g.fill();});}});
-M.lawn=BIO.leafMat(lawnTex,'lfallout',{swayW:'(position.y)',swayA:.05,alphaTest:.45});   /* a leaf card on the core's foliage material (its back-light and the one wind) */
-const lawnG=(function(){const pos=[],uv=[],idx=[];[0,Math.PI/2].forEach(a=>{const ca=Math.cos(a)*.5,sa=Math.sin(a)*.5,n0=pos.length/3;
-  [[-1,0],[1,0],[-1,1],[1,1]].forEach(([u,hh])=>{pos.push(u*ca,hh,u*sa);uv.push((u+1)/2,hh);});idx.push(n0,n0+1,n0+2,n0+2,n0+1,n0+3);});
- const g=new T3.BufferGeometry();g.setAttribute('position',new T3.Float32BufferAttribute(pos,3));g.setAttribute('uv',new T3.Float32BufferAttribute(uv,2));g.setIndex(idx);g.computeVertexNormals();return white(g);})();
+/* the fall-out lawn: a clump of jungle seedlings as geometry (three stalks, each with a pair of broad cotyledons), green at the top, the stalks paler.
+   A GEOMETRY STAND-IN (KNOWN_ISSUES.md): card.fallout.lawn, the cut-out card the plan asks for, is owed (PROMPTS-NEEDED.md section 44) */
+const lawnG=(function(){const P=[],Cc=[],tri=(a,b,c,ca,cb,cc)=>{P.push(...a,...b,...c);Cc.push(...ca,...cb,...cc);};const STEM=[.55,.62,.4],LEAF=[.75,1,.6],TIP=[.95,1,.75];
+ for(let k=0;k<3;k++){const a=k*2.1+.4,ox=Math.cos(a)*.18*(k?1:0),oz=Math.sin(a)*.18*(k?1:0),h=.55+.25*k%2,lean=.08;
+  const top=[ox+Math.cos(a)*lean,h,oz+Math.sin(a)*lean];tri([ox-.02,0,oz],[ox+.02,0,oz],top,STEM,STEM,STEM);
+  for(const sd of[-1,1]){const dx=Math.cos(a+sd*1.4)*.32,dz=Math.sin(a+sd*1.4)*.32,px=-dz*.35,pz=dx*.35,tip=[top[0]+dx,top[1]+.06,top[2]+dz],m1=[top[0]+dx*.5+px,top[1]+.05,top[2]+dz*.5+pz],m2=[top[0]+dx*.5-px,top[1]+.02,top[2]+dz*.5-pz];
+   tri(top,m1,tip,LEAF,LEAF,TIP);tri(top,tip,m2,LEAF,TIP,LEAF);}}
+ const g=new T3.BufferGeometry();g.setAttribute('position',new T3.Float32BufferAttribute(P,3));g.setAttribute('color',new T3.Float32BufferAttribute(Cc,3));g.computeVertexNormals();return g;})();
+M.lawn=new T3.MeshLambertMaterial({vertexColors:true,side:T3.DoubleSide});
 const A2=['aP0','aP1'];
 BIO.def('lring',ringG,M.skin,{attrs:A2,label:'Lung ring (ringos): a coral-like colony\'s individual, banded by the pressure it was born at',cap:20000,capWhy:'a ring is drawn every 10 m of a 3 km lung'});
 BIO.def('lringlo',ringLoG,M.skin,{attrs:A2,label:'Lung ring (ringos), far'});
@@ -142,7 +141,8 @@ LUNG.build=function(opt){opt=opt||{};const L=opt.layout,ground=opt.ground||BIO.t
   /* the bell at the foot: flaring, gaping out from the face and up, on holdfasts, the strainer fringe across it */
   if(l.bell){const B=L.bells.find(b=>b.id===l.bell),out2=[B.face[0]*.75,.65,B.face[1]*.75],Q=qUpTo(out2),c=LUNG.bandAt(l.atm0).col;
    BIO.owner=[B.x,B.z];BIO.range=4000;const s=B.r/2.6;BIO.put('lbell',[B.x,B.y,B.z],Q,[s*l.hand,s*1.4,s],lin(l.dead?BONE:c));
-   for(let k=0;k<4;k++){const a=k/4*TAU+.4,hx=B.x+Math.cos(a)*B.r*.7,hz=B.z+Math.sin(a)*B.r*.7,hy=ground(hx,hz);BIO.range=1500;BIO.put('lhold',[hx,hy-.5,hz],null,[s*1.2,Math.max(1,B.y-hy+s),s*1.2],lin([.36,.3,.28]));}
+   /* the holdfasts: round the bell's narrow base, from the rock up to its underside (never into its throat) */
+   for(let k=0;k<4;k++){const a=k/4*TAU+.4,hx=B.x+Math.cos(a)*s*1.25,hz=B.z+Math.sin(a)*s*1.25,hy=ground(hx,hz);if(B.y-hy<.3)continue;BIO.range=1500;BIO.put('lhold',[hx,hy-.5,hz],null,[s*.5,B.y-hy+.5+s*.15,s*.5],lin([.36,.3,.28]));}
    if(!l.dead){const ax=new T3.Vector3(out2[0],out2[1],out2[2]).normalize(),lip=new T3.Vector3(),p=new T3.Vector3();BIO.range=900;
     for(let k=0;k<28;k++){const a=k/28*TAU;lip.set(Math.cos(a)*2.55*s,1.05*s*1.4,Math.sin(a)*2.55*s).applyQuaternion(Q);p.set(B.x,B.y,B.z).add(lip);
      const inw=lip.clone().multiplyScalar(-1).addScaledVector(ax,-.4).normalize(),outw=lip.clone().normalize().addScaledVector(ax,.6).normalize(),len=s*(1.6+.8*KRAND.unit(KRAND.hash(0x1A6,k,D.bells,0xF51)));

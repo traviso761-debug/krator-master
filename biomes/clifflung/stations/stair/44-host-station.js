@@ -12,7 +12,7 @@ const STN={key:'stair',name:'The Stair',title:'Krator biome — the Cliff Lungs:
  deckY:1250,
  lungs:{n:10,world:0x1A63,step:10},
  wind:[.62,.78],
- hour:8.5,day:0,
- q:.55,
+ hour:10,day:0,
+ q:.4,
  sky:{pressure:1.24,humidity:.92,cover:.6},
  shigh:true,bells:false,fog:true,stair:true};

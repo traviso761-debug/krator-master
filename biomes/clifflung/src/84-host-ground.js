@@ -23,7 +23,7 @@ const GROUND=(function(){const N=480,S=TERR.R*2.2,cs=S/N,nx=N+1;
  const C=h=>new THREE.Color(h).convertSRGBToLinear(),GOLD=C(0xb89a5a),OLIVE=C(0x84834a),RUST=C(0x96683c),MOSS=C(0x6e8c34),MOSSD=C(0x445e2a),LOAM=C(0x3e3828),
   ROCK=C(0x8a7e72),ROCK2=C(0x5e5650),SPH=C(0xa0b03a),PEAT=C(0x3a2e22),LAWN=C(0x6aa83a),LAWND=C(0x8a7a40),FAN=C(0x2e3428),c=new THREE.Color(),t=new THREE.Color();
  for(let j=0;j<nx;j++)for(let i=0;i<nx;i++){const k=j*nx+i,x=-S/2+i*cs,z=-S/2+j*cs,y=terrainH(x,z);pos[k*3]=x;pos[k*3+1]=y;pos[k*3+2]=z;
-  const fog=FIELD.fog(x,z),rock=FIELD.rock(x,z),bog=FIELD.oasis(x,z),lw=FIELD.lawn(x,z),n=KRAND.fbm(x*.013,.5,z*.013,2,0x84),n2=KRAND.fbm(x*.0035,.5,z*.0035,2,0x85);
+  const fog=FG.fog.h(x,z),rock=FG.rock.h(x,z),bog=FG.oasis.h(x,z),lw=FG.lawn.h(x,z),n=KRAND.fbm(x*.013,.5,z*.013,2,0x84),n2=KRAND.fbm(x*.0035,.5,z*.0035,2,0x85);
   let fan=0;for(const W of WELLS){const d=Math.hypot(x-W.x,z-W.z)/(W.r*3);if(d<1)fan=Math.max(fan,(1-d)*(W.live?1:.3));}
   c.copy(GOLD).lerp(OLIVE,smooth(.42,.62,n2)*.8).lerp(RUST,smooth(.6,.75,n)*.5);
   t.copy(MOSS).lerp(MOSSD,smooth(.35,.6,n)).lerp(LOAM,smooth(.55,.75,n2)*.4);c.lerp(t,smooth(.3,.65,fog));
@@ -47,3 +47,5 @@ PL.bogs.forEach((B,i)=>REGISTER({name:'A bog on the paramo',x:B.x,z:B.z,y:terrai
 const GROUND_PROBE=new THREE.Object3D();GROUND_PROBE.name='ground probe points';GROUND_PROBE.userData.probePoints=[];scene.add(GROUND_PROBE);
 const probeAt=(x,z,dy)=>GROUND_PROBE.userData.probePoints.push(x,terrainH(x,z)+(dy||0),z);
 PL.bogs.forEach(B=>probeAt(B.x,B.z,.5));
+/* the cloud sea's volume: the deck is core/atmos's mesh (not sampled); one point in its band, at its middle */
+if(STN.deck!==false)GROUND_PROBE.userData.probePoints.push(0,CLOUD_Y,rimZ(0)-SCARP.run-150);

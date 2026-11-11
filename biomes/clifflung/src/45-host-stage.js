@@ -65,10 +65,10 @@ function waterH(x,z){for(let i=0;i<WELLS.length;i++){const P=WELLS[i];if(Math.ab
 const FOG_BAND=[2050,700];
 function lawnAt(x,z){let k=0;for(const W of LUNG_L.lawns){const dx=x-W.x,dz=z-W.z,a=(dx*W.ax+dz*W.az)/(W.len*.5),b=(-dx*W.az+dz*W.ax)/(W.w*.5),q=Math.hypot(a,b);if(q<1.3)k=Math.max(k,smooth(1.15,.6,q));}return k;}
 const LSP=KSPACE.create({cell:40});
-LUNG_L.lungs.forEach(l=>l.pts.forEach(p=>LSP.insert({l,p},p[0],p[2],l.r+4)));
+LUNG_L.lungs.forEach(l=>l.pts.forEach(p=>LSP.insert({l,p},p[0],p[2],l.r+9)));
 LUNG_L.mouths.forEach(M=>LSP.insert({m:M,p:[M.x,M.y,M.z]},M.x,M.z,M.collar+4));
 LUNG_L.bells.forEach(B=>LSP.insert({b:B,p:[B.x,B.y,B.z]},B.x,B.z,B.r+4));
-function lungNear(x,z,pad){return LSP.some(x,z,pad==null?0:pad,it=>{const r=it.l?it.l.r+4:it.m?it.m.collar+4:it.b.r+4;return Math.hypot(x-it.p[0],z-it.p[2])<r+(pad||0);});}
+function lungNear(x,z,pad){return LSP.some(x,z,pad==null?0:pad,it=>{const r=it.l?it.l.r+9:it.m?it.m.collar+4:it.b.r+4;return Math.hypot(x-it.p[0],z-it.p[2])<r+(pad||0);});}
 const SLOPEK=1.0;
 const FNAMES=['wet','flow','upland','canyon','rim','rock','dune','oasis','slope','abyss','salt','cold','geo','barren','fog','lawn','lung'];
 const FG=(function(){const N=400,S=TERR.R*2.2,st=S/(N-1),x0=-S/2,a={};FNAMES.forEach(n=>a[n]=new Float32Array(N*N));
@@ -93,7 +93,9 @@ LUNG_L.lawns.forEach(W=>SPINE.push([W.x,W.z]));
 PL.bogs.forEach(B=>SPINE.push([B.x,B.z]));
 for(let x=-1800;x<=1800;x+=900)SPINE.push([x,rimZ(x)+1300]);
 /* the mask: nothing roots in the water, under the cloud deck, on a lung's line, in a collar; the lawns' cores are the fall-out's own */
-function rootMask(x,z){const h=terrainH(x,z);if(h<CLIP_Y-12)return 0;if(STN.rootRock!=null&&FIELD.rock(x,z)>STN.rootRock)return 0;const d=h-waterH(x,z);if(d<.15)return 0;
+function rootMask(x,z){const h=terrainH(x,z);if(h<CLIP_Y-12)return 0;if(STN.rootRock!=null&&FIELD.rock(x,z)>STN.rootRock)return 0;
+ /* THE CLIFF WEIGHT (the southern highlands' rule, PLAN.md section 7): nothing roots on a sheer face but a lung (the same weight SHIGH.zones computes) */
+ if(smooth(.8,.95,FIELD.slope(x,z))*smooth(.3,.6,FIELD.rock(x,z))>.5)return 0;const d=h-waterH(x,z);if(d<.15)return 0;
  if(lungNear(x,z))return 0;const lw=FIELD.lawn(x,z);return (d<.7?(d-.15)/.55:1)*(1-.85*smooth(.4,.85,lw));}
 BIO.init({tags:'clifflung',THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,mask:rootMask,
  obstacles:OBSTACLES,ticks:tick,seed:0x1A6,origin:SPINE,center:[0,0],fields:FIELD,register:REGISTER,err:reportErr,

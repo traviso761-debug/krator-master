@@ -26,12 +26,12 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `41-biome-lung-data.js` | 20 |  |
+| `41-biome-lung-data.js` | 21 |  |
 | `42-host-fn.js` | <1 |  |
 | `44-host-station.js` | 2 |  |
 | `45-host-stage.js` | 10 | the land (31); the fields (biomes/WORLD.md), baked on one latti (60); the host binding (86) |
-| `72-biome-lung.js` | 19 | the unit tube: y 0..1 along the axis, radius 1 ( (24); materials (35); the items (55); the drawing (105) |
-| `84-host-ground.js` | 5 |  |
+| `72-biome-lung.js` | 19 | the unit tube: y 0..1 along the axis, radius 1 ( (24); materials (35); the items (55); the drawing (104) |
+| `84-host-ground.js` | 6 |  |
 | `85-host-far.js` | 3 |  |
 | `89-host-sky.js` | 2 |  |
 | `89z-host-atmos.js` | 2 |  |
@@ -39,7 +39,7 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `89zwr-host-lungrec.js` | 2 |  |
 | `89zx-host-build.js` | 3 |  |
 | `89zy-host-breath.js` | 3 |  |
-| `99-host-take.js` | 15 | the inspector's words (28); the probe's budgets and the kit's own checks (ve (42); the page, handed to the host (108) |
+| `99-host-take.js` | 15 | the inspector's words (28); the probe's budgets and the kit's own checks (ve (42); the page, handed to the host (109) |
 | `99-tail.html` | <1 |  |
 
 ## stations/

@@ -20,7 +20,7 @@ else if(M0){const lx=M0.lean[0],lz=M0.lean[1];
  {const W=M0.well;addView('A mouth and its well (uelos)',look(W.x+W.r*4,W.z+W.r*3,3.5,M0.x,M0.z,M0.r*.8));}
  addView('Into a mouth: the throat comb',[M0.x+lx*2,gh(M0.x,M0.z,M0.r*3.4),M0.z+lz*2+.5,M0.x,gh(M0.x,M0.z,M0.r*.3),M0.z]);
  if(LAWN0){const cx=LAWN0.x+LAWN0.az*LAWN0.w*.9,cz=LAWN0.z-LAWN0.ax*LAWN0.w*.9;addView('The fall-out lawn (Gunglomagos)',look(cx,cz,1.8,LAWN0.x,LAWN0.z,.3));}
- {const cx=M0.x-30,cz=rimZ(M0.x-30)-15;addView('Down the face: the lungs into the cloud',[cx,gh(cx,cz,30),cz,cx-120,CLOUD_Y+250,cz-1400]);}
+ {const cx=M0.x+90,cz=rimZ(M0.x+90)-260;addView('Down the face: the lungs into the cloud',[cx,STN.rim.y+60,cz,M0.x-60,CLOUD_Y+300,cz-1300]);}
  {const cz=rimZ(0)-SCARP.run*.78,cx=M0.x+180;addView('Up the face from the cloud',[cx,Math.max(gh(cx,cz,40),CLOUD_Y+90),cz,M0.x,gh(M0.x,M0.z,20),M0.z]);}
  if(HUSKM)addView('A husk\'s top on the lip',look(HUSKM.x+18,HUSKM.z+22,2.5,HUSKM.x,HUSKM.z,HUSKM.r));
  if(MIRL&&MIRL.mouth){const Mm=LUNG_L.mouths.find(m=>m.id===MIRL.mouth);addView('The mirror lung (Levtobređos)',look(Mm.x+25,Mm.z+18,3,Mm.x,Mm.z,Mm.r));}
@@ -40,7 +40,8 @@ function describe(hit){const p=hit.point,o=hit.object;
   '\nthe air here '+air.toFixed(2)+' atm (the '+LUNG.bandAt(Math.min(1.6,air)).name+' band)  ·  the breath now '+(window._breath?window._breath.b.toFixed(2):'?')+
   '\n'+p.x.toFixed(0)+', '+p.y.toFixed(0)+', '+p.z.toFixed(0)+'  range '+camera.position.distanceTo(p).toFixed(0)+' m'+(hz?'\n'+hz:'');}
 // ---------------------------------------------------------------- the probe's budgets and the kit's own checks (verify.py --assert; PLAN.md section 16, L6)
-const BUDGET={showcase:{tris:16000000,calls:160},cls:{pass:12000000,host:1500000},
+const BUDGET={showcase:{tris:STN.tris==null?16000000:STN.tris,calls:STN.calls==null?160:STN.calls},   /* a station's own where it says (the Bells: the hyperjungle's many materials) */
+ cls:{pass:12000000,host:1500000},
  type:{'shigh/trees':'pass','shigh/floor':'pass','lung/lungs':'pass','lung/meadow':'pass','host':'host'}};
 const RINGVOL=()=>REG.filter(r=>r.key==='ring');
 const breathAt=(hour,day,W)=>LUNG.breath((day==null?STN.day:day)+hour/24,Object.assign({wet:.9,cloud:.12,wind:7,summer:KCLOCK.season(day==null?STN.day:day,hour).summer},W||{}));
@@ -61,7 +62,7 @@ const HCHK={
  // the noon preset shows steam at every live mouth and none at a husk
  noonSteam(em,b){const k=steamK(b),husks=LUNG_L.mouths.filter(M=>!M.live),live=LUNG_L.mouths.filter(M=>M.live);
   const miss=live.filter(M=>!em.mouths.some(e=>Math.hypot(e[0]-M.x,e[1]-M.z)<3)).length,atHusk=husks.filter(M=>em.mouths.some(e=>Math.hypot(e[0]-M.x,e[1]-M.z)<10)).length;
-  return{ok:k.mouths>.9&&k.caps>.5&&!miss&&!atHusk&&live.length>0,detail:'at noon (breath '+b.toFixed(2)+') steam '+k.mouths.toFixed(2)+', cap clouds '+k.caps.toFixed(2)+'; '+(live.length-miss)+' of '+live.length+' live mouths steaming, '+atHusk+' of '+husks.length+' husks'};},
+  return{ok:k.mouths>.9&&k.caps>.5&&!miss&&!atHusk&&(live.length>0||!LUNG_L.mouths.length),detail:(LUNG_L.mouths.length?'':'no mouth on this station; ')+'at noon (breath '+b.toFixed(2)+') steam '+k.mouths.toFixed(2)+', cap clouds '+k.caps.toFixed(2)+'; '+(live.length-miss)+' of '+live.length+' live mouths steaming, '+atHusk+' of '+husks.length+' husks'};},
  // the winter-night preset shows it at the bells (and the mouths' faint back-steam)
  winterSteam(em,b){const k=steamK(b),bells=LUNG_L.bells.filter(B=>B.live),miss=bells.filter(B=>!em.bells.some(e=>Math.hypot(e[0]-B.x,e[1]-B.z)<3)).length;
   return{ok:b<-.1&&k.bells>.5&&!miss&&k.back>0,detail:'on a clear winter night (breath '+b.toFixed(2)+') the cold breath '+k.bells.toFixed(2)+' at '+(bells.length-miss)+' of '+bells.length+' bells'+(bells.length?'':' (no bell on this station)')+', the mouths\' back-steam '+k.back.toFixed(2)};},
@@ -101,7 +102,7 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  if(typeof SHIGH!=='undefined'&&SHIGH.zones){let bx=0,bz=0,bs=-1;LUNG_L.lungs.forEach(l=>l.pts.forEach(p=>{const c=SHIGH.zones(p[0],p[2]).cliff;if(c>bs){bs=c;bx=p[0];bz=p[2];}}));
   add('a tree on the steepest cliff a lung stands on',HCHK.cliff([{x:bx,z:bz,sp:0}],LUNG_L));}
  add('one lung in two mirror-handed',HCHK.mirror(LUNG_L,(w,i)=>i%2?-1:1));
- add('a deck on its own hours',HCHK.deck(DECK?{day:Object.assign({},DECK.record.day,{high:LUNG.DECK.high+3})}:null));
+ if(DECK)add('a deck on its own hours',HCHK.deck({day:Object.assign({},DECK.record.day,{high:LUNG.DECK.high+3})}));
  add('a glowing lung',HCHK.glow([new THREE.MeshBasicMaterial({blending:THREE.AdditiveBlending,name:'test glow'})]));
  add('a camera under the ground',HCHK.camerasOut([{view:'under',x:0,y:terrainH(0,0)-3,z:0}]));
  return R;}
@@ -112,7 +113,7 @@ const LUNG_HZ_LAYER=typeof KTAGS!=='undefined'&&KTAGS.hazardLayer?KTAGS.hazardLa
 KHOST.take({build:'clifflung'+(STN.key==='mouths'?'':'-'+STN.key),title:STN.title,
  hint:"The Cliff Lungs: native colonies that lie up the southern Inner Wall's face from the cloud sea to the paramo and breathe the jungle's air up through themselves, on the heat it gives back as it condenses and the sun on their skins. "+STN.name+". Set the hour: dawn steams, noon roars, dusk is silent, a clear winter night runs backward. Nothing glows (ideal type)",
  scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,regHas,views:VIEWS,ticks:TICKS,
- onView:k=>{const T=VIEW_TIME[k];if(T&&KHOST.host){KHOST.host.clock.hour=T.hour;KHOST.host.clock.day=T.day==null?STN.day:T.day;}},
+ onView:k=>{const T=VIEW_TIME[k]||{hour:10.5,day:STN.day};if(T&&KHOST.host){KHOST.host.clock.hour=T.hour;KHOST.host.clock.day=T.day==null?STN.day:T.day;}},
  clock:{hour:STN.hour,day:STN.day},draw:SKY.draw,
  inspect:describe,stats:()=>'inst '+window._instances+'  ·  breath '+(window._breath?window._breath.b.toFixed(2):'?'),
  layers:Object.assign({'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)}},LUNG_HZ_LAYER?{'hazards':LUNG_HZ_LAYER}:{}),

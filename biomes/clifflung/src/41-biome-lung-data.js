@@ -94,8 +94,11 @@ var LUNG=(function(){
    if(out.lungs.some(q=>Math.hypot(q.mouth0[0]-ox,q.mouth0[1]-oz)<70))continue;   /* a lung keeps its own line (KSPACE checks it again on the page) */
    const r=1.6+2.4*u(1),wall=.3*r,dead=u(2)<.15,young=!dead&&u(3)<.12,hand=L.hand(world,k);
    /* the centreline: from the mouth just back of the rim, down the face along n, the centre half a radius over the ground (the rock its back wall) */
-   const pts=[];const d0=-12-8*u(4),dEnd=young?S.run*(.35+.3*u(5)):S.run*(o.footK==null?1.04:o.footK);let cut=false;
+   const pts=[];const d0=-4-4*u(4),dEnd=young?S.run*(.35+.3*u(5)):S.run*(o.footK==null?1.04:o.footK);let cut=false;
    for(let d=d0;d<=dEnd;d+=step){const x=ox+c.nx*d,z=oz+c.nz*d;if(Math.abs(x)>clip||Math.abs(z)>clip){if(pts.length)break;cut=true;continue;}const y=G(x,z)+r*.55;pts.push([x,y,z]);if(y<deckY-80)break;}
+   /* the pipe only falls toward its foot: from the foot up, no point lower than the one below it, so over a hollow or a bench's lip the lung
+      bridges free (the plan's "bridging free where the face overhangs"), and its rings stay monotone in height and pressure */
+   for(let i=pts.length-2;i>=0;i--)if(pts[i][1]<pts[i+1][1])pts[i][1]=pts[i+1][1];
    if(pts.length<4)continue;
    /* young lungs grow from the foot: their top is the growing tip, their foot the bell */
    const P=young?pts.slice(Math.floor(pts.length*.55)):pts;
@@ -104,8 +107,8 @@ var LUNG=(function(){
    const F=P.slice().reverse(),acc=[0];for(let i=1;i<F.length;i++)acc.push(acc[i-1]+Math.hypot(F[i][0]-F[i-1][0],F[i][1]-F[i-1][1],F[i][2]-F[i-1][2]));
    const total=acc[acc.length-1],rings=[];let s=0,j=0;
    const at=q=>{while(j+1<acc.length-1&&acc[j+1]<q)j++;const a=F[j],b=F[j+1],t=cl((q-acc[j])/((acc[j+1]-acc[j])||1),0,1);return [a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t];};
-   for(let n=0;s<total-1;n++){let len=20+40*U(world,k,n,0xA5);if(total-s-len<12)len=total-s;const a=at(s),b=at(s+len),m=at(s+len/2),atm=L.atmAt(m[1]),B=L.bandAt(atm);
-    rings.push({id:id+'.r'+n,lung:id,n,a,b,len,atm:Math.round(atm*10000)/10000,band:B.i,r:r*(1-.18*(young?n/(total/30+1):0)),wall,dead:dead||(young&&false)});s+=len;}
+   for(let n=0;s<total-1;n++){let len=20+40*U(world,k,n,0xA5);if(total-s-len<12)len=total-s;const a=at(s),b=at(s+len),m=at(s+len/2),atm=Math.round(L.atmAt(m[1])*10000)/10000,B=L.bandAt(atm);   /* the band from the pressure as recorded */
+    rings.push({id:id+'.r'+n,lung:id,n,a,b,len,atm,band:B.i,r:r*(1-.18*(young?n/(total/30+1):0)),wall,dead:dead||(young&&false)});s+=len;}
    const lung={id,on:c.on,line:c.i,mouth0:[ox,oz],n:[c.nx,c.nz],r,wall,bore:2*(r-wall),pts:P,hand,mirror:hand<0,dead,young,live:!dead,rings,len:Math.round(total),
     atm0:rings[0].atm,atm1:rings[rings.length-1].atm};
    out.lungs.push(lung);

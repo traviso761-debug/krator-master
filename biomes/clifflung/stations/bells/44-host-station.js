@@ -15,4 +15,5 @@ const STN={key:'bells',name:'The Bells',title:'Krator biome — the Cliff Lungs:
  hour:6.6,day:0,
  q:.5,
  sky:{pressure:1.5,humidity:.95,cover:.45},
+ calls:240,                  /* the hyperjungle's kit draws by species: measured 203 at the bells' dawn preset (2026-11-11, software GL) */
  shigh:false,jungle:true,bells:true,rootRock:.35};

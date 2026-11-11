@@ -9,8 +9,8 @@ Open items are `- [ ]`; build.py counts them.
 - [ ] **The throat comb is `organic.tendril.banded`** (tinted near black), not the owed `organic.comb.throat`.
 - [ ] **The husk is `organic.lichen.plates`** (grey detail under the faded band), not the owed `organic.husk.dry`; a husk is not yet split along
   its ribs (its geometry is a live ring's).
-- [ ] **The fall-out lawn is a canvas card** (`src/72-biome-lung.js`, `lawnTex`: seedlings drawn from KRAND), a procedural stand-in until
-  `card.fallout.lawn` is delivered.
+- [ ] **The fall-out lawn is a geometry stand-in** (`src/72-biome-lung.js`, `lawnG`: three stalks with cotyledons, vertex-coloured), until
+  `card.fallout.lawn` is delivered (a canvas card was tried first: its transparent texels darkened every card's edge to black at a distance).
 
 ## The kit
 
@@ -30,6 +30,11 @@ Open items are `- [ ]`; build.py counts them.
 - [ ] **The far lungs.** `KFAR.streaks` past the map are placed by KRAND along the rim, not by a layout of the far Wall's ravines.
 - [ ] **Mouths over the lip:** a mouth stands at the pipe's top point, back of the rim, and the pipe meets it with an elbow hidden inside the
   mouth's flare; a close camera below the lip can see the joint.
+
+- [ ] **08:30 on game day 0 drew a night sky on the Stair** (stars over the face, the land black; 2026-11-11, software GL): the shared sky's, not
+  traced (an eclipse by the giant is the likeliest reading). The Stair opens at 10:00 instead; station 1's dawn (06:54) and noon are lit.
+- [ ] **Budgets:** the Stair's cloud forest ran over the showcase's 16 M triangles at quality .55 (22.6 M); it opens at .4. The Bells draw
+  about 200 calls (the hyperjungle's kit draws by species), against a budget of 240 set for it. Measured under SwiftShader, not on the GPU lanes.
 
 ## Not in the open world
 

@@ -32,8 +32,8 @@ LUNG.buildStair=function(L,o){const ground=o.ground,normal=o.normal,y0=o.y0==nul
  const mid=l.pts.find(p=>p[1]<(y0+y1)/2)||l.pts[0],R=o.scarp.ravines.filter(V=>Math.abs(V.x-mid[0])>40).sort((a,b)=>Math.abs(a.x-mid[0])-Math.abs(b.x-mid[0]))[0];
  if(R){const along=(o.zAt?o.zAt:0),tx=-R.nz,tz=R.nx;let best=null;
   for(let s=200;s<o.scarp.run;s+=20){const cx=R.x+R.nx*s,cz=R.z+R.nz*s,h=ground(cx,cz);if(h<(y0+y1)/2){best=[cx,cz];break;}}
-  if(best){const w=R.w*1.15,A=[best[0]-tx*w,0,best[1]-tz*w],B=[best[0]+tx*w,0,best[1]+tz*w];A[1]=ground(A[0],A[2]);B[1]=ground(B[0],B[2]);const y=Math.max(A[1],B[1])+2.2;A[1]=y;B[1]=y;
-   const r=2.4,segs=Math.max(2,Math.round(2*w/10)),band=LUNG.bandAt(LUNG.atmAt(y)).col.map(c=>c+(.86-c)*.68);
+  if(best){const w=R.w*.95,A=[best[0]-tx*w,0,best[1]-tz*w],B=[best[0]+tx*w,0,best[1]+tz*w];A[1]=ground(A[0],A[2]);B[1]=ground(B[0],B[2]);const y=Math.max(A[1],B[1])+2.2;A[1]=y;B[1]=y;
+   const r=4,segs=Math.max(2,Math.round(2*w/10)),band=LUNG.bandAt(LUNG.atmAt(y)).col.map(c=>c+(.86-c)*.68);
    for(let k=0;k<segs;k++){const t0=k/segs,t1=(k+1)/segs,a=[A[0]+(B[0]-A[0])*t0,y,A[2]+(B[2]-A[2])*t0],len=2*w/segs;
     vy.set(B[0]-A[0],0,B[2]-A[2]).normalize();vz.set(0,1,0);vx.crossVectors(vy,vz);m.makeBasis(vx,vy,vz);q.setFromRotationMatrix(m);BIO.owner=[a[0],a[2]];BIO.range=3000;
     BIO.put('lhusk',a,q.clone(),[r,len,r],C(band));BIO.range=500;BIO.put('lhuskbore',a,q.clone(),[r,len,r],C([.42,.38,.32]));}

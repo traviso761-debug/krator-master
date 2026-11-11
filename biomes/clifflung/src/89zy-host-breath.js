@@ -29,6 +29,8 @@ function breathTick(){const q=lungClock(),e=LUNG.engines(q[0],q[1]),b=e.b;
  BIO.breathState('lungdrip').value=clamp(b*2,0,1);
  if(STEAM){STEAM.set('mouths',Math.min(1,3*Math.max(b,0)));STEAM.set('caps',1.2*smooth(.45,.9,b));STEAM.set('back',.5*clamp(-b/.2,0,1));STEAM.set('bells',clamp(-b/.2,0,1));}
  if(FAR&&FAR.lines)FAR.lines.k.value=.3+.7*Math.max(b,0);
+ /* the wells' water takes the sky's light from a daytime capture: at night it is dimmed with the sky, so a well never reads as a light (nothing glows) */
+ if(typeof WELL_DRAW!=='undefined'&&ATMOS.U){const nk=1-.92*ATMOS.U.night.value;WELL_DRAW.forEach(D=>[D.P,D.F].forEach(q=>{const m=q&&q.mesh&&q.mesh.material;if(m&&m.envMapIntensity!=null){if(m.userData.env0==null)m.userData.env0=m.envMapIntensity;m.envMapIntensity=m.userData.env0*nk;}}));}
  window._breath={b:+b.toFixed(4),hour:+e.hour.toFixed(2),latent:+e.latent.toFixed(3),solar:+e.solar.toFixed(3),reverse:+e.reverse.toFixed(3),summer:+e.summer.toFixed(3),
   steam:STEAM?{mouths:STEAM.k('mouths'),caps:STEAM.k('caps'),back:STEAM.k('back'),bells:STEAM.k('bells')}:null};}
 TICKS.push(breathTick);

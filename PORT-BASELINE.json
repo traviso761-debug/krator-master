@@ -36,6 +36,18 @@
    "bytes": 9615500,
    "sha256": "b325a6d45ecc5d6f67e7eaa73eb410a18596fd00972afae5cff0911cd19773e7"
   },
+  "biomes/clifflung/dist/clifflung-bells.html": {
+   "bytes": 8585557,
+   "sha256": "fd6e70bee4c8be8a1e5d24e842184bc9b846e0df5f87fba7c1d2d0d3e1694f03"
+  },
+  "biomes/clifflung/dist/clifflung-stair.html": {
+   "bytes": 7339572,
+   "sha256": "c25416f9a2feccc4f982e876ac7c38ce4381e5e538fd6ef2e54e115742acbac2"
+  },
+  "biomes/clifflung/dist/clifflung.html": {
+   "bytes": 7333757,
+   "sha256": "f3a4db7a5304cefb9c2aa18b5d88e4ebb325efca6a53bdf1479d411a4b0a0958"
+  },
   "biomes/copperglacier/dist/copperglacier-icefield.html": {
    "bytes": 5135671,
    "sha256": "a7334ef5b4d036cf57542ba8eb6c7f81c260eac2335c52aaec6af37e22cff429"
