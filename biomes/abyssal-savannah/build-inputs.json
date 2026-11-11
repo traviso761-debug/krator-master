@@ -3,7 +3,7 @@
  "runs": {
   "build.py": {
    "inputs": {
-    "biomes/abyssal-savannah/KNOWN_ISSUES.md": "3c7933ea6254c1583bf733208821c802304e19122305f0ba059b391b6dc0b69a",
+    "biomes/abyssal-savannah/KNOWN_ISSUES.md": "0fa5d97c0a621010aa0f4ab6895dc2e7c9e7ed64b66c1201a2aa6fac29c44562",
     "biomes/abyssal-savannah/PORT.md": "f6a11590162cb0f4c81e5f88f1667667ecb3b431a0df25bcf053afd8dc9aea86",
     "biomes/abyssal-savannah/build.py": "a652532b17954d990538eae4f1ccd742bc11bf86c391845dcd99d06c857736b7",
     "biomes/abyssal-savannah/src/00-head.html": "6939295fda20bfc367d27b6f756056c17cc784c9fd24f128d9f5a2c4ea72d751",
@@ -43,9 +43,9 @@
     "biomes/abyssal-savannah/tex/groundRock.albedo.webp": "1cd0fc2bcf96d02345cf81a685d179a86e1dd356e83c8bf7d5226219e79cb89b",
     "biomes/abyssal-savannah/tex/leaflet.albedo.webp": "3d4db5c92e00db01794c2cce3c1362bd4e3472e11266b9817c198a6a095406ab",
     "biomes/abyssal-savannah/tex/lily.albedo.webp": "9034cb7576e11a6b23713e109f8f48b53215a99360120345a5c34bf0475b39d5",
-    "biomes/abyssal-savannah/tex/pack.json": "eea0fcf9e42e1f914bec09d1ae41953f70fadda850f9dcc583c58737190b69ab",
+    "biomes/abyssal-savannah/tex/pack.json": "3479c0304385bede6f52ee217d8b85396784c01507f51bae5bf98b106ff318b1",
     "biomes/abyssal-savannah/tex/pangrass.albedo.webp": "6e9ee7909b552a580e4fd9a02f14cda0951292489d2dffb012f02563714575ce",
-    "biomes/abyssal-savannah/tex/plate.albedo.webp": "47b008680c925214abbda6b7e887e80d5c62db7e74f7f9b031125fae2917e595",
+    "biomes/abyssal-savannah/tex/plate.albedo.webp": "244c60f1e2c0304dad9d85122439d68b1334234688e5e641c62bd73b84c0c0bb",
     "biomes/abyssal-savannah/tex/rock.albedo.webp": "1225012895dd734166c2ba9a24bae888f20680cae6ae98a1fe43b253b0a9972a",
     "biomes/abyssal-savannah/tex/saltbush.albedo.webp": "a0ddf83546f1def5d337393ff7b04b15331247da5f8933b40b1a8b25639ce3b2",
     "biomes/abyssal-savannah/tex/stubbark.albedo.webp": "76c78b97289e346fe1781c378816204654665fe78dc7227cf71559292c1eef50",
@@ -188,15 +188,15 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/abyssal-savannah/dist/abyssal-savannah.html": "4a3b7ba473e13a13f8949d6971b533008de2ed920dcbcb0e4fa55e63fe7125f6"
+    "biomes/abyssal-savannah/dist/abyssal-savannah.html": "b06ceb17bb1a3fedb3605813964dad691973db9366fee4a59b7d76b52df5cd71"
    },
    "outputs_raw": {
-    "biomes/abyssal-savannah/dist/abyssal-savannah.html": "4a3b7ba473e13a13f8949d6971b533008de2ed920dcbcb0e4fa55e63fe7125f6"
+    "biomes/abyssal-savannah/dist/abyssal-savannah.html": "b06ceb17bb1a3fedb3605813964dad691973db9366fee4a59b7d76b52df5cd71"
    }
   },
   "build.py --station erim": {
    "inputs": {
-    "biomes/abyssal-savannah/KNOWN_ISSUES.md": "3c7933ea6254c1583bf733208821c802304e19122305f0ba059b391b6dc0b69a",
+    "biomes/abyssal-savannah/KNOWN_ISSUES.md": "0fa5d97c0a621010aa0f4ab6895dc2e7c9e7ed64b66c1201a2aa6fac29c44562",
     "biomes/abyssal-savannah/PORT.md": "f6a11590162cb0f4c81e5f88f1667667ecb3b431a0df25bcf053afd8dc9aea86",
     "biomes/abyssal-savannah/build.py": "a652532b17954d990538eae4f1ccd742bc11bf86c391845dcd99d06c857736b7",
     "biomes/abyssal-savannah/src/47c-host-eastabyss-end.js": "fee16ca161dfe605cc4fc026fa9141bf4e62151e39494cd1e3bd0c51b87543b9",
@@ -228,7 +228,7 @@
     "biomes/abyssal-savannah/tex/grass.albedo.webp": "1c6bea28bcb10a6d44808af6ac9d29340e0c13c178febc30c63a01173ebe7e5b",
     "biomes/abyssal-savannah/tex/groundDetail.albedo.webp": "06717817622d3384c81d72c4eba155388c63036791ed2876ce21205aabde463a",
     "biomes/abyssal-savannah/tex/incensebark.albedo.webp": "ce03a78da4075bcd11b286f4f9c80599b1c662e55cd680d6145a1b93deede2aa",
-    "biomes/abyssal-savannah/tex/pack.json": "eea0fcf9e42e1f914bec09d1ae41953f70fadda850f9dcc583c58737190b69ab",
+    "biomes/abyssal-savannah/tex/pack.json": "3479c0304385bede6f52ee217d8b85396784c01507f51bae5bf98b106ff318b1",
     "biomes/abyssal-savannah/tex/palmbark.albedo.webp": "c3dd614882aca85505c40ca8cd1d0bc3fe59d259eb9ec21247351637266bb8a5",
     "biomes/abyssal-savannah/tex/termite.albedo.webp": "39313f5404bbe48e23af6854f160cd29250147606ef8e33fee1dd57ea2f67d19",
     "biomes/eastabyss/src/50-biome-eastabyss-species.js": "32c7d8aafbeef97abca77d097970edc2e0de66a2c2aa66b8860e24f6699e716c",
@@ -398,7 +398,7 @@
   },
   "build.py --station north": {
    "inputs": {
-    "biomes/abyssal-savannah/KNOWN_ISSUES.md": "3c7933ea6254c1583bf733208821c802304e19122305f0ba059b391b6dc0b69a",
+    "biomes/abyssal-savannah/KNOWN_ISSUES.md": "0fa5d97c0a621010aa0f4ab6895dc2e7c9e7ed64b66c1201a2aa6fac29c44562",
     "biomes/abyssal-savannah/PORT.md": "f6a11590162cb0f4c81e5f88f1667667ecb3b431a0df25bcf053afd8dc9aea86",
     "biomes/abyssal-savannah/build.py": "a652532b17954d990538eae4f1ccd742bc11bf86c391845dcd99d06c857736b7",
     "biomes/abyssal-savannah/src/47c-host-eastabyss-end.js": "fee16ca161dfe605cc4fc026fa9141bf4e62151e39494cd1e3bd0c51b87543b9",
@@ -430,7 +430,7 @@
     "biomes/abyssal-savannah/tex/grass.albedo.webp": "1c6bea28bcb10a6d44808af6ac9d29340e0c13c178febc30c63a01173ebe7e5b",
     "biomes/abyssal-savannah/tex/groundDetail.albedo.webp": "06717817622d3384c81d72c4eba155388c63036791ed2876ce21205aabde463a",
     "biomes/abyssal-savannah/tex/incensebark.albedo.webp": "ce03a78da4075bcd11b286f4f9c80599b1c662e55cd680d6145a1b93deede2aa",
-    "biomes/abyssal-savannah/tex/pack.json": "eea0fcf9e42e1f914bec09d1ae41953f70fadda850f9dcc583c58737190b69ab",
+    "biomes/abyssal-savannah/tex/pack.json": "3479c0304385bede6f52ee217d8b85396784c01507f51bae5bf98b106ff318b1",
     "biomes/abyssal-savannah/tex/palmbark.albedo.webp": "c3dd614882aca85505c40ca8cd1d0bc3fe59d259eb9ec21247351637266bb8a5",
     "biomes/abyssal-savannah/tex/termite.albedo.webp": "39313f5404bbe48e23af6854f160cd29250147606ef8e33fee1dd57ea2f67d19",
     "biomes/hyperjungle/src/41-hyperjungle-globals.js": "522689f321f04ca138230497b065907019b16731915fc5e40c4b348f7f26ca1c",
@@ -574,7 +574,7 @@
   },
   "build.py --station serim": {
    "inputs": {
-    "biomes/abyssal-savannah/KNOWN_ISSUES.md": "3c7933ea6254c1583bf733208821c802304e19122305f0ba059b391b6dc0b69a",
+    "biomes/abyssal-savannah/KNOWN_ISSUES.md": "0fa5d97c0a621010aa0f4ab6895dc2e7c9e7ed64b66c1201a2aa6fac29c44562",
     "biomes/abyssal-savannah/PORT.md": "f6a11590162cb0f4c81e5f88f1667667ecb3b431a0df25bcf053afd8dc9aea86",
     "biomes/abyssal-savannah/build.py": "a652532b17954d990538eae4f1ccd742bc11bf86c391845dcd99d06c857736b7",
     "biomes/abyssal-savannah/src/47c-host-eastabyss-end.js": "fee16ca161dfe605cc4fc026fa9141bf4e62151e39494cd1e3bd0c51b87543b9",
@@ -606,7 +606,7 @@
     "biomes/abyssal-savannah/tex/grass.albedo.webp": "1c6bea28bcb10a6d44808af6ac9d29340e0c13c178febc30c63a01173ebe7e5b",
     "biomes/abyssal-savannah/tex/groundDetail.albedo.webp": "06717817622d3384c81d72c4eba155388c63036791ed2876ce21205aabde463a",
     "biomes/abyssal-savannah/tex/incensebark.albedo.webp": "ce03a78da4075bcd11b286f4f9c80599b1c662e55cd680d6145a1b93deede2aa",
-    "biomes/abyssal-savannah/tex/pack.json": "eea0fcf9e42e1f914bec09d1ae41953f70fadda850f9dcc583c58737190b69ab",
+    "biomes/abyssal-savannah/tex/pack.json": "3479c0304385bede6f52ee217d8b85396784c01507f51bae5bf98b106ff318b1",
     "biomes/abyssal-savannah/tex/palmbark.albedo.webp": "c3dd614882aca85505c40ca8cd1d0bc3fe59d259eb9ec21247351637266bb8a5",
     "biomes/abyssal-savannah/tex/termite.albedo.webp": "39313f5404bbe48e23af6854f160cd29250147606ef8e33fee1dd57ea2f67d19",
     "biomes/crater-drylands/src/50-biome-craterdry-species.js": "8f15e6a853643ff41a3974d1eded2587ddf09f7f77489e0b8e09f48e05048b91",

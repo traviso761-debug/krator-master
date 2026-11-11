@@ -3,9 +3,9 @@
  "runs": {
   "build.py": {
    "inputs": {
-    "biomes/cut/KNOWN_ISSUES.md": "2e9edd83045f59d50c9854047ad6576e6b1b642dc02d637e6992c81d37c11dad",
+    "biomes/cut/KNOWN_ISSUES.md": "029b36426f5db018d2a82670189d32c6503ba493edee1984e7e92a500ff3551c",
     "biomes/cut/PORT.md": "e607ade93c0b21c335952c717db9d7df7298af3fa407d3ca471842da9f8e0672",
-    "biomes/cut/build.py": "26c806e34ef1c2290366faac1d1232fe4c3553e0e44c6893ca0ec48582ed8654",
+    "biomes/cut/build.py": "d7c7a5f5e8c0f3982fb9f48072740a4c92a69cce6936a46a9005096d5881f840",
     "biomes/cut/src/00-head.html": "a7288eb24479f658a6a09baf3c57b28b02e8e86e449d835785bbd2531cbe9a2f",
     "biomes/cut/src/41-cut-field.js": "7cf070131b298c9ad339be56430f951f2fb48607a3f2cec9a6f6b25ff2a48175",
     "biomes/cut/src/45-host-stage.js": "3dcf7ef671c36b2ea29c52179d182d7c158716f3b4ae0af1eb2b75c94bdb6085",
@@ -26,7 +26,7 @@
     "biomes/cut/src/99-host-take.js": "f44bb0a4375750c4f757407e756c37dad9ff7a76fda5bc71e56c79499d93db78",
     "biomes/cut/src/99-tail.html": "65abfb642de580808a65c6ec8bf3bc2c410397558a5ac28e825accdb7c590d3b",
     "biomes/cut/tex/culm.albedo.webp": "c3009105a38a497fc67da5bbfdc9a68873509aa80b7e1a9f50649729f5fb6d7d",
-    "biomes/cut/tex/ground.breccia.albedo.webp": "7e2c0bdc0c156d9941bac3429143d4c31125b0cb3ba4e78b3287479e06fd958e",
+    "biomes/cut/tex/ground.breccia.albedo.webp": "ba3d8eb6e61873d8e1dfe14c923e74273e4f545f31a5b0dafb3718f6287a63ee",
     "biomes/cut/tex/ground.efflor.albedo.webp": "5cacad9d2b56df0874940a2e2480a4dedc7683a04bb1237ac77666501a64feee",
     "biomes/cut/tex/ground.face.albedo.webp": "263632d9a693df647f1674cb88aa1529267ccd1eccaf82b85519974c9faabfba",
     "biomes/cut/tex/ground.lichen.albedo.webp": "930aa82fc34c5503c7222f4614d734077518ae73c849c4b8d96e0a221983c05b",
@@ -36,7 +36,7 @@
     "biomes/cut/tex/groundDetail.albedo.webp": "cd37cef58e199b19f7871c96280b000bdce80110699655c5d960d92616c5cbfb",
     "biomes/cut/tex/hleaf.albedo.webp": "9de8e874773fdb9555eff3ddd4037240cba37f7d8516694072f80530a0628ce2",
     "biomes/cut/tex/melon.albedo.webp": "25fc61fd86d10703887e2636cbf68a1ecd382a25f310b0f9f1a4689dc12ee9e2",
-    "biomes/cut/tex/pack.json": "cc9d8522e2e48794a46d723188325b411fda80ee4fede579528e7fcf05803a0a",
+    "biomes/cut/tex/pack.json": "242cc807df5a076adad3ce4d889d843755a6bb75ea62ee80b3f1b2ae1ef75c55",
     "biomes/cut/tex/rank.albedo.webp": "7b493adf2d054dad582ef4eb4f5ea6696b282ccc818675e73234470475154c68",
     "biomes/cut/tex/reed.albedo.webp": "58235418abe67875bdb3e0bd2b9e4f771f3b5040a62363e68d29feda9cd84aa4",
     "biomes/nwlowlands/src/50-biome-nwlowlands-species.js": "76226c8dd9be28520d412f74fd5bb648411697a9b3cc2375aad50e9d05ff70bd",
@@ -104,6 +104,7 @@
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
     "core/biome/30-core-foliage.js": "ee63cf4e901c960b91743ffdb2b49c72dcae54d5325e0ce0d46e3a1ae30450d6",
+    "core/biome/31-core-dither.js": "4a37f1858f180a6558981be196997e11726832486a418a8c33bffceca4ef9872",
     "core/biome/31b-core-leafset.js": "e58ebcc03d77e6da79d54c90eb7582fb806775454c8ed0879e1d7f2359a2788f",
     "core/biome/31j-core-joint.js": "2b32f93de6dc08f1a5044449be80346697b2bb87cf764982ab6ab3c0a6847950",
     "core/biome/32-core-variants.js": "523b7c9c5eeb01db68e0033656ec8400fbbf6f1b172989cbe986078053ac2a47",
@@ -164,21 +165,21 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/cut/dist/cut.html": "4f71febcc9fa68c52f0916b829f33da79bf40bf66a9dd5f46faa601e809e4eb8",
-    "biomes/cut/dist/cut.tex.cut.js": "3c82fc5338482e80602c541a1aa356e90b024e49209c9bff4d58023ed1f8e1f0",
+    "biomes/cut/dist/cut.html": "0fdee2fe79b63224fa2bfddc799b8fce1ccc7cb45813c927022b82f4da7facb6",
+    "biomes/cut/dist/cut.tex.cut.js": "a5e101758d86c5d76c6b5e3e65789e8a7847c1f12cadc6149f90a8b2c6c4e23d",
     "biomes/cut/dist/cut.tex.nwlowlands.js": "d51cf122e6cc261da1f645f1d4d81dbf951b5ff07f267f63f9e8da0b1695e2fc"
    },
    "outputs_raw": {
-    "biomes/cut/dist/cut.html": "4f71febcc9fa68c52f0916b829f33da79bf40bf66a9dd5f46faa601e809e4eb8",
-    "biomes/cut/dist/cut.tex.cut.js": "3c82fc5338482e80602c541a1aa356e90b024e49209c9bff4d58023ed1f8e1f0",
+    "biomes/cut/dist/cut.html": "0fdee2fe79b63224fa2bfddc799b8fce1ccc7cb45813c927022b82f4da7facb6",
+    "biomes/cut/dist/cut.tex.cut.js": "a5e101758d86c5d76c6b5e3e65789e8a7847c1f12cadc6149f90a8b2c6c4e23d",
     "biomes/cut/dist/cut.tex.nwlowlands.js": "d51cf122e6cc261da1f645f1d4d81dbf951b5ff07f267f63f9e8da0b1695e2fc"
    }
   },
   "build.py --station face": {
    "inputs": {
-    "biomes/cut/KNOWN_ISSUES.md": "2e9edd83045f59d50c9854047ad6576e6b1b642dc02d637e6992c81d37c11dad",
+    "biomes/cut/KNOWN_ISSUES.md": "029b36426f5db018d2a82670189d32c6503ba493edee1984e7e92a500ff3551c",
     "biomes/cut/PORT.md": "e607ade93c0b21c335952c717db9d7df7298af3fa407d3ca471842da9f8e0672",
-    "biomes/cut/build.py": "26c806e34ef1c2290366faac1d1232fe4c3553e0e44c6893ca0ec48582ed8654",
+    "biomes/cut/build.py": "d7c7a5f5e8c0f3982fb9f48072740a4c92a69cce6936a46a9005096d5881f840",
     "biomes/cut/src/41-cut-field.js": "7cf070131b298c9ad339be56430f951f2fb48607a3f2cec9a6f6b25ff2a48175",
     "biomes/cut/src/46-biome-cut-warp.js": "60ee73d1e7c1b6facb584118eb42fdf06886dd4be0a10d9783fb65958a4c180f",
     "biomes/cut/src/47-host-land.js": "be3bb6df2171fd74b1e7eab0365a670551e15d7440cc8e7e882a086d23c0ce67",
@@ -198,10 +199,10 @@
     "biomes/cut/src/99-tail.html": "65abfb642de580808a65c6ec8bf3bc2c410397558a5ac28e825accdb7c590d3b",
     "biomes/cut/stations/face/00-head.html": "e8d3f141dc4cf9a9b0a38507cadbd9c8d7c5c31d5141ad4fe79d7026e2df976c",
     "biomes/cut/stations/face/45-host-stage.js": "cb997d3c83bd09f96b4ff8d0477503b18282aec90433c6a38cd2666c0e78e0b2",
-    "biomes/cut/stations/face/48z-host-face.js": "17fe68e70b2a67e848d87548d804f94d3102345de71d5e32d7ab155a80cab6a3",
+    "biomes/cut/stations/face/48z-host-face.js": "1aafa7e4296914fc01297d5f7b19ea90ea2a5da54e6bcf58bd2b29566bb7238a",
     "biomes/cut/stations/face/station.json": "e8afc62768af2023738f23e7904c42db3e053ec1db4217748adfb351221fdb66",
     "biomes/cut/tex/culm.albedo.webp": "c3009105a38a497fc67da5bbfdc9a68873509aa80b7e1a9f50649729f5fb6d7d",
-    "biomes/cut/tex/ground.breccia.albedo.webp": "7e2c0bdc0c156d9941bac3429143d4c31125b0cb3ba4e78b3287479e06fd958e",
+    "biomes/cut/tex/ground.breccia.albedo.webp": "ba3d8eb6e61873d8e1dfe14c923e74273e4f545f31a5b0dafb3718f6287a63ee",
     "biomes/cut/tex/ground.efflor.albedo.webp": "5cacad9d2b56df0874940a2e2480a4dedc7683a04bb1237ac77666501a64feee",
     "biomes/cut/tex/ground.face.albedo.webp": "263632d9a693df647f1674cb88aa1529267ccd1eccaf82b85519974c9faabfba",
     "biomes/cut/tex/ground.lichen.albedo.webp": "930aa82fc34c5503c7222f4614d734077518ae73c849c4b8d96e0a221983c05b",
@@ -211,7 +212,7 @@
     "biomes/cut/tex/groundDetail.albedo.webp": "cd37cef58e199b19f7871c96280b000bdce80110699655c5d960d92616c5cbfb",
     "biomes/cut/tex/hleaf.albedo.webp": "9de8e874773fdb9555eff3ddd4037240cba37f7d8516694072f80530a0628ce2",
     "biomes/cut/tex/melon.albedo.webp": "25fc61fd86d10703887e2636cbf68a1ecd382a25f310b0f9f1a4689dc12ee9e2",
-    "biomes/cut/tex/pack.json": "cc9d8522e2e48794a46d723188325b411fda80ee4fede579528e7fcf05803a0a",
+    "biomes/cut/tex/pack.json": "242cc807df5a076adad3ce4d889d843755a6bb75ea62ee80b3f1b2ae1ef75c55",
     "biomes/cut/tex/rank.albedo.webp": "7b493adf2d054dad582ef4eb4f5ea6696b282ccc818675e73234470475154c68",
     "biomes/cut/tex/reed.albedo.webp": "58235418abe67875bdb3e0bd2b9e4f771f3b5040a62363e68d29feda9cd84aa4",
     "biomes/nhighlands/src/50-biome-nhighlands-species.js": "08240f0a3541c8d97d6a08851e5cebe524685ae4b8bc802682315be8977edce4",
@@ -328,6 +329,7 @@
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
     "core/biome/30-core-foliage.js": "ee63cf4e901c960b91743ffdb2b49c72dcae54d5325e0ce0d46e3a1ae30450d6",
+    "core/biome/31-core-dither.js": "4a37f1858f180a6558981be196997e11726832486a418a8c33bffceca4ef9872",
     "core/biome/31b-core-leafset.js": "e58ebcc03d77e6da79d54c90eb7582fb806775454c8ed0879e1d7f2359a2788f",
     "core/biome/31j-core-joint.js": "2b32f93de6dc08f1a5044449be80346697b2bb87cf764982ab6ab3c0a6847950",
     "core/biome/32-core-variants.js": "523b7c9c5eeb01db68e0033656ec8400fbbf6f1b172989cbe986078053ac2a47",
@@ -389,23 +391,23 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/cut/dist/cut-face.html": "d834af0f97cba127be8768e370eecb6258d638241d031ecf86d13a1de1a88e09",
-    "biomes/cut/dist/cut.tex.cut.js": "3c82fc5338482e80602c541a1aa356e90b024e49209c9bff4d58023ed1f8e1f0",
+    "biomes/cut/dist/cut-face.html": "397e036e6529f2f6179e32e3dcc1f815b831ba5fb728c296e14193f7a397cae1",
+    "biomes/cut/dist/cut.tex.cut.js": "a5e101758d86c5d76c6b5e3e65789e8a7847c1f12cadc6149f90a8b2c6c4e23d",
     "biomes/cut/dist/cut.tex.nhighlands.js": "b4a683aa53a1c104163f742086d902ce669625adad5e6982d44e019725e7ffde",
     "biomes/cut/dist/cut.tex.nwlowlands.js": "d51cf122e6cc261da1f645f1d4d81dbf951b5ff07f267f63f9e8da0b1695e2fc"
    },
    "outputs_raw": {
-    "biomes/cut/dist/cut-face.html": "d834af0f97cba127be8768e370eecb6258d638241d031ecf86d13a1de1a88e09",
-    "biomes/cut/dist/cut.tex.cut.js": "3c82fc5338482e80602c541a1aa356e90b024e49209c9bff4d58023ed1f8e1f0",
+    "biomes/cut/dist/cut-face.html": "397e036e6529f2f6179e32e3dcc1f815b831ba5fb728c296e14193f7a397cae1",
+    "biomes/cut/dist/cut.tex.cut.js": "a5e101758d86c5d76c6b5e3e65789e8a7847c1f12cadc6149f90a8b2c6c4e23d",
     "biomes/cut/dist/cut.tex.nhighlands.js": "b4a683aa53a1c104163f742086d902ce669625adad5e6982d44e019725e7ffde",
     "biomes/cut/dist/cut.tex.nwlowlands.js": "d51cf122e6cc261da1f645f1d4d81dbf951b5ff07f267f63f9e8da0b1695e2fc"
    }
   },
   "build.py --station wall": {
    "inputs": {
-    "biomes/cut/KNOWN_ISSUES.md": "2e9edd83045f59d50c9854047ad6576e6b1b642dc02d637e6992c81d37c11dad",
+    "biomes/cut/KNOWN_ISSUES.md": "029b36426f5db018d2a82670189d32c6503ba493edee1984e7e92a500ff3551c",
     "biomes/cut/PORT.md": "e607ade93c0b21c335952c717db9d7df7298af3fa407d3ca471842da9f8e0672",
-    "biomes/cut/build.py": "26c806e34ef1c2290366faac1d1232fe4c3553e0e44c6893ca0ec48582ed8654",
+    "biomes/cut/build.py": "d7c7a5f5e8c0f3982fb9f48072740a4c92a69cce6936a46a9005096d5881f840",
     "biomes/cut/src/41-cut-field.js": "7cf070131b298c9ad339be56430f951f2fb48607a3f2cec9a6f6b25ff2a48175",
     "biomes/cut/src/46-biome-cut-warp.js": "60ee73d1e7c1b6facb584118eb42fdf06886dd4be0a10d9783fb65958a4c180f",
     "biomes/cut/src/47-host-land.js": "be3bb6df2171fd74b1e7eab0365a670551e15d7440cc8e7e882a086d23c0ce67",
@@ -427,7 +429,7 @@
     "biomes/cut/stations/wall/45-host-stage.js": "4905cbc02be07fd2e5854beefdee895cbacc10ca35041d8c9de6f9923b2a0c8d",
     "biomes/cut/stations/wall/station.json": "b148839575041dc6a72494d5c4678f775600be99ddb4150a36f4b0179bd2f4a4",
     "biomes/cut/tex/culm.albedo.webp": "c3009105a38a497fc67da5bbfdc9a68873509aa80b7e1a9f50649729f5fb6d7d",
-    "biomes/cut/tex/ground.breccia.albedo.webp": "7e2c0bdc0c156d9941bac3429143d4c31125b0cb3ba4e78b3287479e06fd958e",
+    "biomes/cut/tex/ground.breccia.albedo.webp": "ba3d8eb6e61873d8e1dfe14c923e74273e4f545f31a5b0dafb3718f6287a63ee",
     "biomes/cut/tex/ground.efflor.albedo.webp": "5cacad9d2b56df0874940a2e2480a4dedc7683a04bb1237ac77666501a64feee",
     "biomes/cut/tex/ground.face.albedo.webp": "263632d9a693df647f1674cb88aa1529267ccd1eccaf82b85519974c9faabfba",
     "biomes/cut/tex/ground.lichen.albedo.webp": "930aa82fc34c5503c7222f4614d734077518ae73c849c4b8d96e0a221983c05b",
@@ -437,7 +439,7 @@
     "biomes/cut/tex/groundDetail.albedo.webp": "cd37cef58e199b19f7871c96280b000bdce80110699655c5d960d92616c5cbfb",
     "biomes/cut/tex/hleaf.albedo.webp": "9de8e874773fdb9555eff3ddd4037240cba37f7d8516694072f80530a0628ce2",
     "biomes/cut/tex/melon.albedo.webp": "25fc61fd86d10703887e2636cbf68a1ecd382a25f310b0f9f1a4689dc12ee9e2",
-    "biomes/cut/tex/pack.json": "cc9d8522e2e48794a46d723188325b411fda80ee4fede579528e7fcf05803a0a",
+    "biomes/cut/tex/pack.json": "242cc807df5a076adad3ce4d889d843755a6bb75ea62ee80b3f1b2ae1ef75c55",
     "biomes/cut/tex/rank.albedo.webp": "7b493adf2d054dad582ef4eb4f5ea6696b282ccc818675e73234470475154c68",
     "biomes/cut/tex/reed.albedo.webp": "58235418abe67875bdb3e0bd2b9e4f771f3b5040a62363e68d29feda9cd84aa4",
     "biomes/nhighlands/src/50-biome-nhighlands-species.js": "08240f0a3541c8d97d6a08851e5cebe524685ae4b8bc802682315be8977edce4",
@@ -554,6 +556,7 @@
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
     "core/biome/30-core-foliage.js": "ee63cf4e901c960b91743ffdb2b49c72dcae54d5325e0ce0d46e3a1ae30450d6",
+    "core/biome/31-core-dither.js": "4a37f1858f180a6558981be196997e11726832486a418a8c33bffceca4ef9872",
     "core/biome/31b-core-leafset.js": "e58ebcc03d77e6da79d54c90eb7582fb806775454c8ed0879e1d7f2359a2788f",
     "core/biome/31j-core-joint.js": "2b32f93de6dc08f1a5044449be80346697b2bb87cf764982ab6ab3c0a6847950",
     "core/biome/32-core-variants.js": "523b7c9c5eeb01db68e0033656ec8400fbbf6f1b172989cbe986078053ac2a47",
@@ -615,14 +618,14 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/cut/dist/cut-wall.html": "52687cf9f300c04933a268cbbefc82fe3cb960520a9b3e78eb7fa4085a756977",
-    "biomes/cut/dist/cut.tex.cut.js": "3c82fc5338482e80602c541a1aa356e90b024e49209c9bff4d58023ed1f8e1f0",
+    "biomes/cut/dist/cut-wall.html": "96c2065af3e068cf50b0495126d05fe36a98b05e9b18e6b3f0e905c54e617208",
+    "biomes/cut/dist/cut.tex.cut.js": "a5e101758d86c5d76c6b5e3e65789e8a7847c1f12cadc6149f90a8b2c6c4e23d",
     "biomes/cut/dist/cut.tex.nhighlands.js": "b4a683aa53a1c104163f742086d902ce669625adad5e6982d44e019725e7ffde",
     "biomes/cut/dist/cut.tex.nwlowlands.js": "d51cf122e6cc261da1f645f1d4d81dbf951b5ff07f267f63f9e8da0b1695e2fc"
    },
    "outputs_raw": {
-    "biomes/cut/dist/cut-wall.html": "52687cf9f300c04933a268cbbefc82fe3cb960520a9b3e78eb7fa4085a756977",
-    "biomes/cut/dist/cut.tex.cut.js": "3c82fc5338482e80602c541a1aa356e90b024e49209c9bff4d58023ed1f8e1f0",
+    "biomes/cut/dist/cut-wall.html": "96c2065af3e068cf50b0495126d05fe36a98b05e9b18e6b3f0e905c54e617208",
+    "biomes/cut/dist/cut.tex.cut.js": "a5e101758d86c5d76c6b5e3e65789e8a7847c1f12cadc6149f90a8b2c6c4e23d",
     "biomes/cut/dist/cut.tex.nhighlands.js": "b4a683aa53a1c104163f742086d902ce669625adad5e6982d44e019725e7ffde",
     "biomes/cut/dist/cut.tex.nwlowlands.js": "d51cf122e6cc261da1f645f1d4d81dbf951b5ff07f267f63f9e8da0b1695e2fc"
    }

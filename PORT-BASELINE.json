@@ -13,8 +13,8 @@
    "sha256": "1afcaf07c582ef7a3ab0ee58c1b938d13582a5bae8cd60c13c13fced9a3e0faa"
   },
   "biomes/abyssal-savannah/dist/abyssal-savannah.html": {
-   "bytes": 11233731,
-   "sha256": "4a3b7ba473e13a13f8949d6971b533008de2ed920dcbcb0e4fa55e63fe7125f6"
+   "bytes": 11194058,
+   "sha256": "b06ceb17bb1a3fedb3605813964dad691973db9366fee4a59b7d76b52df5cd71"
   },
   "biomes/ancientsvalley/dist/ancientsvalley.html": {
    "bytes": 2166012,
@@ -61,24 +61,24 @@
    "sha256": "a7af80cb3ed5c303a0e8cfcf34827891512177b8406d2376eb0a9cdc038fed30"
   },
   "biomes/crater-drylands/dist/crater-drylands-salt.html": {
-   "bytes": 10205648,
-   "sha256": "f9b2d0966b4b2c321440637a8466f12712573a6b882325ff945579a46dd3def5"
+   "bytes": 10165975,
+   "sha256": "e5c49226b14a03b5ac038c6127529645fc2224ab3f951648485310a481089502"
   },
   "biomes/crater-drylands/dist/crater-drylands.html": {
    "bytes": 5482687,
    "sha256": "1d233f033e0cb4cd93778c239b6e690a97d10a703c90a34eca6380f3b93c4f79"
   },
   "biomes/cut/dist/cut-face.html": {
-   "bytes": 1559532,
-   "sha256": "d834af0f97cba127be8768e370eecb6258d638241d031ecf86d13a1de1a88e09"
+   "bytes": 1563933,
+   "sha256": "397e036e6529f2f6179e32e3dcc1f815b831ba5fb728c296e14193f7a397cae1"
   },
   "biomes/cut/dist/cut-wall.html": {
-   "bytes": 1554281,
-   "sha256": "52687cf9f300c04933a268cbbefc82fe3cb960520a9b3e78eb7fa4085a756977"
+   "bytes": 1558039,
+   "sha256": "96c2065af3e068cf50b0495126d05fe36a98b05e9b18e6b3f0e905c54e617208"
   },
   "biomes/cut/dist/cut.html": {
-   "bytes": 1390956,
-   "sha256": "4f71febcc9fa68c52f0916b829f33da79bf40bf66a9dd5f46faa601e809e4eb8"
+   "bytes": 1394714,
+   "sha256": "0fdee2fe79b63224fa2bfddc799b8fce1ccc7cb45813c927022b82f4da7facb6"
   },
   "biomes/dambasins/dist/east.html": {
    "bytes": 1561121,
@@ -145,20 +145,20 @@
    "sha256": "058b9c06ded2ca25f906f43fa6e4c09e8162d11495b5a6a5ce61930fa810e513"
   },
   "biomes/farside/dist/farside-cloud.html": {
-   "bytes": 1167619,
-   "sha256": "c775d7999a7b4260b5a1e4da5d49547ea4365c797d50755e2bf04c968f528f51"
+   "bytes": 1168166,
+   "sha256": "e73b92e6295b9f3d88fcbaee64d640304954071508602c82c2b3a9c4a99b2f38"
   },
   "biomes/farside/dist/farside-front.html": {
-   "bytes": 1167807,
-   "sha256": "9d1824764f0c8a7192350a636aab9a55777436e0f0e1beaf43e34c36e0141a55"
+   "bytes": 1168354,
+   "sha256": "42ab75f5e61390a9dfa25a325be7c00f6764493662d508217dd3c0c6a7b11d43"
   },
   "biomes/farside/dist/farside-strand.html": {
-   "bytes": 1168897,
-   "sha256": "0a3a0e6b8327ef1854be6662cb66757290a3835879a57cf791b091f907748b3a"
+   "bytes": 1169444,
+   "sha256": "abe14ce4914bade32cddbc127e617318015391559edf7f2bf3f46ce35756a63a"
   },
   "biomes/farside/dist/farside.html": {
-   "bytes": 1178015,
-   "sha256": "1e64384fd3e3a5a8d74cb691003b83f79a612811491c41d83b2287ba9f36be3a"
+   "bytes": 1178562,
+   "sha256": "3dfcc8e073a0cdde74012f0b2969630b42942751ba8eb7969ddea8e6aa607e83"
   },
   "biomes/geyser/dist/geyser-basin.html": {
    "bytes": 1300468,
@@ -241,12 +241,12 @@
    "sha256": "c13e927428df6729ae01d466835044cad5a4da09098cb10e91deee850fb61b25"
   },
   "biomes/hearths/dist/hearths-crystals.html": {
-   "bytes": 1408102,
-   "sha256": "772b4dd3167e4b9c50d1603303afd175d5fb0f17a1a4cda3fcb75a0c25d21d6f"
+   "bytes": 1313045,
+   "sha256": "7f6f3726238c2c664fbc798ebb7ef7b598c8eaaf846f9928975b03c6d1663ab4"
   },
   "biomes/hearths/dist/hearths-hold.html": {
-   "bytes": 1408077,
-   "sha256": "87f20a9658a90fb53c82f5b2453c9d0ce6bf328aef0b4b8e31cafb782d689b29"
+   "bytes": 1313020,
+   "sha256": "14f50a38c604518513c5b62264113895b049aa6a1cc44b32efb6da7e539468f5"
   },
   "biomes/highrift/dist/highrift-coulee.html": {
    "bytes": 5129823,

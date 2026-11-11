@@ -35,7 +35,7 @@
    "files": {
     "map": "ground.breccia.albedo.webp"
    },
-   "lib": "rock.megabreccia",
+   "lib": "rock.megabreccia.polished",
    "metal": 0,
    "normalScale": 1.0,
    "roughLift": 0.0,
@@ -45,16 +45,16 @@
    ],
    "size": 512,
    "source": {
-    "albedo": "9cd554853a90a74a90afe4620c58c63189734434",
-    "normal": "e4ebab796faad5bccf75315f0ddf97467ffbab7e",
-    "roughness": "18d3c3d4eda6004c16b9649b1f8263471f731c73"
+    "albedo": "179e4e8f8cc81b1aa25afff418c53ea553d76792",
+    "normal": "363809734731c31aa561e74a6d8cf28035e8e74f",
+    "roughness": "93fa4aa149d63561d9dd4cb0e5ed8355e41f9234"
    },
    "specular": 0.2,
    "tint": {
     "contrast": 1.0,
     "keep": 0.0,
     "mean": 0.7,
-    "sourceMean": 0.4852
+    "sourceMean": 0.4933
    }
   },
   "ground.efflor": {
