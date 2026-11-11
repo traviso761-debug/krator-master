@@ -160,6 +160,22 @@
    "bytes": 1178015,
    "sha256": "1e64384fd3e3a5a8d74cb691003b83f79a612811491c41d83b2287ba9f36be3a"
   },
+  "biomes/firebliss/dist/firebliss-east.html": {
+   "bytes": 1839613,
+   "sha256": "b62ce4ce257d4b8d1c1005c05cb8a4ec98e724a13ff8ac2f989baccaa3e70795"
+  },
+  "biomes/firebliss/dist/firebliss-glen.html": {
+   "bytes": 1838787,
+   "sha256": "fc3a58a48cdadfbb817645cca52b5ce7d573c2ad80e00fcda83e8c067af50480"
+  },
+  "biomes/firebliss/dist/firebliss-mons.html": {
+   "bytes": 1838398,
+   "sha256": "39e5069ad38380ae215934752044be913994cc9c7fa49846e9b9837579aadbc0"
+  },
+  "biomes/firebliss/dist/firebliss.html": {
+   "bytes": 1840343,
+   "sha256": "a772048312cb86fdb33a785bf83f8b3387df1d2be47cdfe3ece23d41d80c3df8"
+  },
   "biomes/geyser/dist/geyser-basin.html": {
    "bytes": 1300468,
    "sha256": "a2e614fcbcb4de1828264c46e0e21abcaad79a27654911205fba8d6e7d2dcd5d"
