@@ -18,7 +18,7 @@ const FAR=(function(){
   let c=mixC(C.desert,C.floor,smooth(400,-300,h));
   if(k==='XW'&&h<-1000)c=mixC(c,C.salt,.25*smooth(.55,.75,band));   /* a pale crust in the trough's lowest hollows */
   const steep=q.slope==null?0:smooth(.25,.6,q.slope);c=mixC(c,mixC(C.basalt,C.rust,st*.5),Math.max(steep*.85,smooth(2600,4200,h)));
-  c=mixC(c,C.frost,smooth(4800,5600,h)*.55*(1-steep*.5));c=mixC(c,C.ice,(k==='EF'?.8:0)*(1-steep*.6));
+  c=mixC(c,C.frost,smooth(4800,5600,h)*.3*(1-steep*.7));c=mixC(c,C.ice,(k==='EF'?.45:0)*(1-steep*.8));   /* frost and the EF band's ice thin (0 mm of rain up there): the wall reads as rock, rimed (the owner's look pass, KNOWN_ISSUES) */
   c=mixC(c,C.bare,smooth(8400,9200,h)*.7);
   return mixC(c,C.far,.45*smooth(20000,110000,q.r));};
  const G=KFAR.grid({lines:KFAR.lines({cell:60,inner:S0+20,out:ROUT,grow:1.035}),dense:true,

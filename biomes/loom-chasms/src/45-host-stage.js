@@ -115,7 +115,9 @@ const GLW=(function(){
   ['steppe',F=>smooth(.6,.35,F.hot)*smooth(.45,.25,F.cold)*(1-F.abyss)*open(F)*(1-F.rock)*(1-F.pave*.6)],   /* the benches' cold-desert soil */
   ['wadi',F=>F.wash],                                                                                        /* the wadis' cobble floors */
   ['lichen',F=>F.rock*open(F)*smooth(.2,.5,F.cold)],                                                         /* lichen crust on the walls' rock */
-  ['snow',F=>F.snow*smooth(.8,.4,F.slope)]];})();                                                          /* the high walls' frost and firn */
+  ['snow',F=>F.snow*smooth(.8,.4,F.slope)],
+  ['field',F=>F.farm*open(F)],                                                                              /* the Cradle's terraced fields (the farm field) */
+  ['grass',F=>smooth(.25,.6,F.wet)*(1-F.farm)*(1-F.rock)*open(F)]];})();                                    /* the river's and the spring's green banks */                                                          /* the high walls' frost and firn */
 
 /* A FRAGMENT SHADER HAS 16 TEXTURE UNITS (WebGL's floor), AND ANGLE ON THE ARC LINKS 15 AT MOST (riftrim's and ebadlands' measure): the ground's paint
    and grain (2), the strata (5), the horizon (2), the rain's cover map (1) and KGROUND's noise (1) leave 5, so a land names the FOUR it shows
@@ -123,8 +125,10 @@ const GLW=(function(){
    The chasm's land is dry (LAND.wet false: no wet-ground maps). */
 const GL_USE=(LAND.groundLayers||['black','salt','pave','steppe']);
 const GL=(function(){if(typeof KMAT==='undefined'||KMAT.mode!=='lib')return null;
- const P=n=>KMAT.packed('greatchasm','ground.'+n);if(GLW.some(l=>!P(l[0])))return null;
- return GLW.filter(l=>GL_USE.indexOf(l[0])>=0).map(l=>{const e=P(l[0]);return{name:l[0],w:l[1],tex:KMAT.textures(e,{aniso:8}).map,scale:e.scale[0],keep:e.tint,mean:e.mean};});})();
+ /* the kit's own pack first (the Cradle's fields), then the Great Chasm's read in place (the cold desert's layers); every layer the land names must be in one */
+ const P=n=>KMAT.packed('loom-chasms','ground.'+n)?['loom-chasms',KMAT.packed('loom-chasms','ground.'+n)]:KMAT.packed('greatchasm','ground.'+n)?['greatchasm',KMAT.packed('greatchasm','ground.'+n)]:null;
+ const use=GLW.filter(l=>GL_USE.indexOf(l[0])>=0);if(use.some(l=>!P(l[0])))return null;
+ return use.map(l=>{const q=P(l[0]),e=q[1];return{name:l[0],pack:q[0],w:l[1],tex:KMAT.textures(e,{aniso:8}).map,scale:e.scale[0],keep:e.tint,mean:e.mean};});})();
 /* Standard under KGROUND (roughness high, as dry ground is): the rain's gloss and the puddles show on it, as they cannot on Lambert; ?kground=0 for the old floor */
 const MAT_GROUND=USE_KG?new THREE.MeshStandardMaterial({map:TEX_GROUND,color:0xa8a29a,roughness:.96,metalness:0}):new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0xa8a29a});
 MAT_GROUND.onBeforeCompile=sh=>{STRATA.inject(sh);sh.uniforms.uDetail={value:hostGroundLib('groundDetail',TEX_DETAIL)};
@@ -150,7 +154,7 @@ MAT_GROUND.onBeforeCompile=sh=>{STRATA.inject(sh);sh.uniforms.uDetail={value:hos
 // curled plates, ?polygon=0) and the TALUS's red scree (`clast` in 3D cells, blocks a hand to a metre across)
 const KG_Q=GQ,KG_PAVE=KG_Q.get('pave')!=='0',KG_POLY=KG_Q.get('polygon')!=='0';
 if(USE_KG)KGROUND.hook(MAT_GROUND,{key:'loom-ground'+(KG_PAVE?'p':'')+(KG_POLY?'g':''),at:'/*KGROUND*/',relief:KG_RELIEF?{bump:.075,cavity:.8,mesh:1}:null,layers:(GL?GL.map((l,i)=>{const m=Math.pow(l.mean==null?.78:l.mean,2.2),w='vGL'+Math.floor(i/4)+'.'+'xyzw'[i%4];
-  return KGROUND.layer('greatchasm','ground.'+l.name,{w,amt:1,gain:1,tint:'mix(_gP*'+(1/m).toFixed(4)+',vec3(1.0),'+l.keep.toFixed(2)+')',name:l.name});}):[]).concat([
+  return KGROUND.layer(l.pack,'ground.'+l.name,{w,amt:1,gain:1,tint:'mix(_gP*'+(1/m).toFixed(4)+',vec3(1.0),'+l.keep.toFixed(2)+')',name:l.name});}):[]).concat([
  KG_PAVE?{kind:'clast',w:'vGM.x*(1.0-vRock)',amt:.72,proj:'xz',size:.06,matrix:.24,matrixColor:0xb08a6a,sub:0,fleck:0,jitter:.95,vary:.3,
   palette:[0x2a1e18,0x3e2a20,0x553828,0x1e1814,0x4a3226,0x6a4a34],seed:311,name:'pavement'}:null,
  KG_POLY?{kind:'polygon',w:'vGM.y*(1.0-vRock)',amt:.85,size:3.2,width:.05,edgeTint:'vec3(0.62,0.56,0.5)',warp:.14,seed:312,name:'mud polygons'}:null,

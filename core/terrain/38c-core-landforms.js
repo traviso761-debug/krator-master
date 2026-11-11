@@ -322,7 +322,10 @@
   //   depth (60 m under the ground) | floor (an absolute y: the treads then lie between the ground and it), steps (3: risers,
   //   the last landing on the floor), tread (12 m: each tread's width, jittered .7..1.3), riser (1.5 m: a riser's run in plan;
   //   under a field cell it is a sheer step), share (each riser's share of the depth, jittered: [.7,1.3] then normalised),
-  //   rim (0: a lip, m, at the edge), warp {amp (0), scale (1/200)}: the edge wandering, seed})
+  //   rim (0: a lip, m, at the edge), warp {amp (0), scale (1/200)}: the edge wandering,
+  //   head {len, minW (.35)} (a line only, opt-in: THE CHASM HEAD, Mid Basin's amendment 3 and the Loom-Chasms' slots): over the last len m of the
+  //   line at each end the cut's depth tapers to nothing (smoothstep on the distance along the line from its end) and its floor narrows to minW of
+  //   w, so the graben pinches out into the plateau instead of closing round its end at full depth; without head the cut is exactly as before), seed})
   //   -> {kind:'stepcut', form:'line' | 'disc' | 'ell', line | disc | ell, depth, floor, treads:[w], drops:[share], riser, rim,
   //       warp, edge (the outline's distance from the floor's edge: the treads and risers summed), seed}
   //   shape: g cut down by the steps. at(): {part:'rim' | 'riser' | 'tread' | 'floor', i (the step), e (m in from the edge)} or null
@@ -331,7 +334,9 @@
     var n=d(o.steps,3),tw=d(o.tread,12),rr=d(o.riser,1.5),sh=o.share||[.7,1.3];if(!(n>=1)||!(rr>0))throw new Error('KRELIEF.stepcut: steps >= 1 and riser > 0');
     var R={kind:'stepcut',seed:seed,form:form,depth:o.floor!=null?null:d(o.depth,60),floor:o.floor!=null?o.floor:null,riser:rr,rim:d(o.rim,0),
       warp:Object.assign({amp:0,scale:1/200},o.warp||{}),treads:[],drops:[]};
-    if(form==='line'){var Ln=pts2(o.line.pts,'stepcut');R.line={pts:Ln.pts,S:Ln.S,w:d(o.line.w,40)};}
+    if(form==='line'){var Ln=pts2(o.line.pts,'stepcut');R.line={pts:Ln.pts,S:Ln.S,w:d(o.line.w,40)};
+      if(o.head){if(!(o.head.len>0))throw new Error('KRELIEF.stepcut: head.len must be over 0');R.head={len:o.head.len,minW:d(o.head.minW,.35)};}}
+    else if(o.head)throw new Error('KRELIEF.stepcut: a head is a line\'s');
     else if(form==='disc'){if(!(o.disc.r>0))throw new Error('KRELIEF.stepcut: a disc needs r');R.disc={c:[o.disc.c[0],o.disc.c[1]],r:o.disc.r};}
     else{if(!(o.ell.rx>0&&o.ell.rz>0))throw new Error('KRELIEF.stepcut: an ell needs rx and rz');R.ell={c:[o.ell.c[0],o.ell.c[1]],rx:o.ell.rx,rz:o.ell.rz,ry:d(o.ell.ry,0)};}
     var tot=0,i;for(i=0;i<n;i++){R.drops.push(lerp(sh[0],sh[1],u01(K,seed,i,0,0x55A)));tot+=R.drops[i];if(i<n-1)R.treads.push(tw*(.7+.6*u01(K,seed,i,1,0x55A)));}
@@ -339,16 +344,20 @@
     var inner=form==='disc'?R.disc.r:form==='ell'?Math.min(R.ell.rx,R.ell.rz):R.line.w+R.edge;
     if(form!=='line'&&inner<=R.edge)throw new Error('KRELIEF.stepcut: the steps ('+R.edge.toFixed(1)+' m) do not fit inside the pit: fewer or narrower treads');
     return R;}
-  // e: metres in from the outline (negative outside)
-  function scE(R,x,z){if(R.warp.amp){var K=KRq(),W=R.warp;x+=W.amp*(2*K.fbm(x*W.scale,z*W.scale,.5,3,R.seed+3)-1);z+=W.amp*(2*K.fbm(x*W.scale+31,z*W.scale-17,.5,3,R.seed+4)-1);}
+  // e: metres in from the outline (negative outside); _hf: the head's depth share at the last point scE read (1 without a head)
+  var _hf=1;
+  function scE(R,x,z){_hf=1;if(R.warp.amp){var K=KRq(),W=R.warp;x+=W.amp*(2*K.fbm(x*W.scale,z*W.scale,.5,3,R.seed+3)-1);z+=W.amp*(2*K.fbm(x*W.scale+31,z*W.scale-17,.5,3,R.seed+4)-1);}
     if(R.form==='disc')return R.disc.r-Math.hypot(x-R.disc.c[0],z-R.disc.c[1]);
     if(R.form==='ell'){var E=R.ell,dx=x-E.c[0],dz=z-E.c[1],c=Math.cos(E.ry),s=Math.sin(E.ry),lx=dx*c+dz*s,lz=-dx*s+dz*c,rn=Math.hypot(lx/E.rx,lz/E.rz);
       return (1-rn)*Math.min(E.rx,E.rz);}
-    var N=near(R.line.pts,R.line.S,x,z);return R.line.w+R.edge-Math.hypot(N.past,N.past>0?N.q:N.dist);}
-  function scRead(R,x,z){var e=scE(R,x,z),n=R.drops.length;if(e<=-3)return null;if(e<=0)return {sh:0,part:R.rim?'rim':null,i:-1,e:e};
-    var at=0,acc=0;for(var i=0;i<n;i++){if(e<at+R.riser)return {sh:acc+R.drops[i]*sm(0,R.riser,e-at),part:'riser',i:i,e:e};at+=R.riser;acc+=R.drops[i];
-      if(i<n-1){if(e<at+R.treads[i])return {sh:acc,part:'tread',i:i,e:e};at+=R.treads[i];}}
-    return {sh:1,part:'floor',i:n,e:e};}
+    var N=near(R.line.pts,R.line.S,x,z),w=R.line.w;
+    if(R.head){var Lt=R.line.S[R.line.S.length-1],se=N.past>0?0:Math.min(N.s,Lt-N.s);_hf=sm(0,R.head.len,se);w*=R.head.minW+(1-R.head.minW)*_hf;
+      if(N.past>0)return -1e9;}   /* past a headed line's end: no cut (the head has already pinched it out) */
+    return w+R.edge-Math.hypot(N.past,N.past>0?N.q:N.dist);}
+  function scRead(R,x,z){var e=scE(R,x,z),hf=_hf,n=R.drops.length;if(e<=-3)return null;if(e<=0)return {sh:0,part:R.rim?'rim':null,i:-1,e:e};
+    var at=0,acc=0;for(var i=0;i<n;i++){if(e<at+R.riser)return {sh:(acc+R.drops[i]*sm(0,R.riser,e-at))*hf,part:'riser',i:i,e:e};at+=R.riser;acc+=R.drops[i];
+      if(i<n-1){if(e<at+R.treads[i])return {sh:acc*hf,part:'tread',i:i,e:e};at+=R.treads[i];}}
+    return {sh:hf,part:'floor',i:n,e:e};}
   function stepcutH(R,x,z,g){g=g==null?0:g;var q=scRead(R,x,z);if(!q)return g;var lip=R.rim&&q.e<=0?R.rim*sm(-3,0,q.e):0;
     if(R.floor!=null)return Math.min(g,lerp(g,R.floor,q.sh))+lip;return g-R.depth*q.sh+lip;}
   function stepcutAt(R,x,z){var q=scRead(R,x,z);if(!q||!q.part)return null;return {part:q.part,i:q.i,e:q.e};}

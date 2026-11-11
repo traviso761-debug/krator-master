@@ -5,15 +5,15 @@
 // west half, the wall falling west from it (1,140-1,195 m at the page's west edge, 720 m 4 km past it, the floor at 270-490 m 8-12 km out), the mesa
 // top filling the east (1,470-1,610 m). On the model's surface the station sets:
 //   THE SLOT   a tension fissure on the mesa top, parallel to the rim (NNE-SSW, the warp chasms' strike), 230 m across at its lips and 180 m deep, with
-//              sheer stepped walls (KRELIEF.stepcut: two risers and a tread), closed round its ends (the chasm head that tapers is a shared core
-//              amendment: PLAN.md section 8, item 1); runoff gathers on its floor (the wash field: cobble, the Great Chasm's wadi plants)
+//              sheer stepped walls (KRELIEF.stepcut: two risers and a tread), pinching out at both ends over its last 700 m (the
+//              chasm head: stepcut's `head`, PLAN.md section 8, item 1); runoff gathers on its floor (the wash field: cobble, the Great Chasm's wadi plants)
 //   THE CABLES the canopy across it (86-host-slot.js: the anchors found by rays at the drawn walls, the records, then the kit's builders)
 // The far field (83) carries the model on 120 km: the chasm floor west, Mount Caelum 84 km west (4,431 m), the airless east rim 150 km east.
 const STATION=(function(){
  const base=(x,z)=>MODEL.h(x,z);
  /* the slot's line: its south and north ends on the mesa top, 4 km long */
  const SLOT={pts:[[700,2000],[1000,600],[1250,-700],[1500,-2000]],w:70,depth:180,steps:2,tread:40};
- const CUT=KRELIEF.stepcut({line:{pts:SLOT.pts,w:SLOT.w},depth:SLOT.depth,steps:SLOT.steps,tread:SLOT.tread,riser:2,rim:1.2,warp:{amp:14,scale:1/260},seed:99301});
+ const CUT=KRELIEF.stepcut({line:{pts:SLOT.pts,w:SLOT.w},depth:SLOT.depth,steps:SLOT.steps,tread:SLOT.tread,riser:2,rim:1.2,warp:{amp:14,scale:1/260},head:{len:700,minW:.3},seed:99301});
  const g0=(x,z)=>base(x,z)+1.2*(KRAND.fbm(x*.008,.5,z*.008,3,99302)-.5);
  const ground=(x,z)=>KRELIEF.shape(CUT,x,z,g0(x,z));
  const partAt=(x,z)=>KRELIEF.at(CUT,x,z,g0(x,z));
@@ -39,7 +39,9 @@ const LAND={name:'The Loom (loom-chasms station 3)',title:'Krator biome — the 
  plants:['needle','cush','pebble','rosette','grass','sac'],
  modelTol:40,sculpt:(x,z)=>!!STATION.partAt(x,z),
  /* nothing roots on the slot's risers and lips (the sheer faces: terrainH and the drawn triangles part there; the wall curtains are seated by rays, 86) */
- noRoot:(x,z)=>{const e=DRAWN_CELL;for(const o of [[0,0],[e,0],[-e,0],[0,e],[0,-e]]){const a=STATION.partAt(x+o[0],z+o[1]);if(a&&(a.part==='riser'||a.part==='rim'))return true;}return false;},   /* a cell's width round them: the drawn triangle bridges the lip */
+ noRoot:(x,z)=>{const a=STATION.partAt(x,z);if(!a){const e=DRAWN_CELL;for(const o of [[e,0],[-e,0],[0,e],[0,-e]]){const b=STATION.partAt(x+o[0],z+o[1]);if(b&&(b.part==='riser'||b.part==='rim'))return true;}return false;}   /* outside: a cell from the lip */
+ if(a.part==='riser'||a.part==='rim')return true;   /* a cell's width round every riser: the drawn triangle bridges the drop */
+  const C=STATION.CUT,e=a.e;let at=0;for(let i=0;i<C.drops.length;i++){if(Math.abs(e-at)<DRAWN_CELL+1||Math.abs(e-(at+C.riser))<DRAWN_CELL+1)return true;at+=C.riser+(i<C.treads.length?C.treads[i]:0);}return false;},
  farLabel:'The Shuttle Mesas and the chasm net, Mount Caelum to the west (the scale model 5.1)',
  kin:[],
  prebuild:()=>typeof SLOT_SITE!=='undefined'?SLOT_SITE.build():null,

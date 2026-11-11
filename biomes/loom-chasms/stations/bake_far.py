@@ -16,7 +16,7 @@ _spec = importlib.util.spec_from_file_location('gc_bake', os.path.join(HERE, '..
 GC = importlib.util.module_from_spec(_spec); _spec.loader.exec_module(GC)
 
 # the stations built so far, on the 5.1 canvas (PLAN.md section 7b: the Loom moved from 1662,1162, mid-wall, to the mesa's rim)
-SITES = {'loom': (1664, 1161)}
+SITES = {'loom': (1664, 1161), 'cradle': (1558, 1140)}
 
 
 def main():

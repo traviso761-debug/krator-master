@@ -92,6 +92,181 @@
     "sourceMean": 0.4015
    }
   },
+  "cropBean": {
+   "anchor": "center",
+   "base": "bottom",
+   "breakup": null,
+   "card": true,
+   "cell": [
+    0.6707,
+    0.6707,
+    0.996,
+    0.996
+   ],
+   "files": {
+    "map": "cropBean.albedo.webp"
+   },
+   "lib": "card.crop.bean",
+   "metal": 0,
+   "normalScale": 1.0,
+   "plants": 9,
+   "roughLift": 0.0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "e81d38a6d6797ae4eddebbd1f92358b57414b2f6"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.7,
+    "sourceMean": 0.4346
+   }
+  },
+  "cropFlax": {
+   "anchor": "center",
+   "base": "bottom",
+   "breakup": null,
+   "card": true,
+   "cell": [
+    0.3373,
+    0.004,
+    0.6627,
+    0.3293
+   ],
+   "files": {
+    "map": "cropFlax.albedo.webp"
+   },
+   "lib": "card.crop.flax",
+   "metal": 0,
+   "normalScale": 1.0,
+   "plants": 9,
+   "roughLift": 0.0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "9d8c5add527b6a08daa78b1495b86c2f5b2cc94a"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.7,
+    "sourceMean": 0.4407
+   }
+  },
+  "cropGrain": {
+   "anchor": "center",
+   "base": "bottom",
+   "breakup": null,
+   "card": true,
+   "cell": [
+    0.004,
+    0.004,
+    0.3293,
+    0.3293
+   ],
+   "files": {
+    "map": "cropGrain.albedo.webp"
+   },
+   "lib": "card.crop.grainhead",
+   "metal": 0,
+   "normalScale": 1.0,
+   "plants": 9,
+   "roughLift": 0.0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "5ff643833d87c9f6cd2704dac810ece7d45f28c1"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.7,
+    "sourceMean": 0.6939
+   }
+  },
+  "cropSaffron": {
+   "anchor": "center",
+   "base": "bottom",
+   "breakup": null,
+   "card": true,
+   "cell": [
+    0.3373,
+    0.004,
+    0.6627,
+    0.3293
+   ],
+   "files": {
+    "map": "cropSaffron.albedo.webp"
+   },
+   "lib": "card.crop.saffron",
+   "metal": 0,
+   "normalScale": 1.0,
+   "plants": 9,
+   "roughLift": 0.0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "9f82d23b830c18d19a72442282bcb49cd48f4f0f"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.7,
+    "sourceMean": 0.5889
+   }
+  },
+  "cropWoad": {
+   "anchor": "center",
+   "base": "bottom",
+   "breakup": null,
+   "card": true,
+   "cell": [
+    0.3373,
+    0.004,
+    0.6627,
+    0.3293
+   ],
+   "files": {
+    "map": "cropWoad.albedo.webp"
+   },
+   "lib": "card.crop.woad",
+   "metal": 0,
+   "normalScale": 1.0,
+   "plants": 9,
+   "roughLift": 0.0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "df09baceff30e0a7ad0039366a33d25a676ef596"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.7,
+    "sourceMean": 0.4682
+   }
+  },
   "curtain": {
    "anchor": "center",
    "base": "top",
@@ -125,6 +300,62 @@
     "keep": 1.0,
     "mean": 0.6,
     "sourceMean": 0.4007
+   }
+  },
+  "ground.field": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "ground.field.albedo.webp"
+   },
+   "lib": "ground.terrace.field",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.15,
+   "scale": [
+    3,
+    3
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "6e0017dd8ee8251f437ebf786718f049df2b1e2b",
+    "normal": "2085b452fa778d1f4919956e44a47e1e1b98003b",
+    "roughness": "190c0adaef407ca88c43e1e75121fee87cf20786"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.8,
+    "mean": 0.32445605625526575,
+    "sourceMean": 0.3245
+   }
+  },
+  "ground.grass": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "ground.grass.albedo.webp"
+   },
+   "lib": "ground.grass_ground",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.15,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "9dbff918a2de84d51f1677516c87c1e0fe6429d0",
+    "normal": "c24b61b9c8059b74a5712fbe3c348464b8933e8e",
+    "roughness": "705b4f92076304fd8b3c73b6e49d2123456014a9"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.7,
+    "mean": 0.37881497102026845,
+    "sourceMean": 0.3788
    }
   },
   "shoot": {

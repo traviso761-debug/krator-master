@@ -10,6 +10,7 @@ rule takes).
 | `12-hamlet-gather.js` | `KHAMLET.GATHER_KEYS` (pasture, fish, salt), `gatherCheck`, `gatherAt(api, x, z)`, `fieldCapacity(api, poly, cell)`: a biome kit's `gather` tag read without knowing its zone names |
 | `20-hamlet-cultures.js` | `KHAMLET.CULTURES`: a row per building kit (the religious, civic, store and warehouse keys, houses by class, works by focus, the boxes of buildings the kit lacks). `islander_east` first; `xanadu` (settlements/xanadu's kit: Longsong's three valley villages, farming and ranch, its pens, corral and dairy pending) |
 | `30-hamlet-village.js` | `KHAMLET.village(spec)` -> `{census, records, lanes, green, site, error?}`; its parts `census`, `program`, `siteFor` kept apart for other layouts |
+| `ext/21-hamlet-yuni.js` | opt-in (2026-11-11): `KHAMLET.CULTURES.yuni`, the Yuni's row (the Loom-Chasms' Weavers' Cradle; the Great Chasm's trade post wants it): kits/yuni's ASSET keys, every one a declared box (the Yuni engine is not on other pages). Listed after 20 by the pages that want it, so the pages that pool this folder's own fragments do not change; `node core/hamlet/ext/test-hamlet-yuni.js` |
 
 **What a host does:** pass `dims(key)` (the kit's boxes, as `core/city`'s `kit.dims`) and `ground.ok(x, z)` (dry, not a
 cliff, not too steep). Register the records in `core/tags` before drawing them. A record marked `pending` is a building

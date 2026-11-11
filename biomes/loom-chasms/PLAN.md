@@ -8,8 +8,9 @@ that span the slots between the rims. The Yuni farm the Cradle and send expediti
 down off their peaks.
 
 This plan replaces the plan v2 (Gemini, 2026-10-28) and keeps its facts. **Built so far (2026-11-11, a cloud session):** station 3,
-the Loom, the plan's first (`build.py`: `dist/loom-chasms.html`; section 7b the site as drawn, 7c what was settled, section 8 the
-core adoption as built; `INDEX.md`, `KNOWN_ISSUES.md`). The other four stations are records only. The real-GPU verify is owed on
+the Loom, the plan's first (`build.py`: `dist/loom-chasms.html`), and station 1, the Weavers' Cradle (`build.py --station cradle`:
+`dist/loom-chasms-cradle.html`); section 7b the sites as drawn, 7c what was settled, section 8 the core adoption as built;
+`INDEX.md`, `KNOWN_ISSUES.md`. Stations 2, 4 and 5 are records only. The real-GPU verify is owed on
 the owner's PC (the cloud has no GPU). Its station records (`stations/*/station.json`) are on the 5.1 canvas. Names marked **TBD**
 are the owner's. What changed from v2 is listed at the end.
 
@@ -260,7 +261,7 @@ summit and Lake Nim, 140 km apart; they are split here.
 slot, the canopy and the chasm in one view. Station 1 needs the Yuni's farms and the Cradle's people decided first. Station 5
 needs the salt-crust hazard.
 
-### 7b. Station 3 as drawn (the survey, 2026-11-11)
+### 7b. Stations 3 and 1 as drawn (the survey, 2026-11-11)
 
 Read with `smodel.page` from `tools/scale-model/model/data`; `stations/bake_far.py` (the Great Chasm's bake, read in place) writes the
 station's window (121 x 121 cells, 120 km each way) into `stations/loom/44f-host-far-data.js`, and the page's ground is the model's
@@ -272,6 +273,11 @@ surface through those cells with the station's landforms on it.
 | **the station** | **1664,1161** | 1,488 m | 1.33 atm | BWk | 15 (26 / 5) °C | 78 mm | the rim across the page's west half, the wall falling west (1,140-1,195 m at the west edge, 720 m 4 km out, the floor at 270-490 m 8-12 km out), the mesa top at 1,470-1,610 m to the east |
 
 No water within 12 km. Mount Caelum stands 84 km west-south-west (4,431 m); the airless east rim 150 km east.
+
+| Station 1 | 5.1 px | Height | Air | Class | tm (tw / tc) | Rain | What the cells show |
+|---|---|---|---|---|---|---|---|
+| the plan's site | 1555,1142 | 2,180 m | 1.22 atm | Cwb | 11 (23 / 0) °C | 439 mm | the fan, near flat (2,153-2,177 m over 8 km); a seasonal wadi (Norta Waita Guli, r780) 2 km north; **Aina Bruk's head 7 km north-east, off the page** |
+| **the station** | **1558,1140** | 2,168 m | 1.22 atm | Cwb | 11 (22 / 0) °C | 439 mm | **Aina Bruk's spring** (r174, perennial, 26.9 m3/s) at 1557.7,1139.2, where Apa Aina Guli (r632, from the west) and Norta Waita Guli meet; the river's first 3.5 km east; the fan falling north and east at 0.4%; Spindle Fan 6 km east |
 
 ### 7c. Settled (2026-11-11)
 
@@ -288,6 +294,16 @@ No water within 12 km. Mount Caelum stands 84 km west-south-west (4,431 m); the 
 - **The mesa top's ground cover** is the Great Chasm kit's (the Outlands' cold-desert set as its named stand-ins), read in place, with
   its pack (the ground's library layers): the two kits' cold desert is one ground. No trees are borrowed here.
 - **Namakiers**: none (section 2's reading; the owner's call stays open).
+- **The Cradle moved** from 1555,1142 to **1558,1140** (7b): "Aina Bruk off the fan" needs the river's head on the page. Its spring is a
+  pool (a still) where the two wadis meet; the wadis are dry cobble channels on `rivers.json`'s own lines; the river runs east on
+  `KRELIEF.river`'s levels (never climbing) in a channel cut in the fan.
+- **The Cradle's farms** (the owner's answer: Yuni colonists): a farming village on `core/hamlet` with **the Yuni culture row**, added to
+  core as an opt-in fragment (`core/hamlet/ext/21-hamlet-yuni.js`, with its test): kits/yuni's ASSET keys, every one a declared box,
+  since the Yuni engine is not on this page. The village's buildings are pending stand-ins in banco adobe.
+- **The fields**: terraced treads east of the spring (`KRELIEF.terraces`, 0.5 m risers, 60 m fields), one crop a field from
+  `kits/crops` (`CROPS.at`: temperate, standard air, semiarid; `CROPS.pick` seeded by the field's id). The station record's cold rye,
+  mountain flax and lichen spelt are v2's names: kits/crops gives emmer, frost oat, helix bean, flax, saffron and woad (and more) for
+  these bands, and those are what grow. Orchards (wild apricot) and windbreaks (golden poplar) are nsemiarid's trees, read in place.
 
 **Records to fix** when the kit starts (the brief for the records, not this plan's edit; `loom` fixed 2026-11-11):
 - every station's `atm`;
@@ -295,7 +311,7 @@ No water within 12 km. Mount Caelum stands 84 km west-south-west (4,431 m); the 
 - `caelum`: `playa_level` 344 m (it is 240 m) and Lake Nim's `area_km2` 45 (it is about 500);
 - `region98_99.json` still holds Region 99's older 10-vertex outline.
 
-## 8. Core adoption (written first, as the working rules ask; as built for station 3, 2026-11-11)
+## 8. Core adoption (written first, as the working rules ask; as built for stations 3 and 1, 2026-11-11)
 
 The plan's table (written before any fragment) is kept as the build took it. The host is the Great Chasm's (`biomes/greatchasm/src`,
 built the same day on the same scale model: its land library, stage, far field, hazards, sky and air), taken as the start, not
@@ -314,16 +330,21 @@ surface). No core fragment is copied. `python3 tools/check_core_use.py biomes/lo
 | sky, weather | `core/atmos` | the standard sky at the station (its fog thinned: the chasm net and Caelum are the far field); height fog, dust, the dust season; the shimmer only where the ground is hot (not here) |
 | hazards | `core/hazard` (`KHAZ`) | the air and the heat as ambient fields; falls at the slot's lips, rockfall off its walls |
 | tags, space, mask, host, export, materials, shadow | as every kit | each cable a core/tags record registered before it is drawn |
+| **station 1:** the land | `KRELIEF` | `wadi` (the two guli), `river` (Aina Bruk's levels), `meander`, `terraces` (the fields), `pavement` |
+| **station 1:** water | `core/water` | Aina Bruk a `WATER.flow` (drawn as core/water's ribbon), the spring a still |
+| **station 1:** settlement | `core/hamlet` (`KHAMLET.village`), `core/city/33` (its frontage cursor, read in place) | the Yuni farms, on the Yuni row (`ext/21`, new) |
+| **station 1:** crops | `kits/crops` (`CROPS.at`, `CROPS.pick`) | one crop a field, drawn by this kit on the crop's library card |
 
-**Not taken at station 3, each with its reason:** `KRELIEF.terraces`, `scarp`, `relay`, `volcano`, `runout`, `KRELIEF.waters`
-(the other stations' landforms); `KSTRATA.vary` (the Cradle's loess); `KGEODE`, `KSPELEO` (the geodes are the Weave-Step's and a chasm
+**Not taken at stations 3 and 1, each with its reason:** `KRELIEF.scarp`, `relay`, `volcano`, `runout`, `KRELIEF.waters`
+(the other stations' landforms); `KSTRATA.vary` (the Cradle's loess shows only as the ground's colour: the fan has no face to bed); `KGEODE`, `KSPELEO` (the geodes are the Weave-Step's and a chasm
 wall's, not this slot's); `KFROST` (Caelum); `core/water`'s lake, rivers, pan and springs (stations 4 and 5, and the floor's rivers
-past this page); `kits/crops` (the Cradle); `kits/fauna` (the cable-stryder is the fauna kit's: not placed, KNOWN_ISSUES.md);
-`kits/mechs` (the Stalkers keep to the west); `core/camp`, `core/hamlet` (no camp or village on this page); `kits/resources` (no node
-here); `core/city` (no).
+past this page); `kits/fauna` (the cable-stryder and the Yuni's draught animals are the fauna kit's: not placed, KNOWN_ISSUES.md);
+`kits/mechs` (the Stalkers keep to the west); `core/camp` (no camp on these pages); `core/simulation` (the farms' books follow the
+village records: owed); `kits/resources` (no node here); `core/city` (no: the farms are a hamlet).
 
 **Core amendments** (none is a new module; all but the last are listed by other plans: cite them):
-1. **A chasm head for `stepcut`**: a graben whose depth tapers to nothing and ends in an amphitheatre (Mid Basin's amendment 3).
+1. **A chasm head for `stepcut`** (done 2026-11-11: `KRELIEF.stepcut`'s opt-in `head: {len, minW}`, with its tests; the Loom's slot
+   pinches out over its last 700 m): a graben whose depth tapers to nothing and ends in an amphitheatre (Mid Basin's amendment 3).
    The slots need it at both ends.
 2. **Hazards:** a crust that breaks underfoot (the playa); a flood that runs a gorge on a cycle (the wadis and slots).
 3. **Geothermal surfaces** (fumaroles) at Caelum's summit (`core/water/README.md`, "Not here (yet)").

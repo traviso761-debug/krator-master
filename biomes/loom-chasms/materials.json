@@ -1,6 +1,6 @@
 {
  "build": "loom-chasms",
- "note": "The Loom-Chasms' own adapter onto the material library (core/materials/PLAN.md): the cable spinner's parts (50-biome-loom-species.js: BIO.libSwap). bark.cord.braided stands in for the grown cable's iron-silica fibre (tinted iron by the instance colour), organic.flesh.cells for the anchor tuber, organic.pleat.skin for the shoot's gas bladders, card.beard for the canopy's beard (one cell of its sheet), card.moss.hanging for the slots' wall curtains (one cell, its own colour: keep 1). The ground's library layers are the Great Chasm's pack, read in place (build.py). Run python3 tools/textures/pack.py biomes/loom-chasms after any change, then python3 build.py --all.",
+ "note": "The Loom-Chasms' own adapter onto the material library (core/materials/PLAN.md): the cable spinner's parts (50-biome-loom-species.js: BIO.libSwap). bark.cord.braided stands in for the grown cable's iron-silica fibre (tinted iron by the instance colour), organic.flesh.cells for the anchor tuber, organic.pleat.skin for the shoot's gas bladders, card.beard for the canopy's beard (one cell of its sheet), card.moss.hanging for the slots' wall curtains (one cell, its own colour: keep 1). The ground's library layers are the Great Chasm's pack, read in place (build.py). Run python3 tools/textures/pack.py biomes/loom-chasms after any change, then python3 build.py --all. The Cradle (station 1): the crop cards (card.crop.grainhead tinted by the crop, bean, flax, saffron and woad on their own colours: 62-biome-loom-fields.js) and its own two ground layers, ground.field (the terraces' treads, ground.terrace.field) and ground.grass (the river's banks).",
  "size": 512,
  "families": {
   "cable": {
@@ -92,6 +92,127 @@
     0.6627
    ],
    "base": "top"
+  },
+  "cropGrain": {
+   "lib": "card.crop.grainhead",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.7
+   },
+   "size": 512,
+   "cell": [
+    0.004,
+    0.004,
+    0.3293,
+    0.3293
+   ],
+   "base": "bottom"
+  },
+  "cropBean": {
+   "lib": "card.crop.bean",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.7
+   },
+   "size": 512,
+   "cell": [
+    0.6707,
+    0.6707,
+    0.996,
+    0.996
+   ],
+   "base": "bottom"
+  },
+  "cropFlax": {
+   "lib": "card.crop.flax",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.7
+   },
+   "size": 512,
+   "cell": [
+    0.3373,
+    0.004,
+    0.6627,
+    0.3293
+   ],
+   "base": "bottom"
+  },
+  "cropSaffron": {
+   "lib": "card.crop.saffron",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.7
+   },
+   "size": 512,
+   "cell": [
+    0.3373,
+    0.004,
+    0.6627,
+    0.3293
+   ],
+   "base": "bottom"
+  },
+  "cropWoad": {
+   "lib": "card.crop.woad",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.7
+   },
+   "size": 512,
+   "cell": [
+    0.3373,
+    0.004,
+    0.6627,
+    0.3293
+   ],
+   "base": "bottom"
+  },
+  "ground.field": {
+   "lib": "ground.terrace.field",
+   "scale": [
+    3,
+    3
+   ],
+   "tint": {
+    "keep": 0.8,
+    "mean": null
+   },
+   "roughLift": 0.15,
+   "mapOnly": true
+  },
+  "ground.grass": {
+   "lib": "ground.grass_ground",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 0.7,
+    "mean": null
+   },
+   "roughLift": 0.15,
+   "mapOnly": true
   }
  }
 }

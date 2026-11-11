@@ -7,6 +7,7 @@ top's ground cover is the Great Chasm kit's (`GCH`), read in place. A builder dr
 |---|---|
 | `LOOM.drawCable(rec)` | draws one cable from its record: `{id, a, b (the anchors [x,y,z], on the drawn rock), na, nb (the walls' normals there), stage 'grown' \| 'shoot', seed, r, slack}`; a grown cable a KSPAN catenary of segments with its beard and its two anchor tubers, a shoot arching up (`KSPAN.solve(.., {up: true})`) with its bladders. Returns `{S (the span), n (segments), beards, bladders, r, tension (KSPAN.tension: N at the anchors, grown only)}` |
 | `LOOM.drawCurtain(rec)` | draws a wall curtain hung from its top: `{id, p (on the drawn wall), n (the wall's normal), h, w, seed}`; returns the sheets drawn |
+| `LOOM.drawCrop(rec)` | the Cradle's fields: draws one clump of a crop on its library card: `{x, z, crop (a kits/crops record), seed, k}`; returns 1, or 0 when this kit has no card for the crop (`LOOM.CROP_ITEM`: grain head, bean, flax, saffron, woad) |
 | `LOOM.SPAN` | the spinner's numbers: grown radius 7.5-20 cm, shoot 2-3.5 cm, slack, the canopy's band (80-150 m over a slot's floor), the beard's and bladders' spacing, the cable's density (a third iron-silica fibre) |
 | `LOOM.PLANTS` | `cablespinner`, `beardmoss`, `curtain`: name, tags (climate, aridity, abyssal, riparian, Koppen, harvest), the items that draw each |
 | `LOOM.plantOfItem(item)` | the record an instanced item belongs to (the inspector) |

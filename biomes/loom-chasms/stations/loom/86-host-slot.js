@@ -18,7 +18,11 @@ const SLOT_SITE=(function(){const S=STATION.SLOT,P=S.pts,W=99331,u=(k,q)=>KRAND.
  const rimY=c=>Math.min(drawnH(c.x+c.nx*(lipOff+12),c.z+c.nz*(lipOff+12)),drawnH(c.x-c.nx*(lipOff+12),c.z-c.nz*(lipOff+12)));
  const face=n=>Math.abs(n[1])<.6;   /* a riser: the drawn triangle steeper than ~53 degrees */
  function wallHit(o,dx,dz){const l=Math.hypot(dx,dz),d=[dx/l,0,dz/l],h=drawnRay(o,d,lipOff*2.2);return h&&face(h.n)?h:null;}
- const CABLES=[],CURTAINS=[],REJECT={tread:0,miss:0,clip:0};
+ const CABLES=[],CURTAINS=[],REJECT={tread:0,miss:0,clip:0,weak:0};
+ /* what an anchor's bed holds (N): a tuber's root mat fused into the rock, 0.3 MN in the softest bed (a bole, a clay) to 1.5 MN in the hardest flow
+    (hardness 0..1: KSTRATA's, the bed at the anchor point). The numbers are the kit's, set so the thick spans need sound basalt at both ends */
+ const HOLD=p=>{const h=STRATA&&STRATA.hardnessAt?STRATA.hardnessAt(p[0],p[1],p[2]):.6;return 3e5+1.2e6*clamp(h==null?.6:h,0,1);};
+ const pullOf=(S,r)=>{const t=KSPAN.tension(S,Math.PI*r*r*LOOM.SPAN.density*7.4);return Math.max(t.a,t.b);};
  // the cables: one station every ~30 m, 150 m in from either end (the cut closes round its ends)
  for(let k=0,s=150;s<L-150;k++,s+=24+12*u(k,1)){const c=at(s),floor=drawnH(c.x,c.z),rim=rimY(c);if(!(rim-floor>100))continue;
   const yaw=(u(k,2)-.5)*.5,ca=Math.cos(yaw),sa=Math.sin(yaw),dx=c.nx*ca-c.ux*sa,dz=c.nz*ca-c.uz*sa;
@@ -36,6 +40,11 @@ const SLOT_SITE=(function(){const S=STATION.SLOT,P=S.pts,W=99331,u=(k,q)=>KRAND.
   /* the span solved here, before it is a record: one that would pass through the drawn rock (a wall it crosses aslant, a tread under its sag) is not grown */
   const S0=KSPAN.solve(rec.a,rec.b,{slack:rec.slack});let ok=true;for(let i=1;i<24&&ok;i++){const p=KSPAN.at(S0,i/24);if(p[1]<drawnH(p[0],p[2])+rec.r+.3)ok=false;}
   if(!ok){REJECT.clip++;continue;}
+  /* THE ROCK MUST HOLD IT (PLAN.md section 4: "a page can set anchors only where the rock would hold"): the pull at each anchor (KSPAN.tension, the
+     cable's weight in Krator's gravity) against what the bed there holds (HOLD: KSTRATA's hardness of the bed at the anchor); a cable whose pull
+     either anchor's bed cannot hold is not grown */
+  rec.pull=pullOf(S0,rec.r);rec.holdA=HOLD(rec.a);rec.holdB=HOLD(rec.b);
+  if(rec.pull>Math.min(rec.holdA,rec.holdB)){REJECT.weak++;continue;}
   CABLES.push(rec);}
  // the curtains: both walls, every ~11 m, 8-70 m under the lip
  for(let k=0,s=120;s<L-120;k++,s+=7+8*u(k,11)){const c=at(s),rim=rimY(c),floor=drawnH(c.x,c.z);if(!(rim-floor>60))continue;
@@ -65,15 +74,19 @@ const SLOT_SITE=(function(){const S=STATION.SLOT,P=S.pts,W=99331,u=(k,q)=>KRAND.
    return{ok:n>0&&!bad,detail:bad?'a cable through the rock: '+bad.id+' at '+bad.p.map(v=>v|0):n+' points on '+C.length+' spans, every one clear of the drawn rock'};},
   tiers(C){const g=C.filter(c=>c.stage==='grown'&&c.S),bad=g.filter(c=>{const lo=KSPAN.low(c.S).p[1]-c.floor;return lo<40||lo>170;});
    return{ok:g.length>0&&!bad.length,detail:bad.length?bad.length+' grown cables outside the canopy\'s band (first '+bad[0].id+')':g.length+' grown cables, their low points 40-170 m over the slot\'s floor (the tiers 80-150 m at the anchors)'};},
-  both(C){const s=C.filter(c=>c.stage==='shoot').length,g=C.length-s;return{ok:s>0&&g>0,detail:g+' grown cables, '+s+' pioneer shoots'};}};
+  both(C){const s=C.filter(c=>c.stage==='shoot').length,g=C.length-s;return{ok:s>0&&g>0,detail:g+' grown cables, '+s+' pioneer shoots'};},
+  held(C){const g=C.filter(c=>c.stage==='grown'),bad=g.filter(c=>!(c.pull<=Math.min(c.holdA,c.holdB)));
+   return{ok:g.length>0&&!bad.length,detail:bad.length?bad.length+' cables pulling harder than their rock holds (first '+bad[0].id+')':g.length+' grown cables, each pull within its anchors\' beds (the most '+(Math.max(...g.map(c=>c.pull))/1e6).toFixed(2)+' MN; '+REJECT.weak+' stations left ungrown on weak rock)'};}};
  function checks(add){add('the cables anchored on the drawn rock (rays at the drawn walls)',CK.anchors(CABLES));add('the wall curtains seated on the drawn walls',CK.seated(CURTAINS));
-  add('every span clear of the drawn rock',CK.clear(CABLES));add('the grown cables in the canopy\'s tiers',CK.tiers(CABLES));add('grown cables and pioneer shoots both',CK.both(CABLES));}
+  add('every span clear of the drawn rock',CK.clear(CABLES));add('the grown cables in the canopy\'s tiers',CK.tiers(CABLES));add('grown cables and pioneer shoots both',CK.both(CABLES));
+  add('every grown cable held by its anchors\' rock',CK.held(CABLES));}
  function negatives(add){const C=CABLES[0];if(!C)return;
   add('a cable anchored a metre off the rock',CK.anchors([Object.assign({},C,{a:[C.a[0],C.a[1]+1,C.a[2]]})]));
   add('a curtain a metre off its wall',CK.seated([{p:[CURTAINS[0].p[0],CURTAINS[0].p[1]+1,CURTAINS[0].p[2]]}]));
   const g=CABLES.find(c=>c.stage==='grown'&&c.S);if(g){add('a cable sagging through the floor',CK.clear([Object.assign({},g,{S:KSPAN.solve(g.a,g.b,{sag:400})})]));
    add('a cable outside the tiers',CK.tiers([Object.assign({},g,{floor:g.floor-500})]));}
-  add('a canopy of one stage',CK.both(CABLES.filter(c=>c.stage==='grown')));}
+  add('a canopy of one stage',CK.both(CABLES.filter(c=>c.stage==='grown')));
+  if(g)add('a cable on rock that will not hold it',CK.held([Object.assign({},g,{holdA:g.pull*.5})]));}
  // ---------------------------------------------------------------- the views (each camera over the drawn ground: 99's check)
  function views(H){const {look}=H,mid=at(L*.5),c2=at(L*.35),g=CABLES.filter(c=>c.stage==='grown'),sh=CABLES.find(c=>c.stage==='shoot'),C0=g[Math.floor(g.length/2)]||CABLES[0];
   const V={};

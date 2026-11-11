@@ -68,14 +68,18 @@ profile asking a treeless kit for buckets.
 
 - [ ] The Deep's floor draws `ground.sand.black` and `ground.obsidian` for the komatiite pavement the code paints
   (`core/materials/PROMPTS-NEEDED.md` section 43, `ground.komatiite.pavement`).
+- [x] KRELIEF.stepcut takes an opt-in chasm head (`head: {len, minW}`, 2026-11-11: the Loom-Chasms' slots). The headwall's channels keep
+  their closed ends: they run off the page and join the chasm's network, so no head is drawn here (their records do not ask for one).
 - [ ] The model's 2 km cells smear the bench's lip into a 7-degree ramp; the page keeps the drawn heights and does not invent the scarp
   (`PLAN.md` 7b). A finer model of the walls (a scarp record per bench lip, KRELIEF.scarp) is the scale model's to give.
 
 ## The look, seen in SwiftShader (for the owner's pass)
 
 - [ ] The post's stand-ins are boxes and domes in flat colours: they read as the post at range, not up close.
-- [ ] The headwall's views: 'A butte on the floor' stands too close to a spire (its camera is placed by the first body's radius), and
-  'Down the west channel from its rim' looks over the plateau without showing the channel's 400 m drop; both pass the checks.
-- [ ] The east rim's far wall reads white (the far field's frost and EF ice bands, 4.8-6.3 km) and its summit's frost layer is strong.
+- [x] The headwall's views (fixed 2026-11-11): 'A butte on the floor' frames a butte (not a spire) from 2.6 radii plus 40 m; 'Down the west
+  channel from its rim' stands on the south rim of the channel's middle reach and looks across to the far wall's foot, the 400 m drop
+  in frame.
+- [x] The east rim's white (fixed 2026-11-11): the far field's frost (to .3) and the EF band's ice (to .45) thinned and kept off steep
+  faces, so the wall reads as rimed rock; the summit's frost only in the lee hollows (the snow field at .55, from 6,250 m).
 - [ ] The walls 30-120 km off are the far field's vertex colours (banded basalt, frost, bare crests): no texture past the ground's
   square.

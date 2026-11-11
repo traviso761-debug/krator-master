@@ -136,6 +136,13 @@ ok('its walls are sheer risers (slope over 5 for '+sheer+' samples) between flat
 ok('outside the edge there is no falloff: the ground is untouched a metre out',y(P,201,0)===0&&R.at(P,204,0)===null,y(R.stepcut({disc:{c:[0,0],r:200},depth:60}),199,0)===0);
 const Gr=R.stepcut({line:{pts:[[-1000,0],[1000,0]],w:50},depth:40,steps:2,tread:15,riser:1.5,seed:5});
 ok('a graben: the floor between stepped walls on both sides',y(Gr,0,0)===-40&&y(Gr,0,30)===-40&&y(Gr,0,-30)===-40&&R.at(Gr,0,58).part==='tread'&&R.at(Gr,0,-58).part==='tread'&&y(Gr,0,80)===0,y(Gr,0,80)!==0);
+// the chasm head (opt-in, head {len, minW}): the graben pinches out along its last len m instead of closing round its end at full depth
+const Hd=R.stepcut({line:{pts:[[-1000,0],[1000,0]],w:50},depth:40,steps:2,tread:15,riser:1.5,seed:5,head:{len:400}});
+ok('a chasm head: full depth mid-line, shallower toward each end, nothing at and past the ends',y(Hd,0,0)===-40&&y(Hd,-800,0)>-40&&y(Hd,-800,0)<0&&y(Hd,800,0)>-40&&y(Hd,-1000,0)===0&&y(Hd,-1050,0)===0&&y(Hd,1050,0)===0,
+ y(Gr,-800,0)>-40||y(Gr,-1050,0)===0);   /* the headless graben is full depth there and cut round its end */
+ok('the head narrows the floor toward the end',R.at(Hd,-900,30)&&R.at(Hd,-900,30).part!=='floor'&&R.at(Hd,0,30).part==='floor',R.at(Gr,-900,30).part!=='floor');
+ok('a head is a line\'s, its len over 0',throws(()=>R.stepcut({disc:{c:[0,0],r:200},head:{len:50}}))&&throws(()=>R.stepcut({line:{pts:[[0,0],[100,0]]},head:{len:0}})),
+ throws(()=>R.stepcut({line:{pts:[[0,0],[100,0]]},head:{len:50}})));
 const Fa=R.stepcut({disc:{c:[0,0],r:200},floor:-30,steps:2});ok('an absolute floor: the cut ends at that level',y(Fa,0,0,10)===-30&&y(Fa,0,0,-50)===-50,false);
 const El=R.stepcut({ell:{c:[0,0],rx:300,rz:120,ry:.4},depth:20,warp:{amp:15}});ok('an ellipse, its edge warped',y(El,0,0)===-20&&y(El,500,0)===0,false);
 ok('JSON-safe; a pit too small for its steps throws',same(P,json(P),grid(-250,250,-250,250,20))&&throws(()=>R.stepcut({disc:{c:[0,0],r:20},tread:20,steps:3}))&&throws(()=>R.stepcut({depth:5})),throws(()=>R.stepcut({disc:{c:[0,0],r:200}})));

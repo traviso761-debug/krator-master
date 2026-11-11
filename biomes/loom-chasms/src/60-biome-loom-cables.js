@@ -36,4 +36,3 @@ LOOM.drawCurtain=function(rec){reseed(rec.seed>>>0);const n=rec.n,yaw=Math.atan2
  return k;};
 LOOM.canopyH=function(){return 0;};
 })();
-BIO.kitEnd(LOOM);   // its exports run in its registry; the default kit is current again

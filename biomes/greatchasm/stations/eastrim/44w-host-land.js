@@ -16,7 +16,7 @@ const STATION=(function(){
  const L=chasmLand({R:2600,ground,
   rockAt:(x,z,h,sl)=>smooth(.42,.75,sl),strataK:(x,z,h,sl)=>smooth(.3,.65,sl),
   talus:(x,z)=>{if(!ROCKS.length)return 0;const f=KSTACKS.foot(ROCKS,x,z);return f?smooth(20,2,f.d):0;},
-  snowAt:(x,z,h,sl)=>smooth(6150,6500,h)*smooth(.55,.25,sl)*(.35+.65*lee(x,z))*smooth(.42,.58,KRAND.fbm(x*.01,.5,z*.01,2,94602)),
+  snowAt:(x,z,h,sl)=>.55*smooth(6250,6600,h)*smooth(.5,.2,sl)*lee(x,z)*smooth(.46,.6,KRAND.fbm(x*.01,.5,z*.01,2,94602)),   /* rime and old firn in the lee hollows only (thinned 2026-11-11: the summit read white) */
   pave:(x,z)=>0,
   strata:GCH_STRATA({}),
   spine:[[0,0],[600,-200],[-700,300],[300,900],[-400,-1100],[1500,800],[-1700,-600]]});

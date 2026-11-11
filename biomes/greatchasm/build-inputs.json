@@ -38,7 +38,7 @@
     "biomes/ebadlands/tex/pack.json": "8995fd803ea3d491277ebf898fb4f9584b0091eae9b1d74b208a1805ac9c1473",
     "biomes/ebadlands/tex/stone.gem.albedo.webp": "fa2ddcfb1f8cceb9fa362593d3dba9eb17a8d5455cdd9bdfad8a37f060095dc8",
     "biomes/ebadlands/tex/wood.silver.albedo.webp": "56b7afbaa148477bc1c306df83d9b770f107fd49d38ecaeb19d20bc1b02dfc9b",
-    "biomes/greatchasm/KNOWN_ISSUES.md": "efe06fbcf356fbb43e4657cddaf7dcd36750bbdbe44a1e040d20542c7695fe9b",
+    "biomes/greatchasm/KNOWN_ISSUES.md": "4690356501eb897df5dd65597e61bb65017962b5afba96b5f765bfdddf1d158f",
     "biomes/greatchasm/PORT.md": "d46f62283bd3faec340fe00ef69c9476076019d3d7defd84b7a6a1b9e01c1ff2",
     "biomes/greatchasm/build.py": "f37d9709274f2dc41e7acb23b4e93bd81bee7bedfbae5d2c839bae40a192b50a",
     "biomes/greatchasm/src/00-head.html": "c3bb5d17900f3b3d8c0b8839f8564c2e804ff3e06fcbc6c8a02956626e572bb8",
@@ -48,7 +48,7 @@
     "biomes/greatchasm/src/50-biome-greatchasm-species.js": "47256120a910c408f173c453248c98cb496565511f4e9d8160c51efdd8873d65",
     "biomes/greatchasm/src/60-biome-greatchasm-floor.js": "b7fc5532ab49ad8f7696a78af9f82db4d2623ba1c50f517b2738e1ab5d74d09a",
     "biomes/greatchasm/src/70-biome-greatchasm.js": "76ab7b1e056893fedf157baff8d17c6f58716e123b5db89fc2816fd63378eef2",
-    "biomes/greatchasm/src/83-host-far.js": "5a3943f18ada9fccd5f547b738b85d2f2c12c3701d50b9c777d720dbbf6e3fad",
+    "biomes/greatchasm/src/83-host-far.js": "430091a321cbd12d1d0e4554c585583a5a9851720addb8757239092e417747a1",
     "biomes/greatchasm/src/87-host-kin.js": "2d74d5b5fd7e19f8512f8c2c11d0541dc6fe8c1060de676f18b971e52b215d0e",
     "biomes/greatchasm/src/88-host-hazard.js": "4899870a5eadc8dde6c02ca6884e55b060eaa34e215fa56fae9dbd31a2ccbfd5",
     "biomes/greatchasm/src/89-host-sky.js": "e6ed6aa8053e168a3ec45f52803e9133d5c045eb03613fd455dc60b0741db2c9",
@@ -155,7 +155,7 @@
     "core/terrain/35-core-strata.js": "411b14b18413498c532a9a3fab9893c5726630c8387098b3a1190d0817a505b1",
     "core/terrain/37-core-stacks.js": "40693e354aa056827f163268033ef40cd761133fb29b4522395c46447fcfb320",
     "core/terrain/38-core-relief.js": "7b05a027e7258a2bb412cadbe67beb6bab878f88e6f18eeb5fdddf96fb9ae21f",
-    "core/terrain/38c-core-landforms.js": "88347efcd099f50939dcd328d90278d700176ffc87b2e0a4ea7520647a0e0d6c",
+    "core/terrain/38c-core-landforms.js": "031ffe8af33bcafc6b493f9b512648a7fadb8968b26b9de6a34118e0fc5f0eec",
     "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
@@ -184,10 +184,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/greatchasm/dist/greatchasm.html": "df7f3ae024140f4f5d1e02e7d3b50d76f6d327f0e7fb35ae4d53141f5aa4b9b5"
+    "biomes/greatchasm/dist/greatchasm.html": "758e77ad35330ca3248867e21f287d2de32a8836f3396e8808d440ba43d131f3"
    },
    "outputs_raw": {
-    "biomes/greatchasm/dist/greatchasm.html": "df7f3ae024140f4f5d1e02e7d3b50d76f6d327f0e7fb35ae4d53141f5aa4b9b5"
+    "biomes/greatchasm/dist/greatchasm.html": "758e77ad35330ca3248867e21f287d2de32a8836f3396e8808d440ba43d131f3"
    }
   },
   "build.py --station bench": {
@@ -227,7 +227,7 @@
     "biomes/ebadlands/tex/pack.json": "8995fd803ea3d491277ebf898fb4f9584b0091eae9b1d74b208a1805ac9c1473",
     "biomes/ebadlands/tex/stone.gem.albedo.webp": "fa2ddcfb1f8cceb9fa362593d3dba9eb17a8d5455cdd9bdfad8a37f060095dc8",
     "biomes/ebadlands/tex/wood.silver.albedo.webp": "56b7afbaa148477bc1c306df83d9b770f107fd49d38ecaeb19d20bc1b02dfc9b",
-    "biomes/greatchasm/KNOWN_ISSUES.md": "efe06fbcf356fbb43e4657cddaf7dcd36750bbdbe44a1e040d20542c7695fe9b",
+    "biomes/greatchasm/KNOWN_ISSUES.md": "4690356501eb897df5dd65597e61bb65017962b5afba96b5f765bfdddf1d158f",
     "biomes/greatchasm/PORT.md": "d46f62283bd3faec340fe00ef69c9476076019d3d7defd84b7a6a1b9e01c1ff2",
     "biomes/greatchasm/build.py": "f37d9709274f2dc41e7acb23b4e93bd81bee7bedfbae5d2c839bae40a192b50a",
     "biomes/greatchasm/src/00-head.html": "c3bb5d17900f3b3d8c0b8839f8564c2e804ff3e06fcbc6c8a02956626e572bb8",
@@ -237,7 +237,7 @@
     "biomes/greatchasm/src/50-biome-greatchasm-species.js": "47256120a910c408f173c453248c98cb496565511f4e9d8160c51efdd8873d65",
     "biomes/greatchasm/src/60-biome-greatchasm-floor.js": "b7fc5532ab49ad8f7696a78af9f82db4d2623ba1c50f517b2738e1ab5d74d09a",
     "biomes/greatchasm/src/70-biome-greatchasm.js": "76ab7b1e056893fedf157baff8d17c6f58716e123b5db89fc2816fd63378eef2",
-    "biomes/greatchasm/src/83-host-far.js": "5a3943f18ada9fccd5f547b738b85d2f2c12c3701d50b9c777d720dbbf6e3fad",
+    "biomes/greatchasm/src/83-host-far.js": "430091a321cbd12d1d0e4554c585583a5a9851720addb8757239092e417747a1",
     "biomes/greatchasm/src/87-host-kin.js": "2d74d5b5fd7e19f8512f8c2c11d0541dc6fe8c1060de676f18b971e52b215d0e",
     "biomes/greatchasm/src/88-host-hazard.js": "4899870a5eadc8dde6c02ca6884e55b060eaa34e215fa56fae9dbd31a2ccbfd5",
     "biomes/greatchasm/src/89-host-sky.js": "e6ed6aa8053e168a3ec45f52803e9133d5c045eb03613fd455dc60b0741db2c9",
@@ -343,7 +343,7 @@
     "core/terrain/35-core-strata.js": "411b14b18413498c532a9a3fab9893c5726630c8387098b3a1190d0817a505b1",
     "core/terrain/37-core-stacks.js": "40693e354aa056827f163268033ef40cd761133fb29b4522395c46447fcfb320",
     "core/terrain/38-core-relief.js": "7b05a027e7258a2bb412cadbe67beb6bab878f88e6f18eeb5fdddf96fb9ae21f",
-    "core/terrain/38c-core-landforms.js": "88347efcd099f50939dcd328d90278d700176ffc87b2e0a4ea7520647a0e0d6c",
+    "core/terrain/38c-core-landforms.js": "031ffe8af33bcafc6b493f9b512648a7fadb8968b26b9de6a34118e0fc5f0eec",
     "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
@@ -371,10 +371,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/greatchasm/dist/greatchasm-bench.html": "9e2f6a1c1bb80495706418ea766c465558803ca539adb3f9927eeeca13796616"
+    "biomes/greatchasm/dist/greatchasm-bench.html": "b17007177455f15472c0938c7ad4333cfc48ee5fc5ff16887976eb048dbd0ff0"
    },
    "outputs_raw": {
-    "biomes/greatchasm/dist/greatchasm-bench.html": "9e2f6a1c1bb80495706418ea766c465558803ca539adb3f9927eeeca13796616"
+    "biomes/greatchasm/dist/greatchasm-bench.html": "b17007177455f15472c0938c7ad4333cfc48ee5fc5ff16887976eb048dbd0ff0"
    }
   },
   "build.py --station deep": {
@@ -423,7 +423,7 @@
     "biomes/eastabyss/tex/towerRust.rough.webp": "edeba0669de5dd3f5498cb1d26748a6fbf0f2fdef8413ba81687074aa34473e4",
     "biomes/eastabyss/tex/under.albedo.webp": "4d524643218fe749668143f2a6343919d0291417b40571f6a840be0a236cd275",
     "biomes/eastabyss/tex/wood.albedo.webp": "795145ca323cf91bb2d05c131c700a66903a1c5df927836aaa8b99553049ea11",
-    "biomes/greatchasm/KNOWN_ISSUES.md": "efe06fbcf356fbb43e4657cddaf7dcd36750bbdbe44a1e040d20542c7695fe9b",
+    "biomes/greatchasm/KNOWN_ISSUES.md": "4690356501eb897df5dd65597e61bb65017962b5afba96b5f765bfdddf1d158f",
     "biomes/greatchasm/PORT.md": "d46f62283bd3faec340fe00ef69c9476076019d3d7defd84b7a6a1b9e01c1ff2",
     "biomes/greatchasm/build.py": "f37d9709274f2dc41e7acb23b4e93bd81bee7bedfbae5d2c839bae40a192b50a",
     "biomes/greatchasm/src/00-head.html": "c3bb5d17900f3b3d8c0b8839f8564c2e804ff3e06fcbc6c8a02956626e572bb8",
@@ -433,7 +433,7 @@
     "biomes/greatchasm/src/50-biome-greatchasm-species.js": "47256120a910c408f173c453248c98cb496565511f4e9d8160c51efdd8873d65",
     "biomes/greatchasm/src/60-biome-greatchasm-floor.js": "b7fc5532ab49ad8f7696a78af9f82db4d2623ba1c50f517b2738e1ab5d74d09a",
     "biomes/greatchasm/src/70-biome-greatchasm.js": "76ab7b1e056893fedf157baff8d17c6f58716e123b5db89fc2816fd63378eef2",
-    "biomes/greatchasm/src/83-host-far.js": "5a3943f18ada9fccd5f547b738b85d2f2c12c3701d50b9c777d720dbbf6e3fad",
+    "biomes/greatchasm/src/83-host-far.js": "430091a321cbd12d1d0e4554c585583a5a9851720addb8757239092e417747a1",
     "biomes/greatchasm/src/87-host-kin.js": "2d74d5b5fd7e19f8512f8c2c11d0541dc6fe8c1060de676f18b971e52b215d0e",
     "biomes/greatchasm/src/88-host-hazard.js": "4899870a5eadc8dde6c02ca6884e55b060eaa34e215fa56fae9dbd31a2ccbfd5",
     "biomes/greatchasm/src/89-host-sky.js": "e6ed6aa8053e168a3ec45f52803e9133d5c045eb03613fd455dc60b0741db2c9",
@@ -539,7 +539,7 @@
     "core/terrain/35-core-strata.js": "411b14b18413498c532a9a3fab9893c5726630c8387098b3a1190d0817a505b1",
     "core/terrain/37-core-stacks.js": "40693e354aa056827f163268033ef40cd761133fb29b4522395c46447fcfb320",
     "core/terrain/38-core-relief.js": "7b05a027e7258a2bb412cadbe67beb6bab878f88e6f18eeb5fdddf96fb9ae21f",
-    "core/terrain/38c-core-landforms.js": "88347efcd099f50939dcd328d90278d700176ffc87b2e0a4ea7520647a0e0d6c",
+    "core/terrain/38c-core-landforms.js": "031ffe8af33bcafc6b493f9b512648a7fadb8968b26b9de6a34118e0fc5f0eec",
     "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
@@ -567,15 +567,15 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/greatchasm/dist/greatchasm-deep.html": "57db144e69ccb9c91e9950e6d4ba82d526db4c4819768683bf645270d580b1d8"
+    "biomes/greatchasm/dist/greatchasm-deep.html": "d500d6a91353e5b25f6466fc61b46258a16e334a7e870444962701ec37f9dd6a"
    },
    "outputs_raw": {
-    "biomes/greatchasm/dist/greatchasm-deep.html": "57db144e69ccb9c91e9950e6d4ba82d526db4c4819768683bf645270d580b1d8"
+    "biomes/greatchasm/dist/greatchasm-deep.html": "d500d6a91353e5b25f6466fc61b46258a16e334a7e870444962701ec37f9dd6a"
    }
   },
   "build.py --station eastrim": {
    "inputs": {
-    "biomes/greatchasm/KNOWN_ISSUES.md": "efe06fbcf356fbb43e4657cddaf7dcd36750bbdbe44a1e040d20542c7695fe9b",
+    "biomes/greatchasm/KNOWN_ISSUES.md": "4690356501eb897df5dd65597e61bb65017962b5afba96b5f765bfdddf1d158f",
     "biomes/greatchasm/PORT.md": "d46f62283bd3faec340fe00ef69c9476076019d3d7defd84b7a6a1b9e01c1ff2",
     "biomes/greatchasm/build.py": "f37d9709274f2dc41e7acb23b4e93bd81bee7bedfbae5d2c839bae40a192b50a",
     "biomes/greatchasm/src/00-head.html": "c3bb5d17900f3b3d8c0b8839f8564c2e804ff3e06fcbc6c8a02956626e572bb8",
@@ -585,7 +585,7 @@
     "biomes/greatchasm/src/50-biome-greatchasm-species.js": "47256120a910c408f173c453248c98cb496565511f4e9d8160c51efdd8873d65",
     "biomes/greatchasm/src/60-biome-greatchasm-floor.js": "b7fc5532ab49ad8f7696a78af9f82db4d2623ba1c50f517b2738e1ab5d74d09a",
     "biomes/greatchasm/src/70-biome-greatchasm.js": "76ab7b1e056893fedf157baff8d17c6f58716e123b5db89fc2816fd63378eef2",
-    "biomes/greatchasm/src/83-host-far.js": "5a3943f18ada9fccd5f547b738b85d2f2c12c3701d50b9c777d720dbbf6e3fad",
+    "biomes/greatchasm/src/83-host-far.js": "430091a321cbd12d1d0e4554c585583a5a9851720addb8757239092e417747a1",
     "biomes/greatchasm/src/87-host-kin.js": "2d74d5b5fd7e19f8512f8c2c11d0541dc6fe8c1060de676f18b971e52b215d0e",
     "biomes/greatchasm/src/88-host-hazard.js": "4899870a5eadc8dde6c02ca6884e55b060eaa34e215fa56fae9dbd31a2ccbfd5",
     "biomes/greatchasm/src/89-host-sky.js": "e6ed6aa8053e168a3ec45f52803e9133d5c045eb03613fd455dc60b0741db2c9",
@@ -595,7 +595,7 @@
     "biomes/greatchasm/src/99-host-take.js": "26fd3ba3781490f91b5536cdcea7192dd8314b74d3779c86f3a8015819aae819",
     "biomes/greatchasm/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
     "biomes/greatchasm/stations/eastrim/44f-host-far-data.js": "a28d840354167e39188d7019a06dd6870ddf68061f17d5cc5f54add6b563381b",
-    "biomes/greatchasm/stations/eastrim/44w-host-land.js": "38933347d5bf5aa83f9704ceffbdb0c4aca8cb80898fa46cc6613cb112a79863",
+    "biomes/greatchasm/stations/eastrim/44w-host-land.js": "1ee3bf37ebd0dac2820f2dd668934cc5b5dcc04bd0da04c1cf4f8aee3be9358b",
     "biomes/greatchasm/stations/eastrim/station.json": "febc0a55e57bd23f2d95576aaa2b41ea22b5053df6f4601ea9187f011821cb6c",
     "biomes/greatchasm/tex/cush.albedo.webp": "3bee153c51a31cc87ce53675e8589ecc24c51907c666fd1d6e86ea3ad74d0844",
     "biomes/greatchasm/tex/ember.albedo.webp": "3bee153c51a31cc87ce53675e8589ecc24c51907c666fd1d6e86ea3ad74d0844",
@@ -691,7 +691,7 @@
     "core/terrain/35-core-strata.js": "411b14b18413498c532a9a3fab9893c5726630c8387098b3a1190d0817a505b1",
     "core/terrain/37-core-stacks.js": "40693e354aa056827f163268033ef40cd761133fb29b4522395c46447fcfb320",
     "core/terrain/38-core-relief.js": "7b05a027e7258a2bb412cadbe67beb6bab878f88e6f18eeb5fdddf96fb9ae21f",
-    "core/terrain/38c-core-landforms.js": "88347efcd099f50939dcd328d90278d700176ffc87b2e0a4ea7520647a0e0d6c",
+    "core/terrain/38c-core-landforms.js": "031ffe8af33bcafc6b493f9b512648a7fadb8968b26b9de6a34118e0fc5f0eec",
     "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
@@ -719,10 +719,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/greatchasm/dist/greatchasm-eastrim.html": "a81df073b736450d126b7f5f7dcfee1f6ef1b45e5ce64f4737cfa35d69a8b21f"
+    "biomes/greatchasm/dist/greatchasm-eastrim.html": "bfd22c6ce5f695d0828915fde70db80a1d803f9708726748a6b2b924cc57426c"
    },
    "outputs_raw": {
-    "biomes/greatchasm/dist/greatchasm-eastrim.html": "a81df073b736450d126b7f5f7dcfee1f6ef1b45e5ce64f4737cfa35d69a8b21f"
+    "biomes/greatchasm/dist/greatchasm-eastrim.html": "bfd22c6ce5f695d0828915fde70db80a1d803f9708726748a6b2b924cc57426c"
    }
   },
   "build.py --station headwall": {
@@ -762,7 +762,7 @@
     "biomes/ebadlands/tex/pack.json": "8995fd803ea3d491277ebf898fb4f9584b0091eae9b1d74b208a1805ac9c1473",
     "biomes/ebadlands/tex/stone.gem.albedo.webp": "fa2ddcfb1f8cceb9fa362593d3dba9eb17a8d5455cdd9bdfad8a37f060095dc8",
     "biomes/ebadlands/tex/wood.silver.albedo.webp": "56b7afbaa148477bc1c306df83d9b770f107fd49d38ecaeb19d20bc1b02dfc9b",
-    "biomes/greatchasm/KNOWN_ISSUES.md": "efe06fbcf356fbb43e4657cddaf7dcd36750bbdbe44a1e040d20542c7695fe9b",
+    "biomes/greatchasm/KNOWN_ISSUES.md": "4690356501eb897df5dd65597e61bb65017962b5afba96b5f765bfdddf1d158f",
     "biomes/greatchasm/PORT.md": "d46f62283bd3faec340fe00ef69c9476076019d3d7defd84b7a6a1b9e01c1ff2",
     "biomes/greatchasm/build.py": "f37d9709274f2dc41e7acb23b4e93bd81bee7bedfbae5d2c839bae40a192b50a",
     "biomes/greatchasm/src/00-head.html": "c3bb5d17900f3b3d8c0b8839f8564c2e804ff3e06fcbc6c8a02956626e572bb8",
@@ -772,7 +772,7 @@
     "biomes/greatchasm/src/50-biome-greatchasm-species.js": "47256120a910c408f173c453248c98cb496565511f4e9d8160c51efdd8873d65",
     "biomes/greatchasm/src/60-biome-greatchasm-floor.js": "b7fc5532ab49ad8f7696a78af9f82db4d2623ba1c50f517b2738e1ab5d74d09a",
     "biomes/greatchasm/src/70-biome-greatchasm.js": "76ab7b1e056893fedf157baff8d17c6f58716e123b5db89fc2816fd63378eef2",
-    "biomes/greatchasm/src/83-host-far.js": "5a3943f18ada9fccd5f547b738b85d2f2c12c3701d50b9c777d720dbbf6e3fad",
+    "biomes/greatchasm/src/83-host-far.js": "430091a321cbd12d1d0e4554c585583a5a9851720addb8757239092e417747a1",
     "biomes/greatchasm/src/87-host-kin.js": "2d74d5b5fd7e19f8512f8c2c11d0541dc6fe8c1060de676f18b971e52b215d0e",
     "biomes/greatchasm/src/88-host-hazard.js": "4899870a5eadc8dde6c02ca6884e55b060eaa34e215fa56fae9dbd31a2ccbfd5",
     "biomes/greatchasm/src/89-host-sky.js": "e6ed6aa8053e168a3ec45f52803e9133d5c045eb03613fd455dc60b0741db2c9",
@@ -782,7 +782,7 @@
     "biomes/greatchasm/src/99-host-take.js": "26fd3ba3781490f91b5536cdcea7192dd8314b74d3779c86f3a8015819aae819",
     "biomes/greatchasm/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
     "biomes/greatchasm/stations/headwall/44f-host-far-data.js": "fd5e893f54bb438d60d97e7f3b9a9a8c547a80f0236a3d1d431a9a5a427da644",
-    "biomes/greatchasm/stations/headwall/44w-host-land.js": "10cbf556f49ca2c2207690313ce8b91d6c58c0c17328dbfea2f5be5cfe9d6748",
+    "biomes/greatchasm/stations/headwall/44w-host-land.js": "060c98aa02ce77eb5632c6987dcdb07d0837bef2352f50bf05854051a7ebb2b9",
     "biomes/greatchasm/stations/headwall/station.json": "ef9c7fb760b2a59c5d25936860669efc705851bb8166eba931d321d1c0d5d978",
     "biomes/greatchasm/tex/cush.albedo.webp": "3bee153c51a31cc87ce53675e8589ecc24c51907c666fd1d6e86ea3ad74d0844",
     "biomes/greatchasm/tex/ember.albedo.webp": "3bee153c51a31cc87ce53675e8589ecc24c51907c666fd1d6e86ea3ad74d0844",
@@ -878,7 +878,7 @@
     "core/terrain/35-core-strata.js": "411b14b18413498c532a9a3fab9893c5726630c8387098b3a1190d0817a505b1",
     "core/terrain/37-core-stacks.js": "40693e354aa056827f163268033ef40cd761133fb29b4522395c46447fcfb320",
     "core/terrain/38-core-relief.js": "7b05a027e7258a2bb412cadbe67beb6bab878f88e6f18eeb5fdddf96fb9ae21f",
-    "core/terrain/38c-core-landforms.js": "88347efcd099f50939dcd328d90278d700176ffc87b2e0a4ea7520647a0e0d6c",
+    "core/terrain/38c-core-landforms.js": "031ffe8af33bcafc6b493f9b512648a7fadb8968b26b9de6a34118e0fc5f0eec",
     "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
@@ -906,10 +906,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/greatchasm/dist/greatchasm-headwall.html": "4f040a71ea33d0efc292adf959e72c4b739ce8dea461394840eda08f67c28587"
+    "biomes/greatchasm/dist/greatchasm-headwall.html": "51df9f875ed52ca2e7270a2f75b303767df591c402cd9e17b8752eece0e15427"
    },
    "outputs_raw": {
-    "biomes/greatchasm/dist/greatchasm-headwall.html": "4f040a71ea33d0efc292adf959e72c4b739ce8dea461394840eda08f67c28587"
+    "biomes/greatchasm/dist/greatchasm-headwall.html": "51df9f875ed52ca2e7270a2f75b303767df591c402cd9e17b8752eece0e15427"
    }
   },
   "build.py --station sill": {
@@ -949,7 +949,7 @@
     "biomes/ebadlands/tex/pack.json": "8995fd803ea3d491277ebf898fb4f9584b0091eae9b1d74b208a1805ac9c1473",
     "biomes/ebadlands/tex/stone.gem.albedo.webp": "fa2ddcfb1f8cceb9fa362593d3dba9eb17a8d5455cdd9bdfad8a37f060095dc8",
     "biomes/ebadlands/tex/wood.silver.albedo.webp": "56b7afbaa148477bc1c306df83d9b770f107fd49d38ecaeb19d20bc1b02dfc9b",
-    "biomes/greatchasm/KNOWN_ISSUES.md": "efe06fbcf356fbb43e4657cddaf7dcd36750bbdbe44a1e040d20542c7695fe9b",
+    "biomes/greatchasm/KNOWN_ISSUES.md": "4690356501eb897df5dd65597e61bb65017962b5afba96b5f765bfdddf1d158f",
     "biomes/greatchasm/PORT.md": "d46f62283bd3faec340fe00ef69c9476076019d3d7defd84b7a6a1b9e01c1ff2",
     "biomes/greatchasm/build.py": "f37d9709274f2dc41e7acb23b4e93bd81bee7bedfbae5d2c839bae40a192b50a",
     "biomes/greatchasm/src/00-head.html": "c3bb5d17900f3b3d8c0b8839f8564c2e804ff3e06fcbc6c8a02956626e572bb8",
@@ -959,7 +959,7 @@
     "biomes/greatchasm/src/50-biome-greatchasm-species.js": "47256120a910c408f173c453248c98cb496565511f4e9d8160c51efdd8873d65",
     "biomes/greatchasm/src/60-biome-greatchasm-floor.js": "b7fc5532ab49ad8f7696a78af9f82db4d2623ba1c50f517b2738e1ab5d74d09a",
     "biomes/greatchasm/src/70-biome-greatchasm.js": "76ab7b1e056893fedf157baff8d17c6f58716e123b5db89fc2816fd63378eef2",
-    "biomes/greatchasm/src/83-host-far.js": "5a3943f18ada9fccd5f547b738b85d2f2c12c3701d50b9c777d720dbbf6e3fad",
+    "biomes/greatchasm/src/83-host-far.js": "430091a321cbd12d1d0e4554c585583a5a9851720addb8757239092e417747a1",
     "biomes/greatchasm/src/87-host-kin.js": "2d74d5b5fd7e19f8512f8c2c11d0541dc6fe8c1060de676f18b971e52b215d0e",
     "biomes/greatchasm/src/88-host-hazard.js": "4899870a5eadc8dde6c02ca6884e55b060eaa34e215fa56fae9dbd31a2ccbfd5",
     "biomes/greatchasm/src/89-host-sky.js": "e6ed6aa8053e168a3ec45f52803e9133d5c045eb03613fd455dc60b0741db2c9",
@@ -1066,7 +1066,7 @@
     "core/terrain/35-core-strata.js": "411b14b18413498c532a9a3fab9893c5726630c8387098b3a1190d0817a505b1",
     "core/terrain/37-core-stacks.js": "40693e354aa056827f163268033ef40cd761133fb29b4522395c46447fcfb320",
     "core/terrain/38-core-relief.js": "7b05a027e7258a2bb412cadbe67beb6bab878f88e6f18eeb5fdddf96fb9ae21f",
-    "core/terrain/38c-core-landforms.js": "88347efcd099f50939dcd328d90278d700176ffc87b2e0a4ea7520647a0e0d6c",
+    "core/terrain/38c-core-landforms.js": "031ffe8af33bcafc6b493f9b512648a7fadb8968b26b9de6a34118e0fc5f0eec",
     "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
@@ -1094,10 +1094,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/greatchasm/dist/greatchasm.html": "df7f3ae024140f4f5d1e02e7d3b50d76f6d327f0e7fb35ae4d53141f5aa4b9b5"
+    "biomes/greatchasm/dist/greatchasm.html": "758e77ad35330ca3248867e21f287d2de32a8836f3396e8808d440ba43d131f3"
    },
    "outputs_raw": {
-    "biomes/greatchasm/dist/greatchasm.html": "df7f3ae024140f4f5d1e02e7d3b50d76f6d327f0e7fb35ae4d53141f5aa4b9b5"
+    "biomes/greatchasm/dist/greatchasm.html": "758e77ad35330ca3248867e21f287d2de32a8836f3396e8808d440ba43d131f3"
    }
   }
  }
