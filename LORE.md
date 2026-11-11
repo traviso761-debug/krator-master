@@ -237,7 +237,9 @@ The Ancients were the original civilization that colonized Krator, with roots, h
     running (*proposed*: rare earths from the rift fill's carbonatites for the magnets of a power plant that runs on the
     deep middle's heat, and a few recharged Ancient power cells, the rarest thing they sell); they take **ice and other
     things from the mountains**; and **at least a few ventilation shafts** reach the surface, whose heads are their second
-    way out (`kits/tungang/PLAN.md` §1.2.1).
+    way out (`kits/tungang/PLAN.md` §1.2.1). **The shaft heads are kept well hidden from outsiders**, and a striking Union
+    might use them to take **direct action against Dalab's caravans**: up by night, a caravan's road blocked or its cargo
+    taken down, and no door for Dalab to find (the owner, 2026-11-11).
   - **The Fellgangs' villages and Wildcat** (the owner, 2026-11-10/11): the Fowlers (a rope is a vote) and the Ice-cutters
     ("the Cold is owed") are built (`biomes/riftrim` stations 8 and 9). **Wildcat** is about half **Kimr** by descent
     (`biomes/labyrinth/PLAN.md` §5), and the Kimr's bravado shapes its raiding: capital-H heroism in a **scrap pueblo**, stepped

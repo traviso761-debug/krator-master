@@ -366,14 +366,25 @@ least a few ventilation tunnels to the surface**. *Proposed* from there:
   follows the rocks along the Line (`openworld/ANCIENT-TUNNELS.md`: gneiss 112 km, rift fill 120 km, impact breccia 40 km,
   granite 20 km) and `kits/resources`' families (`GEOLOGY.md`):
 
-  | Stretch | Rock | Ores the families favour there | What the Tungangs use it for |
-  |---|---|---|---|
-  | the crystalline middle and north | gneiss | **iron** (strongest on gneiss), silver, gold | plate, bolts and rivets, rails, tools |
-  | the southern end, the holds | rift fill | **rare earths** (the rift's carbonatites, the families' strongest source), copper, gold, silver | the exotic (below); copper for windings and lamp wire |
-  | the north end's impact bench | impact breccia | iron, gold (a Vredefort-like lode), nickel and copper where `kits/resources` puts its nickel nodes | alloy, the Fixers' best steel |
-  | the granite stretches | granite | **tin** (a granite's ore), rare earths, iron | solder, bearings, bronze bushes; the crystal clefts (shrines) are here too |
+  The Line's biome session sampled the geology bake along the bore (`biomes/line/PLAN.md` section 2.1, `survey_line.py`;
+  c52d35ef8 on `claude/awesome-varahamihira-66a852`), and its numbers replace this plan's first guess from the rock list:
 
-  Where a loj's metal comes from is checked against the resource map when the Line's tunnel record is built.
+  | Stretch (km from the north portal) | Rock | Ores (the bake's bytes) | Who works it, for what |
+  |---|---|---|---|
+  | km 187-304, the south | rift fill | **copper 120, rare earths 190** | **the main workings**: copper for windings and lamp wire, rare earths for the exotic (below) |
+  | km 54-57 and 82-97 | granite | **tin 200**, rare earths 160 | solder, bearings, bronze bushes; the crystal clefts (shrines) are here too |
+  | km 17-32, the sedimentary valley | sedimentary | **iron 180**, the Line's best iron | plate, bolts, rivets, wheels and rails |
+  | the north end | impact breccia | iron 120, gold 90, **nickel 60** (the only nickel on the Line) | the Fixers' best steel |
+  | the deep middle | gneiss | iron 160, gold and silver 110 | **inside the hot section: Ancient workings, sealed**, worked by no one |
+
+  The veins are records, `LN.veins {id, s, side, family, grade, node, working}`, taken from `KRES.nodesIn` on a corridor of
+  the bore, so the Line and the open world agree; a Fixers' side gallery follows each vein outside the hot section. The
+  shafts are `LN.shafts {id, s, side, top, depth, r, kind: air | adit | winch, state}`, only where the cover is thin: km 4
+  and 10 (the north end), km 24 (the valley adit), **km 218, a 2.2 km great shaft at the Twenny junction** (the hot
+  section's southern exhaust: Loj Twenny, the first hold, sits under it), km 250 and 260, and every 400 m in the shallow
+  south (km 270-304); none over the hot section, whose crest is near airless. The plant at the hot doors (heat exchangers
+  through the inner door, the cooling plant its cold side, the generators' magnets re-wound from the rift fill's rare
+  earths, the cells recharged there) is the Line's `hotdoor` station; the kit dresses it.
 - **The power and the exotic.** *Proposed*: the Ancients ran the Line on **the deep middle's own heat**, rock well over
   100 °C at km 60-180, through a power plant by the hot section's doors that the Tungangs keep by rite (the Line's biome,
   station `hotdoor`). Generators and the trains' motors want copper windings and magnets, and the magnets want **rare
@@ -388,7 +399,15 @@ least a few ventilation tunnels to the surface**. *Proposed* from there:
   (the draught through the holds), and their **heads** on the mountain are the Tungangs' second way out after the
   portals: a winch house, an ice store, a hooded lamp. From the shaft heads they take **ice** (for the hot holds and the
   Hearth loj's cooling suits, their own beside the Ice-cutters' trade), **snowmelt**, **mountain crystal** from the clefts
-  that are not shrines, and **herbs** of the high slopes. The shaft heads are where the Travellers' dark clan services the shafts and porters up and down them
+  that are not shrines, and **herbs** of the high slopes. **The heads are hidden** (the owner, 2026-11-11: "the entrances'
+  locations are kept well hidden from outsiders"): a head is a cleft in a scree slope, a turf-capped hut that reads as a
+  boulder, no path to it, the hooded lamp lit only to a signal; its place is on no map but the lojes' and the dark clan's.
+  **And they are the strike's weapon** (the owner: a striking Union "might exploit" them "to take direct action against
+  Dalab caravans"): Dalab's road crosses the Wall partly through the Ancient tunnels and over the rim, and a shaft head
+  above it is where a loj on strike comes up at night to cut a caravan's beasts loose, block the road, take its cargo
+  down, and vanish, with no door Dalab can find to knock on (*proposed* forms; `core/simulation`'s latent war between
+  Dalab and the Tungangs, `PLAN-POLITICS.md`, is where it lives as data: a strike turns the shafts into raid points).
+  The shaft heads are where the Travellers' dark clan services the shafts and porters up and down them
   (section 1.3), and where a raider or a player can come down.
 - **The kit's pieces** (section 3.2): `tg_vein_working`, `tg_ore_store`, `tg_refinery` (the rare-earth batch room),
   `tg_power_hall` (the Tungangs' dressing of the Ancients' plant), `tg_shaft_foot` (the ice hoist, the draught doors) and
