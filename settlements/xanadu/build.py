@@ -157,8 +157,8 @@ if '--kit' in sys.argv:
     TARGET_OUT = dict(KIT['targets'])
     TARGET_CORE = dict(KIT.get('core', {}))
     TARGET_FILES = {t: [(os.path.join(ROOT, *d.split('/')), fs) for d, fs in v] for t, v in KIT.get('files', {}).items()}
-# a kit's targets with interiors (kit.json "interiors": [targets], "furniture": [catalog culture files], "interiorSets":
-# [kits/interiors sets]) take the catalog's furniture bundle and the interiors core as one generated fragment, as Iziz's
+# a kit's targets with interiors (kit.json "interiors": [targets], "furniture": [catalog culture files], "furnitureTex": the
+# library's detail maps on the pieces, "interiorSets": [kits/interiors sets]) take the catalog's furniture bundle and the interiors core as one generated fragment, as Iziz's
 # --kit pages do (KratorFurniture, KratorInteriors, ROOM, furnishRoom: closures, so the shared-scope rules skip it)
 KIT_FURN_BUNDLE = '88z-kit-furniture-bundle.js'
 
@@ -345,7 +345,9 @@ def build_one(target, do_checks):
         sys.path.insert(0, os.path.join(ROOT, 'kits', 'catalog'))
         sys.path.insert(0, os.path.join(ROOT, 'kits', 'interiors'))
         import furniture_bundle, kit_bundle
-        bodies[KIT_FURN_BUNDLE] = furniture_bundle.bundle(KIT.get('furniture')) + kit_bundle.bundle(KIT.get('interiorSets', []))
+        # kit.json "furnitureTex": true gives every piece the library's detail maps (KF_TEX, krator-furniture-detail.js)
+        bodies[KIT_FURN_BUNDLE] = furniture_bundle.bundle(KIT.get('furniture'), tex=bool(KIT.get('furnitureTex'))) + \
+            kit_bundle.bundle(KIT.get('interiorSets', []))
         order = sorted(order + [KIT_FURN_BUNDLE])
     if any(f.startswith('86-bio-') for f in order):   # the vendored xanadu biome: its library pack, before the biome code
         bodies['86-bio-00-matlib-pack.js'] = matlib_pack.fragment(os.path.join(ROOT, 'biomes', 'xanadu'), 'xanadu')
@@ -457,7 +459,7 @@ def main():
 
 if __name__ == '__main__':
     main()
-    BSRC.report(vendor_check=vendor_check)   # --list-sources: every target's files (and what --vendor-check compares), then exit
+    BSRC.report(vendor_check=None if KIT else vendor_check)   # --list-sources: every target's files (and what --vendor-check compares; a kit build keeps no copies), then exit
 
 # --- remind whoever is building of the open issues (see KNOWN_ISSUES.md) ---
 _ki = os.path.join(KIT['dir'] if KIT else HERE, 'KNOWN_ISSUES.md')

@@ -12,7 +12,7 @@ function qnShopFront(x,y,z,ry,w,trim,goods){const p=loc(x,z,0,.04,ry);vB('vDarkB
  const l=loc(x,z,0,.16,ry);vB('vWood',l[0],y+2.05,l[1],w+.5,.2,.3,ry,xC(xPick(XPAL.timber)));
  const c=loc(x,z,0,.45,ry);vB('vWood',c[0],y,c[1],w,.85,.6,ry,xC(xPick(XPAL.timber)));
  const a=loc(x,z,0,.75,ry);kput('vWood',[a[0],y+2.25,a[1]],vQ(ry,-.5,0),[w+.2,.06,1.3],xC(xPick(XPAL.timber)));
- const g=goods||[XPAL.saffron,XPAL.red,XPAL.green,XPAL.white];for(let i=0;i<Math.max(2,Math.round(w/.7));i++){const u=-w/2+.35+i*.7;if(u>w/2-.2)break;const q=loc(x,z,u,.45,ry);vB('xPaint',q[0],y+.85,q[1],.42,.22,.36,ry,xC(xPick(g)));}}
+ const g=goods||[XPAL.saffron,XPAL.red,XPAL.green,XPAL.white];for(let i=0;i<Math.max(2,Math.round(w/.7));i++){const u=-w/2+.35+i*.7;if(u>w/2-.2)break;const q=loc(x,z,u,.45,ry);vB('vClothB',q[0],y+.85,q[1],.42,.22,.36,ry,xC(xPick(g)));}}
 
 // ---------------------------------------------------------------- the shop row (middle)
 function buildQbShopRow(G,o){reseed(33301+(o.v|0));const V=xV(o),W=18,D=11,P=.5;
@@ -77,7 +77,7 @@ function buildQbWeaver(G,o){reseed(33341+(o.v|0));const V=xV(o),W=16,D=9,P=.45;
  // the drying frames on the roof, the cloth in the dyers' colours; the vats in the yard in front
  const cols=[XPAL.saffron,XPAL.red,XPAL.blue,0x6e2a2a,XPAL.turquoise,XPAL.green];
  for(const u of[-5,0,5]){for(const s of[-1,1])vPst('vPost',u+s*2,S.y+.3,-1,.05,2.6,aged);vB('vWood',u,S.y+2.85,-1,4.2,.08,.08,0,aged);
-  for(let i=0;i<3;i++)kput('xPaintPl',[u-1.4+i*1.4,S.y+2.0,-1],qEuler(0,0,0),[1.2,1.7,1],xC(xPick(cols)));}
+  for(let i=0;i<3;i++)kput('vCloth',[u-1.4+i*1.4,S.y+2.0,-1],qEuler(0,0,0),[1.2,1.7,1],xC(xPick(cols)));}
  for(let i=0;i<3;i++){const x=-4+i*4;kput('xDrumS',[x,0,D/2+1.4],null,[.8,.8,.8],xC(xPick(QSTONE)));kput('xDisc',[x,.78,D/2+1.4],null,[.7,.04,.7],xC(cols[(i+V)%cols.length]));}}
 
 // ---------------------------------------------------------------- the brewhouse: the malting floor, the vats, the barrels
@@ -100,7 +100,7 @@ function buildQbTannery(G,o){reseed(33361+(o.v|0));const V=xV(o),W=12,D=7,P=.4;
  vB('xRubB',0,0,-4,W,P,D,0,xC(xPick(XPAL.rubble)));const S=qnStack(0,P,-4,W,D,0,[3.0,2.6],wall,'wash',xC(0x6a5a4a));
  // the drying loft: an open upper storey of posts under the roof, the hides hung in it
  qnWins(0,P,-4,W,D,0,[3.0,2.6],S.k,{pitch:2.6,ww:.7,wh:.85,trim:R.trim,top:1,skip:[[-1,1]]});qnDoor(0,P,D/2-4,0,1.6,2.1,{c:R.trim,leaf:aged,val:false});
- for(let i=0;i<5;i++)kput('xPaintPl',[-4+i*2,P+3.6,-4+S.d/2+.12],null,[1.3,1.6,1],xC(xPick([0xb08858,0x9a7048,0xc8a070])));
+ for(let i=0;i<5;i++)kput('vCloth',[-4+i*2,P+3.6,-4+S.d/2+.12],null,[1.3,1.6,1],xC(xPick([0xb08858,0x9a7048,0xc8a070])));
  qnRoof(0,S.y,-4,S.w,S.d,0,wall,{parapet:.5});
  // the pits in a grid in front: stone curbs, the liquor in lime, bark and dye
  const liq=[0xd8d0b8,0x6a4a2a,0x8a5a2a,0xa8382a,0x2a5aa8];
@@ -164,7 +164,7 @@ function buildQbGateMarket(G,o){reseed(33441+(o.v|0));const V=xV(o),W=44,D=44,Dr
  // the square: paving, the stalls, the chorten on the axis
  qnPave(0,0,W-2*Dr-3,D-2*Dr-3,0,P);qnChorten(0,P,0,.8);
  for(let i=0;i<8;i++){const a=i*Math.PI/4+.39,r=10;const x=Math.cos(a)*r,z=Math.sin(a)*r;vB('vWood',x,P,z,2,.85,1,a,tim);
-  kput('vWood',[x,P+2.2,z],qEuler(0,-a,0),[2.6,.06,1.8],xC(xPick(XPAL.cloth)));for(const s of[-1,1])vPst('vPost',x+s*.9,P,z,.05,2.2,tim);}
+  kput('vClothB',[x,P+2.2,z],qEuler(0,-a,0),[2.6,.06,1.8],xC(xPick(XPAL.cloth)));for(const s of[-1,1])vPst('vPost',x+s*.9,P,z,.05,2.2,tim);}
  vnFolk(0,D/2+3,6,6);xnFolk(0,P,-6,6,8);}
 
 // ---------------------------------------------------------------- the baths (civic): the hot hall, the steam vents, the pool court

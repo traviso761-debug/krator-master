@@ -10,6 +10,10 @@
 - [ ] **No Qiblai textures of its own.** Qiblai is drawn in the Xanadu pack (`settlements/xanadu/materials.json`). The plan's three
   candidates (dressed ashlar for the terraces and ring walls, a beaten-gold roof sheet, prayer-wheel copper with mantra relief) wait for
   the owner's word (PLAN.md section 9, item 2).
+- [ ] **kits/interiors: a fixture with a small front clearance blocks the wall pieces** (found 2026-11-11, a node probe on the
+  interiors core): one room fixture whose `clearance.front` is under 0.4 m (0.2, 0 or absent) anywhere in a room leaves the placer
+  unable to fit a required wall piece (the shrine's altar, the hall's table): "no-fit". The kit floors every fixture's front at 0.4 m
+  (`qnRoomRec`, `src/89q5-qb-interiors.js`); the fix belongs in `kits/interiors/src/45-placer.js`.
 - [ ] **No city yet (Q7).** The nested-squares site on core/city is the core/city session's work (PLAN.md section 7); the kit stops at Q6.
 - [ ] **The Xanadu kit's own pages are behind main's core** (found 2026-11-11, not this kit's doing): a rebuild of `settlements/xanadu`
   today changes `dist/xanadu.html` and `dist/erewhon.html` (core/shader's `06-core-khook.js` and core/water's fragments moved on main

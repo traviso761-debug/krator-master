@@ -8,6 +8,7 @@
  ],
  "interiors": ["kit"],
  "furniture": ["xanadu", "eastabyss", "generic", "generic-goods", "jobs"],
+ "furnitureTex": true,
  "interiorSets": [],
  "files": {
   "kit": [
