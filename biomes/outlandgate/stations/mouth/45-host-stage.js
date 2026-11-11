@@ -104,7 +104,7 @@ const STAGE={key:'mouth',px:STATION_PX,seed:400,title:'the Spider Lake Threshold
  water:{lakes:[{name:'Spider Lake',level:LV,box:[-TERR.R*1.1,-TERR.R*1.1,TERR.R*1.1,TERR.R*1.1],seed:[shoreX(0)-1500,0],land:(x,z)=>!inLake(x,z),shallow:0x6a8a7a,deep:0x26443e,label:'Spider Lake (its eastern bay, 1,460 m)'}],
   flows:CH.map(C=>{const pts=C.P.map((p,i)=>[p[0],p[1],C.lvl(C.A[i])]).filter(p=>!inLake(p[0]+C.hw,p[1]));return{name:C.name,pts,width:pts.map(()=>C.hw*2*.86),speed:1.1,shallow:0x6e8a6a,deep:0x3a5446};}),
   pools:COVES.map((V,i)=>({x:V.x,z:V.z,r:V.r,l:base(V.x,V.z)+.4,name:'A warm cove'})),poolCol:0x5a9a90,poolLabel:'A warm cove (32-45 °C: steaming in the cool mornings)'},
- inWorks,worksAt:[LAND.x,LAND.z],worksNeed:['landing','jetty','reeling','god\'s road'],worksLabel:'Spider Lake\'s people\'s silk landing (plain records until their kit)',
+ inWorks,worksAt:[LAND.x,LAND.z],worksNeed:['landing','jetty','reeling'],worksLabel:'Spider Lake\'s people\'s silk landing (plain records until their kit)',
  works(W){const L=LAND,y=W.gmin(L.x,L.z,30)-.3;
   for(let k=0;k<5;k++){const x=L.x-40+k*20,z=L.z+(k%2?14:-14),yy=W.gmin(x,z,5)-.2;for(const sx of[-1,1])for(const sz of[-1,1])W.box('wood',x+sx*3.6,yy,z+sz*2.6,.35,2.4,.35);
    W.box('wood',x,yy+2.4,z,8.2,.4,6.2);W.box('wood',x,yy+2.8,z,7.6,2.6,5.6);W.box('cloth',x,yy+5.4,z,8.8,.5,6.8);
@@ -115,7 +115,7 @@ const STAGE={key:'mouth',px:STATION_PX,seed:400,title:'the Spider Lake Threshold
   W.box('wood',L.x-jl/2,LV+1.1,L.jz,jl,.3,4.4);
   W.rec({name:'The landing\'s jetty (out into Spider Lake\'s eastern bay)',kind:'structure',x:L.x-jl/2,z:L.jz,y:LV-2,r:jl/2,h:4});
   W.rec({name:'The silk landing (Spider Lake\'s people at the gap\'s mouth: PLAN.md section 5)',kind:'settlement',x:L.x,z:L.z,y,r:80,h:8});
-  for(let k=0;k<ROAD.P.length;k+=12){const p=ROAD.P[k];W.rec({name:'The god\'s road (setting out from Spider Lake up the gap)',kind:'road',key:'godsroad:'+k,x:p[0],z:p[1],y:terrainH(p[0],p[1]),r:6,h:2});}
+  for(let k=0;k<ROAD.P.length;k+=12){const p=ROAD.P[k];W.tag({name:'The god\'s road (setting out from Spider Lake up the gap)',kind:'road',key:'godsroad:'+k,x:p[0],z:p[1],y:terrainH(p[0],p[1]),r:6,h:2});}
   return{landing:1};},
  banners:[[LAND.jx-60,LAND.jz,LV+1.4],[LAND.x+30,LAND.z,terrainH(LAND.x+30,LAND.z)]],bannerCol:0xe8d8a0,bannerName:'A silk pennant of Spider Lake\'s people (it streams downwind)',
  hazards(H){CH.forEach((C,ci)=>reachPolys(C).forEach(R=>{if(inLake(R.m[0],R.m[1]))return;H.add({kind:'drown',key:'drown.ch'+ci+':'+R.s,name:C.name+' (drowning)',x:R.m[0],y:C.lvl(R.s)-4,z:R.m[1],r:240,h:6,shape:{type:'poly',pts:R.pts,h:6}});}));

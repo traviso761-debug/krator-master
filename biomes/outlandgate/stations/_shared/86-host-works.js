@@ -2,7 +2,8 @@
 // STAGE.works(W) builds them through W, before the kit (the flora keeps out of them through the stage's own footprint test):
 //   W.box(set, x, y0, z, w, h, d, yaw)    a box standing on y0 (set: stone, dark, wood, cloth, silk, sinter)
 //   W.gmin(x, z, r)                       the lowest ground under a footprint (a wall's foot sits below it)
-//   W.rec({name, kind, x, z, y, r, h})    a core/tags record (REGISTER)
+//   W.rec({name, kind, x, z, y, r, h})    a core/tags record (REGISTER: the registry's volumes, which the verify probes for geometry)
+//   W.tag({...})                          a core/tags record only (BIO.record): what the ground's paint draws (a road, a track)
 // Each piece is a record before the boxes are drawn (one InstancedMesh a set). Plain until the culture kit (kits/coyote; the Spider Lake
 // people's own kit when it comes).
 const WORKS=(function(){const out={pieces:0,records:0},INST={stone:[],dark:[],wood:[],cloth:[],silk:[],sinter:[]};
@@ -10,7 +11,7 @@ const WORKS=(function(){const out={pieces:0,records:0},INST={stone:[],dark:[],wo
  const Q=new THREE.Quaternion(),E=new THREE.Euler(),M4=new THREE.Matrix4(),P=new THREE.Vector3(),S=new THREE.Vector3();
  const W={box:(set,x,y0,z,w,h,d,yaw)=>{INST[set].push([x,y0+h/2,z,w,h,d,yaw==null?0:yaw]);out.pieces++;},
   gmin:(x,z,r)=>Math.min(terrainH(x-r,z),terrainH(x+r,z),terrainH(x,z-r),terrainH(x,z+r),terrainH(x,z)),
-  rec:o=>{REGISTER(o);out.records++;}};
+  rec:o=>{REGISTER(o);out.records++;},tag:o=>{BIO.record(o);out.tags=(out.tags||0)+1;}};
  try{Object.assign(out,STAGE.works(W)||{});}catch(e){reportErr('works: '+e.stack);}
  const MAT={stone:new THREE.MeshLambertMaterial({color:0xa8a090}),dark:new THREE.MeshLambertMaterial({color:0x4a4038}),wood:new THREE.MeshLambertMaterial({color:0x7a5a3e}),
   cloth:new THREE.MeshLambertMaterial({color:0xc8b48e}),silk:new THREE.MeshLambertMaterial({color:0xece6d8,transparent:true,opacity:.8,side:THREE.DoubleSide,depthWrite:false}),

@@ -89,11 +89,11 @@ const STAGE={key:'tarn',px:STATION_PX,seed:300,title:'the Upper Gate Tarn',site:
  farWater:(x,z)=>{const G=OG_FAR,u=Math.round(x/G.cell+G.r),v=Math.round(z/G.cell+G.r);if(u<0||v<0||u>=G.h.length||v>=G.h.length)return null;
   return (z>TERR.R*1.1&&Math.abs(x)<26000&&z<16000)?LEVEL:null;},   /* the tarn's far reaches south and east (the model's 56 cells) */
  paint(x,z,h,c,f){const sh=f('shore'),co=f('coulee'),ri=f('ripple'),bk=f('bank'),rk=f('rock'),rd=f('road'),n=fbm(x*.01,z*.01,6341,2);
-  c.setHex(0x6e7a46).lerp(LIN(0x5e6e3e),smooth(.4,.7,n)*.4).lerp(LIN(0x7a7a5a),rk*.7);
+  c.setHex(0x6e7a46).lerp(LIN(0x5e6e3e),smooth(.4,.7,n)*.4).lerp(LIN(0x6a625a),clamp(rk,0,1)*.85).lerp(LIN(0x55504a),clamp(rk,0,1)*smooth(.5,.8,n)*.3);   /* the coulee's walls: bare basalt */
   c.lerp(LIN(0x9a9084),co*.8).lerp(LIN(0xaaa294),ri*.35).lerp(LIN(0x5e5440),bk*.5).lerp(LIN(0x9a9084),sh*smooth(60,0,shoreZ(x)-z)*.7);
   if(h<LEVEL-.2&&inLake(x,z))c.lerp(LIN(0x4a4a3c),.85);if(h<waterH(x,z)-.2&&!inLake(x,z))c.lerp(LIN(0x4a4a3c),.85);c.lerp(LIN(0x9a8462),rd*.75);},
  layers:[{fam:'ground.grass',name:'meadow',amt:.45},{fam:'ground.shingle',name:'flood gravel',amt:.65},{fam:'ground.mud',name:'bank mud',amt:.55}],
- gl(x,z){const co=Math.max(FC.at(FC.a.coulee,x,z),FC.at(FC.a.shore,x,z)*smooth(60,0,shoreZ(x)-z)),bk=FC.at(FC.a.bank,x,z)*(1-co*.5),m=(1-co)*(1-bk)*(1-FC.at(FC.a.road,x,z));return[m,co,bk];},
+ gl(x,z){const rk=clamp(FC.at(FC.a.rock,x,z),0,1),co=Math.max(FC.at(FC.a.coulee,x,z),FC.at(FC.a.shore,x,z)*smooth(60,0,shoreZ(x)-z),rk*.6),bk=FC.at(FC.a.bank,x,z)*(1-co*.5),m=(1-co)*(1-bk)*(1-FC.at(FC.a.road,x,z))*(1-rk);return[m,co,bk];},
  rocks:ERRATICS,rockName:{balanced:'An erratic (a block the outburst floods carried here: KSTACKS)'},
  probes:[[RIVP[40][0],-1.5,RIVP[40][1]],[0,1,shoreZ(0)+300]],
  landmarks:[{name:'The Upper Gate Tarn (56 cells of the model, its level 1,521.46 m; deep)',kind:'water',x:0,z:shoreZ(0)+1800,y:LEVEL-50,r:2600,h:52},
@@ -103,13 +103,13 @@ const STAGE={key:'tarn',px:STATION_PX,seed:300,title:'the Upper Gate Tarn',site:
  water:{lakes:[{name:'The Upper Gate Tarn',level:LEVEL,box:[-TERR.R*1.1,-TERR.R*1.1,TERR.R*1.1,TERR.R*1.1],seed:[0,shoreZ(0)+1500],land:(x,z)=>!inLake(x,z),shallow:0x6a8a84,deep:0x22404a,label:'The Upper Gate Tarn (1,521 m)'}],
   flows:(function(){const pts=RIVP.map((p,i)=>[p[0],p[1],rivLvl(RA[i])]).filter(p=>!inLake(p[0],p[1]-RIV_HW));
    return[{name:'Hau-Gel (the outlet: rapids down the coulee)',pts,width:pts.map(()=>RIV_HW*2*.86),speed:2.2,shallow:0x7a8a74,deep:0x3e5450}];})()},
- inWorks,worksAt:[SHRINE.x,SHRINE.z],worksNeed:['shrine','cairn','god\'s road'],
+ inWorks,worksAt:[SHRINE.x,SHRINE.z],worksNeed:['shrine','cairn'],
  works(W){const y=W.gmin(SHRINE.x,SHRINE.z,4)-.8;W.box('stone',SHRINE.x,y,SHRINE.z,5,4.2,5);W.box('dark',SHRINE.x,y+4.2,SHRINE.z,6,.6,6);W.box('wood',SHRINE.x+6,y,SHRINE.z,.5,7.5,.5);
   W.box('wood',SHRINE.x+6.6,y+7.3,SHRINE.z,1.8,.5,.4);W.box('wood',SHRINE.x+7.3,y+7.5,SHRINE.z,.3,1.1,.3);
   W.rec({name:'The trickster\'s shrine at the outlet (the runner bird\'s: the god\'s road passes it)',kind:'structure',x:SHRINE.x,z:SHRINE.z,y,r:9,h:10});
   let n=0;for(let k=6;k<ROAD.P.length;k+=11){const p=ROAD.P[k],x=p[0]+7,z=p[1]+3,y0=W.gmin(x,z,2)-.4;W.box('stone',x,y0,z,2.2,1.1,2.2);W.box('stone',x,y0+1.1,z,1.6,1,1.6,.4);W.box('stone',x,y0+2.1,z,1,.9,1,.9);
    W.rec({name:'A cairn on the god\'s road (Coyote contour carvings on its stones)',kind:'structure',key:'cairn:'+k,x,z,y:y0,r:2,h:3.2});n++;}
-  for(let k=0;k<ROAD.P.length;k+=10){const p=ROAD.P[k];W.rec({name:'The god\'s road (the Sleeping City to Trickster\'s House: past the tarn)',kind:'road',key:'godsroad:'+k,x:p[0],z:p[1],y:terrainH(p[0],p[1]),r:6,h:2});}
+  for(let k=0;k<ROAD.P.length;k+=10){const p=ROAD.P[k];W.tag({name:'The god\'s road (the Sleeping City to Trickster\'s House: past the tarn)',kind:'road',key:'godsroad:'+k,x:p[0],z:p[1],y:terrainH(p[0],p[1]),r:6,h:2});}
   return{cairns:n};},
  hazards(H){for(let s=0;s<RLEN;s+=400){const k0=RA.findIndex(a=>a>=s),k1=RA.findIndex(a=>a>=s+400),i0=Math.max(0,k0),i1=k1<0?RIVP.length-1:k1;if(i1-i0<2)continue;
    const m=RIVP[Math.floor((i0+i1)/2)];if(inLake(m[0],m[1]))continue;const L=[],Rt=[];

@@ -104,7 +104,7 @@ const STAGE={key:'seeps',px:STATION_PX,seed:200,title:'the West Bench: the warm 
  landmarks:SPRINGS.map(S=>({name:'An alcove and its spring: '+S.name+' (warm water out of the skarn, PLAN.md section 2)',kind:'landform',x:S.x,z:S.z,y:base(S.x,S.z)-S.D-2,r:S.r,h:S.D+8}))
   .concat(STAIRS.map(St=>{const m=St.at(St.L/2);return{name:'A rimstone stair: '+St.S.name+'\'s travertine terraces ('+St.T.length+' pools)',kind:'landform',x:m[0],z:m[1],y:terrainH(m[0],m[1])-3,r:St.L/2,h:St.T[0].y-St.T[St.T.length-1].y+6};})),
  water:{terraces:STAIRS.map(St=>({name:St.S.name+'\'s rimstone stair (warm water, travertine)',line:St.P,treads:St.T.map(T=>({s0:T.s0,s1:T.s1,y:T.y,w:T.w})),riser:1.4,col:0x7ab0a4}))},
- inWorks,worksAt:[SERAI.x,SERAI.z],worksNeed:['caravanserai','cistern','gatehouse','track'],
+ inWorks,worksAt:[SERAI.x,SERAI.z],worksNeed:['caravanserai','cistern','gatehouse'],
  works(W){const S=SERAI,y=S.pad-1.2,hw=S.hw,H=6.5,T=1.6;
   W.box('stone',S.x,y,S.z-hw,2*hw,H,T);W.box('stone',S.x,y,S.z+hw,2*hw,H,T);W.box('stone',S.x-hw,y,S.z,T,H,2*hw);
   W.box('stone',S.x+hw,y,S.z-hw*.58,T,H,hw*.84);W.box('stone',S.x+hw,y,S.z+hw*.58,T,H,hw*.84);
@@ -115,7 +115,7 @@ const STAGE={key:'seeps',px:STATION_PX,seed:200,title:'the West Bench: the warm 
   W.rec({name:'The Skarn-Seep caravanserai (proposed, PLAN.md section 5: the caravans rest here before the wall)',kind:'structure',x:S.x,z:S.z,y,r:hw*1.45,h:11});
   W.rec({name:'The caravanserai\'s gatehouse',kind:'structure',x:S.x+hw,z:S.z,y,r:10,h:11});
   W.rec({name:'The caravanserai\'s cistern (fed by the Serai Seep)',kind:'structure',x:S.x-6,z:S.z,y,r:10,h:3});
-  for(let k=0;k<TRACK.P.length;k+=12){const p=TRACK.P[k];W.rec({name:'The caravan track (from the caravanserai down to the floor and the god\'s road)',kind:'road',key:'track:'+k,x:p[0],z:p[1],y:terrainH(p[0],p[1]),r:6,h:2});}
+  for(let k=0;k<TRACK.P.length;k+=12){const p=TRACK.P[k];W.tag({name:'The caravan track (from the caravanserai down to the floor and the god\'s road)',kind:'road',key:'track:'+k,x:p[0],z:p[1],y:terrainH(p[0],p[1]),r:6,h:2});}
   return{serai:1};},
  banners:(function(){const S=SERAI,y=S.pad-1.2;return[[S.x+S.hw,S.z,y+10],[S.x-S.hw,S.z-S.hw,y+9.5],[S.x+S.hw,S.z+S.hw,y+9.5]];})(),
  bannerName:'A caravanserai\'s banner (it streams downwind: the gap\'s wind)',
