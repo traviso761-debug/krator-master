@@ -83,7 +83,7 @@ function buildSleeper(scene,gx,gz,d){reseed(10150+d);KOFF=[gx,0,gz];
  const shL=enToW(T,[-104,84,0]);
  if(dd){limb([-150,13,-30],[-162,13,60],15);limb([-162,12,60],[-120,11,128],13);
   kput('pipeR',[-148,15,-38],null,[17,20,17]);enBlk(body,-114,12,142,28,24,36);
-  enHang('tube',[[shL[0]-2,shL[1]-6,shL[2]],[shL[0]-2,shL[1]-12,shL[2]+6],[shL[0]-3,shL[1],shL[2]-8]],30,120,1.1);
+  enHang('tube',[[shL[0]+1,shL[1]-6,shL[2]],[shL[0]+1,shL[1]-12,shL[2]+6],[shL[0]+1,shL[1],shL[2]-8]],30,120,1.1);   /* from the socket's rim */
   beam('tube',[shL[0],shL[1]-10,shL[2]],[-150,2,-34],1,1);
   enDebris(-130,50,90,40,PL);}
  else{const EL=[shL[0]-22,(shL[1]+16)/2+12,(shL[2]+80)/2-16];limb(shL,EL,15);limb(EL,[-112,16,80],13);enBlk(body,-112,13,88,28,26,36);}
@@ -129,7 +129,7 @@ function buildCarapace(scene,gx,gz,d){reseed(10160+d);KOFF=[gx,0,gz];
   const att=enToW(C,[118*o[0],50,118*o[2]]);
   kput('boxD',att,null,[14,14,14]);
   if(dd&&(k===4||k===9)){beam('plateR',att,[att[0]+o[0]*20,att[1]-10,att[2]+o[2]*20],12,10);
-   beam('plateR',[att[0]+o[0]*60,5,att[2]+o[2]*60],[att[0]+o[0]*110,4,att[2]+o[2]*130],12,10);continue;}
+   {const yb=k===9?8:7;beam('plateR',[att[0]+o[0]*60,yb,att[2]+o[2]*60],[att[0]+o[0]*110,yb-1,att[2]+o[2]*130],12,10);}continue;}   /* the shin on the ground, seated */
   let knee,foot;
   if(dd&&att[1]<44){knee=[att[0]+o[0]*44,9,att[2]+o[2]*44];foot=[att[0]+o[0]*98,4,att[2]+o[2]*98];}
   else{knee=[att[0]+o[0]*52,att[1]+26,att[2]+o[2]*52];foot=[o[0]*214,0,o[2]*214];}

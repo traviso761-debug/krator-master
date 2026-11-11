@@ -1036,7 +1036,13 @@ Iris, the Hive, the Star, the Abacus), north of the first ten on the engines she
   and boxes sat at fixed heights. Now every wreck is seated on its lowest points (`enSeatY`; `en3Debris`, 8ah's scatter seated), the stubs
   rise from their own tops, the lights sit on the rims, the Vigil's broken capsule leans from the podium to the ground, and `91y` watches the ten
   with `KRUINS.watch`: the shared harness asserts each (no floater, every wreck within 0.3 m above to 1 m below the ground) with the module's
-  self-test as its negative. The first ten engines (8ah, 8ai) are not watched yet: their `enDebris` plates would fail it.
+  self-test as its negative.
+- [x] **The first ten engines (8ah, 8ai) watched too** (the owner, 2026-11-10: "fix the first ten"). `enDebris` seats every plate on its
+  lowest points (`enSeatY` moved into 8ah; tilts within 0.18 rad, the same draws, so nothing else moved) and so does the Harrow's thrown
+  track; track shoes are 5 m on their 5.2 m pitch (at 4.5 m the check read the chain as broken, and the Harrow's hull as hung in the air);
+  the Harrow's counterweight arms are bolted to deck 2 by a bracket each, its boom cables hang from the bottom chords; the Strider's shin
+  sits in its pad and the toes on the pad's rim (the lifted foot was three loose pieces); the Sleeper's cables hang from the socket's rim;
+  the Carapace's two fallen shins are seated. `91y` watches all twenty (the Harrow over 470 m, past its fallen wheel).
 - [ ] **A first pass, decay 1 only checked.** Each builder takes d like the others (whole at 0), but only the ruined state has been
   looked at. The masses are plain meshes (a hundred to an engine, the Star and the Abacus the most): a host merges them by material
   (the Yards does, `stations/yards/70y-host-yards.js`); the sheet draws them as they are (about 400 calls in the industrial view).
