@@ -43,6 +43,14 @@ them all out.
 5. **The biome comes first**: the look of the caverns and the Line's tunnels must be right before the kit, and the Line
    needs **a train built for it** (section 0.2).
 
+## The owner's answers, round 2 (2026-11-10)
+
+1. **The Line is a `line` kind in `KTRANSIT`** (question 20), and **its cars live in the vehicles kit** (question 21).
+2. **People and cargo must be able to ride them** (section 0.2.1).
+3. **Wildcat goes in the Fellgang set for now**, its dwellings **pueblo-like: a "scrap pueblo"** (section 1.3.1; question 24).
+4. **The Glaziers' language is half Xanadui** by now: written up on the tongues page (section 1.4, "Tongue and look").
+5. **The Glaziers wear turbans like the Xanadui**, with similar slight touches of Orientalism (sections 1.4, 1.5, 3.4, 4).
+
 ## 0. What the kit is
 
 | | |
@@ -193,8 +201,39 @@ section's doors), so the Line's sections, signals, states and trains are drawn b
   gap stations: the Tungangs' timetable, kept as rite, is the data that runs it, and it now times the walks too (the
   timetable gives the next segment's train, so a traveller knows how long the walk may take). The player rides it
   through the hot section and walks the gaps.
-- **Where it lives**: the cars in `kits/motor-vehicles` (culture `ancient`, with its registry, rig and ruin states), placed
-  and moved on the line by `KTRANSIT` (question 21).
+- **Where it lives** (settled, the owner, 2026-11-10): the cars in `kits/motor-vehicles` (culture `ancient`, with its
+  registry, rig and ruin states), placed and moved on the Line by `KTRANSIT`'s `line` kind.
+
+#### 0.2.1 Riding: people and cargo aboard (the owner, 2026-11-10: "we do need to add functionality for people and cargo to ride them")
+
+Nothing in Krator rides today: `core/walk`'s floors stand still, and `core/simulation`'s walkers walk. The Line needs four
+things, all engine-neutral data, each an opt-in extension of a module that exists (*proposed*; question 28):
+
+| What | How | Where |
+|---|---|---|
+| **A car is a moving frame** | each car's pose at time t is a function of its train's s(t) on its segment (from the timetable) and its place in the train: `car.pose(t) -> {x, y, z, yaw, pitch}`, deterministic, so the page and Godot agree | `KTRANSIT` (the `line` kind's trains) |
+| **Floors that ride** | a car's floors, aisles and blocks (seats, bays) are given once in the car's own frame and registered as a **frame group**: `KWALK.frame(id, poseFn)` holds them, and every lookup (`floorsAt`, `floorBelow`, `blocked`, `push`) transforms by the frame's pose at the current time. A walker standing on a frame floor is carried by the frame's motion each tick (the moving platform), then walks on it as on any floor | `core/walk` (opt-in: a page with no frame groups is unchanged) |
+| **Doors that open at platforms** | a car door is a link between a car floor and a platform floor that exists only while the train stands at that platform with its doors open (the timetable's dwell): a nav edge with a time window, a walk strip that switches on (`W.setBlock` already switches blocks) | `KTRANSIT` with `core/door` where it fits; the nav graph |
+| **Riders and cargo in the simulation** | an itinerary gains a **ride leg**: walk to the platform, wait for the train, ride (the rider's pose is the car's pose with a seat or standing offset), alight, walk on: **the walk across a gap is an ordinary walk leg**, then the next segment's ride. Cargo is a record `{id, kind, qty, owner, from, to}` in a car's slot, the train a **carrier** on a fixed route as ships are for `SIM.trade`; at a gap, **porters** carry it across as a group (Dhelv's porters' pattern) and load it on the next segment's train. All of it a function of time, replayable in Godot (`KSim`) | `core/simulation` (a ride leg and a rail carrier) |
+
+- **Capacity** lives on the car's record in the vehicles kit: `cap: {seats, stand, slots: [{kind, size}]}` (a saloon's
+  seats, a freight van's bays, the tank car's water, the ice wagon's blocks), with the interior's floors, seats and bays
+  in the car's frame.
+- **The player** boards at an open door (the walk key, or E at the door), walks the moving car on its frame floors, takes
+  a seat, looks out; the follow camera works in the car's frame (section 6); alights at a platform. Riding the whole hot
+  section is a set piece: the doors sealed, the windows plated, the heat outside on the hazard readout.
+- **Who rides**: Tungangs on the turns (shift workers between holds), traders and porters, the Fixers with their gear, the
+  dead going to the last stop, the Big Meeting's banners; cargo of wax, sulphur, copper, grain from Dalab at Ledge, ice
+  for the hot holds, salvage.
+- **Godot**: each car an `AnimatableBody3D` moved by the same pose function (`sync_to_physics`), its floors and blocks its
+  children; the player's `CharacterBody3D` rides it by the platform velocity Godot already applies; car doors as
+  `NavigationLink3D`s enabled by the timetable; riders replayed by `KSim`.
+- **Checks** (each with its negative): every rider's pose stays on a car floor through a ride (no drift: a rider planted
+  0.5 m off the floor fails); boarding only while the doors are open (a boarding during the run fails); cargo is
+  conserved through every transfer (sum by kind before and after a gap); the porters' gap legs complete; the golden trace
+  replays in Godot.
+- **Beyond the Line**: the same frame groups and ride legs carry the Ancients' Valley's trams, the Ring Sea's ships and the
+  caravans' wagons; worth building once, generically (question 28).
 
 ## 1. The peoples
 
@@ -339,11 +378,16 @@ south-western pueblo culture**.
   rulebook is a book of deeds, and the bigun is the hero with the most boasts made good.
 - **What they raid.** Dalab's supply trains on their surface stretches (canon), the Ice-cutters' ice road (canon: a rival
   band that raids it), Firebliss's hunting camps; and the Labyrinth's beasts, for the glory.
-- **The village.** A pueblo on a knoll, Kimr in plan and Fellgang in hand: stepped room blocks of drystone and Ancient
-  plate, no doors at the ground, ladders pulled up at night, roof hatches; roofs of glyptodont shell and turf; door frames
-  of mammoth ivory; aurochs skulls along the crest; slogans painted man-high on the blocks (NO SKABS beside a painted
-  aurochs); trophy poles in the court; the **round room** of the Kimr sunk in the court as the meeting hall, where the
-  Boast is made from its roof and the hands are counted inside; a scrap stockade round the knoll's foot.
+- **The village: a scrap pueblo** (the owner, 2026-11-10: Wildcat's dwellings are pueblo-like, "scrap pueblo"; in the
+  Fellgang set for now). The Kimr's pueblo built from a scrapyard, on a knoll: **stepped room blocks** set back storey
+  by storey, their walls **faced in salvage** (Ancient plate, the shells of wrecked cars and carriages cut open,
+  corrugated sheet, container panels) over a core of drystone and rammed earth for mass and warmth; **no doors at the
+  ground**, ladders of pipe pulled up at night, roof hatches of plate; flat roofs on bell-fir beams whose ends stand out
+  of the walls in rows, as a pueblo's vigas do, here mixed with scrap rail and pipe; parapets, glyptodont shells as
+  domed cisterns and shields; door frames of mammoth ivory; aurochs skulls along the crest; slogans painted man-high on
+  the blocks (NO SKABS beside a painted aurochs). Stores and pens below, homes above, the hero's rooms on the top
+  terrace under a horned crest. In the walled court the **round room** of the Kimr, sunk, its roof the Boast's stand and
+  its floor where the hands are counted; trophy poles; a scrap stockade round the knoll's foot.
 - **The look.** Bare-armed heroes in megafauna furs and Aurochs-horn helmets, Ancient white plate as pauldrons and
   shields, mammoth-ivory spears and long knives, Fellgang soot round the eyes and Kimr paint on the arms; war drums of
   hide; the Fellgangs' pale eyes in sun-dark Kimr faces.
@@ -398,6 +442,19 @@ called each other; the western lojes know them only as a half-legend, "the crews
   take in strangers (monks, prospectors, the factors' clerks) where a loj keeps them out; they have no Line to keep and
   so no Fixers, and their wealth is opal, not stations.
 
+**Tongue and look** (the owner, 2026-11-10):
+
+- **Their language is half Xanadui by now.** Written up as **Glazier speech** on the tongues page
+  (`lore/tongues-of-krator.html`, the Tungang tab): Tungang words in Xanadui grammar and sounds (verb last, case
+  suffixes, the evidentials *-sin* and *-se*, and their own *-rīḍ*, "so the Book reads", from the monks' third margin
+  mark), a mixed language on the model of Earth's Media Lengua; the Xanadui words whole for gold, cloth, tea, trade and
+  holy things; the Book in its old letters, everything else in Xanadu's syllabary. *Ṭren qamgonārīḍ*: "the train will
+  come, so the Book reads".
+- **Turbans like the Xanadui**, and **slight touches of Orientalism** throughout, kept light: long sashed coats; cusped
+  arches over the adit doors and the fronts' windows; pierced brass lanterns beside the moonglass ones; carpets and
+  bolsters on the tea hall's floor, a brass tea urn; a little Xanadui gilt and lattice. A Tungang loj underneath, always:
+  the count wall, the banner, the lamp code stay.
+
 **The monks' outpost at the High Rift** (the owner, 2026-11-10: "could be a monk outpost maybe"). The High Rift's
 Singing Gjár (`biomes/highrift/PLAN.md` station 5, 5.1 px 1572,1643, 3,700 m): eight fissures lined with chalcedony,
 opal crust, bladed quartz and amethyst vugs, which "sing". *Proposed*: an Order outpost keeps watch on the singing
@@ -413,9 +470,9 @@ shrine, a crystal cleft on the grand scale, entered rarely in cooling suits pack
 | | Tungang | Fellgang | Glazier |
 |---|---|---|---|
 | Body | compact (*proposed* 0.94 of a human: section 3.1), long fingers, huge eyes with eyeshine, colourless skin and hair | the human height, darker, smaller pupils, the long fingers, big-lunged | as Tungang |
-| Base | layered dark canvas and grey blanket, hooded; the mat's felt; fingerless gloves (the fingers climb and feel) | hide over scrap, mist-frill felt hats and pads, sailwort-parchment capes against the rain | wax-cloth, dyed alecap purple and indigo; Xanadui silk at the neck for the rich |
+| Base | layered dark canvas and grey blanket, hooded; the mat's felt; fingerless gloves (the fingers climb and feel) | hide over scrap, mist-frill felt hats and pads, sailwort-parchment capes against the rain | **turbans like the Xanadui** (the owner, 2026-11-10), wound over the goggles' strap and drawn across the mouth in the dusty adits; long coats with a sash, wax-cloth for work and Xanadui silk for the rich, dyed alecap purple and indigo; soft boots |
 | Eyes | **smoked goggles** from Ancient visor glass, worn on the brow inside, down at the surface | goggles up; soot round the eyes | goggles glazed with clear opal from the tarns |
-| Rank | **shine**: the steward's tabard, a faded copy of the crews' orange with stripes of **ground-glass beads** sewn on that flash in any lamp (the Ancients' reflective strips, remembered); a berth number on the back; enamel crew badges | trophies worn: plate pauldrons from Ancient white metal, a Labber's helmet, a Lizard's scale on a cord; the family's rope worn coiled across the chest (the Fowlers) | gilt: a gold-leaf disc on the hood, the register's blue |
+| Rank | **shine**: the steward's tabard, a faded copy of the crews' orange with stripes of **ground-glass beads** sewn on that flash in any lamp (the Ancients' reflective strips, remembered); a berth number on the back; enamel crew badges | trophies worn: plate pauldrons from Ancient white metal, a Labber's helmet, a Lizard's scale on a cord; the family's rope worn coiled across the chest (the Fowlers) | an opal set in the turban's front, gilt on the sash, the register's blue; the steward still wears the orange, as a sash |
 | Carry | the bait tin, the lamp pole, the long spanner | spear, sling, pick-and-hook, crossbow | a wax-cloth dust mask, a tea brick, the potch knife |
 
 ## 2. Material culture
@@ -514,7 +571,7 @@ Ice-cutters' stations swap stand-ins for the kit's defs without a layout change 
 | The meeting | `fg-rope-wall` (inside `fg-meethall`: a peg per family), `fg-tally-board` (the Ice-cutters') |
 | The ice road | `fg-lantern-post` (lobelia in a scrap housing), `fg-carry-hut` (a shelter every few hours down the wall), the sledges (catalog pieces) |
 | The bands | `fg-war-camp` (a `core/camp` row: hide over scrap, the bigun's tent, the trophy pole, the drum), `fg-raid-cache` |
-| Wildcat (section 1.3.1) | `fg-wc-block` (a stepped room block, two to four storeys, drystone and plate, no ground door, roof hatches, glyptodont-shell and turf roofs), `fg-wc-ladder` (pulled up at night), `fg-wc-round-room` (the Kimr's round room as the meeting hall, its roof the Boast's stand), `fg-wc-crest` (aurochs skulls on the parapet), `fg-wc-court` (the walled court and pen), `fg-wc-stockade` (scrap and stakes round the knoll's foot), `fg-wc-deeds-wall` (the Deeds: boasts and their outcomes painted and tallied) |
+| Wildcat (section 1.3.1) | `fg-wc-block` (**the scrap pueblo's room block**, the owner's word: two to four storeys set back, walls faced in salvage plate, car shells and corrugated sheet over drystone and rammed earth, beam ends standing out in rows, no ground door, roof hatches, parapets; variants: a store and pen storey, a family's rooms, the hero's top terrace under a horned crest), `fg-wc-ladder` (pulled up at night), `fg-wc-round-room` (the Kimr's round room as the meeting hall, its roof the Boast's stand), `fg-wc-crest` (aurochs skulls on the parapet), `fg-wc-court` (the walled court and pen), `fg-wc-stockade` (scrap and stakes round the knoll's foot), `fg-wc-deeds-wall` (the Deeds: boasts and their outcomes painted and tallied) |
 | The fells | `fg-shieling` (a summer hut on the High Rift), `fg-cairn`, `fg-stone-sign` (Firebliss's "Fellgang stone signs") |
 
 ### 3.3.1 Replacing riftrim's stand-ins (stations 8 and 9)
@@ -583,7 +640,7 @@ built ahead of the Tungang set (question 27).
 
 | Def | What |
 |---|---|
-| `gz_front` | the carved front of a household's rooms on the fault scarp, facing the tarns: two to four tiers, battered, whitewashed, tapering window cuts glazed with moonglass, cholet bands; the rich add gilt; poor fronts are one tier and a door |
+| `gz_front` | the carved front of a household's rooms on the fault scarp, facing the tarns: two to four tiers, battered, whitewashed, tapering window cuts under cusped arches glazed with moonglass, cholet bands; the rich add gilt and a little lattice; poor fronts are one tier and a door |
 | `gz_stair` | the switchback stairs and ledges up the scarp between the fronts, railed, lamp-coded |
 | `gz_adit` | an adit's mouth: a plate-framed portal, the register's plaque, a spoil heap of potch below, the wet-drilling flume from the tarn |
 | `gz_vein_gallery` | the working: a narrow gallery following a potch line into the basalt-rhyolite contact, the face lit, the wet floor |
@@ -635,6 +692,9 @@ rebuild, best ridden with other work).
 | `glazier_court_register_plaque` | court | art | 0.6 x 0.1 x 0.9 | enamel, the Order's blue, gilt edge |
 | `glazier_court_steward_seat` | court | chair | 1.0 x 0.8 x 1.6 | a carved stone seat, whitewashed and gilt, an opal boss (no carriages in the east) |
 | `glazier_common_glass_bench` | common | workstation | 1.8 x 0.8 x 0.9 | slicing and polishing potch, grinding lenses, `job: 'glazier'` |
+| `glazier_common_carpet` | common | rug | 3.0 x 2.0 x 0.02 | a Xanadui carpet on the tea hall's floor, with bolsters |
+| `glazier_common_brass_lantern` | common | lamp | 0.3 x 0.3 x 0.6 | pierced brass, hung beside the moonglass lanterns |
+| `glazier_common_tea_urn` | common | vessel | 0.5 x 0.5 x 0.8 | brass, on a stand, the tea hall's centre |
 | `fellgang_court_deeds_wall` | court | art | 4.0 x 0.1 x 2.4 | Wildcat's Deeds: boasts and their outcomes, painted and tallied |
 | `fellgang_court_horn_helmet_stand` | court | rack | 0.6 x 0.6 x 1.8 | an Aurochs-horn helmet on its stand, earned |
 | `fellgang_common_shell_shield_rack` | common | rack | 2.0 x 0.5 x 1.6 | glyptodont-shell and Ancient-plate shields |
@@ -997,7 +1057,7 @@ The owner's order (2026-11-10): **the biome first, then the cavern layout, then 
 | Phase | What | Done when |
 |---|---|---|
 | T0 | the owner's answers (section 10); the owed prompts written and pasted; `LORE.md` updated with what the owner confirms | the questions are answered |
-| T1 | **The Line's biome and its train** (section 0.2), its own plan first (`biomes/line/PLAN.md`): the tunnel record with tracks, per-track states and segments; the four-track gallery and its split bores on `KCAVERN`; the stations `bore`, `gap`, `station`, `hotdoor`, `breach`, `fault`, `portal`; the lining texture; the lamp code as light records; the hot section's hazards. The train: the Ancient Line cars in `kits/motor-vehicles`' `ancient` culture with `built`, `kept`, `derelict` and `wreck` states, the Fixers' trolley, running a segment on a timetable. On `KTRANSIT` as a `line` kind once `kits/ancient-transit` is merged (question 20) | the owner's walk along a bore, across a gap and into a station; a train runs its segment; `--assert` passes |
+| T1 | **The Line's biome and its train** (section 0.2), its own plan first (`biomes/line/PLAN.md`): the tunnel record with tracks, per-track states and segments; the four-track gallery and its split bores on `KCAVERN`; the stations `bore`, `gap`, `station`, `hotdoor`, `breach`, `fault`, `portal`; the lining texture; the lamp code as light records; the hot section's hazards. The train: the Ancient Line cars in `kits/motor-vehicles`' `ancient` culture with `built`, `kept`, `derelict` and `wreck` states, the Fixers' trolley, running a segment on a timetable. On `KTRANSIT` as a `line` kind once `kits/ancient-transit` is merged (settled). **Riding** (section 0.2.1): frame floors, door windows, ride legs and cargo (question 28) | the owner's walk along a bore, across a gap and into a station; a train runs its segment and the player rides it; `--assert` passes |
 | T2 | **The cavern setting in `core/city`** (section 5.6), with the city-layout work: Dhelv's layout ported first, its golden digest unchanged and its `CAVERN` exemption removed | `test-city.js`, Dhelv's `test-layout.js` and `verify.py --assert`, Voth's and Verge's pages unchanged |
 | T3 | the camera work (section 6): first measured on Dhelv's page as it is (the cost of `C.sdf` and `C.voidSD` at the camera; what a player cannot read there today); then the opt-in extensions of section 6.5, agreed piece by piece, tried on the Line's stations and Dhelv | the new tests pass; every page that does not opt in is byte-identical (the hash baseline) |
 | T4 | the kit's scaffold: `kits/tungang` on `core/engine`, the carved-def layer in core (agreed), `materials.json`, the salvage foundation (lining segment, carriage, plate, pipe, rivets, enamel, cable, the three rules of fitting), the sheet | the ring house and the carriage house build in three states and `--assert` passes |
@@ -1038,25 +1098,27 @@ for Dhelv and the Zeijani too). Question 4 fell with question 2; question 9 move
 18. **The riftrim stand-ins as the contract**: the kit keeps riftrim's `fg-*` keys and boxes so its stations swap without a
     layout change; and the `fellgang` row moves into `core/hamlet` with its own fowling and ice-cutting focuses?
 19. **Loj Nahn** as a fourth set later (the Tungang shell under the sky on the Pile's crown), or the Tungang set dressed?
-20. **The Line on `KTRANSIT`**: a `line` kind in `kits/ancient-transit` (once it is merged), so the valley's subway and
-    the Line share one code for sections, states and trains? Or the Line as a core module of its own?
-21. **The train's home**: the cars in `kits/motor-vehicles`' `ancient` culture (with its ruin states), placed and moved by
-    `KTRANSIT`?
+20. *Answered 2026-11-10*: the Line is a `line` kind in `KTRANSIT`.
+21. *Answered 2026-11-10*: the cars live in the vehicles kit.
 22. **The Line's shape**: one wide four-track gallery that splits into bores in bad ground; crossovers round a broken
     track; trains trapped in their segments since the collapses, shuttling between gap stations; holds at the gaps as
     well as at the old stations; the hot section one segment that must stay whole. Right?
 23. **The biome**: `biomes/line`, with the stations `bore`, `gap`, `station`, `hotdoor`, `breach`, `fault` and `portal`,
     built by a session of its own from section 0.2?
-24. **Wildcat and the Kimr**: the Boast and the show of hands, the Deeds, the earned horn helmet, no spirits on its walls.
-    And the Kimr's own pueblos are a settlement kit of their own (`biomes/labyrinth/PLAN.md`): build Wildcat's pueblo
-    pieces in the Fellgang set and let the Kimr kit share them later, or plan the Kimr kit first and have Wildcat read it?
+24. *Answered 2026-11-10*: Wildcat in the Fellgang set for now, as a scrap pueblo. Still open: the Boast and the show of
+    hands, the Deeds, the earned horn helmet, no spirits on its walls?
 25. **The Glaziers' history**: the crews who came east and were not absorbed, a loj a thousand years apart, reading the
-    timetable of a train that never comes. Right? (They wait on `biomes/opalvalley`, a draft plan today.)
+    timetable of a train that never comes; the Xanadui call them the Mārā. Right? (The tongue is settled as half
+    Xanadui; the forms on the tongues page are proposals. They wait on `biomes/opalvalley`, a draft plan today.)
 26. **The High Rift's outpost**: the Order's (monks at the Singing Gjár's crystals), in Longsong's style, with a note to
     the High Rift and Longsong plans; not this kit's?
 27. **The Fellgang villages ahead of the order?** The Fowlers and the Ice-cutters are built on stand-ins and need neither the
     Line nor the cavern setting: build the Fellgang village defs of section 3.3.1 (and the row's move into `core/hamlet`)
     in parallel with the Line's biome, rather than after the Tungang set?
+28. **Riding** (section 0.2.1): may I plan it as three opt-in core extensions (frame groups in `core/walk` so floors can
+    ride; a ride leg and a rail carrier in `core/simulation`; the cars' poses and door windows in `KTRANSIT`), built
+    generically so the Valley's trams, the Ring Sea's ships and the caravans' wagons can use them later? And does it
+    belong to the Line's biome session (T1) or a session of its own?
 
 ## 11. Rejected and parked ideas
 
