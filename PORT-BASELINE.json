@@ -392,25 +392,29 @@
    "bytes": 3643337,
    "sha256": "8f9968ae2635680365d8793464b252210fd82b53dd723929cdddd67325be755b"
   },
+  "biomes/outlandgate/dist/outlandgate.html": {
+   "bytes": 2510738,
+   "sha256": "801730e96dcd8649b14c27a7b5ddc2132bf713787f8664edf1c180544b25f696"
+  },
   "biomes/outlands/dist/outlands-gems.html": {
-   "bytes": 2127426,
-   "sha256": "1cf39b5acaf581b9b04461598784fcf6129710e2b1415b7add3603842ae3ce91"
+   "bytes": 2128218,
+   "sha256": "2ab534e667ab723ba0a1ce0a183219c2b924788bb9f416f3a5a6e3835bd2972c"
   },
   "biomes/outlands/dist/outlands-house.html": {
    "bytes": 2264084,
    "sha256": "f65cd5d97e77be560878647424bd9d0ddfbfa3ab4571dfff04dff8cf7396e878"
   },
   "biomes/outlands/dist/outlands-mires.html": {
-   "bytes": 2197859,
-   "sha256": "2ddd6c96ed61023b117abcd50e25915b109460d204038518121eeb4dcc8cdef7"
+   "bytes": 2198693,
+   "sha256": "4566fc528dd23e64c95dea785cf40926858262d2d73651d6b3432f8ae24fac63"
   },
   "biomes/outlands/dist/outlands-nursery.html": {
-   "bytes": 2125926,
-   "sha256": "0a2ea5e02c40e017c25b50143afb19e5d8a85daa7163067cf3e1251ba1b056ef"
+   "bytes": 2126718,
+   "sha256": "58936c0388873b3a301047dd192814b64b7171ce869e85942ee929a0bb17fe2f"
   },
   "biomes/outlands/dist/outlands-plains.html": {
-   "bytes": 2045724,
-   "sha256": "289ba2e573f1a075299fe3c64290e206d02acf26db5776c9ffa4df782518c536"
+   "bytes": 2046516,
+   "sha256": "d70303111b08f684fc4db33178af6ab13c4c276c34d366fe7c00ee32cc70e411"
   },
   "biomes/outlands/dist/outlands-river.html": {
    "bytes": 1927758,
@@ -853,8 +857,8 @@
    "sha256": "74837a10508ce09f294253a6df3a8369bb9f222bd100f9b441535a32f32356bb"
   },
   "kits/fauna/dist/fauna.html": {
-   "bytes": 1212081,
-   "sha256": "506cedc7eae5860bb7a092f7ee751691a612d0759cdbf4ccccc5a3b5ba7ee7a2"
+   "bytes": 1230123,
+   "sha256": "3e29ae867bedf78158b13238ada568f45fdbbcbb2e925ba1c5f462d5ed26ac4e"
   },
   "kits/interiors/dist/interiors-sets.html": {
    "bytes": 734495,
