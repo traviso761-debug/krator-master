@@ -67,7 +67,7 @@ The eight biomes the 2026-11-11 audit found with no fauna plan (nsemiarid, its t
 Godstep, Greenstep, Opal Valley). The rule is the brief above, plus **at least one animal found nowhere else** in each; the rest is
 shared across borders where the range is plausible (an existing key gains the biome's tag). An overlay (dambasins, scablands) owns
 only the animals that mean nothing without it, as it owns only such flora; its host brings the rest. The full tables, with where
-and why, are each biome's `PLAN.md`, section "Fauna (proposed 2026-11-11)". Godthrone and Oidong stay without fauna by design.
+and why, are each biome's `PLAN.md`, section "Fauna (proposed 2026-11-11)". Godthrone stays without fauna by design; Oidong now has a peaceful set (below, and `biomes/oidong/NOTES.md`, "Fauna").
 
 | Biome | New and unique (to build) | Shared in (gain the tag) |
 |---|---|---|
@@ -78,8 +78,9 @@ and why, are each biome's `PLAN.md`, section "Fauna (proposed 2026-11-11)". Godt
 | **swhighlands** (native life) | **bald browser** (grazer that keeps the balds open), **bead weaver** (the insect of the bead cone's gold eggs), **lattice stalker** (climbs through the lattice oaks), **cascade ribbon** (stream swimmer, the fishing bridge's prey) | cap-moth, bloom-glint, canopy-darter (swbay); sail-wing, duckbill-browser (swlowlands); Earth stock only on the Iron Republic's farms |
 | **godstep** | **playa shrimp** (giant tadpole shrimp of the storm-filled salt playa) | argali, chamois, mountain-lion, mountain-condor (shighlands: the north wall); desert-oryx, salt-beetle, coyote (sedesert: steps 3-4); giant-bat (the tube mouths); the Hearths' set at the head |
 | **greenstep** | **veil swift** (nests behind the curtain falls), **mosshorn** (moss-coated six-limbed browser of the cloud bench) | duckbill-browser, cypress-glider, ridge-raptor, sail-wing, long-snout-gharial, sail-skimmer (swlowlands); argali, chamois, mountain-lion, giant-hellbender (shighlands) |
+| **oidong** (peaceful: nothing aggressive to people) | **moon bear** (fruit-eating Asiatic black bear), **pool deer** (wades for lotus pads), **mist crane** (the pools' birds), **petal moth**, **lotus carp** | yak (the monks' dairy), plateau-kiang, bone-eater, ice-lake-char (xanadu); giant-honeybee (the monks' hives) |
 | **opalvalley** | **opal tahr** (goat-antelope with a silica-sheathed shimmering coat), **opal mussel** (opaline nacre and pearls) | plateau-kiang, yak, cloud-leopard, bone-eater, ice-lake-char, lake-diver (xanadu); lamp-glider (rift, at the mouth) |
 
-**Count:** 16 new animals (most on `faWdHex`; one bird on `faHiBird`; a crab, two fish, a quadruped, a shrimp swarm, a moth and a
+**Count:** 21 new animals (16, and Oidong's 5) (most on `faWdHex`; one bird on `faHiBird`; a crab, two fish, a quadruped, a shrimp swarm, a moth and a
 mussel) and about 60 new tags on existing keys. Still unplanned after this wave: the loose-only biomes (riftrim, korona, catch,
 abyssal-savannah, k-guilin, necanyons) and the partial plans' gaps (the 2026-11-11 audit).
