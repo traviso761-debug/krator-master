@@ -26,7 +26,9 @@ DIMS_SOURCES = ([os.path.join(ROOT, 'kits', 'beast-riders', 'src', f) for f in
                 # the Iziz Vernacular's (core/hamlet's `iziz` row, 21-hamlet-iziz.js), as IZV.dims() gives them: its VERN.def records
                 + sorted(os.path.join(ROOT, 'kits', 'iziz-vernacular', 'src', f) for f in os.listdir(os.path.join(ROOT, 'kits', 'iziz-vernacular', 'src')) if f.endswith('.js')))
 JS = [('core', 'rand', '08-core-rand.js'), ('core', 'terrain', '38-core-relief.js'), None,
-      ('core', 'world', '41-world-fields.js'), ('core', 'world', '42-world-roads.js'), ('core', 'space', '20-core-space.js'),
+      ('core', 'mask', '25-core-mask.js'), ('core', 'mask', '27-core-mask-distance.js'), ('core', 'coast', '30-core-coast.js'),
+      ('core', 'world', '41-world-fields.js'), ('core', 'world', '42-world-roads.js'), ('core', 'world', '44c-world-coast.js'),   # the coasts, as the page has them
+      ('core', 'space', '20-core-space.js'),
       ('core', 'camp', '10-camp-cultures.js'), ('core', 'camp', '20-camp-census.js'), ('core', 'camp', '30-camp-pitch.js'),
       ('kits', 'beast-riders', 'src', '79-br-camp.js'),
       ('core', 'city', '33-city-strategies.js'), ('core', 'hamlet', '10-hamlet-wood.js'), ('core', 'hamlet', '12-hamlet-gather.js'),
@@ -75,6 +77,10 @@ def script(region):
             continue
         parts.append('\n// ---- %s\n' % '/'.join(j) + open(os.path.join(ROOT, *j), encoding='utf-8').read())
     parts.append('\n// ---- openworld/%s/src/48-world-site.js\n' % region + open(os.path.join(base, 'src', '48-world-site.js'), encoding='utf-8').read())
+    # the geology the coast's classes read (44c: rock hardness from the provinces), as the page loads it
+    parts.append(WD.geology_fragment(os.path.join(base, 'data')))
+    for where, f in WD.RES_FRAGS:
+        parts.append('\n// ---- %s/%s\n' % (where, f) + open(os.path.join(ROOT, where, f), encoding='utf-8').read())
     parts.append('\nvar KIT_DIMS=' + json.dumps(kit_dims(), separators=(',', ':')) + ';\n' + r'''
 WORLD.init(WORLD_R);
 const dims=(k,v)=>{const A=KIT_DIMS[k];if(!A)return null;const q=A.variants&&A.variants[v];return q?{w:q.w,d:q.d,h:q.h}:{w:A.w,d:A.d,h:A.h};};
@@ -91,7 +97,7 @@ def resources_script(region):
     and WRES.markers(), as the page makes them"""
     base = os.path.join(ROOT, 'openworld', region)
     parts = ['"use strict";var window=globalThis;\n']
-    for j in JS[:5]:
+    for j in JS[:JS.index(('core', 'world', '44c-world-coast.js')) + 1]:   # the land, with its coasts
         if j is None:
             parts.append(WD.fragment(os.path.join(base, 'data'), 'var WORLD_KITS=[];\n', 'the region (core/world/bake_sites.py)',
                                      'openworld/%s/data, decoded by core/world/world_data.py' % region))

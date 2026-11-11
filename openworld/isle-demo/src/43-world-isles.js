@@ -91,13 +91,30 @@ W.ground=function(x,z,S,out){ground0(x,z,S,out);const d=S.depth;
 // is flattened into MANGROVE FLATS: tidal mud just round the water line. Applied to every height the world samples (the
 // terrain, the fields, the seas' beds), so the water, the shore's surf and the kit's zones all see the same coast.
 const NR=KN(4404);
+/* With core/coast on the page (44c-world-coast.js, KCOAST loaded before this file) the coast's marsh class lays the
+   mangrove flats instead (they put land under the level outside any mask: the water stopped on the mask's straight
+   edges, the owner 2026-11-11), and the towns as the owner drew them (the site file's districts, avenues and markers)
+   keep their coast: WORLD.coastKeeps. The settlement page that reads this file without core/coast is unchanged. */
+const COASTED=typeof KCOAST!=='undefined';
+if(COASTED)W.coastKeeps=()=>{const out=[];if(typeof SITE_INIT==='undefined'||!SITE_INIT||!SITE_INIT.towns)return out;
+ for(const t in SITE_INIT.towns){const T=SITE_INIT.towns[t],F=T.frame;if(!F)continue;let r=0;
+  const pt=(x,z)=>{if(isFinite(x)&&isFinite(z))r=Math.max(r,Math.hypot(x,z));};
+  for(const k of ['districts','avenues','causeways','routes'])for(const o of (T[k]||[]))for(const p of (o.poly||o.pts||[]))pt(p[0],p[1]);
+  for(const m of (T.markers||[]))pt(m.x,m.z);
+  /* the town's whole ground (its plan's square, ISLE.PROG[t].half: the wall, the fields and the quays reach its corners) */
+  const P=typeof ISLE!=='undefined'&&ISLE.PROG&&ISLE.PROG[t];if(P&&P.half)r=Math.max(r,P.half*1.42);
+  if(r>0)out.push({x:F.x,z:F.z,r:r+400});}
+ /* Nephtos, the Hykkousoi colony (48p): surveyed round the owner's pick on the forest island west's coast, its villages
+    and their quays round it: the coast there is kept as the colony was planned on */
+ if(typeof ISLE_COLONY!=='undefined'&&ISLE_COLONY.SPEC&&ISLE_COLONY.SPEC.near){const S=ISLE_COLONY.SPEC;out.push({x:S.near[0],z:S.near[1],r:S.look});}
+ return out;};
 /* the sea's and the lakes' level only (WORLD.lakeWater reads the raster): WORLD.water's river part samples the height, which calls this */
 W.landHook=(x,z,h)=>{const wl=W.lakeWater(x,z);if(wl<-1e8)return h;const d=wl-h;
  if(d>0){if(d>=70)return h;
   const on=smooth(.36,.48,NR.fbm(x/2600+3,z/2600-9,3));if(on<=0)return h;
   let g;if(d<12)g=.5+2.3*smooth(0,12,d);else if(d<22)g=2.8-2.45*smooth(12,19,d);else if(d<30)g=.35+.15*NR.vn(x/120,z/120);else g=lerp(.5,d,smooth(30,70,d));
   return wl-lerp(d,g,on);}
- const above=-d;if(above>4)return h;
+ const above=-d;if(above>4||COASTED)return h;   /* on core/coast (44c) the marsh class makes the flats, keeping the water's sign */
  const C=classWeights(x,z),wetCl=C[IDX.XA]+C[IDX.Af]+C[IDX.Am]+C[IDX.Aw]*.4;if(wetCl<.3)return h;
  const m=smooth(.45,.6,NC.fbm(x/3000,z/3000,3))*smooth(.3,.6,wetCl)*(1-smooth(2.5,4,above));if(m<=0)return h;
  return wl+lerp(above,-.4+above*.3,m);};

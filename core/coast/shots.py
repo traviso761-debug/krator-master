@@ -49,7 +49,7 @@ async def run(a):
             pts = await pg.evaluate(FIND_JS, a.n)
         json.dump(pts, open(os.path.join(a.out, 'points.json'), 'w', encoding='utf-8', newline='\n'), indent=1)
         print('points:', json.dumps(pts))
-        st = await pg.evaluate("typeof KCOAST!=='undefined'&&KCOAST.stats?KCOAST.stats():null")
+        st = await pg.evaluate("WORLD.coast?(s=>({ms:s.ms,keeps:s.keeps,bodies:s.bodies.length,classes:s.bodies.map(b=>b.classes)}))(WORLD.coast.stats()):null")
         if st: print('KCOAST:', json.dumps(st))
         for i, p in enumerate(pts):
             for mode in a.modes.split(','):

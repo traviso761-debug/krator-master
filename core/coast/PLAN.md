@@ -4,7 +4,9 @@ The owner, 2026-11-11, on the open-world pages: the coasts of the seas and lakes
 need a module to transform coasts like this and introduce some randomness and a proper coastline with sand or rocks etc
 to boot". Coasts matter for Hook, the Ring Sea isles and the lakes.
 
-Status: **plan, for the owner's word**. Nothing is built yet beyond the before-shots tool (`shots.py`).
+Status: **built** (the owner's word, 2026-11-11: "Build as planned"; answers in section 9). `README.md` says how it
+works; the numbers below are the plan's, `PRESETS` in `30-core-coast.js` holds the tuned ones (the warp and bands were
+widened on the GPU and CPU maps: section 10).
 
 ## 1. What makes the coast blocky today (measured, isle demo, 2026-11-11)
 
@@ -186,7 +188,16 @@ take it unchanged (no texture budget change).
 - Shore species in the biome kits (the fields are there for them; the kits are other sessions').
 - Sea stacks, spits, tombolos and river deltas as landforms; tides.
 
-## 9. Questions for the owner
+## 9. Questions for the owner (answered 2026-11-11)
+
+The owner: "shoreline can move; try to find an analogous area to move it to nearby and carve one out if you can't; fix
+core/water; rebakes sure". So: the coast moves (typically ~0.5-1 km, up to ~3 km on the 2 km-pixel coasts); a town's
+waterfront is carved where its build put it (`keep`: inside a town's ground, and the isle demo's towns as the owner drew
+them, `WORLD.coastKeeps()`, the natural coast resuming over 1.2 km beyond); core/water's window edge is fixed by an
+opt-in far bed (`core/water/farbed`, since core/water's draw file reaches 148 builds); the regions' site plans, resources
+and the isle demo's roads are rebaked.
+
+The original questions:
 
 1. **How far may a coast move?** The warp is set to move the shoreline up to about 1-1.5 km from the scale model's (bays
    and headlands that break the cells' layout). Smaller keeps the map truer but leaves more of the cells' shape.
@@ -195,3 +206,19 @@ take it unchanged (no texture budget change).
    out towards the window's edge), or a separate task?
 4. **Rebakes**: the regions' site plans and roads near the coasts will move with the new shore and be rebaked here:
    agreed?
+
+## 10. What the build changed from the plan
+
+- **The source cell.** All four regions are drawn up from the scale model's 2 km pixels (the isle demo's height grid is
+  4 km, pinnacle's and iziz-cluster's 500 m, xanadu-oidong-highrift's 1 km), and the blocky scale is the pixel: the glue
+  passes `sourceCell = max(2000, the grid's cell)`; the blur is 0.6 of it (1.2 km at most) and the broad warp scales
+  with it.
+- **The warp** has three octaves (7 km, 2.3 km, 800 m). KRAND's two-octave fbm has a sigma of 0.25, so the plan's
+  +-900 m moved a coast only ~200 m and left the cells' notches square; the amplitudes are 2,600, 1,300 and 450 m.
+- **The bands** grew with the warp (its slope passes 1 in places, so `c` changes faster than a distance): the mask's
+  threshold is 1,000 m, the land kept over the level to 1,700 m, the band 2,100 m inland.
+- **The rise** behind the shore is measured from the shoreline's own height, not the level (the generous flood put the
+  blurred shore up the beach, and every slope read as a cliff); the cliff threshold is ~1:6 on granite, ~1:10 on soft
+  ground.
+- `map.py`: a CPU top-down map of a region's coast (node, no GPU), with the coast on or off and the shoreline and mask
+  edge drawn: what the tuning was judged on while the GPU lanes were queued.
