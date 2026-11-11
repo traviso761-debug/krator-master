@@ -16,7 +16,8 @@ Built 2026-11-11 in the cloud: every check ran on software GL (SwiftShader), non
   tints the fog colour toward amber, and dims the sun, each frame after the sky sets them, by how deep the eye is under the lid (`89b`:
   `deckView`). A mist colour of its own in the chunk (`atmFogMistC`, compiled only on a page that asks, as the belt is) would be the core fix; it
   was not made here because the chunk's text is in every biome page and each would have to be rebuilt. The lid (a sheet at 2,580 m) stands in
-  for the deck's underside, since the sky dome takes no fog.
+  for the deck's underside, since the sky dome takes no fog. From the rim the lid reads pale cream, not amber: the air's haze over it
+  (the view 'Down from the rim'); only the top 117 m of the 420 m walls stand above the deck, as the numbers say.
 - [ ] **The road on the Scarp is a pack track**: 16 switchbacks on the ravine's scree climb ~1,500 m in ~4.4 km, a grade near 30%. A wagon
   road would need ten times the length; the plan's "freight exchange for pack beasts" fits a track. The road is drawn only as the bench it cuts
   in the scree (no road surface, no parapets): it hardly reads from afar.

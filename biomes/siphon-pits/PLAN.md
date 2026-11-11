@@ -207,9 +207,9 @@ Its `build.py` predates `tools/build_sources.py`, so that part (`BSRC.report`) i
 | keep-clear, occupancy | `core/space` (`KSPACE`) | the biome core's keep-clear between siphons; no grid of the kit's own |
 | a placement raster | `core/mask` (`KMASK.canvas`, `KMASK.distance`) | Station 1's farm plan (the braided channels, the fields, the farmstead lots) painted as a mask and read back; the willow and the gravel bars by `KMASK.distance` from the channels; Station 3's roper camp kept clear the same way. Never `getImageData` on a canvas of the page's |
 | the ground as data | `core/terrain` `30-core-field` (`KFIELD.bake`, with an inset) | each station's analytic land baked once to a field (8 m; Station 4's knife-edge in a 0.5 m inset), the page and the export read the field |
-| the graben step, the scarp, the pits | `38-core-relief` + `38c-core-landforms` (`KRELIEF.scarp`, `KRELIEF.stepcut`, `KRELIEF.terraces`, `KRELIEF.columns`, `KRELIEF.wadi`'s braids) | the Ostrukh fault's step behind Station 1 and the Scarp's wall (`scarp`), the maar of Station 3 and the Arete's two pits (`stepcut`: sheer stepped walls, written for these pits), the loess terraces (`terraces`), the columns' relief on the walls' tops (`columns`), the braided channel's bars (`wadi` braids) |
+| the graben step, the scarp, the pits | `38-core-relief` + `38c-core-landforms` (`KRELIEF.scarp`, `KRELIEF.stepcut`, `KRELIEF.terraces`, `KRELIEF.columns`, `KRELIEF.wadi`'s braids) | the Scarp's wall (`scarp`; Station 1's floor is level on the model within 16 km, so its fault and the Stalker Peaks are the shared sky's ridges), the maar of Station 3 and the Arete's two pits (`stepcut`: sheer stepped walls, written for these pits), the loess terraces (`terraces`), the columns' relief on the walls' tops (`columns`), the braided channel's bars (`wadi` braids) |
 | the frost pass | `42-core-frost` (`KFROST`) | ice-wedge polygons and sorted circles on Stations 2 and 4, solifluction lobes on the Scarp's ramp |
-| beds on the faces | `35-core-strata` + host shade | `tibasalt` (the flood basalt: flows, rubble, beads, palagonite) on every wall; `loess` on the terraces' risers |
+| beds on the faces | `35-core-strata` + host shade | `rift-volcanic` (basalt flows, ash, scoria) on every wall (`tibasalt`'s orange bead seams were tried and read as the Godthrone's); `loess` on the terraces' risers |
 | the ground's layers, far field, horizon | `43-core-ground` (`KGROUND`), `44-core-farfield` + draw, `45-core-horizon` + shade | as highrift |
 | the vents' heat | `47-core-therm` (`KTHERM`) | Station 3's geyser (the model's vent) and its fumaroles: the one temperature field the felt, the groves, the snow and the hazards read |
 | caves, the geode | `39-core-cavern` (`KCAVERN`), `39b-core-speleo` (`KSPELEO.AMETHYST`), `39f-core-geode` (`KGEODE`) | the walk-in geode on Station 3's rim (S7) |
@@ -230,6 +230,8 @@ trap plants), `38b`/`46` lava (no live lava), `39c-core-karst` (no soluble rock)
 `core/charactermodels` (no people drawn).
 
 ## 7. Order of work
+
+*Status 2026-11-11: S0-S7 done (S6's `test_all` result in the report: its failures are pre-existing on the base); S8 is next.*
 
 - **S0.** The survey and the corrections (section 0); this section and section 6; the station records corrected
   (`stations/*/station.json`, inlined by `build.py`); `PLAN-STATIONS.md`'s table.

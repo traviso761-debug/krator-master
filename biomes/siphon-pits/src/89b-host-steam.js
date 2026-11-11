@@ -15,6 +15,6 @@ function deckView(){if(!DECK)return;const under=smooth(DECK.y+40,DECK.y-60,camer
 // deck is a flat sea of amber cloud filling the maar. Drawn, not a fog layer: the height fog's mist ends at its lid, the sky dome does not take fog
 const DECK_LID=(function(){if(SKEY!=='pitfloor'||new URLSearchParams(location.search).get('lid')==='0')return null;const r=SITE.maar.r+60;
  const g=new THREE.CircleGeometry(r,96);g.rotateX(Math.PI/2);   /* facing down: seen from below; DoubleSide for the rim's view */
- const m=new THREE.MeshLambertMaterial({color:0xc08a44,emissive:0x6a4416,side:THREE.DoubleSide,transparent:true,opacity:.88,depthWrite:false});
+ const m=new THREE.MeshBasicMaterial({color:0xc8964e,side:THREE.DoubleSide,transparent:true,opacity:.9,depthWrite:false});   /* unlit: the deck glows with the light it holds, amber from above and below */
  const mesh=new THREE.Mesh(g,m);mesh.position.y=SITE.fog.top;mesh.renderOrder=5;mesh.userData.inspectLabel='The amber deck (the inversion\'s lid, 2,580 m)';scene.add(mesh);
  REGISTER({name:'The amber deck (the inversion\'s lid at 2,580 m: 303 m over the floor)',x:0,z:0,y:SITE.fog.top-2,r:r*.9,h:6});return mesh;})();
