@@ -17,8 +17,8 @@
    "sha256": "b06ceb17bb1a3fedb3605813964dad691973db9366fee4a59b7d76b52df5cd71"
   },
   "biomes/ancientsvalley/dist/ancientsvalley.html": {
-   "bytes": 2166012,
-   "sha256": "8f59e18a3b2d8095e4df83b4ab3e30c5e0146858c33365dbf45fe9fb40d4ab70"
+   "bytes": 2167344,
+   "sha256": "3253b94aefb9086ce20a0b5494eff969744b100f0d94eac27252f0b4bb10bf6e"
   },
   "biomes/catch/dist/catch-fan.html": {
    "bytes": 9618890,
@@ -69,16 +69,16 @@
    "sha256": "1d233f033e0cb4cd93778c239b6e690a97d10a703c90a34eca6380f3b93c4f79"
   },
   "biomes/cut/dist/cut-face.html": {
-   "bytes": 1563933,
-   "sha256": "397e036e6529f2f6179e32e3dcc1f815b831ba5fb728c296e14193f7a397cae1"
+   "bytes": 1565265,
+   "sha256": "21da619c8ff4c331a83e5662af92c51745c07cff0afaac8fac11c67ee6de8453"
   },
   "biomes/cut/dist/cut-wall.html": {
-   "bytes": 1558039,
-   "sha256": "96c2065af3e068cf50b0495126d05fe36a98b05e9b18e6b3f0e905c54e617208"
+   "bytes": 1559371,
+   "sha256": "d4efea1b78a097f53326a0d3073abb9ed71b1d26c7d4461b0af6150682313449"
   },
   "biomes/cut/dist/cut.html": {
-   "bytes": 1394714,
-   "sha256": "0fdee2fe79b63224fa2bfddc799b8fce1ccc7cb45813c927022b82f4da7facb6"
+   "bytes": 1396046,
+   "sha256": "85c70c6cf28228efc3cbda0d0e15098218c2c2faa7a3406e457e65c7d5be11b0"
   },
   "biomes/dambasins/dist/east.html": {
    "bytes": 1561121,
@@ -145,20 +145,20 @@
    "sha256": "058b9c06ded2ca25f906f43fa6e4c09e8162d11495b5a6a5ce61930fa810e513"
   },
   "biomes/farside/dist/farside-cloud.html": {
-   "bytes": 1168166,
-   "sha256": "e73b92e6295b9f3d88fcbaee64d640304954071508602c82c2b3a9c4a99b2f38"
+   "bytes": 1169498,
+   "sha256": "7c53f81f2ad32ced55581903e357f2ce07734af6d39462f8afd8ec8723285cae"
   },
   "biomes/farside/dist/farside-front.html": {
-   "bytes": 1168354,
-   "sha256": "42ab75f5e61390a9dfa25a325be7c00f6764493662d508217dd3c0c6a7b11d43"
+   "bytes": 1169686,
+   "sha256": "58231564f2581be1d69aab1c7ab21e70f67c931ffa2db1f4854c472899e3a1ea"
   },
   "biomes/farside/dist/farside-strand.html": {
-   "bytes": 1169444,
-   "sha256": "abe14ce4914bade32cddbc127e617318015391559edf7f2bf3f46ce35756a63a"
+   "bytes": 1170776,
+   "sha256": "17031ab592422136b14265ffeb4b52d7af2fc6764fdd40e2739823488ece9b41"
   },
   "biomes/farside/dist/farside.html": {
-   "bytes": 1178562,
-   "sha256": "3dfcc8e073a0cdde74012f0b2969630b42942751ba8eb7969ddea8e6aa607e83"
+   "bytes": 1179894,
+   "sha256": "a4bbd0d0a7b0046b3c004da25af82663cc2c304123fac07e344b181e5eb7b8c5"
   },
   "biomes/geyser/dist/geyser-basin.html": {
    "bytes": 1300468,
@@ -281,8 +281,8 @@
    "sha256": "1b75d5291fc9be47ba1faf241599d3627e40f1b97b955f1b9fc15ce70bfc43be"
   },
   "biomes/korona/dist/korona-basin.html": {
-   "bytes": 1646962,
-   "sha256": "57854a70edd67cf4851f1a7365e2aab85ecfab5390196ed82ef73047a1f53534"
+   "bytes": 1648294,
+   "sha256": "c46a1f9fcdd42904de77c748e725cb58f6cf8ab6be41c791f07a61546796af30"
   },
   "biomes/korona/dist/korona-gorge.html": {
    "bytes": 1666271,
@@ -303,6 +303,10 @@
   "biomes/korona/dist/korona.html": {
    "bytes": 1523367,
    "sha256": "ec622309bf951dd3093bccdf6df80fb2deb63284eaad7d62a191178d545a1cb0"
+  },
+  "biomes/labyrinth/dist/labyrinth.html": {
+   "bytes": 1722979,
+   "sha256": "53f8c1fb3629ea90df602fb5493c57856a1ac2aed3ca735e4d2870cbc925d46d"
   },
   "biomes/necanyons/dist/necanyons-benches.html": {
    "bytes": 1597720,
@@ -349,12 +353,12 @@
    "sha256": "121b159d2ed076a3a3de609e7699c771e8ee838ed4d90a9ad4b44bc7592ff8b2"
   },
   "biomes/nwlowlands/dist/nwlowlands-margins.html": {
-   "bytes": 10546319,
-   "sha256": "ca97c6db7d9e15de2b82c40d64c66e2926f34d376303cdc58df5efde8a105cb9"
+   "bytes": 10547651,
+   "sha256": "373cf774c69fc836bdc1ad5009677955feb1920094d7b3ebf7fb9912db44901d"
   },
   "biomes/nwlowlands/dist/nwlowlands.html": {
-   "bytes": 10542813,
-   "sha256": "229d45fb91d2ea93f71c7f2ce137399c84ed7ed34df96670df8572c4e1d6ee3d"
+   "bytes": 10544145,
+   "sha256": "92d04815cd4523390353bcde1505b39c4b5259c9d1e03e959fb1f7a3d28a5301"
   },
   "biomes/nwouterwall/dist/nwouterwall-taiga.html": {
    "bytes": 1333668,
