@@ -2,11 +2,12 @@
 
 `verify.py --assert` passes on the GPU lane (2026-11-08; the numbers are in `README.md`). What is open:
 
-- [ ] **An intermittent shader link error on the demo page** (2026-11-11). Some `verify.py --assert --no-cache` runs report 22 console errors,
-  `THREE.WebGLProgram: shader error: 0 35715 false` with an empty program log (link status false, no message), then `useProgram: program not
-  valid`; KHOOK.checkPrograms still finds every program linked. Seen on both lanes (arc and rtx) and on main's own page before the line kind
-  (0908aee8d's dist page failed twice in a row the same way), while other runs of the same bytes pass clean: not the deep line's. The failing
-  program is not named (the console lines print only the shader's first defines). Next: dump the program's material name on the error.
+- [ ] **An intermittent shader link error on the demo page, the signature of a lost WebGL context under load** (2026-11-11). Some
+  `verify.py --assert --no-cache` runs report a burst of 22 link failures (`shader error: 0 35715 false`, an empty program log, getError 0),
+  then `useProgram: program not valid`, while KHOOK.checkPrograms passes at the end: every program in the frame failing with no log and three.js
+  rebuilding them once the context returns. Seen on both lanes and on main's page too (0908aee8d), during the app restart when the machine was
+  loaded; the transit session's runs of the same page pass clean on both lanes. Not a defect of the page's shaders: rerun with --no-cache. A
+  harness change that records webglcontextlost and names the material on a link failure is proposed to the owner.
 - [ ] **The deep line (`KTRANSIT.line`, 2026-11-11) is first drawn, not finished.** The `twin` form is in the vocabulary but drawn as the gallery
   (two bores side by side are owed); the lining is the library's `concrete` (biomes/line owes `concrete.lining.segment`, PROMPTS-NEEDED section 41)
   with ribs every 10 m, not segment joints; the hot doors are a bulkhead or a frame, with no leaves; the demo draws no trains on it (the cars are the
