@@ -77,7 +77,7 @@ pass budget.
   (station.json "kin"); a slot the guess missed draws its procedural texture, as the kin's own page does with `?mat=proc`. Read each
   page's library swap before trusting the look.
 - [ ] **Spider Lake's own trees are not built**: its silk-forest is a plan (biomes/spiderlake); station 4 grows the north-west lowlands'
-  paperbark, glow-willow and ghost gum in their place (PLAN.md section 4's fallback), and the silk is the kit's own procedural orb card
+  paperbark, spindle poplar and ghost gum in their place (PLAN.md section 4's fallback), and the silk is the kit's own procedural orb card
   hung between neighbouring trees, not the spiders' frames. Its people's landing, like the caravanserai and the cairns, is plain boxes and
   records until their kits (`kits/coyote`; Spider Lake's).
 - [ ] **The tarn's stragglers are young colonies with no colony pass**: the Outlands kit's forms (deck caps, cap-shrubs, lantern pods, read

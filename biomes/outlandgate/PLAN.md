@@ -249,7 +249,7 @@ wholly on the floor: the gap's walls are the far field), `KSTRATA`, `KSTACKS`, `
 fragment reads what). Taken besides station 1's: `KSTACKS` (the seeps' dike ribs, the tarn's erratics), `WATER.terraces` (the seeps'
 rimstone stairs), `WATER.open` (the tarn, Spider Lake's bay), `WATER.still` pools (the warm coves), `KHAZ`'s `slip`, `fall`, `crush`, `hunter`
 and `heat` records, `BIO.kin` from the north highlands (larch, birch, wind spruce, brook willow) and the north-west lowlands (tree fern,
-paperbark, glow-willow, ghost gum), and the Outlands kit's forms read in place (the tarn's young colonies). The giant current ripples and the
+paperbark, spindle poplar, ghost gum), and the Outlands kit's forms read in place (the tarn's young colonies). The giant current ripples and the
 flood terraces are kit work (amendment 3 is not a `KRELIEF` form yet).
 
 **Core amendments needed:**

@@ -1,11 +1,11 @@
 // ================================================================= OUTLAND GATE — station 4's kin and its silk (PLAN.md section 4)
 // The gap's mouth is the crater side's wettest ground: Spider Lake's silk-forest trees are not built (biomes/spiderlake is a plan), so the
-// plan's fallback, the NEIGHBOURS' SPECIES read in place (station.json "kin": the north-west lowlands' paperbark, glow-willow and ghost
+// plan's fallback, the NEIGHBOURS' SPECIES read in place (station.json "kin": the north-west lowlands' paperbark, poplar and ghost
 // gum), grown by core/biome's BIO.kin in 60. The kit's own: SILK, the gilded orb spiders' webs (an orb on a card, hung between two trunks:
 // {free: true}, the attach audit's rule for what no structure holds), drawn with a procedural thread texture. Data and kit items only.
 OGATE.KINX=[
  {from:'nwlowlands.paperbark',key:'swamppaperbark',name:'Swamp paperbark',scale:{H:.75,rb:.85,crownR:.8},where:'the delta\'s backswamps, standing in the wet',tags:{riparian:'yes',koppen:['Cfa']}},
- {from:'nwlowlands.glowwillow',key:'glowwillow',name:'Glow-willow',scale:{H:.8,rb:.85,crownR:.85},where:'the channels\' levees and the coves\' runs',tags:{riparian:'yes',koppen:['Cfa']}},
+ {from:'nwlowlands.poplar',key:'leveepoplar',name:'Levee poplar',scale:{H:.75,rb:.85,crownR:.85},where:'the channels\' levees and the coves\' runs',tags:{riparian:'yes',koppen:['Cfa']}},
  {from:'nwlowlands.ghostgum',key:'ghostgum',name:'Ghost gum',scale:{H:.6,rb:.7,crownR:.65},where:'the rises, north and south of the delta',tags:{riparian:'no',koppen:['Cfa']}},
 ];
 (function(){const T3=BIO.host.THREE,TAU=Math.PI*2;

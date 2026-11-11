@@ -9,7 +9,7 @@
 // and backswamps between; warm springs come up at the hills' foot to the south (Spider Lake's hydrothermal seeps, its plan: 32-45 °C) into
 // travertine-rimmed coves. The far field's gap floor is lifted to the lake's level for the same reason (STAGE.farLift).
 // THE WOODS (Spider Lake's silk-forest is not built: the plan's fallback, PLAN.md section 4): the north-west lowlands' paperbark in the
-// backswamps, glow-willows on the levees, ghost gums on the rises, read in place; reed beds on the delta's front and the coves. SILK IN THE
+// backswamps, poplars on the levees, ghost gums on the rises, read in place; reed beds on the delta's front and the coves. SILK IN THE
 // WOODS: the gilded orb spiders' webs strung between neighbouring trees (the kit's own: a card hung between two trunks).
 // THE PEOPLE (PLAN.md section 5: Spider Lake's people at the mouth): a silk landing on the delta's south bank: stilt houses, a jetty into the
 // lake, reeling frames (plain records and boxes until their kit), and the god's road setting out from it up the gap.
@@ -64,8 +64,8 @@ FIELD.bankX=(x,z)=>{const C=chanAt(x,z);return C&&!inLake(x,z)&&C.d>=C.C.hw-2?sm
 // stand thick): their webs are strung only there (60), and each patch is a `hunter` hazard (87), registered before anything is drawn
 const WEBZONES=(function(){const out=[],cell=420,N=Math.ceil(TERR.R/cell);
  for(let j=-N;j<=N;j++)for(let i=-N;i<=N;i++){const h=KRAND.hash(6411,i,j),u=k=>KRAND.unit(KRAND.hash(h,k,1)),x=(i+u(1))*cell,z=(j+u(2))*cell;
-  if(Math.abs(x)>TERR.R-150||Math.abs(z)>TERR.R-150||inLake(x,z)||inWorks(x,z,60))continue;const w=Math.max(FIELD.swamp(x,z),FIELD.levee(x,z));if(u(3)>smooth(.25,.6,w)*.8)continue;
-  out.push({x,z,y:terrainH(x,z),r:90+60*u(4)});}return out;})();
+  if(Math.abs(x)>TERR.R-150||Math.abs(z)>TERR.R-150||inLake(x,z)||inWorks(x,z,60))continue;const w=Math.max(FIELD.swamp(x,z),FIELD.levee(x,z),FIELD.rise(x,z)*.7);if(u(3)>smooth(.15,.5,w)*.85)continue;
+  out.push({x,z,y:terrainH(x,z),r:120+80*u(4)});}return out;})();
 // ---------------------------------------------------------------- the host binding
 const SPINE=[];CH.forEach(C=>{for(let k=0;k<C.P.length;k+=25)SPINE.push(C.P[k]);});COVES.forEach(V=>SPINE.push([V.x,V.z]));SPINE.push([LAND.x,LAND.z]);
 for(let z=-2800;z<=2800;z+=700)SPINE.push([shoreX(z)+80,z]);for(const x of[1400,2800])for(const z of[-2400,0,2400])SPINE.push([x,z]);
@@ -82,7 +82,7 @@ const reachPolys=C=>{const out=[];for(let s=0;s<C.L;s+=300){const i0=C.A.findInd
   const m=C.P[Math.floor((i0+i1)/2)],L=[],R=[];for(let i=i0;i<=i1;i++){const a=C.P[Math.max(0,i-1)],b=C.P[Math.min(C.P.length-1,i+1)],dx=b[0]-a[0],dz=b[1]-a[1],l=Math.hypot(dx,dz)||1;
    L.push([C.P[i][0]-dz/l*C.hw-m[0],C.P[i][1]+dx/l*C.hw-m[1]]);R.push([C.P[i][0]+dz/l*C.hw-m[0],C.P[i][1]-dx/l*C.hw-m[1]]);}out.push({m,s,pts:L.concat(R.reverse())});}return out;};
 const STAGE={key:'mouth',px:STATION_PX,seed:400,title:'the Spider Lake Threshold',site:{px:1328-272,py:228-330},
- hint:'The Outland Gate, station 4: the gap\'s mouth (5.1 px 1328,228; Cfa, 1.35 atm, 1,929 mm: the gap\'s wettest), where Hau-Gel enters Spider Lake at its level of 1,460 m. The river comes in from the east-south-east and falls to the lake over a delta: three mouths across flats a metre or two over the water, levees along them and paperbark swamp between; warm springs rise at the southern hills\' foot into travertine-rimmed coves. Glow-willows on the levees, ghost gums on the rises (read in place from the north-west lowlands), reed beds on the delta\'s front, and silk in the woods: the gilded orb spiders\' webs strung between the trees. Spider Lake\'s people keep a silk landing on the south bank, its jetty out into the bay, and the god\'s road sets out from it up the gap',
+ hint:'The Outland Gate, station 4: the gap\'s mouth (5.1 px 1328,228; Cfa, 1.35 atm, 1,929 mm: the gap\'s wettest), where Hau-Gel enters Spider Lake at its level of 1,460 m. The river comes in from the east-south-east and falls to the lake over a delta: three mouths across flats a metre or two over the water, levees along them and paperbark swamp between; warm springs rise at the southern hills\' foot into travertine-rimmed coves. Poplars on the levees, ghost gums on the rises (read in place from the north-west lowlands), reed beds on the delta\'s front, and silk in the woods: the gilded orb spiders\' webs strung between the trees. Spider Lake\'s people keep a silk landing on the south bank, its jetty out into the bay, and the god\'s road sets out from it up the gap',
  sky:{"air":{"pressure":1.35,"humidity":0.75},"clouds":{"cover":0.55,"cumulus":0.8,"cirrus":0.3}},
  atmos:{climate:{wet:true,cold:false}},
  down:[-6000,-3600],wind:{speed:1.6,daySpeed:1.2},   /* the gap's axis at its mouth: the river from 1331,230 to 1328,228, into the lake */
@@ -130,7 +130,7 @@ const STAGE={key:'mouth',px:STATION_PX,seed:400,title:'the Spider Lake Threshold
   ok:(x,z)=>!inWorks(x,z,2)&&waterH(x,z)<-1e8,water:(x,z)=>inLake(x,z)&&terrainH(x,z)<LV-2,people(){return[];},
   badAt:[LAND.x-20,LAND.z+14,'in a stilt house of the landing']},
  build:{webZones:WEBZONES},budgetTypes:{'ogate/silk':'pass'},wetAt:[shoreX(0)-600,0],
- views(){const K=STAGEKIT,g=K.gh,M=MOUTHS[1],mm=M[Math.floor(M.length*.85)],V=COVES[0],Wb=(OGATE.WEBS||[])[0],P=K.nearTree('swamppaperbark',300,800),Gw=K.nearTree('glowwillow',SPLIT[0],SPLIT[1]),Gg=K.nearTree('ghostgum',2400,-2200);
+ views(){const K=STAGEKIT,g=K.gh,M=MOUTHS[1],mm=M[Math.floor(M.length*.85)],V=COVES[0],Wb=(OGATE.WEBS||[])[0],P=K.nearTree('swamppaperbark',300,800),Gw=K.nearTree('leveepoplar',SPLIT[0],SPLIT[1]),Gg=K.nearTree('ghostgum',2400,-2200);
   return{
    'The delta from the southern hills':K.look(1900,2900,30,200,0,0),
    'Hau-Gel into Spider Lake':K.look(mm[0]+180,mm[1]-60,10,mm[0]-400,mm[1],0),
@@ -139,7 +139,7 @@ const STAGE={key:'mouth',px:STATION_PX,seed:400,title:'the Spider Lake Threshold
    'A warm cove':K.look(V.x+V.r+28,V.z-18,3,V.x,V.z,0),
    'Silk in the woods':Wb?[Wb.x+Wb.nx*14,Math.max(g(Wb.x+Wb.nx*14,Wb.z+Wb.nz*14,2),Wb.y-1),Wb.z+Wb.nz*14,Wb.x,Wb.y,Wb.z]:K.look(400,600,4,300,500,4),
    'Paperbark swamp':K.atTree(P,22,2.4,2.5,P.H*.4),
-   'Glow-willows on a levee':K.atTree(Gw,20,1.6,2.5,Gw.H*.45),
+   'Poplars on a levee':K.atTree(Gw,20,1.6,2.5,Gw.H*.45),
    'Ghost gums on the rise':K.atTree(Gg,40,.8,3,Gg.H*.4),
    'The silk landing':K.look(LAND.x+90,LAND.z+70,14,LAND.x,LAND.z,3),
    'The jetty into the bay':K.look(LAND.jx-40,LAND.jz+60,6,LAND.jx+40,LAND.jz,1),
