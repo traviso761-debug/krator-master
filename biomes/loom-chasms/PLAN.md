@@ -7,8 +7,10 @@ Nim** and its playa, **the White Loom**. Over the chasms grows the region's one 
 that span the slots between the rims. The Yuni farm the Cradle and send expeditions in from **Spindle Fan**. The Stalkers come
 down off their peaks.
 
-This plan replaces the plan v2 (Gemini, 2026-10-28) and keeps its facts. Nothing is built; it is a kit for the rebuild's queue,
-after the frozen integration pass. Its station records (`stations/*/station.json`) are on the 5.1 canvas. Names marked **TBD**
+This plan replaces the plan v2 (Gemini, 2026-10-28) and keeps its facts. **Built so far (2026-11-11, a cloud session):** station 3,
+the Loom, the plan's first (`build.py`: `dist/loom-chasms.html`; section 7b the site as drawn, 7c what was settled, section 8 the
+core adoption as built; `INDEX.md`, `KNOWN_ISSUES.md`). The other four stations are records only. The real-GPU verify is owed on
+the owner's PC (the cloud has no GPU). Its station records (`stations/*/station.json`) are on the 5.1 canvas. Names marked **TBD**
 are the owner's. What changed from v2 is listed at the end.
 
 ## 1. What the map carves (map 5.1)
@@ -250,7 +252,7 @@ summit and Lake Nim, 140 km apart; they are split here.
 |---|---|---|---|
 | 1 **The Weavers' Cradle** (`cradle`) | 1555,1142 | 2,180 m (2,166-2,199 m within 3 px); 1.22 atm; Cwb, 11 °C (23/0), 439 mm; Spindle Fan 13 km north-east | the terraced loess fans, Aina Bruk off the fan, the Yuni farms, the road setting out east |
 | 2 **The Weave-Step** (`monocline`) | 1575,1163 | 1,479 m on a step; 978-1,900 m within 3 px; 1.33 atm; BSk, 15 °C (26/5), 125 mm; Mungo 39 km east-north-east | the basalt benches and box canyons, the talus skirts, a waystation on the road, the first view over the chasms |
-| 3 **The Loom** (`loom`) | 1662,1162 | 748 m on a mesa's shoulder; the floor 264 m and the mesa top 1,592 m within 3 px; 1.46 atm; BWk, 19 °C (30/9), 78 mm | a slot on the mesa rim with its cable canopy in tiers, the cable-stryder, the great chasm opening below; Stara Bruk on the floor |
+| 3 **The Loom** (`loom`) | 1662,1162 (built at **1664,1161**, on the rim: 7b) | 748 m on a mesa's shoulder; the floor 264 m and the mesa top 1,592 m within 3 px; 1.46 atm; BWk, 19 °C (30/9), 78 mm | a slot on the mesa rim with its cable canopy in tiers, the cable-stryder, the great chasm opening below; Stara Bruk on the floor |
 | 4 **Mount Caelum** (`caelum`) | 1622,1166 | 4,431 m (pinned; 3,721-4,441 m within 3 px); 0.92 atm; ET, -2 °C (11/-15), 439 mm | the summit fumaroles, the parent colony, the chasm net spread out below |
 | 5 **The White Loom** (new, split from `caelum`) | about 1697,1176 | Lake Nim's shore at 243 m; the lake at 240 m; 1.55 atm; XS, 24 °C (36/13), 47 mm | the playa: salt polygons and crusts, the brine pools and their mats, the halite sifter, a salt-camp |
 
@@ -258,38 +260,67 @@ summit and Lake Nim, 140 km apart; they are split here.
 slot, the canopy and the chasm in one view. Station 1 needs the Yuni's farms and the Cradle's people decided first. Station 5
 needs the salt-crust hazard.
 
-**Records to fix** when the kit starts (the brief for the records, not this plan's edit):
+### 7b. Station 3 as drawn (the survey, 2026-11-11)
+
+Read with `smodel.page` from `tools/scale-model/model/data`; `stations/bake_far.py` (the Great Chasm's bake, read in place) writes the
+station's window (121 x 121 cells, 120 km each way) into `stations/loom/44f-host-far-data.js`, and the page's ground is the model's
+surface through those cells with the station's landforms on it.
+
+| | 5.1 px | Height | Air | Class | tm (tw / tc) | Rain | What the cells show |
+|---|---|---|---|---|---|---|---|
+| the plan's site | 1662,1162 | 748 m | 1.46 atm | BWk | 19 (30 / 9) °C | 78 mm | **mid-wall**: the mesa's west wall drawn as a ramp from the floor at 270 m (x 1659) to the top at 1,520-1,610 m (x 1665); no rim in a 5.2 km page round it |
+| **the station** | **1664,1161** | 1,488 m | 1.33 atm | BWk | 15 (26 / 5) °C | 78 mm | the rim across the page's west half, the wall falling west (1,140-1,195 m at the west edge, 720 m 4 km out, the floor at 270-490 m 8-12 km out), the mesa top at 1,470-1,610 m to the east |
+
+No water within 12 km. Mount Caelum stands 84 km west-south-west (4,431 m); the airless east rim 150 km east.
+
+### 7c. Settled (2026-11-11)
+
+- **The order** (the owner, 2026-11-11): the Loom first, as section 7 says; station 1 after it.
+- **The Cradle's farmers are Yuni colonists** (the owner, 2026-11-11: section 9's question): Yuni families farming the terraces from
+  Spindle Fan, the Yuni culture on their records and Yuni names. Their station is next.
+- **The Loom moved** from 1662,1162 to **1664,1161** (7b): the slot "on the mesa rim" needs the rim in the page.
+- **The slot**: a tension fissure on the mesa top 1 km in from the rim, parallel to it (NNE-SSW), 4 km long, 230 m across its lips and
+  180 m deep, two sheer risers with a tread between (KRELIEF.stepcut), closed round its ends (the chasm head is still owed: section 8).
+- **The canopy**: a cable station every 24-36 m along the slot; three in four are grown cables (KSPAN catenaries, 15-40 cm thick,
+  140-230 m long, in four tiers 80-150 m over the floor), one in four a pioneer shoot arching lip to lip on its bladders. Every anchor is
+  found by a ray at the drawn wall and must strike a riser; a span that would pass through the drawn rock is not grown. The anchors'
+  pull is on each record (KSPAN.tension: a grown cable a third iron-silica fibre, in Krator's 7.4 m/s2).
+- **The mesa top's ground cover** is the Great Chasm kit's (the Outlands' cold-desert set as its named stand-ins), read in place, with
+  its pack (the ground's library layers): the two kits' cold desert is one ground. No trees are borrowed here.
+- **Namakiers**: none (section 2's reading; the owner's call stays open).
+
+**Records to fix** when the kit starts (the brief for the records, not this plan's edit; `loom` fixed 2026-11-11):
 - every station's `atm`;
 - `loom`: `floor` 568 m and `chasm_depth` 180 m (the floor is 264 m; a slot's depth is the page's);
 - `caelum`: `playa_level` 344 m (it is 240 m) and Lake Nim's `area_km2` 45 (it is about 500);
 - `region98_99.json` still holds Region 99's older 10-vertex outline.
 
-## 8. Core adoption (written first, as the working rules ask)
+## 8. Core adoption (written first, as the working rules ask; as built for station 3, 2026-11-11)
 
-Start from the nearest finished kit: `biomes/copperglacier`, with the scablands' coulee for `KGEODE` and spiderlake for `KSPAN`
-when they are built.
+The plan's table (written before any fragment) is kept as the build took it. The host is the Great Chasm's (`biomes/greatchasm/src`,
+built the same day on the same scale model: its land library, stage, far field, hazards, sky and air), taken as the start, not
+copperglacier's (the plan's pick, written before the Great Chasm existed: the Great Chasm is the nearest finished kit on the model's own
+surface). No core fragment is copied. `python3 tools/check_core_use.py biomes/loom-chasms` reads 0 findings.
 
-| Need | Module | How |
+| Need | Module | As built (station 3) |
 |---|---|---|
-| randomness | `core/rand` (`KRAND`) | every placement seeded by (world, cell, index, salt) |
-| the land | `KRELIEF` (`38`, `38c`) | `terraces` for the Cradle; `scarp` and `relay` for the Weave-Step; `stepcut` for the slots and the walls' steps; `volcano` for Caelum; `gully` for the wadis; `runout` for the talus; `KRELIEF.waters` for Lake Nim |
-| strata | `KSTRATA` (35), `KSTRATA.vary` and `drape` (35c) | the flood basalts in every wall, columnar in the faces; the loess and tuff of the Cradle; the evaporite crust |
-| geodes | `KGEODE`, `KSPELEO.AMETHYST` | the Weave-Step's geodes and the walk-in one in a chasm wall |
-| ground | `KGROUND` (43), `KHORIZON` (45), `KFAR` (44) | loess, pavement, fans, salt as documented masks; relief on every station; the far rims and Caelum as far masses |
-| frost | `KFROST` (42) | Caelum's upper flanks |
-| water | `core/water`: `WATER.open`, `flow`, `W.pan` (the `brine` look), `WATER.spring` | Lake Nim, the three perennial rivers, the playa and its brine pools, Caelum's and the Cradle's vents |
-| cables | `KSPAN` (`core/biome/45-core-span.js`) | `solve` (with `up` for the pioneer shoots), `strands` for the tiers, `tension` for the anchors; anchors found by rays at the drawn rock, never at `terrainH` |
-| flora | `core/biome` | the cable spinner and the playa's species in this kit; the neighbours' read in place (section 4) |
-| crops | `kits/crops` (`CROPS.forBiome`, `at`) | the Cradle's fields |
-| sky, weather | `core/atmos` | the standard sky; the shimmer over the floor (`fx/89-atmos-fx-shimmer.js`); the dust season |
-| hazards | `core/hazard` (`KHAZ`) | section 6; every record in `core/tags` before it is drawn |
-| fauna | `kits/fauna` | the cable-stryder and the halite sifter, as `BIO.record` records |
-| the Stalkers | `kits/mechs` (`KratorMechs`, culture `stalker`) | placed as hazard records by this kit, drawn by the mechs kit |
-| camps, settlements | `core/camp`, `core/hamlet` | caravan and salt camps; the Cradle's farms and Mungo; Spindle Fan is a Yuni settlement (`settlements/yuni`'s pieces) |
-| resources | `kits/resources` (`KRES`) | sulphur at Caelum; *proposed* saltpeter on the playa's margins (the Atacama's nitrates form in such basins); read the geology bake at the build |
-| shadows | `core/shadow` | off at load |
-| tags, space, mask, host, export, materials | as every kit | |
-| city | `core/city` | no |
+| randomness | `core/rand` (`KRAND`) | the cable stations, their tiers, yaws, stages, radii and slack, the curtains: `KRAND.hash(world, k, salt)`; the ground cover the core's cell lattice (`BIO.grid`) |
+| the land | the scale model; `KRELIEF` (`38`, `38c`) | the model's surface (44f, 44v); the slot `KRELIEF.stepcut`; `KRELIEF.pavement` on the mesa top |
+| strata | `KSTRATA` (35) | the Great Chasm's flood-basalt recipes, read in place (`biomes/greatchasm/src/44r-*`: colonnade, entablature, flow tops, boles) |
+| ground | `KGROUND`, `KHORIZON`, `KFAR` | four library layers (15 texture units on the linked program), the Great Chasm's pack read in place; KFAR to 118 km from the model; KHORIZON over it |
+| cables | `KSPAN` (`core/biome/45-core-span.js`) | `solve` (grown: a catenary; shoots `up`), `points`, `at`, `low`, `tension`; anchors by rays at the drawn walls (`src/45d-host-drawn.js`: bucketed by the ground's cells), never at terrainH |
+| flora | `core/biome` | this kit's species file (`src/50`, `src/60`): the cable spinner (anchor, shoot, bladder, cable), the cable beard, the wall curtain; the Great Chasm's ground cover read in place |
+| water | `core/water` | none on this page (no water within 12 km); the fields path reads that |
+| sky, weather | `core/atmos` | the standard sky at the station (its fog thinned: the chasm net and Caelum are the far field); height fog, dust, the dust season; the shimmer only where the ground is hot (not here) |
+| hazards | `core/hazard` (`KHAZ`) | the air and the heat as ambient fields; falls at the slot's lips, rockfall off its walls |
+| tags, space, mask, host, export, materials, shadow | as every kit | each cable a core/tags record registered before it is drawn |
+
+**Not taken at station 3, each with its reason:** `KRELIEF.terraces`, `scarp`, `relay`, `volcano`, `runout`, `KRELIEF.waters`
+(the other stations' landforms); `KSTRATA.vary` (the Cradle's loess); `KGEODE`, `KSPELEO` (the geodes are the Weave-Step's and a chasm
+wall's, not this slot's); `KFROST` (Caelum); `core/water`'s lake, rivers, pan and springs (stations 4 and 5, and the floor's rivers
+past this page); `kits/crops` (the Cradle); `kits/fauna` (the cable-stryder is the fauna kit's: not placed, KNOWN_ISSUES.md);
+`kits/mechs` (the Stalkers keep to the west); `core/camp`, `core/hamlet` (no camp or village on this page); `kits/resources` (no node
+here); `core/city` (no).
 
 **Core amendments** (none is a new module; all but the last are listed by other plans: cite them):
 1. **A chasm head for `stepcut`**: a graben whose depth tapers to nothing and ends in an amphitheatre (Mid Basin's amendment 3).
@@ -312,8 +343,8 @@ when they are built.
 
 - **The water:** Ostrukh Riba's 340 m³/s onto a desert floor with a 500 km² lake. Cut the river (Mid Basin's plan questions its
   course), or grow Lake Nim to several thousand km² (a real terminal lake, as the Danakil's were)?
-- **The Cradle's people:** Yuni colonists, or an older people under Yuni rule? Who lives at Mungo? Reed stands on airless
-  ground: move it, or remove it?
+- **The Cradle's people:** ~~Yuni colonists, or an older people under Yuni rule?~~ Yuni colonists (the owner, 2026-11-11). Who
+  lives at Mungo? Reed stands on airless ground: move it, or remove it?
 - **Namakiers:** keep the playa's salt as crust and pinnacles (proposed), or add a buried salt layer so salt glaciers can flow?
 - **The cables:** spans of 100-300 m across slots (proposed), with the great chasms open; or does the owner want longer spans?
   At 2-20 km the chasms are beyond any cable.

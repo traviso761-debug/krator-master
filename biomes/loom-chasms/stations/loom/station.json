@@ -1,30 +1,17 @@
 {
-  "canvas": "5.1 (1821x1723)",
-  "name": "The Looming Chasms (station 3): the 180m sheer graben rifts, halite namakier salt glaciers and razor penitentes on the floor, suspended multi-tiered living tension cable canopy, cable-stryder ambush lairs",
-  "out": "loom-chasms.html",
-  "site": {
-    "name": "loom",
-    "title": "The Looming Chasms",
-    "px": 1662,
-    "py": 1162,
-    "base": 748.0,
-    "floor": 568.0,
-    "chasm_depth": 180.0,
-    "atm": 1.59,
-    "mean": 19.0,
-    "rain": 78,
-    "cls": "BWk",
-    "lat": -27.5
-  },
-  "water": [],
-  "chasm": {
-    "width": 120.0,
-    "depth": 180.0,
-    "salt_floor": true
-  },
-  "cable_canopy": {
-    "span_m": 160.0,
-    "tiers": 3,
-    "species": "chordephytum_ferreum"
-  }
+ "canvas": "5.1 (1821x1723)",
+ "note": "Station 3, the Loom (PLAN.md section 7; built 2026-11-11: the site moved from 1662,1162, mid-wall on the model, to the mesa's rim at 1664,1161, PLAN.md 7b). kin: the Great Chasm's kit read in place for the mesa top's ground cover (the Outlands' cold-desert set as its named stand-ins) and its pack (the ground's library layers); no trees borrowed. The site record below is the plan's data, corrected (atm, the floor, the slot's depth); build.py reads only kin, core and base.",
+ "name": "The Loom (station 3): a slot on a Shuttle Mesa's rim with the living cables across it in tiers, pioneer shoots arching on their bladders, the great chasm opening below",
+ "out": "loom-chasms.html",
+ "site": {"name": "loom", "title": "The Loom", "px": 1664, "py": 1161, "base": 1488.0, "floor_model": 490.0, "slot_depth": 180.0, "atm": 1.33, "mean": 15.0, "rain": 78, "cls": "BWk"},
+ "water": [],
+ "slot": {"width_top": 230.0, "depth": 180.0, "strike": "NNE-SSW", "length": 4000.0},
+ "cable_canopy": {"span_m": [140, 230], "tiers": 4, "canopy_over_floor_m": [80, 150], "species": "cablespinner"},
+ "kin": {
+  "greatchasm": [
+   ["src/50-biome-greatchasm-species.js", "src/60-biome-greatchasm-floor.js", "src/70-biome-greatchasm.js"],
+   "GCH",
+   "*"
+  ]
+ }
 }

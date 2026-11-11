@@ -324,6 +324,10 @@
    "bytes": 1523367,
    "sha256": "ec622309bf951dd3093bccdf6df80fb2deb63284eaad7d62a191178d545a1cb0"
   },
+  "biomes/loom-chasms/dist/loom-chasms.html": {
+   "bytes": 5545080,
+   "sha256": "14da6b908d4831dcf8e169b95ac8d3b5c2f05f70f4a0e5d78a90ae5baf2f154e"
+  },
   "biomes/necanyons/dist/necanyons-benches.html": {
    "bytes": 1597720,
    "sha256": "8e7a4dc6a6feaae25d3f3e21ab12d78fe46c6361bf6c259703279ea358c5f5f9"

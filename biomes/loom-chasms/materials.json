@@ -1,0 +1,97 @@
+{
+ "build": "loom-chasms",
+ "note": "The Loom-Chasms' own adapter onto the material library (core/materials/PLAN.md): the cable spinner's parts (50-biome-loom-species.js: BIO.libSwap). bark.cord.braided stands in for the grown cable's iron-silica fibre (tinted iron by the instance colour), organic.flesh.cells for the anchor tuber, organic.pleat.skin for the shoot's gas bladders, card.beard for the canopy's beard (one cell of its sheet), card.moss.hanging for the slots' wall curtains (one cell, its own colour: keep 1). The ground's library layers are the Great Chasm's pack, read in place (build.py). Run python3 tools/textures/pack.py biomes/loom-chasms after any change, then python3 build.py --all.",
+ "size": 512,
+ "families": {
+  "cable": {
+   "lib": "bark.cord.braided",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.55
+   },
+   "roughLift": 0.15,
+   "mapOnly": true
+  },
+  "shoot": {
+   "lib": "bark.cord.braided",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.55
+   },
+   "roughLift": 0.15,
+   "mapOnly": true
+  },
+  "tuber": {
+   "lib": "organic.flesh.cells",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.15,
+   "mapOnly": true
+  },
+  "bladder": {
+   "lib": "organic.pleat.skin",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.15,
+   "mapOnly": true
+  },
+  "beard": {
+   "lib": "card.beard",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.665
+   },
+   "size": 512,
+   "cell": [
+    0.34,
+    0.34,
+    0.66,
+    0.66
+   ],
+   "base": "top"
+  },
+  "curtain": {
+   "lib": "card.moss.hanging",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.6
+   },
+   "size": 512,
+   "cell": [
+    0.3373,
+    0.3373,
+    0.6627,
+    0.6627
+   ],
+   "base": "top"
+  }
+ }
+}

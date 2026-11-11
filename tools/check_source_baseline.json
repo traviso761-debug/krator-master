@@ -62,6 +62,7 @@
  "biomes/korona/stations/basin/99-host-take.js: ORNUM": 1,
  "biomes/korona/stations/gorge/99-host-take.js: ORNUM": 1,
  "biomes/korona/stations/trench/99-host-take.js: ORNUM": 3,
+ "biomes/loom-chasms/src/45-host-stage.js: RAWTEX": 2,
  "biomes/necanyons/src/45-host-stage.js: ORNUM": 1,
  "biomes/necanyons/src/47-host-land.js: ORNUM": 4,
  "biomes/necanyons/src/83-host-far.js: ORNUM": 1,
