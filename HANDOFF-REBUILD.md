@@ -20,6 +20,8 @@ out), ONE all-builds rebuild on this machine, the GPU verify on both lanes. Push
 - `origin/main` at 9cdbee13e (the textures delivered 2026-11-10);
 - later the same day: `claude/cloud-gpu-lane-7e39d9` (the cloud GPU lanes `vast0`/`vast1`, `tools/CLOUD-LANE.md`; the machine is
   stopped, the lanes unused this pass) and `claude/fervent-meninsky-feaa80` (a `core/materials/PLAN.md` note, no page).
+- last: `claude/stoic-boyd-3ba6cf` (scablands station 2's NW lowlands half, `highline-nw`, and nwlowlands' overlay fragment 57;
+  its session finished it after this pass's brief was written): nwlowlands, nwlowlands-margins and highline-nw rebuilt here.
 
 **Resolved by hand:** the generated files took one side and were rebuilt. `core/materials/PROMPTS-NEEDED.md` keeps every side's
 sections, renumbered 43 (the gypsum maze), 44 (the Hearth field), 45 (raw clay), recounted 37. Nephtos's `busy-keller` was based
