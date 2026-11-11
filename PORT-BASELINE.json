@@ -325,12 +325,12 @@
    "sha256": "ec622309bf951dd3093bccdf6df80fb2deb63284eaad7d62a191178d545a1cb0"
   },
   "biomes/loom-chasms/dist/loom-chasms-cradle.html": {
-   "bytes": 10984400,
-   "sha256": "d2e6ba5c7d803a8e4152a62fca64062cb65002744c7cb81fe2a14efcb8085354"
+   "bytes": 10984407,
+   "sha256": "7c15dc7a866b58387af2121757488e217287dc783c9d355e6d23061f2ddb7a51"
   },
   "biomes/loom-chasms/dist/loom-chasms.html": {
-   "bytes": 6466003,
-   "sha256": "0d19ced6dee657427af141a28915a8c7987caf2266e2d2133d3c39325ffbb122"
+   "bytes": 6466010,
+   "sha256": "bd79dc57d9186fbd499ff1fd187814b1f0a41cf46b7a18a809ab9159a3cb7b54"
   },
   "biomes/necanyons/dist/necanyons-benches.html": {
    "bytes": 1597720,
