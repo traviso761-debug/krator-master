@@ -1,0 +1,10 @@
+{
+ "note": "Station 4, the Headwall (PLAN.md section 7). kin: the eastern badlands' alien needle bloom, read in place, on the channels' floors: the stand-in for the Outlands' wadi plants (PLAN.md section 4).",
+ "kin": {
+  "ebadlands": [
+   ["src/50-biome-ebadlands-species.js", "src/55-biome-ebadlands-trees.js"],
+   "EBADLANDS",
+   "*"
+  ]
+ }
+}

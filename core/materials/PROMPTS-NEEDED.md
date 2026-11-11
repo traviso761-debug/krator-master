@@ -3,7 +3,7 @@
 Every texture or pattern sheet the owner still has to source or generate, each with its finished prompt. Paste a block
 as it is, one image per block. **Everything delivered lives in `PROMPTS-archived.md`** (checked against `core/materials/library/`, `patterns/` and each build's `materials.json` on `origin/main`, 2026-10-19); this file holds only what is still owed.
 
-**Count: 43 prompt blocks** (counted 2026-11-10 at the second integration merge: +2 for the NE outer wall, section 48; +1 for the Firebliss Range, section 47; +3 for the Ancient Transit kit, section 46; the owner's delivery of that day -5; 2026-11-09: +11 for Erewhon's citadel, section 41; +2 for the Tents kit's army and Eternian cloths, section 42; the gypsum maze and the Hearth field, sections 43-44; raw clay, section 45; +3 for the southern highlands' upper stations, section 37; +15 for the hyperjungle's lands and the savannah rims, section 40, 2026-11-08).
+**Count: 44 prompt blocks** (counted 2026-11-10 at the second integration merge: +1 for the Great Chasm, section 49; +2 for the NE outer wall, section 48; +1 for the Firebliss Range, section 47; +3 for the Ancient Transit kit, section 46; the owner's delivery of that day -5; 2026-11-09: +11 for Erewhon's citadel, section 41; +2 for the Tents kit's army and Eternian cloths, section 42; the gypsum maze and the Hearth field, sections 43-44; raw clay, section 45; +3 for the southern highlands' upper stations, section 37; +15 for the hyperjungle's lands and the savannah rims, section 40, 2026-11-08).
 
 **Delivered 2026-11-03:** section 31's five (the Gills: `rock.lamina.pipe`, `mineral.crust.ferromanganese`, `mineral.crust.brucite`,
 `card.breathfringe`, `card.turf.limed`) and ten owed on unmerged branches (High Rift, nwbay, nhighlands, ringisles, the rift rim, Copper Glacier),
@@ -604,6 +604,17 @@ Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfec
 `rock.pseudotachylite.mirror` (the slump faults' glassy faces: station 4's mirror scarp, and the rim's inner face at station 1 when it is drawn; a KGROUND rock layer, roughness low):
 ```
 Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a natural fault surface of black pseudotachylite friction-melt glass, polished to a dull mirror by the fault's slip: smooth, very dark glassy black-brown (#14110f, #221c18), long straight parallel slickenside grooves and fine striations all running the same way across the whole image, a few thin pale grey host-rock gneiss slivers (#8a8780) and small angular clasts dragged out into streaks along the grooves, thin black glass veins branching into the grey host rock at one or two places, faint iridescent oily blue-green and bronze tints on the smoothest patches, a few small chips where the glass has spalled off showing grey rock under it; no lichen, no dirt.
+
+## 49. The Great Chasm (`biomes/greatchasm`, 2026-11-11)
+
+The Deep's floor (`biomes/greatchasm/PLAN.md` sections 2 and 7: the code's paint is "dark komatiite and obsidian on the floor"). Until it
+comes, the Deep's ground draws `ground.sand.black` with `ground.obsidian` in patches (`biomes/greatchasm/materials.json`, `ground.black`
+and `ground.obsidian`): a named stand-in. Full colour, 2 m a tile; it replaces `ground.black` in the Deep's four layers (the slot keeps its
+name).
+
+`ground.komatiite.pavement`:
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a hot desert pavement on an ancient ultramafic lava floor: closely packed angular to sub-rounded pebbles and small cobbles of dark green-black komatiite (#24261f, #2e3128, #3a3c31) with a few with a faint bladed spinifex texture of crossed needle-like crystals on their faces, a dull desert varnish sheen on the stones' tops (#4a4232, #3e3628), scattered chips of black glassy obsidian (#121214, #1c1a1e), a fine grey-brown dust (#6a6254, #7a7062) in the gaps between the stones, and here and there a pale white salt crust (#d8d2c4) in the lowest gaps. No plants. Full colour.
 ```
 
 ## Gaps with no prompt yet
