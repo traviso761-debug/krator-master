@@ -8,7 +8,7 @@
 //    window's bed) sees one coast;
 //  * a town's coast is its own (keep): inside a town's ground and its band the land is not moved and the warp fades
 //    out, so a port's waterfront stays where its build put it;
-//  * the fields 'shore', 'coastC' and 'coast:<class>' (KCOAST.FIELDS) join WORLD.FIELDS, so the biome kits can grow shore
+//  * the fields 'coast', 'coastC' and 'coast:<class>' (not 'shore': core/biome's BIO.ENV.shore is the water's distance in m) (KCOAST.FIELDS) join WORLD.FIELDS, so the biome kits can grow shore
 //    species on them; WORLD.at / fieldsFrom are wrapped (the 43-world-isles.js pattern);
 //  * WORLD.ground is wrapped: the coast's colour bands (wet and dry sand, shingle, rock, the cliff's face, marsh mud);
 //  * WORLD.coast {list, at(x, z), stats(), check(n)} for the probe, the verify and the inspector.
@@ -39,7 +39,14 @@ function chanAt(x,z){W.Hp(x,z,250,PP);return PP.cd<1e8?PP.cd-PP.cw:1e9;}
 // (WORLD.coastKeeps() -> [{x, z, r}]: the isle demo's towns as the owner drew them), easing back to the natural coast
 // over EASE m. A port's waterfront is carved where its build put it; the natural coast resumes beyond it
 const EASE=1200,KEEPS=[];
+const SITE_KEEP={city:4000,town:2500};   /* a site from the scale model (WORLD_DATA.meta.sites): its own point stays where the cut put it */
 function keeps(){KEEPS.length=0;for(const t of (W.towns||[]))KEEPS.push({x:t.x,z:t.z,r:t.R+t.band*.5});
+ for(const s of (M.sites||[]))if(isFinite(s.x)&&isFinite(s.z)){KEEPS.push({x:s.x,z:s.z,r:SITE_KEEP[s.type]==null?1500:SITE_KEEP[s.type]});
+  /* its planned countryside (the region's SITE_SPEC, as 48s searches it): each hamlet's and camp's search disc round its spot */
+  const SP=typeof SITE_SPEC!=='undefined'&&SITE_SPEC&&SITE_SPEC.sites?SITE_SPEC.sites[s.id]:null;if(!SP)continue;
+  for(const H of (SP.hamlets||[]).concat(SP.camps||[])){const look=H.look==null?3000:H.look;
+   const p=H.near?[s.x+H.near[0],s.z+H.near[1]]:H.bearing!=null?[s.x+Math.sin(H.bearing*Math.PI/180)*H.km*1000,s.z-Math.cos(H.bearing*Math.PI/180)*H.km*1000]:null;
+   if(p)KEEPS.push({x:p[0],z:p[1],r:look});}}
  if(typeof W.coastKeeps==='function')for(const k of W.coastKeeps()||[])if(k&&isFinite(k.x)&&isFinite(k.z)&&k.r>0)KEEPS.push({x:k.x,z:k.z,r:k.r});
  return KEEPS;}
 function keepAt(x,z){let k=0;for(let i=0;i<KEEPS.length;i++){const t=KEEPS[i],d=Math.hypot(x-t.x,z-t.z);if(d<t.r+EASE)k=Math.max(k,1-smooth(t.r,t.r+EASE,d));}return k;}
@@ -47,7 +54,8 @@ const SAMPLE={bare:(x,z)=>W.Hbare(x,z,250),rock:rockAt,wet:wetAt,temp:(x,z)=>W.t
 // ---------------------------------------------------------------- built at init
 const init0=W.init;
 W.init=function(R){init0(R);build();};
-function build(){const t0=Date.now(),B=W.waterBodies();on=false;LIST.length=0;keeps();
+function build(){const t0=Date.now();keeps();   /* first: a region's own shaping reads keepAt, and the bodies' old masks are flooded on it */
+ const B=W.waterBodies();on=false;LIST.length=0;
  const HD=M.heights,cellM=Math.max(2000,Math.sqrt((2000/HD.su)*(2000/HD.sv)));   /* the cells the coast came from: the height grid's (4 km on the isles) or the scale model's 2 km pixel the finer grids were drawn up from */
  for(const b of B){const C=KCOAST.build({id:b.id,level:b.level,mask:b.mask,seed:SEED,salt:b.salt>.5,sample:SAMPLE,frame:{ox:OX,oz:OZ},sourceCell:cellM});
   C.body=b;LIST.push(C);}
@@ -58,7 +66,7 @@ function build(){const t0=Date.now(),B=W.waterBodies();on=false;LIST.length=0;ke
 // ---------------------------------------------------------------- the fields
 const FT={};
 function addFields(A){const x=A.x,z=A.z;let best=null;
- for(let i=0;i<LIST.length;i++){const C=LIST[i];if(!inBox(C,x,z))continue;KCOAST.fields(C,x,z,FT);if(!best||FT.shore>best.shore||(best.shore===0&&Math.abs(FT.coastC)<Math.abs(best.coastC))){best=best||{};Object.assign(best,FT);}}
+ for(let i=0;i<LIST.length;i++){const C=LIST[i];if(!inBox(C,x,z))continue;KCOAST.fields(C,x,z,FT);if(!best||FT.coast>best.coast||(best.coast===0&&Math.abs(FT.coastC)<Math.abs(best.coastC))){best=best||{};Object.assign(best,FT);}}
  if(best){for(const k of KCOAST.FIELDS)A[k]=best[k];}else KCOAST.blank(A);
  return A;}
 const at0=W.at,from0=W.fieldsFrom;
@@ -70,7 +78,7 @@ const COL={sand:lin(0xd9c8a0),wet:lin(0x9a8664),shingle:lin(0x8f8a80),pebble:lin
 W.COAST_COLOURS=COL;
 const mixc=(o,c,t)=>{o[0]+=(c[0]-o[0])*t;o[1]+=(c[1]-o[1])*t;o[2]+=(c[2]-o[2])*t;};
 const ground0=W.ground,T=[0,0,0],SD=[0,0,0];
-W.ground=function(x,z,S,out){ground0(x,z,S,out);const sh=S.shore;if(!(sh>0))return out;const c=S.coastC;
+W.ground=function(x,z,S,out){ground0(x,z,S,out);const sh=S.coast;if(!(sh>0))return out;const c=S.coastC;
  const ws=S['coast:sand'],wg=S['coast:shingle'],wr=S['coast:rock'],wc=S['coast:cliff'],wm=S['coast:marsh'];
  if(c>=0){T[0]=T[1]=T[2]=0;let tw=0;const add=(col,w)=>{if(w<=0)return;T[0]+=col[0]*w;T[1]+=col[1]*w;T[2]+=col[2]*w;tw+=w;};
   // sand tinted a quarter by the land's own colour, so a region's beach is of its own ground; dark where the swash wets it
@@ -92,7 +100,7 @@ function maskAt(G,x,z){let u=(x-G.x0)/G.cell-.5,v=(z-G.z0)/(G.cellZ==null?G.cell
 const AT={cls:new Float32Array(5)};
 W.coast={list:LIST,
  at:(x,z)=>{let r=null;for(const C of LIST){if(!inBox(C,x,z))continue;const a=KCOAST.at(C,x,z,0,AT);if(a.band&&(!r||Math.abs(a.c)<Math.abs(r.c))){r={body:C.id,c:a.c,keep:a.keep,cls:{}};KCOAST.CLASSES.forEach((k,i)=>r.cls[k]=a.cls[i]);}}return r;},
- keeps:KEEPS,
+ keeps:KEEPS,keepAt,   /* 0..1: how far (x, z) is kept as the region had it (a region's own shaping applies there as before) */
  stats:()=>({ms,on,keeps:KEEPS.length,bodies:LIST.map(C=>KCOAST.stats(C))}),
  // sampled shore points in each body's band, off the towns: the ground under the level exactly where c < 0 (the sign
  // rule), and in the drawn mask wherever it is under the level (the water shows there). neg: 'mask' checks the old masks

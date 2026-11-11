@@ -1,30 +1,35 @@
 # The Qiblai kit: plan
 
-A vassal building kit for **Qiblai**, the prayer-wheel faith's holy city on the sacred river Ä€lph: a temple city on a strict
+A vassal building kit for **Qiblai**, the prayer-wheel faith's holy city on the sacred river Ālph: a temple city on a strict
 grid, in a blockier but still ornate Xanadu. This plan is for the owner to approve before any code is written.
 
 ## The owner's answers (2026-11-11)
 
 | Question | Answer |
 |---|---|
-| What is Qiblai politically | **The faith's holy city, run by a council of abbots** under the Sultan's suzerainty. No governor's palace. Pilgrims' circuits and ghats on the Ä€lph. |
+| What is Qiblai politically | **The faith's holy city, run by a council of abbots** under the Sultan's suzerainty. No governor's palace. Pilgrims' circuits and ghats on the Ālph. |
 | How big | **About 12,000** |
 | The grid | **A mandala of nested squares:** concentric walled squares round a central temple mountain, cardinal gates, quarters by ring (clergy inside, guilds and lay folk outward) |
 | The massing | **Tibetan cubes with gilt crowns:** battered white and red cubes, flat parapet roofs stacked in terraces; the ornament in bands, windows, gilt roofs and prayer wheels on the temples |
 
 ## 1. What is known
 
-**On the map:**
-- scale model 5.1 px 963,1566 (`60-settlements.js`, id `skm4jjo2vl`, type city, no notes);
-- in the open world, `openworld/xanadu-oidong-highrift`, region frame x -456 km, z -6 km;
-- a pad at **331 m** on the Xanadu eastern bench (`build_425_master.py:3413`), above a stepped graben round a lake at -1,685 m;
-- Cfb, slope ~42 m/km;
-- it stands on the **Ä€lph** (r070, perennial, 520 mÂ³/s), which the lore calls "the sacred river Alph" (LORE.md:479);
-- the Sultanate's ledger says it has stone, wood and water but **no salt within 30 km**.
+**On the map** (moved 2026-11-11; the owner: "by a river and near plentiful resources"):
+- scale model 5.1 **px 922,1595** (`60-settlements.js`, id `skm4jjo2vl`; `SETT_MOVED['5.1e3']`). It was at 963,1566,
+  which in the open world's data stands 65 km from any river, with no salt within 30 km.
+- **At the cataracts of Nahr ash-Shalālāt**, the region's biggest river (~1,100 m³/s), ~1 km from the bank.
+- In the open world, `openworld/xanadu-oidong-highrift`, region frame x -538 km, z +52 km. The ground is ~-1,900 m,
+  Af, ~30 °C, ~990 mm.
+- **Flat:** 37 m of relief over the 1.6 km square, so the mandala's terraces are steps of a few metres, not a hillside.
+- **Within 30 km:** rock salt (236/255), potash, rare earths (190), saltpeter, copper (120), oil. Farmland 40%.
+- **The Ālph**, the faith's sacred river (LORE.md:479), is ~75 km away: a pilgrimage road, not Qiblai's own river
+  (section 9).
+- The scale model's old note of a 331 m pad (`build_425_master.py:3413`) does not match the open world's ground at
+  either spot.
 
 **Today:** a ring of five farming villages and a ranch, 1,345 people in 228 buildings. There is no city page.
 
-**The faith** (LORE.md Â§6.13):
+**The faith** (LORE.md §6.13):
 - temples, monasteries and a pilgrims' circuit of prayer wheels;
 - "no minarets, great prayer wheels instead";
 - the sign is the eight-spoked wheel, in saffron and maroon, with turquoise and gold;
@@ -123,35 +128,35 @@ Scripture is cited with the evidential *-se* ("they say"), the Monks' margin mar
 - **The council of abbots** sits in the Hall of the Decree in the inner square. One abbot comes from each of the eight great
   monasteries, one for each spoke of the wheel. The Sultan's suzerainty is a seat kept empty in the hall and a yearly
   exchange like Longsong's: a grant of fealty answered by grants of esteem.
-- **The Ä€lph is the ninth spoke:** the processional way leaves the east gate for the ghats.
+- **The river is the ninth spoke:** the processional way leaves the east gate for the ghats at the cataracts of Nahr
+  ash-Shalālāt. The pilgrims' road goes on to the Ālph, ~75 km away.
 
 ## 3. The plan of the city
 
 **The module.**
 - Xanadu's garden tiles snap to 8 m (`85b`), and the grid takes that up: **a block is 96 m (12 modules), a street 12 m, a
   pitch of 108 m**.
-- At ~12,000 people, the outer square is **15 Ã— 15 blocks, ~1.6 km a side**. The rings are concentric squares of blocks
+- At ~12,000 people, the outer square is **15 × 15 blocks, ~1.6 km a side**. The rings are concentric squares of blocks
   (*est.*, to be fitted to the population):
 
 | Ring | Blocks (from the centre) | What stands there | People *est.* |
 |---|---|---|---|
-| **0: The Temple Mountain** | the central 3 Ã— 3 (~320 m square) | the great temple on its stepped platform; the Hall of the Decree; the treasury; the great prayer wheel house | ~400 (temple staff, keepers) |
+| **0: The Temple Mountain** | the central 3 × 3 (~320 m square) | the great temple on its stepped platform; the Hall of the Decree; the treasury; the great prayer wheel house | ~400 (temple staff, keepers) |
 | **1: The inner square, the clergy** | ring 1 (16 blocks) | the eight great monasteries (one a spoke); the colleges of the grammarians; the council's offices | ~2,400 monks, novices and lay servants |
 | **2: The kora square, pilgrims and guilds** | ring 2 (24 blocks) | **the kora**, the pilgrims' circuit: a ring street lined with prayer-wheel arcades and chortens at every crossing; pilgrims' hostels; the Goldsmiths', Masons' and Spicers' halls; four gate markets | ~3,000 (and ~1,000 pilgrims at the festival) |
 | **3: The outer square, lay folk** | rings 3-5 (the rest) | row houses on party walls (poor, middle, rich), workshops and the trades, bakeries, baths, wayside shrines | ~6,000 |
-| **Outside the wall** | | the **ghats** on the Ä€lph (east gate), chahar-bagh gardens and the temple estates' farms, the caravanserai on the Erehwon road, the ranch | |
+| **Outside the wall** | | the **ghats** at the cataracts of Nahr ash-Shalālāt (east gate), chahar-bagh gardens and the temple estates' farms, the caravanserai on the Erehwon road, the ranch | |
 
 **The walls and gates.**
 - Each ring is walled: low walls with gate towers on the cardinal axes inside, a full wall on the outer square.
 - The four cardinal avenues run straight from the gates to the Temple Mountain.
 - The axis is **true north** (the mandala's), not the river's. The ghat way leaves the east gate on its own line down to the
-  Ä€lph.
+  Ālph.
 
 **The slope.**
-- 42 m/km over 1.6 km is ~70 m of fall. The grid is **terraced**: each ring stands on its own level platform, one to three
-  steps (2-6 m) above the ring outside it.
-- So the city rises toward the Temple Mountain, the terraces stacked as the massing asks. On a 331 m bench this is a
-  setting, not a fight.
+- The site at the cataracts is nearly flat: 37 m of relief over the 1.6 km square. So the terraces are **built up, not
+  cut**. Each ring stands on its own level platform, one to three steps (2-6 m) above the ring outside it.
+- The city rises toward the Temple Mountain on made ground, the terraces stacked as the massing asks.
 
 **On core/city.**
 - core/city has no orthogonal-grid strategy (`core/city/README.md`: alleys, frontage-courts and radial).
@@ -243,15 +248,17 @@ merged in. Its sheet is a Xanadu page: the kit's buildings, the mixed street, th
 
 **What 12,000 eat.**
 - At 180 kg of grain a head, 12,000 need ~2,160 t a year (more at festival).
-- Qiblai stands at 331 m in Cfb on the Ä€lph, real farming country. Take ~1.8 t/ha and the isle demo's 0.75 ha in crop a
-  hand: a farming village of 240 has ~40-60 t to spare *est.*
+- Qiblai stands at the cataracts of Nahr ash-Shalālāt in a hot, wet lowland (Af, ~30 °C, ~990 mm), with farmland at
+  40% within 30 km: real farming country, likely with two crops a year. Take ~1.8 t/ha and the isle demo's 0.75 ha in
+  crop a hand: a farming village of 240 has ~40-60 t to spare *est.*
+- **Salt is now in reach:** rock salt at 236/255 within 30 km.
 
 **Where it comes from.**
 - The temple estates and the villages that owe them must hold **~30,000 people in 100+ villages** *est.*, or Qiblai buys
-  grain in from the Ä€lph's valley at large.
+  grain in from the Ālph's valley at large.
 - Today's ring of 1,345 feeds a tenth of the city.
 - **Pilgrims and the faith's offerings are Qiblai's export:** gold, books from the grammarians, wheels, incense.
-- **Salt must come in:** none within 30 km.
+- **Salt is local:** rock salt within 30 km, since the move to the cataracts.
 
 This is the open world region's next re-plan when Qiblai's city goes on its ground.
 
@@ -265,4 +272,6 @@ This is the open world region's next re-plan when Qiblai's city goes on its grou
    - a beaten-gold roof sheet distinct from Xanadu's gilt;
    - prayer-wheel copper with worn mantra relief.
 3. **The upstream question:** do the crisp-cube forms go into `kits/xanadu` once they work, or stay Qiblai's?
-4. **Qiblai and Longsong:** the Monks are not of the Decree (section 2a); how much do the two talk? The road between them is 568 km.
+4. **The river:** is Nahr ash-Shalālāt holy in its own right (a sister of the Ālph, or the Ālph's name carried down), or
+   is the Ālph only a pilgrimage 75 km away?
+5. **Qiblai and Longsong:** the Monks are not of the Decree (section 2a); how much do the two talk? The road between them is 568 km.

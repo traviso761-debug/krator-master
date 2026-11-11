@@ -43,7 +43,7 @@ function axisShare(cf,x0,z0,x1,z1,st){let tot=0,ax=0;const nx=Math.round((x1-x0)
 {const A={cls:new Float32Array(5)};
  const raw=axisShare((x,z)=>{const i=Math.floor((x-X0)/CELL),j=Math.floor((z-Z0)/CELL);return data[j*NX+i]>=128?-1:1;},-20000,-20000,20000,20000,137);
  const now=axisShare((x,z)=>KC.at(C,x,z,0,A).c,-20000,-20000,20000,20000,100);
- const off=KC.build({id:0,level:LV,mask:MASK,seed:1234,sample,opts:{sig:1,warp:{a1:0,l1:7000,a2:0,l2:2300,k:[0,0,0,0,0]},fine:{a1:0,l1:300,a2:0,l2:60,k:[0,0,0,0,0]}}});
+ const off=KC.build({id:0,level:LV,mask:MASK,seed:1234,sample,opts:{sig:1,warp:{a1:0,l1:7000,a2:0,l2:2300,k:[0,0,0,0,0]},fine:{a1:0,l1:300,a2:0,l2:60,k:[0,0,0,0,0]},high:{h0:4,k:0}}});
  const offS=axisShare((x,z)=>KC.at(off,x,z,0,A).c,-20000,-20000,20000,20000,100);
  ok(raw>.95,'natural: the mask\'s own edge runs on the grid\'s axes',(raw*100).toFixed(1)+' %');
  ok(now<.25,'natural: the coast field\'s shoreline runs on the axes for under 25 % of its length',(now*100).toFixed(1)+' %');

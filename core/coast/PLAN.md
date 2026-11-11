@@ -95,7 +95,7 @@ Listed by every open-world build after its own fields fragment (`43-*`) and befo
 - `keep`: inside a town's ground (`WORLD.towns`, R plus its band) the coast is not moved (the town's quays and harbour
   are its build's; a town's lift `y0` was taken on the land as it was);
 - adds the fields to `WORLD.FIELDS` and wraps `WORLD.at` / `WORLD.fieldsFrom` (the 43-world-isles pattern), so the
-  biome kits can grow shore species on `shore` and `coast:*`;
+  biome kits can grow shore species on `coast` and `coast:*`;
 - wraps `WORLD.ground`: colour bands per class, mixed by `shore`: wet sand at the water line, dry sand, shingle grey,
   dark rock (and the strata shader's rock weight on cliff faces), marsh mud; under the water a pale sand shelf where it
   is shallow. The colours are the region palette's own `sand`, `gravel`, `rock` and `damp` where it has them;
@@ -220,5 +220,21 @@ The original questions:
 - **The rise** behind the shore is measured from the shoreline's own height, not the level (the generous flood put the
   blurred shore up the beach, and every slope read as a cliff); the cliff threshold is ~1:6 on granite, ~1:10 on soft
   ground.
+- **The field is `coast`, not `shore`**: core/biome's `BIO.ENV.shore` is the water's distance in metres, which the kits'
+  wetness is drawn from; a 0..1 `shore` in `WORLD.FIELDS` overrode it, and the isle demo's farmland, salt pans and
+  villages failed with it.
+- **High ground stays land.** The warp carried one isle shore a kilometre into a hillside 150 m high, and the beach's
+  profile flattened 60 m off the hill over 600 m. Two rules now: the field gains 20 m per metre the bare land stands over
+  4 m (`PRESETS.high`, on a raster of every other texel), so a shoreline cannot wander up into high ground; and inland the
+  profile may cut the land down only within a 25 m face (`PRESETS.cut`), so a coast that meets a hill is a cliff. The
+  mask is drawn on the field before the height term (`c0`, whose slope stays near 1), which is never above `c`: water
+  wherever `c < 0`, the edge on land.
+- **The sign rule's margin** is 5 cm at the water line and 0.5 mm a metre (0.6 m at most): at 4 mm a metre it raised a
+  low plain 4 m a kilometre inland and took the isle demo's salt pans.
+- **Keeps.** A region's sites (`WORLD_DATA.meta.sites`: 4 km round a city, 2.5 km a town, 1.5 km otherwise) and their
+  planned countryside (each hamlet's and camp's search disc in `SITE_SPEC`: Erehwon's farm-1 lost its ground on the new
+  caldera shore without it), the isle
+  demo's towns (their whole plan square) and Nephtos (round the owner's pick, the survey's reach) keep their coast; the
+  isle demo's own mangrove flats still apply inside a keep (`WORLD.coast.keepAt`), so a kept coast is exactly the old one.
 - `map.py`: a CPU top-down map of a region's coast (node, no GPU), with the coast on or off and the shoreline and mask
   edge drawn: what the tuning was judged on while the GPU lanes were queued.

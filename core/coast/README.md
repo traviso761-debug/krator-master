@@ -31,15 +31,16 @@ KRATOR_GL=gpu python3 core/coast/shots.py openworld/isle-demo/dist/isle-demo.htm
    7 km, 1.3 km at 2.3 km and 450 m at 800 m, about a quarter of that typically; scaled by the class: rock and cliff
    coasts most, sand and marsh least) plus a small term on rock coasts. The
    noise is read in the map's frame (`frame`), so two regions' copies of one coast agree, and it is a function of
-   (x, z): the same coast in any tile order.
+   (x, z): the same coast in any tile order. High ground stays land: the field gains 20 m per metre the bare land stands
+   over 4 m, so a shoreline cannot wander up a hillside.
 3. **The classes**, per shore texel from the rise of the bare land over the 300 m behind the shore, the hardness (the
    geology's province: kits/resources), the exposure (16 rays over open water, 12 km fetch), the wetness and the
    temperature; blurred so a class changes over a few hundred metres.
 4. **The shape.** In the band (2.1 km inland, 1.5 km out) the land is blended into the class's profile, and then the
    sign rule: over the level where `c > 0`, under it where `c < 0`, 0 at the water line, so the shoreline is exactly
-   `c`'s zero set. A river's channel under the level near its mouth stays (an estuary); a kept place (a town) is not
-   moved.
-5. **The mask.** A texel is water when `c < 1000 m` at its centre (kept places keep the old mask): the water reaches
+   `c`'s zero set. Inland the profile cuts the land down only within a 25 m face, so a coast that meets a hill is a cliff.
+   A river's channel under the level near its mouth stays (an estuary); a kept place (a town, a site) is not moved.
+5. **The mask.** A texel is water when `c0 < 1000 m` at its centre (`c0`: the field before the height term, never above `c`) (kept places keep the old mask): the water reaches
    every point under the level, and its edge lies on ground the sign rule holds above the level, out of sight.
 
 | Class | When | Profile |
@@ -52,7 +53,7 @@ KRATOR_GL=gpu python3 core/coast/shots.py openworld/isle-demo/dist/isle-demo.htm
 
 ## The fields
 
-`shore` (0..1, 1 at the water line, 0 by 260 m inland and 380 m out), `coastC` (the signed coast distance, m),
+`coast` (0..1, 1 at the water line, 0 by 260 m inland and 380 m out), `coastC` (the signed coast distance, m),
 `coast:sand`, `coast:shingle`, `coast:rock`, `coast:cliff`, `coast:marsh` (the class weights on the shore). The world's
 glue adds them to `WORLD.FIELDS`, so a biome kit's zone can read them; the ground's colour bands are drawn from them.
 

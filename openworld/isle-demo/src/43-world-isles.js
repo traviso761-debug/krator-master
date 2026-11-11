@@ -114,9 +114,12 @@ W.landHook=(x,z,h)=>{const wl=W.lakeWater(x,z);if(wl<-1e8)return h;const d=wl-h;
   const on=smooth(.36,.48,NR.fbm(x/2600+3,z/2600-9,3));if(on<=0)return h;
   let g;if(d<12)g=.5+2.3*smooth(0,12,d);else if(d<22)g=2.8-2.45*smooth(12,19,d);else if(d<30)g=.35+.15*NR.vn(x/120,z/120);else g=lerp(.5,d,smooth(30,70,d));
   return wl-lerp(d,g,on);}
- const above=-d;if(above>4||COASTED)return h;   /* on core/coast (44c) the marsh class makes the flats, keeping the water's sign */
+ const above=-d;if(above>4)return h;
+ /* on core/coast (44c) the marsh class makes the flats, keeping the water's sign; where the coast is kept (a town as it
+    was planned, Nephtos) the flats are as they were, so a kept coast is exactly the old one */
+ const kp=COASTED?(W.coast&&W.coast.keepAt?W.coast.keepAt(x,z):0):1;if(kp<=0)return h;
  const C=classWeights(x,z),wetCl=C[IDX.XA]+C[IDX.Af]+C[IDX.Am]+C[IDX.Aw]*.4;if(wetCl<.3)return h;
- const m=smooth(.45,.6,NC.fbm(x/3000,z/3000,3))*smooth(.3,.6,wetCl)*(1-smooth(2.5,4,above));if(m<=0)return h;
+ const m=smooth(.45,.6,NC.fbm(x/3000,z/3000,3))*smooth(.3,.6,wetCl)*(1-smooth(2.5,4,above))*kp;if(m<=0)return h;
  return wl+lerp(above,-.4+above*.3,m);};
 const lerp=(a,b,t)=>a+(b-a)*t;
 // the kits' weights: the Ring Sea isles kit (and the lenders it grows trees from, 47-world-kits.js) covers the whole demo

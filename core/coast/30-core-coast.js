@@ -27,7 +27,8 @@
 //   KCOAST.shape(C, x, z, h, minWave) -> h'      the land through the coast profile, sign-safe: inside the band the
 //                                                ground is over the level exactly where c > 0 and under it where c < 0
 //   KCOAST.mask(C) -> {x0, z0, cell, cellZ, nx, nz, data}   the water's mask redrawn from c (same frame and size)
-//   KCOAST.fields(C, x, z, out)                  out.shore 0..1 (1 at the water line), out.coastC (m), out['coast:<class>']
+//   KCOAST.fields(C, x, z, out)                  out.coast 0..1 (1 at the water line), out.coastC (m), out['coast:<class>']
+//                                                (not 'shore': core/biome's BIO.ENV has a shore of its own, in metres)
 //   KCOAST.CLASSES, KCOAST.PRESETS, KCOAST.FIELDS, KCOAST.stats(C), KCOAST.hash(C)
 //
 // The classes (soft weights, sum 1): cliff (the land rises fast: hard rock holds a lower one), rock (hard ground, or an
@@ -45,8 +46,10 @@ const PRESETS={
  fine:{a1:120,l1:320,a2:20,l2:70,k:[.12,.5,1,1,.15]},            /* a small term on c, rock and cliff coasts most */
  fetch:12000,rays:16,entry:2500,  // exposure: rays from a shore texel, open when they run `fetch` m over water
  classSig:700,       // the class weights' blur (m)
- shore:{land:260,water:380},      // the `shore` field's reach (m)
+ shore:{land:260,water:380},      /* the coast field's reach (m): 'coast' 1 at the water line, 0 by these */
  eps:{k:.0005,near:.05,max:.6},   /* the sign rule's margin: k per m from the water line, +near after 20 m, at most max: enough to keep the land out of the water, not to raise a low plain (4 m at 1 km took the salt pans) */
+ high:{h0:4,k:20},   // the coast field gains k m per m the bare land stands over h0 m: high ground stays land
+ cut:{face:25,big:1e4,near:8,reach:200},   // inland the profile may cut any depth within the face, `near` m to `reach`, none beyond
  sign:true};         // false: the sign rule off (the tests' negative)
 const clamp=(v,a,b)=>v<a?a:v>b?b:v;
 const smooth=(a,b,x)=>{let t=(x-a)/(b-a);t=t<0?0:t>1?1:t;return t*t*(3-2*t);};
@@ -121,6 +124,13 @@ function build(o){const KR=K(),KM=M(),P=Object.assign({},PRESETS,o.opts||{}),G=o
  for(let c=0;c<NC;c++)blur(KW[c],nx,nz,P.classSig/cell,P.classSig/cellZ);
  // the blur leaks the default (sand) inland of the band: harmless, the profile is off there
  C.RISE=RISE;C.K=KW;C.CH=CH;
+ /* HA: the bare land's height over the level, on a grid of every other texel, within reach of the coast on the land side:
+    `at` adds `hk` m of coast distance per m over `h0`, so the warp cannot carry a shoreline up into high ground (it moved
+    one a kilometre into a hillside 150 m high, and the beach's profile flattened the hill) */
+ {const s=2,hx=Math.ceil(nx/s)+1,hz=Math.ceil(nz/s)+1,HA=new Float32Array(hx*hz),reach=P.band.land+((P.warp.a1+P.warp.a2)*ws+(P.warp.a3||0))*Math.SQRT2*Math.max(...P.warp.k);
+  for(let J=0;J<hz;J++)for(let I=0;I<hx;I++){const i=clamp(Math.floor((I+.5)*s),0,nx-1),j=clamp(Math.floor((J+.5)*s),0,nz-1),f=F[j*nx+i];
+   if(S.bare&&f>-1500&&f<reach)HA[J*hx+I]=Math.max(0,S.bare(C.x0+(I+.5)*s*cell,C.z0+(J+.5)*s*cellZ)-lv);}
+  C.HA={x0:C.x0,z0:C.z0,cell:cell*s,cellZ:cellZ*s,nx:hx,nz:hz,A:HA};}
  C.warpMax=((P.warp.a1+P.warp.a2)*ws+(P.warp.a3||0))*Math.SQRT2*Math.max(...P.warp.k);   /* the most the warp can move a point: the early-out stays continuous */C.fineMax=P.fine.a1+P.fine.a2;
  C.ms=Date.now()-t0;C.nNear=nNear;
  return C;}
@@ -139,6 +149,8 @@ function at(C,x,z,minWave,out){out=out||{cls:new Float32Array(NC)};if(!out.cls)o
  let c=bil(C,C.F,x+wx,z+wz);
  const Fi=P.fine;minWave=minWave||0;
  if(fk>.01&&minWave<Fi.l1){c+=(KR.vnoise(X/Fi.l1,y,Z/Fi.l1,s[4])-.5)*2*Fi.a1*fk;if(minWave<Fi.l2)c+=(KR.vnoise(X/Fi.l2,y+3,Z/Fi.l2,s[4])-.5)*2*Fi.a2*fk;}
+ /* c0: the field before the height term (its slope stays near 1: the mask is drawn on it); then high ground stays land */
+ out.c0=c;if(C.HA){const H=C.HA,ha=bil(H,H.A,x,z);if(ha>P.high.h0)c+=(ha-P.high.h0)*P.high.k;}
  out.c=c;out.band=c<P.band.land&&c>-P.band.water?1:0;return out;}
 
 // ---------------------------------------------------------------- the profiles: [y over the level, weight] at c
@@ -165,6 +177,9 @@ function shape(C,x,z,h,minWave){const A=at(C,x,z,minWave,AT);if(!A.band||A.keep>
  const plat=40+110*root.KRAND.vnoise((x+C.ox)/900,1.5,(z+C.oz)/900,C.seeds[5]);
  let sw=0,sy=0;for(let k=0;k<NC;k++){if(cls[k]<.002)continue;const r=profile(k,c,hl,rise,plat),ww=cls[k]*r[1];sw+=ww;sy+=ww*(lv+r[0]);}
  let h1=h*(1-sw)+sy;
+ /* inland, the profile cuts the land down only within the cliff's face: past it a hill keeps its height, so a coast that
+    meets high ground is a cliff, not a hillside flattened over hundreds of metres to a beach */
+ if(c>=0&&h1<h){const FW=P.cut.face,allow=P.cut.big*(1-smooth(2,FW,c))+P.cut.near*(1-smooth(FW,P.cut.reach,c));if(h-h1>allow)h1=h-allow;}
  // the sign rule: over the level on the land side, under it on the water side; 0 at the water line, so c's zero set is
  // where the ground meets the water
  const e=P.eps,ad=Math.abs(c),eps=Math.min(e.max,e.k*ad+e.near*smooth(0,20,ad));
@@ -179,18 +194,18 @@ function shape(C,x,z,h,minWave){const A=at(C,x,z,minWave,AT);if(!A.band||A.keep>
 // ---------------------------------------------------------------- the mask, redrawn from c
 function mask(C){const P=C.P,out=new Uint8Array(C.nx*C.nz),A={cls:new Float32Array(NC)},old=C.oldMask;let wet=0;
  for(let j=0;j<C.nz;j++)for(let i=0;i<C.nx;i++){const x=C.x0+(i+.5)*C.cell,z=C.z0+(j+.5)*C.cellZ,a=at(C,x,z,250,A),k=j*C.nx+i;
-  let v=a.c<P.band.mask?255:0;if(old&&a.keep>.5)v=old[k];out[k]=v;if(v)wet++;}
+  let v=(a.band?a.c0:a.c)<P.band.mask?255:0;   /* c0 <= c: water wherever c < 0, the edge where c >= c0 = mask */if(old&&a.keep>.5)v=old[k];out[k]=v;if(v)wet++;}
  C.maskWet=wet;
  return{x0:C.x0,z0:C.z0,cell:C.cell,cellZ:C.cellZ,nx:C.nx,nz:C.nz,data:out};}
 
 // ---------------------------------------------------------------- the fields the kits read
-const FIELDS=['shore','coastC'].concat(CLASSES.map(c=>'coast:'+c));
+const FIELDS=['coast','coastC'].concat(CLASSES.map(c=>'coast:'+c));
 const FA={cls:new Float32Array(NC)};
 function fields(C,x,z,out){const A=at(C,x,z,0,FA),P=C.P,c=A.c;
- out.coastC=c;out.shore=c>=0?1-smooth(0,P.shore.land,c):1-smooth(0,P.shore.water,-c);
- const on=A.band?out.shore:0;for(let k=0;k<NC;k++)out['coast:'+CLASSES[k]]=on>0?A.cls[k]:0;
+ out.coastC=c;out.coast=c>=0?1-smooth(0,P.shore.land,c):1-smooth(0,P.shore.water,-c);
+ const on=A.band?out.coast:0;for(let k=0;k<NC;k++)out['coast:'+CLASSES[k]]=on>0?A.cls[k]:0;
  return out;}
-function blank(out){out.coastC=1e9;out.shore=0;for(const k of CLASSES)out['coast:'+k]=0;return out;}
+function blank(out){out.coastC=1e9;out.coast=0;for(const k of CLASSES)out['coast:'+k]=0;return out;}
 
 // ---------------------------------------------------------------- stats and hash
 function stats(C){const s=[0,0,0,0,0];let n=0;for(let k=0;k<C.nx*C.nz;k++)if(Math.abs(C.F[k])<C.cell){n++;for(let c=0;c<NC;c++)s[c]+=C.K[c][k];}
