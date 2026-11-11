@@ -24,6 +24,7 @@ herds: the steppe bison, the staghorn beetle, the ash runner and the millipede's
 | `riders` | the Beast Rider tribes' mounts that were missing (2026-10-19): riding tiger, riding raptor, threehorn, hardshell, jungle mammoth (needs the `hyperjungle` file's helpers; the section "The Beast Riders' mounts" below) |
 | `voth` | seagull, cliff racer, elephant bug, arena tiger, pit lizard, giant beetle, staghorn beetle (the Ash Nomads' mount) |
 | `ash` | ash runner (the Ash Nomads' six-legged herd beast) |
+| `outlands` | the Outlands' animals (2026-11-11, for biomes/outlandgate's land `outlandgate.narrows`; the Outlands are the fungoid colonies' plateau south of the Gate): eight hexapods on `faWdHex` (plain grazer, nurser, fog drinker, rock grazer, pan digger, burrower, outland stalker, carrion hexapod), the ostrich and the runner bird (the trickster's form; bipeds on `faWdQuad`), the golden bird (a soarer on `faHiBird`); its own `faOlAnimal` (`faWdAnimal` with a `scale` read by `A.S`); needs the `hyperjungle` and `wild` files' helpers |
 | `pets` | dog, cat (baked Meshy models only) |
 
 ```

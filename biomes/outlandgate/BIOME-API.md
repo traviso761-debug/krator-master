@@ -27,6 +27,16 @@ Fields through `BIO.field`: the biome core's names plus `bank` (cached) and `ban
 18 m cell), `bar` (the gravel bars), `floor` (the flat floor), `swale` (the old flood channels), `road`, `works` (the Gate's footprints:
 nothing grows there). The host's mask keeps every root out of the water and the works.
 
+## The host's wind, hazards and fauna (station 1)
+
+| Name | What |
+|---|---|
+| `WIND` (89z) | `ATMOS.katabatic(...)`'s handle: `{night, day, wind}` now; `WIND_O` its options (`down` = `GAP_DOWN`, the river's line north; `speed` 2.6, `daySpeed` 1.1). `?wind=0` none |
+| `BANNERS` (89z) | the cloth on each tower and the keep, turned downwind each frame; `window._wind` |
+| `HAZ` (87) | `{drown: [records], flood: record, cycle, ambient}`: the river's `drown` cylinders, the outburst flood (a box over the floor on `cycle` `{period 900, warn 45, ramp 90, on 150, after 120, afterK .3}`), the heat provided (`KHAZ.provide('temperature')`). `?flood=now` / `?flood=0` |
+| `floodT()`, `floodK(t)` (87) | the flood's clock (seconds since load) and its k; `FLOOD_DRAW` (89zw) the still surface raised with it; `window._flood` |
+| `FAUNA` (87b) | `{groups, animals, drawn, people, plan}`: the land `outlandgate.narrows` planned and registered (FAUNALANDS); `OUTLANDGATE_FAUNA` the people's animals (runner birds on the road, the camp's camels and donkeys, the fort's goats), each a `fauna` record. `?fauna=0` none; `window._fauna` |
+
 ## The neighbours read in place (`build.py`, `KIN`)
 
 `{"<kit>": [[its fragments], "<its API>", [its pack families]]}`: each kit's species and tree builders slot after the host stage (45) and

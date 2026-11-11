@@ -1,6 +1,6 @@
 {
  "00-head.html": "256b1421f564",
- "50-fauna-bundle.js": "c1fb55c1a2c8",
+ "50-fauna-bundle.js": "2c0d1ba28587",
  "80-sky-hash.js": "67919cbcd4fa",
  "81-sky.js": "b13975f23277",
  "90-sheet.js": "1b4035123ddc",
@@ -18,6 +18,7 @@
  "bundle:kits/fauna/krator-fauna-hyperjungle.js": "28a437cab09e",
  "bundle:kits/fauna/krator-fauna-livestock.js": "3defe6bbb356",
  "bundle:kits/fauna/krator-fauna-mounts.js": "5a89e337bfc1",
+ "bundle:kits/fauna/krator-fauna-outlands.js": "78dd06973778",
  "bundle:kits/fauna/krator-fauna-pets.js": "173866fefc15",
  "bundle:kits/fauna/krator-fauna-riders.js": "91719c941d69",
  "bundle:kits/fauna/krator-fauna-ringsea.js": "0d7ec2fa5578",

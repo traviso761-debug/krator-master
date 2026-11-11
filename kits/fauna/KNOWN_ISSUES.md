@@ -52,3 +52,8 @@
       name), the raptor's size (the lore says velociraptor), the jungle mammoth (thin-haired, for the heat), every yield, life figure
       and temperament. Their legs turn rigidly at the hip like every animal's here, so a walking mammoth or threehorn lifts its feet
       by turning, not by bending; the mammoth's hair is strips, which read as a fringe up close. No Meshy model variants.
+- [ ] **The `outlands` group (2026-11-11) is a first pass.** Its eight hexapods share `faWdHex` with the `wild` file's large hexapods,
+      told apart by proportions, colour and the `amb` anatomy, not by new parts (the plain grazer, nurser, fog drinker and rock grazer
+      read alike from far off); its sizes are set by a `scale` on `faOlAnimal` (`A.S`), the dims measured from the drawn builds. The
+      runner bird is the ostrich's frame smaller and quicker, not yet the trickster's own (its crest and tail are the PLAN's to give:
+      biomes/outlandgate PLAN.md section 6). Drawn first by biomes/outlandgate; the Outlands' own pages do not draw fauna yet.

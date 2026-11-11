@@ -11,9 +11,20 @@ owner's PC is owed** (the proof is the log's `gpu-renderer` line naming ANGLE an
 
 As built (software GL): ~5,600 trees read in place (Gate cottonwoods ~490 on the banks and bars, bar cottonwoods ~300, Gate oaks ~3,700,
 Gate maples ~1,000), ~10,000 reed beds' rods placed near the eye, 928 stones of the Gate's works (18 towers on the page's 7 km of wall),
-9 drown-hazard records along the river; ~5.7 M triangles of the 14 M pass budget.
+16 drown-hazard reaches along the river and the outburst flood's, the gap's wind on the katabatic fx with a banner on each tower and the
+keep, the land 'outlandgate.narrows' (kits/fauna) and the people's runner birds, camels, donkeys and goats; ~5.7 M triangles of the 14 M
+pass budget.
 
 ## By design (the plan's, or this kit's, said here)
+
+- **The gap's wind is core/atmos's katabatic fx** (`89z`: `ATMOS.katabatic`, aimed down the river's line): the Outland Bore north down
+  the gap by night (2.6 in the base's units), the Silk-Draught back up it by day (1.1), an overcast night barely drains. The page's clock
+  sets it; `?wind=0` gives the weather's own.
+- **The hazards are records** (`87`, core/hazard): the river `drown` (a cylinder every 400 m), the outburst flood `drown` on its cycle
+  (a tell, the rise, the flood, the fall, its leavings, idle), the summer heat as the ambient temperature. The walls' rockfall and
+  avalanche are the far field's (no ground of theirs here).
+- **The fauna** (`87b`): the land's wild animals by kits/fauna's FAUNALANDS (each group and animal a core/tags `life` record before it
+  is drawn), the people's animals by hand; drawn within 900 m of the eye, six of a group's big animals at most.
 
 - **The whole page is floor.** At the Narrows the floor within 300 m of the river is ~30 km wide (PLAN.md section 5): the page rises ~45 m
   in the 4 km either side of the river (the model's row 326). The gap's walls (4-5 km 48-54 km out, 10-14 km beyond) are the far field,
@@ -33,10 +44,14 @@ Gate maples ~1,000), ~10,000 reed beds' rods placed near the eye, 928 stones of 
 - [ ] **The map edit is not made**: the scale model still has The Gate's marker (`sthegate`) at the old pass (5.1 px 1408,414) and the
   god's road over it. PLAN.md section 9 orders the map edit first (move the marker to 1438,326; `god_road.py` re-routes the road): that is
   the scale model's work and a publish of its artifact, not done from this kit.
-- [ ] **No wind yet**: the Silk-Draught by day and the Outland Bore by night wait on the shared katabatic amendment (PLAN.md section 8).
-- [ ] **No fauna**: Spider Lake's spiders, the Outlands' hexapods and ostriches, the runner bird, the raptors (kits/fauna).
-- [ ] **The flood and the heat are not hazards yet**: the outburst flood (the shared gorge-flood amendment) and the summer heat
-  (`KHAZ.provide('temperature')`); the river's drowning is recorded (9 `drown` records), nothing reads them on this page.
+- [ ] **The flood is the page's own cycle, compressed** (900 s, the flood 150 s of it: `87`, `?flood=now` starts one, `?flood=0` none):
+  the real outburst floods are decades apart and the plan's shared gorge-flood amendment (PLAN.md section 8, amendment 2) is not in
+  core; the flood here is KHAZ's own cycle on a box record and one still surface raised with its k. It drowns; it does not yet crush,
+  carry boulders, or rework the bars, and the reed beds and trees do not respond to it.
+- [ ] **The wind pushes nothing but the particles, the foliage sway and the banners**: a `slip`/push on exposed benches (PLAN.md
+  section 6) waits for the benches (station 2). The banners are plain cloth planes (kits/coyote will dress them).
+- [ ] **Spider Lake's spiders and the raptors are not on this page**: the spiders hold the mouth (station 4) and no raptor is in
+  kits/fauna yet; the Outlands' hexapods are kits/fauna's `outlands` group (its README), first drawn here.
 - [ ] **The braids meet the main channel 6 cm under its surface** (89zw): at a grazing view far off the two ribbons may fight where they
   overlap; a confluence (core/water ext 55) would join them properly.
 - [ ] **The caravan camp is tents only**; core/camp's caravans (`KCAMP`, land `SIM.trade` carriers) are planned there, not built.

@@ -15,3 +15,12 @@ const FLOW_DRAWS=FLOWS.filter(F=>F.pts.length>=3).map(F=>{const S=WATER.flow({na
  d.mesh.userData.probeSkip=true;d.mesh.userData.inspectLabel=F.name;return{F,S,d};});
 window._water={flows:FLOW_DRAWS.length};
 if(WATER.breakupAll&&new URLSearchParams(location.search).get('breakup')!=='0'){try{WATER.breakupAll();}catch(e){reportErr('breakup: '+e.stack);}}
+// ---------------------------------------------------------------- THE OUTBURST FLOOD (87's record, on its cycle)
+// one still surface over the floor (core/water), at the bank's level plus the flood's depth x k
+const FLOOD_D=7.5,FLOOD_L0=LVL(0)+1.6;
+const FLOOD_DRAW=(function(){if(!HAZ.flood||!WATER.drawPools)return null;const R=TERR.R*1.1;
+ const S=WATER.still({name:'The outburst flood',level:FLOOD_L0,poly:[[-R,-R],[R,-R],[R,R],[-R,R]]});
+ const D=WATER.drawPools([S],{color:new THREE.Color(0x6a5e48).convertSRGBToLinear(),roughness:.35,metalness:.02,envMapIntensity:.25,renderOrder:3,pick:true,name:'The outburst flood'});
+ D.mesh.userData.inspectLabel='The outburst flood (the lake breaking through)';D.mesh.userData.probeSkip=true;D.mesh.visible=false;
+ tick(()=>{const k=floodK();D.mesh.visible=k>.005;D.mesh.position.y=FLOOD_D*k-.5;window._flood={k:+k.toFixed(3),state:KHAZ.state(HAZ.flood,floodT()).state};});
+ return D;})();

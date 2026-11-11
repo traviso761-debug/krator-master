@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 33 (39%) | 0 (0%) | 1 (1%) | 30 (36%) | 19 (23%) |
+| KB | 37 (37%) | 0 (0%) | 1 (1%) | 42 (42%) | 20 (20%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -20,12 +20,14 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/70-og.js` | 0.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the kit's registry closed |
 | `src/84-host-ground.js` | 5.3 | [web] | 5 | 1 | 0 | 0 | 2 | 1 | 5 | 0 | 0 | 0 | 0 |  |
 | `src/85-host-far.js` | 2.7 | [web] | 2 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/86-host-gate.js` | 6.9 | [draw] | 4 | 0 | 0 | 0 | 0 | 14 | 0 | 3 | 0 | 0 | 0 |  |
+| `src/86-host-gate.js` | 6.7 | [draw] | 4 | 0 | 0 | 0 | 0 | 14 | 0 | 3 | 0 | 0 | 0 |  |
+| `src/87-host-hazards.js` | 3.6 | [web] | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | host: the hazard records (KHAZ data, Godot reads them from the tags export) and the page's flood clock |
+| `src/87b-host-fauna.js` | 4.3 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | host: the fauna land planned and registered (FAUNALANDS: records), then drawn and ticked through kits/fauna |
 | `src/89-host-sky.js` | 1.2 | [G native] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/89z-host-atmos.js` | 1.1 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | host: core/atmos bound for this stage |
-| `src/89zw-host-water.js` | 1.8 | [draw] | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/89z-host-atmos.js` | 3.8 | [web] | 4 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | host: core/atmos bound for this stage |
+| `src/89zw-host-water.js` | 2.8 | [draw] | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/89zx-host-build.js` | 2.1 | [web] | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
-| `src/98-host-views.js` | 6.2 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | host: the page's views and checks |
+| `src/98-host-views.js` | 11.5 | [web] | 1 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | host: the page's views and checks |
 | `src/99-host-take.js` | 3.7 | [draw] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 |  |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 

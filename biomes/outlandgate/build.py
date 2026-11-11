@@ -7,7 +7,8 @@
   45-host-stage     HOST: renderer, the station's land, its fields, BIO.init -- must run before the kin and the kit
   47*               THE NEIGHBOURS' SPECIES, read in place (KIN below: ebadlands' cottonwood, oak and maple), each in its own registry
   50..79            BIOME (the Outland Gate kit: its reed beds and the kin's placement on the floor)
-  80..98            HOST (ground, far field, the Gate's works, sky, atmosphere, water, build, views)
+  80..98            HOST (ground, far field, the Gate's works, the fauna bundle and its land, the hazards, sky, the atmosphere and the
+                    gap's wind, water, build, views)
   99-tail.html      closes <script>
 
   python3 build.py                     dist/outlandgate.html: station 1, the Narrows and the Gate
@@ -82,7 +83,7 @@ for f in CORE_TERRAIN: PATH.setdefault(f,J('core','terrain',f))
 PATH.setdefault('44-core-farfield-draw.js',J('core','terrain','host','44-core-farfield-draw.js'))
 PATH.setdefault('45-core-horizon-shade.js',J('core','terrain','host','45-core-horizon-shade.js'))
 # the biome core (core/README.md); 32 the kin (BIO.kin: the neighbours' species read in place), 33 the fungoid parts (the reed stems' rods)
-CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','31b-core-leafset.js','32-core-variants.js','33-core-fungoid.js','40-core-place.js','42-core-export.js','43-core-export-host.js']
+CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','31b-core-leafset.js','32-core-variants.js','33-core-fungoid.js','37-core-traps.js','40-core-place.js','42-core-export.js','43-core-export-host.js']   # 37: KTRAPS, the hazards' one clock
 for f in CORE_BIOME: PATH.setdefault(f,J('core','biome',f))
 # core/rand and core/tags: every tree, bed, work and hazard the page places is a core/tags record (BIO.init({tags}))
 CORE_TAGS={'08-core-rand.js':'rand','50-core-tags.js':'tags','52-core-tags-vocab.js':'tags','53-core-tags-host.js':'tags'}
@@ -116,6 +117,15 @@ for _i,(_k,(_fs,_api,_keep)) in enumerate(sorted(KIN.items())):
     _pj=os.path.join(_d,'tex','pack.json')
     with open(_pj,encoding='utf-8') as _fh: _fam=sorted(_json.load(_fh).get('families',{})) if os.path.isfile(_pj) else []
     VIRTUAL['44%s-host-matlib-pack-%s.js'%(_c,_k)]=matlib_pack.fragment(_d,_k,exclude=[f for f in _fam if f not in _keep])
+# core/hazard (KHAZ, PLAN.md section 6): the river's drowning, the outburst flood on its cycle, the summer heat (87-host-hazards.js)
+PATH.setdefault('20-core-hazard.js',J('core','hazard','20-core-hazard.js'))
+# THE FAUNA (kits/fauna, PLAN.md section 4): the bundle's groups this land draws from (its own 'outlands': the hexapods, the ostrich, the
+# runner bird and the golden bird, on the 'wild' file's builders and the 'hyperjungle' file's bird; 'livestock' the goat), vertex-coloured
+# (no packed detail maps); placed by FAUNALANDS (kits/fauna's fauna by land, read by path) in 87b-host-fauna.js
+sys.path.insert(0,J('kits','fauna'))
+import fauna_bundle as _fb
+VIRTUAL['86f-host-fauna-bundle.js']=_fb.bundle(['hyperjungle','wild','livestock','outlands'],tex=False)
+for f,pth in {'86g-fauna-lands.js':'kits/fauna/fauna-lands.js','86h-fauna-lands-host.js':'kits/fauna/fauna-lands-host.js'}.items(): PATH.setdefault(f,J(pth))
 for f in VIRTUAL: PATH[f]=None
 # the shared atmosphere (core/atmos/README.md): its core, presets, export, the sky's light, the weather, the shared sky; height fog and
 # THE FOG BELT (sky/89-atmos-j-fog.js, ATMOS.fogBelt: PLAN.md section 12, C1), the rain cover
@@ -123,7 +133,8 @@ CORE_ATMOS=['89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-8-export.js'
 for f in CORE_ATMOS: PATH.setdefault(f,J('core','atmos',f))
 for f in ['89-atmos-e-skymodel.js','89-atmos-f-skypresets.js','89-atmos-g-sky.js','89-atmos-j-fog.js']: PATH[f]=J('core','atmos','sky',f)
 for f in ['89-atmos-h-skyhost.js','89-atmos-i-skybiome.js','89-atmos-e-weatherhost.js','89-atmos-j-heightfog.js']: PATH[f]=J('core','atmos','host',f)
-for f in ['89-atmos-fx-raincover.js']+SJ.get('fx',[]): PATH[f]=J('core','atmos','fx',f)
+# 89-atmos-fx-katabatic: the gap's wind (the shared amendment: the Outland Bore down the gap by night, the Silk-Draught up it by day)
+for f in ['89-atmos-fx-raincover.js','89-atmos-fx-katabatic.js']+SJ.get('fx',[]): PATH[f]=J('core','atmos','fx',f)
 # core/water (core/water/README.md): Hau-Gel's braids as WATER.flow ribbons (89zw-host-water.js)
 CORE_WATER=['20-core-water.js','21-core-water-shore.js','22-core-water-flow.js','50-core-water-draw.js','51-core-water-kinds.js']
 for f in CORE_WATER: PATH.setdefault(f,J('core','water',f))

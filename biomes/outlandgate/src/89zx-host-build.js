@@ -9,7 +9,7 @@ window._biome=null;
  const b=BIO.bake();
  if(BIO.setA2C)BIO.setA2C(renderer);
  if(GROUND_HZ){try{window._horizon.mats=KHORIZON.shadeScene(scene,GROUND_HZ,{filter:m=>!m.userData.farField&&m!==MAT_GROUND});}catch(e){reportErr('horizon: '+e.stack);}}
- window._instances=b.inst;window._bakeCalls=b.calls;window._buildMs=Math.round(performance.now()-t0);window._works={pieces:WORKS.pieces,towers:WORKS.towers,hazards:WORKS.hazards};
+ window._instances=b.inst;window._bakeCalls=b.calls;window._buildMs=Math.round(performance.now()-t0);window._works={pieces:WORKS.pieces,towers:WORKS.towers};
  {let lo=Infinity,hi=-Infinity;const N=48,R0=TERR.R*.7;for(let i=0;i<=N;i++)for(let j=0;j<=N;j++){const x=(i/N*2-1)*R0,z=(j/N*2-1)*R0;const h=terrainH(x,z);if(isFinite(h)){if(h<lo)lo=h;if(h>hi)hi=h;}}
   REGISTER({name:'The Outland Gate: the Narrows (ideal type)',x:0,z:0,y:Math.floor(lo),r:TERR.R,h:Math.ceil(hi-lo)});}
  if(typeof KSHADOW==='undefined'||!KSHADOW.attach){window._shadow='off: no core/shadow';return;}

@@ -48,10 +48,9 @@ const WORKS=(function(){const out={pieces:0},INST={stone:[],dark:[],wood:[],clot
  {for(let k=0;k<9;k++){const a=k*2.3+.4,d=CAMP.r*.62*(.7+.3*KRAND.unit(KRAND.hash(6141,k,1))),x=CAMP.x+Math.cos(a)*d,z=CAMP.z+Math.sin(a)*d,y=gmin(x,z,3)-.3,r=2.8+1.2*KRAND.unit(KRAND.hash(6141,k,2));
    box('cloth',x,y,z,r*2,2.6,r*2.4,a);REGISTER({name:'A caravan\'s tent (Izani traders waiting on the toll)',kind:'structure',x,z,y:y-1,r:r+1,h:4});}
   REGISTER({name:'The caravan camp (outside the wall, waiting on the toll)',kind:'settlement',x:CAMP.x,z:CAMP.z,y:gmin(CAMP.x,CAMP.z,4)-2,r:CAMP.r*1.3,h:8});}
- // ---- the god's road and the river's hazards: records only (the road is the ground's paint; the river is drawn by 89zw)
+ // ---- the god's road: records only (the ground's paint draws it)
  for(let z=-3000;z<=3000;z+=1500)BIO.record({kind:'road',key:'godsroad:'+z,name:'The god\'s road (the Sleeping City to Trickster\'s House, through the gate)',x:roadX(z),y:terrainH(roadX(z),z),z,r:8,h:2});
- out.hazards=0;for(let z=-3200;z<=3200;z+=800){if(BIO.record({kind:'hazard',key:'drown:'+z,name:'Hau-Gel (deep, fast, cold from the walls: drowning)',x:rivX(z),y:LVL(z)-4,z,r:MAIN_W/2,h:6,
-  tags:{hazard:{kind:'drown'}}}))out.hazards++;}
+ /* the river's hazards are 87's (core/hazard: shaped drown records) */
  // ---- draw: one InstancedMesh a material
  const MAT={stone:new THREE.MeshLambertMaterial({color:0xa8a090}),dark:new THREE.MeshLambertMaterial({color:0x4a4038}),wood:new THREE.MeshLambertMaterial({color:0x7a5a3e}),cloth:new THREE.MeshLambertMaterial({color:0xc8b48e})};
  const geo=new THREE.BoxGeometry(1,1,1);out.meshes=[];

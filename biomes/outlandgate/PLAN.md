@@ -235,12 +235,17 @@ breed on the dry bench, and the spores they carry ride the same wind down the ga
 33's stalk for the reeds), `core/rand`, `core/tags` (every tree, work and hazard a record), `core/space`, `core/host`, `core/atmos` (the
 shared sky, the weather, the height fog), `core/water` (`WATER.flow`: the main channel and two braids), `KRELIEF.meander` (the river's
 bends), `KGROUND`, `KFAR` (out to 70 km, on the model's own heights: `tools/far_grid.py` writes `src/44f-og-far-data.js` from
-`tools/scale-model/model/data`), `KHORIZON`, `core/shadow`, `core/materials` (three ground layers). Not yet: `KRELIEF.gap` (the page lies
+`tools/scale-model/model/data`), `KHORIZON`, `core/shadow`, `core/materials` (three ground layers); then (2026-11-11, the same day)
+`core/atmos`'s katabatic fx (amendment 1: the gap's wind, the Bore by night and the Silk-Draught by day, with banners on the towers),
+`core/hazard` (`KHAZ`: the river's drowning as shaped records, the outburst flood on KHAZ's own cycle, the heat provided as the ambient
+temperature) and `kits/fauna` (the land `outlandgate.narrows` on FAUNALANDS; the runner birds, the caravans' camels and donkeys, the
+fort's goats; the Outlands' hexapods are the fauna kit's new `outlands` group). Not yet: `KRELIEF.gap` (the page lies
 wholly on the floor: the gap's walls are the far field), `KSTRATA`, `KSTACKS`, `KGLACIER`, `KFROST` (the walls), `core/hazard`'s runtime
-(the hazards are records), `KCAMP` (the caravans are tents), the wind and flood amendments.
+`KCAMP` (the caravans are tents), the shared gorge-flood amendment (the flood here is the page's compressed cycle, kit work).
 
 **Core amendments needed:**
-1. **Gap wind** (shared: cold-air and katabatic wind), with a day up-valley mode.
+1. **Gap wind** (shared: cold-air and katabatic wind), with a day up-valley mode. **Done** in core/atmos (`89-atmos-fx-katabatic.js`);
+   station 1 takes it.
 2. **A gorge flood** on a cycle (shared hazard amendment).
 3. **Flood bedforms** (new, small): giant current ripples on a floor, as a `KRELIEF` form in `38c` beside `terraces` and
    `runout`. Kit work first; lift to core if another plan (the scablands) wants it.
