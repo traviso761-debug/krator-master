@@ -90,6 +90,9 @@ refinements, all built: s(t) is the train's fixed **A end**; a stop carries its 
 the record. The numbers it gave to stand in with (four tracks at -10.5, -4.5, +4.5, +10.5 m in a 32 m gallery, bogies
 at ±8.5 m on 24 m cars and ±7.5 m on 22 m ones, 1 m between cars, the car floor 1.2 m over the guideway top, saloons
 of 64 seats and 40 standing) are in the shared notes (`line-biome-to-riding.md`); the lab keeps its smaller stand-in.
+The Line session confirmed e7acf88e4 fits the Line as built (2026-11-11; recorded in its section 8 after 0744edac0). The
+owner has since approved the Line's plan; its `line` kind and cars wait for the transit and vehicles branches to reach
+`main`. The gallery widened to 37 m (an access road on the west wall); track offsets and platforms are unchanged.
 
 1. **Track.** Each track of a segment gives a route in the simulation's shape, `{pts: [[x, y, z]...], cum, len}`, along
    the guideway top (the floor + 0.6 m) at the track's offset, 4 m samples (1 m through crossovers), one route per track
