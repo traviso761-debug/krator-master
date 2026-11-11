@@ -88,6 +88,9 @@ them all out.
    of them portering at the Line's gaps (section 1.3; question 5).
 2. **The Travellers porter on the Line's branches near the surface, not deeper in**, and **their cant goes on the tongues
    page** (done: the Tungang tab, "The Travellers' cant").
+3. **More to trade than copper** (section 1.2.1): veins of metal through the Line and its caverns, metal to keep the
+   trains running, maybe something exotic for the power sources, ice and other things from the mountains, and at least a
+   few ventilation tunnels to the surface.
 
 ## 0. What the kit is
 
@@ -345,9 +348,49 @@ them; Ledge's lifts are Loj Fower; **Loj Twenny** (a lava-tube loj on `tube_rift
   bait tin**, a riveted box of wax-sealed mash cakes, the thing every Tungang carries; and **the brew**, a hot drink of
   steeped dead-stalk pith with a drop of stoke against the cold (stoke is canon as a cold remedy, fatal in excess, so
   the steward keeps the stoke).
-- **Trade.** They sell what only they can: passage (guides, the trains through the hot middle, the lifts at Ledge),
-  hearth wax, sulphur and the vents' copper (*proposed* nodes in `biomes/hearths`), moonglass by the rare trader from the east, and
-  their labour on the Line. They buy grain, cloth, timber (scarce below), salt and iron.
+- **Trade.** They sell what only they can: passage (guides, the trains through the hot middle, the lifts at Ledge), the
+  **metals of the Line** (section 1.2.1), hearth wax, sulphur, ice from the shaft heads, moonglass by the rare trader from
+  the east, and their labour on the Line. They buy grain, cloth, timber (scarce below) and salt.
+
+#### 1.2.1 What the Line gives them: metal, power and the shafts (the owner, 2026-11-11)
+
+The owner: the Tungangs have more to trade than copper. They likely reach **veins of metal** through the Line's tunnels and
+the caverns it passes; they need metal to keep the trains running over the centuries, and **maybe something more exotic
+to maintain the power sources**; they may source **ice and other things from the mountains**; and there are probably **at
+least a few ventilation tunnels to the surface**. *Proposed* from there:
+
+- **The veins in the bore.** A straight bore cuts every ore body on its way, so the Line's walls show them: the Fixers
+  open side workings where a vein crosses the bore, and a loj's mines are galleries off its own stretch. What lies where
+  follows the rocks along the Line (`openworld/ANCIENT-TUNNELS.md`: gneiss 112 km, rift fill 120 km, impact breccia 40 km,
+  granite 20 km) and `kits/resources`' families (`GEOLOGY.md`):
+
+  | Stretch | Rock | Ores the families favour there | What the Tungangs use it for |
+  |---|---|---|---|
+  | the crystalline middle and north | gneiss | **iron** (strongest on gneiss), silver, gold | plate, bolts and rivets, rails, tools |
+  | the southern end, the holds | rift fill | **rare earths** (the rift's carbonatites, the families' strongest source), copper, gold, silver | the exotic (below); copper for windings and lamp wire |
+  | the north end's impact bench | impact breccia | iron, gold (a Vredefort-like lode), nickel and copper where `kits/resources` puts its nickel nodes | alloy, the Fixers' best steel |
+  | the granite stretches | granite | **tin** (a granite's ore), rare earths, iron | solder, bearings, bronze bushes; the crystal clefts (shrines) are here too |
+
+  Where a loj's metal comes from is checked against the resource map when the Line's tunnel record is built.
+- **The power and the exotic.** *Proposed*: the Ancients ran the Line on **the deep middle's own heat**, rock well over
+  100 °C at km 60-180, through a power plant by the hot section's doors that the Tungangs keep by rite (the Line's biome,
+  station `hotdoor`). Generators and the trains' motors want copper windings and magnets, and the magnets want **rare
+  earths**: that is the exotic, mined from the rift fill's carbonatites and refined in small batches, a Fixers' craft and
+  secret. With it, a few of the Ancients' **power cells** salvaged along the Line are recharged at the plant: the rarest
+  thing the Tungangs sell, and the one the crater's Geomancers and Eternians would most like to buy.
+- **Grease and the rest.** Hearth wax greases the bogies and seals the doors; iron and nickel steel make the wheels and
+  rails; tin bushes the bearings. A loj counts its wealth in stations kept (canon), and the stations kept are counted in
+  metal.
+- **The shafts.** At least a few **ventilation shafts** reach the surface where the cover is thin, at both ends of the Line
+  (`ANCIENT-TUNNELS.md`: the shafts cluster where the cover is under ~2 km) and under the valleys. They breathe the Line
+  (the draught through the holds), and their **heads** on the mountain are the Tungangs' second way out after the
+  portals: a winch house, an ice store, a hooded lamp. From the shaft heads they take **ice** (for the hot holds and the
+  Hearth loj's cooling suits, their own beside the Ice-cutters' trade), **snowmelt**, **mountain crystal** from the clefts
+  that are not shrines, and **herbs** of the high slopes. The shaft heads are where the Travellers meet them as porters
+  (section 1.3), and where a raider or a player can come down.
+- **The kit's pieces** (section 3.2): `tg_vein_working`, `tg_ore_store`, `tg_refinery` (the rare-earth batch room),
+  `tg_power_hall` (the Tungangs' dressing of the Ancients' plant), `tg_shaft_foot` (the ice hoist, the draught doors) and
+  `tg_shaft_head` (the surface house).
 - **Belief.** No gods. The Book is law, not scripture; the Strike is history, not myth. *Proposed*: what they keep as
   holy is **the Line itself** and the **turn**: a lamp left burning for every Tungang "on shift" somewhere, put out when
   they come home or die. **The dead go off shift**: laid in a sealed siding (the hold's last stop), their berth number
@@ -621,6 +664,9 @@ Glaziers **dress** it (whitewashed, gilt, set in carved stone). The same carriag
 | works | `tg_kiln` | the gypsum kiln on a vent: plaster for the hold |
 | works | `tg_bait_room`, `tg_brew_room` | the communal kitchen and the brew room by the platform |
 | works | `tg_cistern`, `tg_fan_house` | water and air (section 5.3) |
+| works | `tg_vein_working`, `tg_ore_store`, `tg_refinery` | a working off the bore where a vein crosses it; the ore store; the rare-earth batch room (section 1.2.1) |
+| works | `tg_power_hall` | the Ancients' plant by the hot doors, kept by rite: the Tungangs' lamps, banners and rota on the Line's own machinery |
+| works | `tg_shaft_foot`, `tg_shaft_head` | a ventilation shaft's foot in the hold (the ice hoist, the draught doors) and its head on the mountain (a winch house, an ice store, a hooded lamp) |
 | works | `tg_bath` | where the vent's water is warm: a plastered pool, the hold's luxury (Hearth hold only) |
 | works | `tg_leaper_pens` | the cavern leapers' pens |
 | care | `tg_stoke_room` | the infirmary: the steward's stoke, the beds |

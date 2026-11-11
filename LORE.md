@@ -232,6 +232,12 @@ The Ancients were the original civilization that colonized Krator, with roots, h
     year at **the Big Meeting** every loj walks its banner down the Line to the Tpresden; rank is **shine**, ground-glass bead
     strips on a faded copy of the crews' orange. They stand about 0.94 of a human. Much of what they own is fitted salvage of
     the Line.
+  - **What the Line gives them** (the owner, 2026-11-11): more to trade than copper. The bores cut **veins of metal** and the
+    Tungangs work them, for they need metal to keep the trains running; *maybe* something more exotic keeps the power
+    running (*proposed*: rare earths from the rift fill's carbonatites for the magnets of a power plant that runs on the
+    deep middle's heat, and a few recharged Ancient power cells, the rarest thing they sell); they take **ice and other
+    things from the mountains**; and **at least a few ventilation shafts** reach the surface, whose heads are their second
+    way out (`kits/tungang/PLAN.md` §1.2.1).
   - **The Fellgangs' villages and Wildcat** (the owner, 2026-11-10/11): the Fowlers (a rope is a vote) and the Ice-cutters
     ("the Cold is owed") are built (`biomes/riftrim` stations 8 and 9). **Wildcat** is about half **Kimr** by descent
     (`biomes/labyrinth/PLAN.md` §5), and the Kimr's bravado shapes its raiding: capital-H heroism in a **scrap pueblo**, stepped
