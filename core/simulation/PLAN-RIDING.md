@@ -304,6 +304,39 @@ alights; about forty NPCs on journeys across the gap; porters carry cargo across
 - The lab's door leaves are drawn by the lab; `core/door` is untouched (section 3).
 - The lab page is kept in plain Git, as the core examples' pages are (`sim-example.html`, `host-example.html`).
 
+## 8c. R6 (the owner, 2026-11-11: "work on r6; we can have abstract economy for now until we actually build the lojes")
+
+Three pieces, each an opt-in fragment in `core/simulation/ride/` (no `77-sim-*` file and no `core/host` file changes):
+
+- **The Line's goods on an abstract economy** (`80-sim-ride-line.js`, `SIM.lineEconomy`). Until the lojes are built
+  (places, workers, stores), each loj is **books only**: a settlement with an economy and one store at its station,
+  making goods and using them by the hour from its population (`makes` a day, `uses` a person a day), no buildings and
+  no actors. Goods move on what R3 built: a `SIM.trade` route bound to each segment's train between neighbouring
+  stations, a porters' timer route across each gap. **Through goods without new trade code**: each hop's receiver is
+  given `expect` (the trade route's floor on its want) = the use of every loj beyond it on that side of the Line, so
+  grain made at Ledge is drawn hop by hop to the lojes that eat it, each loj on the way keeping a few days' buffer and
+  passing the rest on; the ledger reconciles every hop. What this cannot say is who owns a load and where it is bound
+  (a Glazier's ice order): consignments with an owner and a destination wait until the lojes are built and the trade
+  needs them (then the addition to `SIM.trade` and the ledger described in section 5).
+- **Travellers choose the train** (`81-sim-ride-choose.js`). `SIM.plan` is wrapped: for an actor whose role (or the
+  actor) says `ride: true`, a decision whose walk is impossible, or slower than a journey by train by more than
+  `SIM.RIDE.choose.saving` (60 s), becomes a journey (walk, wait, board, ride, alight, walk on, the gap walked) to the
+  place the resolver chose; the actor is carried (`driven`) until it arrives, then takes up what it decided. Trips under
+  `minDist` (400 m) are always walked. Carts and actors driven by anything else are left alone.
+- **Ferries and ships as ride sources** (`SIM.rideFromTransport`, in 78). A `SIM.transport` route (not `exclusive`) is
+  turned into one ride source a vehicle: its legs joined into one track (padded at the ends), its segments into a
+  `KSCHED` timeline with that vehicle's phase, so its pose, its door windows, the journeys, the cargo carriers and the
+  Godot twin are all the trains' (no new GDScript). Its deck is a car given by the caller (seats, standing room, doors
+  on both sides).
+- **Not in R6**: the swap to the Line's real `line` kind and cars, which waits for the transit and vehicles branches to
+  reach `main`; crossovers (a segment `route` id, when the Line asks).
+
+Checks, each with a negative: the lojes' books balance (`SIM.ledger`) and goods are conserved with what is made; grain
+reaches the far end and Twenny's want is met (without the through-demand it falls short: the negative); the travellers
+with `ride: true` reach work past the gap by train, inside the door windows (a role without it cannot get there);
+a short trip is walked; a ferry's ride-source pose follows `SIM.vehiclePose` to within half a metre and stands at its
+stops through its dwells; a journey crosses the water on the ferry.
+
 ## 9. Questions for the owner
 
 1. **Where it lives**: as opt-in extensions in subfolders of the modules that exist (`core/walk/frame`,

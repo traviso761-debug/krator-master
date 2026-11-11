@@ -111,33 +111,27 @@
       out.push(SIM.actor({ id:'tr'+i, role:'traveller', home:'ledge.homes', work:'twenny.works', pos:{ x:H.x+Math.cos(ang)*r, y:0, z:H.z+Math.sin(ang)*r } })); }
     return out;
   }
-  /* the trade (PLAN-RIDING.md section 5): four lojes, each a settlement keeping an economy, its store the station's; grain
-     made at Ledge and wax at Twenny each go the length of the line hop by hop: the north train (SIM.trade on its ride
-     source), the porters across the gap (a timer route, walked by a crew: 79-sim-ride-porters.js), the south train. Every
-     loj eats grain and burns wax by the hour (RIDELAB.use, a step hook), which is the want the routes serve */
-  var LOJES=[{ id:'ledge', stop:'ledge', stock:{ grain:3000, wax:20 } }, { id:'gapn', stop:'gap.n', stock:{ grain:20, wax:20 } },
-    { id:'gaps', stop:'gap.s', stock:{ grain:20, wax:20 } }, { id:'twenny', stop:'twenny', stock:{ grain:20, wax:3000 } }];
-  var USE={ ledge:{ grain:6, wax:3 }, gapn:{ grain:2, wax:1 }, gaps:{ grain:2, wax:1 }, twenny:{ grain:6, wax:3 } };
+  /* the trade (PLAN-RIDING.md sections 5 and 8c): the four lojes as books only (SIM.lineEconomy, 80-sim-ride-line.js), each a
+     settlement with one store at its station, making and using by the hour from its people: Ledge makes grain, Twenny wax,
+     every loj eats grain and burns wax. The goods go the length of the line hop by hop, drawn by the through-demand: the
+     north train, the porters across the gap (a crew walks it, resting four hours at each end: the Line's real gaps are
+     walks of one to four hours, so the porters are the line's bottleneck), the south train. o.through false: each hop serves only its
+     own receiver (the check's negative) */
+  var LOJES=[{ id:'ledge', stop:'ledge.stop', pop:120, makes:{ grain:600 }, stock:{ grain:500, wax:40 } },
+    { id:'gapn', stop:'gap.n.stop', pop:30, stock:{ grain:40, wax:40 } },
+    { id:'gaps', stop:'gap.s.stop', pop:30, stock:{ grain:40, wax:40 } },
+    { id:'twenny', stop:'twenny.stop', pop:150, makes:{ wax:500 }, stock:{ grain:40, wax:500 } }];
+  var USE={ grain:1, wax:0.5 };
   function trade(L, o){
     o=o||{}; var spm=o.secPerMinute==null ? 60 : o.secPerMinute;
-    if(!SIM.R.faction.tungang){ SIM.faction({ id:'tungang', name:'The Tungangs' }); SIM.org({ id:'loj', faction:'tungang', name:'The lojes' }); }
-    L.lojes=LOJES.map(function(J){ SIM.settlement({ id:J.id, faction:'tungang', name:J.id });
-      var P=SIM.R.place[J.stop+'.stop']; P.settlement=J.id;
-      SIM.economy({ goods:{ grain:{}, wax:{} }, window:1 }, { settlement:J.id });
-      SIM.store(P.id, { kind:'warehouse' }); P.stock=JSON.parse(JSON.stringify(J.stock)); return J; });
-    L.start={ grain:0, wax:0 }; LOJES.forEach(function(J){ L.start.grain+=J.stock.grain; L.start.wax+=J.stock.wax; });
-    var cap=o.cap==null ? 240 : o.cap, keep=o.keep==null ? 1 : o.keep;
-    L.routes={
-      north:SIM.trade({ id:'rail.n', line:'line.n', stops:[{ settlement:'ledge', place:'ledge.stop' }, { settlement:'gapn', place:'gap.n.stop' }], cap:cap, keep:keep }),
-      porters:SIM.trade({ id:'gap.porters', stops:[{ settlement:'gapn', place:'gap.n.stop' }, { settlement:'gaps', place:'gap.s.stop' }], cap:o.portersCap==null ? 120 : o.portersCap,
-        minutes:SIM.portersMinutes('gap.n.stop', 'gap.s.stop', 0.8, 'pedestrian', spm), mins:o.portersStay==null ? 15 : o.portersStay, keep:keep }),
-      south:SIM.trade({ id:'rail.s', line:'line.s', stops:[{ settlement:'gaps', place:'gap.s.stop' }, { settlement:'twenny', place:'twenny.stop' }], cap:cap, keep:keep }) };
-    if(!SIM.R.role.porter){ if(!SIM.R.activity.CARRY) SIM.activity({ id:'CARRY' }); SIM.role({ id:'porter', org:'loj', sched:[[0, 'CARRY']] }); }
-    var crew=[]; for(var i=0;i<(o.crew==null ? 6 : o.crew);i++){ var a=SIM.actor({ id:'porter'+i, role:'porter', settlement:'gapn' }); crew.push(a.id); }
-    L.porters=SIM.porters({ route:'gap.porters', crew:crew, secPerMinute:spm });
-    if(SIM.stepHooks.indexOf(use)<0) SIM.stepHooks.unshift(use);
+    var E=SIM.lineEconomy({ id:'line', faction:'tungang', goods:{ grain:{}, wax:{} }, secPerMinute:spm, through:o.through,
+      lojes:LOJES.map(function(J){ return { id:J.id, stop:J.stop, pop:J.pop, makes:J.makes, uses:USE, stock:J.stock }; }),
+      links:[{ from:'ledge', to:'gapn', rail:'line.n' }, { from:'gapn', to:'gaps', porters:{ speed:0.8, crew:o.crew==null ? 6 : o.crew, cap:200, stay:o.portersStay==null ? 240 : o.portersStay } },
+        { from:'gaps', to:'twenny', rail:'line.s' }] });
+    L.economy=E; L.lojes=E.lojes; L.start=E.start;
+    L.routes={ north:E.routes['ledge-gapn'], porters:E.routes['gapn-gaps'], south:E.routes['gaps-twenny'] };
+    L.porters=E.porters['gapn-gaps'];
     return L;
   }
-  function use(minute){ if(minute%60!==0) return; LOJES.forEach(function(J){ Object.keys(USE[J.id]).forEach(function(g){ SIM.supply(g, USE[J.id][g], false, J.id); }); }); }
-  root.RIDELAB={ declare:declare, walk:walk, doors:doors, people:people, trade:trade, use:use, CAR:CAR, SEG:SEG, DWELL:DWELL, RUN:RUN, LOJES:LOJES, USE:USE };
+  root.RIDELAB={ declare:declare, walk:walk, doors:doors, people:people, trade:trade, CAR:CAR, SEG:SEG, DWELL:DWELL, RUN:RUN, LOJES:LOJES, USE:USE };
 })(typeof window!=='undefined'?window:globalThis);

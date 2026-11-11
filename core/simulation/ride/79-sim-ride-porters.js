@@ -47,7 +47,8 @@
   SIM.portersStep = function(minute, t){
     SIM.PORTERS.list.forEach(function(P){ var R=SIM.TRADE.routes[P.route], C=R && R.carriers[P.carrier]; if(!C) return;
       if(C.phase==='sail' && P.phase!=='sail') bake(P, R, C, minute, t);
-      if(C.phase==='docked' && P.phase!=='docked' && P.at==null){   /* the first look: the crew stands at the carrier's stop */
+      if(C.phase==='docked' && !P.placed){   /* the first look only: the crew stands at the carrier's stop (after an arrival it stands where its walk ended) */
+        P.placed=true;
         var D=doorOf(R.stops[C.at].place); P.crew.forEach(function(id, i){ var a=SIM.R.actor[id]; a.task=null; a.pos={ x:D.x-i*P.spacing*0.7, y:D.y, z:D.z-1-i*0.3 }; }); }
       P.phase=C.phase; P.at=C.at; });
   };

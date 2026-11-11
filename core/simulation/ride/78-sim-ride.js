@@ -23,6 +23,9 @@
 //   SIM.rideRuns(id, t0, t1) -> [{id, src, g, from, to, dep:[o0, o1], arr:[o0, o1]}]   every hop between two dwells departing
 //        in [t0, t1]: the unit capacity is counted in
 //   SIM.rideDoorOpen(id, k, doorId, t) -> bool
+//   SIM.rideFromTransport(routeId, {car:{b, cap, seats, stand, doors}, stops:{id:{wait, side, gap}}, stepSec}) -> [sources]
+//        a SIM.transport route (baked, not exclusive) as one ride source a vehicle, id '<route>#<k>': a ferry or a ship's deck
+//        carries riders as a train's car does; its pose follows SIM.vehiclePose (the track is its legs joined)
 //   SIM.vehiclePose(id, k, t)           answers a ride source's id too: car k's pose, h its yaw, `at` the stop's place through
 //        a dwell (so SIM.trade({line: id}) carries goods on a train: PLAN-RIDING.md section 5)
 //   SIM.rideFootpath({from, to, pts:[[x,y,z]...]})   a recorded walk between two stops (a gap's walk on the Line's record,
@@ -30,6 +33,8 @@
 //   SIM.journeyPlan(from:{x,y,z}, to:{x,y,z}, t, opt) -> {arrive, steps:[{kind:'walk'|'ride', ...}]} | null
 //        a connection scan over every source's runs (earliest arrival; with fewer rides on a tie); its walks are the nav's
 //        routes (opt.layer 'pedestrian', opt.speed), the walk between two stops (a gap) among them when under opt.maxWalk (2000 m)
+//   SIM.rideBake(a, {to, from?, t?, act?, speed?, layer?, plan?}) -> task | null   the journey's legs alone (seats taken, crossings
+//        logged), the actor untouched: the resolver's (81-sim-ride-choose.js)
 //   SIM.journey(a, {to: place id | {x,y,z}, t?, act?, speed?, hold?}) -> task | null
 //        plans and bakes the actor's legs: walk to the platform, wait, board inside the door window, walk to a seat (or a
 //        standing place) in the car's frame, ride, walk to the door when the stop's window opens, alight, walk on (a gap is
@@ -89,6 +94,7 @@
   function carPose(S, k, t){
     var C=S.cars[k], s=S.TL.at(t).value-C.off, F=SIM.at(S.track, s+C.b), R=SIM.at(S.track, s-C.b);
     var dx=F.x-R.x, dz=F.z-R.z, dy=F.y-R.y, L=Math.hypot(dx, dz);
+    if(L<0.25*C.b){ dx=F.tx; dz=F.tz; dy=0; L=1; }   /* the bogies on one spot (a track that turns back on itself: a ferry's far stop): the way ahead */
     return { x:(F.x+R.x)/2, y:(F.y+R.y)/2, z:(F.z+R.z)/2, yaw:Math.atan2(dx, dz), pitch:L>0 ? Math.atan2(dy, L) : 0, roll:0 };
   }
   SIM.rideCarPose = function(id, k, t){ return carPose(src(id), k, t); };
@@ -110,6 +116,33 @@
   function doorOn(side, dside){ return dside===0 || side===dside; }
   SIM.rideDoorOpen = function(id, k, doorId, t){ var S=src(id), d=SIM.rideDwellAt(id, t); if(!d || !d.open) return false;
     var D=S.cars[k].doors.filter(function(x){ return x.id===doorId; })[0]; return !!D && doorOn(D.side, d.side); };
+
+  /* a SIM.transport route as ride sources, one a vehicle: its legs joined into one track (padded at both ends so the car's
+     bogies stay on it), its segments into a KSCHED timeline of s along that track with the vehicle's phase; its stops'
+     dwells are the door windows (both sides, a ferry's deck). Not an `exclusive` route (its day is laid out by events) */
+  SIM.rideFromTransport = function(id, o){
+    var R=SIM.R.transport[id]; if(!R || !R.period) throw new Error('SIM.rideFromTransport: bake '+id+' first (SIM.transportBake)');
+    if(R.sched) throw new Error('SIM.rideFromTransport '+id+': an exclusive route (its day is laid out by events) is not supported');
+    o=o||{}; var car=o.car||{}, b=nz(car.b, 0.25), pad=b+0.5, pts=[], first=[];
+    R.legs.forEach(function(L){ var P=L.path.pts; first.push(pts.length ? pts.length-1 : 0);
+      for(var j=0;j<P.length;j++){ if(j===0 && pts.length){ var q=pts[pts.length-1]; if(Math.abs(q[0]-P[0][0])<1e-9 && Math.abs(q[2]-P[0][2])<1e-9) continue; first[first.length-1]=pts.length; }
+        pts.push([P[j][0], nz(P[j][1], 0), P[j][2]]); } });
+    function along(a, c, d){ var dx=c[0]-a[0], dz=c[2]-a[2], l=Math.hypot(dx, dz)||1; return [a[0]+dx/l*d, a[1], a[2]+dz/l*d]; }
+    pts.unshift(along(pts[0], pts[1], -pad)); pts.push(along(pts[pts.length-1], pts[pts.length-2], -pad));
+    var track=route(pts), legS=first.map(function(i){ return track.cum[i+1]; });
+    var legE=R.legs.map(function(L, i){ return i+1<legS.length ? legS[i+1] : track.len-pad; });
+    var segs=[], li=-1, stops={};
+    R.segments.forEach(function(g){
+      if(g[2]===g[3]){ var nx=Math.min(R.legs.length-1, li+1), st=String(g[2]); segs.push({ dur:g[0], from:legS[nx], name:'stop:'+st });
+        if(!stops[st]){ var Q=SIM.R.place[st], b0=Q ? (Q.pier || Q.door || Q) : null, own=(o.stops||{})[st]||{};
+          stops[st]={ place:st, side:nz(own.side, 0), gap:nz(own.gap, 0.10), wait:own.wait || (b0 ? [[b0.x, nz(b0.y, nz(Q.y, 0)), b0.z]] : []) }; } }
+      else { li++; segs.push({ dur:g[0], from:legS[li], to:legE[li], ease:'linear', name:'run' }); } });
+    var out=[];
+    for(var k=0;k<R.vehicles;k++) out.push(SIM.rideSource({ id:id+'#'+k, kind:o.kind||R.vehicleKind||'ferry', track:track, stops:stops, stepSec:o.stepSec,
+      doorLag:o.doorLag, doorClose:o.doorClose, timeline:{ period:R.period, phase:nz(R.phase, 0)+k*R.period/R.vehicles, segments:segs },
+      cars:[{ off:0, b:b, cap:car.cap, seats:car.seats, stand:car.stand, doors:car.doors, sealed:car.sealed }] }));
+    return out;
+  };
 
   /* SIM.vehiclePose answers a ride source's id (SIM.trade's line carriers read `at`) */
   var baseVP=SIM.vehiclePose;
@@ -201,12 +234,14 @@
   function holdLeg(p, dur, mode, fr, face){ var R=route([p, p]); var L={ route:R, speed:1, dur:Math.max(0, dur), mode:mode, layer:fr ? 'ride' : 'wait', face:nz(face, 0) }; if(fr) L.frame=fr; return L; }
   function nearestDoor(C, side, local){ var best=null, bd=1e300; C.doors.forEach(function(D){ if(!doorOn(D.side, side)) return;
       var d=Math.abs(D.at[2]-local[2]); if(d<bd){ bd=d; best=D; } }); return best; }
-  SIM.journey = function(a, o){
+  /* the legs of a journey from `from` (default: where the actor is) to a place's door or a point, its seats taken and its door
+     crossings logged; the actor's own fields are the caller's (SIM.journey, the resolver: 81-sim-ride-choose.js) */
+  SIM.rideBake = function(a, o){
     o=o||{}; var t=nz(o.t, SIM.time()), speed=nz(o.speed, a.speed||SIM.SPEED.walk), layer=o.layer||a.layer||'pedestrian';
-    var here=SIM.pose(a, t), from={ x:here.x, y:here.y, z:here.z }, P=typeof o.to==='string' ? SIM.R.place[o.to] : null;
+    var here=o.from||SIM.pose(a, t), from={ x:here.x, y:nz(here.y, 0), z:here.z }, P=typeof o.to==='string' ? SIM.R.place[o.to] : null;
     var to=P ? (P.door ? { x:P.door.x, y:nz(P.door.y, 0), z:P.door.z } : { x:P.x, y:nz(P.y, 0), z:P.z }) : o.to;
     if(!to) throw new Error('SIM.journey '+a.id+': unknown destination');
-    var plan=SIM.journeyPlan(from, to, t, { layer:layer, speed:speed, sources:o.sources });
+    var plan=o.plan||SIM.journeyPlan(from, to, t, { layer:layer, speed:speed, sources:o.sources });
     if(!plan){ SIM.logEvent('nojourney', { actor:a.id, to:P ? P.id : null }); return null; }
     var legs=[], cur=from, tau=t, ok=true, boards=[], held=[];
     function push(L){ legs.push(L); tau+=L.dur; }
@@ -246,9 +281,13 @@
     boards.forEach(function(b){ SIM.RIDE.log.push(b); }); if(SIM.RIDE.log.length>SIM.RIDE.LOG_MAX) SIM.RIDE.log.splice(0, SIM.RIDE.log.length-SIM.RIDE.LOG_MAX);
     var spot={ x:to.x, y:nz(to.y, 0), z:to.z }, task={ act:o.act||'TRAVEL', place:P ? P.id : null, t0:t, legs:legs, spot:spot, dur:tau-t, arrive:tau, indoor:false, wander:0,
       failed:false, ride:{ plan:plan, held:held } };
-    a.task=task; a.activity=task.act; a.driven='ride'; a.inVehicle=null; a.rideHold=!!o.hold; a.wake=null;
-    SIM.RIDE.riders[a.id]=true;
     SIM.logEvent('journey', { actor:a.id, to:task.place, rides:plan.rides, arrive:Math.round(tau) });
+    return task;
+  };
+  SIM.journey = function(a, o){
+    var task=SIM.rideBake(a, o); if(!task) return null;
+    a.task=task; a.activity=task.act; a.driven='ride'; a.inVehicle=null; a.rideHold=!!(o && o.hold); a.wake=null;
+    SIM.RIDE.riders[a.id]=true;
     return task;
   };
 
@@ -272,7 +311,8 @@
   SIM.rideStep = function(minute, t){
     var R=SIM.RIDE; Object.keys(R.riders).forEach(function(id){ var a=SIM.R.actor[id]; if(!a){ delete R.riders[id]; return; }
       var T=a.task; if(!T || !T.ride){ delete R.riders[id]; return; }
-      if(t>=T.arrive){ a.pos=SIM.pose(a, t); if(!a.rideHold){ a.driven=false; a.wanted=null; a.wake=null; } delete R.riders[id]; SIM.logEvent('arrived', { actor:a.id, place:T.place }); } });
+      if(t>=T.arrive){ a.pos=SIM.pose(a, t); if(T.ride.resolver){ a.driven=false; a.wake=null; }   /* the resolver's: it takes up what it decided (wanted kept) */
+        else if(!a.rideHold){ a.driven=false; a.wanted=null; a.wake=null; } delete R.riders[id]; SIM.logEvent('arrived', { actor:a.id, place:T.place }); } });
     if(minute%60===0) Object.keys(R.occ).forEach(function(rid){ var p=rid.lastIndexOf(':'), S=R.sources[rid.slice(0, p)]; if(!S) return;
       if(dwell(S, +rid.slice(p+1)+1).t1<t-3600) delete R.occ[rid]; });
   };
