@@ -2,10 +2,10 @@
 
 ## Open
 
-- [ ] **The line record is this build's until the transit kit is on main** (2026-11-11). `stations/bore/48-line-gallery.js` holds the
-  window's records (the section, the tracks, the lamps, the niches, the vein, the trains and their timelines, the car pose) as the
+- [ ] **The line record is this build's until the transit kit is on main** (2026-11-11). `stations/common/47-line-core.js` (`LK`) and each station's
+  `48-line-window.js` hold the window's records (the section, the tracks, the lamps, the niches, the vein, the trains and their timelines, the car pose) as the
   `KTRANSIT.line` kind will (PLAN.md section 4). When `kits/ancient-transit` reaches main (the owner: merge it first), the record moves
-  into the line kind and this fragment reads it, keeping its output.
+  into the line kind and these fragments read it, keeping their output.
 - [ ] **The drawing is this build's builder** (`85-host-lining.js`, `LB`): quads and boxes by family and 100 m chunk, UVs in metres. It
   moves to `KTRANSIT.draw` with the line kind (the transit kit's `B.sweep` and the subway's swept bore are its model).
 - [ ] **Three surfaces stand in for owed sets** (`core/materials/PROMPTS-NEEDED.md` section 41): the lining on `concrete.ancient` (owed
@@ -22,3 +22,15 @@
   cars' `data.ride` records already in place.
 - [ ] **The rock is drawn east of the east wall only** (`84-host-rock.js`): the lining hides the rest; a station with a fallen section
   (`gap`, `fault`) draws its rock where the lining is gone.
+- [ ] **G2 is shorter on the page than in the plan** (2026-11-11). The `gap` page's fall is 0.54 km (bore m 236170-236712) and its walk about
+  595 m, 17 minutes; PLAN.md section 2 gives G2 as 3 km and 3-4 h at low water. The page shows the chamber's crossing at a walkable size;
+  whether G2 is one chamber or a longer stretch of falls and sumps (more pages, or a longer window) is the owner's call.
+- [ ] **The gap's chamber is a `KCAVERN` hall, not `KKARST` hypogene** as PLAN.md section 5 says: an ellipsoid with a flat floor and its gypsum
+  crust by shader (`LINE.gypWeight`). Cropping a `KKARST` cave into the window, as the Hearths do, is the follow-up.
+- [ ] **The station's rooms are stubs.** Each door opens on 3 m of hewn rock: the workshops, cistern, stores, signal room and the
+  mezzanine's rooms are not built (the Tungang kit's rooms are to stay out of it: PLAN.md section 5). The branch toward Loj Twenny is
+  carved 60 m into the rock and stops.
+- [ ] **The great shaft is still.** Its cage and rope stand under the mouth in the vault (carved 106 m up); no hoist moves, no draught or ice
+  comes down (PLAN.md section 2.1).
+- [ ] **Abandoned keeps the Ancients' guideways sound** (`cond` state `built`, unkept: no plate patches, no lamp code), so the clearance and
+  car-pose checks run on every state; a station whose tracks are blocked or fallen is the `fault` page's.

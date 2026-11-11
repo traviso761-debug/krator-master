@@ -441,8 +441,8 @@ question.
 | # | Station | Bore km (px) | What | Settles |
 |---|---|---|---|---|
 | 1 | `bore` | 208-209.2 (445.5,1262) | a kept straight kilometre of the long run, south of the south door: the four-track gallery, its lining, guideways, central strip, walkway and the access road (a derelict Ancient service van on it); a crossover; the Tungangs' green lamps running to a point; a train passing (on its timetable) and a Fixers' trolley; refuge niches; warm (rock 55 degC); **a vein working**: a Fixers' side gallery off a refuge niche following a copper and rare-earth vein (section 2.1), its spoil on a flat wagon | **the section, the scale, the light**; the long view down the bore |
-| 2 | `gap` | 235-240 (443.5,1277) | G2: the long run's southern end: its gap station (the last platform, the trains' turning crossover, the shed), the gallery fallen whole into a hypogene chamber; the walk down the slope into the chamber, green lamps on posts across it, a sump waded, a Fixers' stair up the far fall, and S1's platform with its own train | **the walk between segments**, the game's commonest underground journey |
-| 3 | `station` | 218 (445,1266) | the Twenny junction: an Ancient station cavern in three states (`?state=built`, `kept`, `abandoned`): platforms, the mezzanine, sidings and sheds, workshops, cistern, ventilation, the branch gallery's mouth toward Loj Twenny; **the great shaft's foot** (2.2 km up to the fells: the hoist, the draught, the ice coming down); **empty of the Tungang kit's rooms** (kept shows only catalog pieces already built: benches, lamps, signs) | the Ancient station's architecture; the hold view's test bed (T3) |
+| 2 | `gap` | 235-240 (443.5,1277) | G2: the long run's southern end: its gap station (the last platform, the trains' turning crossover, the shed), the gallery fallen whole into a hypogene chamber; the walk down the slope into the chamber, green lamps on posts across it, a sump waded, a Fixers' stair up the far fall, and S1's platform with its own train | **the walk between segments**, the game's commonest underground journey (built 2026-11-11: the fall 0.54 km on the page; section 14) |
+| 3 | `station` | 218 (445,1266) | the Twenny junction: an Ancient station cavern in three states (`?state=built`, `kept`, `abandoned`): platforms, the mezzanine, sidings and sheds, workshops, cistern, ventilation, the branch gallery's mouth toward Loj Twenny; **the great shaft's foot** (2.2 km up to the fells: the hoist, the draught, the ice coming down); **empty of the Tungang kit's rooms** (kept shows only catalog pieces already built: benches, lamps, signs) | the Ancient station's architecture; the hold view's test bed (T3) (built 2026-11-11: section 14) |
 | 4 | `hotdoor` | 55 (455,1186) | the hot section's north doors: two door walls a train's length apart (an airlock), each a bulkhead across the gallery with four train leaves and a walkway hatch; **the power plant and the cooling plant** kept by rite (the heat exchangers' pipes through the inner door, the generators' rare-earth magnets, power cells on charge: section 2); a sealed train waiting; through the inner door the deep stretch, spalls on the lining, the heat haze, the cyan strips still lit; a granite cleft shrine behind a rail (`ANCIENT-TUNNELS.md` cave 7) | **heat and machinery**; the one place the Ancients' light still burns |
 | 5 | `breach` | 225 (444.5,1270) | the bore cuts a hypogene chamber in the rift fill (`KKARST` `hypogene`, as the Hearths): a bulkhead in the lining, a window, a stair down into the natural cave | **the join of built and natural** |
 | 6 | `fault` | 40-48 (455.5,1180) | the gallery split into two twin bores through the impact breccia; a slump fault shears one bore (its two tracks cut, the beams offset 3 m), the trains crossing over in the junction hall to the other; a low point flooded over two tracks; CO2 pooled | **the ruin states by track** |
@@ -702,6 +702,21 @@ question 14):
   road, crossover, the lamp code, the niches, the vein working, two kept trains passing on their timelines by the riding hook's car pose,
   the work train, a derelict van); `verify.py --assert` with the station's six checks and their negatives (`99-host-take.js`). The line
   record is the station's own `48-line-gallery.js` until `KTRANSIT.line` exists (`KNOWN_ISSUES.md`).
+- **The shared base** (`stations/common/`): the line's core (`47-line-core.js`, `LK`: the section, the profile, routes by arc length, the
+  consist, the riding hook's car pose, the cond runs derived to gaps and segments) and helpers (`47b-line-help.js`, `LW`), and the host
+  fragments every station takes (stage, rock, lining, way, train, air, build, take). Each station's `station.json` names `"base":
+  "common"` and adds its own window (`48-line-window.js`, the `LINE` contract) and works. `bore` moved onto it unchanged.
+- **The `gap` station** (G2): the long run's last platform, its shed and porters' hold, the gallery broken off at both lips, the chamber
+  (a `KCAVERN` hall, not yet `KKARST` hypogene), the Fixers' ramp and stair, the path's green lamps, the sump (core/water), S1's platform
+  and train; its own checks (every track cut across the fall and a walk across it, the path's lamps, the sump waded, the white lamps at the
+  lips, the platform edges) with negatives. **The fall on the page is 0.54 km** (bore m 236170-236712), its walk about 595 m and 17
+  minutes; section 2's G2 of 3 km and 3-4 h is the whole damaged stretch, which this page compresses (`KNOWN_ISSUES.md`).
+- **The `station` station** (the Twenny junction, `?state=built|kept|abandoned`): the cavern 52.5 m wide and 20 m to its vault between
+  the galleries, the tracks splayed round the island platform, the side platforms (the west one the road's apron), every face 0.1 m off
+  the car; the footbridges at 7.6 m and the mezzanine balconies, the stairs; the doors to the station's rooms (hewn stubs behind them),
+  the branch's mouth toward Loj Twenny, the great shaft's cage under its mouth in the vault; by state the Ancients' light and a built
+  train, the lamp code and a kept train with the Tungangs' hut and crates, or the dark with dust and a derelict train. Its checks (the
+  platform faces, the footbridges over the car's envelope, the branch open) with negatives; every state passes in the browser.
 - **The bore hazards**: `core/hazard/22-core-hazard-bore.js` (`KHAZ.rockburst`, `inrush`, `seal`), opt-in, as presets on the kinds the
   vocabulary has (`crush`, `drown`, `gas`), so no other page changes; `test-hazard-bore.js`.
 

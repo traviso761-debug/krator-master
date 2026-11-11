@@ -1,4 +1,5 @@
 {
  "name": "The bore: a kept kilometre of the Rift line's long run, south of the south door: the four-track gallery, its lining, the guideways, the central strip, the walkway and the access road, a crossover, the green lamps running to a point, the kept trains passing, a Fixers' vein working",
- "site": [445.5, 1262]
+ "site": [445.5, 1262],
+ "base": "common"
 }

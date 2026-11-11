@@ -10,23 +10,39 @@ The Rift line's biome (`PLAN.md`): stations, each a window of the one Line recor
 | `tools/survey_extension.py` | the line beyond Ledge to Stair: straight legs, tunnel and viaduct shares |
 | `concept/` | the owner's concept page (`line-concept.src.html`, the survey's profile injected into `line-concept.html`) |
 | `build.py`, `verify.py`, `materials.json`, `tex/` | the build (from biomes/hearths' pattern), the verify harness, the library adapter and its pack |
+| `stations/common/` | the shared base every station takes (its `station.json` names `"base": "common"`) |
 | `stations/bore/` | station 1: a kept kilometre of the long run (bore km 208-209.2) |
+| `stations/gap/` | station 2: G2, the long run's last platform, the fall into the chamber, the walk to S1 (bore km 235.55-236.95) |
+| `stations/station/` | station 3: the Twenny junction, in three states (`?state=built\|kept\|abandoned`; bore km 217.55-218.75) |
 
-## stations/bore
+## stations/common
+
+| Fragment | Tag | What |
+|---|---|---|
+| `47-line-core.js` | [G data] | `LK`: the section, the profile, routes by arc length, the consist, the riding hook's car pose, the cond runs derived to gaps and segments |
+| `47b-line-help.js` | [G data] | `LW`: the plain gallery's walk floors, the invert's gaps, strips along a polyline, the section's floor, the gallery's works, the vein's stain |
+| `49-host-stage.js` | [web] | renderer, the lamp code's light pool, the window's lights, the visitor's lamp, the floor for the eye, BIO.init |
+| `84-host-rock.js` | [draw] | the cavern built; its rock drawn where the window says it shows (`LINE.rockShows`), stained by the vein and the gypsum, on KGROUND |
+| `85-host-lining.js` | [draw] | the builder (LB) and the lining: rings by section, joints, bronze bands, end walls, the openings' jambs and plates, the ragged cut |
+| `86-host-way.js` | [draw] | the guideways along each track's runs (splayed by `LINE.trackX`), the plain gallery's works, the crossovers, the lamps, the crown fittings, the vein's working |
+| `87-host-train.js` | [web] | the trains moved by the car pose (running on timelines, standing), the standing vehicles |
+| `89x-host-air.js` | [web] | core/atmos bound; dust in the lamps |
+| `89z-host-build.js` | [web] | the records and hazards registered (core/tags), the bake |
+| `99-host-take.js` | [web] | the inspector and the shared checks (each with its negative), the window's own, KHOST.take |
+| `99-tail.html` | [web] | the page's end |
+
+## A station's own fragments
 
 | Fragment | Tag | What |
 |---|---|---|
 | `00-head.html` | [web] | the page shell |
 | `44z-host-site.js` | [G data] | the site: chainage origin, the invert's height, the cover, the rock and its heat |
-| `44zs-host-station.js` | [G data] | the station: which window |
-| `48-line-gallery.js` | [G data] | the window's records: the section, the tracks' routes and states, the crossover, the niches, the lamp code, the crown fittings, the vein and its work train, the trains on KSCHED timelines, the riding hook's car pose, the carved void, the walk floors |
-| `49-host-stage.js` | [web] | renderer, the lamp code's light pool, the visitor's lamp, the section's floor for the eye, BIO.init |
-| `60-host-vehicles.js` | (virtual) | the vehicles bundle: `kits/motor-vehicles` ['ancient', 'line', 'tungang'] |
-| `84-host-rock.js` | [draw] | the cavern built; its rock drawn east of the east wall (the niches, the vein's gallery) on KGROUND |
-| `85-host-lining.js` | [draw] | the builder (LB) and the lining: rings, joints, bronze bands, the niches' openings and plates |
-| `86-host-way.js` | [draw] | the guideways, the invert, the strip, the road and barrier, the walkway, the crossover, the lamps, the crown fittings, the vein's working |
-| `87-host-train.js` | [web] | the kept trains moved by the car pose; the work train; the derelict van |
-| `89x-host-air.js` | [web] | core/atmos bound; dust in the lamps |
-| `89z-host-build.js` | [web] | the records registered (core/tags), the bake |
+| `44zs-host-station.js` | [G data] | the station: which window (and, for `station`, which state) |
+| `48-line-window.js` | [G data] | the window (`LINE`): the tracks' routes and states, the openings, the lamps, the trains, the void, the walk, the checks |
+| `48-line-window.js` (bore) | | plus the vein and its work train, the crossover |
+| `88-host-gap.js` (gap) | [draw] | the falls' rubble, the Fixers' ramp and stair, the platforms, the shed, the porters' hold |
+| `89y-host-water.js` (gap) | [web] | the sump's water (core/water; needs core/atmos bound) |
+| `88-host-station.js` (station) | [draw] | the invert, the platforms, the road's and walkway's jogs, the stairs, footbridges and mezzanine, the doors, the branch, the shaft's cage, what each state leaves |
 | `98v-host-views.js` | [web] | the views |
-| `99-host-take.js` | [web] | the inspector and the checks (each with its negative), KHOST.take |
+
+`60-host-vehicles.js` is virtual: the vehicles bundle, `kits/motor-vehicles` ['ancient', 'line', 'tungang'].
