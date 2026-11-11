@@ -1,6 +1,8 @@
-// ================================================================= CORE HOST — riding: the walker carried by the floor under it
-// [web] core/host/95c-host-ride.js (core/simulation/PLAN-RIDING.md section 6). Opt-in: a page that has KWALKFRAME frames
-// lists it after the shell and calls KHOST.ride once it has taken the host, so no other page changes.
+// ================================================================= CORE WALK FRAME — host: the walker carried by the floor under it
+// [web] core/walk/frame/95-walk-frame-host.js (core/simulation/PLAN-RIDING.md section 6). Opt-in: a page that has KWALKFRAME
+// frames lists it after core/host's shell and calls KHOST.ride once it has taken the host, so no other page changes. It
+// lives with the frames, as a module's own host fragments do (core/city's 5x-city-host-*), not in core/host: every build
+// that imports core/host/host.py records core/host's listing, so a file added there marks ~90 builds stale.
 //
 //   KHOST.ride(H, {walk: W, t: () => motion seconds, seats?: F => [{at:[x,y,z], yaw}], sitKey:'e', reach:1.6}) -> R
 //        each frame, after the keys and before the walker stands: the world registry's clock is set to t (KWALKFRAME.at),

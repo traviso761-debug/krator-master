@@ -1,5 +1,5 @@
 // ================================================================= RIDE LAB — the take: core/host, the rider, the checks' API
-// [web] The page on core/host's shell with the opt-in ride fragment (core/host/95c-host-ride.js): walk (F), walk through an
+// [web] The page on core/host's shell with the opt-in ride host fragment (core/walk/frame/95-walk-frame-host.js): walk (F), walk through an
 // open car door, ride; E by a seat sits, E again stands. The views look at the Line, Ledge's station, the gap and Twenny;
 // "Walk at Ledge" stands the walker on Ledge's platform. window._api.lab is what verify.py drives.
 var RLRIDE=null;

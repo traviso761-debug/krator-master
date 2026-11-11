@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Build the ride lab (core/simulation/PLAN-RIDING.md section 8): a stand-in Line of two segments and the gap between, its
 trains carrying the walker (core/walk/frame), the travellers' journeys (core/simulation/ride) and goods (SIM.trade, the
-porters), on core/host's shell with the opt-in ride fragment (core/host/95c-host-ride.js).
+porters), on core/host's shell with the opt-in ride host fragment (core/walk/frame/95-walk-frame-host.js).
 
     python3 build.py           # -> dist/ride-lab.html
     python3 verify.py --assert # the page's checks on the GPU lane, each with a negative
@@ -27,7 +27,7 @@ FRAGS = ([os.path.join(HERE, '00-head.html')]
          + [os.path.join(SIMD, 'ride', '78-sim-ride.js'), os.path.join(SIMD, 'ride', '79-sim-ride-porters.js')]
          + [os.path.join(HERE, f) for f in ('40-ride-lab-world.js', '50-ride-lab-run.js', '60-ride-lab-scene.js')]
          + [khost.path(f) for f in khost.SHELL if f != '20-core-clock.js']
-         + [os.path.join(CORE, 'host', '95c-host-ride.js'), os.path.join(HERE, '98-ride-lab-take.js'), os.path.join(HERE, '99-tail.html')])
+         + [os.path.join(CORE, 'walk', 'frame', '95-walk-frame-host.js'), os.path.join(HERE, '98-ride-lab-take.js'), os.path.join(HERE, '99-tail.html')])
 BSRC.report(FRAGS)   # --list-sources: what the page is made of, then exit
 out = []
 for p in FRAGS:

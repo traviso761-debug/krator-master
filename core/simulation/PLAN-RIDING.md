@@ -219,9 +219,9 @@ So riding adds **no ledger and no cargo record of its own** for goods between se
 - **Riders' own luggage** (a porter's pack, a Fixer's tools) is the items module's (`inv`), carried with its actor: no
   new code.
 
-## 6. The player: `core/host` (one opt-in `[web]` fragment)
+## 6. The player: one opt-in `[web]` host fragment
 
-`core/host/95c-host-ride.js`, listed by a page that has frames: each frame, before the walker stands, `KWALKFRAME.carry`
+`core/walk/frame/95-walk-frame-host.js` (with the frames, not in `core/host`: a file added there marks every build that imports `core/host/host.py` stale through its folder listing), listed by a page that has frames: each frame, before the walker stands, `KWALKFRAME.carry`
 moves `C.walkAt` and the camera's target by the frame's motion since the last frame and turns the view by its yaw change
 (the follow camera stays behind the player in the car's frame). Boarding is walking through an open door; E at a seat
 sits (the seat's pose through the frame), E again stands. The minimap and the probe see the car's floors through the
@@ -283,7 +283,7 @@ alights; about forty NPCs on journeys across the gap; porters carry cargo across
 | R1 | `core/walk/frame/26-core-walk-frame.js`, `test-walk-frame.js` | 27 checks with negatives; `test-walk.js` unchanged |
 | R2 | `core/simulation/ride/78-sim-ride.js`, `test-ride.js`, `lab/40-ride-lab-world.js` (the world, shared with the page) | 25 checks with negatives; 60 travellers across the gap, 120 boards and 120 alights inside their windows; `test-sim.js` unchanged |
 | R3 | `core/simulation/ride/79-sim-ride-porters.js`, `test-ride-cargo.js` | 8 checks with negatives: grain and wax the length of the Line by train, porters, train; conserved every minute; `SIM.ledger` on every leg |
-| R4 | `core/host/95c-host-ride.js`, `core/simulation/ride/lab/` (`build.py`, `verify.py`, `dist/ride-lab.html`) | the walker driven by real keys: kept out with the doors shut, aboard in the window, carried 362 m on the car's floor, E sits and stands; riders on their floors, door windows, capacity, cargo, the porters; the universal asserts (software GL) |
+| R4 | `core/walk/frame/95-walk-frame-host.js`, `core/simulation/ride/lab/` (`build.py`, `verify.py`, `dist/ride-lab.html`) | the walker driven by real keys: kept out with the doors shut, aboard in the window, carried 362 m on the car's floor, E sits and stands; riders on their floors, door windows, capacity, cargo, the porters; the universal asserts (software GL) |
 | R5 | `core/simulation/ride/kride.gd`, `kride_test.gd`, `golden-ride.json` (synced to `godot/tests/ride/`), `godot/krator/ride_cars.gd`, `godot/tests/ride/ride_cars_test.gd` | the replay: 360 rows, 32 aboard a moving car, none differ (a timetable 5 s late moves 18); door states agree with the page's 1920 samples; a `CharacterBody3D` rides an `AnimatableBody3D` car 820 m and is back in its place (0.000 m) once it stops, a body on the platform is not carried. Both tests in `test_all.py`'s Godot list |
 
 **Where it differs from the plan above:**
