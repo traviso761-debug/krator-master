@@ -7,7 +7,7 @@
 const LINE=(function(){
  const S0=SITE.s0,SEC=LK.SEC,WIN={z0:-150,z1:1050,walk0:0,walk1:1000},G=SEC.guide,L=SEC.lining,WY=SEC.walk.y,CX=(SEC.x0+SEC.x1)/2;
  const PROF=LK.profileOf(SEC,36);
- const trackX=(id,z)=>SEC.tracks.find(t=>t.id===id).x;
+ const RW=RIFT.window(S0,WIN),trackX=RW.trackX;   /* the window of the one Rift record (47c-line-record.js): its tracks' offsets, states, crossovers */
  const FALL=[262,338],PORTAL=562,ESC=[420,760],WELLS=[100,180,420,500].map(z=>({id:'line.well.'+Math.round(S0+z),z,x:CX,r:1.6}));
  const covered=z=>(z<FALL[0]||z>FALL[1])&&z<PORTAL;
  /* THE LAND over the invert: 38 m of fill, the escarpment falling to the lower tableland past the portal; the fallen stretch's cutting and the
@@ -18,7 +18,7 @@ const LINE=(function(){
   if(z>=PORTAL-.5){g=Math.min(g,.3+Math.max(0,dx-24)*.9);}
   return g;}
  /* THE TRACKS: kept under cover, worn through the fallen stretch, kept on at grade */
- const cond={};SEC.tracks.forEach(t=>cond[t.id]=[{s0:S0+WIN.z0,s1:S0+FALL[0],state:'kept'},{s0:S0+FALL[0],s1:S0+FALL[1],state:'worn'},{s0:S0+FALL[1],s1:S0+WIN.z1,state:'kept'}]);
+ const cond=RW.cond;
  const trackRuns=id=>cond[id].map(c=>[Math.max(WIN.z0,c.s0-S0),Math.min(WIN.z1,c.s1-S0),c.state]);
  const routes={};SEC.tracks.forEach(t=>routes[t.id]=LK.makeRoute(z=>trackX(t.id,z),WIN.z0,WIN.z1,4));
  /* THE OPENINGS: the niches under cover */

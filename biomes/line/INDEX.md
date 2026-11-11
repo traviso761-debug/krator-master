@@ -7,6 +7,7 @@ The Rift line's biome (`PLAN.md`): stations, each a window of the one Line recor
 |---|---|
 | `PLAN.md` | the plan, the owner's answers (2026-11-11), the survey, the section, the record, the stations, the train, riding, core adoption |
 | `tools/survey_line.py` | the line on scale model 5.1: profile, cover, rock, heat, ore, shafts (reads the model's data and the geology bake) |
+| `tests/test-line-record.js` | node: the one record and each station's window of it (track states, splays, crossovers, the gap), each check with a negative |
 | `tools/survey_extension.py` | the line beyond Ledge to Stair: straight legs, tunnel and viaduct shares |
 | `concept/` | the owner's concept page (`line-concept.src.html`, the survey's profile injected into `line-concept.html`) |
 | `build.py`, `verify.py`, `materials.json`, `tex/` | the build (from biomes/hearths' pattern), the verify harness, the library adapter and its pack |
@@ -24,6 +25,7 @@ The Rift line's biome (`PLAN.md`): stations, each a window of the one Line recor
 | Fragment | Tag | What |
 |---|---|---|
 | `47-line-core.js` | [G data] | `LK`: the section, the profile, routes by arc length, the consist, the riding hook's car pose, the cond runs derived to gaps and segments |
+| `47c-line-record.js` | [G data] | `RIFT`: the one Rift line as `KTRANSIT.line` (its forms, track states, splays, crossovers, stations, doors) and `RIFT.window(S0, WIN)`, each station's window of it |
 | `47b-line-help.js` | [G data] | `LW`: the plain gallery's walk floors, the invert's gaps, strips along a polyline, the section's floor, the gallery's works, the vein's stain |
 | `49-host-stage.js` | [web] | renderer, the lamp code's light pool, the window's lights, the visitor's lamp, the floor for the eye, BIO.init |
 | `84-host-rock.js` | [draw] | the cavern built; its rock drawn where the window says it shows (`LINE.rockShows`), stained by the vein and the gypsum, on KGROUND |

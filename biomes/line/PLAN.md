@@ -743,6 +743,11 @@ question 14):
   it, ramped over 300 m). Its checks: the ramp, the fallen stretch open with its tracks running, the wells open, the line at grade past the
   portal; each with its negative.
 - **All seven stations are built** (2026-11-11), each passing `verify.py --assert` on the GPU.
+- **The stations are windows of one record** (2026-11-11, after the transit session's review): `stations/common/47c-line-record.js` makes
+  the Rift line as `KTRANSIT.line` (kits/ancient-transit/src/43c, read by `build.py` with 40, 41 and 43b) and cuts each station's window with
+  `KTRANSIT.lineWindow`; the pages read their tracks' states, splays, crossovers and gaps from it and run their trains on the kind's
+  `carPose` and `lineConsist`. Every page's tracks, crossovers and triangle counts came out as before (the cars' seeds now
+  `KRAND.child`, so their wear differs); `tests/test-line-record.js`.
 - **The bore hazards**: `core/hazard/22-core-hazard-bore.js` (`KHAZ.rockburst`, `inrush`, `seal`), opt-in, as presets on the kinds the
   vocabulary has (`crush`, `drown`, `gas`), so no other page changes; `test-hazard-bore.js`.
 

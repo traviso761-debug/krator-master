@@ -7,7 +7,7 @@
 const LINE=(function(){
  const S0=SITE.s0,SEC=LK.SEC,WIN={z0:-150,z1:1250,walk0:0,walk1:1100};
  const PROF=LK.profileOf(SEC,36),LIP=470,FAR=1012,FLOOR=SITE.chamber.floor,LEVEL=-16.15,POOL={x0:-30,x1:30,z0:722,z1:758,floor:-16.8};
- const trackX=(id,z)=>SEC.tracks.find(t=>t.id===id).x;
+ const RW=RIFT.window(S0,WIN),trackX=RW.trackX;   /* the window of the one Rift record (47c-line-record.js): its tracks' offsets, states, crossovers */
  /* THE RUBBLE (the near fall z 466-612, the far fall z 925-1016): a heap at each lip, the slope down to the chamber's floor, rising toward the walls,
     roughened by core/rand's noise. Plain functions: the drawing, the walk and the floor all read them */
  const nz=(x,z,s)=>(KRAND.vnoise(x*.35,1,z*.35,s)-.5);
@@ -20,10 +20,10 @@ const LINE=(function(){
  const niches=[];for(let z=25;z<LIP-20;z+=50)niches.push({id:'line.niche.'+Math.round(S0+z),z,w:1.2,h:2.2,d:1.2,y:SEC.walk.y});
  for(let z=1035;z<WIN.z1-10;z+=50)niches.push({id:'line.niche.'+Math.round(S0+z),z,w:1.2,h:2.2,d:1.2,y:SEC.walk.y});
  const openings=niches.map(N=>({id:N.id,kind:'niche',wall:'e',z0:N.z-N.w/2,z1:N.z+N.w/2,y0:N.y,y1:N.y+N.h}));
- const crossovers=[{id:'line.xo.'+Math.round(S0+120),a:'t1',b:'t2',z0:120,z1:240,state:'kept'}];
+ const crossovers=RW.crossovers;
  const inXO=z=>crossovers.some(X=>z>X.z0-10&&z<X.z1+10);
  /* THE TRACKS: every track kept to the lip, cut across the fall, kept again on S1 */
- const cond={};SEC.tracks.forEach(T=>cond[T.id]=[{s0:S0+WIN.z0,s1:S0+LIP,state:'kept'},{s0:S0+LIP,s1:S0+FAR,state:'cut'},{s0:S0+FAR,s1:S0+WIN.z1,state:'kept'}]);
+ const cond=RW.cond;
  const trackRuns=id=>cond[id].filter(c=>c.state!=='cut').map(c=>[Math.max(WIN.z0,c.s0-S0),Math.min(WIN.z1,c.s1-S0),c.state]);
  const routes={};SEC.tracks.forEach(T=>routes[T.id]=LK.makeRoute(z=>trackX(T.id,z),WIN.z0,WIN.z1,4));
  /* THE PLATFORMS (the Tungangs' plate decks at the car floor's height, beside T1 over the walkway): the gap station's and S1's */
@@ -38,7 +38,7 @@ const LINE=(function(){
  for(let i=1;i<ramp.length;i++)ramp[i][1]=Math.min(ramp[i][1],ramp[i-1][1]+3.5);for(let i=stair.length-2;i>0;i--)stair[i][1]=Math.min(stair[i][1],stair[i+1][1]+3.5);
  const walkPts=[[SEC.walk.x0+1.2,PY,440],[SEC.walk.x0+1.2,SEC.walk.y,444]].concat(ramp,path.slice(1),stair.slice(1),[[SEC.walk.x0+1.2,PY,1030]]);
  let wlen=0;for(let i=1;i<walkPts.length;i++)wlen+=Math.hypot(walkPts[i][0]-walkPts[i-1][0],walkPts[i][1]-walkPts[i-1][1],walkPts[i][2]-walkPts[i-1][2]);
- const D=LK.derive(cond,SEC.tracks.map(t=>t.id),S0+WIN.z0,S0+WIN.z1);
+ const D={gaps:RW.gaps,segments:RW.segments};   /* the record's gaps and segments over the window */
  const gaps=D.gaps.map((g,i)=>({id:'line.gap.G2',s0:g.s0,s1:g.s1,kind:'fall',walk:{id:'line.gap.G2.walk',pts:walkPts,len:Math.round(wlen),minutes:Math.round(wlen/.6/60),hazards:['fall','drown','gas']}}));
  /* THE LAMPS: green on the walkways, the road and the strip's masts in both stretches; green on posts every 20 m down the ramp, across the chamber and up
     the stair (the gap's walk); white hooded at each lip (danger: stop); amber at the porters' hold and at S1's platform (work) */

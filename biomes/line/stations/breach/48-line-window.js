@@ -7,7 +7,7 @@
 const LINE=(function(){
  const S0=SITE.s0,SEC=LK.SEC,WIN={z0:-150,z1:1050,walk0:0,walk1:900},G=SEC.guide,L=SEC.lining,WY=SEC.walk.y;
  const PROF=LK.profileOf(SEC,36);
- const trackX=(id,z)=>SEC.tracks.find(t=>t.id===id).x;
+ const RW=RIFT.window(S0,WIN),trackX=RW.trackX;   /* the window of the one Rift record (47c-line-record.js): its tracks' offsets, states, crossovers */
  /* THE CAVE: the chamber, the stair, the landing, the window's passage, the maze beyond (its storey at the chamber's floor) */
  const FLOOR=-20,TABLE=-18;
  const chamber={id:'line.breach.chamber',name:'The hypogene chamber the bore passed',c:[40,FLOOR,495],rx:18,rz:45,h:28,belly:.25};
@@ -23,7 +23,7 @@ const LINE=(function(){
  const openings=niches.map(N=>({id:N.id,kind:'niche',wall:'e',z0:N.z-N.w/2,z1:N.z+N.w/2,y0:N.y,y1:N.y+N.h}))
   .concat([{id:'line.breach.bulkhead',kind:'door',name:'The bulkhead onto the chamber (the Ancients\' steel door)',wall:'e',z0:448,z1:452,y0:WY,y1:WY+2.2},
    {id:window_.id,kind:'window',name:'The window onto the chamber (glazed)',wall:'e',z0:window_.z0,z1:window_.z1,y0:WY,y1:WY+2.2}]);
- const cond={};SEC.tracks.forEach(t=>cond[t.id]=[{s0:S0+WIN.z0,s1:S0+WIN.z1,state:'kept'}]);
+ const cond=RW.cond;
  const trackRuns=id=>cond[id].map(c=>[Math.max(WIN.z0,c.s0-S0),Math.min(WIN.z1,c.s1-S0),c.state]);
  const routes={};SEC.tracks.forEach(t=>routes[t.id]=LK.makeRoute(z=>trackX(t.id,z),WIN.z0,WIN.z1,4));
  /* THE LAMPS: the code on the ways; a white hooded lamp at the bulkhead (bad air below); green down the stair and across the chamber */

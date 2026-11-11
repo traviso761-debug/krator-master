@@ -3,17 +3,18 @@
  "runs": {
   "build.py": {
    "inputs": {
-    "biomes/line/KNOWN_ISSUES.md": "c6aafa23a2e92b9efcea4fa414eabdf85a32635874005b8784de0697e2abe964",
+    "biomes/line/KNOWN_ISSUES.md": "41659bdbe88884bef07500e081087c172ef2f40d5c1b052412cbb49e3567e5a5",
     "biomes/line/PORT.md": "7c4aed253023c97e4560b65c1d21636e5270dae543b6954f701fe3f254aae343",
-    "biomes/line/build.py": "00b7bfb55ac5827e71f756ee028f6a6272043ca3f4543054725f4a0598635773",
+    "biomes/line/build.py": "6522a5582f304ccd0d0094c2ddf96085fba5d91801953811c37b1ce334a3c289",
     "biomes/line/stations/bore/00-head.html": "22fdc4b472063b0f201a43324bf734621d40766fd9de2e76609062d6fe118d43",
     "biomes/line/stations/bore/44z-host-site.js": "1e204e2ff4e9218ed896a19aaa9a7b8cf6f6dd5970a34e6b40df32fef2710b44",
     "biomes/line/stations/bore/44zs-host-station.js": "43a7367210a5f729d48e2883463e114649c3e89db47664a80139c1b43afc0bb6",
-    "biomes/line/stations/bore/48-line-window.js": "8e0ad309adda862992d0c5a3d71f4151a8b8b0f2e2da7c257177bf7c18b325c0",
+    "biomes/line/stations/bore/48-line-window.js": "13686841aacb0085b880c5db56b8556d75f3fbf69d2adc6fbff8c50c19eaf1f1",
     "biomes/line/stations/bore/98v-host-views.js": "8bb85223c2e36963e3f832a29400923ca8059e70556a17f357f4f8a7163a074a",
     "biomes/line/stations/bore/station.json": "be4e8ef8bf47470fd81e41bf9fe2b85091ec2894ecf53b9476cccc33561ba6f5",
-    "biomes/line/stations/common/47-line-core.js": "fa9f396952d9ef899fe5a99489f8661ce5d9c074151923671c739e83c0eea316",
+    "biomes/line/stations/common/47-line-core.js": "19230c576a199635c0e311fa565feae5d535578684f6e84afaddf22336074c8f",
     "biomes/line/stations/common/47b-line-help.js": "ecbfe631252cf05343025f4ae93c7d13f416a7951966fa440f1460c9e6286756",
+    "biomes/line/stations/common/47c-line-record.js": "72d3ead2895ecce0306a5374e0908157b7c865d47675c5c71abd3b5b2178687b",
     "biomes/line/stations/common/49-host-stage.js": "b6b692b56db4e7b188e71eaddd61d3d0ec06cf9dda8649c879ba3d587a89c0ad",
     "biomes/line/stations/common/84-host-rock.js": "23dda5edba76b1b8877c32737ac9f418df57a4d21596c7d3d100e48d978d3b35",
     "biomes/line/stations/common/85-host-lining.js": "a2f588b4ac37024c47afbb4824249e642dd66bc6b464b45baa606ede94a271bd",
@@ -118,6 +119,10 @@
     "core/water/22-core-water-flow.js": "eab9b6ee42e8747dfd1082a1b6d76804b4659d5fd3a2b3d4bc1a566af13dbed7",
     "core/water/50-core-water-draw.js": "9b487271223b64c2935b3336667963139dddcc055b852ac4f0a1912b2a9dd7e0",
     "core/water/51-core-water-kinds.js": "e0c2edba19b476b4b46a4e08a63f0af695423d88b1da15b380795b2e4d07ead4",
+    "kits/ancient-transit/src/40-tr-records.js": "7de62a69956dbce0d5b1aa149b145b5350f4a5d6b70d16bf8638653dc3c3b5c6",
+    "kits/ancient-transit/src/41-tr-path.js": "f4f42db21f7fba6fb6fe1687ebdc388a57e9d6553c1644f010ef67c2c2ef2239",
+    "kits/ancient-transit/src/43b-tr-subway.js": "897320f6543a79e458f13b4cc83b90e70a6e63c04a09e7899b4301869f39b5a3",
+    "kits/ancient-transit/src/43c-tr-line.js": "bb7d48753f18efe4303fb1007d291eab99a5a3b409afb9560ccf529ab3e2840d",
     "kits/motor-vehicles/krator-vehicles-ancient.js": "3ebaf2da088d67bd2270589a7b0d9c7c98339595ea5eb866d99b55a3638e8a6d",
     "kits/motor-vehicles/krator-vehicles-line.js": "cf8107cb932d8f31374d1388804b5e1785b2809dc42f3bede60a91de9de9429b",
     "kits/motor-vehicles/krator-vehicles-runtime.js": "a04a76ec57ff3c3c03cded34c65b15b3db04701fbf4ed7ca3815c5eaf34b5f50",
@@ -172,17 +177,17 @@
    },
    "listings": {
     "biomes/line/stations/bore": "edca72c88081728020909be6e6c19f55e3ac717df4827e47a6c80c874ab47296",
-    "biomes/line/stations/common": "0d8bc66ca8ecba0e44a0f0a897c9f347ca6adacdea1ca7c7a418eaeb33381777",
+    "biomes/line/stations/common": "03674d8ae9aa3bd71afc72fcdde9864d3e9f944927484e1c4e2d7f2105205e50",
     "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
     "kits/motor-vehicles": "da054ee59998be533d646147985ef22ca715974bda88399a700432602056e261",
     "tools": "2d2fdaca850a104a2a2c553313ccb3ad18dc6bc48cb554c8c714fc1ca39607bf",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/line/dist/line-bore.html": "ecf6dd7e5a1526cdf116c26383b71975b6462b3286cb9246e6cc0fbaa829f305"
+    "biomes/line/dist/line-bore.html": "e0b1934fa0e5c2446e2afd669b2fe5408f6553a1edf3a1c6a3092db7222a4225"
    },
    "outputs_raw": {
-    "biomes/line/dist/line-bore.html": "ecf6dd7e5a1526cdf116c26383b71975b6462b3286cb9246e6cc0fbaa829f305"
+    "biomes/line/dist/line-bore.html": "e0b1934fa0e5c2446e2afd669b2fe5408f6553a1edf3a1c6a3092db7222a4225"
    }
   }
  }

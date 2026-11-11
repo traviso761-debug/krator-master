@@ -8,7 +8,7 @@
 const LINE=(function(){
  const S0=SITE.s0,SEC=LK.SEC,WIN={z0:-150,z1:1050,walk0:0,walk1:900},PY=SEC.platformY,G=SEC.guide;
  const PROF=LK.profileOf(SEC,36);
- const trackX=(id,z)=>SEC.tracks.find(t=>t.id===id).x;
+ const RW=RIFT.window(S0,WIN),trackX=RW.trackX;   /* the window of the one Rift record (47c-line-record.js): its tracks' offsets, states, crossovers */
  const OUT=300,INN=560,T=1.2;
  /* THE DOORS: each wall's openings and their leaves (a train leaf 4.6 x 5.6 over each guideway, the walkway hatch, the road gate) */
  const leavesOf=(wid,open)=>SEC.tracks.map(t=>({id:wid+'.'+t.id,kind:'train',track:t.id,x0:t.x-2.3,x1:t.x+2.3,y0:.01,y1:5.6}))
@@ -30,7 +30,7 @@ const LINE=(function(){
  const crossing={id:'line.crossing.N',z0:276,z1:280,y:G.h};
  const cleft={id:'line.cleft.shrine',name:'The cleft shrine: a quartz-lined pocket in the granite behind a rail',c:[-27.5,SEC.road.footY,80],rx:3.6,rz:3.2,h:5,z:80};
  /* THE TRACKS: kept north of the inner door, as the Ancients built them past it; the cyan lit only past it */
- const cond={};SEC.tracks.forEach(t=>cond[t.id]=[{s0:S0+WIN.z0,s1:S0+INN+T,state:'kept'},{s0:S0+INN+T,s1:S0+WIN.z1,state:'built'}]);
+ const cond=RW.cond;
  const trackRuns=id=>cond[id].map(c=>[Math.max(WIN.z0,c.s0-S0),Math.min(WIN.z1,c.s1-S0),c.state]);
  const routes={};SEC.tracks.forEach(t=>routes[t.id]=LK.makeRoute(z=>trackX(t.id,z),WIN.z0,WIN.z1,4));
  const cyanLit=z=>z>INN+T;

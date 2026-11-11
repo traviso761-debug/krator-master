@@ -5,11 +5,11 @@
 const LINE=(function(){
  const S0=SITE.s0,SEC=LK.SEC,WIN={z0:-150,z1:1350,walk0:0,walk1:1200};
  const PROF=LK.profileOf(SEC,36);
- const trackX=(id,z)=>SEC.tracks.find(t=>t.id===id).x;
+ const RW=RIFT.window(S0,WIN),trackX=RW.trackX;   /* the window of the one Rift record (47c-line-record.js): its tracks' offsets, states, crossovers */
  /* the refuge niches: every 50 m in the east wall at the walkway's level (openings in the lining) */
  const niches=[];for(let z=25;z<WIN.walk1;z+=50)niches.push({id:'line.niche.'+Math.round(S0+z),z,w:1.2,h:2.2,d:1.2,y:SEC.walk.y});
  const openings=niches.map(N=>({id:N.id,kind:'niche',wall:'e',z0:N.z-N.w/2,z1:N.z+N.w/2,y0:N.y,y1:N.y+N.h}));
- const crossovers=[{id:'line.xo.'+Math.round(S0+300),a:'t2',b:'t3',z0:300,z1:420,state:'kept'}];
+ const crossovers=RW.crossovers;
  const inXO=z=>crossovers.some(X=>z>X.z0-10&&z<X.z1+10);
  /* the lamp code (PLAN.md section 6): green on the walkway's posts, the road's footway and the strip's masts every 50 m (masts off the crossover) */
  const lamps=[];
@@ -20,8 +20,7 @@ const LINE=(function(){
  /* THE VEIN (PLAN.md section 2.1): a Fixers' side gallery off the niche at z 725, following the rift fill's rare earths and copper */
  const vein={id:'line.vein.'+Math.round(S0+725),z:725,family:'rare-earth',with:['copper'],grade:'mid',
   pts:[[SEC.x1+SEC.lining+1.2,SEC.walk.y,725],[30,1.0,728],[44,.7,731]],w:2.4,h:2.6,state:'kept'};
- const cond={t1:[{s0:S0+WIN.z0,s1:S0+695,state:'kept'},{s0:S0+695,s1:S0+725,state:'blocked'},{s0:S0+725,s1:S0+WIN.z1,state:'kept'}],
-  t2:[{s0:S0+WIN.z0,s1:S0+WIN.z1,state:'kept'}],t3:[{s0:S0+WIN.z0,s1:S0+WIN.z1,state:'kept'}],t4:[{s0:S0+WIN.z0,s1:S0+WIN.z1,state:'kept'}]};
+ const cond=RW.cond;
  const trackRuns=id=>cond[id].filter(c=>c.state!=='cut').map(c=>[Math.max(WIN.z0,c.s0-S0),Math.min(WIN.z1,c.s1-S0),c.state]);
  const routes={};SEC.tracks.forEach(T=>routes[T.id]=LK.makeRoute(z=>trackX(T.id,z),WIN.z0,WIN.z1,4));
  /* THE TRAINS: A passes south on T2, B north on T3, on 4-minute timelines (the page's clock; the long run's real timetable is four hours) */

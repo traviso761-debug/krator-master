@@ -2,12 +2,12 @@
 
 ## Open
 
-- [ ] **The line record is this build's until the transit kit is on main** (2026-11-11). `stations/common/47-line-core.js` (`LK`) and each station's
-  `48-line-window.js` hold the window's records (the section, the tracks, the lamps, the niches, the vein, the trains and their timelines, the car pose) as the
-  `KTRANSIT.line` kind will (PLAN.md section 4). The kind is written (`kits/ancient-transit/src/43c-tr-line.js`, `56c-tr-draw-line.js`, 2026-11-11) and sent to the
-  transit session for review; once agreed, each station's window becomes `KTRANSIT.lineWindow` of one `KTRANSIT.line`, keeping its output.
-- [ ] **The drawing is this build's builder** (`85-host-lining.js`, `LB`): quads and boxes by family and 100 m chunk, UVs in metres. It
-  moves to `KTRANSIT.draw` with the line kind (the transit kit's `B.sweep` and the subway's swept bore are its model).
+- [ ] **The pages draw their windows flat and with their own builder** (2026-11-11). The record is the transit kit's `KTRANSIT.line`
+  (`stations/common/47c-line-record.js`: the one Rift line, each station's window cut by `KTRANSIT.lineWindow`; its track states, splays,
+  crossovers and gaps read from it; the trains on `KTRANSIT.carPose`). But the pages keep the invert at y 0 across a window (the record's
+  -0.04 % grade, about 0.5 m over a page, is not drawn), keep their own section (`LK.SEC`, the same numbers as `KTRANSIT.LINE_SEC`), their own
+  niches, lamps and works, and draw with this build's builder (`85-host-lining.js`, `LB`: 2 m rings, joints, bands, openings), not
+  `KTRANSIT.draw.line` (which sweeps 20 m sections). Moving the drawing to the kind is the next step, and it changes the pages' look.
 - [ ] **Three surfaces stand in for owed sets** (`core/materials/PROMPTS-NEEDED.md` section 41): the lining on `concrete.ancient` (owed
   `concrete.lining.segment`: bolt pockets, gasket joints, ring numbers), the guideways on `concrete.board` (owed `concrete.guideway`),
   the kept cars' plate on the vehicles kit's `paintWorn` (owed `metal.plate.riveted.painted`).

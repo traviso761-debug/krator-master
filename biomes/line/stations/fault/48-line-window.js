@@ -16,13 +16,11 @@ const LINE=(function(){
  const sectionsAt=z=>z<J0?[SEC]:z<J1?[JUNC]:z<FZ?[WB,EB]:[WB,EB2];
  /* THE TRACKS: splayed 5 m apart through the junction; the east pair 3 m further east past the fault (the slump's offset) */
  const SPL={t1:5,t2:5,t3:-5,t4:-5},nom=id=>SEC.tracks.find(t=>t.id===id).x;
- const trackX=(id,z)=>nom(id)+SPL[id]*LK.sm((z-170)/80)+((id==='t1'||id==='t2')&&z>=FZ?3:0);
- const cond={t3:[{s0:S0+WIN.z0,s1:S0+WIN.z1,state:'kept'}],t4:[{s0:S0+WIN.z0,s1:S0+WIN.z1,state:'kept'}]};
- for(const id of ['t1','t2'])cond[id]=[{s0:S0+WIN.z0,s1:S0+J1,state:'kept'},{s0:S0+J1,s1:S0+FW[0],state:'worn'},{s0:S0+FW[0],s1:S0+FW[1],state:'cut'},
-  {s0:S0+FW[1],s1:S0+FLOOD.z0,state:'worn'},{s0:S0+FLOOD.z0,s1:S0+FLOOD.z1,state:'flooded',depth:FLOOD.level},{s0:S0+FLOOD.z1,s1:S0+WIN.z1,state:'worn'}];
+ const RW=RIFT.window(S0,WIN),trackX=RW.trackX;   /* the window of the one Rift record (47c-line-record.js): its tracks' offsets, states, crossovers */
+ const cond=RW.cond;
  const trackRuns=id=>cond[id].filter(c=>c.state!=='cut').map(c=>[Math.max(WIN.z0,c.s0-S0),Math.min(WIN.z1,c.s1-S0),c.state]);
  const routes={};SEC.tracks.forEach(t=>routes[t.id]=LK.makeRoute(z=>trackX(t.id,z),WIN.z0,WIN.z1,4));
- const crossovers=[{id:'line.xo.'+Math.round(S0+60),a:'t1',b:'t2',z0:60,z1:140,state:'kept'},{id:'line.xo.'+Math.round(S0+160),a:'t2',b:'t3',z0:160,z1:240,state:'kept'}];
+ const crossovers=RW.crossovers;
  /* THE NICHES: in the gallery's east wall and the east bore's */
  const niches=[];for(let z=25;z<WIN.walk1;z+=50){if(z>J0-15&&z<J1+15||(z>FW[0]-15&&z<FW[1]+15))continue;niches.push({id:'line.niche.'+Math.round(S0+z),z,w:1.2,h:2.2,d:1.2,y:WY,sec:z<J0?SEC:z<FZ?EB:EB2});}
  const openings=niches.map(N=>({id:N.id,kind:'niche',wall:'e',z0:N.z-N.w/2,z1:N.z+N.w/2,y0:N.y,y1:N.y+N.h,sec:N.sec}));

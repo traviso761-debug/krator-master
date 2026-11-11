@@ -2,7 +2,9 @@
 // biomes/line/PLAN.md sections 3, 4, 7 and 8. Each station's 48-line-window.js builds its window of the Line from these: the gallery's section,
 // a section's lining profile, the tracks' routes (their arc length, so a track that splays into a station is measured as it runs), the trains'
 // consists and the riding hook's car pose (s(t) the fixed A end, car k's middle at s(t) - off_k, bogies at +- b_k), and the segments and gaps
-// derived from the tracks' states (a gap: every track cut). The `line` kind's data, held here until KTRANSIT.line takes it (PLAN.md section 12).
+// derived from the tracks' states (a gap: every track cut). Since 2026-11-11 the record is KTRANSIT.line (kits/ancient-transit, 43c; this page's
+// 47c-line-record.js makes the Rift line and cuts each station's window from it): the train helpers here are the kind's (KTRANSIT.carPose,
+// lineRouteAt, lineConsist); the section, the profile, the route sampler in the page's frame and derive stay for the pages' own drawing and checks.
 // Frame: x across (east +), z along (south +, z = s - SITE.s0), y up from the invert. No three.js, no DOM.
 const LK=(function(){
  /* THE GALLERY'S SECTION (PLAN.md section 3; the access road on the west wall: the owner, 2026-11-11) */
@@ -30,18 +32,16 @@ const LK=(function(){
   for(let z=z0;z<=z1+1e-6;z+=step){const p=[xAt(z),SEC.guide.h,z];if(prev)L+=Math.hypot(p[0]-prev[0],p[2]-prev[2]);pts.push(p);cum.push(L);prev=p;}
   return {pts,cum,len:L,z0};}
  /* the point s along a route (s measured from the route's z0: s = z0 + arc length) */
- function routeAt(R,s){const t=Math.max(0,Math.min(R.len,s-R.z0));let lo=0,hi=R.cum.length-1;while(hi-lo>1){const m=(lo+hi)>>1;if(R.cum[m]<=t)lo=m;else hi=m;}
-  const a=R.pts[lo],b=R.pts[hi],d=R.cum[hi]-R.cum[lo]||1,u=(t-R.cum[lo])/d;return [a[0]+(b[0]-a[0])*u,a[1]+(b[1]-a[1])*u,a[2]+(b[2]-a[2])*u];}
+ const routeAt=(R,s)=>KTRANSIT.lineRouteAt(R,s);
  /* THE TRAIN (PLAN.md section 7): two power cars and six between; the rear power car turned half round */
  const CONSIST8=[['anc_line_power',22,7.5,false],['anc_line_saloon',24,8.5,false],['anc_line_saloon',24,8.5,false],['anc_line_crew',24,8.5,false],
   ['anc_line_van',24,8.5,false],['anc_line_van',24,8.5,false],['anc_line_tank',22,7.5,false],['anc_line_power',22,7.5,true]];
  const GAP=1.0,KEPT=15;
- function consist(spec,seed,variant){let off=0;return (spec||CONSIST8).map((c,k)=>{const o={k,key:c[0],variant:variant==null?1:variant,seed:seed+k,len:c[1],b:c[2],flip:c[3],off:off+c[1]/2};off+=c[1]+GAP;return o;});}
+ /* the kind's consist (KTRANSIT.lineConsist: each car's seed KRAND.child(seed, 'car.' + k), never seed + k) */
+ const consist=(spec,seed,variant)=>KTRANSIT.lineConsist(spec||CONSIST8,seed,variant);
  const trainLen=cars=>cars[cars.length-1].off+cars[cars.length-1].len/2;
  /* THE CAR POSE (the riding hook, item 3): car k's middle at s(t) - off_k on T.route, bogies at +- b_k, yaw and pitch rear -> front */
- function carPose(T,k,t){const c=T.cars[k],s=(T.timeline?T.timeline.at(t).value:T.s)-c.off,R=T.route,f=routeAt(R,s+c.b),r=routeAt(R,s-c.b);
-  const dx=f[0]-r[0],dy=f[1]-r[1],dz=f[2]-r[2],h=Math.hypot(dx,dz)||1;
-  return {x:(f[0]+r[0])/2,y:(f[1]+r[1])/2,z:(f[2]+r[2])/2,yaw:Math.atan2(dx,dz)+(c.flip?Math.PI:0),pitch:Math.atan2(dy,h),roll:0,s,front:f,rear:r};}
+ const carPose=(T,k,t)=>KTRANSIT.carPose(T,k,t);
  /* SEGMENTS AND GAPS (PLAN.md section 4, derived): a gap where every track is cut (or flooded over 0.6 m); segments between */
  function derive(cond,ids,s0,s1){const cut=(id,s)=>(cond[id]||[]).some(c=>s>=c.s0&&s<c.s1&&(c.state==='cut'||(c.state==='flooded'&&c.depth>.6)));
   const gaps=[],segs=[];let g=null,sg=null;

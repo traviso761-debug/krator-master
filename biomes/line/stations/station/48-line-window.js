@@ -14,9 +14,9 @@ const LINE=(function(){
  /* THE TRACKS splay over the throats: nominal (the gallery's) to the station's x */
  const NOM={t1:10.5,t2:4.5,t3:-4.5,t4:-10.5},STA={t1:13.4,t2:7.4,t3:-7.4,t4:-13.4};
  const spl=z=>z<CZ0||z>CZ1?0:z<P0?LK.sm((z-CZ0)/(P0-CZ0)):z>P1?LK.sm((CZ1-z)/(CZ1-P1)):1;
- const trackX=(id,z)=>NOM[id]+(STA[id]-NOM[id])*spl(z);
+ const RW=RIFT.window(S0,WIN),trackX=RW.trackX;   /* the window of the one Rift record (47c-line-record.js): its tracks' offsets, states, crossovers */
  const tstate=ST==='kept'?'kept':'built';   /* abandoned: the Ancients' guideways left sound, unkept (no plate patches, no lamp code) */
- const cond={};SEC.tracks.forEach(T=>cond[T.id]=[{s0:S0+WIN.z0,s1:S0+WIN.z1,state:tstate}]);
+ const cond=ST==='kept'?RW.cond:(()=>{const c={};SEC.tracks.forEach(T=>c[T.id]=[{s0:S0+WIN.z0,s1:S0+WIN.z1,state:tstate}]);return c;})();   /* built and abandoned are what-ifs over the record's kept junction */
  const trackRuns=id=>cond[id].map(c=>[Math.max(WIN.z0,c.s0-S0),Math.min(WIN.z1,c.s1-S0),c.state]);
  const routes={};SEC.tracks.forEach(T=>routes[T.id]=LK.makeRoute(z=>trackX(T.id,z),WIN.z0,WIN.z1,2));
  /* THE PLATFORMS: their edges 0.1 m off the car on the straight (z 300-600) */
