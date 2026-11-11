@@ -7,6 +7,9 @@
   with ribs every 10 m, not segment joints; the hot doors are a bulkhead or a frame, with no leaves; the demo draws no trains on it (the cars are the
   vehicles kit's `anc_line_*`, which the demo does not bundle: `lineTrain` and `carPose` are checked as data). The Line biome's stations still run
   their own copy (`biomes/line/stations/common/47-line-core.js`) until this kind is reviewed; they then become windows of one `KTRANSIT.line`.
+- [ ] **The deep line's smaller gaps** (the transit session's review, 2026-11-11): `KTRANSIT.train(LN, ...)` stands a wreck on the centreline at
+  guide height, over the strip (train reads no lateral offset; an `o.lat` for train is a later change); a flooded section's water face is drawn
+  at a fixed metre, not at its run's depth; the elevated form's piers are not culled against a host's pads (`KTRANSIT.cull` is the highway's).
 - [ ] **The overgrowth's plants are stand-in domes** (`KTRANSIT.draw.growth`: a plain green material, no map): the kit has no flora of its own
   (flora belongs to the biome kits). The records are the point: `span.growth.plants` has a world position, a radius and a height for each,
   so the valley plants its feral forest's species there (`plants: false` on the draw keeps the soil and the creepers). The soil is a sweep on

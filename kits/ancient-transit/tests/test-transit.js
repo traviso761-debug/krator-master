@@ -259,6 +259,19 @@ const ground = (x, z) => 4 * Math.sin(x / 130) * Math.cos(z / 170) + (Math.hypot
   const gw = W.guideAt(500, 't2'), gl = LN.guideAt(1700, 't2'); ok(Math.hypot(gw.x - gl.x, gw.z - gl.z) < 1e-6 && Math.abs(gw.y - gl.y) < 1e-6, 'the window stands where the line does');
   const lw = W.toLocal(...W.toWorld(3, 2, 100)); ok(Math.abs(lw[0] - 3) < 1e-9 && Math.abs(lw[1] - 2) < 1e-9 && Math.abs(lw[2] - 100) < 1e-9, 'toWorld and toLocal invert each other');
   throws(() => T.lineWindow(LN, 9000, 9500), 'a window past the end throws');
+  /* a window cutting the station in half (1270-1730): the station kept with its id, its platforms clipped to the window, its furniture the whole's;
+     the heights between samples the whole line's (the profile's knots carried) */
+  const H = T.lineWindow(LN, 1500, 2600), st = H.stations[0];
+  ok(H.stations.length === 1 && st.id === 'rift.st3' && Math.abs(st.s - 0) < 1e-6 && st.platforms.every(pl => pl.s0 >= 0 && pl.s1 <= H.L + 1e-9) && st.platforms.every(pl => Math.abs(pl.s0) < 1e-9 && Math.abs(pl.s1 - 230) < 1e-6), 'a window cutting the station keeps it, its platforms clipped to the window');
+  ok(st.furniture.length > 0 && st.furniture.every(f => f.s >= 0 && f.s <= H.L && LN.stations[0].furniture.some(q => Math.abs(q.s - 1500 - f.s) < 1e-9 && q.seed === f.seed)), 'its furniture is the whole line\'s, none past the window');
+  ok(H.sections.filter(S => S.s1 <= 230).every(S => S.state === 'intact') && H.sections.every(S => S.state === LN.sections.find(q => q.id === S.id).state), 'the station\'s sections in the window are intact, every state the whole\'s');
+  let same = true; for (let s = 3; s < H.L; s += 37.3) if (Math.abs(H.floorAt(s) - LN.floorAt(s + 1500)) > 1e-9) same = false; ok(same, 'the window\'s heights are the whole line\'s between samples');
+  ok(T.lineWindow(LN, 1750, 2600).stations.length === 0, 'negative: a window clear of the station keeps none');
+  const SP = T.line({ pts: [[0, 0, 0], [0, -10, 400], [30, -20, 400], [30, -30, 0]] }); ok(Math.abs(SP.floorAt(400 + 15) + 15) < 1e-6 && Math.abs(SP.floorAt(830) + 30) < 1e-6, 'a hairpin: each point\'s chainage by the chord, not the nearest pass');
+  ok(T.lineConsist(null, 5).every((c, k) => T.lineConsist(null, 6).every(d => d.seed !== c.seed)), 'two trains whose seeds differ by one share no car seeds');
+  throws(() => T.carPose({ id: 'x', cars: T.lineConsist(null, 1), route: T.lineRoute(LN, 't1', 0, 400), s: null, timeline: null }, 0, 0), 'a train with neither s nor a timeline throws');
+  const OC = T.line({ pts: [[0, -5, 0], [0, -5, 200]], ground, forms: [{ s0: 0, s1: 200, kind: 'open' }] }); ok(T.lineCarved(OC).length >= 12 && T.lineCarved(OC).every(c => c.r >= 26), 'the open form\'s cutting is listed every 16 m for the ground');
+  ok(LN.width === 42, 'the width is about the path (twice the farther wall)');
   /* the trains */
   const Tn = T.lineTrain(W, { track: 't2', s: 400, seed: 81 }); ok(Tn.cars.length === 8 && Math.abs(Tn.len - (22 + 24 * 5 + 22 + 22 + 7)) < 1e-9 && Tn.cars[7].flip, 'the consist: eight cars, the rear power car turned');
   let onG = true; Tn.cars.forEach((c, k) => { const p = T.carPose(Tn, k, 0); [p.front, p.rear].forEach(q => { const pr = W.path.project(q[0], q[2]); if (Math.abs(pr.off - W.offAt('t2', pr.s)) > 0.05 || Math.abs(q[1] - W.railAt(pr.s)) > 0.05) onG = false; }); }); ok(onG, 'every bogie rides its guideway (the car pose)');

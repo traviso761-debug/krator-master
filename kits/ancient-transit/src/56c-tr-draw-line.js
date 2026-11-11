@@ -1,9 +1,10 @@
 // ================================================================= ANCIENT TRANSIT — drawing the deep line  [draw]
 // KTRANSIT.line's records as meshes (a whole line or a window of one: KTRANSIT.lineWindow). By 20 m section, one sweep of two frames where the
 // line runs straight at one pitch, every 4 m where the heading, the grade or a track's offset bends (the owner, 2026-11-09: triangles):
-//   the lining (KTRANSIT.draw.lining: the section's profile facing inward, two-sided), its ring ribs every 10 m, the invert; spalled, darker with
+//   the lining (KTRANSIT.draw.lining: the section's profile facing inward, two-sided), a ring rib a section (12 arcs, end faces), the invert; spalled, darker with
 //   spalls on the floor; fallen, no lining and a mound of rubble; flooded, the water's face at a metre. A junction section is the wider cavern
-//   (o.junction, or the gallery widened 9 m west and 6.5 m east, 11 m to the springing, 20 m to the vault) and a skirt closes the step between
+//   (o.junction over the gallery widened 9 m west and 6.5 m east, 11 m to the springing, 20 m to the vault, its splits the section's) and a skirt
+//   (when the two profiles have as many points) closes the step between
 //   them. The shallow form is lined as the gallery; the open form has no vault, a retaining wall where the ground stands over the invert; the
 //   elevated form stands on a deck and its piers.
 //   The guideways along every run of every track but a cut one (at its offset: a track that splays into a station), their slots, buffer stops
@@ -31,9 +32,9 @@
   const at = (LN, s, lat, up) => { const p = LN.path.at(s); return T.frame(p.x + Math.cos(p.yaw) * lat, LN.floorAt(s) + (up == null ? 0 : up), p.z - Math.sin(p.yaw) * lat, p.yaw, 0, 0); };
   T.draw.line = function (LN, o) {
     o = o || {}; const B = T.builder(), col = C(), S = LN.sec, u = (a, b, c) => T.u(LN.seed, a, b, c);
-    const J = o.junction == null ? { x0: S.x0 - 9, x1: S.x1 + 6.5, spring: 11, crown: 20, wsplit: S.wsplit, esplit: S.esplit } : o.junction;
-    const prof = Q => T.lineProfile(Q, 24).map(p => [p[0], p[1]]), inset = Q => Object.assign({}, Q, { x0: Q.x0 + 0.15, x1: Q.x1 - 0.15, crown: Q.crown - 0.15 });
-    const PG = prof(S), PJ = prof(J), RG = prof(inset(S)), RJ = prof(inset(J)), lined = f => f !== 'open' && f !== 'elevated';
+    const J = Object.assign({ x0: S.x0 - 9, x1: S.x1 + 6.5, spring: 11, crown: 20, wsplit: S.wsplit, esplit: S.esplit }, o.junction || {});
+    const prof = (Q, n) => T.lineProfile(Q, n == null ? 24 : n).map(p => [p[0], p[1]]), inset = Q => Object.assign({}, Q, { x0: Q.x0 + 0.15, x1: Q.x1 - 0.15, crown: Q.crown - 0.15 });
+    const PG = prof(S), PJ = prof(J), WG = prof(S, 12), WJ = prof(J, 12), RG = prof(inset(S), 12), RJ = prof(inset(J), 12), skirt = PG.length === PJ.length, lined = f => f !== 'open' && f !== 'elevated';
     const inSt = s => LN.stations.some(st => s >= st.s0 && s <= st.s1), secAt = s => LN.formAt(s) === 'junction' ? J : S;
     T.draw.tunnelMat();
     /* THE SECTIONS */
@@ -41,11 +42,13 @@
     LN.sections.forEach(Sc => {
       const Q = Sc.form === 'junction' ? J : S, P = Q === J ? PJ : PG, F = fr(LN, Sc.s0, Sc.s1, 0), mid = (Sc.s0 + Sc.s1) / 2, len = Sc.s1 - Sc.s0;
       /* the skirt where the gallery and a junction meet: two rings at one frame, one each profile */
-      if (prev && lined(Sc.form) && lined(prev.form) && (prev.form === 'junction') !== (Sc.form === 'junction')) { const A = prev.form === 'junction' ? PJ : PG; T.draw.lining(B, i => i ? P : A, [F[0], F[0]], dk(col.concrete, 0.8), {}); }
+      if (skirt && prev && lined(Sc.form) && lined(prev.form) && (prev.form === 'junction') !== (Sc.form === 'junction')) { const A = prev.form === 'junction' ? PJ : PG; T.draw.lining(B, i => i ? P : A, [F[0], F[0]], dk(col.concrete, 0.8), {}); }
       prev = Sc;
       if (lined(Sc.form) && Sc.state !== 'fallen') {
         T.draw.lining(B, P, F, dk(col.concrete, Sc.state === 'spalled' ? 0.68 : 0.85), { u0: Sc.s0 });
-        for (let a = 5; a < len; a += 10) { const R0 = T.draw.frames(LN, Sc.s0 + a, Math.min(Sc.s1, Sc.s0 + a + 0.3), 1, 0); T.draw.lining(B, Q === J ? RJ : RG, [R0[0], R0[R0.length - 1]], dk(col.concDark, 0.8), { u0: Sc.s0 + a, fam: 'concrete' }); }
+        /* one ring rib a section (12 arcs: it reads the same as 24): its inner face and its two end faces, 0.15 m proud of the lining */
+        if (len > 1) { const a = Math.min(len - 0.4, 10), R0 = T.draw.frames(LN, Sc.s0 + a, Sc.s0 + a + 0.3, 1, 0), f0 = R0[0], f1 = R0[R0.length - 1], wall = Q === J ? WJ : WG, rib = Q === J ? RJ : RG, rc = dk(col.concDark, 0.8);
+          T.draw.lining(B, rib, [f0, f1], rc, { u0: Sc.s0 + a, fam: 'tunnel' }); T.draw.lining(B, i => i ? rib : wall, [f0, f0], rc, {}); T.draw.lining(B, i => i ? wall : rib, [f1, f1], rc, {}); }
         if (Sc.state === 'spalled') for (let k = 0; k < 4; k++) { const side = u(Sc.i, 61, k) < 0.5 ? -1 : 1, lat = side > 0 ? Q.x1 - 0.8 - u(Sc.i, 62, k) * 1.5 : Q.x0 + 0.8 + u(Sc.i, 62, k) * 1.5, sz = 0.3 + 0.6 * u(Sc.i, 63, k);
           B.box('rubble', at(LN, Sc.s0 + len * u(Sc.i, 64, k), lat, 0).multiply(T.frame(0, 0, 0, u(Sc.i, 65, k) * 3, 0.2, 0.3)), sz * 1.6, sz, sz * 1.2, dk(col.concrete, 0.6)); }
       }

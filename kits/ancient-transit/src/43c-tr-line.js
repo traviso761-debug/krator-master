@@ -22,9 +22,10 @@
 //           s1, state, depth}]}, forms, sections: [{id, i, s0, s1, x0, z0, y0, x1, z1, y1, yaw, len, pitch, form, state}], crossovers, stations,
 //           niches, shafts, branches, doors, veins, gaps: [{id, s0, s1, kind}], segments: [{id, s0, s1}], sinkholes, voids, pits (KTRANSIT.carved
 //           reads them), origin {x, y, z, yaw}, toWorld(lat, up, along) -> [x, y, z], toLocal(x, y, z) -> [lat, up, along]}
-//   KTRANSIT.lineWindow(LN, s0, s1)   the same record cut to [s0, s1] (its s from 0), ids and states as the whole line's, origin at s0
+//   KTRANSIT.lineWindow(LN, s0, s1)   the same record cut to [s0, s1] (its s from 0), ids and states the whole line's (the sections' copied by id),
+//                                     what overlaps it kept (a station's platforms and furniture clipped to it), origin at s0
 //   KTRANSIT.lineCarveH(LN, x, z)     the depression a host adds to its ground: the open form's cutting, a fallen shallow section's bowl, a shaft's
-//                                     collar; KTRANSIT.lineCarved(LN) lists them {x, z, r} for a ground's refinement
+//                                     collar; KTRANSIT.lineCarved(LN) lists them {x, z, r} for a ground's refinement (the cutting a point every 16 m)
 //   KTRANSIT.LINE_CONSIST8, KTRANSIT.lineConsist(spec, seed, variant), KTRANSIT.lineTrainLen(cars)   the trains (vehicles kit keys)
 //   KTRANSIT.lineRoute(LN, track, s0, s1, step) -> {pts, cum, len, z0}; KTRANSIT.lineRouteAt(R, s) -> [x, y, z]   a track's guideway top
 //   KTRANSIT.lineTrain(LN, o) -> Tn {id, track, route, cars, len, s, timeline, dir}; KTRANSIT.carPose(Tn, k, t) -> {x, y, z, yaw, pitch, roll, s,
@@ -69,13 +70,15 @@
     if (o.ground != null && typeof o.ground !== 'function') throw new Error('KTRANSIT.line: o.ground must be a function (x, z) -> y');
     var id = o.id == null ? 'line' : String(o.id), seed = o.seed == null ? T.idHash(id + '.line') : (o.seed >>> 0), base = num(o.base, 0), ground = o.ground == null ? function () { return 0; } : o.ground;
     var S = o.section == null ? T.LINE_SEC : o.section, P = T.path(pts.map(function (p) { return [p[0], p[2]]; }), { ground: ground, radius: num(o.radius, 0), step: num(o.step, 4) }), L = P.L;
-    var ys = pts.map(function (p) { return [P.project(p[0], p[2]).s, p[1]]; }).sort(function (a, b) { return a[0] - b[0]; });
-    ys[0][0] = 0; ys[ys.length - 1][0] = L;
+    /* each point's chainage: the cumulative chord length of o.pts scaled to the path's length (exact with no fillet; never the nearest point,
+       which on a line passing near itself, a spiral or a hairpin, would be the wrong pass) */
+    var chord = [0]; for (var q = 1; q < pts.length; q++) chord.push(chord[q - 1] + Math.hypot(pts[q][0] - pts[q - 1][0], pts[q][2] - pts[q - 1][2]));
+    var CL = chord[chord.length - 1], ys = pts.map(function (p, k) { return [CL > 0 ? chord[k] / CL * L : 0, p[1]]; });
     var Y = T.profile(P, { mode: 'given', ys: ys }), floorAt = Y.at;
     var tracks = (o.tracks == null ? S.tracks : o.tracks).map(function (t, i) { if (!t || t.id == null || !fin(t.off)) throw new Error('KTRANSIT.line: track ' + i + ' needs {id, off}'); return { id: String(t.id), key: id + '.' + t.id, i: i, off: t.off }; });
     var trackOf = function (t) { var tr = typeof t === 'number' ? tracks[t] : tracks.filter(function (q) { return q.id === t || q.key === t; })[0]; if (!tr) throw new Error('KTRANSIT.line ' + id + ': no track ' + t); return tr; };
     var offAt = function (t, s) { var tr = trackOf(t), v = o.offAt ? o.offAt(tr.id, s) : null; return v == null ? tr.off : v; };
-    var LN = { id: id, kind: 'line', seed: seed, base: base, path: P, L: L, width: S.x1 - S.x0, pavement: 0, form: 0.1, sec: S, tracks: tracks, Y: Y, opts: o,
+    var LN = { id: id, kind: 'line', seed: seed, base: base, path: P, L: L, width: 2 * Math.max(-S.x0, S.x1), pavement: 0, knots: ys.map(function (y) { return y[0]; }), form: 0.1, sec: S, tracks: tracks, Y: Y, opts: o,
       floorAt: floorAt, deckAt: floorAt, railAt: function (s) { return floorAt(s) + S.guide.h; }, offAt: offAt,
       cond: {}, forms: [], sections: [], crossovers: [], stations: [], niches: [], shafts: [], branches: [], doors: [], veins: [], gaps: [], segments: [], sinkholes: [], voids: [], pits: [] };
     LN.guideAt = function (s, t) { var lat = offAt(t == null ? 0 : t, s), p = P.at(s); return { s: p.s, x: p.x + Math.cos(p.yaw) * lat, y: floorAt(s) + S.guide.h, z: p.z - Math.sin(p.yaw) * lat, yaw: p.yaw, lat: lat }; };
@@ -118,7 +121,8 @@
       var len = num(st.len, 460), sid = st.id == null ? id + '.st' + num(st.num, k) : st.id, S2 = { id: sid, num: num(st.num, k), name: num(st.name, ''), s: st.s, s0: st.s - len / 2, s1: st.s + len / 2, len: len, kind: num(st.kind, 'station'), state: state, platforms: [], furniture: [] };
       (st.platforms || []).forEach(function (pl, j) { var side = pl.side < 0 ? -1 : 1, tr = trackOf(pl.track);
         S2.platforms.push({ id: num(pl.id, sid + '.p' + j), track: tr.id, side: side, s0: num(pl.s0, S2.s0), s1: num(pl.s1, S2.s1), w: num(pl.w, 7), y: num(pl.y, S.platformY), edge: S.car.half + S.platformGap }); });
-      if (furnOn) S2.platforms.forEach(function (pl, pi) { for (var q = 0, s = pl.s0 + 12; s < pl.s1 - 8; s += 30, q++) {
+      if (st.furniture) S2.furniture = st.furniture.map(function (f) { var c = {}; for (var q in f) c[q] = f[q]; return c; });
+      else if (furnOn) S2.platforms.forEach(function (pl, pi) { for (var q = 0, s = pl.s0 + 12; s < pl.s1 - 8; s += 30, q++) {
         var kind = ['tr_bench', 'tr_bin', 'tr_bench', 'tr_sign'][q % 4], pk = T.pick(KRAND.hash(seed, Math.round(base + S2.s), 52, pi * 64 + q), kind, state === 'built' ? 'intact' : null);
         var lat = offAt(pl.track, s) + pl.side * (pl.edge + pl.w - 1.4), w = P.at(s);
         S2.furniture.push({ kind: kind, state: pk.state, variant: pk.variant, seed: pk.seed, platform: pl.id, s: s, lat: lat, x: w.x + Math.cos(w.yaw) * lat, z: w.z - Math.sin(w.yaw) * lat, y: floorAt(s) + pl.y, yaw: w.yaw + (pl.side > 0 ? -Math.PI / 2 : Math.PI / 2) }); } });
@@ -130,6 +134,7 @@
     for (var i = Math.floor(base / sec); i * sec < base + L - 1e-6; i++) {
       var sa = Math.max(0, i * sec - base), sb = Math.min(L, (i + 1) * sec - base); if (sb - sa < 1e-6) continue;
       var mid = (sa + sb) / 2, given = null; lin.forEach(function (l) { if (mid >= l.s0 && mid < l.s1) given = l.state; });
+      if (o.sectionStates && o.sectionStates[id + '.t' + i] != null) given = o.sectionStates[id + '.t' + i];
       if (given != null && T.LINE_SECTION_STATES.indexOf(given) < 0) throw new Error('KTRANSIT.line ' + id + ': no lining state ' + given);
       var stt = given != null ? given : inGap(mid) ? 'fallen' : inStation(mid) ? 'intact' : ruin(T.u(seed, i, 40, 1)), pa = P.at(sa), pb = P.at(sb), ln = Math.hypot(pb.x - pa.x, pb.z - pa.z);
       LN.sections.push({ id: id + '.t' + i, i: i, s0: sa, s1: sb, x0: pa.x, z0: pa.z, y0: floorAt(sa), x1: pb.x, z1: pb.z, y1: floorAt(sb), yaw: Math.atan2(pb.x - pa.x, pb.z - pa.z), len: ln, pitch: Math.atan2(floorAt(sb) - floorAt(sa), ln), form: LN.formAt(mid), state: stt }); }
@@ -154,21 +159,31 @@
   /* THE WINDOW: the record cut to [s0, s1], its s from 0; the chainage carried in base, so ids and hashed states are the whole line's */
   T.lineWindow = function (LN, s0, s1) {
     if (!(s0 >= 0) || !(s1 <= LN.L + 1e-6) || !(s1 > s0)) throw new Error('KTRANSIT.lineWindow: [' + s0 + ', ' + s1 + '] is not inside [0, ' + LN.L + ']');
-    var o = LN.opts, P = LN.path, pts = [], cuts = [s0, s1];
+    var o = LN.opts, P = LN.path, pts = [], cuts = [s0, s1], WL = s1 - s0;
+    /* the window's points: the path's corners, the profile's knots and every 50 m, so its path and its heights are the whole line's between them */
     P.seg.forEach(function (g) { if (g.s0 > s0 && g.s0 < s1) cuts.push(g.s0); });
+    LN.knots.forEach(function (k) { if (k > s0 && k < s1) cuts.push(k); });
     for (var s = Math.ceil(s0 / 50) * 50; s < s1; s += 50) cuts.push(s);
     cuts.sort(function (a, b) { return a - b; }).forEach(function (s, i, A) { if (i && s - A[i - 1] < 1e-6) return; var p = P.at(s); pts.push([p.x, LN.floorAt(s), p.z]); });
-    var clip = function (list, sk) { return (list || []).filter(function (e) { var v = sk ? e[sk] : e.s; return v >= s0 && v <= s1; }); };
+    /* what the window keeps: a point inside it; a span overlapping it (a station, a crossover) with its true s and length */
+    var inW = function (v) { return v >= s0 && v <= s1; }, over = function (a, b) { return b > s0 && a < s1; };
     var shift = function (e, keys) { var c = {}; for (var k in e) c[k] = e[k]; keys.forEach(function (k) { if (c[k] != null) c[k] -= s0; }); return c; };
-    var runs = function (list) { return (list || []).filter(function (r) { return r.s1 > s0 && r.s0 < s1; }).map(function (r) { var c = shift(r, ['s0', 's1']); c.s0 = Math.max(0, c.s0); c.s1 = Math.min(s1 - s0, c.s1); return c; }); };
-    var cond = []; LN.tracks.forEach(function (tr) { LN.cond[tr.id].forEach(function (r) { if (r.s1 > s0 && r.s0 < s1) cond.push({ s0: Math.max(s0, r.s0) - s0, s1: Math.min(s1, r.s1) - s0, track: tr.id, state: r.state, depth: r.depth }); }); });
+    var clipRun = function (r) { var c = shift(r, ['s0', 's1']); c.s0 = Math.max(0, c.s0); c.s1 = Math.min(WL, c.s1); return c; };
+    var cond = []; LN.tracks.forEach(function (tr) { LN.cond[tr.id].forEach(function (r) { if (over(r.s0, r.s1)) cond.push({ s0: Math.max(s0, r.s0) - s0, s1: Math.min(s1, r.s1) - s0, track: tr.id, state: r.state, depth: r.depth }); }); });
+    /* the sections' states are the whole line's by id: the window is the whole by construction, not by deriving it again */
+    var states = {}; LN.sections.forEach(function (Sc) { if (over(Sc.s0, Sc.s1)) states[Sc.id] = Sc.state; });
     var W = T.line({ id: LN.id, seed: LN.seed, base: LN.base + s0, pts: pts, ground: P.ground, radius: 0, section: LN.sec, tracks: LN.tracks.map(function (t) { return { id: t.id, off: t.off }; }),
-      offAt: o.offAt ? function (tid, s) { return o.offAt(tid, s + s0); } : null, state: o.state, cond: cond, forms: runs(LN.forms), lining: runs(o.lining), ruin: o.ruin, sectionLen: o.sectionLen,
-      crossovers: clip(LN.crossovers).map(function (X) { return { id: X.id, s: X.s - s0, a: X.a, b: X.b, len: X.len, dir: X.dir, state: X.state }; }),
-      stations: clip(LN.stations).map(function (st) { return { id: st.id, num: st.num, name: st.name, s: st.s - s0, len: st.len, kind: st.kind, state: st.state, platforms: st.platforms.map(function (pl) { return shift(pl, ['s0', 's1']); }) }; }),
+      offAt: o.offAt ? function (tid, s) { return o.offAt(tid, s + s0); } : null, state: o.state, cond: cond, forms: LN.forms.filter(function (F) { return over(F.s0, F.s1); }).map(clipRun),
+      sectionStates: states, ruin: o.ruin, sectionLen: o.sectionLen,
+      crossovers: LN.crossovers.filter(function (X) { return over(X.s0, X.s1); }).map(function (X) { return { id: X.id, s: X.s - s0, a: X.a, b: X.b, len: X.len, dir: X.dir, state: X.state }; }),
+      stations: LN.stations.filter(function (st) { return over(st.s0, st.s1); }).map(function (st) {
+        return { id: st.id, num: st.num, name: st.name, s: st.s - s0, len: st.len, kind: st.kind, state: st.state,
+          platforms: st.platforms.filter(function (pl) { return over(pl.s0, pl.s1); }).map(clipRun),
+          furniture: st.furniture.filter(function (f) { return inW(f.s); }).map(function (f) { return shift(f, ['s']); }) }; }),
       nicheStep: o.nicheStep, nicheSide: o.nicheSide, furniture: o.furniture,
-      shafts: clip(LN.shafts).map(function (H) { return { id: H.id, s: H.s - s0, side: H.side, off: H.off, r: H.r, kind: H.kind, state: H.state, hidden: H.hidden, road: H.road }; }),
-      branches: clip(LN.branches).map(function (Bn) { return shift(Bn, ['s']); }), doors: clip(LN.doors).map(function (D) { return shift(D, ['s']); }), veins: o.veins });
+      shafts: LN.shafts.filter(function (H) { return inW(H.s); }).map(function (H) { return { id: H.id, s: H.s - s0, side: H.side, off: H.off, r: H.r, kind: H.kind, state: H.state, hidden: H.hidden, road: H.road }; }),
+      branches: LN.branches.filter(function (Bn) { return inW(Bn.s); }).map(function (Bn) { return shift(Bn, ['s']); }),
+      doors: LN.doors.filter(function (D) { return inW(D.s); }).map(function (D) { return shift(D, ['s']); }), veins: o.veins });
     /* a run, a gap or a segment the window cut short keeps the whole line's id (the one its middle lies in) */
     var idIn = function (list, m) { for (var i = 0; i < list.length; i++) if (m >= list[i].s0 && m <= list[i].s1) return list[i].id; return null; };
     W.tracks.forEach(function (tr) { W.cond[tr.id].forEach(function (r) { var v = idIn(LN.cond[tr.id], (r.s0 + r.s1) / 2 + s0); if (v) r.id = v; }); });
@@ -185,12 +200,17 @@
     for (var i = 0; i < LN.shafts.length; i++) { var Hs = LN.shafts[i], d = Math.hypot(x - Hs.x, z - Hs.z); if (d < Hs.r + 1) { var dv = d < Hs.r ? -3 : -3 * (Hs.r + 1 - d); if (dv < h) h = dv; } }
     return h;
   };
-  T.lineCarved = function (LN) { return T.carved(LN).concat(LN.shafts.map(function (H) { return { x: H.x, z: H.z, r: H.r + 2 }; })); };
+  T.lineCarved = function (LN) {
+    var out = T.carved(LN).concat(LN.shafts.map(function (H) { return { x: H.x, z: H.z, r: H.r + 2 }; })), half = Math.max(-LN.sec.x0, LN.sec.x1) + 1;
+    /* the open form's cutting: a point every 16 m, r the half width, twice the cut's depth (its slopes at 1 : 2) and 5 m more */
+    LN.forms.forEach(function (F) { if (F.kind !== 'open') return; for (var s = F.s0; s <= F.s1 + 1e-6; s += 16) { var p = LN.path.at(s), dep = Math.max(0, p.yG - LN.floorAt(s)); out.push({ x: p.x, z: p.z, r: half + 2 * dep + 5 }); } });
+    return out;
+  };
   /* THE TRAINS (biomes/line PLAN.md section 7): two power cars and six between, the rear power car turned; [key, length, bogie half-spacing, flip] */
   T.LINE_CONSIST8 = [['anc_line_power', 22, 7.5, false], ['anc_line_saloon', 24, 8.5, false], ['anc_line_saloon', 24, 8.5, false], ['anc_line_crew', 24, 8.5, false],
     ['anc_line_van', 24, 8.5, false], ['anc_line_van', 24, 8.5, false], ['anc_line_tank', 22, 7.5, false], ['anc_line_power', 22, 7.5, true]];
   T.LINE_GAP = 1.0;
-  T.lineConsist = function (spec, seed, variant) { var off = 0; return (spec == null ? T.LINE_CONSIST8 : spec).map(function (c, k) { var r = { k: k, key: c[0], variant: variant == null ? 1 : variant, seed: (seed >>> 0) + k, len: c[1], b: c[2], flip: !!c[3], off: off + c[1] / 2 }; off += c[1] + T.LINE_GAP; return r; }); };
+  T.lineConsist = function (spec, seed, variant) { var off = 0; return (spec == null ? T.LINE_CONSIST8 : spec).map(function (c, k) { var r = { k: k, key: c[0], variant: variant == null ? 1 : variant, seed: KRAND.child(seed >>> 0, 'car.' + k) >>> 0, len: c[1], b: c[2], flip: !!c[3], off: off + c[1] / 2 }; off += c[1] + T.LINE_GAP; return r; }); };
   T.lineTrainLen = function (cars) { var c = cars[cars.length - 1]; return c.off + c.len / 2; };
   /* a track's guideway top from s0 to s1 every step: pts in the world, cum the plan arc length, z0 the s it starts at */
   T.lineRoute = function (LN, t, s0, s1, step) {
@@ -202,7 +222,7 @@
   T.lineRouteAt = function (R, s) {
     var t = Math.max(0, Math.min(R.len, s - R.z0)), lo = 0, hi = R.cum.length - 1;
     while (hi - lo > 1) { var m = (lo + hi) >> 1; if (R.cum[m] <= t) lo = m; else hi = m; }
-    var a = R.pts[lo], b = R.pts[hi], d = R.cum[hi] - R.cum[lo] || 1, u = (t - R.cum[lo]) / d;
+    var a = R.pts[lo], b = R.pts[hi], dc = R.cum[hi] - R.cum[lo], d = dc > 0 ? dc : 1, u = (t - R.cum[lo]) / d;
     return [a[0] + (b[0] - a[0]) * u, a[1] + (b[1] - a[1]) * u, a[2] + (b[2] - a[2]) * u];
   };
   /* a train on a track: o.track, o.id, o.seed, o.variant (1: kept), o.spec (a consist), o.s (its front, standing) or o.timeline (anything with
@@ -212,8 +232,9 @@
     return { id: o.id == null ? LN.id + '.train.' + track : String(o.id), track: track, route: o.route == null ? T.lineRoute(LN, track) : o.route, cars: cars, len: T.lineTrainLen(cars), s: o.s == null ? null : o.s, timeline: o.timeline == null ? null : o.timeline, dir: o.dir == null ? 1 : o.dir };
   };
   T.carPose = function (Tn, k, t) {
+    if (!Tn.timeline && Tn.s == null) throw new Error('KTRANSIT.carPose: train ' + Tn.id + ' has neither s nor a timeline');
     var c = Tn.cars[k], s = (Tn.timeline ? Tn.timeline.at(t).value : Tn.s) - c.off, f = T.lineRouteAt(Tn.route, s + c.b), r = T.lineRouteAt(Tn.route, s - c.b);
-    var dx = f[0] - r[0], dy = f[1] - r[1], dz = f[2] - r[2], h = Math.hypot(dx, dz) || 1;
+    var dx = f[0] - r[0], dy = f[1] - r[1], dz = f[2] - r[2], hp = Math.hypot(dx, dz), h = hp > 0 ? hp : 1;
     return { x: (f[0] + r[0]) / 2, y: (f[1] + r[1]) / 2, z: (f[2] + r[2]) / 2, yaw: Math.atan2(dx, dz) + (c.flip ? Math.PI : 0), pitch: Math.atan2(dy, h), roll: 0, s: s, front: f, rear: r };
   };
 })();
