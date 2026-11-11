@@ -1,8 +1,8 @@
 # The Tungang kit: the design plan (proposal, 2026-11-10)
 
 The culture kit of the Rift's tunnel people, **the Tungangs**, their kin on the rim and the fells, **the Fellgangs**,
-and a third people this plan proposes, **the Glaziers** of the Cave of Crystals. One kit, three sets on one foundation,
-as `kits/highlands` carries the Republican, Rustic and Tribal sets (question 1).
+and a third people this plan proposes, **the Glaziers**, the eastern loj of Opal Valley. **One kit, three sets** on one
+foundation, as `kits/highlands` carries the Republican, Rustic and Tribal sets (the owner, 2026-11-10).
 
 **Status: a proposal.** No code is written. Every fact not already in `LORE.md` or a biome plan is marked *proposed* and
 waits on the owner; `LORE.md` is not edited until the owner confirms. Section 10 holds the numbered questions.
@@ -30,15 +30,28 @@ them all out.
 | The Rift's places are canon in place and type (names tentative but Ledge, Arccube, Pluton): Nulab, Shelf, **Loj Twenny** (cavern, 457,1269), **Wildcat** (Fellgang village, 427,1453), Chimes, Cthonos, The Tubes | same, the owner's answers of 2026-11-11 |
 | **Already built**: the Tungang (23 pieces) and Fellgang (20 pieces) catalog culture files, registered in `core/tags` and the catalog core in the shared rebuild of 2026-11-03; the Hearth hold's two storeys (`biomes/hearths`, stations `crystals` and `hold`), massed empty as 33 volume records (`CAVE.HOLD`) "the settlement kit drops into" | `kits/catalog/krator-master-furniture-{tungang,fellgang}.js`; `biomes/hearths/PLAN.md` §18-19 |
 
+## The owner's answers, round 1 (2026-11-10)
+
+1. **One kit, three sets** (question 1).
+2. **The Glaziers move to Opal Valley**, and their concept changes with it (section 1.4). The High Rift's crystal cave
+   (the Singing Gjár's crystal-lined fissures, `biomes/highrift/PLAN.md` station 5) could be **a monk outpost** of the
+   Order instead (section 1.4, last paragraph). The Hearth hold's Cave of Crystals stays a Tungang loj's (section 5.5).
+3. **Wildcat** is notable for its **cultural hybridization with the Kimr** (`biomes/labyrinth/PLAN.md` section 5), whose
+   bravado shapes its culture of raiding. Wildcat is **about 50% Kimr** by descent: a mix of **Conan-the-Barbarian
+   capital-H heroism and south-western pueblo culture** (section 1.3.1).
+4. **A cavern layout in `core/city`**, which should also serve Dhelv and future Zeijani settlements (section 5.6).
+5. **The biome comes first**: the look of the caverns and the Line's tunnels must be right before the kit, and the Line
+   needs **a train built for it** (section 0.2).
+
 ## 0. What the kit is
 
 | | |
 |---|---|
 | Folder | `kits/tungang/` (`src/`, `build.py`, `verify.py`, `materials.json`, `tex/`, `INDEX.md`, `PORT.md`, `KNOWN_ISSUES.md`, `API.md`), three sets: `tg` (Tungang), `fg` (Fellgang), `gz` (the Glaziers), on a shared **salvage foundation** (section 2.1) |
-| Page | `dist/tungang.html`: the kit sheet: each set's buildings in rows poor to rich, three seeds a row, with a state switch (kept, worn, abandoned); **a test hold** (two decks of a line station, carved, furnished, with the camera views of section 6); a Fellgang wall and a stretch of the ice road; a Glazier front in a cooler chamber |
+| Page | `dist/tungang.html`: the kit sheet: each set's buildings in rows poor to rich, three seeds a row, with a state switch (kept, worn, abandoned); **a test hold** (two decks of a line station, carved, furnished, with the camera views of section 6); a Fellgang wall and a stretch of the ice road; Wildcat's pueblo; a Glazier adit front on a fault scarp |
 | Engine | `core/engine` for built defs (huts, fronts, carriage houses, scaffolds); `core/terrain` `KCAVERN` for carved defs (rooms, sets, halls cut into rock), through a **carved-def layer lifted from `kits/zeijani`** into core (question 14) |
 | Registry | `TG.def` (one def per building, tags `culture: 'tungang' / 'fellgang' / <the Glaziers' culture>`, `tier`, `style: carved / built / salvage`, `role`, `job`, `deck`); every hold room a record keyed by stable id, registered in `core/tags` before it is drawn |
-| Biomes | read in place: `biomes/hearths` (the Hearth hold, its `CAVE.HOLD` volumes, its flora: hearth trees, dead stalks, coal moss), `biomes/riftrim` (the rim's flora, the Fowlers' and Ice-cutters' stations), `kits/crops` (the dark crops) |
+| Biomes | read in place: `biomes/hearths` (the Hearth hold, its `CAVE.HOLD` volumes, its flora: hearth trees, dead stalks, coal moss), `biomes/riftrim` (the rim's flora, the Fowlers' and Ice-cutters' stations), `biomes/opalvalley` (the Glaziers' valley: its silica flora, its opal), `biomes/labyrinth` (the Kimr's megafauna, for Wildcat), `kits/crops` (the dark crops); and **the Line's biome**, built first (section 0.2) |
 | Out of scope here | the settlements as pages (Ledge, Loj Twenny, the Hearth hold page is hearths'; Wildcat; Loj Nahn on the Pile); the Line's bores, stations and trains (`kits/ancients`, `openworld/ANCIENT-TUNNELS.md`); the characters' bodies and clothes (`core/charactermodels`: section 1.5 gives the brief); the fauna (`kits/fauna`) |
 
 A new kit goes into the gallery when it first reaches `main`.
@@ -86,7 +99,7 @@ standing, columned fronts. That is the look the owner ruled out for the Tungangs
 
 | | The Zeijani (Dhelv) | The Tungangs |
 |---|---|---|
-| Form | rounded: domes, round rooms and doorways | squared: rectangular rooms and doors in plate frames, the bore's circle the one curve |
+| Form | rounded: domes, round rooms and doorways | squared: rectangular rooms and doors in plate frames, the Line's vault the one curve |
 | Surface | a finish by wealth: hewn, plastered and painted, polished | hewn or plastered only; wealth is in the salvage fitted (enamel, brass, a carriage), never in the rock |
 | Ornament | relief, labyrinth carving, jali, friezes | nothing carved: stencils, enamel signs, livery bands, banners, the crew mosaic |
 | Grandeur | Kailasa and Lalibela: monuments cut from the rock | none: the Ancients' station is their biggest room, and they did not cut it |
@@ -95,6 +108,93 @@ standing, columned fronts. That is the look the owner ruled out for the Tungangs
 
 The Glaziers' carved fronts come nearest the Zeijani's. They differ by being whitewashed and painted (cholet colours,
 gilt on plate) and tiered and battered like the Potala, never columned or relief-carved.
+
+### 0.2 First: the Line's biome and its train (the owner, 2026-11-10)
+
+The kit's rooms stand inside the Line's stations and the caverns it joined, so their look decides the kit's. The order is
+**the Line's biome and its train first** (T1), the cavern layout in `core/city` next (T2, section 5.6), the kit after.
+
+**What exists already.**
+
+| What | Where | State |
+|---|---|---|
+| The hypogene hold (the Hearth hold's two storeys, the Cave of Crystals), massed empty | `biomes/hearths` | built |
+| A gypsum maze on `KKARST` | `biomes/rift --station maze` | built, on `claude/rift-hearths-cavern-b8baf6` |
+| The south portal ("a cut face with the Tungangs' lamps in a row") | `biomes/riftrim` station 5 | built, a site only |
+| A hollow lined body on a 3D centreline (`C.pipe`: a bore inside a pipe body, stepped floor, open ends) | `core/terrain/39-core-cavern.js` | built (for the Cliff Lungs) |
+| `KTRANSIT.subway` (a bored twin-track tunnel in 20 m sections, `intact`, `cracked`, `collapsed`, `silted`; cut-and-cover stations), `KTRANSIT.rail`, `KTRANSIT.train` (`freight` or `passenger`; `standing`, `derailed`, `fallen`) | `kits/ancient-transit`, for the Ancients' Valley | on `claude/ancient-transit-2600a6`, **not merged** |
+| The Ancients' vehicles, with ruin states for every vehicle; `anc_tram`, "a guideway tram-car, forty seats", 2.95 x 13.4 m | `kits/motor-vehicles`, culture `ancient` | on `claude/ancient-vehicles-935f93`, **not merged** |
+| The tunnel record's shape, the section, the crossings by cave kind, the hazards owed (rockburst, inrush, seal) | `openworld/ANCIENT-TUNNELS.md` | a plan |
+
+**The Line is bigger than a subway** (the owner, 2026-11-10): **at least four tracks side by side**. In places some or
+all of them are broken, but despite the gaps **the Line is mostly functional**, and **travellers walk the caverns
+between intact segments**. So (*proposed* unless quoted):
+
+- **The section.** One wide gallery, not a pair of bores: about 32 m across and 12 to 14 m to a flattened vault, four
+  guideways on a flat invert (two each way, about 6 m apart), an island platform strip between each pair, walkways and
+  cable troughs along both walls, lamps in rows down the vault. In bad ground (the breccia's faults, the rift fill's
+  wet stretches) it splits into two or four bores, rejoining in a **junction hall** where the ground is good again. The
+  Ancients' road was a 30 m way with a guideway down its middle (`ANCIENT-ROADS.md`); the Line is that road's
+  underground twin, a cavern of its own ("a kind of cavern of their own": the owner, 2026-11-03).
+- **Gaps by track.** A collapse, a flood or a sheared fault takes one track, two, or the whole width. Where a track or
+  two is gone the trains cross over to the others (the Fixers keep the **crossovers** as their most valued work after the
+  doors); where the whole width is gone the Line is **cut into segments**.
+- **Segments and the walk between.** Each intact segment runs its own trains, back and forth between its two gaps: the
+  trains were trapped in their segment by the collapses a thousand years ago and have never left it, so a segment's
+  rolling stock is its loj's, kept in its own sheds. A traveller rides to the gap, **gets down at a gap station**, and
+  walks to the next segment through what the collapse left: a natural cavern the bore had cut through, a bypass gallery
+  the Fixers dug, a block cave in the breccia, a sump waded at low water, a ledge over a breach. The walk takes an hour
+  or a day; porters carry the goods across.
+- **Holds grow at the gaps.** A gap station is where trade stops, goods change hands and porters live, so the lojes sit
+  on the gaps as much as on the old stations (the Line's stations and its breaks are both "stations" in the Book's
+  count). This is the shape of a Tungang journey and of the map: lit segments in a row, joined by walked dark.
+- **The hot section is one segment and must stay whole**: only the train crosses it (`ANCIENT-TUNNELS.md`). If it broke,
+  the north and south would be cut apart; it is the Tpresden's first care.
+
+**The biome** (*proposed*: `biomes/line`, "the Line"; a station set like the Throne's). Its stations each settle one
+look question:
+
+| Station | What | Settles |
+|---|---|---|
+| 1 `bore` | a kept straight stretch south of the hot section: the four-track gallery, its lining, guideways, island strips, walkways and troughs, a crossover, the lamp code running to a point, a train passing and a Fixers' trolley; a crystal cleft shrine behind a rail in a granite stretch | the section, the scale, the light; the follow camera's long view |
+| 1b `gap` | a gap station: the whole width fallen; the last platform, the trains' turning sheds, the porters' hold, and the walk into the cavern beyond (a breach into a natural chamber, a Fixers' bypass, a rope over a drop) to the next segment's platform | **the walk between segments**, the game's most common underground journey |
+| 2 `station` | an Ancient station cavern in three states (as the Ancients left it, kept by a loj, abandoned): platforms, sidings, workshops, cistern, the ventilation, the doors; **empty of the kit's rooms**, the seed every hold grows from | the station's architecture (the Ancients' form and materials, `kits/ancients`); the hold view's test bed |
+| 3 `hotdoor` | the great doors at the hot section's end, the cooling plant kept by rite, the sealed train waiting at the door; beyond it the deep stretch, rockburst spalls on the lining | heat and machinery |
+| 4 `breach` | where the bore cuts a hypogene chamber in the rift fill: a bulkhead, a stair and a window from the lined bore into the natural cave (`KKARST` `hypogene`, as the Hearths) | the join of built and natural |
+| 5 `fault` | the gallery split into bores through the impact breccia, one bore sheared and its tracks cut, the trains crossing over to the others; a flooded sump over two tracks at a low point | the ruin states by track |
+| 6 `portal` | the Line leaving the Wall above Ledge (440,1307), with the riftrim session | daylight to the dark: the exposure ramp |
+
+The data is the tunnel record of `ANCIENT-TUNNELS.md` section 5 (`[G data]`), the gallery drawn on `KCAVERN` (its split bores on `C.pipe`), the stations as
+`KCAVERN` halls and rooms with the Ancients' fittings; the hot section's air as `core/hazard` `heat` with `soak`, and the
+owed hazards (rockburst, inrush, seal) added to `core/hazard`. The camera's views (section 6) are tried here first.
+
+**One vocabulary with the Ancient transit kit.** `KTRANSIT.subway` is a city metro (a twin-track bore, rails of gauge
+1.6, cut-and-cover stations); the Line is far bigger, an intercity gallery of four or more guideways (`ANCIENT-ROADS.md`,
+`ANCIENT-TUNNELS.md`). *Proposed*: a `line` kind in `KTRANSIT` (the wide gallery and its split bores, guideways by track,
+crossovers, state **per track and per section**, segments and gaps derived from them, long cavern stations, the hot
+section's doors), so the Line's sections, signals, states and trains are drawn by one code once that kit is merged
+(question 20). The tunnel record of `ANCIENT-TUNNELS.md` section 5 gains `tracks` and a per-track `cond`, and a derived
+`segments` list (each with its trains, its sheds, its two gap stations).
+
+**The train** (*proposed*), built for the Line:
+
+- **The Ancient Line train.** Sealed and cooled for the hot section: a power car at each end and 6 to 10 cars between (a
+  crew car, saloons, a freight van, a tank car of water for the cooling), pressure-tight bodies (past a failed seal the
+  hot section's air is thin as well as hot), riding the guideway. Its form is the Ancients' vehicle language of
+  `kits/motor-vehicles`' `ancient` culture (white skin, bronze rails, the tram's bogies), stretched for the Line.
+- **The Tungang-kept train**, a state of the same cars, not a new model: a thousand years of upkeep; plate riveted over
+  the white skin, the windows plated to slits, the lamp code on the nose (green running, red tail, the white lamp
+  hooded), enamel number plates, a loj's livery bands, a bell on the cab, the timetable chalked inside; the door seals
+  waxed. With the Tungangs' own stock built from salvage: the Fixers' trolley (a hand-pumped car on the guideway), flat
+  wagons, an ice wagon for the Glaziers' and the hot holds' ice.
+- **Derelict carriages** (a state again) are the carriage houses of section 3.2: the same car, drawn into a siding.
+- **States**: `built` (as the Ancients ran it), `kept`, `derelict`, `wreck` (the vehicles kit's ruin forms).
+- **It runs.** A train is a record on its segment at s(t) on a timetable (`core/sched`), shuttling between the segment's
+  gap stations: the Tungangs' timetable, kept as rite, is the data that runs it, and it now times the walks too (the
+  timetable gives the next segment's train, so a traveller knows how long the walk may take). The player rides it
+  through the hot section and walks the gaps.
+- **Where it lives**: the cars in `kits/motor-vehicles` (culture `ancient`, with its registry, rig and ruin states), placed
+  and moved on the line by `KTRANSIT` (question 21).
 
 ## 1. The peoples
 
@@ -166,7 +266,7 @@ them; Ledge's lifts are Loj Fower; **Loj Twenny** (a lava-tube loj on `tube_rift
   steeped dead-stalk pith with a drop of stoke against the cold (stoke is canon as a cold remedy, fatal in excess, so
   the steward keeps the stoke).
 - **Trade.** They sell what only they can: passage (guides, the trains through the hot middle, the lifts at Ledge),
-  hearth wax, sulphur and the vents' copper (*proposed* nodes in `biomes/hearths`), selenite panes from the Glaziers, and
+  hearth wax, sulphur and the vents' copper (*proposed* nodes in `biomes/hearths`), moonglass by the rare trader from the east, and
   their labour on the Line. They buy grain, cloth, timber (scarce below), salt and iron.
 - **Belief.** No gods. The Book is law, not scripture; the Strike is history, not myth. *Proposed*: what they keep as
   holy is **the Line itself** and the **turn**: a lamp left burning for every Tungang "on shift" somewhere, put out when
@@ -212,59 +312,101 @@ living**, and the punk shows in each differently:
   their dead on ledges of the wall (canon); *proposed*, **the cairns and stone signs** on the fells are both route marks
   and the dead's names, and a band's rulebook is read at its fire as a loj reads the Book.
 
-### 1.4 The Glaziers: the people of the Cave of Crystals (*proposed*, all of it)
+### 1.3.1 Wildcat: Fellgang and Kimr
 
-**The problem first.** The built Cave of Crystals is the Hearth hold's drained older storey on the rim's vent shelf
-(525,1400, 3,736 m). `biomes/riftrim/PLAN.md` says the rim is too far, with too many Lizardmen in the way, for Xanadu to
-exert an influence; the Vale of Xanadu (938,1496) lies about 410 model pixels east (some 750 km), and Longsong (954,1296
-in `LORE.md`'s old 4.2x frame, about 1226,1626 on 5.1) about 700. So the owner's
-"influenced for centuries by Xanadu and Oidong" needs a road. Two ways (question 2):
+Wildcat (a Fellgang village on the model, 427,1453) sits on the rim some 100 model pixels from the Labyrinth's gate
+(328,1476), where the **Kimr** live in raised pueblos among the Ice Age megafauna (`biomes/labyrinth/PLAN.md` section 5:
+platforms 6-15 m up, stepped room blocks with no doors at the ground, ladders pulled up at night, round kiva-like rooms in
+walled courts; the great **Aurochs** their symbol, its horns on the helmets of their most famed warriors and kings; every
+part of every animal used). Kimr and Fellgang hunters already share the Firebliss Range's grounds (`biomes/firebliss`).
 
-- **A (recommended): they live at the built Cave, and the influence came by the south rim's high road.** The Outer
-  Wall's southern rim runs east above the Lizardmen's reach (too high and cold for them: canon) from the Ice-cutters'
-  lake (470,1521) toward Opal Valley (960-1020, on Xanadu's eastern marches), where "furtive Tungang tunnel-delvers"
-  already work the upper tarns **beside Oidong's monks** (`biomes/opalvalley/PLAN.md`), and the Cold Hearths (Oidong,
-  1186,1591), where the hearth trees grow again and the monks keep a cairn and share stoke as their cold remedy
-  (`biomes/hearths/PLAN.md`). Never a power's reach: a **pilgrims' and monks' road**, a few dozen travellers a year, for
-  five centuries. The road is not surveyed on the scale model: tracing it along the drawn rim (heights, passes, where it
-  must drop toward the Lizardmen) is a T0 task before the owner's answer is final.
-- **B: they are an eastern hold.** A Tungang offshoot in the crystal and opal caves of Opal Valley itself, on Xanadu's
-  doorstep, and the Hearth hold's cave stays a plain Tungang loj. Simpler geography; it gives up the built cave.
+**The owner (2026-11-10):** Wildcat is notable for its cultural hybridization with the Kimr, whose bravado has strongly
+shaped its culture of raiding; it is **about 50% Kimr** by descent; a mix of **Conan-the-Barbarian capital-H heroism and
+south-western pueblo culture**.
 
-**Why the monks came (A).** The Order of Historians wants to know what happened at the Cataclysm, and the Tungang sagas
-are the only human memory of Arccube: "much wailing and screaming, then the Lizardmen, and no Ancient bodies" (canon).
-*Proposed*: some five centuries ago the Order sent a reader to the Hearth hold to take down the sagas, and stayed. The
-loj that took the monks in became something else: a loj of **listeners and keepers**, the Glaziers. The Order still
-keeps a small house in the cave; Xanadui pilgrims follow the monks for the cave's light, and Xanadui merchants for its
-glass.
+*Proposed* from there:
 
-**Who they are.** A loj (they still vote, by show of hands, and still count the shadows) that took three things from the
-east and made them Tungang:
+- **How it mixed.** Kimr hunters who followed the strays up the gorges and stayed; Fellgang wildcats who went down and
+  married in; captives taken both ways who became kin. Two tongues at one fire, the fell speech and the Kimr's (whether
+  the Kimr speak Tungang is the labyrinth plan's open question).
+- **Heroism with a capital H.** Renown is won by deeds and kept by name: a Wildcat hero is known across the rim, the way
+  a loj is known by its number. The great hunt of the Aurochs is the first deed; the Aurochs-horn helmet is earned, never
+  inherited (the Kimr's own rule, kept). Single combat settles what a meeting cannot.
+- **The Boast and the show of hands.** The union's form and the Kimr's bravado in one rite: a raid is proposed by **a
+  Boast**, a hero standing on the round room's roof and saying aloud what they will do; the band answers by **show of
+  hands**, and the hands raised are the ones who go. A hero no hands follow goes alone, or not at all. The sekketri's
+  minute book became **the Deeds**: every boast written down, and beside it whether it was made good. The band's
+  rulebook is a book of deeds, and the bigun is the hero with the most boasts made good.
+- **What they raid.** Dalab's supply trains on their surface stretches (canon), the Ice-cutters' ice road (canon: a rival
+  band that raids it), Firebliss's hunting camps; and the Labyrinth's beasts, for the glory.
+- **The village.** A pueblo on a knoll, Kimr in plan and Fellgang in hand: stepped room blocks of drystone and Ancient
+  plate, no doors at the ground, ladders pulled up at night, roof hatches; roofs of glyptodont shell and turf; door frames
+  of mammoth ivory; aurochs skulls along the crest; slogans painted man-high on the blocks (NO SKABS beside a painted
+  aurochs); trophy poles in the court; the **round room** of the Kimr sunk in the court as the meeting hall, where the
+  Boast is made from its roof and the hands are counted inside; a scrap stockade round the knoll's foot.
+- **The look.** Bare-armed heroes in megafauna furs and Aurochs-horn helmets, Ancient white plate as pauldrons and
+  shields, mammoth-ivory spears and long knives, Fellgang soot round the eyes and Kimr paint on the arms; war drums of
+  hide; the Fellgangs' pale eyes in sun-dark Kimr faces.
+- **Not the Zeijani's pueblo.** Dhelv took the kiva into carved rock with katsina-style spirits (`kits/zeijani/PLAN.md`
+  6.2). Wildcat's pueblo is built above ground and holds no spirits at all: its walls carry heroes, deeds and trophies.
+
+### 1.4 The Glaziers: the eastern loj of Opal Valley (*proposed*, all of it but the place)
+
+**The place** (the owner, 2026-11-10: the Glaziers move to Opal Valley). The upper Opal Valley, above the Sultanate's writ
+(over ~1,800 m), where `biomes/opalvalley/PLAN.md` already has "independent prospectors, exiled miners, and peaceful
+herbalist-monks descending from neighbouring Oidong Valley ... work the upper tarns alongside furtive Tungang
+tunnel-delvers who know the fault fissures better than any surface surveyor". Their hold is cut into **the fault scarp
+between the first and second terraces** (x ~1060, the riser from 1,390 to 2,450 m), along the "potch lines" into the
+basalt-rhyolite contact where the miners find Rift Black Opal; its upper mouths open on the milk-opal tarns (the
+valley's station 2, `upperbed`, 1082,1672), its lower ones look down on the Xanadui factors' assay pavilion (station 3,
+`middlebed`, 1038,1662). Oidong's ridge is just north; Strongbow and the Vale of Xanadu down the valley.
+
+**Who they are: the crews who came east.** `LORE.md` §6.13 has it that at the Cataclysm some of the Tungangs' ancestors
+fled east and were absorbed into Xanadu, leaving loanwords (*gāphar*, *mārā*, *bāiṭ*, *lāin*) and big eyes. *Proposed*:
+not all of them were absorbed. One crew went on up the Opal River into the fault, found the fissures dark and dry, and
+kept a loj there: **the eastern loj**, a thousand years apart from the Union. They never had the Line: no trains, no
+stations, no doors to keep. They still read **the timetable of a train that never comes**, at every turn, as their
+liturgy; the monks long took it for a calendar. The Xanadui call them **the Mārā**, "the comrades", from what they
+called each other; the western lojes know them only as a half-legend, "the crews who came east".
+
+**What they took from their neighbours, and made Tungang:**
 
 | From | What they took | What it became |
 |---|---|---|
-| **Oidong** (the Order) | the register and the seal; contemplation; tea; celadon | **the Register of the Cave**: every great crystal numbered and named like a station on the Line, with its designation, its class and its procedure on an enamel plaque at its foot, as Longsong registers its relics; **the long watch**: a crystal grows a hair a century, and a Glazier's meditation is to sit an hour with one and think in its time; tea (Oidong's, carried in bricks) drunk from celadon; the Order's blue on the register plaques |
-| **Xanadu** | gold on what is holy; the prayer wheel; massing and paint; the eight-spoked wheel | **gilt on salvage**: gold leaf (Xanadu's mines; bought dear) laid on the Ancient plate of the register's doors and the steward's seat; **the click wheels**: wheels of selenite blades and quartz rods turned by passers-by, ringing in the dark, the Tungang click made a prayer; **carved fronts**: the hold's rooms behind tiered, battered fronts cut in the cooler chambers' walls, whitewashed with the cave's own gypsum, with tapering window cuts and cholet colours (rose, teal, saffron) painted bright, seen only by lamplight: a Potala in a cave; the Line's wheel and lamp drawn with eight spokes |
-| **The Tungangs** | the loj, the Book, the lamp code, the Line's salvage | all kept; the timetable is now **the cave's hours**: when the vent breathes, when the well's light falls on which crystal |
+| **Oidong** (the Order's herbalist-monks, over the ridge) | the register and the seal; contemplation; tea; celadon; opal ground into pigment | **the Register of the Veins**: every adit, vein and claim numbered like a station on the Line, with what was taken, by whom, and what is owed the Sultan, on enamel plaques in the Order's blue at each adit's mouth; **the long watch**: opal is silica settling over ages, and a Glazier's meditation is to sit with a vein and think in its time; tea from celadon; the monks' manuscript pigment ground from their spoil |
+| **Xanadu** (the factors, the Sultan's Fifth, Strongbow) | gold on what is holy; the prayer wheel; massing and paint; the eight-spoked wheel | **gilt on salvage** (bought with opal); **the click wheels**: prayer wheels hung with opal chips and the frost willow's fallen spicule twigs, ringing as passers-by turn them, the Tungang click made a prayer; **carved fronts on the scarp**: tiered, battered, whitewashed fronts cut in the cliff over the tarns, tapering window cuts glazed with moonglass, cholet colours (rose, teal, saffron) bright in lamplight: a Potala on a fault; the wheel and lamp drawn with eight spokes |
+| **The Tungangs** (what the crew carried) | the loj, the Book, the lamp code, the show of hands and the count wall | all kept, and the timetable of the train that never comes |
 
-**How they live** (*proposed*).
+**How they live.**
 
-- **The heat and the descent.** The crystal storey is 50 °C and lethal in tens of minutes (canon). The Glaziers live in
-  the cooler chambers and on the shelves above the active storey's water (`CAVE.HOLD`), and go down into the crystals
-  only in **cooling suits**: wax-cloth coveralls with ice pockets, the ice bought from the Ice-cutters ("the Cold is
-  owed" carried 200 km down the rim). **A shift in the crystals is one block of ice**: they reckon time below by the
-  melt. The suit room, the ice house and the crystal doors are their holiest rooms.
-- **Glass.** They cut **moonglass**: selenite split into panes for lantern windows (the hearth-wax lamp behind a selenite
-  pane is the softest light a Tungang can bear and the Glaziers' great export), sold up the Line, east to Xanadu's
-  temples and to Longsong. Only fallen and floor crystal is cut; the registered crystals are never touched.
-- **Light.** Selenite lanterns, the well's one shaft of daylight (canon: the broken cupola, "the one daylight in the
-  cave"), followed across the crystals through the year like a sundial and marked in the register; gilt that catches a
-  single lamp.
-- **Food.** The Hearth hold's: wax, the dark crops on the active storey's shelves (canon kind `field`), leapers; and
-  tea, brick sugar and dried fruit from the east, the Glaziers' luxuries.
-- **How they differ from a Tungang loj.** Quieter, richer, cleaner, more inward; they take in strangers (the monks, the
-  pilgrims) where a loj keeps them out; other lojes think them half-Xanadui and a little soft, and send their
-  sick to them.
+- **The only Tungang hold with a face to the sky.** Their fronts look out over the tarns; by day they keep behind them,
+  dazzled by a valley where every rock and leaf shimmers; at dusk the windows light, and across the milky water the
+  scarp is a cliff of glowing panes.
+- **Glass.** They are glaziers because of **potch**, the common opal with no fire that the jewellers throw away: sliced
+  thin it is a milky translucent pane, **moonglass**, the softest light a Tungang can bear. They sell the precious opal
+  down the valley (the Sultan's Fifth paid in cut stones) and keep the potch for themselves; they also grind lenses from
+  the clear crystal opal of the glacial tarns, and the monks' seeing-mirrors.
+- **The work and its cost.** They follow the potch lines into the dark by hand and lamp, as the valley's plan describes;
+  they **wet-drill** with tarn water against the "prism-lung" of dry silica dust and wear wax-cloth masks, and the old
+  ones have the Glazier's cough anyway.
+- **Light.** Moonglass lanterns on wax, the lamp code on the adits, gilt that catches one lamp, the valley's opal
+  flashing in it.
+- **Food.** Dark crops in the old adits (pale fungi, alecap, on `kits/crops`' dark beds); lotus root and seed from the
+  tarns (the valley's opal water-lotus, Oidong's lotus kin); grain, tea, sugar and dried fruit bought from Xanadu with
+  opal.
+- **How they differ from a western loj.** Richer, cleaner, quieter, more inward in thought and more open in fact: they
+  take in strangers (monks, prospectors, the factors' clerks) where a loj keeps them out; they have no Line to keep and
+  so no Fixers, and their wealth is opal, not stations.
+
+**The monks' outpost at the High Rift** (the owner, 2026-11-10: "could be a monk outpost maybe"). The High Rift's
+Singing Gjár (`biomes/highrift/PLAN.md` station 5, 5.1 px 1572,1643, 3,700 m): eight fissures lined with chalcedony,
+opal crust, bladed quartz and amethyst vugs, which "sing". *Proposed*: an Order outpost keeps watch on the singing
+crystals, a small house in the Longsong style (`settlements/longsong`: its drum halls, its register and seals), where
+the High Rift plan already proposes Fellgang summer country and offerings in the vugs. It is the Order's, not this kit's;
+the note goes to the High Rift and Longsong plans with the owner's word.
+
+**The Cave of Crystals** (the Hearth hold) stays a Tungang loj's (section 5.5): its crystal storey is the Hearth loj's
+shrine, a crystal cleft on the grand scale, entered rarely in cooling suits packed with the Ice-cutters' ice.
 
 ### 1.5 Dress and bodies (the brief for `core/charactermodels`)
 
@@ -272,9 +414,9 @@ east and made them Tungang:
 |---|---|---|---|
 | Body | compact (*proposed* 0.94 of a human: section 3.1), long fingers, huge eyes with eyeshine, colourless skin and hair | the human height, darker, smaller pupils, the long fingers, big-lunged | as Tungang |
 | Base | layered dark canvas and grey blanket, hooded; the mat's felt; fingerless gloves (the fingers climb and feel) | hide over scrap, mist-frill felt hats and pads, sailwort-parchment capes against the rain | wax-cloth, dyed alecap purple and indigo; Xanadui silk at the neck for the rich |
-| Eyes | **smoked goggles** from Ancient visor glass, worn on the brow inside, down at the surface | goggles up; soot round the eyes | goggles with a selenite slit |
+| Eyes | **smoked goggles** from Ancient visor glass, worn on the brow inside, down at the surface | goggles up; soot round the eyes | goggles glazed with clear opal from the tarns |
 | Rank | **shine**: the steward's tabard, a faded copy of the crews' orange with stripes of **ground-glass beads** sewn on that flash in any lamp (the Ancients' reflective strips, remembered); a berth number on the back; enamel crew badges | trophies worn: plate pauldrons from Ancient white metal, a Labber's helmet, a Lizard's scale on a cord; the family's rope worn coiled across the chest (the Fowlers) | gilt: a gold-leaf disc on the hood, the register's blue |
-| Carry | the bait tin, the lamp pole, the long spanner | spear, sling, pick-and-hook, crossbow | the suit's ice pockets, a tea brick |
+| Carry | the bait tin, the lamp pole, the long spanner | spear, sling, pick-and-hook, crossbow | a wax-cloth dust mask, a tea brick, the potch knife |
 
 ## 2. Material culture
 
@@ -285,7 +427,7 @@ part reads the same wherever it is reused.
 
 | Ancient part (where it lies) | Becomes | Who |
 |---|---|---|
-| **Precast lining segments** of the 10-14 m bores (`ANCIENT-TUNNELS.md`), fallen in the collapsed stretches | curved walls and vaults: a **ring house** is a room built inside one or two segments stood on end; cistern walls; the dark beds' edging | Tungang, Glazier |
+| **Precast lining segments** of the Line's gallery and its split bores (section 0.2), fallen in the collapsed stretches | curved walls and vaults: a **ring house** is a room built inside one or two segments stood on end; cistern walls; the dark beds' edging | Tungang, Glazier |
 | **Guideway beams** | lintels, bridges over shafts, the meeting hall's ridge, the Fellgangs' longhouse ridge | all |
 | **Carriages** of the Line's trains | **the carriage house**: a derelict carriage drawn into a siding and fitted out, a rich family's home (the windows plated, a cut room behind); carriage seats as the Tpresden's chair and the meeting's benches (catalog) | Tungang |
 | **Cable** from the troughs | rope, lamp lines, the lifts' rigging; the Fowlers' oldest fixed lines on the wall are Ancient cable, inherited like land | all |
@@ -316,7 +458,7 @@ Glaziers **dress** it (whitewashed, gilt, set in carved stone). The same carriag
 | | fauna | cavern leaper (meat, hide), fin-mouse (pest, fur) |
 | Fellgang | `biomes/riftrim` | **drystone and turf** (riftrim's stand-in row: "drystone under turf, low and long"); **bell fir** poles and light timber; **glass cane** (pipes, floats; it rings in the wind); **lobe larch** bark cordage; **mist frill** fur felted into pads and hats; **sailwort** membranes dried into parchment; **frost frill** resin varnish and tinder; **iris lichen** violet dye; **moor sponge** peat; sedge and tussock thatch; prism-heath honey; rimroot (medicine); Dalab's introductions in the west (cork oak, withies of veil willow, coilbark fibre) |
 | | the fells and walls | the cliff flyers' eggs and feathers (the flyers are owed to `kits/fauna`); lake ice; the rim's big animals' hides and horn (to be named) |
-| Glazier | the Cave | **selenite** (moonglass panes, never the registered crystals), **gypsum** (whitewash, the fronts' render), iron-stained limestone (the fronts' red base course); bought: gold leaf (Xanadu), celadon and tea (Oidong), silk |
+| Glazier | `biomes/opalvalley` | **potch** (common opal sliced into moonglass panes), clear crystal opal (lenses), precious opal (sold: the Sultan's Fifth), the frost willow's fallen silica spicule twigs (the click wheels' chimes), tarn water (wet drilling), the basalt and rhyolite of the scarp (the fronts, whitewashed); the opal water-lotus (food); bought: gold leaf, grain, sugar (Xanadu), celadon and tea (Oidong), silk |
 
 ## 3. Architecture
 
@@ -371,23 +513,25 @@ Ice-cutters' stations swap stand-ins for the kit's defs without a layout change 
 | The wall (Fowlers) | `fg-wall-station` (a pegged ledge with a lift cage or a plate shelter hung from the face), `fg-fixed-line` (a family's rope with its pegs and ladders, as a record: owner, length, the stretch it claims), `fg-nest-ledge`, `fg-burial-ledge` |
 | The meeting | `fg-rope-wall` (inside `fg-meethall`: a peg per family), `fg-tally-board` (the Ice-cutters') |
 | The ice road | `fg-lantern-post` (lobelia in a scrap housing), `fg-carry-hut` (a shelter every few hours down the wall), the sledges (catalog pieces) |
-| The bands | `fg-war-camp` (a `core/camp` row: hide over scrap, the bigun's tent, the trophy pole, the drum), `fg-stockade` (Wildcat: a scrap fort of plate and stakes, slogans), `fg-raid-cache` |
+| The bands | `fg-war-camp` (a `core/camp` row: hide over scrap, the bigun's tent, the trophy pole, the drum), `fg-raid-cache` |
+| Wildcat (section 1.3.1) | `fg-wc-block` (a stepped room block, two to four storeys, drystone and plate, no ground door, roof hatches, glyptodont-shell and turf roofs), `fg-wc-ladder` (pulled up at night), `fg-wc-round-room` (the Kimr's round room as the meeting hall, its roof the Boast's stand), `fg-wc-crest` (aurochs skulls on the parapet), `fg-wc-court` (the walled court and pen), `fg-wc-stockade` (scrap and stakes round the knoll's foot), `fg-wc-deeds-wall` (the Deeds: boasts and their outcomes painted and tallied) |
 | The fells | `fg-shieling` (a summer hut on the High Rift), `fg-cairn`, `fg-stone-sign` (Firebliss's "Fellgang stone signs") |
 
 ### 3.4 Glazier buildings (*proposed*)
 
 | Def | What |
 |---|---|
-| `gz_front` | the carved front of a household's rooms in a cooler chamber's wall: two to four tiers, battered, whitewashed, tapering window cuts glazed with moonglass, cholet bands; the rich add gilt; poor fronts are one tier and a door |
-| `gz_shelf_house` | a home on a shelf cut above the active storey's water (canon kind `shelf`): plate and plaster, a gallery rail |
-| `gz_register` | the gallery of the register: plaques at the crystals' feet (a record per crystal, keyed by its designation), the crystal doors |
-| `gz_suit_room` | the cooling suits on their racks, the ice pockets, the melt drain, the ice clock |
-| `gz_ice_house` | the ice store, sawdust and snow, buying from the Ice-cutters |
-| `gz_wheel_walk` | the click wheels along the way to the crystal doors |
-| `gz_tea_hall` | the hold's meeting hall: the loj's benches, the count wall, celadon, the guest benches for the monks |
-| `gz_order_house` | the Order's small house: a reading room, the sagas' copies, the Order's blue |
-| `gz_glass_shop` | the moonglass workshop: split selenite, frames of plate, lanterns |
-| `gz_pilgrim_rest` | a cut guest hall by the night road |
+| `gz_front` | the carved front of a household's rooms on the fault scarp, facing the tarns: two to four tiers, battered, whitewashed, tapering window cuts glazed with moonglass, cholet bands; the rich add gilt; poor fronts are one tier and a door |
+| `gz_stair` | the switchback stairs and ledges up the scarp between the fronts, railed, lamp-coded |
+| `gz_adit` | an adit's mouth: a plate-framed portal, the register's plaque, a spoil heap of potch below, the wet-drilling flume from the tarn |
+| `gz_vein_gallery` | the working: a narrow gallery following a potch line into the basalt-rhyolite contact, the face lit, the wet floor |
+| `gz_wheel_walk` | the click wheels along the ledge to the loj hall |
+| `gz_tea_hall` | the loj's meeting hall: the benches, the count wall, celadon, the guest benches for monks and factors' clerks |
+| `gz_register_room` | the Register of the Veins: plaques, the claim book, the Sultan's Fifth counted |
+| `gz_glass_shop` | the moonglass workshop: potch sliced and polished into panes, lenses ground from crystal opal, frames of plate |
+| `gz_monks_house` | the herbalist-monks' house in the hold: a reading room, the pigment mill grinding opal spoil, the Order's blue |
+| `gz_dark_adit` | an old adit turned to dark beds |
+| `gz_lotus_pond` | a terraced pond on the tarn's edge for the opal water-lotus |
 
 ### 3.5 Loj Nahn (later)
 
@@ -421,14 +565,17 @@ rebuild, best ridden with other work).
 | `fellgang_common_ice_sledge` | common | vessel | 2.6 x 0.9 x 0.8 | runners from tyres, painted |
 | `fellgang_poor_egg_basket` | poor | storage | 0.5 x 0.5 x 0.4 | the Fowlers' cliff basket |
 | `fellgang_common_wall_peg_rack` | common | rack | 1.2 x 0.3 x 1.8 | pegs, hooks and ladders |
-| `glazier_poor_moonglass_lantern` | poor | lamp | 0.25 x 0.25 x 0.45 | a hearth-wax lamp behind selenite |
-| `glazier_common_click_wheel` | common | shrine | 0.8 x 0.8 x 1.9 | selenite blades and quartz rods on an axle |
+| `glazier_poor_moonglass_lantern` | poor | lamp | 0.25 x 0.25 x 0.45 | a wax lamp behind panes of potch |
+| `glazier_common_click_wheel` | common | shrine | 0.8 x 0.8 x 1.9 | a prayer wheel hung with opal chips and spicule twigs |
 | `glazier_common_tea_board` | common | table | 1.2 x 0.6 x 0.35 | low, with celadon |
-| `glazier_common_suit_rack` | common | rack | 2.0 x 0.6 x 2.0 | cooling suits, ice pockets |
-| `glazier_common_ice_clock` | common | art | 0.5 x 0.5 x 1.5 | the melt bowl and its marks |
+| `glazier_common_mask_rack` | common | rack | 1.2 x 0.4 x 1.8 | wax-cloth dust masks, lamps, the potch knives |
+| `glazier_common_timetable` | common | art | 1.6 x 0.1 x 1.2 | the timetable of the train that never comes, gilt |
 | `glazier_court_register_plaque` | court | art | 0.6 x 0.1 x 0.9 | enamel, the Order's blue, gilt edge |
-| `glazier_court_steward_seat` | court | chair | 1.0 x 0.8 x 1.6 | a carriage seat whitewashed and gilt |
-| `glazier_common_glass_bench` | common | workstation | 1.8 x 0.8 x 0.9 | splitting selenite, `job: 'glazier'` |
+| `glazier_court_steward_seat` | court | chair | 1.0 x 0.8 x 1.6 | a carved stone seat, whitewashed and gilt, an opal boss (no carriages in the east) |
+| `glazier_common_glass_bench` | common | workstation | 1.8 x 0.8 x 0.9 | slicing and polishing potch, grinding lenses, `job: 'glazier'` |
+| `fellgang_court_deeds_wall` | court | art | 4.0 x 0.1 x 2.4 | Wildcat's Deeds: boasts and their outcomes, painted and tallied |
+| `fellgang_court_horn_helmet_stand` | court | rack | 0.6 x 0.6 x 1.8 | an Aurochs-horn helmet on its stand, earned |
+| `fellgang_common_shell_shield_rack` | common | rack | 2.0 x 0.5 x 1.6 | glyptodont-shell and Ancient-plate shields |
 
 The Fellgang file's `bigun` pieces stay for the bands; the villages use the common tier and the new pieces.
 
@@ -439,7 +586,7 @@ The Fellgang file's `bigun` pieces stay for the bands; the villages use the comm
 A Tungang hold is **linear and branching**, a railway yard turned to living in, not a radial hall:
 
 ```
-  PLAN of a line hold (one deck)                          the Line (bore) ====================================
+  PLAN of a line hold (one deck)                   the Line (four tracks) ====================================
                                                                      |  platform (green)  |
    sets   sets   sets            loj hall     signal box             +=====+=======+======+
     |      |      |                 |              |                 siding 1     siding 2     siding 3
@@ -448,7 +595,7 @@ A Tungang hold is **linear and branching**, a railway yard turned to living in, 
    cuts   cuts   bath   cistern   last stop (sealed)               doors (white, hooded) -> the hot section
 ```
 
-- **The spine** is the Ancient station: the platform and the bore. Everything public is on it.
+- **The spine** is the Ancient station: the platforms and the four-track gallery. Everything public is on it.
 - **Sidings are streets**: the old sidings and side galleries, each a district with its paint band (5.4).
 - **Sets are houses**: cut rooms off the sidings, in rows, their doors numbered.
 - **The doors** close the hold at both ends of the Line; the night mouth is the way to the surface.
@@ -467,7 +614,7 @@ passages, approaches). The kit's defs drop into those records without carving ag
   deck +1  [sets][sets][stoke][fans] \ ramp            <- the quiet deck: homes, the infirmary, the fan house
            ----------------------------\-----
   deck 0   [loj hall][signal box]  ( P L A T F O R M )  [Fixers]   <- the Line's deck: public, green lamps
-           =========================( bore, guideway )=============
+           ===================( the gallery: four guideways )===========
   deck -1  [dark beds][dark beds][wax house][cistern][last stop]   <- the work deck: amber, warm, wet
            -------------------------------------
   deck -2  [kiln on the vent][bath]                                <- the hot deck (Hearth hold only)
@@ -498,7 +645,7 @@ After Kevin Lynch's five elements (section 6.1):
 | Element | In a hold |
 |---|---|
 | Path | the platform and the sidings, green-lamped, the floor plate worn to a shine down the middle |
-| Edge | the bore wall; the dark beds' darkness; the sealed end of the abandoned deck |
+| Edge | the gallery's wall; the dark beds' darkness; the sealed end of the abandoned deck |
 | District | each siding has a **paint band** at waist height, a railway livery colour (cream over red, cream over green, plain red): the Tungangs' own way of saying which siding, and the player's |
 | Node | junctions: the click-ribs, an enamel number, a lamp of the code's colour, a bench |
 | Landmark | the loj hall's banner wall and count wall (the one bright wall), the lift, the doors, a great crystal, the bath's steam |
@@ -513,16 +660,61 @@ After Kevin Lynch's five elements (section 6.1):
   count wall, the only bright surface you have seen.
 - **The Hearth hold.** The chambers of a drained cave; homes on shelves cut up the walls, galleries of plate between
   them, the vent's heat everywhere, the bath steaming, the wax house's smell; the stair down to the flooded storey and
-  its shelves of crops, and the two crystal doors to the Glaziers' cave.
-- **The Glaziers' cave.** From the cooler chamber you see the fronts first: tiers of white and rose cut in the rock,
-  moonglass windows lit from behind. Then the click wheels ringing as people pass, the register's plaques in the Order's
-  blue, the suit room's ice, and through the crystal doors, the beams in the heat, gold on one plate catching the
-  well's shaft of daylight.
+  its shelves of crops, and the two crystal doors to the loj's shrine: the beams in the heat, entered rarely, in cooling
+  suits packed with the Ice-cutters' ice (a turn in the crystals lasts one block's melt).
+- **The Glaziers' scarp.** From the milk-opal tarns at dusk: a cliff of tiered white and rose fronts cut in the fault
+  scarp, moonglass windows lighting one by one. Up the switchback stair to an adit's mouth: the click wheels ringing as
+  people pass, the register's plaque in the Order's blue, a monk at tea with the steward, and inside, the potch line
+  running into the dark, wet with tarn water, a lamp at the face.
 - **The Fowlers.** Stone houses on the bench at the wall's foot, the rope house long and low, and above it the wall:
   ropes and pegs and ladders up 3 km of face, cages hung from ledges, the dead on their ledges, the flyers wheeling.
 - **The Ice-cutters.** Low turf houses on the lee shore, barrows of ice houses, the cut lanes on the frozen lake, and at
   night the lantern road going down the south wall, lobelia in scrap housings, a line of sledges.
-- **Wildcat.** A stockade of plate and stakes on a knoll, slogans the height of a man, the trophy pole, the drum.
+- **Wildcat.** A pueblo on a knoll: stepped blocks of stone and plate, ladders, aurochs skulls along the crest, NO SKABS
+  painted beside an aurochs the height of a man. In the court the round room; on its roof a hero in a horned helmet makes
+  a Boast, and below, the band's hands go up.
+- **A gap on the Line.** The train stops where the gallery ends in a slope of fallen rock. Porters take the loads down a
+  ramp into a natural cavern the collapse opened; you follow green lamps on posts across it, wade a sump, climb a Fixers'
+  stair, and come out on the next segment's platform, where its own train waits under its own loj's banner.
+
+### 5.6 The cavern layout in `core/city` (the owner, 2026-11-10)
+
+The owner: a cavern layout in `core/city`, which should also serve **Dhelv and future Zeijani settlements**. `core/city`
+is the city-layout work's, so this is the brief for it, agreed with that work before any code, as the Khaayken's covered
+way was (`kits/yeti/PLAN.md` section 3). Today Dhelv lays its city by hand (`settlements/dhelv/src/41-dhelv-layout.js`,
+`DH`, with twelve checks in `tests/test-layout.js`) and is exempt from "takes `core/simulation`, therefore takes
+`core/city`" as `CAVERN` in `tools/check_core_use.py`; Longsong's single complex is the other exemption.
+
+**What the cases need.**
+
+| Case | Spine | Spaces | Sites |
+|---|---|---|---|
+| A Tungang line hold | the Line's gallery and a station or gap (from the tunnel record, section 0.2) | the station cavern; decks | sets off sidings (wall sites), carriage and ring houses in the galleries (in-void sites), the loj hall, works on the work deck |
+| A Tungang cavern hold (the Hearth hold) | the galleries between natural chambers (`CAVE.HOLD`) | the chambers, their shelves and fields | homes on shelves (shelf sites), halls in chambers (floor sites) |
+| The Glaziers' scarp | the switchback stairs and ledges on an open fault scarp, adits into it | the scarp face, the tarn shore | fronts on the face (wall sites, outdoors), adits behind them |
+| Dhelv and later Zeijani towns | a braid of lava tubes, the outer tube | the hub (a bottle hall under a light well), satellite wells (open pits), the cistern hall, the catacombs | fronts on the hall's and the wells' walls, buildings on the square and the well floors, sunk defs (the kiva, the council) |
+
+**The setting** (*proposed*, for the city-layout work to shape):
+
+- **The frame is three-dimensional.** `core/city` plans on a 2D raster today; the cavern setting plans a **graph of ways
+  with heights**, spaces on several levels, and every lookup takes y (Dhelv's lesson).
+- **Ways** are records with a kind (`gallery`, `siding`, `passage`, `tube`, `stair`, `ramp`, `shaft`, `bypass`, `ledge`),
+  a section (width, height), a height profile, the `KCAVERN` primitive it carves to (`tube`, `room`, `stair`, `shaft`,
+  `pipe`), and a state (kept, worn, abandoned, fallen).
+- **Spaces** are halls (Dhelv's hub, a Line station, a natural chamber), wells (open pits), decks (a band of floors at one
+  height) and faces (a cliff or scarp in the open).
+- **Sites** by how they meet their space: `wall` (a front on a wall, facing in or out), `floor` (on a hall's floor),
+  `shelf` (cut up a wall), `in-void` (built inside a gallery or hall), `sunk` (cut down under a floor).
+- **Rules as plain functions on records**, as the rest of `core/city`: rock between voids (the cavern's 0.8 m), headroom,
+  frontage (every site's door on a way), grades and the step rule, deck alignment (the Tungangs' bands), daylight (sites
+  that need a well), wealth by distance along the graph (Dhelv's rule: it falls with the distance from the square), and
+  growth by phases (a hold that moves when its heat moves leaves an abandoned end).
+- **In and out.** In: the host's network (the tunnel record's segments, a cave's `CAVE.HOLD`, Dhelv's braid) and the
+  kit's defs with their void plans. Out: records keyed by stable ids, edits as deltas by id, which `KCAVERN` carves and
+  the kits draw; the walk floors and the nav graph written from them. `[G data]`: no three.js, no DOM, so it runs in Godot.
+- **The proof.** Dhelv's layout ported onto it with its golden digest unchanged (or every change listed and accepted), as
+  Voth and Verge were ported, and its `CAVERN` exemption removed; then the Tungang test hold as its second user, the
+  Glaziers' scarp its third.
 
 ## 6. Camera and navigation underground
 
@@ -614,7 +806,7 @@ before it is planned in detail (question 14).
    one slab. The same caps. It is also the picture for the owner's review of a hold's plan.
 4. **Map (M)**: `KMAP` drawn from `KWALK`, **filtered by deck** (the current deck bright, the others dim, marks with an
    up or down arrow for what is above or below, as World of Warcraft's minimap does), and beside it **the line map**: a
-   schematic, Tube-map style (nodes the lojes, stations, junctions and lifts; edges the galleries; depth down the page).
+   schematic, Tube-map style (nodes the lojes, stations, junctions and lifts; edges the galleries; depth down the page; the Line's intact segments drawn solid and the gaps as dashed walks, with the walk's time).
    The line map is the Tungangs' own timetable board (section 1.2), so it is diegetic: the player reads the network on the
    wall of every loj hall, and the panel is that board. *Proposed*: the map reveals only what the player has walked or
    what a loj's board has shown them (Descent's automap, Tears of the Kingdom's lit Depths).
@@ -725,7 +917,9 @@ of lights to the halos nearest the camera).
 | `core/sockets` | yes | signs, lamps and banners on doors |
 | `core/hamlet` | yes | the Fellgang villages: the riftrim row moves into `core/hamlet` as the `fellgang` profile (agreed with the riftrim session), with fowling and ice-cutting as focuses instead of borrowing `ranch` and `quarry` |
 | `core/camp` (`KCAMP`) | yes | the bands' war camps and Firebliss's hunting camps: the `fellgang` row `core/camp/PLAN.md` lists as a gap |
-| `core/city` | **asked** | a hold's layout (spine, sidings, sets, decks) is a city plan underground; `core/city` has no cavern setting (`HANDOFF-REBUILD.md`: "the Tungang holds will need it too"). Question 15 |
+| `core/city` | yes: **the cavern setting** (the owner, 2026-11-10) | every hold's layout (spine, sidings, sets, decks; shelves; the Glaziers' scarp), built with the city-layout work and proven on Dhelv first (section 5.6) |
+| `kits/ancient-transit` (`KTRANSIT`) | yes, once merged | the Line as a `line` kind, its states per track, its segments and its trains placed and moved (section 0.2; question 20) |
+| `kits/motor-vehicles` | yes, once merged | the Line's train cars in the `ancient` culture, with the `kept`, `derelict` and `wreck` states (question 21) |
 | `core/simulation`, `core/sched`, `core/clock` | later | the turns, the meeting, the lojes as polities (`PLAN-POLITICS.md` already has Dalab against the Tungangs) when a hold page is built |
 | `core/lod`, `core/export` | yes | the sheet's LOD; the Godot export (T8) |
 | `core/water` | yes, for the bath and cisterns | `WATER.still` and `WATER.spring` for the warm pools; the frozen lake is riftrim's |
@@ -736,38 +930,38 @@ of lights to the halos nearest the camera).
 
 ## 9. Phases
 
+The owner's order (2026-11-10): **the biome first, then the cavern layout, then the kit.**
+
 | Phase | What | Done when |
 |---|---|---|
 | T0 | the owner's answers (section 10); the owed prompts written and pasted; `LORE.md` updated with what the owner confirms | the questions are answered |
-| T1 | first, on Dhelv's page as it is: the cost of `C.sdf` and `C.voidSD` at the camera (section 6.3), and what the player cannot read today (a walk of its braid and wells with the existing views, written down). Then the core camera work of section 6.5, agreed piece by piece: the follow camera on `o.solid`, caps, decks by tag, the soft band, the section plane, the deck map and the line map, the dither and x-ray; tried first on hearths' built hold page (with the hearths session) | `test-walk.js`, `test-minimap.js` and the new tests pass; every page that does not opt in is byte-identical (the hash baseline) |
-| T2 | the scaffold: `kits/tungang` on `core/engine`, the carved-def layer in core (agreed), `materials.json`, the salvage foundation (lining segment, carriage, plate, pipe, rivets, enamel, cable, the three rules of fitting), the sheet | the ring house and the carriage house build in three states and `--assert` passes |
-| T3 | the Tungang set: every def of section 3.2; the **test hold** on the sheet (two decks of a line station, carved, lit by the lamp code, with the four views) | the owner's walk through the test hold; the camera checks of section 6.7 pass |
-| T4 | the Hearth hold furnished: the kit's defs dropped into `CAVE.HOLD`'s volumes on hearths' pages (the hearths session places, the kit publishes) | the hold reads as a loj at eye level |
-| T5 | the Fellgang set: the riftrim keys made real (same boxes), the wall, the ice road, the bands; the `fellgang` profile in `core/hamlet` and the row in `core/camp` | riftrim's Fowlers and Ice-cutters stations swap stand-ins for the kit with no layout change |
-| T6 | the Glaziers: their defs, their culture file, the register as records; on the crystal pages | the cave's fronts and register read; the suit room and the ice clock work as records |
-| T7 | the new catalog pieces (section 4) and the Glaziers' culture registered: one all-builds rebuild, ridden with `TODO.md`'s waiting items | the catalog page passes; the baseline rewritten once |
-| T8 | `verify.py --assert` in full, the Godot export and its case, the index tools, the gallery; then the settlements on `core/city`'s cavern setting (Loj Twenny, Loj Fower at Ledge), each its own plan | the sheet exports and passes; Krator Worlds carries the page |
+| T1 | **The Line's biome and its train** (section 0.2), its own plan first (`biomes/line/PLAN.md`): the tunnel record with tracks, per-track states and segments; the four-track gallery and its split bores on `KCAVERN`; the stations `bore`, `gap`, `station`, `hotdoor`, `breach`, `fault`, `portal`; the lining texture; the lamp code as light records; the hot section's hazards. The train: the Ancient Line cars in `kits/motor-vehicles`' `ancient` culture with `built`, `kept`, `derelict` and `wreck` states, the Fixers' trolley, running a segment on a timetable. On `KTRANSIT` as a `line` kind once `kits/ancient-transit` is merged (question 20) | the owner's walk along a bore, across a gap and into a station; a train runs its segment; `--assert` passes |
+| T2 | **The cavern setting in `core/city`** (section 5.6), with the city-layout work: Dhelv's layout ported first, its golden digest unchanged and its `CAVERN` exemption removed | `test-city.js`, Dhelv's `test-layout.js` and `verify.py --assert`, Voth's and Verge's pages unchanged |
+| T3 | the camera work (section 6): first measured on Dhelv's page as it is (the cost of `C.sdf` and `C.voidSD` at the camera; what a player cannot read there today); then the opt-in extensions of section 6.5, agreed piece by piece, tried on the Line's stations and Dhelv | the new tests pass; every page that does not opt in is byte-identical (the hash baseline) |
+| T4 | the kit's scaffold: `kits/tungang` on `core/engine`, the carved-def layer in core (agreed), `materials.json`, the salvage foundation (lining segment, carriage, plate, pipe, rivets, enamel, cable, the three rules of fitting), the sheet | the ring house and the carriage house build in three states and `--assert` passes |
+| T5 | the Tungang set: every def of section 3.2; **the test hold in a Line station and at a gap** of the biome, laid by the cavern setting | the owner's walk through the hold; the camera checks of section 6.7 pass |
+| T6 | the Hearth hold furnished: the kit's defs dropped into `CAVE.HOLD`'s volumes on hearths' pages (the hearths session places, the kit publishes); the crystal storey as the loj's shrine | the hold reads as a loj at eye level |
+| T7 | the Fellgang set: the riftrim keys made real (same boxes), the wall, the ice road, the bands, **Wildcat** (with the Kimr kit's plan, question 24); the `fellgang` profile in `core/hamlet` and the row in `core/camp` | riftrim's Fowlers and Ice-cutters stations swap stand-ins for the kit with no layout change; Wildcat's pueblo reads |
+| T8 | the Glaziers: their defs and culture file; the scarp hold laid by the cavern setting on `biomes/opalvalley` once that biome is built (it is a draft plan today) | the scarp's fronts, adits and register read |
+| T9 | the new catalog pieces (section 4) and the Glaziers' culture registered: one all-builds rebuild, ridden with `TODO.md`'s waiting items | the catalog page passes; the baseline rewritten once |
+| T10 | `verify.py --assert` in full, the Godot export and its case, the index tools, the gallery; then the settlements on the cavern setting (a gap loj, Loj Twenny, Loj Fower at Ledge), each its own plan | the sheet exports and passes; Krator Worlds carries the page |
 
 ## 10. Questions for the owner
 
-1. **One kit or three?** One kit, `kits/tungang`, with three sets on a shared salvage foundation (the Highlands
-   precedent), or separate `kits/fellgang` and a Glaziers kit?
-2. **The Glaziers' place.** (A, recommended) they live at the built Cave of Crystals, and Xanadu and Oidong reached them
-   by the south rim's high road through Opal Valley, as monks and pilgrims, never as a power; or (B) they are an eastern
-   hold in Opal Valley's caves and the built cave stays a plain loj?
-3. **Their name and culture id.** *Proposed*: the **Glaziers** (Tungang *glaizaz*), for the moonglass they cut; catalog
-   and tags culture `glazier`. Or a name of yours, and a Xanadui name for them?
-4. **Why the monks came**: to take down the Arccube sagas, the only human memory of the exchange (the Order would not
-   understand what it heard). Does that fit the author's secret, which must never be spelled out?
+**Answered 2026-11-10**: 1 (one kit, three sets), 2 (the Glaziers to Opal Valley), 15 (a cavern setting in `core/city`,
+for Dhelv and the Zeijani too). Question 4 fell with question 2; question 9 moved to the Hearth loj.
+
+3. **The Glaziers' name and culture id.** *Proposed*: still the **Glaziers** (Tungang *glaizaz*), for the moonglass they
+   cut from potch; the Xanadui call them **the Mārā**; catalog and tags culture `glazier`. Or a name of yours?
 5. **The Fellgangs as three ways of living** (bands, villages, carriers), the punk strongest in the bands: right?
-6. **The lamp code**: red home, green Line, amber work, blue-green glow-cap, white surface and danger?
+6. **The lamp code**: red home, green Line, amber work, blue-green glow-cap, white surface and danger; on ways and doors
+   only, rooms in wax light?
 7. **The count wall** (hands counted by their shadows) and **click-ribs** (each junction's own echo): keep?
-8. **Carriages**: do enough derelict carriages survive for carriage houses to be the rich Tungang's home, with the
-   running trains kept apart?
-9. **The Glaziers' cooling suits** run on the Ice-cutters' ice, and a shift below is one block of ice: keep?
-10. **The Big Meeting** (one festival, the banners walked down the Line to the Tpresden): keep?
+8. **Carriages**: the derelict cars of each segment's trapped stock become carriage houses, the running trains kept apart?
+9. **The Hearth loj's cooling suits** run on the Ice-cutters' ice, and a turn in the crystals lasts one block's melt: keep?
+10. **The Big Meeting** (one festival, the banners walked down the Line to the Tpresden, across the gaps): keep?
 11. **Dress**: smoked goggles from visor glass; rank as **shine** (ground-glass bead strips on a faded orange tabard)?
-12. **Body scale**: Tungangs and Glaziers at 0.94 of a human (doors 1.95 m), Fellgangs at 1.0?
+12. **Body scale**: Tungangs and Glaziers at 0.94 of a human (doors 1.95 m), Fellgangs and Wildcat at 1.0?
 13. **Food words**: the bait tin and the brew (steeped stalk-pith) as the anti-mead; alecap beer only by the cup?
 14. **Core extensions** (no new module): may I plan, with each owner's agreement, (a) the follow camera and ceiling clamp in
     `core/host` on an opt-in distance query, (b) caps, decks hidden by tag, the soft band and a section plane in the
@@ -777,13 +971,27 @@ of lights to the halos nearest the camera).
     `core/engine`, `core/minimap`, `core/lod`), with the Zeijani session's agreement and Dhelv's pages proven unchanged?
     The other way is to read `kits/zeijani/src/40-zj-cave.js` in place, as Locus reads the Yuni kit, but it is written
     against the Zeijani's fork of the engine.
-15. **A hold's layout**: ask the city-layout work for a **cavern setting** in `core/city` (spine, sidings, sets, decks) now,
-    or lay the test hold by hand on the sheet and port it when the setting exists?
 16. **Textures**: the eight owed sets of section 7: write their prompts into `PROMPTS-NEEDED.md`?
-17. **Which first after the sheet**: the Hearth hold (built and empty, waiting for a loj), or a line loj (Loj Twenny)?
+17. **Which hold first** after the Line's biome: a loj at a gap, the Hearth hold (built and empty), or Loj Twenny?
 18. **The riftrim stand-ins as the contract**: the kit keeps riftrim's `fg-*` keys and boxes so its stations swap without a
     layout change; and the `fellgang` row moves into `core/hamlet` with its own fowling and ice-cutting focuses?
 19. **Loj Nahn** as a fourth set later (the Tungang shell under the sky on the Pile's crown), or the Tungang set dressed?
+20. **The Line on `KTRANSIT`**: a `line` kind in `kits/ancient-transit` (once it is merged), so the valley's subway and
+    the Line share one code for sections, states and trains? Or the Line as a core module of its own?
+21. **The train's home**: the cars in `kits/motor-vehicles`' `ancient` culture (with its ruin states), placed and moved by
+    `KTRANSIT`?
+22. **The Line's shape**: one wide four-track gallery that splits into bores in bad ground; crossovers round a broken
+    track; trains trapped in their segments since the collapses, shuttling between gap stations; holds at the gaps as
+    well as at the old stations; the hot section one segment that must stay whole. Right?
+23. **The biome**: `biomes/line`, with the stations `bore`, `gap`, `station`, `hotdoor`, `breach`, `fault` and `portal`,
+    built by a session of its own from section 0.2?
+24. **Wildcat and the Kimr**: the Boast and the show of hands, the Deeds, the earned horn helmet, no spirits on its walls.
+    And the Kimr's own pueblos are a settlement kit of their own (`biomes/labyrinth/PLAN.md`): build Wildcat's pueblo
+    pieces in the Fellgang set and let the Kimr kit share them later, or plan the Kimr kit first and have Wildcat read it?
+25. **The Glaziers' history**: the crews who came east and were not absorbed, a loj a thousand years apart, reading the
+    timetable of a train that never comes. Right? (They wait on `biomes/opalvalley`, a draft plan today.)
+26. **The High Rift's outpost**: the Order's (monks at the Singing Gjár's crystals), in Longsong's style, with a note to
+    the High Rift and Longsong plans; not this kit's?
 
 ## 11. Rejected and parked ideas
 
@@ -791,13 +999,16 @@ of lights to the halos nearest the camera).
 - **Smelting and forges**: no fuel underground; cold work and the gypsum kiln instead.
 - **Runes or a Tungang script**: they write worn English in stencils and enamel; the Bookmen read it.
 - **Bioluminescent everything**: glow-cap is the poor man's light; the culture's light is rationed and coded.
-- **The Glaziers as crystal worshippers**: they register and keep the crystals, as the Order keeps relics; they do not
-  pray to them.
+- **The Glaziers in the Cave of Crystals**, reached by a high road along the south rim: the owner moved them to Opal
+  Valley (2026-11-10); the Cave stays the Hearth loj's shrine.
+- **The Glaziers as worshippers** of crystal or opal: they register and keep the veins, as the Order keeps relics; they do
+  not pray to them.
+- **The Line as a twin-bore metro** (`KTRANSIT.subway`'s shape): the owner wants at least four tracks side by side.
 - **Camera zones per room** (Resident Evil's fixed angles) as the general method: they do not scale to procedural holds;
   kept only as optional room hints for set pieces.
 - **A top-down minimap alone**: storeys stack and lie; the deck filter and the line map are needed.
 - **three-mesh-bvh for camera collision**: unnecessary where `KCAVERN.sdf` gives the exact distance; and only 0.5.24 runs
   on r128.
-- **Owned elsewhere**: the Line's bores, stations and trains (`kits/ancients`); the bodies and clothes
+- **Owned elsewhere**: the Line's gallery, stations and trains (the Line's biome, `KTRANSIT`, `kits/motor-vehicles`: section 0.2); the Kimr's pueblos (their own kit); the Order's outpost (Longsong's style); the bodies and clothes
   (`core/charactermodels`); the cliff flyers and the rim's big animals (`kits/fauna`, the owner names them); the dark
   crops' records (`kits/crops`); the settlements as pages (their own plans).
