@@ -601,6 +601,36 @@
     "sourceMean": 0.247
    }
   },
+  "scorched": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "scorched.albedo.webp",
+    "normalMap": "scorched.normal.webp",
+    "roughnessMap": "scorched.rough.webp"
+   },
+   "lib": "metal.scorched",
+   "metal": 0,
+   "normalScale": 0.6,
+   "roughLift": 0.0,
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "size": 256,
+   "source": {
+    "albedo": "f1e4249e2d5712565516734b5198c339ad9863c5",
+    "normal": "5db19069206c2e0ef9bf9908d8505da0289722bb",
+    "roughness": "08f2d59dd5536740ee4a390c611fe638ffaf6bb2"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.2,
+    "mean": 0.55,
+    "sourceMean": 0.4892
+   }
+  },
   "solar": {
    "breakup": null,
    "card": false,
