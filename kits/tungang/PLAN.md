@@ -521,7 +521,8 @@ Ice-cutters' stations swap stand-ins for the kit's defs without a layout change 
 
 The rift rim session has built both villages on its stand-ins: **the Fowlers** (`--station fowlers`, 5.1 px 571,1397; commit
 7cb179603 on `claude/rift-hearths-cavern-b8baf6`, GPU-verified: 27 buildings, 104 people, 21 families' ropes, 93 nests) and
-**the Ice-cutters** (`--station icecut`, 470,1521; in the GPU queue). Both are `KHAMLET.village` on the Fellgang row of
+**the Ice-cutters** (`--station icecut`, 470,1521; commit 864f07573 on the same branch, GPU-verified: 23 buildings, 96
+people, 59 stacks of blocks with sledges, 65 lantern posts up the ice road). Both are `KHAMLET.village` on the Fellgang row of
 `stations/fowlers/84f-host-fellgang.js` (`FELLGANG.ROW`, `FELLGANG.BOX`), drawn by `FELLGANG.draw` as untextured boxes:
 drystone under gabled turf (`house`), round stores (`round`), open sheds (`shed`), pens (`pen`), turf barrows (`barrow`).
 
@@ -535,9 +536,14 @@ drystone under gabled turf (`house`), round stores (`round`), open sheds (`shed`
 - **The station keeps its records.** It registers every record in `core/tags` before drawing (as now); it then calls the
   kit's `TG.fg.draw(V, o)` with the arguments `FELLGANG.draw` takes today, and the kit adds each building's parts
   (rooms, furniture) under the record. One line changes in each station's `89b` (and `84f`'s `draw` retires).
-- **The row moves to `core/hamlet`** as the `fellgang` profile, with `fowling` and `ice` focuses (riftrim's
-  `KNOWN_ISSUES.md` names them as owed); until it does, the kit reads `FELLGANG.ROW` as it is, `ranch` and `quarry`
-  standing for fowling and ice.
+- **The row moves to `core/hamlet`** as the `fellgang` profile, **and this plan proposes the two focuses** riftrim's
+  `KNOWN_ISSUES.md` lists as owed, added to `KHAMLET.FOCI` in the same change: **`fowling`** (works `fg-ropehouse`,
+  `fg-eggstore`, `fg-pens`; its resource a cliff with nest ledges, its reach measured to the wall's foot) and **`ice`**
+  (works `fg-icehouse`, `fg-sledgeshed`; its resource a lake frozen in winter, its season the cutting weeks). The
+  station passes `focus: 'fowling'` or `'ice'` in place of `ranch` and `quarry`, with its village's records and digest
+  unchanged (the works lists are the same keys, so the layout must not move: the change is proven by `test-hamlet.js` and
+  both stations' `--assert`). Until it lands, the kit reads `FELLGANG.ROW` as it is, `ranch` and `quarry` standing for
+  fowling and ice. This rides with phase T7 or ahead of it (question 27).
 
 **The buildings** (*proposed* forms; every one drystone of the rim's stone under turf on bell-fir poles, salvage lashed
 on, a slogan somewhere: section 1.3):
