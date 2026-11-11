@@ -28,11 +28,6 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 
 ## Ride along with the next all-builds rebuild
 
-- **settlements/isle-demo: `core/simulation/` gained `ride/`** (2026-11-11, riding: `core/simulation/PLAN-RIDING.md`). The isle demo's
-  build lists `core/simulation/` (it globs `77-sim-*.js`), so `tools/check_stale.py` reads it STALE by its listing, though its pages do not
-  change (nothing it takes moved). `python3 tools/build.py settlements/isle-demo --accept` in a checkout with its LFS inputs, then
-  `tools/port_baseline.py` should read `same`. The riding session could not: its worktree holds LFS pointers.
-
 - **`KSHADOW.units` counts what the GPU links** (2026-11-09, found by the Throne's fix): `core/shadow/host/12-core-shadow-host.js` counts
   declared samplers (some are never read and the GPU drops them), misses `scene.environment` on standard materials, and judges against the
   renderer's own limit (32 in SwiftShader, so shadows turn on where the GPU cannot link them). The Throne's `samplersOf`
