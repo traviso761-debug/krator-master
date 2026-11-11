@@ -3611,6 +3611,184 @@
           }
         }
       }
+    },
+    {
+      "id": "tungang",
+      "name": "Tungangs",
+      "note": "The Rift line's tunnel people (LORE.md section 6.1, kits/tungang/PLAN.md sections 1.5 and 1.5.1): the crews of an Ancient railway kept running in the dark as union lodges. Not dwarves: no beards, braids or axes. Body (the owner): 0.94 of a human, compact, long strong fingers, very large eyes with eyeshine, colourless pale skin, fine colourless hair cropped short, bare faces. Here: the height slider's low end, a little muscle, the eye-size slider's top, the palest skin and hair stops, cropped styles only, no beards. Owed, not faked: the eyeshine, the fingers' length, eyes larger than the morph's end, an exact 0.94 (TUNGANG-OUTFITS.md). Clothes: tools/garments/cultures/tungang.py; rank is shine (the steward's bead stripes), and the goggles are up in the holds and down on the surface (the crew_surface tier)",
+      "ancestry": {
+        "african": [
+          0.1,
+          0.4
+        ],
+        "asian": [
+          0.2,
+          0.6
+        ],
+        "caucasian": [
+          0.2,
+          0.6
+        ]
+      },
+      "skin": [
+        "#ece9e4",
+        "#e0dcd6",
+        "#d3cec8"
+      ],
+      "hair": [
+        "#e8e6e0",
+        "#d6d3cc",
+        "#c2bfb8"
+      ],
+      "eyes": [
+        "#c4ccd0",
+        "#a8b4ba",
+        "#cfc9b4",
+        "#9aa0a4"
+      ],
+      "grey": 0.3,
+      "beard": 0,
+      "morph": {
+        "height": [
+          -0.75,
+          -0.45
+        ],
+        "muscle": [
+          0.0,
+          0.4
+        ],
+        "weight": [
+          -0.2,
+          0.2
+        ],
+        "proportions": [
+          -0.3,
+          0.1
+        ],
+        "eye-scale-decr-incr": [
+          0.7,
+          1.0
+        ]
+      },
+      "styles": {
+        "male": [
+          "short04",
+          "short01",
+          "Low_Fade",
+          "hair_s4_01_feathered_caesar_crop",
+          "hair_meso_01_cropped_fringe_cap",
+          "hair_ea_01_short_textured_spiky_crop"
+        ],
+        "female": [
+          "short03",
+          "hair_s3_01_short_wavy_crop",
+          "hair_s4_01_feathered_caesar_crop",
+          "hair_meso_01_cropped_fringe_cap",
+          "hair_ea_01_short_textured_spiky_crop"
+        ]
+      },
+      "style_share": 1,
+      "tiers": [
+        [
+          "crew",
+          0.5
+        ],
+        [
+          "crew_surface",
+          0.1
+        ],
+        [
+          "fixer",
+          0.22
+        ],
+        [
+          "bookman",
+          0.12
+        ],
+        [
+          "steward",
+          0.06
+        ]
+      ],
+      "tier_labels": {
+        "crew": "Line crew (canvas, felt and grey blanket, hooded, goggles on the brow)",
+        "crew_surface": "Line crew on the night turn above (goggles down)",
+        "fixer": "Fixer (coveralls, fungus-leather apron, tool belt)",
+        "steward": "Loj steward (the faded orange with the shine, berth number, crew badges)",
+        "bookman": "Bookman (long dark coat, the Book in its satchel)"
+      },
+      "outfits": {
+        "male": {
+          "crew": {
+            "torso": "tungang_m_crew_layers",
+            "legs": "tungang_m_trousers",
+            "feet": "tungang_m_boots",
+            "head": "tungang_m_hood_goggles_up",
+            "gloves": "tungang_m_fingerless"
+          },
+          "crew_surface": {
+            "torso": "tungang_m_crew_layers",
+            "legs": "tungang_m_trousers",
+            "feet": "tungang_m_boots",
+            "head": "tungang_m_hood_goggles_down",
+            "gloves": "tungang_m_fingerless"
+          },
+          "fixer": {
+            "torso": "tungang_m_fixer_coveralls",
+            "legs": "tungang_m_fixer_legs",
+            "feet": "tungang_m_boots",
+            "head": "tungang_m_goggles_up",
+            "gloves": "tungang_m_fingerless"
+          },
+          "steward": {
+            "torso": "tungang_m_steward_tabard",
+            "legs": "tungang_m_trousers",
+            "feet": "tungang_m_boots",
+            "head": "tungang_m_goggles_up"
+          },
+          "bookman": {
+            "torso": "tungang_m_bookman_coat",
+            "legs": "tungang_m_trousers",
+            "feet": "tungang_m_boots",
+            "head": "tungang_m_goggles_up"
+          }
+        },
+        "female": {
+          "crew": {
+            "torso": "tungang_f_crew_layers",
+            "legs": "tungang_f_trousers",
+            "feet": "tungang_f_boots",
+            "head": "tungang_f_hood_goggles_up",
+            "gloves": "tungang_f_fingerless"
+          },
+          "crew_surface": {
+            "torso": "tungang_f_crew_layers",
+            "legs": "tungang_f_trousers",
+            "feet": "tungang_f_boots",
+            "head": "tungang_f_hood_goggles_down",
+            "gloves": "tungang_f_fingerless"
+          },
+          "fixer": {
+            "torso": "tungang_f_fixer_coveralls",
+            "legs": "tungang_f_fixer_legs",
+            "feet": "tungang_f_boots",
+            "head": "tungang_f_goggles_up",
+            "gloves": "tungang_f_fingerless"
+          },
+          "steward": {
+            "torso": "tungang_f_steward_tabard",
+            "legs": "tungang_f_trousers",
+            "feet": "tungang_f_boots",
+            "head": "tungang_f_goggles_up"
+          },
+          "bookman": {
+            "torso": "tungang_f_bookman_coat",
+            "legs": "tungang_f_trousers",
+            "feet": "tungang_f_boots",
+            "head": "tungang_f_goggles_up"
+          }
+        }
+      }
     }
   ]
 }
