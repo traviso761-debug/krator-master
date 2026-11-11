@@ -453,14 +453,16 @@ reference until the model carries the layer.
 
 | Class | Routes | km | in tunnel | What |
 |---|---|---|---|---|
-| **The lines** (pinned) | the Rift line (9 legs), the Inner Wall, the Stair line | 3,370 | 1,174 | below |
+| **The lines** (pinned) | the Rift line (11 legs), the Inner Wall, the Stair line | 3,449 | 1,216 | below |
 | **The Twenny gallery** | 1 | 25 | 14 | the Line plan's branch from bore km 218 |
-| **Trunks** (routed) | 57 | 14,805 | 1,861 | a relative-neighbourhood graph over the Ancient cost among 55 sites |
-| *Possible* | Theodiga to Stair | 523 | 88 | then on along the Stair line to the Bowl arcology |
+| **Trunks** (routed) | 54 | 14,014 | 1,667 | a relative-neighbourhood graph over the Ancient cost among 55 sites |
+| *Possible* | Strongbow to Stair | 344 | 329 | the Line session's bore under the Catch's walls; then on along the Stair line to the Bowl arcology |
 | *Izani roads* (not Ancient) | 8 | 732 | 54 | the forts and the ports, each to its nearest network site |
 | *Extensions* (lore to come) | 3 | 1,699 | 318 | toward the Ria valley, Farport and the Crook, the Silent Vales |
 
-**Totals (lines, gallery and trunks):** 18,200 km, 3,049 km of it in tunnel. **No open stretch runs over 8 km.**
+**Totals (lines, gallery and trunks):** 17,488 km, 2,897 km of it in tunnel. **No open stretch runs over 8 km.** The
+picture and the numbers follow section 8.6, which reroutes the Rift line by Cthonos and The Tubes and moves the
+possible leg to Strongbow-Stair.
 
 **The lines.**
 - **The Rift line**, Dalab to Strongbow:
@@ -470,9 +472,15 @@ reference until the model carries the layer.
   - the surface to Ledge: 41 km;
   - Ledge's lifts down to the lake, then on to Nulab: 59 km;
   - Nulab to Chimes: 92 km;
-  - Chimes to **the Pile**: 712 km, 135 km of it in tunnel (the router's way along the Rift's north side);
-  - the Pile to Theodiga: 424 km;
-  - Theodiga to Strongbow: 296 km.
+  - Chimes (6) to Cthonos (7): 278 km, 89 km of it in tunnel;
+  - Cthonos to The Tubes (8): 221 km;
+  - The Tubes to **the Pile** (9): 292 km, round the Rift's lake (a straight 154 km across it would be the elevated
+    crossing of 8.6; this is follow-up question 7);
+  - the Pile to Theodiga (10): 424 km;
+  - Theodiga to Strongbow (11): 296 km;
+  - *possibly* Strongbow to Stair (12): 344 km, 329 km of it bored; then along the Stair line to the Bowl arcology (13).
+  
+  The numbers are the Line session's (8.6).
 - **The Inner Wall tunnel**, bent under Cascade: from Drum, under Cascade, to the Valley at Babel, 539 km.
   - *Proposed*: a level bore at 2,400 m, giving 179 km of tunnel.
   - Cascade stands 382 m over the bore, so the arcology needs only a short shaft.
@@ -498,7 +506,7 @@ reference until the model carries the layer.
   
   Each is the shore point nearest an Ancient site (Veladiga, Tilted Tower).
 - **A Bowl arcology** (to be named and placed), provisionally at 1024,1149, where the Stair line crosses the Bowl. The
-  line's possible extension then runs from Theodiga to Stair, and north along the Stair line to it.
+  line's possible extension then runs from Strongbow to Stair, and north along the Stair line to it.
 
 **The Izani roads.** These are an Iziz-built network, not Ancient (`class: 'izani'`). They are drawn with `KTRANSIT.road`
 or `core/world` ROADS, not as the way.
@@ -571,3 +579,37 @@ swhighlands' Drum and Cascade.
    route instead of an Izani road?
 5. **The stranded ports**: are 723,450 and 631,454 right, or should they move to where the old lakes' Ancient towns stood?
 6. **Wheel and Thera** are on the valley's list but not on the model. Should they be added to the settlements (M4)?
+7. **The Rift's lake**: does the line cross it on the elevated corridor (154 km straight, The Tubes to the Pile), or go
+   round it (292 km, the router's)?
+
+### 8.6 The Line session's decisions (the owner, 2026-11-11, relayed by that session; `biomes/line/PLAN.md` 0744edac0)
+
+1. **Station numbers, north to south**:
+   - the main stations: 1 Dalab, 2 Shelf (the north mouth, at the top of the spirals inside the Wall), 3 the Twenny
+     junction (bore km 218), 4 Ledge's lifts, 5 Nulab, 6 Chimes, 7 Cthonos, 8 The Tubes, 9 the Pile (Loj Nahn);
+   - other stops are lettered halts (2a, 2b);
+   - past the Pile, *proposed*: 10 Theodiga, 11 Strongbow, 12 Stair, 13 the Bowl's arcology.
+   
+   This settles G5. The `rift` route's `stations[].num` takes these numbers, and the route runs by Cthonos and The Tubes,
+   as now drawn.
+2. **The extension**: "the line might connect to strongbow, theodiga, and all the way to Stair and an arcology to be
+   placed in the bowl maybe". It is drawn as Theodiga-Strongbow (line), then Strongbow-Stair, the Line session's straight
+   bore (*possible*), then the Stair line to the Bowl.
+3. **"Where the network runs aboveground, we should have an ancient highway running alongside it. In places of rough or
+   boggy terrain, the whole network may be elevated like louisiana highways."** This changes section 2.2:
+   - **The `way` section becomes a corridor**: the guideways (two on a trunk, four on the Rift line) with **a 30 m
+     highway alongside**, about 45 m wide on a trunk and 70 m on the Line.
+   - **Over bog and water the whole corridor is elevated**: twin low decks 8-15 m up on paired pier bents every 30-40 m,
+     for tens of km (the Atchafalaya Basin Bridge). This is a new form, **`trestle`**, beside `viaduct` (a high crossing of
+     a valley) and `causeway` (an embankment).
+   - In the transit kit, the trestle is `highway`'s spans and piers set low and paired. The highway alongside is the
+     `road` kind at 4 %.
+   - The causeway class in the picture marks where a trestle is likely.
+4. **"A smaller access road along the underground portions"**: the Line plan has it as a 6.6 m two-lane service road
+   along the gallery's west wall, with a 7 m service bore between twin bores, joining the highway at the mouths.
+   - The network takes it for **every tunnel run**: the bores of the Inner Wall, Stair, Hub 01 and rim tunnels as much as
+     the Line's.
+   - It is drawn by the `line` kind; it is not a separate route.
+
+**Bore geometry: unchanged.** Mouths at 458.2,1158.6 (3,614 m) and 439.5,1309.5 (3,501 m); 304 km bored; the hot
+section at bore km 55-203; 42 km on the surface to Ledge. This routing moves none of it.

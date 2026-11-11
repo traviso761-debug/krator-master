@@ -80,7 +80,8 @@ dist = dijkstra(GR, indices=src, directed=False); C = dist[:, src]
 
 # ---- the authored routes (pinned: the router does not choose them)
 AUTH = [
-  ('rift', [('Dalab', 'Shelf'), ('Shelf', 'Ledge', 'bore'), ('Ledge', 'Nulab', 'lift'), ('Nulab', 'Chimes'), ('Chimes', 'Cube'), ('Cube', 'Theodiga'), ('Theodiga', 'Strongbow')]),
+  ('rift', [('Dalab', 'Shelf'), ('Shelf', 'Ledge', 'bore'), ('Ledge', 'Nulab', 'lift'), ('Nulab', 'Chimes'), ('Chimes', 'Cthonos'), ('Cthonos', 'The Tubes'), ('The Tubes', 'Cube'),
+            ('Cube', 'Theodiga'), ('Theodiga', 'Strongbow'), ('Strongbow', 'Stair', 'bore')]),
   ('rift.twenny', [('Twenny junction', 'Loj Twenny', 'bore')]),
   ('innerwall', [('Drum', 'Cascade', 'bore'), ('Cascade', 'Babel', 'bore')]),
   ('span', [('Dalab', 'Span'), ('Span', 'Thera')]),
@@ -190,9 +191,13 @@ def routed(a, b): return trace(cellof(*P(a)), cellof(*P(b)))
 rift_legs = [('Dalab', 'Shelf', routed('Dalab', 'Shelf'), False), ('Shelf', 'N portal', straight(P('Shelf'), EXTRA_PTS['N portal']), True),
              ('N portal', 'S portal', straight(EXTRA_PTS['N portal'], EXTRA_PTS['S portal']), True), ('S portal', 'Ledge', straight(EXTRA_PTS['S portal'], P('Ledge')), False),
              ('Ledge', 'Nulab', straight(P('Ledge'), P('Nulab')), False), ('Nulab', 'Chimes', routed('Nulab', 'Chimes'), False),
-             ('Chimes', 'the Pile', routed('Chimes', 'Cube'), False), ('the Pile', 'Theodiga', routed('Cube', 'Theodiga'), False), ('Theodiga', 'Strongbow', routed('Theodiga', 'Strongbow'), False)]
+             ('Chimes', 'Cthonos', routed('Chimes', 'Cthonos'), False), ('Cthonos', 'The Tubes', routed('Cthonos', 'The Tubes'), False),
+             ('The Tubes', 'the Pile', routed('The Tubes', 'Cube'), False), ('the Pile', 'Theodiga', routed('Cube', 'Theodiga'), False), ('Theodiga', 'Strongbow', routed('Theodiga', 'Strongbow'), False)]
+# the Line session's station numbers (the owner, 2026-11-11: north to south; 10 on are that session's proposal)
+NUM = {'Dalab': 1, 'Shelf': 2, 'Ledge': 4, 'Nulab': 5, 'Chimes': 6, 'Cthonos': 7, 'The Tubes': 8, 'the Pile': 9, 'Theodiga': 10, 'Strongbow': 11, 'Stair': 12}
 for a, b, pts, bore in rift_legs:
-    add('rift', 'line', a, b, pts, bore, name='The Rift line: ' + a + ' to ' + b, note='lifts down the cliff, 1.3 km' if (a, b) == ('Ledge', 'Nulab') else None)
+    add('rift', 'line', a, b, pts, bore, name='The Rift line: ' + a + (' (%d)' % NUM[a] if a in NUM else '') + ' to ' + b + (' (%d)' % NUM[b] if b in NUM else ''),
+        note='lifts down the cliff, 1.3 km' if (a, b) == ('Ledge', 'Nulab') else None)
 add('rift.twenny', 'branch', 'Twenny junction', 'Loj Twenny', straight(EXTRA_PTS['Twenny junction'], P('Loj Twenny')), True, name='The Twenny gallery (bore km 218)')
 IW = straight(P('Drum'), P('Cascade')) + straight(P('Cascade'), P('Babel'))[1:]
 IWL = 2400.0
@@ -205,7 +210,8 @@ STL = level_for(ST, 180)
 add('stair', 'line', 'Arcbeam', 'Stair', ST, name='The Stair line: the 180 km base tunnel by the Bab al-Hawa shaft (sealed halfway)', level=STL,
     note='level bore at %d m (seouterwall: 180 km)' % STL)
 add('godsgate', 'trunk', 'Arcbeam', 'Stair', routed('Arcbeam', 'Stair'), name='The Godsgate highway, Arcbeam to Stair (the surviving way)')
-pinned_names = {tuple(sorted(x)) for x in [('Dalab', 'Shelf'), ('Shelf', 'Ledge'), ('Ledge', 'Nulab'), ('Nulab', 'Chimes'), ('Chimes', 'Cube'), ('Cube', 'Theodiga'), ('Theodiga', 'Strongbow'),
+pinned_names = {tuple(sorted(x)) for x in [('Dalab', 'Shelf'), ('Shelf', 'Ledge'), ('Ledge', 'Nulab'), ('Nulab', 'Chimes'), ('Chimes', 'Cthonos'), ('Cthonos', 'The Tubes'), ('The Tubes', 'Cube'),
+                                           ('Cube', 'Theodiga'), ('Theodiga', 'Strongbow'), ('Strongbow', 'Stair'),
                                            ('Drum', 'Cascade'), ('Cascade', 'Babel'), ('Dalab', 'Span'), ('Span', 'Thera'), ('Arcbeam', 'Stair')]}
 for i, j in sorted(edges):
     a, b = names[i], names[j]
@@ -221,7 +227,9 @@ bpt = inb[len(inb) // 2] if inb else [1096, 1156]
 bpt = [round(bpt[0]), round(bpt[1])]
 nodes['Bowl arcology'] = {'id': 'tbd.bowl', 'name': 'Bowl arcology (to be placed)', 'type': 'arcology', 'px': bpt, 'kind': 'tbd',
                          'note': 'provisional: on the Stair line where it crosses the Bowl, so the line goes on from Stair along the Stair line'}
-add('rift.bowl', 'possible', 'Theodiga', 'Stair', routed('Theodiga', 'Stair'), name='Possible: the line on from Theodiga to Stair, then by the Stair line to the Bowl arcology')
+SBS = straight(P('Strongbow'), P('Stair'))
+add('rift.bowl', 'possible', 'Strongbow', 'Stair', SBS, name='Possible: the line on from Strongbow (11) to Stair (12) under the Catch\'s walls, then by the Stair line to the Bowl arcology (13)',
+    level=level_for(SBS, 329), note='the Line session\'s straight bore, 329 km')
 # ---- Iziz-built roads to the forts and the ports (not Ancient): to the nearest network node by the same cost
 for n in FORTS + PORTS:
     if n not in S: continue
