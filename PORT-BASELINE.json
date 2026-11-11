@@ -401,8 +401,8 @@
    "sha256": "2ab534e667ab723ba0a1ce0a183219c2b924788bb9f416f3a5a6e3835bd2972c"
   },
   "biomes/outlands/dist/outlands-house.html": {
-   "bytes": 2264084,
-   "sha256": "f65cd5d97e77be560878647424bd9d0ddfbfa3ab4571dfff04dff8cf7396e878"
+   "bytes": 2264876,
+   "sha256": "e1ecf63eb8bd0e559fbd1a1e4cb32239ed3e8e060c2fcd878ca66c82a3f1a60a"
   },
   "biomes/outlands/dist/outlands-mires.html": {
    "bytes": 2198693,
@@ -417,8 +417,8 @@
    "sha256": "d70303111b08f684fc4db33178af6ab13c4c276c34d366fe7c00ee32cc70e411"
   },
   "biomes/outlands/dist/outlands-river.html": {
-   "bytes": 1927758,
-   "sha256": "d45811d50d1ddb5b2f3d7c5a9337e83269289fd1dd73d4f42e043c3d032188aa"
+   "bytes": 1928592,
+   "sha256": "be2d60db20be7215d4c162092242434ec5c103bc6f48f26853e8a4c75370b728"
   },
   "biomes/outlands/dist/outlands.html": {
    "bytes": 2133420,
