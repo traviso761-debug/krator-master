@@ -48,7 +48,17 @@ machine holds no credential to the repo). For each job:
    next time (`cloud-needs.json` beside the verify cache).
 7. A pass (an `--assert` run without `--no-cache`, as locally) is recorded in the local verify cache, lane `vast0`,
    when every file it read still has, here, the content the machine verified: an LFS file by its oid, a text file by
-   git's object id (so this PC's CRLF checkouts match the machine's LF ones).
+   git's object id (so this PC's CRLF checkouts match the machine's LF ones). It also needs the machine's harness to
+   check the same way as this PC's: its `result_fingerprint` must match.
+
+**The cache key and the harness** (owner, 2026-11-11). The key takes only the part of `tools/harness.py` that can change
+a verify's result: `harness.result_fingerprint()`, a hash of the parsed code without docstrings, comments, the
+`__main__` block or the names in `NOT_IN_KEY` (the queue, locks, watchdog, cloud routing, lanes listing and the cache
+itself). Editing the transport or the queue therefore keeps every pass; editing the launcher's flags, the page server or
+a check drops them. New top-level code counts unless it is added to `NOT_IN_KEY`. `VERIFY_CACHE_VERSION` is bumped for a
+change outside the file that can change results (a new pinned Chromium). `tools/tests/test_cache_key.py` checks both
+directions. Caches only match between harness copies with the same fingerprint: until this branch is on `main`, a cloud
+pass made here does not count for a session on `main`'s harness, nor the reverse.
 
 **One GPU per lane.** Neither ANGLE nor the NVIDIA driver takes a device switch that tells two identical GPUs apart
 (CUDA_VISIBLE_DEVICES, DRI_PRIME, EGL_VISIBLE_DEVICES and the Vulkan loader's filters were tried). Each lane runs as

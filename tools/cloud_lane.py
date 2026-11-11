@@ -400,7 +400,7 @@ def run_job(lane, script, args, cwd=None, cfg=None, run_watched=None, stall_min=
             retried = True
             continue
         info = {"touched": meta.get("touched", []), "hashes": meta.get("hashes", {}), "lane": meta.get("lane") or lane,
-                "renderer": meta.get("renderer", ""), "root": root}
+                "renderer": meta.get("renderer", ""), "harness_key": meta.get("harness_key", ""), "root": root}
         log("harness: cloud %s: done in %.0f s, exit %d" % (lane, time.time() - t0, code), flush=True)
         return code, info
 
@@ -932,7 +932,11 @@ def _collect(clone, job, lane, script_rel, cwd_rel, start, code, touched, user=N
                     else:
                         info.update(r)
     here = os.path.dirname(script_rel)
-    hashed = set(reads) | {"tools/harness.py"}
+    hashed = set(reads)
+    fp = subprocess.run(_as(user, [sys.executable, "-c", "import sys; sys.path.insert(0, sys.argv[1]); import harness; "
+                                   "print(harness.result_fingerprint())", os.path.join(clone, "tools")]),
+                        capture_output=True, text=True, stdin=subprocess.DEVNULL)
+    info["harness_key"] = fp.stdout.strip().splitlines()[-1] if fp.returncode == 0 and fp.stdout.strip() else ""
     with contextlib.suppress(OSError):
         for f in os.listdir(os.path.join(clone, here)):
             if f.endswith((".py", ".json")) and os.path.isfile(os.path.join(clone, here, f)):
@@ -950,7 +954,7 @@ def _collect(clone, job, lane, script_rel, cwd_rel, start, code, touched, user=N
             for dp, dn, fn in os.walk(os.path.join(job, d)):
                 for f in fn:
                     wrote.append((os.path.relpath(os.path.join(dp, f), job).replace(os.sep, "/"), os.path.join(dp, f)))
-    meta = {"lane": info.get("lane") or lane, "renderer": info.get("renderer", ""), "touched": reads, "hashes": hashes, "pointers": pointers,
+    meta = {"lane": info.get("lane") or lane, "renderer": info.get("renderer", ""), "harness_key": info.get("harness_key", ""), "touched": reads, "hashes": hashes, "pointers": pointers,
             "wrote": sorted(dict(wrote)), "script": script_rel, "code": code, "ended": time.strftime("%Y-%m-%dT%H:%M:%S")}
     with open(os.path.join(job, "wrote.json"), "w", encoding="utf-8") as fh:
         json.dump(dict(wrote), fh)
