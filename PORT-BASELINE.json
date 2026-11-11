@@ -392,9 +392,33 @@
    "bytes": 3643337,
    "sha256": "8f9968ae2635680365d8793464b252210fd82b53dd723929cdddd67325be755b"
   },
+  "biomes/outlands/dist/outlands-gems.html": {
+   "bytes": 2127426,
+   "sha256": "1cf39b5acaf581b9b04461598784fcf6129710e2b1415b7add3603842ae3ce91"
+  },
+  "biomes/outlands/dist/outlands-house.html": {
+   "bytes": 2264084,
+   "sha256": "f65cd5d97e77be560878647424bd9d0ddfbfa3ab4571dfff04dff8cf7396e878"
+  },
+  "biomes/outlands/dist/outlands-mires.html": {
+   "bytes": 2197859,
+   "sha256": "2ddd6c96ed61023b117abcd50e25915b109460d204038518121eeb4dcc8cdef7"
+  },
+  "biomes/outlands/dist/outlands-nursery.html": {
+   "bytes": 2125926,
+   "sha256": "0a2ea5e02c40e017c25b50143afb19e5d8a85daa7163067cf3e1251ba1b056ef"
+  },
+  "biomes/outlands/dist/outlands-plains.html": {
+   "bytes": 2045724,
+   "sha256": "289ba2e573f1a075299fe3c64290e206d02acf26db5776c9ffa4df782518c536"
+  },
+  "biomes/outlands/dist/outlands-river.html": {
+   "bytes": 1927758,
+   "sha256": "d45811d50d1ddb5b2f3d7c5a9337e83269289fd1dd73d4f42e043c3d032188aa"
+  },
   "biomes/outlands/dist/outlands.html": {
-   "bytes": 1828528,
-   "sha256": "6f30a8e1caf694ccaae62c27758e6eb19213363b7dc26972f1041e655e9e6a9d"
+   "bytes": 2133420,
+   "sha256": "cc538cc1606a6babcc919d1c4c5b73d99ebd713824aba46c2af191bb8c252cf0"
   },
   "biomes/rift/dist/rift-highland.html": {
    "bytes": 7521099,
