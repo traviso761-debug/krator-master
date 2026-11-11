@@ -45,6 +45,6 @@ buried (8ah's `enDebris` sank some 5 m). Keep a structure's wreckage inside the 
 
 ## Taken by
 
-`kits/ancients` (the engines target: `targets/engines/91y-engine-checks.js` watches the industrial set; `TARGET_READS`), and
+`kits/ancients` (the engines target: `targets/engines/91y-engine-checks.js` watches all twenty engines; `TARGET_READS`), and
 `biomes/ancientsvalley` station the Yards (its Engines, `stations/yards/70y-host-yards.js`). kits/metropolis's `MPF.measure` (70f, the farm
 families) and `MP.ancientFloaters` (55) are older, narrower counts of the same fault.
