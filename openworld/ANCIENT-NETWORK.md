@@ -558,7 +558,8 @@ In each, the first mention keeps "formerly Cube or Arccube".
 - `biomes/riftrim/PLAN.md` and `biomes/rift/PLAN-STATIONS.md`: rift-hearths-cavern's branch edits riftrim.
 - The rift stations' map labels: `biomes/rift/stations/plateau/45m-host-map.js`, `85-host-tower.js` and
   `44s-host-station.js`, and `biomes/rift/stations/jungle/45m-host-map.js`.
-- The Line plan and the tungang plan, on their branches.
+- The tungang plan, on its branch. (The Line plan is renamed: `claude/awesome-varahamihira-66a852`, after bcb6a2438.
+  It cites this routing, the datum and the way, trestle and service-bore sections in its section 2.2.)
 - The tongues page's Tungang word for it, *Tkyoob* ("the cube"). That is the Tungang session's, and a new word is wanted.
 - The model's settlement name (M9).
 - `HANDOFF-REBUILD.md` is a record and stays as written.
