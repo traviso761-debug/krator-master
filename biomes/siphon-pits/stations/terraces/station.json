@@ -43,5 +43,12 @@
  "wind": {
   "speed": 7.4,
   "note": "mean from the model (wd)"
- }
+ },
+ "core": {
+  "48a-crop-core.js": "kits/crops/src/10-crop-core.js",
+  "48b-crop-records.js": "kits/crops/src/20-crop-records.js",
+  "48c-crop-material.js": "kits/crops/src/22-crop-material.js",
+  "48d-crop-query.js": "kits/crops/src/40-crop-query.js"
+ },
+ "core_note": "kits/crops read in place (its API.md, \"Reading it from a build\"): the station's crops from CROPS.at"
 }

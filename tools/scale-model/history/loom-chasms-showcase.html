@@ -1,3 +1,613 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:e4b865e350defadc05988ad2418fe318703e80c21b8760b1d8877568828a7e93
-size 24638
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Region 99: Loom-Chasm Barrens & Weavers' Cradle</title>
+<style>
+  html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#0d0f14;
+    font:12px/1.45 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#e2ddcf}
+  canvas{display:block}
+  #ui{position:fixed;left:12px;top:12px;z-index:10;max-width:270px;max-height:95vh;overflow-y:auto;
+    background:rgba(15,18,24,.85);padding:10px 12px;border:1px solid rgba(210,195,160,.25);border-radius:4px;
+    box-shadow:0 4px 16px rgba(0,0,0,.6);backdrop-filter:blur(6px)}
+  #ui h1{font-size:12px;letter-spacing:.14em;text-transform:uppercase;margin:0 0 4px;font-weight:700;color:#e8d8b0}
+  #ui .sub{font-size:10.5px;color:#9b9485;margin-bottom:10px;line-height:1.4}
+  .sec-title{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#c0b59b;margin:10px 0 4px;font-weight:600;border-top:1px solid rgba(255,255,255,.08);padding-top:6px}
+  .btn-group{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px}
+  #ui button{flex:1 1 45%;min-width:100px;margin:0;padding:6px 8px;cursor:pointer;
+    background:rgba(30,35,46,.85);color:#dcd5c5;border:1px solid rgba(210,195,160,.3);
+    border-radius:3px;font:11px/1.2 inherit;letter-spacing:.02em;text-align:left}
+  #ui button:hover{background:rgba(210,195,160,.22);border-color:rgba(210,195,160,.6)}
+  #ui button.active{background:rgba(180,95,50,.6);border-color:#e09565;color:#fff;font-weight:600}
+  .slider-row{margin:6px 0}
+  .slider-row label{display:flex;justify-content:space-between;font-size:10.5px;color:#aaa}
+  .slider-row input[type=range]{width:100%;accent-color:#e8d8b0;margin:3px 0 0}
+  #hud{position:fixed;right:12px;top:12px;z-index:10;padding:8px 12px;border-radius:4px;
+    background:rgba(15,18,24,.82);border:1px solid rgba(210,195,160,.22);
+    font:11px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace;color:#c9c0ac;text-align:right;
+    pointer-events:none;box-shadow:0 4px 12px rgba(0,0,0,.5)}
+  #hud b{color:#ecdcb4}
+  #hud .val{color:#8bd5ca}
+  #errs{position:fixed;left:12px;bottom:12px;right:12px;z-index:30;max-height:28%;overflow:auto;
+    color:#ffb4a2;font:11px/1.5 ui-monospace,monospace;white-space:pre-wrap;display:none}
+  #errs:not(:empty){display:block;padding:8px 12px;background:rgba(55,15,15,.92);border:1px solid #c44;border-radius:4px}
+  #inspectTip{position:fixed;z-index:25;display:none;pointer-events:none;padding:6px 10px;
+    background:rgba(12,15,20,.92);border:1px solid rgba(210,195,160,.45);border-radius:4px;
+    font:11px/1.45 ui-monospace,monospace;color:#f2ecdc;box-shadow:0 3px 12px rgba(0,0,0,.7)}
+  #inspectTip b{color:#eedab0}
+  #load{position:fixed;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    background:#0d0f14;color:#eedab0;letter-spacing:.2em;text-transform:uppercase;font-size:12px;gap:12px}
+  .spinner{width:32px;height:32px;border:3px solid rgba(210,195,160,.2);border-top-color:#e8d8b0;border-radius:50%;animation:spin 1s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+</head>
+<body>
+<div id="load"><div class="spinner"></div><span>Weaving Region 99: Loom-Chasms…</span></div>
+<div id="ui">
+  <h1>Loom-Chasms & Cradle</h1>
+  <div class="sub">Region 99 &middot; Enclosed Barrens Basin & Western Loess Piedmont</div>
+  
+  <div class="sec-title">Preset Stations & Views</div>
+  <div class="btn-group">
+    <button id="v0" class="active">1. West Overlook</button>
+    <button id="v1">2. Tension Canopy</button>
+    <button id="v2">3. Namakier Salt Rifts</button>
+    <button id="v3">4. Weavers' Cradle</button>
+    <button id="v4">5. Lake Nim Playa</button>
+    <button id="v5">6. Mount Caelum</button>
+  </div>
+
+  <div class="sec-title">Environment & Atmosphere</div>
+  <div class="slider-row">
+    <label><span>Sun Angle (Time)</span><span id="sunVal">14:00</span></label>
+    <input type="range" id="sunSlider" min="0" max="24" step="0.2" value="14">
+  </div>
+  <div class="slider-row">
+    <label><span>Basin Density Fog</span><span id="fogVal">1.48 atm</span></label>
+    <input type="range" id="fogSlider" min="0" max="1" step="0.05" value="0.65">
+  </div>
+  <div class="slider-row">
+    <label><span>Thermal Steam Plumes</span><span id="ventVal">Active</span></label>
+    <input type="range" id="ventSlider" min="0" max="1" step="0.1" value="0.8">
+  </div>
+
+  <div class="sec-title">Controls</div>
+  <div style="font-size:10.5px;color:#aaa;line-height:1.4">
+    &bull; <b>L-Click + Drag:</b> Orbit &middot; <b>R-Click + Drag:</b> Pan<br>
+    &bull; <b>Scroll:</b> Zoom &middot; <b>Hover:</b> Atmospheric Inspector
+  </div>
+</div>
+
+<div id="hud">
+  <div><b>REGION 99</b> &middot; <span id="hStation">Weavers' Cradle</span></div>
+  <div>Elev: <span id="hElev" class="val">+2,180 m</span> &middot; Press: <span id="hPress" class="val">1.23 atm</span></div>
+  <div>Temp: <span id="hTemp" class="val">+5.5&deg;C</span> &middot; Köppen: <span id="hClim" class="val">Dfb</span></div>
+  <div>Water: <span id="hWater" class="val">Glacial Torrent (45 m&sup3;/s)</span></div>
+  <div style="margin-top:4px;font-size:9.5px;color:#7e796e">Three.js r128 &middot; Sealed Basin Water Balance</div>
+</div>
+
+<div id="inspectTip"></div>
+<div id="errs"></div>
+
+<script>
+window.onerror = function(msg, url, line) {
+  var el = document.getElementById('errs');
+  el.textContent += '[' + line + '] ' + msg + '\n';
+  el.style.display = 'block';
+};
+
+/* =========================================================================
+   1. DETERMINISTIC PRNG & MATH HELPERS
+   ========================================================================= */
+var SEED = 42299;
+function rnd() {
+  SEED = (SEED * 16807) % 2147483647;
+  return (SEED - 1) / 2147483646;
+}
+function rr(a, b) { return a + (b - a) * rnd(); }
+function clamp(x, a, b) { return Math.max(a, Math.min(b, x)); }
+function smoothstep(e0, e1, x) {
+  var t = clamp((x - e0) / (e1 - e0), 0.0, 1.0);
+  return t * t * (3.0 - 2.0 * t);
+}
+function fbm2(x, z) {
+  var v = 0.0, a = 0.5, f = 1.0;
+  for (var i = 0; i < 4; i++) {
+    v += a * (Math.sin(x * f * 0.012 + i * 1.7) * Math.cos(z * f * 0.012 + i * 2.3));
+    a *= 0.5; f *= 2.0;
+  }
+  return v;
+}
+
+/* =========================================================================
+   2. THREE.JS SCENE SETUP
+   ========================================================================= */
+var scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0e1117);
+scene.fog = new THREE.FogExp2(0x1a202c, 0.00065);
+
+var camera = new THREE.PerspectiveCamera(48, window.innerWidth / window.innerHeight, 1, 8000);
+var renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+document.body.appendChild(renderer.domElement);
+
+var controls = new THREE.OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.05;
+controls.maxDistance = 5000;
+controls.minDistance = 15;
+controls.maxPolarAngle = Math.PI / 2 - 0.02;
+
+/* =========================================================================
+   3. LIGHTING & ENVIRONMENT
+   ========================================================================= */
+var hemiLight = new THREE.HemisphereLight(0xced8e6, 0x1f221a, 0.55);
+scene.add(hemiLight);
+
+var dirLight = new THREE.DirectionalLight(0xfff2d4, 1.25);
+dirLight.position.set(-600, 1100, 450);
+dirLight.castShadow = true;
+dirLight.shadow.mapSize.width = 2048;
+dirLight.shadow.mapSize.height = 2048;
+dirLight.shadow.camera.near = 50;
+dirLight.shadow.camera.far = 4000;
+var d = 1600;
+dirLight.shadow.camera.left = -d; dirLight.shadow.camera.right = d;
+dirLight.shadow.camera.top = d; dirLight.shadow.camera.bottom = -d;
+dirLight.shadow.bias = -0.0002;
+scene.add(dirLight);
+
+/* =========================================================================
+   4. TERRAIN GENERATOR: THE ENCLOSED BASIN & REGIONAL ZONING
+   ========================================================================= */
+var GRID_SZ = 3000; // 3 km showcase chunk
+var SEGS = 240;
+
+function terrainH(x, z) {
+  // 1. Base continental regional trend:
+  // West (x < -600): High Stalker foothills (+220m to +380m)
+  // Weavers' Cradle (-600 <= x < -200): Arable loess terrace (+160m to +210m)
+  // Transition Monocline (-200 <= x < 150): Step drops from +160m to +50m
+  // Loom-Chasm Floor (150 <= x < 850): Graben floor (+30m to +50m)
+  // Mount Caelum resurgent dome (centered at x=1050, z=0, rising to +380m)
+  
+  var h = 0;
+  
+  // Western foothills & Loess bench
+  if (x < -200) {
+    var westT = smoothstep(-200, -1200, x);
+    h = 160 + westT * 220 + fbm2(x, z) * 35;
+    // Agricultural terracing steps
+    if (x > -650 && x < -200 && Math.abs(z) < 700) {
+      var stepH = Math.floor(h / 14) * 14;
+      h = h * 0.3 + stepH * 0.7;
+    }
+  } 
+  // Monocline ramp
+  else if (x >= -200 && x < 150) {
+    var rampT = smoothstep(-200, 150, x);
+    h = (160 * (1 - rampT) + 40 * rampT) + fbm2(x, z) * 18;
+  } 
+  // Central deep graben floor
+  else {
+    h = 42 + fbm2(x, z) * 15;
+    
+    // Orthogonal graben rifts (chasms)
+    // Primary E-W chasm slot
+    var riftDistZ = Math.min(Math.abs(z - 180), Math.abs(z + 240));
+    // Secondary N-S chasm cross slot
+    var riftDistX = Math.abs(x - 480);
+    
+    var inChasm = false;
+    var chasmDrop = 0;
+    
+    if (x > 100 && x < 800 && riftDistZ < 85) {
+      var rimEdge = smoothstep(85, 55, riftDistZ);
+      chasmDrop = Math.max(chasmDrop, rimEdge * 95); // 95m sheer chasm
+    }
+    if (Math.abs(z) < 600 && riftDistX < 75) {
+      var rimEdgeX = smoothstep(75, 45, riftDistX);
+      chasmDrop = Math.max(chasmDrop, rimEdgeX * 95);
+    }
+    h -= chasmDrop;
+  }
+
+  // Mount Caelum resurgent volcanic shield
+  var cDist = Math.hypot(x - 1100, z - 40);
+  if (cDist < 650) {
+    var cWeight = 1.0 - smoothstep(100, 650, cDist);
+    h += cWeight * 340;
+    // Caldera crater depression at summit
+    if (cDist < 90) {
+      var calT = smoothstep(90, 0, cDist);
+      h -= calT * 45;
+    }
+  }
+
+  // Lake Nim Terminal Playa Depression
+  var playaDist = Math.hypot(x - 720, z - 320);
+  if (playaDist < 280) {
+    var pT = smoothstep(280, 60, playaDist);
+    h -= pT * 22;
+  }
+
+  return h;
+}
+
+// Generate Terrain Geometry
+var geoTerrain = new THREE.PlaneGeometry(GRID_SZ, GRID_SZ, SEGS, SEGS);
+geoTerrain.rotateX(-Math.PI / 2);
+
+var posAttr = geoTerrain.attributes.position;
+var colors = [];
+var colorHelper = new THREE.Color();
+
+for (var i = 0; i < posAttr.count; i++) {
+  var vx = posAttr.getX(i);
+  var vz = posAttr.getZ(i);
+  var vy = terrainH(vx, vz);
+  posAttr.setY(i, vy);
+
+  // Procedural vertex coloring:
+  // High west/terrace: fertile loess ochre & steppe green
+  // Chasm rims: dark basalt shingle
+  // Chasm floors: glaring white halite namakier salt
+  // Lake Nim: turquoise salt-brine
+  // Mount Caelum: volcanic cinder & sulfur
+  if (vx < -220 && vy > 120) {
+    // Weavers' Cradle: green-gold alluvial loess
+    colorHelper.setHSL(0.19, 0.45, 0.32 + fbm2(vx, vz) * 0.08);
+  } else if (vy < -10) {
+    // Chasm floor namakier salt glaciers
+    colorHelper.setHSL(0.55, 0.25, 0.88 + fbm2(vx, vz) * 0.1);
+  } else if (Math.hypot(vx - 720, vz - 320) < 140) {
+    // Lake Nim Playa crust
+    colorHelper.setHSL(0.52, 0.35, 0.85);
+  } else if (Math.hypot(vx - 1100, vz - 40) < 350 && vy > 200) {
+    // Mount Caelum summit
+    colorHelper.setHSL(0.08, 0.35, 0.22);
+  } else {
+    // Basalt plateau barrens
+    colorHelper.setHSL(0.08, 0.15, 0.22 + fbm2(vx, vz) * 0.05);
+  }
+  colors.push(colorHelper.r, colorHelper.g, colorHelper.b);
+}
+
+geoTerrain.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+geoTerrain.computeVertexNormals();
+
+var matTerrain = new THREE.MeshStandardMaterial({
+  vertexColors: true,
+  roughness: 0.88,
+  metalness: 0.12,
+  flatShading: false
+});
+
+var meshTerrain = new THREE.Mesh(geoTerrain, matTerrain);
+meshTerrain.receiveShadow = true;
+meshTerrain.castShadow = true;
+scene.add(meshTerrain);
+
+/* =========================================================================
+   5. LAKE NIM PLAYA WATER & MELT TORRENTS
+   ========================================================================= */
+// Shallow terminal brine pool at Lake Nim
+var playaGeo = new THREE.CircleGeometry(110, 48);
+playaGeo.rotateX(-Math.PI / 2);
+var playaMat = new THREE.MeshStandardMaterial({
+  color: 0x38b8c5,
+  roughness: 0.1,
+  metalness: 0.85,
+  transparent: true,
+  opacity: 0.85
+});
+var playaMesh = new THREE.Mesh(playaGeo, playaMat);
+playaMesh.position.set(720, 24, 320);
+scene.add(playaMesh);
+
+/* =========================================================================
+   6. LIVING TENSION CABLE CANOPY (CHORDEPHYTUM FERREUM)
+   ========================================================================= */
+var CABLE_COUNT = 32;
+var cableGroup = new THREE.Group();
+
+// Build living suspension spans across the E-W chasm (z ~ 180, x from 150 to 750)
+for (var c = 0; c < CABLE_COUNT; c++) {
+  var spanX = 180 + c * 18;
+  var spanZ1 = 180 - 75; // North rim
+  var spanZ2 = 180 + 75; // South rim
+  var yRim1 = terrainH(spanX, spanZ1) + 8;
+  var yRim2 = terrainH(spanX, spanZ2) + 8;
+  var ySag = Math.min(yRim1, yRim2) - 18 - rnd() * 8; // Catenary sag
+
+  var p1 = new THREE.Vector3(spanX, yRim1, spanZ1);
+  var pMid = new THREE.Vector3(spanX + rr(-10, 10), ySag, 180);
+  var p2 = new THREE.Vector3(spanX + rr(-8, 8), yRim2, spanZ2);
+
+  var curve = new THREE.QuadraticBezierCurve3(p1, pMid, p2);
+  var tubeGeo = new THREE.TubeGeometry(curve, 20, 1.2, 6, false);
+  var tubeMat = new THREE.MeshStandardMaterial({
+    color: 0x3d352c,
+    roughness: 0.75,
+    metalness: 0.4
+  });
+  var cableMesh = new THREE.Mesh(tubeGeo, tubeMat);
+  cableMesh.castShadow = true;
+  cableGroup.add(cableMesh);
+
+  // Hang bladder foliage and nutrient curtains along midsection
+  for (var b = 0; b < 3; b++) {
+    var tParam = 0.3 + b * 0.2;
+    var bPos = curve.getPoint(tParam);
+    var bGeo = new THREE.SphereGeometry(3.5 + rnd() * 2, 8, 8);
+    bGeo.scale(1, 1.6, 1);
+    var bMat = new THREE.MeshStandardMaterial({
+      color: 0x768848,
+      roughness: 0.4,
+      metalness: 0.1
+    });
+    var bMesh = new THREE.Mesh(bGeo, bMat);
+    bMesh.position.copy(bPos);
+    bMesh.position.y += 2.5;
+    cableGroup.add(bMesh);
+
+    // Dangling nutrient roots
+    var rLen = 14 + rnd() * 18;
+    var rGeo = new THREE.CylinderGeometry(0.2, 0.05, rLen, 4);
+    var rMat = new THREE.MeshStandardMaterial({ color: 0x483e32, roughness: 0.9 });
+    var rMesh = new THREE.Mesh(rGeo, rMat);
+    rMesh.position.set(bPos.x, bPos.y - rLen / 2, bPos.z);
+    cableGroup.add(rMesh);
+  }
+
+  // Suspended Traveler Shuttle Cages on selected spans
+  if (c % 7 === 2) {
+    var sPos = curve.getPoint(0.5);
+    var cageGeo = new THREE.BoxGeometry(7, 5, 5);
+    var cageMat = new THREE.MeshStandardMaterial({ color: 0x8a7d65, roughness: 0.6, metalness: 0.5 });
+    var cageMesh = new THREE.Mesh(cageGeo, cageMat);
+    cageMesh.position.set(sPos.x, sPos.y - 4, sPos.z);
+    cableGroup.add(cageMesh);
+  }
+}
+scene.add(cableGroup);
+
+/* =========================================================================
+   7. NAMAKIER PENITENTES (RAZOR SALT SPIRES)
+   ========================================================================= */
+var PENITENTE_COUNT = 140;
+var penGeo = new THREE.ConeGeometry(2.5, 26, 4);
+penGeo.translate(0, 13, 0);
+var penMat = new THREE.MeshStandardMaterial({
+  color: 0xd8eeff,
+  roughness: 0.15,
+  metalness: 0.65
+});
+var instPenitentes = new THREE.InstancedMesh(penGeo, penMat, PENITENTE_COUNT);
+var dummy = new THREE.Object3D();
+
+var penIdx = 0;
+for (var p = 0; p < PENITENTE_COUNT; p++) {
+  var px = rr(220, 720);
+  var pz = 180 + rr(-40, 40);
+  var py = terrainH(px, pz);
+  dummy.position.set(px, py, pz);
+  dummy.scale.set(rr(0.8, 1.4), rr(0.7, 1.6), rr(0.8, 1.4));
+  dummy.rotation.y = rr(0, Math.PI);
+  dummy.rotation.z = rr(-0.1, 0.1);
+  dummy.updateMatrix();
+  instPenitentes.setMatrixAt(penIdx++, dummy.matrix);
+}
+instPenitentes.instanceMatrix.needsUpdate = true;
+scene.add(instPenitentes);
+
+/* =========================================================================
+   8. WEAVERS' CRADLE: STONE LONGHOUSES & CROP TERRACES
+   ========================================================================= */
+var VILLAGE_HOUSES = 18;
+var houseGroup = new THREE.Group();
+var hGeo = new THREE.BoxGeometry(16, 7, 10);
+var roofGeo = new THREE.ConeGeometry(12, 5, 4);
+roofGeo.rotateY(Math.PI / 4);
+roofGeo.translate(0, 6, 0);
+
+var hMat = new THREE.MeshStandardMaterial({ color: 0x58524a, roughness: 0.9 });
+var roofMat = new THREE.MeshStandardMaterial({ color: 0x486036, roughness: 0.95 }); // Turf roof
+
+for (var h = 0; h < VILLAGE_HOUSES; h++) {
+  var hx = -420 + rr(-140, 140);
+  var hz = rr(-220, 220);
+  var hy = terrainH(hx, hz);
+  
+  var house = new THREE.Mesh(hGeo, hMat);
+  house.position.set(hx, hy + 3.5, hz);
+  house.castShadow = true;
+  house.receiveShadow = true;
+
+  var roof = new THREE.Mesh(roofGeo, roofMat);
+  roof.position.set(hx, hy + 6.5, hz);
+  roof.castShadow = true;
+
+  houseGroup.add(house);
+  houseGroup.add(roof);
+}
+scene.add(houseGroup);
+
+/* =========================================================================
+   9. MOUNT CAELUM FUMAROLES & STEAM PARTICLES
+   ========================================================================= */
+var STEAM_COUNT = 60;
+var steamGeo = new THREE.DodecahedronGeometry(8, 1);
+var steamMat = new THREE.MeshStandardMaterial({
+  color: 0xded8ce,
+  roughness: 1.0,
+  transparent: true,
+  opacity: 0.35,
+  depthWrite: false
+});
+var instSteam = new THREE.InstancedMesh(steamGeo, steamMat, STEAM_COUNT);
+var steamParticles = [];
+
+for (var s = 0; s < STEAM_COUNT; s++) {
+  var sx = 1100 + rr(-50, 50);
+  var sz = 40 + rr(-50, 50);
+  var sy = terrainH(sx, sz) + rr(5, 30);
+  steamParticles.push({
+    x: sx, z: sz, y: sy,
+    baseY: sy,
+    vy: rr(8, 18),
+    scale: rr(0.8, 2.2)
+  });
+}
+scene.add(instSteam);
+
+/* =========================================================================
+   10. CAMERA PRESETS & INTERACTION
+   ========================================================================= */
+var PRESETS = [
+  { name: "Weavers' Cradle Overlook", pos: [-650, 310, 180], target: [-100, 110, 160], st: "Weavers' Cradle (West)", el: "+2,180 m", pr: "1.23 atm", tm: "+5.5°C", cl: "Dfb", wt: "Glacial Torrents (45 m³/s)" },
+  { name: "The Living Tension Canopy", pos: [340, 95, 280], target: [380, 50, 180], st: "The Looming Chasms", el: "+620 m", pr: "1.48 atm", tm: "+15.2°C", cl: "BWk", wt: "Ephemeral Channel (1.2 m³/s)" },
+  { name: "Namakier Salt Glacier", pos: [450, 12, 195], target: [510, -15, 180], st: "Chasm Abyss Floor", el: "+550 m", pr: "1.49 atm", tm: "+15.6°C", cl: "BWk", wt: "None (Solid Halite)" },
+  { name: "Weavers' Village Terraces", pos: [-460, 225, 45], target: [-410, 185, 0], st: "Loess Bajada Village", el: "+2,120 m", pr: "1.24 atm", tm: "+5.9°C", cl: "Dfb", wt: "Terrace Irrigation Canals" },
+  { name: "Lake Nim Brine Playa", pos: [560, 95, 440], target: [720, 25, 320], st: "Terminal Salt Sink", el: "+480 m", pr: "1.49 atm", tm: "+16.1°C", cl: "BWk-playa", wt: "Terminal Hypersaline Pool" },
+  { name: "Mount Caelum Resurgent Shield", pos: [780, 210, -220], target: [1100, 340, 40], st: "Mount Caelum Caldera", el: "+4,650 m", pr: "0.89 atm", tm: "-13.5°C", cl: "ET-thermal", wt: "Boiling Geothermal Vents" }
+];
+
+function applyPreset(idx) {
+  var p = PRESETS[idx];
+  camera.position.set(p.pos[0], p.pos[1], p.pos[2]);
+  controls.target.set(p.target[0], p.target[1], p.target[2]);
+  controls.update();
+
+  document.getElementById('hStation').textContent = p.st;
+  document.getElementById('hElev').textContent = p.el;
+  document.getElementById('hPress').textContent = p.pr;
+  document.getElementById('hTemp').textContent = p.tm;
+  document.getElementById('hClim').textContent = p.cl;
+  document.getElementById('hWater').textContent = p.wt;
+
+  for (var i = 0; i < 6; i++) {
+    document.getElementById('v' + i).classList.toggle('active', i === idx);
+  }
+}
+
+for (var v = 0; v < 6; v++) {
+  (function(idx) {
+    document.getElementById('v' + idx).onclick = function() { applyPreset(idx); };
+  })(v);
+}
+
+// UI Controls
+var sunSlider = document.getElementById('sunSlider');
+var sunVal = document.getElementById('sunVal');
+sunSlider.oninput = function() {
+  var val = parseFloat(sunSlider.value);
+  var hours = Math.floor(val);
+  var mins = Math.floor((val - hours) * 60);
+  sunVal.textContent = (hours < 10 ? '0' : '') + hours + ':' + (mins < 10 ? '0' : '') + mins;
+  var rad = (val / 24) * Math.PI * 2 - Math.PI / 2;
+  dirLight.position.x = Math.cos(rad) * 1200;
+  dirLight.position.y = Math.max(100, Math.sin(rad) * 1200);
+  dirLight.intensity = Math.max(0.05, Math.sin(rad) * 1.35);
+  hemiLight.intensity = Math.max(0.15, Math.sin(rad) * 0.65);
+};
+
+var fogSlider = document.getElementById('fogSlider');
+fogSlider.oninput = function() {
+  var fVal = parseFloat(fogSlider.value);
+  scene.fog.density = 0.0002 + fVal * 0.0008;
+  document.getElementById('fogVal').textContent = (1.23 + fVal * 0.26).toFixed(2) + ' atm';
+};
+
+var ventSlider = document.getElementById('ventSlider');
+ventSlider.oninput = function() {
+  var vVal = parseFloat(ventSlider.value);
+  instSteam.visible = (vVal > 0.05);
+  document.getElementById('ventVal').textContent = vVal > 0.6 ? 'Active' : vVal > 0.1 ? 'Dormant' : 'Off';
+};
+
+// Tooltip Inspector on Hover
+var raycaster = new THREE.Raycaster();
+var mouse = new THREE.Vector2();
+var tipEl = document.getElementById('inspectTip');
+
+window.addEventListener('mousemove', function(e) {
+  mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+  raycaster.setFromCamera(mouse, camera);
+  var hits = raycaster.intersectObject(meshTerrain);
+  if (hits.length > 0) {
+    var pt = hits[0].point;
+    var elevM = Math.round(pt.y * 8.5 + 450); // Scale model height map
+    var press = (1.6 * Math.exp(-elevM / 8000)).toFixed(2);
+    var tempC = (16.2 - (elevM - 450) * 0.0065).toFixed(1);
+    
+    var zoneName = pt.x < -200 ? "Weavers' Cradle loess" : pt.y < 0 ? "Graben Halite namakier" : pt.x > 800 ? "Mount Caelum shield" : "Looming Chasms horst";
+
+    tipEl.style.display = 'block';
+    tipEl.style.left = (e.clientX + 14) + 'px';
+    tipEl.style.top = (e.clientY + 14) + 'px';
+    tipEl.innerHTML = '<b>' + zoneName + '</b><br>Elev: ' + elevM + 'm &middot; P: ' + press + ' atm<br>T: ' + tempC + '&deg;C &middot; X:' + Math.round(pt.x) + ' Z:' + Math.round(pt.z);
+  } else {
+    tipEl.style.display = 'none';
+  }
+});
+
+/* =========================================================================
+   11. ANIMATION TICK & RENDER LOOP
+   ========================================================================= */
+var clock = new THREE.Clock();
+
+function animate() {
+  requestAnimationFrame(animate);
+  var dt = clock.getDelta();
+  var time = clock.getElapsedTime();
+
+  // Animate steam particles rising from Mount Caelum
+  if (instSteam.visible) {
+    for (var i = 0; i < STEAM_COUNT; i++) {
+      var sp = steamParticles[i];
+      sp.y += sp.vy * dt;
+      if (sp.y > sp.baseY + 120) {
+        sp.y = sp.baseY;
+      }
+      dummy.position.set(sp.x + Math.sin(time + i) * 6, sp.y, sp.z + Math.cos(time + i * 0.7) * 6);
+      var currentScale = sp.scale * (1.0 + (sp.y - sp.baseY) * 0.015);
+      dummy.scale.set(currentScale, currentScale, currentScale);
+      dummy.updateMatrix();
+      instSteam.setMatrixAt(i, dummy.matrix);
+    }
+    instSteam.instanceMatrix.needsUpdate = true;
+  }
+
+  // Cable sway in deep basin wind thermals
+  cableGroup.children.forEach(function(cMesh, idx) {
+    if (cMesh.isMesh && cMesh.geometry.type === 'TubeGeometry') {
+      cMesh.rotation.x = Math.sin(time * 0.8 + idx * 0.4) * 0.015;
+    }
+  });
+
+  controls.update();
+  renderer.render(scene, camera);
+}
+
+// Window resize handler
+window.addEventListener('resize', function() {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+// Initialization
+applyPreset(0);
+document.getElementById('load').style.display = 'none';
+animate();
+</script>
+</body>
+</html>

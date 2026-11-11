@@ -46,5 +46,28 @@
  "wind": {
   "speed": 7.6,
   "note": "mean from the model (wd)"
- }
+ },
+ "kin": {
+  "throne": [
+   [
+    "src/46-biome-throne-flows.js",
+    "src/50-biome-throne-species.js",
+    "src/55-biome-throne-trees.js",
+    "src/70-biome-throne.js"
+   ],
+   "THRONE",
+   [
+    "bark.flesh",
+    "card.treefern"
+   ]
+  ]
+ },
+ "kin_note": "the woolly siphon: the Throne's siphon tree as a kin (BIO.kin('throne.siphon')), its species, flows (THRONE.ageAt), trees and build read in place, in its own registry, with the two pack families its siphon draws with",
+ "core": {
+  "39-core-cavern.js": "core/terrain/39-core-cavern.js",
+  "39f-core-geode.js": "core/terrain/39f-core-geode.js",
+  "39e-core-cavern-draw.js": "core/terrain/host/39e-core-cavern-draw.js",
+  "39g-core-geode-draw.js": "core/terrain/host/39g-core-geode-draw.js"
+ },
+ "core_note": "the walk-in geode on the rim (PLAN.md section 7, S7; biomes/CRYSTAL-CAVES-5.1.md site 3): KCAVERN, KGEODE and their drawing, as biomes/scablands takes them"
 }
