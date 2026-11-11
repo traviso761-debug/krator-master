@@ -39,7 +39,7 @@
    "pulse",
    "tuber"
   ],
-  "note": "CROPS.at on the station axes (kits/crops has no terrace zone)"
+  "note": "CROPS.forBiome('siphon-pits') on its terraces and braids zones (the query is the fallback, CROPS.at)"
  },
  "wind": {
   "speed": 7.4,
@@ -51,5 +51,5 @@
   "48c-crop-material.js": "kits/crops/src/22-crop-material.js",
   "48d-crop-query.js": "kits/crops/src/40-crop-query.js"
  },
- "core_note": "kits/crops read in place (its API.md, \"Reading it from a build\"): the station's crops from CROPS.at"
+ "core_note": "kits/crops read in place (its API.md, \"Reading it from a build\"): the station's crops from CROPS.forBiome"
 }

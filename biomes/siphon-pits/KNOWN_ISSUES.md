@@ -15,12 +15,13 @@ Built 2026-11-11 in the cloud: every check ran on software GL (SwiftShader), non
 - [ ] **The deck's amber is the page's.** `core/atmos`'s height fog mist takes the fog colour (`sky/89-atmos-j-fog.js`: `cM = fc`), so the page
   tints the fog colour toward amber, and dims the sun, each frame after the sky sets them, by how deep the eye is under the lid (`89b`:
   `deckView`). A mist colour of its own in the chunk (`atmFogMistC`, compiled only on a page that asks, as the belt is) would be the core fix; it
-  was not made here because the chunk's text is in every biome page and each would have to be rebuilt. The lid (a sheet at 2,580 m) stands in
+  was not made here because the chunk's text is in every biome page and each would have to be rebuilt: it is parked in the root `TODO.md`,
+  "Ride along with the next all-builds rebuild" (the owner, 2026-11-11). The lid (a sheet at 2,580 m) stands in
   for the deck's underside, since the sky dome takes no fog. From the rim the lid reads pale cream, not amber: the air's haze over it
   (the view 'Down from the rim'); only the top 117 m of the 420 m walls stand above the deck, as the numbers say.
 - [ ] **The road on the Scarp is a pack track**: 16 switchbacks on the ravine's scree climb ~1,500 m in ~4.4 km, a grade near 30%. A wagon
-  road would need ten times the length; the plan's "freight exchange for pack beasts" fits a track. The road is drawn only as the bench it cuts
-  in the scree (no road surface, no parapets): it hardly reads from afar.
+  road would need ten times the length; the plan's "freight exchange for pack beasts" fits a track. The road is drawn as a gravel surface on its bench with a dry-stone
+  parapet on the downhill side (2026-11-11, second pass).
 - [ ] **The model's lapse across the stations** is 9.5 degC a km (Station 1 +15 at 2,157 m, Station 4 -5 at 4,269 m), steeper than the dry
   adiabat (7.4). The kit takes the model's numbers (`PLAN.md` section 0); the page's air field lapses at the model's 6.5 from each station's
   own record, so it agrees with the record at the station's height only.
@@ -34,12 +35,12 @@ Built 2026-11-11 in the cloud: every check ran on software GL (SwiftShader), non
 
 ## Not done yet (`PLAN.md` section 7)
 
-- [ ] **S8, the animals drawn.** The Ghaunt-Ox, the Flenser-Hound and the Pipe-Borer are records in `kits/fauna` (`krator-fauna-xeno.js`);
-  the pages publish the flensers' lairs as hazard records (`life.species`) but draw no animal. `fauna-lands.js` with a bundle of `hyperjungle`,
-  `wild` and `xeno` is the way (`biomes/hyperjungle`'s stations).
+- [ ] **The animals are drawn by `fauna-lands.js`'s maker** (2026-11-11, second pass: `src/89y-host-fauna.js`): the Ghaunt-Ox yoked in pairs
+  on the terraces' fields, wild on the Scarp's ledges and the pit floor's felt, the Pipe-Borers on the felt, the Flenser-Hounds at the Arete's
+  rims. They stand and walk where the plan puts them; they do not yet flee, hunt or follow a schedule (no behaviour module on a biome page).
+
 - [ ] **The people's sites are placeholders** (boxes, cones): the farmsteads, the tollhouse, the beacons, the roper camp, the gantry. They are
   site records for a building kit and a hamlet pass; the culture is undecided. The Arete's stanchions and chains are the trail's own.
 - [ ] **The fauna vocabulary has no Cwb or Dsc** (`kits/fauna/fauna-core.js` `FAUNA_VOCAB.koppen`): the three animals carry their nearest
-  classes. Adding the two is a change every fauna bundle would carry.
-- [ ] **`kits/crops` has no Region 98 entry**: Station 1 queries `CROPS.at` on its axes; the plan's frost-barley and frost-wheat are the crops
-  kit's frost oat and emmer (it has neither barley nor wheat by those names).
+  classes. Adding the two moves every fauna bundle: parked in the root `TODO.md`, "Ride along with the next all-builds rebuild".
+- [ ] **The plan's frost-barley and frost-wheat** are the crops kit's frost oat and emmer (it has neither barley nor wheat by those names).

@@ -29,7 +29,7 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `40-biome-siphon-sites.js` | 5 |  |
 | `45-host-stage.js` | 16 | the land (34); the climate fields (the field contract's units:  (129); the air as fields (core/hazard's ambient bridge) (161); the host binding (169) |
 | `48-host-therm.js` | 2 |  |
-| `50-biome-siphon-species.js` | 9 | palettes (sRGB hex) (14); the species (22); textures and materials. The library swaps in by  (46); the items (66) |
+| `50-biome-siphon-species.js` | 10 | palettes (sRGB hex) (14); the species (22); textures and materials. The library swaps in by  (46); the items (66) |
 | `60-biome-siphon-place.js` | 9 | station 3: the groves, the felt, the galls (20); stations 2 and 4: the cold ground's small life ( (52); station 1: the crops, the willow, the sedge (63) |
 | `70-biome-siphon.js` | 2 |  |
 | `80-host-plan.js` | 4 |  |
@@ -39,10 +39,11 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `89-host-sky.js` | 3 |  |
 | `89a-host-atmos.js` | 3 |  |
 | `89b-host-steam.js` | 3 |  |
-| `89s-host-sites.js` | 6 |  |
+| `89s-host-sites.js` | 8 |  |
 | `89w-host-water.js` | 3 |  |
+| `89y-host-fauna.js` | 4 |  |
 | `89z-host-build.js` | 6 |  |
-| `99-host-take.js` | 11 |  |
+| `99-host-take.js` | 12 |  |
 | `99-tail.html` | <1 |  |
 
 ## stations/

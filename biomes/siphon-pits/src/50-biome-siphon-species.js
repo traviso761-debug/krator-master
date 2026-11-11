@@ -2,7 +2,7 @@
 // The Siphon lineage come down into the pits: the WOOLLY SIPHON (the Throne's siphon tree as a kin, BIO.kin('throne.siphon'), grown by the Throne's own
 // builder, read in place; its machine-wax pelt and hanging fleece are this kit's), the SIPHON FELT (the spongy turf of the pit floors), the SUTURE GALL
 // (wax bulbs on the damp fractures at the walls' foot). The cold stations' small life: cushion moss, orange rock lichen, scree sedge (no trees on 2 and 4).
-// Station 1's: dwarf blue willow by the braids and the crops kits/crops gives the station's axes (CROPS.at; 60 picks them).
+// Station 1's: dwarf blue willow by the braids and the crops kits/crops gives the station's axes (CROPS.forBiome('siphon-pits'); 80-host-plan picks them, 60 plants them).
 // Tags follow the project rule (climate / aridity / abyssal / riparian / Koppen) plus `heat` (the ground's band, degC), `native`, and `tree` (the tree rule:
 // SIPHON_TREECAP, 40). Everything here is DATA and kit definitions; placement is 60-biome-siphon-place.js.
 BIO.kit('siphon');   // this kit's own registry of items and buckets (core/biome: kits)

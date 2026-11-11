@@ -1,7 +1,7 @@
 // ================================================================= HOST — the station's plan (PLAN.md sections 3 and 6): what is where before anything is placed
 // STATION 1: the farm plan as a placement raster on core/mask (KMASK.canvas: painted by an integer-exact rule, the same bytes in Godot): the braids'
 // water and the farmsteads' lots, each on its own canvas at 4 m a pixel, and their distance fields (KMASK.distance), so the willow keeps 5-42 m from the
-// water and the crops and plants keep off the lots. The crops: kits/crops for the station's axes (CROPS.at: there is no terrace zone in the crops kit),
+// water and the crops and plants keep off the lots. The crops: kits/crops' Region 98 entry (CROPS.forBiome('siphon-pits'), its terraces and braids zones),
 // one pick a bucket (CROPS.pick, seeded: the same crops on every machine), and each terrace tread's field (KRELIEF.at's field id) given one of them or
 // left fallow by its own hash. STATION 3: the roper camp kept clear the same way. Plain data on the page: PLAN.mask, PLAN.crops, FIELD_OF.
 let FIELD_OF=(x,z)=>null;   /* station 1's fields (below); null elsewhere */
@@ -17,7 +17,7 @@ const PLAN=(function(){const P={station:SKEY};
   P.braid=distOf(WM);P.lot=distOf(LM);P.mask={water:KMASK.hash(WM),lots:KMASK.hash(LM),px:PX,size:W,ops:KMASK.ops(WM).length+KMASK.ops(LM).length};
   // the crops kits/crops gives the station (PLAN.md section 3): a grain, a second grain, a pulse and a tuber
   const Q=SITE.crops&&SITE.crops.query||{warmth:'temperate',atm:'standard',arid:'semiarid'};
-  if(typeof CROPS!=='undefined'){const R=CROPS.at(Q),pk=(b,pref,salt)=>{const r=CROPS.pick(R,b,{seed:9850,salt:salt==null?0:salt,prefer:[pref]});return r?r.crop:null;};
+  if(typeof CROPS!=='undefined'){const R=CROPS.BIOMES['siphon-pits']?CROPS.forBiome('siphon-pits').filter(r=>r.zone==='terraces'||r.zone==='braids'):CROPS.at(Q),pk=(b,pref,salt)=>{const r=CROPS.pick(R,b,{seed:9850,salt:salt==null?0:salt,prefer:[pref]});return r?r.crop:null;};
    const paint={grain:0xb8a060,pulse:0x6a8a3e,tuber:0x587044};
    P.crops=[pk('grain','frostoat',1),pk('grain','emmer',2),pk('pulse','helix-bean',3),pk('tuber','murnong',4)].filter(Boolean).map(c=>({id:c.id,name:c.name,bucket:c.bucket,card:c.card,paint:paint[c.bucket]||0xa09060}));
    P.query=Q;P.offered=R.length;}

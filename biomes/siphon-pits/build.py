@@ -131,6 +131,13 @@ for f in ['56-core-water-breakup.js','57-core-water-audit.js','60-core-water-fie
 for f in ['52-core-water-geyser.js','52b-core-water-geyser-draw.js']: PATH.setdefault(f,J('core','water','geyser',f))
 miss=[f for f in ('10-core-head.js','20-core-kit.js','30-core-foliage.js','40-core-place.js') if f not in PATH]
 if miss: print('NO BIOME CORE: '+', '.join(miss)); sys.exit(1)
+# THE FAUNA (kits/fauna, PLAN.md section 7, S8): the bundle of the hexapods' groups (xeno; wild and hyperjungle hold its builders), vertex-coloured,
+# and the placement by land (fauna-lands.js: plan and register; fauna-lands-host.js: draw), read in place as biomes/hyperjungle's stations read them
+sys.path.insert(0,J('kits','fauna'))
+import fauna_bundle as _fb
+VIRTUAL['86f-host-fauna-bundle.js']=_fb.bundle(['hyperjungle','wild','xeno'],tex=False)
+PATH.setdefault('86g-fauna-lands.js',J('kits','fauna','fauna-lands.js'))
+PATH.setdefault('86h-fauna-lands-host.js',J('kits','fauna','fauna-lands-host.js'))
 # the material library (core/materials/record) and the pack of the sets materials.json names (tools/textures/pack.py)
 for f in ['23-mat-record.js','25-matlib-host.js']: PATH.setdefault(f,J('core','materials','record',f))
 sys.path.insert(0,J('tools','textures'))

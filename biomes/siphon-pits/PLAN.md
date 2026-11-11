@@ -67,7 +67,7 @@ median 235 mm, BSk > Dsc > Dsb > ET > Cwb; SE 2,483 / 4,642 / 6,969 m, median -4
   (1668, 1539; 1618, 1576; 1712, 1482): the boiling vent well is that geyser. **No lava tube** of `DATA.tubes` reaches the
   region: the "lava tube portals" are kept only as the Pipe-Borer's burrows in the breccia.
 - **Names that do not exist**, mapped to the real ones (section 6): `core/sky` (the shared sky is `core/atmos/sky`), the
-  `kits/crops` `terrace` zone (the station queries `CROPS.at` on its axes), `core/crops` (`kits/crops`), "KBASIN negative
+  `kits/crops` `terrace` zone (Region 98 is now its own entry, `siphon-pits`, with `terraces`, `braids` and `pitfloor` zones), `core/crops` (`kits/crops`), "KBASIN negative
   stamps" (KBASIN is old lake beds: the pits are `KRELIEF.stepcut`), `ground.turf.alpine`, `ground.soil.volcanic`,
   `stone.basalt.columnar` (the library's sets are named in section 6).
 - **The model already carries most of section 2's edits**: the NW basin lies at 1,900-2,450 m (5.1's south-east provinces
@@ -131,7 +131,7 @@ To physically deliver the owner's brief, three targeted terrain edits are propos
 ### Station 1: Ostrukh Terraces (The Cold Arable Basin — NW)
 * **Metadata:** `stations/terraces/station.json` (`px: 1519, 1453`, elev $+2,157\text{ m}$, $1.22\text{ atm}$, mean $+15^\circ\text{C}$ (warm $+28$, cold $+2$), rain $439\text{ mm}$, Cwb, wind $7.4\text{ m/s}$).
 * **Landscape:** Fertile loess terraces stepping down to braided meltwater streams fed by Stalker glaciers; dry-stone retaining walls, sod-roofed basalt farmhouses, communal grain elevators.
-* **Agriculture & Ecology:** the grain, pulse and tuber `kits/crops` gives for the station's axes (`CROPS.at({warmth:'temperate', atm:'standard', arid:'semiarid'})`: there is no `terrace` zone in the crops kit); domesticated Ghaunt-Ox pairs pulling stone seed-drills.
+* **Agriculture & Ecology:** the grain, pulse and tuber `kits/crops` gives for Region 98 (`CROPS.forBiome('siphon-pits')`, its `terraces` and `braids` zones: the entry added 2026-11-11); domesticated Ghaunt-Ox pairs pulling stone seed-drills.
 * **Role:** The agricultural breadbasket of the south-east, feeding the mining and wax-harvesting camps of the higher zones.
 
 ### Station 2: The Scarp Pass (The Central Dividing Fault)
@@ -219,8 +219,8 @@ Its `build.py` predates `tools/build_sources.py`, so that part (`BSRC.report`) i
 | camera, panel, probe, inspector, polygon tool | `core/host` (`FULL` + `94-host-polytool.js`) | the page shell; `99-host-take.js` hands it the views, the words and the checks |
 | shadows, the clock, export, minimap | `core/shadow`, `core/clock`, `core/export` (`07`, `09`), `core/minimap` (in `FULL`) | as highrift |
 | textures | `core/materials` (`record`, `materials.json`, `tools/textures/pack.py`) | the library sets of section 5 under their real names; the three owed slots are in `core/materials/PROMPTS-NEEDED.md` with stand-ins named in `KNOWN_ISSUES.md` |
-| crops | `kits/crops` (`10`, `20`, `22`, `40`, read in place) | Station 1's grain, pulse and tuber from `CROPS.at` on the station's axes and `CROPS.pick` |
-| fauna | `kits/fauna` | the Ghaunt-Ox, the Flenser-Hound and the Pipe-Borer as records (`krator-fauna-xeno.js`); the pages publish where each lives as data (their herds and lairs as `life` records); drawing them on the pages is S8 |
+| crops | `kits/crops` (`10`, `20`, `22`, `40`, read in place) | Station 1's grain, pulse and tuber from `CROPS.forBiome('siphon-pits')` (its `terraces` and `braids` zones; `CROPS.at` on the station's axes before the entry) and `CROPS.pick` |
+| fauna | `kits/fauna` | the Ghaunt-Ox, the Flenser-Hound and the Pipe-Borer as records (`krator-fauna-xeno.js`); the pages publish where each lives as data (their herds and lairs as `life` records); drawn on the pages by `fauna-lands.js` (S8, `89y`) |
 
 Not taken, and why: `KBASIN` (old lake beds; no palaeolake here), `core/city`, `core/hamlet`, `core/camp`, `core/simulation`,
 `core/furnish` (no settlement is built: the farmsteads, the tollhouse, the roper camp and the gantries are published as site
@@ -231,7 +231,7 @@ trap plants), `38b`/`46` lava (no live lava), `39c-core-karst` (no soluble rock)
 
 ## 7. Order of work
 
-*Status 2026-11-11: S0-S7 done (S6's `test_all` result in the report: its failures are pre-existing on the base); S8 is next.*
+*Status 2026-11-11: S0-S8 done (S6's `test_all` result in the report: its failures are pre-existing on the base); S8's second pass drew the animals, the Scarp's road and the crops entry.*
 
 - **S0.** The survey and the corrections (section 0); this section and section 6; the station records corrected
   (`stations/*/station.json`, inlined by `build.py`); `PLAN-STATIONS.md`'s table.
@@ -253,5 +253,6 @@ trap plants), `38b`/`46` lava (no live lava), `39c-core-karst` (no soluble rock)
   `PORT.md`, `INDEX.md`, `BIOME-API.md`, `KNOWN_ISSUES.md`; `tools/check_core_use.py`; `tools/test_all.py`.
 - **S7.** One walk-in amethyst geode on Station 3's rim (`KGEODE.block` and `line` on a `KCAVERN`), if it fits; else a
   noted next step.
-- **S8.** Next: the animals drawn on the pages (`fauna-lands.js`, the herds on Station 1, the flensers on 4); the owed
+- **S8.** Done (2026-11-11, second pass): the animals drawn on the pages (`fauna-lands.js`, `89y`: the yokes on Station 1, the wild herds on
+  2 and 3, the flensers on 4); the Scarp's road drawn (gravel and a parapet); Region 98 in `kits/crops`. Next: the owed
   textures; the human structures from a building kit; Section 2's terrain edits in the next scale model update.

@@ -28,6 +28,17 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 
 ## Ride along with the next all-builds rebuild
 
+- **core/atmos: a mist colour of its own** (2026-11-11, biomes/siphon-pits; the owner: it rides the next all-biomes rebuild). The height fog's
+  mist takes the fog colour (`core/atmos/sky/89-atmos-j-fog.js`: `cM = fc`, in the shader text and its CPU twin). Add a uniform `atmFogMistC`,
+  compiled only on a page that asks for it (as the belt is) and set from a `mist.colour` in `heightFog` (`core/atmos/host/89-atmos-j-heightfog.js`), so the Siphon Pits' deck reads amber from below without
+  the page tinting the fog colour each frame. Then drop siphon-pits' per-frame tint (`src/89b-host-steam.js`, `deckView`) and give its lid
+  the mist colour, which also cures the pale-cream lid seen from the rim (its `KNOWN_ISSUES.md`). The chunk's text is in every biome
+  page, so it moves every biome page.
+
+- **kits/fauna: the Köppen vocabulary lacks Cwb and Dsc** (2026-11-11, biomes/siphon-pits): `FAUNA_VOCAB.koppen` in `kits/fauna/fauna-core.js`.
+  Region 98's hexapods (`krator-fauna-xeno.js`) carry their nearest classes (Cfb, Dfb) meanwhile. Add the two, then give the Ghaunt-Ox Cwb and
+  the Flenser-Hound Dsc. It moves every page that bundles kits/fauna.
+
 - **`KSHADOW.units` counts what the GPU links** (2026-11-09, found by the Throne's fix): `core/shadow/host/12-core-shadow-host.js` counts
   declared samplers (some are never read and the GPU drops them), misses `scene.environment` on standard materials, and judges against the
   renderer's own limit (32 in SwiftShader, so shadows turn on where the GPU cannot link them). The Throne's `samplersOf`

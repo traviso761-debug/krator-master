@@ -79,5 +79,8 @@ CROPS.BIOMES = {
   cut:         {atm: 2, zones: {lake: {warmth: [5, 5], arid: [4, 4], wet: true}, floor: {warmth: [5, 5], arid: [1, 2], salt: true}, walls: {warmth: [3, 4], arid: [2, 3], atm: 1}, lip: {warmth: [1, 2], arid: [1, 2], atm: 1}}},
   /* the abyssal savannah (biomes/abyssal-savannah/PLAN.md): the eastern abyss's rim slope (Aw, BSh, 1.6-1.75 atm) and its floor's savanna belt
      (XV, 2 atm, ~1,050 mm, +34 C); the parkland, the bench's steppe, the gullies' gallery and the bench's pan */
-  'abyssal-savannah': {atm: 2, zones: {parkland: {warmth: [4, 4], arid: [1, 2]}, steppe: {warmth: [4, 4], arid: [0, 1]}, gallery: {warmth: [4, 4], arid: [2, 3], wet: true}, pan: {warmth: [4, 4], arid: [0, 1], salt: true}}}
+  'abyssal-savannah': {atm: 2, zones: {parkland: {warmth: [4, 4], arid: [1, 2]}, steppe: {warmth: [4, 4], arid: [0, 1]}, gallery: {warmth: [4, 4], arid: [2, 3], wet: true}, pan: {warmth: [4, 4], arid: [0, 1], salt: true}}},
+  /* Region 98 (biomes/siphon-pits, PLAN.md section 0): the Ostrukh Terraces (Cwb, +15 degC, 1.22 atm, 439 mm: the loess terraces, the braids'
+     irrigated banks) and the Siphon Pits' maar floors (Cfa, +18 degC, 1.20 atm under the deck, the vents' heated ground) */
+  'siphon-pits': {atm: 1, zones: {terraces: {warmth: [2, 2], arid: [1, 2]}, braids: {warmth: [2, 2], arid: [2, 3], wet: true}, pitfloor: {warmth: [2, 3], arid: [2, 3], heated: true}}}
 };

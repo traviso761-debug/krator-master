@@ -15,6 +15,17 @@ const STRUCT=(function(){const parts={stone:[],timber:[],iron:[],canvas:[],coppe
  if(SKEY==='scarp'){const t=SITE.toll,p=L.TA(t.t,t.a),y=g(p[0],p[1]),a=Math.atan2(L.nrm[1],L.nrm[0]);
   site({name:'The tollhouse and caravansary (a site under the ravine\'s wall: a building kit\'s to draw; placeholder)',kind:'tollhouse',type:['civic','tavern/inn','infrastructure'],x:p[0],z:p[1],r:t.r,h:16});
   add('stone',BOX,p[0],y+3,p[1],-a,26,6,14);add('timber',BOX,p[0],y+6.4,p[1],-a,27,.8,15);
+  // THE ROAD (KNOWN_ISSUES.md: it read only as its bench): a gravel surface 4.5 m wide on the bench the stage cut, and a dry-stone parapet on the
+  // downhill side (the side whose ground falls away), a block every 2.5 m
+  {const R=L.ROAD,W=2.25,pos=[],step=4;for(let s=0;s+step<=R.L;s+=step){const a=R.pt(s),b=R.pt(s+step),dx=b[0]-a[0],dz=b[1]-a[1],l=Math.hypot(dx,dz)||1,nx=-dz/l,nz=dx/l;
+    const q=(p,k)=>[p[0]+nx*W*k,terrainH(p[0]+nx*W*k,p[1]+nz*W*k)+.08,p[1]+nz*W*k];const A0=q(a,-1),A1=q(a,1),B0=q(b,-1),B1=q(b,1);pos.push(...A0,...B0,...A1,...A1,...B0,...B1);}
+   const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.computeVertexNormals();
+   const m=new THREE.Mesh(g,new THREE.MeshLambertMaterial({color:0x8a8278,side:THREE.DoubleSide}));m.userData.host=true;m.userData.inspectLabel='The caravan road (gravel on its bench; a pack track)';
+   m.userData.probePoints=[];for(let s=0;s<=R.L;s+=40){const p=R.pt(s);m.userData.probePoints.push(p[0],terrainH(p[0],p[1])+.1,p[1]);}scene.add(m);
+   for(let s=0;s<=R.L;s+=2.5){const p=R.pt(s),p2=R.pt(Math.min(R.L,s+1)),dx=p2[0]-p[0],dz=p2[1]-p[1],l=Math.hypot(dx,dz)||1,nx=-dz/l,nz=dx/l;
+    const side=terrainH(p[0]+nx*8,p[1]+nz*8)<terrainH(p[0]-nx*8,p[1]-nz*8)?1:-1,x=p[0]+nx*(W+.4)*side,z=p[1]+nz*(W+.4)*side;
+    add('stone',BOX,x,terrainH(x,z)+.35,z,-Math.atan2(dz,dx),2.2,.8,.5);}
+   site({name:'The caravan road (16 switchbacks up the ravine\'s scree: a pack track, ~30%)',kind:'road',type:['infrastructure'],x:L.RP[2][0],z:L.RP[2][1],r:300,h:900});}
   SITE.beacons.forEach(i=>{const q=L.RP[Math.min(L.RP.length-1,i+2)],yb=g(q[0],q[1]);site({name:'An iron beacon basket on the switchbacks',kind:'beacon',type:['infrastructure'],x:q[0],z:q[1],r:3,h:6});
    add('iron',CYL,q[0],yb+2,q[1],0,.18,4,.18);add('iron',CYL,q[0],yb+4.3,q[1],0,1.1,.7,1.1);});}
  if(SKEY==='pitfloor'){const c=SITE.camp;

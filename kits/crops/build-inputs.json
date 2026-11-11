@@ -8,9 +8,9 @@
     "kits/crops/PORT.md": "edf350fabcba1902c167683d383d2a66199f18fb54ed06b1c1ce6d7537e34968",
     "kits/crops/build.py": "e4bdeb91d84951f9f6b8654c2487ae26d8d73019916225842e6b4ff22859838a",
     "kits/crops/src/00-head.html": "4ca8c0ff8a3db59c594067ef2b9dfc6bb993d73868dc3ca1cb3c342dd63203de",
-    "kits/crops/src/10-crop-core.js": "4f32df5c0260ed8412029ced94fe1c495b0c828c3bea1d69b6d7093a8fcdcb56",
+    "kits/crops/src/10-crop-core.js": "9aa631073465369fc31b8fc27a62909a4079580d59b2926c39c37c43698f6fbb",
     "kits/crops/src/20-crop-records.js": "46dcc7ea9ea802974acc9895b5d3d0b1910b86829f452bf0b807c0ddadcf9f95",
-    "kits/crops/src/22-crop-material.js": "9f79ca919d26d19aa4377c5ed9d22cb75384291187374431b4a91af9133fa3f8",
+    "kits/crops/src/22-crop-material.js": "641c1a2a64c808fb839da23831b8488e21acd2bc92443d865411627529223c58",
     "kits/crops/src/40-crop-query.js": "c4e1179691702ff13200d5b713c23e0f315ee99c61842a8735d671e63bfca439",
     "kits/crops/src/89-sheet.js": "c61d8a99942e93f8e93a2666d7ca1d4a8af3ef5f6d3135514a428ff69541ae7f",
     "kits/crops/src/99-tail.html": "893cb35f3016a3523c33b676c4dfbe5686c4b99a1e7128d78e2e3fa271cd4829",
@@ -65,7 +65,6 @@
     "kits/crops/tex/card_vine.albedo.webp": "980232d55af9a9a89cc70c3b9fcfba331f2f2aca1d7f4c7deb36fc0cfa61c362",
     "kits/crops/tex/card_weeper.albedo.webp": "7ef86069f5079e75e54d94af13d1993f5d5babadc9dbb731b13b7a6076c516e7",
     "kits/crops/tex/pack.json": "3eeb40b45a192fbe9218361a774a5d505b1198e46fd542cea0ed8db72193af4a",
-    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
    },
    "listings": {
@@ -74,12 +73,12 @@
     "tools": "2d2fdaca850a104a2a2c553313ccb3ad18dc6bc48cb554c8c714fc1ca39607bf"
    },
    "outputs": {
-    "kits/crops/build-manifest.json": "2f7aadd9bc0d3bebff1e38ff0b203d6762e373048e30d50824e3ab1b4079a74e",
-    "kits/crops/dist/crops.html": "d0e7f7827b2f5aba4bd5f2b429446d76a1963c4cc10b0feed26f79e5d588bb76"
+    "kits/crops/build-manifest.json": "da21e9d4e7d4062eba33eb57213adeedcc89b436675475260a6b484939abd005",
+    "kits/crops/dist/crops.html": "b81ef7abf7a3a67ef35eed445432d5f3fcd985856bd70e29e6d56a8a05b2927c"
    },
    "outputs_raw": {
-    "kits/crops/build-manifest.json": "2f7aadd9bc0d3bebff1e38ff0b203d6762e373048e30d50824e3ab1b4079a74e",
-    "kits/crops/dist/crops.html": "d0e7f7827b2f5aba4bd5f2b429446d76a1963c4cc10b0feed26f79e5d588bb76"
+    "kits/crops/build-manifest.json": "da21e9d4e7d4062eba33eb57213adeedcc89b436675475260a6b484939abd005",
+    "kits/crops/dist/crops.html": "b81ef7abf7a3a67ef35eed445432d5f3fcd985856bd70e29e6d56a8a05b2927c"
    }
   }
  }

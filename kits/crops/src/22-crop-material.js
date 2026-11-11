@@ -26,7 +26,7 @@ R('annatto', 'Sunseed annatto', 'dye', [4, 4], [3, 4], {form: 'shrub', card: 'ca
 R('indigo', 'Jungle indigo', 'dye', [4, 4], [2, 4], {form: 'shrub', card: 'card.crop.indigo', colour: 'blue', home: ['hyperjungle']});
 R('woad', 'Valley woad', 'dye', [1, 3], [1, 3], {atm: [0, 2], card: 'card.crop.woad', colour: 'blue', home: ['ebadlands', 'nhighlands'], note: 'also Clan woad: the northern clans'});
 R('broom', 'Heath broom', 'dye', [0, 2], [1, 3], {atm: [0, 2], form: 'shrub', card: 'card.broom', colour: 'yellow', home: ['nhighlands']});
-R('lichen', 'Rosette lichen', 'dye', [0, 3], [1, 3], {atm: [0, 2], colour: 'brown', home: ['shighlands', 'sedesert', 'nwouterwall'], src: 'shighlands', note: 'a lichen dye (the colour is not named in the kits)'});
+R('lichen', 'Rosette lichen', 'dye', [0, 3], [1, 3], {atm: [0, 2], colour: 'brown', home: ['shighlands', 'sedesert', 'nwouterwall', 'siphon-pits'], src: 'shighlands', note: 'a lichen dye (the colour is not named in the kits)'});
 R('rabbitbrush', 'Rabbitbrush flowers', 'dye', [2, 4], [0, 1], {form: 'shrub', colour: 'yellow', home: ['ebadlands'], src: 'ebadlands'});
 R('ghost-gum', 'Ghost-gum leaf', 'dye', [2, 4], [0, 2], {form: 'tree', card: 'card.ghostwood', colour: 'gold', home: ['nwlowlands']});
 R('alder-bark', 'Grey alder bark', 'dye', [1, 2], [3, 3], {form: 'tree', colour: 'red', also: [], home: ['nhighlands'], src: 'nhighlands', note: 'red and black'});
@@ -109,4 +109,4 @@ R('birch-tar', 'Birch tar', 'dye', [0, 1], [1, 3], {also: ['fuel'], atm: [0, 1],
 
 /* ---- the Cut (biomes/cut, PLAN.md section 7, 2026-10-26) */
 R('rankgrass', 'Rankgrass', 'thatch', [4, 5], [0, 1], {needs: 'salt', form: 'grass', card: 'card.rankgrass', src: 'cut', home: ['cut'], note: 'a salt grass seeding in straight lines along the field of the warp; grazing on the flats, salt-tolerant thatch'});
-R('circlelichen', 'Circle lichen', 'herb', [1, 2], [0, 4], {also: ['medicine', 'dye'], colour: 'orange', atm: [0, 2], form: 'lichen', src: 'cut', home: ['cut'], stores: ['dried'], note: 'perfect circles on the bare cut faces; scraped and steeped as an antiseptic wash (as Usnea); boiled, the orange circles dye wool yellow to orange (as Xanthoria)'});
+R('circlelichen', 'Circle lichen', 'herb', [1, 2], [0, 4], {also: ['medicine', 'dye'], colour: 'orange', atm: [0, 2], form: 'lichen', src: 'cut', home: ['cut', 'siphon-pits'], stores: ['dried'], note: 'perfect circles on the bare cut faces; scraped and steeped as an antiseptic wash (as Usnea); boiled, the orange circles dye wool yellow to orange (as Xanthoria)'});

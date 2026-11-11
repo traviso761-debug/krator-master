@@ -1,7 +1,9 @@
 // ================================================================= HOST — the station's views, inspector words and probe checks, handed to core/host (highrift's 99)
 const gh=(x,z,dy)=>terrainH(x,z)+(dy==null?0:dy);
 const look=(cx,cz,dyc,tx,tz,dyt)=>[cx,gh(cx,cz,dyc),cz,tx,gh(tx,tz,dyt),tz];
-const VIEWS=(function(){const S=SITE;
+const VIEWS=(function(){const V0=VIEWS0();if(FAUNA&&FAUNA.first){const f=FAUNA.first,lab={terraces:'A Ghaunt-Ox yoke',scarp:'Ghaunt-Ox on the ledges',pitfloor:'Ghaunt-Ox on the felt',arete:'A flenser at the rim'}[SKEY];
+ V0[lab]=look(f.x+18,f.z+14,4,f.x,f.z,1);}return V0;})();
+function VIEWS0(){const S=SITE;
  if(SKEY==='terraces'){const z0=L.zc(0),F=S.farms[1];return{'The braids':look(-700,z0-260,14,500,L.zc(500),0),'The terraces':look(150,700,8,-500,1500,40),
   'A farmstead':look(F[0]-90,F[1]-80,6,F[0],F[1],2),'Willow on the bars':look(150,L.zc(150)-70,2.5,450,L.zc(450),0),'Across the graben':look(-2300,1500,180,500,0,0)};}
  if(SKEY==='scarp'){const T=L.TA,a=T(-1900,-500),b=T(300,0),c=T(-1250,-160),d=T(-200,0),e=T(1500,500),f=T(1800,700);return{'The Ostrukh Wall':[a[0],gh(a[0],a[1],40),a[1],b[0],gh(b[0],b[1],80),b[1]],
@@ -12,7 +14,7 @@ const VIEWS=(function(){const S=SITE;
   if(typeof GEODE!=='undefined'&&GEODE){const B=GEODE.block,fx=Math.cos(B.face),fz=Math.sin(B.face);V['The geode on the rim']=look(B.x+fx*9,B.z+fz*9,1.7,B.x,B.z,1.6);}return V;}
  if(SKEY==='arete'){const g0=SITE.gantry;return{'The knife-edge':look(-260,0,2.2,200,0,-1),'Down into the south pit':look(120,6,1.7,120,700,-400),'The gantry':look(g0.x+60,-30,4,g0.x,30,0),
   'The Arete from above':look(-900,-500,260,200,0,0),'From afar':look(-2300,-1600,400,0,0,0)};}
- throw new Error('no views for '+SKEY);})();
+ throw new Error('no views for '+SKEY);}
 function describe(hit){const p=hit.point,o=hit.object;
  let best=null;for(const r of REG){if(r.r>1500)continue;if(regHas(r,p.x,p.y,p.z)&&(!best||r.r<best.r))best=r;}
  const lab=o.userData.inspectLabel||o.name||'mesh',isItem=o.isInstancedMesh&&o.userData.biome,item=isItem?(o.name||'').replace(/^biome:/,''):null;
@@ -38,6 +40,8 @@ const HCHK={
  felt(P){const bad=P.filter(p=>(p[3]==='biome:spfelt'||p[3]==='biome:spfelthum')&&HEAT_AT(p[0],p[2])>63);return{ok:!bad.length,detail:bad.length?bad.length+' felt on ground over 63 degC':'felt off the hot ground'};},
  dry(P){const bad=P.filter(p=>{const w=waterH(p[0],p[2]);return w>-1e8&&p[1]<w-.6;});return{ok:!bad.length,detail:bad.length?bad.length+' under the water (first '+bad[0][3]+')':P.length+' instances, none drowned'};},
  geode(G){const n=G?G.lining.length:0;return{ok:n>1000,detail:n?'the walk-in geode: '+n+' amethyst points in a '+(G.block.pocket.r*2).toFixed(1)+' m pocket':'no geode'};},
+ fauna(F){const need={terraces:'grazer',scarp:'grazer',pitfloor:'grazer',arete:'predator'}[SKEY],n=F&&F.byRole?F.byRole[need]||0:0;
+  return{ok:n>0&&!(F.missing&&F.missing.length),detail:n?n+' '+need+'s placed and registered ('+(F.keys||[]).join(', ')+'), '+F.drawn+' drawn':'no '+need};},
  sites(list){const need={terraces:'farmstead',scarp:'tollhouse',pitfloor:'camp',arete:'trail'}[SKEY],n=list.filter(s=>s.kind===need).length;return{ok:n>0,detail:n+' '+need+' site(s) of '+list.length};},
  camerasOut(C){const bad=C.filter(c=>c.y<terrainH(c.x,c.z)+.5);return{ok:!bad.length,detail:bad.length?'under the ground: '+bad.map(c=>c.view).join(', '):C.length+' cameras above the ground'};}};
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P=instPoints();
@@ -47,6 +51,7 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P
  if(SKEY==='pitfloor'){add('the felt off the hot ground (KTHERM)',HCHK.felt(P));add('the walk-in geode on the rim (S7)',HCHK.geode(typeof GEODE!=='undefined'?GEODE:null));}
  add('nothing rooted under the water',HCHK.dry(P));
  add('the people\'s sites registered',HCHK.sites(SITES_PEOPLE));
+ add('the station\'s hexapods (kits/fauna, by land)',HCHK.fauna(window._fauna));
  add('preset cameras above the ground',HCHK.camerasOut(Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail});
@@ -59,6 +64,7 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  if(SKEY==='pitfloor')add('no geode',HCHK.geode(null));
  if(SKEY==='pitfloor')add('felt on the vent',HCHK.felt([[SITE.geyser.x,0,SITE.geyser.z,'biome:spfelt']]));
  add('no site',HCHK.sites([]));
+ add('no hexapods',HCHK.fauna({byRole:{},keys:[],drawn:0}));
  add('a camera under the ground',HCHK.camerasOut([{view:'under',x:0,y:terrainH(0,0)-5,z:0}]));
  return R;}
 KHOST.on(SKY.view,'view');
