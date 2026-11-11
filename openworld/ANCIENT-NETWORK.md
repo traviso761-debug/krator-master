@@ -846,6 +846,38 @@ The Ancient network is 63 sites and 22,026 km, 3,627 km of it in tunnel, with no
 6. **Serai**: which lake? Jimjam's own lake shore near the city, or the north basin's remnant lake 136 km north on the
    frontier road?
 
+### 8.14 The owner, 2026-11-11 (places and the last classes)
+
+- **Amaro** stays inside the polygon 'Shumar', at 734,1182 (3,191 m). **No Ancient route crosses Shumar**: a **dirt
+  path** (102 km) joins Amaro to the Ancient highway.
+- **Driyan** lies **east of Shim, up along the river**: on the Sharf Rivrh (`r034`) at 705,1129. It is a node of the
+  Ancient network, with trunks to Wing, Nazar and Pluton, and an Izani highway to Shim.
+- **Dalab makes shoddy repairs to the Ancient roads**, not dirt roads beside them. The Ancient routes inside the Realm of
+  Dalab carry the keeper class `shoddy` (drawn tan).
+- **Serai** sits in the northern basin, on that lake, on the highway. It moves to **894,410**, on the north basin's
+  remnant lake by the north basin highway, 192 km from its old place (826,478). Edit M12.
+- **Ancient highways keep above the old shorelines** in the northern semiarid basins, because the dam lakes were full in
+  the Ancients' day. Every cell under the two dam lakes' old levels costs 20 times the surface for an Ancient route, so the
+  routes go round. Modern roads may cross the dry beds.
+- **The Xanadu roads**: an intermediate class (`xanadu`) joining the Sultanate's settlements (Erehwon, Qiblai, Theodiga,
+  Strongbow, Strongwall) and Oidong (Longsong). There are 8 roads, 2,301 km.
+- **Parabola**: the owner answered the build session's five questions. It is tilted 30 degrees (the back rim about 980 m
+  up), faces north, has lost the west quarter of its shell, carries mirror panels on the terrace lips, and keeps the Izani
+  customs post. All five were relayed to that session.
+
+**The network now:** the Ancient network is 62 sites and 22,038 km, 3,733 km of it in tunnel, with no open stretch over
+8 km.
+
+| Class | Routes | km |
+|---|---|---|
+| *Izani highways* | 39 | 8,246 |
+| *Xanadu roads* | 8 | 2,301 |
+| *Yuni roads* | 3 | 1,037 |
+| *Trade highway* | 1 | 583 |
+| *Vothic highways* | 2 | 283 |
+| *Dirt paths* (Nereus, Coyote Canyon, Amaro) | 3 | 935 |
+| *Beast Rider trails* | 7 | 576 |
+
 ### 8.9 Still open (earlier list; items 2 to 5 answered in 8.10)
 
 1. **The Stair tunnel's canon: done** (the owner: "Yes, rewrite it"). `LORE.md` §4's Catch passage now says that no

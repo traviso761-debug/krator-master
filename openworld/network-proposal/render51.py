@@ -12,7 +12,7 @@ def F(sz):
         try: return ImageFont.truetype(f, sz * K)
         except Exception: pass
     return ImageFont.load_default()
-UP = {'kept': (70, 200, 105), 'partly': (230, 196, 70), 'lapsed': (236, 140, 52), 'decayed': (214, 72, 58)}
+UP = {'shoddy': (200, 168, 96), 'kept': (70, 200, 105), 'partly': (230, 196, 70), 'lapsed': (236, 140, 52), 'decayed': (214, 72, 58)}
 TUN, WAT, VIA = (186, 140, 255), (110, 196, 242), (150, 230, 235)
 def P(p): return (p[0] * K, p[1] * K)
 def dashed(pts, col, w, on=10, off=7):
@@ -34,13 +34,15 @@ def runs(r):
         while j < len(pts) - 1 and (fm[j], up[j]) == key: j += 1
         yield [P(p) for p in pts[i:j + 1]], fm[i], up[i]
         i = j
-order = ['extension', 'trail', 'dalab', 'dirt', 'yuni', 'trade', 'vothic', 'izani', 'trunk', 'possible', 'branch', 'line']
+order = ['extension', 'trail', 'dalab', 'dirt', 'xanadu', 'yuni', 'trade', 'vothic', 'izani', 'trunk', 'possible', 'branch', 'line']
 for cls in order:
     for r in d['routes']:
         if r['class'] != cls: continue
         allp = [P(p) for p in r['px']]
         if cls == 'extension':
             dashed(allp, (12, 14, 16), 5.5, 12, 8); dashed(allp, (225, 228, 232), 3, 12, 8); continue
+        if cls == 'xanadu':
+            dr.line(allp, fill=(12, 14, 16), width=5 * K); dr.line(allp, fill=(250, 150, 60), width=int(2.6 * K)); continue
         if cls == 'trail':
             dashed(allp, (12, 14, 16), 4, 3, 3); dashed(allp, (120, 205, 95), 2.2, 3, 3); continue
         if cls in ('dalab', 'dirt'):
@@ -81,7 +83,7 @@ for n in d['nodes']:
 nodenames = {n['name'] for n in d['nodes']}
 towns = {}
 for r in d['routes']:
-    if r['class'] in ('izani', 'vothic', 'trade', 'yuni', 'dalab', 'trail', 'dirt'):
+    if r['class'] in ('izani', 'vothic', 'trade', 'yuni', 'dalab', 'trail', 'dirt', 'xanadu'):
         for nm, q in ((r['from'], r['px'][0]), (r['to'], r['px'][-1])):
             if nm not in nodenames and nm not in ('the Ancient highway', 'the Temora highway', 'the north basin highway'): towns[nm] = q
 for nm, q in towns.items():
@@ -93,8 +95,8 @@ for nm, p in d['extra'].items():
     dr.polygon([(x, y - r), (x + r, y), (x, y + r), (x - r, y)], fill=(186, 140, 255), outline=(10, 12, 14), width=2 * K)
 # legend
 leg = [('The Rift line, the Inner Wall and Stair lines: centre = keeper', 'line'), ('Trunk, coloured by keeper', 'trunk'), ('Kept (Iziz, the State, Voth, Republic, Tungangs)', UP['kept']),
-       ('Partly kept (Yuni, Xanadu)', UP['partly']), ('Lapsed since the Empire broke', UP['lapsed']), ('Badly decayed', UP['decayed']), ('Tunnel (none open over 8 km)', 'tun'),
-       ('Causeway / viaduct', 'wat'), ('Possible: the line on by Stair to Parabola', 'pos'), ('Izani highway (not Ancient)', 'iz'), ('Vothic highway (not Ancient)', 'vo'), ('Trade highway, Jimjam to Lux (spottily kept)', 'tr'), ("Yuni's road to Mungo", 'yu'), ("Dirt roads (Dalab's; the path to Nereus)", 'da'), ('Beast Rider undergrowth trail', 'trl'), ('Extension, lore to come', 'ext')]
+       ('Partly kept (Yuni, Xanadu)', UP['partly']), ('Lapsed since the Empire broke', UP['lapsed']), ('Shoddy repairs (Dalab)', UP['shoddy']), ('Badly decayed', UP['decayed']), ('Tunnel (none open over 8 km)', 'tun'),
+       ('Causeway / viaduct', 'wat'), ('Possible: the line on by Stair to Parabola', 'pos'), ('Izani highway (not Ancient)', 'iz'), ('Vothic highway (not Ancient)', 'vo'), ('Trade highway, Jimjam to Lux (spottily kept)', 'tr'), ("Yuni's roads", 'yu'), ('Xanadu road (the Sultanate, Oidong)', 'xa'), ('Dirt paths (Nereus, Coyote Canyon, Amaro)', 'da'), ('Beast Rider undergrowth trail', 'trl'), ('Extension, lore to come', 'ext')]
 x0, y0 = 18 * K, 56 * K
 dr.rectangle([x0, y0, x0 + 520 * K, y0 + (24 * len(leg) + 66) * K], fill=(14, 17, 16), outline=(70, 80, 76), width=2 * K)
 dr.text((x0 + 14 * K, y0 + 12 * K), 'The proposed Ancient network, scale model 5.1', font=f22, fill=(244, 242, 234))
@@ -110,6 +112,7 @@ for k, (lab, s) in enumerate(leg):
     elif s == 'tr': dashed([a, b], (236, 96, 214), 2.6, 10, 6)
     elif s == 'yu': dr.line([a, b], fill=(240, 205, 80), width=int(2.4 * K))
     elif s == 'da': dashed([a, b], (205, 165, 110), 2.4, 6, 4)
+    elif s == 'xa': dr.line([a, b], fill=(250, 150, 60), width=int(2.6 * K))
     elif s == 'trl': dashed([a, b], (120, 205, 95), 2.2, 3, 3)
     elif s == 'ext': dashed([a, b], (225, 228, 232), 3, 12, 8)
     else: dr.line([a, b], fill=s, width=int(4.2 * K))
