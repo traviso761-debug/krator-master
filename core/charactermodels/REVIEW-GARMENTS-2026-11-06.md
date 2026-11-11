@@ -470,3 +470,77 @@ The plan takes sections 1 to 3 above whole. What to change before acting on it:
   caftan, the dredger's robe, the heliophant's mantle, the aedile's agbada, Phil's trousers, the praetorian's lorica,
   the patriarch's robe, the commissar's coat, the cantor's gorget: `handoff-shots/fix1-2026-11-10.jpg`, a walk.
   Blender-built garments take it at their next build.
+- **Issue 9 (2026-11-10): motifs on flared skirts.** `paint_strip` painted a part's strip at its mean circumference,
+  so a hem band's motif repeated the same number of times on every row, stretched at a flared hem and squeezed at the
+  waist. The call passes the part's circumference row by row now and each row of a band is tiled at its own (the
+  cell's row resampled across that row's repeats), so a motif keeps its size in metres from waist to hem. Geometry
+  identical (138 of 138 pieces); 96 pieces' textures change, every part with a band whose rows differ in girth:
+  `handoff-shots/fix9-2026-11-10.jpg`, the hips.
+- **Issue 6 measured, not yet asserted (2026-11-10).** The widest radius of each of the 45 head pieces about the
+  head's axis (brims included): the patriarch's cap 0.438 m, the magistrate's hat 0.420, the lancer's casque 0.416,
+  the dredger's kasa 0.394, the chosen's hat 0.342, the heliophant's crown 0.337, the cataphract's helm 0.320, the
+  heliarch's halo 0.311; the median 0.204. A brim or a halo is wide by design, so the assertion wants the crown ring's
+  radius (the closed rows at skull height), which these numbers do not separate; the owner's eye on the eight widest
+  decides the bound before a build fails on it. Issue 4's half that is a cap went in: `limb_tube` caps an arm tube's
+  ease at 2 cm and its flare at 2.8 cm for every caller, not `sleeve()` alone.
+- **Issue 5 tried and taken back (2026-11-10).** `covered()` was given a margin at every open edge of the garment,
+  scaled by the edge's standoff from the skin (none within 10 mm, the full 3.5 cm from 25 mm). Dry-built, it unhid
+  a quarter of the mask on coats and cuirasses (the guild coat 4748 to 3644 triangles, the sibyl's drape 5036 to 3682,
+  the praetorian's lorica 4448 to 3402): a garment is many grids, and every grid's edge is "open" by topology, the
+  sleeve's top ring inside the shoulder, each band's rows, the hem, so the armholes, waist and hem all shed their
+  mask, and the island shaman's arm wrap failed Check 8 (the skirt weights follow the hide). The holes of issue 5
+  want an edge that the eye can see past, which topology does not give: a visibility test (the skin's triangles a
+  camera round the figure sees through an opening), or the hole patches of the audit mapped back to triangles. Left
+  as the opt-in neckline margin it was.
+- **A gate that lied, caught (2026-11-10, late).** Every dry build from issue 13 on stopped at the island shaman's
+  mantle: its arm wraps carry the word `wrap`, so the belt conform took them for bands, copied trunk weights onto an
+  arm part and Check 8 failed the build. The crash came after 135 of 268 pieces, the hash comparison counted only
+  the pieces both roots held, and the commits for issues 13, 1 and 9 (6266bfd0c, 35eb45f68, 082edc53d) adopted the
+  cultures built before the crash only: Yuni, Yusar, Eternian and the Order were left at the strip's state. Fixed:
+  an arm part (`arm` or `arm_tube` fact, or `is_arm`: the wraps are an arm tube by suffix, not an arm word) is never
+  a band to issue 13; the sleeve cap of issue 4 applies to arm tubes
+  18 cm or longer and never to a pauldron (the first cut moved pauldrons 6 to 9 cm); the dry build now reports
+  its piece count against the last complete one. The completion commit rebuilds every culture and adopts every
+  piece that differs from the repo's.
+- **The baseline audit after the night (2026-11-10).** The 66 baseline outfits on the final page against the sweep
+  before the night: the 60 outside the Yuni are unchanged to the pixel class (skin 16414 to 16430, "under" 162767
+  both, "inside" 633651 to 633648), as they should be, since they are Blender-built and no builder fix reaches them;
+  only the Hykkousoi trade's "hole" moved (the greaves' mask, earlier). The Yuni carry the night: "under" 53690 to
+  6327 and 34425 to 586 on the peasants (the trousers), skin to 0 on the man's noble and peasant, "inside" up on the
+  trade duster (17254 to 23346, the standing collar seen from above). The 66 cannot measure the night's builder
+  fixes: the 84 outfits that wear a changed piece are audited before and after for that (`night_audit.sh` in the
+  session scratch; the result is appended below when it lands).
+- **The night measured on the outfits it touched (2026-11-10).** The 84 outfits that wear a changed piece, the roles
+  build's pieces against the final ones (idle, walk, run, crouch; four views): "inside" 929600 to 828238 px (-11 %),
+  "under" 109038 to 96372 (-12 %), skin 171138 to 165559 (-3 %), "hole" 75273 to 73606; 59 outfit-class rows better,
+  37 worse. Better: the Beast Rider lancer's "inside" 67664 to 22947, the Izani praetorian's 27527 to 16109, the
+  watch's 19928 to 8824, the aedile's 16863 to 8860, the dredger's 14881 to 7104, the Order warden's "under" 5153 to
+  25. Worse, each wanting a look: the islander shaman's "inside" 39351 to 80079 and "hole" 1444 to 3348 (the largest
+  regression: the strip put his mantle on the core's tube), the Chichani ordinator's "inside" 4093 to 11039, the
+  chosen's 16829 to 20684, the Xanadu priest man's 22832 to 26632, the Order cham's "under" 0 to 2344 (a band drawn in
+  under its robe).
+- **That comparison is withdrawn: the scratch pages lied (2026-11-10, found chasing the regressions).** A scratch
+  page took a dry root's GLBs but kept the kit the repo's page embedded (`KCHAR_DATA`: hide masks, cloth chains,
+  anchor vertices), and the first version hard-linked the page itself, so it followed every later rebuild. The
+  "before" side of the 84-outfit audit therefore drew old pieces with the final kit: on the shaman's mantle the
+  chains' anchors indexed a mesh of 2861 vertices with a kit made for 3302. The numbers above (-11 %, -12 %, the five
+  regressions) are not evidence either way. The same holds, more mildly, for the night's before/after sheets:
+  their geometry is each build's own, their hide masks and chains the repo's of the moment. Not affected: the dry
+  build's geometry hashes, the 66-outfit audit and both verifies, which run on the repo's real page. Fixed:
+  `scratch_dist.py` now writes each root's kit entries into the page's `KCHAR_DATA` beside its pieces. The audit is
+  re-run on a roles page (every culture) against the repo's final page; its result replaces the above.
+- **The night measured again, on consistent pages (2026-11-10).** The 84 outfits, a roles page (dry-b4 with dry-b6's
+  Yuni and Order, each with its own kit) against the repo's final page: "inside" 874682 to 824007 px (-5.8 %), "under"
+  100477 to 98093 (-2.4 %), skin 167660 to 163640 (-2.4 %), "hole" 76757 to 73959 (-3.6 %); 45 rows better, 30 worse.
+  Better: the Izani watch's "inside" 18908 to 8824, the Beast Rider lancer's 32496 to 22947, the dredger's 13652 to
+  7104, the sibyl's 30408 to 24440, the Yuni sentinel's skin 6068 to 1676, the Order cham's "inside" 20773 to 16820.
+  Worse, all smaller than the gains: the Yusar dronemaster's "inside" 2452 to 6798, the Abyssal trade woman's 5813 to
+  9846, the Xanadu priest man's 22832 to 26632, the Yuni trade woman's 7971 to 11609, the painted warden's 8849 to
+  11971, the heliophant's 9633 to 12266, the commissar's 4159 to 6127, the ordinator's 9178 to 11039. The islander
+  shaman and the Order cham, named as regressions by the flawed run, are not: the shaman does not appear and the
+  cham improved. Several of the worse rows are coats whose collar stands as a ring now (the dronemaster, the
+  commissar, the Yuni trade): the camera sees into the ring, which the audit counts as "inside".
+- **The sheets re-shot (2026-11-10, evening).** `scratch_dist.py` pages with each root's own kit: `roles-`, `strip-`,
+  `fixes-` and `motifs-2026-11-10.jpg` and nine pairs in `closeups-2026-11-10.jpg` replace the first set (removed).
+  The strip changes 53 pieces, not 71. On consistent pages the islander shaman is the same before and after the
+  strip to the eye, as the audit said.

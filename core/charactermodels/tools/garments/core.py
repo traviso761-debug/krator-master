@@ -790,7 +790,8 @@ def assemble_garment(gid, label, slot, culture, parts, covers_hair=False, covers
                                         continue
                                 r_cur = math.hypot(dx, dy)
                                 ang = math.atan2(dx, dy) % (2.0 * math.pi)
-                                if is_strap_band and pz < SHOULDER - 0.06 and r_cur > 1e-6 and getattr(pt, 'closed', False) and pt.P.shape[1] >= 24:
+                                is_body_band = is_strap_band and getattr(pt, 'closed', False) and pt.P.shape[1] >= 24 and not (F & {'arm', 'arm_tube'}) and not getattr(pt, 'is_arm', False)
+                                if is_body_band and pz < SHOULDER - 0.06 and r_cur > 1e-6:
                                     # issue 13: a belt, sash or obi conforms to the trunk at its own height, 3 mm out,
                                     # drawn in as well as out (stood off the largest radius within 3.8 cm it hung in the air
                                     # over a pleated tunic; REVIEW-GARMENTS-2026-11-06.md, issue 13). Rings only: a sash's
@@ -1003,7 +1004,9 @@ def assemble_garment(gid, label, slot, culture, parts, covers_hair=False, covers
         h = TEX - y0 if k == len(parts) - 1 else max(4, int(round(share[k] * TEX)))
         if y0 + h > TEX:
             h = max(1, TEX - y0)
-        img[y0:y0 + h] = paint_strip(p.paint, TEX, h, max(circ, 0.02), max(length, 0.02))
+        R_grid_c = np.concatenate([p.P, p.P[:, :1]], 1) if p.closed else p.P
+        circ_rows = np.linalg.norm(np.diff(R_grid_c, axis=1), axis=2).sum(1) if p.P.ndim == 3 else None
+        img[y0:y0 + h] = paint_strip(p.paint, TEX, h, max(circ, 0.02), max(length, 0.02), circ_rows=circ_rows)
         v_top, v_bot = y0 / TEX, (y0 + h) / TEX
         pad = 1.5 / TEX
         R_cnt, C_cnt = p.P.shape[:2]
@@ -1063,7 +1066,8 @@ def assemble_garment(gid, label, slot, culture, parts, covers_hair=False, covers
         F = fx(p)
         if id(p) in trunk_ids:
             trunk_ranges.append((gi_offset, gi_offset + len(flat_P)))
-        elif 'strap' in F and slot in ('torso', 'legs') and not getattr(p, 'row_joints', None) and not p.rigid_joint:
+        elif 'strap' in F and slot in ('torso', 'legs') and not getattr(p, 'row_joints', None) and not p.rigid_joint and not (F & {'arm', 'arm_tube'}) and not getattr(p, 'is_arm', False):
+            # (not an arm wrap: it carries the word, and trunk weights on an arm part bleed the lower spine, Check 8)
             band_ranges.append((gi_offset, gi_offset + len(flat_P)))
         spans_both_sides = bool(flat_P[:, 0].min() < -0.09 and flat_P[:, 0].max() > 0.09)
         is_true_arm_tube = getattr(p, 'is_arm', False) or 'arm_tube' in F

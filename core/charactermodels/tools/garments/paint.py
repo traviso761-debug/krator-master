@@ -1280,7 +1280,10 @@ def motif(style, w, h, fg, bg, aspect=1.0):
     return img
 
 
-def paint_strip(spec, W, H, circ, length):
+def paint_strip(spec, W, H, circ, length, circ_rows=None):
+    """the strip of a part's texture: W px round (circ metres), H px down (length metres). circ_rows, when given, is
+    the part's circumference row by row (top first): a band's motif is then tiled at each row's own circumference,
+    so it keeps its size in metres on a flared skirt (issue 9, REVIEW-GARMENTS-2026-11-06.md)"""
     img = np.empty((H, W, 3), dtype=np.float64)
     img[:] = spec['base']
     g = spec.get('weave', 0.06)
@@ -1330,6 +1333,18 @@ def paint_strip(spec, W, H, circ, length):
         band_h_m = max(abs(f1 - f0), 1e-4)
         cell = motif(style, cw, r1 - r0, np.array(fg), np.array(bg if bg is not None else spec['base']), aspect=(circ / n_rep) / band_h_m)
         band_arr = np.tile(cell, (1, W // cw + 1, 1))[:, :W]
+        if circ_rows is not None and rep and len(circ_rows) > 1:
+            cr = np.interp(np.arange(r0, r1), np.linspace(0, max(H - 1, 1), len(circ_rows)), circ_rows)
+            xs = np.arange(W)
+            rows_out = np.empty((r1 - r0, W, 3), dtype=np.float64)
+            for k in range(r1 - r0):
+                per = W / max(1, int(round(cr[k] / rep)))          # pixels per repeat on this row
+                pos = (xs % per) / per * cell.shape[1]
+                i0 = np.floor(pos).astype(int) % cell.shape[1]
+                i1 = (i0 + 1) % cell.shape[1]
+                t = (pos - np.floor(pos))[:, None]
+                rows_out[k] = cell[k, i0] * (1 - t) + cell[k, i1] * t
+            band_arr = rows_out
         img[r0:r1] = band_arr * (1 + rng.normal(0, 0.015, (r1 - r0, W, 1)))
 
     for p_spec in panels:
