@@ -28,7 +28,8 @@ const spec = (px, py, o) => Object.assign({ name: 'Camp', kind: 'hunt', size: 'c
 const fresh = () => K.create();
 
 // ---- coordinates: the regions' frames against the scale model's own pixels
-const REGIONS = ['little-demo', 'isle-demo', 'north-basin'].map(n => readJ('openworld/' + n + '/data/region.json'));
+/* the little demo was retired to archive/ (2026-10-20); its region file is read there */
+const REGIONS = ['archive/little-demo', 'openworld/isle-demo', 'openworld/north-basin'].map(n => readJ(n + '/data/region.json'));
 /* a region's own pixels (the old canvas, map '4') give its x, z exactly; the model's 5.1 pixels give them too, but for a
    place moved on the model since the region was cut (reported, not failed) */
 let pairs = 0, off = 0, offOld = 0, own = 0, ownOff = 0;
@@ -57,7 +58,7 @@ ok('fromRegion and toRegion invert; toMap moves the pixel and keeps the place',
 const R0 = fresh();
 ok('the registry starts empty: it is not seeded from the NPC world', K.list(R0).length === 0 && K.save(R0).ops.length === 0 && !('seed' in K.save(R0)),
   K.fold({ seed: [{ id: 'op-sthegate' }], ops: [] }).errors.length === 1);
-const npcAdd = { op: 'ADD', id: 'op-sthegate', rec: { id: 'op-sthegate', player: 'player', name: 'The Gate', kind: 'fort', size: 'town', place: K.place(1408, 414, '5.1'), founded: 0 } };
+const npcAdd = { op: 'ADD', id: 'op-sthegate', rec: { id: 'op-sthegate', player: 'player', name: 'The Gate', kind: 'fort', size: 'town', place: K.place(gateNpc.px, gateNpc.py, '5.1'), founded: 0 } };
 const r1 = K.apply(R0, npcAdd);
 const plAdd = { op: 'ADD', id: 'ps-gate', rec: Object.assign({}, npcAdd.rec, { id: 'ps-gate' }) };
 ok('an NPC place cannot be ADDed: only ps- ids, only this player\'s', !r1.ok && /not a player settlement id/.test(r1.why) &&
@@ -68,10 +69,11 @@ ok('refs only cross to the NPC world, by a known kind and relation',
   K.check(withRef([{ kind: 'scale', id: 'sthegate', rel: 'near' }, { kind: 'sim', id: 'kautoa', rel: 'trade' }])).length === 0,
   K.check(withRef([{ kind: 'scale', id: 'ps-other', rel: 'near' }])).length > 0 && K.check(withRef([{ kind: 'npc', id: 'x', rel: 'near' }])).length > 0 &&
   K.check(withRef([{ kind: 'sim', id: 'x', rel: 'love' }])).length > 0);
-const nw = K.nearWorld(K.place(1410, 415, '5.1'), NPC, 20000);
+/* near the Gate as the model has it now (moved from 1408,414 to the Narrows on 2026-11-09): read from its record */
+const nw = K.nearWorld(K.place(gateNpc.px + 2, gateNpc.py + 1, '5.1'), NPC, 20000);
 ok('nearWorld reads the NPC places near a spot as refs, nearest first, keeping none', nw.length >= 1 && nw[0].id === 'sthegate' && nw[0].kind === 'scale' &&
   nw.every((f, i) => i === 0 || f.d >= nw[i - 1].d) && K.list(R0).length === 0,
-  K.nearWorld(K.place(1410, 415, '5.1'), NPC, 1).length === 0, nw.map(f => f.name).join(', '));
+  K.nearWorld(K.place(gateNpc.px + 2, gateNpc.py + 1, '5.1'), NPC, 1).length === 0, nw.map(f => f.name).join(', '));
 
 // ---- founding
 const R1 = fresh(), f1 = K.found(R1, spec(700, 900));
@@ -84,7 +86,7 @@ ok('the founding rule: apart from the player\'s own live settlements by gap',
   !K.canFound(R1, at(0, 100)).ok && !K.canFound(R1, at(399, 100)).ok && K.canFound(R1, at(401, 100)).ok,
   K.canFound(R1, at(399, 100), { gap: 0 }).ok && !K.canFound(R1, at(401, 100), { gap: 300 }).ok);
 const clearNpc = (x, z, r) => { const h = K.nearWorld({ map: '5.1', x, z }, NPC, r + 3000)[0]; return h ? h.name + ' (' + h.id + ')' : null; };
-const byGate = spec(1409, 414);
+const byGate = spec(gateNpc.px + 1, gateNpc.py);
 ok('the world\'s NPC keep-clears and the page\'s ground can refuse a spot; the registry knows neither',
   !K.canFound(fresh(), byGate, { clear: clearNpc }).ok && /The Gate/.test(K.canFound(fresh(), byGate, { clear: clearNpc }).why) &&
   !K.canFound(fresh(), spec(10, 10), { ground: () => false }).ok,

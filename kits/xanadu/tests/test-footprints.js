@@ -54,7 +54,7 @@ const fail = m => { fails++; console.log('FAIL ' + m); };
 let js = null;
 for (const py of ['python3', 'python']) {
   try {
-    js = cp.execFileSync(py, ['-c', 'import sys; sys.path.insert(0, sys.argv[1]); import kit_bundle; sys.stdout.write(kit_bundle.bundle()[0])', KIT],
+    js = cp.execFileSync(py, ['-c', 'import sys; sys.path.insert(0, sys.argv[1]); import kit_bundle; sys.stdout.buffer.write(kit_bundle.bundle()[0].encode("utf-8"))', KIT],
       { encoding: 'utf8', maxBuffer: 64 << 20, stdio: ['ignore', 'pipe', 'inherit'] });
     break;
   } catch (e) { /* the next name */ }
