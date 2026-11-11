@@ -70,6 +70,18 @@ them all out.
      16), now in `core/materials/PROMPTS-NEEDED.md` section 43.
    Written into `LORE.md` where they are lore.
 
+## The owner's answers, round 4 (2026-11-11)
+
+1. **Build the Fellgang villages now** (question 27): the Fellgang set's village defs of section 3.3.1 go ahead of the
+   order, in parallel with the Line's biome.
+2. **The village contract stands** (question 18): riftrim's `fg-*` keys and boxes kept; the `fellgang` row moves into
+   `core/hamlet` with `fowling` and `ice` focuses.
+3. **Loj Twenny is the first hold** after the Line's biome (question 17).
+4. **The Glaziers' culture id is `glazier`** (question 3).
+5. **The rest stands** (questions 9, 13, 19): the Hearth loj's cooling suits on the Ice-cutters' ice; the bait tin and the
+   brew; Loj Nahn as a later fourth set.
+6. The owner asked **what the carriers are** (question 5, still open): section 1.3, "The carriers".
+
 ## 0. What the kit is
 
 | | |
@@ -351,7 +363,18 @@ living**, and the punk shows in each differently:
 |---|---|---|
 | **The bands** (*wildcats*) | raiders and hunters with no steward, each with "a rulebook of their own": Wildcat (427,1453), the war camps `core/camp` still lacks a row for, Firebliss's seasonal hunters | strongest: spiked plate, trophies (a Labber's helmet, a Lizard's scale), slogans daubed on everything (NO SKABS), war drums, soot-blacked eyes, a bigun's seat |
 | **The fell villages** | the Fowlers, the Ice-cutters, the High Rift's summer shielings | in paint and pride: slogans over doors, rope badges, the family's rope as its banner, a few trophies on the meeting hall; the work is careful and the houses tidy |
-| **The carriers** | the Ice-cutters' long carry down the wall, egg and honey runners, guides for hire | the road gear: goggles worn up, scrap armour for the road, painted sledges |
+| **The carriers** | the ones who live on the road, not in a village: the Ice-cutters' long carry down the wall, egg and honey runners, guides for hire | the road gear: goggles worn up, scrap armour for the road, painted sledges |
+
+**What the carriers are** (the owner asked, 2026-11-11; *proposed*). The rim is a high, broken country between the
+Tungangs' holds, Dalab's road and the hot Rift floor 4 km below, and its goods move on people's backs and sledges. The
+carriers are the Fellgangs who make a living moving them: **haulers** (the Ice-cutters' night carry of ice down the south
+wall to the floor towns, the Fowlers' eggs and honey to the Hearth hold), **guides** (hired by Dalab's trains, traders and
+the odd Historian across the fells and down the walls), and **runners** (messages between the villages and the lojes' rim
+mouths). They are a way of living, not a place: a carrier belongs to a village or a band but spends the season on the road,
+in **carry huts** a day apart, sleeping by the **lantern road**. To the kit that means road pieces, not buildings: the
+`fg-carry-hut`, the `fg-lantern-post`, sledges and pack frames, and a `core/camp` row for a carry party's night halt. A
+natural extension, for the owner to decide: carriers hiring on as **porters at the Line's gaps** near the portals,
+where the Tungangs' underground road meets the rim's.
 
 **How they live** (*proposed* unless marked).
 
