@@ -81,7 +81,7 @@ function epiBole(T,rAt,st,lv,k,uLo,uHi){const n=Math.round(rr(1.2,5)*k*smooth(.4
  for(let i=0;i<n;i++){const u=rr(uLo==null?.12:uLo,uHi==null?.78:uHi),a=rr(0,TAU),R=rAt(u)+.05,x=T.x+Math.cos(a)*R,y=T.y0+T.H*u,z=T.z+Math.sin(a)*R,s=rr(.6,1.5);
   BIO.put('epi',[x,y,z],qUp([Math.cos(a)*.85,.55,Math.sin(a)*.85]),[s,s*.8,s],epiCol());st.epi++;
   if(rng()<.5){BIO.put('epihang',[x+Math.cos(a)*.3,y-.2,z+Math.sin(a)*.3],qFacing([Math.cos(a),0,Math.sin(a)]),[rr(.9,1.8),rr(2,6),1],bright(vary(pick(rng()<.6?PAL.epiDull:PAL.epi),.02,.1,.06),1.15));st.epi++;}
-  if(rng()<.3){const col=bloomCol();for(let b=0,m=ri(2,5);b<m;b++)BIO.put('bloom',[x+rr(-.6,.6),y+rr(-.3,.9),z+rr(-.6,.6)],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),rr(.25,.5),col);st.blooms++;}}}
+  if(rng()<.3){const col=bloomCol();for(let b=0,m=ri(2,5);b<m;b++)BIO.put('bloom',BIO.holdTo([x,y,z],[x+rr(-.6,.6),y+rr(-.3,.9),z+rr(-.6,.6)],.35),qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),rr(.25,.5),col);st.blooms++;}}}
 function epiBough(p,wet,st,lv,k){if(rng()>k*.85*smooth(.40,.9,wet)*(lv===2?1:.4))return;
  const s=rr(.6,1.4);BIO.put('epi',[p.x+rr(-.4,.4),p.y+(p.r||.3)*.75,p.z+rr(-.4,.4)],qUp([rr(-.25,.25),1,rr(-.25,.25)]),[s,s*.8,s],epiCol());st.epi++;
  if(rng()<.6){BIO.put('epihang',[p.x+rr(-.5,.5),p.y-(p.r||.3)*.6,p.z+rr(-.5,.5)],qEuler(0,rr(0,TAU),0),[rr(1,2),rr(2.5,7),1],bright(vary(pick(rng()<.5?PAL.epiDull:PAL.epi),.02,.1,.06),1.15));st.epi++;}}
@@ -89,7 +89,17 @@ function epiBough(p,wet,st,lv,k){if(rng()>k*.85*smooth(.40,.9,wet)*(lv===2?1:.4)
 function beardsAt(p,wet,k,st){const n=Math.round(rr(0,1.6)*k*smooth(.7,.97,wet));
  for(let i=0;i<n;i++)BIO.put('beard',[p.x+rr(-.8,.8),p.y-(p.r||.3)*.5,p.z+rr(-.8,.8)],qEuler(0,rr(0,TAU),0),[rr(1.2,2.4),rr(2.5,8),1.2],bright(vary(pick(PAL.mossPale),.02,.08,.06),1.25));}
 // ---------------------------------------------------------------- foliage helpers
+/* THE CROWN HELD BY ITS TREE (the core attach audit, 2026-11-08; core/biome/README.md "What held means"): a builder runs with its own
+   span log (BIO.segs: every BIO.tube span and BIO.beam it draws, and the bole's top as treeTop gives it), and a clump drawn while one
+   is open is brought to within .55 of its size of the nearest span (BIO.snapSeg, BIO.holdTo): the crowns were jittered round spots up
+   to a bough's length off the wood. No draw moves (the stream is the same); no new triangles. Outside a builder nothing is held */
+const holdClump=(item,x,y,z,size)=>{const L=BIO.segs;if(!L||!L.length)return null;const q=BIO.snapSeg(L,[x,y,z]),d=BIO.defs[item];
+ const stem=!!(d&&(d.fit||d.raw&&d.raw.userData.card&&d.raw.userData.card.kind!=='clump'));   /* as the audit reads it */
+ return q?BIO.holdTo(q.p,[x,y,z],stem?size*.2+.3:size*.55):null;};   /* a library card on its axes is a stem card: its stem on the twig */
+/* the bole's top as a span (a lathe is not logged): the leader's clumps are held by it */
+const treeTop=(T,u0,yTop,r0)=>{if(BIO.segs)BIO.segs.push({a:[T.x,T.y0+T.H*u0,T.z],b:[T.x,yTop,T.z],r0:r0,r1:.05,end:false,top:true});};
 function clumpAt(item,x,y,z,size,flat,col,cx,cy,cz,ex,ey,c2){
+ {const h=holdClump(item,x,y,z,size);if(h){x=h[0];y=h[1];z=h[2];}}
  const dx=(x-cx)/ex,dy=(y-cy)/ey,dz=(z-cz)/ex,qq=Math.hypot(dx,dy,dz);
  const ao=mix(.5,1,smooth(.3,.95,qq))*mix(.8,1,smooth(-.6,.35,dy))*rr(.88,1.1);
  const nx=dx*.9+rr(-.3,.3),ny=dy*.7+.75+rr(-.15,.2),nz=dz*.9+rr(-.3,.3),nn=Math.hypot(nx,ny,nz)||1;
@@ -115,6 +125,7 @@ B[0]=function(T,st,lv){const S=SP[T.sp],fam='bark0',H=T.H,rb=T.rb,ti=T.seed%6;
  rings.push({x:T.x,y:T.y0+H*.9+rAt(.9)*.8,z:T.z,r:.05,yy:H*.9+1,col:barkCol(S,1)});   // closed: a dome, never an open pipe
  const ph=rr(0,TAU);
  st.trunk+=BIO.lathe(fam,rings,lv===2?14:9,Math.max(1,Math.round(TAU*rb/4)),vs,(R,ang)=>R.r*(1+.8*Math.exp(-R.yy/3)*lobeSum(ang)+.02*Math.sin(5*ang+ph)),(R,ang)=>mix(1,.6+.4*clamp(lobeSum(ang),0,1),Math.exp(-R.yy/3.5)));
+ treeTop(T,.8,T.y0+H*.9+rAt(.9)*.8,rAt(.8));
  // the boughs: long, near level, drooping at the tips; two or three secondaries each
  const spots=[],nB=ri(S.boughs[0],S.boughs[1]),a0=rr(0,TAU),boughs=[];
  for(let k=0;k<nB;k++){const u=mix(.55,.88,(k+rr(0,.9))/nB),a=a0+k*GOLD+rr(-.3,.3),el=rr(.15,.45),len=T.crownR*rr(.7,1.05),r0=clamp(rAt(u)*.45,.4,1.8);
@@ -145,6 +156,7 @@ B[1]=function(T,st,lv){const S=SP[T.sp],fam='bark3',H=T.H,rb=T.rb,ti=T.seed%3;
  const ph=rr(0,TAU),nl=ri(6,9),lobes=[];for(let k=0;k<nl;k++)lobes.push({a:k/nl*TAU+rr(-.2,.2),amp:rr(.15,.4)});
  const lobeSum=ang=>{let s=0;for(const L of lobes){const c=Math.cos(ang-L.a);if(c>0)s+=L.amp*Math.pow(c,4);}return s;};
  st.trunk+=BIO.lathe(fam,rings,lv===2?14:9,Math.max(1,Math.round(TAU*rb/5)),vs,(R,ang)=>R.r*(1+.6*Math.exp(-R.yy/4)*lobeSum(ang)+.015*Math.sin(6*ang+R.yy*.08+ph)),null);
+ treeTop(T,.8,T.y0+H*.9+rAt(.9)*.7,rAt(.8));
  const spots=[],hangs=[],nB=ri(S.boughs[0],S.boughs[1]),a0=rr(0,TAU),boughs=[];
  for(let k=0;k<nB;k++){const u=mix(.74,.9,(k+rr(0,.9))/nB),a=a0+k*GOLD+rr(-.3,.3),el=rr(.15,.6),len=T.crownR*rr(.6,1.0),r0=clamp(rAt(u)*.4,.4,1.8);
   const o={x:T.x+Math.cos(a)*rAt(u)*.75,y:T.y0+H*u,z:T.z+Math.sin(a)*rAt(u)*.75},pts=treeGrow(o,[Math.cos(a)*Math.cos(el),Math.sin(el),Math.sin(a)*Math.cos(el)],len,r0,.18,5,.06,.07);
@@ -260,7 +272,7 @@ B[5]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,rc=rodCol(S,T.seed),hc=C(p
  const a0=rr(0,TAU);for(let k=0;k<nF;k++)fork([T.x,T.y0+H*.48,T.z],a0+k/nF*TAU+rr(-.3,.3),rr(.5,.85),H*rr(.22,.3),rb*.55,0);
  const sz=clamp(T.crownR*.42,1.8,4.2);
  heads.forEach(e=>{const y=Math.min(e[1],cy);clumpAt('sword',e[0],y+sz*.15,e[2],sz*rr(.85,1.15),.55,hc,T.x,cy,T.z,T.crownR,H*.3);st.clumps++;
-  if(lv===2&&rng()<.35){const col=bloomCol();for(let b=0;b<4;b++)BIO.put('bloom',[e[0]+rr(-1,1),y+sz*.4+rr(0,.5),e[2]+rr(-1,1)],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),rr(.2,.4),col);st.blooms++;}});
+  if(lv===2&&rng()<.35){const col=bloomCol();for(let b=0;b<4;b++)BIO.put('bloom',BIO.holdTo(e,[e[0]+rr(-1,1),y+sz*.4+rr(0,.5),e[2]+rr(-1,1)],.3),qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),rr(.2,.4),col);st.blooms++;}});
  if(lv===2&&rng()<.4){const a=rr(0,TAU),R=rb*1.3;BIO.put('rosette',[T.x+Math.cos(a)*R,T.y0-.02,T.z+Math.sin(a)*R],qEuler(0,rr(0,TAU),0),[.8,.6,.8],bright(vary(pick(PAL.succulent),.03,.1,.06),1.05));}};
 // 6 the parasol mushroom: a thin stalk and a flat cap on the savannah, the odd ring of young ones round it
 B[6]=function(T,st,lv){const S=SP[T.sp],H=T.H,capR=T.crownR,col=T.capCol||(T.capCol=vary(pick(PAL.capSav),.02,.08,.05));
@@ -298,6 +310,7 @@ B[9]=function(T,st,lv){const S=SP[T.sp],fam='bark6',H=T.H,rb=T.rb,ti=T.seed%3;
  rings.push({x:T.x,y:T.y0+H*.96+1,z:T.z,r:.05,yy:H*.96+1,col:barkCol(S,1)});
  const ph=rr(0,TAU);
  st.trunk+=BIO.lathe(fam,rings,lv===2?14:9,Math.max(1,Math.round(TAU*rb/5)),vs,(R,ang)=>R.r*(1+.01*Math.sin(3*ang+R.yy*.045+ph)+butF(R.yy)*lobeSum(ang)),(R,ang)=>{const f=clamp(butF(R.yy)*1.6,0,1);return f>0?mix(1,.5+.5*clamp(lobeSum(ang)*1.4,0,1),f):1;});
+ treeTop(T,.8,T.y0+H*.96+1,Math.max(.3,rAt(.8)));
  // surface roots, one off each buttress, running out along the ground
  if(lv===2)lobes.forEach(L=>{if(rng()<.3)return;const ang=L.a,R0=rAt(.03)*(1+.4*L.amp),len=rr(10,26)*(.6+.4*L.amp),rr0=clamp(rb*.16*L.amp,.5,1.6),pts=[],wob=rr(0,TAU);
   for(let j=0;j<=7;j++){const t=j/7,d=R0*.75+len*t,a=ang+.3*Math.sin(wob+t*5.2)*t;const x=T.x+Math.cos(a)*d,z=T.z+Math.sin(a)*d;if(j>1&&(BIO.mask(x,z)<=0||!BIO.clearOf(x,z,2)))break;
@@ -390,6 +403,8 @@ B[13]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,rc=tint(pick(S.bark),mean
  if(lv===2){const pc=bright(vary(pick(S.leaf),.02,.06,.04),1.1);for(let b=0,m=ri(10,22);b<m;b++){const a=rr(0,TAU),d=R*Math.sqrt(rng())*1.1;
   BIO.put('bloom',[T.x+Math.cos(a)*d,Y(T.x+Math.cos(a)*d,T.z+Math.sin(a)*d)+.03,T.z+Math.sin(a)*d],qEuler(rr(-1.3,-1.1),rr(0,TAU),rr(-.2,.2)),rr(.16,.3),pc);}}
  if(typeof REGISTER==='function'&&lv===2)REGISTER({name:S.name,kind:'tree',label:S.name,x:T.x,z:T.z,y:T.y0,r:R,h:T.H});};
+// every builder with its own span log (holdClump above); BIO.owner, the range and the stream are the caller's, as before
+B.forEach((f,i)=>{B[i]=function(T,st,lv){const S0=BIO.segs;BIO.segs=[];try{return f(T,st,lv);}finally{BIO.segs=S0;}};});
 
 // ---------------------------------------------------------------- impostors (the far canopy)
 // lite: the stand-in behind a hero tree (seen only past SWBAY.LOD.tree, 1.2-2.9 km): the cheap

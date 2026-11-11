@@ -11,10 +11,15 @@
 // cools, in streamers drawn out along the flow (and fanned out round the springs). The film shines and ripples down the
 // flow; on the Stair each vertex carries its pool's level, which darkens the floor under the pool (the water itself is
 // core/water's: 89w-host-water.js) and the water sheets down the curtains between them.
-REGISTER({name:BASIN.name,x:BASIN.x,z:BASIN.z,y:20,r:Math.max(BASIN.rx,BASIN.rz),h:120});
+REGISTER({name:BASIN.name,x:BASIN.x,z:BASIN.z,y:typeof STATION_GROUND!=='undefined'?landH(BASIN.x,BASIN.z)-20:20,r:Math.max(BASIN.rx,BASIN.rz),h:120});   /* a station's field on its own ground */
 LAYOUT.flats.forEach(f=>{if(f.key==='neck'||f.key==='acidflat')return;REGISTER({name:f.name,x:f.x,z:f.z,y:landH(f.x,f.z)-6,r:Math.max(f.rx,f.rz)*.9,h:80,flat:f.key});});
 LAYOUT.dead.forEach(d=>REGISTER({name:d.name,x:d.x,z:d.z,y:landH(d.x,d.z)-6,r:d.r*.8,h:60,dead:d.key}));
-{const z=(STAIR.z0+shoreZ(STAIR.x0))/2;REGISTER({name:STAIR.name,x:stairX(z),z,y:-4,r:(shoreZ(STAIR.x0)-STAIR.z0)/2,h:60,stair:true});}
+// A STATION ON OTHER GROUND (stations/field, PLAN-STATIONS.md stations 2-5) hands this fragment STATION_GROUND: {patches (the fine meshes, in place of the
+// basin floor's and the Stair's), paint(x, z, y, g, c, GA) (after the kit's paint: may change the colour c and the channels; on a station the `sand`
+// channel carries its cover (snow, ice, salt, needles) and `grass` its warm turf), layers [[slot, GLSL weight, tint, name], ...] (in place of the ten),
+// mats (a GLSL body for _matCol(h): the run-off's colours by heat)}. Without it, the showcase as it was
+const SG=typeof STATION_GROUND!=='undefined'?STATION_GROUND:null;
+if(!STAIR.none){const z=(STAIR.z0+shoreZ(STAIR.x0))/2;REGISTER({name:STAIR.name,x:stairX(z),z,y:-4,r:(shoreZ(STAIR.x0)-STAIR.z0)/2,h:60,stair:true});}
 
 // ---------------------------------------------------------------- the paint (per vertex)
 const K=hx=>new THREE.Color(hx);
@@ -36,6 +41,7 @@ function paintAt(x,z,y,slope){const g=GEYSER.at(x,z,landH(x,z)),c=creekAt(x,z),s
  GA.r=_c.r;GA.g=_c.g;GA.b=_c.b;GA.rock=rock;
  GA.heat=g.heat;GA.sinter=g.sinter*(1-sand);GA.film=g.film;GA.acid=g.acid;GA.dx=g.dx;GA.dz=g.dz;GA.dead=g.dead;GA.mud=g.mud;
  GA.terr=g.terr;GA.sand=Math.max(sand,bed*.7);GA.vent=g.vent;GA.grass=meadow*(1-rock);GA.pl=g.pl;
+ if(SG&&SG.paint)SG.paint(x,z,y,g,_c,GA,slope);
  return GA;}
 
 // ---------------------------------------------------------------- the layers (the library, or procedural without it)
@@ -48,12 +54,33 @@ TEX_MACRO.wrapS=TEX_MACRO.wrapT=THREE.RepeatWrapping;TEX_MACRO.encoding=THREE.Li
 // key: the layer; [procedural colour (sRGB), how strongly the detail map shows]
 const GL_KEYS={litter:[0x3a3426,.6],grass:[0x5a6034,.5],moss:[0x4a6a2a,.45],rock:[0x5e5a52,.7],sand:[0x2e2c2a,.4],sinter:[0xdcd8cc,.35],
  tufa:[0xe8e4da,.4],clay:[0xe0d6c4,.35],mud:[0x6a6052,.4],mat:[0xc87a30,.3]};
+// THE LIBRARY LAYERS ON KGROUND (core/terrain 43; BACKPORT.md's ground row, the final rebuild, pair 7, 2026-11-03): the nine surfaces the paint mixed in by
+// its zone weights (litter, the meadow's grass and moss, rock, the beach's black sand, the dead forest's and the flats' sinter, the Stair's travertine, the acid
+// field's clay, the mud) are KGROUND layers now, in the same order with the same weights and tints: hex-tiled, scaled with distance and blended by height in
+// place of the kit's two-read sampler (GEYSER.GLSL_LAY). The mats' own sampler (the 'mat' set, under the temperature ramp) stays the kit's: it is a term on top
+// of the layers, as the vents, the film and the Stair's pools are. ?kground=0 for the old mix
+const USE_KG=typeof KGROUND!=='undefined'&&new URLSearchParams(location.search).get('kground')!=='0';
 const GLAY=(function(){if(typeof KMAT==='undefined'||KMAT.mode!=='lib')return null;const o={};
  for(const k in GL_KEYS){const P=KMAT.packed('geyser','ground.'+k);if(P)o[k]={map:KMAT.textures(P,{aniso:8}).map,k:1/P.scale[0]};}return o;})();
 const GRU={uT:{value:0},uSun:{value:new THREE.Vector3(...SUN_POS).normalize()},uSky:{value:new THREE.Color(0xc8d4d4)},uLight:{value:1}};
 const MAT_GROUND=new THREE.MeshLambertMaterial({color:0xffffff});
-MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.uniforms.uMacro={value:TEX_MACRO};Object.assign(sh.uniforms,GRU);
- const lib=k=>GLAY&&GLAY[k];
+const KG_LAYERS=USE_KG&&GLAY?(SG&&SG.layers?SG.layers:[['litter','0.65'],['grass','grass*0.9','mix(vec3(1.0),base*3.0,0.3)'],
+ ['moss','grass*smoothstep(0.03,0.09,heat)*(1.0-smoothstep(0.2,0.32,heat))*0.8'],['rock','rock'],['sand','sand','mix(vec3(1.0),base*4.0,0.25)'],
+ ['sinter','dead*0.7','vec3(0.78,0.76,0.72)','dead sinter'],['sinter','sin_','mix(vec3(0.74,0.72,0.68),vec3(1.0,0.98,0.94),_sk)'],
+ ['tufa','terr','vec3(1.04,1.02,0.98)'],['clay','acid*0.9','mix(vec3(1.0),base*1.4,0.6)'],['mud','mud*0.95']])
+ .map(L=>KGROUND.layer('geyser',/^st\./.test(L[0])?L[0]:'ground.'+L[0],{w:L[1],tint:L[2]||'vec3(1.0)',amt:1,gain:1,name:L[3]||L[0]})).filter(Boolean):[];
+const KG_ON=KG_LAYERS.length>0&&KG_LAYERS.length===(SG&&SG.layers?SG.layers.length:10);
+// THE STAIR'S CURTAINS LAID DOWN IN COUPLETS (core/terrain 35b, KSTRATA.lamina; BACKPORT.md's row, "strata in the sinter terraces"; the final rebuild, pair 7):
+// travertine grows a couplet a day, a paler band each wet season, so a terrace wall reads in bands across its face (cream and an iron buff) from afar and
+// in its couplets close to. One column from the flight's top down (depth = the top's height less the fragment's); the curtains' own ribs and drip
+// stripes stay on top. ~0.8 mm a day (Mammoth's fast terraces): the 35 m flight is ~120 years of it. ?lamina=0 for the plain curtains
+const STAIR_LAM=(function(){if(STAIR.none||typeof KSTRATA==='undefined'||!KSTRATA.lamina||!KSTRATA.laminaShade||new URLSearchParams(location.search).get('lamina')==='0')return null;
+ const col={a:'#ece4d2',b:'#c4ae86',wet:'#f8f3e8'},H=STAIR_TOP+8,L=KSTRATA.lamina({seed:5303,H,rate:.0008,colours:col}),S=KSTRATA.laminaShade(L,{THREE,res:.01});
+ const lin=h=>Math.pow(parseInt(h.slice(1,3),16)/255,2.2)*.3+Math.pow(parseInt(h.slice(3,5),16)/255,2.2)*.59+Math.pow(parseInt(h.slice(5,7),16)/255,2.2)*.11;
+ S.H=H;S.k=1/((lin(col.a)+lin(col.b))/2);S.L=L;return S;})();
+window._lamina=STAIR_LAM?{H:STAIR_LAM.H,years:Math.round(STAIR_LAM.H/(.0008*365))}:null;   /* all or none: a page missing a set keeps the old mix whole */
+MAT_GROUND.onBeforeCompile=sh=>{if(STAIR_LAM)Object.assign(sh.uniforms,STAIR_LAM.uniforms);sh.uniforms.uDetail={value:TEX_DETAIL};sh.uniforms.uMacro={value:TEX_MACRO};Object.assign(sh.uniforms,GRU);
+ const lib=k=>GLAY&&GLAY[k]&&(!KG_ON||k==='mat');   /* on KGROUND only the mats' set is the kit's sampler */
  for(const k in GL_KEYS)if(lib(k))sh.uniforms['uG_'+k]={value:GLAY[k].map};
  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute vec4 aC,aT,aU,aW;attribute vec2 aPL;varying vec4 vC,vT,vU,vW;varying vec2 vPL;varying vec3 vGWP;')
   .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vC=aC;vT=aT;vU=aU;vW=aW;vPL=aPL;');
@@ -61,19 +88,19 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.unifor
  const L=k=>{const P=GL_KEYS[k];if(lib(k))return'_lay(uG_'+k+',p,q,'+GLAY[k].k.toFixed(4)+',mt)';const c=new THREE.Color(P[0]).convertSRGBToLinear();
   return'(vec3('+c.r.toFixed(4)+','+c.g.toFixed(4)+','+c.b.toFixed(4)+')*mix(1.0,dt.r*1.08,'+P[1].toFixed(2)+'))';};
  let decl='uniform sampler2D uDetail,uMacro;uniform float uT,uLight;uniform vec3 uSun,uSky;varying vec4 vC,vT,vU,vW;varying vec2 vPL;varying vec3 vGWP;'+
-  (libKeys.length?'uniform sampler2D '+libKeys.map(k=>'uG_'+k).join(',')+';':'')+GEYSER.GLSL_LAY+
+  (libKeys.length?'uniform sampler2D '+libKeys.map(k=>'uG_'+k).join(',')+';':'')+GEYSER.GLSL_LAY+(STAIR_LAM?STAIR_LAM.glsl:'')+
   // the mats' colour by the heat (0..1 of 33..100 degC): clear water over ~73, yellow-green, orange, orange-brown, brown-olive
-  'vec3 _matCol(float h){vec3 c=vec3(0.36,0.32,0.14);c=mix(c,vec3(0.56,0.3,0.1),smoothstep(0.1,0.17,h));c=mix(c,vec3(0.85,0.46,0.12),smoothstep(0.25,0.32,h));'+
-  'c=mix(c,vec3(0.86,0.72,0.2),smoothstep(0.42,0.47,h));c=mix(c,vec3(0.66,0.74,0.36),smoothstep(0.5,0.55,h));return pow(c,vec3(2.2));}';
+  (SG&&SG.mats?'vec3 _matCol(float h){'+SG.mats+'}':'vec3 _matCol(float h){vec3 c=vec3(0.36,0.32,0.14);c=mix(c,vec3(0.56,0.3,0.1),smoothstep(0.1,0.17,h));c=mix(c,vec3(0.85,0.46,0.12),smoothstep(0.25,0.32,h));'+
+  'c=mix(c,vec3(0.86,0.72,0.2),smoothstep(0.42,0.47,h));c=mix(c,vec3(0.66,0.74,0.36),smoothstep(0.5,0.55,h));return pow(c,vec3(2.2));}');
  const body='vec3 _E=vec3(0.0);{vec2 p=vGWP.xz,q=mat2(0.799,-0.602,0.602,0.799)*p;float mt=smoothstep(0.3,0.7,texture2D(uMacro,p*0.0061).r);vec3 dt=texture2D(uDetail,p*0.13).rgb;'+
   'float rock=vC.a,heat=vT.x,sin_=vT.y,film=vT.z,acid=vT.w,dead=vU.z,mud=vU.w,terr=vW.x,sand=vW.y,vent=vW.z,grass=vW.w;'+
-  'vec3 base=pow(vC.rgb,vec3(2.2));vec3 c=mix('+L('litter')+',base,0.35);'+
+  'vec3 base=pow(vC.rgb,vec3(2.2));float _sk=smoothstep(0.25,0.75,texture2D(uMacro,p*0.011).g+dt.r*0.2-0.1);'+(KG_ON?'vec3 c=base;diffuseColor.rgb=c;\n/*KGROUND*/\nc=diffuseColor.rgb;':'vec3 c=mix('+L('litter')+',base,0.35);'+
   'c=mix(c,'+L('grass')+'*mix(vec3(1.0),base*3.0,0.3),grass*0.9);'+
   'c=mix(c,'+L('moss')+',grass*smoothstep(0.03,0.09,heat)*(1.0-smoothstep(0.2,0.32,heat))*0.8);'+
   'c=mix(c,'+L('rock')+',rock);c=mix(c,'+L('sand')+'*mix(vec3(1.0),base*4.0,0.25),sand);'+
-  'c=mix(c,'+L('sinter')+'*vec3(0.78,0.76,0.72),dead*0.7);c=mix(c,'+L('sinter')+'*mix(vec3(0.74,0.72,0.68),vec3(1.0,0.98,0.94),smoothstep(0.25,0.75,texture2D(uMacro,p*0.011).g+dt.r*0.2-0.1)),sin_);'+
+  'c=mix(c,'+L('sinter')+'*vec3(0.78,0.76,0.72),dead*0.7);c=mix(c,'+L('sinter')+'*mix(vec3(0.74,0.72,0.68),vec3(1.0,0.98,0.94),_sk),sin_);'+
   'c=mix(c,'+L('tufa')+'*vec3(1.04,1.02,0.98),terr);'+
-  'c=mix(c,'+L('clay')+'*mix(vec3(1.0),base*1.4,0.6),acid*0.9);c=mix(c,'+L('mud')+',mud*0.95);'+
+  'c=mix(c,'+L('clay')+'*mix(vec3(1.0),base*1.4,0.6),acid*0.9);c=mix(c,'+L('mud')+',mud*0.95);')+
   // a steam vent's ground: sulphur yellow, rust round it
   'c=mix(c,mix(vec3(0.42,0.12,0.03),vec3(0.75,0.6,0.08),smoothstep(0.5,0.9,vent)),smoothstep(0.08,0.4,vent)*0.75);'+
   // THE MATS: where the warm water lies or runs; streamers drawn out along the flow (fanned out round a spring)
@@ -98,10 +125,12 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.unifor
   ' else if(steep>0.35){float fl=smoothstep(0.35,0.7,steep),k=dot(p,normalize(vec2(-fn.z,fn.x)));float fx=texture2D(uMacro,vec2(k*0.21,vGWP.y*0.004)).b;'+
   '  float rib=0.5+0.5*sin(k*7.0+fx*9.0),rib2=0.5+0.5*sin(k*23.0+fx*17.0);c=mix(c,vec3(0.8,0.79,0.76)*(0.82+0.18*rib),fl*0.65);c*=mix(1.0,0.78+0.3*rib*rib2+0.1*rib,fl);'+
   '  c=mix(c,c*vec3(0.8,0.7,0.58),fl*smoothstep(0.62,0.85,fx)*(1.0-smoothstep(0.1,0.35,heat))*0.7);'+
+  (STAIR_LAM?'  {float ld='+STAIR_LAM.H.toFixed(3)+'-vGWP.y;c*=mix(vec3(1.0),laminaColor(ld,max(fwidth(vGWP.y),1e-4))*'+STAIR_LAM.k.toFixed(4)+',fl*0.7);}':'')+
   '  float str=smoothstep(0.6,1.0,texture2D(uMacro,vec2(k*0.35,vGWP.y*0.08+uT*0.12)).b+0.15*sin(vGWP.y*9.0+uT*7.0));_E+=fl*str*0.12*vec3(0.95,0.98,1.0)*uLight;}}'+
 'diffuseColor.rgb=c;}';
  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+decl).replace('#include <map_fragment>','#include <map_fragment>\n'+body)
   .replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>\n totalEmissiveRadiance+=_E;');};
+if(KG_ON)KGROUND.hook(MAT_GROUND,{key:'geyser-ground',at:'/*KGROUND*/',layers:KG_LAYERS});
 TICKS.push(dt=>{GRU.uT.value+=dt;});
 _onLight.push(m=>{GRU.uLight.value=m==='night'?.2:1;});
 
@@ -113,7 +142,7 @@ _onLight.push(m=>{GRU.uLight.value=m==='night'?.2:1;});
 // the plateau, the sea floor and the plain meadow drop to 10-80 m cells while the terraces, the rims, the run-off and the mats keep the base
 // step. Tiles over a spring's rim or a pool geyser's pool go finer than the base (fine: 1 m on the basin floor), so the disc meets its lip.
 // A finer tile's vertices along a coarser neighbour's side are laid on that side's line (no T-junction gap); the normals are the base grid's.
-const PATCHES=[{name:'The basin floor',x0:-680,z0:-680,x1:680,z1:330,cs:2,tol:.04,fine:true},{name:'The Stair',x0:-200,z0:330,x1:320,z1:870,cs:.8,tol:.035}];
+const PATCHES=SG&&SG.patches?SG.patches:[{name:'The basin floor',x0:-680,z0:-680,x1:680,z1:330,cs:2,tol:.04,fine:true},{name:'The Stair',x0:-200,z0:330,x1:320,z1:870,cs:.8,tol:.035}];
 // where a tile goes finer than its base: an annulus [r0, r1] round a point (the springs' rims, the pool geysers' pools)
 const FINE_RINGS=LAYOUT.springs.map(s=>[s.x,s.z,Math.max(0,s.r*.8-2),s.r*1.15+4]).concat(LAYOUT.geysers.filter(g=>g.kind!=='cone').map(g=>[g.x,g.z,0,(g.pool||2)*1.2+4]));
 const GTILE=16,GSTEPS=[16,8,4,2,1];

@@ -69,6 +69,7 @@ except Exception:
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))
+sys.path.insert(0, os.path.join(ROOT, 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 SRC = os.path.join(HERE, 'src')
 DIST = os.path.join(HERE, 'dist')
 CORE = os.path.join(ROOT, 'core', 'materials')   # shared material fragments (core/README.md)
@@ -156,6 +157,7 @@ def main():
                 print('  -', e)
             sys.exit(1)
     html = ''.join(bodies[f] for f in order)
+    BSRC.report(vendored=[os.path.join(ANCIENTS, r) for r in VENDORED] + [SOCKETS, SYMBOLS])   # --list-sources: every file read so far is what the page is made of (and what --vendor-check compares); then exit
     os.makedirs(DIST, exist_ok=True)
     out = os.path.join(DIST, OUT + '.html')
     with open(out, 'w', encoding='utf-8', newline='') as fh:
@@ -186,16 +188,15 @@ def main():
 
 
 # ---------------------------------------------------------------- vendor check
-# Files copied from settlements/reedlake. DELIBERATE drift is recorded in KNOWN_ISSUES.md;
-# anything else that differs from upstream is an error (fix upstream, then re-vendor).
-REEDLAKE = os.path.join(ROOT, 'settlements', 'reedlake')
-VENDORED = ['src/00-head.html', 'src/10-core.js', 'src/12-stats.js', 'src/30-kit.js',
-            'src/92-camera.js', 'src/93-labels.js', 'src/99-tail.html', 'verify.py', 'jscheck.py']
-DELIBERATE = {'src/00-head.html': 'own title',
-              'src/92-camera.js': 'Labels button starts off',
-              'src/93-labels.js': "labels cls:'vessel', shrinks long names",
-              'verify.py': 'vessel invariants in _api.extra(), Chromium fallback',
-              'jscheck.py': 'pre-installed Chromium fallback'}
+# Files copied from the Ancients kit, the vessels' engine (Reed Lake vendors the same files from there; until 2026-11-03 this
+# kit checked them against Reed Lake, a settlement: MODULARITY-PLAN.md step 5). DELIBERATE drift is recorded in
+# KNOWN_ISSUES.md; anything else that differs from upstream is an error (fix upstream, then re-vendor).
+ANCIENTS = os.path.join(ROOT, 'kits', 'ancients')
+VENDORED = ['src/10-core.js', 'src/12-stats.js', 'src/30-kit.js', 'src/99-tail.html']
+DELIBERATE = {}   # 10-core.js was drift until 2026-11-03 (upstream's frame hook): re-vendored with the all-builds rebuild
+# The viewer shell is this kit's own since 2026-11-03: src/00-head.html, 92-camera.js, 93-labels.js, verify.py and jscheck.py
+# began as Reed Lake's and had all drifted on purpose (the title, the Labels button, vessel labels, the vessel invariants, a
+# Chromium fallback). Their place is the core host shell and the shared harness (KNOWN_ISSUES.md, "The viewer shell"), not a settlement.
 SOCKETS = os.path.join(ROOT, 'core', 'sockets', '80-cultures.js')
 SYMBOLS = os.path.join(ROOT, 'core', 'sockets', '38-symbols.js')
 
@@ -213,7 +214,7 @@ def _js_fn_body(src, start):
 def vendor_check():
     bad = []
     for rel in VENDORED:
-        local, up = os.path.join(HERE, rel), os.path.join(REEDLAKE, rel)
+        local, up = os.path.join(HERE, rel), os.path.join(ANCIENTS, rel)
         if not os.path.exists(up):
             print('  ?  %-18s upstream missing (%s)' % (rel, os.path.relpath(up, ROOT))); continue
         same = open(local, 'rb').read() == open(up, 'rb').read()
@@ -224,7 +225,7 @@ def vendor_check():
         else:
             print('  !  %-18s DRIFTS from %s' % (rel, os.path.relpath(up, ROOT))); bad.append(rel)
     for rel in DELIBERATE:   # a deliberate drift that disappeared means KNOWN_ISSUES.md is stale
-        up = os.path.join(REEDLAKE, rel)
+        up = os.path.join(ANCIENTS, rel)
         if os.path.exists(up) and open(os.path.join(HERE, rel), 'rb').read() == open(up, 'rb').read():
             print('  note: %s is now identical to upstream; drop it from DELIBERATE and KNOWN_ISSUES.md' % rel)
     # the faction liveries copied by hand into 41-rs-tex.js (README "Faction colours")

@@ -8,9 +8,9 @@ The page is one <script> made of, in filename order:
                         (the nodes), 45r-res-field.js (the node field, [G data]), 46r-res-ledger.js (the scarcity ledger,
                         [G data]), 89-rows.js (the sheet), 98r-host-geomap.js (the geology map, G), 99-tail.html
   45q-res-geodata.js    GENERATED from data/geology.json and data/ledger.json (RES_GEODATA, RES_LEDGERDATA)
-  kits/scyvoi/src       the engine, READ IN PLACE (not vendored: nothing here to drift): 10-core, 27-mat, 30-geo, 36-def,
-                        90-scene, 91f-furnish, 91n-night, 92-world, 93-anim, 99-host-take
-  settlements/iziz/src  81-sky.js (KratorSky, the standard Krator sky), read in place
+  core/engine           the engine, READ IN PLACE (core/engine/README.md): 10-core, 27-mat, 30-geo, 36-def, 90-scene,
+                        91f-furnish, 91n-night, 92-world, 93-anim, 99-host-take, 99-tail
+  core/atmos/placeholder  81-sky.js (KratorSky, the placeholder sky), read in place
   core/rand, core/materials/record, core/tags, core/furnish, core/atmos   as every kit on the engine
   26-matlib-pack.js     GENERATED: the library pack (none yet: the nodes draw on vertex colours)
   38-furniture-bundle.js GENERATED (kits/catalog/furniture_bundle.py, the generic pieces): the engine's furniture pass needs it
@@ -58,10 +58,11 @@ try: sys.stdout.reconfigure(encoding='utf-8')
 except Exception: pass
 HERE = os.path.dirname(os.path.abspath(__file__)); SRC = os.path.join(HERE, 'src'); DIST = os.path.join(HERE, 'dist')
 ROOT = os.path.dirname(os.path.dirname(HERE))
+sys.path.insert(0, os.path.join(ROOT, 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 KIT_ID = 'resources'
 OUT = os.path.join(DIST, KIT_ID + '.html')
 TEX_DIR = os.path.join(HERE, 'tex')
-CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('shader', 'rand', 'materials/record', 'tags', 'furnish', 'atmos')]
+CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('shader', 'rand', 'materials/record', 'tags', 'furnish', 'atmos', 'door')]
 # the engine and the sky, READ IN PLACE: nothing vendored here, so nothing drifts (a fix to the engine reaches this kit at once)
 # the host shell from core/host (core/host/README.md): the camera, the frame loop and its clock (core/clock), the panel, the probe,
 # and the authoring tools (inspect, polygon, path). the engine's src/99-host-take.js (read in place from kits/scyvoi, with 92-world.js) hands it the
@@ -69,9 +70,12 @@ CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('shader', 'rand
 sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))
 import host as khost
 CORE_HOST = khost.SHELL + ['94-host-polytool.js']
-ENGINE = {'81-sky.js': os.path.join(ROOT, 'settlements', 'iziz', 'src', '81-sky.js')}
-ENGINE.update({f: os.path.join(ROOT, 'kits', 'scyvoi', 'src', f) for f in ('10-core.js', '30-geo.js', '36-def.js', '90-scene.js',
-    '27-mat.js', '91f-furnish.js', '91n-night.js', '92-world.js', '99-host-take.js', '93-anim.js')})
+sys.path.insert(0, os.path.join(ROOT, 'core', 'atmos', 'placeholder'))
+import placeholder as psky   # the placeholder sky (KratorSky), read in place: MODULARITY-PLAN.md step 1
+ENGINE = psky.paths(psky.SKY)
+sys.path.insert(0, os.path.join(ROOT, 'core', 'engine'))
+import engine as kengine   # the building-kit engine, read in place: MODULARITY-PLAN.md step 2
+ENGINE.update(kengine.paths())
 # GENERATED fragments, never written to src/
 FURN_CULTURES = ['generic']   # the engine's furniture pass needs a bundle; the nodes place none
 VIRTUAL = {'26-matlib-pack.js', '38-furniture-bundle.js', '45q-res-geodata.js'}
@@ -154,6 +158,7 @@ def main():
     files = sorted(list(paths) + list(vb))
     bodies = dict(vb)
     bodies.update({f: open(paths[f], encoding='utf-8', newline='').read() for f in files if f not in vb})
+    BSRC.report(paths)   # --list-sources: what the page is made of, then exit
     is_core = lambda f: f in core and paths[f] == core[f]
     errs = []
     if '--no-checks' not in sys.argv:

@@ -63,11 +63,17 @@ domes in tile, marble, plaster and gilt; egg and onion lathes; the tile cone and
 
 **No dark voids** (the owner, 2026-10-19). Every opening is a door, a window or an open portal, never a black plate:
 `tanArch` takes a dark fill (or none) as a DOOR when it is door-shaped (2 m or more, taller than wide, no sill or rail;
-`o.door` overrides) and as a WINDOW otherwise. Doors are walnut leaves with raised panels and a brass pull under a glazed
-fanlight (`tanLeaves`, `tanArchDoor`; glazed double doors at 2.4 m wide or more); windows are Talia's sky-grey pane
-(`taWinB`, the same values as Pylon's) with glazing bars (`tanGlaze`). On a hollow body both cut the wall (`vnHole`), so
-they open into the furnished rooms, the leaves swung in. `tanDoor` and `tanWin` stand in for the Vernacular's `vnDoor` and
-`vnWin` (closed leaves instead of the dark recess; the pane over the dark glass). The loggias open their heads into the
+`o.door` overrides) and as a WINDOW otherwise.
+
+**Real doors and real glass** (the owner, 2026-11-03; `core/door`). A door is walnut leaves under a glazed fanlight
+(`tanArchDoor`, `tanDoorLeaves`): real leaves through the Vernacular's `IZDOOR.leaf` (records in `KDOOR`, stable ids
+`<def key>@x,z.n`; two, mirrored, over 1.4 m wide), which open with E or by an NPC (`KDOOR.open`) on a hollow body, standing in
+the cut wall's middle, and stand shut and locked on a solid one. A window is core/door's glass (`KGLASS`: `taWinB` is the
+clear pane, `MAT.izGlass`, the Vernacular's own; the lit fill the warm pane; the cobalt the `stained` kind) with glazing bars
+(`tanGlaze`): on a hollow body in the cut (the room behind it), elsewhere over the room card (`taRoomB`, `taDiscD`,
+`taGableD`, `taHalfD`: the room's dim back, `KGLASS.SPEC.room`). A round head and a door's fanlight are half discs
+(`taHalfG`, `taHalfL`, `taHalfC`), so two panes never lie over one another and the card leaves the doorway clear.
+`tanDoor` and `tanWin` stand in for the Vernacular's `vnDoor` and `vnWin` (on a hollow face they are those). The loggias open their heads into the
 recess under orange vaults; the court galleries alternate doors and windows; the slits are glazed between stone lips; the
 observatory's slot shows its shutters drawn back and the telescope; the palace's light courts are glazed over.
 

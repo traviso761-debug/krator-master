@@ -2,6 +2,12 @@
 
 `build.py` prints the open ones (`- [ ]`) after every build.
 
+- [x] The GPU verify's `textures-decoded` and small animals' eye checks (2026-11-09). `window._texPending` was a function, always
+      truthy, so the harness's `!window._texPending` wait never cleared (every texture had decoded): it is a getter on the live
+      count now (kits/motor-vehicles' sheet has the same function and fails the same way). And `_sheet.view` framed a small
+      animal from 3.2 of its size, under 1 m away, which the eye check (1 m) fails (bloom glint, wadi swift, rock lizard, hen,
+      salt, char and boring beetles, sparkle hummer, lantern fly, homing pigeon: the animals under about 0.6 m): the camera stands at least 1.15 m beyond the animal's bounding radius and the lens
+      narrows to keep its size in the frame (`gotoRow` puts the 48 degree lens back; walking straight from a view keeps the narrow one).
 - [ ] Every animal is here (48 species, 2026-10-06), but the builds still draw their own copies (each entry's `source` says
       where): point the biome kits and settlements at the bundle, one build at a time, and check each still reads the same.
 - [ ] Wings are rigid: a perched bird's wing is turned back, shortened and rolled down the flank (`flap.sweep`, `foldScale`,
@@ -29,14 +35,19 @@
       `swbay` (the volcano) and `crater-drylands` (burnt steppe); the millipede adds `crater-drylands` for its ash herd. Retag
       them when the biome exists. The Zeijani of Dhelv ride the staghorn beetle too, but are not a catalog culture yet, so
       only `ashnomad` is in its `herdedBy` (a note in its `source` names them).
-- [ ] The Meshy model variants (giant dragonfly #1, quetzalcoatlus #1, giant bat #1, giant archaeopteryx #1, draught millipede #3, cattle #4 and #5, pig #3, sheep #3, hen #4, goat #4, horse #4, water buffalo #2, yak #3, bison #3, duck #3, Dalab lizard #4, dog and cat;
+- [ ] The Meshy model variants (giant dragonfly #1, quetzalcoatlus #1, giant bat #1, giant archaeopteryx #1, draught millipede #3, harvester ant #3, staghorn beetle #4, Bowl mantis #1, cattle #4 and #5, pig #3, sheep #3, hen #4, goat #4, horse #4, water buffalo #2, yak #3, bison #3, duck #3, Dalab lizard #4, dog and cat;
       `models/*.json`, `models_pack.py`) are heavy next to the procedural ones: 8.5 to 13 thousand triangles each (the kit's
       budget is 9 000; `data`/`modelData.budget` is 14 000 for them) and about 1 MB of packed geometry and baked maps apiece, so a
       bundle that takes the flyers and crawlers grows by about 6 MB, and one that takes the farm too by about 5 MB more; models are opt-in, `bundle(groups, mdl=True)`. Fine for a few animals a scene; do not herd them. The
       wing and shoulder joints carry duplicated bands of faces so no seam opens (a few hundred triangles each). Their textures
-      are Meshy's baked maps, not library sets; a perched wing is a rigid fold (the membrane cannot gather); the bat's and
+      are Meshy's baked maps, not library sets (the dragonfly's wings are the library's `wing.dragonfly`); a perched wing is a rigid fold (the membrane cannot gather); the bat's and
       quetzal's perched wings are scaled shorter instead. Their sheet-pose builds (`pose: 'fly'`) are not model-driven: the model
       flies by `animate(g, t, 'fly')`. Rebuilding one means re-running `rig/` (read `rig/README.md`: working code from one session, tuned by eye per model); `models_pack.py` only repacks a finished GLB.
+- [ ] Every Meshy model but the millipede, dragonfly and hen opens at a join in some clip: the necks when grazing, the shoulders of the flyers, the bellies and leg roots of the horse and ox (`tests/test-models.js`, C4; `PLAN-MESHY.md` section 2). Their numbers are held in `tests/models-waivers.json`. Fixing them means regenerating, since the source GLBs are gone. Rigid parts suit an exoskeleton; a membrane flyer wants skinning.
+- [ ] A model variant ignores breeds and `pose: 'fly'`, and one model is one colour.
+- [ ] The spider family: the tarantula body breaks up seen close, so it is used only small (funnel-web, trapdoor); a long-bodied spider keeps a small flap and sliver behind its rear knee, seen from below at close range; the rear legs' femurs are copies of the pair in front. The riding spider's saddle fits on the abdomen, not the chest, and no real saddle has been tried on it. `spiderlake` is a biome only on `gemini-loom-chasms`. The parked `rig/sources/roach-giant` model does not stand.
+- [ ] The Bowl mantis is in the `hyperjungle` file for the builder, so a page that bundles only `desert`, as biomes/sedesert does, does not have it. Its size is this kit's choice, 2.4 m tall. Its strike swings the forelegs up and open; it could reach further forward.
+- [ ] The Meshy staghorn's generated body stands nose up; the rig levels it (spec `level`) and a saddle was tried on a stand-in rider, not a real one. Its texture is 251 px/m.
 - [ ] The five new mounts (`riders`, 2026-10-19) are the kit's choices where the lore is silent: the riding tiger (only the tribe's
       name), the raptor's size (the lore says velociraptor), the jungle mammoth (thin-haired, for the heat), every yield, life figure
       and temperament. Their legs turn rigidly at the hip like every animal's here, so a walking mammoth or threehorn lifts its feet

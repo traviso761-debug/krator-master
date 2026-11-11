@@ -24,36 +24,25 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `00-head.html` | 1 |  |
 | `10-core.js` | 3 | error panel (4); rng + noise, on core/rand (13) |
 | `26k-kit.js` | 4 |  |
-| `27-mat.js` | 6 |  |
 | `28-yt-mat.js` | 1 |  |
-| `30-geo.js` | 22 |  |
-| `36-def.js` | 5 |  |
 | `37-wk-rec.js` | 2 |  |
-| `40-yt-kit.js` | 18 |  |
+| `40-yt-kit.js` | 21 |  |
 | `41-yt-heat.js` | 5 |  |
-| `42-yt-tunnel.js` | 13 |  |
+| `42-yt-tunnel.js` | 15 |  |
 | `43-yt-craft.js` | 2 |  |
-| `44-yt-props.js` | 5 |  |
-| `50-yt-dwell.js` | 11 |  |
+| `44-yt-props.js` | 6 |  |
+| `50-yt-dwell.js` | 12 |  |
 | `51-yt-cluster.js` | 8 |  |
 | `52-yt-rich.js` | 3 |  |
-| `53-yt-balagan.js` | 7 |  |
+| `53-yt-balagan.js` | 8 |  |
 | `55-yt-samples.js` | 4 |  |
 | `56-yt-street.js` | 2 |  |
 | `60-yt-state.js` | 9 |  |
 | `61-yt-works.js` | 8 |  |
 | `62-yt-stores.js` | 4 |  |
-| `63-yt-land.js` | 6 |  |
-| `64-yt-war.js` | 5 |  |
+| `63-yt-land.js` | 7 |  |
+| `64-yt-war.js` | 7 |  |
 | `68-yt-trades.js` | 4 |  |
-| `81-sky.js` | 10 |  |
 | `89-rows.js` | 2 |  |
-| `90-scene.js` | 6 | layout: rows by family, fronts (+z) toward the c (30); (re)build the world (38) |
 | `90y-yt-ground.js` | 4 |  |
-| `91f-furnish.js` | 6 |  |
-| `91n-night.js` | 3 |  |
 | `91y-yt-night.js` | <1 |  |
-| `92-world.js` | <1 |  |
-| `93-anim.js` | 3 |  |
-| `99-host-take.js` | 7 | the inspector's words: a click names what is und (11); the cut-away (C), night (N, in 91n-night.js), sh (28); the frame, around the host's: the sun and the sk (35); the probe's fields (verify.py --assert): what 91 (45); the page, handed to the host (62) |
-| `99-tail.html` | <1 |  |

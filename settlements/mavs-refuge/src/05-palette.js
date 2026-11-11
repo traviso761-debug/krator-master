@@ -117,7 +117,9 @@ var FAMMAT = {
   leafy  : { tex:null, scale:[3.0,3.0] },          /* solid understorey blobs, crops */
   bark0  : { tex:null, scale:[10,20] }, bark1:{ tex:null, scale:[10,20] },
   bark2  : { tex:null, scale:[12,24] }, bark3:{ tex:null, scale:[14,14] },
-  glowmat: { tex:null, scale:[1,1], basic:true }   /* unlit emissive bits */
+  glowmat: { tex:null, scale:[1,1], basic:true },  /* unlit emissive bits */
+  /* door leaves (54-openings.js): their own bucket, so their instances can swing, wearing the map of the family it names */
+  doorleaf:{ tex:null, scale:[3.0,3.0], alias:'plank' }
 };
 
 var BUDGET = { drawCalls: 110, triangles: 4200000, instances: 260000 };

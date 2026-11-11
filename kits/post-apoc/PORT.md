@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 2 (1%) | 8 (2%) | 0 (0%) | 48 (12%) | 334 (85%) |
+| KB | 2 (1%) | 8 (2%) | 0 (0%) | 48 (12%) | 350 (86%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -15,26 +15,27 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/00-head.html` | 3.2 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `src/10-core.js` | 2.5 | [web] | 0 | 0 | 2 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/20-tex.js` | 10.9 | [draw] | 2 | 17 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | canvas painters: TEX.def or bake |
-| `src/22-mat.js` | 8.1 | [G shader] | 10 | 0 | 0 | 0 | 0 | 19 | 8 | 0 | 0 | 0 | 0 |  |
+| `src/22-mat.js` | 8.2 | [G shader] | 10 | 0 | 0 | 0 | 0 | 19 | 8 | 0 | 0 | 0 | 0 |  |
 | `src/29y-pa-matlib.js` | 0.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/30-geo.js` | 19.5 | [draw] | 47 | 0 | 0 | 0 | 0 | 20 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/32-cores.js` | 11.5 | [draw] | 2 | 0 | 0 | 0 | 0 | 48 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/34-adds.js` | 23.0 | [draw] | 1 | 0 | 0 | 0 | 0 | 42 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/32-cores.js` | 11.6 | [draw] | 2 | 0 | 0 | 0 | 0 | 48 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/34-adds.js` | 25.0 | [draw] | 1 | 0 | 0 | 0 | 0 | 44 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/35-pa-open.js` | 8.7 | [draw] | 9 | 0 | 0 | 1 | 0 | 2 | 0 | 3 | 0 | 0 | 0 | the doors and glass on core/door: wallOpen's openings recorded, poLeaf (a KDOOR record; the operable leaves one InstancedMesh), poCard; the E key and tip are host code. Records export through KDOOR.export() |
 | `src/36-def.js` | 21.6 | [draw] | 10 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/40-dw-small.js` | 31.8 | [draw] | 0 | 0 | 0 | 0 | 0 | 41 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/42-lg-dwell.js` | 32.5 | [draw] | 0 | 0 | 0 | 0 | 0 | 36 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/44-civic.js` | 25.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 38 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/44-civic.js` | 26.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 35 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/46-shops.js` | 15.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 10 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/48-industry.js` | 21.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 39 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/50-farm.js` | 26.5 | [draw] | 0 | 0 | 0 | 0 | 0 | 41 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/52-defence.js` | 22.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 39 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/53-barricade.js` | 1.9 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the barricade (the compound's wall runs and gate laid straight) and the palisade |
+| `src/52-defence.js` | 22.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 39 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/53-barricade.js` | 4.4 | [draw] | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | the barricade (the compound's wall runs and gate laid straight) and the palisade |
 | `src/54-compound.js` | 29.7 | [draw] | 2 | 0 | 0 | 0 | 0 | 37 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/56-arena.js` | 17.8 | [draw] | 1 | 0 | 0 | 0 | 0 | 32 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/58-dock.js` | 17.6 | [draw] | 1 | 0 | 0 | 0 | 0 | 38 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/89-rows.js` | 1.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/89-rows.js` | 1.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/90-scene.js` | 8.5 | [web] | 19 | 3 | 1 | 0 | 2 | 2 | 3 | 0 | 0 | 0 | 0 |  |
-| `src/91-probe.js` | 3.5 | [web] | 2 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/91-probe.js` | 3.7 | [web] | 2 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/91f-furnish.js` | 7.1 | [draw] | 1 | 0 | 0 | 0 | 2 | 1 | 0 | 0 | 0 | 0 | 0 | the draw adapter onto core/furnish (2026-10-05): the placement pass is core/furnish/50-core-furnish.js. Kept here: the seed rule (building seed and place in its list), the matrix frame (CM) and ax/az anchors, colliders, lights as halos, dry runs for frontOf, a fresh batch per buildWorld (its performance.now timing is host code) |
 | `src/91n-night.js` | 9.9 | [web] | 15 | 2 | 3 | 1 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/92-camera.js` | 11.7 | [web] | 13 | 0 | 21 | 14 | 4 | 2 | 0 | 0 | 3 | 0 | 0 |  |

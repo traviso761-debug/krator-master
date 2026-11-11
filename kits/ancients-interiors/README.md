@@ -33,8 +33,19 @@ catalog at the same time: the "Ancients kit extras" block of `kits/catalog/krato
 | `src/30-ai-recipes.js` | the hall recipes and `recipe()` |
 | `src/40-ai-audit.js` | `audit()` |
 | `src/70-ai-demo.js` | the demo sheet (not the kit) |
+| `src/38-ai-reception.js` | the `reception` hall recipe and the dress role `board` (below) |
+| `tests/test-reception.js` | the reception recipe's node test (`node tests/test-reception.js [--map]`) |
 | `build.py` | builds `dist/ancients-interiors.html` and `dist/ancients-interiors-core.js` |
-| `kit_bundle.py` | the core as text for another build |
+| `kit_bundle.py` | the core as text for another build (`bundle()`) |
+
+## The reception (permanent since 2026-11-08)
+
+`src/38-ai-reception.js` adds a fifteenth hall recipe, `reception` (an office's front hall: a counter run facing the
+door with chairs behind it, the approach kept clear, waiting groups in the wings, a notice board, banners, statues,
+planting beds and lamps), laid out for shallow bar rooms (4.5-6 m deep, 12-20 m wide) and deep ones (8-12 m). It was
+opt-in from 2026-11-03 (`opt/`, `kit_bundle.bundle(reception=True)`); since 2026-11-08 it is in the core, so every build
+that takes the kit has it, the demo sheet shows it with the other halls (it lists `AI.RECIPES`) and `verify.py --assert`
+checks it there.
 | `verify.py` | the headless check |
 
 ## Build and verify

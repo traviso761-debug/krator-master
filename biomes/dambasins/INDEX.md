@@ -6,7 +6,7 @@ The dam basins, an overlay (biomes/dambasins/PLAN.md): the north basin's drained
 
 Docs: `KNOWN_ISSUES.md`, `PLAN.md`, `PORT.md`, `README.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/port.html`
+Built output (never open it; edit `src/` and rebuild): `dist/east.html`, `dist/graveyard.html`, `dist/port.html`
 
 Build: `cd biomes/dambasins && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -20,13 +20,14 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `50-db-wrecks.js` | 11 |  |
 | `52-db-flotsam.js` | 11 |  |
 | `71-port-terrain.js` | 21 | the natural coast (12); stamps (29); materials (107); the terrain grid (203) |
-| `80-db-bed.js` | 5 |  |
+| `80-db-bed.js` | 6 |  |
 | `81-db-hulks.js` | 3 |  |
 | `89c-db-ground.js` | <1 |  |
-| `91a-db-wrecks.js` | 2 |  |
+| `91a-db-wrecks.js` | 3 |  |
 | `91b-db-flotsam.js` | 2 |  |
 | `91c-db-dust.js` | 2 |  |
-| `91d-db-weather.js` | <1 |  |
+| `91d-db-weather.js` | 2 |  |
+| `91e-db-far.js` | 3 |  |
 | `92-camera.js` | 14 | camera control (3); DAY / NIGHT (4); SEGMENT BOUNDARIES (31); INSPECTOR (72) |
 
 ## targets/
@@ -35,4 +36,6 @@ Each target adds its own fragments to `src/` and builds one output.
 
 | Target | Fragments | KB |
 |---|---|---|
+| `east` | `79-db-site.js`, `89z-rows.js`, `91m-bio-45-db-init.js`, `91m-bio-89-db-flora.js`, `91z-views.js` | 12 |
+| `graveyard` | `79-db-site.js`, `89z-rows.js`, `91m-bio-45-db-init.js`, `91m-bio-89-db-flora.js`, `91y-db-dam.js`, `91z-views.js` | 21 |
 | `port` | `89z-rows.js`, `91z-views.js` | 5 |

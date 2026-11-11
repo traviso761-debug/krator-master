@@ -19,6 +19,96 @@ highlands) on the same fields" (`biomes/rift/NOTES.md`).
 
 **Status: plan, awaiting the owner.**
 
+## On scale model 5.1 (re-surveyed 2026-11-03; supersedes the px in sections 1, 5 and 9)
+
+The plan below was surveyed on map 4.21/4.22. **Every station, lake and the road is re-placed here on 5.1**
+(`tools/scale-model/model/data`, read with `smodel.page`; the canvas shift +272,+330 from the old px, `smodel.page.legacy_px`;
+1821x1723 px at 2 km). **World km** is the 5.1 global frame (`x = px x 2`, `z = py x 2`). Pressure is 1.6 atm x e^(-h/8 km), as
+`survey_biomes.py` and the Hearths' table use. Section 1's old-px numbers are kept as written for the record; where they differ, this
+section wins.
+
+**What moved: almost nothing.** Gemini's 5.1 kept the rim as 4.22 left it: all fifteen lakes are where the shift puts them, at the
+same levels to the metre, and Ledge, the gorge and the road agree with the plan within the model's resolution.
+
+### The polygons on 5.1
+
+| Polygon (`51-region-store.js`) | 5.1 px box | km² (rasterised) | Land median | Note |
+|---|---|---|---|---|
+| `w rift highland` | 308-517 x 1221-1419 | 121,000 | 4,545 m | as planned |
+| `rift rim N` | 496-759 x 1338-1516 | 37,000 | 4,647 m | was 43,000 on 4.21 |
+| `rift rim S` | 344-929 x 1379-1682 | 134,000 | 4,740 m | was 103,000: the owner's split put more of the south-west into it |
+
+Also over the rim on 5.1, new since the plan: **Nulab** (city, 443,1359: on the great lake's south shore, 344 m, Csa), **Shelf**
+(arcology, 461,1161: in the Outer Wall's northern foothills, on Dalab's road), **Loj Twenny** (cavern, 457,1269, on `tube_rift_08`'s
+line), **Wildcat** (village, 427,1453: a Fellgang name), **Cthonos** (526,1503) and **The Tubes** (608,1547), and the political
+polygons `Dalab Council` (317-555 x 992-1424), `Tungang Union` (399-517 x 1140-1345) and `Fellgangs`.
+
+### The lakes on 5.1
+
+Levels are the model's water level (`wl`); depth is the level less the lowest floor cell under the lake (the model's filled hollow,
+so the deepest point, not a mean); the shore is a 3-px ring round the water.
+
+| Lake | 5.1 px | World km | km² | Level | Depth | Shore | Rim |
+|---|---|---|---|---|---|---|---|
+| **The great lake** (Ledge's) | 438,1344 | 876,2688 | 2,336 | **297 m** | 556 m | Csa, 1,052 mm, +16.6 °C | W |
+| N | 568,1403 | 1136,2806 | 624 | 1,887 | 853 | Csb, 968 mm, +8.9 | N |
+| S | 502,1553 | 1004,3106 | 624 | 2,074 | 1,527 | Dsb, 676 mm, +7.8 | S |
+| S | 651,1607 | 1302,3214 | 768 | 2,220 | 1,411 | Csb, 609 mm, +7.0 | S |
+| N | 670,1458 | 1340,2916 | 400 | 2,383 | 776 | Dsb, 730 mm, +7.4 | N |
+| N | 621,1428 | 1242,2856 | 352 | 2,728 | 700 | Dsb, 737 mm, +5.8 | N |
+| S | 574,1582 | 1148,3164 | 848 | 2,735 | 1,626 | Dsb, 630 mm, +4.3 | S |
+| **N, the largest** (station 2) | 533,1391 | 1066,2782 | 1,120 | **3,272** | 2,448 | Dsc, 947 mm, +1.7 | N |
+| N | 519,1370 | 1038,2740 | 544 | 3,427 | 1,129 | Dsc, 835 mm, +0.7 | N |
+| S | 759,1651 | 1518,3302 | 768 | 3,531 | 1,440 | Dsc, 371 mm, -0.4 | S |
+| S | 469,1530 | 938,3060 | 608 | 3,570 | 1,718 | Dsc, 600 mm, -0.3 | S |
+| S | 703,1621 | 1406,3242 | 1,008 | 3,848 | 2,190 | Dsc, 478 mm, -1.0 | S |
+| **S, the cold lake** (station 3) | 706,1645 | 1412,3290 | 688 | **4,477** | 1,108 | ET, 230 mm, **-6.1** | S |
+| W tarn | 335,1274 | 670,2548 | 336 | 5,570 | 889 | ET, 973 mm, -6.4 | W |
+| W tarn | 324,1240 | 648,2480 | 240 | 5,818 | (the model's floor is a deep hollow) | ET, 1,901 mm | W |
+
+The depths are the model's hollows, filled to their spills: they are deeper than the plan's estimates and than a page needs. **The
+pages draw the plan's depths** (the great lake 573 m, the N lake ~1.1 km at most, the cold lake ~500 m; the tarns shallow), since a
+station sees the shore and the first hundred metres of water, not the floor.
+
+### Dalab's road on 5.1
+
+A least-cost line on the model's heights (grade cost (g/6 %)², heights over 6 km penalised, no water) from Dalab (464,1112, 591 m)
+to Ledge (437,1330): **528 km** (the plan: ~510), **158 km over 6.5 km** (~150), **62 km over 8 km**, **24 km over 9 km** (~20),
+the crest **9,645 m at 483,1236** (world 966,2472; the plan: 9.4-9.7 km at old 209,902 = 481,1232). It climbs through the
+foothills past Shelf (461,1161), reaches 5 km by y 1196, 8 km by y 1220 (488,1220: the **north portal** of the tunnel, 7,969 m),
+crosses the crest, and drops back under 8 km by **477,1245** (8,052 m, the **south portal**), 6.2 km by y 1270, 4 km by y 1300 and
+the cliff top over the lake at 436,1329. So the tunnel under everything over 8 km is ~60 km long, as the plan said (60-70 km). The
+crossing lies in `Dalab Council` and `Tungang Union`, not in a rim polygon: it is the road's, and the station keeps its rim flora
+(the S rim's barrens and fellfield) by height, as the plan's "W into S" says.
+
+### The stations on 5.1
+
+| # | Station (page) | Rim | 5.1 px | World km | Ground | Climate | Air | Relief (30 km) |
+|---|---|---|---|---|---|---|---|---|
+| 1 | **Ledge and the great lake** (`dist/riftrim.html`) | W | Ledge **437,1330**; the lake's centre 438,1344 | 874,2660 | cliff top 1,563 m, the lake 297 m (1,266 m below) | Cfa, 878 mm, +15 (26/3) on the top; the shore Csa, ~1,050 mm, +16.6 | 1.32 atm | 3,538 m |
+| 2 | **The lakes of the north rim** (`-lakes`) | N | the lake 533,1391; the station on its east shore 545,1400 | 1090,2800 | the lake 3,272 m, the shore 3.3-4.0 km | Dsc, 816-947 mm, +1 (13/-12) | 0.97 atm | 3,327 m |
+| 3 | **The cold lake** (`-ice`) | S | 706,1645 | 1412,3290 | the lake 4,477 m | ET on the shore, 230-314 mm, -6 (shore mean) | 0.92 atm at the water | 2,509 m |
+| 4 | **The gorge** (`-gorge`) | W | the notch 464,1390; **Chimes** 468,1392 | 928,2780 | the river at 299 m to the brink at px 466,1394, then **a fall of ~1.9 km in 12 km** (187 -> -731 -> -1,534 m by px 470,1398); shoulders to 2.96 km | Cfa/Csa, ~1,050 mm, +22 | 1.54 atm | 4,775 m |
+| 5 | **The crossing** (`-pass`) | W into S | the south portal **477,1245**; the crest 483,1236 (21 km NE) | 954,2490 | 8,052 m at the portal, 9,645 m at the crest | HF (the ice cap) at the portal, O (airless) at the crest; no rain on the model | **0.58 atm**; the crest 0.48 | 2,210 m |
+| 6 | **The black barrens** (`-barrens`) | S | **521,1567** | 1042,3134 | a plateau at 4,774 m on the trough's edge: 4.2 km down to the Rift's floor within 20 km | ET, **173 mm**, -4 (9/-17): the rim's driest high ground | 0.88 atm | 3,766 m |
+
+How the new sites were chosen: station 6 is the flattest ET ground at 4.7-5.4 km in `rift rim S` with the trough falling away beside it
+(5-px relief 308 m, 4.2 km of drop within 20 km; the other candidate, 428,1501 at 5,199 m, is flatter but wetter, 408 mm, and far
+from the trough's edge). Station 5 is the road's south portal, where it falls back under 8 km. Station 4's centre is the notch where
+the river leaves the plain. The **Hearths' stations** (`biomes/hearths/PLAN.md` section 11: `--station hearths` at 525,1400, 3,736 m;
+`hearths-hold` under it; `hearths-walk` at 430,1388) are the Hearths kit's, hosted by this kit: they are **not built in this turn**
+(see "Core adoption", "Not taken").
+
+### Caverns on 5.1 (`biomes/KARST-SITES-5.1.md`)
+
+- **Site 6, Ledge's cliff springs** (437-445, 1330-1345; branch, B-): the branchwork from the cliff top to springs at the great lake's
+  foot is station 1's cave (`KKARST.network({kind:'branch'})` in the `rift` fill, `rock:'gypsum'`, as the survey suggests the fill's
+  evaporites); the Rift line's tunnel meets it by design, its joint given an id.
+- **Site 4, the Hearth hold** (525,1400; hypogene): the Hearths' station 2, not this turn.
+- **Site 3, Cube's gypsum maze** (720,1570) is the Rift kit's station 4, not this kit's.
+- Lava tubes round the rim's vents (old px 205,1037, 158,1058, 253,1070 = 5.1 477,1367, 430,1388, 525,1400): the Hearths' fields
+  stand on two of them. No station of this turn sits on a vent.
+
 ## 0. What the kit is
 
 | | |
@@ -248,7 +338,7 @@ strata plan's `rift` recipe: `core/terrain/STRATA-PLAN.md`). So the caverns are 
 At 0.75 g a roof carries three-quarters of Earth's load, so chambers span about a third wider. **What it gives the
 region**: long, level galleries make a natural transit network, and **the Ancients' tunnels join them** where they can;
 the warm, wet hypogene chambers are refuges from the rim's winters and **the Tungangs' holds** (section 6); the
-springs at the great lake's foot are the caves' outflow. The cave kit is `core/terrain`'s caverns (`39-core-cavern.js`, as
+springs at the great lake's foot are the caves' outflow. (How the Rift line's bores meet these caves, and which the Tungangs live in: `openworld/ANCIENT-TUNNELS.md`, 2026-11-03.) The cave kit is `core/terrain`'s caverns (`39-core-cavern.js`, as
 Pinnacle Rock's Deep Root and Zeijani's tubes), not a new module.
 
 ## 5. Ledge: the hub and the bridge (settled 2026-10-23 unless marked)
@@ -425,6 +515,83 @@ section 13 (2026-10-23), with the library sets each rim reuses.
 7. **The three rims' flora** (section 3, proposed 2026-10-23, the owner's "great proposal"): settled that Dalab brought up
    the most useful plants it could; which ones (the W highland's list) is proposed.
 8. ~~The model's polygon~~: split into `rift rim N` and `rift rim S` on the model (the owner, 2026-10-23; done).
+
+### The answers this build took (2026-11-03, the cloud build session; **for the owner to review**)
+
+The owner has not answered section 12. The build took the plan's recommended answer to each, or the most conservative one where the
+plan recommends none. None of them is hard to reverse: each is a name or a site in one fragment.
+
+| # | Question | Taken | Where it shows | To change it |
+|---|---|---|---|---|
+| 1 | The Fellgangs' divergence and numbers | **Neither is drawn.** The name *Fellgangs* is kept (the model already has a `Fellgangs` polygon). No people are placed on any page (no settlement or crowd is this kit's) | nothing on the pages; the plan's section 6 table stands as proposed | a Fellgang camp would be a `core/camp` record, later |
+| 2 | Ledge's point | done: 437,1330 on 5.1 (= 165,1000 old) | station 1 | |
+| 3 | Chimes, Cthonos, The Tubes | **Kept where 5.1 puts them** (468,1392; 526,1503; 608,1547). Only Chimes is near a station (4, the gorge), and it is drawn as **a ruin's site** only (a terrace cut in the gorge's shoulder, tagged `Chimes (ruin, site only)`), no architecture | station 4 | the tag and the terrace's position in `stations/gorge/44w-host-land.js` |
+| 4 | Ledge's own build | **A settlement's, not this kit's** (as the plan says). Station 1 draws **the site only**: the cliff with its Ancient-cut benches (cut into the ground's profile below Ledge's site; `KSTACKS.contour` bodies and `KCARVE` mouths for the portal and the lift slots are owed: "Core adoption"). No buildings, no Dalab quarter, no lifts | station 1 | `settlements/ledge/` when it is planned |
+| 5 | Chimes or "The Span" | **Keep both names; rename and move nothing** (the most conservative): the gorge station calls it Chimes, as the model does; Dalab's Span stays at 282,680 old | station 4's labels | |
+| 6 | The model's Rift settlements | **Out of this kit's scope**: no change to the model | | |
+| 7 | The three rims' flora | **Taken as proposed** (section 3), all three lists, the W highland's borrowed six included (tier cedar, cork oak, bay laurel, veil willow, coilbark, spiral aloe) | every station | the station's `species` and `kin` lists |
+| 8 | The polygon | done | | |
+
+**Other choices made in the build** (the plan left them open; listed here so nothing is decided silently):
+
+- **The Hearths' stations are not built in this turn.** `biomes/hearths/PLAN.md` hosts three stations here (`hearths`, `hearths-hold`,
+  `hearths-walk`); oidong built its own in pair 6. They need the Hearths' species read in place, KTHERM's bake and `KKARST`'s hypogene
+  mode on the hold: a turn of their own on this kit, after the owner's look pass on the rims.
+- **Ledge's cliff springs' cave (karst site 6)** is not laid out this turn (`KKARST` owed: "Core adoption").
+- **The crossing's air**: 0.58 atm at the portal (the sky's air pressure). Nothing grows above ~6.5 km: the S rim's fellfield runs out by
+  height, as section 3 implies, and the page's south edge (~5.7 km) is the high tundra.
+- **The great lake's colour**: the deep-lake gradient (dark blue under the cliff, green-blue over the plain's shallows). The other
+  kinds (glacial, algal, peat, frozen) are on stations 2, 3 and 6 as section 3's table gives them.
+- **Dalab's fields on the basin plain** are a `farm` field (strips of `ground.terrace.field` and grain tufts), with bay-laurel hedges round
+  them; not a settlement's fields, and not yet from `kits/crops` records.
+- **Fauna**: none (section 8: `kits/fauna`, later).
+
+## Core adoption (the build, 2026-11-03; the cloud session `claude/riftrim-cloud`)
+
+**Started from** `biomes/ebadlands` (the nearest finished multi-station kit on the current core, rebuilt in pair 5): its host fragments
+(the stage, the variants, the far field, the sky, the air, the take) forked and renamed; the land rewritten as a library of lakes
+(`src/44v-host-landlib.js`, `rimLand()`); the species, trees and floor written new (`50`, `55`, `60`); the kin grower made generic
+(`87-host-kin.js` grows the rows each station's `LAND.kin` lists). Station 1 is the kit's own page (`build.py` with no `--station`).
+
+**The three rims kept apart** by shape first and colour second, as section 3 asks: the N rim's columns (frost frills 25-40 m, translucent
+back-lit fins; bell firs' hung bells) over a teal algal lake; the S rim's low dark field (sun rosettes all tilted to the sun, sailwort
+turned edge-on to one wind, cushion anemones, black boulders crusted in iris lichen, snowblood on the snow) with one lantern lobelia
+standing in it; the W rim's hung veils in fog (mist frills leaning and dripping, veil thread on frills and boulders, mist cups, moor
+sponge) among Dalab's planted lowland stands and fields. Each page sets the rim (`LAND.rim`: `RRIM.biome`), its ground palette (45) and
+its ground layers (five of twelve: `LAND.groundLayers`).
+
+| Universal set (`BACKPORT.md` sections 1 and 5) | Taken | How |
+|---|---|---|
+| `BIO.INDEX_ITEMS`, `BIO.LOD.merge/minTris/fade/cull` | yes | inherited (45; `?index=0 ?lodmerge=0 ?lodfade=0 ?lodcull=0`) |
+| Octahedral impostors on the variants' far level | yes | 86 (`VARIANTS.IMP`, `?diet=0`); `BIO.impostorLook` gain 2.4 (ebadlands'): **to set at the GPU look pass** |
+| Cards on their geometry (`check_cells.py --fix`) | yes, 0 faults | the lobe larch's crown sprigs held by their stems (summer row, autumn row), the fog drip's cell tightened |
+| Hanging cards as one strand (`"base": "top"`) | yes | veil thread, fog drip, the bell fir's bells |
+| `BIO.flareJoin` on limb joints | yes | the bell fir's forks, the lobe larch's limbs and sprays (the frills have fins, not limbs) |
+| `BIO.fung`, `BIO.bamboo` | not used | no fungoid part; the glass cane is its own jointed item, not a bamboo |
+| Shared sky, height fog, rain cover, lightning, `bindWeather` | yes | inherited; the sky's site is each station's (old-canvas px: the sky model's frame), its air pressure the station's |
+| Snow that lies (`snowCover` with lee drifts) | yes | every station's `LAND.snowLine`; `frozen` on the S stations |
+| Water: tall falls (`plungeR`, `footK`, `spray: 'drop'`), no breakers on still water, W4 per-lake colour | yes | five lake kinds (89w); the hanging valley's fall (station 2), the gorge's three falls (station 4); `surf:false, breakers:false` on every still |
+| The plume and foam fix (core/water) | yes | rides with core/water: nothing kit-side |
+| `WATER.mirrorSwitch`, off at page load | yes | on the largest still (99): the great lake, the north rim's lake, the cold lake |
+| `KSHADOW`, toggleable and **off by default** | yes | attached in 89z and turned off at load (`window._shadow.off()`); `?shadow=1` or the panel's "shadows" select turns it on. **Core has no switch of its own yet**: this uses the handle's `off()`/`on()` |
+| `KSTRATA` | yes | the `rift` recipe (core/terrain/35, written for this kit) on Ledge's cliff, the lakes' rim, the gorge and the barrens' edge; `rift-volcanic` at the cold lake; `rift-basement` on the Outer Wall at the crossing |
+| `KGROUND`, `KHORIZON`, `KFAR` | yes | the twelve rim layers on documented masks (45 `GLW`); the far field per station (`LAND.far`) |
+| `KHOOK.warp` where Ancient structures are | not applicable | no Ancient structure is drawn: Ledge, Chimes and the portal are sites only (section 12, answers 3 and 4) |
+| Confluences | not taken | no two rivers join on any page (the tarns' stream enters a lake) |
+| Kin (the owner's option A, the Rift's station 3) | yes, as lineage | each own species carries `lineage` (the Rift species it descends from) and `RRIM.make`/`RRIM.grow` are exported, so `BIO.kin('riftrim.frostfrill', ...)` works for the Rift's sky islands; the borrowed species are read in place with `BIO.kin` (87) |
+
+**Not taken this turn, owed** (each listed in `KNOWN_ISSUES.md`):
+
+- **KCARVE cave mouths and `KSTACKS.contour` on Ledge's cliff; `KKARST` and `KCAVERN` for its cliff springs (karst site 6).** The cliff's
+  Ancient-cut benches are cut into the ground (a stepped profile within 650 m of Ledge's site), not contour bodies; no mouth is carved (the
+  ground's 11.8 m cells need a ~40 m patch, and the springs' cave wants a page that goes inside it). `build.py` lists none of those
+  fragments until they are drawn.
+- **The crossing's portal** is a cut face with the Tungangs' lamps in a row before it (the lobelia's glow item), not a carved mouth; the
+  waystation is a level apron (its build is a settlement's).
+- **The Hearths' stations** (`hearths`, `hearths-hold`, `hearths-walk`: `biomes/hearths/PLAN.md` section 11) are not built.
+- **The tier cedar** (the SW lowlands', the W list's timber) is not grown yet: its builder's pads float off its limbs past the attach
+  audit's limit (`KNOWN_ISSUES.md`); the other seven borrowed W species are.
+- **`PORT.md`** is written by `tools/audit_port.py`; the Godot twin is not started.
 
 ## Core changes to take (reconciled 2026-10-27)
 

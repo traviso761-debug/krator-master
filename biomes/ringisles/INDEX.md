@@ -4,39 +4,47 @@
 
 The Ring Sea isles biome kit (the isle demo, settlements/isle-demo/PLAN.md): one kit whose zones follow the scale model's climate classes (XA, Af, Am rainforest; Aw, XV tall-grass savanna in a burn mosaic; BSh hot steppe; XS salt steppe and pans), with the strand, a mangrove lagoon, a reef flat, tide pools, a geyser field and town gardens of the owner's crops (coconut, mango, banana, coffee, cloves, breadfruit; rice, taro, sweet potato, kava, herbs, greens, sugar cane). Borrows the Throne, swbay, eastabyss, sedesert and geyser kits' species in place; the showcase is one synthetic island. Verified: build.py, verify.py --assert.
 
-Docs: `BIOME-API.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PORT.md`
+Docs: `BIOME-API.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PLAN-STATIONS.md`, `PORT.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/ringisles.html`
+Built output (never open it; edit `src/` and rebuild): `dist/ringisles-lagoon.html`, `dist/ringisles.html`
 
 Build: `cd biomes/ringisles && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
 
-From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `35-core-anim.js`, `36-core-walker.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`
-
 From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
 
-From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `94-host-polytool.js`
+From `core/edits/` (shared; see `core/README.md`): `40-core-edits.js`
+
+From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `93-host-inspect.js`, `93-host-stocks.js`, `94-host-marks.js`, `96-host-pictures.js`, `97-host-minimap.js`, `98-host-edit.js`, `99-host-cutaway.js`, `94-host-polytool.js`
+
+From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-core-minimap-host.js`
+
+From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 
 ## src/
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `45-host-stage.js` | 15 | the island's outline (47); the places (80); the land before the thermal ground (116); the climate (the classes as soft weights) (156) |
+| `45-host-stage.js` | 16 | the island's outline (53); the places (86); the land before the thermal ground (122); the climate (the classes as soft weights) (162) |
 | `47-host-land.js` | 7 | the fields (cached below; these are the definiti (20); the host binding (59) |
-| `50-biome-ringisles-species.js` | 20 | palettes (sRGB hex; bark a stop dark) (24); the kit's own tree species (57); borrowed: other kits' trees, grown in place (87); harvest (biomes/FRUIT.md) (109); the small plants (the floor), tagged (125); the gardens (keyed as kits/islanders' placed flo (154) |
-| `52-biome-ringisles-look.js` | 26 | leaf textures (11); bark textures (grey, mean ~.6) (93); local geometries (107); materials (142); instanced items (196) |
-| `55-biome-ringisles-trees.js` | 29 | the classes at a point (11); the burn mosaic (the savanna and the steppe) (22); zones (34); colour (the maths is the core's, BIO.col) (55); polyline and foliage helpers (65); the builders: (T, st, lv) with lv 2 near, 1 mid (85); impostors (the far canopy) (169); keep-clear between trees (184); borrowed trees: grown by their own kits, in plac (191); one of this kit's own trees at a point, the shap (205) |
+| `50-biome-ringisles-species.js` | 21 | palettes (sRGB hex; bark a stop dark) (24); the kit's own tree species (57); borrowed: other kits' trees, grown in place (87); harvest (biomes/FRUIT.md) (117); the small plants (the floor), tagged (133); the gardens (keyed as kits/islanders' placed flo (162) |
+| `52-biome-ringisles-look.js` | 28 | leaf textures (11); bark textures (grey, mean ~.6) (93); local geometries (107); materials (142); instanced items (214) |
+| `55-biome-ringisles-trees.js` | 32 **big** | the classes at a point (11); the burn mosaic (the savanna and the steppe) (22); zones (34); colour (the maths is the core's, BIO.col) (55); polyline and foliage helpers (65); the builders: (T, st, lv) with lv 2 near, 1 mid (96); impostors (the far canopy) (180); keep-clear between trees (195); borrowed trees: grown by their own kits, in plac (202); one of this kit's own trees at a point, the shap (217) |
 | `56-biome-ringisles-crops.js` | 4 |  |
 | `57-biome-ringisles-gather.js` | 2 |  |
-| `60-biome-ringisles-floor.js` | 16 | small plants (25); the zone planters (73); the pass (98); the forest's dressing (after the trees): lianas  (132) |
+| `60-biome-ringisles-floor.js` | 17 | small plants (25); the zone planters (77); the pass (102); the forest's dressing (after the trees): lianas  (136) |
 | `62-biome-ringisles-gardens.js` | 8 |  |
 | `66-biome-ringisles-world.js` | 6 |  |
 | `70-biome-ringisles.js` | 3 |  |
-| `82-host-sky.js` | 14 | day and night (209) |
-| `84-host-ground.js` | 14 | the paint (per vertex) (19); the layers (the library, or procedural without i (47); the meshes (105); the small waters: the tide pools and the brine p (143) |
+| `82-host-sky.js` | <1 |  |
+| `84-host-ground.js` | 16 | the paint (per vertex) (21); the layers (the library, or procedural without i (49); the meshes (114); the small waters: the tide pools and the brine p (154) |
 | `88-host-build.js` | 2 |  |
+| `89-host-sky.js` | 2 |  |
+| `89a-host-atmos.js` | 2 |  |
 | `89f-host-fauna.js` | 4 |  |
-| `89w-host-sea.js` | 3 |  |
-| `99-host-take.js` | 16 | the inspector's words (39); the probe's budgets and the kit's own checks (ve (56); the page, handed to the host (129) |
+| `89w-host-sea.js` | 5 |  |
+| `89zz-host-core.js` | 6 |  |
+| `98z-host-core.js` | 1 |  |
+| `99-host-take.js` | 18 | the inspector's words (41); the probe's budgets and the kit's own checks (ve (58); the page, handed to the host (133) |
 | `99-tail.html` | <1 |  |

@@ -25,7 +25,7 @@ function describe(hit){const p=hit.point,o=hit.object;
   '\n'+p.x.toFixed(0)+', '+p.y.toFixed(0)+', '+p.z.toFixed(0)+'  range '+camera.position.distanceTo(p).toFixed(0)+' m';}
 // species that yield something edible the kit does not draw as a catalog fruit: named, not hidden (the catalog owes the
 // fruit trees' pieces: KNOWN_ISSUES.md)
-const FRUIT_NOT_DRAWN=['pistachio','judas','almond','apple','walnut','apricot','pear','poplar','frill','trumpet','pomegranate','foxtail','dandelion'];
+const FRUIT_NOT_DRAWN=['judas','poplar','frill','trumpet','foxtail','dandelion'];   // the orchard fruit and nuts are the catalog's since 2026-11-03
 const inst=(pat)=>{const o=[],m=new THREE.Matrix4(),p=new THREE.Vector3(),q=new THREE.Quaternion(),sc=new THREE.Vector3();
  scene.traverse(M=>{if(!M.isInstancedMesh||!M.userData.biome)return;if(pat&&!pat.test(M.name))return;for(let i=0;i<M.count;i++){M.getMatrixAt(i,m);m.decompose(p,q,sc);o.push([p.x,p.y,p.z,M.name,sc.y]);}});return o;};
 const near2=(A,x,z,r)=>A.filter(a=>Math.abs(a[0]-x)<r&&Math.abs(a[2]-z)<r);

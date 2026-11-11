@@ -38,3 +38,6 @@ kits/*/tex/*.webp filter=lfs diff=lfs merge=lfs -text
 biomes/*/tex/*.webp filter=lfs diff=lfs merge=lfs -text
 openworld/*/tex/*.webp filter=lfs diff=lfs merge=lfs -text
 godot/data/*/tex/*.webp filter=lfs diff=lfs merge=lfs -text
+# the raw generator output and reference views kept for every model (PLAN-MESHY.md, C1)
+kits/fauna/rig/sources/** filter=lfs diff=lfs merge=lfs -text
+kits/fauna/rig/sources/**/*.json !filter !diff !merge text

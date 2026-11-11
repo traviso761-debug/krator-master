@@ -38,10 +38,11 @@ var CUT={};
 
  // ---------------------------------------------------------------- the lip, by bearing (PLAN.md sections 1 and 9.1)
  // [bearing, lip radius km, lip height m]: the crater mouth (120-180) open, the floor running out at ~-900 m toward the crater;
- // the north mouth (345-15) cut to a 700 m sill 80 km out on the lip's line; highest to the ENE (6.4 km) and the SW (6.1 km);
- // the west lip ~5.1 km at 66 km (station 3, px 427,302)
- const LIP=[[0,80,700],[15,78,900],[30,74,3600],[67,72,6400],[100,72,4300],[118,70,1500],[130,68,-850],[170,68,-900],[182,68,800],
-  [200,70,4400],[225,72,6100],[250,69,5400],[270,66,5100],[300,70,4200],[330,74,3800],[343,78,1200],[360,80,700]];
+ // the north mouth (345-15) cut to a 666 m sill 80 km out on the lip's line; highest to the ENE (6.4 km) and the SW (6.1 km);
+ // the west lip ~4.9 km at 66 km (station 3, px 427,302). Map 5.1's numbers (biomes/STATIONS-MAP-5.1.md, "Small checks"; the final rebuild, pair 10):
+ // the sill 666 m (4.22: 700), the face 164 m lower (4.22: 5,100)
+ const LIP=[[0,80,666],[15,78,900],[30,74,3600],[67,72,6400],[100,72,4300],[118,70,1500],[130,68,-850],[170,68,-900],[182,68,800],
+  [200,70,4400],[225,72,6100],[250,69,5400],[270,66,4936],[300,70,4200],[330,74,3800],[343,78,1200],[360,80,666]];
  const lipAt=(b,i)=>{b=((b%360)+360)%360;let k=0;while(LIP[k+1][0]<b)k++;const a=LIP[k],c=LIP[k+1],t=(b-a[0])/(c[0]-a[0]),u=t*t*(3-2*t);return mix(a[i],c[i],u);};
  CUT.lipR=b=>lipAt(b,1)*1000;
  CUT.lipH=b=>lipAt(b,2);

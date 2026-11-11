@@ -28,7 +28,7 @@ this kit follows (a culture kit forked from the Scyvoi engine, poor to court, ev
 | Town | `core/city` on the site layer when the capital's page comes (section 8): the canal town on `alleys` and main streets, the ministries' quarter on `frontage-courts`, the court on the host |
 | Core | `core/rand`, `core/mask`, `core/tags` (the culture added to the vocab, `core/tags/52-core-tags-vocab.js`), `core/space`, `core/lod`, `core/host`, the shared sky; `core/furnish` with an `eternian` catalog set (section 9); `core/materials/record` through `materials.json` (section 10) |
 | Biome | `biomes/nwlowlands` read in place (Asian and Australian forms at 1.5x, sea pens, glow-willows) |
-| Out of scope here | the **Yeti Kingdom** (its own kit on the highlands' or a cold core), the **cybernetics tribe** (the dark mechanical-organic look, `refs/machine-35`: a kit of its own on the Post-Apoc and Ancients kits), the **dam-basin bandit camps** (Post-Apoc on grounded hulls from `settlements/port` and `kits/ringsea`), **Farport**'s page and the visitors, the Eternian **tongue** (`lore/tongues-of-krator.html`), the **characters** (the costume refs go to `core/charactermodels` when the culture's clothes are drawn) |
+| Out of scope here | the **Yeti Kingdom** (its own kit on the highlands' or a cold core), the **cybernetics tribe** (the dark mechanical-organic look, `refs/machine-35`: a kit of its own on the Post-Apoc and Ancients kits), the **dam-basin bandit camps** (Post-Apoc on grounded hulls from `kits/port` and `kits/ringsea`), **Farport**'s page and the visitors, the Eternian **tongue** (`lore/tongues-of-krator.html`), the **characters** (the costume refs go to `core/charactermodels` when the culture's clothes are drawn) |
 
 The kit goes in the gallery when it first reaches `main` (`gallery/README.md`).
 
@@ -97,7 +97,7 @@ the Heirs' persons and the finials), `arch-25` (its massing, not its fuss), `sta
   streets, a border post at most.
 - **The Post-Apoc kit** (`kits/post-apoc`): the dam-basin bandits' camps and the State's own slums take it with the
   `eternian` sockets, as Pylon's salvage tier does.
-- **The port kit and the Ring Sea kit** (`settlements/port`, `kits/ringsea`): grounded Ancient hulls for the basins, and
+- **The port kit and the Ring Sea kit** (`kits/port`, `kits/ringsea`): grounded Ancient hulls for the basins, and
   the Ancient parts the ministries set into their walls (a prow, a turbine casing).
 
 ## 4. What the kit holds (about 55 defs, *proposed*)

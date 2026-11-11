@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Split gallery/site/ (build_gallery.py) into artifacts that each fit one artifact version (256 MiB; owner, 2026-10-14).
 
-    python3 gallery/split_site.py [--alpha | --parts 2] [--cap 250] [--alone 'biome,objects=Krator Biomes and Objects']
+    python3 gallery/split_site.py [--alpha | --parts 2] [--cap 250] [--alone 'biome,objects=Krator Biomes and Objects' ...]
         [--urls URL1,URL2,...] [--link NAME=URL ...]
 
 --alpha (owner, 2026-10-16, the way the gallery is published now): the world parts by the alphabet, titled by their
@@ -14,6 +14,10 @@ tags point at the one kept. Groups are packed first-fit by size, largest first; 
 Krator Worlds artifact). Each index lists its own cards; --link NAME=URL adds a block naming another part (the parts
 link to each other once they have URLs: publish 2 and 3, then rerun with their links and publish 1). --alone puts the
 named sections in a part of their own, the last, under its own title (owner: the biomes and objects on their own page).
+--alone may be given more than once: each group is a part (or parts) of its own, after the world parts, in the order given.
+With --alpha, a group over the cap is split by the alphabet like the world parts and each part titled by its range
+('Krator Biomes A-G'; owner, 2026-11-09). --urls names every part's artifact in order: the world parts, then the --alone
+parts.
 """
 import hashlib, json, os, re, shutil, sys
 
@@ -37,7 +41,7 @@ def sort_name(e):
     return n.lower()
 
 
-def alpha_parts(entries, size, cap):
+def alpha_parts(entries, size, cap, prefix='Krator Worlds'):
     """--alpha (owner, 2026-10-16): the world parts by the alphabet, titled by their range ('Krator Worlds A-K').
     Pages in name order fill the parts one after another, balanced: as few parts as fit under the cap, each about an
     even share. A part keeps its own copy of every pack its pages load (a pack two parts share is in both), so no range
@@ -61,7 +65,7 @@ def alpha_parts(entries, size, cap):
             break
         limit *= 1.02
     letter = lambda e: sort_name(e)[:1].upper()
-    titles = ['Krator Worlds %s–%s' % (letter(p[0]), letter(p[-1])) if letter(p[0]) != letter(p[-1]) else 'Krator Worlds %s' % letter(p[0])
+    titles = ['%s %s–%s' % (prefix, letter(p[0]), letter(p[-1])) if letter(p[0]) != letter(p[-1]) else '%s %s' % (prefix, letter(p[0]))
               for p in b]
     return b, titles
 
@@ -83,10 +87,10 @@ def main():
             continue
         page = open(os.path.join(W, e['slug'] + '.html'), encoding='utf-8').read()
         side[e['slug']] = re.findall(r'<script src="([^"]+\.tex\.[\w-]+\.js)"></script>', page)
-    alone = arg('--alone')
-    alone_secs, alone_title = (alone.split('=', 1)[0].split(','), alone.split('=', 1)[1]) if alone else ([], None)
-    lone = [e for e in entries if e['section'] in alone_secs]
-    entries = [e for e in entries if e['section'] not in alone_secs]
+    alones = [a.split('=', 1) for i, a in enumerate(sys.argv) if sys.argv[i - 1] == '--alone']   # [[sections, title], ...]
+    lones = [([e for e in entries if e['section'] in secs.split(',')], title) for secs, title in alones]
+    gone = {s for secs, _ in alones for s in secs.split(',')}
+    entries = [e for e in entries if e['section'] not in gone]
     # groups: pages that share a pack (by content) stay together
     parent = {e['slug']: e['slug'] for e in entries}
     def find(x):
@@ -122,11 +126,17 @@ def main():
         bins.sort(key=lambda b: (not any(e['slug'] == 'voth' for e in b), -len(b)))
         titles = TITLES[:len(bins)]
     # --urls U1,U2,...: the world parts' artifacts in order; each index links to the others under their titles
+    for lone, title in lones:   # the --alone groups, after the world parts: one part each, or by the alphabet (--alpha) if over the cap
+        if not lone:
+            continue
+        if '--alpha' in sys.argv and size(lone) > cap:
+            b, t = alpha_parts(lone, size, cap, title)
+        else:
+            b, t = [lone], [title]
+        bins += b
+        titles += t
     urls = [u for u in (arg('--urls') or '').split(',') if u]
     links = [[t, u] for t, u in zip(titles, urls)] + links
-    titles = titles + ([alone_title] if lone else [])
-    if lone:
-        bins.append(lone)
     for n, b in enumerate(bins, 1):
         out = os.path.join(HERE, 'site-%d' % n)
         shutil.rmtree(out, ignore_errors=True)

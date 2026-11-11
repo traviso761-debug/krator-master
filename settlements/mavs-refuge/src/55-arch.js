@@ -9,6 +9,12 @@
    (+ the planner's window-pane mesh).                                      */
 reseed(550001);
 (function(){
+/* the doors and glass are 54-openings.js's (core/door). kits/beast-riders seals this fragment in a closure without them
+   (kits/beast-riders/towns.py), so there a leaf is drawn shut into the plank bucket, a locked record is nothing, and a wall
+   with windows is drawn whole */
+var mvLeaf = typeof goLeaf === 'function' ? goLeaf : function(at,n,w,h,o){ o=o||{}; if(o.draw===false) return null;
+  BOX(at[0],at[1],at[2],w-0.04,h-0.02,o.t==null?0.07:o.t,Math.atan2(n[0],n[1]),o.col==null?PLANKC[3]:o.col,'plank'); return null; };
+var mvSectorWins = typeof goSectorWins === 'function' ? goSectorWins : function(fam,P,r0,r1,a0,a1,yb,yt,col,opt){ SECTOR(fam,P,r0,r1,a0,a1,yb,yt,col,opt); return 0; };
 var ARCH = { buildings:0, stalls:0, huts:0, windows:0, lamps:0, farms:0, beds:0, wayposts:0, furniture:0,
              shrines:0, canopyPanels:0, canopyGaps:0, byKind:{} };
 
@@ -128,10 +134,20 @@ var KIND_LABEL = { home:'Home', fancy:'Fine house', shrine:'Nature shrine', shop
                    armoury:'Armoury', mess:'Mess hall', store:'Storehouse', silkhouse:'Silk house' };
 
 /* ================================================================== 1. RING BUILDINGS */
-function doorAt(P,r,a,y,sgn,w,h,colDoor,colFrame){
-  /* sgn +1: face looks outward (r1), -1: face looks at the trunk (r0) */
-  faceBox(P,r+sgn*0.03,a,y,w+0.5,h+0.3,0.26,colFrame,'timber');
-  faceBox(P,r+sgn*0.10,a,y+0.12,w,h,0.22,colDoor,'wall');
+function doorAt(P,r,a,y,sgn,w,h,colDoor,colFrame,holes){
+  /* sgn +1: face looks outward (r1), -1: face looks at the trunk (r0). With `holes` the doorway is real (the owner's doors,
+     2026-11-03): the frame is a ring round it, the hole goes on the list for the walls drawn after it (lotWalls) and the leaf
+     is a door that opens and shuts (54-openings.js, core/door), drawn shut in the wall as it was; without, the old plate */
+  if(!holes){
+    faceBox(P,r+sgn*0.03,a,y,w+0.5,h+0.3,0.26,colFrame,'timber');
+    faceBox(P,r+sgn*0.10,a,y+0.12,w,h,0.22,colDoor,'wall');
+  }else{
+    [-1,1].forEach(function(sd){ faceBox(P,r+sgn*0.03,a+sd*(w/2+0.125)/r,y,0.25,h+0.3,0.26,colFrame,'timber'); });
+    faceBox(P,r+sgn*0.03,a,y+0.12+h,w,0.18,0.26,colFrame,'timber');
+    holes.push({ a:a, hw:w/2+0.01, y0:y+0.11, y1:y+0.12+h+0.01 });
+    var o=platOutDir(P,a), n=[o[0]*sgn,o[1]*sgn], c=platXZ(P,r-sgn*0.075,a), hg=platXZ(P,r-sgn*0.075,a-sgn*(w/2)/r);
+    mvLeaf([c[0],y+0.12,c[1]],n,w,h,{ hinge:hg, col:colDoor, t:0.07 });
+  }
   faceBox(P,r+sgn*0.75,a,y,w+0.9,0.14,1.3,PLANKC[3],'plank');
 }
 /* a window centred at height y. With `holes` it is a real opening: the frame is a ring round it and the hole
@@ -253,11 +269,12 @@ function buildLot(P,S,bias){
   }
   /* doors on both faces */
   var dcol=shade(WALLDARKC[1],-0.45), bigDoor=(kind==='store'||kind==='armoury');
-  doorAt(P,wr0,am,y,-1,bigDoor?2.2:1.25,bigDoor?2.9:2.3,dcol,trim);
-  if(!shopfront) doorAt(P,wr1,am,y,1,bigDoor?2.2:1.25,bigDoor?2.9:2.3,dcol,trim);
+  var doorsO=[], doorsI=[];                    /* the doorways' openings: cut with the windows', kept apart from them (the interiors read holesO/holesI as windows) */
+  doorAt(P,wr0,am,y,-1,bigDoor?2.2:1.25,bigDoor?2.9:2.3,dcol,trim,doorsI);
+  if(!shopfront) doorAt(P,wr1,am,y,1,bigDoor?2.2:1.25,bigDoor?2.9:2.3,dcol,trim,doorsO);
   /* the walls: a floor at a time; an upper floor that overhangs a veranda or a shopfront has a soffit under the overhang */
   for(var fw=0; fw<fl; fw++)
-    lotWalls(P,a0,a1,fw===0?wr0:r0,fw===0?wr1:r1,y+fw*FH,y+(fw+1)*FH,fw?shade(wcol,0.04):wcol,holesO[fw],holesI[fw]);
+    lotWalls(P,a0,a1,fw===0?wr0:r0,fw===0?wr1:r1,y+fw*FH,y+(fw+1)*FH,fw?shade(wcol,0.04):wcol,fw?holesO[fw]:holesO[fw].concat(doorsO),fw?holesI[fw]:holesI[fw].concat(doorsI));
   if(fl>1){
     if(wr0>r0) SECTOR('wall',P,r0,wr0,a0,a1,y+FH,y+H,shade(wcol,0.04),{faces:'b'});
     if(wr1<r1) SECTOR('wall',P,wr1,r1,a0,a1,y+FH,y+H,shade(wcol,0.04),{faces:'b'});
@@ -674,12 +691,14 @@ PORT('council', 0, { x:P_CC.x, y:P_CC.y, z:P_CC.z, ry:Math.atan2(platOutDir(P_CC
   /* outer wall in four arcs between the doorways; tall windows */
   for(var d=0;d<4;d++){
     var a0=doors[d]+dHalf, a1=doors[(d+1)%4]-dHalf; if(a1<a0) a1+=TAU;
-    SECTOR('wall',P,r1-0.35,r1,a0,a1,y+0.25,yw,wcol,{faces:'ios',step:3.2,colInner:shade(wcol,-0.2)});
+    var nw=Math.round((a1-a0)*r1/3.6), cwins=[];
+    for(var cw=0;cw<nw;cw++) cwins.push({ a:a0+(a1-a0)*(cw+0.5)/nw, hw:1.15/2+0.01, y0:y+3.3-1.7-0.01, y1:y+3.3+1.7+0.01 });
+    /* the wall with its tall windows cut through it (54-openings.js): the glass stands in the openings, the chamber shows */
+    mvSectorWins('wall',P,r1-0.35,r1,a0,a1,y+0.25,yw,wcol,{faces:'ios',step:3.2,colInner:shade(wcol,-0.2)},cwins);
     SECTOR('timber',P,r1-0.45,r1+0.1,a0,a1,y+0.25,y+1.0,deep,{faces:'tios',step:3.2});
     SECTOR('timber',P,r1-0.45,r1+0.12,a0,a1,yw-0.6,yw,red,{faces:'bios',step:3.2});
-    var nw=Math.round((a1-a0)*r1/3.6);
     for(var w=0;w<nw;w++){ var wa=a0+(a1-a0)*(w+0.5)/nw;
-      winAt(P,r1,wa,y+3.3,1,1.15,3.4,false,shade(tc,-0.2));
+      winAt(P,r1,wa,y+3.3,1,1.15,3.4,false,shade(tc,-0.2),[]);
       faceBox(P,r1+0.05,wa,y+5.15,1.5,0.22,0.3,gilt);
       faceBox(P,r1+0.02,a0+(a1-a0)*w/nw,y+0.25,0.3,HW-0.25,0.3,tc); }
     faceBox(P,r1+0.02,a1,y+0.25,0.3,HW-0.25,0.3,tc);
@@ -813,7 +832,11 @@ SATS.forEach(function(P){
     mCone('thatch',x,y+WH-0.2,z,circ+(sq?1.2:0.95),0,rh,tcol,seg,rot,true);
     mCone('thatch',x,y+WH-0.2+rh*0.78,z,circ*0.22+0.2,0,rh*0.32,shade(tcol,-0.25),seg,rot);
     /* door facing the platform centre + step + lean-to porch */
-    fBOX(f,0,ap-0.02,y,1.45,2.25,0.2,TIMBERC[2],'timber'); fBOX(f,0,ap+0.03,y+0.1,1.0,2.0,0.2,shade(WALLDARKC[1],-0.45),'wall');
+    /* the doorway is real (the owner's doors, 2026-11-03): a frame round the opening, the opening cut with the windows'
+       (hutWalls) and a door that opens and shuts (54-openings.js, core/door), drawn shut in the wall as it was */
+    [-1,1].forEach(function(sd){ fBOX(f,sd*0.6125,ap-0.02,y,0.225,2.25,0.2,TIMBERC[2],'timber'); }); fBOX(f,0,ap-0.02,y+2.1,1.0,0.15,0.2,TIMBERC[2],'timber');
+    var hutDoor={ y0:y+0.09, y1:y+2.11, hw:0.51 }, dlc=LP(f,0,ap-0.05), dlh=LP(f,-0.5,ap-0.05);
+    mvLeaf([dlc[0],y+0.1,dlc[1]],[dx,dz],1.0,2.0,{ hinge:dlh, col:shade(WALLDARKC[1],-0.45), t:0.06 });
     fBOX(f,0,ap+0.7,y,1.6,0.12,1.1,PLANKC[3],'plank');
     [-1,1].forEach(function(sd){ fBOX(f,sd*1.0,ap+1.5,y,0.12,2.0,0.12,TIMBERC[0],'timber'); });
     var pa=LP(f,-1.25,ap-0.1), pb=LP(f,1.25,ap-0.1), pc=LP(f,1.25,ap+1.75), pd=LP(f,-1.25,ap+1.75);
@@ -827,7 +850,7 @@ SATS.forEach(function(P){
       fBOX(wf,-0.4875,0,y+1.125,0.125,0.85,0.24,fc,'timber'); fBOX(wf,0.4875,0,y+1.125,0.125,0.85,0.24,fc,'timber');
       hutHoles[((k%seg)+seg)%seg] = { y0:y+1.125, y1:y+1.975, hw:0.425 };
       pane(wf.x+wx*0.13,y+1.55,wf.z+wz*0.13,wx,wz,0.85,0.85,cool,true); });
-    hutWalls(x,y,z,circ,seg,rot,WH,wcol,hutHoles);
+    hutWalls(x,y,z,circ,seg,rot,WH,wcol,Object.assign({ 0:hutDoor }, hutHoles));   /* the door's opening with the windows' (segment 0 faces the door) */
     /* barrel + washing line */
     var bp=LP(f,-(sq?ap:ap*0.75)-0.5,ap*0.55); if(clearAt(bp[0],bp[1],0.2)||true) barrel(bp[0],y,bp[1],0.95);
     var w0=LP(f,circ+0.3,0), w1=LP(f,circ+3.6,0.4), q=Math.hypot(w1[0]-P.x,w1[1]-P.z);

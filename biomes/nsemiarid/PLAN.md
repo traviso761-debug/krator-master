@@ -141,7 +141,7 @@ Old shorelines ~1,630 km (west) and ~1,530 km (east).
   salt crusts and pans growing downward, mud cracks; yardangs (wind-cut ridges in the lake silt) aligned on the wind,
   lunette dunes on the pans' downwind shores; salt flats at the bottom, the golden poplar forests (section 7) on the
   remnant lakes' shores.
-- **Rusted docks:** the Ancient Port kit (`settlements/port`, its `CONTRACT.md`) lays its segments along a coastline;
+- **Rusted docks:** the Ancient Port kit (`kits/port`, its `CONTRACT.md`) lays its segments along a coastline;
   give it the full-pool contour as the coast and a derelict dress (no water, rust, missing deck plates, the port's
   salvage pass). The docks stand high on their piles over the falling slope; ferry ramps run down into dust; a
   lighthouse stands on a knoll that was an island.
@@ -314,6 +314,7 @@ and the scablands' `dist/coulee.html`, which reads the kit in place). Each look 
 | `BIO.INDEX_ITEMS`, `BIO.LOD.merge/minTris/fade/cull`, the runtime LOD tick. The floor sets no `BIO.range` (its bands are densities), so the LOD options change nothing yet | `src/46-host-graphics.js` (its own fragment, so the scablands' stage takes it), `99` | `?index=0`, `?lodmerge=0`, `?lodfade=0`, `?lodcull=0` |
 | The variants' far level on octahedral impostors (core/biome 34, one set, drawn in the variants' own pool; a dead poplar keeps its grown-dead variant); gain 2.4; the welded items expanded before the harvest (ebadlands' stilt-pod fix) | `src/86-host-variants.js`, `88` | `?diet=0`, `?impgain=`, `?impwrap=` |
 | KGROUND: the eight library layers on their documented masks (the rain's three bands, the bed's silt, the ring's crust, the dunes' sand, the rock's basalt, the pan's soda crust), now hex-tiled and height-blended; kinds `clast` (the desert's gravel lag off the bed) and `polygon` (the dry bed's mud cracks, the old canvas net's weight); the ground Standard (KGROUND's distance scale reads `cameraPosition`, which r128 never uploads to a Lambert material) | `src/45c-host-ground.js` | `?kground=0` (the old Lambert floor and its hand-written layers) |
+| KGROUND's relief (core-ground, 2026-11-03; the owner: every build): `relief: {bump: .075, cavity: .8, mesh: 1}` and `KGROUND.cavityMesh` on the ground, the full MeshStandard set; no texture unit. The scablands take it too (the kit's ground) | `src/45c-host-ground.js` | `?kgrelief=0` |
 | KFAR (to 14 km on the stage's own land: the plain, the foothills, the upland, the bed's silt north) and KHORIZON (the ground, then the flora) | `src/87-host-far.js`, `88` | `?far=0`, `?hz=0` |
 | R1 height fog, R10 rain cover, lightning (the storm weather's), the air's load with a dust storm (the panel's air select) | `src/89b-host-atmos.js` | `?hfog=0`, `?dust=0`, `?storm=1` |
 | Water: breakup on the stream and the stills; `WATER.mirrorSwitch` on the salt lake (the scablands: the plunge lake), off at page load | `89b`, `99` | `?breakup=0`, `?mirror=probe\|live` |

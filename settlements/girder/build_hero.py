@@ -16,6 +16,7 @@ Usage:  python3 build_hero.py [--no-checks]
 """
 import base64, json, os, sys
 import build            # build.py: its port lint and open-issue list run on import, as when it is run itself
+import build_sources    # --list-sources (tools/dep_graph.py): build.main() reports, with the hero's files read by then
 
 HERO = os.path.join(build.HERE, 'hero')
 CODE = ['88-hero.js', '89-talk.js']

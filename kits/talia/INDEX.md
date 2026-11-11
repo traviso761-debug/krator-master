@@ -15,12 +15,12 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `69t-tal-mat.js` | 10 | materials and kit items (prefix ta) (21); the owner's delivery of 2026-10-18 (materials.js (71); P4: the University and the civic set (87); real openings (the owner, 2026-10-19: no dark vo (106) |
-| `69u-tal-helpers.js` | 45 **big** | arches (6); columns, balusters, entablature (94); drums, domes, lanterns (142); bays, screens, stairs, paving (183); vaults, courts, shop fronts (the trade buildings (260); P4: tiers, petals, rays, coffers, niches (72t-73 (291); interiors: ceilings, and storey slabs as rings ( (337); walking (F) on the floors (the owner, 2026-10-19 (370); the civic dress (the owner, 2026-10-19: more ela (394) |
+| `69t-tal-mat.js` | 12 | materials and kit items (prefix ta) (21); the owner's delivery of 2026-10-18 (materials.js (74); P4: the University and the civic set (90); real openings (the owner, 2026-10-19: no dark vo (109); real glass and doors (the owner, 2026-11-03; cor (116) |
+| `69u-tal-helpers.js` | 48 **big** | arches (6); columns, balusters, entablature (125); drums, domes, lanterns (173); bays, screens, stairs, paving (214); vaults, courts, shop fronts (the trade buildings (292); P4: tiers, petals, rays, coffers, niches (72t-73 (323); interiors: ceilings, and storey slabs as rings ( (369); walking (F) on the floors (the owner, 2026-10-19 (402); the civic dress (the owner, 2026-10-19: more ela (426) |
 | `70t-tal-dwellings.js` | 16 | POOR (23); MIDDLE (81) |
 | `70u-tal-rich.js` | 11 |  |
 | `71t-tal-trade.js` | 36 **big** | CIVIC: the customs, the bourse, the baths (7); THE CARAVAN ROAD: the caravanserai, the stoa, th (92); THE STREET: the shop arcade, the inn, the press (168) |
-| `72t-tal-uni.js` | 31 **big** | THE CORE (8); THE FACULTIES (150); THE COLLEGES (252) |
+| `72t-tal-uni.js` | 32 **big** | THE CORE (8); THE FACULTIES (150); THE COLLEGES (252) |
 | `72u-tal-arts.js` | 14 |  |
 | `73t-tal-civic.js` | 22 | THE WALL AND THE GATE OF THE PASSES (132); THE FOUNTAIN AND THE BRIDGE (182) |
 | `74t-tal-palace.js` | 14 | THE LION AND THE PAVILIONS (19); THE PALACE (47) |

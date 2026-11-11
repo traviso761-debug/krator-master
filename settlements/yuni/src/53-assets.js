@@ -61,6 +61,27 @@ function PLANT(o){
   o.variants=o.variants||1; PLANTS.push(o); PLANT_BY_KEY[o.key]=o; return o;
 }
 
+/* ---------- 13b-iv. OPENINGS ON core/door: real doors, real glass (the owner, 2026-11-03) -------------------
+   "Remove all dark voids and make all windows, doors and portals actual doors or windows that have transparency", doors
+   that open "with a keypress nearby or by an NPC", and "real glass". The records and rules are core/door's (KDOOR, KGLASS;
+   core/door/README.md); this is the engine's drawing of them, so every builder on the frame draws an opening one way:
+     F.door      a working door: its leaf (or two) in the 'leaf' bucket, hung from the hinge, and a KDOOR record with a
+                 stable id, <asset key>.<how many of that key were placed before it>.d<n> ('mid_washed_house.3.d0'); 76-doors.js
+                 locks the ones with no room behind (no interior plan: a solid body) and swings the rest
+     F.window    a pane of glass (81-glow.js: KGLASS 'clear' by day, 'lit' on the evening schedule) over the room card
+                 (ROOMC: the room you would see, not a black plate)
+     F.card(...)      F.box's arguments without the colour: the room card alone (an unglazed vent or hatch on a solid face)
+     F.paneBox(...)   F.box's arguments without the colour: a dark glazing panel made a card with glass in front of it
+                      (o.kind 'clear' | 'smoked' | 'frosted' | 'stained' {color}; o.out: the local outward normal [x,z],
+                      else the face away from the footprint's centre)
+     F.pane(lx,ly,lz, nlx,nlz, w,h, o)   glass alone over a card a builder drew itself (F.window's placement)
+     F.doorway(...)   F.box's arguments without the colour: a doorway the builder drew as a dark panel, made a LOCKED leaf
+                      (a KDOOR record, never opened: the body behind it is solid); o.col the leaf's colour, o.fam its family
+                      ('plank'; 'metal'), o.out as paneBox
+   A void that is not an opening stays dark: a smoke hole, a flue, a well, a trough's water, a furnace mouth (KNOWN_ISSUES.md).
+   YOPEN counts them for the probe (window._openings). Under INTERIOR_SINK (an interior built lazily) nothing registers. */
+/* ROOMC, YOPEN and the yopen* helpers are 45-kit.js's (the city wall's towers and the Vault, 50-52, draw openings before this) */
+
 function assetFrame(x,z,ry,opt){
   opt=opt||{};
   var F={ x:x, z:z, ry:ry||0, y:opt.y!=null?opt.y:terrainH(x,z), seed:opt.seed||1, variant:opt.variant||0, wealth:opt.wealth==null?0.5:opt.wealth, name:opt.name||'' };
@@ -110,8 +131,8 @@ function assetFrame(x,z,ry,opt){
   /* a window: dark reveal + a pane that lights on the evening schedule. nlx,nlz = the LOCAL outward normal of the wall it is in */
   /* the reveal goes in the 'rvl' bucket so 76-doors.js can hide it while you stand inside and look out */
   F.window=function(lx,ly,lz, nlx,nlz, w,h, opt){ var q=F.p(lx,lz), n=F.dir(nlx,nlz), a=Math.atan2(n[0],n[1]), rv=null; opt=opt||{};
-    if(!opt.noReveal){ rv=kitIndex('rvl','dark'); push('rvl','dark',[q[0]-n[0]*0.10, F.y+ly-h/2, q[1]-n[1]*0.10, w+0.16, h+0.16, 0.30, a, VOIDC[0]]); }
-    WINPANE(q[0]+n[0]*0.06, F.y+ly, q[1]+n[1]*0.06, n[0],n[1], w,h, !!opt.cool);
+    if(!opt.noReveal){ rv=kitIndex('rvl','dark'); push('rvl','dark',[q[0]-n[0]*0.10, F.y+ly-h/2, q[1]-n[1]*0.10, w+0.16, h+0.16, 0.30, a, ROOMC_GLASS]); if(yopenLive()) YOPEN.cards++; }   /* the room card behind the glass */
+    WINPANE(q[0]+n[0]*0.06, F.y+ly, q[1]+n[1]*0.06, n[0],n[1], w,h, !!opt.cool); if(yopenLive()) YOPEN.panes++;   /* its glass: 81-glow.js */
     if(FIX_CTX && FIX.windows.length){ var W=FIX.windows[FIX.windows.length-1]; W.sill=+(ly-h/2).toFixed(3); if(rv) W._rvl=rv; } };
   /* a disc lying in a wall: oculus, medallion, round-window frame. nlx,nlz = LOCAL outward normal; it stands OUT from (lx,lz) by `thick`. */
   F.disc=function(lx,ly,lz, nlx,nlz, r0, thick, col, fam){ var q=F.p(lx,lz), n=F.dir(nlx,nlz), y=F.y+ly, t=thick||0.3;
@@ -120,7 +141,7 @@ function assetFrame(x,z,ry,opt){
   F.roundWindow=function(lx,ly,lz, nlx,nlz, r0, colFrame, spokes){
     var q=F.p(lx,lz), n=F.dir(nlx,nlz), y=F.y+ly, ns=spokes==null?8:spokes, cf=colFrame!=null?colFrame:WHITEC[0];
     F.disc(lx,ly,lz, nlx,nlz, r0+0.34, 0.42, cf, 'relief');
-    F.disc(lx,ly,lz, nlx,nlz, r0, 0.26, VOIDC[0], 'dark');
+    F.disc(lx,ly,lz, nlx,nlz, r0, 0.26, ROOMC_GLASS, 'dark'); if(yopenLive()){ YOPEN.cards++; YOPEN.panes++; }   /* the room card, and the glass over it (81-glow.js) */
     WINPANE(q[0]+n[0]*0.18, y, q[1]+n[1]*0.18, n[0],n[1], r0*1.34, r0*1.34, false);
     for(var k=0;k<ns;k++){ var th=Math.PI*k/ns, ux=Math.cos(th)*r0, uy=Math.sin(th)*r0;
       BEAM(q[0]-n[1]*ux, y-uy, q[1]+n[0]*ux, q[0]+n[1]*ux, y+uy, q[1]-n[0]*ux, 0.10, 0.22, cf, 'relief'); } };
@@ -155,7 +176,7 @@ function assetFrame(x,z,ry,opt){
     var q=F.p(lx,lz), n=F.dir(nlx,nlz), a=Math.atan2(n[0],n[1]), y0=F.y+(ly||0), ux=Math.cos(a), uz=-Math.sin(a);
     var style=o.style||(w>1.75?'double':'plank'), fam=style==='mat'?'cloth':'plank', c=col!=null?col:PLANKC[3];
     var hinge=o.hinge||(phash(q[0],y0,q[1],3.1)<0.5?'left':'right'), leaves=style==='double'?2:1, sw=o.swing==='out'?-1:1;
-    var rv=kitIndex('rvl','dark'); push('rvl','dark',[q[0]-n[0]*0.12, y0, q[1]-n[1]*0.12, w+0.3, h+0.2, 0.34, a, VOIDC[1]]);
+    var rv=kitIndex('rvl','dark'); push('rvl','dark',[q[0]-n[0]*0.12, y0, q[1]-n[1]*0.12, w+0.3, h+0.2, 0.34, a, ROOMC]);   /* the reveal: the room's colour, not a void */
     var L=[], hz=[q[0]+n[0]*0.04, q[1]+n[1]*0.04];
     function leaf(side, lw){ /* side -1: hinge on the viewer's left, leaf runs +x; +1: hinge right, leaf runs -x */
       var hx=hz[0]+ux*side*w/2, hzz=hz[1]+uz*side*w/2, base=side<0?a:a+Math.PI, k=kitIndex('leaf',fam);
@@ -164,7 +185,27 @@ function assetFrame(x,z,ry,opt){
     if(leaves===2){ leaf(-1, w/2-0.01); leaf(1, w/2-0.01); } else leaf(hinge==='left'?-1:1, w);
     var D=FIX_DOOR({ x:q[0], y:y0, z:q[1], yaw:a, w:w, h:h, style:style, leaves:leaves, hinge:leaves===2?'both':hinge, swing:o.swing||'in', to:o.to||'interior' });
     D._leaves=L; D._rvl=rv; D._lid=FIX_CTX?FIX_CTX.id:null;
+    /* the door's record in core/door: hinge on the first leaf's jamb; sign +1 hung on the -x jamb (seen from outside), -1 on +x,
+       negated when it swings out. 76-doors.js locks it when no room is planned behind it, and poses its leaves as it swings */
+    var hs=(leaves===2||hinge==='left')?1:-1, hp=[hz[0]-ux*hs*w/2, y0, hz[1]-uz*hs*w/2];
+    D._kd=yopenDoor({ id:yopenId(F), at:[q[0],y0,q[1]], hinge:hp, yaw:a, w:w, h:h, t:style==='mat'?0.04:0.10, sign:hs*sw,
+      p0:[hz[0], y0+h/2, hz[1]], key:F.asset?F.asset.key:null, fix:D.id, style:style, leaves:leaves });
+    if(D._kd) YOPEN.leaves+=L.length;
     (F.doors||(F.doors=[])).push([q[0]+n[0]*0.9, y0, q[1]+n[1]*0.9]); (F.doorIds||(F.doorIds=[])).push(D.id); return D; };
+  /* the room card alone, F.box's arguments without colour or family (an unglazed vent, a hatch, a portal on a solid face) */
+  F.card=function(lx,ly,lz,w,h,d,r){ F.box(lx,ly,lz,w,h,d,r,ROOMC,'dark'); if(yopenLive()) YOPEN.cards++; };
+  /* a dark glazing panel: the card, with glass standing proud of its outward face */
+  F.paneBox=function(lx,ly,lz,w,h,d,r,o){ o=o||{}; F.box(lx,ly,lz,w,h,d,r,ROOMC_GLASS,'dark'); if(yopenLive()) YOPEN.cards++;
+    var f=yopenFace(lx,lz,w,d,r,o), off=f.thick/2+0.02, q=F.p(lx+f.n[0]*off, lz+f.n[1]*off), n=F.dir(f.n[0],f.n[1]);
+    yopenGlass(q[0], F.y+ly+h/2, q[1], n[0],n[1], f.wide, h, o); };
+  /* glass alone, centred at (lx,ly,lz) on a face whose local outward normal is (nlx,nlz) */
+  F.pane=function(lx,ly,lz, nlx,nlz, w,h, o){ var q=F.p(lx,lz), n=F.dir(nlx,nlz); yopenGlass(q[0], F.y+ly, q[1], n[0],n[1], w,h, o); };
+  /* a doorway the builder drew as a dark panel: a locked leaf where the panel was (the body behind it is solid) */
+  F.doorway=function(lx,ly,lz,w,h,d,r,o){ o=o||{}; F.box(lx,ly,lz,w,h,d,r,o.col!=null?o.col:PLANKC[3],o.fam||'plank');
+    var f=yopenFace(lx,lz,w,d,r,o), q=F.p(lx+f.n[0]*f.thick/2, lz+f.n[1]*f.thick/2), n=F.dir(f.n[0],f.n[1]), a=Math.atan2(n[0],n[1]);
+    var D=yopenDoor({ id:yopenId(F), at:[q[0],F.y+ly,q[1]], hinge:[q[0]-Math.cos(a)*f.wide/2, F.y+ly, q[1]+Math.sin(a)*f.wide/2], yaw:a, w:f.wide, h:h, t:f.thick,
+      locked:true, key:F.asset?F.asset.key:null, style:'panel' });
+    if(D) YOPEN.leaves++; return D; };
   /* an OPENING with no leaf of its own — a gateway, an archway, a hut mouth the builder drew itself.
      Registered exactly like a door (style 'open'), so it exports and the life layer can use it. */
   F.opening=function(lx,lz, nlx,nlz, w,h, ly, o){ o=o||{};

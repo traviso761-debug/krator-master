@@ -18,7 +18,7 @@ Stations, like the Throne's (NOTES.md, "Building it"): each is its own showcase 
   49a..49e            the NECANYONS kit, read in place: its canyon flora and its carnivores grow on Korona's rock
   50..79              THE KIT (KORONA): species, trees, the man-eaters, the summit and the hollow floor, build
   82-host-sky         the hyperjungle's sky, read in place (the standard Krator sky with the giant in the north-east)
-  88-host-build       HOST: the build order
+  89z-host-build      HOST: the build order (after the water: the flora reads its shore)
   90..98              HOST (core/host: camera, loop, panel, probe, the authoring tools)
   99-host-take        the page handed to core/host
   99-tail.html        closes <script>
@@ -61,6 +61,8 @@ def find_node():
     return None
 
 HERE=os.path.dirname(os.path.abspath(__file__)); SRC=os.path.join(HERE,'src'); DIST=os.path.join(HERE,'dist')
+sys.path.insert(0,os.path.join(os.path.dirname(os.path.dirname(HERE)),'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
+BSRC.variants([['--station',_s] for _s in sorted(os.listdir(os.path.join(HERE,'stations'))) if os.path.isfile(os.path.join(HERE,'stations',_s,'station.json'))])   # every station's page
 OUT=sys.argv[1] if len(sys.argv)>1 and not sys.argv[1].startswith("--") else "korona.html"
 STATION=None
 if '--station' in sys.argv:
@@ -70,10 +72,14 @@ if '--station' in sys.argv:
     STN=_json.load(open(os.path.join(STN_DIR,'station.json'),encoding='utf-8'))
     OUT=STN['out']
 FORBID=['kdef(','kput(','kbake(','BUCKET[','MBK[','FAMMAT[','PLATS','BRIDGES','TOWERS','RIVER','PALISADE','KOFF']
-CORE_TERRAIN=['37-core-stacks.js']   # KSTACKS: the tepui's beds, the stacks (core/terrain/37-core-stacks.js)
+# core/terrain: KSTACKS (the tepui's beds, the stacks); the final rebuild (2026-11-03; PLAN.md, "Core adoption"): 35 KSTRATA (the `tepui` recipe on the
+# walls, its shader keyed 35z after it: Span's lesson), 37b KSTACKS.contour, 43 KGROUND (the floor's layers), 44 KFAR (the country past the map), 45 KHORIZON
+CORE_TERRAIN=['35-core-strata.js','37-core-stacks.js','37b-core-stacks-contour.js','43-core-ground.js','44-core-farfield.js','45-core-horizon.js']
 CORE_T=os.path.normpath(os.path.join(HERE,'..','..','core','terrain'))
 # the biome core from core/biome (core/README.md): one copy for every kit. 35-core-anim and 36-core-walker: the hyperjungle's fauna
-CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','31-core-dither.js','35-core-anim.js','36-core-walker.js','37-core-traps.js','40-core-place.js','42-core-export.js','43-core-export-host.js']
+# The final rebuild adds 31j a limb's joint to its parent (BIO.flareJoin), 32 the variant pools and kin (the exchanges), 34 the octahedral impostors,
+# 41 the environmental fields (BIO.env)
+CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','31-core-dither.js','31j-core-joint.js','32-core-variants.js','34-core-impostor.js','35-core-anim.js','36-core-walker.js','37-core-traps.js','40-core-place.js','41-core-env.js','42-core-export.js','43-core-export-host.js']
 CORE_B=os.path.normpath(os.path.join(HERE,'..','..','core','biome'))
 CORE_SPACE=['20-core-space.js']
 CORE_S=os.path.normpath(os.path.join(HERE,'..','..','core','space'))
@@ -94,6 +100,11 @@ KITS={'41-hyperjungle-globals.js':(HJ,'src/41-hyperjungle-globals.js'),
 PATH={f:os.path.join(SRC,f) for f in os.listdir(SRC) if not f.startswith('.')}
 for f in CORE_TERRAIN:
     if f not in PATH: PATH[f]=os.path.join(CORE_T,f)
+for f,h in (('35z-core-strata-shade.js','35-core-strata-shade.js'),('44-core-farfield-draw.js','44-core-farfield-draw.js'),('45-core-horizon-shade.js','45-core-horizon-shade.js')):
+    PATH.setdefault(f,os.path.join(CORE_T,'host',h))
+# core/shadow (KSHADOW; the owner, 2026-11-03: toggleable, OFF by default: ?shadow=1 turns it on, src/89z-host-build.js): the data half before the host's
+PATH.setdefault('10-core-shadow.js',os.path.normpath(os.path.join(HERE,'..','..','core','shadow','10-core-shadow.js')))
+PATH.setdefault('12-core-shadow-host.js',os.path.normpath(os.path.join(HERE,'..','..','core','shadow','host','12-core-shadow-host.js')))
 if STATION:
     for f in os.listdir(STN_DIR):
         if f.endswith('.js') or f.endswith('.html'): PATH[f]=os.path.join(STN_DIR,f)
@@ -121,6 +132,10 @@ for f in CORE_SPACE:
 CORE_WATER=['20-core-water.js','21-core-water-shore.js','22-core-water-flow.js','50-core-water-draw.js','51-core-water-kinds.js']
 for f in CORE_WATER:
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','water',f))
+# the final rebuild's water ext: breakup (56: the stream's glint), the audit (57), the reflections switch (58), the shore's fields (60), by path
+# (tools/fragment_needs.json)
+for f in ['56-core-water-breakup.js','57-core-water-audit.js','58-core-water-mirror.js','60-core-water-fields.js']:
+    PATH.setdefault(f,os.path.normpath(os.path.join(HERE,'..','..','core','water','ext',f)))
 CORE_ATMOS=['89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-8-export.js','89-atmos-a-waves.js','89-atmos-b-skylight.js','89-atmos-4-weather.js','89-atmos-9-host.js']
 for f in CORE_ATMOS:
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos',f))
@@ -134,8 +149,12 @@ khost.resolve(PATH,CORE_HOST)
 # presets and shader, its host and the biome call (src/89-host-sky.js: ATMOS.skyBiome); they replace the painted dome
 for f in ['89-atmos-0-core.js','89-atmos-0p-presets.js']:
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos',f))
-for f in ['89-atmos-e-skymodel.js','89-atmos-f-skypresets.js','89-atmos-g-sky.js']:
+for f in ['89-atmos-e-skymodel.js','89-atmos-f-skypresets.js','89-atmos-g-sky.js','89-atmos-j-fog.js']:
     PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','sky',f))
+# the final rebuild's air (BACKPORT.md section 1): height fog (R1), the rain occlusion map (R10), lightning, snow that lies (the hoar table had it alone)
+for f in ['89-atmos-fx-raincover.js','89-atmos-fx-lightning.js','89-atmos-fx-snowcover.js']:
+    PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','fx',f))
+PATH['89-atmos-j-heightfog.js']=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','host','89-atmos-j-heightfog.js'))
 for f in ['89-atmos-h-skyhost.js','89-atmos-i-skybiome.js','89-atmos-e-weatherhost.js']:   # e-weatherhost: ATMOS.bindWeather, with the weather (4) and its selector (9) in CORE_ATMOS (2026-10-26)
     PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','host',f))
 PATH.pop('82-host-sky.js',None)   # the hyperjungle's old dome (still mapped in by KITS above): this page draws the shared sky
@@ -172,6 +191,7 @@ for f in frags:
             if w in s: bad.append(f'{f}: uses {w}')
     out.append(f'\n// ==================== {f}\n' if f.endswith('.js') else ''); out.append(s)
 if bad: print('BIOME FRAGMENT DEPENDS ON A HOST ENGINE:\n  '+'\n  '.join(bad)); sys.exit(1)
+BSRC.report(PATH)   # --list-sources: what the page is made of, then exit
 os.makedirs(DIST,exist_ok=True)
 html=''.join(out)
 if SIDE: html=_mp.write_sidecar(SIDE,html,DIST,'korona.tex.js',prune=False)

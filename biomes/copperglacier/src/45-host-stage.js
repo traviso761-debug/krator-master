@@ -57,9 +57,9 @@ const ridgeAt=(x,z)=>RIDGES.length?KRELIEF.join(RIDGES.map(f=>f(x,z))):0;
 // THE ICE CAVES: shells at the ice's margin (u, aw: a share of the half-width) or at a point; the mouth faces out of the ice and down it
 const CAVES=(SITE.caves||[]).map((C,i)=>{let x=C.x,z=C.z,face=C.face;
  if(C.u!=null){const c=upAt(C.u,GS.centre(C.u)+C.aw*G.W(C.u));x=c[0];z=c[1];
-  if(face==null){const sg=Math.sign(C.aw),ox=-SITE.up[0]*.7+sg*SITE.up[1]*.7,oz=-SITE.up[1]*.7-sg*SITE.up[0]*.7;face=Math.atan2(oz,ox);}}
+  if(face==null){const sg=Math.sign(C.aw),ox=-SITE.up[0]*.94+sg*SITE.up[1]*.34,oz=-SITE.up[1]*.94-sg*SITE.up[0]*.34;face=Math.atan2(oz,ox);}}   /* down the glacier, turned a little out of the ice (a portal faces the outwash, not the moraine wall) */
  else if(face==null)face=-Math.PI/2;   /* the wind's moat opens north, down the plateau */
- return{x,z,R:C.R,H:C.R*.82,face,mouth:.38,name:C.name,u:C.u,aw:C.aw};});
+ return{x,z,R:C.R,H:C.R*.82,face,mouth:.2,name:C.name,u:C.u,aw:C.aw};});   /* the mouth +-36 deg at the foot: a cave, not a canopy */
 // THE FROST (KFROST): sorted circles and polygons on the flat moraine ground and the outwash (the `flat` field below; KFROST's where reads the bed's slope)
 const FROST=KFROST.create({seed:KRAND.child(4411,'copperglacier/frost/'+SITE.key),ground:(x,z)=>PROF(uOf(x,z)),
  polygons:{cell:3.2,trough:.22,rim:.06,width:.14,where:(x,z)=>{const u=uOf(x,z),a=pOf(x,z)-GS.centre(u),aa=Math.abs(a)-G.W(u);return smooth(30,90,aa)*smooth(SITE.coral[1]+200,SITE.coral[1]-200,PROF(u));}}});
@@ -67,14 +67,14 @@ function landH(x,z){const u=uOf(x,z),p=pOf(x,z),a=p-GS.centre(u);
  let h=PROF(u)+26*(fbm(x*.0008,z*.0008,91,3)-.5)+7*(fbm(x*.004,z*.004,92,2)-.5)+wallAt(u,a)+ridgeAt(x,z);
  h=G.bed(x,z,h)+FROST.h(x,z);
  if(GS.pondDeep){const u2=uOf(x,z),p2=pOf(x,z);h-=GS.pondDeep*G.lakeK(u2,p2,p2-GS.centre(u2));}   /* a pond on a slope: KGLACIER's 9 m basin and the site's more */
- for(const C of CAVES){const d=Math.hypot(x-C.x,z-C.z);if(d<C.R*1.5&&C.floor!=null)h=mix(h,C.floor,smooth(C.R*1.4,C.R*1.0,d));}
+ for(const C of CAVES){const d=Math.hypot(x-C.x,z-C.z);if(d<C.R*2.6&&C.floor!=null)h=mix(h,C.floor,smooth(C.R*2.5,C.R*1.7,d));}   /* a pad levelled out past the shell, wider than a ground cell (12 m), so the drawn ground lies flat round the cave */
  return h;}
 CAVES.forEach(C=>{C.floor=null;C.floor=landH(C.x,C.z);});
 // the ice: KGLACIER's, gone where a nunatak stands through it, cleared inside a cave
 function iceAt(x,z){let t=G.iceAt(x,z);if(t<=0)return 0;if(RIDGES.length){const r=ridgeAt(x,z);if(r>0)t*=1-smooth(t*.35,t*1.05,r);}
  for(const C of CAVES){const dx=x-C.x,dz=z-C.z,al=dx*Math.cos(C.face)+dz*Math.sin(C.face),pp=-dx*Math.sin(C.face)+dz*Math.cos(C.face),d=Math.hypot(al>0?pp*.5:pp,al>0?al*.3:al);   /* the moat: cleared farther out and wider on the mouth's side (wider than the ground mesh's 12 m cells), so the mouth opens on air */
   if(d<C.R*1.4)t*=smooth(C.R*.9,C.R*1.3,d);}return t;}
-function terrainH1(x,z){return landH(x,z)+iceAt(x,z);}
+function terrainH1(x,z){return landH(x,z)+iceAt(x,z);}   /* a cave meets its ground by its own apron (86: KGLACIER.drawer's apron), not by the ground mesh, whose 12 m cells are as wide as a cave */
 // THE TARN (a station's own lake, west of the snout) and the POND (KGLACIER's basin behind the terminal moraine)
 const TARN=SITE.tarn?Object.assign({},SITE.tarn):null;
 const POND=GS.lake&&GS.terminal?(function(){const u=G.termU(TERM.breach),c=upAt(u+6,TERM.breach);return{level:terrainH1(c[0],c[1])-.6,name:'The pond (behind the terminal moraine)'};})():null;
@@ -155,7 +155,7 @@ CAVES.forEach(C=>SPINE.push([C.x,C.z]));SPINE.push(upAt(GS.snout-150,GS.centre(G
 CU.nodes.forEach(n=>{if(Math.abs(n.x)<TERR.R&&Math.abs(n.z)<TERR.R)SPINE.push([n.x,n.z]);});
 if(!SITE.walls)for(let z=-2000;z<=2000;z+=1000)for(let x=-2000;x<=2000;x+=1000)SPINE.push([x,z]);
 // the mask: nothing roots on the ice, in the water, in a cave
-function rootMask(x,z){if(iceAt(x,z)>.3)return 0;for(const C of CAVES)if(Math.hypot(x-C.x,z-C.z)<C.R*1.15)return 0;
+function rootMask(x,z){if(iceAt(x,z)>.3)return 0;for(const C of CAVES)if(Math.hypot(x-C.x,z-C.z)<C.R*1.7)return 0;   /* the cave and its apron of ice */
  if(STREAMS.length&&SBK.at(x,z).d<2.8)return 0;   /* the stream's ribbon is drawn 2.4 m out under its banks (89w): nothing roots in it */
  if(window._waterShore){const s=window._waterShore(x,z);if(s===s&&s<1.2)return 0;}   /* the water the eye sees (89z: its shore grid laps a little over the land) */
  const w=waterH(x,z);if(w>-1e8){const d=terrainH(x,z)-w;if(d<.7)return d<.15?0:(d-.15)/.55;}return 1;}

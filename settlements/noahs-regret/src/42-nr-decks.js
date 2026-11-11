@@ -63,12 +63,13 @@ function nrDecks(){const L=NR.L,W=NR.W;reseed(4200);
      nrBand('white',a,b,sOut-.08,sOut+.08,y,y+.12,P('white'),'oit');nrBand('white',a,b,sOut-.08,sOut+.08,top-.15,top,P('white'),'oib');
      for(let t=a;t<b;t+=NR.DT/2)nrBox('white',t,sOut,y,.08,top-y,.14,P('white'));};
     for(const g of gaps){if(g.t0>c)glaze(c,g.t0);c=Math.max(c,g.t1);}glaze(c,NR.T1);}
-   /* the doors' leaves on the inhabited decks: most hang open into the cabin, some are gone */
-   if(!stripped)for(const C of mine){if(C.i%5===3)continue;const D=nrCabinDoor(C),k=nrK(C.tm,C.sIn);const hingeT=C.doorEnd===0?D.t0:D.t1;
-    const h=NR.at(hingeT,C.sIn+side*.1),T=NR.tan(hingeT),n=NR.nrm(hingeT),ang=1.25+.3*rng();
-    /* the leaf swings from the hinge into the cabin (outboard, +side*n), turning away from the door's free edge */
-    const fx=(C.doorEnd===0?1:-1),dx=T[0]*fx*Math.cos(ang)+n[0]*side*Math.sin(ang),dz=T[1]*fx*Math.cos(ang)+n[1]*side*Math.sin(ang);
-    box('timber',h[0]+dx*.43,y+.02,h[1]+dz*.43,.86,2.05,.045,hc(0x8a6a4a),Math.atan2(-dz,dx));}}
+   /* the doors' leaves on the inhabited decks: most hang open into the cabin, some are gone. Each is a door on core/door
+      (svLeaf, core/engine 36o-open.js: id 'cabin.<cabin id>'), standing ajar as it was drawn (E shuts and opens it) */
+   if(!stripped)for(const C of mine){if(C.i%5===3)continue;const D=nrCabinDoor(C);
+    const m=NR.at(D.tc,C.sIn+side*.1),T=NR.tan(D.tc),n=NR.nrm(D.tc),ang=1.25+.3*rng();
+    /* the face looks out of the cabin (-side*n, onto the corridor); the leaf swings in (outboard), hinged on the doorEnd jamb */
+    const yaw=Math.atan2(-side*n[0],-side*n[1]),ux=Math.cos(yaw),uz=-Math.sin(yaw),toHinge=C.doorEnd===0?-1:1;
+    svLeaf(m[0],y+.02,m[1],yaw,.86,2.05,{t:.045,mk:'timber',col:hc(0x8a6a4a),split:false,mirror:Math.sign(-(ux*T[0]+uz*T[1]))!==toHinge,ajar:ang,id:'cabin.'+C.id,name:'cabin door'});}}
   /* the stripped decks: debris where the pirates threw what they took out (heaps of panels and pipe) */
   if(stripped)for(let i=0;i<40;i++){const t=rr(NR.T0+8,NR.T1-8),s=(rng()<.5?-1:1)*rr(8.8,10.7);if(NR.blocked(d,t-1,t+1,Math.min(s,s*.9),Math.max(s,s*.9)))continue;
    const p=NR.at(t,s);box('rust',p[0],y,p[1],rr(.4,1.2),rr(.1,.5),rr(.3,.9),WHITE,rr(0,TAU));}}

@@ -4,7 +4,7 @@ Read `settlements/mungo/briefs/00-common.md` first.
 
 ## Why
 In Mungo the Geomancers (an oil-drilling guild with electricity and salvaged Ancient engines; brown uniforms and
-canvas packs; their town is Locus, see `LORE.md` §6.9 and `settlements/locus/LOCUS-KIT-NOTES.md`) keep **dune buggies**
+canvas packs; their town is Locus, see `LORE.md` §6.9 and `kits/locus/NOTES.md`) keep **dune buggies**
 in a small parking lot by their chapterhouse, maintain them, and periodically one drives off the map and back. The
 owner: "Near the chapterhouse is a small parking lot for dune buggies (make a new model and start a Motor Vehicles
 kit)." So: a new kit, `kits/motor-vehicles/`, whose first vehicle is the buggy, built so ANY world can take it.

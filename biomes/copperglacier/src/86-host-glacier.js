@@ -9,7 +9,8 @@ const LIGHTS=[];   /* the drawer's day and night hooks (the steam's colour, the 
 const ICECLEAR=(function(){if(typeof KMAT==='undefined'||KMAT.mode!=='lib')return null;const P=KMAT.packed('copperglacier','ice.clear');if(!P)return null;const t=KMAT.textures(P,{aniso:4}).map;t.wrapS=t.wrapT=THREE.RepeatWrapping;return t;})();
 const ICE_MAT=BIO.solidMat(ICECLEAR);   /* the library's clear ice, tinted by the instance colour */
 const ICEC=[0xeef6fc,0xe2eef8,0xd6e8f4,0xf4f8fc,0xcce2f2],ICECU=[0xd4f0e8,0xc8ece0,0xdcf4ec];   /* on the copper ground the ice is greener */
-const GD=KGLACIER.drawer({scene,register:REGISTER,ground:terrainH,ticks:TICKS,onLight:LIGHTS,camera,renderer,map:ICECLEAR,up:SITE.up,across:[SITE.up[1],-SITE.up[0]]});
+/* the caves sit in the ice: an apron of ice from each shell's flank out to the ground (.7 R), their feet carried 2.5 m into the ground (skirt) (45 levels a pad round each, wider than a ground cell), a planar map on the outer face (no swirl at the top) */
+const GD=KGLACIER.drawer({scene,register:REGISTER,ground:terrainH,ticks:TICKS,onLight:LIGHTS,camera,renderer,map:ICECLEAR,up:SITE.up,across:[SITE.up[1],-SITE.up[0]],skirt:2.5,apron:.7,fine:2,mouthTop:.52,uvWorld:true});   /* a low mouth under a roof of ice */
 GD.defSerac(ICE_MAT);
 const iceCol=(x,z)=>{const k=FIELD.copper(x,z)>.2||(SITE.skarn&&CU.p(x,z)>.5);return new THREE.Color(pick(k?ICECU:ICEC));};
 (function(){reseed(8711);

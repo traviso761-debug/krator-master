@@ -6,8 +6,31 @@
   onto the recipes needs each hall's floor as a rectangle in its own frame (several are curved or wrap a stair).
 - [ ] **No engines.** The engine room reserves the engines' floor for the host; the demo draws a grey block there.
   A machinery piece (a turbine casing, a gearbox) would let the recipe furnish it.
+- [x] **The reception recipe is permanent** (opt-in 2026-11-03, folded in 2026-11-08): `src/38-ai-reception.js`, in
+  `kit_bundle.bundle()`, the demo sheet and `verify.py --assert`; the `reception` option is gone. Every page that takes
+  the kit moves at its next rebuild.
+- [x] **`AI.barPlate`'s cross walls ran diagonally** (fixed 2026-11-08): the `.x` wall is `[inner[0], outer[0]]`, straight
+  across at the room's start (it was `outer[m]`, corner to corner). kits/metropolis's straightening pass is dropped.
+- [x] **`AI.furnishPlan` turned a room's frame toward its first door's point** (fixed 2026-11-08): the frame now faces the
+  outward normal of the wall the door is on (`AI.doorWallNormal`), about the area centroid (`AI.polyCentroid`), so a door
+  off a wall's middle no longer skews it. kits/metropolis's `mpFrameDoors` is dropped. Every templated room's furnishing
+  moves at its pages' next rebuild.
 - [ ] **The Ancients' own set is thin.** The `ancient` dress borrows the salvage lords' chairs, tables, carpets,
   divans, bookcases, statues and banners where the Ancients have no piece of their own (`20-ai-dress.js`).
+
+## Real doors and real glass on the sheet (2026-11-03, core/door)
+
+The sheet's halls, ship's rooms and cabins stand in kits/interiors' shells (`50-shell.js`, read in place), which hang each
+door's leaf open 75 degrees and glaze a window with a pale lambert pane. `src/75-ai-doors.js` makes each leaf a KDOOR
+record (`<room id>.d<n>`, standing open as hung, posed by KDOORHOST: E within reach opens and shuts it, the tip shows near
+one) and each pane KGLASS 'clear'; build.py reads core/door's 10, 20, 90 into the page (not into the engine-neutral core).
+
+- [ ] **The leaves are matched to the shell's meshes by order** (the doors with a leaf, in `room.doors` order, against the
+      shell group's `part: 'door'` meshes). kits/interiors' shell should register its own leaves (a KDOOR record and a
+      `KDOORHOST.object`/`posed` per leaf) and use KGLASS; then this fragment goes. Listed for kits/interiors.
+- [ ] **No reachability audit**: the sheet's rooms are shells with no core/walk records (`IX.walk.register` takes a set
+      instance, not a `ROOM()` shell). Every hall and room has its one door on the open deck, so each is reached by
+      construction; a `KWALK` registration of the shells' floors and walls (kits/interiors) would let `KWALK.reach` prove it.
 
 ## The Ancients kit's interiors (2026-10-07)
 

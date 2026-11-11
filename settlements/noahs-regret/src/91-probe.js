@@ -1,5 +1,7 @@
 // ================================================================= PROBE (window._api): everything a headless check needs
 window._api={REG,DEFS,SITES,NR,
+ /* the doors and glass (core/door): {doors, locked, leaves, panes, cards} */
+ get openings(){return SV_OPEN.stats();},
  /* the measured world-space box of each placed def against its declared w x d x h (deck buildings: hull-levelled boxes) */
  footprints(){return REG.filter(r=>r.cls==='building').map(r=>{const D=r.decl,b=r.bbox;const bw=b.mx[0]-b.mn[0],bd=b.mx[2]-b.mn[2],bh=b.mx[1]-b.mn[1];
   return {key:r.key,name:r.name,w:D.w,d:D.d,h:D.h,bh:+bh.toFixed(2),eh:+Math.max(0,bh-D.h).toFixed(2),tris:r.tris,budget:D.budget,top:!r.parent};});},

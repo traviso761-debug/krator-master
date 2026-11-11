@@ -52,7 +52,9 @@ const culmRecs=()=>(CUT.PLANTS?CUT.PLANTS.groves:[]).flatMap(G=>G.culms);
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P=CUT.PLANTS||{groves:[]},st=window._cut||{};
  if(STAGE.groves!==false){add('culms combed along the field',HCHK.combed(culmRecs()));add('a grove\'s nodes on one set of levels',HCHK.nodes(P.groves));}
  add('the warp\'s bites, echoes and size steps',HCHK.warped(st,CUT.WARPED));add('the camp tagged for Dilihan\'s kit',HCHK.camp(BIO.tagReg()));
- add('the read-in trees are this ring\'s',HCHK.ring(treeNames()));add('the natives tagged',HCHK.tagged(CUT.SPECIES));
+ add('the read-in trees are this ring\'s',HCHK.ring(treeNames()));add('the trees keep out of the water the eye sees (WATER.edgeAudit)',edgeCheck(readInTrees()));
+ add('the lake draws no breakers (still water)',{ok:!LAKE_WATER||!!(LAKE_WATER.drawOpt&&LAKE_WATER.drawOpt.breakers===false&&LAKE_WATER.drawOpt.surf===false),detail:LAKE_DRAW?'surf and breakers off on the lake':'no lake on this station'});
+ add('the reflections off at load (WATER.mirrorSwitch)',{ok:!MIRROR||MIRROR.mode()==='off'||/mirror=/.test(location.search),detail:MIRROR?'mode '+MIRROR.mode():'no still on this station'});add('the natives tagged',HCHK.tagged(CUT.SPECIES));
  if(STAGE.checks)STAGE.checks(add);return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),P=CUT.PLANTS||{groves:[]};
  if(STAGE.groves!==false){add('culms standing straight up',HCHK.combed(culmRecs().map(c=>Object.assign({},c,{m:[1,0,0,0,1,0,0,0,1]}))));
@@ -60,15 +62,36 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  if(CUT.field(...STAGE.toBowl(0,0)).s>=.2)add('no bites and no echoes',HCHK.warped({bitten:0,echoes:0},{trees:1,stepped:0,bites:0}));   /* where the warp is under .2 nothing is asked of it */
  if(STAGE.camp)add('a camp with no tags',HCHK.camp({query:()=>[]}));
  add('a meranti on the page',HCHK.ring(['Sky meranti'].concat(treeNames())));
+ if(waterSurfaces().length&&WATER.edgeAudit){const w=LAKE_DRAW?[-STAGE.up[0]*600,-STAGE.up[1]*600]:STAGE.pool?[STAGE.pool.poly.reduce((a,p)=>a+p[0],0)/STAGE.pool.poly.length,STAGE.pool.poly.reduce((a,p)=>a+p[1],0)/STAGE.pool.poly.length]:null;
+  if(w)add('a tree in the middle of the water',edgeCheck([{x:w[0],z:w[1],name:'test tree'}]));}
  add('a native with no harvest',HCHK.tagged(CUT.SPECIES.map((S,i)=>i?S:Object.assign({},S,{tags:{climate:S.tags.climate}}))));
  if(STAGE.negatives)STAGE.negatives(add);return R;}
+// ---------------------------------------------------------------- the water the eye sees (the final rebuild, pair 10)
+// THE TREES KEEP OUT OF IT (core/water ext/60 and 57: WATER.fields and edgeAudit; the review's third line): the shore of the lake, the creek and a station's
+// pool baked at 8 m over the page, and no read-in tree's foot inside it (the plants a kit marks aquatic, standing at the water's own edge, excepted)
+let WATER_F=null;
+const waterSurfaces=()=>[LAKE_WATER,CREEK_FLOW,POOL_STILL].filter(Boolean);
+function edgeCheck(trees){if(!WATER.fields||!WATER.edgeAudit)return{ok:true,detail:'not on this page (core/water ext/60)'};if(!waterSurfaces().length)return{ok:true,detail:'no water on this station'};
+ const S=TERR.R*1.1;if(!WATER_F)WATER_F=WATER.fields({box:[-S,-S,S,S],cell:8,ground:terrainH,surfaces:waterSurfaces()});
+ const P=trees.map(T=>({x:T.x,z:T.z,r:0,name:T.name||'tree',aquatic:!!T.aquatic}));const F=WATER.edgeAudit({field:WATER_F,plants:P,clear:0}),bad=F.filter(f=>f.rule==='plant-in-water');
+ return{ok:!bad.length,detail:P.length+' read-in trees against the water\'s own shore; '+bad.length+' standing in it'+(bad.length?' (first at '+[bad[0].x,bad[0].z].map(v=>Math.round(v||0)).join(',')+')':'')};}
+const readInTrees=()=>[].concat(typeof NWLOW!=='undefined'&&NWLOW.TREES&&window._nwlow?NWLOW.TREES.map(T=>({x:T.x,z:T.z,name:NWLOW.SPECIES[T.sp]&&NWLOW.SPECIES[T.sp].key,aquatic:T.y0<.4})):[],
+ typeof NHL!=='undefined'&&NHL.TREES&&window._nhl?NHL.TREES.map(T=>({x:T.x,z:T.z,name:NHL.SPECIES[T.sp]&&NHL.SPECIES[T.sp].key})):[]).filter(T=>!(CUT.warpDenied&&T.name&&CUT.warpDenied(T.name)));
+// THE REFLECTIONS SWITCH (core/water ext/58, WATER.mirrorSwitch; the owner, 2026-11-01: every biome gets it, OFF at page load, for the tri counts): the land in
+// the lake (station 1: the near and far surfaces, at the lake's level, centred a kilometre out) or in a station's still pool. ?mirror=probe|live asks at load
+const MIRROR=(function(){if(!WATER.mirrorSwitch)return null;const tree=o=>/impTrees|imp/i.test(o.name||'');
+ if(LAKE_DRAW){const c=[-STAGE.up[0]*1000,-STAGE.up[1]*1000];return WATER.mirrorSwitch({THREE,renderer,scene,camera,sky:SKY,materials:[LAKE_DRAW.mesh.material].concat(FAR_DRAW?[FAR_DRAW.mesh.material]:[]),
+  level:WATER_LEVEL,center:c,radius:1000,far:6000,tree,hour:()=>ATMOS.clock?ATMOS.clock.hour:0});}
+ if(POOL_DRAW&&POOL_DRAW.mesh&&STAGE.pool){const P=STAGE.pool.poly,cx=P.reduce((a,p)=>a+p[0],0)/P.length,cz=P.reduce((a,p)=>a+p[1],0)/P.length,r=Math.max(...P.map(p=>Math.hypot(p[0]-cx,p[1]-cz)));
+  return WATER.mirrorSwitch({THREE,renderer,scene,camera,sky:SKY,materials:[POOL_DRAW.mesh.material],level:STAGE.pool.level,center:[cx,cz],radius:r,far:1500,tree,hour:()=>ATMOS.clock?ATMOS.clock.hour:0});}
+ return null;})();window.MIRROR=MIRROR;
 // ---------------------------------------------------------------- the page, handed to the host
 KHOST.on(skyView,'view');
 KHOST.on(function lodTick(){camera.updateMatrixWorld();if(BIO.lodTick)BIO.lodTick(camera);COMPASS.update();},'view');
 KHOST.take({build:'cut-'+STAGE.key,title:STAGE.title,hint:STAGE.hint,
  scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,views:VIEWS,start:STAGE.start||Object.keys(VIEWS)[0],
  onView:name=>{if(VIEW_HOUR[name]!=null&&KHOST.host)KHOST.host.clock.hour=VIEW_HOUR[name];},
- ticks:TICKS,clock:{hour:STAGE.hour==null?9.5:STAGE.hour},draw:()=>SKY.render(),
+ ticks:TICKS,clock:{hour:STAGE.hour==null?9.5:STAGE.hour},draw:()=>{if(MIRROR)MIRROR.update();SKY.render();},
  inspect:describe,stats:()=>'inst '+window._instances+'\nlod '+(BIO.lodShown?BIO.lodShown.meshes+'/'+BIO.lodShown.of+' chunk meshes':'')+'\nwarp s '+CUT.field(...STAGE.toBowl(camera.position.x,camera.position.z)).s.toFixed(2),
  layers:{'flora':{match:o=>!!(o.userData&&o.userData.biome)},'water':{match:o=>!!(o.userData&&o.userData.water)},'sky':{objects:()=>[SKY.mesh]}},
  exporters:{biome:()=>BIO.export()},

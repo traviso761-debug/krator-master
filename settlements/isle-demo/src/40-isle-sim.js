@@ -29,7 +29,7 @@ ISLE.simInit = function (clock) {
   ISLE.simItemsInit();
   var NE = T.needs;   /* needs, happiness, efficiency, loyalty (42 deals each person's trait and meters) */
   if (NE && SIM.needs && !SIM.NEED) SIM.needs({ list: NE.list, rate: NE.rate, fill: NE.fill, work: NE.work, weight: NE.weight, traits: NE.traits, free: NE.free, dwell: NE.dwell,
-    jitter: NE.jitter, keep: NE.keep, done: NE.done, bands: NE.bands, loyalty: NE.loyalty, pain: NE.pain, secPerMinute: T.clock.secPerMinute });
+    jitter: NE.jitter, keep: NE.keep, done: NE.done, bands: NE.bands, loyalty: NE.loyalty, pain: NE.pain, vital: NE.vital, secPerMinute: T.clock.secPerMinute });
   return S;
 };
 /* the census trade a key carries (the first IS_TRADES row naming it), or null */
@@ -58,6 +58,12 @@ ISLE.simPlaces = function (TS, R, G, nav) {
     var K = T.kinds[L.key]; if (!K) { out.unmapped[L.key] = (out.unmapped[L.key] || 0) + 1; return; }
     var hh = ISLE.households(L.key), beds = hh * T.home.per;
     var tags = { key: L.key, lot: L.id, tag: L.tag, trade: ISLE.tradeOf(L.key), cls: L.cls, district: L.district, role: L.role };
+    if (L.vacant && T.build) {   /* an empty lot (32, 47b): its builders' posts, out of doors, until its house is built */
+      tags.vacant = true; tags.hh = hh; (ISLE.SIM.lotRecs || (ISLE.SIM.lotRecs = {}))[s + '.' + L.lot] = L;   /* the plan's record: the drawing follows its project (47b) */
+      var crew = (T.build.crew || {})[s] || 0, nl = out.lots = (out.lots || 0) + 1;   /* the town's builders: a post on each of its first `crew` lots (47b moves them to the projects) */
+      var Pl = put(s + '.' + L.lot, 'an empty lot', ['lot', { WORK: 100 / Math.max(1, L.w * L.d) }, { out: true, wander: 4 }], L.x, L.z, L.ry, L.w * L.d, 0, tags);
+      if (nl > crew) { delete Pl.activities.WORK; out.posts -= 1; }
+      return; }
     var rec = [s + '.' + L.lot, L.name || ISLE_DIMS[L.key] && ISLE_DIMS[L.key].role || L.key, K, L.x, L.z, L.ry, L.w * L.d, beds, tags];
     if (K[0] === 'home') homes.push({ h: KRAND.hash(T.seed, 71, i), rec: rec }); else put.apply(null, rec);
   });
@@ -100,6 +106,11 @@ ISLE.simPlaces = function (TS, R, G, nav) {
       { key: 'canoe stop', lot: Ld.id, trade: ISLE.tradeOf('ie-quay'), cls: 'canoe stop', district: 'harbour', role: 'canoe stop', berths: (Ld.berths || []).map(function (B) { return Object.assign({}, B); }) });
   });
   homes.sort(function (a, b) { return a.h - b.h || (a.rec[0] < b.rec[0] ? -1 : 1); }).forEach(function (H) { put.apply(null, H.rec); });
+  /* the doors of what opens later (2026-11-04): the refugee camp (47r) and the streets outside the gates (33, 47b) get their
+     doors on the walking graph now, while it is still being made, so their people can walk home */
+  var doorOf = function (x, z) { var dn = nav.door(x, z, 3000), w = world(x, z); return dn >= 0 ? nav.at(dn) : { x: w.x, y: w.y, z: w.z }; };
+  if (R.camp) R.camp.door = doorOf(R.camp.x, R.camp.z);
+  (R.spurs || []).forEach(function (Sp) { Sp.lots.forEach(function (L) { L.door = doorOf(L.x, L.z); }); });
   return out;
 };
 /* the towns declared: plans [{R, G}], in ISLE.TOWNS order whatever the order given (so every page deals the same) */
@@ -113,6 +124,7 @@ ISLE.simDeclare = function (plans, clock) {
     if (!SIM.R.org[TS.id + '.folk']) SIM.org({ id: TS.id + '.folk', faction: TS.faction, name: 'The people of ' + TS.name });
     var PL = ISLE.simPlaces(TS, p.R, p.G, navs[i]);
     S.towns[TS.id] = { town: p.R.town, id: TS.id, frame: p.G.frame, places: PL, nav: navs[i].stats };
+    (S.plans || (S.plans = {}))[TS.id] = { R: p.R, G: p.G, nav: navs[i] };   /* a street outside the gate opened later (47b) needs its plan, ground and doors */
     S.order.push(TS.id);
     S.towns[TS.id].ms = { places: Date.now() - t1 };
   });
@@ -129,6 +141,11 @@ ISLE.simDeclare = function (plans, clock) {
     X.ms.people = Date.now() - t1;
   });
   S.trade = ISLE.simTrade();
+  S.build = ISLE.simBuild();   /* the empty lots and upkeep (47b), before the money opens the lots' accounts */
+  S.crime = ISLE.simCrime();   /* crime and punishment (47c), after everyone is placed */
+  S.money = ISLE.simMoney();   /* the accounts (47m: money's M0), after the crime's guild */
+  S.unrest = ISLE.simUnrest();   /* unrest from the happiness pool (47u: PLAN-MONEY.md M6) */
+  S.refugees = ISLE.simRefugees ? ISLE.simRefugees() : null;   /* the camps and the weekly ship (47r), after the money's accounts */
   S.problems = S.problems.concat(SIM.check());
   S.ms.declare = Date.now() - t0;
   return S;

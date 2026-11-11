@@ -37,7 +37,9 @@ const SHADOW_ON=new URLSearchParams(location.search).get('shadow')!=='0'&&typeof
  if(AIR.snow&&ATMOS.snowOnScene){scene.traverse(o=>{const m=o.material;if(!o.isMesh||!m||m.userData.noSnow||!o.geometry.attributes.aN||!m.userData.bio||m.userData.bio.kind!=='leaf'||(m.userData.bio.opts||{}).aN)return;
   ATMOS.snowOn(m,{twoSided:m.side===THREE.DoubleSide,aN:false});m.userData.noSnow=true;});ATMOS.snowOnScene(scene);}   /* the lying snow on every lit material (89a) */
  /* THE SUN'S SHADOWS (core/shadow, KSHADOW; the owner, 2026-11-03: pair 6 takes it): one 4096 box following the view, 90-600 m by the eye's height; the
-    flora and the ground cast and receive, the far field, the water and the impostors draw their own light. ?shadow=0 off (its cost: KNOWN_ISSUES.md) */
+    flora and the ground cast and receive, the far field, the water and the impostors draw their own light. OFF BY DEFAULT (the owner, 2026-11-03:
+     toggleable, off, in every build): the panel's 'shadows' button or ?shadow=1 turns them on, and while off they cost nothing. ?shadow=0 not even
+     the switch (their cost: KNOWN_ISSUES.md) */
  if(SHADOW_ON){try{window._shadow=KSHADOW.attach({renderer,scene,camera,sun,ground:terrainH});
   window._shadow.cast(scene);window._shadow.cast(GROUND,{cast:false});if(FAR)FAR.mesh.castShadow=FAR.mesh.receiveShadow=false;}catch(e){reportErr('shadow: '+e.stack);}}
  window._buildMs=Math.round(performance.now()-t0);

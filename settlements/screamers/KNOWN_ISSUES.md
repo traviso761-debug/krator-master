@@ -2,6 +2,22 @@
 
 `- [ ]` items are printed by `build.py` on every build.
 
+## Real doors and real glass (2026-11-03, core/door)
+
+The owner's "remove all dark voids ... actual doors or windows that have transparency". Before: this fork's windows were
+opaque (core/materials' `winIntact`, the near-black `winDead`), `archOpen` and the village's door panels (`doorD`,
+71-village.js) were `MAT.dark` slabs. Now `build.py` reads core/door (10, 20, 90) and the Ancients kit's
+`kits/ancients/src/8zo-anc-open.js` in place (`DOOR_FILES`): the kit's window items are panes before room cards, the
+arched doors and, through `src/8zp-scr-open.js`, the village's door panels are locked KDOOR records drawn in the Ancients'
+grey alloy (the Hexahedron and its huts are solid bodies). `MAT.dark` itself is left as it was here (this fork's fins and
+other true dark surfaces still use it: there is no `MAT.darkSurf` split).
+
+- [ ] **Reach (core/walk, 2026-11-04):** the salvage homes' 26 floors (KWALK, written by kits/interiors' IX.walk as each
+      home is furnished), each flooded from the open ground round it: 21 reached, 5 not: the Bulkhead Manor's three upper
+      floors and the twin silo's two (`lg-bulkhead`, `lg-twinsilo`: no flight registered up to them). The Post-Apoc kit's.
+- [ ] The salvage homes (the Post-Apoc bundle) are the Post-Apoc kit's; their own doors are that kit's pass (the bundle
+      carries no 35-pa-open.js), so their doorways are as the bundle draws them.
+
 ## Done
 
 - [x] (2026-10-15) The Screamers on core/host (ROADMAP.md section 10, step 5; core/host/README.md): the camera, the controls, the walk

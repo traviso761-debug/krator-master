@@ -57,16 +57,18 @@ defBuilding({key:'et_corner_turret',name:'Corner turret',seed:7006,cut:true,w:11
   box('timber',-2.5,G0,W/2-.55,2.8,1.0,.4,P('timber'));box('timber',-2.5,G0+1.0,W/2-.5,3.0,.06,.55,P('timberL'));   /* the shop's counter */
   box('lime',-2.5,G0+2.75,W/2+.25,3.6,.12,.7,ls);                                         /* its lintel hood */
   for(const [y0,y1] of [[F1,F2],[F2,R0]])etWalls(W,W,y0,y1-y0,'lime',lime,{front:win(1.0),right:side(1.0),back:[{x:1.6,w:1.0,h:1.4,y:1.0}],left:[{x:-1,w:1.0,h:1.4,y:1.0}]});
-  for(const y of [F1,F2]){box('timber',.6,y-.2,0,W-1.8,.2,W-.6,P('timber'));box('timber',-3.6,y-.2,1.4,1.2,.2,W-3.4,P('timber'));
-   box('lime',0,y-.1,0,W+.16,.14,W+.16,ls);}                                              /* the floors, the string course */
-  etStair(-3.6,G0,-1.5,1.0,.2,-.17,16,P('timberL'));etStair(-3.6,F1,-1.5,1.0,.2,-.17,16,P('timberL'));
+  /* the stair up the left wall, a straight flight a storey (core/engine svStairCase: the old one climbed away from its landing, and
+     too steep for a walker), its well left open in the floor and the string course above */
+  const SC=svStairCase({x0:-W/2+ET_T,x1:-W/2+ET_T+1.2,z0:-W/2+ET_T+.3,z1:.6},[G0,F1,F2],{w:1.0,col:P('timberL'),scol:P('timber'),rail:'right'});
+  [F1,F2].forEach((y,i)=>{svWell('timber',0,y-.2,0,W-.6,.2,W-.6,P('timber'),SC.wells[i]);
+   svWell('lime',0,y-.1,0,W+.16,.14,W+.16,ls,SC.wells[i],{walk:false});});                             /* the floors, the string course */
   box('lime',0,R0,0,W,.2,W,ls);
   etParapet(W,W,R0+.2,.9,{crown:true,crownX:-1.2,crownW:3,steps:3,col:lime,cope:ls,crownMask:'lead'});
   // the turret on the corner, past the parapet, under a verdigris cap; the lantern on its bracket
   pushM(TF(TX,0,TX,PI/4));
    cyl('lime',0,G0,0,TR,R0+1.6-G0,lime,16);cyl('stone',0,0,0,TR+.15,G0,P('stoneD'),16);
    for(const y of [F1,F2,R0])cyl('lime',0,y-.1,0,TR+.1,.16,ls,16);
-   for(const y of [F1+1.0,F2+1.0]){box('lime',0,y-.1,TR-.02,.8,1.5,.12,ls);box('glass',0,y,TR+.03,.5,1.2,.04,P('glass'));}
+   for(const y of [F1+1.0,F2+1.0]){box('lime',0,y-.1,TR-.02,.8,1.5,.12,ls);svPane(0,y,TR+.065,0,.5,1.2,{solid:true,depth:.02,t:.02});}   /* the turret is solid: glass over the room card (core/door) */
    cyl('lime',0,R0+1.6,0,TR+.25,.3,ls,16);cone('verdigris',0,R0+1.9,0,TR+.35,3.4,P('verdigris'),8);
    cone('gold',0,R0+5.2,0,.08,.7,KIT_HAS('gold')?new THREE.Color(1,1,1):P('gold'),6);
    beam('iron',[0,3.3,TR],[0,3.3,TR+1.1],.07,P('iron'));beam('iron',[0,2.7,TR],[0,3.3,TR+.7],.05,P('iron'));

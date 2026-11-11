@@ -23,8 +23,12 @@
 - [x] The chief's celestial lining swirled: lathe UVs were arc length per ring, which shears on a cone. Roofs are now unrolled
       (30-geo.js `lathe`, one radial seam). The well's apron z-fought the court paving: lifted 4 cm.
 
-- [ ] The Baelu's cell doors and windows are dark panels, not openings; its cells have no interiors yet (the kits/interiors
-      planner could take a Baelu set: stables, stores, cells, the gatehouse).
+- [ ] The Baelu's cells have no interiors yet (the kits/interiors planner could take a Baelu set: stables, stores, cells, the
+      gatehouse): their doors are locked core/door leaves and their slit windows glass over the room card (2026-11-03; they
+      were dark panels). Planned, the doors unlock (`svDoorway` hollow) and the slits can be cut.
+- [ ] Door leaves are plain boxes (core/engine/36o-open.js): the ger's brass bands and the vardo's glazed tops and scrolls,
+      drawn on the old fixed leaves, are not carried on the moving ones. Shadows of an opening leaf follow it; a leaf in a cut
+      tent hides with the near half.
 - [ ] Shadows ignore the cut-away (the cut tents stop casting while it is on, so the interiors are lit by the sky).
 - [x] The salamanders moved to `kits/fauna` (2026-10-06), with the goats: parts turn there (legs, head, tail; idle, graze, walk,
       rest). Rigid parts, no skinning: `kits/fauna/KNOWN_ISSUES.md`.

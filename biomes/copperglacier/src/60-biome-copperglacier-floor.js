@@ -15,13 +15,16 @@ const Y=(x,z)=>BIO.terrainH(x,z),F=n=>(x,z)=>BIO.field(n,x,z);
 const ice=F('ice'),mor=F('moraine'),snow=F('snow'),cu=F('copper'),flat=F('flat'),shore=F('shore'),wet=F('wet'),rock=F('rock'),slope=F('slope'),cold=F('cold'),cave=F('cave');
 // a FROST CORAL: a short stem, then limbs forking two or three ways, each bending up as it goes, thinner at each fork; the limb's points pass through
 // BIO.flareJoin so it swells into its parent; an iridescent bulb at each tip
-function coral(x,z,lv,st){const y0=Y(x,z),k=cu(x,z),H=rr(2,4.8)*(lv===0?.85:1),maxD=lv===2?3:lv===1?2:1,col=vary(C(pick(k>.3?PAL.coralCu:PAL.coral)),.02,.06,.05);
+function coral(x,z,lv,st){const y0=Y(x,z),k=cu(x,z),H=rr(2,4.8)*(lv===0?.85:1),maxD=lv===2?3:2,col=vary(C(pick(k>.3?PAL.coralCu:PAL.coral)),.02,.06,.05);
  const tipC=vary(C(pick(PAL.coralTip)),.01,.04,.03),seg=r=>r>.15?7:5;
  const limb=(p,d,len,r,depth,parentR)=>{const pts=[{x:p[0],y:p[1],z:p[2],r}];let dx=d[0],dy=d[1],dz=d[2],q=p.slice();
-  for(let i=1;i<=3;i++){dx+=rr(-.12,.12);dz+=rr(-.12,.12);dy+=.22;const L=Math.hypot(dx,dy,dz);dx/=L;dy/=L;dz/=L;q=[q[0]+dx*len/3,q[1]+dy*len/3,q[2]+dz*len/3];pts.push({x:q[0],y:q[1],z:q[2],r:r*(1-.1*i)});}
+  /* the limb tapers: a third off by its fork (a child takes over there), and a last limb narrows to a point under its bulb (2026-11-03, the owner: blunt) */
+  const last=depth>=maxD,tp=last?.2:.11;
+  for(let i=1;i<=3;i++){dx+=rr(-.12,.12);dz+=rr(-.12,.12);dy+=.22;const L=Math.hypot(dx,dy,dz);dx/=L;dy/=L;dz/=L;q=[q[0]+dx*len/3,q[1]+dy*len/3,q[2]+dz*len/3];pts.push({x:q[0],y:q[1],z:q[2],r:r*(1-tp*i)});}
+  if(last){const e=pts[pts.length-1];pts.push({x:e.x+dx*len*.22,y:e.y+dy*len*.22,z:e.z+dz*len*.22,r:r*.14});}
   const P=depth>0&&BIO.flareJoin?BIO.flareJoin(pts,{parentR}):pts;BIO.tube('coral',P,col,{seg:seg(r),cap:depth>=maxD});st.limbs++;
   const end=pts[pts.length-1];
-  if(depth>=maxD){const s=Math.max(end.r*4.5,.07);BIO.put('coraltip',[end.x,end.y,end.z],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),[s,s*1.3,s],tipC,{c2:C(pick(PAL.tipIrid))});st.tips++;return;}
+  if(depth>=maxD){const s=Math.max(r*1.05,.05);   /* a bead of iridescence at the point, not a knob */BIO.put('coraltip',[end.x,end.y,end.z],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),[s,s*1.3,s],tipC,{c2:C(pick(PAL.tipIrid))});st.tips++;return;}
   const n=depth===0?ri(3,4):ri(2,3),a0=rr(0,TAU);
   for(let c=0;c<n;c++){const a=a0+c/n*TAU+rr(-.4,.4),sp=rr(.45,.85),nd=[dx*.5+Math.cos(a)*sp,dy*.5+.35,dz*.5+Math.sin(a)*sp],nl=Math.hypot(...nd);
    limb([end.x,end.y,end.z],[nd[0]/nl,nd[1]/nl,nd[2]/nl],len*rr(.7,.88),end.r*rr(.66,.78),depth+1,end.r);}};

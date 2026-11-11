@@ -5,7 +5,7 @@
     js = transit_bundle.furniture()                 # ONE closure defining the global KratorTransitFurniture
     frags = transit_bundle.fragments()              # [(name, path)]: the KTRANSIT fragments to read in place, in order
 
-The furniture closure wraps the master catalog's engine-neutral core (kits/catalog/krator-furniture-core.js: makeFrame, the
+The furniture closure wraps the master catalog's engine-neutral core (core/catalog/krator-furniture-core.js: makeFrame, the
 mk* primitives, mat, FPAL, ASSET), the `ancient` culture's pieces (krator-transit-furniture.js) and the assembler
 (transit-furnish.js); their top-level names (TAU, shade, mat, FPAL, ASSET ...) stay inside, so they never meet a host's own.
 It needs a global THREE (r128) and KTRANSIT (src/40-tr-records.js, the kinds table) loaded before it.
@@ -19,7 +19,7 @@ tools/textures/matlib_pack.py as its own, under the pack name 'ancient-transit' 
 import os
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-CATALOG = os.path.join(os.path.dirname(HERE), 'catalog')
+CATALOG = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'catalog')   # the catalog core lives in core/catalog since the biome rebuild (2026-11-09)
 PARTS = [(CATALOG, 'krator-furniture-core.js'), (HERE, 'krator-transit-furniture.js'), (HERE, 'transit-furnish.js')]
 SRC = os.path.join(HERE, 'src')
 DATA = ['40-tr-records.js', '41-tr-path.js', '41b-tr-network.js', '42-tr-highway.js', '43-tr-rail.js', '43b-tr-subway.js', '44-tr-dress.js', '44b-tr-war.js', '44c-tr-quake.js']
@@ -37,7 +37,7 @@ def safe(js):
 
 
 def label(d, f):
-    return ('kits/catalog/' if d == CATALOG else 'kits/ancient-transit/') + f
+    return ('core/catalog/' if d == CATALOG else 'kits/ancient-transit/') + f
 
 
 def files():

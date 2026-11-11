@@ -1,6 +1,6 @@
 {
  "build": "geyser",
- "note": "The geyser kit's adapter onto the material library (core/materials/PLAN.md, The geyser basin). ground.* are the ground's ten library layers (84-host-ground.js), blended per vertex by the kit's thermal record (GEYSER.at): litter under the jungle, grass and moss on the basin's warm meadow, rock on the walls, black sand on the beach and the creek's bed, sinter on the flats, the shields and the run-off's banks (ground.sinter greyed: the owner's sinter carries its own mats, and the mats here are drawn by the temperature), tufa the Stair's travertine (the owner's ground.travertine.white since 2026-10-14, kept at 0.2 of its colour: its painted turquoise pools read as smooth pale crust, and the shader lays the pools' own water), clay the acid field's, mud the pots', mat (the owner's ground.mat.thermal) the detail under the shader's mat bands. Run python3 tools/textures/pack.py biomes/geyser after any change, then python3 build.py. The kit's own slots (BIO.libSwap, 50-biome-geyser-species.js): small (card.heath, one shrub, keep 0) the kanuka's foliage, fern (card.fern.green, one frond) the thermal ferns, lily and lilyb (card.lotus: a pad, a pad in flower, full colour) the kettle lilies, rosette (card.screwpine, one crown from above, keep 0) the stilt pandans' crowns; bark0 (bark.palm) the pandans, bark1 (bark.paperbark) the kanuka, bark2 (fibre.cane) the steam combs' stalks, wood (wood.silver) the snags, glass (glass.frosted) the glass canes, sinter (stone.geyserite since 2026-10-14) the cones and beads. The owner's cards (2026-10-14), one plant of each nine-cell sheet: comb (card.steamcomb, a fan, hub at the cell's foot, keep 0: the comb palette tints it), streamer (card.streamer, the straight combed clump, the cell flipped so its base is at the ribbon's root, full colour), club (card.clubmoss, full colour), strap (card.strap.pandan, one leaf, flipped like the streamer: the frond's v runs from its base), grass (card.grass.panic, base-anchored, keep 0: the panic grass palette, red where it is hot, tints it). The full-colour ones take a near-white instance colour (50-60: the procedural colour is still drawn, so the random stream is unchanged). reed (card.reed, the plumed reed of its nine-cell sheet, top right: the sheet is centre-anchored, so the cell is cut at the clump's foot, 0.342 down; full colour, 2026-10-26) the warm reeds.",
+ "note": "The geyser kit's adapter onto the material library (core/materials/PLAN.md, The geyser basin). ground.* are the ground's ten library layers (84-host-ground.js), blended per vertex by the kit's thermal record (GEYSER.at): litter under the jungle, grass and moss on the basin's warm meadow, rock on the walls, black sand on the beach and the creek's bed, sinter on the flats, the shields and the run-off's banks (ground.sinter greyed: the owner's sinter carries its own mats, and the mats here are drawn by the temperature), tufa the Stair's travertine (the owner's ground.travertine.white since 2026-10-14, kept at 0.2 of its colour: its painted turquoise pools read as smooth pale crust, and the shader lays the pools' own water), clay the acid field's, mud the pots', mat (the owner's ground.mat.thermal) the detail under the shader's mat bands. Run python3 tools/textures/pack.py biomes/geyser after any change, then python3 build.py. The kit's own slots (BIO.libSwap, 50-biome-geyser-species.js): small (card.heath, one shrub, keep 0) the kanuka's foliage, fern (card.fern.green, one frond) the thermal ferns, lily and lilyb (card.lotus: a pad, a pad in flower, full colour) the kettle lilies, rosette (card.screwpine, one crown from above, keep 0) the stilt pandans' crowns; bark0 (bark.palm) the pandans, bark1 (bark.paperbark) the kanuka, bark2 (fibre.cane) the steam combs' stalks, wood (wood.silver) the snags, glass (glass.frosted) the glass canes, sinter (stone.geyserite since 2026-10-14) the cones and beads. The owner's cards (2026-10-14), one plant of each nine-cell sheet: comb (card.steamcomb, a fan, hub at the cell's foot, keep 0: the comb palette tints it), streamer (card.streamer, the straight combed clump, the cell flipped so its base is at the ribbon's root, full colour), club (card.clubmoss, full colour), strap (card.strap.pandan, one leaf, flipped like the streamer: the frond's v runs from its base), grass (card.grass.panic, base-anchored, keep 0: the panic grass palette, red where it is hot, tints it). The full-colour ones take a near-white instance colour (50-60: the procedural colour is still drawn, so the random stream is unchanged). reed (card.reed, the plumed reed of its nine-cell sheet, top right: the sheet is centre-anchored, so the cell is cut at the clump's foot, 0.342 down; full colour, 2026-10-26) the warm reeds. st.* (2026-11-09): the cold stations' own sets (stations 2-5: snow, aufeis ice, conifer needles, scoria, salt crust, ash; ichu bunch grass, the pine's needles and bark, a cushion plant), packed into only the pages of the stations that list them (station.json \"tex\").",
  "size": 512,
  "families": {
   "ground.litter": {
@@ -157,11 +157,67 @@
    },
    "roughLift": 0,
    "specular": 0.2,
-   "cell": [
-    0.0,
-    0.0,
-    0.333,
-    0.333
+   "stems": [
+    {
+     "cell": [
+      0.015,
+      0.026,
+      0.335,
+      0.323
+     ],
+     "stem": [
+      0.1699,
+      0.3193
+     ],
+     "tip": [
+      0.1699,
+      0.0322
+     ],
+     "w": [
+      -0.124,
+      0.1435
+     ]
+    },
+    {
+     "cell": [
+      0.347,
+      0.35,
+      0.661,
+      0.648
+     ],
+     "stem": [
+      0.518,
+      0.6416
+     ],
+     "tip": [
+      0.518,
+      0.3545
+     ],
+     "w": [
+      -0.1421,
+      0.1177
+     ]
+    },
+    {
+     "cell": [
+      0.673,
+      0.679,
+      0.982,
+      0.972
+     ],
+     "stem": [
+      0.8471,
+      0.9658
+     ],
+     "tip": [
+      0.8471,
+      0.6826
+     ],
+     "w": [
+      -0.1449,
+      0.1129
+     ]
+    }
    ]
   },
   "fern": {
@@ -234,10 +290,10 @@
    "roughLift": 0,
    "specular": 0.2,
    "cell": [
-    0.0,
-    0.0,
-    0.5,
-    0.5
+    0.026,
+    0.036,
+    0.974,
+    0.964
    ]
   },
   "bark0": {
@@ -397,12 +453,13 @@
    "roughLift": 0,
    "specular": 0.25,
    "cell": [
-    0.418,
-    0.329,
-    0.518,
-    0.009
+    0.415,
+    0.005,
+    0.523,
+    0.333
    ],
-   "size": 1024
+   "size": 1024,
+   "base": "bottom"
   },
   "grass": {
    "lib": "card.grass.panic",
@@ -443,6 +500,216 @@
     0.342
    ],
    "size": 1024
+  },
+  "st.snow": {
+   "lib": "ground.snow.drift",
+   "scale": [
+    6.0,
+    6.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "st.ice": {
+   "lib": "ice.aufeis",
+   "scale": [
+    8.0,
+    8.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "st.needles": {
+   "lib": "ground.needles",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "st.scoria": {
+   "lib": "ground.scoria",
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "st.salt": {
+   "lib": "ground.salt",
+   "scale": [
+    5.0,
+    5.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "st.ash": {
+   "lib": "ground.ash",
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "st.ichu": {
+   "lib": "card.ichu",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "cell": [
+    0.349,
+    0.329,
+    0.655,
+    0.657
+   ]
+  },
+  "st.pine": {
+   "lib": "card.pine",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "stems": [
+    {
+     "cell": [
+      0.018,
+      0.03,
+      0.329,
+      0.339
+     ],
+     "stem": [
+      0.04,
+      0.3213
+     ],
+     "tip": [
+      0.2898,
+      0.0752
+     ],
+     "w": [
+      -0.1083,
+      0.1176
+     ]
+    },
+    {
+     "cell": [
+      0.333,
+      0.349,
+      0.671,
+      0.671
+     ],
+     "stem": [
+      0.585,
+      0.6709
+     ],
+     "tip": [
+      0.4554,
+      0.3648
+     ],
+     "w": [
+      -0.122,
+      0.13
+     ]
+    },
+    {
+     "cell": [
+      0.686,
+      0.661,
+      0.985,
+      0.97
+     ],
+     "stem": [
+      0.6924,
+      0.9424
+     ],
+     "tip": [
+      0.9657,
+      0.7026
+     ],
+     "w": [
+      -0.1129,
+      0.1189
+     ]
+    }
+   ]
+  },
+  "st.cushion": {
+   "lib": "card.cushion.anemone",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "cell": [
+    0.337,
+    0.372,
+    0.665,
+    0.614
+   ]
+  },
+  "st.pinebark": {
+   "lib": "bark.pine.scale",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.1,
+   "specular": 0.15
   }
  }
 }

@@ -12,9 +12,9 @@ python3 verify.py dist/eternian.html --assert        # footprints, doors, tags (
 
 ## How it is built
 
-Forked from the Scyvoi engine as `kits/islanders` was (`PLAN.md` §0): the engine fragments are vendored byte for byte
-from `kits/scyvoi/src` (`10-core 27-mat 30-geo 36-def 90-scene 91f-furnish 91n-night 92-world 93-anim 99-host-take
-99-tail`; the sky from `settlements/iziz`), and `build.py --vendor-check` reports drift. The shared modules are read in
+Forked from the Scyvoi engine as `kits/islanders` was (`PLAN.md` §0): the engine is `core/engine`, read in place
+(`10-core 27-mat 30-geo 36-def 90-scene 91f-furnish 91n-night 92-world 93-anim 99-host-take 99-tail`; its README), the sky
+`core/atmos/placeholder`, and `build.py --vendor-check` reports a `src/` copy as a shadow. The shared modules are read in
 place: `core/rand`, `core/materials/record`, `core/tags`, `core/furnish`, `core/walk`, `core/atmos`, `core/host`, and the
 catalog's `eternian`, `generic`, `generic-goods`, `jobs` and `scrap` furniture as one bundle. What is the kit's own:
 `26k-kit.js` (identity, library families, palette), `37-wk-rec.js` (walk records, from the Islanders kit), `40-et-kit.js`
@@ -154,3 +154,9 @@ catalog's `eternian`, `generic`, `generic-goods`, `jobs` and `scrap` furniture a
   the Sanctum is classed 'mega' for the per-type guide (between Plymouth's mass and Hexahedron's); the export carries the meshes.
 
 Next: the capital's page (PLAN.md section 8) as its own plan; the second pass (KNOWN_ISSUES.md).
+
+## Doors and glass (core/door, 2026-11-03)
+
+The owner: "remove all dark voids and make all windows, doors and portals actual doors or windows that have transparency". The page loads `core/door` (KDOOR, KGLASS, KDOORHOST) and the engine draws it (`core/engine/36o-open.js`: `svLeaf`, `svDoorway`, `svPane`, `svRoom`). A door leaf is a KDOOR record with a stable id (`<def key>.<placement>.d<n>`), shut unless the builder drew it standing open; **E** opens or shuts the one within reach (walking or flying), and `KDOOR.open(id, {by: 'npc'})` does the same for a quest or an NPC. A door on a body with nothing behind it is locked. `_api.openings()`, `_api.doorExport()` and `_api.doorState()` are on the probe. Where the page has `core/walk`, each door's doorway is blocked while it is shut and clear while open (`KDOOR.walk`), and any wall box standing in an unlocked doorway is switched off (`svOpenWalk`).
+
+What it changed here: `etWall` hangs each door as a leaf in the wall's middle that opens into the room (locked on a facade over a solid pier bundle: `o.solid`), its glass is KGLASS (`clear`, `lit`, the Deco steel grid over `smoked`), an unglazed poor window is a clear hole (a room card on a solid facade); glazed lancets and the oculus are glass over the room card; the civic doors are bronze double leaves (locked on the pier bundles; the Registry's opens, its front wall now cut for it); the fort's tower doors are locked and their slits room cards. The onyx and alabaster lights stay stone (they are the State's lights, not voids).

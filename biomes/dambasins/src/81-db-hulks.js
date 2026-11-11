@@ -3,7 +3,7 @@
 // the scene, a berth's by portPlaceVessel), then GROUNDED: pitched and rolled to the ground under its
 // bow, stern and beams, listed further toward the downslope side, and sunk so its keel lies buried in the silt.
 //   How, without touching the kit: a vessel builder keeps its group G unrotated at its midship (gx, 0, gz) and sets
-//   KOFF to that point (settlements/port/CONTRACT.md, "Vessel frame"). Its meshes and its batches are children of G, so
+//   KOFF to that point (kits/port/CONTRACT.md, "Vessel frame"). Its meshes and its batches are children of G, so
 //   they take the pose on G. Its batched items (kput) are placed in world space as KXF(p) + KOFF: while it builds,
 //   DB_GXF folds the pose into both (KXF' = R KXF, KOFF' = KOFF + dy), which is the same pose about the same point.
 // The pose's draws are KRAND hashes of the hulk's place (no stream is touched): the list, the burial.
@@ -12,6 +12,12 @@ const dbKput0=kput;
 kput=function(name,p,q,s,c){if(!DB_GXF)return dbKput0(name,p,q,s,c);
  const k0=KXF,o0=KOFF,m=DB_GXF.R.clone(),qq=DB_GXF.q.clone();if(k0){m.multiply(k0.m);qq.multiply(k0.q);}
  KXF={m,q:qq};KOFF=[o0[0],o0[1]+DB_GXF.dy,o0[2]];try{return dbKput0(name,p,q,s,c);}finally{KXF=k0;KOFF=o0;}};
+// and its probe volumes: the kit's REGISTER (70-port-core.js) takes the vessel's KXF and KOFF but not the pose, so a hulk's parts
+// were registered where the ship floated, not where it lies (2026-11-08: the graveyard's hulks lie 420 m under the old line, and
+// 86 of the giants' volumes stood empty). While a hulk builds, each new volume is turned about the midship (KOFF) and lowered by dy
+const dbReg0=REGISTER;
+REGISTER=function(o){if(!DB_GXF)return dbReg0(o);const n0=REG.length;dbReg0(o);const v=new THREE.Vector3();
+ for(let i=n0;i<REG.length;i++){const e=REG[i];v.set(e.x-KOFF[0],e.y,e.z-KOFF[2]).applyMatrix4(DB_GXF.R);e.x=v.x+KOFF[0];e.y=v.y+DB_GXF.dy;e.z=v.z+KOFF[2];}};
 // the pose of a hulk of length L, beam B, draft D at (x,z), bow along heading h (0: +z, PI/2: +x), on the ground g(x,z)
 const DB_HULKS=[];
 function dbHulkPose(key,x,z,h,L,B,D,g){const fx=Math.sin(h),fz=Math.cos(h),sx=Math.cos(h),sz=-Math.sin(h),u=KRAND.unit;

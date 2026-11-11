@@ -7,10 +7,18 @@ Lizardmen, the nomad kits). Kits whose buildings come from an interiors set are 
 ```
 python3 tools/walk_audit/run.py kits/islanders/dist/islanders.html [--only key,key] [--all] [--json out.json] [--dump folder]
 python3 tools/walk_audit/registry_reach.py kits/islanders/dist/islanders.html [--only key,key] [--cell 0.1]   # the same question asked of core/walk
-python3 tools/walk_audit/door_walk.py kits/islanders/dist/islanders.html [--only key,key] [--trace]   # the host's own walker, 11 m out, in through each door
+python3 tools/walk_audit/door_walk.py kits/islanders/dist/islanders.html [--only key,key] [--trace] [--shut]   # the host's own walker, 11 m out, in through each door (core/door's doors opened first; --shut as built)
 python3 tools/walk_audit/registry_count.py <page.html> --query interiors=1        # what a host's KWALK holds
 node tools/walk_audit/test_audit.js        # in tools/test_all.py
+python3 tools/walk_audit/reach_audit.py kits/eternian/dist/eternian.html [--only key,key] [--list] [--json out.json] [--dump walk.json]   # the doors pass's audit, by kind
+node tools/walk_audit/reach_dump.js walk.json <key> [n] [--all] [--map y]   # that audit again on the dumped registry, no browser: which floor, where
 ```
+
+`reach_audit.py` is the reachability audit of the doors pass (2026-11-03) for a page on `core/engine`: every unlocked door open,
+`KWALK.reach` (0.4 m cells, a 0.45 m step, the ground walkable) from each top-level building's doors and front over its box grown
+3 m; a floor is the building's by its walk tag; "big" is an unreached floor of 2 m2 or more lying 1 m or more under the building's
+top. It counts every floor record, so a stair's strip and landing count as floors, and "big" includes flat roofs, wall copings and
+cornices nobody is meant to stand on: read the per-kind rows (and `reach_dump.js`) before calling a building unreached.
 
 `run.py` places each building def alone on flat ground with the engine's `emit` swapped for a recorder, keeps every oriented
 box (and every `isLadder` / `isLogLadder` call), and `audit.js` rasterises them at 0.1 m: a surface is standable where a box

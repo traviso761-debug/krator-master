@@ -31,7 +31,8 @@ KORONA.pathD=(x,z)=>{const H=BIO.host.korona,P=H&&H.path;if(!P||P.length<2)retur
 const SPACE=KSPACE.create({cell:24});
 const blocked=(x,z,pad)=>SPACE.some(x,z,pad,o=>Math.hypot(x-o.x,z-o.z)<o.r+pad);
 KORONA.blocked=blocked;
-const regTree=(T,S,r,h)=>BIO.register({name:S.name,key:S.key,x:T.x,z:T.z,y:T.y0,r,h});
+let BAKING=false;   /* an impostor's bake builds a tree again: it registers nothing */
+const regTree=(T,S,r,h)=>{if(!BAKING)BIO.register({name:S.name,key:S.key,x:T.x,z:T.z,y:T.y0,r,h});};
 const leafCol=(set,k)=>bright(vary(pick(set),.04,.12,.07),k==null?1.25:k);KORONA.leafCol=leafCol;
 function grow(o,d,len,r0,r1,n,curve,wig){let sx=-d[2],sz=d[0];const sl=Math.hypot(sx,sz)||1;sx/=sl;sz/=sl;const w1=rr(-1,1)*wig,w2=rr(-1,1)*wig,pts=[];
  for(let k=0;k<=n;k++){const t=k/n,w=(w1*Math.sin(t*Math.PI)+w2*Math.sin(t*TAU))*len;pts.push({x:o.x+d[0]*len*t+sx*w,y:o.y+d[1]*len*t+curve*len*t*t,z:o.z+d[2]*len*t+sz*w,r:mix(r0,r1,Math.pow(t,.8))});}return pts;}
@@ -44,7 +45,10 @@ const B=[];
 B[0]=function(T,st,lv){const S=SP[0],bc=bright(pick(PAL.coinBark),1),lean=rr(.1,.3),la=rr(0,TAU);
  const hf=T.H*rr(.35,.5),top={x:T.x+Math.cos(la)*lean*hf,y:T.y0+hf,z:T.z+Math.sin(la)*lean*hf};
  st.trunk+=BIO.tube('bark.coin',[{x:T.x,y:T.y0-.2,z:T.z,r:T.rb},{x:(T.x+top.x)/2,y:(T.y0+top.y)/2+.1,z:(T.z+top.z)/2,r:T.rb*.85},Object.assign({},top,{r:T.rb*.6})],bc,{seg:lv===2?6:4});
- const tips=[];for(let b=0,nb=ri(2,3);b<nb;b++){const p=grow(top,dirOf(la+rr(-1.4,1.4),rr(.3,.9)),(T.H-hf)*rr(.6,1),T.rb*.55,T.rb*.2,3,-.06,.16);st.limb+=BIO.tube('bark.coin',p,bc,{seg:lv===2?4:3});tips.push(p[3],p[2]);}
+ /* each limb's root sunk into the trunk's top and swollen to a collar (core/biome 31j, BIO.flareJoin; the final rebuild, 2026-11-03): no random
+    numbers, so the stream and every tip stay where they were; 6 sides at the joint near */
+ const tips=[];for(let b=0,nb=ri(2,3);b<nb;b++){const p=grow(top,dirOf(la+rr(-1.4,1.4),rr(.3,.9)),(T.H-hf)*rr(.6,1),T.rb*.55,T.rb*.2,3,-.06,.16);
+  st.limb+=BIO.tube('bark.coin',BIO.flareJoin?BIO.flareJoin(p,{parentR:T.rb*.6}):p,bc,{seg:lv===2?6:3});tips.push(p[3],p[2]);}
  let reach=T.crownR;tips.forEach(p=>{reach=Math.max(reach,Math.hypot(p.x-T.x,p.z-T.z)+1);});
  tips.forEach((p,i)=>{const n=lv===2?ri(2,4):1,s=T.crownR*rr(.45,.7);for(let k=0;k<n;k++){const a=rr(0,TAU),d=k?rr(.2,.6):0;
   BIO.put(rng()<.5?'coin0':'coin1',[p.x+Math.cos(a)*d,p.y-.1,p.z+Math.sin(a)*d],qEuler(rr(-.25,.25),rr(0,TAU),rr(-.25,.25)),[s,s*1.1,s],KORONA.libCol('coin',leafCol(S.leaf,1.15)));st.leaves++;}});
@@ -87,7 +91,19 @@ KORONA.buildTrees=function(R,q){q=q==null?1:q;R=R==null?1500:R;
    const T={x,z,y0:y-.25,sp:P.sp,H:rr(S.H[0],S.H[1]),rb:rr(S.rb[0],S.rb[1]),crownR:rr(S.crownR[0],S.crownR[1]),seed:KRAND.hash(SEED,pi,i,j),Z,body:Z.B};
    const ld=BIO.lodD(x,z);T.lv=ld<LOD.hero?2:(ld<LOD.mid?1:0);
    TREES.push(T);SPACE.insert({x,z,r:T.crownR*.5+.5},x,z,T.crownR+2);},{R});});
- TREES.forEach(T=>{reseed(T.seed);if(T.lv===0){buildFar(T,st);st.fars++;}else{B[T.sp](T,st,T.lv);st.heroes++;}st.byS[T.sp]++;});
+ // OCTAHEDRAL IMPOSTORS FOR THE FAR TIER (core/biome 34; the final rebuild, 2026-11-03; necanyons' lines without its runtime LOD): a far lace fan is
+ // one quad baked from the hero nearest the middle, built again where it stands at BIO.bakeImpostors (after every placement), so no draw before it
+ // moves. The coin tree keeps its blobs: at 2.5-6 m it is under the 7 m the stand-ins start at (BACKPORT.md's graphics row). KORONA.IMPOSTORS=false
+ // (?diet=0 in 89z) keeps the blobs for both
+ const IMPON=KORONA.IMPOSTORS!==false&&typeof BIO.impostor==='function',IMPS=[];
+ if(IMPON){const set=BIO.impostorSet('korona.trees',{label:'Far lace fans'}),c=BIO.center?BIO.center():[0,0];
+  [1].forEach(sp=>{const S=SP[sp];let T0=null;for(const T of TREES)if(T.sp===sp&&T.lv>0&&(!T0||Math.hypot(T.x-c[0],T.z-c[1])<Math.hypot(T0.x-c[0],T0.z-c[1])))T0=T;if(!T0)return;
+   const T1=Object.assign({},T0),st1=newStats();
+   const rec=BIO.impostor('korona.'+S.key,()=>{BAKING=true;try{reseed(T1.seed);B[sp](Object.assign({},T1),st1,2);}finally{BAKING=false;}},{set,at:[T1.x,T1.y0,T1.z],label:S.name+' (far)'});
+   if(rec)IMPS[sp]={rec,H:T1.H};});
+  if(set.recs.length)BIO.impostorItem('impTrees',set,{label:'Far lace fans'});}
+ const farImp=T=>{const I=IMPS[T.sp];if(!I)return false;BIO.impostorPut('impTrees',I.rec,[T.x,T.y0,T.z],(T.seed%628)/100,T.H/I.H,null);st.far+=2;return true;};
+ TREES.forEach(T=>{reseed(T.seed);if(T.lv===0){if(!farImp(T))buildFar(T,st);st.fars++;}else{B[T.sp](T,st,T.lv);st.heroes++;}st.byS[T.sp]++;});
  KORONA.COUNTS=SP.map((S,i)=>st.byS[i]);
  return{trees:TREES.length,heroes:st.heroes,far:st.fars,bySpecies:SP.map((S,i)=>S.key+':'+st.byS[i]).join(' '),leaves:st.leaves,tris:{trunk:st.trunk,limbs:st.limb,far:st.far}};};
 KORONA._canopyH=function(x,z){let h=0;for(const T of KORONA.TREES){if(Math.hypot(x-T.x,z-T.z)<T.crownR+4)h=Math.max(h,T.y0+T.H);}return h||BIO.terrainH(x,z)+2;};

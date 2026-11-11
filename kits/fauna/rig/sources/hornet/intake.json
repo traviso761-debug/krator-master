@@ -1,0 +1,16 @@
+{
+ "raw-meshy71.glb": {
+  "tris": 678604,
+  "mb": 24.4,
+  "prims": 1,
+  "mats": 1,
+  "tex": "base+normal+mr",
+  "ext": "",
+  "contacts": 7,
+  "want": 6,
+  "mirror": 0.18,
+  "pieces": 1,
+  "tiny": 0,
+  "debris": 0
+ }
+}

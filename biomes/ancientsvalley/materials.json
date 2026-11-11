@@ -1,0 +1,122 @@
+{
+ "build": "ancientsvalley",
+ "note": "The Ancient's Valley overlay's adapter onto the material library (core/materials/PLAN.md; biomes/ancientsvalley/PLAN.md section 4, the scars). The host's ground layers (47-host-land.js, KGROUND): the floor's pavement and asphalt, the rubble between the towers, the melt glass of the scars (ground.obsidian stands in for the basins' trinitite until a vitrified set is delivered: PROMPTS-NEEDED.md), and the two lowlands' soils under the feral forest (the rainforest floor of the north-west, the oak litter and bayou mud of the south-west). Run python3 tools/textures/pack.py biomes/ancientsvalley after any change, then python3 build.py.",
+ "size": 512,
+ "families": {
+  "ground.pave": {
+   "lib": "concrete.slab",
+   "scale": [
+    12.0,
+    12.0
+   ],
+   "tint": {
+    "keep": 0.3,
+    "mean": 0.58
+   },
+   "roughLift": 0.2,
+   "specular": 0.3,
+   "mapOnly": true
+  },
+  "ground.asphalt": {
+   "lib": "ground.asphalt",
+   "scale": [
+    6.0,
+    6.0
+   ],
+   "tint": {
+    "keep": 0.6,
+    "mean": 0.42
+   },
+   "roughLift": 0.2,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.rubble": {
+   "lib": "ground.rubble.demolition",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 0.8,
+    "mean": 0.55
+   },
+   "roughLift": 0.1,
+   "specular": 0.3,
+   "mapOnly": true
+  },
+  "ground.glass": {
+   "lib": "ground.obsidian",
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": {
+    "keep": 0.9,
+    "mean": 0.3
+   },
+   "roughLift": 0.0,
+   "specular": 0.5,
+   "mapOnly": true,
+   "note": "the melt glass of the dead ground: a stand-in (the basins' trinitite is owed, PROMPTS-NEEDED.md)"
+  },
+  "ground.rainfloor": {
+   "lib": "ground.ground106",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "ground.oaklitter": {
+   "lib": "ground.ground020",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "ground.mud": {
+   "lib": "ground.ground095b",
+   "scale": [
+    3.5,
+    3.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "groundDetail": {
+   "lib": "ground.gravelly_sand",
+   "scale": [
+    6,
+    6
+   ],
+   "size": 256,
+   "tint": {
+    "keep": 0,
+    "mean": 0.9,
+    "contrast": 1.3
+   },
+   "metal": 0,
+   "normalScale": 1.0,
+   "mapOnly": true
+  }
+ }
+}

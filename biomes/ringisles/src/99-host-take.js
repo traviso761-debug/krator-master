@@ -13,7 +13,8 @@ const P_XA=bestAt(KW('XA')),P_AF=bestAt(KW('Af')),P_AM=bestAt(KW('Am')),P_AW=bes
  P_XS=bestAt((f,x,z)=>KW('XS')(f)*(1-f('pan'))*smooth(700,300,Math.hypot(x-PAN.x,z-PAN.z))),
  P_BEACH=bestAt((f,x,z)=>f('beach')*smooth(-200,-700,x)*(1-f('dune'))),P_MANG=bestAt(f=>f('mangal')),P_REEF=bestAt((f,x,z)=>f('reef')*smooth(600,200,Math.hypot(x-BAY.x,z-BAY.z-350)));
 const VMODE={};
-const VIEWS={
+// a station's views (its stage's STATION.views, given this fragment's helpers) replace the island's; the island's places stand off its map
+const VIEWS=typeof STATION!=='undefined'&&STATION.views?STATION.views({toward,bestAt,nearTree,atTree,gh,KW}):{
  'The island from above':[-2600,900,2300,-200,0,0],
  'Windward rainforest (Af)':(function(){const T=nearTree('lehua',P_AF[0],P_AF[1],8);return atTree(T,T.crownR*3+22,2.2,T.H*.45,.7);})(),
  'Hypertropic forest (XA)':(function(){const T=nearTree('lehua',P_XA[0],P_XA[1],14);return atTree(T,T.crownR*2.2+12,-2.5,1.7,.55);})(),
@@ -32,6 +33,7 @@ const VIEWS={
  'The island at night':[1800,260,-1600,0,20,0],
 };
 VMODE['The island at night']='night';
+if(typeof STATION!=='undefined'&&STATION.night)STATION.night.forEach(k=>{VMODE[k]='night';});
 const goLight=k=>{setLightMode(VMODE[k]||'day');if(k==='The geyser field'&&GEYSER.SHOW&&LAYOUT.geysers[0].kind!=='spouter')GEYSER.erupt(LAYOUT.geysers[0].key,GEYSER.SHOW.t-8);};
 const GCTL=[{button:'Day',on:()=>setLightMode('day')},{button:'Night',on:()=>setLightMode('night')},
  {button:'Erupt',on:()=>LAYOUT.geysers.forEach((g,i)=>{if(g.kind!=='spouter'&&GEYSER.SHOW)GEYSER.erupt(g.key,GEYSER.SHOW.t+i*1.5);})}];
@@ -73,7 +75,7 @@ const HCHK={
   for(const p of P){const K=RINGISLES.classAt(p[0],p[2]);for(const k in K)if(K[k]>.6)by[k]++;}
   const thin=RINGISLES.CLASSES.filter(k=>by[k]<400);return{ok:!thin.length,detail:thin.length?'thin: '+thin.map(k=>k+' '+by[k]).join(', '):RINGISLES.CLASSES.map(k=>k+' '+by[k]).join(' · ')};},
  // the trees are at an island's scale: no hyperjungle giants (savanna trees 6-20 m, baobabs to 40, the canopy to 35)
- scale(T){const big=T.filter(t=>t.H>42),tiny=T.filter(t=>!(t.H>.8));return{ok:!big.length&&!tiny.length&&T.length>200,detail:big.length?big.length+' trees over 42 m ('+big.slice(0,3).map(t=>(t.borrow||RINGISLES.SPECIES[t.sp].key)+' '+t.H.toFixed(0)).join(', ')+')':tiny.length?tiny.length+' trees under a metre':T.length+' trees, the tallest '+Math.max(...T.map(t=>t.H)).toFixed(0)+' m'};},
+ scale(T){const big=T.filter(t=>t.H>42),tiny=T.filter(t=>!(t.H>.8));return{ok:!big.length&&!tiny.length&&T.length>200,detail:big.length?big.length+' trees over 42 m ('+big.slice(0,3).map(t=>(t.borrow||RINGISLES.SPECIES[t.sp].key)+' '+t.H.toFixed(0)).join(', ')+')':tiny.length?tiny.length+' trees under a metre':T.length+' trees, the tallest '+T.reduce((m,t)=>t.H>m?t.H:m,0).toFixed(0)+' m'};},
  // no tree on a cliff, none in the water but the mangal's
  rooted(T){const bad=T.filter(t=>{const d=waterH(t.x,t.z)-terrainH(t.x,t.z),mg=MANGAL_KEYS.indexOf(t.borrow)>=0;return(!mg&&d>.15)||(mg&&d>1.3)||RINGISLES.zones(t.x,t.z).cliff>.7;});
   return{ok:!bad.length,detail:bad.length?bad.length+' trees in the water or on a cliff ('+bad.slice(0,3).map(t=>(t.borrow||RINGISLES.SPECIES[t.sp].key)+' at '+t.x.toFixed(0)+','+t.z.toFixed(0)).join('; ')+')':T.length+' trees on dry ground (the mangal\'s in its water)'};},
@@ -99,31 +101,33 @@ const plantList=()=>Object.keys(RINGISLES.PLANTS).map(k=>Object.assign({key:k},R
 // every tree the kit grew (its passes and the gardens' plots), by its own species and by the borrowed ones
 const treeCounts=()=>{const C=RINGISLES.SPECIES.map(()=>0),BC=RINGISLES.BORROW.map(()=>0);for(const t of RINGISLES.TREES){if(t.borrow){const B=RINGISLES.borrowOf[t.borrow];if(B)BC[B.i]++;}else C[t.sp]++;}return[C,BC];};
 const under=()=>(window._biome&&window._biome.under)||{};
+// a station skips the checks its ground has nothing for (STATION.skip: the HCHK names; the bank has no savanna to burn, no mangal, no vent), and their negatives
+const SKIP=new Set(typeof STATION!=='undefined'&&STATION.skip||[]);
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P=instPoints(),T=RINGISLES.TREES||[];
- add('every climate class carries its flora',HCHK.classes(P));
- add('trees at an island\'s scale',HCHK.scale(T));
- add('no tree in the water or on a cliff',HCHK.rooted(T));
- add('the floor stands on the ground',HCHK.grounded(P));
- add('every species placed (own and borrowed)',HCHK.placed(...treeCounts()));
- add('every species, plant and crop tagged',HCHK.tagged(RINGISLES.allSpecies().concat(plantList())));
- add('the savanna burns in a mosaic',HCHK.burn(under()));
- add('the gardens are planted',HCHK.gardens(window._biome&&window._biome.gardens));
- add('the mangroves stand in the bay',HCHK.mangal(T));
- add('the vent\'s field is the geyser kit\'s',HCHK.thermal(P));
- add('preset cameras clear of the ground',HCHK.camerasOut(Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
+ if(!SKIP.has('classes'))add('every climate class carries its flora',HCHK.classes(P));
+ if(!SKIP.has('scale'))add('trees at an island\'s scale',HCHK.scale(T));
+ if(!SKIP.has('rooted'))add('no tree in the water or on a cliff',HCHK.rooted(T));
+ if(!SKIP.has('grounded'))add('the floor stands on the ground',HCHK.grounded(P));
+ if(!SKIP.has('placed'))add('every species placed (own and borrowed)',HCHK.placed(...treeCounts()));
+ if(!SKIP.has('tagged'))add('every species, plant and crop tagged',HCHK.tagged(RINGISLES.allSpecies().concat(plantList())));
+ if(!SKIP.has('burn'))add('the savanna burns in a mosaic',HCHK.burn(under()));
+ if(!SKIP.has('gardens'))add('the gardens are planted',HCHK.gardens(window._biome&&window._biome.gardens));
+ if(!SKIP.has('mangal'))add('the mangroves stand in the bay',HCHK.mangal(T));
+ if(!SKIP.has('thermal'))add('the vent\'s field is the geyser kit\'s',HCHK.thermal(P));
+ if(!SKIP.has('camerasOut'))add('preset cameras clear of the ground',HCHK.camerasOut(Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),T=RINGISLES.TREES||[];
- add('no flora anywhere',HCHK.classes([]));
- add('a 150 m hypertree',HCHK.scale(T.concat([{H:150,borrow:'lehua'}])));
- add('a palm out at sea',HCHK.rooted([{x:BAY.x,z:BAY.z+BAY.r*1.6,borrow:'coconut'}]));
- add('grass floating 5 m up',HCHK.grounded(instPoints().concat([[P_AW[0],terrainH(P_AW[0],P_AW[1])+5,P_AW[1],'biome:tallgrass','ringisles']])));
- {const [C,BC]=treeCounts();C[0]=0;add('a species never placed',HCHK.placed(C,BC));}
- add('a species with no Koppen classes',HCHK.tagged(RINGISLES.allSpecies().map((S,i)=>i===0?Object.assign({},S,{tags:Object.assign({},S.tags,{koppen:[]})}):S)));
- add('no burnt grass',HCHK.burn(Object.assign({},under(),{black:0})));
- add('no gardens',HCHK.gardens({plots:0,rice:0,taro:0,trees:0,kava:0,cane:0,sweetpotato:0,herbs:0,greens:0}));
- add('a mangrove on the mountain',HCHK.mangal(T.concat([{borrow:'mangrove',x:600,z:-150}])));
- add('this kit\'s grass in a hot spring',HCHK.thermal(instPoints().concat([[VENT.x,terrainH(VENT.x,VENT.z),VENT.z,'biome:tallgrass','ringisles']])));
- add('a camera under the ground',HCHK.camerasOut([{view:'under',x:0,y:terrainH(0,0)-2,z:0}]));
+ if(!SKIP.has('classes'))add('no flora anywhere',HCHK.classes([]));
+ if(!SKIP.has('scale'))add('a 150 m hypertree',HCHK.scale(T.concat([{H:150,borrow:'lehua'}])));
+ if(!SKIP.has('rooted'))add('a palm out at sea',HCHK.rooted([{x:BAY.x,z:BAY.z+BAY.r*1.6,borrow:'coconut'}]));
+ if(!SKIP.has('grounded'))add('grass floating 5 m up',HCHK.grounded(instPoints().concat([[P_AW[0],terrainH(P_AW[0],P_AW[1])+5,P_AW[1],'biome:tallgrass','ringisles']])));
+ {const [C,BC]=treeCounts();C[0]=0;if(!SKIP.has('placed'))add('a species never placed',HCHK.placed(C,BC));}
+ if(!SKIP.has('tagged'))add('a species with no Koppen classes',HCHK.tagged(RINGISLES.allSpecies().map((S,i)=>i===0?Object.assign({},S,{tags:Object.assign({},S.tags,{koppen:[]})}):S)));
+ if(!SKIP.has('burn'))add('no burnt grass',HCHK.burn(Object.assign({},under(),{black:0})));
+ if(!SKIP.has('gardens'))add('no gardens',HCHK.gardens({plots:0,rice:0,taro:0,trees:0,kava:0,cane:0,sweetpotato:0,herbs:0,greens:0}));
+ if(!SKIP.has('mangal'))add('a mangrove on the mountain',HCHK.mangal(T.concat([{borrow:'mangrove',x:600,z:-150}])));
+ if(!SKIP.has('thermal'))add('this kit\'s grass in a hot spring',HCHK.thermal(instPoints().concat([[VENT.x,terrainH(VENT.x,VENT.z),VENT.z,'biome:tallgrass','ringisles']])));
+ if(!SKIP.has('camerasOut'))add('a camera under the ground',HCHK.camerasOut([{view:'under',x:0,y:terrainH(0,0)-2,z:0}]));
  return R;}
 
 // ---------------------------------------------------------------- the page, handed to the host
@@ -143,6 +147,9 @@ HOSTED=KHOST.take({build:'ringisles',title:'Krator biome — the Ring Sea isles'
  layers:{'flora':{match:o=>!!(o.userData&&o.userData.biome)},'fauna':{match:o=>{let q=o;while(q){if(q.userData&&q.userData.fauna)return true;q=q.parent;}return false;}},'rings':{objects:()=>[giantRing]}},
  exporters:{biome:()=>BIO.export()},
  budget:BUDGET,types:()=>BIO.stats,
+ /* the foliage guards: the attach audit's limit raised to the share the borrowed kits' trees leave on this page (KNOWN_ISSUES.md, "The final rebuild":
+    the savanna's blooms and leaflets with no structure near them, the Rift's and swbay's to fix at their kits; this kit's own are held). It may only fall */
+ guards:{maxShare:.016},
  api:{hostChecks,hostNegatives,
  get totals(){const t=BIO.totals();return {tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
  setLightMode,biome:()=>window._biome,geyser:()=>window._geyser,

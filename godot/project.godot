@@ -34,6 +34,14 @@ anti_aliasing/quality/msaa_3d=2
 
 [shader_globals]
 
+season_dry={
+"type": "float",
+"value": 0.0
+}
+season_flush={
+"type": "float",
+"value": 0.0
+}
 atm_hour={
 "type": "float",
 "value": 12.0

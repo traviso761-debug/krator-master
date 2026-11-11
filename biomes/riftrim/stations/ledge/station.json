@@ -1,0 +1,47 @@
+{
+ "note": "Station 1, Ledge and the great lake (the W rift highland, the veiled rim). kin: the borrowed species, read in place and grown by their own kits' builders (BIO.kin; 87-host-kin.js grows the rows LAND.kin lists): [fragments, the kit's API, the pack families their builders draw with ('*': the whole pack)]. The SW lowlands' four Dalab brought up (cedar, cork oak, bay laurel, veil willow), the S highlands' two (coilbark, spiral aloe) and the Rift's two (stone pine, fan tree): PLAN.md section 3, the W rift highland's list, taken as proposed. The pack families are the ones the rows draw with (measured on the page, 2026-11-03: every material a kin mesh uses, by its vendor slot), so the page stays under the gallery's 16 MB",
+ "kin": {
+  "swlowlands": [
+   [
+    "src/50-biome-swlowlands-species.js",
+    "src/52-biome-swlowlands-library.js",
+    "src/55-biome-swlowlands-trees.js"
+   ],
+   "SWLOW",
+   [
+    "bk.furrow",
+    "bk.pale",
+    "bk.cork",
+    "oakleaf",
+    "lance",
+    "veil"
+   ]
+  ],
+  "shighlands": [
+   [
+    "src/50-biome-shigh-species.js",
+    "src/55-biome-shigh-trees.js"
+   ],
+   "SHIGH",
+   [
+    "bark.wrung",
+    "leaf.small",
+    "leaf.moss",
+    "leaf.groundsel"
+   ],
+   "shigh"
+  ],
+  "rift": [
+   [
+    "src/50-biome-rift-species.js",
+    "src/52-biome-rift-library.js",
+    "src/55-biome-rift-trees.js"
+   ],
+   "RIFT",
+   [
+    "needle",
+    "fan"
+   ]
+  ]
+ }
+}

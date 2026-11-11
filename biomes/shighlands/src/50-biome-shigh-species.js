@@ -431,7 +431,9 @@ const M=SHIGH.MAT;
 // without the pack (an open world) keeps the procedural ones; ?mat=proc shows them here.
 const LIBP=n=>(typeof KMAT!=='undefined'&&KMAT.mode==='lib'&&KMAT.packed)?KMAT.packed('shigh',n):null;
 SHIGH.LIB={has:n=>!!LIBP(n)};
-function libCell(n,box,W,H,flip){const L=LIBP(n);if(!L)return null;const c=document.createElement('canvas');c.width=W;c.height=H;
+/* the cell is the slot's own where materials.json names one (the final rebuild, pair 12: tools/textures/check_cells.py reads the slot, so the cut
+   the code makes is the one it checks); `box` is the cut for a second plant of the same sheet, or a slot without a cell */
+function libCell(n,box,W,H,flip,own){const L=LIBP(n);if(!L)return null;if(L.cell&&own!==false)box=L.cell;const c=document.createElement('canvas');c.width=W;c.height=H;
  const t=new T3.CanvasTexture(c);t.flipY=false;t.encoding=T3.sRGBEncoding;t.wrapS=t.wrapT=T3.ClampToEdgeWrapping;t.anisotropy=4;
  const img=new Image();if(typeof window!=='undefined')window._texPending=(window._texPending||0)+1;
  img.onload=()=>{const w=img.width,h=img.height,g=c.getContext('2d');if(flip){g.translate(0,H);g.scale(1,-1);}g.drawImage(img,box[0]*w,box[1]*h,(box[2]-box[0])*w,(box[3]-box[1])*h,0,0,W,H);t.needsUpdate=true;window._texPending--;};
@@ -446,7 +448,7 @@ function libCard(n){const L=LIBP(n);if(!L)return null;const t=KMAT.textures(L,{a
  use('small',libCard('leaf.small'));use('moss',libCard('leaf.moss'),.38);
  use('lichen',libCell('lichen',CELL(1,1),256,256),.3);
  /* the giant groundsel's cabbages and the silver rosettes: the owner's nine Dendrosenecio leaves, the green one and the felted silver one, on the whorls' blades (their vertex colours still tint them) */
- use('gleaf',libCell('leaf.groundsel',CELL(0,0),256,256));use('gsilver',libCell('leaf.groundsel',CELL(1,1),256,256));
+ use('gleaf',libCell('leaf.groundsel',CELL(0,0),256,256));use('gsilver',libCell('leaf.groundsel',[.415,.341,.607,.671],256,256,false,false));   /* the felted silver leaf: the sheet's middle plant (check_cells --plants card.groundsel), the slot's cell is the green one */
  /* 2026-10-26: the floor's ferns (card.fern.green, the upright frond), the screw palm's straps (card.strap.pandan, the straight
     strap, cropped so it fills the strip's middle as the canvas's did), the spiral-eye daisies (card.cupflower, the top daisy)
     and the paramo's bunchgrass (card.ichu): grey detail under the instance colours, as the canvases were */
@@ -474,7 +476,9 @@ BIO.bucket('wood',M.wood,{label:'Fallen wood'});
 BIO.bucket('far',BIO.barkMat(null),{label:'Far trees (impostors)'});
 
 // ---------------------------------------------------------------- instanced items
-BIO.def('small',BIO.geo.clump(),M.small,{attrs:['aN'],label:'Crown leaves'});
+/* the crown's card is a sheet of nine sage sprigs (card.sage): with the library on, each quad of the clump takes one sprig (BIO.geo.cells,
+   materials.json "sheet": "geometry"); the procedural leaf keeps the plain clump (the final rebuild, pair 12: it drew the whole grid on every card) */
+BIO.def('small',LIBP('leaf.small')?BIO.geo.cells(BIO.geo.clump(),{n:3}):BIO.geo.clump(),M.small,{attrs:['aN'],label:'Crown leaves'});
 BIO.def('moss',BIO.geo.clump(),M.moss,{attrs:['aN'],label:'Star moss on the limbs'});
 BIO.def('mossmat',BIO.geo.mat(),M.mossmat,{label:'Star moss and sphagnum'});
 BIO.def('fern',G.strip(4,.18,.32),M.fern,{label:'Fern fronds'});

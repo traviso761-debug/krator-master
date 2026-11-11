@@ -23,7 +23,8 @@ the Tungangs' and the Monks' (still to be supplied); **the walk is under a metre
 **Built so far (2026-11-03, oidong's rebuild turn):** `src/50-biome-hearths-species.js` (`HEARTH`: the species and plants with tags, `work`,
 the two dresses, the parts on `BIO.fung` and the breath's `fold`) and `src/55-biome-hearths-place.js` (`HEARTH.layout` on a KTHERM bake), read in place
 by `biomes/oidong/stations/hearths` (station 3). Not yet: the boil cup, the shade cap, the walk, the hold, the animals, the textures (section 15), the
-Godot side, `tests/test-hearths.js`, `BIOME-API.md`.
+Godot side, `tests/test-hearths.js`, `BIOME-API.md`. **Built 2026-11-03: the Cave of Crystals** (section 18), the kit's one
+page: `python3 build.py` -> `dist/hearths-crystals.html`.
 
 Status: **a proposal for the owner** only in its wording of the lore sentences and the names. Nothing is built, nothing
 on the model is changed and `LORE.md` is untouched. Every lore change this plan wants is marked *proposed* with its
@@ -489,7 +490,7 @@ spindles' silver, the steam, the snow line's edge, the hazards and the animals t
    the lake in the older crater beside it with the Talovolci's walled fields, the Godthrone's mass up the valley. Set on
    a winter night, the one season its engine earns; the noon preset shows the field shut and silver in a warm valley,
    the only hearth that is often idle.
-6. **The Stills** (geyser `--station stills`, `dist/geyser-stills.html`; the Steampits showcase's ground, -1,440 m, 1.9
+6. **The Stills** (**built 2026-11-03** in geyser's rebuild turn: `src/57-biome-hearths-stills.js` and the Stills' records and parts in `50`; what was built and the look decisions: `biomes/geyser/PLAN-STATIONS.md`, "Station 6 of the Hearths") (geyser `--station stills`, `dist/geyser-stills.html`; the Steampits showcase's ground, -1,440 m, 1.9
    atm, +33 degC): the geyser basin as the kit draws it (the sinter cones, the prismatic springs, the terraces to the sea,
    the dead forest in silica) with the still trees ringing every boiling spring and cone at the spray line, their black
    sails all across the sea wind and edge-on to the sun, glass stills by the dead springs, sail cups down the run-off,
@@ -694,3 +695,140 @@ Tungangs' surface, Dalab's reasons, Oidong's warmth, the origin, the names' tong
 Settled 2026-11-02, later: **the Stills grow at all three geyser sites** (the Steampits, the West Ring's geyser isles,
 the Throne's geyser isle), as section 7b says; and **the Hearths' vent fields are built by their host kits** (riftrim,
 oidong, godstep) with the geyser kit read in place, not by the geyser kit's own stations (section 0, "Overlap, settled").
+
+## 18. The Cave of Crystals: `build.py --station crystals` (2026-11-03)
+
+The owner (2026-11-03): build the hold's drained storey, the Naica (`biomes/CRYSTAL-CAVES-5.1.md` site 1,
+`biomes/KARST-SITES-5.1.md` site 4), now, as a page: the giant selenite beams, the bladed floor, the hot and deadly air.
+**The hold itself is a later settlement kit**: this station builds no structure and no person, but masses the caverns
+as if they held one, and publishes the spaces a hold would take as plain records, so the settlement kit drops into them
+without carving again (the metropolis massing's pattern: reserve the space, do not fill it).
+
+**Where it builds.** `biomes/riftrim`, the planned host (section 0), has no build yet. So this kit gets a `build.py` whose
+one page is this station: `python3 build.py` (or `--station crystals`) writes `dist/hearths-crystals.html` from
+`stations/crystals/` and the core; `src/` (the life, read in place by oidong) is not on the page. When riftrim gets a build,
+the station moves there as `--station hearths-crystals` unchanged: its fragments read only the core. Started from
+`biomes/copperglacier` (the newest finished kit): its `build.py`, `verify.py` and host shape.
+
+**The cave** (all `KKARST`, site 4's arguments). One hypogene network over the site's box (1.8 km, world 52514): the active
+storey at G - 70 (table G - 69, 55 degC), the drained storey at G - 40 with `crystal: {storeys: [1], speleo: 'SELENITE'}`,
+feeders on two faults along the rim's strike. G is the shelf (3,736 m), drawn as y = 0. The page crops it to a 360 m box
+round the network's largest feeder chamber on the drained storey (`ch:n1:-11,-3`: 108 by 100 m, 31 m to the crown), with
+the four chambers and the passages round it, the cupolas in their roofs, and the feeder shafts down to the water. A
+passage that leaves the box stops at the box: the cave goes on. KKARST's records are cropped, never edited.
+
+- **The Cave of Crystals** is the feeder chamber: KSPELEO's `beam`, `block` and `druse` kinds over its floor, with the
+  station's own numbers (`SELENITE` raised as the preset allows at 0.75 g: beams 5-16 m, 0.45-1.1 m thick, rising at up to
+  63 degrees, so they cross at every angle and lean on each other), the bladed floor (druse points on every floor, the
+  "shark teeth"), blocks under the walls; the second feeder chamber west of it (`ch:n1:-14,-2`) is dressed the same, thinner.
+- **The feeder well**: the level shaft in the great chamber's floor, the storey's hot water (55 degC, sulphurous) 29 m
+  down it, steaming (core/water's still surface, core/atmos's steam).
+- **The vent**: the cupola in the great chamber's crown broke the shelf (KKARST's `thin`): a well to the sky, the one
+  daylight in the cave, falling through the beams.
+- **The rock**: the rift fill's limestone, iron-stained rust red on the roofs and the walls between the crystals (the
+  references), gypsum crust on the floors and the lower walls.
+
+**The hold's massing** (*proposed*: where a loj would sit in this storey; the owner's settlement kit decides what fills it).
+The feeder chambers are the heat (50 degC, lethal): the Tungangs cross them in cooled suits or not at all (CRYSTAL-CAVES
+section 1). The hold takes the storey's **cooler chambers** round them, joined by the network's own passages:
+- **chambers**: `ch:n1:-11,-2` (the north chamber: the loj's hall), `ch:n1:-10,-3` (east) and `ch:n1:-13,-4` (south); their
+  level floors are the hold's floors, cleared of crystals;
+- **shelves**: a level terrace cut into each hold chamber's wall 4 m over its floor (`KCAVERN.room`): an upper floor;
+- **galleries**: the passages between the hold's chambers;
+- **passages**: the two crystal doors from the hold into the Cave of Crystals;
+- **approaches**: the night road (a rising gallery from the north chamber toward the shelf's surface, carved to the
+  page's edge, its run to the surface recorded) and the way down (a stair from the south chamber toward the active storey,
+  its foot recorded).
+Each is a record (`HOLD.volumes`, `[G data]`): `{id, kind, name, prim (the KCAVERN primitive), shape (ellipse, poly or
+capsule, with y0 and y1), floor, area, volume, temp (KTHERM over the feeders), links}`. No crystal stands in one (KSPELEO's
+`accept`), the probe checks it with a negative, and `?massing=1` outlines them. `node biomes/hearths/hold_export.js` prints
+the records as JSON from the same fragments (`--cave`: the whole cave's export), for the settlement kit and Godot.
+
+**Light and air.** No people, so no floodlights: the vent's daylight, the hot water's dull glow up the well, and the
+visitor's own lamp (the camera's headlamp; `?lamp=0` off). The beams are instanced translucent prisms with a cheap fake
+scattering (a thickness term in the shader, lit by the lamp, the vents and the wells; no refraction). The air: warm humid haze (built: the
+scene's fog, since height fog reads the sky's uniforms and there is no sky), steam off the wells. **Hazards** (core/hazard): `heat` over each feeder chamber with `soak`
+(Naica's 50 degC at 100% humidity kills in tens of minutes: full 1500 s), `slip` on the beams, and KKARST's own (the falls
+down the feeder shafts, the gas pooled in the active storey).
+
+**Budget.** The cavern at 1 m cells (~200 k triangles in the box); the crystals instanced (each kind one draw: beams,
+block parts, floor blades, wall points); under 2 M triangles and 60 draw calls a view, as the other stations hold to.
+(Built: the selenite, beams and block parts, in one draw; the blades, floor and roof, in one; ~450 k triangles in all.)
+
+### 18a. Core adoption (written before the first fragment)
+
+| Module | Takes | For |
+|---|---|---|
+| `core/terrain` | `39-core-cavern` (KCAVERN), `39b-core-speleo` (KSPELEO), `39c-core-karst` (KKARST), `39d-core-cavern-floor` and `host/39e-core-cavern-draw` (the floor under the eye, the chunks drawn: lifted into core 2026-11-09), `47-core-therm` (KTHERM), `43-core-ground` (KGROUND) | the network, its voids and chunks; the crystals' records; the storey's warmth; the rock's layers (gossan and gypsum crust, triplanar on the walls) |
+| `core/rand` | `KRAND` | every seed; the massing's and the crystals' hashes |
+| `core/tags` | `50`, `52`, `53` | every chamber, crystal group, reserved volume and hazard a record |
+| `core/space` | `KSPACE` | the reserved volumes' index the crystals' `accept` and the probe read |
+| `core/hazard` | `20-core-hazard`, `21-core-hazard-flow`, `37-core-traps` (the clock) | the heat with `soak`, the slip, KKARST's falls and pooled gas |
+| `core/biome` | `10`, `20`, `30`, `31b`, `40`, `42`, `43`, `44` | `BIO.init` (the host binding, records, the export); no flora on this page (nothing grows in the drained storey) |
+| `core/atmos` | the core, presets, the evening's cones (`2-lights`), particles, export, waves, `bindHost` | the vents' shafts of light, the steam; no sky and no height fog (underground) |
+| `core/water` | `20`, `21`, `22`, `50`, `51` | the hot water in the feeder well (`WATER.open`), still |
+| `core/host` | `FULL` | the page shell, views, inspector, probe |
+| `core/materials` | `record` (`KMAT`), `biomes/hearths/materials.json` packed by `tools/textures/pack.py` | the library sets |
+| `core/shadow` | `KSHADOW`, off by default (`?shadow=1`) | the vent's shaft of light through the beams |
+| `core/export` | `07`, `09` | the krator-world container |
+
+Not taken: `core/mask` (no canvas placement), `core/city`, `core/hamlet`, `core/camp`, `core/simulation`, `core/furnish`
+(no settlement: the hold is massing records), `core/lod` (the chunks are few and static), `38-core-relief`, `KSTRATA`
+(the walls are textured, not bedded), `KFAR`, `KHORIZON`, the sky, the weather, the clock's season (no sky reaches in but
+the vent's).
+
+**Textures.** `rock.limestone.ironstained` (iron-stained cave limestone) is the roofs' and walls' rust; `ground.gypsum.crust` the
+floors' gypsum; `mineral.selenite` the beams' and blades' grain (both delivered 2026-11-10, `core/materials/PLAN.md` "Delivered
+2026-11-10"; before them `rock.gossan` toned down and `stone.alabaster` tinted pale green stood in).
+
+## 19. The hold's active storey: `build.py --station hold` (planned and built 2026-11-09)
+
+Station 2 of section 11, under the Cave of Crystals: the same network (`SITE.net`, world 52514) and the same box, cropped to
+**storey 0**, the active storey at G - 70 under the water table at G - 69, so the two pages are one cave. The crystal page's
+way down arrives here.
+
+**What the records say** (read off the network, 2026-11-09). Six chambers in the box (two feeder chambers, `ch:n0:-11,-3` under
+the Cave of Crystals and `ch:n0:-14,-2`; four others), 44 passages, all phreatic: every floor is at -70 +- 0.6 and the table
+is at -69, so **the whole storey stands in about a metre of water** (KKARST flags all six chambers flooded). Gypsum crust from
+the floor to -63 round every chamber; the cupolas in the crowns; the two feeder shafts rising from depth. KKARST gives every
+pool the rising water's 55 degC.
+
+**Decisions.**
+- **The water's heat falls off from the feeders** (KTHERM, the crystal page's own field over the same feeders): scalding over
+  the feeder chambers (55, a `heat` hazard), warm (30-38) in the far chambers. KKARST's pools keep their record; the station
+  gives each its KTHERM temperature (`temp` on the pool's draw and its hazard). One still `WATER.open` at the table over the
+  storey's floor: milky green-grey, steaming where it is hot.
+- **The dress**: KSPELEO's `HYPOGENE` (gypsum chandeliers, stalactites, columns) over each crust record, drawn by
+  `KSPELEO.mesh` in one geometry; the crust band on the rock (KGROUND's gypsum layer by KCAVERN's crust weight).
+- **The air**: KKARST's hazards as they are (drown in the sumps and pools, gas pooled on every floor, the acid's drips in the
+  crust band, the falls), plus the steam over the hot water (core/atmos smoke).
+- **The fumarole's shaft** (KARST-SITES site 4, "the station's, not KKARST's"): one `KCAVERN.shaft` from the feeder chamber
+  `ch:n0:-14,-2` up through both storeys to the shelf, a hot column (steam, a `heat` hazard round it).
+- **The hold's lower storey, massed and empty** (*proposed*; the settlement kit fills it): the loj cannot live in the water,
+  so it lives **on shelves cut above the waterline** round the cooler chambers' walls (floor at the table + 1.5 m), joined by
+  raised galleries (passages whose floors the station levels above the water with a monolith), and the warm water in the
+  middle is the loj's. Chambers: `ch:n0:-14,-5` (where the crystal page's stair comes down), `ch:n0:-15,-5`, `ch:n0:-9,-3`.
+  Kinds as section 18's, plus `field`: the shelves meant for the dark crops (`kits/crops`' pale fungi, the mat, alecap, glow
+  mushrooms). The crops are not drawn: they are the hold's, as the structures are.
+- **The way down meets it**: section 18's stair ends on a landing at the table + 1.5 (moved up from the storey's floor, which
+  is under water), at `ch:n0:-14,-5`'s shelf. Both pages carve both storeys' cuts, so the stair is the same void on each.
+- **Not drawn** (section 11's first sketch, before the two-storey cave): the hearth trees' feet in the roof (the surface is 40
+  m above this storey's crown) and the night entrance (the crystal page's night road is the hold's way up).
+- **The light**: none but the lamp, the water's faint steam glow over the hot pools, and daylight only where a feeder's well
+  rises to the crystal storey's vents (none in this box): a dark page by design. `?mood=gold` as section 18.
+
+**Shared with station 1.** Both stations take one data fragment, generalised by storey (`SITE.storey`, `SITE.hold`), and the
+same host fragments where they agree (the rock, the massing, the build); a station's own fragments (its site, its dress, its
+views and checks) replace those by name (`station.json` `"base": "crystals"`). The cavern's drawing and its floor function
+move into core (`core/terrain/host/39e-core-cavern-draw.js`, `core/terrain/39d-core-cavern-floor.js`), since
+every cave page draws the same way (nwbay's caverns station could take them).
+
+**Checks** (each with a negative): no speleothem in a reserved volume; every reserved volume open and its floor level **and
+above the water**; the water hot only near the feeders (KTHERM) and a `heat` hazard on every pool over 45 degC; gas on every
+active chamber's floor; the crystal page's stair and this page's landing the same void; the eyes in the open and in air.
+
+**Built (2026-11-09).** As planned, with these as built: both stations carve and draw both storeys (one cave, ~450 k rock triangles); the hold's
+lower storey is three warm pools (24-28 degC) with a shelf and a field over the water in each, the way down's landing a rock platform 1.5 m
+over the water in the landing pool, the galleries wading (1-1.6 m deep), two hot crossings past the feeder pool (41-44 degC); one pool
+scalds (50 degC, under the Cave of Crystals); 183 gypsum chandeliers; the fumarole from the west feeder pool to the shelf.
+`node biomes/hearths/hold_export.js` prints all 33 volumes (both storeys).

@@ -158,7 +158,25 @@ NHL.SPECIES=[
  /*29*/{key:'tablecedar',name:'Table cedar',habit:'table',H:[24,38],rb:[1.2,2.0],crownR:[12,18],bk:1,bark:[0x5a4a3a,0x4e4034,0x665446],leaf:PAL.conifer.map(c=>C(c).lerp(C(0x3a5a3a),.3).getHex()),item:'needle',farShape:'umbrella',
   tags:TG('temperate','subhumid','no',HV('timber',[],true,'Fragrant rot-proof timber for halls; the resin burnt as incense.'))},
  /*30*/{key:'banyan',name:'Veil banyan',habit:'banyan',H:[22,34],rb:[2.2,3.4],crownR:[22,35],bk:2,bark:[0x66665a,0x5c5c50,0x707064],leaf:PAL.broad,item:'broad',farShape:'dome',
-  tags:TG('temperate','humid','both',HV('none',['figs (small, in autumn)'],false,'One tree shelters a village. Where a prop root touches the ground it becomes a trunk.'))},
+  tags:TG('temperate','humid','both',HV('none',['figs (small, in autumn)'],false,'One tree shelters a village. Where a prop root touches the ground it becomes a trunk.'))}, // THE STATIONS' TREES (PLAN-STATIONS.md; pair 7, 2026-11-09), appended so every key and index above is kept. `station` names the station that places
+ // each (station 1 places none of them: its every-species check leaves them out). Station 2, the dry-summer montane (Dsb, Csb), writes the trees nsemiarid's
+ // station `high` takes kin of (its PLAN-STATIONS.md: "whichever station is built first sets the trees"); station 4, the alpine (Dsc, ET), its two pines
+ /*31*/{key:'copperpine',name:'Copper pine',habit:'conifer',station:'montane',H:[34,56],rb:[.7,1.25],crownR:[4.5,7],bk:0,bark:[0xc8844e,0xb87644,0xd8945e],leaf:PAL.conifer.map(c=>C(c).lerp(C(0x6a8a3a),.35).getHex()),item:'needle',
+  form:{clear:.5,crown:'open',step:2.8,droop:.05,L:1,buttress:.15,flutes:0,fluteA:0,top:'flat',moss:0,drape:0,sparse:true},
+  tags:TG('temperate','semiarid','no',HV('timber',['seeds (in good years)'],true,'The bark plates smell of vanilla in the sun; pitch for torches and boats; the big timber of the dry side.'))},
+ /*32*/{key:'embergiant',name:'Ember giant',habit:'conifer',station:'montane',H:[72,96],rb:[2.8,4.0],crownR:[8,12],bk:1,bark:[0xa8502e,0x984628,0xb85e38],leaf:PAL.conifer.map(c=>C(c).lerp(C(0x4e6a34),.3).getHex()),item:'needle',
+  form:{clear:.42,crown:'dome',step:3.2,droop:.15,L:.9,buttress:1.5,flutes:13,fluteA:.13,top:'flat',moss:.1,drape:0},
+  tags:TG('temperate','subhumid','no',HV('timber',[],true,'The red giants of the moist draws: a fire scars them and they grow on. The bark is a hand thick and does not burn; the felled wood shatters.'))},
+ /*33*/{key:'whitefir',name:'White fir',habit:'conifer',station:'montane',H:[30,52],rb:[.6,1.1],crownR:[3.5,5.5],bk:0,bark:[0x9a9890,0x8a8a82,0xa8a69e],leaf:PAL.coniferBlue.map(c=>C(c).lerp(C(0x7a9a8a),.25).getHex()),item:'needle',
+  form:{clear:.18,crown:'spire',step:1.8,droop:.3,L:1,buttress:.2,flutes:0,fluteA:0,top:'spire',moss:.05,drape:0},
+  tags:TG('temperate','subhumid','no',HV('timber',[],true,'Balsam from the blisters for cuts; soft white boards.'))},
+ /*34*/{key:'blackoak',name:'Black oak',habit:'broad',station:'montane',H:[12,22],rb:[.5,.9],crownR:[7,11],bk:4,bark:[0x3a3430,0x2e2a26,0x46403a],leaf:PAL.oak,item:'maple',
+  form:{hB:.3,boughs:[4,7],el:[.3,.85],L:[.9,1.25],wig:.28,curve:-.1,moss:.05,drape:0,bulbs:0,clump:[3.4,5],mast:'acorn'},
+  tags:TG('temperate','semiarid','no',HV('fuel',['acorns'],false,'Acorns leached and ground into meal: the staple of the dry side\'s people.','generic_fruit_mast'))},
+ /*35*/{key:'whitebark',name:'Whitebark pine',habit:'pine',station:'alpine',H:[6,14],rb:[.3,.6],crownR:[3,5],bk:6,bark:[0xd8d0c4,0xc8c0b4,0xe2dcd0],leaf:PAL.conifer.map(c=>C(c).lerp(C(0x4a6a50),.3).getHex()),item:'needle',
+  tags:TG('cold','subhumid','no',HV('fuel',['pine nuts'],false,'The nuts are cached by the nutcrackers and dug up by bears and people alike.'))},
+ /*36*/{key:'foxtail',name:'Foxtail pine',habit:'pine',station:'alpine',H:[4,10],rb:[.5,1.1],crownR:[2,4],bk:4,bark:[0xc8b8a0,0xb8a890,0xd8c8b0],leaf:PAL.conifer.map(c=>C(c).lerp(C(0x3a5a3a),.45).getHex()),item:'needle',
+  tags:TG('cold','semiarid','no',HV('none',[],false,'Thousands of years old, mostly dead wood with one live strip of bark; never cut.'))},
 ];
 NHL.SPECIES.forEach((S,i)=>{S.index=i;});
 // THE UNDERSTOREY PLANTS, for the inspector and the tags (the items carry the label)
@@ -491,7 +509,7 @@ BIO.bucket('nfar',BIO.barkMat(null),{label:'Far trees (impostors)'});
    quad, three cells a card at .75, the needles .88 (core BIO.geo.cells; the owner, 2026-10-26: whole sheets read as a grid). The
    library's cell is in the geometry, so these slots carry no cell in materials.json (without the pack each quad shows a ninth of the stand-in) */
 const SHEET=(g,about,scale)=>BIO.geo.cells?BIO.geo.cells(g,{n:3,about,scale:scale==null?.75:scale}):g;   /* .75: the sprigs overlap into a mass (.6 read sparse) */
-BIO.def('needle',SHEET(BIO.geo.clump(),'quad',.88),M.needle,{attrs:['aN'],label:'Conifer needles'});
+BIO.def('needle',SHEET(BIO.geo.clump(),'quad',.88),M.needle,{attrs:['aN'],label:'Conifer needles',cap:700000,capWhy:'every conifer\'s needle masses (17 species, ~25k trees: the boreal band is closed spruce and fir) and the snow on the high crowns, within the 32 M budget the owner set (KNOWN_ISSUES.md, Density): 632k at 2026-11-01, the mid tier at 2.2x the hero\'s step, impostors past 800 m'});
 BIO.def('spray',BIO.geo.frond(3),M.spray,{label:'Cedar and hemlock sprays'});
 BIO.def('maple',NHL.LEAFSET&&NHL.LEAFSET.maple?SHEET(BIO.geo.clump({stem:true}),'origin'):SHEET(BIO.geo.clump()),M.maple,{attrs:['aN'],label:'Maple leaves'});
 BIO.def('broad',BIO.geo.clump(NHL.LEAFSET&&NHL.LEAFSET.broad?{stem:true}:null),M.broad,{attrs:['aN'],label:'Broadleaf canopy'});
@@ -502,7 +520,7 @@ BIO.def('lance',BIO.geo.clump(),M.lance,{attrs:['aN'],label:'Willow leaves'});
 BIO.def('pinnate',SHEET(BIO.geo.clump()),M.pinnate,{attrs:['aN'],label:'Rowan leaves'});
 BIO.def('drape',BIO.geo.ribbon(4,.7,.14),M.drape,{label:'Hanging moss'});
 BIO.def('beard',BIO.geo.ribbon(4,.55,.10),M.beard,{label:'Beard lichen'});
-BIO.def('frond',BIO.geo.frond(3),M.frond,{label:'Sword ferns'});
+BIO.def('frond',BIO.geo.frond(3),M.frond,{label:'Sword ferns',cap:650000,capWhy:'the fern sea under the old growth (HANDOFF-FLORA.md), its cell already cut from 3 m to 5 m to hold the 32 M budget, and the far floor band to 1.1 km: 595k at 2026-11-01'});
 BIO.def('lady',BIO.geo.frond(3),M.lady,{label:'Lady ferns'});
 BIO.def('lace',BIO.geo.frond(3),M.lace,{attrs:['aC2'],label:'Lace ferns'});
 BIO.def('bracken',G.flat(),M.bracken,{label:'Bracken'});
@@ -589,4 +607,5 @@ BIO.def('fan',BIO.geo.clump(),M.fan,{attrs:['aN'],label:'Fan-leaf leaves'});
 BIO.def('staghorn',NHL.LIB.staghorn?G.antler():BIO.geo.frond(3),M.staghorn,{label:'Staghorns'});
 BIO.def('wheel',G.flat(),M.wheel,{label:'Sun-wheels'});
 BIO.def('sporepin',G.spore(),M.spore,{label:'Spore lamps'});
+NHL.TG=TG;NHL.HV=HV;   /* the tag makers, for a station's own plants (stations/bogs/62) */
 })();

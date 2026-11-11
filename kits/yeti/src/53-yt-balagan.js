@@ -49,7 +49,7 @@ function ytBalagan(season){const B=YT_BAL,S=B.S,hx=B.hx,hz=B.hz,tx=hx-B.bat,tz=h
   ytQuad('larch',[p.w/2,0,pz1],[-p.w/2,0,pz1],[p.w/2,p.h-.25,pz1],[-p.w/2,p.h-.25,pz1],P('larch'),[0,0,1],{u0:.5-B.door.w/2/p.w,u1:.5+B.door.w/2/p.w,v0:B.door.h/(p.h-.25)});
   ytQuad('turf',[-p.w/2-.15,p.h-.3,pz1+.2],[p.w/2+.15,p.h-.3,pz1+.2],[-p.w/2-.15,p.h+.1,pz0],[p.w/2+.15,p.h+.1,pz0],P('turf'),[0,1,1]);
   box('flag',0,-.04,(pz0+pz1)/2,p.w-.2,.06,p.d,P('flag'));
-  door(0,0,pz1,0,B.door.w);
+  door(0,0,pz1,0,B.door.w);svLeaf(0,0,pz1-.04,0,B.door.w*.96,B.door.h-.03,{mk:'larch',col:P('larch'),t:.05,style:'plank',name:'porch door'});   /* the porch's door (core/door): it opens on E or an NPC */
   /* the windows on the north wall: a pane of ice in winter, sewn gut the rest of the year, in a larch frame */
   const pane=season==='winter'?'ice':'gut';
   for(const x of [-1.3,1.3]){const y=1.15*S,zz=-(hz-(y/H)*B.bat)-wt/2;box(pane,x,y,zz,.55,.42,wt+.04,P('ice'));

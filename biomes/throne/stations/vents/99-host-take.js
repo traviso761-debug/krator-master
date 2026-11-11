@@ -39,6 +39,9 @@ const VIEWS={
  'Acid fog':(function(){const a=gp(-350,40),b=gp(-900,0);return[a[0],gh(a[0],a[1],2),a[1],b[0],gh(b[0],b[1],3),b[1]];})(),
  'Ash on the rift':(function(){const W=GRABEN.W(700),a=gp(700,W+30),b=gp(-700,0);return[a[0],gh(a[0],a[1],8),a[1],b[0],gh(b[0],b[1],0),b[1]];})(),
  'From above':[-1300,2350,1300,200,1380,-200],
+ /* the bismuth (87g): the fumarole with the most pockets, from a step off */
+ 'Bismuth pockets at a fumarole':(function(){const R=BISMUTH.records;if(!R.length)return[0,gh(0,0,30),0,10,gh(10,0),0];const c={};R.forEach(r=>c[r.source]=(c[r.source]||0)+1);
+  const si=+Object.keys(c).sort((a,b)=>c[b]-c[a])[0],L=R.filter(r=>r.source===si),g=L.reduce((a,b)=>b.r>a.r?b:a);return[g.x+1.6,gh(g.x+1.6,g.z+1.1,1.5),g.z+1.1,g.x,g.y+g.r*.5,g.z];})(),
 };
 VMODE['The fissure at night']='night';VMODE['Lamp caps at night']='night';
 VWEATHER['Acid fog']='fog';VWEATHER['Ash on the rift']='ashfall';
@@ -99,6 +102,11 @@ const HCHK={
  camerasOut(C){const bad=C.filter(c=>c.y<terrainH(c.x,c.z)+.5);return{ok:!bad.length,detail:bad.length?'under the ground: '+bad.map(c=>c.view).join(', '):C.length+' cameras clear'};}};
 const plantList=()=>Object.keys(THRONE.PLANTS).map(k=>Object.assign({key:k},THRONE.PLANTS[k]));
 const counts=T=>T.reduce((C,t)=>{C[t.sp]++;return C;},THRONE.SPECIES.map(()=>0));
+// THE BISMUTH (87g): every pocket on the ground (lift: the negative's), within reach of its fumarole, none in water; enough of them
+function bismuthCheck(R,lift){const bad=[];for(const r of R){const y=r.y+(lift||0),S=STEAM[r.source];
+  if(Math.abs(y-terrainH(r.x,r.z))>.05)bad.push(r.id+' off the ground');else if(!S||Math.hypot(r.x-S.x,r.z-S.z)>S.R*.5+1e-6)bad.push(r.id+' away from its fumarole');
+  else if(waterH(r.x,r.z)>-1e8)bad.push(r.id+' in water');}
+ return{ok:R.length>=20&&!bad.length,detail:R.length+' bismuth pockets at '+new Set(R.map(r=>r.source)).size+' fumaroles'+(bad.length?'; '+bad.length+' wrong (first '+bad[0]+')':', each on the ground by its vent')};}
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P=instPoints();
  add('Krator\'s own life holds vent country',HCHK.native(THRONE.TREES));
  add('nothing lives in the CO2 hollows',HCHK.hollow(THRONE.TREES,P));
@@ -109,6 +117,7 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P
  add('the acid fog and the ash (core/atmos) are here',HCHK.weather(ATMOS.W,ATMOS.U));
  add('every species of vent country placed',HCHK.placed(counts(THRONE.TREES)));
  add('every species and plant tagged',HCHK.tagged(THRONE.SPECIES.concat(plantList())));
+ add('bismuth hoppers in pockets at the fumaroles (KGEODE.around)',bismuthCheck(BISMUTH.records));
  add('preset cameras clear of the ground',HCHK.camerasOut(Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),H=HOLLOWS[0];
@@ -121,6 +130,7 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('a weather without the ash',HCHK.weather(Object.assign({},ATMOS.W,{MODES:ATMOS.MODES.filter(m=>m!=='fog')}),ATMOS.U));
  {const C=counts(THRONE.TREES);C[SPK('brimstone')]=0;add('a species never placed',HCHK.placed(C));}
  add('a species with no origin',HCHK.tagged(THRONE.SPECIES.map((S,i)=>i===0?Object.assign({},S,{tags:Object.assign({},S.tags,{origin:null})}):S)));
+ add('the bismuth lifted 5 m off the ground',bismuthCheck(BISMUTH.records,5));
  add('a camera under the ground',HCHK.camerasOut([{view:'under',x:0,y:terrainH(0,0)-2,z:0}]));
  return R;}
 // ---------------------------------------------------------------- the page, handed to the host

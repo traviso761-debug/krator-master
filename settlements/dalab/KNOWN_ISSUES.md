@@ -124,7 +124,11 @@ saying what fixed it.
       commas rejoins pieces that spell a preset's name (every verify.py).
 
 ## The vendored biome (Oct 2026)
-- [ ] The swlowlands biome is vendored as `src/86-bio-*`. Its core moved to `core/biome/` (one copy
+- [x] (2026-11-03) **The biome is read in place** under the names `src/86-bio-*` had: `core/biome` (10, 20, 30, 40) and
+      `biomes/swlowlands/src` (species, trees, floor, dress, assembly); src/ keeps no copy. The copies were the core and kit
+      before the `BIO.kit` hooks, the harvest data (`SWLOW.HARVEST`, the figs) and the dressing's runtime LOD. `verify.py
+      --assert` before and after: the set page and the city page each pass all 7, none fail.
+- [x] (superseded by the entry above) The swlowlands biome is vendored as `src/86-bio-*`. Its core moved to `core/biome/` (one copy
       for every kit) and the kit gained `BIO.kit` hooks, so `--vendor-check` reports the core and the
       hooked fragments as drift. The kit's geometry is unchanged (mesh fingerprints, `core/README.md`).
       Re-vendor, or read `core/biome` through a `CORE_BIOME` list, when Dalab is next rebuilt and verified.

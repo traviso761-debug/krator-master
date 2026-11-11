@@ -1,4 +1,4 @@
-// [dambasins] AN ADAPTED COPY of settlements/port/src/71-port-terrain.js (biomes/dambasins/PLAN.md, section 2): a dry
+// [dambasins] AN ADAPTED COPY of kits/port/src/71-port-terrain.js (biomes/dambasins/PLAN.md, section 2): a dry
 // port on a drained lake's old shore. Five hooks, each marked [dambasins], in Ys's pattern (settlements/ys's copy:
 // YS_NAT, ysGroundTint): DB_NAT (the bed's ground for the kit's natural coast), dbGroundTint (the bed's colours), and
 // with DB_DRY no sea sheet, no underwater fade and no port scrub. They belong upstream in the kit (KNOWN_ISSUES.md);

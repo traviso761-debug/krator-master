@@ -15,7 +15,7 @@ python3 build.py [--station pass|icefield]
 python3 verify.py dist/copperglacier.html --assert --all-views
 ```
 
-Verified 2026-11-03 on the GPU (RTX 5060 lane): all three pages pass `--assert --all-views` (53, 53 and 50 checks; 9.7, 14.8 and 1.7 M triangles).
+Verified 2026-11-03 on the GPU (both lanes, the harness's queue): all three pages pass `--assert --all-views` (53, 53 and 50 checks; 10.1, 15.1 and 1.75 M triangles), with KGROUND's relief and the reworked ice caves.
 
 ## How it is put together
 
@@ -29,11 +29,11 @@ Verified 2026-11-03 on the GPU (RTX 5060 lane): all three pages pass `--assert -
   the 4 km cells. The copper field, the copper flowers, the malachite on the ground and the nodes' outcrops all read it.
 - **Placement** (`src/60`) draws each cell from `KRAND.cell` and never from a running stream. The frost coral's limbs are polylines joined to
   their parents by `BIO.flareJoin`, drawn in one `BIO.tree` scope each.
-- **The universal set**: KGROUND layers on documented masks (`84`), KFAR and KHORIZON (`85`), core/water with still water that has no surf or
+- **The universal set**: KGROUND layers on documented masks, with KGROUND's relief and the mesh's cavities (and `tri` on the pass) (`84`), KFAR and KHORIZON (`85`), core/water with still water that has no surf or
   breakers, the plume, the mirror switch off at load and the shore's fields (`89w`, `89z`), KSHADOW (`89z`: measured, off at load, `?shadow=1`), the shared sky at
   each site (`89`), the air row (`89a`).
 
 ## Switches
 
-`?shadow=1` · `?kground=0` · `?polygon=0` · `?plume=0` · `?fields=0` · `?far=0` · `?hz=0` · `?hfog=0` · `?snow=0` · `?q=0.5` · `?nobake=1`
+`?shadow=1` · `?kground=0` · `?relief=0` · `?tri=0` · `?polygon=0` · `?plume=0` · `?fields=0` · `?far=0` · `?hz=0` · `?hfog=0` · `?snow=0` · `?q=0.5` · `?nobake=1`
 · `?index=0` · `?lodmerge=0` · `?lodfade=0` · `?lodcull=0`

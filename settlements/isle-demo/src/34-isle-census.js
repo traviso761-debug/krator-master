@@ -40,6 +40,7 @@ ISLE.census = function (R) {
     if (L.cls === 'landmark') { C.landmarks++; inc(C.byRole, L.role); }
     var trade = D.job || D.role; if (trade) inc(C.trades, trade);
     var hh = ISLE.households(L.key);
+    if (L.vacant) { C.vacant = (C.vacant || 0) + 1; return; }   /* an empty lot (32): a house to be built, nobody in it yet */
     if (hh) { C.dwellings++; C.households += hh; }
   });
   C.citizens = C.households * 5;

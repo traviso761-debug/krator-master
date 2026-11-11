@@ -15,6 +15,8 @@ function hostGroundLib(n,fb){const L=(typeof KMAT!=='undefined'&&KMAT.mode==='li
 // stones, dark in the pools, white where it drops); the tarn is a disc; the mist
 // is sheets lying in the hollows and soft sprites standing in them, drifting.
 // Host-only.
+const BRECCIA_ON=new URLSearchParams(location.search).get('strata')!=='0'&&!(typeof STATION_BRECCIA!=='undefined'&&STATION_BRECCIA===false);   /* the crater wall's megabreccia (86-host-pillars.js); a station off the wall sets STATION_BRECCIA=false */
+const BRECCIA_KINDS={matrix:0x6d6a66,blocks:[0x232124,0x2a2826,0x6e2e24,0x8a8780,0x9a958c,0xd0c4aa,0x9a4430,0xbdb6a6,0x7a7670,0x75716c]};   /* the recipe's colours, weighted by its shares (KGROUND's palette is uniform) */
 let GROUND=null,GROUND_HZ=null;   /* GROUND_HZ: the terrain's horizon maps (KHORIZON), for any material that would take its shadows */
 function buildGround(){
  const SX=TERR.X1-TERR.X0,SZ=TERR.Z1-TERR.Z0,TW=2048,ZN=256;
@@ -64,6 +66,7 @@ function buildGround(){
    // the banks: gravel and wet moss; the tarn's peat
    const fl=FC.at(FC.a.flow,wx,wz);c.lerp(BANK,rip*.45);c.lerp(GRAV,smooth(.86,.98,fl)*.7);
    if(Math.hypot(wx-TARN.x,wz-TARN.z)<TARN.r+30)c.lerp(PEAT,smooth(TARN.r+30,TARN.r,Math.hypot(wx-TARN.x,wz-TARN.z))*.6);
+   if(typeof STATION_PAINT==='function')STATION_PAINT(c,wx,wz,n,n2,n3,sl);   /* a station's own ground colours (the mire's sphagnum and peat), over the kit's */
    // the canopy's shade
    const sh=sat(u,v);c.multiplyScalar(1-.62*sh);
    const k=1+n*.08;d[i]=clamp(c.r*255*k,0,255);d[i+1]=clamp(c.g*255*k,0,255);d[i+2]=clamp(c.b*255*k,0,255);d[i+3]=255;}
@@ -71,12 +74,24 @@ function buildGround(){
  const DET=BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
   for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,v=232+(fbm(x/9,y/9,5,2)-.5)*40+(BIO.fn.h3(x,y,9)-.5)*24;d[i]=d[i+1]=d[i+2]=clamp(v,0,255);d[i+3]=255;}
   g.putImageData(id,0,0);});
- const MAT=new THREE.MeshLambertMaterial({map:TEX,color:0x84847a});
+ /* THE GROUND'S LIGHT PER PIXEL (the cloud kits' merge, 2026-11-04; core/terrain/GROUND.md, the relief's adoption list): on KGROUND the ground is
+    MeshStandard, so the relief's bump and the mesh's hollows reach the light (r128's Lambert lights per vertex); ?kground=0 keeps the Lambert,
+    ?kgrelief=0 drops the relief (the before-and-after) */
+ const KG_STD=typeof KGROUND!=='undefined'&&new URLSearchParams(location.search).get('kground')!=='0',KG_RELIEF=KG_STD&&new URLSearchParams(location.search).get('kgrelief')!=='0';
+ const MAT=KG_STD?new THREE.MeshStandardMaterial({map:TEX,color:0x84847a,roughness:.96,metalness:0}):new THREE.MeshLambertMaterial({map:TEX,color:0x84847a});
  /* the library's ground layers (materials.json ground.mulch: leaf and needle mulch, ground.meadow: green meadow, groundCladonia:
     the owner's reindeer lichen over the boreal floor), by zone: on core/terrain's ground shader (KGROUND, 43-core-ground.js, 2026-10-26),
     hex-tiled, scaled with distance and blended by height; the same weights and strengths as the page's own mix before it */
  const GLY=(function(){const M=KGROUND.layer('nhighlands','ground.mulch',{w:'vGL.x',amt:.7,gain:1.25,tint:'diffuse'}),G=KGROUND.layer('nhighlands','ground.meadow',{w:'vGL.y',amt:.75,gain:1.2,tint:'diffuse'});
-  return M&&G?[M,G,KGROUND.layer('nhighlands','groundCladonia',{w:'vGL.z',amt:.4,gain:1.1,tint:'diffuse'})]:[];})();
+  if(typeof STATION_GLY==='function')return STATION_GLY();   /* a station's own layers on the same three weights (stations/<name>/: STATION_GL fills them) */
+  const L=M&&G?[M,G,KGROUND.layer('nhighlands','groundCladonia',{w:'vGL.z',amt:.4,gain:1.1,tint:'diffuse'})]:[];
+  /* THE CRATER WALL'S MEGABRECCIA on the steep (86-host-pillars.js, BRECCIA_ON; ?strata=0 the old granite bands): KGROUND's `clast` kind, 3D cells (no stretch
+     on a scarp) of 7 m with a finer generation in the matrix and its glass flecks, in the recipe's rocks; no map, so no texture unit. Its weight is the old
+     granite's (the steep), a little under the moss's reach */
+  const BRG=BRECCIA_ON?KGROUND.layer('nhighlands','rock.megabreccia',{}):null;   /* the library's megabreccia (rock.megabreccia): each block's grain, turned per block; one texture unit */
+  if(BRECCIA_ON)L.push({map:BRG?BRG.map:undefined,k:BRG?BRG.k:undefined,kind:'clast',w:'smoothstep(0.42,0.75,1.0-clamp(normalize(vGWN).y,0.0,1.0))',amt:.88,gain:.82,size:7,matrix:.07,sub:.2,fleck:.05,fleckDensity:.25,
+   palette:BRECCIA_KINDS.blocks,matrixColor:BRECCIA_KINDS.matrix,vary:.12,seed:KRAND.hash(86077,0,1,7)%997,name:'megabreccia (clast)'});
+  return L;})();
  MAT.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:hostGroundLib('groundDetail',DET)};
   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;varying vec3 vGWN;attribute vec3 aGL;varying vec3 vGL;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGL=aGL;vGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vGWN=normalize(mat3(modelMatrix)*objectNormal);');
   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail;varying vec3 vGWP;varying vec3 vGWN;varying vec3 vGL;')
@@ -88,8 +103,8 @@ function buildGround(){
     ' float b1=0.5+0.5*sin(y*0.24), b2=smoothstep(0.6,0.95,sin(y*0.08+1.3));',
     ' vec3 st=mix(vec3(0.17,0.18,0.17),vec3(0.26,0.27,0.25),b1); st=mix(st,vec3(0.12,0.14,0.11),b2*0.6);',
     ' st*=0.8+0.4*texture2D(uDetail,vec2(vGWP.x+vGWP.z,vGWP.y*3.0)*0.05).r;',
-    ' diffuseColor.rgb=mix(diffuseColor.rgb,st,smoothstep(0.42,0.75,steep)*0.85);}'].join('\n'));};
- KGROUND.hook(MAT,{layers:GLY,key:'nhl-ground'});
+    BRECCIA_ON?' }':typeof STATION_STEEP==='string'?' diffuseColor.rgb=mix(diffuseColor.rgb,'+STATION_STEEP+',smoothstep(0.14,0.36,steep)*0.92);}':' diffuseColor.rgb=mix(diffuseColor.rgb,st,smoothstep(0.42,0.75,steep)*0.85);}'].join('\n'));};   /* with the megabreccia on, the clast layer above draws the steep */
+ KGROUND.hook(MAT,{layers:GLY,key:'nhl-ground',relief:KG_RELIEF&&GLY.length?{bump:.075,cavity:.8,mesh:1}:null});
  /* THE TERRAIN'S HORIZON (core/terrain/45-core-horizon.js, KHORIZON, 2026-10-26: HEIGHT-RESEARCH item 2): the horizon in eight
     directions baked over the map (256 texels a side, ~26 m) and, beyond it, over the far country's drawn lattice (FAR.G), so at a
     low sun the ridges and the Inner Wall throw their shadows across the valley; the hollows and the stream's cut see less sky */
@@ -111,8 +126,8 @@ function buildGround(){
    const a=P[r.i],b=P[r.i+1],nx=a[0]+(b[0]-a[0])*r.f,nz=a[1]+(b[1]-a[1])*r.f,k=e/r.d;p.setX(i,nx+(x-nx)*k);p.setZ(i,nz+(z-nz)*k);}}
  for(let i=0;i<p.count;i++)p.setY(i,terrainH(p.getX(i),p.getZ(i)));
  const uv=g.attributes.uv;for(let i=0;i<uv.count;i++)uv.setXY(i,(p.getX(i)-TERR.X0)/SX,1-(p.getZ(i)-TERR.Z0)/SZ);
- {const gl=new Float32Array(p.count*3);for(let i=0;i<p.count;i++){const u=(p.getX(i)-TERR.X0)/SX,v=(p.getZ(i)-TERR.Z0)/SZ;gl[i*3]=zat('montane',u,v);gl[i*3+1]=zat('glade',u,v);gl[i*3+2]=zat('boreal',u,v)*(1-zat('alpine',u,v))*(1-zat('burn',u,v))*(1-zat('rip',u,v));}g.setAttribute('aGL',new THREE.BufferAttribute(gl,3));}   /* z: the boreal floor (cladonia) */
- g.computeVertexNormals();const m=new THREE.Mesh(g,MAT);m.userData.probeSkip=true;m.userData.inspectLabel='The northern highlands (ground)';scene.add(m);
+ {const gl=new Float32Array(p.count*3);for(let i=0;i<p.count;i++){const u=(p.getX(i)-TERR.X0)/SX,v=(p.getZ(i)-TERR.Z0)/SZ;if(typeof STATION_GL==='function'){const w=STATION_GL(p.getX(i),p.getZ(i));gl[i*3]=w[0];gl[i*3+1]=w[1];gl[i*3+2]=w[2];continue;}gl[i*3]=zat('montane',u,v);gl[i*3+1]=zat('glade',u,v);gl[i*3+2]=zat('boreal',u,v)*(1-zat('alpine',u,v))*(1-zat('burn',u,v))*(1-zat('rip',u,v));}g.setAttribute('aGL',new THREE.BufferAttribute(gl,3));}   /* z: the boreal floor (cladonia) */
+ g.computeVertexNormals();const m=new THREE.Mesh(g,MAT);if(KG_RELIEF&&GLY.length)KGROUND.cavityMesh(m);m.userData.probeSkip=true;m.userData.inspectLabel='The northern highlands (ground)';scene.add(m);
  // the apron: a vertical skirt 70 m deep round the square's edge, in the paint's edge colour
  {const pos=[],uvs=[],N=NXg,ed=[];for(let k=0;k<=N;k++){const f=k/N;ed.push([TERR.X0+f*SX,TERR.Z0],[TERR.X1,TERR.Z0+f*SZ],[TERR.X1-f*SX,TERR.Z1],[TERR.X0,TERR.Z1-f*SZ]);}
   for(let side=0;side<4;side++)for(let k=0;k<N;k++){const a=ed[k*4+side],b=ed[(k+1)*4+side],ha=terrainH(a[0],a[1]),hb=terrainH(b[0],b[1]);

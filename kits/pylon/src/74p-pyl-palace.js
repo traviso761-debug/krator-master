@@ -21,7 +21,7 @@ function pypPavilion(G,u,v,R,storeys,cap,lit,wh,or,sf){const [x,z]=PYP(u,v),T=1.
    pynFrame('stadium',p[0],y+.8,p[1],a,1.1,SH[s]-1.8,{rim:.14,c:or,fill:lit&&s?'L':'G',out:.05});}
   y+=SH[s];if(s<storeys-1)kput('pyRing',[x,y,z],qEuler(Math.PI/2,0,0),[R+.04,R+.04,R*.18],wh);}
  if(cap==='lattice')acLatticeDome(G,x,Htop,z,R*.92,PYA.white);
- else if(cap==='cone'){mesh(lathe({rFn:yy=>R*(1-.55*yy/(R*.7)),H:R*.7,nu:36,nv:3}),tsand(PYA.white),G,x,Htop,z);kput('pyRing',[x,Htop+R*.7,z],qEuler(Math.PI/2,0,0),[R*.45,R*.45,R*.2],or);kput('pyDiscG',[x,Htop+R*.7-.05,z],qEuler(Math.PI/2,0,0),[R*.42,R*.42,.1],null);}
+ else if(cap==='cone'){mesh(lathe({rFn:yy=>R*(1-.55*yy/(R*.7)),H:R*.7,nu:36,nv:3}),tsand(PYA.white),G,x,Htop,z);kput('pyRing',[x,Htop+R*.7,z],qEuler(Math.PI/2,0,0),[R*.45,R*.45,R*.2],or);pynPane('pyDiscG',[x,Htop+R*.7-.05,z],qEuler(Math.PI/2,0,0),[R*.42,R*.42,.1],'pyDiscD');}
  else{kput('vDomeP',[x,Htop,z],null,[R*.96,R*.55,R*.96],wh);if(cap==='vent'){vPst('vPostS',x,Htop+R*.5,z,.5,1.6,wh);kput('pyRing',[x,Htop+R*.5+1.6,z],qEuler(Math.PI/2,0,0),[.55,.55,.3],or);}}
  return Htop;}
 
@@ -57,13 +57,13 @@ function buildPylGovernorPalace(G,o){reseed(9271+(o.v|0));const T=1.2,G1=5.5,U1=
   vBq('vPlaster',x+dx*1.1,3.4,z+dz*1.1,1,7.2,1.6,vQ(Math.atan2(dx,dz),-.18,0),sf);}
  // ---- the great dome over the audience hall: a drum ringed with amber lancets, the hex-lattice dome, a saffron ring
  {const [x,z]=P(10,0);kput('pyCyl',[x,R2,z],null,[7.3,5.8,7.3],wh);kput('pyRing',[x,R2+5.8,z],qEuler(Math.PI/2,0,0),[7.45,7.45,2.6],or);
-  for(let k=0;k<16;k++){const a=(k+.5)/16*TAU;kput('vWinLit',[x+Math.sin(a)*7.32,R2+2.9,z+Math.cos(a)*7.32],vQ(a,0,0),[.7,3.6,.1],null);}
+  for(let k=0;k<16;k++){const a=(k+.5)/16*TAU;pynPane('vWinLit',[x+Math.sin(a)*7.32,R2+2.9,z+Math.cos(a)*7.32],vQ(a,0,0),[.7,3.6,.1]);}
   acLatticeDome(G,x,R2+5.8,z,7.2,PYA.white);kput('pyRing',[x,R2+5.8+5.6,z],qEuler(Math.PI/2,0,0),[2.2,2.2,1.4],sf);
   // the signal lantern: a small drum on the crown, glazed and lit, the heliograph's mirror on its roof
-  kput('pyCyl',[x,R2+12.2,z],null,[1.5,2.4,1.5],wh);for(let k=0;k<6;k++){const a=k/6*TAU;kput('vWinLit',[x+Math.sin(a)*1.52,R2+13.4,z+Math.cos(a)*1.52],vQ(a,0,0),[.8,1.4,.08],null);}
+  kput('pyCyl',[x,R2+12.2,z],null,[1.5,2.4,1.5],wh);for(let k=0;k<6;k++){const a=k/6*TAU;pynPane('vWinLit',[x+Math.sin(a)*1.52,R2+13.4,z+Math.cos(a)*1.52],vQ(a,0,0),[.8,1.4,.08]);}
   kput('vDomeP',[x,R2+14.6,z],null,[1.6,.8,1.6],or);vBq('vIron',x,R2+15.8,z,.9,.06,.9,vQ(.6,.5,0),gun);vPst('vPipe',x,R2+15.2,z,.05,.7,gun);}
- // the light courts either side of the drum: dark wells through the roof
- for(const s of[-1,1]){const [x,z]=P(5.5,s*9.5);vB('vWinLit',x,R2+.36,z,5,.62,5,0,null);}
+ // the light courts either side of the drum: a lit glazed lantern over each well through the roof (its room card inside)
+ for(const s of[-1,1]){const [x,z]=P(5.5,s*9.5);pynPane('vWinLit',[x,R2+.36+.31,z],null,[5,.62,5]);}
  // ---- the seven pavilions (blueprint: large front corners, medium rear corners, small flanks, the round kitchen)
  for(const s of[-1,1]){pypPavilion(G,-8,s*18,6.3,2,'lattice',true,wh,or,sf);pypPavilion(G,24,s*18,5,2,'cone',true,wh,or,sf);}
  pypPavilion(G,8,-22,3.6,2,'dome',true,wh,or,sf);                          // the guard pavilion; the commander above

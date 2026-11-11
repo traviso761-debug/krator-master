@@ -204,6 +204,89 @@ declares both once they are planned, in one order whichever town it draws, and h
   weavers). Three weeks: 2,240 tooled, 446 on racks; 145 wooden tools, 103 stone, 40 cooking pots and 4 nets worn out
   and replaced in work time; 404 hurt, 369 healed (265 by poultice), none past three days; 948 sarongs and 732 sun hats
   bought; 105 clubs. The weavers' places take cloth three in eight, garments two, mats, hats and nets one each.
+- **Crime and punishment** (owner, 2026-11-02; `47c`, core/simulation `77-sim-6-crime.js`; the Voth brief's rules). One adult
+  in a thousand (not the soldiers) is a criminal: 4 in Kautoa, 1 in Valapo. By day they pick pockets at the markets, shops,
+  greens and taverns (the victim's material meter up 15, the thief's down); at night they burgle another household of their
+  town for a third of its food store. Anyone whose happiness falls under 30 may start a fight among company. A third of
+  the soldiers are the watch, walking the markets, greens and plazas by day. A crime is seen by its witnesses (a soldier
+  among them counts most), far less at night; seen, it fails, the nearest soldier or watchman on duty within 400 m comes
+  and arrests by his distance, and the arrested sit a week in the nearest barracks (a month if they
+  resist, 15%), out of work, then lie low two days. Two weeks (Kautoa watched, then Valapo): about 60 crimes tried, 50
+  done, 13 seen, 3 arrested, the rest escaped; 24 burglaries carried off about 300 servings; no fights (nobody that
+  unhappy). The towns' week checks all still pass with it on, and Godot's isle books agree with the new week.
+  **The thieves' guild** (owner, 2026-11-02): one tavern a town, the farthest from its barracks (Kautoa's 1,056 m off,
+  Valapo's 700 m). A criminal seen within 300 m of it, nearer it than the soldier coming, runs there and hides two hours
+  and cannot be arrested; nobody picks a pocket inside. A burglar takes a spare thing from the household besides the food,
+  carries the lot to the guild in a free hour and fences it: the food into the guild's store, the things onto its shelf,
+  the thief's material meter down. Arrested first, the loot goes back to the household. Two weeks: 4 hid (none taken),
+  every stolen thing and most of the food fenced (the rest eaten at the thief's home first). The player's hooks are in
+  core (`SIM.crimeHide`, `crimeFence`, `crimeLoot`, `crimeAlarm`), waiting for a player.
+  On the map: the guild is a landmark under its tavern (the inspector names it), with a plum sign by the door, a pin over
+  the roof and a button to fly there; on the open world, a diamond on the region map and a Go to entry.
+- **Money: the accounts** (owner, 2026-11-03; `47m`, core/simulation `77-sim-6-money.js`, PLAN-MONEY.md M0). The isles' money is
+  Kautoan shells, worth a twentieth of an Izani Talent (the traders' money). Every household holds shells by its class
+  (poor 40, middle 200, rich 1,000), every workplace has an account owned by its town's treasury (20 shells a person in
+  reserve), the thieves' guild 500, and the money changers and the traders from beyond hold Talents: 2,113 accounts,
+  457,000 shells. **Wages and purchases (M1, 2026-11-03):** every trade earns 6 shells a rota hour, paid at midnight; prices
+  are each good's labour cost times a markup set after five days (a warm-up, then three measured) so the households'
+  spending meets the wage bill: Kautoa's 10.1 (bread 20 shells, fish 9, a meal out 23, a stone tool 704), Valapo's 7.6.
+  The chief redistributes: each night the treasury gives every household a ration for each member with no work, from
+  what it holds over a day's wages (Kautoa 77% of a full keep, Valapo 87%); what a household cannot pay is fed on the
+  dole (about a tenth of what is bought). Money limits nothing yet: the goods' economy runs exactly as before. **Moving
+  prices (M2):** each night a good's price follows its scarcity, (target / supply line)^0.5 within half and double of its
+  cost x markup, eased in over three days: Kautoa's stone and kava dearest (x1.4), its meat and armour cheapest (x0.6); the
+  price index holds within 5%, rations at 90-92% of a full keep. The price level is off: against a flat wage it spirals
+  (core/simulation/PLAN-MONEY.md, "What moving prices taught"). **Spending follows savings:** a household's purse (its
+  savings in days of its keep, ten a full one) sets its people's wealth within their class (the treats it reaches, how
+  often it eats out), a full purse lowers the treat's bar, and treats and meals out by choice need money in hand: rations
+  rose to 93-97% of a full keep, no treat is on the dole, and the people are a little happier (83). **Stations:** the
+  traders and keepers are merchants; a worker's household whose purse holds a vacant shop's price (1,980 shells) and five
+  days' keep for three nights buys it, and the worker rises to merchant and runs it (the shop keeps 15%, the rest to the
+  treasury wholesale); a household that cannot cover its shop's wages falls, unhappier for a month. Twenty days: 6 rises,
+  no fall.
+- **Building and upkeep** (`47b`, `33`, core/simulation 77-sim-6-build.js; PLAN-POLITICS.md section 4, 2026-11-03/04). Three
+  in a hundred dwellings are left as empty lots (32), and each town has up to two streets outside its gates laid out and
+  closed (33), opened when its lots run out. The towns grow 2% a year, a household of five at a time moving into a
+  finished house; a town builds to that demand, one house at a time, with its crew (Kautoa 12, Valapo 6). The lots last
+  2.1 years (Kautoa) and 2.9 (Valapo). A house's bill (timber, stone, mats) comes out of the warehouses as the work goes,
+  and the drawing shows it going up: the Construction kit's site (kits/construction) round the house's own piece, which
+  core/city reveals in build order (footing, frame, walls, roof). Every building wears its bill over three or four years,
+  drawn hourly. The canoes carry Valapo stone and timber; Valapo's own quarry hamlet (on its island) makes stone at a
+  third of Kautoa's pace.
+- **Refugees** (`47r`, `33`'s camp ground; the owner, 2026-11-04: a shipload a week "to see how things develop"). A ship
+  of thirty lands every seven days, at the towns in turn; its people pitch at the camp outside the town (tents on a square
+  found ring by ring out from the town's edge, registered in core/tags), fed at a ration line from the town's warehouses,
+  their own class (`refugee`) in the happiness pool, a little unhappier at first. A household of them moves into each
+  finished house before the town's own new households, and the camp's households are the demand the builders answer.
+  Their grown-ups join the builders at landing (a house going up for every twelve hands). Living in a tent costs twelve
+  points of happiness; a household 45 days in a tent whose people are under 70 happy moves on (leaves the isles).
+- **Valapo's own timber** (2026-11-04): a second lumber village on Valapo's island (11 km off), its felling crew a work
+  camp that migrates as Kautoa's does; the open world draws every crew.
+- **Unrest** (`47u`, core/simulation 77-sim-6-unrest.js; PLAN-MONEY.md M6, 2026-11-03). Each town's happiness pool, all
+  its people and each class, eased over five days (a week to treason): under 50 it grumbles (the watch less able to arrest), under 40 it
+  demands of the polity a shipment of what it lacked (or a new ruler: refused, no political system yet), under 30 a
+  refused demand brings strikes, under 20 treason. An unwatched town now lives its people's needs by their schedules, so
+  its pool holds (Valapo 86 unwatched, 80 watched), and hunger and thirst past 60 cap happiness (a starving town riots).
+  As they are, both towns calm; under a blight (tests/test-isle-unrest.js) Valapo grumbles once its stores are eaten,
+  demands food (Kautoa sends rice and coconut), strikes, and reaches treason six days after the grumbling began.
+- **The resources last; the timber migrates** (owner, 2026-11-02). Every village's resource is sized to last at least five
+  years worked flat out (ore by grade: 5, 10, 20), from its works' posts, rate and grade against its regrowth. The lumber
+  village is the yard: half its sawyers go out as a felling crew, a work camp (core/camp 40) that pitches at one 400 m stand
+  of the forest within 3 km, fells it to its seed trees (a tenth left), strikes and marches to the next (the best stand by
+  its timber, its haul to the yard and the march), while the stands behind it grow back in a year. The crew fells logs and
+  fuelwood; the sawpits saw the logs into timber, the kilns burn the fuelwood. On the open world the camp is drawn where its
+  log puts it, and the stumps are its stands' trees in the share the sim took. A crew at full fells 193 lots a day; its
+  range gives back about 5,000 a day, so it never runs out.
+- **Iron tools** (2026-11-02; PLAN.md 9b). Where the villages are declared (the open world; `tests/test-isle-hamlets.js`),
+  the iron mine's ore is smelted in Valapo, the lakatoi carries the iron to Kautoa, and every fourth Kautoan smithy forges
+  it with charcoal into `irontools`, sold as an `iron tool` (3,000 worked hours, three stone tools' life) at the markets,
+  shops and smithies of both towns and carried back to Valapo by the lakatoi. A worker whose stone tool wears through buys
+  an iron one if the seller has it (core/simulation's tool `prefer`), and a worn iron tool is replaced as stone (`base`),
+  so a town out of iron falls back to stone. Kautoa's iron tools stop at 80 and Valapo's iron at 120 (stockpile
+  ceilings), so the mine, which does not come back, is not drawn down for a pile. Fifteen days with Kautoa watched: 162
+  iron tools forged, 71 bought (60 in Kautoa, 11 in Valapo) against 9 stone; 483 iron smelted, 102 landed in Kautoa, the
+  rest sold to the Hykkousoi or held at the ceiling. The city page has no villages, so it has no iron and its week is
+  unchanged.
 - **Needs** (the owner, 2026-10-19): core/simulation's needs run in the isles (`ISLE.TUNE.sim.needs`, Voth's table on the
   isles' activities): seven meters (eat, drink, socialize, relax, contemplate, sleep, material), happiness, its band's
   efficiency at work, loyalty; in the free hours a person does what its meters ask among company, rest, idling and

@@ -236,6 +236,10 @@ const BL=off('backlit')?0:.35,GT=off('groundtint')?null:{k:.8,gain:.36,fade:[500
 // DECIDUOUS: the species whose crowns drop in the dry season where a station says the forest is monsoon forest (HYPERJUNGLE.LOOK =
 // {deciduous: [3, 5]}, the baobab and the kapok, which drop on Earth too); the closed jungle (station 1) is XA, no dry season: none
 const DEC=off('season')?[]:(LK.deciduous||[]);
+// A HABIT (PLAN-LANDS.md sections 2 and 3, H6; the savage and north lands, 2026-11-08): a station sets HYPERJUNGLE_LOOK = {habit: {H: [[lo, hi]
+// per species], rb, crownR, share, spacing, impCell}} and 55 grows every hypertree that much taller (the savage land's canopy to 300-480 m),
+// the stand shares and the heroes' spacing its own (the north's: ironbark and ghostwood leading, wider apart). Unset (station 1, the lake, the savanna) nothing in 55 changes: the same draws in the same order
+HYPERJUNGLE.HABIT=LK.habit||null;
 HYPERJUNGLE.FUNG=!off('fung')&&!!(BIO.fung&&BIO.fung.bracket);
 HYPERJUNGLE.LOOKS={backlit:BL,ground:GT};   /* 52's library cards take the same options */
 HYPERJUNGLE.MAT={

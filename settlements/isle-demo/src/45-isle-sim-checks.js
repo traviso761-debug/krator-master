@@ -29,8 +29,9 @@ ISLE.simChecks = function (R, o) {
   var pi = {}; places.forEach(function (q) { pi[q.id] = q; });
   var homeless = actors.filter(function (a) { var H = pi[a.home]; return !H || H.settlement !== s || !(H.activities.SLEEP > 0); });
   var C = ISLE.census(R);
-  ok('every resident has a home in the town (the census\'s people)', actors.length > 0 && homeless.length === 0 && actors.length === C.citizens,
-    actors.length + ' residents, census ' + C.citizens + (homeless.length ? '; WITHOUT A HOME IN THE TOWN: ' + homeless.slice(0, 4).map(function (a) { return a.id; }).join(', ') : ''));
+  var grown = actors.filter(function (a) { var H = pi[a.home]; return a.refugee || (H && H.tags && H.tags.built); }).length;   /* the households formed since (47b growth) and the refugees landed (47r) */
+  ok('every resident has a home in the town (the census\'s people, and the households formed since)', actors.length > 0 && homeless.length === 0 && actors.length - grown === C.citizens,
+    actors.length + ' residents, census ' + C.citizens + (grown ? ', ' + grown + ' since' : '') + (homeless.length ? '; WITHOUT A HOME IN THE TOWN: ' + homeless.slice(0, 4).map(function (a) { return a.id; }).join(', ') : ''));
   /* the workers */
   var workers = actors.filter(function (a) { var Rr = SIM.R.role[a.role]; return Rr && Rr.work && Rr.work.act === 'WORK'; });
   var jobless = workers.filter(function (a) { var W = pi[a.work]; return !W || W.settlement !== s || !(W.activities.WORK > 0); });

@@ -87,6 +87,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 RECORD_FILES = ['23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js']
 MATLIB_PACK = '88x-matlib-pack.js'
 ROOT = os.path.dirname(os.path.dirname(HERE))   # repo root: biomes/, kits/, settlements/
+sys.path.insert(0, os.path.join(ROOT, 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 SRC = os.path.join(HERE, 'src')
 TARGETS = os.path.join(HERE, 'targets')
 DIST = os.path.join(HERE, 'dist')
@@ -246,6 +247,8 @@ def build_one(target, do_checks, assert_origin):
         sys.exit('no such target: %s (expected %s)' % (target, tdir))
 
     src = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()}
+    for f, p in BIO_PATHS.items():   # the biome, read in place (a src/ copy with the same name would win)
+        src.setdefault(f, p)
     src.update({f: os.path.join(CORE, f) for f in CORE_FILES if f not in src})
     src.update({f: os.path.join(LOD_DIR, f) for f in LOD_FILES if f not in src})
     src.update({f: os.path.join(ROOT, 'core', 'materials', 'record', f) for f in RECORD_FILES if f not in src})
@@ -272,7 +275,7 @@ def build_one(target, do_checks, assert_origin):
     side = None if '--inline-packs' in sys.argv else {}
     bodies[MATLIB_PACK] = matlib_pack.fragment(HERE, 'dalab', side=side)
     order = sorted(order + [MATLIB_PACK])
-    if any(f.startswith('86-bio-') for f in order):   # the vendored swlowlands biome: its library pack, before the biome code
+    if any(f.startswith('86-bio-') for f in order):   # the swlowlands biome (read in place): its library pack, before the biome code
         bodies['86-bio-00-matlib-pack.js'] = matlib_pack.fragment(os.path.join(ROOT, 'biomes', 'swlowlands'), 'swlowlands')
         order = sorted(order + ['86-bio-00-matlib-pack.js'])
 
@@ -293,6 +296,8 @@ def build_one(target, do_checks, assert_origin):
         html = re.sub(r'<title>.*?</title>', lambda _: '<title>%s</title>' % m.group(1),
                       html, count=1)
     out = os.path.join(DIST, TARGET_OUT[target])
+    if BSRC.LISTING:   # --list-sources: every file this target read is recorded; main() reports every target's
+        return order, None, None
     os.makedirs(DIST, exist_ok=True)
     if side:
         html = matlib_pack.write_sidecar(side, html, DIST, 'dalab.tex.js', prune=False)
@@ -307,19 +312,26 @@ def build_one(target, do_checks, assert_origin):
 VENDORED = ['10-core.js', '12-stats.js', '20-textures.js', '22-materials.js', '30-kit.js',
             '32-surfaces.js', '34-kitdefs.js', '36-decor.js', '38-helpers2.js', '50-registry.js',
             '54-mat-concrete.js', '68-mat-v5.js', '69-mat-salvage.js']          # ../ancients/src
-VENDORED_IZIZ = ['69b-vern-mat.js', '69c-vern-helpers.js', '81-sky.js', '90-scene.js', '91-probe.js',
+VENDORED_VERN = ['69b-vern-mat.js', '69c-vern-helpers.js']   # the Vernacular kit, kits/iziz-vernacular (its files left Iziz's src/ on 2026-11-03: MODULARITY-PLAN.md step 4)
+VENDORED_IZIZ = ['90-scene.js', '91-probe.js',
                  '92-camera.js', '93-labels.js', '99-tail.html', '00-head.html',
                  '75-port-embassy.js', '76-port-chapterhouse.js']   # ../iziz/src (the vp* kit, the Voth embassy, the Historians' chapterhouse from the Yuni set)
+VENDORED_SKY = ['81-sky.js']   # ../../core/atmos/placeholder (KratorSky; Iziz's src/ copy moved there 2026-11-02; read in place with MODULARITY-PLAN.md step 4)
 VENDORED_HL = ['70-hl-tex.js', '71-hl-mat.js', '71b-hl-motif.js', '72-hl-helpers.js', '73-hl-carve.js', '74-rep-dwell.js']   # ../highlands/src (the Republican dwellings, for the embassy)
-BIO_VENDORED = ['10-core-head', '20-core-kit', '30-core-foliage', '40-core-place',
-                '50-biome-swlowlands-species', '55-biome-swlowlands-trees', '60-biome-swlowlands-floor',
-                '65-biome-swlowlands-dress', '70-biome-swlowlands']   # ../biomes/swlowlands/src -> src/86-bio-*.js
+# The south-west lowlands biome, READ IN PLACE under the names src/86-bio-*.js had (2026-11-03, MODULARITY-PLAN.md step 4's
+# ride-along; the copies had fallen behind core/biome's move, the BIO.kit hooks, the harvest data and the runtime LOD):
+# the biome core from core/biome, the kit's species, trees, floor, dress and assembly from biomes/swlowlands/src.
+BIO_INPLACE = ['10-core-head', '20-core-kit', '30-core-foliage', '40-core-place',
+               '50-biome-swlowlands-species', '55-biome-swlowlands-trees', '60-biome-swlowlands-floor',
+               '65-biome-swlowlands-dress', '70-biome-swlowlands']
+BIO_PATHS = {'86-bio-%s.js' % b: os.path.join(ROOT, *(('core', 'biome') if '-core-' in b else ('biomes', 'swlowlands', 'src')), b + '.js')
+             for b in BIO_INPLACE}
 
 
 def vendor_manifest():
     """VENDOR.json: sha1 of every fragment vendored from ../ancients/src and ../iziz/src, so drift is visible."""
     out = {}
-    for f in VENDORED + VENDORED_IZIZ + VENDORED_HL + ['86-bio-%s.js' % b for b in BIO_VENDORED]:
+    for f in VENDORED + VENDORED_VERN + VENDORED_IZIZ + VENDORED_SKY + VENDORED_HL:
         with open(srcpath(f), 'rb') as fh:
             out[f] = hashlib.sha1(fh.read().replace(b'\r\n', b'\n')).hexdigest()[:12]   # LF-normalised, as the build manifest
     with open(os.path.join(HERE, 'VENDOR.json'), 'w', encoding='utf-8') as fh:
@@ -333,13 +345,10 @@ def vendor_check():
     if os.path.exists(lab) and os.path.exists(up):
         print('vendor-check: targets/city/63-anc-dalab.js %s ../ancients/src/64-dalab.js' % ('identical to' if open(lab,'rb').read()==open(up,'rb').read() else 'drifts from (deliberate: the wall gap LAB_WALL_GAP and the narrower BITE, marked DALAB in the file)'))
     for label, files, up in (('ancients', VENDORED, os.path.join(ROOT, 'kits', 'ancients', 'src')),
+                             ('iziz-vernacular', VENDORED_VERN, os.path.join(ROOT, 'kits', 'iziz-vernacular', 'src')),
                              ('iziz', VENDORED_IZIZ, os.path.join(os.path.dirname(HERE), 'iziz', 'src')),
-                             ('highlands', VENDORED_HL, os.path.join(os.path.dirname(HERE), 'highlands', 'src')),
-                             # the biome core lives in core/biome since Oct 2026 (the kit reads it from there)
-                             ('core/biome', [('86-bio-%s.js' % b, b + '.js') for b in BIO_VENDORED if '-core-' in b],
-                              os.path.join(ROOT, 'core', 'biome')),
-                             ('biomes/swlowlands', [('86-bio-%s.js' % b, b + '.js') for b in BIO_VENDORED if '-core-' not in b],
-                              os.path.join(ROOT, 'biomes', 'swlowlands', 'src'))):
+                             ('core/atmos/placeholder', VENDORED_SKY, os.path.join(ROOT, 'core', 'atmos', 'placeholder')),
+                             ('highlands', VENDORED_HL, os.path.join(ROOT, 'kits', 'highlands', 'src'))):   # the Highlands kit, kits/highlands (its files left Highlands' src/ on 2026-11-03: MODULARITY-PLAN.md step 4)
         if not os.path.isdir(up):
             print('vendor-check: ../%s/src not found; skipped' % label)
             continue
@@ -360,7 +369,8 @@ def main():
     if '--vendor-check' in sys.argv:
         vendor_check()
         return
-    vendor_manifest()
+    if not BSRC.LISTING:   # --list-sources writes nothing
+        vendor_manifest()
     do_checks = '--no-checks' not in sys.argv
     assert_origin = '--assert-origin' in sys.argv
     wanted = [a.split('=', 1)[1] for a in sys.argv if a.startswith('--target=')]
@@ -371,6 +381,8 @@ def main():
 
     for target in wanted:
         order, html, out = build_one(target, do_checks, assert_origin)
+        if BSRC.LISTING:
+            continue
 
         # --- byte-identity with the single file this repo was split out of ---
         origin_note = ''
@@ -403,6 +415,7 @@ def main():
 
 if __name__ == '__main__':
     main()
+    BSRC.report(vendor_check=vendor_check)   # --list-sources: every target's files (and what --vendor-check compares), then exit
 
 # --- remind whoever is building of the open issues (see KNOWN_ISSUES.md) ---
 _ki = os.path.join(HERE, 'KNOWN_ISSUES.md')

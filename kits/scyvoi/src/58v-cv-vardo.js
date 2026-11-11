@@ -46,12 +46,12 @@ defBuilding({key:'wagon-chief',name:"Chief's vardo",seed:5805,cls:'building',cut
    box('brass',xr(wy0),wy0,0,.03,.05,L,GOLD,0,0,-s*lean);box('brass',xr(yT-.1),yT-.12,0,.03,.06,L,GOLD,0,0,-s*lean);
    // the window: gilt frame, glass, curtains drawn back, a carved pediment
    const wy=wy0+.38,xw=xr(wy+.3)+s*.02;
-   box('glass',xw,wy,0,.02,.62,.78,0x9ab8c0);
+   svPane(xw,wy,0,s*PI/2,.78,.62,{t:.02});   // core/door's clear glass
    for(const zz of [-.3,.3])withCloth(clothHang(.6,.03),()=>W(xw+s*.01,wy+.62,zz,s>0?PI/2:-PI/2,()=>psurf('flag',(u,v)=>[(u-.5)*.22,-v*.6,0],3,4,0xb01a28)));
    for(const zz of [-.41,.41])box('brass',xw,wy-.03,zz,.04,.7,.05,GOLD);box('brass',xw,wy-.05,0,.05,.05,.88,GOLD);box('brass',xw,wy+.64,0,.05,.05,.88,GOLD);
    cvScroll(xw+s*.02,wy+.82,-.18,.12,-1,1.3,'x');cvScroll(xw+s*.02,wy+.82,.18,.12,1,1.3,'x');sph('brass',xw+s*.02,wy+.84,0,.05,GOLD);}
   // ---- the back wall and its window
-  W(0,wy0,-L2,0,()=>{box('lacq',0,0,0,hw*2+.12,wh,.06,RED);box('glass',0,.45,-.04,.6,.5,.02,0x9ab8c0);
+  W(0,wy0,-L2,0,()=>{box('lacq',0,0,0,hw*2+.12,wh,.06,RED);svPane(0,.45,-.04,PI,.6,.5,{t:.02});
    for(const x of [-.33,.33])box('brass',x,.42,-.05,.05,.56,.04,GOLD);box('brass',0,.4,-.05,.72,.05,.04,GOLD);box('brass',0,.96,-.05,.72,.05,.04,GOLD);
    for(const x of [-.75,-.6,.6,.75])beam('brass',[x,.05,-.045],[x,wh-.12,-.045],.03,GOLD,false);
    cvScroll(-.2,1.2,-.05,.13,-1,1.3);cvScroll(.2,1.2,-.05,.13,1,1.3);});
@@ -61,8 +61,7 @@ defBuilding({key:'wagon-chief',name:"Chief's vardo",seed:5805,cls:'building',cut
     for(const x of [.5,.65,.8])beam('brass',[s*x,.05,.04],[s*x,wh-.12,.04],.03,GOLD,false);
     cvScroll(s*(dW/2+.32),.45,.05,.14,s,1.4);cvScroll(s*(dW/2+.32),1.05,.05,.1,-s,1.3);}
    box('lacq',0,wh-.32,0,dW,.32,.06,RED);
-   for(const s of [-1,1])W(s*dW/2,-(wy0-yF),.03,s*1.25,()=>{box('lacq',-s*dW/4,0,0,dW/2-.02,wh+(wy0-yF)-.34,.05,0x9a1a1a);   // the leaves, half open
-    box('glass',-s*dW/4,.88,.03,dW/2-.14,.4,.02,0xb04050);   /* the leaf's frame stands on the floor: its glazed top half */box('brass',-s*dW/4,.6,.035,dW/2-.12,.04,.02,GOLD);cvScroll(-s*dW/4,.32,.04,.1,s,1.3);});
+   svLeaf(0,-(wy0-yF),.03,0,dW-.04,wh+(wy0-yF)-.34,{split:true,mk:'lacq',col:0x9a1a1a,t:.05,style:'half',name:'vardo door'});   // the leaves (core/door: shut; E or an NPC opens them; half-glazed, core/door's 'half' leaf: the glazing swings with them; the scrolls are not carried)
    const sb=[];for(let i=0;i<=12;i++){const a=PI*i/12;sb.push([Math.cos(a)*.42,wh-.18+Math.sin(a)*.14,.05]);}cord('brass',sb,.025,GOLD);
    for(let i=1;i<12;i+=2){const a=PI*i/12;beam('brass',[0,wh-.2,.05],[Math.cos(a)*.38,wh-.2+Math.sin(a)*.12,.05],.015,GOLD,true,4);}});
   door(0,yF,L2+.1,0,.84);

@@ -16,11 +16,15 @@ import os, subprocess, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))
+sys.path.insert(0, os.path.join(ROOT, 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 
 if '--no-checks' not in sys.argv:
     if subprocess.call([sys.executable, os.path.join(ROOT, 'tools', 'check_port.py'), '--quiet', HERE]) != 0:
         sys.exit('build.py: the port lint failed (tools/check_port.py); fix the fragment or retag it in PORT.md')
 
 args = [a for a in sys.argv[1:]]
-sys.exit(subprocess.call([sys.executable, os.path.join(ROOT, 'settlements', 'iziz', 'build.py'), '--kit', HERE] + args,
-                         cwd=os.path.join(ROOT, 'settlements', 'iziz')))
+_rc = subprocess.call([sys.executable, os.path.join(ROOT, 'settlements', 'iziz', 'build.py'), '--kit', HERE] + args,
+                         cwd=os.path.join(ROOT, 'settlements', 'iziz'))
+if not _rc:
+    BSRC.report()   # --list-sources: the Vernacular's build printed what the page is made of; this adds that build.py
+sys.exit(_rc)

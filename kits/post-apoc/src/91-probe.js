@@ -9,6 +9,8 @@ window._api={REG,DEFS,CULT,SOCK_ALL,SITES,ROWS,
  setCulture(k){buildWorld(k);},
  setNight(v){nightSet(v);},
  doors(){return REG.map(r=>({key:r.key,front:r.front,doorCount:r.doorCount}));},
+ // the openings (35-pa-open.js, core/door): {doors, locked, leaves (operable, drawn as instances), panes, cut (in a real opening), cards, cleared}
+ openings(){return PO.stats();},
  // collision and path data (36-def.js): colliders(i) = REG[i].coll; colliders() = per-building counts. nav() = the scene's nav grid summary + doors;
  // navGrid() = the live grid object (at(x,z), levels, flags); showNav(on) draws it (green reachable, orange cut off, red blocked, cyan door / approach)
  colliders(i){if(i!==undefined)return REG[i]&&REG[i].coll;return REG.map((r,i)=>({i,key:r.key,solids:r.coll.solids.length,floors:r.coll.floors.length,ramps:r.coll.ramps.length,links:r.coll.links.length,water:r.coll.water.length}));},

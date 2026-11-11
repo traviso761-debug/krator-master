@@ -2,7 +2,7 @@
 """Concatenate src/* into dist/zeijani.html (the Zeijani kit: carved, constructed and wooden buildings, their void plans and interiors).
 
 Usage: python3 build.py [--no-checks]
-       python3 build.py --vendor-check   (the vendored sky against settlements/iziz/src; a core file shadowed by src/)
+       python3 build.py --vendor-check   (drift from a vendored upstream; a core file shadowed by src/, the placeholder sky among them)
 
 The page is one <script> made of, in filename order:
   src/*                 the kit (00-head.html ... 99-tail.html)
@@ -13,12 +13,14 @@ The page is one <script> made of, in filename order:
   core/tags             50/52/53-core-tags*.js (KTAGS: every placed thing is registered with its class and tags)
   core/furnish          50/52/53-core-furnish*.js (KFURN: the catalog furniture placement pass)
   core/atmos            89-atmos-*.js (ATMOS: the sky's light on the library materials, ATMOS.skylight)
+  core/door             10-core-door.js, 20-core-glass.js, 90-core-door-host.js (KDOOR, KGLASS, KDOORHOST: doors that open, real glass)
+  core/engine           36o-open.js only (svLeaf, svDoorway, svPane: the engine's drawing of core/door, read in place by this fork)
   26-matlib-pack.js     GENERATED from tex/ (tools/textures/pack.py from materials.json): the library maps as data URLs
   38-furniture-bundle.js GENERATED (kits/catalog/furniture_bundle.py): the catalog as one closure, KratorFurniture
   39-interiors-bundle.js GENERATED (kits/interiors/kit_bundle.py): the interiors core and sets/zeijani.js (KratorInteriors):
                         every def's rooms, and the carved defs' void plans, which the kit carves from the same item
-A src/ file with a core file's name overrides it (record why in KNOWN_ISSUES.md). src/81-sky.js is VENDORED from
-settlements/iziz/src/81-sky.js (KratorSky, the standard Krator sky): --vendor-check reports drift.
+A src/ file with a core file's name overrides it (record why in KNOWN_ISSUES.md). 81-sky.js (KratorSky) is the
+placeholder sky, read from core/atmos/placeholder (its README): a src/ copy is a shadow --vendor-check reports.
 
 Checks (fragments share one JS scope):
   1. no column-0 const/let/var/function/class name is declared in two fragments, or is a generic short name;
@@ -66,17 +68,21 @@ try: sys.stdout.reconfigure(encoding='utf-8')
 except Exception: pass
 HERE = os.path.dirname(os.path.abspath(__file__)); SRC = os.path.join(HERE, 'src'); DIST = os.path.join(HERE, 'dist')
 ROOT = os.path.dirname(os.path.dirname(HERE))
+sys.path.insert(0, os.path.join(ROOT, 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 OUT = os.path.join(DIST, 'zeijani.html')
 TEX_DIR = os.path.join(HERE, 'tex')
-CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('shader', 'rand', 'walk', 'materials/record', 'tags', 'furnish', 'atmos', 'sockets')]
-CORE_FILES = [os.path.join(ROOT, 'core', 'terrain', '39-core-cavern.js')]   # one file of a core folder
+CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('shader', 'rand', 'walk', 'materials/record', 'tags', 'furnish', 'atmos', 'sockets', 'door')]
+CORE_FILES = [os.path.join(ROOT, 'core', 'terrain', '39-core-cavern.js'),   # one file of a core folder
+              os.path.join(ROOT, 'core', 'engine', '36o-open.js')]       # the engine's doors and glass on core/door (this fork's 36-def.js has none)
 # the host shell from core/host (core/host/README.md): the camera, the frame loop and its clock (core/clock), the panel, the probe,
 # and the authoring tools (inspect, polygon, path). src/99-host-take.js hands it the page (its own, kits/scyvoi's with the kit's
 # names, the walk registry and the interiors' furniture records); it replaced the kit's 92-camera.js (2026-10-18, KNOWN_ISSUES.md).
 sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))
 import host as khost
+sys.path.insert(0, os.path.join(ROOT, 'core', 'atmos', 'placeholder'))
+import placeholder as psky   # the placeholder sky (KratorSky), read in place: MODULARITY-PLAN.md step 1
 CORE_HOST = khost.SHELL + ['94-host-polytool.js']
-VENDORED = {'81-sky.js': os.path.join(ROOT, 'settlements', 'iziz', 'src', '81-sky.js')}
+VENDORED = {}
 # GENERATED fragments, never written to src/
 FURN_CULTURES = ['zeijani', 'nomad', 'generic', 'generic-goods']   # the Zeijani pieces, the Eastern Nomads' (pueblo) for fallbacks, the shared goods
 VIRTUAL = {'26-matlib-pack.js', '38-furniture-bundle.js', '39-interiors-bundle.js'}
@@ -139,6 +145,7 @@ def sources():
         paths.update({f: os.path.join(d, f) for f in os.listdir(d) if f[0].isdigit() and f.endswith('.js')})
     paths.update({os.path.basename(p): p for p in CORE_FILES})
     paths.update({f: khost.path(f) for f in CORE_HOST})
+    paths.update(psky.paths(psky.SKY))
     core = dict(paths)
     paths.update({f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()})   # a src/ copy overrides the core one
     return paths, core
@@ -150,6 +157,7 @@ def main():
     files = sorted(list(paths) + list(vb))
     bodies = dict(vb)
     bodies.update({f: open(paths[f], encoding='utf-8', newline='').read() for f in files if f not in vb})
+    BSRC.report(paths, vendored=VENDORED.values())   # --list-sources: what the page is made of, then exit
     is_core = lambda f: f in core and paths[f] == core[f]
     errs = []
     if '--no-checks' not in sys.argv:

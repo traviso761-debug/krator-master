@@ -19,9 +19,9 @@ if(new URLSearchParams(location.search).get('fields')!=='0'){const W0=FIELD.wet,
 {const a=GROUND.geometry.attributes.aGL2,p=GROUND.geometry.attributes.position;if(a){for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i),w=waterH(x,z);a.setZ(i,WET_SHORE(x,z)*(w>-1e8?smooth(2.5,.2,p.getY(i)-w):1));}a.needsUpdate=true;}}
 window._biome=null;
 const IMP_GAIN=2.4;   /* the impostors' gain (eastabyss 3.6, oidong 2.6, swlowlands and ebadlands 2.4): the bake is ~4x dark; set against the near crowns on 'From afar' */
-/* THE SUN'S SHADOWS (core/shadow, KSHADOW; the owner, 2026-11-03: off by default in every build). The switch itself (a panel button, attach turning
-   nothing on) is on the Throne's branch, not yet on claude/biome-rebuild, so this page attaches the shadows only on ?shadow=1 (KNOWN_ISSUES.md) */
-const SHADOW_ON=new URLSearchParams(location.search).get('shadow')==='1'&&typeof KSHADOW!=='undefined'&&!!KSHADOW.attach;
+/* THE SUN'S SHADOWS (core/shadow, KSHADOW; the owner, 2026-11-03: off by default in every build). Since 2026-11-08 on core's own switch (the Throne's
+   way): attached always and off at load; the panel's 'shadows' button or ?shadow=1 turns them on, ?shadow=0 none of it (KNOWN_ISSUES.md) */
+const SHADOW_ON=new URLSearchParams(location.search).get('shadow')!=='0'&&typeof KSHADOW!=='undefined'&&!!KSHADOW.attach;
 (function(){
  const t0=performance.now();
  // ?q=0.5 builds at a lower quality; ?nobake=1 measures the build without drawing it (for budgeting); ?diet=0 keeps the variants' own far level
@@ -49,7 +49,7 @@ const SHADOW_ON=new URLSearchParams(location.search).get('shadow')==='1'&&typeof
  if(BIO.impostorLook)BIO.impostorLook({gain:+(Q.get('impgain')||IMP_GAIN),wrap:+(Q.get('impwrap')||1)});
  if(!unique&&VARIANTS.IMP&&BIO.bakeImpostors){try{BIO.bakeImpostors(renderer,{wait:180,onDone:()=>{if(VARIANTS.ready)VARIANTS.update(camera.position,true);}});}catch(e){reportErr('impostors: '+e.stack);}}   /* after every placement; waits for the library maps */
  if(typeof GROUND_HZ!=='undefined'&&GROUND_HZ){try{window._horizon.mats=KHORIZON.shadeScene(scene,GROUND_HZ,{filter:m=>!m.userData.farField&&m!==MAT_GROUND});}catch(e){reportErr('horizon: '+e.stack);}}
- /* the flora and the ground cast and receive; the far field, the water and the impostors draw their own light. ?shadow=1 (above) */
+ /* the flora and the ground cast and receive; the far field, the water and the impostors draw their own light. Off at load (above) */
  if(SHADOW_ON){try{window._shadow=KSHADOW.attach({renderer,scene,camera,sun,ground:terrainH});
   window._shadow.cast(scene);window._shadow.cast(GROUND,{cast:false});if(FAR)FAR.mesh.castShadow=FAR.mesh.receiveShadow=false;}catch(e){reportErr('shadow: '+e.stack);}}
  window._buildMs=Math.round(performance.now()-t0);

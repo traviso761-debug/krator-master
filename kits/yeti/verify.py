@@ -43,8 +43,8 @@ ASSERT_JS = r"""()=>{const A=window._api;const R=[];const F=A.footprints();
   R.push({name:'mass-inside',ok:!naked.length,detail:naked.length?'heated stone with no insulation outside it: '+naked.map(r=>r.key).join(', '):st.length+' heated stone houses wrapped outside their mass'});}
  /* walk-reach (core/walk): from each building's first target, walk the registered floors (a step up of 0.6 m at most,
     the ground at y 0 only where no floor is registered: a dug room or trench has no ground over it; never into a block taller than a 0.45 m step-over) on a 0.25 m grid; every target it registered, and its
-    children's, must be reached */
- {const W=KWALK,st=.25,out=[],bad=[];const all=r=>(r.walkTargets||[]).map(t=>Object.assign({who:r.key},t)).concat(...r.children.map(all));
+    children's, must be reached. Every unlocked door (core/door) stands open while it walks: a walker opens it (E, an NPC) */
+ {const W=KWALK,st=.25,out=[],bad=[];const DOP=typeof KDOOR!=='undefined'?KDOOR.list.filter(d=>!d.locked).flatMap(d=>d.blocks).map(B=>[B,!B.off]):[];DOP.forEach(([B])=>W.setBlock(B,false));const all=r=>(r.walkTargets||[]).map(t=>Object.assign({who:r.key},t)).concat(...r.children.map(all));
   for(const r of A.REG.filter(q=>!q.parent)){const T=all(r);if(T.length<2)continue;const s0=T.find(t=>!t.opt)||T[0],b=r.bbox,m=4;
    const x0=b.mn[0]-m,x1=b.mx[0]+m,z0=b.mn[2]-m,z1=b.mx[2]+m,seen=new Map(),q=[[s0.x,s0.z,s0.y]],K=(x,z,y)=>Math.round(x/st)+','+Math.round(z/st)+','+Math.round(y*5);
    seen.set(K(s0.x,s0.z,s0.y),1);const V=[];let n=0;
@@ -54,6 +54,7 @@ ASSERT_JS = r"""()=>{const A=window._api;const R=[];const F=A.footprints();
      if(W.blocked(nx,ny+.45,nz,.22,1.2))continue;const k=K(nx,nz,ny);if(seen.has(k))continue;seen.set(k,1);q.push([nx,nz,ny]);}}
    const miss=T.filter(t=>!t.opt&&!V.some(v=>Math.abs(v[0]-t.x)<.45&&Math.abs(v[1]-t.z)<.45&&Math.abs(v[2]-t.y)<.4));
    out.push(r.key+' '+(T.filter(t=>!t.opt).length-miss.length)+'/'+T.filter(t=>!t.opt).length);if(miss.length)bad.push(r.key+'(v'+r.v+'): '+miss.map(t=>t.who+':'+t.name).join(','));}
+  DOP.forEach(([B,on])=>W.setBlock(B,on));
   R.push({name:'walk-reach',ok:!bad.length&&out.length>0,detail:bad.length?'unreached: '+bad.join(' | '):out.length+' buildings walked: '+out.join(', ')});}
  const M=A.materials();R.push({name:'material-records',ok:!!(M&&M.records&&M.records.length>15),detail:M?M.records.length+' records, '+M.records.filter(r=>r.lib).length+' from the library':'none'});
  return R;}"""

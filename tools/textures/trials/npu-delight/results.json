@@ -1,0 +1,590 @@
+{
+ "bark.bark015": {
+  "current": {
+   "left": 0.998,
+   "rmse": 20.96
+  },
+  "depth_s": 0.65,
+  "device": "NPU",
+  "fit_model": {
+   "az": 286.6,
+   "r2": 0.015,
+   "strength": 6.0302
+  },
+  "fit_true": {
+   "az": 180.5,
+   "r2": 0.432,
+   "strength": 0.8848
+  },
+  "light": {
+   "amb": 0.3,
+   "az": 199,
+   "el": 40.0
+  },
+  "marigold": {
+   "left": 0.153,
+   "rmse": 23.17
+  },
+  "marigold-npu": {
+   "left": 0.908,
+   "rmse": 19.06
+  },
+  "marigold-ratio": {
+   "left": 0.919,
+   "rmse": 18.48
+  },
+  "marigold_device": "encoder NPU, UNet NPU, decoder CPU",
+  "marigold_s": 20.1,
+  "none": {
+   "left": 1.0,
+   "rmse": 23.21
+  },
+  "shadefit-model": {
+   "left": 0.985,
+   "rmse": 21.41
+  },
+  "shadefit-true": {
+   "left": 0.266,
+   "rmse": 10.41
+  }
+ },
+ "concrete.cracked_concrete_wall": {
+  "current": {
+   "left": 0.981,
+   "rmse": 16.98
+  },
+  "depth_s": 0.68,
+  "device": "NPU",
+  "fit_model": {
+   "az": 297.4,
+   "r2": 0.07,
+   "strength": 5.682
+  },
+  "fit_true": {
+   "az": 116.1,
+   "r2": 0.289,
+   "strength": 1.1614
+  },
+  "light": {
+   "amb": 0.3,
+   "az": 130,
+   "el": 40.0
+  },
+  "marigold": {
+   "left": 0.196,
+   "rmse": 18.03
+  },
+  "marigold-npu": {
+   "left": 0.954,
+   "rmse": 13.04
+  },
+  "marigold-ratio": {
+   "left": 0.951,
+   "rmse": 12.63
+  },
+  "marigold_device": "encoder NPU, UNet NPU, decoder CPU",
+  "marigold_s": 22.2,
+  "none": {
+   "left": 0.998,
+   "rmse": 21.44
+  },
+  "shadefit-model": {
+   "left": 0.829,
+   "rmse": 17.69
+  },
+  "shadefit-true": {
+   "left": -0.212,
+   "rmse": 13.65
+  }
+ },
+ "ground.coast_sand_rocks_02": {
+  "current": {
+   "left": 1.0,
+   "rmse": 13.08
+  },
+  "depth_s": 0.57,
+  "device": "NPU",
+  "fit_model": {
+   "az": 270.8,
+   "r2": 0.006,
+   "strength": 3.6723
+  },
+  "fit_true": {
+   "az": 316.2,
+   "r2": 0.469,
+   "strength": 0.836
+  },
+  "light": {
+   "amb": 0.3,
+   "az": 339,
+   "el": 40.0
+  },
+  "marigold": {
+   "left": 0.335,
+   "rmse": 12.86
+  },
+  "marigold-npu": {
+   "left": 0.935,
+   "rmse": 12.03
+  },
+  "marigold-ratio": {
+   "left": 0.916,
+   "rmse": 12.24
+  },
+  "marigold_device": "encoder NPU, UNet NPU, decoder CPU",
+  "marigold_s": 30.8,
+  "none": {
+   "left": 1.0,
+   "rmse": 13.8
+  },
+  "shadefit-model": {
+   "left": 0.995,
+   "rmse": 13.1
+  },
+  "shadefit-true": {
+   "left": 0.518,
+   "rmse": 8.12
+  }
+ },
+ "ground.gravel042": {
+  "current": {
+   "left": 0.988,
+   "rmse": 12.78
+  },
+  "depth_s": 0.74,
+  "device": "NPU",
+  "fit_model": {
+   "az": 301.6,
+   "r2": 0.028,
+   "strength": 33.0109
+  },
+  "fit_true": {
+   "az": 127.6,
+   "r2": 0.142,
+   "strength": 0.9947
+  },
+  "light": {
+   "amb": 0.3,
+   "az": 137,
+   "el": 40.0
+  },
+  "marigold": {
+   "left": 0.055,
+   "rmse": 21.64
+  },
+  "marigold-npu": {
+   "left": 0.801,
+   "rmse": 9.97
+  },
+  "marigold-ratio": {
+   "left": 0.881,
+   "rmse": 9.54
+  },
+  "marigold_device": "encoder NPU, UNet NPU, decoder CPU",
+  "marigold_s": 37.5,
+  "none": {
+   "left": 0.999,
+   "rmse": 15.38
+  },
+  "shadefit-model": {
+   "left": 0.889,
+   "rmse": 12.99
+  },
+  "shadefit-true": {
+   "left": -0.406,
+   "rmse": 8.59
+  }
+ },
+ "paving.brick_wall_001": {
+  "current": {
+   "left": 1.0,
+   "rmse": 19.27
+  },
+  "depth_s": 0.6,
+  "device": "NPU",
+  "fit_model": {
+   "az": 243.6,
+   "r2": 0.243,
+   "strength": 7.7071
+  },
+  "fit_true": {
+   "az": 248.2,
+   "r2": 0.515,
+   "strength": 0.9863
+  },
+  "light": {
+   "amb": 0.3,
+   "az": 255,
+   "el": 40.0
+  },
+  "marigold": {
+   "left": -0.044,
+   "rmse": 21.32
+  },
+  "marigold-npu": {
+   "left": 0.858,
+   "rmse": 17.48
+  },
+  "marigold-ratio": {
+   "left": 0.712,
+   "rmse": 20.64
+  },
+  "marigold_device": "encoder NPU, UNet NPU, decoder CPU",
+  "marigold_s": 23.2,
+  "none": {
+   "left": 1.0,
+   "rmse": 20.28
+  },
+  "shadefit-model": {
+   "left": 0.793,
+   "rmse": 18.59
+  },
+  "shadefit-true": {
+   "left": 0.459,
+   "rmse": 11.83
+  }
+ },
+ "paving.cobblestone_01": {
+  "current": {
+   "left": 0.999,
+   "rmse": 14.47
+  },
+  "depth_s": 2.39,
+  "device": "NPU",
+  "fit_model": {
+   "az": 194.9,
+   "r2": 0.173,
+   "strength": 4.032
+  },
+  "fit_true": {
+   "az": 7.9,
+   "r2": 0.465,
+   "strength": 1.7402
+  },
+  "light": {
+   "amb": 0.3,
+   "az": 339,
+   "el": 40.0
+  },
+  "marigold": {
+   "left": -0.158,
+   "rmse": 18.05
+  },
+  "marigold-npu": {
+   "left": 0.721,
+   "rmse": 13.77
+  },
+  "marigold-ratio": {
+   "left": 0.7,
+   "rmse": 13.88
+  },
+  "marigold_device": "encoder NPU, UNet NPU, decoder CPU",
+  "marigold_s": 27.4,
+  "none": {
+   "left": 1.0,
+   "rmse": 16.24
+  },
+  "shadefit-model": {
+   "left": 0.654,
+   "rmse": 16.26
+  },
+  "shadefit-true": {
+   "left": -0.114,
+   "rmse": 15.09
+  }
+ },
+ "paving.tiles144": {
+  "current": {
+   "left": 0.845,
+   "rmse": 8.19
+  },
+  "depth_s": 0.6,
+  "device": "NPU",
+  "fit_model": {
+   "az": 90.9,
+   "r2": 0.047,
+   "strength": 6.6879
+  },
+  "fit_true": {
+   "az": 89.7,
+   "r2": 0.02,
+   "strength": 1.4529
+  },
+  "light": {
+   "amb": 0.3,
+   "az": 133,
+   "el": 40.0
+  },
+  "marigold": {
+   "left": -0.043,
+   "rmse": 7.71
+  },
+  "marigold-npu": {
+   "left": 0.261,
+   "rmse": 4.07
+  },
+  "marigold-ratio": {
+   "left": 0.288,
+   "rmse": 4.64
+  },
+  "marigold_device": "encoder NPU, UNet NPU, decoder CPU",
+  "marigold_s": 21.8,
+  "none": {
+   "left": 0.904,
+   "rmse": 10.49
+  },
+  "shadefit-model": {
+   "left": 0.338,
+   "rmse": 7.78
+  },
+  "shadefit-true": {
+   "left": -0.125,
+   "rmse": 7.51
+  }
+ },
+ "rock.rock_face": {
+  "current": {
+   "left": 1.0,
+   "rmse": 11.05
+  },
+  "depth_s": 0.64,
+  "device": "NPU",
+  "fit_model": {
+   "az": 272.5,
+   "r2": 0.157,
+   "strength": 23.2479
+  },
+  "fit_true": {
+   "az": 90.8,
+   "r2": 0.596,
+   "strength": 0.8635
+  },
+  "light": {
+   "amb": 0.3,
+   "az": 95,
+   "el": 40.0
+  },
+  "marigold": {
+   "left": 0.614,
+   "rmse": 11.75
+  },
+  "marigold-npu": {
+   "left": 0.976,
+   "rmse": 9.96
+  },
+  "marigold-ratio": {
+   "left": 0.983,
+   "rmse": 10.05
+  },
+  "marigold_device": "encoder NPU, UNet NPU, decoder CPU",
+  "marigold_s": 24.4,
+  "none": {
+   "left": 1.0,
+   "rmse": 12.21
+  },
+  "shadefit-model": {
+   "left": 0.891,
+   "rmse": 10.49
+  },
+  "shadefit-true": {
+   "left": 0.445,
+   "rmse": 6.06
+  }
+ },
+ "rock.rock_wall_11": {
+  "current": {
+   "left": 0.999,
+   "rmse": 37.68
+  },
+  "depth_s": 1.14,
+  "device": "NPU",
+  "fit_model": {
+   "az": 211.3,
+   "r2": 0.071,
+   "strength": 2.8316
+  },
+  "fit_true": {
+   "az": 335.2,
+   "r2": 0.649,
+   "strength": 1.008
+  },
+  "light": {
+   "amb": 0.3,
+   "az": 338,
+   "el": 40.0
+  },
+  "marigold": {
+   "left": 0.614,
+   "rmse": 17.01
+  },
+  "marigold-npu": {
+   "left": 0.965,
+   "rmse": 31.23
+  },
+  "marigold-ratio": {
+   "left": 0.94,
+   "rmse": 29.8
+  },
+  "marigold_device": "encoder NPU, UNet NPU, decoder CPU",
+  "marigold_s": 30.5,
+  "none": {
+   "left": 1.0,
+   "rmse": 41.36
+  },
+  "shadefit-model": {
+   "left": 0.957,
+   "rmse": 37.55
+  },
+  "shadefit-true": {
+   "left": 0.458,
+   "rmse": 22.35
+  }
+ },
+ "rock.sandstone_blocks_04": {
+  "current": {
+   "left": 0.988,
+   "rmse": 12.85
+  },
+  "depth_s": 0.97,
+  "device": "NPU",
+  "fit_model": {
+   "az": 288.5,
+   "r2": 0.056,
+   "strength": 15.3913
+  },
+  "fit_true": {
+   "az": 103.1,
+   "r2": 0.71,
+   "strength": 1.2307
+  },
+  "light": {
+   "amb": 0.3,
+   "az": 117,
+   "el": 40.0
+  },
+  "marigold": {
+   "left": 0.007,
+   "rmse": 7.15
+  },
+  "marigold-npu": {
+   "left": 0.945,
+   "rmse": 6.43
+  },
+  "marigold-ratio": {
+   "left": 0.949,
+   "rmse": 6.26
+  },
+  "marigold_device": "encoder NPU, UNet NPU, decoder CPU",
+  "marigold_s": 23.7,
+  "none": {
+   "left": 0.995,
+   "rmse": 17.45
+  },
+  "shadefit-model": {
+   "left": 0.907,
+   "rmse": 12.64
+  },
+  "shadefit-true": {
+   "left": -0.573,
+   "rmse": 12.07
+  }
+ },
+ "roof.clay_roof_tiles": {
+  "current": {
+   "left": 1.0,
+   "rmse": 25.11
+  },
+  "depth_s": 0.69,
+  "device": "NPU",
+  "fit_model": {
+   "az": 226.0,
+   "r2": 0.239,
+   "strength": 7.3606
+  },
+  "fit_true": {
+   "az": 21.6,
+   "r2": 0.56,
+   "strength": 0.9674
+  },
+  "light": {
+   "amb": 0.3,
+   "az": 333,
+   "el": 40.0
+  },
+  "marigold": {
+   "left": -0.01,
+   "rmse": 22.48
+  },
+  "marigold-npu": {
+   "left": 0.759,
+   "rmse": 16.6
+  },
+  "marigold-ratio": {
+   "left": 0.756,
+   "rmse": 18.21
+  },
+  "marigold_device": "encoder NPU, UNet NPU, decoder CPU",
+  "marigold_s": 23.2,
+  "none": {
+   "left": 1.0,
+   "rmse": 25.74
+  },
+  "shadefit-model": {
+   "left": 0.79,
+   "rmse": 22.78
+  },
+  "shadefit-true": {
+   "left": 0.335,
+   "rmse": 14.34
+  }
+ },
+ "wood.wooden_gate": {
+  "current": {
+   "left": 1.0,
+   "rmse": 6.84
+  },
+  "depth_s": 0.77,
+  "device": "NPU",
+  "fit_model": {
+   "az": 217.2,
+   "r2": 0.054,
+   "strength": 0.7959
+  },
+  "fit_true": {
+   "az": 37.2,
+   "r2": 0.496,
+   "strength": 1.2918
+  },
+  "light": {
+   "amb": 0.3,
+   "az": 29,
+   "el": 40.0
+  },
+  "marigold": {
+   "left": -0.309,
+   "rmse": 10.63
+  },
+  "marigold-npu": {
+   "left": 0.841,
+   "rmse": 7.48
+  },
+  "marigold-ratio": {
+   "left": 0.83,
+   "rmse": 7.91
+  },
+  "marigold_device": "encoder NPU, UNet NPU, decoder CPU",
+  "marigold_s": 20.7,
+  "none": {
+   "left": 1.0,
+   "rmse": 7.41
+  },
+  "shadefit-model": {
+   "left": 0.94,
+   "rmse": 6.78
+  },
+  "shadefit-true": {
+   "left": 0.121,
+   "rmse": 4.96
+  }
+ }
+}

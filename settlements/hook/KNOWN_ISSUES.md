@@ -1,7 +1,7 @@
 # Known issues
 
 Open items start with `- [ ]` (build.py prints them after every build). The Port kit's own list is
-`settlements/port/KNOWN_ISSUES.md`; shared-fragment problems found from Hook are recorded here, not fixed in the kit
+`kits/port/KNOWN_ISSUES.md`; shared-fragment problems found from Hook are recorded here, not fixed in the kit
 from a Hook task.
 
 ## The layout against the plan (P0)
@@ -22,7 +22,7 @@ from a Hook task.
 ## Shared helpers (the kit, not fixed from here)
 
 - [x] **Black decks, sheds and roofs: the kit's texture pack was Git LFS pointers.** In a fresh worktree
-      `settlements/port/tex/*.webp` are 130-byte LFS stubs until `git lfs pull --include="settlements/port/tex/*"`;
+      `kits/port/tex/*.webp` are 130-byte LFS stubs until `git lfs pull --include="kits/port/tex/*"`;
       the pack then carries 199-byte data URLs that fail to decode, `_texPending` ends at 0 with no panel error, and
       every library-bound material (the intact paving, the white panels, concrete) samples an empty map: black. The
       kit's own `targets/harbour` page did the same here (2026-10-17). Pull the kit's `tex/` before building Hook;
@@ -30,4 +30,4 @@ from a Hook task.
       change: `KMAT.pack` could refuse an entry under 1 KB).
 - [ ] **`hook-vessels-afloat` reads the kit's silted berths as shallow.** `slBerth` and `slPen` at d=1 silt their
       basins by design; the carrier and the pen's submarine report ground above their draft. The check is soft.
-- [x] **The segment-boundary labels overlap** at this run's length (29 placed items; the kit's own issue). - 2026-10-20: fixed in the kit (`portBoundsDeclutter`, settlements/port/src/92-camera.js; Hook builds it): 11 of the 29 labels show at the Overview, none overlapping.
+- [x] **The segment-boundary labels overlap** at this run's length (29 placed items; the kit's own issue). - 2026-10-20: fixed in the kit (`portBoundsDeclutter`, kits/port/src/92-camera.js; Hook builds it): 11 of the 29 labels show at the Overview, none overlapping.

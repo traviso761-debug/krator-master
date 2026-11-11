@@ -11,7 +11,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 From `core/terrain/` (shared; see `core/README.md`): `43-core-ground.js`, `44-core-farfield.js`, `45-core-horizon.js`
 
-From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `32-core-variants.js`, `33-core-fungoid.js`, `34-core-impostor.js`, `35-core-anim.js`, `36-core-walker.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`, `44-core-stage.js`
+From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `31b-core-leafset.js`, `32-core-variants.js`, `33-core-fungoid.js`, `34-core-impostor.js`, `35-core-anim.js`, `36-core-walker.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`, `44-core-stage.js`
 
 From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
 
@@ -22,7 +22,7 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `45-host-stage.js` | 30 | the bay, the river, the rise (56); terrain (89); the host binding (116); the ground (140); the water (222); the far country (255) |
+| `45-host-stage.js` | 31 **big** | the bay, the river, the rise (56); terrain (89); the host binding (116); the ground (140); the water (229); the far country (262) |
 | `50-biome-swbay-species.js` | 41 **big** | THE CANOPY CEILING (20); THE BAY COLOUR (26); the tree species (77); harvest (biomes/FRUIT.md) (128); leaf textures (153); bark textures (252); geometries local to this biome (318); an iridescent foliage (370); materials (374); instanced items (423) |
 | `52-biome-swbay-library.js` | 2 |  |
 | `55-biome-swbay-trees.js` | 56 **big** | zones from the fields (25); colour (46); polyline helpers (Girder's) (60); keep-clear between trees (69); epiphytes (76); foliage helpers (91); the builders (103); impostors (the far canopy) (394); the pass (437); one tree where a world puts it (504) |

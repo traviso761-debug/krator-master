@@ -77,7 +77,18 @@ function clumpAt(item,x,y,z,size,flat,col,cx,cy,cz,ex,ey){
  BIO.put(item,[x,y,z],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),[size,size*flat,size],bright(col,ao),{n:[nx/nn,ny/nn,nz/nn]});}
 function frondAt(item,x,y,z,a,L,pitch,col,wid){BIO.put(item,[x,y,z],qEuler(rr(-.1,.1),-a,pitch),[L,L*rr(.85,1.05),L*(wid||rr(1.1,1.4))],col,{n:[Math.cos(a)*.35,1,Math.sin(a)*.35]});}
 // a tube along pts in bucket fam, its rings coloured by the species' bark, closed at its tip
-function limb(fam,S,bi,pts,lv,st,seg){pts.forEach((p,k)=>{if(!p.col)p.col=barkCol(S,k,bi);});st.trunk+=BIO.tube(fam,pts,pts[0].col,{seg:seg||(lv===2?6:4),cap:true});}
+// pr: the parent's radius at the joint, for a limb that leaves a trunk or another limb: its root is flared into the parent (core/biome 31j, BIO.flareJoin;
+// the owner, 2026-11-03, every rebuild turn). No random draws, so no tree moves; ?flare=0 the old pipes. A trunk from the ground passes none
+const FLARE=typeof BIO.flareJoin==='function'&&!(typeof location!=='undefined'&&/[?&]flare=0/.test(location.search));
+function limb(fam,S,bi,pts,lv,st,seg,pr){pts.forEach((p,k)=>{if(!p.col)p.col=barkCol(S,k,bi);});
+ const P=FLARE&&pr!=null&&pts[0].r>.04?BIO.flareJoin(pts,{parentR:pr}).map((q,k)=>{if(!q.col)q.col=pts[Math.max(0,Math.min(pts.length-1,k-1))].col;return q;}):pts;
+ st.trunk+=BIO.tube(fam,P,P[0].col,{seg:seg||(lv===2?6:4),cap:true});}
+// HOLD A CLUMP TO ITS WOOD (the attach audit, the final rebuild): a builder keeps its own spans (spansOf: the points of each limb it drew) and a clump
+// whose spot was jittered off them is brought within reach of the nearest (BIO.snapSeg, BIO.holdTo: the core's; no draws, so no other tree moves).
+// reach: a stem card's, .2 x its size + .3 m (the audit's limit is .25 x size + .5); ?hold=0 the old spots
+const HOLD=!(typeof location!=='undefined'&&/[?&]hold=0/.test(location.search));
+function spansOf(L,pts){for(let i=0;i<pts.length-1;i++){const a=pts[i],b=pts[i+1];L.push({a:[a.x,a.y,a.z],b:[b.x,b.y,b.z],r0:a.r,r1:b.r,end:i===pts.length-2});}return L;}
+function held(L,x,y,z,size){if(!HOLD||!L.length)return[x,y,z];const S=BIO.snapSeg(L,[x,y,z]);return S?BIO.holdTo(S.p,[x,y,z],size*.2+.3):[x,y,z];}
 const regTree=(T,S,r,h)=>BIO.register({name:S.name,key:S.key,x:T.x,z:T.z,y:T.y0,r:r,h:h});
 const fruitH=(T,i,k)=>h3(T.seed*.001+i*1.37,k*.71+T.sp,T.x*.013+T.z*.007);
 RINGISLES._h={treeGrow,dirOf,tip,along,clumpAt,frondAt,limb,barkCol,leafCol,fruitH,means};
@@ -88,21 +99,21 @@ const B=[];RINGISLES._B=B;RINGISLES._h.regTree=(T,S,r,h)=>BIO.register({name:S.n
 // top into near-level branches that run out to the rim; a flat, wide, layered umbrella of fine sprays over them (the top
 // plate widest and densest, one or two thinner plates under it), a little domed at the middle; the near ones a few pale
 // thorn twigs; each tree its own share of dry yellow-olive sprays (the dry season browning the crown unevenly)
-B[0]=function(T,st,lv){const S=SP[T.sp],H=T.H,R=T.crownR,hc=C(pick(S.leaf)),dc=C(pick(PAL.thornDry)),dry=rr(.05,.4),tips=[];let top=T.y0;
+B[0]=function(T,st,lv){const S=SP[T.sp],H=T.H,R=T.crownR,hc=C(pick(S.leaf)),dc=C(pick(PAL.thornDry)),dry=rr(.05,.4),tips=[],SG=[];let top=T.y0;
  const n=lv===2?ri(3,6):3,a0=rr(0,TAU);
  for(let s=0;s<n;s++){const a=a0+s/n*TAU+rr(-.35,.35),P=treeGrow({x:T.x+rr(-.12,.12),y:T.y0-.15,z:T.z+rr(-.12,.12)},dirOf(a,rr(.85,1.12)),H*rr(.55,.7),T.rb,T.rb*.55,lv===2?4:2,.04,.12);
   limb('bark0',S,0,P,lv,st,lv===2?5:3);const e=tip(P);
   /* the fork: two or three near-level branches out to the rim, and a twig fork off each near */
   for(let k=0,m=lv===2?ri(2,3):2;k<m;k++){const ba=a+(k-(m-1)/2)*rr(.6,.9),Lb=R*rr(.5,.8),Q=treeGrow(e,dirOf(ba,rr(.18,.45)),Lb,e.r*.8,.015,lv===2?3:2,-.06,.1);
-   limb('bark0',S,0,Q,lv,st,3);tips.push(tip(Q));top=Math.max(top,tip(Q).y);
-   if(lv===2){const c=along(Q,rr(.4,.6)),W=treeGrow(c,dirOf(ba+rr(-1.1,1.1),rr(.1,.4)),R*rr(.25,.4),c.r*.7,.01,2,-.03,.1);limb('bark0',S,0,W,lv,st,3);tips.push(tip(W));}}}
+   limb('bark0',S,0,Q,lv,st,3,e.r);spansOf(SG,Q);tips.push(tip(Q));top=Math.max(top,tip(Q).y);
+   if(lv===2){const c=along(Q,rr(.4,.6)),W=treeGrow(c,dirOf(ba+rr(-1.1,1.1),rr(.1,.4)),R*rr(.25,.4),c.r*.7,.01,2,-.03,.1);limb('bark0',S,0,W,lv,st,3,c.r);spansOf(SG,W);tips.push(tip(W));}}}
  /* a few pale thorn twigs, short and stiff, under the near ones' crown */
  if(lv===2)for(let k=0;k<6;k++){const p=pick(tips),q=treeGrow({x:p.x,y:p.y-.05,z:p.z},dirOf(rr(0,TAU),rr(-.5,.3)),rr(.25,.45),.012,.004,1,0,0);q.forEach(v=>v.col=C(0xc8c0a8));limb('bark0',S,0,q,lv,st,3);}
  const tiers=lv===2?ri(2,3):1,rim=Math.max(R,...tips.map(p=>Math.hypot(p.x-T.x,p.z-T.z)*1.05));
  for(let t=0;t<tiers;t++){const y=top+.1-t*H*.13,r=rim*(t===0?1:t===1?.72:.5);
   for(let k=0,m=lv===2?(t===0?ri(24,32):ri(8,12)):9;k<m;k++){const p=pick(tips),u=Math.sqrt(rng()),a=rr(0,TAU),d=r*u*.9;
    const x=mix(T.x+Math.cos(a)*d,p.x,.4),z=mix(T.z+Math.sin(a)*d,p.z,.4),col=vary(rng()<dry?dc:hc,.02,.08,.06);
-   clumpAt('thornspray',x,y+.22*(1-u)+rr(-.08,.12),z,r*rr(.32,.45)*(lv===2?1:1.6),.22,col,T.x,y,T.z,r,H*.15);st.clumps++;}}
+   const cy=y+.22*(1-u)+rr(-.08,.12),sz=r*rr(.32,.45)*(lv===2?1:1.6),hp=held(SG,x,cy,z,sz);clumpAt('thornspray',hp[0],hp[1],hp[2],sz,.22,col,T.x,y,T.z,r,H*.15);st.clumps++;}}
  regTree(T,S,rim+.4,top-T.y0+.6);};
 // 1 the CORKWOOD: a short swollen green-bronze trunk shedding papery flakes, three to five stubby twisted limbs up and out,
 // a thin crown of small trifoliate leaves (bare-ish in the dry season)
@@ -110,8 +121,8 @@ B[1]=function(T,st,lv){const S=SP[T.sp],H=T.H,R=T.crownR,hc=C(pick(S.leaf));
  const tr=treeGrow({x:T.x,y:T.y0-.2,z:T.z},dirOf(rr(0,TAU),rr(1.35,1.5)),H*.42,T.rb*1.5,T.rb*.9,lv===2?4:2,0,.06);tr[1].r*=1.15;
  tr.forEach((p,k)=>{p.col=k%2?barkCol(S,k,1):tint(pick(PAL.corkPeel),means().bark[1],1);});limb('bark1',S,1,tr,lv,st,lv===2?7:4);
  const top=tip(tr),tips=[];
- for(let k=0,n=lv===2?ri(3,5):3;k<n;k++){const a=k/n*TAU+rr(-.4,.4),P=treeGrow(top,dirOf(a,rr(.45,.95)),H*rr(.4,.6),T.rb*.7,.04,lv===2?4:2,-.04,.16);limb('bark1',S,1,P,lv,st,4);tips.push(tip(P));
-  if(lv===2){const q=along(P,.6),L=treeGrow(q,dirOf(a+rr(-1,1),rr(.3,.8)),H*.25,q.r*.6,.02,2,0,.2);limb('bark1',S,1,L,lv,st,3);tips.push(tip(L));}}
+ for(let k=0,n=lv===2?ri(3,5):3;k<n;k++){const a=k/n*TAU+rr(-.4,.4),P=treeGrow(top,dirOf(a,rr(.45,.95)),H*rr(.4,.6),T.rb*.7,.04,lv===2?4:2,-.04,.16);limb('bark1',S,1,P,lv,st,4,top.r);tips.push(tip(P));
+  if(lv===2){const q=along(P,.6),L=treeGrow(q,dirOf(a+rr(-1,1),rr(.3,.8)),H*.25,q.r*.6,.02,2,0,.2);limb('bark1',S,1,L,lv,st,3,q.r);tips.push(tip(L));}}
  for(const p of tips){for(let c=0,n=lv===2?ri(1,3):1;c<n;c++){clumpAt('trifol',p.x+rr(-.4,.4),p.y+rr(-.1,.3),p.z+rr(-.4,.4),R*rr(.35,.5)*(lv===2?1:1.4),.6,hc,T.x,top.y+H*.3,T.z,R,H*.3);st.clumps++;}}
  let rc=R*.5;for(const p of tips)rc=Math.max(rc,Math.hypot(p.x-T.x,p.z-T.z)+R*.5);regTree(T,S,rc,H+1);};
 // 2 the SALT CEDAR: many slender arching stems from the salt, red-brown; drooping feathery grey-green sprays; pink plumes
@@ -130,7 +141,7 @@ B[3]=function(T,st,lv){const S=SP[T.sp],H=T.H,R=T.crownR,hc=C(pick(S.leaf));cons
  for(let k=0,n=lv===2?ri(5,9):3;k<n;k++){const a=k/n*TAU+rr(-.3,.3),p=along(tr,rr(.0,.25)),d=rr(.9,1.8)+p.y-T.y0,ex=T.x+Math.cos(a)*d,ez=T.z+Math.sin(a)*d,ey=Y(ex,ez)-.3;
   st.trunk+=BIO.tube('bark3',[{x:p.x,y:p.y,z:p.z,r:T.rb*.35},{x:mix(p.x,ex,.55),y:mix(p.y,ey,.4),z:mix(p.z,ez,.55),r:T.rb*.3},{x:ex,y:ey,z:ez,r:T.rb*.28}],barkCol(S,k,3),{seg:lv===2?5:3});}
  const top=tip(tr),heads=[];
- for(let k=0,n=lv===2?ri(2,4):2;k<n;k++){const a=la+k/n*TAU+rr(-.5,.5),P=treeGrow(top,dirOf(a,rr(.5,1.0)),H*rr(.3,.45),T.rb*.7,T.rb*.45,3,.05,.06);limb('bark3',S,3,P,lv,st,4);heads.push(tip(P));}
+ for(let k=0,n=lv===2?ri(2,4):2;k<n;k++){const a=la+k/n*TAU+rr(-.5,.5),P=treeGrow(top,dirOf(a,rr(.5,1.0)),H*rr(.3,.45),T.rb*.7,T.rb*.45,3,.05,.06);limb('bark3',S,3,P,lv,st,4,top.r);heads.push(tip(P));}
  heads.forEach((h,hi)=>{for(let k=0,n=lv===2?ri(14,20):7;k<n;k++){const a=k*GOLD+rr(-.1,.1),age=k/n,L=R*rr(.55,.8)*(age<.25?.7:1);
    frondAt('strap',h.x,h.y,h.z,a,L,lerp(1.0,-.35,age)+rr(-.1,.1),bright(vary(hc,.02,.08,.06),RINGISLES.LIB.strap?1:1.2),rr(.35,.5));st.clumps++;}
   if(lv===2&&fruitH(T,hi,1)<.5){const s=rr(.18,.26);BIO.put('fruit',[h.x+rr(-.2,.2),h.y-.35,h.z+rr(-.2,.2)],qEuler(rr(-.2,.2),rr(0,TAU),0),[s,s*1.25,s],C(pick(PAL.pandanFruit)));st.fruit++;}});
@@ -139,18 +150,18 @@ B[3]=function(T,st,lv){const S=SP[T.sp],H=T.H,R=T.crownR,hc=C(pick(S.leaf));cons
 // red-veined, a few reddened; bunches of grapes in the near ones
 B[4]=function(T,st,lv){const S=SP[T.sp],H=T.H,R=T.crownR,hc=C(pick(S.leaf)),tips=[];
  for(let s=0,n=lv===2?ri(2,4):2;s<n;s++){const a=rr(0,TAU),P=treeGrow({x:T.x,y:T.y0-.15,z:T.z},dirOf(a,rr(.55,.95)),H*rr(.8,1.15),T.rb,T.rb*.4,lv===2?4:2,.1,.12);limb('bark4',S,4,P,lv,st,lv===2?5:3);
-  tips.push(tip(P));if(lv===2){const q=along(P,.55),L=treeGrow(q,dirOf(a+rr(-1.1,1.1),rr(.4,.9)),H*.45,q.r*.7,.03,2,0,.1);limb('bark4',S,4,L,lv,st,3);tips.push(tip(L));}}
+  tips.push(tip(P));if(lv===2){const q=along(P,.55),L=treeGrow(q,dirOf(a+rr(-1.1,1.1),rr(.4,.9)),H*.45,q.r*.7,.03,2,0,.1);limb('bark4',S,4,L,lv,st,3,q.r);tips.push(tip(L));}}
  for(const p of tips)for(let c=0,n=lv===2?ri(3,5):2;c<n;c++){const red=rng()<.1;
   clumpAt('grapeleaf',p.x+rr(-.6,.6),p.y+rr(-.3,.3),p.z+rr(-.6,.6),R*rr(.4,.6)*(lv===2?1:1.4),.7,red?C(pick(PAL.grapeVein)):hc,T.x,T.y0+H*.6,T.z,R,H*.4);st.clumps++;}
  if(lv===2)for(let b=0,nb=ri(0,3);b<nb;b++){const p=pick(tips);for(let k=0;k<ri(6,10);k++){const s=rr(.05,.07);BIO.put('fruit',[p.x+rr(-.25,.25),p.y-rr(.2,.7),p.z+rr(-.25,.25)],null,s,C(pick(PAL.grapeFruit)));st.fruit++;}}
  let rc=R*.5;for(const p of tips)rc=Math.max(rc,Math.hypot(p.x-T.x,p.z-T.z)+R*.5);regTree(T,S,rc,H+1);};
 // 5 the BREADFRUIT: a straight grey trunk to a broad dome of huge deeply lobed glossy leaves, the round green fruit among them
-B[5]=function(T,st,lv){const S=SP[T.sp],H=T.H,R=T.crownR,hc=C(pick(S.leaf));
- const tr=treeGrow({x:T.x,y:T.y0-.3,z:T.z},dirOf(rr(0,TAU),rr(1.42,1.55)),H*.55,T.rb,T.rb*.6,lv===2?5:3,0,.04);limb('bark4',S,4,tr,lv,st,lv===2?7:4);
+B[5]=function(T,st,lv){const S=SP[T.sp],H=T.H,R=T.crownR,hc=C(pick(S.leaf)),SG=[];
+ const tr=treeGrow({x:T.x,y:T.y0-.3,z:T.z},dirOf(rr(0,TAU),rr(1.42,1.55)),H*.55,T.rb,T.rb*.6,lv===2?5:3,0,.04);limb('bark4',S,4,tr,lv,st,lv===2?7:4);spansOf(SG,tr);
  const tips=[tip(tr)];
- for(let k=0,n=lv===2?ri(5,7):3;k<n;k++){const a=k*GOLD+rr(-.2,.2),q=along(tr,rr(.45,.95)),P=treeGrow(q,dirOf(a,rr(.35,.75)),R*rr(.7,.95),q.r*.6,.06,lv===2?4:2,-.05,.08);limb('bark4',S,4,P,lv,st,4);tips.push(tip(P),along(P,.6));}
+ for(let k=0,n=lv===2?ri(5,7):3;k<n;k++){const a=k*GOLD+rr(-.2,.2),q=along(tr,rr(.45,.95)),P=treeGrow(q,dirOf(a,rr(.35,.75)),R*rr(.7,.95),q.r*.6,.06,lv===2?4:2,-.05,.08);limb('bark4',S,4,P,lv,st,4,q.r);spansOf(SG,P);tips.push(tip(P),along(P,.6));}
  const cy=T.y0+H*.72;
- for(let k=0,n=lv===2?ri(26,36):10;k<n;k++){const p=pick(tips),q=rr(0,TAU),d=rr(0,R*.35);clumpAt('breadleaf',p.x+Math.cos(q)*d,Math.max(p.y,cy-R*.3)+rr(0,R*.4),p.z+Math.sin(q)*d,R*rr(.4,.55)*(lv===2?1:1.5),.75,hc,T.x,cy,T.z,R,H*.3);st.clumps++;}
+ for(let k=0,n=lv===2?ri(26,36):10;k<n;k++){const p=pick(tips),q=rr(0,TAU),d=rr(0,R*.35);const lx=p.x+Math.cos(q)*d,ly=Math.max(p.y,cy-R*.3)+rr(0,R*.4),lz=p.z+Math.sin(q)*d,sz=R*rr(.4,.55)*(lv===2?1:1.5),hp=held(SG,lx,ly,lz,sz);clumpAt('breadleaf',hp[0],hp[1],hp[2],sz,.75,hc,T.x,cy,T.z,R,H*.3);st.clumps++;}
  if(lv===2)for(let k=0,n=ri(4,10);k<n;k++){const p=pick(tips),s=rr(.13,.18);BIO.put('fruit',[p.x+rr(-1,1),p.y-rr(.2,.8),p.z+rr(-1,1)],null,s,C(pick(PAL.breadFruit)));st.fruit++;}
  regTree(T,S,R+.5,H+R*.3);};
 // 6 the BANANA: a clump of three to six pseudostems, each crowned with arching paddle leaves torn by the wind, one dead and
@@ -212,6 +223,10 @@ RINGISLES.grow=function(T,lv){const st=newStats();T.lv=lv;BIO.owner=[T.x,T.z];
  try{if(lv===0)buildFar(T,0,st);else B[T.sp](T,st,lv);}finally{BIO.owner=null;}return st;};
 
 // ---------------------------------------------------------------- the pass
+// THE STRUCTURE LOG for the forest's dressing (the final rebuild, pair 8: the attach audit's liana and epiphyte floaters): a near or mid tree in the XA and
+// Af forest, where 60's dressing hangs lianas and seats bromeliads, keeps the spans its builder drew (BIO.tree: BIO.tube's and BIO.beam's, its own kit's
+// or a borrowed one's), so the dressing can put each on the wood (BIO.snapSeg). The log draws nothing and takes no number from the stream
+const wantSegs=(Z,lv)=>lv>=1&&Z.xa*1+Z.af*.25>.05;
 RINGISLES.buildTrees=function(R,q){SP.forEach((S,i)=>{if(typeof B[i]!=='function')BIO.err('ringisles: no builder for species '+i+' '+S.key);});reseed(550071);q=q==null?1:q;R=R||2000;means();
  const st=newStats(),TREES=RINGISLES.TREES;   // the gardens' trees (planted first) stay: RINGISLES.clearTrees starts afresh
  const LOD=BIO.radii();
@@ -225,8 +240,10 @@ RINGISLES.buildTrees=function(R,q){SP.forEach((S,i)=>{if(typeof B[i]!=='function
     if(own){const S=own,T={x,z,y0:y-.3,sp:S.i,H:rr(S.H[0],S.H[1]),rb:rr(S.rb[0],S.rb[1]),crownR:rr(S.crownR[0],S.crownR[1]),seed:ri(0,999999),lv,leanA};
      if(P.k){const k=P.k(Z);T.H*=k;T.crownR*=Math.sqrt(k);}
      TREES.push(T);hadd({x,z,r:T.rb*1.6+.6+(opt.reach||0)});n++;
-     BIO.owner=[x,z];if(lv===0){buildFar(T,TREES.length-1,st);st.fars++;}else{B[T.sp](T,st,lv);st.heroes++;}BIO.owner=null;st.byS[T.sp]++;return;}
-    const k=(Bo.scale||1)*(Bo.xa?mix(1,Bo.xa,Z.xaShare):1),T=borrowGrow(Bo,x,y,z,lv,k,leanA!=null?{leanA}:null);if(!T)return;
+     const run=()=>{BIO.owner=[x,z];if(lv===0){buildFar(T,TREES.length-1,st);st.fars++;}else{B[T.sp](T,st,lv);st.heroes++;}BIO.owner=null;};
+     if(wantSegs(Z,lv))T.segs=BIO.tree(x,z,run);else run();st.byS[T.sp]++;return;}
+    const k=(Bo.scale||1)*(Bo.xa?mix(1,Bo.xa,Z.xaShare):1);let T=null;
+    if(wantSegs(Z,lv)){const L=BIO.tree(x,z,()=>{T=borrowGrow(Bo,x,y,z,lv,k,leanA!=null?{leanA}:null);});if(T)T.segs=L;}else T=borrowGrow(Bo,x,y,z,lv,k,leanA!=null?{leanA}:null);if(!T)return;
     T.lv=lv;TREES.push(T);hadd({x,z,r:(T.rb||.3)*1.6+.6+(opt.reach||0)});n++;st.borrowed++;st.byB[Bo.i]++;},
    {patch:opt.patch==null?.5:opt.patch,patchScale:opt.patchScale||.012,pad:1,noMask:!!P.depth,depth:P.depth||null});
   return n;}

@@ -82,7 +82,11 @@ except Exception:
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))   # repo root: biomes/, kits/, settlements/
+sys.path.insert(0, os.path.join(ROOT, 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
+sys.path.insert(0, os.path.join(ROOT, 'kits', 'highlands'))
+import highlands as khl   # the Highlands kit (Republican, Rustic, Tribal), read in place (MODULARITY-PLAN.md step 4)
 UPSTREAM = {'ancients': os.path.join(ROOT, 'kits', 'ancients'), 'iziz': os.path.join(ROOT, 'settlements', 'iziz'),
+            'iziz-vernacular': os.path.join(ROOT, 'kits', 'iziz-vernacular'),
             'highlands': os.path.join(ROOT, 'settlements', 'highlands')}
 SRC = os.path.join(HERE, 'src')
 TARGETS = os.path.join(HERE, 'targets')
@@ -98,6 +102,11 @@ RAND_DIR = os.path.join(ROOT, 'core', 'rand')     # KRAND: the tags' uid is its 
 TAGS_DIR = os.path.join(ROOT, 'core', 'tags')     # the tag registry the furniture is registered in (core/tags/README.md)
 WALK_DIR = os.path.join(ROOT, 'core', 'walk')   # KWALK: the interiors' floors, walls, stairs and entry flights (kits/interiors IX.walk)
 TAGS_FILES = {f: os.path.join(d, f) for d in (RAND_DIR, TAGS_DIR, WALK_DIR) for f in os.listdir(d) if f[0].isdigit() and f.endswith('.js')}
+# core/door (KDOOR: the doors' records and walk blocks; KGLASS: the glass; KDOORHOST: posing a leaf, the frame tick, the E key)
+# and the Vernacular's openings (69e5: IZDOOR.leaf, the vDoorLeaf and vWinClear items), read in place: the kit's real doors and
+# glass (kits/highlands/src/71c-hl-openings.js) draw through them; src/95-hl-doors.js finishes them once the world is built
+DOOR_FILES = dict(khl.OPENINGS)
+DOOR_FILES['90-core-door-host.js'] = os.path.join(ROOT, 'core', 'door', '90-core-door-host.js')
 CORE_OPT = os.path.join(CORE, 'opt')   # opt-in shared fragments: a build takes only the ones it names
 # the material library (core/materials/record: KMAT, the loader and the in-place bind; not 24-tex-def.js, whose TEX
 # clashes with core/materials 20-textures.js): materials.json -> tools/textures/pack.py -> tex/ -> the GENERATED
@@ -124,6 +133,9 @@ sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))
 import host as khost   # core/host (core/host/README.md; ROADMAP.md section 10, step 3): the shell and the whole interface, as Iziz takes it
 CORE_HOST = [f for f in khost.FULL if f not in ('20-core-space.js', '40-core-edits.js')]   # not core/space (Roketstad's band reads its own copy); no editor world yet
 TARGET_CORE = {'roketstad': ['mask']}   # core/<module> fragments a target takes (core/mask: the placement raster)
+# kit fragments a target reads in place: Roketstad's Ancients pieces (82a-82e) take the Ancients kit's openings (8zo: a window a pane
+# before the room card, an arched door a locked core/door record), as a guest of the page's own door host (its 8zn sets that)
+TARGET_KIT = {'roketstad': {'8zo-anc-open.js': os.path.join(ROOT, 'kits', 'ancients', 'src', '8zo-anc-open.js')}}
 # A target's BIOME, read IN PLACE (biomes/WORLD.md: several kits on one page; as biomes/geyser reads the hyperjungle):
 # core/space, core/biome and one biome kit's fragments, under slot names in the 86-bio- band, so they load after the
 # terrain (84) and the painted masks (85), round the target's own host binding (86-bio-45-init.js, kept local), and
@@ -188,6 +200,8 @@ DETERMINISTIC = {
 DETERMINISTIC |= {'06-core-khook.js', '06b-core-kcolor.js'}   # core/shader (no rnd())
 DETERMINISTIC |= {f for f in os.listdir(os.path.join(ROOT, 'core', 'mask')) if f[0].isdigit() and f.endswith('.js')}
 DETERMINISTIC |= set(CORE_HOST) | {'99-start.js', '91h-hl-tags.js', '89-hl-trades.js'}   # core/host (no rnd()); the take; the sites into core/tags
+DETERMINISTIC |= {'8zn-rk-open-guest.js', '8zo-anc-open.js'}   # Roketstad's Ancients openings (a hash, no rnd())
+DETERMINISTIC |= set(DOOR_FILES) | {'71c-hl-openings.js', '95-hl-doors.js'}   # core/door, the openings (69e5, 71c), their finish: no rnd()
 
 # Seed ranges known to collide, kept here so the build stays green while the
 # collision is tracked in KNOWN_ISSUES.md. Remove an entry when it is fixed;
@@ -307,17 +321,20 @@ def build_one(target, do_checks, assert_origin):
         sys.exit('no such target: %s (expected %s)' % (target, tdir))
 
     src = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()}
+    src.update({f: p for f, p in khl.paths().items() if f not in src})   # the Highlands kit (a src/ copy would win: none)
     src.update({f: os.path.join(CORE, f) for f in CORE_FILES if f not in src})
     src.update({f: os.path.join(CORE_OPT, f) for f in CORE_OPT_FILES if f not in src})
     src.update({f: os.path.join(ROOT, 'core', 'materials', 'record', f) for f in RECORD_FILES if f not in src})
     src.update({f: os.path.join(LOD_DIR, f) for f in LOD_FILES if f not in src})
     src.update({f: os.path.join(FURNISH_DIR, f) for f in FURNISH_FILES if f not in src})
     src.update({f: p for f, p in TAGS_FILES.items() if f not in src})
+    src.update({f: p for f, p in DOOR_FILES.items() if f not in src})   # core/door and the Vernacular's openings, read in place
     khost.resolve(src, CORE_HOST)
     tgt = {f: os.path.join(tdir, f) for f in os.listdir(tdir) if f[0].isdigit()}
     for mod in TARGET_CORE.get(target, []):
         mdir = os.path.join(ROOT, 'core', mod)
         tgt.update({f: os.path.join(mdir, f) for f in os.listdir(mdir) if f[0].isdigit() and f.endswith('.js')})
+    tgt.update(TARGET_KIT.get(target, {}))
     bio = TARGET_BIO.get(target)
     if bio:
         twice = set(bio['files']) & set(tgt)
@@ -365,6 +382,8 @@ def build_one(target, do_checks, assert_origin):
         html = re.sub(r'<title>.*?</title>', lambda _: '<title>%s</title>' % m.group(1),
                       html, count=1)
     out = os.path.join(DIST, TARGET_OUT[target])
+    if BSRC.LISTING:   # --list-sources: every file this target read is recorded; main() reports every target's
+        return order, None, None
     os.makedirs(DIST, exist_ok=True)
     if side:
         html = matlib_pack.write_sidecar(side, html, DIST, 'highlands.tex.js', prune=False)
@@ -379,7 +398,8 @@ def build_one(target, do_checks, assert_origin):
 VENDORED = ['10-core.js', '12-stats.js', '20-textures.js', '22-materials.js', '30-kit.js',
             '32-surfaces.js', '34-kitdefs.js', '36-decor.js', '38-helpers2.js', '50-registry.js',
             '54-mat-concrete.js', '68-mat-v5.js', '69-mat-salvage.js']          # ../ancients/src
-IZIZ_VENDORED = ['69b-vern-mat.js', '69c-vern-helpers.js', '91-probe.js', '92-camera.js', '93-labels.js']   # ../iziz/src
+IZIZ_VENDORED = ['91-probe.js', '92-camera.js', '93-labels.js']   # ../iziz/src
+VERN_VENDORED = ['69b-vern-mat.js', '69c-vern-helpers.js']   # the Vernacular kit, kits/iziz-vernacular (its files left Iziz's src/ on 2026-11-03: MODULARITY-PLAN.md step 4)
 # vendored with a deliberate local edit: drift expected, recorded in KNOWN_ISSUES.md (91-probe.js counts each placed
 # catalog furniture piece, HLF.placed, as a sample of its volume; Iziz places no catalog furniture)
 ADAPTED = {'91-probe.js'}
@@ -388,7 +408,7 @@ ADAPTED = {'91-probe.js'}
 def vendor_manifest():
     """VENDOR.json: sha1 of every vendored fragment, so drift is visible."""
     out = {}
-    for f in VENDORED + IZIZ_VENDORED:
+    for f in VENDORED + IZIZ_VENDORED + VERN_VENDORED:
         with open(srcpath(f), 'rb') as fh:
             out[f] = hashlib.sha1(fh.read().replace(b'\r\n', b'\n')).hexdigest()[:12]   # LF-normalised, as the build manifest
     with open(os.path.join(HERE, 'VENDOR.json'), 'w', encoding='utf-8') as fh:
@@ -398,7 +418,7 @@ def vendor_manifest():
 
 def vendor_check():
     """Compare vendored fragments with ../ancients/src and ../iziz/src."""
-    for up_name, files in (('ancients', VENDORED), ('iziz', IZIZ_VENDORED)):
+    for up_name, files in (('ancients', VENDORED), ('iziz', IZIZ_VENDORED), ('iziz-vernacular', VERN_VENDORED)):
         up = os.path.join(UPSTREAM[up_name], 'src')
         if not os.path.isdir(up):
             print('vendor-check: ../%s/src not found; skipped' % up_name)
@@ -421,7 +441,8 @@ def main():
     if '--vendor-check' in sys.argv:
         vendor_check()
         return
-    vendor_manifest()
+    if not BSRC.LISTING:   # --list-sources writes nothing
+        vendor_manifest()
     do_checks = '--no-checks' not in sys.argv
     assert_origin = '--assert-origin' in sys.argv
     wanted = [a.split('=', 1)[1] for a in sys.argv if a.startswith('--target=')]
@@ -432,6 +453,8 @@ def main():
 
     for target in wanted:
         order, html, out = build_one(target, do_checks, assert_origin)
+        if BSRC.LISTING:
+            continue
 
         # --- byte-identity with the single file this repo was split out of ---
         origin_note = ''
@@ -464,6 +487,7 @@ def main():
 
 if __name__ == '__main__':
     main()
+    BSRC.report(vendor_check=vendor_check)   # --list-sources: every target's files (and what --vendor-check compares), then exit
 
 # --- remind whoever is building of the open issues (see KNOWN_ISSUES.md) ---
 _ki = os.path.join(HERE, 'KNOWN_ISSUES.md')

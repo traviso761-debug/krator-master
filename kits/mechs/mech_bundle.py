@@ -6,7 +6,7 @@
 
 The text defines the single global `KratorMechs` (mechs-runtime.js: list, build, update, setState, attack ...).
 Inside the closure: the master catalog's engine-neutral core (kits/catalog/krator-furniture-core.js: mat, FPAL,
-_target), the culture symbols (kits/catalog/krator-symbols.js: the Iziz sun on the banners), the vehicle frame
+_target), the culture symbols (core/sockets/38-symbols.js: the Iziz sun on the banners), the vehicle frame
 (kits/motor-vehicles/vehicles-core.js: vehicleFrame and its tube, disc and lamp helpers), this kit's core
 (mechs-core.js: MECH, the rig, the mech frame, the skin merge), its parts (mechs-parts.js), the culture files
 asked for and the runtime. Their top-level names stay inside the closure. It needs only a global THREE (r128).
@@ -19,7 +19,7 @@ import os
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 KITS = os.path.dirname(HERE)
-CORE = [(os.path.join(KITS, 'catalog'), 'krator-furniture-core.js'), (os.path.join(KITS, 'catalog'), 'krator-symbols.js'),
+CORE = [(os.path.join(os.path.dirname(KITS), 'core', 'catalog'), 'krator-furniture-core.js'), (os.path.join(os.path.dirname(KITS), 'core', 'sockets'), '38-symbols.js'),
         (os.path.join(KITS, 'motor-vehicles'), 'vehicles-core.js'), (HERE, 'mechs-core.js'), (HERE, 'mechs-parts.js')]
 RUNTIME = (HERE, 'mechs-runtime.js')
 PREFIX = 'krator-mechs-'

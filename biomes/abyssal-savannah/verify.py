@@ -3,6 +3,7 @@
 
 Usage:
   python verify.py dist/abyssal-savannah.html [--views "Laboratory,Starport"] [--all-views]
+  python verify.py dist/abyssal-savannah-<serim|erim|north>.html ...    (the savannah rims' stations, PLAN.md section 14)
                                           [--assert] [--baseline base.json]
                                           [--save-baseline base.json] [--out ./shots]
                                           [--cam cx,cy,cz,tx,ty,tz] [--eval "()=>..."]
@@ -43,6 +44,11 @@ local_three = lambda folder: _harness.local_three(folder, os.path.dirname(os.pat
 # A section that reads stub, none, error or empty fails the run. --profile a,b,c replaces the list for one run
 # (add sim to see a stub fail).
 EXPORT_BOX = [-900, 280, -600, 580]
+# The savannah rims (PLAN.md section 14; their checks folded in from biomes/savannarim's verify.py, 2026-11-08): each station's own 300 m
+# cell on its river and gallery (stations/<name>/44l-host-land.js: LAND.river; the water section needs a surface in the box), by the page's name.
+# Their host checks and negatives (src/rim/99-host-take.js and each land's 44l) run under --assert through invariant 5 below, as the main page's do.
+EXPORT_BOXES = {'abyssal-savannah-serim.html': [150, -550, 450, -250], 'abyssal-savannah-erim.html': [450, 150, 750, 450],
+                'abyssal-savannah-north.html': [150, 50, 450, 350]}
 EXPORT_PROFILE = ['registry', 'items', 'buckets', 'materials', 'textures', 'terrain', 'stage', 'atmos', 'water']
 
 # Structure names contain em dashes; the Windows console default codepage
@@ -158,10 +164,11 @@ async def run(a):
 
             print("\n--- export profile (core/export/README.md, \"Profiles\") ---")
             prof = [s.strip() for s in a.profile.split(",") if s.strip()] if a.profile else EXPORT_PROFILE
-            pok, lines = await check_profile(pg, EXPORT_BOX, prof)
+            box = EXPORT_BOXES.get(os.path.basename(a.html), EXPORT_BOX)
+            pok, lines = await check_profile(pg, box, prof)
             for ln in lines:
                 print("  " + ln)
-            print(("  PASS  " if pok else "  FAIL  ") + "export-profile : box %s" % EXPORT_BOX)
+            print(("  PASS  " if pok else "  FAIL  ") + "export-profile : box %s" % box)
             if not pok:
                 fails.append("assert export-profile")
 

@@ -32,11 +32,11 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `60-biome-oidong-floor.js` | 22 | small plants (22); the zone planters (82); the pass (136); the high country (the passes station, PLAN-STATI (171) |
 | `70-biome-oidong.js` | <1 |  |
 | `82-host-sky.js` | 12 |  |
-| `84-host-ground.js` | 15 | the ground (13); the water (117); the cataract and the mist (120) |
+| `84-host-ground.js` | 16 | the ground (13); the water (120); the cataract and the mist (123) |
 | `85-host-far.js` | 3 |  |
 | `89-host-sky.js` | 2 |  |
 | `89a-host-atmos.js` | 3 |  |
 | `89w-host-water.js` | 5 |  |
-| `89z-host-build.js` | 5 |  |
+| `89z-host-build.js` | 6 |  |
 | `99-host-take.js` | 17 | the inspector's words (51); the probe's budgets and the kit's own checks (ve (65); the page, handed to the host (145) |
 | `99-tail.html` | <1 |  |

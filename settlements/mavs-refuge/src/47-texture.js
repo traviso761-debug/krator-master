@@ -161,6 +161,11 @@ function texFill(S, fn){
     mtexLibrary(FAMMAT[fam], L);
   });
 })();
+/* an alias family (the door leaves) wears exactly the maps of the family it names: its own bucket, the same look */
+Object.keys(FAMMAT).forEach(function(fam){
+  var fm = FAMMAT[fam], A = fm.alias && FAMMAT[fm.alias]; if(!A) return;
+  fm.tex = A.tex; fm.lib = A.lib; fm.libTex = A.libTex; fm.scale = A.scale.slice(); fm.colour = A.colour;
+});
 function mtexLibrary(fm, L){
   var T = KMAT.textures(L, { aniso: FAST ? 1 : 8 }), sc = fm.scale || [3,3];
   [T.map, T.normalMap, T.roughnessMap].forEach(function(t){ if(t) t.repeat.set(sc[0]/L.scale[0], sc[1]/L.scale[1]); });

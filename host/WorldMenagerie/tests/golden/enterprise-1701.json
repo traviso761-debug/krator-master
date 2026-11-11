@@ -1,7 +1,8 @@
 {
- "lots": 13,
- "lotHash": "13aba9adf8ec5368ed7b763d61d61baa6f21295cd593b13fd518dedcab9c374b",
+ "lots": 37,
+ "lotHash": "a53ff9703e3ad511620e5acd732e157188207b389a67c3ad2e092483c00274cf",
  "doors": null,
  "doorHash": null,
+ "page": "enterprise.html",
  "seed": 1701
 }

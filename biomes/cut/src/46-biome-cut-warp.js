@@ -13,6 +13,10 @@
 //   o.adjust(T, {dx, dz, h, kx}): called after each tree is warped (its top's offset from the foot, its new height, its widening);
 //                    o.adjust(T, null) for a tree the kit registered but drew nothing of
 //   o.allow: a Set of the read-in species' keys the station keeps (the plan's list for its ring); the rest are taken back
+//   o.allowAt(key, x, z): false takes a tree of a kept species back where the station does not want it (pair 10: the face keeps only the rowan inside
+//                    the lip, PLAN.md section 12 exchange 5); its volume goes too (o.adjust(T, null))
+//   o.stuck {key: {item, share, size, col, where(x, z)}}: (where: only the trees standing where it is true; the face: inside the lip) the stuck fruit (PLAN.md section 3; exchange 5, the rowan): a share of the species' fruit clusters (that
+//                    item's instances in the tree's span, a cluster by its 2 m cell) set small and green and stay so; CUT.WARPED.stuck counts them
 //   CUT.warpDenied(name): true for a read-in species' name the station does not keep (the host's REGISTER skips its volume)
 //   CUT.WARPED  what it did: trees, instances moved, bites, instances bitten, floor instances leaned
 (function(){
@@ -48,6 +52,8 @@
    K.pos.length=p0;K.nor.length=p0;K.col.length=p0;K.uv.length=p0/9*6;K.k.length=p0/9;K.tris-=t;}
   BIO.tally(-tris,-inst,0);W.dropped=(W.dropped||0)+1;}
  function close(sp,o){const T=sp.T;if(!T){return;}const S=o.species[T.sp]||{};if(o.allow&&!o.allow.has(S.key)){drop(sp);return;}
+  if(o.allowAt&&!o.allowAt(S.key,T.x,T.z)){drop(sp);if(o.adjust)o.adjust(T,null);W.droppedAt=(W.droppedAt||0)+1;return;}
+  if(o.stuck&&o.stuck[S.key]&&(!o.stuck[S.key].where||o.stuck[S.key].where(T.x,T.z)))stuckFruit(sp,o.stuck[S.key],S.key);
   {let any=false;for(const n in BIO.items)if(BIO.items[n].count>(sp.S.items[n]||0)){any=true;break;}if(!any)for(const fm in BIO.buckets)if(BIO.buckets[fm].pos.length>(sp.S.buckets[fm]||0)){any=true;break;}
    if(!any){if(o.adjust)o.adjust(T,null);return;}}   /* the kit registered it but drew nothing (a far snag has no impostor): its volume goes */const f=[T.x,o.ground(T.x,T.z),T.z],b=o.toBowl(T.x,T.z);
   const mean=S.H?(S.H[0]+S.H[1])/2:T.H,Wp=CUT.warp(b[0],b[1],{id:T.seed,salt:31,size:T.H/mean}),air=CUT.airScale(o.alt(f[1])),k=Wp.step==null?1:Wp.step/(T.H/mean);
@@ -62,6 +68,15 @@
    if(gone){W.bites++;W.bitten+=gone;(CUT.BITES||(CUT.BITES=[])).push({x:c[0],y:c[1],z:c[2],r,tree:T.seed});}}
   if(o.adjust){const top=[L[1]*T.H,L[4]*T.H,L[7]*T.H];o.adjust(T,{dx:top[0],dz:top[2],h:top[1],kx:air[0]*k});}   /* the tree's registered volume follows it */
   W.trees++;}
+ // THE STUCK FRUIT: a share of the clusters (by the 2 m cell an instance stands in, so a cluster sticks whole) shrunk about their own centres and
+ // turned unripe green; KRAND by the cell, so the same clusters stick on every run
+ function stuckFruit(sp,St,key){const it=BIO.items[St.item];if(!it)return;const i0=sp.S.items[St.item]||0;if(it.count<=i0)return;
+  const m=it.m.a,c=it.c.a,share=St.share==null?CUT.STUCK:St.share,k=St.size==null?.55:St.size,col=St.col||[.42,.54,.23];
+  for(let i=i0;i<it.count;i++){const x=m[i*16+12],y=m[i*16+13],z=m[i*16+14];
+   if(KRAND.hash(CUT.SEED+61,Math.floor(x/2),Math.floor(z/2),Math.floor(y/2))/4294967296>=share)continue;
+   for(const q of[0,1,2,4,5,6,8,9,10])m[i*16+q]*=k;if(it.c.length>=it.count*3){c[i*3]=col[0];c[i*3+1]=col[1];c[i*3+2]=col[2];}
+   W.stuck=(W.stuck||0)+1;(W.stuckOf||(W.stuckOf={}))[key]=(W.stuckOf[key]||0)+1;}
+  (W.fruitOf||(W.fruitOf={}))[key]=(W.fruitOf[key]||0)+(it.count-i0);}
  // the floor pass: every new instance of an upright item leans about its own foot (its matrix's translation)
  function floorLean(S0,o){for(const n in BIO.items){const it=BIO.items[n],i0=S0.items[n]||0;if(it.count<=i0)continue;const def=BIO.defs[n];
    if(def._upright==null){const g=def.geo;g.computeBoundingBox();const bb=g.boundingBox,h=bb.max.y-bb.min.y,w=Math.max(bb.max.x-bb.min.x,bb.max.z-bb.min.z);def._upright=h>w*.6;}

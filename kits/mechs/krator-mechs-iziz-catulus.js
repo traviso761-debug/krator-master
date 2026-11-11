@@ -11,7 +11,7 @@ MECH({
   key: 'iz_catulus', name: 'Catulus', culture: 'iziz',
   role: 'scout drone: the hound', origin: 'Ancient survey drone',
   lore: 'A survey drone the size of a hound that follows the scouts on its own wits, a numeral on its pack and a feather on its aerial. When it finds something it sounds its siren and darts at it.',
-  tags: { class: 'mech', type: ['scout', 'utility'], drive: 'quadruped', crew: 0, pilot: 'none', weapon: ['none'],
+  tags: { class: 'mech', type: ['scout', 'utility'], drive: 'quadruped', crew: 0, pilot: 'none', weapon: [],
     setting: 'outdoor', guild: 'Forgemasters' },
   variants: 1, variantNames: ['Hound III'],
   w: 0.6, d: 1.2, h: 1.5,

@@ -21,8 +21,8 @@ const SITE={key:'pass',name:'The copper slope',region:'The copper slope over the
  ridges:[],
  tarn:null,
  icefall:[1300,1900],crevasses:[[-560,1250],[1950,2500]],
- caves:[{u:-620,aw:-.95,R:11,face:null,name:'An ice cave (at the snout\'s west margin)'}],
+ caves:[{u:-655,aw:-.12,R:11,face:null,name:'An ice cave (the glacier\'s portal, in its snout)'}],
  streams:[{name:'The outlet stream (from the pond through the moraine\'s breach, down to the pass)',from:'breach',hw:2.2,plume:false}],
- skarn:true,snowLine:[3950,4350],coral:[3300,3760],coralK:.3,worms:true,algae:.5,
+ skarn:true,tri:true,snowLine:[3950,4350],coral:[3300,3760],coralK:.3,worms:true,algae:.5,
  sky:{air:{pressure:1.03,humidity:.5},clouds:{cover:.3,cumulus:.35,cirrus:.4}},
  views:'pass'};

@@ -115,7 +115,7 @@ defBuilding({key:'et_granary',name:'Granary',seed:7421,cut:true,w:15,d:15,h:14,b
  note:'a hexagonal brick granary on a raised floor under a grey-tiled cap, sacks within; a watermill on the race beside',
  build(o){etTrade({plan:'hex',R:5,storeys:2,sh:3.6,G:1.2,mk:'brick',upMk:'brick',roof:'pyramid',mask:'lead',
   furn:[['generic_sack',2,.5],['generic_sack',3,.5],['job_bales',4,.6],['generic_floor_basket',5,.5],['generic_sack',2,.5,1],['generic_sack',4,.5,1]],
-  extra:F=>{for(let i=0;i<3;i++)box('stone',0,i*.4,F.ap+.8+i*.35,1.6,.4,.4,P('stoneD'));
+  extra:F=>{svStair(0,F.ap+.26+1.62,0,F.G,PI,{style:'solid',w:1.6,run:1.62,col:P('stoneD')});   /* the steps up to the raised floor (core/engine svStair) */
    box('water',7.2,0,0,1.6,.4,10,new THREE.Color(ET_WATER));pushM(TF(6.2,1.6,0,PI/2));ring('timber',0,0,0,1.5,.1,P('timber'),0,PI/2);popM();}});}});
 
 /* the warehouse: a hexagonal store of pale brick with round windows (arch-34) on its canal, the crane on its quay

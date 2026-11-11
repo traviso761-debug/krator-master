@@ -46,8 +46,11 @@ const atFC=(k,x,z)=>FC.at(FC.a[k],x,z);
 const TEX_DETAIL=BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,v=232+(fbm(x/9,y/9,5,2)-.5)*40+(BIO.fn.h3(x,y,9)-.5)*26;d[i]=d[i+1]=d[i+2]=clamp(v,0,255);d[i+3]=255;}
  g.putImageData(id,0,0);});
+/* the macro's blue channel carries the detail (2026-11-09: TEX_DETAIL's own grey, the same pixels; on the library ground the two maps are
+   one texture unit, which the isle's mesh needs: it read seventeen of sixteen on the GPU once core/atmos's cloud noise was counted) */
 const TEX_MACRO=BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
- for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,a=fbm(x/40,y/40,7.3,3),b=fbm(x/13,y/13,7.4,2);d[i]=a*255;d[i+1]=b*255;d[i+2]=128;d[i+3]=255;}g.putImageData(id,0,0);});
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,a=fbm(x/40,y/40,7.3,3),b=fbm(x/13,y/13,7.4,2);d[i]=a*255;d[i+1]=b*255;
+  d[i+2]=clamp(232+(fbm(x/9,y/9,5,2)-.5)*40+(BIO.fn.h3(x,y,9)-.5)*26,0,255);d[i+3]=255;}g.putImageData(id,0,0);});
 TEX_MACRO.wrapS=TEX_MACRO.wrapT=THREE.RepeatWrapping;TEX_MACRO.encoding=THREE.LinearEncoding;
 const GROUNDU={uNight:{value:0}};
 // THE LIBRARY GROUND: eight layers, the later winning, each sampled twice (anti-tiling, as the other stations)
@@ -55,23 +58,29 @@ const GL_KEYS=['litter','sandblack','sinter','rim','mud','lichenrock','packed','
 const GLAY=(function(){if(typeof KMAT==='undefined'||KMAT.mode!=='lib')return null;const o={};
  for(const k of GL_KEYS.concat(['wetmoss','canopy'])){const P=KMAT.packed('throne','ground.'+k);if(!P)return null;o[k]={map:KMAT.textures(P,{aniso:8}).map,k:1/P.scale[0]};}return o;})();
 const GROUND_MATS=[];   /* the isle's mesh first, then the basin's patch: 89w wets the first where the swash reaches */
-function groundMat(map){const m=new THREE.MeshLambertMaterial({map,color:0xb0aaa4});GROUND_MATS.push(m);
- m.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};
-  if(GLAY){sh.uniforms.uMacro={value:TEX_MACRO};GL_KEYS.concat(['wetmoss','canopy']).forEach(k=>sh.uniforms['uG_'+k]={value:GLAY[k].map});}
+const GW={litter:'vL0.x',sandblack:'vL0.y',sinter:'vL0.z',rim:'vL0.w',mud:'vL1.x',lichenrock:'vL1.y',packed:'vL1.z',sulphur:'vL1.w',shingle:'vL2.x',basalt:'vL2.y'};   /* the weights, for KGROUND's hook (THRONE.kgGround, 70) */
+function groundMat(map){let KGI=null;const m=new THREE.MeshStandardMaterial({roughness:.95,metalness:0,map,color:0xb0aaa4});GROUND_MATS.push(m);
+ m.onBeforeCompile=sh=>{if(!GLAY)sh.uniforms.uDetail={value:TEX_DETAIL};
+  if(GLAY){sh.uniforms.uMacro={value:TEX_MACRO};(KGI?['canopy']:GL_KEYS.concat(['wetmoss','canopy'])).forEach(k=>sh.uniforms['uG_'+k]={value:GLAY[k].map});}
   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute vec4 aL0,aL1,aL2;varying vec4 vL0,vL1,vL2;')
    .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vL0=aL0;vL1=aL1;vL2=aL2;');
   const W={litter:'vL0.x',sandblack:'vL0.y',sinter:'vL0.z',rim:'vL0.w',mud:'vL1.x',lichenrock:'vL1.y',packed:'vL1.z',sulphur:'vL1.w',shingle:'vL2.x',basalt:'vL2.y'};
-  let decl='uniform sampler2D uDetail;varying vec3 vGWP;varying vec4 vL0,vL1,vL2;',body;
-  if(GLAY){decl+='uniform sampler2D uMacro,'+GL_KEYS.concat(['wetmoss','canopy']).map(k=>'uG_'+k).join(',')+';'+THRONE.layGLSL(USE_KG,'vec3 _lay(sampler2D t,vec2 p,vec2 q,float k,float mt){return pow(mix(texture2D(t,p*k).rgb,texture2D(t,q*k*0.47+vec2(0.31,0.17)).rgb,mt),vec3(2.2));}');
+  let decl=(GLAY?'':'uniform sampler2D uDetail;')+'varying vec3 vGWP;varying vec4 vL0,vL1,vL2;',body;
+  if(GLAY&&KGI){decl+='uniform sampler2D uMacro,uG_canopy;';
+  body='{vec3 dt=vec3(texture2D(uMacro,vGWP.xz*0.023+0.37).b);diffuseColor.rgb*=mix(vec3(1.0),dt*1.06,0.6);}\n/*KGROUND*/\n'+
+   // far off, the forest floor reads as the canopy over it (the trees there are impostors, too small to cover it)
+   '{vec3 L=pow(texture2D(uG_canopy,vGWP.xz*'+GLAY.canopy.k.toFixed(4)+').rgb,vec3(2.2));diffuseColor.rgb=mix(diffuseColor.rgb,diffuse*L*1.2,vL0.x*smoothstep(380.0,1100.0,length(cameraPosition-vGWP))*0.9);}';}
+  else if(GLAY){decl+='uniform sampler2D uMacro,'+GL_KEYS.concat(['wetmoss','canopy']).map(k=>'uG_'+k).join(',')+';'+THRONE.layGLSL(USE_KG,'vec3 _lay(sampler2D t,vec2 p,vec2 q,float k,float mt){return pow(mix(texture2D(t,p*k).rgb,texture2D(t,q*k*0.47+vec2(0.31,0.17)).rgb,mt),vec3(2.2));}');
    // the sinter, the rims and the sulphur keep the paint's colour (the mats' bands, the white): their texture is detail
    const keep={sinter:1,rim:1,sulphur:1};
    body='{vec2 p=vGWP.xz,q=mat2(0.799,-0.602,0.602,0.799)*p;float mt=smoothstep(0.3,0.7,texture2D(uMacro,p*0.0061).r);'+
-    'vec3 dt=texture2D(uDetail,p*0.023+0.37).rgb;diffuseColor.rgb*=mix(vec3(1.0),dt*1.06,0.6);vec3 L;vec3 P0=diffuseColor.rgb;'+
+    'vec3 dt=vec3(texture2D(uMacro,p*0.023+0.37).b);diffuseColor.rgb*=mix(vec3(1.0),dt*1.06,0.6);vec3 L;vec3 P0=diffuseColor.rgb;'+
     GL_KEYS.map(k=>'L=_lay(uG_'+k+',p,q,'+GLAY[k].k.toFixed(4)+',mt);'+(k==='litter'?'L=mix(L,_lay(uG_wetmoss,p,q,'+GLAY.wetmoss.k.toFixed(4)+',mt),smoothstep(0.3,0.75,texture2D(uMacro,p*0.013+0.5).g)*0.75);':'')+(keep[k]?'diffuseColor.rgb=mix(diffuseColor.rgb,P0*L/max(vec3(0.12),vec3(dot(L,vec3(0.333))))*0.95,'+W[k]+');':'diffuseColor.rgb=mix(diffuseColor.rgb,diffuse*L*1.25,'+W[k]+');')).join('')+
     // far off, the forest floor reads as the canopy over it (the trees there are impostors, too small to cover it)
     'L=_lay(uG_canopy,p,q,'+GLAY.canopy.k.toFixed(4)+',mt);diffuseColor.rgb=mix(diffuseColor.rgb,diffuse*L*1.2,vL0.x*smoothstep(380.0,1100.0,length(cameraPosition-vGWP))*0.9);'+'}';}
   else body='{vec3 dt=texture2D(uDetail,vGWP.xz*0.17).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.023+0.37).rgb;diffuseColor.rgb*=dt*dt2*1.12;}';
-  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+decl).replace('#include <map_fragment>','#include <map_fragment>\n'+body);};
+  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+decl).replace('#include <map_fragment>','#include <map_fragment>\n'+body+'\n/*KGROUND*/');};
+ KGI=THRONE.kgGround(m,{key:'throne-isle',keys:GL_KEYS,W:GW,GLAY,gain:{sinter:2.0,rim:2.0,sulphur:2.0},tint:{sinter:'diffuseColor.rgb',rim:'diffuseColor.rgb',sulphur:'diffuseColor.rgb'},extra:GLAY?[{name:'wetmoss',map:GLAY.wetmoss.map,k:GLAY.wetmoss.k,w:'('+GW.litter+')*smoothstep(0.3,0.75,texture2D(uMacro,vGWP.xz*0.013+0.5).g)*0.75',tint:'diffuse',gain:1.25}]:[]});   /* after the page's own hook */
  return m;}
 // a vertex's layer weights
 function layersAt(x,z,h,at,L0,L1,k,L2){const ab=h-SEA,si=at('sinter'),dm=Math.hypot(x-MUD.x,z-MUD.z),dl=Math.hypot(x-LAGOON.x,z-LAGOON.z);
@@ -102,7 +111,7 @@ const GROUND=(function(){const pos=new Float32Array(GNX*GNX*3),uv=new Float32Arr
  /* THE FACES (2026-10-26): the rock field is read off the 11 m field cache, too coarse for the sea cliffs' ~10 m walls, which took the forest
     floor's paint; the mesh's own normals find them: where a vertex leans past ~50 degrees the library's flow-banded basalt (ground.basalt, L2.y) */
  {const N=g.attributes.normal.array;for(let k=0;k<GNX*GNX;k++){const st=1-N[k*3+1];if(st<.3)continue;L2[k*4+1]=smooth(.3,.55,st)*smooth(SEA-1,SEA+.5,GH[k])*.95;}}
- const m=new THREE.Mesh(g,groundMat(TEX_GROUND));m.userData.probeSkip=true;m.userData.inspectLabel='The geyser isle';scene.add(m);return m;})();
+ const m=THRONE.kgCavity(new THREE.Mesh(g,groundMat(TEX_GROUND)));m.userData.probeSkip=true;m.userData.inspectLabel='The geyser isle';scene.add(m);return m;})();
 _mark('ground');
 // THE BASIN'S PATCH: sub x sub vertices a coarse cell; its painted texture its own (0.9 m a pixel), the fields computed
 // directly where they are fine-grained (the springs' rims, the mats), the cache elsewhere
@@ -121,7 +130,7 @@ const GROUND_PATCH=(function(){const P=PATCH,nx=(P.i1-P.i0)*P.sub+1,nz=(P.j1-P.j
  for(let j=0;j<nz-1;j++)for(let i=0;i<nx-1;i++){const a=j*nx+i,b=a+nx,c=b+1,d=a+1;idx[t++]=a;idx[t++]=b;idx[t++]=d;idx[t++]=b;idx[t++]=c;idx[t++]=d;}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('uv',new THREE.BufferAttribute(uv,2));
  g.setAttribute('aL0',new THREE.BufferAttribute(L0,4));g.setAttribute('aL1',new THREE.BufferAttribute(L1,4));g.setAttribute('aL2',new THREE.BufferAttribute(L2,4));
- g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();const m=new THREE.Mesh(g,groundMat(TEX_PATCH));m.userData.probeSkip=true;m.userData.inspectLabel='The geyser basin';scene.add(m);return m;})();
+ g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();const m=THRONE.kgCavity(new THREE.Mesh(g,groundMat(TEX_PATCH)));m.userData.probeSkip=true;m.userData.inspectLabel='The geyser basin';scene.add(m);return m;})();
 _mark('patch');
 
 // ---------------------------------------------------------------- THE SEA, THE FALL, THE STREAMS: on core/water (89w-host-water.js)

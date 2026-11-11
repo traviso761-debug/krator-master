@@ -8,13 +8,15 @@
 // the ground under a burnt patch of grass is black where the grass is. SEAGRASS meadows darken the lagoon's sand in the
 // kit's own meadow pattern (a stand-in for the owner's lagoon floor: KNOWN_ISSUES.md). The vent's field paints its
 // sinter, run-off film and thermophile mats by the geyser kit's record (GEYSER.at), as the geyser kit's own host does.
-REGISTER({name:'The island (a Ring Sea isle)',x:-200,z:50,y:-40,r:1900,h:300});
-REGISTER({name:BAY.name+' (mangroves on the mud, seagrass and coral heads inside the reef)',x:BAY.x,z:BAY.z,y:-4,r:BAY.r,h:30,bay:true});
-REGISTER({name:BENCH.name,x:BENCH.x,z:BENCH.z,y:-1,r:BENCH.r,h:12,bench:true});
-REGISTER({name:PAN.name,x:PAN.x,z:PAN.z,y:-1,r:PAN.rx,h:12,pan:true});
-REGISTER({name:VENT.name,x:VENT.x,z:VENT.z,y:landH(VENT.x,VENT.z)-6,r:VENT.r*1.2,h:80,vent:true});
-REGISTER({name:GARDEN.name,x:GARDEN.x,z:GARDEN.z,y:landH(GARDEN.x,GARDEN.z)-10,r:170,h:40,garden:true});
-REGISTER({name:GARDEN2.name,x:GARDEN2.x,z:GARDEN2.z,y:landH(GARDEN2.x,GARDEN2.z)-14,r:90,h:50,garden:true});
+// a station's stage names its own region and marks a place its map has not got (off: true; STATION, its 45-host-stage.js): no volume for it
+const ONMAP=P=>!P.off;
+if(typeof STATION!=='undefined'&&STATION.region)REGISTER(STATION.region);else REGISTER({name:'The island (a Ring Sea isle)',x:-200,z:50,y:-40,r:1900,h:300});
+if(ONMAP(BAY))REGISTER({name:BAY.name+' (mangroves on the mud, seagrass and coral heads inside the reef)',x:BAY.x,z:BAY.z,y:-4,r:BAY.r,h:30,bay:true});
+if(ONMAP(BENCH))REGISTER({name:BENCH.name,x:BENCH.x,z:BENCH.z,y:-1,r:BENCH.r,h:12,bench:true});
+if(ONMAP(PAN))REGISTER({name:PAN.name,x:PAN.x,z:PAN.z,y:-1,r:PAN.rx,h:12,pan:true});
+if(ONMAP(VENT))REGISTER({name:VENT.name,x:VENT.x,z:VENT.z,y:landH(VENT.x,VENT.z)-6,r:VENT.r*1.2,h:80,vent:true});
+if(ONMAP(GARDEN))REGISTER({name:GARDEN.name,x:GARDEN.x,z:GARDEN.z,y:landH(GARDEN.x,GARDEN.z)-10,r:170,h:40,garden:true});
+if(ONMAP(GARDEN2))REGISTER({name:GARDEN2.name,x:GARDEN2.x,z:GARDEN2.z,y:landH(GARDEN2.x,GARDEN2.z)-14,r:90,h:50,garden:true});
 
 // ---------------------------------------------------------------- the paint (per vertex)
 const K=hx=>new THREE.Color(hx);
@@ -54,25 +56,43 @@ TEX_MACRO.wrapS=TEX_MACRO.wrapT=THREE.RepeatWrapping;TEX_MACRO.encoding=THREE.Li
 // key: the layer; [procedural colour (sRGB), how strongly the detail map shows, the pack ('ringisles' or 'geyser')]
 const GL_KEYS={litter:[0x3a3426,.6],sand:[0xd8ccae,.35],wetsand:[0xa89c7e,.35],grass:[0x5e6a34,.5],cured:[0xa89660,.5],burn:[0x24201c,.5],
  steppe:[0x8a5a3e,.45],salt:[0xece6da,.3],mud:[0x4a4032,.4],reef:[0x9a9482,.6],soil:[0x5a4630,.4],damp:[0xb8a98a,.35],shingle:[0x8c867a,.5],sinter:[0xdcd8cc,.35,'geyser']};
+// a station drops the layers its ground has nothing for (STATION.dropLayers: the high isle has no pan, no vent, no mangal, no damp lee sand), each then a
+// constant colour with no sampler, so its units go to what the station adds (its strata)
+const GL_DROP=new Set(typeof STATION!=='undefined'&&STATION.dropLayers||[]);
+// a station may also SHARE a layer's sampler (STATION.shareLayers {layer: the layer whose map it reads}): the layer reads that map's detail, recoloured
+// to its own procedural colour by luminance, and keeps no unit of its own (2026-11-09: the high isle's ground read 18 units with its strata, its fog belt
+// and the shore's bed: wet sand reads the sand's map, cured grass the grass's)
+const GL_SHARE=typeof STATION!=='undefined'&&STATION.shareLayers||{};
 const GLAY=(function(){if(typeof KMAT==='undefined'||KMAT.mode!=='lib')return null;const o={};
- for(const k in GL_KEYS){const P=KMAT.packed(GL_KEYS[k][2]||'ringisles','ground.'+k);if(P)o[k]={map:KMAT.textures(P,{aniso:8}).map,k:1/P.scale[0]};}return o;})();
+ for(const k in GL_KEYS){if(GL_DROP.has(k)||GL_SHARE[k])continue;const P=KMAT.packed(GL_KEYS[k][2]||'ringisles','ground.'+k);if(P)o[k]={map:KMAT.textures(P,{aniso:8}).map,k:1/P.scale[0]};}return o;})();
 const GRU={uT:{value:0},uSun:{value:new THREE.Vector3(...SUN_POS).normalize()},uSky:{value:new THREE.Color(0xc8d4d4)},uLight:{value:1}};
+// THE LIBRARY LAYERS ON KGROUND (43-core-ground.js; BACKPORT.md's ground row, the final rebuild, pair 8): the Throne's way for a Lambert ground of many
+// layers (THRONE.layGLSL, the Throne read in place): each library layer is read through KGROUND's own sampler, Mikkelsen's hex tiling in place of the
+// geyser kit's two turned reads, and its distance scale (the tile doubles past 60 m, the distance from the fragment's depth: r128 uploads no
+// cameraPosition to a Lambert ground). Every layer keeps its documented mask and its place in the order below (the vertex weights from paintAt:
+// the fields beach, dune, mangal, reef, bench, pan, garden, lagoon, the classes, the burn mosaic, the geyser kit's record). ?kground=0 for the old sampler.
+// The detail map is declared only where a layer has no library set (the procedural colours): with the library, the ground reads fifteen units, so one
+// is left for the sun's shadow map (89zz-host-core.js counts them)
+const USE_KG=typeof KGROUND!=='undefined'&&new URLSearchParams(location.search).get('kground')!=='0';
 const MAT_GROUND=new THREE.MeshLambertMaterial({color:0xffffff});
-MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.uniforms.uMacro={value:TEX_MACRO};Object.assign(sh.uniforms,GRU);
- const lib=k=>GLAY&&GLAY[k];
+MAT_GROUND.onBeforeCompile=sh=>{const lib=k=>GLAY&&GLAY[k],shr=k=>!!(GL_SHARE[k]&&lib(GL_SHARE[k])),allLib=Object.keys(GL_KEYS).every(k=>lib(k)||shr(k)||GL_DROP.has(k)),STR=typeof STATION!=='undefined'&&STATION.strata?STATION.strata:null;if(STR)STR.inject(sh);   /* its uniforms, varyings and strataColor() (KSTRATA's three.js half) */if(!allLib)sh.uniforms.uDetail={value:TEX_DETAIL};sh.uniforms.uMacro={value:TEX_MACRO};Object.assign(sh.uniforms,GRU);
  for(const k in GL_KEYS)if(lib(k))sh.uniforms['uG_'+k]={value:GLAY[k].map};
  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute vec4 aC,aT,aU,aW,aV;varying vec4 vC,vT,vU,vW,vV;varying vec3 vGWP;')
   .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vC=aC;vT=aT;vU=aU;vW=aW;vV=aV;');
  const libKeys=Object.keys(GL_KEYS).filter(lib);
+ const lum=c=>.2126*c.r+.7152*c.g+.0722*c.b;
  const L=k=>{const P=GL_KEYS[k];if(lib(k))return'_lay(uG_'+k+',p,q,'+GLAY[k].k.toFixed(4)+',mt)';const c=new THREE.Color(P[0]).convertSRGBToLinear();
+  if(shr(k)){const s=GL_SHARE[k],cs=new THREE.Color(GL_KEYS[s][0]).convertSRGBToLinear();
+   return'(vec3('+c.r.toFixed(4)+','+c.g.toFixed(4)+','+c.b.toFixed(4)+')*(dot(_lay(uG_'+s+',p,q,'+GLAY[s].k.toFixed(4)+',mt),vec3(0.2126,0.7152,0.0722))*'+(1/Math.max(1e-4,lum(cs))).toFixed(4)+'))';}
+  if(GL_DROP.has(k))return'vec3('+c.r.toFixed(4)+','+c.g.toFixed(4)+','+c.b.toFixed(4)+')';
   return'(vec3('+c.r.toFixed(4)+','+c.g.toFixed(4)+','+c.b.toFixed(4)+')*mix(1.0,dt.r*1.08,'+P[1].toFixed(2)+'))';};
- const decl='uniform sampler2D uDetail,uMacro;uniform float uT,uLight;uniform vec3 uSun,uSky;varying vec4 vC,vT,vU,vW,vV;varying vec3 vGWP;'+
-  (libKeys.length?'uniform sampler2D '+libKeys.map(k=>'uG_'+k).join(',')+';':'')+GEYSER.GLSL_LAY+
+ const decl='uniform sampler2D '+(allLib?'':'uDetail,')+'uMacro;uniform float uT,uLight;uniform vec3 uSun,uSky;varying vec4 vC,vT,vU,vW,vV;varying vec3 vGWP;'+
+  (libKeys.length?'uniform sampler2D '+libKeys.map(k=>'uG_'+k).join(',')+';':'')+'\n'+(typeof KHOOK!=='undefined'?KHOOK.EYE:'vec3 kEye(){return -(viewMatrix[3].xyz*mat3(viewMatrix));}\n')+(typeof THRONE!=='undefined'&&THRONE.layGLSL?THRONE.layGLSL(USE_KG,GEYSER.GLSL_LAY):GEYSER.GLSL_LAY)+
   'vec3 _matCol(float h){vec3 c=vec3(0.36,0.32,0.14);c=mix(c,vec3(0.56,0.3,0.1),smoothstep(0.1,0.17,h));c=mix(c,vec3(0.85,0.46,0.12),smoothstep(0.25,0.32,h));'+
   'c=mix(c,vec3(0.86,0.72,0.2),smoothstep(0.42,0.47,h));c=mix(c,vec3(0.66,0.74,0.36),smoothstep(0.5,0.55,h));return pow(c,vec3(2.2));}';
  // aC: macro rgb, rock; aT: sand, wet sand, salt, mud; aU: litter, green, cured, burn; aW: steppe, reef, soil, seagrass;
  // aV: sinter, heat, film, acid (the vent's)
- const body='vec3 _E=vec3(0.0);{vec2 p=vGWP.xz,q=mat2(0.799,-0.602,0.602,0.799)*p;float mt=smoothstep(0.3,0.7,texture2D(uMacro,p*0.0061).r);vec3 dt=texture2D(uDetail,p*0.13).rgb;'+
+ const body='vec3 _E=vec3(0.0);{vec2 p=vGWP.xz,q=mat2(0.799,-0.602,0.602,0.799)*p;float mt=smoothstep(0.3,0.7,texture2D(uMacro,p*0.0061).r);'+(allLib?'':'vec3 dt=texture2D(uDetail,p*0.13).rgb;')+
   'float rock=vC.a;vec3 base=pow(vC.rgb,vec3(2.2));vec3 c=mix('+L('litter')+'*vec3(0.62,0.6,0.46),base,0.3);'+
   'c=mix(c,'+L('steppe')+'*mix(vec3(1.0),base*2.4,0.3),vW.x);'+
   'c=mix(c,'+L('grass')+'*mix(vec3(1.0),base*2.0,0.2),vU.y);'+
@@ -86,16 +106,18 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.unifor
   'c=mix(c,'+L('sand')+',vT.x);'+
   'c=mix(c,'+L('damp')+',vT.x*(1.0-smoothstep(0.25,1.3,vGWP.y))*0.9);'+
   'c=mix(c,'+L('shingle')+',rock*(1.0-smoothstep(0.8,3.5,vGWP.y))*0.75);'+
+  /* a station's strata on the steep ground (STATION.strata, KSTRATA: the high isle's basalt flows on the valley walls), over the rock the slope makes */
+  (STR?'c=mix(c,strataColor(vSWP,vSWN)*(0.82+0.36*mt),smoothstep(0.15,0.6,rock)*(1.0-vT.x)*0.9);':'')+
   'c=mix(c,'+L('wetsand')+'*vec3(0.42,0.5,0.46),vT.y);'+
   // the seagrass meadows: blades combed by the current, dark green over the lagoon's sand; with the library's seagrass floor on the sand the painted meadow is only a third as strong (the floor has its own)
-  '{float sg=texture2D(uMacro,vec2(p.x*0.35,p.y*0.05)).b*0.6+texture2D(uMacro,p*0.09).g*0.6;c=mix(c,pow(vec3(0.16,0.26,0.12),vec3(2.2))*(0.7+0.6*sg),vW.w*smoothstep(0.35,0.6,sg)*'+(lib('wetsand')?'0.3':'0.9')+');}'+
+  '{float sg=texture2D(uMacro,vec2(p.x*0.35,p.y*0.05)).b*0.6+texture2D(uMacro,p*0.09).g*0.6;c=mix(c,pow(vec3(0.16,0.26,0.12),vec3(2.2))*(0.7+0.6*sg),vW.w*smoothstep(0.35,0.6,sg)*'+(lib('wetsand')||shr('wetsand')?'0.3':'0.9')+');}'+
   'c=mix(c,c*0.7+vec3(0.02,0.02,0.01),rock*0.3);'+
   // the vent's field (the geyser kit's record): sinter, its mats by the heat on the film, acid clay
   'c=mix(c,'+L('sinter')+'*vec3(0.78,0.76,0.72),vV.x);'+
   '{float heat=vV.y,film=vV.z;float st=texture2D(uMacro,p*0.21).b*0.7-0.35;float w=film*(1.0-smoothstep(0.55,0.62,heat+st*0.09))*smoothstep(0.015,0.06,heat);'+
   'c=mix(c,_matCol(heat+st*0.09)*(0.75+0.5*texture2D(uMacro,p*0.3).b),clamp(w*1.5,0.0,1.0)*0.9);c*=1.0-0.25*film;'+
   'c=mix(c,pow(vec3(0.88,0.84,0.74),vec3(2.2)),vV.w*0.85);'+
-  'vec3 V=normalize(cameraPosition-vGWP);float sp=pow(max(dot(vec3(0.0,1.0,0.0),normalize(uSun+V)),0.0),90.0);_E+=film*sp*0.4*vec3(1.0,0.95,0.85)*uLight;}'+
+  'vec3 V=normalize(kEye()-vGWP);float sp=pow(max(dot(vec3(0.0,1.0,0.0),normalize(uSun+V)),0.0),90.0);_E+=film*sp*0.4*vec3(1.0,0.95,0.85)*uLight;}'+
   'diffuseColor.rgb=c;}';
  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+decl).replace('#include <map_fragment>','#include <map_fragment>\n'+body)
   .replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>\n totalEmissiveRadiance+=_E;');};
@@ -109,7 +131,9 @@ const PATCHES=[{name:'The vent\'s field',x0:VENT.x-340,z0:VENT.z-340,x1:VENT.x+3
  {name:'The village gardens',x0:GARDEN.x-200,z0:GARDEN.z-200,x1:GARDEN.x+200,z1:GARDEN.z+200,cs:1.5},
  {name:'The upper gardens',x0:GARDEN2.x-110,z0:GARDEN2.z-110,x1:GARDEN2.x+110,z1:GARDEN2.z+110,cs:1.5}];
 // the patches snapped to the coarse grid so the holes fit them
-const CS0=5;PATCHES.forEach(P=>{['x0','z0'].forEach(k=>P[k]=Math.floor(P[k]/CS0)*CS0);['x1','z1'].forEach(k=>P[k]=Math.ceil(P[k]/CS0)*CS0);});
+const CS0=typeof STATION!=='undefined'&&STATION.groundCs?STATION.groundCs:5;   /* a station's grid (its stage's STATION): a wider map, a coarser grid */
+for(let i=PATCHES.length-1;i>=0;i--){const P=PATCHES[i];if(P.x1<TERR.X0||P.x0>TERR.X1||P.z1<TERR.Z0||P.z0>TERR.Z1)PATCHES.splice(i,1);}   /* a place a station's map has not got (off it) */
+PATCHES.forEach(P=>{['x0','z0'].forEach(k=>P[k]=Math.floor(P[k]/CS0)*CS0);['x1','z1'].forEach(k=>P[k]=Math.ceil(P[k]/CS0)*CS0);});
 function groundMesh(x0,z0,x1,z1,cs,label,hole,skirt){const nx=Math.round((x1-x0)/cs),nz=Math.round((z1-z0)/cs),W=nx+1,NV=W*(nz+1),NS=skirt?2*(nx+nz):0,N=NV+NS;
  const pos=new Float32Array(N*3),nor=new Float32Array(N*3),aC=new Uint8Array(N*4),aT=new Uint8Array(N*4),aU=new Uint8Array(N*4),aW=new Uint8Array(N*4),aV=new Uint8Array(N*4);
  const H=new Float32Array(NV);for(let j=0;j<=nz;j++)for(let i=0;i<=nx;i++)H[j*W+i]=terrainH(x0+i*cs,z0+j*cs);

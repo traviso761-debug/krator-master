@@ -1,6 +1,6 @@
 {
  "build": "cut",
- "note": "The Cut kit's adapter onto the material library (core/materials/PLAN.md; biomes/cut/PLAN.md, Textures). The natives' sheets (card.bamboo.giant, card.reed, card.rankgrass, card.crop.melon: 3x3, each card geometry takes its own cell in its uv, so no 'cell' here) and the hyperbamboo's culm (bark.bamboo.jade, a detail map normalised to the culm's tint); the host's ground layers (47-host-land.js, STAGE.layers): ground.salt and ground.efflorescence on the salt steppe, the lake bed's shells on the shore, leaf litter under the forest, rock.cut.polished on the cut faces and rock.lichen.circles over them. Run python3 tools/textures/pack.py biomes/cut after any change, then python3 build.py (and --station wall, --station face).",
+ "note": "The Cut kit's adapter onto the material library (core/materials/PLAN.md; biomes/cut/PLAN.md, Textures). The natives' sheets (card.bamboo.giant, card.reed, card.rankgrass, card.crop.melon: 3x3, each card geometry takes its own cell in its uv, so no 'cell' here) and the hyperbamboo's culm (bark.bamboo.jade, a detail map normalised to the culm's tint); the host's ground layers (47-host-land.js, STAGE.layers): ground.salt and ground.efflorescence on the salt steppe, the lake bed's shells on the shore, leaf litter under the forest, rock.cut.polished on the cut faces and rock.lichen.circles over them. Run python3 tools/textures/pack.py biomes/cut after any change, then python3 build.py (and --station wall, --station face). Pair 10 (2026-11-04): rock.megabreccia (ground.breccia) is the polished face's grain; since 2026-11-10 rock.megabreccia.polished, the sawn and polished slab (PROMPTS-NEEDED.md section 33, delivered), under KSTRATA's megabreccia blocks (stations/face/48z-host-face.js), a grey detail normalised to its mean.",
  "size": 512,
  "families": {
   "hleaf": {
@@ -145,6 +145,20 @@
     "mean": null
    },
    "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "ground.breccia": {
+   "lib": "rock.megabreccia.polished",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.7
+   },
+   "roughLift": 0.0,
    "specular": 0.2,
    "mapOnly": true
   },

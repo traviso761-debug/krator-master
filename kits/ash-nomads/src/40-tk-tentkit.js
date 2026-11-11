@@ -56,9 +56,9 @@ function tkYurt(o){const r=o.r,wH=o.wallH,cH=o.crownH,cR=o.crownR||Math.max(.5,r
  ring('lacq',0,cH-.08,0,cR,.07,null,0,0,0,24);ring('lacq',0,cH-.02,0,cR*.62,.04,null,0,0,0,18);
  for(let i=0;i<4;i++){const a=i*PI/4;const p=[Math.cos(a)*cR,cH-.06,Math.sin(a)*cR],q=[-p[0],cH-.06,-p[2]];sagRope('lacq',p,q,-.22,.03,null,6);}
  if(o.posts){for(const s of [-1,1])pole('lacq',[s*cR*.5,0,0],[s*cR*.5,cH-.12,0],.07,null,8);}
- // the door: frame, carved double leaves opened inward, the rolled felt curtain over it
+ // the door: frame, carved double leaves (core/door: shut, they open inward on E or an NPC), the rolled felt curtain over it
  W(0,0,r,0,()=>{const fr=o.doorCol||null;box('lacq',-dW/2-.07,0,0,.14,dH+.1,.16,fr);box('lacq',dW/2+.07,0,0,.14,dH+.1,.16,fr);box('lacq',0,dH,0,dW+.28,.16,.18,fr);box('carved',0,0,0,dW+.28,.08,.2,0x9a6a3a);
-  for(const s of [-1,1])W(s*dW/2,0,-.04,s*1.25,()=>{box('lacq',-s*dW/4,.06,0,dW/2-.02,dH-.08,.05,fr);box('brass',-s*dW/4,dH*.35,.03,dW/2-.16,.05,.02,0xc8963a);box('brass',-s*dW/4,dH*.7,.03,dW/2-.16,.05,.02,0xc8963a);});
+  svLeaf(0,.06,-.04,0,dW-.04,dH-.08,{split:true,mk:'lacq',col:fr,t:.05,style:'panel',name:'ger door'});
   beam(o.band||'felt',[-dW/2-.16,dH+.25,.2],[dW/2+.16,dH+.25,.2],.13,o.band?null:fc,true,10);});   // the door felt, rolled up over the lintel
  tkFloor(o.floor||'felt',o.floorCol||(o.floor?null:P('feltG')),r-.03);
  door(0,0,r+.1,0,dW);

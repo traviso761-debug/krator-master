@@ -15,8 +15,9 @@ Two kinds of finding, both from the text of a build (no build is run):
   OWN      a fragment of the build's own src/ (vendored 86-bio-* copies and core copies are skipped) writes what a
            core module already is: a PRNG (Math.random, mulberry32, a hand-rolled LCG), a fract(sin()) hash, a value
            noise (fbm / vnoise / perlin / simplex), getImageData (placement reads core/mask), a water ripple shader
-           (MAT_WATER =; core/water), its own sky dome (a skyTex BackSide dome; core/atmos). Each finding is counted per
-           file and rule.
+           (MAT_WATER =; core/water), its own sky dome (a skyTex BackSide dome; core/atmos), a copy of the placeholder sky
+           (a KratorSky declared in its own files; core/atmos/placeholder is read by path, MODULARITY-PLAN.md step 1). Each
+           finding is counted per file and rule.
 
 Exceptions, each a table in this file with its reason: NOT_APPLICABLE (a module a build cannot use); PLACED (settlements
 already placed on the world map with their biome data: Pinnacle Rock, the isle demo, Hook, Longsong; the biome-sync rules,
@@ -54,7 +55,7 @@ NOT_APPLICABLE = {
     'kits/resources': {'tags': 'data kit; nodes are tagged by the works that take them'},
 }
 
-ALL_MODULES = ['atmos', 'biome', 'city', 'clock', 'export', 'furnish', 'hamlet', 'host', 'lod', 'mask', 'materials', 'minimap', 'rand',
+ALL_MODULES = ['atmos', 'biome', 'city', 'clock', 'engine', 'export', 'furnish', 'hamlet', 'host', 'lod', 'mask', 'materials', 'minimap', 'rand',
                'sched', 'simulation', 'space', 'tags', 'terrain', 'walk', 'water']
 
 # Settlements already PLACED on a site of the world map, with that site's biome data (the owner, 2026-10-23). They read the
@@ -92,6 +93,7 @@ OWN = {
     'getImageData': re.compile(r'\bgetImageData\s*\('),
     'water-shader': re.compile(r'\bMAT_WATER\s*='),
     'sky-dome': re.compile(r'\bskyTex\b[^;]{0,80}BackSide|BackSide[^;]{0,80}\bskyTex\b'),
+    'sky-copy': re.compile(r'^(?:const|let|var)\s+KratorSky\s*=', re.M),
 }
 
 # directories of a build whose fragments are written by the build (the rest of src/ is vendored or generated)
@@ -106,6 +108,13 @@ def builds(only=None):
             if only and d != only:
                 continue
             out.append(d)
+    # a SOURCE KIT: a kit folder with a src/ and no build of its own (a culture kit lifted out of a settlement, MODULARITY-
+    # PLAN.md step 4: kits/iziz-vernacular, kits/highlands). Its fragments are scanned for OWN findings like a build's, so a
+    # finding does not drop out of sight when its file moves; MISSING does not apply (the builds that read it take the modules)
+    for d in glob.glob(os.path.join(ROOT, 'kits', '*', 'src')):
+        k = os.path.relpath(os.path.dirname(d), ROOT).replace(os.sep, '/')
+        if not os.path.exists(os.path.join(ROOT, k, 'build.py')) and (not only or k == only):
+            out.append(k)
     return sorted(out)
 
 
@@ -143,9 +152,10 @@ def scan(build):
     found = {}
     kind = build.split('/')[0]
     bp = os.path.join(ROOT, build, 'build.py')
-    mods = modules_named(open(bp, encoding='utf-8').read())
+    source_kit = not os.path.exists(bp)
+    mods = set() if source_kit else modules_named(open(bp, encoding='utf-8').read())
     skip_sync = kind in ('settlements', 'kits', 'openworld') and build not in PLACED
-    for m in REQUIRED.get(kind, []):
+    for m in ([] if source_kit else REQUIRED.get(kind, [])):
         if m not in mods and m not in NOT_APPLICABLE.get(build, {}):
             found['%s: MISSING core/%s' % (build, m)] = 1
     if kind in ('settlements', 'openworld') and 'simulation' in mods and 'city' not in mods and build not in SINGLE_COMPLEX and build not in CAVERN:

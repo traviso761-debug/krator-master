@@ -1,0 +1,34 @@
+{
+ "note": "Station 2, the lakes of the north rim (the N rim, the glass rim). kin: the Rift's cloud forest (beard tree, monkey-puzzle, cloud tree-fern) and the S highlands' crozier tree fern (a stray from Dalab's plantings in the W), read in place: PLAN.md section 3, the N rim's list. The pack families are the ones the rows draw with (measured on the page, 2026-11-03: every material a kin mesh uses, by its vendor slot), so the page stays under the gallery's 16 MB",
+ "kin": {
+  "rift": [
+   [
+    "src/50-biome-rift-species.js",
+    "src/52-biome-rift-library.js",
+    "src/55-biome-rift-trees.js"
+   ],
+   "RIFT",
+   [
+    "bark1",
+    "bark3",
+    "leaflet",
+    "beard",
+    "moss",
+    "bloom",
+    "anemone"
+   ]
+  ],
+  "shighlands": [
+   [
+    "src/50-biome-shigh-species.js",
+    "src/55-biome-shigh-trees.js"
+   ],
+   "SHIGH",
+   [
+    "bark.scars",
+    "fern"
+   ],
+   "shigh"
+  ]
+ }
+}

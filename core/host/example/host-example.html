@@ -1605,6 +1605,13 @@ var KHOST_EDITS = (function(){ var f = null;
 //                                                           home and grown (`grownAt` past), times their condition: SIM.mood; `tended`: only while
 //                                                           its workers are there; `share`: each of `out` in its share, not
 //                                                           the one most needed)
+//   SIM.site({id, kind, goods?, grade?, yield?, amount?, regen?, capacity?, settlement?})   a resource site, keyed to its world
+//                                                           record's stable id: `yield` multiplies its recipes' rate (the grade's); `amount`
+//                                                           null is endless (the default: a node, a pasture, a stand that regrows),
+//                                                           a number depletes by a unit made, `regen` back a night up to the start;
+//                                                           a recipe's `site` draws on it; an emptied site blocks ('depleted: id')
+//   SIM.stockpile(settlement|null, {good: {min, target, max, reserve}})   the policy on a good: see 77-sim-6-govern.js
+//   SIM.sitesReport(settlement?) -> [{id, kind, grade, yield, amount, start, taken, capacity}]
 //   SIM.cart(actor)                                        an actor the economy drives (SIM.step leaves it alone)
 //   SIM.supply(good, n, whole?) -> n had                   a draw on the warehouses (`whole`: all of n or nothing)
 //   SIM.produce(place, good, n) -> n stored                a one-off yield (a slaughter's meat) into a place's store
@@ -1655,7 +1662,15 @@ var KHOST_EDITS = (function(){ var f = null;
     if(P.storeKind==='warehouse'){ if(E.warehouses.indexOf(P)<0) E.warehouses.push(P); } else if(E.sites.indexOf(P)<0) E.sites.push(P); return P; };
   SIM.recipe = function(id, o){ var E=SIM.ECON, P=SIM.R.place[id]; if(!E || !P) return null; if(!E.stores[id]) SIM.store(id, { kind:'site', cap:o.cap });
     var outs=(o.out||[]).concat(o.herd ? o.herd.out : []); outs.forEach(function(g){ if(!E.goods[g]) throw new Error('SIM.recipe '+id+': unknown good '+g); });
-    E.recipes[id]={ out:(o.out||[]).slice(), rate:o.rate||0, herd:o.herd ? { out:o.herd.out.slice(), rate:o.herd.rate, tended:!!o.herd.tended, share:o.herd.share||null } : null }; return P; };
+    E.recipes[id]={ out:(o.out||[]).slice(), rate:o.rate||0, herd:o.herd ? { out:o.herd.out.slice(), rate:o.herd.rate, tended:!!o.herd.tended, share:o.herd.share||null } : null };
+    if(o.site!=null){ if(!E.resSites || !E.resSites[o.site]) throw new Error('SIM.recipe '+id+': unknown site '+o.site); E.recipes[id].site=o.site; } return P; };
+  /* a resource site (opt-in): see the head of this file */
+  SIM.site = function(o){ var E=o.settlement!=null ? SIM.econ(o.settlement) : SIM.ECON; if(!E) return null; if(!o.id) throw new Error('SIM.site: an id');
+    var S=(E.resSites||(E.resSites={}))[o.id]={ id:o.id, kind:o.kind||null, goods:(o.goods||[]).slice(), grade:o.grade==null ? null : o.grade, yield:o.yield==null ? 1 : o.yield,
+      amount:o.amount==null ? null : o.amount, start:o.amount==null ? null : o.amount, regen:o.regen==null ? 0 : o.regen, capacity:o.capacity==null ? null : o.capacity, taken:0 }; return S; };
+  SIM.sitesReport = function(s){ var E=s!=null ? SIM.econ(s) : SIM.ECON, out=[]; if(!E || !E.resSites) return out;
+    Object.keys(E.resSites).forEach(function(id){ var S=E.resSites[id]; out.push({ id:id, kind:S.kind, goods:S.goods.slice(), grade:S.grade, yield:S.yield, amount:S.amount, start:S.start, taken:S.taken, capacity:S.capacity }); }); return out; };
+  SIM.stockpile = function(s, policy){ var E=s!=null ? SIM.econ(s) : SIM.ECON; if(!E) return null; var P=E.policy||(E.policy={}); Object.keys(policy).forEach(function(g){ P[g]=Object.assign(P[g]||{}, policy[g]); }); return P; };
   /* a one-off yield (a slaughter's meat): into the place's store, up to its cap; -> what went in */
   SIM.produce = function(id, g, n){ var E=SIM.ECON, P=SIM.R.place[id]; if(!E || !P || !E.goods[g] || !(n>0)) return 0; if(!E.stores[id]) SIM.store(id, { kind:'site' });
     var k=Math.max(0, Math.min(Math.floor(n), P.cap-held(P))); if(k<Math.floor(n)) stat(E.blocked, 'full: '+P.kind); if(k){ P.stock[g]=(P.stock[g]||0)+k; dayStat('made', g, k); } return k; };
@@ -1708,7 +1723,7 @@ var KHOST_EDITS = (function(){ var f = null;
      so what piles at the makers' own stores is not made again; and while one of its goods is under target it makes none
      that is over (the weavers short of cotton for cloth do not fill their hours with mats) */
   function pickDays(E, g){ var V=E.govern && E.govern.view[g]; return V ? (V.target>0 ? V.pos/V.target : Infinity) : daysOf(g); }
-  function make(P, outs, units, ck){
+  function make(P, outs, units, ck, site){
     var E=SIM.ECON, u0=units + (P[ck]||0), whole=Math.floor(u0); P[ck]=u0-whole;
     for(var u=0; u<whole; u++){
       if(held(P)>=P.cap){ stat(E.blocked, 'full: '+P.kind); P[ck]=0; break; }
@@ -1716,6 +1731,8 @@ var KHOST_EDITS = (function(){ var f = null;
       var under=V && outs.length>1 && outs.some(function(g){ return V[g] && !over(g); });   /* a governed maker with a good under target */
       outs.forEach(function(g){ if(!inputsFor(P, g) || (under && over(g))) return; var d=pickDays(E, g); if(best==null || d<bd){ bd=d; best=g; } });
       if(!best){ stat(E.blocked, 'inputs: '+P.kind); P[ck]=0; break; }
+      if(site && site.amount!=null && site.amount<1){ stat(E.blocked, 'depleted: '+site.id); P[ck]=0; break; }
+      if(site){ site.taken++; if(site.amount!=null) site.amount--; }
       useInputs(P, best); P.stock[best]=(P.stock[best]||0)+1; dayStat('made', best, 1);
     }
   }
@@ -1741,7 +1758,7 @@ var KHOST_EDITS = (function(){ var f = null;
     Object.keys(H).forEach(function(id){ var R=E.recipes[id], Hd=R.herd; if(Hd.tended && !W[id]) return;
       if(Hd.share) Hd.out.forEach(function(g, i){ make(SIM.R.place[id], [g], H[id]*Hd.rate*Hd.share[i]*hrs, 'carryH'+i); });   /* co-products in their shares (a duck's eggs and its meat) */
       else make(SIM.R.place[id], Hd.out, H[id]*Hd.rate*hrs, 'carryH'); });   /* tended: only while its keepers are at work (the milking) */   /* the animals first: the milk the dairy then turns */
-    Object.keys(W).forEach(function(id){ var R=E.recipes[id]; if(R.out.length && R.rate) make(SIM.R.place[id], R.out, W[id]*R.rate*hrs, 'carry'); });
+    Object.keys(W).forEach(function(id){ var R=E.recipes[id], St=R.site!=null ? E.resSites[R.site] : null; if(R.out.length && R.rate) make(SIM.R.place[id], R.out, W[id]*R.rate*(St ? St.yield : 1)*hrs, 'carry', St); });
   }
   /* ---------------------------------------------------------------- the imports: sent for, delivered */
   function emptiest(g){ return SIM.ECON.warehouses.slice().sort(function(p, q){ return (p.stock[g]||0)-(q.stock[g]||0) || (p.id<q.id?-1:1); })[0]; }
@@ -1916,6 +1933,9 @@ var KHOST_EDITS = (function(){ var f = null;
 //     spoil:  { good: share of its stock that rots a night },
 //     keep:   { by (the preserving good: 'salt'), goods:[the goods it keeps], share (of what would rot), per (servings a unit keeps) },
 //     season: { by (the seasoning good: 'salt'), mult (a meal's quality while the town holds it), least? (1) } }, {settlement})
+//   SIM.stockpile(s, {good: {min, target, max, reserve}})   (77-sim-6-economy.js) the settlement's policy on a good: `min` a
+//                                  floor on the governor's target, `target` in place of it, `max` its ceiling, and at `max`
+//                                  (its supply line, with `pool`) its makers stop; `reserve` no trade route takes
 //   SIM.economyRules(minute)       SIM.step's last act, after the world's own minute (SIM.stepHooks): every economy's
 //                                  governor, then its spoilage, then its seasoning, each in the economies' order
 //   SIM.economyGoverned(s?)  -> {good: {use, pos, cap, mult, target}}   the governor's last look (its demand a day, its
@@ -2004,9 +2024,12 @@ var KHOST_EDITS = (function(){ var f = null;
       st.made += a*(dm - st.made); st.k += a*(k0 - st.k);
       var use = demand(E, g, minute, memo), pos = position(E, g), cap = st.k>0 ? st.made/st.k : 0;
       (G.pool||[]).forEach(function(o){ var Eo = SIM.econ(o); if(Eo && Eo!==E) pos += position(Eo, g); });   /* `pool`: the towns it works for, their stock its own */
-      var target = Math.max(G.cover*use, (G.least||{})[g]||0), out = use + G.alpha*(target - pos)/G.ti;   /* `least`: a shelf stock kept with no demand */
+      var Pol = (E.policy||{})[g]||{}, target = Pol.target!=null ? Pol.target : Math.max(G.cover*use, (G.least||{})[g]||0, Pol.min||0);   /* `least`: a shelf stock kept with no demand; SIM.stockpile's policy */
+      if(Pol.max!=null && target>Pol.max) target = Pol.max;
+      var out = use + G.alpha*(target - pos)/G.ti, full = Pol.max!=null && pos>=Pol.max;
       var lo = G.minBy && G.minBy[g]!=null ? G.minBy[g] : G.min, m = cap>0 ? out/cap : out>0 ? G.max : lo; want[g] = Math.max(lo, Math.min(G.max, m));   /* never made yet: the most only if it is wanted */
-      wanted[g] = out>0; floor[g] = lo;
+      if(full){ want[g] = 0; lo = 0; }   /* at its `max`: no more of it */
+      wanted[g] = out>0 && !full; floor[g] = lo;
       M.view[g] = { use:use, pos:pos, cap:cap, mult:want[g], target:target };
     });
     Object.keys(E.recipes).forEach(function(id){
@@ -2044,6 +2067,7 @@ var KHOST_EDITS = (function(){ var f = null;
     each(function(E){ if(E.govern) govern(E, minute); });
     each(function(E){ if(E.spoil) spoil(E, minute); });
     each(function(E){ if(E.season) season(E, minute); });
+    if(minute%1440===0) each(function(E){ var R=E.resSites; if(R) Object.keys(R).forEach(function(id){ var S=R[id]; if(S.amount!=null && S.regen>0) S.amount=Math.min(S.start, S.amount+S.regen); }); });   /* a site's nightly regrowth */
   };
   SIM.economyGoverned = function(s){ var E = s!=null ? SIM.econ(s) : SIM.ECON; return E && E.govern ? E.govern.view : null; };
 })(typeof window!=='undefined'?window:globalThis);
@@ -2054,8 +2078,8 @@ var KHOST_EDITS = (function(){ var f = null;
 // SIM.items(config); a world without it decides exactly as before.
 //
 //   SIM.items({ kinds:{id:{cat, slot?, layer?, life?, workLife?, material?, food?, quality?, good?, per?}}, free:[ACT..], secPerMinute, mins,
-//               cool, stale, meal:{mult, single, none, mess, rich}, lack, hurt, heal, low, days, meals, perMeal,
-//               treat:{at, items:[[least wealth, item], ...]}, eatOut:{base, wealth}, retry? (minutes), stagger? (0..1) })
+//               cool, stale, meal:{mult, single, none, mess, rich, pot?, noPot?}, lack, hurt, heal, low, days, meals, perMeal,
+//               treat:{at, items:[[least wealth, item], ...], mix?}, eatOut:{base, wealth}, retry? (minutes), stagger? (0..1) })
 //   SIM.shop(placeId, [item ids])      what a place sells (abstract stock, every purchase logged, unless the economy is on)
 //   SIM.give(a, item, n) / SIM.equip(a, item, wear) / SIM.owns(a, item)
 //   actor: issued (its keeper replaces what wears out; it runs no errands: the slaves), inv {item: n} (unbounded;
@@ -2150,7 +2174,9 @@ var KHOST_EDITS = (function(){ var f = null;
     if(!a.errand && !a.issued){ if(a.hurt!=null && !a.owesP) errand(a, 'poultice', 'free', d*1440); else if(want) errand(a, want, 'free', d*1440);
       /* a treat: the material meter high, the best luxury or household good its wealth reaches */
       else if(I.treat && SIM.NEED && SIM.NEED.idx.material!=null && a.nd && a.nd[SIM.NEED.idx.material]>=I.treat.at){
-        var best=null; I.treat.items.forEach(function(t){ if((a.wealth||0)>=t[0]) best=t[1]; }); if(best) errand(a, best, 'free', d*1440); } }
+        var best=null, can=[]; I.treat.items.forEach(function(t){ if((a.wealth||0)>=t[0]){ best=t[1]; can.push(t[1]); } });
+        if(I.treat.mix && can.length) best=can[Math.floor(hash(a.k, d, 23)*can.length)];   /* `mix` (opt-in): any treat its wealth reaches, by a hash of the person and the day; else the dearest */
+        if(best) errand(a, best, 'free', d*1440); } }
   }
   function errand(a, item, when, minute){
     var I=SIM.ITEMS; if(a.errCool && minute<a.errCool) return false;
@@ -2287,8 +2313,11 @@ var KHOST_EDITS = (function(){ var f = null;
     var st=P.store; if(!st || !I.foods.length){ mealStat(a, 'none'); return M.none; }
     var have=I.foods.filter(function(f){ return st[f]>0; }).sort(function(x, y){ return st[y]-st[x] || (x<y?-1:1); });
     var sz=SIM.economySeasoning ? SIM.economySeasoning() : 1, Q=function(f){ var K=I.kinds[f]; return (K && K.quality!=null ? K.quality : 1)*sz; };   /* a better food (cheese) makes a better meal; a seasoned one too (77-sim-6-govern.js) */
-    if(have.length>=2){ st[have[0]]--; st[have[1]]--; cum(a, 'eaten', have[0]); cum(a, 'eaten', have[1]); mealStat(a, 'meal'); if(Q(have[0])>1 || Q(have[1])>1) mealStat(a, 'fine'); return M.mult*fine*(Q(have[0])+Q(have[1]))/2; }
-    if(have.length===1){ st[have[0]]--; cum(a, 'eaten', have[0]); mealStat(a, 'single'); return M.single*Q(have[0]); }
+    /* a kitchen without its pot (opt-in: `meal.pot` the item, `meal.noPot` the worth of what it cooks; place.potBy who keeps it) */
+    var hp=M.pot && P.potBy!=null ? SIM.R.actor[P.potBy] : null, pot=hp && !SIM.owns(hp, M.pot) ? (M.noPot==null ? 1 : M.noPot) : 1;
+    if(pot<1 && have.length) mealStat(a, 'potless');
+    if(have.length>=2){ st[have[0]]--; st[have[1]]--; cum(a, 'eaten', have[0]); cum(a, 'eaten', have[1]); mealStat(a, 'meal'); if(Q(have[0])>1 || Q(have[1])>1) mealStat(a, 'fine'); return M.mult*fine*pot*(Q(have[0])+Q(have[1]))/2; }
+    if(have.length===1){ st[have[0]]--; cum(a, 'eaten', have[0]); mealStat(a, 'single'); return M.single*pot*Q(have[0]); }
     mealStat(a, 'none'); return M.none;
   }
   /* the items' share of a worker's efficiency: a broken tool, a hurt */
@@ -2660,7 +2689,7 @@ var KHOST_EDITS = (function(){ var f = null;
       var wb=Math.max(rate(EB, g), (R.expect && R.expect[b] && R.expect[b][g]) || 0); if(!(wb>0)) return;   /* `expect`: the receiver's planned use a day, a floor */
       var have=stockIn(EB, g)+sitesIn(EB, g)+atSea(g, b, 'to'), need=Math.ceil(want*wb-have); if(need<=0) return;
       if(fellShort(EA, g)) return;
-      var spare=Math.floor(stockIn(EA, g)-keep*rate(EA, g)); if(spare<=0) return;
+      var spare=Math.floor(stockIn(EA, g)-keep*rate(EA, g)-(((EA.policy||{})[g]||{}).reserve||0)); if(spare<=0) return;   /* a policy's `reserve` stays */
       rows.push({ good:g, days:have/wb, n:Math.min(need, spare, R.most) }); });
     rows.sort(function(p, q){ return p.days-q.days || (p.good<q.good?-1:1); });
     var left=R.cap, out=[];
@@ -2718,6 +2747,89 @@ var KHOST_EDITS = (function(){ var f = null;
         carriers:R.carriers.map(function(C){ return { k:C.k, phase:C.phase, at:C.at!=null ? R.stops[C.at].settlement : null, to:C.to!=null ? R.stops[C.to].settlement : null,
           cargo:C.cargo.map(function(c){ return { good:c.good, n:c.n }; }), eta:C.eta }; }) }; });
     return id!=null ? out[id] || null : out;
+  };
+})(typeof window!=='undefined'?window:globalThis);
+
+// ==================== simulation/77-sim-7-ledger.js
+// ================================================================= CORE — simulation 7: the ledger (the accounting contract)
+// settlements/isle-demo/PLAN-ECONOMY.md, Phase 0; the contract is SCHEMA.md, "The books". Read only: nothing here changes
+// a record or draws a number, so a world runs exactly as before. It adds no counters of its own: it reads the stocks'
+// states (77-sim-7-stocks.js), the economy's running books (77-sim-6-economy.js), the items' (77-sim-6-items.js), the
+// spoilage tally (77-sim-6-govern.js) and the routes (77-sim-6-trade.js).
+//
+//   SIM.ledgerSnap() -> {version, minute, towns:{key: {good: row}}, sea:{route: {'a>b': {good: n}}}, routes:{route: {shipped, landed}}}
+//                       a snapshot of every settlement's books (key '_' on an unkeyed page); plain data, safe to keep,
+//                       to JSON and to compare later. A row: unit, owner, total and its states (production, transit,
+//                       storage), ordered, inbound, outbound; the running flows made, imported, exported, used, bought,
+//                       eaten, spoiled, short
+//   SIM.ledger(a, b, opt) -> {ok, problems:[strings], towns:{key: {good: statement}}, routes:{route: {'a>b': {good: leg}}}, sites:{id: {taken, made, amount}}}
+//                       the statement between two snapshots. opt.tol: the residual allowed (0.5: the stocks round to
+//                       hundredths). A statement: {unit, owner, opening, made, imported, consumed, spoiled, exported,
+//                       closing, residual, abroadOut, abroadIn, inbound, outbound, ordered}. A leg: {shipped, landed,
+//                       seaFrom, seaTo}
+//
+// THE BALANCE, per good and settlement: opening + made + imported - consumed - spoiled - exported = closing. consumed =
+// used - bought + eaten - spoiled: `used` counts a household's purchase, which only moves food into its store, and the
+// spoilage booked used so older books still balance. Inbound, outbound and ordered stand beside the balance: they are in
+// no settlement's closing.
+// THE ROUTES. For each leg a>b and good: shipped = landed + the change at sea. A sender's exports are its shipped loads and
+// what went abroad (abroadOut, off the map: never negative); a receiver's imports its landed loads and what came from
+// abroad (abroadIn: a timer's import or a carrier's lot). So a load is in one settlement, on a route, or off the map,
+// once. Deterministic: no draws.
+(function(root){
+  'use strict';
+  var SIM = root.SIM;
+  SIM.LEDGER_VERSION = 1;
+  var FLOWS = ['made', 'imported', 'exported', 'used', 'short'];
+  function keys(){ return SIM.ECONS ? SIM.ECON_ORDER.slice() : (SIM.ECON ? ['_'] : []); }
+  function econOf(k){ return k==='_' ? SIM.ECON : SIM.econ(k); }
+  function snapTown(k){
+    var E=econOf(k), I=SIM.ITEMS, keyed=k!=='_', St=keyed ? SIM.stocks(k) : SIM.stocks(), B=I ? (keyed ? ((I.statsBy||{})[k]||{}) : I.stats) : {}, out={};
+    Object.keys(E.goods).forEach(function(g){ var r=(St && St.by[g])||{}, o={ unit:E.goods[g].unit||'unit', owner:keyed ? k : null, total:r.total||0, production:r.production||0, transit:r.transit||0,
+        storage:r.storage||0, ordered:r.ordered||0, inbound:keyed && SIM.tradeInbound ? SIM.tradeInbound(g, k) : 0, outbound:keyed && SIM.tradeOutbound ? SIM.tradeOutbound(g, k) : 0,
+        bought:(B.bought||{})[g]||0, eaten:(B.eaten||{})[g]||0, spoiled:(E.spoiled||{})[g]||0 };
+      FLOWS.forEach(function(f){ o[f]=(E[f]||{})[g]||0; }); out[g]=o; });
+    return out;
+  }
+  SIM.ledgerSnap = function(){
+    var out={ version:SIM.LEDGER_VERSION, minute:SIM.minute(), towns:{}, sea:{}, routes:{} }, T=SIM.TRADE;
+    keys().forEach(function(k){ out.towns[k]=snapTown(k); var E=econOf(k), R=E.resSites;
+      if(R) Object.keys(R).forEach(function(id){ var S=R[id]; (out.sites||(out.sites={}))[id]={ settlement:k, goods:S.goods.slice(), taken:S.taken, amount:S.amount, regen:S.regen }; }); });
+    if(T) T.order.forEach(function(id){ var R=T.routes[id], sea=out.sea[id]={};
+      R.carriers.forEach(function(C){ if(C.to==null || !C.cargo.length) return; var key=R.stops[C.from].settlement+'>'+R.stops[C.to].settlement, o=sea[key]||(sea[key]={});
+        C.cargo.forEach(function(c){ o[c.good]=(o[c.good]||0)+c.n; }); });
+      out.routes[id]={ shipped:JSON.parse(JSON.stringify(R.shipped)), landed:JSON.parse(JSON.stringify(R.landed)) }; });
+    return out;
+  };
+  function v(o, k, g){ return ((o||{})[k]||{})[g]||0; }
+  SIM.ledger = function(a, b, opt){
+    var tol=opt && opt.tol!=null ? opt.tol : 0.5, out={ ok:true, problems:[], towns:{}, routes:{} }, bad=function(m){ out.ok=false; out.problems.push(m); }, shipOut={}, landIn={};
+    if(!a || !b || a.version!==b.version){ bad('the snapshots are of different versions'); return out; }
+    Object.keys(b.routes).forEach(function(id){ var Rb=b.routes[id], Ra=a.routes[id]||{}, L=out.routes[id]={}, pairs={};
+      [Rb.shipped, Rb.landed, b.sea[id]||{}, a.sea[id]||{}].forEach(function(o){ Object.keys(o).forEach(function(k){ pairs[k]=1; }); });
+      Object.keys(pairs).forEach(function(k){ var gs={}, leg=L[k]={};
+        [Rb.shipped[k], Rb.landed[k], (b.sea[id]||{})[k], (a.sea[id]||{})[k]].forEach(function(o){ Object.keys(o||{}).forEach(function(g){ gs[g]=1; }); });
+        var from=k.split('>')[0], to=k.split('>')[1];
+        Object.keys(gs).forEach(function(g){ var sh=v(Rb.shipped, k, g)-v(Ra.shipped, k, g), la=v(Rb.landed, k, g)-v(Ra.landed, k, g), s0=v(a.sea[id], k, g), s1=v(b.sea[id], k, g);
+          leg[g]={ shipped:sh, landed:la, seaFrom:s0, seaTo:s1 };
+          if(Math.abs(s0+sh-la-s1)>tol) bad(id+' '+k+' '+g+': '+s0+' at sea + '+sh+' shipped - '+la+' landed is not the '+s1+' at sea');
+          var so=shipOut[from]||(shipOut[from]={}), li=landIn[to]||(landIn[to]={}); so[g]=(so[g]||0)+sh; li[g]=(li[g]||0)+la; }); }); });
+    Object.keys(b.towns).forEach(function(k){ var B=b.towns[k], A=a.towns[k]||{}, T=out.towns[k]={};
+      Object.keys(B).forEach(function(g){ var r=B[g], o=A[g]||{}, d=function(f){ return r[f]-(o[f]||0); };
+        var spoiled=d('spoiled'), consumed=d('used')-d('bought')+d('eaten')-spoiled, st={ unit:r.unit, owner:r.owner, opening:o.total||0, made:d('made'), imported:d('imported'), consumed:consumed, spoiled:spoiled,
+          exported:d('exported'), closing:r.total, inbound:r.inbound, outbound:r.outbound, ordered:r.ordered };
+        st.residual=st.closing-(st.opening+st.made+st.imported-st.consumed-st.spoiled-st.exported);
+        st.abroadOut=st.exported-((shipOut[k]||{})[g]||0); st.abroadIn=st.imported-((landIn[k]||{})[g]||0); T[g]=st;
+        if(Math.abs(st.residual)>tol) bad(k+' '+g+': '+st.opening+' + '+st.made+' made + '+st.imported+' in - '+st.consumed+' consumed - '+st.spoiled+' spoiled - '+st.exported+' out is not the '+st.closing+' held (off by '+st.residual+')');
+        if(st.abroadOut<-tol) bad(k+' '+g+': '+(-st.abroadOut)+' shipped by route but never booked exported');
+        if(st.abroadIn<-tol) bad(k+' '+g+': '+(-st.abroadIn)+' landed by route but never booked imported');
+        if(spoiled>d('used')+tol) bad(k+' '+g+': more spoiled than was booked used'); }); });
+    /* a site: what it gave, against what its settlement made of its goods; a finite site's amount by what it gave and regrew */
+    Object.keys(b.sites||{}).forEach(function(id){ var S=b.sites[id], A=(a.sites||{})[id], d=S.taken-(A ? A.taken : 0), made=0, st=out.towns[S.settlement]||{};
+      S.goods.forEach(function(g){ made+=(st[g]||{}).made||0; }); (out.sites||(out.sites={}))[id]={ taken:d, made:made, amount:S.amount };
+      if(d>made+tol) bad(id+': gave '+d+' but its settlement made '+made+' of '+S.goods.join(', '));
+      if(S.amount!=null && A && S.amount>A.amount-d+tol+S.regen*Math.ceil((b.minute-a.minute)/1440+1)) bad(id+': holds more than it gave and regrew'); });
+    return out;
   };
 })(typeof window!=='undefined'?window:globalThis);
 

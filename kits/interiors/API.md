@@ -27,7 +27,7 @@ A build that vendors it copies `dist/interiors-core.js` into its own `src/` and 
 const R = ROOM({
   building: 'voth_tavern_01',     // the placed building's registry name
   kind: 'tavern',                 // IX.PROGRAMS has: hall bedroom kitchen tavern workshop store shrine
-                                  //   study library school barracks antechamber (anything else: IX.DEFAULT_PROGRAM)
+                                  //   study library school barracks antechamber bath (anything else: IX.DEFAULT_PROGRAM)
   poly: [[x, z], ...],            // floor outline, WORLD metres, the inner face of the walls, either winding
   y: 0.0,                         // floor height
   h: 3.2,                         // clear height to the ceiling

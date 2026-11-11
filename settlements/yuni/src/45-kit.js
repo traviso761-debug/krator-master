@@ -321,6 +321,25 @@ function shade(hex, f){
   return c.getHex();
 }
 
+/* ------------------------------------------------------------------ openings on core/door (53-assets.js has the drawing:
+   F.door, F.window, F.card, F.paneBox, F.pane, F.doorway): the room card's colour, the counts, the stable door ids */
+var ROOMC = (typeof KGLASS!=='undefined') ? KGLASS.SPEC.room.color : PAL.roomCard;
+/* the card behind a pane of glass: the room in its shade, as a sunlit street sees it through the glass (the clear pane lightens
+   what is behind it; the room's own colour reads as a grey plate there). Open portals, hatches and vents keep ROOMC */
+var ROOMC_GLASS = new THREE.Color(ROOMC).lerp(new THREE.Color(0x120f0a), 0.45).getHex();
+function yopenIsCard(c){ return c===ROOMC || c===ROOMC_GLASS; }
+var YOPEN = { panes:0, cards:0, leaves:0, glass:[], perKey:{} };
+function yopenLive(){ return !(typeof INTERIOR_SINK!=='undefined' && INTERIOR_SINK); }
+/* the next door id of the asset being built (a sub-asset counts as its own key) */
+function yopenId(F){ if(F._dbase==null){ var k=F.asset ? F.asset.key : 'free', pk=YOPEN.perKey; pk[k] = pk[k]==null ? 0 : pk[k]+1; F._dbase=k+'.'+pk[k]; F._dn=0; }
+  return F._dbase+'.d'+(F._dn++); }
+/* a box laid on a face (F.box's local lx,lz,w,d,r): its thin axis, turned to point out (o.out, else away from the centre) */
+function yopenFace(lx,lz,w,d,r,o){ r = (typeof r==='number') ? r : 0; var thinZ = d<=w, n = thinZ ? [Math.sin(r), Math.cos(r)] : [Math.cos(r), -Math.sin(r)];
+  var ref = (o && o.out) ? o.out : [lx, lz]; if(n[0]*ref[0]+n[1]*ref[1] < 0){ n[0]=-n[0]; n[1]=-n[1]; }
+  return { n:n, thick:thinZ ? d : w, wide:thinZ ? w : d }; }
+function yopenGlass(x,y,z,nx,nz,w,h,o){ if(!yopenLive()) return; YOPEN.glass.push([x,y,z,nx,nz,w,h,(o&&o.kind)||'clear',(o&&o.color!=null)?o.color:null]); YOPEN.panes++; }
+function yopenDoor(r){ if(!yopenLive() || typeof KDOOR==='undefined') return null; return KDOOR.add(r); }
+
 /* ------------------------------------------------------------------ B. merged meshes */
 var MBK = {};                         /* family -> { pos:[], nor:[], uv:[], col:[] } */
 function mbGet(fam){ if(KIT_EMITTED){ if(!KIT_LATE++) ERR('kit: merged family '+fam+' written AFTER emit - it will never render.'); return { pos:[], nor:[], uv:[], col:[], tris:0 }; } return MBK[fam] || (MBK[fam] = { pos:[], nor:[], uv:[], col:[], tris:0 }); }

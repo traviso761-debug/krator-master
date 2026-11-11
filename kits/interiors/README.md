@@ -75,7 +75,7 @@ python3 tools/walkshots.py shots --walk 1       # error panel, a shot per buildi
 
 ```
 cd kits/interiors && python3 build.py                     # dist/interiors.html + dist/interiors-core.js, node --check, build-manifest.json
-python3 build.py --vendor-check                           # src/80-sky-hash.js (kits/catalog), src/81-sky.js (settlements/iziz)
+python3 build.py --vendor-check                           # no src/ copy of the placeholder sky (core/atmos/placeholder)
 python3 verify.py dist/interiors.html --assert            # the gate; exit 0 = pass (about 25 s)
 python3 verify.py dist/interiors-sets.html --sets --assert --seeds 2      # the sets' gate (every set; residences)
 python3 build.py --sets-page highlands                    # one set's working page: dist/interiors-sets.highlands.html (not committed)

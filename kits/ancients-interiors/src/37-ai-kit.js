@@ -101,6 +101,28 @@
     let L = null;
     return Object.assign({}, cat, { list: function () { if (!L) L = cat.list().filter(e => keep[e.culture]); return L; } });
   };
+  /* a polygon's area centroid [x, z] (the vertex mean when it has no area) */
+  AI.polyCentroid = function (P) {
+    const n = P.length; let A = 0, cx = 0, cz = 0;
+    for (let i = 0; i < n; i++) { const a = P[i], b = P[(i + 1) % n], k = a[0] * b[1] - b[0] * a[1]; A += k; cx += (a[0] + b[0]) * k; cz += (a[1] + b[1]) * k; }
+    if (Math.abs(A) < 1e-9) return P.reduce((s, p) => [s[0] + p[0] / n, s[1] + p[1] / n], [0, 0]);
+    return [cx / (3 * A), cz / (3 * A)];
+  };
+  /* the unit normal of the polygon edge nearest point d, turned away from c (the door wall's outward normal); when no edge
+     has length, the unit direction c -> d */
+  AI.doorWallNormal = function (P, d, c) {
+    const n = P.length; let u = null, best = Infinity;
+    for (let i = 0; i < n; i++) {
+      const a = P[i], b = P[(i + 1) % n], dx = b[0] - a[0], dz = b[1] - a[1], l2 = dx * dx + dz * dz;
+      if (l2 < 1e-12) continue;
+      const t = Math.max(0, Math.min(1, ((d[0] - a[0]) * dx + (d[1] - a[1]) * dz) / l2)), q = Math.hypot(a[0] + dx * t - d[0], a[1] + dz * t - d[1]);
+      if (q < best - 1e-9) { best = q; const l = Math.sqrt(l2); u = [dx / l, dz / l]; }
+    }
+    const ox = d[0] - c[0], oz = d[1] - c[1];
+    if (!u) { const l = Math.hypot(ox, oz); return l > 1e-9 ? [ox / l, oz / l] : [0, 1]; }
+    const nx = -u[1], nz = u[0];
+    return nx * ox + nz * oz >= 0 ? [nx, nz] : [-nx, -nz];
+  };
   AI.furnishPlan = function (plan, cat, o) {
     o = o || {};
     const IX = AI.IX || (typeof KratorInteriors !== 'undefined' ? KratorInteriors : null);
@@ -111,9 +133,11 @@
     AI.planRooms(plan).forEach(function (R) {
       if (!R.poly || R.kind === 'corridor' || R.kind === 'core' || R.open) return;
       if (!R.furnish && !o.all) return;
-      /* the room's own frame: origin at its centroid, turned so its first door lies toward +z */
-      const n = R.poly.length, c = R.poly.reduce((s, p) => [s[0] + p[0] / n, s[1] + p[1] / n], [0, 0]);
-      const dr = R.doors[0] ? R.doors[0].at : [c[0], c[1] + 1], ang = Math.atan2(dr[0] - c[0], dr[1] - c[1]);
+      /* the room's own frame: origin at its area centroid, turned so the wall its first door is on faces +z (that wall's
+         outward normal, not the line to the door's point: a door off the wall's middle skewed the frame, and a recipe's
+         rectangle with it, 2026-11-08) */
+      const c = AI.polyCentroid(R.poly), dr = R.doors[0] ? R.doors[0].at : null, nw = dr ? AI.doorWallNormal(R.poly, dr, c) : null;
+      const ang = nw ? Math.atan2(nw[0], nw[1]) : 0;
       const cs = Math.cos(ang), sn = Math.sin(ang);
       const toL = p => [Math.round(((p[0] - c[0]) * cs - (p[1] - c[1]) * sn) * 20) / 20, Math.round(((p[0] - c[0]) * sn + (p[1] - c[1]) * cs) * 20) / 20];
       const lp = R.poly.map(toL), ld = R.doors.map(d => ({ at: toL(d.at), w: d.w, to: d.to }));

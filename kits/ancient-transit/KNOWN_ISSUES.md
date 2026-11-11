@@ -58,7 +58,7 @@
 - [ ] **The trains' bogies do not come off**: a derailed car keeps its wheels under it. The cars are one merged mesh a family, so a host
   cannot spin a wheel; they are wrecks, not vehicles (the running ones are `kits/motor-vehicles`' `anc_tram`).
 - [ ] **No catenary on the elevated line**, no third rail: the guideway carries its rails on plinths and nothing else.
-- [ ] **Textures owed** (`core/materials/PROMPTS-NEEDED.md` section 37): worn asphalt with faded lane paint (the lane paint is geometry
+- [ ] **Textures owed** (`core/materials/PROMPTS-NEEDED.md` section 42): worn asphalt with faded lane paint (the lane paint is geometry
   for now, `line` quads), rail ballast with sleeper shadows (`ground.gravel042` stands in), a rusted rail head (`metal.rust.heavy`).
 - [ ] **The pavements read bright from the air** (`concrete.slab` at mean 0.62 under the kerb's vertex colour): the valley will tint them
   with its rust and grime as it does the towers (`avRust`); the kit leaves the colours plain.

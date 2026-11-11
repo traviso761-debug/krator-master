@@ -106,6 +106,7 @@ function mixShell(u, B){
       /* on the footprint; the leaf stands just in front of the wall face seen from inside: a lot's or hut's lining th in,
          a level room's front wall at the footprint itself */
       var sd = B.doors.filter(function(x){ return x.id===d.id; })[0], p = sd ? sd.at : d.at, off = u.staticAll ? th+0.04 : 0.05;
+      if(goDoorAt(p[0], R.y, p[1], 1.0)) return;   /* the builder's door is a real one now, in its opening (54-openings.js): no second leaf */
       box(G, 'ixwood', p[0]+d.n[0]*off, R.y+0.01, p[1]+d.n[1]*off, d.w-0.04, h, 0.06, Math.atan2(-left[1], left[0]), dc); return; }
     if(d.swing==='none' || (!d.leaf && d.to!=='street')) return;     /* a door from the trade or loading floor stands open */
     var hs=d.hinge==='right'?-1:1, hx=d.at[0]+left[0]*hs*d.w/2, hz=d.at[1]+left[1]*hs*d.w/2, dir=d.swing==='out'?-1:1, ang=75*Math.PI/180;

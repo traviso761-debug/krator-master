@@ -2,7 +2,55 @@
 
 ## Open
 
-- [ ] **For this kit's turn in pair 7: what the core pass measured (2026-11-01, rebuilt on core-biome, GPU, `--assert --all-views`).**
+- [ ] **Pair 7's turn (2026-11-03, cloud session, no GPU): what is done and what the coordinator's GPU run must look at.** Branch
+      `claude/rebuild-nhighlands-cloud`; `PLAN-STATIONS.md`, "Core adoption (pair 7)" and "Station 5, as built".
+      - Verified here in **software GL only** (SwiftShader, `verify.py --assert` on two or three views, not `--all-views`): station 1 passes every
+        invariant, the attach audit at 0.58% (was 3.89% on the committed page: beard 78 of 133 and spray 45 floated; now broad 26, maple 8, bulb 8,
+        spray 7 of 10,642), the edge audit (no tree in the drawn water; 54 were), no card-guard fault, the export profile. Not run: `--all-views`, the GPU.
+      - **Triangles: 30.85 M of the 32 M budget** (was 30.40 M): the rods that now hold the conifers' outer masses, the birches' at mid range and the beard
+        lichen's (+.45 M). Drawn at the overview: 2.89 M (2.78 M before).
+      - **The sun's shadows (KSHADOW) are on**: the ground reads 11 texture units with them (16 on the Arc). **Their cost is not measured** (no GPU here):
+        the coordinator's run should time a view with `?shadow=0` against the default, as the Throne's turn did (+30-38% on its station 1); if it is not
+        affordable, set `STATION_SHADOW=false` in `src/` or drop `89zz-host-shadow.js`.
+      - **The water's fields cost 8.6 s of load in software GL** (`_phases.fields`: `WATER.fields` at 8 m over the 6.6 km map, before the first tree).
+        On the GPU machine it is CPU time too; if it is long there, a 12 m cell (`88-host-build.js`) halves it. `?fields=0` for the old lines.
+      - Placement: only the trees the shore refuses are left out (each still makes its draws and keeps its ground), and the willow's, gnarled oak's,
+        laurel's and serpentwood's mid-range leaves sit on the rods drawn: no other tree moves.
+      - Still open from the core pass's list: about 130 floor plants and 6 trees on full rock faces (the cell form of `BIO.grid` and
+        `BIO.cliffCheck` gate them; the kit is not on the cell form).
+      - Station 5 (`dist/nhighlands-bogs.html`), the same software-GL run: every invariant and its own checks pass (the mire open: no tree over 8 m on
+        it but the great trumpets; 387 pools each under its lip and over its floor; 319 hazard records, 318 `sink` and the lochan's `drown`; 25,650
+        hummocks, 77,432 cotton-grass, 20,190 cloudberry, 6,258 corn lilies), the attach audit 0.09%, 8.87 M triangles held, 109-142 draw calls.
+      Stays open: for the coordinator's GPU `--assert --all-views` and the owner's look (the megabreccia, station 5).
+- [ ] **Stations 2-4 (2026-11-09, cloud session, no GPU): the looks to judge and what they leave out** (`PLAN-STATIONS.md`, "Stations 2-4, as built").
+      Checked in software GL only (`verify.py --assert` on a few views; the handoff paragraph has the numbers); the owner (2026-11-09): no GPU verify from that session, the integration session takes the pages as built. For the owner: station 2's
+      domes are sandstone (the 5.1 geology is sedimentary there, not granite); the dome's steep edge followed the ground mesh's 6.7 m triangles as a sawtooth
+      at first (now the slab's colour: may still show); white fir outnumbers copper pine (3.8k against 3.0k), which can be turned the other way; the old
+      burns are a field (snags, fireweed), not `KFIRE`. Station 3's oaks, sycamore, manzanita and madrone are swlowlands' own, grown in place: they move with
+      swlowlands' sources (`tools/reach.py`). Station 4's bristlecone role is the kit's own foxtail pine. Not built: seasons (the aspens' autumn, the
+      snowline's year), the fire mosaic, ice on the tarns (`ext/54`), people (the herders, the Republic's and the Clansmen's camps).
+- [ ] **The crater wall's megabreccia (pair 7): the look to judge.** The crag pillars draw KSTRATA's `megabreccia` (swhighlands' `crest`) and the
+      ground's steep faces KGROUND's `clast` blocks in the same rocks, where the geology bake puts this flank in the `impact` province
+      (`kits/resources/ROCK-PROPOSAL.md`). The pillars use a crag-scale copy of the recipe (8 m blocks, `nhl-crag-breccia`); the steep's blocks take the
+      library's `rock.megabreccia` as their grain (2026-11-09: it was in the library since 2026-10-26; pair 7 had asked for it as owed, wrongly). Station 4
+      (the alpine, on the impact province too) draws the same. `?strata=0` shows the old granite for comparison.
+- [ ] **Station 5, the bog country (pair 7): the look to judge, and what it does not have yet.** The pools are their own records, not `KFROST`'s polygons;
+      no ice on the pools in winter (`ext/54`); no peat-cutters' camp, bog finds or bog iron (the plan's people and resources); the peat hags are a flat
+      2026-11-09: the hags take the library's `ground.peat.hag` (their steep layer), the dwarf birch is the library's `card.dwarfbirch` on the hummocks
+      (the kit's birch scaled to knee height read as poles) and the sedge `card.sedge.fen` (all three in the library since 2026-10-26: pair 7 had asked for them
+      as owed, wrongly). The cloudberry is drawn on its card but is no catalog fruit yet (`kits/catalog` has none): named in the fruit check's list.
+      Seen in software GL on the first looks (2026-11-03), fixed: the mire painted orange (the library's sphagnum is full colour and was tinted by the
+      paint: it is drawn untinted now), hummocks that read as red boulders (the kit's cushion, now low and mostly green and ochre), willows round every
+      pool (a pool raised the riparian field), the crest drawn as striped spires (a nearer sky ridge: station 1's restored), pale grey pools (their
+      floors are black peat now), a dry moat round each pool (the ground was carved past its edge). Still seen: the stunted spruces and the krummholz
+      read as thin dark poles past ~200 m (their impostor is a hero's scaled down whole); the mire reads golden-ochre, the library set's own colour.
+      The peat stream's hags read as grassy banks: the ground mesh's 6.7 m grid cannot hold a 2 m cut, so the steep test (`STATION_STEEP`) never sees
+      them. A finer strip along the stream (necanyons' creek strip, `WATER` core pass) would; the pools read pale at a grazing angle (the sky in them:
+      the reflections switch helps).
+- [ ] **The ground's wet band is not on the water's field.** `WATER.edgeAudit`'s wet rules are not run here: the wet near the water is the paint's banks
+      (`rip`) and R9's rain, not a band from the shore distance. Moving the paint's banks onto `WATER.fieldAt` is a look change for the owner.
+- [x] **For this kit's turn in pair 7: what the core pass measured (2026-11-01, rebuilt on core-biome, GPU, `--assert --all-views`).**
+      2026-11-03: done in pair 7's turn (the item above): the attach audit 0.58%, `needle` and `frond` declare their caps (`capWhy`: the 32 M budget).
       The page's only failures are these two; the first predates the core pass's cap, the counts behind the second too.
       - The attach audit: 516 of 10,697 cards float (4.82%, limit 1%): `needle` 234 of 5,129, `beard` 81 of 133, `spray` 57 of
         1,323, `broad` 37 of 920. Put them on the twigs with `BIO.tree` and `BIO.clumpOn` or `BIO.snapSeg` (core/biome/README.md).

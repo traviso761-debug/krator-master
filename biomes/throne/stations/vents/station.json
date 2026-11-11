@@ -22,5 +22,10 @@
   "51-core-water-kinds.js",
   "geyser/52-core-water-geyser.js",
   "geyser/52b-core-water-geyser-draw.js"
+ ],
+ "terrain": [
+  "39-core-cavern.js",
+  "39f-core-geode.js",
+  "host/39g-core-geode-draw.js"
  ]
 }

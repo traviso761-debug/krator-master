@@ -73,6 +73,24 @@ for (const S of IX.sets.list) for (const it of S.items) {
   if (!doors || shut !== doors || openOk !== doors || bad2) bad('doorBlocks: ' + doors + ' doors, ' + shut + ' shut, ' + openOk + ' opened, ' + bad2 + ' wrong');
   console.log('doorBlocks: ' + doors + ' doors, all shut by default and opened by setBlock');
 }
+/* climbs: core/walk's reach (0.45 m steps on 0.4 m cells, the reachability audit's) gets from each stair's or ladder's foot to the floor
+   at its top: a ladder is rung floors, not a strip too steep to step up (2026-11-03) */
+{ let climbs = 0, ladders = 0, miss = [];
+  for (const S of IX.sets.list) for (const it of S.items) {
+    if (it.skip) continue;
+    let inst; try { inst = IX.sets.instantiate(it, 4, -3, 0.4, { baseY: 0, register: false }); } catch (e) { continue; }
+    const W = KWALK.create(); IX.walk.register(inst, W, { ground: 0 });
+    for (const B of inst.buildings) for (const St of B.stairs || []) {
+      const f = B.graph.nodes.find(n => n.tag === 'stairfoot' && n.ref === St.id), tp = B.graph.nodes.find(n => n.tag === 'stairtop' && n.ref === St.id); if (!f || !tp) continue;
+      climbs++; if (St.kind === 'ladder') ladders++;
+      const up = (B.floors || []).filter(F => F.level === St.to).map(F => B.id + '.floor.' + F.level);
+      const R = W.reach([[f.x, f.y, f.z]], { ground: () => 0 }), got = R.reached.some(F => up.some(u => (F.name || '').indexOf(u) === 0));
+      if (!got) miss.push(S.set + '/' + it.key + ' ' + St.id + ' (' + St.kind + ')');
+    }
+  }
+  if (miss.length) bad('climbs: ' + miss.length + ' of ' + climbs + ' stairs and ladders do not reach the floor at their top: ' + miss.slice(0, 6).join(', '));
+  console.log('climbs: ' + climbs + ' stairs and ladders (' + ladders + ' ladders), ' + (climbs - miss.length) + ' reach the floor at their top');
+}
 console.log('elevated bodies (no flight: tower, ledge or crown; the host routes to them): ' + elevated.length + (process.argv[3] === '-v' ? ' ' + elevated.join(', ') : ''));
 console.log('items ' + items + ', raised ' + raised + ', entry flights ' + entries + ', failures ' + fails);
 process.exit(fails ? 1 : 0);

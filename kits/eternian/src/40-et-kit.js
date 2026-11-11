@@ -17,7 +17,8 @@ function etFace(x,z,tx,tz){return Math.atan2((tx||0)-x,(tz||0)-z);}
 
 /* ---------------------------------------------------------------- the oculus: a ring window of radius r facing +z */
 function etOculus(x,y,z,r,o){o=o||{};ring(o.mk||'lime',x,y,z,r,r*.16,o.col||P('limeShade'),0,PI/2);   /* ring() lies flat: stood up to face +z */
- ellip('glass',x,y,z-.02,r*.86,r*.86,.04,o.lit?P('glassLit'):P('glass'),0,16);
+ /* core/door's glass over the room card (the oculus sits on a solid face): a lit one glows at night and is still glass */
+ ellip('room',x,y,z-.045,r*.86,r*.86,.02,null,0,16);ellip(svGlass(o.lit?'lit':'clear'),x,y,z-.02,r*.86,r*.86,.04,null,0,16);
  if(o.cross!==false){box('iron',x,y-r*.84,z+.02,.05,r*1.68,.04,P('iron'));box('iron',x,y-.025,z+.02,r*1.68,.05,.04,P('iron'));}}
 
 /* ---------------------------------------------------------------- a stepped Deco head over an opening (w wide, at y) */
@@ -26,12 +27,16 @@ function etStepHead(x,y,z,w,o){o=o||{};const c=o.col||P('limeShade'),n=o.steps==
 
 /* ---------------------------------------------------------------- a wall with openings
    L long, from y0 up h, mk/col its face, along x in the current frame, thickness ET_T about z=0 (its front at +ET_T/2).
-   An opening {x, w, h, y (sill; a door's is 0), door, shut (shutters, default on a window), head ('step' | 'flat'),
-   mask (over a door; maskMetal 'terracotta' or 'lead'), leaf (a door's colour), dark (unglazed: a dark reveal, plank
-   shutters: the poor's)}. The surround is a raised band of lime; a window has its glass set back */
+   An opening {x, w, h, y (sill; a door's is 0, a gap's 0 unless given), door, shut (shutters, default on a window), head ('step' | 'flat'),
+   mask (over a door; maskMetal 'terracotta' or 'lead'), leaf (a door's colour), dark (unglazed: plank shutters, the poor's)}.
+   The surround is a raised band of lime; a window has its glass set back. Doors and glass are core/door's (36o-open.js): a door
+   is a leaf in the wall's middle that opens (E, an NPC) into the room the wall encloses, a window clear glass ('lit' glows,
+   'steel' the Deco grid over smoked glass), an unglazed one a clear hole. o.solid: the wall is a facade on a solid mass (a
+   pier bundle's door): its door is locked and a room card stands behind its windows. A door whose sill (y0) stands 0.45 to 1.2 m
+   over the frame's ground gets stone steps down to it (o.steps false: none) */
 function etWall(L,y0,h,mk,col,opens,o){o=o||{};const t=o.t||ET_T,fz=t/2;opens=(opens||[]).slice().sort((a,b)=>a.x-b.x);let x=-L/2;
  const seg=(a,b,ya,yb)=>{if(b-a>.01&&yb-ya>.01)box(mk,(a+b)/2,y0+ya,0,b-a,yb-ya,t,col);};
- const SY=q=>q.door?0:(q.y==null?.95:q.y),TOP=q=>Math.min(h,SY(q)+q.h);
+ const SY=q=>q.door||(q.gap&&q.y==null)?0:(q.y==null?.95:q.y),TOP=q=>Math.min(h,SY(q)+q.h);   /* a gap with no sill given is a passage from the floor (it took a window's 0.95 m sill: a wall a walker met) */
  /* the wall first, by columns: openings whose spans overlap are stacked in one column (a window over a door, the
     bay's two storeys), and the wall fills under the lowest, between each pair and over the highest, never across one */
  {const cols=[];for(const q of opens){const a=q.x-q.w/2,b=q.x+q.w/2,c=cols[cols.length-1];
@@ -45,15 +50,16 @@ function etWall(L,y0,h,mk,col,opens,o){o=o||{};const t=o.t||ET_T,fz=t/2;opens=(o
   for(const s of [a-.09,b+.09])box('lime',s,y0+sy,fz+.03,.18,top-sy,.08,sc);
   if(!q.door)box('lime',q.x,y0+sy-.1,fz+.06,q.w+.4,.12,.18,sc);                          /* the sill */
   if(q.head!=='flat')etStepHead(q.x,y0+top,fz+.03,q.w,{col:sc});
-  if(q.door){box('timber',q.x,y0,-.02,q.w-.06,top-.04,.08,q.leaf||P('timber'));        /* the leaf, set back */
-   for(let i=0;i<3;i++)box('timber',q.x,y0+.35+i*(top-.6)/3,.04,q.w-.3,.05,.03,new THREE.Color(q.leaf||P('timber')).multiplyScalar(.8));
-   box('brass',q.x+q.w*.32,y0+1.0,.06,.05,.18,.04,P('bronze'));
+  if(q.door){svDoorway(q.x,y0,-.02,0,q.w-.06,top-.04,{hollow:!o.solid,mk:'timber',col:q.leaf||P('timber'),t:.08,style:'panel'});   /* the leaf, set back (core/door) */
    door(q.x,y0,fz,0,q.w);
+   /* a door on a plinth more than a step (0.45 m) over the ground gets stone steps out of it (core/engine svStair), so a walker
+      climbs to its sill: 2026-11-03, the reachability audit; a facade on a solid mass (o.solid) and an upper storey's door get none */
+   if(!o.solid&&o.steps!==false&&y0>.45&&y0<1.2){const run=(Math.ceil(y0/.19-1e-9)-1)*.27;svStair(q.x,fz+.1+run,0,y0,PI,{style:'solid',w:q.w+.4,run,mk:'stone',col:P('stoneD')});}
    if(q.mask!==false)etMask(q.x,y0+top+.62,fz+.1,.46,q.maskMetal);}
-  else if(q.dark){box('plain',q.x,y0+sy,-.06,q.w-.04,top-sy,.04,new THREE.Color(P('stoneD')).multiplyScalar(.45));   /* unglazed: the poor's */
+  else if(q.dark){if(o.solid)svRoom(q.x,y0+sy,-.06,0,q.w-.04,top-sy);   /* unglazed: the poor's, a clear hole into the room (a card on a solid mass) */
    if(q.shut!==false)for(const s of [-1,1])box('shutter',q.x+s*(q.w*.75+.06),y0+sy,fz+.09,q.w/2,top-sy,.04,o.shutCol||P('timberL'));}
-  else{/* the glass; a steel window's is dark and opaque, so its grid reads against it from the street */
-   box(q.steel?'plain':'glass',q.x,y0+sy,-.04,q.w-.04,top-sy,.04,q.lit?P('glassLit'):q.steel?new THREE.Color(P('glass')).multiplyScalar(.8):P('glass'));
+  else{/* the glass; a steel window's is smoked, so its grid reads against it from the street */
+   svPane(q.x,y0+sy,-.04,0,q.w-.04,top-sy,{kind:q.lit?'lit':q.steel?'smoked':'clear',solid:!!o.solid,t:.04});
    if(q.steel){const ir=P('iron');                                                         /* Deco steel glazing: a fine grid */
     for(let k=1;k<Math.round(q.w/.3);k++)box('iron',q.x-q.w/2+k*q.w/Math.round(q.w/.3),y0+sy,.0,.05,top-sy,.06,ir);
     for(let k=1;k<Math.round((top-sy)/.42);k++)box('iron',q.x,y0+sy+k*(top-sy)/Math.round((top-sy)/.42),.0,q.w,.05,.06,ir);}

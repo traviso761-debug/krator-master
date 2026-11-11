@@ -4,13 +4,13 @@
    with floor / strip / poly / block (KWALK, or KWALK.create()). Lifted from kits/zeijani (37-zj-walk.js zwItem).
      - each planned storey's floor (its polygon drawn in by the walker's radius, less its stairwells), at its y
      - each wall as small blocks, gapped at its door openings (windows stay shut)
-     - each stair or ladder as a strip from its foot to its top
+     - each stair as a strip from its foot to its top; a ladder (or a flight steeper than 1.1) as rung floors 0.4 m apart
      - each explicit room's floor and walls, gapped at its doors
      - a RAISED base (a plinth, a deck on piles: the body's y above the ground) gets an entry flight from the ground
        outside every street door up to its sill, so the walker can get in; a rise within `step` needs none
    o: { tag, doorBlocks (false: fill every door opening with blocks, a door that is SHUT, and hand them to onBlock; KWALK.setBlock(recs, false) opens it),
-        onBlock (fn(recs, { door: the opening's id (or true), wall, building, room, kind: 'door' })), ground (the ground y outside; default inst.baseY), inset (.3), blockStep (.3: a smaller block leaves a doorway its full width), step (.5: the rise a walker
-        steps unaided; core/walk's floorBelow takes .6), skipRoom (fn(R) -> true to leave a room to someone else,
+        onBlock (fn(recs, { door: the opening's id (or true), wall, building, room, kind: 'door' })), ground (the ground y outside; default inst.baseY), inset (.3), blockStep (.3: a smaller block leaves a doorway its full width), step (.45: the rise a walker
+        steps unaided, core/walk's reach step; it was .5, and a 0.5 m plinth got no flight the reachability audit could climb), skipRoom (fn(R) -> true to leave a room to someone else,
         Zeijani's carved rooms), flightRise (run per metre of rise, 1.4),
         maxRise (3.5: above it the base is a tower, a cliff ledge or a crown, not a plinth or a deck; no flight is
         drawn and the body is listed in `elevated` for the host to route to) }
@@ -48,6 +48,25 @@
     }
     return parts;
   };
+  /* a ladder (or a flight steeper than LADDER_SLOPE) as rung floors RUNG apart up its line, each reaching on to 0.35 m past the top: a
+     strip that steep rises more than a step over a 0.4 m cell, so neither core/walk's reach nor a walker stepping 0.45 m climbs it
+     (core/walk/box KWALKBOX.ladder's rule, 2026-11-03). Returns 1 (one climb) */
+  const LADDER_SLOPE = 1.1, RUNG = 0.4;
+  function rungs(W, f, tp, w, name, tag) {
+    const dx = tp.x - f.x, dz = tp.z - f.z, run = Math.hypot(dx, dz), ux = run > 1e-6 ? dx / run : 0, uz = run > 1e-6 ? dz / run : 1, px = -uz, pz = ux,
+      rise = tp.y - f.y;
+    /* rungs 0.4 m apart at most, and close enough that a walker stepping 0.2 m down the line never drops more than 0.58 m: a step
+       passes floor(0.2 n / run) + 1 rungs at worst (two rungs of 0.36 m to a step on a steep ladder dropped 0.72 m, more than a
+       stepping walker's 0.6: the Zeijani probe's route walker) */
+    let n = Math.max(2, Math.ceil(rise / RUNG - 1e-9));
+    if (run > 0.05) while (n < 120 && (Math.floor(0.2 * n / run + 1e-9) + 1) * rise / n > 0.58) n++;
+    for (let i = 1; i <= n; i++) {
+      const u = i / n, cx = f.x + dx * u, cz = f.z + dz * u, y = f.y + rise * u, a0 = -0.3, a1 = Math.hypot(tp.x - cx, tp.z - cz) + 0.35;
+      W.poly({ pts: [[cx + ux * a0 - px * w / 2, cz + uz * a0 - pz * w / 2, y], [cx + ux * a1 - px * w / 2, cz + uz * a1 - pz * w / 2, y],
+        [cx + ux * a1 + px * w / 2, cz + uz * a1 + pz * w / 2, y], [cx + ux * a0 + px * w / 2, cz + uz * a0 + pz * w / 2, y]], name: name + '.rung' + i, tag });
+    }
+    return 1;
+  }
   function wall(W, a, b, y0, y1, t, gaps, tag, st) {
     const dx = b[0] - a[0], dz = b[1] - a[1], L = Math.hypot(dx, dz); if (L < 1e-3) return 0;
     const n = Math.max(1, Math.ceil(L / st)), h = Math.max(t, st) / 2; let k = 0;
@@ -85,7 +104,7 @@
     const out = { floors: 0, blocks: 0, strips: 0, entries: 0, elevated: [] };
     if (!inst || !W) return out;
     const tag = o.tag || 'built:' + inst.id, ins = o.inset == null ? 0.3 : o.inset, st = o.blockStep == null ? 0.3 : o.blockStep,
-      stepOK = o.step == null ? 0.5 : o.step, run = o.flightRise == null ? 1.4 : o.flightRise, maxRise = o.maxRise == null ? 3.5 : o.maxRise,
+      stepOK = o.step == null ? 0.45 : o.step, run = o.flightRise == null ? 1.4 : o.flightRise, maxRise = o.maxRise == null ? 3.5 : o.maxRise,
       ground = o.ground != null ? o.ground : (inst.baseY || 0);
     /* a flight from the ground outside a door at `at` up to the floor at y (only when the rise is more than a step) */
     const pending = [];
@@ -136,7 +155,10 @@
       const G0 = B.graph || { nodes: [] };
       for (const S of B.stairs || []) {
         const f = G0.nodes.find(n => n.tag === 'stairfoot' && n.ref === S.id), tp = G0.nodes.find(n => n.tag === 'stairtop' && n.ref === S.id);
-        if (f && tp) { W.strip({ a: [f.x, f.z, f.y], b: [tp.x, tp.z, tp.y], w: Math.max(0.6, S.w - 0.3), name: S.id, tag }); out.strips++; }
+        if (!f || !tp) continue;
+        const run = Math.hypot(tp.x - f.x, tp.z - f.z), rise = tp.y - f.y, w = Math.max(0.6, S.w - 0.3);
+        if (rise > 0 && (S.kind === 'ladder' || run < 1e-6 || rise / run > LADDER_SLOPE)) { out.strips += rungs(W, f, tp, w, S.id, tag); continue; }
+        W.strip({ a: [f.x, f.z, f.y], b: [tp.x, tp.z, tp.y], w, name: S.id, tag }); out.strips++;
       }
       const f0 = (B.floors || []).find(F => F.level === 0), outline = B.poly || (f0 && f0.poly);
       /* a flight that would run into another body of the same item (a tower beside a hall, a block under a block; their walls grown by 0.45 m) is not drawn: that body is entered from its neighbour */

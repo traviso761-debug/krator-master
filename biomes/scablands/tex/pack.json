@@ -1,6 +1,62 @@
 {
  "build": "scablands",
  "families": {
+  "agate": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "agate.albedo.webp"
+   },
+   "lib": "stone.onyx",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.0,
+   "scale": [
+    0.6,
+    0.6
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "0549d08923080006c71379f812b0b284d9cd7d28",
+    "normal": "bc1f211827998e43d15c1d2cf6103eeeb786c875",
+    "roughness": "4e62ca7382a2899d1a99139b93cfb02fe97f6b71"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.7,
+    "sourceMean": 0.6668
+   }
+  },
+  "amethyst": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "amethyst.albedo.webp"
+   },
+   "lib": "stone.geode.druze",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.0,
+   "scale": [
+    0.3,
+    0.3
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "8f41b1559266f6182963cc2967a48ce7484a6055",
+    "normal": "68d97e70f3756c747ceccac3b2ac24ffee7636eb",
+    "roughness": "0ff1d34fb0a572a7f00229378975aa75683f92b9"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.72,
+    "sourceMean": 0.4669
+   }
+  },
   "basalt": {
    "breakup": null,
    "card": false,
@@ -32,6 +88,7 @@
    }
   },
   "card.fern": {
+   "anchor": "center",
    "breakup": null,
    "card": true,
    "files": {
@@ -40,6 +97,7 @@
    "lib": "card.fern.green",
    "metal": 0,
    "normalScale": 1.0,
+   "plants": 9,
    "roughLift": 0.0,
    "scale": [
     1,
@@ -58,6 +116,7 @@
    }
   },
   "card.lily": {
+   "anchor": "center",
    "breakup": null,
    "card": true,
    "files": {
@@ -66,6 +125,7 @@
    "lib": "card.lotus",
    "metal": 0,
    "normalScale": 1.0,
+   "plants": 9,
    "roughLift": 0.0,
    "scale": [
     1,
@@ -84,6 +144,7 @@
    }
   },
   "card.quill": {
+   "anchor": "center",
    "breakup": null,
    "card": true,
    "files": {
@@ -92,6 +153,7 @@
    "lib": "card.sword",
    "metal": 0,
    "normalScale": 1.0,
+   "plants": 9,
    "roughLift": 0.0,
    "scale": [
     1,
@@ -110,6 +172,7 @@
    }
   },
   "card.sedge": {
+   "anchor": "center",
    "breakup": null,
    "card": true,
    "files": {
@@ -118,6 +181,7 @@
    "lib": "card.seagrass",
    "metal": 0,
    "normalScale": 1.0,
+   "plants": 9,
    "roughLift": 0.0,
    "scale": [
     1,

@@ -1,26 +1,39 @@
 # kits/catalog — known issues
 
-- **`krator-symbols.js` has drifted from `core/sockets/38-symbols.js`, on purpose** (2026-10-20): the core file gained
-  `scroll` (the Order of Historians' symbol, `SYMBOL_OF.order`) and Xanadu's `lotus` for the wheel; this copy is in the furniture bundle every furnished build
-  takes, so it is re-vendored with the next all-builds rebuild (`TODO.md`, "Ride along"). Until then the Order's furniture
-  draws no scroll and Xanadu's still the wheel; `build.py --vendor-check` reports the drift.
+- ~~`krator-symbols.js` drifted from `core/sockets/38-symbols.js`~~ (2026-10-20). Fixed 2026-11-03: the copy is gone and the
+  name resolves to `core/sockets/38-symbols.js` (`core/catalog/files.json`; MODULARITY-PLAN.md step 3), so the Order's scroll and
+  Xanadu's lotus are in every page built since. Pages built before (the bundled worlds) take them at the next all-builds rebuild.
 
 `verify.py --assert` passes with nothing deferred: its `ALLOW` list is empty. The style rules (no host globals,
 `F.shade`/`F.TAU`, no literal colours) are assertions now, not warnings.
 
 ## Open
 
+- [x] **The Ancients' bath fixtures are permanent** (opt-in 2026-11-03, folded in 2026-11-08): the pieces at the end of
+  `krator-master-furniture.js` with their PALETTE block (a `FURN_CULTURE('ancient', ...)` merge), the `bath` programme in
+  `kits/interiors/src/30-programs.js`; `krator-optin-furniture-ancient-bath.js`, `optin=` and `--opt-in` are gone. Every page
+  that takes `krator-master-furniture.js` or kits/interiors moves at its next rebuild (a `bath` room was furnished by
+  `IX.DEFAULT_PROGRAM` before).
+- [ ] **Arms: not placed yet** (the owner, 2026-10-22; the file merged from `claude/weapon-racks` 2026-11-08).
+  `krator-master-furniture-arms.js` gives every culture a weapon rack and an armour stand for barracks, guardrooms,
+  armouries and watch houses, but no world build names `'arms'` yet. Per build: add `'arms'` to the list it passes to
+  `furniture_bundle.bundle`, then place the pair in its military rooms (the interiors sets' `armoury` rooms, Zeijani's
+  `guardroom`, the Iziz palace's `pal_armoury` and `pal_guard`, the Eternian fort, each settlement's barracks and forts),
+  rebuild, `verify.py --assert`, `tools/port_baseline.py`.
+- [ ] **The bare towel ladder warns under-size** (`ancients_bath_towel_rail` variant 1, depth 0.09 of 0.16): the declared
+  depth is the towels'. Expected, like the other under-size warnings.
+
 - [x] **The fruit's colours live in the goods file** (fixed 2026-10-20). `krator-master-furniture-generic-fruit.js` reads
   `fruit*` colours and the `KGEN` shapes that only `krator-master-furniture-generic-goods.js` defines. `furniture_bundle.files()`
   now adds `generic-goods` whenever `generic-fruit` is asked for (the fruit file needs its code as well as its colours, so moving
   the colours alone would not have helped). Bundles that already named both are unchanged.
-- [ ] **The north basin's fruit is not in the catalog** (2026-10-23, from `biomes/nsemiarid`). The n semiarid kit draws
-  apples, walnuts, apricots, pears, pomegranates, pistachios and almonds on its trees and as windfall, but
-  `krator-master-furniture-generic-fruit.js` has no piece for any of them, so the kit's `harvest.fruit` is null for each
-  and its probe lists them as edible but not drawn (`FRUIT_NOT_DRAWN`, `biomes/nsemiarid/src/99-host-take.js`). Adding
-  them rebuilds every build that takes the catalog (CLAUDE.md), so it waits for the owner's go-ahead. Pistachio and
-  almond are not in `kits/crops` either. When they land: set each species' `fruit`, empty `FRUIT_NOT_DRAWN` of them, and
-  close `biomes/nsemiarid/KNOWN_ISSUES.md`'s "The catalog owes the fruit".
+- [x] **The north basin's fruit is in the catalog** (2026-10-23, from `biomes/nsemiarid`; landed 2026-11-03/04): the
+  apples, wild pears, apricots, walnuts, pomegranates, pistachios and almonds are `generic_fruit_wild_apple`,
+  `generic_fruit_wild_pear`, `generic_fruit_apricot`, `generic_fruit_walnut`, `generic_fruit_pomegranate`,
+  `generic_fruit_pistachio` and `generic_fruit_almond` in `krator-master-furniture-generic-fruit.js`; nsemiarid's species
+  name them and its `FRUIT_NOT_DRAWN` no longer lists them. `biomes/nsemiarid/KNOWN_ISSUES.md`'s "The catalog owes the
+  fruit" is stale (closed by 2026-11-08's check; that file is the biome's to tick). Pistachio and almond are still not in
+  `kits/crops`.
 - [ ] **Hykkousoi has fourteen pieces and no style sheets** (`krator-master-furniture-hykkousoi.js`): the pieces are the Ys
   settlement's (ported 2026-10; Ys keeps its own copy in `settlements/ys/src/66-hyk-furniture.js`), drawn with the core's
   `F.lathe`, `F.tube` and `F.ell`. Their lit pearls and coals are glowing balls with no point light, and `lens` is the

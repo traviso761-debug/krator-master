@@ -40,7 +40,7 @@ and the default of an `add_argument('--views', default=...)` (split on , ; |), a
 The shared ratchet (tools/ratchet.py) holds the baseline in tools/check_views_baseline.json: the lint fails only on a
 finding that is not in it, so old pages keep passing and a new station or view cannot add to the pile.
 """
-import ast, glob, os, re, sys, time
+import ast, glob, json, os, re, sys, time
 from concurrent.futures import ThreadPoolExecutor
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -52,8 +52,8 @@ BUILD_TOPS = ('biomes', 'kits', 'settlements', 'openworld')
 
 STR = r"""(?:'(?:[^'\\\n]|\\.)*'|"(?:[^"\\\n]|\\.)*")"""
 BAD_CHARS = set(':\\/*?"<>|')
-DEFINES = re.compile(r"\b(?:[A-Z]+_)?VIEWS\s*(?:=[^=]|\[)|\bSTAGE\.views\s*=|\bget\s+views\s*\(|\bviews\s*:|\bviewList\s*:"
-                     r"|\bviews\s*\([\w\s,]*\)\s*\{")
+DEFINES = re.compile(r"\b(?:[A-Z]+_)?VIEWS\s*(?:=[^=]|\[)|\b(?:STAGE|STATION)\.views\s*=|\bget\s+views\s*\(|\bviews\s*:|\bviewList\s*:"
+                     r"|\bviews\s*\([\w\s,]*\)\s*\{|\bfunction\s+STATION_VIEWS\s*\(")
 
 
 def unq(s):
@@ -238,6 +238,15 @@ def scan(build):
                 add('VIEW-NAME %s' % nm, build + '/verify.py')
 
     stations = sorted(s for s in glob.glob(os.path.join(d, 'stations', '*')) if os.path.isdir(s))
+    # a shared base that is never built alone says so in its station.json ("baseOnly": true; biomes/geyser/stations/field, the four field stations'
+    # stage): it is not a station, and each station on it brings its own views
+    def base_only(s):
+        try:
+            with open(os.path.join(s, 'station.json'), encoding='utf-8') as fh:
+                return bool(json.load(fh).get('baseOnly'))
+        except (ValueError, OSError):
+            return False
+    stations = [s for s in stations if not base_only(s)]
     if stations:
         src_view_text = ''.join(read(f) for f in glob.glob(os.path.join(d, 'src', '*.js')) if DEFINES.search(read(f)))
         for s in stations:

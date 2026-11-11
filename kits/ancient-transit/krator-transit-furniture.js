@@ -1,7 +1,7 @@
 /* ======================================================================
    Krator Ancient Transit: the street furniture (kits/ancient-transit/krator-transit-furniture.js)
 
-   The Ancients' street furniture as catalog ASSETs of culture `ancient` on the catalog core (kits/catalog/
+   The Ancients' street furniture as catalog ASSETs of culture `ancient` on the catalog core (core/catalog/
    krator-furniture-core.js: makeFrame, F.box/cyl/beam/rod/frustum/dome/tube, F.col over FPAL). The kinds, their
    boxes, their states and their ruin numbers are KTRANSIT.KINDS (src/40-tr-records.js, [G data]); this file is
    only how each is drawn, intact, and what it does differently in a ruin state when the generic pass

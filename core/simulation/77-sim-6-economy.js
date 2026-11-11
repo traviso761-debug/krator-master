@@ -13,6 +13,23 @@
 //                                                           home and grown (`grownAt` past), times their condition: SIM.mood; `tended`: only while
 //                                                           its workers are there; `share`: each of `out` in its share, not
 //                                                           the one most needed)
+//   SIM.site({id, kind, goods?, grade?, yield?, amount?, regen?, capacity?, settlement?})   a resource site, keyed to its world
+//                                                           record's stable id: `yield` multiplies its recipes' rate (the grade's); `amount`
+//                                                           null is endless (the default: a node, a pasture, a stand that regrows),
+//                                                           a number depletes by a unit made, `regen` back a night up to the start;
+//                                                           a recipe's `site` draws on it; an emptied site blocks ('depleted: id')
+//   SIM.stockpile(settlement|null, {good: {min, target, max, reserve}})   the policy on a good: see 77-sim-6-govern.js
+//   SIM.sitesReport(settlement?) -> [{id, kind, grade, yield, amount, start, taken, capacity, regrown}]
+//   SIM.siteRestore(id, amount, settlement?)               a site grown back while nobody worked it (a work camp's stand, core/camp
+//                                                           40): its amount raised to `amount`, booked `regrown` (the ledger allows it)
+//   SIM.recipeHold(place, reason|null, until?)             a recipe stopped (its crew on the march: core/camp 40) until the minute
+//                                                           `until` (or released with null); the blocked report says `reason`
+//   SIM.recipeSite(place, siteId)                          a recipe pointed at another site (the stand the camp moved to)
+//   SIM.recipe(place, {batch:{in, out, by?, hours}, cap, site?})   a BATCH recipe (PLAN-ECONOMY.md Phase 2): `hours` worker-hours make
+//                                                           one batch; its `in` are claimed once when it starts (own store first, then the
+//                                                           warehouses, booked used: never claimed twice), its `out` and byproducts `by`
+//                                                           landed when it ends. Its `rate` is batches a worker-hour, so the governor sets it as any
+//   SIM.blockedReport(s?) -> {place: {reason:'missing'|'full'|'depleted'|'no workers', goods?}}   why a batch recipe is not running
 //   SIM.cart(actor)                                        an actor the economy drives (SIM.step leaves it alone)
 //   SIM.supply(good, n, whole?) -> n had                   a draw on the warehouses (`whole`: all of n or nothing)
 //   SIM.produce(place, good, n) -> n stored                a one-off yield (a slaughter's meat) into a place's store
@@ -63,7 +80,27 @@
     if(P.storeKind==='warehouse'){ if(E.warehouses.indexOf(P)<0) E.warehouses.push(P); } else if(E.sites.indexOf(P)<0) E.sites.push(P); return P; };
   SIM.recipe = function(id, o){ var E=SIM.ECON, P=SIM.R.place[id]; if(!E || !P) return null; if(!E.stores[id]) SIM.store(id, { kind:'site', cap:o.cap });
     var outs=(o.out||[]).concat(o.herd ? o.herd.out : []); outs.forEach(function(g){ if(!E.goods[g]) throw new Error('SIM.recipe '+id+': unknown good '+g); });
-    E.recipes[id]={ out:(o.out||[]).slice(), rate:o.rate||0, herd:o.herd ? { out:o.herd.out.slice(), rate:o.herd.rate, tended:!!o.herd.tended, share:o.herd.share||null } : null }; return P; };
+    E.recipes[id]={ out:(o.out||[]).slice(), rate:o.rate||0, herd:o.herd ? { out:o.herd.out.slice(), rate:o.herd.rate, tended:!!o.herd.tended, share:o.herd.share||null } : null };
+    if(o.batch){ var B=o.batch, Rb=E.recipes[id]; if(!(B.hours>0)) throw new Error('SIM.recipe '+id+': a batch needs its hours');
+      var bo=Object.keys(B.out||{}).concat(Object.keys(B.by||{})); bo.forEach(function(g){ if(!E.goods[g]) throw new Error('SIM.recipe '+id+': unknown good '+g); });
+      Rb.batch={ 'in':Object.assign({}, B['in']||{}), out:Object.assign({}, B.out||{}), by:Object.assign({}, B.by||{}), hours:B.hours }; Rb.out=Object.keys(B.out||{}); Rb.rate=1/B.hours;
+      Rb.out.forEach(function(g){ if(!E.inputs[g]){ var q={}; Object.keys(Rb.batch['in']).forEach(function(i){ q[i]=Rb.batch['in'][i]/B.out[g]; }); if(Object.keys(q).length) E.inputs[g]=q; } }); }
+    if(o.build) E.recipes[id].build=true;   /* a building lot: its worked hours go to its project (77-sim-6-build.js), it makes nothing */
+    if(o.site!=null){ if(!E.resSites || !E.resSites[o.site]) throw new Error('SIM.recipe '+id+': unknown site '+o.site); E.recipes[id].site=o.site; } return P; };
+  /* a resource site (opt-in): see the head of this file */
+  SIM.site = function(o){ var E=o.settlement!=null ? SIM.econ(o.settlement) : SIM.ECON; if(!E) return null; if(!o.id) throw new Error('SIM.site: an id');
+    var S=(E.resSites||(E.resSites={}))[o.id]={ id:o.id, kind:o.kind||null, goods:(o.goods||[]).slice(), grade:o.grade==null ? null : o.grade, yield:o.yield==null ? 1 : o.yield,
+      amount:o.amount==null ? null : o.amount, start:o.amount==null ? null : o.amount, regen:o.regen==null ? 0 : o.regen, capacity:o.capacity==null ? null : o.capacity, taken:0, regrown:0 }; return S; };
+  function econOfPlace(id){ return SIM.ECONS ? SIM.econ(SIM.settlementOf(id)) : SIM.ECON; }
+  SIM.siteRestore = function(id, amount, s){ var E=s!=null ? SIM.econ(s) : SIM.ECON, S=E && E.resSites && E.resSites[id]; if(!S || S.amount==null) return null;
+    var up=Math.max(0, amount-S.amount); S.amount+=up; S.regrown+=up; if(S.amount>S.start) S.start=S.amount; return S; };
+  SIM.recipeHold = function(id, reason, until){ var E=econOfPlace(id), R=E && E.recipes[id]; if(!R) return null;
+    if(reason==null){ delete R.hold; if(E.why) delete E.why[id]; } else R.hold={ reason:reason, until:until==null ? null : until }; return R; };
+  SIM.recipeSite = function(id, site){ var E=econOfPlace(id), R=E && E.recipes[id]; if(!R) return null;
+    if(site!=null && !(E.resSites && E.resSites[site])) throw new Error('SIM.recipeSite '+id+': unknown site '+site); R.site=site; return R; };
+  SIM.sitesReport = function(s){ var E=s!=null ? SIM.econ(s) : SIM.ECON, out=[]; if(!E || !E.resSites) return out;
+    Object.keys(E.resSites).forEach(function(id){ var S=E.resSites[id]; out.push({ id:id, kind:S.kind, goods:S.goods.slice(), grade:S.grade, yield:S.yield, amount:S.amount, start:S.start, taken:S.taken, capacity:S.capacity, regrown:S.regrown||0 }); }); return out; };
+  SIM.stockpile = function(s, policy){ var E=s!=null ? SIM.econ(s) : SIM.ECON; if(!E) return null; var P=E.policy||(E.policy={}); Object.keys(policy).forEach(function(g){ P[g]=Object.assign(P[g]||{}, policy[g]); }); return P; };
   /* a one-off yield (a slaughter's meat): into the place's store, up to its cap; -> what went in */
   SIM.produce = function(id, g, n){ var E=SIM.ECON, P=SIM.R.place[id]; if(!E || !P || !E.goods[g] || !(n>0)) return 0; if(!E.stores[id]) SIM.store(id, { kind:'site' });
     var k=Math.max(0, Math.min(Math.floor(n), P.cap-held(P))); if(k<Math.floor(n)) stat(E.blocked, 'full: '+P.kind); if(k){ P.stock[g]=(P.stock[g]||0)+k; dayStat('made', g, k); } return k; };
@@ -116,7 +153,7 @@
      so what piles at the makers' own stores is not made again; and while one of its goods is under target it makes none
      that is over (the weavers short of cotton for cloth do not fill their hours with mats) */
   function pickDays(E, g){ var V=E.govern && E.govern.view[g]; return V ? (V.target>0 ? V.pos/V.target : Infinity) : daysOf(g); }
-  function make(P, outs, units, ck){
+  function make(P, outs, units, ck, site){
     var E=SIM.ECON, u0=units + (P[ck]||0), whole=Math.floor(u0); P[ck]=u0-whole;
     for(var u=0; u<whole; u++){
       if(held(P)>=P.cap){ stat(E.blocked, 'full: '+P.kind); P[ck]=0; break; }
@@ -124,16 +161,39 @@
       var under=V && outs.length>1 && outs.some(function(g){ return V[g] && !over(g); });   /* a governed maker with a good under target */
       outs.forEach(function(g){ if(!inputsFor(P, g) || (under && over(g))) return; var d=pickDays(E, g); if(best==null || d<bd){ bd=d; best=g; } });
       if(!best){ stat(E.blocked, 'inputs: '+P.kind); P[ck]=0; break; }
+      if(site && site.amount!=null && site.amount<1){ stat(E.blocked, 'depleted: '+site.id); P[ck]=0; break; }
+      if(site){ site.taken++; if(site.amount!=null) site.amount--; }
       useInputs(P, best); P.stock[best]=(P.stock[best]||0)+1; dayStat('made', best, 1);
     }
   }
+  /* a batch recipe's work: `units` batches' worth of labour. A place holds one batch in hand (P.order): it starts when the
+     store has room, the site is not empty and every input is there, claiming them at once; it ends when its labour is
+     done. What stops it is said, by place (E.why), and cleared when it runs */
+  function batchWork(E, P, R, units, site){
+    var B=R.batch, left=units, why=null;
+    while(left>0){
+      if(!P.order){ var yld=0, size=0, g; for(g in B.out) yld+=B.out[g]; size=yld; for(g in B.by) size+=B.by[g];
+        if(held(P)+size>P.cap){ why={ reason:'full' }; stat(E.blocked, 'full: '+P.kind); break; }
+        if(site && site.amount!=null && site.amount<yld){ why={ reason:'depleted', site:site.id }; stat(E.blocked, 'depleted: '+site.id); break; }
+        var lack=Object.keys(B['in']).filter(function(i){ return (P.stock[i]||0)+SIM.stockOf(i) < B['in'][i]; });
+        if(lack.length){ why={ reason:'missing', goods:lack }; stat(E.blocked, 'inputs: '+P.kind); break; }
+        Object.keys(B['in']).forEach(function(i){ var n=B['in'][i], t=Math.min(n, P.stock[i]||0); P.stock[i]=(P.stock[i]||0)-t; if(t) dayStat('used', i, t); if(n-t>0) SIM.supply(i, n-t); });
+        if(site){ site.taken+=yld; if(site.amount!=null) site.amount-=yld; }
+        P.order={ done:0 }; }
+      var u=Math.min(left, 1-P.order.done); P.order.done+=u; left-=u;
+      if(P.order.done>=1-1e-9){ P.order=null; [B.out, B.by].forEach(function(O){ Object.keys(O).forEach(function(g){ P.stock[g]=(P.stock[g]||0)+O[g]; dayStat('made', g, O[g]); }); }); }
+    }
+    var W=E.why||(E.why={}); if(why) W[P.id]=why; else delete W[P.id];
+  }
+  SIM.blockedReport = function(s){ var E=s!=null ? SIM.econ(s) : SIM.ECON; return E ? JSON.parse(JSON.stringify(E.why||{})) : {}; };
   /* THE ABSTRACT LEVEL (77-sim-7-lod.js, SIM.level): in a town nobody watches, a worker counts at its job in every hour
      its schedule says WORK, an animal at home, each at the efficiency it had when the town was lowered (absEff); a cart's
      trip takes the straight line times SIM.ABSTRACT_DETOUR at its speed, with no route, and it is where it went */
   function absTown(E){ return !!(SIM.ABSTRACT && E.settlement!=null && SIM.ABSTRACT[E.settlement]); }
   function absWork(E, a, minute, W, H){ var eff=a.absEff==null ? 1 : a.absEff;
     if(a.herd!=null){ if((a.grownAt!=null && a.grownAt>minute) || !a.present) return; if(E.recipes[a.herd] && E.recipes[a.herd].herd) H[a.herd]=(H[a.herd]||0)+eff; return; }
-    if(!a.present || a.driven) return; var s=SIM.schedOf(a, minute); if(!s || s[Math.floor((minute%1440)/60)]!=='WORK') return;
+    if(!a.present || a.driven) return; if(a.cmd && minute<a.cmd.until) return;   /* commanded elsewhere (jailed: 77-sim-6-crime.js) */
+    var s=SIM.schedOf(a, minute); if(!s || s[Math.floor((minute%1440)/60)]!=='WORK') return;
     var w=a.work!=null ? a.work : (a.mem && a.mem.WORK); if(w==null || !E.recipes[w]) return; W[w]=(W[w]||0)+eff; }
   function cartAt(a, t){ if(!absTown(SIM.ECON)) return SIM.pose(a, t, { cheap:true }); var P=SIM.R.place[a.place] || SIM.R.place[a.home]; return P ? { x:P.x, y:P.y||0, z:P.z } : { x:0, y:0, z:0 }; }
   function tick(minute, t){
@@ -149,7 +209,14 @@
     Object.keys(H).forEach(function(id){ var R=E.recipes[id], Hd=R.herd; if(Hd.tended && !W[id]) return;
       if(Hd.share) Hd.out.forEach(function(g, i){ make(SIM.R.place[id], [g], H[id]*Hd.rate*Hd.share[i]*hrs, 'carryH'+i); });   /* co-products in their shares (a duck's eggs and its meat) */
       else make(SIM.R.place[id], Hd.out, H[id]*Hd.rate*hrs, 'carryH'); });   /* tended: only while its keepers are at work (the milking) */   /* the animals first: the milk the dairy then turns */
-    Object.keys(W).forEach(function(id){ var R=E.recipes[id]; if(R.out.length && R.rate) make(SIM.R.place[id], R.out, W[id]*R.rate*hrs, 'carry'); });
+    Object.keys(W).forEach(function(id){ var R=E.recipes[id], St=R.site!=null ? E.resSites[R.site] : null;
+      if(R.build){ if(R.hold && !(R.hold.until!=null && minute>=R.hold.until)) return; if(SIM.BUILD) SIM.buildWork(id, W[id]*hrs, minute); return; }   /* a lot's builders at work (77-sim-6-build.js) */
+      if(!R.out.length || !R.rate) return;
+      if(R.hold){ if(R.hold.until!=null && minute>=R.hold.until) delete R.hold; else { (E.why||(E.why={}))[id]={ reason:R.hold.reason }; return; } }   /* held (SIM.recipeHold): its hours lost */
+      var u=W[id]*R.rate*(St ? St.yield : 1)*hrs;
+      if(R.batch) batchWork(E, SIM.R.place[id], R, u, St); else make(SIM.R.place[id], R.out, u, 'carry', St); });
+    Object.keys(E.recipes).forEach(function(id){ var R=E.recipes[id]; if(R.hold && !W[id]){ if(R.hold.until!=null && minute>=R.hold.until) delete R.hold; else (E.why||(E.why={}))[id]={ reason:R.hold.reason }; }
+      if(R.batch && !W[id] && R.rate>0 && !(E.why||(E.why={}))[id]) E.why[id]={ reason:'no workers' }; });
   }
   /* ---------------------------------------------------------------- the imports: sent for, delivered */
   function emptiest(g){ return SIM.ECON.warehouses.slice().sort(function(p, q){ return (p.stock[g]||0)-(q.stock[g]||0) || (p.id<q.id?-1:1); })[0]; }

@@ -28,15 +28,16 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `45-host-stage.js` | 10 | the plain, the river, the stone forest's bench (42); the rock (KSTACKS records: core/terrain/37-core- (62) |
-| `46-biome-guilin-layout.js` | 16 | lay: the grid of beds and wall distances (23); the height of the rock (74); the zone of a point (87); the wall: a point on a bed's face, and its outwa (109); the cliffs' dressing (data: where the scrub hold (115); the paddies (data: fields by the river) (143) |
-| `47-host-land.js` | 17 | the fields (biomes/WORLD.md): wet, flow, rock, u (15); the host binding (before the meshes: their paint (24); the library layers (or procedural without the pa (36); the ground (one mesh: grass, litter at the tower (56); the paddies' bunds: low earth walls round every  (80); the rock (KSTACKS meshes): four meshes, by mater (96); the horizon: the karst going on into the mist (137); the water: the river, the pond, the paddies (153) |
-| `50-biome-guilin-species.js` | 24 | palettes (sRGB; a library card carries its own c (20); the tree-scale species (37); harvest (biomes/FRUIT.md; kits/crops) (61); the small plants, tagged (76); leaf textures (procedural, greyscale: the fallba (92); bark textures (grey, mean ~.6) (130); geometries (kit-local), and cell mapping (139); materials (165); instanced items (193) |
+| `45-host-stage.js` | 9 | the plain, the river, the stone forest's bench (42); the rock (KSTACKS records: core/terrain/37-core- (62) |
+| `46-biome-guilin-layout.js` | 15 | lay: the grid of beds and wall distances (23); the height of the rock (74); the zone of a point (87); the wall: a point on a bed's face, and its outwa (109); the cliffs' dressing (data: where the scrub hold (113); the paddies (data: fields by the river) (141) |
+| `47-host-land.js` | 17 | the fields (biomes/WORLD.md): wet, flow, rock, u (15); the host binding (before the meshes: their paint (24); the library layers (or procedural without the pa (36); the ground (one mesh: grass, litter at the tower (56); the paddies' bunds: low earth walls round every  (80); the rock (KSTACKS meshes): four meshes, by mater (96); the horizon: the karst going on into the mist (136); the water: the river, the pond, the paddies (152) |
+| `50-biome-guilin-species.js` | 24 | palettes (sRGB; a library card carries its own c (20); the tree-scale species (37); harvest (biomes/FRUIT.md; kits/crops) (61); the small plants, tagged (76); leaf textures (procedural, greyscale: the fallba (92); bark textures (grey, mean ~.6) (130); geometries (kit-local), and cell mapping (139); materials (165); instanced items (195) |
 | `55-biome-guilin-trees.js` | 17 | the placement grid (15); keep-clear between trees (core/space) (28); the builders: (T, st, lv) with lv 2 near, 1 mid (49); impostors (the far trees) (127); the passes (data: species, cell, acceptance by z (141) |
 | `57-biome-guilin-cliffs.js` | 5 |  |
 | `60-biome-guilin-floor.js` | 5 |  |
 | `70-biome-guilin.js` | 1 |  |
 | `88-host-build.js` | <1 |  |
+| `89-host-sky.js` | 2 |  |
 | `89w-host-water.js` | 2 |  |
-| `99-host-take.js` | 14 | the inspector's words: a plant names its species (26); the probe's budgets and the kit's own checks (ve (40); the page, handed to the host (112) |
+| `99-host-take.js` | 14 | the inspector's words: a plant names its species (27); the probe's budgets and the kit's own checks (ve (41); the page, handed to the host (113) |
 | `99-tail.html` | <1 |  |

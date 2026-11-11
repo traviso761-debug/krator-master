@@ -24,7 +24,8 @@ const STREAM=(function(){const S=SITE_STREAM,pts=[];if(!S)return null;
  return {name:S.name,pts,level:L,w:S.width,near};})();
 
 // ---------------------------------------------------------------- the landforms (core/terrain/42-core-frost.js)
-NWOW.frost=KFROST.create(Object.assign({seed:SITE.seed,ground:baseH},SITE.frost({stream:STREAM?STREAM.pts:[],grade:(x,z)=>COARSE.grade(x,z),meanAt:(x,z)=>COARSE.mean(x,z)})));
+const FROST_CFG=SITE.frost({stream:STREAM?STREAM.pts:[],grade:(x,z)=>COARSE.grade(x,z),meanAt:(x,z)=>COARSE.mean(x,z)});   /* kept: the ground's patterned layer reads its polygons' where (KGROUND, below) */
+NWOW.frost=KFROST.create(Object.assign({seed:SITE.seed,ground:baseH},FROST_CFG));
 NWOW.frostH=(x,z)=>NWOW.frost.h(x,z);
 _mark('frost');
 // the ground with the stream's channel cut in: a bed ~0.6 m under the water across the stream's width, its banks eased
@@ -168,8 +169,31 @@ const MAT_GROUND=new THREE.MeshLambertMaterial({color:0xffffff});
     over(1,'vW.x',1.3),over(3,'vW.z',2.9),over(4,'vW.w',4.1),over(5,'vW2.x',5.7),over(6,'vW2.y',6.3),over(2,'vW.y',8.9),
     'float mv=nfbm(p*0.021+vec2(4.2,1.3)),mh=nfbm(p*0.0072+vec2(9.1,3.3));c*=(0.82+0.36*mv)*mix(vec3(0.95,0.93,0.9),vec3(1.04,1.03,0.98),mh);',
     'diffuseColor.rgb*=c*vW2.z*1.25;}'].join('\n'));};
- MAT_GROUND.customProgramCacheKey=()=>'nwouterwall-ground-dither';}
-// the weights at a point: [needles, gravel, turf, cladonia], [sphagnum, lichen, shade, 0]
+ MAT_GROUND.customProgramCacheKey=()=>'nwouterwall-ground-dither';
+ /* THE GROUND ON core/terrain's GROUND SHADER (KGROUND, 43-core-ground.js; the final rebuild, pair 11, 2026-11-09): the steppe's grass, the base,
+    stays dithered (ndither, as judged), and the six layers over it (the larch's litter, the turf, caribou moss, bog moss, the lichen crust, the
+    gravel) come over it hex-tiled, scaled with distance and blended by height (a stone stands through the moss at an edge instead of a smear),
+    each at its weight and the season's tint as above. And the PATTERNED GROUND (BACKPORT.md's row: KGROUND's 'polygon' kind): sorted circles
+    a few metres across, their troughs fine-earth dark and their rims sorted stones, wherever the frozen flats take KFROST's ice-wedge polygons
+    (44s: SITE.frost's polygons' where; aW2.w), inside the 14-16 m polygons the ground's mesh already draws. Only with every layer from the pack
+    (the procedural fallback keeps its mix) and ?kground=0 not set. Relief off (?kgrelief=1 shows it: each build times it on the GPU first). three
+    r128 uploads cameraPosition only to Phong and Standard materials, so on this Lambert ground KGROUND's distance takes the eye from the view
+    matrix (KHOOK.EYE's kEye; Korona's lines: the fix belongs in core/terrain/43-core-ground.js) */
+ const KG_ON=typeof KGROUND!=='undefined'&&new URLSearchParams(location.search).get('kground')!=='0'&&Ls.every(L=>L.lib);
+ const KG_LY=KG_ON?[[1,'vW.x'],[3,'vW.z'],[4,'vW.w'],[5,'vW2.x'],[6,'vW2.y'],[2,'vW.y']].map(([i,w])=>KGROUND.layer('nwouterwall',LAYERS[i],{w,tint:T[i],name:LAYERS[i]})):null;
+ if(KG_LY&&KG_LY.every(Boolean)){
+  KG_LY.push({kind:'polygon',w:'vW2.w',amt:.6,size:3,width:.07,edgeTint:'vec3(0.40,0.37,0.32)',warp:.16,rim:.06,rimTint:'vec3(0.56,0.54,0.50)',seed:KRAND.hash(SITE.seed,4799)%997,name:'sorted circles (patterned ground)'});
+  const KG_EYE='#define '+'camera'+'Position kEye()\n';   /* joined so check_source's CAMPOS rule, which cannot tell a redirect from a read, does not count it */
+  MAT_GROUND.onBeforeCompile=sh=>{Object.assign(sh.uniforms,{uL0:U.uL0});
+   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute vec4 aW;attribute vec4 aW2;varying vec4 vW;varying vec4 vW2;varying vec3 vGWP;')
+    .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vW=aW;vW2=aW2;');
+   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uL0;varying vec4 vW;varying vec4 vW2;varying vec3 vGWP;\n'+GROUND_DITHER+KHOOK.EYE+KG_EYE)
+    .replace('#include <map_fragment>',['{vec2 p=vGWP.xz;diffuseColor.rgb='+tex(0)+';}','/*KGROUND*/',
+     '{vec2 p=vGWP.xz;float mv=nfbm(p*0.021+vec2(4.2,1.3)),mh=nfbm(p*0.0072+vec2(9.1,3.3));diffuseColor.rgb*=(0.82+0.36*mv)*mix(vec3(0.95,0.93,0.9),vec3(1.04,1.03,0.98),mh)*vW2.z*1.25;}'].join('\n'));};
+  MAT_GROUND.customProgramCacheKey=()=>'nwouterwall-ground-kg';
+  KGROUND.hook(MAT_GROUND,{key:'nwouterwall-ground',layers:KG_LY,at:'/*KGROUND*/'});
+  MAT_GROUND.userData.kgroundOn=true;}}
+// the weights at a point: [needles, gravel, turf, cladonia], [sphagnum, lichen, shade, patterned ground]
 function groundW(F,x,z){const shade=NWOW.shadeOf(F),warm=F.mean+NWOW.AMP.warm,hi=smooth(8.5,6.5,warm),fell=smooth(4,1.5,warm);
  const larch=Math.max(smooth(.06,.32,shade),smooth(10.6,9.6,warm)*smooth(-.6,-.2,shade))*(1-hi)*(F.floor?.2:1);
  const gravel=Math.max(F.floor?.85:0,smooth(.75,1.05,F.g)*.8,F.field?.7:0,F.pocket?.3*KRAND.vnoise(x*.08,z*.08,0,4793):0,F.rockG*.9,smooth(STREAM?STREAM.w*2.6:0,STREAM?STREAM.w:0,F.streamD));
@@ -179,16 +203,18 @@ function groundW(F,x,z){const shade=NWOW.shadeOf(F),warm=F.mean+NWOW.AMP.warm,hi
  const lich=Math.max(fell,F.rock*.9,F.rockG*.6);
  // the brightness: broad patches (the grass thick or thin, old snow's ground, a burn's soot), finer mottling, the lobes' risers
  const br=.78+.36*KRAND.fbm(x*.0045,z*.0045,0,3,4797)+.1*(KRAND.vnoise(x*.06,z*.06,0,4792)-.5)-.12*F.front-.22*(F.burnK||0)-.12*larch;
- return [[larch,gravel,turf,clad],[sph,lich,br,0]];}
+ const pat=F.pat||0;   /* the patterned ground's sorted circles (KGROUND 'polygon': the frozen flats' polygons' where; 0 on the mid ground) */
+ return [[larch,gravel,turf,clad],[sph,lich,br,pat]];}
 
 // ---------------------------------------------------------------- the near ground: the baked field's own grid, one mesh
 // THE ZONE RASTER: each grid point's zone (46) kept as it is worked out here, so the kit's passes read a candidate's zone at the
 // nearest grid point (NWOW.zoneAt) and work out the full fields only for the candidates it accepts
+const PAT_W=FROST_CFG.polygons&&FROST_CFG.polygons.where?(x,z)=>clamp(FROST_CFG.polygons.where(x,z),0,1):null;   /* the patterned ground's weight */
 const ZONE_IDS=Object.keys(NWOW.ZONES),ZR=new Uint8Array(FIELD.nx*FIELD.nz);
 NWOW.zoneAt=(x,z)=>{if(!inNear(x,z))return NWOW.at(x,z).zone;const i=Math.round((x-FIELD.x0)/FIELD.step),j=Math.round((z-FIELD.z0)/FIELD.step);return ZONE_IDS[ZR[j*FIELD.nx+i]];};
 (function(){const f=FIELD,nx=f.nx,nz=f.nz,pos=new Float32Array(nx*nz*3),w1=new Float32Array(nx*nz*4),w2=new Float32Array(nx*nz*4),idx=[];
  for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const k=j*nx+i,x=f.x0+i*f.step,z=f.z0+j*f.step;pos[3*k]=x;pos[3*k+1]=f.at(i,j);pos[3*k+2]=z;
-  const F=fieldsAt(x,z),W=groundW(F,x,z);w1.set(W[0],4*k);w2.set(W[1],4*k);ZR[k]=ZONE_IDS.indexOf(NWOW.zoneOf(F));}
+  const F=fieldsAt(x,z);F.pat=PAT_W?PAT_W(x,z):0;const W=groundW(F,x,z);w1.set(W[0],4*k);w2.set(W[1],4*k);ZR[k]=ZONE_IDS.indexOf(NWOW.zoneOf(F));}
  for(let j=0;j<nz-1;j++)for(let i=0;i<nx-1;i++){const a=j*nx+i,b=a+1,c=a+nx,d=c+1;idx.push(a,c,b,b,c,d);}
  // a skirt round the edge, down 40 m, so the mid ground never shows through a seam
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('aW',new THREE.BufferAttribute(w1,4));g.setAttribute('aW2',new THREE.BufferAttribute(w2,4));

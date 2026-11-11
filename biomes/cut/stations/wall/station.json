@@ -1,4 +1,13 @@
 {
- "name": "The wall (station 2): on Dilihan's side of the crater mouth, r 56 km: nwlowlands' columns leaning along the field, the terraces of measure melons, the curve of the bowl seen across",
- "out": "cut-wall.html"
+ "name": "The wall (station 2): on Dilihan's side of the crater mouth, r 56 km: nwlowlands' columns leaning along the field, the terraces of measure melons, the curve of the bowl seen across; nhighlands' great trumpet in the ravine beside the hyperbamboo (PLAN.md section 12, exchange 6)",
+ "out": "cut-wall.html",
+ "kits": {
+  "48e-nhl-species.js": "../nhighlands/src/50-biome-nhighlands-species.js",
+  "48f-nhl-trees.js": "../nhighlands/src/55-biome-nhighlands-trees.js",
+  "48g-nhl-floor.js": "../nhighlands/src/60-biome-nhighlands-floor.js",
+  "48h-nhl-build.js": "../nhighlands/src/70-biome-nhighlands.js"
+ },
+ "packs": {
+  "nhighlands": "../nhighlands"
+ }
 }

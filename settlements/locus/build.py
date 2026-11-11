@@ -57,10 +57,12 @@ def find_node():
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(HERE)), 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 SRC = os.path.join(HERE, 'src')
 LOD_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'lod')   # shared level of detail (core/lod/README.md)
 FURNISH_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'furnish')   # the furniture placement pass (core/furnish/README.md)
 WALK_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'walk')   # KWALK: the interiors' floors, walls, stairs and entry flights (kits/interiors IX.walk)
+DOOR_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'door')   # KDOOR, KGLASS, KDOORHOST: the doors and the glass (53-assets.js, 81-glow.js, 95-locus-doors.js)
 RAND_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'rand')   # KRAND: the tags' uid is its hash
 TAGS_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'tags')   # the tag registry the furniture is registered in (core/tags/README.md)
 MASK_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'mask')   # KMASK: the placement mask as data (core/mask/README.md)
@@ -98,6 +100,7 @@ DETERMINISTIC = {'00-head.html', '05-palette.js', '09-lod.js', '97-lod-auto.js',
 DETERMINISTIC |= {'06-core-khook.js', '06b-core-kcolor.js'}   # core/shader (no rnd())
 DETERMINISTIC |= {'50-core-furnish.js', '52-core-furnish-draw.js', '53-core-furnish-host.js'}   # core/furnish (no rnd())
 DETERMINISTIC |= {'25-core-mask.js', '26-core-mask-xform.js', '27-core-mask-distance.js'}   # core/mask (no rnd())
+DETERMINISTIC |= {'10-core-door.js', '20-core-glass.js', '30-core-door-leaf.js', '90-core-door-host.js', '95-locus-doors.js'}   # core/door and its binding (no rnd())
 DETERMINISTIC |= {f for f in os.listdir(ATMOS_DIR) if f.startswith('89-atmos-')} | {'90-atmos-host.js', '20-core-clock.js', '88-core-minimap.js', '88a-core-minimap-host.js', '88b-locus-minimap.js'}   # core/atmos: IIFE-scoped, its own PRNG; core/clock
 DETERMINISTIC |= {f for f in os.listdir(WATER_DIR) if f.endswith('.js') and not f.startswith('test')} | {'90w-lake.js'}   # core/water (every fragment: no rnd()) and the lake's binding
 DETERMINISTIC |= {'08-core-rand.js', '50-core-tags.js', '52-core-tags-vocab.js', '53-core-tags-host.js', '20-core-walk.js'}   # core/rand, core/tags, core/walk (no rnd())
@@ -114,6 +117,19 @@ CONTINUES = {f: '59-civic.js' for f in ('59a-civic-park.js', '59b-civic-library.
 # KratorInteriors, ROOM, furnishRoom). Inserted after the kit builders (65-abyss-*) and before the glue
 # 66-locus-furnish.js (FURNISH, the interiors hook). Both generators' own text is exempt from the rules below.
 ROOT = os.path.dirname(os.path.dirname(HERE))
+sys.path[:0] = [os.path.join(ROOT, 'kits', 'locus'), os.path.join(ROOT, 'kits', 'eastern-abyssal')]
+import locuskit, abysskit   # the Locus kit and the Eastern Abyssal kit, read in place (MODULARITY-PLAN.md step 4)
+sys.path.insert(0, os.path.join(ROOT, 'kits', 'yuni'))
+import yunikit              # the Yuni kit: its buildings (55-59c), read in place on Locus's frame (53-assets.js; MODULARITY-PLAN.md step 4b)
+
+
+
+def vendor_check():
+    """Nothing vendored: the Yuni kit's buildings (kits/yuni) and Locus's two kits are read in place."""
+    missing = [p for p in list(yunikit.paths().values()) + list(locuskit.paths().values()) + list(abysskit.paths().values())
+               if not os.path.isfile(p)]
+    print('vendor-check: nothing vendored; kits/yuni, kits/locus and kits/eastern-abyssal read in place%s'
+          % (('; MISSING ' + ', '.join(missing)) if missing else ''))
 FURN_CULTURES = ['eastabyss', 'nomad', 'reedlake', 'generic', 'scrap', 'jobs']   # scrap: pa_drum, the standing oil drum; jobs: the work items (kits/catalog/krator-master-furniture-jobs.js)
 INTERIOR_SETS = ['locus', 'abyss']
 VIRTUAL = {'65z-furniture-bundle.js', '65y-vehicles-bundle.js', '46-matlib-pack.js', '69a0-bio-matlib-pack.js', khost.EDITS_JS}   # 39-host-edits.js: edits.json as KHOST_EDITS (core/host/host.py)
@@ -277,12 +293,18 @@ def check(order, bodies):
 
 
 def main():
+    if '--vendor-check' in sys.argv:
+        vendor_check()
+        return
     do_checks = '--no-checks' not in sys.argv
     vb = virtual_bodies()
     paths = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()}
+    for kit in (yunikit, locuskit, abysskit):   # the Yuni kit and Locus's two (a src/ copy with the same name would win: none)
+        for f, p in kit.paths().items():
+            paths.setdefault(f, p)
     for f in RECORD_FILES:
         paths.setdefault(f, os.path.join(RECORD_DIR, f))
-    for d in (LOD_DIR, FURNISH_DIR, RAND_DIR, TAGS_DIR, WALK_DIR, MASK_DIR, ATMOS_DIR, CLOCK_DIR, MINIMAP_DIR, WATER_DIR):       # a src/ copy with the same name overrides
+    for d in (LOD_DIR, FURNISH_DIR, RAND_DIR, TAGS_DIR, WALK_DIR, DOOR_DIR, MASK_DIR, ATMOS_DIR, CLOCK_DIR, MINIMAP_DIR, WATER_DIR):       # a src/ copy with the same name overrides
         for f in os.listdir(d):
             if f[0].isdigit() and f.endswith('.js') and f not in paths:
                 paths[f] = os.path.join(d, f)
@@ -305,6 +327,7 @@ def main():
                 print('  -', e)
             sys.exit(1)
 
+    BSRC.report()   # --list-sources: every file read so far is what the page is made of; then exit
     html = ''.join(bodies[f] for f in order)
     if SIDE:   # the pack beside the pages, one file they all share
         sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))

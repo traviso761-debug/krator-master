@@ -7,6 +7,31 @@ pieces a seed, 16 walkers; seeds 0–2, and seeds 0–7 with `--seeds 8`) with n
 What follows is what the checks do not cover, or what the kit does not do yet.
 
 ## Open
+- [x] **`verify.py dist/interiors-sets.html --assert` and `dist/interiors-walk.html --assert` threw in the snapshot (2026-11-09).**
+  Both ran the demo's checks: the demo's snapshot reads `window._interiors.walkers`, which neither page has (the sets sheet needs
+  `--sets`; the walk mockup had no verify, only `tools/walkshots.py`). `verify.py` now takes the mode from the page's name
+  (`interiors-sets*` runs as `--sets`; `interiors-walk*` gets its own check: coverage, `IX.audit` on every room, `IX.auditBuilding`
+  on every building, and seed 0 hashing the same after seed 1, through the page's new `reseed`). Nothing in the kit's output was wrong.
+- [ ] **A living room's food slot can be filled by a surface piece, which the residence rule does not count (2026-11-09).** With
+  `--sets --assert` at the default three seeds, seed 2 fails one residence: `beast-rider.br_bldg_girder_dwelling` (at x 138, z -984 on
+  the full sheet; alone, `?set=beast-rider`, it passes, the 0.2 m grid falling differently) places `br_h_stall_goods` (stack, role
+  store) on its low table as the `food` need, and `IX.sets.auditResidence` skips surface pieces. The fix is `anchors: ['floor', 'wall']`
+  on the food require of `cottage`, `living` and `kitchen` in `src/30-programs.js` (as sets/zeijani.js's `cell` has it), but that
+  fragment reaches Dhelv, Girder (both pages), Highlands, Roketstad and the isle demo (`tools/reach.py`): it waits for a pass that
+  rebuilds them.
+- [x] **Ladders and low plinths the walk could not climb (the stairs pass, 2026-11-03).** `IX.walk.register` wrote a ladder as one strip
+  (about 2.7 m of rise a metre): core/walk's reach (0.45 m steps on 0.4 m cells, the reachability audit's) never got up one, so every
+  storey a planner served with a ladder was unreached; it is rung floors 0.4 m apart now (`rungs()`, a flight steeper than 1.1 too).
+  And a raised base got no entry flight within `step` 0.5 m of the ground, more than the 0.45 m the reach steps: the default is 0.45.
+  `tests/test-walk.js` adds a reach check of every planned climb (246, 26 ladders: the 26 failed before). On the sets alone, each
+  item on flat ground, `KWALK.reach` from outside its street doors: Highlands 388 -> 476 of 620 floors, Zeijani 138 -> 145 of 207,
+  Eternian 119 -> 157 of 192, Locus 23 of 25 either way.
+- [ ] **What is left unreached on the sets (same measure).** Most single misses are slivers of an upper floor cut by its stairwell
+  (`minusHoles`: a 0.1 to 1.7 m2 strip between the well and a wall, too narrow for a walker), not rooms. The rest: explicit rooms
+  over the ground with no stair or ladder declared (the Highlands container stacks' and radome tower's upper units, the kontor's and
+  the tank house's upper rooms, the windmill's buck), bodies above `maxRise` (the market hall's council floor, the temple's
+  sanctum: elevated, routed by the host), and Zeijani's carved galleries and estates, whose floors are the cavern's (`skipRoom`).
+  A set item can give an explicit room a ladder or stair of its own; the planner only serves its planned bodies.
 - [ ] **Building sets: geometry that precludes or bends rooms.** `sets/GEOMETRY.md` lists, for the kits' author,
   the buildings skipped because their geometry has no room (a drum with no floor, a solid trunk, cabins with no
   door) and the rooms planned on an assumption the builder does not draw (an assumed door, a floor laid in a

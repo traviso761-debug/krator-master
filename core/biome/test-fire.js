@@ -1,7 +1,8 @@
 // node core/biome/test-fire.js [--write] — KFIRE (38-core-fire.js), each check with a negative.
-// The first checks load crater-drylands' fire fragment IN PLACE (biomes/crater-drylands/src/52-biome-craterdry-fire.js) on the
-// biome core and prove KFIRE gives the kit's grids bit for bit from the same ground, burnability and fires: crater-drylands'
-// output must match KFIRE's (README.md, "Fire"). Then the model's own rules, and golden-fire.json (the Godot twin's vectors,
+// The first checks load crater-drylands' original fire fragment (frozen: core/biome/ref/craterdry-fire-52.js.txt, the kit's
+// src/52 as it was before it moved onto KFIRE, 2026-11-09) on the biome core and prove KFIRE gives the kit's grids bit for bit from the
+// same ground, burnability and fires: crater-drylands' output must match KFIRE's (README.md, "Fire"). Then the kit's src/52 as it is now
+// (an adapter onto KFIRE, with the kit's own inputs) is loaded on its own and proved to give the frozen fragment's grids and live fire. Then the model's own rules, and golden-fire.json (the Godot twin's vectors,
 // kfire_test.gd): --write rewrites it, a plain run checks it is current.
 'use strict';
 const fs=require('fs'),path=require('path'),vm=require('vm'),crypto=require('crypto');
@@ -11,7 +12,7 @@ const ctx={console,Math,Float32Array,Int16Array,Int32Array,Uint8Array,Object,Arr
 vm.runInContext(read('core/rand/08-core-rand.js'),ctx);
 vm.runInContext(read('core/biome/10-core-head.js'),ctx);
 vm.runInContext('var CRATERDRY={};',ctx);
-vm.runInContext(read('biomes/crater-drylands/src/52-biome-craterdry-fire.js'),ctx);
+vm.runInContext(read('core/biome/ref/craterdry-fire-52.js.txt'),ctx);   /* the frozen reference: never edited */
 vm.runInContext(read('core/biome/38-core-fire.js'),ctx);
 const {BIO,KFIRE,KRAND,CRATERDRY}=ctx,{fbm,smooth}=BIO.fn;
 ok('before any history, ageAt is NEVER and frontAt -1',KFIRE.ageAt(0,0)===KFIRE.NEVER&&KFIRE.frontAt(0,0)===-1,KFIRE.current!==null);
@@ -50,6 +51,19 @@ const rockAt=(()=>{for(let i=0;i<kf.N*kf.N;i++)if(kf.base[i]===0&&Math.hypot(kf.
 ok('a fire lit on rock or water does not take, as the kit\'s does not',rockAt&&!KFIRE.run(kf,{x:rockAt[0],z:rockAt[1]}).ok&&!CRATERDRY.fireRun({x:rockAt[0],z:rockAt[1]}).ok,!kRun.ok);
 ok('the live fire\'s ignition burns at once and the far side is unburnt then',kRun.state(kRun.x,kRun.z,1)==='burning'&&kRun.state(kRun.x,kRun.z,1e5)==='burnt'&&kRun.state(-900,-900,1)==='unburnt',kRun.state(kRun.x,kRun.z,1)==='unburnt');
 const [r0,r1]=kRun.range(0,300);ok('range(0,300) is the cells caught in the first five minutes',kRun.order.slice(r0,r1).every(c=>kRun.arrive[c]<300)&&(r1>=kRun.order.length||kRun.arrive[kRun.order[r1]]>=300),r1===0);
+// THE KIT ON KFIRE (crater-drylands' src/52 as it is now: an adapter onto KFIRE with the kit's own burnability, warp and old fires), in a context
+// of its own on the same ground: the frozen fragment's grids, lookups and live fire, bit for bit. The kit's pages keep their fires by this
+{const c2={console,Math,Float32Array,Int16Array,Int32Array,Uint8Array,Object,Array,Infinity};vm.createContext(c2);
+ vm.runInContext(read('core/rand/08-core-rand.js'),c2);vm.runInContext(read('core/biome/10-core-head.js'),c2);vm.runInContext(read('core/biome/38-core-fire.js'),c2);
+ vm.runInContext('var CRATERDRY={};',c2);vm.runInContext(read('biomes/crater-drylands/src/52-biome-craterdry-fire.js'),c2);
+ c2.BIO.host=host;const K2=c2.CRATERDRY,ad=K2.fireHistory({R:1000,cell:20,wind:W,fires:HOSTF.map(f=>Object.assign({},f)),old:6,seed:777});
+ ok('the kit on KFIRE: every grid is the frozen fragment\'s ('+ad.fires.length+' fires)',same(ad.base,kit.base)&&same(ad.H,kit.H)&&same(ad.last,kit.last)&&same(ad.id,kit.id)&&same(ad.front,kit.front),false);
+ let lk2=0;for(let i=0;i<4000;i++){const x=(i*37.3%2000)-1000,z=(i*91.7%2000)-1000;if(K2.ageAt(x,z)!==kit.ageAt(x,z)||K2.frontAt(x,z)!==kit.frontAt(x,z)||K2.fireAt(x,z).fire!==kit.fireAt(x,z).fire)lk2++;}
+ ok('the kit on KFIRE: its lookups answer as the frozen fragment\'s at 4000 points, and its shares',lk2===0&&JSON.stringify(ad.shares())===JSON.stringify(kit.shares()),false);
+ const aRun=K2.fireRun({x:200,z:300,maxT:900});
+ ok('the kit on KFIRE: a live fire arrives where and when the frozen fragment\'s does',aRun.ok&&same(aRun.arrive,kitRun.arrive)&&aRun.order.join()===kitRun.order.join(),false);
+ const adS=K2.fireHistory({R:1000,cell:20,wind:W,fires:HOSTF.map(f=>Object.assign({},f)),old:6,seed:778});
+ ok('the kit on KFIRE: another seed lights other old fires, and the comparison sees it',true,same(adS.last,kit.last));}
 
 // the model's own rules, on a flat even field (no kit)
 const flat=o=>KFIRE.history(Object.assign({R:600,cell:20,height:()=>0,burn:()=>1,old:0,warp:null},o));

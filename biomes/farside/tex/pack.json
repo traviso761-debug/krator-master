@@ -2,6 +2,7 @@
  "build": "farside",
  "families": {
   "blade0": {
+   "anchor": "top",
    "breakup": null,
    "card": true,
    "files": {
@@ -10,6 +11,7 @@
    "lib": "card.kelp.0",
    "metal": 0,
    "normalScale": 1.0,
+   "plants": 1,
    "roughLift": 0.0,
    "scale": [
     1,
@@ -28,6 +30,7 @@
    }
   },
   "blade1": {
+   "anchor": "top",
    "breakup": null,
    "card": true,
    "files": {
@@ -36,6 +39,7 @@
    "lib": "card.kelp.3",
    "metal": 0,
    "normalScale": 1.0,
+   "plants": 1,
    "roughLift": 0.0,
    "scale": [
     1,
@@ -54,6 +58,7 @@
    }
   },
   "blade2": {
+   "anchor": "top",
    "breakup": null,
    "card": true,
    "files": {
@@ -62,6 +67,7 @@
    "lib": "card.kelp.7",
    "metal": 0,
    "normalScale": 1.0,
+   "plants": 1,
    "roughLift": 0.0,
    "scale": [
     1,
@@ -108,6 +114,7 @@
    }
   },
   "coral0": {
+   "anchor": "center",
    "breakup": null,
    "card": true,
    "cell": [
@@ -122,6 +129,7 @@
    "lib": "card.reef",
    "metal": 0,
    "normalScale": 1.0,
+   "plants": 9,
    "roughLift": 0.0,
    "scale": [
     1,
@@ -140,6 +148,7 @@
    }
   },
   "coral1": {
+   "anchor": "center",
    "breakup": null,
    "card": true,
    "cell": [
@@ -154,6 +163,7 @@
    "lib": "card.reef",
    "metal": 0,
    "normalScale": 1.0,
+   "plants": 9,
    "roughLift": 0.0,
    "scale": [
     1,
@@ -228,6 +238,7 @@
    }
   },
   "eelgrass": {
+   "anchor": "center",
    "breakup": null,
    "card": true,
    "cell": [
@@ -242,6 +253,7 @@
    "lib": "card.seagrass",
    "metal": 0,
    "normalScale": 1.0,
+   "plants": 9,
    "roughLift": 0.0,
    "scale": [
     1,
@@ -257,6 +269,34 @@
     "keep": 0.4,
     "mean": 0.6,
     "sourceMean": 0.4001
+   }
+  },
+  "ground.bench": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "ground.bench.albedo.webp"
+   },
+   "lib": "ground.bench",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "295e315136caefd91800c8129658cfcc34539002",
+    "normal": "ec3cb808f03e2d5cef3bb148610d7aeb8e03f55f",
+    "roughness": "78ac855ba0e134f39a89dd43d9d00156c8d6a780"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.5376052786972942,
+    "sourceMean": 0.5376
    }
   },
   "ground.burn": {
@@ -484,6 +524,7 @@
    }
   },
   "lettuce": {
+   "anchor": "top",
    "breakup": null,
    "card": true,
    "files": {
@@ -492,6 +533,7 @@
    "lib": "card.kelp.1",
    "metal": 0,
    "normalScale": 1.0,
+   "plants": 1,
    "roughLift": 0.0,
    "scale": [
     1,
@@ -566,6 +608,7 @@
    }
   },
   "spongecard": {
+   "anchor": "center",
    "breakup": null,
    "card": true,
    "cell": [
@@ -580,6 +623,7 @@
    "lib": "card.flora.coral",
    "metal": 0,
    "normalScale": 1.0,
+   "plants": 9,
    "roughLift": 0.0,
    "scale": [
     1,
@@ -626,6 +670,7 @@
    }
   },
   "wine0": {
+   "anchor": "none",
    "breakup": null,
    "card": true,
    "cell": [
@@ -640,6 +685,7 @@
    "lib": "card.wineweed",
    "metal": 0,
    "normalScale": 1.0,
+   "plants": 9,
    "roughLift": 0.0,
    "scale": [
     1,
@@ -658,6 +704,7 @@
    }
   },
   "wine1": {
+   "anchor": "none",
    "breakup": null,
    "card": true,
    "cell": [
@@ -672,6 +719,7 @@
    "lib": "card.wineweed",
    "metal": 0,
    "normalScale": 1.0,
+   "plants": 9,
    "roughLift": 0.0,
    "scale": [
     1,
@@ -780,6 +828,7 @@
    }
   },
   "wrack": {
+   "anchor": "center",
    "breakup": null,
    "card": true,
    "cell": [
@@ -794,6 +843,7 @@
    "lib": "card.seaweed",
    "metal": 0,
    "normalScale": 1.0,
+   "plants": 9,
    "roughLift": 0.0,
    "scale": [
     1,

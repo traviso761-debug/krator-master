@@ -1,0 +1,66 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1247,
+    1218
+   ],
+   "seam_after": [
+    0.964,
+    0.961
+   ],
+   "seam_before": [
+    1.926,
+    4.308
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.25,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": true,
+   "rough": 0.7,
+   "rough_var": 0.1,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "stone",
+  "id": "ancient/baroque-scroll",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.7,
+  "scale": [
+   6,
+   6
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "12.webp",
+  "generator": "supplied by the owner (pasted in the session, 2026-11-02)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Flat, front-on, evenly lit relief panel of a monumental carved stone ornament: large swollen scrolls, acanthus curls and bulbous cartouches on a giant scale, deep soft undercuts, all in one pale grey-white stone (#dfe3e6, #cfd5da), no figures, no text, no hard shadows, matte finish. The pattern repeats in both directions. Full colour. Square 2048 px.",
+  "reuse": "giant-scale baroque ornament, tinted pale blue or rust: kits/metropolis S8 the Swell and its rust-red ledge; any palace's carved panels",
+  "sha1": "0b26e9f0cb4467b576f52ee7a9b17531d886c0a7"
+ }
+}

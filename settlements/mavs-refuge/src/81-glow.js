@@ -46,41 +46,51 @@ var NWIN_ON0 = 17.15, NWIN_ONS = 3.9, NWIN_OFF0 = 20.8, NWIN_OFFS = 4.2, NWIN_OF
 function nwT(hour){ return hour >= 12 ? hour : hour + 24; }
 function nwLit(t, W){ var on = NWIN_ON0 + NWIN_ONS*W[7], off = NWIN_OFF0 + NWIN_OFFS*Math.pow(W[8], NWIN_OFFP);
   return t >= on && (t < off || (W[9] && t < NWIN_DAWN)); }
-var paneMesh = null, _pnCol = new THREE.Color(), _pnLit = new THREE.Color(PAL.windowLit), _pnLitC = new THREE.Color(PAL.glowCool),
-    _pnDark = new THREE.Color(PAL.windowDark), PANE_KEY = -1, PANE_LIT = 0, PANE_SETS = [];
-/* two sets: GLASS over a real opening (W[11]: the wall behind is cut, 55-arch / 56-levels), where a dark pane is nearly
-   clear so the room shows through by day and a lit one glows, its alpha rising with its colour; and the old opaque
-   pane over a window drawn on a whole wall (the council chamber, the Crown's tiers, the gate carvings) */
+/* the panes are glass (core/door KGLASS, the owner's "real glass", 2026-11-03), no longer an opaque plate that was a dark
+   void by day (here a near-clear basic pane since 2026-10-05): a pane over a real opening (W[11]: 55-arch / 56-levels cut the
+   wall) stands in the opening and the room shows through it; one on a solid body (the Crown's tiers, the council's drums, the
+   gate carvings) stands before a room card. The same as Girder's (settlements/girder/src/81-glow.js). By night a lit window is
+   the 'lit' glass at the page's night strength (warm, or cool for the silk houses and spider levels), the room still seen through it; an unlit
+   one stays clear glass. Each pane is an instance of two sets, shown in the one its schedule wants (the other's instance
+   folded to nothing). Draw calls: the glass, the lit glass (warm, cool) and the cards. */
+var paneMesh = null, PANE_KEY = -1, PANE_LIT = 0, PANE = { glass:null, lit:[null,null], card:null, M:[], hid:null, n:0 };
 (function(){
   var n=NL_WINDOWS.length; if(!n) return;
-  var glass = new THREE.MeshBasicMaterial({ color:0xffffff, side:THREE.DoubleSide, transparent:true, depthWrite:false });
-  glass.onBeforeCompile = function(sh){ sh.fragmentShader = sh.fragmentShader.replace('#include <color_fragment>',
-    '#include <color_fragment>\n  diffuseColor.a = 0.12 + 0.70*max(max(diffuseColor.r, diffuseColor.g), diffuseColor.b);'); };
-  glass.customProgramCacheKey = function(){ return 'pane-glass'; };
-  var solid = new THREE.MeshBasicMaterial({ color:0xffffff, side:THREE.DoubleSide });
-  [[1, glass], [0, solid]].forEach(function(k){
-    var idx=[]; NL_WINDOWS.forEach(function(W,i){ if((W[11]?1:0)===k[0]) idx.push(i); }); if(!idx.length) return;
-    var m = new THREE.InstancedMesh(new THREE.PlaneGeometry(1,1), k[1], idx.length), o=new THREE.Object3D();
-    idx.forEach(function(wi,i){ var W=NL_WINDOWS[wi];
-      o.position.set(W[0]+W[3]*0.07, W[1], W[2]+W[4]*0.07); o.rotation.set(0, Math.atan2(W[3],W[4]), 0); o.scale.set(W[5],W[6],1); o.updateMatrix();
-      m.setMatrixAt(i,o.matrix); m.setColorAt(i,_pnDark); });
-    m.frustumCulled=false; m.userData.inspectLabel='Window'; if(k[0]) m.renderOrder=4; scene.add(m);
-    PANE_SETS.push({ mesh:m, idx:idx });
-  });
-  paneMesh = PANE_SETS[0] ? PANE_SETS[0].mesh : null;
+  var o=new THREE.Object3D(), geo=new THREE.PlaneGeometry(1,1), M=PANE.M, nCard=0;
+  PANE.hid = new THREE.Matrix4().makeScale(0,0,0); PANE.n = n;
+  for(var i=0;i<n;i++){ var W=NL_WINDOWS[i], d = W[11] ? -0.03 : 0.035;
+    o.position.set(W[0]+W[3]*d, W[1], W[2]+W[4]*d); o.rotation.set(0, Math.atan2(W[3],W[4]), 0); o.scale.set(W[5],W[6],1); o.updateMatrix();
+    M.push(o.matrix.clone()); if(!W[11]) nCard++; }
+  function set(mat, name){ var m=new THREE.InstancedMesh(geo, mat, n); m.name=name; m.frustumCulled=false; m.userData.inspectLabel='Window'; m.userData.lodSkip=true; m.renderOrder=4; scene.add(m); return m; }
+  PANE.glass = set(KGLASS.material(THREE,'clear'), 'window glass');
+  /* the lit glass: KGLASS's 'lit' kind, brighter and denser than its default so a lit window still reads as lit across the town */
+  [PAL.windowLit, PAL.glowCool].forEach(function(c, k){
+    if(k && !NL_WINDOWS.some(function(W){ return W[10]; })) return;
+    var m=KGLASS.material(THREE,'lit').clone(); m.color.set(c); m.emissive.set(c); m.emissiveIntensity=1.0; m.opacity=0.72; m.name='kglass:lit:mavs'+(k?':cool':'');
+    PANE.lit[k] = set(m, 'window glass, lit'+(k?' (cool)':'')); });
+  for(var i2=0;i2<n;i2++){ PANE.glass.setMatrixAt(i2, M[i2]); PANE.lit.forEach(function(m){ if(m) m.setMatrixAt(i2, PANE.hid); }); }
+  if(nCard){   /* the room a pane on a solid body stands before: KGLASS's dim card, 2 cm behind the glass */
+    var cm=new THREE.InstancedMesh(geo, KGLASS.material(THREE,'room'), nCard), c=0, q=new THREE.Matrix4();
+    for(var i3=0;i3<n;i3++){ var W3=NL_WINDOWS[i3]; if(W3[11]) continue;
+      o.position.set(W3[0]+W3[3]*0.015, W3[1], W3[2]+W3[4]*0.015); o.rotation.set(0, Math.atan2(W3[3],W3[4]), 0); o.scale.set(W3[5],W3[6],1); o.updateMatrix();
+      cm.setMatrixAt(c++, o.matrix); }
+    cm.name='window room cards'; cm.frustumCulled=false; cm.userData.lodSkip=true; cm.userData.inspectLabel='Window'; cm.receiveShadow=true; scene.add(cm); PANE.card=cm; }
+  paneMesh = PANE.glass;
+  window._panes = { panes:n, cut:NL_WINDOWS.filter(function(W){ return W[11]; }).length, cards:nCard };
 })();
 function updateGlow(dt, hour, nightK){
   haloMat.uniforms.uK.value = nightK; haloMat.uniforms.uTime.value += dt; haloMat.uniforms.uScale.value = innerHeight*0.5;
   haloPts.visible = nightK > 0.02;
   NLV_U.uNlNight.value = nightK;
-  if(!PANE_SETS.length) return;
+  if(!PANE.glass) return;
   var key = Math.floor(hour*12);                       /* re-evaluate every 5 sky-minutes */
   if(key === PANE_KEY) return; PANE_KEY = key;
   var t=nwT(hour), lit=0;
-  PANE_SETS.forEach(function(S){
-    S.idx.forEach(function(wi,i){ var W=NL_WINDOWS[wi], on=nwLit(t,W);
-      if(on) lit++; S.mesh.setColorAt(i, on ? (W[10]?_pnLitC:_pnLit) : _pnDark); });
-    S.mesh.instanceColor.needsUpdate = true; });
+  for(var i=0;i<NL_WINDOWS.length;i++){ var W=NL_WINDOWS[i], on=nwLit(t,W), k=W[10]?1:0;
+    if(on) lit++;
+    PANE.glass.setMatrixAt(i, on ? PANE.hid : PANE.M[i]);
+    PANE.lit.forEach(function(m, j){ if(m) m.setMatrixAt(i, on && j===k ? PANE.M[i] : PANE.hid); }); }
+  PANE.glass.instanceMatrix.needsUpdate = true; PANE.lit.forEach(function(m){ if(m) m.instanceMatrix.needsUpdate = true; });
   PANE_LIT = lit;
   NLV_U.uNlWin.value = NL_WINDOWS.length ? lit/NL_WINDOWS.length : 0;
 }

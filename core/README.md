@@ -188,6 +188,8 @@ Godot (`biomes/GODOT.md`).
 | `test-chimney.js` | `node core/terrain/test-chimney.js`: KSTACKS kind `chimney` (below), each check with a negative |
 | `37b-core-stacks-contour.js` | opt-in companion of `37-core-stacks.js` ([G data], 2026-10-27, first at `settlements/span`): `KSTACKS.contour(B, m, o)` moves a drawn mesh about the body's axis by angle and height (a profile in and out, a flared foot, a crown drawn in, the axis wandering, vertical joints as grooves, a cleft down from the crown; `o.keep` keeps a held top whole). The record is not changed. A build lists it to use it: no other page moves |
 | `test-stacks-contour.js` | `node core/terrain/test-stacks-contour.js`, each check with a negative |
+| `37c-core-rubble.js` | opt-in ([G data], 2026-11-03, first at `kits/metropolis`): loose rubble on the ground (global `KRUBBLE`): a heap is a lumpy dome at the talus angle over an ellipse, roughened by value noise, its loose blocks and a `cover` of broken chunks (a jittered grid, each piece its own size, tilt and shade, its corners jittered) lying on it; one surface function (`heightAt`, `at`, its noise no finer than the heap's `cell` can draw) makes the mesh (`mesh`: the heap as a polar grid, then the pieces) and the walk triangles (`walkTris`, for `core/walk`'s `poly`); `bedAt` is the drawn mesh's own height, and each piece is laid along it, sunk a third (none floats); `export`/`load`. Not bedded rock: `KSTACKS` is for that. A build lists it to use it |
+| `test-rubble.js` | `node core/terrain/test-rubble.js`, each check with a negative |
 | `38-core-relief.js` | relief functions, all plain maths of (x,z) and a seed (global `KRELIEF`): `range` (a wall of mountains along a line: steep sides, broad serrated top, eased toe, tapered ends), `join` (where ranges meet: the tallest plus a quarter of the rest), `volcano` (a concave cone with gullies and a crater), `fields` (an enclosure lattice: field kinds, crop-row directions and hedge polylines, with missing hedges merging fields), `river` (a water surface that never climbs downstream, with the slope per vertex for foam). Since 2026-10-26 (with core/rand): the landform kinds as records, drawn by `shape` and read by `at`: `wadi` (+ fan), `talus`, `pit`, `pavement` + `paintCover`, `stair` (+ `flowAt`), `rille`, `tube`, `columns`, `gap`, `joints` + `tableland`, `meander` |
 | `test-relief.js` | `node core/terrain/test-relief.js`, each check with a negative |
 | `SCARP.md`, `test-scarp.js`, `golden-scarp.json` | `KRELIEF.scarp`: a wall along a polyline, and its profile published for the scale model (`--write` rewrites the golden file) |
@@ -200,7 +202,7 @@ Godot (`biomes/GODOT.md`).
 | `44-core-farfield.js` | the far field (global `KFAR`, [G data]; HEIGHT-RESEARCH item 3): `lines` (grid lines, even to an inner edge then growing) and `grid` (a vertex-coloured lattice from a height and a colour function, cells skipped by the page; lazy or dense; optional `exag`, `curve` (the planet's curvature, R 4,810 km), `crest`), `shape` (the options on any other height, a lake). Its three.js side is `host/44-core-farfield-draw.js` (`KFAR.mesh`, `KFAR.geometry`, `KFAR.fogThin`) |
 | `test-farfield.js` | `node core/terrain/test-farfield.js`, each check with a negative |
 | `44g-core-glacier.js` | a valley glacier (global `KGLACIER`, [G data], needs `KRAND`; 2026-11-03, lifted from the Throne's glacier station): along an axis (`up`, the centre line, half-width and thickness as functions of u, the snout) it gives `iceAt`, the `trough` the ice cut, lateral and terminal `moraine`s (breached for the river), the proglacial lake's basin (`lakeK`, `lakeAt`), `bed` (all three in the Throne's order); placement on `KRAND.hash` per kind and index (`seracs`, `bergs`, `crevasses`, `caves` from specs) and `records()`. Every part but the ice is optional (`null`: none). The shape uses `Math.exp`/`pow` as the Throne did (a port matches to a hair, not the bit); the draws are bit-exact |
-| `host/44h-core-glacier-draw.js` | its three.js half (`KGLACIER.drawer`, [draw]): the serac and ice-tower items, ice-cave shells lit blue through the ice (an optional `tint`), the ice arch, crevasse slots, the steam. The Throne's glacier station draws through it with its own placement draws, and its page draws exactly what it drew (a scene fingerprint of every mesh, instance, record and a terrain grid: 39 of 39 lines the same) |
+| `host/44h-core-glacier-draw.js` | its three.js half (`KGLACIER.drawer`, [draw]): the serac and ice-tower items, ice-cave shells lit blue through the ice (an optional `tint`; opt-in, 2026-11-03, Copper Glacier: `apron` (a fillet of ice from the shell's flank to the ground, a share of R), `skirt` (m: the foot carried into the ground), `mouthTop` (how high the mouth opens), `fine` (a finer shell), `uvWorld` (a planar map), `caveFloor` (a floor disc); all off by default, the Throne's caves draw as they did), the ice arch, crevasse slots, the steam. The Throne's glacier station draws through it with its own placement draws, and its page draws exactly what it drew (a scene fingerprint of every mesh, instance, record and a terrain grid: 39 of 39 lines the same) |
 | `test-glacier.js` | `node core/terrain/test-glacier.js`, each check with a negative: the Throne's numbers give its old formulas to the bit, placement deterministic and independent of run length |
 | `45-core-horizon.js` | horizon maps (global `KHORIZON`, [G data]; HEIGHT-RESEARCH item 2): `bake` (the horizon's elevation in eight directions over a heightfield, two RGBA8 arrays, and the sky visibility; an optional coarse far grid the rays read past the map; about 1 s at 256 x 256), `at`/`skyAt`/`horizon` (what the shader computes, for tests and placement). Its three.js side is `host/45-core-horizon-shade.js` (`KHORIZON.shade(mat, Hz)`: the sun's direct light cut and the ambient darkened; `uniforms`, `glsl` for a material with its own shading) |
 | `test-horizon.js` | `node core/terrain/test-horizon.js`, each check with a negative |
@@ -394,6 +396,25 @@ Each in a new file, opt-in, node-tested with negatives, except `KCAVERN.pipe`, w
   `CALCITE` (Mississippi Valley: calcite, celestine) and `VUG` (thundereggs, rhyolite vugs). Beams and blocks block a walker.
   The old presets' records, meshes and blocks are byte-identical (`test-speleo.js` holds their digests). `KKARST`'s hypogene kind
   takes `crystal: {storeys, speleo}` to dress the storeys that grew megacrystals with a crystal preset.
+- **A cave page's floor and rock** (2026-11-09, lifted from the Hearths' Cave of Crystals for every cave page): `KCAVERN.floorFn(C, {from,
+  to, step, fallback})` (`39d-core-cavern-floor.js`, `[G data]`, `test-cavern-floor.js`): the lowest open point of a column read off the
+  cavern's `sdf` on a cached 1 m lattice, bilinear (a cave page's camera floor, its BIO ground, a water's bed); `KCAVERN.openAt(C, x, y, z,
+  pad)`. `KCAVERN.drawRock(C, {THREE, material, tile, attrs, weight, ground})` (`host/39e-core-cavern-draw.js`): the chunks merged into one
+  mesh per tile with the page's per-vertex weights (its KGROUND layers' masks) and the occlusion as vertex colour; `ground: 'drop'` leaves
+  out the ground's triangles inside an opening. *Adopting it:* list both after `39-core-cavern.js` (`tools/fragment_needs.json`), then
+  `const floorH = KCAVERN.floorFn(C, {from: <under the lowest floor>, to: <over the highest>, fallback})` and
+  `scene.add(KCAVERN.drawRock(C, {THREE, material, attrs: ['aA'], weight: (x, y, z, nx, ny, nz, ch, i, w) => { w[0] = ...; }}).group)`.
+- **Geodes** (`KGEODE`, 2026-11-09, the scablands' coulee first: `biomes/CRYSTAL-CAVES-5.1.md` site 3): `39f-core-geode.js` (`[G data]`,
+  `test-geode.js`): `KGEODE.scatter({box, world, cell, bands: [{y0, y1, id}], ground, normal, near, wall, loose, r, split, accept})` puts
+  geodes on a cell lattice hashed by (world, cell, salt): **wall** ones in a band where the ground is steep (broken open, the face out
+  along the ground's normal), **loose** ones on gentler ground under a band; `KGEODE.block(C, {id, x, z, ground, face, w, d, h, r, ph})`
+  adds a walk-in geode to a KCAVERN: a fallen block (a `mass`), its pocket (a `hall`) and the broken face's `opening`;
+  `KGEODE.line(C, block, {n, len})` lines the pocket with amethyst points marched from its centre to its rock (KSPELEO reads a void
+  inside a mass as under the sky, so it does not dress one). `host/39g-core-geode-draw.js`: `KGEODE.draw(recs, {THREE, points, maps,
+  lamp, tint, colors})`, instanced nodules, shells, rind faces, druse bowls and crystals (a KHOOK'd fake glow; a thin-film iridescence for
+  aura and bismuth). `KGEODE.MINERALS` (amethyst, quartz, celestine, chalcedony, watermelon, aura, bismuth): each a crust habit and a rind
+  palette; a host passes `minerals: {id: weight}` to `scatter` (its rock's palette). *Adopting it:* list both after
+  `39-core-cavern.js`; draw the block on `KCAVERN.drawRock` (the pocket's own primitive as the rind's weight).
 
 **`KRELIEF.scarp`** (`38-core-relief.js`): `SCARP.md`, which has its "Adopting it" and the profile for the scale model.
 
@@ -401,6 +422,47 @@ Each in a new file, opt-in, node-tested with negatives, except `KCAVERN.pipe`, w
 any list of the same sources gives the same sprites. `KFAR.spriteMesh(S, {k})` is one instanced draw on one uniform, the kit's value: a sprite gates in past its source's `lag`, its size and alpha growing with what is left. The value never touches an item.
 `KFAR.spriteAt(S, i, k, r)` is the shader's arithmetic for a probe or Godot. `KFAR.itemsExport` wraps sets of any `kind`, so the metropolis's district masses (`biomes/ancientsvalley/PLAN-ANOMALIES.md` section 13) are one more kind in this format, with the same placing and `range`. Not built.
 *Adopting it:* `const S = KFAR.sprites({world, sources: [{x, z, y, r, n: 30, size: [300, 700], rise: [100, 400], lag}], shape: (x, z, y) => KFAR.shape(o, x, z, y), range: [3000, 40000]})`, `scene.add(KFAR.spriteMesh(S, {k: uniform}))`, register it (`core/tags`), and set `uniform.value` from the kit's clock.
+
+### The unbuilt plans' pieces (2026-11-03: landforms, strata, seasons, sound)
+
+The 2026-11-03 audit of the unbuilt biome plans found that most need nothing new; these are what they did need. Each piece is in a
+new file, opt-in, and node-tested with negatives. No page takes one yet, so no page's bytes move.
+
+- **`KRELIEF.slump`, `runout`, `gully`, `terraces`, `maar`, `relay`, `stepcut`, `KRELIEF.waters`** (`38c-core-landforms.js`,
+  `test-landforms.js`; `LANDFORMS.md` has the table of parts and plans):
+  - wouterwall's slump terraces, sturzstrom fields, loess gullies with box-canyon heads and yuan, liang and mao, and its terraced fields;
+  - Mid Basin's breached maars and relay benches;
+  - the Siphon Pits' sheer stepped graben and pits (no falloff; KFIELD's brushes stay smooth).
+
+  *Adopting it:* list the file after `38-core-relief.js`, and put the records in `KRELIEF.apply` with the others. `KRELIEF.waters(rec,
+  ground)` gives the ponds, lakes and spring pools.
+- **`KSTRATA.vary`, `KSTRATA.drape`, `KSTRATA.loadVaried`** (`35c-core-strata-vary.js`, `test-strata-vary.js`; GDScript twin
+  `kstrata_vary.gd`, golden `golden-strata-vary.json`, vendored to `godot/tests/terrain/`): a formation whose base varies from place to
+  place. Contacts move by an offset of (x, z), which sums any of a constant, a plane, the stack's table noise, bumps or a grid. The
+  stratigraphic height is remapped piecewise linearly between the moved contacts, so beds keep their place and thin or thicken with their
+  formation. Where two contacts cross, the higher-numbered wins, and the formation between them pinches out. `KSTRATA.drape(S, k, ground,
+  {box, step, th})` lays formation k's base `th` under the ground: a mantle following the land it fell on.
+  - It serves Mid Basin's interbedded loess and tuff and the W outer wall's loess.
+  - *Adopting it:* list it after `35-core-strata.js`, then `const V = KSTRATA.vary(S, {contacts: [{at: 2, by: KSTRATA.drape(S, 2, ground,
+    {box, step: 16, th: 40})}]})`, and read `V.at` / `V.surface` where `S`'s were read.
+  - **The shaders still draw the flat column** (`BIO.strata`, `strata.gdshaderinc`). A varied stack is the CPU's, for painters, plant passes
+    and cliffs: a baked offset texture for the shaders is not done. Keep alterations off a varied stack: their lines read the shifted height.
+- **The season's last two pieces (H7)** (`core/biome/30s-core-season-flush.js` and `core/clock/opt/21-core-clock-flush.js`; `test-season-flush.js`,
+  `test-flush.js`):
+  - **the copper flush**, a leaf colour at the start of the rains (`KCLOCK.flush`, `BIO.FLUSH`, `BIO.bindFlush`);
+  - **the Godot leaf twin**: `season_dry` and `season_flush` as global uniforms, `shaders/lib/season.gdshaderinc` in `foliage.gdshader`,
+    `biome_import.gd` reading the leaf's season options, and `KSeason.flush` and `set_globals` in `kseason.gd` (golden `golden-flush.json`).
+
+  `core/biome/README.md`, "The season", has the details and the GPU check.
+- **The `sound` record (H9)** (`core/tags/opt/54-core-tags-sound.js`, `test-sound.js`, twin `ksound.gd`): an aeolian emitter as a record in core/tags,
+  for a core/audio still to be written and Godot's audio. Its modes are an edge tone, an overblown closed pipe and a Helmholtz cavity, with
+  presets for the howl bamboo, the Singing Gjár and the singing buttress. `core/tags/README.md`, "Adopting it: the sound key".
+- **`KSPAN`** (`core/biome/45-core-span.js`, `test-span.js`): catenaries between two anchors, for spiderlake's silk and loom-chasms' living
+  cables. A span is solved by length, slack or sag. `up` makes a buoyant cable arch over its chord; the shape is the mirror, since
+  buoyancy only changes the tension. It gives points, the tangent, the low point and the tension for a weight, and `strands` hangs a
+  curtain of spans between two anchor lines, with each strand's slack drawn by hash.
+  - Data only: a kit draws the points as tubes or ribbons.
+  - *Adopting it:* list the file in `CORE_BIOME`; `KSPAN.points(KSPAN.solve(a, b, {slack: .05}), 24)`.
 
 ### The landform kinds (2026-10-26: the planned biomes' core gaps)
 
@@ -535,7 +597,7 @@ const M = KSTRATA.shade(S, {cap, foot, dust, res: .25})   // or BIO.strata({reci
   colour equals `S.surface`'s at every sampled pixel off the bed edges (within 1/255) on ten stacks: canyon, legacy, outland with a
   fault, tibasalt across its alteration line, ringfold folded, megabreccia under loess, two blocks formations with two alterations,
   lateral changes (into blocks too), tepui, and badland's wash on flat ground.
-- **Not yet**: a loess (or any formation) whose base varies from place to place; the alteration of block clasts on the GPU;
+- **Not yet**: a varied contact on the GPU (`35c-core-strata-vary.js` is CPU and Godot data only; above); the alteration of block clasts on the GPU;
   `tools/harness.py smoke` crashed every page on this machine (a bare three.js page too), so the browser checks ran in the app's browser.
 
 **Adopting it** (a planned biome; each at its own turn of the rebuild):
@@ -626,9 +688,15 @@ The sun's shadows (2026-11-03, the owner: the valley needs them; first at `kits/
 instead of a fixed one per build: `10-core-shadow.js` ([G data], global `KSHADOW`) is the numbers (`KSHADOW.fit`: the sun's shadow
 camera placed on the texel grid so a moving eye does not make edges shimmer; `KSHADOW.radiusFor`: the box's half side for the eye's
 height, 90 m round a walker to 600 m from high up, in steps); `host/12-core-shadow-host.js` ([web]) is `KSHADOW.attach({ renderer,
-scene, camera, sun, ground })`, which turns on the renderer's shadow map and moves the page's sun in the scene's `onBeforeRender`
-(after `core/atmos` has set the sun for the frame), and `cast(root)`, which flags a group's lit meshes. `node core/shadow/test-shadow.js`.
+scene, camera, sun, ground })`, which readies the renderer's shadow map and moves the page's sun in the scene's `onBeforeRender`
+(after `core/atmos` has set the sun for the frame), and `cast(root)`, which flags a group's lit meshes. **Off by default** (the owner,
+2026-11-03: toggleable, off, in every build and rebuild): while off the renderer's shadow map is disabled, so there is no shadow pass and no
+shadow variant; the panel's `shadows` button, `?shadow=1` or `H.set(true)` turns them on (the mirror switch's pattern). `node core/shadow/test-shadow.js`.
 Read `shadow/README.md`.
+
+**Used by** `kits/metropolis`. About twenty builds still wire their own shadow map (`settlements/girder`, `voth`, `yuni`, the kits'
+`90-scene.js`): each can move onto this when it is next touched.
+
 ## `lod/`
 
 Level of detail for any three.js r128 build: `09-lod.js` (the `LOD` global) and `97-lod-auto.js` (applies it to the
@@ -712,6 +780,7 @@ and to `DETERMINISTIC` (none of them draws from the seeded stream).
 
 | File | What |
 |---|---|
+| `door/10-core-door.js`, `door/20-core-glass.js`, `door/90-core-door-host.js` | `KDOOR` ([G data]): doors that open and shut, as records keyed by stable ids (hinge, width, swing, state, locked, owner), `open` / `close` / `toggle` / `nearest` as plain functions a key, an NPC, a quest or a save calls, each doorway's walk blocks in `KWALK` (shut blocks, open clears), `state()`/`load()` deltas, `export()`. `KGLASS`: one set of glass (clear, lit, frosted, smoked, stained, and the room card behind a pane on a solid body) as data plus one three.js material each. `KDOORHOST`: posing a leaf, the frame tick, the E key. Lifted from Iziz's `IZDOOR` (the Vernacular's `69e5` draws its leaves on it). `core/door/README.md`; `node core/door/test-door.js` |
 | `walk/20-core-walk.js` | `KWALK`: one list of walkable floors (level rects, sloping strips) and blockers, written by whatever builds the geometry as it builds it (after Moria's carver). Queries `floorsAt`, `floorBelow`, `blocked`, `push` (a walker slides round corners), `setBlock(rec, on)` (a door that opens and shuts: a block, or an array, switched off and on), and `export()` (navigation-mesh source and collision boxes for Godot) |
 | `sched/20-core-sched.js` | `KSCHED`: repeating timetables of eased segments (`timeline`), conflict-free phases (`slots`), a periodic event's strength (`eruption`: geysers), formations in the leader's frame, and a queued approach that slows as it arrives. Pure functions of t, so Godot plays them back identically |
 | `minimap/88-core-minimap.js` | `KMAP` ([G data]): a plan as records (rects, turned boxes, strips, discs, labels, a hill-shaded relief grid, or a `KWALK` registry), `pick`, `paint` and `overlay` onto any 2D-context-like object, `export()` the plan as data. No document, no canvas of its own, no input |
@@ -805,7 +874,7 @@ so nothing moved), `settlements/yuni` (only `core/tags`' uid hash: no draws; Yun
 
 ## `sockets/`
 
-The cultural socket and banner/awning system: buildings declare sockets, a culture pack fills them (Iziz, Republic, Voth, Yuni, Beast Riders, generic). A worked example, `sockets/example/`,
+The cultural socket and banner/awning system: buildings declare sockets, a culture pack fills them (Iziz, Republic, Voth, Yuni, Beast Riders, generic). A worked example, `kits/post-apoc/sockets-example/` (it builds on that kit's engine),
 builds a sheet of the same wall in every pack. Read `sockets/README.md`. **Used by** `kits/post-apoc` (its `build.py` reads `37-sockets.js`, `38-symbols.js` and `80-cultures.js` from here; a local copy with the same name overrides; so does `kits/post-apoc/apoc_bundle.py`, the closure `settlements/screamers` loads) and, for the symbols alone, `kits/catalog` (vendored as `krator-symbols.js`).
 
 ## `tags/`
@@ -821,6 +890,7 @@ vocabulary), for the inspector, the minimap, the exporters and Godot node metada
 | `50-core-tags.js` | [G data] `KTAGS.create({build})`: `add`, `child`, `get`, `remove`, `query`, `at`, `audit`, `export`; `KTAGS.uid`, `KTAGS.norm`. No THREE, no DOM |
 | `52-core-tags-vocab.js` | [G data] `KTAGS.VOCAB`: the 18 cultures and their aliases, types, wealth, the other tag vocabularies, id prefixes; the catalog's lists copied and checked by the test |
 | `53-core-tags-host.js` | [web] `KTAGS.label(rec, instance)`: the inspector's text, generated |
+| `opt/54-core-tags-sound.js` | [G data] opt-in (a subfolder: the settlements that take every file in `core/tags` do not take it): the `sound` record (H9), aeolian emitters with `KTAGS.sound`, `soundLevel` and `soundAt`; twin `ksound.gd` (`tags/README.md`, "Adopting it: the sound key") |
 | `test-tags.js` | `node core/tags/test-tags.js` (`--write` rewrites `golden.json`) |
 | `ktags.gd`, `ktags_test.gd`, `golden.json` | the uid in GDScript and its vectors (passing in Godot 4.5); copied to `godot/tests/tags/` |
 

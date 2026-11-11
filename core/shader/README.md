@@ -33,9 +33,9 @@ files by hand names them itself: `'shader'` in `CORE_DIRS` or `CORE_MODULES` (th
 
 ## KCOLOR: what moved and what did not
 
-Nothing is decoded that was not decoded before. core/water's colours go in as written (`WATER.colAsWritten`): those hexes were
-tuned as linear, and decoding them would darken every page's water. So a surface that wants a true display hex passes
-`KCOLOR.lin(hex)`, a `THREE.Color`, and each page's own colours wait for its turn (`CORE-IMPROVEMENTS.md` 9a: "pages at their
+core/water's colours are decoded (`WATER.colLin`, the owner, 2026-11-08): a hex is a display colour and goes into the water's shaders
+linear, as the Godot importer always read it; a `THREE.Color` goes in as it is. Until then they went in as written (read as linear), so
+every page's water darkened with the change; `WATER.colAsWritten` keeps the old reading. Each page's own colours wait for its turn (`CORE-IMPROVEMENTS.md` 9a: "pages at their
 turn"). The mirror (`core/water/ext/58`) already matches the page's output encoding and needs nothing from here.
 
 ## The warp: `KHOOK.warp` and `KWARP`

@@ -11,7 +11,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 From `core/terrain/` (shared; see `core/README.md`): `35-core-strata.js`, `37-core-stacks.js`, `38-core-relief.js`, `38a-core-seat.js`, `43-core-ground.js`, `44-core-farfield.js`, `45-core-horizon.js`
 
-From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `31j-core-joint.js`, `32-core-variants.js`, `33-core-fungoid.js`, `34-core-impostor.js`, `40-core-place.js`, `41-core-env.js`, `42-core-export.js`, `43-core-export-host.js`, `44-core-stage.js`
+From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `31b-core-leafset.js`, `31j-core-joint.js`, `32-core-variants.js`, `33-core-fungoid.js`, `34-core-impostor.js`, `40-core-place.js`, `41-core-env.js`, `42-core-export.js`, `43-core-export-host.js`, `44-core-stage.js`
 
 From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
 
@@ -29,9 +29,9 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 |---|---|---|
 | `00-head.html` | 1 |  |
 | `45-host-stage.js` | 4 |  |
-| `45b-host-land.js` | 14 | the map (10); the sacred river (64); terrain (97); the climate fields (114) |
+| `45b-host-land.js` | 15 | the map (10); the sacred river (64); terrain (97); the climate fields (114) |
 | `45c-host-bind.js` | 3 | the field cache (18 m lattice; terrainH stays ex (3); the host binding (11) |
-| `46-host-ground.js` | 13 | the lake (115) |
+| `46-host-ground.js` | 14 | the lake (118) |
 | `50-biome-xanadu-species.js` | 64 **big** | THE LAKE COLOUR (21); the tree species (76); harvest (biomes/FRUIT.md) (204); leaf and flower textures (272); an iridescent bark (420); bark textures (423); geometries local to this biome (472); materials (567); instanced items (628) |
 | `52-biome-xanadu-library.js` | 1 |  |
 | `55-biome-xanadu-trees.js` | 86 **big** | zones from the fields (17); colour (34); polyline helpers (59); keep-clear between trees (75); foliage helpers (82); the builders (122); impostors (the far canopy) (575); the diversity pass (2026-10-26) (614); the pass (667); one tree at a point (additive, for a world's gar (778) |
@@ -45,7 +45,7 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `89a-host-atmos.js` | 3 |  |
 | `89w-host-water.js` | 6 |  |
 | `89x-host-fountain.js` | 1 |  |
-| `89z-host-build.js` | 5 |  |
+| `89z-host-build.js` | 6 |  |
 | `98-host-views.js` | 5 |  |
-| `99-host-take.js` | 12 | the inspector's words (5); the probe's budgets and the kit's own checks (ve (18); the host's own checks (verify.py runs them), eac (26); the page, handed to the host (89) |
+| `99-host-take.js` | 13 | the inspector's words (5); the probe's budgets and the kit's own checks (ve (18); the host's own checks (verify.py runs them), eac (26); the page, handed to the host (89) |
 | `99-tail.html` | <1 |  |

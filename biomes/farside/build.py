@@ -82,17 +82,28 @@ PATH={f:os.path.join(SRC,f) for f in os.listdir(SRC) if not f.startswith('.')}
 if STATION:
     for f in os.listdir(STN_DIR):
         if f.endswith('.js') or f.endswith('.html'): PATH[f]=os.path.join(STN_DIR,f)
-# the biome core (core/biome): one copy for every kit. 32: the variants; 44: the stage the export carries
-CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','31-core-dither.js','32-core-variants.js','40-core-place.js','42-core-export.js','43-core-export-host.js','44-core-stage.js']
+# the biome core (core/biome): one copy for every kit. 32: the variants; 44: the stage the export carries. The final rebuild (pair 10,
+# 2026-11-04; BACKPORT.md's universal set): 31j a limb's joint to its parent (BIO.flareJoin: the snags' limbs, 55), 34 the octahedral
+# impostors (the native forest's far trees: nwlowlands' 55 makes them when the fragment is on the page)
+CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','31-core-dither.js','31j-core-joint.js','32-core-variants.js','34-core-impostor.js','40-core-place.js','42-core-export.js','43-core-export-host.js','44-core-stage.js']
 for f in CORE_BIOME:
     if f not in PATH: PATH[f]=core('biome',f)
+# core/terrain (the final rebuild): 43 KGROUND (the ground's seven library layers, hex-tiled and height-blended, 47; its 'sand' kind on the
+# strand), 44 KFAR (the far country, 47), 45 KHORIZON (its shadows on the ground and, after the bake, on the flora, 88). A src/ copy wins.
+CORE_TERRAIN=['43-core-ground.js','44-core-farfield.js','45-core-horizon.js']
+for f in CORE_TERRAIN: PATH.setdefault(f,core('terrain',f))
+for f in ['44-core-farfield-draw.js','45-core-horizon-shade.js']: PATH.setdefault(f,core('terrain','host',f))
+# core/shadow (KSHADOW; the owner, 2026-11-03: toggleable, OFF at page load): attached off on core's own switch (88, 99); core's 'shadows' button or ?shadow=1 at load
+PATH.setdefault('10-core-shadow.js',core('shadow','10-core-shadow.js'))
+PATH.setdefault('12-core-shadow-host.js',core('shadow','host','12-core-shadow-host.js'))
 # core/rand and core/tags: with BIO.init({tags}) every item set, instance and registered volume is a core/tags record
 for f,d in {'08-core-rand.js':'rand','50-core-tags.js':'tags','52-core-tags-vocab.js':'tags','53-core-tags-host.js':'tags'}.items():
     if f not in PATH: PATH[f]=core(d,f)
 for f in ['07-core-export.js','09-core-export-adapters.js']:
     if f not in PATH: PATH[f]=core('export',f)
 # THE NATIVE FOREST, read in place (biomes/WORLD.md: several kits on one page): the north-western lowlands' kit in its own
-# registry; it grows where the host's mask lets it (47-host-land.js: off the invaded coast)
+# registry; it grows where the host's mask lets it (47-host-land.js: off the invaded coast). Its look flags (NWLOW_LOOK) stay off
+# for a reader (its PLAN.md, "Core adoption"); its 52 (the library's lobes) is not read: Farside textures the lobes itself (88)
 NWL=os.path.normpath(os.path.join(HERE,'..','nwlowlands'))
 KITS={'49a-nwlow-species.js':'src/50-biome-nwlowlands-species.js','49b-nwlow-trees.js':'src/55-biome-nwlowlands-trees.js',
       '49c-nwlow-floor.js':'src/60-biome-nwlowlands-floor.js','49d-nwlow-build.js':'src/70-biome-nwlowlands.js'}
@@ -113,16 +124,24 @@ VIRTUAL={'44-host-matlib-pack.js':_mp.fragment(HERE,'farside',side=SIDE,own=True
          '44b-host-matlib-pack-nwlowlands.js':_mp.fragment(NWL,'nwlowlands',side=SIDE)}
 for f in VIRTUAL: PATH[f]=None
 # core/atmos: its core, presets, the weather and its selector, the export, the wave field and the sky light; ATMOS.bindHost
-# and ATMOS.bindWeather from core/atmos/host (89a-host-atmos.js calls both); the shared sky (SKY-PLAN.md S1: 89s-host-sky.js)
+# and ATMOS.bindWeather from core/atmos/host (89a-host-atmos.js calls both); the shared sky (SKY-PLAN.md S1: 89s-host-sky.js).
+# The final rebuild's air: height fog (R1: the fog belt, 89s), the rain occlusion map (R10) and the branched lightning
 for f in ['89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-3-particles.js','89-atmos-4-weather.js','89-atmos-8-export.js','89-atmos-9-host.js','89-atmos-a-waves.js','89-atmos-b-skylight.js']:
     if f not in PATH: PATH[f]=core('atmos',f)
-for f in ['89-atmos-c-hostbind.js','89-atmos-e-weatherhost.js','89-atmos-h-skyhost.js']:
+for f in ['89-atmos-c-hostbind.js','89-atmos-e-weatherhost.js','89-atmos-h-skyhost.js','89-atmos-j-heightfog.js']:
     PATH[f]=core('atmos','host',f)
-for f in ['89-atmos-e-skymodel.js','89-atmos-f-skypresets.js','89-atmos-g-sky.js']:
+for f in ['89-atmos-e-skymodel.js','89-atmos-f-skypresets.js','89-atmos-g-sky.js','89-atmos-j-fog.js']:
     PATH[f]=core('atmos','sky',f)
-# core/water: the sea (an open surface with a shore grid and a tint field) and the streams (flows)
+for f in ['89-atmos-fx-raincover.js','89-atmos-fx-lightning.js']:
+    PATH[f]=core('atmos','fx',f)
+# core/water: the sea (an open surface with a shore grid and a tint field) and the streams (flows). The final rebuild's ext: 57 the audit
+# (the water's edges, 99's check), 58 the reflections switch (OFF at load: the saline lagoon, station 1), 58 the shore from the ground
+# (the lagoon's and the harbour's masks), 61 the plume (Ling-Ma's silt out of the harbour mouth on a current, station 1)
 for f in ['20-core-water.js','21-core-water-shore.js','22-core-water-flow.js','50-core-water-draw.js','51-core-water-kinds.js']:
     if f not in PATH: PATH[f]=core('water',f)
+for f,src in [('57-core-water-audit.js','57-core-water-audit.js'),('58-core-water-mirror.js','58-core-water-mirror.js'),
+              ('58-core-water-shore.js','58-core-water-shore.js'),('61-core-water-plume.js','61-core-water-plume.js')]:
+    PATH.setdefault(f,core('water','ext',src))
 miss=[f for f in ('10-core-head.js','20-core-kit.js','30-core-foliage.js','40-core-place.js') if f not in PATH]
 if miss: print('NO BIOME CORE: '+', '.join(miss)); sys.exit(1)
 frags=sorted(PATH)

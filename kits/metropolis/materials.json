@@ -1,0 +1,122 @@
+{
+ "build": "metropolis",
+ "note": "kits/metropolis's adapter onto the material library (core/materials/PLAN.md): the Ancients' white panel, board concrete, relief block and bronze. Run python3 tools/textures/pack.py kits/metropolis after any change.",
+ "size": 512,
+ "families": {
+  "white": {
+   "lib": "metal.ancient.white.macro",
+   "scale": [
+    16.0,
+    16.0
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.875
+   },
+   "metal": 0.12,
+   "roughLift": 0.1,
+   "specular": 0.4
+  },
+  "concrete": {
+   "lib": "concrete.board",
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": {
+    "keep": 0.3,
+    "mean": 0.7
+   },
+   "metal": 0,
+   "roughLift": 0.1,
+   "specular": 0.4
+  },
+  "relief": {
+   "lib": "concrete.block.relief",
+   "scale": [
+    6.0,
+    6.0
+   ],
+   "tint": {
+    "keep": 0.3,
+    "mean": 0.72
+   },
+   "metal": 0,
+   "roughLift": 0.1,
+   "specular": 0.4
+  },
+  "bronze": {
+   "lib": "metal.bronze",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 0.8,
+    "mean": 0.42
+   },
+   "metal": 0.8,
+   "roughLift": 0.0,
+   "specular": 0.5
+  },
+  "pave": {
+   "lib": "concrete.slab",
+   "scale": [
+    12.0,
+    12.0
+   ],
+   "tint": {
+    "keep": 0.3,
+    "mean": 0.6
+   },
+   "metal": 0,
+   "roughLift": 0.15,
+   "specular": 0.3
+  },
+  "rubble": {
+   "lib": "ground.rubble.demolition",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 0.75,
+    "mean": 0.55
+   },
+   "metal": 0,
+   "roughLift": 0.05,
+   "specular": 0.3,
+   "note": "the bed of a ruin's rubble heap, between its concrete chunks (57-mp-debris.js): the owner's demolition rubble (2026-11-03; it replaced rock.rubble.sturzstrom)"
+  },
+  "adobe": {
+   "lib": "stone.adobe.ceramic",
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": {
+    "keep": 0.6,
+    "mean": 0.7
+   },
+   "metal": 0,
+   "roughLift": 0.05,
+   "specular": 0.3,
+   "note": "the sand ceramic of the Telescope (S6) and the Sand Block (M8)"
+  },
+  "baroque": {
+   "lib": "patterns/ancient/baroque-scroll",
+   "scale": [
+    6.0,
+    6.0
+   ],
+   "tint": {
+    "keep": 0.7,
+    "mean": 0.6
+   },
+   "metal": 0,
+   "roughLift": 0.05,
+   "specular": 0.3,
+   "note": "the Swell's (S8) carved rust-red ledges"
+  }
+ }
+}

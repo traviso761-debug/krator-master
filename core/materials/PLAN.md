@@ -519,7 +519,7 @@ Voth, owner-written:
 | `patterns/voth/inlay` | Flat, front-on decorative panel of a stone inlay band: stepped chevrons and hooks cut from jade (#3f6b56), lapis (#1f3f6e), red-purple porphyry (#5e1e2d) and basalt (#2b2a28), set into a polished marble ground (#e8e1d2), with thin dark joints between the stones. The pattern repeats horizontally. Full colour. |
 | `patterns/voth/banner` | Flat, front-on decorative panel of banner cloth woven in stepped bands and hooked spirals in ash yellow (#e8d9a0), dark red (#7a2028) and charcoal (#2b2a28), visible weave, slightly faded and uneven dye. The pattern repeats horizontally. Full colour. |
 
-The Ancient Port (`settlements/port`, a sibling of the Ancients kit, built mainly for the planned settlement of Hook) and, separately, the Hykkousoi of Ys (the nacre culture). They are different cultures and builds; their rows are kept apart below (`patterns/port/*` and `patterns/nacre/*`).
+The Ancient Port (`kits/port`, a sibling of the Ancients kit, built mainly for the planned settlement of Hook) and, separately, the Hykkousoi of Ys (the nacre culture). They are different cultures and builds; their rows are kept apart below (`patterns/port/*` and `patterns/nacre/*`).
 
 Port palette: container white #dcd8cf, blue #2f5f8a, oxide red #9a3a28, mustard #c89a3a (`74-port-dress.js:6`); hazard
 yellow #d9a12c (`89y-sp-1-yard.js:43`); iron #2c2e32; antifouling red #8c3026, topsides slate #3c4652, red-oxide
@@ -553,6 +553,15 @@ mosaic and relief are greyscale (tinted), so these prompts take colours from the
 **Status (2026-10-05): Yuni has adopted the library** (`settlements/yuni/materials.json`; its `KNOWN_ISSUES.md`,
 "Material library"). The base rows below are covered by sets already in the library: `plaster.washes` by `plaster`
 (neutral, tinted), `tile.terracotta` by `roof.tile` (neutral pan tiles, tinted), `earth.banco`, `concrete.board`.
+**Delivered 2026-11-03 and processed, demolition rubble** (`tools/textures/batches/metropolis-rubble-2026-11.json`, pasted by the owner):
+`ground.rubble.demolition` (3 m: broken concrete, brick, bent rebar and rusted flat bar over grey and red-brown gravel), the bed of `kits/metropolis`' ruin
+heaps (`core/terrain` `KRUBBLE`); for any collapsed building's rubble or demolition ground.
+
+**Delivered 2026-11-02 and processed, the metropolis towers** (`tools/textures/batches/metropolis-2026-11.json`, pasted by
+the owner): `metal.ancient.white.macro` (16 m panel courses; processed with the seam pass off, the sheet already tiles: every course
+has a joint at its edge), `stone.adobe.ceramic`, `patterns/ancient/baroque-scroll` (cropped to its period). The macro panel is
+`kits/metropolis`' white skin; the other two wait for S6, S8 and M8.
+
 **Delivered 2026-10-25, the shared sky's moon maps** (pasted by the owner; resized to 1024x512 by hand, albedo only, no batch: they are
 equirectangular maps, not tiles): `sky.moon.companion`, `sky.moon.week`, `sky.moon.thirteen`, `sky.moon.day`, `sky.moon.two-day`,
 `sky.moon.four-day`. Wired in `core/atmos` (the sky's moon atlas, `core/atmos/demo/build.py` `moon_atlas()`); the prompts are in
@@ -1838,6 +1847,32 @@ period (three diamonds by two bands, about 1.6 m). Wired in `kits/islanders` as 
 weaver walls (`63-ie-trade.js`); `28-is-paint.js` draws the twill as its stand-in without the pack. Reuse: any patterned
 plaited mat, floor mat or wall hanging in black, ochre and red.
 
+#### Delivered 2026-11-10 and processed: the Cave of Crystals, the Cut's face, Farside's bench, the umbrella plate, the scorched panel (6 images, WebP)
+
+Saved by the owner in `Downloads/krator-textures-2026-11-10/`, named by id (1254 px, the selenite 2000 px: under the prompts' 2048, so
+nothing was upscaled: the pipeline writes 1024 px sets; each `meta.json`'s `size_note`). Batches `tools/textures/batches/owner-2026-11-10.json`
+(5 surfaces, `process.py`) and `owner-2026-11-10-cards.json` (1 cut-out on magenta, `cards.py`, anchor none); each `meta.json` carries the
+full prompt and the source's sha1. Contact sheets: `core/materials/demo/delivery-2026-11-10/`. A seventh image (`unmatched-black-stone`)
+matches no prompt and is not installed: the owner was asked what it is for.
+
+| id | scale | wired | slot (what it replaces) |
+|---|---|---|---|
+| `mineral.selenite` | 2 m, up the crystal's length | `biomes/hearths` station `crystals` | `crystal.selenite`, full colour (`stone.alabaster` tinted pale green) |
+| `rock.limestone.ironstained` | 3 m | `biomes/hearths` station `crystals` | `rock.ironstain`, full colour at mean .42 (`rock.gossan` toned down) |
+| `rock.megabreccia.polished` | 2 m (the face packs it at 3 m) | `biomes/cut` station `face` | `ground.breccia`, a grey detail at mean .7, read through the core hex-cell dither (`kdither`: the owner saw the tile repeat from afar) (`rock.megabreccia`'s weathered face) |
+| `ground.bench` | 3 m, grooves across | `biomes/farside` (every page; the bench is station 1's) | `ground.bench`, the ground's eighth layer over the wet rock, weight `FIELD.bench` times the rock's (`ground.rock` whitened by the vertex tint, now dropped where the set is packed) |
+| `card.umbrella.plate` | the whole sheet | `biomes/abyssal-savannah` | `plate`, keep 0, mean .7, no cell (one `card.acacia` sprig stretched over the disc) |
+| `metal.scorched` | 1.5 m, tintable grey | **not wired** | the Motor Vehicles kit's `scorched` slot exists only on `claude/ancient-vehicles-935f93` (and the valley branches): wire it there at their merge, and delete its PROMPTS-NEEDED entry (their section 36) then |
+
+- **Look.** Selenite and the polished breccia take a faint normal (`normal_strength` .35 and .25): their luminance is colour, not relief,
+  and the default normal made a satin crystal and a polished slab read bumpy. The breccia has two clasts with a hairline crack (the prompt
+  said none): kept. **`rock.limestone.ironstained` came a little off its prompt**: rust over most of the face, little of the grey-buff
+  limestone, no white gypsum crusts; usable, since the stain is the point, so a redo is the owner's call. The bench's grooves turn with
+  KGROUND's hex tiles (rot .6) rather than all running one way (`biomes/farside/KNOWN_ISSUES.md`).
+- **Keying.** `card.umbrella.plate`'s rim sprays are blended into the magenta in the source: the default key (spill all) left them mauve,
+  unmix pink; `spill: 'vlahos'` (`key_gain` 1.3) leaves them a dry tan. 60% of the sheet is over alpha 0.5.
+- **Still owed:** `rock.megabreccia` for nhighlands' crater wall (PROMPTS-NEEDED.md section 32): the polished slab is not it.
+
 #### Delivered 2026-11-03 and processed: the Gills, High Rift, nwbay, nhighlands, ringisles, the rift rim, Copper Glacier (15 images, 1254 px WebP)
 
 Saved by the owner in `Downloads/krator-delivery-2026-11-03/`, named by id. Batches `tools/textures/batches/owner-2026-11-03.json` (10 surfaces,
@@ -1858,7 +1893,7 @@ Saved by the owner in `Downloads/krator-delivery-2026-11-03/`, named by id. Batc
 - **Still owed from those branches:** `rock.megabreccia` (nhighlands, section 32 on `claude/rebuild-nhighlands-cloud`) was not in the
   delivery; `card.umbrella.plate` (the abyssal savannah).
 
-**Delivered 2026-11-03, wire at merge.** The kits are on branches not yet merged; the session that merges each wires its rows (add the
+**Delivered 2026-11-03, wire at merge.** The kits are on branches not yet merged; the session that merges each wires its rows. **At the cloud kits' merge (2026-11-03):** `rock.hematite.mirror` is wired (High Rift, merged); `ground.ash.soil` and `rock.marble.white` are wired (nwbay, merged 2026-11-04); the bog's three, the coral rubble and the glass cane need new card families or a new ground layer (and a look), so they wait for their kits' next turns (each kit's `KNOWN_ISSUES.md` names them) (add the
 family to the kit's `materials.json`, `python3 tools/textures/pack.py <kit>`, rebuild, verify, delete the stand-in's note).
 
 | id | kit (branch) | slot | stand-in it replaces |
@@ -2176,7 +2211,9 @@ For every generated image, write the exact prompt into the batch file's `_source
   "add the muting sentence". Tintable rows leave out the code's tint hexes, which only invite colour into a grey image.
 - `PROMPTS-ready.md` holds only what is still owed: when a delivery is processed, its blocks are deleted there and listed under
   "Delivered and removed" (with the id it landed as). Before handing prompts to the owner, check them against the library and every
-  local worktree; never append without pruning.
+  local worktree; never append without pruning. `tools/textures/libsearch.py search "<what the prompt asks for>"` lists the
+  nearest sets by words, `like <image>` checks a delivered image by picture, and `dupes` lists sets that are near copies of each
+  other (2026-11-03: `shell.abalone.soft` is `shell.abalone`, and `pattern.bogolan` and `patterns/common/mudcloth` share one source).
 - Every cut-out (card, wing, sprite) is asked for on solid flat bright magenta (#ff00ff), and the prompt says so in full:
   "no magenta, pink or purple anywhere in the subject; no grey or white background". (2026-10-06: four sheets came on grey and
   had to be keyed by hand.)

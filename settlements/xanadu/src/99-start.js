@@ -14,7 +14,12 @@ const XANADU_HOST=KHOST.take({
  minimap:{title:TITLE},
  exporters:{tags:()=>KTAGS.page.export()},
  budget:BUDGET,api:window._api,
+ // E opens or shuts the door within reach (core/door: KDOORHOST.toggleNear; 90-xa-doors.js); flying, E still climbs as well
+ keys:{e:()=>KDOORHOST.toggleNear(camera.position,xaWalking())},
 });
+// walking (the host's F) or flying: the reach of the E key and its tip
+function xaWalking(){return !!(KHOST.cam&&KHOST.cam.ctl&&KHOST.cam.ctl.walk);}
+FRAME_HOOKS.push(KDOORHOST.tip(()=>camera.position,xaWalking));   // "E: open the door" at the foot of the page
 KHOST.on(function xanaduNightFlag(){NIGHT=!!(window.CITY&&window.KratorSky&&KratorSky.state&&KratorSky.state.sun&&KratorSky.state.sun.y<-0.105);},'tick');
 KHOST.on(function xanaduHooks(dt){const now=performance.now();for(const f of FRAME_HOOKS)f(dt,now);},'tick');
 KHOST.on(function xanaduSky(){if(sky)sky.position.copy(camera.position);if(giant)giant.position.copy(camera.position).addScaledVector(giantDir,4000);},'view');

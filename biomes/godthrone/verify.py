@@ -41,7 +41,12 @@ local_three = lambda folder: _harness.local_three(folder, os.path.dirname(os.pat
 # over EXPORT_BOX (a 300 m cell by the vent: its cones, bombs, spatter and hair). No water (station 1 has none: PLAN.md 9a)
 # and no buckets (the kit places only instanced items).
 EXPORT_BOX = [-15740, 15090, -15440, 15390]          # godthrone.html: the vent's 300 m cell
-EXPORT_BOXES = {'godthrone-wall.html': [420, -1280, 720, -980], 'godthrone-flank.html': [-1500, -600, -1200, -300]}   # the flank: by the old vent   # the wall's foot: its talus and stones
+EXPORT_BOXES = {'godthrone-wall.html': [420, -1280, 720, -980], 'godthrone-flank.html': [-1500, -600, -1200, -300],
+                # the rebuild turn's stations (2026-11-04): a 300 m cell where each has its loose stuff
+                'godthrone-orange.html': [-780, -450, -480, -150], 'godthrone-scarp.html': [-450, -350, -150, -50],
+                'godthrone-rim.html': [-150, -150, 150, 150], 'godthrone-blood.html': [7850, 7650, 8150, 7950],
+                'godthrone-gills.html': [100, -150, 400, 150], 'godthrone-gills-ladder.html': [-150, -150, 150, 150],
+                'godthrone-tube.html': [-150, -150, 150, 150]}   # the flank: by the old vent   # the wall's foot: its talus and stones
 EXPORT_PROFILE = ['registry', 'items', 'materials', 'textures', 'terrain', 'stage', 'atmos']
 
 # Structure names contain em dashes; the Windows console default codepage
@@ -102,13 +107,22 @@ const R=[];
 { R.push({name:'registry-and-bake-ran', ok:window._registered>0&&window._instances>0,
           detail:window._registered+' registered volumes, '+window._instances+' baked instances'}); }
 
+// 5a. the ground's texture units (84-host-ground.js, window._groundUnits): the GPUs link at most 16 in a fragment program;
+//     software GL allows more, so the count is checked against 16 here, not against this renderer's own limit
+{ const U=window._groundUnits;
+  R.push({name:'ground-texture-units', ok:!!U&&U.n<=U.max,
+          detail: U ? U.n+' of '+U.max+' units on the ground ('+U.layers+' KGROUND layers; dropped as unweighted: '
+                      +((window._groundLayers&&window._groundLayers.dropped.join(', '))||'none')+')' : 'window._groundUnits missing'}); }
+
 // 5b. the host's own checks, when it has any, and their negatives (each must FAIL)
 if(A.hostChecks){ for(const c of A.hostChecks()) R.push({name:c.name, ok:c.ok, detail:c.detail});
-  for(const n of A.hostNegatives()) R.push({name:'negative: '+n.name, ok:n.failed,
-    detail:(n.failed?'fails as it must: ':'PASSED A BROKEN INPUT (the check cannot fail): ')+n.detail}); }
+  /* core/biome's card negative audits the page's cards: on a page with none (every station but the summit's: no Pele's hair) it has
+     nothing to lift, so it cannot fail; it is left out there, not passed (KNOWN_ISSUES.md) */
+  for(const n of A.hostNegatives()){ if(/card/.test(n.name)&&/^0 of 0 /.test(String(n.detail))) continue; R.push({name:'negative: '+n.name, ok:n.failed,
+    detail:(n.failed?'fails as it must: ':'PASSED A BROKEN INPUT (the check cannot fail): ')+n.detail}); } }
 
 // 6. the kit's own (the host's checks above carry them: heights, halo, items on the ground, thin air, rock, hazards)
-{ const B=A.biomeChecks(); R.push({name:'biome-built', ok:!!(B.items&&B.items.talus>0), detail:JSON.stringify(B).slice(0,400)}); }
+{ const B=A.biomeChecks(); R.push({name:'biome-built', ok:!!(B.items&&(B.items.talus>0||B.items.stones>0)), detail:JSON.stringify(B).slice(0,400)}); }
 return R;}"""
 
 

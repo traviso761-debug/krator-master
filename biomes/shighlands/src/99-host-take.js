@@ -19,11 +19,13 @@ function atTree(T,d,az,dy,ty){const cx=T.x+Math.cos(az)*d,cz=T.z+Math.sin(az)*d;
 // from a point, looking a given way across the ground
 const across=(x,z,az,d,h,th)=>{const tx=x+Math.cos(az)*d,tz=z+Math.sin(az)*d;return[x,gh(x,z,h),z,tx,gh(tx,tz,th==null?2:th),tz];};
 const W0=TOR[0],MIR=SHIGH.mirrorAt[0]||{x:0,z:-1200};
-// over the rim: from the paramo's edge, looking north over the cloud forest to the cloud sea and the Throne
+// over the rim: from the paramo's edge, looking north down the whole face to the cloud sea and the Throne
 const RIMX=-300,RIMZ=rimZ(-300);
 const VIEWS={
  'The paramo':(function(){const T=nearTree('groundsel',P.paramo[0],P.paramo[1],5.5);return atTree(T,34,2.3,2.4,.25);})(),
- 'Above the cloud sea':(function(){const z=RIMZ+150;return[RIMX,gh(RIMX,z,22),z,RIMX-80,CLOUD_Y+30,RIMZ-700];})(),
+ 'Above the cloud sea':(function(){const z=RIMZ+150;return[RIMX,gh(RIMX,z,22),z,RIMX-80,CLOUD_Y+30,DECK_Z-500];})(),
+ 'Down the face':(function(){const z=RIMZ-FACEW*.45,x=RIMX+600;return[x,gh(x,z,40),z,x-150,gh(x-150,z-900,10),z-900];})(),
+ 'Up the face from the cloud':(function(){const z=DECK_Z+250,x=-600;return[x,gh(x,z,25),z,x+100,gh(x+100,z+1600,60),z+1600];})(),
  'The cloud forest':across(P.forest[0],P.forest[1],-1.2,60,2,5),
  'Spiral trumpets':atTree(nearTree('trumpet',P.forest[0],P.forest[1],16),26,.8,3,.6),
  'A volute tree':atTree(nearTree('volute',P.forest[0],P.forest[1],20),42,2.4,6,.7),
@@ -40,7 +42,7 @@ const VIEWS={
  'Corkscrew cereus':atTree(nearTree('cereus',P.dry[0],P.dry[1],4.5),12,2.6,2,.6),
  'The Whorl Stone':look(W0.x+W0.r*2.3,W0.z+W0.r*1.2,14,W0.x,W0.z,W0.h*.5),
  'The tarn':(function(){const x=TARN.x+TARN.r*2.6,z=TARN.z+TARN.r*1.8;return[x,Math.max(gh(x,z,3),TARNL+9),z,TARN.x,TARNL+1,TARN.z];})(),
- 'From afar':look(-2300,2300,160,300,-900,40),
+ 'From afar':look(-2300,2500,160,300,-200,40),
 };
 // ---------------------------------------------------------------- the inspector's words
 function describe(hit){const p=hit.point,o=hit.object;
@@ -100,6 +102,12 @@ const HCHK={
   for(let i=0;i<400;i++){const x=-2500+(i%20)*263,z=-2500+Math.floor(i/20)*263,t=i*7.3,v=hf(x,z,t);lo=Math.min(lo,v);hi=Math.max(hi,v);}
   const ok=r.length===1&&lo>=CLOUD_Y-P.down-1e-6&&hi<=CLOUD_Y+P.up+1e-6&&hi-lo>P.up*.5;
   return{ok,detail:r.length+' deck record(s); the top ranges '+lo.toFixed(1)+' .. '+hi.toFixed(1)+' m (band '+(CLOUD_Y-P.down)+' .. '+(CLOUD_Y+P.up)+')'};},
+ // THE TREES KEEP OUT OF THE WATER THE EYE SEES (core/water ext/60, WATER.fields and edgeAudit; the review's third line, the final rebuild): no
+ // tree's bole in the tarn, a bog pool or a ravine stream, read on the water's own surfaces (89zx: WATER_F; 55: offShore leaves such a tree out)
+ edge(T){if(!WATER.fields||!WATER.edgeAudit)return{ok:true,detail:'not on this page (core/water ext/60)'};
+  const F=WATER_F||WATER.fields({box:[-TERR.R*1.1,-TERR.R*1.1,TERR.R*1.1,TERR.R*1.1],cell:8,ground:terrainH,surfaces:WATER.surfaces.filter(q=>q.kind!=='fall')});
+  const P=T.map(t=>({x:t.x,z:t.z,r:t.rb==null?.5:t.rb,name:SHIGH.SPECIES[t.sp].key})),A=WATER.edgeAudit({field:F,plants:P,clear:0}),n=A.filter(f=>f.rule==='plant-in-water').length;
+  return{ok:n===0,detail:n?n+' trees in the water (first '+A.find(f=>f.rule==='plant-in-water').surface+' at '+[A.find(f=>f.rule==='plant-in-water').x|0,A.find(f=>f.rule==='plant-in-water').z|0]+')':T.length+' trees, none in the water the eye sees'};},
  camerasOut(C){const bad=C.filter(c=>c.y<terrainH(c.x,c.z)+.5);return{ok:!bad.length,detail:bad.length?'under the ground: '+bad.map(c=>c.view).join(', '):C.length+' cameras above the ground'};}};
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P=instPoints();
  add('every species placed',HCHK.placed(SHIGH.COUNTS||[]));
@@ -109,6 +117,7 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P
  add('nothing rooted under the water',HCHK.dry(P));
  add('no tree under the cloud deck',HCHK.deck(SHIGH.TREES));
  add('no tree on a sheer rock face',HCHK.cliffs(SHIGH.TREES));
+ add('the trees keep out of the water the eye sees (WATER.edgeAudit)',HCHK.edge(SHIGH.TREES));
  add('the cloud deck: shared, exported, inside its band',HCHK.clouddeck(ATMOS.fx,(x,z,t)=>ATMOS.deckHeight(x,z,t,CLOUD_Y)));
  add('preset cameras above the ground',HCHK.camerasOut(Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
  return R;}
@@ -121,20 +130,31 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('half the trees mirror-handed',HCHK.hands(SHIGH.TREES.map((t,i)=>Object.assign({},t,{hand:i%2?-1:1}))));
  add('the cloud forest out of the cloud',HCHK.cloud(SHIGH.TREES.map(t=>Object.assign({},t,{fog:0}))));
  add('a plant on the tarn bed',HCHK.dry([[TARN.x,TARNL-2.5,TARN.z,'test']]));
- add('a tree under the deck',HCHK.deck([{x:0,y0:CLOUD_Y-200,z:-2500,sp:0}]));
+ add('a tree under the deck',HCHK.deck([{x:0,y0:CLOUD_Y-200,z:DECK_Z-200,sp:0}]));
+ /* a tree at the deepest node of the water's field (found, not typed: the tarn's level lies under the ground at its centre, KNOWN_ISSUES.md) */
+ if(WATER.edgeAudit&&WATER_F){let k0=0;for(let k=1;k<WATER_F.shore.length;k++)if(WATER_F.shore[k]<WATER_F.shore[k0])k0=k;
+  add('a tree in the deepest water',HCHK.edge([{x:WATER_F.x0+(k0%WATER_F.nx)*WATER_F.cell,z:WATER_F.z0+Math.floor(k0/WATER_F.nx)*WATER_F.cell,sp:0,rb:.5}]));}
  // the steepest granite on the Whorl Stone (found, not typed)
  {let bx=TOR[0].x,bz=TOR[0].z,bs=-1;for(let z=TOR[0].z-200;z<=TOR[0].z+200;z+=4)for(let x=TOR[0].x-200;x<=TOR[0].x+200;x+=4){const s=FIELD.slope(x,z)*FIELD.rock(x,z);if(s>bs){bs=s;bx=x;bz=z;}}
   add('a tree on the tor\'s sheer face',HCHK.cliffs([{x:bx,z:bz,sp:0}]));}
  add('a deck not recorded',HCHK.clouddeck([],(x,z,t)=>ATMOS.deckHeight(x,z,t,CLOUD_Y)));
  add('a deck that rises out of its band',HCHK.clouddeck(ATMOS.fx,(x,z,t)=>ATMOS.deckHeight(x,z,t,CLOUD_Y)+60));
- add('a camera under the tarn',HCHK.camerasOut([{view:'under',x:TARN.x,y:TARNL-5,z:TARN.z}]));
+ add('a camera under the tarn',HCHK.camerasOut([{view:'under',x:TARN.x,y:terrainH(TARN.x,TARN.z)-2,z:TARN.z}]));
  return R;}
 // ---------------------------------------------------------------- the page, handed to the host
+// the runtime LOD: which chunk meshes this camera draws (after the camera is placed, before the draw; BIO.LOD.cull: 45-host-stage.js)
+KHOST.on(function lodTick(){camera.updateMatrixWorld();if(BIO.lodTick)BIO.lodTick(camera);},'view');
 KHOST.on(SKY.view,'view');   /* the shared sky, its lights and fog at the hour (89-host-sky.js) */
+/* the land in the tarn (core/water/ext/58, WATER.mirrorSwitch; the owner, 2026-11-01: every biome gets the switch, OFF at page load, for the tri
+   counts): the panel's "reflections" button or ?mirror=probe|live turns it on. The tarn is the page's largest still; the bog pools take its
+   plane only where they are near its level (one plane a page). The far trees reflect as their impostors */
+const MIRROR=WATER.mirrorSwitch&&typeof TARN_DRAW!=='undefined'&&TARN_DRAW?WATER.mirrorSwitch({THREE,renderer,scene,camera,sky:SKY,
+ far:2200,tree:o=>o.name==='biome:impTrees',hour:()=>ATMOS.clock?ATMOS.clock.hour:0,materials:[TARN_DRAW.mesh.material],level:TARNL,center:[TARN.x,TARN.z],radius:TARN.r*2.5}):null;
+window.MIRROR=MIRROR;
 KHOST.take({build:'shighlands',title:'Krator biome — the southern highlands',
- hint:"The southern highlands: the spiral biome. A cloud forest on the Inner Wall's scarp where the cloud sea laps against it, and above the cloud a paramo of giant rosettes; every plant grows in a spiral, and every spiral turns the same way (ideal type)",
+ hint:"The southern highlands: the spiral biome. A cloud forest on the Inner Wall's 3 km face where the cloud sea laps against it, the elfin forest above it, and on the plateau behind the rim a paramo of giant rosettes; every plant grows in a spiral, and every spiral turns the same way (ideal type)",
  scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,regHas,views:VIEWS,ticks:TICKS,
- clock:{hour:ATMOS.SKY.viewHour},draw:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
+ clock:{hour:ATMOS.SKY.viewHour},draw:MIRROR?()=>{MIRROR.update();SKY.draw();}:SKY.draw,   /* the reflections' pass when on, the shared sky's pass, then the world (89-host-sky.js) */
  inspect:describe,stats:()=>'inst '+window._instances,
  layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'rings':{objects:()=>[giantRing]}},
  exporters:{biome:()=>BIO.export()},

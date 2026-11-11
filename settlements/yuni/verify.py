@@ -225,8 +225,8 @@ async def run(a):
                 print(("  PASS  " if r["ok"] else "  FAIL  ") + r["name"] + " : " + r["detail"])
                 if not r["ok"]:
                     fails.append("assert " + r["name"])
-            from check_trades import trades_check
-            tok, tdetail, _trep = trades_check(os.path.dirname(os.path.abspath(__file__)))
+            from check_trades import trades_check, EXTRA_SRC
+            tok, tdetail, _trep = trades_check(os.path.dirname(os.path.abspath(__file__)), extra_src=EXTRA_SRC.get('settlements/yuni', ()))   # the kits the table names (check_trades.py --all reads them too)
             print(("  PASS  " if tok else "  FAIL  ") + "voth-trades : " + tdetail)
             if not tok:
                 fails.append("assert voth-trades")

@@ -30,14 +30,15 @@ KHAMLET.CULTURES.islander_east = {
   works: {
     salt: [{key: 'ie-saltworks', jobs: 12, share: 1}],
     mine: [{key: 'ie-mine', jobs: 20, share: 1}],
+    quarry: [{key: 'ie-quarry', jobs: 12, share: 1}],   /* a stone quarry (2026-11-04: Valapo's, the isle demo), smaller than a mine */
     lumber: [{key: 'ie-sawpit', jobs: 14, share: 0.7}, {key: 'ie-kiln', jobs: 6, share: 0.3}],
     ranch: [{key: 'ie-byre', jobs: 6, share: 0.35}, {key: 'ie-pens', jobs: 4, share: 0.15}, {key: 'ie-corral', jobs: 4, share: 0.2},
             {key: 'br_bldg_raptor_stable', jobs: 6, share: 0.2}, {key: 'br_bldg_rookery_tower', jobs: 6, share: 0.1}],
     fishing: [{key: 'ie-fishdock', jobs: 12, share: 0.7}, {key: 'ie-canoeshed', jobs: 8, share: 0.3}],
     farming: [{key: 'ie-farm', jobs: 10, share: 0.85}, {key: 'ie-granary', jobs: 2, share: 0.15}]
   },
-  focusJobs: {salt: 110, mine: 120, lumber: 100, ranch: 70, fishing: 100, farming: 140},
-  reach: {salt: 300, mine: 400, lumber: 600, ranch: 900, fishing: 250, farming: 700},
+  focusJobs: {salt: 110, mine: 120, quarry: 48, lumber: 100, ranch: 70, fishing: 100, farming: 140},
+  reach: {salt: 300, mine: 400, quarry: 300, lumber: 600, ranch: 900, fishing: 250, farming: 700},
   /* boxes for keys a host may not load (the ranch's mounts are the Beast Riders kit's, kits/beast-riders: a host without
      that kit's boxes places these footprints and draws stand-ins). The Islanders' own hamlet works are in the kit since
      2026-10-19 (kits/islanders/src/69-ie-hamlet.js: ie-sawpit, ie-kiln, ie-corral, ie-store-food, ie-bloomery) */
@@ -48,8 +49,9 @@ KHAMLET.CULTURES.islander_east = {
 };
 /* Xanadu's valley folk (settlements/xanadu, the building kit; settlements/longsong's three villages round the monastery,
    2026-10-20): whitewashed and rammed-earth houses under flat roofs with the maroon twig band, a temple, the Farmers'
-   Guild's hall for the headmen, a bazaar row, a teahouse, a granary, farmsteads and the windmill (asbad). The kit has no
-   pens, corral or dairy yet: their boxes are pending (the host draws its own) */
+   Guild's hall for the headmen, a bazaar row, a teahouse, a granary, farmsteads and the windmill (asbad). The kit has its
+   pens, corral and dairy now (xa_pens, xa_corral, xa_dairy, kits/xanadu/src/76-xa-farm.js); the boxes below stay pending,
+   so a host without the kit's boxes still places them (it draws its own) */
 KHAMLET.CULTURES.xanadu = {
   kit: 'xanadu', household: 5.5, workShare: 0.45, slopeMax: 0.22,
   religious: 'xa_temple', civic: 'xa_guild_farm', general: 'xa_shops', food: 'xa_teahouse', warehouse: 'xa_granary',
@@ -73,4 +75,4 @@ KHAMLET.CULTURES.xanadu = {
     'xa_dairy': {w: 10, d: 7, h: 4.6, what: 'a dairy (butter, cheese)'}
   }
 };
-KHAMLET.FOCI = ['salt', 'mine', 'lumber', 'ranch', 'fishing', 'farming'];
+KHAMLET.FOCI = ['salt', 'mine', 'quarry', 'lumber', 'ranch', 'fishing', 'farming'];

@@ -79,7 +79,7 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('a species tagged outside the region',HCHK.tagged([Object.assign({},NSEMIARID.SPECIES[0],{tags:Object.assign({},NSEMIARID.SPECIES[0].tags,{koppen:['EF']})})]));
  add('a plant on the lake bed under the water',HCHK.dry([[BED.x,LAKE.level-6,BED.z,'test']]));
  if(window._variants)add('a species with no variants grown',HCHK.variants({K:VARIANTS.K,protos:new Map(),stats:VARIANTS.stats},T));
- add('a fruiting species not named',HCHK.fruit(NSEMIARID.SPECIES.map(S=>S.key==='apple'?Object.assign({},S,{key:'apple?'}):S),NSEMIARID.PLANTS,P));
+ add('a fruiting species not named',HCHK.fruit(NSEMIARID.SPECIES.map(S=>S.key==='apple'?Object.assign({},S,{key:'apple?',tags:Object.assign({},S.tags,{harvest:Object.assign({},S.tags.harvest,{fruit:null})})}):S),NSEMIARID.PLANTS,P));   /* the negative drops apple's catalog fruit too: since the catalog took the fruit (2026-11-03/04) a renamed key alone no longer reads as unnamed */
  add('a camera under the ground',HCHK.camerasOut([{view:'under',x:0,y:terrainH(0,0)-5,z:0}]));
  // the crawlers turned round: heads swapped with their trails
  {const H=inst(/^biome:crawler$/),D=inst(/crawlerDead/);add('crawlers growing uphill',HCHK.crawlers(D.slice(0,H.length*3),H));}

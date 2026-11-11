@@ -247,17 +247,280 @@ for bx_t, by_t, r_km_t, mode_t in anc_basins_test:
         check('drowned blast basin (%.0f, %.0f) is in 17.4 m lake with shallow bed' % (bx_t, by_t),
               bool(whas[icy, icx]) and abs(float(wlev[icy, icx]) - 17.4) <= 1.0 and centre_h >= -80.0)
 
-# ---- 9. Southern Inner Wall scarp & Spirladunon (Round 3 Item 3)
+# ---- 9. Southern Inner Wall scarp & Spirladunon (Round 3 Item 3) + Neo-Ozarks tube location
 spirl_h = float(E[int(round(1017.0 * sv)), int(round(800.0 * su))])
 check('Spirladunon (800, 1017) preserved near 1,398 m (got %.1f m)' % spirl_h, 1300.0 <= spirl_h <= 1500.0)
 scarp_steps = []
-for x_sc in range(750, 926, 5):
-    if 795 <= x_sc <= 805:
-        continue
-    col_sc = [float(E[int(round(y_sc * sv)), int(round(x_sc * su))]) for y_sc in range(1022, 1061)]
+for x_sc in list(range(750, 791, 5)) + list(range(840, 926, 5)):
+    col_sc = [float(E[int(round(y_sc * sv)), int(round(x_sc * su))]) for y_sc in range(980, 1064)]
     y_foot = max([i for i, h_v in enumerate(col_sc) if h_v < 500.0], default=-1)
     y_crest = min([i for i, h_v in enumerate(col_sc) if h_v > 3000.0], default=99)
     scarp_steps.append(y_crest - y_foot)
 check('Southern Inner Wall scarp steps <500 m to >3,000 m in <= 6 px (max=%d px)' % max(scarp_steps),
       all(1 <= s_px <= 6 for s_px in scarp_steps))
+oz_tube = next((t for t in D.get('tubes', []) if t.get('id') == 'tube_ozarks_15'), None)
+check('tube_ozarks_15 sits inside neo-ozarks (X=1109..1318, Y=107..231)',
+      bool(oz_tube) and all(1109 <= p[0] <= 1318 and 107 <= p[1] <= 231 for p in oz_tube['px']))
+
+# ---- 10. Great Chasm & Godshearth reshaped terrain and stations
+for st_name, sx, sy, target_h in [
+    ('greatchasm/firefissure', 1692, 895, -1180.0),
+    ('greatchasm/dikecathedral', 1708, 935, 1640.0),
+    ('greatchasm/rimepalisade', 1726, 888, 6850.0),
+    ('greatchasm/loomthroat', 1698, 1008, 280.0),
+    ('godshearth/climaxgrove', 836, 1388, 3740.0),
+    ('godshearth/prismbasin', 844, 1394, 3642.0),
+    ('godshearth/amberheadwall', 848, 1375, 4120.0),
+    ('godshearth/xanaduspill', 845, 1422, 3380.0),
+    ('seouterwall/godsgate', 1031, 1252, 3620.0),
+    ('seouterwall/gatetarn', 1016, 1236, 3680.0),
+    ('seouterwall/ambertarn', 1064, 1272, 3940.0),
+    ('seouterwall/mirrorscarp', 1134, 1218, 4120.0),
+    ('seouterwall/jadecrest', 1208, 1254, 4380.0),
+    ('seouterwall/coppertarn', 1288, 1184, 3820.0),
+    ('twins/pyroduct', 980, 1467, 4240.0),
+    ('twins/brazier', 1016, 1479, 4680.0),
+    ('twins/lavasump', 992, 1465, 4890.0),
+    ('twins/shroudvale', 968, 1442, 4720.0),
+    ('twins/erebustwin', 1042, 1498, 5420.0),
+    ('twins/catchlookout', 1056, 1462, 3690.0),
+    ('opalvalley/glacier', 1124, 1676, 4150.0),
+    ('opalvalley/upperbed', 1082, 1672, 2540.0),
+    ('opalvalley/middlebed', 1038, 1662, 1340.0),
+    ('opalvalley/lowerbed', 998, 1646, 275.0),
+    ('opalvalley/riftmouth', 972, 1636, 60.0),
+]:
+    map_h = float(E[int(round(sy * sv)), int(round(sx * su))])
+    check('%s (%d, %d) ground %.0f m within 150 m of %.0f m' % (st_name, sx, sy, map_h, target_h),
+          abs(map_h - target_h) <= 150.0)
+check('Godshearth thermal lake at (840, 1394) is wet at 3,642 m',
+      bool(whas[int(round(1394 * sv)), int(round(840 * su))])
+      and abs(float(wlev[int(round(1394 * sv)), int(round(840 * su))]) - 3642.0) <= 2.0)
+for t_name, tx, ty, twl in [
+    ('Tarn of the Gate-Bell', 1013, 1236, 3680.0),
+    ('Amber-Sinter Tarn', 1061, 1272, 3940.0),
+    ('Mirror-Slump Tarn', 1131, 1218, 4120.0),
+    ('Jade-Karst Polje', 1205, 1254, 4380.0),
+    ('Copper-Vein Tarn', 1285, 1184, 3820.0),
+    ('Opal Valley Lake 1 (Milk-Opal Ribbon Tarn)', 1074, 1670, 2525.0),
+    ('Opal Valley Lake 2 (Harlequin Mirror Ribbon Lake)', 1028, 1658, 1315.0),
+    ('Opal Valley Lake 3 (Fire-Opal Ribbon Lagoon)', 989, 1643, 255.0),
+]:
+    iy_t, ix_t = int(round(ty * sv)), int(round(tx * su))
+    check('%s (%d, %d) is wet at %.0f m' % (t_name, tx, ty, twl),
+          bool(whas[iy_t, ix_t]) and abs(float(wlev[iy_t, ix_t]) - twl) <= 2.0)
+for vx_tw, vy_tw, vfl_tw, vpk_tw in [
+    (988.0, 1458.0, 5980.0, 6480.0),
+    (1042.0, 1498.0, 5420.0, 5880.0),
+    (1007.0, 1472.0, 4680.0, 4840.0),
+    (1024.0, 1485.0, 4460.0, 4610.0),
+]:
+    v_rec = next((v for v in D.get('vents', []) if abs(v['px'][0] - vx_tw) < 2.0 and abs(v['px'][1] - vy_tw) < 2.0), None)
+    check('Twins Option A vent at (%.0f, %.0f) has floor=%.0f m, peak=%.0f m' % (vx_tw, vy_tw, vfl_tw, vpk_tw),
+          v_rec is not None and abs(float(v_rec.get('floor', 0)) - vfl_tw) <= 1.0 and abs(float(v_rec.get('peak', 0)) - vpk_tw) <= 1.0)
+
+# ---- 11. Twins no bull's-eye moat, taller SE Outer Wall, gradual North Great Chasm, and lush Green Valley
+yy_all, xx_all = np.mgrid[0:E.shape[0], 0:E.shape[1]]
+for tw_nm, tw_x, tw_y in [('NW Twin', 988.0, 1458.0), ('SE Twin', 1042.0, 1498.0)]:
+    r_tw = np.hypot(xx_all - tw_x, yy_all - tw_y)
+    med_r3_6 = float(np.median(E[(r_tw >= 3.0) & (r_tw <= 6.0)]))
+    med_r8_13 = float(np.median(E[(r_tw >= 8.0) & (r_tw <= 13.0)]))
+    med_r15_20 = float(np.median(E[(r_tw >= 15.0) & (r_tw <= 20.0)]))
+    check('%s (%d, %d) has monotonic radial slope with no bullseye moat (r3..6=%.0fm > r8..13=%.0fm >= r15..20=%.0fm - 150m)' % (
+        tw_nm, tw_x, tw_y, med_r3_6, med_r8_13, med_r15_20),
+        med_r3_6 > med_r8_13 and med_r8_13 >= med_r15_20 - 150.0 and med_r8_13 >= 3900.0)
+
+seow_east_med = float(np.median(E[1190:1320, 1230:1345]))
+seow_east_max = float(np.max(E[1180:1340, 1210:1350]))
+check('SE Outer Wall eastern cordillera (X=1230..1345, Y=1190..1320) meets Stalker Range height (med=%.0fm >= 6800m, max=%.0fm >= 9200m)' % (
+    seow_east_med, seow_east_max),
+    seow_east_med >= 6800.0 and seow_east_max >= 9200.0)
+
+gc_north_y790 = float(E[790, 1671])
+gc_north_y825 = float(E[825, 1668])
+gc_north_y860 = float(E[860, 1660])
+check('Great Chasm northern slope towards S Outlands is gradual (Y=790:%.0fm > Y=825:%.0fm > Y=860:%.0fm)' % (
+    gc_north_y790, gc_north_y825, gc_north_y860),
+    1500.0 <= gc_north_y790 <= 4900.0 and 200.0 <= gc_north_y825 <= 2400.0 and gc_north_y790 > gc_north_y825 > gc_north_y860)
+
+gv_reg = next((r for r in R if r.get('id') == 'rmw5n1w1rx0u2'), None)
+check('Greenstep region rmw5n1w1rx0u2 is present in regions', gv_reg is not None and gv_reg.get('name') == 'Greenstep')
+for pol_id, pol_nm, pol_npts in [
+    ('rmw5ruqmv60t3', 'Realm of Dalab', 36),
+    ('rmw5rzefnfapk', 'Vothic Kingdom', 51),
+    ('rmw5s3ktxgv0d', 'Shumar', 8),
+    ('rmw5sayxeskra', 'Vrivolci', 16),
+    ('rmw8ca6baau47', 'Yuni Emirate', 38),
+    ('rmw8bqrn3dnx4', 'Labyrinth', 13),
+    ('rmw8hj62nmugn', 'Firebliss Range', 12),
+]:
+    pol_reg = next((r for r in R if r.get('id') == pol_id), None)
+    check('Reworked/new region %s (%s, %d pts) is present in regions' % (pol_nm, pol_id, pol_npts),
+          pol_reg is not None and pol_reg.get('name') == pol_nm and len(pol_reg.get('points', [])) == pol_npts)
+check('Superseded political region IDs (rmudhwjkmjc1e, rmufwoc7586da, rmuooahhlhlnu, rmukx7n441l62, rmvyl36gozner) are removed',
+      not any(r.get('id') in {'rmudhwjkmjc1e', 'rmufwoc7586da', 'rmuooahhlhlnu', 'rmukx7n441l62', 'rmvyl36gozner'} for r in R))
+S = P.docs(os.path.join(TOOL, '..', '..', 'openworld', 'little-demo', 'source', 'settlements.json'))
+tw_sett = next((s for s in S if s.get('id') == 'stallwalls01' or s.get('name') == 'Tallwalls'), None)
+check('Tallwalls settlement stallwalls01 is present at (650, 1268)', tw_sett is not None and (int(tw_sett['px']), int(tw_sett['py'])) == (650, 1268))
+gv_t1_e = float(E[1212, 638])
+gv_t2_e = float(E[1242, 644])
+gv_t3_e = float(E[1268, 650])
+gv_t4_e = float(E[1304, 662])
+gv_t5_e = float(E[1338, 668])
+p_grid = P.raster(D, 'p', 'L').astype(float) / 255.0 * 4000.0
+gv_rain_med = float(np.median(p_grid[1210:1335, 615:675]))
+check('Greenstep has 5 stepped lava terraces (T1:%.0fm < T2:%.0fm < T3/Tallwalls:%.0fm < T4:%.0fm < T5:%.0fm <= 3900m) and C.reclimate rain (med=%.0f mm/yr >= 1100 mm/yr)' % (
+    gv_t1_e, gv_t2_e, gv_t3_e, gv_t4_e, gv_t5_e, gv_rain_med),
+    750.0 <= gv_t1_e < gv_t2_e < gv_t3_e < gv_t4_e < gv_t5_e <= 3900.0 and gv_rain_med >= 1100.0)
+shumar_reg = next((r for r in R if r.get('id') == 'rmw5s3ktxgv0d'), None)
+mask_sh_test = G.poly(shumar_reg['points'], 1.0, 1.0, (D['fullH'], D['fullW'])) > 0.5
+c_grid_test = P.raster(D, 'c', 'L')[mask_sh_test]
+codes_test = [c['code'] for c in D['climate']['classes']]
+sh_d_frac = float(sum(1 for k in c_grid_test if codes_test[int(k)].startswith('D'))) / float(max(1, len(c_grid_test)))
+sh_e_med = float(np.median(E[mask_sh_test]))
+check('Shumar (rmw5s3ktxgv0d) has primarily Continental/Boreal (D*) climate (%.1f%% >= 65%%, med elev %.0fm)' % (sh_d_frac * 100.0, sh_e_med),
+      sh_d_frac >= 0.65 and 2600.0 <= sh_e_med <= 3900.0)
+shumari_rivs = [r for r in D.get('rivers', []) if r.get('tongue') == 'shumari']
+check('Shumari rivers are present in Shumar (%d courses >= 10)' % len(shumari_rivs), len(shumari_rivs) >= 10)
+c_grid_full = P.raster(D, 'c', 'L')
+catch_reg = next((r for r in R if r.get('id') == 'rmvka7icdn1dq'), None)
+mask_catch_test = G.poly(catch_reg['points'], 1.0, 1.0, (D['fullH'], D['fullW'])) > 0.5
+catch_floor_mask = mask_catch_test & (E < 1000.0)
+catch_floor_px = int(np.sum(catch_floor_mask))
+catch_bw_frac = float(sum(1 for k in c_grid_full[catch_floor_mask] if codes_test[int(k)].startswith('BW'))) / float(max(1, catch_floor_px))
+check('The Catch (rmvka7icdn1dq) restores <1000m alkali desert floor (%d px >= 6200 px, %.1f%% BW* >= 75%%)' % (
+    catch_floor_px, catch_bw_frac * 100.0),
+    catch_floor_px >= 6200 and catch_bw_frac >= 0.75)
+lab_reg = next((r for r in R if r.get('id') == 'rmw8bqrn3dnx4'), None)
+mask_lab_test = G.poly(lab_reg['points'], 1.0, 1.0, (D['fullH'], D['fullW'])) > 0.5
+lab_e_vals = E[mask_lab_test]
+lab_p10, lab_p90 = float(np.percentile(lab_e_vals, 10)), float(np.percentile(lab_e_vals, 90))
+w_edge_med = float(np.median(E[1360:1660, 0:45]))
+s_edge_med = float(np.median(E[1688:1723, 90:380]))
+check('Labyrinth (rmw8bqrn3dnx4) has Noctis/Chaos inversion relief (p10=%.0fm <= 2800m, p90=%.0fm >= 4600m) while outer W/S map edges remain airless (W=%.0fm, S=%.0fm >= 8800m)' % (
+    lab_p10, lab_p90, w_edge_med, s_edge_med),
+    lab_p10 <= 2800.0 and lab_p90 >= 4600.0 and (lab_p90 - lab_p10) >= 2100.0 and w_edge_med >= 8800.0 and s_edge_med >= 8800.0)
+for lb_lk_nm, lb_x, lb_y, lb_wl in [
+    ('Labyrinth Lake 1 (NW Catena Tarn)', 148, 1468, 2920.0),
+    ('Labyrinth Lake 2 (SW Catena Tarn)', 176, 1564, 2840.0),
+    ('Labyrinth Lake 3 (North Graben Ribbon Lake)', 234, 1424, 1980.0),
+    ('Labyrinth Lake 4 (Central Hub Ribbon Lake)', 244, 1482, 1820.0),
+    ('Labyrinth Lake 5 (South Graben Ribbon Lake)', 248, 1556, 1920.0),
+    ('Labyrinth Lake 6 (North Chaos Moat Lake)', 284, 1418, 1720.0),
+    ('Labyrinth Lake 7 (Great Chaos Moat Lake)', 328, 1475, 1420.0),
+    ('Labyrinth Lake 8 (South Chaos Trough Lake)', 312, 1518, 1580.0),
+]:
+    check('%s (%d, %d) is wet at %.0f m' % (lb_lk_nm, lb_x, lb_y, lb_wl),
+          bool(whas[lb_y, lb_x]) and abs(float(wlev[lb_y, lb_x]) - lb_wl) <= 2.0)
+r295_rec = next((r for r in D.get('rivers', []) if str(r.get('id')) in ('295', 'r295')), None)
+r020_rec = next((r for r in D.get('rivers', []) if str(r.get('id')) in ('20', 'r020')), None)
+r331_rec = next((r for r in D.get('rivers', []) if str(r.get('id')) in ('331', 'r331')), None)
+check('r295 and r020 stay outside Labyrinth on NE mountain range while r331 drains Labyrinth through single Eastern Opening',
+      r295_rec is not None and not any(mask_lab_test[int(round(py)), int(round(px))] for px, py in r295_rec['px'])
+      and r020_rec is not None and not any(mask_lab_test[int(round(py)), int(round(px))] for px, py in r020_rec['px'])
+      and r331_rec is not None and any(mask_lab_test[int(round(py)), int(round(px))] for px, py in r331_rec['px']))
+lab_c_codes = {codes_test[int(k)] for k in c_grid_full[mask_lab_test]}
+check('Labyrinth has rich microclimate mosaic (%d classes >= 7: %s)' % (len(lab_c_codes), sorted(lab_c_codes)),
+      len(lab_c_codes) >= 7 and 'WH' in lab_c_codes and bool(lab_c_codes & {'BWk', 'BSk'}) and bool(lab_c_codes & {'Csb', 'Cfb'}) and bool(lab_c_codes & {'Dsb', 'Dfb', 'Dsc', 'Dfc'}))
+
+# ---- 12. Xanadu one lake-valley (Erewhon's), Theodiga tall cataract, Small Lake, Oidong eastern cataract, low cataracts to Lizardman lake, Rift relief, & climate detail
+check('Erewhon Lake (851, 1498) is wet at -520 m and Erehwon (800, 1503) is dry at ~ -485 m',
+      bool(whas[1498, 851]) and abs(float(wlev[1498, 851]) - (-520.0)) <= 2.0
+      and not bool(whas[1503, 800]) and -515.0 <= float(E[1503, 800]) <= -450.0)
+check('Theodiga (908, 1535) is on dry broken-dam brink at ~ -495 m above Erewhon Lake (-520 m)',
+      not bool(whas[1535, 908]) and -515.0 <= float(E[1535, 908]) <= -460.0)
+s_horst_max = float(np.max(E[1538:1564, 795:895]))
+check('Xanadu Southern Rift Horst Spine (X=795..895, Y=1538..1564) rises cleanly between Erewhon Lake (-520 m) and Lizardman Rift (-2,600 m) (max=%.0f m >= +600 m)' % s_horst_max,
+      s_horst_max >= 600.0)
+small_lk_px = int(np.sum(whas[1578:1635, 910:995] & (np.abs(np.nan_to_num(wlev[1578:1635, 910:995], nan=0.0) - (-1685.0)) <= 5.0)))
+dry_below_slk = int(np.sum((~whas[1574:1636, 932:995]) & (E[1574:1636, 932:995] < -2050.0)))
+e_brink_oid = float(E[1598, 1001])
+wlev_foot_oid = float(wlev[1597, 989])
+check('Lower Xanadu Extended Small Lake (933..990, 1597) is wet at -1,685 m (%d px in 450..1200 px), receives >2 km cataract from Longsong/Oidong river right into eastern shore (brink %.0f m -> lake %.0f m, drop %.0f m >= 2000 m), and has 0 dry basin cells at old -2,599 m floor (got %d)' % (
+    small_lk_px, e_brink_oid, wlev_foot_oid, e_brink_oid - wlev_foot_oid, dry_below_slk),
+    bool(whas[1597, 947]) and bool(whas[1597, 989]) and abs(wlev_foot_oid - (-1685.0)) <= 2.0
+    and (e_brink_oid - wlev_foot_oid) >= 2000.0
+    and 450 <= small_lk_px <= 1200 and dry_below_slk == 0 and not bool(whas[1536, 968]) and not bool(whas[1595, 1060]))
+for xn_rid in ('70', '107', 'r_xanadu_low_cataracts'):
+    r_xn = next((r for r in D.get('rivers', []) if str(r.get('id')) == xn_rid or (str(r.get('id')) == 'r070' and xn_rid == '70') or (str(r.get('id')) == 'r107' and xn_rid == '107')), None)
+    check('Xanadu cataract/outflow river %s is present, sinuous (>= 12 pts), and descends monotonically' % xn_rid,
+          r_xn is not None and len(r_xn.get('px', [])) >= 12 and r_xn['bed_m'][0] > r_xn['bed_m'][-1])
+xan_reg = next((r for r in R if r.get('id') == 'rmvkkmitffbjk'), None)
+mask_xan_test = G.poly(xan_reg['points'], 1.0, 1.0, (D['fullH'], D['fullW'])) > 0.5
+xan_c_codes = {codes_test[int(k)] for k in c_grid_full[mask_xan_test]}
+check('Xanadu (rmvkkmitffbjk) has fine-scale Rift microclimate mosaic (%d classes >= 6: %s)' % (len(xan_c_codes), sorted(xan_c_codes)),
+      len(xan_c_codes) >= 6 and {'WH', 'Af', 'Cfa', 'Csb', 'Cfb'} <= xan_c_codes)
+
+# ---- 13. Firebliss Range (rmw8hj62nmugn) volcanic arc, 4 temperate geothermal valleys, & SE ash/vapor plume into Labyrinth
+fb_reg = next((r for r in R if r.get('id') == 'rmw8hj62nmugn'), None)
+mask_fb_test = G.poly(fb_reg['points'], 1.0, 1.0, (D['fullH'], D['fullW'])) > 0.5
+fb_c_codes = {codes_test[int(k)] for k in c_grid_full[mask_fb_test]}
+fb_vents = [v for v in D.get('vents', []) if v.get('region') == 'Firebliss Range']
+check('Firebliss Range (rmw8hj62nmugn) has 5 volcanic vents (%d) and sheltered temperate geothermal valleys (classes: %s)' % (
+    len(fb_vents), sorted(fb_c_codes)),
+    len(fb_vents) == 5 and 'WH' in fb_c_codes and bool(fb_c_codes & {'Cfa', 'Cfb', 'Csb'}) and 'EF' in fb_c_codes)
+for fb_lk_nm, fb_x, fb_y, fb_wl in [
+    ('West Bliss Cauldron Tarn', 126, 1344, 2640.0),
+    ('Great Firebliss Vale Lake', 184, 1318, 2280.0),
+    ('Solfatara Glen Tarn', 238, 1322, 2120.0),
+    ('East Bliss Vale Tarn', 284, 1318, 1960.0),
+]:
+    check('Firebliss geothermal lake %s (%d, %d) is wet at %.0f m' % (fb_lk_nm, fb_x, fb_y, fb_wl),
+          bool(whas[fb_y, fb_x]) and abs(float(wlev[fb_y, fb_x]) - fb_wl) <= 2.0)
+# ---- 14. 5.1 edit 1 (edit_511.py, 2026-11-09): the Portal Valley and the Epidote Cave, the brine lake, Godshearth's
+#          climate, The Gate and Region 99
+pv = {295: 5530.0, 298: 5750.0, 300: 5850.0, 302: 5900.0}
+for pv_y, pv_f in pv.items():
+    pv_x = int(round(1330 + (pv_y - 295) / 7.0))
+    check('Portal Valley floor (%d, %d) %.0f m within 40 m of %.0f m' % (pv_x, pv_y, E[pv_y, pv_x], pv_f),
+          abs(float(E[pv_y, pv_x]) - pv_f) <= 40.0)
+pv_line = [float(E[y, int(round(1330 + (y - 295) / 7.0))]) for y in range(295, 303)]
+check('Portal Valley floor climbs steadily south to the portal (%s)' % [round(v) for v in pv_line],
+      all(b > a for a, b in zip(pv_line, pv_line[1:])) and max(pv_line) <= 5950.0)
+check('Portal Valley is a trough: its walls stand 400 m over the floor at y 300-302',
+      all(min(float(E[y, int(round(1330 + (y - 295) / 7.0)) - 3]), float(E[y, int(round(1330 + (y - 295) / 7.0)) + 3]))
+          - float(E[y, int(round(1330 + (y - 295) / 7.0))]) >= 400.0 for y in (300, 301, 302)))
+ep = next((t for t in D['tubes'] if t['id'] == 'tube_epidote_16'), None)
+check('tube_epidote_16 (Epidote Cave) runs from the portal 1331,302 to the inner mouth 1340,336 in rmvymakpc0pft',
+      ep is not None and ep['px'][0] == [1331.0, 302.0] and ep['px'][-1] == [1340.0, 336.0]
+      and ep['region'] == 'rmvymakpc0pft' and ep['rock'] == 'skarn_marble' and ep['km'] == 71)
+yy_b, xx_b = np.mgrid[0:E.shape[0], 0:E.shape[1]]
+bl = np.hypot(xx_b - 876, yy_b - 1440) <= 3.0
+check('brine lake at 876,1440: 29 cells wet at 6,420 m',
+      int(bl.sum()) == 29 and bool(whas[bl].all()) and float(np.abs(wlev[bl] - 6420.0).max()) <= 2.0)
+bl_ring = (np.hypot(xx_b - 876, yy_b - 1440) > 3.0) & (np.hypot(xx_b - 876, yy_b - 1440) <= 4.5)
+check('brine lake is closed: its lip holds 6.7 km all round (min %.0f m)' % float(E[bl_ring].min()),
+      float(E[bl_ring].min()) >= 6700.0 and not bool(whas[bl_ring].any()))
+r442_t = next(r for r in D['rivers'] if r['id'] == 'r442')
+check('r442 (the bloodfalls) still rises at 864.8,1439.6, 5,318 m, 22 km below the lake',
+      r442_t['px'][0] == [864.8, 1439.6] and r442_t['source_m'] == 5318.0)
+check('the brine lake\'s basin record is at 876,1440 (6,420 m), the stale one at 842.7,1397.5 gone',
+      any(b['at_px'] == [876.0, 1440.0] and b['level_m'] == 6420 for b in D['basins'])
+      and not any(abs(b['at_px'][0] - 842.7) < .5 and abs(b['at_px'][1] - 1397.5) < .5 for b in D['basins']))
+cav_bt = next(c for t in D['tubes'] for c in t.get('caverns', []) if c['id'] == 'cav_god_brine_throat')
+check('cav_god_brine_throat no longer says 6,415 m under the ice', '6,415' not in cav_bt['notes'])
+gh_reg = next(r for r in R if r.get('id') == 'rmw4wou2y1hhc')
+gh_m = G.poly(gh_reg['points'], 1.0, 1.0, E.shape)
+temps_t = {k: P.raster(D, k, 'L').astype(float) - 90 for k in ('tm', 'tw', 'tc', 'th', 'tl')}
+gh_floor = gh_m & ~whas & (E > 3640) & (E < 3760)
+gh_med = {k: float(np.median(v[gh_floor])) for k, v in temps_t.items()}
+check('Godshearth floor: +7 C (15 / -2), days 24, nights -10 or colder (%s)' % {k: round(v) for k, v in gh_med.items()},
+      abs(gh_med['tm'] - 7) <= 1 and abs(gh_med['tw'] - 15) <= 1 and abs(gh_med['tc'] + 2) <= 1
+      and abs(gh_med['th'] - 24) <= 1 and gh_med['tl'] <= -10)
+gh_hi = gh_m & ~whas & (np.abs(E - 4500) < 150)
+check('Godshearth cools with height (4.5 km: %.0f C vs the floor\'s %.0f C)' % (np.median(temps_t['tm'][gh_hi]), gh_med['tm']),
+      float(np.median(temps_t['tm'][gh_hi])) <= gh_med['tm'] - 4)
+gh_cls = [codes_test[int(k)] for k in c_grid_full[gh_floor]]
+# the cold month crosses Koppen's -3 C at about 3,720 m: the floor's upper edge (3.72-3.76 km) is Dwb
+check('Godshearth floor is mostly Cwb, the rest Dwb (%.0f%% Cwb)' % (100.0 * gh_cls.count('Cwb') / len(gh_cls)),
+      gh_cls.count('Cwb') / len(gh_cls) >= .6 and gh_cls.count('Cwb') + gh_cls.count('Dwb') == len(gh_cls))
+s_src = open(os.path.join(TOOL, 'model', 'src', '60-settlements.js'), encoding='utf-8').read()
+check('The Gate (sthegate) stands at the Narrows, 1438,326 (ground %.0f m)' % E[326, 1438],
+      '"id": "sthegate", "name": "The Gate", "type": "outpost", "px": 1438, "py": 326' in s_src
+      and abs(float(E[326, 1438]) - 1423.0) <= 50.0)
+r99_t = next(r for r in R if r.get('id') == 'rmvraoas90co7')
+gc_t = next(r for r in R if r.get('id') == 'rmw4vh9t20da4')
+m99_t, mgc_t = G.poly(r99_t['points'], 1.0, 1.0, E.shape), G.poly(gc_t['points'], 1.0, 1.0, E.shape)
+check('the Great Chasm\'s sill (1697,1028) is the Great Chasm\'s, not Region 99\'s; overlap %d edge cells' % int((m99_t & mgc_t).sum()),
+      bool(mgc_t[1028, 1697]) and not bool(m99_t[1028, 1697]) and int((m99_t & mgc_t).sum()) <= 80)
 print('%d checks passed' % ok)

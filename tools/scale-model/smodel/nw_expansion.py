@@ -22,6 +22,7 @@ the light-blue river markings (`is_river_paint`) as **local valley thalweg minim
      to Eastern Highland Lake `+1,460 m`), SW Crook–Rift Connector (`rmvcopperglacier`), Western Boundary Cordillera
      (`X = 0..68, Y = 470..1120`), and S Outlands–Loom-Chasms Pass (`X = 1665..1755, Y = 875..1060`).
 """
+import gc
 import heapq
 import math
 import numpy as np
@@ -1573,6 +1574,19 @@ def synthesize_nw_expansion(Eo_old, whas0_old, wlev0_old, ref_path):
     En_new = En_new * (1.0 - w_sw_ext) + h_sw_ext_rim * w_sw_ext
 
     # 6C. Apply the Trans-Boundary Arachnoid Network & Northern Korona Scenic Canyon (*The Web-Cleaver Gorge*):
+    h_breach_slope = h_land_syn * 0.75 + (1650.0 + 550.0 * rn_broad) * 0.25
+    del (
+        h_harm, h_land_syn, h_syn, h_seamount_edifice, h_shelf_arch, h_shelf_deep, h_shelf_sea,
+        h_cone, dr_s, u_s, w_flank, w_throat, h_arch_mod, w_arch_horst, w_arch_trough,
+        el_arch_trough, h_arch_isles, w_arch_land, h_trough_target, h_arch_coast_smooth, w_arch_coast_band,
+        r_delta, h_bayou_patch, d_braid_min, ch_hw_d, d_from_braid, h_delta_islands, w_delta_land,
+        px_nw, py_nw, d_in_hlake, d_out_hlake, w_hlake_basin, h_hlake_profile, r_cop_tarn, w_cop_pocket, h_cop_bed,
+        w_land_coast, d2_ria, s_taper_ria, hw_ria, spur_mod, dist_ria, d_norm_ria, h_bg_slope, max_val_cut, w_ria_val, h_ria_thalweg,
+        Eo_clean_edge, whas0_clean_edge, wlev0_clean_edge, w_new_blend, w_nw_sea_floor, w_coast_new, d_in_sea,
+        d2_ne, el_ne, hw_ne, dist_ne, d_norm_ne,
+        d2_sw, el_sw, hw_sw, dist_sw, d_norm_sw, h_sw_pass_prof, w_sw_pass_trough, h_sw_target, w_sw_apply, w_sw_ext, h_sw_ext_rim,
+    )
+    gc.collect()
     (w_arach_zone, arach_trough_w, arach_rib_h,
      w_canyon, h_canyon_prof, _) = build_arachnoid_and_canyon_field(px, py, is_arach, is_high_lake, rs)
 
@@ -1586,11 +1600,12 @@ def synthesize_nw_expansion(Eo_old, whas0_old, wlev0_old, ref_path):
         * G.sstep(245.0, 285.0, py) * (1.0 - G.sstep(365.0, 415.0, py))
         * np.clip(w_arach_zone * 1.35, 0.0, 1.0)
     )
-    h_breach_slope = h_land_syn * 0.75 + (1650.0 + 550.0 * rn_broad) * 0.25
     En_new = En_new * (1.0 - w_n_korona_breach) + np.minimum(En_new, h_breach_slope) * w_n_korona_breach
 
     En_new = En_new + (arach_rib_h * (1.0 - arach_trough_w) - 580.0 * arach_trough_w) * w_arach_env * np.clip(w_arach_zone + 0.25, 0.0, 1.0)
     En_new = En_new * (1.0 - w_canyon) + np.minimum(En_new, h_canyon_prof) * w_canyon
+    del w_arach_env, h_breach_slope
+    gc.collect()
 
     # 7. Apply Fluvial & Glacial Stream-Power Weathering (`T.weather`) across the new mountains & scarps:
     weather_mask_new = (
@@ -1695,6 +1710,13 @@ def synthesize_nw_expansion(Eo_old, whas0_old, wlev0_old, ref_path):
     w_ntd_carve = (1.0 - G.sstep(0.0, 16.0, dist_ntd)) * (~is_high_lake).astype(float) * (~whas_new).astype(float)
     h_ntd_prof = el_ntd + 420.0 * (G.sstep(0.0, 16.0, dist_ntd) ** 1.35)
     En_new = En_new * (1.0 - 0.90 * w_ntd_carve) + np.minimum(En_new, h_ntd_prof) * (0.90 * w_ntd_carve)
+    del (
+        En_weathered, w_weather_blend, w_coast_taper, w_n_seam_smooth, w_w_seam_smooth, En_wall_smooth,
+        h_canyon_prof, h_ne_valley, w_ne_trough,
+        d2_ctd, el_ctd, dist_ctd, w_ctd_carve, h_ctd_prof,
+        d2_ntd, el_ntd, dist_ntd, w_ntd_carve, h_ntd_prof,
+    )
+    gc.collect()
 
     # 8. Set Water Masks (`whas_new`, `wlev_new`) in the Expanded Territory:
     in_nw_sea_box = is_new_area | ((px < 535.0) & (py < 635.0))
@@ -2192,6 +2214,14 @@ def synthesize_nw_expansion(Eo_old, whas0_old, wlev0_old, ref_path):
     En_new[588, 294] = 212.0
     whas_new[588, 294] = False
     wlev_new[588, 294] = np.nan
+    del (
+        d_in_oz, d_out_oz, sd_oz, w_ozarks_env, h_ozark_bg, h_ozark_table,
+        xw_oz, yw_oz, dendritic_wave, hollow_cut, doline_field, h_porphyry_boost, h_ozark_target,
+        w_tsunami_poly, d_coast_tsu, exposure_tsu, scour_width_px,
+        dx_sm, dy_sm, r_sm, th_sm, chevron_phase, chevron_ridge, backwash_chute, h_scour_bench,
+        d_estuary, d_farside_sea, w_farside_bench, h_farside_scour, r_farport_pad, w_farport_pad, h_farport_pad,
+    )
+    gc.collect()
 
     # --- (6) `ne outer wall` (`rmvymakpc0pft`, X = 1089..1456, Y = 253..399) — *The Glass-Skarn Bastion*:
     # Sculpt the 3 signature tectono-magmatic impact-wall landforms inside `ne outer wall`:
@@ -2624,20 +2654,228 @@ def synthesize_nw_expansion(Eo_old, whas0_old, wlev0_old, ref_path):
             'points': ne_outer_wall_verts,
         },
         {
-            'id': 'rmvyl36gozner',
+            'id': 'rmw8ca6baau47',
             'name': 'Yuni Emirate',
-            'color': '#d7bd60',
-            'kind': 'political',
-            'createdAt': '2026-11-02T01:28:04.262Z',
-            'notes': (
-                'The Yuni Emirate: desert-and-canyon polity spanning the Yuni Valley, Lake Ostrukh, and the eastern '
-                'piedmont fans bordering the Loom-Chasms and SE Desert.'
-            ),
+            'color': '#d9c14a',
             'points': [
-                [1354, 882], [1454, 845], [1515, 811], [1578, 868], [1647, 949],
-                [1637, 1020], [1686, 1110], [1687, 1179], [1656, 1213], [1525, 1143],
-                [1495, 1109], [1484, 1016], [1407, 941],
+                [1272, 946], [1258, 980], [1240, 1014], [1224, 1032], [1211, 1052],
+                [1174, 1087], [1165, 1104], [1195, 1105], [1206, 1098], [1290, 1144],
+                [1324, 1144], [1345, 1167], [1386, 1259], [1435, 1283], [1487, 1341],
+                [1504, 1369], [1499, 1414], [1481, 1444], [1485, 1479], [1528, 1502],
+                [1565, 1455], [1601, 1386], [1633, 1310], [1610, 1251], [1592, 1185],
+                [1592, 1119], [1575, 1073], [1527, 1050], [1469, 1071], [1452, 1107],
+                [1438, 1119], [1389, 1105], [1370, 1083], [1379, 1026], [1393, 979],
+                [1389, 916], [1303, 919], [1273, 913],
             ],
+            'notes': '',
+            'kind': 'political',
+            'createdAt': '2026-11-08T21:33:25.197Z',
+        },
+        {
+            'id': 'rmw8bqrn3dnx4',
+            'name': 'Labyrinth',
+            'color': '#6fb5a8',
+            'points': [
+                [322, 1412], [293, 1349], [184, 1358], [113, 1402], [90, 1484],
+                [136, 1580], [187, 1616], [252, 1640], [310, 1637], [354, 1607],
+                [383, 1569], [393, 1513], [345, 1463],
+            ],
+            'notes': (
+                'The Labyrinth (250,872 km²): a Martian Noctis Labyrinthus & E/NE Chaos Terrain inversion '
+                'canyon complex carved into the 4.8–6.3 km SW Glaciated Dome. Progresses from beaded pit-crater '
+                'catenae in the west/south through a 3-trend intersecting polyhedral fault-graben network in the '
+                'center into a collapsed Martian Chaos Terrain of isolated flat-topped horst mesas and knobby '
+                'pyramids in the east/northeast opening toward The Rift and Copper Glacier.'
+            ),
+            'kind': 'biome',
+            'createdAt': '2026-11-08T21:18:19.044Z',
+        },
+        {
+            'id': 'rmw4vh9t20da4',
+            'name': 'great chasm',
+            'color': '#c9b08a',
+            'points': [
+                [1660, 1003], [1667, 1022], [1696, 1028], [1723, 1032], [1745, 1001],
+                [1747, 913], [1741, 858], [1713, 841], [1671, 798], [1633, 818],
+                [1614, 851], [1647, 880], [1672, 928], [1666, 987],
+            ],
+            'notes': '',
+            'kind': 'biome',
+            'createdAt': '2026-11-06T11:09:43.526Z',
+        },
+        {
+            'id': 'rmw4wizrk66e1',
+            'name': 'silent vale',
+            'color': '#6fb5a8',
+            'points': [
+                [201, 837], [238, 870], [236, 927], [209, 982], [237, 1049],
+                [245, 1082], [226, 1147], [207, 1144], [177, 1100], [154, 1022],
+                [129, 1001], [160, 935], [158, 876], [171, 831], [193, 827],
+            ],
+            'notes': '',
+            'kind': 'biome',
+            'createdAt': '2026-11-06T11:39:03.440Z',
+        },
+        {
+            'id': 'rmw4wknusgc7h',
+            'name': 'crookshore',
+            'color': '#e0e0e0',
+            'points': [
+                [272, 586], [250, 650], [216, 694], [179, 740], [134, 757],
+                [62, 747], [42, 709], [36, 632], [37, 574], [37, 548],
+                [69, 566], [69, 597], [76, 630], [95, 635], [139, 644],
+                [191, 618], [253, 579],
+            ],
+            'notes': '',
+            'kind': 'biome',
+            'createdAt': '2026-11-06T11:40:21.316Z',
+        },
+        {
+            'id': 'rmw4wou2y1hhc',
+            'name': 'godshearth',
+            'color': '#7c8a5e',
+            'points': [
+                [808, 1379], [824, 1387], [837, 1374], [862, 1370], [871, 1376],
+                [880, 1385], [872, 1403], [854, 1411], [845, 1451], [845, 1408],
+                [831, 1408], [821, 1400], [808, 1391],
+            ],
+            'notes': '',
+            'kind': 'biome',
+            'createdAt': '2026-11-06T11:43:36.010Z',
+        },
+        {
+            'id': 'rmw4xy4tp9b29',
+            'name': 'SE outer wall',
+            'color': '#e0e0e0',
+            'points': [
+                [1329, 1136], [1356, 1201], [1336, 1222], [1299, 1228], [1267, 1254],
+                [1245, 1276], [1224, 1300], [1201, 1346], [1130, 1352], [1092, 1340],
+                [1060, 1310], [1039, 1292], [1009, 1305], [997, 1207], [1032, 1205],
+                [1091, 1204], [1164, 1198], [1249, 1188], [1300, 1160], [1324, 1141],
+            ],
+            'notes': '',
+            'kind': 'biome',
+            'createdAt': '2026-11-06T12:18:49.453Z',
+        },
+        {
+            'id': 'rmw52q8d7prwz',
+            'name': 'opal valley',
+            'color': '#3f8fb5',
+            'points': [
+                [982, 1622], [1019, 1638], [1047, 1648], [1065, 1660],
+                [1112, 1664], [1146, 1676], [1107, 1691], [1066, 1698],
+                [1051, 1698], [1013, 1685], [960, 1640],
+            ],
+            'notes': '',
+            'kind': 'biome',
+            'createdAt': '2026-11-06T14:32:38.875Z',
+        },
+        {
+            'id': 'rmw536m06wlyf',
+            'name': 'twins',
+            'color': '#3f8fb5',
+            'points': [
+                [935, 1476], [978, 1419], [1059, 1472], [1095, 1521],
+                [1092, 1556], [1043, 1570], [987, 1515],
+            ],
+            'notes': '',
+            'kind': 'biome',
+            'createdAt': '2026-11-06T14:45:23.046Z',
+        },
+        {
+            'id': 'rmw5n1w1rx0u2',
+            'name': 'Greenstep',
+            'color': '#c95a6a',
+            'points': [
+                [662, 1348], [674, 1349], [686, 1321], [692, 1302],
+                [668, 1253], [663, 1204], [631, 1195], [584, 1198],
+                [578, 1220], [594, 1237], [615, 1255], [622, 1269],
+                [637, 1289], [633, 1313], [652, 1321],
+            ],
+            'notes': (
+                'Greenstep (renamed from Green Valley): the windward, rain-drenched counterpart of Godstep Valley, '
+                'descending NNW across five ponded flood-basalt lava terraces (+3,180 m to +960 m) incised by two '
+                'collapsed lava-tube rilles. Captures ~1,050–1,760 mm/yr of rain (Cfa/Cfb) from prevailing NW winds '
+                'and serves as the greatest refuge of the Free Giants (the Vrivolci) and escaped slaves of every people '
+                'fleeing the Vothic Kingdom and the Realm of Dalab, home to their cyclopean fortress of Tallwalls '
+                '(Talodunon / Da-Talwal) at px 650, 1268 (biomes/greenstep/PLAN.md).'
+            ),
+            'kind': 'biome',
+            'createdAt': '2026-11-07T00:01:35.103Z',
+        },
+        {
+            'id': 'rmw5ruqmv60t3',
+            'name': 'Realm of Dalab',
+            'color': '#3f8fb5',
+            'points': [
+                [624, 1141], [630, 1172], [622, 1189], [589, 1213], [569, 1220], [507, 1231],
+                [508, 1308], [504, 1369], [494, 1399], [467, 1417], [432, 1411], [399, 1380],
+                [374, 1345], [348, 1298], [332, 1271], [344, 1236], [395, 1246], [410, 1184],
+                [423, 1144], [380, 1109], [356, 1071], [350, 1051], [366, 1043], [396, 1019],
+                [435, 1019], [455, 1009], [467, 1014], [489, 1005], [520, 1001], [553, 996],
+                [572, 1013], [583, 1035], [559, 1061], [545, 1097], [534, 1118], [589, 1136],
+            ],
+            'notes': '',
+            'kind': 'political',
+            'createdAt': '2026-11-07T02:15:59.575Z',
+        },
+        {
+            'id': 'rmw5rzefnfapk',
+            'name': 'Vothic Kingdom',
+            'color': '#8a6fc9',
+            'points': [
+                [588, 1035], [560, 1065], [550, 1098], [616, 1116], [628, 1138], [633, 1177],
+                [639, 1196], [673, 1190], [702, 1171], [722, 1161], [738, 1155], [757, 1149],
+                [788, 1134], [784, 1117], [747, 1109], [710, 1105], [696, 1081], [705, 1055],
+                [718, 1049], [739, 1047], [765, 1045], [779, 1050], [788, 1034], [787, 1011],
+                [789, 986], [795, 936], [800, 920], [813, 894], [831, 898], [849, 904],
+                [848, 894], [823, 885], [810, 867], [800, 849], [797, 832], [788, 834],
+                [783, 860], [751, 857], [723, 859], [682, 867], [655, 879], [655, 914],
+                [637, 949], [659, 971], [661, 1013], [679, 1027], [680, 1050], [657, 1078],
+                [639, 1081], [622, 1071], [626, 1050],
+            ],
+            'notes': '',
+            'kind': 'political',
+            'createdAt': '2026-11-07T02:19:37.043Z',
+        },
+        {
+            'id': 'rmw5s3ktxgv0d',
+            'name': 'Shumar',
+            'color': '#c95a6a',
+            'points': [
+                [681, 1187], [699, 1220], [727, 1226], [779, 1205],
+                [826, 1123], [812, 1109], [718, 1161], [698, 1166],
+            ],
+            'notes': '',
+            'kind': 'political',
+            'createdAt': '2026-11-07T02:22:51.957Z',
+        },
+        {
+            'id': 'rmw5sayxeskra',
+            'name': 'Vrivolci',
+            'color': '#5da05c',
+            'points': [
+                [578, 1219], [599, 1244], [620, 1280], [635, 1301],
+                [658, 1331], [670, 1344], [686, 1295], [675, 1245],
+                [673, 1226], [685, 1223], [695, 1223], [688, 1187],
+                [660, 1192], [626, 1184], [601, 1201], [582, 1218],
+            ],
+            'notes': '',
+            'kind': 'political',
+            'createdAt': '2026-11-07T02:28:36.818Z',
+        },
+        {
+            'id': 'rmw8hj62nmugn',
+            'name': 'Firebliss Range',
+            'color': '#6fb5a8',
+            'points': [
+                [234, 1237], [305, 1263], [320, 1298], [318, 1328],
+                [280, 1351], [187, 1352], [111, 1403], [79, 1356],
+                [38, 1259], [92, 1237], [155, 1269], [211, 1256],
+            ],
+            'notes': '',
+            'kind': 'biome',
+            'createdAt': '2026-11-08T23:50:22.079Z',
         },
     ]
 

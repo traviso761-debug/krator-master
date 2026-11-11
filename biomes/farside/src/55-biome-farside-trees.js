@@ -83,6 +83,10 @@ function buildKelpFar(T,st){reseed(T.seed+77);const w=WIND(),W=Math.max(3,T.n*.9
  for(let k=0;k<2;k++){const lean=.12,q=new T3.Quaternion().setFromUnitVectors(new T3.Vector3(0,1,0),new T3.Vector3(w[0]*lean,1,w[1]*lean).normalize());
   q.multiply(new T3.Quaternion().setFromAxisAngle(new T3.Vector3(0,1,0),rr(0,TAU)));BIO.put('kelpfar',[T.x+rr(-1,1),T.y0-.3,T.z+rr(-1,1)],q,[W,T.H*rr(.85,1.05),W],vary(C(0xd8c890),.01,.05,.05));st.far++;}}
 // ---------------------------------------------------------------- THE DEAD at the front: drowned kauri and meranti
+// A LIMB'S JOINT TO ITS BOLE (core/biome 31j, BIO.flareJoin; the owner, 2026-11-03, every rebuild turn): the limb's root sunk into the bole
+// and swollen to a collar, so a snapped limb reads as grown from the snag, not a pipe pushed into it; no draws (the stream does not move).
+// A page without 31j gets the limb as before. jsg: the sides at the joint (8 for a limb over .3 m)
+const fj=(pts,pr)=>BIO.flareJoin?BIO.flareJoin(pts,{parentR:pr}):pts,jsg=(r,n)=>BIO.flareJoin&&r>.3?Math.max(n,8):n;
 // a pale silvered bole with its buttress flare, the top broken, a few limbs snapped short; hung with wine weed and wrack
 function buildSnag(T,st){reseed(T.seed);const pts=[],seg=10,H=T.H,rb=T.rb,lx=rr(-.04,.04),lz=rr(-.04,.04),col=vary(C(pick(PAL.snag)),.01,.04,.06);
  for(let k=0;k<=seg;k++){const t=k/seg;pts.push({x:T.x+lx*H*t,y:T.y0-.8+H*t,z:T.z+lz*H*t,r:rb*lerp(1,.55,t)*(1+1.1*Math.pow(smooth(.12,0,t),2))});}
@@ -90,7 +94,7 @@ function buildSnag(T,st){reseed(T.seed);const pts=[],seg=10,H=T.H,rb=T.rb,lx=rr(
  const top=pts[seg],limbs=[];
  for(let l=0;l<ri(3,6);l++){const t=rr(.55,.95),k=Math.floor(t*seg),p=pts[k],a=rr(0,TAU),el=rr(.2,.8),L=rr(3,9)*(rb/1.6),r=rb*rr(.22,.4),lp=[];
   for(let j=0;j<=3;j++){const s=j/3;lp.push({x:p.x+Math.cos(a)*L*s*Math.cos(el),y:p.y+L*s*Math.sin(el)-.4*s*s*L*.2,z:p.z+Math.sin(a)*L*s*Math.cos(el),r:r*lerp(1,.5,s)});}
-  st.tris+=BIO.tube('snag',lp,col,{seg:6});limbs.push(lp[3]);}
+  st.tris+=BIO.tube('snag',fj(lp,p.r),col,{seg:jsg(r,6)});limbs.push(lp[3]);}
  T.hangs=limbs.concat([top]);}
 // ---------------------------------------------------------------- the passes
 FARSIDE.buildStands=function(R,q,opt){opt=opt||{};q=q==null?1:q;FARSIDE._R=R;const st={tris:0,stipes:0,bladders:0,blades:0,far:0,snags:0,heroes:0,fars:0};
@@ -103,7 +107,7 @@ FARSIDE.buildStands=function(R,q,opt){opt=opt||{};q=q==null?1:q;FARSIDE._R=R;con
  FARSIDE.kgrid('kelp',17/Math.sqrt(q),Z=>(Z.sand>.35||Z.coral>.45||Z.rock>.45)?0:Z.kelpcoast*(1-Z.sand)*(1-Z.coral*.9)*(1-Z.rock)*(1-Z.graze*.8)*(1-Z.burn)*.5+Z.front*(1-Z.burn)*.12,(x,y,z,seed,Z)=>{
   const r=3.2;if(!clear(x,z,r))return;const fr=Z.front>.3,s=KRAND.stream(seed);
   const T={x,z,y0:y,seed,spray:Z.spray,form:(f=>f<.14?'bull':f<.24?'elk':'giant')(s.next()),n:fr?1:2+Math.floor(s.next()*4),
-   H:(fr?lerp(4,12,s.next()):lerp(20,40,s.next()))*lerp(1,.45,smooth(.8,1,Z.spray)),lv:lvOf(x,z),key:'landkelp'};
+   H:(fr?lerp(4,12,s.next()):lerp(20,40,s.next()))*lerp(1,.45,smooth(.8,1,Z.spray))*lerp(1,.6,FL('trim',x,z)),lv:lvOf(x,z),key:'landkelp'};   /* trim: under a tsunami's run-up ceiling the stands are younger (the host's field; 0 where none) */
   sp.push({x,z,r});S.push(T);},{pad:1});
  // THE DEAD: drowned kauri and meranti standing in the front, the sea's weed hung from them
  FARSIDE.kgrid('snag',36/Math.sqrt(q),Z=>Z.front*(1-Z.sand)*.5,(x,y,z,seed)=>{if(!clear(x,z,4))return;const s=KRAND.stream(seed);

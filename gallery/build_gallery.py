@@ -69,8 +69,6 @@ ENTRIES = [
      'The Eastern Nomads\' sunken basin in the high desert: a waterfall into a turquoise pool, a carved Petra face, pueblos round the rim and cliff dwellings under alcoves.', 'new'),
     ('world', 'verge', 'settlements/verge/dist/verge.html', 'Verge',
      'Twin cities on the abyss escarpment: the upper on the plateau, the lower on the floor beneath the cataracts, joined by a switchback trail and a funicular; caravans on the trail.', 'new'),
-    ('world', 'little-demo', 'openworld/little-demo/dist/little-demo.html', 'Little Demo (open world, deprecated)',
-     "The scale model's eastern desert at 1:1, 1,080 by 1,370 km, streamed: the abyss escarpment, the Yuni river, the desert, abyss and jungle flora by climate, and twelve highways. Its six built towns load only in the standalone artifact (https://claude.ai/artifact/Y3GKfn8fuaDPmtJnHW62RJ): the gallery's frame cannot fetch their tiles.", 'new'),
     ('world', 'isle-demo', 'openworld/isle-demo/dist/isle-demo.html', 'Isle Demo (open world)',
      "The scale model's Ring Sea isles at 1:1, streamed: an archipelago of about 11,800 km2 of land, its sea readable from any height, the coast drawn as lagoons, reef crests and mangrove flats, the isles kit's flora by climate class (hypertropic jungle to salt steppe), seagrass and corals in the lagoons, and geyser fields at the scale model's fourteen vents. Kautoa and Valapo are marked; their towns are being laid out."),
     ('world', 'ys', 'settlements/ys/dist/ys.html', 'Ys',
@@ -80,8 +78,6 @@ ENTRIES = [
 
     ('world', 'mungo', 'settlements/mungo/dist/mungo.html', 'Mungo',
      "A trade village on a salt lake in the Eastern Abyss: a floating reed village with its great tavern, Reed's Local, one pontoon to an abyssal town at a marshy river mouth, and the Geomancers' chapterhouse with their dune buggies. Its people live by core/simulation: fishers out at dawn, caravans and lizard riders stopping overnight, a buggy off the map and back.", 'new'),
-    ('world', 'pinnacle-rock', 'settlements/pinnacle-rock/dist/pinnacle-rock.html', 'Pinnacle Rock',
-     "The Beast Riders' roost town on a red sandstone mesa at the hyperjungle's north-eastern edge, on the scale model's own land: the mesa 250 m over its south foot, ten fins round its rim, the Garden of stacks and the shrine's balanced rock, seven spurs, the dry gorge under the north rim, the canyons' plants on the walls and the hyperjungle on the floor, the far land to 60 km with the Inner Wall rising to the north. So far the rock and the site (P0 and P1); the roosts, the Stair, the town and the Deep Root cavern are to come.", 'new'),
 
     ('kit', 'jimjam-kit', 'settlements/jimjam/dist/jimjam-kit.html', 'Jimjam',
      'The exotic city of red and yellow brick with white marble trim: domes, thick staged spires, raised plazas, ornamental brick chimneys, and a temple whose arch frames the solstice sunset.'),
@@ -210,64 +206,64 @@ ENTRIES = [
     ('arcology', 'arc-kept', 'kits/ancients/dist/kept.html', 'Plymouth and Arcoindian I, kept',
      'The two Ancient bodies as the Eternal State keeps them: glazing turned to lit alabaster in bronze tracery, the shells cleaned white with cyan strips alive.', 'new'),
 
-    # The Krator Ancient Port (settlements/port): every target, showcase first.
-    ('port', 'port-showcase', 'settlements/port/dist/showcase.html', 'Showcase',
+    # The Krator Ancient Port (kits/port): every target, showcase first.
+    ('port', 'port-showcase', 'kits/port/dist/showcase.html', 'Showcase',
      'Every port segment in one continuous run per decay: intact, ruined and reclaimed, with natural coast between.'),
-    ('port', 'port-segment', 'settlements/port/dist/segment.html', 'Pier',
+    ('port', 'port-segment', 'kits/port/dist/segment.html', 'Pier',
      'The pier segment on its own, in every decay.'),
-    ('port', 'port-cgBox', 'settlements/port/dist/cgBox.html', 'Container yard',
+    ('port', 'port-cgBox', 'kits/port/dist/cgBox.html', 'Container yard',
      'Container stacks worked by straddle carriers.'),
-    ('port', 'port-cgCrane', 'settlements/port/dist/cgCrane.html', 'Container cranes',
+    ('port', 'port-cgCrane', 'kits/port/dist/cgCrane.html', 'Container cranes',
      'A quay of ship-to-shore container cranes.'),
-    ('port', 'port-cgStore', 'settlements/port/dist/cgStore.html', 'Silo battery',
+    ('port', 'port-cgStore', 'kits/port/dist/cgStore.html', 'Silo battery',
      'Bulk storage: a battery of silos on the quay.'),
-    ('port', 'port-ddDock', 'settlements/port/dist/ddDock.html', 'Dry dock',
+    ('port', 'port-ddDock', 'kits/port/dist/ddDock.html', 'Dry dock',
      'A graving dock under a travelling gantry crane.'),
-    ('port', 'port-ddShed', 'settlements/port/dist/ddShed.html', 'Covered graving dock',
+    ('port', 'port-ddShed', 'kits/port/dist/ddShed.html', 'Covered graving dock',
      'A dry dock under its long shed.'),
-    ('port', 'port-ddYard', 'settlements/port/dist/ddYard.html', 'Slipway',
+    ('port', 'port-ddYard', 'kits/port/dist/ddYard.html', 'Slipway',
      'A shipbuilding slipway and its yard.'),
-    ('port', 'port-tmShip', 'settlements/port/dist/tmShip.html', 'Ship terminal',
+    ('port', 'port-tmShip', 'kits/port/dist/tmShip.html', 'Ship terminal',
      'The cargo terminal and its control tower.'),
-    ('port', 'port-tmPass', 'settlements/port/dist/tmPass.html', 'Liner berth',
+    ('port', 'port-tmPass', 'kits/port/dist/tmPass.html', 'Liner berth',
      'A passenger terminal with its liner berth platform.'),
-    ('port', 'port-tmHeli', 'settlements/port/dist/tmHeli.html', 'Heliport',
+    ('port', 'port-tmHeli', 'kits/port/dist/tmHeli.html', 'Heliport',
      'A heliport reached by a raised walkway.'),
-    ('port', 'port-hbFish', 'settlements/port/dist/hbFish.html', 'Fishing harbour',
+    ('port', 'port-hbFish', 'kits/port/dist/hbFish.html', 'Fishing harbour',
      'The fishing harbour, each decay between plain quays.'),
-    ('port', 'port-hbMarina', 'settlements/port/dist/hbMarina.html', 'Marina',
+    ('port', 'port-hbMarina', 'kits/port/dist/hbMarina.html', 'Marina',
      'The marina, each decay between plain quays.'),
-    ('port', 'port-hbHaven', 'settlements/port/dist/hbHaven.html', 'Haven and lighthouse',
+    ('port', 'port-hbHaven', 'kits/port/dist/hbHaven.html', 'Haven and lighthouse',
      'The haven with its lighthouse.'),
-    ('port', 'port-harbour', 'settlements/port/dist/harbour.html', 'Harbour',
+    ('port', 'port-harbour', 'kits/port/dist/harbour.html', 'Harbour',
      'A Long-Beach-like composition: coastal run, land blocks two rows deep, container yards chained off the great pier.'),
-    ('port', 'port-lbBlocks', 'settlements/port/dist/lbBlocks.html', 'Land blocks',
+    ('port', 'port-lbBlocks', 'kits/port/dist/lbBlocks.html', 'Land blocks',
      'Port authority (a fortress palace when reclaimed), warehouses and silos, a fuel-tank farm, behind the quays.'),
-    ('port', 'port-chHousing', 'settlements/port/dist/chHousing.html', 'Container housing',
+    ('port', 'port-chHousing', 'kits/port/dist/chHousing.html', 'Container housing',
      'Three blocks of container and tank houses with lanes between: towers, courtyard compounds, silo houses.'),
-    ('port', 'port-spYard', 'settlements/port/dist/spYard.html', 'Sea platform',
+    ('port', 'port-spYard', 'kits/port/dist/spYard.html', 'Sea platform',
      'A 110 m container yard on a mole off the pier head, joined on any side to more platforms.'),
-    ('port', 'port-slCarrier', 'settlements/port/dist/slCarrier.html', 'Drone carrier berth',
+    ('port', 'port-slCarrier', 'kits/port/dist/slCarrier.html', 'Drone carrier berth',
      'The naval berth with its drone carrier, down to the reclaimed carrier.'),
-    ('port', 'port-slSub', 'settlements/port/dist/slSub.html', 'Submarine berth',
+    ('port', 'port-slSub', 'kits/port/dist/slSub.html', 'Submarine berth',
      'A submarine at its berth.'),
-    ('port', 'port-slBerth', 'settlements/port/dist/slBerth.html', 'Naval berth',
+    ('port', 'port-slBerth', 'kits/port/dist/slBerth.html', 'Naval berth',
      'A naval berth with its fallen portal crane.'),
-    ('port', 'port-slPen', 'settlements/port/dist/slPen.html', 'Submarine pen',
+    ('port', 'port-slPen', 'kits/port/dist/slPen.html', 'Submarine pen',
      'A hardened submarine pen.'),
-    ('port', 'port-vsFeeder', 'settlements/port/dist/vsFeeder.html', 'Container feeder',
+    ('port', 'port-vsFeeder', 'kits/port/dist/vsFeeder.html', 'Container feeder',
      'The smallest container ship: intact, ruined and reclaimed, moored off three quays.'),
-    ('port', 'port-vsPanamax', 'settlements/port/dist/vsPanamax.html', 'Panamax ship',
+    ('port', 'port-vsPanamax', 'kits/port/dist/vsPanamax.html', 'Panamax ship',
      'A Panamax container ship: intact, ruined and reclaimed.'),
-    ('port', 'port-vsGiant', 'settlements/port/dist/vsGiant.html', 'Ultra-large container ship',
+    ('port', 'port-vsGiant', 'kits/port/dist/vsGiant.html', 'Ultra-large container ship',
      'The largest vessel: intact, ruined and reclaimed.'),
-    ('port', 'port-edges', 'settlements/port/dist/edges.html', 'Pier edges',
+    ('port', 'port-edges', 'kits/port/dist/edges.html', 'Pier edges',
      'Test sheet: the pier against every kind of side it can meet.'),
-    ('port', 'port-cgEdges', 'settlements/port/dist/cgEdges.html', 'Silo battery edges',
+    ('port', 'port-cgEdges', 'kits/port/dist/cgEdges.html', 'Silo battery edges',
      'Test sheet: the silo battery against every kind of side.'),
-    ('port', 'port-tmEdges', 'settlements/port/dist/tmEdges.html', 'Liner berth edges',
+    ('port', 'port-tmEdges', 'kits/port/dist/tmEdges.html', 'Liner berth edges',
      'Test sheet: the liner berth against every kind of side.'),
-    ('port', 'port-hbEdges', 'settlements/port/dist/hbEdges.html', 'Harbour edges',
+    ('port', 'port-hbEdges', 'kits/port/dist/hbEdges.html', 'Harbour edges',
      'Test sheet: the small-craft harbours against every kind of side.'),
 
     ('biome', 'hyperjungle', 'biomes/hyperjungle/dist/hyperjungle.html', 'Central hyperjungle', 'Six hypertree species, understorey, epiphyte gardens, fauna.'),
@@ -298,6 +294,109 @@ ENTRIES = [
     ('korona', 'korona-trench', 'biomes/korona/dist/korona-trench.html', 'Korona 4 · the trenches', "Station 4, the trenches: a ring ridge's crest between two arms of the salt lake, wet and alive on its windward face, bare desert on its lee: the rule that carnivory follows poor x wet x warm, read across one ridge.", 'new'),
     ('korona', 'korona-gorge', 'biomes/korona/dist/korona-gorge.html', 'Korona 5 · the lee gorge', "Station 5, the lee gorge: a dry gorge between two ring walls in a ring's rain shadow, the eastern desert's flora (the sedesert kit read in place) under the walls, one spring and every trap in Korona round it.", 'new'),
     ('korona', 'korona-hoar', 'biomes/korona/dist/korona-hoar.html', 'Korona 6 · the hoar table', "Station 6, the hoar table: a tepui summit above 3,500 m in the high cold country (the eastern highlands kit read in place): cushions and snow wool leaning toward the giant, the Mother Cushion over a knoll, permanent snow in the lee hollows, melt pools with butterwort lawns, a cold sundew and the frost tank, the seep lines frozen to icefalls, the ice tribes' road-marks and cairns under the rim.", 'new'),
+
+    # The biome rebuild's stations (2026-11-09): a listed build's other pages are never discovered, so each has its line,
+    # named "<biome> · <station>" to sort beside its biome's first page; the new multi-page builds' pages likewise.
+    ('biome', 'hyperjungle-savanna', 'biomes/hyperjungle/dist/hyperjungle-savanna.html', 'Central hyperjungle · the savanna edge', "Where the hyperjungle thins to savanna at its rim.", 'new'),
+    ('biome', 'hyperjungle-lake', 'biomes/hyperjungle/dist/hyperjungle-lake.html', 'Central hyperjungle · the lake', "The lake and the flooded forest, the geyser basin's trees at its edge.", 'new'),
+    ('biome', 'hyperjungle-savage', 'biomes/hyperjungle/dist/hyperjungle-savage.html', 'Central hyperjungle · the savage land', "The savage hyperjungle: its traps, its leafsets and its beasts (the Riders' mounts, beetles, spiders, flyers).", 'new'),
+    ('biome', 'hyperjungle-north', 'biomes/hyperjungle/dist/hyperjungle-north.html', 'Central hyperjungle · Screamer wood', "Hyperjungle N: Screamer wood, bonewood and howling culms.", 'new'),
+    ('biome', 'eastabyss-lakes', 'biomes/eastabyss/dist/eastabyss-lakes.html', 'Eastern abyss · the winding lakes', "Station 2: the abyss floor's chain of winding lakes.", 'new'),
+    ('biome', 'sedesert-bowl', 'biomes/sedesert/dist/sedesert-bowl.html', 'Eastern high desert · the Bowl', "The south shore of the Bowl's salt lake at its river's delta: the abyssal salt basin under 1.83 atm.", 'new'),
+    ('biome', 'sedesert-mantis', 'biomes/sedesert/dist/sedesert-mantis.html', "Eastern high desert · Mantis's pocket", "The Socotran monsoon forest round the springs on the Bowl's south-west shore, its savanna, the edge of the oasis town.", 'new'),
+    ('biome', 'sedesert-steppe', 'biomes/sedesert/dist/sedesert-steppe.html', 'Eastern high desert · the steppe fringe', "Desert-steppe at about 330 mm: the kit's Socotran flora in its steppe forms, kopjes with tors and honeycomb faces, fairy circles.", 'new'),
+    ('biome', 'rift-savannah', 'biomes/rift/dist/rift-savannah.html', 'The Rift · the rift savannah', "Gold and violet, open: a lee bench under the central island, grass plains, a dry wash, tors and the salt rim of the lake; giants spaced out.", 'new'),
+    ('biome', 'rift-jungle', 'biomes/rift/dist/rift-jungle.html', 'The Rift · the rift jungle', "Teal and violet, closed: the river's mouth on the terminal sea, the delta's channels, frill trees to 140 m, the scarp into the haze.", 'new'),
+    ('biome', 'rift-highland', 'biomes/rift/dist/rift-highland.html', 'The Rift · the cloud forest', "Green, grey and white: the central island's face in cloud, elfin forest dripping, the crest's heath knee-high.", 'new'),
+    ('biome', 'rift-plateau', 'biomes/rift/dist/rift-plateau.html', "The Rift · Cube's plateau", "The east island's plateau: trees of 20 to 40 m, its families and old stock, the jungle's upper fringe.", 'new'),
+    ('biome', 'swlowlands-gorge', 'biomes/swlowlands/dist/swlowlands-gorge.html', 'Southwestern lowlands · the gorge', "Station 2: the lowlands' river gorge.", 'new'),
+    ('biome', 'swlowlands-delta', 'biomes/swlowlands/dist/swlowlands-delta.html', 'Southwestern lowlands · the delta', "Station 3: the delta and the floodplain.", 'new'),
+    ('biome', 'nwlowlands-margins', 'biomes/nwlowlands/dist/nwlowlands-margins.html', 'Northwestern lowlands · the lake margins', "Station 2: the lake's margins.", 'new'),
+    ('biome', 'xanadu-cloud', 'biomes/xanadu/dist/xanadu-cloud.html', 'Xanadu · the cloud slopes', "Station 2: the cloud slopes, the Oidong cherry as a deeper cousin and the mist tea.", 'new'),
+    ('biome', 'xanadu-ranges', 'biomes/xanadu/dist/xanadu-ranges.html', 'Xanadu · the high ranges', "Station 3: the high ranges and their conifer belts.", 'new'),
+    ('biome', 'xanadu-descent', 'biomes/xanadu/dist/xanadu-descent.html', 'Xanadu · the descent', "Station 4: the cataract and the abyssal south, from the lake's outlet down.", 'new'),
+    ('biome', 'xanadu-floor', 'biomes/xanadu/dist/xanadu-floor.html', 'Xanadu · the Rift floor', "Station 5: native Rift flora and tall Xanadu flora competing for the floor.", 'new'),
+    ('biome', 'xanadu-gills', 'biomes/xanadu/dist/xanadu-gills.html', 'Xanadu · the White Gills', "Alph's head: the White Gills' pipes, iced and steaming, with their collars, fringes and bellows pads.", 'new'),
+    ('biome', 'nhighlands-montane', 'biomes/nhighlands/dist/nhighlands-montane.html', 'Northern highlands · the dry-summer montane', "Station 2: the dry-summer montane forest.", 'new'),
+    ('biome', 'nhighlands-foothills', 'biomes/nhighlands/dist/nhighlands-foothills.html', 'Northern highlands · the foothills', "Station 3: the Mediterranean foothills, the lowlands' oaks, sycamore, manzanita and madrone.", 'new'),
+    ('biome', 'nhighlands-alpine', 'biomes/nhighlands/dist/nhighlands-alpine.html', 'Northern highlands · the alpine', "Station 4: the alpine on the crater wall's megabreccia steps.", 'new'),
+    ('biome', 'nhighlands-bogs', 'biomes/nhighlands/dist/nhighlands-bogs.html', 'Northern highlands · the bogs', "Station 5: the bog country on the Footfall plateau.", 'new'),
+    ('biome', 'ebadlands-waste', 'biomes/ebadlands/dist/ebadlands-waste.html', 'Eastern badlands · the hot waste', "Station 1: the sulphur flats with their vents and acid pools, the painted badlands cut into gullies.", 'new'),
+    ('biome', 'ebadlands-canyons', 'biomes/ebadlands/dist/ebadlands-canyons.html', 'Eastern badlands · canyons and green valleys', "Station 2: five steps of the canyon staircase, each bed's ledge in the ground.", 'new'),
+    ('biome', 'ebadlands-montane', 'biomes/ebadlands/dist/ebadlands-montane.html', 'Eastern badlands · the montane forest', "Station 3: ponderosa and aspen, a wet meadow, a burn of snags and logs.", 'new'),
+    ('biome', 'ebadlands-tundra', 'biomes/ebadlands/dist/ebadlands-tundra.html', 'Eastern badlands · tree line, tundra, glacier', "Station 4: the last spruce-fir and krummholz, bristlecones, patterned ground and the glacier.", 'new'),
+    ('biome', 'nwbay-caverns', 'biomes/nwbay/dist/nwbay-caverns.html', 'North-west bay · the caverns', "The karst's caverns and dolines under the bay's dry slope.", 'new'),
+    ('biome', 'crater-drylands-s', 'biomes/crater-drylands/dist/crater-drylands-s.html', 'Crater drylands · the south', "Station 2: the kiln climbing toward Godstep, old titanium-basalt flows with the black mallee.", 'new'),
+    ('biome', 'crater-drylands-edge', 'biomes/crater-drylands/dist/crater-drylands-edge.html', 'Crater drylands · the savannah edge', "Station 3: the belt toward SW Bay, grass fires every year or two, umbrella thorns, baobabs and termite mounds.", 'new'),
+    ('biome', 'crater-drylands-salt', 'biomes/crater-drylands/dist/crater-drylands-salt.html', 'Crater drylands · the salt floor', "Station 4: salt pans and brine pools by the Steampits, the kiln's scrub on the salt steppe.", 'new'),
+    ('biome', 'shighlands-conifers', 'biomes/shighlands/dist/shighlands-conifers.html', 'Southern highlands · the spiral conifers', "Station 2: the spiral conifers at 3.8 km.", 'new'),
+    ('biome', 'shighlands-fellfield', 'biomes/shighlands/dist/shighlands-fellfield.html', 'Southern highlands · the fellfield and the ice', "Station 3: the spiral fellfield and the ice at 5.2 km.", 'new'),
+    ('biome', 'ehighlands-face', 'biomes/ehighlands/dist/ehighlands-face.html', 'Eastern highlands · the wet face', "Station 2: the cloud forest at the foot of the Inner Wall's windward face, 1-2 km.", 'new'),
+    ('biome', 'ehighlands-lesser', 'biomes/ehighlands/dist/ehighlands-lesser.html', 'Eastern highlands · the Lesser Throne', "Station 3: the young volcano's summit caldera on the Inner Wall's crest, its fumaroles and the life round them.", 'new'),
+    ('biome', 'ehighlands-treeline', 'biomes/ehighlands/dist/ehighlands-treeline.html', 'Eastern highlands · the treeline', "Station 4: spruce-fir thinning to flagged trees and krummholz under the crest.", 'new'),
+    ('biome', 'ehighlands-mixed', 'biomes/ehighlands/dist/ehighlands-mixed.html', 'Eastern highlands · the mixed belt', "Station 5: the cool rainforest of the wet face, combed beeches, the last laurels, the first firs.", 'new'),
+    ('biome', 'ehighlands-montane', 'biomes/ehighlands/dist/ehighlands-montane.html', 'Eastern highlands · the montane belt', "Station 6: fir and beech stands on the wet face.", 'new'),
+    ('biome', 'ringisles-high', 'biomes/ringisles/dist/ringisles-high.html', 'Ring Sea isles · the high isle', "Station 2: the island's high ground.", 'new'),
+    ('biome', 'ringisles-lagoon', 'biomes/ringisles/dist/ringisles-lagoon.html', 'Ring Sea isles · the lagoon', "Station 3: the lagoon.", 'new'),
+    ('biome', 'oidong-passes', 'biomes/oidong/dist/oidong-passes.html', 'The Oidong Valley · the high passes', "Station 2: the high passes out of the valley.", 'new'),
+    ('biome', 'oidong-hearths', 'biomes/oidong/dist/oidong-hearths.html', 'The Oidong Valley · the Cold Hearths', "Station 3: the Cold Hearths.", 'new'),
+    ('biome', 'geyser-puna', 'biomes/geyser/dist/geyser-puna.html', 'The geyser basin · the high desert field', "Station 2: a geyser field in the high desert.", 'new'),
+    ('biome', 'geyser-basin', 'biomes/geyser/dist/geyser-basin.html', 'The geyser basin · the mountain forest field', "Station 3: a geyser field in the mountain forest.", 'new'),
+    ('biome', 'geyser-corona', 'biomes/geyser/dist/geyser-corona.html', 'The geyser basin · the corona field', "Station 4: a geyser field in Korona's rings.", 'new'),
+    ('biome', 'geyser-ice', 'biomes/geyser/dist/geyser-ice.html', "The geyser basin · the ice field", "Station 5: a geyser field on Xanadu's wall in the ice.", 'new'),
+    ('biome', 'geyser-stills', 'biomes/geyser/dist/geyser-stills.html', 'The geyser basin · the Stills', "The Hearths' station 6, the Stills.", 'new'),
+    ('biome', 'necanyons-benches', 'biomes/necanyons/dist/necanyons-benches.html', 'The north-eastern canyons · the high benches', "Station 2: the high benches.", 'new'),
+    ('biome', 'necanyons-savanna', 'biomes/necanyons/dist/necanyons-savanna.html', 'The north-eastern canyons · the savanna floor', "Station 3: the savanna floor toward Korona.", 'new'),
+    ('biome', 'dambasins-east', 'biomes/dambasins/dist/east.html', 'The dam basins: the east bed', "The east bed inside Korona, drained.", 'new'),
+    ('biome', 'dambasins-graveyard', 'biomes/dambasins/dist/graveyard.html', 'The dam basins: the ship graveyard', "The ship graveyard at the west notch.", 'new'),
+    ('biome', 'abyssal-savannah', 'biomes/abyssal-savannah/dist/abyssal-savannah.html', 'Abyssal savannah', "The rim slope: the climb from the jungle's foot to the bench, gully galleries, parkland and kopjes, the caprock rim, the bench's steppe and pan, the burn mosaic over all of it.", 'new'),
+    ('biome', 'abyssal-savannah-serim', 'biomes/abyssal-savannah/dist/abyssal-savannah-serim.html', 'Abyssal savannah · the south-east rim', "The savannah rims, station 1: between Talia and the laterite, the incense country.", 'new'),
+    ('biome', 'abyssal-savannah-erim', 'biomes/abyssal-savannah/dist/abyssal-savannah-erim.html', 'Abyssal savannah · the east rim', "The savannah rims, station 2: the east rim near Fridon.", 'new'),
+    ('biome', 'abyssal-savannah-north', 'biomes/abyssal-savannah/dist/abyssal-savannah-north.html', 'Abyssal savannah · the north', "The savannah rims, station 3: hyperjungle N's abyssal savannah.", 'new'),
+    ('biome', 'catch', 'biomes/catch/dist/catch.html', 'The Catch', "The sealed basin south-east of the Godthrone, walled by 10-17 km crests, 18 mm of rain a year. Station 1, the sand sea: star and linear dunes.", 'new'),
+    ('biome', 'catch-oasis', 'biomes/catch/dist/catch-oasis.html', "The Catch · Stair's oasis", "Station 2: the spring hollow, the tugai, the caravans' campground, the tunnel's southern portal.", 'new'),
+    ('biome', 'catch-lake', 'biomes/catch/dist/catch-lake.html', 'The Catch · the lake and the lake beds', "Station 3: the terminal soda lake, its crusts and strandlines, a playa pan, yardangs.", 'new'),
+    ('biome', 'catch-fan', 'biomes/catch/dist/catch-fan.html', 'The Catch · the north fan and the walls', "Station 4: the gravel fan under the 6.2 km notch, braided dry channels, the gorge mouth.", 'new'),
+    ('biome', 'copperglacier', 'biomes/copperglacier/dist/copperglacier.html', 'Copper Glacier', "The southern Crook's glaciers. Station 1, Copper Tarn: a valley glacier calving into the turquoise tarn, the icefall, moraines and ice caves.", 'new'),
+    ('biome', 'copperglacier-pass', 'biomes/copperglacier/dist/copperglacier-pass.html', 'Copper Glacier · the copper slope', "Station 2: a hanging glacier over the pass, the skarn's malachite and gossan, the copper nodes.", 'new'),
+    ('biome', 'copperglacier-icefield', 'biomes/copperglacier/dist/copperglacier-icefield.html', 'Copper Glacier · the high icefield', "Station 3: plateau ice at 6.5 km, nunataks of gneiss, the ice cliff, ice caves in the wind's moats.", 'new'),
+    ('biome', 'cut', 'biomes/cut/dist/cut.html', 'The Cut', "The bowl an Ancient eigenweapon left in the northern Inner Wall when it deleted the bottom of a sphere.", 'new'),
+    ('biome', 'cut-wall', 'biomes/cut/dist/cut-wall.html', 'The Cut · the wall', "Station 2: Dilihan's side of the crater mouth, the lowlands' columns leaning along the field, terraces of measure melons.", 'new'),
+    ('biome', 'cut-face', 'biomes/cut/dist/cut-face.html', 'The Cut · the cut face', "Station 3: the west lip at 4.8 km, the bare curved face, circle lichen, the whole bowl below.", 'new'),
+    ('biome', 'farside', 'biomes/farside/dist/farside.html', 'Farside', "Farport and the kelp coast, where the tsunami reached.", 'new'),
+    ('biome', 'farside-front', 'biomes/farside/dist/farside-front.html', 'Farside · the front', "Station 2: the kelp forest meets the land's, dead kauri and meranti hung with wine weed and wrack.", 'new'),
+    ('biome', 'farside-strand', 'biomes/farside/dist/farside-strand.html', 'Farside · the strand', "Station 3: eelgrass dunes, sea palms on the surf rocks, spray coral reefs above the waterline.", 'new'),
+    ('biome', 'farside-cloud', 'biomes/farside/dist/farside-cloud.html', 'Farside · the fog belt', "Station 4: the native wet forest in perpetual fog, its trunks crusted with fog sponges.", 'new'),
+    ('biome', 'godthrone', 'biomes/godthrone/dist/godthrone.html', 'Godthrone', "The Godthrone, station 1: the summit vent, 21 km up.", 'new'),
+    ('biome', 'godthrone-wall', 'biomes/godthrone/dist/godthrone-wall.html', 'Godthrone · the caldera wall', "Station 1b: the main wall's six collapse terraces, the floor at its foot, the rim and the sealed portal.", 'new'),
+    ('biome', 'godthrone-flank', 'biomes/godthrone/dist/godthrone-flank.html', 'Godthrone · the high flank', "Station 2: the black lava plain at 11 km, a sinuous rille, a pit-crater chain over a tube, frost in the shadows.", 'new'),
+    ('biome', 'godthrone-orange', 'biomes/godthrone/dist/godthrone-orange.html', 'Godthrone · the orange belt', "Station 3: the dry-cold line near Pluton, black flows going ochre downslope, palagonite cliffs with tafoni.", 'new'),
+    ('biome', 'godthrone-scarp', 'biomes/godthrone/dist/godthrone-scarp.html', 'Godthrone · the basal escarpment', "Station 4: the south-western scarp, a stack of titanium-basalt flows in a cliff 600 m high.", 'new'),
+    ('biome', 'godthrone-rim', 'biomes/godthrone/dist/godthrone-rim.html', 'Godthrone · the airless rim', "Station 5: the Outer Wall's crest at 10.9 km, the crater's megabreccia and its overturned flap.", 'new'),
+    ('biome', 'godthrone-blood', 'biomes/godthrone/dist/godthrone-blood.html', 'Godthrone · the bloodfalls', "Station 6: the ice belt's southern edge at the head of Qol Drai.", 'new'),
+    ('biome', 'godthrone-gills', 'biomes/godthrone/dist/godthrone-gills.html', 'Godthrone · the Red Gill', "Station 7: the Red Gill beside the bloodfalls.", 'new'),
+    ('biome', 'godthrone-gills-ladder', 'biomes/godthrone/dist/godthrone-gills-ladder.html', 'Godthrone · the Red ladder', "Station 8: up the south-east flank at 8.2-8.9 km, the Red Gills' cracks iced over.", 'new'),
+    ('biome', 'godthrone-tube', 'biomes/godthrone/dist/godthrone-tube.html', 'Godthrone · the Ilmenite Pillar Vault', "Station 9: a sealed lava-tube chamber 58 m under the north shield, 290 by 175 m and 54 m high.", 'new'),
+    ('biome', 'hearths-hold', 'biomes/hearths/dist/hearths-hold.html', "The Hearths · the hold's active storey", "Warm water over every floor, scalding at the feeders, gypsum chandeliers, the fumarole.", 'new'),
+    ('biome', 'hearths-crystals', 'biomes/hearths/dist/hearths-crystals.html', 'The Hearths · the Cave of Crystals', "The hold's drained storey: selenite beams over a bladed gypsum floor, hot and lethal.", 'new'),
+    ('biome', 'highrift', 'biomes/highrift/dist/highrift.html', 'High Rift', "Station 1, the Caldron and the Opaline Cataract: the pool in its sinter bowl, the four-tier cataract, a geyser on the rimstone steps, steam over everything.", 'new'),
+    ('biome', 'highrift-mirror', 'biomes/highrift/dist/highrift-mirror.html', 'High Rift · the Mirror', "Station 2: Lake Verdigris under the hematite fault mirror, rift larch parkland, acid springs.", 'new'),
+    ('biome', 'highrift-wedge', 'biomes/highrift/dist/highrift-wedge.html', 'High Rift · the Dorsal Wedge', "Station 3: the horst's crest at 4.2 km, tors and patterned ground, both grabens below.", 'new'),
+    ('biome', 'highrift-coulee', 'biomes/highrift/dist/highrift-coulee.html', 'High Rift · the Coulee', "Station 4: fire and ice on the old coulee's lobes and flow fronts.", 'new'),
+    ('biome', 'highrift-gjar', 'biomes/highrift/dist/highrift-gjar.html', 'High Rift · the Singing Gjar', "Station 5: the plateau pulled apart along the master gja.", 'new'),
+    ('biome', 'nwouterwall', 'biomes/nwouterwall/dist/nwouterwall.html', "The NW outer wall", "The Yeti's High Country. Station 1, Leng's forest-steppe: larch, plumegrass and furflowers, an aufeis valley, Leng's ruin on the horizon.", 'new'),
+    ('biome', 'nwouterwall-taiga', 'biomes/nwouterwall/dist/nwouterwall-taiga.html', 'The NW outer wall · the taiga and alases', "Station 2: open fur larch on permafrost, alases with their lakes and cottongrass, a pingo.", 'new'),
+    ('biome', 'nwouterwall-yeti', 'biomes/nwouterwall/dist/nwouterwall-yeti.html', 'The NW outer wall · the Yeti Valley', "Station 3: the Three Gifts' irrigated fields round the frozen lake, the capital's pycrete halls, the airless rim over it.", 'new'),
+    ('biome', 'riftrim', 'biomes/riftrim/dist/riftrim.html', 'The rift rim', "The high country round the Rift, three biomes on one kit. Station 1, Ledge and the great lake on the veiled rim.", 'new'),
+    ('biome', 'riftrim-lakes', 'biomes/riftrim/dist/riftrim-lakes.html', 'The rift rim · the north rim lakes', "Station 2: the glass rim's lakes, the Rift's cloud forest borrowed.", 'new'),
+    ('biome', 'riftrim-ice', 'biomes/riftrim/dist/riftrim-ice.html', 'The rift rim · the cold lake', "Station 3: the black rim's cold lake, alpine giants in the sheltered hollows.", 'new'),
+    ('biome', 'riftrim-gorge', 'biomes/riftrim/dist/riftrim-gorge.html', 'The rift rim · the gorge', "Station 4: the veiled rim's gorge, cork oak, veil willow and tier cedar.", 'new'),
+    ('biome', 'riftrim-pass', 'biomes/riftrim/dist/riftrim-pass.html', 'The rift rim · the crossing', "Station 5: the pass at 6-8 km, where nothing borrowed grows.", 'new'),
+    ('biome', 'riftrim-barrens', 'biomes/riftrim/dist/riftrim-barrens.html', 'The rift rim · the black barrens', "Station 6: the black rim's barrens, giant groundsel in the hollows.", 'new'),
+    ('biome', 'swhighlands', 'biomes/swhighlands/dist/swhighlands.html', 'The ring folds', "South-western highlands, station 1: a ridge with an arch, a water gap, lattice oaks and bead cones, the river cave and the chevron fold.", 'new'),
+    ('biome', 'swhighlands-pillars', 'biomes/swhighlands/dist/swhighlands-pillars.html', 'The ring folds · the pillar rim', "Station 4: red and white towers in mist with anemone trees on their tops, the green floor and Pan Riba's meanders.", 'new'),
+    ('biome', 'swhighlands-pillars-span', 'biomes/swhighlands/dist/swhighlands-pillars-span.html', "The ring folds · the pillar rim with Span's post", "The pillar rim with a frozen snapshot of Span's watch post on the watch pillar.", 'new'),
+    ('biome', 'swhighlands-treeline', 'biomes/swhighlands/dist/swhighlands-treeline.html', 'The ring folds · the treeline', "Station 6: the dry-summer woods under the crest, bottle brushes and whorl columns, the fellfield and a cirque.", 'new'),
 ]
 
 
@@ -315,13 +414,19 @@ UNLISTED = {'settlements/isle-demo'}   # build folders ('kits/furniture') never 
 # (the LAN host's), where size does not matter. The Throne's eleven stations are about 25 MB with their shared maps.
 ELSEWHERE = {'biomes/throne': 'gallery/build_throne.py',
              # the Ancients kit (city kits and arcologies) and the Ancient Port: about 105 MB with their shared packs
-             'kits/ancients': 'gallery/build_ancients.py', 'settlements/port': 'gallery/build_ancients.py',
+             'kits/ancients': 'gallery/build_ancients.py', 'kits/port': 'gallery/build_ancients.py',
              # Longsong: about 69 MB (its page, three packs and the dressed people's pieces, dist/kchar/), published as built
              # from settlements/longsong/dist (gallery/README.md, "Longsong: its own artifact")
              'settlements/longsong': 'settlements/longsong/build.py',
              # the Eternian kit: about 24 MB (its page and two packs), published as built from kits/eternian/dist
              # (gallery/README.md, "The Eternian kit: its own artifact")
-             'kits/eternian': 'kits/eternian/build.py'}
+             'kits/eternian': 'kits/eternian/build.py',
+             # Voth's city plan: 19.7 MB, over 16 MB a file, and it made Krator Worlds P-V fail the sharing review
+             # (2026-10-23); its own artifact. A page, not a build folder: the Voth catalog (voth-catalog) shares the
+             # folder and stays in the parts
+             'settlements/voth/dist/voth-city.html': 'settlements/voth/build.py',
+             # the Isle Demo: about 84 MB with its packs, its own artifact since the live I-S index was edited in place
+             'openworld/isle-demo': 'openworld/isle-demo/build.py'}
 # Pages a build's own build.py does not write: made by another command in the build's folder, before the page is
 # copied. Girder Hero is too big for the gallery as build_hero.py writes it (20.5 MB, over 16 MB a file), so the
 # gallery takes the --slim one, written outside the committed pages (hero/dist/ is not committed).
@@ -343,6 +448,11 @@ LINKED = {
                              "festival with its great thangka. Its own artifact (its people's clothes and bodies need the room).",
                              'https://claude.ai/artifact/H8dwc8PQetUMZBHo5NkJUY',
                              ['dist/longsong.html', 'dist/longsong.tex.*.js', 'dist/kchar/*']),
+    'settlements/voth/dist/voth-city.html': ('world', 'voth', 'Voth', next(e[4] for e in ENTRIES if e[1] == 'voth') + ' Its own artifact (Voth City Plan).',
+                                             'https://claude.ai/artifact/1W4BzV1Ss4VPUhcWG6zfsy', ['']),
+    'openworld/isle-demo': ('world', 'isle-demo', 'Isle Demo (open world)',
+                            next(e[4] for e in ENTRIES if e[1] == 'isle-demo') + ' Its own artifact.',
+                            'https://claude.ai/artifact/8Gwe3uUG9Ex86Mp3YbHXEM', ['dist/isle-demo.html', 'dist/isle-demo.tex.*.js']),
 }
 
 MADE = {'settlements/girder/hero/dist/girder-hero.html':
@@ -501,7 +611,7 @@ def main():
         for _, _, path, _, _, *_ in ENTRIES:
             if missing and os.path.exists(os.path.join(ROOT, path)):
                 continue
-            if build_dir(path) in skip_built:
+            if build_dir(path) in skip_built or path in skip_built:
                 continue
             if path in MADE:
                 made.append(path)
@@ -526,7 +636,7 @@ def main():
                 sys.exit(r.stdout + r.stderr)
     skip = set(ELSEWHERE) if site == os.path.abspath(SITE) else set()   # their own artifacts; the LAN site keeps them
     found, sections = ([], []) if '--no-discover' in sys.argv else discover(build='--no-build' not in sys.argv, skip=skip)
-    entries = sorted([e for e in ENTRIES if build_dir(e[2]) not in skip] + found,
+    entries = sorted([e for e in ENTRIES if build_dir(e[2]) not in skip and e[2] not in skip] + found,
                      key=lambda e: alpha(e[3]))   # each section alphabetical, the bar's menu too
     if os.path.isdir(site):
         shutil.rmtree(site)
@@ -557,7 +667,7 @@ def main():
     for d, (section, slug, name, blurb, url, files) in LINKED.items():   # a card for each, opening its own artifact
         if d not in skip:
             continue
-        size = sum(os.path.getsize(f) for g in files for f in glob.glob(os.path.join(ROOT, d, g)))
+        size = sum(os.path.getsize(f) for g in files for f in glob.glob(os.path.join(ROOT, d, g) if g else os.path.join(ROOT, d)))
         items.append({'section': section, 'slug': slug, 'name': name, 'blurb': blurb, 'mb': round(size / 1048576, 1),
                       'source': d, 'tag': 'new', 'href': url})
     if 'biomes/throne' in skip:   # the Throne's stations: a card each, in station order, opening the Throne's artifact

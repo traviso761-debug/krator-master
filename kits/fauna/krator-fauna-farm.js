@@ -361,7 +361,7 @@ ANIMAL({
     herd: 'a Scyvoi band drives a herd of twenty to sixty between the seeps, the bulls apart; the calves are penned at night in the kopje\'s lee', fleeDistance: 12, aggression: 0.4,
     schedule: ['REST', 'REST', 'REST', 'REST', 'REST', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'REST', 'REST', 'REST', 'REST', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'REST', 'REST', 'REST', 'REST', 'REST'] },
   build: function (A) {
-    const v = A.variant, calf = v === 2, K = [1, 0.85, 0.55][v] * A.S, hump = [1, 0.85, 0.6][v];
+    const v = A.variant, calf = v === 2, K = [1, 0.85, 0.55, 1][v] * A.S, hump = [1, 0.85, 0.6, 1][v];   /* 3 is the bull again: what the model variant draws in a bundle without models */
     /* the dark hindquarters, the paler tawny cape over the hump and forequarters, the near-black head; a calf is red */
     const hind = calf ? 0x8a4a26 : [0x3a281c, 0x40301f][v], cape = calf ? 0xa0582a : [0x6a4a2c, 0x5e4430][v], head = calf ? 0x6a3a1e : 0x241a14;
     const coat = (x, y, z) => { const zz = z / K, f = Math.min(1, Math.max(0, (zz + 0.15) / 0.4)), e = f * f * (3 - 2 * f);

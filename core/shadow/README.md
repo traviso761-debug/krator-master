@@ -6,20 +6,34 @@ shadows"); `kits/metropolis` takes it first.
 | File | Tag | What |
 |---|---|---|
 | `10-core-shadow.js` | [G data] | `KSHADOW.basis`, `KSHADOW.fit`, `KSHADOW.radiusFor`: where the sun's shadow camera stands and how big its box is, as plain arrays |
-| `host/12-core-shadow-host.js` | [web] | `KSHADOW.attach(o)`: the renderer's shadow map on, the page's sun moved each frame, `cast(root)` |
-| `test-shadow.js` | node | the basis, the texel snapping, the radius steps; each check with a negative |
+| `host/12-core-shadow-host.js` | [web] | `KSHADOW.attach(o)`: the renderer's shadow map readied (off), the switch, the page's sun moved each frame, `cast(root)` |
+| `test-shadow.js` | node | the basis, the texel snapping, the radius steps, the switch (on stubs); each check with a negative |
+
+## Off by default
+
+The owner, 2026-11-03: shadows are toggleable and **off by default, in every build and rebuild**. `attach` sets everything up and turns
+nothing on. While off the renderer's shadow map is disabled and the sun casts nothing, so three runs no shadow pass and compiles no shadow
+variant (r128 declares the map's sampler in a lit material only while the map is on and a light casts): the page costs what it did before
+it took `KSHADOW`. The switch follows `WATER.mirrorSwitch` (core/water ext/58):
+
+- a button on the host's panel, `shadows: off` / `on` (`o.ui`, else `KHOST.ui`, looked up once the page has run; `button: false` none);
+- `?shadow=1` asks for them at load; `o.on: true` starts on;
+- `H.set(on)`, `H.on()`, `H.off()`, `H.enabled()` from the page.
+
+Turning it either way recompiles the lit materials once (their shadow define and sampler come and go). A page whose materials have no texture
+unit to spare for the map must not offer the switch (the Throne's isle and vents: `biomes/throne/src/89zz-host-core.js`).
 
 ## Taking it
 
 ```js
 /* build.py: the two fragments, the data half sorting before the page's host */
-MP.shadow = KSHADOW.attach({ renderer, scene, camera, sun, ground: terrainH });   /* after the sun and the ground exist */
+MP.shadow = KSHADOW.attach({ renderer, scene, camera, sun, ground: terrainH });   /* after the sun and the ground exist; off until switched on */
 GROUND.receiveShadow = true;
 MP.shadow.cast(group);                     /* every placed group: its lit meshes cast and receive */
 MP.shadow.cast(storey, { cast: false });   /* receive only */
 ```
 
-Options: `size` (the map, 4096), `min`, `max`, `k`, `step` (the box: 90 to 600 m, widening 1.2 m a metre of the eye's height, in
+Options: `on` (false), `ui`, `button` (true), `size` (the map, 4096), `min`, `max`, `k`, `step` (the box: 90 to 600 m, widening 1.2 m a metre of the eye's height, in
 steps of 1.25 so it does not change every frame), `reach` (1200 m toward the sun: a tall tower outside the box still throws into
 it), `bias`, `normalBias`, `radius`, `soft`, `target()` (a focus of the page's own, else the view ray on the ground).
 

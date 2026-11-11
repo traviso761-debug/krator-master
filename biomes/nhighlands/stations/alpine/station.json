@@ -1,0 +1,9 @@
+{
+ "note": "Station 4, the alpine (Dsc, ET): station 2's land with its own SITE, on the crater wall's impact province (megabreccia on the cirque's steps).",
+ "base": "montane",
+ "families": [
+  "ground.fell",
+  "ground.scree",
+  "ground.snowbed"
+ ]
+}

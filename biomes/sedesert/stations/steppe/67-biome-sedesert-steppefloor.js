@@ -21,9 +21,12 @@ SEDESERT.buildFloor=function(R,q){const out=base(R,q);reseed(670031);q=q==null?1
  // the gnamma pools: moss and ferns round each rim, where the rain lingers in the rock
  (H.gnamma||[]).forEach(G=>{for(let k=0,n=Math.round(G.r*5);k<n;k++){const a=rr(0,TAU),d=G.r*rr(1.02,1.35),x=G.x+Math.cos(a)*d,z=G.z+Math.sin(a)*d,y=BIO.terrainH(x,z);if(y<G.level+.05)continue;
   if(rng()<.6)BIO.put('lichen',[x,y+.02,z],BIO.fn.qEuler(0,rr(0,TAU),0),rr(.4,1.1),SEDESERT.leafCol([0x5a7a3a,0x6a8a42,0x4e6e34],1.15,.04));else BIO.put('fern',[x,y-.03,z],BIO.fn.qEuler(0,rr(0,TAU),0),[rr(.5,.9),rr(.4,.8),rr(.5,.9)],SEDESERT.leafCol([0x4a7a2e,0x56883a],1.2,.03));}});
- // the grass: three bands along the LOD spine
- [[3.6,L.floor[0],0,2],[10,L.floor[1],L.floor[0],1],[28,1e9,L.floor[1],0]].forEach(b=>{BIO.grid(b[0],0,R,(x,z)=>{const ld=BIO.lodD(x,z);if(ld>=b[1]||ld<b[2])return 0;return F('lush',x,z)*.9*q;},
-  (x,y,z)=>{if(H.insideDisc(x,z))return;if(SEDESERT.blocked(x,z,.3))return;const lv=b[3],h=rr(.45,.95)*(lv===0?1.7:lv===1?1.25:1);
+ // the grass: three bands along the LOD spine. COUNTED (2026-11-08, the instance cap): the spine is a lattice over the whole plain, so
+ // the near band is nearly all of it: at 3.6 m it put 1,141,829 bunchgrass tufts (91,181 mid; 1,233,010 in all, five times the core's
+ // 250k cap) and drew them all (the station floor keeps the spine's static LOD). Now 9.6 m near and 17 m mid, the tussocks a quarter
+ // larger: about 230k (9 m and 16 m put 261,374); the ground's grass layer carries the sward between them
+ [[9.6,L.floor[0],0,2],[17,L.floor[1],L.floor[0],1],[28,1e9,L.floor[1],0]].forEach(b=>{BIO.grid(b[0],0,R,(x,z)=>{const ld=BIO.lodD(x,z);if(ld>=b[1]||ld<b[2])return 0;return F('lush',x,z)*.9*q;},
+  (x,y,z)=>{if(H.insideDisc(x,z))return;if(SEDESERT.blocked(x,z,.3))return;const lv=b[3],h=rr(.45,.95)*(lv===0?1.7:lv===1?1.25:1)*(lv>0?1.25:1);
    if(rng()<.14)PL.stipa(x,y,z,lv,h*1.25);else PL.bunch(x,y,z,lv,h);st.grass++;},{patch:.55,patchScale:.02,pad:.25,box:b[1]<1e9?BIO.originBox(b[1]):null});});
  // the old twoleafs: the pavement and the pan's margin
  BIO.grid(36,0,R,(x,z)=>F('pave',x,z)*.3+F('damp',x,z)*.12,(x,y,z)=>{if(!ok(x,z,3))return;PL.twoleaf(x,y,z,rng()<.16);st.twoleaf++;},{patch:.4,pad:3});

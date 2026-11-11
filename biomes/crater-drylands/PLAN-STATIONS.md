@@ -5,7 +5,8 @@ burn mosaic. The owner split the model's region into **crater drylands N** (`rmu
 to tell them apart. Each holds ground the kit does not draw. The page as built stays station 1. Stations follow the
 Throne's and Korona's pattern (`stations/<name>/`, `python3 build.py --station <name>`).
 
-**Status: plan; the split into N and S settled by the owner (2026-10-27).** Station `south` is already planned in `biomes/hyperjungle/PLAN-LANDS.md` section
+**Status: built (2026-11-09): stations 2 (`south`, S's page), 3 (`edge`) and 4 (`salt`); the split into N and S settled by the owner
+(2026-10-27) and made (`crater-drylands-n.html`, `crater-drylands-s.html`).** Was: plan; Station `south` is already planned in `biomes/hyperjungle/PLAN-LANDS.md` section
 5.3 (the swap); this plan adds the ground under it and two stations in N.
 
 ## The formal split: two lands, N and S (the owner, 2026-10-27)
@@ -81,3 +82,82 @@ in). The kiln's scrub at its largest in the dense air; dust in the dry season (`
 ## Order
 
 `south` first (PLAN-LANDS's order), then `edge`, then `salt`.
+
+## Core adoption (pair 12, the final rebuild; 2026-11-09)
+
+Station 1 (`dist/crater-drylands.html`) on the universal set (`BACKPORT.md` section 1) and what this turn takes of the kit's row (section 2).
+Every look change has a switch, for the owner's look pass.
+
+| Module | Taken | Where | Switch |
+|---|---|---|---|
+| core/biome 31b, 31j, 32, 34, 41, 44 | the leafset (`BIO.leafOn`/`leafQ`, which `BIO.cards` calls: `check_assembly`'s MISSING), `BIO.flareJoin` on the six limb tubes, the variant pools and kin, **octahedral impostors** for the far living trees (8 species over 7 m), the field contract (`BIO.env`), the stage as data | `build.py`, `55`, `88` | `?diet=0` (blobs) |
+| KGROUND | the five library layers (red soil, char, wash sand, granite grit, seep soil), hex-tiled, distance-scaled, height-blended at the old weights and strengths; the char's ash drifts and greying kept | `84` | `?kground=0` |
+| KFAR, KHORIZON | the crater floor to 12 km past the map; the horizon on the ground and on the flora | `87`, `88` | `?far=0`, `?hz=0` |
+| KSHADOW | **off by default** (the owner, 2026-11-03) | `88` | `?shadow=1` |
+| core/atmos | height fog, the rain cover, lightning; the wind's dust off the burnt plain and the washes; the air's load (KHAZ's dust and sight; a dust storm on the panel) | `89a` | `?hfog=0`, `?dust=0`, `?storm=1` |
+| core/water ext | 56 (breakup), 57 (the audit) | `build.py` | |
+| core/host | `khost.FULL` (the whole interface), `--station`, LF writes, the shared pack generator | `build.py` | |
+
+**Not taken, and why:**
+- **The N/S split and station `south`.** The split is settled, but S's page is station `south`, which is
+  `biomes/hyperjungle/PLAN-LANDS.md`'s step J7: it takes the se rim's species (rust miombo, rain rose, incense) from `biomes/savannarim`,
+  which is not built (J4-J6), and the black mallee is still a proposal (PLAN-LANDS question 7). Renaming the page to `-n` with no `-s`
+  beside it would split nothing, so the page keeps its name until `south` is built. `edge` and `salt` (N's) are built this turn, ahead of
+  `south` (below): the handoff builds each station at its kit's turn, and nothing they need waits on another kit.
+- **KFIRE** (H3: the kit's fire onto `core/biome/38-core-fire.js`): `core/biome/test-fire.js` loads this kit's `52` in place as the
+  reference KFIRE is proved against, bit for bit. Moving the kit onto KFIRE needs that test changed first (core's, not this turn's).
+- **The reflections switch** (58) and **the water's fields** (60): the seep is 23 m across, drawn after the build; the kit's own seep
+  field already gives the flora and the ground their wet ring.
+- **Wet ground (R9)**: the climate is dry, and the ground's texture units go to KGROUND and the horizon.
+- **Wadi, talus, tibasalt strata** (the row's other kinds): none on N's ground as built; the strata are S's. The mounds and the pans are
+  on `edge` and `salt` (below).
+
+## Stations 3 and 4, as built (pair 12, 2026-11-09)
+
+Both are N's, built from the kit's own `src/` with a forked stage (`stations/<name>/45-host-stage.js`) and the station's own fragments;
+`src/` reads a `STATION` object through guarded knobs (the sky's site, the count of older fires, the build call, the page's title, views
+and checks), so station 1 builds and runs exactly as before. `python3 build.py --station edge` and `--station salt`.
+
+**Station 3, the savannah edge** (`dist/crater-drylands-edge.html`; the sky at px 437, 457). The plain falls gently toward SW Bay, three
+lower kopjes (the waterhole kopje with the seep at its foot), the plain's wet doubled (.22), and **grass fires every year or two**: twelve
+recent fires (three weeks to four years) and four older ones, so the mosaic is finer and mostly bloom and regrowth. **SW Bay's umbrella
+thorn and gate baobab as kin** (`BIO.kin('swbay.thorn')`, `'swbay.baobab'`; EXCHANGES.md "swbay → crater"): grown by swbay's builders
+(its fragments read in place) with the kin's record, the thorn at .8 and the baobab at .65 of the bay's size, tagged Aw and BSh, by
+hashed cell on the open grass. **Termite mounds** (`KSTACKS.mounds`, the H10 mound kind): fluted clay spires on a skirt, 2.5-7 m,
+by 90 m cell on the open grass, in the plain's red soil, one merged mesh. **The season** on the clock: the grass straw and thinned in the
+dry, green in the wet (core/biome's season on the kit's grass, `BIO.bindSeason`; `?season=0`). **nwbay's flame-crown** planted round the
+waterhole (`BIO.kin('nwbay.flamecrown')`, nwbay read in place). `?mounds=0`, `?kin=0`. Not taken: k-guilin's banyan and silvergrass
+(k-guilin exports no `make`/`grow` or floor-plant function yet), the grass taller than the steppe's (the kit's floor is station 1's).
+
+**Station 4, the salt floor** (`dist/crater-drylands-salt.html`; px 485, 376). A flat floor (8 m swells), two low kopjes, **six salt
+pans** in its lows (core/water ext 54, `WATER.pan`: crust cracked in polygons, the cracks and low cells flooding with brine after rain;
+the ground flattened under each), **two brine pools** (`WATER.still` with the brine look: red-brown to turquoise to a salt rim), the
+washes and the seep. **Two kits share the floor** under their own placement masks: the kit's scrub on the salt steppe (XS), and the
+**abyssal savannah** (`biomes/abyssal-savannah`, read in place) on the fresher **XV islands** (a few metres proud of the floor) and on
+the pans' rims, where its pan zone puts its pan saltbush and blue pan-grass. Its zone bands are opened to the flat floor
+(`ABSAV.setZoneBands`) and its burn mosaic is this page's fire history, so one fire map runs over both. Few fires (four recent, five
+older). **The kiln's scrub at its largest** in the dense air: the kit's trees a fifth bigger (`BIO.host.treeScale`). `?absav=0`. Not taken:
+the Steampits' geyser field reaching in (the geyser kit's run-off and sinter apron), nwbay's cinder pine as the row's upright, unsheared
+cousin (nwbay's builder has no such option), the dry season's dust (the air's load is on, with the storm on the panel, but no season
+drives it).
+
+## Station 2, as built (2026-11-09): the south, crater drylands S
+
+`python3 build.py --station south` -> `dist/crater-drylands-s.html` (the sky at px 572, 667). One slice of S's 2 km climb on the 5.2 km
+showcase: the plain rising ~260 m to the south, toward Godstep, with **old titanium-basalt flows** coming north out of the southern edge as
+four lobed tongues a few metres proud (the painted ground basalt-dark on them, the Throne's black sand as a KGROUND layer: its pack, the one
+family), four kopjes, the washes and the seep; the northern and eastern edges wetter (the se rim's air), the kiln's scrub lower in the cooler
+air (`BIO.host.treeScale` .85), the fire mosaic over the whole patch (six recent fires, seven older), the season and the copper flush on the
+clock. **The swap** (PLAN-LANDS.md 5.3), by hashed cell:
+- **the base**: this kit everywhere but the old flows (its mask);
+- **the black mallee** (`blackmallee`; the owner's yes): a kin of the prism mallee (`BIO.kin('craterdry.prismmallee')`), grown by its builder
+  with violet-black to bronze iridescence and smoky bark, on the old flows only; it burns and resprouts as the mallee does, on black ground;
+- **the se rim comes in** on the wet edges: savannarim's rust miombo and incense tree (`SAVRIM.builders`) on the open ground, its rain rose
+  (its cousin of sedesert's rose) on the kopjes there. Savannarim's species, trees and se rim (`50`, `55`, `56`) are read in place, with the
+  hyperjungle (its seven fragments: savannarim builds on its lands' geometry) and sedesert's species and trees (the rose's source), each in
+  its own registry; the hyperjungle's helpers are the stage's globals (its `41` would clash with them).
+Then (the same day): **the Af gallery** in a north-western gully (the hyperjungle's trees at .3-.5 of their size), **the lava step** along the
+southern edge (Godstep's first, 30 m) with its face in KSTRATA's **tibasalt** beds (a mesh coloured from `KSTRATA.at`, no texture unit), and
+**scrub oak** on the step's top (nhighlands' gnarled oak as a 3-6 m kin). `?black=0`, `?serim=0`, `?gallery=0`, `?oak=0`, `?step=0`,
+`?season=0`. Not taken (KNOWN_ISSUES.md, "Owed on south"): Godstep's red guyed stalk and lava pioneers (Godstep's kit is a plan), S's fields
+from the scale model's polygon.

@@ -1,0 +1,33 @@
+[
+ {
+  "src": "card.umbrella.plate.webp",
+  "out": "core/materials/library/card.umbrella.plate",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "spill": "vlahos",
+   "key_gain": 1.3
+  },
+  "record": {
+   "id": "card.umbrella.plate",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [1, 1],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (krator-textures-2026-11-10, webp, 1254 px), generated from core/materials/PROMPTS-NEEDED.md section 24 (biomes/abyssal-savannah, PLAN.md section 10)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Square, 2048x2048. Orthographic view looking straight down on a single cut-out object centred in the frame, on a solid flat bright magenta (#ff00ff) background that fills everything outside the object, with no shadow cast on the background. Flat, even, shadowless lighting: no highlights, no vignette. No perspective, no text, no border, no watermark. Object: the flat-topped crown layer of an umbrella thorn tree (Vachellia tortilis) seen from directly above, one roughly circular, slightly lobed plate filling about 90% of the frame: a dense, flat mat of tiny bipinnate leaflets on fine interlaced twigs, thick and even in the middle, breaking up toward the rim into separate sprays with magenta showing between them, a few small gaps inside, no trunk or branches showing. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.",
+    "prompt_where": "core/materials/PROMPTS-NEEDED.md section 24 (biomes/abyssal-savannah, the umbrella tree's crown plate: slot plate, G.plate in 50-biome-absav-species.js)",
+    "reuse": "the abyssal savannah's umbrella-tree crown plates (abyssal-savannah, plate: the whole sheet, radial UVs); any flat-topped acacia or thorn-tree crown seen from above, a canopy disc at range",
+    "note": "one plate, kept whole (anchor none): the disc's UVs run radially over the whole card",
+    "key_note": "keyed with spill 'vlahos' (key_gain 1.3): the rim's sprays are blended into the magenta in the source, and the default key (spill all, key_hi 170) left them mauve, unmix pink; vlahos leaves them a dry tan",
+    "size_note": "the source is 1254 px, under the prompt's 2048: the pipeline writes 1024 px sets, so nothing was upscaled"
+   }
+  }
+ }
+]

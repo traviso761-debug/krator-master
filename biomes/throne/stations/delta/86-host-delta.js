@@ -18,7 +18,13 @@ TICKS.push(()=>{const m=DELTAS.lavaMesh;if(m&&!m.userData.lavaMat&&typeof ATMOS!
   if(n)idx.push((n-1)*2,(n-1)*2+1,n*2,(n-1)*2+1,n*2+1,n*2);n++;}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('aF',new THREE.Float32BufferAttribute(F,2));g.setIndex(idx);g.computeVertexNormals();
  const m=new THREE.Mesh(g,new THREE.MeshBasicMaterial({color:0x2a0c04}));m.userData.inspectLabel=LAVA.name;m.userData.lava=true;m.userData.probeSkip=true;scene.add(m);DELTAS.lavaMesh=m;DELTAS.lava=n;
- REGISTER({name:LAVA.name,x:ENTRY.x,z:ENTRY.z,y:SEA-2,r:40,h:20,lava:true});})();
+ /* the hazard (core/hazard: KHAZ.GROUND.lavaFlow): the channel in 200 m pieces, each its outline every 20 m in metres from its first point,
+    its band from its lowest ground to its highest (the fall over the pali drops 280 m in one piece) */
+ const SEG=200;for(let a=LAVA.s0;a<ENTRY.s+6;a+=SEG){const HL=[],HR=[],b=Math.min(a+SEG,ENTRY.s+6);let lo=1e9,hi=-1e9,o=null;
+  for(let s=a;s<=b+1e-6;s+=20){const t=LAVA.t(s),c=xzOf(s,t),c2=xzOf(s+2,LAVA.t(s+2)),dx=c2[0]-c[0],dz=c2[1]-c[1],dl=Math.hypot(dx,dz)||1,nx=-dz/dl,nz=dx/dl,w=LAVA.w*1.6+4,y=Math.max(terrainH(c[0],c[1]),SEA);
+   if(!o)o=c;lo=Math.min(lo,y);hi=Math.max(hi,y);HL.push([c[0]+nx*w-o[0],c[1]+nz*w-o[1]]);HR.unshift([c[0]-nx*w-o[0],c[1]-nz*w-o[1]]);}
+  const hz=KHAZ.GROUND.lavaFlow(HL.concat(HR));hz.shape.y0=-3;hz.shape.h=hi-lo+8;
+  REGISTER({name:LAVA.name,x:o[0],z:o[1],y:lo,r:SEG+20,h:hi-lo+8,lava:true,tags:{hazard:hz}});}})();
 // the entry's glow: a warm light by the front, brighter at night
 const ENTRY_LIGHT=new THREE.PointLight(0xff6a2a,1.2,260,2);ENTRY_LIGHT.position.set(ENTRY.x,SEA+6,ENTRY.z);scene.add(ENTRY_LIGHT);
 _onLight.push(m=>{ENTRY_LIGHT.intensity=m==='night'?3:1.2;});
@@ -38,7 +44,8 @@ TICKS.push(dt=>{LAZEU.uT.value+=dt;});
  for(let i=0;i<900;i++){const a=rr(0,TAU),d=rr(0,26);P.push(ENTRY.x+Math.cos(a)*d,SEA+.5,ENTRY.z+Math.sin(a)*d);A.push(rng(),.035*rr(.8,1.2),rr(7,16),rr(90,240));}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(P,3));g.setAttribute('aS',new THREE.Float32BufferAttribute(A,4));
  const pts=new THREE.Points(g,LAZE_MAT);pts.frustumCulled=false;pts.userData.probeSkip=true;pts.renderOrder=2;scene.add(pts);DELTAS.laze=P.length/3;
- REGISTER({name:'The laze (acid steam off the entry: do not breathe it)',x:ENTRY.x+60,z:ENTRY.z+60,y:SEA,r:140,h:240,laze:true});})();
+ REGISTER({name:'The laze (acid steam off the entry: do not breathe it)',x:ENTRY.x+60,z:ENTRY.z+60,y:SEA,r:140,h:240,laze:true,
+  tags:{hazard:{kind:'acid',danger:.7,dose:1,falloff:'linear',shape:{type:'cyl',r:140,h:240,y0:0},tell:{sign:'white steam off the entry, leaning downwind'}}}});})();
 // the cones' spatter and the rafts (the kit's stones, in its registry)
 (function(){reseed(12804);const C3=c=>new THREE.Color(c),prev=BIO.kit('throne'),cur=BIO.cur;BIO.cur='throne/floor';
  LCONES.forEach(C=>{for(let k=0;k<40;k++){const a=rr(0,TAU),d=C.r*Math.sqrt(rng())*1.1,x=C.x+Math.cos(a)*d,z=C.z+Math.sin(a)*d,s=rr(.3,1.4);

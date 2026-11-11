@@ -7,14 +7,14 @@ are why it looks as it does.
 ## The build
 
 ```
-git lfs pull --include="settlements/port/tex/*"    # the port kit's texture pack is in LFS
+git lfs pull --include="kits/port/tex/*"    # the port kit's texture pack is in LFS
 cd biomes/dambasins
 python3 build.py                                   # every station: dist/<station>.html (+ its .tex.port.js sidecar)
 python3 verify.py dist/port.html --assert --views "The old port from the bed,The moored hulks" --out shots/x
 python3 build.py --vendor-check                    # the adapted copies of the port kit's fragments, against the kit's
 ```
 
-The engine is the **Ancient Port kit** (`settlements/port`), read in place the way Hook reads it (`build.py` is Hook's,
+The engine is the **Ancient Port kit** (`kits/port`), read in place the way Hook reads it (`build.py` is Hook's,
 adapted): its fragments, its core lists and its texture pack, plus core/rand and core/terrain's basin (`KBASIN`) and this
 build's own fragments:
 

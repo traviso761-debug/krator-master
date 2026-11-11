@@ -4,7 +4,8 @@
 
 The eastern highlands (`ehighlands` in `biomes/WORLD.md`): a biome distinct from the rest of the world, worked out in
 the chat of 2026-10-06. The owner chose a **cushion plateau**: an altiplano, which also fits the region's Koppen class
-(cold steppe and tundra), at about 0.6 atm.
+(cold steppe and tundra), at about 0.6 atm. (Scale model 5.1 puts station 1, the crest's lee near 5 km, at about 0.86 atm: nothing in
+the look depended on the thin air, so the kit stands; the notes on its light are the 0.6 atm brief's. PLAN-STATIONS.md, 2026-11-09.)
 
 - **The Andean puna** as the base: cushions, giant spike rosettes, red-barked woods in the gullies, golden bunchgrass.
 - **A giant llareta, "suitably oversized for this planet"**: one cushion grown over a whole hill (the Mother Cushion).
@@ -67,7 +68,8 @@ on the low tors. The probe checks every wormwick is within 25 m of a tower.
 One 5.2 km disc of the plateau (`45-host-stage.js`): the puna at 215-240 m; the Mother Cushion north-east of the centre;
 the bofedal (a cushion bog with 34 pools) in the west with the frozen tarn at its end; the range in the south climbing
 to ~700 m, its north face the sunward one, two gullies cut into it, the west one carrying the stream down to the bog;
-the geyser field in the east (six vents; the Old Kettle erupts every 34 s); five basalt tors.
+the geyser field in the east (six vents; the Old Kettle erupts every 34 s); five basalt tors. (2026-11-09: the geyser field is gone from
+station 1, which the model does not back; the region's one vent is the Lesser Throne's, station 3, whose fumaroles the same fragment draws.)
 
 The light is thin air's: a deep blue zenith, a hard white sun, weak blue fill, almost no haze (`FogExp2` .000042);
 snow-capped volcanoes on every horizon, one with a plume, two with lenticular clouds. The giant is crisp, its night side
