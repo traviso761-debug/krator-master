@@ -47,37 +47,77 @@ def config_path():
     return os.environ.get("KRATOR_CLOUD_CONFIG") or os.path.join(os.environ.get("LOCALAPPDATA") or TMP, "krator-cloud.json")
 
 
-def load_config(any_state=False):
-    """The config when the cloud lanes are on (or, with any_state, when it exists at all), else None."""
+MACHINE_KEYS = ("host", "port", "user", "key", "instance", "workspace", "python", "ssh", "git_remote", "lanes", "on")
+
+
+def _read_config():
+    """The config file as stored, in the machines shape (2026-11-11):
+        {"lanes": [every lane of every machine that is on],
+         "machines": {"<id>": {"host", "port", "user", "key", "instance", "lanes": [in GPU order], "on", ...}}}
+    The older single-machine shape (host, port, ... at the top) reads as one machine named by its instance."""
     try:
         with open(config_path(), encoding="utf-8") as fh:
-            cfg = json.load(fh)
+            raw = json.load(fh)
     except (OSError, ValueError):
         return None
-    if not any_state and not cfg.get("on", True):
+    if "machines" not in raw:
+        m = {k: raw[k] for k in MACHINE_KEYS if k in raw}
+        m.setdefault("lanes", ["vast0", "vast1"])
+        raw = {"machines": {str(raw.get("instance") or raw.get("host") or "machine"): m}}
+    return raw
+
+
+def _machine(mid, m):
+    m = dict(m, id=mid)
+    m.setdefault("workspace", "/workspace")
+    m.setdefault("python", "/venv/main/bin/python")
+    m.setdefault("user", "root")
+    m.setdefault("on", True)
+    m.setdefault("lanes", [])
+    return m
+
+
+def machines(any_state=False):
+    """Each configured machine (switched on, unless any_state), with defaults filled in and its id."""
+    raw = _read_config()
+    out = [_machine(mid, m) for mid, m in sorted((raw or {}).get("machines", {}).items())]
+    return out if any_state else [m for m in out if m["on"]]
+
+
+def machine_of(lane):
+    """The machine that serves `lane` (switched on), or None."""
+    return next((m for m in machines() if lane in m["lanes"]), None)
+
+
+def load_config(any_state=False):
+    """{"lanes": every lane of the machines that are on, "machines": [...]} when any is on (any_state: when the file
+    exists at all), else None."""
+    ms = machines(any_state)
+    if not ms:
         return None
-    cfg.setdefault("lanes", ["vast0", "vast1"])
-    cfg.setdefault("workspace", "/workspace")
-    cfg.setdefault("python", "/venv/main/bin/python")
-    cfg.setdefault("user", "root")
-    return cfg
+    return {"lanes": [ln for m in ms if m["on"] or any_state for ln in m["lanes"]], "machines": ms}
 
 
-def save_config(cfg):
+def save_config(raw):
+    """Write the machines shape, with the top-level `lanes` list (every lane of a machine that is on) that other
+    tools read."""
+    raw = {"lanes": [ln for _mid, m in sorted(raw["machines"].items()) if m.get("on", True) for ln in m.get("lanes", [])],
+           "machines": raw["machines"]}
     path = config_path()
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w", encoding="utf-8", newline="\n") as fh:
-        json.dump(cfg, fh, indent=1)
-    with contextlib.suppress(OSError):
-        os.remove(_status_path())
+        json.dump(raw, fh, indent=1)
+    for mid in raw["machines"]:
+        with contextlib.suppress(OSError):
+            os.remove(_status_path(mid))
 
 
 def _state_dir():
     return os.environ.get("KRATOR_CLOUD_STATE") or TMP
 
 
-def _status_path():
-    return os.path.join(_state_dir(), "krator-cloud-status.json")
+def _status_path(mid):
+    return os.path.join(_state_dir(), "krator-cloud-status-%s.json" % re.sub(r"[^\w.-]", "_", str(mid)))
 
 
 def ssh_argv(cfg):
@@ -123,8 +163,8 @@ def _err(r):
 
 
 def reachable(cfg, fresh=False):
-    """(ok, why): the machine ran `ping` in the last STATUS_S seconds, or does now (fresh: ask now)."""
-    p = _status_path()
+    """(ok, why): machine `cfg` ran `ping` in the last STATUS_S seconds, or does now (fresh: ask now)."""
+    p = _status_path(cfg["id"])
     if not fresh:
         with contextlib.suppress(OSError, ValueError):
             with open(p, encoding="utf-8") as fh:
@@ -145,7 +185,8 @@ def reachable(cfg, fresh=False):
 
 def mark_down(cfg, why):
     with contextlib.suppress(OSError):
-        with open(_status_path(), "w", encoding="utf-8", newline="\n") as fh:
+        os.makedirs(_state_dir(), exist_ok=True)
+        with open(_status_path(cfg["id"]), "w", encoding="utf-8", newline="\n") as fh:
             json.dump({"t": time.time(), "ok": False, "why": why, "key": _cfg_key(cfg)}, fh)
 
 
@@ -154,16 +195,13 @@ def _cfg_key(cfg):
 
 
 def lanes_up():
-    """The cloud lanes a verify may take now: configured, on, and the machine answers. [] otherwise."""
-    cfg = load_config()
-    if not cfg:
-        return []
-    return list(cfg["lanes"]) if reachable(cfg)[0] else []
+    """The cloud lanes a verify may take now: those of each machine that is on and answers. A machine that does not
+    answer drops only its own lanes."""
+    return [ln for m in machines() if reachable(m)[0] for ln in m["lanes"]]
 
 
 def configured_lanes():
-    cfg = load_config()
-    return list(cfg["lanes"]) if cfg else []
+    return [ln for m in machines() for ln in m["lanes"]]
 
 
 # --------------------------------------------------------------------------
@@ -347,12 +385,13 @@ def _remote_args(args, cwd, root, cfg, lane):
 def run_job(lane, script, args, cwd=None, cfg=None, run_watched=None, stall_min=None, log=print):
     """Run verify.py `script` with `args` on cloud lane `lane` (its local lock already held). Returns (code, info): info has
     the files the run read (repo-relative), their hashes on the machine, the lane and the renderer, for the verify cache."""
-    cfg = cfg or load_config()
+    cfg = cfg or machine_of(lane)
     if not cfg:
-        raise CloudDown("the cloud lanes are off (%s)" % config_path())
+        raise CloudDown("no machine that is on serves lane %s (%s)" % (lane, config_path()))
+    gpu = cfg["lanes"].index(lane)
     ok, why = reachable(cfg, fresh=True)
     if not ok:
-        raise CloudDown("the machine does not answer (%s): stopped, or its SSH address changed? %s" % (cfg.get("host", "?"), why))
+        raise CloudDown("machine %s does not answer (%s): stopped, or its SSH address changed? %s" % (cfg["id"], cfg.get("host", "?"), why))
     cwd = os.path.abspath(cwd or os.getcwd())
     script = os.path.abspath(script)
     root = os.path.abspath(_git(os.path.dirname(script), "rev-parse", "--show-toplevel"))
@@ -367,7 +406,7 @@ def run_job(lane, script, args, cwd=None, cfg=None, run_watched=None, stall_min=
     retried = False
     while True:
         want = wanted(root, commit, build_rel, script_rel, pages)
-        r = call(cfg, "prepare", lane, commit, data=json.dumps({"files": want}).encode("utf-8"), timeout=3600)
+        r = call(cfg, "prepare", lane, gpu, commit, data=json.dumps({"files": want}).encode("utf-8"), timeout=3600)
         if r.returncode:
             raise CloudDown("preparing %s: %s" % (lane, "; ".join(_err(r))))
         prep = json.loads(r.stdout.decode("utf-8").strip().splitlines()[-1])
@@ -376,7 +415,7 @@ def run_job(lane, script, args, cwd=None, cfg=None, run_watched=None, stall_min=
             n, size, gone = send_lfs(cfg, root, prep["missing"], log)
             log("harness: cloud %s: sent %d LFS file(s), %.1f MB (%.0f s)%s" % (lane, n, size / 1048576, time.time() - t1,
                 "; not in this PC's LFS store either: %d" % len(gone) if gone else ""), flush=True)
-        argv, src = remote_argv(cfg, "run", lane, cwd_rel, script_rel, stall_min or 25, "--", *rargs)
+        argv, src = remote_argv(cfg, "run", lane, gpu, cwd_rel, script_rel, stall_min or 25, "--", *rargs)
         log("harness: cloud %s: running %s %s" % (lane, script_rel, " ".join(rargs)), flush=True)
         code = run_watched(argv, stall_min, feed=src) if run_watched else subprocess.call(argv)
         if code == 255:
@@ -444,38 +483,53 @@ def _unpack_results(blob, root, extra, log):
 # --------------------------------------------------------------------------
 # This PC: `harness.py cloud ...`
 def cli(argv):
-    """python3 tools/harness.py cloud on --host H --port P --key K [--user root] [--instance N] | off | status | setup"""
+    """python3 tools/harness.py cloud on [--machine ID] --host H --port P --key K [--lanes vast2,vast3] [--user root] [--instance N]
+       python3 tools/harness.py cloud off|status|setup [--machine ID]        (no --machine: every machine)
+    A machine's lanes are listed in its GPUs' order (the first lane on GPU 0). --machine defaults to --instance."""
     cmd = argv[0] if argv else "status"
+    opts, it = {}, iter(argv[1:])
+    for k in it:
+        if k.startswith("--"):
+            opts[k[2:]] = next(it, "")
+    raw = _read_config() or {"machines": {}}
+    mid = opts.pop("machine", None) or opts.get("instance") or (next(iter(raw["machines"])) if len(raw["machines"]) == 1 else None)
     if cmd == "on":
-        cfg = load_config(any_state=True) or {}
-        it = iter(argv[1:])
-        for k in it:
-            if k in ("--host", "--port", "--key", "--user", "--instance", "--python", "--workspace"):
-                cfg[k[2:]] = next(it)
-        cfg["on"] = True
-        miss = [k for k in ("host", "port", "key") if not cfg.get(k)]
-        if miss and not cfg.get("ssh"):
-            print("cloud on: give --%s" % ", --".join(miss))
+        if not mid:
+            print("cloud on: name the machine (--machine ID or --instance N)")
             return 2
-        cfg["port"] = int(cfg["port"]) if cfg.get("port") else cfg.get("port")
-        save_config(cfg)
-        print("cloud lanes on: %s (%s)" % (", ".join(load_config()["lanes"]), config_path()))
-        return status(load_config())
+        m = raw["machines"].setdefault(str(mid), {})
+        for k, v in opts.items():
+            if k in MACHINE_KEYS:
+                m[k] = [x.strip() for x in v.split(",") if x.strip()] if k == "lanes" else v
+        m["on"] = True
+        m.setdefault("lanes", ["vast0", "vast1"])
+        taken = {ln: o for o, om in raw["machines"].items() if o != str(mid) for ln in om.get("lanes", [])}
+        clash = [ln for ln in m["lanes"] if ln in taken]
+        bad = [ln for ln in m["lanes"] if not is_cloud_lane(ln)]
+        miss = [k for k in ("host", "port", "key") if not m.get(k)]
+        if clash or bad or (miss and not m.get("ssh")):
+            print("cloud on: %s" % "; ".join(["lane %s is machine %s's" % (ln, taken[ln]) for ln in clash] + ["%s is not vastN" % ln for ln in bad]
+                                              + (["give --%s" % ", --".join(miss)] if miss and not m.get("ssh") else [])))
+            return 2
+        if m.get("port"):
+            m["port"] = int(m["port"])
+        save_config(raw)
+        print("machine %s on: lanes %s (%s)" % (mid, ", ".join(m["lanes"]), config_path()))
+        return status(next(x for x in machines() if x["id"] == str(mid)))
     if cmd == "off":
-        cfg = load_config(any_state=True)
-        if cfg:
-            cfg["on"] = False
-            save_config(cfg)
-        print("cloud lanes off: verifies take arc and rtx only")
+        for k, m in raw["machines"].items():
+            if mid is None or k == str(mid):
+                m["on"] = False
+        if raw["machines"]:
+            save_config(raw)
+        print("cloud machine(s) %s off: their lanes take no verifies" % (mid or ", ".join(raw["machines"]) or "-"))
         return 0
-    cfg = load_config()
-    if not cfg:
-        print("cloud lanes off (no config, or switched off: %s). tools/CLOUD-LANE.md" % config_path())
+    ms = [m for m in machines() if mid is None or m["id"] == str(mid)]
+    if not ms:
+        print("cloud lanes off (no machine on%s: %s). tools/CLOUD-LANE.md" % (" named %s" % mid if mid else "", config_path()))
         return 1
-    if cmd == "status":
-        return status(cfg)
-    if cmd == "setup":
-        return setup(cfg)
+    if cmd in ("status", "setup"):
+        return max((status if cmd == "status" else setup)(m) for m in ms)
     print(cli.__doc__)
     return 2
 
@@ -484,12 +538,12 @@ def status(cfg):
     r = call(cfg, "ping", timeout=40)
     if r.returncode or b'"ok": true' not in r.stdout:
         mark_down(cfg, "; ".join(_err(r)))
-        print("machine %s: NOT REACHABLE (%s). Stopped? Its SSH port can change after a restart: cloud on --port N." % (
-            cfg.get("instance") or cfg.get("host"), "; ".join(_err(r))))
+        print("machine %s: NOT REACHABLE (%s); its lanes %s take no verifies. Stopped? Its SSH port can change after a restart: "
+              "cloud on --machine %s --port N." % (cfg["id"], "; ".join(_err(r)), ", ".join(cfg["lanes"]), cfg["id"]))
         return 1
     reachable(cfg, fresh=True)
     s = json.loads(r.stdout.decode("utf-8").strip().splitlines()[-1])
-    print("machine %s: reachable; %s" % (cfg.get("instance") or cfg.get("host"), "; ".join(s.get("gpus", [])) or "no GPU seen"))
+    print("machine %s: reachable; %s" % (cfg["id"], "; ".join(s.get("gpus", [])) or "no GPU seen"))
     for ln in cfg["lanes"]:
         print("  %s: %s" % (ln, s.get("lanes", {}).get(ln, "no job yet")))
     if s.get("missing"):
@@ -500,7 +554,7 @@ def status(cfg):
 def setup(cfg):
     """One-time: Playwright and its Chromium on the machine, then the repo seeded from this checkout's tree."""
     print("setup: installing on the machine (a few minutes the first time)...", flush=True)
-    argv, src = remote_argv(cfg, "bootstrap")
+    argv, src = remote_argv(cfg, "bootstrap", ",".join(cfg["lanes"]))
     p = subprocess.run(argv, input=src)
     if p.returncode:
         return p.returncode
@@ -525,8 +579,29 @@ def _ws_here():
     return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-def _gpus():
-    """[(index, bus id like 0000:01:00.0, minor, name)] from nvidia-smi."""
+def _gpus(refresh=False):
+    """[(index, bus id like 0000:01:00.0, minor, name)]: from lanes/gpus.json, written by the one nvidia-smi run that
+    makes it. The driver's ModifyDeviceFiles=1 makes any root process that opens it (nvidia-smi included) reset every
+    /dev/nvidiaN to root:root 0666, which undoes the lane pinning (2026-11-11, both machines), so the runner never runs
+    nvidia-smi as root again once it has the list: bootstrap refreshes it, and _ensure_lane re-applies the permissions
+    straight after."""
+    cache = os.path.join(_ws_here(), "lanes", "gpus.json")
+    if not refresh:
+        with contextlib.suppress(OSError, ValueError, TypeError):
+            with open(cache, encoding="utf-8") as fh:
+                got = [tuple(g) for g in json.load(fh)]
+            if got and all(os.path.exists("/dev/nvidia%d" % g[2]) for g in got):
+                return got
+    out = _gpus_smi()
+    if out:
+        with contextlib.suppress(OSError):
+            os.makedirs(os.path.dirname(cache), exist_ok=True)
+            with open(cache, "w", encoding="utf-8") as fh:
+                json.dump(out, fh)
+    return out
+
+
+def _gpus_smi():
     out = []
     with contextlib.suppress(Exception):
         q = _sh(["nvidia-smi", "-q"])
@@ -544,20 +619,22 @@ def _gpus():
     return out
 
 
-def _lane_user(lane):
-    return "kvast%d" % lane_index(lane), "kgpu%d" % lane_index(lane), 2100 + lane_index(lane)
+def _lane_user(lane, gpu):
+    """The lane's Linux user (kvastN, after the lane) in the group of the GPU it runs on (kgpuG, G its position on this
+    machine): on a second machine vast2 runs as kvast2 in kgpu0."""
+    return "kvast%d" % lane_index(lane), "kgpu%d" % int(gpu), 2100 + lane_index(lane)
 
 
-def _ensure_lane(lane, run_as, gpus):
+def _ensure_lane(lane, gpu, run_as, gpus):
     """The lane's user and group, its GPU's device nodes (its group alone may open them), its folders and git config."""
     ws = _ws_here()
-    user, group, uid = _lane_user(lane)
+    user, group, uid = _lane_user(lane, gpu)
     lanes_dir = os.path.join(ws, "lanes")
     clone, tmp = os.path.join(lanes_dir, lane), os.path.join(lanes_dir, lane + ".tmp")
     if run_as:
         import grp, pwd
-        if lane_index(lane) >= len(gpus):
-            raise RuntimeError("lane %s: the machine has %d GPU(s)" % (lane, len(gpus)))
+        if int(gpu) >= len(gpus):
+            raise RuntimeError("lane %s on GPU %s: the machine has %d GPU(s)" % (lane, gpu, len(gpus)))
         for i, bus, minor, _n in gpus:     # every GPU's nodes, so no lane user can open another lane's GPU
             if not _group_exists("kgpu%d" % i):
                 _sh(["groupadd", "-g", str(2100 + i), "kgpu%d" % i])
@@ -630,7 +707,8 @@ def r_ping(argv):
         missing.append("the repo")
     if not (os.path.isdir("/opt/pw-browsers") or not _run_as_flag()):
         missing.append("Chromium")
-    print(json.dumps({"ok": True, "gpus": ["%d %s (%s)" % (i, n, b) for i, b, _m, n in _gpus()], "lanes": lanes, "missing": missing}))
+    gpus = _gpus() if _run_as_flag() else []   # a lane machine (root); a stand-in machine's nvidia-smi is another job's GPU
+    print(json.dumps({"ok": True, "gpus": ["%d %s (%s)" % (i, n, b) for i, b, _m, n in gpus], "lanes": lanes, "missing": missing}))
     return 0
 
 
@@ -649,6 +727,7 @@ def _flock_busy(path):
 
 
 def r_bootstrap(argv):
+    lanes = [x for x in (argv[0] if argv else "").split(",") if x]   # this machine's lanes, in GPU order
     py, ws = sys.executable, _ws_here()
     env = dict(os.environ, PLAYWRIGHT_BROWSERS_PATH="/opt/pw-browsers")
     steps = [[py, "-m", "pip", "install", "-q", "--root-user-action=ignore", "playwright"],
@@ -665,9 +744,9 @@ def r_bootstrap(argv):
         os.makedirs(os.path.join(ws, "krator.git", "lfs", d), exist_ok=True)
     os.chmod(os.path.join(ws, "krator.git", "lfs", "tmp"), 0o1777)
     os.makedirs(os.path.join(ws, "lanes"), exist_ok=True)
-    gpus = _gpus()
-    for i, *_ in gpus:
-        _ensure_lane("vast%d" % i, _run_as_flag(), gpus)
+    gpus = _gpus(refresh=True)
+    for i, ln in enumerate((lanes or ["vast%d" % g[0] for g in gpus])[:len(gpus)]):
+        _ensure_lane(ln, i, _run_as_flag(), gpus)
     print("bootstrap: done; %d GPU(s)" % len(gpus), flush=True)
     return 0
 
@@ -675,10 +754,10 @@ def r_bootstrap(argv):
 def r_prepare(argv):
     """The lane's clone at <commit>, LFS files as pointers (the store has few of them); the files this job wants are
     smudged by `run` once their objects are here. A checkout that fails rebuilds the clone from scratch, once."""
-    lane, commit = argv[0], argv[1]
+    lane, gpu, commit = argv[0], int(argv[1]), argv[2]
     want = json.loads(sys.stdin.buffer.read().decode("utf-8") or "{}").get("files", {})
     run_as = _run_as_flag()
-    clone, _tmp, user = _ensure_lane(lane, run_as, _gpus() if run_as else [])
+    clone, _tmp, user = _ensure_lane(lane, gpu, run_as, _gpus() if run_as else [])
     bare = os.path.join(_ws_here(), "krator.git")
     git = ["env", "GIT_LFS_SKIP_SMUDGE=1", "git"] if user else ["git"]   # runuser does not pass the environment on
     env = dict(os.environ, GIT_LFS_SKIP_SMUDGE="1")
@@ -817,10 +896,10 @@ def _kill_group(p):
 
 
 def r_run(argv):
-    lane, cwd_rel, script_rel, stall = argv[0], argv[1], argv[2], float(argv[3])
-    args = argv[5:] if argv[4:5] == ["--"] else argv[4:]
+    lane, gpu, cwd_rel, script_rel, stall = argv[0], int(argv[1]), argv[2], argv[3], float(argv[4])
+    args = argv[6:] if argv[5:6] == ["--"] else argv[5:]
     run_as = _run_as_flag()
-    clone, tmp, user = _ensure_lane(lane, run_as, _gpus() if run_as else [])
+    clone, tmp, user = _ensure_lane(lane, gpu, run_as, _gpus() if run_as else [])
     lanes_dir = os.path.dirname(clone)
     lockf = open(os.path.join(lanes_dir, lane + ".flock"), "a")
     with contextlib.suppress(ImportError):
@@ -841,7 +920,7 @@ def r_run(argv):
     shutil.rmtree(job, ignore_errors=True)
     os.makedirs(job)
     if user:
-        _sh(["chown", "-R", "%s:%s" % (user, _lane_user(lane)[1]), job, tmp])
+        _sh(["chown", "-R", "%s:%s" % (user, _lane_user(lane, gpu)[1]), job, tmp])
     touched = os.path.join(job, "touched.jsonl")
     nodes = sorted(glob.glob("/opt/nvm/versions/node/*/bin"))   # the vast base image's node (nvm), off the non-login PATH; some verifies run node
     env = {"HOME": os.path.expanduser("~" + user) if user else os.environ.get("HOME", ""),

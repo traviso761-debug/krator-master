@@ -77,9 +77,9 @@ def config(**kw):
          'workspace': WS.replace(os.sep, '/'), 'python': PY, 'lanes': ['vast0', 'vast1'], 'instance': 'test'}
     c.update(kw)
     write(CFG, json.dumps(c))
-    status = os.path.join(STATE, 'krator-cloud-status.json')   # the cached reachability answer
-    if os.path.exists(status):
-        os.remove(status)
+    for f in os.listdir(STATE) if os.path.isdir(STATE) else []:   # the cached reachability answers
+        if f.startswith('krator-cloud-status'):
+            os.remove(os.path.join(STATE, f))
 
 
 def setup():
@@ -170,13 +170,40 @@ def test_auto_and_down():
     config()
 
 
+def test_two_machines():
+    """The machines shape: each machine names its lanes; one that does not answer drops only its own."""
+    good = {'on': True, 'ssh': [PY, os.path.join(TMP, 'fake_ssh.py')], 'git_remote': os.path.join(WS, 'krator.git'),
+            'workspace': WS.replace(os.sep, '/'), 'python': PY, 'lanes': ['vast0', 'vast1']}
+    dead = {'on': True, 'ssh': [PY, '-c', 'import sys; sys.stderr.write("ssh: connect to host: Connection refused\\n"); sys.exit(255)'],
+            'workspace': '/workspace', 'python': PY, 'lanes': ['vast2', 'vast3']}
+    write(CFG, json.dumps({'lanes': ['vast0', 'vast1', 'vast2', 'vast3'], 'machines': {'A': good, 'B': dead}}))
+    for f in os.listdir(STATE):
+        if f.startswith('krator-cloud-status'):
+            os.remove(os.path.join(STATE, f))
+    c, o = verify('--assert', '--no-cache', lane='vast2')
+    check("a named lane on the machine that does not answer fails at once, exit 3", c == 3 and 'machine B does not answer' in o, o)
+    c, o = verify('--assert', '--no-cache', lane='vast1')
+    check('a lane on the other machine still runs', c == 0 and 'on the vast1 lane (the cloud machine)' in o, o)
+    r = subprocess.run([PY, os.path.join(REPO, 'tools', 'harness.py'), 'lanes'], env=ENV, capture_output=True, text=True, encoding='utf-8')
+    check('lanes lists both machines, B down and A answering', 'machine B DOES NOT ANSWER' in r.stdout and 'machine A answers' in r.stdout
+          and 'vast3' in r.stdout, r.stdout)
+    r = subprocess.run([PY, os.path.join(REPO, 'tools', 'harness.py'), 'cloud', 'off', '--machine', 'B'], env=ENV, capture_output=True, text=True)
+    saved = json.load(open(CFG, encoding='utf-8'))
+    check('cloud off --machine B switches off B alone, and the top-level lanes list follows', saved['lanes'] == ['vast0', 'vast1']
+          and saved['machines']['B']['on'] is False and saved['machines']['A']['on'] is True, json.dumps(saved))
+    r = subprocess.run([PY, os.path.join(REPO, 'tools', 'harness.py'), 'cloud', 'on', '--machine', 'C', '--host', 'h', '--port', '1',
+                        '--key', 'k', '--lanes', 'vast1,vast9'], env=ENV, capture_output=True, text=True)
+    check('a lane cannot belong to two machines', r.returncode == 2 and "vast1 is machine A's" in r.stdout, r.stdout)
+    config()
+
+
 def test_connection_closed():
     sys.path.insert(0, os.path.join(REPO, 'tools'))
     import cloud_lane
     cfg = cloud_lane.load_config()
     pidf = os.path.join(TMP, 'remote.pid')
     env = dict(ENV, FAKE_SLEEP=pidf)
-    argv, src = cloud_lane.remote_argv(cfg, 'run', 'vast0', 'build', 'build/verify.py', 25, '--', 'page.html')
+    argv, src = cloud_lane.remote_argv(cloud_lane.machine_of('vast0'), 'run', 'vast0', 0, 'build', 'build/verify.py', 25, '--', 'page.html')
     p = subprocess.Popen(argv, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, env=env)
     p.stdin.write(src)
     p.stdin.flush()
@@ -205,7 +232,7 @@ if __name__ == '__main__':
         sys.exit(0)
     try:
         setup()
-        for t in (test_routed, test_auto_and_down, test_connection_closed):
+        for t in (test_routed, test_auto_and_down, test_two_machines, test_connection_closed):
             t()
     finally:
         shutil.rmtree(TMP, ignore_errors=True)

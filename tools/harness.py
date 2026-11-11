@@ -126,7 +126,7 @@ LANE_ARGS = {"arc": [], "rtx": ["--force_high_performance_gpu"]}
 LANE_VENDOR = {"arc": "intel", "rtx": "nvidia"}
 # The cloud lanes (tools/CLOUD-LANE.md, tools/cloud_lane.py; 2026-11-10): vast0, vast1, ... one per GPU of a rented machine,
 # switched on by a config outside the repo. Their locks sit beside arc's and rtx's; only verify.py runs take them.
-CLOUD_LANE_NAMES = ("vast0", "vast1")
+CLOUD_LANE_NAMES = tuple("vast%d" % i for i in range(16))   # the locks all_locks() looks after, whichever machines serve them
 # ANGLE on the NVIDIA driver's EGL: passes real pages on the RTX PRO 5000. ANGLE on Vulkan reports the GPU on a blank page
 # but loses the context on a real one (2026-11-10); the Linux default above (--use-angle=gl) falls back to SwiftShader.
 CLOUD_LANE_ARGS = ["--use-gl=angle", "--use-angle=gl-egl"]
@@ -440,12 +440,15 @@ def _lanes_for(lane, cloud):
         want = [ln for ln in up if lane == "cloud" or ln == lane]
         if not want:
             cl = _cloud()
-            cfg = cl.load_config()
-            if not cfg:
+            m = cl.machine_of(lane) if lane != "cloud" else None
+            if not cl.load_config():
                 why = "the cloud lanes are off (harness.py cloud on)"
+            elif lane == "cloud":
+                why = "no cloud machine answers"
+            elif not m:
+                why = "no machine that is on serves it (%s)" % ", ".join(cl.configured_lanes())
             else:
-                ok, w = cl.reachable(cfg)
-                why = "not one of %s" % ", ".join(cfg["lanes"]) if ok else "the machine does not answer: %s" % (w or "stopped?")
+                why = "machine %s does not answer: %s" % (m["id"], cl.reachable(m)[1] or "stopped?")
             raise cl.CloudDown("cloud lane %s: %s" % (lane, why))
         return lane, want
     return lane, [lane]
@@ -700,10 +703,10 @@ def lanes_main(argv):
                 print("  waiting: pid %s %s" % (t["pid"], t.get("what", "")))
     if not cfg:
         print("cloud lanes: off (tools/CLOUD-LANE.md)")
-    else:
-        ok, why = cl.reachable(cfg, fresh=True)
-        print("cloud lanes %s: machine %s %s" % (", ".join(cloud), cfg.get("instance") or cfg.get("host"),
-                                                 "answers" if ok else "DOES NOT ANSWER (%s): verifies take arc and rtx" % why))
+    for m in cl.machines() if cfg else []:
+        ok, why = cl.reachable(m, fresh=True)
+        print("cloud lanes %s: machine %s %s" % (", ".join(m["lanes"]), m["id"],
+                                                 "answers" if ok else "DOES NOT ANSWER (%s): its lanes take no verifies" % why))
     return 0
 
 
@@ -1930,7 +1933,6 @@ def _verify_routed(script, args, cacheable):
             return 3
         except cl.CloudDown as e:
             if pick_lane() == "auto" and not attempt and cl.load_config():
-                cl.mark_down(cl.load_config(), str(e))
                 print("harness: %s; taking a local lane" % e, flush=True)
                 continue
             print("FAILED: %s (tools/CLOUD-LANE.md)" % e, flush=True)
