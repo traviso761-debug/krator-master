@@ -408,6 +408,10 @@
    "bytes": 7930038,
    "sha256": "c76230abb64828afc2208e39e5b8d7afba48448024f4e7e2b628c346743beaeb"
   },
+  "biomes/riftrim/dist/riftrim-fowlers.html": {
+   "bytes": 7364624,
+   "sha256": "433750ec7cc93a36448dfd9996f2829384d1800cc1f6b23217f1d6f243616648"
+  },
   "biomes/riftrim/dist/riftrim-gorge.html": {
    "bytes": 8490870,
    "sha256": "77ef91d03724661637a040dc845746fb7e5efde6eea470234b8a590faa7fc737"

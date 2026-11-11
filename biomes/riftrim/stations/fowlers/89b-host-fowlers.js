@@ -38,7 +38,7 @@ LAND.build=function(){const T=THREE,V=FOWL.village;if(!V.records)return{village:
   const L=r.pts.filter(p=>p[1]-r.y0<18);for(let k=1;k<L.length;k++){const a=L[k-1],b=L[k];push([a[0]-.25,a[1],a[2]],[b[0]-.25,b[1],b[2]],.035);push([a[0]+.25,a[1],a[2]],[b[0]+.25,b[1],b[2]],.035);}
   for(let y=r.y0+.4;y<r.y0+18;y+=.4){const p=L.find(q=>q[1]>=y)||L[L.length-1];push([p[0]-.25,y,p[2]],[p[0]+.25,y,p[2]+.001],.025);}});
  const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(rp,3));g.setAttribute('color',new T.Float32BufferAttribute(rc,3));g.computeVertexNormals();
- const rm=new T.Mesh(g,new T.MeshStandardMaterial({vertexColors:true,roughness:1,side:T.DoubleSide}));rm.name='fowlers:ropes';rm.userData.host=true;rm.userData.inspectLabel='The families\' ropes and ladders';scene.add(rm);
+ const rm=new T.Mesh(g,new T.MeshStandardMaterial({vertexColors:true,roughness:1,side:T.DoubleSide}));rm.name='fowlers:ropes';rm.userData.host=true;rm.userData.probePoints=[].concat(...FOWL.ropes.map(r=>{const p=r.pts[Math.floor(r.pts.length/2)];return[p[0],p[1],p[2]];}));rm.userData.inspectLabel='The families\' ropes and ladders';scene.add(rm);
  /* the nests (a shallow cup of sticks) and their eggs, instanced */
  const N=FOWL.nests,ne=N.reduce((a,n)=>a+n.eggs,0),cup=new T.Mesh(new T.CylinderGeometry(.42,.28,.18,10),new T.MeshStandardMaterial({color:0x4a3a28,roughness:1})),egg=new T.Mesh(new T.SphereGeometry(.07,8,6),new T.MeshStandardMaterial({color:0xd8d0bc,roughness:.6}));
  const IC=new T.InstancedMesh(cup.geometry,cup.material,Math.max(1,N.length)),IE=new T.InstancedMesh(egg.geometry,egg.material,Math.max(1,ne)),m=new T.Matrix4(),q=new T.Quaternion(),s=new T.Vector3(1,1,1),sE=new T.Vector3(1,1.3,1);let e=0;

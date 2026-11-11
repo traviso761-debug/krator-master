@@ -669,6 +669,33 @@ the N rim's shelf, set in winter, opening at dusk (`LAND.hour` 16.9: the fans ha
 - **Owed**: `hearths-walk` (the western vent's walked field, PLAN.md section 11 item 4); the hold's pages moving here as stations; the field and the hold
   on one frame of coordinates; the fin-owl and the hearth animals (`kits/fauna`); `ATMOS.shimmer` over the warm ground (a post pass: oidong's reason).
 
+## Stations 8 and 9, the Fellgang villages (`--station fowlers`, `--station icecut`; 2026-11-11)
+
+Section 6, "Two more Fellgang villages", chosen by the owner 2026-11-11. Both villages are **`core/hamlet` villages** (`KHAMLET.village`, with
+`core/city`'s `KCITY.prim` read in place: each station's `station.json` "core") on a **Fellgang culture row** of their own
+(`stations/fowlers/84f-host-fellgang.js`, which the Ice-cutters read in place). core/hamlet has no fowling or ice-cutting focus, so the Fowlers
+take the `ranch` slot (rope house, egg store, pens) and the Ice-cutters the `quarry` slot (ice houses, sledge shed). **No building kit has the
+Fellgangs**: 84f draws stand-ins from each record's box: drystone walls under a gabled turf roof with a door to the lane, round stone stores, open
+sheds, drystone pens, and a turf barrow over a stone door for an ice house. Each is seated on its footprint (its floor at the highest corner,
+its walls down to the lowest) and merged into three meshes. Every record is a core/tags volume before it is drawn, and the flora keeps off the
+village (`LAND.keep`).
+
+- **Station 8, the Fowlers** (5.1 px 571,1397): the lake at 1,887 m runs past the map's south edge (`LAND.farWater`). The village stands on a
+  shore bench at about 1,960-2,020 m, and the wall rises behind it: 1.5 km in under a kilometre, then on in ledged steps (a flat every
+  ~170 m of height) to about 4.9 km at the page's edge. Each household has its own rope, pegged up the face 180-440 m from the wall's foot
+  with a ladder up its first 18 m. Nest ledges lie where the face flattens beside the ropes, each with a few nests and eggs; the flyers are
+  `kits/fauna`'s, owed. The page opens in the morning (`LAND.hour` 9.3: on this day the giant hides the sun until about 8.5).
+- **Station 9, the Ice-cutters** (5.1 px 470,1521): the lake at 3,570 m is frozen, drawn as station 3's `WATER.ice` with the 2026-11-09
+  drifts. The page is set in winter (station 7's lying snow: `snowBase` .8, `frozen`) and opens at dusk (`LAND.hour` 17.6, the sun 4 degrees up). The village
+  stands on a moraine shelf over the north shore, with seven cut lanes of open water off it. Blocks are stacked at each lane's head, with
+  sledges beside them. The ice road climbs north-east over the moraine to the shelf's edge, with a lantern post every 60 m, lit by night.
+  Hazards: each cut lane is a `drown` record.
+- **Checks** (`LAND.checks` / `LAND.negatives`), each with a broken input that must fail. The Fowlers: the village placed with its meeting
+  hall, rope house and egg store; every building dry and off the wall; the ropes up the face; no tree in a building. The Ice-cutters: the
+  village with its meeting hall, ice houses and sledge shed; every building dry; the lanes on the lake; the stacks on the shore.
+- **Owed**: a Fellgang building kit (the stand-ins are boxes with roofs); the cliff-nesting flyers and the climbers (`kits/fauna`, people);
+  the Fowlers' wall as rock bodies (`KSTACKS.contour`) rather than the ground's 12 m cells.
+
 ## Core changes to take (reconciled 2026-10-27)
 
 Since this plan was written, core gained the cards on their geometry, hanging strands, confluences, tall falls, KLAVA,

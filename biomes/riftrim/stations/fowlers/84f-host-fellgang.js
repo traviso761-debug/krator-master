@@ -64,9 +64,10 @@ const FELLGANG=(function(){
    for(const a of [-1,1])for(const b of [-1,1]){const lx=a*s.w/2,lz=b*s.d/2;Y.push(G(r.x+lx*c+lz*sn,r.z-lx*sn+lz*c));}Y.push(G(r.x,r.z));
    const top=Math.max(...Y),R={x:r.x,z:r.z,ry:r.ry,y:top,lo:Math.min(...Y)-top-.5};   /* the floor at the footprint's highest corner, the walls down to its lowest */
    const f=s.form;if(f==='round')round(R,s,i);else if(f==='shed')shed(R,s,i);else if(f==='pen')pen(R,s,i);else if(f==='barrow')barrow(R,s,i);else house(R,s,i);});
+  const pp=[];V.records.forEach(r=>pp.push(r.x,G(r.x,r.z)+1,r.z));   /* the probe's points: one a building (a merged mesh counts by its box centre otherwise: core/host 95) */
   const out=[];for(const k in B){const b=B[k];if(!b.p.length)continue;const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(b.p,3));
    g.setAttribute('color',new T.Float32BufferAttribute(b.c,3));g.computeVertexNormals();const m=new T.MeshStandardMaterial({vertexColors:true,roughness:k==='roof'?1:.95,metalness:0,side:T.DoubleSide});
-   const mesh=new T.Mesh(g,m);mesh.name='fellgang:'+k;mesh.userData.host=true;mesh.userData.inspectLabel=o.label||'A Fellgang village';o.scene.add(mesh);out.push(mesh);}
+   const mesh=new T.Mesh(g,m);mesh.name='fellgang:'+k;mesh.userData.host=true;mesh.userData.inspectLabel=o.label||'A Fellgang village';if(k==='stone')mesh.userData.probePoints=pp;o.scene.add(mesh);out.push(mesh);}
   return out;}
  /* the village's lanes as a worn track on the ground (a ribbon a few cm over it) */
  function lanes(V,o){const T=THREE,G=o.ground,p=[],c=[],col=new T.Color(0x6a5a46);
