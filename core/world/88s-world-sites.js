@@ -42,13 +42,21 @@ for(const St of PLAN.sites){S.roads+=St.roads.length;
    A building stands on the highest ground under its footprint (the kit's fw x fd, the house without its yard) over a
    stone footing as deep as the slope falls, as settlements/longsong/src/85h-ls-hamlets.js sites them; the kit's pending
    keys (no def yet) are massing boxes. Lanes are packed earth on the ground. */
-const KD=typeof XAK!=='undefined'?XAK.dims():{},VIL=[];
-if(typeof XAK!=='undefined'){try{XAK.bind(typeof KMAT!=='undefined'?KMAT:null);}catch(e){S.errors.push('the Xanadu kit\'s library maps: '+(e&&e.message||e));}}
+/* the village kits by core/hamlet's row `kit`: the declared boxes by key (dims) and a piece (key, variant, footing depth ->
+   isleFlatten's parts). xanadu: XAK (kits/xanadu/kit_bundle.py), its own footing; iziz: the Iziz Vernacular (IZV,
+   settlements/isle-demo/bundles.py) through the shared instancer (isleProto), on a stone footing box as deep as the drop */
+const VK={},VIL=[],footM=new THREE.MeshLambertMaterial({color:0x8f8676});
+if(typeof XAK!=='undefined'){try{XAK.bind(typeof KMAT!=='undefined'?KMAT:null);}catch(e){S.errors.push('the Xanadu kit\'s library maps: '+(e&&e.message||e));}
+ VK.xanadu={dims:XAK.dims(),piece:(key,v,drop)=>{const G=XAK.proto(key,v,{drop,footC:0x8f8676});return G&&typeof isleFlatten==='function'?isleFlatten(G):null;}};}
+if(typeof IZV!=='undefined'&&typeof isleProto==='function')VK.iziz={dims:IZV.dims(),piece:(key,v,drop)=>{const P=isleProto('izv',key,v,CACHE);if(!P)return null;
+ const D=VK.iziz.dims[key],g=new THREE.BoxGeometry(D.w,drop,D.d).translate(0,-drop/2+.05,0);return P.parts.concat([{geo:g,mat:footM,tris:12}]);}};
+const KD=Object.assign({},...Object.keys(VK).map(k=>VK[k].dims));
 const vhash=s=>{let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;};
 for(const St of PLAN.sites)for(const V of St.hamlets||[]){
  const base=TAGS.add({class:'landmark',kind:'village',key:V.id,name:V.name+' ('+St.name+')',at:[V.site.x,H(V.site.x,V.site.z),V.site.z],r:220,h:14,
   tags:{culture:V.culture,types:['dwelling-multi','farm'],role:'village'},note:'core/hamlet ('+V.focus+'): '+V.census.pop+' people, '+V.census.households+' households'});
- const B=V.records.map(r=>{const K=KD[r.key],kit=!!K&&!r.pending,fw=kit&&K.fw?K.fw:r.w,fd=kit&&K.fd?K.fd:r.d,c=Math.cos(r.ry),s=Math.sin(r.ry);
+ const VD=VK[V.culture]?VK[V.culture].dims:{};
+ const B=V.records.map(r=>{const K=VD[r.key],kit=!!K&&!r.pending,fw=kit&&K.fw?K.fw:r.w,fd=kit&&K.fd?K.fd:r.d,c=Math.cos(r.ry),s=Math.sin(r.ry);
   const hs=[[-1,-1],[1,-1],[1,1],[-1,1],[0,0]].map(([u,w])=>H(r.x+u*fw/2*c+w*fd/2*s,r.z-u*fw/2*s+w*fd/2*c)),top=Math.max.apply(null,hs),low=Math.min.apply(null,hs);
   const nv=kit?Math.max(1,Math.min(3,K.variants|0)):1;
   TAGS.child(base.id,{class:'building',key:r.key,at:[r.x,low,r.z],ry:r.ry,size:[r.w,r.d,r.h+(top-low)],
@@ -94,12 +102,12 @@ function massing(C){const T=C.recs.filter(r=>r.kind!=='pen'),Pn=C.recs.filter(r=
  T.forEach((r,i)=>{q.setFromEuler(e.set(0,r.ry,0));a.setMatrixAt(i,m4.compose(v3.set(r.x-C.c.site.x,r.y,r.z-C.c.site.z),q,new THREE.Vector3(r.w*.9,r.h*.5,r.d*.9)));});
  Pn.forEach((r,i)=>{q.setFromEuler(e.set(0,r.ry,0));b.setMatrixAt(i,m4.compose(v3.set(r.x-C.c.site.x,r.y,r.z-C.c.site.z),q,new THREE.Vector3(r.w,1.2,r.d)));});
  a.count=T.length;b.count=Pn.length;const G=new THREE.Group();G.add(a,b);G.position.set(C.c.site.x,0,C.c.site.z);G.name='camp massing '+C.c.id;scene.add(G);return G;}
-/* a village near the camera: the kit's pieces (XAK.proto per key, variant and footing depth, flattened by the shared
+/* a village near the camera: the kit's pieces (VK[kit].piece per key, variant and footing depth, flattened by the shared
    instancer's isleFlatten), every copy merged by material into one mesh (settlements/longsong/src/85h's merge), the
    pending keys as boxes, the lanes as earth ribbons; far, a massing box a building */
 const VPROTO={},earthM=new THREE.MeshLambertMaterial({color:0x9a8a6c}),wallM=new THREE.MeshLambertMaterial({color:0xe8e0cc});
-function vproto(key,v,drop){const id=key+'#'+v+'@'+drop;if(id in VPROTO)return VPROTO[id];let parts=null;
- try{const G=XAK.proto(key,v,{drop,footC:0x8f8676});if(G&&typeof isleFlatten==='function')parts=isleFlatten(G);}catch(e){S.errors.push('the kit could not build '+key+': '+(e&&e.message||e));}
+function vproto(kit,key,v,drop){const id=kit+':'+key+'#'+v+'@'+drop;if(id in VPROTO)return VPROTO[id];let parts=null;
+ try{if(VK[kit])parts=VK[kit].piece(key,v,drop);}catch(e){S.errors.push('the kit could not build '+key+': '+(e&&e.message||e));}
  if(!parts&&S.missing.indexOf(key)<0)S.missing.push(key);return(VPROTO[id]=parts);}
 function vmerge(list,G){const byMat=new Map(),v3=new THREE.Vector3(),n3=new THREE.Matrix3();
  for(const {parts,m} of list)for(const p of parts){const names=Object.keys(p.geo.attributes).sort(),k=p.mat.uuid+'|'+names.join(',');
@@ -118,7 +126,7 @@ function vmerge(list,G){const byMat=new Map(),v3=new THREE.Vector3(),n3=new THRE
   const mesh=new THREE.Mesh(geo,Q.mat);mesh.matrixAutoUpdate=false;G.add(mesh);S.vtris=(S.vtris||0)+ni/3;}}
 function villageFull(W){const G=new THREE.Group(),copies=[],boxes=[],ox=W.V.site.x,oz=W.V.site.z;
  for(const b of W.B){const r=b.r,m=new THREE.Matrix4().compose(new THREE.Vector3(r.x-ox,b.y,r.z-oz),q.setFromEuler(e.set(0,r.ry,0)).clone(),new THREE.Vector3(1,1,1));
-  const parts=b.kit?vproto(r.key,b.v,b.drop):null;if(parts)copies.push({parts,m});else boxes.push(b);}
+  const parts=b.kit?vproto(W.V.culture,r.key,b.v,b.drop):null;if(parts)copies.push({parts,m});else boxes.push(b);}
  if(copies.length)vmerge(copies,G);
  if(boxes.length){const im=new THREE.InstancedMesh(boxG,wallM,boxes.length);boxes.forEach((b,i)=>{const r=b.r;im.setMatrixAt(i,m4.compose(v3.set(r.x-ox,b.low-.3,r.z-oz),q.setFromEuler(e.set(0,r.ry,0)),new THREE.Vector3(r.w,r.h+.3,r.d)));});G.add(im);}
  /* the lanes: packed earth, a quad a 4 m step, 0.1 m over the ground */

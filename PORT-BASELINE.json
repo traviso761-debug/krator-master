@@ -1008,6 +1008,10 @@
    "bytes": 8194676,
    "sha256": "becab070ae9e1f97276286485c6d94aea12dfceaf5f0cd694acfde166354fce9"
   },
+  "openworld/iziz-cluster/dist/iziz-cluster.html": {
+   "bytes": 5590460,
+   "sha256": "14bbb6b5f6e71a8118ad68274f31c5417ba7157e9b8ad2281529ef8b85ea7748"
+  },
   "openworld/little-demo/dist/little-demo.artifact.html": {
    "bytes": 5088461,
    "sha256": "319308d69fde833b5f08452efd0851508d8d83e865b3715cb50840dab09cca45"

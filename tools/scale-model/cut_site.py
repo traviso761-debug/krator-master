@@ -7,7 +7,7 @@
 
 openworld/SITES.json names each region's sites by their ids in the model's settlement list (model/src/60-settlements.js,
 the 5.1 canvas) and the model regions (by id) that join the cut. Each site becomes a square of its reach_km half-size round
-its pixel (2 km a pixel), and each named region its own polygon. The cut is their union:
+its pixel (2 km a pixel), each named region its own polygon, and each corridor ({from, to, width_km: 10} in the region's\n`corridors`) a strip from one site's pixel to another's, so the roads between sites have ground. The cut is their union:
   - the first polygon is written as the cut's named region into source/regions.json (with the model's regions, so the
     biome overlays are the model's own), with kind 'tool' so it is never read as a biome;
   - the rest are written to source/added-areas.json;
@@ -17,7 +17,7 @@ its pixel (2 km a pixel), and each named region its own polygon. The cut is thei
 region.json then gains `sites`: [{id, name, type, culture, px, py, x, z, reach_km, page}], in the cut's frame (metres, x
 east, z south, the origin at the box's centre pixel). Deterministic: the same SITES.json and model data give the same cut.
 """
-import json, os, subprocess, sys
+import json, math, os, subprocess, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.normpath(os.path.join(HERE, '..', '..'))
@@ -54,7 +54,23 @@ def polygons(S, region):
             sys.exit('cut_site: region %s is not in the model\'s region list (model/src/51-region-store.js)' % rid)
         out.append({'name': 'region %s (%s)' % (regs[rid]['name'], rid), 'map_px': [list(p) for p in regs[rid]['points']],
                     'kind': 'region', 'ref': rid})
+    for c in G.get('corridors', []):
+        a, b = c['from'], c['to']
+        for sid in (a, b):
+            if sid not in sett or sid not in G['sites']:
+                sys.exit('cut_site: corridor end %s is not one of region %s\'s sites' % (sid, region))
+        out.append({'name': 'corridor %s - %s' % (sett[a]['name'], sett[b]['name']),
+                    'map_px': corridor(sett[a], sett[b], c.get('width_km', 10)), 'kind': 'corridor', 'ref': '%s-%s' % (a, b)})
     return out, sett
+
+
+def corridor(a, b, width_km):
+    """a strip width_km wide from site a's pixel to site b's (so the roads between sites have the world's ground under them)"""
+    dx, dy = b['px'] - a['px'], b['py'] - a['py']
+    L = math.hypot(dx, dy) or 1.0
+    h = width_km * 500.0 / M_PER_PX
+    nx, ny = -dy / L * h, dx / L * h
+    return [[a['px'] + nx, a['py'] + ny], [b['px'] + nx, b['py'] + ny], [b['px'] - nx, b['py'] - ny], [a['px'] - nx, a['py'] - ny]]
 
 
 def cut(region, dry=False):
