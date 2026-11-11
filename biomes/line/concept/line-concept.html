@@ -1,0 +1,515 @@
+<title>The Rift Line</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@500;700;800&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: one long tunnel-dark column; each drawing is a plate on the wall of the bore, captioned like a Fixers' board.
+   A deliberate single dark look (the Line is underground); every colour is set explicitly. */
+:root {
+  color-scheme: dark;
+  --ground: #0f1213;      /* the bore at night */
+  --wall: #171c1d;        /* a plate's ground */
+  --rock: #2a2724;
+  --lining: #8c8f8a;
+  --fg: #e4e1d8;          /* wax-light text */
+  --muted: #9a9a90;
+  --rule: #2c3333;
+  --green: #5fd38a;       /* the lamp code: the Line */
+  --amber: #e8a640;       /* work */
+  --white: #f5f1e4;       /* surface, danger, hooded */
+  --red: #e0584a;         /* home, the tail lamp */
+  --cyan: #4fe3e8;        /* the Ancients' strips */
+  --bronze: #b8894a;
+  --heat: #7a2a1e;
+  --display: "Big Shoulders Display", "Arial Narrow", Impact, sans-serif;
+  --body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+body { background: var(--ground); color: var(--fg); font: 16px/1.55 var(--body); }
+.wrap { max-width: 1080px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 40px 72px; display: grid; gap: 56px; }
+header { display: grid; gap: 14px; }
+.eyebrow { font: 600 12px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--green); }
+h1 { font: 800 clamp(48px, 9vw, 104px)/.9 var(--display); letter-spacing: .01em; margin: 0; text-transform: uppercase; text-wrap: balance; }
+h1 span { color: var(--green); }
+.lede { max-width: 66ch; color: var(--fg); font-size: 18px; margin: 0; }
+.status { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { font: 600 12px/1 var(--mono); padding: 7px 10px; border: 1px solid var(--rule); color: var(--muted); border-radius: 2px; }
+.chip.g { color: var(--green); border-color: color-mix(in srgb, var(--green) 45%, transparent); }
+.chip.a { color: var(--amber); border-color: color-mix(in srgb, var(--amber) 45%, transparent); }
+section { display: grid; gap: 16px; }
+h2 { font: 700 32px/1 var(--display); text-transform: uppercase; letter-spacing: .02em; margin: 0; display: flex; gap: 14px; align-items: baseline; }
+h2 small { font: 600 12px/1 var(--mono); color: var(--muted); letter-spacing: .1em; }
+h3 { font: 700 20px/1.1 var(--display); text-transform: uppercase; letter-spacing: .03em; margin: 0; }
+p { margin: 0; max-width: 72ch; }
+.plate { background: var(--wall); border: 1px solid var(--rule); border-radius: 3px; padding: 14px; overflow-x: auto; }
+.plate svg { display: block; width: 100%; height: auto; min-width: 720px; }
+.cap { font: 13px/1.5 var(--mono); color: var(--muted); max-width: none; }
+.cap b { color: var(--fg); font-weight: 600; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font: 12px/1.4 var(--mono); color: var(--muted); }
+.legend i { display: inline-block; width: 12px; height: 12px; vertical-align: -2px; margin-right: 6px; border-radius: 1px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
+.card { background: var(--wall); border: 1px solid var(--rule); border-radius: 3px; padding: 16px; display: grid; gap: 8px; align-content: start; min-width: 0; }
+.card .num { font: 600 12px/1 var(--mono); color: var(--green); letter-spacing: .08em; }
+.card .km { font: 12px/1.3 var(--mono); color: var(--amber); }
+.card p { font-size: 15px; color: var(--fg); }
+.card .settles { font-size: 14px; color: var(--muted); }
+.card .settles b { color: var(--fg); font-weight: 600; }
+table { border-collapse: collapse; width: 100%; font: 14px/1.4 var(--body); font-variant-numeric: tabular-nums; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font: 600 11px/1.2 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+td.m { font-family: var(--mono); font-size: 13px; white-space: nowrap; }
+.tablewrap { overflow-x: auto; background: var(--wall); border: 1px solid var(--rule); border-radius: 3px; }
+ol.q { margin: 0; padding-left: 28px; display: grid; gap: 10px; max-width: 80ch; }
+ol.q li::marker { font: 600 14px var(--mono); color: var(--green); }
+ol.q b { font-weight: 600; }
+.two { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; }
+footer { font: 12px/1.6 var(--mono); color: var(--muted); border-top: 1px solid var(--rule); padding-top: 16px; }
+code { font: 13px var(--mono); color: var(--amber); }
+@media (max-width: 520px) { .lede { font-size: 16px; } h2 { font-size: 26px; } }
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">biomes/line · concept for the owner · 2026-11-11</div>
+  <h1>The Rift <span>Line</span></h1>
+  <p class="lede">The Ancients' four-track line under the Outer Wall, which the Tungangs still run in pieces: 304 km of bore from the foothills under Shelf to the tableland above Ledge, a hot middle only the sealed trains cross, and three falls the travellers walk round. This page shows the plan's proposals before anything is built.</p>
+  <div class="status">
+    <span class="chip g">settled: four tracks, mostly running</span>
+    <span class="chip g">settled: a <code>line</code> kind in KTRANSIT, cars in the vehicles kit</span>
+    <span class="chip a">everything drawn here: proposed</span>
+    <span class="chip">riding: the riding session's plan</span>
+  </div>
+</header>
+
+<section>
+  <h2>The board <small>segments and gaps</small></h2>
+  <p>The Tungangs' timetable board, as a loj hall would paint it. Each solid run is a segment whose trains have been trapped between its falls for a thousand years and shuttle end to end; a dashed run is a gap walked on foot, with the walk's time. The hot section is the middle of the long run, closed by its two doors.</p>
+  <div class="plate"><svg id="board" viewBox="0 0 1040 250" role="img" aria-label="Schematic line map of the Rift line's segments, stations and gaps"></svg></div>
+  <div class="legend">
+    <span><i style="background:var(--green)"></i>segment (trains run)</span>
+    <span><i style="background:var(--heat)"></i>the hot section</span>
+    <span><i style="background:var(--white)"></i>hot doors</span>
+    <span><i style="border:1px dashed var(--muted)"></i>gap: walked</span>
+    <span><i style="background:var(--cyan)"></i>sealed ghost station (the cyan still lit)</span>
+  </div>
+</section>
+
+<section>
+  <h2>The profile <small>scale model 5.1, surveyed</small></h2>
+  <p>Dalab to Ledge on the 5.1 heights, with the rock the geology bake gives under each kilometre and the virgin rock temperature (the surface's mean plus 25 °C a kilometre of cover). The bore runs level at about 3.5 km; the crest over it reaches 10.4 km and is near-airless. The north end climbs inside the Wall on spirals; the south end is shallow, 30 to 60 m under a wet tableland.</p>
+  <div class="plate"><svg id="profile" viewBox="0 0 1040 470" role="img" aria-label="Elevation profile of the Rift line with rock provinces and rock temperature"></svg></div>
+  <div class="legend">
+    <span><i style="background:#6b5a4a"></i>impact breccia</span>
+    <span><i style="background:#7d7a62"></i>sedimentary</span>
+    <span><i style="background:#a39d93"></i>granite</span>
+    <span><i style="background:#5d6670"></i>gneiss</span>
+    <span><i style="background:#8a5a3c"></i>rift fill</span>
+    <span><i style="background:var(--amber)"></i>bore floor</span>
+  </div>
+  <p class="cap"><b>From the survey</b> (<code>biomes/line/tools/survey_line.py</code>): 304 km bored · cover over 4 km for 113 km, over 6 km for 36 km · deepest 6,881 m at bore km 124 · rock over 60 °C from km 57 to 201 · shallowest point south of the crest km 215 (2,126 m), 25 km west of Loj Twenny.</p>
+</section>
+
+<section>
+  <h2>The section <small>to scale</small></h2>
+  <p>One gallery, 32 m between the lining's faces and 13 m to a flattened vault: the underground twin of the Ancients' 30 m way. Four guideways (concrete beams with a guide slot, no rails), two each way; a 5 m strip between the pairs for the crossover pits, the signal masts and the lamp posts; a walkway on each wall over the cable trough. In bad ground it parts into two twin-track bores.</p>
+  <div class="plate"><svg id="section" viewBox="0 0 1040 470" role="img" aria-label="Cross-section of the four-track gallery drawn to scale, with a split-bore inset"></svg></div>
+  <p class="cap"><b>States per track:</b> built · kept · worn · blocked · cut · flooded (a depth). <b>Per 20 m of section:</b> intact · cracked · spalled · fallen · flooded · silted. A gap is wherever every track is cut; segments are derived from the record, never written.</p>
+</section>
+
+<section>
+  <h2>The train <small>kits/motor-vehicles, culture ancient</small></h2>
+  <p>The Ancient Line train: sealed and pressurised for the hot section, two power cars and six to ten between, in the vehicles kit's Ancient language (white seamed panel, bronze hoops every 3.6 m, a window ribbon, cyan strips, guide skids in the slot). One car, four ages: the state switch the stations and the Tungang kit share.</p>
+  <div class="plate"><svg id="consist" viewBox="0 0 1040 120" role="img" aria-label="A ten-car Line train in side view, car by car"></svg></div>
+  <div class="plate"><svg id="states" viewBox="0 0 1040 640" role="img" aria-label="The saloon car in four states: built, kept, derelict and wreck"></svg></div>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Car</th><th>Size</th><th>Inside</th><th>In a train</th></tr></thead>
+    <tbody>
+      <tr><td><code>anc_line_power</code></td><td class="m">22 × 3.6 × 4.4 m</td><td>sealed cab for two, the cooling and pressure plant</td><td>one each end</td></tr>
+      <tr><td><code>anc_line_saloon</code></td><td class="m">24 × 3.6 × 4.4 m</td><td>64 seats, 40 standing, a vestibule and doors at each end</td><td>2 to 5</td></tr>
+      <tr><td><code>anc_line_crew</code></td><td class="m">24 × 3.6 × 4.4 m</td><td>berths, galley, the guard's cab and brake</td><td>1</td></tr>
+      <tr><td><code>anc_line_van</code></td><td class="m">24 × 3.6 × 4.4 m</td><td>six bays, double doors each side</td><td>1 to 3</td></tr>
+      <tr><td><code>anc_line_tank</code></td><td class="m">22 × 3.6 × 4.2 m</td><td>cooling water, piped through the train</td><td>0 or 1</td></tr>
+      <tr><td><code>tg_trolley</code> · <code>tg_flat</code> · <code>tg_icewagon</code></td><td class="m">salvage</td><td>the Fixers' pump car, a flat wagon, the ice for the hot holds</td><td>the Tungangs' own</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section>
+  <h2>Seven stations <small>build.py --station</small></h2>
+  <p>Each station builds a window of the one Line record at its chainage (km from the north portal) and settles one look question. <code>bore</code> first: the section must be right before anything else.</p>
+  <div class="grid" id="stations"></div>
+</section>
+
+<section>
+  <h2>Riding <small>the hook with PLAN-RIDING.md</small></h2>
+  <div class="two">
+    <div class="card"><h3>The Line gives</h3><p>A route per track along the guideway top; one <code>KSCHED</code> timetable per train with its dwells; the car pose by the riding plan's formula (pitch at most 0.04, no roll); each car's seats, standing room, bays and doors on its record; a stop for every platform face; the gap walks as routes.</p></div>
+    <div class="card"><h3>The riding session builds</h3><p>Floors that ride in <code>core/walk/frame</code>, the ride leg and journeys in <code>core/simulation/ride</code>, capacity, cargo as records, porters across the gaps, the player's carry and the Godot twins. The Line swaps its stand-ins for the real records when both are built.</p></div>
+  </div>
+</section>
+
+<section>
+  <h2>For the owner <small>numbered as in PLAN.md section 15</small></h2>
+  <ol class="q">
+    <li><b>The Line's shape:</b> four segments, three gaps (a breccia fault, a fall into a hypogene chamber, a karst inrush), the hot section the middle of the long run with doors at km 55 and 203, three sealed ghost stations, three sealed trains on the long run. Right, or move the gaps?</li>
+    <li><b>The numbering:</b> count the stations from the Rift's hub north (Cube 1, Chimes 2, Nulab 3, Ledge's lifts 4 … the north portal 15), so Loj Fower stays at Ledge; Loj Twenny's 20 a loj founded later. LORE says "north to south" today.</li>
+    <li><b>Loj Twenny</b> by a 25 km side gallery from the junction at km 218 (it is not on <code>tube_rift_08</code>, which lies 300 km off)?</li>
+    <li><b>The section:</b> the 32 m gallery, guideways with a guide slot and no rails, twin-track bores in bad ground, crossovers as flexing beams?</li>
+    <li><b>The north approach</b> underground from Dalab's plain, climbing on spirals under Shelf, the Line's northern station town?</li>
+    <li><b>The Line's power</b> from the hot section's heat, so the trains and the cooling plant still run and the cyan strips still glow inside the hot section only?</li>
+    <li><b>The stations</b> at these chainages, <code>bore</code> first; <code>hotdoor</code> at the north door (granite and the cleft shrine) or the south?</li>
+    <li><b>The train:</b> 24 m cars, 3.6 m wide, sealed; kept trains at 15 m/s (the long run in about four hours)?</li>
+    <li><b>The car states</b> built, kept, derelict, wreck, with "kept" a new idea for the vehicles kit (one culture's upkeep over another's vehicle)?</li>
+    <li><b>The Tungangs' own stock</b> as a <code>tungang</code> culture in the vehicles kit?</li>
+    <li><b>Riding:</b> accept the riding plan's hook as written?</li>
+    <li><b>Merging:</b> ask the transit and vehicles sessions to merge first, or build the Line on a branch from theirs?</li>
+    <li><b>Hazards:</b> add rockburst, inrush and seal to <code>core/hazard</code> as opt-in kinds?</li>
+    <li><b>Textures:</b> write prompts for the lining segment, the guideway's surface and riveted painted plate?</li>
+    <li><b>The portal:</b> the shallow south as cut-and-cover with shafts and one stretch fallen open to the sky, then 42 km on the surface to Ledge?</li>
+  </ol>
+</section>
+
+<footer>Plan: biomes/line/PLAN.md · survey: biomes/line/tools/survey_line.py (scale model 5.1, geology bake 5.1) · riding: core/simulation/PLAN-RIDING.md · the Tungang kit: kits/tungang/PLAN.md. Nothing here is built; every drawing is a proposal at the plan's numbers.</footer>
+</div>
+
+<script>
+const PROFILE = [[0,606,"s",null],[2,597,"s",null],[4,586,"s",null],[6,573,"s",null],[8,514,"s",null],[10,471,"s",null],[12,415,"s",null],[14,354,"s",null],[16,417,"s",null],[18,498,"s",null],[20,598,"s",null],[22,720,"s",null],[24,781,"s",null],[26,827,"s",null],[28,849,"s",null],[30,863,"s",null],[32,873,"s",null],[34,883,"s",null],[36,887,"s",null],[38,892,"s",null],[40,894,"s",null],[42,895,"s",null],[44,900,"s",null],[46,904,"s",null],[48,916,"s",null],[50,930,"s",null],[52,948,"s",null],[54,968,"s",null],[56,989,"s",null],[58,1010,"s",null],[60,1031,"s",null],[62,1051,"s",null],[64,1069,"s",null],[66,1086,"s",null],[68,1100,"s",null],[70,1118,"s",null],[72,1145,"c",null],[74,1184,"c",null],[76,1241,"c",null],[78,1312,"c",null],[80,1419,"g",null],[82,1557,"g",null],[84,1792,"b",null],[86,2123,"b",null],[88,2543,"b",null],[90,3019,"b",null],[92,3417,"b",null],[94,3721,"b",6],[96,3913,"b",10],[98,4037,"b",13],[100,4139,"b",15],[102,4243,"b",17],[104,4354,"b",19],[106,4431,"b",20],[108,4452,"b",20],[110,4497,"b",21],[112,4597,"s",23],[114,4740,"s",26],[116,4809,"s",27],[118,4813,"s",27],[120,4818,"s",27],[122,4812,"s",27],[124,4844,"s",28],[126,4937,"s",30],[128,5025,"b",32],[130,5183,"b",35],[132,5286,"b",36],[134,5248,"b",36],[136,5205,"b",35],[138,5285,"b",36],[140,5418,"b",39],[142,5553,"b",42],[144,5739,"b",45],[146,5990,"b",50],[148,6251,"g",54],[150,6503,"g",59],[152,6740,"c",64],[154,6960,"c",68],[156,7164,"c",71],[158,7345,"c",75],[160,7497,"c",78],[162,7611,"c",80],[164,7727,"c",82],[166,7876,"c",86],[168,7989,"c",87],[170,7983,"c",88],[172,7933,"c",87],[174,7881,"c",85],[176,7806,"g",84],[178,7688,"g",82],[180,7586,"g",80],[182,7549,"g",79],[184,7554,"g",79],[186,7608,"g",80],[188,7712,"g",82],[190,7923,"g",86],[192,8191,"c",92],[194,8523,"c",97],[196,8857,"c",104],[198,9125,"c",108],[200,9350,"c",113],[202,9491,"c",115],[204,9594,"c",118],[206,9670,"c",119],[208,9746,"c",121],[210,9881,"c",124],[212,10064,"c",127],[214,10263,"c",130],[216,10427,"c",132],[218,10449,"c",133],[220,10401,"c",133],[222,10324,"c",132],[224,10241,"c",130],[226,10147,"c",128],[228,10056,"c",126],[230,9997,"c",126],[232,9958,"c",125],[234,9918,"c",124],[236,9861,"c",123],[238,9695,"c",119],[240,9482,"c",115],[242,9248,"c",111],[244,9000,"c",107],[246,8753,"c",102],[248,8508,"c",98],[250,8348,"c",95],[252,8230,"c",93],[254,8218,"c",93],[256,8256,"c",93],[258,8330,"c",94],[260,8420,"c",97],[262,8506,"c",97],[264,8588,"c",99],[266,8611,"c",100],[268,8612,"c",100],[270,8535,"c",98],[272,8421,"c",96],[274,8197,"c",92],[276,7919,"c",87],[278,7687,"c",82],[280,7504,"c",79],[282,7347,"r",76],[284,7171,"r",73],[286,7022,"r",70],[288,6893,"r",67],[290,6749,"r",65],[292,6608,"r",63],[294,6512,"r",61],[296,6454,"r",59],[298,6400,"r",58],[300,6299,"r",56],[302,6138,"r",53],[304,5953,"r",50],[306,5782,"r",47],[308,5676,"r",45],[310,5660,"r",44],[312,5709,"r",45],[314,5759,"r",46],[316,5769,"r",47],[318,5709,"r",45],[320,5609,"r",44],[322,5528,"r",42],[324,5496,"r",41],[326,5489,"r",41],[328,5433,"r",40],[330,5286,"r",37],[332,5088,"r",34],[334,4948,"r",31],[336,4901,"r",31],[338,4908,"r",30],[340,4891,"r",30],[342,4796,"r",29],[344,4654,"r",25],[346,4517,"r",23],[348,4392,"r",20],[350,4292,"r",19],[352,4226,"r",18],[354,4183,"r",17],[356,4134,"r",16],[358,4064,"r",15],[360,3978,"r",14],[362,3886,"r",11],[364,3796,"r",10],[366,3736,"r",9],[368,3684,"r",7],[370,3635,"r",7],[372,3594,"r",6],[374,3570,"r",6],[376,3565,"r",5],[378,3565,"r",5],[380,3562,"r",5],[382,3553,"r",5],[384,3540,"r",5],[386,3531,"r",5],[388,3530,"r",5],[390,3532,"r",5],[392,3535,"r",5],[394,3534,"r",5],[396,3524,"r",5],[398,3508,"r",4],[400,3487,"r",null],[402,3463,"r",null],[404,3439,"r",null],[406,3394,"r",null],[408,3306,"r",null],[410,3232,"r",null],[412,3195,"r",null],[414,3179,"r",null],[416,3189,"r",null],[418,3214,"r",null],[420,3244,"r",null],[422,3290,"r",null],[424,3367,"r",null],[426,3410,"r",null],[428,3382,"r",null],[430,3263,"r",null],[432,3021,"r",null],[434,2660,"r",null],[436,2266,"r",null],[438,1855,"r",null],[439,1635,"r",null]];
+const NS = 'http://www.w3.org/2000/svg';
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+function el(tag, attrs, parent, text) {
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (text != null) e.textContent = text;
+  if (parent) parent.appendChild(e);
+  return e;
+}
+const C = { green: css('--green'), amber: css('--amber'), white: css('--white'), red: css('--red'), cyan: css('--cyan'), bronze: css('--bronze'),
+  heat: css('--heat'), fg: css('--fg'), muted: css('--muted'), rule: css('--rule'), rock: css('--rock'), lining: css('--lining'), wall: css('--wall'), ground: css('--ground') };
+const MONO = css('--mono'), DISP = css('--display');
+const PROV = { b: '#6b5a4a', s: '#7d7a62', g: '#a39d93', c: '#5d6670', r: '#8a5a3c' };
+
+/* the Line in bore km (from the north portal); line km = bore km + 94 */
+const NODES = [
+  { s: 0, name: 'N portal', sub: 'Shelf', kind: 'st' }, { s: 24, name: 'Valley', sub: 'adit', kind: 'st' },
+  { s: 45, name: 'Fault jct', sub: 'twin bores', kind: 'st' }, { s: 55, name: 'N door', sub: 'cooling plant', kind: 'door' },
+  { s: 89, name: 'Ghost', sub: 'granite', kind: 'ghost' }, { s: 124, name: 'Ghost', sub: 'the deepest', kind: 'ghost' },
+  { s: 160, name: 'Ghost', sub: '', kind: 'ghost' }, { s: 203, name: 'S door', sub: '', kind: 'door' },
+  { s: 218, name: 'Twenny jct', sub: '→ Loj Twenny 25 km', kind: 'st' }, { s: 250, name: 'Station', sub: 'a loj', kind: 'st' },
+  { s: 285, name: 'Shallow', sub: 'shafts', kind: 'st' }, { s: 304, name: 'S portal', sub: '', kind: 'st' },
+  { s: 346, name: 'Ledge', sub: 'Loj Fower · lifts', kind: 'st' }];
+const GAPS = [{ s0: 33, s1: 36, id: 'G1', walk: 'block caves · 2-3 h' }, { s0: 236, s1: 239, id: 'G2', walk: 'chamber + sump · 3-4 h' }, { s0: 262, s1: 264, id: 'G3', walk: 'Fixers\' bypass · 1 h' }];
+const SEGS = [{ s0: 0, s1: 33, id: 'N' }, { s0: 36, s1: 236, id: 'M · the long run' }, { s0: 239, s1: 262, id: 'S1' }, { s0: 264, s1: 346, id: 'S2' }];
+
+/* ---- the board: a schematic, not to scale (gaps and short runs widened so the labels fit) */
+(function board() {
+  const svg = document.getElementById('board');
+  const pos = s => { /* piecewise: the hot section compressed, the ends widened */
+    const K = [[0, 40], [36, 210], [55, 300], [203, 640], [239, 790], [264, 880], [304, 950], [346, 1010]];
+    for (let i = 1; i < K.length; i++) if (s <= K[i][0]) { const a = K[i - 1], b = K[i]; return a[1] + (s - a[0]) / (b[0] - a[0]) * (b[1] - a[1]); }
+    return 1010;
+  };
+  const y = 120;
+  el('rect', { x: pos(55), y: y - 26, width: pos(203) - pos(55), height: 52, fill: C.heat, opacity: .35, rx: 2 }, svg);
+  el('text', { x: (pos(55) + pos(203)) / 2, y: y - 34, 'text-anchor': 'middle', fill: '#e9a28c', 'font-family': MONO, 'font-size': 12 }, svg, 'THE HOT SECTION · rock 60-133 °C · only the sealed trains cross');
+  for (const g of SEGS) {
+    el('line', { x1: pos(g.s0), y1: y, x2: pos(g.s1), y2: y, stroke: C.green, 'stroke-width': 9, 'stroke-linecap': 'round' }, svg);
+    el('text', { x: (pos(g.s0) + pos(g.s1)) / 2, y: y + 66, 'text-anchor': 'middle', fill: C.green, 'font-family': DISP, 'font-weight': 700, 'font-size': 18, 'letter-spacing': '.04em' }, svg, g.id.toUpperCase());
+    el('text', { x: (pos(g.s0) + pos(g.s1)) / 2, y: y + 84, 'text-anchor': 'middle', fill: C.muted, 'font-family': MONO, 'font-size': 11 }, svg, (g.s1 - g.s0) + ' km');
+  }
+  for (const g of GAPS) {
+    el('line', { x1: pos(g.s0), y1: y, x2: pos(g.s1), y2: y, stroke: C.muted, 'stroke-width': 3, 'stroke-dasharray': '5 5' }, svg);
+    const cx = (pos(g.s0) + pos(g.s1)) / 2;
+    el('text', { x: cx, y: y + 34, 'text-anchor': 'middle', fill: C.white, 'font-family': MONO, 'font-weight': 600, 'font-size': 12 }, svg, g.id);
+    el('text', { x: cx, y: y + 48, 'text-anchor': 'middle', fill: C.muted, 'font-family': MONO, 'font-size': 10 }, svg, g.walk);
+  }
+  NODES.forEach((n, i) => {
+    const x = pos(n.s), up = i % 2 === 0;
+    const fill = n.kind === 'door' ? C.white : n.kind === 'ghost' ? C.cyan : C.ground;
+    const stroke = n.kind === 'ghost' ? C.cyan : n.kind === 'door' ? C.white : C.green;
+    if (n.kind === 'door') el('rect', { x: x - 5, y: y - 14, width: 10, height: 28, fill, stroke: C.ground, 'stroke-width': 2 }, svg);
+    else el('circle', { cx: x, cy: y, r: 8, fill, stroke, 'stroke-width': 3 }, svg);
+    const ty = up ? y - 58 : y - 46;
+    el('line', { x1: x, y1: y - 12, x2: x, y2: ty + 6, stroke: C.rule, 'stroke-width': 1 }, svg);
+    el('text', { x, y: ty - 14 + (up ? 0 : 0), 'text-anchor': 'middle', fill: C.fg, 'font-family': DISP, 'font-weight': 700, 'font-size': 15 }, svg, n.name.toUpperCase());
+    el('text', { x, y: ty, 'text-anchor': 'middle', fill: C.amber, 'font-family': MONO, 'font-size': 10 }, svg, 'km ' + n.s + (n.sub ? ' · ' + n.sub : ''));
+  });
+  el('text', { x: 40, y: 236, fill: C.muted, 'font-family': MONO, 'font-size': 11 }, svg, 'DALAB ← spirals down to the plain');
+  el('text', { x: 1010, y: 236, 'text-anchor': 'end', fill: C.muted, 'font-family': MONO, 'font-size': 11 }, svg, 'the lifts down to Nulab, the Rift → Cube');
+})();
+
+/* ---- the profile */
+(function profile() {
+  const svg = document.getElementById('profile');
+  const X0 = 64, X1 = 1010, Y0 = 300, Y1 = 24, EMAX = 11000;
+  const X = km => X0 + km / 439 * (X1 - X0), Y = e => Y0 - e / EMAX * (Y0 - Y1);
+  const bk = s => s + 94;
+  /* grid */
+  for (let e = 0; e <= 10000; e += 2000) {
+    el('line', { x1: X0, y1: Y(e), x2: X1, y2: Y(e), stroke: C.rule, 'stroke-width': 1 }, svg);
+    el('text', { x: X0 - 8, y: Y(e) + 4, 'text-anchor': 'end', fill: C.muted, 'font-family': MONO, 'font-size': 11 }, svg, (e / 1000) + ' km');
+  }
+  el('rect', { x: X(bk(55)), y: Y1, width: X(bk(203)) - X(bk(55)), height: Y0 - Y1, fill: C.heat, opacity: .22 }, svg);
+  el('line', { x1: X0, y1: Y(8000), x2: X1, y2: Y(8000), stroke: '#6f8db0', 'stroke-dasharray': '2 4', 'stroke-width': 1 }, svg);
+  el('text', { x: X1 - 4, y: Y(8000) - 6, 'text-anchor': 'end', fill: '#8fb0d6', 'font-family': MONO, 'font-size': 10 }, svg, 'near-airless above 8 km');
+  /* the ground: strips coloured by province under the surface, down to a little below the floor */
+  for (let i = 0; i < PROFILE.length - 1; i++) {
+    const [k, e, p] = PROFILE[i], [k2, e2] = PROFILE[i + 1];
+    el('path', { d: `M${X(k)},${Y(e)} L${X(k2)},${Y(e2)} L${X(k2)},${Y0} L${X(k)},${Y0} Z`, fill: PROV[p], opacity: .55 }, svg);
+  }
+  el('path', { d: 'M' + PROFILE.map(r => X(r[0]) + ',' + Y(r[1])).join(' L'), fill: 'none', stroke: C.fg, 'stroke-width': 1.5 }, svg);
+  /* the bore floor: the spiral climb from the plain, level through the Wall, the surface run to Ledge's lifts */
+  const floor = [[30, 870], [94, 3614], [398, 3501], [426, 3420], [438, 3400]];
+  el('path', { d: 'M' + floor.map(p => X(p[0]) + ',' + Y(p[1])).join(' L'), fill: 'none', stroke: C.amber, 'stroke-width': 3 }, svg);
+  el('line', { x1: X(438), y1: Y(3400), x2: X(439), y2: Y(1640), stroke: C.amber, 'stroke-width': 2, 'stroke-dasharray': '3 3' }, svg);
+  el('text', { x: X(436), y: Y(1500), 'text-anchor': 'end', fill: C.amber, 'font-family': MONO, 'font-size': 10 }, svg, 'Ledge\'s lifts ↓');
+  el('text', { x: X(40), y: Y(2400), fill: C.amber, 'font-family': MONO, 'font-size': 10 }, svg, 'spirals at ~4 %');
+  /* gaps and stations on the floor */
+  const fy = s => { const k = bk(s); for (let i = 1; i < floor.length; i++) if (k <= floor[i][0]) { const a = floor[i - 1], b = floor[i]; return a[1] + (k - a[0]) / (b[0] - a[0]) * (b[1] - a[1]); } return 3400; };
+  for (const g of GAPS) {
+    const x = X(bk((g.s0 + g.s1) / 2));
+    el('path', { d: `M${x - 6},${Y(fy(g.s0)) - 8} L${x + 6},${Y(fy(g.s0)) + 8} M${x + 6},${Y(fy(g.s0)) - 8} L${x - 6},${Y(fy(g.s0)) + 8}`, stroke: C.white, 'stroke-width': 2.5 }, svg);
+    el('text', { x, y: Y(fy(g.s0)) + 24, 'text-anchor': 'middle', fill: C.white, 'font-family': MONO, 'font-size': 10 }, svg, g.id);
+  }
+  for (const n of NODES) {
+    const x = X(bk(n.s)), yy = Y(fy(n.s));
+    if (n.kind === 'door') el('rect', { x: x - 3, y: yy - 9, width: 6, height: 18, fill: C.white }, svg);
+    else el('circle', { cx: x, cy: yy, r: 4, fill: n.kind === 'ghost' ? C.cyan : C.ground, stroke: n.kind === 'ghost' ? C.cyan : C.green, 'stroke-width': 2 }, svg);
+  }
+  el('text', { x: X(bk(129)), y: Y(10600), 'text-anchor': 'middle', fill: '#e9a28c', 'font-family': MONO, 'font-size': 11 }, svg, 'the hot section · doors at km 55 and 203');
+  el('text', { x: X(bk(124)), y: Y(10449) - 8, 'text-anchor': 'middle', fill: C.fg, 'font-family': MONO, 'font-size': 10 }, svg, '10,449 m');
+  /* x axis: line km and bore km */
+  for (let s = 0; s <= 300; s += 50) {
+    el('line', { x1: X(bk(s)), y1: Y0, x2: X(bk(s)), y2: Y0 + 6, stroke: C.muted }, svg);
+    el('text', { x: X(bk(s)), y: Y0 + 18, 'text-anchor': 'middle', fill: C.amber, 'font-family': MONO, 'font-size': 11 }, svg, 'km ' + s);
+  }
+  el('text', { x: X(0), y: Y0 + 18, fill: C.muted, 'font-family': MONO, 'font-size': 11 }, svg, 'Dalab');
+  el('text', { x: X(439), y: Y0 + 18, 'text-anchor': 'end', fill: C.muted, 'font-family': MONO, 'font-size': 11 }, svg, 'Ledge');
+  /* rock temperature panel */
+  const T0 = 440, T1 = 340, TMAX = 140, TY = t => T0 - t / TMAX * (T0 - T1);
+  for (const t of [0, 60, 100, 140]) {
+    el('line', { x1: X0, y1: TY(t), x2: X1, y2: TY(t), stroke: t === 60 ? '#a8543f' : C.rule, 'stroke-width': 1, 'stroke-dasharray': t === 60 ? '4 3' : '' }, svg);
+    el('text', { x: X0 - 8, y: TY(t) + 4, 'text-anchor': 'end', fill: t === 60 ? '#e9a28c' : C.muted, 'font-family': MONO, 'font-size': 11 }, svg, t + ' °C');
+  }
+  const tp = PROFILE.filter(r => r[3] != null);
+  el('path', { d: 'M' + tp.map(r => X(r[0]) + ',' + TY(r[3])).join(' L') + ` L${X(tp[tp.length - 1][0])},${T0} L${X(tp[0][0])},${T0} Z`, fill: C.heat, opacity: .5 }, svg);
+  el('path', { d: 'M' + tp.map(r => X(r[0]) + ',' + TY(r[3])).join(' L'), fill: 'none', stroke: '#e9a28c', 'stroke-width': 2 }, svg);
+  el('text', { x: X0, y: T1 - 8, fill: C.muted, 'font-family': MONO, 'font-size': 11 }, svg, 'VIRGIN ROCK TEMPERATURE AT THE BORE');
+})();
+
+/* ---- the section, to scale: 25 px a metre */
+(function section() {
+  const svg = document.getElementById('section');
+  const S = 22, OX = 400, OY = 420;
+  const P = (x, y) => [OX + x * S, OY - y * S];
+  const pt = (x, y) => P(x, y).join(',');
+  el('rect', { x: 0, y: 0, width: 1040, height: 470, fill: C.rock }, svg);
+  /* the void and lining: walls plumb to 6 m, a flattened ellipse to 13 m */
+  function arch(half, spring, crown, base) {
+    const n = 40, pts = [pt(-half, base)];
+    pts.push(pt(-half, spring));
+    for (let i = 0; i <= n; i++) { const a = Math.PI - i / n * Math.PI; pts.push(pt(Math.cos(a) * half, spring + Math.sin(a) * (crown - spring))); }
+    pts.push(pt(half, base));
+    return 'M' + pts.join(' L') + ' Z';
+  }
+  el('path', { d: arch(16.6, 6, 13.6, -0.6), fill: C.lining }, svg);
+  el('path', { d: arch(16, 6, 13, 0), fill: '#1b2021' }, svg);
+  /* ring joints suggested: faint radial ticks on the lining */
+  for (let i = 1; i < 16; i++) { const a = Math.PI - i / 16 * Math.PI; const [x1, y1] = P(Math.cos(a) * 16, 6 + Math.sin(a) * 7), [x2, y2] = P(Math.cos(a) * 16.6, 6 + Math.sin(a) * 7.6); el('line', { x1, y1, x2, y2, stroke: '#6d706b', 'stroke-width': 1 }, svg); }
+  /* invert slab, drain */
+  el('rect', { x: P(-16, 0)[0], y: P(0, 0)[1], width: 32 * S, height: .6 * S, fill: '#5c5f5b' }, svg);
+  el('rect', { x: P(-.4, 0)[0], y: P(0, 0)[1] + 2, width: .8 * S, height: .4 * S, fill: '#101415' }, svg);
+  /* walkways and troughs */
+  for (const sd of [-1, 1]) {
+    const x0 = sd < 0 ? -16 : 13.6;
+    el('rect', { x: P(x0, 1.2)[0], y: P(0, 1.2)[1], width: 2.4 * S, height: 1.2 * S, fill: '#4a4e4b' }, svg);
+    el('rect', { x: P(sd < 0 ? -15.4 : 14.4, .9)[0], y: P(0, .9)[1], width: 1.0 * S, height: .5 * S, fill: '#262b2b', stroke: '#6d706b' }, svg);
+    const hx = sd < 0 ? -13.7 : 13.7;
+    el('line', { x1: P(hx, 1.2)[0], y1: P(0, 1.2)[1], x2: P(hx, 2.2)[0], y2: P(0, 2.2)[1], stroke: C.bronze, 'stroke-width': 2 }, svg);
+    el('line', { x1: P(hx, 2.2)[0], y1: P(0, 2.2)[1], x2: P(sd < 0 ? -16 : 16, 2.2)[0], y2: P(0, 2.2)[1], stroke: C.bronze, 'stroke-width': 2 }, svg);
+    /* the dead cyan strip along the walkway edge, a green lamp post */
+    el('rect', { x: P(sd < 0 ? -13.75 : 13.6, 1.25)[0], y: P(0, 1.3)[1], width: .15 * S, height: 2, fill: '#2d5658' }, svg);
+    const lx = sd < 0 ? -15.2 : 15.2;
+    el('line', { x1: P(lx, 1.2)[0], y1: P(0, 1.2)[1], x2: P(lx, 3.4)[0], y2: P(0, 3.4)[1], stroke: '#3c4241', 'stroke-width': 3 }, svg);
+    el('circle', { cx: P(lx, 3.5)[0], cy: P(0, 3.5)[1], r: 5, fill: C.green }, svg);
+    el('circle', { cx: P(lx, 3.5)[0], cy: P(0, 3.5)[1], r: 16, fill: C.green, opacity: .12 }, svg);
+  }
+  /* the central strip: masts and a lamp post */
+  el('rect', { x: P(-2.5, .3)[0], y: P(0, .3)[1], width: 5 * S, height: .3 * S, fill: '#4a4e4b' }, svg);
+  el('line', { x1: P(0, .3)[0], y1: P(0, .3)[1], x2: P(0, 4.2)[0], y2: P(0, 4.2)[1], stroke: '#3c4241', 'stroke-width': 4 }, svg);
+  el('circle', { cx: P(0, 4.3)[0], cy: P(0, 4.3)[1], r: 5, fill: C.green }, svg);
+  el('circle', { cx: P(0, 4.3)[0], cy: P(0, 4.3)[1], r: 18, fill: C.green, opacity: .12 }, svg);
+  el('rect', { x: P(1.2, 3.2)[0], y: P(0, 3.2)[1], width: .5 * S, height: 1 * S, fill: '#2a2f2f', stroke: '#555' }, svg);
+  el('circle', { cx: P(1.45, 2.85)[0], cy: P(0, 2.85)[1], r: 3, fill: C.red }, svg);
+  /* lamp row in the crown: the Ancients' fittings, dead */
+  for (const x of [-9, -3, 3, 9]) { const yy = 6 + Math.sqrt(Math.max(0, 1 - (x / 16) ** 2)) * 7 - .5; el('rect', { x: P(x - .6, yy)[0], y: P(0, yy)[1], width: 1.2 * S, height: .25 * S, fill: '#3a4040' }, svg); }
+  /* air duct in the crown */
+  el('rect', { x: P(-2, 12.4)[0], y: P(0, 12.4)[1], width: 4 * S, height: .9 * S, fill: '#2b3131', stroke: '#4c5352', rx: 4 }, svg);
+  /* guideways and cars */
+  const tracks = [-10.5, -4.5, 4.5, 10.5];
+  tracks.forEach((x, i) => {
+    el('rect', { x: P(x - 1.4, .6)[0], y: P(0, .6)[1], width: 2.8 * S, height: .6 * S, fill: '#9a9a92' }, svg);
+    el('rect', { x: P(x - .15, .6)[0], y: P(0, .6)[1], width: .3 * S, height: .35 * S, fill: '#1b2021' }, svg);
+    el('text', { x: P(x, -1.3)[0], y: P(0, -1.3)[1], 'text-anchor': 'middle', fill: C.fg, 'font-family': MONO, 'font-size': 12, 'font-weight': 600 }, svg, 'T' + (4 - i));
+  });
+  function car(x, kept) {
+    const w = 3.6, b = .9, h = 5.0;
+    const pts = [pt(x - w / 2 + .2, b), pt(x - w / 2, b + .5), pt(x - w / 2, h - .9), pt(x - w / 2 + .5, h), pt(x + w / 2 - .5, h), pt(x + w / 2, h - .9), pt(x + w / 2, b + .5), pt(x + w / 2 - .2, b)];
+    el('path', { d: 'M' + pts.join(' L') + ' Z', fill: kept ? '#6e7b6a' : '#e6e7e1', stroke: '#222', 'stroke-width': 1 }, svg);
+    el('rect', { x: P(x - w / 2, 3.4)[0] - 1, y: P(0, 3.4)[1], width: w * S + 2, height: (kept ? .25 : 1.1) * S, fill: kept ? '#151818' : '#4d84a8' }, svg);
+    if (kept) el('rect', { x: P(x - w / 2, 2.2)[0] - 1, y: P(0, 2.2)[1], width: w * S + 2, height: .35 * S, fill: '#d8cfb0' }, svg);
+    else { el('rect', { x: P(x - w / 2, 2.05)[0] - 1, y: P(0, 2.05)[1], width: w * S + 2, height: 3, fill: C.cyan }, svg); }
+    el('rect', { x: P(x - 1.2, b)[0], y: P(0, b)[1], width: 2.4 * S, height: .3 * S, fill: '#333' }, svg);
+    el('line', { x1: P(x - w / 2 + .3, 1.8)[0], y1: P(0, 1.8)[1], x2: P(x + w / 2 - .3, 1.8)[0], y2: P(0, 1.8)[1], stroke: kept ? '#3d463c' : '#b9bab4', 'stroke-dasharray': '3 3' }, svg);
+  }
+  car(4.5, true); car(-10.5, false);
+  el('text', { x: P(4.5, 5.6)[0], y: P(0, 5.6)[1], 'text-anchor': 'middle', fill: C.fg, 'font-family': MONO, 'font-size': 11 }, svg, 'kept car');
+  el('text', { x: P(-10.5, 5.6)[0], y: P(0, 5.6)[1], 'text-anchor': 'middle', fill: C.fg, 'font-family': MONO, 'font-size': 11 }, svg, 'built car');
+  /* a Tungang on the walkway for scale: 1.6 m */
+  (function fig(x) {
+    const [fx, fy] = P(x, 1.2);
+    el('circle', { cx: fx, cy: fy - 1.45 * S, r: .14 * S, fill: C.fg }, svg);
+    el('line', { x1: fx, y1: fy - 1.3 * S, x2: fx, y2: fy - .75 * S, stroke: C.fg, 'stroke-width': 3 }, svg);
+    el('line', { x1: fx, y1: fy - .75 * S, x2: fx - .18 * S, y2: fy, stroke: C.fg, 'stroke-width': 3 }, svg);
+    el('line', { x1: fx, y1: fy - .75 * S, x2: fx + .18 * S, y2: fy, stroke: C.fg, 'stroke-width': 3 }, svg);
+    el('line', { x1: fx, y1: fy - 1.15 * S, x2: fx + .35 * S, y2: fy - .9 * S, stroke: C.fg, 'stroke-width': 2.5 }, svg);
+    el('line', { x1: fx + .35 * S, y1: fy - .9 * S, x2: fx + .35 * S, y2: fy - 1.9 * S, stroke: C.muted, 'stroke-width': 1.5 }, svg);
+    el('circle', { cx: fx + .35 * S, cy: fy - 1.95 * S, r: 3, fill: C.green }, svg);
+  })(14.8);
+  /* dimensions */
+  const dim = (x1, y1, x2, y2, label, off, vertical) => {
+    const [a, b] = P(x1, y1), [c, d] = P(x2, y2);
+    el('line', { x1: a, y1: b, x2: c, y2: d, stroke: C.amber, 'stroke-width': 1 }, svg);
+    for (const [u, v] of [[a, b], [c, d]]) el('line', { x1: vertical ? u - 4 : u, y1: vertical ? v : v - 4, x2: vertical ? u + 4 : u, y2: vertical ? v : v + 4, stroke: C.amber }, svg);
+    el('text', { x: (a + c) / 2 + (vertical ? 8 : 0), y: (b + d) / 2 + (vertical ? 4 : -6), 'text-anchor': vertical ? 'start' : 'middle', fill: C.amber, 'font-family': MONO, 'font-size': 12 }, svg, label);
+  };
+  dim(-16, 14.2, 16, 14.2, '32 m between the lining\'s faces', 0, false);
+  dim(-17.4, 0, -17.4, 13, '13 m', 0, true);
+  dim(4.5, -.6, 10.5, -.6, '6 m', 0, false);
+  dim(-2.5, 7.4, 2.5, 7.4, '5 m strip', 0, false);
+  /* the split bores inset */
+  const ix = 900, iy = 300, s2 = 6;
+  el('rect', { x: ix - 125, y: iy - 140, width: 250, height: 210, fill: C.wall, stroke: C.rule, rx: 3 }, svg);
+  el('text', { x: ix, y: iy - 120, 'text-anchor': 'middle', fill: C.fg, 'font-family': DISP, 'font-weight': 700, 'font-size': 15 }, svg, 'IN BAD GROUND');
+  el('text', { x: ix, y: iy - 104, 'text-anchor': 'middle', fill: C.muted, 'font-family': MONO, 'font-size': 10 }, svg, 'two twin-track bores, 14 m, 40 m apart');
+  for (const cx of [-10, 10]) {
+    el('circle', { cx: ix + cx * s2, cy: iy - 20, r: 7.4 * s2, fill: C.lining }, svg);
+    el('circle', { cx: ix + cx * s2, cy: iy - 20, r: 7 * s2, fill: '#1b2021' }, svg);
+    el('rect', { x: ix + (cx - 7) * s2, y: iy - 20 + 3.5 * s2, width: 14 * s2, height: 3.5 * s2, fill: '#5c5f5b' }, svg);
+    for (const t of [-3, 3]) el('rect', { x: ix + (cx + t - 1.4) * s2, y: iy - 20 + 3.5 * s2 - .6 * s2, width: 2.8 * s2, height: .6 * s2, fill: '#9a9a92' }, svg);
+  }
+  el('line', { x1: ix - 2.6 * s2, y1: iy - 20 + 2 * s2, x2: ix + 2.6 * s2, y2: iy - 20 + 2 * s2, stroke: C.amber, 'stroke-dasharray': '3 3' }, svg);
+  el('text', { x: ix, y: iy + 52, 'text-anchor': 'middle', fill: C.muted, 'font-family': MONO, 'font-size': 10 }, svg, 'cross-passage every 250 m');
+})();
+
+/* ---- the consist */
+(function consist() {
+  const svg = document.getElementById('consist');
+  const cars = [['P', 22], ['S', 24], ['S', 24], ['C', 24], ['V', 24], ['V', 24], ['T', 22], ['S', 24], ['S', 24], ['P', 22]];
+  const total = cars.reduce((a, c) => a + c[1] + 1, -1), k = 1000 / total;
+  let x = 20;
+  const NAME = { P: 'power', S: 'saloon', C: 'crew', V: 'van', T: 'tank' };
+  cars.forEach(([t, L], i) => {
+    const w = L * k;
+    el('rect', { x, y: 30, width: w, height: 40, rx: t === 'P' ? 0 : 3, fill: '#6e7b6a', stroke: '#222' }, svg);
+    if (t === 'P') el('path', { d: i === 0 ? `M${x},70 L${x},44 Q${x + 2},30 ${x + 14},30 L${x},30 Z` : `M${x + w},70 L${x + w},44 Q${x + w - 2},30 ${x + w - 14},30 L${x + w},30 Z`, fill: C.wall }, svg);
+    el('rect', { x, y: 52, width: w, height: 5, fill: '#d8cfb0' }, svg);
+    if (t === 'S' || t === 'C') el('rect', { x: x + 4, y: 40, width: w - 8, height: 3, fill: '#151818' }, svg);
+    if (t === 'V') { el('rect', { x: x + w / 2 - 9, y: 34, width: 18, height: 34, fill: 'none', stroke: '#3d463c' }, svg); }
+    if (t === 'T') el('rect', { x: x + 3, y: 36, width: w - 6, height: 26, rx: 12, fill: '#56604f', stroke: '#3d463c' }, svg);
+    el('circle', { cx: x + w * .18, cy: 74, r: 3.5, fill: '#333' }, svg); el('circle', { cx: x + w * .82, cy: 74, r: 3.5, fill: '#333' }, svg);
+    el('text', { x: x + w / 2, y: 92, 'text-anchor': 'middle', fill: C.muted, 'font-family': MONO, 'font-size': 10 }, svg, NAME[t]);
+    x += w + k;
+  });
+  el('circle', { cx: 24, cy: 46, r: 4, fill: C.green }, svg);
+  el('circle', { cx: x - k - 4, cy: 62, r: 3.5, fill: C.red }, svg);
+  el('line', { x1: 20, y1: 108, x2: x - k, y2: 108, stroke: C.amber }, svg);
+  el('text', { x: (20 + x - k) / 2, y: 104, 'text-anchor': 'middle', fill: C.amber, 'font-family': MONO, 'font-size': 11 }, svg, total + ' m · a kept 10-car train · green head lamp, red tail');
+  el('text', { x: 20, y: 18, fill: C.fg, 'font-family': DISP, 'font-weight': 700, 'font-size': 15 }, svg, 'THE LONG RUN\'S SECOND TRAIN (KEPT)');
+})();
+
+/* ---- the saloon in four states: 30 px a metre */
+(function states() {
+  const svg = document.getElementById('states');
+  const S = 34, L = 24, H = 4.4;
+  const rows = [['built', 'as the Ancients ran it: white panel, blue glass, bronze hoops, cyan strips lit'], ['kept', 'a thousand years of upkeep: plate over the skin, windows plated to slits, livery bands, lamps, number plates'],
+    ['derelict', 'drawn into a siding and left: glass out, panels sprung, dust'], ['wreck', 'caught in a fall: crushed at one end, off the guideway']];
+  rows.forEach(([st, cap], r) => {
+    const g = el('g', {}, svg), ox = 120, oy = 40 + r * 150, base = oy + 112;
+    const P = (x, y) => [ox + x * S, base - y * S];
+    const R = (x, y, w, h, attrs) => el('rect', Object.assign({ x: P(x, y + h)[0], y: P(x, y + h)[1], width: w * S, height: h * S }, attrs), g);
+    el('text', { x: 20, y: oy + 40, fill: st === 'kept' ? C.green : C.fg, 'font-family': DISP, 'font-weight': 800, 'font-size': 26 }, svg, st.toUpperCase());
+    el('text', { x: 20, y: oy + 58, fill: C.muted, 'font-family': MONO, 'font-size': 10 }, svg, ['as built', 'kept', 'derelict', 'wreck'][r]);
+    el('text', { x: ox, y: oy + 6, fill: C.muted, 'font-family': MONO, 'font-size': 11 }, svg, cap);
+    /* guideway */
+    el('rect', { x: ox - 20, y: base + 8, width: L * S + 40, height: 14, fill: '#9a9a92' }, svg);
+    let tilt = st === 'wreck' ? 'rotate(-4 ' + P(12, 0).join(' ') + ') translate(0 10)' : '';
+    g.setAttribute('transform', tilt);
+    const bodyCol = { built: '#e8e9e3', kept: '#6e7b6a', derelict: '#a29c8c', wreck: '#7a6e5c' }[st];
+    /* body with rounded ends */
+    el('path', { d: `M${P(.6, .45)} L${P(L - .6, .45)} Q${P(L, .45)} ${P(L, 1.2)} L${P(L, H - .8)} Q${P(L, H)} ${P(L - .8, H)} L${P(.8, H)} Q${P(0, H)} ${P(0, H - .8)} L${P(0, 1.2)} Q${P(0, .45)} ${P(.6, .45)} Z`, fill: bodyCol, stroke: '#1d2020', 'stroke-width': 1.2 }, g);
+    /* bogies */
+    for (const bx of [3.5, 20.5]) { R(bx - 1.6, .05, 3.2, .45, { fill: '#2b2e2e' }); for (const wx of [-1, 1]) el('circle', { cx: P(bx + wx, .25)[0], cy: P(0, .25)[1], r: .38 * S, fill: '#1c1f1f', stroke: '#555' }, g); }
+    if (st === 'built') {
+      R(.4, 2.0, L - .8, 1.2, { fill: '#4d84a8' });
+      for (let x = 1.2; x < L - .5; x += 1.2) R(x - .03, 2.0, .06, 1.2, { fill: C.bronze });
+      for (let x = 2.4; x < L; x += 3.6) R(x - .06, .45, .12, H - .55, { fill: C.bronze, opacity: .85 });
+      R(.4, 1.25, L - .8, .07, { fill: C.cyan }); R(.8, H - .35, L - 1.6, .07, { fill: C.cyan });
+      for (const dx of [1.2, L - 2.6]) R(dx, .6, 1.4, 2.65, { fill: 'none', stroke: '#7f6a46', 'stroke-width': 1.5 });
+      R(1.2 + .02, .6, .05, 2.6, { fill: C.cyan }); R(L - 1.25, .6, .05, 2.6, { fill: C.cyan });
+    }
+    if (st === 'kept') {
+      /* plates over the white skin, rivet rows */
+      const plates = [[.3, .5, 4.2, 1.4, '#7b6a52'], [4.4, .5, 5.6, 1.5, '#6a5c48'], [10.1, .5, 4.8, 1.4, '#73644c'], [15, .5, 5.2, 1.5, '#695a45'], [20.3, .5, 3.4, 1.4, '#7b6a52'], [6, 3.3, 7, .9, '#5f6b5a'], [14, 3.3, 6, .9, '#66705f']];
+      for (const [x, y, w, h, c] of plates) { R(x, y, w, h, { fill: c, stroke: '#2e2a22', 'stroke-width': .8 }); for (let rx = x + .2; rx < x + w; rx += .45) { el('circle', { cx: P(rx, y + h - .12)[0], cy: P(0, y + h - .12)[1], r: 1.2, fill: '#2e2a22' }, g); el('circle', { cx: P(rx, y + .12)[0], cy: P(0, y + .12)[1], r: 1.2, fill: '#2e2a22' }, g); } }
+      R(.3, 1.95, L - .6, .3, { fill: '#d8cfb0' }); R(.3, 2.25, L - .6, .9, { fill: '#3f5a43' });
+      for (let x = 1.5; x < L - 1; x += 2.4) R(x, 2.6, 1.5, .18, { fill: '#121515' });
+      R(.3, 3.15, L - .6, .15, { fill: '#d8cfb0' });
+      R(10.6, 1.0, 1.6, .55, { fill: '#e6dcc0', stroke: '#8a2e24', 'stroke-width': 1.5 });
+      el('text', { x: P(11.4, 1.12)[0], y: P(0, 1.12)[1], 'text-anchor': 'middle', fill: '#8a2e24', 'font-family': DISP, 'font-weight': 800, 'font-size': 14 }, g, 'L·8 · 4');
+      el('circle', { cx: P(23.75, 1.3)[0], cy: P(0, 1.3)[1], r: 6, fill: C.green }, g);
+      el('circle', { cx: P(23.75, 1.3)[0], cy: P(0, 1.3)[1], r: 18, fill: C.green, opacity: .15 }, g);
+      el('circle', { cx: P(.25, 1.3)[0], cy: P(0, 1.3)[1], r: 5, fill: C.red }, g);
+      el('path', { d: `M${P(23.2, 4.0)} L${P(23.2, 4.45)} L${P(23.6, 4.45)} L${P(23.6, 4.0)} Z`, fill: C.white }, g);
+      R(23.05, 4.42, .7, .12, { fill: '#2e2a22' });
+      for (const dx of [1.2, L - 2.6]) R(dx, .6, 1.4, 2.65, { fill: 'none', stroke: '#c9a970', 'stroke-width': 2 });
+    }
+    if (st === 'derelict') {
+      R(.4, 2.0, L - .8, 1.2, { fill: '#202323' });
+      for (let x = 1.2; x < L - .5; x += 1.2) { R(x - .03, 2.0, .06, 1.2, { fill: '#6a5333' }); if ((x * 7) % 3 < 1.2) el('path', { d: `M${P(x + .1, 2.0)} L${P(x + .5, 2.0)} L${P(x + .2, 2.7)} Z`, fill: '#3b5566', opacity: .7 }, g); }
+      for (let x = 2.4; x < L; x += 3.6) R(x - .06, .45, .12, H - .55, { fill: '#6a5333' });
+      el('path', { d: `M${P(8.2, 3.3)} L${P(10.6, 3.3)} L${P(10.9, 4.1)} L${P(8.5, 4.2)} Z`, fill: '#bdb6a3', stroke: '#1d2020' }, g);
+      R(0, .45, L, 1.0, { fill: '#5e5443', opacity: .55 });
+      for (const dx of [1.2]) R(dx, .6, 1.4, 2.65, { fill: '#131515' });
+    }
+    if (st === 'wreck') {
+      R(.4, 2.0, L - .8, 1.2, { fill: '#202323' });
+      el('path', { d: `M${P(15, H + .02)} L${P(19, 2.6)} L${P(24, 2.2)} L${P(24, H + .1)} Z`, fill: C.wall }, g);
+      el('path', { d: `M${P(15, H)} L${P(19, 2.6)} L${P(24, 2.2)}`, fill: 'none', stroke: '#1d2020', 'stroke-width': 2 }, g);
+      for (let x = 2.4; x < 15; x += 3.6) R(x - .06, .45, .12, H - .55, { fill: '#5a4429' });
+      R(0, .45, L, 1.1, { fill: '#3f362b', opacity: .6 });
+      /* the fall over its far end */
+      const rub = [[16, 2.6, 2.2], [18.4, 2.2, 2.6], [21, 2.0, 2.8], [23.4, 1.8, 2.2], [19.7, 3.6, 1.6], [22.4, 3.4, 1.8], [25, .8, 2.4]];
+      for (const [x, y, s] of rub) el('path', { d: `M${P(x - s / 2, y)} L${P(x - s / 3, y + s * .5)} L${P(x + s / 3, y + s * .55)} L${P(x + s / 2, y + .1)} Z`, fill: '#5f5850', stroke: '#2a2724' }, svg);
+    }
+  });
+  el('text', { x: 1020, y: 630, 'text-anchor': 'end', fill: C.muted, 'font-family': MONO, 'font-size': 10 }, svg, 'anc_line_saloon · 24 m × 4.4 m · bogies at ±8.5 m · drawn to scale');
+})();
+
+/* ---- station cards */
+(function cards() {
+  const ST = [
+    ['bore', '208-209', 'A kept straight kilometre of the long run south of the south door: four tracks, the lining, a crossover, green lamps running to a point, a train passing on its timetable, a Fixers\' trolley.', 'the section, the scale and the light'],
+    ['gap', '235-240', 'G2: the long run\'s last platform and turning crossover, the gallery fallen into a hypogene chamber, the walk down into it, lamps on posts, a sump waded, a stair up to S1\'s platform and its own train.', 'the walk between segments'],
+    ['station', '218', 'The Twenny junction, an Ancient station cavern in three states (built, kept, abandoned): platforms, mezzanine, sidings, sheds, cistern, the branch toward Loj Twenny. Empty of the kit\'s rooms.', 'the Ancients\' station architecture'],
+    ['hotdoor', '55', 'The north doors: two door walls a train apart (an airlock), the cooling plant kept by rite, a sealed train waiting; beyond, the deep stretch, spalls, haze, the cyan strips still lit; a granite cleft shrine.', 'heat and machinery'],
+    ['breach', '225', 'Where the bore cut a hypogene chamber in the rift fill: a bulkhead in the lining, a window, a stair down into the natural cave.', 'the join of built and natural'],
+    ['fault', '40-48', 'The gallery split into twin bores through the impact breccia; a slump fault shears one bore and its two tracks, the trains cross over to the other; a low point floods two tracks; CO₂ pools.', 'the ruin states by track'],
+    ['portal', '280-304', 'The shallow south under 30-60 m of fill: light shafts, one stretch fallen open to the sky, the portal onto the tableland and the guideway running on toward Ledge.', 'daylight to the dark']];
+  const box = document.getElementById('stations');
+  ST.forEach(([id, km, what, settles], i) => {
+    const c = document.createElement('div'); c.className = 'card';
+    c.innerHTML = `<div class="num">STATION ${i + 1}</div><h3>${id}</h3><div class="km">bore km ${km}</div><p>${what}</p><div class="settles">Settles: <b>${settles}</b></div>`;
+    box.appendChild(c);
+  });
+})();
+</script>
