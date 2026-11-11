@@ -18,7 +18,7 @@ beside `PLAN-MONEY.md` and `PLAN-POLITICS.md` keeps them in step. Each module's 
 | An opt-in walk extension in a subfolder | `core/walk/box` (`KWALKBOX`) | the pattern for an extension a page lists only when it wants it |
 | Motion as a function of time: tasks of legs, `SIM.pose(a, t)`, the motion export, `KSim.pose` in Godot | `core/simulation` 5, 8; `ksim.gd` | the place a ride leg goes; the golden-trace machinery (Dhelv, isle demo) |
 | Transport routes: stops, a timetable laid out offline, `SIM.vehiclePose(id, k, t)` a pure function | `77-sim-5r-routes.js` (Voth's ferries and striders) | the vehicles move; **nobody boards them** (`SIM.board`, PLAN.md Phase 2 step 5, was never built) |
-| `SIM.trade({line})`: a trade carrier bound to a transport's vehicle k | `77-sim-6-trade.js` | goods ride as counts in a carrier's load, not as records |
+| `SIM.trade({line})`: a trade carrier bound to a transport's vehicle k; road and sea legs on a timer; the ledger reconciling every leg | `77-sim-6-trade.js`, `77-sim-7-ledger.js`; the isle demo's lines, villages and expeditions | the rail carrier and the porters' leg, as they are (section 5) |
 | Group events with itineraries (`legs`, `spread`), Dhelv's porters | `77-sim-3-actors.js`; `settlements/dhelv` | the porters' walk across a gap |
 | `KSCHED.timeline({period, phase, segments})` | `core/sched` | a train's s(t), dwells included, as data |
 | Doors as records, leaves posed, walk blocks switched | `core/door` (`KDOOR`) | the car door's leaves; its state is stepped, not a function of time |
@@ -26,7 +26,8 @@ beside `PLAN-MONEY.md` and `PLAN-POLITICS.md` keeps them in step. Each module's 
 | `KTRANSIT.train` (cars placed at rest along a rail) | `kits/ancient-transit` on `claude/ancient-transit-2600a6`, not merged | car sizes and frames; the `line` kind is the Line session's |
 
 **Missing**: floors that move; a leg whose pose is a vehicle's; boarding inside a door window; capacity; a journey
-planner over timetables; cargo as records with a conservation ledger; carry for the player; the Godot twins of all of it.
+planner over timetables; a carrier bound to a train rather than a `SIM.transport`; goods addressed past the next stop;
+carry for the player; the Godot twins of all of it.
 
 ## 1. The rules this plan keeps
 
@@ -119,7 +120,8 @@ SIM.rideRuns(sourceId, t0, t1)        // [{run, from, to, depart, arrive, open: 
 ```
 
 A **run** is one hop of one train between two dwell stops, identified by `(source, cycle, segment)`: the unit capacity
-is counted in.
+is counted in. The fragment wraps `SIM.vehiclePose` so a ride source's id answers it too (car k's pose, `at` the stop of
+the dwell it stands in): that is all `SIM.trade({line})` needs to carry goods on a train (section 5).
 
 ### 4.2 The ride leg (one addition to a task's legs)
 
@@ -161,19 +163,43 @@ itself, when its walk would be longer than the journey, is phase R6.
 
 ## 5. Cargo, the rail carrier and the porters
 
-- **A consignment is a record**: `{id, kind, qty, owner, from, to, at}` where `at` is its holder now: a place's store,
-  a car's slot (`source:k:slot`), a group (porters carrying it), or `delivered`. Ids are stable (`cg.<from>.<n>`).
-- **The rail carrier.** A train is a carrier: at a dwell, consignments bound beyond the stop are loaded into free slots
-  of the right kind and size (bays, the tank car's water, the ice wagon's blocks), unloaded at their stop, in id order.
-- **Porters across a gap.** A consignment unloaded at a gap station waits there until a porters' group (Dhelv's group
-  event: an itinerary from this gap station to the next segment's, `spread` 0 or pairs) takes it: the group's `carry`
-  limit in kg or units, its members walking the gap leg; at the far station it waits for the next train. The group fires
-  when goods wait (or on a timetable), not by chance.
-- **The ledger.** Every move is logged (`load`, `unload`, `porter`, `deliver`) and `SIM.cargoCheck()` sums each kind by
-  holder: what entered equals what is held plus what was delivered, at every step.
-- **Joining the economy** is a later phase (question 4): a delivered consignment lands into the destination's store as
-  an import under the books' contract (SCHEMA.md "The books"), and `SIM.trade` routes over a ride source make their
-  loads consignments instead of counts.
+**What the isle demo already built** (read 2026-11-11 at the owner's pointer: `77-sim-6-trade.js`, `77-sim-7-ledger.js`,
+`77-sim-7-stocks.js`, the isle demo's `47-isle-trade.js`, `61-isle-canoes.js`, `47h-isle-hamlets.js`, and the countryside
+merge 6d19098c3 on `claude/integration-2`: the villages' road and sea legs, the expeditions' camps by boat, the merchant
+houses). Goods already ride:
+
+- **`SIM.trade` carriers hold cargo** as `cargo: [{good, n}]`, loaded by the next stop's want, booked `exported` by the
+  sender as it leaves and `imported` by the receiver as it lands, counted in transit between (`inbound`, `outbound`).
+- **The ledger reconciles every leg** (`SIM.ledger`): per route leg and good, shipped = landed + the change in transit,
+  and per settlement opening + made + imported - consumed - spoiled - exported = closing. The hamlets' checks assert it
+  for every road and sea leg ("every load a village sent landed in its town or is on the road").
+- **A carrier can be bound to a moving vehicle**: `SIM.trade({line})` docks carrier k while `SIM.vehiclePose(line, k,
+  t).at` is one of its stops' places; the drawing follows `SIM.tradeReport` (the canoes shown while docked).
+- **A road leg on a timer** (`minutes`) is how the villages' carts reach their town; the economy's import `carriers`
+  already come as a group walking an itinerary (`SIM.fire`).
+
+So riding adds **no ledger and no cargo record of its own** for goods between settlements. The plan becomes:
+
+- **The rail carrier is a `SIM.trade` route bound to a ride source.** The ride fragment answers `SIM.vehiclePose` for a
+  ride source's id (the car's pose, `at` the stop of the dwell it stands in), so `SIM.trade({line: 'line3.t1', ...})`
+  works unchanged: one route per segment, its stops the stations and gap stations (each a place with a site store, as the
+  canoe stops are). A car's `cap.slots` gives the route's `cap` (the freight van's bays; the tank car's water, the ice
+  wagon's blocks as goods of their own).
+- **The gap is a leg of its own.** Holds grow at the gaps (`kits/tungang/PLAN.md` 0.2), so a gap station's loj is a
+  settlement: segment A's route ends at its gap station, a porters' route carries goods across to the next segment's gap
+  station on the timer (`minutes`: the walk's length at a laden porter's pace, as the villages' roads are timed), and
+  segment B's route goes on from there. The ledger then reconciles each leg as it does every road and sea leg today.
+- **The porters are drawn as a group** fired at each departure of the porters' route (a step hook reading
+  `SIM.tradeReport`, as the canoes are shown): Dhelv's group pattern, single file through the gap's cavern, arriving
+  when the timer lands the load. Their walk is the embodiment; the books are the route's.
+- **Through consignments** (goods with an owner and a destination beyond the next loj: a Glazier's ice order, a
+  trader's salvage to Ledge) are what `SIM.trade` cannot say yet: today every load is chosen by the next stop's want and
+  booked into that stop's town. Carrying them means an addition to `77-sim-6-trade.js` and the ledger: a cargo entry
+  `{good, n, id, owner, to}` (the same `good` and `n`, so every report still sums), and a **transfer** stop where it lands
+  in transit, not into the town's books, until the next leg loads it. That edits files five builds bundle, so it is its
+  own phase, with every such build rebuilt and the isle demo's ledger checks unchanged (question 4).
+- **Riders' own luggage** (a porter's pack, a Fixer's tools) is the items module's (`inv`), carried with its actor: no
+  new code.
 
 ## 6. The player: `core/host` (one opt-in `[web]` fragment)
 
@@ -212,8 +238,9 @@ alights; about forty NPCs on journeys across the gap; porters carry cargo across
 | the door's walk block and step plate follow the window (blocked moving, open at the dwell) | the block left on at a dwell fails `reach` from the platform to a seat |
 | every car's seats and bays are reached from a door in its frame (`F.walk.reach`) | a seat walled off is reported unreached |
 | a journey with a ride, a gap walk and a second ride arrives when the planner said | a timetable shifted 60 s after planning is caught |
-| cargo is conserved through every transfer (sum by kind by holder) | a consignment dropped at the gap fails |
-| the porters' gap legs complete and the cargo meets the next train | a porter group with no route is reported |
+| the books balance across every leg, rail and porters' (`SIM.ledger(a, b).ok`: shipped = landed + in transit) | a load taken off a car at the gap without booking fails the ledger |
+| a load sent from the first segment lands at the far segment's station (traced through the gap station's store) | a porters' route with no departures is reported |
+| the drawn porters walk exactly while their route's carrier is on its way (as the canoes' check) | the flipped state fails |
 | determinism: two loads give the same trace hash | |
 | the Godot replay matches the golden trace (positions within 1 mm) | a trace with one rider moved fails |
 | every other page is byte-identical (`tools/port_baseline.py`) | |
@@ -225,10 +252,10 @@ alights; about forty NPCs on journeys across the gap; porters carry cargo across
 | R0 | this plan, the Line's hook agreed | the owner approves |
 | R1 | `core/walk/frame` and `test-walk-frame.js` | the walk checks pass with their negatives; `node core/walk/test-walk.js` unchanged |
 | R2 | `core/simulation/ride`: ride sources, frame legs, journeys, capacity; `test-ride.js` | the rider checks pass; `test-sim.js` unchanged |
-| R3 | cargo, the rail carrier, the porters | the cargo checks pass |
+| R3 | the rail carrier (`SIM.trade` on a ride source), the gap's porters' route and its drawn group | the cargo checks pass, the ledger balances |
 | R4 | the host fragment and the lab page, `verify.py --assert` | the page shows the walker riding through a door window, the NPC journey with a gap walk, cargo across the gap |
 | R5 | `kride.gd`, the export's frames block, the Godot cars and the golden-trace test | the replay matches |
-| R6 (later) | the resolver choosing the train; cargo joined to the economy; ferries and ships as ride sources; the swap to the Line's kind and cars | as each user needs it |
+| R6 (later) | the resolver choosing the train; through consignments in `SIM.trade` and the ledger (every bundling build rebuilt); ferries and ships as ride sources; the swap to the Line's kind and cars | as each user needs it |
 
 ## 9. Questions for the owner
 
@@ -237,8 +264,10 @@ alights; about forty NPCs on journeys across the gap; porters carry cargo across
 2. **The timetable as a `KSCHED.timeline`** (s along the track, dwells named by stop and side), so the page, the
    simulation and Godot read one shape. Right? (The Line session is asked the same.)
 3. **The test page** `core/simulation/ride/lab/` with a stand-in Line until the Line's kind and cars are merged?
-4. **Cargo**: consignments as records with their own ledger first, joined to the economy's books later (when the Line's
-   lojes trade, or the isle demo's ships carry consignments)?
+4. **Cargo on what the isle demo built**: goods ride as `SIM.trade` routes bound to the trains, one per segment, with a
+   porters' route across each gap (the gap station's loj a settlement), all reconciled by the existing ledger, so R3
+   edits no core file. Goods addressed beyond the next loj (through consignments) need an addition to `SIM.trade` and
+   the ledger that five builds bundle: later (R6), when the Line's trade needs it?
 5. **The player**: board by walking through the open door, E to sit and stand; the camera follows in the car's frame.
    Anything else for the hot section's set piece (the doors sealed, the windows plated, the heat on the readout) in
    this phase, or with the Line's biome?
