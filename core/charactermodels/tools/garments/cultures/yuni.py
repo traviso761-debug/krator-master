@@ -626,7 +626,7 @@ def _build_rehomed_abyssal(sex, body_id):
                           flare=0.07, group_below=core.CROTCH + 0.02, hull_from=core.WAIST)
     p_boubou.cloth = None
     parts_pt = [p_boubou] + \
-               sleeves(gid_pt, 'elbow', 0.024, P('teal', 0.05, [B('bottom', 0.0, 0.035, 'steps', 'gold', 'holyred', 0.04)]), ease_end=0.05, rows=6)
+               sleeves(gid_pt, 'elbow', 0.024, P('teal', 0.05, [B('bottom', 0.0, 0.035, 'steps', 'gold', 'holyred', 0.04)]), ease_end=0.05, rows=6, wide=True)
     entries.append(assemble_garment(gid_pt, 'Abyssal Marsh-Weaver Boubou' if sex == 'm' else 'Abyssal Marsh-Weaver Blouse',
                                     'torso', 'abyssal', parts_pt))
 
@@ -695,7 +695,7 @@ def _build_rehomed_abyssal(sex, body_id):
         t_boubou,
         sleeve(gid_tt + '_under_L', L, P('indigo', 0.04, [B('bottom', 0.0, 0.03, 'solid', 'gold')]), f0=0.42, f1=0.92, ease=0.014, flare=0.006, rows=6),
         sleeve(gid_tt + '_under_R', R, P('indigo', 0.04, [B('bottom', 0.0, 0.03, 'solid', 'gold')]), f0=0.42, f1=0.92, ease=0.014, flare=0.006, rows=6),
-    ] + sleeves(gid_tt, 'elbow', 0.026, bou_sl_p, ease_end=0.065, rows=7)
+    ] + sleeves(gid_tt, 'elbow', 0.026, bou_sl_p, ease_end=0.065, rows=7, wide=True)
     # Cluster of 5 hammered gold disc pectorals & hanging gold rods across the upper chest (matching ref image!)
     gold_m = P('gold', 0.02, [B('top', 0.0, 0.25, 'solid', 'brass')], fabric='metal.gold')
     for kd, (xd, zd, rd) in enumerate(((-0.065, 0.02, 0.026), (-0.032, -0.005, 0.030), (0.0, -0.018, 0.034), (0.032, -0.005, 0.030), (0.065, 0.02, 0.026))):
