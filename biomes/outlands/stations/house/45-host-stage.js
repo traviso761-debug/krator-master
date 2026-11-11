@@ -23,7 +23,8 @@ const LAKE_L=2132;
 // this page's +x: world x = GX + zl, world z = GZ - xl, world y = LAKE_L - 6 + yl. Its box: xl -1500..570, zl -1250..760
 const GX=-520,GZ=-470,GY=LAKE_L-6;
 const toW=(xl,zl)=>[GX+zl,GZ-xl],toL=(x,z)=>[GZ-z,x-GX];
-const SITE={x0:GX-1250,x1:GX+760,z0:GZ-570,z1:GZ+1500};
+// the kit's footprint: its plateau back (zl -1250) to just behind its far wall, and along the cliff the gorge's full length (xl -1500..1130)
+const SITE={x0:GX-1250,x1:GX+870,z0:GZ-1130,z1:GZ+1500};
 // THE WHOLE ESCARPMENT. The kit ends its massif on a MASTER JOINT (its builder's x 150: here z = GZ - 150), a plane that lays the galleries,
 // the passages and the lens open in section for the kit's own sheet. In the world the cliff goes on: this page's ground carries the
 // escarpment past the joint (and past the kit's west taper) as one wall, its face on the kit's brow line, its top at the kit's rim plateau
@@ -31,20 +32,29 @@ const SITE={x0:GX-1250,x1:GX+760,z0:GZ-570,z1:GZ+1500};
 // the cliff; beyond the joint, west of the face, this page's is (inSite leaves that corner out)
 const ZJ=GZ-150,PLAT=GY+690;
 const xFace=z=>GX-110+22*Math.sin(z*.004+.7)+18*(fbm(5,z*.006,577,2)-.5);   /* the cliff's face: the kit's brow at mid-height */
-function massifH(x,z){const xc=xFace(z);return LAKE_L+4+(PLAT-LAKE_L-4)*smooth(xc+55,xc-18,x)+8*(fbm(x*.012,z*.012,579,2)-.5)*smooth(xc+10,xc-60,x);}
+function massifH(x,z){const xc=xFace(z),f=smooth(xc+55,xc-18,x);if(f<=0)return -1e9;   /* only on its own ground: east of the face the lake's */
+ return LAKE_L-20+(PLAT-LAKE_L+20)*f+8*(fbm(x*.012,z*.012,579,2)-.5)*smooth(xc+10,xc-60,x);}
 const beyondJoint=(x,z)=>z<ZJ&&x<xFace(z)+70;
-const inSite=(x,z,m)=>{m=m==null?0:m;return x>SITE.x0-m&&x<SITE.x1+m&&z>SITE.z0-m&&z<SITE.z1+m&&!beyondJoint(x,z);};
+// THE FAR WALL is the kit's one 760 m sheet across the gorge (its builder's z 812 at the water, leaning in 0.14 m a metre: here x = GX + 812), open
+// at its ends and its back. This page stands a solid ridge behind it to the same height and carries it past both its ends before it tapers into
+// the lake, so the gorge reads as an inlet between the escarpment and a ridge, and no sawn-off sheet shows
+const XF0=GX+812,FARTOP=GY+760;
+function farH(x,z){const e=smooth(XF0+28,XF0+85,x)*smooth(XF0+820,XF0+380,x),a=smooth(SITE.z0-700,SITE.z0-120,z)*smooth(SITE.z1+700,SITE.z1+120,z);
+ return e*a<=0?-1e9:LAKE_L-25+(FARTOP-LAKE_L+25)*e*a*(.92+.08*fbm(x*.006,z*.006,587,2))+10*(fbm(x*.02,z*.02,589,2)-.5)*e;}
+const behindFar=x=>x>XF0+40;
+const inSite=(x,z,m)=>{m=m==null?0:m;return x>SITE.x0-m&&x<SITE.x1+m&&z>SITE.z0-m&&z<SITE.z1+m&&!beyondJoint(x,z)&&!behindFar(x);};
 // the wall west of the lake (rising west), the east shore rising to the BSk tableland
 function baseH(x,z){const w=-x-350+120*Math.sin(z*.0011+.5)+80*(fbm(x*.0012,z*.0012,571,2)-.5);   /* metres west of the shore line */
  const wall=w>0?690*smooth(0,1500,w)+.18*Math.max(0,w-1500)+60*smooth(200,1400,w)*(fbm(x*.003,z*.003,573,2)-.5):-18*smooth(0,300,-w);
  const east=x-1900+150*Math.sin(z*.0013+2.2),shore=east>0?240*smooth(0,1200,east)+60*(fbm(x*.002,z*.002,575,3)-.5):0;
  return LAKE_L+4+(w>0?wall:east>0?shore:-22*smooth(0,500,-w)*smooth(0,600,-east));}
 // inside the ruin's box this page's ground sinks under the kit's own (its rock, its plateau, its gorge), meeting it at the box's edge
-function rockH(x,z){return Math.max(baseH(x,z),massifH(x,z));}
+function rockH(x,z){return Math.max(baseH(x,z),massifH(x,z),farH(x,z));}
 function land0(x,z){const h=rockH(x,z),inB=x>SITE.x0-40&&x<SITE.x1+40&&z>SITE.z0-40&&z<SITE.z1+40;if(!inB)return h;
  /* the sink under the kit's site; none beyond the joint west of the face, and it starts at the joint itself (the kit's own rock from there) */
- let k=Math.min(smooth(-40,30,x-SITE.x0),smooth(-40,30,SITE.x1-x),smooth(-40,30,z-SITE.z0),smooth(-40,30,SITE.z1-z));
+ let k=Math.min(smooth(-40,30,x-SITE.x0),smooth(-40,30,z-SITE.z0),smooth(-40,30,SITE.z1-z));
  k*=1-smooth(ZJ+6,ZJ-6,z)*smooth(xFace(z)+90,xFace(z)+60,x);
+ k*=1-smooth(XF0+22,XF0+44,x);   /* behind the far wall: this page's ridge */
  return mix(h,Math.min(h,LAKE_L-30),k);}
 const _tm={x:NaN,z:NaN,h:0};
 function terrainH(x,z){if(x===_tm.x&&z===_tm.z)return _tm.h;const h=land0(x,z);_tm.x=x;_tm.z=z;_tm.h=h;return h;}
@@ -55,7 +65,10 @@ const RING_R=1900,RING_C=[GX+200,GZ+465];
 const RING=(function(){const out=[];for(let k=0;k<220;k++){const a=k/220*TAU,x=RING_C[0]+Math.cos(a)*RING_R,z=RING_C[1]+Math.sin(a)*RING_R;
   if(Math.abs(x)>TERR.R-60||Math.abs(z)>TERR.R-60||inSite(x,z,60)||rockH(x,z)<LAKE_L+3)continue;out.push({x,z,a,k});}return out;})();
 // ---------------------------------------------------------------- the fields
-const SPINE=[[GX,GZ+465],[GX+500,GZ+465],[RING_C[0]+RING_R*.7,RING_C[1]],[2600,-1500],[2600,1500],[-2400,-2400],[-2400,2400]];for(let x=-2800;x<=2800;x+=1100)for(const z of[-2700,-900,900,2700])SPINE.push([x,z]);
+// THE SHORE: the lake's edge east of the far ridge (scanned along each row: where the ground first rises past the water going east), the river
+// colony's seeds (its band of shore is too narrow for a 220 m cell's jittered seed to find) and the LOD spine's points for its forms
+const SHORE=(function(){const out=[];for(let z=-3200;z<=3200;z+=260){let wet=false;for(let x=XF0+300;x<TERR.R-80;x+=12){const h=rockH(x,z);if(h<LAKE_L-.5)wet=true;else if(wet&&h>LAKE_L+2){out.push([x,z]);break;}}}return out;})();
+const SPINE=[[GX,GZ+465],[GX+500,GZ+465],[RING_C[0]+RING_R*.7,RING_C[1]],[2600,-1500],[2600,1500],[-2400,-2400],[-2400,2400]];SHORE.forEach(p=>SPINE.push([p[0]-60,p[1]]));for(let x=-2800;x<=2800;x+=1100)for(const z of[-2700,-900,900,2700])SPINE.push([x,z]);
 const NEAR=STAGEKIT.nearField(SPINE,90,260);
 function fieldsAt(x,z,h,slope){const lakeEdge=!inSite(x,z,30)?smooth(5,0,Math.abs(h-LAKE_L))*(h>LAKE_L-1?1:0):0,east=x>1200&&h>LAKE_L+2?1:0,wall=x<-300&&!inSite(x,z,0)?1:0,site=inSite(x,z,0)?1:0;
  return{near:NEAR(x,z),wet:clamp(.3+.5*lakeEdge,0,1),upland:.5,rock:clamp(smooth(.55,.85,slope),0,1),slope,dry:clamp(.6*east+.3*wall,0,1),shore:lakeEdge,site,
@@ -147,7 +160,7 @@ const t_=new THREE.Color();
 const T_={sand1:new THREE.Color(0xb08e70),sand2:new THREE.Color(0x8a6c54),sand3:new THREE.Color(0x6a5040),varn:new THREE.Color(0x4e3a2e),
  rock:new THREE.Color(0x8a6a58),rock2:new THREE.Color(0x7a5e50),tan:new THREE.Color(0xa08a6a),tan2:new THREE.Color(0x8a7a5e),mud:new THREE.Color(0x5e5444),bed:new THREE.Color(0x4a4a40)};
 Object.assign(STAGE,{
- types:['copper','steppe','river'],seeds:[{id:'house',x:HSEED[0],z:HSEED[1],type:'copper'}],reach:{copper:[900,1500]},share:{copper:.05},unlike:[['river','steppe']],
+ types:['copper','steppe','river'],seeds:[{id:'house',x:HSEED[0],z:HSEED[1],type:'copper'}].concat(SHORE.map((p,i)=>({id:'shore'+i,x:p[0]-4,z:p[1],type:'river'}))),reach:{copper:[900,1500]},share:{copper:.05},unlike:[['river','steppe']],
  tint:{copper:0x6e8a7a,steppe:0x8a6e52,river:0x5a6a4a},tintK:.12,
  paint(x,z,H,c,f){const p1=fbm(x*.012+5,z*.012-2,.7,2),p2=fbm(x*.03-3,z*.03+8,.9,2),rk=f('rock'),sh=f('shore'),west=x<-300?1:0;
   c.copy(T_.tan).lerp(T_.tan2,smooth(.4,.7,p1)*.5);c.lerp(T_.rock,west*.6);c.lerp(T_.rock2,west*smooth(.45,.7,p2)*.4);c.lerp(T_.mud,sh*.6);if(H<LAKE_L)c.lerp(T_.bed,.8);
@@ -177,7 +190,7 @@ Object.assign(STAGE,{
    'The ruin\'s hollow':cam(P(-60,520,180),P(-250,450,-250)),
    'The House colony on the decks':[L1.x+14,L1.y+6,L1.z+10,L1.x,L1.y,L1.z],
    'Glow in the hollow':[G1.x+8,G1.y+3,G1.z+6,G1.x,G1.y+.3,G1.z],
-   'The wall over the lake':K.look(1800,-2600,90,-1600,0,300),
+   'The wall over the lake':K.look(900,-3200,80,-1500,-2300,300),
    'The keep-out ring':[R0.x+Math.cos(R0.a)*40,K.gh(R0.x+Math.cos(R0.a)*40,R0.z+Math.sin(R0.a)*40,3),R0.z+Math.sin(R0.a)*40,R0.x,K.gh(R0.x,R0.z,1.2),R0.z],
    'Glow bells below the quay':K.at(Gb,6,2.4,1.5,.4),
    'Ember hedges on the east shore':K.at(Em,12,.6,2.2,.6),
