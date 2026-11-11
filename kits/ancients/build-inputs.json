@@ -678,7 +678,7 @@
     "core/water/50-core-water-draw.js": "9b487271223b64c2935b3336667963139dddcc055b852ac4f0a1912b2a9dd7e0",
     "core/water/51-core-water-kinds.js": "e0c2edba19b476b4b46a4e08a63f0af695423d88b1da15b380795b2e4d07ead4",
     "kits/ancients/KNOWN_ISSUES.md": "8649f90fe7db1dcf21bddd7ac4ad5d1d1cdf77abec02ed3cdc44c0c74d8b3ed6",
-    "kits/ancients/PORT.md": "a715c4e3f053f2e1422130074f8adfd88a93ca7688f2a382b54923407ba095f0",
+    "kits/ancients/PORT.md": "adef0ebd6d955a3c8feddf951cce9ecfbff8cfa591aa0bd92416ef98dec07948",
     "kits/ancients/build.py": "9180c0170fdc4cde825f9974d573385df9725a883e780b45d97b7e167b4c7671",
     "kits/ancients/src/00-head.html": "0943bbc0cfb9e39df9a2d653ced3bd64adf319eda202c2a1574fa422dca301f4",
     "kits/ancients/src/10-core.js": "7c31cf7eb63a1666c0f1c8cd97fd810c1531d10e8d014c105f807a2ad521138b",
@@ -882,10 +882,11 @@
     "kits/ancients/targets/monolith/89z-rows.js": "bc39f9dd3d11f68ba20466074ab67084073e2dec95b1bd00dd0b62754aa826e4",
     "kits/ancients/targets/monolith/91z-views.js": "b5a48012889ca124c1faee55fe5f880de5a5de99e0c3167b9b553c3f6d377727",
     "kits/ancients/targets/parabola/89z-rows.js": "edd8eaef4f8b4f1048b3d5384755da9c727f2e01079c3d5bfdf98e94390f05ac",
-    "kits/ancients/targets/parabola/8av0-parabola-plan.js": "f5f564ef4a0d8ab7156586ffc51db8f54b36ca95fe08c98eb774cf7a7db4f253",
-    "kits/ancients/targets/parabola/8av1-parabola-draw.js": "3f6d35ca5c674e6b715d10c6158e1a2cbfa58222457d0c79d9d82b7c12c8012d",
+    "kits/ancients/targets/parabola/8av0-parabola-plan.js": "d87dc3f834530d5d9dcd04065dcc63d4fe2ca2016e2f6650b6b6e37dd8af156e",
+    "kits/ancients/targets/parabola/8av1-parabola-draw.js": "c61db827ca7fa01141b153fb302827c267d265f706dc3283fc903c495840c89c",
     "kits/ancients/targets/parabola/90p-parabola-lake.js": "42dc1fa7d56c241fd5c56acad01d2d3ed529a2d31be3a5a40722de084d4a90cf",
-    "kits/ancients/targets/parabola/91z-views.js": "87bda75d1f41f93daf50b8d3ed770c1ee5085bc16b4ed8fc485ce88e2fd7d285",
+    "kits/ancients/targets/parabola/91z-views.js": "55a44cd577d769edf8b412f39a793011e40ecf0d61f65094817d997dbea173f1",
+    "kits/ancients/targets/parabola/test-parabola.js": "7f0688a7f3d7f231bef174f355ad855ce0483dc1c0ae041d6b270620d15e69dc",
     "kits/ancients/targets/plymouth/89z-rows.js": "3694df0b653d8e394e00c93238a44ed77510988042e31a443c376ff9c2b1bc3a",
     "kits/ancients/targets/plymouth/91z-views.js": "fab3ad7171abdf30af2eb07c269e96d2557d301bcc477cdb8bd71a77700576b5",
     "kits/ancients/targets/podium/89z-rows.js": "f8ee5e91b2265101ab2a34dbe6cb6cbdcab5514b5bc4753bb56c83730c7c8047",
@@ -1055,14 +1056,14 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/ancients/build-manifest-parabola.json": "9cc57c35e6f51a0d3bb9b112aea60b593b1ee204ccd0101613af3b6c11435f1c",
+    "kits/ancients/build-manifest-parabola.json": "6787bfd42cd30f22f2b8da70f6f780c41dd70213d7cf1e969eb635c7761301bb",
     "kits/ancients/dist/ancients.tex.ancients.js": "c7ed83f8f8f6137f51a41f8e4e6d9d29f58231c89061aff467c3d4710a313883",
-    "kits/ancients/dist/parabola.html": "e97d83d00a0a88d415056ec8ae40f9874100f057d6002ebc510d653db62a0208"
+    "kits/ancients/dist/parabola.html": "79f12d192bea67d0765ee5735a9ff32b98a92f5f44a6c01fec98a722c70255af"
    },
    "outputs_raw": {
-    "kits/ancients/build-manifest-parabola.json": "6b18d991cb4a4d3072b1a1744e5dd37ec9a4ba9bdf076288a55b24546a48d141",
+    "kits/ancients/build-manifest-parabola.json": "e9a49e6824efe265aed3ffcc784ca2b21bd76025df1329aec25d237b03a5e596",
     "kits/ancients/dist/ancients.tex.ancients.js": "c7ed83f8f8f6137f51a41f8e4e6d9d29f58231c89061aff467c3d4710a313883",
-    "kits/ancients/dist/parabola.html": "e97d83d00a0a88d415056ec8ae40f9874100f057d6002ebc510d653db62a0208"
+    "kits/ancients/dist/parabola.html": "79f12d192bea67d0765ee5735a9ff32b98a92f5f44a6c01fec98a722c70255af"
    }
   }
  }

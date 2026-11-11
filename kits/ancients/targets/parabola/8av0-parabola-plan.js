@@ -31,7 +31,7 @@ PARABOLA.DIM={R:900,DEPTH:320,TILT:30,AZ:0,STO:25.6/7,NS:6,LIT:16,SHELL:55,LOW:7
  HALL:{len:320,w:64,h:30,under:6},VIA:{len:420,w:34,pitch:42},
  // the population: the lit depth behind each front (one-sided, LIT m), NS storeys, SHARE of it homes, M2 gross a person
  SHARE:.8,M2:45,
- // the ruin (owner's brief, 2026-11-11; the wind proposed): mirrors fallen, the windward quarter, the receiver's lean
+ // the ruin (owner's brief and answers, 2026-11-11: the west quarter windward): mirrors fallen, the windward quarter, the receiver's lean
  RUIN:{mirrors:.84,wind:270,quarter:90,breach:.45,lean:14,panes:.35,sandK:5,lake:6}};
 
 PARABOLA.h=function(seed){return KRAND.unit(KRAND.hash.apply(null,arguments));};
@@ -184,10 +184,10 @@ PARABOLA.ruin=function(P){const D=P.dim,RU=D.RUIN,F=P.frame,S=P.seed,h=PARABOLA.
    out.orchard.push({id:'pb.or.'+g.k+'.'+g.s+'.'+i,on:g.id,at:[p[0],g.y1,p[2]],h:4+7*h(S,315,g.k,g.s,i)});}}
  // THE RAIN LAKE: the basin flooded RU.lake m deep, held by the north parapet
  out.lake={id:'pb.lake',level:P.basin.y+RU.lake,poly:P.basin.poly.slice(),depth:RU.lake};
- // proposed: the Izani customs post at the portal and the caravanserai in the hall, where the road from Mantis ends
+ // the Izani customs post at the portal and the caravanserai in the hall, where the road from Mantis ends (owner, 2026-11-11)
  {const Hl=P.hall,cx=(Hl.x0+Hl.x1)/2,z0=Hl.z0+D.HALL.len*.5,z1=Hl.z1-14,stalls=[];
   for(let i=0;i<14;i++){const side=i<7?-1:1,j=i%7;stalls.push({id:'pb.serai.stall.'+i,at:[cx+side*24,Hl.y0,z0+8+j*(z1-z0-16)/6],ry:side>0?-Math.PI/2:Math.PI/2});}
   const beasts=[];for(let i=0;i<10;i++)beasts.push({id:'pb.serai.beast.'+i,at:[cx+(h(S,316,i,0)-.5)*30,Hl.y0,z0+12+h(S,316,i,1)*(z1-z0-24)],ry:h(S,316,i,2)*6.28});
-  out.post={proposed:true,gate:{id:'pb.post.gate',at:[cx,Hl.y0,Hl.z0+3],w:Hl.x1-Hl.x0-6},house:{id:'pb.post.house',at:[cx+20,Hl.y0,Hl.z0+16],size:[14,7,12]},
+  out.post={owner:'2026-11-11',gate:{id:'pb.post.gate',at:[cx,Hl.y0,Hl.z0+3],w:Hl.x1-Hl.x0-6},house:{id:'pb.post.house',at:[cx+20,Hl.y0,Hl.z0+16],size:[14,7,12]},
    serai:{id:'pb.serai',rect:[cx-28,cx+28,z0,z1],y:Hl.y0,stalls,beasts}};}
  return out;};

@@ -50,8 +50,8 @@ function buildParabola(scene,gx,gz,d){reseed(9920+d);KOFF=[gx,0,gz];
   if(RU){for(const t of RU.orchard)T.child(B.id,{'class':'flora',kind:'tree',key:t.id,at:W(t.at),h:t.h});
    T.child(B.id,{'class':'feature',kind:'lake',key:RU.lake.id,at:W(F.low),name:'the rain lake'});
    const Pz=RU.post,Pt={culture:'iziz',state:'reclaimed'};
-   T.child(B.id,{'class':'building',kind:'customs-post',key:Pz.house.id,name:'Izani customs post (proposed)',at:W(Pz.house.at),tags:Object.assign({types:['civic']},Pt)});
-   T.child(B.id,{'class':'building',kind:'caravanserai',key:Pz.serai.id,name:'caravanserai (proposed)',at:W([(Pz.serai.rect[0]+Pz.serai.rect[1])/2,Pz.serai.y,(Pz.serai.rect[2]+Pz.serai.rect[3])/2]),tags:Object.assign({types:['inn','market']},Pt)});}}
+   T.child(B.id,{'class':'building',kind:'customs-post',key:Pz.house.id,name:'Izani customs post',at:W(Pz.house.at),tags:Object.assign({types:['civic']},Pt)});
+   T.child(B.id,{'class':'building',kind:'caravanserai',key:Pz.serai.id,name:'caravanserai',at:W([(Pz.serai.rect[0]+Pz.serai.rect[1])/2,Pz.serai.y,(Pz.serai.rect[2]+Pz.serai.rect[3])/2]),tags:Object.assign({types:['inn','market']},Pt)});}}
 
  REGISTER({name:'Parabola ('+STATE(d)+')',x:0,z:0,r:R*1.05,y:0,h:P.stats.height+20});
  REGISTER({name:'Parabola — the receiver',x:P.receiver.at[0],z:P.receiver.at[2],r:P.receiver.r+12,y:P.receiver.at[1]-P.receiver.r-14,h:2*P.receiver.r+20});
@@ -212,7 +212,7 @@ function buildParabola(scene,gx,gz,d){reseed(9920+d);KOFF=[gx,0,gz];
   // the sand: drifts on the low decks, in the hall's mouth and on the viaduct
   for(const s of RU.sand){const yaw=s.on===P.hall.id||s.on===P.viaduct.id?Math.PI/2:-(s.a+Math.PI/2);
    kput('pbDune',[s.at[0],s.at[1],s.at[2]],qEuler(0,yaw,0),[s.len/2,s.h,s.w/2],new THREE.Color(0xd2b083).multiplyScalar(.9+.15*h(470,Math.round(s.at[0]),Math.round(s.at[2]))));}
-  // proposed: the Izani customs post at the portal and the caravanserai in the hall
+  // the Izani customs post at the portal (owner, 2026-11-11) and the caravanserai in the hall
   {const Pz=RU.post,y=P.hall.y0,cloth=[0xa83a2a,0xd8a040,0x2a5a8a,0xe8dcc0];
    kput('acBox',[Pz.gate.at[0],y+1.1,Pz.gate.at[2]],null,[Pz.gate.w,.35,.35],new THREE.Color(0xb8382a));
    for(const sx of [-1,1])kput('acBox',[Pz.gate.at[0]+sx*Pz.gate.w/2,y+.8,Pz.gate.at[2]],null,[.5,1.6,.5],new THREE.Color(0x6a5034));

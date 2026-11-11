@@ -62,7 +62,7 @@ ok(P.legs.length===3&&P.legs.every(l=>Math.abs(len(sub(l.head,P.receiver.at))-P.
  ok(RU.receiver.lean>10&&RU.legs.length===3,'the receiver leans in its mast, the stairs gone');
  ok(RU.sand.some(s=>s.on===P.hall.id)&&RU.sand.filter(s=>/^pb\.t\./.test(s.on)).every(s=>+s.on.split('.')[2]<=D.RUIN.sandK),'sand drifted on the lower decks and in the hall');
  const gone=new Set(RU.gone);ok(RU.orchard.length>2000&&RU.orchard.every(t=>!gone.has(t.on)&&P.segs.find(g=>g.id===t.on).use==='farm'),'the standing farm treads gone to orchard ('+RU.orchard.length+' trees)');
- ok(RU.post.proposed&&RU.post.serai.stalls.every(s=>s.at[2]>P.hall.z0&&s.at[2]<P.hall.z1),'the Izani post and caravanserai (proposed) in the hall');}
+ ok(RU.post.owner&&RU.post.serai.stalls.every(s=>s.at[2]>P.hall.z0&&s.at[2]<P.hall.z1),'the Izani post and caravanserai in the hall');}
 {const bad=[];const walk=(o,pth)=>{if(typeof o==='number'){if(!isFinite(o))bad.push(pth);}else if(o&&typeof o==='object')for(const k in o)if(typeof o[k]!=='function')walk(o[k],pth+'.'+k);};
  walk(P,'plan');walk(RU,'ruin');walk(DR,'dress');ok(!bad.length,'every number in the plan, the ruin and the dress is finite'+(bad.length?' ('+bad.slice(0,3).join(' ')+')':''));}
 console.log(fails?fails+' FAILED':'all passed');process.exit(fails?1:0);

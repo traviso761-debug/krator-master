@@ -35,7 +35,7 @@ const VIEWS={
  'The rain lake':                (function(S){return PBW(S,S.low[0]-180,S.ymin+70,S.low[2]+230).concat(PBW(S,S.low[0],S.ymin,S.low[2]-40));})(PBB),
  // the receiver cracked and leaning, the stairs gone from its legs
  'The leaning receiver':         (function(S){const f=S.receiver.at;return PBW(S,f[0]-170,f[1]+30,f[2]-160).concat(PBW(S,f[0],f[1]-10,f[2]));})(PBB),
- // the sand in the hall's mouth, the Izani post and the caravanserai (proposed)
+ // the sand in the hall's mouth, the Izani post and the caravanserai
  'The caravanserai':             (function(S){const H=S.hall,cx=(H.x0+H.x1)/2;return PBW(S,cx+18,H.y0+9,H.z0+70).concat(PBW(S,cx,H.y0+3,H.z0+230));})(PBB),
  // the scree under the north lip: mirror glass in the sand
  'The scree':                    (function(S){return PBW(S,S.low[0]+420,90,S.low[2]-420).concat(PBW(S,S.low[0]+300,10,S.low[2]-160));})(PBB),

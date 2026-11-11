@@ -205,9 +205,9 @@ def ruin_sheet(P):
     ft, fs, f = font(36, True), font(19), font(16)
     R = P['ruin']; nf = len(R['fallen']); nm = P['mirrors']
     dr.text((30, 16), 'Parabola: the ruin in plan', font=ft, fill=(20, 20, 20))
-    para(dr, (30, 62), 'The windward (west, proposed) quarter of the shell down (%d of %d panels, hatched) with the upper terraces of that quarter (%d segments, red) slumped '
+    para(dr, (30, 62), 'The windward (west) quarter of the shell down (%d of %d panels, hatched) with the upper terraces of that quarter (%d segments, red) slumped '
             'into the fan (brown); %d of %d mirror panels fallen (%.0f%%): on the tread below (pale), over the rim into the scree (dark); sand on the lower decks and in '
-            'the hall (ochre); %d orchard trees on the standing treads (green); the rain lake (blue), %d m deep. The receiver leans %d degrees. Proposed: the Izani post and the '
+            'the hall (ochre); %d orchard trees on the standing treads (green); the rain lake (blue), %d m deep. The receiver leans %d degrees. The Izani post and the '
             'caravanserai in the hall.' % (len(R['shell']), len(P['panels']), len(R['gone']), nf, nm, 100 * nf / nm, len(R['orchard']), R['lake']['depth'], R['receiver']['lean']), fs, W - 60)
     X, Y = plan_frame(img, dr, 30, 230, s)
     gone_sh = set(R['shell'])
@@ -238,7 +238,7 @@ def ruin_sheet(P):
     dr.rectangle([X(H['x0']), Y(H['z0']), X(H['x1']), Y(H['z1'])], outline=(160, 60, 40), width=2)
     sr = R['post']['serai']['rect']
     dr.rectangle([X(sr[0]), Y(sr[2]), X(sr[1]), Y(sr[3])], outline=(200, 100, 30), width=2)
-    dr.text((X(H['x1']) + 10, Y(sr[2])), 'the caravanserai and the Izani post (proposed)', font=f, fill=(150, 70, 20))
+    dr.text((X(H['x1']) + 10, Y(sr[2])), 'the caravanserai and the Izani post', font=f, fill=(150, 70, 20))
     fo = P['receiver']['at']; r = P['receiver']['r'] * s
     dr.ellipse([X(fo[0]) - r, Y(fo[2]) - r, X(fo[0]) + r, Y(fo[2]) + r], outline=(60, 110, 160), width=3)
     dd = R['receiver']['dir']; dr.line([X(fo[0]), Y(fo[2]), X(fo[0] + dd[0] * 120), Y(fo[2] + dd[2] * 120)], fill=(60, 110, 160), width=3)
@@ -247,7 +247,7 @@ def ruin_sheet(P):
     ax, az = -1250, 0
     dr.line([X(ax - 120), Y(az), X(ax), Y(az)], fill=(60, 60, 60), width=3)
     dr.polygon([(X(ax), Y(az) - 8), (X(ax) + 14, Y(az)), (X(ax), Y(az) + 8)], fill=(60, 60, 60))
-    dr.text((X(ax - 120), Y(az) + 10), 'the wind (proposed)', font=f, fill=(60, 60, 60))
+    dr.text((X(ax - 120), Y(az) + 10), 'the wind', font=f, fill=(60, 60, 60))
     scale_bar(dr, X, Y, f)
     img.save(os.path.join(OUT, 'ruin.png'))
 

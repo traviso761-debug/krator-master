@@ -4,7 +4,7 @@ The owner's choice (2026-11-11), design A of `openworld/ANCIENT-NETWORK.md` sect
 **a terraced paraboloid dish, a city that was a solar furnace**, on the Bowl's south-west rim near the Godsgate (scale model 5.1
 px 970,1186; 1 716 m, 15 degC mean, 314 mm of rain). The model is `../8av0-parabola-plan.js` (the plan, [G data]) and
 `../8av1-parabola-draw.js`; this folder is its blueprint, drawn from the same records, so a sheet cannot drift from the page.
-Facts marked *proposed* wait on the owner (`../NOTES.md`, "Open questions").
+The owner answered its five questions on 2026-11-11, each keeping the default (`../NOTES.md`); the one fact still marked *proposed* is the lake's drain.
 
 | File | What |
 |---|---|
@@ -41,7 +41,7 @@ The plan with `PARABOLA.ruin`'s deltas, every one by a hash of a record's id:
 
 - **84% of the mirrors fallen** (11 764): most lie broken on the tread below their lip; those near the rim's ends and off the
   slumped terraces went over into the scree outside and the fan;
-- **the windward quarter** (the west, *proposed*): 69 of the shell's 288 panels down (the boss's ring kept), its ribs broken a
+- **the windward quarter** (the west; owner, 2026-11-11): 69 of the shell's 288 panels down (the boss's ring kept), its ribs broken a
   quarter to half way up, and the upper terraces of that quarter (101 segments, above the nineteenth terrace) slumped into a fan of
   shell plates, slabs and glass below; behind the standing terraces the dark broken fabric shows;
 - **the receiver** cracked (a gash and a third of its panes gone) and leaning 14 degrees in its seat, 7 m down; **the stairs gone**
@@ -51,5 +51,5 @@ The plan with `PARABOLA.ruin`'s deltas, every one by a hash of a record's id:
 - **the rain lake**: the basin flooded 6 m deep, held by the 10 m north parapet. 314 mm on the dish's 250 ha is about 0.8 million m3 a
   year; the lake holds about as much and loses perhaps a fifth of that to the dry wind, so it overflows in wet years (*proposed*:
   its level is the old drain into the hall, cracked at 6 m);
-- *proposed*: **the Izani customs post** at the portal (a barrier and a customs house on the platform) and **the caravanserai** in the
-  hall's south half (fourteen stalls round a court, beasts, traders), where the Izani road from Mantis ends.
+- **the Izani customs post** at the portal (a barrier and a customs house on the platform) and **the caravanserai** in the
+  hall's south half (fourteen stalls round a court, beasts, traders), where the Izani road from Mantis ends (owner, 2026-11-11).
