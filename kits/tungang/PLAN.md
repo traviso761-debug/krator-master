@@ -80,7 +80,12 @@ them all out.
 4. **The Glaziers' culture id is `glazier`** (question 3).
 5. **The rest stands** (questions 9, 13, 19): the Hearth loj's cooling suits on the Ice-cutters' ice; the bait tin and the
    brew; Loj Nahn as a later fourth set.
-6. The owner asked **what the carriers are** (question 5, still open): section 1.3, "The carriers".
+6. The owner asked **what the carriers are**: section 1.3; renamed **the Travellers** in round 5.
+
+## The owner's answers, round 5 (2026-11-11)
+
+1. **The carriers are the Travellers**, with some cultural similarities to the Irish Travellers; the owner liked the idea
+   of them portering at the Line's gaps (section 1.3; question 5).
 
 ## 0. What the kit is
 
@@ -363,18 +368,35 @@ living**, and the punk shows in each differently:
 |---|---|---|
 | **The bands** (*wildcats*) | raiders and hunters with no steward, each with "a rulebook of their own": Wildcat (427,1453), the war camps `core/camp` still lacks a row for, Firebliss's seasonal hunters | strongest: spiked plate, trophies (a Labber's helmet, a Lizard's scale), slogans daubed on everything (NO SKABS), war drums, soot-blacked eyes, a bigun's seat |
 | **The fell villages** | the Fowlers, the Ice-cutters, the High Rift's summer shielings | in paint and pride: slogans over doors, rope badges, the family's rope as its banner, a few trophies on the meeting hall; the work is careful and the houses tidy |
-| **The carriers** | the ones who live on the road, not in a village: the Ice-cutters' long carry down the wall, egg and honey runners, guides for hire | the road gear: goggles worn up, scrap armour for the road, painted sledges |
+| **The Travellers** (the owner's name, 2026-11-11) | the families who live on the road, not in a village: haulers, dealers, salvage-smiths, guides; porters at the Line's gaps near the portals | the road's look: barrel-top sledge-wagons painted bright, goggles worn up, scrap armour for the road |
 
-**What the carriers are** (the owner asked, 2026-11-11; *proposed*). The rim is a high, broken country between the
-Tungangs' holds, Dalab's road and the hot Rift floor 4 km below, and its goods move on people's backs and sledges. The
-carriers are the Fellgangs who make a living moving them: **haulers** (the Ice-cutters' night carry of ice down the south
-wall to the floor towns, the Fowlers' eggs and honey to the Hearth hold), **guides** (hired by Dalab's trains, traders and
-the odd Historian across the fells and down the walls), and **runners** (messages between the villages and the lojes' rim
-mouths). They are a way of living, not a place: a carrier belongs to a village or a band but spends the season on the road,
-in **carry huts** a day apart, sleeping by the **lantern road**. To the kit that means road pieces, not buildings: the
-`fg-carry-hut`, the `fg-lantern-post`, sledges and pack frames, and a `core/camp` row for a carry party's night halt. A
-natural extension, for the owner to decide: carriers hiring on as **porters at the Line's gaps** near the portals,
-where the Tungangs' underground road meets the rim's.
+**The Travellers** (the owner, 2026-11-11: "we'll call them Travellers"; "some cultural similarities to the Irish
+Travellers"; the rest *proposed*). The rim is a high, broken country between the Tungangs' holds, Dalab's road and the hot
+Rift floor 4 km below, and its goods move on backs, sledges and beasts. The Travellers are the Fellgang families who live
+by moving them, and by the road itself:
+
+- **Family on the road.** Extended families travel together, known by their family names, with their wagons, sledges and
+  pack beasts; they belong to no village and are welcome in most for their work and wares, mistrusted in some, as anyone
+  without a fixed place is. They keep their own counsel and their own ways, and marry mostly among themselves.
+- **Their work.** **Hauling** (the Ice-cutters' night carry of ice down the south wall, the Fowlers' eggs and honey to the
+  Hearth hold), **dealing** (beasts above all, then salvage and goods carried between the villages, the lojes' rim mouths
+  and Dalab's road), **salvage-smithing** (mending plate, pots, lamps, sledges and the Fowlers' pegs: the trade that opens
+  every village's door), **guiding** (Dalab's trains, traders, the odd monk across the fells and down the walls), and
+  **portering at the Line's gaps** near the portals, where the Tungangs' road underground meets the rim's (the owner liked
+  the idea).
+- **Their homes.** Barrel-top covered **sledge-wagons** with bright painted boards, plate runners from tyres and a stove
+  pipe (`fg-wagon`); **halting places** a day apart along the roads, a low shelter by a lantern post where families stop
+  (`fg-halt`).
+- **The Fair.** Once a year, on a fell everyone knows, the Travellers gather with the villages: beasts traded and raced,
+  matches made, quarrels settled, news carried (Ballinasloe's horse fair is the model). It is the rim's own great meeting,
+  as the Big Meeting is the Line's.
+- **A cant of their own** for speaking in front of outsiders, made from fell speech turned backwards and the shepherds'
+  score, as Shelta was made from Irish (a section for the tongues page when the owner wants it).
+- **Drawn with respect**: the Travellers are written from their crafts, the road, family and the Fair, never from
+  prejudice or stereotype.
+
+To the kit that means road pieces and a camp, not buildings: `fg-wagon`, `fg-halt`, `fg-lantern-post`, sledges and pack
+frames, the Fair's pens and stalls, and a `traveller` row in `core/camp` for a halting place.
 
 **How they live** (*proposed* unless marked).
 
@@ -614,7 +636,7 @@ Ice-cutters' stations swap stand-ins for the kit's defs without a layout change 
 |---|---|
 | The wall (Fowlers) | `fg-wall-station` (a pegged ledge with a lift cage or a plate shelter hung from the face), `fg-fixed-line` (a family's rope with its pegs and ladders, as a record: owner, length, the stretch it claims), `fg-nest-ledge`, `fg-burial-ledge` |
 | The meeting | `fg-rope-wall` (inside `fg-meethall`: a peg per family), `fg-tally-board` (the Ice-cutters') |
-| The ice road | `fg-lantern-post` (lobelia in a scrap housing), `fg-carry-hut` (a shelter every few hours down the wall), the sledges (catalog pieces) |
+| The ice road | `fg-lantern-post` (lobelia in a scrap housing), `fg-halt` (a Travellers' halting place by the lantern road), `fg-wagon` (a Travellers' barrel-top sledge-wagon), the sledges (catalog pieces) |
 | The bands | `fg-war-camp` (a `core/camp` row: hide over scrap, the bigun's tent, the trophy pole, the drum), `fg-raid-cache` |
 | Wildcat (section 1.3.1) | `fg-wc-block` (**the scrap pueblo's room block**, the owner's word: two to four storeys set back, walls faced in salvage plate, car shells and corrugated sheet over drystone and rammed earth, beam ends standing out in rows, no ground door, roof hatches, parapets; variants: a store and pen storey, a family's rooms, the hero's top terrace under a horned crest), `fg-wc-ladder` (pulled up at night), `fg-wc-round-room` (the Kimr's round room as the meeting hall, its roof the Boast's stand), `fg-wc-crest` (aurochs skulls on the parapet), `fg-wc-court` (the walled court and pen), `fg-wc-stockade` (scrap and stakes round the knoll's foot), `fg-wc-deeds-wall` (the Deeds: boasts and their outcomes painted and tallied) |
 | The fells | `fg-shieling` (a summer hut on the High Rift), `fg-cairn`, `fg-stone-sign` (Firebliss's "Fellgang stone signs") |
@@ -1126,7 +1148,7 @@ Big Meeting, 11 shine for rank, 12 the 0.94 scale, 14 the core extensions (each 
 **Still open:**
 
 3. **The Glaziers' culture id**: catalog and tags culture `glazier` (the name itself is in use and the tongue is written)?
-5. **The Fellgangs as three ways of living** (bands, villages, carriers), the punk strongest in the bands: right?
+5. *Answered 2026-11-11*: three ways of living, the third the **Travellers**, with some cultural similarities to the Irish Travellers.
 9. **The Hearth loj's cooling suits** run on the Ice-cutters' ice, and a turn in the crystals lasts one block's melt: keep?
 13. **Food words**: the bait tin and the brew (steeped stalk-pith) as the anti-mead; alecap beer only by the cup?
 17. **Which hold first** after the Line's biome: a loj at a gap, the Hearth hold (built and empty), or Loj Twenny?

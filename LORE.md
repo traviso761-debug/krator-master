@@ -237,7 +237,11 @@ The Ancients were the original civilization that colonized Krator, with roots, h
     (`biomes/labyrinth/PLAN.md` §5), and the Kimr's bravado shapes its raiding: capital-H heroism in a **scrap pueblo**, stepped
     room blocks faced in salvage, ladders pulled up at night. A raid is proposed by **a Boast** from the round room's roof and
     joined by **show of hands**; the minute book became **the Deeds**, every boast and whether it was made good; the
-    Aurochs-horn helmet is earned, never inherited; its walls carry heroes and trophies, no spirits.
+    Aurochs-horn helmet is earned, never inherited; its walls carry heroes and trophies, no spirits. **The Travellers** (the
+    owner, 2026-11-11) are the Fellgang families who live on the road, with some cultural similarities to the Irish
+    Travellers: hauling, dealing in beasts and goods, mending salvage, guiding, portering at the Line's gaps near the portals;
+    barrel-top sledge-wagons and halting places along the lantern roads; a yearly Fair (*proposed*), and a cant of their own
+    (*proposed*).
 - **Language.** Two tongues. The priests' **high tongue** is our English, held in place because the God only answers to it; that is the root of priestly rule. The peasants' **low tongue** drifted like a creole: *the* fused on as *da-* (*Dalab* = the lab, *Daranch* = the ranch), plural *-dem*, tense particles *di/go/a*. Latin letters; the God's fixed-width letters are holy. The oldest prayers are the staff's prompts; the formula that let the God forget is lost. The lab had a rival at Ys (§6.16). `lore/tongues-of-krator.html` [the owner, Oct 2026]
 
 ### 6.2 The Empire of Iziz: the Izani (hyperjungle)
