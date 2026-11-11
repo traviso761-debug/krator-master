@@ -70,20 +70,20 @@
     "name": "site Qiblai (skm4jjo2vl)",
     "points_px": [
      [
-      948.0,
-      1551.0
+      907.0,
+      1580.0
      ],
      [
-      978.0,
-      1551.0
+      937.0,
+      1580.0
      ],
      [
-      978.0,
-      1581.0
+      937.0,
+      1610.0
      ],
      [
-      948.0,
-      1581.0
+      907.0,
+      1610.0
      ]
     ],
     "area_km2": 3600
@@ -23634,19 +23634,19 @@
     [
      -466000.0,
      -6000.0,
-     261133.0,
+     261392.0,
      705.1
     ],
     [
      -466000.0,
      -4000.0,
-     405678.0,
+     405937.0,
      681.2
     ],
     [
      -464000.0,
      -2000.0,
-     406427.0,
+     406686.0,
      713.8
     ],
     [
@@ -29234,7 +29234,7 @@
     [
      -466000.0,
      -4000.0,
-     405678.0,
+     405937.0,
      681.2
     ]
    ],
@@ -33013,19 +33013,19 @@
      -538000.0,
      52000.0,
      44651.0,
-     -1895.8
+     -1894.2
     ],
     [
      -540000.0,
      52000.0,
      48035.0,
-     -1901.4
+     -1905.0
     ],
     [
      -542000.0,
      54000.0,
      52412.0,
-     -1908.4
+     -1907.9
     ],
     [
      -544000.0,
@@ -36487,7 +36487,7 @@
     [
      -539000.0,
      52000.0,
-     -1901.1,
+     -1900.0,
      1096.7
     ],
     [
@@ -40373,12 +40373,12 @@
    "name": "Qiblai",
    "type": "city",
    "doc": "skm4jjo2vl",
-   "px": 963,
-   "py": 1566,
-   "x": -456000.0,
-   "z": -6000.0,
+   "px": 922,
+   "py": 1595,
+   "x": -538000.0,
+   "z": 52000.0,
    "biome": "xanadu",
-   "notes": ""
+   "notes": "Holy city of the Decree, ~12,000, under a council of abbots (kits/qiblai/PLAN.md; LORE.md 6.13). Moved 2026-11-11 (the owner: by a river, near plentiful resources) from 963,1566, 65 km from any river and without salt, 101 km to the cataracts of Nahr ash-Shalalat (~1,100 m3/s, the region's biggest river): flat ground for the 1.6 km mandala (37 m relief), rock salt, potash, rare earths, saltpeter, copper and oil within 30 km, farmland 40% (openworld/PLAN-SITES.md)."
   },
   {
    "name": "Strongbow",
@@ -40985,10 +40985,10 @@
    "name": "Qiblai",
    "type": "city",
    "culture": "xanadu",
-   "px": 963,
-   "py": 1566,
-   "x": -456000.0,
-   "z": -6000.0,
+   "px": 922,
+   "py": 1595,
+   "x": -538000.0,
+   "z": 52000.0,
    "reach_km": 30,
    "page": null
   }

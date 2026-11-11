@@ -39,6 +39,21 @@
   ground (hash `8ad035b1`), and every check passes in the browser.
 - **Not moved yet:** Pinnacle Rock's own page and the published model (`openworld/pinnacle/KNOWN_ISSUES.md`).
 
+**Qiblai moved (the owner, 2026-11-11: "by a river and near plentiful resources").**
+- **Why it moved.** At 5.1 px 963,1566 the city stood 65 km from any river in the open world's data, with no salt
+  within 30 km.
+- **The survey.** Every river in the Xanadu overlay was scored, in 6 km steps, on resources within 30 km (`WRES.assess`),
+  farmland and flat ground for a 1.6 km grid. The owner chose **the cataracts of Nahr ash-Shalālāt, px 922,1595**: the
+  region's biggest river (~1,100 m³/s), 37 m of relief over the grid, rock salt (236), potash, rare earths, saltpeter,
+  copper and oil within reach, farmland 40%.
+  - The Ālph's best point was a gorge (~300 m of relief over the grid).
+  - Gūlī Qubbah was flat and mild but had no salt.
+- **The model's record moved** (`model/src/60-settlements.js`, `SETT_MOVED['5.1e3']`).
+- **The region followed it:** recut (the frame unchanged), the villages and links re-baked, the resources re-baked, the
+  verify's region check at the new pixel.
+- **Erewhon stays put for now:** its lake is to be remodelled first (Lake Atitlán, bigger, with islands; the owner,
+  2026-11-11). The city then moves onto the new shore.
+
 **The second region, Xanadu, Oidong and the High Rift (2026-11-10): `openworld/xanadu-oidong-highrift`.**
 - **The cut:** 1,780 x 582 km at 1 km cells, in about 40 s.
 - **The villages:** Erehwon's and Qiblai's farming and ranching villages and Longsong's three, 15 in all (577 buildings),

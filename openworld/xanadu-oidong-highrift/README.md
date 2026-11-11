@@ -24,7 +24,8 @@ The second region of sites cut off the scale model into the open world (`openwor
   ground with core/hamlet's `xanadu` row, drawn with the Xanadu building kit (`XAK`):
   - **Erehwon** (`s57bkv9741`, px 800,1503): the Sultanate's city (`settlements/xanadu`). Five farming villages 4.6 to
     8 km round it and a ranching village 12 km out: 1,345 people in 249 buildings.
-  - **Qiblai** (`skm4jjo2vl`, px 963,1566), with no page yet: the same ring, 1,345 people in 228 buildings.
+  - **Qiblai** (`skm4jjo2vl`, px 922,1595 since 2026-11-11, moved from 963,1566 to the cataracts of Nahr ash-Shalālāt:
+    by a river, near rock salt and ore; the owner's word), with no page yet: the same ring, re-planned on the new ground.
   - **Longsong** (`sq80bzd7ep`, px 1226,1626): the History Monks' monastery (`settlements/longsong`). Its three villages
     stand where its page lays them: Shar and Nub (farming) and Dzo-ling (the herders), 585 people in 110 buildings.
 - **The roads:**

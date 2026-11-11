@@ -159,7 +159,11 @@ function stops(Lk,S,kit,fromName,toName){const out=[],errors=[],gaps=[],P=Lk.pts
    ground is shaped to the road) */
 function road(n,siteId,fromId,at,to,hw){const R=ROADS.route({name:fromId,x:at.x,z:at.z,r:0},to);
  if(!R||!R.pts||R.pts.length<2)return null;
- const rest=R.pts.filter(p=>Math.hypot(p[0]-at.x,p[1]-at.z)>1),p1=rest[0],d1=Math.hypot(p1[0]-at.x,p1[1]-at.z),e1=p1[2]==null?HL(p1[0],p1[1]):p1[2];
+ const rest=R.pts.filter(p=>Math.hypot(p[0]-at.x,p[1]-at.z)>1);
+ /* the router's first grid point can lie behind the start (the next point nearer the start than it): a spur that doubles
+    back, whose two carriageways the ground cannot both lie on (Qiblai's first village, 2026-11-11): drop it */
+ while(rest.length>2&&Math.hypot(rest[1][0]-at.x,rest[1][1]-at.z)<Math.hypot(rest[0][0]-at.x,rest[0][1]-at.z))rest.shift();
+ const p1=rest[0],d1=Math.hypot(p1[0]-at.x,p1[1]-at.z),e1=p1[2]==null?HL(p1[0],p1[1]):p1[2];
  const g=.075*d1,eg=e1+Math.max(-g,Math.min(g,HL(at.x,at.z)-e1));
  const pts=[[at.x,at.z,eg]].concat(rest);
  return{id:siteId+'/road/'+n,from:fromId,to:siteId,hw:hw==null?R.hw:hw,pts:pts.map(p=>[r2(p[0]),r2(p[1]),r2(p[2]==null?0:p[2])]),
