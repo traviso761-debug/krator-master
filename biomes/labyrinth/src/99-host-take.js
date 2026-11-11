@@ -18,7 +18,7 @@ const VIEWS=(function(){const V={},Y=LEVEL;
  // the funeral road: causeway 3 (south-west), its skull poles toward the plinth (the Kimr's necropolis)
  {const a=2*Math.PI/3;V['The funeral road']=look(Math.cos(a)*400,Math.sin(a)*400+16,1.8,Math.cos(a)*190,Math.sin(a)*190,14);}
  // the stacks from the pond's north-east bank: the bridges, the saucers, the Garden Stack's fall
- {const S=stk('S1');V['The stacks']=look(420,-80,30,S.x,S.z,170);}
+ {const S=stk('S1');V['The stacks']=lookY(820,Y+140,-820,S.x,Y+150,S.z);}   /* from the north-east, the Works Stack nearest, the Garden and Mine Stacks and their bridges behind */
  // the Garden Stack's fall into its pool
  {const f=GATE.plan.falls[0];if(f)V['The Garden Stack\'s fall']=look(f.x+f.nx*240+f.nz*80,f.z+f.nz*240-f.nx*80,20,f.x,f.z,120);}
  // the Gowd Warra above the pond, its gallery woods

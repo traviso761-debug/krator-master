@@ -15,7 +15,7 @@ if(new URLSearchParams(location.search).get('fields')!=='0'){const S0=FIELD.shor
 window._biome=null;
 const SHADOW_ON=new URLSearchParams(location.search).get('shadow')!=='0'&&typeof KSHADOW!=='undefined'&&!!KSHADOW.attach;
 (function(){
- const t0=performance.now(),Q=new URLSearchParams(location.search),q=Q.has('q')?+Q.get('q'):.7;
+ const t0=performance.now(),Q=new URLSearchParams(location.search),q=Q.has('q')?+Q.get('q'):1;   /* the kit's own quality: at .7 its thinned crowns leave 1.35% of the bloom cards floating (the core attach audit) */
  try{BIO.cur='labyrinth/'+SITE.key;window._biome=NWLOW.build({R:TERR.R-150,quality:q});BIO.cur=null;}catch(e){reportErr('flora: '+e.stack);}
  if(Q.has('nobake')){window._stats=JSON.parse(JSON.stringify(BIO.stats));window._instances=0;window._bakeCalls=0;return;}
  const b=BIO.bake();

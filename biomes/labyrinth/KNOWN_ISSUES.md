@@ -4,6 +4,12 @@
   grows grass trees, banksias, needle cypress and she-oak on the floor, with a few birches, poplars and glow-willows: an
   Australian-looking parkland, not the mammoth steppe of PLAN.md section 3. The Labyrinth's own flora (steppe grasses and
   forbs, larch, birch, poplar, willow, dwarf scrub, the wild melon) is a kit still to make.
+- [ ] **The GPU verify fails one assert: the core attach audit** (2026-11-11, RTX lane): 97 of 7,302 cards above the ground float,
+  1.33% against a 1% limit (biome:bloom 92/916, biome:drape 5/1,084; worst about 0.85 m off with 0.57 m tolerance). Every other
+  assert and every negative control passes. These are the NW lowlands kit's blooms, scattered round a shrub's centre with no hold
+  (`biomes/nwlowlands/src/60-biome-nwlowlands-floor.js`, `blooms()`; core/biome README, "the residual floaters": `BIO.holdTo` or
+  `{onLeaf:true}`). The kit's quality does not move it (0.7: 1.35%, 1: 1.33%). The fix is in that shared kit and reaches every page
+  that reads it, so it is not made from here; it goes away anyway when the Labyrinth's own flora replaces the stand-in.
 - [ ] **No animals yet.** The megafauna wait for `kits/fauna` (PLAN.md section 4); no herd, trail or wallow is drawn.
 - [ ] **No hazards.** `core/hazard` is not taken yet: station 1 draws no fall at the stacks' walls and no charge (PLAN.md section 7,
   amendment 2).
