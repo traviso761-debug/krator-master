@@ -35,3 +35,6 @@ const FAUNA=(function(){const Q=new URLSearchParams(location.search),out={land:'
  out.plan=plan;out.first=plan.groups.length?{x:plan.groups[0].at[0],z:plan.groups[0].at[2]}:null;
  return out;})();
 window._fauna={land:FAUNA.land,groups:FAUNA.groups,animals:FAUNA.animals,drawn:FAUNA.drawn,byRole:FAUNA.byRole,keys:FAUNA.keys,missing:FAUNA.missing};
+// THE HEIGHT FOG ON WHAT CAME AFTER IT: 89a hooked the scene's materials (ATMOS.heightFogScene) before the sites (89s) and the animals (above)
+// were drawn, and a lit material without the hook draws black under the deck. Run again: a material already hooked is skipped (KHOOK.add by name)
+if(typeof ATMOS!=='undefined'&&ATMOS.heightFogScene&&ATMOS.U&&ATMOS.U.fogH)window._fauna.hfogLate=ATMOS.heightFogScene(scene);
