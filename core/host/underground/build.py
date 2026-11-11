@@ -16,7 +16,8 @@ import host as khost
 FRAGS = [os.path.join(HERE, '00-head.html')] + [khost.path(f) for f in khost.SHADER]
 FRAGS += [os.path.join(CORE, 'rand', '08-core-rand.js'), os.path.join(CORE, 'walk', '20-core-walk.js')]
 FRAGS += [os.path.join(CORE, 'tags', f) for f in ('50-core-tags.js', '52-core-tags-vocab.js', '53-core-tags-host.js')]
-FRAGS += [os.path.join(CORE, 'terrain', '39-core-cavern.js'), os.path.join(CORE, 'terrain', 'host', '39e-core-cavern-draw.js')]
+FRAGS += [os.path.join(CORE, 'terrain', '39-core-cavern.js'), os.path.join(CORE, 'terrain', 'host', '39e-core-cavern-draw.js'),
+          os.path.join(CORE, 'terrain', 'host', '39h-core-cavern-cut.js')]
 FRAGS += [khost.path(f) for f in sorted(khost.FULL + khost.UNDERGROUND)]
 FRAGS += [os.path.join(HERE, f) for f in ('40-world.js', '60-scene.js', '98-take.js', '99-tail.html')]
 out = []

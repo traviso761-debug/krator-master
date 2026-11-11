@@ -1651,6 +1651,64 @@ root.KCOLOR=C;
     return {group:grp,meshes:grp.children.length,chunks:chunks,tris:tris,ms:Math.round(now()-t0)};};
 })(typeof window!=='undefined'?window:globalThis);
 
+// ==================== terrain/host/39h-core-cavern-cut.js
+// ================================================================= CORE HOST — cavern: the rock cut (a dollhouse at every level)  [web]
+// Lifted 2026-11-11 from the Zeijani kit (kits/zeijani/src/40-zj-cave.js: the cut-away and CV_BOXCUT; settlements/dhelv's cut boxes) for
+// every cave page, with the owner's leave (kits/tungang/PLAN.md section 6.5, question 14; core/host/UNDERGROUND.md). The kit keeps its own
+// fork until it adopts this (kits/zeijani/KNOWN_ISSUES.md). OPT-IN BY FILE AND BY MATERIAL: a build lists it beside 39e and puts the layer
+// on its rock material; a page without it is unchanged. Needs core/shader (KHOOK) and 39-core-cavern.js.
+//
+// In the cut, each void's rock opens `above` metres over that void's OWN floor (a room's, a stair's foot, a hall's, a tube's lowest
+// point; a shaft opens whole above its foot): looked at from above, every level shows its rooms with their walls standing to waist or
+// head height, whatever the level. Rock that is no void's own (the ground's surface, a mass, a monolith) opens only inside the cut boxes:
+// turned boxes with a floor (open above floor + above) and an optional top (shut above it), Dhelv's carved sites nearest the camera.
+//
+//   KCAVERN.cutFloor(P) -> the floor a primitive's rock opens above, or null (not a void: a monolith, a mass, a body)
+//   KCAVERN.cutWeight(C, {own(P) -> bool (default: every void), attr: 0}) -> fn for KCAVERN.drawRock's `weight`: writes into out[attr]
+//     the floor of the vertex's own void, or KCAVERN.CUT_NONE (1e6) where it has none (the ground, a mass). drawRock({attrs: ['aKCut'],
+//     weight: KCAVERN.cutWeight(C)}) (with other weights: compose, or pass attr: the index of 'aKCut')
+//   KCAVERN.cutLayer(material, {attr: 'aKCut'}) -> material   the KHOOK layer 'kcavern-cut' (once per material)
+//   KCAVERN.cut: {U (the shared uniforms), set(on), on, above(m: 2), boxes([{x, z, hw, hd, ry, floor, top?}]) (at most 32; [] clears),
+//     MAX: 32, discards(y, ownFloor, x, z) -> bool (the shader's rule in JS: a pick's filter, and the node test's)}
+(function(root){
+  'use strict';
+  var K=root.KCAVERN;if(!K)throw new Error('host/39h-core-cavern-cut: load core/terrain/39-core-cavern.js first');
+  var NONE=1e6,MAX=32;K.CUT_NONE=NONE;
+  K.cutFloor=function(P){if(!P)return null;var k=P.kind;
+    if(k==='room')return P.y;if(k==='stair')return Math.min(P.a[1],P.b[1]);if(k==='hall')return P.c[1];if(k==='shaft')return P.y0-2;
+    if(k==='trench')return P.y0;if((k==='tube'||k==='bore')&&P.pts&&P.pts.length){var m=1e30;for(var i=0;i<P.pts.length;i++)m=Math.min(m,P.pts[i][1]);
+      if(k==='bore'){var r=Math.min(P.r==null?1:P.r,P.r1==null?(P.r==null?1:P.r):P.r1);m-=r;}return m;}
+    return null;};
+  K.cutWeight=function(C,o){o=o||{};var own=o.own||null,at=o.attr==null?0:o.attr,F=C.prims.map(function(P){var f=K.cutFloor(P);return f==null||(own&&!own(P))?NONE:f;});
+    return function(x,y,z,nx,ny,nz,ch,i,out){var p=ch.prim[i];out[at]=p===65535||p>=F.length?NONE:F[p];};};
+  // ---------------------------------------------------------------- the shared state and the layer
+  var U=null;
+  function uniforms(){if(U)return U;var T=root.THREE,a=[],b=[];for(var i=0;i<MAX;i++){a.push(new T.Vector4());b.push(new T.Vector4());}
+    U={uKCutOn:{value:0},uKCutAbove:{value:2},uKCutA:{value:a},uKCutB:{value:b}};return U;}
+  var S={MAX:MAX,on:false,list:[],get U(){return uniforms();}};
+  S.set=function(on){S.on=!!on;uniforms().uKCutOn.value=S.on?1:0;return S.on;};
+  S.above=function(m){uniforms().uKCutAbove.value=m==null?2:m;};
+  /* uKCutA: centre x, z, half width, half depth; uKCutB: cos, sin of its turn, its floor, its top (NONE: no top). A box past MAX is dropped */
+  S.boxes=function(list){var u=uniforms();S.list=(list||[]).slice(0,MAX);for(var i=0;i<MAX;i++){var q=S.list[i],A=u.uKCutA.value[i],B=u.uKCutB.value[i];
+    if(!q){A.set(0,0,0,0);B.set(0,0,-NONE,0);continue;}A.set(q.x,q.z,q.hw,q.hd);B.set(Math.cos(q.ry||0),Math.sin(q.ry||0),q.floor,q.top==null?NONE:q.top);}
+    return S.list.length;};
+  S.discards=function(x,y,z,own){if(!S.on)return false;var ab=U?U.uKCutAbove.value:2;if(own<NONE*.5)return y>own+ab;
+    for(var i=0;i<S.list.length;i++){var q=S.list[i],dx=x-q.x,dz=z-q.z,c=Math.cos(q.ry||0),s=Math.sin(q.ry||0),lx=dx*c-dz*s,lz=dx*s+dz*c;
+      if(Math.abs(lx)<q.hw&&Math.abs(lz)<q.hd&&y>q.floor+ab&&(q.top==null||y<q.top))return true;}return false;};
+  K.cut=S;
+  var HEADV='attribute float aKCut;varying float vKCut;varying vec3 vKCutW;\n';
+  var HEADF='uniform float uKCutOn;uniform float uKCutAbove;uniform vec4 uKCutA['+MAX+'];uniform vec4 uKCutB['+MAX+'];varying float vKCut;varying vec3 vKCutW;\n';
+  var VTX='{vKCut=aKCut;vec4 kcw=vec4(transformed,1.);\n#ifdef USE_INSTANCING\nkcw=instanceMatrix*kcw;\n#endif\nvKCutW=(modelMatrix*kcw).xyz;}';
+  var FRG='if(uKCutOn>.5){if(vKCut<'+(NONE*.5).toFixed(1)+'){if(vKCutW.y>vKCut+uKCutAbove)discard;}'+
+    'else{for(int i=0;i<'+MAX+';i++){vec4 a=uKCutA[i],b=uKCutB[i];if(a.z<=0.)continue;vec2 d=vKCutW.xz-a.xy;float lx=d.x*b.x-d.y*b.y,lz=d.x*b.y+d.y*b.x;'+
+    'if(abs(lx)<a.z&&abs(lz)<a.w&&vKCutW.y>b.z+uKCutAbove&&vKCutW.y<b.w)discard;}}}';
+  K.cutLayer=function(m,o){o=o||{};var at=o.attr||'aKCut';if(!root.KHOOK)throw new Error('KCAVERN.cutLayer: core/shader (KHOOK) is not on this page');
+    var hv=at==='aKCut'?HEADV:HEADV.replace('attribute float aKCut','attribute float '+at),vx=at==='aKCut'?VTX:VTX.replace('vKCut=aKCut','vKCut='+at);
+    return root.KHOOK.add(m,'kcavern-cut'+(at==='aKCut'?'':':'+at),{uniforms:function(){return uniforms();},
+      vertex:{head:hv,at:[{at:'project_vertex',after:vx}]},fragment:{head:HEADF,at:[{at:'clipping_planes_fragment',after:FRG}]}});};
+  K.cutGLSL={vertex:VTX,fragment:FRG};
+})(typeof window!=='undefined'?window:globalThis);
+
 // ==================== shader/aids/08-core-kfade.js
 /* core/shader/aids/08-core-kfade.js — KFADE: the dither fade and the x-ray (core/host/UNDERGROUND.md; kits/tungang/PLAN.md 6.3, aids 1
    and 2). OPT-IN BY FILE AND BY MATERIAL: this folder is a subfolder so the builds that read core/shader/ whole do not take it; a build
@@ -1663,7 +1721,7 @@ root.KCOLOR=C;
      beyond the pattern's own).
    KFADE.addAll(root, match(mesh, material) -> bool, o)   every material under root that match accepts (thin things, a room's walls)
    KFADE.track(a: Vector3 | [x,y,z] | null, b, r = .7, max = .85)   the segment: the follow camera calls it each frame (null: off)
-   KFADE.band(y | null, soft = 1)   the soft cut over y (core/host 99b's band calls it)
+   KFADE.band(y | null, soft = 1)   the soft cut over y (core/host 99-host-section's band calls it)
    KFADE.xray(object, {color: '#8fd4ff', opacity: .55}) -> the silhouette's meshes   the object (the player, a picked NPC) drawn as a
      flat silhouette where something hides it: a pre-pass marks its visible pixels in the stencil (depth LessEqual, no colour), then a
      pass with the depth test inverted (GreaterDepth) draws only where it is hidden and not already marked. Skinned meshes are bound to
@@ -3734,11 +3792,13 @@ K.onTake(function cutawayTake(H){
 });
 })(typeof window!=='undefined'?window:globalThis);
 
-// ==================== host/99b-host-section.js
+// ==================== host/99-host-section.js
 // ================================================================= CORE HOST — the cut-away's additions: caps, decks, the band, the section
-// [web] core/host/99b-host-section.js (core/host/UNDERGROUND.md; kits/tungang/PLAN.md section 6.3, views 2 and 3). OPT-IN BY FILE: a
+// [web] core/host/99-host-section.js (core/host/UNDERGROUND.md; kits/tungang/PLAN.md section 6.3, views 2 and 3). OPT-IN BY FILE: a
 // build lists it (host.py UNDERGROUND) beside 99-host-cutaway.js; a page without it draws exactly as before. It shares 99's five
-// planes when 99 is on the page (a deck cut is 99's unit cut), and makes its own when it is not (a cave with no decks).
+// planes when 99 is on the page (a deck cut is 99's unit cut), and makes its own when it is not (a cave with no decks). Its name sorts it
+// after 99-host-cutaway.js and before a build's 99-host-take.js and 99-tail.html (a page that sorts its fragments by name closes its
+// script in the tail: a 99b-... file landed after </body> on the Hearths' camera station).
 //
 //   o.cutaway = {units?, ...99's options...,
 //     caps: true | {color: '#2c2622', hatch: true, match(mesh) (default: userData.rock or userData.cap)},
@@ -3751,11 +3811,14 @@ K.onTake(function cutawayTake(H){
 //     band: true | {above: 3, soft: 1, r: 0 (0: everywhere; else a box of that half-width round the eye), key: 'u'},
 //                       a cut relative to the eye for caves without decks: everything over (eye + above + soft) goes; with
 //                       core/shader/aids (KFADE) on a material the last metre dithers out instead of ending hard
+//     rock: true | {key: 'h', above: 2},   H the rock cut (core/terrain/host/39h, KCAVERN.cut: the rock material must carry
+//                       KCAVERN.cutLayer and drawRock's aKCut weight): every void's rock opens `above` metres over its own floor, no
+//                       planes, so every level of a hold shows at once (the Zeijani kit's dollhouse, lifted)
 //     section: true | {key: 'c', offset: 0, slab: 6},
 //                       C a vertical plane through the target facing the camera (the half toward the camera goes: the ant-farm view);
 //                       Shift+C a slab: only the slab metres round the target stay (two planes; union clipping, one recompile each way)
 //   }
-//   KHOST.section: {mode: null | 'band' | 'section' | 'slab' | 'unit', set(mode), off(), planes, clipped(x, y, z) (a pick's filter:
+//   KHOST.section: {mode: null | 'band' | 'section' | 'slab' | 'rock' | 'unit', set(mode), off(), planes, clipped(x, y, z) (a pick's filter:
 //     three's Raycaster ignores clipping), caps(), decks(i), badge}
 // The badge (#khost-cutmode) is up whenever any cut is on, and says which (Timberborn's lesson: a cut must always say it is on).
 // The plane count stays five whatever the mode (three recompiles a material when it changes); only the slab changes how they combine.
@@ -3764,10 +3827,10 @@ K.onTake(function cutawayTake(H){
 const K=root.KHOST=root.KHOST||{},doc=root.document;
 const BIG=1e9;
 K.onTake(function sectionTake(H){
- const o=H.o,CO=o.cutaway;if(!CO||!(CO.caps||CO.decks||CO.band||CO.section))return;
+ const o=H.o,CO=o.cutaway;if(!CO||!(CO.caps||CO.decks||CO.band||CO.section||CO.rock))return;
  const THREE=o.THREE||root.THREE,C=K.cam,CUT=K.cut||null;
  const S=K.section={mode:null,planes:null,inter:true};
- const capO=CO.caps===true?{}:CO.caps||null,deckO=CO.decks===true?{}:CO.decks||null,bandO=CO.band===true?{}:CO.band||null,secO=CO.section===true?{}:CO.section||null;
+ const capO=CO.caps===true?{}:CO.caps||null,deckO=CO.decks===true?{}:CO.decks||null,bandO=CO.band===true?{}:CO.band||null,secO=CO.section===true?{}:CO.section||null,rockO=CO.rock===true?{}:CO.rock||null;
  // ---------------------------------------------------------------- the planes: 99's when it is here, else our own five
  const N0=[[0,-1,0],[-1,0,0],[1,0,0],[0,0,-1],[0,0,1]];   /* 99's normals, put back before every unit cut */
  function planes(){if(S.planes)return S.planes;
@@ -3825,24 +3888,26 @@ K.onTake(function sectionTake(H){
   else{const half=(secO.slab==null?6:secO.slab)/2;P[1].normal.set(fw.x,0,fw.z);P[1].constant=-(s-half);P[2].normal.set(-fw.x,0,-fw.z);P[2].constant=s+half;[0,3,4].forEach(i=>idle(P[i],false));}syncCaps();}
  S.set=function(mode){if(mode===S.mode&&mode!=='unit'){S.off();return;}
   if(mode!=='unit'&&CUT&&CUT.on)CUT.off();
+  const KC=root.KCAVERN&&root.KCAVERN.cut;if(KC)KC.set(mode==='rock');
   S.mode=mode;planes();
   if(mode==='slab')combine(false);else combine(true);
+  if(mode==='rock'){offAll();caps(false);if(KC)KC.above(rockO.above==null?2:rockO.above);if(root.KFADE&&root.KFADE.band)root.KFADE.band(null);paint();return mode;}
   patch();caps(true);
   if(mode==='band')placeBand();else if(mode==='section'||mode==='slab')placeSection();
   if(mode!=='band'&&root.KFADE&&root.KFADE.band)root.KFADE.band(null);
   paint();return mode;};
- S.off=function(){const was=S.mode;S.mode=null;if(was==='unit'&&CUT&&CUT.on)CUT.off();offAll();combine(true);caps(false);decks(null);if(root.KFADE&&root.KFADE.band)root.KFADE.band(null);paint();};
+ S.off=function(){const was=S.mode;S.mode=null;if(root.KCAVERN&&root.KCAVERN.cut)root.KCAVERN.cut.set(false);if(was==='unit'&&CUT&&CUT.on)CUT.off();offAll();combine(true);caps(false);decks(null);if(root.KFADE&&root.KFADE.band)root.KFADE.band(null);paint();};
  /* a picked point the planes hide (three's Raycaster ignores clipping: a pick filters its hits through this) */
  S.clipped=function(x,y,z){if(!S.planes||(!S.mode&&!(CUT&&CUT.on)))return false;const P=S.planes;let all=true,any=false;
   for(let i=0;i<P.length;i++){const v=P[i].normal.x*x+P[i].normal.y*y+P[i].normal.z*z+P[i].constant;if(v<0)any=true;else all=false;}return S.inter?all:any;};
  // ---------------------------------------------------------------- 99's unit cut: the normals put back first, the decks and caps after
  if(CUT){const to=CUT.to,off=CUT.off;
-  CUT.to=function(u,storey){if(S.mode&&S.mode!=='unit'){S.mode=null;if(root.KFADE&&root.KFADE.band)root.KFADE.band(null);}
+  CUT.to=function(u,storey){if(S.mode&&S.mode!=='unit'){S.mode=null;if(root.KCAVERN&&root.KCAVERN.cut)root.KCAVERN.cut.set(false);if(root.KFADE&&root.KFADE.band)root.KFADE.band(null);}
    planes();normals();combine(true);to(u,storey);if(!CUT.on)return;S.mode='unit';patch();caps(true);decks(CUT.storey,CUT.unit);paint();};
   CUT.off=function(){off();if(S.mode==='unit'){S.mode=null;caps(false);decks(null);}paint();};}
  // the band and the section follow the eye and the view every frame; new rock (a streamed chunk) is capped every half second
  let capT=0;
- K.on(function sectionFrame(){if(!S.mode)return;
+ K.on(function sectionFrame(){if(!S.mode||S.mode==='rock')return;
   if(S.mode==='band')placeBand();else if(S.mode==='section'||S.mode==='slab')placeSection();
   const now=performance.now();if(now-capT>500){capT=now;patch();caps(true);}},'view');
  // ---------------------------------------------------------------- the badge: a cut always says it is on
@@ -3853,16 +3918,19 @@ K.onTake(function sectionTake(H){
   if(m==='unit'&&CUT&&CUT.unit){const u=CUT.unit,L=u.levels[CUT.storey];t='CUT · '+(u.name||u.id)+' · deck '+(CUT.storey+1)+' of '+u.levels.length+(L&&L.name?' ('+L.name+')':'')+(hid.length?' · '+hid.length+' above hidden':'');}
   else if(m==='band')t='CUT · everything over '+(bandO.above==null?3:bandO.above)+' m above you'+(bandO.r?' within '+bandO.r+' m':'')+' · '+(bandO.key||'u').toUpperCase()+' to close';
   else if(m==='section')t='SECTION · the near half is cut away · '+(secO.key||'c').toUpperCase()+' to close';
+  else if(m==='rock')t='ROCK CUT · every void open '+(rockO.above==null?2:rockO.above)+' m over its own floor · '+(rockO.key||'h').toUpperCase()+' to close';
   else if(m==='slab')t='SLAB · '+(secO.slab==null?6:secO.slab)+' m round the target · '+(secO.key||'c').toUpperCase()+' to close';
   badge.innerHTML=t;badge.style.display='block';}
  S.paint=paint;
  // ---------------------------------------------------------------- keys and buttons
  const typing=e=>{const t=e.target;return t&&(/INPUT|TEXTAREA|SELECT/.test(t.tagName)||t.isContentEditable);};
- const bk=bandO?String(bandO.key||'u').toLowerCase():null,sk=secO?String(secO.key||'c').toLowerCase():null,own=k=>o.keys&&o.keys[k];
+ const rk=rockO?String(rockO.key||'h').toLowerCase():null,bk=bandO?String(bandO.key||'u').toLowerCase():null,sk=secO?String(secO.key||'c').toLowerCase():null,own=k=>o.keys&&o.keys[k];
  root.addEventListener('keydown',e=>{if(typing(e)||e.ctrlKey||e.metaKey||e.altKey)return;const k=e.key.toLowerCase();
   if(bk&&k===bk&&!own(bk)){S.set('band');e.preventDefault();}
+  else if(rk&&k===rk&&!own(rk)){S.set('rock');e.preventDefault();}
   else if(sk&&k===sk&&!own(sk)){S.set(e.shiftKey?'slab':'section');e.preventDefault();}});
  if(K.ui){if(bandO){const b=doc.createElement('button');b.textContent='band cut ('+bk.toUpperCase()+')';b.id='khost-band-btn';b.onclick=()=>S.set('band');K.ui.appendChild(b);}
+  if(rockO){const b=doc.createElement('button');b.textContent='rock cut ('+rk.toUpperCase()+')';b.id='khost-rock-btn';b.onclick=()=>S.set('rock');K.ui.appendChild(b);}
   if(secO){const b=doc.createElement('button');b.textContent='section ('+sk.toUpperCase()+')';b.id='khost-section-btn';b.onclick=()=>S.set('section');K.ui.appendChild(b);}}
 });
 })(typeof window!=='undefined'?window:globalThis);
@@ -3928,8 +3996,8 @@ const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(
 renderer.shadowMap.enabled=false;
 scene.add(new THREE.HemisphereLight(0xd8d0c0,0x2a2420,.55));scene.add(new THREE.AmbientLight(0x3a3430,.35));
 const UG_ROCK=new THREE.MeshStandardMaterial({color:0xb0a594,vertexColors:true,roughness:.95,metalness:0});UG_ROCK.name='ug rock';
-KFADE.add(UG_ROCK,{occluder:false});
-const UG_DRAW=KCAVERN.drawRock(UGC,{THREE,material:UG_ROCK,tile:48,label:'Rock'});scene.add(UG_DRAW.group);
+KFADE.add(UG_ROCK,{occluder:false});KCAVERN.cutLayer(UG_ROCK);   /* the rock cut (H): each void's rock opens 2 m over its own floor */
+const UG_DRAW=KCAVERN.drawRock(UGC,{THREE,material:UG_ROCK,tile:48,label:'Rock',attrs:['aKCut'],weight:KCAVERN.cutWeight(UGC)});scene.add(UG_DRAW.group);
 /* the props: one material per kind, each with the fade (a crate or a rope between the camera and the walker dithers out) */
 const UG_MAT={};function ugMat(kind){if(UG_MAT[kind])return UG_MAT[kind];let col={crate:0x8a6a44,table:0x7a5a3a,bench:0x6a5038,bed:0x9a7a6a,rope:0xd8c8a0}[kind];if(col==null)col=0x888888;
  const m=new THREE.MeshStandardMaterial({color:col,roughness:.8});m.name='ug '+kind;KFADE.add(m);return UG_MAT[kind]=m;}
@@ -3957,13 +4025,13 @@ const UG_VIEWS={
  'The narrow way':[17,10.6,22.5,40,10.4,22.5],
  'The shaft foot':[22,1.7,-4,25,8,-9]};
 const H=KHOST.take({build:'underground',title:'Underground camera test',
- hint:'core/host underground pieces: V follow (wheel: the arm) · X deck cut, ] [ deck · U band cut · C section, Shift+C slab · M map · L line map · F walk',
+ hint:'core/host underground pieces: V follow (wheel: the arm) · X deck cut, ] [ deck · H rock cut · U band cut · C section, Shift+C slab · M map · L line map · F walk',
  scene,camera,renderer,ground:()=>-50,clear:.3,minR:.5,maxR:400,
  walk:KWALK,walker:{step:.6,r:.3,h:1.7},eye:1.7,
  views:UG_VIEWS,start:'The gallery',
  solid:UG_SOLID,follow:{dist:4},
  cutaway:{units:[{id:'hold',name:'The hold',x:-7,z:5,w:160,d:50,levels:UG.DECKS.map(d=>({y:d.y,h:4.5,name:d.name}))}],cutAt:2.3,
-  caps:{color:'#3a2f28'},decks:{fog:{opacity:.55}},band:{above:2.2,soft:1},section:{slab:6}},
+  caps:{color:'#3a2f28'},decks:{fog:{opacity:.55}},band:{above:2.2,soft:1},section:{slab:6},rock:{above:2}},
  minimap:{frame:[-80,130,-60,60],size:260,relief:false,title:'The hold',decks:{bands:UG.DECKS},
   schematic:Object.assign({onPick:n=>{const p={west:[-60,0,0],mid:[0,0,0],hall:[96,0,0],foot:[25,0,-7],head:[25,60,-9],loj:[-10,4.5,11],sets:[2,9,22],end:[50,9,25]}[n.id];if(p){KHOST.cam.ctl.target.set(p[0],p[1]+1.5,p[2]);KHOST.cam.ctl.radius=18;}}},UG.LINE)},
  stats:()=>{const F=KHOST.follow,S=F&&F.S;return 'rock '+UG_DRAW.tris+' tris in '+UG_DRAW.meshes+' meshes'+(F&&F.on?'\nfollow: arm '+S.L.toFixed(2)+' of '+S.want.toFixed(1)+' m, '+S.mode+', ceiling '+S.hc.toFixed(1)+' m, clear '+F.clearance().toFixed(2)+' m':'');},

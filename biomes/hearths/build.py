@@ -71,8 +71,14 @@ if not os.path.isdir(_sd): sys.exit('build.py: no station '+STATION+' (stations/
 with open(os.path.join(_sd,'station.json'),encoding='utf-8') as _fh: SJ=_json.load(_fh)
 # "base": another station whose fragments this one starts from (the hold takes the crystals' cave and host), its own replacing them by name
 PATH={}
-if SJ.get('base'):
-    _bd=os.path.join(HERE,'stations',SJ['base'])
+# a base may have a base (the camera demo starts from the hold, which starts from the crystals): the deepest first, each nearer one replacing it
+_chain=[];_b=SJ.get('base')
+while _b:
+    if _b in _chain: sys.exit('build.py: a loop of bases at '+_b)
+    _chain.append(_b)
+    with open(os.path.join(HERE,'stations',_b,'station.json'),encoding='utf-8') as _fh: _b=_json.load(_fh).get('base')
+for _b in reversed(_chain):
+    _bd=os.path.join(HERE,'stations',_b)
     PATH.update({f:os.path.join(_bd,f) for f in os.listdir(_bd) if re.match(r'\d',f)})
 PATH.update({f:os.path.join(_sd,f) for f in os.listdir(_sd) if re.match(r'\d',f)})
 # core/terrain, opt-in by name (core/README.md "terrain/"): 39 KCAVERN (the voids, meshed by chunk), 39b KSPELEO (the crystals' records), 39c KKARST
@@ -99,6 +105,11 @@ sys.path.insert(0,J('core','host'))
 import host as khost
 CORE_HOST=khost.FULL
 khost.resolve(PATH,CORE_HOST)
+# a station with "underground": true takes core/host's opt-in underground pieces (core/host/UNDERGROUND.md: the follow camera, the cut-away's
+# caps, band and section, the map's decks, the fade) and the rock cut; the others do not, so their pages are unchanged
+if SJ.get('underground'):
+    khost.resolve(PATH,khost.UNDERGROUND)
+    PATH.setdefault('39h-core-cavern-cut.js',J('core','terrain','host','39h-core-cavern-cut.js'))
 # the shared atmosphere: its core, presets, particles (the steam), the evening's cones (the vents' shafts of light), export, the host binding.
 # No sky, no weather and no height fog (it reads the sky's uniforms): underground, the haze is the scene's fog
 CORE_ATMOS=['89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-2-lights.js','89-atmos-3-particles.js','89-atmos-8-export.js','89-atmos-9-host.js',

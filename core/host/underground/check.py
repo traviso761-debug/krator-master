@@ -6,7 +6,7 @@ from the page through the shared harness (its universal asserts too). KRATOR_GL=
 
 The follow camera (91b): the camera never in the rock along a walk of the gallery, the hall and the sets (cam-not-in-rock), where the
 arm asked for would be; a rope (thin) never shortens the arm, a crate does; the ceiling lowers the pitch in the sets, not in the
-hall; first person in the narrow way. The cut-away (99b): the deck cut hides the deck above, keeps the rest, caps the rock, clips
+hall; first person in the narrow way. The cut-away (99-host-section): the deck cut hides the deck above, keeps the rest, caps the rock, clips
 above the cut and not below; the band follows the eye; the section clips the camera's side only; the slab joins its planes. The map
 (97b, 88b): the band is the eye's deck, the line map is exported. The x-ray (KFADE) on the walker; the fade's segment while following.
 """
@@ -69,6 +69,13 @@ CHECKS = r"""async()=>{
  K.cut.off();await wait(200);
  let back=0;K.host.scene.traverse(q=>{if(q.userData&&q.userData.deck===2&&q.visible)back++;});capsOn=0;K.host.scene.traverse(q=>{if(q.userData&&q.userData.khost==='cap'&&q.visible)capsOn++;});
  ok('off: the deck above is back, the caps gone, the badge down',back===up&&capsOn===0&&S.badge.style.display==='none',back!==up);
+ // ---- the rock cut (core/terrain/host/39h, lifted from the Zeijani kit)
+ K.go('The hold, cut (deck 2)');S.set('rock');await wait(300);const KC=KCAVERN.cut;
+ ok('rock cut (H): on, no planes, the badge says so',KC.on&&KC.U.uKCutOn.value===1&&!S.clipped(-10,9,11)&&/ROCK CUT/.test(S.badge.textContent),!KC.on,S.badge.textContent);
+ ok('rock cut: the loj hall wall over its floor + 2 opens, under it stays',KC.discards(-10,7,6,4.5)&&!KC.discards(-10,6,6,4.5),KC.discards(-10,6,6,4.5));
+ let caps0=0;K.host.scene.traverse(q=>{if(q.userData&&q.userData.khost==='cap'&&q.visible)caps0++;});
+ ok('rock cut: no caps (no planes to cap)',caps0===0,false,caps0);
+ S.off();ok('rock cut off',!KC.on&&KC.U.uKCutOn.value===0,KC.on);
  // ---- the band
  K.setView(70,30,30,96,1,0);S.set('band');await wait(300);
  const P=S.planes;
@@ -95,7 +102,8 @@ SHOTS = [('follow-gallery', "async()=>{KHOST.section.off();KHOST.go('The gallery
          ('follow-rope', "async()=>{const C=KHOST.cam;C.walkAt=[66,1.2,0];C.ctl.target.set(66,1.7,1.2);C.ctl.theta=-1.57;C.ctl.phi=1.68;}"),
          ('follow-sets', "async()=>{const C=KHOST.cam;C.walkAt=[0,22,9];C.ctl.target.set(0,10.7,22);C.ctl.theta=3.14;C.ctl.phi=1.7;}"),
          ('deck-cut', "async()=>{KHOST.follow.set(false);KHOST.cam.walk(false,true);KHOST.go('The hold, cut (deck 2)');KHOST.cut.to('hold',1);}"),
-         ('band-hall', "async()=>{KHOST.cut.off();KHOST.setView(70,30,30,96,1,0);KHOST.section.set('band');}"),
+         ('rock-cut', "async()=>{KHOST.cut.off();KHOST.setView(-62,30,52,-8,4,8);KHOST.section.set('rock');}"),
+         ('band-hall', "async()=>{KHOST.section.off();KHOST.setView(70,30,30,96,1,0);KHOST.section.set('band');}"),
          ('section', "async()=>{KHOST.section.off();KHOST.setView(-30,14,60,-5,4,8);KHOST.section.set('section');}"),
          ('slab', "async()=>{KHOST.section.set('slab');}"),
          ('maps', "async()=>{KHOST.section.off();KHOST.go('The sets');KHOST.minimapPanel.open(true);KHOST.minimapDecks.open(true);}")]

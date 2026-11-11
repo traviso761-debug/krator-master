@@ -17,14 +17,15 @@ folder listing finds them.
 | Piece | File | Kind |
 |---|---|---|
 | Follow camera (V), spring arm on a distance query, ceiling cast | `core/host/91b-host-follow.js` (after 91, because it is a taker) | [web], with the arm's maths a pure function (node-tested) |
-| Cut-away additions: caps, decks hidden by tag, the deck below darkened, the soft band, the vertical section, the two-plane slab, the cut badge | `core/host/99b-host-section.js` | [web] |
+| Cut-away additions: caps, decks hidden by tag, the deck below darkened, the soft band, the vertical section, the two-plane slab, the cut badge | `core/host/99-host-section.js` | [web] |
 | The map's deck bands, above/below marks, the line map (`M.schematic`), carried by `export()` | `core/minimap/decks/88b-core-minimap-decks.js` | [G data] |
 | The map's host side: the band follows the eye; the line map panel (L) | `core/host/97b-host-minimap-decks.js` | [web] |
 | Dither fade chunk, x-ray pass | `core/shader/aids/08-core-kfade.js` | KHOOK layers, opt-in by material |
 | `host.py` | `UNDERGROUND` list, `WHERE` entries | no page changes |
 
-Zeijani's rock cut (the rock opens above each void's floor; the cut boxes) is lifted into `core/terrain/host` only if the
-owner agrees (asked 2026-11-11 through the top session). Until then the kit keeps it.
+| The rock cut over each void's own floor, and the cut boxes (lifted from the Zeijani kit, with the owner's yes of 2026-11-11) | `core/terrain/host/39h-core-cavern-cut.js` | [web] host file; a KHOOK layer on the rock material |
+
+The Zeijani kit and Dhelv keep their fork of the rock cut until they adopt the core layer (`kits/zeijani/KNOWN_ISSUES.md`).
 
 ## Order
 
@@ -71,7 +72,7 @@ under 0.6 m it is first person. A cast up from the pivot every third frame lower
 small figure, with an x-ray silhouette when KFADE is on the page, and while following KFADE dithers whatever stands
 between the camera and the walker.
 
-**The cut-away additions** (`99b-host-section.js`), in `o.cutaway` beside 99's options:
+**The cut-away additions** (`99-host-section.js`), in `o.cutaway` beside 99's options:
 
 ```js
 cutaway: {units: [{id, name, x, z, w, d, levels: [{y, h, name}]}], cutAt: 2.3,      // 99's deck cut (X, ] [)
@@ -154,12 +155,28 @@ What a player cannot read on Dhelv today (the braid, the wells, the outer tube, 
   ledge's tunnels, the two read as one junction.
 - The catacombs and the cistern read well in both views: lit, one level, a clear end.
 
+**The rock cut** (`core/terrain/host/39h-core-cavern-cut.js`, lifted from `kits/zeijani/src/40-zj-cave.js`):
+
+```js
+KCAVERN.cutLayer(rockMaterial)                                   // the KHOOK layer 'kcavern-cut'
+KCAVERN.drawRock(C, {material, attrs: ['aKCut'], weight: KCAVERN.cutWeight(C, {own(P)})})   // each vertex: its own void's floor
+KCAVERN.cut.set(on), .above(2), .boxes([{x, z, hw, hd, ry, floor, top?}]) (32 at most), .discards(x, y, z, ownFloor)
+KCAVERN.cutFloor(P)                                              // room y, stair foot, hall floor, tube's lowest point, shaft y0 - 2
+cutaway: {rock: {key: 'h', above: 2}}                            // 99-host-section's mode: H, no planes, every level at once
+```
+
+In the cut, each void's rock opens `above` metres over that void's own floor, so every level of a hold shows at once, each
+room with its walls to head height. Rock that is no void's own (the ground, a mass, a monolith) opens only inside the cut
+boxes, which are Dhelv's carved sites near the camera. `node core/terrain/test-cavern-cut.js`: 25 checks with negatives,
+including the layer compiled on the real r128 chunks. `tools/check_core_use.py` has a `rock-cut` rule now, so a new copy of
+the cut fails; Zeijani's fork is baselined.
+
 ## The test page
 
 `core/host/underground/` (`python3 build.py`, `python3 check.py`): a small hold on KCAVERN. It has three decks 4.5 m apart,
 an 8 m gallery, stairs in from the side, a lift shaft to the surface, a natural hall with rock pillars and ropes, and a
-1.6 m narrow way. `check.py` runs 29 checks, each with its negative, plus the harness's universal asserts. GPU-verified on
-the RTX lane: 29 of 29, `gpu-renderer` NVIDIA, every program linked. The checks:
+1.6 m narrow way. `check.py` runs 33 checks, each with its negative, plus the harness's universal asserts. GPU-verified on
+both lanes: 33 of 33 on the Arc and on the RTX, `gpu-renderer` named, every program linked. The checks:
 - cam-not-in-rock along 11 stops, where the arm asked for would be in rock at 2 of them;
 - first person in the narrow way, the slow ease-out after it, the whole arm in the hall;
 - the pitch limit under the sets' ceiling;
@@ -167,7 +184,16 @@ the RTX lane: 29 of 29, `gpu-renderer` NVIDIA, every program linked. The checks:
 - the fade's segment, and the x-ray on the walker;
 - the deck cut: the deck above hidden, clipped above the cut and not below or outside, caps on and gone, the badge;
 - the band's plane over the eye, the section's sides, the slab's union;
+- the rock cut: on with no planes, a wall over its floor + 2 opened and under it kept, no caps, off;
 - the map's band and the export.
+
+**On a cave page: the Hearths' camera station** (`biomes/hearths/stations/camera`, page `hearths-camera.html`, with the
+Hearths session's yes). The station is the hold, its base (base chains are new in `biomes/hearths/build.py`), plus one fragment,
+`98z-host-underground.js`. That fragment adds the follow camera on `CAVE.C.sdf`, the band, the section, the caps and the fade
+on the crystals to what the take is handed. `"underground": true` in its `station.json` takes the files. `hearths-crystals.html`
+and `hearths-hold.html` rebuild byte-identical. Its `verify.py --assert` passes on the Arc (its checks, their negatives and
+the universal asserts). In the cave (116 voids) `C.sdf` costs 0.006 to 0.05 ms. Following round the landing pool, the arm
+stays at its full 4 m with at least 1.12 m clear of the rock.
 
 `node core/host/test-follow.js` (24 checks) and `node core/minimap/decks/test-minimap-decks.js` (27) are the data side.
 
@@ -184,9 +210,10 @@ the RTX lane: 29 of 29, `gpu-renderer` NVIDIA, every program linked. The checks:
 
 ## Left
 
-- **Zeijani's rock cut** (the rock opening 2 m over each void's floor; Dhelv's 32 cut boxes) is not lifted. On 2026-11-11 I
-  asked the owner through the top session whether it may move into `core/terrain/host`. No answer yet, so the kit keeps
-  its fork.
+- **Zeijani and Dhelv on the core rock cut**: they keep their fork. Adopting it is three edits, listed in
+  `kits/zeijani/KNOWN_ISSUES.md`.
+- **The rock cut on the Hearths station**: it is not on. The Hearths' `84-host-rock.js` fixes drawRock's attributes
+  (`aGyp`, `aIron`), and a natural cave has no decks: the band is its cut.
 - **core/host's F** stands the walker on the highest floor at x, z. The fix belongs in `90-host-camera.js` (408 pages), so
   it waits for the next all-builds rebuild (TODO.md's ride-along list).
 - **The inspector's picks** do not filter clipped hits yet. `KHOST.section.clipped()` is the filter, and 93 should call it.
@@ -195,4 +222,6 @@ the RTX lane: 29 of 29, `gpu-renderer` NVIDIA, every program linked. The checks:
   r128.
 - **Dhelv**: the core/biome `stemClump` leak, above. Dhelv does not opt in to any of this yet (its V is its nav graph and its C
   its own cut-away: `follow.key` and `section.key` take other keys).
-- **A Hearths station** demo: asked the Hearths session on 2026-11-11; not built without its yes.
+- **`check_stale`**: adding files under `core/host/` changes the folder listing that every build importing `host.py`
+  records, so those builds read stale with no page changed. Recorded with `--write-baseline` (commit message), for their own
+  rebuild turns.

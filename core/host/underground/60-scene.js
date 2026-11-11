@@ -9,8 +9,8 @@ const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(
 renderer.shadowMap.enabled=false;
 scene.add(new THREE.HemisphereLight(0xd8d0c0,0x2a2420,.55));scene.add(new THREE.AmbientLight(0x3a3430,.35));
 const UG_ROCK=new THREE.MeshStandardMaterial({color:0xb0a594,vertexColors:true,roughness:.95,metalness:0});UG_ROCK.name='ug rock';
-KFADE.add(UG_ROCK,{occluder:false});
-const UG_DRAW=KCAVERN.drawRock(UGC,{THREE,material:UG_ROCK,tile:48,label:'Rock'});scene.add(UG_DRAW.group);
+KFADE.add(UG_ROCK,{occluder:false});KCAVERN.cutLayer(UG_ROCK);   /* the rock cut (H): each void's rock opens 2 m over its own floor */
+const UG_DRAW=KCAVERN.drawRock(UGC,{THREE,material:UG_ROCK,tile:48,label:'Rock',attrs:['aKCut'],weight:KCAVERN.cutWeight(UGC)});scene.add(UG_DRAW.group);
 /* the props: one material per kind, each with the fade (a crate or a rope between the camera and the walker dithers out) */
 const UG_MAT={};function ugMat(kind){if(UG_MAT[kind])return UG_MAT[kind];let col={crate:0x8a6a44,table:0x7a5a3a,bench:0x6a5038,bed:0x9a7a6a,rope:0xd8c8a0}[kind];if(col==null)col=0x888888;
  const m=new THREE.MeshStandardMaterial({color:col,roughness:.8});m.name='ug '+kind;KFADE.add(m);return UG_MAT[kind]=m;}

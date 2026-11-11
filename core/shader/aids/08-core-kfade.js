@@ -9,7 +9,7 @@
      beyond the pattern's own).
    KFADE.addAll(root, match(mesh, material) -> bool, o)   every material under root that match accepts (thin things, a room's walls)
    KFADE.track(a: Vector3 | [x,y,z] | null, b, r = .7, max = .85)   the segment: the follow camera calls it each frame (null: off)
-   KFADE.band(y | null, soft = 1)   the soft cut over y (core/host 99b's band calls it)
+   KFADE.band(y | null, soft = 1)   the soft cut over y (core/host 99-host-section's band calls it)
    KFADE.xray(object, {color: '#8fd4ff', opacity: .55}) -> the silhouette's meshes   the object (the player, a picked NPC) drawn as a
      flat silhouette where something hides it: a pre-pass marks its visible pixels in the stencil (depth LessEqual, no colour), then a
      pass with the depth test inverted (GreaterDepth) draws only where it is hidden and not already marked. Skinned meshes are bound to
