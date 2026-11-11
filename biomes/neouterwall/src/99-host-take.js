@@ -78,11 +78,14 @@ HCHK.mouths=(reg,M)=>{const m=reg.filter(r=>r.key==='landform.mouth').length;con
  return{ok,detail:m+' mouths registered of '+M.length+(M.length?'; floors '+M.map(q=>q.floorY.toFixed(0)+' m over the tarn').join(', '):'')};};
 const _zoneCounts=()=>{const n={};for(let k=0;k<ZR.length;k++){const z=ZONE_IDS[ZR[k]];n[z]=(n[z]||0)+1;}return n;};
 const _allTrees=()=>(NWOW.TREES||[]).concat(NEOW.TREES||[]);
-// verify.py's export profile (core/export): its box round the station's start (SPINE[0]) where a tree stands in it, else round the tree
-// nearest the start (stations 4 and 5a start on bare meadow and ice: a box there held no tree, so no bucket); a page with no tree asks for no buckets
-const EXPORT_AT=(function(){const T=_allTrees(),s=SPINE[0];let b=null,d=1e18;T.forEach(t=>{const e=(t.x-s[0])*(t.x-s[0])+(t.z-s[1])*(t.z-s[1]);if(e<d){d=e;b=t;}});
- const c=!b||Math.max(Math.abs(b.x-s[0]),Math.abs(b.z-s[1]))<140?s:[b.x,b.z],x=Math.round(c[0]),z=Math.round(c[1]);
- return{box:[x-150,z-150,x+150,z+150],profile:T.length?null:['registry','items','materials','textures','terrain','stage','atmos']};})();
+// verify.py's export profile (core/export): its box round the station's start (SPINE[0]) where a merged bucket (a trunk, a stem: the baked
+// 'biome:' meshes) reaches into it, else round the bucket vertex nearest the start (stations 4 and 5a start on bare meadow and ice: a box there
+// held no bucket); a page with no bucket asks for none
+const EXPORT_AT=(function(){const s=SPINE[0];let b=null,d=1e18,nb=0;
+ scene.traverse(o=>{if(!o.isMesh||o.isInstancedMesh||!/^biome:/.test(o.name||''))return;const P=o.geometry.attributes.position;nb++;
+  for(let i=0;i<P.count;i+=8){const x=P.getX(i),z=P.getZ(i),e=(x-s[0])*(x-s[0])+(z-s[1])*(z-s[1]);if(e<d){d=e;b=[x,z];}}});
+ const c=!b||Math.max(Math.abs(b[0]-s[0]),Math.abs(b[1]-s[1]))<120?s:b,x=Math.round(c[0]),z=Math.round(c[1]);
+ return{box:[x-150,z-150,x+150,z+150],profile:nb?null:['registry','items','materials','textures','terrain','stage','atmos']};})();
 window._exportBox=EXPORT_AT.box;
 HCHK.zonesOnly=(need,ZC)=>{const lack=need.filter(z=>!(ZC[z]>0));return{ok:!lack.length,detail:need.map(z=>z+' '+(ZC[z]||0)).join(', ')+(lack.length?'; missing '+lack.join(', '):'')};};
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),ZC=_zoneCounts();
