@@ -26,6 +26,7 @@ const SITE={key:'glen',name:'Solfatara Glen',region:'Solfatara Glen (the Firebli
   flats:[{key:'glenflat',name:'The Solfatara\'s white clay',x:-1150,z:900,rx:420,rz:320,a:.5}],
   dead:[{key:'deadglen',name:'Dead pines at the Solfatara\'s edge',x:-1900,z:1500,r:120}],
   terraces:[]},
+ geyserQ:.55,   /* the Solfatara's field is wide (two acid fields and their run-off): the geyser kit's floor at its full density passed its strap, fern and grass caps (300-400k) */
  hollows:[{x:-2000,z:1900,r:70,d:4,name:'The Choke (a hollow where the gas lies on still nights)'},{x:-1700,z:-1700,r:60,d:3.5,name:'A hollow north of the Warra (dead birds in it)'}],
  camp:null,
  trail:{name:'The sulphur gatherers\' track (cairns up to the Solfatara)',pts:[[-1600,2900],[-1500,2200],[-1350,1600],[-1250,1100]],people:'fellgang'},
