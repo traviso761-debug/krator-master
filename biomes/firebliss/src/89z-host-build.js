@@ -25,7 +25,7 @@ const SHADOW_ON=new URLSearchParams(location.search).get('shadow')!=='0'&&typeof
  if(LAYOUT&&!Q.has('nogeyser')){const cx=(TBOX[0]+TBOX[2])/2,cz=(TBOX[1]+TBOX[3])/2,R=Math.max(TBOX[2]-TBOX[0],TBOX[3]-TBOX[1])*.62;
   /* a station that is no valley (Mons' crater: SITE.thermalOnly) takes the kit's sinter and its show only: none of its thermal trees or floor */
   try{if(SITE.thermalOnly){const c0=BIO.host.center;BIO.host.center=[cx,cz];const o={R,quality:q};try{BIO.cur='geyser/sinter';Object.assign(o,GEYSER.buildSinter(q));BIO.cur='geyser/show';Object.assign(o,GEYSER.buildShow(o));}finally{BIO.host.center=c0;BIO.cur=null;}window._geyser=o;}
-   else window._geyser=GEYSER.build({R,quality:q,center:[cx,cz]});}catch(e){reportErr('geyser: '+e.stack);}
+   else window._geyser=GEYSER.build({R,quality:q*dv(SITE.geyserQ,1),center:[cx,cz]});}catch(e){reportErr('geyser: '+e.stack);}   /* SITE.geyserQ thins the kit's passes on a wide field (the Glen's: its floor's items stay under their caps) */
   if(GEYSER.SHOW){GEYSER.SHOW.U.uSun.value.set(...SUN_POS).normalize();}
   (GEYSER.TREES||[]).forEach(T=>OBSTACLES.push({x:T.x,z:T.z,r:T.rb*2+1.5,y0:T.y0-3,y1:T.y0+T.H}));}
  // ---- the hunters' marks first (core/camp's pitch): the camp's ground is then kept clear of every pass after

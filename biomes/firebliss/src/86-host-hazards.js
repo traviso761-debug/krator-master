@@ -11,11 +11,13 @@
 //   FALL       the steep: the gorge's walls and the crater's, a cylinder record every ~60 m of edge where the ground falls away
 //   THE AIR    the thin air and the cold (KHAZ.provide 'pressure' and 'temperature': 1.6 atm x e^(-h/8 km); the station's mean, its lapse, the vents'
 //              warmth at the ground); the plume's ash and acid rain are 89b's
-// Each in core/tags (BIO.record) so the inspector, the overlay and the export read them. The night records read the host's clock (KHAZ.bindClock).
+// Each in core/tags (BIO.record) so the hazard overlay, the inspector's hazard line (KTAGS.hazardAt) and the export read them. They are hazard bands,
+// not the inspector's named volumes (REG): a hollow on bare ice or a flood's path over water holds nothing the volume check could find, and the
+// band's shape is its hazard's own. The night records read the host's clock (KHAZ.bindClock).
 const HAZ=(function(){const out={gas:0,crust:0,flood:0,fall:0};if(typeof KHAZ==='undefined')return out;
  const E=KHAZ.ENV||null;
  KHAZ.bindClock(()=>typeof KHOST!=='undefined'&&KHOST.host&&KHOST.host.clock?KHOST.host.clock.hour:13);
- const add=o=>{REG.push(o);return BIO.record(o);};
+ const add=o=>BIO.record(o);
  // ---- the gas in the hollows (the dead birds are its tell: 60)
  HOLLOWS.forEach(H=>{const y=terrainH(H.x,H.z);
   const body=E?E.nightGas(H.r*.9,{h:Math.max(2,H.d*.8),from:19,to:6,ramp:2,danger:.95,dose:2,falloff:'smooth',tell:{sign:'dead birds and bare ground in the hollow; the reek of rotten eggs at dusk',colour:'#8a8a3a'}}):
