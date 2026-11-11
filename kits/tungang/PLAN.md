@@ -86,6 +86,8 @@ them all out.
 
 1. **The carriers are the Travellers**, with some cultural similarities to the Irish Travellers; the owner liked the idea
    of them portering at the Line's gaps (section 1.3; question 5).
+2. **The Travellers porter on the Line's branches near the surface, not deeper in**, and **their cant goes on the tongues
+   page** (done: the Tungang tab, "The Travellers' cant").
 
 ## 0. What the kit is
 
@@ -382,8 +384,8 @@ by moving them, and by the road itself:
   Hearth hold), **dealing** (beasts above all, then salvage and goods carried between the villages, the lojes' rim mouths
   and Dalab's road), **salvage-smithing** (mending plate, pots, lamps, sledges and the Fowlers' pegs: the trade that opens
   every village's door), **guiding** (Dalab's trains, traders, the odd monk across the fells and down the walls), and
-  **portering at the Line's gaps** near the portals, where the Tungangs' road underground meets the rim's (the owner liked
-  the idea).
+  **portering on the Line's branches near the surface** (the adits, spurs and portal stretches where the Tungangs' road
+  underground meets the rim's), **never deeper in**, where the Tungangs carry their own (the owner, 2026-11-11).
 - **Their homes.** Barrel-top covered **sledge-wagons** with bright painted boards, plate runners from tyres and a stove
   pipe (`fg-wagon`); **halting places** a day apart along the roads, a low shelter by a lantern post where families stop
   (`fg-halt`).
@@ -391,7 +393,8 @@ by moving them, and by the road itself:
   matches made, quarrels settled, news carried (Ballinasloe's horse fair is the model). It is the rim's own great meeting,
   as the Big Meeting is the Line's.
 - **A cant of their own** for speaking in front of outsiders, made from fell speech turned backwards and the shepherds'
-  score, as Shelta was made from Irish (a section for the tongues page when the owner wants it).
+  score, as Shelta was made from Irish: written up on the tongues page, "The Travellers' cant" (the owner, 2026-11-11).
+  They call themselves *Slevart*, "travels" said backwards.
 - **Drawn with respect**: the Travellers are written from their crafts, the road, family and the Fair, never from
   prejudice or stereotype.
 
