@@ -265,6 +265,10 @@ open-world ready). It needs: a zone on `rock` (its crag pines, tussock and saltb
 `bed` and `silt` (young forest on the flood lake's silt, the rafted hulks among the trees), and the pass table and
 variants. Korona, later, needs the same `bed` and `salt` response for its share of the east bed.
 
+**Built 2026-11-10**: the zone on `rock`, the response to `bed`, `silt` and `yearsDry` (`biomes/nwlowlands/src/57-biome-nwlowlands-overlay.js`), and
+an overlay build (`build(overlay=...)`), on which the scablands' `highline-nw` station stands (`biomes/scablands/PLAN.md` section 8): the rafted wrack
+among the young forest's trees. Still owed: the hulks, the pass table and the variants.
+
 ## 9. Order of work
 
 1. **Data.** *Done 2026-10-20:* the live collections in `openworld/north-basin/source/` (little-demo's copy stays its

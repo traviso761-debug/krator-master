@@ -17,7 +17,7 @@ nothing without it. Its weight comes from physics: the ground under the flood's 
 | the water: the plunge-pool lake under the falls (Dry Falls Lake), potholes holding rain | `core/water` still records |**built** (2026-10-23) |
 | erratics: dam concrete with rebar, carried kilometres; basalt boulders | this build (`ERRATICS` in the stage, `87-host-erratics.js`; its own library pack) | **built** (2026-10-23) |
 | its own flora: the pothole pools' plants (kolk lilies, pothole quills, seep sedge, spray ferns at the falls' foot) | this build (`72-biome-scablands-pools.js`, its own kit registry and pack) | **built** (2026-10-23) |
-| the flood lake's high line and its rafted wreckage (station 2) | `stations/highline/`: KBASIN's flood lake (kind `flood`), KSCOUR's fan, the dam basins' flotsam (`DBF`) read in place | **built** (2026-11-09) over n semiarid's share; the NW lowlands half owed |
+| the flood lake's high line and its rafted wreckage (station 2) | `stations/highline/`: KBASIN's flood lake (kind `flood`), KSCOUR's fan, the dam basins' flotsam (`DBF`) read in place | **built**: n semiarid's share (2026-11-09) and the NW lowlands half (`stations/highline-nw`, 2026-11-10); the hulks owed |
 
 ## 2. The engine
 
@@ -45,14 +45,14 @@ For that, n semiarid's page was split (2026-10-23) along the line a stage crosse
    plateau's steppe above the rims.
 2. **`highline`: the flood lake's high line and the west breach's fan** (built 2026-11-09, `python3 build.py --station highline` ->
    `dist/highline.html`; "Station 2, as built" below). Built over **n semiarid's** share of the flood lake (43,600 km², the larger); the
-   plan's half over NW lowlands waits on that kit's rock zone and bed response (`KNOWN_ISSUES.md`).
+   plan's half over NW lowlands is `--station highline-nw` (2026-11-10, `dist/highline-nw.html`; section 8), on the NW lowlands kit.
 
 ## 4. Order of work
 
 - **S0** the split of n semiarid's page; the build; the coulee station (terrain, water, fields, tint, views); the checks.
 - **S1** erratics; the pothole pools' own flora.
-- **S2** the second station: **built 2026-11-09** on n semiarid's side; its NW lowlands half still needs NW lowlands' rock zone and bed
-  response (`biomes/nsemiarid/PLAN.md` section 8).
+- **S2** the second station: **built 2026-11-09** on n semiarid's side, and its NW lowlands half **2026-11-10** (`highline-nw`, section 8) on
+  NW lowlands' new rock zone and bed response (`biomes/nsemiarid/PLAN.md` section 8).
 - **S3** `WORLD_OVERLAYS` in the north-basin open world.
 
 ## 5. Checks (`verify.py --assert`: n semiarid's harness, on this page)
@@ -142,4 +142,41 @@ at 430: scale model 5.1 has moved the trough, so the levels are the plan's, not 
 - **Checked** (`99`, each with a negative): the kit's (the water's edge, tagged, dry, no tree on a rock face, the variants, the cameras, the bed's dust,
   the step cones by the years dry) and the station's: the wrack in its band and none over the line; the strandlines all under it and the bed benched on
   them; the silt under the line and none over it; the fan's bars at the mouth, not up the coulee; the wrack and the erratics half buried; the wrack drawn.
-- **Owed**: the hulks (the Ancient Port kit's vessels) on the line; the half over NW lowlands (KNOWN_ISSUES.md).
+- **Owed**: the hulks (the Ancient Port kit's vessels) on the line (KNOWN_ISSUES.md). The half over NW lowlands: section 8.
+
+## 8. Station 2's NW lowlands half, as built: the high line in the lowlands' forest (2026-11-10)
+
+`stations/highline-nw/` (`build.py --station highline-nw` -> `dist/highline-nw.html`): the flood lake's 32,600 km² over NW lowlands, in small (R 3 km),
+on the same lake record as station 2 (KBASIN kind `flood`, 834 m, the trough at 430, age 1000, recession 600) and the plan's levels. **Its engine is the
+NW lowlands kit**, read in place by `biomes/nwlowlands/build.py`'s new `build(overlay=...)` (n semiarid's form; `station.json` `"kit"`), not n semiarid:
+the page is the lowlands kit with the station's host fragments over it (`README.md`).
+
+- **The land**: NW lowlands' Mediterranean hills west (840-1070 m: the survey's Csa, ~935 m), the kit's own old forest that the water never reached;
+  the **high line** at 834 m running north-south near x -700; the **old bed** falling east to ~600 m, its silt (rhythmites on a cut bank) and **63
+  strandlines** the ground is benched on; a **spur** out of the hills across the bed's north whose nose is an island: the rising lake poured through the
+  gap, **the strait**, a `KSCOUR` course (no falls) cut ~100 m into the spur and scoured to the flood basalt (`KSCOUR.strata`), its bars and giant current
+  ripples spread in the bay behind; a **rain pond** on the bars (a `core/water` still).
+- **The flora: the kit reads the fields** (`biomes/nwlowlands/src/57-biome-nwlowlands-overlay.js`, `biomes/nsemiarid/PLAN.md` section 8):
+  - on the **rock** (the scour, every face steeper than ~35 degrees): the kit's **crag pines**, stunted, in ones and twos in its cracks, its **tussock**
+    and **saltbush** in the hollows, boulders; the kit's own trees and floor kept off it;
+  - on the **silt** under the line: **young forest**, the kit's pioneers in even-aged stands of one species (candle birch and spindle poplar, pale
+    paperbark where it is wet, tall wattle where it is drier), each stand's height by its ground's **years dry** (`yearsDry`: the line came out
+    first, so the stands under it are the tallest, about .9 of the species' height, the youngest toward the trough about .65); the kit's mature forest
+    thinned on the silt and coming back toward the line;
+  - above the line the kit as it is (Csa: ghost gums, she-oak, needle cypress, crag pines, banksia, grass trees, wattle).
+- **The wreckage**: station 2's wrack (the dam basins' `DBF`, read in place; this overlay's `rust`) stranded in its band under the line, **among the young
+  forest's trees** (the trees keep clear of it: every piece an obstacle); the coulee's erratics on the strait's bars and a few on the line.
+- **The ground**: KGROUND with relief on the kit's six layers (the young forest's litter on the silt, the hills' lawn and red soil, the bare silt,
+  mud at the pond, the bars' shingle) and a seventh, this overlay's `basalt`, on the scoured rock; the paint under them (the strandlines' benches, the
+  wrack line dark, the ripples' crests).
+- **The universal set**: KGROUND with relief, KSHADOW attached and off at load, core/rand (every placement a lattice cell's `KRAND.hash`), core/tags
+  (`BIO.init({tags:'scablands'})`), core/water (the pond, its fields, the edge audit, the mirror switch off at load), KFAR past the map and KHORIZON,
+  core/atmos (the shared sky, wind, A2C, wet ground, height fog, rain cover), core/host's whole interface (the inspector, polygon and path tools).
+- **Checked** (`99`, each with a negative): the pond's edge and the environmental fields, nothing in the pond, no tree on a face steeper than 45 degrees
+  (the drawn ground: the station's mask refuses a drawn cell that steep), the cameras over the drawn ground; the wrack in its band and none over the line,
+  **the wrack among the trees** (half or more with a tree within 30 m, none with a tree standing in it), the strandlines and the benches, the silt under
+  the line and none over it, **the young forest** (on the silt, under the line, its height by the years dry), **the rock** (the crag pines on it, the
+  kit's trees off it, its tussock and saltbush), the strait's fan at its mouth, the wreckage half buried, the wrack drawn.
+- **The budget**: 13.9 M triangles held (the trees' pass 11.3 M: the kit's hill forest about half, the young forest's ~8.4k trees the rest), 0.3-7 M drawn
+  at the presets; declared 15 M / 12 M (station 2's n semiarid half: 19.5 / 16 M).
+- **Owed**: the hulks (both halves); the sky's site (px 400,170) is approximate, the levels the plan's (KNOWN_ISSUES.md).

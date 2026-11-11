@@ -13,10 +13,6 @@ From `core/terrain/` (shared; see `core/README.md`): `35-core-strata.js`, `37-co
 
 From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `32-core-variants.js`, `33-core-fungoid.js`, `33b-core-bamboo.js`, `34-core-impostor.js`, `38-core-fire.js`, `40-core-place.js`, `41-core-env.js`, `42-core-export.js`, `43-core-export-host.js`, `44-core-stage.js`
 
-From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
-
-From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`
-
 ## src/
 
 | Fragment | KB | Sections (line) |
@@ -26,6 +22,7 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `50-biome-nwlowlands-species.js` | 60 **big** | palettes (28); the species (82); harvest (biomes/FRUIT.md) (136); leaf textures (170); TWO-TONE BARK (308); geometries local to this biome (454); materials (506); instanced items (579) |
 | `52-biome-nwlowlands-library.js` | 2 |  |
 | `55-biome-nwlowlands-trees.js` | 45 **big** | zones from the fields (26); colour (41); keep-clear between trees (62); the LIMB (73); foliage and epiphytes (90); the crown, ON its branches (111); the builders (149); impostors (the far canopy) (268); the BAMBOO GROVES (305); the pass (365) |
+| `57-biome-nwlowlands-overlay.js` | 9 |  |
 | `60-biome-nwlowlands-floor.js` | 16 | small plants (26); the zone planters (86); the understorey (under the crowns) (125); the pass (137) |
 | `65-biome-nwlowlands-dress.js` | 8 |  |
 | `70-biome-nwlowlands.js` | <1 |  |
@@ -40,3 +37,11 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `89w-host-water.js` | 4 |  |
 | `99-host-take.js` | 12 | the inspector's words (49); the probe's budgets and the kit's own checks (ve (59); the page, handed to the host (106) |
 | `99-tail.html` | <1 |  |
+
+## stations/
+
+Each station builds one page (`build.py --station <name>`) from its own fragments, with `src/` or its `base` station.
+
+| Station | Fragments | KB |
+|---|---|---|
+| margins | 44z-host-margins.js, 85-host-tower.js, 87-host-station.js | 9 |

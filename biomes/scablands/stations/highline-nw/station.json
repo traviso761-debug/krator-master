@@ -1,0 +1,32 @@
+{
+ "note": "Station 2's NW lowlands half: the flood lake's high line over NW lowlands (PLAN.md section 7). Built on the NW lowlands kit, read in place (biomes/nwlowlands/build.py build(overlay=...)), not on n semiarid: 'kit' names the engine. Its own stage (45), fields (86), far field (83), build (88), sky, air and pond (89, 89a, 89w), views and checks (99) shadow the kit's host; the kit's tower, gorge, Inner Wall range and cousins are dropped. KBASIN's flood lake and KSCOUR's strait are core; the coulee's erratics (87) and station 2's wrack (87w, the dam basins' DBF as 44z) are read in place. The kit's flora reads this stage's rock, bed, silt and yearsDry fields (biomes/nwlowlands/src/57-biome-nwlowlands-overlay.js).",
+ "kit": "nwlowlands",
+ "title": "Krator biome — the scablands: the flood lake's high line over NW lowlands (station 2, the lowlands' half)",
+ "drop": [
+  "83-host-range.js",
+  "85-host-tower.js",
+  "87-host-gorge.js",
+  "87k-host-kin.js"
+ ],
+ "core": {
+  "10-core-shadow.js": "core/shadow/10-core-shadow.js",
+  "12-core-shadow-host.js": "core/shadow/host/12-core-shadow-host.js",
+  "31b-core-leafset.js": "core/biome/31b-core-leafset.js",
+  "40-core-basin.js": "core/terrain/40-core-basin.js",
+  "41-core-scour.js": "core/terrain/41-core-scour.js",
+  "44z-db-flotsam.js": "biomes/dambasins/src/52-db-flotsam.js",
+  "87-host-erratics.js": "biomes/scablands/src/87-host-erratics.js",
+  "87w-host-wrack.js": "biomes/scablands/stations/highline/87w-host-wrack.js"
+ },
+ "families": [
+  "rust"
+ ],
+ "skip": [
+  "card.lily",
+  "card.quill",
+  "card.sedge",
+  "card.fern",
+  "agate",
+  "amethyst"
+ ]
+}

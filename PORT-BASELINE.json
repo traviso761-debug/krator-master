@@ -353,12 +353,12 @@
    "sha256": "121b159d2ed076a3a3de609e7699c771e8ee838ed4d90a9ad4b44bc7592ff8b2"
   },
   "biomes/nwlowlands/dist/nwlowlands-margins.html": {
-   "bytes": 10546319,
-   "sha256": "ca97c6db7d9e15de2b82c40d64c66e2926f34d376303cdc58df5efde8a105cb9"
+   "bytes": 10555094,
+   "sha256": "3c66b87092451960d00b25538a251c6dae3bd1e1ea5719bfca786318c6e92e0a"
   },
   "biomes/nwlowlands/dist/nwlowlands.html": {
-   "bytes": 10542813,
-   "sha256": "229d45fb91d2ea93f71c7f2ce137399c84ed7ed34df96670df8572c4e1d6ee3d"
+   "bytes": 10551588,
+   "sha256": "81f9d6aa00d96905282a8dbab2862a5cb084baa6efbeb617c26bf53abd49fa0d"
   },
   "biomes/nwouterwall/dist/nwouterwall-taiga.html": {
    "bytes": 1333668,
@@ -443,6 +443,10 @@
   "biomes/scablands/dist/coulee.html": {
    "bytes": 7859296,
    "sha256": "1cc11ec0f7974d1f855867ba27b9c57a058b122481fea1f499cfa19f05c52a8c"
+  },
+  "biomes/scablands/dist/highline-nw.html": {
+   "bytes": 10252264,
+   "sha256": "42f67938060cbd08c7d70a02703a454068362da008c709b5809c2c2c9bd86495"
   },
   "biomes/scablands/dist/highline.html": {
    "bytes": 7443223,
