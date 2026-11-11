@@ -29,6 +29,9 @@ window._ice=ICE;
  ICE.lanes.forEach(L=>REGISTER({name:'A cut lane in the ice (open water: thin ice at its edges)',x:L.x,z:L.z,y:STATION.LAKE-2,r:Math.max(L.w,L.z1-L.z0)*.55,h:3,lane:L.id,tags:{hazard:{kind:'drown',danger:.8,falloff:'none',shape:{type:'cyl',r:L.w*.5,h:3}}}}));
  ICE.stacks.forEach(s=>REGISTER({name:'Ice blocks, stacked for the carry',x:s.x,z:s.z,y:s.y-.5,r:3,h:s.rows*.62+1,stack:s.id}));
  ICE.lamps.forEach(l=>REGISTER({name:'A lantern post on the ice road (lit for the night carry)',x:l.x,z:l.z,y:l.y-.3,r:.6,h:2.6,lamp:l.id}));
+ /* the tool racks (the Fellgang kit's fg-ice-tools: saws, pike poles and tongs on an A-frame), one beside each stack, on the shore side */
+ ICE.racks=(typeof TG==='undefined'||!TG.fg)?[]:ICE.stacks.map((s,i)=>{const x=s.x+(s.n*.55+1.6)*(i%2?-1:1),z=s.z-1.2;return{id:'icecut:rack:'+i,x,z,y:terrainH(x,z),ry:(i%2?.25:-.25)};});
+ ICE.racks.forEach(r=>REGISTER({name:'The ice-cutters\' tool rack (saws, pike poles, tongs)',x:r.x,z:r.z,y:r.y-.3,r:1.2,h:2.8,rack:r.id}));
  const cx=V.site.x,cz=V.site.z;let rad=0;V.records.forEach(r=>rad=Math.max(rad,Math.hypot(r.x-cx,r.z-cz)));ICE.radius=rad+30;
  LAND.keep=(x,z)=>{if(Math.hypot(x-cx,z-cz)<ICE.radius)return 0;if(nearLine(STATION.ROAD,x,z).d<6)return 0;for(const s of ICE.stacks)if(Math.hypot(x-s.x,z-s.z)<8)return 0;return 1;};})();
 LAND.build=function(){const T=THREE,V=ICE.village;if(!V.records)return{village:0};
@@ -54,7 +57,9 @@ LAND.build=function(){const T=THREE,V=ICE.village;if(!V.records)return{village:0
     the lamp's glow following the night (the tick below) */
  const lpp=[].concat(...ICE.lamps.map(l=>[l.x,l.y+1.2,l.z]));
  if(typeof TG!=='undefined'&&TG.fg){ICE.lampMeshes=TG.fg.pieces(ICE.lamps.map(l=>({key:'fg-lantern-post',x:l.x,z:l.z,y:l.y,id:l.id})),{scene,ground:terrainH});
-  if(ICE.lampMeshes&&ICE.lampMeshes[0])ICE.lampMeshes[0].userData.probePoints=(ICE.lampMeshes[0].userData.probePoints||[]).concat(lpp);}
+  if(ICE.lampMeshes&&ICE.lampMeshes[0])ICE.lampMeshes[0].userData.probePoints=(ICE.lampMeshes[0].userData.probePoints||[]).concat(lpp);
+  ICE.rackMeshes=TG.fg.pieces(ICE.racks.map(r=>({key:'fg-ice-tools',x:r.x,z:r.z,y:r.y,ry:r.ry,id:r.id})),{scene,ground:terrainH});
+  if(ICE.rackMeshes&&ICE.rackMeshes[0])ICE.rackMeshes[0].userData.probePoints=(ICE.rackMeshes[0].userData.probePoints||[]).concat(...ICE.racks.map(r=>[r.x,r.y+1,r.z]));}
  else{const IP=new T.InstancedMesh(box,new T.MeshStandardMaterial({color:0x3a2e24,roughness:.9}),Math.max(1,ICE.lamps.length)),lampM=new T.MeshStandardMaterial({color:0xffd9a0,emissive:0xffb050,emissiveIntensity:1.6}),
    IG=new T.InstancedMesh(new T.SphereGeometry(.16,8,6),lampM,Math.max(1,ICE.lamps.length));
   ICE.lamps.forEach((l,i)=>{IP.setMatrixAt(i,m.compose(new T.Vector3(l.x,l.y+1.1,l.z),q.set(0,0,0,1),new T.Vector3(.12,2.2,.12)));IG.setMatrixAt(i,m.compose(new T.Vector3(l.x,l.y+2.3,l.z),q,new T.Vector3(1,1.3,1)));});

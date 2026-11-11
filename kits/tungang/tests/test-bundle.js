@@ -21,7 +21,7 @@ const ground = (x, z) => .06 * x + .03 * z, scene = new THREE.Group();
 const spec = (id, world, focus, workers, popMax) => ({ id, world, culture: 'fellgang', focus, site: { x: 0, z: 0 }, link: { x: 30, z: -200 }, resource: { x: 0, z: 300, workers }, popMax, dims: TG.fg.dims });
 const fow = KHAMLET.village(spec('fowlers', 8310, 'fowling', 44, 150)), ice = KHAMLET.village(spec('icecut', 8410, 'ice', 40, 120));
 const D1 = TG.fg.draw(fow, { scene, ground, seed: 8312, label: 'The Fowlers' }), D2 = TG.fg.draw(ice, { scene, ground, seed: 8412, label: 'The Ice-cutters' });
-ok('TG.fg.draw draws every record of both villages (' + D1.recs.length + ' and ' + D2.recs.length + ' buildings, ' + (D1.tris + D2.tris) + ' triangles)',
+ok('TG.fg.draw draws every record of both villages (' + D1.recs.length + ' and ' + D2.recs.length + ' buildings, ' + D1.tris + ' and ' + D2.tris + ' triangles)',
   D1.recs.length === fow.records.length && D2.recs.length === ice.records.length && !Object.keys(D1.missing).length && D1.length > 3 && scene.children.length === 2 && TG.errors.length === 0,
   Object.keys(TG.fg.draw({ records: [{ key: 'fg-nonesuch', x: 0, z: 0, ry: 0 }] }, { ground }).missing).length === 1, TG.errors.join('; '));
 const all = D1.recs.concat(D2.recs), pl = TG.fg.check.plinth(all, ground);

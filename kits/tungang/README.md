@@ -20,9 +20,31 @@ as daubed slogans (NO SKABS, ALL OUT, HOLD FAST). Fellgangs bear the day: 1.0 sc
 
 **The contract (`PLAN.md` 3.3.1).** riftrim's Fowlers and Ice-cutters stations (`biomes/riftrim`, stations 8 and 9) lay
 their villages with `KHAMLET.village` on stand-in boxes keyed `fg-*`. The kit keeps the **same keys and boxes**
-(`src/26k-kit.js`, `TG.fg.BOX`; each def within 0.5 m of its box, asserted) and the **same frame** (origin at the
+(`src/26k-kit.js`, `TG.fg.BOX`: an **upper bound**, each building filling 65-100 % of its w and d and 75-100 % of its h,
+never 0.5 m past it, asserted) and the **same frame** (origin at the
 footprint's centre, the door on +z toward the lane, the floor at the footprint's highest corner, a drystone plinth to its
 lowest), so a station swaps `FELLGANG.draw` for `TG.fg.draw` with no layout change.
+
+**Massing families** (the owner, 2026-11-11: "a bit more variation in size and massing"; `src/42-fg-mass.js`). Each
+house-like key draws one of three to five families by seed (the sheet shows them in turn, five seeds a row) or, in a
+village, weighted by its character: **stony** (the Fowlers: blackhouses, beehive cells, steeper roofs) or **low** (the
+Ice-cutters: blackhouses, crofts, hips, lower walls), which `TG.fg.draw` takes from the village's focus.
+
+| Key | Families |
+|---|---|
+| `fg-hut` | gabled; blackhouse; with a beehive cell; half-hipped croft with an outshot; with a wreck's cab for a porch |
+| `fg-house` | gabled with a gable stack; blackhouse; burstabaer (2-3 painted gable fronts, a passage range behind); croft with an outshot; double pile (twin ridges) with a buried container store |
+| `fg-longhouse` | gabled; Norse bow-sided (curved long walls, bowed ridge); Welsh (half-hipped, a cross passage with opposed doors); long blackhouse; hipped croft with a plate lean-to. The byre always at the low end |
+| `fg-headhouse` | porched; burstabaer of 3-4 fronts; double pile with a cab porch; bow-sided with a beehive cell; half-hipped with an outshot |
+| `fg-meethall` | porched; bow-sided; low half-hipped |
+| `fg-store` | gabled; blackhouse; with a buried container; half-hipped with a plate lean-to |
+| `fg-smokehouse` | gabled; hipped; with a beehive cell (each under a louvre) |
+| `fg-barn` | gabled; half-hipped; bow-sided; with an outshot |
+| the rest | fill and proportion by seed: the sheds' length, depth, height and eave; the pens' layout; the ice house's barrow; the cairn house's and egg store's radius and dome |
+
+Details vary by seed within a family: the pitch (30-50 degrees; a burstabaer's gables steeper), the wall height, the
+chimney (a hood along the ridge or a stone stack at a gable), the door's offset, small windows of visor glass, and the turf
+(green, brown, patchy with dead turf, flowering).
 
 | Key | Box (w x d x h) | What it is |
 |---|---|---|
@@ -51,6 +73,7 @@ lowest), so a station swaps `FELLGANG.draw` for `TG.fg.draw` with no layout chan
 | `fg-nest-ledge` | the fowlers' gear by a nest: a plank bridged to the ledge, an iron peg and line with a wicker basket of eggs |
 | `fg-burial-ledge` | a drystone kerb on a ledge, the dead wrapped in hide and bound with cord, a little cairn at the head, the family's rope coiled beside, a slate with the name |
 | `fg-halt` | the Travellers' halting place (the Fellgangs who live on the road: the owner, 2026-11-11): A-frames of fir, hide down the back slope, plate at the windward end, fur beds, a fire before it, a lantern on its pole |
+| `fg-ice-tools` | the Ice-cutters' tools by their stacks: an A-frame rack of fir, two long ice saws, pike poles with iron hooks, block tongs, a coil of rope |
 | `fg-wagon` | the Travellers' rolling home: a barrel-top sledge-wagon of bright painted boards with a scalloped trim and the family's mark, plate runners faced with tyres, a drawbar, a stove pipe, a painted door and steps at the back |
 
 **States.** `kept` and `worn` (`?state=worn`, or the State select on the panel, which reloads): worn greys the colours,
@@ -78,7 +101,8 @@ What this set takes (trimmed from `PLAN.md` section 8 to what is built; `python3
 | `core/door` | yes | the plate doors are `KDOOR` records: they open with E on the sheet |
 | `core/host` | yes | camera, panel, inspector, polygon tool, probe |
 | `core/atmos` | yes | the placeholder sky and the skylight on the library materials |
-| `core/walk`, `core/sockets`, `core/lod`, `core/export`, `core/terrain` (`KCAVERN`), `core/camp`, `core/minimap`, `core/shader` x-ray, `core/hazard`, `kits/ancient-transit`, `kits/motor-vehicles` | not yet | the Tungang set's holds and the Line; the walk records and the Godot export are `KNOWN_ISSUES.md` items |
+| `core/walk`, `core/walk/box` | yes | every box a building draws is a floor or a block (`src/37-wk-rec.js`); round walls as arcs of blocks; the doors' blocks switch as they open; F walks the sheet |
+| `core/sockets`, `core/lod`, `core/export`, `core/terrain` (`KCAVERN`), `core/camp`, `core/minimap`, `core/shader` x-ray, `core/hazard`, `kits/ancient-transit`, `kits/motor-vehicles` | not yet | the Tungang set's holds and the Line; the Godot export is a `KNOWN_ISSUES.md` item |
 
 ## Checks
 
@@ -86,7 +110,10 @@ What this set takes (trimmed from `PLAN.md` section 8 to what is built; `python3
 
 | Check | What | Its negative |
 |---|---|---|
-| `box-within-contract` | every row building's measured box within 0.5 m of its `TG.fg.BOX` (w, d, h above the floor), the pieces of their declared boxes; kept on the page, worn through `TG.fg.proto` | a hut measured against the meeting hall's box |
+| `box-within-contract` | every row building's measured box never 0.5 m past its `TG.fg.BOX` (w, d, h above the floor), the pieces' of their declared boxes; kept on the page, worn through `TG.fg.proto` | too big: a meeting hall measured against the hut's box |
+| `box-fills-its-share` | and filling 65 % of the box's w and d and 75 % of its h | too small: a hut measured against the meeting hall's box |
+| `triangle-budget` | every def within its own budget, kept and worn; the sample village under 130k | the budgets cut to a quarter |
+| `walls-block-doors-pass` | a hut's door blocks a walker shut and lets one through open; 1.35 m along its wall the wall's box stops one | a walker put in the wall, checked as passing |
 | `tags-vocabulary` | the core/tags audit: no unknown value or key, every building with a culture and types | a record of culture `nonesuch`, type `spaceport` |
 | `error-panel` | the panel and the console clean | a panel holding an error |
 | `meethall-variants` | the two `fowlers` halls carry a rope wall (pegs, coils = pegs less the empty, one empty), the two `icecut` halls a tally board (slats, 3+ notches each); the sample village's hall is `fowlers` with a peg for each household | the tally board checked as a rope wall |
@@ -96,4 +123,5 @@ What this set takes (trimmed from `PLAN.md` section 8 to what is built; `python3
 | `coverage`, `no-nan`, `furniture-keys`, `material-records` | every def drawn; no NaN; every catalog key found; the library records | an unknown def, a NaN mesh, an unknown catalog key |
 
 `node tests/test-bundle.js` runs the sealed bundle without a browser: both riftrim villages (their stations' specs) drawn on a
-slope, the plinth, the hall variants by focus, the 14 boxes built alone, a rope, the road pieces; each with its negative.
+slope, the plinth, the hall variants by focus, every key at 8 seeds in three characters within the contract, the ice village
+lower than the Fowlers', a rope, the road pieces, the furnished bundle; each with its negative.

@@ -81,7 +81,7 @@ function fgRoof(hw,hd,wh,rid,C,o){o=o||{};const ov=o.ov==null?.2:o.ov,ovz=o.ovz=
  /* rafters at the gables and every ~2.5 m (inside: the cut-away shows them) */
  {const nr=Math.max(2,Math.round((2*hw-.8)/2.5));for(let i=0;i<=nr;i++){const x=-hw+.4+i*(2*hw-.8)/nr;for(const sg of [1,-1])pole('pole',[x,wh-.05,sg*(hd-.3)],[x,rid-th-.08,0],.06,rc,5);}}
  /* the gables: drystone courses stepping in to the ridge */
- if(!o.noGables){const col=fgCol('stone',C),gt=o.gableT==null?.6:o.gableT;for(const sx of [-1,1]){if(o.noGable===sx)continue;const n=Math.max(4,Math.round((rid-wh)/.16));
+ if(!o.noGables){const col=fgCol('stone',C),gt=o.gableT==null?.6:o.gableT;for(const sx of [-1,1]){if(o.noGable===sx)continue;const n=Math.max(4,Math.round((rid-wh)/.22));
   for(let k=0;k<n;k++){const y0=wh+(rid-wh)*k/n,y1=wh+(rid-wh)*(k+1)/n,half=Math.max(.05,hd*(1-(k+1)/n)-.05);box('stone',sx*(hw-gt/2),y0,0,gt,y1-y0+.01,2*half,col);}}}}
 /* ---------------------------------------------------------------- the plate door */
 /* an Ancient plate door on cable hinges in a bell-fir frame: (x,z) the middle of the doorway's line, w x h. The leaf is a
@@ -114,7 +114,7 @@ function fgTextW(s,ch){return (s.length*4-1)*ch/5;}
 /* a slogan centred on (x,y) (y its baseline) on the face whose yaw is ry, letters ch tall, a hair proud of the face */
 function fgText(s,x,y,z,ry,ch,col){const px=ch/5,w=fgTextW(s,ch);col=col||P('red');
  W(x,y,z,ry,()=>{let cx=-w/2;for(const c of s.toUpperCase()){const G=FG_FONT[c];if(G){for(let r=0;r<5;r++){const row=G[r];let k=0;
-   while(k<3){if(row[k]!=='1'){k++;continue;}let e=k;while(e<3&&row[e]==='1')e++;box('plain',cx+(k+e)/2*px,(4-r)*px,.012,(e-k)*px*.96,px*.96,.012,col);k=e;}}}
+   while(k<3){if(row[k]!=='1'){k++;continue;}let e=k;while(e<3&&row[e]==='1')e++;quad('plain',cx+(k+e)/2*px,(4-r)*px+px*.48,.016,(e-k)*px*.96,px*.96,col);k=e;}}}
   cx+=4*px;}});}
 /* a slogan on a lashed plate: the plate sized to the words, white or rust, the letters red or black */
 function fgSign(s,x,y,z,ry,C,o){o=o||{};const ch=o.ch==null?.22:o.ch,w=fgTextW(s,ch)+ch*1.2,h=ch*1.9,kind=o.kind||'plate';
@@ -125,16 +125,16 @@ function fgSign(s,x,y,z,ry,C,o){o=o||{};const ch=o.ch==null?.22:o.ch,w=fgTextW(s
 const FG_MARKCOL=[0xa8321e,0xc8902e,0xe8e2d4,0x2e5a8a,0x3a7a4a,0x1c1a18,0x8a3a7a];
 function fgMarkCol(i){return FG_MARKCOL[((i|0)%FG_MARKCOL.length+FG_MARKCOL.length)%FG_MARKCOL.length];}
 function fgMark(i,x,y,z,ry,s,col){i=i|0;col=col==null?fgMarkCol(Math.floor(i/6)+i):col;const k=((i%6)+6)%6,t=s*.16;
- W(x,y,z,ry,()=>{if(k===0){ring('plain',0,0,.01,s*.4,t*.35,col,0,PI/2,0,14);for(let a=0;a<4;a++)box('plain',0,-s*.4,.01,t,s*.8,.01,col,0,0,a*PI/4);}
-  else if(k===1){for(const a of [PI/4,-PI/4])box('plain',0,-s*.45,.01,t,s*.9,.01,col,0,0,a);}
-  else if(k===2){for(const a of [PI/5,-PI/5])box('plain',a>0?-s*.17:s*.17,-s*.35,.01,t,s*.65,.01,col,0,0,a);}
-  else if(k===3){for(const dy of [-.22,.12])box('plain',0,dy*s,.01,s*.8,t,.01,col);}
+ W(x,y,z,ry,()=>{if(k===0){ring('plain',0,0,.01,s*.4,t*.35,col,0,PI/2,0,12);for(let a=0;a<4;a++)quad('plain',0,0,.014,t,s*.8,col,0,0,a*PI/4);}
+  else if(k===1){for(const a of [PI/4,-PI/4])quad('plain',0,0,.014,t,s*.9,col,0,0,a);}
+  else if(k===2){for(const a of [PI/5,-PI/5])quad('plain',a>0?-s*.17:s*.17,-s*.025,.014,t,s*.65,col,0,0,a);}
+  else if(k===3){for(const dy of [-.22,.12])quad('plain',0,dy*s+t/2,.014,s*.8,t,col);}
   else if(k===4){for(let a=0;a<3;a++){const r=s*.38;const A=a*TAU/3+PI/2,B=(a+1)*TAU/3+PI/2;const ax=Math.cos(A)*r,ay=Math.sin(A)*r,bx=Math.cos(B)*r,by=Math.sin(B)*r;beam('plain',[ax,ay,.01],[bx,by,.01],t,col);}}
-  else {ring('plain',0,0,.01,s*.38,t*.35,col,0,PI/2,0,14);box('plain',0,-t*.6,.01,t*1.2,t*1.2,.01,col);}});}
+  else {ring('plain',0,0,.01,s*.38,t*.35,col,0,PI/2,0,12);quad('plain',0,0,.014,t*1.2,t*1.2,col);}});}
 /* ---------------------------------------------------------------- fire and smoke */
 /* a fire ring of stones on the floor, embers, the smoke (93-anim.js) and a lit point (91n-night.js) */
-function fgHearth(x,z,C,o){o=o||{};const r=o.r==null?.55:o.r,n=9,col=fgCol('stoneD',C);for(let k=0;k<n;k++){const a=k*TAU/n+rr(-.1,.1);ellip('stone',x+Math.cos(a)*r,.08,z+Math.sin(a)*r,.16,.11,.13,col,a,7);}
- box('stoneD',x,0,z,r*1.5,.04,r*1.5,P('peat'));if(!C.worn||o.lit){for(let k=0;k<4;k++)ellip('glow',x+rr(-.2,.2),.08,z+rr(-.2,.2),.1,.05,.08,hc(0xff6a20),rr(0,PI),6);smokeAt(x,.4,z,{r:.3});haloAt(x,.45,z,0xff8a30,true);}}
+function fgHearth(x,z,C,o){o=o||{};const r=o.r==null?.55:o.r,n=7,col=fgCol('stoneD',C);for(let k=0;k<n;k++){const a=k*TAU/n+rr(-.1,.1);ellip('stone',x+Math.cos(a)*r,.08,z+Math.sin(a)*r,.18,.11,.15,col,a,5);}
+ box('stoneD',x,0,z,r*1.5,.04,r*1.5,P('peat'));if(!C.worn||o.lit){for(let k=0;k<3;k++)ellip('glow',x+rr(-.2,.2),.08,z+rr(-.2,.2),.1,.05,.08,hc(0xff6a20),rr(0,PI),4);smokeAt(x,.4,z,{r:.3});haloAt(x,.45,z,0xff8a30,true);}}
 /* the smoke hole's hood on the ridge: a fan blade of scrap on two poles over the hole, its top at y top */
 function fgHood(x,rid,top,C){const pc=fgCol('pole',C);for(const s of [-1,1])pole('pole',[x+s*.35,rid-.1,0],[x+s*.35,top-.06,0],.04,pc,5);box('scrap',x,top-.06,0,1,.05,.8,fgCol('scrap',C),0,.08);smokeAt(x,top+.2,0,{r:.25});}
 /* ---------------------------------------------------------------- furniture */

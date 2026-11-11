@@ -31,7 +31,7 @@ defBuilding({key:'fg-fixed-line',name:'A family\'s fixed line',seed:9141,cls:'in
  tags:{style:'salvage',role:'rope',part:'fixed-line'},
  note:'a family\'s rope up the wall, drawn from the station\'s record: Ancient cable at the foot, bark cordage above, iron pegs every 25 m, a ladder up the first 18 m, the family\'s mark at the foot and at each peg (the rope is the family\'s vote: it reads as a claim)',
  build(o){const C=fgCx(o);fgRope(o.rope||{pts:[[0,0,0],[0,6,-2],[0,12,-4]],family:0},C);}});
-defBuilding({key:'fg-lantern-post',name:'A lantern post on the road',seed:9142,cls:'fixture',w:.9,d:.9,h:2.75,budget:6000,
+defBuilding({key:'fg-lantern-post',name:'A lantern post on the road',seed:9142,cls:'fixture',w:.9,d:.9,h:2.75,budget:1300,
  tags:{style:'salvage',role:'lamp',light:'flame'},
  note:'a lantern lobelia (the rim\'s one native glow, faint blue on cold nights: "herders steer by them") in a scrap housing on a bell-fir post, a cairn of stones at its foot',
  build(o){const C=fgCx(o),pc=fgCol('pole',C);pole('pole',[0,Math.min(0,C.lo+.3),0],[0,2.45,0],.07,pc,7);
@@ -42,7 +42,7 @@ defBuilding({key:'fg-lantern-post',name:'A lantern post on the road',seed:9142,c
    for(let k=0;k<5;k++){const a=k*TAU/5,x=Math.cos(a)*.07,z=Math.sin(a)*.07-.02;pole('pole',[0,.05,-.02],[x,.22+k*.02,z],.006,hc(0x4a6a3a),4);sph('glow',x,.22+k*.02,z,.035,hc(0x7ab4ff),1.4,6);}
    haloAt(0,.25,0,0x7ab4ff,false);});
   fgSet('lamp',1);}});
-defBuilding({key:'fg-wall-station',name:'A wall station',seed:9143,cut:true,w:3.2,d:2.6,h:3.7,budget:30000,
+defBuilding({key:'fg-wall-station',name:'A wall station',seed:9143,cut:true,w:3.2,d:2.6,h:3.7,budget:1400,
  tags:{types:['infrastructure'],style:'salvage',role:'wall-station'},
  note:'a pegged ledge on the face where a rope passes a flat: a deck of planks on iron pegs, with a lift cage of the Ancients hung from a cable (variant 0) or a plate shelter lashed to the face (variant 1)',
  build(o){const C=fgCx(o),hd=1.3,dy=.5,pc=fgCol('pole',C),wc=fgCol('wood',C);
@@ -61,7 +61,7 @@ defBuilding({key:'fg-wall-station',name:'A wall station',seed:9143,cut:true,w:3.
    for(const x of [-1.2,.4])pole('pole',[x,dy,.6],[x,dy+1.9,-hd+.45],.05,pc,6);fgSlab('plate',[-1.4,dy+2.25,-hd+.42],[.6,dy+2.25,-hd+.42],[-1.4,dy+1.35,.8],.04,fgCol('plate',C));
    for(const x of [-.9,.1])fgLash([x,dy+2.3,-hd+.4],[x,dy+1.3,.85]);fgFurn('fellgang_poor_fur_bed',-.4,dy,-.3,PI/2);fgSet('shelter',1);}
   fgSign('NO SKABS',1.15,dy+.75,hd-.17,0,C,{ch:.1,kind:'rust',ink:'white'});}});
-defBuilding({key:'fg-nest-ledge',name:'Fowlers\' gear at a nest ledge',seed:9144,cls:'prop',w:2.4,d:2.2,h:2.5,budget:10000,
+defBuilding({key:'fg-nest-ledge',name:'Fowlers\' gear at a nest ledge',seed:9144,cls:'prop',w:2.4,d:2.2,h:2.5,budget:700,
  tags:{style:'salvage',role:'fowling-gear'},
  note:'the fowlers\' gear beside a nest (the nests are the cliff flyers\', kits/fauna): a wicker basket on a line from an iron peg, a plank bridged to the ledge',
  build(o){const C=fgCx(o),pc=fgCol('pole',C);if(o.face!==false){box('stone',0,Math.min(-.3,C.lo),-.9,2.4,2.8-Math.min(-.3,C.lo),.4,fgCol('stoneD',C));box('stone',-.5,1.1,-.45,1.2,.25,.6,fgCol('stone',C));}
@@ -71,8 +71,8 @@ defBuilding({key:'fg-nest-ledge',name:'Fowlers\' gear at a nest ledge',seed:9144
   beam('iron',[-.3,2.35,-.72],[-.3,2.35,-.3],.03,P('iron'),true,5);cord('rope',[[-.3,2.33,-.32],[-.3,.9,-.2]],.012,P('rope'));
   lathe('straw',-.3,-.2,[[.12,.42],[.22,.55],[.24,.75],[.2,.85]],10,P('straw'));for(let k=0;k<3;k++)ellip('plain',-.3+(k-1)*.07,.82,-.2,.035,.05,.035,P('white'),0,6);
   for(const a of [0,2.1,4.2])cord('rope',[[-.3+Math.cos(a)*.2,.85,-.2+Math.sin(a)*.2],[-.3,.95,-.2]],.008,P('rope'));
-  fgFurn('generic_basket',.6,null,.8,0);}});
-defBuilding({key:'fg-burial-ledge',name:'A burial ledge',seed:9145,cls:'landmark',w:2.6,d:1.5,h:1.1,budget:12000,
+  fgFurn('fellgang_poor_egg_basket',.6,null,.8,0);}});
+defBuilding({key:'fg-burial-ledge',name:'A burial ledge',seed:9145,cls:'landmark',w:2.6,d:1.5,h:1.1,budget:1800,
  tags:{types:['funerary'],style:'drystone',role:'burial'},
  note:'the Fowlers lay their dead on ledges of the wall: a kerb of drystone round the ledge, the dead wrapped in hide and bound with cord, a little cairn at the head, the family\'s rope end coiled beside them and a slate with the name',
  build(o){const C=fgCx(o),col=fgCol('stone',C);if(o.face!==false)box('stone',0,Math.min(-.3,C.lo),-.62,2.6,1.2-Math.min(-.3,C.lo),.26,fgCol('stoneD',C));
@@ -81,7 +81,7 @@ defBuilding({key:'fg-burial-ledge',name:'A burial ledge',seed:9145,cls:'landmark
   for(let k=0;k<6;k++)ellip('stone',.95+rr(-.1,.1),.08+k*.09,rr(-.12,.12),.14-k*.012,.08,.12-k*.01,col,rr(0,PI),6);
   const fam=o.family==null?C.v:o.family|0;ring('rope',.75,.14,.35,.14,.03,hc(fgMarkCol(fam)).clone().lerp(hc(0x8a7656),.55),0,0,0,12);
   W(-.4,.24,.5,0,()=>{box('stoneD',0,0,0,.26,.18,.03,P('slate'),0,-.3);box('plain',0,.08,.02,.16,.012,.004,P('white'),0,-.3);});fgMark(fam,.4,.38,.52,0,.18);}});
-defBuilding({key:'fg-halt',name:'A Travellers\' halt',seed:9146,cut:true,w:4.2,d:3.2,h:2.3,budget:20000,
+defBuilding({key:'fg-halt',name:'A Travellers\' halt',seed:9146,cut:true,w:4.2,d:3.2,h:2.3,budget:1200,
  tags:{types:['infrastructure'],style:'salvage',role:'halt'},
  note:'a Travellers\' halting place by the lantern road (the Fellgangs who live on the road: the owner, 2026-11-11): a low shelter of hide and plate on bell-fir poles, open to the road, a fire ring before it, a lantern on its pole',
  build(o){const C=fgCx(o),pc=fgCol('pole',C),hw=1.7,yr=2.05;
@@ -95,7 +95,7 @@ defBuilding({key:'fg-halt',name:'A Travellers\' halt',seed:9146,cut:true,w:4.2,d
   /* the lantern on its pole by the road (a lobelia in a can) */
   pole('pole',[hw+.15,0,1.25],[hw+.15,1.9,1.25],.04,pc,5);W(hw+.15,1.62,1.25,0,()=>{box('tin',0,0,0,.2,.24,.2,fgCol('tin',C));sph('glow',0,.12,0,.04,hc(0x7ab4ff),1.3,6);haloAt(0,.12,0,0x7ab4ff,false);});}});
 /* the Travellers' wagon: +z is its back (the door and the steps), -z its front (the drawbar) */
-defBuilding({key:'fg-wagon',name:'A Travellers\' wagon',seed:9147,cut:true,w:2.6,d:6,h:3.3,budget:40000,
+defBuilding({key:'fg-wagon',name:'A Travellers\' wagon',seed:9147,cut:true,w:2.6,d:6,h:3.3,budget:2600,
  tags:{types:['dwelling-single'],style:'salvage',role:'dwelling'},
  note:'the Travellers\' rolling home: a barrel-top covered sledge-wagon of bright painted boards, plate runners faced with tyres, a stove pipe, steps at the back',
  build(o){const C=fgCx(o),pc=fgCol('pole',C),L=4.2,bw=2.2,y0=.62,yw=1.85,R=bw/2;
@@ -120,3 +120,18 @@ defBuilding({key:'fg-wagon',name:'A Travellers\' wagon',seed:9147,cut:true,w:2.6
   /* the stove pipe through the roof, a stove inside, the bed across the front */
   cyl('iron',-.55,1.2,-1.1,.07,2.05,P('iron'),8);cone('iron',-.55,3.22,-1.1,.14,.08,P('iron'),8);smokeAt(-.55,3.3,-1.1,{r:.15});
   fgFurn('fellgang_poor_fur_bed',0,y0,-L/2+.6,0);fgFurn('fellgang_common_chest',.6,y0,.9,-PI/2);box('iron',-.55,y0,-1.1,.4,.55,.4,P('iron'));}});
+/* the Ice-cutters' tools by their stacks (PLAN.md 3.3.1: the cutters' saws, pike poles and tongs): an A-frame rack of fir */
+defBuilding({key:'fg-ice-tools',name:'The ice-cutters\' tool rack',seed:9148,cls:'prop',w:1.8,d:.9,h:2.4,budget:1600,
+ tags:{style:'salvage',role:'tools',job:'quarrying'},
+ note:'the Ice-cutters\' tools by their stacks: an A-frame rack of bell fir, two long ice saws (a blade of Ancient plate, a fir crossbar), pike poles with iron hooks, block tongs hung from the bar, a coil of rope',
+ build(o){const C=fgCx(o),pc=fgCol('pole',C),ic=P('iron');
+  for(const s of [-1,1]){pole('pole',[s*.82,0,-.35],[s*.82,1.95,0],.045,pc,5);pole('pole',[s*.82,0,.35],[s*.82,1.95,0],.045,pc,5);}
+  pole('pole',[-.9,1.9,0],[.9,1.9,0],.04,pc,5);pole('pole',[-.85,.55,-.2],[.85,.55,-.2],.035,pc,5);
+  /* the saws: tall blades leaning on the bar, their crossbars at the top */
+  for(const x of [-.45,-.15]){W(x,0,.28,0,()=>{box('plate',0,.05,0,.2,1.75,.012,fgCol('plate',C),0,-.12);for(let k=0;k<8;k++)quad('plain',.1,.2+k*.2,.008,.03,.06,P('dark'),0,0,.7);
+   pole('pole',[-.32,1.9,-.12],[.32,1.9,-.12],.025,pc,4);});}
+  /* the pike poles: fir shafts with iron hooks */
+  for(const x of [.2,.42,.62]){beam('pole',[x,0,.32],[x+.05,2.3,-.02],.025,pc,true,5);beam('iron',[x+.05,2.3,-.02],[x+.06,2.42,-.04],.02,ic,true,4,.004);beam('iron',[x+.05,2.32,-.02],[x+.14,2.36,-.02],.012,ic,true,4,.003);}
+  /* the tongs hung from the bar, a coil of rope */
+  for(const x of [-.65,.75])for(const s of [-1,1]){beam('iron',[x,1.88,0],[x+s*.12,1.55,0],.012,ic,true,4);beam('iron',[x+s*.12,1.55,0],[x+s*.05,1.38,0],.012,ic,true,4);}
+  ring('rope',-.2,1.6,-.12,.18,.035,P('rope'),0,PI/2,0,8);}});

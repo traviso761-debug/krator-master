@@ -52,7 +52,7 @@ function fgTurfRoof(ea,eb,y0,rise,form,ax,C,o){o=o||{};const look=o.look||'green
  psurf('turf',(u,v)=>{const a=-ea+2*ea*u,b=-eb+2*eb*v;return P3(a,Y(a,b)-.26,b);},nu,nv,col.clone().multiplyScalar(.7),{flip:ax==='z'});
  const edge=(f,n)=>{const pts=[];for(let i=0;i<=n;i++)pts.push(f(i/n));cord('turf',pts,.13,col);};
  for(const s of [-1,1]){edge(t=>{const a=-ea+2*ea*t;return P3(a,Y(a,s*eb)-.08,s*eb);},2);edge(t=>{const b=-eb+2*eb*t;return P3(s*ea,Y(s*ea,b)-.08,b);},Math.max(2,nv/2));}
- if(look==='flower'&&!C.worn){const fc=[0xe8d84a,0xd86a9a,0xf0f0e0];for(let k=0;k<30;k++){const a=(fgU(C,200+k)-.5)*1.8*ea,b=(fgU(C,300+k)-.5)*1.8*eb;const p=P3(a,Y(a,b)+.02,b);ellip('plain',p[0],p[1],p[2],.045,.025,.045,hc(fc[k%3]).clone().multiplyScalar(.7),0,4);}}
+ if(look==='flower'&&!C.worn){const fc=[0xe8d84a,0xd86a9a,0xf0f0e0];for(let k=0;k<22;k++){const a=(fgU(C,200+k)-.5)*1.8*ea,b=(fgU(C,300+k)-.5)*1.8*eb;const p=P3(a,Y(a,b)+.01,b);box('plain',p[0],p[1],p[2],.08,.04,.08,hc(fc[k%3]).clone().multiplyScalar(.7),k);}}
  return {Y,P3};}
 /* ---------------------------------------------------------------- walls by plan */
 /* a front wall from x0 to x1 at z with gaps [x0, x1, top, sill?]: a lintel over each, a sill wall under a window */
@@ -96,7 +96,7 @@ function fgRange(R,C){const hw=R.w/2,hd=R.d/2,th=R.th==null?.7:R.th,wh=R.wh,plan
   const half=(ax==='x'?hd:hw)-th*.6,n=Math.max(2,Math.round(2*ea/2.6));for(let i=1;i<n;i++){const a=-ea+2*ea*i/n,ft=fr(a);if(ft<.35)continue;
    for(const s of [-1,1]){const yt=T.Y(a,0)-.36,yb=form==='mono'?T.Y(a,s*half)-.36:wh;pole('pole',T.P3(a,yb,s*half),T.P3(a,yt,form==='mono'?-s*half*.0:0),.055,pc,5);}}}
  /* the gables: drystone courses (or painted timber) under the roof's line at the two ends */
- if(R.gables!==false&&form!=='hip'&&form!=='black'&&form!=='mono'){const gt=.55,ha=(ax==='x'?hw:hd)-gt/2,hb=(ax==='x'?hd:hw)-.05,n=Math.max(4,Math.round(R.rise/.18));
+ if(R.gables!==false&&form!=='hip'&&form!=='black'&&form!=='mono'){const gt=.55,ha=(ax==='x'?hw:hd)-gt/2,hb=(ax==='x'?hd:hw)-.05,n=Math.max(4,Math.round(R.rise/.24));
   for(const se of [-1,1]){const timber=R.gables==='timber'&&se>0,mk=timber?'wood':'stone',gc=timber?(R.paint?hc(R.paint):fgCol('wood',C)):fgCol('stone',C);
    for(let k=0;k<n;k++){const y0k=wh+(rid-wh)*k/n,y1k=wh+(rid-wh)*(k+1)/n+.01;let run=null;
     for(let b=-hb;b<=hb+1e-6;b+=.1){const okb=T.Y(se*ha,b)-.3>=y1k;if(okb&&run==null)run=b;if((!okb||b+.1>hb)&&run!=null){const b1=okb?b:b-.1;if(b1-run>.08){const p=T.P3(se*ha,y0k,(run+b1)/2);
