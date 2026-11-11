@@ -154,9 +154,9 @@ quoted here, each check with a negative.
   0.76 V; galena against sphalerite 0.54 V. A cell delivers most power at about half its open circuit when its losses are
   ohmic: the organism runs its line at about **0.4 V**. Rest potentials shift with pH (about -0.06 V per unit on the
   cathode, less on the anode) and with oxygen; the function carries both, and the gap narrows as the water neutralises
-  downstream: at pH 5 the cell is weak, at pH 6 it is not worth living on.
+  downstream; and above pH about 4 the minerals passivate (iron and zinc hydroxides coat them), so at pH 5 the cell is weak and at pH 6 it carries almost nothing. The cathode's oxygen supply saturates (o2 / (o2 + 0.1 atm)): a drowned cathode in anoxic brine starves.
 - **The current.** Galvanic leaching of sulfide couples in acid runs at roughly **10-100 mA per m2 of contact**. At
-  0.4 V that is **4-40 mW/m2**; the brief's 5-50 mW/m2 is the same range taken at 0.5 V. Sunlight on Krator's Rift floor
+  0.4 V that is **4-44 mW/m2** (the strand's best, 2.2 atm and +36 degC, is 100 mA/m2 and 44 mW/m2; Rio Tinto's air and warmth give about 45 mA/m2 and 19 mW/m2); the brief's 5-50 mW/m2 is the same range taken at 0.5 V. Sunlight on Krator's Rift floor
   gives a plant of the same area 2-4 W/m2 of net photosynthesis at 1-2% efficiency: **about a hundred times more**.
 - **What that grows.** 20 mW/m2 is 630 kJ/m2 a year. A chemolithotroph turns about a tenth of its energy into biomass at
   about 20 kJ/g: **about 3 g of living matter per m2 per year**, a tenth of an Arctic lichen heath's. So the living part
@@ -252,14 +252,16 @@ brine over sphalerite, chalcopyrite and pyrite muds). Round it:
 
 At the vent: **-2,597 m, 2.21 atm** (0.46 atm of oxygen), **1,051 mm of rain, mean +36 degC, warmest month +40, coldest
 +32**, class XV. The strand runs about 10 km north of the sea to the foot of the hills; the ground then rises to -2,034 m
-within 10 km to the north and -1,211 m within 20 km. The sea's shore is about 14 km south of the vent at the model's mean.
+within 10 km to the north and -1,211 m within 20 km. The sea's shore is about 16 km south of the vent at the model's mean (the strand rows 1574-1580 stand at -2,599 m, the water starts at row 1582).
 Neighbours: **Tuatara** (Lizardmen village, px 818,1554, -1,704 m) 51 km north-east, **Sauropolis** (px 765,1596) 85 km
 west-south-west on the same sea, Komodo (px 865,1617) 155 km east.
 
 **What the page takes** (an ideal type of 5.2 km, High Rift's frame: it takes the model's numbers, not its pixels): the
 page's centre at px 800.2,1572.4 (world 1,600,400, 3,144,800 m), the vent's crater in the page's south-east, the strand
-across the middle at -2,600 to -2,597 m, the sea's edge along the south at the season's level, the hills' foot rising
-to about -2,450 m along the north edge. Sky at old-canvas px 528.2,1242.4. `ATMOS.siteAt` to be confirmed at the build
+across the middle at -2,600 to -2,596 m, the sea's edge along the south at the season's level, the hills' foot rising
+to about -2,450 m along the north edge. **The page compresses the strand**: the model's 16 km from the vent to the water
+are drawn as about 3 km, so the vent, the mounds, the terraces and the season's shore stand on one page. The strand's fall
+is kept (about a metre and a half across it), which is what makes a metre of sea level move the shore by hundreds of metres. Sky at old-canvas px 528.2,1242.4. `ATMOS.siteAt` to be confirmed at the build
 (section 16).
 
 ## 6. The ground (`core/terrain`, `core/water`)
