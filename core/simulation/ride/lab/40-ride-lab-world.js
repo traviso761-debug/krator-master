@@ -98,8 +98,8 @@
   }
   function people(L, n){
     if(!SIM.R.activity.TRAVEL) ['TRAVEL', 'SLEEP', 'WORK'].forEach(function(a){ SIM.activity({ id:a }); });
-    if(!SIM.R.faction.tungang){ SIM.faction({ id:'tungang', name:'The Tungangs' }); SIM.org({ id:'loj', faction:'tungang', name:'The lojes' });
-      SIM.role({ id:'traveller', org:'loj', sched:[[0, 'SLEEP']] }); }
+    if(!SIM.R.faction.tungang){ SIM.faction({ id:'tungang', name:'The Tungangs' }); SIM.org({ id:'loj', faction:'tungang', name:'The lojes' }); }
+    if(!SIM.R.role.traveller) SIM.role({ id:'traveller', org:'loj', sched:[[0, 'SLEEP']] });
     var H=SIM.R.place['ledge.homes'], out=[];
     for(var i=0;i<n;i++){ var u=((i*2654435761)>>>0)/4294967296, v=((i*40503+977)>>>0)%1000/1000, ang=u*Math.PI*2, r=1+4*v;
       out.push(SIM.actor({ id:'tr'+i, role:'traveller', home:'ledge.homes', work:'twenny.works', pos:{ x:H.x+Math.cos(ang)*r, y:0, z:H.z+Math.sin(ang)*r } })); }
@@ -124,7 +124,7 @@
     L.routes={
       north:SIM.trade({ id:'rail.n', line:'line.n', stops:[{ settlement:'ledge', place:'ledge.stop' }, { settlement:'gapn', place:'gap.n.stop' }], cap:cap, keep:keep }),
       porters:SIM.trade({ id:'gap.porters', stops:[{ settlement:'gapn', place:'gap.n.stop' }, { settlement:'gaps', place:'gap.s.stop' }], cap:o.portersCap==null ? 120 : o.portersCap,
-        minutes:SIM.portersMinutes('gap.n.stop', 'gap.s.stop', 0.8, 'pedestrian'), mins:o.portersStay==null ? 15 : o.portersStay, keep:keep }),
+        minutes:SIM.portersMinutes('gap.n.stop', 'gap.s.stop', 0.8, 'pedestrian', spm), mins:o.portersStay==null ? 15 : o.portersStay, keep:keep }),
       south:SIM.trade({ id:'rail.s', line:'line.s', stops:[{ settlement:'gaps', place:'gap.s.stop' }, { settlement:'twenny', place:'twenny.stop' }], cap:cap, keep:keep }) };
     if(!SIM.R.role.porter){ if(!SIM.R.activity.CARRY) SIM.activity({ id:'CARRY' }); SIM.role({ id:'porter', org:'loj', sched:[[0, 'CARRY']] }); }
     var crew=[]; for(var i=0;i<(o.crew==null ? 6 : o.crew);i++){ var a=SIM.actor({ id:'porter'+i, role:'porter', settlement:'gapn' }); crew.push(a.id); }

@@ -159,6 +159,18 @@
                                                    "biomes/ancientsvalley/dist"
                                                ],
                                "port":  8831
+                           },
+                           {
+                               "name":  "ride-lab",
+                               "runtimeExecutable":  "python",
+                               "runtimeArgs":  [
+                                                   "-m",
+                                                   "http.server",
+                                                   "8857",
+                                                   "--directory",
+                                                   "core/simulation/ride/lab/dist"
+                                               ],
+                               "port":  8857
                            }
                        ]
 }
