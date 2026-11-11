@@ -13,26 +13,35 @@ Open items are `- [ ]`; `build.py` counts them. Built 2026-11-11 in a cloud sess
   both used as grey detail under the strata colour. The owed set is `rock.badland.bedded`, a greyscale bedded tile
   (`core/materials/PROMPTS-NEEDED.md` section 9 has the prompt). When it comes: a `materials.json` family and the popcorn layer's slot in
   `84-host-ground.js` on the steep clay.
-- [ ] **Korona's western ring species at station 4.** The plan reads them in place (section 4, `ecotone`). Korona's species fragment reads the
-  necanyons kit's geometry and the hyperjungle's, so reading it here would bring both kits onto the page. Until Korona exports a kin row
-  (`BIO.kin('korona.<key>')`) without them, the cliff town's wet wall grows the eastern badlands' Gambel oak and bigtooth maple (`BIO.kin`).
+- [ ] **Korona's western ring species at station 4.** The plan reads them in place (section 4, `ecotone`). It needs Korona's turn first:
+  `BIO.kin` takes a kit that exports `SPECIES`, `make` and `grow`, and Korona exports `grow` but no `make`; its species fragment also takes its
+  geometry from the necanyons kit (`KORONA.G = NECANYONS.G`), so necanyons would come onto the page too. Until then the cliff town's wet wall
+  grows the eastern badlands' Gambel oak and bigtooth maple (`BIO.kin`).
 - [ ] **The cushions over 4 km.** `ehighlands` is not on any page: no station reaches 4 km (the highest, the bloom flats, is 3,393 m). The
   open world's streaming should read `EHIGHLANDS`' cushions where the plateau tops 4 km (4,128 km², section 3).
-- [ ] **The fauna.** Named, not drawn (`42-biome-painted-fauna.js`): the fauna kit's bighorn, condor, cougar, pronghorn and honeybee; the
-  plateau marmot, a painted-lady butterfly and the plateau's own grazer are owed to `kits/fauna` (its `BIOME-FAUNA-PLAN.md`).
-- [ ] **The flood and the cold as live hazards.** The flash flood is a `KHAZ` record with a cycle (`drown`, 30 minutes, four on) on the wash and
-  the canyon floor; nothing draws the brown wall yet (the "gorge flood" amendment other plans list: PLAN.md section 8). Winter cold is not a
-  provider (`KHAZ.provide('temperature')`): the season's snow is drawn, not felt.
-- [ ] **The dust season.** The plan's light summer dust off the playas (`core/atmos` `fx/89-atmos-fx-dustseason.js`) is not bound.
+- [ ] **The fauna.** Named, not drawn (`42-biome-painted-fauna.js`): the fauna kit's bighorn, condor, cougar, pronghorn and honeybee. The
+  plateau marmot, a painted-lady butterfly and the plateau's own grazer are owed to `kits/fauna` (its `BIOME-FAUNA-PLAN.md`): a change there
+  reaches 24 builds and 97 pages (`tools/reach.py`), so it is the fauna kit's own turn, not this kit's.
+- [x] **The flood and the cold as live hazards** (2026-11-11, second pass). The flash flood is drawn on its own `KHAZ` record's cycle
+  (`89w-host-water.js`, `FLOOD`): brown water over the wash's floor (station 1) and the canyon's (station 3) at the flood's mark, risen from under
+  the bed through the cycle's rise, gone when it idles; a **Flash flood** button on the bar brings it now (its warning first). The cold is
+  `KHAZ.provide('temperature')` (`89a-host-atmos.js`): the station's warm and cold months by the season, the lapse and the day's swing, so
+  KHAZ's `cold` row harms on a winter night. Both checked by the probe with negatives. Not done: the flood's roar (core/audio) and a flood that
+  carries the clay's flowers away.
+- [x] **The dust season** (2026-11-11, second pass). `ATMOS.dust`, `ATMOS.airLoad` and `ATMOS.dustSeason` (crater-drylands' lines), the
+  dryness the bloom's calendar's straw and seed: light dust off the playas, the bare clay and the washes in late summer, none in the melt and the
+  bloom. Not on the cliff town's wet wall.
 - [ ] **The `site` tag key.** The plan proposed `site: 'cliff-alcove' | ...`; the records use core/tags' free `zone` key and carry their
   detail in a `site` field of the record, so no core change was needed. If `site` becomes a vocabulary key, move the value there.
-- [ ] **The canyon-mouth lake at station 4.** The lake (516 m) lies about 6 km north-west of the page, under the far field; it is not drawn.
-- [ ] **Section 8's rows not taken yet.** `core/camp` (the pigment works as a `KCAMP` work camp; nomad camps in Nomad Country): the pigment pit
-  is a landform and a record, no camp; `kits/resources` (no node: the teal bed is a clay by default, section 9); `KGROUND`'s `clast` scree is on
-  the steep ground but no lee drifts (`BACKPORT.md` section 5): the winter is `ATMOS.snowCover` on the station's line and the calendar's snow
-  tint on the gentle ground; `KHORIZON` takes the ground only where its units fit (85).
-- [ ] **The wet wall's broadleaves in spring.** Ebadlands' maple and oak keep their own leaf palette, which reads autumnal on the cliff town's
-  page in the bloom; a `colour` delta on their kin rows (70) once Korona's ring species are read in place, or BIO.SEASON-driven leaf colour.
+- [x] **The canyon-mouth lake at station 4** (2026-11-11, second pass). The wall's foot falls past the page's west edge to the lake's bed, and
+  the lake is a `WATER.open` at 516 m with no surf (`89w-host-water.js`), seen from the wall's top (the view "The lake below the wall"). Its
+  place is an ideal type's (west of the foot, 4.5 km across), not the model's pixels.
+- [x] **Section 8's rows** (2026-11-11, second pass). `core/camp`: the pigment works are a `KCAMP` work camp on the bloom flats (`46-host-cliff.js`,
+  `PIGMENT`): its yard the pit, its stands the 300 m cells where the bright beds lie bare, its first pitch, exported with the sites; data only (the
+  tents are a settlement plan's). Lee drifts were bound from the first pass (`ATMOS.snowCover({lee: .45})`, `89a`). Left by the defaults:
+  `kits/resources` (no node: the teal bed is a clay, section 9); nomad camps in Nomad Country (no station there).
+- [x] **The wet wall's broadleaves in spring** (2026-11-11, second pass). The maple's kin row takes ebadlands' summer green (`colour.leaf`,
+  70); the oak was green already. They do not turn in autumn on this page.
 - [ ] **The painted names.** The canyon, the playas, the hogbacks and the four sites have English working names only (section 9, defaults).
 
 ## Notes

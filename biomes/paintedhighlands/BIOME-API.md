@@ -69,6 +69,19 @@ flats), `culture: 'painted'`, and its own `site` field: `{id, kind, floorY, widt
 patch}`. They are painted into a `KMASK` raster the placement reads as bare. The page's `export sites` button and `window._api.sites()` give
 them; nothing is placed in them (the settlement plan's).
 
+## What the host adds (2026-11-11, second pass)
+
+- **The flash flood** (`89w-host-water.js`, `FLOOD`): a `WATER.flow` over the wash's or the canyon's floor driven by the flood's own `KHAZ`
+  record (`KHAZ.state`, the one clock), so the drawn water and the walker's `drown` agree. `FLOOD.trigger()` (the bar's **Flash flood**)
+  sets the record's cycle so its warning starts now; `FLOOD.k` is the flood's share now. KHAZ caches a hazard by its object, so the offset is
+  changed by making a new hazard (`FLOOD.setOffset`).
+- **The cold** (`89a-host-atmos.js`, `PH_TEMP`): `KHAZ.provide('temperature', (x, y, z, t) -> degC)`, the station's months by core/clock's
+  season, the lapse and the day's swing.
+- **The dust season** (`89a`): `ATMOS.dust`, `ATMOS.airLoad`, `ATMOS.dustSeason`, its dryness the bloom's calendar (straw and seed).
+- **The pigment works** (`46-host-cliff.js`, `PIGMENT`, the bloom flats): a `KCAMP` work camp (core/camp 40) over the bright bare beds; exported
+  with the sites (`export sites`: `pigmentWorks`).
+- **The canyon's mouth lake** (the cliff town's wall): a `WATER.open` at 516 m past the page's west edge.
+
 ## File layout
 
 ```

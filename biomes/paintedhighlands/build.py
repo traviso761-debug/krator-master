@@ -100,6 +100,8 @@ CORE_TERRAIN=['35-core-strata.js','36-core-carve.js','37-core-stacks.js','37b-co
 for f in CORE_TERRAIN: PATH.setdefault(f,J('core','terrain',f))
 # core/mask (KMASK): the cliff sites and the pits kept bare, as a raster the placement reads (never getImageData)
 PATH.setdefault('25-core-mask.js',J('core','mask','25-core-mask.js'))
+# core/camp (KCAMP): the pigment works as a work camp over the bright beds (PLAN.md section 5; 10 makes KCAMP, 40 the work camp)
+for f in ['10-camp-cultures.js','40-camp-work.js']: PATH.setdefault('26-'+f,J('core','camp',f))
 PATH.setdefault('44-core-farfield-draw.js',J('core','terrain','host','44-core-farfield-draw.js'))
 PATH.setdefault('45-core-horizon-shade.js',J('core','terrain','host','45-core-horizon-shade.js'))
 PATH.setdefault('35s-core-strata-shade.js',J('core','terrain','host','35-core-strata-shade.js'))   # keyed to sort after 35-core-strata.js ('-' < '.')
@@ -127,12 +129,13 @@ CORE_HOST=khost.FULL+['94-host-polytool.js']
 khost.resolve(PATH,CORE_HOST)
 # the shared atmosphere (core/atmos/README.md): its core, presets, particles (the plunge's spray, the vents' steam), export, waves, skylight, the weather and
 # its selector, bound by 89a-host-atmos.js; the final rebuild's air: height fog (R1), the rain occlusion map (R10), lightning, snow that lies
-CORE_ATMOS=['89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-3-particles.js','89-atmos-8-export.js','89-atmos-a-waves.js','89-atmos-b-skylight.js','89-atmos-4-weather.js','89-atmos-9-host.js']
+CORE_ATMOS=['89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-3-particles.js','89-atmos-3d-dust.js','89-atmos-8-export.js','89-atmos-a-waves.js','89-atmos-b-skylight.js','89-atmos-4-weather.js','89-atmos-9-host.js']
 for f in CORE_ATMOS: PATH.setdefault(f,J('core','atmos',f))
 PATH['89-atmos-c-hostbind.js']=J('core','atmos','host','89-atmos-c-hostbind.js')
 for f in ['89-atmos-e-skymodel.js','89-atmos-f-skypresets.js','89-atmos-g-sky.js','89-atmos-j-fog.js']: PATH[f]=J('core','atmos','sky',f)
 for f in ['89-atmos-h-skyhost.js','89-atmos-i-skybiome.js','89-atmos-e-weatherhost.js','89-atmos-j-heightfog.js']: PATH[f]=J('core','atmos','host',f)
-for f in ['89-atmos-fx-raincover.js','89-atmos-fx-lightning.js','89-atmos-fx-snowcover.js','89-atmos-fx-smokegroups.js']: PATH[f]=J('core','atmos','fx',f)
+# the air's load and the dry season's dust (crater-drylands' lines): light dust off the playas and the bare clay in late summer (PLAN.md section 3)
+for f in ['89-atmos-fx-raincover.js','89-atmos-fx-lightning.js','89-atmos-fx-snowcover.js','89-atmos-fx-smokegroups.js','89-atmos-fx-airload.js','89-atmos-fx-dustseason.js']: PATH[f]=J('core','atmos','fx',f)
 # core/water (core/water/README.md): the pools WATER.still in one draw (53, 53b), the stream a WATER.flow, the cataract a WATER.fall (89w-host-water.js);
 # the final rebuild's ext: breakup (56: the stream), the audit (57), the reflections switch (58), the shore's fields (60), by path (tools/fragment_needs.json)
 CORE_WATER=['20-core-water.js','21-core-water-shore.js','22-core-water-flow.js','50-core-water-draw.js','51-core-water-kinds.js']

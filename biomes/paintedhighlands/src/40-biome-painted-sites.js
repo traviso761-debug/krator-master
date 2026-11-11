@@ -41,7 +41,7 @@ var PAINTED_SITES={
    {recipe:'badland',top:2320},{recipe:'danxia',top:2560},{recipe:'badland',top:2700},{recipe:'danxia',top:3500}],range:[1100,3500],dip:[0,1,.004],warp:[2,.8]},
   /* the wall's profile, north (z -2600) to south (+2600): the foot at 1,320 m by the lake's fan, then each tier a clay bench under a sandstone cliff */
   foot:1320,rim:3380,tiers:[{z:-1300,top:1840},{z:150,top:2190},{z:1100,top:2560},{z:2150,top:3380}],
-  lake:{level:516,x:-2200,z:-6500,r:4200}}};
+  lake:{level:516,x:-9500,z:-4500,r:4500}}};   /* the canyon's mouth lake (80 km2 on 5.1) west of the wall's foot, under the far field */
 // THE HAZARDS (PLAN.md section 6): the kinds the stations register on core/hazard (KHAZ); the host places them from the land (89z)
 var PAINTED_HAZ={
  flood:{kind:'drown',danger:.9,note:'a flash flood down the wash or the canyon after the melt and the summer storms: the roar, a brown wall',cycle:{period:1800,warn:60,ramp:20,on:240}},

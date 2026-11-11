@@ -116,7 +116,9 @@ const L=(function(){const S=SITE;
     h=top+(z-z0)*.05;   /* the bench */
     if(i===T.length-1)h=top+Math.max(0,z-z0)*.03;}
    return h;}
-  function land(x,z){return prof(x,z)+3*n2(x,z,.01,43);}
+  /* past the page's west edge the wall's foot falls to the canyon's mouth lake (516 m): the land blends to its bed over the last 1.5 km */
+  const Lk=S.lake;function land(x,z){const h=prof(x,z)+3*n2(x,z,.01,43),d=Math.hypot(x-Lk.x,z-Lk.z);
+   return d>Lk.r*1.35?h:mix(Lk.level-22+30*smooth(Lk.r*.7,Lk.r,d),h,smooth(Lk.r*1.0,Lk.r*1.35,d));}
   return{land,prof,zw,BOT,TOP,farBase:1500,spine:[[0,0],[0,-1800],[0,1200],[-1500,0],[1500,0]].concat(T.map((t,i)=>[0,zw(0,i)]))};}
  throw new Error('no station '+SKEY);})();
 function landH(x,z){return L.land(x,z);}

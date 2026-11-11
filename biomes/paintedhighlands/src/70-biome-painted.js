@@ -10,9 +10,9 @@ PAINTED.kinRows=function(){if(PAINTED.KIN)return PAINTED.KIN;if(typeof EBADLANDS
   pinyon:BIO.kin('ebadlands.pinyon',{key:'paintedpinyon',name:'Rim pinyon',scale:{H:.75,crownR:.8},
    tags:{koppen:['BSk','Dsb','Cfa'],zone:['rim','ledge'],harvest:{wood:'firewood; pitch',edible:['pine nuts'],medicinal:false,note:'Pine nuts in autumn (kits/crops pinyon).'}}}),
   /* the wet wall's broadleaves (the cliff town's, Cfa 862 mm): the eastern badlands' Zion-canyon pair, standing in for Korona's western ring species until
-     Korona's are read in place (KNOWN_ISSUES.md) */
+     Korona's are read in place (KNOWN_ISSUES.md). The maple in its summer green (ebadlands' own palette is its autumn) */
   oak:BIO.kin('ebadlands.oak',{key:'paintedoak',name:'Wall oak',tags:{koppen:['Cfa','Dsb'],zone:['ledge','talus']}}),
-  maple:BIO.kin('ebadlands.maple',{key:'paintedmaple',name:'Seep maple',tags:{koppen:['Cfa'],zone:['ledge','seep'],riparian:'both'}})};
+  maple:BIO.kin('ebadlands.maple',{key:'paintedmaple',name:'Seep maple',colour:{leaf:[0x6a8a3a,0x7a9a40,0x5e7e34,0x74943c]},tags:{koppen:['Cfa'],zone:['ledge','seep'],riparian:'both'}})};
  return PAINTED.KIN;};
 PAINTED.TREES=[];
 PAINTED.buildTrees=function(R,q,o){o=o||{};q=q==null?1:q;const K=PAINTED.kinRows(),st={juniper:0,pinyon:0,oak:0,maple:0};if(!K||!K.juniper)return st;

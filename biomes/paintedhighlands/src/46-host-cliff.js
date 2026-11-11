@@ -48,9 +48,21 @@ if(SKEY==='cliff'){const T=SITE.tiers;
  /* the ground takes the recesses: the floor under each hood, rising steeply enough to fit inside its margin (KCARVE.minSteep) */
  let st=40;KCARVE.patches.forEach(Q=>{st=Math.max(st,KCARVE.minSteep(Q)*1.2);});const CST=st;
  CARVE_FOLD=(h,x,z)=>KCARVE.fold(h,x,z,{steep:CST});}
+// THE PIGMENT WORKS (the bloom flats; PLAN.md section 5, "pigment pits and quarry benches cut into the bright beds (a KCAMP work camp)"): core/camp's
+// work camp, its yard the pit, its stands the cells of a 300 m world grid within 2.4 km where the bright beds (the teal, the maroon, the pink and the
+// gold clays, the danxia's red) lie bare at the surface; a stand's capacity the bright samples it holds. Data only: the camp's tents are the Painted
+// Men's (a settlement plan's), so nothing is drawn; the stands and the camp's first pitch are exported with the sites (99: export sites)
+const PIGMENT=(function(){if(SKEY!=='bloom'||typeof KCAMP==='undefined'||!KCAMP.workCamp)return null;
+ const BRIGHT={teal:4,maroon:2,pink:1,gold:1,red:2},yard=[SITE.pit.x,SITE.pit.z];
+ const capacity=(x,z,cell)=>{let n=0;for(let j=0;j<6;j++)for(let i=0;i<6;i++){const px=x-cell/2+(i+.5)*cell/6,pz=z-cell/2+(j+.5)*cell/6;
+  if(FC.at(FC.a.bare,px,pz)<.5)continue;const k=STRATA_DATA.at(px,L.land(px,pz)-.3,pz).kind;n+=BRIGHT[k]||0;}return n;};
+ const stands=KCAMP.stands({id:'painted-pigment',range:2400,yard,cell:300,minCap:2,capacity});
+ const W=KCAMP.workCamp({id:'painted-pigment',world:4402,yard,stands,cfg:{regrowDays:3650,strikeAt:.3}});   /* a bed grows back only as the clay weathers: ten years */
+ const first=stands.length&&KCAMP.workStart?KCAMP.workStart(W,0):null;
+ return{W,stands,first,beds:Object.keys(BRIGHT)};})();
 SITES_CLIFF.forEach(r=>REGISTER(r));
 /* the sites' anchors (korona's rock anchors): one invisible instance at each site's floor, so the probe finds what the record names (an empty site is
    empty on purpose: the settlement plan fills it) */
 if(SITES_CLIFF.length){const A=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),new THREE.MeshBasicMaterial({visible:false}),SITES_CLIFF.length),M4=new THREE.Matrix4();
  SITES_CLIFF.forEach((r,i)=>{M4.makeTranslation(r.x,r.y+3,r.z);A.setMatrixAt(i,M4);});A.userData.host=true;A.userData.inspectLabel='cliff site anchors';A.frustumCulled=false;scene.add(A);}
-window._sites={alcoves:SITES_CLIFF.filter(r=>r.site.kind==='cliff-alcove').length,ledges:SITES_CLIFF.filter(r=>r.site.kind==='cliff-ledge').length,talus:SITES_CLIFF.filter(r=>r.site.kind==='talus-bench').length,seeps:SEEPS.length,mask:KMASK.hash(BARE_MASK.mv)};
+window._sites={pigmentStands:PIGMENT?PIGMENT.stands.length:0,alcoves:SITES_CLIFF.filter(r=>r.site.kind==='cliff-alcove').length,ledges:SITES_CLIFF.filter(r=>r.site.kind==='cliff-ledge').length,talus:SITES_CLIFF.filter(r=>r.site.kind==='talus-bench').length,seeps:SEEPS.length,mask:KMASK.hash(BARE_MASK.mv)};

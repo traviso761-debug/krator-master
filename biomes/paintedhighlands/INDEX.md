@@ -29,8 +29,8 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `40-biome-painted-sites.js` | 6 |  |
 | `41-biome-painted-bloom.js` | 4 |  |
 | `42-biome-painted-fauna.js` | 3 |  |
-| `45-host-stage.js` | 15 | the rock: one stack for the station (KSTRATA; PL (37); the climate fields (the field contract's units:  (132); the host binding (163) |
-| `46-host-cliff.js` | 7 |  |
+| `45-host-stage.js` | 16 | the rock: one stack for the station (KSTRATA; PL (37); the climate fields (the field contract's units:  (134); the host binding (165) |
+| `46-host-cliff.js` | 8 |  |
 | `50-biome-painted-species.js` | 7 | palettes (sRGB hex; the colour maths is the core (15); the species (20); textures and materials (the procedural map is th (35); the items (53) |
 | `60-biome-painted-place.js` | 6 |  |
 | `70-biome-painted.js` | 5 |  |
@@ -39,10 +39,10 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `86-host-stacks.js` | 3 |  |
 | `88-host-place.js` | 2 |  |
 | `89-host-sky.js` | 2 |  |
-| `89a-host-atmos.js` | 3 |  |
-| `89w-host-water.js` | 4 |  |
+| `89a-host-atmos.js` | 5 |  |
+| `89w-host-water.js` | 8 |  |
 | `89z-host-build.js` | 6 |  |
-| `99-host-take.js` | 14 |  |
+| `99-host-take.js` | 17 |  |
 | `99-tail.html` | <1 |  |
 
 ## stations/

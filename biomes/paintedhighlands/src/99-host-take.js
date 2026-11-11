@@ -19,7 +19,7 @@ const VIEWS=(function(){const S=SITE;
   'Down the canyon':look(-2300,cz(-2300)-60,70,1600,cz(1600),-40),'From afar':look(-1800,lip(-1800,-1)-600,320,400,cz(400),-150)};}
  const A=SITES_CLIFF.filter(r=>r.site.kind==='cliff-alcove'),a0=A[4]||A[0]||{x:0,z:0,y:2000};
  return{'The cliff town\'s wall':look(-300,-2400,40,0,600,0),'An alcove at the seep line':[a0.x+10,a0.y+6,a0.z-110,a0.x,a0.y+6,a0.z+10],'Along a ledge':look(-1500,L.zw(-1500,1)+30,1.7,600,L.zw(600,1)+40,0),
-  'Up the tiers':look(300,-1900,3,300,800,600),'From afar':look(-2300,-2500,500,0,600,200)};})();
+  'Up the tiers':look(300,-1900,3,300,800,600),'The lake below the wall':look(-2300,2450,30,SITE.lake.x+SITE.lake.r*.4,SITE.lake.z,24),'From afar':look(-2300,-2500,500,0,600,200)};})();
 function describe(hit){const p=hit.point,o=hit.object;
  let best=null;for(const r of REG){if(r.r>1500)continue;if(regHas(r,p.x,p.y,p.z)&&(!best||r.r<best.r))best=r;}
  const lab=o.userData.inspectLabel||o.name||'mesh',isItem=o.isInstancedMesh&&o.userData.biome,item=isItem?(o.name||'').replace(/^biome:/,''):null;
@@ -56,6 +56,17 @@ const HCHK={
  sites(n){const A=SITES_CLIFF.filter(r=>r.site.kind==='cliff-alcove'),seeped=A.filter(r=>r.site.seep).length,linked=A.filter(r=>r.site.ladder).length;
   const ok=SKEY==='cliff'?A.length>=n&&seeped===A.length&&linked>=A.length-4:SKEY==='canyon'?SITES_CLIFF.length>=n:true;
   return{ok,detail:SKEY==='cliff'?A.length+' alcoves ('+seeped+' with a seep, '+linked+' with a ladder up), '+SITES_CLIFF.length+' sites':SITES_CLIFF.length+' sites'};},
+ // the flash flood follows its hazard record: with the cycle on the flood is drawn at its mark, idle it is gone
+ flood(F){if(!F)return{ok:SKEY!=='stripes'&&SKEY!=='canyon',detail:'no flood on this station'};const c=F.rec.tags.hazard.cycle,t=F.now(),keep=c.offset;
+  F.setOffset(((c.warn+c.ramp+c.on/2-t)%c.period+c.period)%c.period);F.tick();const on=F.D.mesh.visible&&F.k>.99&&KHAZ.state(F.rec,t).state==='on';
+  F.setOffset(((c.period*.75-t)%c.period+c.period)%c.period);F.tick();const off=!F.D.mesh.visible&&KHAZ.state(F.rec,t).state==='idle';F.setOffset(keep);F.tick();
+  return{ok:on&&off,detail:'on: drawn '+on+'; idle: hidden '+off};},
+ // the cold: KHAZ's ambient temperature from the calendar; winter under the cold row's start on the plateau, summer over it
+ cold(fn){if(typeof KHAZ==='undefined'||!fn)return{ok:false,detail:'no temperature provided'};const H=KHOST.host.clock,d0=H.day,h0=H.hour;
+  const at=st=>{H.day=PAINTED_BLOOM.day(st)-(SKY.clock.day-H.day);H.hour=6;return fn(0,SITE.base,0,0);};const w=at('snow'),s=at('straw');H.day=d0;H.hour=h0;
+  const provided=KHAZ.provided().indexOf('temperature')>=0;return{ok:provided&&w<s&&(SITE.temp.cold>2||w<0),detail:'a winter dawn '+w.toFixed(1)+' degC, an autumn dawn '+s.toFixed(1)+' degC'+(provided?'':'; NOT PROVIDED')};},
+ pigment(P){if(SKEY!=='bloom')return{ok:true,detail:'no pigment works on this station'};if(!P)return{ok:false,detail:'no work camp'};
+  return{ok:P.stands.length>0&&!!P.first,detail:P.stands.length+' stands on the bright beds, first pitch at '+(P.first?P.first.stand:'none')};},
  camerasOut(Cs){const bad=Cs.filter(c=>c.y<terrainH(c.x,c.z)+.5);return{ok:!bad.length,detail:bad.length?'under the ground: '+bad.map(c=>c.view).join(', '):Cs.length+' cameras above the ground'};}};
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P=instPoints();
  add('the steppe, the bloom and the trees placed',HCHK.placed(window._station));
@@ -65,6 +76,9 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P
  add('the drifts echo the stripes',HCHK.drifts(P));
  add('the bloom\'s calendar on the clock',HCHK.calendar());
  add('the cliff sites as records',HCHK.sites(SKEY==='cliff'?12:SKEY==='canyon'?6:0));
+ add('the flash flood drawn on its hazard record\'s cycle',HCHK.flood(FLOOD));
+ add('the cold: the season\'s temperature on KHAZ',HCHK.cold(typeof PH_TEMP!=='undefined'?PH_TEMP:null));
+ add('the pigment works (core/camp)',HCHK.pigment(typeof PIGMENT!=='undefined'?PIGMENT:null));
  add('preset cameras above the ground',HCHK.camerasOut(Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail});
@@ -74,6 +88,9 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  else if(SITES_CLIFF.length)add('a sage in a cliff site',HCHK.bare([[SITES_CLIFF[0].x,0,SITES_CLIFF[0].z,'biome:phsage']]));
  {const y=terrainH(0,0),k=BED_AT(0,y+.1,0),Lk=PAINTED_BLOOM.DRIFT[k]||[],i=[0,1,2,3,4,5,6,7,8].find(i=>Lk.indexOf(i)<0);
   add('flowers on a bed that never favours them',HCHK.drifts([0,1,2,3].map(()=>[0,y,0,'biome:phfl'+i])));}
+ if(FLOOD)add('a flood that never shows',HCHK.flood(Object.assign({},FLOOD,{D:{mesh:{visible:false}},tick(){}})));
+ add('a summer as cold as the winter',HCHK.cold(()=>-5));
+ if(SKEY==='bloom')add('a works with no stands',HCHK.pigment({stands:[],first:null}));
  add('a camera under the ground',HCHK.camerasOut([{view:'under',x:0,y:terrainH(0,0)-5,z:0}]));
  if(SKEY==='cliff')add('an alcove without its seep',(()=>{const r=SITES_CLIFF.find(r=>r.site.kind==='cliff-alcove'),sv=r.site.seep;r.site.seep=null;const o=HCHK.sites(12);r.site.seep=sv;return o;})());
  return R;}
@@ -90,10 +107,10 @@ const HINT={stripes:"Station 1 of the painted highlands (scale model 5.1, px 986
 KHOST.take({build:'paintedhighlands'+(SKEY==='stripes'?'':'-'+SKEY),title:'Krator biome — the painted highlands: '+SITE.name,hint:HINT,
  scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,regHas,views:VIEWS,ticks:TICKS,
  clock:{hour:ATMOS.SKY.viewHour},draw:SKY.draw,
- controls:[{select:SEASONS,id:'season',on:v=>setStage(v)}],
+ controls:[{select:SEASONS,id:'season',on:v=>setStage(v)}].concat(FLOOD?[{button:'Flash flood',title:'the flood comes now (its warning first): the hazard record\'s cycle',on:()=>FLOOD.trigger()}]:[]),
  inspect:describe,stats:()=>'inst '+window._instances+' · '+(window._bloom?window._bloom.stage:''),
  layers:{'flora':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'rings':{objects:()=>[giantRing]}},
- exporters:{biome:()=>BIO.export(),sites:()=>({format:'krator-sites',version:0,station:SKEY,note:'the cliff sites, kept bare for the settlement plan (PLAN.md section 5a)',sites:SITES_CLIFF.map(r=>Object.assign({x:r.x,y:r.y,z:r.z,name:r.name},r.site)),mask:KMASK.export(BARE_MASK.mv)}),
+ exporters:{biome:()=>BIO.export(),sites:()=>({format:'krator-sites',version:0,station:SKEY,note:'the cliff sites, kept bare for the settlement plan (PLAN.md section 5a)',sites:SITES_CLIFF.map(r=>Object.assign({x:r.x,y:r.y,z:r.z,name:r.name},r.site)),pigmentWorks:PIGMENT?{camp:PIGMENT.W,first:PIGMENT.first,beds:PIGMENT.beds}:null,mask:KMASK.export(BARE_MASK.mv)}),
   fauna:()=>({format:'krator-fauna-places',version:0,note:'kits/fauna keys and where they live (PLAN.md section 4)',fauna:PAINTED_FAUNA}),
   bloom:()=>({format:'krator-bloom',version:0,calendar:PAINTED_BLOOM.CAL,flowers:PAINTED_BLOOM.FLOWERS,drift:PAINTED_BLOOM.DRIFT,now:window._bloom})},
  minimap:{title:SITE.name},
