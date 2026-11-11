@@ -790,6 +790,56 @@ calendar, and the floor is still marked with the hour lines. It is striking, but
 3. **Driyan's place** (596,1068): right?
 4. **The Pit's place** (1135,466): right?
 
+### 8.13 The owner, 2026-11-11 (corrections round)
+
+**No modern road where a decent Ancient one serves.** A meshed Izani, Vothic or Dalab road is now dropped when more than
+half of it runs within 8 km of an open Ancient route. The roads the owner named are kept.
+
+These were dropped:
+
+| Network | Roads dropped |
+|---|---|
+| Izani | Arcbeam to Port Tobin; Pontus to Tethis; Stump to Talia; Talia to Verge; Trigon to Port Visas; Ys to Port Visas; Girder to Nusidi |
+| Vothic | Drum to Torus; Torus to Voth |
+| Dalab dirt roads | Dalab to Daranch; Blade to Span |
+
+Both of Dalab's dirt roads ran beside the Ancient trunks, so Dalab now has none of its own (follow-up question 5).
+
+**Other changes:**
+- **Shim's Izani highway** goes to the nearest Ancient road (71 km) and to Driyan (168 km), not to Wing.
+- **The Yuni road to Mungo passes through Locus** (615 km).
+- **The north basin highway is Ancient**, not Izani: the east dam port, the north basin port, northern Korona, the Pit
+  (938 km, a trunk). **An Izani road leads from Jimjam to it** (238 km, less well kept).
+- **No Tethis-Nereus road.**
+- **Serai** "falls along the lake and on the highway". The nearest lakeside point on any highway out of Jimjam is
+  842,412, by the north basin's remnant lake. That is **136 km** from Serai's place now (826,478), which is too far to be
+  a move. Which lake is meant is follow-up question 6.
+
+**The network now:**
+
+| Class | Routes | km | in tunnel |
+|---|---|---|---|
+| Lines | 12 | 2,655 | 1,510 |
+| The Twenny gallery | 1 | 25 | 14 |
+| Trunks | 60 | 19,346 | 2,103 |
+| *Possible*: Strongbow, Stair, the Bowl | 2 | 1,070 | 499 |
+| *Izani highways* | 38 | 8,365 | (bridges only) |
+| *Trade*, Jimjam to Lux | 1 | 583 | |
+| *Yuni roads* | 3 | 1,037 | |
+| *Vothic highways* (the Temora-Zey'danin one included) | 3 | 647 | |
+| *Dirt roads* (Nereus, Coyote Canyon) | 2 | 833 | |
+| *Beast Rider trails* | 7 | 576 | |
+| *Extension* (south-west) | 1 | 982 | 50 |
+
+The Ancient network is 63 sites and 22,026 km, 3,627 km of it in tunnel, with no open stretch over 8 km.
+
+**Follow-up questions, added to 8.12:**
+
+5. **Dalab's dirt roads**: should Dalab keep its own roads beside the Ancient trunks (they are a lower class of road for
+   carts and herds), or rely on the trunks?
+6. **Serai**: which lake? Jimjam's own lake shore near the city, or the north basin's remnant lake 136 km north on the
+   frontier road?
+
 ### 8.9 Still open (earlier list; items 2 to 5 answered in 8.10)
 
 1. **The Stair tunnel's canon: done** (the owner: "Yes, rewrite it"). `LORE.md` §4's Catch passage now says that no

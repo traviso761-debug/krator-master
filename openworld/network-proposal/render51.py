@@ -83,7 +83,7 @@ towns = {}
 for r in d['routes']:
     if r['class'] in ('izani', 'vothic', 'trade', 'yuni', 'dalab', 'trail', 'dirt'):
         for nm, q in ((r['from'], r['px'][0]), (r['to'], r['px'][-1])):
-            if nm not in nodenames and nm not in ('the Ancient highway', 'the Temora highway'): towns[nm] = q
+            if nm not in nodenames and nm not in ('the Ancient highway', 'the Temora highway', 'the north basin highway'): towns[nm] = q
 for nm, q in towns.items():
     x, y = P(q); r = 4 * K
     dr.ellipse([x - r, y - r, x + r, y + r], fill=(236, 96, 214), outline=(10, 12, 14), width=2 * K)
