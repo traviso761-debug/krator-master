@@ -17,11 +17,14 @@ function woodTexts() {
   for (const kit of fs.readdirSync(path.join(ROOT, 'biomes'))) {
     const src = path.join(ROOT, 'biomes', kit, 'src');
     if (!fs.existsSync(src)) continue;
-    for (const f of fs.readdirSync(src).filter(f => f.endsWith('.js'))) {
-      const t = fs.readFileSync(path.join(src, f), 'utf8');
+    const files = fs.readdirSync(src).filter(f => f.endsWith('.js')), texts = files.map(f => fs.readFileSync(path.join(src, f), 'utf8'));
+    /* a kit whose HV's first argument is not the wood tag (Firebliss: HV(use, food, med, note) for its rocks and minerals) has no harvest.wood to read */
+    const def = texts.map(t => /\bHV\s*=\s*\(\s*(\w+)/.exec(t)).find(Boolean);
+    if (def && def[1] !== 'wood') continue;
+    texts.forEach((t, i) => { const f = files[i];
       const re = /HV\(\s*'((?:[^'\\]|\\.)*)'/g; let m;
       while ((m = re.exec(t))) out.push({ kit, file: f, text: m[1] });
-    }
+    });
   }
   return out;
 }

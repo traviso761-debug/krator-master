@@ -404,7 +404,7 @@
     "biomes/neouterwall/stations/cave/89x-host-air.js": "97a0968d2853315b48fc40c2de04861704394bc165473fdade68fa093aef3725",
     "biomes/neouterwall/stations/cave/89z-host-build.js": "0955dff051d9504c44370dca70babfb193cc64ad1235e6f82d96e361cd40ddbe",
     "biomes/neouterwall/stations/cave/98u-host-eye.js": "cb7b0ec6664776a0ce304c5d1bb549e439a62f10a3afce003de2e026305abe2d",
-    "biomes/neouterwall/stations/cave/98v-host-views.js": "df10fc17f23ac7214908bd3f0e4f6a2342f681665bbfce158b6908c6ee772128",
+    "biomes/neouterwall/stations/cave/98v-host-views.js": "5c4d08f47f1a6c2db56d5c52a8efbe6e69be687fcf223286f91620a75bbc3722",
     "biomes/neouterwall/stations/cave/99-host-take.js": "c8349cdde60d1b328612942f7993b78ccdd3c9b8cc35dfbf4ed38551ba39aff6",
     "biomes/neouterwall/stations/cave/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
     "biomes/neouterwall/stations/cave/station.json": "284eb2d7c2e2cb0fc310b8c05e2acc5e44fd8a7484f830830e29de23afaac1a1",
@@ -487,10 +487,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/neouterwall/dist/neouterwall-cave.html": "d7d7f87c6d8afd467d72391e3ebbe2d57847111d7545ddded201babf01d3bfc7"
+    "biomes/neouterwall/dist/neouterwall-cave.html": "4830921e657881efba4129b3f5fbfdd63c4b0e2ebea2e38853750c74f229212c"
    },
    "outputs_raw": {
-    "biomes/neouterwall/dist/neouterwall-cave.html": "d7d7f87c6d8afd467d72391e3ebbe2d57847111d7545ddded201babf01d3bfc7"
+    "biomes/neouterwall/dist/neouterwall-cave.html": "4830921e657881efba4129b3f5fbfdd63c4b0e2ebea2e38853750c74f229212c"
    }
   },
   "build.py --station garnet": {

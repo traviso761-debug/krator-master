@@ -351,6 +351,7 @@
  "kits/mechs/mechs-runtime.js: ORNUM": 13,
  "kits/mechs/mechs-runtime.js: RAWTEX": 1,
  "kits/mechs/src/90-sheet.js: ORNUM": 1,
+ "kits/motor-vehicles/krator-vehicles-ancient.js: ORNUM": 1,
  "kits/motor-vehicles/krator-vehicles-runtime.js: ORNUM": 1,
  "kits/motor-vehicles/vehicles-core.js: ORNUM": 4,
  "kits/motor-vehicles/vehicles-detail.js: RAWTEX": 1,
