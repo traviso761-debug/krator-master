@@ -22,8 +22,9 @@ The second region of sites cut off the scale model into the open world (`openwor
   | rift rim S and N | 259 |
 - **The sites** (`openworld/SITES.json`). Each town stays its own page's; each site plans its countryside on the world's
   ground with core/hamlet's `xanadu` row, drawn with the Xanadu building kit (`XAK`):
-  - **Erehwon** (`s57bkv9741`, px 800,1503): the Sultanate's city (`settlements/xanadu`). Five farming villages 4.6 to
-    8 km round it and a ranching village 12 km out: 1,345 people in 249 buildings.
+  - **Erehwon** (`s57bkv9741`, px 805,1516 since 2026-11-11, on the south shore of its caldera lake, scale-model edit
+    5.1-512): the Sultanate's city (`settlements/xanadu`). Five farming villages along the shore and up the slopes
+    south, and a ranching village 14 km out on the uplands.
   - **Qiblai** (`skm4jjo2vl`, px 922,1595 since 2026-11-11, moved from 963,1566 to the cataracts of Nahr ash-Shalālāt:
     by a river, near rock salt and ore; the owner's word), with no page yet: the same ring, re-planned on the new ground.
   - **Longsong** (`sq80bzd7ep`, px 1226,1626): the History Monks' monastery (`settlements/longsong`). Its three villages

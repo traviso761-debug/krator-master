@@ -599,6 +599,57 @@ Completes the southeastern mountain-and-basin complex by sculpting three contigu
   6,420 m, a lip over 6.7 km, r442's head, the basin record), the cavern note, the climate (floor, lapse, Cwb), The Gate
   and the sill.
 
+## 5.1 edit 2: `edit_512.py` (2026-11-11): Erewhon's lake as a caldera lake
+
+`python tools/scale-model/edit_512.py` edits `model/data` in place and writes `edit_512.report.json`; `--dry` computes
+and prints the report without writing; it refuses to run twice (`DATA.landforms` is its marker). The owner's decision of
+2026-11-11: one great lake on the pattern of Atitlan, about 120 x 65 km, caldera walls all round, a chain of volcanoes
+along the south side set back from the shore, and a few islands. Everything moves inside the box x 758-918, y
+1464-1556 (the old lake's box, 774-906 x 1482-1534, with the volcanoes' margin); heights and water 3 cells inside it,
+and every raster (heights, water, the five temperatures, rain, class, zone) is checked unchanged outside it.
+
+- **The lake**: a smoothed ellipse 60 x 32 px round 810,1499.5 on the old lake's axis (15 degrees south of east), in the
+  west of the old basin: 1,495 cells (5,980 km2; the old lake 2,197), 121 x 66 km, at -520 m. Its bed is a caldera bowl,
+  60 m deep at the shore and steepening to about 945 m in the middle (bed -1,465 m). The walls rise from 20-80 m over
+  the water on the shore to about 350 m one cell back and 500 m two cells back (no higher than 80 m over the lake on the
+  shore, then 300 m a cell: the old horst stood 1.5 km at the water), with a bench behind them on the north and west that
+  slopes back to the lake, so the escarpment behind holds no trench.
+- **The south rim and the volcanoes**: the horst between the lake and the Lizardman Rift lowered to a caldera rim (its
+  height over the lake compressed as 700 ln(1 + h/700): 3.3 km fell to 0.8 km), and on it three stratovolcanoes,
+  straight-sided cones 5.5 px in radius, summits 13-14 px (26-28 km) back from the shore: west 794,1525 (2.0 km over the
+  lake), middle 819,1530 (2.3 km), east 843,1523 (2.5 km), each with a summit crater. Not vents (`DATA.vents` would
+  light and smoke them); in the report.
+- **Erehwon's new site** (reported; the settlement record moves separately): **805,1516**, a bench on the south shore
+  between the western and middle volcanoes, -497 m; behind it the town's climb (-415 m), a 90 m step (the grey cliff),
+  the palace plateau (-325 to -305 m), then the mountainside (-210, -20, +180, +370 m at 5-8 cells back). The old pin
+  (800,1503) is under the lake.
+- **The Vale**: the old basin east of the lake's east tip, filled (up to 1.95 km over the old bed) to a floor falling
+  gently to Theodiga: the river 0.35 m a px (-522 m at the lake to -546 m at r070's old head 903.5,1529.5), the floor
+  rising about 2-3 m a px to its sides (-497 m near the lake, -535 m near Theodiga). Cfa, ~900 mm, +25 C (32/18).
+- **The outlet**: the Alph (`r070`) now rises at the lake's east tip (840,1503; sill -521.8 m), crosses the east wall in
+  a V-gorge and the vale, and passes Theodiga's broken dam by a breach west of the pin (1531,905 to 1541,912, -548 to
+  -568 m; two of r070's old -2,025 m slot cells there raised to the bed). Theodiga's pin (908,1535, -495 m) is the dam's
+  standing crest. The old lake stood 32 m under the dam's sill (-488 m): closed in the raster. DATA.outlets gains the
+  outlet. The north shore's rivers (`r613`, `r753`, `r492`, `r272`) are cut through the wall and end in the lake; the
+  vale's wadis (`r488`, `r616`) cross the floor to the Alph; their records' courses, beds, lengths and mouths follow.
+  `r442` (joining `r272` far up) and `r683` (into the Alph at the dam) are unchanged.
+- **Islands**: four of one to four cells (113, 64, 100 and 45 m over the lake; the bay isle 16 km off Erehwon), and two
+  sub-cell islands as landform records, `DATA.landforms` (`model/data/landforms.json`, `{format: 'krator-landforms',
+  version: 1, landforms: [{id, kind: 'island', px, py, r_m, crest_m, water_m, note}]}`, crest absolute) for core/world to
+  stamp at 1:1: `lf_pleasure_dome_isle` (806.6,1513.3, r 300 m, 22 m over the lake, ~5 km off Erehwon's quays) and
+  `lf_west_stack`; each one's cell is held as a 40 m shoal.
+- **Checks**: the lake's bed filled to its way out spills at the outlet's sill (-521.8 m); with the outlet's gorge
+  blocked, not under 340 m over the level; no new pit in the box (a few hollows at the cones' feet and on the vale floor,
+  up to 63 m, filled); every settlement pin in the box but Erehwon's unchanged (Theodiga, Tuatara). Temperatures lapsed
+  with the surface; the cells that turned to land take their land twins' (place and height), new water the lake's; rain,
+  class and zone by `climate.reclimate`; the paint relit and retinted, the lake and the vale painted, the Alph drawn.
+  DATA.basins gains the lake (a through lake).
+- `tests/test_smodel.py`: section 12's lake and Erehwon check moved to the new lake; section 15 checks the lake, its
+  walls, the volcanoes, the islands, the Pleasure Dome's landform, the Alph's head, the vale and the rivers' mouths.
+- **Left for later**: the Erehwon settlement record (model/src/60-settlements.js and the live database), re-cutting
+  `openworld/xanadu-oidong-highrift` and the Erewhon page's world coordinates, core/world's landform stamping, and the
+  stale basin record at 922.8,1527.7 (-759 m, outside the box).
+
 ## Cutting a region out for the open world
 
 `extract_region.py <page.html> <regions> <settlements> "<region name>" <out dir>` reads the same page (no edit) and

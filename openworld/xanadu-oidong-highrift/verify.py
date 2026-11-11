@@ -10,7 +10,7 @@ The checks, each with a negative:
     continuous, nothing in water or outside the region, spacing across tiles, the rivers that carry water (a dry course
     and a river's stations outside the polygon are not judged), the villages' roads on the land at their grade, nothing
     growing on a road or a village, no NaN;
-  - the region: each site where the cut put it (Erehwon px 800,1503 and Qiblai 922,1595 (at the cataracts since 2026-11-11) in the 'xanadu' overlay, Longsong
+  - the region: each site where the cut put it (Erehwon px 805,1516 (on its caldera lake's south shore since edit 5.1-512) and Qiblai 922,1595 (at the cataracts since 2026-11-11) in the 'xanadu' overlay, Longsong
     1226,1626 in the 'oidong valley'), on dry land, its kit growing there (the negative reads Erehwon at Longsong's spot,
     in the Oidong Valley, where the Xanadu kit does not grow);
   - the sites (core/world/88s-world-sites.js _sites.checks): the baked plan is the plan made again in the browser (the
@@ -35,7 +35,7 @@ APPLIES = {'flora placement is seeded by cell (order-free)': 'kits', 'nothing ro
            'the highways lie on the land and keep their grade': 'roads', 'nothing grows on a highway or in a town': 'kits'}
 HAS = "({kits:WORLD_KITS.length>0,rivers:(WORLD_DATA.meta.rivers||[]).length>0,roads:!!WORLD_DATA.roads,towns:!!WORLD_DATA.towns})"
 REGION = r"""(neg)=>{const R=[],M=WORLD_DATA.meta,bad=[],lines=[];
- const want={s57bkv9741:{px:[800,1503],biome:'xanadu',kit:'xanadu'},skm4jjo2vl:{px:[922,1595],biome:'xanadu',kit:'xanadu'},sq80bzd7ep:{px:[1226,1626],biome:'oidong valley',kit:'oidong'}};
+ const want={s57bkv9741:{px:[805,1516],biome:'xanadu',kit:'xanadu'},skm4jjo2vl:{px:[922,1595],biome:'xanadu',kit:'xanadu'},sq80bzd7ep:{px:[1226,1626],biome:'oidong valley',kit:'oidong'}};
  for(const id in want){const S=(M.sites||[]).find(s=>s.id===id),W=want[id];if(!S){bad.push('no site '+id);continue;}
   const L=(M.sites||[]).find(s=>s.id==='sq80bzd7ep'),moved=neg==='site'&&id==='s57bkv9741'&&L;   /* the negative: Erehwon read at Longsong's spot, in the Oidong Valley */
   const x=moved?L.x:S.x,z=moved?L.z:S.z,k=WORLD_KITS.findIndex(q=>q.name===W.kit);

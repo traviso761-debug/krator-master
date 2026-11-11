@@ -51,8 +51,23 @@
 - **The model's record moved** (`model/src/60-settlements.js`, `SETT_MOVED['5.1e3']`).
 - **The region followed it:** recut (the frame unchanged), the villages and links re-baked, the resources re-baked, the
   verify's region check at the new pixel.
-- **Erewhon stays put for now:** its lake is to be remodelled first (Lake Atitlán, bigger, with islands; the owner,
-  2026-11-11). The city then moves onto the new shore.
+- **Erewhon followed its lake** (below).
+
+**Erewhon's lake remade, and Erewhon on its shore (the owner, 2026-11-11: "more like Lake Atitlán, but bigger, with a few
+islands"; 120 x 65 km, the volcanoes a safe distance away).**
+- **The model edit** (`tools/scale-model/edit_512.py`, README "5.1 edit 2"): the 260 x 102 km rift lake became a caldera
+  lake, 121 x 66 km at -520 m, up to 945 m deep, with walls all round. Three volcanoes stand 13-14 px back from the south
+  shore (summits 1.9-2.4 km over the lake). There are four islands of 1-4 cells, and two small-island landform records
+  (`model/data/landforms.json`; the Pleasure Dome's isle among them), which core/world does not stamp yet.
+- **The Vale.** The old basin east of the lake is a farmed vale floor. The Ālph now rises at the lake's east tip and
+  crosses the vale to Theodiga's dam.
+- **Erewhon** moved from 800,1503 (now under the lake) to **805,1516** (`SETT_MOVED['5.1e4']`): a south-shore bench, with
+  the town's climb, a 90 m grey cliff, the palace plateau and the mountainside behind.
+- **Its ring** was re-laid for the new shore: along it east and west, and up the slopes south.
+- **Not done:**
+  - the published model and its database;
+  - the landforms' stamp;
+  - the Erewhon page's own terrain, which is drawn separately and may face another way from the new shore.
 
 **The second region, Xanadu, Oidong and the High Rift (2026-11-10): `openworld/xanadu-oidong-highrift`.**
 - **The cut:** 1,780 x 582 km at 1 km cells, in about 40 s.

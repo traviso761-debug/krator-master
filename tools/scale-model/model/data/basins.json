@@ -164,5 +164,6 @@
 {"at_px": [1285.3, 1115.1], "level_m": 2487, "km2": 16, "depth_m": 160, "kind": "through lake", "climate": "Csa"},
 {"at_px": [738.6, 1169.2], "level_m": 1093, "km2": 16, "depth_m": 199, "kind": "through lake", "climate": "Cfa"},
 {"at_px": [1273.3, 1641.9], "level_m": 2395, "km2": 16, "depth_m": 154, "kind": "through lake", "climate": "Cfa"},
-{"at_px": [646.5, 654.5], "level_m": 2880, "km2": 16, "depth_m": 179, "kind": "through lake", "climate": "Cfa"}
+{"at_px": [646.5, 654.5], "level_m": 2880, "km2": 16, "depth_m": 179, "kind": "through lake", "climate": "Cfa"},
+{"at_px": [810.0, 1499.5], "level_m": -520, "km2": 5980, "depth_m": 945, "kind": "through lake", "climate": "Cfa", "spill_m": -522, "name": "Erewhon's lake", "notes": "A caldera lake (edit_512, 2026-11-11): its outlet the Alph (r070)."}
 ]
