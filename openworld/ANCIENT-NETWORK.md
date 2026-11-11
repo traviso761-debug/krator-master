@@ -903,3 +903,57 @@ The Ancient network is 63 sites and 22,026 km, 3,627 km of it in tunnel, with no
 3. **Names**: the Bowl arcology and the Korona site.
 4. **The Hykkousoi cities**: are they the League of Amphitriton's towns (Tethis, Kierson, Nereus, Pontus), as drawn?
 5. **The frontier highway**: does it end at Crescent, or run on into Region 87 (Mav's Refuge, Pinnacle Rock)?
+
+## 9. The road test bed (2026-11-11)
+
+The owner asked for test renders of each road class, to check how they meet each other and how they handle uneven ground.
+`openworld/network-proposal/testbed/` is the test bed. Its `README.md` has the stage, the classes and the checks.
+- **How it is built:** the Ancient Transit kit's page with its stage swapped. The kit's fragments are read in place, and
+  `python build.py` builds the page.
+- **The ground:** a ridge, a valley, a marsh, a hill and a knoll.
+- **The roads:** every class in section 8 crosses that ground and the other classes:
+  - the Ancient way, with its viaduct, its trestle and its guideway;
+  - the Izani, Vothic, Xanadu and Yuni highways;
+  - the trade highway;
+  - the dirt road;
+  - a Beast Rider trail.
+
+`verify.py --assert` checks:
+- each class's ruling grade;
+- one level at every junction;
+- no step where the way meets a deck;
+- the clearances (5 m under the viaduct and under the guideway, 3 m over the water);
+- the trail's crossings;
+- the ground at junctions and under road edges.
+
+Every check has a negative control, and all pass on the GPU. What the bed found:
+
+1. **A kit bug, fixed.** `KTRANSIT.profile` notched the grade at a lone pin: a pinned sample was clamped inside the grading
+   passes and only put back afterwards, so the trail's crossing dropped at 63 %. The fix is in
+   `kits/ancient-transit/src/41-tr-path.js`, with a test and its negative in `tests/test-transit.js`. The kit's page is
+   rebuilt, and its `PORT-BASELINE.json` entry is updated.
+2. **Order of levelling.** A junction takes the level of the first road through it, and a weak road crossing two stricter
+   roads close together was pinned to two heights it could not join: the dirt road climbed at 44 %.
+   - **Rule:** build the network from the strictest class down. Add each weaker class to the finished network with
+     `KTRANSIT.join`, so it meets the levels already set.
+   - **For `core/network`:** level the roads in class order.
+3. **A trail crosses at grade, with no junction.** It takes the crossed road's level and never flattens that road. Joined as
+   a junction, a trail held the dirt road flat on an 11 % slope, and the dirt road then dropped at 16 % beyond it.
+4. **The ground under roads.**
+   - Where two cuttings overlap, the ground takes the deepest single cut, not the sum.
+   - Under a road on fill, junctions included, the ground is raised and falls away at 1 : 1.5. The kit draws a road's
+     embankment along its runs but not under a junction, so a junction on fill stood over a hole.
+   - The fill under a road is read from that road's level at the point's projection across it. The first version took the
+     highest road sample within the road's half-width of the point. On the 30 m way at 4 %, that reaches 15 m upslope, so
+     the ground stood up to 0.3 m through the surface in a sawtooth (seen at the way × Izani junction).
+   - A check now reads the ground as the mesh draws it (its 1.8 m triangles), across every road's whole width.
+5. **A trail is held at the crossed road's level from kerb to kerb**, every 2 m. Pinned only on the road's centre line, the
+   trail followed the hillside between pins, and it rode 0.2 to 0.5 m above the Xanadu road's surface.
+6. **Surfaces by class.** The kit draws every road surface as asphalt. The bed gives each class its own surface, and a
+   junction takes the surface of its widest road.
+
+**Owed to the kit** (for the transit kit's session; they change no page until a host uses them):
+- a fill pad under a junction;
+- the deepest-cut rule in its demo host;
+- a way to hold a lane at a crossed road's level across its width (the bed pins it by hand);
+- a `surface` option on `draw.road` and `draw.junctions`.

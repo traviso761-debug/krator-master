@@ -29,7 +29,16 @@ const ground = (x, z) => 4 * Math.sin(x / 130) * Math.cos(z / 170) + (Math.hypot
   let over = true, grade = true; for (let i = 0; i < P.n; i++) { if (Y.Y[i] < P.YG[i] + 9 - 1e-6) over = false; if (i && Math.abs(Y.Y[i] - Y.Y[i - 1]) > 0.05 * (P.S[i] - P.S[i - 1]) + 1e-6) grade = false; }
   ok(over && grade, 'the deck clears the ground by the clearance everywhere and never exceeds the grade');
   const Yg = T.profile(P, { mode: 'grade', above: 0.45, maxGrade: 0.03 }); let fills = true; for (let i = 0; i < P.n; i++) if (Yg.Y[i] < P.YG[i] + 0.45 - 1e-6) fills = false; ok(fills, 'a grade profile only fills, never cuts');
-  const Yl = T.profile(P, { mode: 'deck', clearance: 9, maxGrade: 0.05, lift: s => Math.abs(s - 800) < 20 ? 40 : null }); ok(Yl.at(800) >= 40 - 1e-6 && Yl.at(0) < 30, 'a lift raises the deck there and the grade carries it down'); }
+  const Yl = T.profile(P, { mode: 'deck', clearance: 9, maxGrade: 0.05, lift: s => Math.abs(s - 800) < 20 ? 40 : null }); ok(Yl.at(800) >= 40 - 1e-6 && Yl.at(0) < 30, 'a lift raises the deck there and the grade carries it down');
+  /* a LONE pin well below the ground (a trail crossing a road in a cutting: the network test bed, 2026-11-11) holds, and its neighbours are
+     graded down to it within the grade on both sides: no one-sample notch */
+  { const hill = (x, z) => 20 + 0 * z, Ph = T.path([[0, 0], [600, 0]], { ground: hill, radius: 0, step: 4 }), pin = { s: 300, y: 10 };
+    const Yp = T.profile(Ph, { mode: 'cutfill', above: 0.06, maxGrade: 0.18, window: 30, pins: [pin] }), k = Math.round(300 / Ph.L * (Ph.n - 1));
+    let gr = 0; for (let i = 1; i < Ph.n; i++) gr = Math.max(gr, Math.abs(Yp.Y[i] - Yp.Y[i - 1]) / (Ph.S[i] - Ph.S[i - 1]));
+    ok(Math.abs(Yp.Y[k] - 10) < 1e-9 && gr <= 0.18 + 1e-9, 'a lone pin holds and the alignment meets it within the grade: ' + (gr * 100).toFixed(1) + ' %');
+    /* negative: the old pass (the pin clamped inside the pass, restored after) leaves the notch */
+    const Yo = Ph.YG.map(v => v + 0.06), g = 0.18; Yo[k] = 10; for (let pass = 0; pass < 4; pass++) { for (let i = 1; i < Ph.n; i++) { const d = Ph.S[i] - Ph.S[i - 1]; Yo[i] = Math.max(Yo[i - 1] - g * d, Math.min(Yo[i - 1] + g * d, Yo[i])); } Yo[k] = 10; for (let i = Ph.n - 2; i >= 0; i--) { const d = Ph.S[i + 1] - Ph.S[i]; Yo[i] = Math.max(Yo[i + 1] - g * d, Math.min(Yo[i + 1] + g * d, Yo[i])); } Yo[k] = 10; }
+    let go = 0; for (let i = 1; i < Ph.n; i++) go = Math.max(go, Math.abs(Yo[i] - Yo[i - 1]) / (Ph.S[i] - Ph.S[i - 1])); ok(go > 0.5, 'negative: the old pass notches at a lone pin (' + (go * 100).toFixed(0) + ' %)'); } }
 
 /* the highway */
 { const pts = [[-1400, -300], [-200, -300], [900, 500], [2200, 500]];

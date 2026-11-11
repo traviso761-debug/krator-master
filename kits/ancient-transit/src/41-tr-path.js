@@ -101,10 +101,13 @@
       for (i = 0; i < n; i++) { var acc = 0, cnt = 0; for (j = Math.max(0, i - cw); j <= Math.min(n - 1, i + cw); j++) { acc += P.YG[j]; cnt++; } Y[i] = acc / cnt + ab2; }
       /* pins: heights the alignment must take (a junction's level, set by the first road through it); held through the passes */
       var pins = (o.pins || []).map(function (pn) { return [Math.max(0, Math.min(n - 1, Math.round(pn.s / P.L * (n - 1)))), pn.y]; }), setPins = function () { pins.forEach(function (pn) { Y[pn[0]] = pn[1]; }); };
+      /* a pinned sample is HELD inside the passes, not only restored after them: clamped in a pass, a lone pin took its neighbour's height,
+         its other neighbour was graded to that, and the restore left a one-sample notch (the network test bed, 2026-11-11: a trail's crossing pin) */
+      var held = new Array(n); pins.forEach(function (pn) { held[pn[0]] = true; });
       setPins();
       for (var pass = 0; pass < 4; pass++) {
-        for (i = 1; i < n; i++) { var d1 = P.S[i] - P.S[i - 1]; Y[i] = Math.max(Y[i - 1] - g * d1, Math.min(Y[i - 1] + g * d1, Y[i])); } setPins();
-        for (i = n - 2; i >= 0; i--) { var d2b = P.S[i + 1] - P.S[i]; Y[i] = Math.max(Y[i + 1] - g * d2b, Math.min(Y[i + 1] + g * d2b, Y[i])); } setPins(); }
+        for (i = 1; i < n; i++) { if (held[i]) continue; var d1 = P.S[i] - P.S[i - 1]; Y[i] = Math.max(Y[i - 1] - g * d1, Math.min(Y[i - 1] + g * d1, Y[i])); }
+        for (i = n - 2; i >= 0; i--) { if (held[i]) continue; var d2b = P.S[i + 1] - P.S[i]; Y[i] = Math.max(Y[i + 1] - g * d2b, Math.min(Y[i + 1] + g * d2b, Y[i])); } }
       return { Y: Y, at: function (s) { s = Math.max(0, Math.min(P.L, s)); var f = s / P.L * (n - 1), a = Math.floor(f), t = f - a; return a >= n - 1 ? Y[n - 1] : Y[a] + (Y[a + 1] - Y[a]) * t; }, mode: mode };
     } else { var ab = o.above == null ? 0.45 : o.above; for (i = 0; i < n; i++) Y[i] = P.YG[i] + ab; }
     if (o.lift) for (i = 0; i < n; i++) { var lv = o.lift(P.S[i]); if (lv != null && lv > Y[i]) Y[i] = lv; }
