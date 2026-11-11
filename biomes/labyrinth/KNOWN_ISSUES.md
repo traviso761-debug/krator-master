@@ -15,17 +15,32 @@
   an instanced item at points 2 m apart along its axis, not to the segment as `core/biome/README.md` says. The audit fix rebuilds
   every biome page, so it is parked in `TODO.md` for the next all-builds rebuild; the kit's real bloom floaters (ground clusters,
   rhodo) are fixed on that branch.
+  **Latest (2026-11-11, Arc lane): 1.27%**, every other assert and negative control passing. The rock's growth adds some (1.44% before
+  its hidden-face and water clipping). The NW lowlands' growth pass puts blooms up to 7 m off any
+  card on the ledges (`65-biome-nwlowlands-dress.js`). Its flowered curtains (ledge edges, soffits) are turned off here because they
+  floated worse (1.81%). That pass is a fix in the same shared kit.
 - [ ] **No animals yet.** The megafauna wait for `kits/fauna` (PLAN.md section 4); no herd, trail or wallow is drawn.
-- [ ] **No hazards.** `core/hazard` is not taken yet: station 1 draws no fall at the stacks' walls and no charge (PLAN.md section 7,
-  amendment 2).
-- [ ] **The Hall's materials are re-made on this page** (`src/89g-host-gate.js`). The Ancients kit's Standard materials drew
-  near-black here: the same map on a fresh MeshStandardMaterial drew correctly, the kit's own (map plus its packed roughness
-  canvas) did not, and stripping the atmosphere's hooks did not change it. The cause was not found. The page re-makes each
-  once (colour, map, emissive, side, a scalar roughness of .88) and lifts the colour 2.2x (`?lift=`), because the kit's ruin
-  palette is toned for its sheet's brighter lights. Find the cause before another world hosts an Ancients builder this way.
-- [ ] **The walls past the square are the model's 2 km cells**, given spurs and gullies by noise in proportion to their rise
-  (`45`, `landH`). They read as smooth slopes from the floor; KSTRATA's bedding is not on them.
-- [ ] **The knobs and stacks carry no planting.** Their terraces and galleries are bare on the page (the kit's sheet plants
-  boxes); `BIO.upFaces` dressing is not run on them.
+- [x] **Hazards** (2026-11-11, `src/89h-host-hazards.js`, core/hazard). 178 records:
+  - **fall:** every stack's and knob's rim (a 6 m band of boxes along the top outline, so a top's middle is safe), the torn bridge ends, the Hall's broken upper slab and its sheared column;
+  - **slip:** the Kimr's rope bridge;
+  - **drown:** the pond and the river.
+
+  A host check probes rim, middle and pond, with a negative control. **Still open:** a charge (a herd that runs, a Two-Snout's dropped rock) waits for `kits/fauna`'s herds (PLAN.md section 7, amendment 2).
+- [x] **The Hall's materials "drew near-black"** (resolved 2026-11-11). Not a material fault: the kit's own materials, measured by
+  readPixels on an 800 x 600 frame, give the Hall's face 53,57,59 against the floor's 124,117,75. The ruin palette (`MAT.ac*R`, the
+  darkened instance colours) is toned for the kit sheet's brighter lights. The earlier "near-black" probe readings came from a
+  1 x 1 drawing buffer: with the browser pane hidden the window is 0 x 0, so set `renderer.setSize(800,600,false)` before probing.
+  `src/89g-host-gate.js` now only clones the kit's materials and lifts their colour 2.2x (74,78,80; `?lift=1` for the kit's own).
+- [x] **The far walls are bedded** (2026-11-11, `src/85-host-far.js`). From 1,700 m up their colour takes KSTRATA's beds (the Rift's
+  recipe with its red taken out, dipping east). **Still open:** the walls are the model's 2 km cells with noise spurs and gullies,
+  so their shape is soft; their real relief waits for the open world's cut of this region.
+- [x] **The knobs, the stacks and the Hall's decks are overgrown** (2026-11-11, `src/89z-host-build.js`): the stand-in flora kit's
+  growth on structures (`NWLOW.dress`: moss and plants on the ledges, hanging moss under the soffits, roots and curtains down the
+  walls), about 30,000 instances and 360,000 triangles, `?dress=0` to leave them out. Its species change with the flora (above).
+- [x] **The Hall read as a black block in the hero view** (2026-11-11). Two causes:
+  - **The light:** at 11:00 the sun stands north-north-east here, so the old hero view from the south-west saw only shadowed faces.
+    The hero now looks from the east-north-east; the old view is kept as "The Hall from the south bank".
+  - **The palette:** the Ancients kit's ruin palette is toned for the kit sheet's brighter lights, so its colours are lifted 1.7x
+    on this page (`?lift=`), except the stacks' rock.
 - [ ] **The Kimr's pueblo** (PLAN.md section 5, a village on a knob above the gate) is not on this station: the Kimr keep away
   from the Hall (PLAN-GATE.md section 9). It wants `core/hamlet`'s defended platform (PLAN.md section 7, amendment 4).

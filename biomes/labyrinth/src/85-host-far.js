@@ -7,9 +7,14 @@ const FAR=(function(){
  const S0=TERR.R*1.1,ROUT=24000,SINK=18;
  const L=a=>a.map(v=>Math.pow(v/255,2.2)),mixC=(a,b,t)=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t];
  const C={steppe:L([132,130,92]),park:L([96,108,72]),rock:L([122,118,112]),rock2:L([98,96,92]),snow:L([232,236,242]),far:L([170,176,184])};
+ /* THE WALLS' BEDDING (core/terrain KSTRATA): the dome's banded rock as the Rift's recipe (its neighbour across the breach), dipping gently east;
+    a wall's colour takes its bed's colour from 1,700 m up, so the 2 km cells read as bedded cliffs, not smooth slopes */
+ const STRATA=typeof KSTRATA!=='undefined'?KSTRATA.create({seed:KRAND.child(7470,'labyrinth/strata'),recipe:'rift',range:[0,7000],dip:[1,0,.004],warp:[40,8],warpF:[.0006,.004]}):null,SB={};
  const colr=(x,z,y,q)=>{const n1=clamp(KRAND.fbm(x*.002,.5,z*.002,2,414)*.6+KRAND.fbm(x*.011,.5,z*.011,2,415)*.6-.1,0,1);
   let c=mixC(C.steppe,C.park,smooth(.45,.7,n1)*smooth(1800,1300,y));
   c=mixC(c,mixC(C.rock,C.rock2,n1),smooth(1700,2600,y));
+  if(STRATA){const b=STRATA.at(x,y,z,SB),bc=L(b.colour.map(v=>v*255)),g=(bc[0]+bc[1]+bc[2])/3,dg=[g+(bc[0]-g)*.3,g+(bc[1]-g)*.3,g+(bc[2]-g)*.3];   /* the Rift's beds' banding, its red taken out: the dome's rock is grey gneiss (materials.json rock.dome) */
+   c=mixC(c,mixC(dg,C.rock2,.2),.75*smooth(1700,2400,y));}
   c=mixC(c,C.snow,smooth(SITE.snowLine[0],SITE.snowLine[1],y)*smooth(.2,.6,n1));
   return mixC(c,C.far,.5*smooth(6000,20000,q.r));};
  const G0=KFAR.grid({lines:KFAR.lines({cell:70,inner:S0+20,out:ROUT,grow:1.035}),dense:true,

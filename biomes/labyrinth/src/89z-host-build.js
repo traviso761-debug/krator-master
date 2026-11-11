@@ -17,6 +17,26 @@ const SHADOW_ON=new URLSearchParams(location.search).get('shadow')!=='0'&&typeof
 (function(){
  const t0=performance.now(),Q=new URLSearchParams(location.search),q=Q.has('q')?+Q.get('q'):1;   /* the kit's own quality: at .7 its thinned crowns leave 1.35% of the bloom cards floating (the core attach audit) */
  try{BIO.cur='labyrinth/'+SITE.key;window._biome=NWLOW.build({R:TERR.R-150,quality:q});BIO.cur=null;}catch(e){reportErr('flora: '+e.stack);}
+ /* THE ROCK AND THE RUIN OVERGROWN (KNOWN_ISSUES.md): the same kit's growth on structures (NWLOW.dress: moss and plants on the ledges, hanging
+    moss off the soffits, roots and curtains down the walls) over the knobs, the five stacks (their terraces and galleries) and the Hall's broken
+    decks, handed over as world-space geometry; the dressing never touches the geometry. Densities scaled up for surfaces this size (the
+    Hexahedron's lesson, kits/ancients targets/hexahedron: BIO.upFaces weights by area, so the defaults are a few dozen specks). ?dress=0 off */
+ if(Q.get('dress')!=='0')try{const geos=[];scene.updateMatrixWorld(true);
+  /* only what stands out of the water: a triangle with any corner under the pond's level + 0.5 m is dropped (the fallen cap's drums lie half
+     in the pond, and the plinths stand in it; growth there would be rooted under the water) */
+  const dry=g=>{const n=g.index?g.toNonIndexed():g,p=n.attributes.position,uv=n.attributes.uv,P=[],U=[],y0=LEVEL+.5;
+   /* and an up-facing face with rock over it (a bed's top under the bed above: KSTACKS draws it, the eye never sees it) is not a ledge */
+   const covered=i=>{const ax=p.getX(i),ay=p.getY(i),az=p.getZ(i),bx=p.getX(i+1)-ax,by=p.getY(i+1)-ay,bz=p.getZ(i+1)-az,cx=p.getX(i+2)-ax,cy=p.getY(i+2)-ay,cz=p.getZ(i+2)-az;
+    const nx=by*cz-bz*cy,ny=bz*cx-bx*cz,nz=bx*cy-by*cx,nl=Math.hypot(nx,ny,nz)||1;if(Math.abs(ny/nl)<.6)return false;
+    const mx=ax+(bx+cx)/3,my=ay+(by+cy)/3,mz=az+(bz+cz)/3,t=Math.max(KSTACKS.topAt(KNOBS,mx,mz),KSTACKS.topAt(STACKS,mx,mz)+LEVEL);return t>my+1;};
+   for(let i=0;i<p.count;i+=3){if(p.getY(i)<y0||p.getY(i+1)<y0||p.getY(i+2)<y0||covered(i))continue;for(let k=0;k<3;k++){P.push(p.getX(i+k),p.getY(i+k),p.getZ(i+k));if(uv)U.push(uv.getX(i+k),uv.getY(i+k));}}
+   const o=new THREE.BufferGeometry();o.setAttribute('position',new THREE.Float32BufferAttribute(P,3));if(uv)o.setAttribute('uv',new THREE.Float32BufferAttribute(U,2));o.computeVertexNormals();return o;};
+  const take=o=>{if(o.isMesh&&!o.isInstancedMesh&&o.geometry&&o.geometry.attributes.position&&!(o.material&&(o.material.transparent||o.material===MAT.acVoid)))geos.push(dry(o.geometry.clone().applyMatrix4(o.matrixWorld)));};
+  scene.children.forEach(o=>{if(/^host:knob\./.test(o.name))take(o);});GATE.holder.traverse(take);
+  BIO.cur='labyrinth/dress';NWLOW.dress(geos,{ledges:{moss:5000,plants:2600,edges:0,hang:10,mossR:8,size:5,treeH:14},soffits:{n:0},walls:{n:1600,hang:9}}
+  /* no ledge-edge or soffit curtains: their flowers (65-biome-nwlowlands-dress.js, curtain {flowers}) float up to 6 m off any card and failed the
+     core attach audit (1.81%); hangs of 24-30 m ran through the ground and into the rock, so the walls' hang is 9 m */);BIO.cur=null;
+  window._dress={geos:geos.length};}catch(e){reportErr('dress: '+e.stack);}
  if(Q.has('nobake')){window._stats=JSON.parse(JSON.stringify(BIO.stats));window._instances=0;window._bakeCalls=0;return;}
  const b=BIO.bake();
  window._instances=b.inst;window._bakeCalls=b.calls;

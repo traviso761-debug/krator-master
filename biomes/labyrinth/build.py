@@ -16,8 +16,8 @@
 
 Core adoption (PLAN.md section 7, PLAN-GATE.md section 7): core/biome, core/rand, core/tags, core/terrain (KSTACKS, KRELIEF, KGROUND, KFAR,
 KHORIZON), core/water, core/atmos, core/host, core/space, core/shadow, core/export, core/materials (the record, the library pack). Not taken:
-core/city (the Hall is one complex, a ruin; the Kimr's pueblos are core/hamlet, a later station), core/hazard (station 1 has no fall or charge
-hazard drawn yet: KNOWN_ISSUES.md).
+core/city (the Hall is one complex, a ruin; the Kimr's pueblos are core/hamlet, a later station). core/hazard is taken (89h: falls, the
+rope bridge's slip, the water).
 """
 import os, re, subprocess, sys, json
 
@@ -68,8 +68,8 @@ PATH={f:os.path.join(SRC,f) for f in os.listdir(SRC) if not f.startswith('.')}
 if STATION:
     for f in os.listdir(_sd):
         if re.match(r'\d',f): PATH[f]=os.path.join(_sd,f)
-# core/terrain, opt-in by name: 37 KSTACKS (the Hall's stacks, the chaos's knobs), 38 KRELIEF, 43 KGROUND, 44 KFAR, 45 KHORIZON
-CORE_TERRAIN=['37-core-stacks.js','38-core-relief.js','43-core-ground.js','44-core-farfield.js','45-core-horizon.js']
+# core/terrain, opt-in by name: 35 KSTRATA (the far walls' bedding: the Rift's recipe, the dome's rock), 37 KSTACKS (the Hall's stacks, the chaos's knobs), 38 KRELIEF, 43 KGROUND, 44 KFAR, 45 KHORIZON
+CORE_TERRAIN=['35-core-strata.js','37-core-stacks.js','38-core-relief.js','43-core-ground.js','44-core-farfield.js','45-core-horizon.js']
 for f in CORE_TERRAIN: PATH.setdefault(f,J('core','terrain',f))
 for f in ['44-core-farfield-draw.js','45-core-horizon-shade.js']: PATH.setdefault(f,J('core','terrain','host',f))
 # the biome core from core/biome
@@ -80,6 +80,9 @@ PATH.setdefault('20-core-space.js',J('core','space','20-core-space.js'))
 CORE_TAGS={'08-core-rand.js':'rand','50-core-tags.js':'tags','52-core-tags-vocab.js':'tags','53-core-tags-host.js':'tags'}
 for f,d in CORE_TAGS.items(): PATH.setdefault(f,J('core',d,f))
 for f in ['07-core-export.js','09-core-export-adapters.js']: PATH.setdefault(f,J('core','export',f))
+# core/hazard (KHAZ) and the one clock (KTRAPS.cycle): the rims, the torn bridges, the rope bridge, the pond and the river (89h)
+PATH.setdefault('20-core-hazard.js',J('core','hazard','20-core-hazard.js'))
+PATH.setdefault('37-core-traps.js',J('core','biome','37-core-traps.js'))
 PATH.setdefault('10-core-shadow.js',J('core','shadow','10-core-shadow.js'))
 PATH.setdefault('12-core-shadow-host.js',J('core','shadow','host','12-core-shadow-host.js'))
 # OTHER KITS read in place (biomes/WORLD.md): the flora is the NW lowlands' (station 1's first cut: PLAN-GATE.md section 6)

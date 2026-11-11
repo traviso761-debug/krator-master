@@ -10,7 +10,8 @@ const recOf=re=>REG.find(r=>re.test(r.name));
 const stk=k=>STACKS.find(S=>S.key===k);
 const VIEWS=(function(){const V={},Y=LEVEL;
  // the Hall from the south-east bank across the pond, the stacks behind it and the walls far off
- V['The Hall of Heroes']=lookY(-760,Y+210,980,160,Y+180,-260);   /* from the south-west bank: the stacks behind the Hall, the neck's walls far off north-east */
+ V['The Hall of Heroes']=lookY(950,Y+240,-420,-80,Y+170,40);   /* from the east-north-east, with the sun (north-north-east at 11:00 here) on the faces it sees; the stacks to the right */
+ V['The Hall from the south bank']=lookY(-760,Y+210,980,160,Y+180,-260);   /* against the light: the stacks behind it, the neck's walls far off */
  // from the neck, looking west up the Labyrinth: the Hall in its pond, the chaos's knobs, the north wall's toe
  V['Into the Labyrinth']=lookY(2300,Y+120,300,-400,Y+180,-200);
  // the neck from the Hall's upper slab: the river leaving east between the walls (the north wall's toe at 2.4-6.4 km, the south side)
@@ -44,13 +45,24 @@ const HCHK={
   return{ok,detail:g?('the Hall '+g.tris+' triangles; '+(ga&&ga.ruin?ga.ruin.tombs+' tombs, '+ga.ruin.poles+' skull poles':'no ruin')):'no Hall'};},
  // nothing roots in the pond, the river or on the rock
  dry(P){const bad=P.filter(p=>{const w=waterH(p[0],p[2]);return w>-1e8&&p[1]<w-.6;});return{ok:!bad.length,detail:bad.length?bad.length+' plants under the water (first '+bad[0].slice(0,3).map(v=>v|0)+')':P.length+' plants, none drowned'};},
- offRock(P){const bad=P.filter(p=>rockFoot(p[0],p[2])<1);return{ok:!bad.length,detail:bad.length?bad.length+' plants inside a stack or knob (first '+bad[0].slice(0,3).map(v=>v|0)+')':'none on the rock'};},
+ /* rooted at the ground (within 2 m of it: the growth on the rock and the ruin, 89z's NWLOW.dress, stands on its ledges on purpose) and more
+    than 12 m inside a body's outline (KSTACKS draws a wall up to 12 m inside it, so the moss on a foot ledge is on the drawn rock, not in it) */
+ offRock(P){const bad=P.filter(p=>rockFoot(p[0],p[2])<-12&&p[1]<terrainH(p[0],p[2])+2);return{ok:!bad.length,detail:bad.length?bad.length+' plants inside a stack or knob (first '+bad[0].slice(0,3).map(v=>v|0)+')':'none on the rock'};},
  // the river never climbs (the owner's rule)
  graded(L){let up=0;L.forEach(P=>{for(let i=1;i<P.length;i++)if(P[i][2]>P[i-1][2]+1e-6)up++;});return{ok:!up,detail:up?up+' river steps climb':L.reduce((s,P)=>s+P.length,0)+' river points, none climbing'};},
  // the bridges' stack ends are in the rock (fit to the drawn outline: GATESTACKS.EMBED)
  bridges(B){const bad=B.filter(b=>[b.a,b.b].some(e=>e.stack&&!(KSTACKS.topAt(STACKS.filter(S=>S.key===e.stack),e.x,e.z)>=b.y)));return{ok:B.length>=6&&!bad.length,detail:bad.length?bad.length+' bridge ends in the air ('+bad.map(b=>b.key).join(' ')+')':B.length+' bridges, every stack end embedded'};},
+ // the hazards (89h): a rim answers "fall" within 6 m of the drop and not in the mesa's middle; the pond answers "drown"
+ hazards(P){const kinds=p=>(typeof KHAZ==='undefined'?[]:KHAZ.at(p.x,p.z,0,p.y)).map(h=>h.kind),bad=P.filter(p=>kinds(p).includes(p.kind)!==p.want);
+  return{ok:P.length>0&&!bad.length&&typeof KHAZ!=='undefined',detail:bad.length?bad.map(p=>p.what+': '+(p.want?'no ':'a ')+p.kind).join('; '):(window._hazards?window._hazards.n+' hazard records; ':'')+P.length+' probes answered'};},
  camerasOut(Cm){const bad=Cm.filter(c=>c.y<terrainH(c.x,c.z)+.5);return{ok:!bad.length,detail:bad.length?'under the ground: '+bad.map(c=>c.view).join(', '):Cm.length+' cameras above the ground'};}};
+/* the hazard probes: the Garden Stack's top, 2 m in from its rim and at its middle, and the pond's deep middle */
+const hazProbes=(function(){const S=STACKS.find(s=>s.key==='S1'),r=KSTACKS.ring(S,S.top-.5,48)||[[S.x+30,S.z]],cx=r.reduce((s,p)=>s+p[0],0)/r.length,cz=r.reduce((s,p)=>s+p[1],0)/r.length;
+ const p=r[4],d=Math.hypot(p[0]-cx,p[1]-cz)||1,k=(d-2)/d,y=LEVEL+S.top;
+ return[{what:'the Garden Stack\'s rim',kind:'fall',want:true,x:cx+(p[0]-cx)*k,z:cz+(p[1]-cz)*k,y},{what:'the Garden Stack\'s middle',kind:'fall',want:false,x:cx,z:cz,y},
+  {what:'the pond',kind:'drown',want:true,x:0,z:PONDD.b*.6,y:LEVEL-2}];})();
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P=instPoints();
+ add('the hazards: a fall at the rims, not in a top\'s middle; the pond drowns (core/hazard)',HCHK.hazards(hazProbes));
  add('the Hall of Heroes, its tombs and the funeral road drawn',HCHK.hall(window._gate,window._gatearc));
  add('nothing rooted under the water',HCHK.dry(P));
  add('nothing rooted on the rock',HCHK.offRock(P));
@@ -60,6 +72,7 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail});
  add('no Hall',HCHK.hall(null,null));
+ add('a fall wanted in a top\'s middle',HCHK.hazards(hazProbes.map(p=>p.kind==='fall'?Object.assign({},p,{want:!p.want}):p)));
  add('a plant drowned',HCHK.dry([[0,LEVEL-3,PONDD.b*.6,'biome:x']]));
  {const S=STACKS[0];add('a plant inside a stack',HCHK.offRock([[S.x,S.y0+LEVEL,S.z,'biome:x']]));}
  add('a river that climbs',HCHK.graded([[[0,0,10],[10,0,12]]]));

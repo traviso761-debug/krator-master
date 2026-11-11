@@ -5,7 +5,7 @@
 //   GATEARC.host     {y: the pond's level, pond: false (89w draws it on core/water), stacks: the stacks' plan (the bridges' portals), sheet: false}
 //   GATESTACKS.host  {water: false (89w draws the fall and the pools on core/water), ground: the page's ground in the Hall's frame}
 // The kit's own volumes (ANC_REG, in the Hall's frame) become the page's records; its core/tags records are the page's already (KTAGS.gatearc).
-const GATE_LIFT=(function(){const q=new URLSearchParams(location.search);return q.has('lift')?+q.get('lift'):2.2;})();
+const GATE_LIFT=(function(){const q=new URLSearchParams(location.search);return q.has('lift')?+q.get('lift'):1.7;})();
 const GATE=(function(){const t0=performance.now(),Q=new URLSearchParams(location.search),D=Q.has('decay')?+Q.get('decay'):1;
  const SPLAN=GATESTACKS.plan({hall:HALL,ground:(x,z)=>groundAt0(x,z)-LEVEL});
  GATEARC.host={y:LEVEL,pond:false,stacks:SPLAN,sheet:false};
@@ -15,16 +15,15 @@ const GATE=(function(){const t0=performance.now(),Q=new URLSearchParams(location
  try{buildGatestacks(holder,0,0,D);}catch(e){reportErr('the stacks: '+e.stack);}
  KOFF=[0,0,0];KXF=null;kbake(holder);KIT.order.forEach(n=>{KIT.items[n].length=0;});
  ANC_REG.splice(r0).forEach(v=>REGISTER({name:v.name,kind:'arcology',x:v.x||0,z:v.z||0,y:LEVEL+(v.y||0),r:v.r,h:v.h,tags:{kind:'arcology',site:'gatearc'}}));
- /* THE KIT'S MATERIALS ON THIS PAGE (2026-11-11, measured in the browser pane): the Ancients kit's Standard materials (map + its packed roughness
-    canvas, TEX.concreteRM) draw near-black here, while the same map on a fresh MeshStandardMaterial draws as on the kit's sheet; the cause is not
-    found (KNOWN_ISSUES.md). Each is re-made once, fresh, with its colour, map, emissive and side and a scalar roughness (the RM canvas's green is
-    225/255: .88), the clones shared by every mesh that shared the original */
+ /* THE KIT'S PALETTE ON THIS PAGE (measured 2026-11-11 by readPixels on an 800x600 frame of the hero view): the kit's ruin palette (MAT.ac*R, the
+    darkened instance colours) is toned for its sheet's bright lights (90-scene); under this page's sky (hemisphere .62, sun 2.25 from the colour
+    script) the Hall's face averages 53,57,59 against the floor's 124,117,75, and reads as a black block at range. Every lit surface is lifted
+    1.7x (2.2x gave 74,78,80 but blew the sunlit cells white; ?lift=1 for the kit's own); the voids, near-black on purpose, stay. The materials are cloned first: MAT.* is the kit's, shared.
+    (The kit's materials are not at fault: an earlier "near-black" reading was a probe on a 1x1 drawing buffer, the pane hidden.) */
  {const fresh=new Map(),F=M=>{if(!M||!M.isMeshStandardMaterial||M.transparent)return M;if(fresh.has(M))return fresh.get(M);
-   const N=new THREE.MeshStandardMaterial({color:M.color.clone(),map:M.map||null,emissive:M.emissive.clone(),emissiveMap:M.emissiveMap||null,emissiveIntensity:M.emissiveIntensity,
-    side:M.side,vertexColors:M.vertexColors,roughness:M.roughnessMap?.88:M.roughness,metalness:M.metalness,normalMap:M.normalMap||null});N.name=M.name;
-   /* the kit's ruin palette is toned for its sheet's bright lights (90-scene); under this page's sky (hemisphere .6, the sun's colour script) its
-      concrete reads near-black, so every lit surface is lifted 2.2x (the voids, near-black on purpose, stay) */
-   if(N.color.getHSL({h:0,s:0,l:0}).l>.08)N.color.multiplyScalar(GATE_LIFT);fresh.set(M,N);return N;};
+   const N=M.clone();if(M.onBeforeCompile)N.onBeforeCompile=M.onBeforeCompile;N.name=M.name;
+   /* the stacks' rock (vertex colours: KSTACKS' occlusion) is toned already and stays: lifted it reads chalk-white */
+   if(!M.vertexColors&&N.color.getHSL({h:0,s:0,l:0}).l>.08)N.color.multiplyScalar(GATE_LIFT);fresh.set(M,N);return N;};
   holder.traverse(m=>{if(m.isMesh)m.material=Array.isArray(m.material)?m.material.map(F):F(m.material);});}
  let tris=0;holder.traverse(m=>{if(m.isMesh){m.userData.host=true;if(!m.userData.inspectLabel)m.userData.inspectLabel='The Hall of Heroes';
   if(m.geometry){const g=m.geometry,n=g.index?g.index.count/3:g.attributes.position.count/3;tris+=n*(m.isInstancedMesh?m.count:1);}}});
