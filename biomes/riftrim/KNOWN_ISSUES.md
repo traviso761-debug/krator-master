@@ -63,6 +63,22 @@ Seen and left for the owner (each a look decision or a larger piece of work):
 - [ ] **The far fields round every station are flat vertex colour** past the map, and the shared sky's snow ridges stand as a pale scalloped wall
   over them on the high stations.
 
+## Stations 8 and 9, the Fellgang villages (2026-11-11; `PLAN.md`, "Stations 8 and 9, the Fellgang villages")
+
+- [ ] **No building kit has the Fellgangs.** The villages are core/hamlet's records drawn as stand-ins (`stations/fowlers/84f-host-fellgang.js`):
+  drystone boxes under gabled turf roofs, round stores, open sheds, pens, and barrows for the ice houses, with no texture (vertex colours only).
+  A Fellgang building kit owes their real forms and the library's drystone and turf.
+- [ ] **core/hamlet has no fowling or ice-cutting focus**: the Fowlers take the `ranch` slot and the Ice-cutters the `quarry` slot, each naming its
+  own works in the Fellgang row. A `fowling` and an `ice` focus in `KHAMLET.FOCI` would be a core change, owed if more such villages come.
+- [ ] **The Fowlers' wall faces south**, away from the sun at this latitude (~40 degrees S): it stands in its own shadow most of the day, so the
+  face reads dark under the `rift` beds' red and black. That is true to the site (scale model 5.1 puts the wall north of the lake); a summer
+  dawn or evening, with the sun rising or setting south of east or west, lights it obliquely.
+- [ ] **The wall is the ground's 12 m cells**, so its ledges are coarse and the ropes follow a smoothed face; `KSTACKS.contour` bodies would
+  give it real overhangs and ledges.
+- [ ] **No flyers, no climbers, no people** (`kits/fauna`, people); the nests and eggs are placed records only.
+- **The Ice-cutters' opening view frames the nearest lantern lobelia** (the S rim's beacon, 1.8 km west of the village) with the frozen lake
+  and the village beyond it: the shelf round the village grows no tree, and the check that trees are drawn as variants needs one in range.
+
 ## Station 7, the Hearth field (2026-11-09; `PLAN.md`, "Station 7, the Hearth field")
 
 - [x] **`ATMOS.snowBare` uploaded its mask with three.js's default 4-byte row alignment** (core/atmos fx/snowcover; fixed in core 2026-11-09): a

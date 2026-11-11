@@ -1,0 +1,10 @@
+{
+ "note": "Station 9, the Ice-cutters (PLAN.md section 6, 'Two more Fellgang villages', chosen by the owner 2026-11-11): a Fellgang village on the S rim's 3,570 m lake, 5.1 px 470,1521. core: core/hamlet and the city primitives it reads, and the Fellgang row and stand-ins from stations/fowlers (84f), read in place. No kin: the S rim's own flora",
+ "core": {
+  "10-hamlet-wood.js": "core/hamlet/10-hamlet-wood.js",
+  "20-hamlet-cultures.js": "core/hamlet/20-hamlet-cultures.js",
+  "30-hamlet-village.js": "core/hamlet/30-hamlet-village.js",
+  "33-city-strategies.js": "core/city/33-city-strategies.js",
+  "84f-host-fellgang.js": "biomes/riftrim/stations/fowlers/84f-host-fellgang.js"
+ }
+}

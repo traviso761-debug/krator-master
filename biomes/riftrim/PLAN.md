@@ -347,9 +347,15 @@ Pinnacle Rock's Deep Root and Zeijani's tubes), not a new module.
   of the Wall** (`LORE.md` §4): the tunnels under the Outer Wall came out above it, and the line ran on to the Ancients'
   Rift settlements, less extensive than those up north but substantial. **Their hub was Cube (Arccube)**, deep in the
   Lizardmen's country (px 448,1237): the owner's most settled point, and **the reward for a player who braves the
-  Lizardmen**. The rest are **very tentative** in name and place (*proposed*: Chimes at the gorge's foot, Cthonos, The
-  Tubes; Pluton, on the Godthrone's airless flank, is the key to the Ancients' own tunnels up the Godthrone, settled
+  Lizardmen**. Pluton, on the Godthrone's airless flank, is the key to the Ancients' own tunnels up the Godthrone (settled
   2026-10-23: `openworld/ANCIENT-ROADS.md` section 3).
+- **The model's Rift places are canon in place and type** (the owner, 2026-11-11: "make the theme and the model's rift places
+  canonical ... chimes will not become the span, but the other names are still tentative"), at their 5.1 px: **Nulab** (city,
+  443,1359), **Shelf** (arcology, 461,1161), **Loj Twenny** (cavern, 457,1269), **Wildcat** (Fellgang village, 427,1453),
+  **Chimes** (ruined arcology, 468,1392), **Cthonos** (ruined arcology, 526,1503), **The Tubes** (cavern, 608,1547), with
+  **Arccube** (720,1567) and **Pluton** (743,1328) as already settled. **Names**: Ledge, Arccube and Pluton are settled; every
+  other name here is **tentative** (Nulab, Shelf, Loj Twenny, Wildcat, Chimes, Cthonos, The Tubes). **Chimes does not become
+  "The Span"**: both names stay, and Dalab's Span (a wrecked arcology) stays where it is.
 - **It is a bridge between two levels**: the highland where Dalab's road comes out of the tunnels (the cliff top, ~1.6-2.5
   km) and the basin and lake ~1.3 km below it (after 4.22). Holding it means working both: the road's terminus, stores
   and stables above; the fields, the harbour and the way to the gorge below; the arcology between them, built into the
@@ -359,8 +365,9 @@ Pinnacle Rock's Deep Root and Zeijani's tubes), not a new module.
 - **The point**: Ledge's marker stood on a water cell on 4.21 (px 160,1007). **Moved with 4.22 to px 165,1000**, the
   cliff where the road comes down (1,638 m, ~1,340 m over the lake, +14 °C, Csa): the upper level; the arcology runs down the cliff
   from it to the shore.
-- **Theme** (*proposed*): a transit hub first (terminus halls, the lift shafts, sidings cut into the rock), with the gene
-  bank as a second story: Dalab came for the line's road and stayed for what the arcology's gardens and vaults hold.
+- **Theme** (**canon**, the owner, 2026-11-11: "make the theme ... canonical"): a transit hub first (terminus halls, the lift
+  shafts, sidings cut into the rock), with Dalab's gene bank as the second story: Dalab came for the line's road and stayed for
+  what the arcology's gardens and vaults hold.
 
 ## 6. Natives: the Tungangs (settled 2026-10-23; the name proposed)
 
@@ -445,6 +452,39 @@ better than anyone.** "The Shift" is not the name; the name is open (below).
   | To Dalab | the bargain at the lifts and in the tunnels | the raids on the supply trains' surface stretches |
   | To each other | the Fellgangs are lapsed members at best, *scabs* at worst | the Tungangs are the stewards who sold the fells to Dalab |
 
+### Two more Fellgang villages (**chosen**, 2026-11-11)
+
+**Both chosen by the owner** (2026-11-11, on the two proposals below: "that sounds good for both"), to be built in that order: the Fowlers
+as station 8 (`--station fowlers`), then the Ice-cutters as station 9 (`--station icecut`). Their names stay placeholders (section 12, question 6).
+
+The owner (2026-11-11): "propose me 2 more scenic sites for fellgang villages with a unique theme". Surveyed on scale model 5.1
+(heights, `wl`, the classes, `p` rain, the `tm`/`tw`/`tc`/`tl` temperatures, `basins.json`, `rivers.json`, `vents.json`,
+`tubes.json`; the polygons and settlements from `model/src/51-region-store.js` and `60-settlements.js`). The search ran every
+other pixel inside the `Fellgangs` polygon, at least 14 px from every named place and 30 px from Wildcat, and ranked the cells by
+the drop within 10 km, by lake water within 6 km and by relief over 30 km. Both sites sit inside `Fellgangs` and a rim polygon,
+on lakes the plan's lake table already lists ("The lakes on 5.1"). Names are placeholders.
+
+| | **A. The wall-climbers** (*the Fowlers*) | **B. The ice-cutters** (*the Coldmen*) |
+|---|---|---|
+| 5.1 px | the north shore of the N rim's 1,887 m lake: village **571,1397** (the lake 568,1403) | the north shore of the S rim's 3,570 m lake: village **470,1521** (the lake 469,1530) |
+| Why here | the rim's tallest wall over water: the ground rises from the lake at 1,887 m to **5,627 m within 16 km** north, a south-facing wall of 3.7 km, the lake 624 km² and 853 m deep under it | the highest lake in `Fellgangs` that freezes hard (coldest month -12 °C, nights to -20) under a dry, clear sky, with the Rift's floor **4.2 km below within 20 km** (-397 m) |
+| Ground and air | a shore bench at ~2,350 m; Csa, ~820 mm, mean +11 °C (warmest month 22, coldest 0); `rift rim N` | the shore at ~3,830 m; Dsc, ~630 mm, mean +1 °C (14 / -12); `rift rim S` |
+| The theme | **Fowlers**, as St Kilda's and the Himalaya's honey hunters: the village lives off the wall. Its people climb it on ropes, pegs and ladders left in place for generations, taking the eggs, the young and the nests of the rim's cliff-nesting flyers, wall honey and the wall's herbs. Each family "owns" a stretch of the face by the rope it keeps there, and a rope is inherited like land | **Ice-cutters**: the village lives off the lake's winter. It saws the ice into blocks, packs them in sawdust and snow in ice houses dug into the moraine, and carries them down the south wall by night to the hot floor (Cthonos' country, and the Rift floor's towns at 1.9 atm and +25 °C), where cold is the dearest thing there is. Their ice buys grain, cloth and metal |
+| How it shapes the village | stacked stone houses on the bench at the wall's foot; rope walks and peg-stores; the young are climbers before they are herders; the dead are laid on ledges of the wall; the Fellgang build (big-lunged, cold-hardy, the Tungangs' long climbing fingers) is the trade's own | low turf-and-stone houses on the lee shore; ice houses like barrows; sledges and the ice road down; a winter calendar (the ice's thickness read like a harvest); a year's work in eight weeks, then the long carry |
+| What they keep or believe | the wall is the village's oldest member: **a rope is a vote** (their lapsed union's form, kept as the right to climb), and a family that loses its rope loses its say | **the Cold is owed**: what the lake gives in winter must be carried down and sold, never hoarded, or the lake will not freeze again; they keep a reckoning of every block like a ledger (the Book's habit of accounts, without the Book) |
+| Its scenic draw | a village at the foot of a 3.7 km wall over a deep warm lake: climbers on the face at dawn, the snow line and the cloud on the wall's upper half, the falls of the rim beyond (station 2's hanging valley 26 px west) | a frozen high lake under a black, clear sky: the cut lanes in the ice, blue blocks stacked by the ice houses, the trough's haze 4 km below, the night carry's lanterns going down the wall |
+| How it reaches the line, Ledge or the caves | over the N rim's shelf by the Hearth field (41 px, ~80 km, to the Hearth hold at 525,1400: the Tungangs' warm caverns trade for eggs and honey); Ledge is ~290 km by the rim's lake chain | down the south wall to Cthonos (61 px, ~120 km): the line's country below; Wildcat ~160 km west along the S rim (rival Fellgangs: the ice road is what they raid) |
+| Station | **near station 2** (the lakes of the north rim, 545,1400): a new station `-wall` on this kit, or a second view down the trough from station 2's lip; it needs the wall drawn as rock (`KSTACKS.contour`, the `rift` strata) and the flyers (`kits/fauna`) | **a new station** (`-icecut`): none of this kit's stations is within 70 px. Cheap: station 3's frozen lake (`WATER.ice`, the drifts fixed 2026-11-09) and station 7's winter snow on a new site, with the ice lanes, the stacks and the ice houses as records |
+
+**Distinct from the others**: Wildcat is a raiders' band that answers to no steward; the Tungangs' holds are caverns, dark crops
+and the line's upkeep; Dalab's outposts are the genepriests' farms and stations. The Fowlers live **up a wall in daylight**, the
+Ice-cutters **on a frozen lake and its trade**. Both keep a form of the union as their own custom (the rope's vote, the ledger),
+which fits the Fellgangs' "lapsed or broken away" row above.
+
+**Pick first: A, the Fowlers.** It is the more striking sight (a 3.7 km wall over a deep lake). It sits next to station 2 and the
+Hearth field, so it shares their kit, flora and sky, and it gives the rim its first vertical settlement. B is cheaper to build (it
+reuses the frozen lake and the winter snow almost whole), so it is the better choice if a quick station is wanted.
+
 ## 7. Crops (`kits/crops`)
 
 A `riftrim` entry (`atm: 1`): zones `shore` (warmth [2, 3], arid [2, 3]), `montane` (warmth [1, 1], arid [1, 3]),
@@ -477,6 +517,8 @@ name). The page's first stations carry birds, insects over the lakes and grazing
    sailwort swinging in the wind, iris lichen on the boulders, snowblood on the summer snow, one lantern lobelia standing
    over it all at dusk, the Rift's trough falling away at the edge.
 7. **The Hearth field** (N; `-hearths`; built 2026-11-09): the Hearths' showcase on the N rim's shelf, 5.1 px 525,1400 (below).
+8. **The Fowlers** (N; `-fowlers`; chosen 2026-11-11): a Fellgang village of fowlers on the bench under the N rim's 3.7 km wall, 5.1 px 571,1397 (section 6).
+9. **The Ice-cutters** (S; `-icecut`; chosen 2026-11-11): a Fellgang village of ice-cutters on the S rim's 3,570 m lake, 5.1 px 470,1521 (section 6).
 
 ## 10. Textures
 
@@ -505,14 +547,16 @@ section 13 (2026-10-23), with the library sets each rim reuses.
 1. **The Fellgangs** (the name proposed, section 6; *Tungangs* is settled, from the owner's "tunnel gangs"): how far the
    branches have diverged and how many they are. Their speech is on `lore/tongues-of-krator.html`, the Tungang tab.
 2. **Ledge's point**: done, moved with the model's 4.22 basin to the cliff (px 165,1000).
-3. **The Rift's ruins**: Arccube is the hub (settled); the others' names and positions are very tentative (the owner):
-   whether Chimes, Cthonos and The Tubes stay, move or go (Pluton is settled: the key to the Godthrone's tunnels).
+3. **The Rift's ruins**: Arccube is the hub (settled); **places settled 2026-11-11** (the owner: the model's Rift places are
+   canon in place and type, section 5): Chimes, Cthonos and The Tubes stay where the model has them. Their **names stay
+   tentative** (Pluton is settled: the key to the Godthrone's tunnels).
 4. **Ledge's own build** (the arcology on both levels, Dalab's quarter, the Tungangs at the lifts) is a settlement plan of its
    own (`settlements/ledge/`), after this kit's station 1.
-5. **Chimes may be "The Span"** (the owner, 2026-10-23: the model's Rift settlements need a rework). The name **Span** is
-   already a Dalab outpost on the model (a wrecked arcology, px 282,680, `LORE.md` §6.1): keep both, rename one, or move
-   Dalab's Span to the gorge. An arcology that spans the great lake's gorge would suit the name.
-6. **The model's Rift settlements** want a rework of their own (names, places, types), with Arccube fixed.
+5. ~~**Chimes may be "The Span"**~~ **Closed 2026-11-11** (the owner: "chimes will not become the span"): both names stay;
+   Chimes stays at the gorge (468,1392), Dalab's Span (the wrecked arcology, px 282,680 old, `LORE.md` §6.1) stays where it is.
+6. **The model's Rift settlements**: **places and types closed 2026-11-11** (the owner: "make ... the model's rift places
+   canonical"; section 5 lists them). **Names still open**: every name but Ledge, Arccube and Pluton is tentative. The owner
+   asked for two more Fellgang villages (proposed, section 6, "Two more Fellgang villages").
 7. **The three rims' flora** (section 3, proposed 2026-10-23, the owner's "great proposal"): settled that Dalab brought up
    the most useful plants it could; which ones (the W highland's list) is proposed.
 8. ~~The model's polygon~~: split into `rift rim N` and `rift rim S` on the model (the owner, 2026-10-23; done).
@@ -526,10 +570,10 @@ plan recommends none. None of them is hard to reverse: each is a name or a site 
 |---|---|---|---|---|
 | 1 | The Fellgangs' divergence and numbers | **Neither is drawn.** The name *Fellgangs* is kept (the model already has a `Fellgangs` polygon). No people are placed on any page (no settlement or crowd is this kit's) | nothing on the pages; the plan's section 6 table stands as proposed | a Fellgang camp would be a `core/camp` record, later |
 | 2 | Ledge's point | done: 437,1330 on 5.1 (= 165,1000 old) | station 1 | |
-| 3 | Chimes, Cthonos, The Tubes | **Kept where 5.1 puts them** (468,1392; 526,1503; 608,1547). Only Chimes is near a station (4, the gorge), and it is drawn as **a ruin's site** only (a terrace cut in the gorge's shoulder, tagged `Chimes (ruin, site only)`), no architecture | station 4 | the tag and the terrace's position in `stations/gorge/44w-host-land.js` |
+| 3 | Chimes, Cthonos, The Tubes | **Kept where 5.1 puts them** (the places made canon by the owner, 2026-11-11; the names tentative) (468,1392; 526,1503; 608,1547). Only Chimes is near a station (4, the gorge), and it is drawn as **a ruin's site** only (a terrace cut in the gorge's shoulder, tagged `Chimes (ruin, site only)`), no architecture | station 4 | the tag and the terrace's position in `stations/gorge/44w-host-land.js` |
 | 4 | Ledge's own build | **A settlement's, not this kit's** (as the plan says). Station 1 draws **the site only**: the cliff with its Ancient-cut benches (cut into the ground's profile below Ledge's site; `KSTACKS.contour` bodies and `KCARVE` mouths for the portal and the lift slots are owed: "Core adoption"). No buildings, no Dalab quarter, no lifts | station 1 | `settlements/ledge/` when it is planned |
-| 5 | Chimes or "The Span" | **Keep both names; rename and move nothing** (the most conservative): the gorge station calls it Chimes, as the model does; Dalab's Span stays at 282,680 old | station 4's labels | |
-| 6 | The model's Rift settlements | **Out of this kit's scope**: no change to the model | | |
+| 5 | Chimes or "The Span" | **Keep both names; rename and move nothing** (the owner confirmed it, 2026-11-11: "chimes will not become the span"): the gorge station calls it Chimes, as the model does; Dalab's Span stays at 282,680 old | station 4's labels | |
+| 6 | The model's Rift settlements | **Out of this kit's scope**: no change to the model (the owner, 2026-11-11: the places and types are canon as the model has them; the names tentative) | | |
 | 7 | The three rims' flora | **Taken as proposed** (section 3), all three lists, the W highland's borrowed six included (tier cedar, cork oak, bay laurel, veil willow, coilbark, spiral aloe) | every station | the station's `species` and `kin` lists |
 | 8 | The polygon | done | | |
 
@@ -624,6 +668,33 @@ the N rim's shelf, set in winter, opening at dusk (`LAND.hour` 16.9: the fans ha
   off ground over 6 degC; three pools each over its vent; the engine open at night, shut at noon, open in an eclipse; each with a broken input that fails.
 - **Owed**: `hearths-walk` (the western vent's walked field, PLAN.md section 11 item 4); the hold's pages moving here as stations; the field and the hold
   on one frame of coordinates; the fin-owl and the hearth animals (`kits/fauna`); `ATMOS.shimmer` over the warm ground (a post pass: oidong's reason).
+
+## Stations 8 and 9, the Fellgang villages (`--station fowlers`, `--station icecut`; 2026-11-11)
+
+Section 6, "Two more Fellgang villages", chosen by the owner 2026-11-11. Both villages are **`core/hamlet` villages** (`KHAMLET.village`, with
+`core/city`'s `KCITY.prim` read in place: each station's `station.json` "core") on a **Fellgang culture row** of their own
+(`stations/fowlers/84f-host-fellgang.js`, which the Ice-cutters read in place). core/hamlet has no fowling or ice-cutting focus, so the Fowlers
+take the `ranch` slot (rope house, egg store, pens) and the Ice-cutters the `quarry` slot (ice houses, sledge shed). **No building kit has the
+Fellgangs**: 84f draws stand-ins from each record's box: drystone walls under a gabled turf roof with a door to the lane, round stone stores, open
+sheds, drystone pens, and a turf barrow over a stone door for an ice house. Each is seated on its footprint (its floor at the highest corner,
+its walls down to the lowest) and merged into three meshes. Every record is a core/tags volume before it is drawn, and the flora keeps off the
+village (`LAND.keep`).
+
+- **Station 8, the Fowlers** (5.1 px 571,1397): the lake at 1,887 m runs past the map's south edge (`LAND.farWater`). The village stands on a
+  shore bench at about 1,960-2,020 m, and the wall rises behind it: 1.5 km in under a kilometre, then on in ledged steps (a flat every
+  ~170 m of height) to about 4.9 km at the page's edge. Each household has its own rope, pegged up the face 180-440 m from the wall's foot
+  with a ladder up its first 18 m. Nest ledges lie where the face flattens beside the ropes, each with a few nests and eggs; the flyers are
+  `kits/fauna`'s, owed. The page opens in the morning (`LAND.hour` 9.3: on this day the giant hides the sun until about 8.5).
+- **Station 9, the Ice-cutters** (5.1 px 470,1521): the lake at 3,570 m is frozen, drawn as station 3's `WATER.ice` with the 2026-11-09
+  drifts. The page is set in winter (station 7's lying snow: `snowBase` .8, `frozen`) and opens at dusk (`LAND.hour` 17.6, the sun 4 degrees up). The village
+  stands on a moraine shelf over the north shore, with seven cut lanes of open water off it. Blocks are stacked at each lane's head, with
+  sledges beside them. The ice road climbs north-east over the moraine to the shelf's edge, with a lantern post every 60 m, lit by night.
+  Hazards: each cut lane is a `drown` record.
+- **Checks** (`LAND.checks` / `LAND.negatives`), each with a broken input that must fail. The Fowlers: the village placed with its meeting
+  hall, rope house and egg store; every building dry and off the wall; the ropes up the face; no tree in a building. The Ice-cutters: the
+  village with its meeting hall, ice houses and sledge shed; every building dry; the lanes on the lake; the stacks on the shore.
+- **Owed**: a Fellgang building kit (the stand-ins are boxes with roofs); the cliff-nesting flyers and the climbers (`kits/fauna`, people);
+  the Fowlers' wall as rock bodies (`KSTACKS.contour`) rather than the ground's 12 m cells.
 
 ## Core changes to take (reconciled 2026-10-27)
 

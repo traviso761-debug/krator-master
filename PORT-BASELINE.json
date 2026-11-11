@@ -508,6 +508,10 @@
    "bytes": 7931655,
    "sha256": "71ed49f56a3cadf9b84942da7c7fe58583620f801ecb8313a50f22fe6ae66efd"
   },
+  "biomes/riftrim/dist/riftrim-fowlers.html": {
+   "bytes": 7364624,
+   "sha256": "433750ec7cc93a36448dfd9996f2829384d1800cc1f6b23217f1d6f243616648"
+  },
   "biomes/riftrim/dist/riftrim-gorge.html": {
    "bytes": 8492487,
    "sha256": "bf97710c0033fcfdcb9179fc43ffcd99e347c0c56bd1706c3ab483ba44f36a8b"
@@ -519,6 +523,10 @@
   "biomes/riftrim/dist/riftrim-ice.html": {
    "bytes": 7933040,
    "sha256": "19702af7574e0682f69a276f7f0a3882bc657db19030ebd8451a68d1f81c1de7"
+  },
+  "biomes/riftrim/dist/riftrim-icecut.html": {
+   "bytes": 7365442,
+   "sha256": "0754ba610c3bc36f14f4e792616a92371c0854d02c03a1143264fd5c093e8bde"
   },
   "biomes/riftrim/dist/riftrim-lakes.html": {
    "bytes": 8942900,
