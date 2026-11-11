@@ -2,8 +2,10 @@
 
 The owner, 2026-11-10: "we do need to add functionality for people and cargo to ride them" (the Line's trains); and
 2026-11-11: "riding in its own session". This plan shapes `kits/tungang/PLAN.md` section 0.2.1 (on
-`claude/tungang-fellgang-kits-a56ece`) into work. **Status: a proposal. No code is written.** Section 9 holds the
-questions for the owner.
+`claude/tungang-fellgang-kits-a56ece`) into work. **Status: approved by the owner, 2026-11-11 ("Approve, build"),
+with section 9's recommendations as asked: extensions in subfolders, not a new module; the timetable a
+`KSCHED.timeline`; the lab under `core/simulation/ride/lab/`; cargo on `SIM.trade` and the ledger, through
+consignments later (R6); the player boards by walking, E to sit.** R1 to R5 are built on this branch.
 
 **Why this file sits in `core/simulation`.** Most of riding is the simulation's: the ride leg, the journey across
 segments, capacity, cargo, the rail carrier, the porters, the export and the Godot replay. The other parts (floors that
