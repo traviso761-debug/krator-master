@@ -90,7 +90,7 @@ Object.assign(STAGE,{
   "ridges":[{"base":3.6,"amp":1.1,"cycles":18,"octaves":2,"seed":57,"win":[0,120,2.2],"floor":-0.2,"dist":60000,"haze":0.05,"forestH":0,"rock":[0.6,0.56,0.56]},
    {"base":0.3,"amp":0.5,"cycles":30,"octaves":3,"peaks":10,"peakAmp":0.5,"seed":58,"win":[[150,100,2.5]],"floor":-0.3,"dist":30000,"haze":0.1,"forestH":0,"rock":[0.6,0.5,0.44]}],"landmarks":[]},
  atmos:{climate:{wet:false,cold:true,dry:true},fog:{falloff:1/1000,sun:.35,sky:.3}},
- build:{decay:true,quality:.8},decayForms:['bonebloom'],
+ build:{decay:true,quality:.65},decayForms:['bonebloom'],   /* .65: the crust rosettes under the core's 250 k instance cap */
  structures:nestRecords,
  views(){const K=STAGEKIT,N0=NESTS.slice().sort((a,b)=>Math.hypot(a.x-300,a.z-200)-Math.hypot(b.x-300,b.z-200))[0]||{x:0,z:0,r:15},
    Pt=K.near('podtower',N0.x+60,N0.z),Bp=K.near('broodpad',N0.x,N0.z),Gs=K.near('gallstack',N0.x,N0.z),Ro=K.near('rosette',-900,1200),Em=K.near('ember',200,300),Bb=K.near('bonebloom',0,0),

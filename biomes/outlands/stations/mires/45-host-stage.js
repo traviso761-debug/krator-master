@@ -110,7 +110,7 @@ Object.assign(STAGE,{
  layers:[{fam:'ground.sphagnum',name:'sphagnum',amt:.55,gain:1.15},{fam:'ground.peat',name:'peat',amt:.6,gain:1.15},{fam:'ground.tundra',name:'frozen peat',amt:.5,gain:1.15}],
  gl(x,z){const pa=smooth(.2,.6,FC.at(FC.a.palsa,x,z)),pe=smooth(.2,.7,Math.max(FC.at(FC.a.flow,x,z)*1.5,FC.at(FC.a.shore,x,z)))*(1-pa);return[(1-pa)*(1-pe),pe,pa];},
  landmarks:[{name:'The stream between its peat faces',x:STREAM[Math.floor(STREAM.length*.5)][0],z:STREAM[Math.floor(STREAM.length*.5)][1],y:STREAM_BED[Math.floor(STREAM.length*.5)]-3,r:40,h:12}],
- probes:[[STREAM[Math.floor(STREAM.length*.5)][0],-1.5,STREAM[Math.floor(STREAM.length*.5)][1]]],
+ probes:[[STREAM[Math.floor(STREAM.length*.5)][0],-1.5,STREAM[Math.floor(STREAM.length*.5)][1]]].concat(PALSA.map(P=>[P.x,-1,P.z])),   /* a palsa is the ground mesh's own: one point in it */
  far:{h:(x,z)=>baseH(x,z)+(x<-3400?.08*(-3400-x):0),col(x,z,y,q){const L=a=>a.map(v=>Math.pow(v/255,2.2)),B=L([120,110,72]),HZ=L([196,202,206]),t=.6*smooth(3000,10000,q.r);return[B[0]+(HZ[0]-B[0])*t,B[1]+(HZ[1]-B[1])*t,B[2]+(HZ[2]-B[2])*t];}},
  sky:{"air":{"pressure":0.98,"humidity":0.75},"clouds":{"cover":0.55,"cumulus":0.6,"cirrus":0.4},"fogDensity":0.00022,
   "ridges":[{"base":1.2,"amp":0.6,"cycles":16,"octaves":2,"seed":61,"win":[270,90,2.2],"floor":-0.2,"dist":60000,"haze":0.06,"forestH":0,"rock":[0.56,0.54,0.52]},
