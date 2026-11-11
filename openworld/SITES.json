@@ -28,12 +28,23 @@
    "corridors": [{"from": "skukf2qmmq", "to": "seed07", "width_km": 10}, {"from": "seed07", "to": "sor1zqih8x", "width_km": 10}],
    "upsample": "auto",
    "note": "the owner, 2026-11-09: Girder, Mav's Refuge and Talia as three sites in one region, with the roads between them"
+  },
+  "oidong-highrift": {
+   "name": "The Oidong Valley and the High Rift",
+   "order": 4,
+   "sites": ["sq80bzd7ep", "ssinggjar01", "smirrorgrange01", "scaldronhouse01"],
+   "polygons": ["rmuklrcae6jb5", "rmvhighrift100"],
+   "upsample": "auto",
+   "note": "the owner, 2026-11-11 (core/simulation/PROPOSAL-LONGSONG-PINNACLE.md section 6): Longsong moves onto the open world's ground, cut from the Oidong Valley and the High Rift out of the xanadu-oidong-highrift region; the Singing Gjar outpost and its two work camps, and the Order's two accessory houses (the owner: 'one or two other accessory monasteries in places that look strategic or very productive'). The two polygons hold the Mirror Graben and the beck road whole, so the outpost's grain trade stays inside the cut"
   }
  },
  "sites": {
   "staiytii0y": {"name": "Pinnacle Rock", "type": "city", "region": "pinnacle", "reach_km": 30, "moved": "2026-11-10: 1027,681 -> 1007,686 (the owner: more forest; the savage hyperjungle's north-east edge)", "culture": "beast-rider", "page": "settlements/pinnacle-rock", "state": "built"},
   "s57bkv9741": {"name": "Erehwon", "type": "city", "region": "xanadu-oidong-highrift", "reach_km": 30, "culture": "xanadu", "page": "settlements/xanadu", "state": "built"},
-  "sq80bzd7ep": {"name": "Longsong", "type": "village", "region": "xanadu-oidong-highrift", "reach_km": 15, "culture": "xanadu", "page": "settlements/longsong", "state": "built"},
+  "sq80bzd7ep": {"name": "Longsong", "type": "village", "region": "oidong-highrift", "reach_km": 15, "culture": "xanadu", "page": "settlements/longsong", "state": "built", "also": "xanadu-oidong-highrift keeps its first plan (three villages) until that region is recut"},
+  "ssinggjar01": {"name": "The Singing Gjar", "type": "outpost", "px": 1572, "py": 1643, "model": false, "region": "oidong-highrift", "reach_km": 12, "culture": "order", "page": null, "state": "planned", "notes": "The History Monks' house in the High Rift (~350) beside the faith's pilgrimage site, with the Beck Fields and the Vein Camp (PROPOSAL-LONGSONG-PINNACLE.md section 2a; biomes/highrift/PLAN.md station 5). Not on the scale model's list yet: add it to model/src/60-settlements.js after the Qiblai move lands"},
+  "smirrorgrange01": {"name": "The Mirror Grange", "type": "outpost", "px": 1430, "py": 1644, "model": false, "region": "oidong-highrift", "reach_km": 10, "culture": "order", "page": null, "state": "planned", "notes": "an accessory house of the Order on the Mirror Graben's fans, the High Rift's mildest ground (Dfb): the outpost's grain (openworld/oidong-highrift/PLAN.md)"},
+  "scaldronhouse01": {"name": "The Caldron House", "type": "outpost", "px": 1366, "py": 1668, "model": false, "region": "oidong-highrift", "reach_km": 8, "culture": "order", "page": null, "state": "planned", "notes": "an accessory house of the Order at the foot of the graben staircase, where the beck road from Longsong climbs into the High Rift past the Opaline Cataract: the road's hospice and its toll of the peace (openworld/oidong-highrift/PLAN.md)"},
   "skm4jjo2vl": {"name": "Qiblai", "type": "city", "region": "xanadu-oidong-highrift", "reach_km": 30, "culture": "xanadu", "page": null, "state": "built"},
   "seed07": {"name": "Girder", "type": "village", "region": "iziz-cluster", "reach_km": 15, "culture": "beast-rider", "page": "settlements/girder", "state": "built"},
   "skukf2qmmq": {"name": "Mav's Refuge", "type": "city", "region": "iziz-cluster", "reach_km": 30, "culture": "beast-rider", "page": "settlements/mavs-refuge", "state": "built"},
