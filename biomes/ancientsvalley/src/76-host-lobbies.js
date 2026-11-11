@@ -12,6 +12,18 @@ AVL.walk={floorsAt:(x,z)=>KWALK.floorsAt(x,z).filter(f=>!f[1].gone),
  blocked:(x,y,z,r,h)=>KWALK.blocked(x,y,z,r,h),push:(x,y,z,r,h)=>KWALK.push(x,y,z,r,h)};
 /* the records first: every door, heap, open climb and weak floor in core/tags, then the walk (core/walk), then the hazards' zones */
 AVL.init=function(){const LB=STAGE.lobbies,TW=STAGE.plan.towers;if(!LB)return;AVL.doors=LB.doors;
+ /* the heroes' outlines (the walls below): a design's own lobby outline off its intact hero (kits/metropolis 54, userData.walk; built here if
+    the city has not yet, and kept in its cache for the shell bake), else the records' (41c AV.towerOutlines) */
+ const doorOf=new Map();LB.doors.forEach(D=>doorOf.set(D.ti,D));
+ const skinOf=(Fm,y)=>Fm.envR?{r:Fm.envR(y)}:Fm.id==='spindle'?{r:MP.spindleR(y)}:{},walkOf={};
+ const heroWalk=fam=>{if(walkOf[fam]!==undefined)return walkOf[fam];const k=fam+'.intact';let W=null;try{const H=AVC.hero[k]||(AVC.hero[k]=heroOf(k));W=H&&H.userData&&H.userData.walk&&H.userData.walk.length?H.userData.walk:null;}catch(e){reportErr('lobby walls '+k+': '+(e.message||e));}return walkOf[fam]=W;};
+ const outlinesOf=T=>{const F=MP.FAMILY[T.family];return AV.towerOutlines(F,skinOf,F.design?heroWalk(T.family):null);};
+ /* an open or stair-blocked door whose way in its own walls cut (an inner lobby ring: the Swell's lobes, the Terrarium's dome, known only off the
+    hero) is shut at its door: rubble there, its climb gone, before anything is counted or registered */
+ AVL.shut=0;LB.doors.forEach(D=>{if(D.mode!=='open'&&D.mode!=='stair')return;const T=TW[D.ti];if(AV.routeHits(D.route,AV.towerWalls(T,outlinesOf(T),D),.35)<0)return;
+  const was=D.mode;LB.counts[was]--;LB.counts.door++;const bs=LB.counts.byState[D.state];if(was==='open'&&bs)bs.open--;const oi=LB.open.indexOf(D.id);if(oi>=0)LB.open.splice(oi,1);
+  D.shutBy='inner wall';D.mode='door';D.climb=null;D.choke=null;D.forced=false;AV.doorBlocks(D,T,(STAGE.seed|0)+91);
+  const k=D.route.findIndex(p=>p[0]===D.x&&p[1]===D.z);D.route=D.route.slice(0,k+1).concat([[D.x-D.nx*1.5,D.z-D.nz*1.5]]);AVL.shut++;});
  /* core/tags: one record a 400 m cell (the wrecks' and the street cells' way: a door's heap, steps and climb are drawn only near the eye, so a
     record of its own would stand empty in every other view), its tags counting the cell's doors by fate, its climbs, heaps and weak floors; the
     doors themselves are STAGE.lobbies' records, keyed by id */
@@ -26,7 +38,14 @@ AVL.init=function(){const LB=STAGE.lobbies,TW=STAGE.plan.towers;if(!LB)return;AV
  AVL.cells=cells.size;
  /* the fallen towers' shafts: blocks on the walk (41c AV.fallenBlocks, registered by lobbyWalk above) */
  AVL.fallen={blocks:out.fallen};
- AVL.n={cut:LB.counts.cut||0,doors:LB.doors.length,open:LB.counts.open,door:LB.counts.door,stair:LB.counts.stair,rubbleRamps:LB.counts.rubble,floors:out.floors,blocks:out.blocks,weak:out.weak.length,heaps:out.heaps.length};
+ /* THE WALLS (2026-11-10): every standing tower's ground outline on core/walk, open only at an open or stair-blocked tower's door (41c
+    AV.towerWalls): a design's own lobby outline off its intact hero (kits/metropolis 54, userData.walk; built here if the city has not yet, and
+    kept in its cache for the shell bake), the Spindle's skirt and fins and the Ledger's arcade from their records. A walker no longer steps
+    through a skin beside the rubble, and a hero's other doors are shut */
+ AVL.walls={towers:0,blocks:0,fromHero:0,byTower:new Map()};
+ TW.forEach((T,ti)=>{if(T.state==='fallen')return;const F=MP.FAMILY[T.family];if(!F)return;const hw=F.design?heroWalk(T.family):null,bx=AV.towerWalls(T,outlinesOf(T),doorOf.get(ti));
+  bx.forEach(b=>KWALK.block(b,'wall'));AVL.walls.towers++;AVL.walls.blocks+=bx.length;if(hw)AVL.walls.fromHero++;if(bx.length)AVL.walls.byTower.set(ti,bx[(bx.length>>1)]);});   /* one sample box a tower, for the check */
+ AVL.n={shut:AVL.shut,cut:LB.counts.cut||0,doors:LB.doors.length,open:LB.counts.open,door:LB.counts.door,stair:LB.counts.stair,rubbleRamps:LB.counts.rubble,floors:out.floors,blocks:out.blocks,weak:out.weak.length,heaps:out.heaps.length};
  AVL.ready=true;};
 // ---------------------------------------------------------------- the geometry: flat-shaded prisms in the kit's concrete and rubble, vertex-tinted
 const avlAcc=()=>({concrete:{p:[],c:[],u:[]},rubble:{p:[],c:[],u:[]}});
@@ -50,9 +69,14 @@ AVL.drawApproach=function(acc,D){const A=D.approach;if(A.kind!=='steps'&&A.kind!
  if(A.kind==='ramp'){avlPrism(acc.concrete,[[A.a[0]-vx*hw,A.a[1]-vz*hw],[A.b[0]-vx*hw,A.b[1]-vz*hw],[A.b[0]+vx*hw,A.b[1]+vz*hw],[A.a[0]+vx*hw,A.a[1]+vz*hw]],(x,z)=>A.a[2]+rise*Math.max(0,Math.min(1,((x-A.a[0])*ux+(z-A.a[1])*uz)/L))+.02,lo,AVL_COL.step);return;}
  const n=Math.max(2,Math.round(Math.abs(rise)/.17)),up=rise>0;
  for(let i=0;i<n;i++){const s0=i*L/n,s1=(i+1)*L/n,y=A.a[2]+rise*(i+(up?1:0))/n,cx=A.a[0]+ux*(s0+s1)/2,cz=A.a[1]+uz*(s0+s1)/2;avlBox(acc.concrete,cx,cz,ux,uz,(s1-s0)/2+.01,hw,lo,y,AVL_COL.step);}
- /* the cheeks: low walls along both sides, 0.6 m over the flight's line */
+ /* the cheeks: low walls along both sides, 0.6 m over the flight's line; a flight going down to a sunk plinth keeps them at the pavement's level
+    and a 0.9 m parapet all the way down (2026-11-10: the Spindle's sunk approach read as steps lost in a bowl): retaining walls of a sunken court */
+ const cheekY=(x,z)=>{const y=A.a[2]+rise*Math.max(0,Math.min(1,((x-A.a[0])*ux+(z-A.a[1])*uz)/L));return up?y+.6:Math.max(y+.6,A.a[2]+.9);};
  [-1,1].forEach(sd=>{const ox=vx*(hw+.2)*sd,oz=vz*(hw+.2)*sd;avlPrism(acc.concrete,[[A.a[0]+ox-vx*.2,A.a[1]+oz-vz*.2],[A.b[0]+ox-vx*.2,A.b[1]+oz-vz*.2],[A.b[0]+ox+vx*.2,A.b[1]+oz+vz*.2],[A.a[0]+ox+vx*.2,A.a[1]+oz+vz*.2]],
-  (x,z)=>A.a[2]+rise*Math.max(0,Math.min(1,((x-A.a[0])*ux+(z-A.a[1])*uz)/L))+.6,lo,AVL_COL.cheek);});};
+  cheekY,lo,AVL_COL.cheek);});
+ /* the head of a sunk flight: a parapet across its foot's sides is not wanted (the pavement runs on); a lintel band at the court's far end
+    marks where the plinth begins */
+ if(!up&&rise<-1.2){const bx=A.b[0]+ux*.3,bz=A.b[1]+uz*.3;avlBox(acc.concrete,bx,bz,ux,uz,.3,hw+.4,A.b[2]-.1,A.b[2]+.15,AVL_COL.cheek);}};
 /* a heap from KRUBBLE: the bed in the rubble set, its chunks and blocks in the concrete (57-mp-debris's way), the hollows dark */
 AVL.drawHeap=function(acc,H){const o=KRUBBLE.mesh(H,{cell:1.5}),P=o.pos,I=o.idx;for(let i=0;i<I.length;i+=3){const a=I[i],b=I[i+1],c=I[i+2],pt=o.part[a],k=pt?1-o.occ[a]:.7*(1-.5*o.occ[a]),col=[.74*k,.7*k,.66*k];
   avlTri(pt?acc.concrete:acc.rubble,[P[a*3],P[a*3+1],P[a*3+2]],[P[b*3],P[b*3+1],P[b*3+2]],[P[c*3],P[c*3+1],P[c*3+2]],col,null);}};
@@ -95,7 +119,7 @@ AVL.frame=0;AVL.on=null;AVL.tick=function(dt){if(!AVL.ready)return;
 // ---------------------------------------------------------------- the checks (verify.py --assert; 99 calls them), each with its negative
 /* a walk view with extra blocks, or with the rubble taken away (its blocks and its heaps' surfaces) */
 AVL.walkWith=function(extra,noRubble){const W=AVL.walk;return{floorsAt:(x,z)=>W.floorsAt(x,z).filter(f=>!noRubble||f[1].tag!=='rubble'),floorBelow(x,z,y,step){const s=step==null?.6:step,fs=this.floorsAt(x,z);for(let i=0;i<fs.length;i++)if(fs[i][0]<=y+s)return fs[i];return null;},
- blocked(x,y,z,r,h){for(const B of extra||[]){const cx=Math.max(B[0],Math.min(x,B[1])),cz=Math.max(B[2],Math.min(z,B[3]));if(B[5]>y&&B[4]<y+h&&(x-cx)*(x-cx)+(z-cz)*(z-cz)<r*r)return{box:B,tag:'test'};}const b=W.blocked(x,y,z,r,h);return b&&noRubble&&b.tag==='rubble'?null:b;},push:W.push};};
+ blocked(x,y,z,r,h){for(const B of extra||[]){const cx=Math.max(B[0],Math.min(x,B[1])),cz=Math.max(B[2],Math.min(z,B[3]));if(B[5]>y&&B[4]<y+h&&(x-cx)*(x-cx)+(z-cz)*(z-cz)<r*r)return{box:B,tag:'test'};}const b=W.blocked(x,y,z,r,h);return b&&noRubble&&(b.tag==='rubble'||b.tag==='wall')?null:b;},push:W.push};};   /* noRubble: the rubble and the walls taken away */
 const ACHK={
  /* every standing kerb tower has a door; each approach's foot off the roadway on the pavement's level, its head inside the plinth's edge at the plinth's level, its slope under 0.6; the ground under it its plane */
  approaches(doors,towers){let bad=0,ex=null,steps=0,ramps=0,rubble=0;const kerbT=towers.filter(t=>t.kerb&&t.state!=='fallen'&&MP.FAMILY[t.family]).length;
@@ -114,11 +138,17 @@ const ACHK={
   return{ok:O.length>=20&&!bad,detail:O.length+' open towers walked from the street to the top (the highest '+Math.round(hi)+' m); '+bad+' cut'+(ex?': '+ex:'')};},
  /* every blocked tower's route stops at its rubble: at the door, or on the stair above the lobby */
  blocked(doors,W){const B=doors.filter(d=>(d.mode==='door'||d.mode==='stair')&&(d.approach.kind==='steps'||d.approach.kind==='ramp')&&!d.cut);let bad=0,ex=null;
-  for(const D of B){const r=AV.walkRoute(W,terrainH,D.route),H=D.heap,near=!r.ok&&r.at&&H&&Math.hypot(r.at[0]-H.x,r.at[1]-H.z)<Math.max(H.rx,H.rz)+6;if(!near){bad++;if(!ex)ex=D.id+' '+D.mode+': '+(r.ok?'walked in':r.why+' away from its rubble');}}
+  for(const D of B){const r=AV.walkRoute(W,terrainH,D.route),H=D.heap,near=!r.ok&&r.at&&(H&&Math.hypot(r.at[0]-H.x,r.at[1]-H.z)<Math.max(H.rx,H.rz)+6||r.tag==='wall'&&D.mode==='door');   /* a door-blocked tower is shut by its walls too */if(!near){bad++;if(!ex)ex=D.id+' '+D.mode+': '+(r.ok?'walked in':r.why+' away from its rubble');}}
   const cut=doors.filter(d=>d.cut).length;return{ok:B.length>=50&&!bad,detail:B.length+' blocked towers, each stopped at its rubble; '+bad+' not'+(ex?': '+ex:'')+' ('+cut+' more cut off by a fallen tower or a broken plinth)'};},
  /* weak floors only in the open broken, crown-gone and skeleton towers, never the lobby's or the top two */
  weak(recs,doors){const by={};doors.forEach(d=>by[d.id]=d);let bad=0;for(const r of recs){const D=by[r.weak[0]];if(!D||D.mode!=='open'||!AV.WEAK_STATES[D.state]||r.weak[1]<1||r.weak[1]>D.climb.floors.length-3)bad++;}
   return{ok:recs.length>0&&!bad,detail:recs.length+' weak floors; '+bad+' where they should not be'};},
+ /* every standing tower has walls on the walk (a sample of its outline blocked at the plinth), and an open or stair-blocked tower's door is not */
+ walls(W,doors){const T=STAGE.plan.towers,S=AVL.walls.byTower;let shut=0,openWall=0,doorShut=0,ex=null;
+  S.forEach((b,ti)=>{const x=(b[0]+b[1])/2,z=(b[2]+b[3])/2;if(W.blocked(x,T[ti].y,z,.35,1.7))shut++;else{openWall++;if(!ex)ex=T[ti].id+' open at its wall';}});
+  for(const D of doors){if(D.mode!=='open'&&D.mode!=='stair')continue;const x=D.x-D.nx*1.2,z=D.z-D.nz*1.2,b=W.blocked(x,D.y,z,.35,1.7);if(b&&b.tag==='wall'){doorShut++;if(!ex)ex=D.id+' walled at its door';}}
+  const want=T.filter(t=>t.state!=='fallen'&&MP.FAMILY[t.family]).length;
+  return{ok:S.size>=want*.95&&S.size>100&&!openWall&&!doorShut,detail:S.size+' of '+want+' standing towers walled ('+AVL.walls.blocks+' blocks, '+AVL.walls.fromHero+' outlines off the heroes); '+openWall+' open at the sample, '+doorShut+' doors walled'+(ex?': '+ex:'')};},
  /* every fallen tower's shaft is blocked (the parent session's finding, 2026-11-10: the walker went into a crushed tube): its middle is blocked on the walk */
  fallen(W){const TW=STAGE.plan.towers;let n=0,open=0;TW.forEach(T=>{if(T.state!=='fallen')return;const F=MP.FAMILY[T.family];let P=null;try{P=MP.debrisPlan(F,'fallen');}catch(e){}if(!P)return;
    P.pieces.forEach(pc=>{if(pc.kind!=='shaft')return;n++;const w=AV.doorWorld(T,pc.x,pc.z);if(!W.blocked(w[0],T.y,w[1],.35,1.7))open++;});});
@@ -126,13 +156,15 @@ const ACHK={
 AVL.checks=function(add){if(!AVL.ready){add('the lobbies are built',{ok:false,detail:'not ready'});return;}const D=AVL.doors,W=AVL.walk,T=STAGE.plan.towers;
  add('every standing kerb tower has a door, steps or a ramp up from the pavement',ACHK.approaches(D,T));add('a fraction of the towers open, stumps the most',ACHK.share(D));
  add('every open tower climbable from the street to its top',ACHK.open(D,W));add('every blocked tower stopped by its rubble',ACHK.blocked(D,W));
- add('weak floors only in the wrecked open towers',ACHK.weak(Object.values(AVL.weak),D));add('the fallen towers\' shafts are blocked',ACHK.fallen(W));};
+ add('weak floors only in the wrecked open towers',ACHK.weak(Object.values(AVL.weak),D));add('the fallen towers\' shafts are blocked',ACHK.fallen(W));
+ add('the towers\' walls stop a walker, but at the open doors',ACHK.walls(W,D));};
 AVL.negatives=function(add){if(!AVL.ready)return;const D=AVL.doors,T=STAGE.plan.towers,O=D.filter(d=>d.mode==='open'),B=D.filter(d=>d.mode==='door');
  add('an approach a metre short of the plinth',ACHK.approaches(D.map((d,i)=>{if(d!==O[0])return d;const A=d.approach,b=[A.b[0]+d.nx,A.b[1]+d.nz,A.b[2]];return Object.assign({},d,{approach:Object.assign({},A,{b})});}),T));
  add('every door blocked',ACHK.share(D.map(d=>Object.assign({},d,{mode:'door'}))));
  {const d=O[0],S=d.climb.stair,Tw=T[d.ti],q=AV.doorWorld(Tw,S.su,S.sv),y=Tw.y+d.climb.floors[1].y;add('an open tower with a heap in its stair',ACHK.open([d].concat(O.slice(1,20)),AVL.walkWith([[q[0]-2.5,q[0]+2.5,q[1]-2.5,q[1]+2.5,y-1.5,y+3]])));}
  add('a blocked door with its rubble taken away',ACHK.blocked(B.slice(0,60),AVL.walkWith(null,true)));
  add('a weak floor in an intact tower',ACHK.weak(Object.values(AVL.weak).concat([{weak:['x',2,0]}]),D.concat([{id:'x',mode:'open',state:'intact',climb:{floors:new Array(9)}}])));
- add('a fallen shaft with no blocks',ACHK.fallen({blocked:()=>null}));};
+ add('a fallen shaft with no blocks',ACHK.fallen({blocked:()=>null}));
+ add('towers with no walls',ACHK.walls({blocked:()=>null},D));};
 try{AVL.t0=performance.now();AVL.init();AVL.ms=Math.round(performance.now()-AVL.t0);}catch(err){reportErr('lobbies: '+(err.message||err));}
 tick(dt=>AVL.tick(dt));

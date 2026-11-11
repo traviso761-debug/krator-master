@@ -22,7 +22,8 @@ var AV = (typeof AV !== 'undefined') ? AV : {};
   var u01 = function (seed, i, salt) { return KR.unit(KR.hash(seed | 0, i | 0, salt | 0)); };
   var SLOPE = 0.55, STEP_UP = 0.7, DROP = 1.4, STAIR_L = 7.2, STAIR_W = 3.0, LAND = 1.3, FLIGHT_W = 1.4, MAX_FLOORS = 70;
   /* the open share by state (the owner: more climbable stumps); the rest blocked, seven in ten at the door, three at the stair */
-  AV.OPEN_SHARE = { intact: 0.08, gutted: 0.08, crown: 0.10, broken: 0.10, skeleton: 0.15, stump: 0.30 };
+  /* intact towers keep their glass: walking in by a door the page chose would be walking through it, so none opens (2026-11-10) */
+  AV.OPEN_SHARE = { intact: 0, gutted: 0.08, crown: 0.10, broken: 0.10, skeleton: 0.15, stump: 0.30 };
   AV.WEAK_STATES = { broken: 1, crown: 1, skeleton: 1 };
   AV.LOBBY = { slope: SLOPE, maxRise: 6.3, stairL: STAIR_L, stairW: STAIR_W, land: LAND, flightW: FLIGHT_W };
   /* the plan's frame (2026-11-10: 70 now draws every form turned by -yaw in three's sense, so a tower's local x points along (cos yaw, sin yaw),
@@ -120,7 +121,8 @@ var AV = (typeof AV !== 'undefined') ? AV : {};
       var nx = a === 0 ? c * sg : -s * sg, nz = a === 0 ? s * sg : c * sg, tx = -nz, tz = nx;
       /* the door: the portal nearest the street, else the frontage's middle; on the skin at the ground */
       var dl = toLocal(T, nx, nz), th = Math.atan2(dl[1], dl[0]);
-      if (F.portals && F.portals.length) { var best = F.portals[0], bd = 9; F.portals.forEach(function (q) { var d = Math.abs(Math.atan2(Math.sin(q - th), Math.cos(q - th))); if (d < bd) { bd = d; best = q; } }); th = best; }
+      /* a portal only when it faces the street (within 70 degrees: the Spiral's took one on its back and the way in crossed the tower) */
+      if (F.portals && F.portals.length) { var best = F.portals[0], bd = 9; F.portals.forEach(function (q) { var d = Math.abs(Math.atan2(Math.sin(q - th), Math.cos(q - th))); if (d < bd) { bd = d; best = q; } }); if (bd < 1.22) th = best; }
       var sk = o.skin(F, 0), du = Math.cos(th), dv = Math.sin(th), rr = sk.r != null ? sk.r : Math.min(sk.hw / Math.max(1e-6, Math.abs(du)), sk.hd / Math.max(1e-6, Math.abs(dv)));
       var dw = AV.doorWorld(T, du * rr, dv * rr), lat = (dw[0] - T.x) * tx + (dw[1] - T.z) * tz;
       /* the approach: from the pavement's back edge (dB from the street's line) toward the plinth, at the door's lateral place */
@@ -157,9 +159,12 @@ var AV = (typeof AV !== 'undefined') ? AV : {};
       /* a lean does not keep a tower shut: an open tower is set plumb below (its plates are level; every ruin on the page leans a little) */
       var share = AV.OPEN_SHARE[T.state] || 0, climb = null, eligible = (kind === 'steps' || kind === 'ramp') && !D.cut;
       /* open wants two storeys of climb at least (a broken Stalk keeps one 4.5 m floor: a stair-blocked lobby at most) */
-      climb = AV.climb(F, T.state, T, { ruin: o.ruin, skin: o.skin, seed: o.seed }); if (!climb || climb.floors.length < 3) eligible = false;
+      /* a family of several bodies (the Organ's pipes, the Pods, the Crescent's towers: F.towers) has no one axis for the plates and the stair:
+         it is shut at its door, never climbed (its floors would hang between its parts) */
+      var multi = !!(F.towers && F.towers.length > 1);
+      climb = multi ? null : AV.climb(F, T.state, T, { ruin: o.ruin, skin: o.skin, seed: o.seed }); if (!climb || climb.floors.length < 3) eligible = false;
       D.mode = eligible && u01(o.seed, ti, 501) < share ? 'open' : (u01(o.seed, ti, 503) < 0.7 || !climb ? 'door' : 'stair');
-      if (eligible && o.near) { var dn = Math.hypot(T.x - o.near.x, T.z - o.near.z); if (!nearest || dn < nearest.d) nearest = { d: dn, D: D, climb: climb }; }
+      if (eligible && o.near && share > 0) { var dn = Math.hypot(T.x - o.near.x, T.z - o.near.z); if (!nearest || dn < nearest.d) nearest = { d: dn, D: D, climb: climb }; }
       if (D.mode !== 'door') D.climb = climb;
       if (D.mode === 'stair') D.choke = Math.max(1, Math.min(climb.floors.length - 1, 1 + Math.floor(u01(o.seed, ti, 505) * 3)));
       D.approach.w = D.mode === 'open' ? 6 : 4;
@@ -167,22 +172,7 @@ var AV = (typeof AV !== 'undefined') ? AV : {};
     });
     if (nearest && nearest.D.mode !== 'open') { nearest.D.mode = 'open'; nearest.D.climb = nearest.climb; nearest.D.choke = null; nearest.D.approach.w = 6; nearest.D.forced = true; }
     /* the blocking: a heap against the skin across the doorway and blocks along its line; or a heap on the stair's B landing under the choke's floor */
-    var blockOf = function (D) {
-      var T = o.towers[D.ti];
-      if (D.mode === 'door') {
-        var hc = [D.x + D.nx * 2.2, D.z + D.nz * 2.2];
-        D.heap = { id: D.id + '.heap', x: hc[0], z: hc[1], y0: D.y, rx: D.w / 2 + 2, rz: 2.8, ry: Math.atan2(D.tz, D.tx), h: 3.8, lumps: 4, blocks: 7, size: [0.8, 2.4], cover: 1.1, seed: KR.hash(o.seed, D.ti, 601) };
-        D.blocks = []; for (var q = -D.w / 2 - 0.5; q <= D.w / 2 + 0.5; q += 0.5) { var bx = D.x + D.tx * q, bz = D.z + D.tz * q; D.blocks.push([bx - 0.3, bx + 0.3, bz - 0.3, bz + 0.3, D.y - 1, D.y + 5]); }
-      } else if (D.mode === 'stair') {
-        var Cb = D.climb, S = Cb.stair, k = D.choke - 1, fl = Cb.floors, ym = fl[k].y + (fl[k + 1].y - fl[k].y) / 2;
-        var bu = S.ax === 0 ? S.su + (S.L / 2 - 0.65) : S.su, bv = S.ax === 0 ? S.sv : S.sv + (S.L / 2 - 0.65), w = AV.doorWorld(T, bu, bv);
-        D.heap = { id: D.id + '.choke', x: w[0], z: w[1], y0: T.y + ym, rx: 2.2, rz: 1.8, ry: (T.yaw || 0), h: 2.6, lumps: 3, blocks: 5, size: [0.6, 1.8], cover: 0.9, seed: KR.hash(o.seed, D.ti, 603) };
-        /* blocks across the B landing and the head of the first flight, from the landing up */
-        D.blocks = []; for (var al = S.L / 2 - LAND - 1.2; al <= S.L / 2; al += 0.5) for (var ac = -S.W / 2; ac <= S.W / 2; ac += 0.5) {
-          var pu = S.ax === 0 ? S.su + al : S.su + ac, pv = S.ax === 0 ? S.sv + ac : S.sv + al, pw = AV.doorWorld(T, pu, pv);
-          D.blocks.push([pw[0] - 0.3, pw[0] + 0.3, pw[1] - 0.3, pw[1] + 0.3, T.y + ym - 1.2, T.y + ym + 3]); }
-      }
-    };
+    var blockOf = function (D) { AV.doorBlocks(D, o.towers[D.ti], o.seed); };
     doors.forEach(blockOf);
     /* a door whose way (the flight, the plinth, the doorway) crosses another door's rubble, two towers on a corner with their doors facing,
        is cut off by it (D.cut 'rubble'); an open one there is shut at its own door */
@@ -203,19 +193,51 @@ var AV = (typeof AV !== 'undefined') ? AV : {};
       /* the route: the approach, across the plinth to the door, in, and (open or stair) up the stair */
       var Ap = D.approach, r = [];
       if (Ap.kind === 'steps' || Ap.kind === 'ramp') { r.push([Ap.a[0] + D.nx * -0.05, Ap.a[1] + D.nz * -0.05, Ap.a[2]]); r.push([Ap.b[0], Ap.b[1]]); }
-      r.push([D.x + D.nx * 1.0, D.z + D.nz * 1.0]); r.push([D.x - D.nx * 1.5, D.z - D.nz * 1.5]);
+      /* in through the door; then (a climb) radially in to a circle just outside the stair's box, round it to the bearing of the stair's A end,
+         and in to that end: a portal can stand 60 degrees off the street's normal, and a turn made at the skin clips the wall beside the door */
+      r.push([D.x + D.nx * 1.0, D.z + D.nz * 1.0]); r.push([D.x, D.z]);
+      if (!D.climb) r.push([D.x - D.nx * 1.5, D.z - D.nz * 1.5]);
       if (D.climb) {
-        /* from inside the door to the stair's A end, round its hole: in the stair's frame (al along it, ac across), out to the side clear of the
-           box, along to the A end, in to its middle */
-        var S2 = D.climb.stair, dIn = toLocal(T, D.x - D.nx * 1.5 - T.x, D.z - D.nz * 1.5 - T.z), al0 = S2.ax === 0 ? dIn[0] - S2.su : dIn[1] - S2.sv, ac0 = S2.ax === 0 ? dIn[1] - S2.sv : dIn[0] - S2.su;
-        var side = (ac0 < 0 ? -1 : 1) * (S2.W / 2 + 1.2), ae = -S2.L / 2 - 1.2, SP = function (al, ac) { var q = S2.ax === 0 ? [S2.su + al, S2.sv + ac] : [S2.su + ac, S2.sv + al]; return AV.doorWorld(T, q[0], q[1]); };
-        if (Math.abs(ac0) < S2.W / 2 + 1.2 && al0 > ae) r.push(SP(al0, side));
-        r.push(SP(Math.min(al0, ae), Math.abs(ac0) < S2.W / 2 + 1.2 && al0 > ae ? side : ac0)); r.push(SP(ae, Math.abs(ac0) < S2.W / 2 + 1.2 && al0 > ae ? side : ac0)); r.push(SP(ae, 0));
+        var S2 = D.climb.stair, ae = -S2.L / 2 - 1.2, SP = function (al, ac) { var q = S2.ax === 0 ? [S2.su + al, S2.sv + ac] : [S2.su + ac, S2.sv + al]; return AV.doorWorld(T, q[0], q[1]); };
+        var cu = S2.su, cv = S2.sv, rIn = Math.hypot(S2.L / 2, S2.W / 2) + 1.5, dl0 = toLocal(T, D.x - T.x, D.z - T.z), a0 = Math.atan2(dl0[1] - cv, dl0[0] - cu);
+        var tgt = S2.ax === 0 ? [cu + ae, cv] : [cu, cv + ae], a1 = Math.atan2(tgt[1] - cv, tgt[0] - cu), da = Math.atan2(Math.sin(a1 - a0), Math.cos(a1 - a0)), ns = Math.max(1, Math.ceil(Math.abs(da) / 0.25));
+        var ring = function (a) { return AV.doorWorld(T, cu + Math.cos(a) * rIn, cv + Math.sin(a) * rIn); };
+        for (var si = 0; si <= ns; si++) r.push(ring(a0 + da * si / ns));
+        r.push(SP(ae, 0));
         D.climb.route.forEach(function (q) { var w = AV.doorWorld(T, q[0], q[1]); r.push([w[0], w[1], T.y + q[2]]); });
       }
       D.route = r;
     });
     return { doors: doors, open: open, counts: counts, fallen: o.fallen || [] };
+  };
+  /* a door's blocking (its mode door or stair): a heap against the skin across the doorway and blocks along its line; or a heap on the
+     stair's B landing under the choke's floor and blocks across it. The page calls it too, for a door it shuts (76: an inner wall on the way) */
+  AV.doorBlocks = function (D, T, seed) {
+      D.heap = null; D.blocks = null;
+      if (D.mode === 'door') {
+        var hc = [D.x + D.nx * 2.2, D.z + D.nz * 2.2];
+        D.heap = { id: D.id + '.heap', x: hc[0], z: hc[1], y0: D.y, rx: D.w / 2 + 2, rz: 2.8, ry: Math.atan2(D.tz, D.tx), h: 3.8, lumps: 4, blocks: 7, size: [0.8, 2.4], cover: 1.1, seed: KR.hash(seed, D.ti, 601) };
+        D.blocks = []; for (var q = -D.w / 2 - 0.5; q <= D.w / 2 + 0.5; q += 0.5) { var bx = D.x + D.tx * q, bz = D.z + D.tz * q; D.blocks.push([bx - 0.3, bx + 0.3, bz - 0.3, bz + 0.3, D.y - 1, D.y + 5]); }
+      } else if (D.mode === 'stair') {
+        var Cb = D.climb, S = Cb.stair, k = D.choke - 1, fl = Cb.floors, ym = fl[k].y + (fl[k + 1].y - fl[k].y) / 2;
+        var bu = S.ax === 0 ? S.su + (S.L / 2 - 0.65) : S.su, bv = S.ax === 0 ? S.sv : S.sv + (S.L / 2 - 0.65), w = AV.doorWorld(T, bu, bv);
+        D.heap = { id: D.id + '.choke', x: w[0], z: w[1], y0: T.y + ym, rx: 2.2, rz: 1.8, ry: (T.yaw || 0), h: 2.6, lumps: 3, blocks: 5, size: [0.6, 1.8], cover: 0.9, seed: KR.hash(seed, D.ti, 603) };
+        /* blocks across the B landing and the head of the first flight, from the landing up */
+        D.blocks = []; for (var al = S.L / 2 - LAND - 1.2; al <= S.L / 2; al += 0.5) for (var ac = -S.W / 2; ac <= S.W / 2; ac += 0.5) {
+          var pu = S.ax === 0 ? S.su + al : S.su + ac, pv = S.ax === 0 ? S.sv + ac : S.sv + al, pw = AV.doorWorld(T, pu, pv);
+          D.blocks.push([pw[0] - 0.3, pw[0] + 0.3, pw[1] - 0.3, pw[1] + 0.3, T.y + ym - 1.2, T.y + ym + 3]); }
+      }
+  };
+  /* the ground part of a door's route (every leg before the climb's first point) against boxes in plan: the first leg a walker of radius r
+     standing on it would overlap one of them, or -1 */
+  AV.routeHits = function (route, boxes, r) {
+    r = r == null ? 0.35 : r;
+    for (var i = 1; i < route.length; i++) {
+      if (route[i].length > 2) break; var a = route[i - 1], b = route[i], L = Math.hypot(b[0] - a[0], b[1] - a[1]), n = Math.max(1, Math.ceil(L / 0.25));
+      for (var j = 0; j <= n; j++) { var x = a[0] + (b[0] - a[0]) * j / n, z = a[1] + (b[1] - a[1]) * j / n;
+        for (var k = 0; k < boxes.length; k++) { var B = boxes[k], cx = Math.max(B[0], Math.min(x, B[1])), cz = Math.max(B[2], Math.min(z, B[3])); if ((x - cx) * (x - cx) + (z - cz) * (z - cz) < r * r) return i; } }
+    }
+    return -1;
   };
   /* a fallen tower's shaft sections (kits/metropolis 40 MP.debrisPlan, drawn by 57: a hollow tube laid on its side, crushed to 0.42 of its height,
      its ends open) are not a place to walk into (the owner walked into one at -450, 424 and read its stretched inner face as shells inside a tower):
@@ -253,6 +275,50 @@ var AV = (typeof AV !== 'undefined') ? AV : {};
       }
       (D.blocks || []).forEach(function (b) { W.block(b, 'rubble'); out.blocks++; });
       if (D.heap && o.rubble) { var H = o.rubble.heap(D.heap); out.heaps.push(H); o.rubble.walkTris(H, 2).forEach(function (t) { try { W.poly({ pts: t.map(function (p) { return [p[0], p[1], p[2]]; }), name: H.id, tag: 'rubble' }); out.floors++; } catch (e) { } }); }
+    });
+    return out;
+  };
+  // ---------------------------------------------------------------- a tower's walls: its ground outline as blocks, open only at its door
+  /* The outline in the tower's frame: a design hero's own (kits/metropolis 54 records its lobby's ground outline as userData.walk: [{pts, doors,
+     closed}]); the Spindle's skirt and its root fins, the Ledger's arcade glass and end walls, from their records (as kits/metropolis 56
+     towerBlocks reads them). AV.towerOutlines(F, skin, heroWalk) -> [{pts, closed, t}] (t a half thickness) */
+  AV.towerOutlines = function (F, skin, heroWalk) {
+    if (heroWalk && heroWalk.length) return heroWalk.map(function (o) { return { pts: o.pts, closed: !!o.closed, t: 0.55 }; });
+    var out = [], fp = F.footprint || {};
+    if (F.core && F.core.kind === 'round' && !F.design) {
+      var s15 = skin(F, 1.5).r, r = (s15 != null ? s15 : fp.r != null ? fp.r : 30) - 0.6, P = [], N = Math.max(16, Math.ceil(2 * Math.PI * r / 2));
+      for (var i = 0; i < N; i++) { var a = 2 * Math.PI * i / N; P.push([Math.cos(a) * r, Math.sin(a) * r]); }
+      out.push({ pts: P, closed: true, t: 0.55 });
+      if (F.fins) for (var f = 0; f < F.fins.n; f++) { var fa = F.fins.a0 + f * 2 * Math.PI / F.fins.n, r1 = r + F.fins.out + 1; out.push({ pts: [[Math.cos(fa) * r, Math.sin(fa) * r], [Math.cos(fa) * r1, Math.sin(fa) * r1]], closed: false, t: Math.max(0.55, F.fins.t / 2) }); }
+      return out;
+    }
+    /* a round design without its hero's outline: a circle at its skin (envR at the walker's height, else the footprint's radius) */
+    if (fp.shape !== 'rect' && (fp.r != null || F.envR)) {
+      var rc = (skin(F, 1).r != null ? skin(F, 1).r : fp.r), Q = [], M = Math.max(16, Math.ceil(2 * Math.PI * rc / 2));
+      for (var m = 0; m < M; m++) { var b = 2 * Math.PI * m / M; Q.push([Math.cos(b) * rc, Math.sin(b) * rc]); }
+      out.push({ pts: Q, closed: true, t: 0.55 }); return out;
+    }
+    var hw = fp.w == null ? 30 : fp.w / 2, hd = fp.d == null ? 30 : fp.d / 2, dep = F.arcade ? F.arcade.depth : 0;
+    out.push({ pts: [[-hw, -(hd - dep)], [hw, -(hd - dep)], [hw, hd - dep], [-hw, hd - dep]], closed: true, t: 0.55 });
+    return out;
+  };
+  /* the blocks: a box every 1.5 m along each outline (0.8 m half-width, so neighbours overlap at any bearing: no gap a walker of 0.35 m fits
+     through), from under the plinth to over the lobby; none in the door's corridor of an open or stair-blocked tower (the door's width, from 6 m
+     inside it out to the street: a hero's lobby outline can stand metres outside the skin radius the door was set on). A door-blocked tower is
+     shut all round */
+  AV.towerWalls = function (T, outlines, D, o) {
+    o = o || {}; var y0 = T.y - 1, y1 = T.y + (o.h == null ? 6 : o.h), out = [], open = D && (D.mode === 'open' || D.mode === 'stair'), sp = o.step == null ? 1.5 : o.step;
+    outlines.forEach(function (O) {
+      var P = O.pts.concat(O.closed ? [O.pts[0]] : []), t = Math.max(O.t, sp / 2 + 0.05);
+      for (var i = 0; i + 1 < P.length; i++) {
+        var p = P[i], q = P[i + 1], k = Math.max(1, Math.ceil(Math.hypot(q[0] - p[0], q[1] - p[1]) / sp));
+        for (var j = 0; j < k; j++) {
+          var w = AV.doorWorld(T, p[0] + (q[0] - p[0]) * j / k, p[1] + (q[1] - p[1]) * j / k);
+          /* the corridor flares inside the door (a metre wider for each metre in), as the way turns toward the stair */
+          if (open) { var dx = w[0] - D.x, dz = w[1] - D.z, dn = dx * D.nx + dz * D.nz; if (Math.abs(dx * D.tx + dz * D.tz) < D.w / 2 + t + 0.3 + Math.max(0, -dn) && dn > -6 && dn < 30) continue; }
+          out.push([w[0] - t, w[0] + t, w[1] - t, w[1] + t, y0, y1]);
+        }
+      }
     });
     return out;
   };
