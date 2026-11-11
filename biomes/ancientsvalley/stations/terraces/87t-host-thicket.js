@@ -87,18 +87,25 @@ const AV_THICKET=(function(){const out={ok:false,fields:0,plants:0,trees:0,grown
   const mmat=new THREE.MeshLambertMaterial({map:matMap||null,color:new THREE.Color(.78,.86,.70).convertSRGBToLinear(),alphaTest:matMap?.45:0,side:THREE.DoubleSide});mmat.name='podtop.mat';
   const CELLS=new Map(),V=new THREE.Vector3();
   BIO.range=900;BIO.minRange=0;BIO.chunk=200;BIO.owner=null;
-  P.towers.forEach((t,ti)=>{if(t.family!=='pod'||t.state==='fallen')return;let RU=null;if(t.state!=='intact'){try{RU=MP.ruin(FP,t.state);}catch(e){return;}}
+  /* the tear cuts the dome of a crown, a broken pod, a stump and a skeleton (a gutted pod keeps its whole frame: only the glass went, the first cut of
+     this mat stopped at the tear's height there and left the frames bare); a ruin's heaps (MP.heaps: KRUBBLE records, the surface their mesh is
+     drawn from, KRUBBLE.at) take clumps on a 3 m grid where they rise over the plinth */
+  const TORN={crown:1,broken:1,stump:1,skeleton:1};
+  P.towers.forEach((t,ti)=>{if(t.family!=='pod'||t.state==='fallen')return;let RU=null;if(TORN[t.state]){try{RU=MP.ruin(FP,t.state);}catch(e){return;}}
    const Qt=avQuat(t),W=p=>{V.set(p[0],p[1],p[2]).applyQuaternion(Qt);return[t.x+V.x,t.y+V.y,t.z+V.z];},quads=[],feet=[];
    const keep=p=>!RU||p[1]<MP.tearAtXZ(FP,RU,p[0],p[2])-.4;
    for(let b=0;b+1<ROWS.length;b++)for(let k=0;k<6;k++)for(let g=0;g<SEG;g++){const h=KRAND.hash(STAGE.seed+73,ti,b*6+k,g),u=n=>KRAND.unit(KRAND.hash(h,n,0,0));if(u(1)<.14)continue;
     const L=[at(b,0,k,g/SEG),at(b,0,k,(g+1)/SEG),at(b,1,k,(g+1)/SEG),at(b,1,k,g/SEG)];if(!L.every(keep))continue;quads.push(L.map(W));
     const nc=b<3?2:1;for(let c=0;c<nc;c++)feet.push(at(b,.15+.7*u(2+c),k,(g+.15+.7*u(4+c))/SEG));}
-   if(!quads.length){out.podTops.push({t,feet:[],quads:[]});return;}
-   REGISTER({name:'A growing pod overgrown on top',kind:'podtop',x:t.x,z:t.z,y:t.y+PH-1,r:R0+2,h:HD+6,tags:{kind:'podtop',family:'pod',state:t.state,quads:quads.length}});
+   const HP=RU&&MP.heaps?MP.heaps(FP,t.state):[],heapFeet=[];
+   if(HP.length)for(let j=-12;j<=12;j++)for(let i=-12;i<=12;i++){const h=KRAND.hash(STAGE.seed+77,ti,i+20,j+20),u=n=>KRAND.unit(KRAND.hash(h,n,0,0)),lx=(i+((j&1)?.5:0))*3+(u(1)-.5)*1.2,lz=j*3*.866+(u(2)-.5)*1.2;
+    const y=KRUBBLE.at(HP,lx,lz);if(!(y>PH+.3))continue;heapFeet.push([lx,y-.15,lz]);}
+   if(!quads.length&&!heapFeet.length){out.podTops.push({t,feet:[],quads:[],heap:[]});return;}
+   REGISTER({name:'A growing pod overgrown on top',kind:'podtop',x:t.x,z:t.z,y:t.y+(quads.length?PH-1:0),r:R0+6,h:HD+6,tags:{kind:'podtop',family:'pod',state:t.state,quads:quads.length}});
    const ck=Math.floor(t.x/600)+','+Math.floor(t.z/600);let C=CELLS.get(ck);if(!C)CELLS.set(ck,C=[]);quads.forEach(q=>C.push(q));out.podQuads+=quads.length;
-   const fw=feet.map(W);fw.forEach((w,i)=>{const h=KRAND.hash(STAGE.seed+75,ti,i,0),u=n=>KRAND.unit(KRAND.hash(h,n,0,0)),sz=1.7+1.6*u(3),c=.82+.18*u(4);
+   const fw=feet.concat(heapFeet).map(W);fw.forEach((w,i)=>{const h=KRAND.hash(STAGE.seed+75,ti,i,0),u=n=>KRAND.unit(KRAND.hash(h,n,0,0)),sz=1.7+1.6*u(3),c=.82+.18*u(4);
     BIO.put(u(5)<.7?'pt.broadleaf':'pt.fern',w,BIO.fn.qEuler(0,u(6)*TAU,0),[sz,sz*(.75+.45*u(7)),sz],new THREE.Color(c,c*(.96+.08*u(8)),c*.94));out.podClumps++;});
-   out.podTops.push({t,feet:fw,quads});});
+   out.podTops.push({t,feet:fw.slice(0,feet.length),quads,heap:heapFeet});});
   BIO.range=null;BIO.chunk=null;
   /* the mats, a mesh a 600 m cell: two triangles a quad, the card across it (v 0 at the top: the library's unflipped convention) */
   CELLS.forEach((Q,ck)=>{const pos=[],uv=[],U=[[0,1],[1,1],[1,0],[0,0]];Q.forEach(q=>{[0,1,2,0,2,3].forEach(i=>{pos.push(q[i][0],q[i][1],q[i][2]);uv.push(U[i][0],U[i][1]);});});

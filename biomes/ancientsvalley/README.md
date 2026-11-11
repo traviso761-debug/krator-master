@@ -332,9 +332,12 @@ and one-line stubs for what is the Overlook's alone (`72` keepers, `73` wrecks, 
   the aqueduct's own, mostly standing). The creepers (`71`) and the roof trees (`88`) reach them in the wild half as they reach the towers.
 - **The ground**: the model and the Overlook's relief (`AV.farmLand`), the fields terraced into the slope (2.5 m risers along the contour, fading at
   each hedge), every plinth eased in (an aqueduct module's bed over 20 m); the roads asphalt, the hub paved, the fields tilled soil, the wood's floor.
-- **The pods overgrown on top** (the owner, 2026-11-10: "completely overgrown on top"; `87t`): every standing pod's top, whole dome, ribs, beds or
-  stump, under broadleaf and fern clumps (the crops pack's cards, whole plants) on a staggered 3 m grid over the hex, each set where a ray down meets
-  the drawn hero (`avSurface.down`, as `88`'s roof trees), turned with the pod; every foot kept and checked on the drawn surface (`HCHK.floraHeld`).
+- **The pods overgrown on top** (the owner, 2026-11-10: "completely overgrown on top"; `87t`): every standing pod under a mat of vines laid on the
+  dome's own facets (the kit's nine rows of a hexagon, 0.35 m off the glass, the broadleaf card across each quad, one in seven open), cut where the
+  ruin tore the dome (a crown's, a broken pod's, a stump's, a skeleton's; a gutted pod keeps its whole frame), merged a mesh a 600 m cell; broadleaf
+  and fern clumps on the mat, and on a broken pod's or a stump's rubble heaps (`MP.heaps`, `KRUBBLE.at`: the surface their mesh is drawn from). The
+  station's own, the same at every tier: a first cut set clumps on the hero by rays, and they floated over the box shells a honeycomb's pods mostly
+  are within 600 m (70 draws only the nearest 64 heroes), and fell through a gutted dome's ribs to its beds. Every foot is checked on its mat or heap.
 - **The streets** (the owner, 2026-11-10: "the street modeling from the transit kit should be integrated in an overgrown and ruined way"; `46z`):
   the plan's roads as the transit kit's network (`KTRANSIT.network`: kerbs, 2.4 m pavements, junctions with crosswalks; the ring road in four arcs,
   graded on the relief at up to 30%, the ground cut by `KTRANSIT.lineH`), a riot's war at most (`KTRANSIT.war` under 0.3: no craters), drawn by
@@ -360,6 +363,12 @@ towers), 33 roads and 9 crossings under arches, 36 pylons (120 wires), 2,621 tow
 orchard trees, every one grown by the feral wrap; 14.97 M scene triangles (budget 20 M), the lowland trees 6.59 M of their 8 M (the wood's quality
 held at .9 and .7: at 1.6 and 1.1 it was 13.9 M and two items passed the 250k instance cap). Per view 530 to 695 calls (ceiling 1,200) and 3.1 to
 5.2 M triangles, the hub town the worst. Every assert and negative passes.
+
+**Numbers, the second pass (2026-11-10, `verify.py --assert --all-views` on the GPU, rtx lane):** 223 towers (147 pods standing, four arrays of
+nineteen), 12,579 quads of vines over the domes and 22,225 clumps (4,192 on the heaps), 32 transit roads with 31 junctions, 3,223 furniture pieces
+and 2,697 of a riot's war, 82,142 weeds; 15.86 M scene triangles (budget 20 M), 678 to 825 calls a view (ceiling 1,200); the attach audit 0.45%
+floating (limit 1%). Every assert and negative passes. The build ran 73 s with other sessions' jobs on the machine (the first cut's Terraces 30 to
+55 s): the honeycombs' 176 pods and the roads' cuttings both cost the forest kits' ground samples (`KNOWN_ISSUES.md`).
 
 **The atmosphere panel** (the owner, 2026-11-10: "add controls for the atmospheric effects", then "let me select sky color, cloud pattern, trigger
 environmental effects"; `98-host-atmos-ui.js`). A foldable panel at the bottom right of every station's page. AIR: haze (the fog's density, scaled

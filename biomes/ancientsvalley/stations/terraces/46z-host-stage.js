@@ -59,10 +59,12 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
     for(let cx=Math.floor((x-reach)/50);cx<=Math.floor((x+reach)/50);cx++)for(let cz=Math.floor((z-reach)/50);cz<=Math.floor((z+reach)/50);cz++){const key=cx*100003+cz;let L2=AVT.cells.get(key);if(!L2)AVT.cells.set(key,L2=[]);if(L2[L2.length-1]!==i&&L2.indexOf(i)<0)L2.push(i);}}}});}
  /* the ground: the relief, the roads' cuttings (KTRANSIT.lineH: the deepest of the roads near, never their sum: two at a junction) */
  const lineHnear=(x,z)=>{const L=AVT.cells.get(Math.floor(x/50)*100003+Math.floor(z/50));if(!L)return 0;let h=0;for(let k=0;k<L.length;k++){const v=KTRANSIT.lineH(AVT.net.roads[L[k]],x,z);if(v<h)h=v;}return h;};
- /* read off a 2 m lattice filled as it is asked (the forest kits sample the ground millions of times, and lineH projects onto the road's path:
+ /* read off a 4 m lattice filled as it is asked (the forest kits sample the ground millions of times, and lineH projects onto the road's path:
     asked directly the two lowland kits took 90 s against 40, the first GPU run of the streets, 2026-11-10), bilinear between its nodes; 0 off the roads */
- const LHG=new Map(),lhNode=(i,j)=>{const k=i*1000003+j;let v=LHG.get(k);if(v===undefined){v=lineHnear(i*2,j*2);LHG.set(k,v);}return v;};
- const lineHgrid=(x,z)=>{if(!AVT.cells.get(Math.floor(x/50)*100003+Math.floor(z/50)))return 0;const fx=x/2,fz=z/2,i=Math.floor(fx),j=Math.floor(fz),u=fx-i,v=fz-j,a=lhNode(i,j),b=lhNode(i+1,j),c=lhNode(i,j+1),d=lhNode(i+1,j+1);
+ /* a node is asked only within 24 m of a carriageway (a farm road graded at up to 30% cuts a metre or two: its sides at 1 : 2 die out well inside
+    that); 4 m apart (2 m filled a million nodes, each projecting onto the road and sampling the relief: the build went from 30 s to 100 s) */
+ const LHG=new Map(),LHS=4,lhNode=(i,j)=>{const k=i*1000003+j;let v=LHG.get(k);if(v===undefined){const x=i*LHS,z=j*LHS;v=PLAN.roadD(x,z)>24?0:lineHnear(x,z);LHG.set(k,v);}return v;};
+ const lineHgrid=(x,z)=>{if(!AVT.cells.get(Math.floor(x/50)*100003+Math.floor(z/50)))return 0;const fx=x/LHS,fz=z/LHS,i=Math.floor(fx),j=Math.floor(fz),u=fx-i,v=fz-j,a=lhNode(i,j),b=lhNode(i+1,j),c=lhNode(i,j+1),d=lhNode(i+1,j+1);
   return a===0&&b===0&&c===0&&d===0?0:(a*(1-u)+b*u)*(1-v)+(c*(1-u)+d*u)*v;};
  function ground(x,z){const h=relief(x,z);return h<LAKE_Y+1.5?h:h+lineHgrid(x,z);}
  const yOf=ground;

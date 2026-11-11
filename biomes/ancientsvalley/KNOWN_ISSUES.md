@@ -172,8 +172,9 @@
   its card (`card.crop.melon`) is in the material library but not in the crops kit's pack (`kits/crops/materials.json`); adding it there (the crops
   kit's own change) brings it back. The station checks that every card has its map and stays inside one cell of its sheet. **The pylons' wires are straight sagging lengths** between standing pylons; a leaning pylon's
   wires attach where it would stand upright. **The roads are the transit kit's** (since the second pass): its asphalt has no crack texture of its own, so the
-  cracks are the weeds' lines (`87t`) and the riot's scorch; the pod tops' and the weeds' cards are whole plants with no impostor (the pod tops stop
-  at 1.2 km, the weeds at 700 m) and the box shells past 600 m carry no green. A spoke laid nearly along the
+  cracks are the weeds' lines (`87t`) and the riot's scorch; the pods' clumps and the weeds are whole-plant cards with no impostor (the clumps stop
+  at 900 m, the weeds at 700 m); the vine mats over the domes are drawn to the fog. The mats are the station's (87t), not the kit's: a pod on the
+  metropolis kit's page is bare. A spoke laid nearly along the
   aqueduct is not built (`41d`: no crossing can square it), so a few clusters have no road. **The aqueduct is level on a contour** with a bed under
   its arches levelled up to 6.6 m (its modules are one height): where the contour wanders the bed reads as a cut or an embankment. Shells and
   impostors of the eight families come from `70-host-city.js` unchanged (box shells): a pod's dome is a box at 600 m and beyond.
@@ -181,7 +182,7 @@
   (`STAGE.checks`); the lattice, transit, wreck, keeper and extraplanar checks stay the Overlook's.
 - [ ] **The build is long and blocks the page** (the owner, 2026-11-10: "the station pages really seem to take forever to load ... station 0 keeps
   freezing on load"). Measured on the GPU verify lanes that day, with other sessions' jobs sharing the machine: station 0 112 to 329 s, the Yards
-  343 s, the Terraces 35 to 55 s; nearly all of it the two lowland kits' forest (the marks `_t.swlowlands`, `_t.nwlowlands`), which ask the page's
+  343 s, the Terraces 35 to 55 s (73 to 100 s after its second pass, 2026-11-10: the honeycombs and the roads' cuttings, read off a 4 m lattice gated by the road distance, still on every ground sample; not profiled yet); nearly all of it the two lowland kits' forest (the marks `_t.swlowlands`, `_t.nwlowlands`), which ask the page's
   ground and mask for every sample. The build is one synchronous run, so the page freezes until it ends. A CPU profile of station 0 on software GL
   (560 s) found the valley's own fields scanning every crater and scar per sample (90 s) and the subway's sinkholes (27 s): bucketed by cell now
   (41, `AV.bucket`, `AV.sinkGate`: the same numbers bit for bit, tested), 346 s to 218 s there. Left: core/biome's `BIO.alphaTex` reads a canvas
