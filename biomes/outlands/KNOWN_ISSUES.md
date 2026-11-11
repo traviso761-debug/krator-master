@@ -26,11 +26,11 @@ As built (software GL; scene triangles of the 14 M pass budget, the forms each p
 | Page | Colony types | Forms | Pass triangles | Notes |
 |---|---|---|---|---|
 | Fog Wall | veil, mast, copper, wadi | ~122,700 | ~13.9 M | the slope compressed onto one page (below) |
-| River | mast, river | ~60,000 | ~10.6 M | 14 field plots of the Valley tribe a cell, a village, the river and the 705 m lake |
+| River | mast, river | ~60,000 | ~10.6 M | the Valley tribe's terraced field plots and village, the river and the 705 m lake |
 | Gem Hills | copper, wadi, steppe | ~70,000 | ~7.3 M | two open-cast workings, four mesas, a row of seven fins (KSTACKS) |
 | Plains of Runners | steppe, salt, wadi | ~200,000 | ~9.4 M | inselbergs and tors (KSTACKS), the brine (core/water's brine look), a herders' camp |
-| Nursery Bench | nursery, steppe | ~140,000 | ~9.3 M | the nests and yardangs as records |
-| Trickster's House | copper (the House colony), steppe, river | ~25,000 | ~7.6 M + the ruin's 0.28 M | Arcoindian II read in place |
+| Nursery Bench | nursery, steppe | ~115,000 | ~7.8 M | the nests and yardangs as records; its crust rosettes 225 k instances (the core's cap 250 k) |
+| Trickster's House | copper (the House colony), steppe, river | ~95,000 | ~8.8 M + the ruin's 0.28 M | Arcoindian II read in place, its walls continued |
 | Mires | mast, river, rim | ~90,000 | ~6.7 M | ~300 pools, 300 hazard records |
 
 ## By design (the owner's calls, or this kit's, said here)
@@ -54,16 +54,21 @@ As built (software GL; scene triangles of the 14 M pass budget, the forms each p
   a closed hollow in the plain's south-west with a brine pool (WATER.open with core/water's `brine` look) and the salt colony on it.
 - **Trickster's House is kits/ancients' Arcoindian II with its own site**, read in place (build.py's `"ancients"`): its builder run at
   decay 1 into a group turned a quarter so its mouth faces the lake (east) and lifted so its water (y 6) is the lake's level. The
-  site brings its 690 m rim plateau, its hollow and its gorge with a far wall: on this page the far wall reads as a ridge across an
-  inlet of the lake. This page's ground sinks under the site's box and meets it at the box's edges; the lake is drawn round it.
+  site brings its 690 m rim plateau, its hollow and its gorge with a far wall: on this page the gorge is an inlet of the lake between the
+  escarpment and a ridge. **The walls are whole** (the owner, 2026-11-11: "this cliff should be complete and there shouldn't be exposed
+  rooms on the side"): the kit ends its massif on a master joint that lays the galleries and the lens open in section for its own
+  sheet, and its far wall is one sheet open at its ends and back; this page's ground carries the escarpment on past the joint and the
+  west taper as one cliff (its face on the kit's brow line, its top at the rim plateau, painted in the kit's bedded sandstone tones),
+  and stands a solid ridge behind the far wall to its 760 m top, carried past both its ends into the lake. Inside the site's box the
+  ground sinks under the kit's rock; the lake is drawn round it.
   **The Ancients kit's library pack is left empty on this page** (its procedural maps): the full pack is ~8 MB.
 - **The yardangs are drawn by the Nursery Bench's stage** (streamlined ridges on a KRAND lattice, each a record with its angle):
   KBASIN.land cuts yardangs only in a drained lake's silt, and the bench has none.
 - **The steppe forms are thinned** where a station holds the steppe over a whole map (the plains, the gems' west, the bench): every
   instance a pass puts is a triangle on the page whether or not the runtime LOD shows it, so the needle fur (a carpet) is drawn near
   the eye's places only (the host's `near` field) and the cushions, sac brush and ember scrub at wider cells than station 1's
-  forms. A station may scale its passes (`STAGE.build.quality`: the gems .55, the river .55, the mires .6, the plains .7, the House
-  .7, the bench .8).
+  forms. A station may scale its passes (`STAGE.build.quality`: the gems .55, the river .55, the mires .6, the bench .65, the plains .7,
+  the House .7).
 
 ## Open
 
@@ -96,6 +101,9 @@ As built (software GL; scene triangles of the 14 M pass budget, the forms each p
   colony map shared by the paint and the placement would halve it.
 - [ ] **Forms are instanced items, not trees**, and the page has no impostors: past the far LOD the tall forms are drawn in full.
 - [ ] **The pit's adits are records only** (KRELIEF.pit gives them; nothing carves them: KCARVE is not taken), stations 1 and 3.
+- [ ] **The House's continued cliff is a heightfield**: it cannot lean out as the kit's brow does (the brow overhangs 400 m from the water
+  to the crown), so where the two meet at the joint there is a step, and on its steep faces the ground's top-down uv stretches the paint
+  and the library layer into vertical streaks (a triplanar face, or KSTACKS/KCARVE walls, would fix both).
 - [ ] **The curtain weed is scarce on the Mires** (a handful on the stream's peat faces, the only steep wet ground there).
 
 ## Fixed (2026-11-11)
