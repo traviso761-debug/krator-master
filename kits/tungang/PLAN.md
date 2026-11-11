@@ -411,7 +411,12 @@ least a few ventilation tunnels to the surface**. *Proposed* from there:
   Dalab caravans"): Dalab's road crosses the Wall partly through the Ancient tunnels and over the rim, and a shaft head
   above it is where a loj on strike comes up at night to cut a caravan's beasts loose, block the road, take its cargo
   down, and vanish, with no door Dalab can find to knock on (*proposed* forms; `core/simulation`'s latent war between
-  Dalab and the Tungangs, `PLAN-POLITICS.md`, is where it lives as data: a strike turns the shafts into raid points).
+  Dalab and the Tungangs, `PLAN-POLITICS.md`, is where it lives as data: a strike turns the shafts into raid points). The Line session measured them (`biomes/line/PLAN.md`
+  2.1, 4f7c0fb3e): every shaft and adit is `hidden: true` unless outsiders know it (Ledge's lifts and the portals are known),
+  and carries `road: {id: 'dalab-ledge', d, reach}`, reach being within 15 km, a night's walk out and back. The raid points
+  are **the north end under Shelf** (km 4, 10 and 24: 6, 8 and 13 km from the road, which climbs right over the Line there)
+  and **the road's last stretch to Ledge's cliff** (the shallow south from about km 290); the heartland's shafts (km 218,
+  250, 260) are two nights out, with a hidden camp.
   The shaft heads are where the Travellers' dark clan services the shafts and porters up and down them
   (section 1.3), and where a raider or a player can come down.
 - **The kit's pieces** (section 3.2): `tg_vein_working`, `tg_ore_store`, `tg_refinery` (the rare-earth batch room),
