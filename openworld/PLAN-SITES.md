@@ -39,8 +39,20 @@
   ground (hash `8ad035b1`), and every check passes in the browser.
 - **Not moved yet:** Pinnacle Rock's own page and the published model (`openworld/pinnacle/KNOWN_ISSUES.md`).
 
+**The second region, Xanadu, Oidong and the High Rift (2026-11-10): `openworld/xanadu-oidong-highrift`.**
+- **The cut:** 1,780 x 582 km at 1 km cells, in about 40 s.
+- **The villages:** Erehwon's and Qiblai's farming and ranching villages and Longsong's three, 15 in all (577 buildings),
+  on core/hamlet's `xanadu` row. They are drawn with the Xanadu building kit, with roads joined into a network.
+- **The links** between the towns are planned but not laid (no bridges yet).
+- **The flora:** the Xanadu and Oidong kits.
+- **Core changes on the way:**
+  - `KSITES` plans villages and links;
+  - the drawing draws villages;
+  - the world's river check judges only rivers that carry water, inside the region.
+- **The third region** (the Iziz cluster) is next.
+
 **Not yet:**
-- Step 3 (the generic town steps lifted out of `ISLE`): the first site has no town.
+- Step 3 (the generic town steps lifted out of `ISLE`): neither region plans a town yet.
 - Step 6 (the region's planner page).
 - Step 7 (Godot reading `plan/`).
 - The other two regions.

@@ -30,10 +30,10 @@
   }
  },
  "sites": {
-  "staiytii0y": {"name": "Pinnacle Rock", "type": "city", "region": "pinnacle", "reach_km": 30, "moved": "2026-11-10: 1027,681 -> 1007,686 (the owner: more forest; the savage hyperjungle's north-east edge)", "culture": "beast-rider", "page": "settlements/pinnacle-rock", "state": "planned"},
-  "s57bkv9741": {"name": "Erehwon", "type": "city", "region": "xanadu-oidong-highrift", "reach_km": 30, "culture": "xanadu", "page": "settlements/xanadu", "state": "planned"},
-  "sq80bzd7ep": {"name": "Longsong", "type": "village", "region": "xanadu-oidong-highrift", "reach_km": 15, "culture": "xanadu", "page": "settlements/longsong", "state": "planned"},
-  "skm4jjo2vl": {"name": "Qiblai", "type": "city", "region": "xanadu-oidong-highrift", "reach_km": 30, "culture": "xanadu", "page": null, "state": "planned"},
+  "staiytii0y": {"name": "Pinnacle Rock", "type": "city", "region": "pinnacle", "reach_km": 30, "moved": "2026-11-10: 1027,681 -> 1007,686 (the owner: more forest; the savage hyperjungle's north-east edge)", "culture": "beast-rider", "page": "settlements/pinnacle-rock", "state": "built"},
+  "s57bkv9741": {"name": "Erehwon", "type": "city", "region": "xanadu-oidong-highrift", "reach_km": 30, "culture": "xanadu", "page": "settlements/xanadu", "state": "built"},
+  "sq80bzd7ep": {"name": "Longsong", "type": "village", "region": "xanadu-oidong-highrift", "reach_km": 15, "culture": "xanadu", "page": "settlements/longsong", "state": "built"},
+  "skm4jjo2vl": {"name": "Qiblai", "type": "city", "region": "xanadu-oidong-highrift", "reach_km": 30, "culture": "xanadu", "page": null, "state": "built"},
   "seed07": {"name": "Girder", "type": "village", "region": "iziz-cluster", "reach_km": 15, "culture": "beast-rider", "page": "settlements/girder", "state": "planned"},
   "skukf2qmmq": {"name": "Mav's Refuge", "type": "city", "region": "iziz-cluster", "reach_km": 30, "culture": "beast-rider", "page": "settlements/mavs-refuge", "state": "planned"},
   "sor1zqih8x": {"name": "Talia", "type": "city", "region": "iziz-cluster", "reach_km": 30, "culture": "talia", "page": "kits/talia", "state": "planned"}
