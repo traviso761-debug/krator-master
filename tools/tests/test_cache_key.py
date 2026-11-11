@@ -50,7 +50,7 @@ if __name__ == "__main__":
     same("the lanes listing", '"cloud lanes: off (tools/CLOUD-LANE.md)"', '"cloud lanes: switched off"')
     same("the stall default", 'KRATOR_GPU_STALL_MIN") or 25)', 'KRATOR_GPU_STALL_MIN") or 30)')
     same("the cloud routing", 'print("harness: on the %s lane (the cloud machine)" % got, flush=True)', 'pass')
-    same("the cache's own message", '"harness: cached pass: ', '"harness: cached pass (same bytes): ')
+    same("the cache's own message", '"harness: cached %spass: ', '"harness: cached %spass (same bytes): ')
     same("the __main__ block", 'sys.exit(lanes_main(sys.argv[2:]))', 'sys.exit(lanes_main(sys.argv[2:]) or 0)')
     # in the key
     moved("VERIFY_CACHE_VERSION", "VERIFY_CACHE_VERSION = 1", "VERIFY_CACHE_VERSION = 2")
