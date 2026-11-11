@@ -1,0 +1,17 @@
+{
+ "build": "line",
+ "note": "biomes/line's adapter onto the material library (core/materials/PLAN.md; biomes/line/PLAN.md section 13). The bore station (stations/bore): the lining (85-host-lining.js) on concrete.ancient until the owed concrete.lining.segment comes (PROMPTS-NEEDED.md section 41); the guideways on concrete.board until concrete.guideway comes; the invert, strip, footway and barrier on concrete.slab; the access road on ground.asphalt; the walkway's grating, the handrail and posts, the Fixers' patches on the rusty grate and plate; the bronze bands; the enamel plates and the road's line on chipped paint; the spoil on demolition rubble; rock.riftfill is the KGROUND layer on the rock where it shows (84-host-rock.js: the niches, the vein's gallery). Scales are world metres per tile; the builder writes UVs in metres. Run python3 tools/textures/pack.py biomes/line after any change, then python3 build.py.",
+ "size": 512,
+ "families": {
+  "lining": {"lib": "concrete.ancient", "scale": [4.0, 4.0], "tint": {"keep": 0.25, "mean": 0.72}, "roughLift": 0.1, "specular": 0.35, "note": "the precast lining's face (concrete.lining.segment owed)"},
+  "guide": {"lib": "concrete.board", "scale": [3.0, 3.0], "tint": {"keep": 0.25, "mean": 0.66}, "roughLift": 0.05, "specular": 0.4, "note": "the guideway beams (concrete.guideway owed)"},
+  "conc": {"lib": "concrete.slab", "scale": [5.0, 5.0], "tint": {"keep": 0.3, "mean": 0.6}, "roughLift": 0.12, "specular": 0.3, "note": "the invert, the central strip, the footway, the barrier"},
+  "road": {"lib": "ground.asphalt", "scale": [6.0, 6.0], "tint": {"keep": 0.3, "mean": 0.45}, "roughLift": 0.1, "specular": 0.3, "note": "the access road"},
+  "grate": {"lib": "metal.metal_grate_rusty", "scale": [1.5, 1.5], "tint": {"keep": 0.6, "mean": 0.5}, "metal": 0.4, "roughLift": 0.05, "specular": 0.4, "note": "the walkway's grating"},
+  "metal": {"lib": "metal.rust.plate", "scale": [2.0, 2.0], "tint": {"keep": 0.5, "mean": 0.5}, "metal": 0.35, "roughLift": 0.05, "specular": 0.35, "note": "the handrail, the posts, the slot's lips, the Fixers' plate"},
+  "bronze": {"lib": "metal.bronze", "scale": [1.0, 1.0], "tint": {"keep": 0.4, "mean": 0.55}, "metal": 0.6, "roughLift": 0.0, "specular": 0.5, "note": "the bands where the structure transfers"},
+  "paint": {"lib": "metal.painted.chipped", "scale": [1.0, 1.0], "tint": {"keep": 0.15, "mean": 0.72}, "metal": 0.1, "roughLift": 0.05, "specular": 0.4, "note": "the enamel plates, the road's line"},
+  "rubble": {"lib": "ground.rubble.demolition", "scale": [2.0, 2.0], "tint": {"keep": 0.6, "mean": 0.5}, "roughLift": 0.05, "specular": 0.3, "note": "the vein's spoil"},
+  "rock.riftfill": {"lib": "rock.limestone.karst", "scale": [4.0, 4.0], "tint": {"keep": 0.6, "mean": 0.52}, "roughLift": 0.2, "specular": 0.2, "mapOnly": true, "note": "the rift fill where the lining opens (KGROUND)"}
+ }
+}

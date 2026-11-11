@@ -304,6 +304,10 @@
    "bytes": 1523367,
    "sha256": "ec622309bf951dd3093bccdf6df80fb2deb63284eaad7d62a191178d545a1cb0"
   },
+  "biomes/line/dist/line-bore.html": {
+   "bytes": 7581355,
+   "sha256": "7c7597efbe5231de00c65e35cb397248fc103e9ba3781775ba379a8a2a5fcb62"
+  },
   "biomes/necanyons/dist/necanyons-benches.html": {
    "bytes": 1597720,
    "sha256": "8e7a4dc6a6feaae25d3f3e21ab12d78fe46c6361bf6c259703279ea358c5f5f9"
@@ -837,8 +841,8 @@
    "sha256": "49864e7da42437b705368786a6c313fb199ca012b5d144ec47379f9522f62a87"
   },
   "kits/motor-vehicles/dist/motor-vehicles.html": {
-   "bytes": 2290119,
-   "sha256": "d5410056c11f375a78e44d2716672313544690d34977771087cd6b39a74de169"
+   "bytes": 2331399,
+   "sha256": "27ceb176d61f04e4a7be55769455ec1ec86123b2493ddce0c1671b028282ea41"
   },
   "kits/port/dist/cgBox.html": {
    "bytes": 1024088,

@@ -10,6 +10,7 @@ module is plain functions on those records (`[G data]`: no THREE, no DOM), porte
 | `20-core-hazard.js` | `KHAZ`: `make`, `of`, `shape`, `inside`, `beyond`, `state`, `dose`, `list`, `at`, `zones`, `export`, `STATES`, `speed`; `exposure`, `bindFire`, `fireHazard`, `GROUND`; `taboo`, `taboos`, `forbids`, `tabooOk`, `tabooAudit` |
 | `test-hazard.js` | `node core/hazard/test-hazard.js`: every function, each check with a negative |
 | `21-core-hazard-flow.js` | opt-in: `KHAZ.moveAt`, `drift`, `poolK`: a hazard's `move` read (`move.pull` toward the core) and gas pooled on a band's floor (`shape.pool`); `test-hazard-flow.js` |
+| `22-core-hazard-bore.js` | opt-in: `KHAZ.rockburst`, `inrush`, `seal`: a bore's hazards (openworld/ANCIENT-TUNNELS.md section 4) as presets on kinds core/tags has (`crush` and `drown` on a cycle, `gas` on the state function `KHAZ.seal`); no vocabulary edited; `test-hazard-bore.js` |
 | `GODOT.md` | the Area3D, navigation and status mapping for the port |
 
 What else it touches (all in this workstream, 2026-10-26):
@@ -298,6 +299,18 @@ filled `hazard`.
    ({state: k > 0 ? 'drawing' : 'still', k, on: k > 0})` and `k = 1 - GILLS.breath(t)` (the in-breath is the breath's low).
 3. A sump: `{kind: 'gas', danger: 1, falloff: 'none', shape: {type: 'poly', pts, h: 4, pool: 2}}` at the floor's height.
 4. The walker each step: `const D = KHAZ.drift(x, z, t, y)`; its pace times `D.speed`, plus `D.pull` times dt.
+
+## A bore's hazards (`22-core-hazard-bore.js`, opt-in, 2026-11-11)
+
+The three owed by `openworld/ANCIENT-TUNNELS.md` section 4, added for the Line (`biomes/line/PLAN.md` section 6; the owner, 2026-11-11). Each is
+a preset on a kind the vocabulary already has, so no page that does not list the file changes and `KHAZ.make` checks each like any record:
+
+- `KHAZ.rockburst(o)`: a `crush` on a cycle (a tell of dust and ticking, the burst, a settling spall, idle the rest of the period).
+- `KHAZ.inrush(o)`: a `drown` on a cycle (the drains roar, the gallery fills on its ramp, stays flooded, drains), dry between (`base` 0).
+- `KHAZ.seal(o)`: a `gas` (suffocate) on the state function `KHAZ.seal`: harmless while its door holds, airless when it fails; a page calls
+  `KHAZ.setSeal(doorId, sealed)` when the door opens or breaks.
+
+A build lists `core/hazard/22-core-hazard-bore.js` after `20-core-hazard.js`.
 
 ## Tests
 

@@ -4,7 +4,9 @@ The Ancients' Rift line under the Outer Wall, the tunnels the Tungangs keep, and
 of the Tungang work, in the owner's order (2026-11-10): **"we need to get the look of the caverns and Line tunnels right.
 we'll also need a train vehicle custom built for it"**; then the cavern layout in `core/city` (T2), then the culture kit.
 
-**Status: approved by the owner (2026-11-11), all 17 questions answered; not yet told to build. No code is written.**
+**Status: approved by the owner (2026-11-11), all 17 questions answered; building started on the owner's word the same day.** Built so far
+(see section 14, "Progress"): the Line train and the Tungangs' stock in `kits/motor-vehicles`, the `bore` station, the bore hazards in
+`core/hazard` (opt-in). Waiting: the line record on `KTRANSIT` (the transit kit's merge to main).
 The answers are below; where a section still says *proposed*, the answer settled it as written unless the answers say
 otherwise. The core changes (section 11) are each agreed before code, and a page that does not opt in stays
 byte-identical.
@@ -341,7 +343,7 @@ smaller access road along the underground portions".
 | Part | Size | What |
 |---|---|---|
 | Gallery | **37 m** between the lining's faces (x -21 to +16), 14 m to the crown, walls plumb to 6 m, a flattened elliptical vault | one span: no columns (columns would block crossovers) |
-| Access road | 6.6 m, two lanes, along the west wall at the invert (+0.2 m), behind a 0.6 m barrier from T4; a 1.2 m footway and the cable trough at the wall; lay-bys at the refuge niches | the Ancients' service road; the Tungangs' footway and barrow road (section 2.3) |
+| Access road | 6.6 m, two lanes, along the west wall at the invert (+0.2 m), behind a 0.45 m barrier from T4 (x -13.2 to -12.75: a 0.6 m one would stand inside T4's clearance, found building the `bore` station); a 1.2 m footway and the cable trough at the wall; lay-bys at the refuge niches | the Ancients' service road; the Tungangs' footway and barrow road (section 2.3) |
 | Lining | precast segments 0.6 m thick, rings 2.0 m long, the joints a fine grid; a bronze ring band every 3.6 m (the Ancients' storey, as the tram's hoops) | the ring joints make the length readable (`ANCIENT-TUNNELS.md` §2) |
 | Guideways | four, at -10.5, -4.5, +4.5, +10.5 m; each a raised concrete beam 2.8 m wide, 0.6 m high, with a central guide slot and the power strip in it; no rails, no catenary | the Ancients' guideway (the tram's "guide skids", `kits/motor-vehicles`) |
 | Pairs | T1, T2 one way, T3, T4 the other; 6 m centres in a pair | |
@@ -529,7 +531,7 @@ power).
 | State | What | How in the vehicles kit |
 |---|---|---|
 | `built` | as the Ancients ran it: white panel, blue glass, cyan strips lit | the kit's `intact` |
-| `kept` | a thousand years of Tungang upkeep: plate riveted over the white skin, the windows plated to slits, the lamp code on the nose (green running, red tail, the white lamp hooded), enamel number plates, a loj's livery bands, a bell on the cab, the timetable chalked inside, the door seals waxed | **not a ruin state**: an upkeep option over the built car, `KratorVehicles.build(key, {variant, seed, state: 'intact', kept: 'tungang'})`, drawn by the keeping culture's own function (in `krator-vehicles-tungang.js`) over the vehicle; verify's ruin checks (dead lamps, no glass) do not apply to it |
+| `kept` | a thousand years of Tungang upkeep: plate riveted over the white skin, the windows plated to slits, the lamp code on the nose (green running, red tail, the white lamp hooded), enamel number plates, a loj's livery bands, a bell on the cab, the timetable chalked inside, the door seals waxed | **not a ruin state**: as built (2026-11-11), **variant 1** of each Line car, "Kept (Tungang)", drawn by `lineKept()` in `krator-vehicles-line.js` over the built car, so the shared runtime (which reaches Locus and Mungo) is untouched; a kept car still takes the ruin states. The general build option (`kept: 'tungang'` in `API.build`, as agreed with the vehicles session) is a known issue for when one culture's upkeep must dress another's vehicle generally |
 | `derelict` | drawn into a siding and left: glass gone, panels sprung, dust; the kit's carriage houses later | the kit's `weathered` |
 | `wreck` | a train caught in a collapse: a car crushed under the fall, one rolled across two tracks | the kit's `wreck` forms |
 
@@ -690,6 +692,18 @@ question 14):
 | L4 | `station`, `gap`, `hotdoor`, `fault`, `breach`, `portal` | each passes `--assert`; the owner's walk from `station` across `gap` |
 | L5 | riding on the pages (after the riding plan's phases it needs): riders in the passing train, porters at G2, the player boarding at `station` | the riding plan's checks pass on these pages |
 | L6 | the Godot export; the index tools; the gallery (a new biome goes in when it first reaches `main`) | the stations export and pass |
+
+**Progress** (2026-11-11, on the owner's "start building"):
+- **L3, the train (built first)**: `kits/motor-vehicles/krator-vehicles-line.js` (the five Line cars, each with a "Kept (Tungang)" variant
+  and `data.ride` for riding) and `krator-vehicles-tungang.js` (the Fixers' trolley, a flat wagon, the ice wagon); the kit's
+  `verify.py --assert` passes (135 builds, 405 ruin builds; its ruin box now allows a long vehicle's swing). `kept` is a variant, not a
+  build option (the runtime, which reaches Locus and Mungo, is untouched): the kit's `KNOWN_ISSUES.md`.
+- **L2, the `bore` station**: `stations/bore/` (the gallery carved on KCAVERN, the lining drawn in rings, the guideways, strip, walkway,
+  road, crossover, the lamp code, the niches, the vein working, two kept trains passing on their timelines by the riding hook's car pose,
+  the work train, a derelict van); `verify.py --assert` with the station's six checks and their negatives (`99-host-take.js`). The line
+  record is the station's own `48-line-gallery.js` until `KTRANSIT.line` exists (`KNOWN_ISSUES.md`).
+- **The bore hazards**: `core/hazard/22-core-hazard-bore.js` (`KHAZ.rockburst`, `inrush`, `seal`), opt-in, as presets on the kinds the
+  vocabulary has (`crush`, `drown`, `gas`), so no other page changes; `test-hazard-bore.js`.
 
 **Checks** (`verify.py --assert`; each with its negative control):
 - `line-record`: the record's derived segments and gaps match the cond runs (negative: a track's `cut` run removed must
