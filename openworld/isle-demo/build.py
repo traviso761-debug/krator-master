@@ -88,6 +88,7 @@ ORDER = (
      ('core/shader', '06-core-khook.js'), ('core/shader', '06b-core-kcolor.js'),
      ('core/rand', '08-core-rand.js'), ('core/clock', '20-core-clock.js'), ('core/terrain', '38-core-relief.js'),
      ('core/biome', '10-core-head.js'), ('core/biome', '20-core-kit.js'), ('core/biome', '30-core-foliage.js'),
+     ('core/biome', '31b-core-leafset.js'), ('core/biome', '34-core-impostor.js'),   # BIO.leafOn/leafQ (the kit core), BIO.impostorSet (the lenders' trees)
      ('core/biome', '35-core-anim.js'), ('core/biome', '36-core-walker.js'), ('core/space', '20-core-space.js'), ('core/biome', '40-core-place.js'),
      ('core/tags', '50-core-tags.js'), ('core/tags', '52-core-tags-vocab.js'),
      ('core/atmos', '89-atmos-0-core.js'), ('core/atmos', '89-atmos-0p-presets.js'), ('core/atmos', '89-atmos-a-waves.js'),
