@@ -22,7 +22,7 @@ const STATION=(function(){const R=3000,LAKE=3570;
  const VIL={x:-150,z:-60};
  const L=rimLand({R,ground,
   lakes:[{name:'The ice-cutters\' lake',kind:'frozen',level:LAKE,poly:[[-3600,3600],[-3600,300]].concat(Array.from({length:44},(_,k)=>{const x=-3500+k*163;return[x,shoreZ(x)-30];}),[[3600,300],[3600,3600]]),
-   inside:(x,z)=>z>shoreZ(x),area:608}],
+   inside:(x,z)=>z>shoreZ(x)-30,area:608}],   /* the drawn outline's own line (the poly is the shore less 30 m): waterH and the drawn water agree */
   river:null,falls:[],
   tm:(x,z,h)=>1-6.5*(h-3700)/1000,
   wet:(x,z,h)=>.36+.08*fbm(x*.0016,z*.0016,8405,2),
@@ -40,8 +40,8 @@ function fieldsAt(x,z,h,slope){return STATION.fieldsAt(x,z,h,slope);}
 
 const LAND={name:'The Ice-cutters (riftrim station 9)',title:'Krator biome — the rift rim: the Ice-cutters\' lake',
  hint:'Station 9 of the rift rim: a Fellgang village of ice-cutters on the S rim\'s 3,570 m lake (scale model 5.1 px 470,1521; Dsc, coldest month -12 degC). In winter they saw the lake ice into blocks, pack them in ice houses under turf, and carry them down the wall by night to the hot Rift floor, where cold is the dearest thing there is. The Cold is owed: what the lake gives is sold, never hoarded. Opens at dusk, the carry\'s lanterns lit (#hour=12 for midday)',
- region:{name:'The Ice-cutters (station 9)',x:0,z:0,r:TERR.R},rim:'s',wind:[.8,.5],arcade:false,fruitMin:0,hour:17.4,
- species:['lanternlobelia'],exportBox:[STATION.VIL.x-150,STATION.VIL.z-150,STATION.VIL.x+150,STATION.VIL.z+150],
+ region:{name:'The Ice-cutters (station 9)',x:0,z:0,r:TERR.R},rim:'s',wind:[.8,.5],arcade:false,fruitMin:0,hour:17.6,   /* the sun 4 degrees up: the low gold light before the carry */
+ species:['lanternlobelia'],exportBox:[STATION.VIL.x+350,STATION.VIL.z+150,STATION.VIL.x+650,STATION.VIL.z+450],   /* the shore beside the village and the ice's edge (the flora keeps off the village itself) */
  exportProfile:['registry','items','materials','textures','terrain','stage','atmos','water'],   /* the village and the lake's edge; no bucket here (the ice station's reason) */
  sky:{px:198,py:1191},atm:.66,cloud:.06,dust:false,   /* the sky's frame: the old canvas (5.1 px less 272,330); a clear winter evening */
  fog:{falloff:1/1500,sun:.4,sky:.25},climate:{cold:true,dry:true},wet:false,snowLine:[3300,3450],snowBase:.8,frozen:true,groundN:560,
@@ -56,9 +56,12 @@ const LAND={name:'The Ice-cutters (riftrim station 9)',title:'Krator biome — t
  views:H=>{const {P,look,atTree,nearTree,gh}=H,S=STATION,V=S.VIL,F=window._ice||{};
   const vx=F.site?F.site.x:V.x,vz=F.site?F.site.z:V.z,sz=S.shoreZ(vx);
   return{
+  /* the opening shot: the S rim's beacon, the nearest lantern lobelia to the village, over the frozen lake, the village and its lanterns beyond it */
+  'A lantern lobelia over the frozen lake':()=>{const Ts=(RRIM.TREES||[]),t=Ts.slice().sort((a,b)=>Math.hypot(a.x-vx,a.z-vz)-Math.hypot(b.x-vx,b.z-vz))[0];
+   if(!t)return[vx+340,S.LAKE+14,sz+420,vx,gh(vx,vz,4),vz];const dx=vx-t.x,dz=vz-t.z,l=Math.hypot(dx,dz)||1,cx=t.x-dx/l*22,cz=t.z-dz/l*22;return[cx,gh(cx,cz,3.2),cz,vx,gh(vx,vz,8),vz];},
   'The Ice-cutters at dusk':()=>[vx+340,S.LAKE+14,sz+420,vx,gh(vx,vz,4),vz],
   'The cut lanes on the ice':()=>{const c=(F.lanes&&F.lanes[1])||{x:vx,z:sz+120};return[c.x+40,S.LAKE+6,c.z+40,c.x,S.LAKE,c.z];},
-  'The blocks stacked on the shore':()=>{const b=(F.stacks&&F.stacks[0])||{x:vx,z:sz+10};return[b.x+12,S.LAKE+3.5,b.z+14,b.x,S.LAKE+1,b.z];},
+  'The blocks stacked on the shore':()=>{const b=(F.stacks&&F.stacks[0])||{x:vx,z:sz+10};return[b.x+12,gh(b.x+12,b.z+14,2.2),b.z+14,b.x,gh(b.x,b.z,1),b.z];},
   'The ice houses':()=>{const h=((F.village&&F.village.records)||[]).find(r=>r.key==='fg-icehouse')||{x:vx,z:vz};return[h.x+22,gh(h.x+22,h.z+18,4),h.z+18,h.x,gh(h.x,h.z,2),h.z];},
   'The ice road over the moraine':()=>{const p=S.ROAD[3];return[p[0]-120,gh(p[0]-120,p[1]+90,9),p[1]+90,S.ROAD[6][0],gh(S.ROAD[6][0],S.ROAD[6][1],4),S.ROAD[6][1]];},
   'The village from the ice':()=>[vx-260,S.LAKE+40,sz+900,vx,gh(vx,vz,0),vz],

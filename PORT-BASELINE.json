@@ -424,6 +424,10 @@
    "bytes": 7931423,
    "sha256": "fc260c34865f2bf9a5d0bc9c011ba6ac02ba61d9445cacf7e4736c868cb59926"
   },
+  "biomes/riftrim/dist/riftrim-icecut.html": {
+   "bytes": 7365442,
+   "sha256": "0754ba610c3bc36f14f4e792616a92371c0854d02c03a1143264fd5c093e8bde"
+  },
   "biomes/riftrim/dist/riftrim-lakes.html": {
    "bytes": 8941283,
    "sha256": "236ec89bfda2cd16bbdbd6aabb296a96b9f96ee1666640795a9a0f7fc0dac761"

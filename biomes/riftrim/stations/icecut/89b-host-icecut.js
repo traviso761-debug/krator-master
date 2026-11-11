@@ -15,7 +15,7 @@ const ICE=(function(){const S=STATION,V0=S.VIL,G=terrainH,slope=(x,z)=>{const e=
  /* the cut lanes: parallel strips off the shore below the village, 6 m wide, 60-140 m long, square to the shore */
  for(let i=0;i<7;i++){const x=cx-150+i*48+(U(i,1)-.5)*10,z0=S.shoreZ(x)+25+U(i,2)*15,len=60+80*U(i,3);out.lanes.push({id:'icecut:lane:'+i,x,z:z0+len/2,z0,z1:z0+len,w:5+2*U(i,4)});}
  /* the stacks: on the shore at each lane's head, and the sledges beside them */
- out.lanes.forEach((L,i)=>{const x=L.x+(U(i,5)-.5)*6,z=S.shoreZ(x)-6-U(i,6)*8;out.stacks.push({id:'icecut:stack:'+i,x,z,y:G(x,z),n:3+Math.floor(U(i,7)*4),rows:2+Math.floor(U(i,8)*2)});
+ out.lanes.forEach((L,i)=>{const x=L.x+(U(i,5)-.5)*6,z=S.shoreZ(x)-42-U(i,6)*8;   /* on the shore past the water's drawn line (shore less 30 m) */out.stacks.push({id:'icecut:stack:'+i,x,z,y:G(x,z),n:3+Math.floor(U(i,7)*4),rows:2+Math.floor(U(i,8)*2)});
   if(i%2===0)out.sledges.push({id:'icecut:sledge:'+i,x:x+5,z:z-3,y:G(x+5,z-3),ry:U(i,9)*.6-.3});});
  /* the lanterns up the ice road: every 60 m from the village to the shelf's edge */
  let acc=0;for(let k=1;k<S.ROAD.length;k++){const a=S.ROAD[k-1],b=S.ROAD[k],l=Math.hypot(b[0]-a[0],b[1]-a[1]);for(let t=(60-acc%60)%60;t<l;t+=60){const x=a[0]+(b[0]-a[0])*t/l+4,z=a[1]+(b[1]-a[1])*t/l;
@@ -49,7 +49,7 @@ LAND.build=function(){const T=THREE,V=ICE.village;if(!V.records)return{village:0
  ICE.lamps.forEach((l,i)=>{IP.setMatrixAt(i,m.compose(new T.Vector3(l.x,l.y+1.1,l.z),q.set(0,0,0,1),new T.Vector3(.12,2.2,.12)));IG.setMatrixAt(i,m.compose(new T.Vector3(l.x,l.y+2.3,l.z),q,new T.Vector3(1,1.3,1)));});
  IP.count=IG.count=ICE.lamps.length;ICE.lampM=lampM;
  [[IL,'A cut lane in the ice (open water)'],[IB,'Ice blocks, stacked for the carry'],[IS,'A sledge for the carry'],[IP,'A lantern post on the ice road'],[IG,'A lantern (lit for the night carry)']].forEach(([o,l])=>{o.userData.host=true;o.userData.inspectLabel=l;scene.add(o);});
- IL.userData.probeSkip=true;IG.userData.noSnow=true;lampM.userData.noSnow=true;
+ IG.userData.noSnow=true;lampM.userData.noSnow=true;IL.material.userData.noSnow=true;IB.material.userData.noSnow=true;   /* open water and fresh-cut ice hold no snow (89z's snowOnScene skips them) */
  tick(()=>{if(ICE.lampM)ICE.lampM.emissiveIntensity=.2+1.8*(1-smooth(.04,.5,sun.intensity));});
  return{village:V.records.length,pop:V.census&&V.census.pop,lanes:ICE.lanes.length,blocks:b,lamps:ICE.lamps.length};};
 // THE STATION'S CHECKS (99: LAND.checks / LAND.negatives), each with a broken input that must fail
