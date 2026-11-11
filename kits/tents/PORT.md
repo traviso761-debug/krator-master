@@ -13,7 +13,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | Fragment | KB | Tag | THREE | canvas | DOM | events | loop | geom | shader | inst | ray | store | net | Note |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `src/00-head.html` | 1.2 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
-| `src/26k-kit.js` | 3.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the kit's identity, library families and palette |
+| `src/26k-kit.js` | 4.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the kit's identity, library families and palette |
 | `src/33-tn-table.js` | 8.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | forms x sizes x roles: boxes and rooms; tests/test-tents.js loads it in node |
 | `src/41-tn-dress.js` | 9.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the dresses; tests/test-tents.js loads it in node |
 | `src/42-tn-parts.js` | 8.8 | [draw] | 2 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | cloth, flaps (core/door leaves), finials, pennants; wraps the toolkit's tkStake and tkGuy |

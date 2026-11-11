@@ -29,6 +29,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `78l-xa-moorish-data.js` | 5 |  |
 | `78m-xa-moorish.js` | 16 | materials (wired in materials.json: the owed set (19); geometry (31); helpers (the running builder's frame) (73) |
 | `78n-xa-citadel.js` | 36 **big** | the plan drawer (47); the Sultan's Palace (E1, E2a, E2b) (196); the Grand Vizier's palace (E5a, E5b) (240); the dars: the great officers' houses, the envoys (261); the court temple and the citadel kitchens (290) |
+| `78o-xa-golden-way.js` | 24 | the Pleasure Dome where the Way is built (85); the builder (102) |
 | `79-xa-guild.js` | 17 | Farmers' Guild (22); Miners' Guild (36); Goldsmiths' Guild (55); Alchemists' Guild (71); Masons' Guild (89); the generator (109) |
 | `80-xa-military.js` | 16 | the barracks (12); a length of the city wall (34); the gate (44); the fortress (dzong) (61); the city watch (86); the mustering ground (105) |
 | `81-xa-public.js` | 11 | the arena (11); the amphitheatre (36); the public baths (55); the public garden (76) |

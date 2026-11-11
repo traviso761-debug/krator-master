@@ -30,16 +30,16 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `00-head.html` | 1 |  |
 | `44r-host-site-rec.js` | 6 |  |
 | `44s-host-site.js` | 10 | the apron: a signed distance in from its toe (11); one record a point (memo of the last): the heigh (72) |
-| `45-host-stage.js` | 7 | the station, its air and its season (23); the model's ground (bicubic over its 1 km cells) (37); the ground's height (47); renderer, light, camera (67) |
+| `45-host-stage.js` | 8 | the station, its air and its season (23); the model's ground (bicubic over its 1 km cells) (37); the ground's height (47); renderer, light, camera (68) |
 | `46-biome-neow-layout.js` | 7 |  |
-| `47-host-land.js` | 33 **big** | the near box and a coarse look at the ground (7); the springs' heat (core/terrain KTHERM, 47-core- (15); the caves' mouths (core/terrain KCARVE alcoves;  (31); the water: the tarn, the springs' pools, the sta (63); the fields (biomes/WORLD.md; BIOME-API.md) (83); the host binding (before the meshes: their paint (115); the library layers (or procedural without the pa (128); the ground material (one shader for the near and (154); the near ground: the baked field's own grid, one (228); the mid ground: the model's country to 20 km, th (271) |
+| `47-host-land.js` | 33 **big** | the near box and a coarse look at the ground (7); the springs' heat (core/terrain KTHERM, 47-core- (15); the caves' mouths (core/terrain KCARVE alcoves;  (31); the water: the tarn, the springs' pools, the sta (63); the fields (biomes/WORLD.md; BIOME-API.md) (83); the host binding (before the meshes: their paint (115); the library layers (or procedural without the pa (127); the ground material (one shader for the near and (153); the near ground: the baked field's own grid, one (227); the mid ground: the model's country to 20 km, th (270) |
 | `50-biome-neow-cauldron.js` | 11 | palettes (sRGB) (16); the species and the plants, tagged (20); textures (procedural, greyscale: the fallback wh (35); the tree fern's builder: (T, st, lv) with lv 2 n (57); the passes (data: zone, cell, acceptance by the  (71) |
 | `70-biome-neow.js` | 1 |  |
 | `89a-host-atmos.js` | 3 |  |
 | `89s-host-sky.js` | 4 |  |
 | `89w-host-water.js` | 5 | the water records (core/water): the tarn, the sp (10) |
 | `89z-host-build.js` | 7 | the air on everything drawn (once, after the bak (33) |
-| `99-host-take.js` | 16 | the inspector's words: a plant names its species (9); the probe's budgets and the kit's own checks (ve (22); the page, handed to the host (123) |
+| `99-host-take.js` | 17 | the inspector's words: a plant names its species (9); the probe's budgets and the kit's own checks (ve (22); the page, handed to the host (132) |
 | `99-tail.html` | <1 |  |
 
 ## stations/
@@ -49,7 +49,7 @@ Each station builds one page (`build.py --station <name>`) from its own fragment
 | Station | Fragments | KB |
 |---|---|---|
 | badlands | 44r-host-site-rec.js, 44s-host-site.js | 8 |
-| cave | 00-head.html, 44z-host-site.js, 44zs-host-station.js, 48-neow-cave.js, 49-host-stage.js, 84-host-rock.js, 85-host-crystals.js, 85b-host-speleo.js, 89x-host-air.js, 89z-host-build.js, 98u-host-eye.js, 98v-host-views.js, 99-host-take.js, 99-tail.html | 48 |
+| cave | 00-head.html, 44z-host-site.js, 44zs-host-station.js, 48-neow-cave.js, 49-host-stage.js, 84-host-rock.js, 85-host-crystals.js, 85b-host-speleo.js, 89x-host-air.js, 89z-host-build.js, 98u-host-eye.js, 98v-host-views.js, 99-host-take.js, 99-tail.html | 49 |
 | garnet | 44r-host-site-rec.js | 5 |
 | portal | 44r-host-site-rec.js, 44s-host-site.js | 6 |
 | shoulder | 44r-host-site-rec.js, 44s-host-site.js | 7 |

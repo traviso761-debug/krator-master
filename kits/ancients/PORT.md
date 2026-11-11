@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 360 (12%) | 39 (1%) | 176 (6%) | 48 (2%) | 2401 (79%) |
+| KB | 361 (12%) | 39 (1%) | 176 (6%) | 48 (2%) | 2401 (79%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -107,8 +107,8 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/8ae-wing.js` | 45.5 | [draw] | 38 | 8 | 0 | 0 | 0 | 11 | 2 | 0 | 0 | 0 | 0 |  |
 | `src/8af-drum.js` | 48.5 | [draw] | 33 | 3 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/8ag-blades.js` | 56.3 | [draw] | 60 | 9 | 0 | 0 | 0 | 25 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/8ah-engines.js` | 32.9 | [draw] | 27 | 0 | 0 | 0 | 0 | 13 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/8ai-engines2.js` | 19.3 | [draw] | 10 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/8ah-engines.js` | 33.7 | [draw] | 28 | 0 | 0 | 0 | 0 | 13 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/8ai-engines2.js` | 19.4 | [draw] | 10 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/8aj-alt-a-bole.js` | 15.2 | [draw] | 14 | 0 | 0 | 0 | 0 | 9 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/8aj-alt-b-stack.js` | 9.3 | [draw] | 6 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/8aj-alt-c-hotel.js` | 7.1 | [draw] | 3 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
@@ -186,8 +186,8 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `targets/drum/89z-rows.js` | 1.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/drum/91z-views.js` | 5.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/engines/89z-rows.js` | 2.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `targets/engines/8aj-engines3.js` | 30.1 | [draw] | 38 | 0 | 0 | 0 | 0 | 22 | 0 | 0 | 0 | 0 | 0 |  |
-| `targets/engines/91y-engine-checks.js` | 1.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `targets/engines/8aj-engines3.js` | 29.1 | [draw] | 36 | 0 | 0 | 0 | 0 | 22 | 0 | 0 | 0 | 0 | 0 |  |
+| `targets/engines/91y-engine-checks.js` | 1.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/engines/91z-views.js` | 3.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/forest/89z-rows.js` | 0.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/forest/91z-views.js` | 4.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |

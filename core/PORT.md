@@ -6,13 +6,13 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 2213 (48%) | 495 (11%) | 116 (3%) | 1090 (24%) | 717 (15%) |
+| KB | 2239 (47%) | 516 (11%) | 116 (2%) | 1107 (23%) | 739 (16%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
 | Fragment | KB | Tag | THREE | canvas | DOM | events | loop | geom | shader | inst | ray | store | net | Note |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| `anomaly/20-core-anomaly.js` | 16.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `anomaly/20-core-anomaly.js` | 16.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `anomaly/host/90-anomaly-walker.js` | 2.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `atmos/89-atmos-0-core.js` | 11.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 3 | 1 | 3 | 0 | 0 | 0 | the host passes dt (onFrame), view height and pixel ratio; becomes the Atmos autoload |
 | `atmos/89-atmos-0p-presets.js` | 7.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | presets: one .tres per preset |
@@ -34,18 +34,24 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `atmos/fx/89-atmos-fx-ashplume.js` | 13.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | opt-in: ATMOS.ashPlume, a volcanic plume (fog, under for airLoad ashAt, shade, deposit, KFAR sources); export/load for Godot; fx/test-ashplume.js |
 | `atmos/fx/89-atmos-fx-deckday.js` | 4.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | opt-in (subfolder): ATMOS.deckLevel (the cloud deck's level by the hour and weather), deckDay, deckIn, provideDeck (visibility in the cloud) |
 | `atmos/fx/89-atmos-fx-dustseason.js` | 2.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `atmos/fx/89-atmos-fx-gustsheen.js` | 3.6 | [G shader] | 0 | 0 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 |  |
 | `atmos/fx/89-atmos-fx-katabatic.js` | 3.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `atmos/fx/89-atmos-fx-lava.js` | 10.9 | [G shader] | 1 | 0 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 |  |
 | `atmos/fx/89-atmos-fx-lightning.js` | 6.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `atmos/fx/89-atmos-fx-localtime.js` | 11.1 | [draw] | 0 | 0 | 0 | 0 | 0 | 1 | 3 | 1 | 0 | 0 | 0 |  |
+| `atmos/fx/89-atmos-fx-localtime.js` | 12.9 | [draw] | 0 | 0 | 0 | 0 | 0 | 1 | 3 | 1 | 0 | 0 | 0 |  |
+| `atmos/fx/89-atmos-fx-plumes.js` | 8.2 | [draw] | 0 | 0 | 0 | 0 | 0 | 1 | 3 | 1 | 0 | 0 | 0 |  |
 | `atmos/fx/89-atmos-fx-radiation.js` | 15.0 | [G shader] | 0 | 0 | 0 | 0 | 0 | 2 | 12 | 0 | 0 | 0 | 0 |  |
 | `atmos/fx/89-atmos-fx-raincover.js` | 9.8 | [draw] | 0 | 0 | 0 | 0 | 0 | 1 | 2 | 2 | 0 | 0 | 0 |  |
 | `atmos/fx/89-atmos-fx-rainwall.js` | 8.0 | [G shader] | 0 | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 |  |
 | `atmos/fx/89-atmos-fx-shimmer.js` | 7.0 | [G shader] | 0 | 0 | 0 | 0 | 0 | 1 | 5 | 0 | 0 | 0 | 0 | opt-in (subfolder): ATMOS.shimmer, the heat shimmer post pass over a KTHERM bake (core/host o.draw), shimmerK its JS twin; a full-screen quad shader in Godot |
+| `atmos/fx/89-atmos-fx-slag.js` | 5.0 | [G shader] | 0 | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 |  |
 | `atmos/fx/89-atmos-fx-slopewind.js` | 16.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | opt-in: ATMOS.slopeWind, katabatic/anabatic/gap wind and cold pools on baked grids; attach to ATMOS.windAt, provide KHAZ temperature; fx/test-slopewind.js |
+| `atmos/fx/89-atmos-fx-sludge.js` | 11.2 | [G shader] | 0 | 0 | 0 | 0 | 0 | 1 | 8 | 0 | 0 | 0 | 0 |  |
 | `atmos/fx/89-atmos-fx-smokegroups.js` | 2.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | opt-in (subfolder): ATMOS.smokeGroups, one smoke cloud a group with its own strength (the gills' steam on the breath); Godot scales the group's GPUParticles3D alpha |
 | `atmos/fx/89-atmos-fx-snowcover.js` | 11.0 | [G shader] | 0 | 0 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 |  |
-| `atmos/fxdemo/src/10-demo.js` | 9.5 | [web] | 0 | 0 | 4 | 1 | 3 | 9 | 0 | 0 | 0 | 0 | 0 |  |
+| `atmos/fx/89-atmos-fx-sparks.js` | 11.8 | [draw] | 0 | 0 | 0 | 0 | 0 | 2 | 6 | 2 | 0 | 0 | 0 |  |
+| `atmos/fx/89-atmos-fx-spill.js` | 5.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `atmos/fxdemo/src/10-demo.js` | 16.6 | [web] | 0 | 0 | 4 | 1 | 3 | 22 | 0 | 1 | 0 | 0 | 0 |  |
 | `atmos/host/89-atmos-c-hostbind.js` | 3.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `atmos/host/89-atmos-e-weatherhost.js` | 6.7 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `atmos/host/89-atmos-h-skyhost.js` | 22.2 | [G native] | 0 | 0 | 0 | 0 | 1 | 1 | 8 | 0 | 0 | 0 | 0 | the sky as a three.js background pass driving the page light; Godot: the Sky material and krator/sky.gd |
@@ -106,7 +112,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `audio/tools/verify_soundtrack_build.js` | 2.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `biome/10-core-head.js` | 12.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | its rng already equals KRAND.stream (test-rand.js); its sin-based h3/vnoise/fbm move to core/rand in the biome reseeding event |
 | `biome/20-core-kit.js` | 80.5 | [draw] | 1 | 0 | 0 | 0 | 0 | 4 | 3 | 15 | 0 | 0 | 0 | split: items and buckets on Float32 stores are data; the bake and LOD are three.js |
-| `biome/30-core-foliage.js` | 48.6 | [G shader] | 1 | 5 | 0 | 0 | 0 | 6 | 51 | 0 | 0 | 0 | 0 | foliage card, bark, wind: the shader library |
+| `biome/30-core-foliage.js` | 48.9 | [G shader] | 1 | 5 | 0 | 0 | 0 | 6 | 51 | 0 | 0 | 0 | 0 | foliage card, bark, wind: the shader library |
 | `biome/30s-core-season-flush.js` | 3.8 | [G shader] | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | opt-in: the copper flush (BIO.FLUSH, setFlush, bindFlush) wrapping BIO.foliageHook; Godot's is shaders/lib/season.gdshaderinc in foliage.gdshader (season_dry, season_flush globals) |
 | `biome/31-core-dither.js` | 3.6 | [G shader] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the hex-cell ground dither (BIO.DITHER GLSL, X4) and its JS twin ditherCell: ground.gdshader writes the same functions |
 | `biome/31b-core-leafset.js` | 8.8 | [G data] | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | leaves held by the stem: stems, stem-pivoted cards and sprays (geometry), BIO.leafOn/leafAlong placement on KRAND (plain maths) |
@@ -161,6 +167,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `door/20-core-glass.js` | 3.7 | [G native] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | KGLASS: the glass kinds as data (SPEC) for a StandardMaterial3D with alpha; material(THREE, kind) is the three.js side |
 | `door/30-core-door-leaf.js` | 8.5 | [draw] | 0 | 0 | 0 | 0 | 0 | 7 | 0 | 5 | 0 | 0 | 0 |  |
 | `door/90-core-door-host.js` | 4.9 | [web] | 1 | 0 | 4 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | KDOORHOST: pose a leaf (an instance or an Object3D), the frame tick, the E key and its tip |
+| `drawn/10-core-drawn.js` | 7.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `edits/40-core-edits.js` | 10.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the edit log (ADD, MOVE, SET, REMOVE): no three.js, no DOM |
 | `engine/10-core.js` | 3.4 | [web] | 0 | 0 | 2 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `engine/27-mat.js` | 6.4 | [G shader] | 12 | 0 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 |  |
@@ -188,6 +195,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `hamlet/16-hamlet-names.js` | 5.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `hamlet/18-hamlet-names.js` | 1.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `hamlet/20-hamlet-cultures.js` | 5.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `hamlet/21-hamlet-iziz.js` | 2.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `hamlet/30-hamlet-village.js` | 25.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 | the village generator: plain records; its "geom" hits are its own box and rectangle maths, no three.js |
 | `hamlet/32-hamlet-platform.js` | 35.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 14 | 0 | 0 | 0 | 0 | 0 |  |
 | `hamlet/34-hamlet-trade.js` | 14.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
@@ -338,19 +346,19 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `world/41-world-fields.js` | 40.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `world/42-world-roads.js` | 11.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `world/45-world-host.js` | 5.1 | [web] | 9 | 0 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `world/48s-world-sites.js` | 8.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `world/48s-world-sites.js` | 19.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `world/80-world-sky.js` | 9.1 | [G native] | 15 | 1 | 0 | 0 | 0 | 3 | 12 | 0 | 0 | 0 | 0 | shader hook inside |
 | `world/81-world-terrain.js` | 11.8 | [web] | 10 | 1 | 0 | 0 | 3 | 2 | 5 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `world/83-world-water.js` | 2.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `world/83w-world-seas.js` | 3.9 | [web] | 2 | 0 | 0 | 0 | 3 | 0 | 1 | 0 | 0 | 0 | 0 |  |
 | `world/84-world-nursery.js` | 13.0 | [web] | 8 | 0 | 0 | 0 | 6 | 1 | 10 | 0 | 0 | 0 | 0 |  |
-| `world/85-world-flora.js` | 13.5 | [web] | 4 | 0 | 0 | 0 | 5 | 2 | 0 | 4 | 0 | 0 | 0 |  |
+| `world/85-world-flora.js` | 13.8 | [web] | 4 | 0 | 0 | 0 | 5 | 2 | 0 | 4 | 0 | 0 | 0 |  |
 | `world/86-world-floor.js` | 6.0 | [web] | 5 | 0 | 0 | 0 | 5 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `world/87-world-places.js` | 2.7 | [web] | 6 | 0 | 5 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `world/88-world-towns.js` | 9.0 | [web] | 20 | 0 | 0 | 0 | 2 | 2 | 0 | 3 | 0 | 0 | 2 |  |
-| `world/88s-world-sites.js` | 10.3 | [web] | 11 | 0 | 0 | 0 | 2 | 1 | 0 | 3 | 0 | 0 | 0 |  |
+| `world/88s-world-sites.js` | 20.0 | [web] | 26 | 0 | 0 | 0 | 2 | 5 | 0 | 5 | 0 | 0 | 0 |  |
 | `world/90-world-camera.js` | 13.5 | [web] | 3 | 3 | 7 | 14 | 0 | 1 | 0 | 0 | 2 | 0 | 0 |  |
-| `world/91-world-probe.js` | 12.1 | [web] | 0 | 0 | 1 | 0 | 3 | 6 | 0 | 0 | 0 | 0 | 0 |  |
+| `world/91-world-probe.js` | 12.5 | [web] | 0 | 0 | 1 | 0 | 3 | 6 | 0 | 0 | 0 | 0 | 0 |  |
 | `world/98-world-start.js` | 6.4 | [web] | 0 | 1 | 2 | 0 | 5 | 0 | 0 | 0 | 0 | 0 | 1 |  |
 
 ## Notes

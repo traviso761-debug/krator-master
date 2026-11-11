@@ -40,7 +40,7 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `89a-host-atmos.js` | 2 |  |
 | `89b-host-plume.js` | 3 |  |
 | `89w-host-water.js` | 3 |  |
-| `89z-host-build.js` | 8 |  |
+| `89z-host-build.js` | 9 |  |
 | `99-host-take.js` | 16 |  |
 | `99-tail.html` | <1 |  |
 

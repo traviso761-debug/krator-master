@@ -6,7 +6,7 @@ The rift rim: the high country round the Rift, three biomes on one kit (RRIM.bio
 
 Docs: `BIOME-API.md`, `KNOWN_ISSUES.md`, `PLAN.md`, `PORT.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/riftrim-barrens.html`, `dist/riftrim-gorge.html`, `dist/riftrim-hearths.html`, `dist/riftrim-ice.html`, `dist/riftrim-lakes.html`, `dist/riftrim-pass.html`, `dist/riftrim.html`
+Built output (never open it; edit `src/` and rebuild): `dist/riftrim-barrens.html`, `dist/riftrim-fowlers.html`, `dist/riftrim-gorge.html`, `dist/riftrim-hearths.html`, `dist/riftrim-ice.html`, `dist/riftrim-icecut.html`, `dist/riftrim-lakes.html`, `dist/riftrim-pass.html`, `dist/riftrim.html`
 
 Build: `cd biomes/riftrim && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -53,9 +53,11 @@ Each station builds one page (`build.py --station <name>`) from its own fragment
 | Station | Fragments | KB |
 |---|---|---|
 | barrens | 44w-host-land.js | 5 |
+| fowlers | 44w-host-land.js, 84f-host-fellgang.js, 89b-host-fowlers.js | 26 |
 | gorge | 44w-host-land.js | 8 |
 | hearths | 44w-host-land.js, 89b-host-hearths.js | 18 |
 | ice | 44w-host-land.js | 6 |
+| icecut | 44w-host-land.js, 89b-host-icecut.js | 17 |
 | lakes | 44w-host-land.js | 8 |
 | ledge | 44w-host-land.js | 9 |
 | pass | 44w-host-land.js | 6 |

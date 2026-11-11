@@ -64,5 +64,5 @@ Each target adds its own fragments to `src/` and builds one output.
 
 | Target | Fragments | KB |
 |---|---|---|
-| `erewhon` | `83-er-data.js`, `84-er-geo.js`, `85-er-paint.js`, `86-bio-46-er-init.js`, `87-er-layout.js`, `88-er-place.js`, `89z-rows.js`, `90a-er-world.js`, `90b-er-build.js`, `91z-views.js`, `93-er-ui.js` | 316 |
+| `erewhon` | `83-er-data.js`, `84-er-geo.js`, `85-er-paint.js`, `86-bio-46-er-init.js`, `87-er-layout.js`, `88-er-place.js`, `89z-rows.js`, `90a-er-world.js`, `90b-er-build.js`, `91z-views.js`, `93-er-ui.js` | 318 |
 | `xanadu` | `89z-rows.js`, `90-xa-still.js`, `91z-views.js` | 3 |

@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 295 (45%) | 19 (3%) | 10 (1%) | 65 (10%) | 270 (41%) |
+| KB | 296 (45%) | 19 (3%) | 10 (1%) | 66 (10%) | 270 (41%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -50,12 +50,12 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `targets/erewhon/84-er-geo.js` | 10.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/erewhon/85-er-paint.js` | 5.7 | [draw] | 0 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | canvas painters: TEX.def or bake |
 | `targets/erewhon/86-bio-46-er-init.js` | 1.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `targets/erewhon/87-er-layout.js` | 34.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `targets/erewhon/87-er-layout.js` | 35.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `targets/erewhon/88-er-place.js` | 6.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `targets/erewhon/89z-rows.js` | 0.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/erewhon/90a-er-world.js` | 8.3 | [web] | 7 | 1 | 0 | 0 | 2 | 4 | 0 | 0 | 0 | 0 | 0 |  |
-| `targets/erewhon/90b-er-build.js` | 32.3 | [web] | 7 | 0 | 0 | 0 | 2 | 3 | 0 | 0 | 0 | 0 | 0 |  |
-| `targets/erewhon/91z-views.js` | 5.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `targets/erewhon/90b-er-build.js` | 32.9 | [web] | 7 | 0 | 0 | 0 | 2 | 3 | 0 | 0 | 0 | 0 | 0 |  |
+| `targets/erewhon/91z-views.js` | 5.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/erewhon/93-er-ui.js` | 3.0 | [web] | 2 | 2 | 2 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `targets/xanadu/89z-rows.js` | 0.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/xanadu/90-xa-still.js` | 2.5 | [draw] | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | the kit's still water: WATER.still records (core/water, data) for every flat xWaterB box and xDiscWater disc, their InstancedMeshes on WATER.stillMaterial |

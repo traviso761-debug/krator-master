@@ -28,5 +28,5 @@ Each station builds one page (`build.py --station <name>`) from its own fragment
 
 | Station | Fragments | KB |
 |---|---|---|
-| highline | 45b-host-stage.js, 56-biome-scablands-highline.js, 87w-host-wrack.js, 99-host-take.js | 29 |
+| highline | 45b-host-stage.js, 56-biome-scablands-highline.js, 87h-host-hulks.js, 87w-host-wrack.js, 99-host-take.js | 38 |
 | highline-nw | 45-host-stage.js, 83-host-far.js, 86-host-fields.js, 88-host-build.js, 89-host-sky.js, 89a-host-atmos.js, 89w-host-water.js, 99-host-take.js | 54 |

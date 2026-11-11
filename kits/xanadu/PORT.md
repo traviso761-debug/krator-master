@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 220 (49%) | 0 (0%) | 0 (0%) | 36 (8%) | 194 (43%) |
+| KB | 244 (52%) | 0 (0%) | 0 (0%) | 36 (8%) | 194 (41%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -28,6 +28,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/78l-xa-moorish-data.js` | 4.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | XMOOR: the citadel's arch outlines, muqarnas cells, star ceilings, barrel section as plain numbers (Godot builds from them) |
 | `src/78m-xa-moorish.js` | 16.3 | [draw] | 10 | 0 | 0 | 0 | 0 | 15 | 0 | 0 | 0 | 0 | 0 | the Moorish and Mughal materials, geometry items and helpers (arch heads, muqarnas, star ceilings, vaults, jali, iwan, water) |
 | `src/78n-xa-citadel.js` | 35.7 | [web] | 0 | 0 | 1 | 0 | 0 | 9 | 0 | 0 | 0 | 0 | 0 | the citadel's builders: walls, floors, doors and stairs drawn from the interior set's rooms (sets/xanadu-citadel.js); window._citadel |
+| `src/78o-xa-golden-way.js` | 24.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/79-xa-guild.js` | 17.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/80-xa-military.js` | 15.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/81-xa-public.js` | 11.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
