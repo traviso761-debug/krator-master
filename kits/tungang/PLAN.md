@@ -517,6 +517,62 @@ Ice-cutters' stations swap stand-ins for the kit's defs without a layout change 
 | Wildcat (section 1.3.1) | `fg-wc-block` (a stepped room block, two to four storeys, drystone and plate, no ground door, roof hatches, glyptodont-shell and turf roofs), `fg-wc-ladder` (pulled up at night), `fg-wc-round-room` (the Kimr's round room as the meeting hall, its roof the Boast's stand), `fg-wc-crest` (aurochs skulls on the parapet), `fg-wc-court` (the walled court and pen), `fg-wc-stockade` (scrap and stakes round the knoll's foot), `fg-wc-deeds-wall` (the Deeds: boasts and their outcomes painted and tallied) |
 | The fells | `fg-shieling` (a summer hut on the High Rift), `fg-cairn`, `fg-stone-sign` (Firebliss's "Fellgang stone signs") |
 
+### 3.3.1 Replacing riftrim's stand-ins (stations 8 and 9)
+
+The rift rim session has built both villages on its stand-ins: **the Fowlers** (`--station fowlers`, 5.1 px 571,1397; commit
+7cb179603 on `claude/rift-hearths-cavern-b8baf6`, GPU-verified: 27 buildings, 104 people, 21 families' ropes, 93 nests) and
+**the Ice-cutters** (`--station icecut`, 470,1521; in the GPU queue). Both are `KHAMLET.village` on the Fellgang row of
+`stations/fowlers/84f-host-fellgang.js` (`FELLGANG.ROW`, `FELLGANG.BOX`), drawn by `FELLGANG.draw` as untextured boxes:
+drystone under gabled turf (`house`), round stores (`round`), open sheds (`shed`), pens (`pen`), turf barrows (`barrow`).
+
+**The contract the kit keeps**, so the stations swap without a layout change:
+
+- **The same keys and the same boxes.** Every def below answers to its `fg-*` key with the stand-in's `w`, `d` and `h`
+  (`verify.py` asserts the measured box within 0.5 m of it), so `KHAMLET.village` lays out the same village.
+- **The same frame.** Origin at the footprint's centre, the door on +z toward the lane (core/hamlet's records face their
+  lane), seated as the stand-ins are: the floor at the footprint's highest corner, and a **drystone plinth** carried down
+  to the lowest corner (the stand-in's `lo`), so a house on the bench's slope stands on a stepped footing, not in the air.
+- **The station keeps its records.** It registers every record in `core/tags` before drawing (as now); it then calls the
+  kit's `TG.fg.draw(V, o)` with the arguments `FELLGANG.draw` takes today, and the kit adds each building's parts
+  (rooms, furniture) under the record. One line changes in each station's `89b` (and `84f`'s `draw` retires).
+- **The row moves to `core/hamlet`** as the `fellgang` profile, with `fowling` and `ice` focuses (riftrim's
+  `KNOWN_ISSUES.md` names them as owed); until it does, the kit reads `FELLGANG.ROW` as it is, `ranch` and `quarry`
+  standing for fowling and ice.
+
+**The buildings** (*proposed* forms; every one drystone of the rim's stone under turf on bell-fir poles, salvage lashed
+on, a slogan somewhere: section 1.3):
+
+| Stand-in key | Box (w x d x h m), form | The kit's def | What it becomes |
+|---|---|---|---|
+| `fg-hut` | 6 x 5 x 4.2, house | `fg-hut` | a one-room hut: drystone walls 0.7 m thick, a turf roof on bell-fir poles, a door of Ancient plate on cable hinges, the hearth under a smoke hole; poor |
+| `fg-house` | 9 x 6 x 4.8, house | `fg-house` | two hearths, a cross wall, a box bed in the wall's thickness, a store loft; the family's slogan over the door |
+| `fg-longhouse` | 15 x 6.5 x 5.2, house | `fg-longhouse` | house and byre under one roof, **the byre at the low end** (the def reads the footing's fall and puts the byre down-slope), a drain through the gable |
+| `fg-headhouse` | 13 x 8 x 5.8, house | `fg-headhouse` | the head's house (the village's elected head, not a steward: section 1.3): two rooms and a porch where the head hears complaints |
+| `fg-meethall` | 18 x 10 x 7, house | `fg-meethall` | **the one large room**: benches down both walls, the fire down the middle; the Fowlers' **rope wall** (a peg for each family, its coil hung on it, an empty peg where a family lost its rope) or the Ice-cutters' **tally board** on the end wall, by a `variant` the station passes (`fowlers` or `icecut`); a scrap-plate porch |
+| `fg-cairnhall` | 7 x 7 x 6, round | `fg-cairnhall` | a corbelled drystone round house; inside, the dead's names scratched on slate tallies hung in rows (no carving: section 11); the old rules said aloud from its step |
+| `fg-store` | 8 x 6 x 4.5, house | `fg-store` | the general store: shelves, sacks, the trade goods (grain, cloth, metal bought with eggs or ice) |
+| `fg-smokehouse` | 6 x 5 x 4.5, house | `fg-smokehouse` | a louvred turf ridge, racks of fowl and fish, a peat smudge |
+| `fg-barn` | 12 x 7 x 5.5, house | `fg-barn` | hay and peat, the herd's winter feed, a threshing floor |
+| `fg-ropehouse` | 20 x 5 x 4, shed | `fg-ropehouse` | **the rope walk**: a long open shed, the twisting posts, lobe-larch bark cordage laid up and Ancient cable spliced in, every family's spare coil on its own peg |
+| `fg-eggstore` | 6 x 6 x 4.5, round | `fg-eggstore` | a cool corbelled store, half sunk: egg racks in ash, honey crocks, the herb bundles hung |
+| `fg-pens` | 14 x 12 x 1.4, pen | `fg-pens` | drystone pens with a gate of plate and stakes, a shelter wall |
+| `fg-icehouse` | 12 x 9 x 4.5, barrow | `fg-icehouse` | a turf barrow over a corbelled stone vault, a stone door frame faced with salvage plate; inside (cut-away) the blocks packed in sawdust and snow, the reckoning chalked by the door |
+| `fg-sledgeshed` | 16 x 7 x 4.2, shed | `fg-sledgeshed` | an open shed, the sledges racked (catalog `fellgang_common_ice_sledge`), runners from tyres, paint pots |
+
+**The records that are not buildings** (each drawn by the kit from the station's own record, the station placing them):
+
+| Station record | Today | The kit's piece |
+|---|---|---|
+| `fowlers:rope:i` (one per household: `pts` up the fall line, `y0`, `top`) | a 5 cm ribbon, pegs every 25 m, a ladder up the first 18 m | `fg-fixed-line`: the rope (Ancient cable at the foot, bark cordage above), iron pegs and rope-ends, the ladder, **the family's mark** painted at the foot and at each peg (so the rope reads as a claim); optional `fg-wall-station`s (a pegged ledge with a lift cage or a plate shelter) where the rope passes a flat |
+| `fowlers:nest:...` | a stick cup and eggs | stays the station's (the nests are the flyers', `kits/fauna`); the kit adds `fg-nest-ledge` gear beside some: a basket on a line, a plank bridged to the ledge |
+| the Fowlers' dead on the wall's ledges (canon, not yet placed) | none | `fg-burial-ledge`, placed by the station on its high ledges |
+| `icecut:stack:i` | pale blue blocks | stays the station's (the blocks are water); the kit adds the cutters' saws, pike poles and tongs leaned on it |
+| `icecut:sledge:i` | (the station's) | the catalog's `fellgang_common_ice_sledge` |
+| `icecut:lamp:i` (every 60 m up the ice road) | (the station's) | `fg-lantern-post`: a lantern lobelia in a scrap housing on a bell-fir post, lit by night |
+
+These villages are surface work: they wait on neither the Line nor the cavern setting, so the Fellgang village defs can be
+built ahead of the Tungang set (question 27).
+
 ### 3.4 Glazier buildings (*proposed*)
 
 | Def | What |
@@ -992,6 +1048,9 @@ for Dhelv and the Zeijani too). Question 4 fell with question 2; question 9 move
     timetable of a train that never comes. Right? (They wait on `biomes/opalvalley`, a draft plan today.)
 26. **The High Rift's outpost**: the Order's (monks at the Singing Gjár's crystals), in Longsong's style, with a note to
     the High Rift and Longsong plans; not this kit's?
+27. **The Fellgang villages ahead of the order?** The Fowlers and the Ice-cutters are built on stand-ins and need neither the
+    Line nor the cavern setting: build the Fellgang village defs of section 3.3.1 (and the row's move into `core/hamlet`)
+    in parallel with the Line's biome, rather than after the Tungang set?
 
 ## 11. Rejected and parked ideas
 
