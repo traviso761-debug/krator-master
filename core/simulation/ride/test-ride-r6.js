@@ -76,6 +76,12 @@ const near=(p,P,r)=>Math.hypot(p.x-P.x,p.z-P.z)<=r;
  const p=S.pose(a,clock.t);
  ok('aboard it stays on the deck, and it arrives at the market',onDeck&&near(p,S.R.place.market,1),!near(p,S.R.place.market,1));
  ok('its boarding and alighting are inside the ferry\'s door windows',S.rideAudit().ok&&S.rideAudit().boards===1,false);
+ // the ferry's golden trace for Godot (kride_test.gd replays it with golden-ride.json): 80 times through the crossing, the
+ // alighting at the far stop included (where the track turns back on itself and the car takes the way ahead)
+ const MF=S.rideExportMotion({actors:[a],times:Array.from({length:80},(_,i)=>T.t0+i*(T.arrive-T.t0)/80-clock.t)});   /* never the arrival itself: a boundary's last bit */
+ const GOLD=path.join(__dirname,'golden-ride-ferry.json');
+ if(process.argv.includes('--write'))fs.writeFileSync(GOLD,JSON.stringify(MF));
+ else ok('the ferry\'s golden trace is unchanged (node test-ride-r6.js --write after a change meant to move it)',fs.existsSync(GOLD)&&fs.readFileSync(GOLD,'utf8')===JSON.stringify(MF),false);
  let threw=false;try{S.transport({id:'excl',layer:'water',stops:['pierA','pierB'],exclusive:true});S.transportBake('excl');S.rideFromTransport('excl',{car:deck});}catch(e){threw=/exclusive/.test(e.message);}
  ok('an exclusive route (a day laid out by events) is refused, not half-converted',threw,false);}
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);

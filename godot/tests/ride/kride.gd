@@ -61,6 +61,11 @@ static func car_pose(S: Dictionary, k: int, t: float) -> Dictionary:
 	var dz: float = F["z"] - R["z"]
 	var dy: float = F["y"] - R["y"]
 	var L := sqrt(dx * dx + dz * dz)
+	if L < 0.25 * float(C["b"]):   # the bogies on one spot (a track that turns back on itself: a ferry's far stop): the way ahead
+		dx = F["tx"]
+		dz = F["tz"]
+		dy = 0.0
+		L = 1.0
 	return {"x": (F["x"] + R["x"]) / 2.0, "y": (F["y"] + R["y"]) / 2.0, "z": (F["z"] + R["z"]) / 2.0,
 		"yaw": atan2(dx, dz), "pitch": atan2(dy, L) if L > 0.0 else 0.0, "roll": 0.0}
 

@@ -337,6 +337,23 @@ with `ride: true` reach work past the gap by train, inside the door windows (a r
 a short trip is walked; a ferry's ride-source pose follows `SIM.vehiclePose` to within half a metre and stands at its
 stops through its dwells; a journey crosses the water on the ferry.
 
+**Built (2026-11-11, commits from eaa8a9b7c).** `80-sim-ride-line.js`, `81-sim-ride-choose.js`, `SIM.rideFromTransport`
+and `SIM.rideBake` in 78; `test-ride-cargo.js` (15 checks) and `test-ride-r6.js` (15); the lab runs the lojes as books
+and 16 shift workers sent by the resolver; `kride_test.gd` replays a ferry's golden too (`golden-ride-ferry.json`).
+What building it taught:
+- **The through-demand must be a net deficit.** Counting every use beyond a hop asked the producing side to send its
+  good back; and SIM.trade's `keep` (1 day) under its `want` (3 days) made a producer send everything, fall short and buy
+  it back, so 200,000 grain went each way over the north hop in four days. Fixed: `expect` is the use less the making
+  beyond a hop (floored at 0), and a good goes one way a hop (the route's `goods`, toward the side whose deficit asks).
+- **It matters only where the gap is the bottleneck.** With porters leaving three times a day, plain hop-by-hop want
+  kept Twenny fed (the south train drained the south gap loj quickly); with porters leaving once a day (the Line's real
+  gap walks take one to four hours), only the through-demand keeps it fed: each trip then goes full. The lab's porters
+  rest four hours at each end; the cargo test's negative runs them at once a day.
+- **The porters' first look** (stand the crew at its stop) ran again after every arrival, clearing the crew's walk: an
+  R3 bug, fixed (a flag set once).
+- **A ferry's track turns back on itself** at an out-and-back route's far stop, where the two bogie points meet: the car
+  takes the way ahead there (`SIM.rideCarPose` and `KRide.car_pose`), as `SIM.vehiclePose` does.
+
 ## 9. Questions for the owner
 
 1. **Where it lives**: as opt-in extensions in subfolders of the modules that exist (`core/walk/frame`,

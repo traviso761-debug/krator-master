@@ -48,9 +48,9 @@ RL.L.sources.forEach(S=>S.cars.forEach(C=>{const g=new THREE.Group();g.name=S.id
     leaves[D.id]={l,r,z:D.at[2],open:0};});
   scene.add(g);LAB.cars.push({src:S.id,k:C.k,g,roof,leaves});}));
 /* the people: travellers in ochre, porters in rust, a crate on a porter's back while the carrier is on its way */
-LAB.ids=RL.people.map(a=>a.id).concat(RL.L.porters.crew);
+LAB.ids=RL.people.map(a=>a.id).concat(RL.shift.map(a=>a.id),RL.L.porters.crew);
 LAB.fig=new THREE.InstancedMesh(new THREE.CylinderGeometry(0.22,0.26,1.6,8).translate(0,0.8,0),mat(0xffffff),LAB.ids.length);LAB.fig.name='people';
-{const col=new THREE.Color();LAB.ids.forEach((id,i)=>LAB.fig.setColorAt(i,col.set(id.indexOf('porter')===0?0xb4552e:0xe0b050)));}
+{const col=new THREE.Color();LAB.ids.forEach((id,i)=>LAB.fig.setColorAt(i,col.set(id.indexOf('porter')>=0?0xb4552e:id.indexOf('shift')===0?0x5a9ad8:0xe0b050)));}
 LAB.crate=new THREE.InstancedMesh(new THREE.BoxGeometry(0.6,0.5,0.5),mat(0x9a7a4a),RL.L.porters.crew.length);LAB.crate.name='crates';
 scene.add(LAB.fig,LAB.crate);
 const labM=new THREE.Matrix4(),labQ=new THREE.Quaternion(),labE=new THREE.Euler(),labV=new THREE.Vector3(),labS=new THREE.Vector3(1,1,1),labSit=new THREE.Vector3(1,0.7,1);

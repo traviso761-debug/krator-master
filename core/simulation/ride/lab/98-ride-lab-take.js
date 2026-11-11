@@ -14,7 +14,7 @@ const LABH=KHOST.take({
   const tr=RL.L.sources.map(S=>{const d=SIM.rideDwellAt(S.id,t);return S.id+': '+(d?'at '+d.stop+(d.open?' (doors open)':''):'running');}).join('\n');
   const goods=Object.keys(rep).map(id=>id+': '+rep[id].carriers.map(C=>C.phase+(C.cargo.length?' '+C.cargo.map(c=>c.good+' '+c.n).join(', '):'')).join('; ')).join('\n');
   return tr+'\n'+goods+'\ntravellers on journeys: '+aboard+', journeys '+RL.journeys+(RL.failed?' ('+RL.failed+' waited)':'')+'\ndoor windows kept: '+(A.ok?'yes':'NO')+'\nyou: '+(R.aboard?'aboard '+R.aboard+(R.sitting!=null?', seated':''):'on foot');},
- legend:[['#e0b050','a traveller'],['#b4552e','a porter (a crate: carrying)']],
+ legend:[['#e0b050','a traveller'],['#5a9ad8','a shift worker (chooses the train)'],['#b4552e','a porter (a crate: carrying)']],
 });
 RLRIDE=KHOST.ride(LABH,{walk:KWALK,t:()=>LABCLOCK.t,seats:()=>RIDELAB.CAR.seats});
 LABH.on(function rideLab(dt,clock){RL.tick(clock.t);},'tick');
@@ -32,12 +32,16 @@ const RLAPI={
  audit:()=>{const A=SIM.rideAudit();return {ok:A.ok,boards:A.boards,alights:A.alights,outside:A.outside.length,over:A.over.length,journeys:RL.journeys,failed:RL.failed};},
  /* every rider in a frame leg now stands on its own car's floor (the walk side, posed by the same function) */
  onFloors(lift){const t=LABCLOCK.t;let n=0,miss=0,worst=0;KWALKFRAME.at(KWALK,t);
-  RL.people.forEach(a=>{const p=SIM.pose(a,t);if(!p.frame)return;n++;const f=KWALK.floorBelow(p.x,p.z,p.y+(lift||0),0.6),fr=RL.L.frames.find(q=>q.src===p.frame.source&&q.k===p.frame.k).F;
+  RL.people.concat(RL.shift).forEach(a=>{const p=SIM.pose(a,t);if(!p.frame)return;n++;const f=KWALK.floorBelow(p.x,p.z,p.y+(lift||0),0.6),fr=RL.L.frames.find(q=>q.src===p.frame.source&&q.k===p.frame.k).F;
    if(!f||f[1].frame!==fr)miss++;else worst=Math.max(worst,Math.abs(f[0]-p.y-(lift||0)));});return {n,miss,worst};},
- cargo(){const led=SIM.ledger(RL.snap0,SIM.ledgerSnap()),r=id=>SIM.TRADE.routes[id].landed;
+ cargo(){const led=SIM.ledger(RL.snap0,SIM.ledgerSnap()),r=k=>RL.L.routes[k].landed;
   return {ledger:led.ok,problems:led.problems.slice(0,3),twennyGrain:SIM.econ('twenny').imported.grain||0,ledgeWax:SIM.econ('ledge').imported.wax||0,
-   north:(r('rail.n')['ledge>gapn']||{}).grain||0,porters:(r('gap.porters')['gapn>gaps']||{}).grain||0,south:(r('rail.s')['gaps>twenny']||{}).grain||0,trips:RL.L.porters.trips};},
- porters(){const C=SIM.TRADE.routes['gap.porters'].carriers[0],a=SIM.R.actor[RL.L.porters.crew[0]],p=SIM.pose(a,LABCLOCK.t+0.5);return {phase:C.phase,moving:p.moving};},
+   north:(r('north')['ledge>gapn']||{}).grain||0,porters:(r('porters')['gapn>gaps']||{}).grain||0,south:(r('south')['gaps>twenny']||{}).grain||0,trips:RL.L.porters.trips,
+   back:((r('north')['gapn>ledge']||{}).grain||0)+((r('porters')['gaps>gapn']||{}).grain||0)+((r('south')['twenny>gaps']||{}).grain||0),made:RL.L.economy.made};},
+ porters(){const C=RL.L.routes.porters.carriers[0],a=SIM.R.actor[RL.L.porters.crew[0]],p=SIM.pose(a,LABCLOCK.t+0.5);return {phase:C.phase,moving:p.moving};},
+ /* the shift workers: each journey by train their own decision (no script sends them) */
+ shift(){const j=SIM.LOG.filter(e=>e.kind==='journey'&&/^shift/.test(e.actor)&&e.rides>0),by={};j.forEach(e=>{by[e.actor]=(by[e.actor]||0)+1;});
+  return {n:RL.shift.length,rode:Object.keys(by).length,journeys:j.length,chosen:SIM.rideChosen,driven:RL.shift.filter(a=>a.driven&&a.driven!=='ride').length};},
  exportMotion(){return SIM.rideExportMotion({actors:RL.people.slice(0,8)});},
 };
 window._api=window._api||{};window._api.lab=RLAPI;

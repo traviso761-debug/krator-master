@@ -166,6 +166,12 @@ it arrives. Occupancy is counted per run and car; `SIM.RIDE.log` holds every doo
 against the door windows and the room. `SIM.vehiclePose` answers a ride source, so `SIM.trade({line: <source>})` carries
 goods on a train; `SIM.porters({route, crew})` walks a crew in step with a timer route's carrier (a gap between two
 segments). `SIM.rideExportMotion` is `SIM.exportMotion` with each leg's frame and the sources (`ride/kride.gd` replays it).
+R6 (PLAN-RIDING.md section 8c): `SIM.lineEconomy({id, goods, lojes: [{id, stop, pop, makes, uses, stock}], links: [{from, to,
+rail | porters}]})` (`ride/80-sim-ride-line.js`) declares a line's settlements as books only (a store at each station, making
+and using by the hour from the population, no actors), its routes on the trains and porters, and the through-demand (each
+hop's `expect` = the net deficit beyond it, each good one way a hop); a role or actor with `ride: true` takes the train when
+the resolver's walk is impossible or slower (`ride/81-sim-ride-choose.js` wraps `SIM.plan`); `SIM.rideFromTransport(route,
+{car, stops})` turns a non-exclusive `SIM.transport` into one ride source a vessel.
 
 ## Settlements and their economies (P7a, 2026-10-19)
 

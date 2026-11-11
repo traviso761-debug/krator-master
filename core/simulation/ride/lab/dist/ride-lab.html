@@ -4367,6 +4367,9 @@ root.KCOLOR=C;
 //   SIM.rideRuns(id, t0, t1) -> [{id, src, g, from, to, dep:[o0, o1], arr:[o0, o1]}]   every hop between two dwells departing
 //        in [t0, t1]: the unit capacity is counted in
 //   SIM.rideDoorOpen(id, k, doorId, t) -> bool
+//   SIM.rideFromTransport(routeId, {car:{b, cap, seats, stand, doors}, stops:{id:{wait, side, gap}}, stepSec}) -> [sources]
+//        a SIM.transport route (baked, not exclusive) as one ride source a vehicle, id '<route>#<k>': a ferry or a ship's deck
+//        carries riders as a train's car does; its pose follows SIM.vehiclePose (the track is its legs joined)
 //   SIM.vehiclePose(id, k, t)           answers a ride source's id too: car k's pose, h its yaw, `at` the stop's place through
 //        a dwell (so SIM.trade({line: id}) carries goods on a train: PLAN-RIDING.md section 5)
 //   SIM.rideFootpath({from, to, pts:[[x,y,z]...]})   a recorded walk between two stops (a gap's walk on the Line's record,
@@ -4374,6 +4377,8 @@ root.KCOLOR=C;
 //   SIM.journeyPlan(from:{x,y,z}, to:{x,y,z}, t, opt) -> {arrive, steps:[{kind:'walk'|'ride', ...}]} | null
 //        a connection scan over every source's runs (earliest arrival; with fewer rides on a tie); its walks are the nav's
 //        routes (opt.layer 'pedestrian', opt.speed), the walk between two stops (a gap) among them when under opt.maxWalk (2000 m)
+//   SIM.rideBake(a, {to, from?, t?, act?, speed?, layer?, plan?}) -> task | null   the journey's legs alone (seats taken, crossings
+//        logged), the actor untouched: the resolver's (81-sim-ride-choose.js)
 //   SIM.journey(a, {to: place id | {x,y,z}, t?, act?, speed?, hold?}) -> task | null
 //        plans and bakes the actor's legs: walk to the platform, wait, board inside the door window, walk to a seat (or a
 //        standing place) in the car's frame, ride, walk to the door when the stop's window opens, alight, walk on (a gap is
@@ -4433,6 +4438,7 @@ root.KCOLOR=C;
   function carPose(S, k, t){
     var C=S.cars[k], s=S.TL.at(t).value-C.off, F=SIM.at(S.track, s+C.b), R=SIM.at(S.track, s-C.b);
     var dx=F.x-R.x, dz=F.z-R.z, dy=F.y-R.y, L=Math.hypot(dx, dz);
+    if(L<0.25*C.b){ dx=F.tx; dz=F.tz; dy=0; L=1; }   /* the bogies on one spot (a track that turns back on itself: a ferry's far stop): the way ahead */
     return { x:(F.x+R.x)/2, y:(F.y+R.y)/2, z:(F.z+R.z)/2, yaw:Math.atan2(dx, dz), pitch:L>0 ? Math.atan2(dy, L) : 0, roll:0 };
   }
   SIM.rideCarPose = function(id, k, t){ return carPose(src(id), k, t); };
@@ -4454,6 +4460,33 @@ root.KCOLOR=C;
   function doorOn(side, dside){ return dside===0 || side===dside; }
   SIM.rideDoorOpen = function(id, k, doorId, t){ var S=src(id), d=SIM.rideDwellAt(id, t); if(!d || !d.open) return false;
     var D=S.cars[k].doors.filter(function(x){ return x.id===doorId; })[0]; return !!D && doorOn(D.side, d.side); };
+
+  /* a SIM.transport route as ride sources, one a vehicle: its legs joined into one track (padded at both ends so the car's
+     bogies stay on it), its segments into a KSCHED timeline of s along that track with the vehicle's phase; its stops'
+     dwells are the door windows (both sides, a ferry's deck). Not an `exclusive` route (its day is laid out by events) */
+  SIM.rideFromTransport = function(id, o){
+    var R=SIM.R.transport[id]; if(!R || !R.period) throw new Error('SIM.rideFromTransport: bake '+id+' first (SIM.transportBake)');
+    if(R.sched) throw new Error('SIM.rideFromTransport '+id+': an exclusive route (its day is laid out by events) is not supported');
+    o=o||{}; var car=o.car||{}, b=nz(car.b, 0.25), pad=b+0.5, pts=[], first=[];
+    R.legs.forEach(function(L){ var P=L.path.pts; first.push(pts.length ? pts.length-1 : 0);
+      for(var j=0;j<P.length;j++){ if(j===0 && pts.length){ var q=pts[pts.length-1]; if(Math.abs(q[0]-P[0][0])<1e-9 && Math.abs(q[2]-P[0][2])<1e-9) continue; first[first.length-1]=pts.length; }
+        pts.push([P[j][0], nz(P[j][1], 0), P[j][2]]); } });
+    function along(a, c, d){ var dx=c[0]-a[0], dz=c[2]-a[2], l=Math.hypot(dx, dz)||1; return [a[0]+dx/l*d, a[1], a[2]+dz/l*d]; }
+    pts.unshift(along(pts[0], pts[1], -pad)); pts.push(along(pts[pts.length-1], pts[pts.length-2], -pad));
+    var track=route(pts), legS=first.map(function(i){ return track.cum[i+1]; });
+    var legE=R.legs.map(function(L, i){ return i+1<legS.length ? legS[i+1] : track.len-pad; });
+    var segs=[], li=-1, stops={};
+    R.segments.forEach(function(g){
+      if(g[2]===g[3]){ var nx=Math.min(R.legs.length-1, li+1), st=String(g[2]); segs.push({ dur:g[0], from:legS[nx], name:'stop:'+st });
+        if(!stops[st]){ var Q=SIM.R.place[st], b0=Q ? (Q.pier || Q.door || Q) : null, own=(o.stops||{})[st]||{};
+          stops[st]={ place:st, side:nz(own.side, 0), gap:nz(own.gap, 0.10), wait:own.wait || (b0 ? [[b0.x, nz(b0.y, nz(Q.y, 0)), b0.z]] : []) }; } }
+      else { li++; segs.push({ dur:g[0], from:legS[li], to:legE[li], ease:'linear', name:'run' }); } });
+    var out=[];
+    for(var k=0;k<R.vehicles;k++) out.push(SIM.rideSource({ id:id+'#'+k, kind:o.kind||R.vehicleKind||'ferry', track:track, stops:stops, stepSec:o.stepSec,
+      doorLag:o.doorLag, doorClose:o.doorClose, timeline:{ period:R.period, phase:nz(R.phase, 0)+k*R.period/R.vehicles, segments:segs },
+      cars:[{ off:0, b:b, cap:car.cap, seats:car.seats, stand:car.stand, doors:car.doors, sealed:car.sealed }] }));
+    return out;
+  };
 
   /* SIM.vehiclePose answers a ride source's id (SIM.trade's line carriers read `at`) */
   var baseVP=SIM.vehiclePose;
@@ -4545,12 +4578,14 @@ root.KCOLOR=C;
   function holdLeg(p, dur, mode, fr, face){ var R=route([p, p]); var L={ route:R, speed:1, dur:Math.max(0, dur), mode:mode, layer:fr ? 'ride' : 'wait', face:nz(face, 0) }; if(fr) L.frame=fr; return L; }
   function nearestDoor(C, side, local){ var best=null, bd=1e300; C.doors.forEach(function(D){ if(!doorOn(D.side, side)) return;
       var d=Math.abs(D.at[2]-local[2]); if(d<bd){ bd=d; best=D; } }); return best; }
-  SIM.journey = function(a, o){
+  /* the legs of a journey from `from` (default: where the actor is) to a place's door or a point, its seats taken and its door
+     crossings logged; the actor's own fields are the caller's (SIM.journey, the resolver: 81-sim-ride-choose.js) */
+  SIM.rideBake = function(a, o){
     o=o||{}; var t=nz(o.t, SIM.time()), speed=nz(o.speed, a.speed||SIM.SPEED.walk), layer=o.layer||a.layer||'pedestrian';
-    var here=SIM.pose(a, t), from={ x:here.x, y:here.y, z:here.z }, P=typeof o.to==='string' ? SIM.R.place[o.to] : null;
+    var here=o.from||SIM.pose(a, t), from={ x:here.x, y:nz(here.y, 0), z:here.z }, P=typeof o.to==='string' ? SIM.R.place[o.to] : null;
     var to=P ? (P.door ? { x:P.door.x, y:nz(P.door.y, 0), z:P.door.z } : { x:P.x, y:nz(P.y, 0), z:P.z }) : o.to;
     if(!to) throw new Error('SIM.journey '+a.id+': unknown destination');
-    var plan=SIM.journeyPlan(from, to, t, { layer:layer, speed:speed, sources:o.sources });
+    var plan=o.plan||SIM.journeyPlan(from, to, t, { layer:layer, speed:speed, sources:o.sources });
     if(!plan){ SIM.logEvent('nojourney', { actor:a.id, to:P ? P.id : null }); return null; }
     var legs=[], cur=from, tau=t, ok=true, boards=[], held=[];
     function push(L){ legs.push(L); tau+=L.dur; }
@@ -4590,9 +4625,13 @@ root.KCOLOR=C;
     boards.forEach(function(b){ SIM.RIDE.log.push(b); }); if(SIM.RIDE.log.length>SIM.RIDE.LOG_MAX) SIM.RIDE.log.splice(0, SIM.RIDE.log.length-SIM.RIDE.LOG_MAX);
     var spot={ x:to.x, y:nz(to.y, 0), z:to.z }, task={ act:o.act||'TRAVEL', place:P ? P.id : null, t0:t, legs:legs, spot:spot, dur:tau-t, arrive:tau, indoor:false, wander:0,
       failed:false, ride:{ plan:plan, held:held } };
-    a.task=task; a.activity=task.act; a.driven='ride'; a.inVehicle=null; a.rideHold=!!o.hold; a.wake=null;
-    SIM.RIDE.riders[a.id]=true;
     SIM.logEvent('journey', { actor:a.id, to:task.place, rides:plan.rides, arrive:Math.round(tau) });
+    return task;
+  };
+  SIM.journey = function(a, o){
+    var task=SIM.rideBake(a, o); if(!task) return null;
+    a.task=task; a.activity=task.act; a.driven='ride'; a.inVehicle=null; a.rideHold=!!(o && o.hold); a.wake=null;
+    SIM.RIDE.riders[a.id]=true;
     return task;
   };
 
@@ -4616,7 +4655,8 @@ root.KCOLOR=C;
   SIM.rideStep = function(minute, t){
     var R=SIM.RIDE; Object.keys(R.riders).forEach(function(id){ var a=SIM.R.actor[id]; if(!a){ delete R.riders[id]; return; }
       var T=a.task; if(!T || !T.ride){ delete R.riders[id]; return; }
-      if(t>=T.arrive){ a.pos=SIM.pose(a, t); if(!a.rideHold){ a.driven=false; a.wanted=null; a.wake=null; } delete R.riders[id]; SIM.logEvent('arrived', { actor:a.id, place:T.place }); } });
+      if(t>=T.arrive){ a.pos=SIM.pose(a, t); if(T.ride.resolver){ a.driven=false; a.wake=null; }   /* the resolver's: it takes up what it decided (wanted kept) */
+        else if(!a.rideHold){ a.driven=false; a.wanted=null; a.wake=null; } delete R.riders[id]; SIM.logEvent('arrived', { actor:a.id, place:T.place }); } });
     if(minute%60===0) Object.keys(R.occ).forEach(function(rid){ var p=rid.lastIndexOf(':'), S=R.sources[rid.slice(0, p)]; if(!S) return;
       if(dwell(S, +rid.slice(p+1)+1).t1<t-3600) delete R.occ[rid]; });
   };
@@ -4699,12 +4739,148 @@ root.KCOLOR=C;
   SIM.portersStep = function(minute, t){
     SIM.PORTERS.list.forEach(function(P){ var R=SIM.TRADE.routes[P.route], C=R && R.carriers[P.carrier]; if(!C) return;
       if(C.phase==='sail' && P.phase!=='sail') bake(P, R, C, minute, t);
-      if(C.phase==='docked' && P.phase!=='docked' && P.at==null){   /* the first look: the crew stands at the carrier's stop */
+      if(C.phase==='docked' && !P.placed){   /* the first look only: the crew stands at the carrier's stop (after an arrival it stands where its walk ended) */
+        P.placed=true;
         var D=doorOf(R.stops[C.at].place); P.crew.forEach(function(id, i){ var a=SIM.R.actor[id]; a.task=null; a.pos={ x:D.x-i*P.spacing*0.7, y:D.y, z:D.z-1-i*0.3 }; }); }
       P.phase=C.phase; P.at=C.at; });
   };
   SIM.portersReport = function(){ var out={}; SIM.PORTERS.list.forEach(function(P){ var R=SIM.TRADE.routes[P.route], C=R.carriers[P.carrier];
       out[P.route]={ phase:C.phase, walking:C.phase==='sail', trips:P.trips, crew:P.crew.slice(), cargo:C.cargo.slice() }; }); return out; };
+})(typeof window!=='undefined'?window:globalThis);
+
+// ==================== simulation/ride/80-sim-ride-line.js
+// ================================================================= CORE — simulation ride: a line's lojes as books (abstract economy)
+// [G data] core/simulation/PLAN-RIDING.md section 8c (the owner, 2026-11-11: "we can have abstract economy for now until we
+// actually build the lojes"). Opt-in (listed after 78 and 79). Until a line's settlements are built (places, workers,
+// stores), each is BOOKS ONLY: a settlement (77-sim-6-economy.js) with an economy and one store at its station, making
+// goods and using them by the hour from its population, with no buildings and no actors. Its goods move on R3's carriers:
+// a SIM.trade route bound to each segment's train between two neighbouring stations, a porters' timer route across each
+// gap (walked by a crew when asked: 79-sim-ride-porters.js). The ledger (77-sim-7-ledger.js) reconciles every hop.
+//
+// THROUGH GOODS, with no new trade code: each hop's receiver is given `expect` (SIM.trade's floor on the receiver's want,
+// a day) = the net deficit of that loj and every loj beyond it on that side of the line (their use less what they make,
+// never below 0: a side that makes enough of a good asks none back), so a good made at one end is drawn hop by hop to the
+// lojes that use it, each loj on the way keeping `want` days of what lies beyond it and passing the
+// rest on (it sends what it holds over `keep` days of its own use). On each hop a good goes one way only, toward the side
+// whose net deficit asks for it (SIM.trade's `goods`), so it does not slosh to and fro. What this cannot say is who owns a load and where it
+// is bound: consignments wait until the lojes are built (PLAN-RIDING.md section 5).
+//
+//   SIM.lineEconomy({ id, faction:'tungang', goods:{good:{}}, lojes:[{id, stop: place id, pop, makes:{good: a day},
+//                     uses:{good: a person a day}, stock:{good: n}}] (in order along the line),
+//                     links:[{from, to, rail: ride source id} | {from, to, porters:{minutes | speed:0.8, crew?, layer?, stay?}}]
+//                     (each between two lojes next to each other in that order), cap:240, keep:1, want:3,
+//                     through:true, secPerMinute:60 }) -> L {id, lojes, routes:{linkKey: route}, porters:{linkKey: P}}
+//        through:false gives no expect (each hop serves only its receiver's own use: the check's negative)
+//   SIM.lineEconomyStep(minute)       the step hook (pushed before the ride hooks): each loj's hour of making and using
+//   SIM.lineEconomyReport(id) -> {lojes:{id:{pop, stock, made, used, short, imported, exported}}, start, made}
+//   L.start {good: n}, L.made {good: n}: what the lojes held at the start and have made since (conservation's terms)
+(function(root){
+  'use strict';
+  var SIM = root.SIM;
+  if(!SIM || !SIM.rideSource) throw new Error('core/simulation/ride/80: load 78-sim-ride.js first');
+  var nz=function(v,d){ return v==null ? d : v; };
+  SIM.LINEECON = { list:[], byId:{} };
+  SIM.lineEconomy = function(o){
+    if(!o || o.id==null) throw new Error('SIM.lineEconomy: an id');
+    if(SIM.LINEECON.byId[o.id]) throw new Error('SIM.lineEconomy: duplicate id '+o.id);
+    var goods=o.goods||{}, gl=Object.keys(goods); if(!gl.length) throw new Error('SIM.lineEconomy '+o.id+': goods');
+    var lojes=o.lojes||[]; if(lojes.length<2) throw new Error('SIM.lineEconomy '+o.id+': two lojes or more');
+    var fac=o.faction||'tungang', spm=nz(o.secPerMinute, 60), idx={};
+    if(!SIM.R.faction[fac]) SIM.faction({ id:fac, name:fac });
+    var L={ id:o.id, lojes:[], routes:{}, porters:{}, start:{}, made:{}, acc:{} };
+    gl.forEach(function(g){ L.start[g]=0; L.made[g]=0; });
+    lojes.forEach(function(J, i){
+      var P=SIM.R.place[J.stop]; if(!P) throw new Error('SIM.lineEconomy '+o.id+': loj '+J.id+' has no station place '+J.stop);
+      idx[J.id]=i;
+      if(!SIM.R.settlement || !SIM.R.settlement[J.id]) SIM.settlement({ id:J.id, faction:fac, name:J.name||J.id });
+      P.settlement=J.id;
+      SIM.economy({ goods:JSON.parse(JSON.stringify(goods)), window:1 }, { settlement:J.id });
+      SIM.store(P.id, { kind:'warehouse', cap:1e12 }); P.stock={};
+      gl.forEach(function(g){ var n=nz((J.stock||{})[g], 0); if(n){ P.stock[g]=n; L.start[g]+=n; } });
+      var use={}; gl.forEach(function(g){ use[g]=nz(J.pop, 0)*nz((J.uses||{})[g], 0); });
+      L.lojes.push({ id:J.id, stop:J.stop, pop:nz(J.pop, 0), makes:J.makes||{}, use:use });
+      L.acc[J.id]={ make:{}, use:{} }; });
+    /* the through-demand: the net deficit a day (use less making, floored at 0) of a loj and every loj beyond it, each way */
+    function beyond(i, dir){ var w={}; gl.forEach(function(g){ w[g]=0; });
+      for(var j=i; j>=0 && j<L.lojes.length; j+=dir) gl.forEach(function(g){ w[g]+=L.lojes[j].use[g]-nz(L.lojes[j].makes[g], 0); });
+      gl.forEach(function(g){ w[g]=Math.max(0, w[g]); }); return w; }
+    (o.links||[]).forEach(function(K){
+      var a=idx[K.from], b=idx[K.to]; if(a==null || b==null) throw new Error('SIM.lineEconomy '+o.id+': a link names an unknown loj');
+      if(Math.abs(a-b)!==1) throw new Error('SIM.lineEconomy '+o.id+': link '+K.from+'-'+K.to+' joins lojes not next to each other');
+      var A=L.lojes[a], B=L.lojes[b], key=A.id+'-'+B.id, dirB=b>a ? 1 : -1, expect=null, toB=beyond(b, dirB), toA=beyond(a, -dirB);
+      if(o.through!==false){ expect={}; expect[B.id]=toB; expect[A.id]=toA; }
+      /* one way a good: toward the side whose net deficit asks for it (else a producer that sends all over `keep` days buys it
+         back under `want` days, and the good sloshes to and fro) */
+      var send={}; send[A.id]=gl.filter(function(g){ return toB[g]>0; }); send[B.id]=gl.filter(function(g){ return toA[g]>0; });
+      var stops=[{ settlement:A.id, place:A.stop }, { settlement:B.id, place:B.stop }], base={ id:o.id+'.'+key, stops:stops, cap:nz(K.cap, nz(o.cap, 240)),
+        keep:nz(o.keep, 1), want:nz(o.want, 3), expect:expect, goods:send };
+      if(K.rail!=null){ base.line=K.rail; L.routes[key]=SIM.trade(base); return; }
+      var Pr=K.porters||{}; if(!SIM.porters && Pr.crew) throw new Error('SIM.lineEconomy: porters with a crew need 79-sim-ride-porters.js');
+      base.minutes=Pr.minutes!=null ? Pr.minutes : SIM.portersMinutes(A.stop, B.stop, nz(Pr.speed, 0.8), Pr.layer||'pedestrian', spm);
+      base.mins=nz(Pr.stay, 15); base.cap=nz(Pr.cap, nz(K.cap, 120));
+      L.routes[key]=SIM.trade(base);
+      if(Pr.crew){ if(!SIM.R.activity.CARRY) SIM.activity({ id:'CARRY' });
+        if(!SIM.R.org[fac+'.porters']) SIM.org({ id:fac+'.porters', faction:fac, name:'porters' });
+        if(!SIM.R.role.porter) SIM.role({ id:'porter', org:fac+'.porters', sched:[[0, 'CARRY']] });
+        var crew=[]; for(var c=0;c<Pr.crew;c++){ var aid=o.id+'.'+key+'.porter'+c; if(!SIM.R.actor[aid]) SIM.actor({ id:aid, role:'porter', settlement:A.id }); crew.push(aid); }
+        L.porters[key]=SIM.porters({ route:base.id, crew:crew, layer:Pr.layer||'pedestrian', secPerMinute:spm }); } });
+    SIM.LINEECON.list.push(L); SIM.LINEECON.byId[o.id]=L;
+    if(SIM.stepHooks.indexOf(SIM.lineEconomyStep)<0) SIM.stepHooks.unshift(SIM.lineEconomyStep);
+    return L;
+  };
+  /* each loj's hour: it makes `makes`/24 and uses pop * `uses`/24 of each good, whole units, the fractions carried */
+  SIM.lineEconomyStep = function(minute){
+    if(minute%60!==0) return;
+    SIM.LINEECON.list.forEach(function(L){ L.lojes.forEach(function(J){ var A=L.acc[J.id];
+      Object.keys(J.makes).forEach(function(g){ A.make[g]=nz(A.make[g], 0)+J.makes[g]/24; var n=Math.floor(A.make[g]+1e-9);
+        if(n>0){ var k=SIM.produce(J.stop, g, n); A.make[g]-=n; L.made[g]+=k; } });
+      Object.keys(J.use).forEach(function(g){ if(!(J.use[g]>0)) return; A.use[g]=nz(A.use[g], 0)+J.use[g]/24; var n=Math.floor(A.use[g]+1e-9);
+        if(n>0){ SIM.supply(g, n, false, J.id); A.use[g]-=n; } }); }); });
+  };
+  SIM.lineEconomyReport = function(id){
+    var L=SIM.LINEECON.byId[id]; if(!L) return null; var out={ lojes:{}, start:L.start, made:L.made };
+    L.lojes.forEach(function(J){ var E=SIM.econ(J.id), P=SIM.R.place[J.stop];
+      out.lojes[J.id]={ pop:J.pop, stock:JSON.parse(JSON.stringify(P.stock)), made:E.made||{}, used:E.used||{}, short:E.short||{}, imported:E.imported||{}, exported:E.exported||{} }; });
+    return out;
+  };
+})(typeof window!=='undefined'?window:globalThis);
+
+// ==================== simulation/ride/81-sim-ride-choose.js
+// ================================================================= CORE — simulation ride: travellers choose the train
+// [G data] core/simulation/PLAN-RIDING.md section 8c. Opt-in (listed after 78-sim-ride.js): the resolver's own walk is
+// unchanged on a page that does not list this. It wraps SIM.plan (77-sim-3-actors.js), the leg-maker SIM.decide calls
+// once it has chosen a place: for an actor whose role or own record says `ride: true`, when the walk there is
+// impossible (no path: the Line's segments are joined only by the trains and the gap walks) or slower than a journey by
+// train by more than `saving` seconds, the task becomes that journey (SIM.rideBake: walk, wait, board inside the door
+// window, ride, alight, walk on, the gap walked, ride again, walk to the place's spot). The actor is carried (`driven`)
+// until it arrives, then takes up what it decided (its `wanted` kept, so it does not decide again on the spot).
+// A trip under `minDist` metres is always walked; carts (a.cart) and actors driven by anything else are left alone.
+//
+//   SIM.RIDE.choose = {minDist:400, saving:60}       the rule's numbers
+//   SIM.rideChosen -> {asked, rode, walked, none}     the tally (an audit)
+(function(root){
+  'use strict';
+  var SIM = root.SIM;
+  if(!SIM || !SIM.rideBake) throw new Error('core/simulation/ride/81: load 78-sim-ride.js first');
+  SIM.RIDE.choose = SIM.RIDE.choose || { minDist:400, saving:60 };
+  SIM.rideChosen = { asked:0, rode:0, walked:0, none:0 };
+  var basePlan=SIM.plan;
+  SIM.plan = function(a, P, act, from, t){
+    var T=basePlan(a, P, act, from, t), R=SIM.R.role[a.role];
+    if(!(a.ride || (R && R.ride)) || a.cart || (a.driven && a.driven!=='ride') || !SIM.RIDE.order.length) return T;
+    var C=SIM.RIDE.choose, sp=T.spot, d=Math.hypot(sp.x-from.x, sp.z-from.z);
+    if(d<C.minDist) return T;
+    SIM.rideChosen.asked++;
+    var layer=a.layer||(R && R.layer)||'pedestrian', speed=a.speed||SIM.SPEED.walk, to={ x:sp.x, y:sp.y==null ? 0 : sp.y, z:sp.z };
+    var plan=SIM.journeyPlan({ x:from.x, y:from.y==null ? 0 : from.y, z:from.z }, to, t, { layer:layer, speed:speed });
+    if(!plan || !plan.rides){ if(T.failed) SIM.rideChosen.none++; else SIM.rideChosen.walked++; return T; }
+    if(!T.failed && plan.arrive>=T.arrive-C.saving){ SIM.rideChosen.walked++; return T; }
+    var J=SIM.rideBake(a, { from:from, to:to, t:t, act:act, speed:speed, layer:layer, plan:plan });
+    if(!J){ SIM.rideChosen.none++; return T; }
+    J.place=P.id; J.indoor=T.indoor; J.wander=T.wander; J.vehFrom=null; J.veh=null; J.ride.resolver=true;
+    a.driven='ride'; a.inVehicle=null; SIM.RIDE.riders[a.id]=true; SIM.rideChosen.rode++;
+    return J;
+  };
 })(typeof window!=='undefined'?window:globalThis);
 
 // ==================== simulation/ride/lab/40-ride-lab-world.js
@@ -4821,42 +4997,37 @@ root.KCOLOR=C;
       out.push(SIM.actor({ id:'tr'+i, role:'traveller', home:'ledge.homes', work:'twenny.works', pos:{ x:H.x+Math.cos(ang)*r, y:0, z:H.z+Math.sin(ang)*r } })); }
     return out;
   }
-  /* the trade (PLAN-RIDING.md section 5): four lojes, each a settlement keeping an economy, its store the station's; grain
-     made at Ledge and wax at Twenny each go the length of the line hop by hop: the north train (SIM.trade on its ride
-     source), the porters across the gap (a timer route, walked by a crew: 79-sim-ride-porters.js), the south train. Every
-     loj eats grain and burns wax by the hour (RIDELAB.use, a step hook), which is the want the routes serve */
-  var LOJES=[{ id:'ledge', stop:'ledge', stock:{ grain:3000, wax:20 } }, { id:'gapn', stop:'gap.n', stock:{ grain:20, wax:20 } },
-    { id:'gaps', stop:'gap.s', stock:{ grain:20, wax:20 } }, { id:'twenny', stop:'twenny', stock:{ grain:20, wax:3000 } }];
-  var USE={ ledge:{ grain:6, wax:3 }, gapn:{ grain:2, wax:1 }, gaps:{ grain:2, wax:1 }, twenny:{ grain:6, wax:3 } };
+  /* the trade (PLAN-RIDING.md sections 5 and 8c): the four lojes as books only (SIM.lineEconomy, 80-sim-ride-line.js), each a
+     settlement with one store at its station, making and using by the hour from its people: Ledge makes grain, Twenny wax,
+     every loj eats grain and burns wax. The goods go the length of the line hop by hop, drawn by the through-demand: the
+     north train, the porters across the gap (a crew walks it, resting four hours at each end: the Line's real gaps are
+     walks of one to four hours, so the porters are the line's bottleneck), the south train. o.through false: each hop serves only its
+     own receiver (the check's negative) */
+  var LOJES=[{ id:'ledge', stop:'ledge.stop', pop:120, makes:{ grain:600 }, stock:{ grain:500, wax:40 } },
+    { id:'gapn', stop:'gap.n.stop', pop:30, stock:{ grain:40, wax:40 } },
+    { id:'gaps', stop:'gap.s.stop', pop:30, stock:{ grain:40, wax:40 } },
+    { id:'twenny', stop:'twenny.stop', pop:150, makes:{ wax:500 }, stock:{ grain:40, wax:500 } }];
+  var USE={ grain:1, wax:0.5 };
   function trade(L, o){
     o=o||{}; var spm=o.secPerMinute==null ? 60 : o.secPerMinute;
-    if(!SIM.R.faction.tungang){ SIM.faction({ id:'tungang', name:'The Tungangs' }); SIM.org({ id:'loj', faction:'tungang', name:'The lojes' }); }
-    L.lojes=LOJES.map(function(J){ SIM.settlement({ id:J.id, faction:'tungang', name:J.id });
-      var P=SIM.R.place[J.stop+'.stop']; P.settlement=J.id;
-      SIM.economy({ goods:{ grain:{}, wax:{} }, window:1 }, { settlement:J.id });
-      SIM.store(P.id, { kind:'warehouse' }); P.stock=JSON.parse(JSON.stringify(J.stock)); return J; });
-    L.start={ grain:0, wax:0 }; LOJES.forEach(function(J){ L.start.grain+=J.stock.grain; L.start.wax+=J.stock.wax; });
-    var cap=o.cap==null ? 240 : o.cap, keep=o.keep==null ? 1 : o.keep;
-    L.routes={
-      north:SIM.trade({ id:'rail.n', line:'line.n', stops:[{ settlement:'ledge', place:'ledge.stop' }, { settlement:'gapn', place:'gap.n.stop' }], cap:cap, keep:keep }),
-      porters:SIM.trade({ id:'gap.porters', stops:[{ settlement:'gapn', place:'gap.n.stop' }, { settlement:'gaps', place:'gap.s.stop' }], cap:o.portersCap==null ? 120 : o.portersCap,
-        minutes:SIM.portersMinutes('gap.n.stop', 'gap.s.stop', 0.8, 'pedestrian', spm), mins:o.portersStay==null ? 15 : o.portersStay, keep:keep }),
-      south:SIM.trade({ id:'rail.s', line:'line.s', stops:[{ settlement:'gaps', place:'gap.s.stop' }, { settlement:'twenny', place:'twenny.stop' }], cap:cap, keep:keep }) };
-    if(!SIM.R.role.porter){ if(!SIM.R.activity.CARRY) SIM.activity({ id:'CARRY' }); SIM.role({ id:'porter', org:'loj', sched:[[0, 'CARRY']] }); }
-    var crew=[]; for(var i=0;i<(o.crew==null ? 6 : o.crew);i++){ var a=SIM.actor({ id:'porter'+i, role:'porter', settlement:'gapn' }); crew.push(a.id); }
-    L.porters=SIM.porters({ route:'gap.porters', crew:crew, secPerMinute:spm });
-    if(SIM.stepHooks.indexOf(use)<0) SIM.stepHooks.unshift(use);
+    var E=SIM.lineEconomy({ id:'line', faction:'tungang', goods:{ grain:{}, wax:{} }, secPerMinute:spm, through:o.through,
+      lojes:LOJES.map(function(J){ return { id:J.id, stop:J.stop, pop:J.pop, makes:J.makes, uses:USE, stock:J.stock }; }),
+      links:[{ from:'ledge', to:'gapn', rail:'line.n' }, { from:'gapn', to:'gaps', porters:{ speed:0.8, crew:o.crew==null ? 6 : o.crew, cap:200, stay:o.portersStay==null ? 240 : o.portersStay } },
+        { from:'gaps', to:'twenny', rail:'line.s' }] });
+    L.economy=E; L.lojes=E.lojes; L.start=E.start;
+    L.routes={ north:E.routes['ledge-gapn'], porters:E.routes['gapn-gaps'], south:E.routes['gaps-twenny'] };
+    L.porters=E.porters['gapn-gaps'];
     return L;
   }
-  function use(minute){ if(minute%60!==0) return; LOJES.forEach(function(J){ Object.keys(USE[J.id]).forEach(function(g){ SIM.supply(g, USE[J.id][g], false, J.id); }); }); }
-  root.RIDELAB={ declare:declare, walk:walk, doors:doors, people:people, trade:trade, use:use, CAR:CAR, SEG:SEG, DWELL:DWELL, RUN:RUN, LOJES:LOJES, USE:USE };
+  root.RIDELAB={ declare:declare, walk:walk, doors:doors, people:people, trade:trade, CAR:CAR, SEG:SEG, DWELL:DWELL, RUN:RUN, LOJES:LOJES, USE:USE };
 })(typeof window!=='undefined'?window:globalThis);
 
 // ==================== simulation/ride/lab/50-ride-lab-run.js
 // ================================================================= RIDE LAB — the life: the clock, the world, the travellers
 // [G data] The world clock is core/clock's standard day (a world minute every 3 real seconds), so a world minute is 3
 // motion seconds (SPM); the trains, the walkers and the riders move in motion time, SIM steps once a world minute. Each
-// traveller commutes: a journey from the homes at Ledge to the works at Twenny past the gap, a stay, and back, for ever.
+// traveller commutes: a journey from the homes at Ledge to the works at Twenny past the gap, a stay, and back, for ever;
+// the shift workers go by SIM's own resolver (they choose the train); the lojes are books only (80-sim-ride-line.js).
 // The page and the verify read the same functions: RL.tick(t) once a frame, RL.run(minutes) to step the world fast.
 const LABCLOCK=KCLOCK.make({hour:7,running:true,scale:1});
 const SPM=KCLOCK.DAY_SECONDS/1440;
@@ -4866,6 +5037,11 @@ RL.L=RIDELAB.declare({secPerMinute:SPM});
 RIDELAB.walk(KWALK,RL.L);
 RIDELAB.trade(RL.L,{secPerMinute:SPM});
 RL.people=RIDELAB.people(RL.L,40);
+/* the shift workers (R6): no script sends them; SIM's resolver does. Their role says ride: true, so a decision to work at
+   Twenny or sleep at Ledge, past the gap, becomes a journey by train (81-sim-ride-choose.js) */
+SIM.role({id:'shift',org:'loj',ride:true,sched:[[0,'SLEEP'],[6,'WORK'],[18,'SLEEP']],prefers:{SLEEP:{pin:'home'},WORK:{pin:'work'}}});
+RL.shift=[];{const H=SIM.R.place['ledge.homes'];for(let i=0;i<16;i++)RL.shift.push(SIM.actor({id:'shift'+i,role:'shift',home:'ledge.homes',work:'twenny.works',
+  pos:{x:H.x+Math.cos(i*0.7)*4,y:0,z:H.z+Math.sin(i*0.7)*4}}));}
 RL.snap0=null;
 /* each traveller's next journey: its time (motion seconds) and where to; the first ones leave a few seconds apart */
 RL.people.forEach((a,i)=>{RL.plan[a.id]={next:6+i*9,to:'twenny.works'};});
@@ -4932,9 +5108,9 @@ RL.L.sources.forEach(S=>S.cars.forEach(C=>{const g=new THREE.Group();g.name=S.id
     leaves[D.id]={l,r,z:D.at[2],open:0};});
   scene.add(g);LAB.cars.push({src:S.id,k:C.k,g,roof,leaves});}));
 /* the people: travellers in ochre, porters in rust, a crate on a porter's back while the carrier is on its way */
-LAB.ids=RL.people.map(a=>a.id).concat(RL.L.porters.crew);
+LAB.ids=RL.people.map(a=>a.id).concat(RL.shift.map(a=>a.id),RL.L.porters.crew);
 LAB.fig=new THREE.InstancedMesh(new THREE.CylinderGeometry(0.22,0.26,1.6,8).translate(0,0.8,0),mat(0xffffff),LAB.ids.length);LAB.fig.name='people';
-{const col=new THREE.Color();LAB.ids.forEach((id,i)=>LAB.fig.setColorAt(i,col.set(id.indexOf('porter')===0?0xb4552e:0xe0b050)));}
+{const col=new THREE.Color();LAB.ids.forEach((id,i)=>LAB.fig.setColorAt(i,col.set(id.indexOf('porter')>=0?0xb4552e:id.indexOf('shift')===0?0x5a9ad8:0xe0b050)));}
 LAB.crate=new THREE.InstancedMesh(new THREE.BoxGeometry(0.6,0.5,0.5),mat(0x9a7a4a),RL.L.porters.crew.length);LAB.crate.name='crates';
 scene.add(LAB.fig,LAB.crate);
 const labM=new THREE.Matrix4(),labQ=new THREE.Quaternion(),labE=new THREE.Euler(),labV=new THREE.Vector3(),labS=new THREE.Vector3(1,1,1),labSit=new THREE.Vector3(1,0.7,1);
@@ -5497,7 +5673,7 @@ const LABH=KHOST.take({
   const tr=RL.L.sources.map(S=>{const d=SIM.rideDwellAt(S.id,t);return S.id+': '+(d?'at '+d.stop+(d.open?' (doors open)':''):'running');}).join('\n');
   const goods=Object.keys(rep).map(id=>id+': '+rep[id].carriers.map(C=>C.phase+(C.cargo.length?' '+C.cargo.map(c=>c.good+' '+c.n).join(', '):'')).join('; ')).join('\n');
   return tr+'\n'+goods+'\ntravellers on journeys: '+aboard+', journeys '+RL.journeys+(RL.failed?' ('+RL.failed+' waited)':'')+'\ndoor windows kept: '+(A.ok?'yes':'NO')+'\nyou: '+(R.aboard?'aboard '+R.aboard+(R.sitting!=null?', seated':''):'on foot');},
- legend:[['#e0b050','a traveller'],['#b4552e','a porter (a crate: carrying)']],
+ legend:[['#e0b050','a traveller'],['#5a9ad8','a shift worker (chooses the train)'],['#b4552e','a porter (a crate: carrying)']],
 });
 RLRIDE=KHOST.ride(LABH,{walk:KWALK,t:()=>LABCLOCK.t,seats:()=>RIDELAB.CAR.seats});
 LABH.on(function rideLab(dt,clock){RL.tick(clock.t);},'tick');
@@ -5515,12 +5691,16 @@ const RLAPI={
  audit:()=>{const A=SIM.rideAudit();return {ok:A.ok,boards:A.boards,alights:A.alights,outside:A.outside.length,over:A.over.length,journeys:RL.journeys,failed:RL.failed};},
  /* every rider in a frame leg now stands on its own car's floor (the walk side, posed by the same function) */
  onFloors(lift){const t=LABCLOCK.t;let n=0,miss=0,worst=0;KWALKFRAME.at(KWALK,t);
-  RL.people.forEach(a=>{const p=SIM.pose(a,t);if(!p.frame)return;n++;const f=KWALK.floorBelow(p.x,p.z,p.y+(lift||0),0.6),fr=RL.L.frames.find(q=>q.src===p.frame.source&&q.k===p.frame.k).F;
+  RL.people.concat(RL.shift).forEach(a=>{const p=SIM.pose(a,t);if(!p.frame)return;n++;const f=KWALK.floorBelow(p.x,p.z,p.y+(lift||0),0.6),fr=RL.L.frames.find(q=>q.src===p.frame.source&&q.k===p.frame.k).F;
    if(!f||f[1].frame!==fr)miss++;else worst=Math.max(worst,Math.abs(f[0]-p.y-(lift||0)));});return {n,miss,worst};},
- cargo(){const led=SIM.ledger(RL.snap0,SIM.ledgerSnap()),r=id=>SIM.TRADE.routes[id].landed;
+ cargo(){const led=SIM.ledger(RL.snap0,SIM.ledgerSnap()),r=k=>RL.L.routes[k].landed;
   return {ledger:led.ok,problems:led.problems.slice(0,3),twennyGrain:SIM.econ('twenny').imported.grain||0,ledgeWax:SIM.econ('ledge').imported.wax||0,
-   north:(r('rail.n')['ledge>gapn']||{}).grain||0,porters:(r('gap.porters')['gapn>gaps']||{}).grain||0,south:(r('rail.s')['gaps>twenny']||{}).grain||0,trips:RL.L.porters.trips};},
- porters(){const C=SIM.TRADE.routes['gap.porters'].carriers[0],a=SIM.R.actor[RL.L.porters.crew[0]],p=SIM.pose(a,LABCLOCK.t+0.5);return {phase:C.phase,moving:p.moving};},
+   north:(r('north')['ledge>gapn']||{}).grain||0,porters:(r('porters')['gapn>gaps']||{}).grain||0,south:(r('south')['gaps>twenny']||{}).grain||0,trips:RL.L.porters.trips,
+   back:((r('north')['gapn>ledge']||{}).grain||0)+((r('porters')['gaps>gapn']||{}).grain||0)+((r('south')['twenny>gaps']||{}).grain||0),made:RL.L.economy.made};},
+ porters(){const C=RL.L.routes.porters.carriers[0],a=SIM.R.actor[RL.L.porters.crew[0]],p=SIM.pose(a,LABCLOCK.t+0.5);return {phase:C.phase,moving:p.moving};},
+ /* the shift workers: each journey by train their own decision (no script sends them) */
+ shift(){const j=SIM.LOG.filter(e=>e.kind==='journey'&&/^shift/.test(e.actor)&&e.rides>0),by={};j.forEach(e=>{by[e.actor]=(by[e.actor]||0)+1;});
+  return {n:RL.shift.length,rode:Object.keys(by).length,journeys:j.length,chosen:SIM.rideChosen,driven:RL.shift.filter(a=>a.driven&&a.driven!=='ride').length};},
  exportMotion(){return SIM.rideExportMotion({actors:RL.people.slice(0,8)});},
 };
 window._api=window._api||{};window._api.lab=RLAPI;

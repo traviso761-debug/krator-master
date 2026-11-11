@@ -24,7 +24,8 @@ FRAGS = ([os.path.join(HERE, '00-head.html')]
          + [os.path.join(CORE, 'rand', '08-core-rand.js'), khost.path('20-core-clock.js'), os.path.join(CORE, 'sched', '20-core-sched.js'),
             os.path.join(CORE, 'walk', '20-core-walk.js'), os.path.join(CORE, 'walk', 'frame', '26-core-walk-frame.js')]
          + [os.path.join(SIMD, f) for f in SIMF]
-         + [os.path.join(SIMD, 'ride', '78-sim-ride.js'), os.path.join(SIMD, 'ride', '79-sim-ride-porters.js')]
+         + [os.path.join(SIMD, 'ride', '78-sim-ride.js'), os.path.join(SIMD, 'ride', '79-sim-ride-porters.js'),
+            os.path.join(SIMD, 'ride', '80-sim-ride-line.js'), os.path.join(SIMD, 'ride', '81-sim-ride-choose.js')]
          + [os.path.join(HERE, f) for f in ('40-ride-lab-world.js', '50-ride-lab-run.js', '60-ride-lab-scene.js')]
          + [khost.path(f) for f in khost.SHELL if f != '20-core-clock.js']
          + [os.path.join(CORE, 'walk', 'frame', '95-walk-frame-host.js'), os.path.join(HERE, '98-ride-lab-take.js'), os.path.join(HERE, '99-tail.html')])

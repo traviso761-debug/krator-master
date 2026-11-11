@@ -9,7 +9,8 @@ Runs the node tests first (core/walk/frame, core/simulation/ride, the cargo), th
     in, and the moving car carries it down the Line, still on the car's floor; E sits it, E stands it
   - the travellers: every rider in a frame leg stands on its own car's floor (a rider lifted 0.5 m fails), every door
     crossing inside its window and no car over its room (SIM.rideAudit)
-  - the goods: grain from Ledge reaches Twenny across the gap; the books balance (SIM.ledger; grain slipped into a store
+  - the shift workers: SIM's resolver sends them by train of their own choice (81-sim-ride-choose.js)
+  - the goods (the lojes as books, 80-sim-ride-line.js): grain made at Ledge reaches Twenny across the gap, none goes back; the books balance (SIM.ledger; grain slipped into a store
     unbooked fails); the porters walk exactly while their carrier is on its way (the flipped state fails)
   - the views: Ledge station, the gap, the Line, aboard
 """
@@ -22,7 +23,7 @@ import harness as _h
 try: sys.stdout.reconfigure(encoding='utf-8')
 except Exception: pass
 
-NODE_TESTS = ['core/walk/frame/test-walk-frame.js', 'core/simulation/ride/test-ride.js', 'core/simulation/ride/test-ride-cargo.js']
+NODE_TESTS = ['core/walk/frame/test-walk-frame.js', 'core/simulation/ride/test-ride.js', 'core/simulation/ride/test-ride-cargo.js', 'core/simulation/ride/test-ride-r6.js']
 
 
 def report(fails, name, ok, detail=''):
@@ -85,14 +86,17 @@ async def run(page_path, out):
         A = trav['audit']
         report(fails, 'every door crossing inside its window, no car over its room (%d boards, %d journeys)' % (A['boards'], A['journeys']),
                A['ok'] and A['journeys'] >= 40 and A['boards'] >= A['alights'] > 30, str(A))
-        # ---- the goods: run until grain from Ledge has reached Twenny; the books; the porters
+        sh = await ev("()=>_api.lab.shift()")
+        report(fails, "the shift workers choose the train themselves (SIM's resolver): %d of %d rode, %d journeys" % (sh['rode'], sh['n'], sh['journeys']),
+               sh['rode'] == sh['n'] and sh['chosen']['none'] == 0 and sh['driven'] == 0, str(sh['chosen']))
+        # ---- the goods (the lojes as books): run until grain from Ledge has reached Twenny; the books; the porters
         cg = await ev("""()=>{const L=_api.lab;let c=L.cargo(),n=0;while(!(c.twennyGrain>0&&c.porters>0)&&n<60){L.run(60);c=L.cargo();n++;}
           let mism=0,flip=0;for(let i=0;i<400;i++){L.run(1);const p=L.porters();if((p.phase==='sail')!==p.moving)mism++;if((p.phase!=='sail')!==p.moving)flip++;}
           const st=SIM.R.place['gap.n.stop'].stock;st.grain=(st.grain||0)+50;const bad=L.cargo().ledger;st.grain-=50;
           return {c:L.cargo(),mism,flip,bad};}""")
         c = cg['c']
-        report(fails, 'grain from Ledge reaches Twenny: north train, porters across the gap, south train', c['north'] > 0 and c['porters'] > 0 and c['south'] > 0 and c['twennyGrain'] > 0,
-               'north %d, porters %d, south %d' % (c['north'], c['porters'], c['south']))
+        report(fails, 'grain made at Ledge reaches Twenny: north train, porters across the gap, south train; none goes back', c['north'] > 0 and c['porters'] > 0 and c['south'] > 0 and c['twennyGrain'] > 0
+               and c['back'] == 0 and c['made']['grain'] > 0, 'made %d, north %d, porters %d, south %d, back %d' % (c['made']['grain'], c['north'], c['porters'], c['south'], c['back']))
         report(fails, 'the books balance on every leg (SIM.ledger)', c['ledger'] and not cg['bad'], 'unbooked grain caught: %s' % (not cg['bad']))
         report(fails, 'the porters walk exactly while their carrier is on its way', cg['mism'] == 0 and cg['flip'] > 0, '%d trips' % c['trips'])
         if out:
