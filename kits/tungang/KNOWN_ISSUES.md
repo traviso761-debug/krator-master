@@ -43,5 +43,15 @@
       before it). Recorded as one key in `tools/check_assembly_baseline.json`.
 - [ ] **The Godot export** of the sheet (`core/export`) is not wired: `PLAN.md` phase T10.
 - [ ] **Gallery.** The kit is a new build: it goes into the Krator Worlds gallery when it first reaches `main`.
-- [ ] **Not yet built** from `PLAN.md` 3.3: the bands (`fg-war-camp`, `fg-raid-cache`), Wildcat's scrap pueblo (`fg-wc-*`),
-      the fells (`fg-shieling`, `fg-cairn`, `fg-stone-sign`); the Tungang (`tg`) and Glazier (`gz`) sets.
+- [ ] **Not yet built** from `PLAN.md` 3.3: the bands (`fg-war-camp`, `fg-raid-cache`),
+      the fells (`fg-shieling`, `fg-cairn`, `fg-stone-sign`); the Tungang (`tg`) and Glazier (`gz`) sets. (Wildcat's scrap
+      pueblo is built on `core/pueblo`, 2026-11-11: `PLAN.md` 1.3.1, "Built".)
+- [ ] **Wildcat: rooms as massing.** The great house's 805 rooms are core/pueblo records (registered in core/tags) drawn as
+      solid columns with their faces, doors, hatches and ladders: no interiors, no furniture inside, and no walk records on
+      the roofs or up the ladders (`core/walk` reads boxes, and a column is a prism). Interiors come with the hold work or a
+      Wildcat page of its own.
+- [ ] **Wildcat: the Deeds and the slogans are geometry** (block letters, marks and tallies as thin boxes), as the Fellgang
+      set's slogans are, until the daub sheet is delivered (`core/materials/PROMPTS-NEEDED.md` section 43).
+- [ ] **Wildcat's triangles.** The great house draws about 190k triangles (2,400 vigas, 440 salvage panels, 98 ladders) and its
+      stockade about 870 stakes: fine on the sheet, heavy for a station far off. A LOD (the columns alone past ~400 m) is owed
+      with `core/lod`.

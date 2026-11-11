@@ -19,6 +19,9 @@ passes is a failure too. The checks (kits/tungang/README.md, "Checks"):
   plinth-on-slope       on the sloped pad: the floor at the highest corner, the plinth to the lowest, the byre down-slope
   fixed-line-follows    the ropes on the test wall follow their records (no vertex strays, no point is left short)
   host-api              TG.fg.draw draws every record of the sample village (core/hamlet's fellgang row, fowling)
+  wildcat-plan, wildcat-on-knoll, wildcat-tags, wildcat-dress, wildcat-hamlets
+                        the scrap pueblo (core/pueblo, TG.fg.pueblo): the plan's invariants and 1,000-2,000 people, the
+                        floor on the knoll, every room registered, the dress drawn, the two hamlets
   coverage, no-nan, furniture-keys, material-records
 """
 import argparse, asyncio, json, os, sys
@@ -79,13 +82,16 @@ ASSERT_JS = r"""()=>{const A=window._api,R=[],S=window._fgSheet||{},C=TG.fg.chec
    detail:(V.records?V.records.length:0)+' records (KHAMLET.village, fellgang, fowling: '+(V.census?V.census.pop:0)+' people), '+(vd.recs?vd.recs.length:0)+' drawn into '+vd.length+' meshes, '+vd.tris+' triangles'},
   {ok:!Object.keys(neg.missing).length,detail:'a record of a key the kit lacks: missing '+JSON.stringify(neg.missing)});
  /* coverage: every def drawn, on the rows or by the host API */
- const drawn=new Set(REG.map(r=>r.key));for(const k of ['pad','villageDraw','ropeDraw','wall','road'])for(const r of (S[k]&&S[k].recs||[]))drawn.add(r.key);
+ const drawn=new Set(REG.map(r=>r.key));for(const k of ['pad','villageDraw','ropeDraw','wall','road','wildcat','wildcatPens'])for(const r of (S[k]&&S[k].recs||[]))drawn.add(r.key);
+ for(const h of (S.hamlets||[]))for(const r of h.recs)drawn.add(r.key);
  const miss=Object.keys(DEFS).filter(k=>!drawn.has(k));
  add('coverage',{ok:!miss.length,detail:miss.length?'not drawn: '+miss.join(', '):Object.keys(DEFS).length+' defs drawn'},{ok:!Object.keys(DEFS).concat(['fg-nonesuch']).filter(k=>!drawn.has(k)).length,detail:'fg-nonesuch'});
  add('no-nan',{ok:A.nanSweep()===0,detail:'nan meshes: '+A.nanSweep()},(()=>{const g=new THREE.Group(),b=new THREE.BufferGeometry();b.setAttribute('position',new THREE.Float32BufferAttribute([0,NaN,0,1,0,0,0,0,1],3));g.add(new THREE.Mesh(b));let n=0;g.traverse(m=>{if(m.geometry){const a=m.geometry.attributes.position.array;for(let i=0;i<a.length;i++)if(!isFinite(a[i])){n++;break;}}});return {ok:n===0,detail:n+' nan mesh'};})());
  const fu=A.furniture(),fm=Object.keys(fu.missing);
  add('furniture-keys',{ok:!fm.length&&fu.placed>100,detail:fm.length?'missing from the catalog: '+fm.join(', '):fu.placed+' pieces from '+fu.keys+' catalog keys'},{ok:KratorFurniture.has('fellgang_nonesuch'),detail:'fellgang_nonesuch'});
  const M=A.materials();add('material-records',{ok:!!(M&&M.records&&M.records.length>15&&M.records.filter(r=>r.lib).length>15),detail:M?M.records.length+' records, '+M.records.filter(r=>r.lib).length+' from the library':'none'},{ok:false,detail:'n/a'});
+ /* Wildcat (src/91w-wc-sheet.js): the plan, the knoll, core/tags, the dress, the hamlets */
+ if(window._wcChecks)R.push(...window._wcChecks());else R.push({name:'wildcat',ok:false,detail:'no window._wcChecks'});
  return R;}"""
 
 
