@@ -1,0 +1,339 @@
+{
+ "build": "greatchasm",
+ "note": "The Great Chasm's adapter onto the material library (core/materials/PLAN.md). Card slots are 50-biome-greatchasm-species.js's materials (BIO.libSwap), each one cell of its 3 x 3 sheet: the Outlands' cards (card.outlands.scrub: sac brush, grey cushion, ember scrub; card.outlands.crust: needle fur, crust rosette, pebble mat) drawn by this kit's stand-ins until the Outlands kit defines those plants (PLAN.md section 4, KNOWN_ISSUES.md); samphire for the floor's salt tufts; dry bunch grass; lichen rosettes on the walls; the snowball card for the high walls' frost puffs. keep 1 the card's own colour. ground.* the host's ground layers on KGROUND (45-host-stage.js GLW: a station names the five it shows, LAND.groundLayers). The komatiite pavement of the Deep has no set yet (core/materials/PROMPTS-NEEDED.md): ground.sand.black and ground.obsidian stand in. Run python3 tools/textures/pack.py biomes/greatchasm after any change, then python3 build.py --all.",
+ "size": 512,
+ "families": {
+  "sac": {
+   "lib": "card.outlands.scrub",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.75
+   },
+   "size": 512,
+   "cell": [
+    0.3373,
+    0.004,
+    0.6627,
+    0.3293
+   ],
+   "base": "bottom"
+  },
+  "cush": {
+   "lib": "card.outlands.scrub",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.75
+   },
+   "size": 512,
+   "cell": [
+    0.3373,
+    0.3373,
+    0.6627,
+    0.6627
+   ],
+   "base": "bottom"
+  },
+  "ember": {
+   "lib": "card.outlands.scrub",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.75
+   },
+   "size": 512,
+   "cell": [
+    0.004,
+    0.6707,
+    0.3293,
+    0.996
+   ],
+   "base": "bottom"
+  },
+  "needle": {
+   "lib": "card.outlands.crust",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.75
+   },
+   "size": 512,
+   "cell": [
+    0.3373,
+    0.004,
+    0.6627,
+    0.3293
+   ],
+   "base": "bottom"
+  },
+  "rosette": {
+   "lib": "card.outlands.crust",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.7
+   },
+   "size": 512,
+   "cell": [
+    0.004,
+    0.3373,
+    0.3293,
+    0.6627
+   ],
+   "base": "center"
+  },
+  "pebble": {
+   "lib": "card.outlands.crust",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.7
+   },
+   "size": 512,
+   "cell": [
+    0.6707,
+    0.3373,
+    0.996,
+    0.6627
+   ],
+   "base": "center"
+  },
+  "samph": {
+   "lib": "card.samphire",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.6,
+    "mean": 0.75
+   },
+   "size": 512,
+   "cell": [
+    0.3373,
+    0.004,
+    0.6627,
+    0.3293
+   ],
+   "base": "bottom"
+  },
+  "grass": {
+   "lib": "card.grass.dry",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.7,
+    "mean": 0.75
+   },
+   "size": 512,
+   "cell": [
+    0.004,
+    0.004,
+    0.3293,
+    0.3293
+   ],
+   "base": "bottom"
+  },
+  "lichen": {
+   "lib": "card.lichen",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.7
+   },
+   "size": 512,
+   "cell": [
+    0.3373,
+    0.004,
+    0.6627,
+    0.3293
+   ],
+   "base": "center"
+  },
+  "puff": {
+   "lib": "card.snowball",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.75
+   },
+   "size": 512,
+   "cell": [
+    0.3373,
+    0.004,
+    0.6627,
+    0.3293
+   ],
+   "base": "bottom"
+  },
+  "rock": {
+   "lib": "rock.basalt.vesicular",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.4
+   },
+   "roughLift": 0.1,
+   "mapOnly": true
+  },
+  "ground.pave": {
+   "lib": "ground.pavement.desert",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 0.6,
+    "mean": null
+   },
+   "roughLift": 0.15,
+   "mapOnly": true
+  },
+  "ground.salt": {
+   "lib": "ground.salt",
+   "scale": [
+    3,
+    3
+   ],
+   "tint": {
+    "keep": 0.85,
+    "mean": null
+   },
+   "roughLift": 0.15,
+   "mapOnly": true
+  },
+  "ground.black": {
+   "lib": "ground.sand.black",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 0.7,
+    "mean": null
+   },
+   "roughLift": 0.15,
+   "mapOnly": true
+  },
+  "ground.steppe": {
+   "lib": "ground.steppe",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 0.6,
+    "mean": null
+   },
+   "roughLift": 0.15,
+   "mapOnly": true
+  },
+  "ground.wadi": {
+   "lib": "ground.wadi.cobble",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 0.7,
+    "mean": null
+   },
+   "roughLift": 0.15,
+   "mapOnly": true
+  },
+  "ground.lichen": {
+   "lib": "ground.lichen.crust",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 0.6,
+    "mean": null
+   },
+   "roughLift": 0.15,
+   "mapOnly": true
+  },
+  "ground.efflo": {
+   "lib": "ground.efflorescence",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 0.8,
+    "mean": null
+   },
+   "roughLift": 0.15,
+   "mapOnly": true
+  },
+  "ground.obsidian": {
+   "lib": "ground.obsidian",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 0.8,
+    "mean": null
+   },
+   "roughLift": 0.15,
+   "mapOnly": true
+  },
+  "ground.snow": {
+   "lib": "ground.snow.drift",
+   "scale": [
+    3,
+    3
+   ],
+   "tint": {
+    "keep": 0.9,
+    "mean": null
+   },
+   "roughLift": 0.15,
+   "mapOnly": true
+  },
+  "groundDetail": {
+   "lib": "ground.gravelly_sand",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": null
+   },
+   "mapOnly": true
+  }
+ }
+}

@@ -7,8 +7,12 @@ dry, empty corridor. One **trade post** stands in it, where the two cultures mee
 (the owner's brief, 2026-11-09).
 
 This is a seed from the owner's brief and the map, expanded from Gemini's first draft (2026-11-06). Its names marked **TBD**
-are the owner's to give, and *proposed* marks this plan's own suggestions. Nothing is built; it is a kit for the rebuild's
-queue, after the frozen integration pass. Coordinates are 5.1 px (1821 x 1723, 2 km a px).
+are the owner's to give, and *proposed* marks this plan's own suggestions. Coordinates are 5.1 px (1821 x 1723, 2 km a px).
+
+**Built 2026-11-11** (a cloud session, branch `claude/greatchasm`): the five stations of section 7 as pages on the biome core
+(`build.py --all`; `INDEX.md`, `KNOWN_ISSUES.md`). Section 7b is the survey of the sites as the model draws them, section 7c
+what this build settled, and section 8 the core adoption as built. The real-GPU verify is owed on the owner's PC: the cloud has
+no GPU, and the pages were checked in software GL only (`KNOWN_ISSUES.md`).
 
 ## 1. What the map carves (Gemini, map 5.1)
 
@@ -253,36 +257,95 @@ the north.
 | Station | 5.1 px | Ground (model) | What |
 |---|---|---|---|
 | 1 **The Sill** (the trade post) | 1697,1028 | 1,695 m; crest 1,550-2,000 m; floor 761 m within 8 km north; BWk, 16 °C (23/8), 47 mm, 1.29 atm | the post (serai, Yuni half, Coyote half, market court); the bench road arriving, the Yuni road leaving; the ramp down to the floor; cable vines below; walls to 11 km (E) and 6.5 km (W) |
-| 2 **The Long Bench** | 1708,935 (pinned) | 1,640 m on the east bench; BWk, 16 °C (24/9), 47 mm, 1.30 atm | the road: dike fins, pleat columns in their shade, a caravan's night camp, milestones; the drop to the Deep, the east wall to 9.5 km |
+| 2 **The Long Bench** | 1718,924 (the pin 1708,935 is a knob: 7b) | 1,750 m on the east bench; BWk, 16 °C (24/9), 47 mm, 1.30 atm | the road: dike fins, pleat columns in their shade, a caravan's night camp, milestones; the drop to the Deep, the east wall to 9.5 km |
 | 3 **The Deep** | 1692,895 (pinned) | -1,180 m (lowest -1,187 m at 1686,898); XW, 38 °C (46/31), 78 mm, 1.86 atm | the furnace: pavement, salt crust, shimmer, dust, gas in the hollows; the walls a skyline 1-11° high; vents if the floor is live |
 | 4 **The Headwall** | 1664,812 | 1,628 m; mesa caps 1,520-3,560 m round it; the lip (3,786 m) 55 px north; BWk, 16 °C (24/9), 47 mm, 1.30 atm | the Coyote Men's way down: the chaos and its channels, Hum milestones, ostrich riders, the golden bird on the thermals |
-| 5 **The East Rim** (optional) | 1726,888 (pinned) | 6,850 m; HT, -16 °C (-8/-23), 0 mm, 0.68 atm | the whole chasm from above, the floor 74 km west and 7.9 km down; thin air, frost, amethyst geodes |
+| 5 **The East Rim** (optional) | 1726,888 (pinned: the horn, 7b) | 6,850 m; HT, -16 °C (-8/-23), 0 mm, 0.68 atm | the whole chasm from above, the floor 74 km west and 7.9 km down; thin air, frost, amethyst geodes |
 
 Station 1 comes first: it holds the post, both peoples, both roads and the view of the chasm at once. Station 2 is the road
 itself; stations 3 and 4 are its two extremes.
 
-## 8. Core adoption (written first, as the working rules ask)
+### 7b. The sites as drawn (the survey, 2026-11-11)
 
-| Need | Module | How |
+Read with `smodel.page` from `tools/scale-model/model/data` (the build's own source; the height grid is the full map, one 2 km
+cell a pixel), heights bilinear at the pixel, pressure 1.6 e^(-h/8000), rain and temperatures the model's `p`, `tm`, `tw`, `tc`
+at the pixel. `stations/bake_far.py` writes each station's window (121 x 121 cells, 120 km each way) into its
+`44f-host-far-data.js`; the page's ground is the model's surface through those cells (Catmull-Rom: the cells' heights exactly
+at their centres) with the station's landforms on it, and the far field (KFAR, `src/83-host-far.js`) is the same surface past
+the ground's square.
+
+| Station | 5.1 px | Height | Air | Class | tm (tw / tc) | Rain | What the cells show |
+|---|---|---|---|---|---|---|---|
+| 1 the Sill | 1697,1028 | 1,695 m | 1.29 atm | BWk | 16 (23 / 8) °C | 47 mm | a north-facing ramp: 1,150 m at the page's north edge, 1,940 m at its south; 973 m 4 km north, 651 m 8 km north; the crest 2,040-2,080 m 6 km south |
+| 2 the Long Bench | **1718,924** | 1,750 m | 1.28 atm | BWk | 16 (24 / 9) °C | 47 mm | the east bench's back sloping west from 1.9 km to 1.5 km at the page's west edge, ribbed 100-250 m on a NNW-SSE strike (the dikes); the ramp to the floor beyond |
+| 3 the Deep | 1692,895 | -1,180 m | 1.85 atm | XW | 38 (46 / 31) °C | 78 mm | flat: the page's nine cells within 50 m of each other; the walls 60-120 km off, 1-7° up |
+| 4 the Headwall | 1664,812 | 1,628 m | 1.31 atm | BWk | 16 (24 / 9) °C | 47 mm | a plateau at 1,560-1,790 m broken by single low cells 350-550 m down (1,082-1,300 m): one 2 km north, four more 4 km off |
+| 5 the East Rim | 1726,888 | 6,850 m | 0.68 atm | HT | -16 (-8 / -23) °C | 0 mm | a horn: its four neighbours 6,020-6,030 m, its corners 5,290-5,370, the ring 4 km out 4,100-4,300 m, on a bench at 1.9-2.6 km |
+
+What the survey changed (the round's rule: survey the drawn heights, never the pins' comments):
+- **Station 2 moved** from the pin (1708,935) to **1718,924**. The pin is a lone knob: its cell at 1,640 m stands over
+  neighbours at 1,330-1,360 and a ring 4 km out at -230 to 750 m, on the ramp between the floor and the bench, 10 km west of
+  the bench. The east bench is drawn at x 1716-1733 (1.5-2.0 km); the knob stands in station 2's far field, 22 km west.
+- **Station 5 is the pin's horn**, as drawn: a peak 4.5 km over the bench round it, 30-40 km in front of the east wall's true
+  crest (11-12.3 km, airless). The page is the horn; the wall is its far field.
+- **The headwall's chaos** is a plateau with box channels: the code's mesas between channels narrower than a cell. The page
+  draws the plateau through the high cells and cuts the channels down to the low cells' heights (KRELIEF.stepcut).
+- **No water within 12 km of any site** (the `wl` layer, `rivers.json`, `tubes.json`, `vents.json`): the plan's section 1 holds.
+
+### 7c. Settled in the build (2026-11-11; the owner's questions in section 9 stay open)
+
+- The trade post is on **the sill** (section 9's first question taken as the plan proposes), as records first: 84 of them
+  (serai walls, gate and bays, tower-house, two shell houses, the cistern's kerb, the market court's stalls and its seven
+  boundary stones, twelve Coyote rooms in three steps, the shrine, the two pens, the qanat's shafts), every one `pending` and
+  drawn as a stand-in at its box in its culture's mud. The Yuni kit's buildings, kits/coyote, core/hamlet's trade focus and
+  core/simulation's books are owed (section 8).
+- **The floor is dead and dry** (the plan's default): no vents, no pan, no geothermal surfaces.
+- **The flora**: the chasm's own ground cover is drawn as named stand-ins for the Outlands' plants on the library's Outlands
+  cards (`card.outlands.scrub`, `card.outlands.crust`), each tagged `standin: 'outlands.<key>'`; the trees are read in place
+  from the built kits: the eastern abyss's **jade shrub** on the Deep's hollow rims (the plan's own XW source) and the
+  eastern badlands' alien **needle bloom** on the benches, the sill and the headwall's channels (stand-ins for the Outlands'
+  and the Loom-Chasms' trees). The badlands' stilt pod was tried and dropped: its tendrils float 2.3-2.6 m off it here (the
+  attach audit, `KNOWN_ISSUES.md`).
+- **The air**: the sky's own fog thinned to a sixth (the walls 30-120 km off are the chasm); the heat shimmer over the Deep
+  (core/atmos fx/shimmer, first used here); the dust season held at the dry end all year.
+- **The hour**: the pages open at 14:00, not the shared 11:00. On game start's day (the spring equinox) the giant eclipses the
+  sun at the chasm's longitude from 10:00 to 12:00 (`ATMOS.sunHidden`), so at 11:00 the world was unlit; `?hour=` still sets
+  any hour, the eclipse included.
+
+## 8. Core adoption (written first, as the working rules ask; as built 2026-11-11)
+
+The plan's table (written before any fragment, 2026-11-09) is kept here as the build took it: each row says what the build takes
+and where, and the second table what it does not take, and why. `python3 tools/check_core_use.py biomes/greatchasm` reads 0 findings. The host is riftrim's (`biomes/riftrim/src`, the
+nearest finished station kit on the scale model), taken as the start and cut to the chasm: no copy of a core fragment is in `src/`.
+
+| Need | Module | As built |
 |---|---|---|
-| randomness | `core/rand` (`KRAND`) | every placement seeded by (world, cell, index, salt) |
-| the trench's land | `KRELIEF` (`38`, `38c`) | `relay` and `slump` for the rotated benches and their scarps, `scarp` for the walls, `stepcut` for the floor's gorges below the sill; seated on the scale model's heights |
-| the chaos, the dikes | `KSTACKS` (`37`) | the headwall's mesas and knobs (as the Labyrinth's); the dikes as kind `fin` on the benches |
-| strata | `KSTRATA` (35, 35c); `KLAVA.strata` (46b) | the walls' basalt flows, colonnade and entablature; `KLAVA` itself only if the floor is live |
-| geodes | `KCAVERN` (39), `KSPELEO` (39b) | small wall voids lined by `KSPELEO.AMETHYST`: KSPELEO dresses a KCAVERN's voids |
-| rubble | `KRUBBLE` (37c) | talus under the walls and the chaos |
-| ground | `KGROUND` (43), `KHORIZON` (45), `KFAR` (44) | pavement, salt and bench scrub as masks; KHORIZON's far grid for the walls' skyline and shade; the far walls as KFAR masses |
-| water | `core/water` | if wanted, a pan in the Deep (`W.pan`, the `brine` look of `W.LOOKS`); if the floor is live, hot pools as `WATER.spring({temp: 1, mineral: 'sulfur', boil})`; the post's cistern as a still |
-| flora | `core/biome` | the neighbours' species read in place (section 4) |
-| sky, weather | `core/atmos` | the standard sky; the heat shimmer over the floor (`ATMOS.shimmer`, `fx/89-atmos-fx-shimmer.js`); dust (`fx/89-atmos-fx-dustseason.js`) |
-| hazards | `core/hazard` (`KHAZ`, with `21-core-hazard-flow.js`) | section 6 |
-| the post | `core/hamlet` (`KHAMLET`), `core/simulation`, `core/camp` | the post's records, its books, and the caravans' stop at its serai (section 5) |
-| the caravans on the road | `core/camp` | a night camp on the bench (station 2) |
-| fauna | `kits/fauna` | section 4, as `BIO.record` records |
-| furniture, resources | `kits/catalog` via `core/furnish`; `kits/resources` | `yuni-common` for the Yuni rooms; read the geology bake when the kit starts |
-| shadows | `core/shadow` | off at load, as every kit |
-| tags, space, mask, host, export, materials | as every kit | |
-| city | `core/city` | no: the post is a hamlet |
+| randomness | `core/rand` (`KRAND`) | every placement by cell: the floor's passes are the core's cell lattice (`BIO.grid`'s cell form), the hollows, knobs, tors and buttes `KRAND.hash(world, i, k, salt)`, the kin's lattice the same; the small relief `KRAND.fbm` |
+| the land | the scale model, `KRELIEF` (`38`, `38c`) | the page's ground is the model's own surface (44v `MODEL`: the station's 44f cells, baked by `stations/bake_far.py`); on it `KRELIEF.wadi` (the sill's and the bench's dry channels), `KRELIEF.pavement`, `KRELIEF.stepcut` (the headwall's channels) |
+| the chaos, the dikes, the knobs | `KSTACKS` (`37`) | `KSTACKS.row` for the dike fins (sill, bench), `make` for the channels' buttes and spire (headwall), the Deep's knobs, the horn's tors; drawn by `KSTACKS.mesh` in the strata's beds (45) |
+| strata | `KSTRATA` (35, 35z) | three recipes added through the core's `KSTRATA.add` (`src/44r-biome-greatchasm-strata.js`: the flood basalt's colonnade, entablature, flow tops and boles; the chaos's ochre caps; the floor's komatiite): the walls, the rock bodies and the ground's steep faces |
+| ground | `KGROUND` (43), `KHORIZON` (45), `KFAR` (44) | four library layers a station (45: the ground's program reads 15 texture units, counted on the linked program: `the ground reads 15 texture units or fewer`; ANGLE on the Arc links 15 at most), KGROUND's pavement, polygon and talus kinds; KFAR to 118 km from the model with the planet's curvature and a crest pass (83); KHORIZON over the square with the far lattice past it |
+| water | `core/water` | the post's cistern, a still (station 1); nothing else (the chasm is dry); the fields path (ext/60) reads it |
+| flora | `core/biome` | the kit's ground cover (50, 60) and the neighbours' trees read in place (`BIO.kin`, 87; station.json `kin`) |
+| sky, weather | `core/atmos` | the standard sky at each station's place (`ATMOS.skyBiome`), its fog thinned; height fog, the dust and the air's load, the dust season (`fx/dustseason`), the heat shimmer (`fx/shimmer`) over the Deep, the weather's dry climate |
+| hazards | `core/hazard` (`KHAZ`, 20 and 21) | the air and the heat as ambient fields (`KHAZ.provide`: pressure, temperature with the season and the hour), records for the Deep's gas hollows, falls, rockfall, the qanat's open shafts, the cistern (88) |
+| tags, space, mask, host, export, materials, shadow, clock, minimap, edits | as every kit | `core/tags`, `core/space`, `core/host` (the whole interface and the polygon tool), `core/export`, the material library (`materials.json`, `tex/`), `core/shadow` (off at load); placement never reads canvas pixels |
+
+**Not taken, each with its reason:**
+
+| Module | Why not (yet) |
+|---|---|
+| `core/hamlet` (`KHAMLET`) | it has no `trade` focus and no Yuni or Coyote culture row (amendment 1 below); the post's records are laid by hand in its own frame (`stations/sill/86-host-post.js`), plain data with stable ids, to move onto `KHAMLET.village` when it gains them |
+| `core/simulation` | the post's books (its stock, the caravans' trade) wait for the hamlet record set; `check_core_use` would then ask for `core/city` too, which the plan rules out (a hamlet, not a city) |
+| `core/camp` | the bench's night camp is pending records drawn as stand-ins (station 2); `KCAMP`'s caravan records are planned, not built |
+| `core/city` | no: the post is a hamlet (as planned) |
+| `kits/fauna` | no animal is placed: the Outlands' ostriches, goats, vultures and hexapods, the golden bird and the runner bird wait for their records in kits/fauna; the stalker hexapod's lairs (`hunter`) with them |
+| `kits/catalog`, `core/furnish` | no interiors are drawn (the post's buildings are stand-ins) |
+| `kits/resources` | the geology bake is not read; the plan's section 2 is the plan's reading |
+| `KCAVERN`, `KSPELEO` (39, 39b) | the amethyst geodes on the east rim are owed |
+| `KRUBBLE` (37c) | the talus blocks are the floor pass's boulders and fallen columns; KRUBBLE's fields when the walls' feet are drawn closer |
+| `KLAVA` (46, 46b) | the floor is dead (7c) |
+| `KSTACKS.contour` (37b) | the fins keep KSTACKS' own profile |
 
 **What is kit-side, not core:** the vents, if any (black-smoker chimneys, lava glow), and the look of the walls closing the
 sky. KHORIZON gives the shading, and the composition is the kit's.
