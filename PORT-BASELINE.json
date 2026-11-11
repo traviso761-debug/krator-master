@@ -380,6 +380,22 @@
    "bytes": 3643337,
    "sha256": "8f9968ae2635680365d8793464b252210fd82b53dd723929cdddd67325be755b"
   },
+  "biomes/paintedhighlands/dist/paintedhighlands-bloom.html": {
+   "bytes": 5729334,
+   "sha256": "18e384cf40010347879cf493a1f158a3b18de9544729bef2d71e310ec3a5f544"
+  },
+  "biomes/paintedhighlands/dist/paintedhighlands-canyon.html": {
+   "bytes": 5729337,
+   "sha256": "675c8d681c2b949a7036a050e79edfd4e8fb79d3ff96a7513979fb5f37f4e207"
+  },
+  "biomes/paintedhighlands/dist/paintedhighlands-cliff.html": {
+   "bytes": 5729334,
+   "sha256": "e756614e3dadd460f7dcc6114e28d45f146f28a24f52889ce4557bf7c6817b97"
+  },
+  "biomes/paintedhighlands/dist/paintedhighlands.html": {
+   "bytes": 5729082,
+   "sha256": "f3b1ed1b34a9415195746e940271b4df7947314938474416d39164c5e515822b"
+  },
   "biomes/rift/dist/rift-highland.html": {
    "bytes": 7521099,
    "sha256": "54b0bacf791b170faab3ecbb8fcd3d7f131ba66b73a9218a356875fdaebb4ddb"
