@@ -177,18 +177,35 @@ node's, so the open world and the Line agree on where the metal is. Where a vein
 
 **Shafts to the surface** (*proposed*, where the cover is thin; the survey's cover):
 
-| Bore km | Cover | Surface | Shaft |
-|---|---|---|---|
-| 4, 10 | 0.2, 0.7 km | 3.9-4.4 km, the foothills under Shelf | the north end's air |
-| 24 | 1.1 km | 4.8 km, the sedimentary valley | the valley's adit and shaft |
-| 218 | 2.2 km | 5.8 km, the fells over the rift fill | **the great shaft**: the hot section's southern exhaust, at the Twenny junction; the deepest the Ancients sank |
-| 250, 260 | 1.1, 0.7 km | 4.7, 4.2 km | the rift end's air |
-| 270-304, every 400 m | 30-280 m | 3.5-3.8 km, the tableland | the shallow south's light and air shafts |
+| Bore km | Cover | Surface | Shaft | To Dalab's road | A raid point? |
+|---|---|---|---|---|---|
+| 4, 10 | 0.2, 0.7 km | 3.9-4.4 km, the foothills under Shelf | the north end's air | 6, 8 km | **yes**: the road climbs past Shelf right over the Line's north end |
+| 24 | 1.1 km | 4.8 km, the sedimentary valley | the valley's adit and shaft | 13 km | **yes** (a night out and back) |
+| 218 | 2.2 km | 5.8 km, the fells over the rift fill | **the great shaft**: the hot section's southern exhaust, at the Twenny junction; the deepest the Ancients sank | 34 km | no: two nights, with a hidden camp |
+| 250, 260 | 1.1, 0.7 km | 4.7, 4.2 km | the rift end's air | 26, 24 km | no (two nights) |
+| 270-304, every 400 m | 30-280 m | 3.5-3.8 km, the tableland | the shallow south's light and air shafts | 21 km at km 270, falling to **12 km at km 300** | **yes** from km ~290: the road's last stretch to Ledge's cliff |
+
+The distances are to Dalab's road as `biomes/riftrim/PLAN.md` routes it (Dalab, Shelf, 488,1220, the crest 483,1236,
+477,1245, Ledge 436,1329; its x at y 1196, 1270 and 1300 interpolated here, so to about 2 km). A raid point is a head
+within 15 km of the road: a night's walk there and back over the fells.
 
 None inside the hot section: the crest over it is near-airless, so a shaft there would vent the section (the `seal`
 hazard; the `hot-sealed` check). **The shaft heads** on the mountain have a winch house, an ice store and a hooded white
 lamp; the Fellgang road families porter there (the tungang plan's Travellers): the mountains' ice comes down the shafts to
-the hot holds. `LN.shafts` gives each `{id, s, side, top: [x, y, z], depth, r, kind: air | adit | winch, state}`.
+the hot holds.
+
+**Hidden** (the owner, 2026-11-11: "the entrances' locations are kept well hidden from outsiders"): a shaft head reads as a
+cleft in scree or a turf-capped hut that looks like a boulder, with no path to it; its hooded lamp is lit only to a
+signal (the disguised forms are the kit's `tg_shaft_head`). Every shaft and adit is `hidden: true` unless an outsider
+knows it (Ledge's lifts and the portals are known). A map shows a hidden head only to those who know it, the minimap
+included.
+
+**Raids** (the owner, 2026-11-11: a striking Tungang Union "might exploit" the shafts "to take direct action against Dalab
+caravans"): a loj on strike comes up a shaft at night over Dalab's road to block it, cut beasts loose or take cargo down,
+and vanishes. The shafts within reach of the road are the raid points of `core/simulation`'s Dalab-Tungang latent war
+(`PLAN-POLITICS.md`): `road: {id, d, reach}` on each shaft says which.
+
+`LN.shafts` gives each `{id, s, side, top: [x, y, z], depth, r, kind: air | adit | winch, state, hidden, road: {id: 'dalab-ledge', d, reach}}`.
 
 **The numbering** (question 2). Canon has the lojes numbered "after the Line's original stations north to south (Ledge's
 lifts are Loj Fower)", but Ledge is the Line's southern end, and Loj Twenny lies north of it. *Proposed*: the Ancients
@@ -281,7 +298,8 @@ LN { id, kind: 'line', seed, path, L, floorAt(s), guideAt(s, track), axisAt(s),
      stations: [{ id: 'rift.st8', num, s, s0, s1, kind: station | ghost | door | gap | portal, state: built | kept | abandoned | sealed,
                   platforms: [{ id, side, track, from, to, y }], sidings: [...], sheds: [...], rooms: [{ id, kind, box }], loj? }],
      doors:    [{ id, s, kind: 'hot', leaves: [{ track | 'walk', w, h, state }], plant }],
-     shafts:   [{ id, s, side, top: [x, y, z], depth, r, kind: air | adit | winch, state }],                  section 2.1
+     shafts:   [{ id, s, side, top: [x, y, z], depth, r, kind: air | adit | winch, state, hidden,
+                  road: { id, d, reach } }],                                                                 section 2.1
      adits:    [{ id, s, side, to: [x, y, z], state }],
      veins:    [{ id, s, side, family, grade, node, working: { state: kept | worked-out | abandoned, len } }],  derived (KRES)
      plant:    [{ id, s, door, kind: 'geothermal', state, cells }],                                          at the hot doors
@@ -604,5 +622,7 @@ question 14):
     world agrees; the heartland gives copper and rare earths, the north end iron (the valley) and tin (the north door's
     granite), the gneiss's gold and silver lie behind the hot doors; the metals move along the Line as cargo?
 17. **The shafts** (section 2.1): air shafts only where the cover is thin (both ends, the valley, the great shaft at the
-    Twenny junction, the shallow south), none over the hot section; their heads with a winch house, an ice store and a
-    hooded lamp, portered by the Fellgang road families?
+    Twenny junction, the shallow south), none over the hot section; their heads hidden and disguised, with a winch
+    house, an ice store and a hooded lamp, portered by the Fellgang road families? The raid points are the heads within
+    15 km of Dalab's road: km 4, 10 and 24 in the north, and km 290-304 in the shallow south. Is 15 km (a night's walk out
+    and back) the right reach?
