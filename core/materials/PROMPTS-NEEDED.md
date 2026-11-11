@@ -3,7 +3,7 @@
 Every texture or pattern sheet the owner still has to source or generate, each with its finished prompt. Paste a block
 as it is, one image per block. **Everything delivered lives in `PROMPTS-archived.md`** (checked against `core/materials/library/`, `patterns/` and each build's `materials.json` on `origin/main`, 2026-10-19); this file holds only what is still owed.
 
-**Count: 19 prompt blocks** (2026-11-11: +1, `metal.scorched` for the Motor Vehicles kit's burnt ruins, section 36; 2026-11-10: -5, the owner's delivery of that day; 2026-11-09: +3 for the southern highlands' upper stations, section 37; +15 for the hyperjungle's lands and the savannah rims, section 40, 2026-11-08; counted 2026-11-04 before them).
+**Count: 29 prompt blocks** (2026-11-11: +10 for the Tungang kit, section 43, and +1, `metal.scorched` for the Motor Vehicles kit's burnt ruins, section 36; 2026-11-10: -5, the owner's delivery of that day; 2026-11-09: +3 for the southern highlands' upper stations, section 37; +15 for the hyperjungle's lands and the savannah rims, section 40, 2026-11-08; counted 2026-11-04 before them).
 
 **Delivered 2026-11-03:** section 31's five (the Gills: `rock.lamina.pipe`, `mineral.crust.ferromanganese`, `mineral.crust.brucite`,
 `card.breathfringe`, `card.turf.limed`) and ten owed on unmerged branches (High Rift, nwbay, nhighlands, ringisles, the rift rim, Copper Glacier),
@@ -441,6 +441,62 @@ rails and every ruined metal. **3 prompts.** Each takes the base template, then:
 | `ground.asphalt.lanes` | Worn dark asphalt road surface with faded lane paint: fine aggregate showing through the bitumen (#4a4846, #585450), a patched crack running across, and one broken white lane dash (#d8d4c8, worn to 60%) along one edge of the tile and a faded yellow edge line (#c8a040) along the other, so the tile repeats as a lane. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. |
 | `ground.ballast.rail` | Railway track ballast: angular grey granite stones 3 to 6 cm (#7e7a74, #8a8680, #6a6660), packed, dusty with rust-brown fines between them (#6a4a36), two faint darker bands across the tile where sleepers lay. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. |
 | `metal.rail.rusted` | The head and web of a steel rail a thousand years idle: flaking orange-brown rust (#8a4a2c, #a65a36) over pitted dark steel (#4a4644), the running surface a dull grey band along the tile's middle with rust creeping over it, scale lifting at the edges. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. |
+
+## 43. The Tungang kit (`kits/tungang`, 2026-11-11)
+
+`kits/tungang/PLAN.md` section 7, agreed by the owner on 2026-11-11 ("agree with your suggestions"). The Line's biome
+(`biomes/line`) wants the lining segment and the hewn rock too. Wire them into `kits/tungang/materials.json` (and the
+Line's) when they come. Numbered 43 because sections 41 and 42 are owed on `claude/rift-hearths-cavern-b8baf6`.
+
+`rock.hewn.drillmarked` (the hand-cut galleries of the Line and the holds):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a hand-hewn tunnel wall in hard grey gneiss with limestone bands: parallel rows of half-barrel drill holes running diagonally across the rock, pick and chisel scars between them, sharp angular facets, fine grey dust in the hollows, faint dark soot staining in patches and a smoother, slightly polished worn area across the middle as if many shoulders had brushed it. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
+```
+
+`concrete.lining.segment` (the precast lining of the Line's gallery and bores; the ring house's walls):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: the face of a precast concrete tunnel lining segment seen straight on: smooth dense grey concrete with faint formwork marks, two rows of square bolt pockets each holding a rusted steel bolt head and washer, a narrow rubber gasket groove running along the joints at the tile's edges so neighbouring tiles read as segments of a ring, pale calcite streaks and brown water stains running down from the joints, a faded rectangular patch of old paint where a ring number once was. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
+```
+
+`organic.fungus.leather` (the Tungangs' pressed and tanned fungus hide: bags, aprons, seat covers):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: leather made from pressed and tanned mushroom mycelium: a felted, suede-like fibrous surface with faint wavy growth layers, soft creases and scuffs, panels joined by rows of coarse hand stitching in pale thread, slightly irregular edges at the seams. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
+```
+
+`patterns/tungang/loj-banner` (a loj's banner, carried at meetings and funerals; a single panel, not tiling):
+```
+Square, 2048x2048. A flat, front-on decorative panel filling the whole frame edge to edge: one whole banner, not tiling. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no watermark, no readable words. Panel: a trade-union lodge banner in the style of a nineteenth-century English miners' lodge banner, painted on heavy crimson silk: a gold scroll across the top and another across the bottom with worn lettering-shapes that cannot be read, a large central oval painting of pale, hooded workers in dark coats with small red lamps raising their hands together at a meeting, beneath an emblem of a wheel and a lamp, gold and cream scrollwork in the four corners, a gold fringe along the bottom edge; a thousand years of mending: patched cloth, faded and flaking paint, darned tears, smoke darkening toward the edges. Full colour: crimson #7a1a17, gold #c9a24a, cream #f3dfa6.
+```
+
+`patterns/tungang/loj-banner.b` (a second banner):
+```
+Square, 2048x2048. A flat, front-on decorative panel filling the whole frame edge to edge: one whole banner, not tiling. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no watermark, no readable words. Panel: a trade-union lodge banner in the style of a nineteenth-century English miners' lodge banner, painted on heavy deep green silk: gold scrolls at top and bottom with worn lettering-shapes that cannot be read, a central oval painting of a long train with lit windows coming out of a great arched tunnel, workers with lamps standing beside the track, cream and gold ornament round the oval, a fringe along the bottom; centuries of mending: patches, faded paint, darns, soot. Full colour: green #2f5a3a, gold #c9a24a, cream #f3dfa6, the train's lamps #e8b24a.
+```
+
+`patterns/tungang/loj-banner.c` (a third banner):
+```
+Square, 2048x2048. A flat, front-on decorative panel filling the whole frame edge to edge: one whole banner, not tiling. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no watermark, no readable words. Panel: a trade-union lodge banner in the style of a nineteenth-century English miners' lodge banner, painted on heavy dark blue silk: gold scrolls at top and bottom with worn lettering-shapes that cannot be read, a central oval painting of a column of workers with lamps and tools walking down into a tunnel mouth while a red sky burns above the mountains behind them, two clasped hands in a gold medallion beneath the oval, cream and gold corner scrolls, a fringe along the bottom; centuries of mending: patches, faded paint, darns, soot. Full colour: blue #1f2a4a, gold #c9a24a, cream #f3dfa6, red sky #a8382c.
+```
+
+`patterns/tungang/enamel-signs` (a 4 x 4 atlas of the Line's enamel signs; read as holy marks):
+```
+Square, 2048x2048. A flat, front-on decorative panel filling the whole frame edge to edge: a 4 by 4 grid of sixteen separate enamel signs, each in its own equal cell on a plain dark grey ground. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no border, no watermark, no words. Signs: old vitreous enamel railway signs on iron, rectangular, round and diamond, in red on cream, cream on red, cream on green and white on blue; each carries only a large numeral, an arrow, a lamp symbol, a bell symbol, a downward chevron or a simple pictogram of a person or a train, never words; every sign chipped at its edges and corners down to black iron, with small rust blooms, screw holes at the corners, and the enamel faded unevenly. Full colour: red #a8382c, cream #e2d8bc, green #2f6a4a, blue #2a4a7a, iron #2a2826.
+```
+
+`patterns/tungang/crew-mosaic` (the platform's landmark wall; a single panel):
+```
+Square, 2048x2048. A flat, front-on decorative panel filling the whole frame edge to edge: one whole mural, not tiling. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no border, no watermark, no words. Panel: a worn mosaic mural in the manner of a Soviet metro station mosaic: heroic workers in hooded coats holding lamps and long spanners, a train emerging from a tunnel mouth behind them, rays fanning out from a lamp above; small tesserae of ceramic, coloured glass and bits of scrap metal; many tiles missing in patches showing grey mortar beneath, cracks running through, grime and soot darkening the upper part. Full colour, muted by age: brick red #8a3a2c, ochre #b8893a, deep green #3a5a44, gold glass #c9a24a, grey mortar #8a867c.
+```
+
+`patterns/fellgang/daub` (a 2 x 2 atlas of the Fellgangs' daubed marks on plate; the slogans' letters are the kit's own decals):
+```
+Square, 2048x2048. A flat, front-on decorative panel filling the whole frame edge to edge: a 2 by 2 grid of four separate squares, each a sheet of rusty steel plate. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no border, no watermark, no letters or words. Panels: crude marks daubed and sprayed in thick paint on rusted, dented steel plate, with runs and drips: (1) a bold wheel symbol in white, scraped and repainted; (2) a charging aurochs with great horns in red; (3) rows of handprints and tally marks in black and white; (4) a large X and jagged stripes in red over older faded paint; paint flaking where the rust has pushed through. Full colour: rust #7a4a32, white #e8e2d4, red #a8302a, black #1c1a18.
+```
+
+`patterns/glazier/cholet-front` (the painted band on the Glaziers' carved fronts; tiles horizontally):
+```
+Seamless tileable texture, 2048x512 (a horizontal band). Orthographic view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge. Panel: a painted decorative band on whitewashed plaster, in the bright flat colours of Andean cholet facades combined with Tibetan and Persian ornament: a row of stepped lozenges and zigzags, a running band of small eight-spoked wheels, thin gilt lines edging each band, colours rose, teal, saffron and white on the whitewash, the paint slightly worn. Full colour: rose #c8607a, teal #2a8a88, saffron #e0a030, white #f2eee4, gilt #c9a24a.
+```
 
 ## Gaps with no prompt yet
 
