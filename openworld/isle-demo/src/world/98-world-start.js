@@ -28,9 +28,12 @@ async function start(){
  WORLD.init(R);
  msg('laying out the land');for(const f of LATE)f();
  CAM.paintBase(R);
- // the first view: the sedesert plateau west of Shade, looking east over the scrub toward the abyss's rim
- const sh=PLACES.list.find(p=>p.name==='Shade')||{x:0,z:0};
- CAM.setView(sh.x-6000,sh.z+2500,140,0,-.12);CAM.lookAt(sh.x,WORLD.H(sh.x,sh.z)+60,sh.z);
+ // the first view: the region's own (WORLD_CONFIG.start: a place, framed as "Go to" frames it; the probe's flora checks
+ // run round it), else little-demo's: the sedesert plateau west of Shade, looking east over the scrub toward the abyss's rim
+ const st=WORLD_CONFIG.start&&PLACES.list.find(p=>p.name===WORLD_CONFIG.start);
+ if(st){CAM.setView(st.x+900,st.z+1400,320,0,-.18);CAM.lookAt(st.x,WORLD.H(st.x,st.z)+40,st.z);}
+ else{const sh=PLACES.list.find(p=>p.name==='Shade')||{x:0,z:0};
+  CAM.setView(sh.x-6000,sh.z+2500,140,0,-.12);CAM.lookAt(sh.x,WORLD.H(sh.x,sh.z)+60,sh.z);}
  requestAnimationFrame(frame);}
 let last=performance.now(),fpsN=0,fpsT=performance.now(),fps=0,lastDraw=null;
 const camera=HOST.camera,renderer=HOST.renderer,scene=HOST.scene;

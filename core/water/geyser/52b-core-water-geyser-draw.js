@@ -92,8 +92,10 @@
  // or its back faces while the camera is inside it, so the column is seen from within. S.plume (WATER.geyser({plume})) or o.plume makes the record;
  // the export carries it (Godot: a FogVolume over its box). o: as drawGeyser's {THREE, scene, uniforms, fog, renderOrder, onMaterial}, plus
  // {plume (WATER.plumeOf's options), steps, colour [r, g, b], shade [r, g, b]}. One draw call. -> {mesh, material, record}
- W.plumeGLSL=P=>{const f=glf;return['float plmSm(float a,float b,float x){float t=clamp((x-a)/(b-a),0.0,1.0);return t*t*(3.0-2.0*t);}',
-  'float plmDensity(vec3 p,float s){float h=(p.y-'+f(P.y0)+')*'+f(1/P.height)+';if(h<0.0||h>1.0)return 0.0;vec2 c=vec2('+f(P.x)+'+'+f(P.lean[0])+'*(p.y-'+f(P.y0)+'),'+f(P.z)+'+'+f(P.lean[1])+'*(p.y-'+f(P.y0)+'));'+
+ // dy: the height over the vent's base, written p.y+1278.37 for a base below 0 (p.y--1278.37 is a decrement, a syntax
+ // error: the isle demo's vents stand below its zero); a base at or above 0 keeps the text it always had
+ W.plumeGLSL=P=>{const f=glf,dy='(p.y'+(P.y0<0?'+'+f(-P.y0):'-'+f(P.y0))+')';return['float plmSm(float a,float b,float x){float t=clamp((x-a)/(b-a),0.0,1.0);return t*t*(3.0-2.0*t);}',
+  'float plmDensity(vec3 p,float s){float h='+dy+'*'+f(1/P.height)+';if(h<0.0||h>1.0)return 0.0;vec2 c=vec2('+f(P.x)+'+'+f(P.lean[0])+'*'+dy+','+f(P.z)+'+'+f(P.lean[1])+'*'+dy+');'+
    'float r='+f(P.radius)+'*(0.5+h);float d=length(p.xz-c)/r;return '+f(P.density)+'*s*exp(-2.0*d*d)*plmSm(0.0,0.12,h)*(1.0-plmSm(0.55,1.0,h));}',
   'float plmH(vec3 p){p=fract(p*0.1031);p+=dot(p,p.zyx+31.32);return fract((p.x+p.y)*p.z);}',
   'float plmNoise(vec3 p){vec3 i=floor(p);vec3 u=fract(p);u=u*u*(3.0-2.0*u);return mix(mix(mix(plmH(i),plmH(i+vec3(1.0,0.0,0.0)),u.x),mix(plmH(i+vec3(0.0,1.0,0.0)),plmH(i+vec3(1.0,1.0,0.0)),u.x),u.y),'+
