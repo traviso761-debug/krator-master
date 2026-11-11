@@ -16,6 +16,7 @@ import argparse, os, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 ATMOS = os.path.dirname(HERE)
 ROOT = os.path.dirname(os.path.dirname(ATMOS))
+sys.path.insert(0, os.path.join(ROOT, 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 
 C = lambda *p: os.path.join(ROOT, 'core', *p)
 FRAGMENTS = [
@@ -61,10 +62,7 @@ def main():
     ap.add_argument('--list-sources', action='store_true')
     a = ap.parse_args()
     three = find_three()
-    if a.list_sources:
-        for p in FRAGMENTS + [three, os.path.join(HERE, 'src', '00-head.html')]:
-            print(os.path.relpath(p, ROOT).replace(os.sep, '/'))
-        return
+    BSRC.report(FRAGMENTS + [three, os.path.join(HERE, 'src', '00-head.html')])   # --list-sources: what the page reads, then exit
     js = '\n'.join('// ---- ' + os.path.relpath(p, ROOT).replace(os.sep, '/') + '\n' + read(p) for p in FRAGMENTS)
     page = read(os.path.join(HERE, 'src', '00-head.html')).replace('/*THREE*/', read(three)).replace('/*JS*/', js)
     os.makedirs(os.path.dirname(a.out), exist_ok=True)
