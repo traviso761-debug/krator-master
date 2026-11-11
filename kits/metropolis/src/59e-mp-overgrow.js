@@ -155,7 +155,8 @@ MP.WILD_CAP = 900;      /* the most sockets one hero grows from (MP.overgrow o.c
       MP.plant(F, state, { x: 0, y: 0, z: 0, yaw: 0 }, { density: dens, seed, plant: s => { if (!planted(s)) return false; const u = KRAND.unit(KRAND.hash(s.seed, 3)); if (s.size === 'tree') list.push({ ref: TREES[Math.floor(u * TREES.length)], x: s.x, y: s.y, z: s.z, scale: Math.max(0.3, Math.min(0.8, s.r / 7)), seed: s.seed }); else list.push({ ref: FLOOR[Math.floor(u * FLOOR.length)], x: s.x, y: s.y, z: s.z, scale: 1, seed: s.seed }); return true; } });
       const P = MP.flora.grow(list); P.children.slice().forEach(m => { m.userData.noShell = true; m.name = F.id + '.' + state + '.wild.flora'; G.add(m); }); G.userData.flora = P.userData.flora;
     }
-    G.name = F.id + '.' + state + '.wild'; G.userData.state = state + '.wild'; G.userData.tris = MP.countTris(G, m => m.name !== 'debris' && !(m.parent && m.parent.name === 'debris'));
+    /* the hero's count is the kit's own (its growth included); the page's planting (noShell: a host plants its own) is counted apart */
+    G.name = F.id + '.' + state + '.wild'; G.userData.state = state + '.wild'; const noDebris = m => m.name !== 'debris' && !(m.parent && m.parent.name === 'debris'); G.userData.tris = MP.countTris(G, m => noDebris(m) && !m.userData.noShell); G.userData.floraTris = MP.countTris(G, m => noDebris(m) && !!m.userData.noShell);
     return G;
   };
 })();

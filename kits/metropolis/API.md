@@ -61,7 +61,8 @@ valley's flattened stub) keeps the other clean. Options: `o.density` 0..1 (`MP.W
 multiplied into the moss, the leaves and the soil (the biome's colour), `o.standins` `true | false | fn(socket)`, `o.strands`,
 `o.moss`, `o.soil` (each true unless false), `o.cap` (`MP.WILD_CAP`, 900 sockets at most, the lowest units first), `o.sockets`
 (ready-made). It adds two materials to `MP.mats()`: `vine` (bark) and `moss`; the stand-ins take `green`. A wild hero may hold
-`MP.WILD_BUDGET` (1.6) times its family's triangle budget; the growth is 20 to 50 k triangles a hero.
+`MP.WILD_BUDGET` (1.6) times its family's triangle budget (`userData.tris`, the kit's own: the growth is 13 to 41 k triangles a hero on this page;
+the page's planting is counted apart in `userData.floraTris`, 30 to 60 k).
 
 `MP.plant` is the biome adapter: the host's kits grow their species at the sockets. Each kept socket is handed over turned and moved
 by `at` (`x, y, z, nx, ny, nz` in the world; the hero-frame record under `local`); `o.plant` returns true when it planted. `o.kinds` and
