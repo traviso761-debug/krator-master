@@ -333,10 +333,12 @@ for n in ('Pinnacle Rock', 'Girder', 'Kautoa', 'Nusidi', 'Fort Ebon', 'Port Goto
 IZM['Spirladunon'] = PXOF('Spirladunon')
 IZM['Talia'] = [1072, 936]
 IZM = {('the Pile' if n == 'Cube' else n): p for n, p in IZM.items()}
-NO_ROAD = {tuple(sorted(('Tethis', 'Nereus')))}   # the owner, 2026-11-11: no Tethis-Nereus road
+NO_ROAD = {tuple(sorted(x)) for x in (('Tethis', 'Nereus'), ('Fort Ebon', 'Spirladunon'), ('Nereus', 'Fort Ebon'))}   # the owner, 2026-11-11   # the owner, 2026-11-11: no Tethis-Nereus road
 n_iz = mesh('izani', IZM, 'izani', 'Izani highway', 2, ancient_pairs | NO_ROAD)
 _ap = nodes['Amaro']['px']; _ak = int(np.hypot(_av[:, 0] - _ap[0], _av[:, 1] - _ap[1]).argmin())
 add('dirt.amaro', 'dirt', 'Amaro', 'the Ancient highway', mtrace(cellof(*_ap), cellof(*[float(_av[_ak][0]), float(_av[_ak][1])])), name='Dirt path: Amaro (Shumar) to the Ancient highway')
+for a_, b_ in (('Spirladunon', 'Torus'), ('Dilihan', 'Port Visas')):   # the owner, 2026-11-11
+    add('izani.%s-%s' % (a_.lower(), b_.lower().replace(' ', '')), 'izani', a_, b_, mtrace(cellof(*PXOF(a_)), cellof(*PXOF(b_))), name='Izani highway: %s to %s' % (a_, b_))
 _sh = PXOF('Shim')
 if 'Driyan' in nodes:
     add('izani.shim.driyan', 'izani', 'Shim', 'Driyan', mtrace(cellof(*_sh), cellof(*nodes['Driyan']['px'])), name='Izani highway: Shim to Driyan')
@@ -413,6 +415,23 @@ def spur(cls, name, q, limit_px, label):
         tgt = [float(anc_pts[k][0]), float(anc_pts[k][1])]
         add('%s.spur.%s' % (cls, name.replace(' ', '').lower()), cls, name, 'the Ancient highway', mtrace(cellof(*q), cellof(*tgt)), name='%s: %s to the Ancient highway' % (label, name))
 for n, q in BR.items(): spur('trail', n, q, 60, 'Beast Rider trail')
+spur('dirt', 'Coyote Canyon', PXOF('Coyote Canyon'), 200, 'Dirt road')   # the owner, 2026-11-11
+# two small Ring Islander villages (about 1,000 people each) on the Throne's coast, north-east and south-east of Zey'danin,
+# joined to it by dirt paths (the owner, 2026-11-11): the coastal land cell nearest a bearing 30 to 60 px out
+_zx, _zy = PXOF("Zey'danin")
+_coast = binary_dilation(W2, iterations=1) & ~W2 & (E2 < 600)
+_cy, _cx = np.nonzero(_coast)
+for _nm, (_bx, _by) in (('Islander village (NE of Zey\'danin)', (0.7, -0.7)), ('Islander village (SE of Zey\'danin)', (0.7, 0.7))):
+    _dx, _dy = _cx - _zx, _cy - _zy; _r = np.hypot(_dx, _dy)
+    _ok = (_r > 12) & (_r < 70) & ((_dx * _bx + _dy * _by) / np.maximum(_r, 1e-6) > 0.8)
+    if not _ok.any(): print('no coast for', _nm); continue
+    _k = int(np.argmin(np.where(_ok, _r, 1e9))); _vp = [int(_cx[_k]), int(_cy[_k])]
+    _id = 'new.islander.' + ('ne' if 'NE' in _nm else 'se')
+    nodes[_nm] = {'id': _id, 'name': _nm, 'type': 'village', 'px': _vp, 'kind': 'town',
+                  'note': "proposed (the owner, 2026-11-11): a small Ring Islander fishing village, about 1,000 people, on the Throne's coast; a dirt path to Zey'danin"}
+    add('dirt.' + _id, 'dirt', "Zey'danin", _nm, mtrace(cellof(_zx, _zy), cellof(*_vp)), name="Dirt path: Zey'danin to the %s" % _nm.replace(' (', ', ').replace(')', ''))
+    print('islander village', _nm, _vp, 'at', round(float(E2[_vp[1], _vp[0]])), 'm')
+add('dirt.reed-mungo', 'dirt', 'Reed', 'Mungo', mtrace(cellof(*PXOF('Reed')), cellof(*PXOF('Mungo'))), name='Dirt path: Reed to Mungo')   # the owner, 2026-11-11
 # ---- the owner: "if convenient, modern highways and trails should try to connect to the ancient network if it is not too far" (40 km)
 done = set(BR) | {'Temora', "Zey'danin", 'the Temora highway'}
 for r in list(routes):

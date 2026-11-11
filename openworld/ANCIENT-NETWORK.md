@@ -878,6 +878,18 @@ The Ancient network is 63 sites and 22,026 km, 3,627 km of it in tunnel, with no
 | *Dirt paths* (Nereus, Coyote Canyon, Amaro) | 3 | 935 |
 | *Beast Rider trails* | 7 | 576 |
 
+### 8.15 The owner, 2026-11-11 (road fixes)
+
+- **Spirladunon joins Torus** by an Izani highway. Spirladunon's long highway toward the Pontus region (to Fort Ebon,
+  717 km) is dropped.
+- **Nereus's road over the sea** (to Fort Ebon) is dropped.
+- **A direct Izani highway from Dilihan to Port Visas.**
+- **A dirt road from Coyote Canyon to the nearest Ancient road.**
+- **A dirt path from Reed to Mungo.**
+- **Two small Ring Islander fishing villages**, about 1,000 people each, on the Throne's coast north-east (806,794) and
+  south-east (801,871) of Zey'danin, each joined to it by a dirt path. Both are *proposed* places, and the scale model adds
+  them (edit M12).
+
 ### 8.9 Still open (earlier list; items 2 to 5 answered in 8.10)
 
 1. **The Stair tunnel's canon: done** (the owner: "Yes, rewrite it"). `LORE.md` §4's Catch passage now says that no
