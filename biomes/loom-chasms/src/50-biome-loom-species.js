@@ -24,7 +24,7 @@ const K=(c,a,r,kp)=>({climate:c,aridity:a,abyssal:false,riparian:r,koppen:kp});
 LOOM.PLANTS={
  cablespinner:{name:'Cable spinner',items:['cable','shoot','bladder','tuber'],tags:Object.assign(K('warm..cold','arid','no',['BWk','BSk']),{lineage:'fungoid host',
   harvest:HV('cordage (the grown cable\'s iron-silica fibre: the Yuni cut fallen cables for rope and wire)',[],false,'Spans the slots in tension: the shoot arches up on its gas bladders, the grown cable hangs; the anchors are tubers fused into the basalt.')})},
- beardmoss:{name:'Cable beard',items:['beard'],tags:Object.assign(K('warm..cold','semiarid','no',['BWk','BSk']),{harvest:HV('tinder, stuffing',[],false,'Grey-green beards hung from the grown cables: the canopy\'s floor for what lives on it.')})},
+ beardmoss:{name:'Cable beard',items:['beard'],tags:Object.assign(K('warm..cold','semiarid','no',['BWk','BSk']),{harvest:HV('stuffing; fuel (tinder)',[],false,'Grey-green beards hung from the grown cables: the canopy\'s floor for what lives on it.')})},
  curtain:{name:'Wall curtain',items:['curtain'],tags:Object.assign(K('warm..cold','semiarid','no',['BWk','BSk']),{harvest:HV('none',[],false,'Shade lovers on the slots\' sheer walls, where the night\'s dew runs down: a hanging garden in rust, violet and green.')})}};
 LOOM.plantOfItem=item=>{for(const k in LOOM.PLANTS)if(LOOM.PLANTS[k].items.indexOf(item)>=0)return LOOM.PLANTS[k];return null;};
 LOOM.FRUIT_KEYS=[];
