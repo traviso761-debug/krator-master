@@ -524,14 +524,18 @@ power).
   section's air is thin as well as hot: the crest above is near-airless). Each car's floor 1.2 m above the guideway top
   (the platform's height); the bogies two a car, four wheels a bogie on the guideway, the guide skids in the slot.
 - **A train**: two power cars and six to ten between (190 to 290 m). The long run's three trains are 8, 10 and 12 cars.
-- **States**, the same car at four ages (the owner's question 21 settled where they live; the states are *proposed*):
+- **States**, the same car at four ages (accepted by the owner, 2026-11-11; the shape agreed with the vehicles session the same day):
 
 | State | What | How in the vehicles kit |
 |---|---|---|
-| `built` | as the Ancients ran it: white panel, blue glass, cyan strips lit | the car's build with no ruin |
-| `kept` | a thousand years of Tungang upkeep: plate riveted over the white skin, the windows plated to slits, the lamp code on the nose (green running, red tail, the white lamp hooded), enamel number plates, a loj's livery bands, a bell on the cab, the timetable chalked inside, the door seals waxed | **new**: a culture's upkeep dress over another's vehicle (section 12: agreed with the vehicles session) |
+| `built` | as the Ancients ran it: white panel, blue glass, cyan strips lit | the kit's `intact` |
+| `kept` | a thousand years of Tungang upkeep: plate riveted over the white skin, the windows plated to slits, the lamp code on the nose (green running, red tail, the white lamp hooded), enamel number plates, a loj's livery bands, a bell on the cab, the timetable chalked inside, the door seals waxed | **not a ruin state**: an upkeep option over the built car, `KratorVehicles.build(key, {variant, seed, state: 'intact', kept: 'tungang'})`, drawn by the keeping culture's own function (in `krator-vehicles-tungang.js`) over the vehicle; verify's ruin checks (dead lamps, no glass) do not apply to it |
 | `derelict` | drawn into a siding and left: glass gone, panels sprung, dust; the kit's carriage houses later | the kit's `weathered` |
 | `wreck` | a train caught in a collapse: a car crushed under the fall, one rolled across two tracks | the kit's `wreck` forms |
+
+The vehicles kit also has `burnt` (`intact | weathered | burnt | wreck`, `vehicleRuin(state, seed, key, airframe)` in `vehicles-core.js`),
+usable for a train caught in a fire. The Line cars declare `budget.tris` (a 24 m sealed car is over the 6,000 default; the
+ceiling is 20,000) and their wheels `steer: false` with `maxSteer: 0`, as `anc_tram` does, so they pass the kit's checks.
 
 - **The Tungangs' own stock**, from salvage (*proposed*, a `tungang` culture file in the vehicles kit): `tg_trolley` (the
   Fixers' hand-pumped car on the guideway: a deck on a bogie, the lever, a lamp pole, a tool chest); `tg_flat` (a flat
