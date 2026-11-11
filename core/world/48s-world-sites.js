@@ -21,6 +21,8 @@
 //   CAMP {id: '<site>/camp/<tribe>', tribe, name, site: {x, z}, way, R, hearth, gate, census: {pop, adults, children, elders,
 //         riders, mounts, households}, records: [{id, key, v, kind, x, z, ry, w, d, h}], hedge, fence, pasture, short}
 //   ROAD {id: '<site>/road/<n>', from (a camp's id), to (the site's id), hw, pts: [[x, z, e]], length_m, maxGrade}
+//   LINK {id: '<site>/link/<site>', from, to, hw, pts, length_m, maxGrade, stops?: [STOP], gaps?: [{id, kind, at_m, why}]}
+//        (plan's `links`; STOP: stops(); a gap is a stop the road had no ground for)
 // Every id begins with the site's id in the scale model, so an edit (core/edits) keeps its target when the plan is redone.
 var KSITES=(function(){'use strict';
 const SLOPE=.3,RINGS=[0,.3,.6,1],SPOKES=12,GRID=50;
@@ -94,11 +96,64 @@ function plan(spec,kit){const out={format:'krator-site-plan',version:1,region:sp
  if(spec.links&&typeof ROADS!=='undefined'){out.links=[];
   for(const L of spec.links){const A=out.sites.find(s=>s.id===L[0]),B=out.sites.find(s=>s.id===L[1]),o=L[2]||{};
    if(!A||!B){out.errors.push('link '+L[0]+'-'+L[1]+': a site is missing');continue;}
-   const R=ROADS.route({name:A.id,x:A.x,z:A.z,r:o.r==null?2000:o.r},{name:B.id,x:B.x,z:B.z,r:o.r==null?2000:o.r});
+   const R=o.keep?keptRoute(A,B,o):ROADS.route({name:A.id,x:A.x,z:A.z,r:o.r==null?2000:o.r},{name:B.id,x:B.x,z:B.z,r:o.r==null?2000:o.r});
    if(!R||!R.pts||R.pts.length<2){out.errors.push('link '+A.id+'-'+B.id+': no route');continue;}
-   out.links.push({id:A.id+'/link/'+B.id,from:A.id,to:B.id,hw:o.hw==null?R.hw:o.hw,pts:R.pts.map(p=>[r2(p[0]),r2(p[1]),r2(p[2]==null?HL(p[0],p[1]):p[2])]),
-    length_m:Math.round(R.length_m),maxGrade:Math.round((R.maxGrade||0)*1e4)/1e4});}}
+   const Lk={id:A.id+'/link/'+B.id,from:A.id,to:B.id,hw:o.hw==null?R.hw:o.hw,pts:R.pts.map(p=>[r2(p[0]),r2(p[1]),r2(p[2]==null?HL(p[0],p[1]):p[2])]),
+    length_m:Math.round(R.length_m),maxGrade:Math.round((R.maxGrade||0)*1e4)/1e4};
+   if(o.stops){const St=stops(Lk,o.stops,kit,A.name,B.name);Lk.stops=St.stops;if(St.gaps.length)Lk.gaps=St.gaps;St.errors.forEach(e=>out.errors.push(e));}
+   out.links.push(Lk);}}
  out.hash=hash(out);return out;}
+/* the stops along a link (a link's {stops: {every, inn, rest, culture, setback, look, drop}}): an inn (`inn`, a kit key)
+   every `every` m of road and a rest stop (`rest`) halfway between, none in the last quarter of `every` before a town
+   (the towns are the ends' stops). Each stands beside the road on good ground (KSITES.groundOk at its corners and
+   middle, the ground under it falling no more than `drop` m), its front to the road, `setback` m off the shoulder, with
+   a lane to the carriageway; it is searched along the road (100 m steps out to `look` m either way) and on either side,
+   the sides taken in turn. STOP {id: '<link>/stop/<n>', kind: 'inn'|'rest', name, culture, at_m (along the road from
+   its first town), side, x, z, staff, records: [{id, key, role, x, z, ry, w, d, h}], lane: {w, pts}} */
+/* a link kept inside the region (a link's {keep: true, via (m, 8000)}): the router's coarse pass searches the whole box
+   and may leave a narrow cut (the Iziz cluster's corridors: 24 km off the line), so the link is routed in hops between
+   points on the straight line every `via` m, and its fine pass may not leave the polygon (ROADS.route opts.avoid). The
+   hops' lines are joined end to end; a hop's grade is held within it */
+function keptRoute(A,B,o){const via=o.via==null?8000:o.via,r=o.r==null?2000:o.r,L=Math.hypot(B.x-A.x,B.z-A.z),n=Math.max(1,Math.round((L-2*r)/via));
+ const W=[];for(let k=0;k<=n;k++){const t=(r+(L-2*r)*k/n)/L;W.push({x:A.x+(B.x-A.x)*t,z:A.z+(B.z-A.z)*t});}
+ /* nor run down a river's bed (a cell with a named river's channel at its middle or 80 m to any side: the road crosses a
+    river in one step between two cells, on a causeway, but never lies along it, burying it) */
+ const RW=WORLD.riverWater,wetAt=(x,z)=>RW?[[0,0],[80,0],[-80,0],[0,80],[0,-80]].some(o=>RW(x+o[0],z+o[1])>-1e8):false;
+ const out={pts:[],length_m:0,maxGrade:0,hw:null},avoid=(x,z)=>!WORLD.inside(x,z)||wetAt(x,z);
+ for(let k=0;k<n;k++){const a=k?{name:A.id+'/via/'+k,x:W[k].x,z:W[k].z,r:0}:{name:A.id,x:A.x,z:A.z,r},
+   b=k<n-1?{name:A.id+'/via/'+(k+1),x:W[k+1].x,z:W[k+1].z,r:0}:{name:B.id,x:B.x,z:B.z,r};
+  const R=ROADS.route(a,b,{avoid});if(!R||!R.pts||R.pts.length<2)return null;
+  const P=out.pts.length?R.pts.filter((p,i)=>i>0||Math.hypot(p[0]-out.pts[out.pts.length-1][0],p[1]-out.pts[out.pts.length-1][1])>1):R.pts;
+  out.pts.push(...P);out.length_m+=R.length_m;out.maxGrade=Math.max(out.maxGrade,R.maxGrade||0);if(out.hw==null)out.hw=R.hw;}
+ return out;}
+const STOP_STAFF={inn:12,rest:4};
+function segDist(P,x,z,i0,i1){let best=1e18;for(let i=Math.max(1,i0);i<=Math.min(P.length-1,i1);i++){const a=P[i-1],b=P[i],ex=b[0]-a[0],ez=b[1]-a[1],L2=ex*ex+ez*ez||1,
+  t=Math.max(0,Math.min(1,((x-a[0])*ex+(z-a[1])*ez)/L2)),d=Math.hypot(x-a[0]-ex*t,z-a[1]-ez*t);if(d<best)best=d;}return best;}
+function boxPts(x,z,ry,w,d){const c=Math.cos(ry),s=Math.sin(ry),u=[c*w/2,-s*w/2],v=[s*d/2,c*d/2];
+ return[[x,z],[x-u[0]-v[0],z-u[1]-v[1]],[x+u[0]-v[0],z+u[1]-v[1]],[x+u[0]+v[0],z+u[1]+v[1]],[x-u[0]+v[0],z-u[1]+v[1]]];}
+function stops(Lk,S,kit,fromName,toName){const out=[],errors=[],gaps=[],P=Lk.pts,hw=Lk.hw,every=S.every==null?25000:S.every,set=S.setback==null?8:S.setback,
+  look=S.look==null?3000:S.look,drop=S.drop==null?4:S.drop;
+ const cum=[0];for(let i=1;i<P.length;i++)cum.push(cum[i-1]+Math.hypot(P[i][0]-P[i-1][0],P[i][1]-P[i-1][1]));const L=cum[cum.length-1];
+ const along=d=>{let lo=1,hi=P.length-1;while(lo<hi){const m=(lo+hi)>>1;if(cum[m]<d)lo=m+1;else hi=m;}
+  const a=P[lo-1],b=P[lo],sl=cum[lo]-cum[lo-1]||1,t=Math.max(0,Math.min(1,(d-cum[lo-1])/sl));return{x:a[0]+(b[0]-a[0])*t,z:a[1]+(b[1]-a[1])*t,tx:(b[0]-a[0])/sl,tz:(b[1]-a[1])/sl,i:lo};};
+ for(let k=1;k*every/2<L-every/4;k++){const kind=k%2?'rest':'inn',key=S[kind],D=key&&kit.dims(key,0),id=Lk.id+'/stop/'+k;
+  if(!D){errors.push(id+': no box for '+key);continue;}
+  const first=k%4<2?1:-1;let got=null;
+  /* the ground under it may fall `drop` m; failing that anywhere in reach, twice that (the footing is deeper) */
+  for(const dropK of [drop,drop*2])for(let dd=0;dd<=look&&!got;dd+=100)for(const sg of dd?[1,-1]:[1])for(const side of [first,-first]){if(got)break;
+   const d0=k*every/2+sg*dd;if(d0<every/4||d0>L-every/4)continue;
+   const p=along(d0),nx=-p.tz,nz=p.tx,off=hw+set+D.d/2,x=p.x+side*nx*off,z=p.z+side*nz*off,ry=Math.atan2(-side*nx,-side*nz);
+   const B=boxPts(x,z,ry,D.w,D.d);if(!B.every(q=>groundOk(q[0],q[1])))continue;
+   const hs=B.map(q=>HL(q[0],q[1]));if(Math.max.apply(null,hs)-Math.min.apply(null,hs)>dropK)continue;
+   if(!B.every(q=>segDist(P,q[0],q[1],p.i-80,p.i+80)>hw+2))continue;
+   got={d:d0,p,x,z,ry,side,nx,nz};}
+  if(!got){gaps.push({id,kind,at_m:Math.round(k*every/2),why:'no good ground within '+look+' m along the road (water, a slope, the edge of the region)'});continue;}
+  const g=got,km=Math.round(g.d/1000),fx=g.x-g.side*g.nx*D.d/2,fz=g.z-g.side*g.nz*D.d/2,ex=g.p.x+g.side*g.nx*hw,ez=g.p.z+g.side*g.nz*hw;
+  out.push({id,kind,name:(kind==='inn'?'the caravanserai':'the rest stop')+' at km '+km+' from '+fromName+' to '+toName,culture:S.culture||null,
+   at_m:Math.round(g.d),side:g.side,x:r2(g.x),z:r2(g.z),staff:STOP_STAFF[kind],
+   records:[{id:id+'/b',key,role:kind,x:r2(g.x),z:r2(g.z),ry:Math.round(g.ry*1e4)/1e4,w:D.w,d:D.d,h:D.h}],
+   lane:{w:kind==='inn'?6:4,pts:[[r2(fx),r2(fz)],[r2(ex),r2(ez)]]}});}
+ return{stops:out,errors,gaps};}
 /* one road from a point (a camp's gate, a village's lane end) to a site, as a record: the router starts on its own grid,
    so the road begins at the point itself, its height there held to the road's grade from the router's first point (the
    ground is shaped to the road) */
@@ -134,6 +189,11 @@ function check(P,opt){opt=opt||{};const problems=[],counts={sites:0,camps:0,reco
   for(const R of S.roads){counts.roads++;const a=R.pts[0],C=S.camps.find(c=>c.id===R.from),V=(S.hamlets||[]).find(h=>h.id===R.from),p=C?C.gate:V?V.end:null;
    if(!p||Math.hypot(a[0]-p.x,a[1]-p.z)>5)problems.push(R.id+': does not start at its '+(V?'village\'s lane end':'camp\'s gate'));}}
  for(const L of P.links||[]){counts.links=(counts.links||0)+1;const A=P.sites.find(s=>s.id===L.from),B=P.sites.find(s=>s.id===L.to),a=L.pts[0],b=L.pts[L.pts.length-1];
-  if(!A||!B||Math.hypot(a[0]-A.x,a[1]-A.z)>4000||Math.hypot(b[0]-B.x,b[1]-B.z)>4000)problems.push(L.id+': its ends are not at its towns');}
+  if(!A||!B||Math.hypot(a[0]-A.x,a[1]-A.z)>4000||Math.hypot(b[0]-B.x,b[1]-B.z)>4000)problems.push(L.id+': its ends are not at its towns');
+  /* its stops: each building on good ground at its corners and middle and clear of the carriageway */
+  for(const St of L.stops||[]){counts.stops=(counts.stops||0)+1;
+   for(const r of St.records){counts.records++;const B=boxPts(r.x,r.z,r.ry,r.w,r.d);
+    if(!B.every(q=>(opt.groundOk||groundOk)(q[0],q[1])))problems.push(St.id+': off good ground');
+    if(!B.every(q=>segDist(L.pts,q[0],q[1],1,L.pts.length-1)>L.hw+1))problems.push(St.id+': on the road');}}}
  return{ok:!problems.length,problems,counts};}
 return{SLOPE,groundOk,discOk,siteFor,plan,hash,check,slopeAt};})();

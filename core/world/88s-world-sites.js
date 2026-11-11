@@ -52,9 +52,13 @@ if(typeof IZV!=='undefined'&&typeof isleProto==='function')VK.iziz={dims:IZV.dim
  const D=VK.iziz.dims[key],g=new THREE.BoxGeometry(D.w,drop,D.d).translate(0,-drop/2+.05,0);return P.parts.concat([{geo:g,mat:footM,tris:12}]);}};
 const KD=Object.assign({},...Object.keys(VK).map(k=>VK[k].dims));
 const vhash=s=>{let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;};
-for(const St of PLAN.sites)for(const V of St.hamlets||[]){
- const base=TAGS.add({class:'landmark',kind:'village',key:V.id,name:V.name+' ('+St.name+')',at:[V.site.x,H(V.site.x,V.site.z),V.site.z],r:220,h:14,
-  tags:{culture:V.culture,types:['dwelling-multi','farm'],role:'village'},note:'core/hamlet ('+V.focus+'): '+V.census.pop+' people, '+V.census.households+' households'});
+/* a link's stops (48s stops()) are drawn as villages of one building and a lane: the same footing, merge, keep-clear,
+   tags and checks */
+const STOPV=[];for(const Lk of PLAN.links||[])for(const s of Lk.stops||[])STOPV.push({St:{name:s.kind==='inn'?'a caravanserai':'a rest stop'},
+ V:{id:s.id,name:s.name,culture:s.culture,focus:s.kind,site:{x:s.x,z:s.z},records:s.records,lanes:[s.lane],census:{pop:s.staff,households:1}},stop:true});
+for(const E of PLAN.sites.flatMap(St=>(St.hamlets||[]).map(V=>({St,V}))).concat(STOPV)){const St=E.St,V=E.V;
+ const base=TAGS.add({class:'landmark',kind:E.stop?'waystation':'village',key:V.id,name:E.stop?V.name:V.name+' ('+St.name+')',at:[V.site.x,H(V.site.x,V.site.z),V.site.z],r:E.stop?60:220,h:14,
+  tags:{culture:V.culture,types:E.stop?['inn']:['dwelling-multi','farm'],role:E.stop?'waystation':'village'},note:E.stop?'core/world 48s stops: '+V.census.pop+' keepers':'core/hamlet ('+V.focus+'): '+V.census.pop+' people, '+V.census.households+' households'});
  const VD=VK[V.culture]?VK[V.culture].dims:{};
  const B=V.records.map(r=>{const K=VD[r.key],kit=!!K&&!r.pending,fw=kit&&K.fw?K.fw:r.w,fd=kit&&K.fd?K.fd:r.d,c=Math.cos(r.ry),s=Math.sin(r.ry);
   const hs=[[-1,-1],[1,-1],[1,1],[-1,1],[0,0]].map(([u,w])=>H(r.x+u*fw/2*c+w*fd/2*s,r.z-u*fw/2*s+w*fd/2*c)),top=Math.max.apply(null,hs),low=Math.min.apply(null,hs);

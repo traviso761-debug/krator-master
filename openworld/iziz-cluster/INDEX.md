@@ -4,7 +4,7 @@
 
 The Iziz cluster: the third region of sites (openworld/PLAN-SITES.md): Girder, Mav's Refuge and Talia on map 5.1 at 1:1 (each town's square and a 10 km corridor between them, 500 m cells) on core/world, the hyperjungle and the abyssal savannah growing on their overlays, and three sites planned on that ground (core/world KSITES, baked to plan/sites.json): Beast Rider bands camped round Mav's Refuge and Girder (core/camp) with their tracks, Talia's farming villages and ranch on core/hamlet's iziz row drawn with the Iziz Vernacular (IZV), and the roads between the three towns, laid. Verified: build.py, verify.py --assert. Read README.md
 
-Docs: `KNOWN_ISSUES.md`, `PLAN.md`, `README.md`
+Docs: `KNOWN_ISSUES.md`, `PLAN.md`, `PORT.md`, `README.md`
 
 Built output (never open it; edit `src/` and rebuild): `dist/iziz-cluster.html`
 
@@ -15,7 +15,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `46-world-config.js` | 1 |  |
+| `46-world-config.js` | 2 |  |
 | `47-world-kits.js` | 3 |  |
-| `48-world-site.js` | 2 |  |
+| `48-world-site.js` | 3 |  |
 | `49-world-absav.js` | 3 |  |

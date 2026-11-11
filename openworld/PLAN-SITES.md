@@ -57,7 +57,8 @@
   Girder, each with its track to the town.
 - **The villages:** Talia's four farming villages and a ranch (1,095 people, 242 buildings) on a new core/hamlet row,
   `iziz` (`core/hamlet/21-hamlet-iziz.js`: the Iziz Vernacular), drawn through the isle demo's IZV bundle.
-- **The links are laid:** 137 and 154 km at 8 %, through the corridors; every river station still holds water.
+- **The links are laid:** 135 and 154 km at 8 %, kept inside the corridors (routed in 8 km hops, never along a river's
+  bed); every river station holds water. Along them, 20 stops: a caravanserai every 25 km and a rest stop between.
 - **The flora:** the hyperjungle and the abyssal savannah (which reads `upland` as the height above the abyss floor).
 - **Core changes on the way:** `88s` picks a village's drawing by its row's kit (`VK`); the bake reads `VERN.def` boxes.
   One kit on several overlays is a shim in the region until `41` takes a list (`TODO.md`, "Ride along").

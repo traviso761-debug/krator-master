@@ -60,7 +60,9 @@ function buildTile(tx,tz){const t0=performance.now(),x0=tx*TS,z0=tz*TS,recs=[];
    const gx0=Math.ceil((x0-MARGIN)/c),gx1=Math.ceil((x0+TS+MARGIN)/c)-1,gz0=Math.ceil((z0-MARGIN)/c),gz1=Math.ceil((z0+TS+MARGIN)/c)-1;
    for(let gz=gz0;gz<=gz1;gz++)for(let gx=gx0;gx<=gx1;gx++){const h=H(SEED,ki,pi,gx,gz),x=(gx+U(H(h,1)))*c,z=(gz+U(H(h,2)))*c,u=U(H(h,3));
     // (the jitter may carry a cell's point over the tile's edge: the cell's own tile still owns it, and no other does)
-    const w=bil(F.w[ki],F,x,z);if(w<.02||bil(F.inside,F,x,z)<.5)continue;
+    /* inside: the tile grid's blend is a quick reject, the map's own pixel (WORLD.inside, as the probe reads it) the rule;
+       the blend alone let a record over the edge where the region is a narrow corridor (openworld/iziz-cluster) */
+    const w=bil(F.w[ki],F,x,z);if(w<.02||bil(F.inside,F,x,z)<.5||!WORLD.inside(x,z))continue;
     const s=samp(x,z)||WORLD.at(x,z);if(s.slope>.88)continue;
     let a=1;if(K.zones){const Z=K.zones(x,z);a=P.accept(Z,x,z);}else a=P.accept();
     if(!(a>0))continue;

@@ -11,8 +11,11 @@ from Mav's Refuge to Girder and from Girder to Talia, cut by `tools/scale-model/
 | Girder | `seed07` | 1039,869 | the savage hyperjungle | the raptor and threehorn bands, their tracks |
 | Talia | `sor1zqih8x` | 1073,939 | the SE savannah rim | four farming villages and a ranch (`core/hamlet`'s `iziz` row: the Iziz Vernacular's houses, farms, silos, byres and pens), a road from each lane end to the town, joined |
 
-The links between the towns are laid: Mav's Refuge to Girder (137 km) and Girder to Talia (154 km), held to 8 %, through
-the corridors. The towns themselves are their pages' (`settlements/mavs-refuge`, `settlements/girder`, `kits/talia`).
+The links between the towns are laid: Mav's Refuge to Girder (135 km, 1,160 m up and 1,090 m down) and Girder to Talia
+(154 km, 2,700 m up and 1,100 m down: out of the crater floor onto the rim), held to 8 %, kept inside the corridors (routed
+in 8 km hops, never along a river's bed). Along them stand a caravanserai every 25 km of road (a wagon caravan's day) and
+a rest stop halfway between (the Iziz Vernacular's `vern_caravanserai` and `vern_rest_stop`), 20 in all, each beside the
+road with a lane to it: Mav's Refuge-Girder has no inn at km 75, where the road crosses 10 km of water on a causeway. The towns themselves are their pages' (`settlements/mavs-refuge`, `settlements/girder`, `kits/talia`).
 
 The hyperjungle grows on the savage hyperjungle and hyperjungle S, the abyssal savannah's kit (with the eastern abyss's
 species it borrows) on the SE, E and NE savannah rims. The savannah reads `upland` as the height above the abyss floor
