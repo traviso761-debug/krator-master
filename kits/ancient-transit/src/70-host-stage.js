@@ -18,7 +18,7 @@ TRS.build=function(){if(TRS.ready)return true;if(window._texPending>0)return fal
  /* the streets, dressed */
  R.war=TR_WAR;
  R.roads=TR_ROADS;R.quake=TR_QUAKE;R.net=TR_NET;const veh=typeof KratorVehicles!=='undefined'?KratorVehicles:null;R.vehicles=!!veh;
- R.dress=TRS.streets.map((st,i)=>{const S=st,Wr=TR_WAR[i],Rd=TR_ROADS[i],D=KTRANSIT.dress(S,{seed:KRAND.child(TR_SEED,st.id),space:space,blocked:blocked,war:Wr,damage:Wr.damageAt,network:TR_NET,road:i});add(KTRANSIT.draw.street(S,D,{furn,shadow:sh,err:reportErr,road:Rd,roadIndex:i,network:TR_NET,ground:g,tilt:Rd.levelAt}),'The street '+st.id+' and its furniture','street',{pieces:D.pieces.length,skipped:D.skipped,width:st.width,kind:Rd.roadKind});
+ R.dress=TRS.streets.map((st,i)=>{const S=st,Wr=TR_WAR[i],Rd=TR_ROADS[i],D=KTRANSIT.dress(S,{seed:KRAND.child(TR_SEED,st.id),space:space,blocked:blocked,war:Wr,wars:TR_WAR,damage:Wr.damageAt,network:TR_NET,road:i});add(KTRANSIT.draw.street(S,D,{furn,shadow:sh,err:reportErr,road:Rd,roadIndex:i,network:TR_NET,ground:g,tilt:Rd.levelAt}),'The street '+st.id+' and its furniture','street',{pieces:D.pieces.length,skipped:D.skipped,width:st.width,kind:Rd.roadKind});
   add(KTRANSIT.draw.war(Wr,{furn,vehicles:veh,shadow:sh,err:reportErr,tilt:Rd.levelAt}),'The war along '+st.id,'war',{craters:Wr.craters.length,pieces:Wr.pieces.length,positions:Wr.positions.length,blockades:Wr.blockades.length});return D;});
  /* the junctions: a patch, the pavement corners, the crosswalks */
  {const JB=KTRANSIT.builder();KTRANSIT.draw.junctions(JB,TR_NET,g);add(JB.finish('junctions'),'The junctions','junction',{count:TR_NET.junctions.length,kinds:TR_NET.junctions.map(J=>J.kind).join(',')});}

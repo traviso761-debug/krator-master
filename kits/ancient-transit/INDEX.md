@@ -31,7 +31,7 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `42-tr-highway.js` | 15 |  |
 | `43-tr-rail.js` | 15 |  |
 | `43b-tr-subway.js` | 11 |  |
-| `44-tr-dress.js` | 9 |  |
+| `44-tr-dress.js` | 10 |  |
 | `44b-tr-war.js` | 16 |  |
 | `44c-tr-quake.js` | 4 |  |
 | `45-host-stage.js` | 8 |  |
