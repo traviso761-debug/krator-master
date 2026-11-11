@@ -91,6 +91,8 @@ them all out.
 3. **More to trade than copper** (section 1.2.1): veins of metal through the Line and its caverns, metal to keep the
    trains running, maybe something exotic for the power sources, ice and other things from the mountains, and at least a
    few ventilation tunnels to the surface.
+4. **A clan of Travellers for the dark**, venturing into unexplored caverns and servicing and portering for the
+   underground and the ventilation shafts (section 1.3, "The dark clan").
 
 ## 0. What the kit is
 
@@ -386,7 +388,7 @@ least a few ventilation tunnels to the surface**. *Proposed* from there:
   (the draught through the holds), and their **heads** on the mountain are the Tungangs' second way out after the
   portals: a winch house, an ice store, a hooded lamp. From the shaft heads they take **ice** (for the hot holds and the
   Hearth loj's cooling suits, their own beside the Ice-cutters' trade), **snowmelt**, **mountain crystal** from the clefts
-  that are not shrines, and **herbs** of the high slopes. The shaft heads are where the Travellers meet them as porters
+  that are not shrines, and **herbs** of the high slopes. The shaft heads are where the Travellers' dark clan services the shafts and porters up and down them
   (section 1.3), and where a raider or a player can come down.
 - **The kit's pieces** (section 3.2): `tg_vein_working`, `tg_ore_store`, `tg_refinery` (the rare-earth batch room),
   `tg_power_hall` (the Tungangs' dressing of the Ancients' plant), `tg_shaft_foot` (the ice hoist, the draught doors) and
@@ -429,6 +431,27 @@ by moving them, and by the road itself:
   every village's door), **guiding** (Dalab's trains, traders, the odd monk across the fells and down the walls), and
   **portering on the Line's branches near the surface** (the adits, spurs and portal stretches where the Tungangs' road
   underground meets the rim's), **never deeper in**, where the Tungangs carry their own (the owner, 2026-11-11).
+- **The dark clan** (the owner, 2026-11-11: "maybe there is a clan of travellers that specialize in venturing into dark
+  unexplored caverns, they could be the ones that service and porter for the underground and ventilation shafts"). One
+  Traveller clan goes where the others will not: down. *Proposed* from there:
+  - **What they do.** They **service the ventilation shafts** (clearing ice and fallen rock, mending the winches, the
+    ladders and the draught doors) and **porter up and down them**; they go **into the dark unexplored caverns** that open
+    off the shafts, the Line's lost stretches and the rim's caves, as prospectors (new veins), salvagers, mappers and
+    rescuers; and they guide anyone mad enough to follow. The other Travellers still stop near the surface; the kept
+    deep Line is the Tungangs' own, and the dark clan works its margins, the shafts and what no loj keeps.
+  - **Why them.** The rope work of the walls (the Fowlers' craft, which they share and trade in), lamps they buy from the
+    lojes, and eyes: the clan is said to throw back to the Tungangs, with bigger pupils than other Fellgangs, and it marries
+    into the lojes more than any other family does. Lojes trust them as they trust no other surface folk, and their
+    Bookmen half count the clan as members.
+  - **Their gear and marks.** Ropes, ladders and a gin-wheel tripod for the shafts; fungus-leather and hide cave suits;
+    the lamp code learned from the lojes; **way-marks** chalked and painted at every turn they have walked (an arrow, a
+    tally of turns, a mark for bad air), so any caver can follow them out; maps scratched on enamel plate, the best of the
+    Line's unknown parts anyone has, kept in the family and sold dear.
+  - **A name** (*proposed*, the owner's to choose): **the Kradz**, *dark* said backwards in the cant; the Tungangs call
+    them *Tdarkaz*.
+  - **The kit's pieces**: a dark clan's wagon (`fg-wagon`, variant `dark`: rope drums, the tripod lashed on, lamp racks),
+    `fg-shaft-rig` (the tripod and gin wheel over a shaft head), `fg-waymark` (painted and chalked marks on rock, as records
+    so a walker can follow them), and the cave gear as catalog pieces.
 - **Their homes.** Barrel-top covered **sledge-wagons** with bright painted boards, plate runners from tyres and a stove
   pipe (`fg-wagon`); **halting places** a day apart along the roads, a low shelter by a lantern post where families stop
   (`fg-halt`).
