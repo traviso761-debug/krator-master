@@ -1,0 +1,20 @@
+{
+ "name": "ambertarn",
+ "out": "seouterwall-ambertarn.html",
+ "note": "Station 3 (PLAN.md sections 4 and 5, Oasis 2; section 7.5): the Amber-Sinter Tarn, the model's geothermal tarn (3,940 m) at its east shore, px 1064,1272 (region/station-ambertarn.json). Its 44s-host-site.js replaces src/'s: the fault's vents (KTHERM), the hot springs and their sinter terraces down to the tarn, the hearth trees on the warm ground (biomes/hearths, read in place).",
+ "core": {
+  "47-core-therm.js": "core/terrain/47-core-therm.js",
+  "33-core-fungoid.js": "core/biome/33-core-fungoid.js",
+  "35-core-anim.js": "core/biome/35-core-anim.js",
+  "39-core-lean.js": "core/biome/39-core-lean.js",
+  "52-core-water-geyser.js": "core/water/geyser/52-core-water-geyser.js",
+  "52b-core-water-geyser-draw.js": "core/water/geyser/52b-core-water-geyser-draw.js",
+  "53-core-water-terraces.js": "core/water/ext/53-core-water-terraces.js",
+  "53b-core-water-terraces-draw.js": "core/water/ext/53b-core-water-terraces-draw.js",
+  "89-atmos-3-particles.js": "core/atmos/89-atmos-3-particles.js",
+  "89-atmos-fx-smokegroups.js": "core/atmos/fx/89-atmos-fx-smokegroups.js"
+ },
+ "kin": {
+  "hearths": [["src/50-biome-hearths-species.js", "src/55-biome-hearths-place.js"], "HEARTH", []]
+ }
+}
