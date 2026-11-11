@@ -689,8 +689,13 @@ section at bore km 55-203; 42 km on the surface to Ledge. This routing moves non
 
 ### 8.9 Still open
 
-1. **The Stair tunnel's canon.** Should I rewrite `LORE.md` §4's Catch passage now (no Ancient tunnel to Stair; what the
-   divers dive instead), or leave it, `biomes/catch/PLAN.md` and `biomes/seouterwall/PLAN.md` to their owners?
+1. **The Stair tunnel's canon: done** (the owner: "Yes, rewrite it"). `LORE.md` §4's Catch passage now says that no
+   Ancient tunnel reaches Stair, which the Ancients reached by the Godsgate highway. *Proposed* there: the divers dive the
+   Hill arcology's sand-drifted lower levels, and the Rift line's possible bore mouth from Strongbow. Its open question is
+   updated, and `ANCIENT-ROADS.md` §4b's note is marked dropped. Still with their owners: `biomes/catch/PLAN.md`
+   (sections 6a-6b, the tunnel and the divers' camp at its portal), `biomes/catch/KNOWN_ISSUES.md` (the placeholder
+   portal), and `biomes/seouterwall/PLAN.md` (the base tunnel, the Bab al-Hawa shaft as a caravanserai, the vault that
+   records the collapse).
 2. **Talia**: should it move 6.3 km onto the Ancient trunk at 1072,936?
 3. **Names**: the Bowl arcology and the Korona site.
 4. **The Hykkousoi cities**: are they the League of Amphitriton's towns (Tethis, Kierson, Nereus, Pontus), as drawn?
