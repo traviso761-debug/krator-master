@@ -30,13 +30,20 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
  const inIZ=(x,z,m)=>x>IZ.u0-(m||0)&&x<IZ.u1+(m||0)&&z>IZ.w0-(m||0)&&z<IZ.w1+(m||0);
  const modelY=(x,z)=>M.at(x,z)-BASE;
  const slopeK=(x,z)=>{const s=(M.at(x+600,z)-M.at(x-600,z))/1200,t=(M.at(x,z+600)-M.at(x,z-600))/1200;return Math.hypot(s,t);};
- function land0(x,z){const m=modelY(x,z),st=slopeK(x,z),r=1-Math.abs(2*KRAND.fbm(x*.0013+3.7,z*.0013-9.1,0,4,SEED+1)-1),f=KRAND.fbm(x*.011+1.3,z*.011+2.2,0,3,SEED+2);
+ /* the model's height and slope on a 32 m lattice under the relief (41, AV.lattice: the model's cells are 2 km, so within 2 cm; its bicubic was most of
+    what was left of the build's ground after the 4 m lattices, 2026-11-11); modelY itself stays exact for the far ground */
+ const modelL=AV.lattice(modelY,{cell:32,half:R+1600,tol:1e9}).h,slopeL=AV.lattice(slopeK,{cell:32,half:R+1600,tol:1e9}).h;
+ function land0(x,z){const m=modelL(x,z),st=slopeL(x,z),r=1-Math.abs(2*KRAND.fbm(x*.0013+3.7,z*.0013-9.1,0,4,SEED+1)-1),f=KRAND.fbm(x*.011+1.3,z*.011+2.2,0,3,SEED+2);
   return m+(14+260*Math.min(.5,st))*(r-.45)*smooth(LAKE_Y-30,LAKE_Y+6,m)+2.2*(f-.5);}
  /* THE BENCH: the yard's row graded level across (a long profile along x: the model's ground on the line, averaged over 600 m), eased into the flanks */
  const BENCH=(function(){const T=[];for(let x=-3800;x<=3800;x+=50){let s=0,n=0;for(let d=-300;d<=300;d+=50){s+=modelY(x+d,LINE_Z+60);n++;}T.push(s/n-1.5);}
   return x=>{const t=(Math.max(-3800,Math.min(3800,x))+3800)/50,i=Math.min(T.length-2,Math.floor(t));return mix(T[i],T[i+1],t-i);};})();
  const benchW=(x,z)=>smooth(300,170,Math.abs(z-(LINE_Z+90)))*smooth(R+200,R-200,Math.abs(x));
- function landGround(x,z){return mix(land0(x,z),BENCH(x),benchW(x,z));}
+ /* the ground's lattices (41, AV.lattice; 2026-11-10: a build asked the model-and-noise ground 94 million times, the whole ground 16 million): the model's
+    ground with its relief on a 4 m lattice under everything, and the whole ground on another that the fields and the kits read (BIO's terrainH, 47);
+    the drawn ground, the towers and the roads keep the whole ground itself */
+ const landL=AV.lattice(land0,{cell:4,half:R+1400}).h;
+ function landGround(x,z){return mix(landL(x,z),BENCH(x),benchW(x,z));}
  /* the records of the yards' pieces that are ground (46f): the slag heaps, and the spill grounds and toxic pools (dead ground) */
  const SLAG=[MP.yards.slagHeap({x:-2060,z:420,rx:150,rz:70,h:26,yaw:.15,seed:SEED+201}),MP.yards.slagHeap({x:-1900,z:610,rx:115,rz:80,h:22,yaw:-.3,seed:SEED+202}),
   MP.yards.slagHeap({x:-2110,z:640,rx:90,rz:55,h:17,yaw:.6,seed:SEED+203}),MP.yards.slagHeap({x:-800,z:640,rx:70,rz:35,h:14,yaw:.05,seed:SEED+204})];
@@ -170,7 +177,7 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
   trainOn(AVT.subway,{id:'metro1',s:AVT.subway.stations[0].s+30,kind:'passenger',cars:4,state:'standing'}),
   trainOn(AVT.pax,{id:'pax1',s:2400,kind:'passenger',state:'fallen',from:2})].filter(Boolean);
  AVT.ms=Math.round(performance.now()-AVT_T0);
- const yOf=ground;
+ const GRL=AV.lattice(ground,{cell:4,half:R+200}),yOf=GRL.h;
  /* THE PIECES as records (46f), each on the ground it stands on: the yard's turntable and loading gantries, the tank farms, the dish array, the chimneys,
     the pipe racks (along the blocks' backs and across the yard's row, a bent never in a street or on a track: the pipes span it), the conveyors from the
     yard to the foundry and the furnaces (their trestles off the streets), the pools (the spill grounds are ground only). Registered and drawn in 70y */
@@ -203,7 +210,7 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
   cloudMood:{period:300,glowColour:[1,.5,.18]},airLook:{turbidity:3.4,dust:[.56,.47,.48]},fogDensity:.00052,
   smog:{colour:[.34,.29,.31],mix:.9,mist:{density:.0016,above:140,depth:150,noise:.85,day:1,field:true},band:{density:.004,y:[300,520],cover:.7,noise:1}},
   weather:'oily rain',seed:SEED,model:M,region:RG,
-  ground,rawGround,modelY,F,plan:PLAN,pads:PADS,engines:ENGINES,craters:CRATERS,debris:DEBRIS,scorch,viaduct:{pts:VIAS,deckY:(x,z)=>Math.max(rawGround(x,z)+16,-2),d:viaD},transit:AVT,relief,railD,near:NEAR,street,streetK,streetD,avenueLines,
+  ground,groundFast:yOf,groundLattice:GRL,rawGround,modelY,F,plan:PLAN,pads:PADS,engines:ENGINES,craters:CRATERS,debris:DEBRIS,scorch,viaduct:{pts:VIAS,deckY:(x,z)=>Math.max(rawGround(x,z)+16,-2),d:viaD},transit:AVT,relief,railD,near:NEAR,street,streetK,streetD,avenueLines,
   lattice:{c:ct,s:snt,pitch:P,AW,SW},built,forest,scars,cities,basins,
   yards:{IZ,MR,CROSS,LINE_Z,YARD,PIECES,SLAG,SPILL,POOLS,INDUSTRY,STREETS,streetAt,inStreet,offStreet,offTrack,PIECE_PADS,BLK,indK,noStreet},
   wreckAvoid:[{x:-850,z:-120,r:820},{x:60,z:-20,r:80}],wreckMax:420,

@@ -147,4 +147,22 @@ ok('every deck is above its ground and every pier reaches it',V.decks.every(d=>d
  ok('the bucketed craters give the scan\'s heights at 20,000 points ('+hit+' inside a crater\'s reach, '+diff+' different)',diff===0&&hit>100);
  const C2=C.map(c=>Object.assign({},c));C2._avB=AV.bucket(C2,c=>c.r*.5,128);let d2=0;for(let i=0;i<20000;i++){const x=(KRAND.unit(KRAND.hash(9,i,1,0))*2-1)*3200,z=(KRAND.unit(KRAND.hash(9,i,2,0))*2-1)*3200;if(AV.craterH(C2,x,z)!==brute(x,z))d2++;}
  ok('...and a bucket with too short a reach differs (the negative)',d2>0);}
+/* the ground's lattice (AV.lattice, 2026-11-10): within tol of the function where its features are wider than a cell, exact in a pit's sharp cells,
+   the same reads in any order of asking; the negative: a lattice with no centre check misses the pit */
+{const C=AV.craters({R:3000,n:24,seed:5,rMin:35,rMax:150,ok:()=>true}),pit=(x,z)=>Math.abs(x-301)<5&&Math.abs(z+77)<5?-6:0,
+  f=(x,z)=>40*Math.sin(x*.004)*Math.cos(z*.003)+3*KRAND.fbm(x*.011,z*.011,0,3,7)+AV.craterH(C,x,z)+pit(x,z);
+ const pts=[];for(let i=0;i<20000;i++)pts.push([(KRAND.unit(KRAND.hash(11,i,1,0))*2-1)*3400,(KRAND.unit(KRAND.hash(11,i,2,0))*2-1)*3400]);
+ for(let i=0;i<400;i++)pts.push([296+KRAND.unit(KRAND.hash(12,i,1,0))*10,-82+KRAND.unit(KRAND.hash(12,i,2,0))*10]);
+ const L=AV.lattice(f,{cell:4,half:3200,tol:.12});let worst=0,out=0;for(const [x,z] of pts){const e=Math.abs(L.h(x,z)-f(x,z));if(Math.abs(x)>3200||Math.abs(z)>3200){if(e)out++;continue;}if(e>worst)worst=e;}
+ const L2=AV.lattice(f,{cell:4,half:3200,tol:.12}),same=pts.slice().reverse().every(([x,z])=>L2.h(x,z)===L.h(x,z));
+ const L3=AV.lattice(f,{cell:4,half:3200,tol:1e9});let miss=0;for(let i=0;i<400;i++){const [x,z]=pts[20000+i];if(Math.abs(L3.h(x,z)-f(x,z))>1)miss++;}
+ ok('the lattice is within 0.2 m of its function at 20,400 points ('+worst.toFixed(3)+' m worst, '+L.stats.sharp+' sharp cells of '+L.stats.cells+'), exact outside its square',worst<.2&&out===0&&L.stats.sharp>0);
+ ok('...the same reads whatever order they are asked in',same);
+ ok('...and one with no centre check is off by metres in the pit (the negative: '+miss+' reads)',miss>20);}
+/* the stages read the model's height and slope on a 32 m lattice (46z): within 5 cm of the bicubic over the page and its lake ring, on each station's record */
+['overlook','yards','terraces'].forEach(nm=>{const G=JSON.parse(require('fs').readFileSync(require('path').join(__dirname,'..','region','station-'+nm+'.json'),'utf8')).grid,M=AV.model(G),
+  mY=(x,z)=>M.at(x,z),sK=(x,z)=>Math.hypot((M.at(x+600,z)-M.at(x-600,z))/1200,(M.at(x,z+600)-M.at(x,z-600))/1200),
+  LY=AV.lattice(mY,{cell:32,half:4400,tol:1e9}),LS=AV.lattice(sK,{cell:32,half:4400,tol:1e9});let eY=0,eS=0;
+ for(let i=0;i<20000;i++){const x=(KRAND.unit(KRAND.hash(13,i,1,0))*2-1)*4300,z=(KRAND.unit(KRAND.hash(13,i,2,0))*2-1)*4300;eY=Math.max(eY,Math.abs(LY.h(x,z)-mY(x,z)));eS=Math.max(eS,Math.abs(LS.h(x,z)-sK(x,z)));}
+ ok(nm+': the model on its 32 m lattice is within 5 cm ('+(eY*100).toFixed(2)+' cm worst; the slope within '+eS.toExponential(1)+')',eY<.05&&eS<1e-3);});
 console.log(fails?fails+' FAILED of '+n:'all '+n+' passed');process.exit(fails?1:0);

@@ -6,21 +6,21 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 80 (23%) | 0 (0%) | 4 (1%) | 202 (58%) | 61 (17%) |
+| KB | 82 (23%) | 0 (0%) | 4 (1%) | 206 (58%) | 61 (17%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
 | Fragment | KB | Tag | THREE | canvas | DOM | events | loop | geom | shader | inst | ray | store | net | Note |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `src/00-head.html` | 1.2 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
-| `src/41-av-field.js` | 21.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/41-av-field.js` | 23.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/41b-av-wrecks.js` | 9.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/41c-av-house.js` | 5.9 | [draw] | 0 | 0 | 0 | 0 | 0 | 8 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/41c-av-lobbies.js` | 26.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/41e-av-cardrects.js` | 6.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/46-av-feral.js` | 13.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/46z-host-stage.js` | 34.1 | [web] | 0 | 0 | 2 | 1 | 3 | 14 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/47-host-land.js` | 8.7 | [web] | 14 | 2 | 1 | 0 | 0 | 3 | 5 | 0 | 0 | 0 | 0 | split: data inside host code |
+| `src/46z-host-stage.js` | 35.0 | [web] | 0 | 0 | 2 | 1 | 3 | 14 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/47-host-land.js` | 8.9 | [web] | 14 | 2 | 1 | 0 | 0 | 3 | 5 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/70-host-city.js` | 54.7 | [web] | 39 | 0 | 0 | 0 | 6 | 10 | 3 | 24 | 0 | 0 | 0 |  |
 | `src/71-host-creepers.js` | 7.4 | [draw] | 4 | 0 | 0 | 0 | 0 | 3 | 0 | 2 | 0 | 0 | 0 |  |
 | `src/72-host-keepers.js` | 10.3 | [web] | 1 | 0 | 0 | 2 | 2 | 2 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
@@ -29,7 +29,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/75-host-extraplanar.js` | 14.8 | [web] | 1 | 0 | 0 | 0 | 2 | 7 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/75-host-house.js` | 10.9 | [web] | 7 | 0 | 2 | 0 | 0 | 3 | 3 | 0 | 0 | 3 | 0 |  |
 | `src/76-host-lobbies.js` | 19.5 | [web] | 6 | 0 | 0 | 0 | 1 | 2 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/88-host-build.js` | 8.0 | [web] | 2 | 0 | 0 | 0 | 2 | 2 | 0 | 1 | 0 | 0 | 0 | split: data inside host code |
+| `src/88-host-build.js` | 10.3 | [web] | 2 | 0 | 2 | 0 | 2 | 2 | 0 | 1 | 0 | 0 | 0 | split: data inside host code |
 | `src/89a-host-atmos.js` | 0.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/89s-host-sky.js` | 2.8 | [G native] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/89t-host-weather.js` | 0.6 | [G native] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |

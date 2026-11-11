@@ -61,10 +61,10 @@ const AV_AFTER=()=>{avLoadNote(null);const el=document.getElementById('av-after'
    if(out.length>=2)break;}return out;}:null;
  const perched=(T,pc,h)=>{AV.FERAL.perchedH=Math.max(AV.FERAL.perchedH||0,h);};
  window.AV_TOPS=TOPS;   /* ?feral=0: the kits as they are (the species kept, nothing grown), to tell the wrap's faults from the kits' */
- if(typeof SWLOW!=='undefined'&&STAGE.swQ){AV.feralKit(SWLOW,{ground:terrainH,feral,capH,allow:STAGE.swAllow?new Set(STAGE.swAllow):null,keep:new Set(STAGE.swKeep||[]),adjust,perch,perched,seed:STAGE.seed+31});
+ if(typeof SWLOW!=='undefined'&&STAGE.swQ){AV.feralKit(SWLOW,{ground:kitH,feral,capH,allow:STAGE.swAllow?new Set(STAGE.swAllow):null,keep:new Set(STAGE.swKeep||[]),adjust,perch,perched,seed:STAGE.seed+31});
   try{window._swlow=await kitStages(SWLOW,'lowlands','the south-western forest',(x,z)=>clamp(STAGE.zone(x,z).sw,0,1),{R:STAGE.R-60,quality:q*STAGE.swQ,avenues:[]});}catch(e){BIO.cur=null;reportErr('swlowlands: '+e.stack);}}
  _mark('swlowlands');
- if(typeof NWLOW!=='undefined'&&STAGE.nwQ){AV.feralKit(NWLOW,{ground:terrainH,feral,capH,allow:STAGE.nwAllow?new Set(STAGE.nwAllow):null,adjust,perch,perched,seed:STAGE.seed+37});
+ if(typeof NWLOW!=='undefined'&&STAGE.nwQ){AV.feralKit(NWLOW,{ground:kitH,feral,capH,allow:STAGE.nwAllow?new Set(STAGE.nwAllow):null,adjust,perch,perched,seed:STAGE.seed+37});
   try{window._nwlow=await kitStages(NWLOW,'nwlow','the north-western forest',(x,z)=>clamp(STAGE.zone(x,z).nw,0,1),{R:STAGE.R-60,quality:q*STAGE.nwQ,avenues:[]});}catch(e){BIO.cur=null;reportErr('nwlowlands: '+e.stack);}}
  _mark('nwlowlands');
  if(typeof avSurfaceFree==='function')avSurfaceFree();   /* the creepers (71) and the roof trees are placed: the rays' buckets go (70) */
