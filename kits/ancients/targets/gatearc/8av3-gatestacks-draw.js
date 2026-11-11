@@ -16,7 +16,7 @@ kdef('gsCone',new THREE.ConeGeometry(1,1,12),MAT.mud);
 kdef('gsDisc',new THREE.CylinderGeometry(1,1,1,40),MAT.acKit);
 
 function buildGatestacks(scene,gx,gz,d){reseed(7451+d);
- const Y0=(GATEARC.host&&GATEARC.host.y)||0;KOFF=[gx,Y0,gz];
+ const Y0=GATEARC.host&&GATEARC.host.y!=null?GATEARC.host.y:0;KOFF=[gx,Y0,gz];
  const dd=d>0?1:0,H=GATEARC.plan(),P=GATESTACKS.plan({hall:H,ground:GATESTACKS.host.ground}),RU=dd?GATESTACKS.ruin(P):null;
  const UH=(id,salt)=>{let h=7451^salt;for(let i=0;i<id.length;i++)h=KRAND.hash(h,id.charCodeAt(i));return KRAND.unit(h);};
  const conc=(id,lo,hi)=>new THREE.Color().setHSL(.09+.03*UH(id,1),.05+.05*UH(id,2),(dd?lo*.65:lo)+(hi-lo)*UH(id,3));
@@ -28,7 +28,7 @@ function buildGatestacks(scene,gx,gz,d){reseed(7451+d);
   const B=T.add({id:pre+P.id,'class':'landmark',kind:'stacks',key:'ancients:gatestacks',name:'The Hall\'s stacks',at:[gx,Y0,gz],
    tags:{culture:'ancient',types:['industry','farm','infrastructure'],state:dd?'ruined':'intact'}});
   for(const S of P.stacks)T.child(B.id,{'class':'feature',kind:'stack',key:S.id,name:S.name,at:W([S.x,S.y0,S.z]),r:S.R,h:S.top-S.y0,tags:{role:S.role,variant:S.kind}});
-  for(const f of P.fittings)if(!gone.has(f.id))T.child(B.id,{'class':'part',kind:f.kind,key:f.id,at:W([f.x||0,f.y||0,f.z||0]),tags:f.tags});
+  for(const f of P.fittings)if(!gone.has(f.id))T.child(B.id,{'class':'part',kind:f.kind,key:f.id,at:W([f.x==null?0:f.x,f.y==null?0:f.y,f.z==null?0:f.z]),tags:f.tags});
   for(const b of P.bridges)T.child(B.id,{'class':'infrastructure',kind:'bridge',key:b.id,at:W([b.a.x,b.y,b.a.z]),tags:{role:'bridge',variant:RU&&RU.rope.some(r=>r.id===b.id)?'rope':'girder'}});}
  for(const S of P.stacks)REGISTER({name:'The Hall\'s stacks — '+S.name,x:S.x,z:S.z,r:S.R,y:S.y0,h:S.top-S.y0});
  for(const b of P.bridges)REGISTER({name:'The Hall\'s stacks — bridge '+b.key+(RU&&RU.rope.some(r=>r.id===b.id)?' (a Kimr rope bridge)':''),x:(b.a.x+b.b.x)/2,z:(b.a.z+b.b.z)/2,r:Math.max(14,b.span/2),y:b.y-8,h:12});

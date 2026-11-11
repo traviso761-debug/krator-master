@@ -155,7 +155,13 @@ pueblos.
   massed its caverns for the Hearth hold. The pueblos themselves are a **settlement kit** of their own: a culture in
   `kits/catalog` and a building kit, placed with `core/hamlet`.
 
-## 6. The arcology at the gate (name TBD)
+## 6. The arcology at the gate: the Hall of Heroes
+
+**Settled 2026-11-11 (`PLAN-GATE.md`):** the owner named it the **Hall of Heroes**, a ruin where the Kimr bury their dead. Its form
+is Soleri's Arcvillage II with five carved stacks bridged to it (`kits/ancients` targets/gatearc), at the neck of the eastern
+opening, px 376.5,1473.5 (not the gate lake), and station 1 is built there. The text below is the seed's.
+
+### The seed (2026-11-09)
 
 At the eastern entrance, the breach to the Rift, stands an Ancient arcology (**TBD**). The natives' ancestors came out of it.
 - **Its site:** the gate lake (1,419 m, px 328,1476) and the lowest ground at px 367,1486, between the chaos mesas.

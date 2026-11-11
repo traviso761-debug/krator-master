@@ -20,17 +20,19 @@ kdef('gaBone',new THREE.BoxGeometry(1,1,1),MAT.gaHide);
 kdef('gaGlass',new THREE.BoxGeometry(1,1,1),MAT.glass);
 
 function buildGatearc(scene,gx,gz,d){reseed(7431+d);
- const HO=GATEARC.host,Y0=HO.y||0;KOFF=[gx,Y0,gz];
+ const HO=GATEARC.host,Y0=HO.y==null?0:HO.y;KOFF=[gx,Y0,gz];
  const dd=d>0?1:0,P=GATEARC.plan(),RU=dd?GATEARC.ruin(P):null,KM=GATEARC.kimr(P,RU),D=P.dim;
  const UH=(id,salt)=>{let h=P.seed^salt;for(let i=0;i<id.length;i++)h=KRAND.hash(h,id.charCodeAt(i));return KRAND.unit(h);};
  const gone=new Set(RU?RU.cellsGone:[]),sheared=new Map(RU?RU.sheared.map(s=>[s.id,s.y]):[]);
  const slabGone=(key,k)=>RU&&RU.slabGone.some(s=>s.slab===key&&s.face===k);
  const G=new THREE.Group();G.position.set(gx,Y0,gz);scene.add(G);
+ if(HO.sheet!==false){   /* the kit's sheet only: a world host owns its camera and sky */
  if(typeof camera!=='undefined'&&camera.far<30000){camera.far=30000;camera.updateProjectionMatrix();}
  if(typeof sky!=='undefined')sky.renderOrder=-1;
  // the Pile's fix (8at1): the sky dome's pow() kept off a negative, or the band over the horizon comes out black
  if(typeof skyMat!=='undefined'&&skyMat.fragmentShader.indexOf('pow(h,.55)')>=0){
   skyMat.fragmentShader=skyMat.fragmentShader.replace('pow(h,.55)','pow(max(h,0.),.55)');skyMat.needsUpdate=true;}
+ }
 
  // ---- core/tags: one record per placed thing, before anything is drawn -------------------------------------------
  {const T=KTAGS.gatearc||(KTAGS.gatearc=KTAGS.create({build:'ancients-gatearc'}));
@@ -65,7 +67,7 @@ function buildGatearc(scene,gx,gz,d){reseed(7431+d);
   list.push(uvShift(gridSurface((u,v)=>[xa+(xb-xa)*u,y0+(y1-y0)*v,za+(zb-za)*u],nu||Math.max(1,Math.round(Lw/T256)),1,{uS:Lw/T256,vS:(y1-y0)/T256}),y0/T256));};
  // a drum (a column's outside), a0..a1 the arc (radians)
  // hf: a decay predicate (holeFn) for a ruined drum: the drum is cut in storey-pair rows so the holes are windows' size
- const drum=(list,cx,cz,r,y0,y1,a0,a1,hf)=>{a0=a0||0;a1=a1==null?TAU:a1;const arc=(a1-a0)*r,nv=hf?Math.max(1,Math.round((y1-y0)/8.4)):1;
+ const drum=(list,cx,cz,r,y0,y1,a0,a1,hf)=>{a0=a0==null?0:a0;a1=a1==null?TAU:a1;const arc=(a1-a0)*r,nv=hf?Math.max(1,Math.round((y1-y0)/8.4)):1;
   const opt={uS:arc/T256,vS:(y1-y0)/T256};if(hf)opt.hole=(u,v)=>hf(u*arc/216,y0+(y1-y0)*v);
   list.push(uvShift(gridSurface((u,v)=>{const a=a0+(a1-a0)*u;return [cx+Math.cos(a)*r,y0+(y1-y0)*v,cz+Math.sin(a)*r];},Math.max(8,Math.round(arc/7)),nv,opt),y0/T256));};
  const disc=(list,cx,cz,r0,r1,y)=>list.push(gridSurface((u,v)=>{const a=u*TAU,r=r0+(r1-r0)*v;return [cx+Math.cos(a)*r,y,cz+Math.sin(a)*r];},48,1,{uS:TAU*r1/T256,vS:(r1-r0)/T256}));

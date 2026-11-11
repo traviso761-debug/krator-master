@@ -599,6 +599,20 @@ Completes the southeastern mountain-and-basin complex by sculpting three contigu
   6,420 m, a lip over 6.7 km, r442's head, the basin record), the cavern note, the climate (floor, lapse, Cwb), The Gate
   and the sill.
 
+## 5.1, the Gate edit: `edit_51g.py` (2026-11-11): the Hall of Heroes
+
+Records only (every file of `model/data/` is checked unchanged). From the Labyrinth's Gate plan (`biomes/labyrinth/PLAN-GATE.md`,
+the owner's answers of 2026-11-11):
+
+- **The pin:** the Hall of Heroes (`shallofheroes`, a ruined arcology) at px 377, 1474, the neck of the Labyrinth's one eastern
+  opening on the Gowd Warra (r331): the Kimrs' ancestral arcology and their necropolis. In `defSetts` and in `SETT_ADDED` under
+  the reconcile key `5.1g1`.
+- **The Labyrinth's east corner:** two points inserted after (393,1513), at (394,1484) and (384,1467), so the neck stands inside
+  the polygon (before: outside, by about 20 km). Merge key `krator.regMerged.5.1g1`.
+
+The keys 5.1e1-5.1e3 are the scale-model session's edits 1-3 (`claude/dreamy-davinci-30f3c1`); merging the two branches wants
+a textual merge of the same two tables. Not yet published to the artifact or written to its shared database.
+
 ## Cutting a region out for the open world
 
 `extract_region.py <page.html> <regions> <settlements> "<region name>" <out dir>` reads the same page (no edit) and

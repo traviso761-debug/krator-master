@@ -39,9 +39,9 @@ GATEARC.corner=function(k,R){const a=k*Math.PI/3;return [Math.cos(a)*R,Math.sin(
 // the hexagon's radius at angle a (corner radius R): R at a corner, R*cos30 at a flat
 GATEARC.hexR=function(a,R){const s=Math.PI/3,t=((a%s)+s)%s;return R*Math.cos(Math.PI/6)/Math.cos(t-Math.PI/6);};
 // a point on face k of a hexagon of corner radius R, at t (0 corner k .. 1 corner k+1), pushed out along the normal by o
-GATEARC.facePt=function(k,R,t,o){const a=GATEARC.corner(k,R),b=GATEARC.corner(k+1,R),na=(k*60+30)*Math.PI/180;o=o||0;
+GATEARC.facePt=function(k,R,t,o){const a=GATEARC.corner(k,R),b=GATEARC.corner(k+1,R),na=(k*60+30)*Math.PI/180;o=o==null?0:o;
  return [a[0]+(b[0]-a[0])*t+Math.cos(na)*o,a[1]+(b[1]-a[1])*t+Math.sin(na)*o];};
-GATEARC.inPond=function(x,z,m){const P=GATEARC.DIM.POND;m=m||0;return (x*x)/((P.a+m)*(P.a+m))+(z*z)/((P.b+m)*(P.b+m))<1;};
+GATEARC.inPond=function(x,z,m){const P=GATEARC.DIM.POND;m=m==null?0:m;return (x*x)/((P.a+m)*(P.a+m))+(z*z)/((P.b+m)*(P.b+m))<1;};
 // where a ray from the centre at angle a leaves the pond
 GATEARC.pondR=function(a){const P=GATEARC.DIM.POND,c=Math.cos(a),s=Math.sin(a);return 1/Math.sqrt(c*c/(P.a*P.a)+s*s/(P.b*P.b));};
 

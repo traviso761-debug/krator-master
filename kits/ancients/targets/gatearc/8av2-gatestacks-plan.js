@@ -37,10 +37,10 @@ GATESTACKS.DECK={w:12,depth:6,rail:1.4,pierEvery:150,pierW:9};
 
 GATESTACKS.u=function(seed,a,b,c){return KRAND.unit(KRAND.hash(seed,a|0,b==null?0:b|0,c==null?0:c|0));};
 // the stack's outline at height y: n points, and the one facing a direction
-GATESTACKS.ring=function(S,y,n){return KSTACKS.ring(S,y,n||72);};
+GATESTACKS.ring=function(S,y,n){return KSTACKS.ring(S,y,n==null?72:n);};
 GATESTACKS.facing=function(S,y,dx,dz){const r=GATESTACKS.ring(S,y,96);if(!r)return null;
- const L=Math.hypot(dx,dz)||1;let best=null,bd=-2;
- for(const p of r){const vx=p[0]-S.x,vz=p[1]-S.z,vl=Math.hypot(vx,vz)||1,dt=(vx*dx+vz*dz)/(vl*L);if(dt>bd){bd=dt;best={x:p[0],z:p[1],nx:vx/vl,nz:vz/vl,r:vl};}}
+ const L=Math.hypot(dx,dz);if(!L)return null;let best=null,bd=-2;
+ for(const p of r){const vx=p[0]-S.x,vz=p[1]-S.z,vl=Math.max(1e-9,Math.hypot(vx,vz)),dt=(vx*dx+vz*dz)/(vl*L);if(dt>bd){bd=dt;best={x:p[0],z:p[1],nx:vx/vl,nz:vz/vl,r:vl};}}
  return best;};
 // a fitting on the wall at an angle (radians, from the stack's centre)
 GATESTACKS.onWall=function(S,y,a){return GATESTACKS.facing(S,y,Math.cos(a),Math.sin(a));};
@@ -50,7 +50,7 @@ GATESTACKS.plan=function(o){o=o||{};const G0=o.ground||(()=>1.6),H=o.hall||null,
  const byId={};
  for(const d of GATESTACKS.DEFS){const y0=G0(d.x,d.z);
   const spec=Object.assign({id:'stacks.'+d.id,kind:d.kind,x:d.x,z:d.z,y0:y0,seed:d.seed},
-   d.tiers?{tiers:d.tiers,bed:d.bed,weather:d.weather}:{H:d.H,r:d.r,plates:d.plates,taper:d.taper,crown:d.crown,lean:d.lean||0});
+   d.tiers?{tiers:d.tiers,bed:d.bed,weather:d.weather}:{H:d.H,r:d.r,plates:d.plates,taper:d.taper,crown:d.crown,lean:d.lean==null?0:d.lean});
   const S=KSTACKS.make(spec);S.name=d.name;S.role=d.role;S.key=d.id;
   P.stacks.push(S);byId[d.id]=S;}
  const F=(o)=>{P.fittings.push(o);return o;};
