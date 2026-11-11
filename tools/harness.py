@@ -864,6 +864,7 @@ UNIVERSAL_JS = "(cap)=>{" + FIND_JS + """
    first:JSON.stringify((s.firstInstances||[]).concat(s.first||[])).slice(0,300)}; }catch(e){ return {error:String(e)}; } })():null;
  R.occ=(A&&typeof A.regOccupancy==='function')?(()=>{ try{ const o=A.regOccupancy(); const e=o.filter(x=>x.n===0);
    return {n:o.length, empty:e.length, names:e.slice(0,6).map(x=>x.name)}; }catch(e){ return {error:String(e)}; } })():null;
+ R.ruins=(typeof KRUINS!=='undefined'&&typeof KRUINS.report==='function'&&KRUINS.watched&&KRUINS.watched.length)?(()=>{ try{ return {rep:KRUINS.report(), neg:KRUINS.selfTest()}; }catch(e){ return {error:String(e)}; } })():null;
  const over=[]; let src=null; const B=(typeof BIO!=='undefined')?BIO:(window.BIO||null);
  if(B&&typeof B.capReport==='function'){ src='BIO.capReport'; try{ for(const r of (B.capReport()||[])) over.push((r.kit?r.kit+'/':'')+(r.item||'?')+' '+r.count+' > '+r.cap+(r.why?' ('+r.why+')':' (no capWhy)')); }catch(e){ over.push('capReport threw: '+e); } }
  else if(sc){ src='scene scan, cap '+cap; sc.traverse(o=>{ if(o.isInstancedMesh&&o.count>cap&&!(o.userData&&o.userData.capOk))
@@ -1114,6 +1115,14 @@ class VerifyPage:
                 U.append(("registered-volumes-non-empty", not o.get("error") and not o.get("empty"),
                           o.get("error") or ("%d empty of %d: %s" % (o["empty"], o["n"], " | ".join(o["names"])) if o["empty"]
                                              else "%d volumes, none empty" % o["n"])))
+            if R.get("ruins") is not None:   # core/ruins: every ruined structure the page watches (KRUINS.watch): nothing floats, every wreck lies on the ground
+                ru = R["ruins"]
+                if ru.get("error"):
+                    U.append(("ruins", False, "the ruins check threw: " + ru["error"][:200]))
+                else:
+                    for r in ru["rep"]:
+                        U.append(("ruins: " + r["name"], r["ok"], r["detail"][:400]))
+                    U.append(("ruins: negative (core/ruins selfTest)", ru["neg"]["ok"], ru["neg"]["detail"]))
             if R["seat"] is not None:   # core-seat's sweeps (core/host/95b-host-seat.js, core/terrain/SEAT.md), when the page takes them
                 st = R["seat"]
                 bad = [k for k in ("contact", "clear", "doors", "stairs") if not st.get("error") and st[k]["nFails"]]

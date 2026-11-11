@@ -10,6 +10,11 @@ thing is: ids, class, tags), `space/` (the one spatial index placement passes sh
 `krator-world` container every module gives its part to, for Godot). `charactermodels/` (the people: MakeHuman bodies,
 clothes, peoples and clips, with two labs) is a build of its own as well as a module.
 
+## `ruins/`
+
+`KRUINS`: every ruined structure is watched once drawn (`KRUINS.watch(root, {name, ground})`), and the verify harness asserts it: no piece
+touching nothing, every wreck on its lowest points on the ground (the owner, 2026-11-10: the default for ruined structures). `ruins/README.md`.
+
 ## `shader/`
 
 `KHOOK` (the one door for shader hooks: layers in a fixed order, a program keyed from them, an anchor that throws, `checkPrograms`)

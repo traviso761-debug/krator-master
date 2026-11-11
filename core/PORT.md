@@ -175,6 +175,8 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `terrain/host/46-core-lava-gpu.js` | 10.3 | [G shader] | 2 | 0 | 0 | 0 | 0 | 1 | 4 | 0 | 0 | 0 | 0 | opt-in (subfolder): KLAVA.gpu, the step as render passes on float textures; a compute shader in Godot (LAVA.md, "Godot") |
 | `walk/20-core-walk.js` | 11.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | floors and blockers; export() is navigation-mesh source and collision boxes |
 | `hazard/21-core-hazard-flow.js` | 6.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | opt-in: KHAZ.moveAt, drift, poolK: a hazard's move read (move.pull toward its core) and gas pooled on a band's floor (shape.pool); test-hazard-flow.js; core/hazard/GODOT.md "Moving and pooling" |
+| `ruins/20-core-ruins.js` | 6.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `ruins/21-core-ruins-host.js` | 6.0 | [web] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | the page side: a three.js tree into boxes, the watch list, the report the harness reads |
 | `walk/box/24-core-walk-box.js` | 5.7 | [web] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `water/20-core-water.js` | 26.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | WATER: the six kinds, the CPU twins, ride, export; becomes a Water autoload (core/water/README.md, "Godot") |
 | `water/21-core-water-shore.js` | 15.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the shore grid (the flood, the exact distance transform, the bytes) and the shore's twins (shoaling, breakers, the beach); GDScript twin in godot/krator/water.gd (KWater.shore_grid) |
