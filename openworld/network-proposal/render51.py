@@ -34,13 +34,15 @@ def runs(r):
         while j < len(pts) - 1 and (fm[j], up[j]) == key: j += 1
         yield [P(p) for p in pts[i:j + 1]], fm[i], up[i]
         i = j
-order = ['extension', 'izani', 'trunk', 'possible', 'branch', 'line']
+order = ['extension', 'vothic', 'izani', 'trunk', 'possible', 'branch', 'line']
 for cls in order:
     for r in d['routes']:
         if r['class'] != cls: continue
         allp = [P(p) for p in r['px']]
         if cls == 'extension':
             dashed(allp, (12, 14, 16), 5.5, 12, 8); dashed(allp, (225, 228, 232), 3, 12, 8); continue
+        if cls == 'vothic':
+            dr.line(allp, fill=(12, 14, 16), width=5 * K); dr.line(allp, fill=(250, 250, 250), width=int(2.2 * K)); continue
         if cls == 'izani':
             dr.line(allp, fill=(12, 14, 16), width=5 * K); dr.line(allp, fill=(236, 96, 214), width=int(2.4 * K)); continue
         if cls == 'possible':
@@ -68,14 +70,24 @@ for n in d['nodes']:
         r = (7 if ('arcology' in n['type'] or n['type'] == 'city') else 5) * K
         dr.ellipse([x - r, y - r, x + r, y + r], fill=(244, 242, 234), outline=(10, 12, 14), width=3 * K)
     dr.text((x + 11 * K, y - 9 * K), n['name'], font=f14, fill=(244, 242, 234), stroke_width=3 * K, stroke_fill=(10, 12, 14))
+nodenames = {n['name'] for n in d['nodes']}
+towns = {}
+for r in d['routes']:
+    if r['class'] in ('izani', 'vothic'):
+        for nm, q in ((r['from'], r['px'][0]), (r['to'], r['px'][-1])):
+            if nm not in nodenames: towns[nm] = q
+for nm, q in towns.items():
+    x, y = P(q); r = 4 * K
+    dr.ellipse([x - r, y - r, x + r, y + r], fill=(236, 96, 214), outline=(10, 12, 14), width=2 * K)
+    dr.text((x + 8 * K, y - 8 * K), nm, font=f12, fill=(240, 220, 236), stroke_width=3 * K, stroke_fill=(10, 12, 14))
 for nm, p in d['extra'].items():
     x, y = P(p); r = 5 * K
     dr.polygon([(x, y - r), (x + r, y), (x, y + r), (x - r, y)], fill=(186, 140, 255), outline=(10, 12, 14), width=2 * K)
 # legend
 leg = [('The Rift line, the Inner Wall and Stair lines: centre = keeper', 'line'), ('Trunk, coloured by keeper', 'trunk'), ('Kept (Iziz, the State, Voth, Republic, Tungangs)', UP['kept']),
        ('Partly kept (Yuni, Xanadu)', UP['partly']), ('Lapsed since the Empire broke', UP['lapsed']), ('Badly decayed', UP['decayed']), ('Tunnel (none open over 8 km)', 'tun'),
-       ('Causeway / viaduct', 'wat'), ('Possible: the line on to Stair and the Bowl', 'pos'), ('Izani road to a fort or port (not Ancient)', 'iz'), ('Extension, lore to come', 'ext')]
-x0, y0 = (W0 - 540) * K, 60 * K
+       ('Causeway / viaduct', 'wat'), ('Possible: the line on by Stair to the Bowl', 'pos'), ('Izani highway (not Ancient)', 'iz'), ('Vothic highway (not Ancient)', 'vo'), ('Extension, lore to come', 'ext')]
+x0, y0 = 18 * K, 56 * K
 dr.rectangle([x0, y0, x0 + 520 * K, y0 + (30 * len(leg) + 70) * K], fill=(14, 17, 16), outline=(70, 80, 76), width=2 * K)
 dr.text((x0 + 14 * K, y0 + 12 * K), 'The proposed Ancient network, scale model 5.1', font=f22, fill=(244, 242, 234))
 for k, (lab, s) in enumerate(leg):
@@ -86,6 +98,7 @@ for k, (lab, s) in enumerate(leg):
     elif s == 'wat': dr.line([a, (a[0] + 30 * K, a[1])], fill=WAT, width=int(4.2 * K)); dr.line([(a[0] + 30 * K, a[1]), b], fill=VIA, width=int(4.2 * K))
     elif s == 'pos': dashed([a, b], (255, 214, 120), 4.5, 14, 8)
     elif s == 'iz': dr.line([a, b], fill=(236, 96, 214), width=int(2.4 * K))
+    elif s == 'vo': dr.line([a, b], fill=(250, 250, 250), width=int(2.2 * K))
     elif s == 'ext': dashed([a, b], (225, 228, 232), 3, 12, 8)
     else: dr.line([a, b], fill=s, width=int(4.2 * K))
     dr.text((x0 + 90 * K, yy), lab, font=f14, fill=(230, 232, 228))

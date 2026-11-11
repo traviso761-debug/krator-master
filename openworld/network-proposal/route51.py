@@ -45,8 +45,26 @@ for n, s in S.items():
     if n in ZEIJ or n in FORTS: continue
     if s['type'] in ANC or n in CITIES:
         nodes[n] = {'id': s['id'], 'name': 'the Pile' if n == 'Cube' else n, 'type': s['type'], 'px': [s['px'], s['py']], 'kind': 'site'}
+nodes.pop("Noa's Regret", None)
 for n, px, t in (('Wheel', (406, 886), 'ruined arcology'), ('Thera', (526, 955), 'ruin')):
     nodes[n] = {'id': 'valley.' + n.lower(), 'name': n, 'type': t, 'px': list(px), 'kind': 'site', 'note': 'in the valley plan, not yet on the model'}
+# ---- the owner, later on 2026-11-11
+FORT_STOPS = ('Fort Kalor', 'Fort Kreia', 'Fort Ordo')      # built by Iziz beside the way: stops on it
+for n in FORT_STOPS:
+    s = S[n]; nodes[n] = {'id': s['id'], 'name': n, 'type': 'fort', 'px': [s['px'], s['py']], 'kind': 'site', 'note': 'built by Iziz beside the Ancient way'}
+nodes['Quintagon'] = {'id': 'new.quintagon', 'name': 'Quintagon', 'type': 'arcology', 'px': [1349, 830], 'kind': 'site', 'note': 'new (the owner): NE of Verge in the eastern badlands; 2,320 m, 14 degC'}
+nodes['Bowl arcology'] = {'id': 'tbd.bowl', 'name': 'Bowl arcology (to be named)', 'type': 'arcology', 'px': [970, 1186], 'kind': 'site',
+                          'note': "the Bowl's most temperate ground near the Godsgate: 15 degC, 1,716 m, 314 mm"}
+_R = {r['name']: r for r in json.load(open(SP + '/regions.json', encoding='utf8'))}
+def _mask(n):
+    im = Image.new('L', (W2w, H2), 0); ImageDraw.Draw(im).polygon([tuple(q) for q in _R[n]['points']], fill=1); return np.array(im).astype(bool)
+_tm = raster(D, 'tm', 'L').astype(float) - 90
+_gy, _gx = np.gradient(E2); _sl = np.hypot(_gx, _gy) / 2000
+_yy, _xx = np.mgrid[0:H2, 0:W2w]
+_km = _mask('Korona / NE') & ~_mask('Tiers') & ~_mask('The Tiers') & ~W2 & (_sl < 0.02) & (_xx < 1150)
+_s = np.where(_km, np.abs(_tm - 12) + np.hypot(_xx - 1090, _yy - 520) / 40, 1e9); _j, _i = np.unravel_index(_s.argmin(), _s.shape)
+nodes['Korona site'] = {'id': 'tbd.korona', 'name': 'Korona site (to be named)', 'type': 'ruin', 'px': [int(_i), int(_j)], 'kind': 'site',
+                        'note': 'proposed: level ground in Korona beyond the Tiers, %d m, %d degC' % (E2[_j, _i], _tm[_j, _i])}
 # ---- the stranded Ancient ports on the dam lakes' former shores
 pl = json.load(open('model/data/palaeolakes.json', encoding='utf8'))
 from scipy.ndimage import label, binary_dilation
@@ -85,13 +103,13 @@ AUTH = [
   ('rift.twenny', [('Twenny junction', 'Loj Twenny', 'bore')]),
   ('innerwall', [('Drum', 'Cascade', 'bore'), ('Cascade', 'Babel', 'bore')]),
   ('span', [('Dalab', 'Span'), ('Span', 'Thera')]),
-  ('stair', [('Arcbeam', 'Stair', 'bore')]),
+  ('rift.bowl', [('Stair', 'Bowl arcology')]),
 ]
 pinned = set()
 for rid, legs in AUTH:
     for leg in legs:
         if leg[0] in ix and leg[1] in ix: pinned.add(tuple(sorted((ix[leg[0]], ix[leg[1]]))))
-NOT_RNG = {'Loj Twenny', 'Strongbow'}
+NOT_RNG = {'Loj Twenny', 'Strongbow', "Trickster's House", 'Korona site'}
 SB = ix['Strongbow']
 edges = set()
 for i in range(N):
@@ -175,82 +193,145 @@ def upkeep(p):
     return 'decayed'
 
 routes = []
-def add(rid, cls, a, b, pts, bore=False, name=None, note=None, level=None):
+def add(rid, cls, a, b, pts, bore=False, name=None, note=None, level=None, force=None):
     s, f, fm = forms(pts, bore, level)
+    if force: fm = [force if x not in ('causeway',) else x for x in fm]
     up = [upkeep(p) for p in pts]
     tun = sum(s[k + 1] - s[k] for k in range(len(pts) - 1) if fm[k] == 'tunnel') / 1000
     air = sum(s[k + 1] - s[k] for k in range(len(pts) - 1) if surf(pts[k])[0] > AIR and fm[k] != 'tunnel') / 1000
     routes.append({'id': rid, 'class': cls, 'from': a, 'to': b, 'name': name or (a + ' to ' + b), 'km': round(s[-1] / 1000), 'tunnel_km': round(tun),
                    'airless_open_km': round(air), 'px': [[round(x, 1), round(y, 1)] for x, y in pts], 'form': fm, 'up': up, 'note': note})
 P = lambda n: nodes[n]['px'] if n in nodes else None
-EXTRA_PTS = {'Twenny junction': [445, 1266], 'N portal': [458.2, 1158.6], 'S portal': [439.5, 1309.5]}
-# the Rift line: the Line's survey alignment for the bore, the router for the open legs
-leg_pts = []
-seq = []
-def routed(a, b): return trace(cellof(*P(a)), cellof(*P(b)))
-rift_legs = [('Dalab', 'Shelf', routed('Dalab', 'Shelf'), False), ('Shelf', 'N portal', straight(P('Shelf'), EXTRA_PTS['N portal']), True),
-             ('N portal', 'S portal', straight(EXTRA_PTS['N portal'], EXTRA_PTS['S portal']), True), ('S portal', 'Ledge', straight(EXTRA_PTS['S portal'], P('Ledge')), False),
-             ('Ledge', 'Nulab', straight(P('Ledge'), P('Nulab')), False), ('Nulab', 'Chimes', routed('Nulab', 'Chimes'), False),
-             ('Chimes', 'Cthonos', routed('Chimes', 'Cthonos'), False), ('Cthonos', 'The Tubes', routed('Cthonos', 'The Tubes'), False),
-             ('The Tubes', 'the Pile', routed('The Tubes', 'Cube'), False), ('the Pile', 'Theodiga', routed('Cube', 'Theodiga'), False), ('Theodiga', 'Strongbow', routed('Theodiga', 'Strongbow'), False)]
-# the Line session's station numbers (the owner, 2026-11-11: north to south; 10 on are that session's proposal)
-NUM = {'Dalab': 1, 'Shelf': 2, 'Ledge': 4, 'Nulab': 5, 'Chimes': 6, 'Cthonos': 7, 'The Tubes': 8, 'the Pile': 9, 'Theodiga': 10, 'Strongbow': 11, 'Stair': 12}
-for a, b, pts, bore in rift_legs:
-    add('rift', 'line', a, b, pts, bore, name='The Rift line: ' + a + (' (%d)' % NUM[a] if a in NUM else '') + ' to ' + b + (' (%d)' % NUM[b] if b in NUM else ''),
-        note='lifts down the cliff, 1.3 km' if (a, b) == ('Ledge', 'Nulab') else None)
+EXTRA_PTS = {'Twenny junction': [445, 1266], 'N portal': [458.2, 1158.6], 'S portal': [439.5, 1309.5], 'the Gate': [1438, 326]}
+def routed(a, b): return trace(cellof(*(P(a) or a)), cellof(*(P(b) or b)))
+def via(pts):
+    out = []
+    for a, b in zip(pts, pts[1:]):
+        seg = trace(cellof(*a), cellof(*b)); out += seg if not out else seg[1:]
+    return out
+# ---- the Rift line (the Line session's survey for the bore; the owner: underground through the Lizardmen's country)
+rift_legs = [('Dalab', 'Shelf', routed('Dalab', 'Shelf'), False, None), ('Shelf', 'N portal', straight(P('Shelf'), EXTRA_PTS['N portal']), True, None),
+             ('N portal', 'S portal', straight(EXTRA_PTS['N portal'], EXTRA_PTS['S portal']), True, None), ('S portal', 'Ledge', straight(EXTRA_PTS['S portal'], P('Ledge')), False, None),
+             ('Ledge', 'Nulab', straight(P('Ledge'), P('Nulab')), False, None), ('Nulab', 'Chimes', routed('Nulab', 'Chimes'), False, None),
+             ('Chimes', 'Cthonos', routed('Chimes', 'Cthonos'), False, 'tunnel'), ('Cthonos', 'The Tubes', routed('Cthonos', 'The Tubes'), False, 'tunnel'),
+             ('The Tubes', 'the Pile', routed('The Tubes', 'Cube'), False, 'tunnel'), ('the Pile', 'Theodiga', routed('Cube', 'Theodiga'), False, None),
+             ('Theodiga', 'Strongbow', routed('Theodiga', 'Strongbow'), False, None)]
+NUM = {'Dalab': 1, 'Shelf': 2, 'Ledge': 4, 'Nulab': 5, 'Chimes': 6, 'Cthonos': 7, 'The Tubes': 8, 'the Pile': 9, 'Theodiga': 10, 'Strongbow': 11, 'Stair': 12, 'Bowl arcology': 13}
+lab = lambda n: n + (' (%d)' % NUM[n] if n in NUM else '')
+for a, b, pts, bore, force in rift_legs:
+    add('rift', 'line', a, b, pts, bore, name='The Rift line: ' + lab(a) + ' to ' + lab(b), force=force,
+        note='lifts down the cliff, 1.3 km' if (a, b) == ('Ledge', 'Nulab') else ('underground through the Lizardmen\'s country (the owner); surface where the tunnel wars broke it open, to be authored' if force else None))
 add('rift.twenny', 'branch', 'Twenny junction', 'Loj Twenny', straight(EXTRA_PTS['Twenny junction'], P('Loj Twenny')), True, name='The Twenny gallery (bore km 218)')
+SBS = straight(P('Strongbow'), P('Stair'))
+add('rift.bowl', 'possible', 'Strongbow', 'Stair', SBS, level=level_for(SBS, 329), name='Possible: the Rift line on from Strongbow (11) to Stair (12) under the Catch\'s walls',
+    note='the Line session\'s straight bore, 329 km')
+add('rift.bowl', 'possible', 'Stair', 'Bowl arcology', routed('Stair', 'Bowl arcology'), name='Possible: the Rift line on from Stair (12) to the Bowl arcology (13), by the Godsgate')
+# ---- the Inner Wall tunnel, bent under Cascade
 IW = straight(P('Drum'), P('Cascade')) + straight(P('Cascade'), P('Babel'))[1:]
 IWL = 2400.0
 add('innerwall', 'line', 'Drum', 'Babel', IW, name='The Inner Wall tunnel: Drum, under Cascade (a shaft), to the Valley at Babel', level=IWL,
     note='level bore at %d m; Cascade stands %d m over it' % (IWL, surf(P('Cascade'))[0] - IWL))
+# ---- the Span trunk
 add('span', 'trunk', 'Dalab', 'Span', routed('Dalab', 'Span'), name='Span trunk: Dalab and the Basin Tunnel to Span')
 add('span', 'trunk', 'Span', 'Thera', routed('Span', 'Thera'), name='Span trunk: Span and the Valley Tunnel to Thera')
-ST = straight(P('Arcbeam'), [1033, 1258]) + straight([1033, 1258], P('Stair'))[1:]
-STL = level_for(ST, 180)
-add('stair', 'line', 'Arcbeam', 'Stair', ST, name='The Stair line: the 180 km base tunnel by the Bab al-Hawa shaft (sealed halfway)', level=STL,
-    note='level bore at %d m (seouterwall: 180 km)' % STL)
-add('godsgate', 'trunk', 'Arcbeam', 'Stair', routed('Arcbeam', 'Stair'), name='The Godsgate highway, Arcbeam to Stair (the surviving way)')
+# (no Stair tunnel: the owner dropped it, 2026-11-11)
+# ---- the road to Trickster's House: east from Yuni, round through the Loom-Chasms and up the Great Chasm
+TR = via([P('Yuni'), [1450, 1130], [1600, 1150], [1697, 1028], [1688, 920], [1680, 810], P("Trickster's House")])
+add('trickster', 'trunk', 'Yuni', "Trickster's House", TR, name="The road to Trickster's House: Yuni, the Loom-Chasms, the Great Chasm")
+# ---- the Outland Gate highway: the Outlands north through the Gate to the Ria valley; the branch through the Tiers to Korona
+OG = via([P("Trickster's House"), EXTRA_PTS['the Gate'], [950, 200]])
+add('outland', 'trunk', "Trickster's House", 'the Ria valley', OG, name='The Outland Gate highway: the Outlands, the Gate, the Ria valley (the north end: lore to come)')
+OK = via([EXTRA_PTS['the Gate'], [1230, 470], P('Korona site')])
+add('outland.korona', 'trunk', 'the Gate', 'Korona site', OK, name='The Outland Gate highway: the branch through the Tiers to the Korona site')
 pinned_names = {tuple(sorted(x)) for x in [('Dalab', 'Shelf'), ('Shelf', 'Ledge'), ('Ledge', 'Nulab'), ('Nulab', 'Chimes'), ('Chimes', 'Cthonos'), ('Cthonos', 'The Tubes'), ('The Tubes', 'Cube'),
-                                           ('Cube', 'Theodiga'), ('Theodiga', 'Strongbow'), ('Strongbow', 'Stair'),
-                                           ('Drum', 'Cascade'), ('Cascade', 'Babel'), ('Dalab', 'Span'), ('Span', 'Thera'), ('Arcbeam', 'Stair')]}
+                                           ('Cube', 'Theodiga'), ('Theodiga', 'Strongbow'), ('Strongbow', 'Stair'), ('Stair', 'Bowl arcology'),
+                                           ('Drum', 'Cascade'), ('Cascade', 'Babel'), ('Dalab', 'Span'), ('Span', 'Thera')]}
 for i, j in sorted(edges):
     a, b = names[i], names[j]
     if tuple(sorted((a, b))) in pinned_names: continue
     na, nb = nodes[a]['name'], nodes[b]['name']
     add('r.%s.%s' % (nodes[a]['id'], nodes[b]['id']), 'trunk', na, nb, trace(src[i], src[j]))
-# ---- the owner, 2026-11-11 (later): "the rail line might even extend from strongbow, to theodiga, to Stair, to an arcology TBD in the bowl"
-bowl = [r for r in R if r['name'] == 'The Bowl'][0]
-im = Image.new('L', (W2w, H2), 0); ImageDraw.Draw(im).polygon([tuple(p) for p in bowl['points']], fill=1); bm = np.array(im).astype(bool)
-line = straight(P('Arcbeam'), [1033, 1258], 0.5)
-inb = [p for p in line if bm[int(round(p[1])), int(round(p[0]))] and not W2[int(round(p[1])), int(round(p[0]))]]
-bpt = inb[len(inb) // 2] if inb else [1096, 1156]
-bpt = [round(bpt[0]), round(bpt[1])]
-nodes['Bowl arcology'] = {'id': 'tbd.bowl', 'name': 'Bowl arcology (to be placed)', 'type': 'arcology', 'px': bpt, 'kind': 'tbd',
-                         'note': 'provisional: on the Stair line where it crosses the Bowl, so the line goes on from Stair along the Stair line'}
-SBS = straight(P('Strongbow'), P('Stair'))
-add('rift.bowl', 'possible', 'Strongbow', 'Stair', SBS, name='Possible: the line on from Strongbow (11) to Stair (12) under the Catch\'s walls, then by the Stair line to the Bowl arcology (13)',
-    level=level_for(SBS, 329), note='the Line session\'s straight bore, 329 km')
-# ---- Iziz-built roads to the forts and the ports (not Ancient): to the nearest network node by the same cost
-for n in FORTS + PORTS:
-    if n not in S: continue
-    s0 = S[n]; c0 = cellof(s0['px'], s0['py'])
-    d0 = dijkstra(GR, indices=c0, directed=False, limit=4000)
-    best = min(names, key=lambda m: d0[src[ix[m]]]);
-    if not np.isfinite(d0[src[ix[best]]]): continue
-    add('izani.' + s0['id'], 'izani', n.replace('  ', ' '), nodes[best]['name'], trace(c0, src[ix[best]]), name='Izani road: ' + n.replace('  ', ' ') + ' to ' + nodes[best]['name'])
-# ---- extensions into the new west and north (lore to come)
-EXT = [('north', 'the Ria valley', [950, 200]), ('west', 'Farport and the Crook', [294, 588]), ('southwest', 'the Silent Vales', [194, 982])]
+# ---- the modern roads (not Ancient): built at 8 %, no tunnels, bridges where they must
+def graph(Gm, tun, wat):
+    rows, cols, cost = [], [], []
+    for dj, di in ((0, 1), (1, 0), (1, 1), (1, -1)):
+        a = idx[max(0, -dj):VH - max(0, dj), max(0, -di):VW - max(0, di)]
+        b = idx[max(0, dj):VH + min(0, dj) or None, max(0, di):VW + min(0, di) or None]
+        ea, eb = E.flat[a.ravel()], E.flat[b.ravel()]; wa, wb = W.flat[a.ravel()], W.flat[b.ravel()]
+        d = CELL * math.hypot(dj, di); g = np.abs(eb - ea) / (d * 1000)
+        c = np.minimum(d * (1 + 0.5 * (g / Gm) ** 2), d * tun)
+        c[(ea > AIR) | (eb > AIR)] = np.inf; c[wa | wb] = d * wat
+        rows += [a.ravel(), b.ravel()]; cols += [b.ravel(), a.ravel()]; cost += [c, c]
+    return coo_matrix((np.concatenate(cost), (np.concatenate(rows), np.concatenate(cols))), shape=(VW * VH, VW * VH)).tocsr()
+GM = graph(0.08, 40.0, 40.0)
+def mtrace(a_cell, b_cell):
+    _, pred = dijkstra(GM, indices=a_cell, directed=False, return_predecessors=True)
+    p = [b_cell]
+    while p[-1] != a_cell and pred[p[-1]] >= 0: p.append(int(pred[p[-1]]))
+    return [pxof(c) for c in p[::-1]]
+def mesh(cls, members, prefix, label, k_near=2, skip_pairs=()):
+    """a road network among `members` (names -> px): a relative-neighbourhood graph plus each member's k nearest (the owner:
+    'their highway network would connect its nodes to multiple nearby cities'), minus pairs the Ancient trunks already join"""
+    nm = list(members); cells = [cellof(*members[n]) for n in nm]
+    Dm = dijkstra(GM, indices=cells, directed=False)[:, cells]
+    es = set()
+    for i in range(len(nm)):
+        for j in range(i + 1, len(nm)):
+            if np.isfinite(Dm[i, j]) and not any(max(Dm[i, q], Dm[q, j]) < Dm[i, j] for q in range(len(nm)) if q not in (i, j)): es.add((i, j))
+        for j in np.argsort(Dm[i])[1:k_near + 1]:
+            if np.isfinite(Dm[i, j]) and Dm[i, j] < 3 * np.median(Dm[i][np.isfinite(Dm[i])]): es.add(tuple(sorted((i, int(j)))))
+    made = 0
+    for i, j in sorted(es):
+        if tuple(sorted((nm[i], nm[j]))) in skip_pairs: continue
+        add('%s.%s.%s' % (prefix, i, j), cls, nm[i], nm[j], mtrace(cells[i], cells[j]), name='%s: %s to %s' % (label, nm[i], nm[j])); made += 1
+    return made
+PXOF = lambda n: [S[n]['px'], S[n]['py']] if n in S else nodes[n]['px']
+ancient_pairs = {tuple(sorted((r['from'], r['to']))) for r in routes if r['class'] in ('trunk', 'line')}
+# Iziz: the Empire's towns, the towns it reached in its rule (the owner: Pinnacle Rock, Girder, the Hykkousoi cities, Shim, Kautoa, Nusidi),
+# the forts off the way and the ports
+emp = _mask('Empire of Iziz'); lea = _mask('League of Amphitriton')
+IZM = {}
+for n, s in S.items():
+    if n in ZEIJ or n in ("Noa's Regret",): continue
+    if emp[s['py'], s['px']] or (lea[s['py'], s['px']] and s['type'] in ('city', 'village', 'arcology')): IZM[n.replace('  ', ' ')] = [s['px'], s['py']]
+for n in ('Pinnacle Rock', 'Girder', 'Shim', 'Kautoa', 'Nusidi', 'Fort Ebon', 'Port Goto', 'Port Visas', "Mav's Refuge"):
+    IZM[n] = PXOF(n)
+IZM = {('the Pile' if n == 'Cube' else n): p for n, p in IZM.items()}
+n_iz = mesh('izani', IZM, 'izani', 'Izani highway', 2, ancient_pairs)
+# the Iziz highway to Jimjam through Dilihan, then east into the anarchic frontier (less well kept)
+for a, b, note in (('Iziz', 'Dilihan', None), ('Dilihan', 'Jimjam', None), ('Jimjam', 'Shell', 'the frontier: less well kept'), ('Shell', 'Crescent', 'the frontier: less well kept')):
+    pts = mtrace(cellof(*PXOF(a)), cellof(*PXOF(b)))
+    add('izani.north.%s' % a.lower(), 'izani', a, b, pts, name='Izani highway north: %s to %s' % (a, b), note=note)
+    if note: routes[-1]['up'] = ['lapsed' if u == 'kept' else u for u in routes[-1]['up']]
+# Voth: new, less elaborate highways between its major settlements
+vk = _mask('Vothic Kingdom')
+VM = {n: [s['px'], s['py']] for n, s in S.items() if vk[s['py'], s['px']] and s['type'] in ('city', 'arcology')}
+n_vo = mesh('vothic', VM, 'voth', 'Vothic highway', 1, ancient_pairs)
+print('izani', n_iz, 'vothic', n_vo, 'Voth members', sorted(VM), 'Izani members', len(IZM))
+IZ = [n for n in IZM if n in S or n.replace(' ', '  ') in S]
+IZ = [n if n in S else n.replace(' ', '  ') for n in IZ]
+# ---- candidates to move onto the network (the owner: "in some cases, we might want to move the settlement onto an existing highway")
+vt = np.array([p for r in routes if r['class'] in ('line', 'trunk') for k, p in enumerate(r['px']) if r['form'][min(k, len(r['form']) - 1)] != 'tunnel'])
+moves = []
+for n in IZ:
+    if n in nodes or n.replace('  ', ' ') in ('Nusidi', 'the Pile'): continue
+    s0 = S[n]; d = np.hypot(vt[:, 0] - s0['px'], vt[:, 1] - s0['py']); k = int(d.argmin())
+    if 1.5 < d[k] <= 5: moves.append({'name': n.replace('  ', ' '), 'type': s0['type'], 'px': [s0['px'], s0['py']], 'to': [float(vt[k][0]), float(vt[k][1])], 'km': round(2 * float(d[k]), 1)})
+moves.sort(key=lambda m: m['km'])
+# ---- extensions into the new west (lore to come); the north is now the Outland Gate highway's
+EXT = [('west', 'Farport and the Crook', [294, 588]), ('southwest', 'the Silent Vales', [194, 982])]
 for k, label_, pt in EXT:
     c0 = cellof(*pt); d0 = dijkstra(GR, indices=c0, directed=False)
     best = min((m for m in names if m not in NOT_RNG and nodes[m]['kind'] == 'site'), key=lambda m: d0[src[ix[m]]])
     add('ext.' + k, 'extension', nodes[best]['name'], label_, trace(src[ix[best]], c0), name='Extension (lore to come): ' + nodes[best]['name'] + ' toward ' + label_)
-out = {'nodes': [dict(v) for v in nodes.values()], 'routes': routes, 'extra': EXTRA_PTS,
-       'excluded': {'zeijani': list(ZEIJ), 'forts': FORTS, 'ports': PORTS}}
+out = {'nodes': [dict(v) for v in nodes.values()], 'routes': routes, 'extra': EXTRA_PTS, 'move_candidates': moves,
+       'excluded': {'zeijani': list(ZEIJ), 'forts_off_the_way': ['Fort Ebon', 'Fort Vaklu'], 'ports': PORTS}}
 json.dump(out, open(SP + '/net51.json', 'w', encoding='utf8'), ensure_ascii=False, separators=(',', ':'))
 tot = {}
 for r in routes: tot.setdefault(r['class'], [0, 0, 0]); t = tot[r['class']]; t[0] += 1; t[1] += r['km']; t[2] += r['tunnel_km']
 print(N, 'nodes;', tot)
 for r in routes:
-    if r['class'] in ('line', 'branch') or r['airless_open_km']: print('  %-60s %5d km  tunnel %4d  airless-open %d' % (r['name'][:60], r['km'], r['tunnel_km'], r['airless_open_km']))
-print('docks:', [(n, nodes[n]['px'], nodes[n]['note']) for n in docks])
-print('trunks:', len([r for r in routes if r['class'] == 'trunk']))
+    if r['class'] in ('line', 'branch', 'possible') or r['airless_open_km'] or r['id'] in ('trickster', 'outland', 'outland.korona'):
+        print('  %-70s %5d km  tunnel %4d  airless-open %d' % (r['name'][:70], r['km'], r['tunnel_km'], r['airless_open_km']))
+print('korona site:', nodes['Korona site'])
+print('izani roads:', len([r for r in routes if r['class'] == 'izani']), 'move candidates:', moves)

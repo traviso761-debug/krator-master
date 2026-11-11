@@ -612,5 +612,86 @@ swhighlands' Drum and Cascade.
      the Line's.
    - It is drawn by the `line` kind; it is not a separate route.
 
+### 8.7 The owner, later on 2026-11-11
+
+1. **Izani highways join Iziz's settlements, especially in the heartland.** In some cases a settlement may be **moved onto
+   an existing highway**. The `izani` class grows from the forts and ports to the Empire's towns.
+2. **The Bowl arcology lies further south**, on the most temperate ground near the Godsgate. **No tunnel to Arcbeam**
+   (clarified in 8.8: the Stair tunnel is dropped).
+3. **Quintagon**: a new arcology in the lands north-east of Verge, in the eastern badlands (`e badlands`, `rmuqm20f95x4v`).
+4. **The road to Trickster's House** does not go straight through the mountains. It winds east from Yuni, then curves
+   round through the Loom-Chasms (`rmvraoas90co7`) and the Great Chasm (`rmw4vh9t20da4`). This replaces the draft's rim
+   tunnel at ~1450,749.
+5. **Another highway runs through the Outland Gate** (`rmvoutlandpass`, the Gate at 1438,326). It splits off to an Ancient
+   site, still to be placed, in Korona (`Korona / NE`, `rmuqm3urh0mo6`), running through the Tiers (`rmucfm4y5yd6y`).
+
+### 8.8 The follow-up answers and the last decisions (2026-11-11)
+
+**Follow-ups:**
+- **The Bowl arcology** goes at **970,1186**: the Bowl's most temperate ground near the Godsgate (15 degC mean, 1,716 m,
+  314 mm of rain).
+- **"No tunnel to Arcbeam" means: drop the Stair tunnel.** There is no Ancient tunnel from Arcbeam to Stair at all.
+  - Stair is reached by the Rift line's possible leg from Strongbow, and by the surface trunks.
+  - This changes canon in `LORE.md` §4 (the Catch: "the Ancients' tunnel to Stair ... sealed halfway", the divers'
+    prospect), `biomes/catch/PLAN.md` and `biomes/seouterwall/PLAN.md` (the base tunnel and Bab al-Hawa). I have not
+    rewritten those yet (follow-up question 1 below).
+- **Quintagon** goes at **1349,830** (2,320 m, 14 degC, 376 mm, 289 km from Verge).
+- **The Outland Gate highway** runs from the Outlands (Trickster's House) north through the Gate to the Ria valley. It
+  splits at the Gate, and the branch runs south-west through the Tiers to the Korona site.
+- **The Korona site** is *proposed* at **1135,466**: level ground in Korona beyond the Tiers, 2,927 m, 12 degC.
+- **The Rift line through the Lizardmen's country** (Chimes to the Pile) is **underground**, with surface stretches where
+  the tunnel wars broke it open (to be authored).
+- **The Rift's lake**: the line goes **round** it.
+- **Moving towns onto the network**: list the candidates. Only **Talia** (1073,939) lies within 10 km of an Ancient route
+  without being on it: 6.3 km, toward 1072,936. It is the one candidate.
+- **The forts beside the way**: **Fort Kalor, Fort Kreia and Fort Ordo** become stops on the Ancient routes. Fort Ebon and
+  Fort Vaklu keep Izani roads.
+- **Centrum and the Sanctum**: the scale-model session places them as Eternian nodes (edit M10). Farport gets an Eternian
+  road.
+- **The stranded ports** stay at 723,450 and 631,454.
+- **Wheel and Thera** are added to the model (M4).
+
+**Decisions:**
+- **Noa's Regret is not on the network.**
+- **The Izani highways.** Iziz built highways during its rule:
+  - to **Pinnacle Rock, Girder, the Hykkousoi cities** (the League of Amphitriton's: Tethis, Kierson, Nereus, Pontus),
+    **Shim, Kautoa and Nusidi**;
+  - and its network **joins each node to several nearby cities**;
+  - and **an Izani highway runs to Jimjam through Dilihan, and from there east into the anarchic frontier**, less well kept.
+  
+  The router builds them at 8 %, with no tunnels and bridges only where a road must cross water. Each is a
+  relative-neighbourhood graph plus every town's two nearest, minus the pairs an Ancient trunk already joins. The northern
+  highway runs Iziz, Dilihan, Jimjam, Shell, Crescent, and is drawn lapsed beyond Jimjam.
+- **The Vothic highways**: "new, less elaborate highways between its major settlements". These are the Vothic Kingdom's
+  cities and arcologies (Voth, Almua, Shim, Zey'danin, Drum, Torus, Wing), meshed the same way, as a `vothic` class.
+
+**The network now** (`network-proposal/`, regenerated):
+
+| Class | Routes | km | in tunnel |
+|---|---|---|---|
+| Lines: the Rift line (11 legs, Dalab to Strongbow) and the Inner Wall | 12 | 2,652 | 1,503 |
+| The Twenny gallery | 1 | 25 | 14 |
+| Trunks, including the road to Trickster's House (2,084 km by Yuni, the Loom-Chasms and the Great Chasm) and the Outland Gate highway with its Korona branch | 59 | 17,847 | 1,793 |
+| *Possible*: Strongbow, Stair, the Bowl arcology | 2 | 978 | 524 |
+| *Izani highways* | 38 | 9,312 | (bridges only) |
+| *Vothic highways* | 5 | 1,375 | (bridges only) |
+| *Extensions* (west, south-west) | 2 | 851 | 235 |
+
+The Ancient network is 60 sites and 20,524 km, 3,310 km of it in tunnel, with no open stretch over 8 km.
+
+**New scale-model edits:**
+- **M10**: place Centrum and the Sanctum. Add Quintagon (1349,830), the Bowl arcology (970,1186) and the Korona site
+  (1135,466) as settlements, named when the owner names them.
+- **M11**: retire the Stair tunnel. Drop Noa's Regret from the node rule.
+
 **Bore geometry: unchanged.** Mouths at 458.2,1158.6 (3,614 m) and 439.5,1309.5 (3,501 m); 304 km bored; the hot
 section at bore km 55-203; 42 km on the surface to Ledge. This routing moves none of it.
+
+### 8.9 Still open
+
+1. **The Stair tunnel's canon.** Should I rewrite `LORE.md` §4's Catch passage now (no Ancient tunnel to Stair; what the
+   divers dive instead), or leave it, `biomes/catch/PLAN.md` and `biomes/seouterwall/PLAN.md` to their owners?
+2. **Talia**: should it move 6.3 km onto the Ancient trunk at 1072,936?
+3. **Names**: the Bowl arcology and the Korona site.
+4. **The Hykkousoi cities**: are they the League of Amphitriton's towns (Tethis, Kierson, Nereus, Pontus), as drawn?
+5. **The frontier highway**: does it end at Crescent, or run on into Region 87 (Mav's Refuge, Pinnacle Rock)?
