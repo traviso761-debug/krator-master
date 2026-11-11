@@ -22,7 +22,9 @@
   without a kerb (about one in twenty, left on their nodes by `AV.kerbPlace`) have no door; an open tower is set plumb (its lean cleared), so the
   ruin shares' lean count falls by the open ones; the approach's steps are solid blocks on a ground that takes their plane, but the ground mesh is
   coarser than a tread, so its triangles can show between the cheeks on a steep flight; a rise over 6.3 m has a rubble ramp, not steps, and its
-  tower is never open; a plinth more than 6.3 m under its street has no approach (29 of 444 on station 0).
+  tower is never open; a plinth more than 6.3 m under its street has no approach (29 of 444 on station 0). A flight down to a sunk plinth (the
+  open Spindle nearest the Overlook, 3.6 m down) still reads poorly from the street on the GPU even with its cheeks held at the pavement's level as
+  retaining walls (2026-11-10): the plinth's eased bowl around it dominates; a retaining wall round the whole sunk plinth would read better.
 
 - [ ] **The tiers, after the owner's six passes on them (2026-11-07 to 09; `70-host-city.js`, "THE TIERS, plainly"):** every family and every look
   has a box shell (KSHELL box mode, the test bed's prototype, 66 looks in two 2048 atlases baked at the boot from the rusted heroes), so one rule
