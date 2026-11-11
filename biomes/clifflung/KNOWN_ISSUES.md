@@ -33,7 +33,7 @@ Open items are `- [ ]`; build.py counts them.
 
 - [ ] **08:30 on game day 0 drew a night sky on the Stair** (stars over the face, the land black; 2026-11-11, software GL): the shared sky's, not
   traced (an eclipse by the giant is the likeliest reading). The Stair opens at 10:00 instead; station 1's dawn (06:54) and noon are lit.
-- [ ] **Budgets:** the Stair's cloud forest ran over the showcase's 16 M triangles at quality .55 (22.6 M); it opens at .4. The Bells draw
+- [ ] **Budgets:** the Stair's cloud forest ran over the showcase's 16 M triangles at quality .55 (22.6 M) and is still over at .4 (17.2 M: reported OVER, not failed); the southern highlands' trees are most of it. The Bells draw
   about 200 calls (the hyperjungle's kit draws by species), against a budget of 240 set for it. Measured under SwiftShader, not on the GPU lanes.
 
 ## Not in the open world
