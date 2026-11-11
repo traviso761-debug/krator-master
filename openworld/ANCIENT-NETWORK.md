@@ -1,6 +1,10 @@
 # The Ancients' network: roads, lines and tunnels as one picture (assessment and proposal, 2026-11-11)
 
-**Status: a proposal. Nothing is built, and no other file is edited.** This file pulls together three things:
+**Status: a proposal. The owner answered its questions on 2026-11-11 (section 8), and the proposed network is drawn on
+5.1 (`network-proposal/`). Nothing is built yet.** The rename of Cube to the Pile is applied to `LORE.md`, the two
+network files and the karst and stations maps. No other session's files are edited.
+
+This file pulls together three things:
 - `ANCIENT-ROADS.md`: the highways, with the draft router;
 - `ANCIENT-TUNNELS.md`: the bores and the caves they meet;
 - the Line: the Rift line as a biome and a train (`biomes/line/PLAN.md` on `claude/awesome-varahamihira-66a852`, and
@@ -27,8 +31,8 @@ own piece in its own record shape. This file is the join; the pieces keep their 
   Yuni, Ys, Dalab, Roketstad, Verge). They pass under the mountains only where they must (`LORE.md` §4; `ANCIENT-ROADS.md` §1).
 - **The profile.** One broad 30 m way with a guideway down its middle: road and line are one. The ruling grade is about 4 %,
   with no switchbacks: cuttings, viaducts, spiral tunnels and causeways instead (`ANCIENT-ROADS.md` §2).
-- **The Rift line.** It runs **Dalab to Ledge, mostly underground**, and Ledge is where it comes out of the Wall. Arccube
-  (Cube) is the Rift's hub. The line "once ran the length of the Rift" (`LORE.md` §6.20), worked by the crews who became the
+- **The Rift line.** It runs **Dalab to Ledge, mostly underground**, and Ledge is where it comes out of the Wall. **The
+  Pile** (once called Cube or Arccube; renamed by the owner, 2026-11-11) is the Rift's hub. The line "once ran the length of the Rift" (`LORE.md` §6.20), worked by the crews who became the
   Tungangs.
   - Its tunnel is a **four-track gallery**, mostly working, cut into segments by gaps that travellers walk (the owner,
     2026-11-10).
@@ -115,20 +119,20 @@ script is in this session's scratchpad: `measure.py`, `lines.py`).
 | # | What | Where (5.1 px) | Says what | Proposed resolution |
 |---|---|---|---|---|
 | G1 | **The draft is on the 4.22 canvas and heights**, keyed by names | `openworld/ancient-roads-draft.json` | every px is 272, 330 short of 5.1; Godthrone, Stalker Peaks and the Catch have changed under it | rerun on 5.1, keyed by settlement id (edit M1) |
-| G2 | **Draft routes on airless surface** (over 8 km, not in tunnel) on 5.1's heights | Cube-Pluton 221 km (peak 13,182 m); Hub 01-Yuni 147 km; Hub 01-Stair 99 km; Loj Twenny-Shelf 51 km; Trickster's House-Verge 40 km; Pluton-Shelf 15 km | the router forbids it (`ancient_roads.py` l.45), but the land rose after the run | rerun; question 4 decides whether an open way may run airless at all |
+| G2 | **Draft routes on airless surface** (over 8 km, not in tunnel) on 5.1's heights | the Pile (draft: Cube)-Pluton 221 km (peak 13,182 m); Hub 01-Yuni 147 km; Hub 01-Stair 99 km; Loj Twenny-Shelf 51 km; Trickster's House-Verge 40 km; Pluton-Shelf 15 km | the router forbids it (`ancient_roads.py` l.45), but the land rose after the run | rerun; question 4 decides whether an open way may run airless at all |
 | G3 | **The Rift line in the draft is a surface road**: Dalab-Shelf-Loj Twenny-Ledge, 34 km in tunnel | Loj Twenny-Shelf crosses the crest at 9,718 m | settled as a ~304 km bore | pin the Line's alignment as an authored route; the router does not route it (M2) |
-| G4 | **The Rift line past Ledge** | draft: Ledge-Chimes (163 km), Chimes-Cthonos (277 km, up to 2,313 m), Cthonos-The Tubes, The Tubes-Cube | lore: it "ran the length of the Rift"; the Line plan numbers stations from Cube (Cube 1, Chimes 2, Nulab 3, Ledge's lifts 4) | one route `rift`, Dalab to Cube by Ledge, Nulab and Chimes; question 3 |
-| G5 | **Loj numbering**: "north to south" | `riftrim/PLAN.md` l.371-410, `LORE.md` §6.1 | the Line plan proposes numbering from Cube north (its question 2) | the network takes whichever the owner chooses: station numbers are a field |
+| G4 | **The Rift line past Ledge** | draft: Ledge-Chimes (163 km), Chimes-Cthonos (277 km, up to 2,313 m), Cthonos-The Tubes, The Tubes-the Pile | lore: it "ran the length of the Rift"; the Line plan numbers stations from the hub (the Pile 1, Chimes 2, Nulab 3, Ledge's lifts 4) | **answered**: one route `rift`, Dalab by Ledge, Nulab, Chimes and the Pile to Strongbow (section 8) |
+| G5 | **Loj numbering**: "north to south" | `riftrim/PLAN.md` l.371-410, `LORE.md` §6.1 | the Line plan proposes numbering from the Pile north (its question 2) | the network takes whichever the owner chooses: station numbers are a field |
 | G6 | **Loj Twenny's cave** | 457,1269 | riftrim and the tungang plan put it "on `tube_rift_08`", but that tube is at 628,1528-594,1558, 300 km off | the Line plan's side gallery from km 218 (25 km); its question 3 |
 | G7 | **The Inner Wall tunnel's surface access** | Cascade 568,841 is 214 km from the Drum-Dorado line (the doc's "~140 km" was measured on the old line) | the draft found surface passes (Cascade-Drum, 6 km of tunnel) instead of the tunnel | pin the tunnel (M2); question 5 |
 | G8 | **Span's tunnels are not in the draft** | Span 554,1010: the Basin Tunnel's lower portal is unplaced; the Valley Tunnel's portal is on the Deep Reach floor | span's plan says "the two Ancient highways meet on the Cross" | branch routes `span.basin`, `span.valley`; question 6 |
 | G9 | **The Stair tunnel** | Arcbeam-Stair | the draft has an 860 km surface route with 16 km of tunnel; seouterwall *proposes* a 180 km base tunnel, the Bab al-Hawa shaft (1033,1258) and a surface highway through the Godsgate; catch has the caravans enter by the 6.2 km notch (*old* 726,896) | question 7 |
-| G10 | **Xanadu's line** | Strongbow 1026,1594 to Theodiga 908,1535 (264 km, under 2,600 m); Theodiga to Cube 381 km | the draft joins them; no doc says how Strongbow's line meets the rest, and the caravans use the Lasso pass (1040,1566) | *proposed*: the Rift line's east end runs Cube-Theodiga-Strongbow, so "the end of the line" is literal; question 3 |
+| G10 | **Xanadu's line** | Strongbow 1026,1594 to Theodiga 908,1535 (264 km, under 2,600 m); Theodiga to the Pile 381 km | the draft joins them; no doc says how Strongbow's line meets the rest, and the caravans use the Lasso pass (1040,1566) | **answered**: the Rift line's east end runs the Pile-Theodiga-Strongbow; it may go on from Theodiga to Stair and a Bowl arcology (section 8) |
 | G11 | **Nodes the draft lacks or should drop** | new: Fort Ebon 695,782, Nulab 443,1359; in the valley plan but not in the model's source: Wheel 406,886, Thera 526,955; the three Zeijani caverns (876,802; 834,882; 806,818) and Dhelv would be picked up as "cavern" nodes | the draft skips only Dhelv | M1 |
 | G12 | **Upkeep spheres by polygon name** | `ancient_roads.py` `UPKEEP` | names are stale: "Dalab Council" is now "Realm of Dalab"; "Dilihan Province", "Tungang Union", "Fellgangs" and "Shell Province" are unmapped; there is no "Beast Riders" or "The Cut" political polygon | M1, M3 |
 | G13 | **Flooded Tower** | the draft end is 11 km off the node at 1028,840 | the node moved | M1 |
 | G14 | **The airless rim** | `ANCIENT-ROADS.md` | §2: "crossable only in tunnel"; §4: the airless rim is "intact: the high stretches look new" | question 4 |
-| G15 | **Old px in the docs** | `ANCIENT-ROADS.md` §3-4c, `LORE.md` §4 (Cube "448,1237", Pluton "471,998"), `biomes/outlands/SURVEY.md`, `biomes/godthrone/PLAN.md` | old canvas | annotate 5.1 beside them when each is next edited (no edit now) |
+| G15 | **Old px in the docs** | `ANCIENT-ROADS.md` §3-4c, `LORE.md` §4 (the Pile "448,1237", Pluton "471,998"), `biomes/outlands/SURVEY.md`, `biomes/godthrone/PLAN.md` | old canvas | annotate 5.1 beside them when each is next edited (no edit now) |
 | G16 | **The Godthrone's summit** | `tools/scale-model/README.md` 5.1 section: "Godthrone (px 968, 1012)" | 968,1012 is at -883 m on 5.1; the summit is **861,1272** (24,822 m) | M6 |
 | G17 | **Name clashes** | Span's "the Line" (Dalab's salvage barricade, `span/PLAN.md` l.201, `TODO.md` l.64); swhighlands' "Drum" (a Vothic town) and "Cascade" (the Kaskejt Rivr) | the network uses the Rift line's id `rift` and the crater's Drum and Cascade arcologies | rename one side when its owner next edits (question 11) |
 | G18 | **Modern links ignore the Ancient alignments** | iziz-cluster's links (Mav's Refuge-Girder 135 km, Girder-Talia 154 km at 8 %); the draft's Iziz-Stump, Fort Ordo-Stump and Stump-Verge meet at Stump (1044,952) inside that region's box | `ANCIENT-ROADS.md`: "modern highways prefer the Ancient alignment" | the corridor discount (section 2.3) |
@@ -302,7 +306,7 @@ first column:
   route's named `datum` (s = 94 km). Nothing in its station table moves.
 - (b) Its `forms` gains the open-air forms (`cut`, `fill`, `viaduct`, `causeway`, `spiral`, `portal`; it has `open`).
   `tracks` and `cond` per track serve every route.
-- (c) The Rift line continues past Ledge (Nulab, Chimes, Cube, and perhaps Theodiga and Strongbow: question 3). Its
+- (c) The Rift line continues past Ledge to Nulab, Chimes, the Pile, Theodiga and Strongbow (answered: section 8). Its
   numbering question (its question 2) is the owner's either way.
 - (d) The window it builds comes from `KNET.window` rather than from `survey_line.py` direct. The survey becomes the
   authored alignment the model pins.
@@ -385,7 +389,7 @@ Each is opt-in, so a region without a network is byte-identical.
 The notes folder of this session group carries `ancient-network.md`: the short version of sections 1.4, 2.6 and 7 for
 the sessions named in 2.6.
 
-## 7. Questions for the owner
+## 7. Questions for the owner (answered 2026-11-11: section 8)
 
 1. **Where the network's data lives.** A new data-only core module, `core/network` (`KNET`: the records, windows by
    chainage, clips, edits), which `core/world`, `core/city`, `core/simulation`, the stations and Godot take, with
@@ -394,8 +398,8 @@ the sessions named in 2.6.
    30 m paved way at 4 %, with viaducts, cuttings, causeways and portals), so one code draws the Rift line and every trunk?
    And **how many guideways** does an open trunk carry: one (as "a guideway down its middle" says), or two, one each way?
    Does the Rift line's four-track width carry on the surface from its south portal to Ledge?
-3. **The Rift line past Ledge.** Does one route run on from Ledge's lifts by Nulab and Chimes to Cube, on the Rift floor or
-   in tunnels along its walls? And east from Cube to Theodiga and Strongbow, so Strongbow is literally the end of the line,
+3. **The Rift line past Ledge.** Does one route run on from Ledge's lifts by Nulab and Chimes to the Pile, on the Rift floor or
+   in tunnels along its walls? And east from the Pile to Theodiga and Strongbow, so Strongbow is literally the end of the line,
    the crews who came east came along it, and the Glaziers live just off its end?
 4. **The airless rim.** May an open way run over 8 km (sealed cars; its stretches "look new", `ANCIENT-ROADS.md` §4), or
    only in tunnel (§2, and the router)? On 5.1 the draft's Hub 01, Pluton and rim routes would cross 15-221 km of
@@ -422,3 +426,148 @@ the sessions named in 2.6.
     - the Valley's edge, Span and the Inner Wall's west portal.
 11. **Names.** Span's barricade is called "the Line", and swhighlands has a "Drum" and a "Cascade". Rename those, or the
     network's?
+
+## 8. The owner's answers (2026-11-11) and the proposed network
+
+### 8.1 The answers
+
+| # | Question | The owner's answer |
+|---|---|---|
+| 1 | Where the data lives | **`core/network`** (`KNET`), a data-only core module; `KTRANSIT` draws from it |
+| 2 | One record; guideways | **One record for every route; two guideways** down the middle of the open 30 m way, one each way; the Rift line's four tracks carry on from the south portal to Ledge |
+| 3 | The Rift line past Ledge | **On to Strongbow** (by Nulab, Chimes, the Pile and Theodiga). **Cube is now canonically renamed the Pile**; conflicting docs fixed. Later the same day: **"the rail line might even extend from strongbow, to theodiga, to Stair, to an arcology TBD in the bowl"** |
+| 4 | The airless rim | **Tunnel only** above 8 km |
+| 5 | The Inner Wall tunnel's access | **Bend it under Cascade** (a shaft from the Republic's arcology down to the bore) |
+| 6 | Span's two tunnels | **One trunk**: Dalab, the Basin Tunnel, Span, the Valley Tunnel, the Valley |
+| 7 | The Stair tunnel | **Accept** seouterwall's proposal: the 180 km base tunnel, the Bab al-Hawa shaft (1033,1258), the surviving surface highway through the Godsgate |
+| 8 | Condition and keepers | **Both**: one vocabulary (section 2.4) and the keeper's dress |
+| 9 | Nodes | **Drop the Zeijani caverns and Dhelv.** **Forts are not on the Ancient highway by default**: Iziz may have built them near it for convenience; if not, an **Iziz-built highway network** joins them. **The same for ports.** **The major Eternian cities have an arcology or an Ancient ruin at their core** (nodes). **A rusted, stranded Ancient port or two on the dams' former shore** would be joined. **Extensions into the new west and north** are likely (their lore mostly to come). **Theodiga's Xanadui** are a node. "Show me a pic of the network you propose": `network-proposal/ancient-network-proposal-5.1.jpg` |
+| 10 | The first region | **iziz-cluster** |
+| 11 | Names | **Rename the local ones**: Span's barricade ("the Line"), the SW highlands' Drum and Cascade |
+
+### 8.2 The network as proposed on 5.1
+
+`network-proposal/` holds the picture, `net51.json` and the router (`route51.py`, read-only on the model; its README says
+how to rerun it). It is the draft that the scale-model session's router (M1) is to reproduce and improve, and the owner's
+reference until the model carries the layer.
+
+| Class | Routes | km | in tunnel | What |
+|---|---|---|---|---|
+| **The lines** (pinned) | the Rift line (9 legs), the Inner Wall, the Stair line | 3,370 | 1,174 | below |
+| **The Twenny gallery** | 1 | 25 | 14 | the Line plan's branch from bore km 218 |
+| **Trunks** (routed) | 57 | 14,805 | 1,861 | a relative-neighbourhood graph over the Ancient cost among 55 sites |
+| *Possible* | Theodiga to Stair | 523 | 88 | then on along the Stair line to the Bowl arcology |
+| *Izani roads* (not Ancient) | 8 | 732 | 54 | the forts and the ports, each to its nearest network site |
+| *Extensions* (lore to come) | 3 | 1,699 | 318 | toward the Ria valley, Farport and the Crook, the Silent Vales |
+
+**Totals (lines, gallery and trunks):** 18,200 km, 3,049 km of it in tunnel. **No open stretch runs over 8 km.**
+
+**The lines.**
+- **The Rift line**, Dalab to Strongbow:
+  - Dalab to Shelf: 99 km, 18 km of it in tunnel (the Line plan's spirals under Shelf);
+  - Shelf to the north portal: 7 km;
+  - the bore: 304 km, on the Line plan's survey alignment;
+  - the surface to Ledge: 41 km;
+  - Ledge's lifts down to the lake, then on to Nulab: 59 km;
+  - Nulab to Chimes: 92 km;
+  - Chimes to **the Pile**: 712 km, 135 km of it in tunnel (the router's way along the Rift's north side);
+  - the Pile to Theodiga: 424 km;
+  - Theodiga to Strongbow: 296 km.
+- **The Inner Wall tunnel**, bent under Cascade: from Drum, under Cascade, to the Valley at Babel, 539 km.
+  - *Proposed*: a level bore at 2,400 m, giving 179 km of tunnel.
+  - Cascade stands 382 m over the bore, so the arcology needs only a short shaft.
+  - The Valley end moves from Dorado to **Babel**, the Valley's nearest arcology after the bend. The Valley trunk goes on to
+    Dorado.
+- **The Stair line**: Arcbeam, the Bab al-Hawa shaft and Stair, 797 km.
+  - The base tunnel is a level bore at 4,969 m under the Godsgate's shoulder, 180 km long.
+  - The approaches add 147 km of shorter tunnels.
+  - It is sealed halfway (canon). The **Godsgate highway** (Arcbeam to Stair, routed as a trunk) is the way that survived.
+- **The Span trunk**: Dalab to Span (the Basin Tunnel's way up), then Span to Thera (the Valley Tunnel down to the Valley's
+  eastern rampart).
+
+**The nodes** (55 sites):
+- **Every arcology and Ancient ruin**, except the forts (Fort Ebon, Fort Kalor, Fort Kreia, Fort Ordo, Fort Vaklu), the
+  Zeijani caverns and Dhelv.
+- **The cities on Ancient ground**: Hook, Iziz, Yuni, Ys, Dalab, Roketstad and Verge.
+- **Nulab**: the Line's station on the lake.
+- **Lux**: the one major Eternian city on the model. Centrum and the Sanctum are not placed, and Farport is a port.
+- **Wheel and Thera**, from the valley plan.
+- **Two stranded Ancient ports** (*proposed*), one on each dam lake's former shore:
+  - the east dam's lake (1,050 m) at 723,450;
+  - the west dam's lake (900 m) at 631,454.
+  
+  Each is the shore point nearest an Ancient site (Veladiga, Tilted Tower).
+- **A Bowl arcology** (to be named and placed), provisionally at 1024,1149, where the Stair line crosses the Bowl. The
+  line's possible extension then runs from Theodiga to Stair, and north along the Stair line to it.
+
+**The Izani roads.** These are an Iziz-built network, not Ancient (`class: 'izani'`). They are drawn with `KTRANSIT.road`
+or `core/world` ROADS, not as the way.
+
+| From | To |
+|---|---|
+| Fort Ebon | Tethis |
+| Fort Kalor | Hexahedron |
+| Fort Kreia | the Sleeping City |
+| Fort Ordo | Flooded Tower |
+| Fort Vaklu | Iziz |
+| Port Tobin | Iziz |
+| Port Goto | Shell |
+| Port Visas | Ys |
+
+A fort that Iziz built *beside* the Ancient way needs a node on the route at its `s` instead of a road. Which forts those
+are is the owner's call.
+
+### 8.3 What the answers change in this proposal
+
+- **Section 2.5**: `core/network` is settled. Its plan is the next piece of work (phase N1), agreed module by module.
+- **Section 2.2**: the `way` carries **two guideways**. The Rift line's surface stretch to Ledge keeps the four-track
+  section.
+- **The `izani` class** joins the record set: a route class drawn as a modern road, its keeper the Empire.
+- **Section 3, the scale-model edits**:
+  - **M1** takes the node rule of 8.2: forts and ports leave the Ancient set and are joined by Izani roads; Lux, the docks
+    and the Bowl site are added.
+  - **M2** pins:
+    - the Inner Wall tunnel, bent under Cascade and ending at Babel;
+    - the Stair line by Bab al-Hawa, with the Godsgate highway;
+    - the Span trunk;
+    - the Rift line to Strongbow;
+    - the possible Theodiga-Stair leg, as a hidden layer.
+  - **M9 (new)**: rename the settlement "Cube" to **"the Pile"**, keeping its id, in `60-settlements.js` and in the shared
+    store. Do the same in the regions' copies of the settlements (`source/settlements.json` in `openworld/isle-demo`,
+    `north-basin`, `longsong` and `pinnacle-rock`) when each is next refreshed.
+- **Phases**: N0 is done. **N5's first region is iziz-cluster.**
+
+### 8.4 The rename, and the files other sessions own
+
+**Renamed on this branch:**
+- `LORE.md`;
+- `openworld/ANCIENT-ROADS.md` and `openworld/ANCIENT-TUNNELS.md`;
+- `biomes/KARST-SITES-5.1.md` and `biomes/STATIONS-MAP-5.1.md`.
+
+In each, the first mention keeps "formerly Cube or Arccube".
+
+**Left to their owners**, because each has newer work on a branch or is data rather than a doc (the coordinator relays):
+- `biomes/riftrim/PLAN.md` and `biomes/rift/PLAN-STATIONS.md`: rift-hearths-cavern's branch edits riftrim.
+- The rift stations' map labels: `biomes/rift/stations/plateau/45m-host-map.js`, `85-host-tower.js` and
+  `44s-host-station.js`, and `biomes/rift/stations/jungle/45m-host-map.js`.
+- The Line plan and the tungang plan, on their branches.
+- The tongues page's Tungang word for it, *Tkyoob* ("the cube"). That is the Tungang session's, and a new word is wanted.
+- The model's settlement name (M9).
+- `HANDOFF-REBUILD.md` is a record and stays as written.
+
+**The local name clashes** (question 11) go to Span's and the SW highlands' sessions: Span's barricade "the Line", and
+swhighlands' Drum and Cascade.
+
+### 8.5 Follow-up questions
+
+1. **The Bowl arcology**: its name, and its place (provisionally 1024,1149, on the Stair line). With the extension, the
+   Rift line would reach the crater by Stair and the sealed Stair line. Is that ring intended, or does the line stop at the
+   Bowl?
+2. **The Rift line east of Chimes**: the router keeps it mostly on the Rift floor (135 of the 712 km to the Pile in tunnel).
+   Should the stretch through the Lizardmen's country be underground, given the tunnel wars?
+3. **The Eternian cities**: Lux is the only one on the model. Where do Centrum and the Sanctum go? Is Farport joined by an
+   Eternian road, as a port would be?
+4. **The forts beside the way**: which of the five forts did Iziz build on the Ancient way, so that they take a node on the
+   route instead of an Izani road?
+5. **The stranded ports**: are 723,450 and 631,454 right, or should they move to where the old lakes' Ancient towns stood?
+6. **Wheel and Thera** are on the valley's list but not on the model. Should they be added to the settlements (M4)?
