@@ -2,9 +2,9 @@
 
 Every station of PLAN.md section 7, built 2026-11-10 in a cloud session on the branch `claude/neouterwall-s1`: 1 Vitreous Hollow
 (`dist/neouterwall.html`), 2 the Garnet-Mirror Cauldron (`-garnet`), 3 the Epidote Badlands (`-badlands`), 4 the Gate Shoulder (`-shoulder`),
-5 the Epidote-Steam Tarn (`-steam`), 5a the Portal (`-portal`).
+5 the Epidote-Steam Tarn (`-steam`), 5a the Portal (`-portal`), 5b the Epidote Cave (`-cave`, its own frame).
 
-- [ ] **The real-GPU verify is owed.** The cloud has no GPU: both pages were checked with `verify.py --assert --all-views` in software
+- [ ] **The real-GPU verify is owed.** The cloud has no GPU: all seven pages were checked with `verify.py --assert --all-views` in software
       GL (SwiftShader) only. Run it on the owner's machine before the merge (`python3 verify.py dist/neouterwall.html --assert --all-views`
       and the same for each `dist/neouterwall-<station>.html`, on either lane), and set the impostors' gain (`IMP_GAIN` in `src/89z-host-build.js`, 2.4 as the W outer wall's) against the near
       woods there. The page's frame cost and the tarn's look (its depth colour, the springs' ramps against the ground's sinter) are judged
