@@ -14,7 +14,8 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 PY = sys.executable
 TMP = tempfile.mkdtemp(prefix='krator-lanes-test-')
 ENV = dict(os.environ, KRATOR_GPU_LOCK=os.path.join(TMP, 'arc.lock'), KRATOR_GPU_LOCK_RTX=os.path.join(TMP, 'rtx.lock'),
-           KRATOR_GPU_LOCK_POLL='0.2', KRATOR_VERIFY_CACHE_DIR=os.path.join(TMP, 'cache'), PYTHONIOENCODING='utf-8')
+           KRATOR_GPU_LOCK_POLL='0.2', KRATOR_VERIFY_CACHE_DIR=os.path.join(TMP, 'cache'), PYTHONIOENCODING='utf-8',
+           KRATOR_CLOUD_CONFIG=os.path.join(TMP, 'no-cloud.json'), KRATOR_CLOUD_STATE=TMP)   # the cloud lanes off: tests/test_cloud_lane.py
 for k in ('KRATOR_GPU_LOCK_HELD', 'KRATOR_GPU_LANE_HELD', 'KRATOR_GPU_LANE', 'KRATOR_GL', 'KRATOR_VERIFY_CHILD', 'KRATOR_VERIFY_TOUCHED'):
     ENV.pop(k, None)
 os.environ.clear()

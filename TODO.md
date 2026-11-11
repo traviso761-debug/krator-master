@@ -62,6 +62,16 @@ rebuilds once, rewrites the baseline once, then deletes these items; the spot re
 - **KSTRATA recipe `obsidian`** (`scoria` has since landed) (2026-11-09, `biomes/twins/PLAN.md` section 0.1): the Twins' plan names them for its coulees and
   spatter cones; `core/terrain/35-core-strata.js` has `tibasalt` as the nearest. Adding a recipe changes every page that inlines the file, so
   it waits here; station 1 draws its faces as `tibasalt` and its obsidian as items and a ground class until then.
+- **The `tools/` listing** (2026-11-10, the cloud lanes): `tools/cloud_lane.py` and `tools/CLOUD-LANE.md` are new names in `tools/`, which
+  eight builds record as a listing input (kits/catalog, crops, interiors, mechs, motor-vehicles, port; settlements/isle-demo, longsong), so
+  `check_stale` calls them stale though no file they read changed. Their next rebuild clears it. Worth a look: the listing likely comes from
+  Python's importer reading `tools/` when a build imports from it, so any new tool file does this.
+
+- **`KSHADOW.units` counts what the GPU links** (2026-11-09, found by the Throne's fix): `core/shadow/host/12-core-shadow-host.js` counts
+  declared samplers (some are never read and the GPU drops them), misses `scene.environment` on standard materials, and judges against the
+  renderer's own limit (32 in SwiftShader, so shadows turn on where the GPU cannot link them). The Throne's `samplersOf`
+  (`biomes/throne/src/89zz-host-core.js`) does all three right since 2026-11-09: move that into core, cap at min(16, GL), and drop the copies.
+  It moves every KSHADOW page.
 
 - **Two `||` numeric defaults left for the rebuild** (2026-11-10, test_all's source lint; not changed, because each moves pages):
   `core/furnish/50-core-furnish.js` line 65 `rec.scale || 1` (reaches 34 builds, 186 pages: `python3 tools/reach.py`) and
