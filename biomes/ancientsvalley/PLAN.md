@@ -390,7 +390,12 @@ records until the streets want lots), `core/mask` (every field is a function), `
    1,694 mm), the south face of the ridge north of city1, the page falling about 180 m to the shelf, city1 and the Overlook's ridge 16-18 km due
    south; the plan as records (`stations/terraces/41d-av-farm.js`, `tests/test-farm.js`): a hub town, the aqueduct on a contour, 36 clusters of
    pods, vault houses and stacks, 33 roads crossing under arches, two pylon lines, about 1,900 parcels of crops and orchards from `kits/crops`
-   gone to thicket under the feral wrap, and the city below as a far skyline. Waiting on the owner's eye.
+   gone to thicket under the feral wrap, and the city below as a far skyline.
+   *The second pass, 2026-11-10* (the owner: "more arrays of the honeycombed growing pods (groups of 12+ pods), the growing pods themselves ought
+   to be completely overgrown on top, and the street modeling from the transit kit should be integrated in an overgrown and ruined way"): four
+   honeycomb arrays of nineteen pods on a 53 m hex lattice (and the clusters' honeycombs on the same lattice, 176 pods in all); every pod's top
+   under broadleaf and fern clumps set on the drawn dome by rays; the roads as the transit kit's network (kerbs, pavements, junctions, dead
+   furniture, a riot's war at most) with weeds through the cracks and the wild wood let onto them. Waiting on the owner's eye.
 3. `core/anomaly`, then **the Stilled Ground and the Press** (cheap, as `PLAN-ANOMALIES.md` 11 has it), each as a district with its basin.
 4. **The House at Babel**, with the subway.
 5. The Lake That Falls, the Fast Water, the Bend; radiation and portals as they come.

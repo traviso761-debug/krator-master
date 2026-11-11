@@ -39,15 +39,43 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
  const ST=2.5,terraced=h=>{const k=Math.floor(h/ST),f=h/ST-k;return(k+smooth(.78,1,f))*ST;};
  function relief(x,z){let h=rawGround(x,z);const fk=PLAN.fieldK(x,z);if(fk>0)h=mix(h,terraced(h),.85*fk);
   _q.length=0;PADS.query(x,z,0,_q);for(let i=0;i<_q.length;i++){const T=_q[i],e=T.family==='aqueduct'?20:T.ease,d=AV.farmBoxD(T,x,z);if(d<e)h=mix(T.y,h,smooth(0,e,d));}return h;}
- const ground=relief,yOf=ground;
+ /* THE STREETS (the owner, 2026-11-10: "the street modeling from the transit kit should be integrated in an overgrown and ruined way"): the plan's
+    roads (41d) as the transit kit's network (kits/ancient-transit KTRANSIT.network: kerbs, pavements, junctions with their crosswalks), each road
+    at its own carriageway width with a 2.4 m pavement (the plan keeps every building 3 m off the carriageway), graded on the relief but free to
+    follow it (a farm road climbs the terraces: maxGrade 0.3), its corners filleted at 10 m (the approaches squared under the aqueduct's arches
+    keep their arch); the ring road in four arcs (a closed loop is not a road). The war is a riot's at most (KTRANSIT.war under 0.3: scorch, glass,
+    bins and benches over, a barricade here and there; no craters: the shelling was the city's, not the farms'). 74 draws them as station 0's grid
+    (one surface builder, the junctions, the furniture and war a 400 m cell at a time as the eye nears, KratorTransitFurniture.dead: dark and
+    rusted), without a gantry or footbridge across a farm road; 87t grows the weeds through the cracks */
+ const AVT={trains:[],lakeK:()=>0,lakeD:()=>1e9,dressOpts:{across:false}};
+ {const defs=[];PLAN.roads.forEach(r=>{if(r.kind==='ring'){const P=r.pts,q=Math.floor((P.length-1)/4);for(let k=0;k<4;k++)defs.push({id:r.id+'.'+k,pts:P.slice(k*q,k===3?P.length:k*q+q+1),width:r.w,pavement:2.4,lines:'edges',maxGrade:.3,radius:40,plan:r});}
+   else defs.push({id:r.id,pts:r.pts,width:r.w,pavement:2.4,lines:r.kind==='trunk'?'both':'edges',maxGrade:.3,radius:10,plan:r});});
+  AVT.defs=defs;AVT.net=KTRANSIT.network(defs,{ground:relief});
+  AVT.streets=defs.map((d,i)=>{const Rd=AVT.net.roads[i];return{id:d.id,pts:d.pts,width:Rd.width,pavement:Rd.pavement,ground:Rd.levelAt};});
+  AVT.wars=AVT.streets.map((st,i)=>KTRANSIT.war(st,{damage:.12+.14*KRAND.unit(KRAND.hash(SEED,77,i,0)),military:false,network:AVT.net,road:i,seed:KRAND.hash(SEED,73,i,0)}));
+  AVT.craters=AVT.wars.reduce((a,W)=>a+W.craters.length,0);
+  /* the roads near a point, on a 50 m grid (the ground is sampled millions of times; lineH walks a road's path) */
+  AVT.cells=new Map();AVT.net.roads.forEach((Rd,i)=>{const P=defs[i].pts,reach=Rd.width/2+Rd.pavement+20;for(let k=0;k+1<P.length;k++){const a=P[k],b=P[k+1],L=Math.hypot(b[0]-a[0],b[1]-a[1]);for(let q=0;q<=L;q+=10){const x=a[0]+(b[0]-a[0])*q/L,z=a[1]+(b[1]-a[1])*q/L;
+    for(let cx=Math.floor((x-reach)/50);cx<=Math.floor((x+reach)/50);cx++)for(let cz=Math.floor((z-reach)/50);cz<=Math.floor((z+reach)/50);cz++){const key=cx*100003+cz;let L2=AVT.cells.get(key);if(!L2)AVT.cells.set(key,L2=[]);if(L2[L2.length-1]!==i&&L2.indexOf(i)<0)L2.push(i);}}}});}
+ /* the ground: the relief, the roads' cuttings (KTRANSIT.lineH: the deepest of the roads near, never their sum: two at a junction) */
+ const lineHnear=(x,z)=>{const L=AVT.cells.get(Math.floor(x/50)*100003+Math.floor(z/50));if(!L)return 0;let h=0;for(let k=0;k<L.length;k++){const v=KTRANSIT.lineH(AVT.net.roads[L[k]],x,z);if(v<h)h=v;}return h;};
+ /* read off a 4 m lattice filled as it is asked (the forest kits sample the ground millions of times, and lineH projects onto the road's path:
+    asked directly the two lowland kits took 90 s against 40, the first GPU run of the streets, 2026-11-10), bilinear between its nodes; 0 off the roads */
+ /* a node is asked only within 24 m of a carriageway (a farm road graded at up to 30% cuts a metre or two: its sides at 1 : 2 die out well inside
+    that); 4 m apart (2 m filled a million nodes, each projecting onto the road and sampling the relief: the build went from 30 s to 100 s) */
+ const LHG=new Map(),LHS=4,lhNode=(i,j)=>{const k=i*1000003+j;let v=LHG.get(k);if(v===undefined){const x=i*LHS,z=j*LHS;v=PLAN.roadD(x,z)>24?0:lineHnear(x,z);LHG.set(k,v);}return v;};
+ const lineHgrid=(x,z)=>{if(!AVT.cells.get(Math.floor(x/50)*100003+Math.floor(z/50)))return 0;const fx=x/LHS,fz=z/LHS,i=Math.floor(fx),j=Math.floor(fz),u=fx-i,v=fz-j,a=lhNode(i,j),b=lhNode(i+1,j),c=lhNode(i,j+1),d=lhNode(i+1,j+1);
+  return a===0&&b===0&&c===0&&d===0?0:(a*(1-u)+b*u)*(1-v)+(c*(1-u)+d*u)*v;};
+ function ground(x,z){const h=relief(x,z);return h<LAKE_Y+1.5?h:h+lineHgrid(x,z);}
+ const yOf=ground;
  /* the masks: a road's carriageway, a plinth, a field (how deep inside it), the hub's paved ground */
  const roadK=(x,z)=>{const d=PLAN.roadD(x,z);return smooth(1.2,-.8,d);};
  const built=(x,z)=>{_q.length=0;PADS.query(x,z,0,_q);let k=0;for(let i=0;i<_q.length;i++)k=Math.max(k,smooth(4,-6,AV.farmBoxD(_q[i],x,z)));return k;};
  const hubK=(x,z)=>smooth(PLAN.hub.ring+20,PLAN.hub.ring-10,Math.hypot(x-PLAN.hub.x,z-PLAN.hub.z));
  const street=(x,z)=>roadK(x,z);
  /* the wild wood: everywhere the farm is not (the hedges, the copses, the parcels the wood took back, the ridge above), thin in the fields (an oak
-    in a hedge's gap), none on a road, a plinth or the hub's paving */
- const forest=(x,z)=>{const y=yOf(x,z);if(y<LAKE_Y+.6)return 0;const fk=PLAN.fieldK(x,z);return clamp((1-.88*fk)*(1-.9*roadK(x,z))*(1-built(x,z))*(1-.85*hubK(x,z))*(.4+.4*F.wild(x,z)),0,1);};
+    in a hedge's gap), none on a plinth or the hub's paving; on a road a quarter of its strength (the owner, 2026-11-10: the streets overgrown) */
+ const forest=(x,z)=>{const y=yOf(x,z);if(y<LAKE_Y+.6)return 0;const fk=PLAN.fieldK(x,z);return clamp((1-.88*fk)*(1-.72*roadK(x,z))*(1-built(x,z))*(1-.85*hubK(x,z))*(.4+.4*F.wild(x,z)),0,1);};
  /* the far city below (70t): the towers' heights by the model's band, read where it stands */
  return{key:'terraces',name:'The Ancient\'s Valley: the Terraces',title:'Krator biome — the Ancient\'s Valley: the Terraces',
   hint:'The Soleri farm belt on the terraces north of city1 (330 m, 1.53 atm, Cfa): growing pods, vault houses and stacks round a hub town, an aqueduct on arches, pylon lines, the fields and orchards gone to thicket; the city below toward the lake. Fly (W A S D, Q E, Shift), F to walk.',
@@ -59,7 +87,7 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
   /* the mist pooled over the shelf and the inlet below (full under the lake's level + 150 m, page y -163, gone 140 m higher, so it laps the
      page's south edge and lies over the city); no band of cloud (station 0's sits at the towers' height, here it would lie on the fields) */
   smog:{colour:[.40,.35,.38],mix:.7,mist:{density:.0007,above:150,depth:140,noise:.85,day:1,field:true},band:{density:0,y:[0,1],cover:0,noise:0}},seed:SEED,model:M,region:RG,
-  ground,rawGround,modelY,F,plan:PLAN,pads:PADS,engines:[],craters:[],debris:[],scorch:(x,z)=>0,viaduct:{pts:[],deckY:()=>0,d:()=>1e9},relief,railD:()=>1e9,
+  ground,rawGround,modelY,F,plan:PLAN,pads:PADS,transit:AVT,engines:[],craters:[],debris:[],scorch:(x,z)=>0,viaduct:{pts:[],deckY:()=>0,d:()=>1e9},relief,railD:()=>1e9,
   near:{x:PLAN.hub.x,z:PLAN.hub.z,r:300,keys:[]},street,streetK:street,streetD:PLAN.roadD,avenueLines:()=>[],lattice:{c:1,s:0,pitch:200,AW:14,SW:6},built,forest,scars:[],cities,basins,crops:CROPLIST,
   water:{level:LAKE_Y,shallow:0x4f7a74,deep:0x1a3440,name:'The valley lake (17.4 m: brackish, the drowned city under it)'},
   floorLabel:(x,z,y)=>{if(roadK(x,z)>.5)return 'a farm road';if(built(x,z)>.5)return 'a plinth';const f=PLAN.fieldAt(x,z);if(f)return(f.orchard?'an orchard':'a field')+' gone to thicket ('+f.crop+')';if(hubK(x,z)>.5)return 'the hub town\'s paving';return 'the terraces: the wild wood';},
@@ -93,8 +121,10 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
     'The Terraces: the hub and the city below':V(eHub,26,[H.x+dn[0]*6000,H.z+dn[1]*6000],-150),
     /* from the turning place at the end of the cluster's own road (100 m out, clear of trees and fields by the plan): from the fields round it the
        orchards hid the pods (the GPU runs of 2026-11-10) */
-    'A honeycomb of growing pods':(()=>{const C=PLAN.clusters.filter(c=>c.kind==='pods'&&c.members.length>=4&&PLAN.roads.some(r=>r.id==='av.f.r.c'+c.id.split('.c')[1])).sort((a,b)=>Math.hypot(a.x-H.x,a.z-H.z)-Math.hypot(b.x-H.x,b.z-H.z))[0];
-     if(!C)return V(spot(cl.x+dn[0]*150,cl.z+dn[1]*150,12),18,[cl.x,cl.z],8);   /* no pods' cluster keeps a road: from 18 m, over the orchards */const r=PLAN.roads.find(q=>q.id==='av.f.r.c'+C.id.split('.c')[1]),e=r.pts[r.pts.length-1];return V(e,18,[C.x,C.z],8);})(),   /* 18 m up: over the orchards' crowns (to 14 m) that close round the road's end */
+    /* an array of nineteen (41d, 2b), from its spoke road 70 m back from the road's end and 34 m up: the domes' overgrown tops and the walks between */
+    'A honeycomb of growing pods':(()=>{const A=(PLAN.arrays||[]).filter(a=>a.road&&PLAN.roads.indexOf(a.road)>=0).sort((a,b)=>Math.hypot(a.x-H.x,a.z-H.z)-Math.hypot(b.x-H.x,b.z-H.z))[0];
+     if(!A)return V(spot(cl.x+dn[0]*150,cl.z+dn[1]*150,12),18,[cl.x,cl.z],8);const P=A.road.pts,e=P[P.length-1],f=P[Math.max(0,P.length-2)],l=Math.hypot(e[0]-f[0],e[1]-f[1])||1,k=Math.min(70,l);
+     return V([e[0]+(f[0]-e[0])/l*k,e[1]+(f[1]-e[1])/l*k],34,[A.x,A.z],6);})(),
     'The aqueduct on its arches':V(spot(mid.x-mid.dir[1]*70+mid.dir[0]*90,mid.z+mid.dir[0]*70+mid.dir[1]*90,14),3,[mid.x-mid.dir[0]*200,mid.z-mid.dir[1]*200],14),
     'The growing stacks':V(spot(st.x+Math.sin(st.yaw3)*170,st.z+Math.cos(st.yaw3)*170,14),3,[st.x,st.z],14),
     'The hub town':V(spot(H.x+H.along[0]*230+dn[0]*60,H.z+H.along[1]*230+dn[1]*60,10),1.8,[H.x,H.z],10),

@@ -24,8 +24,23 @@ ok('the crops: at least six with cards, field crops and tree crops ('+crops.map(
 ok('the plan: every family stands, pods the most, twenty modules of aqueduct or more',MP.FARM_KEYS.every(k=>fam(k).length>0)&&fam('pod').length>=20&&fam('aqueduct').length>=20,false);
 /* the pods on their plinths: a building stands where the raw ground under its box varies by under 7 m (its pad levels that), its y the ground at its centre */
 const under=t=>{let lo=1e9,hi=-1e9;for(let a=-1;a<=1;a+=.5)for(let b=-1;b<=1;b+=.5){const lx=a*(t.rx-6),lz=b*(t.rz-6),x=t.x+lx*t.c+lz*t.s,z=t.z-lx*t.s+lz*t.c,h=ground(x,z);lo=Math.min(lo,h);hi=Math.max(hi,h);}return{lo,hi};};
-const seated=L=>L.filter(t=>t.family!=='aqueduct').every(t=>{const u=under(t);return Math.abs(t.y-ground(t.x,t.z))<.01&&u.hi-u.lo<(t.family==='stack'?10.5:7);});
-ok('every building on a level plinth: its y the ground at its centre, under 7 m of fall under its box (a stack 10.5)',seated(T),seated(T.map((t,i)=>t.family==='pod'&&i===T.findIndex(q=>q.family==='pod')?Object.assign({},t,{y:t.y+5}):t)));
+/* a honeycomb's pod stands on its array's level instead: the ground under its box within 5 m of it (the relief cuts and fills the rest, the walks with it) */
+const arrOf=t=>t.array!=null&&(P.clusters.find(c=>c.id===t.array)||{});
+const seated=L=>L.filter(t=>t.family!=='aqueduct').every(t=>{const u=under(t);if(t.array!=null){const A=arrOf(t);return Math.abs(t.y-A.y)<.01&&u.lo>=A.y-5.01&&u.hi<=A.y+5.01;}return Math.abs(t.y-ground(t.x,t.z))<.01&&u.hi-u.lo<(t.family==='stack'?10.5:7);});
+{const ai=T.findIndex(q=>q.array!=null),ni=T.findIndex(q=>q.family==='pod'&&q.array==null);
+ ok('every building on a level plinth: its y the ground at its centre (a honeycomb pod on its array level), under 7 m of fall under its box (a stack 10.5)',seated(T),
+  seated(T.map((t,i)=>i===ai?Object.assign({},t,{y:t.y+5}):t))||seated(T.map((t,i)=>i===ni?Object.assign({},t,{y:t.y+5}):t)));}
+/* the honeycombs: three arrays or more of twelve pods or more, each pod on the 53 m hex lattice round its array's centre (a flat to flat walk of 8 m
+   between neighbours), no two pods closer than 52 m, and no building's walls (its box less the 6 m margin) inside another's */
+{const AR=P.clusters.filter(c=>c.kind==='array'),pods=fam('pod'),onLat=L=>L.filter(t=>t.array!=null).every(t=>{const A=arrOf(t),q=(t.x-A.x)/(53*Math.cos(Math.PI/6)),r=(t.z-A.z-q*26.5)/53;return Math.abs(q-Math.round(q))<.01&&Math.abs(r-Math.round(r))<.01;});
+ const apart=L=>{for(let i=0;i<L.length;i++)for(let j=i+1;j<L.length;j++)if(Math.hypot(L[i].x-L[j].x,L[i].z-L[j].z)<52)return false;return true;};
+ /* two pods are hexes (45 m across the flats, the flats' normals at 30, 90, 150 degrees): they overlap when every normal finds them closer than that */
+ const hexHit=(a,b)=>[30,90,150].every(d=>{const t=d*Math.PI/180;return Math.abs((b.x-a.x)*Math.cos(t)+(b.z-a.z)*Math.sin(t))<45;});
+ const hard=t=>({x:t.x,z:t.z,c:t.c,s:t.s,rx:t.rx-6,rz:t.rz-6}),overlap=L=>{for(let i=0;i<L.length;i++)for(let j=0;j<L.length;j++){if(i===j||L[i].family==='aqueduct'||L[j].family==='aqueduct')continue;const a=hard(L[i]),b=L[j];if(a.rx+6===32&&L[i].family==='pod'&&b.family==='pod'){if(hexHit(L[i],b))return true;continue;}if(Math.hypot(a.x-b.x,a.z-b.z)>a.rx+a.rz+b.rx+b.rz)continue;
+   for(const[cx,cz]of[[1,1],[1,-1],[-1,1],[-1,-1],[1,0],[-1,0],[0,1],[0,-1]]){const lx=cx*(b.rx-6),lz=cz*(b.rz-6);if(AV.farmBoxD(a,b.x+lx*b.c+lz*b.s,b.z-lx*b.s+lz*b.c)<0)return true;}}return false;};
+ const good=L=>AR.length>=3&&AR.every(A=>A.members.length>=12)&&onLat(L)&&apart(L.filter(t=>t.family==='pod'))&&!overlap(L);
+ const shove=T.map(t=>t===pods.find(q=>q.array!=null)?Object.assign({},t,{x:t.x+20}):t);
+ ok('the honeycombs: '+AR.length+' arrays of '+AR.map(A=>A.members.length).join(', ')+' pods on the hex lattice, '+pods.length+' pods in all, none closer than 52 m, no walls overlapping',good(T),good(shove));}
 /* nothing in a road: no building's box within the carriageway (half its width and 1 m); the aqueduct's piers apart from its arches */
 const J=MP.aqueductJoin,piers=t=>{const out=[];for(let k=0;k<=J.arches;k++){const u=-J.len/2+k*J.span;out.push({x:t.x+u*t.c,z:t.z-u*t.s,c:t.c,s:t.s,rx:J.pier/2+.3,rz:J.depth/2+.3});}return out;};
 const inRoad=(L,roads)=>{let bad=[];for(const r of roads)for(let i=0;i+1<r.pts.length;i++){const a=r.pts[i],b=r.pts[i+1],l=Math.hypot(b[0]-a[0],b[1]-a[1]);for(let q=0;q<=l;q+=3){const x=a[0]+(b[0]-a[0])*q/l,z=a[1]+(b[1]-a[1])*q/l;
