@@ -18,7 +18,7 @@ const VIEWS=(function(){const V={};
   if(sp){const c=back(sp.x,sp.z,sp.x-40,sp.z+50,sp.r*1.6+14);V['A hot spring']=look(c[0],c[1],sp.r*.7+10,sp.x,sp.z,0);}
   if(LAYOUT.acid[0]){const a=LAYOUT.acid[0],c=back(a.x,a.z,a.x+50,a.z+60,a.r*1.1+30);V['The acid field']=look(c[0],c[1],9,a.x,a.z,0);}}
  if(SITE.steps){const a=SITE.steps.a,b=SITE.steps.b,c=back(b[0],b[1],2*b[0]-a[0],2*b[1]-a[1],70);V['The sinter steps']=look(c[0],c[1],10,(a[0]+b[0])/2,(a[1]+b[1])/2,0);}
- if(window._camp){const h=window._camp.hearth,c=back(h.x,h.z,h.x-SITE.camp.way[0]*50,h.z-SITE.camp.way[1]*50,48);V['The hunters\' camp']=look(c[0],c[1],11,h.x,h.z,1);}
+ if(window._camp){const h=window._camp.hearth,c=back(h.x,h.z,h.x-SITE.camp.way[0]*50,h.z-SITE.camp.way[1]*50,48);V['The hunting camp']=look(c[0],c[1],11,h.x,h.z,1);}
  if(HOLLOWS.length){const H=HOLLOWS[0],c=back(H.x,H.z,H.x+30,H.z-40,H.r+18);V['A gas hollow']=look(c[0],c[1],4,H.x,H.z,0);}
  {const t=REG.filter(r=>r.kind==='tree'&&/Firebliss pine/.test(r.name)).sort((a,b)=>Math.hypot(a.x,a.z)-Math.hypot(b.x,b.z))[0];if(t){const c=back(t.x,t.z,t.x-30,t.z-25,26);V['The pines']=look(c[0],c[1],3,t.x,t.z,t.h*.4);}}
  if(RIVER){const P=RIVER.pts,i0=Math.floor(P.length*.55),m=P[i0],n=P[Math.min(P.length-1,i0+12)],dx=n[0]-m[0],dz=n[1]-m[1],l=Math.hypot(dx,dz)||1;
@@ -79,7 +79,7 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P
  add('the cold ground\'s plants off the warm floor',HCHK.cold(P));
  add('no tree on a cliff face',HCHK.cliffs(TREES()));
  add('nothing of the floor rooted on ground over 60 degC',HCHK.hot(P));
- add('the hunters\' camp pitched (core/camp: no overlap, on good ground)',HCHK.camp(window._hunt&&window._hunt.camp));
+ add('the hunting camp pitched (core/camp: no overlap, on good ground)',HCHK.camp(window._hunt&&window._hunt.camp));
  add('the plan\'s hazards registered (gas, crust, flood, falls: core/hazard)',HCHK.hazards(window._hazards));
  add('the resource data\'s nodes: all listed, the drawn ones registered',HCHK.nodes(window._nodes||[],FB_RES.nodes));
  add('the flora and the wet band read the shore of the water (BIO.envCheck, WATER.edgeAudit)',edgeCheck());
