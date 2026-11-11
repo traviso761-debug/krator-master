@@ -750,6 +750,12 @@ cutout session's foliage changes, then rebuild the core modules thoroughly"). Pa
   tablelands (`biomes/wouterwall/PLAN.md` section 7, a new kit: `dist/wouterwall.html`), then **the SW highlands' remaining
   stations**: 2, the rain wall and the landslide lake (`-rainwall`); 3, Span's tableland and canyon (`-span`, with `settlements/span`);
   5, the fan coast (`-fancoast`). Stations 1, 4 and 6 are built; the flora for 2, 3 and 5 is in (7ee5bc4ca).
+  **The SE outer wall, queued for the GPU verify (2026-11-10, a cloud session, `claude/seouterwall-s1`, not merged):** `biomes/seouterwall`,
+  a new kit, all six stations of its `PLAN.md` section 5 (`dist/seouterwall.html` the Godsgate, `-gatetarn`, `-ambertarn`, `-mirrorscarp`,
+  `-jadecrest`, `-coppertarn`), the plant turn, the Ancients' highway, and an opt-in core/atmos fragment (`fx/89-atmos-fx-katabatic.js`,
+  its node test passing; no other page's bytes move). Every page's own checks and negatives pass in software GL; the full software
+  `--all-views` was stopped at the owner's word in favour of this queue. Its `PLAN.md` section 7 and `KNOWN_ISSUES.md` say what is owed. On the GPU:
+  `cd biomes/seouterwall; for p in dist/seouterwall*.html; do KRATOR_GL=gpu python3 verify.py $p --assert --all-views || break; done`
   **Textures delivered 2026-10-27 (9b621bc70), to wire.** Turns still to come take them in their turn. These went to turns
   already done, so each gets a repack follow-up after pair 3, one at a time on the GPU:
   - eastabyss: `card.clubmoss.sprig` in its `clubmoss` slot (the id `card.clubmoss` was taken), and optionally `card.palm.costa`
