@@ -2,6 +2,8 @@
 """The scablands (an overlay): a station built on the n semiarid kit, read in place (biomes/scablands/PLAN.md).
 
   python3 build.py            dist/coulee.html (station 1: a coulee and dry falls on the west breach)
+  python3 build.py --station highline      dist/highline.html (station 2: the flood lake's high line, n semiarid's share)
+  python3 build.py --station highline-nw   dist/highline-nw.html (station 2's NW lowlands half, on biomes/nwlowlands' build(overlay=...))
 
 n semiarid's build.py assembles the page (its build(overlay=...)): every fragment of biomes/nsemiarid/src and the core
 lists it names, then this folder's src/, which shadows the kit's fragments by name (45b-host-stage.js: the station;
@@ -58,6 +60,17 @@ if __name__ == '__main__':
     _sd = os.path.join(HERE, 'stations', _st)
     if not os.path.isdir(_sd): sys.exit('build.py: no station ' + _st + ' (stations/' + _st + '/)')
     SJ = station_json(_st)
+    # a station on another kit (station.json "kit": station 2's NW lowlands half, highline-nw, on biomes/nwlowlands): that kit's build(overlay=...)
+    # assembles it from the station's folder alone (none of this overlay's src/, which is n semiarid's stage), its "core" by path, this overlay's pack
+    if SJ.get('kit') == 'nwlowlands':
+        _spec = importlib.util.spec_from_file_location('nwlowlands_build', os.path.join(ROOT, 'biomes', 'nwlowlands', 'build.py'))
+        nwl = importlib.util.module_from_spec(_spec); _spec.loader.exec_module(nwl)
+        sys.exit(nwl.build(_st + '.html', overlay={'src': _sd, 'drop': SJ.get('drop', []),
+                                                   'core': {f: os.path.normpath(os.path.join(ROOT, p)) for f, p in SJ.get('core', {}).items()},
+                                                   'dist': os.path.join(HERE, 'dist'), 'here': HERE,
+                                                   'tex': os.path.join(HERE, 'tex'), 'pack': 'scablands',
+                                                   'packExclude': (station_families() - set(SJ.get('families', []))) | set(SJ.get('skip', [])),
+                                                   'kin': False, 'host': 'full', 'title': SJ.get('title')}))
     sys.exit(ns.build(_st + '.html', overlay={'src': os.path.join(HERE, 'src'), 'srcs': [_sd], 'drop': SJ.get('drop', []),
                                               'core': {f: os.path.normpath(os.path.join(ROOT, p)) for f, p in SJ.get('core', {}).items()},
                                               'dist': os.path.join(HERE, 'dist'), 'here': HERE,

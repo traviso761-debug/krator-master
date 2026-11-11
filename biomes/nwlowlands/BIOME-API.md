@@ -133,3 +133,27 @@ part of a building: `dress()` places plants ON geometry the host hands it.
 `NWLOW.make(sp,x,y,z) -> T`, `NWLOW.grow(T,lv) -> stats`: one tree alone (biomes/WORLD.md, "trees as variants"): the pass's own
 record, then its habit's builder at lv 2/1 or its far impostor at 0. biomes/ringisles plants the drape she-oak (the strand
 casuarina) with them; the kit's own pass does not call them, so its page draws exactly as before.
+
+## The overlays' ground: rock, an old lake's bed and its silt (2026-11-10)
+
+`src/57-biome-nwlowlands-overlay.js` (`biomes/nsemiarid/PLAN.md` section 8). An overlay lying over this kit (biomes/scablands' `highline-nw`: the
+flood lake's high line over NW lowlands) gives `BIO.host.fields` more than the kit's own host does, and the kit answers:
+
+| field | | the kit's answer |
+|---|---|---|
+| `rock` | 0..1 bare or scoured rock | its **zone on rock**: crag pines (stunted, in ones and twos), tussock, saltbush and boulders in the hollows; its own trees (`NWLOW.treeK`) and floor planters (`NWLOW.zones`) kept off it |
+| `bed`, `silt` | 0..1 under an old lake; its sediment | **young forest on the silt**: the pioneers (candle birch, spindle poplar, pale paperbark where `wet` > .6, tall wattle where it is under .5) in even-aged stands of one species (a 150 m patch); its mature forest thinned on the silt |
+| `yearsDry` | years since the water left | each stand's height: .45 of the species' at `NWLOW.SILT.young` (500) years to full at `.old` (1100); the mature forest back on the oldest bed |
+| `slope` | 0..1, optional | none of these on a face over .8 (a silt tree over .5); the kit also reads terrainH's own rise over 5 and 11 m |
+
+**Inert when unset**: a host without `rock` or `silt` (the kit's own two pages; the Cut, Farside, Korona's basin and ringisles, which read `50`/`55`/`60`
+by name and not `57`) gets the kit exactly as before: the fragment returns at once, wraps nothing and draws no random number. With them it wraps
+`NWLOW.zones` (before `60` takes it), `NWLOW.buildTrees` (its own passes after the kit's, the trunks made obstacles) and, at build time,
+`NWLOW.buildFloor` (the rock's floor after the kit's); placement is a lattice cell's `KRAND.hash`, each tree a reseed of it. It reports
+`NWLOW.overlay` (`rockK`, `siltK`, `oldK`, `standK`, `stats`) for a station's checks; each tree it grows carries `T.overlay` ('rock' or 'silt') and
+`T.standK`.
+
+**The overlay build** (n semiarid's form): `build.py`'s `build(OUT, station=None, overlay=None)`. `overlay` = `{src, srcs, drop, core, dist, here,
+tex, pack, packExclude, kin, host, title}`: its folders' numbered fragments shadow the kit's by name, `drop` leaves kit fragments out, `core` adds
+fragments by path, its own pack goes in beside the kit's, `kin: False` leaves the neighbours' cousins out, `host: 'full'` takes core/host's whole
+interface. The kit's own pages are assembled exactly as before (`python3 build.py`, `--station margins`).

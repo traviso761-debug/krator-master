@@ -6,7 +6,7 @@ The scablands, an overlay (biomes/scablands/PLAN.md): the ground the dam break's
 
 Docs: `KNOWN_ISSUES.md`, `PLAN.md`, `PORT.md`, `README.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/coulee.html`, `dist/highline.html`
+Built output (never open it; edit `src/` and rebuild): `dist/coulee.html`, `dist/highline-nw.html`, `dist/highline.html`
 
 Build: `cd biomes/scablands && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -29,3 +29,4 @@ Each station builds one page (`build.py --station <name>`) from its own fragment
 | Station | Fragments | KB |
 |---|---|---|
 | highline | 45b-host-stage.js, 56-biome-scablands-highline.js, 87w-host-wrack.js, 99-host-take.js | 29 |
+| highline-nw | 45-host-stage.js, 83-host-far.js, 86-host-fields.js, 88-host-build.js, 89-host-sky.js, 89a-host-atmos.js, 89w-host-water.js, 99-host-take.js | 54 |

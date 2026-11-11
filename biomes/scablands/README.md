@@ -10,6 +10,8 @@ biome that is there (n semiarid; the flood lake's dry bed lies over NW lowlands 
 cd biomes/scablands
 python3 build.py                                   # dist/coulee.html (station 1)
 python3 build.py --station highline                # dist/highline.html (station 2: the flood lake's high line; stations/highline/, PLAN.md section 7)
+python3 build.py --station highline-nw             # dist/highline-nw.html (station 2's NW lowlands half, on biomes/nwlowlands; PLAN.md section 8)
+python3 verify.py dist/highline-nw.html --assert --all-views --out shots/x   # runs nwlowlands' harness (its station.json "kit")
 python3 verify.py dist/coulee.html --assert --views "The dry falls from the rim,The plunge-pool lake" --out shots/x
 ```
 
@@ -31,3 +33,9 @@ in its places), each with a negative |
 **When the kit changes**, rebuild this page too: it takes every kit fragment it does not shadow. The fragments it
 shadows (`45b`, `99`) are the stage's, not copies of the kit's: the stage's interface is `TERR`, `terrainH`, `waterH`,
 `FNAMES`/`FC`/`FIELD`, `OBSTACLES`, `WIND`, `STAGE_WATER` and `STAGE_GROUND` (`biomes/nsemiarid/BIOME-API.md`).
+
+**Station 2's NW lowlands half (`stations/highline-nw/`) is on another engine**: its `station.json` names `"kit": "nwlowlands"`, and
+`build.py` hands it to `biomes/nwlowlands/build.py`'s `build(overlay=...)` (n semiarid's form): the lowlands kit's fragments, the station's folder over
+them (its own `45` stage, `83` far field, `86` fields, `88` build, `89`/`89a`/`89w` sky, air and pond, `99` views and checks), none of this overlay's
+`src/` but the erratics (`87`) and station 2's wrack (`87w`, with the dam basins' `DBF` as `44z`), named by path in its `"core"`. The kit's flora
+reads the stage's `rock`, `bed`, `silt`, `yearsDry` and `slope` fields through `biomes/nwlowlands/src/57-biome-nwlowlands-overlay.js`.

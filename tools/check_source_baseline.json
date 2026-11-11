@@ -100,6 +100,7 @@
  "biomes/ringisles/src/55-biome-ringisles-trees.js: ORNUM": 8,
  "biomes/ringisles/src/60-biome-ringisles-floor.js: ORNUM": 3,
  "biomes/ringisles/src/84-host-ground.js: RAWTEX": 4,
+ "biomes/scablands/stations/highline-nw/45-host-stage.js: RAWTEX": 1,
  "biomes/sedesert/src/35-core-strata.js: ORNUM": 3,
  "biomes/sedesert/src/35-core-strata.js: RAWTEX": 5,
  "biomes/sedesert/src/45-host-stage.js: RAWTEX": 3,
