@@ -1168,3 +1168,33 @@ is the showcase's, the canyon is the biome kit's. Seeds 12300-12379.
 
 Found on the way: in a fresh worktree `tex/` holds LFS pointers and the library-bound white renders BLACK with a clean
 error panel (rust is procedural, so the ruins looked right): `git lfs pull --include="kits/ancients/tex/*"` first.
+
+## Theodiga: the Dome on the Water (2026-11-11)
+
+The owner settled Xanadu's faith as the Decree and the Broken Wheel (LORE 6.13, `kits/qiblai/PLAN.md` section 2a): the
+Station is "the dome in air", and Theodiga, the arcology the Xanadui descend from, is to be "the dome on earth", the
+stately pleasure-dome of the Song. Of three massings (one great dome over the crest; a chain of nine domes along it;
+domed towers on the upper fins) the owner chose the first.
+
+`targets/theodiga/77a-theodiga-dome-plan.js` (`THEODOME.plan`, [G data], KRAND records with stable ids) and
+`77b-theodiga-dome-draw.js` (`THEODOME.draw`). `buildDam` calls the drawing last, after its own decay and figures, when
+`THEODOME` is on the page; it draws no `rng()`, so the dam's own fins, tunnels and decay are the draws they were. Without
+the target's fragments (every other page) the crest keeps its old low public dome. The theodiga target joins
+`TAGS_TARGETS` (core/rand, core/tags): 104 records (the dome, its deck, drum, shell, lantern, hall, 27 piers, 2 beams,
+the ruin's rubble), audit clean.
+
+- The dome: 240 m across, 112 m from the drum to an open oculus, the crown at 553 m (over the canyon rim at 440), 24
+  white ribs and six tiers of panes (the lowest solid) glazed by a blue glass shell, copper bands at every tier line, a
+  16 m arcaded drum with the cyan strips at its head, a short lantern round the oculus.
+- The deck stands 65 m upstream of the crest: the crest carries its downstream chord, an outer ring of 16 piers (8 of
+  24 fall on the dam), an inner ring of 10 and a core carry the rest from the reservoir bed, trumpet-flared under the
+  deck, tied by two ring beams under the water. The reservoir is unchanged (378 m), so the dome stands on the water.
+- The hall: the crest's old fluted public dome, moved onto the deck inside the great one.
+- The ruin (every d > 0): reservoir at 250 m, piers bare 166 m over the mud; the glass gone (the dark void behind the
+  frames, as the old dome's), the bands verdigris; one
+  sector (upstream, west: the notch's side) failed, its outer piers broken (4) and one inner, the deck over them fallen,
+  the shell torn open nearly to the drum with some ribs standing; slabs, ribs and plates lie on the mud under the gap.
+
+Found on the way: the canyon's plateau (the rock's top surface) ran from 150 m inside the cliff face and hung over the
+reservoir as a lid at the rim's height, unseen from downstream, a ceiling over the dome from upstream. It now starts at
+the face's top edge, column for column. New views: Dome on the water, Dome ruin, Dome ruin piers.

@@ -8,13 +8,17 @@ function buildDam(scene,gx,gz,d){reseed(9260+d);KOFF=[gx,0,gz];const G=new THREE
  // All six wall meshes merge into one: they always shared a material.
  const ROCK=[];
  for(const s of [-1,1]){const CX=s*(SPAN/2+150);
-  ROCK.push(gridSurface((u,v)=>{const z=-700+u*1300,y=v*CH;
+  const face=(u,v)=>{
    const strata=9*Math.sin(v*34+fbm(u*4,0,2205,2)*7);                        // bedding planes
    const gully=26*Math.pow(Math.abs(fbm(u*19,v*3,2206+s,3)-.5)*2,1.7);       // vertical gullies
    const inner=-s*(150-32*fbm(u*13,v*7,2200+s,4)-strata-gully-18*(1-v)*(1-v));
-   const wob=1+.12*fbm(u*6,v*2,2210,2);return[CX+inner*wob,y,z];},118,38,{uS:40,vS:14}));
-  ROCK.push(gridSurface((u,v)=>{const z=-700+u*1300,x=CX+(v-.5)*2*300;
-   return[x,CH+8*fbm(u*7,v*7,2220+s,2)+16*fbm(u*3,v*3,2221+s,2),z];},60,12,{uS:40,vS:20}));
+   const wob=1+.12*fbm(u*6,v*2,2210,2);return CX+inner*wob;};
+  ROCK.push(gridSurface((u,v)=>[face(u,v),v*CH,-700+u*1300],118,38,{uS:40,vS:14}));
+  // THE PLATEAU starts at the cliff's top edge (2026-11-11). It ran from CX-300, 150 m inside the face, and hung
+  // over the reservoir as a lid at the rim's height: invisible from downstream, a ceiling over the Dome on the Water
+  // from upstream. Its inner edge is the face's top edge, column for column, so the two meet with no crack.
+  ROCK.push(gridSurface((u,v)=>{const z=-700+u*1300,x=lerp(face(u,1),CX+s*300,v);
+   return[x,CH+v*(8*fbm(u*7,v*7,2220+s,2)+16*fbm(u*3,v*3,2221+s,2)),z];},118,12,{uS:40,vS:20}));
   ROCK.push(gridSurface((u,v)=>{const z=-700+u*1300;const x=CX+s*300;return[x,v*CH,z];},40,6,{}));
   for(let k=0;k<70;k++){const z=-700+rng()*1300,t=Math.pow(rng(),1.8);
    const bx=CX-s*(150-34*fbm((z+700)/1300*13,.1,2200+s,4))*(1-t*.5)+s*t*70;
@@ -77,8 +81,12 @@ function buildDam(scene,gx,gz,d){reseed(9260+d);KOFF=[gx,0,gz];const G=new THREE
  // crest: light wells (arc of slots), residential arc, public centre dome, cultural domes
  for(let k=-13;k<=13;k++){const x=k*22;const z=zc(x);const gone=d>0&&rng()<.15;if(notch(x,H-1)||notch(x+9,H-1)||notch(x-9,H-1))continue;kput(BOXC(d),[x,H+9,z+8],null,[15,18,28],null);kput('boxD',[x,H+18.2,z+8],null,[9,.4,20],null);kput(BOXC(d),[x,H+8,z+50],null,[18,16,22],null);for(let r=0;r<2;r++)for(let c=-1;c<=1;c++)kput(d>0?'winSmD':'winSmI',[x+c*5,H+5+r*6,z+61.2],qFacing([0,0,1]),[2,2.4,1],null);
   if(!gone){const lit=d>0?rng()<.12:true;kput('strip',[x,H+12.6,z+10],qEuler(0,Math.PI/2,0),[16,1,1],lit?CYAN:DEAD);}}
- mesh(lathe({rFn:y=>44*Math.pow(clamp(1-Math.pow(y/26,2),0,1),.55),H:26,flutes:24,amp:.06,sharp:2,nu:96,nv:14,hole:(u,y)=>Math.cos(u*TAU*24)<.3&&y>3&&y<22||(d>0&&fbm(u*4,y*.1,2310,2)<.3)}),skin,G,0,H+12,zc(0)+20);
- if(d===0)mesh(lathe({rFn:y=>42*Math.pow(clamp(1-Math.pow(y/26,2),0,1),.55),H:26,nu:48,nv:10}),MAT.glass,G,0,H+12,zc(0)+20);else mesh(lathe({rFn:y=>40*Math.pow(clamp(1-Math.pow(y/26,2),0,1),.55),H:26,nu:48,nv:10}),MAT.dark,G,0,H+12,zc(0)+20);
+ // THE DOME ON THE WATER (the owner, 2026-11-11): with targets/theodiga's fragments on the page, the great dome
+ // (THEODOME, drawn at the end of this builder) takes the public dome inside it as its hall. Without them the
+ // crest keeps its old low public dome, below.
+ const DOME=typeof THEODOME!=='undefined';
+ if(!DOME)mesh(lathe({rFn:y=>44*Math.pow(clamp(1-Math.pow(y/26,2),0,1),.55),H:26,flutes:24,amp:.06,sharp:2,nu:96,nv:14,hole:(u,y)=>Math.cos(u*TAU*24)<.3&&y>3&&y<22||(d>0&&fbm(u*4,y*.1,2310,2)<.3)}),skin,G,0,H+12,zc(0)+20);
+ if(DOME){}else if(d===0)mesh(lathe({rFn:y=>42*Math.pow(clamp(1-Math.pow(y/26,2),0,1),.55),H:26,nu:48,nv:10}),MAT.glass,G,0,H+12,zc(0)+20);else mesh(lathe({rFn:y=>40*Math.pow(clamp(1-Math.pow(y/26,2),0,1),.55),H:26,nu:48,nv:10}),MAT.dark,G,0,H+12,zc(0)+20);
  for(const s of [-1,1])for(let k=0;k<3;k++){const x=s*(90+k*40);mesh(lathe({rFn:y=>15*Math.pow(clamp(1-Math.pow(y/12,2),0,1),.5)+.01,H:12,flutes:12,amp:.08,nu:36,nv:8,hole:holeFn(d*.7,2320+k,null,2.5)}),skin,G,x,H+12,zc(x)+40);}
  // the cruciform on the downstream face: upper residential fins, learning-centre beam, lower splayed fins, central spine
  const zf=y=>zc(0)+th_(y);const fins=[];for(let k=-3;k<=3;k++)fins.push([k*46,244,H+10,30,d>0&&(k===2)]);for(let k=-2.5;k<=2.5;k++)fins.push([k*52,50,214,34,d>0&&(k===-1.5)]);
@@ -150,5 +158,8 @@ function buildDam(scene,gx,gz,d){reseed(9260+d);KOFF=[gx,0,gz];const G=new THREE
  if(d>0){mossOnSurface(FACE,0,0,0,140,2.6);vinesFromLedge(FACE,0,0,0,60,26);stainsFromLedge(FACE,0,0,0,70,22);
   mossOnSurface(ROCK,0,0,0,120,3.4);
   scatterMoss(0,2,zf(0)+200,0,300,120,3);rubbleRing(0,2,zf(0)+70,20,220,120,4);vinesOnRing(0,H+12,zc(0)+10,60,20,60);for(let k=0;k<30;k++)kput('vine',[rr(-300,300),rr(120,H),zf(200)+2],qEuler(rr(-.05,.05),0,0),[1.5,rr(15,60),1.5],null);}
- figures(0,zf(0)+200,10,60);KOFF=[0,0,0];return G;}
+ figures(0,zf(0)+200,10,60);
+ // last, so its records draw nothing from rng() ahead of the dam's own decay and figures
+ if(DOME)THEODOME.draw(G,d,{gx:gx,gz:gz,H:H,SPAN:SPAN,BOW:140,CREST:50,zc:zc,WL:WL});
+ KOFF=[0,0,0];return G;}
 

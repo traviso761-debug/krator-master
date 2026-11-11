@@ -280,6 +280,19 @@ exceeded ceiling as `OVER`; `--strict-budget` makes it fail.
 - [ ] Only the domes exist. Mounds, settlements, streets, embassies, the Halls
       of Reformation and the life layer are all still to do.
 
+## Theodiga (`--target theodiga`): the Dome on the Water (2026-11-11)
+
+- [ ] **No way up to the deck.** The deck stands on the crest blocks' roofs (H+20) with no stair, lift or ramp from the
+      crest's residential arc or the light tunnels; the hall on it has no doors. The crest's light-well and tunnel
+      slots under the dome's chord are covered by the deck.
+- [ ] **The tear faces west and upstream.** In the ruin the empty frames show the kit's dark void (as the old public
+      dome's did) and the torn sector is open through it; from the east and from downstream the dome looks whole (the
+      'Dome ruin' view looks from the west). The fallen ribs are the kit's rusted posts (`postR`), not curved rib pieces.
+- [ ] **Piers show through the water.** `MAT.water` is translucent, so the piers' submerged length reads under the
+      intact reservoir; there is no bed under it to stand them on (they go to y = 0).
+- [ ] **Not in the kit target.** `buildDam` is placed only on its own page; the kit showcase never places the dam, so the
+      dome exists only where `targets/theodiga` is on the page. A world that places Theodiga needs both fragments.
+
 ## Veladiga (`--target veladiga`)
 
 - [x] ~~Piers read flatter than the sheets.~~ They are now swept from a five-point
