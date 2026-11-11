@@ -68,13 +68,36 @@ const FC=(function(){const N=440,S=TERR.R*2.2,a={};FNAMES.forEach(n=>a[n]=new Fl
  return{N,S,a,at};})();
 const FIELD={};FNAMES.forEach(n=>FIELD[n]=(x,z)=>FC.at(FC.a[n],x,z));
 
-// ---------------------------------------------------------------- the wreckage (records; drawn by 87-host-erratics.js and 87w-host-wrack.js)
+// ---------------------------------------------------------------- the wreckage (records; drawn by 87-host-erratics.js, 87h-host-hulks.js and 87w-host-wrack.js)
+// THE HULKS: the dam lake's own working boats (trawlers, coasters, barges, tugs), torn from their moorings, rafted through the west notch and set
+// down on the high line when the lake began to fall (the dam basins' wreck kind, read in place: biomes/dambasins/src/50-db-wrecks.js as
+// 45a-db-wrecks.js, DBW; the Ancient Port kit's great ships stayed in their berths on the dam bed, where the dam basins ground them). A few,
+// cell-seeded on core/rand (DBW.records: a hash of the seed, the cell and an index), only in the line's band (KBASIN 'high'), 250 m apart at
+// least; each laid along the line (the contour, either way, turned up to 25 degrees), lying on the ground's tilt across its beam and heeled
+// further toward the bed below, at most 20 degrees in all, its keel sunk in the line's silt (a third to two thirds of its depth). The pose's draws hash the record's own
+// seed. Whole or half buried: a snapped hull's halves list opposite ways in DBW.draw, which a slope would not allow
+const HULKS=(function(){const u=(h,k)=>KRAND.unit(KRAND.hash(h,k)),lr=(a,b,t)=>a+(b-a)*t,S={},g=terrainH,e=4,out=[];
+ const R0=DBW.records({x0:-TERR.R+250,x1:TERR.R-250,z0:-TERR.R+250,z1:TERR.R-250,cell:240,seed:6203,ground:g,
+  avoid:(x,z)=>waterH(x,z)>-1e8||SC.sample(x,z,g(x,z),{}).scour>.4,
+  accept:(x,z,h)=>{if(h>HL.level)return 0;const s=BASIN.sample(x,z,h,S);return s.band===KBASIN.BAND.high?.4:0;}});
+ for(const r of R0){if(out.some(q=>Math.hypot(q.x-r.x,q.z-r.z)<250))continue;const h=r.seed;
+  const gx=(g(r.x+e,r.z)-g(r.x-e,r.z))/(2*e),gz=(g(r.x,r.z+e)-g(r.x,r.z-e))/(2*e),gl=Math.hypot(gx,gz)||1,dir=u(h,201)<.5?1:-1;
+  r.heading=Math.atan2(-gz/gl*dir,gx/gl*dir)+(u(h,202)-.5)*.87;
+  r.state=u(h,203)<.6?'whole':'buried';r.bury=r.state==='buried'?lr(.5,.66,u(h,204)):lr(.32,.48,u(h,204));
+  /* the list (DBW.draw's roll about the keel: + lifts the hull's +x side, (cos h, -sin h)): the ground's tilt across the beam, and a heel more toward its lower side */
+  const sx=Math.cos(r.heading),sz=-Math.sin(r.heading),yp=g(r.x+sx*r.B*.4,r.z+sz*r.B*.4),yq=g(r.x-sx*r.B*.4,r.z-sz*r.B*.4);
+  r.list=clamp(Math.atan2(yp-yq,r.B*.8)+(yp<yq?-1:1)*lr(.08,.22,u(h,205)),-.36,.36);
+  r.id='hulk:'+r.id.slice(6);out.push(r);}
+ return out;})();
+// a point in a hulk's footprint (its length and beam, pad m round them): the erratics and the wrack keep out of it
+const inHulk=(x,z,pad)=>HULKS.some(r=>{const dx=x-r.x,dz=z-r.z,f=Math.sin(r.heading)*dx+Math.cos(r.heading)*dz,s=Math.cos(r.heading)*dx-Math.sin(r.heading)*dz;
+ return Math.abs(f)<r.L/2+pad&&Math.abs(s)<r.B/2+pad;});
 // THE ERRATICS (the coulee's kinds: the dam's broken concrete with its rebar, the flood basalt's boulders) on the fan's bars, where the surge
 // dropped its load as it spread into the lake, and a few on the high line, rafted; cell-seeded on core/rand, each sunk a fifth to a third
 const ERRATICS=(function(){const out=[],C=150,R=TERR.R-150,S={},u=(h,k)=>KRAND.unit(KRAND.hash(h,k)),lr=(a,b,t)=>a+(b-a)*t;
  for(let j=Math.floor(-R/C);j<=Math.floor(R/C);j++)for(let i=Math.floor(-R/C);i<=Math.floor(R/C);i++)for(let n=0;n<2;n++){const h=KRAND.hash(7719,i,j,n);
   const x=(i+u(h,1))*C,z=(j+u(h,2))*C;if(Math.abs(x)>R||Math.abs(z)>R)continue;
-  const g=terrainH(x,z),q=SC.sample(x,z,g,S),b=BASIN.sample(x,z,g,{}),p=.32*q.bar+.06*q.scour+(b.band===KBASIN.BAND.high?.1:0);if(!(u(h,3)<p)||q.island>.3||waterH(x,z)>-1e8||g>HL.level)continue;
+  const g=terrainH(x,z),q=SC.sample(x,z,g,S),b=BASIN.sample(x,z,g,{}),p=.32*q.bar+.06*q.scour+(b.band===KBASIN.BAND.high?.1:0);if(!(u(h,3)<p)||q.island>.3||waterH(x,z)>-1e8||g>HL.level||inHulk(x,z,4))continue;
   const block=u(h,4)<.7,slab=block&&u(h,5)<.3,sx=block?lr(2.5,7,u(h,6)):lr(2,6,u(h,6)),sz=sx*lr(.55,1,u(h,7)),sy=slab?lr(.8,1.5,u(h,8)):block?lr(1.5,4,u(h,8)):sx*lr(.55,.8,u(h,8));
   out.push({id:'erratic:'+i+':'+j+':'+n,kind:block?(slab?'slab':'block'):'boulder',x,z,y:g-sy*lr(.18,.33,u(h,9)),sx,sy,sz,
    yaw:u(h,10)*TAU,pitch:lr(-.3,.3,u(h,11)),roll:lr(-.3,.3,u(h,12)),bars:block?3+Math.floor(u(h,13)*7):0,seed:h});}
@@ -83,19 +106,25 @@ const ERRATICS=(function(){const out=[],C=150,R=TERR.R-150,S={},u=(h,k)=>KRAND.u
 // containers from the dam's works and the drowned docks (the dam basins' flotsam kind, read in place: biomes/dambasins/src/52-db-flotsam.js, DBF),
 // thick in a band a few metres under the level (KBASIN's band 'high'), in drifts along it, none above it; a few further down on the strandlines
 const WRACK=DBF.records({x0:-TERR.R+150,x1:TERR.R-150,z0:-TERR.R+150,z1:TERR.R-150,cell:46,field:7,seed:4471,ground:terrainH,
- avoid:(x,z)=>waterH(x,z)>-1e8||SC.sample(x,z,terrainH(x,z),{}).scour>.6,
+ avoid:(x,z)=>waterH(x,z)>-1e8||SC.sample(x,z,terrainH(x,z),{}).scour>.6||inHulk(x,z,3),
  accept:(x,z,h)=>{if(h>HL.level)return 0;const s=BASIN.sample(x,z,h,BS);return s.band===KBASIN.BAND.high?.85:s.band===KBASIN.BAND.recession?.002+.025*s.strand:0;}});
 // ---------------------------------------------------------------- the host binding
 const OBSTACLES=[];
 for(const e of ERRATICS)OBSTACLES.push({x:e.x,z:e.z,r:Math.max(e.sx,e.sz)*.6+.5});
 for(const r of WRACK){const sz=r.kind==='plate'?Math.max(r.w,r.l):r.L;OBSTACLES.push({x:r.x,z:r.z,r:sz*.5+.4});}
+/* a hulk: a row of circles down its length, each covering its share of the hull's length and its beam (one circle round a coaster would clear 40 m) */
+for(const r of HULKS){const n=Math.max(2,Math.ceil(r.L/r.B)),fx=Math.sin(r.heading),fz=Math.cos(r.heading),cr=Math.hypot(r.L/n/2,r.B/2)+1;
+ for(let k=0;k<n;k++){const a=((k+.5)/n-.5)*r.L;OBSTACLES.push({x:r.x+fx*a,z:r.z+fz*a,r:cr});}}
 // where the line runs (the views and the checks): its points, one a 150 m row, where the ground crosses the level
 const LINE=(function(){const P=[];for(let z=-2700;z<=2700;z+=150){let prev=null;for(let x=-2900;x<=2900;x+=10){const h=landH(x,z);if(prev!=null&&prev<HL.level&&h>=HL.level){P.push([x,z]);break;}prev=h;}}return P;})();
 const FAN=(function(){const C=SC.courses[0],p=C.pts[C.pts.length-1];return{x:p[0],z:p[1]};})();
 // the LOD spine: along the line, down the coulee mouth to the fan, the pond, the bed west and the plateau east
 const SPINE=LINE.filter((p,i)=>i%5===2).concat([[2300,-2300],[1200,-1350],[150,-550],[FAN.x,FAN.z],[FAN.x-500,FAN.z+400],[POND.x,POND.z],[2200,800],[2000,2200]]);   /* none out on the bed: its crawler fields (the kit's floor) held the floor's class over 16 M */
 BIO.init({tags:'scablands',THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,
- obstacles:OBSTACLES,ticks:tick,seed:19,origin:SPINE,center:[0,0],fields:FIELD,register:REGISTER,err:reportErr,
+ obstacles:OBSTACLES,ticks:tick,
+ /* the core's default mask (nothing roots under the water), and nothing in a hulk's footprint: the kit's travellers' offspring (a mace head rolled, a roll-egg's
+    trail of seedlings) are tested on the mask, not the obstacles */
+ mask:(x,z)=>{if(inHulk(x,z,.5))return 0;const d=BIO.placeH(x,z)-BIO.waterH(x,z);return d<.15?0:d<.7?(d-.15)/.55:1;},seed:19,origin:SPINE,center:[0,0],fields:FIELD,register:REGISTER,err:reportErr,
  lod:{hero:400,mid:1000,far:2600,floor:[360,880]},
  windows:{water:[-TERR.R,-TERR.R,TERR.R,TERR.R]}});
 BIO.setSun([-1000,1150,-560]);
@@ -118,4 +147,7 @@ const FAR_LAND=(x,z)=>BASIN.land(x,z,795+.055*Math.max(-6000,Math.min(6000,x))-1
 // ---------------------------------------------------------------- the inspector's volumes
 REGISTER({name:'The flood lake\'s high line ('+HL.level+' m: the surge stood here for days)',x:600,z:0,y:HL.level-20,r:3000,h:30});
 REGISTER({name:'The west breach\'s fan: its bars and giant current ripples',x:FAN.x,z:FAN.z,y:690,r:1300,h:80});
+/* each hulk a record (core/tags, through REGISTER's BIO.record) before it is drawn: its volume from its buried keel up past its masts */
+for(const r of HULKS)REGISTER({name:'A hulk on the high line: a '+r.kind+' of the dam lake, rafted through the west notch ('+(r.state==='buried'?'half buried':'heeled')+')',
+ cls:'prop',kind:'wreck',key:'hulk.'+r.kind,x:r.x,z:r.z,y:r.h-r.bury*r.H,r:r.L*.55,h:r.H*2.2,tags:{culture:'ancient',state:'ruined'}});
 for(const e of ERRATICS)REGISTER({name:e.kind==='boulder'?'An erratic: a basalt boulder the flood rolled here':'An erratic: the dam\'s broken concrete, rafted kilometres ('+e.kind+', rebar torn out of it)',x:e.x,z:e.z,y:e.y-1,r:Math.max(e.sx,e.sz)*.75,h:e.sy+3});

@@ -9,7 +9,7 @@ biome that is there (n semiarid; the flood lake's dry bed lies over NW lowlands 
 ```
 cd biomes/scablands
 python3 build.py                                   # dist/coulee.html (station 1)
-python3 build.py --station highline                # dist/highline.html (station 2: the flood lake's high line; stations/highline/, PLAN.md section 7)
+python3 build.py --station highline                # dist/highline.html (station 2: the flood lake's high line, its wrack and hulks; stations/highline/, PLAN.md section 7)
 python3 build.py --station highline-nw             # dist/highline-nw.html (station 2's NW lowlands half, on biomes/nwlowlands; PLAN.md section 8)
 python3 verify.py dist/highline-nw.html --assert --all-views --out shots/x   # runs nwlowlands' harness (its station.json "kit")
 python3 verify.py dist/coulee.html --assert --views "The dry falls from the rim,The plunge-pool lake" --out shots/x
@@ -27,6 +27,7 @@ this page.
 | `src/72-biome-scablands-pools.js` | the overlay's own flora, its own kit registry (`BIO.kit('scablands')`): kolk lilies, pothole quills, seep sedge, spray ferns, tagged as the kit's plants are, textured from this overlay's pack (whole card sheets cut by cell); `SCABLANDS.place(records)` places them from what the stage hands it |
 | `src/87a-host-pools.js` | hands the overlay's flora the stage's pothole pools, the plunge lake and the falls' foot before the kit's build bakes; `STAGE_PLANTS` lets the inspector name them |
 | `src/87-host-erratics.js` | the erratics drawn (records in the stage: `ERRATICS`, obstacles before the kit plants): the dam's broken concrete, blocks and slabs of its face with rebar torn out of their broken sides, and basalt boulders, each kind one merged mesh, textured from this overlay's own pack (`materials.json`, `tex/`: `concrete.rust.streaked`, `rock.basalt.vesicular`) |
+| `stations/highline/` | **station 2**: its stage (`45b`: the flood lake, the fan, the wreckage's records: the erratics, the wrack and the hulks), the hulks drawn (`87h`: the dam basins' `DBW`, read in place as `45a-db-wrecks.js`), the wrack drawn (`87w`: their `DBF`, as `45a-db-flotsam.js`), its views and checks (`99`); `station.json` names its core and drops the coulee's pools and geodes |
 | `src/99-host-take.js` | the station's views, the kit's checks that apply here and the overlay's own (the falls, the water held, the walls stepped, the scour bare of trees, the erratics sunk in the floor, the pools' flora
 in its places), each with a negative |
 

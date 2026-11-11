@@ -7,12 +7,15 @@
 //   the bed and above    the slackwater silt under the line, the steppe's ground over it bare of silt
 //   the fan              the west breach's bars and giant current ripples spread at its mouth, onto the bed
 //   half buried          the wrack and the erratics each in the ground and out of it
+//   the hulks            on the line's band, keel in the silt and deck out of it, heeled toward the bed, no plant of the kit's inside one
 const H_KS=KBASIN.BAND,HLC=SC.courses[0];
 const gcs=(s,d,dy)=>{const C=HLC;s=clamp(s,0,C.len);let k=1;while(k<C.cum.length-1&&C.cum[k]<s)k++;const a=C.pts[k-1],b=C.pts[k],L=(C.cum[k]-C.cum[k-1])||1,t=(s-C.cum[k-1])/L,tx=(b[0]-a[0])/L,tz=(b[1]-a[1])/L;
  const x=a[0]+(b[0]-a[0])*t-tz*(d||0),z=a[1]+(b[1]-a[1])*t+tx*(d||0);return[x,terrainH(x,z)+(dy||0),z];};
 const L0=LINE[Math.floor(LINE.length*.6)]||[600,300],L1=LINE[Math.floor(LINE.length*.3)]||[600,-900];
 // the wrack's thickest drift on the line (the view frames it), and a container
 const WD=(function(){let best=WRACK[0]||{x:L0[0],z:L0[1]},bn=-1;for(let i=0;i<WRACK.length;i+=3){let n=0;for(const q of WRACK)if(Math.abs(q.x-WRACK[i].x)<40&&Math.abs(q.z-WRACK[i].z)<40)n++;if(n>bn){bn=n;best=WRACK[i];}}return best;})();
+// the longest hulk (its view: from down the slope and off its bow or stern, over it, the hull heeled toward the eye)
+const HK=HULKS.slice().sort((a,b)=>b.L-a.L)[0]||null;
 const WC=WRACK.find(r=>r.kind==='container'&&Math.hypot(r.x-L0[0],r.z-L0[1])<1500)||WRACK.find(r=>r.kind==='container')||WD;
 const PLACE3=(function(){const S={cone:[0,0],steppe:[0,0],bar:[0,0]},bs={cone:-1e9,steppe:-1e9,bar:-1e9};
  for(let z=-2700;z<=2700;z+=40)for(let x=-2700;x<=2700;x+=40){const ld=BIO.lodD(x,z),Z=NSEMIARID.zones(x,z);
@@ -23,6 +26,9 @@ const VIEWS={
  'The high line from below':look(L0[0]-260,L0[1]+90,3,L0[0]+40,L0[1]-30,6),
  'The wrack line and its rafted wreckage':look(WD.x-30,WD.z+22,4,WD.x,WD.z,1),
  'A container stranded on the line':look(WC.x-14,WC.z+10,3,WC.x,WC.z,1),
+ 'A hulk on the high line':HK?(()=>{const g=terrainH,e=4,gx=(g(HK.x+e,HK.z)-g(HK.x-e,HK.z))/(2*e),gz=(g(HK.x,HK.z+e)-g(HK.x,HK.z-e))/(2*e),gl=Math.hypot(gx,gz)||1,
+  fx=Math.sin(HK.heading),fz=Math.cos(HK.heading),cx=HK.x+fx*HK.L*.5-gx/gl*HK.L*.9,cz=HK.z+fz*HK.L*.5-gz/gl*HK.L*.9,y0=g(HK.x,HK.z);
+  return[cx,Math.max(y0+14,g(cx,cz)+4),cz,HK.x,y0+HK.H*.3,HK.z];})():look(L0[0]-60,L0[1],4,L0[0],L0[1],2),
  'Along the high line':look(L1[0]+40,L1[1]-60,14,L0[0],L0[1],2),
  'The strandlines down the old bed':look(-1500,-2100,22,-2600,-300,0),
  'Down the west breach\'s mouth':(()=>{const a=gcs(HLC.len*.15,COURSE.floor*.75,90),b=gcs(HLC.len*.75,0,0);return[a[0],a[1],a[2],b[0],b[1],b[2]];})(),
@@ -60,7 +66,23 @@ const HLCHK={
   return{ok:mouth>100&&mouth>up*1.5&&rip>20,detail:'bar cells: '+mouth+' at the mouth, '+up+' up the coulee; '+rip+' on a ripple\'s crest'};},
  // HALF BURIED: each piece's lowest point under the ground and its highest over it (DBF.draw sets lo and hi; the erratics their y and height)
  buried(W,E,lift){const l=lift||0,bw=W.filter(r=>r.lo==null||!(r.lo+l<r.h-.02&&r.hi+l>r.h+.05)).length,be=E.filter(e=>!(e.y+l<terrainH(e.x,e.z)&&e.y+l+e.sy>terrainH(e.x,e.z)+.3)).length;
-  return{ok:!bw&&!be&&W.length>0,detail:(W.length-bw)+' of '+W.length+' wrack pieces and '+(E.length-be)+' of '+E.length+' erratics in the ground and out of it'};}};
+  return{ok:!bw&&!be&&W.length>0,detail:(W.length-bw)+' of '+W.length+' wrack pieces and '+(E.length-be)+' of '+E.length+' erratics in the ground and out of it'};},
+ // THE HULKS ON THE LINE: at least three, each where its ground lies in the line's band (0 to 8 m under the level: KBASIN's band 'high' is the top 6 m),
+ // none over it (lift: the hulks raised)
+ hulksOn(H,lift){const l=lift||0,off=H.filter(r=>{const d=HL.level-(r.h+l);return d<0||d>8;}).length;
+  return{ok:H.length>=3&&!off,detail:H.length+' hulks: '+(H.length-off)+' on the line\'s band, '+off+' off it ('+H.map(r=>r.kind+' '+r.L.toFixed(0)+' m, '+(HL.level-r.h-l).toFixed(1)+' m under').join('; ')+')'};},
+ // HALF BURIED: each hulk's lowest drawn point under the ground at its midship by half a metre or more, its highest out of it by two fifths of its
+ // depth (87h sets lo and hi: lift raises the hull, sink lowers it), and heeled down the line's slope (its list's turn lowers its downhill side)
+ hulksBuried(H,lift){const l=lift||0;let bad=0,heel=0;const g=terrainH,e=4;
+  for(const r of H){const y=g(r.x,r.z);if(r.lo==null||!(r.lo+l<y-.5&&r.hi+l>y+r.H*.4))bad++;
+   const gx=(g(r.x+e,r.z)-g(r.x-e,r.z))/(2*e),gz=(g(r.x,r.z+e)-g(r.x,r.z-e))/(2*e),sx=Math.cos(r.heading),sz=-Math.sin(r.heading);
+   /* the +x side runs downhill when the slope along it is negative: there the list must be negative (that side lowered) */
+   if((sx*gx+sz*gz<0)===(r.list<0))heel++;}
+  return{ok:H.length>0&&!bad&&heel===H.length,detail:(H.length-bad)+' of '+H.length+' hulks with the keel in the silt and the deck out of it; '+heel+' heeled toward the bed'};},
+ // THE KIT'S PLANTS KEPT OUT OF THE HULKS (their obstacles before the floor is planted, and the stage's mask for what rolls): no rooted instance
+ // inside a hulk's footprint (the sail candelabra's kiting blades are aloft, 1 to 6 m up, and drift over anything: not counted)
+ hulksClear(P){let n=0;for(const p of P)if(!/kite/.test(p[3])&&inHulk(p[0],p[2],-.5))n++;
+  return{ok:n===0&&HULKS.length>0,detail:n+' of '+P.length+' plant instances inside a hulk\'s footprint'};}};
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P=inst(),T=NSEMIARID.TREES;
  add('the flora and the wet band read the shore of the water (BIO.envCheck, WATER.edgeAudit)',edgeCheck());
  add('every species tagged with its Koppen classes',HCHK.tagged(NSEMIARID.SPECIES));
@@ -76,6 +98,10 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P
  add('the west breach\'s fan: bars and giant current ripples at its mouth (KSCOUR)',HLCHK.fan());
  add('the wrack and the erratics half buried',HLCHK.buried(WRACK,ERRATICS));
  add('the overlay\'s wrack drawn (the dam basins\' flotsam, read in place)',{ok:(window._wrack||0)===WRACK.length&&WRACK.length>0,detail:(window._wrack||0)+' drawn of '+WRACK.length});
+ add('the hulks on the high line (the dam lake\'s boats, rafted: the dam basins\' wrecks, read in place)',HLCHK.hulksOn(HULKS));
+ add('the hulks half buried in the line\'s silt and heeled toward the bed',HLCHK.hulksBuried(HULKS));
+ add('the kit\'s plants kept out of the hulks (their obstacles)',HLCHK.hulksClear(P));
+ add('the hulks drawn',{ok:(window._hulks||0)===HULKS.length&&HULKS.length>0,detail:(window._hulks||0)+' drawn of '+HULKS.length});
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),P=inst();
  add('a species with no Koppen classes',HCHK.tagged(NSEMIARID.SPECIES.map((S,i)=>i===3?Object.assign({},S,{tags:Object.assign({},S.tags,{koppen:[]})}):S)));
@@ -88,6 +114,11 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('the silt looked for over the line',HLCHK.silt(true));
  add('the fan looked for up the coulee (its mouth and its upper reach swapped)',HLCHK.fan(true));
  add('the wrack lifted 10 m',HLCHK.buried(WRACK,ERRATICS,10));
+ add('the hulks lifted 20 m, over the line',HLCHK.hulksOn(HULKS,20));
+ add('the hulks lifted 10 m, out of the silt',HLCHK.hulksBuried(HULKS,10));
+ add('the hulks sunk 30 m, under it',HLCHK.hulksBuried(HULKS,-30));
+ add('the hulks heeled up the slope (their lists turned)',HLCHK.hulksBuried(HULKS.map(r=>Object.assign({},r,{list:-r.list}))));
+ add('a plant inside a hulk',HLCHK.hulksClear(P.concat(HULKS.length?[[HULKS[0].x,HULKS[0].h,HULKS[0].z,'test']]:[])));
  return R;}
 // ---------------------------------------------------------------- the page, handed to the host
 KHOST.on(function variants(){if(typeof VARIANTS!=='undefined'&&VARIANTS.ready)VARIANTS.update(camera.position);},'view');

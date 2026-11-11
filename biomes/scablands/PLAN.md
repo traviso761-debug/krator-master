@@ -17,7 +17,7 @@ nothing without it. Its weight comes from physics: the ground under the flood's 
 | the water: the plunge-pool lake under the falls (Dry Falls Lake), potholes holding rain | `core/water` still records |**built** (2026-10-23) |
 | erratics: dam concrete with rebar, carried kilometres; basalt boulders | this build (`ERRATICS` in the stage, `87-host-erratics.js`; its own library pack) | **built** (2026-10-23) |
 | its own flora: the pothole pools' plants (kolk lilies, pothole quills, seep sedge, spray ferns at the falls' foot) | this build (`72-biome-scablands-pools.js`, its own kit registry and pack) | **built** (2026-10-23) |
-| the flood lake's high line and its rafted wreckage (station 2) | `stations/highline/`: KBASIN's flood lake (kind `flood`), KSCOUR's fan, the dam basins' flotsam (`DBF`) read in place | **built**: n semiarid's share (2026-11-09) and the NW lowlands half (`stations/highline-nw`, 2026-11-10); the hulks owed |
+| the flood lake's high line and its rafted wreckage (station 2) | `stations/highline/`: KBASIN's flood lake (kind `flood`), KSCOUR's fan, the dam basins' flotsam (`DBF`) and wrecks (`DBW`: the hulks, 2026-11-10) read in place | **built** (2026-11-09) over n semiarid's share; the NW lowlands half owed |
 
 ## 2. The engine
 
@@ -139,10 +139,24 @@ at 430: scale model 5.1 has moved the trough, so the levels are the plan's, not 
   ripples; the kit's steppe above. A **rain pond** behind a bar (a `core/water` still).
 - **The flora**: the n semiarid kit read in place on the fields (the bed its lowland desert, thinned to two fifths: `56`, KNOWN_ISSUES.md; the plateau
   its steppe): step cones on the bed reading the years dry (the line came out first), crawlers, dew gardens, the steppe's frills and trumpets.
+- **The hulks** (2026-11-10): five of the dam lake's own boats (a barge, a coaster, a tug, two trawlers: 27 to 67 m), torn from their moorings,
+  rafted through the west notch and set down on the line as the lake began to fall. Drawn by the dam basins' wreck kind (`DBW`,
+  `biomes/dambasins/src/50-db-wrecks.js`, read in place as `45a-db-wrecks.js`: rusted plating holed above the silt, decks rotted through,
+  wheelhouses, masts standing or fallen). Records in the stage (`HULKS`): `DBW.records` cell-seeded on core/rand, accepted only in KBASIN's band
+  `high` (the line's top 6 m), 250 m apart at least; each laid along the line (its contour, either way, turned up to 25 degrees), lying on the
+  ground's tilt across its beam and heeled further toward the bed (at most 20 degrees in all), its keel sunk a third to two thirds of its depth; whole
+  or half buried (DBW's snapped hulls list their halves opposite ways, which a slope would not allow). Each registered (`REGISTER`: a core/tags
+  record, class `prop`, kind `wreck`) and an obstacle (a row of circles down its length) before the kit plants; the stage's `mask` keeps the
+  kit's rolled offspring (mace heads, roll-egg trails) out of their footprints too, and the wrack and the erratics keep out. Drawn by `87h`,
+  textured from the wrack's `rust`. **Why not the Ancient Port kit's great ships** (140 to 370 m): they stayed in their berths on the dam bed, where
+  the dam basins ground them; what the surge could raft through the notch was the lake's working craft. Reading a port vessel here would mean
+  sealing the whole port kit (its core, its stream, its materials and pack) into this page: not done.
 - **Checked** (`99`, each with a negative): the kit's (the water's edge, tagged, dry, no tree on a rock face, the variants, the cameras, the bed's dust,
   the step cones by the years dry) and the station's: the wrack in its band and none over the line; the strandlines all under it and the bed benched on
-  them; the silt under the line and none over it; the fan's bars at the mouth, not up the coulee; the wrack and the erratics half buried; the wrack drawn.
-- **Owed**: the hulks (the Ancient Port kit's vessels) on the line (KNOWN_ISSUES.md). The half over NW lowlands: section 8.
+  them; the silt under the line and none over it; the fan's bars at the mouth, not up the coulee; the wrack and the erratics half buried; the wrack drawn;
+  the hulks on the line's band (negative: lifted 20 m), half buried with the keel in the silt and the deck out of it (lifted 10 m; sunk 30 m), heeled
+  toward the bed (their lists turned), no rooted plant of the kit's inside one (a plant put in one), all drawn. View: `A hulk on the high line`.
+- **The half over NW lowlands**: section 8.
 
 ## 8. Station 2's NW lowlands half, as built: the high line in the lowlands' forest (2026-11-10)
 
