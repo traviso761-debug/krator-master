@@ -65,6 +65,51 @@ const AV_THICKET=(function(){const out={ok:false,fields:0,plants:0,trees:0,grown
  /* the feral wrap (46): the orchards' trees grown about their feet, capped at 14 m; the crops grown about their own (floor) */
  const g0=AV.FERAL.grown;AV.feralKit(api,{ground:terrainH,feral:AVQ_ON('feral')?(x,z)=>STAGE.F.feral(x,z):()=>0,capH:14,floor:true,seed:STAGE.seed+59});
  try{api.buildTrees();api.buildFloor();}catch(e){reportErr('thicket: '+(e.stack||e));}
+ /* THE PODS' TOPS (the owner, 2026-11-10: "the growing pods themselves ought to be completely overgrown on top"): every pod's top, whole dome,
+    ribs or broken stump, under a cover of broadleaf and fern clumps (the crops pack's cards, each a whole plant: a clump, not a sheet's cell), one
+    on a staggered 3 m grid over the hex, each set where a ray down meets the drawn hero (70, avSurface.down: the dome's glass, a rib, the beds of a
+    gutted one, the plinth's walk), in the tower's frame turned by its yaw and lean as 88's roof trees are; every foot is kept for the check
+    (99, HCHK.floraHeld: each foot on the drawn surface within 0.6 m). One volume a pod is registered before its clumps are put */
+ out.podTops=[];out.podClumps=0;
+ try{const pm=[cardMat('card_broadleaf',[.80,.86,.74]),cardMat('card_fern_green',[.82,.88,.74])];
+  BIO.def('pt.broadleaf',BIO.geo.clump(),pm[0],{cls:'flora',kind:'plant',label:'Broadleaf over a growing pod',tags:{origin:'podtop'}});
+  BIO.def('pt.fern',BIO.geo.clump(),pm[1],{cls:'flora',kind:'plant',label:'Fern over a growing pod',tags:{origin:'podtop'}});
+  const FD=MP.FARM_DESIGN.pod,HR=FD.hex-1,TIP=MP.FAMILY.pod.height.tip+3,SP=3,in6=(x,z)=>Math.abs(z)<=.866*HR&&Math.abs(x)*.866+Math.abs(z)*.5<=.866*HR;
+  const PTS=new THREE.Object3D();PTS.name='pod tops, probe points';PTS.userData.probePoints=[];scene.add(PTS);   /* the probe samples instanced cards sparsely: one point a top, as 88's roof trees */
+  BIO.range=1200;BIO.minRange=0;BIO.chunk=300;BIO.owner=null;
+  P.towers.forEach((t,ti)=>{if(t.family!=='pod'||t.state==='fallen')return;let sf;try{sf=avSurface(t.key);}catch(e){reportErr('pod tops '+t.key+': '+(e.message||e));return;}
+   const Qt=avQuat(t),feet=[],W=new THREE.Vector3();
+   REGISTER({name:'A growing pod overgrown on top',kind:'podtop',x:t.x,z:t.z,y:t.y+14,r:FD.hex+3,h:32,tags:{kind:'podtop',family:'pod',state:t.state}});
+   for(let j=-10;j<=10;j++)for(let i=-10;i<=10;i++){const h=KRAND.hash(STAGE.seed+73,ti,i+20,j+20),u=k=>KRAND.unit(KRAND.hash(h,k,0,0));
+    const lx=(i+((j&1)?.5:0))*SP+(u(1)-.5)*1.6,lz=j*SP*.866+(u(2)-.5)*1.6;if(!in6(lx,lz))continue;
+    const y=sf.down(lx,lz,TIP,.5);if(y==null)continue;
+    /* not on the dome's steep flank (a clump there stood out from the glass: the core attach audit, 2026-11-10): the surface a metre either way within 1.6 m */
+    const ya=sf.down(lx+1,lz,TIP,.5),yb=sf.down(lx-1,lz,TIP,.5),yc=sf.down(lx,lz+1,TIP,.5),yd=sf.down(lx,lz-1,TIP,.5);if(ya==null||yb==null||yc==null||yd==null||Math.abs(ya-yb)>1.6||Math.abs(yc-yd)>1.6)continue;
+    W.set(lx,y-.35,lz).applyQuaternion(Qt);const sz=1.9+1.7*u(3),c=.82+.18*u(4);if(!feet.length)PTS.userData.probePoints.push(t.x+W.x,t.y+W.y+1,t.z+W.z);
+    BIO.put(u(5)<.7?'pt.broadleaf':'pt.fern',[t.x+W.x,t.y+W.y,t.z+W.z],BIO.fn.qEuler(0,u(6)*TAU,0),[sz,sz*(.75+.45*u(7)),sz],new THREE.Color(c,c*(.96+.08*u(8)),c*.94));
+    feet.push([lx,y,lz]);out.podClumps++;}
+   out.podTops.push({t,feet});});
+  BIO.range=null;BIO.chunk=null;}catch(e){reportErr('pod tops: '+(e.stack||e));}
+ window.AV_POD_TOPS=out.podTops;
+ /* THE STREETS GRASSED OVER (the owner, 2026-11-10: the transit kit's streets "integrated in an overgrown and ruined way"): the roads are the
+    transit kit's (46z STAGE.transit, drawn by 74); the weeds come up through them where the asphalt cracked, along a ridged noise's lines (the
+    cracks), the kerb's joint and the carriageway's middle seam, thicker where the feral field is; a bush on the pavement here and there. Each
+    stands on the road's own surface (Rd.levelAt), one record a road registered first; a weed every fortieth is kept for the check */
+ out.weeds=0;out.roadBush=0;out.weedSample=[];
+ try{const TR=STAGE.transit;if(TR&&TR.net){const wm=[cardMat('card_ichu',[.86,.88,.74]),cardMat('card_fern_green',[.80,.86,.72])];
+  BIO.def('rw.grass.a',stand.clone(),wm[0],{cls:'flora',kind:'plant',label:'Grass through the cracked asphalt',tags:{origin:'street'}});
+  BIO.def('rw.fern',BIO.geo.clump(),wm[1],{cls:'flora',kind:'plant',label:'A fern in the kerb\'s joint',tags:{origin:'street'}});
+  BIO.range=700;BIO.minRange=0;BIO.chunk=300;BIO.owner=null;
+  TR.net.roads.forEach((Rd,ri)=>{const Pt=Rd.path,L=Pt.L||Rd.L,w=Rd.width/2,pv=Rd.pavement==null?0:Rd.pavement,a=Pt.at(0),b=Pt.at(L);
+   REGISTER({name:'Weeds through the street '+TR.defs[ri].id,kind:'weeds',x:(a.x+b.x)/2,z:(a.z+b.z)/2,y:Math.min(a.yG,b.yG)-3,r:Math.hypot(b.x-a.x,b.z-a.z)/2+w+pv+4,h:Math.abs(b.yG-a.yG)+8,tags:{kind:'weeds',road:TR.defs[ri].id}});
+   for(let sA=1;sA<L-1;sA+=1.8)for(let off=-(w+pv)+.4;off<=w+pv-.4;off+=1.3){const h=KRAND.hash(STAGE.seed+79,ri,Math.round(sA*10),Math.round(off*10)),u=k=>KRAND.unit(KRAND.hash(h,k,0,0));
+    const q=Pt.lateral(sA,off),x=q[0]+(u(1)-.5)*1.1,z=q[1]+(u(2)-.5)*1.1,fe=STAGE.F.feral(x,z),cr=1-Math.abs(2*KRAND.fbm(x*.09+3.1,z*.09-1.7,0,3,STAGE.seed+81)-1),ao=Math.abs(off);
+    const pave=ao>w+.25,seam=Math.abs(ao-w)<.7||ao<.5,keep=cr>.84?.85:seam?.45:pave?.22:.04;if(u(3)>keep*(.55+.6*fe))continue;
+    const y=Rd.levelAt(x,z);if(!isFinite(y))continue;
+    if(pave&&u(4)<.12){const sz=1.2+1.4*u(5);BIO.put('rw.fern',[x,y-.05,z],BIO.fn.qEuler(0,u(6)*TAU,0),[sz,sz*(.8+.4*u(7)),sz],new THREE.Color(.85,.9,.82));out.roadBush++;}
+    else{const sz=.55+.75*u(5)*(.6+.6*cr),c=.8+.2*u(8);BIO.put('rw.grass.a',[x,y-.03,z],BIO.fn.qEuler(0,u(6)*TAU,0),[sz,sz*(.8+.5*u(7)),sz],new THREE.Color(c,c,c*.92));}
+    out.weeds++;if(!(out.weeds%40))out.weedSample.push([x,y,z,ri]);}});
+  BIO.range=null;BIO.chunk=null;}}catch(e){reportErr('street weeds: '+(e.stack||e));}
  BIO.kitEnd(api);BIO.kit(prev||'');out.unmapped=Object.values(BIO.kits.farmcrops?BIO.kits.farmcrops.defs:{}).filter(d=>d.mat&&d.mat.isMaterial&&/thicket\.card/.test(d.mat.name||'')&&!d.mat.map).map(d=>d.mat.name);
  /* every card quad inside one plant's box of its sheet (a third each way, or its plant's box, 41e, at most 0.6): a quad wider shows several plants */
  out.cellBad=[];{const D=BIO.kits.farmcrops?BIO.kits.farmcrops.defs:{};for(const n in D){if(!/^thk\.(?!trunk)/.test(n))continue;const U=D[n].geo.attributes.uv.array;for(let q=0;q*12<U.length;q++){let u0=9,u1=-9,v0=9,v1=-9;for(let v=0;v<6;v++){const u=U[q*12+v*2],w=U[q*12+v*2+1];u0=Math.min(u0,u);u1=Math.max(u1,u);v0=Math.min(v0,w);v1=Math.max(v1,w);}if(u1-u0>.6||v1-v0>.6){out.cellBad.push(n);break;}}}}

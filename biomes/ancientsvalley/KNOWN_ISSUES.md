@@ -171,7 +171,9 @@
   the crops stop at 650 m and the orchards at 1.3 km (the paint carries the fields past that). **The measure melon is left out of the fields**:
   its card (`card.crop.melon`) is in the material library but not in the crops kit's pack (`kits/crops/materials.json`); adding it there (the crops
   kit's own change) brings it back. The station checks that every card has its map and stays inside one cell of its sheet. **The pylons' wires are straight sagging lengths** between standing pylons; a leaning pylon's
-  wires attach where it would stand upright. **Roads are paint and asphalt on the ground** (KGROUND), no kerbs; a spoke laid nearly along the
+  wires attach where it would stand upright. **The roads are the transit kit's** (since the second pass): its asphalt has no crack texture of its own, so the
+  cracks are the weeds' lines (`87t`) and the riot's scorch; the pod tops' and the weeds' cards are whole plants with no impostor (the pod tops stop
+  at 1.2 km, the weeds at 700 m) and the box shells past 600 m carry no green. A spoke laid nearly along the
   aqueduct is not built (`41d`: no crossing can square it), so a few clusters have no road. **The aqueduct is level on a contour** with a bed under
   its arches levelled up to 6.6 m (its modules are one height): where the contour wanders the bed reads as a cut or an embankment. Shells and
   impostors of the eight families come from `70-host-city.js` unchanged (box shells): a pod's dome is a box at 600 m and beyond.

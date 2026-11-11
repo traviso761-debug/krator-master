@@ -321,7 +321,10 @@ and one-line stubs for what is the Overlook's alone (`72` keepers, `73` wrecks, 
   ground near the page's middle (the Hub Hall, the Market along the contour, a ring road); **the aqueduct** traced along the contour 320 m upslope of
   the hub in modules of the kit's joint (66 m, at most 5 degrees a joint, level but for 3 cm a module), the pump house and the water tower beside it
   on the hub's side; **36 clusters** on rings round the hub (honeycombs of pods on a hex lattice, rows of vault houses along the contour, growing stacks
-  facing down the steeper ground), a spoke road to each; **the roads**, a road meeting the aqueduct moved to an arch's middle and squared to the line
+  facing down the steeper ground), a spoke road to each; **four honeycomb arrays** (the owner, 2026-11-10: "more arrays of the honeycombed
+  growing pods (groups of 12+ pods)"), nineteen pods each packed flat to flat on a 53 m hex lattice with an 8 m walk between, on one level the relief
+  cuts and fills (the walks with it), 950 to 2,150 m out on the belt, 700 m apart, off the aqueduct and the trunk's line, with a spoke road each
+  (the clusters' honeycombs are the lattice's first ring the same way: 176 pods in all); **the roads**, a road meeting the aqueduct moved to an arch's middle and squared to the line
   (a spoke laid nearly along it is not built); **two pylon lines** down the slope, a pylon every 280 m nudged off every pad, road and pier; **the
   fields**, parcels along the contour within 420 m of a cluster or 650 m of the hub (the wood took back the rest), a crop or an orchard each.
 - **The buildings** are the city stage's towers (`70-host-city.js` unchanged): heroes to 600 m, box shells to 3.2 km, impostors past that, rusted,
@@ -329,6 +332,15 @@ and one-line stubs for what is the Overlook's alone (`72` keepers, `73` wrecks, 
   the aqueduct's own, mostly standing). The creepers (`71`) and the roof trees (`88`) reach them in the wild half as they reach the towers.
 - **The ground**: the model and the Overlook's relief (`AV.farmLand`), the fields terraced into the slope (2.5 m risers along the contour, fading at
   each hedge), every plinth eased in (an aqueduct module's bed over 20 m); the roads asphalt, the hub paved, the fields tilled soil, the wood's floor.
+- **The pods overgrown on top** (the owner, 2026-11-10: "completely overgrown on top"; `87t`): every standing pod's top, whole dome, ribs, beds or
+  stump, under broadleaf and fern clumps (the crops pack's cards, whole plants) on a staggered 3 m grid over the hex, each set where a ray down meets
+  the drawn hero (`avSurface.down`, as `88`'s roof trees), turned with the pod; every foot kept and checked on the drawn surface (`HCHK.floraHeld`).
+- **The streets** (the owner, 2026-11-10: "the street modeling from the transit kit should be integrated in an overgrown and ruined way"; `46z`):
+  the plan's roads as the transit kit's network (`KTRANSIT.network`: kerbs, 2.4 m pavements, junctions with crosswalks; the ring road in four arcs,
+  graded on the relief at up to 30%, the ground cut by `KTRANSIT.lineH`), a riot's war at most (`KTRANSIT.war` under 0.3: no craters), drawn by
+  `74-host-transit.js` as station 0's grid with the furniture dead and rusted and no gantry across a farm road (`STAGE.transit` without the lines:
+  `74` draws only what a station has); weeds through the cracked asphalt along a ridged noise, the kerb joint and the seam, a bush on the pavement
+  here and there (`87t`), and the wild wood let onto the roads at a quarter of its strength.
 - **The thicket** (`87t`): what the south-west lowlands' zones grow rain-fed with a card (`kits/crops`, `CROPS.forBiome('swlowlands')`: twelve,
   annatto to indigo, four of them tree crops; the measure melon waits on its card in the crops kit's pack), each field's rows of clumps (one plant a cell of the card's sheet, three crossed quads) broken
   by noise and grown wild about their feet, each orchard's trees on an 11 m grid with suckers between, grown feral by the valley's wrap and capped at
@@ -339,7 +351,9 @@ and one-line stubs for what is the Overlook's alone (`72` keepers, `73` wrecks, 
   and the station's own, each with a negative): every farm building on its plinth (the drawn ground level under its box), nothing in a road (a
   building's box, an aqueduct's piers, a pylon), the aqueduct continuous on its bed, every road under an arch, the wires clear of the ground, the city
   below off the page and above the lake, the fields gone to thicket (plants, trees, crops, every card mapped and inside one cell, none on a road),
-  the farm belt ruined.
+  the farm belt ruined, the pods overgrown on top (every foot on the drawn dome), the streets the transit kit's (every road, its junctions, the
+  furniture dead, no crater, the weeds on their road's surface); the plan's own tests add the honeycombs (four arrays of twelve or more on the
+  lattice, no two pods closer than 52 m, no walls overlapping).
 
 **Numbers (2026-11-10, `verify.py --assert --all-views` on the GPU, 1280 x 800):** 46 farm buildings and 25 aqueduct modules (the tiers: 71
 towers), 33 roads and 9 crossings under arches, 36 pylons (120 wires), 2,621 towers in the city below, 1,956 fields: 180,729 crop clumps and 24,877
