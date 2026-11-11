@@ -147,7 +147,7 @@
     "biomes/crater-drylands/stations": "71afee8c4086661fb59f114a5adbbe49e1a9fff07fce2695338f920d5191d40f",
     "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
     "kits/fauna": "15ddf75514bc2fb08858cc3e94a1fff2bf1cafb60c1014a7cdc4463763fb2e5c",
-    "tools": "24cc9a0d867a37d71596ec8a001087a35735c498125de4e336dde163318589d8",
+    "tools": "6631bdd33a724ae4afb19e5705fb6b95c13d305435fd8d325567b5e7f68c5f8c",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
@@ -355,7 +355,7 @@
     "biomes/crater-drylands/stations/edge": "c18cb86d880f61f14a4edc0ec25d5e2b8189b6164387d7025a6e5b2dbd568c09",
     "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
     "kits/fauna": "15ddf75514bc2fb08858cc3e94a1fff2bf1cafb60c1014a7cdc4463763fb2e5c",
-    "tools": "24cc9a0d867a37d71596ec8a001087a35735c498125de4e336dde163318589d8",
+    "tools": "6631bdd33a724ae4afb19e5705fb6b95c13d305435fd8d325567b5e7f68c5f8c",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
@@ -555,7 +555,7 @@
     "biomes/crater-drylands/stations/salt": "f942c792aec615dbab06f4c99c7cbc0a205cf2294c7a49423e00c58c2628aac9",
     "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
     "kits/fauna": "15ddf75514bc2fb08858cc3e94a1fff2bf1cafb60c1014a7cdc4463763fb2e5c",
-    "tools": "24cc9a0d867a37d71596ec8a001087a35735c498125de4e336dde163318589d8",
+    "tools": "6631bdd33a724ae4afb19e5705fb6b95c13d305435fd8d325567b5e7f68c5f8c",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
@@ -782,7 +782,7 @@
     "biomes/crater-drylands/stations/south": "ea5d7d903b99541f173bf365a13320d0de42c9db9b31b5c432fdfb7c6214d1b0",
     "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
     "kits/fauna": "15ddf75514bc2fb08858cc3e94a1fff2bf1cafb60c1014a7cdc4463763fb2e5c",
-    "tools": "24cc9a0d867a37d71596ec8a001087a35735c498125de4e336dde163318589d8",
+    "tools": "6631bdd33a724ae4afb19e5705fb6b95c13d305435fd8d325567b5e7f68c5f8c",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {

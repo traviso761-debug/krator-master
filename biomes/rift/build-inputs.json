@@ -134,7 +134,7 @@
    "listings": {
     "biomes/rift/src": "a37105eb48f8c0a14e64ab4e26d5fd2ab819c5ee335c8725f6d6017a36dcea61",
     "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
-    "tools": "24cc9a0d867a37d71596ec8a001087a35735c498125de4e336dde163318589d8",
+    "tools": "6631bdd33a724ae4afb19e5705fb6b95c13d305435fd8d325567b5e7f68c5f8c",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
@@ -282,7 +282,7 @@
     "biomes/rift/src": "a37105eb48f8c0a14e64ab4e26d5fd2ab819c5ee335c8725f6d6017a36dcea61",
     "biomes/rift/stations/highland": "c7e80bc9595f9b0c54e0c28d2be2f647a8909e54579e0c96532dbb824f8bbb5b",
     "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
-    "tools": "24cc9a0d867a37d71596ec8a001087a35735c498125de4e336dde163318589d8",
+    "tools": "6631bdd33a724ae4afb19e5705fb6b95c13d305435fd8d325567b5e7f68c5f8c",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
@@ -429,7 +429,7 @@
     "biomes/rift/src": "a37105eb48f8c0a14e64ab4e26d5fd2ab819c5ee335c8725f6d6017a36dcea61",
     "biomes/rift/stations/jungle": "aa2138a167f74e28fa8f27a9b585bf5bc799805435f7727868a470d1219ca857",
     "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
-    "tools": "24cc9a0d867a37d71596ec8a001087a35735c498125de4e336dde163318589d8",
+    "tools": "6631bdd33a724ae4afb19e5705fb6b95c13d305435fd8d325567b5e7f68c5f8c",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
@@ -576,7 +576,7 @@
     "biomes/rift/src": "a37105eb48f8c0a14e64ab4e26d5fd2ab819c5ee335c8725f6d6017a36dcea61",
     "biomes/rift/stations/maze": "fc3eab53da248b8ba1dae6c5c5dd05a601a0f5e3b98edbcc06f792f6013829f7",
     "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
-    "tools": "24cc9a0d867a37d71596ec8a001087a35735c498125de4e336dde163318589d8",
+    "tools": "6631bdd33a724ae4afb19e5705fb6b95c13d305435fd8d325567b5e7f68c5f8c",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
@@ -725,7 +725,7 @@
     "biomes/rift/src": "a37105eb48f8c0a14e64ab4e26d5fd2ab819c5ee335c8725f6d6017a36dcea61",
     "biomes/rift/stations/plateau": "6b08b38f3475c66ba4e2b80e397f59b482f93289a3355fa85ce8085ffedb0dfb",
     "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
-    "tools": "24cc9a0d867a37d71596ec8a001087a35735c498125de4e336dde163318589d8",
+    "tools": "6631bdd33a724ae4afb19e5705fb6b95c13d305435fd8d325567b5e7f68c5f8c",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
@@ -881,7 +881,7 @@
     "biomes/rift/src": "a37105eb48f8c0a14e64ab4e26d5fd2ab819c5ee335c8725f6d6017a36dcea61",
     "biomes/rift/stations/savannah": "29d378ba2d6d6df9b52f3f1bcac32551c199af433181c2b7232612a990a43718",
     "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
-    "tools": "24cc9a0d867a37d71596ec8a001087a35735c498125de4e336dde163318589d8",
+    "tools": "6631bdd33a724ae4afb19e5705fb6b95c13d305435fd8d325567b5e7f68c5f8c",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {

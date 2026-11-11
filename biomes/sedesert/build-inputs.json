@@ -153,7 +153,7 @@
     "biomes/sedesert/src": "a6da70ddc780ee444dcca50e34f0039527902b6429fe1cb32a01c70479155dc6",
     "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
     "kits/fauna": "15ddf75514bc2fb08858cc3e94a1fff2bf1cafb60c1014a7cdc4463763fb2e5c",
-    "tools": "24cc9a0d867a37d71596ec8a001087a35735c498125de4e336dde163318589d8",
+    "tools": "6631bdd33a724ae4afb19e5705fb6b95c13d305435fd8d325567b5e7f68c5f8c",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
@@ -342,7 +342,7 @@
     "biomes/sedesert/stations/bowl": "dfa6aaef3e3fffc83b9d3de44b9b03aedb920563a37e5aee146e0da45b010681",
     "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
     "kits/fauna": "15ddf75514bc2fb08858cc3e94a1fff2bf1cafb60c1014a7cdc4463763fb2e5c",
-    "tools": "24cc9a0d867a37d71596ec8a001087a35735c498125de4e336dde163318589d8",
+    "tools": "6631bdd33a724ae4afb19e5705fb6b95c13d305435fd8d325567b5e7f68c5f8c",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
@@ -542,7 +542,7 @@
     "biomes/sedesert/stations/mantis": "4290396b982836fa9da798be40940d40194be05017d215e98343b2ef490d6fe6",
     "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
     "kits/fauna": "15ddf75514bc2fb08858cc3e94a1fff2bf1cafb60c1014a7cdc4463763fb2e5c",
-    "tools": "24cc9a0d867a37d71596ec8a001087a35735c498125de4e336dde163318589d8",
+    "tools": "6631bdd33a724ae4afb19e5705fb6b95c13d305435fd8d325567b5e7f68c5f8c",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
@@ -753,7 +753,7 @@
     "biomes/sedesert/stations/steppe": "f298fecf44f60dc525a0f5b00ffc714b59699cbc34607fa2ddb45a4ec14a569d",
     "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
     "kits/fauna": "15ddf75514bc2fb08858cc3e94a1fff2bf1cafb60c1014a7cdc4463763fb2e5c",
-    "tools": "24cc9a0d867a37d71596ec8a001087a35735c498125de4e336dde163318589d8",
+    "tools": "6631bdd33a724ae4afb19e5705fb6b95c13d305435fd8d325567b5e7f68c5f8c",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {

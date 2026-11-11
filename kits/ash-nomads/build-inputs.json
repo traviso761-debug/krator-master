@@ -268,7 +268,7 @@
     "kits/ash-nomads/src": "6ece5be912436d486f097efa49e5f79c4bee9d4afc92abe3d10a1fae55ed139d",
     "kits/catalog": "10322ea778934242b7ce59b2a1b14f40befde097c5b9b80081f11fd0cb8a57ce",
     "kits/fauna": "15ddf75514bc2fb08858cc3e94a1fff2bf1cafb60c1014a7cdc4463763fb2e5c",
-    "tools": "24cc9a0d867a37d71596ec8a001087a35735c498125de4e336dde163318589d8"
+    "tools": "6631bdd33a724ae4afb19e5705fb6b95c13d305435fd8d325567b5e7f68c5f8c"
    },
    "outputs": {
     "kits/ash-nomads/build-manifest.json": "21ecd16613c68e67d722f1268f30250b73d012b7069c671bfb3c5532bccdc4e4",

@@ -1,5 +1,91 @@
 # Handoff: the all-builds rebuild
 
+## The second integration pass (2026-11-10, `claude/integration-2`; read first; not pushed)
+
+One branch with every finished branch not yet on `origin/main` (the Ancient's Valley and the sessions still working left
+out), ONE all-builds rebuild on this machine, the GPU verify on both lanes. Pushing is the coordinator's, after the owner reads this.
+
+**Merged** (in order, on top of the kits round `ccr-55bd6ee1-p1si44` and its `-allbuilds` ride-alongs):
+- local: `claude/quizzical-kirch-b98137` (snowBare, KSPELEO, the Oidong vent dose; with `claude/rift-hearths-cavern-b8baf6`:
+  rift station 5 the gypsum maze, riftrim station 7 the Hearth field), `claude/swhighlands-rest-f8a7ee`, `claude/nsemiarid-scablands-3b022c`
+  (and its later build-inputs commit), `claude/abyssal-savannah-rest-240d14`, `claude/openworld-sites-24defd` (core/world, the sites,
+  Pinnacle Rock at its new spot), `claude/outpost-registry-6c40e9`, `claude/water-migration-merge` (core/audio and the Audio Lab, the
+  cue picker inside it), `claude/garment-defects` (local, newer than origin's; through 35eb45f68), `claude/voth-citadel` (the
+  Ordinators' citadel def, not placed), `claude/bold-keller-756e90` (GarmentCode notes);
+- cloud: `origin/claude/twins-finish-cloud` (= `stoic-fermat-9kqllo`; carries `cloud-kits-verify`, `core-plan-features` and the six
+  `ccr-*` kit branches: twins, godshearth, godstep 1, greenstep 1, outlands, W outer wall 1, the Firebliss plan, scale model 5.1
+  edits 2-3), `origin/claude/godstep-finish-cloud`, `origin/claude/greenstep-finish-cloud`, `origin/claude/busy-keller-lstwje` (Nephtos),
+  `origin/claude/dreamy-tesla-wzp8hw` (Verge takes 35-core-anim), `origin/claude/enterprise-starbases` (the Menagerie; insulation passes),
+  `origin/ccr-55bd6ee1-p1si44-allbuilds` and `-hlxa` (their late commits);
+- `origin/main` at 9cdbee13e (the textures delivered 2026-11-10);
+- later the same day: `claude/cloud-gpu-lane-7e39d9` (the cloud GPU lanes `vast0`/`vast1`, `tools/CLOUD-LANE.md`; the machine is
+  stopped, the lanes unused this pass) and `claude/fervent-meninsky-feaa80` (a `core/materials/PLAN.md` note, no page).
+
+**Resolved by hand:** the generated files took one side and were rebuilt. `core/materials/PROMPTS-NEEDED.md` keeps every side's
+sections, renumbered 43 (the gypsum maze), 44 (the Hearth field), 45 (raw clay), recounted 37. Nephtos's `busy-keller` was based
+on an old main: HEAD's construction kit, isle verify and core/world paths kept, its shell and nacre piles ported as `KCONS` `slabs`.
+The Audio Lab branch carried an older copy of the scale-model build: HEAD's 5.1 copy kept, and its raster LFS rules dropped from
+`.gitattributes` (HEAD stores them as plain blobs). `.claude/launch.json` is the union.
+
+**Triage of the older branches:** `claude/weapon-racks`, `claude/confluence-swhighlands`, `origin/claude/busy-maxwell-8uvk60`,
+`origin/ccr-05259b8d-kuy4pm`, `claude/biome-lod-cells`, `claude/eloquent-swartz-7f7b41`, `claude/yeti-y5`: already in.
+`claude/nonhuman-spike`, `claude/izv-bundle` and `claude/great-turing-3e145c` (core/world and `vernacular.py` replaced them),
+`claude/sweet-bhabha-e3b98e` (its skill section 5v: the skill's "reference, not a log" rule since; `core/water/PRACTICE.md` holds it),
+`origin/claude/yeti-kit` (older docs only): superseded. **Needs the owner:** `claude/hook-p1` (= its origin copy; contains
+`silly-hawking-929a87` and `dreamy-wiles-23e50a`): real Hook P1-P3 work not in main, but its KLAND lifts the land rule out of
+`41-world-fields.js`, which is now `core/world` that five builds read; and `claude/review-round-3` (contains `pelvis-tilt`,
+`sleeve-cover`, `clothing-round-3`, `hand-props-3`, `limb-fixes-3`): the 2026-10-26 posture round 3, real and not superseded, but
+its kit masks clash with the garment session's and need re-running in Blender from the local pieces: hand it to the garment work.
+**Firebliss** (`claude/firebliss-80cc25`, asked in by the owner) was merged, built and verified, then reverted (9375e188a):
+station 1 passes; east (the Weyt Warra's lahar volume) and mons (the crater hollow's gas volume) fail `registered-volumes-non-empty`;
+glen runs the geyser kit's floor over the glen, three items past the cap with no `capWhy` (strap 301k, fern 402k, grass 303k).
+
+**The outer walls** (`origin/claude/neouterwall-s1`, `origin/claude/seouterwall-s1`, asked in by the owner as whole kits) were merged, built and
+verified, then reverted (b0fc0b069, d5fccd6f8). NE: cave (11 of 15 roof-cupola volumes empty), portal and shoulder (`export-profile`: no
+tree buckets in the box) fail; badlands, garnet, steam and the main page pass. SE: ambertarn (`export-profile`) and gatetarn
+(nwouterwall's stipa 293,954 past the instance cap, no `capWhy`) fail; coppertarn passes; the rest were stopped. The SE wall and
+Godshearth both added `core/atmos/fx/89-atmos-fx-katabatic.js` with different `ATMOS.katabatic` APIs: at its next merge, give the SE
+wall's gale its own file (`89-atmos-fx-gale.js`, `ATMOS.gale`), as was done here before the revert.
+**Not merged, for the owner:** `claude/ancientsvalley-7f521c` (2f0a29e10, the valley with its children; its session asks for it, but
+this pass's brief left the valley out). `origin/claude/rebuild-nwouterwall-cloud` adds nothing (already in).
+
+**Retired:** Girder's hero page (the owner, 2026-11-10) to `archive/girder-hero` (its README); Styv's and Phil's models to
+`core/charactermodels/donors` (the canonical bind pose); its gallery entry and baseline row gone.
+
+**Built once:** `tools/build.py --all` (113 of 115; Longsong blocked, below) and every station through `--station`: `--all` had
+built only each kit's default page, so about a hundred station pages were never rebuilt by it. `tools/test_all.py`
+`extra_builds()` now lists every station folder (with or without a `station.json`; nine kits keep none: 17 more pages were rebuilt
+and verified once that was found), skipping `baseOnly` folders, `common` and plan-only kits. Also the core demo pages.
+Fixed on the way: the isle-demo world's Nephtos bundle (`bundles.py` reads the Ancients fragments Ys reads in place); the Twins'
+fern and sedge cards held by their stems (`check_cells --fix`); `core/charactermodels/build.py --list-sources` (dep_graph) and the
+Godot character data synced; Greenstep loamstep's oak view out of the crowns.
+
+**Verified on the GPU** (`KRATOR_GL=gpu`, `--assert`, plus `--all-views` on every biome and station page, `--interiors` on Erewhon):
+350 pages run, **336 pass on these bytes (281 RTX, 54 Arc, 1 metropolis on the RTX lane whose verify prints no renderer line)**;
+`PORT-BASELINE.json` rewritten for those 336 only. Still failing, rows left as they were, none from this pass's merges:
+- known: guilin (frozen), Dalab's instance cap, Mav's walk-and-reach, Locus's three sheets and Yuni's three pages on the one key map
+  (the not-yet-adopted list), yuni-plants' streamed doors, Pinnacle Rock's attach audit (1.87%, limit 1%);
+- `settlements/voth/dist/voth-city.html`: two embassies of six drawn short (Dalab, Yuni) and the Arena canton's flight fails at
+  a ledge (28.7 to 31.1 m). Nothing merged here touches Voth's layout or walks; the kits round's interiors and walk changes are the
+  candidates. Owed to the city-layout work;
+- `kits/post-apoc/sockets-example`: its demo def has no declared door (`front-door-not-default`); never checked before;
+- the isle demo's `.artifact.html` copy: not checked, as before.
+
+**Fingerprints:** `core/engine/fingerprint.py --write` (Islanders +7 records: the Isles' clay pit and camp shelters) and
+`core/furnish/fingerprint.py --write` (the tile family's own mesh, the Highlands and Roketstad interiors, the food anchors).
+**Godot 4.7.2:** all 37 headless tests pass.
+**`test_all.py --no-build`:** every lint, ratchet and check passes after the fixes here (the Audio Lab's `||` defaults ratcheted; the
+Twins' cards held by their stems; `core/charactermodels` `--list-sources`; the Godot character data synced; Xanadu's footprint test and
+the outposts test fixed for this checkout); left failing: `core/audio/test-audio.js` (two catalogue checks, as its branch committed it)
+and `check_stale` for Longsong (owed, below).
+**Performance:** `PERF-PLAN.md` is the plan for the next all-builds rebuild, from this pass's numbers (`heaviest-pages-2026-11-10.md`)
+and Gemini's second opinion (`OPTIMIZATION-PLAN-2026-11-10.md`), with the cloud lanes for its verify.
+
+**Owed:** Longsong's rebuild (the garment branch's 112 new Xanadu and Order outfit pieces are published only in the garment
+session's worktree: rebuild once they are; its page stays the allbuilds one, verified there); the Audio Lab's 147 `||` defaults and its
+catalogue test's two failing checks (TODO.md); the gallery republish (a wide change: ask the owner); the cloud's `-goldenway` branch;
+the Ancient's Valley family; Firebliss, hook-p1 and review-round-3 above.
+
 ## Triage of the 14 parallel merges (2026-11-09, `ccr-55bd6ee1-p1si44-triage`)
 
 `ccr-55bd6ee1-p1si44` (35e535bf) merges 14 agent branches, most "WIP (stopped before verification)", onto main's 2d530d40.

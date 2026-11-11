@@ -184,7 +184,7 @@
     "biomes/abyssal-savannah/src/rim": "26ea920c7764d1f0b9762e60338dcd468c003193a58fdfa2fa43749620550e59",
     "biomes/abyssal-savannah/stations": "ee57c758605333af364af21c6a62446a7a1cf5d9aa766658360f8135358c7a1b",
     "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
-    "tools": "24cc9a0d867a37d71596ec8a001087a35735c498125de4e336dde163318589d8",
+    "tools": "6631bdd33a724ae4afb19e5705fb6b95c13d305435fd8d325567b5e7f68c5f8c",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
@@ -383,7 +383,7 @@
     "biomes/abyssal-savannah/stations": "ee57c758605333af364af21c6a62446a7a1cf5d9aa766658360f8135358c7a1b",
     "biomes/abyssal-savannah/stations/belt": "dd28d61425d478ba615617596011e09b12bca995f4db73f80eb17cfe01f6da19",
     "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
-    "tools": "24cc9a0d867a37d71596ec8a001087a35735c498125de4e336dde163318589d8",
+    "tools": "6631bdd33a724ae4afb19e5705fb6b95c13d305435fd8d325567b5e7f68c5f8c",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
@@ -588,7 +588,7 @@
     "biomes/abyssal-savannah/stations": "ee57c758605333af364af21c6a62446a7a1cf5d9aa766658360f8135358c7a1b",
     "biomes/abyssal-savannah/stations/bench": "dd28d61425d478ba615617596011e09b12bca995f4db73f80eb17cfe01f6da19",
     "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
-    "tools": "24cc9a0d867a37d71596ec8a001087a35735c498125de4e336dde163318589d8",
+    "tools": "6631bdd33a724ae4afb19e5705fb6b95c13d305435fd8d325567b5e7f68c5f8c",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
@@ -790,7 +790,7 @@
     "biomes/abyssal-savannah/stations": "ee57c758605333af364af21c6a62446a7a1cf5d9aa766658360f8135358c7a1b",
     "biomes/abyssal-savannah/stations/erim": "e63b5e3d069ff99c205e676ebf75ca466d000ae6a75cbe9495a2f21b2eb0f2e2",
     "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
-    "tools": "24cc9a0d867a37d71596ec8a001087a35735c498125de4e336dde163318589d8",
+    "tools": "6631bdd33a724ae4afb19e5705fb6b95c13d305435fd8d325567b5e7f68c5f8c",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
@@ -966,7 +966,7 @@
     "biomes/abyssal-savannah/stations": "ee57c758605333af364af21c6a62446a7a1cf5d9aa766658360f8135358c7a1b",
     "biomes/abyssal-savannah/stations/north": "5a1a02533957554305c8b012d48ea8f001f287d62880d974e10d42ccdeef8339",
     "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
-    "tools": "24cc9a0d867a37d71596ec8a001087a35735c498125de4e336dde163318589d8",
+    "tools": "6631bdd33a724ae4afb19e5705fb6b95c13d305435fd8d325567b5e7f68c5f8c",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
@@ -1169,7 +1169,7 @@
     "biomes/abyssal-savannah/stations": "ee57c758605333af364af21c6a62446a7a1cf5d9aa766658360f8135358c7a1b",
     "biomes/abyssal-savannah/stations/serim": "5a1a02533957554305c8b012d48ea8f001f287d62880d974e10d42ccdeef8339",
     "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
-    "tools": "24cc9a0d867a37d71596ec8a001087a35735c498125de4e336dde163318589d8",
+    "tools": "6631bdd33a724ae4afb19e5705fb6b95c13d305435fd8d325567b5e7f68c5f8c",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
