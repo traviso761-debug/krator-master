@@ -192,9 +192,17 @@
   (560 s) found the valley's own fields scanning every crater and scar per sample (90 s) and the subway's sinkholes (27 s): bucketed by cell now
   (41, `AV.bucket`, `AV.sinkGate`: the same numbers bit for bit, tested), 346 s to 218 s there. Since then: core/biome's `BIO.alphaTex` reads its canvas as `willReadFrequently` (CPU-backed: the readback is a copy, not a GPU stall), and
   the build yields (88 runs each kit's trees, its floor and the bake as stages, showing where it is and giving the browser a turn between them; the
-  page's fragments after 88 wait in a text block, `av-after`, run when the build finishes). Left: each stage is still one task of 15 to 40 s (a
-  kit's whole pass); the model's bicubic heights (`at`, `cr`: 50 s; a fine pre-sampled grid would do, at a few millimetres' difference); the
-  relief's noise (27 s). The core/biome change reaches 72 builds: the all-builds integration rebuilds them.
+  page's fragments after 88 wait in a text block, `av-after`, run when the build finishes). Then (2026-11-11, the owner: "pre-sample the ground"):
+  a build asked the model-and-noise ground 94 million times, the model's bicubic 468 million and the whole ground 16 million. The stages read
+  them off lattices now (41, `AV.lattice`: sampled at the nodes, filled a tile where first asked, read bilinearly, exact in a cell whose centre is
+  off by more than 0.12 m, so a pit's rim or a kerb stays exact; tested): the model's height and slope at 32 m (within 2 cm), the relief under
+  everything at 4 m, and the whole ground at 4 m for the fields and the kits (BIO's `terrainH`, 47); the drawn ground, the towers and the roads
+  keep the whole ground itself. On software GL the build went from 131 s to 67 s (the bake's mark) and the profiled load from 341 s to 208 s; 6.4
+  million model-and-noise reads, 32 million bicubic, 7.2 million whole ground. Building the near forest first was measured and dropped: the
+  south-western trees' drawing is about 13 s of what is left, the rest is placement (one rng stream through the floor, and the north-western
+  kit's trees draw without reseeding), so a deferred far draw would save about 5 s for a second bake. Left: the first frame's shader compiles
+  (20 s on software GL), the transit's drawing (11 s), the take (11 s). The core/biome change reaches 72 builds: the all-builds integration
+  rebuilds them.
 - [ ] **The ground's detail map is sampled raw** (`47-host-land.js`, the lint's one RAWTEX on this build, locked in the baseline): the library's
   `groundDetail` albedo multiplies the ground's colour without an sRGB decode, as the two lowlands' pages do (the valley copies their ground). A
   decode darkens the ground a fifth; do it with the lowlands together and retune the gain, not here alone.

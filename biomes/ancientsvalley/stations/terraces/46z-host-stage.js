@@ -67,7 +67,8 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
  const lineHgrid=(x,z)=>{if(!AVT.cells.get(Math.floor(x/50)*100003+Math.floor(z/50)))return 0;const fx=x/LHS,fz=z/LHS,i=Math.floor(fx),j=Math.floor(fz),u=fx-i,v=fz-j,a=lhNode(i,j),b=lhNode(i+1,j),c=lhNode(i,j+1),d=lhNode(i+1,j+1);
   return a===0&&b===0&&c===0&&d===0?0:(a*(1-u)+b*u)*(1-v)+(c*(1-u)+d*u)*v;};
  function ground(x,z){const h=relief(x,z);return h<LAKE_Y+1.5?h:h+lineHgrid(x,z);}
- const yOf=ground;
+ /* the whole ground on a 4 m lattice (41, AV.lattice; 2026-11-10) that the fields and the kits read (BIO's terrainH, 47); the drawn ground keeps ground itself */
+ const GRL=AV.lattice(ground,{cell:4,half:R+200}),yOf=GRL.h;
  /* the masks: a road's carriageway, a plinth, a field (how deep inside it), the hub's paved ground */
  const roadK=(x,z)=>{const d=PLAN.roadD(x,z);return smooth(1.2,-.8,d);};
  const built=(x,z)=>{_q.length=0;PADS.query(x,z,0,_q);let k=0;for(let i=0;i<_q.length;i++)k=Math.max(k,smooth(4,-6,AV.farmBoxD(_q[i],x,z)));return k;};
@@ -87,7 +88,7 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
   /* the mist pooled over the shelf and the inlet below (full under the lake's level + 150 m, page y -163, gone 140 m higher, so it laps the
      page's south edge and lies over the city); no band of cloud (station 0's sits at the towers' height, here it would lie on the fields) */
   smog:{colour:[.40,.35,.38],mix:.7,mist:{density:.0007,above:150,depth:140,noise:.85,day:1,field:true},band:{density:0,y:[0,1],cover:0,noise:0}},seed:SEED,model:M,region:RG,
-  ground,rawGround,modelY,F,plan:PLAN,pads:PADS,transit:AVT,engines:[],craters:[],debris:[],scorch:(x,z)=>0,viaduct:{pts:[],deckY:()=>0,d:()=>1e9},relief,railD:()=>1e9,
+  ground,groundFast:yOf,groundLattice:GRL,rawGround,modelY,F,plan:PLAN,pads:PADS,transit:AVT,engines:[],craters:[],debris:[],scorch:(x,z)=>0,viaduct:{pts:[],deckY:()=>0,d:()=>1e9},relief,railD:()=>1e9,
   near:{x:PLAN.hub.x,z:PLAN.hub.z,r:300,keys:[]},street,streetK:street,streetD:PLAN.roadD,avenueLines:()=>[],lattice:{c:1,s:0,pitch:200,AW:14,SW:6},built,forest,scars:[],cities,basins,crops:CROPLIST,
   water:{level:LAKE_Y,shallow:0x4f7a74,deep:0x1a3440,name:'The valley lake (17.4 m: brackish, the drowned city under it)'},
   floorLabel:(x,z,y)=>{if(roadK(x,z)>.5)return 'a farm road';if(built(x,z)>.5)return 'a plinth';const f=PLAN.fieldAt(x,z);if(f)return(f.orchard?'an orchard':'a field')+' gone to thicket ('+f.crop+')';if(hubK(x,z)>.5)return 'the hub town\'s paving';return 'the terraces: the wild wood';},

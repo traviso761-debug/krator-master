@@ -24,8 +24,15 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
  // flank gets crags, the floor stays level), finer where the city stands (built ground), none under the lake's level
  const modelY=(x,z)=>M.at(x,z)-BASE;
  const slopeK=(x,z)=>{const s=(M.at(x+600,z)-M.at(x-600,z))/1200,t=(M.at(x,z+600)-M.at(x,z-600))/1200;return Math.hypot(s,t);};
- function landGround(x,z){const m=modelY(x,z),st=slopeK(x,z),r=1-Math.abs(2*KRAND.fbm(x*.0013+3.7,z*.0013-9.1,0,4,SEED+1)-1),f=KRAND.fbm(x*.011+1.3,z*.011+2.2,0,3,SEED+2);
+ /* the model's height and slope on a 32 m lattice under the relief (41, AV.lattice: the model's cells are 2 km, so within 2 cm; its bicubic was most of
+    what was left of the build's ground after the 4 m lattices, 2026-11-11); modelY itself stays exact for the far ground */
+ const modelL=AV.lattice(modelY,{cell:32,half:R+1600,tol:1e9}).h,slopeL=AV.lattice(slopeK,{cell:32,half:R+1600,tol:1e9}).h;
+ function land0(x,z){const m=modelL(x,z),st=slopeL(x,z),r=1-Math.abs(2*KRAND.fbm(x*.0013+3.7,z*.0013-9.1,0,4,SEED+1)-1),f=KRAND.fbm(x*.011+1.3,z*.011+2.2,0,3,SEED+2);
   return m+(14+260*Math.min(.5,st))*(r-.45)*smooth(LAKE_Y-30,LAKE_Y+6,m)+2.2*(f-.5);}
+ /* the ground's lattices (41, AV.lattice; 2026-11-10: a build asked the model-and-noise ground 94 million times, the whole ground 16 million): the model's
+    ground with its relief on a 4 m lattice under everything, and the whole ground on another that the fields and the kits read (BIO's terrainH, 47);
+    the drawn ground, the towers and the roads keep the whole ground itself */
+ const landGround=AV.lattice(land0,{cell:4,half:R+1400}).h;
  // THE CRATERS (the owner, 2026-11-04: war damage): fourteen strikes on the dry land, bowls with raised rims, each a scar of melt glass
  const CRATERS=AV.craters({R:R+200,n:24,seed:SEED+13,rMin:35,rMax:150,ok:(x,z,r)=>landGround(x,z)>LAKE_Y+r*.2+4&&Math.hypot(x-300,z+150)>r+260});
  const scorch=(x,z)=>AV.scorch(CRATERS,x,z,SEED);
@@ -145,7 +152,7 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
  /* each flight's plane, and the level path on the plinth from its head to the door (unless the plinth is cut deeper than 2.5 m there) */
  LOBQ=KSPACE.create({cell:60});const lobPut=(a,b,w)=>{const L=Math.max(.1,Math.hypot(b[0]-a[0],b[1]-a[1])),q={a,b,w,L,ux:(b[0]-a[0])/L,uz:(b[1]-a[1])/L};LOBQ.insert(q,(a[0]+b[0])/2,(a[1]+b[1])/2,L/2+w/2+2);};
  LOB.doors.forEach(D=>{const A=D.approach;if(A.kind!=='steps'&&A.kind!=='ramp')return;lobPut(A.a,A.b,A.w);if(D.cut!=='ground'&&Math.hypot(D.path.b[0]-D.path.a[0],D.path.b[1]-D.path.a[1])>.3)lobPut(D.path.a,D.path.b,A.w);});   /* a path of no length would level a disc */
- const yOf=ground;
+ const GRL=AV.lattice(ground,{cell:4,half:R+200}),yOf=GRL.h;
  // the streets: the lattice's lines (asphalt), 9 m wide, where the city is dense enough to have them
  /* THE STREET GRID (the owner, 2026-11-08: a clear Ancient grid, destroyed and overgrown): the lattice's lines are the streets, 11 m wide, and every
     third line an avenue of 26 m; drawn as asphalt with rubble at the kerbs, the forest thinned to a third on them (cracks and saplings), where the
@@ -185,7 +192,7 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
       olive. The valley's clouds keep the taint's hues: brown, dull red, ash grey, ghostly purple */
    palette:[[.42,.33,.30],[.48,.26,.24],[.46,.45,.44],[.52,.44,.66]]},airLook:{turbidity:2.8,dust:[.58,.47,.54]},fogDensity:.00036,
   smog:{colour:[.36,.30,.36],mix:.85,mist:{density:.0011,above:110,depth:110,noise:.85,day:1,field:true},band:{density:.0032,y:[430,690],cover:.6,noise:1}},seed:SEED,model:M,region:RG,
-  ground,rawGround,modelY,F,plan:PLAN,pads:PADS,engines:ENGINES,craters:CRATERS,debris:DEBRIS,scorch,viaduct:{pts:VIAS,deckY:viaDeckY,d:viaD},transit:AVT,lobbies:LOB,relief,railD,near:NEAR,street,streetK,streetD,avenueLines,lattice:{c:ct,s:snt,pitch:PLAN.pitch,AW,SW},built,forest,scars,cities,basins,
+  ground,groundFast:yOf,groundLattice:GRL,rawGround,modelY,F,plan:PLAN,pads:PADS,engines:ENGINES,craters:CRATERS,debris:DEBRIS,scorch,viaduct:{pts:VIAS,deckY:viaDeckY,d:viaD},transit:AVT,lobbies:LOB,relief,railD,near:NEAR,street,streetK,streetD,avenueLines,lattice:{c:ct,s:snt,pitch:PLAN.pitch,AW,SW},built,forest,scars,cities,basins,
   water:{level:LAKE_Y,shallow:0x4f7a74,deep:0x1a3440,name:'The valley lake (17.4 m: brackish, the drowned city under it)'},
   floorLabel:(x,z,y)=>{if(F.scar(x,z)>.5)return 'dead ground: melt glass (the scar)';if(street(x,z)>.5)return 'a street';if(built(x,z)>.5)return 'a tower\'s plinth';if(F.foul(x,z)>.6&&F.park(x,z)<.5)return 'polluted ground (the foul half)';const zn=F.zone(x,z);return zn==='floor'?'the floor: the core\'s plazas':zn==='shelf'?(F.park(x,z)>.5?'a park gone feral':'the shelf: the residential rings'):'the terraces';},
   // what the kits read: the lowlands' fields. Af and 2,980 mm: tropic everywhere, wet at the water and in the hollows, dry on the pavement

@@ -49,6 +49,12 @@ distortions, on every station's page, each a multiplier on what the page set. Th
 feral" at 1,180 calls and 8.47 M triangles; the Yards, 75 over 12 views, the worst "Among the halls" at 904 calls; the Terraces, 64 over 9
 views, the worst "The hub town" at 695; `kits/metropolis` 126 checks; `kits/ancient-transit` 44. Every page's console clean of shader errors.
 
+**Load times (2026-11-11).** The build yields (88: each kit pass and the bake a stage, the page's later fragments run after it), the fields read
+craters, scars and sinkholes by cell (`AV.bucket`, `AV.sinkGate`), and the stages read the ground off lattices (`AV.lattice`: the model at 32 m,
+the relief and the whole ground at 4 m, exact in a pit's or kerb's cells; KNOWN_ISSUES "The build is long"). On the Arc lane, alone on the
+machine: the build (`_buildMs`) station 0 22 s, the Yards 29 s, the Terraces 30 s (from 102 to 163 s); all three verified, 114, 79 and 74
+asserts, the worst view "A park gone feral" at 1,179 calls. Building the near forest first was measured and dropped (about 5 s to gain).
+
 ## Take up first
 
 1. **The owner's eye** on the Yards (four views reframed after the first look) and the Terraces (a first cut; KNOWN_ISSUES "The Terraces").
