@@ -1,5 +1,8 @@
+/* core/region 41-region-nav: lifted from settlements/isle-demo/src/41-isle-nav.js (S0, 2026-11-11). RH is the region's host (KREGION.use:
+   the isle demo's ISLE, Longsong's LSR); the body is the isle demo's, ISLE. read as RH. */
+KREGION.part('41-region-nav', function (RH) {
 /* ============================== 7b. THE PEDESTRIAN NAV FROM THE PLAN'S WAYS (P7b) ============================== */
-/* [G data] ISLE.navOf(R, G, pre) makes a town's walking graph (core/simulation's NAV contract: {nodes:[{id,x,y,z,tag}],
+/* [G data] RH.navOf(R, G, pre) makes a town's walking graph (core/simulation's NAV contract: {nodes:[{id,x,y,z,tag}],
    edges:[{id,a,b,kind,len,w}]}) from its core/city plan alone: R.plan.ways, the avenues, main and side streets and
    alleys as polylines. It reads only {cls, w, pts} of each way, so it fits any core/city plan (a candidate for core/city's
    data side, asked of the city-layout work: KNOWN_ISSUES.md).
@@ -10,9 +13,9 @@
    Then G.door(x, z) splits the nearest way at the point nearest (x, z) and returns that node: a place's door is on its
    street (a place far from every way, a track to it). The graph is in WORLD metres (the town's frame added, the height over the world's datum), so two towns'
    graphs stand apart in one layer and a sea line can join them (P7c). The index is core/space's (KSPACE). */
-ISLE.NAV = { step: 12, reach: 6, bridge: 160 };
-ISLE.navOf = function (R, G, pre) {
-  var F = G.frame, T = ISLE.NAV, N = [], E = [], S = KSPACE.create({ cell: 30 });
+RH.NAV = { step: 12, reach: 6, bridge: 160 };
+RH.navOf = function (R, G, pre) {
+  var F = G.frame, T = RH.NAV, N = [], E = [], S = KSPACE.create({ cell: 30 });
   var node = function (x, z, tag) { N.push({ id: pre + N.length, x: x, z: z, tag: tag || '' }); return N.length - 1; };
   var edge = function (a, b, kind, w) { if (a === b) return -1; var A = N[a], B = N[b], i = E.length; E.push({ a: a, b: b, kind: kind, w: w, dead: false });
     S.insert(i, (A.x + B.x) / 2, (A.z + B.z) / 2, Math.hypot(B.x - A.x, B.z - A.z) / 2 + 0.01); return i; };
@@ -113,3 +116,4 @@ ISLE.navOf = function (R, G, pre) {
   out.bodies = function () { var b = bodies(); return { count: b.size.length, main: b.size[b.main], nodes: N.length }; };
   return out;
 };
+});

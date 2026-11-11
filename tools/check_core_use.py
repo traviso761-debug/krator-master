@@ -56,7 +56,7 @@ NOT_APPLICABLE = {
 }
 
 ALL_MODULES = ['atmos', 'biome', 'camp', 'city', 'clock', 'engine', 'export', 'furnish', 'hamlet', 'host', 'lod', 'mask', 'materials', 'minimap', 'rand',
-               'sched', 'simulation', 'space', 'tags', 'terrain', 'walk', 'water', 'world']
+               'region', 'sched', 'simulation', 'space', 'tags', 'terrain', 'walk', 'water', 'world']
 
 # Settlements already PLACED on a site of the world map, with that site's biome data (the owner, 2026-10-23). They read the
 # biome files, so they are rebuilt whenever those change: the biome-sync rules apply to them like a biome. Every other

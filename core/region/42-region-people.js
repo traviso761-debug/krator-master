@@ -1,13 +1,16 @@
+/* core/region 42-region-people: lifted from settlements/isle-demo/src/42-isle-people.js (S0, 2026-11-11). RH is the region's host (KREGION.use:
+   the isle demo's ISLE, Longsong's LSR); the body is the isle demo's, ISLE. read as RH. */
+KREGION.part('42-region-people', function (RH) {
 /* ============================== 7c. THE PEOPLE: ROLES BY KIND OF WORK AND BY AGE, DEALT PER TOWN (P7b) ============================== */
 /* [G data] A town's people as core/simulation roles (SCHEMA.md "roles"), keyed to the town (`settlement`) and dealt by
    SIM.populate({settlement, prefix}) over the town's own beds, once a town (P7a: homes and work in one's own town):
-     - a role for each kind of work (ISLE.TUNE.sim.jobs): its count the posts (WORK slots) its kinds of place offer in
+     - a role for each kind of work (RH.TUNE.sim.jobs): its count the posts (WORK slots) its kinds of place offer in
        the town, so every post is filled; it lives in the houses (the soldiers in the barracks first) and works at the
        nearest place of its kinds with a free post (core/simulation's `work.near`);
-     - by age (ISLE.TUNE.sim.ages; the owner, 2026-10-19): the children (a share of the town), as many of them pupils as
+     - by age (RH.TUNE.sim.ages; the owner, 2026-10-19): the children (a share of the town), as many of them pupils as
        the schools', temples' and shrines' STUDY places hold (the nearest), the rest helping at home (HOUSEWORK); the elders (a
        share) keeping house; the adults at home (no post): the `fill` role, every bed left (the residences' and the
-       barracks' too: ISLE.TUNE.sim.homes).
+       barracks' too: RH.TUNE.sim.homes).
    The census's people are the sim's: the beds are the households at five a household (40), so the town holds the
    census's citizens exactly. No slaves and no cantons (Voth's 44 is trimmed, not copied). After the deal:
      - each person's age, a hash of the person within its band (pupils the youngest children), and its status:
@@ -16,9 +19,9 @@
        dealt round its houses again, the kinds in their shares, so a house holds a family; nobody moves out of the
        square, and everyone keeps the job the deal gave;
      - its home's class and wealth (the items' meals and eating out read them) and `job`, the census trade of its work.
-   ISLE.simDemography(s) is the town's breakdown: by age band, by status, by kind of work, the households. */
-ISLE.simPeople = function (TS, places) {
-  var T = ISLE.TUNE.sim, A = T.ages, s = TS.id, org = s + '.folk', posts = {}, study = 0, beds = 0, out;
+   RH.simDemography(s) is the town's breakdown: by age band, by status, by kind of work, the households. */
+RH.simPeople = function (TS, places) {
+  var T = RH.TUNE.sim, A = T.ages, s = TS.id, org = s + '.folk', posts = {}, study = 0, beds = 0, out;
   places.forEach(function (P) { if (P.activities.WORK) posts[P.kind] = (posts[P.kind] || 0) + P.activities.WORK; study += P.activities.STUDY || 0; beds += P.activities.SLEEP || 0; });
   var prefers = function () { return { SLEEP: { pin: 'home' }, EAT: { pin: 'home' }, REST: { pin: 'home' }, IDLE: { pin: 'home' }, HOUSEWORK: { pin: 'home' }, WORK: { pin: 'work' }, STUDY: { pin: 'work' } }; };
   var NE = T.needs, needsOf = function (job) { return NE ? { labour: NE.labour[job] || 0, rate: NE.byTrade[job] || undefined } : undefined; };   /* a trade's labour and rates */
@@ -51,7 +54,7 @@ ISLE.simPeople = function (TS, places) {
     a.ageBand = band === 'pupil' || band === 'child' ? 'child' : band;
     a.status = R.work && R.work.act === 'WORK' ? 'employed' : nm === 'pupil' ? 'pupil' : nm === 'child' || nm === 'elder' ? 'housework' : 'home';
   });
-  out.mixed = ISLE.simMixHouseholds(s, mine);
+  out.mixed = RH.simMixHouseholds(s, mine);
   /* a person's trait and starting meters, by a hash of the person (core/rand) */
   if (NE && SIM.NEED) { var TR = Object.keys(NE.traits);
     mine.forEach(function (a) { a.trait = TR[KRAND.hash(T.seed, 67, a.k) % TR.length];
@@ -69,8 +72,8 @@ ISLE.simPeople = function (TS, places) {
 /* the households mixed: in each square of the town the people living in its houses (kind 'home') dealt round them again,
    the four kinds (employed, at home, children, elders) interleaved in their shares (the kind furthest behind its share
    next), houses filled to their beds in id order; -> {cells, people} */
-ISLE.simMixHouseholds = function (s, mine) {
-  var C = ISLE.TUNE.sim.mix.cell, cells = {}, kindOf = function (a) { return a.ageBand === 'child' ? 'child' : a.ageBand === 'elder' ? 'elder' : a.status === 'employed' ? 'employed' : 'home'; };
+RH.simMixHouseholds = function (s, mine) {
+  var C = RH.TUNE.sim.mix.cell, cells = {}, kindOf = function (a) { return a.ageBand === 'child' ? 'child' : a.ageBand === 'elder' ? 'elder' : a.status === 'employed' ? 'employed' : 'home'; };
   mine.forEach(function (a) { var H = SIM.R.place[a.home]; if (H.kind !== 'home') return; var k = Math.floor(H.x / C) + ',' + Math.floor(H.z / C);
     var c = cells[k] || (cells[k] = { houses: {}, people: {} }); c.houses[H.id] = H; (c.people[kindOf(a)] || (c.people[kindOf(a)] = [])).push(a); });
   var moved = 0, n = 0;
@@ -101,7 +104,7 @@ ISLE.simMixHouseholds = function (s, mine) {
   return { cells: Object.keys(cells).length, people: n, moved: moved, swapped: swapped };
 };
 /* the town's breakdown */
-ISLE.simDemography = function (s) {
+RH.simDemography = function (s) {
   var A = SIM.all('actor').filter(function (a) { return !a.driven && SIM.settlementOf(a) === s && a.ageBand; }), out = { people: A.length, ages: {}, status: {}, byBand: {}, work: {}, households: {} };
   var inc = function (o, k) { o[k] = (o[k] || 0) + 1; };
   A.forEach(function (a) {
@@ -118,3 +121,4 @@ ISLE.simDemography = function (s) {
   out.employedShare = Math.round(100 * (out.status.employed || 0) / A.length);
   return out;
 };
+});

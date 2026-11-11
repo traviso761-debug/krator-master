@@ -1,3 +1,6 @@
+/* core/region 47n-region-herders: lifted from settlements/isle-demo/src/47n-isle-herders.js (S0, 2026-11-11). RH is the region's host (KREGION.use:
+   the isle demo's ISLE, Longsong's LSR); the body is the isle demo's, ISLE. read as RH. */
+KREGION.part('47n-region-herders', function (RH) {
 /* ============================== 7h10. THE HERDING BANDS: SEMI-NOMADIC CAMPS ON THE PASTURE (2026-11-09) ============================== */
 /* [G data] The owner (2026-11-09): "add some ranch hamlets / semi nomadic herding camps on the map". A town's HERDING BAND
    (`herders` in the tune) is a settlement of the town's (kind 'camp'): its households in a camp of the Islanders kit's
@@ -5,37 +8,37 @@
    machine, the lumber village's crew): its range is the pasture round the band's home ground (the page's `pasture(x, z)`,
    0..1), cut into cells each holding its pasture share x its hectares x head a hectare x meat lots a head; the herd grazes
    one cell down to `strikeAt`, then the band STRIKES AND MOVES ITS WHOLE CAMP to the next (its camp, store and herd places
-   move together: ISLE.herdStep); the grass it left grows back. Its meat and hides go to its town by cart, the town's
+   move together: RH.herdStep); the grass it left grows back. Its meat and hides go to its town by cart, the town's
    staples back, at the detour rate from wherever the camp stands (the routes' minutes follow it); it eats its own meat
    first. The page hands the bands in (openworld/isle-demo 48n: ISLE_HERDERS.make): [{id, town, name?, gloss?, yard: {x, z},
    pasture(x, z), h(x, z)}].
-     ISLE.simHerders(bands)   after the hamlets (48t): each band declared -> {bands: [report], errors}
-     ISLE.herdBooks()         a snapshot: each band's people, meals, made, taken, moves, stand, what reached its town
-     ISLE.herdChecks(a, b)    over two snapshots, each with a negative in tests/test-isle-herders.js */
-ISLE.simHerders = function (bands) {
-  var S = ISLE.SIM, T = ISLE.TUNE.sim, HB = T.herders, out = { bands: [], errors: [] }; if (!HB || !bands || typeof KCAMP === 'undefined') return out;
+     RH.simHerders(bands)   after the hamlets (48t): each band declared -> {bands: [report], errors}
+     RH.herdBooks()         a snapshot: each band's people, meals, made, taken, moves, stand, what reached its town
+     RH.herdChecks(a, b)    over two snapshots, each with a negative in tests/test-isle-herders.js */
+RH.simHerders = function (bands) {
+  var S = RH.SIM, T = RH.TUNE.sim, HB = T.herders, out = { bands: [], errors: [] }; if (!HB || !bands || typeof KCAMP === 'undefined') return out;
   S.herders = S.herders || [];
   /* the goods a band makes, in its town's economy (hides are the villages' good: a page with no ranch has none yet) */
   var Bg = Object.keys(HB.crew.batch.out).concat(Object.keys(HB.crew.batch.by || {}));
   S.order.forEach(function (s) { var E = SIM.econ(s); Bg.forEach(function (g) { if (!E.goods[g]) E.goods[g] = { id: g, minLoad: (T.hamlets.minLoad || {})[g], unit: 'lot' }; }); });
-  bands.forEach(function (B) { try { var X = ISLE.simHerdBand(B); S.herders.push(X); out.bands.push({ id: X.id, town: X.town, people: X.people, stands: X.life.stands, at: [Math.round(X.at.x), Math.round(X.at.z)] }); }
+  bands.forEach(function (B) { try { var X = RH.simHerdBand(B); S.herders.push(X); out.bands.push({ id: X.id, town: X.town, people: X.people, stands: X.life.stands, at: [Math.round(X.at.x), Math.round(X.at.z)] }); }
     catch (e) { out.errors.push(B.id + ': ' + (e && e.message || e)); } });
-  if (SIM.stepHooks.indexOf(ISLE.herdStep) < 0) SIM.stepHooks.push(ISLE.herdStep);
+  if (SIM.stepHooks.indexOf(RH.herdStep) < 0) SIM.stepHooks.push(RH.herdStep);
   if (SIM.placesChanged) SIM.placesChanged();
   return out;
 };
-ISLE.simHerdBand = function (B) {
-  var S = ISLE.SIM, T = ISLE.TUNE.sim, HB = T.herders, HT = T.hamlets, I = T.items, s = null, TSp = null;
+RH.simHerdBand = function (B) {
+  var S = RH.SIM, T = RH.TUNE.sim, HB = T.herders, HT = T.hamlets, I = T.items, s = null, TSp = null;
   Object.keys(T.towns).forEach(function (k) { if (T.towns[k].name === B.town || T.towns[k].id === B.town) { TSp = T.towns[k]; s = T.towns[k].id; } });
   if (!s) throw new Error('no town ' + B.town);
   var id = B.id, h = B.h || function () { return 0; }, name = (B.name ? B.name + ' (' : '') + 'the herding band of ' + TSp.name + (B.name ? ')' : '');
   SIM.settlement({ id: id, faction: TSp.faction, name: name, parent: s, kind: 'camp' });
   SIM.org({ id: id + '.folk', faction: TSp.faction, name: 'The herders' });
-  var hh = HB.households, np = hh * 5, places = [], y0 = h(B.yard.x, B.yard.z);
+  var hh = HB.households, np = hh * ((RH.TUNE.sim.herders && RH.TUNE.sim.herders.perHousehold) || 5), places = [], y0 = h(B.yard.x, B.yard.z);
   /* the herd: the work camp on the pasture round the band's home ground; its first pitch is where the band camps */
   var CR = Object.assign({}, HB.crew, { posts: HB.hands, focus: 'herding' });
   var res = { id: id + ':range', kind: 'pasture', x: B.yard.x, z: B.yard.z, forest: B.pasture };
-  var cr = ISLE.simCrewPlace(id, { name: name, focus: 'herding' }, places, res, CR, h); cr.herd = true;
+  var cr = RH.simCrewPlace(id, { name: name, focus: 'herding' }, places, res, CR, h); cr.herd = true;
   var P0 = SIM.R.place[cr.place]; P0.kind = 'herd'; P0.name = name + ': the herd at pasture'; P0.tags.key = 'herd';
   var at = { x: P0.x + 60, z: P0.z };
   var camp = SIM.place({ id: id + '.camp', name: 'the herders\' camp', kind: 'camp', x: at.x, y: h(at.x, at.z), z: at.z, door: { x: at.x, y: h(at.x, at.z), z: at.z },
@@ -52,48 +55,48 @@ ISLE.simHerdBand = function (B) {
   mine.forEach(function (a) { a.cls = 'poor'; a.wealth = 0; }); camp.people = mine.length;
   /* its economy: its town's goods; its own meat first at its meals; its store opened with the town's food */
   var EP = SIM.econ(s), Xp = S.towns[s], goods = {}; Object.keys(EP.goods).forEach(function (g) { goods[g] = EP.goods[g].minLoad != null ? { minLoad: EP.goods[g].minLoad } : {}; goods[g].unit = EP.goods[g].unit; });
-  var foods = ['meat'].concat(Xp.econ.foods.filter(function (f) { return f !== 'meat'; })), rules = ISLE.simRules(id); if (rules.govern) rules.govern = Object.assign({}, rules.govern, { exported: false, pool: [s] });
+  var foods = ['meat'].concat(Xp.econ.foods.filter(function (f) { return f !== 'meat'; })), rules = RH.simRules(id); if (rules.govern) rules.govern = Object.assign({}, rules.govern, { exported: false, pool: [s] });
   SIM.economy(Object.assign({ goods: goods, inputs: {}, every: T.economy.every, window: T.economy.window, imports: T.economy.imports, cart: T.economy.cart, meal: { per: I.perMeal, foods: foods.slice() }, useShort: true }, rules), { settlement: id });
   SIM.store(store.id, { kind: 'warehouse' });
-  ISLE.carryFood(s, id, store, foods.filter(function (f) { return f !== 'meat'; }), mine.length * I.meals * I.perMeal * HB.startDays);
-  var life = ISLE.simCrewStart(cr, CR, id);
+  RH.carryFood(s, id, store, foods.filter(function (f) { return f !== 'meat'; }), mine.length * I.meals * I.perMeal * HB.startDays);
+  var life = RH.simCrewStart(cr, CR, id);
   for (var c = 0; c < (HB.carts > 0 ? HB.carts : 1); c++) { var a = SIM.actor({ id: id + '.cart' + c, role: 'cart', org: id + '.folk', home: store.id, cls: 'cart', job: 'carters' }); a.pos = { x: store.x, y: store.y || 0, z: store.z }; SIM.cart(a); }
   /* the roads: its meat and hides to its town's nearest warehouse, the staples back (meat it makes itself) */
   var R = HT.road, ship = cr.goods.concat(Object.keys(CR.batch.by || {})), Wp = null, bd = Infinity; EP.warehouses.forEach(function (P) { var d = Math.hypot(P.x - store.x, P.z - store.z); if (d < bd) { bd = d; Wp = P; } });
-  var mins = ISLE.herdMinutes(store, Wp), gO = {}, gI = {}, eO = {}, eI = {}; gO[id] = ship.slice(); gO[s] = []; gI[s] = foods.filter(function (f) { return f !== 'meat'; }); gI[id] = []; eO[s] = {}; ship.forEach(function (g) { eO[s][g] = 1; }); eI[id] = {};
+  var mins = RH.herdMinutes(store, Wp), gO = {}, gI = {}, eO = {}, eI = {}; gO[id] = ship.slice(); gO[s] = []; gI[s] = foods.filter(function (f) { return f !== 'meat'; }); gI[id] = []; eO[s] = {}; ship.forEach(function (g) { eO[s][g] = 1; }); eI[id] = {};
   gI[s].forEach(function (f) { eI[id][f] = mine.length * I.meals * I.perMeal / foods.length; });
   var Ro = SIM.trade({ id: id + ':out', stops: [{ settlement: id, place: store.id }, { settlement: s, place: Wp.id }], cap: R.cap, carriers: 1, minutes: mins, mins: R.mins, keep: 1, want: 1e6, goods: gO, expect: eO });
   var Ri = SIM.trade({ id: id + ':in', stops: [{ settlement: s, place: Wp.id }, { settlement: id, place: store.id }], cap: R.cap, carriers: 1, minutes: mins, mins: R.mins, keep: R.keep, want: R.want, goods: gI, expect: eI });
-  if (SIM.MONEY && ISLE.simMoneyTown) ISLE.simMoneyTown(id, { fundedBy: 'treasury:' + s });   /* its money from its town's treasury, not minted */
+  if (SIM.MONEY && RH.simMoneyTown) RH.simMoneyTown(id, { fundedBy: 'treasury:' + s });   /* its money from its town's treasury, not minted */
   SIM.level(id, 'abstract');
   SIM.logEvent('herding band', { settlement: s, band: id, people: mine.length, stands: life.stands });
   return { id: id, town: s, townName: TSp.name, name: B.name || null, gloss: B.gloss || null, people: mine.length, households: hh, crew: cr, life: life, places: { camp: camp.id, store: store.id, herd: cr.place }, out: Ro.id, 'in': Ri.id, warehouse: Wp.id, at: at, goods: ship, moved: 0, ms: mins };
 };
-ISLE.herdMinutes = function (from, to) { var R = ISLE.TUNE.sim.hamlets.road, d = Math.hypot(to.x - from.x, to.z - from.z); return Math.max(60, Math.round(d * R.detour / (R.kmh * 1000 / 60))); };
+RH.herdMinutes = function (from, to) { var R = RH.TUNE.sim.hamlets.road, d = Math.hypot(to.x - from.x, to.z - from.z); return Math.max(60, Math.round(d * R.detour / (R.kmh * 1000 / 60))); };
 /* each hour: a herd that moved takes its camp and store with it, and the carts' road from the new ground */
-ISLE.herdStep = function (minute) {
-  var S = ISLE.SIM; if (minute % 60 || !S.herders) return;
+RH.herdStep = function (minute) {
+  var S = RH.SIM; if (minute % 60 || !S.herders) return;
   S.herders.forEach(function (X) { var P = SIM.R.place[X.places.herd]; if (!P) return; var nx = P.x + 60, nz = P.z; if (Math.abs(nx - X.at.x) < 1 && Math.abs(nz - X.at.z) < 1) return;
     X.at = { x: nx, z: nz }; X.moved++;
     [[X.places.camp, 0], [X.places.store, 20]].forEach(function (q) { var Q = SIM.R.place[q[0]]; if (!Q) return; Q.x = nx + q[1]; Q.z = nz; Q.y = P.y; Q.door = { x: Q.x, y: Q.y, z: Q.z }; });
-    var Wp = SIM.R.place[X.warehouse], m = ISLE.herdMinutes(SIM.R.place[X.places.store], Wp); X.ms = m;
+    var Wp = SIM.R.place[X.warehouse], m = RH.herdMinutes(SIM.R.place[X.places.store], Wp); X.ms = m;
     [X.out, X['in']].forEach(function (rid) { var Rt = SIM.TRADE && SIM.TRADE.routes[rid]; if (Rt) Rt.minutes = m; });
     if (SIM.placesChanged) SIM.placesChanged();
     SIM.logEvent('herders moved', { band: X.id, to: [Math.round(nx), Math.round(nz)], minutes: m }); });
 };
-ISLE.herdBooks = function () {
-  var S = ISLE.SIM, out = { minute: SIM.minute(), bands: [] }; if (!S.herders) return out; var I = SIM.ITEMS;
+RH.herdBooks = function () {
+  var S = RH.SIM, out = { minute: SIM.minute(), bands: [] }; if (!S.herders) return out; var I = SIM.ITEMS;
   S.herders.forEach(function (X) {
     var E = SIM.econ(X.id), Bk = (I.statsBy || {})[X.id] || {}, M = Object.assign({ meal: 0, single: 0, none: 0, mess: 0, out: 0 }, Bk.meals || {}), made = {};
     X.goods.forEach(function (g) { made[g] = E ? (E.made[g] || 0) : 0; });
     var here = SIM.all('actor').filter(function (a) { return !a.driven && a.home === X.places.camp; }).length, R = SIM.tradeReport(X.out), landed = R.landed[X.id + '>' + X.town] || {};
-    var site = ISLE.crewSite({ crew: X.crew, id: X.id, resource: X.crew.id }), P = SIM.R.place[X.places.herd], Pc = SIM.R.place[X.places.camp];
+    var site = RH.crewSite({ crew: X.crew, id: X.id, resource: X.crew.id }), P = SIM.R.place[X.places.herd], Pc = SIM.R.place[X.places.camp];
     out.bands.push({ id: X.id, town: X.town, name: X.name, people: X.people, here: here, meals: M, made: made, landed: Object.assign({}, landed), imported: SIM.econ(X.town).imported.meat || 0, taken: site.taken,
       stands: X.life.stands, stand: site.camp.stand, state: site.camp.state, moves: X.crew.moves, moved: X.moved, campAt: [Math.round(Pc.x), Math.round(Pc.z)], herdAt: [Math.round(P.x), Math.round(P.z)], minutes: X.ms }); });
   return out;
 };
-ISLE.herdChecks = function (a, b) {
-  var res = [], ok = function (name, pass, detail) { res.push({ name: 'herders: ' + name, ok: !!pass, detail: detail }); }, L = b.bands, HB = ISLE.TUNE.sim.herders;
+RH.herdChecks = function (a, b) {
+  var res = [], ok = function (name, pass, detail) { res.push({ name: 'herders: ' + name, ok: !!pass, detail: detail }); }, L = b.bands, HB = RH.TUNE.sim.herders;
   ok('each town has its herding band, its households in their camp beside the herd', L.length >= 2 && L.every(function (x) { return x.people >= HB.households * 3 && x.here === x.people && Math.hypot(x.campAt[0] - x.herdAt[0], x.campAt[1] - x.herdAt[1]) < 100; }),
     L.map(function (x) { return (x.name ? x.name + ', ' : '') + x.id + ': ' + x.people + ' people, ' + x.here + ' in the camp, the herd ' + Math.round(Math.hypot(x.campAt[0] - x.herdAt[0], x.campAt[1] - x.herdAt[1])) + ' m off'; }).join('; '));
   var fed = L.filter(function (x) { return b.minute >= 1440; });
@@ -110,3 +113,4 @@ ISLE.herdChecks = function (a, b) {
     moved.map(function (x) { return x.id + ': ' + x.moves + ' moves, the camp moved ' + x.moved + ' times, now at ' + x.campAt.join(','); }).join('; '));
   return res;
 };
+});

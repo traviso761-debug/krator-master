@@ -1,6 +1,9 @@
+/* core/region 44-region-economy: lifted from settlements/isle-demo/src/44-isle-economy.js (S0, 2026-11-11). RH is the region's host (KREGION.use:
+   the isle demo's ISLE, Longsong's LSR); the body is the isle demo's, ISLE. read as RH. */
+KREGION.part('44-region-economy', function (RH) {
 /* ============================== 7e. EACH TOWN'S OWN ECONOMY (P7b) ============================== */
 /* [G data] A town's economy on core/simulation (77-sim-6-economy.js, keyed: SIM.economy(config, {settlement})), tuned by
-   ISLE.TUNE.sim.economy. Units are servings for food (a meal is the items' perMeal of them) and lots for the rest.
+   RH.TUNE.sim.economy. Units are servings for food (a meal is the items' perMeal of them) and lots for the rest.
      - THE PRODUCERS: each farm parcel grows its own crop (PLAN.md 8c, the programme's farm: sweet potato, banana and
        coconut to eat; sugar cane and cotton for the mill and the weavers), the fish docks land fish, the pens raise
        meat (the land animals' food is one good, meat; the sea's, fish), the bakehouses bake bread from sweet potato, the windmill crushes cane to sugar, the weavers make cloth from
@@ -19,8 +22,8 @@
      - THE DIET (2026-10-26): its households buy the imported foods at their servings a person a day (core's
        SIM.itemsDiet), so the line brings what is eaten and the rice eaten does not grow with the rice landed; the rest
        by the warehouses' stock, as ever. Returns the setup: producers by kind and good, warehouses, carts. */
-ISLE.simEconomy = function (TS, places) {
-  var T = ISLE.TUNE.sim.economy, I = ISLE.TUNE.sim.items, s = TS.id, goods = {};
+RH.simEconomy = function (TS, places) {
+  var T = RH.TUNE.sim.economy, I = RH.TUNE.sim.items, s = TS.id, goods = {};
   T.goods.concat(TS.goods || []).forEach(function (g) { goods[g] = T.minLoad && T.minLoad[g] != null ? { minLoad: T.minLoad[g] } : {}; goods[g].unit = I.foods.indexOf(g) >= 0 ? 'serving' : 'lot'; });   /* a colony's own goods too (47k: Nephtos's) */   /* servings of food, lots of the rest (SCHEMA.md, The books) */
   /* the foods the town makes: a producer's out, a parcel's crop (its bread only if it grows what bread is made of) */
   var inputs = Object.assign({}, T.inputs, TS.inputs || {}), listed = function (P) { var Pr = T.producers[P.kind]; if (!Pr || !P.activities.WORK) return null;
@@ -28,17 +31,17 @@ ISLE.simEconomy = function (TS, places) {
   /* what the town can make: a listed good whose inputs it can make, to a fixed point (Kautoa grows no cotton, so its
      weavers make no cloth, so no garments or nets: their mats and hats only); a maker makes only those of its list */
   var made = {}; places.forEach(function (P) { (listed(P) || []).forEach(function (g) { made[g] = 1; }); });
-  /* the crops the town's farming hamlets will bring by road (PLAN.md section 11; ISLE.simDeclare opts.hamlets, 47h): counted
+  /* the crops the town's farming hamlets will bring by road (PLAN.md section 11; RH.simDeclare opts.hamlets, 47h): counted
      as the town's own for what it can make and keep (Valapo's bread from their sweet potato, its sugar and cloth from the
      plantation's cane and cotton), and opened at an average producer's share of the town's food */
-  var byRoad = {}; ISLE.hamletSpecs('farming', TS.name).forEach(function (sp) { ISLE.hamletCrops(s, sp).forEach(function (C) { var g = T.crops[C.crop]; if (g) byRoad[g] = 1; }); });
+  var byRoad = {}; RH.hamletSpecs('farming', TS.name).forEach(function (sp) { RH.hamletCrops(s, sp).forEach(function (C) { var g = T.crops[C.crop]; if (g) byRoad[g] = 1; }); });
   Object.keys(byRoad).forEach(function (g) { made[g] = 1; });
   for (var drop = true; drop;) { drop = false; Object.keys(made).forEach(function (g) { var q = inputs[g];
     if (q && !Object.keys(q).every(function (x) { return made[x]; })) { delete made[g]; drop = true; } }); }
   var can = function (g) { return !!made[g]; }, outOf = function (P) { var L = listed(P); L = L && L.filter(can); return L && L.length ? L : null; };
-  var DI = (ISLE.TUNE.sim.trade && ISLE.TUNE.sim.trade.diet || {})[s] || {};   /* the other town's foods it eats */
+  var DI = (RH.TUNE.sim.trade && RH.TUNE.sim.trade.diet || {})[s] || {};   /* the other town's foods it eats */
   var foods = I.foods.filter(function (f) { return can(f) || DI[f] > 0; });
-  var E = SIM.economy(Object.assign({ goods: goods, inputs: inputs, every: T.every, window: T.window, imports: T.imports, cart: T.cart, meal: { per: I.perMeal, foods: foods.slice() }, useShort: true }, ISLE.simRules(s)), { settlement: s });   /* the governor, spoilage and salt (49: core's rules) */
+  var E = SIM.economy(Object.assign({ goods: goods, inputs: inputs, every: T.every, window: T.window, imports: T.imports, cart: T.cart, meal: { per: I.perMeal, foods: foods.slice() }, useShort: true }, RH.simRules(s)), { settlement: s });   /* the governor, spoilage and salt (49: core's rules) */
   var out = { producers: {}, goods: {}, warehouses: 0, carts: 0, foods: foods };
   places.forEach(function (P) {
     if (T.warehouses.indexOf(P.kind) >= 0) { SIM.store(P.id, { kind: 'warehouse' }); out.warehouses++; return; }
@@ -62,7 +65,7 @@ ISLE.simEconomy = function (TS, places) {
   var per = I.meals * I.perMeal, imp = 0, diet = {}; Object.keys(DI).forEach(function (f) { if (foods.indexOf(f) >= 0) { diet[f] = DI[f] / per; imp += diet[f]; } });
   var open = function (f) { return diet[f] != null ? diet[f] : tot > 0 ? (1 - imp) * (share[f] || 0) / tot : (1 - imp) / foods.length; };
   var need = pop * I.meals * I.perMeal * T.startDays;
-  var brought = {}, TR = ISLE.TUNE.sim.trade;
+  var brought = {}, TR = RH.TUNE.sim.trade;
   if (TR) TR.lines.forEach(function (L) { Object.keys(L.goods).forEach(function (o) { if (o !== s) L.goods[o].forEach(function (x) { brought[x] = 1; }); }); });
   if (W.length) T.goods.concat(TS.goods || []).forEach(function (g) {
     var n = Math.round(foods.indexOf(g) >= 0 ? need * open(g) : made[g] || brought[g] ? (T.startLots[g] || 0) : 0);
@@ -78,3 +81,4 @@ ISLE.simEconomy = function (TS, places) {
   out.people = pop; out.brought = Object.keys(byRoad);
   return out;
 };
+});

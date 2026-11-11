@@ -73,9 +73,9 @@ def pack_fragment(kit):
     return _mp.fragment(os.path.join(ROOT, 'biomes', kit), kit, exclude=PACK_EXCL[kit], side=SIDE)
 LDF = lambda *fs: [('ld', f) for f in fs]
 # the city page's [G data] half, as settlements/isle-demo/build.py lists it (CITY_DATA_JS)
-ISLE_DATA_JS = ['15-isle-tune.js', '20-isle-ground.js', '30-isle-programme.js', '32-isle-city.js', '33-isle-spurs.js', '34-isle-census.js',
-                '40-isle-sim.js', '41-isle-nav.js', '42-isle-people.js', '43-isle-items.js', '44-isle-economy.js', '45-isle-sim-checks.js',
-                '46-isle-stocks.js', '47-isle-trade.js', '47b-isle-build.js', '47c-isle-crime.js', '47f-isle-found.js', '47h-isle-hamlets.js', '47k-isle-colony.js', '47x-isle-expeditions.js', '47y-isle-houses.js', '47n-isle-herders.js', '47m-isle-money.js', '47u-isle-unrest.js', '47r-isle-refugees.js', '48-isle-week.js', '49-isle-govern.js', '50-isle-export.js']
+ISLE_DATA_JS = ['15-isle-tune.js', '20-isle-ground.js', '30-isle-programme.js', '32-isle-city.js', '33-isle-spurs.js', '34-isle-census.js', 'core/region/00-region-core.js', '39-isle-region.js',
+                'core/region/40-region-sim.js', 'core/region/41-region-nav.js', 'core/region/42-region-people.js', 'core/region/43-region-items.js', 'core/region/44-region-economy.js', 'core/region/45-region-sim-checks.js',
+                'core/region/46-region-stocks.js', '47-isle-trade.js', 'core/region/47b-region-build.js', 'core/region/47c-region-crime.js', 'core/region/47f-region-found.js', 'core/region/47h-region-hamlets.js', '47k-isle-colony.js', '47x-isle-expeditions.js', '47y-isle-houses.js', 'core/region/47n-region-herders.js', 'core/region/47m-region-money.js', 'core/region/47u-region-unrest.js', 'core/region/47r-region-refugees.js', 'core/region/48-region-week.js', 'core/region/49-region-govern.js', '50-isle-export.js']
 def _isle_build():
     """settlements/isle-demo/build.py as a module (its data fragments: dims, trades, site), loaded once"""
     import importlib.util
@@ -129,7 +129,7 @@ ORDER = (
     + [('core/simulation', f) for f in sorted(os.listdir(os.path.join(ROOT, 'core', 'simulation'))) if re.match(r'77-sim-.*\.js$', f)]
     + [('core/export', '07-core-export.js'), ('core/export', '09-core-export-adapters.js'), ('core/export', '10-core-export-scene.js'),
        ('core/biome', '44-core-stage.js')]
-    + [('settlements/isle-demo/src', f) for f in ISLE_DATA_JS] + [('src', '48p-world-colony.js'), ('src', '48t-world-towns.js'), ('src', '48r-world-roads.js'), ('src', '48f-world-found.js'), ('src', '48x-world-expeditions.js'), ('src', '48n-world-herders.js')]
+    + [(os.path.dirname(f) if '/' in f else 'settlements/isle-demo/src', os.path.basename(f)) for f in ISLE_DATA_JS] + [('src', '48p-world-colony.js'), ('src', '48t-world-towns.js'), ('src', '48r-world-roads.js'), ('src', '48f-world-found.js'), ('src', '48x-world-expeditions.js'), ('src', '48n-world-herders.js')]
     + LDF('80-world-sky.js', '81-world-terrain.js', '83-world-water.js', '83w-world-seas.js', '84-world-nursery.js',
           '85-world-flora.js', '86-world-floor.js', '87-world-places.js', '88-world-towns.js')
     + [('core/city', '54-city-host-construct.js'), ('kits/construction/src', '10-cons-site.js')]   # the empty lots' works (settlements/isle-demo 60): a building site and a piece going up

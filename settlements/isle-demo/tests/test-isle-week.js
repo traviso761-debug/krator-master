@@ -1,6 +1,6 @@
 // node settlements/isle-demo/tests/test-isle-week.js [days] — the isle demo's week test (P7d, PLAN.md section 7) without a
 // browser. Plans both towns, declares them (src/40-48), runs a week with Valapo watched (Kautoa abstract), then a week with
-// Kautoa watched (Valapo abstract), and checks src/48-isle-week.js ISLE.weekChecks: each town's books balance over each week
+// Kautoa watched (Valapo abstract), and checks core/region/48-region-week.js ISLE.weekChecks: each town's books balance over each week
 // at either level, every load shipped landed or at sea, the loads to the abstract town landed and booked there, each
 // town's food a worker a day abstract within a band of the same town watched, the ships' buys, the governor's checks (no
 // good short after the second day, each stock steady, each town's food supply line holding or moving toward its target),

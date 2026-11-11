@@ -1,5 +1,8 @@
+/* core/region 47m-region-money: lifted from settlements/isle-demo/src/47m-isle-money.js (S0, 2026-11-11). RH is the region's host (KREGION.use:
+   the isle demo's ISLE, Longsong's LSR); the body is the isle demo's, ISLE. read as RH. */
+KREGION.part('47m-region-money', function (RH) {
 /* ============================== 7h3. MONEY: THE ACCOUNTS (PLAN-MONEY.md M0, 2026-11-03) ============================== */
-/* [G data] core/simulation's money (77-sim-6-money.js) on the isles, tuned by ISLE.TUNE.sim.money (15): the Kautoan shell
+/* [G data] core/simulation's money (77-sim-6-money.js) on the isles, tuned by RH.TUNE.sim.money (15): the Kautoan shell
    the Islanders' currency, the Izani Talent the traders'. M0 opens the accounts; nothing is paid yet (M1: wages and
    purchases). Each settlement (the towns, and the villages when a page hands them in) gets:
      - its TREASURY (`treasury:<s>`), `treasury` shells a person: it owns every workplace to start (PLAN-MONEY 2a);
@@ -8,48 +11,48 @@
      - its thieves' GUILD (`guild:<s>`, 47c), `guild` shells;
    and the crater's: the money changers' reserves (shells and Talents) and the traders from beyond (`foreign:beyond`, Talents).
    Every opening sum is minted and booked `endowment` or `reserve`, so the books balance from the first snapshot.
-     ISLE.simMoney()            after the towns are declared (40) -> {currencies, accounts, supply by town}
-     ISLE.simMoneyTown(s)       one settlement's accounts (the villages: 47h calls it)
-     ISLE.moneyBooks()          a snapshot: the money report and the ledger's money
-     ISLE.moneyChecks(a, b)     over two snapshots: every household, workplace, treasury and guild of a settlement has its
+     RH.simMoney()            after the towns are declared (40) -> {currencies, accounts, supply by town}
+     RH.simMoneyTown(s)       one settlement's accounts (the villages: 47h calls it)
+     RH.moneyBooks()          a snapshot: the money report and the ledger's money
+     RH.moneyChecks(a, b)     over two snapshots: every household, workplace, treasury and guild of a settlement has its
                                 account in its nation's currency; every workplace owned by its own town's treasury; nobody
                                 below zero; each settlement's money balanced to its books (the ledger) */
-ISLE.simMoney = function () {
-  var T = ISLE.TUNE.sim, K = T.money, S = ISLE.SIM; if (!K || !SIM.money) return null;
+RH.simMoney = function () {
+  var T = RH.TUNE.sim, K = T.money, S = RH.SIM; if (!K || !SIM.money) return null;
   /* a colony's currency (47k: the Tethyan drachma) only where a town that keeps it is declared, so a page without one keeps its money as it was */
-  var CUR = Object.assign({}, K.currencies); S.order.forEach(function (s) { var c = ISLE.currencyOf(s); if (!CUR[c] && K.extra && K.extra[c]) CUR[c] = K.extra[c]; });
+  var CUR = Object.assign({}, K.currencies); S.order.forEach(function (s) { var c = RH.currencyOf(s); if (!CUR[c] && K.extra && K.extra[c]) CUR[c] = K.extra[c]; });
   var M1 = K.m1; SIM.money({ currencies: CUR, spread: K.spread, m1: M1 ? { wage: function () { return M1.wage; }, priceWage: M1.wage, calibrate: M1.calibrate, fallback: M1.fallback && typeof M1.fallback === 'object' ? function (g) { var v = M1.fallback[g]; return v == null ? M1.fallback._ : v; } : M1.fallback, ration: M1.ration !== false,
     spend: M1.spend ? { bands: T.items.wealthSpread, days: M1.spend.days, treatDrop: M1.spend.treatDrop } : null,
-    stations: M1.stations ? { of: ISLE.stationOf, cls: M1.stations.cls, rise: M1.stations.rise, perLife: M1.stations.perLife, margin: M1.stations.margin, reserve: M1.stations.reserve, fall: M1.stations.fall } : null } : null,
+    stations: M1.stations ? { of: RH.stationOf, cls: M1.stations.cls, rise: M1.stations.rise, perLife: M1.stations.perLife, margin: M1.stations.margin, reserve: M1.stations.reserve, fall: M1.stations.fall } : null } : null,
     m2: K.m2 || null });
   Object.keys(K.changers || {}).forEach(function (c) { if (SIM.acct('changer:' + c)) SIM.mint('changer:' + c, K.changers[c], 'reserve'); });
   Object.keys(K.foreign || {}).forEach(function (c) { SIM.account({ id: 'foreign:beyond', owner: 'ships from beyond', kind: 'foreign', currency: c, name: 'the traders from beyond the isles' });
     SIM.mint('foreign:beyond', K.foreign[c], 'reserve'); });
-  S.order.forEach(function (s) { ISLE.simMoneyTown(s); });
+  S.order.forEach(function (s) { RH.simMoneyTown(s); });
   if (M1) { S.order.forEach(function (s) { SIM.moneyPrices(s); });   /* the towns' costs first: a village's foods are costed at its town's */
-    ISLE.moneyRecost(S.order); }
+    RH.moneyRecost(S.order); }
 
   var R = SIM.moneyReport(), sup = {}; S.order.forEach(function (s) { sup[s] = (R.towns[s] || {}); });
   return { currencies: Object.keys(K.currencies), accounts: SIM.accounts().length, towns: sup };
 };
 /* a person's station at the market's opening, by its trade (the owner: class follows profession) */
-ISLE.stationOf = function (a) { var Z = ISLE.TUNE.sim.money.m1.stations, s = SIM.settlementOf(a), job = s != null && a.role.indexOf(s + '.') === 0 ? a.role.slice(s.length + 1) : a.role;
+RH.stationOf = function (a) { var Z = RH.TUNE.sim.money.m1.stations, s = SIM.settlementOf(a), job = s != null && a.role.indexOf(s + '.') === 0 ? a.role.slice(s.length + 1) : a.role;
   if (Z.merchants.indexOf(job) >= 0) return 'merchant'; if (Z.nobles.indexOf(job) >= 0 && a.cls === 'rich') return 'noble'; return 'worker'; };
-ISLE.currencyOf = function (s) { var K = ISLE.TUNE.sim.money, St = SIM.R.settlement[s], f = St && St.faction; return (K.nation || {})[f] || Object.keys(K.currencies)[0]; };
+RH.currencyOf = function (s) { var K = RH.TUNE.sim.money, St = SIM.R.settlement[s], f = St && St.faction; return (K.nation || {})[f] || Object.keys(K.currencies)[0]; };
 /* THE COST TABLES AGAIN, one settlement at a time (2026-11-09). Money's cost of a good a settlement does not make is its
    cost where it is made, found by recursing into that settlement's table; a table first computed while the settlement
    asking is mid-way finds it busy, takes the placeholder (m1 `fallback`) and keeps it. So the second town priced Kautoa's
    rice and salt at 30 shells against 1 and 3, and anything that buys at one town's price and sells at the other's saw a
    tenfold gap. Recomputed in turn, each table reads the others' finished ones. `keys`: the settlements, in order */
-ISLE.moneyRecost = function (keys) {
+RH.moneyRecost = function (keys) {
   var C = SIM.MONEY && SIM.MONEY.m1; if (!C) return;
   for (var pass = 0; pass < 2; pass++) keys.forEach(function (k) { delete C.cost[k]; SIM.moneyPrices(k === '' ? null : k); });
 };
 /* o.fundedBy: an account that pays the new settlement's reserve and its households' endowments (a settlement founded after
    the start: its money comes from its town, it is not minted) */
-ISLE.simMoneyTown = function (s, o) {
+RH.simMoneyTown = function (s, o) {
   o = o || {}; var mint = function (id, n, why) { if (!(n > 0)) return 0; return o.fundedBy ? SIM.pay(o.fundedBy, id, n, why === 'reserve' ? 'grant' : why, true) : SIM.mint(id, n, why); };
-  var K = ISLE.TUNE.sim.money, c = ISLE.currencyOf(s), tre = 'treasury:' + s, I = SIM.ITEMS, E = SIM.econ(s), out = { households: 0, workplaces: 0 };
+  var K = RH.TUNE.sim.money, c = RH.currencyOf(s), tre = 'treasury:' + s, I = SIM.ITEMS, E = SIM.econ(s), out = { households: 0, workplaces: 0 };
   if (SIM.acct(tre)) return out;
   var places = SIM.all('place').filter(function (P) { return SIM.settlementOf(P.id) === s; }).sort(function (a, b) { return a.id < b.id ? -1 : a.id > b.id ? 1 : 0; });
   var people = places.reduce(function (n, P) { return n + (P.people || 0); }, 0);
@@ -68,15 +71,15 @@ ISLE.simMoneyTown = function (s, o) {
   if (G) { SIM.account({ id: 'guild:' + s, owner: G.id, kind: 'guild', currency: c, settlement: s, name: "the thieves' guild" }); SIM.mint('guild:' + s, K.guild || 0, 'reserve'); }
   return out;
 };
-ISLE.moneyBooks = function () { var hh = {}; SIM.accounts().forEach(function (A) { if (A.kind === 'household' || A.kind === 'mess') hh[A.id] = A.balance; });
+RH.moneyBooks = function () { var hh = {}; SIM.accounts().forEach(function (A) { if (A.kind === 'household' || A.kind === 'mess') hh[A.id] = A.balance; });
   return { minute: SIM.minute(), report: SIM.moneyReport(), ledger: SIM.ledgerSnap(), m1: SIM.moneyM1(), households: hh, rel: SIM.MONEY && SIM.MONEY.m1 ? JSON.parse(JSON.stringify(SIM.MONEY.m1.rel)) : null,
     prices: SIM.MONEY && SIM.MONEY.m1 ? JSON.parse(JSON.stringify(SIM.MONEY.m1.price)) : null, stations: SIM.moneyStations ? SIM.moneyStations() : null }; };
 /* M1's checks, over two snapshots taken after the calibration: the prices whole, at least 1, and a made good dearer than
    its inputs' cost (bread over its taro); the wage bill paid in full each day (none unpaid); the circular flow in every
    settlement (the wages paid into its households = what they spent + what they saved); the dole's share reported */
-ISLE.moneyM1Checks = function (a, b) {
+RH.moneyM1Checks = function (a, b) {
   var res = [], ok = function (name, pass, detail) { res.push({ name: 'money M1: ' + name, ok: !!pass, detail: detail }); };
-  var P = b.prices || {}, towns = Object.keys(P).filter(function (k) { return ISLE.SIM.order.indexOf(k) >= 0; }), badP = [];
+  var P = b.prices || {}, towns = Object.keys(P).filter(function (k) { return RH.SIM.order.indexOf(k) >= 0; }), badP = [];
   towns.forEach(function (s) { var E = SIM.econ(s), C = SIM.MONEY.m1.cost[s] || {};
     Object.keys(P[s]).forEach(function (g) { var p = P[s][g]; if (!(p >= 1) || Math.floor(p) !== p) badP.push(s + ' ' + g + ' ' + p);
       var made = Object.keys(E.recipes).some(function (id) { var R = E.recipes[id]; return R && R.out && R.out.indexOf(g) >= 0; }), In = E.inputs[g]; if (made && In && C[g] != null) { var ic = Object.keys(In).reduce(function (n, i) { return n + In[i] * (C[i] || 0); }, 0); if (C[g] < ic - 1e-9) badP.push(s + ' ' + g + ' costs less than its inputs'); } }); });
@@ -93,18 +96,18 @@ ISLE.moneyM1Checks = function (a, b) {
   ok('the wage bill paid in full every day (the treasury and its workplaces never short)', unpaid === 0 && live, unpaid ? unpaid + ' shells of wages or purchases unpaid' :
     flow.map(function (f) { return f.k + ': dole ' + f.dl + ' (' + (f.sp + f.dl > 0 ? Math.round(100 * f.dl / (f.sp + f.dl)) : 0) + '% of what was bought), the ration ' + (rs[f.k] == null ? '-' : Math.round(100 * rs[f.k]) + '% of a full keep'); }).join('; '));
   /* the treasury and its workplaces break even, near enough, over the paid days: the markup set on the earners' keep */
-  var tre = ISLE.SIM.order.map(function (s) { var t0 = 0, t1 = 0; [a, b].forEach(function (X, j) { Object.keys(X.ledger.money.accounts).forEach(function (id) { var A = SIM.acct(id);
+  var tre = RH.SIM.order.map(function (s) { var t0 = 0, t1 = 0; [a, b].forEach(function (X, j) { Object.keys(X.ledger.money.accounts).forEach(function (id) { var A = SIM.acct(id);
       if (A && A.settlement === s && (A.kind === 'treasury' || A.kind === 'workplace')) { if (j) t1 += X.ledger.money.accounts[id]; else t0 += X.ledger.money.accounts[id]; } }); });
     var f = flow.filter(function (x) { return x.k === s; })[0] || { w: 0 }; return { s: s, d: t1 - t0, out: f.w }; });
   ok('each town\'s treasury breaks even, near enough (within a quarter of what it paid out)', tre.every(function (t) { return t.out > 0 && Math.abs(t.d) <= 0.25 * t.out; }),
     tre.map(function (t) { return t.s + ' ' + (t.d >= 0 ? '+' : '') + t.d + ' on ' + t.out + ' paid out'; }).join('; '));
   return res;
 };
-ISLE.moneyChecks = function (a, b) {
+RH.moneyChecks = function (a, b) {
   var res = [], ok = function (name, pass, detail) { res.push({ name: 'money: ' + name, ok: !!pass, detail: detail }); };
-  var S = ISLE.SIM, towns = Object.keys(SIM.R.settlement).filter(function (s) { return SIM.acct('treasury:' + s); }).sort(), acc = b.ledger.money ? b.ledger.money.accounts : {};
+  var S = RH.SIM, towns = Object.keys(SIM.R.settlement).filter(function (s) { return SIM.acct('treasury:' + s); }).sort(), acc = b.ledger.money ? b.ledger.money.accounts : {};
   var miss = [], held = function (id) { return acc[id] != null; };
-  towns.forEach(function (s) { var c = ISLE.currencyOf(s), E = SIM.econ(s), I = SIM.ITEMS;
+  towns.forEach(function (s) { var c = RH.currencyOf(s), E = SIM.econ(s), I = SIM.ITEMS;
     SIM.all('place').forEach(function (P) { if (SIM.settlementOf(P.id) !== s) return;
       if (P.people && !P.mess && (!held('hh:' + P.id) || SIM.acct('hh:' + P.id).currency !== c)) miss.push('hh:' + P.id);
       var works = (E && E.recipes && E.recipes[P.id]) || (I && I.sells && I.sells[P.id] && I.sells[P.id].length);
@@ -112,7 +115,7 @@ ISLE.moneyChecks = function (a, b) {
     if (SIM.guildOf && SIM.guildOf(s) && !held('guild:' + s)) miss.push('guild:' + s); });
   var R = b.report || {}, cur = R.currencies || {};
   ok('every household, workplace, treasury and guild has its account in its nation\'s currency, every workplace its town\'s', !miss.length && towns.length >= 2,
-    miss.length ? miss.length + ' missing or wrong: ' + miss.slice(0, 4).join(', ') : towns.map(function (s) { return s + ' ' + SIM.accounts({ settlement: s }).length + ' accounts in ' + ISLE.currencyOf(s); }).join('; '));
+    miss.length ? miss.length + ' missing or wrong: ' + miss.slice(0, 4).join(', ') : towns.map(function (s) { return s + ' ' + SIM.accounts({ settlement: s }).length + ' accounts in ' + RH.currencyOf(s); }).join('; '));
   var neg = Object.keys(acc).filter(function (id) { return acc[id] < 0; });
   ok('nobody holds less than nothing', !neg.length, neg.length ? neg.join(', ') : Object.keys(cur).map(function (c) { return cur[c].supply + ' ' + c + ' in ' + cur[c].accounts + ' accounts'; }).join('; '));
   var L = SIM.ledger(a.ledger, b.ledger);
@@ -122,10 +125,10 @@ ISLE.moneyChecks = function (a, b) {
 /* M2's checks (moving prices), over the same two snapshots: every governed good's scarcity within [lo, hi] of its cost x
    markup; the town's price index (its foods' prices over their cost) within `drift` of where it opened, no runaway; a good
    short of its target dearer than one over it, on the whole */
-ISLE.moneyM2Checks = function (a, b, drift) {
+RH.moneyM2Checks = function (a, b, drift) {
   var res = [], ok = function (name, pass, detail) { res.push({ name: 'money M2: ' + name, ok: !!pass, detail: detail }); };
-  var Z = ISLE.TUNE.sim.money.m2; if (!Z) return res; drift = drift == null ? 0.15 : drift;
-  var towns = ISLE.SIM.order, bad = [], idx = [], short = [];
+  var Z = RH.TUNE.sim.money.m2; if (!Z) return res; drift = drift == null ? 0.15 : drift;
+  var towns = RH.SIM.order, bad = [], idx = [], short = [];
   towns.forEach(function (s) { var R = (b.rel || {})[s] || {}; Object.keys(R).forEach(function (g) { if (!(R[g] >= Z.lo - 1e-9 && R[g] <= Z.hi + 1e-9)) bad.push(s + ' ' + g + ' ' + R[g]); });
     var H = (b.m1.days[s] || []).filter(function (d) { return d.cpi != null; }), c0 = H.length ? H[0].cpi : null, c1 = H.length ? H[H.length - 1].cpi : null, mx = 0;
     H.forEach(function (d) { mx = Math.max(mx, Math.abs(d.cpi / c0 - 1)); }); idx.push({ s: s, c0: c0, c1: c1, mx: mx, n: H.length });
@@ -141,10 +144,10 @@ ISLE.moneyM2Checks = function (a, b, drift) {
 };
 /* M1's second part (spending that follows savings): every person's wealth within its class's band; no treat's good on
    the dole, near enough (a purse checked again at the counter); the households' savings */
-ISLE.moneySpendChecks = function (a, b) {
+RH.moneySpendChecks = function (a, b) {
   var res = [], ok = function (name, pass, detail) { res.push({ name: 'money spend: ' + name, ok: !!pass, detail: detail }); };
-  var T = ISLE.TUNE.sim, B = T.items.wealthSpread, out = [];
-  SIM.all('actor').forEach(function (x) { var W = B[x.cls]; if (!W || x.driven || ISLE.SIM.order.indexOf(SIM.settlementOf(x)) < 0) return; if (!(x.wealth >= W[0] - 1e-9 && x.wealth <= W[1] + 1e-9)) out.push(x.id + ' ' + x.cls + ' ' + x.wealth); });
+  var T = RH.TUNE.sim, B = T.items.wealthSpread, out = [];
+  SIM.all('actor').forEach(function (x) { var W = B[x.cls]; if (!W || x.driven || RH.SIM.order.indexOf(SIM.settlementOf(x)) < 0) return; if (!(x.wealth >= W[0] - 1e-9 && x.wealth <= W[1] + 1e-9)) out.push(x.id + ' ' + x.cls + ' ' + x.wealth); });
   var fills = SIM.accounts({ kind: 'household' }).map(function (A) { return SIM.moneyFill(A.owner); }).filter(function (f) { return f != null; }).sort(function (p, q) { return p - q; });
   var q = function (p) { return fills.length ? fills[Math.min(fills.length - 1, Math.floor(p * fills.length))] : null; };
   ok('every person\'s wealth within its class\'s band, the household\'s purse its place in it', !out.length && fills.length > 0,
@@ -158,9 +161,9 @@ ISLE.moneySpendChecks = function (a, b) {
 /* the stations' checks: every rise bought a vacant place of its station's kinds in its own town, now the riser's household's,
    the riser at its station's class and within its rises a life; every fall's place back with the treasury, its runner a
    station down, its household's people carrying the fall's unhappiness; the happiness pool by class, reported */
-ISLE.moneyStationChecks = function (a, b) {
+RH.moneyStationChecks = function (a, b) {
   var res = [], ok = function (name, pass, detail) { res.push({ name: 'money stations: ' + name, ok: !!pass, detail: detail }); };
-  var Z = ISLE.TUNE.sim.money.m1.stations; if (!Z) return res; var S0 = (a.stations || { events: [] }).events.length, ev = (b.stations || { events: [] }).events.slice(S0), bad = [];
+  var Z = RH.TUNE.sim.money.m1.stations; if (!Z) return res; var S0 = (a.stations || { events: [] }).events.length, ev = (b.stations || { events: [] }).events.slice(S0), bad = [];
   var rises = ev.filter(function (e) { return e.kind === 'rise'; }), falls = ev.filter(function (e) { return e.kind === 'fall'; });
   rises.forEach(function (e) { var R = Z.rise[e.to], P = e.place && SIM.R.place[e.place], A = e.place && SIM.acct('wp:' + e.place), x = SIM.R.actor[e.actor], fell = falls.some(function (f) { return f.place === e.place && f.m > e.m; });
     if (!R || (R.places && (!P || R.places.indexOf(P.kind) < 0 || SIM.settlementOf(P.id) !== e.settlement))) bad.push(e.actor + ': not a ' + e.to + "'s place");
@@ -174,7 +177,8 @@ ISLE.moneyStationChecks = function (a, b) {
     var ppl = H ? SIM.all('actor').filter(function (y) { return y.home === H.owner && !y.driven; }) : [];
     if (b.minute - e.m < Z.fall.days * 1440 && !ppl.every(function (y) { return (y.hmods || []).some(function (h) { return h.why === 'fall'; }); })) badF.push(e.household + ' not unhappy'); });
   ok('every fall: the place back with the treasury, its people unhappier', !badF.length, badF.length ? badF.slice(0, 3).join('; ') : falls.length + ' falls');
-  var pools = ISLE.SIM.order.map(function (s) { var P = SIM.happinessPool(s); return s + ' ' + Math.round(P.all.mean) + ' (' + Object.keys(P.byClass).map(function (c) { return c + ' ' + Math.round(P.byClass[c].mean); }).join(', ') + ')'; });
+  var pools = RH.SIM.order.map(function (s) { var P = SIM.happinessPool(s); return s + ' ' + Math.round(P.all.mean) + ' (' + Object.keys(P.byClass).map(function (c) { return c + ' ' + Math.round(P.byClass[c].mean); }).join(', ') + ')'; });
   ok('the happiness pool, collective and by class (unrest below 50: 47u, M6)', true, pools.join('; '));
   return res;
 };
+});

@@ -281,6 +281,24 @@ cluster's links between Mav's Refuge, Girder and Talia already exist.
 
 Longsong can be on the sim after S0-S3. Pinnacle Rock needs S0-S7.
 
+**Done (2026-11-11; the owner: "make sure S0-S3 are implemented").**
+- **S0:** `core/region`, the isle host lifted whole (`KREGION.part`, the page's `KREGION.use(ISLE)`), and the culture's
+  literals moved into `H.TUNE.sim.culture` (`core/region/README.md`).
+- **S1:** `core/simulation/77-sim-6-season.js`: `SIM.calendar`, a recipe's or herd's `season` and `seasonRate`, and
+  `SIM.onSeason`. Tested in `test-season.js`.
+- **S2:** Longsong's culture table, `settlements/longsong/src/15-ls-tune.js` (`LS_TUNE`): goods, diets, the farming year,
+  the herds, the Order's crafts (light upkeep and relic work, no heavy industry), the calendar, the caravan and the
+  fealty.
+- **S3:**
+  - core/simulation: `SIM.trade`'s `share` (the tithe) and `77-sim-6-transfer.js` (the fealty and esteem, fixed);
+  - `core/region/50-region-valley.js`: a valley declared from a plain spec at the abstract level;
+  - the year test, `settlements/longsong/tests/test-ls-economy.js`. On the region's plan (`openworld/oidong-highrift`),
+    the ring of 15 tithes 251 t, and the house ends the year fuller than it began. The ring of three leaves the house
+    24 t short.
+
+  The page's people are not yet declared through the host. Longsong's page declares its walkers on core/simulation
+  itself (`40d-ls-sim.js`); its economy is the valley test's.
+
 ## 5. Things to fix on the way
 
 **Longsong:**

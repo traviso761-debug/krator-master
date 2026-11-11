@@ -1,34 +1,37 @@
+/* core/region 45-region-sim-checks: lifted from settlements/isle-demo/src/45-isle-sim-checks.js (S0, 2026-11-11). RH is the region's host (KREGION.use:
+   the isle demo's ISLE, Longsong's LSR); the body is the isle demo's, ISLE. read as RH. */
+KREGION.part('45-region-sim-checks', function (RH) {
 /* ============================== 7f. THE SIM'S CHECKS, PER TOWN (P7b) ============================== */
 /* [G data] What verify.py --assert and the node test (tests/test-isle-sim.js) hold a town declared on core/simulation to,
-   each {name, ok, detail} as ISLE.checks gives them. o overrides what is read, for the negatives: {places, actors, books}.
-     ISLE.simChecks(R, o)       once declared: every lot of a census trade (a key kits/islanders' IS_TRADES names) is a
+   each {name, ok, detail} as RH.checks gives them. o overrides what is read, for the negatives: {places, actors, books}.
+     RH.simChecks(R, o)       once declared: every lot of a census trade (a key kits/islanders' IS_TRADES names) is a
                                 place of the town; every resident lives in a home of the town and the town holds the
                                 census's people; every worker has a job (a place of the town offering WORK) and every
                                 post is filled; the stocks map (46) finds every place from its lot, and SIM.stocks reads
                                 the town's foods by settlement
-     ISLE.simBooks(s)           a town's food books after a run: per food made, hauled, drawn, short and the days its
+     RH.simBooks(s)           a town's food books after a run: per food made, hauled, drawn, short and the days its
                                 stock lasts (SIM.economyReport); bought, eaten and out of (the items' books by town);
                                 the meals the kitchens could not make
-     ISLE.simFoodChecks(R, books)  after a day: every food made and hauled, food eaten, nothing short (no draw on the
+     RH.simFoodChecks(R, books)  after a day: every food made and hauled, food eaten, nothing short (no draw on the
                                 warehouses unmet, no purchase out of stock, no kitchen without a meal), every food
                                 lasting a day more, and the food made (less what went into other food) covering what the town ate.
                                 The meals are the town's own (core/simulation books them by town: SIM.ITEMS.statsBy[town].meals) */
-ISLE.simChecks = function (R, o) {
+RH.simChecks = function (R, o) {
   o = o || {};
-  var TS = ISLE.TUNE.sim.towns[R.town], s = TS.id, out = [];
+  var TS = RH.TUNE.sim.towns[R.town], s = TS.id, out = [];
   var ok = function (name, pass, detail) { out.push({ name: R.town + ': ' + name, ok: !!pass, detail: detail }); };
   var places = o.places || SIM.all('place').filter(function (P) { return P.settlement === s; });
   var byLot = {}; places.forEach(function (P) { if (P.tags && P.tags.lot) byLot[P.tags.lot] = P; });
   /* the census trades' lots */
-  var lots = R.lots.filter(function (L) { return ISLE.tradeOf(L.key); }), miss = lots.filter(function (L) { return !byLot[L.id]; }), tr = {};
-  lots.forEach(function (L) { tr[ISLE.tradeOf(L.key)] = 1; });
+  var lots = R.lots.filter(function (L) { return RH.tradeOf(L.key); }), miss = lots.filter(function (L) { return !byLot[L.id]; }), tr = {};
+  lots.forEach(function (L) { tr[RH.tradeOf(L.key)] = 1; });
   ok('every lot of a census trade is a place', lots.length > 0 && miss.length === 0, lots.length + ' lots of ' + Object.keys(tr).length + ' trades, ' + places.length + ' places in all' +
     (miss.length ? '; NOT PLACES: ' + miss.slice(0, 5).map(function (L) { return L.id + ' ' + L.key; }).join(', ') : ''));
   /* the residents */
   var actors = o.actors || SIM.all('actor').filter(function (a) { var Rr = SIM.R.role[a.role]; return !a.driven && Rr && Rr.settlement === s; });
   var pi = {}; places.forEach(function (q) { pi[q.id] = q; });
   var homeless = actors.filter(function (a) { var H = pi[a.home]; return !H || H.settlement !== s || !(H.activities.SLEEP > 0); });
-  var C = ISLE.census(R);
+  var C = RH.census(R);
   var grown = actors.filter(function (a) { var H = pi[a.home]; return a.refugee || (H && H.tags && H.tags.built); }).length;   /* the households formed since (47b growth) and the refugees landed (47r) */
   ok('every resident has a home in the town (the census\'s people, and the households formed since)', actors.length > 0 && homeless.length === 0 && actors.length - grown === C.citizens,
     actors.length + ' residents, census ' + C.citizens + (grown ? ', ' + grown + ' since' : '') + (homeless.length ? '; WITHOUT A HOME IN THE TOWN: ' + homeless.slice(0, 4).map(function (a) { return a.id; }).join(', ') : ''));
@@ -43,7 +46,7 @@ ISLE.simChecks = function (R, o) {
     (jobless.length ? '; WITHOUT A JOB IN THE TOWN: ' + jobless.slice(0, 4).map(function (a) { return a.id; }).join(', ') : ''));
   /* by age (42): every child at school (a STUDY place of the town) or at housework (its home), every elder at housework,
      each age in its band; the households mixed (no house of children alone) */
-  var Bd = ISLE.TUNE.sim.ages.bands, wrong = [];
+  var Bd = RH.TUNE.sim.ages.bands, wrong = [];
   actors.forEach(function (a) {
     var Rr = SIM.R.role[a.role], nm = Rr.name, H = pi[a.home], W = pi[a.work];
     if (a.ageBand === 'child' && !(nm === 'pupil' ? W && W.settlement === s && W.activities.STUDY > 0 : H && H.activities.HOUSEWORK > 0 && Rr.sched.indexOf('HOUSEWORK') >= 0)) wrong.push(a.id + ' (a child)');
@@ -51,20 +54,20 @@ ISLE.simChecks = function (R, o) {
     var b = Bd[nm === 'pupil' ? 'pupil' : nm === 'child' ? 'child' : nm === 'elder' ? 'elder' : 'adult'];
     if (!(a.age >= b[0] && a.age <= b[1])) wrong.push(a.id + ' aged ' + a.age);
   });
-  var D = ISLE.simDemography(s), kids = actors.filter(function (a) { return a.ageBand === 'child'; }), eld = actors.filter(function (a) { return a.ageBand === 'elder'; });
+  var D = RH.simDemography(s), kids = actors.filter(function (a) { return a.ageBand === 'child'; }), eld = actors.filter(function (a) { return a.ageBand === 'elder'; });
   ok('every child at school or at housework, every elder at housework, the households mixed', kids.length > 0 && eld.length > 0 && !wrong.length && D.households.onlyChildren === 0,
     kids.length + ' children (' + (D.status.pupil || 0) + ' at school, ' + kids.filter(function (a) { return a.status === 'housework'; }).length + ' at housework), ' + eld.length + ' elders at housework; ' +
     D.households.n + ' households, ' + D.households.onlyChildren + ' of children alone' + (wrong.length ? '; WRONG: ' + wrong.slice(0, 4).join(', ') : ''));
   /* the stocks map (46): every place found again from its lot, and the town's stocks read by settlement */
-  var lost = places.filter(function (q) { return q.tags && q.tags.lot && ISLE.simIdOf({ lot: q.tags.lot }).indexOf(q.id) < 0; }), X = ISLE.SIM.towns[s];
+  var lost = places.filter(function (q) { return q.tags && q.tags.lot && RH.simIdOf({ lot: q.tags.lot }).indexOf(q.id) < 0; }), X = RH.SIM.towns[s];
   var St = SIM.stocks ? SIM.stocks(s) : null, rows = St ? (X.econ.foods || []).filter(function (f) { return St.by[f]; }).length : 0;
   ok('the stocks map finds every place from its lot; the stocks read by settlement', lost.length === 0 && St && rows === (X.econ.foods || []).length,
     places.filter(function (q) { return q.tags && q.tags.lot; }).length + ' places by lot, ' + rows + ' of ' + (X.econ.foods || []).length + ' foods in its stocks' +
     (lost.length ? '; NOT FOUND: ' + lost.slice(0, 4).map(function (q) { return q.id; }).join(', ') : ''));
   return out;
 };
-ISLE.simBooks = function (s) {
-  var E = SIM.economyReport(s), I = SIM.ITEMS, B = (I.statsBy || {})[s] || {}, X = ISLE.SIM.towns[s], F = X.econ.foods;
+RH.simBooks = function (s) {
+  var E = SIM.economyReport(s), I = SIM.ITEMS, B = (I.statsBy || {})[s] || {}, X = RH.SIM.towns[s], F = X.econ.foods;
   var M = Object.assign({ meal: 0, single: 0, none: 0, bought: 0, mess: 0, out: 0 }, B.meals || {});   /* the town's own meals (SIM.ITEMS.statsBy[town].meals) */
   var out = { town: s, foods: {}, meals: M, carts: E.carts, short: E.short };
   F.forEach(function (f) {
@@ -74,8 +77,8 @@ ISLE.simBooks = function (s) {
   });
   return out;
 };
-ISLE.simFoodChecks = function (R, books) {
-  var out = [], ok = function (name, pass, detail) { out.push({ name: R.town + ': ' + name, ok: !!pass, detail: detail }); }, F = books.foods, DI = ((ISLE.SIM.towns[books.town] || {}).econ || {}).diet || {}, k = Object.keys(F).filter(function (f) { return DI[f] == null; });   /* the town's own foods: the imported are landed, not made */
+RH.simFoodChecks = function (R, books) {
+  var out = [], ok = function (name, pass, detail) { out.push({ name: R.town + ': ' + name, ok: !!pass, detail: detail }); }, F = books.foods, DI = ((RH.SIM.towns[books.town] || {}).econ || {}).diet || {}, k = Object.keys(F).filter(function (f) { return DI[f] == null; });   /* the town's own foods: the imported are landed, not made */
   var sum = function (key) { return k.reduce(function (n, f) { return n + F[f][key]; }, 0); };
   var unmade = k.filter(function (f) { return !(F[f].made > 0) || !(F[f].hauled > 0); });
   ok('every food made and hauled', unmade.length === 0, k.map(function (f) { return f + ' ' + F[f].made + '/' + F[f].hauled; }).join(', ') + ' (made/hauled)' + (unmade.length ? '; NOT: ' + unmade.join(', ') : ''));
@@ -87,7 +90,7 @@ ISLE.simFoodChecks = function (R, books) {
     (short.length ? '; SHORT: ' + short.join(', ') : '') + (low.length ? '; UNDER A DAY: ' + low.join(', ') : ''));
   /* made, less the food that went into other food (the sweet potato baked into bread), against what was eaten: at home,
      and the meals bought out and served at the mess */
-  var IN = Object.assign({}, ISLE.TUNE.sim.economy.inputs, ISLE.TUNE.sim.towns[R.town].inputs || {}), per = ISLE.TUNE.sim.items.perMeal, made = sum('made'), into = 0;
+  var IN = Object.assign({}, RH.TUNE.sim.economy.inputs, RH.TUNE.sim.towns[R.town].inputs || {}), per = RH.TUNE.sim.items.perMeal, made = sum('made'), into = 0;
   k.forEach(function (f) { var q = IN[f] || {}; for (var g in q) if (F[g]) into += F[f].made * q[g]; });
   var ate = eaten + (meals.bought + meals.mess) * per;
   ok('the food made covers what the town ate', made - into >= ate, (made - into) + ' servings made (' + made + ', ' + into + ' of them baked into others), ' + ate + ' eaten (' + eaten + ' at home, ' +
@@ -96,13 +99,14 @@ ISLE.simFoodChecks = function (R, books) {
 };
 /* the free hours: of those who want company now (wish SOCIALIZE), the share at a place for it rather than sent home; measured
    in a presented town (an abstract town's people do not decide: verify skips the check there) */
-ISLE.simSocial = function (s) {
+RH.simSocial = function (s) {
   var A = SIM.all('actor').filter(function (a) { return !a.driven && SIM.settlementOf(a) === s && a.wanted === 'SOCIALIZE'; });
   var at = A.filter(function (a) { return a.activity === 'SOCIALIZE' && a.place !== a.home; }).length, slots = SIM.all('place').filter(function (P) { return P.settlement === s; }).reduce(function (n, P) { return n + (P.activities.SOCIALIZE || 0); }, 0);
   return { town: s, minute: SIM.minute(), level: SIM.levelOf ? SIM.levelOf(s) : 'presented', want: A.length, placed: at, slots: slots };
 };
-ISLE.simSocialCheck = function (R, soc, least) {
+RH.simSocialCheck = function (R, soc, least) {
   least = least == null ? 0.9 : least; var q = soc.want ? soc.placed / soc.want : 0;
   return { name: R.town + ': those who want company in their free hours find a place for it', ok: soc.want > 0 && q >= least,
     detail: soc.placed + ' of ' + soc.want + ' wanting company placed (' + Math.round(100 * q) + '%, ' + Math.round(100 * least) + '% wanted) at ' + Math.floor(soc.minute % 1440 / 60) + ':' + ('0' + soc.minute % 60).slice(-2) + '; ' + soc.slots + ' places for it' };
 };
+});
