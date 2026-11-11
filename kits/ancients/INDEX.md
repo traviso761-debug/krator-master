@@ -180,7 +180,7 @@ Each target adds its own fragments to `src/` and builds one output.
 | `dalab` | `89z-rows.js`, `91z-views.js` | 4 |
 | `darco` | `89z-rows.js`, `91z-views.js` | 2 |
 | `drum` | `89z-rows.js`, `91z-views.js` | 6 |
-| `engines` | `89z-rows.js`, `8aj-engines3.js` (the industrial set: the Coil, the Procession, the Mortar, the Vigil, the Receiver, the Loom, the Iris, the Hive, the Star, the Abacus), `91z-views.js` | 34 |
+| `engines` | `89z-rows.js`, `8aj-engines3.js`, `91y-engine-checks.js`, `91z-views.js` | 37 |
 | `forest` | `89z-rows.js`, `91z-views.js` | 5 |
 | `funicular` | `89z-rows.js`, `91z-views.js` | 5 |
 | `hexahedron` | `89z-rows.js`, `91z-views.js` | 8 |

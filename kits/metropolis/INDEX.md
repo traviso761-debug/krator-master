@@ -27,20 +27,25 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `46c-mp-planned.js` | 56 **big** |  |
 | `46d-mp-gridplan.js` | 68 **big** |  |
 | `46e-mp-industry.js` | 10 |  |
+| `46f-mp-farm.js` | 18 |  |
+| `46f-mp-yards.js` | 15 |  |
 | `47-host-land.js` | 2 |  |
 | `50-mp-kit.js` | 12 |  |
 | `52-mp-hero-spindle.js` | 14 |  |
 | `53-mp-hero-ledger.js` | 14 |  |
 | `54-mp-hero-designs.js` | 39 **big** |  |
+| `54f-mp-hero-farm.js` | 28 |  |
 | `55-mp-hero-ancients.js` | 24 |  |
 | `56-mp-interiors.js` | 22 |  |
 | `57-mp-debris.js` | 6 |  |
+| `57y-mp-yards-draw.js` | 13 |  |
 | `58-mp-cutaway.js` | 4 |  |
 | `59-mp-floors.js` | 18 |  |
 | `59b-mp-ruin-design.js` | 11 |  |
 | `59d-mp-flora.js` | 4 |  |
-| `60-mp-shell-host.js` | 22 |  |
+| `60-mp-shell-host.js` | 24 |  |
 | `70-mp-stage.js` | 22 |  |
+| `70f-mp-stage-farm.js` | 17 |  |
 | `89-host-sky.js` | <1 |  |
 | `99-host-take.js` | 5 |  |
 | `99-tail.html` | <1 |  |

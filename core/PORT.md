@@ -6,12 +6,14 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 2166 (48%) | 472 (10%) | 106 (2%) | 1070 (24%) | 698 (15%) |
+| KB | 2213 (48%) | 495 (11%) | 116 (3%) | 1090 (24%) | 717 (15%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
 | Fragment | KB | Tag | THREE | canvas | DOM | events | loop | geom | shader | inst | ray | store | net | Note |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `anomaly/20-core-anomaly.js` | 16.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `anomaly/host/90-anomaly-walker.js` | 2.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `atmos/89-atmos-0-core.js` | 11.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 3 | 1 | 3 | 0 | 0 | 0 | the host passes dt (onFrame), view height and pixel ratio; becomes the Atmos autoload |
 | `atmos/89-atmos-0p-presets.js` | 7.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | presets: one .tres per preset |
 | `atmos/89-atmos-1-street.js` | 5.6 | [G shader] | 0 | 0 | 0 | 0 | 0 | 1 | 1 | 0 | 0 | 0 | 0 | per core/atmos/GODOT.md |
@@ -34,26 +36,31 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `atmos/fx/89-atmos-fx-dustseason.js` | 2.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `atmos/fx/89-atmos-fx-katabatic.js` | 3.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `atmos/fx/89-atmos-fx-lava.js` | 10.9 | [G shader] | 1 | 0 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 |  |
-| `atmos/fx/89-atmos-fx-lightning.js` | 5.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `atmos/fx/89-atmos-fx-lightning.js` | 6.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `atmos/fx/89-atmos-fx-localtime.js` | 11.1 | [draw] | 0 | 0 | 0 | 0 | 0 | 1 | 3 | 1 | 0 | 0 | 0 |  |
+| `atmos/fx/89-atmos-fx-radiation.js` | 15.0 | [G shader] | 0 | 0 | 0 | 0 | 0 | 2 | 12 | 0 | 0 | 0 | 0 |  |
 | `atmos/fx/89-atmos-fx-raincover.js` | 9.8 | [draw] | 0 | 0 | 0 | 0 | 0 | 1 | 2 | 2 | 0 | 0 | 0 |  |
-| `atmos/fx/89-atmos-fx-rainwall.js` | 7.7 | [G shader] | 0 | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 |  |
+| `atmos/fx/89-atmos-fx-rainwall.js` | 8.0 | [G shader] | 0 | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 |  |
 | `atmos/fx/89-atmos-fx-shimmer.js` | 7.0 | [G shader] | 0 | 0 | 0 | 0 | 0 | 1 | 5 | 0 | 0 | 0 | 0 | opt-in (subfolder): ATMOS.shimmer, the heat shimmer post pass over a KTHERM bake (core/host o.draw), shimmerK its JS twin; a full-screen quad shader in Godot |
 | `atmos/fx/89-atmos-fx-slopewind.js` | 16.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | opt-in: ATMOS.slopeWind, katabatic/anabatic/gap wind and cold pools on baked grids; attach to ATMOS.windAt, provide KHAZ temperature; fx/test-slopewind.js |
 | `atmos/fx/89-atmos-fx-smokegroups.js` | 2.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | opt-in (subfolder): ATMOS.smokeGroups, one smoke cloud a group with its own strength (the gills' steam on the breath); Godot scales the group's GPUParticles3D alpha |
 | `atmos/fx/89-atmos-fx-snowcover.js` | 11.0 | [G shader] | 0 | 0 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 |  |
+| `atmos/fxdemo/src/10-demo.js` | 9.5 | [web] | 0 | 0 | 4 | 1 | 3 | 9 | 0 | 0 | 0 | 0 | 0 |  |
 | `atmos/host/89-atmos-c-hostbind.js` | 3.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `atmos/host/89-atmos-e-weatherhost.js` | 6.7 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
-| `atmos/host/89-atmos-h-skyhost.js` | 16.4 | [G native] | 0 | 0 | 0 | 0 | 1 | 1 | 8 | 0 | 0 | 0 | 0 | the sky as a three.js background pass driving the page light; Godot: the Sky material and krator/sky.gd |
+| `atmos/host/89-atmos-h-skyhost.js` | 22.2 | [G native] | 0 | 0 | 0 | 0 | 1 | 1 | 8 | 0 | 0 | 0 | 0 | the sky as a three.js background pass driving the page light; Godot: the Sky material and krator/sky.gd |
 | `atmos/host/89-atmos-i-skybiome.js` | 7.9 | [draw] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `atmos/host/89-atmos-j-heightfog.js` | 9.9 | [draw] | 0 | 0 | 0 | 0 | 0 | 3 | 7 | 0 | 0 | 0 | 0 |  |
+| `atmos/host/89-atmos-j-heightfog.js` | 11.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 3 | 7 | 0 | 0 | 0 | 0 |  |
 | `atmos/placeholder/80-sky-hash.js` | 0.5 | [G native] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `atmos/placeholder/81-sky.js` | 9.5 | [G native] | 23 | 4 | 0 | 0 | 0 | 3 | 6 | 0 | 0 | 0 | 0 | shader hook inside |
 | `atmos/sky/89-atmos-e-skymodel.js` | 28.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the sky model (SKY-PLAN.md): sun, the lifted giant, moons, stars, calendar, ridge profiles; krator/sky.gd twin |
-| `atmos/sky/89-atmos-f-skypresets.js` | 7.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the standard sky preset and the colour script by sun altitude (skyLook): Environment and lights in Godot |
-| `atmos/sky/89-atmos-g-sky.js` | 44.4 | [G shader] | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | the atmos_sky chunk, every layer in one fragment: becomes atmos_sky.gdshaderinc for a shader_type sky |
-| `atmos/sky/89-atmos-j-fog.js` | 15.0 | [G native] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `atmos/sky/89-atmos-f-skypresets.js` | 10.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the standard sky preset and the colour script by sun altitude (skyLook): Environment and lights in Godot |
+| `atmos/sky/89-atmos-g-sky.js` | 52.1 | [G shader] | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | the atmos_sky chunk, every layer in one fragment: becomes atmos_sky.gdshaderinc for a shader_type sky |
+| `atmos/sky/89-atmos-j-fog.js` | 19.5 | [G native] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `atmos/sky/89-atmos-k-cloudmood.js` | 17.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `audio/20-core-audio-catalog.js` | 5.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `audio/22-core-audio-cues.js` | 5.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `audio/24-core-audio-sky.js` | 10.7 | [web] | 0 | 0 | 0 | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 1 | split: data inside host code |
 | `audio/24-core-audio-soundscape.js` | 8.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `audio/26-core-audio-music.js` | 21.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `audio/lab/build.js` | 5.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
@@ -219,10 +226,12 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `minimap/88a-core-minimap-host.js` | 3.8 | [web] | 0 | 5 | 5 | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the browser panel, the M key, hover and click; moves to core/host/ (Phase 1) |
 | `ports/44-core-ports.js` | 7.5 | [draw] | 2 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | PORT marks for kits/beast-riders: bucket ranges are data; the box measure reads three.js |
 | `rand/08-core-rand.js` | 4.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | one stream (the lineages' mulberry32), an integer hash, noise: golden.json, test-rand.js, test_rand.py; GDScript twin krand.gd (passing in Godot 4.5 since 2026-10-05). Used by Ys's city |
+| `ruins/20-core-ruins.js` | 6.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `ruins/21-core-ruins-host.js` | 6.0 | [draw] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 |  |
 | `sched/20-core-sched.js` | 6.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `shader/06-core-khook.js` | 11.4 | [G shader] | 0 | 0 | 0 | 0 | 0 | 0 | 10 | 0 | 0 | 0 | 0 |  |
 | `shader/06b-core-kcolor.js` | 5.3 | [draw] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `shader/07-core-kwarp.js` | 4.4 | [G shader] | 0 | 0 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 |  |
+| `shader/07-core-kwarp.js` | 4.7 | [G shader] | 0 | 0 | 0 | 0 | 0 | 0 | 8 | 0 | 0 | 0 | 0 |  |
 | `shader/r128.js` | 2.0 | [G shader] | 3 | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 |  |
 | `shadow/10-core-shadow.js` | 3.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `shadow/host/12-core-shadow-host.js` | 10.7 | [web] | 1 | 0 | 1 | 1 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | the page's renderer and sun: Godot's DirectionalLight3D shadows instead |

@@ -22,7 +22,7 @@ import os
 HERE = os.path.dirname(os.path.abspath(__file__))
 KITS = os.path.dirname(HERE)
 MECHS = os.path.join(KITS, 'mechs')
-CORE = [(os.path.join(KITS, 'catalog'), 'krator-furniture-core.js'), (os.path.join(KITS, 'catalog'), 'krator-symbols.js'),
+CORE = [(os.path.join(os.path.dirname(KITS), 'core', 'catalog'), 'krator-furniture-core.js'), (os.path.join(os.path.dirname(KITS), 'core', 'sockets'), '38-symbols.js'),   # as mech_bundle.py (the catalog's engine is core/catalog since 2026-11-03)
         (os.path.join(KITS, 'motor-vehicles'), 'vehicles-core.js'), (MECHS, 'mechs-core.js'), (MECHS, 'mechs-parts.js'),
         (HERE, 'xp-records.js')]
 RUNTIME = [(MECHS, 'mechs-runtime.js'), (HERE, 'xp-draw.js'), (HERE, 'xp-runtime.js')]

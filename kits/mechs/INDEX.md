@@ -17,6 +17,19 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 
 | File | KB | Sections (line) |
 |---|---|---|
+| `krator-mechs-ancient-courier.js` | 6 |  |
+| `krator-mechs-ancient-gardener.js` | 9 |  |
+| `krator-mechs-ancient-lamplighter.js` | 10 |  |
+| `krator-mechs-ancient-lifter.js` | 6 |  |
+| `krator-mechs-ancient-mender.js` | 6 |  |
+| `krator-mechs-ancient-porter.js` | 11 |  |
+| `krator-mechs-ancient-shroud.js` | 9 |  |
+| `krator-mechs-ancient-sweeper.js` | 8 |  |
+| `krator-mechs-ancient-tripod.js` | 8 |  |
+| `krator-mechs-ancient-trooper.js` | 9 |  |
+| `krator-mechs-ancient-wasp.js` | 4 |  |
+| `krator-mechs-ancient-watcher.js` | 5 |  |
+| `krator-mechs-ancient.js` | 12 |  |
 | `krator-mechs-iziz-aquilifer.js` | 9 |  |
 | `krator-mechs-iziz-baiulus.js` | 9 |  |
 | `krator-mechs-iziz-castra.js` | 18 |  |
@@ -38,9 +51,9 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `krator-mechs-stalker-blade.js` | 7 |  |
 | `krator-mechs-stalker-harpooner.js` | 8 |  |
 | `krator-mechs-stalker.js` | 2 |  |
-| `mechs-core.js` | 25 |  |
+| `mechs-core.js` | 26 |  |
 | `mechs-parts.js` | 19 |  |
-| `mechs-runtime.js` | 40 **big** |  |
+| `mechs-runtime.js` | 42 **big** |  |
 
 ## src/
 

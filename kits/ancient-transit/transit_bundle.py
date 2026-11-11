@@ -19,7 +19,7 @@ tools/textures/matlib_pack.py as its own, under the pack name 'ancient-transit' 
 import os
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-CATALOG = os.path.join(os.path.dirname(HERE), 'catalog')
+CATALOG = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'catalog')   # the catalog's engine (core/catalog since 2026-11-03)
 PARTS = [(CATALOG, 'krator-furniture-core.js'), (HERE, 'krator-transit-furniture.js'), (HERE, 'transit-furnish.js')]
 SRC = os.path.join(HERE, 'src')
 DATA = ['40-tr-records.js', '41-tr-path.js', '41b-tr-network.js', '42-tr-highway.js', '43-tr-rail.js', '43b-tr-subway.js', '44-tr-dress.js', '44b-tr-war.js', '44c-tr-quake.js']
@@ -37,7 +37,7 @@ def safe(js):
 
 
 def label(d, f):
-    return ('kits/catalog/' if d == CATALOG else 'kits/ancient-transit/') + f
+    return ('core/catalog/' if d == CATALOG else 'kits/ancient-transit/') + f
 
 
 def files():
