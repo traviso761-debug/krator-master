@@ -540,3 +540,7 @@ The plan takes sections 1 to 3 above whole. What to change before acting on it:
   shaman and the Order cham, named as regressions by the flawed run, are not: the shaman does not appear and the
   cham improved. Several of the worse rows are coats whose collar stands as a ring now (the dronemaster, the
   commissar, the Yuni trade): the camera sees into the ring, which the audit counts as "inside".
+- **The sheets re-shot (2026-11-10, evening).** `scratch_dist.py` pages with each root's own kit: `roles-`, `strip-`,
+  `fixes-` and `motifs-2026-11-10.jpg` and nine pairs in `closeups-2026-11-10.jpg` replace the first set (removed).
+  The strip changes 53 pieces, not 71. On consistent pages the islander shaman is the same before and after the
+  strip to the eye, as the audit said.
