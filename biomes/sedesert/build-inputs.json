@@ -26,7 +26,7 @@
     "biomes/sedesert/src/89-host-sky.js": "7282a9a3547d328fb1e307f23f5412c3b35a1cd23c054196c566c73d5c323775",
     "biomes/sedesert/src/89w-host-water.js": "606cbae6ad1e23c973a1ad874a89a9afd8d41fc76b0f1fb857916cb999a503e9",
     "biomes/sedesert/src/89x-host-air.js": "97f499964c8ac4384e099465c14d7e57703fc25368ba1241ba8398522ae6c8e2",
-    "biomes/sedesert/src/99-host-take.js": "6d0ddd3ddf7ebddb72a03f07a25184f2a05a4f6aa4c15f2ef9a1049d794f3a7c",
+    "biomes/sedesert/src/99-host-take.js": "064a13c0e9edf0deb32fdf9fdc002de0578dd9d05b3dd849d3eb902208e60dbf",
     "biomes/sedesert/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
     "biomes/sedesert/tex/aloe.albedo.webp": "e6b5c2769602459f62448888403adc8a156262e2ef7b589e7c24c65d4e43ece7",
     "biomes/sedesert/tex/bark0.albedo.webp": "3a8d77e64a0bc5d2b789b0de03ab2ab641f84f786199b75e0267eead8d60acbb",
@@ -158,10 +158,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/sedesert/dist/sedesert.html": "e711ca8ef17073a749c1f2335c3d31049940600f5c7a1e56eb8e32dcb1b883aa"
+    "biomes/sedesert/dist/sedesert.html": "0c6a62797c468d66fcc5541f03498ba623cd9b21bcf210db05d3be130fad6ffe"
    },
    "outputs_raw": {
-    "biomes/sedesert/dist/sedesert.html": "e711ca8ef17073a749c1f2335c3d31049940600f5c7a1e56eb8e32dcb1b883aa"
+    "biomes/sedesert/dist/sedesert.html": "0c6a62797c468d66fcc5541f03498ba623cd9b21bcf210db05d3be130fad6ffe"
    }
   },
   "build.py --station bowl": {
