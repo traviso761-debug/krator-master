@@ -136,7 +136,7 @@ Built once with the citadel, both Domes and the interiors merged (`ccr-55bd6ee1-
 | 2. `verify.py dist/erewhon.html --assert` | OK, error panel clean, no `citadel: no room for ...`, 1,108 draw calls at start. With `--interiors`: OK, 53,240 of 54,985 floors reached; 116 placements held inside the citadel wall (401 before: the citadel's own buildings and both Domes are no longer held) |
 | 3. `xdomeReach` | the citadel's Dome 78 of 78, the Bay's 4 of 4, with and without `?interiors=1` (with the furniture on it read 72 of 78 at first: the set item's rooms, each a room's largest rectangle, walled the L-shaped rooms off in core/walk; the item now only furnishes, into a scratch walk registry, 89y) |
 | 4. `window._xaDome`, `_xaBay` | rooms 31, segs 125, doors 29, unplaced 0, lib `rock.marble012`; the Bay's doors 1 |
-| 5. the seam | the lots clear (the palace 2 m north; the Dome shifted 1.35 m south in its lot, its garden 2.5 m shorter: "The site among the citadel's buildings" above); the 18 m level step is recorded, not fixed |
+| 5. the seam | the lots clear (the palace 2 m north; the Dome shifted 1.35 m south in its lot, its garden 2.5 m shorter: "The site among the citadel's buildings" above); the 18 m level step is recorded, not fixed (built since: "The Golden Way" below) |
 | 6. budgets | the Dome 186,272 triangles a variant (v2 182,736) on Xanadu's sheet; the sheet 5,810,711 of its 6,000,000 (it was 9.53M with the citadel's nine buildings drawn at every variant: their builders read no `o.v`, so they are `nv:1` now, and Xanadu's sheet leaves them to the kit's own sheet, which takes them since this rebuild) |
 | 7. `kits/xanadu` `verify.py --assert` | OK; doors: 849, 593 locked, 256 unlocked in hollow defs (the citadel's 78n now declares its leaves in `_hollowDoors` as 78d does) |
 | 8. the views against the references | `refs/pleasure-dome/built/rebuild-2026-11-10/` (deviceScaleFactor 2, `?interiors=1`): the eight Dome views and the Bay's three frame as before (the views take the precinct's offset); the catalog furniture is back in the Dome's rooms (it had been held with the citadel); "from the garden" sees the shorter chahar bagh, the gate's wall 2.5 m nearer and the two front kiosks beside the parterres |
@@ -164,8 +164,8 @@ Built once with the citadel, both Domes and the interiors merged (`ccr-55bd6ee1-
   from the consorts and the hospital; the stair hall takes a 12 m bay from the concubines' dormitories and the baths.
 - **The baths' rest rooms** (E4.9) cover only the warm and hot rooms: the great pool is double height under its domes.
 - **The eunuchs' upper floor** (E4.12) is over their dormitory only: E3 draws their court open, E4 draws a floor over it.
-- **The north door** stands 2 m through the north garden wall (as E3 draws it, v 203 to 207), with the vestibule 14 m wide
-  to take the orders; the Golden Way beyond it (E0.8) is not built: it lies between the Dome and the held palace.
+- **The north door** stood 2 m through the north garden wall (as E3 draws it, v 203 to 207); since the Golden Way (2026-11-10,
+  below) it stands in the Dome's north face (z -53), the vestibule 13 m deep instead of 17, still 14 m wide to take the orders.
 - **The Sultan's lattice box** (E4.2) is not drawn; the musicians' box is.
 - **Furniture.** The kit draws the few objects STYLE.md rule 6 names (white tables and basins, black planters with trees,
   crystal, fountains, the heated platform), always. The manifest's pieces (`FURNITURE.md`) come from the catalog through
@@ -188,15 +188,73 @@ Built once with the citadel, both Domes and the interiors merged (`ccr-55bd6ee1-
   now). The rooms keep their coordinates. Measured on the sheet (`kits/xanadu/tests/test-footprints.js`): z -55.98..54.73
   inside 112 m. In Erewhon that is z -207.98..-97.27: clear of the palace's lot (-209) and of the court temple's (north
   edge -97). The interior views (`91z-views.js`) and the furnished rooms (`89y`) take the same offset.
-  **The seam with the palace is a level step, recorded, not fixed.** The citadel's ground gives the palace's block 153 m
-  and the Dome's 171 m (the terrain's own fall; CIT_G levels each block at its cells' mean), so at z -209/-208 the ground
-  steps 18 m in the metre between the two lots. The Dome's North Door (floor 171.3, at z -208) opens on that drop, about
-  level with the pinnacles of the palace's gate iwan (some 172.5) and 18 m over its threshold, 1.3 m in front of it; the Golden Way
-  (E0.8), which the blueprint puts between them, is not built, and the palace's Harem Postern (the Golden Way's door) is
-  at x -383, 39 m west of the North Door. The preset "Citadel — the gate iwan" stands at z -204.4, inside the Dome's
-  terrace. The cure is the owner's to choose: a stair or ramp court down the 18 m (the Golden Way built as a descending
-  court), or one level for both blocks (both at 162: the palace on 9 m of fill, the Dome's south garden 21 m under the
-  temple's 183).
+  **The seam with the palace: the Golden Way (2026-11-10, the owner's choice).** The citadel's ground gives the palace's block
+  153 m and the Dome's 171 m (CIT_G levels each block at its cells' mean), so the ground stepped 18 m in the metre between the two
+  lots and the North Door opened 18 m over the gate iwan, 1.3 m in front of it. The owner chose the Golden Way as a descending
+  court; it is built (next section), and the step is now its masonry.
+
+
+## The Golden Way (2026-11-10)
+
+The owner's choice for the seam: the Golden Way (BLUEPRINT.md E0; principle 2, litter-wide) built as a court that descends the
+18 m from the Dome's North Door to the palace. `kits/xanadu/src/78o-xa-golden-way.js` (`XGW`, `xgwPlan`: plain records; the
+builder; `xgwReach`), read with the citadel's files by Erewhon's and the kit sheet's builds only (named in their `build.py`, not
+in `xanadu.py`), so XAK, Longsong and kits/construction are unchanged. Placed by Erewhon on the
+palace's block (`87-er-layout` GOLDEN_WAY, `90b`), its top the Dome's floor 18.3 m over it.
+
+**Where it stands.** Neither lot has room for it: the palace's (to z -208, its back on the citadel wall) and the Dome's (from
+-208, its gate against the court temple's lot) abut, and nothing can move. What is free is the slot between the two buildings'
+faces, 7.45 m from the curtain's battered foot (z -211.4) to the Dome's north face (-203.95), 100 m long: the palace's apron
+before its curtain and the Dome's garden margin inside its north garden wall. The Way takes that slot, x -391 to -293 (the
+palace's front towers close it at both ends), and the ground there is cut to the palace's level (the terrain's 4 m vertices
+chosen so the Dome's garden walls keep theirs; the grid's retaining wall across it is left out).
+
+**What moved.** The North Door: the vestibule's 2 m tunnel through the garden wall stood 0.4 m from the gate iwan's face, so no
+court could open before the iwan. It moves 4 m in, to the Dome's north face (z -53): the vestibule keeps its checkered orders
+and barrel, 4 m shorter (`XPDOME` patched in 78o; while the Dome builds, the barrel, its runner and its roof are cut back to the
+face). Where the Way is built (`o.gw`, Erewhon) the north garden wall's run east of the vestibule gives way to the Way's upper
+lane. No room of either building changed; the postern did not move.
+
+**The descent, from the top** (103 risers of 0.173 m, treads 0.32 m; levels over the palace's block):
+1. the North Door's balcony at 18.3 (the Dome's floor), 2.4 m deep along the Dome's face, two black orbs on white pedestals by
+   the door (ref 08), carried over the gate court on one pointed arch of black and white voussoirs, 19.5 m, and on east as a
+   bridge over the Way's foot;
+2. the Eunuchs' Walk, level at 18.3 for 21 m along the Dome's face past the eunuchs' court's door, to **the Eunuchs' Gate**
+   (the first check: horseshoe arch in alternating voussoirs, a pair of black lacquer leaves);
+3. two upper flights east (18 risers each, a landing between) down to the turn at 12.06, under a colonnade of black columns with
+   gold capitals and a white balustrade with a gold rail (refs 09, 12), roofed;
+4. the turn, a landing across both lanes at the east end, a black planter with its olive, a crystal chandelier;
+5. four lower flights back west along the curtain (17, 17, 17, 16 risers, landings of 3.85 m) under diaphragm arches, each bay
+   roofed at its own level, arches behind arches down the lane (STYLE.md rule 3);
+6. the foot at 0.45 (the palace's floor) and **the Golden Gate** (the palace guard's check), then under the great arch into
+7. **the gate court** before the gate iwan, 15 x 4.4 m, open to the sky but for the balcony, with a basin on the axis: the
+   ceremonial door, where the Sultan's litter goes in (the iwan's door is 4.4 m wide); and west, round the iwan's pier,
+8. **the postern court**, 37 m along the curtain under six cusped diaphragm arches, past **the Postern Gate** (the household on
+   foot) to the Harem Postern (x -383), the Way's own private door.
+
+It serves both doors: the gate iwan for the Sultan carried (the litter does not fit the postern's 1.8 m), the postern for the
+household. The dress narrows as the Way comes down (refs/citadel/STYLE.md rule 5), by height: the upper third the Dome's own
+(bands, crazy paving with gold joints, Greek-key runners, black treads with gold noses, alternating voussoirs), the middle black
+and white marble under pointed arches with gold rings, the lowest third the palace's red sandstone under white marble and cusped
+arches. Everything is drawn with 78a/78b's and 78l/78m's helpers; no new texture.
+
+**Walkable.** Every floor and flight in core/walk (tag `interior:xa-goldenway`: 14 floors, 6 flight strips, the walls and
+parapets as blocks); the three gates' leaves in core/door, unlocked. The audit `xgwReach()` (and `verify.py --assert`
+`golden-way-descent`): from inside the North Door, the Way's 20 floors and flights reached, and the palace's door strips at the
+gate iwan and the Harem Postern reached, with and without `?interiors=1`.
+
+**Views** (`views/golden-way-2026-11-10/`, deviceScaleFactor 2, `?interiors=1`): `Citadel_-_the_gate_iwan` (the preset, from the
+gate court 4 m before the iwan's face: the muqarnas hood framed again, its gilt tiers and the gold ring round the pishtaq's
+arch), `Citadel_-_the_Golden_Way` (the new preset, from the turn down the lower flights: the pointed gold-ringed arches give way
+to the cusped ones toward the palace, the runners on the landings), `Golden_Way_-_from_the_top` (down the upper flights past the
+colonnade), `Golden_Way_-_from_the_bottom` (from the foot up the lower flights: red sandstone risers, the cusped arches, the black
+and gold at the top), `Golden_Way_-_from_above` (the two lanes and their roofs
+between the palace's curtain and the Dome's face).
+
+**Not yet.** The arches are the kit's round-ended voussoirs, not the references' wedges; the colonnade's balusters stand on a
+slope over the steps (they follow the flight's line, not each tread); the lanes are lit only from the open sides and the
+chandelier at the turn (no lamps in niches); the ends of the slot, beyond the Way's end walls, keep the terrain's 4 m slope
+between the two levels. The roofs are plain white slabs under a gold line.
 
 ## Textures asked for
 

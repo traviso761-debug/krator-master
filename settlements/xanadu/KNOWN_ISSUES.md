@@ -39,11 +39,11 @@ Open items are `- [ ]` lines; build.py prints them.
       palace's two back piers now stand inside the citadel wall's thickness (3 x 1.5 m, were 4 x 3: with the palace 2 m north they
       reached 1.5 to 2 m past the wall's outer face); its lot's back corners (z -307) lie outside CIT_POLY (6.9 m NW, 10.4 m NE of
       the wall line), but nothing of it is built there: the rooms' back (z -296) is 2.3 to 7 m inside the line.
-- [ ] (2026-11-10) **The seam between the palace and the Pleasure Dome: an 18 m step.** The palace's block is levelled at 153 m,
-      the Dome's at 171 m (CIT_G: each block at its cells' mean of the terrain), so the ground steps 18 m at z -209/-208, and the
-      Dome's North Door opens 18 m above the palace's gate iwan, 1.3 m in front of it. The preset "Citadel — the gate iwan" stands
-      inside the Dome's terrace. Recorded for the owner (`citadel/PLEASURE-DOME.md`, "The site among the citadel's buildings":
-      the Golden Way as a descending court, or one level for both blocks).
+- [x] (2026-11-10) **The seam between the palace and the Pleasure Dome: an 18 m step.** The palace's block is levelled at 153 m,
+      the Dome's at 171 m. Fixed the same day by the owner's choice: the Golden Way built as a descending court in the slot
+      between the two (kits/xanadu/src/78o-xa-golden-way.js; `citadel/PLEASURE-DOME.md`, "The Golden Way"): the ground there cut
+      to the palace's level, the Dome's North Door moved 4 m in to its north face, the gate iwan's preset back in a court before
+      it. Left: beyond the Way's end walls the slot keeps the terrain's 4 m slope between the two levels.
 - [ ] (2026-11-10) **Interiors (`?interiors=1`): hollow walls, the set, the reachability audit.** The furnished defs are drawn
       hollow by the Vernacular's auto bodies (69e6) round the set's rooms (`kits/interiors/sets/xanadu.js`), their doors unlocked;
       `verify.py --interiors` runs `tools/ix_reach_audit.js`. Fixed 2026-11-10: a battered block up to 5 m wider a side than its

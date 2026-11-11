@@ -294,6 +294,7 @@ def build_one(target, do_checks):
     src = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()}
     src.update({f: p for f, p in kxa.paths().items() if f not in src})   # the Xanadu kit (a src/ copy would win: none)
     src.update({f: p for f, p in kxa.paths(kxa.CITADEL).items() if f not in src})   # the citadel's vocabulary and buildings (kits/xanadu/xanadu.py CITADEL)
+    src.update({f: p for f, p in kxa.paths(['78o-xa-golden-way.js']).items() if f not in src})   # the Golden Way with it (named here, not in xanadu.py: Longsong reads that)
     src.update({f: os.path.join(CORE, f) for f in CORE_FILES if f not in src})
     src.update({f: os.path.join(CORE_OPT, f) for f in CORE_OPT_FILES if f not in src})
     src.update({f: os.path.join(ROOT, 'core', 'materials', 'record', f) for f in RECORD_FILES if f not in src})

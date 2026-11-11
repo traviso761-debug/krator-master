@@ -63,15 +63,21 @@ are kept on origin for their history; do not merge them separately (they are alr
   backport (nsemiarid), Ys/Dalab/Shade reading their biomes in place.
 - Triage (`-triage`, `HANDOFF-REBUILD.md` top section): new failures fixed; the lava/scarp/water-gaps goldens fixed for Node 22/24.
 
-## In flight when written (merge these when they finish)
+## In flight, updated 2026-11-10 12:30
 
-| Branch | Session | What |
-|---|---|---|
-| `ccr-55bd6ee1-p1si44-allbuilds` | `session_018FfX1QUSU28wNeEMAPU9WC` | **The all-builds rebuild.** Ride-alongs done first (the catalog's `tile` texture family; the Highlands great-building room kinds into `kits/interiors/src/30-programs.js`; the last `||` defaults), every build rebuilt and committed by area, then verify on changed pages, `core/engine/fingerprint.py --write`, furnish fingerprint, `PORT-BASELINE.json` for checked pages, `DEPS.json`, test_all. At `8ea09e0b` at 09:05 with the pages pushed; verification in progress. |
-| `ccr-55bd6ee1-p1si44-goldenway` | `session_018FfX1S6sVJgmo7M9K1gToN` | **The Golden Way as a descending court** (owner, 2026-11-10): the 18 m step between the citadel palace (level 153) and the Garden Pleasure Dome (171) in Erewhon. Merges allbuilds before its one Erewhon build. |
-| `ccr-55bd6ee1-p1si44-textures` | a local session on the owner's PC, if started | **The textures delivered 2026-11-10** (`C:\Users\travi\Documents\Codex\2026-11-10`): matched to PROMPTS-NEEDED ids, processed into the library, wired where stand-ins wait (the citadel's eleven families, the domes' marbles and op-art, the tents' cloths, older biome items), entries deleted from PROMPTS-NEEDED. No pages rebuilt: after merging it, rebuild and verify the builds whose `tex/` changed (its report lists them), and update their baseline entries. |
-
-Suggested order: allbuilds -> goldenway (it already carries allbuilds) -> textures -> the textures' rebuild -> `main`.
+- **Merged since this file was first written:** `ccr-55bd6ee1-p1si44-goldenway` (`c493d6ad`, the Golden Way as a descending court:
+  `kits/xanadu/src/78o-xa-golden-way.js`, def `xa_cit_golden_way`, 103 risers from the Pleasure Dome's North Door (moved 4 m in) down
+  18 m to both the palace's gate iwan and its postern; Erewhon --assert and --interiors pass, descent 20/20; PLEASURE-DOME.md "The
+  Golden Way"). It carried `ccr-55bd6ee1-p1si44-allbuilds` up to `f0d45028`, so that branch's rebuilt pages are in too.
+- **`ccr-55bd6ee1-p1si44-allbuilds`** (`session_018FfX1QUSU28wNeEMAPU9WC`): every rebuilt page outside `biomes/` verified (Erewhon
+  included); NOT done: the biome pages' verification (it waits for the name of a biome rebuild branch from the owner), the hash
+  baseline and furniture fingerprint rewrite, test_all, its HANDOFF-REBUILD.md section. Whoever integrates should finish those once.
+- **Textures** (the 2026-11-10 delivery, `C:\Users\travi\Documents\Codex\2026-11-10` on the owner's PC): the task was started in
+  the cloud and is blocked (it cannot read the PC); it must run on the owner's machine and push `ccr-55bd6ee1-p1si44-textures`;
+  then rebuild and verify the builds whose `tex/` changed.
+- **Budget:** kits/xanadu's sheet is a soft OVER at 6.28M of 6.0M scene triangles (the Golden Way adds ~25k; the citadel was added to
+  the kit sheet in the Xanadu rebuild). Settlements/xanadu's own baseline entries (erewhon.html, xanadu.html) were updated by the
+  Golden Way session; kits/xanadu/dist/xanadu.html has no baseline entry yet.
 
 ## How the merges were resolved (so a re-merge does not undo them)
 

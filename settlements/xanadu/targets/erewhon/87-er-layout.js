@@ -146,7 +146,8 @@ const CIT_SITES=[
  // the Pleasure Dome on its blueprint precinct (105 x 110, kits/xanadu 78c), pinned on the palace's axis between the Vizier's
  // palace (east edge x -401) and the guard (west edge -286), the palace (south edge z -209, where the Golden Way's door
  // stands) and the court temple (north edge -97)
- {key:'xa_pleasure_dome',w:106,d:112,v:0,t:[-344,-152],at:[-344,-152]},
+ // o.gw: the Golden Way is built before its north face (kits/xanadu 78o; the Way's upper lane takes the garden margin east of the vest)
+ {key:'xa_pleasure_dome',w:106,d:112,v:0,t:[-344,-152],at:[-344,-152],o:{gw:1}},
  // the rest of the citadel on its blueprint (settlements/xanadu/citadel/BLUEPRINT.md, E0; 2026-11-09): the hollow Moorish and
  // Mughal buildings of kits/xanadu/src/78n-xa-citadel.js at their enlarged sizes, each wanting the blueprint's place
  // (world x = u, z = -v)
@@ -207,6 +208,10 @@ for(const g of GRID_GARDENS)g.G=tileGround(g.poly,g.sites||[],4,(x,z)=>streamDis
 function inGridGarden(x,z,m){return GRID_GARDENS.some(g=>inPoly(g.poly,x,z)||(m>0&&distToLoop(g.poly,x,z)<m));}
 // the gridded gardens' ground (the citadel's and the River garden's)
 CIT_HFN=(x,z)=>{for(const G of[CIT_G].concat(GRID_GARDENS.map(g=>g.G))){const b=G.box;if(x<b[0]||x>b[1]||z<b[2]||z>b[3]||!inPoly(G.poly,x,z))continue;return G.at(x,z);}return null;};
+// the Golden Way (kits/xanadu 78o, 2026-11-10: the owner's descending court): between the palace's front (its block at 153) and the
+// Pleasure Dome's north face (171) the ground is cut to the palace's level, and the Way's own masonry stands on it (90b places it)
+const GOLDEN_WAY=xgwSite(CIT_G.blocks.find(b=>b.key==='xa_cit_palace'),CIT_G.blocks.find(b=>b.key==='xa_pleasure_dome'));
+if(GOLDEN_WAY){const h0=CIT_HFN,C=GOLDEN_WAY.cut;CIT_HFN=(x,z)=>(x>C[0]&&x<C[1]&&z>C[2]&&z<C[3])?GOLDEN_WAY.y:h0(x,z);}
 for(const g of GRID_GARDENS){cpoly(cg,g.poly,'#4f7f42');cpoly(mg,g.poly,'#00ff00');cpoly(kg,g.poly,KLCOL(KL.park));}
 // the citadel's ground is palace grounds: not buildable; park where the tiles leave it (the biome's undergrowth and a
 // few trees; 90b makes every building and tile an obstacle to it)
