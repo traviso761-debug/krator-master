@@ -154,7 +154,7 @@
   function thinK(p){var r=thinRow(),sp=r.start-r.worst;return sp?cl((r.start-p)/sp):0;}
   function openNow(rec,S,t){if(BOUND[rec.id])return cl(+BOUND[rec.id](t)||0);var E=eventsOf(rec,S),o=0;for(var i=0;i<E.length&&E[i][0]<=t;i++)o=E[i][1];return o;}
   function sealState(rec,h,t,speed){var S=sealOf(rec),p=pressureOf(rec,h,t,speed),k=thinK(p),o;
-    if(S.fail&&!BOUND[rec.id]&&!eventsOf(rec,S).length){var q=clock(rec,h,S.fail,t,speed).q;o={state:q?(q.k>0?'failed':q.state==='warn'?'warn':'sealed'):'failed',open:q?q.k:1,left:q?q.left:null};if(q&&q.state==='warn')o.warn=true;}
+    if(S.fail&&!BOUND[rec.id]&&!eventsOf(rec,S).length){var q=clock(rec,h,S.fail,t,speed).q;o={state:q?(q.k>0?'failed':q.state==='warn'?'warn':p<S.inside-1e-3?'refilling':'sealed'):'failed',open:q?q.k:1,left:q?q.left:null};if(q&&q.state==='warn')o.warn=true;}
     else{var op=openNow(rec,S,t);o={state:op>0?'breached':p<S.inside-1e-3?'refilling':'sealed',open:op};}
     o.k=k;o.on=k>0;o.pressure=p;return o;}
   function pressure(rec,t){var h=H.of(rec);if(!h||h.kind!=='seal')throw new Error('KHAZ.pressure: a seal record');return pressureOf(rec,h,t,H.speed);}

@@ -18,7 +18,7 @@ Line's starting point, bind no `ATMOS` at all): it reads the page's own sun, hem
 | `10-core-cavelight.js` | `[G data]` | `KCAVELIGHT`: the kinds (the Tungang lamp code, wax, glow fungus, the Ancients' strips...), light and opening records, flicker, the nearest-N choice, the under test, the exposure ramp, the openings' daylight as numbers, lamp lines, the export. No THREE, no DOM |
 | `90-core-cavelight-host.js` | `[web]` | `KCAVELIGHT.host(o)`: the pool of real lights, the halos, the underground switch, the exposure, the openings' spot, sky light, bounce, shaft and motes in three.js r128 |
 | `test-cavelight.js` | | `node core/cavelight/test-cavelight.js`: every data function, each check with a negative |
-| `demo/` | | a test page: a bore with the lamp code, a crystal cleft and a portal (`python3 core/cavelight/demo/build.py`; `verify.py --assert`) |
+| `demo/` | | a test page (below): `python3 core/cavelight/demo/build.py`, `python3 core/cavelight/demo/verify.py core/cavelight/demo/dist/cavelight-demo.html --assert` |
 
 Opt-in by path: a page that does not list these files is unchanged.
 
@@ -46,9 +46,9 @@ every surface to mud). So the coloured kinds are weak and short; `wax` and `lant
 
 | Kind | Colour | Range | Intensity | Flicker | Role |
 |---|---|---|---|---|---|
-| `lamp-red` | `#ff4a2a` | 5 | .45 | .02 | a home: hung at its door, not in it |
-| `lamp-green` | `#48e078` | 8 | .7 | .015 | the Line: walkway posts every 50 m of a kept track, the platforms, the way |
-| `lamp-amber` | `#ffb438` | 9 | .9 | .03 | work: the sheds, the cooling plant, the dark beds |
+| `lamp-red` | `#ff4a2a` | 4 | .35 | .02 | a home: hung at its door, not in it |
+| `lamp-green` | `#48e078` | 6 | .45 | .015 | the Line: walkway posts every 50 m of a kept track, the platforms, the way |
+| `lamp-amber` | `#ffb438` | 8 | .7 | .03 | work: the sheds, the cooling plant, the dark beds |
 | `lamp-white` | `#f2f4ff` | 16 | 1.8 | .005 | the surface, the Gaffers, danger: "stop"; hooded (a spot down, 0.7 rad) |
 | `glowcap` | `#4ad8c0` | 4 | .3 | 0 | blue-green glow-cap: the common light of passages and the poor |
 | `fungus` | `#6fe0c0` | 6 | .4 | 0 | Dhelv's glow fungus at the foot of a tunnel wall (an accent) |
@@ -62,11 +62,13 @@ A kit may add its own row (`KCAVELIGHT.kind(name, row)`) or override any field o
 ## Openings
 
 ```
-{id, kind, c: [x, z], r, top, floor, dir, ramp}
+{id, kind, c: [x, z], r, top, floor, dir, ramp, open}
   kind   'well' (a vertical opening: Dhelv's wells, a shaft's foot) | 'portal' (a tunnel mouth: daylight in along dir) |
          'cutting' (a stretch fallen open to the sky)
   c, r   its centre and radius (a portal: its half-width)     top, floor   the sky side's y and the floor's y under it
-  dir    a portal's: [x, z], pointing into the tunnel          ramp   m: how far in the exposure ramps to the cave's (300 at the Line's portal)
+  dir    a portal's: [x, z], pointing into the tunnel          ramp   m: how far in the exposure ramps to the cave's (300 at the Line's portal; 120 else)
+  open   0..1: how much of the sky it lets in at its foot: a portal or a cutting 1, a well (r / 12)^2 (a 3.5 m shaft about .09,
+         a 24 m well whole). A narrow shaft lights its floor with its own spots and leaves the eye dark-adapted round it
 ```
 
 ## The functions (`10-core-cavelight.js`)
@@ -82,14 +84,23 @@ A kit may add its own row (`KCAVELIGHT.kind(name, row)`) or override any field o
   m to the right of the way), up (m over the line), fail (0..1: the share dead, each lamp's own KRAND.hash(world, n, salt)),
   owner}` -> records. A window cut from the same line gets the same lamps (by chainage, not by draws).
 - `KCAVELIGHT.under(o)`: `{y, ground, inVoid, margin (2)}` -> true below the ground by `margin`, or inside a void.
-- `KCAVELIGHT.exposure(o)`: the clamped ramp. `{d (m to the nearest opening, Infinity with none), ramp (300), day (0..1),
-  under, surface (1), cave (1.55), max (1.8), floor (.14), night (1.35)}` -> `{exposure, ambient, sky, sun}`: at an opening
-  (d 0) the surface's exposure and full sky; at `ramp` and beyond the cave's, clamped to `max`, the ambient at its `floor`
-  (never 0: nothing is pure black), `sky` and `sun` 0. Above the ground it returns the surface's. Smoothstep in between.
+- `KCAVELIGHT.exposure(o)`: the clamped ramp. `{d (m to the opening, Infinity with none), ramp (300), open (1), day (0..1),
+  under, surface (1), cave (1.55), max (1.8), floor (.14), night (1.35), sunIn (min(15, ramp x .05) m)}` -> `{exposure, ambient,
+  sky, sun, s}`. Above the ground, the surface's. Under: the eye's adaptation `s` runs 0 at the opening to 1 at `ramp`
+  (smoothstep; an opening that lets in little sky leaves it near 1); the exposure goes from the surface's to the cave's,
+  **clamped to `max`** (no grey daylight in the dark); the ambient falls from the daylight to its **floor** over 70% of the
+  ramp, no faster than the eye adapts (nothing pure black, and no dark dip on the way in); the sky's reflections are gone
+  by a third of the ramp; the **sun is out within `sunIn` m** (with no shadows it would light through the rock): past the
+  mouth daylight comes in only as the openings' own spots.
+- `KCAVELIGHT.exposureAt(x, y, z, o, list)`: the same from every opening at a point; the one that leaves the eye least
+  dark-adapted wins (a wide portal 50 m off beats a narrow shaft 5 m off). Adds `{opening, d}`. The host calls this.
 - `KCAVELIGHT.nearestOpening(x, y, z, list)`: `{o, d}` (a portal's d is along its dir from the mouth; a well's from its foot).
-- `KCAVELIGHT.daylight(O, sun, day)`: the light down one opening now, as numbers: `{on, beam: {from, to, len}, spot: {pos, target,
-  angle, intensity}, sky: {pos, target, angle, intensity}, bounce: {pos, distance, intensity}, shaft: {mid, len, r, dir}}`.
-  `sun` the unit vector toward the sun; `day` 0..1 (the host's: the sun's height, 0 at night). Dhelv's numbers.
+- `KCAVELIGHT.daylight(O, sun, day)`: the light at one opening now, as numbers: `{on, beam: {from, to, len}, spot: {pos,
+  target, angle, intensity} | null, sky: {pos, target, angle, intensity, distance?}, bounce: {pos, distance, intensity},
+  shaft: {mid, len, r, dir, opacity} | null}`. `sun` the unit vector toward the sun; `day` 0..1. A well or a cutting: Dhelv's
+  numbers (the sun's spot through it onto the floor, the sky's spot straight down, the warm bounce, the shaft of lit air).
+  A portal: no shaft; the sun's spot only as far in as the mouth's height lets a low sun reach (at most 8 widths), the sky
+  a broad soft spot from just inside the mouth down the tunnel.
 - `KCAVELIGHT.export(o)`: `{format: 'krator-cavelight', version: 1, convention, kinds, lights, openings, pool, exposure}`.
 
 ## The host (`90-core-cavelight-host.js`)
@@ -119,6 +130,17 @@ CL.state                   // {under, exposure, ambient, pool: n lit, halos, ope
 - **Openings**: per opening within 220 m: Dhelv's sun spot (shadowed), the sky's own spot straight down, the warm bounce, the
   shaft of lit air (an additive cylinder) and 320 motes drifting down it (positions from `KRAND`, not `Math.random`).
 - Owns nothing else: the page keeps its renderer, fog and camera.
+
+## The demo (`demo/`)
+
+An 800 m bore of the Line's section (37 m wide, 14.6 m to the crown; stand-in geometry, not the Line's look) under a 30 m hill:
+its portal onto daylight (the 300 m ramp), a 3.5 m light shaft at 500 m, the lamp code on both walkways (green every 50 m,
+12% dead by hash; amber at a shed; the white stop lamp hooded at the far door), a wax-lit refuge with a smoky-quartz cleft
+shrine behind it (`KCAVERN` + `KSPELEO.SMOKY`), the hot stretch's cyan strips, glow fungus, and the tunnels' hazards on
+core/tags (a rockburst over the hot stretch with its spalls drawn from `KHAZ.spalls`, an inrush's water at the low point
+from `KHAZ.flood`, a seal on the shrine's cleft); the HUD says the light's state and what hurts at the eye. Eight views
+(keys 1-8), WASD and drag, N for night. **GPU-verified** (2026-11-11, RTX 5060 lane): every check passes, the mean brightness
+falls from 198 outside to 161 at the mouth, 62 at 150 m and 49 deep in (never black), the shaft's foot stays dark-adapted.
 
 ## Godot (in `PORT.md` terms)
 
