@@ -1,0 +1,45 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "bottom",
+   "choke": 2,
+   "key": "#ff00ff",
+   "key_hi": 170,
+   "key_lo": 60,
+   "pad": 0.02,
+   "size": 1024,
+   "spill": "all"
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   2048,
+   2048
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "leaf",
+  "id": "card.grass.elephant",
+  "kind": "card",
+  "metal": 0,
+  "roughness": 0.75,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "elephant-grass-magenta-2048.png",
+  "generator": "supplied by the owner (Documents/Codex/2026-11-10, PNG 2048 px, as elephant-grass-magenta-2048.png), generated from core/materials/PROMPTS-NEEDED.md section 40",
+  "licence": "generated for this project by its owner",
+  "prompt": "Square, 2048x2048. Orthographic view of a single cut-out object centred in the frame, on a solid flat bright magenta (#ff00ff) background that fills everything outside the object, with no shadow cast on the background. Flat, even, shadowless lighting: no highlights, no vignette. No perspective, no text, no border, no watermark. Object: a single clump of elephant grass (Pennisetum purpureum) seen from the side, filling the frame top to bottom: tall cane-like culms with joints, long flat arching leaf blades 2 to 4 cm wide with a pale midrib, a few buff cylindrical bristly flower plumes at the tops, the base dense and upright, nothing touching the frame edges at the sides. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.",
+  "prompt_where": "core/materials/PROMPTS-NEEDED.md section 40 (delivered 2026-11-10)",
+  "reuse": "the savannah rims' blind grass (biomes/abyssal-savannah blind); any cane-grass stand: elephant grass, napier, sugar-cane screens",
+  "sha1": "48d11910c296c9d45037b87a0e10f25fcd32e264"
+ }
+}

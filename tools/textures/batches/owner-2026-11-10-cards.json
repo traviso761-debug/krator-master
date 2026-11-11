@@ -16,7 +16,10 @@
    "colour": "#ffffff",
    "roughness": 0.8,
    "metal": 0,
-   "scale": [1, 1],
+   "scale": [
+    1,
+    1
+   ],
    "tint": true,
    "_source": {
     "generator": "supplied by the owner (krator-textures-2026-11-10, webp, 1254 px), generated from core/materials/PROMPTS-NEEDED.md section 24 (biomes/abyssal-savannah, PLAN.md section 10)",
@@ -28,6 +31,171 @@
     "key_note": "keyed with spill 'vlahos' (key_gain 1.3): the rim's sprays are blended into the magenta in the source, and the default key (spill all, key_hi 170) left them mauve, unmix pink; vlahos leaves them a dry tan",
     "size_note": "the source is 1254 px, under the prompt's 2048: the pipeline writes 1024 px sets, so nothing was upscaled"
    }
+  }
+ },
+ {
+  "src": "square-2048x2048-orthographic-view-looking-straight/outputs/alpine-succulent-leaves-3x3-2048.png",
+  "out": "core/materials/library/card.rosette.snail",
+  "record": {
+   "id": "card.rosette.snail",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.75,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (Documents/Codex/2026-11-10, PNG 2048 px, as alpine-succulent-leaves-3x3-2048.png), generated from core/materials/PROMPTS-NEEDED.md section 37",
+    "licence": "generated for this project by its owner",
+    "prompt": "Square, 2048x2048. Orthographic view looking straight down on nine separate single leaves in a 3x3 grid, each centred in its third of the frame with magenta all round it, on a solid flat bright magenta (#ff00ff) background that fills everything outside the objects, with no shadow cast on the background. Flat, even, shadowless lighting: no highlights, no vignette. No perspective, no text, no border, no watermark. Objects: the fleshy spoon-shaped rosette leaves of a high-alpine succulent, each leaf a thick, slightly cupped spatula with a rounded tip and a narrow base, a fine pale waxy bloom over a grey-green surface, faint parallel veins, the tip a little reddened on three of them; all nine the same size and pointing the same way, base at the bottom of their cell. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.",
+    "prompt_where": "core/materials/PROMPTS-NEEDED.md section 37 (delivered 2026-11-10)",
+    "reuse": "the southern highlands' snail-shell rosettes, a leaf a cell (3 x 3; biomes/shighlands station fellfield, to wire on the whorl); any fleshy spatulate rosette leaf"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170,
+   "choke": 2
+  }
+ },
+ {
+  "src": "square-2048x2048-orthographic-view-of-a-5/outputs/ghost-pipe-magenta.png",
+  "out": "core/materials/library/card.ghostpipe",
+  "record": {
+   "id": "card.ghostpipe",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.75,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Documents/Codex/2026-11-10, PNG 1254 px, as ghost-pipe-magenta.png), generated from core/materials/PROMPTS-NEEDED.md section 40",
+    "licence": "generated for this project by its owner",
+    "prompt": "Square, 2048x2048. Orthographic view of a single cut-out object centred in the frame, on a solid flat bright magenta (#ff00ff) background that fills everything outside the object, with no shadow cast on the background. Flat, even, shadowless lighting: no highlights, no vignette. No perspective, no text, no border, no watermark. Object: a clump of ghost pipe plants (Monotropa uniflora): waxy translucent white stems with small scale leaves, each bent over at the top into a nodding white bell-shaped flower, a faint pink tinge at the bases, seen from the side. Full colour: not tinted.",
+    "prompt_where": "core/materials/PROMPTS-NEEDED.md section 40 (delivered 2026-11-10)",
+    "reuse": "the hyperjungle's ghost pipe clumps (biomes/hyperjungle station north, to wire); any saprophyte on a dark floor"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "bottom",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "edge",
+   "key_lo": 60,
+   "key_hi": 170,
+   "choke": 2
+  }
+ },
+ {
+  "src": "square-2048x2048-orthographic-view-of-a-6/outputs/elephant-grass-magenta-2048.png",
+  "out": "core/materials/library/card.grass.elephant",
+  "record": {
+   "id": "card.grass.elephant",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.75,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (Documents/Codex/2026-11-10, PNG 2048 px, as elephant-grass-magenta-2048.png), generated from core/materials/PROMPTS-NEEDED.md section 40",
+    "licence": "generated for this project by its owner",
+    "prompt": "Square, 2048x2048. Orthographic view of a single cut-out object centred in the frame, on a solid flat bright magenta (#ff00ff) background that fills everything outside the object, with no shadow cast on the background. Flat, even, shadowless lighting: no highlights, no vignette. No perspective, no text, no border, no watermark. Object: a single clump of elephant grass (Pennisetum purpureum) seen from the side, filling the frame top to bottom: tall cane-like culms with joints, long flat arching leaf blades 2 to 4 cm wide with a pale midrib, a few buff cylindrical bristly flower plumes at the tops, the base dense and upright, nothing touching the frame edges at the sides. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.",
+    "prompt_where": "core/materials/PROMPTS-NEEDED.md section 40 (delivered 2026-11-10)",
+    "reuse": "the savannah rims' blind grass (biomes/abyssal-savannah blind); any cane-grass stand: elephant grass, napier, sugar-cane screens"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "bottom",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170,
+   "choke": 2
+  }
+ },
+ {
+  "src": "square-2048x2048-orthographic-view-of-a-7/outputs/red-oat-grass-tussock-magenta.png",
+  "out": "core/materials/library/card.grass.themeda",
+  "record": {
+   "id": "card.grass.themeda",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.75,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (Documents/Codex/2026-11-10, PNG 2048 px, as red-oat-grass-tussock-magenta.png), generated from core/materials/PROMPTS-NEEDED.md section 40",
+    "licence": "generated for this project by its owner",
+    "prompt": "Square, 2048x2048. Orthographic view of a single cut-out object centred in the frame, on a solid flat bright magenta (#ff00ff) background that fills everything outside the object, with no shadow cast on the background. Flat, even, shadowless lighting: no highlights, no vignette. No perspective, no text, no border, no watermark. Object: a single tussock of red oat grass (Themeda triandra) seen from the side: a dense base of fine leaves, arching stems carrying drooping clusters of large rust-red to bronze awned spikelets with long twisted dark awns, the leaves turning from green at the base to red-bronze at the tips. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.",
+    "prompt_where": "core/materials/PROMPTS-NEEDED.md section 40 (delivered 2026-11-10)",
+    "reuse": "the savannah rims' red oat grass (biomes/abyssal-savannah grass); any awned tussock grass: Themeda, Hyparrhenia, the dry savannah's"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "bottom",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "edge",
+   "key_lo": 60,
+   "key_hi": 170,
+   "choke": 2
+  }
+ },
+ {
+  "src": "square-2048x2048-orthographic-view-of-a-8/outputs/miombo-leaves-2048.png",
+  "out": "core/materials/library/card.leaf.miombo",
+  "record": {
+   "id": "card.leaf.miombo",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.75,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Documents/Codex/2026-11-10, PNG 2048 px, as miombo-leaves-2048.png), generated from core/materials/PROMPTS-NEEDED.md section 40",
+    "licence": "generated for this project by its owner",
+    "prompt": "Square, 2048x2048. Orthographic view of a single cut-out object centred in the frame, on a solid flat bright magenta (#ff00ff) background that fills everything outside the object, with no shadow cast on the background. Flat, even, shadowless lighting: no highlights, no vignette. No perspective, no text, no border, no watermark. Object: a spray of miombo leaves (Brachystegia spiciformis) seen from above: pinnate leaves of four to seven pairs of oval leaflets on a slender twig, in the copper-red to wine flush of new growth, glossy, a few leaflets turning olive at their bases. Full colour: not tinted.",
+    "prompt_where": "core/materials/PROMPTS-NEEDED.md section 40 (delivered 2026-11-10)",
+    "reuse": "the se rim's rust miombo crown and the incense tree's leaflets (biomes/abyssal-savannah station serim, to wire); any pinnate leaf in red flush: Brachystegia, the flame-flush trees"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "edge",
+   "key_lo": 60,
+   "key_hi": 170,
+   "choke": 2
   }
  }
 ]

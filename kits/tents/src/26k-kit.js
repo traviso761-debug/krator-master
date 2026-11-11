@@ -13,18 +13,18 @@ const KIT={id:'tents',title:'Tents Kit',pack:'tents',culture:'generic',faction:'
    field and ink and its culture's symbol (core/sockets/38-symbols.js SYMBOLS). A dress not listed here flies no pennant. */
 const TN_EMBLEMS=['scyvoi','desert','ash','beast-rider','iziz','republican','xanadu','islander','postapoc','eternian'];
 /* the library families: MAT key -> pack family (materials.json). A key missing from the pack, or ?mat=proc, draws flat. */
-const SV_LIB={felt:'felt',canvas:'canvas',goat:'goat',hide:'hide',ashc:'ashc',brownc:'brownc',silk:'silk',tarp:'tarp',stripe:'stripe',mat:'mat',brocade:'brocade',
+const SV_LIB={felt:'felt',canvas:'canvas',armyc:'armyc',ripstop:'ripstop',goat:'goat',hide:'hide',ashc:'ashc',brownc:'brownc',silk:'silk',tarp:'tarp',stripe:'stripe',mat:'mat',brocade:'brocade',
  patApp:'patApp',patSadu:'patSadu',patFret:'patFret',patBR:'patBR',patXan:'patXan',patTapa:'patTapa',patKilim:'patKilim',patIziz:'patIziz',patEter:'patEter',patFelt:'patFelt',
  wood:'wood',lacq:'lacq',carved:'carved',bamboo:'bamboo',iron:'iron',scrapm:'scrapm',rope:'rope',rug:'rug',earth:'earth'};
 for(const s of TN_EMBLEMS)SV_LIB['emb_'+s]='none';   // no library set: 88-tn-emblem.js gives each its canvas map
 /* metres per tile when there is no pack (?mat=proc) */
-const SV_TILE0={felt:.8,canvas:2.4,goat:.6,hide:1.2,ashc:1.2,brownc:1.2,silk:1.2,tarp:2,stripe:1.6,mat:1,brocade:1,patApp:1.5,patSadu:1.2,patFret:1,patBR:1,patXan:1,patTapa:1.2,
+const SV_TILE0={felt:.8,canvas:2.4,armyc:2,ripstop:1.5,goat:.6,hide:1.2,ashc:1.2,brownc:1.2,silk:1.2,tarp:2,stripe:1.6,mat:1,brocade:1,patApp:1.5,patSadu:1.2,patFret:1,patBR:1,patXan:1,patTapa:1.2,
  patKilim:2.2,patIziz:1.6,patEter:1.4,patFelt:1.6,wood:1.6,lacq:1.5,carved:1.2,bamboo:1.2,iron:.8,scrapm:1.6,rope:.3,rug:1,earth:3};
 for(const s of TN_EMBLEMS)SV_TILE0['emb_'+s]=1;
-const SV_CLOTH={felt:1,canvas:1,goat:1,hide:1,ashc:1,brownc:1,silk:1,tarp:1,stripe:1,mat:1,brocade:1,patApp:1,patSadu:1,patFret:1,patBR:1,patXan:1,patTapa:1,patKilim:1,patIziz:1,patEter:1,patFelt:1,flag:1};
+const SV_CLOTH={felt:1,canvas:1,armyc:1,ripstop:1,goat:1,hide:1,ashc:1,brownc:1,silk:1,tarp:1,stripe:1,mat:1,brocade:1,patApp:1,patSadu:1,patFret:1,patBR:1,patXan:1,patTapa:1,patKilim:1,patIziz:1,patEter:1,patFelt:1,flag:1};
 for(const s of TN_EMBLEMS)SV_CLOTH['emb_'+s]=1;
 const SV_CUT=Object.assign({wood:1,lacq:1,carved:1,bamboo:1,iron:1,scrapm:1,plain:1,rope:1,brass:1,bone:1,glass:1},SV_CLOTH);   // buckets that carry the cut-away attribute
-const KIT_FALLBACK=[['brocade','silk'],['patEter','patKilim'],['ashc','felt'],['brownc','canvas']];
+const KIT_FALLBACK=[['brocade','silk'],['armyc','canvas'],['ripstop','canvas'],['patEter','patKilim'],['ashc','felt'],['brownc','canvas']];
 /* ---------------------------------------------------------------- the palette (sRGB hex). Arrays are picked with P(k). */
 const SVPAL={
  feltW:[0xf2ece0,0xebe3d2,0xf4efe6,0xe6dcc8],feltG:[0x9a9284,0x8a8274,0xa49c8c],feltB:[0x6a5040,0x5c4434,0x7a5a46],

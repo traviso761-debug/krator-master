@@ -1,0 +1,45 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "bottom",
+   "choke": 2,
+   "key": "#ff00ff",
+   "key_hi": 170,
+   "key_lo": 60,
+   "pad": 0.02,
+   "size": 1024,
+   "spill": "edge"
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   2048,
+   2048
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "leaf",
+  "id": "card.grass.themeda",
+  "kind": "card",
+  "metal": 0,
+  "roughness": 0.75,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "red-oat-grass-tussock-magenta.png",
+  "generator": "supplied by the owner (Documents/Codex/2026-11-10, PNG 2048 px, as red-oat-grass-tussock-magenta.png), generated from core/materials/PROMPTS-NEEDED.md section 40",
+  "licence": "generated for this project by its owner",
+  "prompt": "Square, 2048x2048. Orthographic view of a single cut-out object centred in the frame, on a solid flat bright magenta (#ff00ff) background that fills everything outside the object, with no shadow cast on the background. Flat, even, shadowless lighting: no highlights, no vignette. No perspective, no text, no border, no watermark. Object: a single tussock of red oat grass (Themeda triandra) seen from the side: a dense base of fine leaves, arching stems carrying drooping clusters of large rust-red to bronze awned spikelets with long twisted dark awns, the leaves turning from green at the base to red-bronze at the tips. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.",
+  "prompt_where": "core/materials/PROMPTS-NEEDED.md section 40 (delivered 2026-11-10)",
+  "reuse": "the savannah rims' red oat grass (biomes/abyssal-savannah grass); any awned tussock grass: Themeda, Hyparrhenia, the dry savannah's",
+  "sha1": "79a6018efc61079815041b37f0dd939a1d6b439e"
+ }
+}

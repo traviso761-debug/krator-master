@@ -8,7 +8,10 @@
    "colour": "#ffffff",
    "roughness": 0.35,
    "metal": 0,
-   "scale": [2, 2],
+   "scale": [
+    2,
+    2
+   ],
    "tint": false,
    "_source": {
     "generator": "supplied by the owner (krator-textures-2026-11-10, webp, 2000 px), generated from core/materials/PROMPTS-NEEDED.md section 36 (biomes/hearths/PLAN.md section 18)",
@@ -20,7 +23,12 @@
     "look_note": "on its prompt; the striations are colour, not relief, so the normal is kept faint (normal_strength 0.35): a satin crystal face"
    }
   },
-  "options": {"rough": 0.35, "rough_var": 0.15, "lift": 0.1, "normal_strength": 0.35}
+  "options": {
+   "rough": 0.35,
+   "rough_var": 0.15,
+   "lift": 0.1,
+   "normal_strength": 0.35
+  }
  },
  {
   "src": "rock.limestone.ironstained.webp",
@@ -31,7 +39,10 @@
    "colour": "#ffffff",
    "roughness": 0.85,
    "metal": 0,
-   "scale": [3, 3],
+   "scale": [
+    3,
+    3
+   ],
    "tint": false,
    "_source": {
     "generator": "supplied by the owner (krator-textures-2026-11-10, webp, 1254 px), generated from core/materials/PROMPTS-NEEDED.md section 36 (biomes/hearths/PLAN.md section 18)",
@@ -43,7 +54,11 @@
     "look_note": "off its prompt a little: the rust covers most of the face, the grey-buff limestone shows only in small patches and the white gypsum crusts are missing; usable as the cave's stained walls, where the stain is the point"
    }
   },
-  "options": {"rough": 0.85, "rough_var": 0.15, "lift": 0.12}
+  "options": {
+   "rough": 0.85,
+   "rough_var": 0.15,
+   "lift": 0.12
+  }
  },
  {
   "src": "rock.megabreccia.polished.webp",
@@ -54,7 +69,10 @@
    "colour": "#ffffff",
    "roughness": 0.3,
    "metal": 0,
-   "scale": [2, 2],
+   "scale": [
+    2,
+    2
+   ],
    "tint": false,
    "_source": {
     "generator": "supplied by the owner (krator-textures-2026-11-10, webp, 1254 px), generated from core/materials/PROMPTS-NEEDED.md section 33 (biomes/cut, station face)",
@@ -66,7 +84,12 @@
     "look_note": "on its prompt but for two clasts with a hairline crack across them (the prompt said no cracks); the luminance invents relief on a polished slab, so the normal is kept faint (normal_strength 0.25); 2 m a tile puts the largest clasts at the prompt's half metre (the Cut's face packs it at 3 m)"
    }
   },
-  "options": {"rough": 0.3, "rough_var": 0.1, "lift": 0.1, "normal_strength": 0.25}
+  "options": {
+   "rough": 0.3,
+   "rough_var": 0.1,
+   "lift": 0.1,
+   "normal_strength": 0.25
+  }
  },
  {
   "src": "ground.bench.webp",
@@ -77,7 +100,10 @@
    "colour": "#ffffff",
    "roughness": 0.85,
    "metal": 0,
-   "scale": [3, 3],
+   "scale": [
+    3,
+    3
+   ],
    "tint": true,
    "_source": {
     "generator": "supplied by the owner (krator-textures-2026-11-10, webp, 1254 px), generated from core/materials/PROMPTS-NEEDED.md section 14 (biomes/farside, station 1)",
@@ -89,7 +115,12 @@
     "orientation": "the scour grooves run across (left to right)"
    }
   },
-  "options": {"rough": 0.85, "rough_var": 0.2, "lift": 0.12, "mute": 0.3}
+  "options": {
+   "rough": 0.85,
+   "rough_var": 0.2,
+   "lift": 0.12,
+   "mute": 0.3
+  }
  },
  {
   "src": "metal.scorched.webp",
@@ -100,7 +131,10 @@
    "colour": "#ffffff",
    "roughness": 0.75,
    "metal": 0,
-   "scale": [1.5, 1.5],
+   "scale": [
+    1.5,
+    1.5
+   ],
    "tint": true,
    "_source": {
     "generator": "supplied by the owner (krator-textures-2026-11-10, webp, 1254 px), generated from the prompt in core/materials/PROMPTS-NEEDED.md section 36 on the Ancient's Valley branches (claude/ancient-vehicles-935f93, claude/ancientsvalley-7f521c); not on main",
@@ -111,6 +145,524 @@
     "size_note": "the source is 1254 px, under the prompt's 2048: the pipeline writes 1024 px sets, so nothing was upscaled"
    }
   },
-  "options": {"rough": 0.75, "rough_var": 0.2, "lift": 0.12, "mute": 0.5}
+  "options": {
+   "rough": 0.75,
+   "rough_var": 0.2,
+   "lift": 0.12,
+   "mute": 0.5
+  }
+ },
+ {
+  "src": "seamless-tileable-texture-square-2048x2048-orthographic-11/outputs/nero_marquina_seamless_2048.png",
+  "out": "core/materials/library/stone.marble.black",
+  "record": {
+   "id": "stone.marble.black",
+   "family": "stone",
+   "colour": "#ffffff",
+   "roughness": 0.25,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Documents/Codex/2026-11-10, PNG 2048 px, as nero_marquina_seamless_2048.png), generated from core/materials/PROMPTS-NEEDED.md section 41",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: polished black marble (Nero Marquina): a deep, even near-black ground with fine, sharp white and pale grey veins running in long branching lines and a few thin crackle networks, no large patches, a faint satin polish without reflections.",
+    "prompt_where": "core/materials/PROMPTS-NEEDED.md section 41 (delivered 2026-11-10)",
+    "reuse": "the Pleasure Domes' black stone (settlements/xanadu and kits/xanadu xMarK, xMarbleB); any polished black marble: dadoes, floors, tombs"
+   }
+  },
+  "options": {
+   "rough": 0.25,
+   "rough_var": 0.1,
+   "lift": 0.1,
+   "normal_strength": 0.3,
+   "dark_gloss": 0.2
+  }
+ },
+ {
+  "src": "seamless-tileable-texture-square-2048x2048-orthographic-12/outputs/calacatta-marble-seamless-2048.png",
+  "out": "core/materials/library/stone.marble.calacatta",
+  "record": {
+   "id": "stone.marble.calacatta",
+   "family": "stone",
+   "colour": "#ffffff",
+   "roughness": 0.25,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Documents/Codex/2026-11-10, PNG 2048 px, as calacatta-marble-seamless-2048.png), generated from core/materials/PROMPTS-NEEDED.md section 41",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: polished white marble (Calacatta): a warm white ground with bold grey veins, some edged in pale gold and ochre, broad soft clouds of grey between them, crisp fine veinlets branching off; satin polish without reflections.",
+    "prompt_where": "core/materials/PROMPTS-NEEDED.md section 41 (delivered 2026-11-10)",
+    "reuse": "the Pleasure Domes' white stone (xMarW, xMarbleW); any veined white marble where rock.marble.white is too plain: palaces, baths, tombs"
+   }
+  },
+  "options": {
+   "rough": 0.25,
+   "rough_var": 0.1,
+   "lift": 0.1,
+   "normal_strength": 0.3
+  }
+ },
+ {
+  "src": "seamless-tileable-texture-square-2048x2048-orthographic-13/outputs/moroccan-zellige-seamless-2048.png",
+  "out": "core/materials/patterns/xanadu/zellige-star",
+  "record": {
+   "id": "patterns/xanadu/zellige-star",
+   "family": "tile",
+   "colour": "#ffffff",
+   "roughness": 0.3,
+   "metal": 0,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner (Documents/Codex/2026-11-10, PNG 2048 px, as moroccan-zellige-seamless-2048.png), generated from core/materials/PROMPTS-NEEDED.md section 41",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Moroccan zellige mosaic seen straight on: small hand-cut glazed terracotta pieces set edge to edge in an eight-pointed star and interlace pattern, glazes in cobalt blue, emerald green, saffron orange, white and black, each piece slightly uneven and glossy with tiny chips at its edges, thin pale grout lines; the pattern repeats exactly at the tile's edges.",
+    "prompt_where": "core/materials/PROMPTS-NEEDED.md section 41 (delivered 2026-11-10)",
+    "reuse": "Erewhon's Moorish courts, fountains and dados (xZel); any zellige dado or fountain basin, Xanadu's and the Sultanate's"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "rough": 0.3,
+   "rough_var": 0.15,
+   "lift": 0.1,
+   "normal_strength": 0.6
+  }
+ },
+ {
+  "src": "seamless-tileable-texture-square-2048x2048-orthographic-14/outputs/persian-haft-rangi-tile-texture.png",
+  "out": "core/materials/patterns/xanadu/haft-rangi",
+  "record": {
+   "id": "patterns/xanadu/haft-rangi",
+   "family": "tile",
+   "colour": "#ffffff",
+   "roughness": 0.3,
+   "metal": 0,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner (Documents/Codex/2026-11-10, PNG 2048 px, as persian-haft-rangi-tile-texture.png), generated from core/materials/PROMPTS-NEEDED.md section 41",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Persian haft-rangi glazed tiles seen straight on: a deep cobalt-lapis ground covered edge to edge in dense arabesque scrolls of slender tendrils, palmettes, lotus and peony blossoms in saffron yellow, turquoise, white and touches of green, outlined in thin dark lines; the square tile joints faintly visible every 20 cm; glossy glaze with fine crazing.",
+    "prompt_where": "core/materials/PROMPTS-NEEDED.md section 41 (delivered 2026-11-10)",
+    "reuse": "Erewhon's tiled vaults and arcades (xHaft); any Isfahan-style tiled iwan, arcade or dome drum"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "rough": 0.3,
+   "rough_var": 0.15,
+   "lift": 0.1,
+   "normal_strength": 0.4
+  }
+ },
+ {
+  "src": "seamless-tileable-texture-square-2048x2048-orthographic-15/outputs/mughal-gilded-ceiling-seamless-2048.png",
+  "out": "core/materials/patterns/xanadu/mughal-gilt-ceiling",
+  "record": {
+   "id": "patterns/xanadu/mughal-gilt-ceiling",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner (Documents/Codex/2026-11-10, PNG 2048 px, as mughal-gilded-ceiling-seamless-2048.png), generated from core/materials/PROMPTS-NEEDED.md section 41",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a painted and gilded Mughal ceiling panel seen straight on: a dark lapis-navy ground covered in a dense lattice of fine golden scrolling stems with large raised gold-leaf rosettes and leaves, the gold slightly worn to show red bole beneath, with narrow borders of white and terracotta-red floral scroll; matte paint, the gold with a soft sheen.",
+    "prompt_where": "core/materials/PROMPTS-NEEDED.md section 41 (delivered 2026-11-10)",
+    "reuse": "Erewhon's Mughal painted ceilings and vault panels (xGiltC); any painted and gilded ceiling panel"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "rough": 0.6,
+   "rough_var": 0.2,
+   "lift": 0.1,
+   "normal_strength": 0.4,
+   "dark_gloss": 0.1
+  }
+ },
+ {
+  "src": "seamless-tileable-texture-square-2048x2048-orthographic-16/outputs/moorish-plaster-yeseria-seamless-2048.png",
+  "out": "core/materials/library/stone.stucco.yeseria",
+  "record": {
+   "id": "stone.stucco.yeseria",
+   "family": "plaster",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner (Documents/Codex/2026-11-10, PNG 2048 px, as moorish-plaster-yeseria-seamless-2048.png), generated from core/materials/PROMPTS-NEEDED.md section 41",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: carved Moorish plaster (yeseria) seen straight on: deep-cut interlaced arabesques, palmettes and small geometric star panels in high relief, warm ochre-apricot plaster with darker shadows in the cuts and lighter worn high points, a little dust in the recesses; strong relief readable for a normal map.",
+    "prompt_where": "core/materials/PROMPTS-NEEDED.md section 41 (delivered 2026-11-10)",
+    "reuse": "Erewhon's carved stucco on arches, spandrels and friezes (xYes); any carved plaster arabesque panel"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "rough": 0.85,
+   "rough_var": 0.15,
+   "lift": 0.15,
+   "normal_strength": 1.2
+  }
+ },
+ {
+  "src": "seamless-tileable-texture-square-2048x2048-orthographic-17/outputs/muqarnas-glazed-tile-2048.png",
+  "out": "core/materials/library/tile.muqarnas.turquoise",
+  "record": {
+   "id": "tile.muqarnas.turquoise",
+   "family": "tile",
+   "colour": "#ffffff",
+   "roughness": 0.3,
+   "metal": 0,
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner (Documents/Codex/2026-11-10, PNG 2048 px, as muqarnas-glazed-tile-2048.png), generated from core/materials/PROMPTS-NEEDED.md section 41",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: small glazed tiles for muqarnas niches seen straight on: turquoise and cobalt glaze with tiny white, gold and aubergine floral motifs, each tile a pointed-arch or star-and-cross shape set in a repeating grid, glossy with fine crazing, thin white grout lines.",
+    "prompt_where": "core/materials/PROMPTS-NEEDED.md section 41 (delivered 2026-11-10)",
+    "reuse": "the faces of Erewhon's muqarnas cells (xMuqT); any turquoise glazed tile grid, portals and niches"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "rough": 0.3,
+   "rough_var": 0.15,
+   "lift": 0.1,
+   "normal_strength": 0.5
+  }
+ },
+ {
+  "src": "seamless-tileable-texture-square-2048x2048-orthographic-18/outputs/painted-plaster-rainbow-bands.png",
+  "out": "core/materials/patterns/xanadu/peacock-band",
+  "record": {
+   "id": "patterns/xanadu/peacock-band",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner (Documents/Codex/2026-11-10, PNG 2048 px, as painted-plaster-rainbow-bands.png), generated from core/materials/PROMPTS-NEEDED.md section 41",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: painted plaster with tight parallel bands of saturated colour running edge to edge horizontally: repeating sequences of crimson, orange, saffron, green, turquoise, cobalt and violet bands, each 1 to 2 cm, separated by thin black and gold lines, with a row of small black-outlined gold dots every few bands; matte tempera finish with slight brush texture.",
+    "prompt_where": "core/materials/PROMPTS-NEEDED.md section 41 (delivered 2026-11-10)",
+    "reuse": "Erewhon's painted vault ribs and banded plaster in the private halls (xBandR); any rainbow-banded painted plaster"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "rough": 0.8,
+   "rough_var": 0.1,
+   "lift": 0.1,
+   "normal_strength": 0.3
+  }
+ },
+ {
+  "src": "seamless-tileable-texture-square-2048x2048-orthographic-19/outputs/pietra-dura-marble-tile.png",
+  "out": "core/materials/library/stone.pietra-dura",
+  "record": {
+   "id": "stone.pietra-dura",
+   "family": "stone",
+   "colour": "#ffffff",
+   "roughness": 0.3,
+   "metal": 0,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner (Documents/Codex/2026-11-10, PNG 2048 px, as pietra-dura-marble-tile.png), generated from core/materials/PROMPTS-NEEDED.md section 41",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: white marble inlaid flush with pietra dura: repeating stylised flowering plants and vines in cut semiprecious stones, carnelian red, lapis blue, jade green, onyx black, yellow jasper, each petal a separate polished stone with crisp edges, on a smooth white marble ground; satin polish.",
+    "prompt_where": "core/materials/PROMPTS-NEEDED.md section 41 (delivered 2026-11-10)",
+    "reuse": "Erewhon's inlaid white marble: tombs, fountains, piers and the throne dais (xPietra); any pietra dura inlay"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "rough": 0.3,
+   "rough_var": 0.1,
+   "lift": 0.1,
+   "normal_strength": 0.25
+  }
+ },
+ {
+  "src": "seamless-tileable-texture-square-2048x2048-orthographic-20/outputs/seamless-op-art-basket-weave-2048.png",
+  "out": "core/materials/patterns/xanadu/op-art-arcs",
+  "record": {
+   "id": "patterns/xanadu/op-art-arcs",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner (Documents/Codex/2026-11-10, PNG 2048 px, as seamless-op-art-basket-weave-2048.png), generated from core/materials/PROMPTS-NEEDED.md section 41",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a black and white op-art wall pattern: bundles of parallel white stripes on black interlocking in a basket weave, alternating vertical and horizontal bundles, some bundles turning into concentric half-circles; crisp hand-painted edges, matte, exactly repeating at the edges.",
+    "prompt_where": "core/materials/PROMPTS-NEEDED.md section 41 (delivered 2026-11-10)",
+    "reuse": "the Pleasure Domes' private rooms (xOpArt); any black and white op-art wallcovering"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "rough": 0.85,
+   "rough_var": 0.05,
+   "lift": 0.1,
+   "normal_strength": 0.15
+  }
+ },
+ {
+  "src": "seamless-tileable-texture-square-2048x2048-orthographic-23/outputs/moorish-cedar-seamless-texture-2048.png",
+  "out": "core/materials/library/wood.cedar.moorish",
+  "record": {
+   "id": "wood.cedar.moorish",
+   "family": "wood",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner (Documents/Codex/2026-11-10, PNG 2048 px, as moorish-cedar-seamless-texture-2048.png), generated from core/materials/PROMPTS-NEEDED.md section 42",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: carved and painted Moorish cedar wood seen straight on: shallow-carved interlaced eight-pointed star and polygon panels framed by raised strapwork, the strapwork natural honey-brown cedar with visible grain, the sunken panels painted in faded red, deep green, ochre and blue with small white and gold floral sprigs, the paint worn at the high points to show the wood; strong relief readable for a normal map.",
+    "prompt_where": "core/materials/PROMPTS-NEEDED.md section 42 (delivered 2026-11-10)",
+    "reuse": "Erewhon's door leaves, shutters and painted ceiling beams (kits/xanadu, to wire); any carved and painted cedar panel"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "rough": 0.7,
+   "rough_var": 0.2,
+   "lift": 0.12,
+   "normal_strength": 1.0
+  }
+ },
+ {
+  "src": "seamless-tileable-texture-square-2048x2048-orthographic-21/outputs/military-cotton-duck-canvas-tile.png",
+  "out": "core/materials/library/cloth.canvas.duck.army",
+  "record": {
+   "id": "cloth.canvas.duck.army",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (Documents/Codex/2026-11-10, PNG 2048 px, as military-cotton-duck-canvas-tile.png), generated from core/materials/PROMPTS-NEEDED.md section 42",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: heavy proofed cotton duck tent canvas of a military tent, a tight plain weave with a slightly waxy, water-proofed sheen, a straight double-stitched flat-felled seam running vertically through the frame and a second one parallel to it, a few faint stencil-ink smudges and scuffs, a little dust in the weave, no lettering, no grommets. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.",
+    "prompt_where": "core/materials/PROMPTS-NEEDED.md section 42 (delivered 2026-11-10)",
+    "reuse": "the Republican army's ridge and wedge tents (kits/tents armyc, tinted by the dress); any proofed heavy canvas: awnings, wagon tilts, tarpaulins"
+   }
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "lift": 0.1,
+   "mute": 0.5
+  }
+ },
+ {
+  "src": "seamless-tileable-texture-square-2048x2048-orthographic-22/outputs/tent-fabric-ripstop-tileable-2048.png",
+  "out": "core/materials/library/cloth.ripstop",
+  "record": {
+   "id": "cloth.ripstop",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (Documents/Codex/2026-11-10, PNG 2048 px, as tent-fabric-ripstop-tileable-2048.png), generated from core/materials/PROMPTS-NEEDED.md section 42",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a lightweight technical tent fabric, fine ripstop nylon with its reinforcing threads forming a regular grid of small squares about one centimetre apart, a faint even satin sheen of a coated fabric, a few soft creases, no logos, no seams. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.",
+    "prompt_where": "core/materials/PROMPTS-NEEDED.md section 42 (delivered 2026-11-10)",
+    "reuse": "the Eternians' expedition tents (kits/tents ripstop, tinted by the dress); any technical nylon: packs, flysheets, flags"
+   }
+  },
+  "options": {
+   "rough": 0.6,
+   "rough_var": 0.1,
+   "lift": 0.1,
+   "mute": 0.5
+  }
+ },
+ {
+  "src": "seamless-tileable-texture-square-2048x2048-orthographic-3/outputs/frost-sorted-fellfield-soil-seamless.png",
+  "out": "core/materials/library/ground.fellfield.fines",
+  "record": {
+   "id": "ground.fellfield.fines",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (Documents/Codex/2026-11-10, PNG 2048 px, as frost-sorted-fellfield-soil-seamless.png), generated from core/materials/PROMPTS-NEEDED.md section 37",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: the fine-grained centre of a frost-sorted soil circle on a high fellfield: bare, frost-heaved silt and fine gravel, slightly domed and cracked into a faint net of shallow hairline cracks, scattered pea-sized grey and brown pebbles, a few tiny patches of black and grey crust lichen, no plants, no large stones. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.",
+    "prompt_where": "core/materials/PROMPTS-NEEDED.md section 37 (delivered 2026-11-10)",
+    "reuse": "the southern highlands' sorted spirals: the fines between the stone arms (biomes/shighlands station fellfield, to wire); any frost-heaved bare silt"
+   }
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0.4
+  }
+ },
+ {
+  "src": "seamless-tileable-texture-square-2048x2048-orthographic-4/outputs/spiny-palm-bark-seamless.png",
+  "out": "core/materials/library/bark.palm.spined",
+  "record": {
+   "id": "bark.palm.spined",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1.0,
+    1.5
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (Documents/Codex/2026-11-10, PNG 2048 px, as spiny-palm-bark-seamless.png), generated from core/materials/PROMPTS-NEEDED.md section 40",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: the bark of a spiny palm trunk (Bactris, Aiphanes): grey-brown fibrous rings 6 to 10 cm apart running straight across, each ring bristling with dense black needle spines 5 to 30 cm long lying flat against the bark and pointing in every direction, broken spine stubs between them, pale leaf-scar bands between the rings. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.",
+    "prompt_where": "core/materials/PROMPTS-NEEDED.md section 40 (delivered 2026-11-10)",
+    "reuse": "the hyperjungle's armour palm trunk (biomes/hyperjungle station savage, to wire); any spiny palm: Bactris, Aiphanes, the peach palm"
+   }
+  },
+  "options": {
+   "rough": 0.8,
+   "rough_var": 0.2,
+   "lift": 0.12,
+   "mute": 0.4,
+   "normal_strength": 1.1
+  }
+ },
+ {
+  "src": "seamless-tileable-texture-square-2048x2048-orthographic-5/outputs/tualang_bark_seamless_2048.png",
+  "out": "core/materials/library/bark.tualang",
+  "record": {
+   "id": "bark.tualang",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.75,
+   "metal": 0,
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (Documents/Codex/2026-11-10, PNG 2048 px, as tualang_bark_seamless_2048.png), generated from core/materials/PROMPTS-NEEDED.md section 40",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: the smooth bark of a giant emergent tree (Koompassia excelsa, tualang): pale pinkish-grey to silver-grey, very smooth and almost polished, with faint vertical streaks, scattered small round lenticels, a few thin horizontal ring creases, patches of pale lichen and faint greenish algae stains, no furrows or plates. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.",
+    "prompt_where": "core/materials/PROMPTS-NEEDED.md section 40 (delivered 2026-11-10)",
+    "reuse": "the hyperjungle's comb tree bole (biomes/hyperjungle station savage, to wire); any smooth pale emergent: tualang, kapok, the bee trees"
+   }
+  },
+  "options": {
+   "rough": 0.75,
+   "rough_var": 0.2,
+   "lift": 0.12,
+   "mute": 0.4
+  }
+ },
+ {
+  "src": "seamless-tileable-texture-square-2048x2048-orthographic-10/outputs/laterite-pavement-seamless-2048.png",
+  "out": "core/materials/library/ground.ironstone",
+  "record": {
+   "id": "ground.ironstone",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Documents/Codex/2026-11-10, PNG 2048 px, as laterite-pavement-seamless-2048.png), generated from core/materials/PROMPTS-NEEDED.md section 40",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a laterite pavement seen from above: a hard red-brown iron crust broken into irregular plates, strewn with round pisolitic ironstone gravel 0.5 to 2 cm across, dark purple-brown to rust, glossy where weathered, fine red dust in the cracks, a few dry grass stems lying across. Full colour: not tinted.",
+    "prompt_where": "core/materials/PROMPTS-NEEDED.md section 40 (delivered 2026-11-10)",
+    "reuse": "the savannah rims' laterite pavements (biomes/abyssal-savannah, a KFIELD pavement, to wire); any ironstone crust or pisolitic gravel flat"
+   }
+  },
+  "options": {
+   "rough": 0.7,
+   "rough_var": 0.25,
+   "lift": 0.12
+  }
  }
 ]

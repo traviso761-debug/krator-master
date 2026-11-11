@@ -1,0 +1,62 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.757,
+    0.98
+   ],
+   "seam_before": [
+    3.167,
+    2.276
+   ],
+   "source_size": [
+    2048,
+    2048
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.1,
+   "mute": 0.0,
+   "normal_strength": 0.3,
+   "pattern": false,
+   "rough": 0.25,
+   "rough_var": 0.1,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "stone",
+  "id": "stone.marble.calacatta",
+  "metal": 0,
+  "roughness": 0.25,
+  "scale": [
+   2,
+   2
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "calacatta-marble-seamless-2048.png",
+  "generator": "supplied by the owner (Documents/Codex/2026-11-10, PNG 2048 px, as calacatta-marble-seamless-2048.png), generated from core/materials/PROMPTS-NEEDED.md section 41",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: polished white marble (Calacatta): a warm white ground with bold grey veins, some edged in pale gold and ochre, broad soft clouds of grey between them, crisp fine veinlets branching off; satin polish without reflections.",
+  "prompt_where": "core/materials/PROMPTS-NEEDED.md section 41 (delivered 2026-11-10)",
+  "reuse": "the Pleasure Domes' white stone (xMarW, xMarbleW); any veined white marble where rock.marble.white is too plain: palaces, baths, tombs",
+  "sha1": "8b20a9b9d20c320abe94472abe726be6702c42ff"
+ }
+}

@@ -1,0 +1,62 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.229,
+    0.899
+   ],
+   "seam_before": [
+    1.489,
+    2.003
+   ],
+   "source_size": [
+    2048,
+    2048
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.1,
+   "mute": 0.5,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "cloth.canvas.duck.army",
+  "metal": 0,
+  "roughness": 0.9,
+  "scale": [
+   2.0,
+   2.0
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "military-cotton-duck-canvas-tile.png",
+  "generator": "supplied by the owner (Documents/Codex/2026-11-10, PNG 2048 px, as military-cotton-duck-canvas-tile.png), generated from core/materials/PROMPTS-NEEDED.md section 42",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: heavy proofed cotton duck tent canvas of a military tent, a tight plain weave with a slightly waxy, water-proofed sheen, a straight double-stitched flat-felled seam running vertically through the frame and a second one parallel to it, a few faint stencil-ink smudges and scuffs, a little dust in the weave, no lettering, no grommets. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.",
+  "prompt_where": "core/materials/PROMPTS-NEEDED.md section 42 (delivered 2026-11-10)",
+  "reuse": "the Republican army's ridge and wedge tents (kits/tents armyc, tinted by the dress); any proofed heavy canvas: awnings, wagon tilts, tarpaulins",
+  "sha1": "b98035716ff75f3fac0544adee0983c622eb48ef"
+ }
+}

@@ -31,7 +31,8 @@ Read before changing anything here. `build.py` prints the open count.
       herd in view; the cathedral fig's lattice and crown (view "A cathedral fig"); the combs under the comb trees; the bai sedge's
       density; the ash tint.
     - **Stand-ins** (PROMPTS-NEEDED.md section 40): the armour palm's trunk, the comb tree's bole (the ghostwood's bark), the combs
-      (organic.pod.honeycomb), the carrion arum, the sky pitcher and the elephant ear are vertex-coloured models; the library's
+      (organic.pod.honeycomb), the carrion arum, the sky pitcher and the elephant ear are vertex-coloured models (`bark.palm.spined` and
+      `bark.tualang` are in the library since 2026-11-10, not yet wired: a family each for the armour trunk and the comb tree's bole); the library's
       card.carnivore.monkeycup, organic.pitcher.giant and card.heartleaf are there to try on them at the GPU pass. The cathedral fig wears
       bark.strangler (`figbark`). The two new families ride only on the savage page (`build.py` `LAND_FAMS`).
     - **Owed:** `kits/fauna` has no longcrawler, wingclaw or nightwing yet (the plan lists them missing; the land names them). The kit's
@@ -56,7 +57,8 @@ Read before changing anything here. `build.py` prints the open count.
       pass 4.6M), the draw calls (391 at the default camera).
     - **Stand-ins** (PROMPTS-NEEDED.md section 40): the watcher's and the bloodwood's bark are canvases painted in `src/57`; the culms wear
       bark.bamboo.jade (`howlculm`) and the sprays card.bamboo.giant (`howlleaf`) until bark.bamboo.bored and card.bamboo.leaf come; the
-      bone giants wood.silver (`bonewood`); the hand-flowers, skull-pods and ghost pipes are vertex-coloured models.
+      bone giants wood.silver (`bonewood`); the hand-flowers, skull-pods and ghost pipes are vertex-coloured models (`card.ghostpipe` is in the
+      library since 2026-11-10, not yet wired).
     - Taken as proposed, owner to confirm: question 3 (Screamer wood's theme, and the rumour that the Screamers' speech began with the
       groves: LORE.md section 6.7, a proposal).
   - **J4** (the savannah rims: `biomes/abyssal-savannah`'s stations `serim`, `erim`, `north`, its KNOWN_ISSUES.md; built as

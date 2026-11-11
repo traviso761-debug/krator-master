@@ -78,11 +78,12 @@ Read before changing anything here. `build.py` prints the open count.
       swbay's builder holds its cards.
     - **For the GPU verify:** the grass's density and colour by burn age (view "In the grass"), the blind grass's height against a person,
       the bone giants' white over it, the mounds' texture scale (uv in metres / 3), the dry-season bleach and the kapoks' drop (`#day=`).
-    - **Stand-ins** (`core/materials/PROMPTS-NEEDED.md` section 37): the blind grass on card.rankgrass (card.grass.elephant owed), the red oat
-      grass on card.grass.dry (card.grass.themeda owed), the umbrella thorn's leaflets painted (card.acacia is in the library: it wants its
+    - **Stand-ins** (`core/materials/PROMPTS-NEEDED.md` section 40): the blind grass and the red oat grass wear their own cards since 2026-11-10
+      (`blind` card.grass.elephant, `grass` card.grass.themeda: single plants, the families' `cell` dropped; tex/ packed, the pages not rebuilt:
+      check the tufts' scale at the next rebuild), the umbrella thorn's leaflets painted (card.acacia is in the library: it wants its
       stems), its bark vertex colour.
     - **Not built here:** fauna (the savannah's herds: a later step with kits/fauna's lands, as the hyperjungle's stations have), the
-      laterite pavements' ironstone as a KFIELD/C4 `pavement` (only the ground's paint; `ground.ironstone` owed), crops (`kits/crops`
+      laterite pavements' ironstone as a KFIELD/C4 `pavement` (only the ground's paint; `ground.ironstone` is in the library since 2026-11-10, not yet a family here), crops (`kits/crops`
       the rims: PLAN-LANDS.md section 8).
   - **J5, the e rim** (`--station erim`; `src/rim/52`, `stations/erim/`): the old lines, seven cousins by BIO.kin of eastabyss's and the e
     highlands' builders read in place (the e highlands' registry is `ehigh`, so `ehigh.vigil` etc.): fire scale-trees on the old burns,
@@ -117,7 +118,8 @@ Read before changing anything here. `build.py` prints the open count.
     - **For the GPU verify:** the copper flush (set `#day=` to the rains' start), the zones' sequence (views "The incense country", "The rust
       miombo", "The wet face's foot"), the rain bottles' size against the gate baobab, the page's size (7.9 MB: the Bowl's and the drylands'
       packs) and its triangles (9.4M of the 11M budget).
-    - **Stand-ins:** the rust miombo's and the incense tree's leaflets are painted (card.leaf.miombo owed; PROMPTS-NEEDED.md section 40), the
+    - **Stand-ins:** the rust miombo's and the incense tree's leaflets are painted (card.leaf.miombo is in the library since 2026-11-10, not yet
+      wired: `D.miomboMat` is still the painted pinnate), the
       leaning fern's trunk and the miombo's bark vertex colour; the incense bark is the library's bark.paperbark (`incensebark`).
     - The owner's answers (PLAN-LANDS.md section 14, 2026-11-08): 6 yes (the rust miombo defined here and read by Godstep's redlands, the
       red guyed stalk Godstep's); 5 no incense or dragon's-blood trade for Talia (incense and dragon's blood stay the se rim's, the Bowl's

@@ -1,0 +1,67 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    2041,
+    2041
+   ],
+   "seam_after": [
+    0.588,
+    0.627
+   ],
+   "seam_before": [
+    0.0,
+    0.0
+   ],
+   "source_size": [
+    2048,
+    2048
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": true,
+   "rough": 0.7,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "wood",
+  "id": "wood.cedar.moorish",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.7,
+  "scale": [
+   1.5,
+   1.5
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "moorish-cedar-seamless-texture-2048.png",
+  "generator": "supplied by the owner (Documents/Codex/2026-11-10, PNG 2048 px, as moorish-cedar-seamless-texture-2048.png), generated from core/materials/PROMPTS-NEEDED.md section 42",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: carved and painted Moorish cedar wood seen straight on: shallow-carved interlaced eight-pointed star and polygon panels framed by raised strapwork, the strapwork natural honey-brown cedar with visible grain, the sunken panels painted in faded red, deep green, ochre and blue with small white and gold floral sprigs, the paint worn at the high points to show the wood; strong relief readable for a normal map.",
+  "prompt_where": "core/materials/PROMPTS-NEEDED.md section 42 (delivered 2026-11-10)",
+  "reuse": "Erewhon's door leaves, shutters and painted ceiling beams (kits/xanadu, to wire); any carved and painted cedar panel",
+  "sha1": "4a228dadeae54ca7cea1a15dcefafa18dac35692"
+ }
+}
