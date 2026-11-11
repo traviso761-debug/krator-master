@@ -7,7 +7,8 @@
 //   const CL = KCAVELIGHT.host({THREE, scene, renderer, camera, sun, hemi, ground(x, z), inVoid(x, y, z), sunDir() -> [x, y, z] | Vector3,
 //                               day() -> 0..1, night() -> bool (the pool above ground too), pool 14, spots 4, halos true, shadows false,
 //                               exposure: {surface, cave, max, floor, ramp} | false (the page keeps its exposure), lights() -> records,
-//                               openings() -> records, reach 220 (m: openings lit within it), world (the motes' seed)})
+//                               openings() -> records, reach 220 (m: openings lit within it), world (the motes' seed),
+//                               fog: {surface, cave '#hex', density | near, far: [surface, cave]} (scene.fog follows the exposure: KCAVELIGHT.fog)})
 //   CL.update(t)     each frame after the camera moved (t: the page's clock, s)
 //   CL.rebuild()     after the records changed: the halos made again
 //   CL.rebase()      the sun's and hemisphere's intensities read again as the surface's (a page whose sky changed them)
@@ -98,6 +99,8 @@
           cave:EX&&EX.cave,max:EX&&EX.max,floor:EX&&EX.floor,night:EX&&EX.night,sunIn:EX&&EX.sunIn},openOf());
         st.under=under;st.d=E.d;st.opening=E.opening;st.ambient=E.ambient;st.sky=E.sky;st.sun=E.sun;
         if(EX&&renderer){renderer.toneMappingExposure=E.exposure;st.exposure=E.exposure;}else st.exposure=renderer?renderer.toneMappingExposure:1;
+        if(o.fog&&scene.fog){var F=KC.fog(E,o.fog);scene.fog.color.set(F.colour);if(F.density!=null&&scene.fog.isFogExp2)scene.fog.density=F.density;
+          if(F.near!=null&&scene.fog.near!=null)scene.fog.near=F.near;if(F.far!=null&&scene.fog.far!=null)scene.fog.far=F.far;st.fog=F.colour;}
         if(sun){sun.intensity=base.sun*E.sun;sun.visible=E.sun>.002;}
         if(hemi)hemi.intensity=under?base.hemi*E.ambient:base.hemi;
         /* no sky in the reflections once the sky's share is under half */

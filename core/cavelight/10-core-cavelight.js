@@ -21,6 +21,7 @@
 //   KCAVELIGHT.nearestOpening(x, y, z, list)   {o, d} (d: a portal's along its dir from the mouth, else from the opening's foot)
 //   KCAVELIGHT.exposure(o)         the clamped ramp {d, ramp, open, day, under, surface, cave, max, floor, night, sunIn} -> {exposure, ambient, sky, sun, s}
 //   KCAVELIGHT.exposureAt(x, y, z, o, list)   the same from every opening (the one leaving the eye least dark-adapted wins), + {opening, d}
+//   KCAVELIGHT.fog(E, o)           the fog with the exposure: {surface, cave '#hex', density | near, far: [surface, cave]} -> {colour, density, near, far}
 //   KCAVELIGHT.daylight(O, sun, day)   the light down an opening now, as numbers (Dhelv's): {on, beam, spot, sky, bounce, shaft}
 //   KCAVELIGHT.export(o)           {format 'krator-cavelight', version 1, convention, kinds, lights, openings, pool, exposure}
 (function(root){
@@ -160,6 +161,13 @@
     if(!list.length)return with_(null);
     for(var i=0;i<list.length;i++){var E=with_(list[i]);if(!best||E.s<best.s||(E.s===best.s&&E.ambient>best.ambient))best=E;}
     return best;}
+  /* ---- the fog with the exposure (the Line's portal): its colour and density from the surface's to the cave's along the eye's
+     adaptation s (exposure's). o: {surface '#hex', cave '#hex', density [surface, cave] (FogExp2), near [a, b], far [a, b] (Fog)} */
+  function hexRGB(h,w){if(!HEX.test(h))throw new Error('KCAVELIGHT.fog: '+w+' is #rrggbb');var n=parseInt(h.slice(1),16);return [n>>16&255,n>>8&255,n&255];}
+  function lerpA(a,s,w){if(a==null)return null;if(!(Array.isArray(a)&&a.length===2&&isFinite(a[0])&&isFinite(a[1])))throw new Error('KCAVELIGHT.fog: '+w+' is [surface, cave]');return a[0]+(a[1]-a[0])*s;}
+  function fog(E,o){if(!o)throw new Error('KCAVELIGHT.fog: {surface, cave, density | near and far}');var s=Math.max(0,Math.min(1,E&&E.s!=null?E.s:0)),A=hexRGB(o.surface,'surface'),B=hexRGB(o.cave,'cave');
+    var c=A.map(function(v,i){return Math.round(v+(B[i]-v)*s);}),hx='#'+c.map(function(v){return (v<16?'0':'')+v.toString(16);}).join('');
+    return {colour:hx,density:lerpA(o.density,s,'density'),near:lerpA(o.near,s,'near'),far:lerpA(o.far,s,'far'),s:s};}
   /* ---- the daylight down an opening (Dhelv's numbers): the sun's spot through it onto the floor, the sky's own spot straight
      down, a warm bounce where it lands, and the shaft of lit air from the top to the floor. sun: unit vector toward the sun */
   function daylight(O,sun,day){day=Math.max(0,Math.min(1,d(day,1)));var L=sun,ly=Math.max(.15,L[1]),out={on:day>0};if(!out.on)return out;
@@ -196,5 +204,5 @@
       exposure:{surface:1,night:1.35,cave:1.55,max:1.8,floor:.14,ramp:300}});}
 
   root.KCAVELIGHT={KINDS:KINDS,kind:kind,make:make,add:add,addAll:addAll,remove:remove,clear:clear,all:all,get:get,opening:opening,openings:openings,
-    flicker:flicker,dist2:dist2,near:near,line:line,under:under,nearestOpening:nearestOpening,exposure:exposure,exposureAt:exposureAt,daylight:daylight,export:exp};
+    flicker:flicker,dist2:dist2,near:near,line:line,under:under,nearestOpening:nearestOpening,exposure:exposure,exposureAt:exposureAt,fog:fog,daylight:daylight,export:exp};
 })(typeof window!=='undefined'?window:globalThis);

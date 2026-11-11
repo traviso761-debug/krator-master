@@ -94,6 +94,9 @@ A kit may add its own row (`KCAVELIGHT.kind(name, row)`) or override any field o
   mouth daylight comes in only as the openings' own spots.
 - `KCAVELIGHT.exposureAt(x, y, z, o, list)`: the same from every opening at a point; the one that leaves the eye least
   dark-adapted wins (a wide portal 50 m off beats a narrow shaft 5 m off). Adds `{opening, d}`. The host calls this.
+- `KCAVELIGHT.fog(E, o)`: the fog with the exposure (the Line's portal): `o` `{surface, cave: '#rrggbb', density: [surface, cave]`
+  (a `FogExp2`) `| near, far: [surface, cave]` (a `Fog`)`}` -> `{colour, density, near, far}` along `E.s`. The host's `o.fog` applies it to
+  `scene.fog` each frame.
 - `KCAVELIGHT.nearestOpening(x, y, z, list)`: `{o, d}` (a portal's d is along its dir from the mouth; a well's from its foot).
 - `KCAVELIGHT.daylight(O, sun, day)`: the light at one opening now, as numbers: `{on, beam: {from, to, len}, spot: {pos,
   target, angle, intensity} | null, sky: {pos, target, angle, intensity, distance?}, bounce: {pos, distance, intensity},
@@ -115,7 +118,8 @@ const CL = KCAVELIGHT.host({THREE, scene, renderer, camera,
   day: () => 0..1,          // optional: how much daylight there is (1 by default)
   pool: 14,                 // real point lights moved to the records nearest the eye
   halos: true,              // every lit record a glow sprite (one Points draw)
-  exposure: {surface, cave, max, floor, ramp}});   // overrides of KCAVELIGHT.exposure's
+  exposure: {surface, cave, max, floor, ramp},     // overrides of KCAVELIGHT.exposure's ({floor: 1} keeps the page's own key)
+  fog: {surface: '#a0c0e0', cave: '#201810', density: [.001, .012]}});   // optional: scene.fog follows the exposure
 // each frame, after the camera moved:
 CL.update(t);              // t in seconds (the page's clock)
 CL.rebuild();              // after adding or removing records: the halos again

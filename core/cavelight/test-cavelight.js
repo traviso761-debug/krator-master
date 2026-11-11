@@ -63,6 +63,11 @@ ok('by night the mouth is the night\'s exposure and the deep ambient still the f
 let mono=true,prev=0;for(let dd=0;dd<=400;dd+=5){const e=L.exposure({under:true,d:dd,ramp:300}).exposure;if(e<prev-1e-12)mono=false;prev=e;}
 ok('the ramp never dips going in',mono,false);
 
+// ---- the fog with the exposure (the Line's portal)
+const FG={surface:'#a0c0e0',cave:'#201810',density:[.001,.012]},f0=L.fog(L.exposure({under:false}),FG),f1=L.fog(L.exposure({under:true,d:1e5}),FG),fm=L.fog(L.exposure({under:true,d:150}),FG);
+ok('the fog runs from the surface colour and density to the cave one with the eye adapting',f0.colour==='#a0c0e0'&&f1.colour==='#201810'&&Math.abs(f1.density-.012)<1e-12&&fm.density>f0.density&&fm.density<f1.density&&f0.near===null,f1.colour===f0.colour);
+ok('a Fog near and far ramp too; a bad colour or range throws',Math.abs(L.fog({s:1},{surface:'#ffffff',cave:'#000000',near:[50,5],far:[900,120]}).far-120)<1e-12&&throws(()=>L.fog({s:0},{surface:'blue',cave:'#000000'}))&&throws(()=>L.fog({s:0},{surface:'#ffffff',cave:'#000000',density:[1]})),false);
+
 // ---- openings, daylight
 L.clear();
 const P=L.opening({id:'portal',kind:'portal',c:[0,0],r:16,top:14,floor:0,dir:[1,0]}),W=L.opening({id:'shaft',kind:'well',c:[500,0],r:3,top:200,floor:0});

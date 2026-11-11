@@ -15,7 +15,7 @@ const T=THREE,Q=new URLSearchParams(location.search);
 const renderer=new T.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);
 renderer.outputEncoding=T.sRGBEncoding;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1;
 document.body.appendChild(renderer.domElement);
-const scene=new T.Scene();scene.background=new T.Color(0x9fc2e6);
+const scene=new T.Scene();scene.background=new T.Color(0x9fc2e6);scene.fog=new T.FogExp2(0x9fc2e6,.0012);
 const camera=new T.PerspectiveCamera(60,innerWidth/innerHeight,.1,2000);scene.add(camera);
 const sun=new T.DirectionalLight(0xfff1dc,1.4);const SUN=new T.Vector3(-.55,.62,.28).normalize();sun.position.copy(SUN).multiplyScalar(300);scene.add(sun);
 const hemi=new T.HemisphereLight(0xbcd4f0,0x5a4a38,.55);scene.add(hemi);
@@ -112,7 +112,7 @@ for(let x=209;x<LEN;x+=37)KL.add({id:'fungus.'+x,kind:'fungus',x:x,y:.5,z:-(W/2-
   const bm=new T.MeshBasicMaterial({color:r.on?r.colour:'#222222'});bm.toneMapped=false;add(new T.SphereGeometry(.12,8,6),bm,{x:r.x,y:r.y,z:r.z});});}
 KL.opening({id:'portal',kind:'portal',c:[0,0],r:W/2,top:CROWN,floor:0,dir:[1,0],ramp:300});
 KL.opening({id:'shaft',kind:'well',c:[WELL.x,0],r:WELL.r,top:HILL,floor:0,ramp:60});
-const CL=KL.host({THREE:T,scene,renderer,camera,sun,hemi,ground,sunDir:()=>SUN,day:()=>DAY,pool:14,world:WORLD});
+const CL=KL.host({THREE:T,scene,renderer,camera,sun,hemi,ground,sunDir:()=>SUN,day:()=>DAY,pool:14,world:WORLD,fog:{surface:'#9fc2e6',cave:'#1c1712',density:[.0012,.006]}});
 let DAY=Q.has('night')?0:1;
 
 // ---- the camera: views, WASD, drag to look

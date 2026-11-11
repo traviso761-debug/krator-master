@@ -60,6 +60,7 @@ async def run(page, out):
             ('the refuge: the wax key in the pool', 'wax' in rf['near'][:4], ','.join(rf['near'][:6])),
             ('the hot stretch: the strips in the pool', 'strip' in hot['near'][:6] and hot['pool'] > 0, ','.join(hot['near'][:6])),
             ('the far door: the hooded stop lamp on a spot', door['spots'] >= 1 and 'lamp-white' in door['near'], ''),
+            ('the fog follows the exposure: the sky colour outside, the cave colour deep in, between at 150 m', o.get('fog') == '#9fc2e6' and dp.get('fog') == '#1c1712' and h.get('fog') not in ('#9fc2e6', '#1c1712'), '%s / %s / %s' % (o.get('fog'), h.get('fog'), dp.get('fog'))),
             ('every view underground has halos drawn', all(S[v]['halos'] > 70 for v in VIEWS), str(dp['halos'])),
         ]
         for name, ok, detail in checks:
