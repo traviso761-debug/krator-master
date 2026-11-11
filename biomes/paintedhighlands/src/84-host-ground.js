@@ -95,6 +95,6 @@ if(SKEY==='cliff')REGISTER({name:'The cliff town\'s wall (2,224 m of relief: the
 // sandstone over each alcove is the wall's own beds; the floor under it is the ground's, folded in (46: CARVE_FOLD)
 if(SKEY==='cliff'&&KCARVE.patches.length){const S=TERR.R*2.2,m4=[0,0,0,0],sd=new THREE.Vector3(-900,1100,600).normalize();
  try{KCARVE.mesh(MAT_GROUND,{sun:[sd.x,sd.y,sd.z],ao:true,cast:'hood',gridNormals:true,
-  attrs:{uv:{size:2,fn:(x,y,z)=>[x/S+.5,.5-z/S]},aGL:{size:4,fn:(x,y,z)=>{masksAt(x,z,y,m4);return [m4[0],m4[1],m4[2],1];}},aBl:{size:4,fn:()=>[0,0,0,0]},aWet:{size:1,fn:()=>0}}})
+  attrs:{uv:{size:2,fn:(x,y,z)=>[x/S+.5,.5-z/S]},aGL:{size:4,fn:(x,y,z)=>{masksAt(x,z,y,m4);return [m4[0],m4[1],m4[2],1];}},aBl:{size:4,fn:()=>[0,0,0,0]},aWet:{size:1,fn:()=>[0]}}})   /* a one-component attribute is still an array to KCARVE (v[0]) */
   .forEach(cm=>{if(KG_RELIEF)KGROUND.cavityMesh(cm);cm.userData.host=true;cm.userData.rock=true;cm.userData.inspectLabel='An alcove\'s hood (danxia sandstone over the seep line)';scene.add(cm);});}
  catch(e){reportErr('alcoves: '+e.stack);}}

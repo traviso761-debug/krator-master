@@ -14,7 +14,7 @@ const Y=(x,z)=>BIO.host.terrainH(x,z);
 const WHITE=[0xf4f2ec,0xeeeae0,0xf8f6f0];
 PAINTED.buildFloor=function(R,q,o){o=o||{};q=q==null?1:q;R=R==null?2500:R;
  const st={grass:0,sage:0,rabbit:0,flowers:0,drifts:0,boulders:0,byFlower:B.FLOWERS.map(()=>0)},seed=KRAND.child(2000017,'paintedhighlands/floor'),
-  keep=o.keep||(()=>1),bed=o.bed||(()=>null),talus=o.talus||(()=>0),grass=o.grass==null?1:o.grass;
+  keep=o.keep||(()=>1),bed=o.bed||(()=>null),talus=o.talus||(()=>0),grass=o.grass==null?1:o.grass,bloomK=o.bloom==null?1:o.bloom;
  const F=n=>(x,z)=>BIO.field(n,x,z),wet=F('wet'),rock=F('rock'),slope=F('slope'),bare=F('bare'),flow=F('flow'),flat=F('flat'),rim=F('rim');
  const Lv=BIO.LOD(),c0=BIO.center();
  const cellPass=(cell,salt,maxD,fn)=>{const N=Math.ceil(R*2/cell);for(let iz=0;iz<N;iz++)for(let ix=0;ix<N;ix++){
@@ -34,7 +34,7 @@ PAINTED.buildFloor=function(R,q,o){o=o||{};q=q==null?1:q;R=R==null?2500:R;
  // THE BLOOM: drifts on the washes' floors, the playa, the gentle dip slopes and the rims; each drift one flower, the one its bed's clay favours
  // (B.flowerFor) most of the time, a neighbour's now and then; a drift is a cluster of 3-9 plants of it about the cell's point
  cellPass(2.2,4,Lv.floor[1],(x,y,z,lv)=>{const sl=slope(x,z),gentle=(1-smooth(.08,.16,sl))*(1-bare(x,z));
-  const zone=Math.max(flow(x,z)*.95,flat(x,z)*.3,gentle*.3,rim(x,z)*.25*(1-rock(x,z)));const a=zone*(1-rock(x,z))*q;if(rng()>a)return;   /* the playa's drifts at a third: its colour from afar is the ground's (84: aBl) */
+  const zone=Math.max(flow(x,z)*.95,flat(x,z)*.3,gentle*.3,rim(x,z)*.25*(1-rock(x,z)));const a=zone*(1-rock(x,z))*q*bloomK;if(rng()>a)return;   /* the playa's drifts at a third: its colour from afar is the ground's (84: aBl) */
   const kind=bed(x,y,z),fi=rng()<.78?B.flowerFor(kind,rng()):B.flowerFor(null,rng()),n=lv===2?ri(3,8):lv===1?ri(1,3):1,f=B.FLOWERS[fi];
   for(let k=0;k<n;k++){const ang=rr(0,TAU),d=k?rr(.2,1.1):0,px=x+Math.cos(ang)*d,pz=z+Math.sin(ang)*d;if(BIO.mask(px,pz)<=0||keep(px,pz)<=0)continue;
    const s=rr(.28,.55)*(f.key==='skylupin'||f.key==='ravenspike'||f.key==='scarletbeard'||f.key==='paintbrush'?1.3:1);

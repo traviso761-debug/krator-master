@@ -27,6 +27,12 @@ Open items are `- [ ]`; `build.py` counts them. Built 2026-11-11 in a cloud sess
 - [ ] **The `site` tag key.** The plan proposed `site: 'cliff-alcove' | ...`; the records use core/tags' free `zone` key and carry their
   detail in a `site` field of the record, so no core change was needed. If `site` becomes a vocabulary key, move the value there.
 - [ ] **The canyon-mouth lake at station 4.** The lake (516 m) lies about 6 km north-west of the page, under the far field; it is not drawn.
+- [ ] **Section 8's rows not taken yet.** `core/camp` (the pigment works as a `KCAMP` work camp; nomad camps in Nomad Country): the pigment pit
+  is a landform and a record, no camp; `kits/resources` (no node: the teal bed is a clay by default, section 9); `KGROUND`'s `clast` scree is on
+  the steep ground but no lee drifts (`BACKPORT.md` section 5): the winter is `ATMOS.snowCover` on the station's line and the calendar's snow
+  tint on the gentle ground; `KHORIZON` takes the ground only where its units fit (85).
+- [ ] **The wet wall's broadleaves in spring.** Ebadlands' maple and oak keep their own leaf palette, which reads autumnal on the cliff town's
+  page in the bloom; a `colour` delta on their kin rows (70) once Korona's ring species are read in place, or BIO.SEASON-driven leaf colour.
 - [ ] **The painted names.** The canyon, the playas, the hogbacks and the four sites have English working names only (section 9, defaults).
 
 ## Notes
@@ -37,3 +43,4 @@ Open items are `- [ ]`; `build.py` counts them. Built 2026-11-11 in a cloud sess
   contact shows the clay's bands at its foot and the sandstone above, as the stack puts them. A first pass on Lambert drew them black.
 - **The stones and fallen blocks** take only their instance colour (the solid material without vertex colours: their geometry has none; with
   vertex colours on they drew black).
+- **KCARVE's extra attributes** (`84-host-ground.js`, the alcoves' hoods): a one-component attribute's `fn` must still return an array (`[0]`); KCARVE reads `v[0]`, and a bare number gave NaN and black hoods. Not a core change (every caller passes arrays today).

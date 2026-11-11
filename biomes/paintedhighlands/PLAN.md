@@ -426,6 +426,21 @@ nine cells are the bloom's nine Earth models**, so the flower cards are not owed
 - **P4.** Stations 2, 3 (and 4).
 - **P5.** `verify.py --assert`, `PORT.md`, `tools/check_core_use.py`, the gallery (a new biome).
 
+**As built (2026-11-11).** P1 to P5 done on `claude/paintedhighlands-biome`, but the gallery (the owner publishes once the kit is reviewed).
+- **P1.** One `KSTRATA` stack a station (`40-biome-painted-sites.js`, `strata`; `45-host-stage.js`, `STRATA_DATA`): `badland` under `danxia`, the
+  fold on `KSTRATA`'s `fold` (station 1's anticline crest 2.6 km east of the page, so the page is the breached fold's west limb: a dip slope
+  on the sandstone, its scarp facing east, the clay core below). The ground's shader draws the same stack (`KSTRATA.shade`, 84); the
+  drifts and the inspector read it on the CPU (`STRATA_DATA.at`). The relief: the scarp from the contact (sheer sandstone, a clay slope below),
+  the rounded clay hills (a KRAND lattice of elongated domes under a soft maximum, rills down their flanks), `KRELIEF.wadi` for the wash,
+  `KRELIEF.pit` for the pigment pit, `KSTRATA.terrace` for the stepped canyon walls and the cliff tiers, `KSTACKS.row` with `contour` and
+  `weather` for the fins (86), `KCARVE` for the alcoves (46).
+- **P2.** The steppe and the bloom (`60-biome-painted-place.js`), the calendar (`41-biome-painted-bloom.js`) on core/clock's season, bound to
+  `BIO.SEASON`, the ground's uniforms and the melt pools (89z); the season select on the bar.
+- **P3.** `kits/crops` (the `paintedhighlands` entry, the bulb, the paintbrush, the black and the teal; `tests/test-crops.js`); the fauna by name
+  (`42-biome-painted-fauna.js`) and the owed animals in `kits/fauna/BIOME-FAUNA-PLAN.md`.
+- **P4.** Stations 2 to 4 (`stations/<name>/44z-host-site.js`).
+- **P5.** `verify.py --assert` on all four pages (software GL), `PORT.md`, `INDEX.md`, `BIOME-API.md`, `KNOWN_ISSUES.md`, `check_core_use.py`.
+
 ## Sources
 
 - the owner's brief, 2026-10-23;

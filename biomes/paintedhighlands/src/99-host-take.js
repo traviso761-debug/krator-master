@@ -102,6 +102,6 @@ KHOST.take({build:'paintedhighlands'+(SKEY==='stripes'?'':'-'+SKEY),title:'Krato
  get totals(){const t=BIO.totals();return {tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
  biome:()=>window._station,site:()=>SITE,bloom:()=>BLOOM_NOW(),setStage,sites:()=>SITES_CLIFF.map(r=>r.site),strata:()=>STRATA_DATA.export(),
  exportProfile:['registry','items','materials','textures','terrain','stage','atmos','water'],
- exportBox:SKEY==='canyon'?[-200,L.cz(0)-200,200,L.cz(0)+200]:SKEY==='bloom'?[SITE.playa.x-500,SITE.playa.z-50,SITE.playa.x-100,SITE.playa.z+350]:SKEY==='stripes'?(()=>{const p=L.WADI.pools.slice().sort((a,b)=>Math.hypot(a.x,a.z)-Math.hypot(b.x,b.z))[0]||{x:0,z:0};return[p.x-200,p.z-200,p.x+200,p.z+200];})():[-200,-1300,200,-900],
+ exportBox:SKEY==='canyon'?[-200,L.cz(0)-200,200,L.cz(0)+200]:SKEY==='bloom'?[SITE.playa.x-500,SITE.playa.z-50,SITE.playa.x-100,SITE.playa.z+350]:SKEY==='stripes'?(()=>{const p=L.WADI.pools.slice().sort((a,b)=>Math.hypot(a.x,a.z)-Math.hypot(b.x,b.z))[0]||{x:0,z:0};return[p.x-200,p.z-200,p.x+200,p.z+200];})():(()=>{const p=SEEPS[Math.floor(SEEPS.length/2)]||{x:0,z:-1100};return[p.x-150,p.z-150,p.x+150,p.z+150];})(),
  at:(x,z)=>{const o={h:terrainH(x,z),water:waterH(x,z),bed:BED_AT(x,terrainH(x,z),z)};FNAMES.forEach(n=>o[n]=+FIELD[n](x,z).toFixed(3));return o;}}});
 if(!/[?&#]day=/.test(location.search+location.hash))setStage('bloom');
