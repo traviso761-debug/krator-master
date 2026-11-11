@@ -67,7 +67,7 @@ profile asking a treeless kit for buckets.
 ## The ground
 
 - [ ] The Deep's floor draws `ground.sand.black` and `ground.obsidian` for the komatiite pavement the code paints
-  (`core/materials/PROMPTS-NEEDED.md` section 41, `ground.komatiite.pavement`).
+  (`core/materials/PROMPTS-NEEDED.md` section 43, `ground.komatiite.pavement`).
 - [ ] The model's 2 km cells smear the bench's lip into a 7-degree ramp; the page keeps the drawn heights and does not invent the scarp
   (`PLAN.md` 7b). A finer model of the walls (a scarp record per bench lip, KRELIEF.scarp) is the scale model's to give.
 

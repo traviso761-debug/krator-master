@@ -6,23 +6,24 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 0 (0%) | 10 (7%) | 0 (0%) | 20 (14%) | 116 (79%) |
+| KB | 0 (0%) | 10 (4%) | 0 (0%) | 23 (9%) | 216 (87%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
 | Fragment | KB | Tag | THREE | canvas | DOM | events | loop | geom | shader | inst | ray | store | net | Note |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `krator-vehicles-ancient.js` | 68.0 | [draw] | 5 | 0 | 0 | 0 | 0 | 214 | 0 | 0 | 0 | 0 | 0 |  |
 | `krator-vehicles-eastabyss.js` | 13.4 | [draw] | 0 | 0 | 0 | 0 | 0 | 57 | 0 | 0 | 0 | 0 | 0 | split: palette, detail table, `tags`, `data`, `variantData` are [G data]; `build`/`wheel` draw |
 | `krator-vehicles-geomancer.js` | 20.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 129 | 0 | 0 | 0 | 0 | 0 | split: each entry's `tags`, `data`, `variantData` and the palette are [G data] (a sim reads them with no drawing); `build`/`wheel` draw |
 | `krator-vehicles-iziz.js` | 11.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 47 | 0 | 0 | 0 | 0 | 0 | split: palette, detail table, `tags`, `data`, `variantData` are [G data]; `build`/`wheel` draw |
 | `krator-vehicles-post-apoc.js` | 16.4 | [draw] | 1 | 0 | 0 | 0 | 0 | 79 | 0 | 0 | 0 | 0 | 0 | split: palette, detail table, `tags`, `data`, `variantData` are [G data]; `build`/`wheel` draw; the bogie table `PA_BOGIES` is data too |
 | `krator-vehicles-republic.js` | 18.9 | [draw] | 1 | 0 | 0 | 0 | 0 | 78 | 0 | 0 | 0 | 0 | 0 | split: palette, detail table, `tags`, `data`, `variantData` are [G data]; `build`/`wheel` draw |
-| `krator-vehicles-runtime.js` | 15.4 | [draw] | 30 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | assembly: merges per material with a detail slot per vertex, hangs the wheels, lays the belts; `list()`/`dataOf()` are the data face, `roll`/`steer`/`lights` act on three.js nodes |
-| `vehicles-core.js` | 20.6 | [draw] | 30 | 0 | 0 | 0 | 0 | 20 | 0 | 0 | 0 | 0 | 0 | split: the VEHICLE registry, vocabularies, `vehicleData()` and `vehicleBudget()` are [G data]; the vehicle frame helpers (`F.slab`, `F.tub`, `F.track` ...) and `vehicleBalloonTyre()` draw |
-| `vehicles-detail.js` | 9.7 | [G shader] | 4 | 3 | 0 | 0 | 0 | 1 | 8 | 0 | 0 | 0 | 0 | the detail maps: slot resolution is [G data]; the triplanar atlas hook is one .gdshader (or StandardMaterial3D triplanar + a CUSTOM0 slot); the atlas canvas is [web] |
-| `src/00-head.html` | 4.3 | [web] | 0 | 0 | 4 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
-| `src/90-sheet.js` | 8.5 | [web] | 8 | 3 | 9 | 4 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/92-hover.js` | 2.9 | [web] | 2 | 0 | 8 | 3 | 0 | 0 | 0 | 0 | 2 | 0 | 0 |  |
+| `krator-vehicles-runtime.js` | 40.8 | [draw] | 34 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | assembly: merges per material with a detail slot per vertex, hangs the wheels, lays the belts; `list()`/`dataOf()` are the data face, `roll`/`steer`/`lights` act on three.js nodes |
+| `vehicles-core.js` | 27.0 | [draw] | 30 | 0 | 0 | 0 | 0 | 20 | 0 | 0 | 0 | 0 | 0 | split: the VEHICLE registry, vocabularies, `vehicleData()` and `vehicleBudget()` are [G data]; the vehicle frame helpers (`F.slab`, `F.tub`, `F.track` ...) and `vehicleBalloonTyre()` draw |
+| `vehicles-detail.js` | 10.3 | [G shader] | 4 | 3 | 0 | 0 | 0 | 1 | 8 | 0 | 0 | 0 | 0 | the detail maps: slot resolution is [G data]; the triplanar atlas hook is one .gdshader (or StandardMaterial3D triplanar + a CUSTOM0 slot); the atlas canvas is [web] |
+| `src/00-head.html` | 4.6 | [web] | 0 | 0 | 4 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
+| `src/90-sheet.js` | 10.5 | [web] | 8 | 3 | 11 | 4 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/92-hover.js` | 3.2 | [web] | 2 | 0 | 8 | 3 | 0 | 0 | 0 | 0 | 2 | 0 | 0 |  |
 | `src/93-polygon.js` | 4.8 | [web] | 6 | 0 | 9 | 9 | 0 | 2 | 0 | 0 | 1 | 0 | 0 |  |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 

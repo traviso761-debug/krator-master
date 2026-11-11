@@ -5,8 +5,10 @@
    one vehicle; each variant stands at ry = 0 (+z forward), wheels on y = 0, with a
    1.75 m figure beside the row for scale.
    Toolbar: Drive (R) rolls every wheel and swings the front pair; Lights (L) switches
-   the lamps; Night (N) darkens the sky to judge them.
-   Exposes window._sheet (rows, instances, view(i, kind), setDrive, setLights, setNight)
+   the lamps; Night (N) darkens the sky to judge them; the State select (S cycles it) rebuilds
+   every vehicle in one of the kit's ruin states (intact, weathered, burnt, wreck: KV.build's
+   `state`); ?state=burnt opens the sheet in one.
+   Exposes window._sheet (rows, instances, view(i, kind), setDrive, setLights, setNight, setState, state)
    and sets window._ready.
    ====================================================================== */
 const INSTANCES = [];
@@ -19,6 +21,9 @@ const INSTANCES = [];
   if (typeof ground !== 'undefined' && ground.material && ground.material.color) ground.material.color.convertSRGBToLinear();
   /* ?mat=proc: the vehicles without the library detail maps (vertex colours only), to compare */
   if (/[?&]mat=proc\b/.test(location.search)) KV.setTextures(false);
+  /* ?state=<name>: the ruin state every vehicle is first built in */
+  const qs = /[?&]state=([a-z]+)/.exec(location.search);
+  let state = qs && KV.STATES.indexOf(qs[1]) >= 0 ? qs[1] : 'intact';
 
   /* --- labels on the ground */
   function label(text, sub, x, z, w, dark) {
@@ -60,13 +65,15 @@ const INSTANCES = [];
     let x = 0, depth = E.d;
     const placed = [];
     figure(-1.2, z);
-    for (let v = 0; v < E.variants; v++) {
-      const cx = x + E.w / 2;
-      const g = KV.build(E.key, { variant: v, seed: 1 });
+    /* at least three slots a row (seeds 1, 2, 3; the variants cycle), so a ruin state shows three fates of one vehicle */
+    const slots = Math.max(E.variants, 3);
+    for (let i = 0; i < slots; i++) {
+      const v = i % E.variants, cx = x + E.w / 2;
+      const g = KV.build(E.key, { variant: v, seed: 1 + i, state: state });
       g.position.set(cx, 0, z);
       g.userData.x = cx; g.userData.z = z; g.userData.ry = 0;
       scene.add(g); INSTANCES.push(g); placed.push(g);
-      label(E.name + ' #' + (v + 1) + (E.variantNames[v] ? ' ' + E.variantNames[v] : ''),
+      label(E.name + ' #' + (v + 1) + (E.variantNames[v] ? ' ' + E.variantNames[v] : '') + (i >= E.variants ? ' · seed ' + (1 + i) : ''),
         E.culture + ' · ' + KV.dataOf(E.key, v).seats + ' seats · ' + g.userData.tris + ' tris', cx, z + E.d / 2 + 0.7, Math.max(E.w * 1.4, 2.6), false);
       x += E.w + GAP;
     }
@@ -95,6 +102,24 @@ const INSTANCES = [];
     document.getElementById('nightBtn').classList.toggle('on', night);
   }
 
+  /* --- the ruin state: every instance rebuilt in place (same key, variant, seed) */
+  function setState(st) {
+    if (KV.STATES.indexOf(st) < 0) return state;
+    state = st;
+    for (let i = 0; i < INSTANCES.length; i++) {
+      const old = INSTANCES[i], u = old.userData;
+      const g = KV.build(u.key, { variant: u.variant, seed: u.seed, state: state });
+      g.position.copy(old.position); g.rotation.copy(old.rotation); g.visible = old.visible;
+      g.userData.x = u.x; g.userData.z = u.z; g.userData.ry = u.ry;
+      scene.remove(old); KV.dispose(old);
+      scene.add(g); INSTANCES[i] = g;
+      for (const r of rows) { const k = r.instances.indexOf(old); if (k >= 0) r.instances[k] = g; }
+      KV.lights(g, lightsOn);
+    }
+    document.getElementById('stateSel').value = state;
+    return state;
+  }
+
   /* --- drive and lights */
   let drive = false, lightsOn = false, t0 = 0;
   function setDrive(on) { drive = !!on; document.getElementById('driveBtn').classList.toggle('on', drive); }
@@ -118,11 +143,15 @@ const INSTANCES = [];
   document.getElementById('driveBtn').onclick = function () { setDrive(!drive); };
   document.getElementById('lightsBtn').onclick = function () { setLights(!lightsOn); };
   document.getElementById('nightBtn').onclick = function () { setNight(!night); };
+  const ss = document.getElementById('stateSel');
+  ss.value = state;
+  ss.onchange = function () { setState(ss.value); };
   window.addEventListener('keydown', function (e) {
     const t = e.target;
-    if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+    if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable || t.tagName === 'SELECT')) return;
     const k = e.key.toLowerCase();
     if (k === 'r') setDrive(!drive); else if (k === 'l') setLights(!lightsOn); else if (k === 'n') setNight(!night);
+    else if (k === 's') setState(KV.STATES[(KV.STATES.indexOf(state) + 1) % KV.STATES.length]);
   });
 
   function showAll() { for (const g of INSTANCES) g.visible = true; }
@@ -155,7 +184,7 @@ const INSTANCES = [];
   if (rows.length) gotoRow(0);
 
   window._sheet = { rows: rows, instances: INSTANCES, width: maxW, gotoRow: gotoRow, view: view, showAll: showAll, views: Object.keys(VIEWS),
-    setDrive: setDrive, setLights: setLights, setNight: setNight };
+    setDrive: setDrive, setLights: setLights, setNight: setNight, setState: setState, state: function () { return state; } };
   /* ready once the detail maps have decoded into the atlas (verify.py and the screenshots wait on it) */
   /* the harness waits on !window._texPending (a count, as KMAT keeps it): a getter, so it reads the live count (a function is always
      truthy, and the wait never cleared: 2026-11-09, as fauna's) */

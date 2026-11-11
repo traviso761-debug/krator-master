@@ -73,6 +73,84 @@ function vehicleBudget(A) {
   const tracked = A.tags && (A.tags.drive === 'tracked' || A.tags.drive === 'half-track');   /* + the belts mesh */
   return { meshes: 2 + ((A.data && A.data.wheels) || []).length + (tracked ? 1 : 0), tris: (A.budget && A.budget.tris) || 6000 };
 }
+/* ---------------------------------------------------------------- ruin states (data, 2026-11-08)
+   Every vehicle of every culture can be built in one of four states, KV.build(key, { state }):
+     intact      as designed
+     weathered   a thousand years outside: rust blooms over the paint, grime, the glass gone, the tyres flat,
+                 trim sprung, dead lamps
+     burnt       burnt out: soot over everything, the body sagging, the glass gone, the tyres burnt off the rims,
+                 the interior open
+     wreck       crushed, overturned or torn in two (one of the three, by seed), a wheel missing, panels sprung
+                 and fallen, heavy rust and soot
+   vehicleRuin(state, seed, key) is the RECORD of one ruin (what happened to this vehicle), a plain object a host or a
+   sim can read; the runtime's ruin pass (krator-vehicles-runtime.js) draws it onto the merged body and wheels of
+   ANY culture (recolour, detail slots, deformation, rigid transforms), and a culture's build(F) may read F.ruin to
+   draw its own damage (skip the glass, draw a cabin as a charred frame). Its draws come from a generator of their
+   own on (seed, state), so a body's own F.rnd draws are the same in every state: the intact and the ruined builds
+   of one seed are the same vehicle.
+     { state, rust: 0..1 (the share of the paint that is rust), soot: 0..1, grime: 0..1, glass: bool (panes kept),
+       tyres: 'ok' | 'flat' | 'gone', sag: 0..1 (roof and panels caving), sprung: 0..1 (the share of small trim
+       knocked askew), lamps: bool (lights() may glow), tilt: rad (a roll about z, the body settling),
+       form: null | one of VEHICLE_WRECK_FORMS (the wreck's shape), missing: a wheel index (wreck; -1 none),
+       cut: 0..1 (torn: where along the length; tboned: where the blow landed, as a fraction), side: +-1 (tboned,
+       onside: which flank), end: +-1 (crashed: the nose or the tail), seed }                              */
+const VEHICLE_STATES = ['intact', 'weathered', 'burnt', 'wreck'];
+/* a wreck's shape (R.form), by seed: crushed (the upper body pressed down and sheared), overturned (on its roof),
+   torn (cut across, the halves parted), crashed (the nose, or the tail, crumpled: R.end), tboned (one flank caved
+   in round R.cut: R.side), exploded (blown open: holes in the upper body, panels flung, burnt out), onside (lying on
+   one flank: R.side), skidded (airframes: gear torn off, nose crumpled, belly down at the end of its furrow, wreckage
+   strewn behind). A street pairs them: a crashed one nose-on to a tboned one's flank is a collision */
+const VEHICLE_WRECK_FORMS = ['crushed', 'overturned', 'torn', 'crashed', 'tboned', 'exploded', 'onside',
+  'skidded', 'nosedived', 'broken', 'piled', 'gutted'];
+/* an airframe (data.airframe: the helicopter, the jet) draws its form from this list instead; it came down, so it
+   lies on the ground (its gear gone: R.gearGone), never perched on wheels or a wingtip:
+     skidded     the belly on the ground at the end of the furrow it ploughed, the nose crumpled, wreckage strewn
+                 behind it (the build draws the furrow and the trail)
+     nosedived   pitched nose-down into the ground, the nose buried (what is under the ground is cut away), the tail
+                 in the air
+     broken      in two, both halves belly down, holes through the fuselage
+     piled       belly down, the nose crumpled to a quarter of its length into a heap of torn panels and earth
+     overturned  on its roof (the helicopter's rotor sheared off); the gear stays up in the air
+     gutted      burnt to a heap: the build draws the collapsed remains, the rotor head and a bent blade standing
+                 out of them                                                                             */
+const VEHICLE_AIR_FORMS = ['skidded', 'nosedived', 'broken', 'piled', 'overturned', 'gutted', 'skidded', 'broken'];
+function vehicleRuin(state, seed, key, airframe) {
+  state = VEHICLE_STATES.indexOf(state) >= 0 ? state : 'intact';
+  seed = seed == null ? 1 : seed;
+  /* the vehicle's key salts the draws, so two vehicles of one seed (a sheet, a street built from one seed) do not
+     share one fate */
+  let salt = 0;
+  for (let i = 0; key && i < key.length; i++) salt = (Math.imul(salt, 31) + key.charCodeAt(i)) | 0;
+  let st = ((Math.imul(seed | 0, 2654435761) >>> 0) + VEHICLE_STATES.indexOf(state) * 40503 + (Math.imul(salt, 2246822519) >>> 0) + 7) >>> 0;
+  const rnd = function () { st = (Math.imul(st, 1664525) + 1013904223) >>> 0; return st / 4294967296; };
+  const R = { state: state, rust: 0, soot: 0, grime: 0, glass: true, tyres: 'ok', sag: 0, sprung: 0, lamps: true, tilt: 0,
+    form: null, missing: -1, cut: 0.5, side: 1, end: 1, gearGone: false, seed: seed };
+  if (state === 'intact') return R;
+  R.glass = false; R.lamps = false;
+  if (state === 'weathered') {
+    R.rust = 0.3 + rnd() * 0.3; R.grime = 0.45 + rnd() * 0.2; R.tyres = 'flat'; R.sprung = 0.15 + rnd() * 0.1; R.tilt = (rnd() - 0.5) * 0.05;
+  } else if (state === 'burnt') {
+    R.rust = 0.35 + rnd() * 0.25; R.soot = 0.85 + rnd() * 0.15; R.grime = 0.3; R.tyres = 'gone'; R.sag = 0.35 + rnd() * 0.3;
+    R.sprung = 0.3 + rnd() * 0.15; R.tilt = (rnd() - 0.5) * 0.07;
+  } else {
+    R.rust = 0.8 + rnd() * 0.2; R.soot = rnd() < 0.6 ? 0.45 + rnd() * 0.4 : 0.1 + rnd() * 0.15; R.grime = 0.4;
+    R.tyres = rnd() < 0.5 ? 'gone' : 'flat'; R.sag = 0.5 + rnd() * 0.4; R.sprung = 0.55 + rnd() * 0.25;
+    const forms = airframe ? VEHICLE_AIR_FORMS : VEHICLE_WRECK_FORMS.slice(0, 7);     /* the rest are the airframes' */
+    R.form = forms[Math.floor(rnd() * forms.length) % forms.length];
+    R.missing = Math.floor(rnd() * 64);
+    R.tilt = (rnd() - 0.5) * 0.24; R.cut = 0.35 + rnd() * 0.3;
+    R.side = rnd() < 0.5 ? 1 : -1; R.end = rnd() < 0.7 ? 1 : -1;
+    if (R.form === 'exploded') { R.soot = 0.8 + rnd() * 0.2; R.sprung = 0.9; R.tyres = 'gone'; R.sag = 0.3; }
+    if (airframe) {
+      R.end = 1; R.tyres = 'gone'; R.missing = -1; R.gearGone = R.form !== 'overturned'; R.sag = 0.25; R.sprung = 0.5;
+      if (R.form === 'skidded' || R.form === 'piled') R.tilt = (rnd() - 0.5) * 0.08;
+      if (R.form === 'gutted') { R.soot = 0.9 + rnd() * 0.1; R.sprung = 0.9; R.sag = 0.6; }
+      if (R.form === 'broken') R.soot = rnd() < 0.5 ? 0.6 + rnd() * 0.3 : 0.1 + rnd() * 0.15;
+    }
+  }
+  return R;
+}
+
 /* the data of one variant: the entry's data with that variant's overrides merged on top (wheels copied) */
 function vehicleData(A, v) {
   const d = Object.assign({}, A.data, A.variantData[v || 0] || {});
@@ -200,8 +278,9 @@ function vehicleFrame(opt) {
   };
   /* a tub: a stack of horizontal superellipse sections, bottom to top, [{ y, a, b, n, z }]: half-width a (x),
      half-length b (z), exponent n (2 an ellipse, 4+ a rounded rectangle), centre offset z (default 0); smooth-shaded
-     sides, flat caps where asked (caps: 'top', 'bottom', 'both'). A rover's bowl, a cupola, a fuel tank on its side. */
-  F.tub = function (secs, segs, color, family, caps) {
+     sides, flat caps where asked (caps: 'top', 'bottom', 'both'). A rover's bowl, a cupola, a fuel tank on its side.
+     inside: the faces turned inward (a cabin's liner inside a single-sided hull, so the interior has walls). */
+  F.tub = function (secs, segs, color, family, caps, inside) {
     const S = _seg(segs || 20, 8), pos = [], idx = [];
     const pt = function (s, i) {
       const th = i * TAU / S, c = Math.cos(th), sn = Math.sin(th), e = 2 / (s.n || 2);
@@ -210,13 +289,14 @@ function vehicleFrame(opt) {
     for (const s of secs) for (let i = 0; i < S; i++) pos.push.apply(pos, pt(s, i));
     for (let j = 0; j + 1 < secs.length; j++) for (let i = 0; i < S; i++) {
       const a = j * S + i, b = j * S + (i + 1) % S, c = a + S, d = b + S;
-      idx.push(a, c, b, b, c, d);
+      if (inside) idx.push(a, b, c, b, d, c); else idx.push(a, c, b, b, c, d);
     }
     const capAt = function (s, up) {
       const base = pos.length / 3;
       for (let i = 0; i < S; i++) pos.push.apply(pos, pt(s, i));
       pos.push(0, s.y, s.z || 0);
       const c = base + S;
+      if (inside) up = !up;
       for (let i = 0; i < S; i++) { const a = base + i, b = base + (i + 1) % S; if (up) idx.push(c, b, a); else idx.push(c, a, b); }
     };
     const g = new THREE.BufferGeometry();

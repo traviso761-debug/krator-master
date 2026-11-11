@@ -9,8 +9,10 @@
    shader divides back out, so the palettes keep their brightness and the set adds its grain: chipped
    paint, rust, corrugation, canvas, tarp, planks.
 
-   ONE ATLAS for the whole kit: the families of materials.json in a 4-wide grid (slot order = atlas order; 2 rows,
-   4 once a ninth family is delivered; at most 16),
+   ONE ATLAS for the whole kit: the families of materials.json in a 4-wide grid (slot order = atlas order; as many
+   rows as the highest packed slot needs, vehicle_bundle.py: 2 to 8, so at most 32 slots; the shader's tables are
+   32 long. Until 2026-11-08 both stopped at 16 while materials.json already listed 20: slots 16 to 19 (rustB, rustC,
+   whitePaint, bluePlate) sampled off the atlas),
    colour, normal and roughness each one texture. Every vertex carries its slot (attribute aDetS, -1 =
    none), so a vehicle draws exactly the meshes it drew before textures: body:matte, body:metal and the
    wheels sample the same atlas. The maps come from tex/ (tools/textures/pack.py kits/motor-vehicles),
@@ -26,7 +28,7 @@
    ====================================================================== */
 const VEHICLE_DETAIL = (function () {
   const T = (typeof KV_TEX !== 'undefined' && KV_TEX) || null;
-  const SLOT = {};
+  const NSLOT = 32, SLOT = {};
   if (T) T.slots.forEach(function (s, i) { if (T.fam[s]) SLOT[s] = i; });
   const METALISH = { metal: 1, gold: 1, bronze: 1, rust: 1, brass: 1, steel: 1, chrome: 1 };
   const rev = {};
@@ -83,7 +85,7 @@ const VEHICLE_DETAIL = (function () {
         img.src = f[k];
       }
     });
-    const n = T.slots.length, P = function (key, def) { const a = []; for (let i = 0; i < 16; i++) { const f = T.fam[T.slots[i]]; a.push(i < n && f ? f[key] : def); } return a; };
+    const n = T.slots.length, P = function (key, def) { const a = []; for (let i = 0; i < NSLOT; i++) { const f = T.fam[T.slots[i]]; a.push(i < n && f ? f[key] : def); } return a; };
     atlas = { map: A.map.t, normalMap: A.normalMap.t, roughnessMap: A.roughnessMap.t, grid: new THREE.Vector2(T.cols, T.rows),
       tile: P('tile', 1).map(function (x) { return 1 / x; }), gain: P('gain', 1), ns: P('ns', 0) };
     return atlas;
@@ -94,7 +96,7 @@ const VEHICLE_DETAIL = (function () {
   const GLSL_F_DECL = [
     'varying float vDetS;', 'varying vec3 vDetP;', 'varying vec3 vDetN;', 'varying vec3 vDetM0;', 'varying vec3 vDetM1;', 'varying vec3 vDetM2;',
     'uniform sampler2D uDetC;', 'uniform sampler2D uDetN;', 'uniform sampler2D uDetR;',
-    'uniform float uDetTile[16];', 'uniform float uDetGain[16];', 'uniform float uDetNS[16];', 'uniform vec2 uDetGrid;',
+    'uniform float uDetTile[32];', 'uniform float uDetGain[32];', 'uniform float uDetNS[32];', 'uniform vec2 uDetGrid;',
     '#if __VERSION__ >= 300',
     '#define DET_TEX(t, c, w) textureGrad(t, c, dFdx(w), dFdy(w))',
     '#else',
@@ -110,7 +112,7 @@ const VEHICLE_DETAIL = (function () {
     '  float detS = floor(vDetS + 0.5);',
     '  if(detS > -0.5){',
     '    float tl = 1.0, gn = 1.0, ns = 0.0;',
-    '    for(int i = 0; i < 16; i++){ if(float(i) == detS){ tl = uDetTile[i]; gn = uDetGain[i]; ns = uDetNS[i]; } }',
+    '    for(int i = 0; i < 32; i++){ if(float(i) == detS){ tl = uDetTile[i]; gn = uDetGain[i]; ns = uDetNS[i]; } }',
     '    vec2 base = vec2(mod(detS, uDetGrid.x) / uDetGrid.x, 1.0 - (floor(detS / uDetGrid.x) + 1.0) / uDetGrid.y);',
     '    vec3 N0 = normalize(vDetN);',
     '    vec3 wt = pow(abs(N0) + 1e-4, vec3(4.0)); wt /= (wt.x + wt.y + wt.z);',
@@ -138,13 +140,18 @@ const VEHICLE_DETAIL = (function () {
         .replace('#include <roughnessmap_fragment>', '#include <roughnessmap_fragment>\n  if(vDetRough >= 0.0) roughnessFactor = clamp(roughnessFactor * (0.55 + 0.9 * vDetRough), 0.04, 1.0);\n')
         .replace('#include <normal_fragment_maps>', '#include <normal_fragment_maps>\n  normal = normalize(normal + mat3(vDetM0, vDetM1, vDetM2) * vDetNrm);\n');
     };
-    mat.customProgramCacheKey = function () { return 'krator-vehicles-detail-2'; };
+    mat.customProgramCacheKey = function () { return 'krator-vehicles-detail-3'; };
     mat.userData.detail = true;
     return mat;
   }
 
   return {
     resolve: resolve, hook: hook, textures: textures,
+    /* for the runtime's ruin pass: the palette key of a colour, a slot by name with a fallback name (-1 when neither
+       is packed), and the slot names by index */
+    keyOf: keyOf,
+    slot: function (name, fallback) { const s = slotOf(name); return s >= 0 ? s : slotOf(fallback); },
+    names: function () { return T ? T.slots : []; },
     on: function () { return enabled && !!T; },
     set: function (on) { enabled = !!on && !!T; return enabled; },
     pending: function () { return pending; },

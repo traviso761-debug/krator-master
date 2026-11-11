@@ -14,16 +14,63 @@ families from `core/materials/library` in one atlas: `paint` (Metal003, clean pa
 `metal` (Metal038: tube, engine, frames), `rust` (rusty_metal_04: the hab), `corrugated` (worn_corrugated_iron: the
 hab's containers), `canvas` (canvas.tent), `tarp` (cloth.tarp: the caravan tarps, canopy, awnings) and `wood`
 (weathered planks: crates). Which surface takes which is each culture's `detail` table (palette key -> family) or a
-family named on the primitive (`'corrugated'`, `'tarp'`); glass, lenses, hoses and ropes take none. Tyres wait on a
-rubber set (`KNOWN_ISSUES.md`). `?mat=proc` on the sheet shows the old vertex-colour look.
+family named on the primitive (`'corrugated'`, `'tarp'`); glass, lenses, hoses and ropes take none. Tyres take
+`rubber` (`rubber.tyre`). `?mat=proc` on the sheet shows the old vertex-colour look. Since 2026-11-08 the atlas holds
+up to 32 families (eight rows of four; `vehicle_bundle.py` packs the rows the bundled cultures need) and the Ancients
+add `ancientWhite` (`metal.ancient.white`: their seamed white panel), `bronze` (`metal.bronze`), `concrete`
+(`concrete.ancient`: the hauler's deck) and the ruin pass's `rustHeavy` (`metal.rust.heavy`); `scorched`
+(`metal.scorched`, burnt paint) is wired but owed (`core/materials/PROMPTS-NEEDED.md`).
+
+**Ruin states (2026-11-08).** Every vehicle of every culture builds in one of four states,
+`KratorVehicles.build(key, { state: 'intact' | 'weathered' | 'burnt' | 'wreck' })`: the same vehicle (same seed,
+same variant) rusted over, grimed, its glass gone and its tyres flat; burnt out, sooted, sagging, the interior open;
+or a wreck in one of seven forms by seed (crushed, overturned, torn in two, crashed nose-first, t-boned, exploded,
+on its side; an airframe has its own six, all on the ground with its gear gone: skidded at the end of a furrow with a
+wreckage trail, nosedived with the tail in the air, broken in two, piled into a heap at the nose, overturned, gutted
+to a charred heap), a wheel missing, trim sprung and fallen. The ruin is a record
+(`vehicles-core.js` `vehicleRuin`, `KratorVehicles.ruinOf(state, seed, key)`) that the runtime's general pass draws
+onto the merged body of any culture, so a ruined vehicle costs the same draw calls and fewer triangles; a culture's
+`build(F)` may read `F.ruin` to draw its own damage (the Ancients skip their glass and char their seats). The sheet's
+State select (S) rebuilds every vehicle in a state; `?state=wreck` opens it so. Built for the Ancient's Valley's
+streets (`biomes/ancientsvalley`), where every vehicle is a thousand years dead.
 
 | Key | Name | Culture | Wheels | Variants |
 |---|---|---|---|---|
+| `anc_pod` | Ancient pod car | `ancient` | 4 in flared wells, front steers | Civic (white), Hire (bronze roof, a cyan sign) |
+| `anc_saloon` | Ancient saloon | `ancient` | 4 in flared wells, front steers | Saloon (white), Statesman (bronze roof and dishes, a bonnet spine) |
+| `anc_police` | Ancient watch car | `ancient` | the saloon's | Patrol (lamp bar, bull bar, belt stripe, searchlight), Pursuit (darker, bronze roof) |
+| `anc_van` | Ancient delivery van | `ancient` | 4: the cab-over fronts under mudguards, the rears in wells | Van (crates aboard), Courier (a roof pod) |
+| `anc_utility` | Ancient six-wheeled utility | `ancient` | 6, front axle steers | Works (two tanks in a bronze cage), Patrol (a lamp bar and a dish) |
+| `anc_hauler` | Ancient flatbed hauler | `ancient` | 6, front axle steers | Flatbed, Pods, Crates (and drums), Container |
+| `anc_tram` | Ancient guideway tram-car | `ancient` | 8 in wells, none steers (guided) | Tram-car |
+| `anc_tank` | Ancient lance tank | `ancient` | tracked: 10 road wheels, two belts, skid steer | Line, Command (a dish) |
+| `anc_heli` | Ancient helicopter | `ancient` | 3 (landing gear), none steers | Transport, Patrol (searchlight, blue cells) |
+| `anc_jet` | Ancient passenger jet | `ancient` | 3 (landing gear), none steers | Liner |
 | `geo_dune_buggy` | Geomancer dune buggy | `geomancer` | 4 | Scout (2 seats, tarp), Crew (4 seats, longer cage), Drill rig (auger mast, drill pipe) |
 | `rep_crawler` | Republic salvage crawler | `republic` | 8 wire-mesh, front and rear axles steer | Survey (cream, solar lid open), Hauler (ochre, lid shut under crates and drums) |
 | `iz_six_wheeler` | Izani armoured six-wheeler | `iziz` | 6, front axle steers | Lancer (orange, four-tube rocket rack), Courier (cream, striped awning, the palace orb) |
 | `ab_caravan_truck` | Abyssal caravan truck | `eastabyss` | 4 big sand tyres | Caravan (sand, pastel tarps), Headman's (teal, lacquer and gold, tin-mirror cladding) |
 | `pa_crawler_hab` | Post-Apoc crawler hab | `post-apoc` | tracked: 12 road wheels on four bogies, skid steer | Hab (rust and olive), Trader (faded teal, mustard, awning, crates) |
+
+**The Ancients' ten** (2026-11-08, for the Ancient's Valley; `krator-vehicles-ancient.js`) are in the metropolis
+kit's house style (`kits/metropolis/PLAN.md` 2, "The family": Cyclopean, Modernist, Organic): smooth monocoque
+bodies of stacked superellipse sections (`F.tub`), white seamed panel, a bronze belt band at the waist, a blue-glass
+canopy on bronze posts, cyan strips along the sills and across the nose (a lamp family: they glow with `lights()`
+and are dead in a ruin), the wheels under boxy sills behind bronze arches (the steered pair clears the skin at full
+lock) on real running gear (a beam axle between each pair, a knuckle and an upright from each wheel to the body, a
+mudguard shell over the cab-over wheels), hollow cabins (an open belt, an inward-facing liner, a low floor between
+shelves over the wheels, the seats and dash inside the canopy), no engine (Ancient cells, hub motors: `fuel:
+'battery'`). The pod car (2 seats, 2.1 x 3.3 m),
+the long low saloon (4 seats, 6.0 m, bronze fins), the delivery van (a cab pod before a box with a bronze roller door),
+the six-wheeled utility (a cab pod and an open bay under a bronze cage, two tanks), the flatbed hauler (a cab pod over
+the front wheels, a board-formed composite deck with bronze rails and stakes) and the guideway tram-car (13.4 m, forty
+seats, a window ribbon all round on bronze mullions, a bronze hoop every 3.6 m where the structure transfers, two doors
+a side, guide skids under the floor; `maxSteer` 0: the viaduct guides it). Then the watch's car (the saloon with a
+lamp bar, a bull bar and a searchlight), the lance tank (tracked: a low hull, sponsons and skirts, a turret with an
+energy lance that a wreck knocks round and an explosion takes off), a helicopter (a glazed nose, a tail boom, a
+four-blade rotor that droops in a ruin) and a passenger jet (swept wings with ducted fans, a T-tail, a cockpit visor;
+a wreck's wing lies torn off beside it), both standing on their landing gear for a host to place. 3 700 to 7 400
+triangles intact, fewer ruined. In a ruin the glass is gone but its frames stay and shards of dark glass stand in them.
 
 The buggy: a welded tube roll cage, a low tub of salvaged plate, two bucket seats, a big exposed Ancient-salvage
 flat-four at the rear with twin exhaust stacks and an upright radiator, four 0.85 m balloon sand tyres with chunky
@@ -63,11 +110,11 @@ The other four came from reference pictures (2026-10-06), each given to the cult
 
 | File | What |
 |---|---|
-| `vehicles-core.js` | the `VEHICLE({...})` registry, its vocabularies, `VEHICLE_CULTURE()` (palette into the core's FPAL), the vehicle frame (catalog `makeFrame()` plus disc, face, taper, ring, tube, tri, knob, lamp, spareWheel) and `vehicleBalloonTyre()` |
-| `krator-vehicles-<culture>.js` | one file per culture (as the catalog does): its palette and its vehicles. Now: `eastabyss`, `geomancer`, `iziz`, `post-apoc`, `republic` |
+| `vehicles-core.js` | the `VEHICLE({...})` registry, its vocabularies, `VEHICLE_CULTURE()` (palette into the core's FPAL), the ruin states (`VEHICLE_STATES`, `vehicleRuin(state, seed, key)`: the record), the vehicle frame (catalog `makeFrame()` plus disc, face, taper, ring, tube, tri, knob, lamp, spareWheel) and `vehicleBalloonTyre()` |
+| `krator-vehicles-<culture>.js` | one file per culture (as the catalog does): its palette and its vehicles. Now: `ancient`, `eastabyss`, `geomancer`, `iziz`, `post-apoc`, `republic` |
 | `vehicles-detail.js` | the detail maps: the slot each vertex takes, the kit atlas (colour, normal, roughness) composed from the packed maps, the triplanar shader hook |
 | `materials.json`, `tex/` | the families and their library sets (Girder's adapter shape); `tex/` is what `tools/textures/pack.py kits/motor-vehicles` wrote from them (commit it). `vehicle_bundle.py` inlines the families the bundled cultures name |
-| `krator-vehicles-runtime.js` | the API (`KratorVehicles`): assembly, the per-material merge (with the detail slot per vertex), wheels, belts, roll, steer, lights, textures |
+| `krator-vehicles-runtime.js` | the API (`KratorVehicles`): assembly, the per-material merge (with the detail slot per vertex), the ruin pass (recolour, sprung trim, sag, crush, tear, overturn, flat and burnt tyres, the settle), wheels, belts, roll, steer, lights, textures |
 | `vehicle_bundle.py` | `bundle(cultures=None) -> str`: one closure, one global |
 | `build.py`, `src/` | the kit sheet `dist/motor-vehicles.html`, and `dist/krator-vehicles.js` (the bundle alone) |
 | `verify.py` | headless checks and screenshots |
@@ -85,6 +132,7 @@ never copied.
 cd kits/motor-vehicles && python3 build.py                 # -> dist/motor-vehicles.html, dist/krator-vehicles.js
 python3 verify.py dist/motor-vehicles.html --assert         # every vehicle x variant x seeds 1..3, plus the bundle alone
 python3 verify.py dist/motor-vehicles.html --out shots --views front34,side,rear34,top --night
+python3 verify.py dist/motor-vehicles.html --out shots-wreck --views front34 --state wreck    # every vehicle in a ruin state
 python3 build.py --vendor-check                             # no src/ copy of the placeholder sky (core/atmos/placeholder)
 python3 ../../tools/textures/pack.py kits/motor-vehicles     # after materials.json changes (numpy, Pillow; the sets via git lfs pull)
 ```
@@ -94,13 +142,16 @@ meshes plus one per wheel and 6 000 triangles (or the entry's own `budget.tris`,
 moving parts (wheel origins at their hubs, steer pivots, roll/steer/lights do what they say, a tracked vehicle's belts
 run and stay on the ground), tags and data from the vocabularies, the paint's LINEAR value in the vertex colours,
 textures (a detail slot per vertex, the atlas hook on every material), clearance (no steered wheel inside the body at
-full lock either way), determinism, and `bundle-alone` (a blank page with only
+full lock either way), determinism, `ruin` (every vehicle in every ruin state: grounded, within the settled box, under
+budget, the glass gone, the lamps dead, a wreck's wheel missing, deterministic, unlike the intact build), and
+`bundle-alone` (a blank page with only
 three.min.js: the bundle adds exactly one global, `KratorVehicles`, and builds every vehicle). verify.py serves
 `three.min.js` from this folder: copy `kits/catalog/three.min.js` here first in a fresh checkout (without it the
 page never loads and the run waits out its timeout).
 
 The sheet: one row per vehicle, every variant, a 1.75 m figure for scale. Drive (R) rolls and steers; Lights (L);
-Night (N); the hover inspector (T) shows name, culture, tags and data; the polygon tool (P). The page engine is
+Night (N); State (S, or the select) rebuilds every vehicle in a ruin state; the hover inspector (T) shows name,
+culture, tags, data and the ruin; the polygon tool (P). The page engine is
 `kits/catalog/krator-asset-engine.js`, read by path; the sky is the standard KratorSky (vendored).
 
 ## Taking the bundle into a world
@@ -123,6 +174,10 @@ the host's own `TAU`, `PAL`, `rnd`, `shade` are untouched. Then, in the world's 
 const g = KratorVehicles.build('geo_dune_buggy', { variant: 0, seed: 7 });
 g.position.set(x, groundY, z); g.rotation.y = heading; scene.add(g);
 KratorVehicles.lights(g, isNight);
+// a ruin on a dead street (the Ancient's Valley: bundle(['ancient'])): a static prop, its lowest point on y = 0
+const w = KratorVehicles.build('anc_pod', { variant: 1, seed: 7, state: 'burnt' });   // or 'weathered', 'wreck'
+w.position.set(x, groundY, z); w.rotation.y = heading; scene.add(w);
+w.userData.ruin   // { state, form: null | 'crushed' | 'overturned' | 'torn', rust, soot, tyres, missingWheel ... }
 // driving: each frame, move by v*dt along (sin h, 0, cos h), then
 KratorVehicles.roll(g, v * dt); KratorVehicles.steer(g, steerAngle);
 ```
@@ -136,4 +191,7 @@ for a crowded world. Full API: `API.md`.
 A new culture is a new file `krator-vehicles-<culture>.js` (it drops into the bundle by filename); a new vehicle is
 one more `VEHICLE({...})` in its culture's file. `API.md` "Adding a vehicle" gives the entry shape and the helpers.
 Locus and Mungo take `bundle(['geomancer'])`: a new culture reaches a world only when its `build.py` asks for it.
-Data first: everything a simulation reads goes in `tags`, `data` and `variantData`, not in `build`.
+Data first: everything a simulation reads goes in `tags`, `data` and `variantData`, not in `build`. A `build(F)` gets
+the ruin states for free (the runtime's pass); it may read `F.ruin` (`F.ruin.glass`, `F.ruin.state`) to skip its
+glass or draw charred furniture, but must not draw from `F.rnd` only in some states, or the intact and the ruined
+builds of one seed stop being one vehicle.

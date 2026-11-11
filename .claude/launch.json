@@ -159,6 +159,12 @@
                                                    "biomes/ancientsvalley/dist"
                                                ],
                                "port":  8831
+                           },
+                           {
+                             "name": "motor-vehicles",
+                             "runtimeExecutable": "python",
+                             "runtimeArgs": ["-m", "http.server", "8797", "--directory", "kits/motor-vehicles"],
+                             "port": 8797
                            }
                        ]
 }
