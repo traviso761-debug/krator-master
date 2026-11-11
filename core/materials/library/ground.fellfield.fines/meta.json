@@ -1,0 +1,62 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.267,
+    1.199
+   ],
+   "seam_before": [
+    0.0,
+    0.0
+   ],
+   "source_size": [
+    2048,
+    2048
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.4,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "ground",
+  "id": "ground.fellfield.fines",
+  "metal": 0,
+  "roughness": 0.9,
+  "scale": [
+   2.0,
+   2.0
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "frost-sorted-fellfield-soil-seamless.png",
+  "generator": "supplied by the owner (Documents/Codex/2026-11-10, PNG 2048 px, as frost-sorted-fellfield-soil-seamless.png), generated from core/materials/PROMPTS-NEEDED.md section 37",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: the fine-grained centre of a frost-sorted soil circle on a high fellfield: bare, frost-heaved silt and fine gravel, slightly domed and cracked into a faint net of shallow hairline cracks, scattered pea-sized grey and brown pebbles, a few tiny patches of black and grey crust lichen, no plants, no large stones. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.",
+  "prompt_where": "core/materials/PROMPTS-NEEDED.md section 37 (delivered 2026-11-10)",
+  "reuse": "the southern highlands' sorted spirals: the fines between the stone arms (biomes/shighlands station fellfield, to wire); any frost-heaved bare silt",
+  "sha1": "7c6c5117bfca35d0b35b3baa921de5a883bc9d76"
+ }
+}

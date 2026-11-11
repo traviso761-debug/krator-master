@@ -1,0 +1,67 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    2039,
+    2039
+   ],
+   "seam_after": [
+    0.489,
+    0.467
+   ],
+   "seam_before": [
+    3.514,
+    2.341
+   ],
+   "source_size": [
+    2048,
+    2048
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.1,
+   "mute": 0.0,
+   "normal_strength": 0.6,
+   "pattern": true,
+   "rough": 0.3,
+   "rough_var": 0.15,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "tile",
+  "id": "patterns/xanadu/zellige-star",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.3,
+  "scale": [
+   1.2,
+   1.2
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "moroccan-zellige-seamless-2048.png",
+  "generator": "supplied by the owner (Documents/Codex/2026-11-10, PNG 2048 px, as moroccan-zellige-seamless-2048.png), generated from core/materials/PROMPTS-NEEDED.md section 41",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Moroccan zellige mosaic seen straight on: small hand-cut glazed terracotta pieces set edge to edge in an eight-pointed star and interlace pattern, glazes in cobalt blue, emerald green, saffron orange, white and black, each piece slightly uneven and glossy with tiny chips at its edges, thin pale grout lines; the pattern repeats exactly at the tile's edges.",
+  "prompt_where": "core/materials/PROMPTS-NEEDED.md section 41 (delivered 2026-11-10)",
+  "reuse": "Erewhon's Moorish courts, fountains and dados (xZel); any zellige dado or fountain basin, Xanadu's and the Sultanate's",
+  "sha1": "22cde1e31d016c1b78adf8afcb95b06f19aef340"
+ }
+}

@@ -1,0 +1,67 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    2041,
+    2041
+   ],
+   "seam_after": [
+    0.485,
+    0.544
+   ],
+   "seam_before": [
+    0.774,
+    5.73
+   ],
+   "source_size": [
+    2048,
+    2048
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.1,
+   "mute": 0.0,
+   "normal_strength": 0.5,
+   "pattern": true,
+   "rough": 0.3,
+   "rough_var": 0.15,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "tile",
+  "id": "tile.muqarnas.turquoise",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.3,
+  "scale": [
+   1.0,
+   1.0
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "muqarnas-glazed-tile-2048.png",
+  "generator": "supplied by the owner (Documents/Codex/2026-11-10, PNG 2048 px, as muqarnas-glazed-tile-2048.png), generated from core/materials/PROMPTS-NEEDED.md section 41",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: small glazed tiles for muqarnas niches seen straight on: turquoise and cobalt glaze with tiny white, gold and aubergine floral motifs, each tile a pointed-arch or star-and-cross shape set in a repeating grid, glossy with fine crazing, thin white grout lines.",
+  "prompt_where": "core/materials/PROMPTS-NEEDED.md section 41 (delivered 2026-11-10)",
+  "reuse": "the faces of Erewhon's muqarnas cells (xMuqT); any turquoise glazed tile grid, portals and niches",
+  "sha1": "3c07450e1352a6766d2e66510e4437cc94997b8a"
+ }
+}
