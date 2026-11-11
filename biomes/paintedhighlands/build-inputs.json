@@ -11,8 +11,8 @@
     "biomes/ebadlands/tex/leaf.round.albedo.webp": "6dcc023461c90804aa7c5f3de5ea2bcf9bc140afdb489744ab0c1256206d31f8",
     "biomes/ebadlands/tex/leaf.scale.albedo.webp": "750b79196ddaddc8e42c04c3830acc57f0128ba22a81a6c89697130d63b47075",
     "biomes/ebadlands/tex/pack.json": "8995fd803ea3d491277ebf898fb4f9584b0091eae9b1d74b208a1805ac9c1473",
-    "biomes/paintedhighlands/KNOWN_ISSUES.md": "139c30d2866ba53e84d1f32b3732598844ffbe094b5e5c0c34403b97b5bb0264",
-    "biomes/paintedhighlands/PORT.md": "cea4f0e16613077f75f429f60644d404380c34556f1e92b6bca2c3b90e0f9284",
+    "biomes/paintedhighlands/KNOWN_ISSUES.md": "c4036bcc7d1110402f55f45b2ceb82ebb00ef07f61db8eba10535bae486d0f62",
+    "biomes/paintedhighlands/PORT.md": "6b7572f0302fd41f3d2c220e94c1f789603a9bcf798f61aa77d713ba83089858",
     "biomes/paintedhighlands/build.py": "57abf32a5413f081898965dc301630f3e55d7bf842388f2b87a7b5dfd2a90a7a",
     "biomes/paintedhighlands/src/00-head.html": "37939e9bc6091234a16d0b8022ad9612b1af1004e15343ead40da82398a39568",
     "biomes/paintedhighlands/src/40-biome-painted-sites.js": "14657c52e318b83687175af430247155938d2af3607f2469565b259d06a8c200",
@@ -23,7 +23,7 @@
     "biomes/paintedhighlands/src/50-biome-painted-species.js": "a4795f76900f8dc7ae006a05fc0e16bd79e3cf5b73f3e0fc367c5e33c8849ac8",
     "biomes/paintedhighlands/src/60-biome-painted-place.js": "a980661527b81b027967ed3a2792e4dad19b6598dc2b6f3b809c1813cb252a7c",
     "biomes/paintedhighlands/src/70-biome-painted.js": "20d0c446139ff875a9033212b06e0d288609c9201d0927164159d70a46282b32",
-    "biomes/paintedhighlands/src/84-host-ground.js": "d25a08fc9f6a3799068474148ab96c537aecc8fdb8811905b573cd967634ed34",
+    "biomes/paintedhighlands/src/84-host-ground.js": "981dd1ac07f50974b1eb9b512f1cf55281d599257b1b5c69d91cd8878e004f60",
     "biomes/paintedhighlands/src/85-host-far.js": "0414e755f07e7809635e133032b55a5026e7488f9eeaa6a8ae8e63725a952c66",
     "biomes/paintedhighlands/src/86-host-stacks.js": "6e321ba61fdeeac86613528f96932b7e157f7008b5f245c17089e97f6ec9c1b1",
     "biomes/paintedhighlands/src/88-host-place.js": "6cd48dce226e077053c0a484895f828854a9ea7f8c0aceb48a669f184892ce49",
@@ -163,10 +163,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/paintedhighlands/dist/paintedhighlands.html": "2dbe9c3536717a38ae4d73cb2b430462df64ed84ec8bc35bbbecfdd7ff7f5c76"
+    "biomes/paintedhighlands/dist/paintedhighlands.html": "44fc9f999c188f126599914c66335d2d79804edda59a7ec6bf2480f359031fd5"
    },
    "outputs_raw": {
-    "biomes/paintedhighlands/dist/paintedhighlands.html": "2dbe9c3536717a38ae4d73cb2b430462df64ed84ec8bc35bbbecfdd7ff7f5c76"
+    "biomes/paintedhighlands/dist/paintedhighlands.html": "44fc9f999c188f126599914c66335d2d79804edda59a7ec6bf2480f359031fd5"
    }
   },
   "build.py --station bloom": {
@@ -179,8 +179,8 @@
     "biomes/ebadlands/tex/leaf.round.albedo.webp": "6dcc023461c90804aa7c5f3de5ea2bcf9bc140afdb489744ab0c1256206d31f8",
     "biomes/ebadlands/tex/leaf.scale.albedo.webp": "750b79196ddaddc8e42c04c3830acc57f0128ba22a81a6c89697130d63b47075",
     "biomes/ebadlands/tex/pack.json": "8995fd803ea3d491277ebf898fb4f9584b0091eae9b1d74b208a1805ac9c1473",
-    "biomes/paintedhighlands/KNOWN_ISSUES.md": "139c30d2866ba53e84d1f32b3732598844ffbe094b5e5c0c34403b97b5bb0264",
-    "biomes/paintedhighlands/PORT.md": "cea4f0e16613077f75f429f60644d404380c34556f1e92b6bca2c3b90e0f9284",
+    "biomes/paintedhighlands/KNOWN_ISSUES.md": "c4036bcc7d1110402f55f45b2ceb82ebb00ef07f61db8eba10535bae486d0f62",
+    "biomes/paintedhighlands/PORT.md": "6b7572f0302fd41f3d2c220e94c1f789603a9bcf798f61aa77d713ba83089858",
     "biomes/paintedhighlands/build.py": "57abf32a5413f081898965dc301630f3e55d7bf842388f2b87a7b5dfd2a90a7a",
     "biomes/paintedhighlands/src/00-head.html": "37939e9bc6091234a16d0b8022ad9612b1af1004e15343ead40da82398a39568",
     "biomes/paintedhighlands/src/40-biome-painted-sites.js": "14657c52e318b83687175af430247155938d2af3607f2469565b259d06a8c200",
@@ -191,7 +191,7 @@
     "biomes/paintedhighlands/src/50-biome-painted-species.js": "a4795f76900f8dc7ae006a05fc0e16bd79e3cf5b73f3e0fc367c5e33c8849ac8",
     "biomes/paintedhighlands/src/60-biome-painted-place.js": "a980661527b81b027967ed3a2792e4dad19b6598dc2b6f3b809c1813cb252a7c",
     "biomes/paintedhighlands/src/70-biome-painted.js": "20d0c446139ff875a9033212b06e0d288609c9201d0927164159d70a46282b32",
-    "biomes/paintedhighlands/src/84-host-ground.js": "d25a08fc9f6a3799068474148ab96c537aecc8fdb8811905b573cd967634ed34",
+    "biomes/paintedhighlands/src/84-host-ground.js": "981dd1ac07f50974b1eb9b512f1cf55281d599257b1b5c69d91cd8878e004f60",
     "biomes/paintedhighlands/src/85-host-far.js": "0414e755f07e7809635e133032b55a5026e7488f9eeaa6a8ae8e63725a952c66",
     "biomes/paintedhighlands/src/86-host-stacks.js": "6e321ba61fdeeac86613528f96932b7e157f7008b5f245c17089e97f6ec9c1b1",
     "biomes/paintedhighlands/src/88-host-place.js": "6cd48dce226e077053c0a484895f828854a9ea7f8c0aceb48a669f184892ce49",
@@ -333,10 +333,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/paintedhighlands/dist/paintedhighlands-bloom.html": "5af716aedac090112f73d427f0da9c7e3ca0644f60a33a7b5bb5906b7a0d34cb"
+    "biomes/paintedhighlands/dist/paintedhighlands-bloom.html": "6e3d5f96645d974f1521fd3dcd91dd05b7929f2057e438b1ae2e8a3c05a7acdb"
    },
    "outputs_raw": {
-    "biomes/paintedhighlands/dist/paintedhighlands-bloom.html": "5af716aedac090112f73d427f0da9c7e3ca0644f60a33a7b5bb5906b7a0d34cb"
+    "biomes/paintedhighlands/dist/paintedhighlands-bloom.html": "6e3d5f96645d974f1521fd3dcd91dd05b7929f2057e438b1ae2e8a3c05a7acdb"
    }
   },
   "build.py --station canyon": {
@@ -349,8 +349,8 @@
     "biomes/ebadlands/tex/leaf.round.albedo.webp": "6dcc023461c90804aa7c5f3de5ea2bcf9bc140afdb489744ab0c1256206d31f8",
     "biomes/ebadlands/tex/leaf.scale.albedo.webp": "750b79196ddaddc8e42c04c3830acc57f0128ba22a81a6c89697130d63b47075",
     "biomes/ebadlands/tex/pack.json": "8995fd803ea3d491277ebf898fb4f9584b0091eae9b1d74b208a1805ac9c1473",
-    "biomes/paintedhighlands/KNOWN_ISSUES.md": "139c30d2866ba53e84d1f32b3732598844ffbe094b5e5c0c34403b97b5bb0264",
-    "biomes/paintedhighlands/PORT.md": "cea4f0e16613077f75f429f60644d404380c34556f1e92b6bca2c3b90e0f9284",
+    "biomes/paintedhighlands/KNOWN_ISSUES.md": "c4036bcc7d1110402f55f45b2ceb82ebb00ef07f61db8eba10535bae486d0f62",
+    "biomes/paintedhighlands/PORT.md": "6b7572f0302fd41f3d2c220e94c1f789603a9bcf798f61aa77d713ba83089858",
     "biomes/paintedhighlands/build.py": "57abf32a5413f081898965dc301630f3e55d7bf842388f2b87a7b5dfd2a90a7a",
     "biomes/paintedhighlands/src/00-head.html": "37939e9bc6091234a16d0b8022ad9612b1af1004e15343ead40da82398a39568",
     "biomes/paintedhighlands/src/40-biome-painted-sites.js": "14657c52e318b83687175af430247155938d2af3607f2469565b259d06a8c200",
@@ -361,7 +361,7 @@
     "biomes/paintedhighlands/src/50-biome-painted-species.js": "a4795f76900f8dc7ae006a05fc0e16bd79e3cf5b73f3e0fc367c5e33c8849ac8",
     "biomes/paintedhighlands/src/60-biome-painted-place.js": "a980661527b81b027967ed3a2792e4dad19b6598dc2b6f3b809c1813cb252a7c",
     "biomes/paintedhighlands/src/70-biome-painted.js": "20d0c446139ff875a9033212b06e0d288609c9201d0927164159d70a46282b32",
-    "biomes/paintedhighlands/src/84-host-ground.js": "d25a08fc9f6a3799068474148ab96c537aecc8fdb8811905b573cd967634ed34",
+    "biomes/paintedhighlands/src/84-host-ground.js": "981dd1ac07f50974b1eb9b512f1cf55281d599257b1b5c69d91cd8878e004f60",
     "biomes/paintedhighlands/src/85-host-far.js": "0414e755f07e7809635e133032b55a5026e7488f9eeaa6a8ae8e63725a952c66",
     "biomes/paintedhighlands/src/86-host-stacks.js": "6e321ba61fdeeac86613528f96932b7e157f7008b5f245c17089e97f6ec9c1b1",
     "biomes/paintedhighlands/src/88-host-place.js": "6cd48dce226e077053c0a484895f828854a9ea7f8c0aceb48a669f184892ce49",
@@ -503,10 +503,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/paintedhighlands/dist/paintedhighlands-canyon.html": "346e8c641792ee7770b9c96ad06f3679164d0a50ec7a61203dc7e61681fa6cc5"
+    "biomes/paintedhighlands/dist/paintedhighlands-canyon.html": "c535ec68a0a65ed84f28de138837fec4c61d9723de7ca142a3b3379b92cd3e88"
    },
    "outputs_raw": {
-    "biomes/paintedhighlands/dist/paintedhighlands-canyon.html": "346e8c641792ee7770b9c96ad06f3679164d0a50ec7a61203dc7e61681fa6cc5"
+    "biomes/paintedhighlands/dist/paintedhighlands-canyon.html": "c535ec68a0a65ed84f28de138837fec4c61d9723de7ca142a3b3379b92cd3e88"
    }
   },
   "build.py --station cliff": {
@@ -519,8 +519,8 @@
     "biomes/ebadlands/tex/leaf.round.albedo.webp": "6dcc023461c90804aa7c5f3de5ea2bcf9bc140afdb489744ab0c1256206d31f8",
     "biomes/ebadlands/tex/leaf.scale.albedo.webp": "750b79196ddaddc8e42c04c3830acc57f0128ba22a81a6c89697130d63b47075",
     "biomes/ebadlands/tex/pack.json": "8995fd803ea3d491277ebf898fb4f9584b0091eae9b1d74b208a1805ac9c1473",
-    "biomes/paintedhighlands/KNOWN_ISSUES.md": "139c30d2866ba53e84d1f32b3732598844ffbe094b5e5c0c34403b97b5bb0264",
-    "biomes/paintedhighlands/PORT.md": "cea4f0e16613077f75f429f60644d404380c34556f1e92b6bca2c3b90e0f9284",
+    "biomes/paintedhighlands/KNOWN_ISSUES.md": "c4036bcc7d1110402f55f45b2ceb82ebb00ef07f61db8eba10535bae486d0f62",
+    "biomes/paintedhighlands/PORT.md": "6b7572f0302fd41f3d2c220e94c1f789603a9bcf798f61aa77d713ba83089858",
     "biomes/paintedhighlands/build.py": "57abf32a5413f081898965dc301630f3e55d7bf842388f2b87a7b5dfd2a90a7a",
     "biomes/paintedhighlands/src/00-head.html": "37939e9bc6091234a16d0b8022ad9612b1af1004e15343ead40da82398a39568",
     "biomes/paintedhighlands/src/40-biome-painted-sites.js": "14657c52e318b83687175af430247155938d2af3607f2469565b259d06a8c200",
@@ -531,7 +531,7 @@
     "biomes/paintedhighlands/src/50-biome-painted-species.js": "a4795f76900f8dc7ae006a05fc0e16bd79e3cf5b73f3e0fc367c5e33c8849ac8",
     "biomes/paintedhighlands/src/60-biome-painted-place.js": "a980661527b81b027967ed3a2792e4dad19b6598dc2b6f3b809c1813cb252a7c",
     "biomes/paintedhighlands/src/70-biome-painted.js": "20d0c446139ff875a9033212b06e0d288609c9201d0927164159d70a46282b32",
-    "biomes/paintedhighlands/src/84-host-ground.js": "d25a08fc9f6a3799068474148ab96c537aecc8fdb8811905b573cd967634ed34",
+    "biomes/paintedhighlands/src/84-host-ground.js": "981dd1ac07f50974b1eb9b512f1cf55281d599257b1b5c69d91cd8878e004f60",
     "biomes/paintedhighlands/src/85-host-far.js": "0414e755f07e7809635e133032b55a5026e7488f9eeaa6a8ae8e63725a952c66",
     "biomes/paintedhighlands/src/86-host-stacks.js": "6e321ba61fdeeac86613528f96932b7e157f7008b5f245c17089e97f6ec9c1b1",
     "biomes/paintedhighlands/src/88-host-place.js": "6cd48dce226e077053c0a484895f828854a9ea7f8c0aceb48a669f184892ce49",
@@ -673,10 +673,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/paintedhighlands/dist/paintedhighlands-cliff.html": "9aaebafd57532ea63ded5537a21685433010da24a9841bc0f49d81cd3e2bbd39"
+    "biomes/paintedhighlands/dist/paintedhighlands-cliff.html": "dcd8996b9d048a1968d08e426fb352111c102af6b6d8451906400edea84bb060"
    },
    "outputs_raw": {
-    "biomes/paintedhighlands/dist/paintedhighlands-cliff.html": "9aaebafd57532ea63ded5537a21685433010da24a9841bc0f49d81cd3e2bbd39"
+    "biomes/paintedhighlands/dist/paintedhighlands-cliff.html": "dcd8996b9d048a1968d08e426fb352111c102af6b6d8451906400edea84bb060"
    }
   }
  }

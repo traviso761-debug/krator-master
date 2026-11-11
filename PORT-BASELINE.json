@@ -381,20 +381,20 @@
    "sha256": "8f9968ae2635680365d8793464b252210fd82b53dd723929cdddd67325be755b"
   },
   "biomes/paintedhighlands/dist/paintedhighlands-bloom.html": {
-   "bytes": 5771940,
-   "sha256": "5af716aedac090112f73d427f0da9c7e3ca0644f60a33a7b5bb5906b7a0d34cb"
+   "bytes": 5771952,
+   "sha256": "6e3d5f96645d974f1521fd3dcd91dd05b7929f2057e438b1ae2e8a3c05a7acdb"
   },
   "biomes/paintedhighlands/dist/paintedhighlands-canyon.html": {
-   "bytes": 5771943,
-   "sha256": "346e8c641792ee7770b9c96ad06f3679164d0a50ec7a61203dc7e61681fa6cc5"
+   "bytes": 5771955,
+   "sha256": "c535ec68a0a65ed84f28de138837fec4c61d9723de7ca142a3b3379b92cd3e88"
   },
   "biomes/paintedhighlands/dist/paintedhighlands-cliff.html": {
-   "bytes": 5771940,
-   "sha256": "9aaebafd57532ea63ded5537a21685433010da24a9841bc0f49d81cd3e2bbd39"
+   "bytes": 5771952,
+   "sha256": "dcd8996b9d048a1968d08e426fb352111c102af6b6d8451906400edea84bb060"
   },
   "biomes/paintedhighlands/dist/paintedhighlands.html": {
-   "bytes": 5771688,
-   "sha256": "2dbe9c3536717a38ae4d73cb2b430462df64ed84ec8bc35bbbecfdd7ff7f5c76"
+   "bytes": 5771700,
+   "sha256": "44fc9f999c188f126599914c66335d2d79804edda59a7ec6bf2480f359031fd5"
   },
   "biomes/rift/dist/rift-highland.html": {
    "bytes": 7521099,

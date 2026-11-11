@@ -65,7 +65,7 @@ if(USE_KG)KGROUND.hook(MAT_GROUND,{key:'painted-'+SKEY+'-ground',at:'/*KGROUND*/
  KGROUND.layer('paintedhighlands','ground.clay.popcorn',{w:'vGL.y*0.8',amt:.6,gain:1.0,tint:'_gT*0.7',name:'popcorn clay (tinted by its bed)'}),
  KGROUND.layer('paintedhighlands','rock.sandstone.bedded.red',{w:'vGL.w*0.7',amt:.55,gain:1.0,tint:'_gT*0.7',name:'danxia sandstone (tinted by its bed)'}),
  SKEY==='bloom'?{kind:'polygon',w:'vGL.z',amt:.85,size:1.6,width:.05,edgeTint:'vec3(0.55,0.48,0.42)',warp:.18,rim:0,seed:461,name:'mud cracks (after the melt)'}:null,
- SKEY==='cliff'||SKEY==='canyon'||SKEY==='stripes'?{kind:'clast',w:'gSteep*(1.0-vGL.w)*0.6',amt:.55,proj:'tri',size:.9,matrix:.14,matrixColor:0x8a6e5e,sub:.2,fleck:0,jitter:.9,vary:.35,palette:[0xb2452c,0xc8642e,0xd8a050,0x9a7a6a,0xe0d0b8],seed:462,name:'talus'}:null]
+ SKEY==='cliff'||SKEY==='canyon'||SKEY==='stripes'?{kind:'clast',w:'gSteep*(1.0-vGL.w)*(1.0-vGL.y)*0.6',amt:.55,proj:'tri',size:.9,matrix:.14,matrixColor:0x8a6e5e,sub:.2,fleck:0,jitter:.9,vary:.35,palette:[0xb2452c,0xc8642e,0xd8a050,0x9a7a6a,0xe0d0b8],seed:462,name:'talus'}:null]
  .concat(LAYERS.map(l=>KGROUND.layer('paintedhighlands',l[0],{w:l[1],amt:l[2],gain:1.0,tint:l[4],name:l[3]})))});
 const GROUND=(function(){const N=SKEY==='stripes'?760:SKEY==='cliff'?720:640,S=TERR.R*2.2,cs=S/N,nx=N+1,m4=[0,0,0,0];
  const pos=new Float32Array(nx*nx*3),uv=new Float32Array(nx*nx*2),gl=new Float32Array(nx*nx*4),bl=new Float32Array(nx*nx*4),fc=new THREE.Color(),FLC=PAINTED_BLOOM.FLOWERS.map(f=>new THREE.Color(f.col).convertSRGBToLinear());
