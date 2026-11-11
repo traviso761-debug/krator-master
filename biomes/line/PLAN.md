@@ -4,10 +4,41 @@ The Ancients' Rift line under the Outer Wall, the tunnels the Tungangs keep, and
 of the Tungang work, in the owner's order (2026-11-10): **"we need to get the look of the caverns and Line tunnels right.
 we'll also need a train vehicle custom built for it"**; then the cavern layout in `core/city` (T2), then the culture kit.
 
-**Status: a proposal. No code is written.** Every fact not already in `LORE.md`, `openworld/ANCIENT-TUNNELS.md`,
-`openworld/ANCIENT-ROADS.md` or the owner's answers is marked *proposed*. `LORE.md` is not edited until the owner
-confirms. Section 15 holds the numbered questions. The core changes (section 11) are each agreed before code, and a page
-that does not opt in stays byte-identical.
+**Status: approved by the owner (2026-11-11), all 17 questions answered; not yet told to build. No code is written.**
+The answers are below; where a section still says *proposed*, the answer settled it as written unless the answers say
+otherwise. The core changes (section 11) are each agreed before code, and a page that does not opt in stays
+byte-identical.
+
+## The owner's answers (2026-11-11)
+
+1. **The Line's shape**: accepted (four segments, three gaps, the hot section the middle of the long run).
+2. **The numbering**: **"cube is loj nahn so renumber accordingly"**: Loj Nahn, the number no Tungang says, is **9**, Cube's
+   station. Counted **north to south** as `LORE.md` has it (no change to LORE): **1 Dalab, 2 Shelf** (the north mouth),
+   **3 the Twenny junction** (km 218), **4 Ledge's lifts**, then down into the Rift **5 Nulab, 6 Chimes, 7 Cthonos, 8 The
+   Tubes, 9 Cube**. The Line's other stops (the valley, the fault junction, the doors, the sealed stations, km 250, the
+   shallow station, the south mouth) are **unnumbered halts named by the station before them** (2a, 2b, ...). Loj Twenny's
+   20 is a later founding (section 2). And: **"the line might connect to strongbow, theodiga, and all the way to Stair and
+   an arcology to be placed in the bowl maybe"**: surveyed now (section 2.2).
+3. **Loj Twenny**: by a 25 km side tunnel from the Twenny junction (km 218).
+4. **The section**: accepted (the gallery, now 37 m with the access road, guideways, twin bores, flexing-beam crossovers).
+5. **The north approach**: accepted (spirals under Shelf, the Line's northern station town).
+6. **The power**: accepted (the plant at the hot doors, rare-earth magnets, the cyan lit only in the hot section).
+7. **The stations**: accepted, `bore` first; **`hotdoor` at the north door** (km 55, granite, the cleft shrine).
+8. **The train**: accepted (24 m cars, 3.6 m wide, sealed; kept trains at 15 m/s).
+9. **The car states**: accepted (built, kept, derelict, wreck; `kept` a culture's upkeep dress).
+10. **The Tungangs' stock**: in the vehicles kit, a `tungang` culture.
+11. **Riding**: the hook accepted as agreed with the riding session (section 8).
+12. **Merging**: **ask the ancient-transit and ancient-vehicles sessions to merge their branches first**; the Line builds on
+    `main` after.
+13. **Hazards**: add `rockburst`, `inrush` and `seal` to `core/hazard` as opt-in kinds.
+14. **Textures**: write the three prompts into `core/materials/PROMPTS-NEEDED.md` (done 2026-11-11).
+15. **The portal**: accepted (the shallow south, a stretch fallen open, 42 km on the surface to Ledge).
+16. **The ore**: accepted (veins from `kits/resources`' nodes; section 2.1's table).
+17. **The shafts**: accepted, hidden; **raid reach 15 km** (a night out and back).
+
+**And, mid-answer** (the owner, 2026-11-11): **"where the network runs aboveground, we should have an ancient highway running
+alongside it. in places of rough or boggy terrain, the whole network may be elevated like louisiana highways"** (section
+2.3).
 
 **The concept page**: https://claude.ai/artifact/CyanY5xY3itERUzw3tZSmm (source `concept/line-concept.src.html`, the
 survey's profile injected into `concept/line-concept.html`): the board of segments and gaps, the profile, the section to
@@ -207,47 +238,112 @@ and vanishes. The shafts within reach of the road are the raid points of `core/s
 
 `LN.shafts` gives each `{id, s, side, top: [x, y, z], depth, r, kind: air | adit | winch, state, hidden, road: {id: 'dalab-ledge', d, reach}}`.
 
-**The numbering** (question 2). Canon has the lojes numbered "after the Line's original stations north to south (Ledge's
-lifts are Loj Fower)", but Ledge is the Line's southern end, and Loj Twenny lies north of it. *Proposed*: the Ancients
-numbered the stations **from the Rift's hub up the line**: Cube 1, Chimes 2, Nulab 3 (on the lake shore under Ledge),
-Ledge's lifts 4, the south portal 5, and on north to the north portal 15; numbers past the stations' went to lojes founded
-later in caverns off the Line (Loj Twenny, 20, off station 8 at km 218). One word in `LORE.md` changes ("north to south"
-to "from the Rift north").
+**The numbering** (settled by the owner, 2026-11-11: Cube is Loj Nahn). Canon has the lojes numbered "after the Line's
+original stations north to south (Ledge's lifts are Loj Fower)". The Ancients numbered only the Line's **main stations**,
+north to south: **1 Dalab** (the lab), **2 Shelf** (the north mouth, the spirals' head), **3 the Twenny junction** (km 218,
+the great shaft), **4 Ledge's lifts**, and in the Rift **5 Nulab** (the lake shore under the lifts), **6 Chimes**, **7
+Cthonos**, **8 The Tubes**, **9 Cube**: Loj Nahn, the number no Tungang says, the lost loj in Arccube's upper levels. Every
+other stop is a **halt**, named by the main station before it: the valley 2a, the fault junction 2b, the north door 2c, the
+sealed stations 2d to 2f, the south door 2g; km 250 3a, the shallow station 3b, the south mouth 3c. Lojes founded later in
+caverns off the Line took numbers past the stations' (Loj Twenny, 20, off station 3). Beyond Cube the count goes on (10
+Theodiga, 11 Strongbow, 12 Stair: section 2.2).
+
+### 2.2 Beyond Ledge: the Rift's stations, Cube and the line east (surveyed 2026-11-11)
+
+The owner (2026-11-11): "the line might connect to strongbow, theodiga, and all the way to Stair and an arcology to be
+placed in the bowl maybe". `python3 biomes/line/tools/survey_extension.py` takes straight legs between the stations on
+5.1, graded straight end to end; ground more than 60 m over the grade is tunnel, more than 30 m under it viaduct
+(`ANCIENT-ROADS.md` §2's thresholds). A first look, not a route: **the routing is the Ancient network session's**
+(`openworld/ANCIENT-ROADS.md`, branch `claude/ancient-network-9cc3e7`), which gets these numbers.
+
+| Leg | km | Ends (m) | Surface (m) | Tunnel | Viaduct | Over water | Rock |
+|---|---|---|---|---|---|---|---|
+| 4 Ledge's lifts' foot to 5 Nulab | 59 | 1,563 to 344 | -216 to 1,563 | 0 | 57 | **51** (the great lake) | rift |
+| 5 Nulab to 6 Chimes | 83 | 344 to 243 | 243 to 883 | 58 | 0 | 0 | rift, volcanic |
+| 6 Chimes to 7 Cthonos | 250 | 243 to 2,313 | -1,848 to 2,738 | 34 | **208** | 0 | rift |
+| 7 Cthonos to 8 The Tubes | 186 | 2,313 to -77 | -766 to 3,328 | **137** | 46 | 0 | rift, volcanic |
+| 8 The Tubes to 9 Cube | 228 | -77 to -224 | -2,600 to -36 | 0 | **219** | **154** (the Rift's lake) | rift |
+| 9 Cube to 10 Theodiga | 381 | -224 to -495 | -2,304 to 1,614 | 115 | **229** | 23 | rift, volcanic |
+| 10 Theodiga to 11 Strongbow | 264 | -495 to 1,535 | -760 to 2,515 | **188** | 68 | 43 | rift |
+| 11 Strongbow to 12 Stair | 344 | 1,535 to 1,379 | 983 to 4,553 | **329** | 11 | 3 | granite, gneiss, sedimentary (the Catch's walls) |
+| **Ledge to Stair** | **1,795** | | | **861** | **838** | **274** | |
+
+- **The Rift floor is crossed high**: from Chimes to Theodiga the straight legs run more than half their length over
+  ground far under the grade (the Rift's trenches and lakes): the Line rides a **continuous elevated way** there (section
+  2.3), with tunnels through the ridges between (Cthonos to The Tubes). The router will bend it round the worst.
+- **The Tubes to Cube crosses the Rift's lake**: 154 km over water on the straight line; the router may keep to the
+  shore. Cube's own station (9) stands in Lizardmen country: the Line there is the reward's road, mostly broken.
+- **Strongbow to Stair is one long bore** (329 km tunnel under the Catch's walls, 4.5 km high), kin of the Arcbeam-Stair
+  tunnel closed by the quake (`biomes/catch/PLAN.md`). Strongbow was Xanadu's end of the line (`LORE.md` §4): *proposed*,
+  the bore beyond it is sealed or fallen, and Xanadu keeps only its own short line.
+- **The Bowl's arcology** is still to be placed (the owner's "maybe"): between Stair (1106,1442) and Arcbeam (1016,1058),
+  on the Bowl's floor near Mantis (1113,1164), it would join the Rift line to the Arcbeam-Stair route and so to the
+  crater's network. Its number would be 13.
+- **Numbers**: 10 Theodiga, 11 Strongbow, 12 Stair, the Bowl's arcology 13 (*proposed*, by the same north-to-south count
+  carried on east).
+
+None of this is in the biome's stations: the biome stays on Dalab-Ledge (stations 1 to 4). The extension is data for the
+network session and a later plan.
+
+### 2.3 Above ground: the highway beside it, the elevated way, and the access road below (the owner, 2026-11-11)
+
+The owner (2026-11-11): "where the network runs aboveground, we should have an ancient highway running alongside it. in
+places of rough or boggy terrain, the whole network may be elevated like louisiana highways", and "make there be a
+smaller access road along the underground portions".
+
+- **At grade, the highway runs beside the line**: the Ancients' 30 m way (`ANCIENT-ROADS.md` §2) beside the four
+  guideways, one corridor about 70 m wide (the guideways' 30 m, a 6 m median, the highway's 30 m with its verges), on one
+  embankment or one cutting. The Line's surface stretches here: the 42 km from the south mouth to Ledge, the open
+  approach on Dalab's plain, and every surface leg of section 2.2.
+- **Over bog, lakes and broken ground, the whole corridor is elevated**: long low viaducts on close-set piers, as the
+  Louisiana swamp highways run (the Atchafalaya Basin Bridge: 29 km of twin decks a few metres over the swamp): two
+  decks side by side, the line's and the highway's, 8 to 15 m up on paired pier bents every 30 to 40 m, for tens of
+  kilometres. On the Rift's floor and lake (section 2.2) this is the Line's commonest form; on Dalab-Ledge, the wet
+  tableland's dips toward Ledge (surface under the floor by 200-300 m at km 410-420 of the line) are crossed this way.
+  `KTRANSIT.highway`'s spans, piers and their ruin states draw both decks.
+- **Underground, a smaller access road runs beside the tracks**: along the gallery's west wall, behind a barrier from
+  T4: two lanes of 3.3 m for the Ancients' service vehicles (`kits/motor-vehicles`' utility and van), a footway and the
+  cable trough at the wall. In the split bores it takes **its own small service bore between the two**, 7 m inside, joined
+  to both by the cross-passages (the Channel Tunnel's service tunnel); in the shallow south it is the cut-and-cover's west
+  bay. At the mouths it joins the highway. Today it is the Tungangs' footway and barrow road, the porters' way, and a row
+  of derelict Ancient service vehicles where the Line fell; the Fixers' trolley needs the guideway, the access road needs
+  nothing. It has a track's states (kept, worn, blocked, cut), and at a gap it is cut with the rest.
 
 ## 3. The section and its states per track
 
-**The gallery** (*proposed*): the underground twin of the Ancients' 30 m way.
+**The gallery** (*proposed*; the access road added by the owner, 2026-11-11): the underground twin of the Ancients' way.
 
 ```
   SECTION of the four-track gallery (looking north; metres)
-                         ______________________________
-                    ____/      lamp rows at 9.5 m      \____                          crown 13.0
-                ___/                                        \___
-             __/   cable trough      (vault: flattened ellipse)  \__
-            /  |                                                 |  \                  springing 6.0
-           |   |  .------.    .------.        .------.    .------.  |   |
-           |[w]|  | car  |    | car  |  [CS]  | car  |    | car  |  |[w]|               car roof 5.0
-           |   |  |      |    |      |        |      |    |      |  |   |
-           |___|__|______|____|______|________|______|____|______|__|___|               guideway top 0.6
-           ======[ T4 ]=========[ T3 ]==================[ T2 ]=========[ T1 ]=====        invert 0.0
-           -16  -12.5  -10.5   -4.5   -2.5   0   2.5    4.5     10.5  12.5  16
-           [w] walkway 2.4 m and trough on each wall    [CS] the central strip, 5 m
+                            ____________________________________
+                     ______/        lamp rows at 10 m           \______                   crown 14.0
+                ____/                                                  \____
+             __/                     (vault: flattened ellipse)             \__
+            /                                                                  \           springing 6.0
+           |                   .------.    .------.        .------.    .------.  |   |
+           | f|  access road  || car  |    | car  |  [CS]  | car  |    | car  |  |[w]|    car roof 5.0
+           |  |  (2 x 3.3 m)  ||      |    |      |        |      |    |      |  |   |
+           |__|_______________||______|____|______|________|______|____|______|__|___|    guideway top 0.6
+           ===================B=[ T4 ]=======[ T3 ]==============[ T2 ]=======[ T1 ]====    invert 0.0
+          -21 -19.8          -13.2 -10.5   -4.5   -2.5   0   2.5   4.5        10.5  13.6 16
+           f footway 1.2 m and trough   B barrier   [CS] the central strip, 5 m   [w] walkway 2.4 m and trough
 ```
 
 | Part | Size | What |
 |---|---|---|
-| Gallery | 32 m between the lining's faces, 13 m to the crown, walls plumb to 6 m, a flattened elliptical vault | one span: no columns (columns would block crossovers) |
+| Gallery | **37 m** between the lining's faces (x -21 to +16), 14 m to the crown, walls plumb to 6 m, a flattened elliptical vault | one span: no columns (columns would block crossovers) |
+| Access road | 6.6 m, two lanes, along the west wall at the invert (+0.2 m), behind a 0.6 m barrier from T4; a 1.2 m footway and the cable trough at the wall; lay-bys at the refuge niches | the Ancients' service road; the Tungangs' footway and barrow road (section 2.3) |
 | Lining | precast segments 0.6 m thick, rings 2.0 m long, the joints a fine grid; a bronze ring band every 3.6 m (the Ancients' storey, as the tram's hoops) | the ring joints make the length readable (`ANCIENT-TUNNELS.md` §2) |
 | Guideways | four, at -10.5, -4.5, +4.5, +10.5 m; each a raised concrete beam 2.8 m wide, 0.6 m high, with a central guide slot and the power strip in it; no rails, no catenary | the Ancients' guideway (the tram's "guide skids", `kits/motor-vehicles`) |
 | Pairs | T1, T2 one way, T3, T4 the other; 6 m centres in a pair | |
 | Central strip | 5 m between the pairs: signal masts, the crossover pits, the Ancients' lamp standards, the Tungangs' lamp posts | at a station it widens into the island platform |
-| Walkways | 2.4 m on each wall, 1.2 m above the invert, a cable trough under, a handrail, refuge niches every 50 m | the Fixers' way and the pedestrians' |
-| Cross-section services | a drain under the central strip, air ducts in the crown, the dead cyan strips along the walkways' edges | |
+| Walkway | 2.4 m on the east wall, 1.2 m above the invert, a cable trough under, a handrail, refuge niches every 50 m | the Fixers' way beside the tracks |
+| Cross-section services | a drain under the central strip, air ducts in the crown, the dead cyan strips along the walkway's and the road's edges | |
 | Clearance | a car 3.6 m wide and 4.4 m over the guideway (section 7), 0.5 m all round | |
 
 **Split bores** (*proposed*): in bad ground (the breccia's faults, the rift fill's wettest stretches) the gallery parts
-into **two twin-track bores**, 14 m inside, circular, 40 m apart, joined by cross-passages every 250 m (a refuge and a
-walk between), and rejoins in a **junction hall**: a 300 m flared cavern where the bores' tracks meet again, the
+into **two twin-track bores**, 14 m inside, circular, 40 m apart, with the access road's **7 m service bore** between them,
+all three joined by cross-passages every 250 m (a refuge and a walk between), and rejoins in a **junction hall**: a 300 m flared cavern where the bores' tracks meet again, the
 crossovers in it. `ANCIENT-TUNNELS.md`'s 10-14 m bores are these. In the shallow south the gallery is the same section
 cut and covered: a flat roof of beams under 30-60 m of fill, shafts every 400 m.
 
@@ -290,8 +386,10 @@ KTRANSIT.line(o) -> LN
        branches: [{id, s, side, to}], hot: {s0, s1} }
 
 LN { id, kind: 'line', seed, path, L, floorAt(s), guideAt(s, track), axisAt(s),
-     forms:    [{ s0, s1, kind: 'gallery' | 'twin' | 'junction' | 'shallow' | 'open', w, h, sep? }],
+     forms:    [{ s0, s1, kind: 'gallery' | 'twin' | 'junction' | 'shallow' | 'open' | 'elevated', w, h, sep?, highway? }],
      tracks:   [{ id: 'rift.t1', i, off, route: {pts, cum, len} }],           the riding hook's route per track (section 8)
+     road:     { off: -16.5, w: 6.6, lanes: 2, cond: [{ s0, s1, state }], route: {pts, cum, len} },   the access road (2.3)
+     highway:  [{ s0, s1, side, off, ref }],                                   the Ancient highway beside the open and elevated forms (2.3)
      sections: [{ id: 'rift.x10423', i, s0, s1, state, depth, silt }],        20 m, the section layer
      cond:     [{ id, track, s0, s1, state, depth }],                          runs per track
      crossovers: [{ id, s, a: 't2', b: 't3', len, dir, state: built | kept | frozen | gone }],
@@ -331,7 +429,7 @@ question.
 
 | # | Station | Bore km (px) | What | Settles |
 |---|---|---|---|---|
-| 1 | `bore` | 208-209.2 (445.5,1262) | a kept straight kilometre of the long run, south of the south door: the four-track gallery, its lining, guideways, central strip and walkways; a crossover; the Tungangs' green lamps running to a point; a train passing (on its timetable) and a Fixers' trolley; refuge niches; warm (rock 55 degC); **a vein working**: a Fixers' side gallery off a refuge niche following a copper and rare-earth vein (section 2.1), its spoil on a flat wagon | **the section, the scale, the light**; the long view down the bore |
+| 1 | `bore` | 208-209.2 (445.5,1262) | a kept straight kilometre of the long run, south of the south door: the four-track gallery, its lining, guideways, central strip, walkway and the access road (a derelict Ancient service van on it); a crossover; the Tungangs' green lamps running to a point; a train passing (on its timetable) and a Fixers' trolley; refuge niches; warm (rock 55 degC); **a vein working**: a Fixers' side gallery off a refuge niche following a copper and rare-earth vein (section 2.1), its spoil on a flat wagon | **the section, the scale, the light**; the long view down the bore |
 | 2 | `gap` | 235-240 (443.5,1277) | G2: the long run's southern end: its gap station (the last platform, the trains' turning crossover, the shed), the gallery fallen whole into a hypogene chamber; the walk down the slope into the chamber, green lamps on posts across it, a sump waded, a Fixers' stair up the far fall, and S1's platform with its own train | **the walk between segments**, the game's commonest underground journey |
 | 3 | `station` | 218 (445,1266) | the Twenny junction: an Ancient station cavern in three states (`?state=built`, `kept`, `abandoned`): platforms, the mezzanine, sidings and sheds, workshops, cistern, ventilation, the branch gallery's mouth toward Loj Twenny; **the great shaft's foot** (2.2 km up to the fells: the hoist, the draught, the ice coming down); **empty of the Tungang kit's rooms** (kept shows only catalog pieces already built: benches, lamps, signs) | the Ancient station's architecture; the hold view's test bed (T3) |
 | 4 | `hotdoor` | 55 (455,1186) | the hot section's north doors: two door walls a train's length apart (an airlock), each a bulkhead across the gallery with four train leaves and a walkway hatch; **the power plant and the cooling plant** kept by rite (the heat exchangers' pipes through the inner door, the generators' rare-earth magnets, power cells on charge: section 2); a sealed train waiting; through the inner door the deep stretch, spalls on the lining, the heat haze, the cyan strips still lit; a granite cleft shrine behind a rail (`ANCIENT-TUNNELS.md` cave 7) | **heat and machinery**; the one place the Ancients' light still burns |
@@ -343,7 +441,7 @@ question.
 `hotdoor`, `fault`, `breach`, `portal`.
 
 **How a station is drawn.**
-- **The rock is `KCAVERN`**: the gallery as a `tube` (its arched section: `w` 33.2, `h` 13.6), the bores as `pipe`s, the
+- **The rock is `KCAVERN`**: the gallery as a `tube` (its arched section: `w` 38.2, `h` 14.6), the bores as `pipe`s, the
   station cavern and its side galleries as `room`s and `tube`s, the stairs, shafts and openings as theirs; the walk
   floors written from the plan. One cell size a page (1 m in the gallery, where the lining hides the rock; 0.5 m where
   rock shows: the gap, the breach).
@@ -477,7 +575,7 @@ follow camera's long view, `gap` for a narrow walk), but nothing here waits on i
 | `core/rand` (`KRAND`) | yes | every seed by (world, chainage cell, index, salt): the lining's wear, the rubble, the lamps' failures |
 | `core/tags` | yes | every section, track run, station, door, crossover, train, car and lamp registered before it is drawn |
 | `core/space` (`KSPACE`) | yes | the rubble and pieces kept off the tracks, the walk, the platforms |
-| `core/walk` (`KWALK`) | yes | floors from the plan: the walkways, platforms, the gap's walk, the stairs; blocks for the cars at rest |
+| `core/walk` (`KWALK`) | yes | floors from the plan: the walkway, the access road, platforms, the gap's walk, the stairs; blocks for the cars at rest |
 | `core/hazard` | yes | heat with soak, gas, drown, crush, fall; the owed rockburst, inrush and seal (question 13) |
 | `core/door` (`KDOOR`) | yes | the hot doors' leaves and hatches; the car doors (the riding plan drives them) |
 | `core/sched` | yes | the trains' timetables (`KSCHED.timeline`) |
@@ -557,7 +655,7 @@ question 14):
 |---|---|---|
 | L0 | the owner's answers (section 15); the concept page reviewed; the transit and vehicles sessions asked (section 12) | the questions are answered |
 | L1 | **the record**: `KTRANSIT.line` data side (alignment from the survey, forms, tracks, sections, cond, crossovers, stations, doors, gaps and segments derived), node-tested; the riding hook's five outputs | `tests/test-line.js` passes; the record's digest is stable |
-| L2 | **the `bore` station**: the scaffold (`build.py`, `verify.py`, `materials.json`, `INDEX.md`, `PORT.md`), the gallery carved and lined, the guideways, walkways, a crossover, the lamps; the train cars' first build (a kept 8-car train, standing) | the owner's walk down the bore; `--assert` passes on the GPU lane |
+| L2 | **the `bore` station**: the scaffold (`build.py`, `verify.py`, `materials.json`, `INDEX.md`, `PORT.md`), the gallery carved and lined, the guideways, walkway and access road, a crossover, the lamps; the train cars' first build (a kept 8-car train, standing) | the owner's walk down the bore; `--assert` passes on the GPU lane |
 | L3 | the train in the vehicles kit: the five Line cars in four states, the Tungang stock; running on a timetable in `bore` | the vehicles sheet passes; the train passes on its timetable in `bore` |
 | L4 | `station`, `gap`, `hotdoor`, `fault`, `breach`, `portal` | each passes `--assert`; the owner's walk from `station` across `gap` |
 | L5 | riding on the pages (after the riding plan's phases it needs): riders in the passing train, porters at G2, the player boarding at `station` | the riding plan's checks pass on these pages |
@@ -566,7 +664,7 @@ question 14):
 **Checks** (`verify.py --assert`; each with its negative control):
 - `line-record`: the record's derived segments and gaps match the cond runs (negative: a track's `cut` run removed must
   merge two segments);
-- `clearance`: a car's envelope swept along every kept track's route stays 0.4 m clear of the lining, the platforms and
+- `clearance`: a car's envelope swept along every kept track's route, and a service van's along the access road, stays 0.4 m clear of the lining, the barrier, the platforms and
   every block (negative: a platform edge moved 0.6 m in);
 - `walk-floors`: every walkway, platform, stair and gap walk is a `KWALK` floor within 0.15 m of the drawn surface, and
   the reach audit reaches every platform from every other in its segment and across its gaps (negative: the gap's stair
@@ -582,6 +680,8 @@ question 14):
   view budgets.
 
 ## 15. Questions for the owner
+
+**All seventeen answered on 2026-11-11** (see "The owner's answers" at the top). Kept here as asked.
 
 1. **The Line's shape** (section 2): four segments (N, the long run, S1, S2), three gaps (G1 at the breccia's fault, G2
    where the gallery fell into a hypogene chamber, G3 a karst inrush), the hot section the middle of the long run (doors

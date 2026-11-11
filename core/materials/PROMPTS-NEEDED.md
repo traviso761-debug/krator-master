@@ -3,7 +3,7 @@
 Every texture or pattern sheet the owner still has to source or generate, each with its finished prompt. Paste a block
 as it is, one image per block. **Everything delivered lives in `PROMPTS-archived.md`** (checked against `core/materials/library/`, `patterns/` and each build's `materials.json` on `origin/main`, 2026-10-19); this file holds only what is still owed.
 
-**Count: 18 prompt blocks** (2026-11-10: -5, the owner's delivery of that day; 2026-11-09: +3 for the southern highlands' upper stations, section 37; +15 for the hyperjungle's lands and the savannah rims, section 40, 2026-11-08; counted 2026-11-04 before them).
+**Count: 21 prompt blocks** (2026-11-11: +3 for the Rift line, section 41; 2026-11-10: -5, the owner's delivery of that day; 2026-11-09: +3 for the southern highlands' upper stations, section 37; +15 for the hyperjungle's lands and the savannah rims, section 40, 2026-11-08; counted 2026-11-04 before them).
 
 **Delivered 2026-11-03:** section 31's five (the Gills: `rock.lamina.pipe`, `mineral.crust.ferromanganese`, `mineral.crust.brucite`,
 `card.breathfringe`, `card.turf.limed`) and ten owed on unmerged branches (High Rift, nwbay, nhighlands, ringisles, the rift rim, Copper Glacier),
@@ -418,6 +418,29 @@ Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfec
 `card.leaf.miombo` (the rust miombo's crown; now a painted stand-in, and the incense tree's leaflets with it):
 ```
 Square, 2048x2048. Orthographic view of a single cut-out object centred in the frame, on a solid flat bright magenta (#ff00ff) background that fills everything outside the object, with no shadow cast on the background. Flat, even, shadowless lighting: no highlights, no vignette. No perspective, no text, no border, no watermark. Object: a spray of miombo leaves (Brachystegia spiciformis) seen from above: pinnate leaves of four to seven pairs of oval leaflets on a slender twig, in the copper-red to wine flush of new growth, glossy, a few leaflets turning olive at their bases. Full colour: not tinted.
+```
+
+## 41. The Rift line (`biomes/line`, the owner's go-ahead 2026-11-11)
+
+The Line's four-track gallery, its guideways and the Tungangs' kept trains (`biomes/line/PLAN.md` section 13; the owner
+answered "write the prompts" on 2026-11-11). Until they come, `concrete.ancient` stands in for the lining, `concrete.slab`
+for the guideway and `metal.rust.plate` for the kept plate. Reuse notes: the lining serves every Ancient bore and the
+subway (`kits/ancient-transit`); the riveted painted plate serves any salvaged vehicle or kept Ancient machine.
+
+`concrete.lining.segment` (the gallery's and every bore's precast lining, seen face-on; about 4 m across the image, so a 2 m
+ring and its joints repeat twice):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: the inside face of a precast concrete tunnel lining, very old: smooth pale warm-grey concrete (#a8a49a to #8f8b82) cast in curved segments 2 m long and about 1.5 m wide, laid in rings so the joints form a regular grid, the ring joints straight across, the long joints staggered from ring to ring like brickwork; each joint a narrow dark groove with a black rubber gasket line; four round bolt pockets 12 cm across near the corners of each segment, filled flush with darker grout; a small grout port in the middle of each segment; faint stencilled ring numbers in faded black at the same spot on every ring; long pale calcite drip stains and darker damp streaks running down from the joints, a few rust blooms from the bolts, a light film of grey dust and soot. Full colour: not tinted.
+```
+
+`concrete.guideway` (the guideway beam's running surface, along the beam; about 3 m across the image):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: the running surface of a concrete guideway beam for a train, running vertically through the frame: dense smooth trowelled concrete, mid-grey (#8a8984) with a faint warm cast, worn into two broad polished running bands of darker smoother concrete (#6f6e6a) where wheels have rolled for centuries, between them a straight central guide slot 30 cm wide with worn steel lips along both edges, dark rust-brown inside, a dull grey metal power strip at its bottom; fine transverse expansion joints every 1.5 m filled with black sealant; oil and rust streaks along the slot, chips and spalls along the beam's outer edges, grey dust in the hollows. The slot and the bands run exactly vertical and continue off the top and bottom edges. Full colour: not tinted.
+```
+
+`metal.plate.riveted.painted` (salvaged plate riveted over the Ancients' white panel: the kept cars and kept stations; about 2 m across the image):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a patchwork of salvaged steel plates riveted over old smooth white metal panel: rectangular plates of different sizes overlapping at their edges, each fixed with neat rows of round domed rivets 2 cm across every 10 cm; the plates painted long ago in faded railway colours, dull bottle green (#3f5a43), cream (#d8cfb0) and red oxide (#8a3e2a), the paint worn through at the edges and around the rivets to brown rust and bare grey steel, chalky and faded, a few brush-painted repairs in slightly different shades; in two or three gaps between plates the original seamed white panel (#e6e5df) shows, scuffed and yellowed; soot and grime darkest at the plate edges. Full colour: not tinted.
 ```
 
 ## Gaps with no prompt yet
