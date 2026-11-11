@@ -126,7 +126,7 @@ LANE_ARGS = {"arc": [], "rtx": ["--force_high_performance_gpu"]}
 LANE_VENDOR = {"arc": "intel", "rtx": "nvidia"}
 # The cloud lanes (tools/CLOUD-LANE.md, tools/cloud_lane.py; 2026-11-10): vast0, vast1, ... one per GPU of a rented machine,
 # switched on by a config outside the repo. Their locks sit beside arc's and rtx's; only verify.py runs take them.
-CLOUD_LANE_NAMES = ("vast0", "vast1")
+CLOUD_LANE_NAMES = tuple("vast%d" % i for i in range(16))   # the locks all_locks() looks after, whichever machines serve them
 # ANGLE on the NVIDIA driver's EGL: passes real pages on the RTX PRO 5000. ANGLE on Vulkan reports the GPU on a blank page
 # but loses the context on a real one (2026-11-10); the Linux default above (--use-angle=gl) falls back to SwiftShader.
 CLOUD_LANE_ARGS = ["--use-gl=angle", "--use-angle=gl-egl"]
@@ -445,12 +445,15 @@ def _lanes_for(lane, cloud):
         want = [ln for ln in up if lane == "cloud" or ln == lane]
         if not want:
             cl = _cloud()
-            cfg = cl.load_config()
-            if not cfg:
+            m = cl.machine_of(lane) if lane != "cloud" else None
+            if not cl.load_config():
                 why = "the cloud lanes are off (harness.py cloud on)"
+            elif lane == "cloud":
+                why = "no cloud machine answers"
+            elif not m:
+                why = "no machine that is on serves it (%s)" % ", ".join(cl.configured_lanes())
             else:
-                ok, w = cl.reachable(cfg)
-                why = "not one of %s" % ", ".join(cfg["lanes"]) if ok else "the machine does not answer: %s" % (w or "stopped?")
+                why = "machine %s does not answer: %s" % (m["id"], cl.reachable(m)[1] or "stopped?")
             raise cl.CloudDown("cloud lane %s: %s" % (lane, why))
         return lane, want
     return lane, [lane]
@@ -705,10 +708,10 @@ def lanes_main(argv):
                 print("  waiting: pid %s %s" % (t["pid"], t.get("what", "")))
     if not cfg:
         print("cloud lanes: off (tools/CLOUD-LANE.md)")
-    else:
-        ok, why = cl.reachable(cfg, fresh=True)
-        print("cloud lanes %s: machine %s %s" % (", ".join(cloud), cfg.get("instance") or cfg.get("host"),
-                                                 "answers" if ok else "DOES NOT ANSWER (%s): verifies take arc and rtx" % why))
+    for m in cl.machines() if cfg else []:
+        ok, why = cl.reachable(m, fresh=True)
+        print("cloud lanes %s: machine %s %s" % (", ".join(m["lanes"]), m["id"],
+                                                 "answers" if ok else "DOES NOT ANSWER (%s): its lanes take no verifies" % why))
     return 0
 
 
@@ -1906,12 +1909,70 @@ async def renderer_main():
 # run_watched (the stall watchdog), and skips a run that already passed on the same bytes (the verify cache).
 #
 # The cache key: every file the run read (the pages it opened, every file the page server handed out, three.js, the
-# build's BUDGETS.json, the ratchet), the verify.py and the .py and .json files beside it, this harness, the arguments
-# and KRATOR_GL. A pass is recorded per page and argument list in CACHE_DIR (%LOCALAPPDATA%/krator-verify-cache), with
+# build's BUDGETS.json, the ratchet), the verify.py and the .py and .json files beside it, the arguments, KRATOR_GL, and
+# the part of this harness that can change a verify's result (result_fingerprint: the page server, the launcher and its
+# flags, the checks, VERIFY_CACHE_VERSION; not the queue, locks, watchdog, cloud transport, lanes listing or this cache,
+# owner 2026-11-11). It is taken from the parsed code, so comments and docstrings never move it; a top-level name not in
+# NOT_IN_KEY counts, so new code is in the key unless someone says otherwise (tools/tests/test_cache_key.py). Bump
+# VERIFY_CACHE_VERSION for a change outside this file that can change results (the pinned Chromium, for one).
+# A pass is recorded per page and argument list in CACHE_DIR (%LOCALAPPDATA%/krator-verify-cache), with
 # the lane and the GPU that produced it; a failure is never recorded. Only --assert runs are cached (a run without it
 # is for looking), never a timing run; --no-cache (or KRATOR_VERIFY_CACHE=0) reruns; KRATOR_VERIFY_WRAP=0 runs the
 # verify in place, with neither the watchdog nor the cache. A file the verify reads itself without the harness (a
 # route handler's file) is outside the key: its verify.py beside it is in it.
+
+VERIFY_CACHE_VERSION = 1
+# Top-level names that cannot change what a verify finds: processes, the lanes' locks and queue, the watchdog, the cloud
+# transport, the lanes listing and this cache and wrapper. Everything else in this file is in the key.
+NOT_IN_KEY = frozenset((
+    "TMP", "GPU_LOCK", "GPU_LOCK_RTX", "LANES", "CLOUD_LANE_NAMES", "TIMING_SCRIPTS", "STALL_MIN", "LOCK_POLL", "CACHE_DIR",
+    "BROWSERS_DIR", "CHROME_NAMES", "_MY_BROWSERS",
+    "lock_path", "all_locks", "_cloud", "_proc_table", "pid_alive", "_proc_start", "_kill_pids", "reap_orphans", "_descendants",
+    "_record_browsers", "_forget_browsers", "GpuLockTimeout", "_lock_owner", "_release", "timing_run", "pick_lane", "_ticket_live",
+    "lane_queue", "_owner_note", "_lanes_for", "gpu_lock", "_tree", "kill_tree", "out_dirs", "_newest", "run_watched", "lock_main",
+    "lanes_main", "NOT_IN_KEY", "result_fingerprint", "_touched", "_sha_file", "_rel", "cache_args", "cache_entry_path", "cache_hash",
+    "cache_lookup", "cache_record", "verify_wrap", "_verify_routed", "_cache_cloud_pass", "_run_child", "_imported_at_top_of_main",
+    "_maybe_wrap_verify", "_watch_parent"))
+_FINGERPRINT = {}
+
+
+def result_fingerprint(src=None):
+    """A hash of the result-relevant code of this harness (see the comment above): the module parsed, its docstrings,
+    the `if __name__` block and every top-level definition or assignment named in NOT_IN_KEY dropped, the rest dumped
+    without positions. `src`: another copy's text (the tests)."""
+    import ast, hashlib
+    if src is None and "self" in _FINGERPRINT:
+        return _FINGERPRINT["self"]
+    text = src
+    if text is None:
+        with open(os.path.abspath(__file__), encoding="utf-8") as fh:
+            text = fh.read()
+    keep = []
+    for n in ast.parse(text).body:
+        if isinstance(n, ast.Expr) and isinstance(n.value, ast.Constant) and isinstance(n.value.value, str):
+            continue
+        if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)) and n.name in NOT_IN_KEY:
+            continue
+        if isinstance(n, (ast.Assign, ast.AnnAssign)):
+            names = [t.id for t in (n.targets if isinstance(n, ast.Assign) else [n.target]) if isinstance(t, ast.Name)]
+            if names and all(x in NOT_IN_KEY for x in names):
+                continue
+        if isinstance(n, ast.Expr) and isinstance(n.value, ast.Call) and getattr(n.value.func, "id", "") in NOT_IN_KEY:
+            continue
+        if isinstance(n, ast.If) and "__name__" in ast.dump(n.test):
+            continue
+        keep.append(n)
+    for n in keep:
+        for d in ast.walk(n):
+            body = getattr(d, "body", None)
+            if isinstance(d, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)) and body and isinstance(body[0], ast.Expr) \
+                    and isinstance(body[0].value, ast.Constant) and isinstance(body[0].value.value, str):
+                d.body = body[1:] or [ast.Pass()]
+    fp = hashlib.sha256(ast.dump(ast.Module(body=keep, type_ignores=[])).encode("utf-8")).hexdigest()
+    if src is None:
+        _FINGERPRINT["self"] = fp
+    return fp
+
 
 def _touched(rec):
     """In a wrapped verify, note a file the run read (a path) or the lane and renderer (a dict) for the parent."""
@@ -1955,7 +2016,8 @@ def cache_entry_path(script_rel, args_n):
 
 
 def cache_hash(root, files, args_n):
-    """The key over the files' current bytes, this harness, the arguments and KRATOR_GL; None if a file is gone."""
+    """The key over the files' current bytes, this harness's result fingerprint, the arguments and KRATOR_GL; None if a
+    file is gone."""
     import hashlib
     h = hashlib.sha256()
     for rel in sorted(set(files)):
@@ -1963,7 +2025,7 @@ def cache_hash(root, files, args_n):
         if not os.path.isfile(p):
             return None
         h.update(("%s\0%s\n" % (rel, _sha_file(p))).encode("utf-8"))
-    h.update(_sha_file(os.path.abspath(__file__)).encode("utf-8"))
+    h.update(("harness:" + result_fingerprint()).encode("utf-8"))
     h.update(json.dumps([args_n, os.environ.get("KRATOR_GL", "").lower()]).encode("utf-8"))
     return h.hexdigest()
 
@@ -2055,7 +2117,6 @@ def _verify_routed(script, args, cacheable):
             return 3
         except cl.CloudDown as e:
             if pick_lane() == "auto" and not attempt and cl.load_config():
-                cl.mark_down(cl.load_config(), str(e))
                 print("harness: %s; taking a local lane" % e, flush=True)
                 continue
             print("FAILED: %s (tools/CLOUD-LANE.md)" % e, flush=True)
@@ -2072,6 +2133,10 @@ def _cache_cloud_pass(script, args, info):
     root, hashes = info["root"], info.get("hashes", {})
     if not hashes:
         print("harness: not cached: the machine sent no hashes", flush=True)
+        return
+    if info.get("harness_key") != result_fingerprint():   # the machine ran a harness whose checks differ from this one's
+        print("harness: not cached: the harness on the machine checks differently from this one (result fingerprint %s, here %s)"
+              % ((info.get("harness_key") or "none")[:12], result_fingerprint()[:12]), flush=True)
         return
     here = _cloud().object_ids(root, [rel for rel in hashes if os.path.isfile(os.path.join(root, rel))])
     changed = [rel for rel, h in hashes.items() if here.get(rel) != h]

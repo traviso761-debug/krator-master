@@ -48,13 +48,46 @@ machine holds no credential to the repo). For each job:
    next time (`cloud-needs.json` beside the verify cache).
 7. A pass (an `--assert` run without `--no-cache`, as locally) is recorded in the local verify cache, lane `vast0`,
    when every file it read still has, here, the content the machine verified: an LFS file by its oid, a text file by
-   git's object id (so this PC's CRLF checkouts match the machine's LF ones).
+   git's object id (so this PC's CRLF checkouts match the machine's LF ones). It also needs the machine's harness to
+   check the same way as this PC's: its `result_fingerprint` must match.
+
+**The cache key and the harness** (owner, 2026-11-11). The key takes only the part of `tools/harness.py` that can change
+a verify's result: `harness.result_fingerprint()`, a hash of the parsed code without docstrings, comments, the
+`__main__` block or the names in `NOT_IN_KEY` (the queue, locks, watchdog, cloud routing, lanes listing and the cache
+itself). Editing the transport or the queue therefore keeps every pass; editing the launcher's flags, the page server or
+a check drops them. New top-level code counts unless it is added to `NOT_IN_KEY`. `VERIFY_CACHE_VERSION` is bumped for a
+change outside the file that can change results (a new pinned Chromium). `tools/tests/test_cache_key.py` checks both
+directions. Caches only match between harness copies with the same fingerprint: until this branch is on `main`, a cloud
+pass made here does not count for a session on `main`'s harness, nor the reverse.
 
 **One GPU per lane.** Neither ANGLE nor the NVIDIA driver takes a device switch that tells two identical GPUs apart
 (CUDA_VISIBLE_DEVICES, DRI_PRIME, EGL_VISIBLE_DEVICES and the Vulkan loader's filters were tried). Each lane runs as
-its own user, `kvast0` and `kvast1`, whose group alone can open its GPU's `/dev/nvidiaN` and DRM nodes. The runner
-sets these permissions before every job (the container resets `/dev` when it restarts). `gpu-renderer` checks the
-vendor is NVIDIA.
+its own user (`kvastN`, after the lane) in the group of the GPU it runs on (`kgpuG`, G its position in the machine's
+`lanes`), and that group alone can open the GPU's `/dev/nvidiaN` and DRM nodes. The runner sets these permissions
+before every job (the container resets `/dev` when it restarts). `gpu-renderer` checks the vendor is NVIDIA.
+**Never run `nvidia-smi` (or anything NVIDIA) as root on a lane machine while it serves:** the drivers here have
+`ModifyDeviceFiles: 1`, so any root process that opens the driver resets every `/dev/nvidiaN` to `root:root 0666`, and
+every lane can then open every GPU (they still render on NVIDIA, but may share one GPU). The runner reads the GPU list
+from `lanes/gpus.json`, which `cloud setup` writes with the one root `nvidia-smi` it runs, and re-applies the
+permissions. To look at a lane's GPU, ask as its user: `runuser -u kvast2 -- nvidia-smi` shows that GPU alone.
+
+**More than one machine** (2026-11-11). The config names each machine and its lanes, in GPU order:
+
+    {"lanes": ["vast0", "vast1", "vast2", "vast3", "vast4", "vast5"],
+     "machines": {"60160613": {"host": "ssh3.vast.ai", "port": 12986, "key": "~/.ssh/krator_vast", "instance": "60160613",
+                               "lanes": ["vast0", "vast1"], "on": true},
+                  "60169974": {"host": "ssh6.vast.ai", "port": 20428, "key": "~/.ssh/krator_vast", "instance": "60169974",
+                               "lanes": ["vast2", "vast3", "vast4", "vast5"], "on": true}}}
+
+The top-level `lanes` lists every lane of every machine that is on (other tools read it; `cloud on`/`off` keep it).
+A machine that does not answer drops only its own lanes. The older single-machine shape (host, port... at the top)
+still loads, as one machine with `vast0` and `vast1`. Each machine has its own repo copy and LFS store, filled as its
+lanes need them.
+
+    python3 tools/harness.py cloud on --machine 60169974 --host ssh6.vast.ai --port 20428 --key ~/.ssh/krator_vast --lanes vast2,vast3,vast4,vast5
+    python3 tools/harness.py cloud setup --machine 60169974
+    python3 tools/harness.py cloud off --machine 60169974      # or no --machine: every machine
+    python3 tools/harness.py cloud status                      # every machine
 
 **The watchdog.** The local side is `run_watched` on the SSH process, as for a local job: 25 minutes with no output
 kills it and frees the lane (exit 124). The machine's runner stops the verify when the SSH connection closes, and
@@ -68,8 +101,8 @@ an SSH no-op (10 s timeout, the answer kept for two minutes). An unreachable mac
 
 Rent a machine with NVIDIA GPUs (the image `vastai/base-image:cuda-*` works), add an SSH key, then on this PC:
 
-    python3 tools/harness.py cloud on --host ssh6.vast.ai --port 33608 --key ~/.ssh/krator_vast --instance 60132164
-    python3 tools/harness.py cloud setup           # Playwright, its Chromium, the lane users; seeds the repo
+    python3 tools/harness.py cloud on --machine <instance> --host <host> --port <port> --key ~/.ssh/krator_vast --lanes vast0,vast1
+    python3 tools/harness.py cloud setup --machine <instance>   # Playwright, its Chromium, the lane users, the GPU list
 
 The config is `%LOCALAPPDATA%\krator-cloud.json` (`KRATOR_CLOUD_CONFIG`), never in the repo. With no config the
 harness is exactly as it was: two local lanes.
