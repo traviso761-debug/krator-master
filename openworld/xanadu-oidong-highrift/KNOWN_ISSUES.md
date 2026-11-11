@@ -7,6 +7,10 @@
       `plan/sites.json` (`links`), but the build leaves them out of `WORLD_DATA.roads`. Laid, their fill buried a carved
       river channel at (-569 km, -70 km), near Theodiga: 27.6 m of road over the ground and a dry river station. The
       world has no bridge yet.
+- [ ] **The Xanadu overlay's green is a wrapper.** core/world 41 has no style for the 'xanadu' overlay (it takes the desert's),
+      so `src/43-world-xoh.js` re-colours `WORLD.ground` there by wetness. The land is still shaped as desert (terraces at
+      55 m steps). The core fix is parked in `TODO.md` ("Ride along"). The High Rift, Godthrone, twins and the other
+      kit-less overlays are still the desert's red.
 - [ ] **The Xanadu kit's lake shore does not grow.** The kit reads its shore from the ground's absolute height (`Z.h`
       between 2.5 and 10 m, its page's lake at 0). In the world that is the real height, so `Z.shore` is 0 and its
       shore and river-mouth stands are missing.
