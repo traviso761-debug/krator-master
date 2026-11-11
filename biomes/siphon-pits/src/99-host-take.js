@@ -2,16 +2,17 @@
 const gh=(x,z,dy)=>terrainH(x,z)+(dy==null?0:dy);
 const look=(cx,cz,dyc,tx,tz,dyt)=>[cx,gh(cx,cz,dyc),cz,tx,gh(tx,tz,dyt),tz];
 const VIEWS=(function(){const S=SITE;
- if(SKEY==='terraces'){const z0=L.zc(0),F=S.farms[1];return{'The braids':look(-700,z0-260,14,500,L.zc(500),0),'The terraces':look(-300,240,5,500,1100,40),
+ if(SKEY==='terraces'){const z0=L.zc(0),F=S.farms[1];return{'The braids':look(-700,z0-260,14,500,L.zc(500),0),'The terraces':look(150,700,8,-500,1500,40),
   'A farmstead':look(F[0]-90,F[1]-80,6,F[0],F[1],2),'Willow on the bars':look(150,L.zc(150)-70,2.5,450,L.zc(450),0),'Across the graben':look(-2300,1500,180,500,0,0)};}
- if(SKEY==='scarp'){const T=L.TA,a=T(-1900,-500),b=T(300,0),c=T(-300,60),d=T(150,-40),e=T(1500,500),f=T(1800,700);return{'The Ostrukh Wall':[a[0],gh(a[0],a[1],40),a[1],b[0],gh(b[0],b[1],80),b[1]],
-  'The switchbacks':[c[0],gh(c[0],c[1],8),c[1],d[0],gh(d[0],d[1],0),d[1]],'Frost polygons on the plateau':[e[0],gh(e[0],e[1],2.2),e[1],f[0],gh(f[0],f[1],0),f[1]],
+ if(SKEY==='scarp'){const T=L.TA,a=T(-1900,-500),b=T(300,0),c=T(-1250,-160),d=T(-200,0),e=T(1500,500),f=T(1800,700);return{'The Ostrukh Wall':[a[0],gh(a[0],a[1],40),a[1],b[0],gh(b[0],b[1],80),b[1]],
+  'The switchbacks':[c[0],gh(c[0],c[1],60),c[1],d[0],gh(d[0],d[1],0),d[1]],'Frost polygons on the plateau':[e[0],gh(e[0],e[1],2.2),e[1],f[0],gh(f[0],f[1],0),f[1]],
   'The tollhouse':(()=>{const p=T(S.toll.t-120,S.toll.a+90),q=T(S.toll.t,S.toll.a);return[p[0],gh(p[0],p[1],10),p[1],q[0],gh(q[0],q[1],3),q[1]];})(),'From afar':look(-2400,-2000,400,0,0,0)};}
  if(SKEY==='pitfloor'){const G=S.geyser,c=S.camp;const V={'The grove under the deck':look(-380,-120,3,40,-160,12),'The vent well':look(G.x+90,G.z+70,3,G.x,G.z,10),'The walls and the galls':look(-L.edgeR+260,60,4,-L.edgeR-40,0,60),
-  'The roper camp':look(c.x+150,c.z-110,6,c.x,c.z,2),'Up into the deck':look(100,300,2,0,-200,260),'Down from the rim':look(1700,600,30,0,0,0)};
+  'The roper camp':look(c.x+150,c.z-110,6,c.x,c.z,2),'Up into the deck':look(100,300,2,0,-200,260),'Down from the rim':look(1950,700,320,0,0,300)};
   if(typeof GEODE!=='undefined'&&GEODE){const B=GEODE.block,fx=Math.cos(B.face),fz=Math.sin(B.face);V['The geode on the rim']=look(B.x+fx*9,B.z+fz*9,1.7,B.x,B.z,1.6);}return V;}
- const g0=SITE.gantry;return{'The knife-edge':look(-700,0,1.7,300,0,0),'Down into the south pit':look(120,6,1.7,120,700,-400),'The gantry':look(g0.x+60,-30,4,g0.x,30,0),
-  'The Arete from above':look(-900,-500,260,200,0,0),'From afar':look(-2300,-1600,400,0,0,0)};})();
+ if(SKEY==='arete'){const g0=SITE.gantry;return{'The knife-edge':look(-260,0,2.2,200,0,-1),'Down into the south pit':look(120,6,1.7,120,700,-400),'The gantry':look(g0.x+60,-30,4,g0.x,30,0),
+  'The Arete from above':look(-900,-500,260,200,0,0),'From afar':look(-2300,-1600,400,0,0,0)};}
+ throw new Error('no views for '+SKEY);})();
 function describe(hit){const p=hit.point,o=hit.object;
  let best=null;for(const r of REG){if(r.r>1500)continue;if(regHas(r,p.x,p.y,p.z)&&(!best||r.r<best.r))best=r;}
  const lab=o.userData.inspectLabel||o.name||'mesh',isItem=o.isInstancedMesh&&o.userData.biome,item=isItem?(o.name||'').replace(/^biome:/,''):null;
@@ -53,7 +54,7 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('a field that is not the record\'s',HCHK.air(SITE,(x,y,z)=>AIR_P(x,y,z)*1.05,AIR_T));
  add('nothing placed',HCHK.placed({}));
  const fake=n=>Array.from({length:n},(_,i)=>({x:i,z:0}));
- add(SIPHON.TREECAP[SKEY]===0?'one tree on a treeless station':'one tree over the cap',HCHK.trees(SKEY,fake((SIPHON.TREECAP[SKEY]||0)+1),[]));
+ if(SIPHON.TREECAP[SKEY]!=null)add(SIPHON.TREECAP[SKEY]===0?'one tree on a treeless station':'one tree over the cap',HCHK.trees(SKEY,fake(SIPHON.TREECAP[SKEY]+1),[]));
  if(SIPHON.TREECAP[SKEY]===0)add('a tree item on a treeless station',HCHK.trees(SKEY,[],[[0,0,0,'biome:spfleece']]));
  if(SKEY==='pitfloor')add('no geode',HCHK.geode(null));
  if(SKEY==='pitfloor')add('felt on the vent',HCHK.felt([[SITE.geyser.x,0,SITE.geyser.z,'biome:spfelt']]));
@@ -69,7 +70,8 @@ const HINT={terraces:"Station 1 of Region 98 (scale model 5.1, px 1519,1453; 2,1
  arete:"Station 4 (px 1678,1542; 4,269 m, 0.94 atm, -5 degC, ET): the Arete Way, a 6 m knife-edge of basalt between two 420 m pits, crossed on iron stanchions and chains in the blizzard (?weather=clear for a clear day); the rim gantry, the flensers' lairs under the rims; no trees (ideal type)"}[SKEY];
 KHOST.take({build:SKEY==='pitfloor'?'siphon-pits':'siphon-pits-'+SKEY,title:'Krator biome — Siphon Pits: '+SITE.title,hint:HINT,
  scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,regHas,views:VIEWS,ticks:TICKS,
- clock:{hour:ATMOS.SKY.viewHour},draw:SKY.draw,
+ /* the page opens at 14:00: at these longitudes the giant eclipses the sun at the sky's view hour (11:00, day 0), so the stations loaded in its dark */
+ clock:{hour:14},draw:SKY.draw,
  inspect:describe,stats:()=>'inst '+window._instances+' · trees '+SIPHON.TREES.length,
  layers:{'flora':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'rings':{objects:()=>[giantRing]}},
  exporters:{biome:()=>BIO.export(),sound:()=>({format:'krator-sound',version:0,station:SKEY,note:'records for core/audio (not yet in core)',sources:SIPHON.SOUND[SKEY]}),
@@ -79,6 +81,6 @@ KHOST.take({build:SKEY==='pitfloor'?'siphon-pits':'siphon-pits-'+SKEY,title:'Kra
  api:{hostChecks,hostNegatives,
  get totals(){const t=BIO.totals();return {tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
  biome:()=>window._station,site:()=>SITE,station:()=>SKEY,trees:()=>SIPHON.TREES.slice(),air:(y)=>({atm:AIR_P(0,y,0),temp:AIR_T(0,y,0)}),sound:()=>SIPHON.SOUND[SKEY],
- exportProfile:['registry','items','materials','textures','terrain','stage','atmos','water'],
+ exportProfile:['registry','items','materials','textures','terrain','stage','atmos'].concat(SKEY==='scarp'||SKEY==='arete'?[]:['water']),   /* the scarp and the Arete hold no water */
  exportBox:SKEY==='terraces'?[-200,-350,200,50]:SKEY==='pitfloor'?[200,-400,600,0]:[-200,-200,200,200],   /* the terraces' and the pit's hold their water */
  at:(x,z)=>{const o={h:terrainH(x,z),water:waterH(x,z),heat:HEAT_AT(x,z)};FNAMES.forEach(n=>o[n]=+FIELD[n](x,z).toFixed(3));return o;}}});

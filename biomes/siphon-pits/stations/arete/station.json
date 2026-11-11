@@ -12,7 +12,7 @@
   "mean": -5,
   "rain": 173,
   "cls": "ET",
-  "lat": -30.2,
+  "lat": -52.4,
   "warm": 8,
   "cold": -18,
   "high": 15,
@@ -21,7 +21,8 @@
   "pits": {
    "floor": 3850.0,
    "depth": 420
-  }
+  },
+  "lat_note": "the shared sky's site frame (ATMOS.siteAt on the old canvas px); the old plan gave -30.2"
  },
  "water": [],
  "wind": {

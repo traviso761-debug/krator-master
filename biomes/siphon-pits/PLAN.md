@@ -60,6 +60,9 @@ median 235 mm, BSk > Dsc > Dsb > ET > Cwb; SE 2,483 / 4,642 / 6,969 m, median -4
   m" becomes ~200 m on the floor (mist density 0.02 per m: Koschmieder's V = 3.912 / sigma), thickening to the lid.
 - **The wind.** The model's mean wind is 7.3-7.6 m/s at all four stations; the Arete's 35 m/s (gusts 48) is the blizzard's,
   an event in the weather, not the mean. Kept as the blizzard: core/atmos's blizzard state at the station's wind.
+- **Latitude.** The station records' `lat` (-28.2 to -30.4) did not match the shared sky's site frame (`ATMOS.siteAt`): the four
+  stations lie at **50.3-52.7 degrees south**. Corrected; at their longitude the giant eclipses the sun at 11:00 on the sky's day 0,
+  so the pages open at 14:00.
 - **Vents.** The model has a geyser vent 3 px from Station 3 (1684, 1552; floor 2,203 m), and three more along the swarm
   (1668, 1539; 1618, 1576; 1712, 1482): the boiling vent well is that geyser. **No lava tube** of `DATA.tubes` reaches the
   region: the "lava tube portals" are kept only as the Pipe-Borer's burrows in the breccia.

@@ -16,7 +16,7 @@ const PAL=SIPHON.PAL={
  fleece:[0xb88440,0xc8944c,0xa87436,0xd0a058,0x9a6a32],fleeceTip:[0xd8a85a,0xe0b468,0xc8964a],
  felt:[0x9aa864,0x8e9c5a,0xa6b072,0xa8a868,0x86965a],feltDry:[0xb0a070,0xbca880],
  gall:[0xd8a050,0xe4b060,0xc88c40,0xecc078],
- cushion:[0x5a6a3a,0x667644,0x4e5e34,0x72804e],lichen:[0xd8782a,0xe48a38,0xc86a24,0xe8a048],
+ cushion:[0x8a9a5a,0x96a664,0x7e8e50,0xa2b070],lichen:[0xc87a3a,0xd08a48,0xb86e34,0xd89a58],
  sedge:[0xa89a6a,0xb4a676,0x9a8c60],willow:[0x8aa0b4,0x98acbe,0x7a90a6,0xa4b8c8],
  grain:[0xc8b070,0xd4bc7a,0xbca464],pulse:[0x6a8a44,0x76964c,0x5e7e3c],tuber:[0x4e6a3a,0x5a7644,0x46603a]};
 // ---------------------------------------------------------------- the species
@@ -70,7 +70,7 @@ BIO.def('spfringe',BIO.fung.fringe({n:4,r:1,w:.42}),M.strand,{attrs:['aN'],label
 BIO.def('spfelt',BIO.fung.crust({lobes:5,lobeA:.35,seg:9,rings:1}),M.felt,{label:'Siphon felt'});
 BIO.def('spfelthum',BIO.fung.cap({form:'dome',h:.45,seg:10,rings:3,lump:.45,under:'none',seed:9851}),M.felt,{label:'Siphon felt (hummock)'});
 BIO.def('spgall',BIO.fung.bladder({swell:.9,neck:.35,pleats:5,pleatA:.06,seg:10,rings:5,h:1.2}),M.gall,{label:'Suture gall'});
-BIO.def('spcushion',BIO.fung.cap({form:'dome',h:.5,seg:10,rings:3,lump:.5,under:'none',seed:9852}),M.solid,{label:'Cushion moss'});
+BIO.def('spcushion',BIO.fung.cap({form:'dome',h:.5,seg:7,rings:2,lump:.5,under:'none',seed:9852}),M.solid,{label:'Cushion moss'});
 BIO.def('splichen',BIO.fung.crust({lobes:5,lobeA:.4,seg:8,rings:1}),M.solid,{label:'Orange rock lichen'});
 BIO.def('spsedge',BIO.geo.clump(),M.sedge,{attrs:['aN'],label:'Scree sedge'});
 BIO.def('spwillow',BIO.geo.clump(),M.willow,{attrs:['aN'],label:'Dwarf blue willow'});

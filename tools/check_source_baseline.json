@@ -112,6 +112,7 @@
  "biomes/shighlands/src/55-biome-shigh-trees.js: ORNUM": 3,
  "biomes/shighlands/src/70-biome-shigh.js: ORNUM": 1,
  "biomes/shighlands/src/84-host-ground.js: RAWTEX": 4,
+ "biomes/siphon-pits/src/84-host-ground.js: RAWTEX": 1,
  "biomes/swbay/src/45-host-stage.js: RAWTEX": 2,
  "biomes/swbay/src/55-biome-swbay-trees.js: ORNUM": 6,
  "biomes/swbay/src/65-biome-swbay-dress.js: ORNUM": 12,

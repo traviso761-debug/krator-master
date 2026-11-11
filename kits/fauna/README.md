@@ -25,6 +25,7 @@ herds: the steppe bison, the staghorn beetle, the ash runner and the millipede's
 | `voth` | seagull, cliff racer, elephant bug, arena tiger, pit lizard, giant beetle, staghorn beetle (the Ash Nomads' mount) |
 | `ash` | ash runner (the Ash Nomads' six-legged herd beast) |
 | `pets` | dog, cat (baked Meshy models only) |
+| `xeno` | the native hexapods of the late biome plans, vertebrate-grade, not insects (2026-11-11, `biomes/siphon-pits`): the Woolly Ghaunt-Ox (a draught and riding hexapod), the Flenser-Hound (an ambush predator with scythe-arms), the Basalt Pipe-Borer (a burrower); drawn by the `wild` file's `faWdHex`, so a bundle that takes `xeno` takes `wild` and `hyperjungle` too |
 
 ```
 cd kits/fauna && python3 build.py                   # dist/fauna.html (the sheet) and dist/krator-fauna.js (the bundle alone)

@@ -12,12 +12,13 @@
   "mean": 15,
   "rain": 439,
   "cls": "Cwb",
-  "lat": -28.2,
+  "lat": -50.3,
   "warm": 28,
   "cold": 2,
   "high": 36,
   "low": -6,
-  "surveyed": "scale model 5.1, 2026-11-11 (PLAN.md section 0): atm = 1.6 exp(-h/8000); temperatures tm/tw/tc/th/tl"
+  "surveyed": "scale model 5.1, 2026-11-11 (PLAN.md section 0): atm = 1.6 exp(-h/8000); temperatures tm/tw/tc/th/tl",
+  "lat_note": "the shared sky's site frame (ATMOS.siteAt on the old canvas px); the old plan gave -28.2"
  },
  "water": [
   {

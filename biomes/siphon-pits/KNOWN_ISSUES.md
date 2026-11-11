@@ -18,7 +18,8 @@ Built 2026-11-11 in the cloud: every check ran on software GL (SwiftShader), non
   was not made here because the chunk's text is in every biome page and each would have to be rebuilt. The lid (a sheet at 2,580 m) stands in
   for the deck's underside, since the sky dome takes no fog.
 - [ ] **The road on the Scarp is a pack track**: 16 switchbacks on the ravine's scree climb ~1,500 m in ~4.4 km, a grade near 30%. A wagon
-  road would need ten times the length; the plan's "freight exchange for pack beasts" fits a track.
+  road would need ten times the length; the plan's "freight exchange for pack beasts" fits a track. The road is drawn only as the bench it cuts
+  in the scree (no road surface, no parapets): it hardly reads from afar.
 - [ ] **The model's lapse across the stations** is 9.5 degC a km (Station 1 +15 at 2,157 m, Station 4 -5 at 4,269 m), steeper than the dry
   adiabat (7.4). The kit takes the model's numbers (`PLAN.md` section 0); the page's air field lapses at the model's 6.5 from each station's
   own record, so it agrees with the record at the station's height only.
@@ -26,6 +27,9 @@ Built 2026-11-11 in the cloud: every check ran on software GL (SwiftShader), non
   the Stalker Peaks and the Ostrukh Wall are the shared sky's ridges), and the Scarp's page puts 1,850 m of wall where the model's 4 km cells
   give ~1,000 m within 2 km. The plan's section 2 edits (the graben, the wall, the pits) are a to-do for the next scale model update.
 - [ ] **No lava tube** of the model reaches Region 98, so the plan's "lava tube portals" are not drawn; the Pipe-Borer's burrows stand for them.
+
+- [ ] **The ground's detail mask is read raw** (`84-host-ground.js`, `uDetail`: a procedural grey multiplier, not a colour map, as
+  highrift's): `tools/check_source.py`'s RAWTEX finding is baselined for it, the same as highrift's line.
 
 ## Not done yet (`PLAN.md` section 7)
 

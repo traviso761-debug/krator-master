@@ -40,7 +40,7 @@ SIPHON.buildPit=function(R,q,o){o=o||{};q=q==null?1:q;const st={trees:0,pelts:0,
    BIO.put('spfleece',[T.x,hy,T.z],qEuler(rr(-.04,.04),rr(0,TAU),rr(-.04,.04)),[rad,seg,rad],col.clone().offsetHSL(0,0,rr(-.05,.05)));st.pelts++;
    if(lv>0){const L=rr(1.2,2.4);BIO.put('spfringe',[T.x,hy+seg*.9,T.z],qEuler(0,rr(0,TAU),0),[rad*1.08,L,rad*1.08],pickC(PAL.fleeceTip,.03));}}}
  // THE FELT: crusts everywhere on the floor's warm damp ground, hummocks near; thinning and browning toward 60 degC, gone over it
- cellPass(R,seed,3.2,11,Lv.floor[1],keep,(x,y,z,lv)=>{if(lv===0&&rng()<.75)return;const T=heat(x,z),a=deck(x,z)*(1-smooth(.3,.55,rock(x,z)))*smooth(62,48,T)*(.55+.45*wet(x,z))*q;if(rng()>a)return;
+ cellPass(R,seed,3.8,11,Lv.floor[1],keep,(x,y,z,lv)=>{if(lv===0&&rng()<.75)return;const T=heat(x,z),a=deck(x,z)*(1-smooth(.3,.55,rock(x,z)))*smooth(62,48,T)*(.55+.45*wet(x,z))*q;if(rng()>a)return;
   const dry=smooth(40,58,T),s=rr(.6,1.6);BIO.put('spfelt',[x,y+.02,z],qEuler(0,rr(0,TAU),0),[s,s*rr(.6,1),s],pickC(dry>.5?PAL.feltDry:PAL.felt,.03));st.felt++;
   if(lv===2&&rng()<.35){const h=rr(.25,.6);BIO.put('spfelthum',[x+rr(-.4,.4),y-.05,z+rr(-.4,.4)],qEuler(0,rr(0,TAU),0),[h*1.4,h,h*1.4],pickC(PAL.felt,.03));}});
  // THE GALLS: rows of bulbs on the wall's foot (the host's points: the fractures where the condensate runs)
@@ -52,11 +52,11 @@ SIPHON.buildPit=function(R,q,o){o=o||{};q=q==null?1:q;const st={trees:0,pelts:0,
 // ---------------------------------------------------------------- stations 2 and 4: the cold ground's small life (no trees)
 SIPHON.buildCold=function(R,q,o){o=o||{};q=q==null?1:q;const st={cushion:0,lichen:0,sedge:0},seed=KRAND.child(1000099,'siphon/cold'),keep=o.keep||(()=>1),Lv=BIO.LOD();
  const rock=F('rock'),cold=F('cold'),flat=F('flat'),slope=o.slope||F('slope'),shelter=o.shelter||(()=>1),grass=o.grass==null?1:o.grass;
- cellPass(R,seed,2.2,21,Lv.floor[1],keep,(x,y,z,lv)=>{const a=.42*(1-smooth(.45,.75,slope(x,z)))*shelter(x,z)*(1-.4*smooth(.8,1,cold(x,z)))*q;if(rng()>a)return;
+ cellPass(R,seed,3.4,21,Lv.floor[1],keep,(x,y,z,lv)=>{const a=(lv===2?.5:.18)*(1-smooth(.45,.75,slope(x,z)))*shelter(x,z)*(1-.4*smooth(.8,1,cold(x,z)))*q;if(rng()>a)return;
   const s=rr(.12,.45);BIO.put('spcushion',[x,y-.03,z],qEuler(rr(-.1,.1),rr(0,TAU),rr(-.1,.1)),[s,s*rr(.5,.8),s],pickC(PAL.cushion,.03));st.cushion++;});
- cellPass(R,seed,2.6,22,Lv.floor[1],keep,(x,y,z,lv)=>{const sl=slope(x,z),a=.6*smooth(.25,.6,sl)*q;if(rng()>a)return;
-  const nn=o.normal?o.normal(x,z):[0,1,0],s=rr(.25,.8);BIO.put('splichen',[x+nn[0]*.04,y+.02,z+nn[2]*.04],qUp(nn),[s,1,s],pickC(PAL.lichen,.04));st.lichen++;});
- cellPass(R,seed,2.8,23,Lv.floor[1],keep,(x,y,z,lv)=>{const a=grass*.45*(1-smooth(.4,.65,slope(x,z)))*(1-smooth(.75,1,cold(x,z)))*shelter(x,z)*q;if(rng()>a)return;
+ cellPass(R,seed,3.2,22,Lv.floor[1],keep,(x,y,z,lv)=>{const sl=slope(x,z),a=(lv===2?.6:.3)*smooth(.25,.6,sl)*q;if(rng()>a)return;
+  const nn=o.normal?o.normal(x,z):[0,1,0],s=rr(.12,.4);BIO.put('splichen',[x+nn[0]*.04,y+.02,z+nn[2]*.04],qUp(nn),[s,1,s],pickC(PAL.lichen,.04));st.lichen++;});
+ cellPass(R,seed,3.2,23,Lv.floor[1],keep,(x,y,z,lv)=>{const a=grass*(lv===2?.5:.25)*(1-smooth(.4,.65,slope(x,z)))*(1-smooth(.75,1,cold(x,z)))*shelter(x,z)*q;if(rng()>a)return;
   const s=rr(.3,.65);BIO.put('spsedge',[x,y-.05,z],qEuler(rr(-.08,.08),rr(0,TAU),rr(-.08,.08)),[s,s*rr(.9,1.3),s],pickC(PAL.sedge,.03));st.sedge++;});
  return st;};
 
@@ -64,8 +64,8 @@ SIPHON.buildCold=function(R,q,o){o=o||{};q=q==null?1:q;const st={cushion:0,liche
 SIPHON.buildTerraces=function(R,q,o){o=o||{};q=q==null?1:q;const st={crops:0,willow:0,sedge:0,byCrop:{}},seed=KRAND.child(1000097,'siphon/terraces'),keep=o.keep||(()=>1),Lv=BIO.LOD();
  const rock=F('rock'),slope=F('slope'),fieldAt=o.fieldAt||(()=>null),braid=o.braid||(()=>1e9);
  // THE CROPS: rows on each field's tread (the field's crop, kits/crops'), dense near, thinner to the floor's far tier
- cellPass(R,seed,1.3,31,Lv.floor[1]*1.2,keep,(x,y,z,lv)=>{const f=fieldAt(x,z);if(!f||!f.crop)return;const row=Math.abs(((x*Math.cos(f.rows)+z*Math.sin(f.rows))/1.1)%1);
-  if(row>.45||rng()>.9*q*(lv===0?.5:1))return;const it=SIPHON.CROP_ITEMS[f.crop.bucket]||'spgrain',s=f.crop.bucket==='grain'?rr(.45,.75):rr(.3,.55);
+ cellPass(R,seed,1.6,31,Lv.floor[0]*1.4,keep,(x,y,z,lv)=>{const f=fieldAt(x,z);if(!f||!f.crop)return;const row=Math.abs(((x*Math.cos(f.rows)+z*Math.sin(f.rows))/1.1)%1);
+  if(row>.45||rng()>.9*q*(lv===2?1:.4))return;const it=SIPHON.CROP_ITEMS[f.crop.bucket]||'spgrain',s=f.crop.bucket==='grain'?rr(.45,.75):rr(.3,.55);
   BIO.put(it,[x,y-.04,z],qEuler(rr(-.06,.06),rr(0,TAU),rr(-.06,.06)),[s,s*(f.crop.bucket==='grain'?rr(1.1,1.5):rr(.7,1)),s],pickC(PAL[f.crop.bucket]||PAL.grain,.03));
   st.crops++;st.byCrop[f.crop.id]=(st.byCrop[f.crop.id]||0)+1;});
  // THE WILLOW: knee-high clumps on the banks and the bars, 5-42 m from the water (core/mask's distance field: o.braid)

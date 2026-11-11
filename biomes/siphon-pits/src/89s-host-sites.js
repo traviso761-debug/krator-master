@@ -4,8 +4,8 @@
 // and expect it to be replaced"). Each is drawn as a plain placeholder: boxes, posts, a cone, merged by material. The Arete's iron stanchions and chains
 // are the trail's own furniture and are drawn properly. The flensers' lairs are hazard records (kind 'hunter') with nothing drawn: the walls hold them.
 const SITES_PEOPLE=[];
-const STRUCT=(function(){const parts={stone:[],timber:[],iron:[],canvas:[],copper:[],sod:[]},M4=new THREE.Matrix4(),Q=new THREE.Quaternion(),V=new THREE.Vector3(),Sc=new THREE.Vector3();
- const add=(mat,geo,x,y,z,ry,sx,sy,sz)=>{const g=geo.index?geo.toNonIndexed():geo.clone();Q.setFromEuler(new THREE.Euler(0,ry||0,0));M4.compose(V.set(x,y,z),Q,Sc.set(sx,sy,sz));g.applyMatrix4(M4);parts[mat].push(g);};
+const STRUCT=(function(){const parts={stone:[],timber:[],iron:[],canvas:[],copper:[],sod:[]},PP={},M4=new THREE.Matrix4(),Q=new THREE.Quaternion(),V=new THREE.Vector3(),Sc=new THREE.Vector3();
+ const add=(mat,geo,x,y,z,ry,sx,sy,sz)=>{const g=geo.index?geo.toNonIndexed():geo.clone();Q.setFromEuler(new THREE.Euler(0,ry||0,0));M4.compose(V.set(x,y,z),Q,Sc.set(sx,sy,sz));g.applyMatrix4(M4);parts[mat].push(g);(PP[mat]=PP[mat]||[]).push(x,y,z);};
  const BOX=new THREE.BoxGeometry(1,1,1),CYL=new THREE.CylinderGeometry(.5,.5,1,10),CONE=new THREE.ConeGeometry(.5,1,8);
  const site=(o)=>{SITES_PEOPLE.push(o);REGISTER({name:o.name,x:o.x,z:o.z,y:terrainH(o.x,o.z)-2,r:o.r,h:o.h,tags:Object.assign({class:'structure',placeholder:true,culture:null,kind:o.kind,type:o.type},o.tags||{})});};
  const g=(x,z)=>terrainH(x,z);
@@ -41,6 +41,6 @@ const STRUCT=(function(){const parts={stone:[],timber:[],iron:[],canvas:[],coppe
   for(const p of parts[k]){pos.set(p.attributes.position.array,o*3);nor.set(p.attributes.normal.array,o*3);o+=p.attributes.position.count;}
   const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.BufferAttribute(pos,3));geo.setAttribute('normal',new THREE.BufferAttribute(nor,3));
   const mesh=new THREE.Mesh(geo,k==='copper'||k==='iron'?new THREE.MeshStandardMaterial({color:MATS[k],roughness:k==='iron'?.6:.4,metalness:.7}):new THREE.MeshLambertMaterial({color:MATS[k]}));
-  mesh.userData.host=true;mesh.userData.inspectLabel=k==='iron'&&SKEY==='arete'?'Iron stanchions and chains (the Arete Way)':'A placeholder ('+k+'): a site for a building kit';scene.add(mesh);out[k]=mesh;}
+  mesh.userData.host=true;mesh.userData.probePoints=PP[k]||[];mesh.userData.inspectLabel=k==='iron'&&SKEY==='arete'?'Iron stanchions and chains (the Arete Way)':'A placeholder ('+k+'): a site for a building kit';scene.add(mesh);out[k]=mesh;}
  return out;})();
 window._sites=SITES_PEOPLE.map(s=>({kind:s.kind,x:Math.round(s.x),z:Math.round(s.z)}));

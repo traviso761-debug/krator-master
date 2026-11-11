@@ -13,7 +13,7 @@
   "mean": 18,
   "rain": 439,
   "cls": "Cfa",
-  "lat": -30.4,
+  "lat": -52.7,
   "warm": 32,
   "cold": 6,
   "high": 40,
@@ -23,7 +23,8 @@
    4000,
    4800
   ],
-  "note": "the maar is 420 m deep in the floor of the sink; the shoulders are the plateau 8-16 km out"
+  "note": "the maar is 420 m deep in the floor of the sink; the shoulders are the plateau 8-16 km out",
+  "lat_note": "the shared sky's site frame (ATMOS.siteAt on the old canvas px); the old plan gave -30.4"
  },
  "water": [
   {

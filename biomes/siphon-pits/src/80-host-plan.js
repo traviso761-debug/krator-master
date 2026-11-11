@@ -17,7 +17,7 @@ const PLAN=(function(){const P={station:SKEY};
   P.braid=distOf(WM);P.lot=distOf(LM);P.mask={water:KMASK.hash(WM),lots:KMASK.hash(LM),px:PX,size:W,ops:KMASK.ops(WM).length+KMASK.ops(LM).length};
   // the crops kits/crops gives the station (PLAN.md section 3): a grain, a second grain, a pulse and a tuber
   const Q=SITE.crops&&SITE.crops.query||{warmth:'temperate',atm:'standard',arid:'semiarid'};
-  if(typeof CROPS!=='undefined'){const R=CROPS.at(Q),pk=(b,pref,salt)=>{const r=CROPS.pick(R,b,{seed:9850,salt:salt||0,prefer:pref});return r?r.crop:null;};
+  if(typeof CROPS!=='undefined'){const R=CROPS.at(Q),pk=(b,pref,salt)=>{const r=CROPS.pick(R,b,{seed:9850,salt:salt==null?0:salt,prefer:[pref]});return r?r.crop:null;};
    const paint={grain:0xb8a060,pulse:0x6a8a3e,tuber:0x587044};
    P.crops=[pk('grain','frostoat',1),pk('grain','emmer',2),pk('pulse','helix-bean',3),pk('tuber','murnong',4)].filter(Boolean).map(c=>({id:c.id,name:c.name,bucket:c.bucket,card:c.card,paint:paint[c.bucket]||0xa09060}));
    P.query=Q;P.offered=R.length;}
