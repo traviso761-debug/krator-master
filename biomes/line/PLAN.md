@@ -639,6 +639,15 @@ not opt in stays byte-identical: `python3 tools/port_baseline.py` reads `same` f
   (branch `claude/ancient-vehicles-935f93`, not merged). This plan writes into both. *Proposed*: once the owner approves,
   ask each session whether its branch merges first (the clean way: the Line builds on `main`) or the Line's work goes on
   a branch from theirs. Nothing is changed in either until that is agreed.
+- **`kits/motor-vehicles`' Ancients are on main** (origin/main 2009202c8, 2026-11-11, merged into this branch): build the
+  Line cars on main. The vehicles session's three cautions: (1) `vehicles-core.js` is read in place by `kits/mechs`, and the
+  Catch stations `fan`, `lake` and `oasis` carry the mechs bundle, so an edit there means rebuilding those (`python3
+  tools/reach.py kits/motor-vehicles/vehicles-core.js`); a new culture file or a runtime edit reaches only the kit, Locus
+  and Mungo, so the Line adds files rather than editing the core; (2) `kept` is read in `API.build` beside `state` and handed
+  to the keeping culture's function, kept out of `VEHICLE_STATES`, with its own assertion in the kit's `verify.py`; (3) stage
+  files by name (`git add kits/motor-vehicles` picks up the local `three.min.js` the verify needs). The shaders' uniform
+  tables are 32 long and `materials.json` has 26 slots: room for six more families. Read `kits/motor-vehicles/API.md`
+  ("Ruin states", "The Ancients' ten", "Adding a vehicle") first.
 - **The riding session** (`core/simulation/PLAN-RIDING.md`, branch `claude/clever-rhodes-cb3fec`): section 8 is the
   contract; a hand-over note is in the shared notes folder.
 - **The tungang plan** (`kits/tungang/PLAN.md`, branch `claude/tungang-fellgang-kits-a56ece`): this plan does not edit it.
