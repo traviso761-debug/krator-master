@@ -6,7 +6,7 @@
 PAINTED.KIN=null;
 PAINTED.kinRows=function(){if(PAINTED.KIN)return PAINTED.KIN;if(typeof EBADLANDS==='undefined'||!BIO.kin)return null;
  PAINTED.KIN={juniper:BIO.kin('ebadlands.juniper',{key:'paintedjuniper',name:'Painted juniper',scale:{H:.8,crownR:.85},
-   tags:{koppen:['BSk','Dsb','Dsc','Cfa'],zone:['rim','ledge'],harvest:{wood:'posts and firewood; the berries (gin, the shamans\' smoke)',edible:['berries (spice)'],medicinal:true,note:'The Painted Men\'s juniper: its berries a spice (kits/crops juniper), its smoke the shamans\'.'}}}),
+   tags:{koppen:['BSk','Dsb','Dsc','Cfa'],zone:['rim','ledge'],harvest:{wood:'posts and firewood; incense (the shamans\' smoke)',edible:['berries (spice)'],medicinal:true,note:'The Painted Men\'s juniper: its berries a spice (kits/crops juniper), its smoke the shamans\'.'}}}),
   pinyon:BIO.kin('ebadlands.pinyon',{key:'paintedpinyon',name:'Rim pinyon',scale:{H:.75,crownR:.8},
    tags:{koppen:['BSk','Dsb','Cfa'],zone:['rim','ledge'],harvest:{wood:'firewood; pitch',edible:['pine nuts'],medicinal:false,note:'Pine nuts in autumn (kits/crops pinyon).'}}}),
   /* the wet wall's broadleaves (the cliff town's, Cfa 862 mm): the eastern badlands' Zion-canyon pair, standing in for Korona's western ring species until

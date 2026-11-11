@@ -23,9 +23,9 @@ const SPECIES=PAINTED.SPECIES=[
  {key:'bunchgrass',name:'Stripe bunchgrass',how:'tufts of a cold steppe bunchgrass spaced out on the gentle ground, green in the melt, straw by midsummer; the one plant everywhere off the bare clay',
   items:['phgrass'],tags:K('cold-temperate','semiarid','no',KP,{zone:['steppe','bloom','rim'],harvest:HV('thatch and bedding; fodder')})},
  {key:'sage',name:'Plateau sage',how:'a grey-green aromatic shrub to a metre, the sagebrush of the gentle ground and the washes\' banks',
-  items:['phsage'],tags:K('cold-temperate','arid','no',KP,{zone:['steppe','rim'],harvest:HV('fuel (kindling); smudge',[],true,'Burnt as a smudge in the shamans\' stone circles.')})},
+  items:['phsage'],tags:K('cold-temperate','arid','no',KP,{zone:['steppe','rim'],harvest:HV('fuel (kindling); incense (a smudge)',[],true,'Burnt as a smudge in the shamans\' stone circles.')})},
  {key:'rabbitbrush',name:'Gold rabbitbrush',how:'a pale shrub of the washes\' banks and the disturbed clay, golden in late summer: the yellow dye (PLAN.md section 4)',
-  items:['phrabbit'],tags:K('cold-temperate','arid','both',KP,{zone:['steppe','bloom'],harvest:HV('dye (yellow, gold: the flowers)',[],false,'Its flowers dye wool and hide yellow to gold.')})}]
+  items:['phrabbit'],tags:K('cold-temperate','arid','both',KP,{zone:['steppe','bloom'],harvest:HV('dye (yellow and gold: the flowers)',[],false,'Its flowers dye wool and hide yellow to gold.')})}]
  .concat(FL.map(f=>({key:f.key,name:f.name,how:'a flower of the spring bloom ('+f.model+'): in drifts after the melt, its drift on the clay bed it favours (PAINTED_BLOOM.DRIFT)',
   items:['phfl'+f.i],bloom:true,tags:K('cold-temperate','semiarid',f.key==='skylupin'||f.key==='snowprimrose'?'both':'no',KP,{zone:['bloom','steppe'],season:'spring (the melt)',
    harvest:f.key==='paintbrush'?HV('none',[],true,'The Painted Men\'s medicine (PLAN.md section 4: a new crops record, `paintbrush`).'):HV('none',[],false,'')})})));
