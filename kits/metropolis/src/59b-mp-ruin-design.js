@@ -34,7 +34,11 @@ MP.ruinDesign = function (G, F, state) {
       const y = Math.max(va.y, vb.y, vc.y), cx = (va.x + vb.x + vc.x) / 3, cz = (va.z + vb.z + vc.z) / 3;
       if (y <= Math.min(limit(cx, cz), skin) + 0.05) keep.push(a, b, c);
     }
-    const g2 = g.clone(); g2.setIndex(keep); const C = g2.attributes.color; if (C && stain < 1) { for (let i = 0; i < C.count; i++) C.setXYZ(i, C.getX(i) * stain, C.getY(i) * stain, C.getZ(i) * stain); C.needsUpdate = true; }
+    /* compacted: only the kept triangles' vertices (the valley, 2026-11-09: the index was cut but every vertex stayed, so a stump's bounding box
+       and the impostor's card framed from it still stood at the whole tower's height; an Organ stump read 240 m against its record's 47). A
+       mesh with nothing left goes */
+    if (!keep.length) { drop.push(o); return; }
+    const g2 = MP.compact(g, keep), C = g2.attributes.color; if (C && stain < 1) { for (let i = 0; i < C.count; i++) C.setXYZ(i, C.getX(i) * stain, C.getY(i) * stain, C.getZ(i) * stain); C.needsUpdate = true; }
     o.geometry = g2;
   });
   drop.forEach(o => o.parent && o.parent.remove(o));
@@ -90,8 +94,24 @@ MP.ruinDesign = function (G, F, state) {
     const m = new THREE.Mesh(g, MP.mats().concrete); m.name = F.id + '.ruin.slabs'; G.add(m); }
   /* the core, its walls to the cut (a stump's to its own height over the cut) */
   if (state !== 'gutted' && F.core.kind === 'round' && !F.core.atrium && !F.core.bays) { const cy = Math.max(R.core || 0, Math.min(hi, F.height.roof)); B.lathe('concrete', [[rc, 0], [rc, cy]], 24, { uv: 4 }); B.lathe('concrete', [[rc - 0.3, cy], [rc - 0.3, 0]], 24, { uv: 4 }); B.lathe('concrete', [[rc, cy], [rc - 0.3, cy]], 24, { uv: 2 }); }
-  const H = B.finish(F, 'ruin'); H.children.forEach(c => { c.name = F.id + '.ruin.' + c.name; G.add(c); });
+  const H = B.finish(F, 'ruin'); H.children.slice().forEach(c => { c.name = F.id + '.ruin.' + c.name; G.add(c); });   /* slice: G.add takes a child out of H */
   const D = MP.debris(F, state); if (D) { D.name = 'debris'; G.add(D); }
-  G.name = F.id + '.' + state; G.userData.ruin = R;
+  G.name = F.id + '.' + state; G.userData.ruin = R; G.userData.tris = MP.countTris(G, m => m.name !== 'debris' && !(m.parent && m.parent.name === 'debris'));
   return G;
+};
+/* a geometry of the triangles `idx` names (an index array into g), with only the vertices they use: every attribute copied through, a new index */
+MP.compact = function (g, idx) {
+  const map = new Map(), order = []; idx.forEach(i => { if (!map.has(i)) { map.set(i, order.length); order.push(i); } });
+  const out = new THREE.BufferGeometry();
+  for (const name in g.attributes) { const A = g.attributes[name], sz = A.itemSize, arr = new A.array.constructor(order.length * sz); for (let j = 0; j < order.length; j++) for (let c = 0; c < sz; c++) arr[j * sz + c] = A.array[order[j] * sz + c]; out.setAttribute(name, new THREE.BufferAttribute(arr, sz, A.normalized)); }
+  const I = new Array(idx.length); for (let i = 0; i < idx.length; i++) I[i] = map.get(idx[i]);
+  out.setIndex(order.length > 65535 ? new THREE.Uint32BufferAttribute(I, 1) : new THREE.Uint16BufferAttribute(I, 1)); out.userData = Object.assign({}, g.userData); return out;
+};
+/* the triangles drawn in a group: each mesh's index (or its vertices) once, an instanced mesh's times its live instances (a zeroed matrix is a cut
+   piece); keep(m) false leaves a mesh out */
+MP.countTris = function (G, keep) {
+  let n = 0; const M = new THREE.Matrix4();
+  G.traverse(m => { if (!m.isMesh || !m.geometry || (keep && !keep(m))) return; const g = m.geometry, t = g.index ? g.index.count / 3 : g.attributes.position.count / 3;
+    if (!m.isInstancedMesh) { n += t; return; } let live = 0; for (let i = 0; i < m.count; i++) { m.getMatrixAt(i, M); if (M.elements[0] !== 0 || M.elements[5] !== 0 || M.elements[10] !== 0) live++; } n += t * live; });
+  return Math.round(n);
 };

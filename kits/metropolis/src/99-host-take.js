@@ -9,14 +9,19 @@ function hostChecks(){const R=[],add=(name,ok,detail)=>R.push({name,ok:!!ok,deta
  /* the Ancients kit's buildings with plans (46d): planned off their hero's grid, so audited here, not in node */
  (MP.ANCIENT_PLANNED||[]).forEach(k=>{if(!MP.FAMILY[k])MP.hero(k);const F=MP.FAMILY[k],A=F?MP.audit(F):null;add(k+': the grid plans pass the audit',A&&A.ok,A?(A.ok?A.rooms+' rooms':A.fails[0]):'no family');});
  add('the stage booted',MPS.ready);if(!MPS.ready)return R;
- MPS.keys.forEach(k=>{const H=MPS.hero[k].userData,F=MP.FAMILY[k.split('.')[0]];add(k+': hero under its budget',H.tris<=F.tris,H.tris+' of '+F.tris);add(k+': hero under 10 draw calls',H.calls<10,''+H.calls);add(k+': a cage of 60 triangles or fewer',MPS.rec[k].tris<=60,''+MPS.rec[k].tris);});
- add(MPS.keys.length+' impostors baked',MPS.impN===MPS.keys.length,''+MPS.impN);
- /* the ruins: each state but intact and gutted has its rubble, under 25k triangles (it stands at every ruin within 1 km); every shell's slots in the one atlas */
+ /* a wild look (overgrown, 59e) may hold MP.WILD_BUDGET times its family's budget and a few more draw calls (its bark, moss and green); its calls are its meshes less the door leaves */
+ MPS.keys.forEach(k=>{const G=MPS.hero[k],H=G.userData,F=MP.FAMILY[k.split('.')[0]],wild=/\.wild$/.test(k),lim=wild?Math.round(F.tris*MP.WILD_BUDGET):F.tris,calls=G.children.filter(c=>c.isMesh&&!c.userData.door&&!c.userData.noShell).length;   /* the page's own planting (the lowland kits' baked meshes, noShell) is the host's, not the hero's */add(k+': hero under its budget',H.tris<=lim,H.tris+' of '+lim);add(k+': hero under '+(wild?16:10)+' draw calls',calls<(wild?16:10),''+calls);add(k+': a cage of 60 triangles or fewer',MPS.rec[k].tris<=60,''+MPS.rec[k].tris);
+  if(wild){const W=H.wild||{};add(k+': overgrown (sockets, strands, moss)',W.sockets>0&&W.strands>0&&W.mossed>0,JSON.stringify({sockets:W.sockets,strands:W.strands,roots:W.roots,soil:W.soil,bushes:W.bushes,trees:W.trees,mossed:W.mossed,growthTris:W.tris,planted:H.flora?H.flora.planted:0,plantedTris:H.floraTris==null?0:H.floraTris}));add(k+': the wild shell baked',!!MPS.slot[k]&&MPS.atlasOf[k]!=null,'atlas '+MPS.atlasOf[k]);}});
+ add(MPS.impKeys.length+' impostors baked',MPS.impN===MPS.impKeys.length,''+MPS.impN);
+ /* the ruins: each state but intact and gutted has its rubble, under 25k triangles (it stands at every ruin within 1 km); every shell's slots in an atlas */
  MPS.keys.filter(k=>MP.RUINS.indexOf(k.split('.')[1])>1).forEach(k=>add(k+': rubble under 25k triangles',MPS.debris[k]&&MPS.debrisTris[k]<=25000,''+MPS.debrisTris[k]));
- add('every shell packs one atlas',MPS.packed.length===MPS.keys.reduce((n,k)=>n+KSHELL.slots(MPS.rec[k]).length,0),MPS.packed.length+' slots');
+ add('every shell packs an atlas ('+MPS.atlases.length+')',MPS.packed.length===MPS.keys.reduce((n,k)=>n+KSHELL.slots(MPS.rec[k]).length,0),MPS.packed.length+' slots');
  /* a family set's own checks (70f, the farm belt: MP.EXTRA_CHECKS), each add(name, ok, detail) */
  (MP.EXTRA_CHECKS||[]).forEach(f=>f(add));return R;}
 function hostNegatives(){const R=[];{const F=JSON.parse(JSON.stringify(MP.SPINDLE));F.core.shafts[0].x=9;R.push({name:'a shaft out of the core',failed:!MP.audit(F).ok});}
+ /* the overgrowth: at a density of 0 nothing grows; a socket moved off the skin fails the inside test */
+ {const G=MP.overgrow(new THREE.Group(),MP.SPINDLE,'crown',{density:0});R.push({name:'no growth at density 0',failed:G.userData.wild.sockets===0&&G.userData.wild.tris===0});}
+ {const q=Object.assign({},MP.sockets(MP.SPINDLE,'crown',1).filter(s=>s.kind==='ledge')[0]);q.x+=40;R.push({name:'a socket off the skin',failed:!MP.socketInside(MP.SPINDLE,q)});}
  R.push({name:'a cage over the budget',failed:(()=>{const r=KSHELL.record(Object.assign({},MP.SPINDLE,{shell:Object.assign({},MP.SPINDLE.shell,{sides:16})}),'x');return r.tris>60;})()});
  (MP.EXTRA_NEGATIVES||[]).forEach(f=>f((name,failed)=>R.push({name,failed:!!failed})));return R;}
 KHOST.on(SKY.view,'view');KHOST.on(()=>MP.rideView(),'view');

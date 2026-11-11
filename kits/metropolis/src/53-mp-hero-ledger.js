@@ -91,4 +91,9 @@ MP.heroLedger=function(state,lite,only){const F=MP.LEDGER,S=F.ruins[state]||{},B
  if(cut>=roof){const c=F.massing[1];for(let i=0;i<c.steps;i++){const k=1-i*.2,w=c.w*k/2,d=c.d*k/2,y0=roof+i*2.8,y1=y0+2.8;B.box('bronze',-w,w,y0,y1-.5,-d,d,{uv:3});B.box('bronze',-w-.5,w+.5,y1-.5,y1,-d-.5,d+.5,{uv:3});}}
  else if(!torn){const c=[.6,.58,.54];for(let i=0;i<12;i++){const x=-44+i*8,h=.8+3*MP.u(seedK&0xffff,i,51);B.panel(x,top+h/2,0,0,.5,h,14,c);}}
  const G=B.finish(F,state);if(!lite)MP.doorLeaves(G,doors);return G;};
-MP.hero=function(family,state,lite,only){if(MP.DESIGNS&&MP.DESIGNS[family]){const G=MP.heroDesign(MP.DESIGNS[family],state,lite),Fp=MP.FAMILY[family],out=Fp&&Fp.design&&state&&state!=='intact'?MP.ruinDesign(G,Fp,state):G;return MP.floraDress?MP.floraDress(out,family,state):out;}if(MP.ANCIENTS&&MP.ANCIENTS[family]){const G=MP.heroAncient(MP.ANCIENTS[family],state),Fp=MP.FAMILY[family];return Fp&&Fp.anc&&state&&state!=='intact'?MP.ruinDesign(G,Fp,state):G;}return family==='spindle'?MP.heroSpindle(state,lite,only):MP.heroLedger(state,lite,only);};
+/* a hero by family and look: a state ('crown'), or a state overgrown ('crown.wild': the state's hero, then MP.overgrowDress, 59e) */
+MP.hero=function(family,look,lite,only){const L=MP.look(look),state=L.state;let out;
+ if(MP.DESIGNS&&MP.DESIGNS[family]){const G=MP.heroDesign(MP.DESIGNS[family],state,lite),Fp=MP.FAMILY[family],R=Fp&&Fp.design&&state&&state!=='intact'?MP.ruinDesign(G,Fp,state):G;out=MP.floraDress?MP.floraDress(R,family,state):R;}
+ else if(MP.ANCIENTS&&MP.ANCIENTS[family]){const G=MP.heroAncient(MP.ANCIENTS[family],state),Fp=MP.FAMILY[family];out=Fp&&Fp.anc&&state&&state!=='intact'?MP.ruinDesign(G,Fp,state):G;}
+ else out=family==='spindle'?MP.heroSpindle(state,lite,only):MP.heroLedger(state,lite,only);
+ return L.wild&&MP.overgrowDress?MP.overgrowDress(out,family,state,{lite:!!lite}):out;};

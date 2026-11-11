@@ -3,8 +3,8 @@
 // not bedded rock), drawn from KRUBBLE.mesh in the concrete, its hollows dark; each piece (a section of the shaft lying, the lamp's disc on its side, a floor slab tipped up) comes from the builder.
 // One mesh a material, so the stage instances the group at every tower of the state: it is not in the hero, the shell or the impostor (it lies off the tower's axis).
 // a ruin's heaps as KRUBBLE records, once a state: the mesh, the far mesh and the walk triangles read the same ones
-MP.heaps=function(F,state){const k=F.id+'.'+state,C=MP.heaps.cache||(MP.heaps.cache={});if(!C[k]){const P=MP.debrisPlan(F,state);C[k]=P?P.mounds.map((m,i)=>KRUBBLE.heap(Object.assign({id:k+'.m'+i,size:[1.5,5]},m))):[];}return C[k];};
-MP.debris=function(F,state,coarse){const P=MP.debrisPlan(F,state);if(!P)return null;const acc={},M=MP.mats(),m4=new THREE.Matrix4(),n3=new THREE.Matrix3(),v=new THREE.Vector3();
+MP.heaps=function(F,state){state=MP.look(state).state;const k=F.id+'.'+state,C=MP.heaps.cache||(MP.heaps.cache={});if(!C[k]){const P=MP.debrisPlan(F,state);C[k]=P?P.mounds.map((m,i)=>KRUBBLE.heap(Object.assign({id:k+'.m'+i,size:[1.5,5]},m))):[];}return C[k];};
+MP.debris=function(F,state,coarse){state=MP.look(state).state;const P=MP.debrisPlan(F,state);if(!P)return null;   /* a wild look's rubble is its state's */const acc={},M=MP.mats(),m4=new THREE.Matrix4(),n3=new THREE.Matrix3(),v=new THREE.Vector3();
  // a geometry's arrays into its material's bucket, moved by m (normals by its rotation)
  const put=function(name,g,m){const q=acc[name]||(acc[name]={p:[],n:[],u:[],c:[],i:[]}),P0=g.attributes.position,N0=g.attributes.normal,U0=g.attributes.uv,C0=g.attributes.color,base=q.p.length/3;n3.getNormalMatrix(m);
   for(let i=0;i<P0.count;i++){v.fromBufferAttribute(P0,i).applyMatrix4(m);q.p.push(v.x,v.y,v.z);v.fromBufferAttribute(N0,i).applyMatrix3(n3).normalize();q.n.push(v.x,v.y,v.z);q.u.push(U0?U0.getX(i):0,U0?U0.getY(i):0);if(C0)q.c.push(C0.getX(i),C0.getY(i),C0.getZ(i));else q.c.push(1,1,1);}
