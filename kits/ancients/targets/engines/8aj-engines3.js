@@ -24,11 +24,22 @@
 const EN_HEX=(()=>{const g=new THREE.CylinderGeometry(1,1,1,6);g.rotateX(Math.PI/2);return g;})();
 // the dark iron of the industrial set (MAT.dark takes a pale library set under the kit's binding, so the Iris came out white)
 const EN_IRON=new THREE.MeshStandardMaterial({color:0x2c2a28,roughness:.55,metalness:.55});EN_IRON.name='en.iron';
-kdef('enHexW',EN_HEX,MAT.white);kdef('enHexG',EN_HEX,MAT.glass);
+kdef('enHexW',EN_HEX,MAT.white);
+// a fallen plate's extents for its seat (the hexagon is 2 across its corners, 1.73 across its flats; 2.2 m deep), at the plates' scale
+const EN_HEX_S=(()=>{EN_HEX.computeBoundingBox();const b=EN_HEX.boundingBox;return[(b.max.x-b.min.x)*6.2,(b.max.y-b.min.y)*6.2,(b.max.z-b.min.z)*2.2];})();kdef('enHexG',EN_HEX,MAT.glass);
 // a plate's turn from its face: local z along n (the face's normal), local y as near `up` as it can be (the kit's qEuler turns about the
 // world's axes in XYZ order, so a plate on a sphere or a leaning sail cannot be said with it)
 function enQn(n,up){const Z=new THREE.Vector3(n[0],n[1],n[2]).normalize(),U=new THREE.Vector3().fromArray(up||(Math.abs(Z.y)>.95?[1,0,0]:[0,1,0]));
  const X=new THREE.Vector3().crossVectors(U,Z).normalize(),Y=new THREE.Vector3().crossVectors(Z,X);return new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(X,Y,Z));}
+// the height a piece's centre stands at so its lowest point is `sink` (0.25) m into the ground at y0: q its turn, s its full extents in its own
+// frame (a unit box scaled by s; a unit-radius piece passes twice its scale). The quality pass (the owner, 2026-11-10: "detached pieces lie on
+// the ground properly"): a wreck rests on its lowest points, neither hanging above the ground nor buried in it
+function enSeatY(q,s,y0,sink){const e=new THREE.Matrix4().makeRotationFromQuaternion(q).elements;return (y0||0)+Math.abs(e[1])*s[0]/2+Math.abs(e[5])*s[1]/2+Math.abs(e[9])*s[2]/2-(sink==null?.25:sink);}
+// 8ah's enDebris, seated: the same scatter of plates and rubble round (x, z), each plate tilted a little and resting on its lowest corner (8ah's
+// stood them at 0.12 of their size whatever the tilt, which sank some 5 m and lifted others clear); the rubble is the kit's decoration
+function en3Debris(x,z,r,n,pl){for(let i=0;i<n;i++){const a=rng()*TAU,q0=Math.sqrt(rng())*r,s=rr(2,9),px=x+q0*Math.cos(a),pz=z+q0*Math.sin(a);
+ if(rng()<.55){const q=qEuler(rr(-.18,.18),rng()*TAU,rr(-.18,.18)),sc=[s*rr(1,2.2),s*.18,s*rr(.8,1.6)];kput(pl,[px,enSeatY(q,sc,0),pz],q,sc);}
+ else kput('rubble',[px,s*.3,pz],qEuler(rng()*3,rng()*3,rng()*3),[s*.8,s*.5,s*.7],new THREE.Color().setHSL(rr(.05,.09),rr(.1,.3),rr(.3,.5)));}}
 
 // ---------------------------------------------------------------- THE COIL
 function buildCoil(scene,gx,gz,d){reseed(10200+d);KOFF=[gx,0,gz];
@@ -40,7 +51,7 @@ function buildCoil(scene,gx,gz,d){reseed(10200+d);KOFF=[gx,0,gz];
  /* the sails: six tall plates leaning out from the upper drum, braced back to it */
  /* each sail stands radially (its face toward the tangent), leaning out 24 degrees from the vertical */
  for(let k=0;k<6;k++){const a=k/6*TAU+.3,c=Math.cos(a),s=Math.sin(a),L=.42,up=[c*Math.sin(L),Math.cos(L),s*Math.sin(L)],q=enQn([-s,0,c],up);
-  if(dd&&k===4){kput(PL,[c*150,4,s*150],enQn([0,1,0],[c,0,s]),[64,70,3]);continue;}
+  if(dd&&k===4){kput(PL,[c*150,1.25,s*150],enQn([0,1,0],[c,0,s]),[64,70,3]);continue;}   /* the fallen sail flat on the ground, 0.25 m in */
   kput(PL,[c*(80+40*Math.sin(L)),34+40*Math.cos(L),s*(80+40*Math.sin(L))],q,[66,80,3]);beam('strutR',[c*72,34,s*72],[c*(80+60*Math.sin(L))-s*2,34+60*Math.cos(L),s*(80+60*Math.sin(L))+c*2],2.2,2.2);
   for(let j=0;j<3;j++){const t=12+j*22;kput('boxD',[c*(80+t*Math.sin(L))-s*1.8,34+t*Math.cos(L),s*(80+t*Math.sin(L))+c*1.8],q,[44,1.2,1]);}}
  /* the mast: six pipes on a ring of 22 m, four lattice towers on 58 m */
@@ -50,9 +61,9 @@ function buildCoil(scene,gx,gz,d){reseed(10200+d);KOFF=[gx,0,gz];
  for(let i=0;i<7;i++){const y=70+i*34;if(y>TOP)break;const ph=i*.9,ox=Math.cos(ph)*8,oz=Math.sin(ph)*8,slip=dd&&(i===2||i===5);
   const ring=mesh(enRing([0,0,0],[0,1,0],30,58+(i%2)*6,40),MAT.white,G,ox,slip?y-18:y,oz);if(slip)ring.rotation.set(.22,0,-.16);
   const rim=mesh(enTube([0,-3,0],[0,0,0],()=>58+(i%2)*6,40,1),MAT.white,G,ox,slip?y-18:y,oz);if(slip)rim.rotation.copy(ring.rotation);
-  for(let k=0;k<10;k++){const a=k/10*TAU+ph;kput('cell',[ox+Math.cos(a)*(59+(i%2)*6),y-1.5-(slip?18:0),oz+Math.sin(a)*(59+(i%2)*6)],qEuler(0,-a+Math.PI/2,0),[3,.8,.5],dd&&k%3?DEAD:WARM);}}
- if(dd){for(let k=0;k<6;k++){const a=k/6*TAU;beam('pipeR',[Math.cos(a)*22,TOP,Math.sin(a)*22],[Math.cos(a)*26+rr(-6,6),TOP+rr(8,22),Math.sin(a)*26+rr(-6,6)],2.4,2.4);}
-  enDebris(120,90,90,40,PL);rubbleRing(0,0,0,112,220,80,6);enOvergrow(acc,60,24,0,0);}
+  for(let k=0;k<10;k++){const a=k/10*TAU+ph;if(!slip)kput('cell',[ox+Math.cos(a)*(58.3+(i%2)*6),y-1.5,oz+Math.sin(a)*(58.3+(i%2)*6)],qEuler(0,-a+Math.PI/2,0),[3,.8,.5],dd&&k%3?DEAD:WARM);}}   /* on the rim's face (a slipped deck's lights are gone with it) */
+ if(dd){for(let k=0;k<6;k++){const a=k/6*TAU;const t=TOP-(k%2?40:0);beam('pipeR',[Math.cos(a)*22,t,Math.sin(a)*22],[Math.cos(a)*26+rr(-6,6),t+rr(8,22),Math.sin(a)*26+rr(-6,6)],2.4,2.4);}   /* each stub from its own pipe's broken top */
+  en3Debris(120,90,90,40,PL);rubbleRing(0,0,0,112,220,80,6);enOvergrow(acc,60,24,0,0);}
  meshMerged(acc,conc,G);scatterMoss(0,0,0,112,300,60+50*dd,4);figures(0,130,5,10);
  REGISTER({name:'The Coil: drum and sails',x:0,y:0,z:0,r:150,h:110});
  REGISTER({name:'The Coil: mast and decks',x:0,y:30,z:0,r:70,h:TOP});
@@ -68,14 +79,14 @@ function buildProcession(scene,gx,gz,d){reseed(10210+d);KOFF=[gx,0,gz];
   const T=mesh(new THREE.TorusGeometry(R,13,4,96,arc),MAT.white,G,x,cy,0);T.rotation.set(0,Math.PI/2,brk?2.1:0);T.scale.set(1,1,1);T.rotation.order='YXZ';
   const T2=mesh(new THREE.TorusGeometry(R-12,6,4,96,arc),EN_IRON,G,x,cy,0);T2.rotation.copy(T.rotation);
   /* its inner face crowded with machinery, its outer face plated; the lower 22% is under the plain */
-  for(let k=0;k<64;k++){const a=k/64*TAU;if(brk&&((a+2.1)%TAU)>arc)continue;const py=cy+Math.sin(a)*R;if(py<2)continue;
-   const ci=Math.cos(a),si=Math.sin(a),rIn=R-18-rr(0,8);
+  for(let k=0;k<64;k++){const a=k/64*TAU;if(brk){const t=(((Math.PI-a-2.1)%TAU)+TAU)%TAU;if(t<.12||t>arc-.12)continue;}   /* the broken ring's pieces only where its arc is: the torus's angle t is pi - a, spun 2.1 (its YXZ turn) */const py=cy+Math.sin(a)*R;if(py<2)continue;
+   const ci=Math.cos(a),si=Math.sin(a);
    /* Rx(-a) takes a piece's local z to the ring's outward normal (0, sin a, cos a): plates lie on the ring, boxes sit square to it */
-   kput('boxD',[x+rr(-14,14),cy+si*rIn,ci*rIn],qEuler(-a,0,0),[rr(8,22),rr(6,14),rr(4,10)]);
+   const rz=rr(4,10),rM=R-13-rz/2+.4;kput('boxD',[x+rr(-8,8),cy+si*rM,ci*rM],qEuler(-a,0,0),[rr(8,16),rr(6,14),rz]);   /* against the ring's inner face, inside its depth */
    if(k%2)kput(PL,[x,cy+si*(R+13.4),ci*(R+13.4)],qEuler(-a,0,0),[22,rr(9,13),1.2]);
-   if(k%8===0)kput('cell',[x+14.4,cy+si*(R-4),ci*(R-4)],qEuler(0,Math.PI/2,0),[6,1.2,.5],dd?DEAD:CYAN);}
+   if(k%8===0)kput('cell',[x+12.6,cy+si*(R-4),ci*(R-4)],qEuler(0,Math.PI/2,0),[6,1.2,.5],dd?DEAD:CYAN);}
   enBlk(acc,x,2,0,40,4,R*1.6);
-  if(brk){const seg=mesh(new THREE.TorusGeometry(R,13,4,30,TAU*.3),MAT.white,G,x+60,13,90);seg.rotation.set(Math.PI/2,0,.4);enDebris(x+40,80,120,40,PL);}}
+  if(brk){const seg=mesh(new THREE.TorusGeometry(R,13,4,30,TAU*.3),MAT.white,G,x+60,12.75,90);seg.rotation.set(Math.PI/2,0,.4);en3Debris(x+40,80,120,40,PL);}}
  if(dd){rubbleRing(0,0,0,40,420,120,6);enOvergrow(acc,60,30,0,0);}
  meshMerged(acc,conc,G);scatterMoss(0,0,0,40,420,70+60*dd,4);figures(-260,40,6,12);
  REGISTER({name:'The Procession: the rings',x:0,y:0,z:0,r:400,h:270});
@@ -104,7 +115,7 @@ function buildMortar(scene,gx,gz,d){reseed(10220+d);KOFF=[gx,0,gz];
   mesh(enTube(o,end,t=>10-t*.015,6,20),EN_IRON,G);
   for(let t=20;t<L-4;t+=24){const p=[o[0]+dir[0]*t,o[1]+dir[1]*t,o[2]+dir[2]*t];mesh(enTube([p[0]-dir[0]*2,p[1]-dir[1]*2,p[2]-dir[2]*2],[p[0]+dir[0]*2,p[1]+dir[1]*2,p[2]+dir[2]*2],()=>12.5-t*.015,6,1),MAT.rust,G);}
   beam('cell',[o[0]+dir[0]*30,o[1]+dir[1]*30+9.6,o[2]+dir[2]*30],[o[0]+dir[0]*(L-20),o[1]+dir[1]*(L-20)+6.2,o[2]+dir[2]*(L-20)],1.4,.6,dd?new THREE.Color(0x601008):new THREE.Color(0xff3010));
-  if(dd&&b){const f=[end[0]+dir[0]*40,4,end[2]+dir[2]*40+30];mesh(enTube([end[0]+20,6,end[2]+16],f.map((v,i)=>i===1?9:v+(i?60:90)),()=>9,6,10),EN_IRON,G);enDebris(end[0]+60,end[2]+50,70,30,PL);}});
+  if(dd&&b){const f=[end[0]+dir[0]*40,4,end[2]+dir[2]*40+30];mesh(enTube([end[0]+20,8.75,end[2]+16],f.map((v,i)=>i===1?8.75:v+(i?60:90)),()=>9,6,10),EN_IRON,G);   /* the broken barrel on its side, 0.25 m in */en3Debris(end[0]+60,end[2]+50,70,30,PL);}});
  if(dd){rubbleRing(0,0,0,94,220,90,6);enOvergrow(acc,70,24,0,0);}
  meshMerged(acc,conc,G);scatterMoss(0,0,0,96,300,70+60*dd,4);figures(0,120,6,10);
  REGISTER({name:'The Mortar: fortress drum',x:0,y:0,z:0,r:104,h:60});
@@ -132,7 +143,7 @@ function buildVigil(scene,gx,gz,d){reseed(10230+d);KOFF=[gx,0,gz];
   for(let k=0;k<5;k++){const a=ea+Math.PI+rr(-1,1),ry=y0+rr(.1,.7)*H,pr=t.r*rr(.25,.4);mesh(enTube([t.x+Math.cos(a)*(t.r+pr*.6),ry,t.z+Math.sin(a)*(t.r+pr*.6)],[t.x+Math.cos(a)*(t.r+pr*.6),ry+pr*3,t.z+Math.sin(a)*(t.r+pr*.6)],()=>pr,16,2),MAT.white,G);}
   for(let k=0;k<3;k++){const a=ea+Math.PI*.6+k*.35;kput('pipeR',[t.x+Math.cos(a)*(t.r+2),y0+H*.45,t.z+Math.sin(a)*(t.r+2)],null,[1.4,H*.85,1.4]);}
   mesh(enRing([t.x,y0+H*.5,t.z],[0,1,0],t.r,t.r+6,36),MAT.rust,G);
-  if(brk){mesh(enTube([t.x+10,22,t.z+30],[t.x+90,30,t.z+95],()=>t.r*.95,36,6),MAT.white,G);mesh(new THREE.SphereGeometry(t.r*.95,30,12,0,TAU,0,Math.PI/2),MAT.white,G,t.x+98,30,t.z+101).rotation.set(0,-.7,Math.PI/2*.9);enDebris(t.x+40,t.z+50,60,30,PL);}});
+  if(brk){const rb=t.r*.95;mesh(enTube([t.x+10,20+rb-.25,t.z+20],[t.x+70,rb-.25,t.z+95],()=>rb,36,6),MAT.white,G);   /* the broken capsule leaning from the podium's top down to the ground, its open end on the plain */en3Debris(t.x+40,t.z+50,60,30,PL);}});
  if(dd){rubbleRing(0,0,0,100,220,70,5);enOvergrow(acc,50,20,0,0);}
  meshMerged(acc,conc,G);scatterMoss(0,0,0,110,260,50+40*dd,4);figures(0,90,6,10);
  REGISTER({name:'The Vigil: podium',x:0,y:0,z:0,r:134,h:22});
@@ -161,7 +172,7 @@ function buildReceiver(scene,gx,gz,d){reseed(10240+d);KOFF=[gx,0,gz];
  [[-150,-70,260],[-150,-10,220],[-150,50,190],[-150,110,150]].forEach((s,i)=>{const H=dd&&i===1?150:s[2];enBlk(acc,s[0],H/2,s[1],34,H,44);
   for(let y=30;y<H-10;y+=9)kput('cellD',[s[0]+17.2,y,s[1]],qEuler(0,Math.PI/2,0),[6,4,1]);
   enBlk(acc,s[0]+8,22,s[1],46,44,52);beam('strutR',[s[0]+17,AY+10,s[1]],[-60,AY+DR*.5,s[1]*.3],4,4);
-  if(dd&&i===1){enDebris(s[0]-40,s[1]-20,60,30,PL);kput('boxD',[s[0]-50,8,s[1]-30],qEuler(.3,.5,1.2),[30,60,40]);}});
+  if(dd&&i===1){en3Debris(s[0]-40,s[1]-20,60,30,PL);{const q=qEuler(.3,.5,1.2),sc=[30,60,40];kput('boxD',[s[0]-50,enSeatY(q,sc,0),s[1]-30],q,sc);}}});
  if(dd){rubbleRing(0,0,0,70,260,90,6);enOvergrow(acc,70,24,0,0);}
  meshMerged(acc,conc,G);scatterMoss(0,0,0,70,320,70+50*dd,4);figures(80,80,6,10);
  REGISTER({name:'The Receiver: drum and sphere',x:10,y:0,z:0,r:130,h:AY+DR+16});
@@ -181,11 +192,11 @@ function buildLoom(scene,gx,gz,d){reseed(10250+d);KOFF=[gx,0,gz];
   else for(let k=0;k<4;k++)beam('pipeR',[i*P+rr(-6,6),h,j*P+rr(-6,6)],[i*P+rr(-14,14),h+rr(6,20),j*P+rr(-14,14)],1.4,1.4);
   enBlk(acc,i*P,3,j*P,34,6,34);}
  /* straight tubes between neighbours at 150 m, the saucers at the ring's joints */
- for(let a=0;a<9;a++)for(const b of[a+1,a+3]){if(b>=9||(b===a+1&&a%3===2))continue;const A=cols[a],B=cols[b];if(A.h<150||B.h<150){if(dd)mesh(enTube([A.x,3,A.z],[(A.x+B.x)/2+12,3,(A.z+B.z)/2+8],()=>5,12,4),MAT.white,G);continue;}
+ for(let a=0;a<9;a++)for(const b of[a+1,a+3]){if(b>=9||(b===a+1&&a%3===2))continue;const A=cols[a],B=cols[b];if(A.h<150||B.h<150){if(dd)mesh(enTube([A.x,4.75,A.z],[(A.x+B.x)/2+12,4.75,(A.z+B.z)/2+8],()=>5,12,4),MAT.white,G);continue;}
   mesh(enTube([A.x,150,A.z],[B.x,150,B.z],()=>5,12,6),MAT.white,G);for(let t=.2;t<.9;t+=.2)kput('cell',[A.x+(B.x-A.x)*t,150+5.2,A.z+(B.z-A.z)*t],null,[2,.5,2],dd?DEAD:CYAN);}
  const arc=dd?TAU*.68:TAU,ring=mesh(new THREE.TorusGeometry(RR,7,10,120,arc),MAT.white,G,0,RY,0);ring.rotation.set(Math.PI/2,0,dd?.9:0);
  for(let k=0;k<8;k++){const a=k/8*TAU;if(dd&&((a-.9+TAU)%TAU)>arc)continue;const x=Math.cos(a)*RR,z=Math.sin(a)*RR;mesh(enTube([x,RY-4,z],[x,RY+4,z],()=>20,28,1),MAT.white,G);mesh(enRing([x,RY-4,z],[0,-1,0],0,20,28),EN_IRON,G);}
- if(dd){const seg=mesh(new THREE.TorusGeometry(RR,7,10,40,TAU*.3),MAT.white,G,40,8,60);seg.rotation.set(Math.PI/2+.08,0,2.8);enDebris(60,90,150,50,PL);rubbleRing(0,0,0,40,260,100,6);enOvergrow(acc,60,24,0,0);}
+ if(dd){const seg=mesh(new THREE.TorusGeometry(RR,7,10,40,TAU*.3),MAT.white,G,40,6.75,60);seg.rotation.set(Math.PI/2,0,2.8);   /* the fallen third of the ring flat on the plain */en3Debris(60,90,150,50,PL);rubbleRing(0,0,0,40,260,100,6);enOvergrow(acc,60,24,0,0);}
  meshMerged(acc,conc,G);scatterMoss(0,0,0,30,300,70+60*dd,4);figures(0,160,6,12);
  REGISTER({name:'The Loom: columns and ring',x:0,y:0,z:0,r:P*1.45+20,h:H+50});
  EN_SITE.loom={x:gx,z:gz};
@@ -221,7 +232,7 @@ function buildIris(scene,gx,gz,d){reseed(10260+d);KOFF=[gx,0,gz];
  for(let k=0;k<7;k++){const a=k/7*TAU,r=12+k%3*6,x=Math.cos(a)*r,z=Math.sin(a)*r,top=dd&&k%3===1?BY+BR+60:BY+BR+220;
   mesh(enTube([x,BY+BR*.7,z],[x*1.6,top,z*1.6-20],()=>3+k%2*2,10,6),EN_IRON,G);}
  for(let k=0;k<5;k++)beam('strutR',[rr(-40,40),0,-BR-60],[rr(-20,20),BY+BR+160,-30],3,3);
- if(dd){enDebris(40,60,90,30,PL);rubbleRing(0,0,0,40,200,70,5);enOvergrow(acc,40,20,0,0);}
+ if(dd){en3Debris(30,40,60,30,PL);rubbleRing(0,0,0,40,200,70,5);   /* its wreckage within 110 m: a host's pad for it is 135 (AV.ENGINES r + 20), and past a pad the ground falls away */enOvergrow(acc,40,20,0,0);}
  meshMerged(acc,conc,G);figures(0,140,4,8);
  REGISTER({name:'The Iris: bulb and legs',x:0,y:0,z:0,r:BR+60,h:BY+BR});
  REGISTER({name:'The Iris: the conduit column',x:0,y:BY,z:0,r:60,h:BR+230});
@@ -242,10 +253,10 @@ function buildHive(scene,gx,gz,d){reseed(10270+d);KOFF=[gx,0,gz];
  mesh(enRing([ex,ey,ez],[0,0,1],12,26,40),MAT.rust,G);mesh(enRing([ex,ey,ez+.4],[0,0,1],0,12,30),dd?EN_IRON:MAT.glass,G);
  for(let k=0;k<24;k++){const a=k/24*TAU;kput('boxD',[ex+Math.cos(a)*28,ey+Math.sin(a)*28,ez],qEuler(0,0,a),[6,2.4,2]);}
  /* the skirt: splayed buttresses from the base out to the ground */
- for(let k=0;k<18;k++){const a=k/18*TAU,c=Math.cos(a),s=Math.sin(a);if(dd&&k===7){kput(PL,[c*90,3,s*90],qEuler(.1,-a,0),[70,4,9]);continue;}
+ for(let k=0;k<18;k++){const a=k/18*TAU,c=Math.cos(a),s=Math.sin(a);if(dd&&k===7){const q=qEuler(.1,-a,0),sc=[70,4,9];kput(PL,[c*90,enSeatY(q,sc,0),s*90],q,sc);continue;}
   beam('plateR',[c*R*.8,Y0+20,s*R*.8],[c*130,0,s*130],8,4);}
  mesh(enTube([0,Y0-20,0],[0,Y0,0],()=>R*.9,6,1),EN_IRON,G);
- if(dd){for(let k=0;k<40;k++){const a=rng()*TAU,r=rr(60,170);kput('enHexW',[Math.cos(a)*r,1,Math.sin(a)*r],qEuler(rr(-1.7,-1.4),rng()*TAU,rr(-.3,.3)),[6.2,6.2,2.2]);}rubbleRing(0,0,0,60,200,60,5);enOvergrow(acc,40,20,0,0);}
+ if(dd){for(let k=0;k<40;k++){const a=rng()*TAU,r=rr(60,170);const q=qEuler(rr(-1.7,-1.4),rng()*TAU,rr(-.3,.3));kput('enHexW',[Math.cos(a)*r,enSeatY(q,EN_HEX_S,0),Math.sin(a)*r],q,[6.2,6.2,2.2]);}rubbleRing(0,0,0,60,200,60,5);enOvergrow(acc,40,20,0,0);}
  meshMerged(acc,conc,G);figures(0,150,4,8);
  REGISTER({name:'The Hive: tower',x:0,y:Y0,z:0,r:R+4,h:H});
  REGISTER({name:'The Hive: buttress skirt',x:0,y:0,z:0,r:134,h:Y0+20});
@@ -264,11 +275,11 @@ function buildStar(scene,gx,gz,d){reseed(10280+d);KOFF=[gx,0,gz];
  const D=[];for(let i=0;i<5;i++){const a=i/5*TAU;D.push([Math.cos(a)*.85,.53,Math.sin(a)*.85]);D.push([Math.cos(a+TAU/10)*.85,-.53,Math.sin(a+TAU/10)*.85]);}
  D.forEach((v,i)=>{const torn=dd&&(i===3||i===8),L=150,a=[v[0]*SR*.9,SY+v[1]*SR*.9,v[2]*SR*.9],b=[v[0]*L,Math.max(16,SY+v[1]*L),v[2]*L];
   mesh(enRing(a,v,0,SR*.32,24),EN_IRON,G);
-  if(torn){const fx=v[0]*170,fz=v[2]*170;mesh(enTube([fx,9,fz],[fx+v[2]*90,11,fz-v[0]*90],()=>13,20,4),MAT.white,G);return;}
+  if(torn){const fx=v[0]*115,fz=v[2]*115;mesh(enTube([fx,12.75,fz],[fx+v[2]*60,12.75,fz-v[0]*60],()=>13,20,4),MAT.white,G);return;}   /* on its side, 0.25 m in, inside the engine's reach */
   mesh(enTube(a,b,t=>t<20?9:14,20,6),MAT.white,G);mesh(new THREE.SphereGeometry(14,20,12),MAT.white,G,b[0],b[1],b[2]);
   for(const t of[.35,.7]){const p=[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t];mesh(enTube(p,[p[0]+v[0]*4,p[1]+v[1]*4,p[2]+v[2]*4],()=>16,20,1),EN_IRON,G);}
   const n=D[(i+2)%10],q=[n[0]*L*.8,SY+n[1]*L*.8,n[2]*L*.8];beam('tube',[b[0]*.8,b[1]*.95,b[2]*.8],[(b[0]*.8+q[0])/2,Math.max(6,Math.min(b[1],q[1])-30),(b[2]*.8+q[2])/2],.9,.9);});
- if(dd){enDebris(0,0,180,40,PL);rubbleRing(0,0,0,70,220,70,5);enOvergrow(acc,40,20,0,0);}
+ if(dd){en3Debris(0,0,180,40,PL);rubbleRing(0,0,0,70,220,70,5);enOvergrow(acc,40,20,0,0);}
  meshMerged(acc,conc,G);figures(0,110,5,8);
  REGISTER({name:'The Star',x:0,y:0,z:0,r:170,h:SY+150});
  EN_SITE.star={x:gx,z:gz,SY};
@@ -287,7 +298,7 @@ function buildAbacus(scene,gx,gz,d){reseed(10290+d);KOFF=[gx,0,gz];
  const arc=mesh(new THREE.TorusGeometry(44,3,8,40,Math.PI*1.1),EN_IRON,G,0,H+30,0);arc.rotation.set(0,.4,-.1);
  /* the cables: from the head to anchors 300-420 m out, threaded with beads; parted ones lie with their beads in the dust */
  for(let k=0;k<11;k++){const a=-1.1+k*.22,r=300+(k%3)*60,ax=Math.cos(a)*r,az=Math.sin(a)*r,top=[0,H+20,0],parted=dd&&(k===2||k===7);enBlk(acc,ax,3,az,14,6,14);
-  if(parted){beam('tube',[ax,.5,az],[ax*.5,.5,az*.5],.5,.5);for(let j=1;j<5;j++){const t=j/5*.5+.5;mesh(new THREE.SphereGeometry(5+j%2*3,14,10),MAT.rust,G,ax*t,4,az*t);}continue;}
+  if(parted){beam('tube',[ax,.5,az],[ax*.5,.5,az*.5],.5,.5);for(let j=1;j<5;j++){const t=j/5*.5+.5;const rb=5+j%2*3;mesh(new THREE.SphereGeometry(rb,14,10),MAT.rust,G,ax*t,rb-.25,az*t);}continue;}
   beam('tube',top,[ax,1,az],.5,.5);
   for(let j=1;j<6;j++){const t=j/6,br=(k+j)%3?4:7;mesh(new THREE.SphereGeometry(br,14,10),MAT.rust,G,top[0]+(ax-top[0])*t,top[1]+(1-top[1])*t,top[2]+(az-top[2])*t);}}
  if(dd){rubbleRing(0,0,0,60,200,60,5);enOvergrow(acc,40,20,0,0);}

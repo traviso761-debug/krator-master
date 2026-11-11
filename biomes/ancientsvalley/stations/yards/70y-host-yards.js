@@ -34,6 +34,11 @@ const AV_YARDS=(function(){const Y=STAGE.yards,out={ready:false,groups:[],n:{},f
   if(!out.famDone){out.famDone=true;const keys=[...new Set(Y.INDUSTRY.map(T=>T.family))];
    keys.forEach(k=>{try{const ik=k+'.intact';if(!MP.FAMILY[k])AVC.hero[ik]=AVC.hero[ik]||heroOf(ik);const F=MP.FAMILY[k];if(!F){out.noShell.push(k+' (no family)');return;}out.families++;
     if(!F.shell){F.shell={mode:'box',inset:1.2,texel:1.0,ruinTexel:1.25,box:true};try{KSHELL.record(F,'intact');}catch(e){delete F.shell;out.noShell.push(k);}}}catch(e){reportErr('industry family '+k+': '+(e.stack||e));}});}
+   /* THE HALLS FACE THEIR AVENUE (2026-11-10, after the valley's -yaw fix turned every drawn form by -yaw: a quarter-turned hall's doors went to
+      its back): each industrial hall's entrances (MP.ancientEntrances, in its hero's frame) are read off its intact hero, and a hall whose doors face
+      away from the avenue on its block's yard side is turned half round (its plinth is a rectangle: nothing else moves). Drawn by -yaw (70) */
+   out.faced=0;Y.INDUSTRY.forEach(T=>{const H=AVC.hero[T.family+'.intact'],E=H&&H.userData.entrances;if(!E||!E.length)return;let ex=0,ez=0;E.forEach(D=>{ex+=D.x;ez+=D.z;});ex/=E.length;ez/=E.length;
+    if(Math.hypot(ex,ez)<2)return;const th=-T.yaw,dz=-ex*Math.sin(th)+ez*Math.cos(th),want=T.z<0?1:-1;if(dz*want<0){T.yaw+=Math.PI;T.c=Math.cos(T.yaw);T.s=Math.sin(T.yaw);T.q=null;out.faced++;}T.facing=dz*want<0?'turned':'kept';});
   return boot0();};
  /* the Engines merged by material: every plain mesh of an engine's tree into one mesh a material, in the engine's frame */
  function mergeByMat(G){G.updateMatrixWorld(true);const inv=new THREE.Matrix4().copy(G.matrixWorld).invert(),by=new Map(),kill=[],M=new THREE.Matrix4(),N=new THREE.Matrix3(),v=new THREE.Vector3();
@@ -49,7 +54,9 @@ const AV_YARDS=(function(){const Y=STAGE.yards,out={ready:false,groups:[],n:{},f
   /* an instanced mesh's instances too (the probe samples a capped few of them: the Hive's 18 skirt beams among its plates read empty) */
   G.traverse(m=>{if(!m.isInstancedMesh||m.userData.probePoints)return;const a=m.instanceMatrix.array,pp=[];for(let i=0;i<m.count;i++){if(a[i*16]===0&&a[i*16+5]===0&&a[i*16+10]===0)continue;pp.push(a[i*16+12],a[i*16+13],a[i*16+14]);}m.userData.probePoints=pp;});
   return merged;}
- const eng0=AVC.engines;AVC.engines=function(){const L=eng0.apply(this,arguments)||[];L.forEach(G=>{try{out.mergedEngines+=mergeByMat(G);}catch(e){reportErr('engine merge: '+(e.message||e));}});return L;};
+ const eng0=AVC.engines;AVC.engines=function(){const L=eng0.apply(this,arguments)||[];L.forEach(G=>{try{out.mergedEngines+=mergeByMat(G);}catch(e){reportErr('engine merge: '+(e.message||e));}
+  /* core/ruins watches each engine on the ground as drawn (the owner, 2026-11-10: the check is the default for every ruined structure; the harness asserts it) */
+  if(typeof KRUINS!=='undefined')KRUINS.watch(G,{name:'the engine '+String(G.name||'').replace(/^engine\./,''),ground:terrainH});});return L;};
  /* the yard and the pieces, drawn once the transit is (its materials and builder): the pieces into one builder by family and chunk (57y), the sidings
     as the kit's rails, the buffer stops */
  out.draw=function(){if(out.ready)return;if(window._texPending>0||typeof KTRANSIT==='undefined'||typeof AVTR==='undefined'||!AVTR.ready)return;const t0=performance.now();

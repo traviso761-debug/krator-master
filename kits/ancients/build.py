@@ -116,6 +116,8 @@ TAGS_CORE = INTERIOR_CORE[:4]
 # fragments a target reads in place from another kit: the Sanctum's statuary is the Eternian kit's head generator
 # (kits/eternian/src/42-et-head.js, [G data]: one generator for every build that carries the Eternians' faces)
 TARGET_READS = {'podium': [(os.path.join(ROOT, 'kits', 'eternian', 'src'), '42-et-head.js')],
+                # the engines' industrial set is watched by core/ruins (targets/engines/91y; the owner, 2026-11-10)
+                'engines': [(os.path.join(ROOT, 'core', 'ruins'), '20-core-ruins.js'), (os.path.join(ROOT, 'core', 'ruins'), '21-core-ruins-host.js')],
                 # the Sanctum (2026-10-22) shares the Podium's skins and materials (MAT.sn*), read in place
                 'sanctum': [(os.path.join(ROOT, 'kits', 'eternian', 'src'), '42-et-head.js'),
                             (os.path.join(HERE, 'targets', 'podium'), '8aq2-podium-skins.js')]}
@@ -216,6 +218,8 @@ DETERMINISTIC = {
     '8ap-funicular.js',                  # its own hashed stream: no rng(), no reseed, moves nobody's rubble
     '91-probe.js', '92-camera.js', '99-tail.html',
     '89z-rows.js', '91z-views.js',        # per-target site table and view list
+    '91y-engine-checks.js',               # targets/engines: the industrial set watched by core/ruins (measures the scene, places nothing)
+    '20-core-ruins.js', '21-core-ruins-host.js',   # core/ruins: the ruins check (no rnd())
     '8ap-host-0-lib.js',                  # the host types' shared plan, plate and spec helpers (no builder)
     '8aq0-podium-plan.js', '8aq1-podium-kept.js', '8aq2-podium-skins.js',      # targets/podium: KRAND-hashed records, no rng()
     '8ar0-sanctum-plan.js',                                                     # targets/sanctum: KRAND-hashed records, no rng()
@@ -393,9 +397,9 @@ def build_one(target, do_checks, assert_origin):
                 bodies[f] = fh.read()
             extra.append(f)
         order = sorted(order + extra)
-    if target in TAGS_TARGETS:
+    if target in TAGS_TARGETS or target in TARGET_READS:   # a target may read core or another kit in place without core/tags (engines: core/ruins)
         extra = []
-        for d, f in TAGS_CORE + TARGET_READS.get(target, []):
+        for d, f in (TAGS_CORE if target in TAGS_TARGETS else []) + TARGET_READS.get(target, []):
             if f in bodies:
                 continue
             with open(os.path.join(d, f), encoding='utf-8', newline='') as fh:

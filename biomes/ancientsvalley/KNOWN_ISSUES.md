@@ -195,6 +195,9 @@
 - [ ] **Wrecks are fewer here** (an industrial district has a street every 495 m inside the zone): the wreck check's floor is 60, not the
   Overlook's 150; none stands in a superblock or the yard's row (they have no street).
 - [ ] **The Engines' masses are merged by material at the boot** (`70y`), not in the kit: the engines sheet draws them unmerged.
+- [x] **The halls' facing after the valley's -yaw fix** (2026-11-10: every drawn form turns by -yaw, so the five quarter-turned halls' doors went to
+  their backs): `70y` reads each hall's entrances off its intact hero at the boot and turns a hall whose doors face away from its avenue half round
+  (its plinth is a rectangle: nothing else moves). The Engines are watched by core/ruins on the ground as drawn (`KRUINS.watch`, the harness asserts).
 - [ ] **On software GL the shell bake's programs fail to link** (the first with an empty log, every one after it with INVALID_OPERATION: the
   signature of a lost context), seen headless under SwiftShader; on both GPU lanes every program links and the page passes. The GPU lanes are
   the check for this page (`verify.py` with `KRATOR_GL=gpu`); `harness.py smoke` on software GL reports it dirty.

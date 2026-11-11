@@ -56,6 +56,8 @@ next all-builds rebuild", with it.
 - Placement never reads canvas pixels (`getImageData`): use `core/mask` (`KMASK.canvas`). GPU and CPU canvases
   disagree.
 - A numeric default is `x == null ? d : x`, not `x || d` (0 is a real seed, scale and renderOrder).
+- **Every ruined structure is watched by `core/ruins`** (owner, 2026-11-10): once it is drawn, `KRUINS.watch(root, {name, ground})`; the verify
+  harness asserts nothing floats and every wreck lies on its lowest points on the ground. Seat wreckage by its rotated extents, never at a fixed height.
 - Everything placed is registered in `core/tags` before it is drawn; a builder draws a record, it does not decide
   where things go.
 - Do not copy infrastructure into a build (camera, probe, PRNG, noise, terrainH, sky, verify harness): take the
