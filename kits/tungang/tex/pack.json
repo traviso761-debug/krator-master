@@ -129,7 +129,7 @@
     "normalMap": "f_hide.normal.webp",
     "roughnessMap": "f_hide.rough.webp"
    },
-   "lib": "hide.leather008",
+   "lib": "hide.leather009",
    "metal": 0,
    "normalScale": 1.0,
    "roughLift": 0.3,
@@ -139,16 +139,16 @@
    ],
    "size": 256,
    "source": {
-    "albedo": "593bf2032f9ae82af1e103e9460174610dde7b37",
-    "normal": "9b3dc36ee7c442252f73c22a986eb126d1cafff1",
-    "roughness": "f1f573876936f84b96b10656e9e20b52ddbc87fe"
+    "albedo": "6200ef062de1cc180d7f69e1f6a348de1e04f74a",
+    "normal": "a160ab76879938d916e7f38886f91bff30b28d99",
+    "roughness": "1b2a38ff0ba619f553859d9fc650ec2d8e98c06a"
    },
    "specular": 0.2,
    "tint": {
     "contrast": 1.0,
     "keep": 0.0,
     "mean": 0.5,
-    "sourceMean": 0.1909
+    "sourceMean": 0.1189
    }
   },
   "f_metal": {
@@ -373,7 +373,7 @@
     "normalMap": "hide.normal.webp",
     "roughnessMap": "hide.rough.webp"
    },
-   "lib": "hide.leather008",
+   "lib": "hide.leather009",
    "metal": 0,
    "normalScale": 1.0,
    "roughLift": 0.3,
@@ -383,16 +383,16 @@
    ],
    "size": 512,
    "source": {
-    "albedo": "593bf2032f9ae82af1e103e9460174610dde7b37",
-    "normal": "9b3dc36ee7c442252f73c22a986eb126d1cafff1",
-    "roughness": "f1f573876936f84b96b10656e9e20b52ddbc87fe"
+    "albedo": "6200ef062de1cc180d7f69e1f6a348de1e04f74a",
+    "normal": "a160ab76879938d916e7f38886f91bff30b28d99",
+    "roughness": "1b2a38ff0ba619f553859d9fc650ec2d8e98c06a"
    },
    "specular": 0.2,
    "tint": {
     "contrast": 1.0,
     "keep": 0.3,
     "mean": 0.45,
-    "sourceMean": 0.1909
+    "sourceMean": 0.1189
    }
   },
   "horn": {
