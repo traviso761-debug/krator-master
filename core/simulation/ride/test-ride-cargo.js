@@ -3,6 +3,7 @@
 // with a broken input that must fail.
 const fs=require('fs'),path=require('path');
 global.window=global;
+const KV=require('./lab/kv-node.js');   /* the Line's cars (kits/motor-vehicles' built bundle) */
 const CORE=path.join(__dirname,'..','..');
 const SIMF=fs.readdirSync(path.join(CORE,'simulation')).filter(f=>/^77-sim-.*\.js$/.test(f)).sort().map(f=>path.join('simulation',f));
 const FILES=['rand/08-core-rand.js','sched/20-core-sched.js',...SIMF,'simulation/ride/78-sim-ride.js','simulation/ride/79-sim-ride-porters.js','simulation/ride/80-sim-ride-line.js','simulation/ride/lab/40-ride-lab-world.js'];
@@ -10,7 +11,7 @@ let bad=0;const ok=(name,pass,neg)=>{const r=pass&&!neg;if(!r)bad++;console.log(
 function run(opt,days,each){
   FILES.forEach(f=>(0,eval)(fs.readFileSync(path.join(CORE,f),'utf8')));
   const S=window.SIM,clock={h:0,d:0,t:0};S.init({seed:5,hour:()=>clock.h,day:()=>clock.d,t:()=>clock.t,err:()=>{}});
-  const L=RIDELAB.trade(RIDELAB.declare({}),opt||{});
+  const L=RIDELAB.trade(RIDELAB.declare({cars:KV}),opt||{});
   S.step();const snap0=S.ledgerSnap();const shortAt={};
   for(let m=1;m<days*1440;m++){clock.t+=60;clock.d=Math.floor(m/1440);clock.h=(m%1440)/60+1e-7;S.step();
     if(m===(days-1)*1440)L.lojes.forEach(J=>{shortAt[J.id]=Object.assign({},S.econ(J.id).short||{});});

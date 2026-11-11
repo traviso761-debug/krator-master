@@ -78,7 +78,9 @@ NODE_AFTER_BUILD = ['settlements/isle-demo/tests/test-isle-city.js', 'settlement
                     'settlements/isle-demo/tests/test-isle-crime.js', 'settlements/isle-demo/tests/test-isle-money.js',
                     'settlements/isle-demo/tests/test-isle-unrest.js', 'settlements/isle-demo/tests/test-isle-build.js',
                     'settlements/isle-demo/tests/test-isle-refugees.js',   # dist/isle-city.plan.js
-                    'kits/interiors/tests/test-walk.js']   # dist/interiors-core.js
+                    'kits/interiors/tests/test-walk.js',   # dist/interiors-core.js
+                    'core/simulation/ride/test-ride.js', 'core/simulation/ride/test-ride-cargo.js',
+                    'core/simulation/ride/test-ride-r6.js']   # kits/motor-vehicles/dist/krator-vehicles.js (the Line's cars)
 
 
 def builds():

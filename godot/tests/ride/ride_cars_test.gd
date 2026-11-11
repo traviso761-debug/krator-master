@@ -68,20 +68,20 @@ func _initialize() -> void:
 	ok("the door windows agree with the page's (%d samples, %d open)" % [n, opened], n > 0 and opened > 0 and miss == 0, flip == 0)
 	R = RideCars.build(M)
 	root.add_child(R)
-	ok("the cars are built: %d bodies, each with its door links and door blocks" % R.cars.size(), R.cars.size() == 6 and R.cars[1]["doors"].size() == 4
-		and R.cars[1]["doors"]["d+r"].has("block") and R.cars[1]["doors"]["d+r"].has("link"), false)
+	ok("the cars are built: %d bodies, each with its door links and door blocks" % R.cars.size(), R.cars.size() == 10 and R.cars[1]["doors"].size() == 4
+		and R.cars[1]["doors"]["d1"].has("block") and R.cars[1]["doors"]["d1"].has("link"), false)
 	# a dwell at Ledge: three seconds before its doors shut, a rider in car 1 and a body on a platform slab beside it
 	var d := KRide.dwell(srcs[0], 2)
 	t = float(d["o1"]) - 3.0
 	t_end = float(d["t1"]) + 85.0   # the run to the gap station is 75 s: stopped there, ten seconds in
 	R.set_time(t)
 	var C1: Dictionary = R.cars[1]
-	var e: Dictionary = C1["doors"]["d+r"]
+	var e: Dictionary = C1["doors"]["d1"]
 	ok("in the window the door is open: its link enabled, its block off, the far side's shut", e["link"].enabled and e["block"].disabled
-		and not C1["doors"]["d-r"]["link"].enabled, not e["link"].enabled)
+		and not C1["doors"]["d2"]["link"].enabled, not e["link"].enabled)
 	var T0: Transform3D = R.car_transform(0, 1, t)
 	car0 = T0.origin
-	rider = body_at(T0 * Vector3(0.0, 1.12, 2.0))
+	rider = body_at(T0 * Vector3(0.0, 1.22, 2.0))   # a saloon of the Line: its floor 1.2 m up
 	local0 = T0.affine_inverse() * rider.position
 	var slab := StaticBody3D.new()
 	var sh := CollisionShape3D.new()
@@ -90,8 +90,8 @@ func _initialize() -> void:
 	sh.shape = bx
 	slab.add_child(sh)
 	root.add_child(slab)
-	slab.position = Vector3(car0.x, 1.0, -4.0)
-	stay = body_at(Vector3(car0.x, 1.12, -4.0))
+	slab.position = Vector3(car0.x, 1.1, -4.0)
+	stay = body_at(Vector3(car0.x, 1.22, -4.0))
 	stay0 = stay.position
 
 
@@ -126,7 +126,7 @@ func _process(_delta: float) -> bool:
 	var drift := Vector2(local1.x - local0.x, local1.z - local0.z).length()
 	var carried := rider.position.x - car0.x
 	print("  car moved %.1f m in %d frames; the rider %.1f m, drift in the car %.3f m once stopped (%.3f m at most while moving), height in the car %.3f; the platform body moved %.3f m" % [moved, frames, carried, drift, lag, local1.y, stay.position.x - stay0.x])
-	ok("a CharacterBody3D in the car rides it down the Line, held in the car's frame (back within 5 cm once it stops; under a frame's travel, 0.35 m, while it runs)", moved > 100.0 and drift < 0.05 and lag < 0.35 and absf(local1.y - 1.1) < 0.1,
+	ok("a CharacterBody3D in the car rides it down the Line, held in the car's frame (back within 5 cm once it stops; under a frame's travel, 0.35 m, while it runs)", moved > 100.0 and drift < 0.05 and lag < 0.35 and absf(local1.y - 1.2) < 0.1,
 		absf(stay.position.x - stay0.x) > 1.0)
 	print("all passed" if bad == 0 else "%d FAILED" % bad)
 	quit(0 if bad == 0 else 1)

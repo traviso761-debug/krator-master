@@ -41,48 +41,64 @@ async def run(page_path, out):
             return V.exit()
         # ---- the walker: a dwell at Ledge ahead, the walker on the platform facing car 1's rear door
         d = await ev("()=>{const L=_api.lab;L.scale(0);const d=L.nextDwell('line.n','ledge',L.clock().t+30);L.setT(d.o0-2);"
-                     "const w=L.doorWorld('line.n',1,'d+r',d.t0+1);L.standAt(w[0],1.1,-3.6,Math.PI);return {d,w};}")
+                     "const w=L.doorWorld('line.n',1,'d1',d.t0+1);L.walkSpeed(0.12);L.standAt(w[0],1.2,-3.6,Math.PI);return {d,w};}")
         await pg.wait_for_timeout(400)
-        await pg.keyboard.down('w'); await pg.wait_for_timeout(500); await pg.keyboard.up('w'); await pg.wait_for_timeout(300)
+
+        async def hold(until_js, ms, extra=0):
+            """hold W until the page says so (or ms pass), then `extra` ms more: a frame on software GL can take half a
+            second with the Line's cars in view, and the walk keys move by the frame's time (capped at 0.1 s)"""
+            await pg.keyboard.down('w')
+            try:
+                await pg.wait_for_function(until_js, timeout=ms)
+            except Exception:
+                pass
+            if extra:
+                await pg.wait_for_timeout(extra)
+            await pg.keyboard.up('w')
+            await pg.wait_for_timeout(600)
+
+        await hold("()=>{const f=_api.lab.feet();return f&&f[2]>-2.2;}", 15000, 2500)
         shut = await ev("()=>({ride:_api.lab.ride(),feet:_api.lab.feet()})")
         report(fails, 'doors shut: the walker cannot step aboard (it stays on the platform)', shut['ride']['aboard'] is None and shut['feet'][2] < -1.6,
                'z %.2f, aboard %s' % (shut['feet'][2], shut['ride']['aboard']))
-        await ev("(d)=>{const L=_api.lab;L.setT(d.d.o0+1);const w=d.w;L.standAt(w[0],1.1,-3.6,Math.PI);L.scale(1);}", d)
-        await pg.wait_for_timeout(400)
-        await pg.keyboard.down('w'); await pg.wait_for_timeout(450); await pg.keyboard.up('w'); await pg.wait_for_timeout(300)
+        await ev("(d)=>{const L=_api.lab;L.setT(d.d.o0+1);const w=d.w;L.standAt(w[0],1.2,-3.6,Math.PI);}", d)
+        await pg.wait_for_timeout(600)
+        await hold("()=>{const f=_api.lab.feet();return f&&f[2]>-0.8;}", 30000)   # well inside the car, past the step plate
         inn = await ev("()=>({ride:_api.lab.ride(),feet:_api.lab.feet(),t:_api.lab.clock().t})")
         report(fails, 'doors open: the walker walks through the door into the car', inn['ride']['aboard'] == 'line.n.car1',
                'aboard %s at z %.2f' % (inn['ride']['aboard'], inn['feet'][2]))
         x0 = inn['feet'][0]
-        await ev("()=>_api.lab.scale(16)")
-        await pg.wait_for_function("(o1)=>_api.lab.clock().t>o1+40", arg=d['d']['o1'], timeout=60000)
-        await ev("()=>_api.lab.scale(0)")
-        await pg.wait_for_timeout(200)
+        # the clock jumped past the doors shutting and 40 s into the run: the carry takes any step (poses are functions of time)
+        await ev("(o1)=>_api.lab.setT(o1+40)", d['d']['o1'])
+        await pg.wait_for_timeout(2000)
         ride = await ev("()=>{const R=_api.lab.ride(),f=_api.lab.feet(),P=SIM.rideCarPose('line.n',1,_api.lab.clock().t);return {R,f,cy:P.y,cx:P.x};}")
         loc = ride['R']['local'] or [9, 9, 9]
         report(fails, 'the moving car carries the walker down the Line, on its floor', ride['R']['aboard'] == 'line.n.car1' and ride['f'][0] - x0 > 50
-               and abs(loc[0]) < 1.31 and abs(loc[2]) < 6.5 and abs(ride['f'][1] - (ride['cy'] + 1.1)) < 0.05,
+               and abs(loc[0]) < 1.61 and abs(loc[2]) < 12 and abs(ride['f'][1] - (ride['cy'] + 1.2)) < 0.05,
                'carried %.0f m, local %s' % (ride['f'][0] - x0, [round(v, 2) for v in loc]))
-        await pg.keyboard.press('e'); await pg.wait_for_timeout(200)
+        await pg.keyboard.press('e'); await pg.wait_for_timeout(1500)
         sat = await ev("()=>_api.lab.ride()")
-        await ev("()=>_api.lab.scale(4)"); await pg.wait_for_timeout(1000); await ev("()=>_api.lab.scale(0)")
+        await ev("()=>_api.lab.setT(_api.lab.clock().t+20)"); await pg.wait_for_timeout(2000)
         held = await ev("()=>_api.lab.ride()")
-        await pg.keyboard.press('e'); await pg.wait_for_timeout(200)
+        await pg.keyboard.press('e'); await pg.wait_for_timeout(1500)
         up = await ev("()=>_api.lab.ride()")
         report(fails, 'E sits the walker on a seat and holds it there as the car moves; E stands it', sat['sitting'] is not None and held['sitting'] == sat['sitting']
                and held['local'] and abs(held['local'][0] - sat['local'][0]) < 0.01 and abs(held['local'][2] - sat['local'][2]) < 0.01 and up['sitting'] is None,
                'seat %s' % sat['sitting'])
         if out:
             os.makedirs(out, exist_ok=True)
-            await V.shot(os.path.join(out, 'aboard.png'), view='aboard')
+            await ev("()=>{LABH.ctl.theta=SIM.rideCarPose('line.n',1,_api.lab.clock().t).yaw;LABH.ctl.phi=Math.PI/2+0.1;}")   # down the aisle
+            await pg.wait_for_timeout(1500)
+            await pg.screenshot(path=os.path.join(out, 'aboard.png'))   # not a preset view: inside a car every wall is near the eye
+        await ev("()=>_api.lab.walkSpeed(1)")
         await ev("()=>{LABH.cam.walk(false,true);}")
         # ---- the travellers: run the world, then look while riders are aboard
         trav = await ev("""()=>{const L=_api.lab;L.run(300);let seen=0,miss=0,worst=0,neg=true,tries=0;
           while(seen<30&&tries<400){L.run(2);tries++;const f=L.onFloors(0);if(f.n){seen+=f.n;miss+=f.miss;worst=Math.max(worst,f.worst);
-            const g=L.onFloors(0.5);if(g.miss===0&&g.worst<0.02)neg=false;}}
+            const g=L.onFloors(0.5);if(g.miss===0&&g.worst<0.2)neg=false;}}
           return {seen,miss,worst,neg,audit:L.audit()};}""")
-        report(fails, 'every rider aboard stands on its own car\'s floor (%d looks)' % trav['seen'], trav['seen'] >= 30 and trav['miss'] == 0 and trav['worst'] < 0.02 and trav['neg'],
-               'worst %.3f m; lifted 0.5 m fails: %s' % (trav['worst'], trav['neg']))
+        report(fails, 'every rider aboard stands on its own car\'s floor (%d looks)' % trav['seen'], trav['seen'] >= 30 and trav['miss'] == 0 and trav['worst'] < 0.2 and trav['neg'],
+               'standing on it or sitting up to 0.2 m above (worst %.3f m); lifted 0.5 m fails: %s' % (trav['worst'], trav['neg']))
         A = trav['audit']
         report(fails, 'every door crossing inside its window, no car over its room (%d boards, %d journeys)' % (A['boards'], A['journeys']),
                A['ok'] and A['journeys'] >= 40 and A['boards'] >= A['alights'] > 30, str(A))

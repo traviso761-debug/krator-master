@@ -16,7 +16,7 @@ const LABH=KHOST.take({
   return tr+'\n'+goods+'\ntravellers on journeys: '+aboard+', journeys '+RL.journeys+(RL.failed?' ('+RL.failed+' waited)':'')+'\ndoor windows kept: '+(A.ok?'yes':'NO')+'\nyou: '+(R.aboard?'aboard '+R.aboard+(R.sitting!=null?', seated':''):'on foot');},
  legend:[['#e0b050','a traveller'],['#5a9ad8','a shift worker (chooses the train)'],['#b4552e','a porter (a crate: carrying)']],
 });
-RLRIDE=KHOST.ride(LABH,{walk:KWALK,t:()=>LABCLOCK.t,seats:()=>RIDELAB.CAR.seats});
+RLRIDE=KHOST.ride(LABH,{walk:KWALK,t:()=>LABCLOCK.t,reach:3,seats:F=>{const fr=RL.L.frames.find(q=>q.F===F);return fr?fr.car.ride.seats:[];}});
 LABH.on(function rideLab(dt,clock){RL.tick(clock.t);},'tick');
 LABH.on(function rideLabDraw(dt,clock){labDraw(clock.t,dt,camera.position);},'view');
 /* the verify's handles: everything it asks is read from SIM and the walk registry, never kept apart */
@@ -25,15 +25,15 @@ const RLAPI={
  feet(){const w=LABH.cam.walkAt;return w?[w[0],w[2],w[1]]:null;},
  /* the next dwell of a train at a stop after t: its door window */
  nextDwell(src,stop,after){for(let g=0;g<4000;g++){const d=SIM.rideDwell(src,g);if(d.stop===stop&&d.o0>after)return d;}return null;},
- doorWorld(src,k,doorId,t){const D=RIDELAB.CAR.doors.find(d=>d.id===doorId);return SIM.rideToWorld(SIM.rideCarPose(src,k,t),D.at);},
- setT(t){LABCLOCK.t=t;},clock(){return {t:LABCLOCK.t,hour:LABCLOCK.hour,day:LABCLOCK.day,scale:LABCLOCK.scale};},scale(s){LABCLOCK.scale=s;},
+ doorWorld(src,k,doorId,t){const D=RL.L.train[k].ride.doors.find(d=>d.id===doorId);return SIM.rideToWorld(SIM.rideCarPose(src,k,t),D.at);},
+ setT(t){LABCLOCK.t=t;},walkSpeed(k){LABH.ctl.speed=k;},clock(){return {t:LABCLOCK.t,hour:LABCLOCK.hour,day:LABCLOCK.day,scale:LABCLOCK.scale};},scale(s){LABCLOCK.scale=s;},
  run(min){RL.run(min);},
  ride:()=>RLRIDE.state(),
  audit:()=>{const A=SIM.rideAudit();return {ok:A.ok,boards:A.boards,alights:A.alights,outside:A.outside.length,over:A.over.length,journeys:RL.journeys,failed:RL.failed};},
  /* every rider in a frame leg now stands on its own car's floor (the walk side, posed by the same function) */
  onFloors(lift){const t=LABCLOCK.t;let n=0,miss=0,worst=0;KWALKFRAME.at(KWALK,t);
   RL.people.concat(RL.shift).forEach(a=>{const p=SIM.pose(a,t);if(!p.frame)return;n++;const f=KWALK.floorBelow(p.x,p.z,p.y+(lift||0),0.6),fr=RL.L.frames.find(q=>q.src===p.frame.source&&q.k===p.frame.k).F;
-   if(!f||f[1].frame!==fr)miss++;else worst=Math.max(worst,Math.abs(f[0]-p.y-(lift||0)));});return {n,miss,worst};},
+   if(!f||f[1].frame!==fr)miss++;else{const d=p.y+(lift||0)-f[0];if(d<-0.02)miss++;worst=Math.max(worst,d);}});return {n,miss,worst};},
  cargo(){const led=SIM.ledger(RL.snap0,SIM.ledgerSnap()),r=k=>RL.L.routes[k].landed;
   return {ledger:led.ok,problems:led.problems.slice(0,3),twennyGrain:SIM.econ('twenny').imported.grain||0,ledgeWax:SIM.econ('ledge').imported.wax||0,
    north:(r('north')['ledge>gapn']||{}).grain||0,porters:(r('porters')['gapn>gaps']||{}).grain||0,south:(r('south')['gaps>twenny']||{}).grain||0,trips:RL.L.porters.trips,

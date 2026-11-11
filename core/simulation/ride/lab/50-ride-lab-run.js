@@ -8,7 +8,7 @@ const LABCLOCK=KCLOCK.make({hour:7,running:true,scale:1});
 const SPM=KCLOCK.DAY_SECONDS/1440;
 SIM.init({seed:20261111,hour:()=>LABCLOCK.hour,day:()=>LABCLOCK.day,t:()=>LABCLOCK.t,err:m=>{const e=document.getElementById('errs');e.style.display='block';e.textContent+='sim: '+m+'\n';}});
 const RL={L:null,people:[],plan:{},minute:null,journeys:0,failed:0};
-RL.L=RIDELAB.declare({secPerMinute:SPM});
+RL.L=RIDELAB.declare({secPerMinute:SPM,cars:KratorVehicles});   /* the Line's cars (the vehicles kit, bundled by build.py) */
 RIDELAB.walk(KWALK,RL.L);
 RIDELAB.trade(RL.L,{secPerMinute:SPM});
 RL.people=RIDELAB.people(RL.L,40);

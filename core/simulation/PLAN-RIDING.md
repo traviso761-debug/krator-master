@@ -354,6 +354,39 @@ What building it taught:
 - **A ferry's track turns back on itself** at an out-and-back route's far stop, where the two bogie points meet: the car
   takes the way ahead there (`SIM.rideCarPose` and `KRide.car_pose`), as `SIM.vehiclePose` does.
 
+## 8d. The Line's cars in the lab (the owner, 2026-11-11: "Merge and swap now")
+
+`claude/awesome-varahamihira-66a852` (the Line: its cars at 226fb6340, the bore station, `main`'s transit and vehicles kits)
+is merged into this branch (5c07d2d7d; one conflict, `.claude/launch.json`, both sides kept). The lab's stand-in cars are
+gone: its trains are the Line's own (`kits/motor-vehicles/krator-vehicles-line.js`, the Kept variant), a power car, two
+saloons (64 seats, 40 standing each), a van and a power car turned round (the bore station's consist in short), read
+through `KratorVehicles.dataOf(key, 1).ride`; the turned car's records are mirrored (`RIDELAB.mirror`). Each car's walk
+frame is written from its own `floor` rect and doors (walls with `door:<id>` gaps 1.4 m wide, step plates); the platforms
+rise to the cars' 1.2 m floor and lengthen for the 120 m train; the page draws the real cars (`vehicle_bundle.bundle(
+['ancient', 'line', 'tungang'])`, their wheels rolled by the distance run, a lamp over each door lit in its window). The
+node tests read the built bundle under a stand-in THREE (`lab/kv-node.js`) and run after the builds (`test_all.py`
+NODE_AFTER_BUILD). Everything passes: the node tests, the lab's verify (the walker boards a real saloon in its door window
+and is carried 336 m, E finds seat 62), the Godot replay and the Godot cars (a body rides a saloon 780 m).
+
+What the real cars taught:
+- **A rider waits by its own door.** On a 120 m train a waiting spot picked by hash could be 50 m from the car the rider
+  was given, and the walk missed the door window: a journey now takes its place (car, seat, door) first and waits at the
+  spot nearest that door, and alights to the spot nearest its exit.
+- **The planner budgets a stop's spread.** A stop is the middle of its waiting spots, and the planner allows the walk to
+  the farthest of them on boarding and alighting, and the walk from the stop to a gap's recorded path and from its end to
+  the next stop; a bake that still misses its train by the walking is planned again with 30 s more (twice at most), and a
+  failed bake now logs why (`nojourney`: full, too late to board or alight, no door, no walk).
+- **The doorway's threshold needs a floor.** The saloon's floor ends at x = 1.6 and its side is at 1.75: the walker stepped
+  off the plate into the wall's thickness, fell to the trackbed and walked on under the car. The step plate now runs from
+  the floor's edge across the threshold and out over the platform's gap.
+- **The host's walker can step through a thin wall at a low frame rate** (a 0.5 s frame on software GL is a 0.9 m step
+  across a 0.15 m wall); at 60 frames a second a step is 0.15 m. The verify walks slowly; a swept walker step would be
+  `core/host`'s to add (not done here).
+- **The kit's doors are drawn shut** (no opening leaf yet): the walker passes through the drawn door in its window; the
+  lamp over it says it is open. A door-opening hook in the vehicles kit would let the lab draw it.
+- `kits/motor-vehicles/tex` came through the merge as LFS pointers in this worktree (`git lfs checkout` fixed it: the
+  objects were in the shared store).
+
 ## 9. Questions for the owner
 
 1. **Where it lives**: as opt-in extensions in subfolders of the modules that exist (`core/walk/frame`,

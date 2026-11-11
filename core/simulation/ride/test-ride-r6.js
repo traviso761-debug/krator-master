@@ -3,6 +3,7 @@
 // that must fail. (The lojes as books, 80-sim-ride-line.js, are test-ride-cargo.js's.)
 const fs=require('fs'),path=require('path');
 global.window=global;
+const KV=require('./lab/kv-node.js');   /* the Line's cars (kits/motor-vehicles' built bundle) */
 const CORE=path.join(__dirname,'..','..');
 const SIMF=fs.readdirSync(path.join(CORE,'simulation')).filter(f=>/^77-sim-.*\.js$/.test(f)).sort().map(f=>path.join('simulation',f));
 const FILES=['rand/08-core-rand.js','sched/20-core-sched.js',...SIMF,'simulation/ride/78-sim-ride.js','simulation/ride/81-sim-ride-choose.js','simulation/ride/lab/40-ride-lab-world.js'];
@@ -17,7 +18,7 @@ function fresh(h0){
 const near=(p,P,r)=>Math.hypot(p.x-P.x,p.z-P.z)<=r;
 
 // ---------------------------------------------------------------- the resolver: shift workers at Ledge, work at Twenny past the gap
-{const {S,clock}=fresh(7);const L=RIDELAB.declare({});RIDELAB.people(L,0);
+{const {S,clock}=fresh(7);const L=RIDELAB.declare({cars:KV});RIDELAB.people(L,0);
  S.place({id:'ledge.shed',kind:'shed',x:L.stops.ledge.x+12,z:-40,y:0,r:3,activities:{WORK:20}});
  const sched=[[0,'SLEEP'],[8,'WORK'],[20,'SLEEP']];
  S.role({id:'shift',org:'loj',ride:true,sched,prefers:{SLEEP:{pin:'home'},WORK:{pin:'work'}}});

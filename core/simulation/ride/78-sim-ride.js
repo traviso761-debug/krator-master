@@ -187,7 +187,9 @@
   function foot(sa, sb, opt){
     var key=sa+'>'+sb+'@'+opt.layer+'@'+opt.speed, F=SIM.RIDE.foot, Pth=SIM.RIDE.paths[sa+'>'+sb];
     if(F[key]!==undefined) return F[key];
-    if(Pth){ F[key]={ dur:Pth.len/opt.speed, len:Pth.len, path:true }; return F[key]; }
+    if(Pth){ var a0=stopPt(sa), b0=stopPt(sb), p0=Pth.pts[0], pn=Pth.pts[Pth.pts.length-1];   /* the stop to the path, the path, the path to the stop */
+      var len=(a0 ? Math.hypot(a0.x-p0[0], a0.z-p0[2]) : 0)+Pth.len+(b0 ? Math.hypot(b0.x-pn[0], b0.z-pn[2]) : 0);
+      F[key]={ dur:len/opt.speed, len:len, path:true }; return F[key]; }
     var A=stopPt(sa), B=stopPt(sb), L=null;
     if(A && B && Math.hypot(A.x-B.x, A.z-B.z)<=opt.maxWalk) L=walkLeg(A, B, opt.speed, opt.layer);
     F[key]=L ? { dur:L.dur, len:L.route.len } : null; return F[key];
@@ -196,8 +198,14 @@
   var STOPS=null;
   function stopIndex(){ if(STOPS) return STOPS; STOPS={}; SIM.RIDE.order.forEach(function(id){ var S=SIM.RIDE.sources[id];
       Object.keys(S.stops).forEach(function(s){ if(!STOPS[s]) STOPS[s]=S.stops[s]; }); }); return STOPS; }
-  function stopPt(s){ var st=stopIndex()[s]; if(!st || !st.wait || !st.wait.length) return null; var w=st.wait[0]; return { x:w[0], y:w[1], z:w[2] }; }
-  function waitSpot(s, a){ var st=stopIndex()[s], W=st.wait, w=W[Math.floor(h32(a.k, 61)*W.length)%W.length]; return { x:w[0], y:w[1], z:w[2] }; }
+  /* a stop's point: the middle of its waiting spots; its spread: the farthest spot from that point (a long train's doors) */
+  function stopPt(s){ var st=stopIndex()[s]; if(!st || !st.wait || !st.wait.length) return null; var x=0, y=0, z=0, n=st.wait.length;
+    st.wait.forEach(function(w){ x+=w[0]; y+=w[1]; z+=w[2]; }); return { x:x/n, y:y/n, z:z/n }; }
+  function spread(s){ var c=stopPt(s), st=stopIndex()[s], m=0; if(!c) return 0; st.wait.forEach(function(w){ m=Math.max(m, Math.hypot(w[0]-c.x, w[2]-c.z)); }); return m; }
+  /* where an actor waits on a stop's platform: the spot nearest the door it will use (`near`, a world point), else one by hash */
+  function waitSpot(s, a, near){ var st=stopIndex()[s], W=st.wait, w=W[Math.floor(h32(a.k, 61)*W.length)%W.length];
+    if(near){ var bd=1e300; W.forEach(function(q){ var d=Math.hypot(q[0]-near[0], q[2]-near[2]); if(d<bd-1e-9){ bd=d; w=q; } }); }
+    return { x:w[0], y:w[1], z:w[2] }; }
 
   /* ---------------------------------------------------------------- the planner: a connection scan */
   SIM.journeyPlan = function(from, to, t, opt){
@@ -211,10 +219,10 @@
     C.sort(function(p, q){ return p.dep[1]-q.dep[1] || (p.id<q.id ? -1 : 1); });
     var inTrip={}, rides={};
     for(var ci=0;ci<C.length;ci++){ var c=C[ci], S=SIM.RIDE.sources[c.src];
-      var can = inTrip[c.src] ? true : (T[c.from]!=null && T[c.from]+bs<=c.dep[1]);
+      var can = inTrip[c.src] ? true : (T[c.from]!=null && T[c.from]+bs+spread(c.from)/speed<=c.dep[1]);
       if(!can || !room(S, c.g)){ if(inTrip[c.src] && !room(S, c.g)) inTrip[c.src]=null; continue; }
       if(!inTrip[c.src]) inTrip[c.src]={ enter:c, rides:ridesOf(J[c.from])+1 };
-      var tB=c.arr[0]+as, E=inTrip[c.src];
+      var tB=c.arr[0]+as+spread(c.to)/speed, E=inTrip[c.src];
       if(T[c.to]==null || tB<T[c.to] || (tB===T[c.to] && E.rides<ridesOf(J[c.to]))){ T[c.to]=tB; J[c.to]={ kind:'ride', enter:E.enter, exit:c, rides:E.rides };
         stops.forEach(function(s2){ if(s2===c.to) return; var f=foot(c.to, s2, fo); if(!f) return; var t2=tB+f.dur;
           if(T[s2]==null || t2<T[s2]){ T[s2]=t2; J[s2]={ kind:'walk', from:c.to, rides:E.rides }; } }); } }
@@ -241,26 +249,38 @@
     var here=o.from||SIM.pose(a, t), from={ x:here.x, y:nz(here.y, 0), z:here.z }, P=typeof o.to==='string' ? SIM.R.place[o.to] : null;
     var to=P ? (P.door ? { x:P.door.x, y:nz(P.door.y, 0), z:P.door.z } : { x:P.x, y:nz(P.y, 0), z:P.z }) : o.to;
     if(!to) throw new Error('SIM.journey '+a.id+': unknown destination');
-    var plan=o.plan||SIM.journeyPlan(from, to, t, { layer:layer, speed:speed, sources:o.sources });
-    if(!plan){ SIM.logEvent('nojourney', { actor:a.id, to:P ? P.id : null }); return null; }
-    var legs=[], cur=from, tau=t, ok=true, boards=[], held=[];
+    /* the plan baked; a bake that misses its train by the walking (a long train's far door) is planned again with 30 s more
+       for boarding and alighting, twice at most */
+    var why0=null;
+    for(var tr=0; tr<3; tr++){
+      var plan=(tr===0 && o.plan) || SIM.journeyPlan(from, to, t, { layer:layer, speed:speed, sources:o.sources, boardSec:SIM.RIDE.boardSec+30*tr, alightSec:SIM.RIDE.alightSec+30*tr });
+      if(!plan) break;
+      var r=bakeOnce(a, o, plan, from, to, P, t, speed, layer); if(r.task) return r.task;
+      why0=r.why; if(!/too late/.test(r.why||'')) break; }
+    SIM.logEvent('nojourney', { actor:a.id, to:P ? P.id : null, why:why0 ? 'bake: '+why0 : 'no plan' });
+    return null;
+  };
+  function bakeOnce(a, o, plan, from, to, P, t, speed, layer){
+    var legs=[], cur=from, tau=t, ok=true, why=null, boards=[], held=[];
     function push(L){ legs.push(L); tau+=L.dur; }
-    function walkTo(p){ var L=walkLeg(cur, p, speed, layer); if(!L){ ok=false; return; } push(L); cur=p; }
+    function no(w){ ok=false; why=why||w; }
+    function walkTo(p){ var L=walkLeg(cur, p, speed, layer); if(!L){ no('no walk to '+Math.round(p.x)+','+Math.round(p.z)); return; } push(L); cur=p; }
     plan.steps.forEach(function(st){ if(!ok) return;
       if(st.kind==='walk'){ var Pth=SIM.RIDE.paths[st.from+'>'+st.to];
         if(!Pth){ walkTo(stopPt(st.to)); return; }
         var p0=Pth.pts[0], pn=Pth.pts[Pth.pts.length-1]; walkTo({ x:p0[0], y:p0[1], z:p0[2] }); if(!ok) return;
         push({ route:Pth, speed:speed, dur:Pth.len/speed, mode:'walk', layer:'gap' }); cur={ x:pn[0], y:pn[1], z:pn[2] }; return; }
       var S=SIM.RIDE.sources[st.src], A=dwell(S, st.g0), B=dwell(S, st.g1);
-      var w0=waitSpot(st.from, a); walkTo(w0); if(!ok) return;
-      var pl=allot(S, st.g0, st.g1, a); if(!pl){ ok=false; return; }
+      /* its place first (a car, a seat or standing room, the door nearest it), then it waits by that door */
+      var pl=allot(S, st.g0, st.g1, a); if(!pl){ no('full'); return; }
       var C=S.cars[pl.k], place=pl.seat ? pl.seat.at : pl.stand, face=pl.seat ? nz(pl.seat.yaw, 0) : h32(a.k, 67)*Math.PI*2;
-      var dA=nearestDoor(C, A.side, place), dB=nearestDoor(C, B.side, place); if(!dA || !dB){ ok=false; return; }
+      var dA=nearestDoor(C, A.side, place), dB=nearestDoor(C, B.side, place); if(!dA || !dB){ no('no door on the side of the stop'); return; }
       var PA=carPose(S, pl.k, A.t0+1), sideA=dA.side===0 ? 1 : dA.side;
       var gapA=nz(stopIndex()[st.from].gap, 0.10), gapB=nz(stopIndex()[st.to].gap, 0.10);
       var out=toWorld(PA, [dA.at[0]+sideA*(0.5+gapA), dA.at[1], dA.at[2]]), inn=toWorld(PA, [dA.at[0]-sideA*0.45, dA.at[1], dA.at[2]]);
+      var w0=waitSpot(st.from, a, out); walkTo(w0); if(!ok) return;
       var bw=route([[w0.x, w0.y, w0.z], out, inn]), bdur=bw.len/speed, span=A.o1-A.o0-bdur-SIM.RIDE.margin;
-      if(span<0 || tau>A.o1-bdur){ ok=false; return; }
+      if(span<0 || tau>A.o1-bdur){ no('too late to board ('+Math.round(tau)+' > '+Math.round(A.o1-bdur)+')'); return; }
       var start=Math.max(tau, A.o0+h32(a.k, A.g)*span);
       push(holdLeg([w0.x, w0.y, w0.z], start-tau, 'wait'));
       push({ route:bw, speed:speed, dur:bdur, mode:'walk', layer:'board' });
@@ -270,20 +290,20 @@
       var sideB=dB.side===0 ? 1 : dB.side, alight=B.o0+h32(a.k, B.g+7)*Math.max(0, (B.o1-B.o0)*SIM.RIDE.jitter);
       push(holdLeg(place, alight-tau, 'ride', { source:S.id, k:pl.k }, face));
       var dIn=[dB.at[0]-sideB*0.45, dB.at[1], dB.at[2]], fl2=frameLeg(S, pl.k, [place, [0, dB.at[1], place[2]], [0, dB.at[1], dB.at[2]], dIn], speed, face); push(fl2);
-      var PB=carPose(S, pl.k, B.t0+1), w1=waitSpot(st.to, a), bo=route([toWorld(PB, dIn), toWorld(PB, [dB.at[0]+sideB*(0.5+gapB), dB.at[1], dB.at[2]]), [w1.x, w1.y, w1.z]]);
+      var PB=carPose(S, pl.k, B.t0+1), outB=toWorld(PB, [dB.at[0]+sideB*(0.5+gapB), dB.at[1], dB.at[2]]), w1=waitSpot(st.to, a, outB), bo=route([toWorld(PB, dIn), outB, [w1.x, w1.y, w1.z]]);
       boards.push({ kind:'alight', actor:a.id, src:S.id, k:pl.k, door:dB.id, t:tau, o0:B.o0, o1:B.o1, g:B.g });
-      var bod=bo.len/speed; if(tau+bod>B.o1){ ok=false; return; }
+      var bod=bo.len/speed; if(tau+bod>B.o1){ no('too late to alight ('+Math.round(tau+bod)+' > '+Math.round(B.o1)+')'); return; }
       push({ route:bo, speed:speed, dur:bod, mode:'walk', layer:'board' }); cur=w1;
       held.push({ src:S.id, k:pl.k, g0:st.g0, g1:st.g1, seat:pl.seat ? pl.seat.id : null }); });
     if(ok) walkTo(to);
-    if(!ok){ SIM.logEvent('nojourney', { actor:a.id, to:P ? P.id : null, why:'bake' }); return null; }
+    if(!ok) return { why:why||'?' };
     held.forEach(function(h){ for(var g=h.g0;g<h.g1;g++){ var c=carOcc(h.src+':'+g, h.k); if(h.seat) c.seats[h.seat]=a.id; else c.stand.push(a.id); } });
     boards.forEach(function(b){ SIM.RIDE.log.push(b); }); if(SIM.RIDE.log.length>SIM.RIDE.LOG_MAX) SIM.RIDE.log.splice(0, SIM.RIDE.log.length-SIM.RIDE.LOG_MAX);
     var spot={ x:to.x, y:nz(to.y, 0), z:to.z }, task={ act:o.act||'TRAVEL', place:P ? P.id : null, t0:t, legs:legs, spot:spot, dur:tau-t, arrive:tau, indoor:false, wander:0,
       failed:false, ride:{ plan:plan, held:held } };
     SIM.logEvent('journey', { actor:a.id, to:task.place, rides:plan.rides, arrive:Math.round(tau) });
-    return task;
-  };
+    return { task:task };
+  }
   SIM.journey = function(a, o){
     var task=SIM.rideBake(a, o); if(!task) return null;
     a.task=task; a.activity=task.act; a.driven='ride'; a.inVehicle=null; a.rideHold=!!(o && o.hold); a.wake=null;

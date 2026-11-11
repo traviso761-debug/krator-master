@@ -36,7 +36,9 @@ K.ride=function(H,o){
   (o.seats(F)||[]).forEach((S,i)=>{const d=Math.hypot(S.at[0]-l[0],S.at[2]-l[2]);if(d<bd){bd=d;best={i,at:S.at.slice(),yaw:S.yaw||0};}});
   if(!best)return;sit={F,i:best.i,at:best.at};place(KF.toWorld(F,best.at,t));
   ctl.theta=KF.pose(F,t).yaw+best.yaw+Math.PI;});
- const R={state:()=>{const t=T(),f=aboard||(sit&&sit.F);return {aboard:f?f.id:null,sitting:sit?sit.i:null,local:f?KF.toLocal(f,feet(),t):null};}};
+ /* where the walker is now, read live (with the clock paused the carry has nothing to do, so it is not kept from it) */
+ const R={state:()=>{const t=T();let f=sit?sit.F:null;if(!f&&ctl.walk){const st=KF.standing(W,feet(),t);f=st?st.frame:null;}
+  return {aboard:f?f.id:null,sitting:sit?sit.i:null,local:f?KF.toLocal(f,feet(),t):null};}};
  root._api=root._api||{};root._api.ride=R.state;
  return R;};
 })(typeof window!=='undefined'?window:globalThis);

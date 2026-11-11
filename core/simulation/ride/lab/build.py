@@ -17,6 +17,7 @@ CORE = os.path.dirname(SIMD)
 ROOT = os.path.dirname(CORE)
 sys.path.insert(0, os.path.join(ROOT, 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 sys.path.insert(0, os.path.join(CORE, 'host')); import host as khost
+sys.path.insert(0, os.path.join(ROOT, 'kits', 'motor-vehicles')); import vehicle_bundle   # the Line's cars (KratorVehicles)
 
 SIMF = sorted(f for f in os.listdir(SIMD) if f.startswith('77-sim-') and f.endswith('.js'))
 FRAGS = ([os.path.join(HERE, '00-head.html')]
@@ -29,10 +30,13 @@ FRAGS = ([os.path.join(HERE, '00-head.html')]
          + [os.path.join(HERE, f) for f in ('40-ride-lab-world.js', '50-ride-lab-run.js', '60-ride-lab-scene.js')]
          + [khost.path(f) for f in khost.SHELL if f != '20-core-clock.js']
          + [os.path.join(CORE, 'walk', 'frame', '95-walk-frame-host.js'), os.path.join(HERE, '98-ride-lab-take.js'), os.path.join(HERE, '99-tail.html')])
-BSRC.report(FRAGS)   # --list-sources: what the page is made of, then exit
+VEHICLES = vehicle_bundle.bundle(['ancient', 'line', 'tungang'])   # the Ancients' vehicles, the Line's cars, the Tungangs' stock
+BSRC.report(FRAGS)   # --list-sources: what the page is made of (the bundle's reads are the audit hook's), then exit
 out = []
 for p in FRAGS:
     s = open(p, encoding='utf-8').read()
+    if p.endswith('40-ride-lab-world.js'):
+        out.append('\n// ==================== kits/motor-vehicles (vehicle_bundle.bundle: ancient, line, tungang)\n' + VEHICLES)
     out.append(('\n// ==================== %s\n' % os.path.relpath(p, CORE).replace(os.sep, '/') if p.endswith('.js') else '') + s)
 html = ''.join(out)
 os.makedirs(os.path.join(HERE, 'dist'), exist_ok=True)
