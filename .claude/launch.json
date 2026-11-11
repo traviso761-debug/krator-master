@@ -171,6 +171,18 @@
                                                    "core/simulation/ride/lab/dist"
                                                ],
                                "port":  8857
+                           },
+                           {
+                             "name": "motor-vehicles",
+                             "runtimeExecutable": "python",
+                             "runtimeArgs": ["-m", "http.server", "8797", "--directory", "kits/motor-vehicles"],
+                             "port": 8797
+                           },
+                           {
+                             "name": "line",
+                             "runtimeExecutable": "python",
+                             "runtimeArgs": ["-m", "http.server", "8841", "--directory", "biomes/line/dist"],
+                             "port": 8841
                            }
                        ]
 }

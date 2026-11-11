@@ -51,7 +51,7 @@
     "kits/mechs/tex/pack.json": "8520471c394b5a762d727171f5e879c470f970c38a21836bf9f9ecec6ff16eea",
     "kits/mechs/tex/plate.albedo.webp": "5da438689601eaa550b8b2522c70e9c82fa13f93a53810a537f07ccd6183d0d3",
     "kits/mechs/tex/sunbanner.albedo.webp": "7ab86d89d9df6cd059ca4bc8dfd55c262b653d576dabc0f5f05904b5fc3887a3",
-    "kits/motor-vehicles/vehicles-core.js": "3ef2b2ba7ba37ada7e633706bd92bf55f1c41122b902e9f2cb461ba5fef0c22e",
+    "kits/motor-vehicles/vehicles-core.js": "85b818f33a3305886128379a011df40103dc76cbdd2656d422a2d5af6d472990",
     "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
    },
@@ -62,14 +62,14 @@
     "tools": "2d2fdaca850a104a2a2c553313ccb3ad18dc6bc48cb554c8c714fc1ca39607bf"
    },
    "outputs": {
-    "kits/mechs/build-manifest.json": "d765510d05ffc395c5c9edce39c5be1739f9c110d1818a67881e19ecb3f1f7f0",
-    "kits/mechs/dist/krator-mechs.js": "b7cc2868d0600764077eddad96293e05621c16fc069df9d7827033bc5c954f1b",
-    "kits/mechs/dist/mechs.html": "ba00e9294660255830ed63a1e1c8784c4d253676b63fcd0178268d868243cbc6"
+    "kits/mechs/build-manifest.json": "b9cc3173eff9d30cd4e0984fc861c91df155fdcac73ea1e6deeb24b612ccb3fe",
+    "kits/mechs/dist/krator-mechs.js": "37407c4a839bd56ad209a5cf60ebbbc77a22d2844951fce951e831e6e4d04c3c",
+    "kits/mechs/dist/mechs.html": "546c441eadb97d53b0a819dd2c9b67ce95862e98ecf38f445c01702e9584ac75"
    },
    "outputs_raw": {
-    "kits/mechs/build-manifest.json": "e46665007e90443d0615299b06e84cbadf18d8423012666d24e6270dd1d345ab",
-    "kits/mechs/dist/krator-mechs.js": "b7cc2868d0600764077eddad96293e05621c16fc069df9d7827033bc5c954f1b",
-    "kits/mechs/dist/mechs.html": "ba00e9294660255830ed63a1e1c8784c4d253676b63fcd0178268d868243cbc6"
+    "kits/mechs/build-manifest.json": "886903044ad80431dc2790a0bbf13afc902e7480ac35ca943b288aee7c317836",
+    "kits/mechs/dist/krator-mechs.js": "37407c4a839bd56ad209a5cf60ebbbc77a22d2844951fce951e831e6e4d04c3c",
+    "kits/mechs/dist/mechs.html": "546c441eadb97d53b0a819dd2c9b67ce95862e98ecf38f445c01702e9584ac75"
    }
   }
  }
