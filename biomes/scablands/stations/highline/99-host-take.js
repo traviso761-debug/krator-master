@@ -31,7 +31,7 @@ const VIEWS={
   return[cx,Math.max(y0+14,g(cx,cz)+4),cz,HK.x,y0+HK.H*.3,HK.z];})():look(L0[0]-60,L0[1],4,L0[0],L0[1],2),
  'Along the high line':look(L1[0]+40,L1[1]-60,14,L0[0],L0[1],2),
  'The strandlines down the old bed':look(-1500,-2100,22,-2600,-300,0),
- 'Down the west breach\'s mouth':(()=>{const a=gcs(HLC.len*.15,COURSE.floor*.75,90),b=gcs(HLC.len*.75,0,0);return[a[0],a[1],a[2],b[0],b[1],b[2]];})(),
+ 'Down the west breach mouth':(()=>{const a=gcs(HLC.len*.15,COURSE.floor*.75,90),b=gcs(HLC.len*.75,0,0);return[a[0],a[1],a[2],b[0],b[1],b[2]];})(),
  'The fan, its bars and giant current ripples':look(PLACE3.bar[0]+180,PLACE3.bar[1]-160,26,PLACE3.bar[0]-120,PLACE3.bar[1]+120,0),
  'An erratic on a bar':(()=>{const e=ERRATICS.filter(q=>q.kind==='block').sort((a,b)=>b.sx*b.sy-a.sx*a.sy)[0]||ERRATICS[0]||{x:FAN.x,z:FAN.z,sx:4,sy:3};
   const d=e.sx*3+14,c=[e.x+d*.8,0,e.z+d*.6];return[c[0],terrainH(c[0],c[2])+e.sy+5,c[2],e.x,terrainH(e.x,e.z)+e.sy*.4,e.z];})(),

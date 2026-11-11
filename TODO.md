@@ -35,10 +35,6 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 
 ## Left red by the second integration pass *(2026-11-11; HANDOFF-REBUILD.md)*
 
-- **Eleven view names with an apostrophe** (check_views, over its baseline), from the merged stations: rift maze (`A spring at the
-  scarp's foot`, `The Ancients' cut gallery ...`, `The scarp's lip ...`; `biomes/rift/verify.py` names the first), scablands highline
-  and highline-nw, swhighlands span (two) and rainwall, abyssal-savannah belt (two), Erewhon's `Citadel — the Treasurer's court`.
-  Rename as Firebliss's were (`2f6a92dcb`), rebuild those five builds, re-verify the pages, update their baseline rows.
 - **The NE wall's `HV('thatch, mats, arrow shafts', ...)`**: `core/hamlet/test-hamlet.js` cannot read "arrow shafts". Add it to the
   craft rule in `core/hamlet/10-hamlet-wood.js` with the next rebuild that takes core/hamlet (54 pages), or call it `poles` in the kit.
 

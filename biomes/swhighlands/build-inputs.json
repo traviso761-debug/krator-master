@@ -793,7 +793,7 @@
     "biomes/swhighlands/stations/rainwall/89a-host-atmos.js": "5ca970e9fccfc5f4d5381aac6be422c450eb3f6184b422cd616b608d93dab8df",
     "biomes/swhighlands/stations/rainwall/89s-host-sky.js": "2bc7db2acc12547cc5c4c77d6feaccfb344b95f1fe74a0ed45a101fa22e84286",
     "biomes/swhighlands/stations/rainwall/89w-host-water.js": "f781b20badc8b97902bba7faf93ffa102b26940c8d50d77c8baf024b3b58938e",
-    "biomes/swhighlands/stations/rainwall/99-host-take.js": "530c42b981b2a013f89ad07d6a79f6e68ff4a8fd0acfc11aab893078e41c6566",
+    "biomes/swhighlands/stations/rainwall/99-host-take.js": "be2a49b09766ea6c782e7902aff13d437268589ff73cc1429c30b0167876f9d8",
     "biomes/swhighlands/stations/shared/89zz-host-shadow.js": "644b455e2625b0fb8db0580a3804c2bff912cff481d6efedac4586861ab68ab8",
     "biomes/swhighlands/tex/brush.albedo.webp": "7209607a0576635687ac955adc7255130aeaabfc4cf919abf1d64a2aaea9cbfd",
     "biomes/swhighlands/tex/cap.albedo.webp": "64794b2ac51422b1eca9382485db6a4f040cb582c4751f1d781d84c95ae57515",
@@ -916,10 +916,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/swhighlands/dist/swhighlands-rainwall.html": "274714d36750f6e6981f27985cda0b8ce264e274c35621de948a2aa00665aa70"
+    "biomes/swhighlands/dist/swhighlands-rainwall.html": "a8a6a1ef079c912e20d67a799108e166408cd363320e932db2b8756b89351b4a"
    },
    "outputs_raw": {
-    "biomes/swhighlands/dist/swhighlands-rainwall.html": "274714d36750f6e6981f27985cda0b8ce264e274c35621de948a2aa00665aa70"
+    "biomes/swhighlands/dist/swhighlands-rainwall.html": "a8a6a1ef079c912e20d67a799108e166408cd363320e932db2b8756b89351b4a"
    }
   },
   "build.py --station span": {
@@ -950,7 +950,7 @@
     "biomes/swhighlands/stations/span/87-host-kin.js": "2226cee766fa41d9738965f140714c008a1615650a225013adc174cb94fdb5dc",
     "biomes/swhighlands/stations/span/88-host-build.js": "0fc84d98d5971327195fa07f227a9b65a50d0cb2e8220f383519f67881a465ee",
     "biomes/swhighlands/stations/span/89wb-host-tableland-water.js": "f678db966ecfeadd152a4e5e8c2c4bcebaba72eac7bf13dbf106c77c51f65100",
-    "biomes/swhighlands/stations/span/99-host-take.js": "2b8255f93553708b1a14ab27b1e88b835677e5fb6ea9bf3adf62911a57464ada",
+    "biomes/swhighlands/stations/span/99-host-take.js": "e32774f7ecf4e7c2e40569c0a3560dcde9a09f4d58123bb27d4da8abba4e3324",
     "biomes/swhighlands/stations/span/INHERIT": "7cbecbe658e4fdedd0ca17305c133e0a6cc652f7d16ced113d1d541b339164d8",
     "biomes/swhighlands/stations/span/station.json": "408264890ff6379e58bb7ce344d4afbc905dbb3b2fd93297f271c5552154835f",
     "biomes/swhighlands/tex/brush.albedo.webp": "7209607a0576635687ac955adc7255130aeaabfc4cf919abf1d64a2aaea9cbfd",
@@ -1084,10 +1084,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/swhighlands/dist/swhighlands-span.html": "ccb1dc019b7c21d7f56ded22bb50924f8473e2bc2b5684390f4ea8b1cb408b58"
+    "biomes/swhighlands/dist/swhighlands-span.html": "1cc2e0acb47af515ff55c20b8d08f5b5a26ce8399ea6b0344cadc50e17a2eb3b"
    },
    "outputs_raw": {
-    "biomes/swhighlands/dist/swhighlands-span.html": "ccb1dc019b7c21d7f56ded22bb50924f8473e2bc2b5684390f4ea8b1cb408b58"
+    "biomes/swhighlands/dist/swhighlands-span.html": "1cc2e0acb47af515ff55c20b8d08f5b5a26ce8399ea6b0344cadc50e17a2eb3b"
    }
   },
   "build.py --station treeline": {

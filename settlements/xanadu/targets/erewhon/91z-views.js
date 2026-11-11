@@ -42,5 +42,5 @@ const VIEWS=(function(){const V={};const pal=_at('palace'),gd=_at('garden'),mm=_
   if(P){V['Citadel — the Hall of Audience']=at(P,[0,2.1,0.6],[0,4.6,-21]);V['Citadel — the gate iwan']=at(P,[0,2.15,XGW.IW+4],[0,10.6,XGW.IW-3.4]);
    if(typeof GOLDEN_WAY!=='undefined'&&GOLDEN_WAY){const m=xgwPlan(GOLDEN_WAY.top).mid,zl=XGW.IW+(XGW.Z.foot+XGW.Z.low)/2;V['Citadel — the Golden Way']=at(P,[XGW.X.turn0+1.6,m+1.75,zl],[XGW.X.bridge+2,2.4,zl]);}}
   if(Vz)V['Citadel — the Divan']=at(Vz,[3.5,2.1,-15.2],[-19,3.9,-38]);
-  if(T)V['Citadel — the Treasurer\'s court']=at(T,[-2.5,1.9,8.2],[2.5,2.8,-7]);}
+  if(T)V['Citadel — the court of the Treasurer']=at(T,[-2.5,1.9,8.2],[2.5,2.8,-7]);}
  return V;})();

@@ -254,7 +254,7 @@
     "biomes/scablands/stations/highline/56-biome-scablands-highline.js": "ead0fed88543d20168eb98ea3224cf7a342b4eae722610d73b25c54cc91aa627",
     "biomes/scablands/stations/highline/87h-host-hulks.js": "429a1b4b72183fbf2064ce0aad9f74bbf60cae7c66b171613157a60c0f38af25",
     "biomes/scablands/stations/highline/87w-host-wrack.js": "78c1b6147f721dde57e8203653c071b4ab4414238773c2c390d91f2be239c81a",
-    "biomes/scablands/stations/highline/99-host-take.js": "38a8b385d866cda2e720d9be9bc5e59fed54794ce1323ed9d64aa443654cca1f",
+    "biomes/scablands/stations/highline/99-host-take.js": "bb67ab512fdaafeae848f2f6b1e811253d7e44614b3c98cdb8130430b7c02c61",
     "biomes/scablands/stations/highline/station.json": "c07b76a37e75394bf438d031e7842d9a11cccced3d3532cd0ab0f38459e93b6c",
     "biomes/scablands/tex/basalt.albedo.webp": "0058a7c75db23a735260b0c2f0627e87625469312879e58da9cd641148c54f60",
     "biomes/scablands/tex/basalt.normal.webp": "28faceb2cc3153bea0ce6bbe8b45d985e2c8b8d220f19258e94fde1462cf5600",
@@ -361,10 +361,10 @@
     "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512"
    },
    "outputs": {
-    "biomes/scablands/dist/highline.html": "b2dc6a2bc96801c12d6c7adb918ce8ee58ba2e9874b0aa992e80cba339978505"
+    "biomes/scablands/dist/highline.html": "d61666f4e8c6def7671e0b09aa2cf0ca6369d78a65188a94942dd4565f36a0c2"
    },
    "outputs_raw": {
-    "biomes/scablands/dist/highline.html": "b2dc6a2bc96801c12d6c7adb918ce8ee58ba2e9874b0aa992e80cba339978505"
+    "biomes/scablands/dist/highline.html": "d61666f4e8c6def7671e0b09aa2cf0ca6369d78a65188a94942dd4565f36a0c2"
    }
   },
   "build.py --station highline-nw": {
@@ -460,7 +460,7 @@
     "biomes/scablands/stations/highline-nw/89-host-sky.js": "c977ec95d35d12ac96bf4f36d9df7860ab643be8b29c830a26e0d8cf72ecb340",
     "biomes/scablands/stations/highline-nw/89a-host-atmos.js": "ecfd0d6fb953eb09ef35125552c6986a36bc4f3ec001577ebe631be59c572c36",
     "biomes/scablands/stations/highline-nw/89w-host-water.js": "6671feb259425e53a5be71eb4bad64c863a8fe6e76de5263045da3f53f8d6f4a",
-    "biomes/scablands/stations/highline-nw/99-host-take.js": "55fac83bb749ed6d67df46e85eba9a59fab74b25f634297aafb8eee0f9f98972",
+    "biomes/scablands/stations/highline-nw/99-host-take.js": "6eb280c03a7ec9e84ce05ee8a996698403d05c48e963bf5143071b164b0cbb1a",
     "biomes/scablands/stations/highline-nw/station.json": "65280387314508425d3b112d9cbea01a739e308919013303bd9c3d7b263ee134",
     "biomes/scablands/stations/highline/87w-host-wrack.js": "78c1b6147f721dde57e8203653c071b4ab4414238773c2c390d91f2be239c81a",
     "biomes/scablands/stations/highline/station.json": "c07b76a37e75394bf438d031e7842d9a11cccced3d3532cd0ab0f38459e93b6c",
@@ -577,10 +577,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/scablands/dist/highline-nw.html": "3a84e33cee371830ef3c344c31713a53695222564364ef5a9c33b7928dfc19f1"
+    "biomes/scablands/dist/highline-nw.html": "ac65d2aaa1875deac336295b9148fe8490a3500d17c15606390bf7a6d28355ea"
    },
    "outputs_raw": {
-    "biomes/scablands/dist/highline-nw.html": "3a84e33cee371830ef3c344c31713a53695222564364ef5a9c33b7928dfc19f1"
+    "biomes/scablands/dist/highline-nw.html": "ac65d2aaa1875deac336295b9148fe8490a3500d17c15606390bf7a6d28355ea"
    }
   }
  }

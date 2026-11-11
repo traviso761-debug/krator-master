@@ -17,7 +17,7 @@ const VIEWS={};
  {const T=SWHI.TREES.find(T=>T.sp===SWHI.KEY.fishingbridge);if(T){const mx=(T.x+T.x2)/2,mz=(T.z+T.z2)/2,r=streamNear(mx,mz),i=r?r.i:0,p=SEEP.pts[Math.max(0,i-3)];
   add('The fishing bridge over the seep',[p[0],SEEP.y[Math.max(0,i-3)]+2.2,p[1]+3,mx,SEEP.y[i]+2.5,mz]);}}
  // the thread of falls: from the lower valley up to the lip
- {const x=LIP.x-300,z=axisZ(x)+40;add('The seep\'s falls over the hanging lip',[x,G(x,z)+30,z,LIP.x+20,floorY(LIP.x+20)-30,axisZ(LIP.x)]);}
+ {const x=LIP.x-300,z=axisZ(x)+40;add('The seep falls over the hanging lip',[x,G(x,z)+30,z,LIP.x+20,floorY(LIP.x+20)-30,axisZ(LIP.x)]);}
  {const S=(SWHI.SNAGS||[]).slice().sort((a,b)=>a.x-b.x);if(S.length){const s=S[Math.floor(S.length*.4)],x=s.x-55,z=s.z+20;add('Drowned trees in the lake',[x,LAKE.level+4,z,s.x+30,LAKE.level+4,s.z-5]);}}
  {const P=PINNACLES[Math.floor(PINNACLES.length/2)];if(P){const x=P.x+70,z=P.z+60;add('Fluted pinnacles over the scar',[x,G(x,z)+12,z,P.x,(P.y0+P.top)*.5,P.z]);}}
  {const g=itemPositions('glowtubes',3).filter(p=>Math.abs(p[2]-axisZ(p[0]))<500);if(g.length){const p=g[Math.floor(g.length/2)];add('Glow tubes on the forest floor at night',[p[0]+5,G(p[0]+5,p[2]+3)+1.6,p[2]+3,p[0],p[1]+.6,p[2]],'night');}}

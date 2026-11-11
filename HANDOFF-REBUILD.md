@@ -106,10 +106,10 @@ the span preview (`swhighlands --station pillars --preview span`, missed by the 
 deliberate, each read: the radiation pass's `CAMPOS` and `RAWTEX` x3 (a full ShaderMaterial; a depth texture and the encoded frame), the
 vehicles' `2 / (s.n || 2)` (0 would divide by zero), the valley's creeper and mosshang cells (picked in code), the W wall's puyaspike
 cut, riftrim's `KCITY.stance` (behind `TUNE.stance`, which riftrim never sets), engines' `EN_HEX.computeBoundingBox` (a three.js
-method), iziz-cluster's five window clashes (Girder's and Mav's sources together, as `beast-riders.html` already carries). **Left
-failing, owed:** `check_views`, eleven view names with an apostrophe from the merged stations (rift maze x3, scablands highline and
-highline-nw, swhighlands span x2 and rainwall, abyssal-savannah belt x2, Erewhon's Treasurer's court): a rename means rebuilding five
-builds and re-verifying their pages; `core/hamlet`, the NE wall's "arrow shafts" (a craft rule in `10-hamlet-wood.js` reaches 54
+method), iziz-cluster's five window clashes (Girder's and Mav's sources together, as `beast-riders.html` already carries). The
+merged stations' eleven view names with an apostrophe renamed (rift maze x3, scablands highline and highline-nw, swhighlands span x2
+and rainwall, abyssal-savannah belt x2 and its check, Erewhon's `Citadel — the court of the Treasurer`); the seven pages rebuilt and
+passing (`--all-views`; Erewhon `--interiors`, 882 s on the Arc), their baseline rows rewritten. **Left failing, owed:** `core/hamlet`, the NE wall's "arrow shafts" (a craft rule in `10-hamlet-wood.js` reaches 54
 pages); `core/audio/test-audio.js`, 68 clips in categories `categories.json` lacks (`sfx.interface`, `sfx.impact`, `music.motif`) and
 5 clips without a source URL (two Drones pack beds, three user uploads), as `a1e202d37` committed them (the Audio Lab's call);
 `check_stale` for Longsong (blocked, below).

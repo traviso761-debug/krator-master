@@ -11,10 +11,10 @@ const VIEWS={
  'In the grass':V(700,-420,1.7,1000,-300,2.2),
  'Umbrella trees at their tallest':(function(){const T=nearestTree(0,500,-200,false,T=>T.H>22);if(!T)return V(500,-200,3,700,-200,12);const a=.5;
   return V(T.x-Math.cos(a)*T.crownR*4,T.z-Math.sin(a)*T.crownR*4,2.2,T.x,T.z,T.H*.55);})(),
- 'The clay ants\' spires':(function(){const k=nearestMound(600,-300);if(!k)return V(600,-300,3,700,-300,4);const h=k.top-k.y0;return V(k.x-h*1.6,k.z+h*1.1,2,k.x,k.z,h*.55);})(),
+ 'The clay ant spires':(function(){const k=nearestMound(600,-300);if(!k)return V(600,-300,3,700,-300,4);const h=k.top-k.y0;return V(k.x-h*1.6,k.z+h*1.1,2,k.x,k.z,h*.55);})(),
  'Rope araucarias':(function(){const T=nearestTree(17,800,0,true,T=>BIO.field('upland',T.x,T.z)>.25);if(!T)return V(800,0,3,900,0,15);return V(T.x+T.crownR*3.5,T.z+T.crownR*2,2.5,T.x,T.z,T.H*.5);})(),
  'The belt stream':(function(){const z=-1100;return V(strX(z+140)+10,z+140,7,strX(z-220),z-220,1.5);})(),
- 'The jungle\'s edge':V(1500,-1150,4,2950,-2250,18),
+ 'The jungle edge':V(1500,-1150,4,2950,-2250,18),
  'The salt flat':V(PAN.c[0]+380,PAN.c[1]-650,5,PAN.c[0],PAN.c[1],0),
  'A fresh burn':(function(){const p=burnSpot(0,600,-200);return V(p[0]-30,p[1]-22,7,p[0]+25,p[1]+18,0);})(),
  'A young burn':(function(){const p=burnSpot(2,400,400);return V(p[0]-40,p[1]-30,1.8,p[0]+60,p[1]+40,1);})(),
@@ -72,7 +72,7 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),T
  add('the eastern abyss jungle at the jungle\'s edge',HCHK.jungle(T));
  add('rope araucarias through the parkland',HCHK.araucaria(T));
  add('the parkland at its tallest',HCHK.tall(T));
- add('the clay ants\' spires',HCHK.mounds(MOUNDS,T));
+ add('the clay ant spires',HCHK.mounds(MOUNDS,T));
  add('no tree in the water',HCHK.dry(T));
  add('the burn mosaic',HCHK.burn(F,burnAges()));
  add('the flora and the wet band read the shore of the water (BIO.envCheck, WATER.edgeAudit)',edgeCheck());

@@ -464,7 +464,7 @@
     "biomes/rift/stations/maze/85-host-speleo.js": "9a591201e0f9068e5124b781493dfba9f78e3e08113e0d1af2af3b8ed5cff7c8",
     "biomes/rift/stations/maze/89x-host-air.js": "8aabeb097383a118eec54566edfc59e616d84c12e47d29dbb0cb6f7853e47c98",
     "biomes/rift/stations/maze/89z-host-build.js": "5c93e01a20c854d5191831df94be2671a9b5e9aae11e94153404aca30e8f4fb1",
-    "biomes/rift/stations/maze/98v-host-views.js": "44022e28d7b5763f1705eb1a483bd19edcba9312b7e4e2df394d71de64c0bb63",
+    "biomes/rift/stations/maze/98v-host-views.js": "70b156f3dfa90e906f04ac447ea1679a1e79b6d1f05875fe9344075a423c7905",
     "biomes/rift/stations/maze/99-host-take.js": "4d1d5718a159ca3ddd9bb0108b5dab5457ccd1189f28bf8fc7c1c36298adde9f",
     "biomes/rift/stations/maze/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
     "biomes/rift/stations/maze/station.json": "92aee0732f9e40bed0843fb7fae5d858c261adb2e363b2b7e6f084042eec99ee",
@@ -584,10 +584,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/rift/dist/rift-maze.html": "a6bd121628f72e50a5f8c1f5f45d23e27caadcba9c2546cd0372f69e7e5cc39a"
+    "biomes/rift/dist/rift-maze.html": "2b9b1ca10962d2464bfa1b6def6a80701f0d95c37908e79b9ec4633d73b6a5a1"
    },
    "outputs_raw": {
-    "biomes/rift/dist/rift-maze.html": "a6bd121628f72e50a5f8c1f5f45d23e27caadcba9c2546cd0372f69e7e5cc39a"
+    "biomes/rift/dist/rift-maze.html": "2b9b1ca10962d2464bfa1b6def6a80701f0d95c37908e79b9ec4633d73b6a5a1"
    }
   },
   "build.py --station plateau": {

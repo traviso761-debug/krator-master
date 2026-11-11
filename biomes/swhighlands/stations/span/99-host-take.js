@@ -10,7 +10,7 @@ const VIEWS={};
  // the overview: from over the table north of the rim, across the slots and domes to the canyon's rim
  {const x=-200,z=rimZ(x)-900;add('Overview of the tableland',[x,tableTop(x,z)+70,z,-900,tableTop(-900,rimZ(-900)-300),rimZ(-900)-300]);}
  // Span's canyon: from its northern rim along the reach (the arcology's ground: settlements/span draws it)
- {const a=P(700,230),b=P(0,-20);add('Span\'s canyon (the arcology\'s ground)',[a[0],tableTop(a[0],a[1])+25,a[1],b[0],tableTop(b[0],b[1])-140,b[1]]);
+ {const a=P(700,230),b=P(0,-20);add('Span canyon (the arcology ground)',[a[0],tableTop(a[0],a[1])+25,a[1],b[0],tableTop(b[0],b[1])-140,b[1]]);
   const c=P(-500,-250),d=P(-1650,0);add('The reservoir above the canyon',[c[0],tableTop(c[0],c[1])+40,c[1],d[0],RESERVOIR.level,d[1]]);}
  // a hanging swamp: its seep pool with the most cell lamps round it, from beside it at eye height
  {const L=itemPositions('celllamp');let best=null,bn=0;SEEP_POOLS.forEach(Q=>{const n=L.filter(p=>Math.hypot(p[0]-Q.x,p[2]-Q.z)<Q.r+1.5).length;if(n>bn){bn=n;best=Q;}});
@@ -32,7 +32,7 @@ const VIEWS={};
   const tz=(ra[1]+rb[1])/2,ty=groundH(fx,tz)-45;let cam=null;for(const dz of [450,600,750,900])for(const dx of [0,-120,120,-240,240]){if(cam)break;const x=fx+dx,z=tz+dz,y=G(x,z)+25;let clear=true;
    for(let s=.08;s<.92&&clear;s+=.04){const px=x+(fx-x)*s,pz=z+(tz-z)*s,py=y+(ty-y)*s,t=towerTop(px,pz,0);if(nearTower(px,pz,3)&&(!t||t.top>py-2))clear=false;}if(clear)cam=[x,y,z];}
   if(!cam)cam=[fx,G(fx,tz+600)+60,tz+600];add('The twin falls over the rim',[cam[0],cam[1],cam[2],fx,ty,tz]);
-  const t=TWIN[0].pts[Math.floor(TWIN[0].pts.length*.4)];add('The twin falls\' streams on the slickrock',[t[0]+30,G(t[0]+30,t[1]-30)+4,t[1]-30,t[0],G(t[0],t[1]),t[1]+40]);}}
+  const t=TWIN[0].pts[Math.floor(TWIN[0].pts.length*.4)];add('The twin falls streams on the slickrock',[t[0]+30,G(t[0]+30,t[1]-30)+4,t[1]-30,t[0],G(t[0],t[1]),t[1]+40]);}}
  {const C=(STATION_KIN.cedar||[]).filter(T=>T.lv===2),T=C[Math.floor(C.length/2)];if(T){const x=T.x+T.crownR*2.2,z=T.z+T.crownR*.8;add('A tier cedar on the slickrock',[x,G(x,z)+3,z,T.x,T.y0+T.H*.5,T.z]);}}
  {const C=(STATION_KIN.madrone||[]).filter(T=>T.lv===2),T=C[Math.floor(C.length/2)];if(T){const x=T.x+T.crownR*2,z=T.z-T.crownR;add('A flayed madrone on the sunny side',[x,G(x,z)+2.5,z,T.x,T.y0+T.H*.4,T.z]);}}
  {const x=-300,z=rimZ(x)-500;add('Torch spikes on the slickrock',[x,G(x,z)+2.2,z,x+40,G(x+40,z+25)+.6,z+25]);}

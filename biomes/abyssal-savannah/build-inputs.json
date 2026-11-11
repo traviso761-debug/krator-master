@@ -216,7 +216,7 @@
     "biomes/abyssal-savannah/stations/belt/80-host-ground.js": "b585d4623687ca5258979a3dbed37d2b1aafb18d939528c04778dca300a92d90",
     "biomes/abyssal-savannah/stations/belt/89w-host-water.js": "4a5e38da4c70d15f367795692c176d81b2eed36beae6fe19f58a47cec5f54610",
     "biomes/abyssal-savannah/stations/belt/89z-host-build.js": "b027ee4d4edda6befd87c159a9d9babae58bf2eee9cc2cb452dd7937bb3d955c",
-    "biomes/abyssal-savannah/stations/belt/99-host-take.js": "1567044dd3803a33e2242c7b85c15272647468e07a55bab1a3a4f53e1538d34f",
+    "biomes/abyssal-savannah/stations/belt/99-host-take.js": "0e9aab86e24531459b06db87dba569541473cc254475a3d1c6fd02d237575a21",
     "biomes/abyssal-savannah/stations/belt/station.json": "377993da108f4c999a481143f7ddd99ec7976cb9f5c696a075b58633cad4ed7b",
     "biomes/abyssal-savannah/tex/bark0.albedo.webp": "64305db7fd5dddf4ca046c5b6493634668d9117bf4027c6691824dafb4779093",
     "biomes/abyssal-savannah/tex/bark1.albedo.webp": "1acde04c70f219ed275b8edb54410bdf1f4a31357eca645f50d19f9b48673f19",
@@ -389,10 +389,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/abyssal-savannah/dist/abyssal-savannah-belt.html": "b7aa441a8b51af9ccf38e84700170fea511800705cf8ae1b4fa7471dd4412361"
+    "biomes/abyssal-savannah/dist/abyssal-savannah-belt.html": "d980bf95cd07a327371541c600aa97c1435d0ff4cfd571fd72bf9c504e27f97c"
    },
    "outputs_raw": {
-    "biomes/abyssal-savannah/dist/abyssal-savannah-belt.html": "b7aa441a8b51af9ccf38e84700170fea511800705cf8ae1b4fa7471dd4412361"
+    "biomes/abyssal-savannah/dist/abyssal-savannah-belt.html": "d980bf95cd07a327371541c600aa97c1435d0ff4cfd571fd72bf9c504e27f97c"
    }
   },
   "build.py --station bench": {

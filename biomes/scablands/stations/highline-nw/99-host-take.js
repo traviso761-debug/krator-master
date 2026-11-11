@@ -37,7 +37,7 @@ const VIEWS={
  'The strait through the spur':(()=>{const a=gcs(HLC.len*.12,0,60),b=gcs(HLC.len*.62,0,0);return[a[0],a[1],a[2],b[0],b[1],b[2]];})(),
  'Crag pines on the scoured rock':viewT(nearT(ROCK_T,[STRAIT.x,STRAIT.z],2),5,4,.45,look(STRAIT.x+120,STRAIT.z+60,20,STRAIT.x,STRAIT.z,0)),
  'Tussock and saltbush on the rock':look(PLACE.rock[0]+16,PLACE.rock[1]+10,2.2,PLACE.rock[0],PLACE.rock[1],0),
- 'The strait\'s fan, its bars and current ripples':look(PLACE.bar[0]+160,PLACE.bar[1]+140,26,PLACE.bar[0]-120,PLACE.bar[1]-120,0),
+ 'The strait fan, its bars and current ripples':look(PLACE.bar[0]+160,PLACE.bar[1]+140,26,PLACE.bar[0]-120,PLACE.bar[1]-120,0),
  'An erratic on a bar':(()=>{const e=ERRATICS.filter(q=>q.kind==='block').sort((a,b)=>b.sx*b.sy-a.sx*a.sy)[0]||ERRATICS[0]||{x:FAN.x,z:FAN.z,sx:4,sy:3};
   const d=e.sx*3+14,c=[e.x+d*.8,e.z+d*.6];return[c[0],eyeH(c[0],c[1])+e.sy+5,c[1],e.x,terrainH(e.x,e.z)+e.sy*.4,e.z];})(),
  'The old forest above the line':look(PLACE.hills[0]+80,PLACE.hills[1]+60,4,PLACE.hills[0]-60,PLACE.hills[1]-40,8),

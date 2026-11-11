@@ -269,7 +269,7 @@
     "settlements/xanadu/targets/erewhon/89z-rows.js": "5cabf217d384626b36f0476acc235064341356011e9ab2ad60874cf30235f589",
     "settlements/xanadu/targets/erewhon/90a-er-world.js": "ce295b247139fa79dfa17fbab4fcd9a6c9ec46cf111f233a700d2201b484ed2e",
     "settlements/xanadu/targets/erewhon/90b-er-build.js": "c559450019994686f35d86879688b32c7638af74fa29cc9e64d4f2b3d2d256fa",
-    "settlements/xanadu/targets/erewhon/91z-views.js": "22c1dad2e5fc9687b84feb0a6f0a9bcafd9a00bb1cf56a88ee3e26fa2130334f",
+    "settlements/xanadu/targets/erewhon/91z-views.js": "a04823eb4a65581f41709d6ee4be445860aacd00fa49733fc4b0b68d96755d86",
     "settlements/xanadu/targets/erewhon/93-er-ui.js": "517dd22525cdad7793edf206b95bd4b6c7c70502e14e169c5d5319dfbca44698",
     "settlements/xanadu/targets/xanadu/89z-rows.js": "2fb8dd4970f1bca96620cc37416b98453ea0e69e2c45094c662bd993b0ba8328",
     "settlements/xanadu/targets/xanadu/90-xa-still.js": "6094237890c417c94578915eb176572964eb2319a3d457586c02ff0037a2af6a",
@@ -437,18 +437,18 @@
    },
    "outputs": {
     "settlements/xanadu/VENDOR.json": "ed46582fb92d0f1c1c13a0cb7b6fcf37196d84c1499934f72636be1ce164f158",
-    "settlements/xanadu/build-manifest-erewhon.json": "cbc4c26fc22ec720257c8577ab0042dfd92c6a7dd9d83dd1d22ac9a7d28fa3a8",
+    "settlements/xanadu/build-manifest-erewhon.json": "7f5d8d8872e46da3d300312d79bf24e27114bbc9549dc93b7d5aade718f049fb",
     "settlements/xanadu/build-manifest-xanadu.json": "046e4d7ed5e5b608d01ae4934e307a10922c47ddad4e8653f295537cc04182b0",
-    "settlements/xanadu/dist/erewhon.html": "28bb22dba6b7300ded26611b99b68511fda3da9204f23d6030be60e3db990a2a",
+    "settlements/xanadu/dist/erewhon.html": "4db64bf4aaf26e98a59dbb8bd35dcadc5b054a5f0c14d169b2025ac23acadaa4",
     "settlements/xanadu/dist/xanadu.html": "519ea7f53a2872f9dc4566ede293c72fe70bea1546346197ac9e4167d2f729ac",
     "settlements/xanadu/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
     "settlements/xanadu/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4"
    },
    "outputs_raw": {
     "settlements/xanadu/VENDOR.json": "b1fad8bfd5cb2f141d50db7274657b16776136800f5366c81529c4243e605402",
-    "settlements/xanadu/build-manifest-erewhon.json": "1e09a4696ef91a6298958ff57d6ad822f0fa2ad93665fe94810c98caae88afb1",
+    "settlements/xanadu/build-manifest-erewhon.json": "e8b7080775c65f04bd980a92a5ca6737b3728f505067bd0e8a9c7b387f2e8fa7",
     "settlements/xanadu/build-manifest-xanadu.json": "e92c1cb832f2041f54f75ef68a328500f22b4075adfae2e7a66cf83868425642",
-    "settlements/xanadu/dist/erewhon.html": "28bb22dba6b7300ded26611b99b68511fda3da9204f23d6030be60e3db990a2a",
+    "settlements/xanadu/dist/erewhon.html": "4db64bf4aaf26e98a59dbb8bd35dcadc5b054a5f0c14d169b2025ac23acadaa4",
     "settlements/xanadu/dist/xanadu.html": "519ea7f53a2872f9dc4566ede293c72fe70bea1546346197ac9e4167d2f729ac",
     "settlements/xanadu/dist/xanadu.tex.xanadu-2.js": "be1d57f174e08cf71b5511aff65a313eec8edc29e057c48d027e9b60630f3ab5",
     "settlements/xanadu/dist/xanadu.tex.xanadu.js": "3fe87059ee305d523fa5026dddfd91123354e88d5839097de9df44137500f2a4"

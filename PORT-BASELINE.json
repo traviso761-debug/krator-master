@@ -1,8 +1,8 @@
 {
  "pages": {
   "biomes/abyssal-savannah/dist/abyssal-savannah-belt.html": {
-   "bytes": 11450005,
-   "sha256": "b7aa441a8b51af9ccf38e84700170fea511800705cf8ae1b4fa7471dd4412361"
+   "bytes": 11449996,
+   "sha256": "d980bf95cd07a327371541c600aa97c1435d0ff4cfd571fd72bf9c504e27f97c"
   },
   "biomes/abyssal-savannah/dist/abyssal-savannah-bench.html": {
    "bytes": 12016336,
@@ -525,8 +525,8 @@
    "sha256": "687d4731809ce5368bf504fec7f9daa8901b3dbdee54ecdba5435b49b1246702"
   },
   "biomes/rift/dist/rift-maze.html": {
-   "bytes": 1390846,
-   "sha256": "a6bd121628f72e50a5f8c1f5f45d23e27caadcba9c2546cd0372f69e7e5cc39a"
+   "bytes": 1390837,
+   "sha256": "2b9b1ca10962d2464bfa1b6def6a80701f0d95c37908e79b9ec4633d73b6a5a1"
   },
   "biomes/rift/dist/rift-plateau.html": {
    "bytes": 8179290,
@@ -593,12 +593,12 @@
    "sha256": "9ebf3519c5d594be50025a5a91261c98c688927d33088c110337f7bae2e04ef7"
   },
   "biomes/scablands/dist/highline-nw.html": {
-   "bytes": 10277866,
-   "sha256": "3a84e33cee371830ef3c344c31713a53695222564364ef5a9c33b7928dfc19f1"
+   "bytes": 10277863,
+   "sha256": "ac65d2aaa1875deac336295b9148fe8490a3500d17c15606390bf7a6d28355ea"
   },
   "biomes/scablands/dist/highline.html": {
-   "bytes": 7492103,
-   "sha256": "b2dc6a2bc96801c12d6c7adb918ce8ee58ba2e9874b0aa992e80cba339978505"
+   "bytes": 7492100,
+   "sha256": "d61666f4e8c6def7671e0b09aa2cf0ca6369d78a65188a94942dd4565f36a0c2"
   },
   "biomes/sedesert/dist/sedesert-bowl.html": {
    "bytes": 8371292,
@@ -649,12 +649,12 @@
    "sha256": "6d39985a848f68f7f51dd0fb3657a8bef722ca391f2a01a867bab449ff42cada"
   },
   "biomes/swhighlands/dist/swhighlands-rainwall.html": {
-   "bytes": 4751008,
-   "sha256": "274714d36750f6e6981f27985cda0b8ce264e274c35621de948a2aa00665aa70"
+   "bytes": 4751005,
+   "sha256": "a8a6a1ef079c912e20d67a799108e166408cd363320e932db2b8756b89351b4a"
   },
   "biomes/swhighlands/dist/swhighlands-span.html": {
-   "bytes": 5940366,
-   "sha256": "ccb1dc019b7c21d7f56ded22bb50924f8473e2bc2b5684390f4ea8b1cb408b58"
+   "bytes": 5940358,
+   "sha256": "1cc2e0acb47af515ff55c20b8d08f5b5a26ce8399ea6b0344cadc50e17a2eb3b"
   },
   "biomes/swhighlands/dist/swhighlands-treeline.html": {
    "bytes": 8837173,
@@ -1553,8 +1553,8 @@
    "sha256": "62072fe13143fd60c928119cf5d3e496ef1b9e6f4db5dbbd5d2ce612ffc08870"
   },
   "settlements/xanadu/dist/erewhon.html": {
-   "bytes": 8964426,
-   "sha256": "28bb22dba6b7300ded26611b99b68511fda3da9204f23d6030be60e3db990a2a"
+   "bytes": 8964430,
+   "sha256": "4db64bf4aaf26e98a59dbb8bd35dcadc5b054a5f0c14d169b2025ac23acadaa4"
   },
   "settlements/xanadu/dist/xanadu.html": {
    "bytes": 8798794,

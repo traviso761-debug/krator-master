@@ -15,7 +15,7 @@ const VIEWS=(function(){const V={},M=CAVE.M,P=CAVE.passages,B=CAVE.box,cx=CAVE.c
  {const ms=CAVE.mouths.filter(m=>m.storey>0),mz=ms.length?ms.reduce((a,m)=>a+m.at[2],0)/ms.length:0,x=-236,g=CAVE.ground(x,mz);
   V['The scarp and its mouths (from the bench)']=[x,g+7,mz-30,-158,-17,mz+10];}
  {const S=WATERS.springs[0];if(S){const sp=CAVE.water.springs.find(q=>q.id===S.id),d=sp.dir,x=S.at[0]+d[0]*9-d[1]*4,z=S.at[2]+d[1]*9+d[0]*4;
-  V['A spring at the scarp\'s foot']=[x,CAVE.ground(x,z)+2.2,z,sp.at[0],sp.y+1,sp.at[1]];}}
+  V['A spring at the scarp foot']=[x,CAVE.ground(x,z)+2.2,z,sp.at[0],sp.y+1,sp.at[1]];}}
  {const D=CAVE.dolines.slice().sort((a,b)=>b.r-a.r)[0];if(D){const g=SITE.ground(D.x,D.z),fl=D.floor==null?g-D.depth:D.floor,a=.7;
   V['A collapse doline (from the table)']=[D.x+Math.cos(a)*(D.r+7),g+5,D.z+Math.sin(a)*(D.r+7),D.x-Math.cos(a)*D.r*.3,fl+1,D.z-Math.sin(a)*D.r*.3];
   /* from under the overhang at the chamber's far end along its long axis, looking up and out of the pit */
@@ -34,10 +34,10 @@ const VIEWS=(function(){const V={},M=CAVE.M,P=CAVE.passages,B=CAVE.box,cx=CAVE.c
  /* the wet storey: along a flooded passage near the scarp, the eye over the water */
  {const ws=P.filter(p=>p.level===0&&both(p)&&Math.min(M[p.a].y,M[p.b].y)<WL);const p=byNear(ws,-120,40,p=>[(M[p.a].x+M[p.b].x)/2,(M[p.a].z+M[p.b].z)/2])[0];
   if(p){const a=M[p.a],b=M[p.b],e=eyeAt(a.x,WL+1.25,a.z);V['The wet storey (the perched water)']=[e[0],e[1],e[2],b.x,WL+.9,b.z];}}
- if(CAVE.ancients){const A=CAVE.ancients,e=eyeAt(A.end[0]+18,A.at[1]+1.7,A.end[2]);V['The Ancients\' cut gallery (its breach into the maze)']=[e[0],e[1],e[2],A.at[0]-2,A.at[1]+1.4,A.at[2]];}
+ if(CAVE.ancients){const A=CAVE.ancients,e=eyeAt(A.end[0]+18,A.at[1]+1.7,A.end[2]);V['The Ancient cut gallery (its breach into the maze)']=[e[0],e[1],e[2],A.at[0]-2,A.at[1]+1.4,A.at[2]];}
  if(CAVE.loj){const W=CAVE.loj.walls[0],e=eyeAt(W.at[0]+W.dir[0]*6,W.at[1]+1.6,W.at[2]+W.dir[1]*6);V['The walled chamber']=[e[0],e[1],e[2],W.at[0],W.at[1]+1.3,W.at[2]];}
  /* the scarp's lip from the air off the face: the face and its mouths running away north */
- V['The scarp\'s lip (from the air off the face)']=[-185,4,-110,-152,-18,20];
+ V['The scarp lip (from the air off the face)']=[-185,4,-110,-152,-18,20];
  V[PLAN_VIEW]=[cx-20,300,cz+40,cx-20,-20,cz];
  return V;})();
 function onView(name){const p=name===PLAN_VIEW;VIEW.plan=p;GROUND.mesh.visible=!p;SKY_ALL.value=p?1:0;}
