@@ -2,6 +2,8 @@
 // ================================================================= THE WORKS (PLAN.md section 3.3.1: fg-ropehouse, fg-pens, fg-icehouse, fg-sledgeshed)
 // The fowling works (the rope walk and rope house, the pens) and the ice works (the ice house, the sledge shed), as the
 // `fowling` and `ice` focuses of core/hamlet's fellgang row staff them (core/hamlet/fellgang/22-hamlet-fellgang.js).
+/* the box a building fills, by seed: w, d, h each a share of the stand-in's (the box an upper bound) */
+function fgFillBox(B,C,wr,dr,hr){const b={w:B.w*fgLerp(wr,fgU(C,21)),d:B.d*fgLerp(dr,fgU(C,22)),h:B.h*fgLerp(hr,fgU(C,23))};if(C.o.character==='low')b.h=Math.max(B.h*.8,b.h*.92);fgSet('fill',[+(b.w/B.w).toFixed(2),+(b.d/B.d).toFixed(2),+(b.h/B.h).toFixed(2)]);return b;}
 /* an open shed (the stand-ins' `shed` form): the back and end walls drystone, the front on bell-fir posts open to the lane,
    a turf roof falling from the back (its crown at the def's h) to the front eave at fe */
 function fgShed(B,C,o){o=o||{};const hw=B.w/2,hd=B.d/2,th=.6,bh=B.h-.4,fe=o.fe==null?2.45:o.fe,col=fgCol('stone',C),pc=fgCol('pole',C);
@@ -23,7 +25,7 @@ function fgPegRow(n,x0,x1,y,zb,C,o){o=o||{};const sp=(x1-x0)/n,pc=fgCol('pole',C
 defBuilding({key:'fg-ropehouse',name:'The rope house and rope walk',seed:9131,cut:true,w:20,d:5,h:4,budget:90000,
  tags:{types:['industry'],style:'drystone',role:'works',job:'ropemaking'},
  note:'the rope walk: a long open shed, the twisting posts, lobe-larch bark cordage laid up and Ancient cable spliced in, every family\'s spare coil on its own peg',
- build(o){const C=fgCx(o),B=TG.fg.BOX['fg-ropehouse'],S=fgShed(B,C),pc=fgCol('pole',C),wc=fgCol('wood',C);
+ build(o){const C=fgCx(o),B=fgFillBox(TG.fg.BOX['fg-ropehouse'],C,[.78,1],[.8,1],[.82,1]),S=fgShed(B,C,{fe:fgLerp([2.2,2.6],fgU(C,24))}),pc=fgCol('pole',C),wc=fgCol('wood',C);
   /* the twisting jacks at the two ends: a post frame, a crank board with three hooks; the strands laid between them */
   const xj=S.hw-1.4,yj=.95;for(const s of [-1,1]){const x=s*xj;for(const dz of [-.35,.35])pole('pole',[x,.06,.2+dz],[x,1.35,.2+dz],.07,pc,6);box('wood',x,1.05,.2,.12,.3,.9,wc);
    for(const dz of [-.22,0,.22])beam('iron',[x-s*.06,yj,.2+dz],[x-s*.22,yj,.2+dz],.02,P('iron'),true,5);}
@@ -41,12 +43,12 @@ defBuilding({key:'fg-ropehouse',name:'The rope house and rope walk',seed:9131,cu
 defBuilding({key:'fg-pens',name:'The pens',seed:9132,w:14,d:12,h:1.4,budget:50000,
  tags:{types:['farm'],style:'drystone',role:'works',job:'herding'},
  note:'drystone pens with a gate of plate and stakes, a shelter wall',
- build(o){const C=fgCx(o),B=TG.fg.BOX['fg-pens'],hw=B.w/2,hd=B.d/2,t=.6,wh=1.15,col=fgCol('stone',C),tc=fgCol('turf',C);
+ build(o){const C=fgCx(o),B=fgFillBox(TG.fg.BOX['fg-pens'],C,[.7,1],[.7,1],[.82,1]),hw=B.w/2,hd=B.d/2,t=.6,wh=1.15,col=fgCol('stone',C),tc=fgCol('turf',C);
   const run=(x0,z0,x1,z1)=>{const L=Math.hypot(x1-x0,z1-z0),n=Math.max(1,Math.ceil(L/3));for(let k=0;k<n;k++){const a=k/n,b=(k+1)/n,ax=x0+(x1-x0)*a,az=z0+(z1-z0)*a,bx=x0+(x1-x0)*b,bz=z0+(z1-z0)*b;
     const g=Math.max(C.lo,Math.min(C.gl(ax,az),C.gl(bx,bz),0)-.5);fgWall(ax,az,bx,bz,t+.08,g,.02,C,col);}
    fgWall(x0,z0,x1,z1,t,0,wh,C,col);const dx=x1-x0,dz=z1-z0;W((x0+x1)/2,0,(z0+z1)/2,Math.atan2(dx,dz)-PI/2,()=>box('turf',0,wh,0,L+.05,.22,t+.06,tc));};
   run(-hw,-hd+t/2,hw,-hd+t/2);run(-hw+t/2,-hd+t,-hw+t/2,hd);run(hw-t/2,-hd+t,hw-t/2,hd);run(-hw+t,hd-t/2,-1.2,hd-t/2);run(1.2,hd-t/2,hw-t,hd-t/2);
-  run(1.8,-hd+t,1.8,1.4);run(1.8+t/2,-1,hw-t,-1);
+  const px=hw*fgLerp([.05,.35],fgU(C,25));run(px,-hd+t,px,hd*.25);if(C.v%2===0)run(px+t/2,-hd*.15,hw-t,-hd*.15);else run(-hw+t,-hd*.2,px-t/2,-hd*.2);
   /* the corner at the footprint's lowest point carries its footing to C.lo */
   {let lo=1e9,cx=0,cz=0;for(const sx of [-1,1])for(const sz of [-1,1]){const g=C.gl(sx*hw,sz*hd);if(g<lo){lo=g;cx=sx;cz=sz;}}box('stone',cx*(hw-.5),C.lo,cz*(hd-.5),1,-.5-C.lo+.6,1,col);}
   /* the gate: two posts, a plate panel on stakes, lashed, standing a little open */
@@ -54,17 +56,17 @@ defBuilding({key:'fg-pens',name:'The pens',seed:9132,w:14,d:12,h:1.4,budget:5000
   W(-1.15,0,hd-t/2,C.worn?.9:.35,()=>{box('rust',1.1,.2,0,2.2,.95,.04,fgCol('rust',C));for(const x of [.15,1.1,2.05])pole('pole',[x,.15,.04],[x,1.35,.04],.035,pc,5);
    for(const y of [.4,1])fgLash([0,y,.06],[2.2,y,.06]);fgSpike([2.15,1.3,.04],[0,1,0],.18);});
   /* the shelter: a plate roof on two poles against the back wall, in the big pen; a trough of cut plate */
-  for(const x of [-5.2,-2.2])pole('pole',[x,.06,-hd+t+1.6],[x,1.3,-hd+t+1.6],.07,pc,6);
-  fgSlab('tin',[-5.6,1.75,-hd+t+.05],[-1.8,1.75,-hd+t+.05],[-5.6,1.25,-hd+t+1.8],.04,fgCol('tin',C));
+  for(const x of [-hw*.74,-hw*.31])pole('pole',[x,.06,-hd+t+1.6],[x,1.3,-hd+t+1.6],.07,pc,6);
+  fgSlab('tin',[-hw*.8,1.75,-hd+t+.05],[-hw*.26,1.75,-hd+t+.05],[-hw*.8,1.25,-hd+t+1.8],.04,fgCol('tin',C));
   box('rust',-1.6,.06,1.6,1.8,.35,.5,fgCol('rust',C));box('plain',-1.6,.3,1.6,1.7,.06,.42,hc(0x3a4a50));
-  if(!C.worn)fgSign(fgSlogan(),4.4,.35,hd+.02,0,C,{ch:.12,kind:'rust',ink:'white'});}});
+  if(!C.worn)fgSign(fgSlogan(),hw*.62,.35,hd+.02,0,C,{ch:.12,kind:'rust',ink:'white'});}});
 /* the ice house (the stand-ins' `barrow` form): a turf barrow over a corbelled stone vault; its front dented back for the
    entrance, a drystone facade faced with salvage plate, the plate door; inside (the cut-away) the blocks packed in tiers in
    sawdust under snow, the reckoning chalked on a plate by the door */
 defBuilding({key:'fg-icehouse',name:'An ice house',seed:9133,cut:true,w:12,d:9,h:4.5,budget:100000,
  tags:{types:['industry'],style:'drystone',role:'works',job:'warehousing'},
  note:'a turf barrow over a corbelled stone vault, a stone door frame faced with salvage plate; inside (cut-away) the blocks packed in sawdust and snow, the reckoning chalked by the door',
- build(o){const C=fgCx(o),B=TG.fg.BOX['fg-icehouse'],rw=B.w/2,rd=B.d/2,H=B.h,dent=2.1;
+ build(o){const C=fgCx(o),B=fgFillBox(TG.fg.BOX['fg-icehouse'],C,[.75,1],[.85,1],[.8,1]),rw=B.w/2,rd=B.d/2,H=B.h,dent=2.1*Math.min(1,B.d/9);
   const dk=a=>{let d=((a-PI/2+PI)%TAU+TAU)%TAU-PI;return Math.exp(-(d/.42)*(d/.42));};
   /* the barrow: turf over an ellipse, its front pulled back for the facade; a turf skirt from the rim down to the foot */
   psurf('turf',(u,v)=>{const a=u*TAU,c=Math.cos(v*PI/2),e=Math.sin(v*PI/2),k=1-dk(a)*dent/rd*(1-e*e*.7);return [Math.cos(a)*rw*c*k,H*e,Math.sin(a)*rd*c*k];},32,10,fgCol('turf',C),{flip:true});
@@ -98,11 +100,11 @@ function fgSledge(x,y,z,ry,C,o){o=o||{};const L=o.L==null?3.2:o.L,W2=o.w==null?1
 defBuilding({key:'fg-sledgeshed',name:'The sledge shed',seed:9134,cut:true,w:16,d:7,h:4.2,budget:90000,
  tags:{types:['industry'],style:'drystone',role:'works',job:'carpentry'},
  note:'an open shed, the sledges racked, runners from tyres, paint pots',
- build(o){const C=fgCx(o),B=TG.fg.BOX['fg-sledgeshed'],S=fgShed(B,C,{fe:2.5}),wc=fgCol('wood',C);
+ build(o){const C=fgCx(o),B=fgFillBox(TG.fg.BOX['fg-sledgeshed'],C,[.75,1],[.8,1],[.82,1]),S=fgShed(B,C,{fe:fgLerp([2.3,2.7],fgU(C,24))}),wc=fgCol('wood',C);
   /* three sledges on the floor, two racked on end against the back wall, one half painted on trestles */
-  for(let k=0;k<3;k++)fgSledge(-5+k*2.6,.06,.4,0,C,{paint:[0xa8321e,0xc8902e,0x2e5a8a][(k+C.v)%3]});
-  for(let k=0;k<2;k++)WX(2.6+k*1.8,.06,S.z0+.62,0,-PI/2+.12,0,()=>fgSledge(0,0,1.6,0,C,{paint:0x3a7a4a}));
-  for(const s of [-1,1])box('wood',5.6+s*1.1,.06,.6,.12,.7,1.2,wc);fgSledge(5.6,.76,.6,0,C,{paint:0xe8e2d4,L:2.8});
+  for(let k=0;k<3;k++)fgSledge(-S.hw*.82+k*S.hw*.4,.06,.4,0,C,{paint:[0xa8321e,0xc8902e,0x2e5a8a][(k+C.v)%3]});
+  for(let k=0;k<2;k++)WX(S.hw*.36+k*1.7,.06,S.z0+.62,0,-PI/2+.12,0,()=>fgSledge(0,0,1.6,0,C,{paint:0x3a7a4a}));
+  {const tx=S.hw-1.6;for(const s of [-1,1])box('wood',tx+s*.9,.06,.6,.12,.7,1.2,wc);fgSledge(tx,.76,.6,0,C,{paint:0xe8e2d4,L:2.8});}
   /* the paint pots on a bench: cut cans, each its colour at the brim */
   box('wood',S.x1-1.2,.75,S.z0+.45,1.6,.05,.55,wc);for(const s of [-1,1])box('wood',S.x1-1.2+s*.7,.06,S.z0+.45,.06,.69,.5,wc);
   [0xa8321e,0xc8902e,0xe8e2d4,0x2e5a8a,0x1c1a18].forEach((c,i)=>{const x=S.x1-1.8+i*.3;cyl('scrap',x,.8,S.z0+.45,.09,.18,fgCol('scrap',C),8);cyl('plain',x,.97,S.z0+.45,.082,.015,hc(c),8);});

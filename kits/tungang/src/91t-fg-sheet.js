@@ -41,6 +41,11 @@ function fgSheetExtras(W){const out={};
    const L=[];for(let k=0;k<6;k++){const x=V.site.x+70+k*24,z=V.site.z+12+k*1.2;L.push({key:'fg-lantern-post',x,z:z+5,ry:0,id:'sheet:lamp:'+k});}
    L.push({key:'fg-halt',x:V.site.x+128,z:V.site.z+30,ry:0,id:'sheet:halt'},{key:'fg-wagon',x:V.site.x+120,z:V.site.z+36,ry:PI/2-.2,id:'sheet:wagon'});
    L.forEach(p=>fgSheetRegister(p,0,'The sample village\'s road'));out.road=TG.fg.pieces(L,{scene:W,ground:terrainH,seed:8313});}}
+ /* THE SECOND VILLAGE: the Ice-cutters' kind (focus ice), its character low, sunk and barrow-like */
+ if(typeof KHAMLET!=='undefined'&&KHAMLET.CULTURES.fellgang){const V=KHAMLET.village({id:'sheet-icecut',world:8410,culture:'fellgang',focus:'ice',site:{x:250,z:-360},link:{x:420,z:-350},
+   resource:{x:250,z:-500,workers:40},popMax:120,dims:TG.fg.dims});out.village2=V;
+  if(V.error)reportErr('the second village: '+V.error);else{V.records.forEach(r=>fgSheetRegister(r,0,'The ice village'));fgSheetLanes(V,W,terrainH);
+   out.villageDraw2=TG.fg.draw(V,{scene:W,ground:terrainH,seed:8412,label:'The ice village (core/hamlet: the fellgang row, focus ice)'});}}
  /* THE SLOPED PAD */
  W.add(fgSheetMesh(FG_PAD.ground,FG_PAD.x0-.5,FG_PAD.x1+.5,FG_PAD.z0-.5,FG_PAD.z1+.5,2,0x6e7454));
  const PR=[{key:'fg-longhouse',x:-171,z:-68,ry:0},{key:'fg-house',x:-150,z:-69,ry:.3},{key:'fg-hut',x:-139,z:-50,ry:-.5},{key:'fg-cairnhall',x:-179,z:-50,ry:0},{key:'fg-icehouse',x:-157,z:-50,ry:0}]

@@ -33,6 +33,13 @@ ok('the Fowlers\' hall has the rope wall (a peg a household), the Ice-cutters\' 
   !(halls[1].fg.variant === 'fowlers'), halls.map(r => r.fg.variant + ' ' + (r.fg.pegs || r.fg.slats)).join(', '));
 const protos = Object.keys(TG.fg.BOX).map(k => TG.fg.proto(k, { v: 1 }).recs[0]), bx = TG.fg.check.box(protos);
 ok('each of the 14 buildings, built alone, keeps its stand-in box within 0.5 m', bx.ok && protos.length === 14, !TG.fg.check.box([Object.assign({}, protos[0], { key: 'fg-pens' })]).ok, bx.bad.join('; '));
+const many = []; for (const k of Object.keys(TG.fg.BOX)) for (let v = 0; v < 8; v++) for (const character of [null, 'stony', 'low']) { const p = TG.fg.proto(k, { v, character }); many.push(p.recs[0]); p.forEach(m => m.geometry.dispose()); }
+const mb = TG.fg.check.box(many), fams = new Set(many.filter(r => r.fg && r.fg.family).map(r => r.key + ':' + r.fg.family));
+ok('every key, 8 seeds in three characters (' + many.length + ' builds, ' + fams.size + ' key-family pairs), within 0.5 m of its box and filling 65 % of w, d and 75 % of h',
+  mb.ok && fams.size >= 30, !TG.fg.check.box([Object.assign({}, many[0], { key: 'fg-meethall' })]).ok && !TG.fg.check.box([Object.assign({}, many.find(r => r.key === 'fg-meethall'), { key: 'fg-hut' })]).ok, mb.bad.slice(0, 4).join('; '));
+const LOWF = new Set(['black', 'croft', 'halfhip', 'twin', 'hip', 'container', 'lean']), lowShare = D => { const f = D.recs.filter(r => r.fg && r.fg.family); return f.filter(r => LOWF.has(r.fg.family)).length / Math.max(1, f.length); };
+ok('a village has a character: the Ice-cutters\' takes more of the low families than the Fowlers\' (' + lowShare(D2).toFixed(2) + ' against ' + lowShare(D1).toFixed(2) + ')',
+  lowShare(D2) > lowShare(D1) + .1, !(lowShare(D1) > lowShare(D1) + .1));
 const rope = { id: 'r0', family: 3, pts: [], y0: 0, top: 0 };for (let k = 0; k < 30; k++) rope.pts.push([.1 * Math.sin(k), k * 2.4, -k * 1.5]);rope.top = rope.pts[29][1];
 const RD = TG.fg.ropes([rope], {}), rc = TG.fg.check.rope([rope], RD);
 ok('a fixed line follows its record (' + rc.verts + ' vertices, farthest ' + rc.far + ' m)', rc.ok && RD.recs[0].fg.pegs >= 2 && RD.recs[0].fg.rungs > 30,

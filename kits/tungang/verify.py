@@ -38,7 +38,9 @@ ASSERT_JS = r"""()=>{const A=window._api,R=[],S=window._fgSheet||{},C=TG.fg.chec
  const worn=boxOf(wr),wornRecs=wr.length;
  const hut=top().find(r=>r.key==='fg-hut');
  add('box-within-contract',{ok:kept.ok&&worn.ok&&wornRecs>0,detail:'kept: '+kept.detail+'; worn: '+worn.detail},
-  (()=>{const q=C.box([Object.assign({},hut,{key:'fg-meethall'})]);return {ok:q.ok,detail:'a hut checked against the meeting hall\'s box: '+q.bad.join('')};})());
+  (()=>{const q=C.box([Object.assign({},top().find(r=>r.key==='fg-meethall'),{key:'fg-hut'})]);return {ok:q.ok,detail:'too big: a meeting hall checked against the hut\'s box: '+q.bad.join('')};})());
+ add('box-fills-its-share',{ok:kept.ok,detail:'every building fills 65 % of its box\'s w and d and 75 % of its h (the families: '+[...new Set(top().filter(r=>r.fg&&r.fg.family).map(r=>r.key.slice(3)+':'+r.fg.family))].length+' key-family pairs on the sheet)'},
+  (()=>{const q=C.box([Object.assign({},hut,{key:'fg-meethall'})]);return {ok:q.ok,detail:'too small: a hut checked against the meeting hall\'s box: '+q.bad.join('')};})());
  /* tags */
  const T=A.tags().audit;const scratch=KTAGS.create({build:'neg'});scratch.add({'class':'building',kind:'x',key:'x',name:'x',at:[0,0,0],ry:0,size:[1,1,1],tags:{culture:'nonesuch',types:['spaceport']}});const TN=scratch.audit();
  add('tags-vocabulary',{ok:T.unknown===0&&T.missingCulture===0&&T.missingTypes===0&&T.records>100,detail:T.records+' records ('+Object.entries(T.byClass).map(e=>e.join(' ')).join(', ')+'), unknown '+T.unknown+(T.unknown?' '+JSON.stringify(T.unknownValues)+JSON.stringify(T.unknownKeys):'')},
@@ -48,7 +50,7 @@ ASSERT_JS = r"""()=>{const A=window._api,R=[],S=window._fgSheet||{},C=TG.fg.chec
   ice=r=>!!r.fg&&r.fg.variant==='icecut'&&r.fg.slats>0&&r.fg.notches>=r.fg.slats*3&&!r.fg.pegs;
  const halls=top().filter(r=>r.key==='fg-meethall'),hf=halls.filter(r=>r.fg&&r.fg.variant==='fowlers'),hi=halls.filter(r=>r.fg&&r.fg.variant==='icecut');
  const vh=(S.villageDraw&&S.villageDraw.recs||[]).filter(r=>r.key==='fg-meethall'),pop=S.village&&S.village.census?S.village.census.pop:0,hh=Math.max(6,Math.round((pop||140)/5));
- add('meethall-variants',{ok:hf.length===2&&hi.length===2&&hf.every(fow)&&hi.every(ice)&&vh.length===1&&fow(vh[0])&&vh[0].fg.pegs===hh,
+ add('meethall-variants',{ok:hf.length===3&&hi.length===2&&hf.every(fow)&&hi.every(ice)&&vh.length===1&&fow(vh[0])&&vh[0].fg.pegs===hh,
    detail:'rope wall: '+hf.map(r=>r.fg.pegs+' pegs, '+r.fg.coils+' coils, '+r.fg.empty+' empty').join('; ')+'; tally board: '+hi.map(r=>r.fg.slats+' slats, '+r.fg.notches+' notches').join('; ')+'; the sample village\'s hall: '+(vh[0]&&vh[0].fg?vh[0].fg.variant+', '+vh[0].fg.pegs+' pegs for '+hh+' households':'none')},
   {ok:hi.length>0&&hi.every(fow),detail:'the tally board checked as a rope wall'});
  /* the sloped pad */
