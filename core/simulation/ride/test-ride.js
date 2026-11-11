@@ -80,7 +80,10 @@ const atWork=people.every(a=>{const p=S.pose(a,clock.t);return Math.hypot(p.x-L.
 ok('every traveller arrives at the works at Twenny, past the gap',atWork&&Object.keys(S.RIDE.riders).length===0,!atWork);
 ok('a journey arrives within a minute of the planner\'s time',people.every(a=>Math.abs(a.task.arrive-a.task.ride.plan.arrive)<60),false);
 // the export carries the frames, and its trace is SIM.pose's
-const M=S.rideExportMotion({actors:people.slice(0,6),times:[0,100,400,900,1500,2500].map(x=>x-clock.t)});
+const M=S.rideExportMotion({actors:people.slice(0,6),times:Array.from({length:60},(_,i)=>i*45-clock.t)});
+// for Godot's cars (godot/krator/ride_cars.gd): the cars' walk records in their own frames, and the doors' state sampled
+M.walk=KWALKFRAME.export(W);
+M.doors=[];for(let t=0;t<720;t+=3)L.sources.forEach((Sx,si)=>RIDELAB.CAR.doors.forEach(D=>M.doors.push([t,si,1,D.id,S.rideDoorOpen(Sx.id,1,D.id,t)?1:0])));
 ok('the motion export carries each leg\'s frame and the sources',M.ride.sources.length===2&&M.actors[0].task.legs.filter(l=>l.frame).length===6&&M.ride.sources[0].timeline.segments.length===4,!M.ride);
 // determinism: the same world twice gives the same trace
 function trace(){const {S:S2,clock:c2}=fresh(11);const L2=RIDELAB.declare({});const P=RIDELAB.people(L2,20);
