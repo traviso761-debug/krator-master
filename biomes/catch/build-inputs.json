@@ -85,16 +85,16 @@
     "core/atmos/89-atmos-9-host.js": "7cbe36a99725362e9c754e4812f3c6dae15c7febedde37e4830153dac640514d",
     "core/atmos/89-atmos-a-waves.js": "77ab3264db6d412a82c8d7b2f0f1e643a1cc65537c3456248f9193b6621dbc98",
     "core/atmos/89-atmos-b-skylight.js": "fdd81ff12eb4e98d7d9bc07691b033a71cd2add1b8a0d23d7ffb6149d781c6d0",
-    "core/atmos/fx/89-atmos-fx-lightning.js": "f96fdc78200973764a80ca42831289edfcbfb6c42191b39c8eef053e6109e253",
+    "core/atmos/fx/89-atmos-fx-lightning.js": "8f74cb76bb2c8761a9432482ecd62a562502f17d83cc7f6a546ec7eaa1bc9991",
     "core/atmos/fx/89-atmos-fx-raincover.js": "3b17ad5680758adca953d3444e0c9393c524941559cb19d3061c4e7d8f07e908",
     "core/atmos/host/89-atmos-c-hostbind.js": "2d516dca2ab21914afcc39898a3c952e2112e4470b53e4d576dc9e47b0ebc411",
     "core/atmos/host/89-atmos-e-weatherhost.js": "4b2492dcd78a5eeb6f567f5fa6546275d02e44325e497a3f2933841e6473dbb6",
-    "core/atmos/host/89-atmos-h-skyhost.js": "40b4be9d7c0bd7a8d05dea3eff1d2f2110f3669d693737206872f5dd820a00c4",
-    "core/atmos/host/89-atmos-j-heightfog.js": "a0c6deea83ffd85df81d6befd07283ec43ad28028de4831d47faad3ee92aeb75",
+    "core/atmos/host/89-atmos-h-skyhost.js": "62401272c4ae693a9ce80a3aec3611833e0b31792ac2e0e69b37d1b52a5ee425",
+    "core/atmos/host/89-atmos-j-heightfog.js": "175945b28d80b508231906f0105e9ee22b61dddb126ef1823adb349901f6dacd",
     "core/atmos/sky/89-atmos-e-skymodel.js": "a88e93cffe596d5362daa08d693c63795713514f850125feff8f2f9ee2b8e258",
-    "core/atmos/sky/89-atmos-f-skypresets.js": "459132ec76e796e76b8d58715ce3eb77d26e4d57cc61b59900135c0e747fe98d",
-    "core/atmos/sky/89-atmos-g-sky.js": "32b6b6e04be15df728ca7ad3502d2035f2c750426deb3dae964273228ea5a6eb",
-    "core/atmos/sky/89-atmos-j-fog.js": "60ab4f8d18bd785cd18fbfea54ae4730bc30dad66fd97531e1d7eff2b7058560",
+    "core/atmos/sky/89-atmos-f-skypresets.js": "5f55cc174ba0ce60c681e76c5f2c8213c68c9c3c434c5bd85b234ea7e00b2fd0",
+    "core/atmos/sky/89-atmos-g-sky.js": "45f083d44aa9834b558b48ec3815a4637a71475e672b3a678388a2466bcee21c",
+    "core/atmos/sky/89-atmos-j-fog.js": "c6fbc34d9dc0552623f7f22c79b2d8f94c6965b3bc4090c2e65b381d209320c5",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
     "core/biome/30-core-foliage.js": "60d066abf6678b08bff3be1c66a075ad93e27fe242c8d0e4b78e79e5111a24d5",
@@ -162,10 +162,10 @@
     "kits/mechs/krator-mechs-stalker-harpooner.js": "161e3472040c299c28b11971b7e0b7fa7b1a1d8a80ef712645c696c75972604c",
     "kits/mechs/krator-mechs-stalker.js": "afbb1b5de9812e8338c192bf8a3ac2308d56f5346f822c1ba7ede55c109f6ed2",
     "kits/mechs/mech_bundle.py": "4aa5d2262f452e8d667a928e187a11dcdfa11d4f09d912a01921f750aa05d39d",
-    "kits/mechs/mechs-core.js": "17e55f98452817ade42e252073c7f56c82d44694eb145981bafd96667d71af4b",
-    "kits/mechs/mechs-parts.js": "b1b9533034d537e6283ab7886c374833734f0a9f3c605735f62158d392e83e63",
-    "kits/mechs/mechs-runtime.js": "8f8d534ab9253ff4cfac0fdab4f06d97be68ab1b1a4138e93ea69a6528c4d075",
-    "kits/motor-vehicles/vehicles-core.js": "3ef2b2ba7ba37ada7e633706bd92bf55f1c41122b902e9f2cb461ba5fef0c22e",
+    "kits/mechs/mechs-core.js": "0aa66251019e87b453082c42bdc396f7dc429e046387b7aa216b1aa90e4cd38a",
+    "kits/mechs/mechs-parts.js": "fc84e5714ca7b1c6e40d5baa613cf988a3bdb79c9505e2ef70c5e6fca42d57e0",
+    "kits/mechs/mechs-runtime.js": "bd5b92b7988b773907f8c37527b454364d0508c2552fd247f9170ecba0510af9",
+    "kits/motor-vehicles/vehicles-core.js": "85b818f33a3305886128379a011df40103dc76cbdd2656d422a2d5af6d472990",
     "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
@@ -173,15 +173,15 @@
    "listings": {
     "biomes/catch/src": "34bfb62e51dcdd0c64f60f266ed3d78b5a58b63a26b9a87e5b808816fd3784ff",
     "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
-    "kits/mechs": "54a0b7ef668394931f9b11510c2d35127f23a245ff15f5feb5dd237081028cbd",
+    "kits/mechs": "73ceabd35a9c14974b3b79cd4010a3e8283ae82797c1da3698d39d1a2f5a9b70",
     "tools": "6631bdd33a724ae4afb19e5705fb6b95c13d305435fd8d325567b5e7f68c5f8c",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/catch/dist/catch.html": "4b74ee8e8abb8a9128ad1de521abde2e022b163ec3553f44d9acd40e356950c5"
+    "biomes/catch/dist/catch.html": "5b19bec84477a3b5be2d8bf6d6d0d0643e72222dff1fbdfc38084625301b90d7"
    },
    "outputs_raw": {
-    "biomes/catch/dist/catch.html": "4b74ee8e8abb8a9128ad1de521abde2e022b163ec3553f44d9acd40e356950c5"
+    "biomes/catch/dist/catch.html": "5b19bec84477a3b5be2d8bf6d6d0d0643e72222dff1fbdfc38084625301b90d7"
    }
   },
   "build.py --station fan": {
@@ -269,16 +269,16 @@
     "core/atmos/89-atmos-9-host.js": "7cbe36a99725362e9c754e4812f3c6dae15c7febedde37e4830153dac640514d",
     "core/atmos/89-atmos-a-waves.js": "77ab3264db6d412a82c8d7b2f0f1e643a1cc65537c3456248f9193b6621dbc98",
     "core/atmos/89-atmos-b-skylight.js": "fdd81ff12eb4e98d7d9bc07691b033a71cd2add1b8a0d23d7ffb6149d781c6d0",
-    "core/atmos/fx/89-atmos-fx-lightning.js": "f96fdc78200973764a80ca42831289edfcbfb6c42191b39c8eef053e6109e253",
+    "core/atmos/fx/89-atmos-fx-lightning.js": "8f74cb76bb2c8761a9432482ecd62a562502f17d83cc7f6a546ec7eaa1bc9991",
     "core/atmos/fx/89-atmos-fx-raincover.js": "3b17ad5680758adca953d3444e0c9393c524941559cb19d3061c4e7d8f07e908",
     "core/atmos/host/89-atmos-c-hostbind.js": "2d516dca2ab21914afcc39898a3c952e2112e4470b53e4d576dc9e47b0ebc411",
     "core/atmos/host/89-atmos-e-weatherhost.js": "4b2492dcd78a5eeb6f567f5fa6546275d02e44325e497a3f2933841e6473dbb6",
-    "core/atmos/host/89-atmos-h-skyhost.js": "40b4be9d7c0bd7a8d05dea3eff1d2f2110f3669d693737206872f5dd820a00c4",
-    "core/atmos/host/89-atmos-j-heightfog.js": "a0c6deea83ffd85df81d6befd07283ec43ad28028de4831d47faad3ee92aeb75",
+    "core/atmos/host/89-atmos-h-skyhost.js": "62401272c4ae693a9ce80a3aec3611833e0b31792ac2e0e69b37d1b52a5ee425",
+    "core/atmos/host/89-atmos-j-heightfog.js": "175945b28d80b508231906f0105e9ee22b61dddb126ef1823adb349901f6dacd",
     "core/atmos/sky/89-atmos-e-skymodel.js": "a88e93cffe596d5362daa08d693c63795713514f850125feff8f2f9ee2b8e258",
-    "core/atmos/sky/89-atmos-f-skypresets.js": "459132ec76e796e76b8d58715ce3eb77d26e4d57cc61b59900135c0e747fe98d",
-    "core/atmos/sky/89-atmos-g-sky.js": "32b6b6e04be15df728ca7ad3502d2035f2c750426deb3dae964273228ea5a6eb",
-    "core/atmos/sky/89-atmos-j-fog.js": "60ab4f8d18bd785cd18fbfea54ae4730bc30dad66fd97531e1d7eff2b7058560",
+    "core/atmos/sky/89-atmos-f-skypresets.js": "5f55cc174ba0ce60c681e76c5f2c8213c68c9c3c434c5bd85b234ea7e00b2fd0",
+    "core/atmos/sky/89-atmos-g-sky.js": "45f083d44aa9834b558b48ec3815a4637a71475e672b3a678388a2466bcee21c",
+    "core/atmos/sky/89-atmos-j-fog.js": "c6fbc34d9dc0552623f7f22c79b2d8f94c6965b3bc4090c2e65b381d209320c5",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
     "core/biome/30-core-foliage.js": "60d066abf6678b08bff3be1c66a075ad93e27fe242c8d0e4b78e79e5111a24d5",
@@ -346,10 +346,10 @@
     "kits/mechs/krator-mechs-stalker-harpooner.js": "161e3472040c299c28b11971b7e0b7fa7b1a1d8a80ef712645c696c75972604c",
     "kits/mechs/krator-mechs-stalker.js": "afbb1b5de9812e8338c192bf8a3ac2308d56f5346f822c1ba7ede55c109f6ed2",
     "kits/mechs/mech_bundle.py": "4aa5d2262f452e8d667a928e187a11dcdfa11d4f09d912a01921f750aa05d39d",
-    "kits/mechs/mechs-core.js": "17e55f98452817ade42e252073c7f56c82d44694eb145981bafd96667d71af4b",
-    "kits/mechs/mechs-parts.js": "b1b9533034d537e6283ab7886c374833734f0a9f3c605735f62158d392e83e63",
-    "kits/mechs/mechs-runtime.js": "8f8d534ab9253ff4cfac0fdab4f06d97be68ab1b1a4138e93ea69a6528c4d075",
-    "kits/motor-vehicles/vehicles-core.js": "3ef2b2ba7ba37ada7e633706bd92bf55f1c41122b902e9f2cb461ba5fef0c22e",
+    "kits/mechs/mechs-core.js": "0aa66251019e87b453082c42bdc396f7dc429e046387b7aa216b1aa90e4cd38a",
+    "kits/mechs/mechs-parts.js": "fc84e5714ca7b1c6e40d5baa613cf988a3bdb79c9505e2ef70c5e6fca42d57e0",
+    "kits/mechs/mechs-runtime.js": "bd5b92b7988b773907f8c37527b454364d0508c2552fd247f9170ecba0510af9",
+    "kits/motor-vehicles/vehicles-core.js": "85b818f33a3305886128379a011df40103dc76cbdd2656d422a2d5af6d472990",
     "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
@@ -358,15 +358,15 @@
     "biomes/catch/src": "34bfb62e51dcdd0c64f60f266ed3d78b5a58b63a26b9a87e5b808816fd3784ff",
     "biomes/catch/stations/fan": "ceb80754fedd650ee2223b7858c263e380baf56728549d76cc9f09ea669ba4d0",
     "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
-    "kits/mechs": "54a0b7ef668394931f9b11510c2d35127f23a245ff15f5feb5dd237081028cbd",
+    "kits/mechs": "73ceabd35a9c14974b3b79cd4010a3e8283ae82797c1da3698d39d1a2f5a9b70",
     "tools": "6631bdd33a724ae4afb19e5705fb6b95c13d305435fd8d325567b5e7f68c5f8c",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/catch/dist/catch-fan.html": "0b01ad6f931eeafcb076ec637a58fe39a7628dc597ae5610206e67a30d21de8a"
+    "biomes/catch/dist/catch-fan.html": "edd2cb3d716c1c32aa08413043620704b20915d091e6d1b9fba555206b4614a1"
    },
    "outputs_raw": {
-    "biomes/catch/dist/catch-fan.html": "0b01ad6f931eeafcb076ec637a58fe39a7628dc597ae5610206e67a30d21de8a"
+    "biomes/catch/dist/catch-fan.html": "edd2cb3d716c1c32aa08413043620704b20915d091e6d1b9fba555206b4614a1"
    }
   },
   "build.py --station lake": {
@@ -454,16 +454,16 @@
     "core/atmos/89-atmos-9-host.js": "7cbe36a99725362e9c754e4812f3c6dae15c7febedde37e4830153dac640514d",
     "core/atmos/89-atmos-a-waves.js": "77ab3264db6d412a82c8d7b2f0f1e643a1cc65537c3456248f9193b6621dbc98",
     "core/atmos/89-atmos-b-skylight.js": "fdd81ff12eb4e98d7d9bc07691b033a71cd2add1b8a0d23d7ffb6149d781c6d0",
-    "core/atmos/fx/89-atmos-fx-lightning.js": "f96fdc78200973764a80ca42831289edfcbfb6c42191b39c8eef053e6109e253",
+    "core/atmos/fx/89-atmos-fx-lightning.js": "8f74cb76bb2c8761a9432482ecd62a562502f17d83cc7f6a546ec7eaa1bc9991",
     "core/atmos/fx/89-atmos-fx-raincover.js": "3b17ad5680758adca953d3444e0c9393c524941559cb19d3061c4e7d8f07e908",
     "core/atmos/host/89-atmos-c-hostbind.js": "2d516dca2ab21914afcc39898a3c952e2112e4470b53e4d576dc9e47b0ebc411",
     "core/atmos/host/89-atmos-e-weatherhost.js": "4b2492dcd78a5eeb6f567f5fa6546275d02e44325e497a3f2933841e6473dbb6",
-    "core/atmos/host/89-atmos-h-skyhost.js": "40b4be9d7c0bd7a8d05dea3eff1d2f2110f3669d693737206872f5dd820a00c4",
-    "core/atmos/host/89-atmos-j-heightfog.js": "a0c6deea83ffd85df81d6befd07283ec43ad28028de4831d47faad3ee92aeb75",
+    "core/atmos/host/89-atmos-h-skyhost.js": "62401272c4ae693a9ce80a3aec3611833e0b31792ac2e0e69b37d1b52a5ee425",
+    "core/atmos/host/89-atmos-j-heightfog.js": "175945b28d80b508231906f0105e9ee22b61dddb126ef1823adb349901f6dacd",
     "core/atmos/sky/89-atmos-e-skymodel.js": "a88e93cffe596d5362daa08d693c63795713514f850125feff8f2f9ee2b8e258",
-    "core/atmos/sky/89-atmos-f-skypresets.js": "459132ec76e796e76b8d58715ce3eb77d26e4d57cc61b59900135c0e747fe98d",
-    "core/atmos/sky/89-atmos-g-sky.js": "32b6b6e04be15df728ca7ad3502d2035f2c750426deb3dae964273228ea5a6eb",
-    "core/atmos/sky/89-atmos-j-fog.js": "60ab4f8d18bd785cd18fbfea54ae4730bc30dad66fd97531e1d7eff2b7058560",
+    "core/atmos/sky/89-atmos-f-skypresets.js": "5f55cc174ba0ce60c681e76c5f2c8213c68c9c3c434c5bd85b234ea7e00b2fd0",
+    "core/atmos/sky/89-atmos-g-sky.js": "45f083d44aa9834b558b48ec3815a4637a71475e672b3a678388a2466bcee21c",
+    "core/atmos/sky/89-atmos-j-fog.js": "c6fbc34d9dc0552623f7f22c79b2d8f94c6965b3bc4090c2e65b381d209320c5",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
     "core/biome/30-core-foliage.js": "60d066abf6678b08bff3be1c66a075ad93e27fe242c8d0e4b78e79e5111a24d5",
@@ -531,10 +531,10 @@
     "kits/mechs/krator-mechs-stalker-harpooner.js": "161e3472040c299c28b11971b7e0b7fa7b1a1d8a80ef712645c696c75972604c",
     "kits/mechs/krator-mechs-stalker.js": "afbb1b5de9812e8338c192bf8a3ac2308d56f5346f822c1ba7ede55c109f6ed2",
     "kits/mechs/mech_bundle.py": "4aa5d2262f452e8d667a928e187a11dcdfa11d4f09d912a01921f750aa05d39d",
-    "kits/mechs/mechs-core.js": "17e55f98452817ade42e252073c7f56c82d44694eb145981bafd96667d71af4b",
-    "kits/mechs/mechs-parts.js": "b1b9533034d537e6283ab7886c374833734f0a9f3c605735f62158d392e83e63",
-    "kits/mechs/mechs-runtime.js": "8f8d534ab9253ff4cfac0fdab4f06d97be68ab1b1a4138e93ea69a6528c4d075",
-    "kits/motor-vehicles/vehicles-core.js": "3ef2b2ba7ba37ada7e633706bd92bf55f1c41122b902e9f2cb461ba5fef0c22e",
+    "kits/mechs/mechs-core.js": "0aa66251019e87b453082c42bdc396f7dc429e046387b7aa216b1aa90e4cd38a",
+    "kits/mechs/mechs-parts.js": "fc84e5714ca7b1c6e40d5baa613cf988a3bdb79c9505e2ef70c5e6fca42d57e0",
+    "kits/mechs/mechs-runtime.js": "bd5b92b7988b773907f8c37527b454364d0508c2552fd247f9170ecba0510af9",
+    "kits/motor-vehicles/vehicles-core.js": "85b818f33a3305886128379a011df40103dc76cbdd2656d422a2d5af6d472990",
     "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
@@ -543,15 +543,15 @@
     "biomes/catch/src": "34bfb62e51dcdd0c64f60f266ed3d78b5a58b63a26b9a87e5b808816fd3784ff",
     "biomes/catch/stations/lake": "ceb80754fedd650ee2223b7858c263e380baf56728549d76cc9f09ea669ba4d0",
     "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
-    "kits/mechs": "54a0b7ef668394931f9b11510c2d35127f23a245ff15f5feb5dd237081028cbd",
+    "kits/mechs": "73ceabd35a9c14974b3b79cd4010a3e8283ae82797c1da3698d39d1a2f5a9b70",
     "tools": "6631bdd33a724ae4afb19e5705fb6b95c13d305435fd8d325567b5e7f68c5f8c",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/catch/dist/catch-lake.html": "95cf6ee26792d7f4a11cb72b1baecfa87861d0360d2eaeeb6fb642543ccd51a2"
+    "biomes/catch/dist/catch-lake.html": "bbdaee2cb92ef05804cb4e14fbcabcbf86af642611a8d35c34402c755aeb13de"
    },
    "outputs_raw": {
-    "biomes/catch/dist/catch-lake.html": "95cf6ee26792d7f4a11cb72b1baecfa87861d0360d2eaeeb6fb642543ccd51a2"
+    "biomes/catch/dist/catch-lake.html": "bbdaee2cb92ef05804cb4e14fbcabcbf86af642611a8d35c34402c755aeb13de"
    }
   },
   "build.py --station oasis": {
@@ -639,16 +639,16 @@
     "core/atmos/89-atmos-9-host.js": "7cbe36a99725362e9c754e4812f3c6dae15c7febedde37e4830153dac640514d",
     "core/atmos/89-atmos-a-waves.js": "77ab3264db6d412a82c8d7b2f0f1e643a1cc65537c3456248f9193b6621dbc98",
     "core/atmos/89-atmos-b-skylight.js": "fdd81ff12eb4e98d7d9bc07691b033a71cd2add1b8a0d23d7ffb6149d781c6d0",
-    "core/atmos/fx/89-atmos-fx-lightning.js": "f96fdc78200973764a80ca42831289edfcbfb6c42191b39c8eef053e6109e253",
+    "core/atmos/fx/89-atmos-fx-lightning.js": "8f74cb76bb2c8761a9432482ecd62a562502f17d83cc7f6a546ec7eaa1bc9991",
     "core/atmos/fx/89-atmos-fx-raincover.js": "3b17ad5680758adca953d3444e0c9393c524941559cb19d3061c4e7d8f07e908",
     "core/atmos/host/89-atmos-c-hostbind.js": "2d516dca2ab21914afcc39898a3c952e2112e4470b53e4d576dc9e47b0ebc411",
     "core/atmos/host/89-atmos-e-weatherhost.js": "4b2492dcd78a5eeb6f567f5fa6546275d02e44325e497a3f2933841e6473dbb6",
-    "core/atmos/host/89-atmos-h-skyhost.js": "40b4be9d7c0bd7a8d05dea3eff1d2f2110f3669d693737206872f5dd820a00c4",
-    "core/atmos/host/89-atmos-j-heightfog.js": "a0c6deea83ffd85df81d6befd07283ec43ad28028de4831d47faad3ee92aeb75",
+    "core/atmos/host/89-atmos-h-skyhost.js": "62401272c4ae693a9ce80a3aec3611833e0b31792ac2e0e69b37d1b52a5ee425",
+    "core/atmos/host/89-atmos-j-heightfog.js": "175945b28d80b508231906f0105e9ee22b61dddb126ef1823adb349901f6dacd",
     "core/atmos/sky/89-atmos-e-skymodel.js": "a88e93cffe596d5362daa08d693c63795713514f850125feff8f2f9ee2b8e258",
-    "core/atmos/sky/89-atmos-f-skypresets.js": "459132ec76e796e76b8d58715ce3eb77d26e4d57cc61b59900135c0e747fe98d",
-    "core/atmos/sky/89-atmos-g-sky.js": "32b6b6e04be15df728ca7ad3502d2035f2c750426deb3dae964273228ea5a6eb",
-    "core/atmos/sky/89-atmos-j-fog.js": "60ab4f8d18bd785cd18fbfea54ae4730bc30dad66fd97531e1d7eff2b7058560",
+    "core/atmos/sky/89-atmos-f-skypresets.js": "5f55cc174ba0ce60c681e76c5f2c8213c68c9c3c434c5bd85b234ea7e00b2fd0",
+    "core/atmos/sky/89-atmos-g-sky.js": "45f083d44aa9834b558b48ec3815a4637a71475e672b3a678388a2466bcee21c",
+    "core/atmos/sky/89-atmos-j-fog.js": "c6fbc34d9dc0552623f7f22c79b2d8f94c6965b3bc4090c2e65b381d209320c5",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
     "core/biome/30-core-foliage.js": "60d066abf6678b08bff3be1c66a075ad93e27fe242c8d0e4b78e79e5111a24d5",
@@ -716,10 +716,10 @@
     "kits/mechs/krator-mechs-stalker-harpooner.js": "161e3472040c299c28b11971b7e0b7fa7b1a1d8a80ef712645c696c75972604c",
     "kits/mechs/krator-mechs-stalker.js": "afbb1b5de9812e8338c192bf8a3ac2308d56f5346f822c1ba7ede55c109f6ed2",
     "kits/mechs/mech_bundle.py": "4aa5d2262f452e8d667a928e187a11dcdfa11d4f09d912a01921f750aa05d39d",
-    "kits/mechs/mechs-core.js": "17e55f98452817ade42e252073c7f56c82d44694eb145981bafd96667d71af4b",
-    "kits/mechs/mechs-parts.js": "b1b9533034d537e6283ab7886c374833734f0a9f3c605735f62158d392e83e63",
-    "kits/mechs/mechs-runtime.js": "8f8d534ab9253ff4cfac0fdab4f06d97be68ab1b1a4138e93ea69a6528c4d075",
-    "kits/motor-vehicles/vehicles-core.js": "3ef2b2ba7ba37ada7e633706bd92bf55f1c41122b902e9f2cb461ba5fef0c22e",
+    "kits/mechs/mechs-core.js": "0aa66251019e87b453082c42bdc396f7dc429e046387b7aa216b1aa90e4cd38a",
+    "kits/mechs/mechs-parts.js": "fc84e5714ca7b1c6e40d5baa613cf988a3bdb79c9505e2ef70c5e6fca42d57e0",
+    "kits/mechs/mechs-runtime.js": "bd5b92b7988b773907f8c37527b454364d0508c2552fd247f9170ecba0510af9",
+    "kits/motor-vehicles/vehicles-core.js": "85b818f33a3305886128379a011df40103dc76cbdd2656d422a2d5af6d472990",
     "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
@@ -728,15 +728,15 @@
     "biomes/catch/src": "34bfb62e51dcdd0c64f60f266ed3d78b5a58b63a26b9a87e5b808816fd3784ff",
     "biomes/catch/stations/oasis": "ceb80754fedd650ee2223b7858c263e380baf56728549d76cc9f09ea669ba4d0",
     "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
-    "kits/mechs": "54a0b7ef668394931f9b11510c2d35127f23a245ff15f5feb5dd237081028cbd",
+    "kits/mechs": "73ceabd35a9c14974b3b79cd4010a3e8283ae82797c1da3698d39d1a2f5a9b70",
     "tools": "6631bdd33a724ae4afb19e5705fb6b95c13d305435fd8d325567b5e7f68c5f8c",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/catch/dist/catch-oasis.html": "7a8ff864ac76e61203fc57e77283764157895b2bba68bf38ddf97bc9992188f8"
+    "biomes/catch/dist/catch-oasis.html": "f59c353e76344335e76f86f28630671fe899df75fc10f973b5543a08439b8c67"
    },
    "outputs_raw": {
-    "biomes/catch/dist/catch-oasis.html": "7a8ff864ac76e61203fc57e77283764157895b2bba68bf38ddf97bc9992188f8"
+    "biomes/catch/dist/catch-oasis.html": "f59c353e76344335e76f86f28630671fe899df75fc10f973b5543a08439b8c67"
    }
   }
  }

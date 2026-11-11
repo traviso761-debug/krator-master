@@ -29,7 +29,7 @@
  ],
  "07-core-kwarp.js": [
   "core/shader",
-  "5995df925616"
+  "9e8301807d19"
  ],
  "08-core-rand.js": [
   "core/rand",
@@ -309,7 +309,7 @@
  ],
  "65y-vehicles-bundle.js": [
   "virtual",
-  "9297c252e306"
+  "97c5b54c3f85"
  ],
  "65z-furniture-bundle.js": [
   "virtual",

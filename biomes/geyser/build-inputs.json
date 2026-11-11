@@ -102,16 +102,16 @@
     "core/atmos/89-atmos-9-host.js": "7cbe36a99725362e9c754e4812f3c6dae15c7febedde37e4830153dac640514d",
     "core/atmos/89-atmos-a-waves.js": "77ab3264db6d412a82c8d7b2f0f1e643a1cc65537c3456248f9193b6621dbc98",
     "core/atmos/89-atmos-b-skylight.js": "fdd81ff12eb4e98d7d9bc07691b033a71cd2add1b8a0d23d7ffb6149d781c6d0",
-    "core/atmos/fx/89-atmos-fx-lightning.js": "f96fdc78200973764a80ca42831289edfcbfb6c42191b39c8eef053e6109e253",
+    "core/atmos/fx/89-atmos-fx-lightning.js": "8f74cb76bb2c8761a9432482ecd62a562502f17d83cc7f6a546ec7eaa1bc9991",
     "core/atmos/fx/89-atmos-fx-raincover.js": "3b17ad5680758adca953d3444e0c9393c524941559cb19d3061c4e7d8f07e908",
     "core/atmos/host/89-atmos-e-weatherhost.js": "4b2492dcd78a5eeb6f567f5fa6546275d02e44325e497a3f2933841e6473dbb6",
-    "core/atmos/host/89-atmos-h-skyhost.js": "40b4be9d7c0bd7a8d05dea3eff1d2f2110f3669d693737206872f5dd820a00c4",
+    "core/atmos/host/89-atmos-h-skyhost.js": "62401272c4ae693a9ce80a3aec3611833e0b31792ac2e0e69b37d1b52a5ee425",
     "core/atmos/host/89-atmos-i-skybiome.js": "40dde8c1cd5b19ff2436106b9db5f003334f4052fba1239cca767b1d10974bd1",
-    "core/atmos/host/89-atmos-j-heightfog.js": "a0c6deea83ffd85df81d6befd07283ec43ad28028de4831d47faad3ee92aeb75",
+    "core/atmos/host/89-atmos-j-heightfog.js": "175945b28d80b508231906f0105e9ee22b61dddb126ef1823adb349901f6dacd",
     "core/atmos/sky/89-atmos-e-skymodel.js": "a88e93cffe596d5362daa08d693c63795713514f850125feff8f2f9ee2b8e258",
-    "core/atmos/sky/89-atmos-f-skypresets.js": "459132ec76e796e76b8d58715ce3eb77d26e4d57cc61b59900135c0e747fe98d",
-    "core/atmos/sky/89-atmos-g-sky.js": "32b6b6e04be15df728ca7ad3502d2035f2c750426deb3dae964273228ea5a6eb",
-    "core/atmos/sky/89-atmos-j-fog.js": "60ab4f8d18bd785cd18fbfea54ae4730bc30dad66fd97531e1d7eff2b7058560",
+    "core/atmos/sky/89-atmos-f-skypresets.js": "5f55cc174ba0ce60c681e76c5f2c8213c68c9c3c434c5bd85b234ea7e00b2fd0",
+    "core/atmos/sky/89-atmos-g-sky.js": "45f083d44aa9834b558b48ec3815a4637a71475e672b3a678388a2466bcee21c",
+    "core/atmos/sky/89-atmos-j-fog.js": "c6fbc34d9dc0552623f7f22c79b2d8f94c6965b3bc4090c2e65b381d209320c5",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
     "core/biome/30-core-foliage.js": "60d066abf6678b08bff3be1c66a075ad93e27fe242c8d0e4b78e79e5111a24d5",
@@ -180,12 +180,12 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/geyser/dist/geyser.html": "7679e5977e75d2518480931c0326efa83b1fc92f84a9784d5faa30b6fcc350d6",
+    "biomes/geyser/dist/geyser.html": "1f4520705fa1c4570c886a90f6115b1977150778d25dc678d76ff227cf8b9ece",
     "biomes/geyser/dist/geyser.tex.geyser.js": "b0361eb4a6edce2d616cd03823b5ea220ad22110af3def47736274d5ac9d28a3",
     "biomes/geyser/dist/geyser.tex.hyperjungle.js": "f14f25782e3159d60b4b2252c77237fb4983362457ada1540f04d666dbd54c61"
    },
    "outputs_raw": {
-    "biomes/geyser/dist/geyser.html": "7679e5977e75d2518480931c0326efa83b1fc92f84a9784d5faa30b6fcc350d6",
+    "biomes/geyser/dist/geyser.html": "1f4520705fa1c4570c886a90f6115b1977150778d25dc678d76ff227cf8b9ece",
     "biomes/geyser/dist/geyser.tex.geyser.js": "b0361eb4a6edce2d616cd03823b5ea220ad22110af3def47736274d5ac9d28a3",
     "biomes/geyser/dist/geyser.tex.hyperjungle.js": "f14f25782e3159d60b4b2252c77237fb4983362457ada1540f04d666dbd54c61"
    }
@@ -263,16 +263,16 @@
     "core/atmos/89-atmos-9-host.js": "7cbe36a99725362e9c754e4812f3c6dae15c7febedde37e4830153dac640514d",
     "core/atmos/89-atmos-a-waves.js": "77ab3264db6d412a82c8d7b2f0f1e643a1cc65537c3456248f9193b6621dbc98",
     "core/atmos/89-atmos-b-skylight.js": "fdd81ff12eb4e98d7d9bc07691b033a71cd2add1b8a0d23d7ffb6149d781c6d0",
-    "core/atmos/fx/89-atmos-fx-lightning.js": "f96fdc78200973764a80ca42831289edfcbfb6c42191b39c8eef053e6109e253",
+    "core/atmos/fx/89-atmos-fx-lightning.js": "8f74cb76bb2c8761a9432482ecd62a562502f17d83cc7f6a546ec7eaa1bc9991",
     "core/atmos/fx/89-atmos-fx-raincover.js": "3b17ad5680758adca953d3444e0c9393c524941559cb19d3061c4e7d8f07e908",
     "core/atmos/host/89-atmos-e-weatherhost.js": "4b2492dcd78a5eeb6f567f5fa6546275d02e44325e497a3f2933841e6473dbb6",
-    "core/atmos/host/89-atmos-h-skyhost.js": "40b4be9d7c0bd7a8d05dea3eff1d2f2110f3669d693737206872f5dd820a00c4",
+    "core/atmos/host/89-atmos-h-skyhost.js": "62401272c4ae693a9ce80a3aec3611833e0b31792ac2e0e69b37d1b52a5ee425",
     "core/atmos/host/89-atmos-i-skybiome.js": "40dde8c1cd5b19ff2436106b9db5f003334f4052fba1239cca767b1d10974bd1",
-    "core/atmos/host/89-atmos-j-heightfog.js": "a0c6deea83ffd85df81d6befd07283ec43ad28028de4831d47faad3ee92aeb75",
+    "core/atmos/host/89-atmos-j-heightfog.js": "175945b28d80b508231906f0105e9ee22b61dddb126ef1823adb349901f6dacd",
     "core/atmos/sky/89-atmos-e-skymodel.js": "a88e93cffe596d5362daa08d693c63795713514f850125feff8f2f9ee2b8e258",
-    "core/atmos/sky/89-atmos-f-skypresets.js": "459132ec76e796e76b8d58715ce3eb77d26e4d57cc61b59900135c0e747fe98d",
-    "core/atmos/sky/89-atmos-g-sky.js": "32b6b6e04be15df728ca7ad3502d2035f2c750426deb3dae964273228ea5a6eb",
-    "core/atmos/sky/89-atmos-j-fog.js": "60ab4f8d18bd785cd18fbfea54ae4730bc30dad66fd97531e1d7eff2b7058560",
+    "core/atmos/sky/89-atmos-f-skypresets.js": "5f55cc174ba0ce60c681e76c5f2c8213c68c9c3c434c5bd85b234ea7e00b2fd0",
+    "core/atmos/sky/89-atmos-g-sky.js": "45f083d44aa9834b558b48ec3815a4637a71475e672b3a678388a2466bcee21c",
+    "core/atmos/sky/89-atmos-j-fog.js": "c6fbc34d9dc0552623f7f22c79b2d8f94c6965b3bc4090c2e65b381d209320c5",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
     "core/biome/30-core-foliage.js": "60d066abf6678b08bff3be1c66a075ad93e27fe242c8d0e4b78e79e5111a24d5",
@@ -343,11 +343,11 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/geyser/dist/geyser-basin.html": "7b97fdf79a520ae9f2ab7ffd4fdcc7356afe552225c514e71065022d6fdac824",
+    "biomes/geyser/dist/geyser-basin.html": "b82e72183d20072b23a5fb928f8739aa9ea49997a027b488addd536286331f22",
     "biomes/geyser/dist/geyser-basin.tex.geyser.js": "d0e4df750182c584b6a4dc9f574619cff845a5ca9363e742c9616f3221194461"
    },
    "outputs_raw": {
-    "biomes/geyser/dist/geyser-basin.html": "7b97fdf79a520ae9f2ab7ffd4fdcc7356afe552225c514e71065022d6fdac824",
+    "biomes/geyser/dist/geyser-basin.html": "b82e72183d20072b23a5fb928f8739aa9ea49997a027b488addd536286331f22",
     "biomes/geyser/dist/geyser-basin.tex.geyser.js": "d0e4df750182c584b6a4dc9f574619cff845a5ca9363e742c9616f3221194461"
    }
   },
@@ -457,16 +457,16 @@
     "core/atmos/89-atmos-9-host.js": "7cbe36a99725362e9c754e4812f3c6dae15c7febedde37e4830153dac640514d",
     "core/atmos/89-atmos-a-waves.js": "77ab3264db6d412a82c8d7b2f0f1e643a1cc65537c3456248f9193b6621dbc98",
     "core/atmos/89-atmos-b-skylight.js": "fdd81ff12eb4e98d7d9bc07691b033a71cd2add1b8a0d23d7ffb6149d781c6d0",
-    "core/atmos/fx/89-atmos-fx-lightning.js": "f96fdc78200973764a80ca42831289edfcbfb6c42191b39c8eef053e6109e253",
+    "core/atmos/fx/89-atmos-fx-lightning.js": "8f74cb76bb2c8761a9432482ecd62a562502f17d83cc7f6a546ec7eaa1bc9991",
     "core/atmos/fx/89-atmos-fx-raincover.js": "3b17ad5680758adca953d3444e0c9393c524941559cb19d3061c4e7d8f07e908",
     "core/atmos/host/89-atmos-e-weatherhost.js": "4b2492dcd78a5eeb6f567f5fa6546275d02e44325e497a3f2933841e6473dbb6",
-    "core/atmos/host/89-atmos-h-skyhost.js": "40b4be9d7c0bd7a8d05dea3eff1d2f2110f3669d693737206872f5dd820a00c4",
+    "core/atmos/host/89-atmos-h-skyhost.js": "62401272c4ae693a9ce80a3aec3611833e0b31792ac2e0e69b37d1b52a5ee425",
     "core/atmos/host/89-atmos-i-skybiome.js": "40dde8c1cd5b19ff2436106b9db5f003334f4052fba1239cca767b1d10974bd1",
-    "core/atmos/host/89-atmos-j-heightfog.js": "a0c6deea83ffd85df81d6befd07283ec43ad28028de4831d47faad3ee92aeb75",
+    "core/atmos/host/89-atmos-j-heightfog.js": "175945b28d80b508231906f0105e9ee22b61dddb126ef1823adb349901f6dacd",
     "core/atmos/sky/89-atmos-e-skymodel.js": "a88e93cffe596d5362daa08d693c63795713514f850125feff8f2f9ee2b8e258",
-    "core/atmos/sky/89-atmos-f-skypresets.js": "459132ec76e796e76b8d58715ce3eb77d26e4d57cc61b59900135c0e747fe98d",
-    "core/atmos/sky/89-atmos-g-sky.js": "32b6b6e04be15df728ca7ad3502d2035f2c750426deb3dae964273228ea5a6eb",
-    "core/atmos/sky/89-atmos-j-fog.js": "60ab4f8d18bd785cd18fbfea54ae4730bc30dad66fd97531e1d7eff2b7058560",
+    "core/atmos/sky/89-atmos-f-skypresets.js": "5f55cc174ba0ce60c681e76c5f2c8213c68c9c3c434c5bd85b234ea7e00b2fd0",
+    "core/atmos/sky/89-atmos-g-sky.js": "45f083d44aa9834b558b48ec3815a4637a71475e672b3a678388a2466bcee21c",
+    "core/atmos/sky/89-atmos-j-fog.js": "c6fbc34d9dc0552623f7f22c79b2d8f94c6965b3bc4090c2e65b381d209320c5",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
     "core/biome/30-core-foliage.js": "60d066abf6678b08bff3be1c66a075ad93e27fe242c8d0e4b78e79e5111a24d5",
@@ -537,12 +537,12 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/geyser/dist/geyser-corona.html": "0c5c868693b6f15f5a5e1fb117a823cd481ffdedeb6a37dd83e6765759f07873",
+    "biomes/geyser/dist/geyser-corona.html": "5501edf6571d054326315cbac470c3057b251a7958fda75b966e99f0f676a98c",
     "biomes/geyser/dist/geyser-corona.tex.geyser.js": "de29eae9979541bd9c3924ade6031bd39e1cffa1fc3669048f09306eb79f0227",
     "biomes/geyser/dist/geyser-corona.tex.hyperjungle.js": "fb350b246be78e074a0bcd2c17b20f339516f5155d65af7a65486524f9c02552"
    },
    "outputs_raw": {
-    "biomes/geyser/dist/geyser-corona.html": "0c5c868693b6f15f5a5e1fb117a823cd481ffdedeb6a37dd83e6765759f07873",
+    "biomes/geyser/dist/geyser-corona.html": "5501edf6571d054326315cbac470c3057b251a7958fda75b966e99f0f676a98c",
     "biomes/geyser/dist/geyser-corona.tex.geyser.js": "de29eae9979541bd9c3924ade6031bd39e1cffa1fc3669048f09306eb79f0227",
     "biomes/geyser/dist/geyser-corona.tex.hyperjungle.js": "fb350b246be78e074a0bcd2c17b20f339516f5155d65af7a65486524f9c02552"
    }
@@ -617,16 +617,16 @@
     "core/atmos/89-atmos-9-host.js": "7cbe36a99725362e9c754e4812f3c6dae15c7febedde37e4830153dac640514d",
     "core/atmos/89-atmos-a-waves.js": "77ab3264db6d412a82c8d7b2f0f1e643a1cc65537c3456248f9193b6621dbc98",
     "core/atmos/89-atmos-b-skylight.js": "fdd81ff12eb4e98d7d9bc07691b033a71cd2add1b8a0d23d7ffb6149d781c6d0",
-    "core/atmos/fx/89-atmos-fx-lightning.js": "f96fdc78200973764a80ca42831289edfcbfb6c42191b39c8eef053e6109e253",
+    "core/atmos/fx/89-atmos-fx-lightning.js": "8f74cb76bb2c8761a9432482ecd62a562502f17d83cc7f6a546ec7eaa1bc9991",
     "core/atmos/fx/89-atmos-fx-raincover.js": "3b17ad5680758adca953d3444e0c9393c524941559cb19d3061c4e7d8f07e908",
     "core/atmos/host/89-atmos-e-weatherhost.js": "4b2492dcd78a5eeb6f567f5fa6546275d02e44325e497a3f2933841e6473dbb6",
-    "core/atmos/host/89-atmos-h-skyhost.js": "40b4be9d7c0bd7a8d05dea3eff1d2f2110f3669d693737206872f5dd820a00c4",
+    "core/atmos/host/89-atmos-h-skyhost.js": "62401272c4ae693a9ce80a3aec3611833e0b31792ac2e0e69b37d1b52a5ee425",
     "core/atmos/host/89-atmos-i-skybiome.js": "40dde8c1cd5b19ff2436106b9db5f003334f4052fba1239cca767b1d10974bd1",
-    "core/atmos/host/89-atmos-j-heightfog.js": "a0c6deea83ffd85df81d6befd07283ec43ad28028de4831d47faad3ee92aeb75",
+    "core/atmos/host/89-atmos-j-heightfog.js": "175945b28d80b508231906f0105e9ee22b61dddb126ef1823adb349901f6dacd",
     "core/atmos/sky/89-atmos-e-skymodel.js": "a88e93cffe596d5362daa08d693c63795713514f850125feff8f2f9ee2b8e258",
-    "core/atmos/sky/89-atmos-f-skypresets.js": "459132ec76e796e76b8d58715ce3eb77d26e4d57cc61b59900135c0e747fe98d",
-    "core/atmos/sky/89-atmos-g-sky.js": "32b6b6e04be15df728ca7ad3502d2035f2c750426deb3dae964273228ea5a6eb",
-    "core/atmos/sky/89-atmos-j-fog.js": "60ab4f8d18bd785cd18fbfea54ae4730bc30dad66fd97531e1d7eff2b7058560",
+    "core/atmos/sky/89-atmos-f-skypresets.js": "5f55cc174ba0ce60c681e76c5f2c8213c68c9c3c434c5bd85b234ea7e00b2fd0",
+    "core/atmos/sky/89-atmos-g-sky.js": "45f083d44aa9834b558b48ec3815a4637a71475e672b3a678388a2466bcee21c",
+    "core/atmos/sky/89-atmos-j-fog.js": "c6fbc34d9dc0552623f7f22c79b2d8f94c6965b3bc4090c2e65b381d209320c5",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
     "core/biome/30-core-foliage.js": "60d066abf6678b08bff3be1c66a075ad93e27fe242c8d0e4b78e79e5111a24d5",
@@ -699,11 +699,11 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/geyser/dist/geyser-ice.html": "894a1e1d2434b36470facf6aada1f6811f8c08d7a6b8792d3ae3f5e93554929f",
+    "biomes/geyser/dist/geyser-ice.html": "980545bac141abccd24565be7175932164ab3375e050c570577454848f4180c6",
     "biomes/geyser/dist/geyser-ice.tex.geyser.js": "58ae666e3207f25ccb15ac649742e9b0221a320077fa8be3a6e872f6657fd57c"
    },
    "outputs_raw": {
-    "biomes/geyser/dist/geyser-ice.html": "894a1e1d2434b36470facf6aada1f6811f8c08d7a6b8792d3ae3f5e93554929f",
+    "biomes/geyser/dist/geyser-ice.html": "980545bac141abccd24565be7175932164ab3375e050c570577454848f4180c6",
     "biomes/geyser/dist/geyser-ice.tex.geyser.js": "58ae666e3207f25ccb15ac649742e9b0221a320077fa8be3a6e872f6657fd57c"
    }
   },
@@ -777,16 +777,16 @@
     "core/atmos/89-atmos-9-host.js": "7cbe36a99725362e9c754e4812f3c6dae15c7febedde37e4830153dac640514d",
     "core/atmos/89-atmos-a-waves.js": "77ab3264db6d412a82c8d7b2f0f1e643a1cc65537c3456248f9193b6621dbc98",
     "core/atmos/89-atmos-b-skylight.js": "fdd81ff12eb4e98d7d9bc07691b033a71cd2add1b8a0d23d7ffb6149d781c6d0",
-    "core/atmos/fx/89-atmos-fx-lightning.js": "f96fdc78200973764a80ca42831289edfcbfb6c42191b39c8eef053e6109e253",
+    "core/atmos/fx/89-atmos-fx-lightning.js": "8f74cb76bb2c8761a9432482ecd62a562502f17d83cc7f6a546ec7eaa1bc9991",
     "core/atmos/fx/89-atmos-fx-raincover.js": "3b17ad5680758adca953d3444e0c9393c524941559cb19d3061c4e7d8f07e908",
     "core/atmos/host/89-atmos-e-weatherhost.js": "4b2492dcd78a5eeb6f567f5fa6546275d02e44325e497a3f2933841e6473dbb6",
-    "core/atmos/host/89-atmos-h-skyhost.js": "40b4be9d7c0bd7a8d05dea3eff1d2f2110f3669d693737206872f5dd820a00c4",
+    "core/atmos/host/89-atmos-h-skyhost.js": "62401272c4ae693a9ce80a3aec3611833e0b31792ac2e0e69b37d1b52a5ee425",
     "core/atmos/host/89-atmos-i-skybiome.js": "40dde8c1cd5b19ff2436106b9db5f003334f4052fba1239cca767b1d10974bd1",
-    "core/atmos/host/89-atmos-j-heightfog.js": "a0c6deea83ffd85df81d6befd07283ec43ad28028de4831d47faad3ee92aeb75",
+    "core/atmos/host/89-atmos-j-heightfog.js": "175945b28d80b508231906f0105e9ee22b61dddb126ef1823adb349901f6dacd",
     "core/atmos/sky/89-atmos-e-skymodel.js": "a88e93cffe596d5362daa08d693c63795713514f850125feff8f2f9ee2b8e258",
-    "core/atmos/sky/89-atmos-f-skypresets.js": "459132ec76e796e76b8d58715ce3eb77d26e4d57cc61b59900135c0e747fe98d",
-    "core/atmos/sky/89-atmos-g-sky.js": "32b6b6e04be15df728ca7ad3502d2035f2c750426deb3dae964273228ea5a6eb",
-    "core/atmos/sky/89-atmos-j-fog.js": "60ab4f8d18bd785cd18fbfea54ae4730bc30dad66fd97531e1d7eff2b7058560",
+    "core/atmos/sky/89-atmos-f-skypresets.js": "5f55cc174ba0ce60c681e76c5f2c8213c68c9c3c434c5bd85b234ea7e00b2fd0",
+    "core/atmos/sky/89-atmos-g-sky.js": "45f083d44aa9834b558b48ec3815a4637a71475e672b3a678388a2466bcee21c",
+    "core/atmos/sky/89-atmos-j-fog.js": "c6fbc34d9dc0552623f7f22c79b2d8f94c6965b3bc4090c2e65b381d209320c5",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
     "core/biome/30-core-foliage.js": "60d066abf6678b08bff3be1c66a075ad93e27fe242c8d0e4b78e79e5111a24d5",
@@ -857,11 +857,11 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/geyser/dist/geyser-puna.html": "39dae45ebff63d50d206f579e6c5020c22302e45639b4a9b0d6487825ac43d47",
+    "biomes/geyser/dist/geyser-puna.html": "428c17602a5ace9a66e67f6c6168381c2948229a96312bd5fcc870a16f0cad93",
     "biomes/geyser/dist/geyser-puna.tex.geyser.js": "04106dc6831f8441de4672e1fe62c74f1a39bb9904f2b3558fbacb4f513c0335"
    },
    "outputs_raw": {
-    "biomes/geyser/dist/geyser-puna.html": "39dae45ebff63d50d206f579e6c5020c22302e45639b4a9b0d6487825ac43d47",
+    "biomes/geyser/dist/geyser-puna.html": "428c17602a5ace9a66e67f6c6168381c2948229a96312bd5fcc870a16f0cad93",
     "biomes/geyser/dist/geyser-puna.tex.geyser.js": "04106dc6831f8441de4672e1fe62c74f1a39bb9904f2b3558fbacb4f513c0335"
    }
   },
@@ -970,16 +970,16 @@
     "core/atmos/89-atmos-9-host.js": "7cbe36a99725362e9c754e4812f3c6dae15c7febedde37e4830153dac640514d",
     "core/atmos/89-atmos-a-waves.js": "77ab3264db6d412a82c8d7b2f0f1e643a1cc65537c3456248f9193b6621dbc98",
     "core/atmos/89-atmos-b-skylight.js": "fdd81ff12eb4e98d7d9bc07691b033a71cd2add1b8a0d23d7ffb6149d781c6d0",
-    "core/atmos/fx/89-atmos-fx-lightning.js": "f96fdc78200973764a80ca42831289edfcbfb6c42191b39c8eef053e6109e253",
+    "core/atmos/fx/89-atmos-fx-lightning.js": "8f74cb76bb2c8761a9432482ecd62a562502f17d83cc7f6a546ec7eaa1bc9991",
     "core/atmos/fx/89-atmos-fx-raincover.js": "3b17ad5680758adca953d3444e0c9393c524941559cb19d3061c4e7d8f07e908",
     "core/atmos/host/89-atmos-e-weatherhost.js": "4b2492dcd78a5eeb6f567f5fa6546275d02e44325e497a3f2933841e6473dbb6",
-    "core/atmos/host/89-atmos-h-skyhost.js": "40b4be9d7c0bd7a8d05dea3eff1d2f2110f3669d693737206872f5dd820a00c4",
+    "core/atmos/host/89-atmos-h-skyhost.js": "62401272c4ae693a9ce80a3aec3611833e0b31792ac2e0e69b37d1b52a5ee425",
     "core/atmos/host/89-atmos-i-skybiome.js": "40dde8c1cd5b19ff2436106b9db5f003334f4052fba1239cca767b1d10974bd1",
-    "core/atmos/host/89-atmos-j-heightfog.js": "a0c6deea83ffd85df81d6befd07283ec43ad28028de4831d47faad3ee92aeb75",
+    "core/atmos/host/89-atmos-j-heightfog.js": "175945b28d80b508231906f0105e9ee22b61dddb126ef1823adb349901f6dacd",
     "core/atmos/sky/89-atmos-e-skymodel.js": "a88e93cffe596d5362daa08d693c63795713514f850125feff8f2f9ee2b8e258",
-    "core/atmos/sky/89-atmos-f-skypresets.js": "459132ec76e796e76b8d58715ce3eb77d26e4d57cc61b59900135c0e747fe98d",
-    "core/atmos/sky/89-atmos-g-sky.js": "32b6b6e04be15df728ca7ad3502d2035f2c750426deb3dae964273228ea5a6eb",
-    "core/atmos/sky/89-atmos-j-fog.js": "60ab4f8d18bd785cd18fbfea54ae4730bc30dad66fd97531e1d7eff2b7058560",
+    "core/atmos/sky/89-atmos-f-skypresets.js": "5f55cc174ba0ce60c681e76c5f2c8213c68c9c3c434c5bd85b234ea7e00b2fd0",
+    "core/atmos/sky/89-atmos-g-sky.js": "45f083d44aa9834b558b48ec3815a4637a71475e672b3a678388a2466bcee21c",
+    "core/atmos/sky/89-atmos-j-fog.js": "c6fbc34d9dc0552623f7f22c79b2d8f94c6965b3bc4090c2e65b381d209320c5",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
     "core/biome/30-core-foliage.js": "60d066abf6678b08bff3be1c66a075ad93e27fe242c8d0e4b78e79e5111a24d5",
@@ -1050,12 +1050,12 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/geyser/dist/geyser-stills.html": "b1bd643e489913cb02f7236b3ceeafed794a9542dd5852629874a5717d32dde5",
+    "biomes/geyser/dist/geyser-stills.html": "f71929f41a3de492bc497721544b9c5dad823ad1917098b04c0c084e6684ee7a",
     "biomes/geyser/dist/geyser-stills.tex.geyser.js": "628094a64deb010b625ab11a9b1d0ff1e33bfc36a67b0fc18f0ca6a8b6bc06e1",
     "biomes/geyser/dist/geyser-stills.tex.hyperjungle.js": "ca615113bf000de52df83c66023180e03fd8b794f2f0f1d90f7d5ffb48c96118"
    },
    "outputs_raw": {
-    "biomes/geyser/dist/geyser-stills.html": "b1bd643e489913cb02f7236b3ceeafed794a9542dd5852629874a5717d32dde5",
+    "biomes/geyser/dist/geyser-stills.html": "f71929f41a3de492bc497721544b9c5dad823ad1917098b04c0c084e6684ee7a",
     "biomes/geyser/dist/geyser-stills.tex.geyser.js": "628094a64deb010b625ab11a9b1d0ff1e33bfc36a67b0fc18f0ca6a8b6bc06e1",
     "biomes/geyser/dist/geyser-stills.tex.hyperjungle.js": "ca615113bf000de52df83c66023180e03fd8b794f2f0f1d90f7d5ffb48c96118"
    }

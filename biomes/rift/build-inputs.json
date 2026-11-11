@@ -79,17 +79,17 @@
     "core/atmos/89-atmos-9-host.js": "7cbe36a99725362e9c754e4812f3c6dae15c7febedde37e4830153dac640514d",
     "core/atmos/89-atmos-a-waves.js": "77ab3264db6d412a82c8d7b2f0f1e643a1cc65537c3456248f9193b6621dbc98",
     "core/atmos/89-atmos-b-skylight.js": "fdd81ff12eb4e98d7d9bc07691b033a71cd2add1b8a0d23d7ffb6149d781c6d0",
-    "core/atmos/fx/89-atmos-fx-lightning.js": "f96fdc78200973764a80ca42831289edfcbfb6c42191b39c8eef053e6109e253",
+    "core/atmos/fx/89-atmos-fx-lightning.js": "8f74cb76bb2c8761a9432482ecd62a562502f17d83cc7f6a546ec7eaa1bc9991",
     "core/atmos/fx/89-atmos-fx-raincover.js": "3b17ad5680758adca953d3444e0c9393c524941559cb19d3061c4e7d8f07e908",
     "core/atmos/host/89-atmos-c-hostbind.js": "2d516dca2ab21914afcc39898a3c952e2112e4470b53e4d576dc9e47b0ebc411",
     "core/atmos/host/89-atmos-e-weatherhost.js": "4b2492dcd78a5eeb6f567f5fa6546275d02e44325e497a3f2933841e6473dbb6",
-    "core/atmos/host/89-atmos-h-skyhost.js": "40b4be9d7c0bd7a8d05dea3eff1d2f2110f3669d693737206872f5dd820a00c4",
+    "core/atmos/host/89-atmos-h-skyhost.js": "62401272c4ae693a9ce80a3aec3611833e0b31792ac2e0e69b37d1b52a5ee425",
     "core/atmos/host/89-atmos-i-skybiome.js": "40dde8c1cd5b19ff2436106b9db5f003334f4052fba1239cca767b1d10974bd1",
-    "core/atmos/host/89-atmos-j-heightfog.js": "a0c6deea83ffd85df81d6befd07283ec43ad28028de4831d47faad3ee92aeb75",
+    "core/atmos/host/89-atmos-j-heightfog.js": "175945b28d80b508231906f0105e9ee22b61dddb126ef1823adb349901f6dacd",
     "core/atmos/sky/89-atmos-e-skymodel.js": "a88e93cffe596d5362daa08d693c63795713514f850125feff8f2f9ee2b8e258",
-    "core/atmos/sky/89-atmos-f-skypresets.js": "459132ec76e796e76b8d58715ce3eb77d26e4d57cc61b59900135c0e747fe98d",
-    "core/atmos/sky/89-atmos-g-sky.js": "32b6b6e04be15df728ca7ad3502d2035f2c750426deb3dae964273228ea5a6eb",
-    "core/atmos/sky/89-atmos-j-fog.js": "60ab4f8d18bd785cd18fbfea54ae4730bc30dad66fd97531e1d7eff2b7058560",
+    "core/atmos/sky/89-atmos-f-skypresets.js": "5f55cc174ba0ce60c681e76c5f2c8213c68c9c3c434c5bd85b234ea7e00b2fd0",
+    "core/atmos/sky/89-atmos-g-sky.js": "45f083d44aa9834b558b48ec3815a4637a71475e672b3a678388a2466bcee21c",
+    "core/atmos/sky/89-atmos-j-fog.js": "c6fbc34d9dc0552623f7f22c79b2d8f94c6965b3bc4090c2e65b381d209320c5",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
     "core/biome/30-core-foliage.js": "60d066abf6678b08bff3be1c66a075ad93e27fe242c8d0e4b78e79e5111a24d5",
@@ -138,10 +138,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/rift/dist/rift.html": "f6490b4e828123acc99d69653f29108c58e4ff726a97cbb0a554bbd064d6dcd7"
+    "biomes/rift/dist/rift.html": "fc619de83bfe852fbb9cffd80c8c53247e27c7962637db3e79c76e7d45939aef"
    },
    "outputs_raw": {
-    "biomes/rift/dist/rift.html": "a55ed995a131cedb5cf259a59fd0ae990a275f839e706b2902fbc9f76ef496b8"
+    "biomes/rift/dist/rift.html": "4dafa16d08ed842b21c29fc5ad43a3e747b942862473237e8c7ba11bf39468ab"
    }
   },
   "build.py --station highland": {
@@ -226,17 +226,17 @@
     "core/atmos/89-atmos-9-host.js": "7cbe36a99725362e9c754e4812f3c6dae15c7febedde37e4830153dac640514d",
     "core/atmos/89-atmos-a-waves.js": "77ab3264db6d412a82c8d7b2f0f1e643a1cc65537c3456248f9193b6621dbc98",
     "core/atmos/89-atmos-b-skylight.js": "fdd81ff12eb4e98d7d9bc07691b033a71cd2add1b8a0d23d7ffb6149d781c6d0",
-    "core/atmos/fx/89-atmos-fx-lightning.js": "f96fdc78200973764a80ca42831289edfcbfb6c42191b39c8eef053e6109e253",
+    "core/atmos/fx/89-atmos-fx-lightning.js": "8f74cb76bb2c8761a9432482ecd62a562502f17d83cc7f6a546ec7eaa1bc9991",
     "core/atmos/fx/89-atmos-fx-raincover.js": "3b17ad5680758adca953d3444e0c9393c524941559cb19d3061c4e7d8f07e908",
     "core/atmos/host/89-atmos-c-hostbind.js": "2d516dca2ab21914afcc39898a3c952e2112e4470b53e4d576dc9e47b0ebc411",
     "core/atmos/host/89-atmos-e-weatherhost.js": "4b2492dcd78a5eeb6f567f5fa6546275d02e44325e497a3f2933841e6473dbb6",
-    "core/atmos/host/89-atmos-h-skyhost.js": "40b4be9d7c0bd7a8d05dea3eff1d2f2110f3669d693737206872f5dd820a00c4",
+    "core/atmos/host/89-atmos-h-skyhost.js": "62401272c4ae693a9ce80a3aec3611833e0b31792ac2e0e69b37d1b52a5ee425",
     "core/atmos/host/89-atmos-i-skybiome.js": "40dde8c1cd5b19ff2436106b9db5f003334f4052fba1239cca767b1d10974bd1",
-    "core/atmos/host/89-atmos-j-heightfog.js": "a0c6deea83ffd85df81d6befd07283ec43ad28028de4831d47faad3ee92aeb75",
+    "core/atmos/host/89-atmos-j-heightfog.js": "175945b28d80b508231906f0105e9ee22b61dddb126ef1823adb349901f6dacd",
     "core/atmos/sky/89-atmos-e-skymodel.js": "a88e93cffe596d5362daa08d693c63795713514f850125feff8f2f9ee2b8e258",
-    "core/atmos/sky/89-atmos-f-skypresets.js": "459132ec76e796e76b8d58715ce3eb77d26e4d57cc61b59900135c0e747fe98d",
-    "core/atmos/sky/89-atmos-g-sky.js": "32b6b6e04be15df728ca7ad3502d2035f2c750426deb3dae964273228ea5a6eb",
-    "core/atmos/sky/89-atmos-j-fog.js": "60ab4f8d18bd785cd18fbfea54ae4730bc30dad66fd97531e1d7eff2b7058560",
+    "core/atmos/sky/89-atmos-f-skypresets.js": "5f55cc174ba0ce60c681e76c5f2c8213c68c9c3c434c5bd85b234ea7e00b2fd0",
+    "core/atmos/sky/89-atmos-g-sky.js": "45f083d44aa9834b558b48ec3815a4637a71475e672b3a678388a2466bcee21c",
+    "core/atmos/sky/89-atmos-j-fog.js": "c6fbc34d9dc0552623f7f22c79b2d8f94c6965b3bc4090c2e65b381d209320c5",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
     "core/biome/30-core-foliage.js": "60d066abf6678b08bff3be1c66a075ad93e27fe242c8d0e4b78e79e5111a24d5",
@@ -286,10 +286,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/rift/dist/rift-highland.html": "33e6b9c0fbc993b539cf2e8f7a9aadc6a3e1523b9a79a1270f904476d306f20a"
+    "biomes/rift/dist/rift-highland.html": "91ee409c0e31d627059438620059bbce9746d4fa4463c7b02dab423dc4d95ebe"
    },
    "outputs_raw": {
-    "biomes/rift/dist/rift-highland.html": "04ad0cc31425e750526fab7148a6848a220492f9a756e10ff74fb61fb53d1434"
+    "biomes/rift/dist/rift-highland.html": "31ccf9e37cfecd09cd56d75ad9fc5e8b4eaccb6713dc0ca53a3ee70214eca14b"
    }
   },
   "build.py --station jungle": {
@@ -373,17 +373,17 @@
     "core/atmos/89-atmos-9-host.js": "7cbe36a99725362e9c754e4812f3c6dae15c7febedde37e4830153dac640514d",
     "core/atmos/89-atmos-a-waves.js": "77ab3264db6d412a82c8d7b2f0f1e643a1cc65537c3456248f9193b6621dbc98",
     "core/atmos/89-atmos-b-skylight.js": "fdd81ff12eb4e98d7d9bc07691b033a71cd2add1b8a0d23d7ffb6149d781c6d0",
-    "core/atmos/fx/89-atmos-fx-lightning.js": "f96fdc78200973764a80ca42831289edfcbfb6c42191b39c8eef053e6109e253",
+    "core/atmos/fx/89-atmos-fx-lightning.js": "8f74cb76bb2c8761a9432482ecd62a562502f17d83cc7f6a546ec7eaa1bc9991",
     "core/atmos/fx/89-atmos-fx-raincover.js": "3b17ad5680758adca953d3444e0c9393c524941559cb19d3061c4e7d8f07e908",
     "core/atmos/host/89-atmos-c-hostbind.js": "2d516dca2ab21914afcc39898a3c952e2112e4470b53e4d576dc9e47b0ebc411",
     "core/atmos/host/89-atmos-e-weatherhost.js": "4b2492dcd78a5eeb6f567f5fa6546275d02e44325e497a3f2933841e6473dbb6",
-    "core/atmos/host/89-atmos-h-skyhost.js": "40b4be9d7c0bd7a8d05dea3eff1d2f2110f3669d693737206872f5dd820a00c4",
+    "core/atmos/host/89-atmos-h-skyhost.js": "62401272c4ae693a9ce80a3aec3611833e0b31792ac2e0e69b37d1b52a5ee425",
     "core/atmos/host/89-atmos-i-skybiome.js": "40dde8c1cd5b19ff2436106b9db5f003334f4052fba1239cca767b1d10974bd1",
-    "core/atmos/host/89-atmos-j-heightfog.js": "a0c6deea83ffd85df81d6befd07283ec43ad28028de4831d47faad3ee92aeb75",
+    "core/atmos/host/89-atmos-j-heightfog.js": "175945b28d80b508231906f0105e9ee22b61dddb126ef1823adb349901f6dacd",
     "core/atmos/sky/89-atmos-e-skymodel.js": "a88e93cffe596d5362daa08d693c63795713514f850125feff8f2f9ee2b8e258",
-    "core/atmos/sky/89-atmos-f-skypresets.js": "459132ec76e796e76b8d58715ce3eb77d26e4d57cc61b59900135c0e747fe98d",
-    "core/atmos/sky/89-atmos-g-sky.js": "32b6b6e04be15df728ca7ad3502d2035f2c750426deb3dae964273228ea5a6eb",
-    "core/atmos/sky/89-atmos-j-fog.js": "60ab4f8d18bd785cd18fbfea54ae4730bc30dad66fd97531e1d7eff2b7058560",
+    "core/atmos/sky/89-atmos-f-skypresets.js": "5f55cc174ba0ce60c681e76c5f2c8213c68c9c3c434c5bd85b234ea7e00b2fd0",
+    "core/atmos/sky/89-atmos-g-sky.js": "45f083d44aa9834b558b48ec3815a4637a71475e672b3a678388a2466bcee21c",
+    "core/atmos/sky/89-atmos-j-fog.js": "c6fbc34d9dc0552623f7f22c79b2d8f94c6965b3bc4090c2e65b381d209320c5",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
     "core/biome/30-core-foliage.js": "60d066abf6678b08bff3be1c66a075ad93e27fe242c8d0e4b78e79e5111a24d5",
@@ -433,10 +433,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/rift/dist/rift-jungle.html": "f22554bb6bb0c8a5ccf8acd1c9e70ffc1528a9b67ccd84ffafb5201d138ab272"
+    "biomes/rift/dist/rift-jungle.html": "c2403b02696d1c754944456d231bf57a424d7d1909ad55d2dc0002c95139b8ed"
    },
    "outputs_raw": {
-    "biomes/rift/dist/rift-jungle.html": "203e5198bb133ce4d0bac6de4ea6903675de863a50e19058859199291f32403e"
+    "biomes/rift/dist/rift-jungle.html": "f1a651a696b87dff7063b386ad0de94079e1ef836ca2f54fd20fe2a48aae950b"
    }
   },
   "build.py --station maze": {
@@ -669,17 +669,17 @@
     "core/atmos/89-atmos-9-host.js": "7cbe36a99725362e9c754e4812f3c6dae15c7febedde37e4830153dac640514d",
     "core/atmos/89-atmos-a-waves.js": "77ab3264db6d412a82c8d7b2f0f1e643a1cc65537c3456248f9193b6621dbc98",
     "core/atmos/89-atmos-b-skylight.js": "fdd81ff12eb4e98d7d9bc07691b033a71cd2add1b8a0d23d7ffb6149d781c6d0",
-    "core/atmos/fx/89-atmos-fx-lightning.js": "f96fdc78200973764a80ca42831289edfcbfb6c42191b39c8eef053e6109e253",
+    "core/atmos/fx/89-atmos-fx-lightning.js": "8f74cb76bb2c8761a9432482ecd62a562502f17d83cc7f6a546ec7eaa1bc9991",
     "core/atmos/fx/89-atmos-fx-raincover.js": "3b17ad5680758adca953d3444e0c9393c524941559cb19d3061c4e7d8f07e908",
     "core/atmos/host/89-atmos-c-hostbind.js": "2d516dca2ab21914afcc39898a3c952e2112e4470b53e4d576dc9e47b0ebc411",
     "core/atmos/host/89-atmos-e-weatherhost.js": "4b2492dcd78a5eeb6f567f5fa6546275d02e44325e497a3f2933841e6473dbb6",
-    "core/atmos/host/89-atmos-h-skyhost.js": "40b4be9d7c0bd7a8d05dea3eff1d2f2110f3669d693737206872f5dd820a00c4",
+    "core/atmos/host/89-atmos-h-skyhost.js": "62401272c4ae693a9ce80a3aec3611833e0b31792ac2e0e69b37d1b52a5ee425",
     "core/atmos/host/89-atmos-i-skybiome.js": "40dde8c1cd5b19ff2436106b9db5f003334f4052fba1239cca767b1d10974bd1",
-    "core/atmos/host/89-atmos-j-heightfog.js": "a0c6deea83ffd85df81d6befd07283ec43ad28028de4831d47faad3ee92aeb75",
+    "core/atmos/host/89-atmos-j-heightfog.js": "175945b28d80b508231906f0105e9ee22b61dddb126ef1823adb349901f6dacd",
     "core/atmos/sky/89-atmos-e-skymodel.js": "a88e93cffe596d5362daa08d693c63795713514f850125feff8f2f9ee2b8e258",
-    "core/atmos/sky/89-atmos-f-skypresets.js": "459132ec76e796e76b8d58715ce3eb77d26e4d57cc61b59900135c0e747fe98d",
-    "core/atmos/sky/89-atmos-g-sky.js": "32b6b6e04be15df728ca7ad3502d2035f2c750426deb3dae964273228ea5a6eb",
-    "core/atmos/sky/89-atmos-j-fog.js": "60ab4f8d18bd785cd18fbfea54ae4730bc30dad66fd97531e1d7eff2b7058560",
+    "core/atmos/sky/89-atmos-f-skypresets.js": "5f55cc174ba0ce60c681e76c5f2c8213c68c9c3c434c5bd85b234ea7e00b2fd0",
+    "core/atmos/sky/89-atmos-g-sky.js": "45f083d44aa9834b558b48ec3815a4637a71475e672b3a678388a2466bcee21c",
+    "core/atmos/sky/89-atmos-j-fog.js": "c6fbc34d9dc0552623f7f22c79b2d8f94c6965b3bc4090c2e65b381d209320c5",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
     "core/biome/30-core-foliage.js": "60d066abf6678b08bff3be1c66a075ad93e27fe242c8d0e4b78e79e5111a24d5",
@@ -729,10 +729,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/rift/dist/rift-plateau.html": "4fe04cbbdf3cd0e81069a70bc93d1aeed34493deaade396425a2e501015d5c05"
+    "biomes/rift/dist/rift-plateau.html": "9f1973ace41358cbc3d3913e887f1b81d8e029d5e0c0aa54a0300ac606c7d32e"
    },
    "outputs_raw": {
-    "biomes/rift/dist/rift-plateau.html": "42d85fd260eb4567d0f2796ff6ec87573c15af4f97f9da880d81f2d3fd5777d7"
+    "biomes/rift/dist/rift-plateau.html": "355962615dc0ad53c389e27a071931ab9f5bf2a487b3fbd948c87025b0736727"
    }
   },
   "build.py --station savannah": {
@@ -825,17 +825,17 @@
     "core/atmos/89-atmos-9-host.js": "7cbe36a99725362e9c754e4812f3c6dae15c7febedde37e4830153dac640514d",
     "core/atmos/89-atmos-a-waves.js": "77ab3264db6d412a82c8d7b2f0f1e643a1cc65537c3456248f9193b6621dbc98",
     "core/atmos/89-atmos-b-skylight.js": "fdd81ff12eb4e98d7d9bc07691b033a71cd2add1b8a0d23d7ffb6149d781c6d0",
-    "core/atmos/fx/89-atmos-fx-lightning.js": "f96fdc78200973764a80ca42831289edfcbfb6c42191b39c8eef053e6109e253",
+    "core/atmos/fx/89-atmos-fx-lightning.js": "8f74cb76bb2c8761a9432482ecd62a562502f17d83cc7f6a546ec7eaa1bc9991",
     "core/atmos/fx/89-atmos-fx-raincover.js": "3b17ad5680758adca953d3444e0c9393c524941559cb19d3061c4e7d8f07e908",
     "core/atmos/host/89-atmos-c-hostbind.js": "2d516dca2ab21914afcc39898a3c952e2112e4470b53e4d576dc9e47b0ebc411",
     "core/atmos/host/89-atmos-e-weatherhost.js": "4b2492dcd78a5eeb6f567f5fa6546275d02e44325e497a3f2933841e6473dbb6",
-    "core/atmos/host/89-atmos-h-skyhost.js": "40b4be9d7c0bd7a8d05dea3eff1d2f2110f3669d693737206872f5dd820a00c4",
+    "core/atmos/host/89-atmos-h-skyhost.js": "62401272c4ae693a9ce80a3aec3611833e0b31792ac2e0e69b37d1b52a5ee425",
     "core/atmos/host/89-atmos-i-skybiome.js": "40dde8c1cd5b19ff2436106b9db5f003334f4052fba1239cca767b1d10974bd1",
-    "core/atmos/host/89-atmos-j-heightfog.js": "a0c6deea83ffd85df81d6befd07283ec43ad28028de4831d47faad3ee92aeb75",
+    "core/atmos/host/89-atmos-j-heightfog.js": "175945b28d80b508231906f0105e9ee22b61dddb126ef1823adb349901f6dacd",
     "core/atmos/sky/89-atmos-e-skymodel.js": "a88e93cffe596d5362daa08d693c63795713514f850125feff8f2f9ee2b8e258",
-    "core/atmos/sky/89-atmos-f-skypresets.js": "459132ec76e796e76b8d58715ce3eb77d26e4d57cc61b59900135c0e747fe98d",
-    "core/atmos/sky/89-atmos-g-sky.js": "32b6b6e04be15df728ca7ad3502d2035f2c750426deb3dae964273228ea5a6eb",
-    "core/atmos/sky/89-atmos-j-fog.js": "60ab4f8d18bd785cd18fbfea54ae4730bc30dad66fd97531e1d7eff2b7058560",
+    "core/atmos/sky/89-atmos-f-skypresets.js": "5f55cc174ba0ce60c681e76c5f2c8213c68c9c3c434c5bd85b234ea7e00b2fd0",
+    "core/atmos/sky/89-atmos-g-sky.js": "45f083d44aa9834b558b48ec3815a4637a71475e672b3a678388a2466bcee21c",
+    "core/atmos/sky/89-atmos-j-fog.js": "c6fbc34d9dc0552623f7f22c79b2d8f94c6965b3bc4090c2e65b381d209320c5",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
     "core/biome/30-core-foliage.js": "60d066abf6678b08bff3be1c66a075ad93e27fe242c8d0e4b78e79e5111a24d5",
@@ -885,10 +885,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/rift/dist/rift-savannah.html": "326cf42c65bd309756bbad245470bdb12c7b29dd75c577a71f10e56cddc385e0"
+    "biomes/rift/dist/rift-savannah.html": "d553ab41c407888631c9de76a688cc5469206efad90306a33e2eb107a0e53ac7"
    },
    "outputs_raw": {
-    "biomes/rift/dist/rift-savannah.html": "f7bcb4f840f8080f12896a3a6a707bc078ad909f62d69f72efcf276b62471a68"
+    "biomes/rift/dist/rift-savannah.html": "188566a56ffde8a9e7b3ee3a0e08037407d6e3b43e10b645e1a3a9f7a5077aec"
    }
   }
  }

@@ -232,7 +232,7 @@
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
    },
    "listings": {
-    "core/atmos": "30a642030efd42bcc162ce8cf40be0758482952e7e901e4d500b8129ebb12ccb",
+    "core/atmos": "97ec173a1f39d031319dc7532a9d749cdd784c7203e140334b9c46e8ff85d5e6",
     "core/atmos/placeholder": "93e72701f4f204e698b400c25d1989704d985203b33d5a076ec9e170c3bb9552",
     "core/catalog": "30a9e7a2a0ea642339cc1158c3060327682167fbeb74a8c68a584185e0c6d094",
     "core/door": "606c86cebee6cecd509a1319eb00f4f3b96202499526068992bd052a85bdca4a",

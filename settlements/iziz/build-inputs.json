@@ -586,7 +586,7 @@
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
-    "core/atmos": "30a642030efd42bcc162ce8cf40be0758482952e7e901e4d500b8129ebb12ccb",
+    "core/atmos": "97ec173a1f39d031319dc7532a9d749cdd784c7203e140334b9c46e8ff85d5e6",
     "core/atmos/placeholder": "93e72701f4f204e698b400c25d1989704d985203b33d5a076ec9e170c3bb9552",
     "core/catalog": "30a9e7a2a0ea642339cc1158c3060327682167fbeb74a8c68a584185e0c6d094",
     "core/export": "ba9ff57ab58b1898dd8004bdde31950a6ca3c13dec7bd46fc5079609ae5e214f",

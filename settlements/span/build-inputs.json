@@ -9,11 +9,11 @@
     "core/atmos/89-atmos-a-waves.js": "77ab3264db6d412a82c8d7b2f0f1e643a1cc65537c3456248f9193b6621dbc98",
     "core/atmos/89-atmos-b-skylight.js": "fdd81ff12eb4e98d7d9bc07691b033a71cd2add1b8a0d23d7ffb6149d781c6d0",
     "core/atmos/host/89-atmos-c-hostbind.js": "2d516dca2ab21914afcc39898a3c952e2112e4470b53e4d576dc9e47b0ebc411",
-    "core/atmos/host/89-atmos-h-skyhost.js": "40b4be9d7c0bd7a8d05dea3eff1d2f2110f3669d693737206872f5dd820a00c4",
+    "core/atmos/host/89-atmos-h-skyhost.js": "62401272c4ae693a9ce80a3aec3611833e0b31792ac2e0e69b37d1b52a5ee425",
     "core/atmos/host/89-atmos-i-skybiome.js": "40dde8c1cd5b19ff2436106b9db5f003334f4052fba1239cca767b1d10974bd1",
     "core/atmos/sky/89-atmos-e-skymodel.js": "a88e93cffe596d5362daa08d693c63795713514f850125feff8f2f9ee2b8e258",
-    "core/atmos/sky/89-atmos-f-skypresets.js": "459132ec76e796e76b8d58715ce3eb77d26e4d57cc61b59900135c0e747fe98d",
-    "core/atmos/sky/89-atmos-g-sky.js": "32b6b6e04be15df728ca7ad3502d2035f2c750426deb3dae964273228ea5a6eb",
+    "core/atmos/sky/89-atmos-f-skypresets.js": "5f55cc174ba0ce60c681e76c5f2c8213c68c9c3c434c5bd85b234ea7e00b2fd0",
+    "core/atmos/sky/89-atmos-g-sky.js": "45f083d44aa9834b558b48ec3815a4637a71475e672b3a678388a2466bcee21c",
     "core/catalog/catalog.py": "5d4a79810193b831fc1c686c934990afd10ecb63b5a55d05e0f3d7dd4c84d88a",
     "core/catalog/files.json": "a400e7bf3e1197698d129db83964d883fd9ea2818173fe7df3c7d1b4a054d72f",
     "core/catalog/krator-furniture-core.js": "1c8bfa11d261b36895fd50645358e2c4ebe54febf67daeed700a38fbd6256fe9",
@@ -331,14 +331,14 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "settlements/span/dist/span.html": "43540384691f85edd5a0a6565b75ddf2f62ca3bdbaac7ab2308838189c07812a",
+    "settlements/span/dist/span.html": "67151a713175feebef5c1bf3d6562734093e62b060a855b67003b919bce9595f",
     "settlements/span/dist/span.tex.ancients.js": "166466565181f7fff70d5b6e436300c03e43515d3c69af5c5dc67f7bad489fae",
     "settlements/span/dist/span.tex.dalab-2.js": "f526b3dc0e2438d876987e698e6900b3acaf1a0da12dadc5039a89314995bb94",
     "settlements/span/dist/span.tex.dalab.js": "ed602ccc5977f37c18dc73afa899289c67953db66da2b0985bf486e14cfe0eb1",
     "settlements/span/dist/span.tex.span.js": "f71dd7d64211262fd6d14d8e71013c888ed706cb5419b4df8555c5552bb402b8"
    },
    "outputs_raw": {
-    "settlements/span/dist/span.html": "43540384691f85edd5a0a6565b75ddf2f62ca3bdbaac7ab2308838189c07812a",
+    "settlements/span/dist/span.html": "67151a713175feebef5c1bf3d6562734093e62b060a855b67003b919bce9595f",
     "settlements/span/dist/span.tex.ancients.js": "166466565181f7fff70d5b6e436300c03e43515d3c69af5c5dc67f7bad489fae",
     "settlements/span/dist/span.tex.dalab-2.js": "f526b3dc0e2438d876987e698e6900b3acaf1a0da12dadc5039a89314995bb94",
     "settlements/span/dist/span.tex.dalab.js": "ed602ccc5977f37c18dc73afa899289c67953db66da2b0985bf486e14cfe0eb1",

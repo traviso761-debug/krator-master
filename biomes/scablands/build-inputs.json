@@ -91,17 +91,17 @@
     "core/atmos/89-atmos-a-waves.js": "77ab3264db6d412a82c8d7b2f0f1e643a1cc65537c3456248f9193b6621dbc98",
     "core/atmos/89-atmos-b-skylight.js": "fdd81ff12eb4e98d7d9bc07691b033a71cd2add1b8a0d23d7ffb6149d781c6d0",
     "core/atmos/fx/89-atmos-fx-airload.js": "3391e44fcbb3eace41c61a149683805593488450a0f3298c5cfed9f6d3d900c9",
-    "core/atmos/fx/89-atmos-fx-lightning.js": "f96fdc78200973764a80ca42831289edfcbfb6c42191b39c8eef053e6109e253",
+    "core/atmos/fx/89-atmos-fx-lightning.js": "8f74cb76bb2c8761a9432482ecd62a562502f17d83cc7f6a546ec7eaa1bc9991",
     "core/atmos/fx/89-atmos-fx-raincover.js": "3b17ad5680758adca953d3444e0c9393c524941559cb19d3061c4e7d8f07e908",
     "core/atmos/host/89-atmos-c-hostbind.js": "2d516dca2ab21914afcc39898a3c952e2112e4470b53e4d576dc9e47b0ebc411",
     "core/atmos/host/89-atmos-e-weatherhost.js": "4b2492dcd78a5eeb6f567f5fa6546275d02e44325e497a3f2933841e6473dbb6",
-    "core/atmos/host/89-atmos-h-skyhost.js": "40b4be9d7c0bd7a8d05dea3eff1d2f2110f3669d693737206872f5dd820a00c4",
+    "core/atmos/host/89-atmos-h-skyhost.js": "62401272c4ae693a9ce80a3aec3611833e0b31792ac2e0e69b37d1b52a5ee425",
     "core/atmos/host/89-atmos-i-skybiome.js": "40dde8c1cd5b19ff2436106b9db5f003334f4052fba1239cca767b1d10974bd1",
-    "core/atmos/host/89-atmos-j-heightfog.js": "a0c6deea83ffd85df81d6befd07283ec43ad28028de4831d47faad3ee92aeb75",
+    "core/atmos/host/89-atmos-j-heightfog.js": "175945b28d80b508231906f0105e9ee22b61dddb126ef1823adb349901f6dacd",
     "core/atmos/sky/89-atmos-e-skymodel.js": "a88e93cffe596d5362daa08d693c63795713514f850125feff8f2f9ee2b8e258",
-    "core/atmos/sky/89-atmos-f-skypresets.js": "459132ec76e796e76b8d58715ce3eb77d26e4d57cc61b59900135c0e747fe98d",
-    "core/atmos/sky/89-atmos-g-sky.js": "32b6b6e04be15df728ca7ad3502d2035f2c750426deb3dae964273228ea5a6eb",
-    "core/atmos/sky/89-atmos-j-fog.js": "60ab4f8d18bd785cd18fbfea54ae4730bc30dad66fd97531e1d7eff2b7058560",
+    "core/atmos/sky/89-atmos-f-skypresets.js": "5f55cc174ba0ce60c681e76c5f2c8213c68c9c3c434c5bd85b234ea7e00b2fd0",
+    "core/atmos/sky/89-atmos-g-sky.js": "45f083d44aa9834b558b48ec3815a4637a71475e672b3a678388a2466bcee21c",
+    "core/atmos/sky/89-atmos-j-fog.js": "c6fbc34d9dc0552623f7f22c79b2d8f94c6965b3bc4090c2e65b381d209320c5",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
     "core/biome/30-core-foliage.js": "60d066abf6678b08bff3be1c66a075ad93e27fe242c8d0e4b78e79e5111a24d5",
@@ -177,10 +177,10 @@
     "tools": "6631bdd33a724ae4afb19e5705fb6b95c13d305435fd8d325567b5e7f68c5f8c"
    },
    "outputs": {
-    "biomes/scablands/dist/coulee.html": "fff8442e0905bd67c0d6409ac0fc01b645de2b44ea6194fb5c4a6aee03cbe2c9"
+    "biomes/scablands/dist/coulee.html": "89fe9273d2c3dce2fd52de9e09576f805364575afe3d5c6b47da2e789e1890f4"
    },
    "outputs_raw": {
-    "biomes/scablands/dist/coulee.html": "fff8442e0905bd67c0d6409ac0fc01b645de2b44ea6194fb5c4a6aee03cbe2c9"
+    "biomes/scablands/dist/coulee.html": "89fe9273d2c3dce2fd52de9e09576f805364575afe3d5c6b47da2e789e1890f4"
    }
   },
   "build.py --station highline": {
@@ -273,17 +273,17 @@
     "core/atmos/89-atmos-a-waves.js": "77ab3264db6d412a82c8d7b2f0f1e643a1cc65537c3456248f9193b6621dbc98",
     "core/atmos/89-atmos-b-skylight.js": "fdd81ff12eb4e98d7d9bc07691b033a71cd2add1b8a0d23d7ffb6149d781c6d0",
     "core/atmos/fx/89-atmos-fx-airload.js": "3391e44fcbb3eace41c61a149683805593488450a0f3298c5cfed9f6d3d900c9",
-    "core/atmos/fx/89-atmos-fx-lightning.js": "f96fdc78200973764a80ca42831289edfcbfb6c42191b39c8eef053e6109e253",
+    "core/atmos/fx/89-atmos-fx-lightning.js": "8f74cb76bb2c8761a9432482ecd62a562502f17d83cc7f6a546ec7eaa1bc9991",
     "core/atmos/fx/89-atmos-fx-raincover.js": "3b17ad5680758adca953d3444e0c9393c524941559cb19d3061c4e7d8f07e908",
     "core/atmos/host/89-atmos-c-hostbind.js": "2d516dca2ab21914afcc39898a3c952e2112e4470b53e4d576dc9e47b0ebc411",
     "core/atmos/host/89-atmos-e-weatherhost.js": "4b2492dcd78a5eeb6f567f5fa6546275d02e44325e497a3f2933841e6473dbb6",
-    "core/atmos/host/89-atmos-h-skyhost.js": "40b4be9d7c0bd7a8d05dea3eff1d2f2110f3669d693737206872f5dd820a00c4",
+    "core/atmos/host/89-atmos-h-skyhost.js": "62401272c4ae693a9ce80a3aec3611833e0b31792ac2e0e69b37d1b52a5ee425",
     "core/atmos/host/89-atmos-i-skybiome.js": "40dde8c1cd5b19ff2436106b9db5f003334f4052fba1239cca767b1d10974bd1",
-    "core/atmos/host/89-atmos-j-heightfog.js": "a0c6deea83ffd85df81d6befd07283ec43ad28028de4831d47faad3ee92aeb75",
+    "core/atmos/host/89-atmos-j-heightfog.js": "175945b28d80b508231906f0105e9ee22b61dddb126ef1823adb349901f6dacd",
     "core/atmos/sky/89-atmos-e-skymodel.js": "a88e93cffe596d5362daa08d693c63795713514f850125feff8f2f9ee2b8e258",
-    "core/atmos/sky/89-atmos-f-skypresets.js": "459132ec76e796e76b8d58715ce3eb77d26e4d57cc61b59900135c0e747fe98d",
-    "core/atmos/sky/89-atmos-g-sky.js": "32b6b6e04be15df728ca7ad3502d2035f2c750426deb3dae964273228ea5a6eb",
-    "core/atmos/sky/89-atmos-j-fog.js": "60ab4f8d18bd785cd18fbfea54ae4730bc30dad66fd97531e1d7eff2b7058560",
+    "core/atmos/sky/89-atmos-f-skypresets.js": "5f55cc174ba0ce60c681e76c5f2c8213c68c9c3c434c5bd85b234ea7e00b2fd0",
+    "core/atmos/sky/89-atmos-g-sky.js": "45f083d44aa9834b558b48ec3815a4637a71475e672b3a678388a2466bcee21c",
+    "core/atmos/sky/89-atmos-j-fog.js": "c6fbc34d9dc0552623f7f22c79b2d8f94c6965b3bc4090c2e65b381d209320c5",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
     "core/biome/30-core-foliage.js": "60d066abf6678b08bff3be1c66a075ad93e27fe242c8d0e4b78e79e5111a24d5",
@@ -357,10 +357,10 @@
     "tools": "6631bdd33a724ae4afb19e5705fb6b95c13d305435fd8d325567b5e7f68c5f8c"
    },
    "outputs": {
-    "biomes/scablands/dist/highline.html": "35eb30bb5d0d99afd99a82485f0a4cf6f1a8c37dc880ade1a71c2a7d6371892f"
+    "biomes/scablands/dist/highline.html": "c4806e974bac2d03536b20b96a5dd9d60248aeeebabd354e87077c9fd2493127"
    },
    "outputs_raw": {
-    "biomes/scablands/dist/highline.html": "35eb30bb5d0d99afd99a82485f0a4cf6f1a8c37dc880ade1a71c2a7d6371892f"
+    "biomes/scablands/dist/highline.html": "c4806e974bac2d03536b20b96a5dd9d60248aeeebabd354e87077c9fd2493127"
    }
   },
   "build.py --station highline-nw": {
@@ -370,7 +370,7 @@
     "biomes/nsemiarid/build.py": "b11bae8474a1fc9035416294bfeee33263783a5e4b4214b6aaab3ecb7ea0dd04",
     "biomes/nsemiarid/src/60-biome-nsemiarid-floor.js": "c1c127a72181e722b0a3986d4a60c5d06be03555fc98799691418cfef79fdc44",
     "biomes/nsemiarid/src/70-biome-nsemiarid.js": "7fd233ff843885d19133072ed3af5ef04628b36177c9d2c1275c8c17a62721d4",
-    "biomes/nwlowlands/PORT.md": "6cd91017f33eee0e7cfdc2d5bd28433a888f3290007fc2bf7b023c786d042608",
+    "biomes/nwlowlands/PORT.md": "bd4fb7645798c6a8f98fd244bdd492d5aa941e7591103d56cb51e11b0e0f3c88",
     "biomes/nwlowlands/build.py": "bdbcf39965191c606c98ba51d9c48a90ccc92f886641bc2331f38deb4813e309",
     "biomes/nwlowlands/src/00-head.html": "2a65aa42840bfa2401a1e2eb1f3c7d4ec086c808b4281cdc4dc067a98c51db22",
     "biomes/nwlowlands/src/50-biome-nwlowlands-species.js": "76226c8dd9be28520d412f74fd5bb648411697a9b3cc2375aad50e9d05ff70bd",
@@ -477,17 +477,17 @@
     "core/atmos/89-atmos-9-host.js": "7cbe36a99725362e9c754e4812f3c6dae15c7febedde37e4830153dac640514d",
     "core/atmos/89-atmos-a-waves.js": "77ab3264db6d412a82c8d7b2f0f1e643a1cc65537c3456248f9193b6621dbc98",
     "core/atmos/89-atmos-b-skylight.js": "fdd81ff12eb4e98d7d9bc07691b033a71cd2add1b8a0d23d7ffb6149d781c6d0",
-    "core/atmos/fx/89-atmos-fx-lightning.js": "f96fdc78200973764a80ca42831289edfcbfb6c42191b39c8eef053e6109e253",
+    "core/atmos/fx/89-atmos-fx-lightning.js": "8f74cb76bb2c8761a9432482ecd62a562502f17d83cc7f6a546ec7eaa1bc9991",
     "core/atmos/fx/89-atmos-fx-raincover.js": "3b17ad5680758adca953d3444e0c9393c524941559cb19d3061c4e7d8f07e908",
     "core/atmos/host/89-atmos-c-hostbind.js": "2d516dca2ab21914afcc39898a3c952e2112e4470b53e4d576dc9e47b0ebc411",
     "core/atmos/host/89-atmos-e-weatherhost.js": "4b2492dcd78a5eeb6f567f5fa6546275d02e44325e497a3f2933841e6473dbb6",
-    "core/atmos/host/89-atmos-h-skyhost.js": "40b4be9d7c0bd7a8d05dea3eff1d2f2110f3669d693737206872f5dd820a00c4",
+    "core/atmos/host/89-atmos-h-skyhost.js": "62401272c4ae693a9ce80a3aec3611833e0b31792ac2e0e69b37d1b52a5ee425",
     "core/atmos/host/89-atmos-i-skybiome.js": "40dde8c1cd5b19ff2436106b9db5f003334f4052fba1239cca767b1d10974bd1",
-    "core/atmos/host/89-atmos-j-heightfog.js": "a0c6deea83ffd85df81d6befd07283ec43ad28028de4831d47faad3ee92aeb75",
+    "core/atmos/host/89-atmos-j-heightfog.js": "175945b28d80b508231906f0105e9ee22b61dddb126ef1823adb349901f6dacd",
     "core/atmos/sky/89-atmos-e-skymodel.js": "a88e93cffe596d5362daa08d693c63795713514f850125feff8f2f9ee2b8e258",
-    "core/atmos/sky/89-atmos-f-skypresets.js": "459132ec76e796e76b8d58715ce3eb77d26e4d57cc61b59900135c0e747fe98d",
-    "core/atmos/sky/89-atmos-g-sky.js": "32b6b6e04be15df728ca7ad3502d2035f2c750426deb3dae964273228ea5a6eb",
-    "core/atmos/sky/89-atmos-j-fog.js": "60ab4f8d18bd785cd18fbfea54ae4730bc30dad66fd97531e1d7eff2b7058560",
+    "core/atmos/sky/89-atmos-f-skypresets.js": "5f55cc174ba0ce60c681e76c5f2c8213c68c9c3c434c5bd85b234ea7e00b2fd0",
+    "core/atmos/sky/89-atmos-g-sky.js": "45f083d44aa9834b558b48ec3815a4637a71475e672b3a678388a2466bcee21c",
+    "core/atmos/sky/89-atmos-j-fog.js": "c6fbc34d9dc0552623f7f22c79b2d8f94c6965b3bc4090c2e65b381d209320c5",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
     "core/biome/30-core-foliage.js": "60d066abf6678b08bff3be1c66a075ad93e27fe242c8d0e4b78e79e5111a24d5",
@@ -572,10 +572,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/scablands/dist/highline-nw.html": "2371b79c8ac6bf0b31caecbd9c33c07fd399b60c61fa2c97f450af911c8ac98c"
+    "biomes/scablands/dist/highline-nw.html": "451e6824f5442d7e406e7418a8c874e2bac04c2a8651264b3ff9d201e631f3f4"
    },
    "outputs_raw": {
-    "biomes/scablands/dist/highline-nw.html": "2371b79c8ac6bf0b31caecbd9c33c07fd399b60c61fa2c97f450af911c8ac98c"
+    "biomes/scablands/dist/highline-nw.html": "451e6824f5442d7e406e7418a8c874e2bac04c2a8651264b3ff9d201e631f3f4"
    }
   }
  }
