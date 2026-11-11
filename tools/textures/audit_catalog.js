@@ -12,6 +12,7 @@
    Results are in core/materials/PLAN.md, "Catalog furniture audit". */
 const fs = require('fs'), vm = require('vm'), path = require('path');
 const CAT = path.join(__dirname, '..', '..', 'kits', 'catalog') + path.sep;
+const AT = require(path.join(__dirname, '..', '..', 'core', 'catalog', 'catalog-files.js'));   // a catalog name -> its file
 const args = process.argv.slice(2), jsonOut = args[0] === '--json' ? args[1] : null;
 
 /* a page-less context: three.js, a canvas that paints nothing, a scene that keeps nothing */
@@ -30,7 +31,7 @@ vm.runInContext(fs.readFileSync(CAT + 'three.min.js', 'utf8'), g);
 
 const files = ['krator-furniture-core.js', 'krator-symbols.js', 'krator-furniture-kit.js', 'krator-master-furniture.js']
   .concat(fs.readdirSync(CAT).filter(f => f.startsWith('krator-master-furniture-') && f.endsWith('.js')).sort());
-const src = 'var scene = { add() {}, remove() {} };\n' + files.map(f => fs.readFileSync(CAT + f, 'utf8')).join('\n;\n') + `
+const src = 'var scene = { add() {}, remove() {} };\n' + files.map(f => fs.readFileSync(AT(f), 'utf8')).join('\n;\n') + `
 ;(function () {
   const out = [], tri = new THREE.Triangle(), a = new THREE.Vector3(), b = new THREE.Vector3(), c = new THREE.Vector3();
   function area(m) {

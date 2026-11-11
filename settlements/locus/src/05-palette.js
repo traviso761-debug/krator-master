@@ -50,6 +50,7 @@ var PAL = {
   concrete : [0x9a958a, 0x8c887e, 0xa6a094, 0x7e7a72],
   glass    : [0x3f8fd6, 0x4aa0e0, 0x2f78be, 0x66b8ea],      /* the blue-transparent glass, where it survives */
   darkVoid : [0x14161a, 0x1a1d22, 0x0e1012],                /* openings, empty sockets */
+  roomCard : 0x6e5a46,          /* the room seen through glass or a doorway on a solid body: core/door's KGLASS.SPEC.room (53-assets.js ROOMC reads it there) */
 
   /* --- Yuni's own fabric --- */
   adobe    : [0xc89a62, 0xbc8e58, 0xd4a66e, 0xb08250, 0xdcb27c],   /* banco, ochre mud plaster */

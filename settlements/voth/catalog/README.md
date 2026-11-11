@@ -5,7 +5,7 @@ builds, the first-generation registry, and the new building types. They are
 drawn on one orbitable, walkable sheet with an inspector and automatic LOD.
 
 Open `index.html` from a local server rooted at the repo root, because the page
-loads `../three.min.js` and the engine from `../../../kits/catalog/`:
+loads `../three.min.js`, the engine from `../../../core/catalog/` and the Voth buildings from `../../../kits/catalog/`:
 
 ```
 python3 -m http.server 8000          # from the repo root
@@ -101,7 +101,7 @@ The whole catalog is 250 builds and 2.1 M triangles at L0. It draws in about
 
 ## Engine additions
 
-These are in `../../../kits/catalog/krator-asset-engine.js`:
+These are in `../../../core/catalog/krator-asset-engine.js`:
 * `F.hipRoof(lx, ly, lz, w, h, d, ry, colour, family)` is a true hip roof
   with a ridge along the longer side. `F.pyrRoof` always met at one point
   and read as a stretched pyramid on any long building.

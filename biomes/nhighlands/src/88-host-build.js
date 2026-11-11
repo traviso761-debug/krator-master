@@ -3,6 +3,7 @@
 // hand their shells to dress()), then the biome, then the growth on the
 // structures, then one bake. The ground is painted last: it bakes the canopy's
 // shade from the trees the biome placed.
+var NHL_WATER_F=null;   /* the water's fields (below; 99's edge check reads them) */
 window._biome=null;window._dress=null;
 (function(){
  const t0=performance.now();let tp=t0;
@@ -13,6 +14,11 @@ window._biome=null;window._dress=null;
  try{rocks=buildPillars()||[];}catch(e){reportErr('pillars: '+e.stack);}
  lap('structures');
  const qp=+(new URLSearchParams(location.search).get('q')||1);   // ?q=.4 for a quick look
+ /* THE WATER AS FIELDS (core/water ext/60; the review's third line, pair 7): the shore of the water the eye sees, baked over the map at 8 m before the
+    first tree, so the trees keep off it by its own edge (55: offShore) and the host's edge check reads the same field (99). ?fields=0 for the old lines */
+ if(WATER.fields&&new URLSearchParams(location.search).get('fields')!=='0'){try{NHL_WATER_F=WATER.fields({box:[TERR.X0,TERR.Z0,TERR.X1,TERR.Z1],cell:8,ground:terrainH});
+  NHL.SHORE=(x,z)=>WATER.fieldAt(NHL_WATER_F,x,z).shore;}catch(e){reportErr('water fields: '+e.stack);}}
+ lap('fields');
  /* THE FAR BAND'S DIET (GRAPHIC-LOAD.md recommendation 2, for the owner to judge; ?diet=0 for the old settings): heroes to 800 m
     (they were drawn to 1300 m, a third to a half of the instanced triangles past 400 m), impostors beyond, and the far floor band
     to 1.1 km (it ran to 2.4 km; the ground paint carries the rest, R5 already fades the floor into it) */

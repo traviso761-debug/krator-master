@@ -192,6 +192,7 @@
    "mapOnly": true
   },
   "poplar": {
+   "sheet": "geometry",
    "lib": "card.poplar.euphrates",
    "scale": [
     1,
@@ -206,6 +207,7 @@
    "size": 1024
   },
   "tamarisk": {
+   "sheet": "geometry",
    "lib": "card.tamarisk",
    "scale": [
     1,
@@ -220,6 +222,7 @@
    "size": 1024
   },
   "reed": {
+   "sheet": "geometry",
    "lib": "card.reed",
    "scale": [
     1,
@@ -234,6 +237,7 @@
    "size": 1024
   },
   "saltbush": {
+   "sheet": "geometry",
    "lib": "card.saltbush",
    "scale": [
     1,
@@ -248,6 +252,7 @@
    "size": 1024
   },
   "brinelamp": {
+   "sheet": "geometry",
    "lib": "card.brinelamp",
    "scale": [
     1,

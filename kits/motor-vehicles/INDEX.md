@@ -17,14 +17,14 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 
 | File | KB | Sections (line) |
 |---|---|---|
-| `krator-vehicles-ancient.js` | 62 **big** |  |
+| `krator-vehicles-ancient.js` | 68 **big** |  |
 | `krator-vehicles-eastabyss.js` | 13 |  |
 | `krator-vehicles-geomancer.js` | 20 |  |
 | `krator-vehicles-iziz.js` | 11 |  |
 | `krator-vehicles-post-apoc.js` | 16 |  |
 | `krator-vehicles-republic.js` | 19 |  |
-| `krator-vehicles-runtime.js` | 38 **big** |  |
-| `vehicles-core.js` | 25 |  |
+| `krator-vehicles-runtime.js` | 41 **big** |  |
+| `vehicles-core.js` | 27 |  |
 | `vehicles-detail.js` | 10 |  |
 
 ## src/
@@ -32,8 +32,6 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 5 |  |
-| `80-sky-hash.js` | <1 | h3 hash for KratorSky (1) |
-| `81-sky.js` | 10 |  |
 | `90-sheet.js` | 10 | Motor vehicles kit sheet (1) |
 | `92-hover.js` | 3 | Hover inspector (1) |
 | `93-polygon.js` | 5 | Polygon tool (1) |

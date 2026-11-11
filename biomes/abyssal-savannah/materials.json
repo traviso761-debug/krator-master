@@ -1,6 +1,6 @@
 {
  "build": "abyssal-savannah",
- "note": "The abyssal savannah's adapter onto the material library (PLAN.md section 10; core/materials/PLAN.md). Keys are the kit's MAT slots (50-biome-absav-species.js; an array entry by index: bark0 corky umbrella, bark1 smooth tongue and fig, bark2 the stub lycopsid's scales, bark3 the ember cycad's armour), stubbark and cycadbark the solid items' maps, and the host's ground layers (groundDetail, groundRock: 45-host-stage.js). Grey detail maps (keep 0) are tinted by the species' instance colours; the full-colour cards (charred stems, ember lilies, the bench forbs: keep 1) keep their own colour under a near-white instance colour. Single plants show one cell of their nine-plant sheet (cell); clump and crown cards keep the whole sheet. Reused sets: card.rankgrass (the Cut's) for the blue pan-grass, card.ichu (the puna's) for the bench bunchgrass and the stub lycopsid's leaf tuft, rock.granite.tor and card.charred (the crater drylands'). Delivered 2026-10-26: ground.savanna.litter (groundDetail, grey detail, 2 m tile) and card.grass.thatch (thatch, near-colourless cream so the burn-age tints read true). Run python3 tools/textures/pack.py biomes/abyssal-savannah after any change, then python3 build.py.",
+ "note": "The abyssal savannah's adapter onto the material library (PLAN.md section 10; core/materials/PLAN.md). Keys are the kit's MAT slots (50-biome-absav-species.js; an array entry by index: bark0 corky umbrella, bark1 smooth tongue and fig, bark2 the stub lycopsid's scales, bark3 the ember cycad's armour), stubbark and cycadbark the solid items' maps, and the host's ground layers (groundDetail, groundRock: 45-host-stage.js). Grey detail maps (keep 0) are tinted by the species' instance colours; the full-colour cards (charred stems, ember lilies, the bench forbs: keep 1) keep their own colour under a near-white instance colour. Single plants show one cell of their nine-plant sheet (cell); clump and crown cards keep the whole sheet. Reused sets: card.rankgrass (the Cut's) for the blue pan-grass, card.ichu (the puna's) for the bench bunchgrass and the stub lycopsid's leaf tuft, rock.granite.tor and card.charred (the crater drylands'). Delivered 2026-10-26: ground.savanna.litter (groundDetail, grey detail, 2 m tile) and card.grass.thatch (thatch, near-colourless cream so the burn-age tints read true). Run python3 tools/textures/pack.py biomes/abyssal-savannah after any change, then python3 build.py. The final rebuild (pair 8, 2026-11-03) adds four KGROUND layers on documented masks (45-host-stage.js, 'the ground'): ground.soil (the red soil of the gullies, the foot and the trampled ground), ground.burn (this year's burns), ground.salt (the pan), ground.gravel (the bench's stony steppe and the rim's talus apron); full colour (keep 1), blended over the paint by height. THE SAVANNAH RIMS (PLAN.md section 14; folded in from biomes/savannarim, 2026-11-08): grass (the red oat grass on one plant of card.grass.dry, as eastabyss and swbay take it), blind (the blind grass on card.rankgrass, a stand-in until card.grass.elephant: PROMPTS-NEEDED.md section 37), fan (the fan palm fronds on card.palm, base bottom), palmbark (its trunk), termite (the termite cathedrals, KSTACKS uv in metres) and incensebark (the se rim incense tree) are the rim stations families: build.py RIM_PACK, packed under the rims kit key savannarim (src/rim/50 SAVRIM.MAT, the ground in src/rim/45, the mounds in src/rim/87); the main page leaves them out, and the rims take this kit groundDetail as it is (the same set and settings). After pack.py, rebuild the main page and each station (--station serim, erim, north). Delivered 2026-11-10: card.umbrella.plate (plate, the umbrella tree's crown plate: the whole sheet, no cell; it replaces one sprig of card.acacia stretched over the disc).",
  "size": 512,
  "families": {
   "bark0": {
@@ -190,11 +190,67 @@
     "mean": 0.7
    },
    "size": 512,
-   "cell": [
-    0.34,
-    0.34,
-    0.66,
-    0.66
+   "stems": [
+    {
+     "cell": [
+      0.015,
+      0.046,
+      0.325,
+      0.314
+     ],
+     "stem": [
+      0.1722,
+      0.3076
+     ],
+     "tip": [
+      0.1722,
+      0.0518
+     ],
+     "w": [
+      -0.1282,
+      0.1276
+     ]
+    },
+    {
+     "cell": [
+      0.343,
+      0.368,
+      0.659,
+      0.64
+     ],
+     "stem": [
+      0.4639,
+      0.6338
+     ],
+     "tip": [
+      0.4639,
+      0.3682
+     ],
+     "w": [
+      -0.0918,
+      0.1699
+     ]
+    },
+    {
+     "cell": [
+      0.667,
+      0.681,
+      0.984,
+      0.958
+     ],
+     "stem": [
+      0.836,
+      0.9521
+     ],
+     "tip": [
+      0.836,
+      0.6807
+     ],
+     "w": [
+      -0.1377,
+      0.1181
+     ]
+    }
    ]
   },
   "charred": {
@@ -315,7 +371,14 @@
     "keep": 0.0,
     "mean": 0.66
    },
-   "size": 512
+   "size": 512,
+   "cell": [
+    0.089,
+    0.046,
+    0.911,
+    0.995
+   ],
+   "base": "bottom"
   },
   "leaflet": {
    "lib": "card.acacia",
@@ -327,17 +390,79 @@
     "keep": 0.0,
     "mean": 0.68
    },
-   "size": 512
+   "size": 512,
+   "stems": [
+    {
+     "cell": [
+      0.018,
+      0.015,
+      0.331,
+      0.339
+     ],
+     "stem": [
+      0.251,
+      0.3369
+     ],
+     "tip": [
+      0.0968,
+      0.0402
+     ],
+     "w": [
+      -0.1383,
+      0.1342
+     ]
+    },
+    {
+     "cell": [
+      0.343,
+      0.345,
+      0.663,
+      0.655
+     ],
+     "stem": [
+      0.5146,
+      0.6514
+     ],
+     "tip": [
+      0.4964,
+      0.3474
+     ],
+     "w": [
+      -0.1354,
+      0.1331
+     ]
+    },
+    {
+     "cell": [
+      0.667,
+      0.661,
+      0.982,
+      0.985
+     ],
+     "stem": [
+      0.7568,
+      0.9795
+     ],
+     "tip": [
+      0.9038,
+      0.6756
+     ],
+     "w": [
+      -0.1326,
+      0.1428
+     ]
+    }
+   ]
   },
   "plate": {
-   "lib": "card.acacia",
+   "lib": "card.umbrella.plate",
    "scale": [
     1,
     1
    ],
    "tint": {
     "keep": 0.0,
-    "mean": 0.62
+    "mean": 0.7
    },
    "size": 512
   },
@@ -395,6 +520,157 @@
    },
    "metal": 0,
    "normalScale": 1.0,
+   "mapOnly": true
+  },
+  "ground.soil": {
+   "lib": "ground.redsoil",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.burn": {
+   "lib": "ground.burn",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.salt": {
+   "lib": "ground.salt.ochre",
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.gravel": {
+   "lib": "ground.gravelly_sand",
+   "scale": [
+    2.6,
+    2.6
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "grass": {
+   "lib": "card.grass.dry",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.7
+   },
+   "size": 512,
+   "cell": [
+    0.34,
+    0.34,
+    0.66,
+    0.66
+   ]
+  },
+  "blind": {
+   "lib": "card.rankgrass",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.7
+   },
+   "size": 512,
+   "cell": [
+    0.34,
+    0.34,
+    0.66,
+    0.66
+   ]
+  },
+  "fan": {
+   "lib": "card.palm",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.7
+   },
+   "size": 512,
+   "cell": [
+    0.34,
+    0.34,
+    0.66,
+    0.66
+   ],
+   "base": "bottom"
+  },
+  "palmbark": {
+   "lib": "bark.palm",
+   "scale": [
+    3,
+    4
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.55
+   },
+   "mapOnly": true,
+   "roughLift": 0.3
+  },
+  "termite": {
+   "lib": "earth.termite",
+   "scale": [
+    3,
+    3
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "mapOnly": true,
+   "roughLift": 0.3
+  },
+  "incensebark": {
+   "lib": "bark.paperbark",
+   "scale": [
+    1.5,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
    "mapOnly": true
   }
  }

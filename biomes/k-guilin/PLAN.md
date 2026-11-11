@@ -146,6 +146,31 @@ Read in place: `biomes/nwbay` (species 50, trees 55, variants 56) in its own reg
 `BIO.kitEnd(NWBAY)`, written by this build around nwbay's fragments, as `biomes/ringisles` reads its kits);
 `biomes/hyperjungle/src/41-hyperjungle-globals.js` (the core's helpers by their old names), as guilin.
 
+### The final rebuild (pair 13, 2026-11-09; cloud, no GPU)
+
+One page, `dist/k-guilin.html` (no station: `--station <name>` builds `stations/<name>/` when one exists). Every change is in `src/` and
+`build.py`, each look change behind a switch. **The universal set (`BACKPORT.md` section 1), as ringisles (pair 8) and korona (pair 9) took it:**
+
+| Module | Taken | Where | Switch |
+|---|---|---|---|
+| `core/biome` 31b, 31j, 32, 33, 34, 41 | leaves on stems, limb joints, variants, fungoid, octahedral impostors, the field contract (check_assembly's MISSING `BIO.leafOn`/`leafQ`/`impostor*` gone) | `build.py` `CORE_BIOME` | |
+| octahedral impostors | this kit's far bamboo, banyan, camphor and both pines (55); nwbay's borrowed trees (`NWBAY.IMPOSTORS`, asked by 88); osmanthus, pomelo, oak keep their blobs | 55, 88 | `?diet=0` |
+| nwbay's attach fixes | `NWBAY_LOOK.joints` (`BIO.flareJoin`) and `.holds` (`BIO.holdTo`) on the borrowed species; nwbay's looks (back-light, root colour, season, fungus shape) off | 45 | `?joints=0`, `?holds=0` |
+| card cells | `check_cells.py --fix`: stems for `scrub`, `pomeloleaf`, `pineleaf`, `bambooleaf`; `lotusbloom`'s cell (5 to 0) | `materials.json`, `tex/pack.json` | |
+| `KSTRATA` (35, 35z) | nwbay's limestone recipe (`kguilin-karst`: one province) on the towers' walls and the blades, not the tops | 47 | `?strata=0` |
+| `KGROUND` (43) | the litter, sand and mud over the grass, hex-tiled, distance-scaled, height-blended (all four layers from the pack only) | 47 | `?kground=0` |
+| `KHORIZON` (45) | the towers' shadows on the plain at a low sun, on the ground and every lit material (not the karst beyond) | 88 | `?horizon=0` |
+| `KSHADOW` | off by default (the owner, 2026-11-03) | 88 | `?shadow=1` |
+| height fog (R1) | the lake's air thinning up the towers; the valley mist (BACKPORT's "fog belt in the karst valleys") pooled to ~14 m over the lake at dawn | 89a | `?hfog=0` |
+| rain cover (R10), lightning, wind (R8), A2C (R7) | as the other turns | 89a, 88 | |
+| `core/water` ext 57, 58 | the audit; `WATER.mirrorSwitch` on the lake, off at load; the lake has no surf or breakers (BACKPORT.md, the owner, 2026-11-02) | 89w | `?mirror=probe\|live`, `?breakers=1` |
+| `khost.FULL`, `--station`, LF writes, `build_sources` | `build.py` | | |
+
+**Not taken (each with its reason, `KNOWN_ISSUES.md`):** `KFAR` (the page draws its own karst beyond, and the lake runs on north);
+`KSTACKS.contour` and `KSTACKS.weather` (the cliff scrub, figs, vines and orchids are placed on the records' walls; a worn wall leaves them off it
+until a seat pass like korona's staghorns'); wet ground and puddles (R9: the black-ground finding on a KGROUND floor); the water fields (ext 60:
+nothing here reads `BIO.env`'s water yet); BACKPORT's karst springs, confluences, tall falls and `BIO.bamboo` (new features: not this turn).
+
 ## 6. Textures
 
 guilin's sets (`biomes/guilin/materials.json`: ground.grass.lush, the karst limestone and moss, rice, bamboo, the stone

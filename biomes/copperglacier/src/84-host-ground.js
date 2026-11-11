@@ -41,7 +41,12 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};
 const KG_POLY=GQ.get('polygon')!=='0';
 /* the walls' rock by the resource data's province at the site: granite where the cell is granite (station 1), the banded gneiss elsewhere (crystalline, the rift's edge) */
 const WALL_ROCK=CG_RES.province==='granite'?'rock.granite':'rock.gneiss';
-if(USE_KG)KGROUND.hook(MAT_GROUND,{key:'copperglacier-'+SITE.key+'-ground'+(KG_POLY?'g':''),at:'/*KGROUND*/',layers:[
+/* THE RELIEF (2026-11-03, the ground workstream; core/README.md 'Adopting KGROUND's relief'): the derivative bump from the layers' blended height,
+   the cavity occlusion and the mesh's own hollows (cavityMesh, after the mesh below), at no texture unit; the side planes (tri) only where a station's
+   flanks are steep and near (the pass: SITE.tri). ?relief=0 / ?tri=0 for the before */
+const KG_RELIEF=GQ.get('relief')!=='0',KG_TRI=!!SITE.tri&&GQ.get('tri')!=='0';
+if(USE_KG)KGROUND.hook(MAT_GROUND,{key:'copperglacier-'+SITE.key+'-ground'+(KG_POLY?'g':'')+(KG_RELIEF?'r':'')+(KG_TRI?'t':''),at:'/*KGROUND*/',
+ ...(KG_RELIEF?{relief:{bump:.075,cavity:.8,mesh:1}}:{}),...(KG_TRI?{tri:{from:.35,to:.7}}:{}),layers:[
  KGROUND.layer('copperglacier','ground.gravel',{w:'(1.0-vRock)*(1.0-vIce)*(1.0-vSnow)*(1.0-vCu)',amt:.75,gain:1.0,name:'gravel'}),
  KGROUND.layer('copperglacier',WALL_ROCK,{w:'vRock*(1.0-vIce)*(1.0-vSnow*0.8)',amt:.85,gain:1.0,tint:'_gP*1.5',name:WALL_ROCK==='rock.granite'?'granite':'banded gneiss'}),
  KGROUND.layer('copperglacier','rock.malachite',{w:'vCu*(1.0-vIce)*(1.0-vSnow)',amt:.8,gain:1.0,name:'malachite (the copper ground)'}),
@@ -61,4 +66,6 @@ const GROUND=(function(){const N=480,S=TERR.R*2.2,cs=S/N,nx=N+1;
  for(let j=0;j<N;j++)for(let i=0;i<N;i++){const a=j*nx+i,b=a+nx,c=b+1,d=a+1;idx[t++]=a;idx[t++]=b;idx[t++]=d;idx[t++]=b;idx[t++]=c;idx[t++]=d;}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('uv',new THREE.BufferAttribute(uv,2));
  GA.forEach((a,i)=>g.setAttribute(a,new THREE.BufferAttribute(A[i],1)));
- g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.receiveShadow=true;m.userData.probeSkip=true;m.userData.inspectLabel=SITE.region;scene.add(m);return m;})();
+ g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.receiveShadow=true;m.userData.probeSkip=true;m.userData.inspectLabel=SITE.region;scene.add(m);
+ if(USE_KG&&KG_RELIEF&&KGROUND.cavityMesh)KGROUND.cavityMesh(m,{rings:[3,18],depth:[.5,4]});   /* aKGAO, the hollows relief.mesh reads */
+ return m;})();

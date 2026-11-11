@@ -24,6 +24,33 @@ DRAW.stage = function () {
   var sun = new THREE.DirectionalLight(0xfff1dc, 1.05); sun.position.set(-0.55, 0.75, 0.35); scene.add(sun);
   addEventListener('resize', function () { camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); });
 };
+/* ---------------------------------------------------------------- the thieves' guild (47c ISLE.tagGuilds; owner, 2026-11-02) */
+/* A guild's mark, in the town's frame: a post by the tavern's door with a plum board painted with a dagger (the den's
+   sign), and a map pin above the roof, "Thieves' guild", the same size on screen at any distance (DRAW.guildPins(false)
+   hides the pins). It decides nothing: the guild is the sim's (core/simulation 77-sim-6-crime.js) */
+DRAW.guildTex = function (w, h, paint) { var c = document.createElement('canvas'); c.width = w; c.height = h; paint(c.getContext('2d'), w, h);
+  var t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding; t.anisotropy = 4; return t; };
+DRAW.dagger = function (g, x, y, s, col) {   /* a dagger, point down, its hilt at (x, y), s its length */
+  g.fillStyle = col; g.beginPath(); g.moveTo(x - s * 0.07, y + s * 0.22); g.lineTo(x + s * 0.07, y + s * 0.22); g.lineTo(x, y + s); g.closePath(); g.fill();
+  g.fillRect(x - s * 0.22, y + s * 0.16, s * 0.44, s * 0.07); g.fillRect(x - s * 0.04, y, s * 0.08, s * 0.17); g.beginPath(); g.arc(x, y - s * 0.02, s * 0.06, 0, Math.PI * 2); g.fill(); };
+DRAW.guildPins = function (on) { (DRAW.guildMarks || []).forEach(function (G) { if (G.pin) G.pin.visible = on !== false; }); };
+DRAW.guild = function (m) {
+  if (!m || !m.at) return null;
+  var g = new THREE.Group(), sz = m.size || [8, 8, 6], s = Math.sin(m.ry || 0), c = Math.cos(m.ry || 0), fr = sz[1] / 2 + 1.4, side = Math.min(sz[0] / 2, 3);
+  var x = m.at[0] + s * fr + c * side, z = m.at[2] + c * fr - s * side, y = m.at[1];
+  var wood = new THREE.MeshLambertMaterial({ color: 0x3a2a1e }), post = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.16, 4.4, 6).translate(0, 2.2, 0), wood);
+  var arm = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.12, 0.12).translate(0.75, 4.1, 0), wood);
+  var face = DRAW.guildTex(128, 96, function (q, w, h) { q.fillStyle = '#4a1e3a'; q.fillRect(0, 0, w, h); q.strokeStyle = '#c9a24a'; q.lineWidth = 6; q.strokeRect(5, 5, w - 10, h - 10);
+    DRAW.dagger(q, w / 2, 14, 70, '#d8c27a'); });
+  var board = new THREE.Mesh(new THREE.BoxGeometry(1.1, 0.8, 0.06).translate(1.1, 3.55, 0), [wood, wood, wood, wood, new THREE.MeshLambertMaterial({ map: face }), new THREE.MeshLambertMaterial({ map: face })]);
+  [post, arm, board].forEach(function (k) { g.add(k); }); g.position.set(x, y, z); g.rotation.y = m.ry || 0; g.name = "thieves' guild sign";
+  g.userData.inspectLabel = "Thieves' guild"; scene.add(g);
+  var pinT = DRAW.guildTex(512, 128, function (q, w, h) { q.fillStyle = 'rgba(40,14,32,0.86)'; q.fillRect(0, 8, w, h - 16); q.strokeStyle = '#c9a24a'; q.lineWidth = 5; q.strokeRect(4, 10, w - 8, h - 20);
+    DRAW.dagger(q, 62, 22, 84, '#e6cf86'); q.fillStyle = '#f2e2b0'; q.font = 'bold 54px Georgia, serif'; q.textBaseline = 'middle'; q.fillText("Thieves' guild", 112, h / 2 + 2); });
+  var pin = new THREE.Sprite(new THREE.SpriteMaterial({ map: pinT, sizeAttenuation: false, depthTest: false, transparent: true }));
+  pin.scale.set(0.16, 0.04, 1); pin.position.set(m.at[0], y + sz[2] + 5, m.at[2]); pin.renderOrder = 20; pin.name = "thieves' guild pin"; scene.add(pin);
+  var G = { mark: m, sign: g, pin: pin }; (DRAW.guildMarks || (DRAW.guildMarks = [])).push(G); DRAW.stats.guilds = DRAW.guildMarks.length; return G;
+};
 /* ---------------------------------------------------------------- the ground and the sea */
 /* the library's layers over the vertex colours (materials.json, pack 'isle'): the town ground's aL weights (tilled, damp sand,
    sand with rocks, shingle) and the streets' aK (0 gravel, 1 dry grass path), read at world xz; a layer without its set is skipped */
@@ -184,7 +211,7 @@ DRAW.near = function (at, force) {
   DRAW.at = at.slice();
   DRAW.inst.forEach(function (m) { scene.remove(m); m.dispose(); }); DRAW.inst = [];
   var all = DRAW.recs, near = [];
-  all.forEach(function (L, i) { var d = Math.hypot(L.x - at[0], L.z - at[1]); if (d < DRAW.nearR) near.push([d, i]); });
+  all.forEach(function (L, i) { if (L.vacant) return; var d = Math.hypot(L.x - at[0], L.z - at[1]); if (d < DRAW.nearR) near.push([d, i]); });   /* an empty lot: its works and its house going up (DRAW.lots) */
   near.sort(function (a, b) { return a[0] - b[0]; }); near = near.slice(0, DRAW.nearMax);
   var full = {}, by = {}, t0 = performance.now();
   near.forEach(function (ni) { var L = all[ni[1]], P = DRAW.proto(L.kit, L.key, L.v); if (!P) return; full[ni[1]] = 1; (by[P.id] || (by[P.id] = { P: P, L: [] })).L.push(L); });
@@ -200,7 +227,7 @@ DRAW.near = function (at, force) {
   }
   var nb = 0, z0 = new THREE.Matrix4().makeScale(0, 0, 0);
   all.forEach(function (L, i) {
-    if (full[i]) { DRAW.massB.setMatrixAt(i, z0); DRAW.massR.setMatrixAt(i, z0); return; }
+    if (full[i] || L.vacant) { DRAW.massB.setMatrixAt(i, z0); DRAW.massR.setMatrixAt(i, z0); return; }
     var wh = L.cls === 'wall' ? L.h : Math.max(2.5, L.h * 0.45), rh = L.cls === 'wall' ? 0.01 : Math.max(1.5, L.h - wh);
     DRAW.massB.setMatrixAt(i, DRAW.matOf(L, [L.w * 0.9, wh, L.d * 0.9]));
     var r = DRAW.matOf(L, [L.w * 1.02, rh, L.d * 1.02]); r.elements[13] += wh; DRAW.massR.setMatrixAt(i, r); nb++;
@@ -209,6 +236,75 @@ DRAW.near = function (at, force) {
   if (DRAW.massB.instanceColor) DRAW.massB.instanceColor.needsUpdate = true; if (DRAW.massR.instanceColor) DRAW.massR.instanceColor.needsUpdate = true;
   DRAW.stats.near = Object.keys(full).length; DRAW.stats.massing = nb; DRAW.stats.nearTris = Math.round(tris); DRAW.stats.protos = DRAW.built;
   DRAW.stats.nearMs = Math.round(performance.now() - t0);
+};
+/* ---------------------------------------------------------------- the empty lots and their houses going up (47b) */
+/* Each empty lot of the plan (32: L.vacant; and each lot of a street outside the gate once the sim opens it: 33, 47b) drawn
+   as its works, by its project's progress (ISLE.lotProgress, from the sim): the Construction kit's site (kits/construction,
+   KCONS.site: the cleared plot, the stakes, the bill's materials piled by what is still on site, the scaffold while the
+   work is under way) round the lot's own house, its kit piece revealed in build order by core/city (KCITY.constructMesh:
+   footing, frame before infill, the roof last). Built, the site goes and the piece stays whole: a lot is always drawn here,
+   never by the near set or the massing. An opened street's lane is drawn as a dirt track. It decides nothing: the
+   progress is the sim's record */
+DRAW.lotWork = function (L) {
+  if (typeof KCONS === 'undefined' || !KCITY.constructMesh) { DRAW.failed['lot works'] = 'no Construction kit or core/city construct'; return null; }
+  var B = ISLE.TUNE.sim.build, kind = ISLE.households(L.key) >= 3 ? 'longhouse' : 'house', bill = B && B.kinds[kind] ? B.kinds[kind].bill : null;
+  var P = DRAW.proto(L.kit, L.key, L.v), C = P ? KCITY.constructMesh(P.parts) : null, g = new THREE.Group();
+  var bb = P ? DRAW.protoBox(P) : null;   /* the piece's own extent (its geometry, not its declared box) */
+  var S = KCONS.site({ w: bb ? bb.w : L.w * 0.7, d: bb ? bb.d : L.d * 0.7, h: bb ? bb.h : L.h, eaves: bb ? bb.h * 0.5 : null, plot: [L.w, L.d], bill: bill });   /* the scaffold round the piece, the plot the lot */
+  g.add(S.group); if (C) g.add(C.group);
+  g.position.set(L.x, L.y, L.z); g.rotation.y = L.ry || 0; g.name = 'empty lot ' + L.id; g.userData.inspectLabel = 'An empty lot: a house to be built'; g.userData.lots = [L.tag]; scene.add(g);
+  var W = { L: L, g: g, S: S, C: C, f: -1 }; (DRAW.lotWorks || (DRAW.lotWorks = [])).push(W); return W;
+};
+DRAW.protoBox = function (P) {
+  if (P._box) return P._box; var x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity, z0 = Infinity, z1 = -Infinity;
+  P.parts.forEach(function (pt) { var A = pt.geo.attributes.position.array; for (var i = 0; i < A.length; i += 3) {
+    if (A[i] < x0) x0 = A[i]; if (A[i] > x1) x1 = A[i]; if (A[i + 1] < y0) y0 = A[i + 1]; if (A[i + 1] > y1) y1 = A[i + 1]; if (A[i + 2] < z0) z0 = A[i + 2]; if (A[i + 2] > z1) z1 = A[i + 2]; } });
+  return (P._box = { w: 2 * Math.max(Math.abs(x0), Math.abs(x1)), d: 2 * Math.max(Math.abs(z0), Math.abs(z1)), h: y1 - Math.min(0, y0) });
+};
+DRAW.lots = function (R) {
+  DRAW.lotWorks = DRAW.lotWorks || []; DRAW.lanes = DRAW.lanes || {}; DRAW.lotsR = R;
+  R.lots.forEach(function (L) { if (L.vacant) DRAW.lotWork(L); });
+  DRAW.camp(R);
+  DRAW.lotsTick(); DRAW.stats.lots = DRAW.lotWorks.length;
+};
+/* an opened street's lane: a dirt track down its middle, draped on the ground */
+DRAW.lane = function (Sp) {
+  var G = ISLE.cur && ISLE.cur.G, a = Sp.lane[0], b = Sp.lane[1], len = Math.hypot(b[0] - a[0], b[1] - a[1]), n = Math.max(2, Math.ceil(len / 4)), pos = [], idx = [];
+  var tx = (b[0] - a[0]) / len, tz = (b[1] - a[1]) / len, nx = -tz * 2, nz = tx * 2;
+  for (var i = 0; i <= n; i++) { var x = a[0] + (b[0] - a[0]) * i / n, z = a[1] + (b[1] - a[1]) * i / n, y = (G ? G.h(x, z) : 0) + 0.08;
+    pos.push(x + nx, y, z + nz, x - nx, y, z - nz); if (i) { var k = i * 2; idx.push(k - 2, k - 1, k, k, k - 1, k + 1); } }
+  var g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setIndex(idx); g.computeVertexNormals();
+  var m = new THREE.Mesh(g, new THREE.MeshLambertMaterial({ color: 0x8e7a5a })); m.name = 'lane ' + Sp.id; scene.add(m); return m;
+};
+/* THE REFUGEE CAMP (47r, 2026-11-04): on the camp's ground of the plan (33), a tent for every `tent` people the sim's camp
+   holds, in rows across the square (a ridge tent of canvas over two poles: a stand-in until a camp kit's tents are drawn
+   here), and a cook shelter for the ration line once anyone is there. It decides nothing: the count is the sim's */
+DRAW.camp = function (R) {
+  var C = R.camp; if (!C) return null; var K = ISLE.TUNE.sim.refugees, sp = 6, n = Math.floor(C.size / sp), G = ISLE.cur && ISLE.cur.G;
+  var tent = new THREE.CylinderGeometry(1, 1, 4, 3, 1); tent.rotateZ(Math.PI / 2); tent.scale(1, 1.3, 1); tent.translate(0, 0.9, 0);
+  var im = new THREE.InstancedMesh(tent, new THREE.MeshLambertMaterial({ color: 0xd8ccb0 }), n * n), m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), k = 0;
+  for (var j = 0; j < n; j++) for (var i = 0; i < n; i++) { var x = C.x - C.size / 2 + sp / 2 + i * sp, z = C.z - C.size / 2 + sp / 2 + j * sp, y = G ? G.h(x, z) : C.y;
+    im.setMatrixAt(k++, m4.compose(new THREE.Vector3(x, y, z), q.setFromAxisAngle(new THREE.Vector3(0, 1, 0), (i + j) % 2 ? 0 : 0.08), new THREE.Vector3(1, 1, 1))); }
+  im.count = 0; im.name = 'refugee camp tents'; im.userData.lots = C.tag != null ? [C.tag] : []; scene.add(im);
+  var cook = new THREE.Group(), wood = new THREE.MeshLambertMaterial({ color: 0x7a5a3a }), y0 = G ? G.h(C.x + C.size / 2 + 4, C.z) : C.y;
+  [[-2, -1.5], [2, -1.5], [2, 1.5], [-2, 1.5]].forEach(function (p) { var k2 = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 2.6, 6), wood); k2.position.set(p[0], 1.3, p[1]); cook.add(k2); });
+  var roof = new THREE.Mesh(new THREE.BoxGeometry(5, 0.15, 4), new THREE.MeshLambertMaterial({ color: 0xc2a868 })); roof.position.y = 2.6; cook.add(roof);
+  cook.position.set(C.x + C.size / 2 + 4, y0, C.z); cook.visible = false; cook.name = 'the camp\'s ration line'; scene.add(cook);
+  DRAW.campDraw = { C: C, im: im, cook: cook, max: n * n, tent: K ? K.camp.tent : 5, s: ISLE.TUNE.sim.towns[R.town] ? ISLE.TUNE.sim.towns[R.town].id : null };
+  return DRAW.campDraw;
+};
+DRAW.lotsTick = function () {
+  var by = {}, R = DRAW.lotsR, CD = DRAW.campDraw;
+  if (CD && CD.s && typeof SIM !== 'undefined' && SIM.R && SIM.R.place) { var CP = SIM.R.place[CD.s + '.camp'], np = CP ? CP.people || 0 : 0, nt = Math.min(CD.max, Math.ceil(np / CD.tent));
+    if (CD.im.count !== nt) { CD.im.count = nt; CD.im.instanceMatrix.needsUpdate = true; } CD.cook.visible = np > 0; DRAW.stats.camp = { people: np, tents: nt }; }
+  if (R && R.spurs) R.spurs.forEach(function (Sp) { if (!Sp.open || DRAW.lanes[Sp.id]) return; DRAW.lanes[Sp.id] = DRAW.lane(Sp); Sp.lots.forEach(function (L) { DRAW.lotWork(L); }); });   /* a street opened */
+  (DRAW.lotWorks || []).forEach(function (W) {
+    var p = typeof ISLE !== 'undefined' && ISLE.lotProgress ? ISLE.lotProgress(W.L) : { f: 0, onSite: null }, st = p.f >= 1 ? 'built' : p.f > 0 ? 'building' : 'cleared';
+    by[st] = (by[st] || 0) + 1; if (p.f === W.f && !p.onSite) return; W.f = p.f;
+    W.S.set(p.f, p.onSite); if (W.C) W.C.set(p.f);
+  });
+  DRAW.stats.lotStages = by; DRAW.stats.lots = (DRAW.lotWorks || []).length;
+  return false;
 };
 /* ---------------------------------------------------------------- the vessels */
 DRAW.vessels = function (R) {

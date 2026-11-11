@@ -207,7 +207,13 @@ GEYSER.hazard={geyser:g=>g.kind==='spouter'?{kind:'heat',danger:.6,dose:1.5,shap
   {kind:'heat',danger:.9,dose:3,shape:{type:'cyl',r:Math.max(4,g.sprayR*.6),h:g.H+4},cycle:{period:g.period,warn:g.pre,on:g.dur,after:g.steam,afterK:.25,offset:-g.off},
    stateFn:'GEYSER.state',seed:g.key,tell:{sign:'the preplay: surges a few metres high, closer and closer'}},
  spring:s=>({kind:'heat',danger:Math.round(Math.min(1,.3+.7*s.temp)*100)/100,dose:1+2*s.temp,shape:{type:'cyl',r:s.r,h:6,y0:2}}),
- acid:a=>({kind:'acid',danger:.5,falloff:'linear',shape:{type:'cyl',r:a.r,h:8,y0:2}})};
+ acid:a=>({kind:'acid',danger:.5,falloff:'linear',shape:{type:'cyl',r:a.r,h:8,y0:2}}),
+ // the final rebuild (pair 7, 2026-11-03; BACKPORT.md's row, "vents and hot ground"): the thin sinter crust round a spring's rim over its boiling water (KHAZ's
+ // hot ground: walkable at a cost, worse the hotter the spring), a fumarole's gas in a dome over its vent, a mud pot's boiling clay
+ crust:s=>({kind:'heat',danger:Math.round((.25+.35*s.temp)*100)/100,dose:.4+.6*s.temp,falloff:'linear',shape:{type:'cyl',r:s.r*1.25+4,h:2,y0:1},nav:{travel:3,enter:5,avoid:false},
+  tell:{sign:'a hollow ring underfoot, steam from the cracks'}}),
+ fumarole:f=>({kind:'gas',danger:Math.round((.4+.4*f.s)*100)/100,falloff:'smooth',shape:{type:'sphere',r:3+5*f.s},tell:{sign:'the rotten-egg reek of sulphur'}}),
+ mud:m=>({kind:'heat',danger:.7,dose:2,shape:{type:'cyl',r:m.r*1.1,h:2,y0:1}})};
 GEYSER.state=function(rec,h,t){const c=h.cycle,g=GEYSER.byKey(h.seed),T=GEYSER.SHOW&&GEYSER.SHOW.t!=null?GEYSER.SHOW.t:t;
  const P=g&&g.period?{period:g.period,pre:g.pre,dur:g.dur,steam:g.steam,off:g.off}:{period:c.period,pre:c.warn,dur:c.on,steam:c.after,off:-c.offset};
  const q=KTRAPS.cycle([['warn',P.pre,0,0],['on',P.dur,1,1],['after',P.steam,c.afterK,c.afterK],['idle',Math.max(0,P.period-P.pre-P.dur-P.steam),0,0]],T,-P.off);

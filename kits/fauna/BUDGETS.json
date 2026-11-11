@@ -2,9 +2,9 @@
  "what": "ceilings past the defaults, each with why and raised (tools/check_budgets.py lints it; harness.verify_page reads tris, calls and bytes; CORE-IMPROVEMENTS.md 3d). A raise needs a new why.",
  "pages": {
   "krator-fauna.js": {
-   "bytes": 18350080,
-   "why": "the fauna bundle other builds load (17.0 MB) was over 16 MB before the cap landed; a split by animal group is owed",
-   "raised": "2026-10-27"
+   "bytes": 31457280,
+   "why": "claude/fauna-meshy (the Meshy arthropods, the spider and beetle part families, hornet, elephant bug), merged in the integration pass on the owner's word (2026-11-08), brings the bundle to 28.3 MB; every page that takes it stays under its own cap. The split by animal group is still owed (TODO.md)",
+   "raised": "2026-11-08"
   }
  }
 }

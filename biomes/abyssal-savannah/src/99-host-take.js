@@ -56,12 +56,19 @@ const HCHK={
  // the burn mosaic reads: every age band is on the map, and a fresh burn carries its char and its lilies
  burn(F,ages){const miss=[0,1,2,3,8].filter(a=>!ages[a]);return{ok:!miss.length&&F.charred>0&&F.lilies>0,detail:'patch ages seen '+Object.keys(ages).join(',')+'; charred '+F.charred+', ember lilies '+F.lilies};}};
 function burnAges(){const o={};for(let z=-TERR.Z+100;z<TERR.Z;z+=200)for(let x=-TERR.X+100;x<TERR.X;x+=200){const a=ABSAV.burn(x,z);o[a<4?a:8]=1;}return o;}
+// the flora and the ground's wet band read the water's own shore (the review's third line; oidong's lines): the env fields in the contract, no tree
+// standing in the water, and the wet band wet at the water's edge (WATER.edgeAudit). EDGE_OWED: what this turn leaves (a ratchet)
+const EDGE_OWED={plant:0,wet:0};
+function edgeCheck(){const P=[];for(const T of ABSAV.TREES){P.push({x:T.x,z:T.z,r:Math.min(T.rb==null?.4:T.rb,.6),name:T.ea?'ea':ABSAV.SPECIES[T.sp].key});if(P.length>8000)break;}
+ const G=STREAM.gully,bad=BIO.envCheck(ENV,[[0,0],[-1500,G.zc(-1500)],[PAN.c[0],PAN.c[1]],[-2780,G.zc(-2780)]]),F=WATER.edgeAudit({field:WATER_F,plants:P,wet:WET_SHORE,band:4,clear:0}),N={};F.forEach(f=>{N[f.rule]=(N[f.rule]||0)+1;});
+ return{ok:!bad.length&&(N['plant-in-water']||0)<=EDGE_OWED.plant&&(N['wet-short']||0)<=EDGE_OWED.wet,detail:(bad.length?'env: '+JSON.stringify(bad).slice(0,200)+'; ':'')+P.length+' trees, '+JSON.stringify(N)+' (owed '+JSON.stringify(EDGE_OWED)+')'+(F.length?'; first: '+JSON.stringify(F[0]).slice(0,240):'')};}
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),T=ABSAV.TREES,F=(window._biome||{}).floor||{};
  add('species tagged',HCHK.tags(ABSAV.SPECIES.concat(ABSAV.PLANTS)));
  add('savannah trees in their zones',HCHK.zoned(T));
  add('the eastern abyss jungle at the foot',HCHK.jungle(T));
  add('no tree in the water',HCHK.dry(T));
  add('the burn mosaic',HCHK.burn(F,burnAges()));
+ add('the flora and the wet band read the shore of the water (BIO.envCheck, WATER.edgeAudit)',edgeCheck());
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),T=ABSAV.TREES,F=(window._biome||{}).floor||{};
  add('a species with no harvest tag',HCHK.tags(ABSAV.SPECIES.map(S=>S.key==='stub'?Object.assign({},S,{tags:{climate:'tropic'}}):S)));
@@ -74,10 +81,14 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
 // the page opens at 14:00 (10:00 on game start's day is the daily eclipse here: the sun behind the giant, 09:00-10:30); #hour= moves it
 const PAGE_HOUR=14;
 KHOST.on(skyView,'view');   /* the shared sky, its lights and fog at the hour (89s-host-sky.js) */
+/* the land in the pan (core/water/ext/58; the owner, 2026-11-01): off at page load, for the tri counts; the panel's button or ?mirror=probe|live turns it on.
+   The pan is the largest still near the eye (240 m); the stream's foot pools stand 470 m lower at the foot, so they keep the sky's reflection (one plane a page) */
+const MIRROR=WATER.mirrorSwitch?WATER.mirrorSwitch({THREE,renderer,scene,camera,sky:SKY,materials:[PAN_DRAW.mesh.material],
+ level:PAN_WATER.level,center:[PAN_WATER.x,PAN_WATER.z],radius:PAN_WATER.r*2.2,far:2400,tree:o=>o.name==='biome:impTrees',hour:()=>ATMOS.clock?ATMOS.clock.hour:0}):null;window.MIRROR=MIRROR;
 KHOST.take({build:'abyssal-savannah',title:'Krator biome — the abyssal savannah',
- hint:'The abyssal savannah, station 1: the eastern abyss\'s gentle east rim (scale model px 1021,350), from the jungle\'s foot up the parkland and the caprock rim to the bench',
+ hint:'The abyssal savannah, station 1: the eastern abyss\'s gentle east rim (scale model px 1026,350, map 5.1), from the jungle\'s foot up the parkland and the caprock rim to the bench',
  scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,views:VIEWS,ticks:TICKS,
- clock:{hour:PAGE_HOUR},draw:()=>SKY.render(),
+ clock:{hour:PAGE_HOUR},draw:MIRROR?()=>{MIRROR.update();SKY.render();}:()=>SKY.render(),
  inspect:describe,stats:()=>'inst '+window._instances,
  layers:{'flora':{match:o=>!!(o.userData&&o.userData.biome)},'sky':{objects:()=>[SKY.mesh]}},
  exporters:{biome:()=>BIO.export()},

@@ -25,7 +25,7 @@ build output except for its own two fragments. `97-lod-auto.js` applies it to th
    time calls `LOD.init(...)` and `LOD.apply()` itself, and 97 then does nothing.
 4. Rebuild, and measure (below). Record the numbers in the build's README.
 
-**Adopted by every build:** `settlements/port`, `jimjam`, `reedlake`, `screamers`, `voth`, `yuni`, `locus`, `iziz`,
+**Adopted by every build:** `kits/port`, `jimjam`, `reedlake`, `screamers`, `voth`, `yuni`, `locus`, `iziz`,
 `highlands`, `xanadu`, `dalab`, `mavs-refuge`, `girder` and `kits/ancients` (measurements in each build's README or
 KNOWN_ISSUES, "Level of detail"). A new build: the `build.py` edit above, then check its animated objects (anything
 flagged or declared dynamic is left out, and anything that moves anyway is handed back on its first move, but naming

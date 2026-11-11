@@ -440,7 +440,7 @@ BIO.def('ribbon',BIO.geo.ribbon(4,.55,.18),M.hang,{label:'Hanging growth'});
 BIO.def('strand',BIO.geo.ribbon(2,.4,.05),M.hang,{label:'Lianas and strands'});
 BIO.def('mossmat',BIO.geo.mat(),M.moss,{label:'Moss'});
 BIO.def('lobe',BIO.geo.lobe(),M.solid,{label:'Bush lobes'});
-BIO.def('bloom',BIO.geo.bloom(),M.bloom,{label:'Blooms'});
+BIO.def('bloom',BIO.geo.bloom(),M.bloom,{label:'Blooms',onLeaf:true});   /* held in a head of leaves or a frond's body too (core attach audit, 2026-11-08) */
 BIO.def('epi',G.rosette(),M.rosette,{label:'Epiphyte rosettes'});
 BIO.def('rosette',G.rosette(),M.rosette,{label:'Rosette succulents'});
 // THE FUNGOID PARTS ON BIO.fung (core/biome 33-core-fungoid.js; TODO.md's fungoid list, the final rebuild 2026-10-27; ?fung=0 for the kit's own

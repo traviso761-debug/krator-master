@@ -4,7 +4,7 @@
 
 Locus: a fork of the Yuni engine in the eastern abyss, with its own kit sheet and plant catalogue.
 
-Docs: `ABYSS-KIT-KNOWN-ISSUES.md`, `ABYSS-KIT-NOTES.md`, `API.md`, `KNOWN_ISSUES.md`, `LOCUS-KIT-KNOWN-ISSUES.md`, `LOCUS-KIT-NOTES.md`, `LOCUS-NOTES.md`, `PORT.md`
+Docs: `API.md`, `KNOWN_ISSUES.md`, `LOCUS-NOTES.md`, `PORT.md`
 
 Built output (never open it; edit `src/` and rebuild): `abyss-kit.html`, `locus-kit.html`, `locus-plants.html`, `locus.html`
 
@@ -40,40 +40,14 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `21-sky.js` | 56 **big** | 5b. KRATOR SKY (1) |
 | `30-layout.js` | 40 **big** | 8. LAYOUT — LOCUS (1); 1-2. THE SITES (32); STREET NETWORK (same contract as Yuni) (91); THE ROUTE GRID (107); WALK GRAPH (the life layer's network) (498) |
 | `40-ground.js` | 7 | 9. GROUND CANVAS + MASK — LOCUS (1) |
-| `45-kit.js` | 29 | 10. KIT (1); NIGHT LIGHT VOLUME (123) |
+| `45-kit.js` | 32 **big** | 10. KIT (1); NIGHT LIGHT VOLUME (128) |
 | `47-texture.js` | 17 | 11. TEXTURES (1) |
 | `50-structure.js` | 10 | 12. STRUCTURE (massing) (1) |
-| `53-assets.js` | 18 | 13b. ASSET REGISTRY + BUILD FRAME (1) |
-| `55-mid-example.js` | 3 | 16a. ASSETS: reference example (1) |
-| `56-mid.js` | 63 **big** | 16b. ASSETS: middle-class houses + trade (1) |
-| `57-poor.js` | 26 | 16c. ASSETS: POOR QUARTERS — mud and thatch (1) |
-| `58-rich.js` | 48 **big** | 16d. ASSETS: WEALTHY COMPOUNDS + THE EMIR'S PALA (1) |
-| `59-civic.js` | 20 | 16e. ASSETS: CIVIC, NEO-AFRICAN AND PARK PIECES (1) |
-| `59a-civic-park.js` | 27 |  |
-| `59b-civic-library.js` | 28 |  |
-| `59c-civic-furniture.js` | 9 |  |
+| `53-assets.js` | 23 | 13b. ASSET REGISTRY + BUILD FRAME (1) |
 | `60-flora.js` | 2 | 15. FLORA — LOCUS (1) |
 | `62-plants.js` | 4 | 15b. THE PLANT CATALOGUE — SPECIES (1) |
 | `63-furniture.js` | 10 | 15c. THE FURNITURE CATALOGUE — SEED SET (1) |
-| `64-locus-chapterhouse.js` | 14 | 16Q. LOCUS — the Geomancers' Chapterhouse (1) |
-| `64-locus-core.js` | 16 | 16L. LOCUS — shared helpers (1) |
-| `64-locus-dwellings.js` | 19 | 16M. LOCUS — abyssal-desert dwellings, tents and (1) |
-| `64-locus-farm.js` | 10 | 16O. LOCUS — the salt-rice farm (1) |
-| `64-locus-infra.js` | 8 | 16R. LOCUS — the warehouse, the fishing dock, an (1) |
-| `64-locus-petroleum.js` | 22 | 16P. LOCUS — the petroleum works (1) |
-| `64-locus-plants.js` | 4 | 16N. LOCUS — crops and marsh-edge plants (1) |
-| `64-locus-power.js` | 18 | 16W. LOCUS — power and fuel (1) |
-| `65-abyss-00-core.js` | 42 **big** | 16X. ABYSS — the Eastern Abyssal kit: shared hel (1); ABYSS 0. a smooth-shaded grid of the merged buil (25); ABYSS 1. sails (53); ABYSS 2. lanterns, masts, propeller-lanterns (69); ABYSS 3. cone shells (89); ABYSS 4. repurposed vessels as rooms (125); ABYSS 5. the swoop-and-horn roof (178); ABYSS 6. tin-mirror cladding and salvaged trim (217); ABYSS 7. overhead clutter (236); ABYSS 8. the stepped square altar (264) |
-| `65-abyss-20-plants.js` | 3 | 16X-P. ABYSS — plants the abyssal kit needs that (1) |
-| `65-abyss-30-housing.js` | 21 | 16X-H. ABYSS — housing: poor, middle, rich (1) |
-| `65-abyss-40-shops.js` | 31 **big** | 16X-S. ABYSS — shops (1) |
-| `65-abyss-50-civic.js` | 22 | 16X-C. ABYSS — hospitality and civic (1) |
-| `65-abyss-60-temple.js` | 7 | 16X-T. ABYSS — the temple of the altar (1) |
-| `65-abyss-70-palace.js` | 8 | 16X-K. ABYSS — the Headman's palace and its plaz (1) |
-| `65-abyss-75-verge.js` | 22 | 16X-V. ABYSS — Lower Verge: the mayor's compound (1) |
-| `65-abyss-80-military.js` | 13 | 16X-M. ABYSS — military: the wall system, the fo (1) |
-| `65-abyss-90-farm.js` | 13 | 16X-G. ABYSS — farming and storage (1) |
-| `66-locus-furnish.js` | 11 | 16Y. FURNITURE — placed from the catalog (FURNIS (1) |
+| `66-locus-furnish.js` | 12 | 16Y. FURNITURE — placed from the catalog (FURNIS (1) |
 | `67-lo-trades.js` | 6 | = (1) |
 | `68-place.js` | 17 | 18b. THE PLACEMENT PASS — LOCUS (1) |
 | `68c-locus-crossings.js` | 10 | 18c. POOL CROSSINGS — LOCUS (2026-10-01) (1) |
@@ -86,7 +60,7 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `75-terrain.js` | 14 | 20. EMIT + GROUND + WATER — LOCUS (1) |
 | `76-locus-anim.js` | 9 | 20L. LOCUS — animated machinery (1) |
 | `80-camera.js` | 10 | 25. CAMERA: ON core/host (1); THE PAGE'S FRAME (98-start.js runs it after the  (101) |
-| `81-glow.js` | 5 | 26. NIGHT GLOW (1) |
+| `81-glow.js` | 7 | 26. NIGHT GLOW (1) |
 | `82-daynight.js` | 6 | 27. DAY / NIGHT (1) |
 | `83-locus-fauna.js` | 12 | 19F. AMBIENT FAUNA — LOCUS (1) |
 | `84-life.js` | 51 **big** | 20. THE LIFE LAYER — LOCUS (1) |
@@ -97,5 +71,6 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `89-sheetui.js` | 4 | 31. SHEET UI (1) |
 | `90-atmos-host.js` | 1 | ATMOS: the shared atmosphere module, bound to Lo (1) |
 | `90w-lake.js` | 5 | THE SALT LAKE ON core/water (1) |
+| `95-locus-doors.js` | 5 | 31b. THE DOORS: core/door on the Yuni engine's l (1) |
 | `98-start.js` | 7 | 99. START: ON core/host (1) |
 | `99-tail.html` | <1 |  |

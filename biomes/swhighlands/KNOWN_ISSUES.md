@@ -44,4 +44,9 @@ From `PLAN.md` section 10 and what station 1 met:
 - [ ] **Station 6, the treeline** (2026-10-27): a first pass for the owner's look. The cirque is the kit's own bowl on the field (no
   core cirque form); the snow is paint only (no snow cover module); the fellfield's clast layer and the stones want a look pass;
   the impostor gain is station 1's, not measured here; the glass tower is ehighlands' (its own look and draws, read in place).
+- [x] **2026-11-08: the ground's program failed to link on the GPU** (station 1, `shader-programs`): not a vertex limit but 17 fragment
+  samplers on the ground's MeshStandard (KGROUND 4, KSTRATA 5, KHORIZON 2, rain cover, water hollows, cloud noise, map, rock grain, the
+  detail canvas) against MAX_TEXTURE_IMAGE_UNITS 16 (ANGLE/D3D11, both lanes). The detail canvas `uDetail` is now computed in the shader
+  (`SWH_DET`, 84-host-ground.js; the pillars' copy too, for headroom): 16 units. A new sampler on this ground needs another one dropped.
+  GPU-verified `--assert --all-views`: swhighlands (rtx) and swhighlands-pillars (arc) pass.
 - [ ] Stations 2-5 are not built. Station 4 (the pillar rim) waits for the Span arcology's hand-over (its own session).

@@ -22,7 +22,7 @@ def mode_of(call):
 
 bad = []
 for f in sorted(FILES):
-    tree = ast.parse(open(f, encoding='utf-8').read(), f)
+    tree = ast.parse(open(f, encoding='utf-8-sig').read(), f)
     for n in ast.walk(tree):
         if isinstance(n, ast.Call) and isinstance(n.func, ast.Name) and n.func.id == 'open':
             m = mode_of(n)

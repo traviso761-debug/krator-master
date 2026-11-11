@@ -2,6 +2,42 @@
 
 Open items are `- [ ]` lines; build.py prints them.
 
+- [ ] (2026-11-03) **Doors and glass: the kit's bodies are solid.** The kit takes core/door and the Vernacular's openings
+      (69e5) and `kits/highlands/src/71c-hl-openings.js` (kits/highlands/README.md, "Doors and glass"): on the sheet 325 doors
+      (each a real leaf in KDOOR, with an id from its def and placement) and 4,578 panes where there were black plates and
+      dark glass (vDarkB 2,822 -> 107, vWinGlass 887 -> 0); in Roketstad 2,930 doors and 24,224 panes (vDarkB 17,878 -> 1,269,
+      the rest: flues, fireboxes, furnace mouths, a shaft, the flame trench, scorch, and the Ancients pieces of
+      `targets/roketstad/82*`, which are the Ancients kit's). What is left: (1) no builder draws its walls hollow (69e's vnBody),
+      so every leaf stands on a solid face: with the interiors off every door is locked; with `?interiors=1` a door whose sill
+      meets a furnished room is unlocked (285 of 325 on the sheet) and opens, but onto the box's own face (the rooms are inside
+      the solid box). Hollow walls for the furnished defs are the next step. (2) The reachability audit (Roketstad,
+      `?interiors=1`, KWALK.reach from each door's step over a box round each furnished building, the ground walkable;
+      1,676 furnished buildings, 8,024 floors): with every door locked 1,239 floors reached; with the 2,740 doors that open onto
+      a room unlocked and opened 5,263 reached, 2,761 not (with every leaf's blocks off, 5,290). Of those 2,761: 1,665 are
+      upper-storey rooms and 116 tenement stairs (the interiors kit's planning: a room behind a partition, a stair whose foot no
+      floor meets; kits/interiors), 185 lean-tos and 161 container units, 72 entry ramps; the reclaimed variants of the mid and
+      poor houses carry most (house_mid_c_reclaimed 597, house_mid_a_reclaimed 494). 101 furnished buildings have no kit door
+      near their rooms (lantern stalls, container shops, mid_b houses, the theatre, warehouses: their openings are open cards or
+      gates, no door record), so the audit has no step to start from there. Not fixed here: none of it is a kit door or a gap the
+      kit draws.
+      (3) 69e5's room card (vnWin, vnOpening, vnPlate) is drawn in the plaster's own light colour; 71c recolours vnWin's to the
+      room's (IZ_ROOMC), its own helpers use it; the fix belongs in 69e5. (4) A door keeps the kit's old threshold step (69c),
+      not 69e5's landing and flight (the builders draw their own steps); a socle door on Roketstad's slopes can stand above the
+      ground with no walk floor up to it. (5) Reed Lake, Dalab and Ys vendor 73-hl-carve.js and 74-rep-dwell.js (Ys: 74 was
+      identical, now drifts); not re-vendored. Proof: verify.py --assert keeps every check: the sheet 7 of 7 (voth-trades failed
+      before the fix in verify.py: the table moved to kits/highlands), 172 -> 176 draw calls, 2.66 M -> 2.72 M scene triangles;
+      Roketstad 7 of 7, 558 -> 561 calls, 20.70 M -> 20.47 M scene triangles (the town differs run to run, as before).
+- [ ] (2026-11-03) **The stairs pass: the interiors kit's walk fixes reach Roketstad.** Two of the "2,761 not reached" causes were the
+      interiors kit's walk records, fixed there (`kits/interiors/src/49b-walk.js`): a planned ladder was one strip too steep for
+      core/walk's reach (rung floors 0.4 m apart now) and a base 0.45 to 0.5 m over the ground got no entry flight (the default step
+      is 0.45 now). On the Highlands set alone (each item on flat ground, KWALK.reach from outside its street doors; the town's own
+      audit was not rerun: Roketstad with `?interiors=1` is a 20 M triangle page) 388 -> 476 of 620 floors are reached: the taverns,
+      the arsenal, the guild halls and the fortress keep on 0.5 m plinths, and the tenement's ladder storey (`hl_rep_house_mid_c`
+      1/9 -> 7/9). Left on the set: slivers of upper floor beside a stairwell (0.1 to 1.7 m2, a walker's width or less), the
+      container stacks', the radome tower's, the kontor's and the tank house's upper units (explicit rooms over the ground with no
+      stair declared: `vnStairs` and `vnLadder` draw them, the set item does not register them), the market hall's council floor
+      and the temple's sanctum (above `maxRise`: elevated, the host routes to them). The pages were rebuilt; `verify.py --assert`
+      on the sheet: 7 of 7 before and after (Roketstad's verify was not rerun).
 - [x] (2026-10-15) Highlands and Roketstad on core/host (ROADMAP.md section 10, step 3), as Iziz: `src/92-camera.js` re-vendored from
       Iziz's (the camera layer), `src/00-head.html` the same, `src/99-start.js` the take, and `src/91h-hl-tags.js` adds every REG site
       to the core/tags registry the furniture is in (so the inspector and minimap read the buildings too), mapping Highlands'

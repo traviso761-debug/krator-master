@@ -72,6 +72,13 @@ def _furniture(T):
     return furniture_bundle.bundle(T['cultures'], harvested=T['harvested']) + kit_bundle.bundle(['beast-rider'])
 
 
+def _listing():
+    """True in a build's --list-sources run (tools/build_sources.py): the maps' bytes do not matter, only their names,
+    so a checkout without Git LFS can list."""
+    bs = sys.modules.get('build_sources')
+    return bool(bs and bs.LISTING)
+
+
 def _pack(T, img):
     """KMAT.pack('<town>', {...}) over the families T uses, each map a reference into BR_TOWN_IMG (img: hash -> data URL)"""
     tex = os.path.join(ROOT, 'settlements', T['town'], 'tex')
@@ -89,7 +96,7 @@ def _pack(T, img):
         refs = {}
         for k, name in sorted(e['files'].items()):
             data = open(os.path.join(tex, name), 'rb').read()
-            if data.startswith(b'version https://git-lfs'):
+            if data.startswith(b'version https://git-lfs') and not _listing():
                 sys.exit('towns.py: %s is a Git LFS pointer: git lfs pull --include="settlements/%s/tex/*"' % (name, T['town']))
             h = hashlib.sha1(data).hexdigest()[:16]
             img.setdefault(h, 'data:image/webp;base64,' + base64.b64encode(data).decode())

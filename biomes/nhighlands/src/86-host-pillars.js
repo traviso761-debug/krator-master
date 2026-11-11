@@ -1,10 +1,23 @@
 // ================================================================= HOST — the crag pillars
 // A few free-standing rock pillars below the crag steps, the reference's pines-
-// on-a-pillar: grey granite stacked in irregular, ledged drums, rust-stained,
+// on-a-pillar: rock (megabreccia since pair 7, below; granite before) stacked in irregular, ledged drums, rust-stained,
 // flat-topped. Host geometry like the tower: they are handed to NHL.dress(...,
 // {kind:'crag'}) so the biome grows its crag pines, heath and lichen on them.
 // Host-only. No plant is placed in this file.
 const PILLARS=[];
+// THE CRATER WALL'S ROCK (the final rebuild, pair 7, 2026-11-03; kits/resources/ROCK-PROPOSAL.md, "Where the biomes must change" 1): this flank is the Inner
+// Wall's, and the geology bake (kits/resources/data/geology.json, 5.1) puts the wall in the `impact` province, so its crag steps (the 5.1 model's slump
+// terraces) and the pillars below them are MEGABRECCIA, not granite: blocks of every rock (basalt black and red, gneiss, tuff, red sandstone, limestone,
+// a finer breccia) at every angle in a grey matrix flecked with impact glass. The pillars draw KSTRATA's `megabreccia` recipe (swhighlands' `crest`) in
+// full (strataColor, five texture units on their own material); the ground's steep faces draw it as KGROUND's `clast` kind in the same rocks
+// (84-host-ground.js: no texture unit, the ground is near its sixteen). ?strata=0: the old granite on both
+let STRATA=null;
+function crestStrata(){if(STRATA||!BRECCIA_ON||!BIO.strata||typeof KSTRATA==='undefined')return STRATA;
+ /* the recipe at the crags' scale: its blocks are 60 m (a crest's), so a pillar 10-25 m across stood inside one; 8 m blocks with a nested generation of
+    1.4 m, the same rocks and matrix, so a pillar shows a dozen (a page recipe: KSTRATA.add; the Godthrone's crest keeps the 60 m one) */
+ try{const R0=KSTRATA.recipe('megabreccia');if(R0&&!KSTRATA.RECIPES['nhl-crag-breccia'])KSTRATA.add(Object.assign({},R0,{name:'nhl-crag-breccia',blocks:Object.assign({},R0.blocks,{size:8,nest:{kind:'fine',size:1.4}})}));}catch(e){reportErr('strata recipe: '+e.stack);}
+ try{STRATA=BIO.strata({recipe:KSTRATA.RECIPES['nhl-crag-breccia']?'nhl-crag-breccia':'megabreccia',seed:86077,range:[-400,2800],dip:[.55,.83,.006],warp:[7,2],dust:0x8a8676,res:.25,private:true});}catch(e){reportErr('strata: '+e.stack);STRATA=null;}
+ return STRATA;}
 function buildPillars(){const geos=[],rock=[],pal=[0x8a8c86,0x7a7c76,0x9a9a92,0x6e706a];reseed(86031);
  // the spots: just under each scarp's foot, away from the stream, where the step is tall
  for(const Sc of SCARPS){for(let t=-1500;t<=1500;t+=270){const k=scarpAt(Sc,Sc.s0,t);if(k.a<Sc.amp*.7)continue;if(Math.abs(t-tStream(k.sc))<190)continue;if(rng()<.45)continue;
@@ -28,5 +41,13 @@ function buildPillars(){const geos=[],rock=[],pal=[0x8a8c86,0x7a7c76,0x9a9a92,0x
   OBSTACLES.push({x:P.x,z:P.z,r:P.R*1.2+2,y0:y0-5,y1:y+30});
   REGISTER({name:'Crag pillar '+(pi+1),kind:'rock',x:P.x,z:P.z,y:y0,r:P.R*1.2,h:y-y0+20});});
  if(geos.length){const tex=NHL.ROCKTEX,m=new THREE.MeshLambertMaterial({map:tex,vertexColors:true});
-  geos.forEach(g=>{const mm=new THREE.Mesh(g,m);mm.userData.inspectLabel='Crag pillar (granite)';mm.userData.host=true;scene.add(mm);});}
+  const S=crestStrata();
+  /* the megabreccia: the block's colour from KSTRATA over the drums' rust and lichen tint (the vertex colour, about its grey mean), the old granite map as
+     the grain (about its mean); the glass flecks and the blocks' edges are the recipe's (35-core-strata-shade.js) */
+  if(S)m.onBeforeCompile=sh=>{S.inject(sh);sh.fragmentShader=sh.fragmentShader.replace('#include <color_fragment>',['#include <color_fragment>',
+    /* the grain: the map's texel against its own mean (its last mip, decoded as map_fragment decodes it); the drums' tint against the palette's mean (.23) */
+    '{vec3 kb=strataColor(vSWP,vSWN);vec3 mm=mapTexelToLinear(texture2D(map,vUv,16.0)).rgb;float gr=clamp(dot(texelColor.rgb,vec3(0.333))/max(dot(mm,vec3(0.333)),0.02),0.5,1.6);',
+    ' diffuseColor.rgb=kb*gr*clamp(vColor/0.23,vec3(0.7),vec3(1.3));}'].join('\n'));};
+  if(S)m.customProgramCacheKey=()=>'nhl-pillar-breccia';
+  geos.forEach(g=>{const mm=new THREE.Mesh(g,m);mm.userData.inspectLabel=S?'Crag pillar (megabreccia: the crater wall)':'Crag pillar (granite)';mm.userData.host=true;mm.userData.rock=true;scene.add(mm);});}
  return geos;}

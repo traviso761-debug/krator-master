@@ -1,0 +1,92 @@
+[
+ {
+  "src": "14.webp",
+  "out": "core/materials/library/metal.ancient.white.macro",
+  "record": {
+   "id": "metal.ancient.white.macro",
+   "family": "metal",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0.12,
+   "scale": [
+    16,
+    16
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (pasted in the session, 2026-11-02)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Flat, front-on, evenly lit surface texture of a futuristic white enamelled metal building facade, seen square on. Very large rectangular panels in staggered courses, thin dark recessed seams between them, each panel a slightly different off-white (#ecebe6, #e4e3de, #f1f0ec), a faint fine vertical brushing, no rivets, no windows, no text, no shadows, matte finish. The pattern repeats in both directions. Full colour. Square 2048 px.",
+    "reuse": "any Ancient tower's skin seen at a tower's scale (the 4 m metal.ancient.white reads as noise on a 230 m face): kits/metropolis, and the Ancients kit's skyscrapers"
+   }
+  },
+  "options": {
+   "lift": 0.0,
+   "rough": 0.6,
+   "rough_var": 0.08,
+   "delight": 0.1,
+   "normal_strength": 0.6,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "13.webp",
+  "out": "core/materials/library/stone.adobe.ceramic",
+  "record": {
+   "id": "stone.adobe.ceramic",
+   "family": "stone",
+   "colour": "#ffffff",
+   "roughness": 0.75,
+   "metal": 0,
+   "scale": [
+    4,
+    4
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (pasted in the session, 2026-11-02)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Flat, front-on, evenly lit surface texture of a smooth hand-finished baked ceramic wall, warm sand colours (#d9b77c, #cfa96c, #e2c48c), broad soft trowel sweeps, faint horizontal lift lines every metre or so, a few fine hairline cracks, slightly glazed, no bricks, no tiles, no openings, no text, matte finish. The pattern repeats in both directions. Full colour. Square 2048 px.",
+    "reuse": "sand-ceramic and adobe walls at a building's scale: kits/metropolis S6 the Telescope and M8 the Sand Block; any desert culture's rendered wall"
+   }
+  },
+  "options": {
+   "lift": 0.0,
+   "rough": 0.75,
+   "rough_var": 0.12,
+   "delight": 0.2,
+   "normal_strength": 0.5
+  }
+ },
+ {
+  "src": "12.webp",
+  "out": "core/materials/patterns/ancient/baroque-scroll",
+  "record": {
+   "id": "ancient/baroque-scroll",
+   "family": "stone",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    6,
+    6
+   ],
+   "tint": true,
+   "pattern": true,
+   "_source": {
+    "generator": "supplied by the owner (pasted in the session, 2026-11-02)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Flat, front-on, evenly lit relief panel of a monumental carved stone ornament: large swollen scrolls, acanthus curls and bulbous cartouches on a giant scale, deep soft undercuts, all in one pale grey-white stone (#dfe3e6, #cfd5da), no figures, no text, no hard shadows, matte finish. The pattern repeats in both directions. Full colour. Square 2048 px.",
+    "reuse": "giant-scale baroque ornament, tinted pale blue or rust: kits/metropolis S8 the Swell and its rust-red ledge; any palace's carved panels"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "lift": 0.0,
+   "rough": 0.7,
+   "rough_var": 0.1,
+   "delight": 0.25,
+   "normal_strength": 1.0
+  }
+ }
+]

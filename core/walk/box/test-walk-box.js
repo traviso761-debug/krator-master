@@ -39,6 +39,10 @@ W = reg(turn); const dir = [Math.SQRT1_2, -Math.SQRT1_2]; /* the doorway faces +
 const mv = (t) => [-Math.SQRT1_2 * 0 + 0, 0]; void mv;
 ok(!walk(W, line(0 * 1 + 6 * Math.SQRT1_2, 6 * Math.SQRT1_2 * -1 + 0, 0, 0).map(p => p), 0).blocked || true, 'a turned house registers without error');
 ok(W.export().blocks.length > 20, 'a turned wall is cut into blocks along its length (' + W.export().blocks.length + ')');
+/* a thick turned wall (4.4 m, at 60 degrees) blocks its own footprint, not 3 m out of its centre line: a walker 2.6 m off it is free */
+{ const Wt = KWALK.create(), a = Math.PI / 3; KB.add(Wt, box(0, 0, 0, 20, 1.6, 4.4, a).m);
+  const off = (d) => [-Math.sin(a) * 0 + Math.cos(a) * 0 + d * Math.sin(a), d * Math.cos(a)];   /* d along the wall's normal */
+  const p1 = off(2.6), p0 = off(1.5); ok(!Wt.blocked(p1[0], .5, p1[1], .25, 1.6) && !!Wt.blocked(p0[0], .5, p0[1], .25, 1.6), 'a 4.4 m wall turned 60 degrees: blocked 1.5 m off its centre line, free 2.6 m off'); }
 /* tilted and tiny boxes are nothing */
 const tilt = box(0, 1, 0, 2, .1, 2); const c = Math.cos(.6), s = Math.sin(.6); tilt.m[4] = s * .1; tilt.m[5] = c * .1;
 ok(KB.add(KWALK.create(), tilt.m) === null, 'a tilted panel is neither floor nor wall');
@@ -53,6 +57,15 @@ ok(KB.add(KWALK.create(), box(0, 0, 0, .2, 1.5, .2).m) === 'block' && KB.add(KWA
   const Wn = KWALK.create(); let yn = 0; for (let i = 0; i < 40; i++) { const f = Wn.floorBelow(0, 3 - i * .02, yn, .7); if (f) yn = f[0]; }
   ok(yn === 0, 'without the ladder the walker stays on the ground');
   const Ws = KWALK.create(); const r = KB.ladder(Ws, [0, 3], [0, 1.2, 1.2], { footY: 0 }); ok(r && r.kind === 'strip', 'a 1.2 m ladder with 1.8 m of run is a strip'); }
+/* the reach audit (KWALK.reach, a 0.45 m step on 0.4 m cells) climbs a steep ladder's rungs to the deck it leans on, at any height */
+for (const h of [2.7, 3.15, 4.5]) { const Wr = KWALK.create(), deck = Wr.floor({ rect: [-2, 2, -2, 2], y: h, name: 'deck' }); KB.ladder(Wr, [0, 3], [0, 2, h], { footY: 0 });
+  const R = Wr.reach([[0, 0, 5]], { ground: () => 0 }); ok(R.reached.includes(deck), 'reach climbs a ' + h + ' m ladder to its deck (' + R.reached.length + ' floors reached)');
+  const Wn = KWALK.create(), d2 = Wn.floor({ rect: [-2, 2, -2, 2], y: h }); ok(!Wn.reach([[0, 0, 5]], { ground: () => 0 }).reached.includes(d2), 'no ladder: the ' + h + ' m deck is unreached'); }
+/* down a steep ladder (3.25 m over 1.2 m) a walker stepping 0.2 m along it, taking the highest floor within 0.6 m over its feet,
+   never drops more than 0.6 m (the Zeijani probe's route walker) */
+{ const Wd = KWALK.create(), top = Wd.floor({ rect: [-1, 1, -3, 0], y: 3.25 }); Wd.floor({ rect: [-1, 1, -3, 4], y: 0 }); KB.ladder(Wd, [0, 1.2], [0, 0, 3.25], { footY: 0 });
+  let feet = 3.25, worst = 0; for (let z = -0.5; z <= 1.6; z += 0.2) { const f = Wd.floorBelow(0, z, feet, .6); worst = Math.max(worst, feet - f[0]); feet = f[0]; }
+  ok(worst <= .6 && feet < .1, 'down a 3.25 m ladder in 0.2 m steps: the worst drop ' + worst.toFixed(2) + ' m, arriving at ' + feet.toFixed(2)); void top; }
 /* agreement with the audit: the same scenes, the same verdict on the raised room */
 for (const [name, Bx, reach] of [['stair', room(1.2, true).concat(stair(0, 2.1, 1.2)), true], ['no stair', room(1.2, true), false]]) {
   const a = AUD.audit({ boxes: Bx }), unreachedCovered = a.components.some(cmp => cmp.covered);

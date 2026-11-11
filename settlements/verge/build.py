@@ -26,6 +26,7 @@ the kit and every build that reads it:
 import glob, hashlib, json, os, re, subprocess, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(HERE)), 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 ROOT = os.path.normpath(os.path.join(HERE, '..', '..'))
 SRC = os.path.join(HERE, 'src')
 DIST = os.path.join(HERE, 'dist')
@@ -106,25 +107,15 @@ INTERIOR_SETS = ['iziz', 'locus', 'abyss', 'yuni', 'yuni-town']   # yuni: the mi
 
 # ---------------------------------------------------------------- the Iziz Vernacular bundle (IZV)
 IZIZ = os.path.join(ROOT, 'settlements', 'iziz', 'src')
+sys.path.insert(0, os.path.join(ROOT, 'kits', 'iziz-vernacular'))
+import vernacular as kvern   # the Iziz Vernacular kit, read in place (MODULARITY-PLAN.md step 4)
 MATS = os.path.join(ROOT, 'core', 'materials')
 
 
 def izv_files():
-    def iz(f):   # a local copy in settlements/iziz/src wins over core/materials (its build's srcpath rule)
-        p = os.path.join(IZIZ, f)
-        if os.path.exists(p):
-            return p
-        q = os.path.join(MATS, f)
-        return q if os.path.exists(q) else os.path.join(MATS, 'opt', f)
-    names = ['10-core.js', '12-stats.js', '20-textures.js', '22-materials.js', '30-kit.js', '32-surfaces.js', '34-kitdefs.js',
-             '38-helpers2.js', '50-registry.js', '54-mat-concrete.js', '68-mat-v5.js', '69-mat-salvage.js', '69a-world-uv.js', '69b-vern-mat.js',
-             '69c-vern-helpers.js', '69e-vern-hollow.js', '69e5-iziz-openings.js', '70-vern-dwellings.js', '71-vern-trade.js',
-             '72-vern-civic.js', '73-vern-infra.js', '74-vern-guilds.js']
-    # 69e5: real doors and glass (vnPlate, vnHole, vnOpening, IZDOOR, IZ_ROOMC), which the vernacular fragments call since 2026-10-19
-    out = [iz(f) for f in names]
-    out += sorted(glob.glob(os.path.join(IZIZ, '74[a-z]-vern-*.js')))          # additions to the vernacular set
-    out += sorted(glob.glob(os.path.join(ROOT, 'kits', 'ancients', 'src', '*funicular*.js')))   # the Ancients funicular
-    return out
+    """The Vernacular kit's one bundle list (kits/iziz-vernacular/vernacular.py bundle_files(): the Ancients core, the kit's
+    foundation, every building fragment), and the Ancients funicular Verge's trail takes."""
+    return kvern.bundle_files() + sorted(glob.glob(os.path.join(ROOT, 'kits', 'ancients', 'src', '*funicular*.js')))
 
 
 def izv_bundle():
@@ -143,17 +134,21 @@ def izv_bundle():
 
 # ---------------------------------------------------------------- the Yuni / Locus / Abyss bundle (YKIT)
 LOCUS = os.path.join(ROOT, 'settlements', 'locus', 'src')
+sys.path[:0] = [os.path.join(ROOT, 'kits', 'locus'), os.path.join(ROOT, 'kits', 'eastern-abyssal')]
+import locuskit, abysskit   # the Locus kit and the Eastern Abyssal kit, read in place (MODULARITY-PLAN.md step 4)
+sys.path.insert(0, os.path.join(ROOT, 'kits', 'yuni'))
+import yunikit              # the Yuni kit's buildings (56-59c), which Locus draws on its frame (step 4b)
 # Locus fragments cut into parts so they can be read (settlements/locus/build.py CONTINUES): YKIT takes the fragment
 # whole, its parts joined back on under the fragment's own name, so the bundle is the same text as before the cut.
 LOCUS_PARTS = {'59-civic.js': ['59a-civic-park.js', '59b-civic-library.js', '59c-civic-furniture.js']}
 
 
 def ykit_files():
-    names = ['05-palette.js', '10-core.js', '45-kit.js', '47-texture.js', '50-structure.js', '53-assets.js',
-             '56-mid.js', '57-poor.js', '58-rich.js', '59-civic.js']
+    names = ['05-palette.js', '10-core.js', '45-kit.js', '47-texture.js', '50-structure.js', '53-assets.js']
     out = [os.path.join(LOCUS, f) for f in names]
-    out += sorted(glob.glob(os.path.join(LOCUS, '64-locus-*.js')))
-    out += sorted(glob.glob(os.path.join(LOCUS, '65-abyss-*.js')))
+    out += [yunikit.path(f) for f in ('56-mid.js', '57-poor.js', '58-rich.js', '59-civic.js')]   # their parts: LOCUS_PARTS
+    out += [locuskit.path(f) for f in locuskit.FILES]
+    out += [abysskit.path(f) for f in abysskit.FILES]
     out.append(os.path.join(LOCUS, '72-lights.js'))
     return out
 
@@ -162,7 +157,7 @@ def ykit_bundle():
     fs = ykit_files()
     parts = []
     for f in fs:
-        s = rd(f) + ''.join(rd(os.path.join(LOCUS, p)) for p in LOCUS_PARTS.get(os.path.basename(f), []))
+        s = rd(f) + ''.join(rd(os.path.join(os.path.dirname(f), p)) for p in LOCUS_PARTS.get(os.path.basename(f), []))
         if f.endswith('10-core.js'):
             n = s.count('window.YUNI_TARGET')
             if n != 1:
@@ -265,6 +260,7 @@ def main():
             out.append('\n// ==================== %s   (%s)\n' % (f, frags[f][1]))
         out.append(frags[f][0])
     html = ''.join(out)
+    BSRC.report()   # --list-sources: every file read so far is what the page is made of; then exit
     os.makedirs(DIST, exist_ok=True)
     html = matlib_pack.write_sidecar(SIDE, html, DIST, 'verge.tex.js')
     with open(os.path.join(DIST, OUT), 'w', encoding='utf-8') as fh:

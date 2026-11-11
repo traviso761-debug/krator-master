@@ -2881,10 +2881,12 @@ var jaw_open = null                      # 0..1 holds the jaw open (tools, tests
 
 
 func _tail_setup(it) -> void:
+	# (the last tail's joints back to the skeleton's rest: a species' chain (tail.rest) moved them)
+	if not _tl.is_empty():
+		for i in _tl["ids"]:
+			skeleton.set_bone_pose_rotation(i, KChar._q(skel["joints"][i]["r"]))
+			skeleton.set_bone_pose_position(i, morph["t"][i])
 	if it == null or not it.has("tail"):
-		if not _tl.is_empty():
-			for i in _tl["ids"]:
-				skeleton.set_bone_pose_rotation(i, KChar._q(skel["joints"][i]["r"]))
 		_tl = {}
 		return
 	var ids := []
@@ -2898,9 +2900,18 @@ func _tail_setup(it) -> void:
 
 
 func _tail_rest() -> void:
+	# a species' tail (tools/tails.py) carries its own chain (tail.rest: Tail2 on, the hips' frame at bind): those
+	# joints take it, scaled as the morphs scale the skeleton's own offsets (the twin of tailRest)
 	var r := []
 	var p := Vector3.ZERO
-	for i in _tl["ids"]:
+	var own = _tl["spec"].get("rest", null)
+	var ids: Array = _tl["ids"]
+	for k in ids.size():
+		var i: int = ids[k]
+		if own != null and k > 0 and k - 1 < own.size():
+			var l0 := KChar._v(skel["joints"][i]["t"]).length()
+			var l1 := (morph["t"][i] as Vector3).length()
+			skeleton.set_bone_pose_position(i, KChar._v(own[k - 1]) * (l1 / l0 if l0 > 1e-6 else 1.0))
 		p += skeleton.get_bone_pose_position(i)
 		r.append(p)
 	var last: int = _tl["ids"][-1]

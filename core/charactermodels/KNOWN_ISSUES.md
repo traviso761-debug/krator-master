@@ -170,6 +170,25 @@
   (the page through MakeHuman's source vertices) and reads its cover from a texture by VERTEX_ID; its figure test
   could not run here (no pieces), only a test sphere. No people draws a coat yet: the Khaayken's people entry and their
   1.15 scale are for Y5 (`kits/yeti/PLAN.md`).
+- **The cat, lion, rat, monkey and bird heads are first passes** (2026-11-02; README, "Therian heads";
+  `tools/therian.py`): each on the coyote's machinery, so everything above holds for them (upper lids only, no jaw, ears
+  still, the morphs by the nearest skull vertex, headgear floats). The lion's mane is a solid field under 28 shells of
+  a 6 cm pile: the heaviest piece the labs draw (fine on a GPU; software WebGL takes seconds a frame, so `verify.py`
+  and `tools/shots.py` crawl on it), and it ends flat at the head's floor under the neck, which a top or the coat covers; a piece wears one fur kind,
+  so the lion's face wears the mane's coarse strands short (from the front it reads spiky; a kind per material would
+  need the fur rows to pick by material).
+  The whiskers are crossed ribbons a millimetre wide: fine from near, aliased from afar. The rat's ears and the bird's beak
+  are untinted (the ears pink, the beak horn), whatever the record's colours; the monkey's bare face takes the skin
+  colour, so a people's skin stops should be a macaque's pinks and browns. The bird's beak is one shape (a corvid's);
+  a raptor's hook or a finch's cone would be a species each. None is drawn by a people yet (all marked `test`), none
+  has been checked in Godot (the kit items and `fur.json` are synced; the pieces are not in the repo), and their pieces
+  are not in the published Cosmetic Lab (no room): they are in "Cosmetic Lab: therian heads" (`gallery/README.md`).
+- **Their tails are first passes too** (2026-11-02; `tools/tails.py`). A species' tail puts its own chain on the shared
+  tail joints while it is worn (kit `tail.rest`); the spring chain, the leg capsules and the floor hold as for the
+  reptile's, so a tail carried up (the cat's, the monkey's) is a rest the chain springs back to, not a pose a clip can
+  change, and a curl past the level (the monkey's) can swing through the body's back when the hips turn fast. The bird's
+  feathers are flat blades with no fur shells and no barbs. Not checked in Godot (the twin's `_tail_rest` was written
+  blind to the page's); the tube is 16 vertices round, so the thin tails are faceted close up.
 - **The lower arms (the arm mods) are copies driven by rule, not animated.** The flesh pair is the upper pair's skin
   and joints copied lower (`tools/mods.py`), so its deltoids are the upper's; where the copy blends into the ribs a
   close look finds a soft crease, and an arm swung far back can show the blend. No clip was made for four arms: the

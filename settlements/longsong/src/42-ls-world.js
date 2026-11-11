@@ -1,5 +1,5 @@
 // ================================================================= HOST — the world round the site (the scale model at 1:1)
-// The open world's fields (openworld/little-demo/src/41-world-fields.js, read in place) over the cut round Longsong
+// The open world's fields (openworld/isle-demo/src/world/41-world-fields.js, read in place) over the cut round Longsong
 // (region/data: tools/scale-model/extract_region.py; decoded at build time into WORLD_R by Pinnacle Rock's
 // tools/world_data.py). The page's origin is LS.SITE (40-ls-plan.js): WORLD coordinates are page + (SITE.wx, SITE.wz),
 // and y 0 on this page is the model's height there.

@@ -214,7 +214,7 @@ trapHook(M.hood,KORONA.TRAPS.maneater,'hinge');trapHook(M.tendriltip,KORONA.TRAP
 // THREE INSTANCED DRAWS for all the pits of a page: the MOUTH MASK (renderOrder 20: no colour, no depth; it writes the
 // stencil where the mouth is seen), the BODY (21: the flask's inside, drawn only inside the stencil and over what the
 // ground drew there: the hole in the ground), the MEMBRANE and its peristome (22: depth-tested against the body).
-// KORONA.afterBake sets the orders (88-host-build.js calls it after BIO.bake).
+// KORONA.afterBake sets the orders (89z-host-build.js calls it after BIO.bake).
 KORONA.MEMBRANE={whole:720,tear:.6,torn:120,regrow:360};
 const sstep=(a,b,x)=>{x=clamp((x-a)/(b-a),0,1);return x*x*(3-2*x);};
 /* on the one clock (KTRAPS.cycle, core/biome/37-core-traps.js): the same arithmetic as before it, so the pits do not move */

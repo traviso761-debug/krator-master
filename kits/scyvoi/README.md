@@ -43,7 +43,7 @@ the fire season).
 
 ## The engine is shared
 
-`kits/desert-nomads` and `kits/ash-nomads` vendor this kit's engine fragments (`10-core`, `27-mat`, `30-geo`, `36-def`, `40-tk-tentkit`, `90-scene`, `92-world`, `99-host-take`, `91f-furnish`, `91n-night`, `92-camera`, `93-anim`, `99-tail`) unchanged: whatever names the kit or its culture lives in `src/26k-kit.js` (`KIT`, the library families, `KIT_FALLBACK`, the palette). Fix the engine here, copy it to both, and their `build.py --vendor-check` must read OK.
+The engine (`10-core`, `27-mat`, `30-geo`, `36-def`, `90-scene`, `91f-furnish`, `91n-night`, `92-world`, `93-anim`, `99-host-take`, `99-tail`) moved from this kit's `src/` to `core/engine` on 2026-11-02 (MODULARITY-PLAN.md step 2): this kit, the nomads, Eternian, Islanders, Lizardmen, Yeti and Resources read it in place. Whatever names a kit or its culture lives in its `src/26k-kit.js` (`KIT`, the library families, `KIT_FALLBACK`, the palette), its alternative materials in `src/31-alt-takes.js`. Fix the engine in `core/engine`, rebuild every kit on it and run `python3 core/engine/fingerprint.py`. `kits/desert-nomads` and `kits/ash-nomads` still vendor this kit's tents (`40-tk-tentkit`, a culture file).
 
 ## Design rules this kit follows
 
@@ -66,3 +66,9 @@ the fire season).
   the baskets is a placeholder until that biome's fruit is in the catalog.
 
 See `API.md` for the functions and the frame conventions, `KNOWN_ISSUES.md` for what is open.
+
+## Doors and glass (core/door, 2026-11-03)
+
+The owner: "remove all dark voids and make all windows, doors and portals actual doors or windows that have transparency". The page loads `core/door` (KDOOR, KGLASS, KDOORHOST) and the engine draws it (`core/engine/36o-open.js`: `svLeaf`, `svDoorway`, `svPane`, `svRoom`). A door leaf is a KDOOR record with a stable id (`<def key>.<placement>.d<n>`), shut unless the builder drew it standing open; **E** opens or shuts the one within reach (walking or flying), and `KDOOR.open(id, {by: 'npc'})` does the same for a quest or an NPC. A door on a body with nothing behind it is locked. `_api.openings()`, `_api.doorExport()` and `_api.doorState()` are on the probe. The page has no `core/walk`, so the doors carry no walk blocks here.
+
+What it changed here: the ger's carved double leaves are real leaves (shut; they swing in on E), the Baelu's gate leaves stand open as drawn and shut on E, the Baelu's cell, stable, smokehouse and cistern-house doors are locked leaves (its cells have no interiors yet), its upper slit windows are glass over the room card, and the vardo's windows are clear glass and its double door two real leaves (plain: the glazing and scrolls the old half-open leaves carried are not on the moving ones). The bell, ridge and pavilion tents' flaps stay tied back cloth: an open doorway, no leaf.

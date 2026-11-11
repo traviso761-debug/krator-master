@@ -1,0 +1,14 @@
+{
+ "legs": 46,
+ "contacts": 30,
+ "wings": 0,
+ "rings": true,
+ "budget": {
+  "head": 350,
+  "abd": 85,
+  "femur": 18,
+  "tibia": 18,
+  "tarsus": 9
+ },
+ "crouch": 0.2
+}

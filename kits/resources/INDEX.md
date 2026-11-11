@@ -4,7 +4,7 @@
 
 The Resources kit: world content that belongs to no culture. So far the resource nodes the building kits' works draw on: iron, copper, gold, tin, silver, rare earth, coal, sulfur, saltpeter and oil, each in a low, a medium and a high grade, placeable. A mine works the nearest node it can within 400 m (everything but oil); oil takes a derrick (Locus's pumpjack, ind_pumpjack); the grade sets the yield (x0.5, x1, x2); nodes do not run out. The rule (42r-res-ore.js) is plain data for core/simulation. Runs on the Scyvoi engine, read in place; kits/islanders reads its two fragments in place.
 
-Docs: `API.md`, `GEOLOGY.md`, `KNOWN_ISSUES.md`, `PLACEMENT-RESEARCH.md`, `PORT.md`, `README.md`
+Docs: `API.md`, `GEOLOGY.md`, `KNOWN_ISSUES.md`, `PLACEMENT-RESEARCH.md`, `PORT.md`, `README.md`, `REBAKE-PLAN.md`, `ROCK-PROPOSAL.md`
 
 Built output (never open it; edit `src/` and rebuild): `dist/resources.html`
 
@@ -21,11 +21,10 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 |---|---|---|
 | `00-head.html` | 1 |  |
 | `26k-kit.js` | 2 |  |
-| `42r-res-ore.js` | 5 |  |
+| `42r-res-ore.js` | 6 |  |
 | `43r-res-fields.js` | 5 |  |
-| `44r-res-nodes.js` | 19 |  |
+| `44r-res-nodes.js` | 22 |  |
 | `45r-res-field.js` | 9 |  |
 | `46r-res-ledger.js` | 8 |  |
 | `89-rows.js` | 2 |  |
-| `98r-host-geomap.js` | 7 |  |
-| `99-tail.html` | <1 |  |
+| `98r-host-geomap.js` | 8 |  |

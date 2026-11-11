@@ -1,0 +1,21 @@
+{
+ "generator": "fal-ai/hyper3d/rodin",
+ "price_usd": 0.4,
+ "raw": "raw-rodin.glb",
+ "request_id": "01a19ab5-4257-7182-8ba4-4c846a98575b",
+ "seconds": 62,
+ "seed": 7,
+ "settings": {
+  "condition_mode": "concat",
+  "geometry_file_format": "glb",
+  "material": "PBR",
+  "quality": "medium",
+  "seed": 7,
+  "tier": "Regular"
+ },
+ "views": [
+  "front.png",
+  "left.png",
+  "back.png"
+ ]
+}

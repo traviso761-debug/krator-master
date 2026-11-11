@@ -16,8 +16,10 @@ const VIEWS={};
  if(typeof NWLOW!=='undefined'&&NWLOW.TREES&&NWLOW.TREES.length&&STAGE.natives){const n=near(NWLOW.TREES.filter(T=>T.lv===2),0,0);
   if(n)VIEWS['A native tree in the fog (sponges and wine weed)']=[n.x+12,n.y0+4,n.z+9,n.x,n.y0+n.H*.35,n.z];}
  const seen={};WORKS.forEach(o=>{if(seen[o.kind])return;seen[o.kind]=1;const r=Math.max(10,o.r*2.4);
-  VIEWS['The works: '+({kelpkiln:'a kelp kiln',limekiln:'a lime kiln',wrackheap:'a wrack heap',wrackcart:'a wrack cart',terraces:'the walled terraces',fold:'a goat fold',rack:'a drying rack'}[o.kind]||o.kind)]=
-   [o.x-w[0]*r+w[1]*r*.5,o.y+Math.max(4,o.r*.8),o.z-w[1]*r-w[0]*r*.5,o.x,o.y+1,o.z];});})();
+  VIEWS['The works: '+({kelpkiln:'a kelp kiln',limekiln:'a lime kiln',wrackheap:'a wrack heap',wrackcart:'a wrack cart',terraces:'the walled terraces',fold:'a goat fold',rack:'a drying rack',quay:'a quay',pier:'a jetty',slip:'the dockyard slip',tsunamistone:'a tsunami stone'}[o.kind]||o.kind)]=
+   (function(){const ex=o.x-w[0]*r+w[1]*r*.5,ez=o.z-w[1]*r-w[0]*r*.5,ey=o.y+Math.max(4,o.r*.8)+(STAGE.key==='cloud'?32:0);
+    /* the cloud forest's works from over its canopy: at the works' own height the fold's eye stood in a broadleaf (the GPU verify's eye check, 2026-11-04) */
+    return[ex,ey,ez,o.x,o.y+1,o.z];})();});})();
 
 // ---------------------------------------------------------------- the inspector's words: a plant names its species, what it yields, the zone
 function describe(hit){const p=hit.point,o=hit.object;
@@ -53,13 +55,28 @@ const HCHK={
  place(ST){const bad=ST.filter(T=>T.key==='landkelp'&&(waterMask(T.x,T.z)<.5||F.sand(T.x,T.z)>.5||F.coral(T.x,T.z)>.6||F.rock(T.x,T.z)>.6));
   return{ok:!bad.length&&(ST.some(T=>T.key==='landkelp')||!STAGE.fields.invade(0,0)),detail:bad.length?bad.length+' stands misplaced, first at '+bad[0].x.toFixed(0)+','+bad[0].z.toFixed(0):ST.length+' stands, none in the water, on the sand, the coral or the rock'};},
  // the works: every one the station names is drawn and registered as Eternian furniture (to be backported)
- works(W,R){const named=(STAGE.works||[]).length,rec=R.filter(r=>r.tags&&r.tags.culture==='eternian'&&r.cls==='furniture');
+ works(W,R){const named=window._worksNamed==null?(STAGE.works||[]).length:window._worksNamed,rec=R.filter(r=>r.tags&&r.tags.culture==='eternian'&&r.cls==='furniture');
   return{ok:W.length===named&&rec.length===named,detail:W.length+' of '+named+' works drawn; '+rec.length+' registered as Eternian furniture'};}};
+// THE TSUNAMI (station 1, map 5.1; the owner, 2026-11-01): the old city's site above the run-up ceiling, the harbour below it, the reach drawn,
+// the stones on it, no kelp stand on the city's site, the harbour's water still (no shore grid: no breakers ring the quays)
+HCHK.tsunami=function(T,sites,works,stands){if(!T)return{ok:true,detail:'no tsunami on this station'};
+ const city=sites.find(s=>s.key==='city'),q=works.filter(o=>o.kind==='quay'),st=works.filter(o=>o.kind==='tsunamistone'),bad=[];
+ if(!city||city.y<T.runup+50)bad.push('the city\'s site at '+(city?city.y.toFixed(0):'none')+' m (it must stand over '+(T.runup+50)+' m)');
+ if(!q.length||q.some(o=>o.y>T.runup))bad.push('the quays not at the water');
+ st.forEach(o=>{if(Math.abs(o.y-T.runup)>6)bad.push('a stone at '+o.y.toFixed(1)+' m, off the line');});if(st.length<3)bad.push(st.length+' stones on the line');
+ const L=window._tsunami;if(!L||!L.pts[0])bad.push('no run-up line drawn');
+ if(city){const inn=stands.filter(T=>T.key==='landkelp'&&Math.hypot(T.x-city.x,T.z-city.z)<city.r*.8).length;if(inn)bad.push(inn+' kelp stands on the city\'s site');}
+ return{ok:!bad.length,detail:bad.length?bad.join('; '):'the city\'s site at '+city.y.toFixed(0)+' m (the ceiling '+T.runup+' m); '+q.length+' quays at the water; '+st.length+' stones on the line; the line drawn ('+L.pts[0]+' points)'};};
+HCHK.harbour=function(D){if(!STAGE.harbour)return{ok:true,detail:'no harbour on this station'};
+ if(!D)return{ok:false,detail:'the harbour is not drawn'};const o=D.water&&D.water.drawOpt||{};
+ return{ok:!D.water.shore&&o.breakers===false,detail:(D.water.shore?'a shore grid on the harbour (its breakers ring the quays)':'no shore grid')+'; breakers '+(o.breakers===false?'off':'on')};};
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r));
  add('every species has a harvest; the edible ones a crop',HCHK.harvest(FARSIDE.SPECIES,FARSIDE_CROPS));
  add('the kelp blades stream inland on the wind',HCHK.stream(instOf(/blade[0-2]$/),BIO.host.farside.wind));
  add('the sea\'s flora placed on land, off the sand, the coral and the rock',HCHK.place(FARSIDE.STANDS));
  add('the works drawn and tagged as Eternian furniture',HCHK.works(WORKS,REG));
+ add('the tsunami: the old city over the run-up, the harbour below, the line and its stones',HCHK.tsunami(STAGE.tsunami,window._sites||[],WORKS,FARSIDE.STANDS));
+ add('the harbour is still water (no breakers ring the quays)',HCHK.harbour(HARB_DRAW&&{water:HARB_WATER}));
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail});
  add('an edible species with no crop',HCHK.harvest(FARSIDE.SPECIES,FARSIDE_CROPS.filter(c=>c!=='kelp')));
@@ -68,20 +85,32 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  {const p=SEA?STAGE.XZ(-1400,0):STREAM?STREAM.pts[STREAM.pts.length>>1]:[0,0];   /* in the sea, or in an inland station's stream */
   add('a kelp stand in the water',HCHK.place(FARSIDE.STANDS.concat([{key:'landkelp',x:p[0],z:p[1],y0:-10,H:30}])));}
  add('a work not registered',HCHK.works(WORKS,REG.filter(r=>!(r.tags&&r.tags.culture))));
+ if(STAGE.tsunami){const S=(window._sites||[]).map(o=>o.key==='city'?Object.assign({},o,{y:60}):o);   /* the city put down on the bench */
+  add('the old city left in the wave\'s reach',HCHK.tsunami(STAGE.tsunami,S,WORKS,FARSIDE.STANDS));
+  const c=S.find(o=>o.key==='city');if(c)add('a kelp stand on the city\'s site',HCHK.tsunami(STAGE.tsunami,window._sites,WORKS,FARSIDE.STANDS.concat([{key:'landkelp',x:c.x,z:c.z}])));}
+ if(STAGE.harbour&&HARB_WATER)add('the harbour with the sea\'s breakers',HCHK.harbour({water:Object.assign({},HARB_WATER,{shore:{},drawOpt:{}})}));
  return R;}
 // ---------------------------------------------------------------- the page, handed to the host
 KHOST.on(skyView,'view');   /* the shared sky, its lights and fog at the hour (89s-host-sky.js) */
 KHOST.on(function lodTick(){camera.updateMatrixWorld();if(BIO.lodTick)BIO.lodTick(camera);},'view');
+// THE REFLECTIONS SWITCH (core/water ext/58; BACKPORT.md's universal set; OFF at page load): the kit's largest still is station 1's saline
+// lagoon (the sea has a swell, the harbour a current); the switch is made after the panel (its button), so the draw reads it through MIRROR
+let MIRROR=null;
 KHOST.take({build:'farside',title:'Krator biome — '+STAGE.name,
  hint:STAGE.name+': the sea\'s plants come ashore (land kelp, storm wrack, spray coral, eelgrass, sea palms, wine weed, sea lettuce, fog sponges, anemones)',
  scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,views:VIEWS,ticks:TICKS,
  /* the hour slider and run / hold in the panel (core/host shows them when the page takes the hour: onSet; the sky reads the clock
     each frame, so there is nothing more to do); the page opens at 10:00, in full daylight (the owner, 2026-10-26) */
- clock:{hour:STAGE.hour==null?10:STAGE.hour,onSet:h=>{}},draw:()=>SKY.render(),
+ clock:{hour:STAGE.hour==null?10:STAGE.hour,onSet:h=>{}},draw:()=>{if(MIRROR)MIRROR.update();SKY.render();},
  inspect:describe,stats:()=>'inst '+window._instances+'\nlod '+(BIO.lodShown?BIO.lodShown.meshes+'/'+BIO.lodShown.of+' chunk meshes':''),
- layers:{'flora':{match:o=>!!(o.userData&&o.userData.biome)},'works and ground':{match:o=>!!(o.userData&&o.userData.host)},'sky':{objects:()=>[SKY.mesh]}},
+ layers:{'flora':{match:o=>!!(o.userData&&o.userData.biome)},'works and ground':{match:o=>!!(o.userData&&o.userData.host&&!o.userData.tsunami)},
+  'the tsunami\'s reach':{match:o=>!!(o.userData&&o.userData.tsunami)},'the far country':{match:o=>!!(o.userData&&o.userData.farField)},'sky':{objects:()=>[SKY.mesh]}},
  exporters:{biome:()=>BIO.export()},
  budget:BUDGET,types:()=>BIO.stats,
  api:{hostChecks,hostNegatives,
  get totals(){const t=BIO.totals();return {rendered:BIO.lodShown?BIO.lodShown.tris:null,lodMeshes:BIO.lodMeshes.length,tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
  biome:()=>window._biome}});
+if(LAG_DRAW&&WATER.mirrorSwitch){try{MIRROR=WATER.mirrorSwitch({THREE,renderer,scene,camera,sky:SKY,materials:[LAG_DRAW.mesh.material],level:LAGOON.level,
+ center:LAGOON.centre,radius:LAGOON.r*1.4,far:2600,tree:o=>o.name==='biome:impTrees',hour:()=>ATMOS.clock?ATMOS.clock.hour:0});window.MIRROR=MIRROR;}catch(e){reportErr('mirror: '+e.stack);}}
+// THE SUN'S SHADOWS (88: SHADOW_ATTACH, core/shadow's own switch; the owner, 2026-11-03: off by default): core's button on the panel; ?shadow=1 turns them on at load
+SHADOW_ATTACH(KHOST.ui);

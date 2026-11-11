@@ -8,7 +8,7 @@
   "watched": "valapo",
   "abstract": "kautoa",
   "decided": 0,
-  "moved": 131031
+  "moved": 128340
  },
  "start": {
   "clock": {
@@ -35,10 +35,10 @@
       "eaten": 0
      },
      "taro": {
-      "warehouses": 20097,
+      "warehouses": 19469,
       "sites": 0,
       "carts": 0,
-      "total": 28155,
+      "total": 27199,
       "made": 0,
       "used": 0,
       "imported": 0,
@@ -48,10 +48,10 @@
       "eaten": 0
      },
      "rice": {
-      "warehouses": 27634,
+      "warehouses": 26769,
       "sites": 0,
       "carts": 0,
-      "total": 36248,
+      "total": 35137,
       "made": 0,
       "used": 0,
       "imported": 0,
@@ -61,10 +61,10 @@
       "eaten": 0
      },
      "banana": {
-      "warehouses": 6532,
+      "warehouses": 6327,
       "sites": 0,
       "carts": 0,
-      "total": 14707,
+      "total": 14224,
       "made": 0,
       "used": 0,
       "imported": 0,
@@ -74,10 +74,10 @@
       "eaten": 0
      },
      "coconut": {
-      "warehouses": 8164,
+      "warehouses": 7909,
       "sites": 0,
       "carts": 0,
-      "total": 16351,
+      "total": 15779,
       "made": 0,
       "used": 0,
       "imported": 0,
@@ -87,10 +87,10 @@
       "eaten": 0
      },
      "fish": {
-      "warehouses": 3810,
+      "warehouses": 3691,
       "sites": 0,
       "carts": 0,
-      "total": 11077,
+      "total": 10799,
       "made": 0,
       "used": 0,
       "imported": 0,
@@ -100,10 +100,10 @@
       "eaten": 0
      },
      "meat": {
-      "warehouses": 1047,
+      "warehouses": 1014,
       "sites": 0,
       "carts": 0,
-      "total": 9232,
+      "total": 8999,
       "made": 0,
       "used": 0,
       "imported": 0,
@@ -113,10 +113,10 @@
       "eaten": 0
      },
      "bread": {
-      "warehouses": 7536,
+      "warehouses": 7301,
       "sites": 0,
       "carts": 0,
-      "total": 15679,
+      "total": 15116,
       "made": 0,
       "used": 0,
       "imported": 0,
@@ -431,10 +431,10 @@
     "level": "presented",
     "goods": {
      "sweet-potato": {
-      "warehouses": 8104,
+      "warehouses": 7878,
       "sites": 0,
       "carts": 0,
-      "total": 11346,
+      "total": 11063,
       "made": 0,
       "used": 0,
       "imported": 0,
@@ -457,10 +457,10 @@
       "eaten": 0
      },
      "rice": {
-      "warehouses": 323,
+      "warehouses": 314,
       "sites": 0,
       "carts": 0,
-      "total": 323,
+      "total": 314,
       "made": 0,
       "used": 0,
       "imported": 0,
@@ -470,10 +470,10 @@
       "eaten": 0
      },
      "banana": {
-      "warehouses": 5984,
+      "warehouses": 5818,
       "sites": 0,
       "carts": 0,
-      "total": 9221,
+      "total": 8978,
       "made": 0,
       "used": 0,
       "imported": 0,
@@ -483,10 +483,10 @@
       "eaten": 0
      },
      "coconut": {
-      "warehouses": 2244,
+      "warehouses": 2182,
       "sites": 0,
       "carts": 0,
-      "total": 5599,
+      "total": 5441,
       "made": 0,
       "used": 0,
       "imported": 0,
@@ -496,10 +496,10 @@
       "eaten": 0
      },
      "fish": {
-      "warehouses": 5673,
+      "warehouses": 5515,
       "sites": 0,
       "carts": 0,
-      "total": 8938,
+      "total": 8669,
       "made": 0,
       "used": 0,
       "imported": 0,
@@ -509,10 +509,10 @@
       "eaten": 0
      },
      "meat": {
-      "warehouses": 416,
+      "warehouses": 404,
       "sites": 0,
       "carts": 0,
-      "total": 3705,
+      "total": 3622,
       "made": 0,
       "used": 0,
       "imported": 0,
@@ -522,10 +522,10 @@
       "eaten": 0
      },
      "bread": {
-      "warehouses": 3117,
+      "warehouses": 3030,
       "sites": 0,
       "carts": 0,
-      "total": 6274,
+      "total": 6090,
       "made": 0,
       "used": 0,
       "imported": 0,
@@ -652,10 +652,10 @@
       "eaten": 0
      },
      "stone": {
-      "warehouses": 0,
+      "warehouses": 40,
       "sites": 0,
       "carts": 0,
-      "total": 0,
+      "total": 40,
       "made": 0,
       "used": 0,
       "imported": 0,
@@ -969,16 +969,16 @@
    }
   },
   "counts": {
-   "places": 2839,
-   "actors": 8450,
+   "places": 2841,
+   "actors": 8225,
    "people": [
     [
      "kautoa",
-     6235
+     6040
     ],
     [
      "valapo",
-     2155
+     2095
     ]
    ],
    "routes": 2

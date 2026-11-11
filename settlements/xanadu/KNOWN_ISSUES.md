@@ -2,6 +2,19 @@
 
 Open items are `- [ ]` lines; build.py prints them.
 
+- [ ] (2026-11-03) **Doors and glass: the kit's bodies are solid.** The kit takes core/door and the Vernacular's openings
+      (69e5) and `kits/xanadu/src/71c-xa-openings.js` (kits/xanadu/README.md, "Doors and glass"): on the sheet 599 doors (each a
+      real leaf in KDOOR, locked, with an id from its def and placement) and 5,912 panes where there were black plates and dark
+      glass (vDarkB 2,425 -> 40: wells, a shaft, ovens and kilns; vWinGlass 1,996 -> 0); the arch heads and niches
+      (xArcDark) are the room's dim back, the Grand Baths' coloured glass is transparent. What is left: no builder draws its walls
+      hollow and the pages have no interiors and no core/walk, so every door is locked and there is nothing to audit for
+      reachability; Erewhon's leaves are handed to the host chunk by chunk (90-xa-doors.js), as its items are emptied after each
+      chunk (69e5's IZDOOR.finish/tick assume one bake). 69e5's room card is the plaster's light colour, which on these whitewashed
+      faces read as no window: 71c recolours vnWin's (the fix belongs in 69e5). Longsong's XAK carries the doors (each proto's in
+      `userData.doors`), but the protos are flattened, so its leaves are static. Proof: verify.py --assert keeps every check:
+      the sheet as before (6 pass, the biome's triangle budget OVER as before), 88 -> 90 draw calls, 5.42 M -> 5.48 M scene
+      triangles; Erewhon 7 of 7 (2,547 doors, 26,780 panes, vDarkB 38 left), 1,042 -> 1,045 calls, 21.12 M -> 21.39 M; Longsong
+      (XAK) the same 72 passes, its draw-call OVER and its one FAIL as before (the stale interiors bake), 522 -> 527 calls.
 - [x] (2026-10-15) Xanadu on core/host (ROADMAP.md section 10, step 5; core/host/README.md): the camera, the controls, the walk (F),
       the frame loop, the panel, the probe's frame, the inspector (I hover, a click: core/tags records), marks (P, they replace the
       polygon tool) and the minimap (M) are core/host's on the kit page and Erewhon, as on Iziz and Highlands (host.FULL without
@@ -25,6 +38,12 @@ Open items are `- [ ]` lines; build.py prints them.
       unchanged (every assert and counter the same; the first stats line, sampled while core/lod is still building
       chunks, read 89 / 989k on Xanadu and 9.536 M on Erewhon before and 88 / 888k and 9.532 M after, and the assert's
       own count is 88 both times; Xanadu's opening shot is pixel-identical). `--vendor-check`: all 19 identical.
+- [x] (2026-11-03) `--vendor-check` reported `69-mat-salvage.js` drifted from `../highlands/src` (Highlands took the
+      Ancients kit's on 2026-10-23). Read: this copy was only behind; upstream adds `patchOpening` (the owner, 2026-10-19:
+      an opening a later people filled with boards, sheet or plate), which only the Ancients builders Xanadu does not vendor
+      call. Re-vendored. `verify.py --assert` before and after on both pages: every assert the same; the camera's first
+      stats line moves between runs of the same page (Erewhon's 'before' page read 9.485 M and 9.511 M triangles on two runs),
+      as the 2026-10-13 entry saw. The pages wait for the all-builds rebuild: they were behind their sources before this.
 - [ ] Windows placed on a battered face sit on the base plane of the block, so on tall single blocks (the fortress tower, the strong room) the surround boards can be a few centimetres inside the lean; builders offset them by hand (`hw-.05`).
 - [ ] (2026-10-06) The vernacular MAT keys take the material library (materials.json, Iziz's rows; src/88y-xanadu-matlib.js binds them through core/materials/record/26-matlib-bind.js). The build's own families (its patterns, bands and tiles) are not wired yet. verify --assert passes, as before.
 - [x] **Xanadu's own families take the material library** (2026-10-06): xEarth, xWash, xTiles, xRubble, xRock (materials.json). The rammed

@@ -133,7 +133,7 @@ cd kits/motor-vehicles && python3 build.py                 # -> dist/motor-vehic
 python3 verify.py dist/motor-vehicles.html --assert         # every vehicle x variant x seeds 1..3, plus the bundle alone
 python3 verify.py dist/motor-vehicles.html --out shots --views front34,side,rear34,top --night
 python3 verify.py dist/motor-vehicles.html --out shots-wreck --views front34 --state wreck    # every vehicle in a ruin state
-python3 build.py --vendor-check                             # 80-sky-hash.js, 81-sky.js against their upstreams
+python3 build.py --vendor-check                             # no src/ copy of the placeholder sky (core/atmos/placeholder)
 python3 ../../tools/textures/pack.py kits/motor-vehicles     # after materials.json changes (numpy, Pillow; the sets via git lfs pull)
 ```
 

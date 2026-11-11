@@ -22,7 +22,7 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `45-host-stage.js` | 24 | the axis, the sea, the river (43); terrain (73); the climate fields (112); the host binding (129); the ground (141); the water (213); the road (224) |
+| `45-host-stage.js` | 28 | the axis, the sea, the river (43); terrain (73); the climate fields (123); the host binding (140); the ground (152); the water (248); the road (259) |
 | `50-biome-nwlowlands-species.js` | 60 **big** | palettes (28); the species (82); harvest (biomes/FRUIT.md) (136); leaf textures (170); TWO-TONE BARK (308); geometries local to this biome (454); materials (506); instanced items (579) |
 | `52-biome-nwlowlands-library.js` | 2 |  |
 | `55-biome-nwlowlands-trees.js` | 45 **big** | zones from the fields (26); colour (41); keep-clear between trees (62); the LIMB (73); foliage and epiphytes (90); the crown, ON its branches (111); the builders (149); impostors (the far canopy) (268); the BAMBOO GROVES (305); the pass (365) |
@@ -38,5 +38,5 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `89-host-sky.js` | 2 |  |
 | `89a-host-atmos.js` | 3 |  |
 | `89w-host-water.js` | 4 |  |
-| `99-host-take.js` | 12 | the inspector's words (49); the probe's budgets and the kit's own checks (ve (59); the page, handed to the host (100) |
+| `99-host-take.js` | 12 | the inspector's words (49); the probe's budgets and the kit's own checks (ve (59); the page, handed to the host (106) |
 | `99-tail.html` | <1 |  |

@@ -37,6 +37,7 @@ function buildTower(T){
         BOX(T.x+1.8, yb, T.z-6.1, 12.4, SLAB, 3.8, 0, pc, 'concrete');                 /* north + south strips */
         BOX(T.x+1.8, yb, T.z+6.1, 12.4, SLAB, 3.8, 0, pc, 'concrete');
       }
+      else BOX(T.x-6.2, yb, T.z, 3.6, SLAB, 16, 0, pc, 'concrete');   /* the roof's west landing: the last flight's head (it climbed into the open core, and the roof plates were reached by no stair: the reachability audit, 2026-11-03) */
     }
     /* perimeter spandrel girders + the interior girder lines under the plate. The spandrel's outer face stands 10 cm
        inside the columns' outer faces (it was flush with them, and fought) */

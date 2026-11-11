@@ -69,16 +69,21 @@ function saxaul(x,y,z,lv,st){const H=rr(2.6,5.5),n=ri(3,6),bk=pick(PB.saxBark);
   for(let s=0;s<=k;s++){const t=s/k;pts.push({x:px,y:py,z:pz,r:lerp(.14,.04,t)*(lv===2?1:1.3)});const w=a+rr(-.7,.7);px+=Math.cos(w)*lean*L/k*1.4;pz+=Math.sin(w)*lean*L/k*1.4;py+=L/k*rr(.7,1.05);}
   st.sax+=BIO.tube('saxbark',pts,shade(C(bk),rr(-.15,.05)),{seg:lv===2?5:3});
   const tip=pts[pts.length-1],tw=leafCol(PB.saxaul,1.2,.03);
-  for(let j=0,m=lv===2?ri(3,5):2;j<m;j++)BIO.put('saxtwig',[tip.x+rr(-.8,.8),tip.y+rr(-.7,.1),tip.z+rr(-.8,.8)],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),[rr(1.5,2.4),rr(1.1,1.7),rr(1.5,2.4)],tw,{n:[rr(-.3,.3),1,rr(-.3,.3)]});}
+  /* each tuft held to its stem's tip (2026-11-08, the attach audit): the draws as they were, the spot brought in to half its size */
+  for(let j=0,m=lv===2?ri(3,5):2;j<m;j++){const P=[tip.x+rr(-.8,.8),tip.y+rr(-.7,.1),tip.z+rr(-.8,.8)],q=qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),S3=[rr(1.5,2.4),rr(1.1,1.7),rr(1.5,2.4)];
+   BIO.put('saxtwig',BIO.holdTo([tip.x,tip.y,tip.z],P,SEDESERT.reachOf('saxtwig',Math.max(S3[0],S3[2]))),q,S3,tw,{n:[rr(-.3,.3),1,rr(-.3,.3)]});}}
  if(lv===2)BIO.register({name:'Saxaul',key:'saxaul',x,z,y,r:H*.6,h:H+1});
  haloAdd({x,z,r:H*.45});st.saxauls++;}
 // TAMARISK: a short leaning trunk and a feathery grey-green crown of clumps, pink flower plumes at the branch ends
 function tamarisk(x,y,z,lv,st){const H=rr(3.5,7.5),R=H*rr(.42,.6),a0=rr(0,TAU),lean=rr(.05,.25),tx=x+Math.cos(a0)*lean*H,tz=z+Math.sin(a0)*lean*H,ty=y+H*.55;
- st.sax+=BIO.tube('saxbark',[{x,y:y-.2,z,r:.22*H/6},{x:(x+tx)/2,y:(y+ty)/2,z:(z+tz)/2,r:.16*H/6},{x:tx,y:ty,z:tz,r:.1*H/6}],shade(C(pick(PB.tamBark)),rr(-.1,.05)),{seg:lv===2?6:4});
+ const bc=shade(C(pick(PB.tamBark)),rr(-.1,.05));st.sax+=BIO.tube('saxbark',[{x,y:y-.2,z,r:.22*H/6},{x:(x+tx)/2,y:(y+ty)/2,z:(z+tz)/2,r:.16*H/6},{x:tx,y:ty,z:tz,r:.1*H/6}],bc,{seg:lv===2?6:4});
  const lc=leafCol(PB.tamarisk,1.2,.03),n=lv===2?ri(8,13):ri(3,4);
+ /* (2026-11-08, the attach audit: the crown's clumps stood in the air round the trunk's top) a branch from the trunk's top to each clump
+    (a rod, no draw from the stream), and each plume held on its clump */
  for(let i=0;i<n;i++){const a=rr(0,TAU),d=R*Math.sqrt(rng())*.75,cx=tx+Math.cos(a)*d,cz=tz+Math.sin(a)*d,cy=ty+rr(-.1,.45)*H*.4,s=R*rr(.6,.95);
+  BIO.beam('rod',[tx,ty-.3,tz],[cx,cy,cz],.08*H/6,.03,bc);
   BIO.put('tamarisk',[cx,cy,cz],qEuler(rr(-.2,.2),rr(0,TAU),rr(-.2,.2)),[s,s*rr(.7,1),s],bright(vary(lc,.02,.06,.05),rr(.9,1.1)),{n:[Math.cos(a)*.4,1,Math.sin(a)*.4]});
-  if(lv===2&&rng()<.55)BIO.put('plume',[cx+rr(-.4,.4),cy+s*.45,cz+rr(-.4,.4)],qEuler(0,rr(0,TAU),0),[s*.35,s*.3,s*.35],leafCol(PB.tamPlume,1.15,.02),{n:[0,1,0]});}
+  if(lv===2&&rng()<.55){const P=[cx+rr(-.4,.4),cy+s*.45,cz+rr(-.4,.4)];BIO.put('plume',BIO.holdTo([cx,cy,cz],P,SEDESERT.reachOf('plume',s*.35)),qEuler(0,rr(0,TAU),0),[s*.35,s*.3,s*.35],leafCol(PB.tamPlume,1.15,.02),{n:[0,1,0]});}}
  if(lv===2)BIO.register({name:'Tamarisk',key:'tamarisk',x,z,y,r:R+1,h:H+1});
  haloAdd({x,z,r:R*.8});st.tamarisks++;}
 function saltbush(x,y,z,lv,st){const Rs=rr(.7,1.7),hc=leafCol(PB.saltbush,1.2,.03);

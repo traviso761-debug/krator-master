@@ -1,0 +1,20 @@
+{
+ "glide": {
+  "dur": 2.0,
+  "edge_stretch_max": 14.371,
+  "edge_stretch_p99": 1.138
+ },
+ "flap": {
+  "dur": 1.0,
+  "edge_stretch_max": 41.708,
+  "edge_stretch_p99": 2.186
+ },
+ "fold": {
+  "dur": 4.0,
+  "edge_stretch_max": 81.362,
+  "edge_stretch_p99": 3.839
+ },
+ "tris": 13366,
+ "bones": 29,
+ "raw": 2110732
+}

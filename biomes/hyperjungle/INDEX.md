@@ -4,7 +4,7 @@
 
 Docs: `BIOME-API.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PLAN-LANDS.md`, `PLAN-STATIONS.md`, `PORT.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/hyperjungle-lake.html`, `dist/hyperjungle-savanna.html`, `dist/hyperjungle.html`
+Built output (never open it; edit `src/` and rebuild): `dist/hyperjungle-lake.html`, `dist/hyperjungle-north.html`, `dist/hyperjungle-savage.html`, `dist/hyperjungle-savanna.html`, `dist/hyperjungle.html`
 
 Build: `cd biomes/hyperjungle && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -23,12 +23,15 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 |---|---|---|
 | `00-head.html` | 1 |  |
 | `41-hyperjungle-globals.js` | <1 |  |
-| `45-host-stage.js` | 8 | terrain (23); the host binding (33) |
-| `50-biome-hyperjungle-species.js` | 33 **big** | harvest (biomes/FRUIT.md) (57); leaf textures (91); bark textures (162); materials (226); the material library (core/materials/PLAN.md) (257); instanced items (292) |
+| `45-host-stage.js` | 10 | terrain (23); the host binding (33) |
+| `50-biome-hyperjungle-species.js` | 33 **big** | harvest (biomes/FRUIT.md) (57); leaf textures (91); bark textures (162); materials (226); the material library (core/materials/PLAN.md) (261); instanced items (296) |
 | `52-biome-hyperjungle-library.js` | 2 |  |
-| `55-biome-hyperjungle-trees.js` | 33 **big** | trunk profile (24); colour (33); polyline helpers (Girder) (68); one hero hypertree (97); an immature hypertree (240); the far forest: impostors (273); the pass (307); one tree alone (biomes/WORLD.md: trees as varian (362) |
+| `54-biome-hyperjungle-lands.js` | 8 | unit geometry helpers (shared by the lands' frag (14) |
+| `55-biome-hyperjungle-trees.js` | 35 **big** | trunk profile (24); colour (33); polyline helpers (Girder) (68); one hero hypertree (104); an immature hypertree (249); the far forest: impostors (285); the pass (319); one tree alone (biomes/WORLD.md: trees as varian (374) |
+| `56-biome-hyperjungle-savage.js` | 22 | the records (core/tags reads them by key: HYPERJ (25); the items (defined once, on the first def()) (42); the trees (105) |
+| `57-biome-hyperjungle-north.js` | 21 | the howl bamboo: one grove (BIO.bamboo.grove), i (95); the bone giant: a hypertree killed standing (111); the north's broadleaves on the shared tree (54:  (129); the floor's four: one instance set each (141) |
 | `58-biome-hyperjungle-fauna.js` | 16 | bodies (26); textures, materials, items (68); placement helpers (95); the herds (a pose from the clock) (104); the pass (125) |
-| `60-biome-hyperjungle-floor.js` | 35 **big** | colour (22); keep-clear (62); bole profiles (76); fields (96); the plants (102); the belt's own understorey (170); fallen hypertrees (216); lianas (267); the pass (275) |
+| `60-biome-hyperjungle-floor.js` | 36 **big** | colour (22); keep-clear (62); bole profiles (76); fields (96); the plants (102); the belt's own understorey (171); fallen hypertrees (217); lianas (268); the pass (276) |
 | `65-biome-hyperjungle-dress.js` | 7 |  |
 | `70-biome-hyperjungle.js` | 1 |  |
 | `82-host-sky.js` | 12 |  |
@@ -38,5 +41,5 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `89-host-sky.js` | 2 |  |
 | `89a-host-atmos.js` | 3 |  |
 | `89w-host-water.js` | 1 |  |
-| `99-host-take.js` | 10 | the inspector's words: a plant or a tree part na (30); the probe's budgets and the kit's own checks (ve (42); the page, handed to the host (84) |
+| `99-host-take.js` | 10 | the inspector's words: a plant or a tree part na (30); the probe's budgets and the kit's own checks (ve (42); the page, handed to the host (85) |
 | `99-tail.html` | <1 |  |

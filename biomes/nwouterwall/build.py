@@ -19,11 +19,12 @@ Stations, as Korona's and the Throne's: each is its own showcase page from the s
   46-biome-nwow-layout THE KIT's fields and landforms (data): aspect, permafrost, the alases, the aufeis, pyc, the zones
   47-host-land        HOST: terrainH, the fields, BIO.init, the ground (near and mid), Leng, the water records
   50..79              THE KIT (NWOW): species, trees, the floor and the fields, build
-  88-host-build       HOST: the build order
   89-atmos-*          core/atmos: core, presets, weather and its selector, export, waves, skylight, the shared sky, snow that lies
   89a-host-atmos      HOST: ATMOS.bindHost, the weather ({cold:true}), the snow
   89s-host-sky        HOST: the shared sky at the station's pixel, its far land cast from the model (region/far.py)
   89w-host-water      HOST: the streams and the lakes on core/water
+  89z-host-build      HOST: the build order (after the water), the impostors' bake, then the air on everything (cloud shade, the weather,
+                      height fog, the rain cover, the snow, KHORIZON, KSHADOW on ?shadow=1)
   90..99              HOST (core/host's whole interface; core/edits, core/minimap)
   99-host-take        the page handed to core/host
   99-tail.html        closes <script>
@@ -68,6 +69,8 @@ def find_node():
 
 HERE=os.path.dirname(os.path.abspath(__file__)); SRC=os.path.join(HERE,'src'); DIST=os.path.join(HERE,'dist')
 ROOT=os.path.normpath(os.path.join(HERE,'..','..'))
+sys.path.insert(0,os.path.join(ROOT,'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
+BSRC.variants([['--station',_s] for _s in sorted(os.listdir(os.path.join(HERE,'stations'))) if os.path.isfile(os.path.join(HERE,'stations',_s,'station.json'))])   # every station's page
 FORBID=['kdef(','kput(','kbake(','BUCKET[','MBK[','FAMMAT[','PLATS','BRIDGES','TOWERS','RIVER','PALISADE','KOFF']
 if '--all' in sys.argv:
     rest=[a for a in sys.argv[1:] if a!='--all']
@@ -87,11 +90,16 @@ if STN_DIR:
         if f.endswith('.js') or f.endswith('.html'): PATH[f]=os.path.join(STN_DIR,f)
 # core/terrain: KFIELD (the baked ground the export carries), KSTACKS (the tors, Leng's ruin), KFROST (the periglacial landforms:
 # patterned ground, alases, pingos, aufeis, solifluction lobes, rock glaciers; core/terrain/42-core-frost.js)
-CORE_TERRAIN=['30-core-field.js','37-core-stacks.js','42-core-frost.js']
+# The final rebuild (pair 11, 2026-11-09; PLAN.md, "Core adoption"): 43 KGROUND (the ground's library layers hex-tiled and height-blended, and the
+# patterned ground's `polygon` kind: BACKPORT.md's row), 45 KHORIZON (the terrain's shadows at a low sun) with its shade. KSTRATA and KFAR not taken (PLAN.md)
+CORE_TERRAIN=['30-core-field.js','37-core-stacks.js','42-core-frost.js','43-core-ground.js','45-core-horizon.js']
 for f in CORE_TERRAIN:
     if f not in PATH: PATH[f]=J('core','terrain',f)
+PATH.setdefault('45-core-horizon-shade.js',J('core','terrain','host','45-core-horizon-shade.js'))
 # the biome core from core/biome (core/README.md): one copy for every kit
-CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','40-core-place.js','42-core-export.js','43-core-export-host.js','44-core-stage.js']   # 44: KSTAGE, the export's light, air and sky
+# 44: KSTAGE, the export's light, air and sky. The final rebuild (pair 11) adds 31j a limb's joint to its parent (BIO.flareJoin: the larch's and the stone
+# pine's limbs), 34 the octahedral impostors (the far trees), 41 the environmental fields (BIO.env: the flora and the water's own shore)
+CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','31j-core-joint.js','34-core-impostor.js','40-core-place.js','41-core-env.js','42-core-export.js','43-core-export-host.js','44-core-stage.js']
 for f in CORE_BIOME:
     if f not in PATH: PATH[f]=J('core','biome',f)
 # core/rand and core/tags (core/tags/README.md): with BIO.init({tags}) every item set, instance and registered volume the kit
@@ -117,6 +125,12 @@ for slot,p in STN.get('kits',{}).items(): PATH[slot]=os.path.normpath(os.path.jo
 CORE_WATER=['20-core-water.js','21-core-water-shore.js','22-core-water-flow.js','50-core-water-draw.js','51-core-water-kinds.js']
 for f in CORE_WATER:
     if f not in PATH: PATH[f]=J('core','water',f)
+# the final rebuild's water ext, by path (tools/fragment_needs.json): breakup (56: the stream's glint), the audit (57), the reflections switch (58), the
+# shore's fields (60)
+for f in ['56-core-water-breakup.js','57-core-water-audit.js','58-core-water-mirror.js','60-core-water-fields.js']: PATH.setdefault(f,J('core','water','ext',f))
+# core/shadow (KSHADOW; the owner, 2026-11-03: toggleable and OFF by default; ?shadow=1 turns it on, src/89z-host-build.js)
+PATH.setdefault('10-core-shadow.js',J('core','shadow','10-core-shadow.js'))
+PATH.setdefault('12-core-shadow-host.js',J('core','shadow','host','12-core-shadow-host.js'))
 # core/atmos: the core, presets, the weather (4) and its selector (9), the export, the waves, the skylight; ATMOS.bindHost and
 # ATMOS.bindWeather (core/atmos/host); the shared sky (core/atmos/sky, SKY-PLAN.md S1) and its host; snow that lies (core/atmos/fx)
 CORE_ATMOS=['89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-4-weather.js','89-atmos-8-export.js','89-atmos-9-host.js','89-atmos-a-waves.js','89-atmos-b-skylight.js']
@@ -125,6 +139,10 @@ for f in CORE_ATMOS:
 for f in ['89-atmos-c-hostbind.js','89-atmos-e-weatherhost.js','89-atmos-h-skyhost.js']: PATH[f]=J('core','atmos','host',f)
 for f in ['89-atmos-e-skymodel.js','89-atmos-f-skypresets.js','89-atmos-g-sky.js']: PATH[f]=J('core','atmos','sky',f)
 PATH['89-atmos-fx-snowcover.js']=J('core','atmos','fx','89-atmos-fx-snowcover.js')
+# the final rebuild's air (BACKPORT.md's universal set, "Sky and air"): height fog (R1: the sky's fog chunk and its host), the rain occlusion map (R10), lightning
+PATH['89-atmos-j-fog.js']=J('core','atmos','sky','89-atmos-j-fog.js')
+PATH['89-atmos-j-heightfog.js']=J('core','atmos','host','89-atmos-j-heightfog.js')
+for f in ['89-atmos-fx-raincover.js','89-atmos-fx-lightning.js']: PATH[f]=J('core','atmos','fx',f)
 # the host shell from core/host (core/host/README.md), the whole interface. src/99-host-take.js hands it the page (KHOST.take)
 sys.path.insert(0,J('core','host'))
 import host as khost
@@ -156,7 +174,7 @@ if STN.get('yeti'):
     if _yb:
         VIRTUAL['86x-host-yeti-bundle.js']=_yb
         VIRTUAL['44y-host-matlib-pack-yeti.js']=_mp.fragment(yeti_bundle.YETI,'yeti',side=SIDE)
-        print('station %s: kits/yeti read in place (%d KB)'%(STN['name'],len(_yb)//1024))
+        print('station %s: kits/yeti read in place (%d KB)'%(STN['name'],len(_yb)//1024),file=sys.stderr)   # stderr: --list-sources' stdout is the list
     else:
         print('station %s: kits/yeti is not in the tree: built without the capital\'s halls'%STN['name'])
 for f in VIRTUAL: PATH[f]=None
@@ -169,6 +187,7 @@ for f in frags:
             if w in s: bad.append(f'{f}: uses {w}')
     out.append(f'\n// ==================== {f}\n' if f.endswith('.js') else ''); out.append(s)
 if bad: print('BIOME FRAGMENT DEPENDS ON A HOST ENGINE:\n  '+'\n  '.join(bad)); sys.exit(1)
+BSRC.report(PATH,[os.path.join(HERE,'region','station-%s.json'%STN['name'])],yeti_bundle.sources() if STN.get('yeti') else [])   # --list-sources: what the page is made of, then exit
 os.makedirs(DIST,exist_ok=True)
 html=''.join(out)
 if SIDE: html=_mp.write_sidecar(SIDE,html,DIST,'nwouterwall.tex.js',prune=False)

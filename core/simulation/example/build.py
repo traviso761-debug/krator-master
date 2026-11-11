@@ -15,6 +15,7 @@ streets and places with what the build placed, and move WORLD into the settlemen
 import os, re, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__)); CORE = os.path.dirname(os.path.dirname(HERE))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..', 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 FRAGS = [os.path.join(HERE, '00-head.html'), os.path.join(CORE, 'rand', '08-core-rand.js'), os.path.join(CORE, 'clock', '20-core-clock.js')]
 FRAGS += [os.path.join(CORE, 'simulation', f) for f in sorted(os.listdir(os.path.join(CORE, 'simulation'))) if re.match(r'77-sim-.*\.js$', f)]
 FRAGS += [os.path.join(HERE, f) for f in ('40-world.js', '80-draw.js', '90-checks.js', '99-tail.html')]
@@ -22,6 +23,7 @@ out = []
 for p in FRAGS:
     s = open(p, encoding='utf-8').read()
     out.append(('\n// ==================== %s\n' % os.path.relpath(p, CORE).replace(os.sep, '/') if p.endswith('.js') else '') + s)
+BSRC.report(FRAGS)   # --list-sources: what the page is made of, then exit
 html = ''.join(out)
 dst = os.path.join(HERE, 'sim-example.html'); open(dst, 'w', encoding='utf-8', newline='\n').write(html)
 print('built sim-example.html (%d fragments, %.0f KB); python3 check.py runs its checks' % (len(FRAGS), os.path.getsize(dst) / 1024))

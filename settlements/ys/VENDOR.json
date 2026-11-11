@@ -101,17 +101,17 @@
  },
  "69b-vern-mat.js": {
   "adapted": false,
-  "from": "settlements/iziz/src",
+  "from": "kits/iziz-vernacular/src",
   "sha1": "7fbd29de7bf1"
  },
  "69c-vern-helpers.js": {
   "adapted": false,
-  "from": "settlements/iziz/src",
+  "from": "kits/iziz-vernacular/src",
   "sha1": "9ad5721b11dd"
  },
  "69e-vern-hollow.js": {
   "adapted": false,
-  "from": "settlements/iziz/src",
+  "from": "kits/iziz-vernacular/src",
   "sha1": "0565517a8d1f"
  },
  "69h-host-0-lib.js": {
@@ -151,27 +151,27 @@
  },
  "70-hl-tex.js": {
   "adapted": false,
-  "from": "settlements/highlands/src",
+  "from": "kits/highlands/src",
   "sha1": "89684ac3e3ee"
  },
  "70-port-core.js": {
   "adapted": false,
-  "from": "settlements/port/src",
+  "from": "kits/port/src",
   "sha1": "b6e114e2932b"
  },
  "70-vern-dwellings.js": {
   "adapted": false,
-  "from": "settlements/iziz/src",
+  "from": "kits/iziz-vernacular/src",
   "sha1": "238cbba4d7e8"
  },
  "71-hl-mat.js": {
   "adapted": false,
-  "from": "settlements/highlands/src",
+  "from": "kits/highlands/src",
   "sha1": "2b3109400c54"
  },
  "71-port-terrain.js": {
   "adapted": true,
-  "from": "settlements/port/src",
+  "from": "kits/port/src",
   "sha1": "290185169664"
  },
  "71-sky-h.js": {
@@ -181,17 +181,17 @@
  },
  "71-vern-trade.js": {
   "adapted": false,
-  "from": "settlements/iziz/src",
+  "from": "kits/iziz-vernacular/src",
   "sha1": "93ecce940cc6"
  },
  "71b-hl-motif.js": {
   "adapted": false,
-  "from": "settlements/highlands/src",
+  "from": "kits/highlands/src",
   "sha1": "bf315ee9ebc6"
  },
  "71w-port-sea.js": {
   "adapted": false,
-  "from": "settlements/port/src",
+  "from": "kits/port/src",
   "sha1": "713609384546"
  },
  "72-datacenter.js": {
@@ -201,17 +201,17 @@
  },
  "72-hl-helpers.js": {
   "adapted": false,
-  "from": "settlements/highlands/src",
+  "from": "kits/highlands/src",
   "sha1": "d0d7fa9524d0"
  },
  "72-port-kit.js": {
   "adapted": false,
-  "from": "settlements/port/src",
+  "from": "kits/port/src",
   "sha1": "6aaf10b6d2ad"
  },
  "73-hl-carve.js": {
   "adapted": false,
-  "from": "settlements/highlands/src",
+  "from": "kits/highlands/src",
   "sha1": "6d57fdefd8a5"
  },
  "73-police.js": {
@@ -221,7 +221,7 @@
  },
  "73-port-edges.js": {
   "adapted": false,
-  "from": "settlements/port/src",
+  "from": "kits/port/src",
   "sha1": "79339087e90d"
  },
  "74-hospital.js": {
@@ -231,12 +231,12 @@
  },
  "74-port-dress.js": {
   "adapted": false,
-  "from": "settlements/port/src",
+  "from": "kits/port/src",
   "sha1": "2adaa490788f"
  },
  "74-rep-dwell.js": {
   "adapted": false,
-  "from": "settlements/highlands/src",
+  "from": "kits/highlands/src",
   "sha1": "810a299e405f"
  },
  "75-hotel.js": {
@@ -266,68 +266,13 @@
  },
  "81-sky.js": {
   "adapted": false,
-  "from": "settlements/iziz/src",
+  "from": "core/atmos/placeholder",
   "sha1": "b13975f23277"
  },
  "82-apartments.js": {
   "adapted": true,
   "from": "kits/ancients/src",
   "sha1": "9c554d78a51a"
- },
- "86-bio-10-core-head.js": {
-  "adapted": false,
-  "from": "core/biome",
-  "sha1": "79691236dfbd"
- },
- "86-bio-20-core-kit.js": {
-  "adapted": false,
-  "from": "core/biome",
-  "sha1": "a020cb184f85"
- },
- "86-bio-30-core-foliage.js": {
-  "adapted": false,
-  "from": "core/biome",
-  "sha1": "98b0f4e59ec2"
- },
- "86-bio-40-core-place.js": {
-  "adapted": false,
-  "from": "core/biome",
-  "sha1": "86d05ad00910"
- },
- "86-bio-50-biome-nwbay-species.js": {
-  "adapted": false,
-  "from": "biomes/nwbay/src",
-  "sha1": "a526009b7901"
- },
- "86-bio-55-biome-nwbay-trees.js": {
-  "adapted": false,
-  "from": "biomes/nwbay/src",
-  "sha1": "a1762aa0e75c"
- },
- "86-bio-56-biome-nwbay-variants.js": {
-  "adapted": false,
-  "from": "biomes/nwbay/src",
-  "sha1": "31dac8a160de"
- },
- "86-bio-60-biome-nwbay-floor.js": {
-  "adapted": false,
-  "from": "biomes/nwbay/src",
-  "sha1": "f88984b83e8a"
- },
- "86-bio-65-biome-nwbay-dress.js": {
-  "adapted": false,
-  "from": "biomes/nwbay/src",
-  "sha1": "49bde2c3b134"
- },
- "86-bio-70-biome-nwbay.js": {
-  "adapted": false,
-  "from": "biomes/nwbay/src",
-  "sha1": "097ec443275c"
- },
- "86-bio-75-biome-nwbay-fauna.js": {
-  "adapted": false,
-  "from": "biomes/nwbay/src",
-  "sha1": "096932704554"
  },
  "89-lab.js": {
   "adapted": false,

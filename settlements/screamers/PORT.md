@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 32 (6%) | 19 (3%) | 27 (5%) | 34 (6%) | 468 (81%) |
+| KB | 32 (6%) | 19 (3%) | 27 (5%) | 34 (6%) | 469 (81%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -79,6 +79,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/87-mega.js` | 4.8 | [draw] | 4 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/88-factory.js` | 5.6 | [draw] | 5 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/89-lab.js` | 5.9 | [draw] | 5 | 0 | 0 | 0 | 0 | 11 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/8zp-scr-open.js` | 0.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the village's door panels into kits/ancients 8zo-anc-open.js (locked KDOOR records: data) |
 | `src/90-scene.js` | 16.6 | [web] | 27 | 2 | 1 | 0 | 0 | 6 | 6 | 0 | 0 | 0 | 0 |  |
 | `src/91-probe.js` | 4.5 | [web] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 |  |
 | `src/92-camera.js` | 1.5 | [web] | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | what stays of the camera on core/host: ui, setView, the title, LOD's options (2026-10-15) |

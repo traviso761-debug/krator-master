@@ -43,10 +43,10 @@ NIGHTLY_VERIFY = [
     ('settlements/verge', 'dist/verge.html', ['--assert']),
     ('settlements/yuni', 'yuni.html', ['--assert']),   # its export profile (registry, fixtures, interiors) since 2026-10-18
 ]
-GODOT_TESTS = ['res://tests/rand/krand_test.gd', 'res://tests/clock/kseason_test.gd', 'res://tests/fire/kfire_test.gd', 'res://tests/tags/ktags_test.gd',
+GODOT_TESTS = ['res://tests/rand/krand_test.gd', 'res://tests/clock/kseason_test.gd', 'res://tests/clock/kseason_flush_test.gd', 'res://tests/fire/kfire_test.gd', 'res://tests/tags/ktags_test.gd', 'res://tests/tags/ksound_test.gd',
                'res://tests/mask/kmask_test.gd', 'res://tests/mask/kmask_distance_test.gd', 'res://tests/atmos/atmos_test.gd',
                'res://tests/verge/verge_sim_test.gd', 'res://tests/dhelv/dhelv_sim_test.gd', 'res://tests/isle/isle_books_test.gd', 'res://tests/export/isle_test.gd', ('res://tests/export/isle_test.gd', '--case=world-isle-valapo', '--town=valapo'),
-               'res://tests/dhelv/dhelv_nav_test.gd', 'res://tests/terrain/kfield_test.gd', 'res://tests/terrain/kstrata_test.gd', 'res://tests/terrain/klava_test.gd', 'res://tests/resources/kres_field_test.gd',
+               'res://tests/dhelv/dhelv_nav_test.gd', 'res://tests/terrain/kfield_test.gd', 'res://tests/terrain/kstrata_test.gd', 'res://tests/terrain/kstrata_vary_test.gd', 'res://tests/terrain/klava_test.gd', 'res://tests/resources/kres_field_test.gd',
                'res://tests/terrain/field_import_test.gd', 'res://tests/tags/records_test.gd',
                'res://tests/export/world_test.gd', 'res://tests/export/iziz_test.gd', 'res://tests/export/yuni_test.gd', 'res://tests/export/yuni_interiors_test.gd', 'res://tests/export/longsong_test.gd', 'res://tests/water/water_test.gd',
                'res://tests/water/falls_case_test.gd', 'res://tests/water/gaps_test.gd',
@@ -74,7 +74,11 @@ BUILD_FIRST = ['kits/interiors']
 # A node test that reads a build's output runs after the builds (in CI its input is an LFS pointer until the build
 # writes it); with --no-build it runs with the other node tests, on the committed output.
 NODE_AFTER_BUILD = ['settlements/isle-demo/tests/test-isle-city.js', 'settlements/isle-demo/tests/test-isle-sim.js',
-                    'settlements/isle-demo/tests/test-isle-week.js', 'settlements/isle-demo/tests/test-isle-export.js', 'settlements/isle-demo/tests/test-isle-hamlets.js']   # dist/isle-city.plan.js
+                    'settlements/isle-demo/tests/test-isle-week.js', 'settlements/isle-demo/tests/test-isle-export.js', 'settlements/isle-demo/tests/test-isle-hamlets.js',
+                    'settlements/isle-demo/tests/test-isle-crime.js', 'settlements/isle-demo/tests/test-isle-money.js',
+                    'settlements/isle-demo/tests/test-isle-unrest.js', 'settlements/isle-demo/tests/test-isle-build.js',
+                    'settlements/isle-demo/tests/test-isle-refugees.js',   # dist/isle-city.plan.js
+                    'kits/interiors/tests/test-walk.js']   # dist/interiors-core.js
 
 
 def builds():
@@ -92,6 +96,11 @@ def extra_builds():
     for st in sorted(glob.glob(os.path.join(ROOT, 'biomes', 'throne', 'stations', '*', 'station.json'))):
         name = os.path.basename(os.path.dirname(st))
         out.append(('build biomes/throne --station ' + name, [PY, 'build.py', '--station', name], 'biomes/throne'))
+    # the Hearths' stations past its default one (build.py writes the crystals' page; the hold is --station hold)
+    for st in sorted(glob.glob(os.path.join(ROOT, 'biomes', 'hearths', 'stations', '*', 'station.json'))):
+        name = os.path.basename(os.path.dirname(st))
+        if name != 'crystals':
+            out.append(('build biomes/hearths --station ' + name, [PY, 'build.py', '--station', name], 'biomes/hearths'))
     if os.path.isfile(os.path.join(ROOT, 'settlements', 'girder', 'build_hero.py')):
         out.append(('build settlements/girder hero', [PY, 'build_hero.py'], 'settlements/girder'))
     return out

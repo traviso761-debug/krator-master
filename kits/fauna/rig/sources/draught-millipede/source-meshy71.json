@@ -1,0 +1,12 @@
+{
+ "prompt": "Giant millipede, long straight armoured body, many rings with one pair of short jointed legs each, weathered ochre and brown chitin",
+ "task_ids": [
+  "01a19ef2-8b50-7723-aa5b-dfb0ed119518",
+  "01a19ef4-903f-760c-885f-d974f9da7763"
+ ],
+ "ai_model": "meshy-7.1",
+ "credits": 39,
+ "raw": "raw-meshy71.glb",
+ "route": "multi-image, the image step chained",
+ "rights": "generated on the owner's Meshy account"
+}

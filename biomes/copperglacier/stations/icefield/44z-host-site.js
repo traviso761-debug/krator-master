@@ -18,6 +18,6 @@ const SITE={key:'icefield',name:'The high icefield',region:'The high icefield (C
  icefall:[-1345,-1240],crevasses:[[-1230,-650]],
  caves:[{x:-610,z:300,R:14,face:null,name:'An ice cave (the wind\'s moat at a nunatak\'s foot)'},{x:1180,z:-470,R:11,face:null,name:'An ice cave (the wind\'s moat at a nunatak\'s foot)'}],
  streams:[],
- snowLine:[0,1],coral:[0,0],worms:false,algae:.18,sastrugi:true,caveView:2.2,
+ snowLine:[0,1],coral:[0,0],worms:false,algae:.18,sastrugi:true,caveView:3.2,
  sky:{air:{pressure:.71,humidity:.2},clouds:{cover:.15,cumulus:0,cirrus:.5}},
  views:'icefield'};

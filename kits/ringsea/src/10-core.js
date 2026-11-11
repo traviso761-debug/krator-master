@@ -33,3 +33,12 @@ const clamp=(v,a,b)=>v<a?a:v>b?b:v, lerp=(a,b,t)=>a+(b-a)*t, TAU=Math.PI*2;
 // being touched. Keep it cheap: it is called per tree and per rubble block.
 function terrainH(x,z){return 0;}
 
+// FRAME HOOK. The one route to animation in this kit: `tick(fn)` registers a
+// function that 92-camera.js calls every frame, after the camera moves and
+// before the render, as fn(dt, t) — dt in seconds (clamped to 0.1, so a slow
+// software-GL frame cannot jump a sweep), t wall-clock seconds. Same order as
+// Screamers' hook, which the biome binding (75-biome-45-bind.js) already
+// expects. Nothing is rebuilt; a tick only moves or shows what is built.
+const TICKS=[];
+function tick(fn){TICKS.push(fn);}
+

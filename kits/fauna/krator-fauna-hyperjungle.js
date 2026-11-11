@@ -494,7 +494,8 @@ ANIMAL({
    LORE: the crater's and the lowland's air is about 2 atm: more oxygen reaches an insect's tracheae, so insects and
    flyers grow larger there (the giant dragonfly is the flyers' file). These four are the hyperjungle's ground and
    trunk insects, drawn (2026-10-12) in the kit's procedural style: jointed chitin legs that turn about their roots
-   (the hexapod tripod walk), plated bodies with banding. They are procedural only: a Meshy version waits on credits. */
+   (the hexapod tripod walk), plated bodies with banding. The harvester ant and the Bowl mantis carry a Meshy model variant too
+   (models/*.json, rig/arthro.py). */
 function faHiMix(a, b, t) { const C = q => Array.isArray(q) ? new THREE.Color(q[0], q[1], q[2]) : new THREE.Color(q); const c = C(a).lerp(C(b), Math.max(0, Math.min(1, t))); return [c.r, c.g, c.b]; }   /* a and b: hex or [r, g, b] */
 /* the drawing helpers at one scale K, and a jointed insect leg: pts root, joints..., foot, rad per point */
 function faHiKit(A, K) {
@@ -522,6 +523,9 @@ const FA_HI_SRC = { build: 'kits/fauna', file: 'krator-fauna-hyperjungle.js', li
 
 /* ---- the lattice mantis: an ambush hunter that waits among the leaves with its raptorial arms folded */
 const FA_HI_MANTIS = [{ base: 0x5a8a34, dark: 0x2e5a22, pale: 0xb8d070 }, { base: 0x8a6a40, dark: 0x4a3420, pale: 0xc8a870 }, { base: 0xd8b0c0, dark: 0x9a5a78, pale: 0xf4e8e8 }];
+const FA_HI_BOWLMANTIS = [{ base: 0xc8c8b4, dark: 0x8a9078, pale: 0xece8d8 }];
+/* one mantis, at a size and in a palette: the lattice mantis's and the Bowl mantis's */
+function faHiMantis(pal, K) { return function (A) { FA_HI_MANTIS_BODY(A, pal, K); }; }
 ANIMAL({
   key: 'lattice-mantis', name: 'Lattice mantis', group: 'hyperjungle',
   tags: Object.assign({}, FA_HI_BASE, { diet: 'carnivore', feeding: 'predator', activity: 'diurnal', temperament: 'aggressive',
@@ -537,8 +541,32 @@ ANIMAL({
     herd: 'alone: it holds a leaf and eats what comes within reach', fleeDistance: 3, aggression: 0.8,
     idle: { headYaw: 0.7, headPitch: 0.1, tailYaw: 0.04 },
     schedule: ['REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'IDLE', 'HUNT', 'HUNT', 'HUNT', 'IDLE', 'HUNT', 'HUNT', 'IDLE', 'HUNT', 'HUNT', 'IDLE', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST'] },
-  build: function (A) {
-    const C = FA_HI_MANTIS[A.variant] || FA_HI_MANTIS[0], k = faHiKit(A, A.S), mix = faHiMix;
+  build: faHiMantis(FA_HI_MANTIS, 1)
+});
+
+/* ---- the Bowl mantis: the great mantis of the eastern desert's salt lake, which the town of Mantis is named for (LORE.md 6.2, biomes/sedesert/PLAN-BOWL.md section 6): an
+   ambush hunter of the halo and the deltas, coloured like the salt scrub. Its two forelegs are held up; the model's are one rigid part each, so it does not strike yet */
+ANIMAL({
+  key: 'bowl-mantis', name: 'Bowl mantis', group: 'hyperjungle',
+  tags: Object.assign({}, FA_HI_BASE, { koppen: ['BWh', 'BSh'], aridity: ['arid', 'semiarid'], climate: ['tropic'], biomes: ['sedesert'], riparian: 'both', diet: 'carnivore', feeding: 'predator', activity: 'crepuscular', temperament: 'aggressive',
+    habitat: ['ground', 'marsh'], locomotion: ['walks', 'climbs', 'leaps'] }),
+  size: { length: 2.3, height: 1.4 },
+  source: [Object.assign({}, FA_HI_SRC, { note: 'first drawn here (2026-11-02), on the lattice mantis\'s builder at 1.4 times its size; the size is this kit\'s choice: the plan says only "large"' }),
+    { build: 'kits/fauna', file: 'models/bowl-mantis.json', lines: '-', note: 'the Meshy 7.1 model variant, cut and rigged by rig/arthro.py; 2.4 m tall' }],
+  traits: { edible: false, milkable: false, tameable: false, rideable: false, draught: false, eggs: false },
+  yields: { chitin: { amount: 6, note: 'the spined forearms, the salt-pale plates of the Bowl\'s hunters' } },
+  life: { maturity: 0.8, lifespan: 2, litter: 120, gestation: 40, note: 'invented, after the lattice mantis: an egg case in the tamarisk' },
+  variants: 2, variantNames: ['salt scrub', 'salt scrub (Meshy model)'],
+  w: 1.0, d: 2.27, h: 1.4,
+  variantDims: [{ w: 1.0, d: 2.27, h: 1.4 }, { w: 1.61, d: 1.86, h: 2.4 }], models: { 1: 'bowl-mantis' }, modelData: { 1: { budget: 9000 } },   /* the Meshy model variant (models/bowl-mantis.json, rig/arthro.py) */
+  data: { mass: 16, legs: 4, sizeRange: [0.8, 1.2], speed: { walk: 0.5, run: 3.5 }, gait: { type: 'quadruped', freq: 1.4, stride: 0.28 }, grazePitch: 0.3,
+    herd: 'alone: it holds a patch of the salt scrub and takes what comes within reach', fleeDistance: 4, aggression: 0.85,
+    idle: { headYaw: 0.7, headPitch: 0.1, tailYaw: 0.04 },
+    schedule: ['REST', 'REST', 'REST', 'REST', 'HUNT', 'HUNT', 'HUNT', 'HUNT', 'IDLE', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'IDLE', 'HUNT', 'HUNT', 'HUNT', 'HUNT', 'HUNT', 'REST', 'REST'] },
+  build: faHiMantis(FA_HI_BOWLMANTIS, 1.4)
+});
+const FA_HI_MANTIS_BODY = (A, pal, K) => {
+    const C = pal[A.variant] || pal[0], k = faHiKit(A, A.S * K), mix = faHiMix;
     const shade = (t, a) => mix(C.base, C.pale, Math.cos(a) < -0.3 ? 0.7 : 0.15 * faNoise(t * 20, a, 1));
     /* the abdomen, long and tapering, with the folded wings laid along its back */
     k.rows([[0, .46, -.05, .07, .06], [0, .46, -.3, .09, .08], [0, .47, -.55, .075, .065], [0, .48, -.78, .03, .03]], 14, 12, null, { round: [0.1, 0.12], colf: (t, a) => shade(t, a) });
@@ -562,8 +590,7 @@ ANIMAL({
       A.part('leg' + i, k.Q(X([.05, .46, 0])), () => k.leg([X([.05, .46, 0]), X([.2, .56, .02]), X([.32, .2, .08 * (z > 0 ? 1 : -1)]), X([.34, .0, .12 * (z > 0 ? 1 : -1)])], [.03, .022, .016, .01], C.base));
     }
     A.anchor('lead', k.Q([0, .6, .45])); A.anchor('headRoot', k.Q([0, .69, .5])); A.anchor('tailRoot', k.Q([0, .46, -.05]));
-  }
-});
+};
 
 /* ---- the stilt walkingstick: a twig the length of a man, on six long legs */
 const FA_HI_STICK = [{ base: 0x6a7a3a, dark: 0x3a4a22, pale: 0xa8b060 }, { base: 0x6a5238, dark: 0x3a2c1e, pale: 0x9a8a68 }, { base: 0x7a7e6e, dark: 0x4a4e44, pale: 0xb0b49a }];
@@ -606,24 +633,8 @@ ANIMAL({
 
 /* ---- the horned scarab: a rhinoceros beetle the size of a calf, the male with the horn that wins the bough */
 const FA_HI_SCARAB = [{ base: 0x5a2c1a, dark: 0x2a140c, pale: 0x8a4a2a }, { base: 0x1e1c22, dark: 0x0c0c10, pale: 0x4a4650 }, { base: 0x3a6a48, dark: 0x16301e, pale: 0x8ab070 }, { base: 0x8a6a3a, dark: 0x4a3418, pale: 0xc8a868 }];
-ANIMAL({
-  key: 'horned-scarab', name: 'Horned scarab', group: 'hyperjungle',
-  tags: Object.assign({}, FA_HI_BASE, { diet: 'herbivore', feeding: 'frugivore', activity: 'nocturnal', temperament: 'defensive',
-    habitat: ['ground', 'trunks', 'canopy'], locomotion: ['walks', 'climbs'] }),
-  size: { length: 1.2, height: 0.68 },
-  source: [Object.assign({}, FA_HI_SRC, { note: 'first drawn here (2026-10-12): a giant rhinoceros beetle, grown large by the lowland air (about 2 atm); it drinks the sap of the split boughs and fights for them with its horn' })],
-  traits: { edible: true, milkable: false, tameable: false, rideable: false, draught: false, eggs: false },
-  yields: { meat: { amount: 7, note: 'the grubs are the prize: fat, sweet, roasted on a stick; the adult is mostly shell' }, chitin: { amount: 4, note: 'the domed wing cases: shields and bowls, black or bronze' } },
-  life: { maturity: 2, lifespan: 3, litter: 40, gestation: 60, note: 'litter: eggs laid in rotting wood; gestation: egg to grub; the grub lives two years and fattens in the log' },
-  variants: 4, variantNames: ['chestnut', 'black', 'green bronze', 'tan'],
-  w: 0.92, d: 1.19, h: 0.68,
-  data: { mass: 8, legs: 6, sizeRange: [0.7, 1.4], speed: { walk: 0.5, run: 2 }, gait: { type: 'hexapod', freq: 1.5, stride: 0.2 }, grazePitch: 0.5,
-    herd: 'a few at a split bough, the big males fighting on it', fleeDistance: 2, aggression: 0.4,
-    idle: { headYaw: 0.2, headPitch: 0.1, tailYaw: 0 },
-    schedule: ['BROWSE', 'BROWSE', 'BROWSE', 'BROWSE', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'IDLE', 'IDLE', 'BROWSE', 'BROWSE', 'BROWSE', 'BROWSE', 'BROWSE'],
-    scheduleNote: 'BROWSE: sap and fallen fruit' },
-  build: function (A) {
-    const C = FA_HI_SCARAB[A.variant] || FA_HI_SCARAB[0], k = faHiKit(A, A.S), mix = faHiMix;
+function faHiScarab(A, C) {
+    const k = faHiKit(A, A.S), mix = faHiMix;
     const sheen = (x, y, z) => mix(C.base, C.pale, 0.35 * Math.max(0, y - 0.3) * 3 + 0.12 * faNoise(x * 12, y * 12, z * 12));
     k.el(0, .3, -.1, .24, .18, .36, null, { seg: 18, colf: (x, y, z) => sheen(x, y, z) });                  /* the domed wing cases */
     k.el(0, .19, -.12, .22, .06, .34, C.dark, { seg: 14 });                                               /* the belly under them */
@@ -643,7 +654,26 @@ ANIMAL({
       A.part('leg' + i, k.Q(X([.14, .22, g.z])), () => k.leg([X([.14, .22, g.z]), X(g.kn), X(g.ft)], [.04, .03, .016], C.dark, .045));
     }
     A.anchor('lead', k.Q([0, .3, .5])); A.anchor('headRoot', k.Q([0, .26, .36])); A.anchor('tailRoot', k.Q([0, .3, -.4]));
-  }
+}
+ANIMAL({
+  key: 'horned-scarab', name: 'Horned scarab', group: 'hyperjungle',
+  tags: Object.assign({}, FA_HI_BASE, { diet: 'herbivore', feeding: 'frugivore', activity: 'nocturnal', temperament: 'defensive',
+    habitat: ['ground', 'trunks', 'canopy'], locomotion: ['walks', 'climbs'] }),
+  size: { length: 1.2, height: 0.68 },
+  source: [Object.assign({}, FA_HI_SRC, { note: 'first drawn here (2026-10-12): a giant rhinoceros beetle, grown large by the lowland air (about 2 atm); it drinks the sap of the split boughs and fights for them with its horn' })],
+  traits: { edible: true, milkable: false, tameable: false, rideable: false, draught: false, eggs: false },
+  yields: { meat: { amount: 7, note: 'the grubs are the prize: fat, sweet, roasted on a stick; the adult is mostly shell' }, chitin: { amount: 4, note: 'the domed wing cases: shields and bowls, black or bronze' } },
+  life: { maturity: 2, lifespan: 3, litter: 40, gestation: 60, note: 'litter: eggs laid in rotting wood; gestation: egg to grub; the grub lives two years and fattens in the log' },
+  variants: 8, variantNames: ['chestnut', 'black', 'green bronze', 'tan', 'chestnut (model)', 'black (model)', 'green bronze (model)', 'tan (model)'],
+  w: 0.92, d: 1.19, h: 0.68,
+  variantDims: [{ w: 0.92, d: 1.19, h: 0.68 }, { w: 0.92, d: 1.19, h: 0.68 }, { w: 0.92, d: 1.19, h: 0.68 }, { w: 0.92, d: 1.19, h: 0.68 }, { w: 1.11, d: 1.2, h: 0.5 }, { w: 1.11, d: 1.2, h: 0.5 }, { w: 1.11, d: 1.2, h: 0.5 }, { w: 1.11, d: 1.2, h: 0.5 }],
+  models: { 4: 'beetle#scarab-chestnut', 5: 'beetle#scarab-black', 6: 'beetle#scarab-bronze', 7: 'beetle#scarab-tan' }, modelData: { 4: { budget: 9000 }, 5: { budget: 9000 }, 6: { budget: 9000 }, 7: { budget: 9000 } },   /* picks of one family (models/beetle.json, rig/family.py) */
+  data: { mass: 8, legs: 6, sizeRange: [0.7, 1.4], speed: { walk: 0.5, run: 2 }, gait: { type: 'hexapod', freq: 1.5, stride: 0.2 }, grazePitch: 0.5,
+    herd: 'a few at a split bough, the big males fighting on it', fleeDistance: 2, aggression: 0.4,
+    idle: { headYaw: 0.2, headPitch: 0.1, tailYaw: 0 },
+    schedule: ['BROWSE', 'BROWSE', 'BROWSE', 'BROWSE', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'IDLE', 'IDLE', 'BROWSE', 'BROWSE', 'BROWSE', 'BROWSE', 'BROWSE'],
+    scheduleNote: 'BROWSE: sap and fallen fruit' },
+  build: A => faHiScarab(A, FA_HI_SCARAB[A.variant % 4])
 });
 
 /* ---- the harvester ant: a worker the size of a dog, the soldier with a head like a shield */
@@ -657,8 +687,9 @@ ANIMAL({
   traits: { edible: false, milkable: false, tameable: false, rideable: false, draught: false, eggs: false },
   yields: { chitin: { amount: 2, note: 'a soldier\'s jaws and head plate: a scraper and a shield rim' } },
   life: { maturity: 0.3, lifespan: 2, litter: 400, gestation: 30, note: 'litter: the queen\'s clutch (the colony has one queen); gestation: egg to worker, a month' },
-  variants: 3, variantNames: ['worker, black', 'soldier, rust red', 'worker, slate'],
+  variants: 4, variantNames: ['worker, black', 'soldier, rust red', 'worker, slate', 'worker, rust red (Meshy model)'],
   w: 0.79, d: 1.5, h: 0.81,
+  variantDims: [{ w: 0.79, d: 1.5, h: 0.81 }, { w: 0.79, d: 1.5, h: 0.81 }, { w: 0.79, d: 1.5, h: 0.81 }, { w: 1.42, d: 1.6, h: 0.84 }], models: { 3: 'harvester-ant' }, modelData: { 3: { budget: 9000 } },   /* the Meshy model variant (models/harvester-ant.json, rig/arthro.py) */
   data: { mass: 4, legs: 6, sizeRange: [0.7, 1.3], speed: { walk: 0.9, run: 5 }, gait: { type: 'hexapod', freq: 2.2, stride: 0.3 }, grazePitch: 0.4,
     herd: 'a column of fifty on a trail, hauling leaf, with a soldier to every ten', fleeDistance: 3, aggression: 0.7,
     idle: { headYaw: 0.3, headPitch: 0.1, tailYaw: 0.05 },
@@ -806,22 +837,8 @@ ANIMAL({
 
 /* ---- the gilded orb spider: a web-spinner the size of a table, the abdomen gold-marked */
 const FA_HI_SPIDER = [{ body: 0x1c1610, mark: 0xe0b020, leg: 0x2a2018 }, { body: 0x2a4a2a, mark: 0xe8f0c0, leg: 0x3a5a2a }, { body: 0x2a0e0e, mark: 0xc82a1a, leg: 0x3a1a14 }];
-ANIMAL({
-  key: 'gilded-orb-spider', name: 'Gilded orb spider', group: 'hyperjungle',
-  tags: Object.assign({}, FA_HI_BASE2, { diet: 'carnivore', feeding: 'predator', activity: 'cathemeral', temperament: 'defensive',
-    habitat: ['canopy', 'trunks', 'ground'], locomotion: ['walks', 'climbs'] }),
-  size: { length: 1.4, height: 0.5 },
-  source: [Object.assign({}, FA_HI_SRC2, { note: 'first drawn here (2026-10-12): a giant orb-weaver (an arachnid, but an insectoid for the kit), grown large by the lowland air (about 2 atm); the web is spun across a game trail and takes birds' })],
-  traits: { edible: false, milkable: false, tameable: false, rideable: false, draught: false, eggs: false },
-  yields: { silk: { amount: 4, note: 'the web: strong, golden, reeled in the dry months' }, chitin: { amount: 1.5, note: 'the fangs and the carapace' } },
-  life: { maturity: 1, lifespan: 4, litter: 300, gestation: 30, note: 'litter: an egg sac; gestation: the sac to the young' },
-  variants: 3, variantNames: ['gilded: black with gold', 'jade: green and cream', 'crimson: maroon with red'],
-  w: 1.3, d: 1.6, h: 0.5,
-  data: { mass: 5, legs: 8, sizeRange: [0.7, 1.3], speed: { walk: 0.5, run: 3 }, gait: { type: 'octopod', freq: 1.4, stride: 0.2 }, grazePitch: 0.3,
-    herd: 'alone, at the hub of its web', fleeDistance: 2, aggression: 0.5, idle: { headYaw: 0.1, headPitch: 0.03, tailYaw: 0.04 },
-    schedule: ['HUNT', 'HUNT', 'HUNT', 'HUNT', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'IDLE', 'HUNT', 'HUNT', 'HUNT', 'HUNT'], scheduleNote: 'HUNT: waiting at the hub for a catch' },
-  build: function (A) {
-    const C = FA_HI_SPIDER[A.variant] || FA_HI_SPIDER[0], k = faHiKit(A, A.S), mix = faHiMix;
+function faHiSpider(A, C) {
+    const k = faHiKit(A, A.S), mix = faHiMix;
     k.el(0, .3, -.28, .22, .2, .3, null, { seg: 16, colf: (x, y, z) => { const a = Math.atan2(x, z + .28 / A.S * 0 + 0), band = Math.sin((y / A.S - .3) * 30 + (x / A.S) * 8) > 0.55; return band ? C.mark : mix(C.body, C.mark, 0.1 * faNoise(x * 10, y * 10, z * 10)); } });   /* the abdomen */
     k.el(0, .3, .06, .12, .1, .14, C.body, { seg: 12 });                                                               /* the carapace */
     A.part('head', k.Q([0, .3, .14]), () => { k.el(0, .3, .2, .07, .06, .07, C.body, { seg: 10 });
@@ -832,8 +849,94 @@ ANIMAL({
       A.part('leg' + i, k.Q(X([.08, .3, z])), () => k.leg([X([.08, .3, z]), X([.32, .5, z + dz * 0.45]), X([.52, .0, z + dz])], [.026, .018, .007], C.leg, .03));
     }
     A.anchor('lead', k.Q([0, .32, .3])); A.anchor('headRoot', k.Q([0, .3, .14])); A.anchor('tailRoot', k.Q([0, .3, -.55]));
-  }
+}
+ANIMAL({
+  key: 'gilded-orb-spider', name: 'Gilded orb spider', group: 'hyperjungle',
+  tags: Object.assign({}, FA_HI_BASE2, { diet: 'carnivore', feeding: 'predator', activity: 'cathemeral', temperament: 'defensive',
+    habitat: ['canopy', 'trunks', 'ground'], locomotion: ['walks', 'climbs'] }),
+  size: { length: 1.4, height: 0.5 },
+  source: [Object.assign({}, FA_HI_SRC2, { note: 'first drawn here (2026-10-12): a giant orb-weaver (an arachnid, but an insectoid for the kit), grown large by the lowland air (about 2 atm); the web is spun across a game trail and takes birds' })],
+  traits: { edible: false, milkable: false, tameable: false, rideable: false, draught: false, eggs: false },
+  yields: { silk: { amount: 4, note: 'the web: strong, golden, reeled in the dry months' }, chitin: { amount: 1.5, note: 'the fangs and the carapace' } },
+  life: { maturity: 1, lifespan: 4, litter: 300, gestation: 30, note: 'litter: an egg sac; gestation: the sac to the young' },
+  variants: 6, variantNames: ['gilded: black with gold', 'jade: green and cream', 'crimson: maroon with red', 'gilded (model)', 'jade (model)', 'crimson (model)'],
+  w: 1.3, d: 1.6, h: 0.5,
+  variantDims: [{ w: 1.3, d: 1.6, h: 0.5 }, { w: 1.3, d: 1.6, h: 0.5 }, { w: 1.3, d: 1.6, h: 0.5 }, { w: 1.4, d: 1.54, h: 0.87 }, { w: 1.4, d: 1.54, h: 0.87 }, { w: 1.4, d: 1.54, h: 0.74 }],
+  models: { 3: 'spider#gilded', 4: 'spider#jade', 5: 'spider#crimson' }, modelData: { 3: { budget: 9000 }, 4: { budget: 9000 }, 5: { budget: 9000 } },   /* the Meshy model variants, picks of one family (models/spider.json, rig/family.py) */
+  data: { mass: 5, legs: 8, sizeRange: [0.7, 1.3], speed: { walk: 0.5, run: 3 }, gait: { type: 'octopod', freq: 1.4, stride: 0.2 }, grazePitch: 0.3,
+    herd: 'alone, at the hub of its web', fleeDistance: 2, aggression: 0.5, idle: { headYaw: 0.1, headPitch: 0.03, tailYaw: 0.04 },
+    schedule: ['HUNT', 'HUNT', 'HUNT', 'HUNT', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'IDLE', 'HUNT', 'HUNT', 'HUNT', 'HUNT'], scheduleNote: 'HUNT: waiting at the hub for a catch' },
+  build: A => faHiSpider(A, FA_HI_SPIDER[A.variant % 3])
 });
+
+/* ---- the same spider drawn in three more kinds, on the Silk-Weaver and bluff entries below; each variant's model is a pick of the spider family (rig/families/spider.json) */
+const FA_SPIDER_SILK = [{ body: 0x8a6a30, mark: 0xd8a040, leg: 0x9a7a44 }, { body: 0x9a8a60, mark: 0xd8c890, leg: 0xb0a074 }, { body: 0x7a6a44, mark: 0xb09a68, leg: 0x8a7a54 }];
+const FA_SPIDER_BASE = Object.assign({}, FA_HI_BASE2, { biomes: ['spiderlake'], diet: 'carnivore', feeding: 'predator', activity: 'nocturnal', temperament: 'defensive', locomotion: ['walks', 'climbs'] });
+const FA_SPIDER_TRAITS = { edible: false, milkable: false, tameable: false, rideable: false, draught: false, eggs: false };
+const FA_SPIDER_SCHEDULE = ['HUNT', 'HUNT', 'HUNT', 'HUNT', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'IDLE', 'HUNT', 'HUNT', 'HUNT', 'HUNT'];
+const faSpiderData = (mass, range, herd, walk) => ({ mass: mass, legs: 8, sizeRange: range, speed: { walk: walk, run: walk * 5 }, gait: { type: 'octopod', freq: 1.4, stride: 0.2 }, grazePitch: 0.3,
+  herd: herd, fleeDistance: 2, aggression: 0.5, idle: { headYaw: 0.1, headPitch: 0.03, tailYaw: 0.04 }, schedule: FA_SPIDER_SCHEDULE, scheduleNote: 'HUNT: at the web, or out on it' });
+ANIMAL({
+  key: 'silk-weaver', name: 'Krator Silk-Weaver', group: 'hyperjungle',
+  tags: Object.assign({}, FA_SPIDER_BASE, { habitat: ['canopy', 'trunks', 'ground'] }),
+  size: { length: 2.7, height: 1.9 },
+  source: [Object.assign({}, FA_HI_SRC2, { note: 'the Spider Lake colonies (biomes/spiderlake/PLAN.md, a plan on gemini-loom-chasms): three castes of one spider, drawn here until the kit exists' })],
+  traits: FA_SPIDER_TRAITS,
+  yields: { silk: { amount: 6, note: 'sheet silk, from the outer span' }, chitin: { amount: 2, note: 'the moults' } },
+  life: { maturity: 1, lifespan: 6, litter: 300, gestation: 30, note: 'only the matriarchs lay; litter: an egg sac' },
+  variants: 3, variantNames: ['matriarch: deep-amber abdomen, keeps the brood pavilion', 'rigger: long-legged, on the outer sheets', 'packer: small and thick-set, in groups of 30 to 100'],
+  w: 2.7, d: 3.0, h: 1.9,
+  variantDims: [{ w: 2.7, d: 2.98, h: 1.86 }, { w: 1.99, d: 2.19, h: 0.87 }, { w: 1.26, d: 1.38, h: 0.53 }],
+  models: { 0: 'spider#silk-matriarch', 1: 'spider#silk-rigger', 2: 'spider#silk-packer' }, modelData: { 0: { budget: 9000 }, 1: { budget: 9000 }, 2: { budget: 9000 } },
+  data: faSpiderData([60, 18, 5], [0.8, 1.2], 'colonies of 20,000 to 250,000 on the lake sheets', 0.5),
+  build: A => faHiSpider(A, FA_SPIDER_SILK[A.variant])
+});
+ANIMAL({
+  key: 'trapdoor-spider', name: 'Trapdoor spider', group: 'hyperjungle',
+  tags: Object.assign({}, FA_SPIDER_BASE, { habitat: ['ground'] }),
+  size: { length: 0.75, height: 0.36 },
+  source: [Object.assign({}, FA_HI_SRC2, { note: 'solitary on the upland bluffs above Spider Lake (biomes/spiderlake/PLAN.md, a plan on gemini-loom-chasms)' })],
+  traits: FA_SPIDER_TRAITS,
+  yields: { chitin: { amount: 0.3, note: 'the fangs' } },
+  life: { maturity: 3, lifespan: 12, litter: 120, gestation: 40, note: 'litter: an egg sac kept in the burrow' },
+  variants: 1, variantNames: ['bluff brown'], w: 0.8, d: 0.79, h: 0.37,
+  models: { 0: 'spider#trapdoor' }, modelData: { 0: { budget: 12000 } },
+  data: faSpiderData(1.2, [0.8, 1.1], 'alone, in a silk-hinged burrow', 0.4),
+  build: A => faHiSpider(A, { body: 0x4a3a28, mark: 0x6a5638, leg: 0x54442e })
+});
+ANIMAL({
+  key: 'funnel-web-spider', name: 'Funnel-web spider', group: 'hyperjungle',
+  tags: Object.assign({}, FA_SPIDER_BASE, { temperament: 'aggressive', habitat: ['ground', 'trunks'] }),
+  size: { length: 0.92, height: 0.55 },
+  source: [Object.assign({}, FA_HI_SRC2, { note: 'solitary on the upland bluffs above Spider Lake (biomes/spiderlake/PLAN.md, a plan on gemini-loom-chasms)' })],
+  traits: FA_SPIDER_TRAITS,
+  yields: { chitin: { amount: 0.4, note: 'the fangs' } },
+  life: { maturity: 2, lifespan: 8, litter: 100, gestation: 30, note: 'litter: an egg sac at the funnel\'s end' },
+  variants: 1, variantNames: ['blue-black'], w: 0.86, d: 0.92, h: 0.55,
+  models: { 0: 'spider#funnel-web' }, modelData: { 0: { budget: 12000 } },
+  data: faSpiderData(1.6, [0.8, 1.1], 'alone, at the mouth of its funnel', 0.5),
+  build: A => faHiSpider(A, { body: 0x1c1820, mark: 0x2c2632, leg: 0x24202a })
+});
+
+/* ---- three small beetles the biomes name, all picks of the beetle family; each drawn as a small scarab where no model is bundled */
+const faSmallBeetle = (key, name, base, L, pick, C, note, mass, dims) => ANIMAL({
+  key: key, name: name, group: 'hyperjungle', tags: base, size: { length: L, height: L * 0.5 },
+  source: [Object.assign({}, FA_HI_SRC, { note: note })],
+  traits: { edible: false, milkable: false, tameable: false, rideable: false, draught: false, eggs: false },
+  yields: { chitin: { amount: 0.1, note: 'the wing cases' } },
+  life: { maturity: 1, lifespan: 2, litter: 40, gestation: 30, note: 'litter: eggs' },
+  variants: 1, variantNames: ['adult'], w: dims[0], d: dims[1], h: dims[2],
+  models: { 0: 'beetle#' + pick }, modelData: { 0: { budget: 9000 } },
+  data: { mass: mass, legs: 6, sizeRange: [0.8, 1.2], speed: { walk: 0.3, run: 1 }, gait: { type: 'hexapod', freq: 1.5, stride: 0.1 }, grazePitch: 0.5, herd: 'scattered, in hundreds', fleeDistance: 1, aggression: 0, idle: { headYaw: 0.1, headPitch: 0.05, tailYaw: 0 },
+    schedule: ['BROWSE', 'BROWSE', 'BROWSE', 'BROWSE', 'BROWSE', 'BROWSE', 'BROWSE', 'BROWSE', 'BROWSE', 'BROWSE', 'BROWSE', 'BROWSE', 'BROWSE', 'BROWSE', 'BROWSE', 'BROWSE', 'BROWSE', 'BROWSE', 'BROWSE', 'BROWSE', 'BROWSE', 'BROWSE', 'BROWSE', 'BROWSE'], scheduleNote: 'BROWSE: on the crust, the char or the cane' },
+  build: A => faHiScarab(A, C)
+});
+faSmallBeetle('salt-beetle', 'Salt beetle', Object.assign({}, FA_HI_BASE, { koppen: ['BWh', 'BSh'], aridity: ['arid', 'semiarid'], climate: ['tropic'], biomes: ['sedesert'], diet: 'omnivore', feeding: 'grazer', activity: 'nocturnal', temperament: 'skittish', habitat: ['ground'], locomotion: ['walks'] }),
+  0.3, 'salt', FA_HI_SCARAB[3], 'named on the crust in biomes/sedesert PLAN-BOWL.md section 6, for instancing there', 0.3, [0.28, 0.32, 0.16]);
+faSmallBeetle('char-beetle', 'Char beetle', Object.assign({}, FA_HI_BASE, { koppen: ['BSh', 'BSk', 'BWh'], aridity: ['semiarid', 'arid'], climate: ['tropic', 'temperate'], biomes: ['crater-drylands'], diet: 'omnivore', feeding: 'grazer', activity: 'diurnal', temperament: 'skittish', habitat: ['ground'], locomotion: ['walks'] }),
+  0.35, 'char', FA_HI_SCARAB[1], 'crater-drylands KNOWN_ISSUES.md: they breed in fresh char', 0.4, [0.37, 0.4, 0.16]);
+faSmallBeetle('boring-beetle', 'Boring beetle', Object.assign({}, FA_HI_BASE, { diet: 'herbivore', feeding: 'browser', activity: 'nocturnal', temperament: 'skittish', habitat: ['trunks'], locomotion: ['walks', 'climbs'] }),
+  0.25, 'boring', FA_HI_SCARAB[0], 'hyperjungle PLAN-LANDS.md: they bore the screaming hyperbamboo', 0.2, [0.26, 0.28, 0.17]);
 
 /* ---- the atlas moth: wings two metres across, the tips drawn out into serpent heads' hooks, a clear window in each */
 const FA_HI_MOTH = [{ a: 0xa8602a, b: 0x5a2a14, win: 0xf0e8d0, body: 0x6a3a1e }, { a: 0xb89a62, b: 0x6a5a38, win: 0xf0f0e0, body: 0x7a6a44 }, { a: 0x8a9a6a, b: 0x3a4a2a, win: 0xe8f0d8, body: 0x4a5a34 }];
@@ -882,12 +985,14 @@ ANIMAL({
   traits: { edible: false, milkable: false, tameable: false, rideable: false, draught: false, eggs: false },
   yields: { chitin: { amount: 0.5, note: 'a sting a hand long: a needle and an awl' } },
   life: { maturity: 0.3, lifespan: 1, litter: 100, gestation: 14, note: 'litter: a queen\'s brood in the paper nest; gestation: egg to larva' },
-  variants: 3, variantNames: ['golden', 'pale and black', 'red'],
+  variants: 6, variantNames: ['golden', 'pale and black', 'red', 'golden (model)', 'pale and black (model)', 'red (model)'],
   w: 1.4, d: 1.4, h: 0.5,
+  variantDims: [{ w: 1.4, d: 1.4, h: 0.5 }, { w: 1.4, d: 1.4, h: 0.5 }, { w: 1.4, d: 1.4, h: 0.5 }, { w: 1.69, d: 1.55, h: 1.3 }, { w: 1.69, d: 1.55, h: 1.3 }, { w: 1.69, d: 1.55, h: 1.3 }],
+  models: { 3: 'hornet#golden', 4: 'hornet#pale', 5: 'hornet#red' }, modelData: { 3: { budget: 9000 }, 4: { budget: 9000 }, 5: { budget: 9000 } },   /* picks of one family with wing cards (models/hornet.json, rig/family.py) */
   data: { mass: 1.0, legs: 6, wings: 2, sizeRange: [0.7, 1.3], speed: { walk: 0.3, run: 0.8, fly: 9 }, gait: { type: 'insect', freq: 6, stride: 0.04 }, grazePitch: 0.05, flap: { freq: 6, amp: 0.45, glide: 0 },
     herd: 'a nest of a hundred; a few hunters on the wing', fleeDistance: 3, aggression: 0.8, schedule: FA_HI_SCH_DAY.map(a => a === 'BROWSE' ? 'HUNT' : a), scheduleNote: '' },
   build: function (A) {
-    const C = FA_HI_HORNET[A.variant] || FA_HI_HORNET[0], k = faHiKit(A, A.S), mix = faHiMix, yb = 0.22;
+    const C = FA_HI_HORNET[A.variant % 3], k = faHiKit(A, A.S), mix = faHiMix, yb = 0.22;
     k.el(0, yb, 0.1, .08, .08, .11, C.b, { seg: 12 });                                                                         /* the thorax */
     k.co([0, yb, -.02], [0, yb - .01, -.1], .03, .02, C.b, 6);                                                                  /* the waist */
     k.rows([[0, yb - .01, -.1, .02, .02], [0, yb - .03, -.22, .09, .08], [0, yb - .06, -.45, .09, .085], [0, yb - .09, -.65, .02, .02]], 16, 14, null, { round: [0.1, 0.05], colf: (t, a) => Math.sin(t * 30) > 0.1 ? C.a : C.b });  /* the striped abdomen */

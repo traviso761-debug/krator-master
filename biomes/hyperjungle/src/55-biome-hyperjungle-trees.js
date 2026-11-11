@@ -86,7 +86,14 @@ const clear3=(x,y,z,rad,vr)=>BIO.clearOf3(x,y,z,rad,vr);
 // its measured quantiles for the target shares below (so the shares hold for
 // any seed, radius or species count), with Girder's share of off-pattern
 // trees. Order along the field = which stands border which.
-const SHARE=[.22,.17,.22,.11,.17,.11];   // ironbark, ghostwood, prism gum, baobab, mahogany, kapok
+const SHARE=(HYPERJUNGLE.HABIT&&HYPERJUNGLE.HABIT.share)||[.22,.17,.22,.11,.17,.11];   // ironbark, ghostwood, prism gum, baobab, mahogany, kapok (the savage land's own: 50, HABIT)
+// the old-growth habit (50: HYPERJUNGLE.HABIT, the savage land): a tree's height times a factor hashed from its own seed (no draw, so
+// the stream is the one the plain habit draws), its bole and crown by the habit's fixed factors. Without the habit, T as it came
+const HAB=HYPERJUNGLE.HABIT;
+function oldGrowth(T){if(!HAB||!T||T.sapling||(SP[T.sp]&&SP[T.sp].noHabit))return T;   /* a cousin grown by this builder (BIO.kin) may keep its own size */
+ const R=(HAB.H&&HAB.H[T.sp])||[1,1],u=KRAND.unit(KRAND.hash(0x5a7a6e,T.seed,T.sp));
+ const k=R[0]+(R[1]-R[0])*u;T.H*=k;T.rb*=HAB.rb==null?1:HAB.rb;T.crownR*=HAB.crownR==null?1:HAB.crownR;T.oldGrowth=k;return T;}
+HYPERJUNGLE.oldGrowth=oldGrowth;
 let QUANT=null;
 function standQuantiles(R){const v=[],o=BIO.center(),n=64;   // the grids' centre, [x,z] (the core keeps host.origin as a list)
  for(let iz=0;iz<n;iz++)for(let ix=0;ix<n;ix++){const x=o[0]+(ix/(n-1)-.5)*2*R,z=o[1]+(iz/(n-1)-.5)*2*R;if(Math.hypot(x-o[0],z-o[1])>R)continue;v.push(BIO.standAt(x,z,4000)/4000);}
@@ -315,10 +322,10 @@ HYPERJUNGLE.buildTrees=function(R,heroR,q){
  const st={trunk:0,limb:0,bough:0,twig:0,root:0,far:0,sapTris:0,roots:0,topBoughs:0,boughs:0,twigs:0,spots:0,clumps:0,racemes:0,pods:0,capsules:0,flowers:0,sapClumps:0};
  const TREES=HYPERJUNGLE.TREES;TREES.length=0;const SAPS=HYPERJUNGLE.SAPLINGS;SAPS.length=0;
  const mk=(x,y,z,hero)=>{const sp=standSp(x,z),S=SP[sp];
-  return{x:x,z:z,y0:y-.8,sp:sp,H:rr(S.H[0],S.H[1]),rb:rr(S.rb[0],S.rb[1]),crownR:rr(S.crownR[0],S.crownR[1]),crown0:S.crown0,seed:ri(0,999999),hero:hero};};
+  return oldGrowth({x:x,z:z,y0:y-.8,sp:sp,H:rr(S.H[0],S.H[1]),rb:rr(S.rb[0],S.rb[1]),crownR:rr(S.crownR[0],S.crownR[1]),crown0:S.crown0,seed:ri(0,999999),hero:hero});};
  // 1. HERO hypertrees: area-uniform over the hero disc, Girder's 165 m minimum spacing
- const nHero=Math.round(Math.PI*heroR*heroR/125000*q);
- BIO.scatter(nHero,0,heroR,165,(x,y,z)=>{TREES.push(mk(x,y,z,true));},{pad:34});
+ const SPC=HAB&&HAB.spacing?HAB.spacing:165,nHero=HAB&&HAB.spacing?Math.round(Math.PI*heroR*heroR/125000*q*(165*165)/(SPC*SPC)):Math.round(Math.PI*heroR*heroR/125000*q);   /* the old growth stands wider apart (HAB.spacing) */
+ BIO.scatter(nHero,0,heroR,SPC,(x,y,z)=>{TREES.push(mk(x,y,z,true));},{pad:34});
  const heroes=TREES.slice();
  // 2. FAR impostors from heroR out to R, one per ~150 m cell, no patchiness (the canopy must close)
  BIO.grid(165*Math.sqrt(1/Math.max(.25,q)),heroR+30,R,(x,z,d)=>{for(const T of heroes)if(Math.hypot(x-T.x,z-T.z)<T.crownR+60)return 0;return 1;},
@@ -339,7 +346,7 @@ HYPERJUNGLE.buildTrees=function(R,heroR,q){
  // BIO.bakeImpostors (after every placement, its own seed); here nothing draws from the stream but the heroes, the far blobs and the
  // saplings, in the same order, so every tree keeps its form.
  const LD=HYPERJUNGLE.LOD,LT=LD.tree,IMPON=HYPERJUNGLE.IMPOSTORS!==false&&typeof BIO.impostor==='function',IMPS=[];
- if(IMPON){const set=BIO.impostorSet('hyperjungle.trees',{label:'Far hypertrees'});const c=BIO.center();
+ if(IMPON){const set=BIO.impostorSet('hyperjungle.trees',{label:'Far hypertrees',cell:HAB&&HAB.impCell?HAB.impCell:undefined});const c=BIO.center();
   SP.forEach((S,sp)=>{let T0=null;for(const T of heroes)if(T.sp===sp&&(!T0||Math.hypot(T.x-c[0],T.z-c[1])<Math.hypot(T0.x-c[0],T0.z-c[1])))T0=T;if(!T0)return;
    const T1=Object.assign({},T0),st1=Object.assign({},st);
    const rec=BIO.impostor('hyperjungle.'+S.key,()=>{const R0=typeof window!=='undefined'?window.REGISTER:null;if(R0)window.REGISTER=null;
@@ -371,7 +378,7 @@ HYPERJUNGLE.buildTrees=function(R,heroR,q){
 // BIO.lod at the tree, so a world wanting a lighter hero grows it far from the host's origin). Nothing else: no TREES
 // record, no keep-clear. An open world grows each species' variants once with these and instances them (openworld/README.md).
 HYPERJUNGLE.make=function(sp,x,y,z,sapling){if(sapling){const H=20+40*Math.pow(rng(),1.4);return{x:x,z:z,y0:y-1,H:H,sp:sp,cr:H*SAP_CR[sp]+2,ring:false,sapling:true,seed:ri(0,999999)};}
- const S=SP[sp];return{x:x,z:z,y0:y-.8,sp:sp,H:rr(S.H[0],S.H[1]),rb:rr(S.rb[0],S.rb[1]),crownR:rr(S.crownR[0],S.crownR[1]),crown0:S.crown0,seed:ri(0,999999),hero:true};};
+ const S=SP[sp];return oldGrowth({x:x,z:z,y0:y-.8,sp:sp,H:rr(S.H[0],S.H[1]),rb:rr(S.rb[0],S.rb[1]),crownR:rr(S.crownR[0],S.crownR[1]),crown0:S.crown0,seed:ri(0,999999),hero:true});};
 HYPERJUNGLE.grow=function(T,lv){tints();
  const st={trunk:0,limb:0,bough:0,twig:0,root:0,far:0,sapTris:0,roots:0,topBoughs:0,boughs:0,twigs:0,spots:0,clumps:0,racemes:0,pods:0,capsules:0,flowers:0,sapClumps:0};
  T.lv=lv;if(T.sapling)buildSapling(T,T.seed%3,1,st);else if(lv===0)buildFar(T,T.seed%7,st);else buildHero(T,T.seed%97,1,st);return st;};

@@ -34,7 +34,7 @@
 (function(){const W=WATER,TAU=Math.PI*2;
  const glf=v=>{const q=String(+v);return/[.e]/.test(q)?q:q+'.0';},f=glf;
  const AT=()=>{try{return typeof ATMOS!=='undefined'?ATMOS:null;}catch(e){return null;}};
- const lin=(T,c)=>'vec3('+W.colAsWritten(T,c).map(glf).join(',')+')';
+ const lin=(T,c)=>'vec3('+W.colLin(T,c).map(glf).join(',')+')';
  const tag=(m,S,o)=>{m.name='water:'+S.name;if(!(o&&o.pick))m.userData.probeSkip=true;m.userData.lodSkip=true;m.userData.water=S.id;if(o&&o.pick)m.userData.inspectLabel=S.name;else m.raycast=()=>{};return m;};
  // the sky's light on a material (b-skylight's capture), as WATER.draw takes it
  const sky=(mat,o)=>{const A=AT();if(o.envMapIntensity!=null)mat.envMapIntensity=o.envMapIntensity;

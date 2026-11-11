@@ -6,7 +6,7 @@ Together they are too big for the Krator Worlds artifact, which links to this on
 
 Usage:  python3 gallery/build_ancients.py [--build] [--out DIR]
 
---build rebuilds kits/ancients and settlements/port first; without it the pages in their dist/ are used as they are
+--build rebuilds kits/ancients and kits/port first; without it the pages in their dist/ are used as they are
 (the Port's dist/ is not committed: build it once on a fresh clone). The pages are the ENTRIES lines of
 build_gallery.py whose build is one of these two, with their names, blurbs and sections (Ancient city kits,
 Arcologies, Ancient Port). Each kit loads its library maps from one shared sidecar (ancients.tex.ancients.js,
@@ -18,7 +18,7 @@ import json, os, re, shutil, subprocess, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import build_gallery as bg
 
-BUILDS = ('kits/ancients', 'settlements/port')
+BUILDS = ('kits/ancients', 'kits/port')
 OUT = os.path.join(bg.HERE, 'ancients-site')
 WORLDS_URL = 'https://claude.ai/artifact/UhTfQ2kioZEbrzZR1agHv9'   # Krator Worlds (gallery/README.md)
 

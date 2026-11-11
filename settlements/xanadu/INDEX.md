@@ -33,26 +33,10 @@ From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-
 | `38-helpers2.js` | 8 | v2 helpers (1); mouldings (28) |
 | `50-registry.js` | <1 | v3: inspector registry + group transforms (1) |
 | `54-mat-concrete.js` | 4 | v4: concrete, brick, glass panes (1) |
-| `69-mat-salvage.js` | 16 | salvage (decay level 3) (1); FIRELIGHT (44) |
+| `69-mat-salvage.js` | 17 | salvage (decay level 3) (1); FIRELIGHT (54) |
 | `69b-vern-mat.js` | 14 | textures (world units: a 128px tile = 2 m) (30); world-unit UVs (93); materials (97); geometry (116); kit items (141) |
 | `69c-vern-helpers.js` | 22 | primitives (local frame; y = BASE of the piece) (51); walls, frames, plinths (60); roofs (ridge along local x unless noted) (88); openings (128); porches, stairs, yards (154) |
-| `70-xa-tex.js` | 10 | the painted palette used inside colour maps (14); rammed earth: 2 m tile, lift lines every ~0.37 m (17); whitewash over rubble: 2 m tile (25); small glazed tiles: 2 m tile, 0.25 m tiles with  (32); the twig band (penbey): 1 m tile, bundled tamari (39); fieldstone (rubble): 4 m tile (46); valley rock (the hillsides): 8 m tile (56); the valley floor: dry grass over pale earth (64); jali (pierced stone screen): 1 m tile, alpha-cut (70); window valance: pleated cloth, scalloped hem (al (77) |
-| `71-xa-mat.js` | 11 | world UV with separate u/v tile sizes (the band  (24); materials (28); geometry (51); kit items (80) |
-| `72-xa-helpers.js` | 33 **big** | vectors in the local frame (32); walls: the battered mass (53); the Turkish overhang (cumba) and the Indian bay  (120); the Persian note: arches, iwans, arcades, domes (149); the gilded roof (the Tibetan "gyaphib") and pavi (202); pennants, poles, shrines, roundels (224); footings, terraces, gardens, water (251) |
-| `74-xa-dwell.js` | 25 | POOR (9); MIDDLE (68); RICH (145) |
-| `75-xa-trade.js` | 8 | the bazaar row: three shops under arches, rooms  (15); the workshop: dyer and potter round a yard (32); the scrap smithy (51) |
-| `76-xa-farm.js` | 19 | the terraced farm: four terraces down a slope (13); the farmstead: house, yard wall, byre, hay on th (34); the granary: a stone store on a plinth, slit ven (62); the windmill (asbad): a vertical rotor between t (79); the watermill: a horizontal wheel under a stone  (104); the herders' works (2026-10-20: core/hamlet's ra (130) |
-| `77-xa-sacred.js` | 11 | the temple (31); the monastery on its terrace (47); the Grand Temple of the capital (73) |
-| `78-xa-palace.js` | 11 | the Sultan's Palace (18); the Pleasure Dome and its grounds (55) |
-| `79-xa-guild.js` | 17 | Farmers' Guild (22); Miners' Guild (36); Goldsmiths' Guild (55); Alchemists' Guild (71); Masons' Guild (89); the generator (109) |
-| `80-xa-military.js` | 16 | the barracks (12); a length of the city wall (34); the gate (44); the fortress (dzong) (61); the city watch (86); the mustering ground (105) |
 | `81-sky.js` | 10 |  |
-| `81-xa-public.js` | 11 | the arena (11); the amphitheatre (36); the public baths (55); the public garden (76) |
-| `82-xa-hill.js` | 3 |  |
-| `83-xa-turk.js` | 24 | shared bits of the Turkish houses (prefix xnXT) (7); the temple after Ortaköy (43); Turkish houses (81); Turkish shops (128); the street lights (between buildings) (172) |
-| `84-xa-grandbath.js` | 10 | textures and kit items of the baths (7); pieces (prefix xnXK) (28); the Grand Baths (41) |
-| `85-xa-water.js` | 12 | the slope pieces (48) |
-| `85b-xa-garden.js` | 20 | the five tile maps (9) |
 | `86-bio-10-core-head.js` | 6 | PRNG (14); noise (24); host binding (41); accounting (83) |
 | `86-bio-20-core-kit.js` | 19 | merged buckets (46); runtime LOD (xanadu-1, additive) (140); indexed buckets (164); bake (187) |
 | `86-bio-30-core-foliage.js` | 13 | alpha textures (18); card geometries (48); the foliage hook (110) |
@@ -63,15 +47,9 @@ From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-
 | `86-bio-60-biome-xanadu-floor.js` | 19 | small plants (34); the zone planters (99); the pass (166) |
 | `86-bio-65-biome-xanadu-dress.js` | 5 |  |
 | `86-bio-70-biome-xanadu.js` | <1 |  |
-| `86-xa-vizier.js` | 9 |  |
-| `86b-xa-plants.js` | 2 |  |
-| `87-xa-spicer.js` | 9 |  |
-| `87b-xa-andean.js` | 12 | POOR: the Palopó shop-house (28); MIDDLE: the cholet (51); RICH: the cholet palace (73) |
-| `87c-xa-erewhon.js` | 24 | a small boat and the pleasure barge (8); the quay, the boat shed, the warehouse (26); the lighthouse: an octagonal stone tower on a ro (60); the garden teahouse: on a double rill plot (16 m (80); the prison, cut into the cliff (96); the Caves of Ice (round 9c): a small ice cavern (110); the palace gate: a mosaic iwan between two gilt- (147); the Pleasure Dome of the Bay: the biome's ruin o (158); a street bridge over the stream (round 9c): the  (178) |
-| `88-xa-dress.js` | 12 | the palette and the painted motifs (colour-carry (13); the paint filter on kput (58); the twins (102) |
 | `88y-xanadu-matlib.js` | 1 |  |
-| `89-xa-trades.js` | 5 |  |
 | `90-scene.js` | 7 | scene (Xanadu showcase) (1); build every site the target lists (61) |
+| `90-xa-doors.js` | 2 |  |
 | `91-probe.js` | 3 | probe (window._api) — same contract as the Ancie (1) |
 | `91t-xanadu-tags.js` | 3 | CORE TAGS: XANADU'S REG (1) |
 | `92-camera.js` | 1 | what stays of the camera: the build's own button (1) |

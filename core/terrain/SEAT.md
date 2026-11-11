@@ -69,9 +69,9 @@ drawers (BIO's bucket, the flatten helpers) are core-biome's to add.
 
 ## What it found on the way
 
-- **A ringed KSTACKS top has a hole at its centre.** `KSTACKS.mesh` draws a top as rings from the edge in to `.08` of the
-  radius (`rhos` in `37-core-stacks.js`), and never closes the last ring. A ray down at a mesa's centre falls through to
-  the ground (`test-seat.js` pins it). On a 160 m mesa the hole is about 13 m across. A fix is a centre fan, but it moves
-  every page that draws a ringed top, so it waits for an all-builds rebuild (TODO.md, "Ride along").
+- **A ringed KSTACKS top had a hole at its centre** (closed 2026-11-08). `KSTACKS.mesh` drew a top as rings from the edge in
+  to `.08` of the radius (`rhos` in `37-core-stacks.js`) and never closed the last ring, so a ray down at a mesa's centre fell
+  through to the ground (about 13 m across on a 160 m mesa). A centre fan (`fan`) now closes every ringed top, a chimney's
+  solid top too; `test-seat.js` checks the ray meets the rock.
 - **A body's hidden bed tops are drawn inside it.** `under` walks up through every face met from behind, so a point's
   depth is measured to where it comes out, not to the first buried bed top.

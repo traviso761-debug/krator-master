@@ -64,7 +64,8 @@ var LOCHOST = KHOST.take({
   scene:scene, camera:camera, renderer:renderer, ground:terrainH, walk:KWALK, clampCam:camClamp, minR:4, maxR:9000,
   views:locViews, start:VIEWS.length ? VIEWS[0][0] : 'Start',
   clock:{ hour:10, running:false, scale:1, speeds:[0, 1, 2, 4, 8] },   /* the world hour is the page's own clock (80-camera.js): no host hour */
-  keys:SHEET ? { p:function(){} } : undefined,                          /* the sheet's P steps back (89-sheetui.js): marks stay on their button */
+  keys:Object.assign(SHEET ? { p:function(){} } : {},                  /* the sheet's P steps back (89-sheetui.js): marks stay on their button */
+    LDOOR.on ? { e:function(){ KDOORHOST.toggleNear(LDOOR.eye(), LDOOR.walking()); } } : {}),   /* E: the door within reach (95-locus-doors.js); flying, E still climbs */
   inspect:function(hit, hits, rec){ return inspectDescribe(hit, rec); },
   palette:{ items:locPal, build:function(key){ var b = KratorFurniture.batch({ indexed:true }); b.place(key, 0, 0, 0, 0, { variant:0, seed:1, wealth:0.5 }); return b.flush(); } },
   edits:SHEET ? undefined : { world:LWORLD, log:LEDIT.log,

@@ -40,16 +40,5 @@
  "8aj-alt-d-flat.js": "68558a08e962",
  "8ak-alt-a-houses.js": "fadc522573d3",
  "8ak-alt-b-civic.js": "22d36ceec21d",
- "8ak-alt-c-works.js": "36cb5666702e",
- "targets/city/86-bio-10-core-head.js": "306a77c56377",
- "targets/city/86-bio-20-core-kit.js": "af1dcca206dd",
- "targets/city/86-bio-30-core-foliage.js": "ee0fed9cb7f9",
- "targets/city/86-bio-35-core-anim.js": "14f1edd02817",
- "targets/city/86-bio-40-core-place.js": "6de80a247190",
- "targets/city/86-bio-50-biome-hyperjungle-species.js": "8a251c63f593",
- "targets/city/86-bio-55-biome-hyperjungle-trees.js": "603c770c466a",
- "targets/city/86-bio-58-biome-hyperjungle-fauna.js": "0e781dfd9d82",
- "targets/city/86-bio-60-biome-hyperjungle-floor.js": "24af1c8d7b53",
- "targets/city/86-bio-65-biome-hyperjungle-dress.js": "55156bf99ea9",
- "targets/city/86-bio-70-biome-hyperjungle.js": "9bffe7a23009"
+ "8ak-alt-c-works.js": "36cb5666702e"
 }

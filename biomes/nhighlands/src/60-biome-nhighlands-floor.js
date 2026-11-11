@@ -171,11 +171,17 @@ function plantFar(x,y,z,Z,st){const t=rng();
 function plantAlpine(x,y,z,Z,lv,st){const t=rng();
  if(t<.38){heath(x,y,z,lv);st.heath++;}else if(t<.62){lichen(x,y,z,lv);st.lichen++;}else if(t<.82){grass(x,y,z,lv,[0x7a8458,0x8a9460],.7);st.tufts++;}else if(t<.88)boulder(x,y,z,lv,st,rng()<.3,.3);}
 
+// the planters a station's floor may call (NHL.STATION_PLANT's last argument): the kit's own small plants, each drawing as it always does
+const FLOOR_TOOLS={swordFern,ladyFern,laceFern,bracken,mossMat,mossCushion,sorrel,shrub,tuft,grass,heath,lichen,mushrooms,bluebells,discStalks,pleatFans,darkAccent,boulder,
+ plantTemperate,plantGlade,plantBank,plantMontane,plantBoreal,plantAlpine,plantFar};
+NHL.FLOOR_TOOLS=FLOOR_TOOLS;
 // ---------------------------------------------------------------- the pass
 NHL.buildFloor=function(R,q,box){
  reseed(600031);q=q==null?1:q;R=R||3300;means();
  const st={ferns:0,lace:0,moss:0,sorrel:0,shrubs:0,tufts:0,mush:0,zebra:0,boulders:0,bells:0,bracken:0,discs:0,fans:0,heath:0,lichen:0,spikes:0,dark:0,cane:0,logs:0,stones:0};
  function plant(x,y,z,lv){if(!okGround(x,z,.8))return;const Z=zones(x,z);
+  /* a station's own floor (stations/<name>/): NHL.STATION_PLANT(x, y, z, Z, lv, st, tools) -> true when it planted the spot; station 1 sets none */
+  if(typeof NHL.STATION_PLANT==='function'&&NHL.STATION_PLANT(x,y,z,Z,lv,st,FLOOR_TOOLS))return;
   if(lv===0){plantFar(x,y,z,Z,st);return;}
   const w=[Z.temperate*(1-Z.glade)*(1-Z.oldwood)*(1-Z.rip),Z.glade*1.2,Z.rip*1.6,Z.oldwood*1.4,Z.montane*(1-Z.glade)*(1-Z.oldwood)*(1-Z.rip),Z.boreal*(1-Z.alpine)*(1-Z.glade)*(1-Z.rip),Z.alpine],P=[plantTemperate,plantGlade,plantBank,plantOldwood,plantMontane,plantBoreal,plantAlpine];
   let tot=0;for(const v of w)tot+=v;if(tot<=0)return;
@@ -198,7 +204,7 @@ NHL.buildFloor=function(R,q,box){
   {patch:.4,patchScale:.03,noMask:true,depth:[.15,1.6],pad:.3,center:[0,0],box:[o[0]-900,o[1]-900,o[0]+900,o[1]+900]});});
  BIO.range=NHL.LOD.logs;
  // the fallen giants: across the temperate and montane slopes, more in the old wood
- BIO.grid(85,0,R*1.42,(x,z)=>{if(BIO.lodD(x,z)>1200)return 0;const Z=zones(x,z);return (Z.temperate*.75+Z.montane*.5+Z.oldwood*.4+Z.boreal*.2)*(1-Z.rip)*q;},(x,y,z)=>{const c=BIO.field('cold',x,z);for(let t=0;t<4;t++)if(log(x+rr(-20,20),y,z+rr(-20,20),st,c))break;},{patch:0,pad:2,box});
+ BIO.grid(85,0,R*1.42,(x,z)=>{if(BIO.lodD(x,z)>1200)return 0;const Z=zones(x,z);return (Z.temperate*.75+Z.montane*.5+Z.oldwood*.4+Z.boreal*.2)*(1-Z.rip)*q*(NHL.STATION_LOGS?NHL.STATION_LOGS(x,z):1);},   /* a station scales them where no wood stands (NHL.STATION_LOGS; station 1: none) */(x,y,z)=>{const c=BIO.field('cold',x,z);for(let t=0;t<4;t++)if(log(x+rr(-20,20),y,z+rr(-20,20),st,c))break;},{patch:0,pad:2,box});
  BIO.range=null;
  return{under:st};};
 

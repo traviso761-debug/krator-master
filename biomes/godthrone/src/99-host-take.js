@@ -117,13 +117,13 @@ function biomeChecks(){return{items:window._biome,phases:window._phases,horizon:
 function hostChecks(){const R=[],add=(n,r)=>R.push(Object.assign({name:n},r)),hs=STN.summit?heightsNow():null,pres=P=>ATMOS.airPressureAt(SKY.preset||{air:{pressure:1.6,thin:{y0:0,scale:8000}}},P);
 if(STN.summit) add('the caldera\'s heights (4.23)',HCHK.heights(hs[0],hs[1],hs[2]));
  if(STN.vent)add('the halo: orange near the vent, black far',HCHK.halo(FIELD.orange(VENT.x+300,VENT.z),FIELD.orange(...xzOf(PIT.s+4200,PIT.t+1200))));
- ['boulder','bomb','stone','hair'].forEach(n=>add('the '+n+'s rest on the ground',HCHK.rests(itemPositions(n,5),terrainH,FIELD.face)));
+ (STN.items||['boulder','bomb','stone','hair']).forEach(n=>add('the '+n+'s rest on the ground',HCHK.rests(itemPositions(n,5),terrainH,FIELD.face)));
  if(STN.summit){add('thin air (the sky and core/hazard agree)',HCHK.air(pres(25000),pres(21110)));
  add('the wall is fresh tibasalt',HCHK.rock(wallSamples()));}
  const pf=STN.summit?xzOf(PIT.s+1100,PIT.t+500):null;if(STN.vent)add('the hazards',HCHK.hazards(hazAt(VENT.x,VENT.z,VENT.lavaY+.5),hazAt(pf[0],pf[1],terrainH(pf[0],pf[1])+1.6)));
  if(STN.summit)add('the fountain: intermittent, one clock',HCHK.fountain(fountainAt(FT.on),fountainAt(FT.idle),VENTS.phase(FT.on).state,VENTS.phase(FT.idle).state));
- {const B=window._biome||{},ok=STN.vent?B.talus>500&&B.hair>50&&B.bombs>200:STN.summit?B.talus>2000&&B.stones>1000:B.talus>150&&B.stones>1000;add('counts: talus '+B.talus+', bombs '+B.bombs+', hair '+B.hair+', stones '+B.stones,{ok,detail:JSON.stringify(B)});}
- if(!STN.summit)flankChecks().forEach(c=>R.push(c));
+ {const B=window._biome||{},ok=STN.counts?STN.counts(B):STN.vent?B.talus>500&&B.hair>50&&B.bombs>200:STN.summit?B.talus>2000&&B.stones>1000:B.talus>150&&B.stones>1000;add('counts: talus '+B.talus+', bombs '+B.bombs+', hair '+B.hair+', stones '+B.stones,{ok,detail:JSON.stringify(B)});}
+ if(typeof STATION_CHECKS==='function')STATION_CHECKS().forEach(c=>R.push(c));
  if(LAKE){add('the lava lake: its level from its volume',HCHK.lake(lakeSamples(),LAKE.E));add('the lava lake: its hazard and its frozen floor',HCHK.lakePage(lakePage()));}
  if(OVF)OVF.verdict(OVF.run()).forEach(c=>add(c.name,c));   /* the lake's overflow (89d, ?overflow only) */
  return R;}
@@ -156,20 +156,22 @@ if(STN.summit){ add('the pit as deep as the floor (a flat caldera)',HCHK.heights
   add('the lake\'s floor left re-baked after the restore',HCHK.lakePage(Object.assign(lakePage(),{restored:12})));}}
  if(OVF){const r=OVF.run(),neg=(n,o)=>{const v=OVF.verdict(Object.assign({},r,o))[n];add(v.name+' (broken)',v);};
   neg(2,{cos:-1,farShare:.5});neg(1,{mass:Object.assign({},r.mass,{error:r.mass.erupted*.01})});neg(3,{raised:0});neg(4,{mid:Object.assign({},r.mid,{farBurn:5})});neg(5,{gpu:{mass:1.1,dh:1,dT:0,molten:[0,0]}});neg(6,{off:12});neg(0,{out:0});}
- if(!STN.summit)flankNegatives().forEach(c=>R.push(c));
+ if(typeof STATION_NEGATIVES==='function')STATION_NEGATIVES().forEach(c=>R.push(c));
  return R;}
 // ---------------------------------------------------------------- the page, handed to the host
 KHOST.on(function lodTick(){camera.updateMatrixWorld();if(BIO.lodTick)BIO.lodTick(camera);},'view');
 KHOST.on(SKY.view,'view');
 KHOST.take({build:'godthrone',title:STN.title,hint:STN.hint,
- scene,camera,renderer,ground:terrainH,clear:1.6,minR:2,maxR:60000,registry:REG,views:HOST_VIEWS,ticks:TICKS,
- onView:k=>{lightMode(VIEWS[k].mode);if(VIEWS[k].erupt)VENTS.nextFountain();if(LAKE){LAKE.set(VIEWS[k].lake==null?null:VIEWS[k].lake);if(LAKE.ui)LAKE.ui.sync();}},controls:LCTL,
+ scene,camera,renderer,ground:terrainH,clear:1.6,floor:typeof STATION_FLOOR==='function'?STATION_FLOOR:undefined,   /* the tube's vault: the eye may stand on its floor under the plan */
+ minR:2,maxR:60000,registry:REG,views:HOST_VIEWS,ticks:TICKS,
+ onView:k=>{lightMode(VIEWS[k].mode);if(VIEWS[k].hour!=null){const c=KHOST.host&&KHOST.host.clock;if(c&&c.set)c.set(VIEWS[k].hour);}   /* a view at its own hour (the Red Gill's breath) */
+  if(VIEWS[k].erupt)VENTS.nextFountain();if(LAKE){LAKE.set(VIEWS[k].lake==null?null:VIEWS[k].lake);if(LAKE.ui)LAKE.ui.sync();}},controls:LCTL,
  keys:{n:()=>lightMode((typeof LIGHT_MODE!=='undefined'&&LIGHT_MODE==='night')?'day':'night')},
  clock:{hour:ATMOS.SKY.viewHour},draw:SKY.draw,
  inspect:describe,stats:()=>'inst '+window._instances+'\nlod '+(BIO.lodShown?BIO.lodShown.meshes+'/'+BIO.lodShown.of+' chunk meshes':''),
  layers:{'hazards':KTAGS.hazardLayer(),'loose stuff':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'far country':{objects:()=>[FAR.mesh]}},
  exporters:{biome:()=>BIO.export()},
- minimap:{title:'The Godthrone\'s summit'},
+ minimap:{title:STN.minimap||'The Godthrone\'s summit'},
  budget:BUDGET,types:()=>BIO.stats,
  probeSample:4000,
  api:{hostChecks,hostNegatives,biomeChecks,itemPositions,

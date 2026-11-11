@@ -34,7 +34,7 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `45b-host-stage.js` | 13 | the land (23); the climate fields (cached below; these are the  (96); the host binding (121); the water (136) |
 | `45c-host-ground.js` | 15 | the ground (5) |
 | `46-host-graphics.js` | 1 |  |
-| `50-biome-nsemiarid-species.js` | 64 **big** | palettes (31); the tree species (76); harvest (biomes/FRUIT.md; kits/crops) (120); the small plants (the floor), tagged (147); leaf textures (182); bark, rock textures (272); geometries local to this biome (303); materials (488); the library cards and barks (materials.json) (521); instanced items (558) |
+| `50-biome-nsemiarid-species.js` | 65 **big** | palettes (31); the tree species (76); harvest (biomes/FRUIT.md; kits/crops) (120); the small plants (the floor), tagged (147); leaf textures (182); bark, rock textures (272); geometries local to this biome (303); materials (488); the library cards and barks (materials.json) (521); instanced items (558) |
 | `55-biome-nsemiarid-trees.js` | 37 **big** | zones from the fields (13); the travellers' shapes (positions only: core/ran (41); colour (the maths is the core's, BIO.col) (56); polyline helpers (Girder's) (71); keep-clear between trees (81); foliage helpers (88); the builders (123); impostors (the far canopy) (296); the pass (321); the passes (data: species, cell, acceptance from (350) |
 | `60-biome-nsemiarid-floor.js` | 30 **big** | small plants (39); the travellers (60); dew gardens (196); the zone planters (206); the pass (281) |
 | `70-biome-nsemiarid.js` | <1 |  |

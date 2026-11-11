@@ -13,14 +13,28 @@
  env.add(new THREE.Mesh(sky.geometry,sky.material));{const g=giant.clone(),r=giantRing.clone();env.add(g);env.add(r);}
  ATMOS.skylight({renderer,sky:env,scene:WENV,ground:()=>new THREE.Color(0x5a6a4a)});}
 const lin=c=>new THREE.Color(c).convertSRGBToLinear();
+const WQ0=new URLSearchParams(location.search);
 const WBOX=[CENTER[0]-TERR.R*1.1,CENTER[1]-TERR.R*1.1,CENTER[0]+TERR.R*1.1,CENTER[1]+TERR.R*1.1];   // the old plane's square
 // ---- the bay
 const PALE_L=lin(WATER_PALE).getHex(),FRESH_L=lin(RIVER_COL).getHex();
+/* THE RIVER'S PLUME (core/water ext/61, tintFlow; BACKPORT.md section 5, nwbay in its list; the catch-up pass, 2026-11-03; ?plume=0 the old
+   still tint): the travertine river's milky-green water carried out from the delta's mouth into the turquoise bay, a tongue that fans and
+   thins over ~700 m on a current that runs out along the river's last reach and spreads across it, with eddies and filaments, never an edge.
+   It shares the bay's tint with the shoals and the river's own fresh water (whichever is strongest). xanadu's lake is the worked shape */
+const PLUME=WQ0.get('plume')!=='0'?(function(){const M=XZ(MOUTH_U,vR(MOUTH_U)),Q=XZ(MOUTH_U+80,vR(MOUTH_U+80)),dx=M[0]-Q[0],dz=M[1]-Q[1],l=Math.hypot(dx,dz)||1,ux=dx/l,uz=dz/l;
+ const loc=(x,z)=>{const rx=x-M[0],rz=z-M[1];return[rx*ux+rz*uz,-rx*uz+rz*ux];};
+ return{col:lin(RIVER_COL.clone().lerp(WATER_PALE,.45)).getHex(),
+  a:(x,z)=>{const q=loc(x,z),al=q[0],w=60+.5*Math.max(0,al);return .7*smooth(-80,40,al)*smooth(760,140,al)*Math.exp(-(q[1]*q[1])/(w*w));},
+  v:(x,z)=>{const q=loc(x,z),al=q[0];if(al<-100||al>1100)return null;const s=.45*smooth(1100,80,al),w=60+.5*Math.max(0,al),sp=.35*Math.tanh(q[1]/w);return[(ux-uz*sp)*s,(uz+ux*sp)*s];}};})():null;
 const BAY_WATER=WATER.open({name:'The bay',level:0,swell:[[.05,40,225,0,.035],[.03,16,200,1.3,.025]],field:.1,bounds:WBOX,
  bed:groundH,bedBox:WBOX,bedCell:12,shore:{seeds:{edge:true,depth:2,sides:'es',points:[[BAY.c[0],BAY.c[1]]]}},
- tint:{box:WBOX,cell:12,at:(x,z)=>{const k=waterTintK(x,z);if(k[0]<.01&&k[1]<.01)return null;return k[1]>=k[0]?{c:FRESH_L,a:k[1]}:{c:PALE_L,a:k[0]};}}});
+ tint:{box:WBOX,cell:12,at:(x,z)=>{const k=waterTintK(x,z),pa=PLUME&&bayIn(x,z)<0?PLUME.a(x,z):0;if(pa>k[0]&&pa>k[1]&&pa>.01)return{c:PLUME.col,a:pa};
+  if(k[0]<.01&&k[1]<.01)return null;return k[1]>=k[0]?{c:FRESH_L,a:k[1]}:{c:PALE_L,a:k[0]};}},
+ ...(PLUME?{tintFlow:{v:PLUME.v,cell:24}}:{})});
+/* the breakers: the bay is a sea and keeps them (BACKPORT.md, "No breakers on still water": a sea keeps them); ?breakers=0 draws the shore grid
+   without them, for the owner to judge against the rings round the stacks' lagoons that still water showed elsewhere */
 const BAY_DRAW=WATER.draw(BAY_WATER,{rain:true,renderOrder:1,roughness:.16,metalness:.05,envMapIntensity:.22,ramp:[1.2,9],pick:true,
- shallow:lin(WATER_SHALLOW),deep:lin(WATER_DEEP.clone().multiplyScalar(.8))});
+ shallow:lin(WATER_SHALLOW),deep:lin(WATER_DEEP.clone().multiplyScalar(.8)),...(WQ0.get('breakers')==='0'?{breakers:false}:{})});
 BAY_DRAW.mesh.userData.inspectLabel='The bay';
 // ---- the outer water: the far country's sea, flat, 0.15 m under the bay's, drawn only where the bay's surface is not
 const OUTER_BOX=[CENTER[0]-9000,CENTER[1]-9000,CENTER[0]+9000,CENTER[1]+9000];
@@ -66,4 +80,4 @@ const CENOTE_POOLS=SINKS.filter(S=>S.kind==='cenote').map(S=>{const poly=[];for(
 // ---- the shelf pools: every rimstone pool a still at its level, all of them one mesh
 const SHELF_STILLS=SHELF_POOLS.map((q,i)=>WATER.still({name:q.name+' '+(i+1),level:q.y,poly:q.pts}));
 const SHELF_DRAW=SHELF_STILLS.length?WATER.drawPools(SHELF_STILLS,{color:lin(POOL_COL.clone().lerp(POOL_PALE,.5)),roughness:.06,metalness:.1,envMapIntensity:.35,renderOrder:1,pick:true,rain:true,gradient:POOL_GRAD,name:'Shelf pools'}):null;
-window._water={bay:!!BAY_DRAW,terraces:RIVER_TERRACES?RIVER_TERRACES.pools.length:0,falls:RIVER_TERRACES?RIVER_TERRACES.falls.length:0,low:!!RIVER_LOW,weed:RIVER_WEED?(RIVER_WEED.count||RIVER_WEED.n||true):0,cenotes:CENOTE_POOLS.length,shelf:SHELF_STILLS.length};
+window._water={plume:!!PLUME,bay:!!BAY_DRAW,terraces:RIVER_TERRACES?RIVER_TERRACES.pools.length:0,falls:RIVER_TERRACES?RIVER_TERRACES.falls.length:0,low:!!RIVER_LOW,weed:RIVER_WEED?(RIVER_WEED.count||RIVER_WEED.n||true):0,cenotes:CENOTE_POOLS.length,shelf:SHELF_STILLS.length};

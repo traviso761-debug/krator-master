@@ -27,6 +27,8 @@ forbidden names so a kit fragment cannot quietly grow a dependency on one world'
   python3 build.py                 dist/ringisles.html (+ the sidecar texture packs dist/ringisles.tex.<kit>.js)
   python3 build.py --inline-packs  one self-contained file
   python3 build.py --no-fauna      leave the kits/fauna bundle out
+  python3 build.py --station <name>  dist/ringisles-<name>.html: stations/<name>/ added to src/ (PLAN-STATIONS.md); its
+                                   station.json may name more core ("core": {fragment: path}) as oidong's do
 """
 import os, re, subprocess, sys
 
@@ -64,11 +66,22 @@ def find_node():
     return None
 
 HERE=os.path.dirname(os.path.abspath(__file__)); SRC=os.path.join(HERE,'src'); DIST=os.path.join(HERE,'dist')
+sys.path.insert(0,os.path.join(os.path.dirname(os.path.dirname(HERE)),'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 ROOT=os.path.normpath(os.path.join(HERE,'..','..'))
-OUT=sys.argv[1] if len(sys.argv)>1 and not sys.argv[1].startswith("--") else "ringisles.html"
+_args=sys.argv[1:]
+STATION=_args[_args.index('--station')+1] if '--station' in _args else None
+if STATION: _args=[a for a in _args if a not in ('--station',STATION)]
+_args=[a for a in _args if not a.startswith('--')]
+OUT=_args[0] if _args else ('ringisles-%s.html'%STATION if STATION else 'ringisles.html')
+J=lambda *p:os.path.normpath(os.path.join(ROOT,*p))
 FORBID=['kdef(','kput(','kbake(','BUCKET[','MBK[','FAMMAT[','PLATS','BRIDGES','TOWERS','RIVER','PALISADE','KOFF']
 # the biome core from core/biome (core/README.md): one copy for every kit
-CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','35-core-anim.js','36-core-walker.js','40-core-place.js','42-core-export.js','43-core-export-host.js']
+# The final rebuild (pair 8, 2026-11-03; PLAN-STATIONS.md, "Core adoption"): 31b leaves on stems (the kit core's BIO.leafOn, leafQ), 31j a limb's joint
+# to its parent (BIO.flareJoin), 32 the variant pools and kin, 33 the fungoid parts, 34 the octahedral impostors (the borrowed kits' far trees: the
+# Throne's, swbay's, eastabyss', sedesert's, the Rift's and nwlowlands' trees call BIO.impostorItem when it is there), 37 the one clock (KTRAPS.cycle:
+# the geyser kit's hazards), 39 the lean, 41 the environmental fields, 44 the stage
+CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','31b-core-leafset.js','31j-core-joint.js','32-core-variants.js','33-core-fungoid.js','34-core-impostor.js',
+ '35-core-anim.js','36-core-walker.js','37-core-traps.js','39-core-lean.js','40-core-place.js','41-core-env.js','42-core-export.js','43-core-export-host.js','44-core-stage.js']
 CORE_B=os.path.join(ROOT,'core','biome')
 CORE_SPACE=['20-core-space.js']
 CORE_S=os.path.join(ROOT,'core','space')
@@ -78,7 +91,6 @@ CORE_S=os.path.join(ROOT,'core','space')
 # layout (46) is data, read before the land is made (its relief is part of the land).
 KITS={
  '41-hyperjungle-globals.js':'hyperjungle/src/41-hyperjungle-globals.js',
- '35-core-strata.js':'sedesert/src/35-core-strata.js',
  '46-geyser-layout.js':'geyser/src/46-biome-geyser-layout.js',
  '49a1-throne-flows.js':'throne/src/46-biome-throne-flows.js','49a2-throne-species.js':'throne/src/50-biome-throne-species.js',
  '49a3-throne-trees.js':'throne/src/55-biome-throne-trees.js','49a4-throne-floor.js':'throne/src/60-biome-throne-floor.js',
@@ -109,8 +121,37 @@ LAST={'throne':'49a5-throne-build.js','swbay':'49b6-swbay-fauna.js','eastabyss':
       'sedesert':'49d6-sedesert-fauna.js','geyser':'49e6-geyser-build.js',
       'rift':'49f4-rift-build.js','nwlowlands':'49g3-nwlowlands-build.js','hyperjungle':'49h3-hyperjungle-build.js'}
 PATH={f:os.path.join(SRC,f) for f in os.listdir(SRC) if not f.startswith('.')}
+# a STATION (PLAN-STATIONS.md; python3 build.py --station <name> -> dist/ringisles-<name>.html): stations/<name>/'s numbered fragments are added to src/'s
+# (a name in both is the station's), and its station.json may name more core ("core": {"<fragment name>": "<path from the repo root>"}) or drop one of
+# src/'s ("drop": [names]: the lagoon has no vent, so no geyser field)
+import json as _json
+SJ={}
+if STATION:
+    _sd=os.path.join(HERE,'stations',STATION)
+    if not os.path.isdir(_sd): sys.exit('build.py: no station '+STATION+' (stations/'+STATION+'/)')
+    _sj=os.path.join(_sd,'station.json')
+    if os.path.isfile(_sj):
+        with open(_sj,encoding='utf-8') as _fh: SJ=_json.load(_fh)
+    for f in os.listdir(_sd):
+        if re.match(r'\d',f): PATH[f]=os.path.join(_sd,f)
+    for f,pth in SJ.get('core',{}).items(): PATH.setdefault(f,J(pth))
 for slot,p in KITS.items(): PATH[slot]=os.path.join(ROOT,'biomes',p)
+for f in SJ.get('drop',[]): PATH.pop(f,None)   # a station's dropped fragments (src/'s or a read kit's slot)
+# core/terrain, opt-in by name (core/README.md "terrain/"); the final rebuild: 35 KSTRATA (the core's, in place of sedesert's src/ copy this page read
+# before: BIO.strata with no recipe is the same shader), 43 KGROUND (the ground's library layers, 84), 44 KFAR (the sea floor and the shelf past the
+# map, 85), 45 KHORIZON (the mountain's shadow on the land and the flora); the drawing halves by path (core/terrain/host/). A src/ copy wins.
+for f in ['35-core-strata.js','43-core-ground.js','44-core-farfield.js','45-core-horizon.js']: PATH.setdefault(f,J('core','terrain',f))
+PATH.setdefault('35s-core-strata-shade.js',J('core','terrain','host','35-core-strata-shade.js'))   # keyed 35s: it reads KSTRATA when it loads
+PATH.setdefault('44-core-farfield-draw.js',J('core','terrain','host','44-core-farfield-draw.js'))
+PATH.setdefault('45-core-horizon-shade.js',J('core','terrain','host','45-core-horizon-shade.js'))
+# core/hazard (KHAZ): the geyser kit's vents and hot ground reach the walker through it (the one clock is core/biome 37)
+PATH.setdefault('20-core-hazard.js',J('core','hazard','20-core-hazard.js'))
+# core/shadow (KSHADOW): the sun's shadows in one view-following box, decided at load by the ground's texture units (89zz-host-core.js: r128 declares
+# the shadow map in every lit material, and this ground reads the library's fourteen layers)
+PATH.setdefault('10-core-shadow.js',J('core','shadow','10-core-shadow.js'))
+PATH.setdefault('12-core-shadow-host.js',J('core','shadow','host','12-core-shadow-host.js'))
 for k,slot in LAST.items():
+    if slot not in PATH: continue   # a station that drops the kit
     if not re.search(r'^[^/\n]*BIO\.kitEnd\(',open(PATH[slot],encoding='utf8').read(),re.M):
         sys.exit('KIT %s: its last listed fragment (%s) does not call BIO.kitEnd: list the fragment that does'%(k,KITS[slot]))
 for f in CORE_BIOME:
@@ -126,27 +167,32 @@ for f in CORE_EXPORT:
 for f in CORE_SPACE:
     if f not in PATH: PATH[f]=os.path.join(CORE_S,f)
 # the shared atmosphere and core/water: the sea is a WATER.open surface (89w-host-sea.js)
-CORE_ATMOS=['89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-8-export.js','89-atmos-a-waves.js','89-atmos-b-skylight.js','89-atmos-4-weather.js','89-atmos-9-host.js']
+CORE_ATMOS=['89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-3-particles.js','89-atmos-8-export.js','89-atmos-a-waves.js','89-atmos-b-skylight.js','89-atmos-4-weather.js','89-atmos-9-host.js']
 CORE_WATER=['20-core-water.js','21-core-water-shore.js','22-core-water-flow.js','50-core-water-draw.js','51-core-water-kinds.js']   # 2026-10-20 (phase 3): the shore grid (21), the still pools and the wet beach (51; 22 is its flow half)
+CORE_WATER_EXT=['57-core-water-audit.js','58-core-water-mirror.js','60-core-water-fields.js']   # the final rebuild: the audit, the reflections switch (off at load), the shore's fields (tools/fragment_needs.json orders them)
 CORE_WATER_GEYSER=['52-core-water-geyser.js','52b-core-water-geyser-draw.js']   # core/water/geyser/: opt-in, NOT pooled by builds that list core/water (README)   # 52 and 52b: the geyser kit's show draws its springs and columns through them
 for f in CORE_ATMOS:
     if f not in PATH: PATH[f]=os.path.join(ROOT,'core','atmos',f)
 for f in CORE_WATER:
     if f not in PATH: PATH[f]=os.path.join(ROOT,'core','water',f)
+for f in CORE_WATER_EXT: PATH.setdefault(f,J('core','water','ext',f))
 for f in CORE_WATER_GEYSER:
     PATH[f]=os.path.join(ROOT,'core','water','geyser',f)
 # the host shell from core/host (core/host/README.md); src/99-host-take.js hands it the page (KHOST.take)
 sys.path.insert(0,os.path.join(ROOT,'core','host'))
 import host as khost
-CORE_HOST=khost.SHELL+['94-host-polytool.js']
+CORE_HOST=khost.FULL+['94-host-polytool.js']   # the whole interface and the authoring tools (the final rebuild)
 khost.resolve(PATH,CORE_HOST)
 # the shared sky (core/atmos/SKY-PLAN.md section 9, 2026-10-26): core/atmos's core where the kit had none, the sky's model,
 # presets and shader, its host and the biome call (src/89-host-sky.js: ATMOS.skyBiome); they replace the painted dome
 for f in ['89-atmos-0-core.js','89-atmos-0p-presets.js']:
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos',f))
-for f in ['89-atmos-e-skymodel.js','89-atmos-f-skypresets.js','89-atmos-g-sky.js']:
+for f in ['89-atmos-e-skymodel.js','89-atmos-f-skypresets.js','89-atmos-g-sky.js','89-atmos-j-fog.js']:
     PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','sky',f))
-for f in ['89-atmos-h-skyhost.js','89-atmos-i-skybiome.js','89-atmos-e-weatherhost.js']:   # e-weatherhost: ATMOS.bindWeather, with the weather (4) and its selector (9) in CORE_ATMOS (2026-10-26)
+# the final rebuild's air (89a-host-atmos.js): the host binding, height fog (the sea haze), the rain's occlusion map, lightning
+PATH['89-atmos-c-hostbind.js']=J('core','atmos','host','89-atmos-c-hostbind.js')
+for f in ['89-atmos-fx-raincover.js','89-atmos-fx-lightning.js']: PATH[f]=J('core','atmos','fx',f)
+for f in ['89-atmos-h-skyhost.js','89-atmos-i-skybiome.js','89-atmos-e-weatherhost.js','89-atmos-j-heightfog.js']:   # e-weatherhost: ATMOS.bindWeather, with the weather (4) and its selector (9) in CORE_ATMOS (2026-10-26)
     PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','host',f))
 miss=[f for f in ('10-core-head.js','20-core-kit.js','30-core-foliage.js','40-core-place.js') if f not in PATH]
 if miss: print('NO BIOME CORE: '+', '.join(miss)+' (list them in CORE_BIOME or keep a src/ copy)'); sys.exit(1)
@@ -166,7 +212,8 @@ def _fams(kit):
     return sorted(_json.load(open(pj,encoding='utf8')).get('families',{})) if os.path.isfile(pj) else []
 # the Throne: only the isle's and the savanna's trees (lehua, tree fern, arch palm, palm frill, mangrove, coconut, star aloe,
 # gill-parasol) and the small plants this kit borrows from it
-THRONE_KEEP={'bark.armored','bark.palm','bark.mangrove','bark.twisted','bark.coir','card.frond.coconut','card.fractal',
+# (2026-11-09) and the elfin tree's bark and hanging moss for station 2's cloud forest (stations/high: the Throne's elfin read in place)
+THRONE_KEEP={'bark.elfin','card.mosshang','bark.armored','bark.palm','bark.mangrove','bark.twisted','bark.coir','card.frond.coconut','card.fractal',
  'card.treefern','card.aloeflower','card.ferngreen','card.bromeliad','card.mossclump','leaf.fern','cap.disc','cap.tier'}
 DROP=lambda k:k.startswith('tower') or k.startswith('jetty') or k.startswith('ground')
 EXCL={'throne':[f for f in _fams('throne') if f not in THRONE_KEEP],
@@ -179,7 +226,7 @@ EXCL={'throne':[f for f in _fams('throne') if f not in THRONE_KEEP],
       'nwlowlands':[f for f in _fams('nwlowlands') if f not in ('bk.fibre','drape','wood')],
       'hyperjungle':[f for f in _fams('hyperjungle') if f not in ('frond','under','limb')]}
 # named -host- (the FORBID scan skips it: base64 may spell a forbidden word) and numbered 44: the stage (45) reads them
-VIRTUAL={'44-host-matlib-pack.js':_mp.fragment(HERE,'ringisles',side=SIDE)}
+VIRTUAL={'44-host-matlib-pack.js':_mp.fragment(HERE,'ringisles',side=SIDE),khost.EDITS_JS:khost.edits_js(HERE,'ringisles')}
 for i,k in enumerate(['throne','swbay','eastabyss','sedesert','geyser','rift','nwlowlands','hyperjungle']):
     VIRTUAL['44%s-host-matlib-pack-%s.js'%('bcdefghi'[i],k)]=_mp.fragment(os.path.join(ROOT,'biomes',k),k,exclude=EXCL[k],side=SIDE)
 # THE FAUNA (kits/fauna: one kit for every animal, biomes/README.md): the Ring Sea's and the savanna's animals, placed by
@@ -199,14 +246,16 @@ for f in frags:
             if w in s: bad.append(f'{f}: uses {w}')
     out.append(f'\n// ==================== {f}\n' if f.endswith('.js') else ''); out.append(s)
 if bad: print('BIOME FRAGMENT DEPENDS ON A HOST ENGINE:\n  '+'\n  '.join(bad)); sys.exit(1)
+BSRC.report(PATH)   # --list-sources: what the page is made of, then exit
 os.makedirs(DIST,exist_ok=True)
 html=''.join(out)
-if SIDE: html=_mp.write_sidecar(SIDE,html,DIST,'ringisles.tex.js')
-open(os.path.join(DIST,OUT),'w',encoding='utf8').write(html)
+# a station's page shares the main page's sidecars (the same kits, the same packs): it writes them again, identical, and prunes nothing
+if SIDE: html=_mp.write_sidecar(SIDE,html,DIST,'ringisles.tex.js',prune=not STATION)
+open(os.path.join(DIST,OUT),'w',encoding='utf8',newline='\n').write(html)
 # syntax check on the script body
 m=re.search(r'<script>\n(?!document)(.*)</script>\s*</body>',html,re.S)
 js=m.group(1) if m else ''
-chk=os.path.join(HERE,'.syntax.js'); open(chk,'w',encoding='utf8').write(js)
+chk=os.path.join(HERE,'.syntax.js'); open(chk,'w',encoding='utf8',newline='\n').write(js)
 node=find_node()
 r=subprocess.run([node,'--check',chk],capture_output=True,text=True) if node else None
 side=sum(os.path.getsize(os.path.join(DIST,f)) for f in os.listdir(DIST) if f.startswith('ringisles.tex.'))

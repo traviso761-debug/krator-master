@@ -1,5 +1,5 @@
 // TARGET: hook - the waterfront of Hook (settlements/hook/PLAN.md, section 2), laid out with the grid placement
-// (settlements/port/src/70-port-core.js "layout") as settlements/port/targets/harbour does it: one coastal run west
+// (kits/port/src/70-port-core.js "layout") as kits/port/targets/harbour does it: one coastal run west
 // to east, the Point to the Stacks; land blocks two deep behind the Customs (the pier) and behind the Sun Canton
 // (the heliport and the plain quays east of it); the L of four sea platforms off the great pier's end (the hook of
 // the Hook); the five vessels. Every key the kit registers is placed at least once (verify.py: port-every-key).

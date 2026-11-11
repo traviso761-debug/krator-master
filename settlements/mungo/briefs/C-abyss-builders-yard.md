@@ -10,9 +10,9 @@ The owner: "if inventing a new one, put it in its culture's kit after building i
 Mungo's lumberjacks also deliver felled timber there, so it doubles as the village's timber yard.
 
 ## Build it
-- Read `settlements/locus/ABYSS-KIT-NOTES.md` (all of it: the style as built, the helpers, the rules),
-  `ABYSS-KIT-KNOWN-ISSUES.md`, `API.md` (furniture is catalog data placed with `ABYSS.furn`), and
-  `settlements/locus/src/65-abyss-40-shops.js` (21 KB: the eight shops; your model) plus the helpers you need from
+- Read `kits/eastern-abyssal/NOTES.md` (all of it: the style as built, the helpers, the rules),
+  `kits/eastern-abyssal/KNOWN_ISSUES.md`, `API.md` (furniture is catalog data placed with `ABYSS.furn`), and
+  `kits/eastern-abyssal/src/65-abyss-40-shops.js` (21 KB: the eight shops; your model) plus the helpers you need from
   `65-abyss-00-core.js` (42 KB: read by section, `grep -n 'ABYSS [0-9]' ...`).
 - Add ONE asset at the end of `65-abyss-40-shops.js`, inside that fragment's IIFE, seeds from the fragment's own block
   (654xxx, unused), builders use `F.rnd()/F.rr()/F.pick()` only:
@@ -45,7 +45,7 @@ Mungo's lumberjacks also deliver felled timber there, so it doubles as the villa
   interiors item note.
 
 ## Files you own
-`settlements/locus/src/65-abyss-40-shops.js`, `settlements/locus/ABYSS-KIT-NOTES.md`, `settlements/locus/ABYSS-KIT-KNOWN-ISSUES.md`,
+`kits/eastern-abyssal/src/65-abyss-40-shops.js`, `kits/eastern-abyssal/NOTES.md`, `settlements/locus/ABYSS-KIT-KNOWN-ISSUES.md`,
 `kits/interiors/sets/abyss.js`, `kits/catalog/krator-master-furniture-jobs.js` / `-eastabyss.js` (additions only).
 Rebuilt outputs (`settlements/locus/*.html`, `publish/`, `kits/catalog/dist`, `kits/interiors/dist/interiors-sets.abyss.html`) are fine.
 Do not touch any other Locus fragment.

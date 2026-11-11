@@ -55,7 +55,8 @@ rectangular holes (t, s). `nrForecastle()` the bow (bulwark, sheer deck, cutwate
 rounded stern (the half-round pontoon, the glazed shell, the terraces, the screws and rudders; lathes about the hull's end),
 `nrBalconyFront(side, y)` and `nrLoftS(...)` the scalloped balconies and rounded rails (`nrScallop(t)` the bulge), `nrBeacon(x, y, z)`. The piers draw in `41-nr-piers.js` (`nrPierMole`, `nrPierFinger`; a pier's
 own frame `nrPierPt(pier, l, k, y)`: l metres out along it, k across). `nrPart(name, fn)` registers a hull pass, `nrAfter(name, fn)` a pass that places child defs after
-the lots. The geometry engine is `30-geo.js` (vendored from kits/scyvoi: buckets per material key, world-unit UVs).
+the lots. The geometry engine is `30-geo.js` (`core/engine`, read in place: buckets per material key, world-unit UVs; this
+build's alternative materials are `src/31-alt-takes.js`).
 
 ## Defs
 

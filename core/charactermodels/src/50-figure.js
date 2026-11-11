@@ -2079,15 +2079,25 @@ function KCharFigure(body, sliders, load){
      above the floor. The joints then turn to the points (as the cloth chains' bones do). With no clip it rests */
   var TL = null, tlV = V(), tlV2 = V(), tlQ = Q(), tlQ2 = Q(), tlM = new THREE.Matrix4(), nhT = 0;
   function tailSetup(it){
-    if(!it || !it.tail){ if(TL) TL.ids.forEach(function(i, k){ bones[i].quaternion.fromArray(J[i].r); }); TL = null; return; }
+    // (the last tail's joints back to the skeleton's rest: a species' chain (tail.rest) moved them)
+    if(TL) TL.ids.forEach(function(i, k){ bones[i].quaternion.fromArray(J[i].r); bones[i].position.fromArray(self.pose.t[i]); });
+    if(!it || !it.tail){ TL = null; return; }
     var spec = it.tail, ids = spec.joints.map(function(n){ return byName[n]; });
     if(ids.some(function(i){ return i === undefined; })){ TL = null; return; }
     TL = { spec:spec, ids:ids, x:[], xp:[], tw:[], rest:[], acc:0, reset:true };
   }
   function tailRest(){
-    // the chain in the hips' frame: each joint's offset from its parent (its rest frame is the hips', turned by none)
-    var r = TL.rest, p = V();
-    TL.ids.forEach(function(i, k){ p.add(bones[i].position); (r[k] = r[k] || V()).copy(p); });
+    // the chain in the hips' frame: each joint's offset from its parent (its rest frame is the hips', turned by none).
+    // A species' tail (tools/tails.py) carries its own chain (tail.rest: Tail2 on, the hips' frame at bind): those
+    // joints take it, scaled as the morphs scale the skeleton's own offsets (the tail grows with the legs)
+    var r = TL.rest, p = V(), own = TL.spec.rest;
+    TL.ids.forEach(function(i, k){
+      if(own && k > 0 && own[k - 1]){
+        var l0 = V().fromArray(J[i].t).length(), l1 = V().fromArray(self.pose.t[i]).length();
+        bones[i].position.fromArray(own[k - 1]).multiplyScalar(l0 > 1e-6 ? l1 / l0 : 1);
+      }
+      p.add(bones[i].position); (r[k] = r[k] || V()).copy(p);
+    });
     var n = TL.ids.length, last = TL.ids[n - 1], lr = V().fromArray(J[last].t).length();
     (r[n] = r[n] || V()).copy(p).add(V().fromArray(TL.spec.tip).multiplyScalar(lr > 1e-6 ? bones[last].position.length() / lr : 1));
   }

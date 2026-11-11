@@ -1,0 +1,21 @@
+// node core/atmos/fx/test-dustseason.js — the dry season drives the dust (89-atmos-fx-dustseason.js): each check with a negative.
+'use strict';
+const fs=require('fs'),path=require('path'),vm=require('vm');
+let bad=0;const ok=(name,pass,neg)=>{const r=pass&&!neg;if(!r)bad++;console.log((r?'PASS  ':'FAIL  ')+name+(neg?' (its negative passed)':''));};
+const hooks=[];const ctx={console,Math,ATMOS:{hook:f=>hooks.push(f),air:{dust:120,stormMg:900}}};ctx.globalThis=ctx;vm.createContext(ctx);
+vm.runInContext(fs.readFileSync(path.join(__dirname,'89-atmos-fx-dustseason.js'),'utf8'),ctx);
+const A=ctx.ATMOS,K=A.dustSeasonK;
+ok('the wet season lifts its share (.25), the height of the dry all of it',Math.abs(K(0)-.25)<1e-9&&Math.abs(K(1)-1)<1e-9,Math.abs(K(0)-1)<1e-9);
+ok('k rises with the dry season, never falls',[0,.1,.2,.35,.5,.65,.8,.9,1].map(d=>K(d)).every((v,i,a)=>!i||v>=a[i-1]),K(.6)<K(.4));
+ok('its options are taken (wet 0: a wet season with no dust; 0 is a value)',K(0,{wet:0})===0,K(0,{wet:0})===.25);
+ok('a NaN or out-of-range dry is held in 0..1',K(NaN)===K(0)&&K(-3)===K(0)&&K(9)===K(1),K(9)>1);
+let dry=.5;const D=A.dustSeason({dry:()=>dry});
+ok('the air\'s local dust is its base times k ('+A.air.dust.toFixed(1)+' mg/m3 at mid-season)',Math.abs(A.air.dust-120*K(.5))<1e-9&&D.base===120,A.air.dust===120);
+dry=0;hooks.forEach(f=>f());
+ok('a frame later in the wet it falls to the wet share ('+A.air.dust.toFixed(1)+')',Math.abs(A.air.dust-120*.25)<1e-9,A.air.dust===120*K(.5));
+ok('the storm\'s load is left alone (weather, not season)',A.air.stormMg===900,A.air.stormMg!==900);
+const m=D.mask(()=>.8);dry=1;hooks.forEach(f=>f());
+ok('the mask it hands the dust follows the season (.8 x k)',Math.abs(m(0,0)-.8)<1e-9,Math.abs(m(0,0)-.2)<1e-9);
+const c2={console,Math,ATMOS:{}};c2.globalThis=c2;vm.createContext(c2);vm.runInContext(fs.readFileSync(path.join(__dirname,'89-atmos-fx-dustseason.js'),'utf8'),c2);
+const D2=c2.ATMOS.dustSeason({dry:()=>.5});ok('with no air\'s load and no hook it still answers k',D2.air===null&&Math.abs(D2.k-K(.5))<1e-9,false);
+console.log(bad?bad+' failed':'all passed');process.exit(bad?1:0);

@@ -70,10 +70,16 @@ if '--station' in sys.argv:
     STN=json.load(open(os.path.join(STN_DIR,'station.json'),encoding='utf-8'))
     OUT=STN['out']
 FORBID=['kdef(','kput(','kbake(','BUCKET[','MBK[','FAMMAT[','PLATS','BRIDGES','TOWERS','RIVER','PALISADE','KOFF']
-# core/terrain: KRELIEF (the face's relief stamp, station 3) and the carve; listed by name
-CORE_TERRAIN=['36-core-carve.js','38-core-relief.js']
-# the biome core from core/biome (core/README.md): one copy for every kit
-CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','32-core-variants.js','40-core-place.js','42-core-export.js','43-core-export-host.js']
+# core/terrain: KRELIEF (the face's relief stamp, station 3) and the carve; listed by name. The final rebuild (pair 10, 2026-11-04; PLAN.md "Core
+# adoption (pair 10)") adds 35 KSTRATA (the cut face's beds in clean section), 43 KGROUND (the ground's library layers, 47-host-land.js), 44 KFAR (the
+# far bowl's lattice) and 45 KHORIZON (the walls' shadows on the floor), with their three.js halves from core/terrain/host
+CORE_TERRAIN=['35-core-strata.js','36-core-carve.js','38-core-relief.js','43-core-ground.js','44-core-farfield.js','45-core-horizon.js']
+CORE_TERRAIN_HOST={'35z-core-strata-shade.js':'35-core-strata-shade.js','44-core-farfield-draw.js':'44-core-farfield-draw.js','45-core-horizon-shade.js':'45-core-horizon-shade.js'}
+# the biome core from core/biome (core/README.md): one copy for every kit. Pair 10 adds what the read-in kits' rebuilt species call for: 31b the
+# leaf sets, 31j a limb's joint to its parent (BIO.flareJoin: the read-in kits flare their limbs where a page lists it), 33 the fungoid parts,
+# 33b the bamboo (BIO.bamboo), 31 the hex-cell dither (BIO.DITHER: the polished face's grain, the owner 2026-11-10), 34 the octahedral impostors (the read-in kits' far trees), 41 the environmental fields (BIO.env), 44 the stage
+CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','31-core-dither.js','31b-core-leafset.js','31j-core-joint.js','32-core-variants.js','33-core-fungoid.js','33b-core-bamboo.js',
+ '34-core-impostor.js','40-core-place.js','41-core-env.js','42-core-export.js','43-core-export-host.js','44-core-stage.js']
 CORE_SPACE=['20-core-space.js']
 # OTHER KITS read in place (biomes/WORLD.md: several kits on one page): nwlowlands on every station (PLAN.md section 4: the
 # floor's shore and creek, the walls' columns, the lip's conifers), slotted before this kit's fragments; a station adds more
@@ -84,6 +90,13 @@ KITS={'48a-nwlow-species.js':(NW,'src/50-biome-nwlowlands-species.js'),'48b-nwlo
 PATH={f:os.path.join(SRC,f) for f in os.listdir(SRC) if not f.startswith('.')}
 for f in CORE_TERRAIN:
     if f not in PATH: PATH[f]=os.path.join(CORE,'terrain',f)
+for f,src in CORE_TERRAIN_HOST.items():
+    if f not in PATH: PATH[f]=os.path.join(CORE,'terrain','host',src)
+# core/shadow (KSHADOW; BACKPORT.md's universal set, the owner 2026-11-03: toggleable and OFF by default): the sun's shadows in one view-following
+# box, attached always on core's switch, off at load (89zz-host-shadow.js: the button or ?shadow=1). core/shader's KWARP (07; KHOOK.warp): the eigenweapon's bend, opt-in on ?bend=1 (89k-host-bend.js)
+PATH.setdefault('10-core-shadow.js',os.path.join(CORE,'shadow','10-core-shadow.js'))
+PATH.setdefault('12-core-shadow-host.js',os.path.join(CORE,'shadow','host','12-core-shadow-host.js'))
+PATH.setdefault('07-core-kwarp.js',os.path.join(CORE,'shader','07-core-kwarp.js'))
 if STATION:
     for f in os.listdir(STN_DIR):
         if f.endswith('.js') or f.endswith('.html'): PATH[f]=os.path.join(STN_DIR,f)
@@ -104,13 +117,23 @@ for f in CORE_SPACE:
 CORE_WATER=['20-core-water.js','21-core-water-shore.js','22-core-water-flow.js','50-core-water-draw.js','51-core-water-kinds.js']
 for f in CORE_WATER:
     if f not in PATH: PATH[f]=os.path.join(CORE,'water',f)
+# the final rebuild's water ext, by path (tools/fragment_needs.json): breakup (56: the creek), the audit (57: the edge audit), the reflections
+# switch (58: WATER.mirrorSwitch, off at load), the shore's fields (60: the trees keep off the water the eye sees), the plume (61: the creek's silt
+# carried out into the lake on a current)
+for f in ['56-core-water-breakup.js','57-core-water-audit.js','58-core-water-mirror.js','60-core-water-fields.js','61-core-water-plume.js']:
+    if f not in PATH: PATH[f]=os.path.join(CORE,'water','ext',f)
 # core/atmos: the core, presets, export, waves, skylight, the weather (4) and its selector (9); the host binding, the weather
 # binding (ATMOS.bindWeather) and the shared sky (SKY-PLAN.md S1: model, presets, shader, host), by path
 CORE_ATMOS=['89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-4-weather.js','89-atmos-8-export.js','89-atmos-9-host.js','89-atmos-a-waves.js','89-atmos-b-skylight.js']
 for f in CORE_ATMOS:
     if f not in PATH: PATH[f]=os.path.join(CORE,'atmos',f)
-for f in ['89-atmos-c-hostbind.js','89-atmos-e-weatherhost.js','89-atmos-h-skyhost.js']:
+for f in ['89-atmos-c-hostbind.js','89-atmos-e-weatherhost.js','89-atmos-h-skyhost.js','89-atmos-j-heightfog.js']:
     PATH[f]=os.path.join(CORE,'atmos','host',f)
+# the final rebuild's air (BACKPORT.md's universal set, "Sky and air"): height fog (the dense air lying in the bowl), the rain occlusion map and the
+# branched lightning (the afternoon storms, PLAN.md section 6), which ATMOS.bindWeather takes when they are on the page
+PATH['89-atmos-j-fog.js']=os.path.join(CORE,'atmos','sky','89-atmos-j-fog.js')
+for f in ['89-atmos-fx-raincover.js','89-atmos-fx-lightning.js']:
+    PATH[f]=os.path.join(CORE,'atmos','fx',f)
 # snow that lies (core/atmos/fx): the cold station's weather binding builds it while it snows (ATMOS.bindWeather climate.cold)
 PATH['89-atmos-fx-snowcover.js']=os.path.join(CORE,'atmos','fx','89-atmos-fx-snowcover.js')
 for f in ['89-atmos-e-skymodel.js','89-atmos-f-skypresets.js','89-atmos-g-sky.js']:
@@ -143,7 +166,7 @@ out=[]; bad=[]
 for f in frags:
     s=VIRTUAL[f] if PATH[f] is None else open(PATH[f],encoding='utf-8').read()
     n=int(re.match(r'(\d+)',f).group(1))
-    if 10<=n<80 and '-host-' not in f:
+    if 10<=n<80 and '-host-' not in f and 'core-water' not in f:
         for w in FORBID:
             if w in s: bad.append(f'{f}: uses {w}')
     out.append(f'\n// ==================== {f}\n' if f.endswith('.js') else ''); out.append(s)

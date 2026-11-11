@@ -2,14 +2,14 @@
 // (This machine has no node: python <scratch>/jsrun.py core/sched/20-core-sched.js core/simulation/77-sim-*.js core/simulation/test-sim.js)
 const fs=require('fs'),path=require('path');
 global.window=global;
-['77-sim-0-core.js','77-sim-1-world.js','77-sim-2-places.js','77-sim-3-actors.js','77-sim-4-nav.js','77-sim-5-motion.js','77-sim-5r-routes.js','77-sim-6-economy.js','77-sim-6-govern.js','77-sim-6-items.js','77-sim-6-needs.js','77-sim-6-population.js','77-sim-6-trade.js','77-sim-7-stocks.js','77-sim-7-lod.js','77-sim-8-export.js','77-sim-9-debug.js']
+['77-sim-0-core.js','77-sim-1-world.js','77-sim-2-places.js','77-sim-3-actors.js','77-sim-4-nav.js','77-sim-5-motion.js','77-sim-5r-routes.js','77-sim-6-build.js','77-sim-6-economy.js','77-sim-6-govern.js','77-sim-6-items.js','77-sim-6-crime.js','77-sim-6-money.js','77-sim-6-needs.js','77-sim-6-population.js','77-sim-6-trade.js','77-sim-6-unrest.js','77-sim-7-stocks.js','77-sim-7-ledger.js','77-sim-7-lod.js','77-sim-8-export.js','77-sim-9-debug.js']
   .forEach(f=>(0,eval)(fs.readFileSync(path.join(__dirname,f),'utf8')));
 let bad=0;const ok=(name,pass,neg)=>{const r=pass&&!neg;if(!r)bad++;console.log((r?'PASS  ':'FAIL  ')+name+(neg?' (its negative passed)':''));};
 const near=(a,b,e)=>Math.abs(a-b)<(e||1e-6);
 
 function world(seed){
   // a fresh SIM each time: re-evaluate the module
-  ['77-sim-0-core.js','77-sim-1-world.js','77-sim-2-places.js','77-sim-3-actors.js','77-sim-4-nav.js','77-sim-5-motion.js','77-sim-5r-routes.js','77-sim-6-economy.js','77-sim-6-govern.js','77-sim-6-items.js','77-sim-6-needs.js','77-sim-6-population.js','77-sim-6-trade.js','77-sim-7-stocks.js','77-sim-7-lod.js','77-sim-8-export.js','77-sim-9-debug.js']
+  ['77-sim-0-core.js','77-sim-1-world.js','77-sim-2-places.js','77-sim-3-actors.js','77-sim-4-nav.js','77-sim-5-motion.js','77-sim-5r-routes.js','77-sim-6-build.js','77-sim-6-economy.js','77-sim-6-govern.js','77-sim-6-items.js','77-sim-6-crime.js','77-sim-6-money.js','77-sim-6-needs.js','77-sim-6-population.js','77-sim-6-trade.js','77-sim-6-unrest.js','77-sim-7-stocks.js','77-sim-7-ledger.js','77-sim-7-lod.js','77-sim-8-export.js','77-sim-9-debug.js']
     .forEach(f=>(0,eval)(fs.readFileSync(path.join(__dirname,f),'utf8')));
   const S=window.SIM, clock={h:2,d:0,t:0};
   S.init({seed:seed||7, hour:()=>clock.h, day:()=>clock.d, t:()=>clock.t});
@@ -831,6 +831,335 @@ function world(seed){
  ok('stagger: twenty homes buy between 1.5 and 4.5 days of food, no two rounds alike ('+Math.min(...A)+'-'+Math.max(...A)+' servings)',Math.min(...A)>=30&&Math.max(...A)<=90&&new Set(A).size>=10,new Set(A).size===1);
  ok('without it every home buys three days (60 servings)',B.every(x=>x===60),!B.every(x=>x===60));}
 
+// the ledger (77-sim-7-ledger.js, SCHEMA.md "The books"): deterministic small scenarios, each with a negative: a town's goods
+// balance with spoilage on its own line, a load is in one town, at sea or in the other, what leaves the map is abroad
+{const two=()=>{const {S,clock}=world(179);
+   S.settlement({id:'kautoa',faction:'town'});S.settlement({id:'valapo',faction:'town'});
+   S.place({id:'kShed',kind:'warehouse',x:0,z:0,activities:{},settlement:'kautoa'});S.place({id:'vShed',kind:'warehouse',x:150,z:0,activities:{},settlement:'valapo'});
+   const cfg=()=>({goods:{rice:{unit:'serving'},salt:{unit:'lot'}},window:1,spoil:{rice:0.1}});const EK=S.economy(cfg(),{settlement:'kautoa'}),EV=S.economy(cfg(),{settlement:'valapo'});
+   S.store('kShed',{kind:'warehouse'});S.store('vShed',{kind:'warehouse'});S.R.place.kShed.stock={rice:1000,salt:100};S.R.place.vShed.stock={rice:10,salt:5};
+   const R=S.trade({id:'line',stops:[{settlement:'kautoa',place:'kShed'},{settlement:'valapo',place:'vShed'}],cap:300,minutes:300,mins:30,keep:0,want:3,goods:{kautoa:['rice'],valapo:[]},expect:{valapo:{rice:50}}});
+   const run=(m0,m1)=>{for(let m=m0;m<m1;m++){clock.h=(m%1440)/60;clock.d=Math.floor(m/1440);clock.t+=40;if(m%60===0)S.supply('rice',2,false,'valapo');S.step();}};
+   return {S,run,R,EK,EV};};
+ let W=two(),a=W.S.ledgerSnap();W.run(0,200);
+ let mid=W.S.ledgerSnap(),L=W.S.ledger(a,mid);
+ ok('the ledger: both towns balance with a load at sea, the load in neither',L.ok&&mid.sea.line['kautoa>valapo'].rice>0&&L.towns.valapo.rice.inbound===mid.sea.line['kautoa>valapo'].rice,!L.ok);
+ ok('a statement says whose, in what unit, and the opening',L.towns.kautoa.rice.unit==='serving'&&L.towns.kautoa.rice.owner==='kautoa'&&L.towns.kautoa.rice.opening===1000,L.towns.kautoa.rice.owner!=='kautoa');
+ W.run(200,1500);const c=W.S.ledgerSnap(),L2=W.S.ledger(a,c);
+ ok('over a day: spoilage on its own line, not in consumed',L2.ok&&L2.towns.kautoa.rice.spoiled>0&&L2.towns.kautoa.rice.consumed===0,L2.towns.kautoa.rice.consumed>0);
+ ok('a route\'s leg: shipped = landed + the change at sea',L2.routes.line['kautoa>valapo'].rice.shipped>0&&L2.towns.kautoa.rice.abroadOut===0&&L2.towns.valapo.rice.abroadIn===0,L2.towns.kautoa.rice.abroadOut!==0);
+ W.S.R.place.kShed.stock.rice+=7;const P1=W.S.ledger(a,W.S.ledgerSnap());W.S.R.place.kShed.stock.rice-=7;
+ ok('negative: 7 rice from nowhere is caught, and named',!P1.ok&&/kautoa rice/.test(P1.problems[0]),P1.ok);
+ const lost=JSON.parse(JSON.stringify(c));lost.routes.line.landed['kautoa>valapo'].rice-=10;const P2=W.S.ledger(a,lost);
+ ok('negative: 10 lost on the road is caught',!P2.ok&&P2.problems.some(p=>/line kautoa>valapo rice/.test(p)),P2.ok);
+ const unb=JSON.parse(JSON.stringify(c));unb.towns.valapo.rice.imported-=20;unb.towns.valapo.rice.total-=20;const P3=W.S.ledger(a,unb);
+ ok('negative: a load landed but never booked imported is caught',!P3.ok&&P3.problems.some(p=>/never booked imported/.test(p)),P3.ok);
+ W.S.withEcon('kautoa',()=>{const n=W.S.economyTake('salt',30);W.S.economyBook('exported','salt',n);});const c2=W.S.ledgerSnap(),L3=W.S.ledger(c,c2);
+ ok('what leaves the map is abroad, on no route',L3.ok&&L3.towns.kautoa.salt.abroadOut===30,L3.towns.kautoa.salt.abroadOut!==30);}
+{const {S}=world(181);S.place({id:'shed',kind:'warehouse',x:0,z:0,activities:{}});S.economy({goods:{corn:{}},window:1});S.store('shed',{kind:'warehouse'});S.R.place.shed.stock={corn:50};
+ const a=S.ledgerSnap();S.supply('corn',5);const L=S.ledger(a,S.ledgerSnap());
+ ok('an unkeyed page has one ledger, under _',L.ok&&L.towns._.corn.consumed===5&&L.towns._.corn.closing===45,!L.ok);
+ ok('no economy, an empty ledger',Object.keys(world(183).S.ledgerSnap().towns).length===0,false);}
+
+// resource sites and stockpile policies (PLAN-ECONOMY.md Phase 1): a site's grade sets the yield, its id keys its take, an
+// endless site never stops (the owner's rule), a finite one blocks and says so, regrows by night; a policy's max stops the
+// makers, its reserve stays out of a route, its min holds a shelf
+{const mk=(site,pol,gov)=>{const {S,clock}=world(191);['WORK','HAUL','UNLOAD'].forEach(a=>S.activity({id:a}));
+   S.place({id:'shed',kind:'warehouse',x:0,z:0,activities:{}});S.place({id:'pit',kind:'mine',x:150,z:0,activities:{WORK:4},open:[0,24]});
+   S.role({id:'miner',org:'folk',sched:[[0,'WORK']],prefers:{WORK:{pin:'work'}}});S.role({id:'carter',org:'folk',sched:[[0,'IDLE']]});
+   const E=S.economy(Object.assign({goods:{ore:{unit:'lot'}},every:60,window:1,cart:{cap:500,load:5,unload:5,minLoad:5}},gov?{govern:{every:60,cover:3,ti:1.5,alpha:.3,min:.3,max:1.5}}:{}));
+   S.store('shed',{kind:'warehouse'});if(site)S.site(Object.assign({id:'world:node-7',kind:'iron',goods:['ore']},site));
+   S.recipe('pit',Object.assign({out:['ore'],rate:2,cap:100000},site?{site:'world:node-7'}:{}));S.R.place.shed.stock={ore:0};if(pol)S.stockpile(null,pol);
+   [0,1].forEach(i=>S.actor({id:'m'+i,role:'miner',home:'homeA',work:'pit'}));S.cart(S.actor({id:'c',role:'carter',home:'homeA'}));
+   const run=(h)=>{for(let m=E._m||0,e=m+h*60;m<e;m++){clock.h=(m%1440)/60;clock.d=Math.floor(m/1440);clock.t+=40;S.step();E._m=m+1;}};return {S,E,run};};
+ const P=mk(null),H=mk({grade:'high',yield:2}),L=mk({grade:'low',yield:.5});[P,H,L].forEach(W=>W.run(10));
+ ok('a site\'s grade sets the yield ('+H.E.made.ore+' high, '+P.E.made.ore+' plain, '+L.E.made.ore+' low)',H.E.made.ore>1.8*P.E.made.ore&&L.E.made.ore<.6*P.E.made.ore,H.E.made.ore<=P.E.made.ore);
+ const R0=H.S.sitesReport()[0];ok('a site reports by its world id what it gave, and an endless one has no amount',R0.id==='world:node-7'&&R0.taken===H.E.made.ore&&R0.amount===null,R0.taken!==H.E.made.ore);
+ const a=H.S.ledgerSnap();H.run(5);const LG=H.S.ledger(a,H.S.ledgerSnap());ok('the ledger reconciles a site\'s take with what was made',LG.ok&&LG.sites['world:node-7'].taken>0,!LG.ok);
+ const bad=JSON.parse(JSON.stringify(H.S.ledgerSnap()));bad.sites['world:node-7'].taken+=50;ok('negative: a site that gave more than was made is caught',!H.S.ledger(a,bad).ok,H.S.ledger(a,bad).ok);
+ const F=mk({amount:30});F.run(12);ok('a finite site stops at nothing left and says why',F.E.made.ore===30&&F.S.sitesReport()[0].amount===0&&F.E.blocked['depleted: world:node-7']>0,F.E.made.ore>30);
+ const Fr=mk({amount:30,regen:10});Fr.run(30);ok('a site with regen grows back by night',Fr.E.made.ore>30,Fr.E.made.ore<=30);
+ const noMax=mk(null,null,true),Mx=mk(null,{ore:{max:60}},true);[noMax,Mx].forEach(W=>W.run(72));
+ ok('a policy\'s max stops the makers ('+Mx.E.made.ore+' made, '+noMax.E.made.ore+' without; rate '+Mx.E.recipes.pit.rate+')',Mx.E.recipes.pit.rate===0&&Mx.E.made.ore<noMax.E.made.ore,Mx.E.recipes.pit.rate>0);
+ const Mn=mk(null,{ore:{min:100}},true);Mn.run(72);const sm=Mn.S.economyGoverned().ore;ok('a policy\'s min holds a shelf with no demand',sm.target===100&&noMax.S.economyGoverned().ore.target===0,sm.target!==100);}
+{const go=(pol)=>{const {S,clock}=world(193);S.settlement({id:'kautoa',faction:'town'});S.settlement({id:'valapo',faction:'town'});
+   S.place({id:'kShed',kind:'warehouse',x:0,z:0,activities:{},settlement:'kautoa'});S.place({id:'vShed',kind:'warehouse',x:150,z:0,activities:{},settlement:'valapo'});
+   const cfg=()=>({goods:{rice:{}},window:1});S.economy(cfg(),{settlement:'kautoa'});const EV=S.economy(cfg(),{settlement:'valapo'});S.store('kShed',{kind:'warehouse'});S.store('vShed',{kind:'warehouse'});S.R.place.kShed.stock={rice:400};
+   if(pol)S.stockpile('kautoa',pol);S.trade({id:'line',stops:[{settlement:'kautoa',place:'kShed'},{settlement:'valapo',place:'vShed'}],cap:1000,minutes:60,mins:30,keep:0,want:100,goods:{kautoa:['rice'],valapo:[]},expect:{valapo:{rice:50}}});
+   for(let m=0;m<200;m++){clock.h=(m%1440)/60;clock.t+=40;S.step();}return EV.imported.rice||0;};
+ const r=go({rice:{reserve:300}}),n=go(null);ok('a policy\'s reserve stays out of a route ('+r+' sent, '+n+' without)',r===100&&n===400,r>100);}
+
+// better tools (77-sim-6-items.js `prefer`, `base`; the isles' iron tools): a worn tool's errand buys the better kind when
+// its seller sells it and the town holds its good, else its own, the miss booked short of the better good; a better tool
+// worn out is sought as its base, so a town out of iron falls back; an undeclared good is never bought free
+{const mk=(o)=>{o=o||{};const {S,clock}=world(211);
+   ['WORK','EAT'].forEach(a=>{ if(!S.R.activity[a]) S.activity({id:a}); });
+   S.settlement({id:'valapo',faction:'town'});
+   S.place({id:'vHome',kind:'house',x:150,z:0,activities:{SLEEP:6,EAT:6},settlement:'valapo'});S.place({id:'vFarm',kind:'field',x:100,z:60,activities:{WORK:6},open:[0,24],settlement:'valapo'});
+   S.place({id:'vShed',kind:'warehouse',x:50,z:0,activities:{},settlement:'valapo'});S.place({id:'vShop',kind:'shop',x:60,z:0,activities:{BUY:4},open:[6,20],settlement:'valapo'});
+   const goods={rice:{},tools:{}};if(o.declared!==false)goods.irontools={};
+   const EV=S.economy({goods:goods,every:60,window:1},{settlement:'valapo'});S.store('vShed',{kind:'warehouse'});
+   S.R.place.vShed.stock={rice:500,tools:100,irontools:2};
+   S.items({kinds:{rice:{cat:'food',food:true},stone:Object.assign({cat:'tool',workLife:20,good:'tools'},o.prefer===false?{}:{prefer:['iron']}),iron:{cat:'tool',workLife:30,good:'irontools',base:'stone'},hoe:{cat:'tool',workLife:20,good:'tools',prefer:['iron']}},free:['IDLE'],secPerMinute:40});
+   S.shop('vShop',o.sells===false?['stone','rice']:['stone','iron','hoe','rice']);
+   S.role({id:'grower',org:'folk',sched:[[0,'SLEEP'],[6,'WORK'],[18,'EAT'],[19,'SLEEP']],prefers:{SLEEP:{pin:'home'},EAT:{pin:'home'},WORK:{pin:'work'}}});
+   const ps=[0,1,2,3].map(i=>{const a=S.actor({id:'vg'+i,role:'grower',home:'vHome',work:'vFarm'});a.tool={k:o.given?'iron':o.hoe?'hoe':'stone',w:0.1*i};return a;});
+   S.R.place.vHome.store={rice:200};S.R.place.vHome.people=4;
+   clock.d=0;clock.h=0;S.level('valapo','abstract');
+   for(let m=0;m<6*1440;m++){clock.h=(m%1440)/60;clock.d=Math.floor(m/1440);clock.t+=40;S.step();}
+   return {S,EV,ps,B:(S.ITEMS.statsBy||{}).valapo||S.ITEMS.stats};};
+ const A=mk(),bA=A.B.bought||{},brA=A.S.ITEMS.stats.brokenBy||{};
+ ok('better tools: the town\'s two iron tools bought first, then stone ('+(bA.iron||0)+' iron, '+(bA.stone||0)+' stone; irontools used '+(A.EV.used.irontools||0)+')',bA.iron===2&&A.EV.used.irontools===2&&bA.stone>=2&&A.ps.every(a=>a.tool),!(bA.iron>0));
+ ok('out of iron, the miss is booked short of the better good (the town\'s want: '+(A.EV.short.irontools||0)+')',A.EV.short.irontools>0,!(A.EV.short.irontools>0));
+ ok('an iron tool worn out is sought as stone and replaced from it ('+(brA.iron||0)+' worn out)',brA.iron>=1&&A.ps.every(a=>a.tool&&!a.toolNeed),!(brA.iron>=1));
+ const N=mk({prefer:false}),bN=N.B.bought||{};ok('without prefer, stone is replaced by stone',!(bN.iron>0)&&bN.stone>=4&&!(N.EV.short.irontools>0),bN.iron>0);
+ const U=mk({declared:false}),bU=U.B.bought||{};ok('a better good the economy does not hold is never bought free',!(bU.iron>0)&&bU.stone>=4,bU.iron>0);
+ const W=mk({sells:false}),bW=W.B.bought||{};ok('a seller without the better tool sells its own',!(bW.iron>0)&&bW.stone>=4,bW.iron>0);
+ // a better tool remembers what it stood in for: a field hand's iron tool, worn out, is sought as its hoe again (not the
+ // iron kind's `base`, the stone tool); an iron tool given at the start, with nothing remembered, falls back to the base
+ const H=mk({hoe:true}),bH=H.B.bought||{};
+ ok('a field hand\'s iron tool worn out is sought as its hoe again ('+(bH.iron||0)+' iron, '+(bH.hoe||0)+' hoes, '+(bH.stone||0)+' stone)',bH.iron===2&&bH.hoe>=2&&!(bH.stone>0)&&H.ps.every(a=>a.tool),bH.stone>0);
+ const G=mk({given:true}),bG=G.B.bought||{};ok('an iron tool given at the start falls back to its kind\'s base ('+(bG.stone||0)+' stone)',bG.stone>0,!(bG.stone>0));}
+
+// batch recipes (PLAN-ECONOMY.md Phase 2): inputs claimed once at the start, outputs and byproducts at the end, and what
+// stops a batch said by place: no input, a partial input, no workers, a full store, an empty site
+{const mk=(o)=>{o=o||{};const {S,clock}=world(197);['WORK'].forEach(a=>S.activity({id:a}));
+   S.place({id:'shed',kind:'warehouse',x:0,z:0,activities:{}});S.place({id:'forge',kind:'smithy',x:150,z:0,activities:{WORK:4},open:[0,24]});
+   S.role({id:'smith',org:'folk',sched:[[0,'WORK']],prefers:{WORK:{pin:'work'}}});
+   const E=S.economy({goods:{ore:{},coal:{},iron:{},slag:{}},every:60,window:1});S.store('shed',{kind:'warehouse'});if(o.site)S.site(Object.assign({id:'n1',goods:['iron']},o.site));
+   S.recipe('forge',Object.assign({batch:{'in':{ore:2,coal:1},out:{iron:1},by:{slag:1},hours:2},cap:o.cap==null?1000:o.cap},o.site?{site:'n1'}:{}));S.R.place.shed.stock=o.stock||{ore:20,coal:10};
+   if(o.smiths!==0)[0,1].forEach(i=>S.actor({id:'s'+i,role:'smith',home:'homeA',work:'forge'}));
+   const run=(h)=>{for(let m=E._m||0,e=m+h*60;m<e;m++){clock.h=(m%1440)/60;clock.d=Math.floor(m/1440);clock.t+=40;S.step();E._m=m+1;}};return {S,E,run};};
+ const A=mk();const a0=A.S.ledgerSnap();A.run(30);const L=A.S.ledger(a0,A.S.ledgerSnap());
+ ok('a batch makes its outputs and byproduct from its inputs (10 batches from 20 ore and 10 coal)',A.E.made.iron===10&&A.E.made.slag===10&&A.E.used.ore===20&&A.E.used.coal===10,A.E.made.iron!==10);
+ ok('the ledger balances over batches',L.ok,!L.ok);
+ ok('out of input it says what is missing',A.S.blockedReport().forge.reason==='missing'&&A.S.blockedReport().forge.goods.indexOf('ore')>=0,!A.S.blockedReport().forge);
+ const P=mk({stock:{ore:1,coal:9}});P.run(10);ok('a partial input claims nothing',!(P.E.used.coal>0)&&P.S.R.place.shed.stock.coal===9&&P.S.blockedReport().forge.goods.join()==='ore',P.E.used.coal>0);
+ const N=mk({smiths:0});N.run(3);ok('nobody at work is said',N.S.blockedReport().forge.reason==='no workers',!N.S.blockedReport().forge);
+ const F=mk({cap:3});F.run(10);ok('a full store stops it and says so',F.S.blockedReport().forge.reason==='full'&&F.E.made.iron<=2,F.E.made.iron>3);
+ const D=mk({site:{amount:3}});D.run(20);ok('an empty site stops it, its batch whole',D.S.blockedReport().forge.reason==='depleted'&&D.E.made.iron===3&&D.S.sitesReport()[0].amount===0,D.E.made.iron!==3);
+ const R=mk();R.run(30);R.S.R.place.shed.stock.ore=4;R.S.R.place.shed.stock.coal=2;R.run(10);ok('fed again it runs',R.E.made.iron===12,R.E.made.iron!==12);}
+
+// a work camp's controls (core/camp 40): a recipe held while its crew marches (its hours lost, the reason said, released at
+// `until`), pointed at the stand it moved to, and a stand grown back while nobody worked it booked `regrown`, which the
+// ledger allows (an amount raised without it is caught)
+{const mk=()=>{const {S,clock}=world(203);['WORK'].forEach(a=>S.activity({id:a}));
+   S.place({id:'shed',kind:'warehouse',x:0,z:0,activities:{}});S.place({id:'camp',kind:'fellcamp',x:150,z:0,activities:{WORK:4},open:[0,24]});
+   S.role({id:'feller',org:'folk',sched:[[0,'WORK']],prefers:{WORK:{pin:'work'}}});
+   const E=S.economy({goods:{logs:{},brush:{}},every:60,window:1});S.store('shed',{kind:'warehouse'});
+   S.site({id:'s1',goods:['logs'],amount:40});S.site({id:'s2',goods:['logs'],amount:400});
+   S.recipe('camp',{batch:{'in':{},out:{logs:1},by:{brush:1},hours:1},cap:1000,site:'s1'});[0,1].forEach(i=>S.actor({id:'feller'+i,role:'feller',home:'homeA',work:'camp'}));
+   const run=(h)=>{for(let m=E._m||0,e=m+h*60;m<e;m++){clock.h=(m%1440)/60;clock.d=Math.floor(m/1440);clock.t+=40;S.step();E._m=m+1;}};return {S,E,run};};
+ const A=mk();A.run(4);const m0=A.E.made.logs||0;A.S.recipeHold('camp','moving camp',A.E._m+5*60);A.run(4);const held=(A.E.made.logs||0)-m0,why=A.S.blockedReport().camp;A.run(4);
+ ok('a held recipe makes nothing and says why ('+(why&&why.reason)+'), then runs at its minute',held===0&&why&&why.reason==='moving camp'&&(A.E.made.logs||0)>m0&&!A.S.blockedReport().camp,held>0);
+ const B=mk();B.run(3);const t1=B.S.R&&B.E.resSites.s1.taken;B.S.recipeSite('camp','s2');B.run(3);
+ ok('a recipe pointed at another site draws on it ('+B.E.resSites.s2.taken+' from s2, s1 stays at '+B.E.resSites.s1.taken+')',B.E.resSites.s2.taken>0&&B.E.resSites.s1.taken===t1,(()=>{try{B.S.recipeSite('camp','nowhere');return true;}catch(e){return false;}})());
+ const C=mk();C.run(30);const a0=C.S.ledgerSnap();const left=C.E.resSites.s1.amount;C.S.siteRestore('s1',30);C.run(2);const L=C.S.ledger(a0,C.S.ledgerSnap());
+ const D=mk();D.run(30);const d0=D.S.ledgerSnap();D.E.resSites.s1.amount=30;D.run(2);const LD=D.S.ledger(d0,D.S.ledgerSnap());
+ ok('a stand grown back is booked regrown and the ledger allows it ('+left+' to 30, regrown '+C.E.resSites.s1.regrown+')',left<30&&C.E.resSites.s1.regrown===30-left&&L.ok,LD.ok);}
+
+// crime and punishment (77-sim-6-crime.js; the Voth brief 1.7): a pickpocket at the market unseen takes from a
+// victim's purse (its material meter); seen with a guard on duty near, it is arrested and held at the jail for its days,
+// then let go; seen with no guard near, it escapes; a burglar carries food from another household to its own, none lost;
+// a jailed worker does not work at the abstract level either. Each with its negative
+{const mk=(o)=>{o=o||{};const {S,clock}=world(229);['WORK'].forEach(a=>S.activity({id:a}));
+   S.place({id:'post',kind:'post',x:100,z:50,activities:{WORK:2}});S.place({id:'cell',kind:'barracks',x:0,z:0,activities:{SLEEP:4}});S.place({id:'homeC',kind:'home',x:100,z:0,activities:{SLEEP:2,REST:2}});
+   S.role({id:'loafer',org:'folk',sched:[[0,'SLEEP'],[6,'SOCIALIZE'],[20,'SLEEP']],prefers:{SLEEP:{pin:'home'},SOCIALIZE:{kinds:['market']}}});
+   S.role({id:'guard',org:'folk',sched:[[0,'WORK']],prefers:{WORK:{pin:'work'}}});
+   S.actor({id:'thief',role:'loafer',home:'homeC'});S.actor({id:'v1',role:'loafer',home:'homeA'});S.actor({id:'v2',role:'loafer',home:'homeB'});
+   if(o.guard!==false) S.actor({id:'g1',role:'guard',home:'homeA',work:'post'});
+   S.needs({list:['material'],rate:{material:0},init:10});
+   S.R.place.homeA.store={rice:100,fish:60};S.R.place.homeB.store={rice:80};S.R.place.homeC.store={};
+   S.crime({seed:5,share:1,who:a=>a.id==='thief',guard:a=>a.role==='guard',jails:['barracks'],guardActs:['WORK'],
+     crimes:o.crimes||{pickpocket:{acts:['SOCIALIZE'],at:['market'],hours:[6,20],chance:1,loss:20,gain:20}},
+     seen:{base:o.seen==null?0:o.seen,perWitness:0,guard:0,night:1},arrest:{reach:300,base:1},jail:{days:o.days||7,resist:0}});
+   const run=(h)=>{for(let m=S._m||0,e=m+h*60;m<e;m++){clock.h=(m%1440)/60;clock.d=Math.floor(m/1440);clock.t+=40;S.step();S._m=m+1;}};return {S,run};};
+ const A=mk();A.run(14);const RA=A.S.crimeReport(),mat=a=>{A.S.needsOf(a,A.S.minute());return a.nd[A.S.NEED.idx.material];};
+ ok('a pickpocket unseen at the market takes from its victims ('+(RA.stats[''].done.pickpocket||0)+' done; the victims\' material '+Math.round(mat(A.S.R.actor.v1))+' and '+Math.round(mat(A.S.R.actor.v2))+')',
+   RA.criminals===1&&RA.stats[''].done.pickpocket>0&&!RA.jailed.length&&(mat(A.S.R.actor.v1)>10||mat(A.S.R.actor.v2)>10),!(RA.stats[''].done.pickpocket>0));
+ const B=mk({seen:1});B.run(12);const RB=B.S.crimeReport(),th=B.S.R.actor.thief;B.run(1);
+ ok('seen, with a guard on duty near, it is arrested and held at the jail for its seven days ('+(RB.jailed[0]&&RB.jailed[0].place)+')',
+   RB.stats[''].arrested.pickpocket===1&&RB.jailed.length===1&&RB.jailed[0].place==='cell'&&B.S.jailed(th)&&th.place==='cell'&&th.cmd.until===RB.jailed[0].until&&B.S.CRIME.held.thief.until-B.S.CRIME.held.thief.since===7*1440,
+   !(RB.stats[''].arrested.pickpocket>0));
+ B.run(3*24);const held3=B.S.jailed(th)&&th.place==='cell';const until=th.cmd.until;B.run(Math.ceil((until-B.S.minute())/60)+1);const RB2=B.S.crimeReport();
+ ok('it stays in its cell through its term and is let go at its end (served '+RB2.stats[''].served+', out at day '+Math.floor(B.S.minute()/1440)+')',held3&&!B.S.jailed(th)&&RB2.stats[''].served===1&&!RB2.jailed.length,!held3);
+ B.run(36);ok('let go, it lies low two days before it tries again ('+(B.S.crimeReport().stats[''].attempts.pickpocket)+' attempts in all)',B.S.crimeReport().stats[''].attempts.pickpocket===1,B.S.crimeReport().stats[''].attempts.pickpocket>1);
+ const C=mk({seen:1,guard:false});C.run(14);const RC=C.S.crimeReport();
+ ok('seen with no guard near, it escapes ('+(RC.stats[''].escaped.pickpocket||0)+' escaped)',RC.stats[''].escaped.pickpocket>0&&!RC.jailed.length,RC.jailed.length>0);
+ const food=W=>['homeA','homeB','homeC'].reduce((n,id)=>n+Object.values(W.S.R.place[id].store||{}).reduce((a,b)=>a+b,0),0);
+ const D=mk({crimes:{burglary:{hours:[1,4],chance:1,share:0.5}}}),f0=food(D);D.run(30);const RD=D.S.crimeReport();
+ const Z=mk({crimes:{burglary:{hours:[1,4],chance:1,share:0}}});Z.run(30);
+ ok('a burglar carries food from another household to its own, none lost ('+RD.stats[''].stolen+' servings to its home)',RD.stats[''].stolen>0&&food(D)===f0&&Object.values(D.S.R.place.homeC.store).reduce((a,b)=>a+b,0)===RD.stats[''].stolen,
+   Z.S.crimeReport().stats[''].stolen>0);
+ // the abstract level: a jailed worker is not counted at work
+ const W=(jail)=>{const {S,clock}=world(233);S.activity({id:'WORK'});S.settlement({id:'valapo',faction:'town'});
+   S.place({id:'vH',kind:'house',x:150,z:0,activities:{SLEEP:4},settlement:'valapo'});S.place({id:'vF',kind:'field',x:100,z:60,activities:{WORK:4},open:[0,24],settlement:'valapo'});
+   S.place({id:'vS',kind:'warehouse',x:50,z:0,activities:{},settlement:'valapo'});
+   const E=S.economy({goods:{rice:{}},every:60,window:1},{settlement:'valapo'});S.store('vS',{kind:'warehouse'});S.recipe('vF',{out:['rice'],rate:1,cap:3000});
+   S.role({id:'grower',org:'folk',sched:[[0,'WORK']],prefers:{WORK:{pin:'work'}}});const a=S.actor({id:'vg',role:'grower',home:'vH',work:'vF'});
+   S.level('valapo','abstract');if(jail)S.command(a,{act:'SLEEP',place:'vH',until:2*1440,by:'jail'});
+   for(let m=0;m<1440;m++){clock.h=(m%1440)/60;clock.d=Math.floor(m/1440);clock.t+=40;S.step();}return E.made.rice||0;};
+ const wj=W(true),wf=W(false);ok('a jailed worker does not work at the abstract level ('+wj+' made, '+wf+' free)',wj===0&&wf>0,wf===0);}
+
+// the thieves' guild (77-sim-6-crime.js `guild`; owner, 2026-11-02): one a town, the tavern farthest from the jail; a
+// burglar's loot (food, and a spare shirt) carried there in a free hour and fenced (the food into its store, the shirt on
+// its shelf, the thief's material meter down); a thief seen near it hides there, out of the guard's reach, and is not
+// arrested; an arrested thief's loot goes back to the household; nobody picks a pocket in the guild. Each with a negative
+{const mk=(o)=>{o=o||{};const {S,clock}=world(239);['WORK'].forEach(a=>S.activity({id:a}));
+   S.place({id:'post',kind:'post',x:o.postX==null?100:o.postX,z:o.postZ==null?50:o.postZ,activities:{WORK:2}});S.place({id:'cell',kind:'barracks',x:0,z:0,activities:{SLEEP:4}});
+   S.place({id:'homeC',kind:'home',x:100,z:0,activities:{SLEEP:2,REST:2}});
+   S.place({id:'nearTav',kind:'tavern',x:10,z:0,activities:{SOCIALIZE:6}});S.place({id:'den',kind:'tavern',x:120,z:60,activities:{SOCIALIZE:6}});
+   S.role({id:'loafer',org:'folk',sched:[[0,'SLEEP'],[6,'SOCIALIZE'],[20,'SLEEP']],prefers:{SLEEP:{pin:'home'},SOCIALIZE:{kinds:o.at||['market']}}});
+   S.role({id:'guard',org:'folk',sched:[[0,'WORK']],prefers:{WORK:{pin:'work'}}});
+   S.actor({id:'thief',role:'loafer',home:'homeC'});const v1=S.actor({id:'v1',role:'loafer',home:'homeA'});S.actor({id:'v2',role:'loafer',home:'homeB'});
+   S.actor({id:'g1',role:'guard',home:'homeA',work:'post'});
+   S.needs({list:['material'],rate:{material:0},init:30});
+   S.items({kinds:{shirt:{cat:'clothes',slot:'torso',life:900}},free:['IDLE'],secPerMinute:40});v1.inv={shirt:2};
+   S.R.place.homeA.store={rice:100,fish:60};S.R.place.homeB.store={rice:80};S.R.place.homeC.store={};
+   S.crime({seed:5,share:1,who:a=>a.id==='thief',guard:a=>a.role==='guard',jails:['barracks'],guardActs:['WORK'],crimes:o.crimes,
+     seen:{base:o.seen==null?0:o.seen,perWitness:0,guard:0,night:1},arrest:{reach:300,base:1},jail:{days:7,resist:0},
+     guild:o.guild===false?null:{kinds:['tavern'],hideReach:300,hideMins:120,items:1,fence:{acts:['SOCIALIZE'],mins:30,perServing:0.2,perItem:8}}});
+   const run=(h)=>{for(let m=S._m||0,e=m+h*60;m<e;m++){clock.h=(m%1440)/60;clock.d=Math.floor(m/1440);clock.t+=40;S.step();S._m=m+1;}};return {S,run};};
+ const food=W=>['homeA','homeB','homeC','den'].reduce((n,id)=>n+Object.values(W.S.R.place[id].store||{}).reduce((a,b)=>a+b,0),0);
+ const A=mk({crimes:{burglary:{hours:[1,4],chance:1,share:0.5}}}),G=A.S.guildOf(null);
+ ok('the guild is the tavern farthest from the jail ('+(G&&G.id)+')',G&&G.id==='den'&&G.guild,!(G&&G.id==='den'));
+ const f0=food(A);A.run(5);const R1=A.S.crimeReport(),car=R1.carrying.length;A.run(10);const R2=A.S.crimeReport(),th=A.S.R.actor.thief;
+ A.S.needsOf(th,A.S.minute());
+ ok('a burglar\'s loot is fenced at the guild in a free hour ('+R2.stats[''].fenced+' servings, '+R2.stats[''].fencedItems+' shirt; the stash '+JSON.stringify(R2.guild.stash)+'), none lost',
+   car===1&&R2.stats[''].fenced>0&&R2.guild.stash.shirt===1&&!R2.carrying.length&&food(A)===f0&&A.S.R.actor.v1.inv.shirt===1&&th.nd[A.S.NEED.idx.material]<30,
+   !(R2.stats[''].fenced>0));
+ // hiding: a pickpocket seen at the market, the guild 20 m off, the guard 120 m off
+ const pp={pickpocket:{acts:['SOCIALIZE'],at:['market'],hours:[6,20],chance:1}};
+ const H=mk({crimes:pp,seen:1,postX:0,postZ:10});H.run(8);const RH=H.S.crimeReport();
+ const N=mk({crimes:pp,seen:1,postX:0,postZ:10,guild:false});N.run(8);const RN=N.S.crimeReport();
+ ok('a thief seen near the guild hides there and is not arrested ('+(RH.stats[''].hid.pickpocket||0)+' hid; without a guild '+(RN.stats[''].arrested.pickpocket||0)+' arrested)',
+   RH.stats[''].hid.pickpocket>0&&!(RH.stats[''].arrested.pickpocket>0)&&!RH.jailed.length,!(RN.stats[''].arrested.pickpocket>0));
+ // recovery: a thief carrying loot arrested gives it back
+ const Rc=mk({crimes:{}}),thc=Rc.S.R.actor.thief;Rc.run(1);Rc.S.R.place.homeA.store.rice-=20;Rc.S.R.place.homeC.store.rice=20;Rc.S.R.actor.v1.inv.shirt--;
+ Rc.S.crimeLoot(thc,{from:'homeA',food:{rice:20},items:[{item:'shirt',owner:'v1'}]});const caught=Rc.S.crimeAlarm(thc,'burglary',{x:100,z:50,place:'post'});
+ ok('an arrested thief\'s loot goes back to the household ('+Rc.S.R.place.homeA.store.rice+' rice, '+Rc.S.R.actor.v1.inv.shirt+' shirts)',caught&&Rc.S.R.place.homeA.store.rice===100&&Rc.S.R.actor.v1.inv.shirt===2&&!thc.loot,
+   Rc.S.R.place.homeC.store.rice>0);
+ // no pocket picked in the guild: the loafers spend their day there
+ const Q=mk({crimes:pp,at:['tavern']});Q.run(14);const RQ=Q.S.crimeReport(),inDen=Q.S.R.actor.thief.place;
+ const Q2=mk({crimes:{pickpocket:{acts:['SOCIALIZE'],at:['tavern'],hours:[6,20],chance:1}},at:['tavern'],guild:false});Q2.run(14);
+ ok('nobody picks a pocket inside the guild (the thief at '+inDen+', '+(RQ.stats[''].attempts.pickpocket||0)+' tried there)',!(RQ.stats[''].attempts.pickpocket>0),Q2.S.crimeReport().stats[''].attempts.pickpocket>0===false);}
+
+// money (77-sim-6-money.js, PLAN-MONEY.md M0): accounts in a nation's currency, integers; mint and burn the only faucet and
+// sink; a payment conserves its currency, never overdraws, is booked out of one settlement and into another; an exchange
+// goes through the changers at the rates to the Talent less their spread; the ledger holds every settlement's money to its
+// books, exactly, and catches a balance changed by hand, an account gone, money paid out of a town that never came in
+{const mk=()=>{const {S,clock}=world(241);S.settlement({id:'kautoa',faction:'town'});S.settlement({id:'valapo',faction:'town'});
+   S.money({currencies:{talent:{name:'Izani Talent',talent:1},shell:{name:'Kautoan shells',talent:0.05}},spread:0.03});
+   S.account({id:'hhA',kind:'household',currency:'shell',settlement:'kautoa'});S.account({id:'hhB',kind:'household',currency:'shell',settlement:'valapo'});
+   S.account({id:'tre',kind:'treasury',currency:'shell',settlement:'kautoa'});S.account({id:'shop',kind:'workplace',currency:'shell',settlement:'kautoa',ownedBy:'tre'});
+   S.account({id:'player',kind:'player',currency:'talent'});
+   S.mint('hhA',200,'endowment');S.mint('hhB',100,'endowment');S.mint('tre',5000,'reserve');S.mint('player',50,'endowment');
+   S.mint('changer:shell',10000,'reserve');S.mint('changer:talent',1000,'reserve');return S;};
+ const S=mk(),a0=S.ledgerSnap();
+ const p1=S.pay('hhA','shop',30,'purchase'),p2=S.pay('hhA','hhB',500,'gift'),p3=S.pay('hhB','tre',90,'tribute',true),p4=S.pay('hhB','tre',500,'tribute',true);
+ const b1=S.burn('tre',100,'offering'),ex=S.exchange('player','hhA',10,'player buys');
+ const L=S.ledger(a0,S.ledgerSnap()),R=S.moneyReport();
+ ok('a payment conserves its currency and never overdraws ('+p1+' paid, '+p2+' of 500 asked, '+p3+' of 90 whole, '+p4+' of 500 whole)',p1===30&&p2===170&&p3===90&&p4===0&&S.acct('hhA').balance===200-30-170+ex&&S.acct('hhB').balance===100+170-90&&S.accounts().every(A=>A.balance>=0),p2===500);
+ ok('only mint and burn change the supply ('+R.currencies.shell.supply+' shells, '+JSON.stringify(R.currencies.shell.minted)+' minted, '+JSON.stringify(R.currencies.shell.burned)+' burned)',
+   R.currencies.shell.supply===200+100+5000+10000-100&&R.currencies.talent.supply===1050,R.currencies.shell.supply!==15200);
+ ok('an exchange goes through the changers at the rates to the Talent, less the spread (10 Talents to '+ex+' shells)',ex===Math.floor(10/0.05*0.97)&&S.acct('changer:talent').balance===1010&&S.acct('changer:shell').balance===10000-ex,ex===200);
+ let threw=false;try{S.pay('player','hhA',1,'x');}catch(e){threw=true;}
+ ok('a payment between currencies is refused (an exchange is the way)',threw,!threw);
+ ok('the ledger holds every settlement\'s money to its books (kautoa: '+JSON.stringify(L.money&&L.money.towns.kautoa.shell)+')',L.ok&&L.money.towns.valapo.shell['in']===170&&L.money.towns.valapo.shell.out===90&&L.money.towns.kautoa.shell.out===170&&L.money.towns.kautoa.shell['in']===90+ex,!L.ok);
+ const T1=mk(),c0=T1.ledgerSnap();T1.acct('hhA').balance+=25;const L1=T1.ledger(c0,T1.ledgerSnap());
+ ok('a balance changed by hand is caught ('+L1.problems[0]+')',!L1.ok&&/off by 25/.test(L1.problems.join()),L1.ok);
+ const T2=mk(),d0=T2.ledgerSnap(),sn=T2.ledgerSnap();sn.money.towns.valapo.shell['in']+=40;sn.money.towns.valapo.shell.total+=40;const L2=T2.ledger(d0,sn);
+ ok('money paid into a town that no town paid out is caught',!L2.ok&&L2.problems.some(p=>/paid out of settlements/.test(p)),L2.ok);
+ const T3=mk(),e0=T3.ledgerSnap(),sg=T3.ledgerSnap();delete sg.money.accounts.hhB;const L3=T3.ledger(e0,sg);
+ ok('an account gone is caught',!L3.ok&&L3.problems.some(p=>/is gone/.test(p)),L3.ok);
+ let bad=false;try{S.mint('hhA',1.5,'x');}catch(e){bad=true;}ok('money is whole numbers only',bad,!bad);}
+
+// money M1 (77-sim-6-money.js `m1`; PLAN-MONEY.md): prices at labour cost (bread its baking plus its rice), a calibration
+// day that measures and pays nothing, then wages at midnight for the rota's hours into each worker's household, the
+// households paying for their food, a household with no wage and no money fed on the treasury's dole, nobody paid while
+// held, the circular flow (wages = spending + saving) and the ledger holding. Each with a negative
+{const mk=(o)=>{o=o||{};const {S,clock}=world(251);S.activity({id:'WORK'});S.settlement({id:'kautoa',faction:'town'});
+   const P=(id,kind,x,acts)=>S.place({id,kind,x,z:0,activities:acts,open:[0,24],settlement:'kautoa'});
+   P('shed','warehouse',10,{});P('farm','field',60,{WORK:4});P('bake','bakehouse',80,{WORK:2});P('hA','house',100,{SLEEP:4,EAT:4});P('hB','house',120,{SLEEP:4,EAT:4});P('hC','house',140,{SLEEP:4,EAT:4});
+   S.economy(Object.assign({goods:o.treat?{rice:{},bread:{},kava:{}}:{rice:{},bread:{}},inputs:{bread:{rice:1}},every:60,window:1,meal:{per:2,foods:['rice','bread']}},o.govern?{govern:{every:60,cover:3,ti:1.5,alpha:0.3,min:0.3,max:1.5,smooth:2,window:1}}:{}),{settlement:'kautoa'});S.store('shed',{kind:'warehouse'});
+   S.recipe('farm',{out:['rice'],rate:2,cap:5000});S.recipe('bake',{out:['bread'],rate:4,cap:5000});S.R.place.shed.stock={rice:400,bread:200};
+   if(o.treat){S.needs({list:['material'],rate:{material:0.5},init:10});P('shop','shop',90,{BUY:6});S.R.place.shed.stock.kava=5000;}
+   if(o.stations){S.needs({list:['material'],rate:{material:0.2},init:10});P('shop','shop',90,{BUY:6,WORK:2});}
+   S.items(Object.assign({kinds:Object.assign({rice:{cat:'food',food:true},bread:{cat:'food',food:true}},o.treat?{'kava bowl':{cat:'luxury',material:25,good:'kava'}}:{}),free:['IDLE'],secPerMinute:40,meals:2,perMeal:2,low:1,days:1},o.treat?{treat:{at:30,items:[[0,'kava bowl']]}}:{}));
+   if(o.treat) S.shop('shop',['kava bowl']);
+   if(o.stations) S.shop('shop',['rice','bread']);
+   S.role({id:'grower',org:'folk',sched:[[0,'SLEEP'],[6,'WORK'],[18,'SLEEP']],prefers:{WORK:{pin:'work'}}});S.role({id:'idler',org:'folk',sched:[[0,'SLEEP']]});
+   const gs=[0,1,2].map(i=>S.actor({id:'gr'+i,role:'grower',home:'hA',work:i<2?'farm':'bake'}));S.actor({id:'gr3',role:'grower',home:'hB',work:'farm'});S.actor({id:'id0',role:'idler',home:'hC'});
+   S.all('actor').forEach(a=>{a.cls='poor';a.wealth=0.1;});
+   ['hA','hB','hC'].forEach(h=>{S.R.place[h].store={rice:4};S.R.place[h].people=h==='hA'?3:1;});
+   S.money({currencies:{shell:{name:'shells',talent:0.05}},m1:{wage:()=>3,priceWage:3,calibrate:o.calibrate===false?false:o.calibrate||1,ration:!!o.ration,spend:o.spend||null,stations:o.stations||null},m2:o.m2||null});
+   S.account({id:'treasury:kautoa',kind:'treasury',currency:'shell',settlement:'kautoa'});S.mint('treasury:kautoa',o.reserve==null?3000:o.reserve,'reserve');
+   ['farm','bake'].concat(o.stations?['shop']:[]).forEach(w=>S.account({id:'wp:'+w,owner:w,kind:'workplace',currency:'shell',settlement:'kautoa',ownedBy:'treasury:kautoa'}));
+   ['hA','hB','hC'].forEach(h=>S.account({id:'hh:'+h,owner:h,kind:'household',currency:'shell',settlement:'kautoa'}));S.mint('hh:hA',o.rich==null?60:o.rich,'endowment');S.mint('hh:hB',30,'endowment');
+   if(o.jail) S.command(gs[0],{act:'SLEEP',place:'hA',until:3*1440,by:'jail'});
+   clock.d=0;clock.h=0;S.level('kautoa','abstract');const run=(d)=>{for(let m=S._m||0,e=m+Math.round(d*1440);m<e;m++){clock.h=(m%1440)/60;clock.d=Math.floor(m/1440);clock.t+=40;S.step();S._m=m+1;}};return {S,run};};
+ const A=mk();A.run(1+1/1440);const day0=A.S.moneyReport().currencies.shell.paid,mk0=A.S.moneyM1().markup.kautoa,a0=A.S.ledgerSnap(),hh0=['hA','hB','hC'].map(h=>A.S.acct('hh:'+h).balance);A.run(2);const R=A.S.moneyM1(),L=A.S.ledger(a0,A.S.ledgerSnap());
+ const P=A.S.MONEY.m1.price.kautoa,C=A.S.MONEY.m1.cost.kautoa;
+ ok('prices at labour cost: rice '+C.rice+', bread '+C.bread+' (its baking and its rice); at the markup '+mk0.toFixed(2)+': rice '+P.rice+', bread '+P.bread,
+   Math.abs(C.rice-1.5)<1e-9&&Math.abs(C.bread-(0.75+1.5))<1e-9&&P.bread>P.rice&&P.rice>=1&&Number.isInteger(P.bread),Math.abs(C.bread-2.25)>1e-9);
+ ok('the calibration day measures, no purchase paid; the market opens at its end, with its wages ('+JSON.stringify(day0)+'); the markup the wage bill over the spending at cost',!day0.purchase&&day0.wage===4*12*3&&mk0>1&&R.live,!!day0.purchase);
+ const D=R.days.kautoa.slice(1),wages=D.reduce((n,d)=>n+d.wages,0),spent=D.reduce((n,d)=>n+d.spent,0),dole=D.reduce((n,d)=>n+d.dole,0),dHof=(L)=>L.reduce((n,h)=>n+A.S.acct('hh:'+h).balance-hh0[['hA','hB','hC'].indexOf(h)],0),dH=dHof(['hA','hB','hC']);
+ ok('wages paid at midnight for the rota\'s hours: 4 workers x 12 h x 3 a day ('+wages+' in two days)',wages===2*4*12*3,wages===0);
+ ok('the circular flow: wages = the households\' spending + their saving ('+wages+' = '+spent+' + '+dH+')',wages===spent+dH&&spent>0,wages===spent+dHof(['hB','hC']));
+ ok('a household with no wage and no money is fed on the treasury\'s dole ('+dole+' in two days; hC holds '+A.S.acct('hh:hC').balance+')',dole>0&&A.S.acct('hh:hC').balance===0,!(dole>0));
+ ok('the ledger holds the town\'s money to its books',L.ok,!L.ok);
+ const J=mk({jail:true});J.run(3+1/1440);const JD=J.S.moneyM1().days.kautoa.slice(1).reduce((n,d)=>n+d.wages,0);
+ ok('nobody is paid while held ('+JD+' to the three free workers)',JD===2*3*12*3,JD===2*4*12*3);
+ const T=mk({calibrate:3});T.run(3+1/1440);const RT=T.S.moneyM1();ok('a longer calibration measures over its days ('+RT.days.kautoa.length+' days, markup '+(RT.markup.kautoa||0).toFixed(2)+')',RT.live&&RT.days.kautoa.length===3&&!(T.S.moneyReport().currencies.shell.paid.purchase>0)&&RT.markup.kautoa>1,!RT.live);
+ // the chief's redistribution (m1.ration): each member with no work kept by the treasury, the markup on the earners' keep
+ const Q=mk({ration:true,calibrate:3}),q0=()=>['hA','hB','hC'].map(h=>Q.S.acct('hh:'+h).balance);Q.run(3+1/1440);const qh=q0(),qt=Q.S.acct('treasury:kautoa').balance+Q.S.acct('wp:farm').balance+Q.S.acct('wp:bake').balance;Q.run(4);
+ const QR=Q.S.moneyM1(),QD=QR.days.kautoa.slice(3),qw=QD.reduce((n,d)=>n+d.wages,0),qr=QD.reduce((n,d)=>n+d.ration,0),qs=QD.reduce((n,d)=>n+d.spent,0),qd=QD.reduce((n,d)=>n+d.dole,0),qdh=q0().reduce((n,b,i)=>n+b-qh[i],0);
+ const qt1=Q.S.acct('treasury:kautoa').balance+Q.S.acct('wp:farm').balance+Q.S.acct('wp:bake').balance;
+ ok('the ration keeps the household with no work ('+qr+' paid, ration '+QR.ration.kautoa+' a head; dole '+qd+'), and wages + rations = spending + saving ('+qw+' + '+qr+' = '+qs+' + '+qdh+')',
+   qr>0&&qd<0.05*(qs+qd)&&qw+qr===qs+qdh,!(qr>0));
+ ok('the treasury breaks even, near enough, on the earners\' markup ('+(qt1-qt)+' over four days on '+(qw+qr)+' paid out)',Math.abs(qt1-qt)<0.25*(qw+qr),false);
+ // M2 (moving prices): a governed good kept scarce gets dearer, one glutted cheaper, within the clamp, eased in; when the
+ // households save, the price level rises until the takings meet the wages and the rations, the ration a day's keep with it
+ const G2=mk({govern:true,calibrate:1,ration:true,m2:{k:0.5,lo:0.5,hi:2,smooth:3,level:false}});G2.run(1+1/1440);
+ const E2=G2.S.econ('kautoa');G2.S.R.place.shed.stock.rice=2;G2.S.R.place.shed.stock.bread=40000;G2.S.R.place.farm.stock={};G2.S.R.place.bake.stock={};G2.S.R.place.farm.cap=0;
+ G2.run(4);const rel=G2.S.MONEY.m1.rel.kautoa,PR=G2.S.MONEY.m1.price.kautoa,base=G2.S.MONEY.m1.cost.kautoa,mk2=G2.S.MONEY.m1.markup.kautoa;
+ ok('scarce rice dearer ('+rel.rice.toFixed(2)+'), glutted bread cheaper ('+rel.bread.toFixed(2)+'), within half to double, eased in',rel.rice>1.2&&rel.rice<=2&&rel.bread<0.85&&rel.bread>=0.5&&PR.rice===Math.max(1,Math.round(base.rice*mk2*rel.rice)),!(rel.rice>1));
+ const lv=(m2)=>{const T=mk({ration:true,calibrate:3,m2});T.run(3+1/1440);const t0=()=>T.S.acct('treasury:kautoa').balance+T.S.acct('wp:farm').balance+T.S.acct('wp:bake').balance;T.run(8);
+   const H=T.S.moneyM1().days.kautoa.slice(-5),owed=H.reduce((n,d)=>n+d.wages+d.rationDue,0),took=H.reduce((n,d)=>n+d.spent,0);return {T,owed,took,gap:(owed-took)/owed,mk:T.S.MONEY.m1.markup.kautoa,ra:T.S.MONEY.m1.ration.kautoa};};
+ const L2=lv({level:{gain:0.5,step:0.05},smooth:3}),L0=lv(null);
+ ok('the price level closes the gap between what the treasury owes and what it takes ('+Math.round(100*L0.gap)+'% short at fixed prices, '+Math.round(100*L2.gap)+'% with M2; markup '+L0.mk.toFixed(2)+' to '+L2.mk.toFixed(2)+', ration '+L0.ra+' to '+L2.ra+')',
+   Math.abs(L2.gap)<Math.abs(L0.gap)&&L2.mk>L0.mk&&L2.ra>L0.ra,Math.abs(L2.gap)>=Math.abs(L0.gap));
+ const L2L=L2.T.S.ledgerSnap();ok('the books still hold with prices moving',L2.T.S.ledger(L2L,L2L).ok,false);
+ // spending that follows savings (m1.spend): wealth within the class's band by the household's savings; a treat bought only
+ // with money in hand; savings lower the treat's bar, so saved money is spent
+ const SP={bands:{poor:[0,0.2]},days:5,treatDrop:15},kv=(W,h)=>W.kava[h]||0;
+ const tr=(o)=>{const W=mk(Object.assign({treat:true,calibrate:1},o));W.kava={};W.first={};const mb=W.S.moneyBuy;W.S.moneyBuy=function(home,place,g,n,s){if(g==='kava'&&W.S.MONEY.m1.live){W.kava[home]=(W.kava[home]||0)+n;if(W.first[home]==null)W.first[home]=W.S.minute();}return mb.apply(this,arguments);};W.run(1+1/1440);W.run(6);return W;};
+ const S1=tr({spend:SP,rich:20000}),S0=tr({spend:null,rich:20000}),S2=tr({spend:Object.assign({},SP,{treatDrop:0}),rich:20000});
+ const wA=S1.S.R.actor.gr0.wealth,wC=S1.S.R.actor.id0.wealth;
+ ok('wealth follows savings within the class\'s band (the saving household '+wA.toFixed(2)+', the broke one '+wC.toFixed(2)+', the band 0 to 0.2)',Math.abs(wA-0.2)<1e-9&&Math.abs(wC-0)<1e-9,Math.abs(S0.S.R.actor.gr0.wealth-0.2)<1e-9);
+ ok('a treat only with money in hand (the broke household '+kv(S1,'hC')+' bowls; without the rule, on the dole, '+kv(S0,'hC')+')',kv(S1,'hC')===0&&kv(S0,'hC')>0,kv(S1,'hC')>0);
+ const fb1=S1.first.hA,fb2=S2.first.hA;
+ ok('savings lower the treat\'s bar, so saved money is spent sooner (the saving household\'s first bowl at day '+(fb1/1440).toFixed(2)+', '+kv(S1,'hA')+' bowls; without the drop day '+(fb2/1440).toFixed(2)+', '+kv(S2,'hA')+')',
+   fb1<fb2&&kv(S1,'hA')>=kv(S2,'hA'),!(fb1<fb2));
+ // stations (m1.stations): a household whose purse holds the price buys a vacant shop and one of its workers rises to its
+ // merchant (its class with it); the owned shop keeps its margin, the rest to the treasury wholesale; a household that
+ // cannot cover its shop's wages falls back, the shop to the treasury, its people unhappier; one rise a life (two where fluid)
+ const ST=(o)=>Object.assign({of:a=>'worker',cls:{worker:'poor',merchant:'middle'},rise:{merchant:{places:['shop'],cost:3,hold:1}},margin:0.15,reserve:2,fall:{unhappy:30,days:20}},o||{});
+ const R1=mk({stations:ST(),rich:6000,calibrate:1});R1.run(1+1/1440);R1.run(1);const gr=R1.S.R.actor.gr0,shopA=R1.S.acct('wp:shop'),ev=R1.S.moneyStations();
+ ok('a household whose purse holds the price buys the vacant shop and its worker rises ('+JSON.stringify(ev.rises)+'; '+gr.id+' a '+gr.station+', '+gr.cls+', the shop the '+shopA.ownedBy+'\'s)',
+   gr.station==='merchant'&&gr.cls==='middle'&&shopA.ownedBy==='hh:hA'&&gr.work==='shop'&&ev.events[0].price>0,gr.station!=='merchant');
+ R1.run(2);const wh=R1.S.moneyReport().currencies.shell.paid.wholesale||0,pu=R1.S.MONEY.flows.shell.paid.purchase||0;
+ ok('the owned shop keeps its margin and pays the treasury the rest wholesale ('+wh+' wholesale)',wh>0,!(wh>0));
+ const F1=mk({stations:ST({margin:0}),rich:6000,calibrate:1});F1.run(1+1/1440);F1.run(1);const fg=F1.S.R.actor.gr0,was=fg.station;F1.S.burn('hh:hA',F1.S.acct('hh:hA').balance,'lost');F1.run(2);
+ const fev=F1.S.moneyStations(),pool=F1.S.happinessPool('kautoa'),hA=F1.S.R.actor.gr1,hB=F1.S.R.actor.gr3;
+ ok('a household that cannot cover its shop\'s wages falls: the shop to the treasury, its merchant a '+fg.station+' ('+fg.cls+'), its people '+Math.round(F1.S.happiness(hA))+' happy to '+Math.round(F1.S.happiness(hB))+' next door',
+   was==='merchant'&&fg.station==='worker'&&fg.cls==='poor'&&F1.S.acct('wp:shop').ownedBy==='treasury:kautoa'&&(fev.falls.kautoa||{}).merchant===1&&F1.S.happiness(hA)<F1.S.happiness(hB)-20,fg.station==='merchant');
+ ok('the happiness pool by class ('+Object.keys(pool.byClass).map(c=>c+' '+Math.round(pool.byClass[c].mean)).join(', ')+')',pool.all.n===5&&pool.byClass.poor&&pool.byClass.poor.n===5,!pool.byClass.poor);
+ F1.S.mint('hh:hA',9000,'endowment');F1.run(2);ok('one rise a life: the fallen merchant does not rise again ('+fg.station+', '+fg.rises+' rise)',fg.station==='worker'&&fg.rises===1,fg.station!=='worker');
+ const F2=mk({stations:ST({margin:0,perLife:2}),rich:6000,calibrate:1});F2.run(1+1/1440);F2.run(1);F2.S.burn('hh:hA',F2.S.acct('hh:hA').balance,'lost');F2.run(2);F2.S.mint('hh:hA',9000,'endowment');F2.run(2);
+ const f2=F2.S.R.actor.gr0;ok('where the nation is fluid (two a life) it may rise again ('+f2.station+', '+f2.rises+' rises)',f2.rises===2&&f2.station==='merchant',f2.rises<2);
+ const N=mk({calibrate:false});N.run(1+1/1440);ok('without calibration it pays from the first day',(N.S.moneyReport().currencies.shell.paid.wage||0)>0,!((N.S.moneyReport().currencies.shell.paid.wage||0)>0));}
+
 // a page with no settlements: the trade fragment is inert (every older check in this file runs with it loaded)
 {const {S}=world(99);ok('no trade routes: no report, nothing at sea, the step does nothing',S.tradeReport()===null&&S.tradeInbound('rice')===0&&S.tradeStep(0,0)===undefined,S.tradeReport()!==null);}
 
@@ -898,7 +1227,23 @@ function world(seed){
  S.role({id:'eater',org:'folk',sched:[[0,'EAT']],prefers:{EAT:{pin:'home'}}});const e=S.actor({id:'e1',role:'eater',home:'cot'});
  S.R.place.cot.store={milk:5,bread:5};e.wanted=null;S.decide(e,S.minute(),clock.t);const b1=e.boost.EAT;
  S.R.place.cot.store={cheese:5,bread:5};e.wanted=null;S.decide(e,S.minute()+1,clock.t);const b2=e.boost.EAT;
- ok('a meal with cheese fills more than one with milk',b2>b1&&b1===3,b2<=b1);}
+ ok('a meal with cheese fills more than one with milk',b2>b1&&b1===3,b2<=b1);
+ // a kitchen without its pot (meal.pot): what it cooks is worth noPot; with the pot, or no rule, a full meal
+ const c0=S.place({id:'cot2',kind:'home',x:0,z:0,activities:{EAT:3,SLEEP:3}});S.ITEMS.kinds.pot={id:'pot',cat:'household',slot:'lhand',life:60};
+ const e2=S.actor({id:'e2',role:'eater',home:'cot2'});c0.potBy='e2';S.ITEMS.meal.pot='pot';S.ITEMS.meal.noPot=0.6;
+ const bite=(m)=>{c0.store={milk:5,bread:5};e2.wanted=null;S.decide(e2,S.minute()+m,clock.t);return e2.boost.EAT;};
+ const none=bite(2);S.equip(e2,'pot',0);const has=bite(3);
+ ok('a kitchen without its pot cooks a poorer meal ('+none.toFixed(1)+'), with it a full one ('+has.toFixed(1)+')',Math.abs(none-1.8)<1e-9&&has===3,none>=has);}
+// the treat's mix (treat.mix): over days a person buys any treat its wealth reaches, by a hash; without it only the dearest
+{const {S}=world(173);S.needs({list:['material'],rate:{material:1},fill:{}});
+ S.items({kinds:{kava:{cat:'luxury',material:1},mat:{cat:'household',material:1},gem:{cat:'luxury',material:1}},free:['IDLE'],secPerMinute:1});S.shop('market',['kava','mat','gem']);
+ S.role({id:'buyer',org:'folk',sched:[[0,'IDLE']]});const a=S.actor({id:'t1',role:'buyer',home:'homeA'});a.wealth=0.5;
+ const seen=(mix)=>{S.ITEMS.treat={at:10,items:[[0,'kava'],[0.3,'mat'],[0.9,'gem']],mix:mix};const n={};a.itDay=0;a.nd=[60];a.ndT=S.minute();
+   for(let d=1;d<=40;d++){a.errand=null;a.errCool=null;a.nd=[60];S.itemsAbstractDay(a,d,null);}
+   Object.keys(S.ITEMS.stats.errands).forEach(k=>{n[k]=S.ITEMS.stats.errands[k];});S.ITEMS.stats.errands={};return n;};
+ const M=seen(true),D=seen(false);
+ ok('mix: a person of middling wealth buys both treats it reaches ('+JSON.stringify(M)+'), not the one past it',M.kava>5&&M.mat>5&&!M.gem,!(M.kava>0));
+ ok('without it only the dearest it reaches',D.mat===40&&!D.kava,D.kava>0);}
 
 
 // what things hold and the settlement's stocks (77-sim-7-stocks.js): SIM.contents(id) by record, SIM.stocks() by item
@@ -976,5 +1321,134 @@ function world(seed){
   let peak=0,at0=null,at30=null;clock.d=0;for(let m=0;m<13*60;m++){clock.h=m/60;clock.t+=1;const made=S.step();if(m>0 && (m%60<=10 || (m%60>=30 && m%60<=40))) peak=Math.max(peak,made);
     if(m===10*60+15){ const mm=S.minute(); at0=S.all('actor').filter(a=>!a.lagBase && S.desire(a,mm)==='BUY').length; at30=S.all('actor').filter(a=>a.lagBase && S.desire(a,mm)==='BUY').length; } }
   ok('two buckets: the half-hour bucket keeps its old hour until :30; the peak lower again',at30===0&&at0>40&&peak<=B.peak,at30>0);}}
+
+// a vital need (SIM.needs `vital`): past its line hunger caps happiness, to nothing at a full meter, so a starving man is not
+// kept content by his other needs; without it the weighted mean leaves him at three quarters
+{const {S}=world(223);S.needs({list:['eat','rest','talk','pray'],rate:{},weight:{eat:1.5},vital:{eat:60},pain:1});const a=S.actor({id:'v1',role:Object.keys(S.R.role)[0]||'x',home:'homeA'});
+ const h=(e)=>S.happiness(a,[e,0,0,0]),N=S.NEED,v=N.vital;N.vital=[];const flat=h(90);N.vital=v;
+ ok('a vital need past its line caps happiness (hunger 90: '+h(90).toFixed(0)+', 100: '+h(100).toFixed(0)+'; under the line, 50: '+h(50).toFixed(0)+'; without the rule, 90: '+flat.toFixed(0)+')',
+   Math.abs(h(90)-25)<1e-9&&h(100)===0&&Math.abs(h(50)-(100-1.5*50/4.5))<1e-9,flat<=25);}
+// building (77-sim-6-build.js; PLAN-POLITICS.md section 4): a town with two empty lots and four builders; a house's bill
+// drawn from the warehouses as the work goes (booked used), the work never ahead of the bill delivered, the next lot
+// started and the hands moved when one is done; and upkeep, every standing house wearing its bill over its life, owed
+// when the warehouses are empty, the neglect shown on a hashed share of the houses, paid back when the goods return
+{const mk=(o)=>{o=o||{};const {S,clock}=world(229);
+   ['WORK'].forEach(a=>{ if(!S.R.activity[a]) S.activity({id:a}); });
+   S.settlement({id:'kautoa',faction:'town'});
+   S.place({id:'kShed',kind:'warehouse',x:10,z:0,activities:{},settlement:'kautoa'});
+   for(let i=0;i<10;i++) S.place({id:'kH'+i,kind:'house',x:20*i,z:40,activities:{SLEEP:5},settlement:'kautoa'});
+   S.place({id:'lot0',kind:'lot',x:0,z:80,activities:{WORK:4},settlement:'kautoa'});S.place({id:'lot1',kind:'lot',x:40,z:80,activities:{WORK:4},settlement:'kautoa'});
+   const EK=S.economy({goods:{stone:{},mats:{}},every:60,window:1},{settlement:'kautoa'});S.store('kShed',{kind:'warehouse'});
+   S.R.place.kShed.stock={stone:o.stone==null?500:o.stone,mats:o.mats==null?500:o.mats};
+   const built=[];S.build({kinds:{house:{bill:{stone:20,mats:10,timber:5},hours:96,life:o.life==null?100:o.life}},of:P=>P.kind==='house'?'house':null,pace:o.pace,grace:10,
+     onBuilt:(L,P)=>{const Q=S.R.place[L.id];Q.kind='house';built.push(L.id);S.buildChanged('kautoa');}});
+   S.buildLot({id:'lot0',kind:'house'});S.buildLot({id:'lot1',kind:'house'});
+   S.role({id:'builder',org:'folk',sched:[[0,'SLEEP'],[6,'WORK'],[18,'SLEEP']]});
+   const ps=[0,1,2,3].map(i=>S.actor({id:'b'+i,role:'builder',home:'kH0',work:'lot0'}));
+   clock.d=0;clock.h=0;S.level('kautoa','abstract');
+   const run=(days,each)=>{for(let m=S._m||0,e=m+Math.round(days*1440);m<e;m++){clock.h=(m%1440)/60;clock.d=Math.floor(m/1440);clock.t+=40;S.step();S._m=m+1;if(each)each(m);}};
+   return {S,EK,ps,built,run};};
+ const A=mk(),L0=A.S.ledgerSnap();A.run(2.6);const RA=A.S.buildReport('kautoa').towns.kautoa,P0=RA.projects.find(p=>p.lot==='lot0');
+ ok('a house goes up on an empty lot: four builders, 96 worker-hours, two working days ('+(P0&&P0.state)+' on day '+(P0&&P0.m1/1440).toFixed(2)+'; stone '+(P0&&P0.got.stone)+', mats '+(P0&&P0.got.mats)+', timber gathered '+(P0&&P0.local&&P0.local.timber)+')',
+   P0&&P0.state==='built'&&P0.m1<2*1440&&P0.got.stone===20&&P0.got.mats===10&&P0.local.timber===5&&A.built[0]==='lot0',!(P0&&P0.state==='built'));
+ const P1=RA.projects.find(p=>p.lot==='lot1');
+ ok('the next lot started as it was done, its hands moved there ('+A.ps.map(a=>a.work).join(', ')+')',P1&&P1.state==='building'&&P1.m0===P0.m1&&A.ps.every(a=>a.work==='lot1'),A.ps.some(a=>a.work==='lot0'));
+ const LA=A.S.ledger(L0,A.S.ledgerSnap());ok('the materials booked used: the books hold ('+A.EK.used.stone+' stone used)',LA.ok&&A.EK.used.stone>=20,!LA.ok);
+ const B=mk({stone:8});B.run(3);const PB=B.S.buildReport('kautoa').towns.kautoa.projects[0];
+ ok('short of stone (the houses\' upkeep takes its share), the work waits on the bill delivered ('+(PB.done/PB.hours*100).toFixed(0)+'% done, '+PB.got.stone+' of 20 stone)',PB.state==='building'&&PB.done/PB.hours<=PB.got.stone/20+1e-9&&PB.got.stone<20&&PB.done>0,PB.state==='built');
+ B.S.R.place.kShed.stock.stone+=100;B.run(2);const PB2=B.S.buildReport('kautoa').towns.kautoa.projects[0];
+ ok('and goes on when the stone comes',PB2.state==='built',PB2.state!=='built');
+ const C=mk({pace:2});C.run(0.6);const RC=C.S.buildReport('kautoa').towns.kautoa;
+ ok('a town keeps `pace` projects going ('+RC.building+' at pace 2)',RC.building===2,RC.building!==2);
+ // upkeep: 10 houses, a bill of 20 stone and 10 mats over 100 days: 2 stone and 1 mat a day for the town
+ const U=mk({life:100});U.ps.forEach(a=>{a.work=null;});U.run(10);const RU=U.S.buildReport('kautoa').towns.kautoa;
+ ok('upkeep: ten houses wear their bills over their lives, drawn hourly ('+RU.upkeep.taken.stone+' stone, '+RU.upkeep.taken.mats+' mats in ten days; '+RU.buildings+' buildings)',
+   Math.abs(RU.upkeep.taken.stone-20)<=1&&Math.abs(RU.upkeep.taken.mats-10)<=1&&RU.buildings===10&&!RU.upkeep.taken.timber,!(RU.upkeep.taken.stone>0));
+ U.S.R.place.kShed.stock.stone=0;U.run(10);const q=U.S.buildReport('kautoa').towns.kautoa.upkeep,worn=['kH0','kH1','kH2','kH3','kH4','kH5','kH6','kH7','kH8','kH9'].filter(id=>U.S.buildWorn(id)>0);
+ ok('the stone out, the upkeep owed and the neglect shown on a share of the houses ('+q.owed.stone+' stone owed, neglect '+q.neglect.toFixed(2)+', '+worn.length+' houses worn)',q.owed.stone>=19&&q.neglect>0.9&&worn.length>=8,worn.length===0);
+ ok('the want booked short once, not each hour\'s retry ('+(U.EK.short.stone||0)+' short for '+q.owed.stone+' owed)',U.EK.short.stone===q.owed.stone,U.EK.short.stone>q.owed.stone);
+ U.S.R.place.kShed.stock.stone=100;U.run(1);const q2=U.S.buildReport('kautoa').towns.kautoa.upkeep,worn2=['kH0','kH1','kH2','kH3','kH4','kH5','kH6','kH7','kH8','kH9'].filter(id=>U.S.buildWorn(id)>0);
+ ok('the stone back, the debt repaid and the houses kept again ('+q2.owed.stone+' owed, '+worn2.length+' worn)',!q2.owed.stone&&worn2.length===0,worn2.length>0);
+ const LU=U.S.ledgerSnap();ok('the upkeep booked used: the books hold',U.S.ledger(LU,LU).ok,false);}
+// growth (77-sim-6-build.js `growth`): building follows demand. A town of 50 growing 365% a year (a household of 5 every
+// ten days, to keep the test short) keeps one house ahead: the first goes up at once, the next only when a household has
+// moved in; when the lots are out the host opens another (onFull)
+{const mk=(o)=>{o=o||{};const {S,clock}=world(233);
+   ['WORK'].forEach(a=>{ if(!S.R.activity[a]) S.activity({id:a}); });
+   S.settlement({id:'kautoa',faction:'town'});
+   S.place({id:'kShed',kind:'warehouse',x:10,z:0,activities:{},settlement:'kautoa'});S.place({id:'kHome',kind:'house',x:0,z:40,activities:{SLEEP:60},settlement:'kautoa'});
+   const lot=(i)=>S.place({id:'lot'+i,kind:'lot',x:40*i,z:80,activities:{WORK:1},settlement:'kautoa'});lot(0);lot(1);
+   const EK=S.economy({goods:{stone:{}},every:60,window:1},{settlement:'kautoa'});S.store('kShed',{kind:'warehouse'});S.R.place.kShed.stock={stone:900};
+   const settled=[],opened=[];
+   S.build({kinds:{house:{bill:{stone:5},hours:48}},pace:2,growth:o.noGrowth?null:{rate:3.65,per:5,ahead:1,settle:(L,s)=>settled.push([L.id,S.minute()])},
+     onBuilt:(L)=>{S.R.place[L.id].kind='house';S.R.place[L.id].activities={SLEEP:5};S.buildChanged('kautoa');},
+     onFull:(s)=>{if(opened.length>=1)return false;const P=lot(9);opened.push(P.id);S.buildLot({id:P.id,kind:'house'});return true;}});
+   S.buildLot({id:'lot0',kind:'house'});S.buildLot({id:'lot1',kind:'house'});
+   S.role({id:'builder',org:'folk',sched:[[0,'SLEEP'],[6,'WORK'],[18,'SLEEP']]});S.role({id:'kin',org:'folk',sched:[[0,'SLEEP']]});
+   for(let i=0;i<4;i++)S.actor({id:'b'+i,role:'builder',home:'kHome',work:'lot0'});for(let i=0;i<46;i++)S.actor({id:'k'+i,role:'kin',home:'kHome'});
+   clock.d=0;clock.h=0;S.level('kautoa','abstract');
+   const run=(days)=>{for(let m=S._m||0,e=m+Math.round(days*1440);m<e;m++){clock.h=(m%1440)/60;clock.d=Math.floor(m/1440);clock.t+=40;S.step();S._m=m+1;}};
+   return {S,run,settled,opened};};
+ const A=mk();A.run(6);const R6=A.S.buildReport('kautoa').towns.kautoa;
+ ok('building follows demand: one house ahead goes up, then the builders wait ('+R6.built+' built, '+R6.building+' building, '+R6.empty+' lots empty on day 6)',R6.built===1&&R6.building===0&&R6.empty===1,R6.building>0||R6.built!==1);
+ const Z=mk({noGrowth:true});Z.run(6);const RZ=Z.S.buildReport('kautoa').towns.kautoa;
+ ok('without growth the town builds on every lot ('+RZ.built+' built by day 6)',RZ.built>=2,RZ.built<2);
+ A.run(30);const R36=A.S.buildReport('kautoa').towns.kautoa;
+ ok('a household moves in every ten days or so, and the next house goes up as it does ('+A.settled.map(x=>x[0]+' day '+(x[1]/1440).toFixed(0)).join(', ')+'; '+R36.built+' built)',
+   A.settled.length>=2&&A.settled[0][0]==='lot0'&&R36.built>=2,A.settled.length<2);
+ ok('the lots out, the host opens another (onFull: '+A.opened.join(', ')+')',A.opened.length===1&&A.S.BUILD.lots[A.opened[0]],!A.opened.length);
+ // a crew sized pace (crewPer): four builders at two a project keep two houses going; at four a project, one
+ const P2=mk({noGrowth:true});P2.S.BUILD.cfg.crewPer=2;P2.S.BUILD.cfg.pace=1;P2.run(0.3);const R2=P2.S.buildReport('kautoa').towns.kautoa;
+ const P1=mk({noGrowth:true});P1.S.BUILD.cfg.crewPer=4;P1.S.BUILD.cfg.pace=1;P1.run(0.3);const R1=P1.S.buildReport('kautoa').towns.kautoa;
+ ok('a town keeps a project for every crewPer hands ('+R2.hands+' hands at two a project: '+R2.building+' going up; at four: '+R1.building+')',R2.building===2&&R1.building===1,R1.building===2);}
+// unrest (77-sim-6-unrest.js; PLAN-MONEY.md M6): two towns of one faction, both unwatched; the workers' want rises a little
+// each day and nothing fills it, so their pool sinks and walks the stages (grumbling, demands, strikes, treason) while
+// the merchants stay content; Valapo, short of rice, asks the faction and Kautoa ships it from its spare; the ruler's
+// demand is refused (no political system), and the refused strike
+{const mk=(o)=>{o=o||{};const {S,clock}=world(211);
+   ['WORK','EAT'].forEach(a=>{ if(!S.R.activity[a]) S.activity({id:a}); });
+   S.settlement({id:'kautoa',faction:o.kFaction||'town'});S.settlement({id:'valapo',faction:'town'});if(o.kFaction)S.faction({id:o.kFaction});
+   S.place({id:'vHome',kind:'house',x:150,z:0,activities:{SLEEP:6},settlement:'valapo'});S.place({id:'vFarm',kind:'field',x:100,z:60,activities:{WORK:6},open:[0,24],settlement:'valapo'});
+   S.place({id:'vMill',kind:'mill',x:110,z:60,activities:{WORK:6},open:[0,24],settlement:'valapo'});
+   S.place({id:'vShed',kind:'warehouse',x:50,z:0,activities:{},settlement:'valapo'});S.place({id:'kShed',kind:'warehouse',x:10,z:0,activities:{},settlement:'kautoa'});
+   S.place({id:'kHome',kind:'house',x:0,z:0,activities:{SLEEP:4},settlement:'kautoa'});
+   const cfg=()=>({goods:{rice:{},flour:{}},every:60,window:1});S.economy(cfg(),{settlement:'kautoa'});const EV=S.economy(cfg(),{settlement:'valapo'});
+   S.store('kShed',{kind:'warehouse'});S.store('vShed',{kind:'warehouse'});S.recipe('vFarm',{out:['rice'],rate:0,cap:300});S.recipe('vMill',{out:['flour'],rate:0,cap:300});
+   S.R.place.kShed.stock={rice:o.kRice==null?2000:o.kRice};S.R.place.vShed.stock={rice:o.short?60:0};   /* two days' rice, then none */
+   S.needs({list:['want'],rate:{want:o.rate==null?0.5:o.rate},init:0,pain:1});
+   S.role({id:'hand',org:'folk',sched:[[0,'SLEEP'],[6,'WORK'],[18,'SLEEP']]});S.role({id:'clerk',org:'folk',sched:[[0,'SLEEP'],[8,'WORK'],[16,'SLEEP']],needs:{rate:{want:0}}});
+   const ps=[];for(let i=0;i<6;i++){const a=S.actor({id:'vw'+i,role:'hand',home:'vHome',work:i<4?'vFarm':'vMill'});a.cls='poor';ps.push(a);}
+   for(let i=0;i<2;i++){const a=S.actor({id:'vc'+i,role:'clerk',home:'vHome',work:'vMill'});a.cls='middle';ps.push(a);}
+   for(let i=0;i<4;i++){const a=S.actor({id:'kw'+i,role:'clerk',home:'kHome'});a.cls='poor';}
+   S.unrest(Object.assign({smooth:1,hyst:5},o.unrest||{}));
+   clock.d=0;clock.h=0;S.level('valapo','abstract');S.level('kautoa','abstract');
+   const run=(days)=>{for(let m=S._m||0,e=m+days*1440;m<e;m++){clock.h=(m%1440)/60;clock.d=Math.floor(m/1440);clock.t+=40;
+     if(o.short && m%1440===600) S.withEcon('valapo',()=>S.supply('rice',30));   /* the town draws rice it has none of: short */
+     S.step();S._m=m+1;}};
+   return {S,EV,ps,run};};
+ const A=mk({short:true});A.run(12);const RA=A.S.unrestReport('valapo').towns.valapo,EVA=A.S.unrestReport().events.filter(e=>e.settlement==='valapo'&&e.key==='poor'&&e.kind==='stage').map(e=>e.to);
+ const C=mk({rate:0});C.run(12);const RC=C.S.unrestReport('valapo').towns.valapo;
+ ok('a sinking pool walks the stages in order ('+EVA.join(' > ')+'; the workers\' level '+RA.level.poor.toFixed(0)+') while the content merchants stay calm ('+RA.stage.middle+')',
+   EVA.join(',')==='grumble,demand,strike,treason'&&RA.stage.middle==='calm'&&RA.treason.length===1,RC.stage.poor!=='calm');
+ const B=mk({short:true});B.run(7);const g3=B.S.unrestArrest('valapo'),g0=C.S.unrestArrest('valapo'),sB=B.S.UNREST.towns.valapo.stage.poor;
+ ok('grumbling: the watch\'s arrest odds lower in the town ('+g3+' at '+sB+', against '+g0+' calm)',sB!=='calm'&&g3===0.7&&g0===1,g0!==1);
+ const DG=RA.demands.find(D=>D.kind==='goods'),L0=A.S.ledgerSnap?A.S.ledgerSnap():null;
+ ok('a demand for the rice it lacked, answered by the faction: Kautoa ships five days of its normal use (30 a day) from its spare ('+(DG&&JSON.stringify(DG.sent))+', '+(DG&&DG.came)+' of '+(DG&&DG.asked)+' asked), booked imported',
+   DG&&DG.answer==='granted'&&DG.goods[0]==='rice'&&DG.asked===150&&DG.sent['kautoa>rice']===150&&A.EV.imported.rice===DG.came&&A.S.econ('kautoa').exported.rice===DG.came,!(DG&&DG.came>0));
+ const F=mk({short:true,kFaction:'other'});F.run(9);const DF=F.S.unrestReport('valapo').towns.valapo.demands.find(D=>D.kind==='goods');
+ ok('a town of another faction sends nothing: refused',DF&&DF.answer==='refused'&&!(F.EV.imported.rice>0),!(DF&&DF.answer==='refused'));
+ const N=mk({short:false});N.run(9);const RN=N.S.unrestReport('valapo').towns.valapo,DR=RN.demands.find(D=>D.kind==='ruler');
+ ok('short of nothing, the demand is for a new ruler, refused: there is no political system yet ('+(DR&&DR.why)+')',DR&&DR.answer==='refused'&&DR.why==='no political system yet',!DR);
+ const SK=RN.strikes[0],held=SK?SK.held:[];
+ ok('refused, the workers strike: the workplaces most of them work held, their hours lost ('+held.join(', ')+')',!!SK&&held[0]==='vFarm'&&SK.until-SK.m===1440&&N.S.unrestReport().events.some(e=>e.kind==='strike'),!SK);
+ const NR=mk({short:false,unrest:{ruler:()=>true}});NR.run(9);const RR=NR.S.unrestReport('valapo').towns.valapo;
+ ok('a faction that grants the ruler: no strike follows ('+RR.demands.map(D=>D.kind+' '+D.answer).join(', ')+')',RR.demands.every(D=>D.answer!=='refused')&&!RR.strikes.length,!!RR.strikes.length);
+ const cheer=A.ps.filter(a=>a.cls==='poor').every(a=>(a.hmods||[]).some(h=>h.why==='demand granted'));
+ ok('a granted demand cheers the people who made it, not the others',cheer&&A.ps.filter(a=>a.cls==='middle').every(a=>!(a.hmods||[]).some(h=>h.why==='demand granted')),!cheer);
+ // easing back: a stage leaves only `hyst` over its line (the pool read as it is: smooth near nothing; no cheers)
+ const H=mk({short:false,rate:0,unrest:{smooth:0.01,demand:{granted:{n:0},refused:{n:0}}}}),wk=H.ps.filter(a=>a.cls==='poor'),at=(w)=>{wk.forEach(a=>{H.S.needsOf(a,H.S.minute());a.nd[0]=w;});H.run(1);return H.S.UNREST.towns.valapo.stage.poor;};
+ H.run(1);const seq=[65,58,54,47,40].map(at);
+ ok('a stage eases back only '+H.S.UNREST.cfg.hyst+' points over its line (the pool 35, 42, 46, 53, 60: '+seq.join(', ')+')',seq.join(',')==='demand,demand,grumble,grumble,calm',seq[1]!=='demand');
+}
 
 console.log(bad?bad+' FAILED':'all passed');if(bad&&typeof process!=='undefined')process.exit(1);

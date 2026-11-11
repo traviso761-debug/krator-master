@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 162 (31%) | 0 (0%) | 0 (0%) | 97 (18%) | 268 (51%) |
+| KB | 162 (31%) | 0 (0%) | 0 (0%) | 98 (18%) | 270 (51%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -26,7 +26,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/63-ls-signs.js` | 8.4 | [draw] | 6 | 2 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | canvas pictures: the sigil, plaques, thangka, glyph band, seal, dial |
 | `src/64-ls-monastery.js` | 55.8 | [draw] | 15 | 2 | 0 | 0 | 0 | 97 | 5 | 4 | 0 | 0 | 0 | draws the plan's records; registers each building in core/tags first |
 | `src/65-ls-marks.js` | 3.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the culture marks drawn through LSSOCK (63s, core/sockets) |
-| `src/66-ls-vault.js` | 40.7 | [draw] | 56 | 2 | 0 | 0 | 0 | 74 | 12 | 0 | 0 | 0 | 0 | the Vault and the Procrastinator; its own lights shader |
+| `src/66-ls-vault.js` | 43.1 | [draw] | 57 | 2 | 0 | 0 | 0 | 74 | 12 | 0 | 0 | 0 | 0 | the Vault and the Procrastinator; its own lights shader |
 | `src/68-ls-life.js` | 21.9 | [draw] | 22 | 0 | 0 | 0 | 0 | 8 | 3 | 1 | 0 | 0 | 0 | draws the people from SIM.pose (40d declares their world on core/simulation; the records in 40); the activities' poses are motion as a function of time |
 | `src/69-ls-figures.js` | 11.5 | [draw] | 2 | 0 | 2 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | the nearest people as KCharFigures from their records, the pieces from sidecars; Godot: kchar_figure.gd |
 | `src/84-ls-ground.js` | 8.5 | [draw] | 6 | 1 | 0 | 0 | 0 | 1 | 6 | 0 | 0 | 0 | 0 |  |
@@ -40,7 +40,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/89y-ls-festival.js` | 11.1 | [draw] | 0 | 2 | 0 | 0 | 0 | 8 | 0 | 4 | 0 | 0 | 0 | the festival day shown: the thangka hung, the camp pitched (who comes is core/simulation's: 40, 40d) |
 | `src/89z-ls-atmos.js` | 2.7 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | core/atmos host: weather on the fog and lights, smoke, fireflies, cull, LOD options |
 | `src/94-ls-export.js` | 9.6 | [web] | 3 | 2 | 0 | 0 | 0 | 0 | 1 | 1 | 0 | 0 | 0 | core/export contributor: reads the three.js scene at export time |
-| `src/99-host-take.js` | 15.2 | [web] | 0 | 0 | 4 | 2 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | the page handed to core/host: views, inspector words, checks |
+| `src/99-host-take.js` | 15.6 | [web] | 0 | 0 | 4 | 2 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | the page handed to core/host: views, inspector words, checks |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 
 ## Notes

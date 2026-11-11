@@ -47,19 +47,42 @@ function buildGround(){
    const sh=sat(u,v);c.multiplyScalar(1-.6*sh*(1-fm));
    const k=1+n*.08;d[i]=clamp(c.r*255*k,0,255);d[i+1]=clamp(c.g*255*k,0,255);d[i+2]=clamp(c.b*255*k,0,255);d[i+3]=255;}
   g.putImageData(id,0,0);g0.imageSmoothingEnabled=true;g0.imageSmoothingQuality='high';g0.drawImage(cv,0,0,W0,H0);});
- const DET=BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
-  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,v=232+(KRAND.fbm(x/9,.4,y/9,2,5)-.5)*40+(KRAND.h3(x,y,9,6)-.5)*24;d[i]=d[i+1]=d[i+2]=clamp(v,0,255);d[i+3]=255;}
-  g.putImageData(id,0,0);});
- const MAT=new THREE.MeshLambertMaterial({map:TEX,color:0x84847a});
+ /* THE GROUND'S DETAIL IS COMPUTED, NOT SAMPLED (2026-11-08): the 256 px detail canvas (uDetail) was the seventeenth texture unit
+    on the ground's MeshStandard program (KGROUND's four layers, KSTRATA's five, KHORIZON's two, the rain cover, the water's hollows,
+    the cloud noise, the map, the rock grain), past MAX_TEXTURE_IMAGE_UNITS 16 on ANGLE/D3D11 (Arc 140T, RTX 5060): the program
+    failed to link ("FRAGMENT shader texture image units count exceeds") and the ground went undrawn. SWH_DET is the same grey
+    (232 +- an fbm at 9 texels over 5 octaves +- a per-texel grain, /255) as value noise in the canvas's texel units, each octave
+    faded out as it nears the pixel (fwidth), where the canvas's mips blurred it */
+ const SWH_DET='float swhH(vec2 p){vec3 q=fract(vec3(p.xyx)*0.1031);q+=dot(q,q.yzx+33.33);return fract((q.x+q.y)*q.z);}'+
+  'float swhN(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);return mix(mix(swhH(i),swhH(i+vec2(1.0,0.0)),f.x),mix(swhH(i+vec2(0.0,1.0)),swhH(i+vec2(1.0,1.0)),f.x),f.y);}'+
+  'float swhDet(vec2 q){float fw=max(length(fwidth(q)),1e-4),s=0.0,a=0.5;vec2 p=q/9.0;for(int o=0;o<5;o++){s+=a*(swhN(p)-0.5)*(1.0-smoothstep(0.25,0.5,fw*exp2(float(o))/9.0));p*=2.0;a*=0.5;}'+
+  'return 0.9098+s*0.157+(swhN(q+17.0)-0.5)*0.094*(1.0-smoothstep(0.25,0.5,fw));}';
  // the library's ground sets by zone (KGROUND, core/terrain 43): the native moss under the forest, the turf on the crests and
  // the bald and the pasture, the gravel on the banks, the tilled soil on the arable; hex-tiled, scaled with distance
  const GLY=(function(){const A=KGROUND.layer('swhighlands','ground.moss',{w:'vGL.x',amt:.55,gain:.95,tint:'diffuse'}),Bq=KGROUND.layer('swhighlands','ground.turf',{w:'vGL.y',amt:.55,gain:1.0,tint:'diffuse'});
   return A&&Bq?[A,Bq,KGROUND.layer('swhighlands','ground.gravel',{w:'vGL.z',amt:.75,gain:1.1,tint:'diffuse'}),KGROUND.layer('swhighlands','ground.tilled',{w:'vGL.w',amt:.7,gain:1.1,tint:'diffuse'})]:[];})();
- MAT.onBeforeCompile=sh=>{STRATA.inject(sh);sh.uniforms.uDetail={value:DET};sh.uniforms.uRG={value:ROCK_LIB?ROCK_LIB.map:ROCK_GRAIN};sh.uniforms.uRGs={value:ROCK_LIB?1/(ROCK_LIB.scale||[6,6])[0]:1/6};
+ /* THE GROUND'S LIGHT PER PIXEL (2026-11-04, the ground catch-up; core/terrain/GROUND.md): on KGROUND the ground is MeshStandard, so
+    the relief's bump and cavities reach the light (r128's Lambert lights per vertex); without the pack, or with ?kground=0, the Lambert.
+    ?kgrelief=0 drops the relief (the before-and-after on this page) */
+ const KG_RELIEF=GLY.length>0&&new URLSearchParams(location.search).get('kgrelief')!=='0';
+ const MAT=GLY.length?new THREE.MeshStandardMaterial({map:TEX,color:0x84847a,roughness:.96,metalness:0}):new THREE.MeshLambertMaterial({map:TEX,color:0x84847a});
+ /* THE GROUND'S HOLLOWS (KGROUND.cavity, relief.mesh; 2026-11-04, the ground catch-up): one field on a 12 m grid over the square,
+    from the height, read by every piece of the ground (bilinear), so the pieces meet with no seam in the shade. The valley term's depth
+    is 30 m, not the core's 4: on these folds and cliffs 4 m saturated a 200 m band at every foot to black (judged on the pillars'
+    cliff, 2026-11-04); with relief.mesh .7 the foot of a cliff and the gullies read a shade darker, no more */
+ const KGCAV=KG_RELIEF?(function(){const st=12,nx=Math.round(SX/st),nz=Math.round(SZ/st),W=nx+1,n=W*(nz+1),P=new Float32Array(n*3),I=new Uint32Array(nx*nz*6);let t=0;
+  for(let j=0;j<=nz;j++)for(let i=0;i<=nx;i++){const k=j*W+i,x=TERR.X0+i*SX/nx,z=TERR.Z0+j*SZ/nz;P[3*k]=x;P[3*k+1]=terrainH(x,z);P[3*k+2]=z;}
+  for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const a=j*W+i;I[t++]=a;I[t++]=a+W;I[t++]=a+1;I[t++]=a+1;I[t++]=a+W;I[t++]=a+W+1;}
+  const A=KGROUND.cavity({pos:P,index:I,count:n},{rings:[3,18],depth:[1.5,30]});
+  return (x,z)=>{const u=clamp((x-TERR.X0)/SX*nx,0,nx),v=clamp((z-TERR.Z0)/SZ*nz,0,nz),i=Math.min(nx-1,Math.floor(u)),j=Math.min(nz-1,Math.floor(v)),fu=u-i,fv=v-j,k=j*W+i;
+   return (A[k]*(1-fu)+A[k+1]*fu)*(1-fv)+(A[k+W]*(1-fu)+A[k+W+1]*fu)*fv;};})():null;
+ const kgCav=mesh=>{if(!KGCAV)return mesh;const p=mesh.geometry.attributes.position,a=new Float32Array(p.count);for(let i=0;i<p.count;i++)a[i]=KGCAV(p.getX(i),p.getZ(i));
+  mesh.geometry.setAttribute('aKGAO',new THREE.BufferAttribute(a,1));return mesh;};
+ MAT.onBeforeCompile=sh=>{STRATA.inject(sh);sh.uniforms.uRG={value:ROCK_LIB?ROCK_LIB.map:ROCK_GRAIN};sh.uniforms.uRGs={value:ROCK_LIB?1/(ROCK_LIB.scale||[6,6])[0]:1/6};
   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute vec4 aGL;varying vec4 vGL;').replace('#include <begin_vertex>','#include <begin_vertex>\nvGL=aGL;');
-  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail;uniform sampler2D uRG;uniform float uRGs;varying vec4 vGL;')
+  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+SWH_DET+'uniform sampler2D uRG;uniform float uRGs;varying vec4 vGL;')
    .replace('#include <map_fragment>',['#include <map_fragment>',
-    '{vec3 dt=texture2D(uDetail,vSWP.xz*0.17).rgb;vec3 dt2=texture2D(uDetail,vSWP.xz*0.023+0.37).rgb;diffuseColor.rgb*=mix(vec3(1.0),dt*dt2*1.12,0.85);',
+    '{float dt=swhDet(vSWP.xz*43.52),dt2=swhDet(vSWP.xz*5.888+94.72);diffuseColor.rgb*=mix(vec3(1.0),vec3(dt*dt2*1.12),0.85);',
     '/*KGROUND*/',
     // the folds' beds on the steep (strataColor is linear, as the paint is once decoded)
     ' float steep=1.0-clamp(normalize(vSWN).y,0.0,1.0);',
@@ -67,7 +90,7 @@ function buildGround(){
     ' vec3 rn=abs(normalize(vSWN));rn/=rn.x+rn.y+rn.z;vec3 rt=texture2D(uRG,vSWP.zy*uRGs).rgb*rn.x+texture2D(uRG,vSWP.xz*uRGs).rgb*rn.y+texture2D(uRG,vSWP.xy*uRGs).rgb*rn.z;',
     ' vec3 sc=strataColor(vSWP,vSWN);sc=mix(vec3(dot(sc,vec3(0.333))),sc,0.72)*1.25*clamp(pow(dot(rt,vec3(0.333))/0.47,1.3),0.4,1.7);',
     ' diffuseColor.rgb=mix(diffuseColor.rgb,sc,smoothstep(0.36,0.62,steep)*0.92);}'].join('\n'));};
- KGROUND.hook(MAT,{layers:GLY,key:'swhi-ground'});
+ KGROUND.hook(MAT,{layers:GLY,key:'swhi-ground',relief:KG_RELIEF?{bump:.075,cavity:.8,mesh:.7}:null});   /* the relief (no texture unit) and the hollows (kgCav) */
  // THE TERRAIN'S HORIZON (KHORIZON): eight directions over the map (256 a side, ~19 m) and, past it, the far country's lattice,
  // so a low sun throws the folds' shadows across the strike valleys
  const HZ=(function(){const t0=performance.now(),H=KHORIZON.bake({box:[TERR.X0,TERR.Z0,TERR.X1,TERR.Z1],n:256,h:terrainH,
@@ -86,13 +109,13 @@ function buildGround(){
   const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('uv',new THREE.BufferAttribute(uv,2));g.setAttribute('aGL',new THREE.BufferAttribute(gl,4));
   g.setIndex(N>65535?new THREE.Uint32BufferAttribute(idx,1):new THREE.Uint16BufferAttribute(idx,1));g.computeVertexNormals();return g;};
  const g=grid(TERR.X0,TERR.Z0,TERR.X1,TERR.Z1,GROUND_STEP,INSETS,(x,z)=>terrainH(x,z));
- const m=new THREE.Mesh(g,MAT);m.userData.probeSkip=true;m.userData.inspectLabel='The ring folds (ground)';scene.add(m);
+ const m=kgCav(new THREE.Mesh(g,MAT));m.userData.probeSkip=true;m.userData.inspectLabel='The ring folds (ground)';scene.add(m);
  // the inset: on its rim the height runs straight between the base grid's vertices, so the two meshes meet exactly
  const S6=GROUND_STEP;GROUND_INSETS=INSETS.map(IN=>{const gi=grid(IN.x0,IN.z0,IN.x1,IN.z1,IN.step,null,(x,z,i,j,nx,nz)=>{
   const rim=i===0||j===0||i===nx||j===nz;if(!rim)return terrainH(x,z);
   if(i===0||i===nx){const z0=IN.z0+Math.floor((z-IN.z0)/S6+1e-9)*S6,f=(z-z0)/S6;return f<1e-6?terrainH(x,z0):mix(terrainH(x,z0),terrainH(x,z0+S6),f);}
   const x0=IN.x0+Math.floor((x-IN.x0)/S6+1e-9)*S6,f=(x-x0)/S6;return f<1e-6?terrainH(x0,z):mix(terrainH(x0,z),terrainH(x0+S6,z),f);});
-  const mi=new THREE.Mesh(gi,MAT);mi.userData.probeSkip=true;mi.userData.inspectLabel=IN.name;scene.add(mi);return mi;});GROUND_INSET=GROUND_INSETS[0];
+  const mi=kgCav(new THREE.Mesh(gi,MAT));mi.userData.probeSkip=true;mi.userData.inspectLabel=IN.name;scene.add(mi);return mi;});GROUND_INSET=GROUND_INSETS[0];
  // the apron: a vertical skirt 60 m deep round the square's edge, in the paint's edge colour
  {const pos=[],uvs=[],N=400,ed=[];for(let k=0;k<=N;k++){const f=k/N;ed.push([TERR.X0+f*SX,TERR.Z0],[TERR.X1,TERR.Z0+f*SZ],[TERR.X1-f*SX,TERR.Z1],[TERR.X0,TERR.Z1-f*SZ]);}
   for(let side=0;side<4;side++)for(let k=0;k<N;k++){const a=ed[k*4+side],b=ed[(k+1)*4+side],ha=terrainH(a[0],a[1]),hb=terrainH(b[0],b[1]);
@@ -105,7 +128,7 @@ function buildGround(){
  {const sd=new THREE.Vector3(SUN_POS[0],SUN_POS[1],SUN_POS[2]).normalize();
   try{CAVE_MESHES=KCARVE.mesh(MAT,{sun:[sd.x,sd.y,sd.z],ao:true,cast:'hood',gridNormals:true,
    attrs:{uv:{size:2,fn:(x,y,z)=>[(x-TERR.X0)/SX,1-(z-TERR.Z0)/SZ]},aGL:{size:4,fn:(x,y,z)=>glAt(x,z)}}});}catch(e){reportErr('cave: '+e.stack);}
-  CAVE_MESHES.forEach(cm=>{cm.userData.host=true;cm.userData.rock=true;cm.userData.inspectLabel='The river cave (its mouth in the limestone ridge)';
+  CAVE_MESHES.forEach(cm=>{kgCav(cm);cm.userData.host=true;cm.userData.rock=true;cm.userData.inspectLabel='The river cave (its mouth in the limestone ridge)';
    cm.userData.probePoints=[CAVE.c[0]+CAVE.depth*.4,BITE.floor+CAVE.h*.5,CAVE.c[1]];   /* the probe reads it at the mouth, inside its registered volume */scene.add(cm);});}
  GROUND=m;return m;}
 

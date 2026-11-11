@@ -134,17 +134,21 @@ const TEX_GROUND=BIO.canvasTex(1024,1024,(g,w,h)=>{const id=g.createImageData(w,
   const bk=clamp(1-brookDist(wx,wz)/40,0,1);r=lerp(r,104+n2*26,bk);gg=lerp(gg,90+n2*20,bk);b=lerp(b,66,bk);
   d[i]=r;d[i+1]=gg;d[i+2]=b;d[i+3]=255;}
  g.putImageData(id,0,0);});
-const MAT_GROUND=new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0x8c8c86});
 const GLIT=null;
 const GLIB=(function(){if(typeof KGROUND==='undefined'||new URLSearchParams(location.search).get('kground')==='0')return null;
  const L=KGROUND.layer('hyperjungle','ground.litter',{w:'(1.0-vBk)',amt:.6,gain:.55,tint:'diffuse'});return L?[L]:null;})();
+/* THE GROUND'S LIGHT PER PIXEL (2026-11-04, the ground catch-up; core/terrain/GROUND.md): on KGROUND the floor is MeshStandard, so the
+   relief's bump and cavities reach the light (r128's Lambert lights per vertex); ?kground=0 (or no pack) keeps the Lambert;
+   ?kgrelief=0 drops the relief (the before-and-after on this page) */
+const KG_RELIEF=!!GLIB&&new URLSearchParams(location.search).get('kgrelief')!=='0';
+const MAT_GROUND=GLIB?new THREE.MeshStandardMaterial({map:TEX_GROUND,color:0x8c8c86,roughness:.96,metalness:0}):new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0x8c8c86});
 if(GLIB){MAT_GROUND.onBeforeCompile=sh=>{
  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute float aBk;varying float vBk;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvBk=aBk;');
  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying float vBk;');};
- KGROUND.hook(MAT_GROUND,{key:'hyperjungle-lake-ground',layers:GLIB});}
+ KGROUND.hook(MAT_GROUND,{key:'hyperjungle-lake-ground',layers:GLIB,relief:KG_RELIEF?{bump:.075,cavity:.8,mesh:1}:null});}   /* the relief (no texture unit) and the mesh's hollows (aKGAO below); no tri: no near steep flank */
 (function(){const N=260,S=TERR.R*2.2,g=new THREE.PlaneGeometry(S,S,N,N);g.rotateX(-Math.PI/2);
  const p=g.attributes.position;for(let i=0;i<p.count;i++){p.setY(i,terrainH(p.getX(i),p.getZ(i)));}
  /* aBk: no litter on the silt, the sand or the channels (the litter layer's weight is 1 - aBk) */
  {const bk=new Float32Array(p.count);for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i),Z=zoneW(x,z);
    bk[i]=clamp(Math.max(Z.lake,Z.varzea*smooth(HIGH+.5,HIGH-1,groundH(x,z))*.45,1-brookDist(x,z)/40),0,1);   /* the library's litter at half strength on the flood's floor: its moss and leaf grain under the paint */}g.setAttribute('aBk',new THREE.BufferAttribute(bk,1));}
- g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The várzea floor and the terrace';scene.add(m);})();
+ g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);if(KG_RELIEF)KGROUND.cavityMesh(m);m.userData.probeSkip=true;m.userData.inspectLabel='The várzea floor and the terrace';scene.add(m);})();

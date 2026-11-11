@@ -91,3 +91,35 @@ EXPORT_PROFILE in verify.py leaves out: atmos (the page has no core/atmos export
       (13:00 and 22:00: the old SW sun is out of reach at the equinox here). Draw calls at the default camera (verify.py
       --assert, GPU): 105 before, 103 after.
 
+
+## The final rebuild (pair 7, 2026-11-03; PLAN-STATIONS.md, "Core adoption")
+
+- [x] **The page died at render when rebuilt from the merged sources** (`W.wetChunk`: `WATER.PRESETS.shore` undefined): `build.py` lacked
+  `core/water/21-core-water-shore.js`. Listed.
+- [x] **A shade half that sorts before its data half** throws before the error panel is wired, and the page is blank with no message:
+  `core/terrain/host/35b-core-lamina-shade.js` sorts before `35b-core-lamina.js` (`-` before `.`), so the build keys it `35c-core-lamina-shade.js`.
+  Worth a check in `tools/check_assembly.py` for every page (not done: shared).
+- [ ] **KSHADOW's cost not measured** (no GPU in the cloud session). Software GL cannot time it. The coordinator's GPU run measures `?shadow=0`
+  against the default at "The geyser basin" and "From above"; if it is unaffordable, set it off by default here.
+- [ ] **The attach audit is close to its limit**: 0.98% (limit 1%) after the card fixes, 0.90% before. The heath (`small`) took stems from
+  `check_cells.py --fix` and 6 of its 533 cards now float (they were 0); the bloom (51 of 853) and the kettle lilies on the creek's mouth (6 of 7, on
+  the water: `free` wants setting on `lily`) are the rest. Not traced in this turn.
+- [ ] **No look judged on a GPU**: KGROUND's layers (hex-tiled and height-blended against the old two-read sampler), the curtains' lamina bands,
+  the plume, the far field's canopy colour and the Stills. Software GL shots only (the turn's notes say which).
+
+## Stations 2-5 (2026-11-09; PLAN-STATIONS.md, "Stations 2-5 as built")
+
+- [x] **A plume based under 0 did not compile** (core/water/geyser `52b`, `WATER.plumeGLSL` wrote `p.y--0.16`: a decrement). Fixed in core (the base in
+  brackets); the showcase's geysers all stand above 0, so only basin's showed it. The other pages that take 52b (ringisles, the Throne's three, xanadu's
+  two, the isle demo) move by that text at their turns (`check_stale` already held them stale).
+- [x] **A station's views never reached the page** when it left out the showcase's (`ownViews`): the station-views line sat inside the block it skipped
+  (`99-host-take.js`). Moved.
+- [ ] **puna and basin open at 13:00, not the owner's 11:00**: at their longitudes 11:00 falls in the giant's eclipse (09:30-11:30 and 09:30-11:00 on day 1;
+  `ATMOS.sunHidden`), and the page opened in the dark. A station names its hour (`STATION_TAKE.hour`). The owner's call whether to keep the eclipse instead.
+- [ ] **basin draws ~19,000 lodgepoles** (6.2M triangles at its default camera, 59 draw calls; budget 26M): the forest has no impostor or far tier yet (a
+  bole and needle clumps, a cheaper ring past 750 m). Measure on the GPU; give it `BIO.impostor` if it is heavy.
+- [ ] **`check_cells` does not read a station's fragments for a build with `src/`**, so the `st.*` card slots' geometry is unseen by it: `st.pine`'s
+  stems were written from the tool's own proposal by hand (the clump guard asked for them at load).
+- [ ] **The stations still load the hyperjungle's `41` globals** (TAU, clamp, smooth, fbm...) though only corona grows it (`"nojungle"` drops the rest
+  and its pack).
+- [ ] **No GPU look yet** at any of the four: the gravel's and ice's tints, the run-off ramps per station, the lodgepole's crown, the ice towers and caves.

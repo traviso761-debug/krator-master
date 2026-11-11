@@ -51,6 +51,28 @@ It is a new biome, so it goes in the gallery when it first reaches `main`.
 | `kits/yeti` | station 3's buildings, read in place (the owner, 2026-10-26: "read kits/yeti now"); the `pyc` field is what the culture kit reads back |
 | `core/city`, `core/hamlet`, `core/simulation` | not taken: no settlement is built here (the Yeti's towns are the culture kit's and the capital's own plans) |
 
+**The final rebuild (pair 11, 2026-11-09; BACKPORT.md section 1 and its row; a cloud session, no GPU):** taken, every change in `src/`:
+
+| Group | Taken | Where |
+|---|---|---|
+| Graphics | **octahedral impostors** for the four species' far trees (one set, item `impTrees`; `?diet=0` the old blobs; gain 2.4, `?impgain=`) | `55`, `89z` |
+| Limb joints | **`BIO.flareJoin`** on the fur larch's and the stone pine's near limbs | `55` `limb()` |
+| Held crowns | a mid larch's branches drawn as one rod each: its sprays hung from branches that were not drawn (the audit's "a far tier drops the parent") | `55` |
+| Cards | `check_cells` reads 0 faults for this kit already: nothing to fix | |
+| Sky and air | height fog (thin and long, a dawn mist over the lowest still), the rain cover, lightning with the storms, `BIO.bindAtmosWind`, A2C | `89a`, `89z` |
+| Water | the ext 56/57/58/60, the water's fields and `BIO.env`; **`WATER.mirrorSwitch` off at load** on the largest open still | `89z`, `99` |
+| Sun shadows | **`KSHADOW` off by default, `?shadow=1`** | `89z` |
+| Ground | **KGROUND** for the six layers over the steppe's base (`?kground=0`), and the row's **`polygon` kind**: sorted circles on the frozen flats where KFROST lays its ice-wedge polygons; **KHORIZON** over the near box and the model's country to 16 km (`?hz=0`) | `47`, `89z` |
+| Order | `88-host-build.js` is `89z-host-build.js` (after the water); the clouds' shade, the weather, the snow on the scene run there after the bake (they were in `89s`) | `89z`, `89s` |
+| Station 3 | `kits/yeti` is merged: `yeti_bundle.py` reads its engine from `core/engine` (36o doors on core/door, 36s stairs) and the capital is drawn | `yeti_bundle.py` |
+
+**Not taken, and why:** KSTRATA (the row's "strata on the wall": the near ground holds no bedded wall; the tors are granite split on its sheet
+joints, which KSTACKS already draws; the Outer Wall's faces are the far land's cast ridges), talus (KFROST's rock glaciers and the gravel layer
+carry the scree), KFAR (the mid ground to 20 km is the model's own country, the sky's ridges past it), thin air on the crest (the Wall's airless rim
+is far land on every station's page), the ice kind on the frozen lake (the lake is drawn as its own ice sheet on the library's `ice.lake`; the
+water ext's ice is for a stream or a pool that freezes in the weather), seasons by `BIO.season` (the season is the page's build input already:
+KNOWN_ISSUES), R9 puddles (a dry country; oidong's finding on a KGROUND floor), KGROUND's relief (`?kgrelief=1`: each build times it on the GPU first).
+
 **Stations on the model (N0, picked 2026-10-26 with the owner's leave; `region/far.py` SITES):** station 1 at px 220,216
 (4,597 m, 0.90 atm, Dsc, mean +2 °C, ~300 mm; Leng 16 km south), station 2 at px 218,190 (5,068 m, 0.85 atm, Dsc, mean
 -1 °C, 188 mm; flat permafrost ground 52 km north of Leng), station 3 at px 138,176 on the frozen lake's north-west shore

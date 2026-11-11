@@ -93,10 +93,22 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
 // ---------------------------------------------------------------- the page, handed to the host
 window._registered=REG.length;
 KHOST.on(skyView,'view');   /* the shared sky, its lights and fog at the hour (89s-host-sky.js) */
+/* THE LAND IN THE STILL WATER (core/water/ext/58, WATER.mirrorSwitch; every rebuild: the switch, OFF at page load, for the tri counts): the panel's
+   "reflections" button or ?mirror=probe|live turns it on. The largest open still is the plane (the Yeti Valley's lake when it is not frozen, else the
+   largest alas); the other stills share its material and so its plane (one a page): an alas at another level shows the plane's land, as the stream
+   would */
+const MIRROR_AT=(function(){if(!WATER_DRAW||!WATER_DRAW.still||!WATER_RECS)return null;const iced=WATER_RECS.lake&&SITE.lakeIce&&SITE.lakeIce[SEASON];
+ const L=(WATER_RECS.alases||[]).concat(WATER_RECS.lake&&!iced?[WATER_RECS.lake]:[]);if(!L.length)return null;
+ const area=P=>{let a=0;for(let k=0;k<P.length;k++){const p=P[k],q=P[(k+1)%P.length];a+=p[0]*q[1]-q[0]*p[1];}return Math.abs(a)/2;};
+ const S=L.reduce((b,S)=>!b||area(S.poly)>area(b.poly)?S:b,null),n=S.poly.length;let cx=0,cz=0;S.poly.forEach(q=>{cx+=q[0];cz+=q[1];});cx/=n;cz/=n;
+ const r=Math.max(...S.poly.map(q=>Math.hypot(q[0]-cx,q[1]-cz)));
+ return {materials:[WATER_DRAW.still.material],level:S.level,center:[cx,cz],radius:r*2.5};})();
+const MIRROR=WATER.mirrorSwitch&&MIRROR_AT?WATER.mirrorSwitch(Object.assign({THREE,renderer,scene,camera,sky:SKY,far:2200,tree:o=>o.name==='biome:impTrees',
+ hour:()=>ATMOS.clock?ATMOS.clock.hour:10},MIRROR_AT)):null;window.MIRROR=MIRROR;
 const H=KHOST.take({build:'nwouterwall',title:'Krator biome — the NW outer wall: '+SITE.title,
  hint:'The Yeti\'s High Country ('+NW_REGION.site.base.toFixed(0)+' m, '+NW_REGION.site.atm.toFixed(2)+' atm, '+NW_REGION.site.cls+'): '+SITE.title+', '+SEASON+'. The Season select reloads the page',
  scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,views:VIEWS,ticks:TICKS,
- clock:{hour:10},draw:()=>SKY.render(),   /* the shared sky's pass, then the world (89s-host-sky.js) */
+ clock:{hour:10},draw:MIRROR?()=>{MIRROR.update();SKY.render();}:()=>SKY.render(),   /* the reflections' pass when on, the shared sky's pass, then the world (89s-host-sky.js) */
  controls:[{select:SEASONS.map(s=>[s,'Season: '+s]),id:'seasonsel',on:v=>{const u=new URL(location.href);u.searchParams.set('season',v);location.href=u.toString();}}],
  inspect:describe,stats:()=>'inst '+window._instances+'\nseason '+SEASON+' · day '+SKY_DAY0+'\nlod '+(BIO.lodShown?BIO.lodShown.meshes+'/'+BIO.lodShown.of+' chunk meshes':''),
  layers:{'flora':{match:o=>!!(o.userData&&o.userData.biome)},'rock and ice':{match:o=>!!(o.userData&&(o.userData.rock||/^ice:/.test(o.name||'')))},

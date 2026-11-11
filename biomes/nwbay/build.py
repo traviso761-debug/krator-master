@@ -48,7 +48,22 @@ def find_node():
     return None
 
 HERE=os.path.dirname(os.path.abspath(__file__)); SRC=os.path.join(HERE,'src'); DIST=os.path.join(HERE,'dist')
-OUT=sys.argv[1] if len(sys.argv)>1 else "nwbay.html"
+sys.path.insert(0,os.path.join(os.path.dirname(os.path.dirname(HERE)),'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
+# a STATION (PLAN.md, "The caverns station"; python3 build.py --station <name> -> dist/nwbay-<name>.html): stations/<name>/'s numbered
+# fragments are added to src/'s (a name in both is the station's), and its station.json may name more core ("core": {"<fragment name>":
+# "<path from the repo root>"}). The pattern is oidong's (biomes/oidong/build.py)
+_args=[a for a in sys.argv[1:] if not a.startswith('--') or a=='--station']
+STATION=_args[_args.index('--station')+1] if '--station' in _args else None
+if STATION: _args=[a for a in _args if a not in ('--station',STATION)]
+OUT=_args[0] if _args else ('nwbay-%s.html'%STATION if STATION else 'nwbay.html')
+import json as _json
+SJ={}
+if STATION:
+    _sd=os.path.join(HERE,'stations',STATION)
+    if not os.path.isdir(_sd): sys.exit('build.py: no station '+STATION+' (stations/'+STATION+'/)')
+    _sj=os.path.join(_sd,'station.json')
+    if os.path.isfile(_sj):
+        with open(_sj,encoding='utf-8') as _fh: SJ=_json.load(_fh)
 FORBID=['kdef(','kput(','kbake(','BUCKET[','MBK[','FAMMAT[','PLATS','BRIDGES','TOWERS','RIVER','PALISADE','KOFF']
 # shared fragments from core/terrain, opt-in by name (core/README.md): '36-core-carve.js' gives
 # BIO.carve, overhangs on the heightfield. A local src/ copy with the same name wins.
@@ -56,12 +71,17 @@ CORE_TERRAIN=['35-core-strata.js','37-core-stacks.js','43-core-ground.js','44-co
 CORE_T=os.path.normpath(os.path.join(HERE,'..','..','core','terrain'))
 # the biome core from core/biome, the same way (core/README.md): one copy for every kit.
 # A kit that lists nothing keeps its own src/ copies and builds as before.
-CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','32-core-variants.js','33-core-fungoid.js','34-core-impostor.js','35-core-anim.js','40-core-place.js','42-core-export.js','43-core-export-host.js','44-core-stage.js']
+# 31j (the catch-up pass, 2026-11-03): a limb's joint to its parent (BIO.flareJoin), on only where the host asks (NWBAY_LOOK.joints)
+CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','31j-core-joint.js','32-core-variants.js','33-core-fungoid.js','34-core-impostor.js','35-core-anim.js','40-core-place.js','42-core-export.js','43-core-export-host.js','44-core-stage.js']
 CORE_B=os.path.normpath(os.path.join(HERE,'..','..','core','biome'))
 # core/space (KSPACE: the spatial index the core's keep-clear and scatter read; core/README.md), listed the same way
 CORE_SPACE=['20-core-space.js']
 CORE_S=os.path.normpath(os.path.join(HERE,'..','..','core','space'))
 PATH={f:os.path.join(SRC,f) for f in os.listdir(SRC) if not f.startswith('.')}
+if STATION:
+    for f in os.listdir(_sd):
+        if re.match(r'\d',f): PATH[f]=os.path.join(_sd,f)
+    for f,pth in SJ.get('core',{}).items(): PATH.setdefault(f,os.path.normpath(os.path.join(HERE,'..','..',pth)))
 for f in CORE_TERRAIN:
     if f not in PATH: PATH[f]=os.path.join(CORE_T,f)
 # KSTRATA's three.js half (the limestone's beds on the stacks' and the sinkholes' walls, 45-host-stage.js), keyed 35z so it sorts
@@ -114,7 +134,8 @@ for f in CORE_ATMOS:
 CORE_WATER=['20-core-water.js','21-core-water-shore.js','22-core-water-flow.js','50-core-water-draw.js','51-core-water-kinds.js']
 for f in CORE_WATER:
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','water',f))
-for f in ['53-core-water-terraces.js','53b-core-water-terraces-draw.js','54-core-water-kinds-ext.js','54b-core-water-kinds-ext-draw.js']:   # 54/54b (2026-10-27): the weed in the lowland reach
+for f in ['53-core-water-terraces.js','53b-core-water-terraces-draw.js','54-core-water-kinds-ext.js','54b-core-water-kinds-ext-draw.js',
+          '58-core-water-mirror.js','61-core-water-plume.js']:   # 58 WATER.mirrorSwitch (off at load) and 61 the river's plume (tintFlow): the catch-up pass, 2026-11-03   # 54/54b (2026-10-27): the weed in the lowland reach
     PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','water','ext',f))
 PATH['89-atmos-c-hostbind.js']=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','host','89-atmos-c-hostbind.js'))   # ATMOS.bindHost, in core/atmos/host/ so the kits that take core/atmos whole are not changed
 # the shared sky (core/atmos/SKY-PLAN.md section 9, 2026-10-26): core/atmos's core and binding where the kit had none, the sky's
@@ -130,6 +151,10 @@ for f in ['89-atmos-c-hostbind.js','89-atmos-h-skyhost.js','89-atmos-i-skybiome.
 PATH['89-atmos-j-fog.js']=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','sky','89-atmos-j-fog.js'))
 for f in ['89-atmos-fx-raincover.js','89-atmos-fx-lightning.js']:
     PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','fx',f))
+# core/shadow (KSHADOW; the catch-up pass, 2026-11-03): the sun's shadows in one view-following box, attached and switched OFF at load
+# (the owner: toggleable, off by default; ?shadow=1 or the panel's button turns it on: 88-host-build.js)
+PATH.setdefault('10-core-shadow.js',os.path.normpath(os.path.join(HERE,'..','..','core','shadow','10-core-shadow.js')))
+PATH.setdefault('12-core-shadow-host.js',os.path.normpath(os.path.join(HERE,'..','..','core','shadow','host','12-core-shadow-host.js')))
 # the syntax check cannot see a core fragment that is simply absent
 miss=[f for f in ('10-core-head.js','20-core-kit.js','30-core-foliage.js','40-core-place.js') if f not in PATH]
 if miss: print('NO BIOME CORE: '+', '.join(miss)+' (list them in CORE_BIOME or keep a src/ copy)'); sys.exit(1)
@@ -143,6 +168,7 @@ for f in frags:
             if w in s: bad.append(f'{f}: uses {w}')
     out.append(f'\n// ==================== {f}\n' if f.endswith('.js') else ''); out.append(s)
 if bad: print('BIOME FRAGMENT DEPENDS ON A HOST ENGINE:\n  '+'\n  '.join(bad)); sys.exit(1)
+BSRC.report(PATH)   # --list-sources: what the page is made of, then exit
 os.makedirs(DIST,exist_ok=True)
 html=''.join(out); open(os.path.join(DIST,OUT),'w',encoding='utf8').write(html)
 # syntax check on the script body

@@ -9,6 +9,9 @@
 //     spoil:  { good: share of its stock that rots a night },
 //     keep:   { by (the preserving good: 'salt'), goods:[the goods it keeps], share (of what would rot), per (servings a unit keeps) },
 //     season: { by (the seasoning good: 'salt'), mult (a meal's quality while the town holds it), least? (1) } }, {settlement})
+//   SIM.stockpile(s, {good: {min, target, max, reserve}})   (77-sim-6-economy.js) the settlement's policy on a good: `min` a
+//                                  floor on the governor's target, `target` in place of it, `max` its ceiling, and at `max`
+//                                  (its supply line, with `pool`) its makers stop; `reserve` no trade route takes
 //   SIM.economyRules(minute)       SIM.step's last act, after the world's own minute (SIM.stepHooks): every economy's
 //                                  governor, then its spoilage, then its seasoning, each in the economies' order
 //   SIM.economyGoverned(s?)  -> {good: {use, pos, cap, mult, target}}   the governor's last look (its demand a day, its
@@ -97,9 +100,12 @@
       st.made += a*(dm - st.made); st.k += a*(k0 - st.k);
       var use = demand(E, g, minute, memo), pos = position(E, g), cap = st.k>0 ? st.made/st.k : 0;
       (G.pool||[]).forEach(function(o){ var Eo = SIM.econ(o); if(Eo && Eo!==E) pos += position(Eo, g); });   /* `pool`: the towns it works for, their stock its own */
-      var target = Math.max(G.cover*use, (G.least||{})[g]||0), out = use + G.alpha*(target - pos)/G.ti;   /* `least`: a shelf stock kept with no demand */
+      var Pol = (E.policy||{})[g]||{}, target = Pol.target!=null ? Pol.target : Math.max(G.cover*use, (G.least||{})[g]||0, Pol.min||0);   /* `least`: a shelf stock kept with no demand; SIM.stockpile's policy */
+      if(Pol.max!=null && target>Pol.max) target = Pol.max;
+      var out = use + G.alpha*(target - pos)/G.ti, full = Pol.max!=null && pos>=Pol.max;
       var lo = G.minBy && G.minBy[g]!=null ? G.minBy[g] : G.min, m = cap>0 ? out/cap : out>0 ? G.max : lo; want[g] = Math.max(lo, Math.min(G.max, m));   /* never made yet: the most only if it is wanted */
-      wanted[g] = out>0; floor[g] = lo;
+      if(full){ want[g] = 0; lo = 0; }   /* at its `max`: no more of it */
+      wanted[g] = out>0 && !full; floor[g] = lo;
       M.view[g] = { use:use, pos:pos, cap:cap, mult:want[g], target:target };
     });
     Object.keys(E.recipes).forEach(function(id){
@@ -137,6 +143,7 @@
     each(function(E){ if(E.govern) govern(E, minute); });
     each(function(E){ if(E.spoil) spoil(E, minute); });
     each(function(E){ if(E.season) season(E, minute); });
+    if(minute%1440===0) each(function(E){ var R=E.resSites; if(R) Object.keys(R).forEach(function(id){ var S=R[id]; if(S.amount!=null && S.regen>0){ var a0=S.amount; S.amount=Math.min(S.start, S.amount+S.regen); S.regrown=(S.regrown||0)+S.amount-a0; } }); });   /* a site's nightly regrowth */
   };
   SIM.economyGoverned = function(s){ var E = s!=null ? SIM.econ(s) : SIM.ECON; return E && E.govern ? E.govern.view : null; };
 })(typeof window!=='undefined'?window:globalThis);

@@ -7,8 +7,18 @@ long stretch of savannah. The **savannah rims** each call back to the big biomes
 
 This plan replaces stations 2 and 3 of `PLAN-STATIONS.md`, which was written for the old polygons.
 
-**Status: plan, waiting for the owner.** Nothing is built yet. Wherever this file says *proposed*, the owner has not
-decided.
+**Status (2026-11-08): J0 and J1 done (with the core gaps H1-H8, H10); J2-J6 built in a cloud session on CPU checks only; J7-J9 not started**
+(builds, the lints and a SwiftShader load of each page with its own checks; the GPU verify is the coordinator's, owed). Wherever this
+file says *proposed*, the owner has not decided; where a step took a proposal so it could be built, section 14 marks it **taken as
+proposed, owner to confirm**.
+
+| Step | Built | Page |
+|---|---|---|
+| J2 | the savage land: the old-growth habit (50, 55: `HYPERJUNGLE_LOOK.habit`), H6 (the impostors' reach and cell), the 8 species (`src/54`, `src/56`), bais, trails, wallows and licks, the Riders' beasts by land (H8) | `dist/hyperjungle-savage.html` (`--station savage`) |
+| J3 | Screamer wood: H5 (the howl bamboo on `BIO.bamboo`, the Cut's reach on H1), the bone giants, the 7 others (`src/57`), the habit thinned (ironbark and ghostwood leading), the groves' howl (H9 sound records), the fauna hunted thin (H8) | `dist/hyperjungle-north.html` (`--station north`) |
+| J4 | the savannah rims, built as `biomes/savannarim` and folded into `biomes/abyssal-savannah` as its stations (its `PLAN.md` section 14 holds the core adoption; section 14 answer 1 below): H3 (KFIRE), H10 (KSTACKS.mounds), H7 (the seasons), the savannah's base (red oat grass, blind grass, fan palm, umbrella thorn; the gallery forest and the outliers read in place) and the north savannah (the bone giants and bloodwood read in place); the hyperjungle's station `north` reads its blind grass | `biomes/abyssal-savannah/dist/abyssal-savannah-north.html` (`--station north`) |
+| J5 | the e rim: seven cousins by BIO.kin of eastabyss's and the e highlands' builders read in place, H4 (`BIO.setGiant`, the pull fading west), the savage land's comb tree and elephant ear by reach (H1) | `biomes/abyssal-savannah/dist/abyssal-savannah-erim.html` (`--station erim`) |
+| J6 | the se rim, the incense country: its zones, the Bowl's cousins (rain dragon, rain rose, rain bottle), incense, cloud avocado, leaning tree fern (H4), the rust miombo defined here with its copper flush (H7; read by Godstep's redlands), the red guyed stalk left to Godstep (not built there yet), the Bowl's and the drylands' species by reach | `biomes/abyssal-savannah/dist/abyssal-savannah-serim.html` (`--station serim`) |
 
 ## 0. The ground (scale model 4.23, surveyed 2026-10-26)
 
@@ -42,12 +52,12 @@ What the numbers say:
 | `hyperjungle S` | `biomes/hyperjungle`, land `pure` (the page as built) | the kit as it stands, plus the lake station (section 6) |
 | `savage hyperjungle` | `biomes/hyperjungle`, land `savage` | the same forest as S, but larger, with new species and the beasts |
 | `hyperjungle N`, its XA part | `biomes/hyperjungle`, land `north` | Screamer wood |
-| `hyperjungle N`, its XV/Aw/BSh part | **`biomes/savannarim`**, land `north` | the blind grass. The savannah's base comes from the savannah kit |
-| `e savannah rim` | `biomes/savannarim`, land `east` | "the old lines": the abyss's and the highlands' cousins |
-| `se savannah rim` | `biomes/savannarim`, land `southeast` | "the incense country": the Bowl's, the wet face's and Godstep's cousins |
+| `hyperjungle N`, its XV/Aw/BSh part | **`biomes/abyssal-savannah`**, station and land `north` | the blind grass. The savannah's base comes from the savannah kit |
+| `e savannah rim` | `biomes/abyssal-savannah`, station `erim`, land `east` | "the old lines": the abyss's and the highlands' cousins |
+| `se savannah rim` | `biomes/abyssal-savannah`, station `serim`, land `southeast` | "the incense country": the Bowl's, the wet face's and Godstep's cousins |
 | `crater drylands` (south) | `biomes/crater-drylands`, station `south` | the three-way species swap |
 
-- **One new kit, `biomes/savannarim`**, holds the savannah's base for all three savannahs: tall grass, the fire mosaic,
+- **One kit holds the savannah's base** (`biomes/abyssal-savannah`'s rim stations, section 14 answer 1; first built as a new kit, `biomes/savannarim`, and folded in),  for all three savannahs: tall grass, the fire mosaic,
   termite cathedrals, gallery forest, and the shared base species (section 4). Each land sets its own palette on top of
   that. Pylon and Talia already read this ground (`settlements/iziz/VASSAL-KITS.md`). The alternative is to keep the
   savannah as stations of the hyperjungle kit, which is what `PLAN-STATIONS.md` proposed. That would cram four very
@@ -144,7 +154,7 @@ Everything unsettling here is a real plant habit, used in a frightening way:
 | `widowhair` | **Widow's hair** | Spanish moss (*Tillandsia usneoides*) and old man's beard | grey hanging curtains 10 to 40 m long on the bone giants and dead limbs | wherever there are bone giants | stuffing; tinder |
 | `ghostpipe` | **Ghost pipe** | ghost pipe (*Monotropa uniflora*), a white plant with no chlorophyll | waxy white stems 1 to 2 m tall, bent over at the head, in clumps on the dark floor. They turn black when touched | the darkest floor, under the bamboo | a sedative (proposed medicine) |
 | `devilsfingers` | **Devil's fingers** | octopus stinkhorn (*Clathrus archeri*) | red fungal "fingers" 1 to 2 m long that hatch out of a pale egg and curl back. They stink | the litter after rain | none |
-| `blindgrass` | **Blind grass** | elephant grass (*Pennisetum purpureum*) in the dense air | cane-grass 5 to 8 m tall, too dense to see through: the raiders' grass. Defined in `savannarim` (section 4), and it grows into the forest gaps here | the savannah, and gaps in the jungle | fodder, thatch, screening walls |
+| `blindgrass` | **Blind grass** | elephant grass (*Pennisetum purpureum*) in the dense air | cane-grass 5 to 8 m tall, too dense to see through: the raiders' grass. Defined in the savannah rims' kit (`biomes/abyssal-savannah` `src/rim/`, section 4), and it grows into the forest gaps here | the savannah, and gaps in the jungle | fodder, thatch, screening walls |
 
 The kit's six hypertrees grow here at the *pure* scale but thinner, and they turn into bone giants as rain falls. Ironbark
 and ghostwood lead, because they stand drought best. Prism gum is rare.
@@ -154,7 +164,7 @@ The Screamers' **millipede ranches** (the economy, `LORE.md` §6.7) and orchards
 boa and lattice mantis from `kits/fauna`'s hyperjungle set. Punji pits and net traps are the Screamers' own records (the
 settlement's job, `settlements/screamers`), but the kit leaves clear lanes in the blind grass for them.
 
-## 4. The savannah base (`biomes/savannarim`, every land)
+## 4. The savannah base (`biomes/abyssal-savannah`'s rim stations, `src/rim/`, every land)
 
 Shared by the north savannah and both rims. Each land re-tints and re-weights it.
 
@@ -271,7 +281,7 @@ High water and low water follow the world clock (core gap H7).
 - `hyperjungle` gains zones `savage` (wet) and `north` (warmth 5, arid 2). New records: elephant-ear taro (staple), armour
   palm heart, comb-tree honey (sweetener), cathedral figs (fruit), howl-bamboo shoots, bloodwood (dye and reagent), ghost
   pipe (medicine), moriche fruit, sky-lily seed (grain).
-- `savannarim` is new, with zones `north`, `east` and `southeast`. Records: monsoon-cycad sago (staple, leached),
+- the savannah rims (`biomes/abyssal-savannah`'s stations; first built as `savannarim`) are new, with zones `north`, `east` and `southeast`. Records: monsoon-cycad sago (staple, leached),
   frankincense (resin), dragon's blood (dye), rain-rose sap (reagent), cloud avocado (fruit), rust-miombo honey and
   caterpillars, red-stalk fibre (Godstep's), scouring rush.
 - `kits/resources`: none new.
@@ -284,9 +294,9 @@ High water and low water follow the world clock (core gap H7).
 | 2 | hyperjungle | `-savage` | near Mav's Refuge (752,477) | the 480 m forest, a bai with a herd, a cathedral fig, sky pitchers in the boughs |
 | 3 | hyperjungle | `-north` | near the Hexahedron (555,338), on the howl bamboo's way out of the Cut | howl-bamboo groves, watchers, bone giants at the edge |
 | 4 | hyperjungle | `-lake` | the lake's shore | várzea, moriche, sky lilies |
-| 1 | savannarim | `dist/savannarim.html` | se rim, between Talia and the laterite | the incense country and the copper flush |
-| 2 | savannarim | `-east` | e rim near Fridon (755,601) | fire scale-trees, the post-burn cycad flush, ember spikes |
-| 3 | savannarim | `-north` | N's XV savannah | the blind grass under bone giants, bloodwood |
+| 1 | abyssal-savannah | `-serim` | se rim, between Talia and the laterite | the incense country and the copper flush |
+| 2 | abyssal-savannah | `-erim` | e rim near Fridon (755,601) | fire scale-trees, the post-burn cycad flush, ember spikes |
+| 3 | abyssal-savannah | `-north` | N's XV savannah | the blind grass under bone giants, bloodwood |
 | + | crater-drylands | `-south` | the patch | black mallee on the old flows; the three-way mix |
 
 ## 10. Textures
@@ -347,7 +357,7 @@ the lake), `core/atmos` (`cloudDeck` at the wet face's foot), `core/rand`, `core
 
 ## 12. Core adoption (written first, as the working rules ask)
 
-`biomes/savannarim` starts from the nearest finished kit, crater-drylands: the fire, the open ground, the sky. It takes
+The savannah rims (built as `biomes/savannarim`, now `biomes/abyssal-savannah`'s stations) start from the nearest finished kit, crater-drylands: the fire, the open ground, the sky. It takes
 the biome core (`CORE_BIOME`, with H1-H5, H7 and H10 when they land), `core/host`, `core/rand` (every placement seeded by
 hash of world, cell, index and salt), `core/mask` (no `getImageData`), `core/tags` (registered before drawn),
 `core/space`, `core/terrain`, `core/water`, `core/atmos`, and the shared sky. Before it is called done:
@@ -357,28 +367,54 @@ hash of world, cell, index and salt), `core/mask` (no `getImageData`), `core/tag
 
 | Step | What | Done when |
 |---|---|---|
-| **J0** | The owner approves this plan (the open questions below). In `extract_region.py` `KITS`, map `hyperjungle S` / `savage hyperjungle` / `hyperjungle N` to `hyperjungle` (with a land), and the rims to `savannarim`; drop the old `hyperjungle` key. Choose the station sites. Write the texture prompts | approved; prompts listed |
+| **J0** | The owner approves this plan (the open questions below). In `extract_region.py` `KITS`, map `hyperjungle S` / `savage hyperjungle` / `hyperjungle N` to `hyperjungle` (with a land), and the rims to `savannarim` (answer 1 below: to `abyssal-savannah`, as `extract_region.py` already has them); drop the old `hyperjungle` key. Choose the station sites. Write the texture prompts | approved; prompts listed |
 | **J1** | Core: H1 (reach) and H2 (kin), each with a node test. `port_baseline.py` reads `same` for every build that did not ask to change | tests pass |
 | **J2** | The savage land: the scale habit, H6, the 8 species, bais and trails, H8 for the herds. Station 2 | `verify.py --assert` |
 | **J3** | H5 (bamboo). The north land's jungle: howl bamboo, bone giants, the 7 others. Station 3 | verified |
-| **J4** | `biomes/savannarim`: H3 (fire), H10 (mounds), H7 (seasons), the base, and the north savannah. Station 3 of savannarim | verified, `check_core_use.py` |
-| **J5** | The east rim (H4 lands here). Station 2 | verified |
-| **J6** | The south-east rim, with the rust miombo and red stalk shared with Godstep (in step with Godstep's D3). Station 1 | verified |
+| **J4** | the savannah rims (`biomes/abyssal-savannah` stations): H3 (fire), H10 (mounds), H7 (seasons), the base, and the north savannah. Station 3 of the rims, `north` | verified, `check_core_use.py` |
+| **J5** | The east rim (H4 lands here). Station 2, `erim` | verified |
+| **J6** | The south-east rim, with the rust miombo and red stalk shared with Godstep (in step with Godstep's D3). Station 1, `serim` | verified |
 | **J7** | The drylands' `south` station: the reaches and the black mallee | verified; the drylands' station 1 unchanged |
 | **J8** | The lake station (H7's water level) | verified |
-| **J9** | `PORT.md`, the index tools, `biomes/WORLD.md` rows, `LORE.md` §8, the gallery (savannarim is a new biome), and the little demo's refresh where it covers these polygons | baseline rewritten on purpose |
+| **J9** | `PORT.md`, the index tools, `biomes/WORLD.md` rows, `LORE.md` §8, the gallery (the rims are new stations of abyssal-savannah), and the little demo's refresh where it covers these polygons | baseline rewritten on purpose |
 
 ## 14. Open questions for the owner
 
+**The owner's answers (2026-11-08):**
+1. **No new kit: the rims go to the existing `biomes/abyssal-savannah`** (as `extract_region.py` already maps `e savannah rim`
+   and `se savannah rim`). Wherever this plan says `savannarim`, read abyssal-savannah: the savannah base, the north savannah,
+   the east rim and the south-east rim become its stations.
+2. **Yes**: volcanic ash on beast-dunged soil is reason enough ("rule of cool, mostly").
+3. **Yes, as a rumour that is a complete red herring**: the Screamers' speech did not begin with the groves.
+4. **Yes**: the glass wand and Fridon's wormwick trade go in.
+5. **Talia is in the east rim's climate** (east-abyss flora): the owner will redraw `e savannah rim` on the map so it runs a
+   bit further south, taking Talia (px 801,609; inside `se savannah rim` on map 5.1). Incense and dragon's blood stay the
+   **SE** rim's (the Bowl's lineage), and Talia's trade is not in them: no incense or dragon's-blood trade for Talia in LORE.
+   The east rim's station sites and Talia's ground (Pylon and Talia read this ground) follow the redrawn polygon.
+6. **Yes**: the rust miombo is defined here, Godstep's redlands reads it; the red guyed stalk stays Godstep's.
+7. **Yes**: the black mallee is the drylands patch's one hybrid.
+
 1. **One new savannah kit (`savannarim`)**, or the savannahs kept as stations of the hyperjungle kit?
+   *Answered:* the owner queued "the e savannah rim (`biomes/savannarim`, a new kit on the savannah base of section 4)"
+   (HANDOFF-REBUILD.md, 2026-10-27), and the core sessions built its gaps for it: one kit. **Superseded by the owner's answer 1 above** (2026-11-08): no new kit; built as `savannarim`, then folded into `biomes/abyssal-savannah` as its stations `serim`, `erim` and `north`.
 2. **Why the savage jungle is savage**: is volcanic ash on beast-dunged soil acceptable as the reason, with its
    carnivores a guild of canopy and shade, not Korona's poor-soil bog?
+   **Taken as proposed, owner to confirm** (J2, 2026-11-08): the ash-dark floor, the herds' bais, the three traps under 1% of the
+   plants and in the shade and the boughs (`stations/savage`); LORE.md section 8 carries it as a proposal.
 3. **Screamer wood**: the theme of a forest that looks and sounds like people (howling bamboo, watchers, hand flowers,
    skull-pods, bone giants). And may the Screamers' speech be rumoured to have begun with the groves?
+   **Taken as proposed, owner to confirm** (J3, 2026-11-08): built as station `north`; the rumour is in LORE.md section 6.7 as a
+   proposal, and the hand-flowers' name "the elders" in the species' harvest note.
 4. **The east rim's story**: the abyss's lineages as fire-hardened relics, and the highlands' pull toward the giant fading
    westward. Should the glass wand and Fridon's wormwick trade go in?
+   **Taken as proposed, owner to confirm** (J5, 2026-11-08): built as savannarim's station `east` (now abyssal-savannah's `erim`), the glass wand in (on the
+   ironstone pavements); Fridon's wormwick trade is in LORE.md section 8 as a proposal.
 5. **The south-east rim's story**: is Talia's trade in incense and dragon's blood acceptable (an addition to `LORE.md`
    §6.2)?
+   **Taken as proposed, owner to confirm** (J6, 2026-11-08): built as savannarim's station 1 (now abyssal-savannah's `serim`); LORE.md section 6.2 carries the trade as a
+   proposal.
 6. **Godstep's shared species**: the rust miombo to be defined here and read by Godstep's redlands station; the red guyed
    stalk to stay Godstep's.
+   **Taken as proposed, owner to confirm** (J6, 2026-11-08): `SAVRIM.builders.rustmiombo` (`BIO.kitBuilder('savannarim', 'rustmiombo')`);
+   the red guyed stalk is a reference row only until Godstep's kit builds it.
 7. **The black mallee** as the drylands patch's one hybrid.

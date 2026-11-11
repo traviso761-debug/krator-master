@@ -1,0 +1,11 @@
+{
+ "build": "hearths",
+ "note": "The Hearths kit's adapter onto the material library (core/materials/PLAN.md; PLAN.md section 18). The Cave of Crystals (stations/crystals): the rock's KGROUND layers (84-host-rock.js): rock.ironstain (the iron-stained roofs and walls between the crystals: rock.limestone.ironstained, delivered 2026-11-10, full colour at the stand-in's brightness), rock.limestone (the rift fill's grey lake limestone where the stain thins: rock.limestone.karst), ground.gypsum (the gypsum crust on the floors and the lower walls: ground.gypsum.crust); crystal.selenite is the beams' and blades' grain (mineral.selenite, delivered 2026-11-10: full colour, up the crystal's length, 2 m a tile). Run python3 tools/textures/pack.py biomes/hearths after any change, then python3 build.py.",
+ "size": 512,
+ "families": {
+  "rock.ironstain": {"lib": "rock.limestone.ironstained", "scale": [3.0, 3.0], "tint": {"keep": 1.0, "mean": 0.42}, "roughLift": 0.15, "specular": 0.2, "mapOnly": true},
+  "rock.limestone": {"lib": "rock.limestone.karst", "scale": [4.0, 4.0], "tint": {"keep": 0.6, "mean": 0.5}, "roughLift": 0.2, "specular": 0.2, "mapOnly": true},
+  "ground.gypsum": {"lib": "ground.gypsum.crust", "scale": [1.5, 1.5], "tint": {"keep": 0.75, "mean": 0.6}, "roughLift": 0.2, "specular": 0.25, "mapOnly": true},
+  "crystal.selenite": {"lib": "mineral.selenite", "scale": [2.0, 2.0], "tint": {"keep": 1.0, "mean": 0.8}, "roughLift": 0.0, "specular": 0.5, "mapOnly": true}
+ }
+}

@@ -46,6 +46,10 @@ GEYSER.blocked=blocked;
 // a crooked polyline from o along d
 function grow(o,d,len,r0,r1,n,curve,wig){let sx=-d[2],sz=d[0];const sl=Math.hypot(sx,sz)||1;sx/=sl;sz/=sl;const w1=rr(-1,1)*wig,w2=rr(-1,1)*wig,pts=[];
  for(let k=0;k<=n;k++){const t=k/n,w=(w1*Math.sin(t*Math.PI)+w2*Math.sin(t*TAU))*len;pts.push({x:o.x+d[0]*len*t+sx*w,y:o.y+d[1]*len*t+curve*len*t*t,z:o.z+d[2]*len*t+sz*w,r:mix(r0,r1,Math.pow(t,.8))});}return pts;}
+// a limb's joint to its parent (core/biome 31j, BIO.flareJoin; the owner, 2026-11-03, every rebuild turn): the root sunk into the parent and swollen to a
+// collar, so a fork reads as grown, not two pipes pushed together; no draws (the stream does not move). A reader without 31j (the hyperjungle's lake
+// station, ringisles) gets the limb as before. jsg: the sides at the joint (6+ for a limb over .15 m)
+const fj=(pts,pr)=>BIO.flareJoin&&pts[0].r>.04?BIO.flareJoin(pts,{parentR:pr}):pts,jsg=(r,n)=>BIO.flareJoin&&r>.15?Math.max(n,6):n;
 const dirOf=(a,el)=>[Math.cos(a)*Math.cos(el),Math.sin(el),Math.sin(a)*Math.cos(el)];
 function clumpAt(item,x,y,z,size,flat,col,cx,cy,cz,ex,ey){const dx=(x-cx)/ex,dy=(y-cy)/ey,dz=(z-cz)/ex,qq=Math.hypot(dx,dy,dz);
  const ao=mix(.55,1,smooth(.3,.95,qq))*mix(.82,1,smooth(-.6,.35,dy))*rr(.9,1.1);const nx=dx*.9+rr(-.3,.3),ny=dy*.7+.75+rr(-.15,.2),nz=dz*.9+rr(-.3,.3),nn=Math.hypot(nx,ny,nz)||1;
@@ -70,9 +74,9 @@ B[0]=function(T,st,lv){const S=SP[T.sp],M=means(),hr=rr(1.2,2.4)*(T.H/10),rs=hr*
  // the forks: two or three, each forking again once
  const nb=ri(2,3),tips=[];
  for(let b=0;b<nb;b++){const ba=la+b*TAU/nb+rr(-.4,.4),L1=(T.H-hf)*rr(.45,.6),p1=grow(top,dirOf(ba,rr(.75,1.05)),L1,T.rb*.6,T.rb*.4,2,-.05,.08);
-  st.limb+=BIO.tube('bark0',p1,bc,{seg:lv===2?5:3});const e=p1[p1.length-1];
+  st.limb+=BIO.tube('bark0',fj(p1,top.r||T.rb*.75),bc,{seg:jsg(p1[0].r,lv===2?5:3)});const e=p1[p1.length-1];
   for(let c=0,nc=lv===2?ri(1,2):1;c<nc;c++){const ca=ba+rr(-.8,.8),p2=grow(e,dirOf(ca,rr(.7,1.1)),(T.H-e.y+T.y0)*rr(.7,1),e.r*.8,e.r*.55,2,-.05,.1);
-   st.limb+=BIO.tube('bark0',p2,bc,{seg:lv===2?4:3});tips.push(p2[p2.length-1]);}}
+   st.limb+=BIO.tube('bark0',fj(p2,e.r),bc,{seg:jsg(p2[0].r,lv===2?4:3)});tips.push(p2[p2.length-1]);}}
  const lc=C(pick(S.leaf));let reach=rs;
  tips.forEach((p,i)=>{crown(T,st,lv,p.x,p.y,p.z,T.crownR*rr(.55,.7),lc);reach=Math.max(reach,Math.hypot(p.x-T.x,p.z-T.z)+T.crownR*.5);
   if(fruitH(T,i,3)<.35){const fc=C(pick(PAL.pandanFruit));BIO.put('fruit',[p.x+rr(-.2,.2),p.y-.35,p.z+rr(-.2,.2)],null,[.14,.18,.14],bright(fc,1.05));st.fruit++;}});
@@ -83,7 +87,7 @@ B[1]=function(T,st,lv){const S=SP[T.sp],M=means(),bc=bk(pick(PAL.kanukaBark),1,M
  for(let s=0;s<ns;s++){const a=a0+s*TAU/ns+rr(-.4,.4),h=T.H*rr(.7,1),p=grow({x:T.x+Math.cos(a)*.15,y:T.y0-.2,z:T.z+Math.sin(a)*.15},dirOf(a,rr(1.0,1.35)),h,T.rb,T.rb*.35,lv===2?4:2,-.08,.12);
   st.trunk+=BIO.tube('bark1',p,bc,{seg:lv===2?5:3,cap:true});const e=p[p.length-1];top=Math.max(top,e.y);
   for(let k=0,nk=lv===2?ri(2,3):1;k<nk;k++){const ka=a+rr(-1.2,1.2),q=grow(p[Math.max(1,p.length-2-k)],dirOf(ka,rr(.35,.8)),h*rr(.25,.4),e.r*.9,.02,2,-.05,.15);
-   if(lv===2)st.limb+=BIO.tube('bark1',q,bc,{seg:3});spots.push(q[q.length-1]);reach=Math.max(reach,Math.hypot(q[2].x-T.x,q[2].z-T.z));}
+   if(lv===2)st.limb+=BIO.tube('bark1',fj(q,p[Math.max(1,p.length-2-k)].r),bc,{seg:jsg(q[0].r,3)});spots.push(q[q.length-1]);reach=Math.max(reach,Math.hypot(q[2].x-T.x,q[2].z-T.z));}
   spots.push(e);}
  const hc=C(pick(S.leaf)),R=T.crownR,cy=top-R*.15;
  for(const p of spots){for(let c=0,n=lv===2?ri(2,3):1;c<n;c++){const q=rr(0,TAU),d=R*.35*Math.sqrt(rng());
@@ -126,7 +130,7 @@ B[4]=function(T,st,lv){const S=SP[T.sp],M=means(),sock=rr(1.2,3.8),grey=()=>bk(p
  st.trunk+=BIO.tube('wood',pts,pts[0].col,{seg:lv===2?9:5,cap:false});
  // the broken top: a jagged cone of splinters
  const e=pts[n];if(lv===2)for(let k=0;k<5;k++){const a=k/5*TAU+rr(-.3,.3),h=rr(.5,2.4);BIO.beam('rod',[e.x+Math.cos(a)*e.r*.6,e.y-.2,e.z+Math.sin(a)*e.r*.6],[e.x+Math.cos(a)*e.r*.4,e.y+h,e.z+Math.sin(a)*e.r*.4],e.r*.25,.03,grey());}
- for(let k=0,nk=lv===2?ri(2,5):1;k<nk;k++){const u=rr(.5,.9),p=pts[Math.round(u*n)],a=rr(0,TAU),L=rr(1,T.crownR),q=grow(p,dirOf(a,rr(.1,.6)),L,p.r*.35,p.r*.15,2,-.05,.1);st.limb+=BIO.tube('wood',q,grey(),{seg:4,cap:true});}
+ for(let k=0,nk=lv===2?ri(2,5):1;k<nk;k++){const u=rr(.5,.9),p=pts[Math.round(u*n)],a=rr(0,TAU),L=rr(1,T.crownR),q=grow(p,dirOf(a,rr(.1,.6)),L,p.r*.35,p.r*.15,2,-.05,.1);st.limb+=BIO.tube('wood',fj(q,p.r),grey(),{seg:jsg(q[0].r,4),cap:true});}
  regTree(T,S,T.rb*3+2,T.H+1);};
 
 // ---------------------------------------------------------------- impostors (the far canopy)

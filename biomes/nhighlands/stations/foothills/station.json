@@ -1,0 +1,33 @@
+{
+ "note": "Station 3, the Mediterranean foothills (Csa): station 2's land with its own SITE; swlowlands' oaks, sycamore, manzanita and madrone read in place (kin).",
+ "base": "montane",
+ "families": [
+  "ground.goldgrass",
+  "ground.chaparral",
+  "ground.lush"
+ ],
+ "kin": {
+  "swlowlands": [
+   [
+    "src/50-biome-swlowlands-species.js",
+    "src/55-biome-swlowlands-trees.js"
+   ],
+   "SWLOW",
+   [
+    "bk.furrow",
+    "bk.mottle",
+    "bk.ember",
+    "bk.flay",
+    "bk.cork",
+    "oakleaf",
+    "glossy",
+    "broad",
+    "beard",
+    "moss",
+    "wood",
+    "bloom",
+    "grass"
+   ]
+  ]
+ }
+}

@@ -3212,6 +3212,36 @@
    "row": "Metal",
    "col": "Ancient Port (Hook)",
    "status": "new"
+  },
+  {
+   "src": "library/mineral.selenite",
+   "row": "Stone & rock",
+   "col": "Generic",
+   "status": "committed"
+  },
+  {
+   "src": "library/rock.limestone.ironstained",
+   "row": "Stone & rock",
+   "col": "Generic",
+   "status": "committed"
+  },
+  {
+   "src": "library/rock.megabreccia.polished",
+   "row": "Stone & rock",
+   "col": "Generic",
+   "status": "committed"
+  },
+  {
+   "src": "library/ground.bench",
+   "row": "Ground",
+   "col": "Bays & coast",
+   "status": "committed"
+  },
+  {
+   "src": "library/metal.scorched",
+   "row": "Metal",
+   "col": "Ancients",
+   "status": "committed"
   }
  ]
 }

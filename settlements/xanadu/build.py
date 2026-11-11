@@ -77,7 +77,12 @@ except Exception:
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))   # repo root: biomes/, core/, kits/, settlements/
-UPSTREAM = {'highlands': os.path.join(ROOT, 'settlements', 'highlands'), 'iziz': os.path.join(ROOT, 'settlements', 'iziz')}
+sys.path.insert(0, os.path.join(ROOT, 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
+sys.path.insert(0, os.path.join(ROOT, 'kits', 'xanadu'))
+import xanadu as kxa   # the Xanadu kit, read in place (MODULARITY-PLAN.md step 4)
+UPSTREAM = {'highlands': os.path.join(ROOT, 'settlements', 'highlands'), 'iziz': os.path.join(ROOT, 'settlements', 'iziz'),
+            'ancients': os.path.join(ROOT, 'kits', 'ancients'), 'iziz-vernacular': os.path.join(ROOT, 'kits', 'iziz-vernacular'),
+            'placeholder': os.path.join(ROOT, 'core', 'atmos', 'placeholder')}
 SRC = os.path.join(HERE, 'src')
 TARGETS = os.path.join(HERE, 'targets')
 DIST = os.path.join(HERE, 'dist')
@@ -95,6 +100,11 @@ TAGS_FILES = {f: os.path.join(ROOT, 'core', d, f) for d in ('rand', 'tags') for 
 sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))
 import host as khost
 CORE_HOST = [f for f in khost.FULL if f not in ('20-core-space.js', '40-core-edits.js')]
+# core/door (KDOOR: the doors' records; KGLASS: the glass; KDOORHOST: posing a leaf, the frame tick, the E key) and the
+# Vernacular's openings (69e5: IZDOOR.leaf, the vDoorLeaf and vWinClear items), read in place: the kit's real doors and glass
+# (kits/xanadu/src/71c-xa-openings.js) draw through them; src/90-xa-doors.js hands each leaf to the host after a bake
+DOOR_FILES = {f: os.path.join(ROOT, 'core', 'door', f) for f in kxa.DOOR + ['90-core-door-host.js']}
+DOOR_FILES.update({f: os.path.join(ROOT, 'kits', 'iziz-vernacular', 'src', f) for f in kxa.OPENINGS_VERN})
 CORE_OPT = os.path.join(CORE, 'opt')   # opt-in shared fragments: a build takes only the ones it names
 # the material library (core/materials/record: KMAT, the loader and the in-place bind; not 24-tex-def.js, whose TEX
 # clashes with core/materials 20-textures.js): materials.json -> tools/textures/pack.py -> tex/ -> the GENERATED
@@ -151,6 +161,7 @@ DETERMINISTIC |= {'06-core-khook.js', '06b-core-kcolor.js'}   # core/shader (no 
 DETERMINISTIC |= {f for f in os.listdir(os.path.join(ROOT, 'core', 'mask')) if f[0].isdigit() and f.endswith('.js')}
 DETERMINISTIC |= set(CORE_ATMOS) | set(CORE_WATER) | {'90-xa-still.js'}   # core/atmos, core/water and their taker: nothing placed
 DETERMINISTIC |= set(CORE_HOST) | set(TAGS_FILES) | {'99-start.js', '91t-xanadu-tags.js', '89-xa-trades.js'}   # core/host (no rnd()); core/rand, core/tags; the take; REG into core/tags (reads only)
+DETERMINISTIC |= set(DOOR_FILES) | {'71c-xa-openings.js', '90-xa-doors.js'}   # core/door, the openings (69e5, 71c), the leaves' hand-over: no rnd()
 
 # Seed ranges known to collide, kept here so the build stays green while the
 # collision is tracked in KNOWN_ISSUES.md. Remove an entry when it is fixed;
@@ -261,11 +272,13 @@ def build_one(target, do_checks):
         sys.exit('no such target: %s (expected %s)' % (target, tdir))
 
     src = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()}
+    src.update({f: p for f, p in kxa.paths().items() if f not in src})   # the Xanadu kit (a src/ copy would win: none)
     src.update({f: os.path.join(CORE, f) for f in CORE_FILES if f not in src})
     src.update({f: os.path.join(CORE_OPT, f) for f in CORE_OPT_FILES if f not in src})
     src.update({f: os.path.join(ROOT, 'core', 'materials', 'record', f) for f in RECORD_FILES if f not in src})
     src.update({f: os.path.join(LOD_DIR, f) for f in LOD_FILES if f not in src})
     src.update({f: p for f, p in TAGS_FILES.items() if f not in src})
+    src.update({f: p for f, p in DOOR_FILES.items() if f not in src})   # core/door and the Vernacular's openings, read in place
     khost.resolve(src, CORE_HOST)   # a src/ copy with a shell file's name would win (none)
     tgt = {f: os.path.join(tdir, f) for f in os.listdir(tdir) if f[0].isdigit()}
     for mod in TARGET_CORE.get(target, []):
@@ -311,6 +324,8 @@ def build_one(target, do_checks):
         html = re.sub(r'<title>.*?</title>', lambda _: '<title>%s</title>' % m.group(1),
                       html, count=1)
     out = os.path.join(DIST, TARGET_OUT[target])
+    if BSRC.LISTING:   # --list-sources: every file this target read is recorded; main() reports every target's
+        return order, None, None
     os.makedirs(DIST, exist_ok=True)
     if side:
         html = matlib_pack.write_sidecar(side, html, DIST, 'xanadu.tex.js', prune=False)
@@ -340,27 +355,31 @@ def vendor_manifest():
 
 
 def vendor_check():
-    """Compare vendored fragments with ../highlands/src (which itself vendors ancients + iziz)."""
-    up = os.path.join(UPSTREAM['highlands'], 'src')
-    if not os.path.isdir(up):
-        print('vendor-check: ../highlands/src not found; skipped')
-        return
-    files = VENDORED + IZIZ_VENDORED
-    # Highlands keeps no src/ copy of 81-sky.js (its sky is a target fragment), so a file it lacks is
-    # compared with ../iziz/src, where it comes from
-    iz = os.path.join(UPSTREAM['iziz'], 'src')
-    upf = lambda f: srcpath(f, up) if os.path.exists(srcpath(f, up)) else srcpath(f, iz)
-    drift = [f for f in files if not os.path.exists(upf(f))
-             or open(upf(f), 'rb').read() != open(srcpath(f), 'rb').read()]
-    print('vendor-check highlands: %s' % ('all %d identical' % len(files) if not drift
-                                          else 'DRIFT in ' + ', '.join(drift)))
+    """Compare each vendored fragment with the module it comes from."""
+    # Each copy is compared with the module it comes from (MODULARITY-PLAN.md step 6), not with Highlands' copy of it:
+    # the Ancients core with kits/ancients (and core/materials), the Vernacular's two with kits/iziz-vernacular, the sky
+    # with core/atmos/placeholder. The viewer shell (91-93) is Highlands' own (its 91-probe adapted on purpose), so it is
+    # compared with Highlands'.
+    vern, shell = ['69b-vern-mat.js', '69c-vern-helpers.js'], ['91-probe.js', '92-camera.js', '93-labels.js']
+    groups = (('ancients', VENDORED, 'src'), ('iziz-vernacular', vern, 'src'), ('highlands', shell, 'src'),
+              ('placeholder', ['81-sky.js'], ''))
+    for up_name, files, sub in groups:
+        up = os.path.join(UPSTREAM[up_name], sub)
+        if not os.path.isdir(up):
+            print('vendor-check: %s not found; skipped' % os.path.relpath(up, ROOT).replace(os.sep, '/'))
+            continue
+        drift = [f for f in files if not os.path.exists(srcpath(f, up))
+                 or open(srcpath(f, up), 'rb').read() != open(srcpath(f), 'rb').read()]
+        print('vendor-check %s: %s' % (up_name, 'all %d identical' % len(files) if not drift
+                                       else 'DRIFT in ' + ', '.join(drift)))
 
 
 def main():
     if '--vendor-check' in sys.argv:
         vendor_check()
         return
-    vendor_manifest()
+    if not BSRC.LISTING:   # --list-sources writes nothing
+        vendor_manifest()
     do_checks = '--no-checks' not in sys.argv
     wanted = [a.split('=', 1)[1] for a in sys.argv if a.startswith('--target=')]
     if '--target' in sys.argv:
@@ -370,6 +389,8 @@ def main():
 
     for target in wanted:
         order, html, out = build_one(target, do_checks)
+        if BSRC.LISTING:
+            continue
 
         # --- syntax check (honest about node being absent) -------------------
         body = html.rsplit('<script>', 1)[1].rsplit('</script>', 1)[0]
@@ -392,6 +413,7 @@ def main():
 
 if __name__ == '__main__':
     main()
+    BSRC.report(vendor_check=vendor_check)   # --list-sources: every target's files (and what --vendor-check compares), then exit
 
 # --- remind whoever is building of the open issues (see KNOWN_ISSUES.md) ---
 _ki = os.path.join(HERE, 'KNOWN_ISSUES.md')

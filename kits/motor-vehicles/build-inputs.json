@@ -3,11 +3,14 @@
  "runs": {
   "build.py": {
    "inputs": {
-    "kits/catalog/krator-asset-engine.js": "857d45d9a71f62c958eb29dbe273d572b9e8262669c29f9f0433675451e2139d",
-    "kits/catalog/krator-furniture-core.js": "f3810ba604216f194de8fab7aa58d8991e18a99f31387e3acee5d879445e256f",
+    "core/atmos/placeholder/80-sky-hash.js": "70eba6e14ba39b5da1123e5056a9383fb55913213e24b18e75045d0e17aab31f",
+    "core/atmos/placeholder/81-sky.js": "ad22fb31cdfbbd20cb1f8ad919e4720e7db54094e4e778c46e7bd8ce7780e6ab",
+    "core/atmos/placeholder/placeholder.py": "a56878038fdd42d4d41752866926a3cf59815924a08f2ef42b56484766848aab",
+    "core/catalog/krator-asset-engine.js": "857d45d9a71f62c958eb29dbe273d572b9e8262669c29f9f0433675451e2139d",
+    "core/catalog/krator-furniture-core.js": "1c8bfa11d261b36895fd50645358e2c4ebe54febf67daeed700a38fbd6256fe9",
     "kits/motor-vehicles/KNOWN_ISSUES.md": "61a8c73fb55b2dc39781783929c01b3aa58d445f0f3de9d2d6e45dfbfb0158c7",
-    "kits/motor-vehicles/PORT.md": "6d58c02eb5177637f6e4b2213d21647161176900de3e6ab24bc0052cbc9fd5c6",
-    "kits/motor-vehicles/build.py": "2388f2d51b8045d66c464eaadc0eb428a9605f796019478b8ee676515ac4dcf0",
+    "kits/motor-vehicles/PORT.md": "6dccaf0053b612038e012624a28762e5c2cc312f764d6109149726e7b1324dfc",
+    "kits/motor-vehicles/build.py": "23508c4009e370ddcfc447eb2417d3cb6fa0ec6f850334be7de00c6c7e234e69",
     "kits/motor-vehicles/krator-vehicles-ancient.js": "3ebaf2da088d67bd2270589a7b0d9c7c98339595ea5eb866d99b55a3638e8a6d",
     "kits/motor-vehicles/krator-vehicles-eastabyss.js": "30b367dfa517a1caced6d44c9874cc17aeae561872b9bfef6f5375f9dc6bc135",
     "kits/motor-vehicles/krator-vehicles-geomancer.js": "58869c92a19a1818fc669abb2ba71e462f75cbdbaf6bedc789f52d7c710f091a",
@@ -17,9 +20,7 @@
     "kits/motor-vehicles/krator-vehicles-runtime.js": "a04a76ec57ff3c3c03cded34c65b15b3db04701fbf4ed7ca3815c5eaf34b5f50",
     "kits/motor-vehicles/materials.json": "c311b609550dc762b03e35c749d12e7692898e49890ab221fe6fcaf0fa8197b8",
     "kits/motor-vehicles/src/00-head.html": "c577fed1dac18c8f53b753ec54519545324c5e58bf185d1a7f451306ffe89608",
-    "kits/motor-vehicles/src/80-sky-hash.js": "70eba6e14ba39b5da1123e5056a9383fb55913213e24b18e75045d0e17aab31f",
-    "kits/motor-vehicles/src/81-sky.js": "ad22fb31cdfbbd20cb1f8ad919e4720e7db54094e4e778c46e7bd8ce7780e6ab",
-    "kits/motor-vehicles/src/90-sheet.js": "9315e4d50ccb8c1c63ce979c070ae0656059681ece9372ca151466800d67635e",
+    "kits/motor-vehicles/src/90-sheet.js": "52bbe8f392f79679bb848c86857505962a77cd9ce9ca0abca433c0e45ef9dd94",
     "kits/motor-vehicles/src/92-hover.js": "2cdc8dd455d3f0a447c27f7ef3d21acc867d729713da18512411a46592714ccf",
     "kits/motor-vehicles/src/93-polygon.js": "a67795b37643006dd27274facb6d9eb2cddb80ed508a56a66ac5b78271ce1463",
     "kits/motor-vehicles/src/99-tail.html": "fc837380d9f5351ff0a5776c8e1f523bb2107106f2ac860e0e76535377ec5b78",
@@ -99,24 +100,27 @@
     "kits/motor-vehicles/tex/wood.albedo.webp": "8006f36a9405a8057d18b9810bde262ae67e2cbabe057ac7679fdd460385fc15",
     "kits/motor-vehicles/tex/wood.normal.webp": "f3d886ba4e6f5b61569086d975c88f423410d23178794ffe2c3eb0e315079c05",
     "kits/motor-vehicles/tex/wood.rough.webp": "4f07725b9fb784a09cb06f46b35f5384d79ba2521057e8c5ca60ca7f3c3fc84a",
-    "kits/motor-vehicles/vehicle_bundle.py": "a8210263e6589e971d7080eab0b1b6518dd4adf9d57165be3f31b2c5070ffb8b",
+    "kits/motor-vehicles/vehicle_bundle.py": "3ca455526d032d01bc31bde32f7b7c2fb64e1c72bed35245aae296a9859a2e2a",
     "kits/motor-vehicles/vehicles-core.js": "85b818f33a3305886128379a011df40103dc76cbdd2656d422a2d5af6d472990",
     "kits/motor-vehicles/vehicles-detail.js": "833b14b967d19983c354920b5ad13850363118fc260dc11f358101ab8ae80ce8",
-    "tools/check_port.py": "f78c26838944d7dd30c27eeaec2f9eba0d2904c25dfcd582f2edca049f0206e2"
+    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
+    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
    },
    "listings": {
+    "core/atmos/placeholder": "93e72701f4f204e698b400c25d1989704d985203b33d5a076ec9e170c3bb9552",
     "kits/motor-vehicles": "d83f4b49b75d7559d77640173e31e0700e1041e27f9bc5a66f09b39eaa2bf0fb",
-    "kits/motor-vehicles/src": "e71f5b75eb3d7c283777ba45e3998da9c6242bbeb78f01d976014e9e4e9da244"
+    "kits/motor-vehicles/src": "7b25856ff7f3f488ee7348c0e2d05df7e2a5925a636a1919d057a19556b47bb2",
+    "tools": "2d2fdaca850a104a2a2c553313ccb3ad18dc6bc48cb554c8c714fc1ca39607bf"
    },
    "outputs": {
-    "kits/motor-vehicles/build-manifest.json": "38dc15a1f023537f78962ef9349a52e42a248b0c41ceb1b90cb2ba6345b4dedf",
-    "kits/motor-vehicles/dist/krator-vehicles.js": "1977bd48fb2f8770d65dc4a65cb19017f1de024d47bbbd7197e800cc592ae4b4",
-    "kits/motor-vehicles/dist/motor-vehicles.html": "bd07a8f119a8263135fb403f20c670314fcbfcfd7217846d21969eea5ce6c344"
+    "kits/motor-vehicles/build-manifest.json": "9c032a00d716ba7af81c332c4091f6ee9b7360b8a67f55a9174cf269b703049d",
+    "kits/motor-vehicles/dist/krator-vehicles.js": "98e1d07d166b4af418fc92e556d882801e0cfc0df9d66d8284e5e24516d64dcd",
+    "kits/motor-vehicles/dist/motor-vehicles.html": "d5410056c11f375a78e44d2716672313544690d34977771087cd6b39a74de169"
    },
    "outputs_raw": {
-    "kits/motor-vehicles/build-manifest.json": "1d27e47c7ed46dd9b0e336472c553464a8f549e6d4fdae1522b36a0e96e7b2bd",
-    "kits/motor-vehicles/dist/krator-vehicles.js": "1977bd48fb2f8770d65dc4a65cb19017f1de024d47bbbd7197e800cc592ae4b4",
-    "kits/motor-vehicles/dist/motor-vehicles.html": "bd07a8f119a8263135fb403f20c670314fcbfcfd7217846d21969eea5ce6c344"
+    "kits/motor-vehicles/build-manifest.json": "0fc9ca79cbdc1c0225451046696daff8013401d253e0fbca66e0943f29d33748",
+    "kits/motor-vehicles/dist/krator-vehicles.js": "98e1d07d166b4af418fc92e556d882801e0cfc0df9d66d8284e5e24516d64dcd",
+    "kits/motor-vehicles/dist/motor-vehicles.html": "d5410056c11f375a78e44d2716672313544690d34977771087cd6b39a74de169"
    }
   }
  }

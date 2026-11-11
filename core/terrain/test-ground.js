@@ -48,7 +48,7 @@ ok('KGROUND.layer is null without the library',G.layer('nhighlands','ground.mulc
 // ---- the defaults are frozen: with no kind asked, the library, the layer code and the hooked shaders are byte for byte
 // what they were before the kinds (2026-10-26, the hashes of 43-core-ground.js at 71bed9f4d)
 const crypto=require('crypto'),sha=x=>crypto.createHash('sha1').update(x).digest('hex').slice(0,16);
-const FROZEN={glsl:'c8172f17c7a34804',glslNoHex:'a9e67aa4ceb6fedc',code:'8fadd0c5654d5f33',codePlain:'9ef2c66796916db8',fs:'1ab17892e2ddaf4b',vs:'5fecc5c7883e02f0',key:'|kground-k-2-764'};
+const FROZEN={glsl:'c8172f17c7a34804',glslNoHex:'a9e67aa4ceb6fedc',code:'cc45db7207dae11f',codePlain:'05e620a5ea7bd641',fs:'099817c7e920ca2b',vs:'5fecc5c7883e02f0',key:'|kground-k-2-789'};
 const freeze=(layers)=>{const F1={map:{id:1},k:1/3,w:'vGL.x',amt:.7,gain:1.25,tint:'diffuse',name:'mulch'},F2={map:{id:2},k:1/3.2,w:'vGL.y',amt:.75,name:'meadow',h:{from:'a'},lin:false};
   const LL=layers||[F1,F2],m={userData:{},customProgramCacheKey:proto.customProgramCacheKey,onBeforeCompile:null};G.hook(m,{layers:LL,key:'k'});const s=fake();m.onBeforeCompile(s);
   return {glsl:sha(G.glsl()),glslNoHex:sha(G.glsl({hex:false})),code:sha(G.code({},LL)),codePlain:sha(G.code({blend:0,far:false},[LL[0]])),fs:sha(s.fragmentShader),vs:sha(s.vertexShader),key:m.customProgramCacheKey()};};

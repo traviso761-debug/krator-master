@@ -67,7 +67,45 @@ seeds, the variants), and the station's:
 - **the water held**: the plunge lake's and every pothole pool's shore over its level all round;
 - each with a broken input that must fail.
 
-**Geodes** (planned, 2026-11-03): the coulee walls cut through the flows' geode-bearing tops, so station 1 can show small amethyst geodes in the entablature and one walk-in geode (`KSPELEO.AMETHYST`). See `biomes/CRYSTAL-CAVES-5.1.md`, site 3.
+**Geodes** (planned 2026-11-03; planned in full and built 2026-11-09): the coulee walls cut through the flows' geode-bearing tops, so
+station 1 shows small amethyst geodes in the walls and on the talus, and one walk-in geode (`biomes/CRYSTAL-CAVES-5.1.md`, site 3).
+- **Where geodes are**: a flood basalt's gas bubbles rise to the top of each flow and are filled later by silica groundwater, so the
+  geodes lie in **the band under each flow top** (`SC.strata.tops`): the top 30 per cent of a flow's cliff, under its bench.
+- **The records** (`core/terrain/39f-core-geode.js`, `KGEODE`, `[G data]`, node-tested with negatives): `KGEODE.scatter` on a cell
+  lattice hashed by (world, cell, salt): **wall** geodes in the band where the drawn ground is steep, broken open by the coulee's cut
+  (their cut face out along the ground's normal, half the shell left in the rock), and **loose** geodes on the gentler ground within
+  60 m below a band (weathered out and fallen: whole nodules, a share broken in halves). Each `{id, kind, x, y, z, r, split, n, az,
+  rind, mineral: 'amethyst', band}`.
+- **The walk-in geode**: the drawn ground's cells are 10 m, too coarse to open a 4 m mouth in a cliff (Copper Glacier's lesson), so the
+  walk-in geode is in **a fallen block of a flow top** on the talus at a wall's foot: `KGEODE.block` adds a KCAVERN `mass` (the block,
+  9 by 8 m and 7 high, its top capped) and a `hall` inside it (a round pocket, 2.3 m in radius, 4.4 high) whose front the block's
+  broken face cuts open (a `door` opening); `KGEODE.line` lines it with amethyst points (KSPELEO reads a void inside a mass as
+  under the sky and would not dress it). Placed below the west
+  wall in sight of the dry falls; an obstacle for the kit's plants, registered.
+- **The drawing** (`core/terrain/host/39g-core-geode-draw.js`, `KGEODE.draw`): instanced pieces, one draw each: whole nodules (a knobbly
+  grey-brown skin), half shells, cut faces (the agate rind's bands in the vertex colour, the cavity dark), amethyst points (the
+  scattered geodes' and the walk-in's druse, translucent purple with a cheap fake glow); the block on `KCAVERN.drawRock` in the flow
+  top's vesicular basalt, the pocket's walls in the agate rind.
+- **Textures** (the library's, no new set): `stone.geode.druze` (the Throne's druse, its reuse note "any crystal-lined cavity") toned
+  grey and coloured amethyst by the material; `stone.onyx` toned grey-blue as the agate rind; `rock.basalt.vesicular` (this overlay's
+  `basalt`) for the block.
+- **Checks** (each with a negative): every wall geode in a flow-top band and on the drawn ground; every loose one on gentle ground below a
+  band; the block standing on the ground (its foot in the drawn ground all round, the ground under its pocket below the pocket's floor), its pocket and door open; the
+  pocket's druse fixed to its rock.
+- **Views**: the walk-in geode from outside, inside it, the geodes in a wall's flow top.
+- **The minerals** (the owner's references, 2026-11-09): `KGEODE.MINERALS` names seven fillings, each a crust habit and a rind palette:
+  amethyst (white quartz at the rim, purple deepening inward: most of them), quartz, celestine (blue blades in a chalky rind),
+  chalcedony (blue botryoidal pillars in a green crust), watermelon (pink and green bands, tourmaline prisms green at the foot and pink at
+  the tip standing out of the face), and two no basalt grows: aura (a teal, blue and violet film) and bismuth (stepped hopper crystals
+  in a rainbow film), moved out of the coulee on 2026-11-09 (bismuth to the Throne's vents, aura to Godstep's plan). The coulee's
+  palette: amethyst .6, quartz .12, chalcedony .1, watermelon .1, celestine .08. Geodes are ovals, not balls; half the broken loose ones lie with their other half beside them; the walk-in geode's
+  lining grows longer and darker toward the back of its pocket.
+- **Drawn by distance** (2026-11-09): every piece is chunked (240 m squares) and a chunk shows only while the eye is within its piece's
+  range (shells and nodules 240 m, faces 170, druse and tourmaline 90, the other crystals 60: `KGEODE.draw`'s `update`, this page's tick).
+  The geodes hold about 0.85 M triangles in 729 meshes; standing by one, about 40 meshes and 43 k triangles are drawn.
+
+Core adoption for the geodes: `core/terrain/39-core-cavern.js` (KCAVERN),
+`39f-core-geode.js`, `host/39e-core-cavern-draw.js` and `host/39g-core-geode-draw.js`, added to this overlay's `CORE` in `build.py`.
 
 ## 6. Core adoption: the final rebuild's turn (2026-11-03, pair 9)
 

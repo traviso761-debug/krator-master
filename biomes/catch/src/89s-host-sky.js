@@ -16,10 +16,9 @@ const SKY_CLOCK={get hour(){const c=skyHostClock();return c?c.hour:ATMOS.SKY.vie
 const RIDGES=(STAGE.ridges||[]).map(r=>r.hz==null?r:Object.assign({},r,{haze:-Math.log(1-Math.min(.95,r.hz))/(r.dist*STAGE.fogDensity)}));
 const SKY=ATMOS.sky(ATMOS.skyPreset('standard',{site:STAGE.site,air:STAGE.air,clouds:STAGE.clouds,fogDensity:STAGE.fogDensity,ridges:RIDGES}),
  {renderer,camera,scene,sun,hemi:HEMI,clock:SKY_CLOCK,fog:true});
-// THE HAZE IS DUST (the owner, 2026-10-26): low, warm and thickest on the floor. Height fog for this page (45-host-scene.js,
-// STAGE.fogH {y0, H, k}); the sky's own fog colour and the world's are pulled toward the dust's colour (STAGE.dust {col, k})
+// THE HAZE IS DUST (the owner, 2026-10-26): low, warm and thickest on the floor. Height fog for this page (core/atmos's, bound in
+// 89zz-host-core.js on STAGE.fogH {y0, H}); the sky's own fog colour and the world's are pulled toward the dust's colour (STAGE.dust {col, k})
 // each frame after the colour script sets them, so the walls fade into the same warm haze as the far dunes, not a blue one
-{const H=STAGE.fogH||{};heightFog(H.y0==null?(STAGE.siteH||0):H.y0,H.H==null?80:H.H,H.k==null?.85:H.k);}
 const DUST=Object.assign({col:0xcdb592,k:.5},STAGE.dust||{}),DUST_C=new THREE.Color(DUST.col);
 const SKY_FILL=fill.intensity;
 function skyView(dt){SKY.update(dt);const L=SKY.look;if(scene.fog)scene.fog.color.lerp(DUST_C,DUST.k);SKY.uniforms.uFogC.value.lerp(DUST_C,DUST.k);fill.intensity=SKY_FILL*Math.min(1,L.sunI/2);BIO.setSun(SKY.state.sunDir);}   /* each frame: 99-host-take.js subscribes it */

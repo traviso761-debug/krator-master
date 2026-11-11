@@ -1,0 +1,64 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.209,
+    1.355
+   ],
+   "seam_before": [
+    1.512,
+    1.422
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.85,
+   "rough_var": 0.15,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "rock",
+  "id": "rock.limestone.ironstained",
+  "metal": 0,
+  "roughness": 0.85,
+  "scale": [
+   3,
+   3
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "rock.limestone.ironstained.webp",
+  "generator": "supplied by the owner (krator-textures-2026-11-10, webp, 1254 px), generated from core/materials/PROMPTS-NEEDED.md section 36 (biomes/hearths/PLAN.md section 18)",
+  "licence": "generated for this project by its owner",
+  "look_note": "off its prompt a little: the rust covers most of the face, the grey-buff limestone shows only in small patches and the white gypsum crusts are missing; usable as the cave's stained walls, where the stain is the point",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a damp limestone cave wall stained by iron oxide: dull rust red and red-brown staining (#7a3a22, #9a5a34) in irregular blotches and runs over grey-buff limestone (#8a8478), small solution pits and shallow scallops, crusts of tiny white gypsum crystals in the hollows, a thin wet film with darker damp patches, matte.",
+  "prompt_where": "core/materials/PROMPTS-NEEDED.md section 36 (biomes/hearths/PLAN.md section 18)",
+  "reuse": "the Cave of Crystals' iron-stained roofs and walls (hearths, rock.ironstain, 3 m); any rust-stained limestone or cave wall, gossan, iron-stained karst",
+  "sha1": "9bb5bbeea34e1602d152b25a0330479dd75ef5e8",
+  "size_note": "the source is 1254 px, under the prompt's 2048: the pipeline writes 1024 px sets, so nothing was upscaled"
+ }
+}

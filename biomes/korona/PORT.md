@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 16 (13%) | 0 (0%) | 0 (0%) | 16 (13%) | 89 (74%) |
+| KB | 17 (11%) | 0 (0%) | 1 (1%) | 31 (19%) | 114 (70%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -14,16 +14,19 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `src/00-head.html` | 1.2 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `src/45-host-stage.js` | 10.6 | [web] | 7 | 0 | 3 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/47-host-land.js` | 28.8 | [draw] | 27 | 1 | 0 | 0 | 0 | 7 | 13 | 1 | 0 | 0 | 0 | split: data candidate that also draws |
-| `src/50-biome-korona-species.js` | 26.4 | [draw] | 0 | 1 | 0 | 0 | 0 | 5 | 4 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
-| `src/55-biome-korona-trees.js` | 8.9 | [draw] | 0 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/57-biome-korona-carnivores.js` | 20.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/47-host-land.js` | 33.6 | [draw] | 28 | 1 | 0 | 0 | 0 | 7 | 21 | 1 | 0 | 0 | 0 | split: data candidate that also draws |
+| `src/50-biome-korona-species.js` | 42.5 | [draw] | 0 | 1 | 0 | 0 | 0 | 6 | 11 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
+| `src/55-biome-korona-trees.js` | 10.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/57-biome-korona-carnivores.js` | 22.2 | [draw] | 0 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/60-biome-korona-floor.js` | 3.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/70-biome-korona.js` | 1.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/88-host-build.js` | 3.7 | [web] | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
-| `src/89a-host-atmos.js` | 0.5 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | ATMOS.bindHost |
-| `src/89w-host-water.js` | 4.2 | [draw] | 7 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/99-host-take.js` | 11.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/85-host-far.js` | 3.5 | [web] | 2 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/89-host-sky.js` | 1.2 | [G native] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/89a-host-atmos.js` | 4.3 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | ATMOS.bindHost |
+| `src/89w-host-water.js` | 4.6 | [draw] | 7 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/89z-host-build.js` | 11.4 | [web] | 3 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 1 | 0 | 0 | split: data inside host code |
+| `src/98z-host-mirror.js` | 1.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/99-host-take.js` | 12.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 
 ## Notes

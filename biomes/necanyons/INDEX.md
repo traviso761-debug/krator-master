@@ -30,9 +30,9 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `00-head.html` | 1 |  |
 | `45-host-stage.js` | 10 | the canyon floor (49); the rock (KSTACKS records: core/terrain/37-core- (58) |
 | `46-biome-necanyons-layout.js` | 8 | lay: the grid of beds and wall distances (25); the height of the rock (45); the zone of a point (58); the wall: a point on a bed's face, and its outwa (73); the seep lines (data: where the hanging gardens  (79); potholes: rain pools on the caps and the stacks' (90) |
-| `47-host-land.js` | 30 | the fields (biomes/WORLD.md): wet, flow, rock, u (71); the host binding (before the meshes: their paint (81); the library layers (or procedural without the pa (96); the floor (one mesh: litter, talus at the walls' (114); the rock (KSTACKS meshes): three meshes, by mate (180); the water: the creek and the rain pools (248) |
+| `47-host-land.js` | 35 **big** | the fields (biomes/WORLD.md): wet, flow, rock, u (79); the host binding (before the meshes: their paint (89); the library layers (or procedural without the pa (104); the floor (one mesh: litter, talus at the walls' (122); the rock (KSTACKS meshes): three meshes, by mate (215); the water: the creek and the rain pools (285) |
 | `50-biome-necanyons-species.js` | 28 | palettes (sRGB; a library card carries its own c (20); the trap records (core/biome/37-core-traps.js) (34); the tree-scale species (45); harvest (biomes/FRUIT.md; kits/crops) (65); the small plants and the carnivores, tagged (78); leaf textures (procedural, greyscale: the fallba (98); bark textures (grey, mean ~.6) (138); geometries (kit-local), and cell mapping (147); materials (176); instanced items (227) |
-| `55-biome-necanyons-trees.js` | 19 | the placement grid (19); keep-clear between trees (core/space) (31); the builders: (T, st, lv) with lv 2 near, 1 mid (51); impostors (the far trees) (128); the passes (data: species, cell, acceptance by z (142) |
+| `55-biome-necanyons-trees.js` | 20 | the placement grid (19); keep-clear between trees (core/space) (31); the builders: (T, st, lv) with lv 2 near, 1 mid (61); impostors (the far trees) (143); the passes (data: species, cell, acceptance by z (157) |
 | `57-biome-necanyons-carnivores.js` | 10 | the plants (24); the passes (62) |
 | `60-biome-necanyons-floor.js` | 2 |  |
 | `70-biome-necanyons.js` | 1 |  |
@@ -43,5 +43,5 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `89g-host-nightlife.js` | 2 |  |
 | `89n-host-night.js` | 3 |  |
 | `89w-host-water.js` | 6 |  |
-| `99-host-take.js` | 15 | the inspector's words: a plant names its species (36); the probe's budgets and the kit's own checks (ve (50); the page, handed to the host (119) |
+| `99-host-take.js` | 16 | the inspector's words: a plant names its species (36); the probe's budgets and the kit's own checks (ve (50); the page, handed to the host (120) |
 | `99-tail.html` | <1 |  |

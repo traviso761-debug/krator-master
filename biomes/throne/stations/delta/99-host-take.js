@@ -39,7 +39,9 @@ function describe(hit){const p=hit.point,o=hit.object;
  const fl=THRONE.flowAt(p.x,p.z),gr=fl?fl.name+', '+ageLabel(fl.age)+' old':'old ground (no flow in the record)';
  return name+'\n'+cls+(tg?'\n'+tg.climate+' · '+tg.aridity+' · riparian '+tg.riparian+' · abyssal '+tg.abyssal+' · '+tg.origin+' · lives: '+tg.plume+' · Koppen '+tg.koppen.join(' '):'')+
   (tg&&tg.harvest?'\nharvest: wood '+tg.harvest.wood+' · edible '+(tg.harvest.edible.join(', ')||'none')+(tg.harvest.medicinal?' · medicinal':'')+(tg.harvest.fruit?' · catalog '+tg.harvest.fruit:''):'')+
-  '\nground: '+(FIELD.delta(p.x,p.z)>.5?'the delta\'s new lava':FIELD.sand(p.x,p.z)>.5?'black sand':FIELD.cliff(p.x,p.z)>.5?'the pali\'s face':FIELD.flank(p.x,p.z)>.5?'the old flank':'the sea floor')+' · '+Math.round(terrainH(p.x,p.z))+' m'+'\n'+p.x.toFixed(0)+', '+p.y.toFixed(0)+', '+p.z.toFixed(0)+'  range '+camera.position.distanceTo(p).toFixed(0)+' m';}
+  '\nground: '+(FIELD.delta(p.x,p.z)>.5?'the delta\'s new lava':FIELD.sand(p.x,p.z)>.5?'black sand':FIELD.cliff(p.x,p.z)>.5?'the pali\'s face':FIELD.flank(p.x,p.z)>.5?'the old flank':'the sea floor')+' · '+Math.round(terrainH(p.x,p.z))+' m'+'\n'+p.x.toFixed(0)+', '+p.y.toFixed(0)+', '+p.z.toFixed(0)+'  range '+camera.position.distanceTo(p).toFixed(0)+' m'+hazardWords(p);}
+/* the hazards at the point (core/hazard, KTAGS.hazardAt): each one's kind, danger and state now */
+function hazardWords(p){const w=typeof KTAGS!=='undefined'&&KTAGS.hazardAt?KTAGS.hazardAt(p.x,p.y,p.z):'';return w?'\n'+w:'';}
 // ---------------------------------------------------------------- the probe's budgets and the kit's own checks (verify.py --assert)
 // What verify.py --assert measures. Budgets per kit pass come from BIO.stats (charged by BIO.cur inside the kit).
 const BUDGET={
@@ -60,6 +62,10 @@ const HCHK={
   return{ok:T.length>50&&!bad.length&&!badP.length,detail:T.length+' trees on the old flank'+(bad.length+badP.length?', '+bad.length+' trees and '+badP.length+' plants on the new land, the cliff or the sand (first at '+(bad[0]?[bad[0].x|0,bad[0].z|0]:[badP[0][0]|0,badP[0][2]|0])+')':', none on the new land, the cliff or the sand')};},
  // the lava reaches the sea: its channel runs from the flank to the entry, and the entry is at the delta's front, in the sea's edge
  entry(D){const f=frontS(ENTRY.t);return{ok:D.lava>500&&Math.abs(ENTRY.s-f)<5&&D.laze>500&&!!D.lavaMesh,detail:'channel '+D.lava+' sections, entry '+Math.round(ENTRY.s-f)+' m off the front, laze '+D.laze+' puffs'};},
+ // the hazards (core/hazard): each point reads the kind it should (want null: none), and the count of a kind is what was placed
+ hazards(Q,n){const bad=Q.filter(q=>{const k=KHAZ.at(q.x,q.z,0,q.y).map(h=>h.kind);return q.want?k.indexOf(q.want)<0:k.length>0;});
+  const ok=!bad.length&&(!n||n.got>=n.want);
+  return{ok,detail:(bad.length?'wrong at: '+bad.map(q=>q.what+' (want '+(q.want||'none')+')').join(', '):Q.map(q=>q.what+': '+(q.want||'none')).join(', '))+(n?' · '+n.got+' '+n.what+' of '+n.want:'')};},
  weather(W,U){const ok=!!W&&['ashfall','ash'].every(m=>W.MODES.indexOf(m)>=0)&&!!U&&!!U.ash;
   return{ok,detail:ok?'modes '+W.MODES.join(', ')+' ('+W.mode+')':'no snow or no ash'};},
  tagged(L){const reg=Object.keys(THRONE.KOPPEN),bad=[];
@@ -68,15 +74,20 @@ const HCHK={
   return{ok:!bad.length,detail:bad.length?'untagged: '+bad.join(', '):L.length+' species and plants tagged'};},
  camerasOut(C){const bad=C.filter(c=>c.y<terrainH(c.x,c.z)+.5);return{ok:!bad.length,detail:bad.length?'under the ground: '+bad.map(c=>c.view).join(', '):C.length+' cameras clear'};}};
 const plantList=()=>Object.keys(THRONE.PLANTS).map(k=>Object.assign({key:k},THRONE.PLANTS[k]));
+const HZQ=(function(){const sm=(LAVA.s0+ENTRY.s)/2,cm=xzOf(sm,LAVA.t(sm)),si=LAVA.s0+400,ci=xzOf(si,LAVA.t(si)+600);
+ return[{what:'mid-channel',x:cm[0],z:cm[1],y:terrainH(cm[0],cm[1])+1,want:'lava'},{what:'the laze',x:ENTRY.x+60,z:ENTRY.z+60,y:SEA+60,want:'acid'},
+  {what:'the entry',x:ENTRY.x,z:ENTRY.z,y:SEA+2,want:'heat'},{what:'the old flank',x:ci[0],z:ci[1],y:terrainH(ci[0],ci[1])+1,want:null}];})();
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P=instPoints();
  add('nothing on the new land, the cliff or the sand',HCHK.bare(THRONE.TREES,P));
  add('the lava runs to the sea at the delta\'s front',HCHK.entry(DELTAS));
  add('the ash (core/atmos, opt-in) is here',HCHK.weather(ATMOS.W,ATMOS.U));
+ add('the hazards: the lava, the laze, the entry (core/hazard)',HCHK.hazards(HZQ));
  add('every species and plant tagged',HCHK.tagged(THRONE.SPECIES.concat(plantList())));
  add('preset cameras clear of the ground',HCHK.camerasOut(Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail});
  add('a tree on the new land',HCHK.bare(THRONE.TREES.concat([{sp:SPK('ashpine'),x:ENTRY.x-40,z:ENTRY.z}]),[]));
+ add('lava read on the old flank',HCHK.hazards(HZQ.map(q=>q.want?q:Object.assign({},q,{want:'lava'}))));
  add('a channel that stops short of the sea',HCHK.entry(Object.assign({},DELTAS,{lava:10})));
  add('a weather without the ash',HCHK.weather(Object.assign({},ATMOS.W,{MODES:ATMOS.MODES.filter(m=>m!=='ash'&&m!=='ashfall')}),ATMOS.U));
  add('a species with no origin',HCHK.tagged(THRONE.SPECIES.map((S,i)=>i===0?Object.assign({},S,{tags:Object.assign({},S.tags,{origin:null})}):S)));
@@ -93,7 +104,7 @@ KHOST.take({build:'throne-delta',title:'Krator biome — the Throne: the lava de
  onView:goLight,controls:LCTL,keys:{n:()=>setLightMode(LIGHT_MODE==='night'?'day':'night')},
  clock:{hour:ATMOS.SKY.viewHour},draw:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
  inspect:describe,stats:()=>'inst '+window._instances,
- layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'rings':{objects:()=>[giantRing]}},
+ layers:{'hazards':KTAGS.hazardLayer(),'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'rings':{objects:()=>[giantRing]}},
  exporters:{biome:()=>BIO.export()},
  budget:BUDGET,types:()=>BIO.stats,
  api:{hostChecks,hostNegatives,

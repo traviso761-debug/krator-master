@@ -23,9 +23,31 @@ unless marked.
 | `core/clock` | through `core/host` |
 | `biomes/nwlowlands` | read in place (its own registry and pack): the native forest at the front and in the fog belt |
 
-Not taken: `core/terrain` (each station's landform is a short closed function of the survey's numbers: the coast, the
-rise, the coral terraces; no stacks, carve or relief field fits it; the surf rocks are knolls in that function),
-`core/mask` (nothing reads a raster: every field is a function), `core/city`, `core/hamlet`, `core/simulation`
+**The final rebuild (pair 10, 2026-11-04, branch `claude/rebuild-farside-cloud`; `BACKPORT.md`'s universal set and Farside's row):**
+
+| Module | Takes it for |
+|---|---|
+| `core/biome` 31j `BIO.flareJoin` | the snags' limbs at the front (`55`): the root sunk into the bole and swollen to a collar, 8 sides at the joint; no draws, so no stand moves |
+| `core/biome` 34 impostors | the native forest's far trees (nwlowlands' `55` makes them when the fragment is on the page: the front and the fog belt), lit at the hyperjungle's gain (1.6, `88`); `?diet=0` the old blobs. Farside's own stands keep their stand-ins (two streaky tufts: cheaper than an impostor) |
+| `core/terrain` 43 `KGROUND` | the ground's seven library layers (`47`), same order and weights, hex-tiled and height-blended; the sand is the `sand` kind (wind ripples across the north-wester, grain glints: the row's "sand on the strand"). `?kground=0` the old hex-cell bomb |
+| `core/terrain` 44 `KFAR`, 45 `KHORIZON` | the far country as a far-field lattice to 14 km (`47`); the horizon's shadows on the ground and, after the bake, on the flora (`88`). `?far=0`, `?hz=0` |
+| `core/shadow` (`KSHADOW`) | **off at page load** (the owner, 2026-11-03): the panel's `shadows` button attaches it on the first turn-on, then `off()`/`on()`; `?shadow=1` at load. core/shadow has no switch of its own yet, so the page holds one (`88`) |
+| `core/water` ext 57, 58, 58-shore, 61 | the audit; the reflections switch on station 1's saline lagoon (off at load); the harbour's and the lagoon's masks from the ground; Līng-Mā's plume out of the harbour mouth (`89w`; `?plume=0`). The sea keeps its surf and breakers; the harbour arm and the lagoon have none (`breakers:false`, no shore grid: the sea's grid stops at the mouth, `STAGE.sea.land`) |
+| `core/atmos` height fog, fog belt, rain cover, lightning | every station (`89t`): the flora in the wind and A2C, height fog with a dawn sea mist on the coast stations, the fog belt over Yith's ridge (the row's "fog belt (the cloud station)", `?belt=0`), the rain occlusion map |
+
+Dropped, and why: **seasons** (the coast is Af/Cfa, ever-wet; nwlowlands' seasons are its own look flag, off for a reader); **weed in the
+shallows** as `WATER.weed` (the sea's tint already carries the weed-brown shallows off the wrack line; a weed bed would sit under the surf
+and the kelp is on land here: left for the owner's eye); `KSTRATA` (no bedded cliff on any station: the bluff under Farport is
+planed bedrock, salt-bleached by tint); `KHOOK.warp` (no Bend); `core/mask` (nothing reads a raster). The card cells were already at zero
+faults (`check_cells.py`), the attach audit at .01% or less (`HANDOFF-REBUILD.md`), and `kits/resources/ROCK-PROPOSAL.md` has no Farside row.
+
+**Map 5.1 (the station review):** station 1 is re-drawn for the tsunami and Farport's move (section 6); the strand is re-sited (its old
+pixel now stands at 1,725 m on the wall's slope; 5.1 px 293,573, 16 m, on the scour bench); the front stays at 5.1 px 317,530 (2,179 m,
+above the plan's band: `KNOWN_ISSUES.md`); the fog belt at 1,611 m (the plan's 1,615). The sky's pixels are on the 4.23 canvas (5.1 less
+272,330), as the sky's frame is.
+
+Not taken before this turn and still not: `core/mask` (nothing reads a raster: every field is a function),
+`core/city`, `core/hamlet`, `core/simulation`
 (no settlement here: the owner, works only), `core/furnish` (the works are drawn by the page, tagged; they move to
 the Eternian kit later), `core/lod` and `core/minimap` (no biome takes them yet).
 
@@ -144,9 +166,17 @@ those rigs do worst.
 
 ## 6. Stations
 
-1. **Farport and the kelp coast** (`dist/farside.html`; on map 5.1 the old city moves onto the plateau above the tsunami's reach, the harbour
-   below it: `biomes/STATIONS-MAP-5.1.md`): the city on its harbour, the spray coral terraces round it
-   whitewashed with their own lime, the land-kelp forest standing on the slopes behind, the traders' quarter by the water.
+1. **Farport and the kelp coast** (`dist/farside.html`). **Rebuilt on map 5.1 (pair 10, 2026-11-04): the tsunami reaches Farside** (the owner,
+   2026-11-01; `biomes/STATIONS-MAP-5.1.md`, "Farside, the tsunami and Farport"; `DATA.tsunami_farside`: a 50 m crest, the scour bench to
+   65 m, chevrons to 38 m, the run-up ceiling 100 m). Farport's old city stands on the near-shore plateau (5.1 px 294,588, 212 m), its site
+   held clear and registered for the settlement build; the harbour stays at the water in Līng-Mā's drowned estuary (the river grades to
+   0 m on 5.1), with quays on both banks, two jetties and the dockyard's slip, the factory quarter's site beside them. Between them the
+   wave's ground: the scour bench (planed, salt-bleached bedrock to ~55 m), V-shaped chevron ridges pointing inland with backwash chutes
+   between, a perched saline lagoon at 9 m (a plunge pool), then the bluff to the plateau. The reach is drawn: the run-up line (red) and
+   the bench's top (amber) as ribbons on the ground (a panel layer, `?tsunami=0`), five **tsunami stones** on the run-up line (the State's
+   warning not to build below them: Earth's tsunami stones), and a **trimline** (the kelp under 100 m is younger, ~60% of its height).
+   The spray coral terraces stand either side of the harbour mouth, the land-kelp forest on the bluff and the plateau round the city's site.
+   Two km of the model are compressed into the page (KNOWN_ISSUES.md).
 2. **The front** (`-front`): where the kelp forest meets the land's: dead kauri and meranti hung with wine weed and wrack,
    kelp seedlings coming up between them, the native forest standing beyond.
 3. **The strand** (`-strand`): eelgrass dunes, sea palms on the surf rocks, spray coral reefs growing out of the sand above

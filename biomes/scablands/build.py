@@ -14,6 +14,7 @@ import importlib.util, os, subprocess, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.normpath(os.path.join(HERE, '..', '..'))
 NS = os.path.join(ROOT, 'biomes', 'nsemiarid')
+sys.path.insert(0, os.path.join(ROOT, 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 
 # the port lint for this build's own fragments (the kit's build lints the kit's when it loads)
 _cp = os.path.join(ROOT, 'tools', 'check_port.py')
@@ -24,7 +25,12 @@ spec = importlib.util.spec_from_file_location('nsemiarid_build', os.path.join(NS
 ns = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(ns)
 
-CORE = {'41-core-scour.js': os.path.join(ROOT, 'core', 'terrain', '41-core-scour.js')}   # KSCOUR: the flood's landforms
+CORE = {'41-core-scour.js': os.path.join(ROOT, 'core', 'terrain', '41-core-scour.js'),   # KSCOUR: the flood's landforms
+        # the geodes (PLAN.md, "Geodes"): KCAVERN (the walk-in geode's block and pocket), KGEODE (the records), and their drawing
+        '39-core-cavern.js': os.path.join(ROOT, 'core', 'terrain', '39-core-cavern.js'),
+        '39f-core-geode.js': os.path.join(ROOT, 'core', 'terrain', '39f-core-geode.js'),
+        '39e-core-cavern-draw.js': os.path.join(ROOT, 'core', 'terrain', 'host', '39e-core-cavern-draw.js'),
+        '39g-core-geode-draw.js': os.path.join(ROOT, 'core', 'terrain', 'host', '39g-core-geode-draw.js')}
 
 if __name__ == '__main__':
     sys.exit(ns.build('coulee.html', overlay={'src': os.path.join(HERE, 'src'), 'core': CORE,

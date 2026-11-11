@@ -240,10 +240,10 @@ const CHUNK_GROUPS=[];let ER_INST=0;
 function erBakeChunk(key,list){const G=new THREE.Group();G.name='chunk:'+key;scene.add(G);let x0=1e9,z0=1e9,x1=-1e9,z1=-1e9,y1=-1e9,y0=1e9;
  for(const Pl of list){TSTAT.cur=Pl.key+'/'+((Pl.o&&Pl.o.v)||0);const r0=REG.length;const g=VERN.place(G,Pl.key,Pl.x,Pl.z,Pl.ry,Pl.o);if(g)Pl.G=g;for(let i=r0;i<REG.length;i++){REG[i].type=Pl.key;if(Pl.o.y)REG[i].y=(REG[i].y||0);}
   x0=Math.min(x0,Pl.x-40);x1=Math.max(x1,Pl.x+40);z0=Math.min(z0,Pl.z-40);z1=Math.max(z1,Pl.z+40);y0=Math.min(y0,(Pl.o.y||0)-(Pl.o.drop||0));y1=Math.max(y1,(Pl.o.y||0)+(Pl.h||12));}
- TSTAT.cur=null;kbake(G);ER_INST+=window._instances||0;for(const n in KIT.items)KIT.items[n].length=0;
+ TSTAT.cur=null;kbake(G);xaDoorsBind();ER_INST+=window._instances||0;for(const n in KIT.items)KIT.items[n].length=0;   /* the chunk's door leaves to the host (90-xa-doors.js) before its items go */
  const e={G,key,sphere:new THREE.Sphere(new THREE.Vector3((x0+x1)/2,(y0+y1)/2,(z0+z1)/2),Math.hypot(x1-x0,y1-y0,z1-z0)/2+20),range:key==='landmark'?1e9:1700,n:list.length};CHUNK_GROUPS.push(e);return e;}
 // the walls and the mine boulders already sit in KIT.items: they bake first as the world chunk (always drawn)
-{const G=new THREE.Group();G.name='chunk:world';scene.add(G);kbake(G);ER_INST+=window._instances||0;for(const n in KIT.items)KIT.items[n].length=0;CHUNK_GROUPS.push({G,key:'world',sphere:new THREE.Sphere(new THREE.Vector3(0,100,0),3000),range:1e9,n:0});}
+{const G=new THREE.Group();G.name='chunk:world';scene.add(G);kbake(G);xaDoorsBind();ER_INST+=window._instances||0;for(const n in KIT.items)KIT.items[n].length=0;CHUNK_GROUPS.push({G,key:'world',sphere:new THREE.Sphere(new THREE.Vector3(0,100,0),3000),range:1e9,n:0});}
 for(const k in CHUNKS)erBakeChunk(k,CHUNKS[k]);
 
 // the hanging lights on the avenues: wherever two buildings face each other across a lit road within 24 m, a string of
@@ -255,7 +255,7 @@ for(const k in CHUNKS)erBakeChunk(k,CHUNKS[k]);
     if(!A||!B)continue;const ya=A.y+Math.min(A.h,9)*.72,yb=B.y+Math.min(B.h,9)*.72;const pa=[A.front[0],ya,A.front[1]],pb=[B.front[0],yb,B.front[1]];
     if(Math.hypot(pa[0]-pb[0],pa[2]-pb[2])>34)continue;if(n%2)xnBasketLights(pa,pb,5);else xnUmbrellaLights(pa,pb,5);n++;}
    acc+=L;}}
- kbake(G);ER_INST+=window._instances||0;for(const k in KIT.items)KIT.items[k].length=0;window._instances=ER_INST;CHUNK_GROUPS.push({G,key:'lights',sphere:new THREE.Sphere(new THREE.Vector3(0,100,0),3000),range:900,n});window._lights=n;})();
+ kbake(G);xaDoorsBind();ER_INST+=window._instances||0;for(const k in KIT.items)KIT.items[k].length=0;window._instances=ER_INST;CHUNK_GROUPS.push({G,key:'lights',sphere:new THREE.Sphere(new THREE.Vector3(0,100,0),3000),range:900,n});window._lights=n;})();
 // the runtime LOD: a chunk is drawn while it is in the view and within its range; the biome's own chunks tick beside it
 const _fr=new THREE.Frustum(),_pm=new THREE.Matrix4();
 FRAME_HOOKS.push(()=>{camera.updateMatrixWorld();_pm.multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse);_fr.setFromProjectionMatrix(_pm);const P=camera.position;let shown=0;

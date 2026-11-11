@@ -40,13 +40,13 @@
       runs of at most 16 steps with landings (`SKILL.md` 5j) do not fit its 10 m footprint as a straight flight. The
       front pavilions' inner columns stand inside the hall block's corners, where the round pavilions overlap it (as
       the sheets draw the pavilions as squares). Its rooms (the blueprint's B, G, U and L sheets) come with P6.
-- [ ] No dark voids (2026-10-19): the Talia kit's openings are doors, panes and open portals. The Iziz Vernacular houses on
-      the sheet (the mixed streets) still draw the Vernacular's dark door recesses and dark glass where their walls are not
-      hollow: that is the shared Vernacular helper (settlements/iziz 69c, vendored byte-identical by five builds), the owner's call.
-      TODO (the owner, 2026-10-19): when the Iziz Vernacular's own sheet fixes its dark voids, rebuild this kit (it reads
-      Iziz's src/ in place, so the fixed doors and windows come in with the rebuild), add any NEW Vernacular buildings to
-      the mixed streets in targets/kit/89z-rows.js at their tier, re-verify, and close this entry.
-- [ ] Lit windows (rich and civic) keep the warm lit pane; their white glazing bars barely show on it by day.
+- [x] No dark voids (2026-10-19): the Talia kit's openings are doors, panes and open portals. The Iziz Vernacular houses on
+      the sheet (the mixed streets) drew the Vernacular's dark door recesses and dark glass where their walls were not hollow.
+      **2026-11-03:** the Vernacular's openings are real (69e5: leaves in core/door, KGLASS glass over the room card) and come in
+      with every rebuild of this kit; its remaining `vDarkB` are furnaces, wells and troughs (kits/iziz-vernacular/README.md).
+      Still owed from the owner's TODO: any NEW Vernacular buildings added to the mixed streets (targets/kit/89z-rows.js).
+- [ ] Lit windows (rich and civic) keep the warm lit pane (the Vernacular's `MAT.warmPane`, transparent since 69e5); their
+      white glazing bars barely show on it by day.
 - [x] P7's gallery update: Krator Worlds S-Z version 8 (2026-10-19) carries the current page and card (gallery/README.md).
 - [x] Interiors showed from above and their floors flickered (the owner, 2026-10-19): a ceiling now closes every hollow body
       under its top, and a thin slab across a room (a string course, a band) is drawn as a ring round it
@@ -70,3 +70,22 @@
 - [x] The court textures in Godot (2026-10-19): the overlays export as parts of their pieces (95i courtParts, 94 ixFurniture),
       and the finishes as materials with hook 'triplanar' (tile, detail, gain), drawn by godot/shaders/library.gdshader through
       lib/triplanar.gdshaderinc in the piece's own frame; iziz_test.gd checks them; tests/export/court_shot.gd renders them.
+- [x] **Real doors and real glass (the owner, 2026-11-03; core/door).** Windows are KGLASS's clear pane (`taWinB` is
+      `MAT.izGlass`; it was the dark glass lifted to an opaque sky grey), the lit fill the warm pane, the cobalt the `stained` kind,
+      in the cut on a hollow body and over the room card elsewhere; round heads and fanlights are half discs. Doors are real
+      leaves (`tanDoorLeaves` through `IZDOOR.leaf`): operable on a hollow body, locked on a solid one; a door on a frontispiece
+      standing forward of a hollow body (the great hall's, the Senate's and the faculty's centre pavilions) is the body's door in
+      the wall behind (`tanDoorBehind`), the frontispiece opened round it (`tanPierBox`). The caravanserai's and the inn's gate blocks are opened through their
+      arches (`tanPierBox`): the street gates open (`o.gate`), the court side is a clear arch (`o.open`). `tanWin` no longer lays a second pane
+      over the Vernacular's; the jali's ground is the room card. The sheet before -> after: doors 96 -> 368 (locked 1 -> 135),
+      panes 4631 (2291 of them opaque) -> 4521 (all transparent), room cards 38 -> 3014; `vWinGlass` 8 left (pools, basins).
+- [ ] Glazed double doors (2.4 m and wider) are plain timber leaves now: a `vDoorLeaf` is one box, so the glazing, the raised
+      panels and the brass pulls of the old static leaves are gone.
+- [ ] Locked doors: 135, on the solid bodies of types the interiors set does not furnish (P6's owed list) and the walls' gates;
+      they open once the type is furnished.
+- [ ] Reachability (core/walk `KWALK.reach` from four points round each plot, every unlocked door open; 2026-11-03): 946 of
+      1603 floors before, 1011 of 1612 after (the colleges, sealed before, 29 of 36 each; the faculty, the great hall and the
+      inn one more each; the caravanserai stays 3 of 16 with its gate open: its court ranges are the planner's). Still sealed: the cloister (0/50: its ranges open through arches with no cut, P6's owed list), the
+      theatre's tiers and the wall walks (no stair registered to them). Most of the rest are the 'solid top' floors (the tops of
+      podiums, terraces and roofs registered by tanWalkSolids, many of them roofs nothing climbs to) and upper floors whose
+      interiors stair is not met: the planner's and the walk registration's, not the doors'.

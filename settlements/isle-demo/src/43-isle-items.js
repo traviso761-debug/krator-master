@@ -31,8 +31,26 @@ ISLE.simItemsInit = function () {
   Object.keys(I.treats || {}).forEach(function (k) { kinds[k] = Object.assign({ per: 1 }, I.treats[k]); });   /* the treats */
   var IT = SIM.items({ kinds: kinds, free: T.sched.free, secPerMinute: T.clock.secPerMinute, mins: I.mins, cool: I.cool, low: I.low, days: I.days,
     meals: I.meals, perMeal: I.perMeal, eatOut: I.eatOut, hurt: I.hurt || 0, heal: I.heal, lack: I.lack || 0, treat: I.treat || null,
-    retry: I.tools ? 60 : 0, stagger: I.stagger || 0 });   /* each house buys 1.5 to 4.5 days of food (a hash): the rounds drift apart */   /* a tool errand that failed, asked again every hour of work (core's retry) */
+    retry: I.tools ? 60 : 0, stagger: I.stagger || 0, meal: I.noPot == null ? undefined : { pot: Object.keys(I.household || {})[0], noPot: I.noPot } });   /* each house buys 1.5 to 4.5 days of food (a hash): the rounds drift apart */   /* a tool errand that failed, asked again every hour of work (core's retry) */
   return IT;
+};
+/* a person dressed as the town dresses its people (ISLE.simHouseholds; a household that forms later, 47b): its clothes by
+   its class's sets, a hat by its trade or a hash, the armed a cuirass, the rich a club, the tool of its trade */
+ISLE.dressPerson = function (a, s, out) {
+  var T = ISLE.TUNE.sim, I = T.items, u = function (x, y, z) { return KRAND.unit(KRAND.hash(T.seed, 53, x, y, z || 0)); }; out = out || {};
+  var armed = {}; (I.armed || []).forEach(function (j) { armed[s + '.' + j] = 1; });
+  var job = a.role.slice(s.length + 1), sets = I.setsBy && I.setsBy[a.cls] != null ? I.setsBy[a.cls] : I.sets;   /* its class's sets */
+  a.sets = sets; a.wears = ['shirt', I.sarong && u(a.k, 11) < I.sarong.share ? 'sarong' : 'wrap', 'sandal'];
+  if (I.hat && (I.hat.jobs.indexOf(job) >= 0 || u(a.k, 12) < I.hat.share)) a.wears.push('sun hat');
+  a.wears.forEach(function (it, j) { SIM.equip(a, it, u(a.k, 7, j) * 0.999); if (sets > 1) SIM.give(a, it, sets - 1); });
+  if (armed[a.role]) { a.keep = { cuirass: 1 }; SIM.equip(a, 'cuirass', u(a.k, 8) * 0.999); a.wears.push('cuirass'); }
+  if (I.club && a.cls === 'rich' && job !== 'child' && job !== 'pupil' && u(a.k, 13) < I.club.share) { a.keep = a.keep || {}; a.keep.club = 1; SIM.equip(a, 'club', u(a.k, 14) * 0.999); a.wears.push('club'); out.clubs = (out.clubs || 0) + 1; }
+  /* the tool of its trade: by its workplace's kind, else by its kind of work; a rack's trades own none */
+  var WP = a.work && SIM.R.place[a.work], tk = null, TL = I.tools || {};
+  Object.keys(TL).forEach(function (k) { if (!tk && WP && (TL[k].kinds || []).indexOf(WP.kind) >= 0) tk = k; });
+  Object.keys(TL).forEach(function (k) { if (!tk && (TL[k].roles || []).indexOf(job) >= 0) tk = k; });
+  if ((I.racks || []).indexOf(job) >= 0) { a.toolRack = true; out.racked = (out.racked || 0) + 1; }
+  else if (tk) { a.tool = { k: tk, w: u(a.k, 9) * 0.999 }; out.tooled = (out.tooled || 0) + 1; }
 };
 ISLE.simHouseholds = function (TS, places, foods) {
   var T = ISLE.TUNE.sim, I = T.items, s = TS.id, out = { shops: {}, sellers: 0, stores: 0, messes: 0, people: 0, servings: 0, foods: foods.slice() };
@@ -44,22 +62,10 @@ ISLE.simHouseholds = function (TS, places, foods) {
     var k = P.shopAs || P.kind; out.shops[k] = (out.shops[k] || 0) + 1; out.sellers++;
   });
   /* what everyone wears: the set of each worn kind on, the rest at home, at a hashed wear; the armed a cuirass besides */
-  var armed = {}; (I.armed || []).forEach(function (j) { armed[TS.id + '.' + j] = 1; }); out.worn = 0;
+  out.worn = 0;
   SIM.all('actor').forEach(function (a) {
     if (a.driven || SIM.settlementOf(a) !== s || !I.worn) return;
-    var job = a.role.slice(s.length + 1), sets = I.setsBy && I.setsBy[a.cls] != null ? I.setsBy[a.cls] : I.sets;   /* its class's sets */
-    a.sets = sets; a.wears = ['shirt', I.sarong && u(a.k, 11) < I.sarong.share ? 'sarong' : 'wrap', 'sandal'];
-    if (I.hat && (I.hat.jobs.indexOf(job) >= 0 || u(a.k, 12) < I.hat.share)) a.wears.push('sun hat');
-    a.wears.forEach(function (it, j) { SIM.equip(a, it, u(a.k, 7, j) * 0.999); if (sets > 1) SIM.give(a, it, sets - 1); });
-    if (armed[a.role]) { a.keep = { cuirass: 1 }; SIM.equip(a, 'cuirass', u(a.k, 8) * 0.999); a.wears.push('cuirass'); }
-    if (I.club && a.cls === 'rich' && job !== 'child' && job !== 'pupil' && u(a.k, 13) < I.club.share) { a.keep = a.keep || {}; a.keep.club = 1; SIM.equip(a, 'club', u(a.k, 14) * 0.999); a.wears.push('club'); out.clubs = (out.clubs || 0) + 1; }
-    /* the tool of its trade: by its workplace's kind, else by its kind of work; a rack's trades own none */
-    var WP = a.work && SIM.R.place[a.work], tk = null, TL = I.tools || {};
-    Object.keys(TL).forEach(function (k) { if (!tk && WP && (TL[k].kinds || []).indexOf(WP.kind) >= 0) tk = k; });
-    Object.keys(TL).forEach(function (k) { if (!tk && (TL[k].roles || []).indexOf(job) >= 0) tk = k; });
-    if ((I.racks || []).indexOf(job) >= 0) { a.toolRack = true; out.racked = (out.racked || 0) + 1; }
-    else if (tk) { a.tool = { k: tk, w: u(a.k, 9) * 0.999 }; out.tooled = (out.tooled || 0) + 1; }
-    out.worn++;
+    ISLE.dressPerson(a, s, out); out.worn++;
   });
   var people = {};
   SIM.all('actor').forEach(function (a) { if (a.home && !a.driven) people[a.home] = (people[a.home] || 0) + 1; });

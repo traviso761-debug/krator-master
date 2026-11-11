@@ -303,6 +303,7 @@ function emitBuckets(){
     }
     var im = new THREE.InstancedMesh(geo, mat, B.list.length);
     im.userData.shape = B.shape; im.userData.fam = B.fam; im.userData.kit = true;
+    B.mesh = im;   /* kept: a door leaf is an instance of its bucket, posed as it swings (54-openings.js goFlush) */
     im.castShadow = !FAST && !fm.basic; im.receiveShadow = !FAST && !fm.basic;
     for(var i=0;i<B.list.length;i++){
       var r = B.list[i], rot = r[6];

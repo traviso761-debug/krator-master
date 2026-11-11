@@ -1,0 +1,279 @@
+{
+ "edit": "5.1 edit 1",
+ "date": "2026-11-09",
+ "portal_valley": {
+  "cells": 28,
+  "rows": {
+   "295": {
+    "floor_m": 5530,
+    "centre_x": 1330.0,
+    "cut_m": 0
+   },
+   "296": {
+    "floor_m": 5603,
+    "centre_x": 1330.14,
+    "cut_m": 187
+   },
+   "297": {
+    "floor_m": 5677,
+    "centre_x": 1330.29,
+    "cut_m": 372
+   },
+   "298": {
+    "floor_m": 5750,
+    "centre_x": 1330.43,
+    "cut_m": 542
+   },
+   "299": {
+    "floor_m": 5800,
+    "centre_x": 1330.57,
+    "cut_m": 730
+   },
+   "300": {
+    "floor_m": 5850,
+    "centre_x": 1330.71,
+    "cut_m": 905
+   },
+   "301": {
+    "floor_m": 5875,
+    "centre_x": 1330.86,
+    "cut_m": 1103
+   },
+   "302": {
+    "floor_m": 5900,
+    "centre_x": 1331.0,
+    "cut_m": 1314
+   }
+  },
+  "max_cut_m": 1314,
+  "pit_cells_before_after": [
+   0,
+   0
+  ]
+ },
+ "brine_lake": {
+  "centre_px": [
+   876,
+   1440
+  ],
+  "cells": 29,
+  "km2": 116,
+  "level_m": 6420.0,
+  "bed_m": [
+   6270,
+   6380
+  ],
+  "carve_m_max": 560,
+  "fill_m_max": 983,
+  "shore_min_m": 6752,
+  "lip_cells_raised": 28,
+  "spill_m": 6768,
+  "closed": true,
+  "to_r442_head_km": 22.4
+ },
+ "reclimate": {
+  "cells": 187,
+  "class_changed": 114,
+  "rain_mean_before_mm": 823.0,
+  "rain_mean_after_mm": 836.0,
+  "classes_now": {
+   "Dfb": 49,
+   "ET": 38,
+   "EF": 77,
+   "HT": 23
+  }
+ },
+ "godshearth": {
+  "cells": 2187,
+  "weighted_cells": 9176,
+  "reclassed_cells": 4959,
+  "cold_pool_cells": 46,
+  "cold_pool_below_m": 3650,
+  "spillway_C": {
+   "tm": 9,
+   "th": 26,
+   "tl": -8,
+   "tw": 17,
+   "tc": 0
+  },
+  "rim_C_at_5km": {
+   "tm": -1,
+   "th": 16,
+   "tl": -19,
+   "tw": 7,
+   "tc": -10
+  },
+  "floor_C": {
+   "tm": 7.0,
+   "th": 24.0,
+   "tl": -10.0,
+   "tw": 15.0,
+   "tc": -2.0
+  },
+  "bench_C": {
+   "tm": 4.0,
+   "th": 21.0,
+   "tl": -13.0,
+   "tw": 12.0,
+   "tc": -5.0
+  },
+  "classes": {
+   "Dwb": 1501,
+   "Cwb": 498,
+   "Dwc": 104,
+   "ET": 66,
+   "WH": 18
+  },
+  "classes_weighted": {
+   "Dwb": 2687,
+   "Cwb": 1088,
+   "HF": 1024,
+   "ET": 804,
+   "O": 486,
+   "Dwc": 276,
+   "Cwa": 93,
+   "HT": 75,
+   "EF": 11
+  },
+  "mean_cell_step_tm_C_before_after": [
+   0.79,
+   0.84
+  ]
+ },
+ "lake_paint_rgb": [
+  76,
+  76,
+  80
+ ],
+ "cavern_note_was": "Subglacial titanium-basalt feeder cavern at 6,415 m beneath the southern EF ice sheet that warms and mineralizes the brine reservoir feeding Red Riwa.",
+ "basin_was": {
+  "at_px": [
+   842.7,
+   1397.5
+  ],
+  "level_m": 6419,
+  "km2": 112,
+  "spill_m": 6813,
+  "climate": "ET",
+  "kind": "lake",
+  "surplus_m3s": 0.0
+ },
+ "basin_now": {
+  "at_px": [
+   876.0,
+   1440.0
+  ],
+  "level_m": 6420,
+  "km2": 116,
+  "spill_m": 6768,
+  "climate": "EF",
+  "kind": "salt lake",
+  "surplus_m3s": 0.0,
+  "depth_m": 150
+ },
+ "cells_changed": {
+  "tm": 8021,
+  "tw": 7916,
+  "tc": 8149,
+  "th": 3628,
+  "tl": 3401,
+  "p": 173,
+  "c": 4725,
+  "z": 73
+ },
+ "records": {
+  "sthegate": {
+   "from": [
+    1408,
+    414
+   ],
+   "to": [
+    1438,
+    326
+   ]
+  },
+  "region99_points": [
+   [
+    1444,
+    1176
+   ],
+   [
+    1482,
+    1196
+   ],
+   [
+    1504,
+    1187
+   ],
+   [
+    1577,
+    1256
+   ],
+   [
+    1611,
+    1275
+   ],
+   [
+    1655,
+    1295
+   ],
+   [
+    1727,
+    1263
+   ],
+   [
+    1766,
+    1293
+   ],
+   [
+    1794,
+    1135
+   ],
+   [
+    1750,
+    1016
+   ],
+   [
+    1736,
+    1013
+   ],
+   [
+    1723,
+    1032
+   ],
+   [
+    1696,
+    1028
+   ],
+   [
+    1667,
+    1022
+   ],
+   [
+    1660,
+    1003
+   ],
+   [
+    1662,
+    998
+   ],
+   [
+    1604,
+    986
+   ],
+   [
+    1461,
+    1071
+   ],
+   [
+    1444,
+    1160
+   ]
+  ],
+  "region99_gc_overlap_cells": 57,
+  "sill_1697_1028": {
+   "region99": false,
+   "great_chasm": true
+  }
+ }
+}

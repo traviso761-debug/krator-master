@@ -42,10 +42,11 @@ function etPoly(mk,pts,col){const tl=TILE[mk]||1,pos=[],nor=[],uv=[],idx=[];cons
  const ax=Math.abs(n.x),ay=Math.abs(n.y),az=Math.abs(n.z),U=ax>=ay&&ax>=az?p=>[p[2],p[1]]:ay>=az?p=>[p[0],p[2]]:p=>[p[0],p[1]];
  for(const p of pts){const t=U(p);pos.push(p[0],p[1],p[2]);nor.push(n.x,n.y,n.z);uv.push(t[0]/tl,t[1]/tl);}for(let i=1;i<pts.length-1;i++)idx.push(0,i,i+1);
  emit(mk,fixWind(mkGeo(pos,nor,uv,idx)),null,col);}
-/* one lancet set in a wall face at z: the dark reveal, the light (o.light: 'onyx', 'alabaster' or 'glass'), the tracery */
+/* one lancet set in a wall face at z: the dark reveal, the light (o.light: 'onyx', 'alabaster' or 'glass': core/door's clear
+   glass over the room card, the lancet standing on a face), the tracery */
 function etLancet(x,y,z,w,h,o){o=o||{};
  etPoly('stone',etLancetPts(x,y-.12,w+.24,h+.22,z+.01),P('stoneD'));
- const lt=o.light||'onyx';etPoly(lt,etLancetPts(x,y,w,h,z+.03),lt==='glass'?P('glass'):new THREE.Color(1,1,1));
+ const lt=o.light||'onyx';if(lt==='glass')svPanePoly(etLancetPts(x,y,w,h,z+.03),{solid:true,depth:.008});else etPoly(lt,etLancetPts(x,y,w,h,z+.03),new THREE.Color(1,1,1));
  if(o.tracery!==false)etTracery(x,y,z+.06,w,h,{head:'pointed',mw:o.mw,th:o.th,col:o.barCol});}
 /* a bundle of n lancets stepping up to the middle like the piers above them (the gate fronts, the ministries' halls),
    under a stepped Deco head, an oculus over the middle (o.oculus). Returns the bundle's top */

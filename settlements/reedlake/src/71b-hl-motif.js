@@ -237,9 +237,12 @@ function hlPillarTex(motifs,bgKind){return canvasTex(256,1024,(g,w,h)=>{(bgKind=
 
 // ---------------------------------------------------------------- the textures and kit items
 for(const n in HWIDE){HMOTIF.wide.push(hlMotifItem('w',n,hlMakeTex(512,256,HWIDE[n])));}
+/* the Republic's folk-painted boards (patterns/republic: two formline takes and the folk flowers): three more wide murals, each the upper half of a square tileable sheet, so the 2:1 board keeps the sheet's own shape (88y sets the repeat); this map is the ?mat=proc stand-in */
+for(const n of['folkA','folkB','folkP'])HMOTIF.wide.push(hlMotifItem('w',n,hlMakeTex(512,256,HWIDE.knot)));
 for(const n in HGABLE){HMOTIF.gable.push(hlMotifItem('g',n,hlMakeTex(512,256,HGABLE[n])));}
 for(const n in HTALL){HMOTIF.tall.push(hlMotifItem('t',n,hlMakeTex(128,512,HTALL[n])));}
 {const bgs=[HFORM.white,HFORM.cedar,'#bfd9d2',HFORM.ochre];let i=0;for(const n in HDISC){const b=bgs[i++%bgs.length];HMOTIF.disc.push(hlMotifItem('d',n,hlMakeTex(256,256,(g,W)=>hlRoundel(g,W,HDISC[n],b),true),true));}}
+HMOTIF.disc.push(hlMotifItem('d','crane',hlMakeTex(256,256,(g,W)=>hlRoundel(g,W,HDISC.tree,HFORM.cedar),false)));   /* the library's square floral panel (crane-floral) stands on a sign post beside the roundels; this map is its ?mat=proc stand-in */
 {const bgs=[HFORM.white,'#e6c98e','#bfd9d2',HFORM.cedar];let i=0;for(const n in HSIGN){const b=bgs[i++%bgs.length];HMOTIF.sign[n]=hlMotifItem('sign',n,hlMakeTex(256,256,(g,W)=>hlRoundel(g,W,HSIGN[n],b,8),true),true);}}
 HMOTIF.emblem=hlMotifItem('d','emblem',hlMakeTex(256,256,(g,W)=>hlIn(g,0,0,W,W,100,100,hlEmblem),true),true);
 // the wide crest version of the emblem: the arms on a red field between knot panels (over civic doors)

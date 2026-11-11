@@ -26,17 +26,6 @@ const SKY=ATMOS.sky(ATMOS.skyPreset('standard',{site:{px:NW_REGION.site.px,py:NW
 // the fill light keeps its share of the day and goes out at night (the giantshine light takes the night)
 const SKY_FILL=fill.intensity;
 function skyView(dt){SKY.update(dt);const L=SKY.look;fill.intensity=SKY_FILL*Math.min(1,L.sunI/2);BIO.setSun(SKY.state.sunDir);}   /* each frame once the camera is placed: 99-host-take.js subscribes it */
-// the clouds' shadows and the weather's darkening on the ground, the plants and the rock (SKY-PLAN.md 11.1): every lit material, once
-{const seen=new Set();scene.traverse(o=>{if(!o.isMesh||!o.material)return;for(const m of(Array.isArray(o.material)?o.material:[o.material])){
-  if(seen.has(m)||!(m.isMeshLambertMaterial||m.isMeshStandardMaterial||m.isMeshPhongMaterial))continue;seen.add(m);
-  ATMOS.cloudShade(m,{porosity:o.userData.biome?.4:o.userData.host?.6:1});}});}
-// THE WEATHER (core/atmos/host/89-atmos-e-weatherhost.js): a cold climate (snowfall and blizzards besides the base five); the ground
-// wets in the rain. It starts clear, so the page looks as it is; the Weather selector in the panel picks the rest. The shared sky
-// (89s) draws the weather's light and air from the colour script (its o.weather), so the binding is given no sun, hemisphere or
-// fog of its own to scale: a stand-in fog takes its writes (the sky's own fog is the page's)
-const WEATHER_FOG={color:new THREE.Color(0x9aa0a6),density:.00005};
-/* bound after ATMOS.cloudShade: cloudShade chains a material's hook by reading and setting onBeforeCompile, and WATER.wetGround's
-   setter would then call cloudShade's hook from inside itself (a recursion: core/atmos/host/89-atmos-h-skyhost.js, reported) */
-ATMOS.bindWeather({climate:{cold:true},fog:WEATHER_FOG,grounds:[MAT_GROUND]});
-// the snow last (89a bound its cover): snowOn wraps each material's shader hooks as they are now, cloud shade included
-ATMOS.snowOnScene(scene);
+// THE CLOUDS' SHADE, THE WEATHER AND THE SNOW ON THE SCENE are bound in 89z-host-build.js, after the bake (the final rebuild, pair 11): they
+// ran here, after the build when it was 88; it is 89z now (after the water), so they follow it. core/atmos chains them on KHOOK now, so their order is free (the recursion
+// this page once worked round, cloudShade after WATER.wetGround, is gone with it)

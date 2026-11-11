@@ -199,6 +199,11 @@ function gtexKind(fam, S, fn, opt){
     fm.panel = false;
     if(fm.proc){ var p = FAMMAT[fm.proc]; fm.tex = p.tex; fm.scale = p.scale.slice(); }
   });
+  /* an alias family (the door leaves) wears exactly the maps of the family it names: its own bucket, the same look */
+  Object.keys(FAMMAT).forEach(function(fam){
+    var fm = FAMMAT[fam], A = fm.alias && FAMMAT[fm.alias]; if(!A) return;
+    fm.tex = A.tex; fm.lib = A.lib; fm.libTex = A.libTex; fm.scale = A.scale.slice(); fm.panel = A.panel; fm.colour = A.colour;
+  });
 })();
 /* a library family: its three maps, repeating at the set's own tile size over UVs laid out in FAMMAT.scale metres */
 function gtexLibrary(fm, L){

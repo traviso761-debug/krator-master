@@ -96,7 +96,7 @@ const STAGE={
  water:[{key:'lake',kind:'open',name:'The terminal lake (soda brine: the Catch\'s one great salt field)',
   open:{name:'The terminal lake',level:LEVEL,swell:[[.03,30,240,0,.03]],field:.06,bounds:LAKE_BOX,bed:(x,z)=>terrainH(x,z),bedBox:LAKE_BOX,bedCell:10,
    shore:{seeds:[[2800,2800]]},tint:LAKE_TINT},
-  look:{renderOrder:1,roughness:.3,metalness:.02,envMapIntensity:.14,surf:false,ramp:[.2,3],shallow:0x6a9a92,deep:0x235e5c}}],
+  look:{renderOrder:1,roughness:.3,metalness:.02,envMapIntensity:.14,surf:false,breakers:false,ramp:[.2,3],shallow:0x6a9a92,deep:0x235e5c}}],
  sedQ:0,stalkers:[],exportBox:[-1200,-1200,-900,-900],
  registers:[{name:'The playa (a dry salt pan: ochre salt polygons ringed with white)',key:'landform.playa',x:PAN.x,z:PAN.z,y:LEVEL-2,r:PAN.r*.8,h:12},
   {name:'The yardang field (the old lake\'s silt, cut by the wind into ridges)',key:'landform.yardang',x:-600,z:-1200,y:LEVEL+20,r:700,h:60},

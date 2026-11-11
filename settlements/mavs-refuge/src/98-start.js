@@ -61,6 +61,11 @@ var mCut = PLATS.map(function(P, i){ return [P, i]; }).filter(function(q){ retur
   return { id:'plat-'+q[1], name:P.name, x:P.x, z:P.z, r:P.R*Math.max(P.sx||1, P.sz||1)+2,
     levels:P.levels.slice().sort(function(a, b){ return a.y - b.y; }).map(function(L){ return { y:L.y, h:L.H, name:L.kind }; }) }; });
 var mLast = performance.now(), mTmp = new THREE.Vector3();
+goHost();   /* each door leaf handed to core/door's host, which eases the moving ones on the frame (54-openings.js) */
+var mDoorTip = KDOORHOST.tip(function(){ return camera.position; }, goWalking), mDoorLast = performance.now();   /* "E: open the door" at the foot of the page */
+window._doors = { doors:KDOOR.list.length, locked:KDOOR.list.filter(function(D){ return D.locked; }).length, open:KDOOR.list.filter(function(D){ return D.open>0; }).length,
+  leaves:KDOOR.list.filter(function(D){ return !!D.fam; }).length, panes:NL_WINDOWS.length, cut:NL_WINDOWS.filter(function(W){ return W[11]; }).length,
+  cards:(window._panes ? window._panes.cards : 0) + (GOPEN.cards||0), voids:0 };
 var MHOST = KHOST.take({
   build:'mavs-refuge', title:"Mav's Refuge", hint:'a Beast Rider refuge in the canopy of the hyperjungle',
   scene:scene, camera:camera, renderer:renderer, ground:terrainH, clear:1.6, minR:4, maxR:5000,
@@ -76,6 +81,8 @@ var MHOST = KHOST.take({
   minimap:{ title:"Mav's Refuge" },
   exporters:{ tags:function(){ return KTAGS.page.export(); } },
   budget:BUDGET, api:window._api,
+  /* E opens or shuts the door within reach (core/door: KDOORHOST.toggleNear; 54-openings.js); flying, E still climbs as well */
+  keys:{ e:function(){ goToggleNear(); } },
   draw:function(sc, cam){   /* the sky's pass, then the world over it: as 80-camera.js's frame drew */
     renderer.info.autoReset = false; renderer.info.reset();
     renderer.autoClear = true; skyRender();
@@ -96,6 +103,7 @@ KHOST.on(function mavFrame(dtm){
   waterUni.uSun.value.copy(SKY_STATE.keyDir); waterUni.uFogCol.value.copy(scene.fog.color); waterUni.uFogDen.value = scene.fog.density;
   waterUni.uDay.value = clamp(SKY_STATE.dayK, 0.12, 1);
   updateGlow(dt, hour, nk);
+  var dNow = performance.now(); KDOORHOST.tick(Math.min(0.06, (dNow-mDoorLast)/1000)); mDoorLast = dNow; mDoorTip();   /* the doors ease at real time */
   for(var i=0;i<TICKS.length;i++){ try{ TICKS[i](dt, hour, nk); }catch(err){ if(!TICKS[i]._err){ TICKS[i]._err = 1; ERR('tick '+i+': '+(err&&err.stack||err)); } } }
   sun.position.copy(SKY_STATE.keyDir).multiplyScalar(2200).add(mTmp.set(ctl.tx, ctl.ty, ctl.tz));
   sun.target.position.set(ctl.tx, ctl.ty, ctl.tz); sun.target.updateMatrixWorld();

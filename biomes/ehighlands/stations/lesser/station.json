@@ -1,0 +1,22 @@
+{
+ "name": "The Lesser Throne (station 3): the young volcano's summit caldera on the eastern Inner Wall's crest, 6.07-6.88 km, its fumaroles and the life round them",
+ "out": "ehighlands-lesser.html",
+ "packSkip": [
+  "laurel",
+  "bigfrond",
+  "fern",
+  "beard",
+  "epi",
+  "brom",
+  "moss",
+  "bark4",
+  "ground.moss",
+  "leaf.rag",
+  "bark.ragbark",
+  "needle",
+  "bark5",
+  "beech",
+  "bark6",
+  "ground.needles"
+ ]
+}

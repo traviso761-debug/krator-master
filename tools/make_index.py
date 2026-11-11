@@ -19,6 +19,7 @@ CORE_BUILDS = ['core/charactermodels']
 BIG = 30 * 1024          # CLAUDE.md: never read a fragment this size whole
 
 ABOUT = {
+    'biomes/riftrim': "The rift rim: the high country round the Rift, three biomes on one kit (RRIM.biome n | s | w): the glass rim (N: frost frills and bell firs over algal lakes, glass canes in the shallows), the black rim (S: sun rosettes, sailwort, cushion anemones, lantern lobelias, iris lichen, a frozen lake), the veiled rim (W: mist frills, veil thread and mist cups in the cloud belt, Dalab's planted lowland stands); the staircase of lakes from the great lake at 297 m to the tarns. Six stations on scale model 5.1 (Ledge and the great lake, the north rim's lakes, the cold lake, the gorge, the crossing, the black barrens); the Rift's, the SW lowlands' and the S highlands' species read in place.",
     'biomes/throne': "The Throne: the central volcano. Station 1, the plume's edge on the south-east shoulder: a rift of cones, an acid lake, lava flows of every age (the kit's flow model), the shoulder's familiar trees giving way under the plume to Krator's own glowing life.",
     'settlements/voth': "Voth: a Venice/Vivec-like Dunmer city on an enclosed brackish bay: the city plan on core/city with its citizen simulation (dist/voth-city.html) and the site editor (dist/voth-site.html). src/ is Voth's source library, the first Voth's fragments (its page is retired: archive/voth-first), which build.py runs whole or lifts by name; catalog/ is Voth's building catalog.",
     'settlements/yuni': 'Yuni: the city, plus its building-kit and plant sheets (its furniture is in kits/catalog).',
@@ -36,13 +37,13 @@ ABOUT = {
     'settlements/pinnacle-rock': "Pinnacle Rock: the Beast Riders' roost town on a red sandstone mesa at the hyperjungle's north-eastern edge (PLAN.md). So far the rock and the site (P0-P1): the mesa, its ten fins, the Garden and spurs as KSTACKS records from the settled plan (src/40-pr-layout.js), the necanyons and hyperjungle kits read in place, the floor and the far land to 60 km from the scale model (region/: its cut; the open world's fields read in place); and the roosts (P2): deck rings fitted to the stacks, Girder's stalls and perches, climbs, rope bridges, the two lifts and the Stair as records (src/43-pr-roosts.js, PRR) drawn in the Beast Riders kit's maps, and Girder's flyers read in place on them (flyers/); and the town on the top (P3a): one core/city instance (src/54-pr-town.js, PRT) laid from the settled zones, about 600 of the Beast Riders kit's buildings and its ports, instanced; and the farms (P3b): six terraces of field cells inside the palisade (src/55-pr-farms.js, PRF), twelve farmhouses, the gates; and the bands' grounds (P3c): BR_CAMP's eighteen grounds on the top and the floor, hedged, with their tracks (src/56-pr-camps.js, PRC); and the Deep Root cavern (P3d) on core/terrain's KCAVERN: the court, the passage of the tribes, the hall, the light well, the kit's rock-cut dressing (src/57-pr-cavern.js, PRD); and the Garden (P3e): its stair and ramp and the stair up the Heart, its great-houses round the Heart (src/58-pr-garden.js, PRG); and the night (necanyons' 89n-host-night.js read in place, the fires and lamps on core/atmos: src/89y-host-night.js). Verified: build.py, verify.py --assert. Read README.md",
     'settlements/noahs-regret': "Noah's Regret: an Ancient floating harbour city of the Ring Sea, aground on the south shore, Bloody Ruephus's pirate base: a catamaran of two hulls joined at the bow, the harbour open astern (holds half full of the sea, four decks, rounded terraced sterns, scalloped balconies), the grand atrium, the bridge, the grand dining room, twin silent engine rooms, two crew messes, the greenhouse, fifteen ship's rooms, the bridge house with the bridge on top, a forecourt plaza over the forward third of the harbour with terraces and a grand stair, nine Ancient buildings (barracks, a mess hall, the HQ under his flag on the plaza), the liner mole and finger piers, every room furnished from the catalog through the interiors kit, a deck cut to see inside; no life layer yet.",
     'settlements/mavs-refuge': "Mav's Refuge: a refuge in the hypertropic jungle on the lee shore of the Ring Sea.",
-    'settlements/port': 'The Ancient Port kit (a kit, not a settlement, despite the folder): modular Ancient port segments and vessels tiling along a coast, a sibling of kits/ancients built the same way. It will build Hook (the ancient port city recently retaken from Voth, LORE.md) and may serve other coasts after. Read CONTRACT.md, then API.md.',
-    'settlements/hook': "Hook: the Ancient port city of the Ring Sea's south-western shore, the Izani Empire's premier port, retaken from Voth a few months before game start (LORE.md 6.2; PLAN.md). Built on the Ancient Port kit (settlements/port), read in place: P0 is the waterfront, every Port segment and vessel placed at least once in one coastal run with the Customs' and the Sun Canton's land blocks behind and the hooked L of sea platforms off the great pier.",
+    'kits/port': 'The Ancient Port kit: modular Ancient port segments and vessels tiling along a coast, a sibling of kits/ancients built the same way. It will build Hook (the ancient port city recently retaken from Voth, LORE.md) and may serve other coasts after. Read CONTRACT.md, then API.md.',
+    'settlements/hook': "Hook: the Ancient port city of the Ring Sea's south-western shore, the Izani Empire's premier port, retaken from Voth a few months before game start (LORE.md 6.2; PLAN.md). Built on the Ancient Port kit (kits/port), read in place: P0 is the waterfront, every Port segment and vessel placed at least once in one coastal run with the Customs' and the Sun Canton's land blocks behind and the hooked L of sea platforms off the great pier.",
     'settlements/ys': 'Ys: the half-drowned Hykkousoi capital on the ruins of an Ancient city at the head of the north-west bay of the Ring Sea (phase 2: the Hykkousoi kit, 89 pieces on the kit sheet; phase 3 prep: the layout, shore and nav).',
     'settlements/xanadu': 'Xanadu: the building kit of the southern Sultanate (Tibetan massing, Indian, Turkish and Persian detail) and the city of Erewhon.',
     'settlements/mungo': "Mungo: a trade village at a river mouth on a salt lake in the Eastern Abyss: a floating reed village (the Reed Lake kit, run inside the page; Reed's Local), one pontoon to an Eastern Abyssal town, the Geomancers' chapterhouse among Yuni houses with their dune buggies. Shares the Locus engine and kits by name (build.py); the first world on core/simulation (SIM) and core/clock: a scheduled life layer whose data is world/*.json.",
     'settlements/shade': "Shade: the Eastern Nomads' sunken basin in the eastern high desert (falls, pool, carved face, switchback, slot canyon) on the sedesert biome kit: rock-cut and pueblo buildings, cliff dwellings round the rim, alcoves and an undercut behind the falls, the life layer's data and walkable grid.",
-    'openworld/little-demo': "DEPRECATED (see its DEPRECATED.md; the world's fragments moved to openworld/isle-demo/src/world). Little Demo: the scale model's eastern desert region at 1:1 (1.3 million km2), streamed: terrain from the scale model's heights, the sedesert, eastabyss, hyperjungle and ebadlands kits' flora placed by climate as cell-seeded instances, settlements marked.",
+    'kits/metropolis': 'The metropolis test bed: sixteen Ancient towers designed for the range tiers (hero, KSHELL baked shell, impostor, district); two built, with audited interiors. Read PLAN.md.',
     'kits/mechs': 'Mechs: animated walking machines any world takes as one bundle (KratorMechs: a skinned rig, leg IK with planted feet, idle, walk and attack clips with fire and impact events, swinging banners and feathers) on the catalog core; seventeen Iziz walkers, from a hound-sized drone to a walking siege tower (the Castra in two variants); a verified kit sheet with a z-fighting audit.',
     'kits/motor-vehicles': 'Motor Vehicles: procedural motor vehicles any world takes as one bundle (KratorVehicles: wheels to spin and steer, switchable lamps, simulation data) on the catalog core; fifteen vehicles in six culture files (the Ancients\' ten for the Ancient\'s Valley\'s streets: pod car, saloon, watch car, van, six-wheeled utility, flatbed hauler with four loads, guideway tram-car, lance tank, helicopter, passenger jet; the Geomancer dune buggy, the Republic salvage crawler, the Izani six-wheeler, the Abyssal caravan truck, the Post-Apoc tracked hab); four ruin states for every vehicle (intact, weathered, burnt, wreck in seven forms: build(key, { state })); a verified kit sheet.',
     'kits/ringsea': 'Ring Sea watercraft: 31 procedural vessels (warships, cargo ships, barges, canoes, outriggers, rafts) of the cultures round the Ring Sea.',
@@ -52,6 +53,7 @@ ABOUT = {
     'kits/scyvoi': "The Scyvoi kit: the salamander riders of the crater drylands, gers and Tibetan tents in polychrome and appliqué. Five small and five large tents (gers, a bell tent, goat-hair tents, a white appliqué tent and a gur, two Tibetan halls, an appliqué tent), the chief's great tent and carved vardo, the shaman's ger, the smithy, hidemaker, supply and cartwright's tents, all furnished from the catalog's Scyvoi culture (core/furnish) with a cut-away; salamanders (riding, war, draught), goats, bison and cattle from kits/fauna with life data and their pens, chariots and carts, tethering; and the Baelu, a fitted-stone fire redoubt. Its engine (the KIT record, materials, tent kit, scene) is vendored by the Desert and Ash Nomads kits; a verified kit sheet.",
     'kits/desert-nomads': "The Desert Nomads kit (catalog culture nomad, the Eastern Nomads): the camel nomads of the eastern high desert and the eastern abyss. Black goat-hair tents, khaimas, square hair-cloth tents, white caidal tents, a Tuareg leather tent, the Saharan pavilion (austere outside: brown or white with simple contrasting bands; Moroccan and Arabian inside, muted), the sheikh's tent and guest pavilion, the seer's tent, the hookah tent, smithy, hidemaker and supply tents; camels (riding, war, pack), horses, riding and pack lizards with tack, a camel cart and litter, goats, sheep, cattle and emus in zaribas and folds; forked from kits/scyvoi; a verified kit sheet.",
     'biomes/dambasins': "The dam basins, an overlay (biomes/dambasins/PLAN.md): the north basin's drained dam-lake beds, on the Ancient Port kit read in place (Hook's pattern) and core/terrain's KBASIN. Station 1 (targets/port): the old port on the 900 m line, ruined, dry, the bathtub ring under it and the fast-drain slope below, its moored hulks grounded, pitched and listed in their berths. Adapted copies of the kit's terrain and camera (the hooks belong upstream). Verified: build.py, verify.py --assert.",
+    'biomes/hearths': "The Hearths, a shared kit of life read in place by host kits (src/: the hearth trees, read by biomes/oidong), and its pages while its host (biomes/riftrim) has no build: the Hearth hold at 525,1400, one cave of two storeys on both: the Cave of Crystals (stations/crystals, dist/hearths-crystals.html; PLAN.md section 18), the drained storey, a Naica on core/terrain's KKARST (hypogene), KCAVERN, KSPELEO (selenite beams and the bladed floor, instanced), KTHERM and KGROUND, lethal heat on core/hazard; and the hold's active storey (stations/hold, dist/hearths-hold.html; section 19), warm water over every floor, scalding at the feeders, gypsum chandeliers, the fumarole; the hold's chambers, shelves, fields, galleries and approaches on both storeys massed and empty as plain records (CAVE.HOLD; ?massing=1). Verified: build.py, verify.py --assert.",
     'biomes/scablands': "The scablands, an overlay (biomes/scablands/PLAN.md): the ground the dam break's flood tore down, on the n semiarid kit read in place (its build(overlay=...)) and core/terrain's KSCOUR. Station 1 (dist/coulee.html): a coulee and dry falls on the west breach, its walls stepped by the basalt flows, a plunge-pool lake, potholes holding rain, bars with giant current ripples, streamlined loess islands.",
     'biomes/nsemiarid': "The northern semiarid country, the walking steppe (biomes/nsemiarid/PLAN.md): the north basin round the drained dam lakes, Central Asian in basis (pistachio parkland, crescent saxaul, spring planes, Judas trees and almonds, the feral fruit forest of apple, apricot, pear and walnut, golden poplar on the lake margins, dead on the salt behind) and Krator's own (the dandelion frill, the helicopter trumpet, the drift lantern); everything travels: tumblers and their drifts, crawlers, striders, bead chains, roll-eggs, seeds aloft downwind, and the owner's small and weird in dew gardens. The showcase: an old lake bed with KBASIN's strandlines and bathtub ring down to a salt lake, the steppe, the foothills, the rainy upland. Trees as variants. Verified: build.py, verify.py --assert.",
     'biomes/ringisles': "The Ring Sea isles biome kit (the isle demo, settlements/isle-demo/PLAN.md): one kit whose zones follow the scale model's climate classes (XA, Af, Am rainforest; Aw, XV tall-grass savanna in a burn mosaic; BSh hot steppe; XS salt steppe and pans), with the strand, a mangrove lagoon, a reef flat, tide pools, a geyser field and town gardens of the owner's crops (coconut, mango, banana, coffee, cloves, breadfruit; rice, taro, sweet potato, kava, herbs, greens, sugar cane). Borrows the Throne, swbay, eastabyss, sedesert and geyser kits' species in place; the showcase is one synthetic island. Verified: build.py, verify.py --assert.",
@@ -204,8 +206,9 @@ def build_index(build, write=True):
             lines.append('| `%s` | %s%s | %s |' % (f, kb(size), ' **big**' if size >= BIG else '',
                                                   '; '.join([t for t in sections(p) if not t.startswith('= (')][:10])))
         lines += ['']
-    lines += ['## src/', '', '| Fragment | KB | Sections (line) |', '|---|---|---|']
-    lines += frag_table(build, src, 'src')
+    if os.path.isdir(src):
+        lines += ['## src/', '', '| Fragment | KB | Sections (line) |', '|---|---|---|']
+        lines += frag_table(build, src, 'src')
     tdir = os.path.join(d, 'targets')
     if os.path.isdir(tdir):
         lines += ['', '## targets/', '',
@@ -217,10 +220,25 @@ def build_index(build, write=True):
                 fs = [f for f in os.listdir(td) if f[0].isdigit()]
                 lines.append('| `%s` | %s | %s |' % (t, ', '.join('`%s`' % f for f in sorted(fs)),
                                                     kb(sum(fsize(os.path.join(td, f)) for f in fs))))
+    sdir = os.path.join(d, 'stations')
+    if os.path.isdir(sdir):   # a station's fragments (python3 build.py --station <name>; biomes/hearths builds from them alone)
+        lines += ['', '## stations/', '',
+                  'Each station builds one page (`build.py --station <name>`) from its own fragments, with `src/` or its `base` station.', '',
+                  '| Station | Fragments | KB |', '|---|---|---|']
+        for t in sorted(os.listdir(sdir)):
+            td = os.path.join(sdir, t)
+            if os.path.isdir(td):
+                fs = [f for f in os.listdir(td) if f[0].isdigit()]
+                lines.append('| %s | %s | %s |' % (t, ', '.join('%s' % f for f in sorted(fs)),
+                                                    kb(sum(fsize(os.path.join(td, f)) for f in fs))))
     if write:
         with open(os.path.join(d, 'INDEX.md'), 'w', encoding='utf-8') as fh:
             fh.write('\n'.join(lines) + '\n')
-    sizes = [fsize(os.path.join(src, f)) for f in os.listdir(src) if f[0].isdigit()]
+    if os.path.isdir(src):
+        sizes = [fsize(os.path.join(src, f)) for f in os.listdir(src) if f[0].isdigit()]
+    else:   # a build whose page is its stations' alone (no src/): their fragments count
+        sizes = [fsize(os.path.join(sdir, t, f)) for t in sorted(os.listdir(sdir)) if os.path.isdir(os.path.join(sdir, t))
+                 for f in os.listdir(os.path.join(sdir, t)) if f[0].isdigit()]
     sizes += [fsize(os.path.join(d, f)) for f in top]
     return len(sizes), sum(sizes), max(sizes) if sizes else 0, outs   # a build whose fragments all live elsewhere (Hook on the Port kit)
 
@@ -234,13 +252,13 @@ def main(argv=()):
     for top in ('settlements', 'kits', 'biomes', 'openworld'):
         for name in sorted(os.listdir(os.path.join(ROOT, top))):
             b = '%s/%s' % (top, name)
-            if os.path.isfile(os.path.join(ROOT, b, 'build.py')) and os.path.isdir(os.path.join(ROOT, b, 'src')):
+            if os.path.isfile(os.path.join(ROOT, b, 'build.py')) and (os.path.isdir(os.path.join(ROOT, b, 'src')) or os.path.isdir(os.path.join(ROOT, b, 'stations'))):
                 builds.append(b)
     builds += CORE_BUILDS
     if only:
         bad = [b for b in only if b not in builds]
         if bad:
-            sys.exit('make_index: not a build with src/: ' + ', '.join(bad))
+            sys.exit('make_index: not a build with src/ or stations/: ' + ', '.join(bad))
         for b in only:
             build_index(b)
         if '--root' not in argv:

@@ -11,11 +11,12 @@
  var K = typeof KTAGS !== 'undefined' ? KTAGS : globalThis.KTAGS;
  if (!K) throw new Error('52-core-tags-vocab: load 50-core-tags.js first');
 
- // ---- copied from kits/catalog/krator-furniture-core.js (checked by test-tags.js) ----
- // FURN_CULTURES (the 27 the core file lists before any culture file registers itself)
+ // ---- copied from core/catalog/krator-furniture-core.js (checked by test-tags.js) ----
+ // FURN_CULTURES (the 36 the core file lists before any culture file registers itself)
  var CATALOG_CULTURES = ['ancient', 'ancients-salvage', 'yuni-court', 'yuni-common', 'yuni-poor', 'sahelian', 'order', 'nomad',
    'voth', 'iziz', 'beast-rider', 'generic', 'scrap', 'lizardmen', 'eastabyss', 'xanadu', 'screamer', 'islander', 'republican',
-   'rustic', 'painted', 'reedlake', 'post-apoc', 'hykkousoi', 'scyvoi', 'zeijani', 'ashnomad', 'eternian'];
+   'rustic', 'painted', 'reedlake', 'post-apoc', 'hykkousoi', 'scyvoi', 'zeijani', 'ashnomad', 'eternian',
+   'khaayken', 'tungang', 'fellgang', 'talovolci', 'jimjam', 'dalab', 'pylon', 'talia'];
  // BUILDING_TYPES
  var CATALOG_TYPES = ['civic', 'market', 'shop', 'tavern', 'inn', 'industry', 'farm', 'dwelling-single', 'dwelling-multi',
    'infrastructure', 'religious', 'funerary'];
@@ -32,7 +33,7 @@
  // FURN_SETTINGS, plus core/furnish's 'room' (a piece the interiors place)
  var CATALOG_SETTINGS = ['indoor', 'outdoor', 'both'];
 
- // ---- the cultures, cleaned (PROPOSAL.md, "The culture list, cleaned"): 24 (Scyvoi added 2026-10-05, Zeijani and the Ash Nomads 2026-10-07, Jimjam and Dalab 2026-10-20, the Eternians 2026-10-20) ----
+ // ---- the cultures, cleaned (PROPOSAL.md, "The culture list, cleaned"): 30 (Scyvoi added 2026-10-05, Zeijani and the Ash Nomads 2026-10-07, Jimjam and Dalab 2026-10-20, the Eternians 2026-10-20; the Khaayken, Tungangs, Fellgangs, Talovolci, Pylon and Talia 2026-11-03, kits/yeti/PLAN.md section 11) ----
  // Display names are FURN_CULTURE_INFO's (the core file and each culture file's FURN_CULTURE(key, { name })).
  var CULTURE_NAMES = {
    'ancient': 'Ancients', 'yuni': 'Yuni', 'order': 'The Order', 'nomad': 'Eastern Nomads', 'voth': 'Voth', 'iziz': 'Iziz',
@@ -40,10 +41,11 @@
    'islander': 'Ring Sea Islanders', 'republican': 'Republicans', 'rustic': 'Rustic Highlanders', 'painted': 'Painted Men',
    'reedlake': 'Reed Lake', 'post-apoc': 'Post-Apoc salvage', 'hykkousoi': 'Hykkousoi', 'scyvoi': 'Scyvoi',
    'zeijani': 'Zeijani', 'ashnomad': 'Ash Nomads', 'eternian': 'Eternians',
-   'jimjam': 'Jimjam', 'dalab': 'Dalab'
+   'jimjam': 'Jimjam', 'dalab': 'Dalab', 'khaayken': 'Khaayken', 'tungang': 'Tungangs', 'fellgang': 'Fellgangs',
+   'talovolci': 'Talovolci', 'pylon': 'Pylon', 'talia': 'Talia'
  };
  // cultures of a settlement with no catalog furniture set (yet): not in FURN_CULTURES, so test-tags.js does not look for them there
- var NO_CATALOG = ['jimjam', 'dalab'];
+ var NO_CATALOG = [];   // Jimjam and Dalab have their culture files since 2026-11-03
  var CULTURES = Object.keys(CULTURE_NAMES);
  // old spellings and catalog sets on input: the culture they become, and the tags they bring (never over a given one)
  var CULTURE_ALIAS = {

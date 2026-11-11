@@ -1,9 +1,9 @@
 {
  "commit": "69fda11f06dbe0b17b689819e3f21a1ca7914c92",
  "files": {
+  "core/catalog/krator-asset-engine.js": "666d5790f074437191a41aa0a2446ea00c98ffe5",
   "core/city/50-city-host-streets.js": "12bdc2059f44fcfa0db78f5dd3cbf419fe02628f",
   "core/city/52-city-host-buildings.js": "d49da758eb478449fbaa0ba5e0d54e20e9192d10",
-  "kits/catalog/krator-asset-engine.js": "666d5790f074437191a41aa0a2446ea00c98ffe5",
   "settlements/voth/serve.py": "af171a818b9979a684df41b24847cff75f4d435a",
   "settlements/voth/targets/voth-city/00-head.html": "f4592f89693a533e741ff337fa87b382a71e4681",
   "settlements/voth/targets/voth-city/55-vc-host.js": "1884524c1c67e804bd2edebcef090f6f221fb878",

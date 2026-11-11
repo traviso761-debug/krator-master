@@ -4,6 +4,26 @@ Read before changing anything here. `build.py` prints the open count.
 
 ## Open
 
+- [ ] **The catch-up pass (2026-11-03): for the owner's eye and the GPU.** `PLAN.md`, "The catch-up pass". Built in a cloud session with
+      no GPU: looked at only in SwiftShader screenshots (the old river chamber reads as a dark cave hung with dripstone; the tiankeng's
+      wall shows its cut alcove only faintly). Owed on the GPU: `verify.py --assert --all-views` on `dist/nwbay.html` and
+      `dist/nwbay-caverns.html`; the looks: the caverns station's seven views, the marble band and outcrops (`?marble=0`), the ash soils
+      (`?ash=0`), the limb joints (`?joints=0`), the held blooms and umbrella-thorn crowns (`?holds=0`), the plume (`?plume=0`), the bay's
+      breakers against `?breakers=0`, the shadows (`?shadow=1`, off by default), the reflections (the panel's button, off by default).
+- [ ] **KCAVERN HAS NO LIMESTONE.** Its materials are basalt and tuff (`MATS`); a `rock:'limestone'` prim gets tuff's index. The station
+      draws the whole cave in the library's karst limestone itself (`89x`), so the page is right, but an export reads tuff. A limestone
+      (and a gypsum) material in `core/terrain/39-core-cavern.js` is owed (`KARST-SITES-5.1.md`, "Notes for the module").
+- [ ] **A SUMP'S ROAD IS BESIDE ITS HAZARD, NOT IN IT.** core/hazard keeps only the fields it knows, so `KHAZ.make` drops the drown
+      hazard's `spares: ['water-breathers']`; the road is `tags.road` on the same record. A `spares` (or `breathers`) field in
+      core/hazard, read by `KHAZ.at` and the nav zones, is owed in core (it reaches every page that takes core/hazard).
+- [ ] **THE CAVE'S MOUTHS ARE CUT FROM COARSE MESHES.** The tiankeng's wall is 96 segments by 30 rows, so its alcove's cut is 9 triangles
+      with a ragged edge (no refinement, as Pinnacle Rock's cap has); the cenotes' beds lose their middle fan (3-4 m) over the shafts. The
+      sinks' shafts reach up under the uncut ground (choked swallets under the dolines' soil); the spring's riser ends under its pool.
+- [ ] **THE CAVE MESHES LAZILY.** 460 chunks near the views at load; the rest (12,000 in all) near the eye, four a frame: a fast flight
+      through the network can outrun it. Underground the light is a per-vertex sky term and a lamp at the eye, not real occlusion: the sun's
+      shadow box does not reach the cave (its meshes neither cast nor receive).
+- [x] **STAND-IN TEXTURES.** Wired at the merge (2026-11-03): `groundAsh` draws the delivered `ground.ash.soil` untinted and `groundMarble`
+      `rock.marble.white` (both 2 m; `core/materials/PLAN.md`, "Delivered 2026-11-03"). Their look is the owner's.
 - [ ] **The final rebuild's looks (2026-10-27): for the owner's look pass.** `PLAN.md` "Core adoption" lists every module taken and its
       switch: the far impostors (gain 2.2: at nhighlands' 3.6 the far avenue baobabs' trunks baked out white while the crowns read
       right; one gain cannot fit bark and leaves until the core's bake is fixed), the sea fog belt, the limestone's beds, the KGROUND
@@ -21,6 +41,8 @@ Read before changing anything here. `build.py` prints the open count.
       `57-biome-nwbay-cliffs.js`), but still solid: no caves, arches or hollow stacks. Ys builds its caves and
       stair-houses into the faces itself (DESIGN §8); the karst field only says where the rock is.
       Stays open (2026-10-25): a design task (caves, arches); Ys builds its own.
+      Part (2026-11-03): the caverns station (`--station caverns`) puts the Hykkousoi karst under the bay (KKARST), with a cave under the
+      tiankeng and the cenotes; the stacks themselves are still solid.
 - [x] THE DOMES ARE THINNER THAN GUILIN'S (closed 2026-10-26: `57-biome-nwbay-cliffs.js` "THE DOME'S SKIN", guilin's model with
       the bay's plants: a glossy-shrub cushion every 3.4 m over every dome and cap (karst field 1), one stream per stack, drawn
       after every tree pass, so no tree moved; ~4,100 clumps. The cliff points' scrub on a dome bed gives way to it). The forest roots on a dome (karst 1: a bed whose wall leans in under steep
@@ -108,6 +130,7 @@ Read before changing anything here. `build.py` prints the open count.
       a tiankeng's floor trees can push their crowns into the wall (the mask keeps feet 12 m off it).
       The lip hides the ground mesh's cut with a polygon offset; at a grazing angle from far off the
       cut's jagged edge can show through.
+      Part (2026-11-03): on the caverns station one tiankeng alcove is a through-cave, its back cut out where its passage runs on.
       Stays open (2026-10-25): a design task.
 - [x] (closed 2026-10-26 for the ironbark and the pandan: a variant keeps its surface roots and stilts as specs, and each
       placed tree grows its own on its own ground in `stamp` (55 ironRoots, pandanStilts; the roots in the root bucket, no new

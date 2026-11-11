@@ -41,7 +41,7 @@ function fieldsAt(x,z,h,slope){const sd=coastD(x,z),rd=reefD(x,z),bk=bayK(x,z),w
  for(const k of KOPPEN)o['koppen:'+k]=K[k]*land;
  return o;}
 const FNAMES=['wet','flow','slope','rock','upland','cold','salt','beach','dune','mangal','lagoon','reef','bench','pan','garden','floor'].concat(KOPPEN.map(k=>'koppen:'+k));
-const FC=(function(){const X0=TERR.X0,Z0=TERR.Z0,cs=8,NX=Math.ceil((TERR.X1-X0)/cs)+1,NZ=Math.ceil((TERR.Z1-Z0)/cs)+1,a={};
+const FC=(function(){const X0=TERR.X0,Z0=TERR.Z0,cs=typeof STATION!=='undefined'&&STATION.fieldCs?STATION.fieldCs:8,NX=Math.ceil((TERR.X1-X0)/cs)+1,NZ=Math.ceil((TERR.Z1-Z0)/cs)+1,a={};
  FNAMES.forEach(n=>a[n]=new Float32Array(NX*NZ));a.h=new Float32Array(NX*NZ);
  for(let j=0;j<NZ;j++)for(let i=0;i<NX;i++)a.h[j*NX+i]=terrainH(X0+i*cs,Z0+j*cs);
  for(let j=0;j<NZ;j++)for(let i=0;i<NX;i++){const x=X0+i*cs,z=Z0+j*cs,k=j*NX+i;
@@ -64,11 +64,14 @@ const waterMask=(x,z)=>{const d=terrainH(x,z)-waterH(x,z);return d<.15?0:d<.7?(d
 let MASK=waterMask;
 // the LOD spine: a lattice over the island and the places every view looks at
 const SPINE=[];
+if(typeof STATION!=='undefined'&&STATION.spine)STATION.spine.forEach(p=>SPINE.push(p));   /* a station's lattice (its stage) */
+else{
 for(let z=-900;z<=900;z+=600)for(let x=-1700;x<=1500;x+=600)if(coastD(x,z)>-150)SPINE.push([x,z]);
 [[BENCH.x,BENCH.z],[PAN.x,PAN.z],[VENT.x,VENT.z],[GARDEN.x,GARDEN.z],[GARDEN2.x,GARDEN2.z],[BAY.x,BAY.z-250],[BAY.x-200,BAY.z+250]].forEach(p=>SPINE.push(p));
+}
 BIO.init({tags:'ringisles',THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,mask:(x,z)=>MASK(x,z),
- obstacles:OBSTACLES,ticks:tick,seed:71,origin:SPINE,center:[-250,50],fields:FIELD,register:REGISTER,err:reportErr,
- lod:{hero:230,mid:620,far:2600,floor:[190,460]},
+ obstacles:OBSTACLES,ticks:tick,seed:71,origin:SPINE,center:typeof STATION!=='undefined'&&STATION.center?STATION.center:[-250,50],fields:FIELD,register:REGISTER,err:reportErr,
+ lod:typeof STATION!=='undefined'&&STATION.lod?STATION.lod:{hero:230,mid:620,far:2600,floor:[190,460]},
  windows:{bay:[BAY.x-BAY.r-200,BAY.z-BAY.r-150,BAY.x+BAY.r+200,BAY.z+BAY.r+260],pan:[PAN.x-PAN.rx*1.6,PAN.z-PAN.rx*1.2,PAN.x+PAN.rx*1.6,PAN.z+PAN.rx*1.2],
   bench:[BENCH.x-BENCH.r*1.2,BENCH.z-BENCH.r*1.2,BENCH.x+BENCH.r*1.2,BENCH.z+BENCH.r*1.2],garden:[GARDEN.x-200,GARDEN.z-200,GARDEN.x+200,GARDEN.z+200],garden2:[GARDEN2.x-120,GARDEN2.z-120,GARDEN2.x+120,GARDEN2.z+120],
   vent:[VENT.x-VENT.r*1.6,VENT.z-VENT.r*1.6,VENT.x+VENT.r*1.6,VENT.z+VENT.r*1.6]}});

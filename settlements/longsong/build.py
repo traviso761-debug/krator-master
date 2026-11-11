@@ -11,7 +11,7 @@ Valley, built in situ on the scale model's land (PLAN.md, README.md; the program
   40-ls-plan          THE PLAN as data [G data]: the site, the rock, the ward, every building, the Vault, the sealed
                       things, the people and their schedules
   40b-ls-farms        THE FARMS AND GARDENS as data [G data]: fields, terraces, pools, groves, orchards, beds, herds
-  41-world-fields     the open world's fields, read in place (openworld/isle-demo/src/world): WORLD.H, the land at 1:1
+  41-world-fields     the open world's fields, read in place (openworld/isle-demo/src/world, moved from the deprecated little-demo): WORLD.H, the land at 1:1
   42-ls-world         HOST: WORLD.init, the page's origin on the model
   44-host-matlib-pack GENERATED (tools/textures/matlib_pack.py): Longsong's library maps and the Oidong kit's, as sidecars
   45-host-stage       HOST: renderer, light, the land and the plan's shapes on it, the fields, BIO.init
@@ -70,6 +70,7 @@ def find_node():
     return None
 
 HERE = os.path.dirname(os.path.abspath(__file__)); SRC = os.path.join(HERE, 'src'); DIST = os.path.join(HERE, 'dist')
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(HERE)), 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 ROOT = os.path.normpath(os.path.join(HERE, '..', '..'))
 OUT = sys.argv[1] if len(sys.argv) > 1 and not sys.argv[1].startswith('--') else 'longsong.html'
 FORBID = ['kdef(', 'kput(', 'kbake(', 'BUCKET[', 'MBK[', 'FAMMAT[', 'PLATS', 'BRIDGES', 'TOWERS', 'RIVER', 'PALISADE', 'KOFF']
@@ -124,7 +125,7 @@ for f in ('10-hamlet-wood.js', '12-hamlet-gather.js', '20-hamlet-cultures.js', '
 PATH.setdefault('33-city-strategies.js', os.path.join(ROOT, 'core', 'city', '33-city-strategies.js'))
 for f in ('09-lod.js', '97-lod-auto.js'):
     PATH.setdefault(f, os.path.join(ROOT, 'core', 'lod', f))
-# the open world's fields, read in place: the land round the site at 1:1
+# the open world's fields (openworld/isle-demo/src/world), read in place: the land round the site at 1:1
 PATH['41-world-fields.js'] = os.path.join(ROOT, 'openworld', 'isle-demo', 'src', 'world', '41-world-fields.js')
 # the host shell from core/host, the whole interface (core/host/README.md): the inspector, marks, pictures, the minimap,
 # the editor, the cutaway, and the core modules they read (core/edits, core/space, core/minimap)
@@ -198,6 +199,9 @@ def _kchar():
                         or (it['slot'] == 'beard' and it['id'] in KCHAR_BEARDS[b])]
         bodies[b] = {'skeleton': J(b, 'skeleton.json'), 'kit': kit}
         need += [b + '/base', b + '/anims'] + [it['glb'][len('pieces/'):-len('.glb')] for it in kit['items']]
+    if BSRC.LISTING:   # --list-sources: the pieces it would copy beside the page, by name; nothing is written
+        BSRC.note([os.path.join(CM, 'dist', 'pieces', k + '.txt') for k in need])
+        return ''
     kd = os.path.join(DIST, 'kchar')
     os.makedirs(kd, exist_ok=True)
     keep, missing = set(), []
@@ -222,7 +226,7 @@ def _kchar():
         sys.exit('KCHAR PIECES MISSING (build core/charactermodels, or fetch them from its published lab): ' + ', '.join(missing))
     data = {'sliders': J('sliders.json'), 'posture': J('posture.json'), 'peoples': peoples, 'bodies': bodies}
     return 'var LS_KCHAR=%s;\nLS_KCHAR.pieces=%s;\n' % (json.dumps(data, separators=(',', ':')), json.dumps(need))
-# the Xanadu kit (settlements/xanadu/kit_bundle.py) and the isle demo's kit-piece flattener (isleFlatten, read in place)
+# the Xanadu kit (kits/xanadu/kit_bundle.py; its texture pack is still settlements/xanadu's) and the isle demo's kit-piece flattener (isleFlatten, read in place)
 XA = os.path.join(ROOT, 'settlements', 'xanadu')
 XA_FAMS = ('cloth', 'clothR', 'corrugate', 'plaster', 'stone', 'tarp', 'thatch', 'white', 'wood', 'woodV', 'xBandC', 'xEarth', 'xMosC',
            'xMosD', 'xPenbey', 'xRubble', 'xSun', 'xTiles', 'xValance', 'xWash')   # the MAT keys the village buildings use (2026-10-20)
@@ -231,7 +235,7 @@ def _xa_skip():
         return tuple(k for k in json.load(f)['families'] if k not in XA_FAMS)
 def _xak():   # by path: kits/interiors/kit_bundle.py is already imported as kit_bundle
     import importlib.util
-    spec = importlib.util.spec_from_file_location('xanadu_kit_bundle', os.path.join(XA, 'kit_bundle.py'))
+    spec = importlib.util.spec_from_file_location('xanadu_kit_bundle', os.path.join(ROOT, 'kits', 'xanadu', 'kit_bundle.py'))   # the kit's (MODULARITY-PLAN.md step 4)
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
     js, _ = mod.bundle('XAK')
@@ -262,6 +266,7 @@ VIRTUAL = {'39-ls-world-data.js': _wd.fragment(os.path.join(HERE, 'region'),
            khost.EDITS_JS: khost.edits_js(HERE, 'longsong')}
 for f in VIRTUAL:
     PATH[f] = None
+BSRC.report(PATH)   # --list-sources: what the page is made of (every path it names), then exit
 frags = sorted(PATH)
 out = []; bad = []
 for f in frags:

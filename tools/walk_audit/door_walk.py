@@ -4,13 +4,15 @@
   python3 tools/walk_audit/door_walk.py kits/islanders/dist/islanders.html [--only key,key]
 
 A building passes when the walker ends within 0.25 m of the door's sill height having moved at least 3.5 m, not pushed sideways. Needs a page whose
-host takes `walk: KWALK` and whose records carry `front` (the Scyvoi engine kits). Roofed buildings whose door opens on solid mass fail by design."""
+host takes `walk: KWALK` and whose records carry `front` (the Scyvoi engine kits). Roofed buildings whose door opens on solid mass fail by design.
+The page's doors (core/door, KDOOR) are opened first, every unlocked one, as a walker would open them (they are built shut); --shut walks them as built."""
 import argparse, asyncio, os, sys, threading, socketserver
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
 import harness as H
 try: sys.stdout.reconfigure(encoding='utf-8')
 except Exception: pass
-JS = r"""(only) => {
+JS = r"""([only, shut]) => {
+ if (!shut && typeof KDOOR !== 'undefined') { for (const D of KDOOR.list) KDOOR.open(D, { by: 'audit' }); for (let i = 0; i < 50; i++) KDOOR.step(.1); }
  const C = KHOST.cam, out = []; C.walk(true, true);
  for (const r of REG.filter(r => r.cls === 'building' && !r.parent && r.front && r.front.source !== 'declared' && (!only.length || only.includes(r.key)))) {
   const f = r.front.world, yaw = f.yaw, ox = Math.sin(yaw), oz = Math.cos(yaw);   /* the way out */
@@ -32,7 +34,7 @@ async def main(a):
         b = await H.launch_chromium(p); pg = await b.new_page(); pg.set_default_timeout(900000)
         await pg.route("**/three.min.js", lambda r: asyncio.ensure_future(r.fulfill(path=H.local_three(folder, folder), content_type="application/javascript")))
         await pg.goto(f"http://127.0.0.1:{port}/{name}?t=4", timeout=H.LOAD_MS); await pg.wait_for_function("window._ready===true", timeout=H.LOAD_MS); await pg.wait_for_timeout(1500)
-        res = await pg.evaluate(JS, a.only.split(',') if a.only else [])
+        res = await pg.evaluate(JS, [a.only.split(',') if a.only else [], bool(a.shut)])
         bad = [r for r in res if not r['ok']]
         if a.trace:
             for r in bad[:1]: print(r['key'], [t for t in r['trace'] if t[2]!=r['trace'][0][2]][:30] or r['trace'][-3:])
@@ -40,5 +42,5 @@ async def main(a):
         print('%d buildings, %d did not walk in through their door' % (len(res), len(bad)))
         await b.close()
 if __name__ == '__main__':
-    ap = argparse.ArgumentParser(); ap.add_argument('html'); ap.add_argument('--only'); ap.add_argument('--trace', action='store_true')
+    ap = argparse.ArgumentParser(); ap.add_argument('html'); ap.add_argument('--only'); ap.add_argument('--trace', action='store_true'); ap.add_argument('--shut', action='store_true')
     asyncio.run(main(ap.parse_args()))

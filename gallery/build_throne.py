@@ -25,9 +25,10 @@ STATION_ONE = ('throne.html', "The plume's edge (station 1): the south-east shou
                "rift of five vents, eight lava flows from 2 to 5,200 years old, a pit crater's acid lake, hot pools and "
                "bone bells in the steam; Krator's own life glows at night")
 
-LEDE = ('Eleven stations on the Throne, the volcano at the heart of Krator, each a 6 km piece of one biome kit: rain '
+LEDE = ('Fourteen stations on the Throne, the volcano at the heart of Krator, each a 6 km piece of one biome kit: rain '
         'forest and kipuka, a spice frontier, a geyser isle, cloud forest, savanna, ash desert, vent country, a glacier, '
-        'the caldera rim and a lava tube. Each page generates its world in your browser with Three.js, so allow a few '
+        'the caldera rim, a lava tube, the lava delta, the blast zone and the lee\'s penitentes. Each page generates its '
+        'world in your browser with Three.js, so allow a few '
         'seconds. <strong>Drag to orbit, scroll to zoom;</strong> every station has preset views, an inspector and night '
         '(N). A desktop browser is recommended.')
 
@@ -39,7 +40,8 @@ BACK = ('  <div class="hub">\n    <div class="col">\n      <h2>Krator Worlds</h2
 
 SECTION = {'key': 'throne', 'id': 'stations', 'title': 'The stations',
            'note': 'In station order: from the plume\'s edge on the south-east shoulder round the windward flank, '
-                   'the isles and the summit, down into a lava tube.', 'after': 'port'}
+                   'the isles and the summit, down into a lava tube, then the lava delta, the blast zone and the lee\'s '
+                   'penitentes.', 'after': 'port'}
 
 
 def stations():

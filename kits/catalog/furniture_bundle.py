@@ -16,11 +16,18 @@ A name in `cultures` is a FILE SUFFIX: 'eastabyss' picks krator-master-furniture
 files are picked the same way and only when named: 'generic-goods', 'generic-fruit' (not by 'generic'; asking for
 'generic-fruit' adds 'generic-goods', whose KGEN shapes and fruit* colours the fruit file uses) and
 'jobs' (krator-master-furniture-jobs.js, the work items by trade: each keeps its own culture and adds its colours
-to that culture's palette itself, so it needs no culture file beside it). Files load in filename order.
+to that culture's palette itself, so it needs no culture file beside it); 'arms' (krator-master-furniture-arms.js,
+every culture's weapon rack and armour stand, the same way; merged 2026-11-08 from claude/weapon-racks). cultures=None
+takes every file, these too. Files load in filename order.
+
+The Ancients' bath fixtures (seven `ancient` pieces for room kind `bath`) were an opt-in set from 2026-11-03; since
+2026-11-08 they are in krator-master-furniture.js (harvested=True) and the `bath` programme is kits/interiors'.
 """
-import base64, json, os
+import base64, json, os, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'catalog'))
+import catalog as kcat   # the engine's names resolve to core/catalog, the culture files' to this folder
 CORE = ['krator-furniture-core.js', 'krator-symbols.js', 'krator-furniture-kit.js']
 RUNTIME = 'krator-furniture-runtime.js'
 DETAIL = 'krator-furniture-detail.js'      # joins only with tex=True
@@ -32,7 +39,7 @@ def culture_files():
 
 
 def read(f):
-    with open(os.path.join(HERE, f), encoding='utf-8') as fh:
+    with open(kcat.path(f), encoding='utf-8') as fh:
         return fh.read()
 
 
@@ -84,11 +91,11 @@ def bundle(cultures=None, harvested=False, tex=False, plants=False):
     fs = files(cultures, harvested)
     if plants:
         fs = fs[:-1] + [PLANTS_FILE] + fs[-1:]
-    body = ''.join('/* ---- kits/catalog/%s ---- */\n%s\n' % (f, read(f)) + (PLANTS_ADAPTER if f == PLANTS_FILE else '') for f in fs)
+    body = ''.join('/* ---- %s ---- */\n%s\n' % (kcat.rel(f), read(f)) + (PLANTS_ADAPTER if f == PLANTS_FILE else '') for f in fs)
     if tex:
         fs = fs + [DETAIL]
         body += '/* ---- the packed detail maps (tex/) ---- */\n' + textures()
-        body += '/* ---- kits/catalog/%s ---- */\n%s\n' % (DETAIL, read(DETAIL))
+        body += '/* ---- %s ---- */\n%s\n' % (kcat.rel(DETAIL), read(DETAIL))
     return safe('/* kits/catalog furniture bundle (furniture_bundle.py): %s. GENERATED; edit the catalog files. */\n'
             'var KratorFurniture = (function () {\n%s\nreturn KF_API;\n})();\n' % (', '.join(fs), body))
 

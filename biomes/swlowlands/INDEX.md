@@ -29,11 +29,11 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 |---|---|---|
 | `00-head.html` | 1 |  |
 | `44y-host-stationlib.js` | 3 |  |
-| `45-host-stage.js` | 26 | the axis, the sea, the river (51); terrain (83); the climate fields (116); the host binding (133); the ground (148); the water (230); the road (241) |
+| `45-host-stage.js` | 29 | the axis, the sea, the river (51); terrain (83); the climate fields (127); the host binding (144); the ground (159); the water (255); the road (266) |
 | `50-biome-swlowlands-species.js` | 56 **big** | the climate this biome reads (24); palettes (34); the tree species (104); harvest (biomes/FRUIT.md) (173); leaf textures (217); TWO-TONE BARK (331); geometries local to this biome (447); materials (487); instanced items (551) |
 | `52-biome-swlowlands-library.js` | 2 |  |
 | `55-biome-swlowlands-trees.js` | 68 **big** | zones from the fields (28); colour (47); keep-clear between trees (68); the LIMB (79); foliage and epiphytes (96); the crown, ON its branches (117); the builders (155); impostors (the far canopy) (518); the pass (572) |
-| `60-biome-swlowlands-floor.js` | 28 | small plants (31); the understorey (under the crowns) (137); the zone planters (159); the pass (227) |
+| `60-biome-swlowlands-floor.js` | 28 | small plants (31); the understorey (under the crowns) (138); the zone planters (160); the pass (228) |
 | `65-biome-swlowlands-dress.js` | 8 |  |
 | `70-biome-swlowlands.js` | <1 |  |
 | `83-host-far.js` | 3 |  |
@@ -43,5 +43,5 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `89a-host-atmos.js` | 2 |  |
 | `89w-host-water.js` | 9 |  |
 | `89z-host-build.js` | 4 |  |
-| `99-host-take.js` | 15 | the inspector's words (48); the probe's budgets and the kit's own checks (ve (59); the host's own checks (verify.py runs them when  (71); the page, handed to the host (136) |
+| `99-host-take.js` | 17 | the inspector's words (48); the probe's budgets and the kit's own checks (ve (59); the host's own checks (verify.py runs them when  (71); the page, handed to the host (145) |
 | `99-tail.html` | <1 |  |

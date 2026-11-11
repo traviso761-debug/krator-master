@@ -49,6 +49,13 @@ warning by default: nhighlands' `needle` (632k) and `frond` (595k) are over the 
 turn. `BIO.CAP_ERR` (`BIO.init({capErr: true})`) makes it a `BIO.err` instead, which fails verify. `BIO.CAP_THROW`
 (`BIO.init({capThrow: true})`) throws; a session writing a new pass should set it. An item meant to be
 that many says so: `BIO.def(name, geo, mat, {cap: N, capWhy: '...'})` (a cap with no `capWhy` is itself reported).
+
+**The rule (the owner, 2026-11-08: "make it a rule"):** foliage that is dense on purpose declares it, `{cap, capWhy}`, with the
+cap a little over what it puts and the reason in `capWhy` (the look that needs the count: a sward, a bloom carpet). Precedents:
+hyperjungle's `tallgrass` (cap 650k) and crater-drylands' `bloom` (550k). Coarsening (a wider cell, fewer per cell) is for
+density that is accidental, an item over the cap that nobody meant; do not coarsen a declared carpet to get under 250k, and
+do not declare a cap to silence an accident.
+
 `BIO.capReport()` returns `[{kit, item, count, cap, pass, why}]`; `harness.verify_page` reads it as the universal `instance-cap` assert.
 
 **6. Probe points from the drawers.** The probe samples a merged mesh at its box centre, so a tree drawn into a bark
@@ -494,8 +501,27 @@ BIO.bindSeason(null,{sharp:2});   // the monsoon: two seasons, the rains in the 
 
 and on the materials that turn: the grasses `season:{colour:0xc8a860,k:.85}`, a deciduous crown (`monsoonrag`, the
 kapok) `season:{drop:.9,colour:0x9a7040,k:.5}`, the bolster `season:{colour:0xd86a20}`. A material's options are in
-`m.userData.bio.opts`, so the export carries them. Not done yet: the copper flush (a colour at the start of the rains,
-not the dry) and the Godot leaf shader's twin (a global `season_dry`, the same hash and the same two terms).
+`m.userData.bio.opts`, so the export carries them.
+
+**The copper flush and the Godot twin** (2026-11-03; opt-in, `30s-core-season-flush.js`, `test-season-flush.js`).
+
+- **The flush.** It is a colour at the start of the rains, not in the dry. `season: {..., flush: {colour, k, stagger}}` on a `leafMat`
+  reads one more page-wide uniform, `BIO.FLUSH.value`, which `BIO.bindFlush(clock, o)` drives from `KCLOCK.flush`
+  (`core/clock/opt/21-core-clock-flush.js`). That is a pulse keyed to the day the wet last rose through one half: `rise` 5 days, `hold` 18,
+  `fade` 12. Its colour step sits right after the dry's, with the same hash. Without `flush`, every shader is the one it was, character
+  for character (the test compares all of them).
+  *Adopting it* (the rust miombo): load the fragment after `30-core-foliage.js` and `core/clock/opt/21-core-clock-flush.js` after core/clock, then
+  `BIO.bindFlush(null, {sharp: 2})`, and give the crown `season: {flush: {colour: 0xb0502a}}`.
+- **The Godot twin.**
+  - `godot/shaders/lib/season.gdshaderinc` holds the two global uniforms, `season_dry` and `season_flush`, in `project.godot`'s
+    shader_globals, plus the same hash and both terms.
+  - `foliage.gdshader` takes `sn_k`, `sn_c`, `fl_k` and `fl_c`, which `krator/biome_import.gd` sets from the exported options.
+    Their defaults draw what the shader drew.
+  - `KSeason.set_globals(day, hour, o)` (`core/clock/kseason.gd`) sets both globals each frame.
+  - Checked on software GL under Xvfb by `godot/tests/shaders/season_gpu_check.gd`: the include's functions against their GDScript
+    twins, and a card through the importer that vanishes at full dry and turns copper at full flush, with negatives.
+  - The hash is taken at `MODEL_MATRIX[3]`, the instance's world origin; three's is at its `instanceMatrix`. They agree when the
+    MultiMesh node sits at the origin, as the importer places it.
 
 ## Godot
 
@@ -517,14 +543,16 @@ not the dry) and the Godot leaf shader's twin (a global `season_dry`, the same h
 ## Fire: `KFIRE` (`38-core-fire.js`; hyperjungle PLAN-LANDS.md section 11, H3; opt-in)
 
 crater-drylands' fire history (`CRATERDRY.fireHistory`, `fireRun`, `ageAt`, `frontAt`: `biomes/crater-drylands/src/52-biome-craterdry-fire.js`)
-lifted into core for every savannah's burn mosaic (the cycad flush and the ember spikes key on burn age). `[G data]`: no BIO, THREE or
+lifted into core for every savannah's burn mosaic; since 2026-11-09 that fragment is an adapter onto KFIRE, and its original is frozen as
+`ref/craterdry-fire-52.js.txt`, the test's reference (the cycad flush and the ember spikes key on burn age). `[G data]`: no BIO, THREE or
 DOM; the host hands it its ground (`height(x,z)`) and its burnability (`burn(x,z)`). The API is in the fragment's header.
 
 **crater-drylands' output must match KFIRE's.** The spread, the fuel curve, the ignition search, the live fire and the lookups are the
 kit's arithmetic, operation for operation: from the same ground, burnability and fires, `KFIRE.history` gives the kit's `last`, `id`,
 `front`, `base` and `H` grids bit for bit, and `KFIRE.run` the kit's `arrive` and `order`. `node core/biome/test-fire.js` proves it
-against the kit's own function, loaded in place (its negatives: a reversed wind and one fire 30% larger are seen). A change to either
-side that breaks the match fails that test; change both, or neither.
+against the kit's original function (the frozen `ref/craterdry-fire-52.js.txt`; its negatives: a reversed wind and one fire 30% larger
+are seen), and proves the kit's adapter (its `src/52` now) gives that reference's grids, lookups and live fire. A change to KFIRE that
+breaks the match fails that test. The reference is never edited: it is the arithmetic KFIRE keeps.
 
 Two inputs differ from the kit on purpose, and a host chooses them:
 
@@ -545,9 +573,10 @@ const FIRE=KFIRE.history({R:TERR.R,cell:20,seed:520031,wind:FIRE_WIND,fires:FIRE
 // then KFIRE.ageAt(x,z) / FIRE.ageAt, KFIRE.stages(age), FIRE.frontAt, KFIRE.run(FIRE,{x,z}) for a live fire
 ```
 
-**crater-drylands, at its rebuild:** to keep its page, pass the kit's own inputs: `burn` from its formula with its BIO `fbm` patch,
-`warp` its BIO `fbm` warp, and its fires as it lit them (`old:0` and the list; `test-fire.js` builds exactly these). To move to the
-portable defaults (what Godot can reproduce), drop those three and the page changes once: a rebuild with a screenshot set.
+**crater-drylands, at its rebuild (done, pair 12, 2026-11-09):** its `src/52` passes the kit's own inputs, so its page kept its fires:
+`burn` from its formula with its BIO `fbm` patch (`CRATERDRY.firePatch`), `warp` its BIO `fbm` warp (`CRATERDRY.fireWarp`), and its
+fires as it lit them (`old:0` and the list). To move to the portable defaults (what Godot can reproduce), drop those three and the page
+changes once: a rebuild with a screenshot set.
 
 ### Godot
 

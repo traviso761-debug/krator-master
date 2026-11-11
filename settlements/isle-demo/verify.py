@@ -124,6 +124,8 @@ WEEK_JS = r"""(neg)=>{if(!window._week){const w1=ISLE.simWeek('Valapo',7*1440),w
  if(neg==='rate'){const a=cp(w1);a.b.towns.kautoa.food=a.a.towns.kautoa.food;return pick(ISLE.weekChecks(a,w2),/a worker a day/);}
  if(neg==='decided'){const a=cp(w1);a.decided=3;return pick(ISLE.weekChecks(a,w2),/decided/);}
 if(neg==='wave'){const a=cp(w1);let add=0;a.days.forEach((x,j)=>{if(j%3===2)add+=9000;x.towns.valapo.goods.fish.bought+=add;});return pick(ISLE.weekChecks(a,w2),/steadily/);}
+if(neg==='ledger'){const a=cp(w1);a.b.ledger.towns.valapo.fish.total+=40;return pick(ISLE.weekChecks(a,w2),/the ledger: every good/);}
+if(neg==='abroad'){const a=cp(w1);a.b.ledger.towns.kautoa.clove.exported+=25;return pick(ISLE.weekChecks(a,w2),/left the map/);}
 if(neg==='diet'){const a=cp(w1),b=cp(w2);[a,b].forEach(W=>{W.b.towns.valapo.goods.rice.bought=W.a.towns.valapo.goods.rice.bought;});return pick(ISLE.weekChecks(a,b),/foods eaten/);}
  if(neg==='late'){const a=cp(w1);a.days[4].towns.valapo.goods.fish.short+=5;return pick(ISLE.weekChecks(a,w2),/short after the second day/);}
  if(neg==='swing'){const a=cp(w1);a.days.forEach((x,j)=>{if(j%2)x.towns.kautoa.goods.rice.total*=1.6;});return pick(ISLE.weekChecks(a,w2),/stock steady/);}
@@ -133,7 +135,7 @@ if(neg==='diet'){const a=cp(w1),b=cp(w2);[a,b].forEach(W=>{W.b.towns.valapo.good
  if(neg==='clad'){const a=cp(w1);a.b.towns.valapo.wear.hurtOld=4;return pick(ISLE.weekChecks(a,w2),/keep their clothes/);}
  if(neg==='ships'){const a=cp(w1),b=cp(w2);a.b.towns.kautoa.sold=Object.assign({},a.a.towns.kautoa.sold);b.b.towns.kautoa.sold=Object.assign({},b.a.towns.kautoa.sold);return pick(ISLE.weekChecks(a,b),/ships from beyond/);}
  return [];}"""
-WEEK_NEGS = ('balance', 'sea', 'booked', 'rate', 'decided', 'ships', 'late', 'swing', 'drift', 'gear', 'needs', 'clad', 'diet', 'wave')
+WEEK_NEGS = ('balance', 'sea', 'booked', 'rate', 'decided', 'ships', 'late', 'swing', 'drift', 'gear', 'needs', 'clad', 'diet', 'wave', 'ledger', 'abroad')
 # P7e: the `sim` export section (src/50) after the week: src/50's checks on ISLE.simExport(), each with a negative, and
 # EXPORT.check under the profile ['sim'] failing on a stubbed section and passing filled
 SIMX_JS = r"""(neg)=>{const doc=JSON.parse(JSON.stringify(ISLE.simExport())),pick=(rs,re)=>rs.filter(c=>re.test(c.name));
@@ -148,6 +150,16 @@ SIMX_JS = r"""(neg)=>{const doc=JSON.parse(JSON.stringify(ISLE.simExport())),pic
 SIMX_NEGS = ('home', 'stock', 'sea', 'count')
 SIM_TOWNS = ('Kautoa', 'Valapo')
 SIM_NEGS = ('lot', 'home', 'job', 'age', 'social', 'map', 'haul', 'short', 'made')
+# the thieves' guild on the map (47c, 60 DRAW.guild): one a town, registered under its tavern in that town's registry as
+# a landmark named "Thieves' guild", the drawn town's sign and pin over it; the negative moves the pin 50 m off
+GUILD_JS = r"""(neg)=>{const gm=_city.guilds||[],T=_city.town,cur=gm.find(m=>m.town===T),G=(DRAW.guildMarks||[]).find(g=>g.mark.town===T);
+ if(neg==='moved'&&G)G.pin.position.x+=50;
+ const reg=gm.every(m=>{const P=SIM.R.place[m.place];return P&&P.guild&&P.kind==='tavern'&&m.record;}),R=cur&&KTAGS.page.get(cur.record);
+ const named=!!R&&R.name==="Thieves' guild"&&R['class']==='landmark'&&R.parent===cur.tag;
+ const drawn=!!G&&Math.hypot(G.pin.position.x-cur.at[0],G.pin.position.z-cur.at[2])<1&&G.sign.visible!==false;
+ if(neg==='moved'&&G)G.pin.position.x-=50;
+ return{name:"the thieves' guild on the map: one a town, a landmark under its tavern, its sign and pin drawn over it",ok:gm.length===2&&reg&&named&&drawn,
+  detail:gm.map(m=>m.town+' '+m.place+' ('+(SIM.R.place[m.place]||{}).kind+', record '+m.record+')').join('; ')+(R?'; '+T+"'s record: "+R.name+' under '+R.parent:'')+(drawn?'; sign and pin drawn':'; NOT DRAWN OVER IT')};}"""
 SIM_JS = r"""(q)=>{const C=window._city,town=q.town,neg=q.neg,R=C.simPlans[town],s=ISLE.TUNE.sim.towns[town].id,X=ISLE.SIM.towns[s];
  if(!ISLE.SIM.dayMs){const t0=performance.now(),c=ISLE.TUNE.sim.clock.start+630;ISLE.simRun(c-ISLE.SIM.clock.m);ISLE.SIM.soc={};ISLE.SIM.order.forEach(k=>{ISLE.SIM.soc[k]=ISLE.simSocial(k);});ISLE.simDay();ISLE.SIM.dayMs=Math.round(performance.now()-t0);}
  const books=ISLE.simBooks(s),res=()=>SIM.all('actor').filter(a=>!a.driven&&SIM.R.role[a.role].settlement===s).map(a=>Object.assign({},a)),cp=()=>JSON.parse(JSON.stringify(books));
@@ -237,6 +249,12 @@ async def run_city(a):
                         r = await pg.evaluate(CANOE_JS, 'flip')
                         print(('  PASS  ' if not r['ok'] else '  MISSED') + ' negative (a vessel shown in the wrong state) : ' + r['detail'])
                         if r['ok']: tf.append('negative canoes')
+                        r = await pg.evaluate(GUILD_JS, None)
+                        print(('  PASS  ' if r['ok'] else '  FAIL  ') + r['name'] + ' : ' + r['detail'])
+                        if not r['ok']: tf.append(r['name'])
+                        r = await pg.evaluate(GUILD_JS, 'moved')
+                        print(('  PASS  ' if not r['ok'] else '  MISSED') + " negative (the guild's pin 50 m off) : " + r['detail'])
+                        if r['ok']: tf.append('negative guild')
                         r = await pg.evaluate(CIT_JS, None)
                         print(('  PASS  ' if r['ok'] else '  FAIL  ') + r['name'] + ' : ' + r['detail'])
                         if not r['ok']: tf.append(r['name'])

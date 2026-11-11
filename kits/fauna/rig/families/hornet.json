@@ -1,0 +1,53 @@
+{
+ "group": "crawlers",
+ "unit": 0.6,
+ "nrmtex": 512,
+ "swap": [
+  "abd",
+  "head"
+ ],
+ "bodies": [
+  "hornet"
+ ],
+ "sources": {
+  "hornet": "hornet"
+ },
+ "tex": {
+  "hornet": 1024
+ },
+ "picks": {
+  "golden": {
+   "body": "hornet",
+   "abd": "hornet",
+   "head": "hornet",
+   "scale": 0.767,
+   "tint": {
+    "body": "0x4a3216",
+    "legs": "0x8a6a28",
+    "abd": "0xd8a828"
+   }
+  },
+  "pale": {
+   "body": "hornet",
+   "abd": "hornet",
+   "head": "hornet",
+   "scale": 0.767,
+   "tint": {
+    "body": "0x241e18",
+    "legs": "0x3a3026",
+    "abd": "0xd8d0b8"
+   }
+  },
+  "red": {
+   "body": "hornet",
+   "abd": "hornet",
+   "head": "hornet",
+   "scale": 0.767,
+   "tint": {
+    "body": "0x4a1c10",
+    "legs": "0x5a2a18",
+    "abd": "0xa83a1a"
+   }
+  }
+ }
+}

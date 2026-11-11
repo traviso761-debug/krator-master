@@ -17,7 +17,7 @@ function bakeGrid(x0,z0,st,nx,nz,edge){const B=new Float32Array(nx*nz);
 // its close views stand under at 2 m (the flows' ledges show). Each box on the base lattice's lines, its border on the base
 // field (KFIELD insets; 84-host-ground.js draws each as its own mesh and leaves the base mesh's cells under it out)
 const INSETS=(STN.insets?STN.insets():[]).map(o=>{const sn=v=>Math.round(v/FIELD_STEP)*FIELD_STEP,x0=sn(o.x-o.r),z0=sn(o.z-o.r),x1=sn(o.x+o.r),z1=sn(o.z+o.r);
- return{st:o.st,name:o.name,box:[x0,z0,x1,z1],nx:Math.round((x1-x0)/o.st)+1,nz:Math.round((z1-z0)/o.st)+1};});
+ return{st:o.st,name:o.name,label:o.label,box:[x0,z0,x1,z1],nx:Math.round((x1-x0)/o.st)+1,nz:Math.round((z1-z0)/o.st)+1};});
 const INSET=STN.vent?INSETS[0]||null:null;   // the vent's (the lava lake re-bakes it, 89c)
 const GROUND_F=(function(){const t0=performance.now(),st=FIELD_STEP,nx=Math.round((TERR.X1-TERR.X0)/st)+1,nz=Math.round((TERR.Z1-TERR.Z0)/st)+1;
  const F=KFIELD.create({x0:TERR.X0,z0:TERR.Z0,step:st,nx,nz,heights:bakeGrid(TERR.X0,TERR.Z0,st,nx,nz,null),name:'godthrone-'+STN.key});
@@ -35,7 +35,13 @@ MODEL.after();
 //          eruptions alternated (PLAN.md section 4)
 // talus    the aprons at the scarps' feet; rampart the spatter rampart and the cones; hollow the ground's dips (the drifts,
 //          the Pele's hair); vent 0..1 near the vent (sublimates, fumes); frost hoarfrost on shaded north faces
-const FC=(function(){const N=481,SX=TERR.X1-TERR.X0,st=SX/(N-1),K=['h','slope','halo','orange','talus','rampart','hollow','vent','frost','north','face','glass'],a={};K.forEach(k=>a[k]=new Float32Array(N*N));
+// THE STATIONS' OWN GROUND CLASSES (2026-11-04, the rebuild turn's new stations; 0 wherever a station's model does not set them):
+// palag  palagonite (the bead glass altered under the dry-cold line: ochre to rust-orange)   ice    glacier and debris-covered ice
+// rust   iron oxide (the bloodfalls' and the Red Gills' brine)                               breccia the crater's megabreccia (the rim)
+// snow   lying snow and firn                                                                 tuff   pale ash beds and ignimbrite (downwind)
+// pave   desert pavement and sand-wedge polygons (the rim's regolith)                       crust  lichen crusts (black and orange)
+const GROUND_EXTRA=['palag','ice','rust','breccia','snow','tuff','pave','crust'];
+const FC=(function(){const N=481,SX=TERR.X1-TERR.X0,st=SX/(N-1),K=['h','slope','halo','orange','talus','rampart','hollow','vent','frost','north','face','glass'].concat(GROUND_EXTRA),a={};K.forEach(k=>a[k]=new Float32Array(N*N));
  for(let j=0;j<N;j++)for(let i=0;i<N;i++){a.h[j*N+i]=terrainH(TERR.X0+i*st,TERR.Z0+j*st);}
  const H=a.h,hb=new Float32Array(N*N),R=6;   // the hollows: the ground less its 120 m box blur
  {const tmp=new Float32Array(N*N);for(let j=0;j<N;j++){let s=0;for(let i=-R;i<=R;i++)s+=H[j*N+clamp(i,0,N-1)];for(let i=0;i<N;i++){tmp[j*N+i]=s/(2*R+1);s+=H[j*N+clamp(i+R+1,0,N-1)]-H[j*N+clamp(i-R,0,N-1)];}}
@@ -45,13 +51,15 @@ const FC=(function(){const N=481,SX=TERR.X1-TERR.X0,st=SX/(N-1),K=['h','slope','
   const hx=(H[j*N+Math.min(N-1,i+1)]-H[j*N+Math.max(0,i-1)])/(2*st),hz=(H[Math.min(N-1,j+1)*N+i]-H[Math.max(0,j-1)*N+i])/(2*st);
   const sl=Math.hypot(hx,hz);a.slope[k]=sl;a.north[k]=clamp(hz/.6,-1,1);   // >0: the ground rises southward, so it faces north
   a.hollow[k]=clamp((hb[k]-H[k])/2.5,0,1);
-  MODEL.fieldsAt(x,z,sl,a.hollow[k],mo);for(const q of ['face','talus','rampart','glass','vent','halo','orange'])a[q][k]=mo[q];
+  for(const q of GROUND_EXTRA)mo[q]=0;MODEL.fieldsAt(x,z,sl,a.hollow[k],mo);for(const q of ['face','talus','rampart','glass','vent','halo','orange'])a[q][k]=mo[q];for(const q of GROUND_EXTRA)a[q][k]=mo[q]||0;
   a.frost[k]=clamp(smooth(.15,.8,-a.north[k])*smooth(.35,1.2,sl)*(.35+.65*smooth(.45,.8,vn(x*.02,z*.02,WORLD+12))),0,1);}   /* hoarfrost on the shaded faces: at this site the noon sun stands north (the shared sky at px 577, 932), so they face south */
  const at=(arr,x,z)=>{const u=clamp((x-TERR.X0)/SX*(N-1),0,N-1.001),v=clamp((z-TERR.Z0)/SX*(N-1),0,N-1.001),i=Math.floor(u),j=Math.floor(v),fu=u-i,fv=v-j;
   return arr[j*N+i]*(1-fu)*(1-fv)+arr[j*N+i+1]*fu*(1-fv)+arr[(j+1)*N+i]*(1-fu)*fv+arr[(j+1)*N+i+1]*fu*fv;};
  return{N,a,at,st};})();
 const FIELD={halo:(x,z)=>FC.at(FC.a.halo,x,z),orange:(x,z)=>FC.at(FC.a.orange,x,z),talus:(x,z)=>FC.at(FC.a.talus,x,z),rampart:(x,z)=>FC.at(FC.a.rampart,x,z),
  hollow:(x,z)=>FC.at(FC.a.hollow,x,z),glass:(x,z)=>FC.at(FC.a.glass,x,z),vent:(x,z)=>FC.at(FC.a.vent,x,z),frost:(x,z)=>FC.at(FC.a.frost,x,z),slope:(x,z)=>FC.at(FC.a.slope,x,z),face:(x,z)=>FC.at(FC.a.face,x,z),
+ palag:(x,z)=>FC.at(FC.a.palag,x,z),ice:(x,z)=>FC.at(FC.a.ice,x,z),rust:(x,z)=>FC.at(FC.a.rust,x,z),breccia:(x,z)=>FC.at(FC.a.breccia,x,z),
+ snow:(x,z)=>FC.at(FC.a.snow,x,z),tuff:(x,z)=>FC.at(FC.a.tuff,x,z),pave:(x,z)=>FC.at(FC.a.pave,x,z),crust:(x,z)=>FC.at(FC.a.crust,x,z),
  /* the core's own fields: nothing grows (no water, no air to speak of) */
  wet:()=>0,salt:()=>0,upland:()=>1,cold:()=>1,rock:(x,z)=>smooth(.6,1.2,FC.at(FC.a.slope,x,z))};
 // THE AIR: the pressure by height (the model's law: 1.6 atm at the datum, a scale of 8 km; the sky's air.thin reads the same)

@@ -3,7 +3,7 @@
 // often the ground stands in cloud). Every builder turns its spirals by the tree's own hand, T.hand: +1 (right-handed,
 // SHIGH.HAND) for all but the rare mirror-handed tree. A lathe's ridges wind by it, a limb's corkscrew turns by it,
 // leaves are set round by it, and the spiral items are drawn with their x scale times it.
-// Beyond the LOD spine a tree becomes an impostor in the 'far' bucket. Every count scales with q.
+// Beyond the LOD spine a tree becomes an octahedral impostor (core/biome 34; the 'far' bucket's blobs with ?diet=0 or without 34). Every count scales with q.
 (function(){const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,h3,vnoise,fbm,qEuler,qFacing,qUp}=BIO.fn;
 const SP=SHIGH.SPECIES,PAL=SHIGH.PAL,GOLD=SHIGH.GOLD;
 const T3=BIO.host.THREE,C=SHIGH.C;
@@ -63,6 +63,12 @@ function corkscrew(o,d,len,r0,r1,n,coil,turns,hand,curve){let p1=[-d[2],0,d[0]];
   pts.push({x:o.x+d[0]*len*t+(p1[0]*Math.cos(f)+p2[0]*Math.sin(f))*c,y:o.y+d[1]*len*t+(curve||0)*len*t*t+(p1[1]*Math.cos(f)+p2[1]*Math.sin(f))*c,
    z:o.z+d[2]*len*t+(p1[2]*Math.cos(f)+p2[2]*Math.sin(f))*c,r:mix(r0,r1,Math.pow(t,.8))});}
  return pts;}
+// A LIMB'S JOINT TO ITS PARENT (core/biome 31j, BIO.flareJoin; the owner, 2026-11-03: every rebuild turn): the limb's root sunk into its
+// parent and swollen to a collar, so a limb no longer meets its trunk as two pipes pushed together. Only the near tubes (lv 2) take it; the
+// mid tier's rods do not. A side limb here starts on its trunk's axis (corkscrew from the ring's centre), so its root sinks only a little behind
+// the axis and its collar reaches past the bark (sink .3, len 3); a fork at the trunk's top sinks down into it (the defaults). No random numbers:
+// the kit's stream does not move. A reader without 31j (riftrim lists it) draws as before.
+const joint=(lp,pR,side)=>BIO.flareJoin?BIO.flareJoin(lp,side?{parentR:pR,sink:.3,len:3}:{parentR:pR}):lp;
 const dirOf=(a,el)=>[Math.cos(a)*Math.cos(el),Math.sin(el),Math.sin(a)*Math.cos(el)];
 function along(pts,u){const f=clamp(u,0,1)*(pts.length-1),i=Math.min(pts.length-2,Math.floor(f)),t=f-i,a=pts[i],b=pts[i+1];return{x:mix(a.x,b.x,t),y:mix(a.y,b.y,t),z:mix(a.z,b.z,t),r:mix(a.r,b.r,t)};}
 // a TWISTED TRUNK by lathe: rings up the bole (leaning, wandering a little), radius rAt(u), `lobes` ridges winding up
@@ -112,7 +118,7 @@ B[0]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,R=T.crownR,elfin=T.fog<.6;
  const nL=lv===2?ri(5,8):3,a0=rr(0,TAU),hc=C(pick(S.leaf)),spots=[];let reach=R*.5,top=T.y0+H*.82;
  for(let k=0;k<nL;k++){const u=rr(.45,.9),p=along(C0,u),la=a0+k*GOLD*T.hand,L=R*rr(.75,1.1)*(1.1-u*.4);
   const lp=corkscrew(p,dirOf(la,rr(.35,.8)),L,p.r*.55,.05,lv===2?6:3,L*.12,rr(.6,1.1),T.hand,-.04);
-  if(lv===2)st.limb+=BIO.tube('bark0',lp,barkCol(S,k+2),{seg:lp[0].r>.15?5:4,cap:true});
+  if(lv===2)st.limb+=BIO.tube('bark0',joint(lp,p.r,true),barkCol(S,k+2),{seg:lp[0].r>.15?5:4,cap:true});
   else BIO.beam('rod',[lp[0].x,lp[0].y,lp[0].z],[lp[lp.length-1].x,lp[lp.length-1].y,lp[lp.length-1].z],lp[0].r*1.6,.05,rodCol(S.bark[0]));
   const e=lp[lp.length-1];spots.push({p:e,s:L*.38,tip:true},{p:lp[Math.floor(lp.length*.6)],s:L*.28});
   if(lv===2){mossAt(lp[1].x,lp[1].y+lp[1].r*.6,lp[1].z,rr(.6,1.2)*(elfin?1.4:1));epiphytes(T,lp[2],st,T.fog);}
@@ -141,7 +147,7 @@ B[1]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,R=T.crownR,stack=T.seed%2=
   const e=C0[C0.length-1],L=R*1.3;tr(e,[0,1,0],L,nearW(1.05));top=Math.max(top,e.y+L);}
  else{const e=C0[C0.length-1],n=lv===2?ri(3,5):3,a0=rr(0,TAU);
   for(let k=0;k<n;k++){const la=a0+k*TAU/n*T.hand+rr(-.2,.2),L=(H-Ht)*rr(.75,1),lp=corkscrew(e,dirOf(la,rr(.95,1.25)),L*.75,e.r*.6,e.r*.3,lv===2?6:3,L*.08,rr(.5,.9),T.hand,0);
-   if(lv===2)st.limb+=BIO.tube('bark1',lp,barkCol(S,k),{seg:5,cap:true});else BIO.beam('rod',[lp[0].x,lp[0].y,lp[0].z],[lp[lp.length-1].x,lp[lp.length-1].y,lp[lp.length-1].z],e.r*1.1,e.r*.6,rodCol(S.bark[0]));
+   if(lv===2)st.limb+=BIO.tube('bark1',joint(lp,e.r),barkCol(S,k),{seg:5,cap:true});else BIO.beam('rod',[lp[0].x,lp[0].y,lp[0].z],[lp[lp.length-1].x,lp[lp.length-1].y,lp[lp.length-1].z],e.r*1.1,e.r*.6,rodCol(S.bark[0]));
    const t=lp[lp.length-1],t0=lp[lp.length-2],d=[t.x-t0.x,t.y-t0.y,t.z-t0.z],TL=R*rr(1.2,1.6);tr(t,d,TL,nearW());
    reach=Math.max(reach,Math.hypot(t.x-T.x,t.z-T.z)+TL*.4);top=Math.max(top,t.y+TL*.9);}}
  // moss on the ribs, a bromeliad or two in the cloud
@@ -158,7 +164,7 @@ B[2]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,R=T.crownR;
  const scroll=(p,a,s)=>{const q=qEuler(0,-a,0).multiply(qEuler(rr(-.25,.25),0,rr(-.15,.35)));BIO.put('volute',[p.x,p.y,p.z],q,hz(T,[s,s,s]),leafCol(S.leaf,1.25,.02,.06,.05));st.scrolls++;};
  for(let k=0;k<nL;k++){const u=rr(.6,1),p=along(C0,u),la=a0+k*GOLD*T.hand,L=R*rr(.55,.85);
   const lp=corkscrew(p,dirOf(la,rr(.45,.75)),L,p.r*.6,p.r*.25,lv===2?6:3,L*.05,rr(.3,.6),T.hand,.05);
-  if(lv===2)st.limb+=BIO.tube('bark2',lp,barkCol(S,k),{seg:6,cap:true});else BIO.beam('rod',[lp[0].x,lp[0].y,lp[0].z],[lp[lp.length-1].x,lp[lp.length-1].y,lp[lp.length-1].z],p.r*1.2,p.r*.5,rodCol(S.bark[0]));
+  if(lv===2)st.limb+=BIO.tube('bark2',joint(lp,p.r,true),barkCol(S,k),{seg:6,cap:true});else BIO.beam('rod',[lp[0].x,lp[0].y,lp[0].z],[lp[lp.length-1].x,lp[lp.length-1].y,lp[lp.length-1].z],p.r*1.2,p.r*.5,rodCol(S.bark[0]));
   const e=lp[lp.length-1],s=R*rr(.42,.6);scroll(e,la,s);
   if(lv===2&&rng()<.7){const m=lp[Math.floor(lp.length*.55)];scroll(m,la+T.hand*rr(.6,1.2),s*rr(.4,.6));}
   if(lv===2)epiphytes(T,lp[2],st,T.fog*.8);
@@ -188,7 +194,7 @@ B[4]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,R=T.crownR;
  const fk=H*rr(.55,.75),C0=twistTrunk(T,S,'bark4',fk,u=>rb*(1-.2*u),3,.03,8,lv,null,{st,lean:rr(.02,.1),wig:.06,seg:7}),e=C0[C0.length-1];
  const tips=[];const nb=H>8?ri(2,3):1;
  if(nb===1)tips.push(e);else{const a0=rr(0,TAU);for(let k=0;k<nb;k++){const la=a0+k*TAU/nb,L=(H-fk)*rr(.8,1),lp=corkscrew(e,dirOf(la,rr(.85,1.15)),L,rb*.85,rb*.6,lv===2?4:2,.1,.3,T.hand,0);
-  if(lv===2)st.limb+=BIO.tube('bark4',lp,barkCol(S,k),{seg:5,cap:true});else BIO.beam('rod',[lp[0].x,lp[0].y,lp[0].z],[lp[lp.length-1].x,lp[lp.length-1].y,lp[lp.length-1].z],rb*1.6,rb*1.1,rodCol(S.bark[0]));
+  if(lv===2)st.limb+=BIO.tube('bark4',joint(lp,e.r),barkCol(S,k),{seg:5,cap:true});else BIO.beam('rod',[lp[0].x,lp[0].y,lp[0].z],[lp[lp.length-1].x,lp[lp.length-1].y,lp[lp.length-1].z],rb*1.6,rb*1.1,rodCol(S.bark[0]));
   tips.push(lp[lp.length-1]);}}
  for(const p of tips){const n=lv===2?ri(22,34):10,a0=rr(0,TAU);
   for(let k=0;k<n;k++){const t=k/n,a=a0+T.hand*k*(TAU/3+.11),el=mix(-.7,1.2,t),old=t<.18,L=R*mix(1.05,.6,t)*rr(.9,1.1);
@@ -217,7 +223,7 @@ B[6]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,R=T.crownR,ages=H/8;
  const e=C0[C0.length-1],nb=ages<.5?1:ri(2,Math.max(2,Math.round(ages*5))),tips=[];
  if(nb===1)tips.push(e);
  else{const a0=rr(0,TAU);for(let k=0;k<nb;k++){const la=a0+k*GOLD*T.hand,L=(H-fk)*rr(.75,1),lp=corkscrew(e,dirOf(la,rr(.9,1.2)),L,rb*.95,rb*.8,lv===2?4:2,.06,.25,T.hand,.08);
-  if(lv===2)st.limb+=BIO.tube('bark6',lp,barkCol(S,k),{seg:6,cap:true});else BIO.beam('rod',[lp[0].x,lp[0].y,lp[0].z],[lp[lp.length-1].x,lp[lp.length-1].y,lp[lp.length-1].z],rb*1.9,rb*1.6,barkCol(S,k));
+  if(lv===2)st.limb+=BIO.tube('bark6',joint(lp,e.r),barkCol(S,k),{seg:6,cap:true});else BIO.beam('rod',[lp[0].x,lp[0].y,lp[0].z],[lp[lp.length-1].x,lp[lp.length-1].y,lp[lp.length-1].z],rb*1.9,rb*1.6,barkCol(S,k));
   tips.push(lp[lp.length-1]);}}
  const hc=leafCol(PAL.cabbage,1.0,.02,.06,.05);
  for(const p of tips){const s=R*rr(.85,1.1);BIO.put(SHIGH.it('cabbage',lv),[p.x,p.y-.1,p.z],qEuler(rr(-.12,.12),rr(0,TAU),rr(-.12,.12)),hs(T,[s,s*.8,s]),hc);st.cabbages++;
@@ -298,12 +304,20 @@ function buildFar(T,fi,st){const S=SP[T.sp],K=BIO.bucket('far');if(!ICO)ICO=new 
 
 // ---------------------------------------------------------------- the pass
 SP.forEach((S,i)=>{if(typeof B[i]!=='function')BIO.err('shigh: no builder for species '+i+' '+S.key);});
+// THE BUILDERS' TOOLS, for a station's own species (stations/<name>/5x-*.js: they append to SHIGH.SPECIES and SHIGH.B before the build). Read only:
+// the cloud forest's builders above are unchanged by them
+SHIGH.B=B;
+SHIGH.TOOLS={twistTrunk,corkscrew,along,dirOf,joint,clumpAt,mossAt,epiphytes,regTree,hs,hz,leafCol,rodCol,nearW,blocked,hadd};
 const newStats=()=>({fins:0,trunk:0,limb:0,far:0,clumps:0,trumpets:0,scrolls:0,fronds:0,croziers:0,straps:0,stilts:0,frills:0,cabbages:0,columns:0,aloes:0,epi:0,bells:0,heroes:0,fars:0,mirrors:0,byS:SP.map(()=>0)});
 // MIRROR-HANDED trees: about one in MIRROR_EVERY, and the host may ask for one at a point (SHIGH.mirrorAt: the nearest
 // hero of a species there turns mirror-handed), so a camera can find one
 SHIGH.MIRROR_EVERY=320;SHIGH.mirrorAt=[];
+// a tree whose bole would stand in the water the eye sees (a ravine stream, the tarn, a bog pool) is not drawn (SHIGH.SHORE: the host's
+// WATER.fieldAt shore distance, core/water ext/60; nhighlands' rule, the final rebuild). It is made and keeps its ground (its draws, its
+// keep-clear), so no other tree moves; a page that sets no SHORE (riftrim's reads) draws it as before
+const offShore=(x,z,T)=>!!SHIGH.SHORE&&SHIGH.SHORE(x,z)<T.rb+.5;
 SHIGH.buildTrees=function(R,q){
- reseed(550047);q=q==null?1:q;R=R||2500;means();
+ reseed(550047);q=q==null?1:q;R=R==null?2500:R;means();
  const st=newStats();
  const TREES=SHIGH.TREES;TREES.length=0;for(const k in HASH)delete HASH[k];
  const LOD=BIO.LOD();
@@ -314,13 +328,31 @@ SHIGH.buildTrees=function(R,q){
     const T=SHIGH.make(sp,x,y,z);
     const ld=BIO.lodD(x,z);T.lv=ld<hero?2:(ld<mid?1:0);
     if(T.lv===0&&!S.far)return;
-    TREES.push(T);hadd({x:x,z:z,r:T.rb*1.4+1});n++;},
+    hadd({x:x,z:z,r:T.rb*1.4+1});if(offShore(x,z,T))return;TREES.push(T);n++;},
    {patch:opt.patch==null?.6:opt.patch,patchScale:opt.patchScale||.01,pad:pad+2});
   return n;}
  SHIGH.PASSES.forEach(pass);
  // the asked-for mirror trees: the nearest hero of the species to each point
  SHIGH.mirrorAt.forEach(m=>{const sp=SP.indexOf(SHIGH.byKey[m.key]);let b=null,bd=1e9;for(const T of TREES){if(T.sp!==sp||T.lv<2)continue;const d=Math.hypot(T.x-m.x,T.z-m.z);if(d<bd){bd=d;b=T;}}if(b)b.hand=-1;});
- TREES.forEach((T,i)=>{if(T.hand<0)st.mirrors++;if(T.lv===0){buildFar(T,i,st);st.fars++;}else{B[T.sp](T,st,T.lv);st.heroes++;}st.byS[T.sp]++;});
+ // OCTAHEDRAL IMPOSTORS (core/biome 34-core-impostor.js; BACKPORT.md's universal set, the final rebuild, pair 12): a far tree (lv 0) is one quad
+ // showing its species baked from 8 x 8 directions, in place of the 'far' bucket's blobs on a pole. On when the page lists 34 and SHIGH.IMPOSTORS
+ // is not false (the host sets it false on ?diet=0: the blobs as before). The eleven species share one set (one atlas pair, one item, 'impTrees').
+ // Each species bakes one of its own heroes, built again in place after every placement (BIO.bakeImpostors, called by the host after the bake),
+ // reseeded from that tree's seed and with its registration muted. buildFar draws no random number, so a quad in its place moves no other tree.
+ // A mirror-handed far tree shows the right-handed bake (one in 320, and only past the mid band).
+ const IMPON=SHIGH.IMPOSTORS!==false&&typeof BIO.impostor==='function',IMPS=[];
+ if(IMPON){const set=BIO.impostorSet('shighlands.trees',{label:'Far trees'});
+  SP.forEach((S,sp)=>{if(!S.far)return;const T0=TREES.find(T=>T.sp===sp&&T.lv===2)||TREES.find(T=>T.sp===sp);if(!T0)return;
+   const T1=Object.assign({},T0,{hand:SHIGH.HAND}),st1=newStats();
+   const rec=BIO.impostor('shighlands.'+S.key,()=>{const H=BIO.host,R0=H.register;H.register=()=>{};
+     try{reseed(T1.seed*7919+17);B[sp](Object.assign({},T1),st1,2);}finally{H.register=R0;}},{set,at:[T1.x,T1.y0,T1.z],label:S.name+' (far)'});
+   if(rec)IMPS[sp]={rec,H:T1.H};});
+  if(set.recs.length)BIO.impostorItem('impTrees',set,{label:'Far trees'});}
+ const farImp=T=>{const I=IMPS[T.sp];if(!I)return false;BIO.impostorPut('impTrees',I.rec,[T.x,T.y0,T.z],(T.seed%628)/100,T.H/I.H,null);st.far+=2;return true;};
+ SHIGH.IMPOSTOR_SPECIES=IMPS.filter(Boolean).length;
+ // EACH TREE FROM ITS OWN SEED (the final rebuild, pair 12; nhighlands' rule): a builder draws from a stream reseeded by its tree's seed, so a tree
+ // left out (offShore) or drawn as a quad moves no other tree's form. Every tree's form was re-rolled once by this (keys, places and sizes kept)
+ TREES.forEach((T,i)=>{reseed(T.seed*7919+17);if(T.hand<0)st.mirrors++;if(T.lv===0){if(!farImp(T))buildFar(T,i,st);st.fars++;}else{B[T.sp](T,st,T.lv);st.heroes++;}st.byS[T.sp]++;});
  SHIGH.COUNTS=SP.map((S,i)=>st.byS[i]);
  return{trees:TREES.length,heroes:st.heroes,far:st.fars,mirrors:st.mirrors,bySpecies:SP.map((S,i)=>S.key+':'+st.byS[i]).join(' '),clumps:st.clumps,trumpets:st.trumpets,scrolls:st.scrolls,
   fronds:st.fronds,croziers:st.croziers,straps:st.straps,frills:st.frills,cabbages:st.cabbages,columns:st.columns,aloes:st.aloes,epiphytes:st.epi,bells:st.bells,tris:{trunk:st.trunk,limbs:st.limb,far:st.far}};};

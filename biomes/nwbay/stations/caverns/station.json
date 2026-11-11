@@ -1,0 +1,11 @@
+{
+ "what": "the caverns station (PLAN.md, 'The caverns station'): the main page's src/ plus these fragments, and the core they read",
+ "core": {
+  "38-core-relief.js": "core/terrain/38-core-relief.js",
+  "39-core-cavern.js": "core/terrain/39-core-cavern.js",
+  "39b-core-speleo.js": "core/terrain/39b-core-speleo.js",
+  "39c-core-karst.js": "core/terrain/39c-core-karst.js",
+  "20-core-hazard.js": "core/hazard/20-core-hazard.js",
+  "37-core-traps.js": "core/biome/37-core-traps.js"
+ }
+}

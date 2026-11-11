@@ -120,7 +120,11 @@ const layer=k=>LIB[k]?{map:LIB[k].map,normalMap:LIB[k].normalMap||null,roughness
 ['ground.litter','ground.talus','ground.sand','rock.wall','rock.stack','rock.top','rock.red','rock.bed','rock.cap','rock.tepui'].forEach(k=>{if(!LIB[k]&&!PROC[k])return;const t=layer(k).map;if(t){t.wrapS=t.wrapT=THREE.RepeatWrapping;}});
 
 // ---------------------------------------------------------------- the floor (one mesh: litter, talus at the walls' feet, sand by the creek)
-const MAT_GROUND=new THREE.MeshLambertMaterial({color:0xffffff});
+/* THE FLOOR'S LIGHT PER PIXEL (2026-11-04, the ground catch-up; core/terrain/GROUND.md): where the page lists KGROUND the floor is
+   MeshStandard, so the relief's bump and cavities reach the light (r128's Lambert lights per vertex, here on 16 m cells); ?kground=0,
+   or a world reading this fragment without KGROUND, keeps the Lambert. ?kgrelief=0 drops the relief (the before-and-after) */
+const KG_ON=typeof KGROUND!=='undefined'&&RQ.get('kground')!=='0',KG_RELIEF=KG_ON&&RQ.get('kgrelief')!=='0';
+const MAT_GROUND=KG_ON?new THREE.MeshStandardMaterial({color:0xffffff,roughness:.96,metalness:0}):new THREE.MeshLambertMaterial({color:0xffffff});
 {const Lt=layer('ground.litter'),Lr=layer('ground.talus'),Ls=layer('ground.sand');
  MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uL={value:Lt.map};sh.uniforms.uR={value:Lr.map};sh.uniforms.uS={value:Ls.map};
   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute vec3 aW;varying vec3 vW;varying vec3 vGWP;')
@@ -159,7 +163,9 @@ const MAT_GROUND=new THREE.MeshLambertMaterial({color:0xffffff});
      'float ncH(vec2 p){p=fract(p*vec2(0.1031,0.1030));p+=dot(p,p.yx+33.33);return fract((p.x+p.y)*p.x);}'+
      'float ncN(vec2 p){vec2 i=floor(p),f=fract(p),u=f*f*(3.0-2.0*f);return mix(mix(ncH(i),ncH(i+vec2(1,0)),u.x),mix(ncH(i+vec2(0,1)),ncH(i+vec2(1,1)),u.x),u.y);}').replace('#include <map_fragment>','#include <map_fragment>\n/*KGROUND*/\ndiffuseColor.rgb*=vW.z;'+
      (MOT?'{float m=0.65*ncN(vMW.xz/45.0)+0.35*ncN(vMW.xz/11.0+17.3);m=smoothstep(0.42,0.72,m)*(1.0-vW.x)*(1.0-vW.y);diffuseColor.rgb*=mix(vec3(1.0),'+MOT.tint+','+MOT.amt.toFixed(3)+'*m);}':''));};
-   KGROUND.hook(MAT_GROUND,{key:'necanyons-ground-kg'+(MOT?'-m':''),layers:LY,at:'/*KGROUND*/'});}}}
+   KGROUND.hook(MAT_GROUND,{key:'necanyons-ground-kg'+(MOT?'-m':''),layers:LY,at:'/*KGROUND*/',
+    relief:KG_RELIEF?{bump:.075,cavity:.8,mesh:1}:null});   /* the relief (no texture unit) and the mesh's hollows (aKGAO below); no tri: 2% of the
+    floor's vertices are past tri's onset (1-|n.y| .35, measured 2026-11-04), at the talus's top; the walls are the rock's meshes */}}}
 (function(){const N=LANDO.groundN||220,S=TERR.R*2.2,g=new THREE.PlaneGeometry(S,S,N,N);g.rotateX(-Math.PI/2);
  const p=g.attributes.position,w=new Float32Array(p.count*3);
  for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i);p.setY(i,groundH(x,z));const fd=NECANYONS.footD(x,z),cd=creekD(x,z);
@@ -178,11 +184,16 @@ const MAT_GROUND=new THREE.MeshLambertMaterial({color:0xffffff});
     in a carve that closes over 26 m, on 16 m cells: the banks were mush and the water's edge wandered with the cells. The cells over the carve,
     a row at a time, are drawn again at 4 m. ?creekstrip=0 */
  if(NEWROCK&&LANDO.creek!==false&&RQ.get('creekstrip')!=='0')for(let iy=0;iy<N;iy++){const z0=-S/2+iy*C,xa=CREEK.x(z0),xb=CREEK.x(z0+C),r=CREEK.w+26;pad(Math.min(xa,xb)-r,z0,Math.max(xa,xb)+r,z0+C-1e-6,STRIP);}
+ /* THE FLOOR'S HOLLOWS (KGROUND.cavity, relief.mesh) on the whole coarse grid before its cells are cut, so the fine patches read the
+    same field (bilinear from the coarse vertices: exact on their shared edges, no seam in the shade) */
+ let CAV=null;if(KG_RELIEF){g.computeVertexNormals();CAV=KGROUND.cavity({pos:p.array,index:g.index.array,normal:g.attributes.normal.array,count:p.count});g.setAttribute('aKGAO',new THREE.BufferAttribute(CAV,1));}
+ const cavAt=(x,z)=>{const u=(x+S/2)/C,v=(z+S/2)/C,i=Math.max(0,Math.min(N-1,Math.floor(u))),j=Math.max(0,Math.min(N-1,Math.floor(v))),fu=u-i,fv=v-j,k=j*(N+1)+i;
+  return (CAV[k]*(1-fu)+CAV[k+1]*fu)*(1-fv)+(CAV[k+N+1]*(1-fu)+CAV[k+N+2]*fu)*fv;};
  const cov=new Map();boxes.forEach(B=>{for(let iy=B[1];iy<B[3];iy++)for(let ix=B[0];ix<B[2];ix++)cov.set(iy*N+ix,Math.max(cov.get(iy*N+ix)||0,B[4]));});
  if(cov.size){const I=g.index.array,keep=[];for(let iy=0;iy<N;iy++)for(let ix=0;ix<N;ix++){if(cov.has(iy*N+ix))continue;const o=6*(iy*N+ix);for(let k=0;k<6;k++)keep.push(I[o+k]);}g.setIndex(keep);}
  g.computeVertexNormals();
  const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The canyon floor';m.userData.host=true;scene.add(m);
- if(cov.size){const pos=[],ww=[],idx=[],pp=[];
+ if(cov.size){const pos=[],ww=[],idx=[],pp=[],cc=[];
   cov.forEach((K,key)=>{const iy=key/N|0,ix=key%N,x0=-S/2+ix*C,z0=-S/2+iy*C,o=pos.length/3;
    /* a vertex on an edge shared with a coarser cell lies on that cell's line (its own samples, heights between them: no crack) */
    const Kof=(dx,dy)=>ix+dx<0||iy+dy<0||ix+dx>=N||iy+dy>=N?1:cov.get((iy+dy)*N+ix+dx)||1;
@@ -191,9 +202,9 @@ const MAT_GROUND=new THREE.MeshLambertMaterial({color:0xffffff});
     if(j===0&&(n=Kof(0,-1))<K)return line(n,x0,z0,x1,z0,u);if(j===K&&(n=Kof(0,1))<K)return line(n,x0,z1,x1,z1,u);
     if(i===0&&(n=Kof(-1,0))<K)return line(n,x0,z0,x0,z1,v);if(i===K&&(n=Kof(1,0))<K)return line(n,x1,z0,x1,z1,v);return null;};
    for(let j=0;j<=K;j++)for(let i=0;i<=K;i++){const x=x0+i/K*C,z=z0+j/K*C,e=edgeOf(i,j);pos.push(x,e==null?groundH(x,z):e,z);
-    const fd=NECANYONS.footD(x,z),cd=creekD(x,z);ww.push(smooth(LANDO.talus?TALW*.88:48,4,fd)*(.7+.3*fbm(x*.02,z*.02,41,2)),smooth(CREEK.w+16,CREEK.w+2,cd),.85+.3*fbm(x*.006,z*.006,42,2));if(paveF)pp.push(paveF(x,z));}
+    const fd=NECANYONS.footD(x,z),cd=creekD(x,z);ww.push(smooth(LANDO.talus?TALW*.88:48,4,fd)*(.7+.3*fbm(x*.02,z*.02,41,2)),smooth(CREEK.w+16,CREEK.w+2,cd),.85+.3*fbm(x*.006,z*.006,42,2));if(paveF)pp.push(paveF(x,z));if(CAV)cc.push(cavAt(x,z));}
    for(let j=0;j<K;j++)for(let i=0;i<K;i++){const a=o+j*(K+1)+i,b=a+1,c=a+K+1,d=c+1;idx.push(a,c,b,b,c,d);}});
-  const pg=new THREE.BufferGeometry();pg.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));pg.setAttribute('aW',new THREE.Float32BufferAttribute(ww,3));if(paveF)pg.setAttribute('aP',new THREE.Float32BufferAttribute(pp,1));
+  const pg=new THREE.BufferGeometry();pg.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));pg.setAttribute('aW',new THREE.Float32BufferAttribute(ww,3));if(paveF)pg.setAttribute('aP',new THREE.Float32BufferAttribute(pp,1));if(CAV)pg.setAttribute('aKGAO',new THREE.Float32BufferAttribute(cc,1));
   pg.setIndex(idx);pg.computeVertexNormals();
   /* each cell has its own vertices: their normals are welded, or the grid of cells shows in the light */
   {const nr=pg.attributes.normal,sum=new Map(),keyOf=i=>Math.round(pos[3*i]*4)+','+Math.round(pos[3*i+2]*4);
