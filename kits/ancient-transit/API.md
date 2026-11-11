@@ -6,6 +6,12 @@ Two globals: `KTRANSIT` (the records and their drawing; `src/40-57`, read in pla
 
 ## The data side (`[G data]`: no three.js, no DOM; `tests/test-transit.js`)
 
+**Seeds.** Every record's `o.seed` defaults to `KTRANSIT.idHash(id)` (`KRAND.child`), which gives far-apart seeds. Pass a seed from
+`KRAND.child(worldSeed, id)` or leave the default; **never small consecutive integers** (901, 902, ...): `KRAND.hash(seed, a, ...)` folds the seed
+and its first value together (seed XOR a) before mixing, so `hash(5, 0, s)` equals `hash(6, 3, s)` and records with close seeds take each other's
+draws at shuffled indices (the transit session measured 4032 collisions in a 64 x 64 grid of seed and index). The line's cars are seeded by
+`KRAND.child(seed, 'car.' + k)` for this reason.
+
 | Call | Returns |
 |---|---|
 | `KTRANSIT.path(pts, {ground, radius, step, shift})` | `P`: `pts` (filleted), `seg [{x0, z0, x1, z1, s0, s1, len, yaw}]`, `L`, `S X Z YG YAW` (one a sample), `at(s) -> {s, x, z, yaw, yG}`, `lateral(s, off) -> [x, z]`, `project(x, z) -> {s, off, d}`. `pts` are `[[x, z], ...]` (two or more); `ground(x, z)` is required; `radius` fillets the corners (0 none); `step` 4 m; `shift(x, z) -> [dx, dz]` carries every point of the line as the land was carried (an earthquake's slip: the line bends and breaks at the fault) |
