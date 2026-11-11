@@ -6,7 +6,9 @@ Open items, each with what is owed. The kit was built in one cloud session (2026
 
 ## Verified (2026-11-11, the cloud session: SwiftShader, no GPU)
 
-`python3 verify.py <page> --assert --all-views`, 1280x800, software GL (`tools/harness.py`), every page on its committed bytes:
+`python3 verify.py <page> --assert --all-views`, 1280x800, software GL (`tools/harness.py`), every page on its committed bytes. Re-run
+on 2026-11-11 after the open issues were closed (the slot's head in `core/terrain/38c`, the far field's frost, the headwall's views):
+the counts below are that run's; the bench's row is still the first run's (its re-run is queued).
 
 | Page | Checks | Fails | Heaviest view (draw calls, scene triangles) | Attach audit |
 |---|---|---|---|---|
