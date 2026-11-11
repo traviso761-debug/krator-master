@@ -18,7 +18,7 @@ copy:
 
 The config (`harness.py cloud on`, KRATOR_CLOUD_CONFIG, default %LOCALAPPDATA%/krator-cloud.json) is never in the repo.
 """
-import contextlib, hashlib, io, json, os, re, shlex, shutil, subprocess, sys, tarfile, tempfile, threading, time
+import contextlib, glob, hashlib, io, json, os, re, shlex, shutil, subprocess, sys, tarfile, tempfile, threading, time
 
 CLOUD_RE = re.compile(r"^vast\d+$")   # the launch flags on a cloud lane are harness.CLOUD_LANE_ARGS
 TMP =os.path.join(tempfile.gettempdir(), "claude")
@@ -100,12 +100,22 @@ def remote_argv(cfg, cmd, *args):
     return ssh_argv(cfg) + [line], src
 
 
-def call(cfg, cmd, *args, data=b"", timeout=900):
+TRANSIENT = re.compile(rb"banner exchange|Connection timed out|Connection reset|Connection closed by|kex_exchange_identification", re.I)
+
+
+def call(cfg, cmd, *args, data=b"", timeout=900, tries=4):
+    """One runner call over SSH. vast.ai's SSH proxy now and then drops a connection before the shell starts ("timed
+    out during banner exchange", 2026-11-11): such a failure (exit 255, nothing run) is retried, with a growing pause."""
     argv, src = remote_argv(cfg, cmd, *args)
-    try:
-        return subprocess.run(argv, input=src + data, capture_output=True, timeout=timeout)
-    except subprocess.TimeoutExpired:
-        return subprocess.CompletedProcess(argv, 255, b"", b"timed out after %d s" % timeout)
+    for i in range(tries):
+        try:
+            r = subprocess.run(argv, input=src + data, capture_output=True, timeout=timeout)
+        except subprocess.TimeoutExpired:
+            r = subprocess.CompletedProcess(argv, 255, b"", b"timed out after %d s" % timeout)
+        if r.returncode != 255 or not TRANSIENT.search(r.stderr or b"") or i == tries - 1:
+            return r
+        time.sleep(5 * (i + 1))
+    return r
 
 
 def _err(r):
@@ -119,7 +129,7 @@ def reachable(cfg, fresh=False):
         with contextlib.suppress(OSError, ValueError):
             with open(p, encoding="utf-8") as fh:
                 s = json.load(fh)
-            if time.time() - s["t"] < STATUS_S and s.get("key") == _cfg_key(cfg):
+            if time.time() - s["t"] < (STATUS_S if s["ok"] else 30) and s.get("key") == _cfg_key(cfg):   # a failure is rechecked soon: the proxy flakes
                 return s["ok"], s.get("why", "")
     r = call(cfg, "ping", timeout=40)
     ok = r.returncode == 0 and b'"ok": true' in r.stdout
@@ -169,7 +179,19 @@ def _posix_rel(path, root):
     return os.path.relpath(os.path.abspath(path), root).replace(os.sep, "/")
 
 
-def snapshot(root, build_rel, log=print):
+def snapshot(root, build_rel, log=print, tries=3):
+    """_snapshot, retried: a session rebuilding its pages while this runs can remove a file under git's feet."""
+    for i in range(tries):
+        try:
+            return _snapshot(root, build_rel, log)
+        except RuntimeError as e:
+            if i == tries - 1:
+                raise
+            log("harness: cloud: snapshot failed (%s); again in %d s" % (str(e)[:160], 10 * (i + 1)), flush=True)
+            time.sleep(10 * (i + 1))
+
+
+def _snapshot(root, build_rel, log=print):
     """A commit of the working tree as it is (tracked changes everywhere, new files in the build folder and in tools/, which
     the verify runs on), made on a copy of the index, on top of the last snapshot sent (refs/krator-cloud/base). Nothing
     of the session's own state moves."""
@@ -233,13 +255,22 @@ def _load_needs():
 
 
 def _save_needs(script_rel, paths):
-    n = _load_needs()
-    n[script_rel] = sorted(set(n.get(script_rel, [])) | set(paths))
+    """Remember what this verify read. Best effort: two jobs ending together race on the file (Windows refuses the
+    second rename, 2026-11-11), and a lost note only costs one retried run later."""
     os.makedirs(os.path.dirname(needs_path()), exist_ok=True)
     tmp = needs_path() + ".%d.tmp" % os.getpid()
-    with open(tmp, "w", encoding="utf-8", newline="\n") as fh:
-        json.dump(n, fh, indent=1)
-    os.replace(tmp, needs_path())
+    for i in range(5):
+        try:
+            n = _load_needs()
+            n[script_rel] = sorted(set(n.get(script_rel, [])) | set(paths))
+            with open(tmp, "w", encoding="utf-8", newline="\n") as fh:
+                json.dump(n, fh, indent=1)
+            os.replace(tmp, needs_path())
+            return
+        except OSError:
+            time.sleep(0.2 * (i + 1))
+    with contextlib.suppress(OSError):
+        os.remove(tmp)
 
 
 def wanted(root, commit, build_rel, script_rel, page_rels):
@@ -812,7 +843,9 @@ def r_run(argv):
     if user:
         _sh(["chown", "-R", "%s:%s" % (user, _lane_user(lane)[1]), job, tmp])
     touched = os.path.join(job, "touched.jsonl")
-    env = {"HOME": os.path.expanduser("~" + user) if user else os.environ.get("HOME", ""), "PATH": os.path.dirname(sys.executable) + os.pathsep + os.environ.get("PATH", ""),
+    nodes = sorted(glob.glob("/opt/nvm/versions/node/*/bin"))   # the vast base image's node (nvm), off the non-login PATH; some verifies run node
+    env = {"HOME": os.path.expanduser("~" + user) if user else os.environ.get("HOME", ""),
+           "PATH": os.pathsep.join([os.path.dirname(sys.executable)] + nodes[-1:] + [os.environ.get("PATH", "")]),
            "PLAYWRIGHT_BROWSERS_PATH": os.environ.get("PLAYWRIGHT_BROWSERS_PATH", "/opt/pw-browsers"), "TMPDIR": tmp, "KRATOR_GL": "gpu",
            "KRATOR_GPU_LOCK_HELD": "cloud lane %s" % lane, "KRATOR_GPU_LANE_HELD": lane, "KRATOR_VERIFY_WRAP": "0",
            "KRATOR_VERIFY_TOUCHED": touched, "PYTHONUNBUFFERED": "1", "PYTHONIOENCODING": "utf-8", "LANG": "C.UTF-8"}
