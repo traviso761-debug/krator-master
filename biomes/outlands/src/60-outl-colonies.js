@@ -20,7 +20,12 @@ const col=(set,k)=>{const c=C(pick(set));if(k!=null)c.multiplyScalar(k);c.offset
 // 2: the core (it feeds there), 1: the reach (its cords only), 0: not. The wadi's floor is the wadi colony's alone.
 // The wadi's floor and banks are the wadi colony's alone (floor its core, banks its reach); its fan is shared ground. The mast and copper
 // cores overlap a little (2.93-3.0 km), so the two meet in a seam, as the veil and mast cores do at the belt's foot.
-function allow(t,x,z){const w=wadiX(x,z);
+// A later station (stations/<name>/45-host-stage.js) hands each of its types a ZONE field, z_<type> (0..1): over .5 the type's core, over .15
+// its reach; a z_wadi over .15 is the wadi colony's alone. Station 1 hands none and keeps its own rule below.
+const HF=()=>BIO.host.fields||{},hasZ=t=>typeof HF()['z_'+t]==='function';
+const Z=(t,x,z)=>BIO.field('z_'+t,x,z);
+function allowZ(t,x,z){if(t!=='wadi'&&hasZ('wadi')&&Z('wadi',x,z)>.15)return 0;const v=Z(t,x,z);return v>.5?2:v>.15?1:0;}
+function allow(t,x,z){if(hasZ(t))return allowZ(t,x,z);const w=wadiX(x,z);
  if(t==='wadi')return w>=.99?2:w>=.5?1:0;
  if(w>=.5)return 0;
  if(t==='veil'){const f=fog(x,z);return f>.5?2:(f>.06||band(x,z)>=.9)?1:0;}
@@ -28,14 +33,16 @@ function allow(t,x,z){const w=wadiX(x,z);
  if(t==='copper')return dry(x,z)>.35?2:0;
  return 0;}
 OUTL.allow=allow;
+// the station's colony types (the host may set OUTL.STATION_TYPES before the build; station 1's four by default) and its size factors
 OUTL.STATION_TYPES=['veil','mast','copper','wadi'];
+OUTL.SIZE={};
 
 // OUTL.SEEDS (the host's): colonies seeded where a cell's chance cannot find their ground, [{id, x, z, type}] (the wadi colonies along
 // their channels: a 10 m floor is rarely hit by a seed jittered in a 220 m cell). Each is a colony like the others, aged by hash.
 // the colony map alone (no puts): the host's ground paints its seams from it before the build (84-host-ground.js)
 OUTL.colonyMap=function(R){if(OUTL.COLONY&&OUTL.COLONY._R===R)return OUTL.COLONY;
- const types=OUTL.STATION_TYPES.map(k=>({key:k,reach:OUTL.byType[k].reach,share:k==='wadi'?3:1}));
- const M=OUTLCOL.create({seed:KRAND.child(BIO.host.seed>>>0,'outl:colonies'),box:[-R,-R,R,R],cell:220,p:.8,types,allow,seamW:[2,8],warp:24,seeds:OUTL.SEEDS||[]});
+ const SH=OUTL.SHARE||{},types=OUTL.STATION_TYPES.map(k=>({key:k,reach:(OUTL.REACH||{})[k]||OUTL.byType[k].reach,share:SH[k]!=null?SH[k]:k==='wadi'?3:1}));
+ const M=OUTLCOL.create({seed:KRAND.child(BIO.host.seed>>>0,'outl:colonies'),box:[-R,-R,R,R],cell:OUTL.CELL||220,p:.8,types,allow,seamW:[2,8],warp:24,seeds:OUTL.SEEDS||[]});
  M._R=R;OUTL.COLONY=M;return M;};
 OUTL.buildColonies=function(R,q,opt){opt=opt||{};
  const M=OUTL.colonyMap(R);
@@ -52,10 +59,11 @@ OUTL.buildColonies=function(R,q,opt){opt=opt||{};
   return BIO.grid('outl:'+S.key,cell,(x,z)=>{M.at(x,z,A);const c=A.c;if(!c||c.type!==T)return 0;
     if(warden){if(!A.seam||A.level!==2)return 0;}else{if(A.seam||A.gap<r+.5)return 0;if(!o.both&&A.level!==lvl)return 0;}
     return score(x,z,A);},
-   (x,y,z,seed)=>{M.at(x,z,A);const c=A.c;if(!c)return;fn(x,y,z,c,A,seed);},Object.assign({box:[-R,-R,R,R],patch:o.patch==null?.4:o.patch},o.cliff?{cliff:true}:{}));}
- const F=OUTL.byKey,Q=q==null?1:q;
+   (x,y,z,seed)=>{M.at(x,z,A);const c=A.c;if(!c)return;fn(x,y,z,c,A,seed);},Object.assign({box:[-R,-R,R,R],patch:o.patch==null?.4:o.patch},o.cliff?{cliff:true}:{},o.grid||{}));}
+ const F=OUTL.byKey,Q=q==null?1:q,has=t=>OUTL.STATION_TYPES.indexOf(t)>=0;
 
  // ======================================================== THE VEIL COLONY (the fog wall)
+ if(has('veil')){
  // the veil cap: drinker. Toward the wet side: the thickest fog; the old colonies' caps the tallest
  BIO.range=null;
  pass(F.veilcap,34/Math.sqrt(Q),(x,z,A)=>clamp((fog(x,z)-.45)*2.2,0,1)*(.55+.45*A.c.age),(x,y,z,c,A)=>{
@@ -86,11 +94,13 @@ OUTL.buildColonies=function(R,q,opt){opt=opt||{};
   BIO.put('pleat',[x,y-H*.16,z],qEuler(rr(-.04,.04),rr(0,TAU),rr(-.04,.04)),[r,H/1.4,r],OUTL.LIB.has('pleat.skin')?col([0xe8ecf0,0xdde6ea]):col(PAL.pleat),{label:lab(S,c)});
   note(S,c,x,z,y,{H});},{r:1.2});
 
+ }
  // ======================================================== THE MAST COLONY (the wet band under the belt)
- pass(F.deckcap,26/Math.sqrt(Q),(x,z,A)=>(.5+.5*mast(x,z))*(.6+.4*A.c.age),(x,y,z,c,A)=>{
-  const H=rr(6,10),r=rr(.18,.3),y0=y-.25,n=ri(3,4),S=F.deckcap,lb=lab(S,c),bend=rr(-.04,.04);
+ if(has('mast')){const mz=hasZ('mast')?((x,z)=>Z('mast',x,z)):mast,sz=OUTL.SIZE.mast||1;
+ pass(F.deckcap,26/Math.sqrt(Q),(x,z,A)=>(.5+.5*mz(x,z))*(.6+.4*A.c.age),(x,y,z,c,A)=>{
+  const H=rr(6,10)*sz,r=rr(.18,.3),y0=y-.25,n=ri(3,4),S=F.deckcap,lb=lab(S,c),bend=rr(-.04,.04);
   BIO.put('stalk',[x,y0,z],qEuler(bend,rr(0,TAU),rr(-.04,.04)),[r/.08,H,r/.08],col(PAL.deckStalk),{label:lb});
-  for(let k=0;k<n;k++){const t=.45+.55*k/(n-1),cr=lerp(2.4,1.2,k/(n-1))*rr(.85,1.15);
+  for(let k=0;k<n;k++){const t=.45+.55*k/(n-1),cr=lerp(2.4,1.2,k/(n-1))*rr(.85,1.15)*Math.sqrt(sz);
    BIO.put('dcap',[x+bend*H*t*t,y0+H*t,z],qEuler(rr(-.08,.08),rr(0,TAU),rr(-.08,.08)),[cr,cr*rr(.75,1),cr],col(PAL.deck),{label:lb});}
   note(S,c,x,z,y,{H});},{r:2.6});
  // the curtain weed: drinker, on the wet rock of the seeps (it grows on faces)
@@ -101,22 +111,25 @@ OUTL.buildColonies=function(R,q,opt){opt=opt||{};
  BIO.range=600;
  pass(F.capshrub,16/Math.sqrt(Q),(x,z,A)=>Math.pow(1-A.u,1.1)*.85,(x,y,z,c,A)=>{const S=F.capshrub,lb=lab(S,c),cc=col(PAL.capshrub);
   for(const p of FG.troop({n:ri(2,5),r:.9,size:[.28,.55],flat:[.9,1.2],tilt:.15,seed:KRAND.hash(5543,Math.floor(x*4),Math.floor(z*4))}))
-   BIO.put('capsm',[x+p.p[0],Y(x+p.p[0],z+p.p[2])-.05,z+p.p[2]],FG.Q(p.q),p.s,cc.clone().offsetHSL(0,0,(p.u-.5)*.08),{label:lb});
+   {if(BIO.mask(x+p.p[0],z+p.p[2])<=0)continue;   /* a troop's cap at the water's edge: none in the water */
+   BIO.put('capsm',[x+p.p[0],Y(x+p.p[0],z+p.p[2])-.05,z+p.p[2]],FG.Q(p.q),p.s,cc.clone().offsetHSL(0,0,(p.u-.5)*.08),{label:lb});}
   note(S,c,x,z,y);},{r:1});
  BIO.range=null;
  // the comb mast: WARDEN, on the seam, in lines: every few metres along it, on its own colony's side
- pass(F.combmast,6,(x,z,A)=>.55,(x,y,z,c,A)=>{
-  const H=rr(8,14),r=rr(.16,.26),y0=y-.25,ry=rr(0,TAU),S=F.combmast,lb=lab(S,c);
+ pass(F.combmast,6/Math.sqrt(Math.min(1,Q)),(x,z,A)=>.55,(x,y,z,c,A)=>{
+  const H=rr(8,14)*sz,r=rr(.16,.26)*Math.sqrt(sz),y0=y-.25,ry=rr(0,TAU),S=F.combmast,lb=lab(S,c);
   BIO.put('stalk',[x,y0,z],qEuler(rr(-.03,.03),ry,rr(-.03,.03)),[r/.08,H,r/.08*.9],col(PAL.mast),{label:lb});
-  for(const p of FG.combs({a:[0,H*.25,0],b:[0,H*.98,0],n:ri(5,8),t0:0,t1:1,size:[2.4,1.1],seed:KRAND.hash(5545,Math.floor(x*4),Math.floor(z*4))}))
+  for(const p of FG.combs({a:[0,H*.25,0],b:[0,H*.98,0],n:ri(5,8),t0:0,t1:1,size:[2.4*sz,1.1*sz],seed:KRAND.hash(5545,Math.floor(x*4),Math.floor(z*4))}))
    BIO.put('comb',[x+p.p[0],y0+p.p[1],z+p.p[2]],FG.Q(p.q),p.s,col(PAL.comb),{label:lb});
   note(S,c,x,z,y,{H,seam:true,c2:A.c2?A.c2.id:null,c2type:A.c2?A.c2.type:null});});
 
+ }
  // ======================================================== THE COPPER COLONY (the dry gem shoulder)
+ if(has('copper')){
  BIO.range=900;
  pass(F.greenfan,20/Math.sqrt(Q),(x,z,A)=>.5*(1-wadiX(x,z))*(.6+.4*A.c.age),(x,y,z,c,A)=>{const S=F.greenfan,lb=lab(S,c),n=ri(1,3);
   for(let k=0;k<n;k++){const a=rr(0,TAU),d=k?rr(.3,.9):0,px=x+Math.cos(a)*d,pz=z+Math.sin(a)*d,s=rr(.45,.9);
-   BIO.put('bracket',[px,Y(px,pz)-.05,pz],qEuler(-Math.PI/2+rr(-.2,.2),rr(0,TAU),rr(-.15,.15)),[s,s,s*.8],col(PAL.green),{label:lb});}
+   BIO.put(OUTL.LIB.lace?'fan':'bracket',[px,Y(px,pz)-.05,pz],qEuler(-Math.PI/2+rr(-.2,.2),rr(0,TAU),rr(-.15,.15)),[s,s,s*.8],OUTL.LIB.lace?col([0xc8e4d0,0xd4ecd8]):col(PAL.green),{label:lb});}
   note(S,c,x,z,y);},{r:1});
  pass(F.drums,34/Math.sqrt(Q),(x,z,A)=>(.35+.65*(1-A.u))*.8,(x,y,z,c,A)=>{const S=F.drums,lb=lab(S,c);
   BIO.put('crust',[x,y+.05,z],qEuler(0,rr(0,TAU),0),[rr(1.6,2.6),1,rr(1.4,2.2)],col(PAL.drum,.7),{label:S.name+' (its root mat)'});
@@ -132,9 +145,11 @@ OUTL.buildColonies=function(R,q,opt){opt=opt||{};
  // the lace crust: MINER, on the ore (the copper and turquoise beds where the rock shows; the pit's fresh faces and spoil)
  pass(F.lacecrust,5/Math.sqrt(Q),(x,z,A)=>oreX(x,z)>.2?.85:0,(x,y,z,c,A)=>{const s=rr(.6,1.5),S=F.lacecrust,e=2,
   gx=(Y(x+e,z)-Y(x-e,z))/(2*e),gz=(Y(x,z+e)-Y(x,z-e))/(2*e),n=[-gx,1,-gz];
-  BIO.put('crust',[x,y+.06,z],qUp(n),[s,1,s*rr(.6,1)],col(PAL.lace),{label:lab(S,c),n});note(S,c,x,z,y,{ore:oreX(x,z)});},{r:.4,cliff:true,patch:0});
+  BIO.put(OUTL.LIB.lace?'lace':'crust',[x,y+.06,z],qUp(n),[s,1,s*rr(.6,1)],OUTL.LIB.lace?col([0xe4f0ec,0xd8eae4]):col(PAL.lace),{label:lab(S,c),n});note(S,c,x,z,y,{ore:oreX(x,z)});},{r:.4,cliff:true,patch:0});
 
+ }
  // ======================================================== THE WADI COLONY (the dry channels)
+ if(has('wadi')){BIO.range=650;
  pass(F.ribbon,6/Math.sqrt(Q),(x,z,A)=>wadiX(x,z)>=.99?.6:0,(x,y,z,c,A)=>{const S=F.ribbon;
   BIO.put('crust',[x,y+.04,z],qEuler(0,rr(-.4,.4)+Math.PI/2,0),[rr(.25,.45),1,rr(1.6,3)],col(PAL.ribbon),{label:lab(S,c)});note(S,c,x,z,y);},{r:.3,patch:.6});
  BIO.range=null;
@@ -155,6 +170,8 @@ OUTL.buildColonies=function(R,q,opt){opt=opt||{};
    BIO.put('stalk',[ex,ey,ez],qUp([dx,dy,dz]),[.5,L,.5],col(PAL.stiltLeg),{label:lb});}
   note(S,c,x,z,y,{bank:wadiX(x,z)});},{r:1.6,both:true});
 
+ }
+ OUTL.placeMore(has,pass,M,A,lab,note,Q,opt);
  // ======================================================== THE SEAMS: dark crust patches on the seam's line, near the eye (the ground
  // paints the seam everywhere: 84-host-ground.js). Nothing else stands on a seam but the wardens
  BIO.range=380;

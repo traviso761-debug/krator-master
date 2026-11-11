@@ -1,0 +1,6 @@
+{
+ "name": "Station 4, the Plains of Runners (PLAN.md section 9): N1 at 5.1 px 1616,539 (legacy 1344,209), BSk 3.5 km, 282 mm; the steppe colonies' cracked mosaic (needle fur, grey cushions, sac brush, ember hedges on the seams), inselbergs and tors (KSTACKS), a salt pan with its brine (the salt colonies), two washes, a herders' camp as records, carrion with its bone bloom",
+ "use": ["44z-host-common.js","84-host-ground.js","84b-host-rock.js","85-host-far.js","89-host-sky.js","89z-host-atmos.js","89zw-host-water.js","89zx-host-build.js","98-host-views.js"],
+ "core": {"37-core-stacks.js": "core/terrain/37-core-stacks.js","54-core-water-kinds-ext.js": "core/water/ext/54-core-water-kinds-ext.js"},
+ "families": ["flesh.cells","mossball","ground.steppe","ground.salt","ground.cobble"]
+}

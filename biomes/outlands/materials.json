@@ -1,13 +1,362 @@
 {
  "build": "outl",
- "note": "The Outlands kit's adapter onto the material library (core/materials/PLAN.md; biomes/outlands/PLAN.md section 11). Station 1, the Fog Wall: organic.cap.violet on the veil caps' tops (the disc cap's planar uv, a near-white instance colour over it), organic.pleat.skin on the pleat columns, card.fogcomber's first cell on the veil caps' thread fringes and the curtain weed (cut in 50's libCell), and three ground layers (84-host-ground.js, KGROUND): ground.biocrust.fog (the fog pelt under the belt), ground.wadi.cobble (the wadis' floors), ground.gravelly_sand (the gem shoulder). Run python3 tools/textures/pack.py biomes/outlands after any change, then python3 build.py. ?mat=proc shows the procedural textures.",
+ "note": "The Outlands kit's adapter onto the material library (core/materials/PLAN.md; biomes/outlands/PLAN.md section 11). Every station's page packs only its own families (build.py: station 1's eight, or a station.json's \"families\"). Station 1, the Fog Wall: organic.cap.violet on the veil caps' tops, organic.pleat.skin on the pleat columns, card.fogcomber's first cell on the fringes and the curtain weed, organic.lace.copper on the lace crust (a planar uv, 55) and the green fans, organic.flesh.cells on the stalks and masts, and three ground layers (ground.fogcrust, ground.cobble, ground.gravel). The later stations add the honeycomb (pod towers), the mossball felt (grey cushions, frost puffs), the glossy cap (mire pads, brood pads) and their grounds (each page at most three KGROUND layers: 16 texture units, counted by its own check). Run python3 tools/textures/pack.py biomes/outlands after any change, then build. ?mat=proc shows the procedural textures.",
  "size": 512,
  "families": {
-  "cap.violet": {"lib": "organic.cap.violet", "scale": [1.0, 1.0], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.2, "specular": 0.25, "mapOnly": true},
-  "pleat.skin": {"lib": "organic.pleat.skin", "scale": [1.0, 1.0], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.2, "specular": 0.25, "mapOnly": true},
-  "fogcomber": {"lib": "card.fogcomber", "scale": [1.0, 1.0], "tint": {"keep": 0.0, "mean": 0.8}, "roughLift": 0, "specular": 0.2, "cell": [0.0, 0.0, 0.3333, 0.3333]},
-  "ground.fogcrust": {"lib": "ground.biocrust.fog", "scale": [2.8, 2.8], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.35, "specular": 0.25, "mapOnly": true},
-  "ground.cobble": {"lib": "ground.wadi.cobble", "scale": [3.0, 3.0], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.3, "specular": 0.25, "mapOnly": true},
-  "ground.gravel": {"lib": "ground.gravelly_sand", "scale": [3.0, 3.0], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.35, "specular": 0.25, "mapOnly": true}
+  "cap.violet": {
+   "lib": "organic.cap.violet",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.2,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "pleat.skin": {
+   "lib": "organic.pleat.skin",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.2,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "fogcomber": {
+   "lib": "card.fogcomber",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.8
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "cell": [
+    0.0,
+    0.0,
+    0.3333,
+    0.3333
+   ]
+  },
+  "ground.fogcrust": {
+   "lib": "ground.biocrust.fog",
+   "scale": [
+    2.8,
+    2.8
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.cobble": {
+   "lib": "ground.wadi.cobble",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.gravel": {
+   "lib": "ground.gravelly_sand",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "lace.copper": {
+   "lib": "organic.lace.copper",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.2,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "flesh.cells": {
+   "lib": "organic.flesh.cells",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.25,
+    "mean": 0.85
+   },
+   "roughLift": 0.2,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "pod.honeycomb": {
+   "lib": "organic.pod.honeycomb",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.5,
+    "mean": 0.8
+   },
+   "roughLift": 0.2,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "mossball": {
+   "lib": "organic.mossball",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.85
+   },
+   "roughLift": 0.2,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "cap.glossy": {
+   "lib": "organic.cap.glossy",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.2,
+    "mean": 0.8
+   },
+   "roughLift": 0.1,
+   "specular": 0.3,
+   "mapOnly": true
+  },
+  "ground.pavement": {
+   "lib": "ground.pavement.desert",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.steppe": {
+   "lib": "ground.steppe",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.salt": {
+   "lib": "ground.salt",
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.sphagnum": {
+   "lib": "ground.sphagnum",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.peat": {
+   "lib": "ground.peat.hag",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.malachite": {
+   "lib": "rock.malachite",
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.lichen": {
+   "lib": "ground.lichen.crust",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.tundra": {
+   "lib": "ground.tundra",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.shingle": {
+   "lib": "ground.shingle",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.playa": {
+   "lib": "ground.playa.red",
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.mud": {
+   "lib": "ground.brown_mud_02",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.grass": {
+   "lib": "ground.grass.lush",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.puna": {
+   "lib": "ground.puna",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.gossan": {
+   "lib": "rock.gossan",
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  }
  }
 }

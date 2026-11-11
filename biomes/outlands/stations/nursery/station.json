@@ -1,0 +1,5 @@
+{
+ "name": "Station 5, the Nursery Bench (PLAN.md section 9; shared with biomes/outlandgate, which reads it in place): 5.1 px 1558,516 (legacy 1286,186), the rim at 1558,513, BSk/BWk 3.96-4.01 km, 110 mm; the nursery colonies (pod towers, brood pads, gall stacks, rosettes) on desert pavement round the hexapods' nests, yardangs lined up with the Outland Bore, steppe colonies on the bench's BSk, the rim and the scarp down toward the gap",
+ "use": ["44z-host-common.js","84-host-ground.js","84b-host-rock.js","85-host-far.js","89-host-sky.js","89z-host-atmos.js","89zw-host-water.js","89zx-host-build.js","98-host-views.js"],
+ "families": ["flesh.cells","mossball","pod.honeycomb","cap.glossy","ground.pavement","ground.steppe","ground.gravel"]
+}

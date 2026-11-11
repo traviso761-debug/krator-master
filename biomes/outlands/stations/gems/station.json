@@ -1,0 +1,6 @@
+{
+ "name": "Station 3, the Gem Hills (PLAN.md section 9): S4 at 5.1 px 1624,721 (legacy 1352,391), BWk 2.3 km, 173 mm; copper-stained mesas and fins, the emerald and turquoise workings, lace crust, turquoise shelves and green fans on the spoil, the wadis, the steppe's edge to the west",
+ "use": ["44z-host-common.js","84-host-ground.js","84b-host-rock.js","85-host-far.js","89-host-sky.js","89z-host-atmos.js","89zw-host-water.js","89zx-host-build.js","98-host-views.js"],
+ "core": {"37-core-stacks.js": "core/terrain/37-core-stacks.js"},
+ "families": ["lace.copper","flesh.cells","mossball","ground.gravel","ground.cobble","ground.malachite"]
+}

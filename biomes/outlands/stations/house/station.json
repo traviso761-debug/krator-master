@@ -1,0 +1,6 @@
+{
+ "name": "Station 7, Trickster's House (PLAN.md section 9): 5.1 px 1512,660 (legacy 1240,330), the lake at 2,132 m under the N main basin's west wall; Arcoindian II, ruined, read in place from kits/ancients (its builder run at decay 1, turned to face the lake), the aware House colony grown on the ruin, glow tubes in its hollow, the keep-out ring of turned-away stones, the luck hazard and the taboo (C6) as core/tags records",
+ "use": ["44z-host-common.js","84-host-ground.js","84b-host-rock.js","85-host-far.js","89-host-sky.js","89z-host-atmos.js","89zw-host-water.js","89zx-host-build.js","98-host-views.js"],
+ "ancients": {"builders": ["88-plymouth.js","89b-arcoindian.js","89b1-arcoindian-cut.js","89b2-arcoindian-plinth.js","89c-arcoindian2.js","89c1-arcoindian2-lens.js","89c2-arcoindian2-stalk.js"]},
+ "families": ["flesh.cells","lace.copper","cap.glossy","ground.gravel","ground.steppe","ground.mud"]
+}

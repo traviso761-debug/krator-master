@@ -10,7 +10,8 @@
   99-tail.html      closes <script>
 
   python3 build.py                     dist/outlands.html: station 1, the Fog Wall (the slope from the fog belt to the gem shoulder)
-  python3 build.py --station <name>    dist/outlands-<name>.html: stations/<name>/ added to src/ (none yet)
+  python3 build.py --station <name>    dist/outlands-<name>.html: stations/<name>/ added to src/ (PLAN.md section 9: gems, plains,
+                                       nursery, river, house, mires), with stations/_shared/'s host fragments its station.json "use"s
 
 The colony pass's node test (tests/test-colony.js) runs first; --no-checks skips it with the port lint.
 The core and the biome fragments never reference a host global except through BIO.host (BIOME-API.md); build.py greps
@@ -83,6 +84,9 @@ if STATION:
     for f in os.listdir(_sd):
         if re.match(r'\d',f): PATH[f]=os.path.join(_sd,f)
     for f,pth in SJ.get('core',{}).items(): PATH.setdefault(f,J(pth))
+    # "use": the host fragments every station after the first shares (stations/_shared/: the generic ground, far field, sky, air,
+    # water, build, views and checks, each driven by the station's STAGE record in its own 45-host-stage.js); each replaces src/'s
+    for f in SJ.get('use',[]): PATH[f]=os.path.join(_SD,'_shared',f)
 # core/terrain, opt-in by name (core/README.md "terrain/"): 35 KSTRATA (the 'outland' recipe: red basalt over pale tuffs and red beds,
 # the copper bands the miners follow; PLAN.md section 12, C3), 38 KRELIEF (the wadis and their fans, the open-cast pit: C4), 43 KGROUND
 # (the ground's library layers), 44 KFAR (the land past the map), 45 KHORIZON (the wall's shadow on the slope)
@@ -111,7 +115,12 @@ khost.resolve(PATH,CORE_HOST)
 for f in ('23-mat-record.js','25-matlib-host.js'): PATH.setdefault(f,J('core','materials','record',f))
 sys.path.insert(0,J('tools','textures'))
 import matlib_pack
-VIRTUAL={'44-host-matlib-pack.js':matlib_pack.fragment(HERE,'outl',own=True),khost.EDITS_JS:khost.edits_js(HERE,'outlands')}
+# the pack's families on this page only: station 1's six (the Fog Wall's), or the station's own list (station.json "families")
+FAM1=['cap.violet','pleat.skin','fogcomber','ground.fogcrust','ground.cobble','ground.gravel','lace.copper','flesh.cells']
+_keep=SJ.get('families',FAM1)
+_pj=os.path.join(HERE,'tex','pack.json')
+with open(_pj,encoding='utf-8') as _fh: _fams=sorted(_json.load(_fh).get('families',{})) if os.path.isfile(_pj) else []
+VIRTUAL={'44-host-matlib-pack.js':matlib_pack.fragment(HERE,'outl',exclude=[f for f in _fams if f not in _keep],own=True),khost.EDITS_JS:khost.edits_js(HERE,'outlands')}
 for f in VIRTUAL: PATH[f]=None
 # the shared atmosphere (core/atmos/README.md): its core, presets, export, the sky's light, the weather, the shared sky; height fog and
 # THE FOG BELT (sky/89-atmos-j-fog.js, ATMOS.fogBelt: PLAN.md section 12, C1), the rain cover
@@ -124,14 +133,37 @@ for f in ['89-atmos-fx-raincover.js']+SJ.get('fx',[]): PATH[f]=J('core','atmos',
 CORE_WATER=['20-core-water.js','21-core-water-shore.js','22-core-water-flow.js','50-core-water-draw.js','51-core-water-kinds.js']
 for f in CORE_WATER: PATH.setdefault(f,J('core','water',f))
 for f in ['53-core-water-terraces.js','53b-core-water-terraces-draw.js','56-core-water-breakup.js','60-core-water-fields.js']: PATH.setdefault(f,J('core','water','ext',f))
+# THE ANCIENTS KIT, read in place (station.json "ancients": {"builders": [...]}: station 7, Trickster's House, the ruined Arcoindian II), as
+# biomes/ancientsvalley and kits/metropolis read it: its runtime, the named builders and its materials, the files on disk untouched. Its
+# top-level names that this page declares too are renamed in its fragments only (anc*: its registry, error panel, ground, ticks, PRNG,
+# noise, clamp, lerp, TAU, qEuler, qFacing); its library pack is left empty (KMAT.pack('ancients', {})): the kit's own procedural maps
+ANC_FILES={};SUBST={}
+if SJ.get('ancients'):
+    ANC=J('kits','ancients')
+    ANC_RUNTIME=['10-core.js','12-stats.js','30-kit.js','32-surfaces.js','34-kitdefs.js','36-decor.js','38-helpers2.js','50-registry.js','54-mat-concrete.js','69-mat-salvage.js','69w-worn.js','88y-ancients-matlib.js']
+    for f in ANC_RUNTIME+SJ['ancients'].get('builders',[]): ANC_FILES[f]=os.path.join(ANC,'src',f)
+    for f in ['20-textures.js','22-materials.js','68-mat-v5.js']:
+        _p=os.path.join(ANC,'src',f); ANC_FILES[f]=_p if os.path.isfile(_p) else J('core','materials',f)
+    for f,_p in ANC_FILES.items():
+        if f in PATH: sys.exit('build.py: the Ancients kit\'s %s shadows a fragment of this page' % f)
+        PATH[f]=_p
+    PATH.setdefault('26-matlib-bind.js',J('core','materials','record','26-matlib-bind.js'))
+    _names={'REGISTER':'ANC_REGISTER','REG':'ANC_REG','ERRS':'ANC_ERRS','reportErr':'ancReportErr','terrainH':'ancTerrainH','TICKS':'ANC_TICKS','tick':'ancTick',
+            'reseed':'ancReseed','rng':'ancRng','rr':'ancRr','h3':'ancH3','vnoise':'ancVnoise','fbm':'ancFbm','clamp':'ancClamp','lerp':'ancLerp','TAU':'ANC_TAU',
+            'qEuler':'ancQEuler','qFacing':'ancQFacing'}
+    _sub=[(r'(?<![\w$.])%s(?![\w$])' % k, v) for k,v in _names.items()]+[(r'\bwindow\.onerror\b','window.ancOnerror'),(r'!!NIGHT\b','!!window.NIGHT')]
+    for f in ANC_FILES: SUBST[f]=_sub
+    VIRTUAL['88x-matlib-pack-ancients.js']="/* the Ancients kit's library pack, left empty on this page: its own procedural maps (KNOWN_ISSUES.md) */\nKMAT.pack('ancients', {});\n"
+    PATH['88x-matlib-pack-ancients.js']=None
 miss=[f for f in ('10-core-head.js','20-core-kit.js','30-core-foliage.js','40-core-place.js') if f not in PATH]
 if miss: print('NO BIOME CORE: '+', '.join(miss)+' (list them in CORE_BIOME)'); sys.exit(1)
 frags=sorted(PATH)
 out=[]; bad=[]
 for f in frags:
     s=VIRTUAL[f] if PATH[f] is None else open(PATH[f],encoding='utf-8').read()
+    for _a,_b in SUBST.get(f,[]): s=re.sub(_a,_b,s)
     n=int(re.match(r'(\d+)',f).group(1))
-    if 10<=n<80 and '-host-' not in f and not (PATH[f] and os.sep+'core'+os.sep in os.path.normpath(PATH[f])):
+    if 10<=n<80 and '-host-' not in f and f not in ANC_FILES and not (PATH[f] and os.sep+'core'+os.sep in os.path.normpath(PATH[f])):
         for w in FORBID:
             if w in s: bad.append(f'{f}: uses {w}')
     out.append(f'\n// ==================== {f}\n' if f.endswith('.js') else ''); out.append(s)

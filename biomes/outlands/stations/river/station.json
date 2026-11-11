@@ -1,0 +1,5 @@
+{
+ "name": "Station 2, the River (PLAN.md section 9): S2's wet valley (5.1 px 1641,676, Cfa 2.86 km) over the river's lower course down to the 705 m lake (1654,701) and S3's hot floor (1656,719, BSh 1.09 km): mast colonies on the walls, the Valley tribe's terraced fields and village as records, the river colony's pipe reeds, mire pads and glow bells on the lake",
+ "use": ["44z-host-common.js","84-host-ground.js","84b-host-rock.js","85-host-far.js","89-host-sky.js","89z-host-atmos.js","89zw-host-water.js","89zx-host-build.js","98-host-views.js"],
+ "families": ["flesh.cells","cap.glossy","fogcomber","ground.grass","ground.mud","ground.gravel"]
+}

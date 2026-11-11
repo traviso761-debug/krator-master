@@ -1,0 +1,6 @@
+{
+ "name": "Station 8, the Mires (PLAN.md section 9; asked for by the owner, 2026-11-02): the S Outlands' boreal plateau at 5.1 px 1604,721 (legacy 1332,391), Dfb 3.94 km, 1,176 mm, 4 °C; string bogs and their pools (flarks), palsas (KFROST pingos, ice-cored), a stream between peat faces; the comb mast as a bog pine on the strings, the river colony's mire pads and pipe reeds in the pools, the rim colony's frost puffs and ice crust on the palsas; a trapping camp as records; the sink and cold hazards as core/tags records",
+ "use": ["44z-host-common.js","84-host-ground.js","84b-host-rock.js","85-host-far.js","89-host-sky.js","89z-host-atmos.js","89zw-host-water.js","89zx-host-build.js","98-host-views.js"],
+ "core": {"42-core-frost.js": "core/terrain/42-core-frost.js"},
+ "families": ["flesh.cells","mossball","cap.glossy","fogcomber","ground.sphagnum","ground.peat","ground.tundra"]
+}

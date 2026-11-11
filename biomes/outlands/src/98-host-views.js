@@ -43,7 +43,8 @@ const COLCHK={
  reach(I){const A={},r=I.filter(f=>f.role==='runner'),bad=r.filter(f=>{OUTL.COLONY.at(f.x,f.z,A);return f.type==='wadi'?!(FIELD.wadiX(f.x,f.z)>=.5&&FIELD.wadiX(f.x,f.z)<.99):A.level!==1;});
   return{ok:r.length>0&&!bad.length,detail:bad.length?bad.length+' of '+r.length+' runners on their colony\'s core':r.length+' runners, each on its colony\'s reach (cords only)'};},
  unlike(W){const pairs=new Set();W.forEach(f=>{if(f.c2type&&f.c2type!==f.type)pairs.add([f.type,f.c2type].sort().join('|'));});
-  return{ok:pairs.has('mast|veil')&&pairs.has('copper|mast'),detail:pairs.size?'wardens stand on seams between '+[...pairs].join(', '):'no seam between unlike colonies'};}};
+  return{ok:pairs.has('mast|veil')&&pairs.has('copper|mast'),detail:pairs.size?'wardens stand on seams between '+[...pairs].join(', '):'no seam between unlike colonies'};},
+ units(n,max){return{ok:n<=max,detail:n+' of '+max+' texture units on the ground (its map, the library layers, the horizon, the rain cover, the height fog; +1 for the shadow map)'};}};
 function STATION_CHECKS(add){const I=OUTL.INST;
  add('every form of the station\'s colonies placed',COLCHK.placed(OUTL.PLACED,STATION_FORMS));
  add('every form tagged with its colony type and role',COLCHK.tagged(STATION_FORMS.map(k=>OUTL.byKey[k])));
@@ -51,7 +52,9 @@ function STATION_CHECKS(add){const I=OUTL.INST;
  add('wardens only on seams, nothing else on one',COLCHK.seams(I));
  add('miners only on the ore',COLCHK.ore(I));
  add('runners on the reach, not the core',COLCHK.reach(I));
- add('seams between colonies of different types (veil|mast, mast|copper)',COLCHK.unlike(I.filter(f=>f.role==='warden')));}
+ add('seams between colonies of different types (veil|mast, mast|copper)',COLCHK.unlike(I.filter(f=>f.role==='warden')));
+ /* the ground's texture units, counted (KSHADOW.units: its map, the three library layers, the horizon, the rain cover, the height fog), +1 the shadow map */
+ add('the ground within 16 texture units (counted)',COLCHK.units((typeof KSHADOW!=='undefined'&&KSHADOW.units?KSHADOW.units(MAT_GROUND,renderer):0)+1,16));}
 function STATION_NEGATIVES(add){const I=OUTL.INST,A={};
  const v=I.find(f=>f.key==='veilcap'),w=I.find(f=>f.role==='warden'),m=I.find(f=>f.role==='miner'),r=I.find(f=>f.key==='pleatcol');
  const C=Object.assign({},OUTL.PLACED);C[STATION_FORMS[0]]=0;add('a form never placed',COLCHK.placed(C,STATION_FORMS));
@@ -61,5 +64,6 @@ function STATION_NEGATIVES(add){const I=OUTL.INST,A={};
  if(v){let p=null;for(const f of I)if(f.role==='warden'){p={x:f.x,z:f.z};break;}if(p)add('a veil cap on a seam',COLCHK.seams([Object.assign({},v,p)]));}
  if(m)add('a miner on bare gravel',(function(){for(let k=0;k<400;k++){const x=-2400+k*12,z=1800;if(!(FIELD.oreX(x,z)>.2)&&FIELD.wadiX(x,z)===0)return COLCHK.ore([Object.assign({},m,{x,z})]);}return{ok:true,detail:'no bare gravel found'};})());
  if(r){const c=OUTL.COLONY.colonies.find(c=>c.id===r.colony);add('a pleat column at its colony\'s seed (the core)',COLCHK.reach([Object.assign({},r,{x:c.x,z:c.z})]));}
- add('wardens only between veil colonies',COLCHK.unlike([{type:'veil',c2type:'veil'}]));}
+ add('wardens only between veil colonies',COLCHK.unlike([{type:'veil',c2type:'veil'}]));
+ add('a ground reading 17 texture units',COLCHK.units(17,16));}
 const STATION_FORMS=OUTL.TYPES.filter(T=>T.station).reduce((a,T)=>a.concat(Object.values(T.forms)),[]).filter((k,i,a)=>a.indexOf(k)===i);

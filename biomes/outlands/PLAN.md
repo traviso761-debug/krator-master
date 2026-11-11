@@ -8,8 +8,7 @@ and the native flora has gone its own way for millions of years. It is **the one
 (section 4): a hillside is one organism. Home of the **Coyote Men** (therian tribes, stone and bronze age); the **Kingdom of the Tiers** of the
 **Tierhounds** keeps the threshold. Exports: **emeralds, turquoise, ostrich feathers**.
 
-**Status: station 1 built (2026-11-09).** P0 (the survey) is done: `SURVEY.md` holds every number this plan quotes. **Station 1, the Fog Wall** (`dist/outlands.html`, section 9) is built on the colony rule (section 4): `BIOME-API.md`, `KNOWN_ISSUES.md`. No
-other station is built. Settled points carry the owner's date; *proposed* marks this plan's own suggestions.
+**Status: every station built (2026-11-11).** P0 (the survey) is done: `SURVEY.md` holds every number this plan quotes. **Station 1, the Fog Wall** (`dist/outlands.html`, section 9) was built on the colony rule (section 4) on 2026-11-09; **stations 2, 3, 4, 5, 7 and 8** (the River, the Gem Hills, the Plains of Runners, the Nursery Bench, Trickster's House, the Mires) were built on 2026-11-11 in the cloud, each on the 5.1 model's ground for its site (section 9's table; the survey in section 9, "The 5.1 sites"), and verified in **software GL only**: the real-GPU verify is owed on the owner's PC (`KNOWN_ISSUES.md`). Station 6 is the Outland Gate kit's page. `BIOME-API.md`, `KNOWN_ISSUES.md`. Settled points carry the owner's date; *proposed* marks this plan's own suggestions.
 
 ## 0. What the kit is
 
@@ -387,15 +386,27 @@ Plus a native small layer (fog moths, glow flies). The ostrich, runner bird and 
 | # | Station | Site (`SURVEY.md` section 6) | What it shows |
 |---|---|---|---|
 | 1 | **The Fog Wall** (`dist/outlands.html`; **built** 2026-11-09) | S1 down to S4 (legacy px 1337,393 to 1352,391: Dfb 3.9 km to BWk 2.3 km), on ONE page (the owner, 2026-11-09: "make the slope fit one page"; 4.4x steeper than the model, KNOWN_ISSUES.md) | the slope chosen to test the colony rule first: the fog belt on the wall (veil colonies: veil caps, lantern stalks, fog pelt, and their pleat-column runners on the dry ledges below), the wet band under it (mast colonies: deck caps, curtain weed, cap-shrubs, comb-mast wardens on the seams), the gem shoulder (copper colonies: green fans, drums, turquoise shelves, lace-crust miners on the strata's copper beds and the open-cast pit), the wadis (wadi colonies: ribbon mats, bell pools, stilt-mound runners); seams between unlike types; buttes, the pit, three ravines running on as wadis |
-| 2 | **The River** (`-river`) | S2 px 1369,346 (Cfa 2.9 km) down to S3 px 1384,389 (BSh 1.1 km) | the Valley tribe's terraced fields on the perennial river, deck caps on the slopes, pipe reeds, mire pads on the 705 m lake; the Earth-like three |
-| 3 | **The Gem Hills** (`-gems`; its shoulder is on station 1) | S4, px 1352,391, BWk 2.3 km | copper-stained mesas and fins, lace crust, turquoise shelves, green fans on spoil, open-cast benches |
-| 4 | **The Plains of Runners** (`-plains`) | N1, px 1344,209, BSk 3.7 km | ostrich flocks and grazing hexapods on needle fur and grey cushions, tors and inselbergs, a herders' camp, the salt lake's edge |
-| 5 | **The Nursery Bench** (`-nursery`; combined with the gap, 2026-11-09; **this kit owns it**, the Outland Gate kit lists it as its station 5 and reads it in place) | **5.1 px 1558,516** (legacy 1286,186), the rim at 1558,513: 3,960-4,007 m, 0.98 atm, BWk/BSk, 94-109 mm, 6 °C (19/-7) | the old Nursery Plateau's idea on the gap's head: pod towers, brood pads and gall stacks on desert pavement, the `nurser` hexapods; yardangs cut by the gap's night wind (the Outland Bore) and lined up with the gap; at the rim, the 2.2 km scarp down to the gap's upper floor (Cfa, 1,785 m at 1558,500) and the N Outlands' lake 30 km east: the dry nursery over the wet gap, the strangest page |
+| 2 | **The River** (`-river`; **built** 2026-11-11) | S2 px 1369,346 (Cfa 2.9 km) down to S3 px 1384,389 (BSh 1.1 km); on the page the river's lower course (1.45 km to the 705 m lake) under S2's wet walls (to 2.8 km), ~4x steeper than the model (KNOWN_ISSUES.md) | the Valley tribe's terraced fields on the perennial river, deck caps on the slopes, pipe reeds, mire pads on the 705 m lake; the Earth-like three |
+| 3 | **The Gem Hills** (`-gems`; its shoulder is on station 1; **built** 2026-11-11) | S4, px 1352,391 (5.1 px 1624,721), BWk 2.3 km, 173 mm; the true fall (2.6 to 2.15 km east) | copper-stained mesas and fins, lace crust, turquoise shelves, green fans on spoil, open-cast benches |
+| 4 | **The Plains of Runners** (`-plains`; **built** 2026-11-11) | N1, px 1344,209 (5.1 px 1616,539), BSk 3.5 km on 5.1, 282 mm | ostrich flocks and grazing hexapods on needle fur and grey cushions, tors and inselbergs, a herders' camp, the salt lake's edge |
+| 5 | **The Nursery Bench** (`-nursery`; combined with the gap, 2026-11-09; **this kit owns it**, the Outland Gate kit lists it as its station 5 and reads it in place; **built** 2026-11-11, its scarp compressed) | **5.1 px 1558,516** (legacy 1286,186), the rim at 1558,513: 3,960-4,007 m, 0.98 atm, BWk/BSk, 94-109 mm, 6 °C (19/-7) | the old Nursery Plateau's idea on the gap's head: pod towers, brood pads and gall stacks on desert pavement, the `nurser` hexapods; yardangs cut by the gap's night wind (the Outland Bore) and lined up with the gap; at the rim, the 2.2 km scarp down to the gap's upper floor (Cfa, 1,785 m at 1558,500) and the N Outlands' lake 30 km east: the dry nursery over the wet gap, the strangest page |
 | 6 | **The Gate** (`-gate`; **moved, 2026-11-09**) | **5.1 px 1438,326**, the gap's Narrows, 1,423 m | now the Outland Gate kit's station 1 ("The Narrows and the Gate"): the long wall, the toll fort and water gate, the shrine, the god's road, on the gap's floor. This kit drops its own Gate page; the old pass (px 1136,84) keeps a cairn and shrine, no page |
-| 7 | **Trickster's House** (`-house`) | px 1240,330 | the ruined half-cave arcology over its lake, held by the aware House colony (crust tracing the conduits, glow in the dark shelf, its pranks); the keep-out ring of turned-away stones (*proposed*); the luck hazard |
-| 8 | **The Mires** (`-mires`; asked for by the owner, 2026-11-02) | S Outlands, the boreal plateau at 5.1 px ~1605-1625 by 669-762 (legacy ~1333-1353 by 339-432): three flats of 540-1,530 km2 at 3,850-3,930 m, 0.98 atm, 1,130-1,190 mm, +4 to +6 degC (17-19/-7 to -9), Dfb; the wettest flat cold ground on the whole model | the Outlands' **muskeg**: a boreal bog country of sphagnum, sedge and black spruce-like fog-combers (the kit's own at their smallest: the comb mast as a bog pine), string bogs and pool-and-ridge patterns (`KFROST`), palsas with ice cores on the plateau's cold side, peat faces at the streams, the frost puff and mire pad (section 4) at home, the Coyote Men's winter trapping camps (a published site); hazards `sink` (the quaking mire by `move` and `weight`), `cold`, the fog; peat and bog iron as the tribes' fuel and the smiths' ore; the 705 m lake's warm oasis is N3 below, this is the cold one |
+| 7 | **Trickster's House** (`-house`; **built** 2026-11-11: Arcoindian II read in place from kits/ancients, ruined, turned to face the lake) | px 1240,330 (5.1 px 1512,660; the lake at 2,132 m east of the wall on 5.1) | the ruined half-cave arcology over its lake, held by the aware House colony (crust tracing the conduits, glow in the dark shelf, its pranks); the keep-out ring of turned-away stones (*proposed*); the luck hazard |
+| 8 | **The Mires** (`-mires`; asked for by the owner, 2026-11-02; **built** 2026-11-11 at 5.1 px 1604,721, 3,938 m, Dfb, 1,176 mm) | S Outlands, the boreal plateau at 5.1 px ~1605-1625 by 669-762 (legacy ~1333-1353 by 339-432): three flats of 540-1,530 km2 at 3,850-3,930 m, 0.98 atm, 1,130-1,190 mm, +4 to +6 degC (17-19/-7 to -9), Dfb; the wettest flat cold ground on the whole model | the Outlands' **muskeg**: a boreal bog country of sphagnum, sedge and black spruce-like fog-combers (the kit's own at their smallest: the comb mast as a bog pine), string bogs and pool-and-ridge patterns (`KFROST`), palsas with ice cores on the plateau's cold side, peat faces at the streams, the frost puff and mire pad (section 4) at home, the Coyote Men's winter trapping camps (a published site); hazards `sink` (the quaking mire by `move` and `weight`), `cold`, the fog; peat and bog iron as the tribes' fuel and the smiths' ore; the 705 m lake's warm oasis is N3 below, this is the cold one |
 
 Optional later: N3, the 705 m lake shore (a warm oasis page), if station 2 cannot hold it.
+
+**The 5.1 sites** (surveyed 2026-11-11 on `tools/scale-model/model/data` through `smodel.page`; heights are 2 km cell values, rain in mm,
+temperatures mean (warmest / coldest month; hottest afternoon / coldest night)):
+
+| Station | 5.1 px | Height, class | Rain | Temperature | Ground round it |
+|---|---|---|---|---|---|
+| 2 S2 / the lake / S3 | 1641,676 / 1654,701 / 1656,719 | 2,858 m Cfa / 705 m (water) / 1,089 m BSh | 1,318 / - / 486 | 11 (24/-2; 31/-9) / - / 21 (31/10; 40/2) | the walls fall SE to the lake; the BSh floor rises S of it |
+| 3 Gem Hills | 1624,721 | 2,295 m BWk | 173 | 14 (26/1; 35/-8) | ~2.6 km BSk 6 km W, ~2.15 km 8 km E |
+| 4 Plains | 1616,539 | 3,509 m BSk | 282 | 9 (22/-4; 31/-13) | ~3.9 km 8 km N, ~3.2 km (Dfb) 8 km S |
+| 5 Nursery Bench | 1558,516 (rim 1558,513) | 4,007 m BSk/BWk | 110 | 6 (19/-7; 29/-17) | the bench at 3.95-4.05 km, the rim and the fall north to the gap |
+| 7 Trickster's House | 1512,660 (lake), wall at 1500-1504 | lake 2,132 m WH | 612 | 22 (29/14; 35/8) | the wall climbs W: 2.4 km at the shore, 3.2 km 4 km out, 5 km 16 km out; BSk E |
+| 8 Mires | 1604,721 | 3,938 m Dfb | 1,176 | 4 (17/-9; 25/-16) | the flat falls ~10 m a km E; the Fog Rim (station 1) 10 km ESE |
 
 **Why the Nursery Bench, and why here** (the owner asked, 2026-11-09: "can we combine the ideas maybe?"). The old N2 site
 (5.1 px 1541,460) is now on the gap's floor: 1,719 m, Cfa, 1,552 mm. No bench in the gap's south end is dry (all Cfa,
@@ -471,6 +482,13 @@ Start from **`biomes/ebadlands`** (its species, floor and dress fragments) and *
 - `core/water` (`WATER.open`, `flow`, `still`, `spring`, `wet`) with C5; `core/atmos` (`ATMOS.weather`, `cloudDeck`, C1's belt);
 - `core/host` (`KHOST.take`, `khost.SHELL` + the polygon tool); the shared sky.
 
+**As built (2026-11-11), the later stations add:** `KSTACKS` (37: the gems' fins, the plains' inselbergs and tors), `KFROST` (42:
+the mires' palsas as pingos), core/water's ext 54 (the plains' brine look), `KRELIEF.wadi`, `talus`, `pit`, `pavement` and `meander`
+(the gems' and plains' wadis, the gems' workings and talus, the bench's pavement, the mires' stream), `KSPACE` (the mires' pools and
+stream), core/tags records for the hazards (`sink`, `cold`, `luck`) and the `taboo` area (C6, the vocabulary core already had), and
+**kits/ancients read in place** on station 7 (its runtime and the Arcoindian builders, as biomes/ancientsvalley and kits/metropolis read
+it). The colony pass stays kit code (48, 60, 62).
+
 Write no PRNG, noise, `getImageData`, water shader or sky dome. `tools/check_core_use.py` must pass (a biome names `biome`,
 `rand`, `tags`, `host`, `atmos`, `water`). Fragments are tagged in `PORT.md`; data fragments stay free of the browser.
 
@@ -483,9 +501,9 @@ Write no PRNG, noise, `getImageData`, water shader or sky dome. `tools/check_cor
 | **O2** | **Textures**: the 13 new sets and the five owed ones delivered and processed; `materials.json`; `pack.py` | the contact sheet passes in the demo kit |
 | **O3** | **Core amendments C1 and C2** (fog belt; fungoid parts), each with its node test; `port_baseline.py` reads `same` for every build that did not ask to move | tests pass |
 | **O4** | **Station 1, the Fog Wall** (built 2026-11-09, on the slope from the Fog Rim to the Gem Hills' shoulder) (the owner's reference images arrive at build time, into `refs/`, before each station's flora): the kit's fields and zones, the S wall, the fog belt, the fog-wood species, seeps | `verify.py --assert`, `check_core_use.py` |
-| **O5** | **C3, C4**; **stations 3, 4, 5** (gem hills, plains, nursery); the fauna and resource additions | each verified |
-| **O6** | **C5**; **station 2, the River** (fields as records, the Earth-like three, the lake) | verified |
-| **O7** | **C6**; **station 7, Trickster's House** (with `kits/ancients`' Arcoindian II); the Gate is the Outland Gate kit's station 1 now (2026-11-09) | verified |
+| **O5** | **C3, C4**; **stations 3, 4, 5** (gem hills, plains, nursery; **built 2026-11-11**, software GL); the fauna and resource additions (owed) | each verified |
+| **O6** | **C5**; **station 2, the River** (fields as records, the lake: **built 2026-11-11**; the Earth-like three owed) | verified |
+| **O7** | **C6**; **station 7, Trickster's House** (with `kits/ancients`' Arcoindian II: **built 2026-11-11**); the Gate is the Outland Gate kit's station 1 now (2026-11-09); station 8, the Mires (**built 2026-11-11**) | verified |
 | **O8** | `biomes/tiers` plan and build; `kits/coyote` plan | the owner's yes on each |
 | **O9** | `PORT.md`, index tools, the Godot export check, the gallery (the owner allows once) | published |
 

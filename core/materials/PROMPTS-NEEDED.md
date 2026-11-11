@@ -3,7 +3,7 @@
 Every texture or pattern sheet the owner still has to source or generate, each with its finished prompt. Paste a block
 as it is, one image per block. **Everything delivered lives in `PROMPTS-archived.md`** (checked against `core/materials/library/`, `patterns/` and each build's `materials.json` on `origin/main`, 2026-10-19); this file holds only what is still owed.
 
-**Count: 18 prompt blocks** (2026-11-10: -5, the owner's delivery of that day; 2026-11-09: +3 for the southern highlands' upper stations, section 37; +15 for the hyperjungle's lands and the savannah rims, section 40, 2026-11-08; counted 2026-11-04 before them).
+**Count: 20 prompt blocks** (2026-11-11: +2, the Outlands' stations 2-8, section 26; 2026-11-10: -5, the owner's delivery of that day; 2026-11-09: +3 for the southern highlands' upper stations, section 37; +15 for the hyperjungle's lands and the savannah rims, section 40, 2026-11-08; counted 2026-11-04 before them).
 
 **Delivered 2026-11-03:** section 31's five (the Gills: `rock.lamina.pipe`, `mineral.crust.ferromanganese`, `mineral.crust.brucite`,
 `card.breathfringe`, `card.turf.limed`) and ten owed on unmerged branches (High Rift, nwbay, nhighlands, ringisles, the rift rim, Copper Glacier),
@@ -244,16 +244,26 @@ lava-dammed playas, tinted pale), `rock.palagonite` (section 20). Needed before 
 
 ## 25. The Yeti kit (`kits/yeti`, 2026-10-25)
 
-## 26. The Outlands (`biomes/outlands`, planned 2026-10-26)
+## 26. The Outlands (`biomes/outlands`, stations 1-8, 2026-11-11)
 
-The walled basin beyond the Gate (`biomes/outlands/PLAN.md` section 11): a native fungoid flora (violet, teal, rust, copper
-green; no leaves, no flowers), cold steppe and desert, a salt lake, copper-stained gem hills, the fog woods. **13 prompts**
-(this section raises the count above by 13). Reused: `ground.steppe`, `ground.puna`, the gravel scans, `ground.salt`,
-`ground.efflorescence`, `rock.malachite`, `rock.gossan`, the basalt sets, `ice.clear`, `ground.turf.polygon`,
-`ground.lichen.crust`, the fungoid `organic.cap.*`, `organic.fungus.bracket`, `ground.mycelium.gold`, `card.fungus.drip`,
-`card.shelf.glow`, `card.palm`. Also needed here and owed above: `rock.badland.bedded` (section 9), `ground.salt.ochre` and
-`ground.soda.crust` (sections 11, 12), `organic.pod.honeycomb` and `organic.lichen.plates` (section 17). Needed before the
-kit's O2.
+The section's first thirteen (2026-10-26: `card.outlands.*`, `organic.cap.violet`, `organic.pleat.skin`, `organic.lace.copper`, the grounds) are
+delivered and in the library. The remaining stations (`biomes/outlands/PLAN.md` section 9: gems, plains, nursery, river, house, mires, built
+2026-11-11) are wired on sets that exist (`organic.lace.copper` now on the lace crust and the green fans, `organic.flesh.cells`, `organic.pod.honeycomb`,
+`organic.mossball`, `organic.cap.glossy`, `ground.pavement.desert`, `ground.steppe`, `ground.salt`, `ground.sphagnum`, `ground.peat.hag`, `ground.tundra`,
+`rock.malachite`, `ground.grass.lush`, `ground.brown_mud_02`). Two surfaces are still the kit's stand-ins:
+
+`organic.tube.waxy` (the TUBE forms: pipe reeds, ember scrub, glass tubes, needle fur, glow bells and glow tubes; drawn now in vertex colour only,
+the `tube`, `tubeS`, `fur` and `tubeglow` items in `biomes/outlands/src/55-outl-forms-more.js`; a near-colourless family on their materials, the
+instance colours tinting it):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: the skin of a fleshy fungal tube unrolled flat: a smooth, slightly waxy surface with fine long parallel grooves running top to bottom, faint growth bands across them every few centimetres, tiny pale pores scattered along the grooves, a soft satin sheen, no hairs, no leaves. Muted, near-colourless greys and pale fawns only, so a tint can colour it.
+```
+
+`ground.flark.mud` (the Mires' flarks: the wet hollows between the peat strings, red with bog iron; drawn now as `ground.peat.hag`, the
+`ground.peat` layer of `stations/mires/45-host-stage.js`):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: the floor of a wet bog hollow between peat ridges: soft dark brown peat mud, water-logged and glossy in patches, streaked and stained rust-orange and ochre where iron seeps out, an oily iridescent film on two or three small puddles, scattered half-sunk dead moss stems and sedge leaves, a few pale sphagnum tufts at the edges. Full colour: dark peat browns #3a2a20 and #4a3a2a, rust #8a4a2a, ochre #a8743a.
+```
 
 ## 29. The Throne's plume flora, the last procedural parts (`biomes/throne`, 2026-10-26)
 
