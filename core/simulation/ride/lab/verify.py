@@ -41,7 +41,7 @@ async def run(page_path, out):
             return V.exit()
         # ---- the walker: a dwell at Ledge ahead, the walker on the platform facing car 1's rear door
         d = await ev("()=>{const L=_api.lab;L.scale(0);const d=L.nextDwell('line.n','ledge',L.clock().t+30);L.setT(d.o0-2);"
-                     "const w=L.doorWorld('line.n',1,'d1',d.t0+1);L.walkSpeed(0.12);L.standAt(w[0],1.2,-3.6,Math.PI);return {d,w};}")
+                     "const w=L.doorWorld('line.n',1,'d1',d.t0+1);L.standAt(w[0],1.2,-3.6,Math.PI);return {d,w};}")
         await pg.wait_for_timeout(400)
 
         async def hold(until_js, ms, extra=0):

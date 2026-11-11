@@ -380,8 +380,10 @@ What the real cars taught:
   off the plate into the wall's thickness, fell to the trackbed and walked on under the car. The step plate now runs from
   the floor's edge across the threshold and out over the platform's gap.
 - **The host's walker can step through a thin wall at a low frame rate** (a 0.5 s frame on software GL is a 0.9 m step
-  across a 0.15 m wall); at 60 frames a second a step is 0.15 m. The verify walks slowly; a swept walker step would be
-  `core/host`'s to add (not done here).
+  across a 0.15 m wall); at 60 frames a second a step is 0.15 m. Fixed in riding's own host fragment (2026-11-11, "work
+  on open issues"), so `core/host` is untouched: a key step over 0.3 m is walked in 0.1 m samples against the walk blocks
+  (static and riding) and stopped at the last free one. The verify walks at full speed again: a shut door holds, an
+  open one lets the walker in and the far wall keeps it there.
 - **The kit's doors are drawn shut** (no opening leaf yet): the walker passes through the drawn door in its window; the
   lamp over it says it is open. A door-opening hook in the vehicles kit would let the lab draw it.
 - `kits/motor-vehicles/tex` came through the merge as LFS pointers in this worktree (`git lfs checkout` fixed it: the
