@@ -3,7 +3,7 @@
  "runs": {
   "build.py": {
    "inputs": {
-    "biomes/neouterwall/KNOWN_ISSUES.md": "d5bf4e7450ce3398746192ba792b6c60f8f70502238da91b6a6c47a5e4898614",
+    "biomes/neouterwall/KNOWN_ISSUES.md": "096db20db3c6e5cc4352a485ae69f73f2fdc73b162eb3695c132654d5c07b719",
     "biomes/neouterwall/PORT.md": "dd609c7fb546874341036a09eacc1d75b5d0d26a503cc62b6b5000c1c592ae82",
     "biomes/neouterwall/build.py": "f86fe77a25df7265d313483d6c75500212f6ce2e0063fec1b36563f57d889258",
     "biomes/neouterwall/region/station-vitreous.json": "4391c0c73233809565ebe6219ef0a1a7fe6b99aadaa911c0561726954503b422",
@@ -12,14 +12,14 @@
     "biomes/neouterwall/src/44s-host-site.js": "a6eb60323fd1cd65d14a908568ccd0e34ab0402a28dcce5961e83e0a9b5aa6ff",
     "biomes/neouterwall/src/45-host-stage.js": "7a452d3685fbc81d10cfb4bc5139a8fb7eb63ddd824d2940ddd6959c554bbd37",
     "biomes/neouterwall/src/46-biome-neow-layout.js": "bd9e87295a1af69544795d1d263fc0ed2ff3bae6cfce38049deb3baa064c3537",
-    "biomes/neouterwall/src/47-host-land.js": "681b75f964df415c1291bcfc40bfd09b3a3f2cbc8c50b71428579efb3394029d",
+    "biomes/neouterwall/src/47-host-land.js": "40ae21ad643b544fa378024a26fd539e05def0c37329c298bc8be662f22a0adb",
     "biomes/neouterwall/src/50-biome-neow-cauldron.js": "ffac2cc0eb63e7774df562111c8401227d01347baa7ac56b1a315da26c69b157",
     "biomes/neouterwall/src/70-biome-neow.js": "7c58133732d10105d070184cb12fe239c4e14624d15c814aaa76237a5e9b1312",
     "biomes/neouterwall/src/89a-host-atmos.js": "fcbda7568eb4f42602d16beed68c3520618a22b5ed5fe664ea8d11d583878893",
     "biomes/neouterwall/src/89s-host-sky.js": "bb58b8aa251695db05f84a9487ddd424018673907629ca39ac69798c52122ca0",
     "biomes/neouterwall/src/89w-host-water.js": "4ac82c1a80495c9aca7dd2215fc527c68393f06283a7827188d448b873109f5e",
     "biomes/neouterwall/src/89z-host-build.js": "25aa0c253999e5a2c990b69f924661bd39b121a4b3bcc23cc61a9a8cda3fdf33",
-    "biomes/neouterwall/src/99-host-take.js": "47ddc5cb1cbf413f82b821534ffe4037e3f9f7e6000398862affbbd2a9d304fa",
+    "biomes/neouterwall/src/99-host-take.js": "a2ab4b890a72d7cea5b682d5a082099b4c1572f1692f095ea294bbea7f76c116",
     "biomes/neouterwall/src/99-tail.html": "65abfb642de580808a65c6ec8bf3bc2c410397558a5ac28e825accdb7c590d3b",
     "biomes/neouterwall/tex/bark.fern.albedo.webp": "8574e3a5a537f7e42531ec39489479ff8cbeb19a9f73facbd5f4347e9d5ee823",
     "biomes/neouterwall/tex/frond.albedo.webp": "1655b30708f4a72b3dc7f3bbba4fca675696f9e0222ffbf75e34d73ed0b5f0a6",
@@ -176,19 +176,19 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/neouterwall/dist/neouterwall.html": "e5e22fc4f5d414b8bd45da2818b727e9961bd33deffc35d3a8caa03b7dac0ca8",
+    "biomes/neouterwall/dist/neouterwall.html": "e1d340bf1d05a5ad39a7c090442b27b2c2caacbd7de016c1079630aa11d1b56a",
     "biomes/neouterwall/dist/neouterwall.tex.neouterwall.js": "07beab27d0d22de4325c7a9a8d3b00e4b5d89738f5e5cc439384b8321e0009f9",
     "biomes/neouterwall/dist/neouterwall.tex.nwouterwall.js": "ae7a5ac2d0f9ebaa4b7bbf40ec7087eff1601a5942bee662dc568b94e1539932"
    },
    "outputs_raw": {
-    "biomes/neouterwall/dist/neouterwall.html": "e5e22fc4f5d414b8bd45da2818b727e9961bd33deffc35d3a8caa03b7dac0ca8",
+    "biomes/neouterwall/dist/neouterwall.html": "e1d340bf1d05a5ad39a7c090442b27b2c2caacbd7de016c1079630aa11d1b56a",
     "biomes/neouterwall/dist/neouterwall.tex.neouterwall.js": "07beab27d0d22de4325c7a9a8d3b00e4b5d89738f5e5cc439384b8321e0009f9",
     "biomes/neouterwall/dist/neouterwall.tex.nwouterwall.js": "ae7a5ac2d0f9ebaa4b7bbf40ec7087eff1601a5942bee662dc568b94e1539932"
    }
   },
   "build.py --station badlands": {
    "inputs": {
-    "biomes/neouterwall/KNOWN_ISSUES.md": "d5bf4e7450ce3398746192ba792b6c60f8f70502238da91b6a6c47a5e4898614",
+    "biomes/neouterwall/KNOWN_ISSUES.md": "096db20db3c6e5cc4352a485ae69f73f2fdc73b162eb3695c132654d5c07b719",
     "biomes/neouterwall/PORT.md": "dd609c7fb546874341036a09eacc1d75b5d0d26a503cc62b6b5000c1c592ae82",
     "biomes/neouterwall/build.py": "f86fe77a25df7265d313483d6c75500212f6ce2e0063fec1b36563f57d889258",
     "biomes/neouterwall/region/station-badlands.json": "42e41089e0b50f5a5bc2d738bd77eb1fef4c40ffb2c75ba3eb2d0080aa169f4e",
@@ -197,14 +197,14 @@
     "biomes/neouterwall/src/44s-host-site.js": "a6eb60323fd1cd65d14a908568ccd0e34ab0402a28dcce5961e83e0a9b5aa6ff",
     "biomes/neouterwall/src/45-host-stage.js": "7a452d3685fbc81d10cfb4bc5139a8fb7eb63ddd824d2940ddd6959c554bbd37",
     "biomes/neouterwall/src/46-biome-neow-layout.js": "bd9e87295a1af69544795d1d263fc0ed2ff3bae6cfce38049deb3baa064c3537",
-    "biomes/neouterwall/src/47-host-land.js": "681b75f964df415c1291bcfc40bfd09b3a3f2cbc8c50b71428579efb3394029d",
+    "biomes/neouterwall/src/47-host-land.js": "40ae21ad643b544fa378024a26fd539e05def0c37329c298bc8be662f22a0adb",
     "biomes/neouterwall/src/50-biome-neow-cauldron.js": "ffac2cc0eb63e7774df562111c8401227d01347baa7ac56b1a315da26c69b157",
     "biomes/neouterwall/src/70-biome-neow.js": "7c58133732d10105d070184cb12fe239c4e14624d15c814aaa76237a5e9b1312",
     "biomes/neouterwall/src/89a-host-atmos.js": "fcbda7568eb4f42602d16beed68c3520618a22b5ed5fe664ea8d11d583878893",
     "biomes/neouterwall/src/89s-host-sky.js": "bb58b8aa251695db05f84a9487ddd424018673907629ca39ac69798c52122ca0",
     "biomes/neouterwall/src/89w-host-water.js": "4ac82c1a80495c9aca7dd2215fc527c68393f06283a7827188d448b873109f5e",
     "biomes/neouterwall/src/89z-host-build.js": "25aa0c253999e5a2c990b69f924661bd39b121a4b3bcc23cc61a9a8cda3fdf33",
-    "biomes/neouterwall/src/99-host-take.js": "47ddc5cb1cbf413f82b821534ffe4037e3f9f7e6000398862affbbd2a9d304fa",
+    "biomes/neouterwall/src/99-host-take.js": "a2ab4b890a72d7cea5b682d5a082099b4c1572f1692f095ea294bbea7f76c116",
     "biomes/neouterwall/src/99-tail.html": "65abfb642de580808a65c6ec8bf3bc2c410397558a5ac28e825accdb7c590d3b",
     "biomes/neouterwall/stations/badlands/44r-host-site-rec.js": "4f5575c15bbb4c913ea9aa8124b9074d5446a2ba46dca71966abe24c62f58b16",
     "biomes/neouterwall/stations/badlands/44s-host-site.js": "72d356c67fcea0294ac90e2c9448cfa2c4753a01c91e327afb951ba876d56eca",
@@ -365,19 +365,19 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/neouterwall/dist/neouterwall-badlands.html": "25ffe2f64294631b05eeb530e99424cbc205b651b77089e44927adb6f9f0ede0",
+    "biomes/neouterwall/dist/neouterwall-badlands.html": "5db4607a3c902fc95399f2034111c1b44c95e9b2e56a7819a04b2c32a7348524",
     "biomes/neouterwall/dist/neouterwall.tex.neouterwall.js": "07beab27d0d22de4325c7a9a8d3b00e4b5d89738f5e5cc439384b8321e0009f9",
     "biomes/neouterwall/dist/neouterwall.tex.nwouterwall.js": "ae7a5ac2d0f9ebaa4b7bbf40ec7087eff1601a5942bee662dc568b94e1539932"
    },
    "outputs_raw": {
-    "biomes/neouterwall/dist/neouterwall-badlands.html": "25ffe2f64294631b05eeb530e99424cbc205b651b77089e44927adb6f9f0ede0",
+    "biomes/neouterwall/dist/neouterwall-badlands.html": "5db4607a3c902fc95399f2034111c1b44c95e9b2e56a7819a04b2c32a7348524",
     "biomes/neouterwall/dist/neouterwall.tex.neouterwall.js": "07beab27d0d22de4325c7a9a8d3b00e4b5d89738f5e5cc439384b8321e0009f9",
     "biomes/neouterwall/dist/neouterwall.tex.nwouterwall.js": "ae7a5ac2d0f9ebaa4b7bbf40ec7087eff1601a5942bee662dc568b94e1539932"
    }
   },
   "build.py --station cave": {
    "inputs": {
-    "biomes/neouterwall/KNOWN_ISSUES.md": "d5bf4e7450ce3398746192ba792b6c60f8f70502238da91b6a6c47a5e4898614",
+    "biomes/neouterwall/KNOWN_ISSUES.md": "096db20db3c6e5cc4352a485ae69f73f2fdc73b162eb3695c132654d5c07b719",
     "biomes/neouterwall/PORT.md": "dd609c7fb546874341036a09eacc1d75b5d0d26a503cc62b6b5000c1c592ae82",
     "biomes/neouterwall/build.py": "f86fe77a25df7265d313483d6c75500212f6ce2e0063fec1b36563f57d889258",
     "biomes/neouterwall/build_cave.py": "a52db49ead050a9c9c791f766430973220fb8f5c1299058220e95957ee2b9d42",
@@ -388,16 +388,16 @@
     "biomes/neouterwall/stations/cave/00-head.html": "2e0ab19837edda67affb64a4c553fc21ee133ceb5bc7d6d5d98e5467f8147c99",
     "biomes/neouterwall/stations/cave/44z-host-site.js": "896fd7dc5b3c36db0e02ec85e48ef4a1cb2ef7620dcc10309a645424a7cf78e7",
     "biomes/neouterwall/stations/cave/44zs-host-station.js": "349ed23b1e49d8a2dafe6be541441b03075f9db9079c590674b27ad79a47746b",
-    "biomes/neouterwall/stations/cave/48-neow-cave.js": "cbe9a5b023d27de648583813ce2f9afdc9a1a5051939f0005f8712f6e84d1f62",
+    "biomes/neouterwall/stations/cave/48-neow-cave.js": "156eec7c34168036fe781e6e7147b1a613082b4a800ed1eb2d2ccde53cd295f8",
     "biomes/neouterwall/stations/cave/49-host-stage.js": "3bb01c568d99d6d3f148d87703b03ef99e3a8820f47ad4edc8cd64e0b8b066d3",
-    "biomes/neouterwall/stations/cave/84-host-rock.js": "bca0d3687fce5fd7726ebda76c18f1d5e52f8e9b6fde206a33575fc1e93d7e09",
+    "biomes/neouterwall/stations/cave/84-host-rock.js": "e8af19ac8326a82bc0d089fdd2ee59d9fc59b661f6cf2956da11d4b35262f619",
     "biomes/neouterwall/stations/cave/85-host-crystals.js": "a82c9f0937caa89568219dfb70053c0530b55e04fca9a6c6d0a56f1f817a35f0",
     "biomes/neouterwall/stations/cave/85b-host-speleo.js": "4ef8f87dcfe7df31e46b9cae5a65ba8458203357cdbd1d9970649ee692ee69cf",
     "biomes/neouterwall/stations/cave/89x-host-air.js": "97a0968d2853315b48fc40c2de04861704394bc165473fdade68fa093aef3725",
     "biomes/neouterwall/stations/cave/89z-host-build.js": "0955dff051d9504c44370dca70babfb193cc64ad1235e6f82d96e361cd40ddbe",
     "biomes/neouterwall/stations/cave/98u-host-eye.js": "cb7b0ec6664776a0ce304c5d1bb549e439a62f10a3afce003de2e026305abe2d",
     "biomes/neouterwall/stations/cave/98v-host-views.js": "df10fc17f23ac7214908bd3f0e4f6a2342f681665bbfce158b6908c6ee772128",
-    "biomes/neouterwall/stations/cave/99-host-take.js": "a78776f71feddc17d462657992edaf03deb73c8296af527efab5178e013423b1",
+    "biomes/neouterwall/stations/cave/99-host-take.js": "c8349cdde60d1b328612942f7993b78ccdd3c9b8cc35dfbf4ed38551ba39aff6",
     "biomes/neouterwall/stations/cave/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
     "biomes/neouterwall/stations/cave/station.json": "284eb2d7c2e2cb0fc310b8c05e2acc5e44fd8a7484f830830e29de23afaac1a1",
     "biomes/neouterwall/stations/cave/tex/crystal.gypsum.albedo.webp": "43f673ebc628086bc9217cd2e14dac77c60ba5a4c37c96e644ca219e1f44689c",
@@ -475,15 +475,15 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/neouterwall/dist/neouterwall-cave.html": "8ab5359fcc13114b2528876255c191c334056f5b1aec5d6418ee0445a1627344"
+    "biomes/neouterwall/dist/neouterwall-cave.html": "a25a8f347e21a33082d6f624a8f3d3507542853a4f4171e4b6d0f915a78a0a3c"
    },
    "outputs_raw": {
-    "biomes/neouterwall/dist/neouterwall-cave.html": "8ab5359fcc13114b2528876255c191c334056f5b1aec5d6418ee0445a1627344"
+    "biomes/neouterwall/dist/neouterwall-cave.html": "a25a8f347e21a33082d6f624a8f3d3507542853a4f4171e4b6d0f915a78a0a3c"
    }
   },
   "build.py --station garnet": {
    "inputs": {
-    "biomes/neouterwall/KNOWN_ISSUES.md": "d5bf4e7450ce3398746192ba792b6c60f8f70502238da91b6a6c47a5e4898614",
+    "biomes/neouterwall/KNOWN_ISSUES.md": "096db20db3c6e5cc4352a485ae69f73f2fdc73b162eb3695c132654d5c07b719",
     "biomes/neouterwall/PORT.md": "dd609c7fb546874341036a09eacc1d75b5d0d26a503cc62b6b5000c1c592ae82",
     "biomes/neouterwall/build.py": "f86fe77a25df7265d313483d6c75500212f6ce2e0063fec1b36563f57d889258",
     "biomes/neouterwall/region/station-garnet.json": "6bb29a85b10cf56b6c3b73b1a6654765ccf2878bfdfa062ed76a62a1f2f82eec",
@@ -492,14 +492,14 @@
     "biomes/neouterwall/src/44s-host-site.js": "a6eb60323fd1cd65d14a908568ccd0e34ab0402a28dcce5961e83e0a9b5aa6ff",
     "biomes/neouterwall/src/45-host-stage.js": "7a452d3685fbc81d10cfb4bc5139a8fb7eb63ddd824d2940ddd6959c554bbd37",
     "biomes/neouterwall/src/46-biome-neow-layout.js": "bd9e87295a1af69544795d1d263fc0ed2ff3bae6cfce38049deb3baa064c3537",
-    "biomes/neouterwall/src/47-host-land.js": "681b75f964df415c1291bcfc40bfd09b3a3f2cbc8c50b71428579efb3394029d",
+    "biomes/neouterwall/src/47-host-land.js": "40ae21ad643b544fa378024a26fd539e05def0c37329c298bc8be662f22a0adb",
     "biomes/neouterwall/src/50-biome-neow-cauldron.js": "ffac2cc0eb63e7774df562111c8401227d01347baa7ac56b1a315da26c69b157",
     "biomes/neouterwall/src/70-biome-neow.js": "7c58133732d10105d070184cb12fe239c4e14624d15c814aaa76237a5e9b1312",
     "biomes/neouterwall/src/89a-host-atmos.js": "fcbda7568eb4f42602d16beed68c3520618a22b5ed5fe664ea8d11d583878893",
     "biomes/neouterwall/src/89s-host-sky.js": "bb58b8aa251695db05f84a9487ddd424018673907629ca39ac69798c52122ca0",
     "biomes/neouterwall/src/89w-host-water.js": "4ac82c1a80495c9aca7dd2215fc527c68393f06283a7827188d448b873109f5e",
     "biomes/neouterwall/src/89z-host-build.js": "25aa0c253999e5a2c990b69f924661bd39b121a4b3bcc23cc61a9a8cda3fdf33",
-    "biomes/neouterwall/src/99-host-take.js": "47ddc5cb1cbf413f82b821534ffe4037e3f9f7e6000398862affbbd2a9d304fa",
+    "biomes/neouterwall/src/99-host-take.js": "a2ab4b890a72d7cea5b682d5a082099b4c1572f1692f095ea294bbea7f76c116",
     "biomes/neouterwall/src/99-tail.html": "65abfb642de580808a65c6ec8bf3bc2c410397558a5ac28e825accdb7c590d3b",
     "biomes/neouterwall/stations/garnet/44r-host-site-rec.js": "c01b3b54e6431f6e589a081f59968f4f8c8c09154067f31dd7865021d17553d8",
     "biomes/neouterwall/stations/garnet/station.json": "e31b4de91b0fbf5d2c308995dee8d5bbab562b757152bd395dca0531bc7ebf0a",
@@ -659,19 +659,19 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/neouterwall/dist/neouterwall-garnet.html": "0274dc552a57c27cc20669d8bbef6bede5f54d8de213f4a629c366a936f6e04b",
+    "biomes/neouterwall/dist/neouterwall-garnet.html": "f9f58dec752b870056c52548577ca8dacf7336aa11c0378fcfd6d62bf4dcb45c",
     "biomes/neouterwall/dist/neouterwall.tex.neouterwall.js": "07beab27d0d22de4325c7a9a8d3b00e4b5d89738f5e5cc439384b8321e0009f9",
     "biomes/neouterwall/dist/neouterwall.tex.nwouterwall.js": "ae7a5ac2d0f9ebaa4b7bbf40ec7087eff1601a5942bee662dc568b94e1539932"
    },
    "outputs_raw": {
-    "biomes/neouterwall/dist/neouterwall-garnet.html": "0274dc552a57c27cc20669d8bbef6bede5f54d8de213f4a629c366a936f6e04b",
+    "biomes/neouterwall/dist/neouterwall-garnet.html": "f9f58dec752b870056c52548577ca8dacf7336aa11c0378fcfd6d62bf4dcb45c",
     "biomes/neouterwall/dist/neouterwall.tex.neouterwall.js": "07beab27d0d22de4325c7a9a8d3b00e4b5d89738f5e5cc439384b8321e0009f9",
     "biomes/neouterwall/dist/neouterwall.tex.nwouterwall.js": "ae7a5ac2d0f9ebaa4b7bbf40ec7087eff1601a5942bee662dc568b94e1539932"
    }
   },
   "build.py --station portal": {
    "inputs": {
-    "biomes/neouterwall/KNOWN_ISSUES.md": "d5bf4e7450ce3398746192ba792b6c60f8f70502238da91b6a6c47a5e4898614",
+    "biomes/neouterwall/KNOWN_ISSUES.md": "096db20db3c6e5cc4352a485ae69f73f2fdc73b162eb3695c132654d5c07b719",
     "biomes/neouterwall/PORT.md": "dd609c7fb546874341036a09eacc1d75b5d0d26a503cc62b6b5000c1c592ae82",
     "biomes/neouterwall/build.py": "f86fe77a25df7265d313483d6c75500212f6ce2e0063fec1b36563f57d889258",
     "biomes/neouterwall/region/station-portal.json": "8cecd889fe1aecefd4b45ee25f1db62a27d3b5186896d3b675c9cc656cef6f34",
@@ -680,14 +680,14 @@
     "biomes/neouterwall/src/44s-host-site.js": "a6eb60323fd1cd65d14a908568ccd0e34ab0402a28dcce5961e83e0a9b5aa6ff",
     "biomes/neouterwall/src/45-host-stage.js": "7a452d3685fbc81d10cfb4bc5139a8fb7eb63ddd824d2940ddd6959c554bbd37",
     "biomes/neouterwall/src/46-biome-neow-layout.js": "bd9e87295a1af69544795d1d263fc0ed2ff3bae6cfce38049deb3baa064c3537",
-    "biomes/neouterwall/src/47-host-land.js": "681b75f964df415c1291bcfc40bfd09b3a3f2cbc8c50b71428579efb3394029d",
+    "biomes/neouterwall/src/47-host-land.js": "40ae21ad643b544fa378024a26fd539e05def0c37329c298bc8be662f22a0adb",
     "biomes/neouterwall/src/50-biome-neow-cauldron.js": "ffac2cc0eb63e7774df562111c8401227d01347baa7ac56b1a315da26c69b157",
     "biomes/neouterwall/src/70-biome-neow.js": "7c58133732d10105d070184cb12fe239c4e14624d15c814aaa76237a5e9b1312",
     "biomes/neouterwall/src/89a-host-atmos.js": "fcbda7568eb4f42602d16beed68c3520618a22b5ed5fe664ea8d11d583878893",
     "biomes/neouterwall/src/89s-host-sky.js": "bb58b8aa251695db05f84a9487ddd424018673907629ca39ac69798c52122ca0",
     "biomes/neouterwall/src/89w-host-water.js": "4ac82c1a80495c9aca7dd2215fc527c68393f06283a7827188d448b873109f5e",
     "biomes/neouterwall/src/89z-host-build.js": "25aa0c253999e5a2c990b69f924661bd39b121a4b3bcc23cc61a9a8cda3fdf33",
-    "biomes/neouterwall/src/99-host-take.js": "47ddc5cb1cbf413f82b821534ffe4037e3f9f7e6000398862affbbd2a9d304fa",
+    "biomes/neouterwall/src/99-host-take.js": "a2ab4b890a72d7cea5b682d5a082099b4c1572f1692f095ea294bbea7f76c116",
     "biomes/neouterwall/src/99-tail.html": "65abfb642de580808a65c6ec8bf3bc2c410397558a5ac28e825accdb7c590d3b",
     "biomes/neouterwall/stations/portal/44r-host-site-rec.js": "4fbf5532f1a91a59c99794fdf198a217425608160f9844004acf7a9aaf5da8e4",
     "biomes/neouterwall/stations/portal/44s-host-site.js": "74ccd6db99bf6a75e88d956e5a275daf10d8216c19496d4b25a24fba8d411e14",
@@ -848,19 +848,19 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/neouterwall/dist/neouterwall-portal.html": "2333fa4e732427c086a8148f6f7cfbb40ddd274c9a8cdf1611703dbb1c2b836f",
+    "biomes/neouterwall/dist/neouterwall-portal.html": "4b4a3556061f8a8ca94d94561b00646e7d7e0eefe60ccd1fe009843b6ecbe31b",
     "biomes/neouterwall/dist/neouterwall.tex.neouterwall.js": "07beab27d0d22de4325c7a9a8d3b00e4b5d89738f5e5cc439384b8321e0009f9",
     "biomes/neouterwall/dist/neouterwall.tex.nwouterwall.js": "ae7a5ac2d0f9ebaa4b7bbf40ec7087eff1601a5942bee662dc568b94e1539932"
    },
    "outputs_raw": {
-    "biomes/neouterwall/dist/neouterwall-portal.html": "2333fa4e732427c086a8148f6f7cfbb40ddd274c9a8cdf1611703dbb1c2b836f",
+    "biomes/neouterwall/dist/neouterwall-portal.html": "4b4a3556061f8a8ca94d94561b00646e7d7e0eefe60ccd1fe009843b6ecbe31b",
     "biomes/neouterwall/dist/neouterwall.tex.neouterwall.js": "07beab27d0d22de4325c7a9a8d3b00e4b5d89738f5e5cc439384b8321e0009f9",
     "biomes/neouterwall/dist/neouterwall.tex.nwouterwall.js": "ae7a5ac2d0f9ebaa4b7bbf40ec7087eff1601a5942bee662dc568b94e1539932"
    }
   },
   "build.py --station shoulder": {
    "inputs": {
-    "biomes/neouterwall/KNOWN_ISSUES.md": "d5bf4e7450ce3398746192ba792b6c60f8f70502238da91b6a6c47a5e4898614",
+    "biomes/neouterwall/KNOWN_ISSUES.md": "096db20db3c6e5cc4352a485ae69f73f2fdc73b162eb3695c132654d5c07b719",
     "biomes/neouterwall/PORT.md": "dd609c7fb546874341036a09eacc1d75b5d0d26a503cc62b6b5000c1c592ae82",
     "biomes/neouterwall/build.py": "f86fe77a25df7265d313483d6c75500212f6ce2e0063fec1b36563f57d889258",
     "biomes/neouterwall/region/station-shoulder.json": "1ecd69c3a26111008f2ae40b80f808b26f7ce3f46086bff2b6e5f1799006fcf5",
@@ -869,14 +869,14 @@
     "biomes/neouterwall/src/44s-host-site.js": "a6eb60323fd1cd65d14a908568ccd0e34ab0402a28dcce5961e83e0a9b5aa6ff",
     "biomes/neouterwall/src/45-host-stage.js": "7a452d3685fbc81d10cfb4bc5139a8fb7eb63ddd824d2940ddd6959c554bbd37",
     "biomes/neouterwall/src/46-biome-neow-layout.js": "bd9e87295a1af69544795d1d263fc0ed2ff3bae6cfce38049deb3baa064c3537",
-    "biomes/neouterwall/src/47-host-land.js": "681b75f964df415c1291bcfc40bfd09b3a3f2cbc8c50b71428579efb3394029d",
+    "biomes/neouterwall/src/47-host-land.js": "40ae21ad643b544fa378024a26fd539e05def0c37329c298bc8be662f22a0adb",
     "biomes/neouterwall/src/50-biome-neow-cauldron.js": "ffac2cc0eb63e7774df562111c8401227d01347baa7ac56b1a315da26c69b157",
     "biomes/neouterwall/src/70-biome-neow.js": "7c58133732d10105d070184cb12fe239c4e14624d15c814aaa76237a5e9b1312",
     "biomes/neouterwall/src/89a-host-atmos.js": "fcbda7568eb4f42602d16beed68c3520618a22b5ed5fe664ea8d11d583878893",
     "biomes/neouterwall/src/89s-host-sky.js": "bb58b8aa251695db05f84a9487ddd424018673907629ca39ac69798c52122ca0",
     "biomes/neouterwall/src/89w-host-water.js": "4ac82c1a80495c9aca7dd2215fc527c68393f06283a7827188d448b873109f5e",
     "biomes/neouterwall/src/89z-host-build.js": "25aa0c253999e5a2c990b69f924661bd39b121a4b3bcc23cc61a9a8cda3fdf33",
-    "biomes/neouterwall/src/99-host-take.js": "47ddc5cb1cbf413f82b821534ffe4037e3f9f7e6000398862affbbd2a9d304fa",
+    "biomes/neouterwall/src/99-host-take.js": "a2ab4b890a72d7cea5b682d5a082099b4c1572f1692f095ea294bbea7f76c116",
     "biomes/neouterwall/src/99-tail.html": "65abfb642de580808a65c6ec8bf3bc2c410397558a5ac28e825accdb7c590d3b",
     "biomes/neouterwall/stations/shoulder/44r-host-site-rec.js": "96b4098078f219af596b6832c232f70dd966957d92d5b6190cbe1d6d314e39b2",
     "biomes/neouterwall/stations/shoulder/44s-host-site.js": "f220fc379d88f2d94ec64f0145bf54be9c7fa8c5d1b98807822cc6bd09e573d1",
@@ -1037,19 +1037,19 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/neouterwall/dist/neouterwall-shoulder.html": "d0c850939ec273304d3346a9312310243435e414f7793b8bbfc526666243b261",
+    "biomes/neouterwall/dist/neouterwall-shoulder.html": "4e74716ffb6a2d3410292aa92b4c4b73d36580530c6a5b2258cfb95091fe94d6",
     "biomes/neouterwall/dist/neouterwall.tex.neouterwall.js": "07beab27d0d22de4325c7a9a8d3b00e4b5d89738f5e5cc439384b8321e0009f9",
     "biomes/neouterwall/dist/neouterwall.tex.nwouterwall.js": "ae7a5ac2d0f9ebaa4b7bbf40ec7087eff1601a5942bee662dc568b94e1539932"
    },
    "outputs_raw": {
-    "biomes/neouterwall/dist/neouterwall-shoulder.html": "d0c850939ec273304d3346a9312310243435e414f7793b8bbfc526666243b261",
+    "biomes/neouterwall/dist/neouterwall-shoulder.html": "4e74716ffb6a2d3410292aa92b4c4b73d36580530c6a5b2258cfb95091fe94d6",
     "biomes/neouterwall/dist/neouterwall.tex.neouterwall.js": "07beab27d0d22de4325c7a9a8d3b00e4b5d89738f5e5cc439384b8321e0009f9",
     "biomes/neouterwall/dist/neouterwall.tex.nwouterwall.js": "ae7a5ac2d0f9ebaa4b7bbf40ec7087eff1601a5942bee662dc568b94e1539932"
    }
   },
   "build.py --station steam": {
    "inputs": {
-    "biomes/neouterwall/KNOWN_ISSUES.md": "d5bf4e7450ce3398746192ba792b6c60f8f70502238da91b6a6c47a5e4898614",
+    "biomes/neouterwall/KNOWN_ISSUES.md": "096db20db3c6e5cc4352a485ae69f73f2fdc73b162eb3695c132654d5c07b719",
     "biomes/neouterwall/PORT.md": "dd609c7fb546874341036a09eacc1d75b5d0d26a503cc62b6b5000c1c592ae82",
     "biomes/neouterwall/build.py": "f86fe77a25df7265d313483d6c75500212f6ce2e0063fec1b36563f57d889258",
     "biomes/neouterwall/region/station-steam.json": "816372115d1c985dd59dac5e49518fa90dbb1a6abae9223b81d71d19423ec6d0",
@@ -1058,14 +1058,14 @@
     "biomes/neouterwall/src/44s-host-site.js": "a6eb60323fd1cd65d14a908568ccd0e34ab0402a28dcce5961e83e0a9b5aa6ff",
     "biomes/neouterwall/src/45-host-stage.js": "7a452d3685fbc81d10cfb4bc5139a8fb7eb63ddd824d2940ddd6959c554bbd37",
     "biomes/neouterwall/src/46-biome-neow-layout.js": "bd9e87295a1af69544795d1d263fc0ed2ff3bae6cfce38049deb3baa064c3537",
-    "biomes/neouterwall/src/47-host-land.js": "681b75f964df415c1291bcfc40bfd09b3a3f2cbc8c50b71428579efb3394029d",
+    "biomes/neouterwall/src/47-host-land.js": "40ae21ad643b544fa378024a26fd539e05def0c37329c298bc8be662f22a0adb",
     "biomes/neouterwall/src/50-biome-neow-cauldron.js": "ffac2cc0eb63e7774df562111c8401227d01347baa7ac56b1a315da26c69b157",
     "biomes/neouterwall/src/70-biome-neow.js": "7c58133732d10105d070184cb12fe239c4e14624d15c814aaa76237a5e9b1312",
     "biomes/neouterwall/src/89a-host-atmos.js": "fcbda7568eb4f42602d16beed68c3520618a22b5ed5fe664ea8d11d583878893",
     "biomes/neouterwall/src/89s-host-sky.js": "bb58b8aa251695db05f84a9487ddd424018673907629ca39ac69798c52122ca0",
     "biomes/neouterwall/src/89w-host-water.js": "4ac82c1a80495c9aca7dd2215fc527c68393f06283a7827188d448b873109f5e",
     "biomes/neouterwall/src/89z-host-build.js": "25aa0c253999e5a2c990b69f924661bd39b121a4b3bcc23cc61a9a8cda3fdf33",
-    "biomes/neouterwall/src/99-host-take.js": "47ddc5cb1cbf413f82b821534ffe4037e3f9f7e6000398862affbbd2a9d304fa",
+    "biomes/neouterwall/src/99-host-take.js": "a2ab4b890a72d7cea5b682d5a082099b4c1572f1692f095ea294bbea7f76c116",
     "biomes/neouterwall/src/99-tail.html": "65abfb642de580808a65c6ec8bf3bc2c410397558a5ac28e825accdb7c590d3b",
     "biomes/neouterwall/stations/steam/44r-host-site-rec.js": "fea91c71a349e76033945f45e8130aabf59fa8583064fe92b6b4ea28fb1ee8c0",
     "biomes/neouterwall/stations/steam/station.json": "072a5845f9a20bceaaf092313a003e87426d61155d4aa2921afddc87e63304ae",
@@ -1225,12 +1225,12 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/neouterwall/dist/neouterwall-steam.html": "1f0c6a9417221f0dcbb172327166cce45b37ac5dffa21a6da8c93e8485f60114",
+    "biomes/neouterwall/dist/neouterwall-steam.html": "b896029bcf5938e05a007685ef28a8ec7863c27744657dbd51ee84854d015229",
     "biomes/neouterwall/dist/neouterwall.tex.neouterwall.js": "07beab27d0d22de4325c7a9a8d3b00e4b5d89738f5e5cc439384b8321e0009f9",
     "biomes/neouterwall/dist/neouterwall.tex.nwouterwall.js": "ae7a5ac2d0f9ebaa4b7bbf40ec7087eff1601a5942bee662dc568b94e1539932"
    },
    "outputs_raw": {
-    "biomes/neouterwall/dist/neouterwall-steam.html": "1f0c6a9417221f0dcbb172327166cce45b37ac5dffa21a6da8c93e8485f60114",
+    "biomes/neouterwall/dist/neouterwall-steam.html": "b896029bcf5938e05a007685ef28a8ec7863c27744657dbd51ee84854d015229",
     "biomes/neouterwall/dist/neouterwall.tex.neouterwall.js": "07beab27d0d22de4325c7a9a8d3b00e4b5d89738f5e5cc439384b8321e0009f9",
     "biomes/neouterwall/dist/neouterwall.tex.nwouterwall.js": "ae7a5ac2d0f9ebaa4b7bbf40ec7087eff1601a5942bee662dc568b94e1539932"
    }
