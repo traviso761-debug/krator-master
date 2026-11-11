@@ -23,7 +23,8 @@ def sources():
             subdirs[:] = [s for s in subdirs if s not in SKIP_DIRS and not s.startswith(('.', 'shots'))]
             in_src = re.search(r'/(src|targets)(/|$)', d.replace(os.sep, '/'))
             for name in files:
-                if (in_src and name.endswith(SOURCE)) or name in ('build.py', 'verify.py') or tree == 'core':
+                # core: every source file, not its texture library and models (reading those took 22 min, 2026-11-11)
+                if ((in_src or tree == 'core') and name.endswith(SOURCE)) or name in ('build.py', 'verify.py'):
                     if not name.startswith('.') and name != 'three.min.js':
                         yield os.path.join(d, name)
 
