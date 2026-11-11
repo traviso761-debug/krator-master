@@ -547,7 +547,15 @@ the riding session to confirm), with these Line-specific answers:
 | 4. **Interior and capacity** on the car's record: `cap {seats, stand, slots}`, `interior {floors, blocks, doors, seats, stand, slots}` in the car's frame | yes, on each Line car in the vehicles kit: the saloon's 64 seats and 40 standing, the van's six bays (`slots` of kind `bay`), the tank car's water (`kind: water`), the trolley's deck, the ice wagon's blocks. Written beside the car's build, from the same numbers the build draws (one source), checked by the riding plan's reach audit |
 | 5. **Stops** `{id, track, s, side, floor, gap}` | `LN.stations[i].platforms` give them: one stop per platform face per track, `floor` the platform's `KWALK` floor id, `gap` the platform-to-car gap **per stop** (0.1 m: the Ancients' close-fitting platform edge; a kept station's edge worn to 0.15) |
 
-Agreed with the riding session on 2026-11-11 (both plans still wait on the owner).
+Agreed with the riding session on 2026-11-11, and **built on its side** (the owner approved riding; commit e7acf88e4 on
+`claude/clever-rhodes-cb3fec`, unpushed): `SIM.rideSource({id, track, timeline, cars, stops})` takes this shape as written
+(`stop:<stopId>` without a side is also accepted, taking the stop's side); **a gap's walk goes in through
+`SIM.rideFootpath({from, to, pts})`** with `LN.gaps[i].walk.pts`, walked both ways as an ordinary leg; goods ride as
+`SIM.trade({line: <source id>})`, and a gap's porters are a timed `SIM.trade` route plus `SIM.porters`; a car's walk side
+is its floors and walls in its frame, a door's block tagged `door:<id>`; in Godot, `KRide` (`kride.gd`) and
+`godot/krator/ride_cars.gd` build the cars as `AnimatableBody3D` from the same records. Until the `line` kind and the
+cars exist, riding's lab runs on stand-ins of this shape. A run that must cross over waits on the optional `route` id on a
+timeline segment (to be asked for when needed).
 
 **What the Line does not do**: frame floors, the ride leg, journeys, capacity counting, cargo and porters, the player's
 carry and the Godot twins are the riding plan's. The Line's records are the source riding reads; until the `line` kind
