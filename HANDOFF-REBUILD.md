@@ -48,8 +48,12 @@ tree buckets in the box) fail; badlands, garnet, steam and the main page pass. S
 (nwouterwall's stipa 293,954 past the instance cap, no `capWhy`) fail; coppertarn passes; the rest were stopped. The SE wall and
 Godshearth both added `core/atmos/fx/89-atmos-fx-katabatic.js` with different `ATMOS.katabatic` APIs: at its next merge, give the SE
 wall's gale its own file (`89-atmos-fx-gale.js`, `ATMOS.gale`), as was done here before the revert.
-**Not merged, for the owner:** `claude/ancientsvalley-7f521c` (2f0a29e10, the valley with its children; its session asks for it, but
-this pass's brief left the valley out). `origin/claude/rebuild-nwouterwall-cloud` adds nothing (already in).
+**The Ancient's Valley** (`claude/ancientsvalley-7f521c` at 54976e76b, with its children: the Yards, the Terraces, the Engines, smog, radiation,
+local time, core/anomaly, core/ruins, the extraplanar hunters, the transit, the vehicles' ruins, the robots) merged on the owner's yes (2026-11-10).
+Fixed on the way: its transit and extraplanar bundles read the catalog's engine from `core/catalog`; its metropolis test reads the reception
+recipe from `src/`; `metal.scorched` packed for the vehicles' ruins. Its `core/atmos` sky, fog and height-fog changes move every biome page
+(204 pages), all rebuilt and GPU-verified again (below), on the local lanes and the cloud lanes `vast0`/`vast1` together.
+`origin/claude/rebuild-nwouterwall-cloud` adds nothing (already in).
 
 **Retired:** Girder's hero page (the owner, 2026-11-10) to `archive/girder-hero` (its README); Styv's and Phil's models to
 `core/charactermodels/donors` (the canonical bind pose); its gallery entry and baseline row gone.
