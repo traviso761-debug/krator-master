@@ -257,7 +257,7 @@
     "biomes/outlands/stations/_shared/89zw-host-water.js": "6372912b501df116e73dd0e3523d9d74b56af591cc756bb6764bc8b96492db23",
     "biomes/outlands/stations/_shared/89zx-host-build.js": "c1d74fd5dddaac778c8542de3182fe7d7bf42158182acc333752a998eac011f4",
     "biomes/outlands/stations/_shared/98-host-views.js": "a24f90e486328558c5d04eda48dca0736e59f4fca9d5fc439b0c3888ccdf1e15",
-    "biomes/outlands/stations/house/45-host-stage.js": "f3686d37c0eb6ed9704936993b69976ca6a3f2ac956711ccc7ecd72585b0aa05",
+    "biomes/outlands/stations/house/45-host-stage.js": "a30fb5a407bf842507d220918889d24781d67b7da259b5bced45ebc3b38f7154",
     "biomes/outlands/stations/house/station.json": "14de2a6b7395f64b2dfd1b39739902c27a5777a67367892fd959a5e95248a452",
     "biomes/outlands/tex/cap.glossy.albedo.webp": "5b4745225501ca21225aee1463d132dffa24511cae875285af4efcf4a5fa4576",
     "biomes/outlands/tex/flesh.cells.albedo.webp": "6e4e9e482797e7216b9c62b2017dee347b7b4f81ffb88296066231af6dd22964",
@@ -368,10 +368,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/outlands/dist/outlands-house.html": "a5cb412c785d9f3dc1240e938726efb71e75077043d3bab53b6f55271de2bb77"
+    "biomes/outlands/dist/outlands-house.html": "4248d492e9d619288a4b4a8cd85268cc1a5b2af8ca4538ccdc4bb9a9f2dc90fc"
    },
    "outputs_raw": {
-    "biomes/outlands/dist/outlands-house.html": "a5cb412c785d9f3dc1240e938726efb71e75077043d3bab53b6f55271de2bb77"
+    "biomes/outlands/dist/outlands-house.html": "4248d492e9d619288a4b4a8cd85268cc1a5b2af8ca4538ccdc4bb9a9f2dc90fc"
    }
   },
   "build.py --station mires": {

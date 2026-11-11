@@ -73,12 +73,17 @@ function houseBuild(){const out={};
  holder.traverse(m=>{if(m.isMesh){m.userData.host=true;if(!m.userData.inspectLabel)m.userData.inspectLabel='Trickster\'s House (Arcoindian II, ruined)';}});
  scene.add(holder);holder.updateMatrixWorld(true);RUIN=holder;
  /* the kit's own volumes (ANC_REG, in its builder frame) become this page's records, turned with the ruin */
- /* each a record; a page volume (the inspector's names, the registry's occupancy) only where the ruin, at decay 1, still has fabric in it:
-    three rays down its axis and either side (the kit's own page checks them at decay 0, where every one is full) */
- out.volumes=0;out.gone=0;const RC=new THREE.Raycaster(),DN=new THREE.Vector3(0,-1,0);
+ /* each a record; a page volume (the inspector's names, the registry's occupancy) only where the ruin, at decay 1, still holds what the
+    probe counts there (core/host's regOccupancy: an instance, or a mesh's box centre); the kit's own page checks them at decay 0 */
+ const SP=[],MI=new THREE.Matrix4(),V3=new THREE.Vector3(),BX=new THREE.Box3();
+ holder.traverse(m=>{if(m.isInstancedMesh){for(let i=0;i<m.count;i++){m.getMatrixAt(i,MI);V3.setFromMatrixPosition(MI).applyMatrix4(m.matrixWorld);SP.push([V3.x,V3.y,V3.z]);}}
+  else if(m.isMesh&&m.geometry){BX.setFromObject(m);BX.getCenter(V3);SP.push([V3.x,V3.y,V3.z]);}});
+ out.volumes=0;out.gone=0;const PP=[];
  ANC_REG.splice(r0).forEach(v=>{const w=toW(v.x==null?0:v.x,v.z==null?0:v.z),y0=GY+(v.y==null?0:v.y),r=v.r==null?5:v.r,h=v.h==null?10:v.h,rec={name:'Trickster\'s House: '+v.name,kind:'ruin',x:w[0],z:w[1],y:y0,r,h};
-  let hit=false;for(const d of[0,-.5,.5]){RC.set(new THREE.Vector3(w[0]+d*r,y0+h+2,w[1]),DN);RC.far=h+6;if(RC.intersectObject(holder,true).length){hit=true;break;}}
-  if(hit){REGISTER(rec);out.volumes++;}else{BIO.record(Object.assign({},rec,{name:rec.name+' (fallen: the ruin holds nothing there now)'}));out.gone++;}});
+  const full=SP.some(p=>regHas(rec,p[0],p[1],p[2]));
+  if(full){REGISTER(rec);out.volumes++;PP.push(w[0],y0+Math.min(h*.5,4),w[1]);}else{BIO.record(Object.assign({},rec,{name:rec.name+' (fallen: the ruin holds nothing there now)'}));out.gone++;}});
+ /* the ruin's merged meshes carry one probe point at each volume they fill (as station 1's landforms do): a merged mesh is one box centre */
+ {const o=new THREE.Object3D();o.name='ruin probe points';o.userData.probePoints=PP;scene.add(o);}
  let tris=0;holder.traverse(m=>{if(m.isMesh&&m.geometry){const g=m.geometry,n=g.index?g.index.count/3:g.attributes.position.count/3;tris+=n*(m.isInstancedMesh?m.count:1);}});out.tris=Math.round(tris);window._ruinTris=out.tris;
  // the ruin's up-facing faces, sampled by hash (a point a 6 m cell of the plan at most): where the House colony grows; the hollow's (under
  // the crown, behind the mouth, in the kit's frame) are its dark rooms
