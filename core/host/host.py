@@ -36,6 +36,13 @@ WHERE = {
     '20-core-space.js': 'space',
     '88-core-minimap.js': 'minimap',
     '88a-core-minimap-host.js': 'minimap',
+    # underground (core/host/UNDERGROUND.md), each opt-in by file: the map's and the shader's sit in subfolders, out of reach of the
+    # builds that read core/minimap/ or core/shader/ whole
+    '91b-host-follow.js': 'host',                 # the follow camera (V): a spring arm on o.solid
+    '97b-host-minimap-decks.js': 'host',          # the map's deck band and the line map (L)
+    '99b-host-section.js': 'host',                # the cut-away's caps, decks, band (U) and section (C)
+    '88b-core-minimap-decks.js': 'minimap/decks', # KMAP: walkBands, band, mark, schematic
+    '08-core-kfade.js': 'shader/aids',            # KFADE: the dither fade and the x-ray
 }
 SHELL = ['20-core-clock.js', '90-host-camera.js', '91-host-loop.js', '92-host-panel.js', '95-host-probe.js']
 # the whole interface (ROADMAP.md section 10, step 2 on): the shell, the inspector, marks, pictures, minimap, editor, cutaway,
@@ -44,13 +51,16 @@ FULL = SHELL + ['93-host-inspect.js', '93-host-stocks.js', '94-host-marks.js', '
                 '99-host-cutaway.js', '40-core-edits.js', '20-core-space.js', '88-core-minimap.js', '88a-core-minimap-host.js']
 # the seat sweeps, opt-in (CORE-IMPROVEMENTS.md item 1): khost.resolve(PATH, khost.SEAT) beside the shell
 SEAT = ['38a-core-seat.js', '95b-host-seat.js']
+# underground, opt-in (core/host/UNDERGROUND.md; kits/tungang/PLAN.md section 6): khost.resolve(PATH, khost.FULL + khost.UNDERGROUND).
+# 97b and 88b need the minimap (FULL's 97, 88, 88a); 99b works with or without 99's units
+UNDERGROUND = ['91b-host-follow.js', '97b-host-minimap-decks.js', '99b-host-section.js', '88b-core-minimap-decks.js', '08-core-kfade.js']
 # core/shader goes on every page (resolve adds it whatever the list): core/atmos, core/terrain, core/water and core/biome call it
 SHADER = ['06-core-khook.js', '06b-core-kcolor.js']
 EDITS_JS = '39-host-edits.js'      # the generated fragment edits_js() writes (sorts before core/edits and every builder)
 
 
 def path(name):
-    return os.path.join(CORE, WHERE[name], name)
+    return os.path.join(CORE, *WHERE[name].split('/'), name)
 
 
 def resolve(paths, names=SHELL):
