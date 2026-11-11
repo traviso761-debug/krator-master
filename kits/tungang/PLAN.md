@@ -186,9 +186,11 @@ The kit's rooms stand inside the Line's stations and the caverns it joined, so t
 all of them are broken, but despite the gaps **the Line is mostly functional**, and **travellers walk the caverns
 between intact segments**. So (*proposed* unless quoted):
 
-- **The section.** One wide gallery, not a pair of bores: about 32 m across and 12 to 14 m to a flattened vault, four
-  guideways on a flat invert (two each way, about 6 m apart), an island platform strip between each pair, walkways and
-  cable troughs along both walls, lamps in rows down the vault. In bad ground (the breccia's faults, the rift fill's
+- **The section.** One wide gallery, not a pair of bores: **37 m across** (the owner's answers to the Line plan,
+  2026-11-11) and 12 to 14 m to a flattened vault, four guideways on a flat invert (two each way, about 6 m apart), an
+  island platform strip between each pair, **a two-lane service road along its west wall**, walkways and cable troughs,
+  lamps in rows down the vault. Where the Line runs above ground **an Ancient highway runs beside it**, on elevated decks
+  over bog and water (the owner, via `biomes/line/PLAN.md`, 0744edac0). In bad ground (the breccia's faults, the rift fill's
   wet stretches) it splits into two or four bores, rejoining in a **junction hall** where the ground is good again. The
   Ancients' road was a 30 m way with a guideway down its middle (`ANCIENT-ROADS.md`); the Line is that road's
   underground twin, a cavern of its own ("a kind of cavern of their own": the owner, 2026-11-03).
@@ -250,7 +252,17 @@ section's doors), so the Line's sections, signals, states and trains are drawn b
   timetable gives the next segment's train, so a traveller knows how long the walk may take). The player rides it
   through the hot section and walks the gaps.
 - **Where it lives** (settled, the owner, 2026-11-10): the cars in `kits/motor-vehicles` (culture `ancient`, with its
-  registry, rig and ruin states), placed and moved on the Line by `KTRANSIT`'s `line` kind.
+  registry, rig and ruin states), placed and moved on the Line by `KTRANSIT`'s `line` kind; the Tungangs' own stock (the
+  Fixers' trolley, the flat and ice wagons) as a **`tungang` culture** in the same kit (accepted on the Line plan,
+  2026-11-11).
+
+**The stations' numbers** (the owner, 2026-11-11, on the Line plan: "cube is loj nahn so renumber accordingly"). Counted
+north to south, as the lojes are: **1** Dalab, **2** Shelf, **3** the Twenny junction (bore km 218), **4** Ledge's lifts
+(Loj Fower), **5** Nulab, **6** Chimes, **7** Cthonos, **8** The Tubes, **9** Cube: **Loj Nahn, the number no one says**;
+the Line's other stops are lettered halts (2a-2g, 3a-3c). **Loj Twenny** (20) is a later founding, by the Twenny junction.
+The Line may run on past Cube to Theodiga (10), Strongbow (11), Stair (12) and an arcology in the Bowl (13): an open
+question on the Line plan. If it does, the Glaziers' train that never comes (section 1.4) is the eastern Line's, cut since
+the Lizardmen took Cube, and its timetable is the one they read (*proposed*).
 
 #### 0.2.1 Riding: people and cargo aboard (the owner, 2026-11-10: "we do need to add functionality for people and cargo to ride them")
 

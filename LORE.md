@@ -222,8 +222,10 @@ The Ancients were the original civilization that colonized Krator, with roots, h
   - **Perhaps a fluid society** (the owner, 2026-11-03): the Tungangs, the tunnel people of the Rift and the southern
     Outer Wall, might, like the Iron Republic and Yuni, let a person rise two stations in a life (core/simulation/PLAN-MONEY.md).
   - **Friendly Morlocks** (the owner, 2026-11-10/11; `kits/tungang/PLAN.md`): pale, light-shy, nocturnal tunnel folk who are
-    decent people, not monsters, and not dwarves: the night shift that never ended. **The Line is at least four tracks wide**,
-    broken in places but mostly running: where the whole width has fallen it is cut into segments, each segment's trains
+    decent people, not monsters, and not dwarves: the night shift that never ended. **The Line is at least four tracks wide**
+    (a gallery 37 m across with a two-lane service road along its west wall; where it runs above ground an Ancient highway
+    runs beside it, on elevated decks over bog and water: the owner, 2026-11-11, `biomes/line/PLAN.md`), broken in places
+    but mostly running: where the whole width has fallen it is cut into segments, each segment's trains
     trapped in it since the collapses, shuttling between its gaps, and **travellers walk the caverns between intact
     segments**; holds grow at the gaps. Their light is rationed and coded, **the lamp code** on every gallery and door (red a
     home, green the Line, amber work, glow-cap the passages, white the surface and danger, hooded at once), with rooms lit
@@ -232,6 +234,10 @@ The Ancients were the original civilization that colonized Krator, with roots, h
     year at **the Big Meeting** every loj walks its banner down the Line to the Tpresden; rank is **shine**, ground-glass bead
     strips on a faded copy of the crews' orange. They stand about 0.94 of a human. Much of what they own is fitted salvage of
     the Line.
+  - **The stations' numbers** (the owner, 2026-11-11: "cube is loj nahn so renumber accordingly"), north to south: 1 Dalab,
+    2 Shelf, 3 the Twenny junction, 4 Ledge's lifts (Loj Fower), 5 Nulab, 6 Chimes, 7 Cthonos, 8 The Tubes, **9 Cube: Loj
+    Nahn, the number no one says**; the other stops are lettered halts. Loj Twenny (20) is a later founding by the Twenny
+    junction. Whether the Line ran on past Cube to Theodiga, Strongbow, Stair and an arcology in the Bowl (10-13) is open.
   - **What the Line gives them** (the owner, 2026-11-11): more to trade than copper. The bores cut **veins of metal** and the
     Tungangs work them, for they need metal to keep the trains running; *maybe* something more exotic keeps the power
     running (agreed 2026-11-11: rare earths from the rift fill's carbonatites for the magnets of a power plant that runs on
@@ -850,8 +856,8 @@ marked *proposed* is this session's and waits on the owner. Its placeholder entr
   far as the Vale, for livestock, tools and valuables (§6.13).
 - **The tunnel wars** [the owner, 2026-10-23]. The Ancients' Rift line once ran the length of the Rift, worked by the
   crews who became the Tungangs (§6.1). When the Lizardmen came, the Tungangs east of Chimes were wiped out in **vicious
-  tunnel wars**; the survivors fled west and up onto the fells, and many Fellgangs descend from them. One loj did hold out: **Loj Nahn**,
-  sealed into the upper levels of **Arccube**, about a thousand people farming its terraces among the Lizardmen, who
+  tunnel wars**; the survivors fled west and up onto the fells, and many Fellgangs descend from them. One loj did hold out: **Loj Nahn**
+  (Cube was the Line's ninth station: the owner, 2026-11-11), sealed into the upper levels of **Arccube**, about a thousand people farming its terraces among the Lizardmen, who
   attack its night parties but have never pressed it further (§6.1). Tungang and Fellgang agree that the only thing worse than a Labber is a Lizard.
 - **What everyone can see** [the owner, 2026-10-23]: the Lizardmen **try to use Ancient relics**, fumblingly, in bizarre
   and esoteric ways no human would think of: the strange constructions in the reliquaries are made of them. And they
