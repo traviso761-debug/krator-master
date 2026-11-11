@@ -182,10 +182,11 @@
   343 s, the Terraces 35 to 55 s; nearly all of it the two lowland kits' forest (the marks `_t.swlowlands`, `_t.nwlowlands`), which ask the page's
   ground and mask for every sample. The build is one synchronous run, so the page freezes until it ends. A CPU profile of station 0 on software GL
   (560 s) found the valley's own fields scanning every crater and scar per sample (90 s) and the subway's sinkholes (27 s): bucketed by cell now
-  (41, `AV.bucket`, `AV.sinkGate`: the same numbers bit for bit, tested), 346 s to 218 s there. Left: core/biome's `BIO.alphaTex` reads a canvas
-  back for each of the lowland kits' 52 generated cards (52 s; a `willReadFrequently` canvas is the likely fix, core-wide); the model's bicubic
-  heights (`at`, `cr`: 50 s; a fine pre-sampled grid would do, at a few millimetres' difference); the relief's noise (27 s); and the build yielding
-  to the browser between kits so the page shows progress instead of freezing (core/biome's kit loop).
+  (41, `AV.bucket`, `AV.sinkGate`: the same numbers bit for bit, tested), 346 s to 218 s there. Since then: core/biome's `BIO.alphaTex` reads its canvas as `willReadFrequently` (CPU-backed: the readback is a copy, not a GPU stall), and
+  the build yields (88 runs each kit's trees, its floor and the bake as stages, showing where it is and giving the browser a turn between them; the
+  page's fragments after 88 wait in a text block, `av-after`, run when the build finishes). Left: each stage is still one task of 15 to 40 s (a
+  kit's whole pass); the model's bicubic heights (`at`, `cr`: 50 s; a fine pre-sampled grid would do, at a few millimetres' difference); the
+  relief's noise (27 s). The core/biome change reaches 72 builds: the all-builds integration rebuilds them.
 - [ ] **The ground's detail map is sampled raw** (`47-host-land.js`, the lint's one RAWTEX on this build, locked in the baseline): the library's
   `groundDetail` albedo multiplies the ground's colour without an sRGB decode, as the two lowlands' pages do (the valley copies their ground). A
   decode darkens the ground a fifth; do it with the lowlands together and retune the gain, not here alone.
