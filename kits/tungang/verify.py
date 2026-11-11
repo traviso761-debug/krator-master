@@ -64,6 +64,15 @@ ASSERT_JS = r"""()=>{const A=window._api,R=[],S=window._fgSheet||{},C=TG.fg.chec
  const rr=(S.ropeDraw&&S.ropeDraw.recs)||[];
  add('fixed-line-follows',{ok:rc.ok&&ropes.length===6&&rr.length===6&&rr.every(r=>r.fg&&r.fg.rungs>20&&r.fg.pegs>=1),detail:ropes.length+' ropes, '+rc.verts+' vertices: the farthest from its record '+rc.far+' m, the record\'s farthest point from the line '+rc.gap+' m; pegs '+rr.map(r=>r.fg&&r.fg.pegs).join(',')+', rungs '+rr.map(r=>r.fg&&r.fg.rungs).join(',')},
   {ok:rn.ok,detail:'the records moved 3 m east: farthest '+rn.far+' m'});
+ /* walls block a walker (core/walk, from the boxes a building draws), an open door lets one through */
+ const wd=KDOOR.list.find(d=>d.key==='fg-hut'&&!d.locked),walkOk=(p,h)=>!KWALK.blocked(p[0],p[1]+.02,p[2],.3,h==null?1.5:h);
+ let walk={ok:false,detail:'no hut door'},walkNeg={ok:true,detail:'n/a'};
+ if(wd){const ux=Math.cos(wd.yaw),uz=-Math.sin(wd.yaw),wall=[wd.at[0]+ux*1.35,wd.at[1],wd.at[2]+uz*1.35],shut=walkOk(wd.at);
+  KDOOR.open(wd.id,{by:'verify'});for(let k=0;k<40;k++)KDOOR.step(.1);const open=walkOk(wd.at),wallBlocked=!walkOk(wall),blk=KWALK.blocked(wall[0],wall[1]+.02,wall[2],.3,1.5);
+  KDOOR.close(wd.id,{by:'verify'});for(let k=0;k<40;k++)KDOOR.step(.1);
+  walk={ok:open&&!shut&&wallBlocked,detail:'a hut\'s door ('+wd.id+'): shut it blocks '+(!shut)+', open a walker passes '+open+'; 1.35 m along its wall a walker is stopped '+wallBlocked+' (by '+(blk&&blk.tag)+'); '+KWALK.export().blocks.length+' blocks, '+KWALK.export().floors.length+' floors'};
+  walkNeg={ok:walkOk(wall),detail:'a walker put in the wall itself, checked as passing'};}
+ add('walls-block-doors-pass',walk,walkNeg);
  /* the host API on the sample village */
  const V=S.village||{},vd=S.villageDraw||[],neg=TG.fg.draw({records:[{key:'fg-nonesuch',x:0,z:0,ry:0}]},{ground:()=>0});
  add('host-api',{ok:!V.error&&V.records&&V.records.length>=8&&vd.recs&&vd.recs.length===V.records.length&&!Object.keys(vd.missing).length&&vd.length>3,

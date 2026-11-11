@@ -50,7 +50,7 @@ defBuilding({key:'fg-cairnhall',name:'The cairn house',seed:9112,cut:true,w:7,d:
  note:'a corbelled drystone round house; inside, the dead\'s names scratched on slate tallies hung in rows (no carving); the old rules said aloud from its step',
  build(o){const C=fgCx(o),fr=fgLerp([.72,1],fgU(C,21)),r=3.5*fr,t=.8,wh=2.6*fgLerp([.85,1],fgU(C,22)),Ht=6*Math.max(.78,fgLerp([.78,1],fgU(C,23))),g=.2/fr,col=fgCol('stone',C),a0=PI/2+g,a1=PI/2-g+TAU;fgSet('fill',+fr.toFixed(2));
   cyl('stone',0,C.lo,0,r+.02,.06-C.lo,col,22);
-  sector('stone',0,0,r-t,r,a0,a1,0,wh,col);box('stoneD',0,1.85,r-t/2,1.5,.3,t+.04,fgCol('stoneD',C));
+  sector('stone',0,0,r-t,r,a0,a1,0,wh,col);wkRing(0,0,r-t,r,a0,a1,0,wh);box('stoneD',0,1.85,r-t/2,1.5,.3,t+.04,fgCol('stoneD',C));
   sector('stone',0,0,r-t,r,PI/2-g-.02,PI/2+g+.02,2.15,wh,col,3);
   /* the corbels: each course steps in until a capstone closes the dome; turf over the crown */
   const nc=8,cs=(Ht-.6-wh)/nc;for(let k=0;k<nc;k++){const y0=wh+k*cs,ro=r*(1-Math.pow((k+1)/nc,1.5)*.82),ri=Math.max(.2,ro-.75);sector('stone',0,0,ri,ro,0,TAU,y0,y0+cs+.01,k%2?col:fgCol('stone',C),18);}

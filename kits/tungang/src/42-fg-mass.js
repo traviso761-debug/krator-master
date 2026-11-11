@@ -68,7 +68,7 @@ function fgPlanRect(hw,hd,th,wh,C,gaps,o){o=o||{};const col=fgCol('stone',C);fgF
 function fgPlanRound(hw,hd,th,wh,C,gaps,rc){const col=fgCol('stone',C),tc=fgCol('turf',C);rc=Math.min(rc,hw-.2,hd-.2);
  fgFront(-hw+rc,hw-rc,-hd+th/2,th,wh,C,null,col);fgFront(-hw+rc,hw-rc,hd-th/2,th,wh,C,gaps,col);
  for(const s of [-1,1])fgWall(s*(hw-th/2),-hd+rc,s*(hw-th/2),hd-rc,th,0,wh,C,col);
- for(const sx of [-1,1])for(const sz of [-1,1]){const a0=sx>0?(sz>0?0:-PI/2):(sz>0?PI/2:PI),cx=sx*(hw-rc),cz=sz*(hd-rc);sector('stone',cx,cz,Math.max(.05,rc-th),rc,a0,a0+PI/2,0,wh,col,5);
+ for(const sx of [-1,1])for(const sz of [-1,1]){const a0=sx>0?(sz>0?0:-PI/2):(sz>0?PI/2:PI),cx=sx*(hw-rc),cz=sz*(hd-rc);sector('stone',cx,cz,Math.max(.05,rc-th),rc,a0,a0+PI/2,0,wh,col,5);wkRing(cx,cz,Math.max(.05,rc-th),rc,a0,a0+PI/2,0,wh);
   sector('turf',cx,cz,Math.max(.05,rc-th+.1),rc-.1,a0,a0+PI/2,wh,wh+.18,tc,5);}
  for(const s of [-1,1]){box('turf',0,wh,s*(hd-th/2),2*(hw-rc),.18,th-.2,tc);box('turf',s*(hw-th/2),wh,0,th-.2,.18,2*(hd-rc),tc);}}
 /* the Norse bow-sided plan: the long walls bow out, the ends are straight and narrower by bulge */
@@ -121,7 +121,7 @@ function fgOutshot(side,cx,ow,od,zc,C,o){o=o||{};const x=cx,Cx=Object.assign({},
  for(let k=0;k<5;k++)box('stoneD',(fgU(C,400+k)-.5)*(ow-1.4),0,-od/2+.8+k*.2,.4,.26,.4,P('peat'));});}
 /* a corbelled beehive cell of radius r, height h at (x, z): a stone cone, a turf cap, a low plate door toward +z */
 function fgBeehive(x,z,r,h,C){W(x,0,z,0,()=>{const sc=fgCol('stone',C),g=Math.max(C.lo,Math.min(0,C.gl(x-r,z-r),C.gl(x+r,z-r),C.gl(x-r,z+r),C.gl(x+r,z+r))-.5);cyl('stone',0,g,0,r+.02,.06-g,sc,12);
- lathe('stone',0,0,[[r,0],[r*.98,h*.35],[r*.78,h*.62],[r*.42,h*.86],[0,h]],12,sc);lathe('turf',0,0,[[r*.7,h*.66],[r*.4,h*.88],[0,h+.05]],10,fgTurfCol(C,'green'));
+ lathe('stone',0,0,[[r,0],[r*.98,h*.35],[r*.78,h*.62],[r*.42,h*.86],[0,h]],12,sc);wkRing(0,0,r*.6,r,0,TAU,0,h*.6);lathe('turf',0,0,[[r*.7,h*.66],[r*.4,h*.88],[0,h+.05]],10,fgTurfCol(C,'green'));
  box('stoneD',0,1.05,r-.15,1,.18,.4,fgCol('stoneD',C));svLeaf(0,0,r-.02,0,.65,1.05,{mk:'rust',col:0xc8b8a8,t:.04,locked:true,name:'a cell door'});});}
 /* a plate lean-to against an end wall: two fir poles, white plate sheets, peat stacked under it */
 function fgLean(x,z,w,d,side,C){W(x,0,z,0,()=>{const pc=fgCol('pole',C);for(const s of [-1,1])pole('pole',[side*d/2,0,s*(w/2-.15)],[side*d/2,1.55,s*(w/2-.15)],.05,pc,5);
@@ -144,7 +144,7 @@ function fgCab(x,zf,C){const c=hc([0x4a6a7a,0x6a7a4a,0x8a4a3a][C.v%3]).clone().m
    one door, offset by seed); inner(S) furnishes it. The house's frame is offset (S.xo, S.zo) so its additions fit the box */
 function fgHouse(B,C,fams,inner,spec){spec=spec||{};const F=fgPick(C,fams),ch=C.o.character,add=F.add||[];fgSet('family',F.id);
  /* at most .96 of w and d: the eaves and their turf rolls stand ~.2 m past the walls on each side */
- let wf=Math.min(.96,fgLerp(F.wf||[.75,1],fgU(C,21))),df=Math.min(.96,fgLerp(F.df||[.8,1],fgU(C,22))),hf=fgLerp(F.hf||[.8,1],fgU(C,23));
+ let wf=Math.min(.96,fgLerp(F.wf==null?[.75,1]:F.wf,fgU(C,21))),df=Math.min(.96,fgLerp(F.df==null?[.8,1]:F.df,fgU(C,22))),hf=fgLerp(F.hf==null?[.8,1]:F.hf,fgU(C,23));
  if(ch==='low')hf=hf-.08;hf=Math.max(.79,Math.min(1,hf));if(ch==='stony')hf=Math.min(1,hf+.05);
  /* room for the additions inside the box */
  const aw=add.includes('outshot')||add.includes('lean')||add.includes('beehive')?Math.min(3.2,B.w*.28):0,ad=add.includes('porch')?1.9:add.includes('cab')?1.5:add.includes('container')?1.6:0;
@@ -152,10 +152,10 @@ function fgHouse(B,C,fams,inner,spec){spec=spec||{};const F=fgPick(C,fams),ch=C.
  if(aw&&w+aw<B.w*.65)w=B.w*.65-aw;
  const xo=aw?-side*aw/2:0,zo=add.includes('cab')||add.includes('porch')?-ad/2:add.includes('container')?ad/2:0,H=B.h*hf;
  /* the walls' height and the roof's rise from the pitch (30-50 degrees; a low village pitches lower, a stony one higher) */
- let pitch=fgLerp(F.pitch||[34,46],fgU(C,25));if(ch==='low')pitch-=4;if(ch==='stony')pitch+=3;pitch=Math.max(28,Math.min(52,pitch));
+ let pitch=fgLerp(F.pitch==null?[34,46]:F.pitch,fgU(C,25));if(ch==='low')pitch-=4;if(ch==='stony')pitch+=3;pitch=Math.max(28,Math.min(52,pitch));
  const across=(F.ax==='z'?w:d)/2,wantRise=Math.tan(pitch*PI/180)*across*(F.roof==='twin'?.5:1);let wh=Math.max(1.55,H-.1-wantRise);if(ch==='low')wh=Math.max(1.5,wh-.2);const rise=Math.max(.8,H-.1-wh-(F.roof==='black'?.1:0));
  const th=(F.th==null?.7:F.th)+(ch==='stony'?.1:0),look=fgTurfLook(C),C2=Object.assign({},C,{gl:(x,z)=>C.gl(x+xo,z+zo)});
- const dw=spec.doorW||.95,dh=Math.min(spec.doorH||1.8,wh-.3);
+ const dw=spec.doorW==null?.95:spec.doorW,dh=Math.min(spec.doorH==null?1.8:spec.doorH,wh-.3);
  W(xo,0,zo,0,()=>{fgPlinth(-w/2,w/2,-d/2,d/2,C2);
   const S0={w,d,hw:w/2,hd:d/2,th,wh},doors=spec.doors?spec.doors(S0,F):[[(fgU(C,26)-.5)*Math.max(0,w-2*th-dw-1.4),dw,dh]];
   const nwin=F.wins==null?(w>7?2:1):F.wins,wins=[];for(let k=0;k<nwin;k++){const x=-w/2+th+.8+(w-2*th-1.6)*(k+.5)/nwin;if(doors.every(dd=>Math.abs(dd[0]-x)>dd[1]/2+.6))wins.push([x,.45,.4,Math.min(1.05,wh-.7)]);}

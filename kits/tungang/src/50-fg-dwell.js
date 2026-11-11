@@ -36,7 +36,7 @@ function fgFurnishHome(S,C,o){o=o||{};const rich=o.tier==='rich',poor=o.tier==='
  fgFurn('fellgang_poor_tallow_lamp',hx+.9,null,S.z0+.35,0);if(rich)fgFurn('fellgang_court_rulebook',hx-1.1,null,S.z0+.5,0);}
 /* the family's slogan beside the door, on whatever face the house shows */
 function fgDoorSign(S,C,o){o=o||{};const d=S.doors&&S.doors[0];if(!d)return;const x=d[0]+(d[0]>0?-1:1)*(d[1]/2+.85);if(Math.abs(x)>S.hw-.6)return;
- fgSign(o.text||fgSlogan(),x,Math.min(1.05,S.wh-.55),S.hd+.02,0,C,{ch:o.ch||.13,kind:o.kind||'plate',ink:o.ink});}
+ fgSign(o.text||fgSlogan(),x,Math.min(1.05,S.wh-.55),S.hd+.02,0,C,{ch:o.ch==null?.13:o.ch,kind:o.kind||'plate',ink:o.ink});}
 defBuilding({key:'fg-hut',name:'A Fellgang hut',seed:9101,cut:true,w:6,d:5,h:4.2,budget:26000,
  tags:{types:['dwelling-single'],wealth:'poor',style:'drystone',role:'dwelling'},
  note:'a one-room hut: drystone walls, a turf roof on bell-fir poles, a door of Ancient plate on cable hinges, the hearth under a smoke hole; poor. Families: a gabled hut, a blackhouse, a hut with a beehive cell, a croft with an outshot, a hut with a wreck\'s cab for a porch',
@@ -52,7 +52,7 @@ defBuilding({key:'fg-house',name:'A Fellgang house (two hearths)',seed:9102,cut:
   fgHearth((xc+S.x1)/2,S.z0+1,C,{r:.42});
   /* the box bed in its plank cabinet, the store loft on poles over the second room with its ladder */
   const wc=fgCol('wood',C),pc=fgCol('pole',C),ly=Math.min(2.1,S.wh-.3);if(S.x1-xc>2.2){W(0,0,0,0,()=>{for(let z=S.z0+.1;z<S.z0+1.9;z+=.32)box('wood',(xc+S.x1)/2,ly,z+.14,S.x1-xc-ct/2,.06,.3,wc);
-   pole('pole',[xc+ct/2,ly-.08,S.z0+1.95],[S.x1,ly-.08,S.z0+1.95],.07,pc,6);for(const s of [-.22,.22])pole('pole',[S.x1-.6+s,.06,S.z0+2.8],[S.x1-.6+s,ly+.5,S.z0+1.9],.035,pc,5);});
+   pole('pole',[xc+ct/2,ly-.08,S.z0+1.95],[S.x1,ly-.08,S.z0+1.95],.07,pc,6);for(const s of [-.22,.22])pole('pole',[S.x1-.6+s,.06,S.z0+2.8],[S.x1-.6+s,ly+.5,S.z0+1.9],.035,pc,5);});wkLadder(S.x1-.6,.06,S.z0+2.8,S.x1-.6,ly+.06,S.z0+1.6);
    fgFurn('fellgang_poor_hide_sacks',(xc+S.x1)/2,ly+.06,S.z0+.7,0);}
   fgDoorSign(S,C,{});if(fgU(C,42)<.5)fgPatch(S.hw-.02,Math.min(1.2,S.wh-.6),-S.hd*.3,1,.9,PI/2,C);});}});
 /* the longhouse reads its footing: the byre takes the end that sits lower (the drain runs out of it), so on a slope the

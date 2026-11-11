@@ -56,7 +56,7 @@ defBuilding({key:'fg-eggstore',name:'The egg and honey store',seed:9124,cut:true
   cyl('stone',0,Math.min(C.lo,-sunk-.4),0,r+.02,.06-Math.min(C.lo,-sunk-.4),col,20);
   /* the sunk floor inside: a stone pan .8 m down, steps down from the door */
   cyl('stoneD',0,-sunk,0,r-t,.04,fgCol('stoneD',C),18);
-  sector('stone',0,0,r-t,r,a0,a1,-sunk,wh,col);sector('stone',0,0,r-t,r,PI/2-g-.02,PI/2+g+.02,1.15,wh,col,3);box('stoneD',0,.95,r-t/2,1.3,.22,t+.04,fgCol('stoneD',C));
+  sector('stone',0,0,r-t,r,a0,a1,-sunk,wh,col);wkRing(0,0,r-t,r,a0,a1,0,wh);sector('stone',0,0,r-t,r,PI/2-g-.02,PI/2+g+.02,1.15,wh,col,3);box('stoneD',0,.95,r-t/2,1.3,.22,t+.04,fgCol('stoneD',C));
   for(let k=0;k<3;k++)box('stoneD',0,-sunk+k*.27,r-t-.3-k*.28,.9,.27,.3,fgCol('stoneD',C));
   /* the turf banked against the wall (a skirt), the corbels, the turf cap */
   lathe('turf',0,0,[[r+.02,0],[r-.05,.9],[r-.35,wh+.05]],18,fgCol('turf',C),{a0:a0,a1:a1});
