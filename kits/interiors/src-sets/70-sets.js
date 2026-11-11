@@ -19,6 +19,9 @@
   location.search.replace(/^\?/, '').split('&').forEach(function (kv) { if (!kv) return; const p = kv.split('='); Q[decodeURIComponent(p[0])] = decodeURIComponent(p[1] || ''); });
   const KEEP_LIGHTS = Q.lights === 'keep';
   const catalog = IX.catalogAdapter({ lights: KEEP_LIGHTS ? 'keep' : 'strip' });
+  /* a room of a people drawn to their own measure (the Tungangs at 0.94) furnishes through a scaled adapter, when the page
+     carries core/furnish/54-core-furnish-scale.js (KFURN.adapterFor); every other room through the catalog's own */
+  const catalogFor = function (R) { return typeof KFURN !== 'undefined' && KFURN.adapterFor ? KFURN.adapterFor(catalog, R) : catalog; };
   const BASE_Y = 0.15, LIGHT_POOL = 6, ROW_W = 150, GAP = 7;
   const SETS = IX.sets.list.filter(function (S) { return !Q.set || Q.set.split(',').indexOf(S.set) >= 0; });
   const ONLY = Q.only ? Q.only.split(',') : null;
@@ -78,8 +81,9 @@
     clearFurniture();
     plansById = {};
     plans = rooms.map(function (R) {
-      const P = furnishRoom(R, catalog, { seed: seed });
-      IX.buildRoom(P, catalog, R);
+      const C = catalogFor(R);
+      const P = furnishRoom(R, C, { seed: seed });
+      IX.buildRoom(P, C, R);
       if (R.level) for (const g of P.objects) IX.view.cutaway.tag(g, R.level);
       plansById[R.id] = P;
       return P;
@@ -98,6 +102,37 @@
       const o = IX.view.outline(R, plans[i], { grid: S.grid, paths: S.grid });
       scene.add(o); outlines.push(o);
       if (R.level) IX.view.cutaway.tag(o, R.level);
+    });
+  }
+
+  /* ---------- fixtures and dress drawn by the catalog: a room fixture that names a catalog `key` (a count wall, a lamp row:
+     structure the placer keeps off) and an item's `dress` (what the building puts on its doors and walls: door lamps, number
+     plates, signs, click-ribs; sets/tungang.js) are built once, at the room's or the item's culture's scale. A dress record
+     is { key, variant, seed, x, y, z, ry, light? } in the item's frame (y above the item's ground) */
+  const dressed = [], dressRecs = [];
+  function buildDress(C, R, q) {
+    const g = C.build({ id: q.id || q.key, key: q.key, variant: q.variant == null ? 0 : q.variant, seed: q.seed == null ? 1 : q.seed, x: q.x, y: q.y, z: q.z, ry: q.ry == null ? 0 : q.ry }, R);
+    if (!g) return;
+    g.userData.dress = q; if (R && R.level) IX.view.cutaway.tag(g, R.level);
+    dressed.push(g);
+  }
+  function drawDress() {
+    rooms.forEach(function (R) {
+      /* ROOM() keeps a fixture's footprint only; its catalog key, variant, seed and height above the floor are on the def (R.src) */
+      const src = (R.src && R.src.fixtures) || [];
+      (R.fixtures || []).forEach(function (f) {
+        const o = src[f.i] || f;
+        if (o.key && FURN_BY_KEY[o.key]) buildDress(catalogFor(R), R, { id: f.id, key: o.key, variant: o.variant, seed: o.seed, x: f.x, y: R.y + (o.y == null ? 0 : o.y), z: f.z, ry: f.ry });
+      });
+    });
+    items.forEach(function (E) {
+      const it = E.item, inst = E.inst; if (!it.dress || it.skip) return;
+      const iry = inst.ry == null ? 0 : inst.ry, c = Math.cos(iry), s = Math.sin(iry), C = catalogFor({ culture: it.culture });
+      it.dress.forEach(function (d) {
+        if (!FURN_BY_KEY[d.key]) return;
+        const q = Object.assign({}, d, { x: inst.x + d.x * c + d.z * s, z: inst.z - d.x * s + d.z * c, y: inst.baseY + (d.y == null ? 0 : d.y), ry: (d.ry == null ? 0 : d.ry) + iry, item: it.key });
+        dressRecs.push(q); buildDress(C, null, q);
+      });
     });
   }
 
@@ -290,11 +325,12 @@
   });
 
   furnishAll();
+  drawDress();
   sheetLabels();
   overview();
   window._interiors = {
     sets: SETS, bands: bands, items: items, rooms: rooms, get plans() { return plans; }, get plansById() { return plansById; }, get residences() { return residences; },
-    catalog: catalog, shells: shells, buildings: buildings, buildingSpecs: buildingSpecs, stairs: stairs,
+    catalog: catalog, catalogFor: catalogFor, dress: dressRecs, dressed: dressed, shells: shells, buildings: buildings, buildingSpecs: buildingSpecs, stairs: stairs,
     gotoItem: gotoItem, gotoRoom: gotoRoom, gotoSet: gotoSet, overview: overview, setLevel: setLevel,
     lightBudget: KEEP_LIGHTS ? null : LIGHT_POOL, keepLights: KEEP_LIGHTS, pointLights: pointLights, assignLights: assignLights,
     reseed: reseed, setOutline: function (on, grid) { S.outline = !!on; S.grid = !!grid; $('olBtn').classList.toggle('on', S.outline); $('gridBtn').classList.toggle('on', S.grid); drawOutlines(); },
