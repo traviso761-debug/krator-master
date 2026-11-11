@@ -172,6 +172,8 @@
  "core/atmos/89-atmos-6-sewer.js: ORNUM": 3,
  "core/atmos/89-atmos-7-cull.js: ORNUM": 2,
  "core/atmos/fx/89-atmos-fx-lightning.js: ORNUM": 1,
+ "core/atmos/fx/89-atmos-fx-radiation.js: CAMPOS": 1,
+ "core/atmos/fx/89-atmos-fx-radiation.js: RAWTEX": 3,
  "core/atmos/fx/89-atmos-fx-raincover.js: ORNUM": 2,
  "core/atmos/host/89-atmos-j-heightfog.js: ORNUM": 1,
  "core/atmos/sky/89-atmos-j-fog.js: ORNUM": 1,

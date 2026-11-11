@@ -1,4 +1,6 @@
 {
+ "biomes/ancientsvalley/materials.json: WHOLE SHEET creeper": 1,
+ "biomes/ancientsvalley/materials.json: WHOLE SHEET mosshang": 1,
  "biomes/catch/materials.json: WHOLE SHEET brinelamp": 1,
  "biomes/catch/materials.json: WHOLE SHEET poplar": 1,
  "biomes/catch/materials.json: WHOLE SHEET reed": 1,
@@ -106,6 +108,7 @@
  "biomes/throne/materials.json: WHOLE SHEET card.weeper": 1,
  "biomes/throne/materials.json: WHOLE SHEET leaf.broom": 1,
  "biomes/throne/materials.json: WHOLE SHEET leaf.needle": 1,
+ "biomes/wouterwall/materials.json: CELL OFF GRID puyaspike": 1,
  "biomes/xanadu/materials.json: CELL OFF GRID raceme": 1,
  "kits/crops/materials.json: WHOLE SHEET card_acacia": 1,
  "kits/crops/materials.json: WHOLE SHEET card_breadfruit": 1,
