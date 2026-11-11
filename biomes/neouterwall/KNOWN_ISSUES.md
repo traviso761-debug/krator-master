@@ -42,6 +42,10 @@ Every station of PLAN.md section 7, built 2026-11-10 in a cloud session on the b
       (`sink`, amendment 4), the scalding pools' `heat` volumes and the tarn's `drown` are owed with those amendments.
 - [ ] **The tarn reflects only the sky.** `WATER.mirror` (core/water ext 58) is not taken: the walls and the dikes do not show in the
       water. A probe-tier mirror over the tarn is the next step once the GPU verify has the frame's cost.
+- [ ] **The tarns' far shores step a little from above.** The water's mask is the model's water cells and their neighbours (1 km), on 60 m
+      cells where the ground lies under the level; where the bicubic ground stays at the level past that ring (station 1's east shore), the
+      water's edge follows the ring in 60 m steps with a pale shallow band (seen from the high view, 'The hollow from the wall'). A shore
+      flood-filled from the tarn (`WATER.open`'s shore grid) in place of the ring would follow the ground.
 - [ ] **The model's shore is a 1 km grid.** The tarn's cells meet the wall's cells with no shore between them; the station's spring
       apron (44s) is the shore the page draws. Beyond the apron's reach (east of the box, round the tarn's far shores) the mid ground's
       220 m cells show the 1 km model's smooth bowl, and the far walls are the model's slopes with the far crags' noise (45: `farRough`),
