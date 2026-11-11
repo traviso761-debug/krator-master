@@ -1,4 +1,4 @@
-"""Survey the Rift line beyond Ledge on scale model 5.1: the Rift's stations to Cube (Loj Nahn), and on to Theodiga,
+"""Survey the Rift line beyond Ledge on scale model 5.1: the Rift's stations to the Pile (Loj Nahn), and on to Theodiga,
 Strongbow and Stair, toward an arcology still to be placed in the Bowl (biomes/line/PLAN.md section 2.2; the owner,
 2026-11-11).
 
@@ -20,9 +20,9 @@ import smodel.page  # noqa: E402
 
 PX_KM = 2.0
 CUT_M, FILL_M = 60.0, 30.0       # ANCIENT-ROADS.md section 2: a cutting up to ~60 m, a viaduct where the ground falls ~30 m under the grade
-# the stations in order (5.1 px), numbered north to south as LORE has it (the owner, 2026-11-11: Cube is Loj Nahn, 9)
+# the stations in order (5.1 px), numbered north to south as LORE has it (the owner, 2026-11-11: the Pile, once Cube, is Loj Nahn, 9)
 STOPS = [('4 Ledge (the lifts\' foot: the lake shore)', 437, 1330), ('5 Nulab', 443, 1359), ('6 Chimes', 468, 1392),
-         ('7 Cthonos', 526, 1503), ('8 The Tubes', 608, 1547), ('9 Cube (Loj Nahn)', 720, 1567),
+         ('7 Cthonos', 526, 1503), ('8 The Tubes', 608, 1547), ('9 the Pile (Loj Nahn)', 720, 1567),
          ('10 Theodiga', 908, 1535), ('11 Strongbow', 1026, 1594), ('12 Stair', 1106, 1442)]
 
 

@@ -12,10 +12,10 @@ byte-identical.
 ## The owner's answers (2026-11-11)
 
 1. **The Line's shape**: accepted (four segments, three gaps, the hot section the middle of the long run).
-2. **The numbering**: **"cube is loj nahn so renumber accordingly"**: Loj Nahn, the number no Tungang says, is **9**, Cube's
+2. **The numbering**: **"cube is loj nahn so renumber accordingly"**: Loj Nahn, the number no Tungang says, is **9**, the Pile's
    station. Counted **north to south** as `LORE.md` has it (no change to LORE): **1 Dalab, 2 Shelf** (the north mouth),
    **3 the Twenny junction** (km 218), **4 Ledge's lifts**, then down into the Rift **5 Nulab, 6 Chimes, 7 Cthonos, 8 The
-   Tubes, 9 Cube**. The Line's other stops (the valley, the fault junction, the doors, the sealed stations, km 250, the
+   Tubes, 9 the Pile**. The Line's other stops (the valley, the fault junction, the doors, the sealed stations, km 250, the
    shallow station, the south mouth) are **unnumbered halts named by the station before them** (2a, 2b, ...). Loj Twenny's
    20 is a later founding (section 2). And: **"the line might connect to strongbow, theodiga, and all the way to Stair and
    an arcology to be placed in the bowl maybe"**: surveyed now (section 2.2).
@@ -52,7 +52,7 @@ section 3) for the Line's side: tracks, timetables, car poses, car interiors, st
 
 | What | Where |
 |---|---|
-| The Ancients built **tunnels under the Outer Wall** to their Rift settlements; **Ledge** is where the line comes out of the Wall; **Cube (Arccube)** is the Rift's hub; **most of the Dalab-Ledge line runs underground**, ~340-420 km with stations, sidings and side galleries, joined to the natural caves | `LORE.md` §4 |
+| The Ancients built **tunnels under the Outer Wall** to their Rift settlements; **Ledge** is where the line comes out of the Wall; **the Pile** (once Cube, Arccube: renamed by the owner, 2026-11-11) is the Rift's hub; **most of the Dalab-Ledge line runs underground**, ~340-420 km with stations, sidings and side galleries, joined to the natural caves | `LORE.md` §4 |
 | The Ancients' road was **one broad 30 m way with a guideway down its middle**: road and line are one; ruling grade ~4 %, no switchbacks: spiral tunnels | `ANCIENT-ROADS.md` §2 |
 | **Significant portions are straight bores**; stations every 30-50 km are "the most-lived-in spaces of all: level, dry, already doored"; the deep middle crossed only by train; **the doors at either end of the hot section are the Tungangs' most important machinery after the trains**; rockbursts in the deepest stretch; collapsed stretches at the breccia's faults, flooded ones at the low points | `ANCIENT-TUNNELS.md` §1-2 |
 | The tunnels are "**a kind of cavern of their own**" (the owner, 2026-11-03) | `ANCIENT-TUNNELS.md` |
@@ -238,17 +238,17 @@ and vanishes. The shafts within reach of the road are the raid points of `core/s
 
 `LN.shafts` gives each `{id, s, side, top: [x, y, z], depth, r, kind: air | adit | winch, state, hidden, road: {id: 'dalab-ledge', d, reach}}`.
 
-**The numbering** (settled by the owner, 2026-11-11: Cube is Loj Nahn). Canon has the lojes numbered "after the Line's
+**The numbering** (settled by the owner, 2026-11-11: the Pile (once Cube) is Loj Nahn). Canon has the lojes numbered "after the Line's
 original stations north to south (Ledge's lifts are Loj Fower)". The Ancients numbered only the Line's **main stations**,
 north to south: **1 Dalab** (the lab), **2 Shelf** (the north mouth, the spirals' head), **3 the Twenny junction** (km 218,
 the great shaft), **4 Ledge's lifts**, and in the Rift **5 Nulab** (the lake shore under the lifts), **6 Chimes**, **7
-Cthonos**, **8 The Tubes**, **9 Cube**: Loj Nahn, the number no Tungang says, the lost loj in Arccube's upper levels. Every
+Cthonos**, **8 The Tubes**, **9 the Pile**: Loj Nahn, the number no Tungang says, the lost loj in Arccube's upper levels. Every
 other stop is a **halt**, named by the main station before it: the valley 2a, the fault junction 2b, the north door 2c, the
 sealed stations 2d to 2f, the south door 2g; km 250 3a, the shallow station 3b, the south mouth 3c. Lojes founded later in
-caverns off the Line took numbers past the stations' (Loj Twenny, 20, off station 3). Beyond Cube the count goes on (10
+caverns off the Line took numbers past the stations' (Loj Twenny, 20, off station 3). Beyond the Pile the count goes on (10
 Theodiga, 11 Strongbow, 12 Stair: section 2.2).
 
-### 2.2 Beyond Ledge: the Rift's stations, Cube and the line east (surveyed 2026-11-11)
+### 2.2 Beyond Ledge: the Rift's stations, the Pile and the line east (surveyed 2026-11-11)
 
 The owner (2026-11-11): "the line might connect to strongbow, theodiga, and all the way to Stair and an arcology to be
 placed in the bowl maybe". `python3 biomes/line/tools/survey_extension.py` takes straight legs between the stations on
@@ -262,17 +262,26 @@ placed in the bowl maybe". `python3 biomes/line/tools/survey_extension.py` takes
 | 5 Nulab to 6 Chimes | 83 | 344 to 243 | 243 to 883 | 58 | 0 | 0 | rift, volcanic |
 | 6 Chimes to 7 Cthonos | 250 | 243 to 2,313 | -1,848 to 2,738 | 34 | **208** | 0 | rift |
 | 7 Cthonos to 8 The Tubes | 186 | 2,313 to -77 | -766 to 3,328 | **137** | 46 | 0 | rift, volcanic |
-| 8 The Tubes to 9 Cube | 228 | -77 to -224 | -2,600 to -36 | 0 | **219** | **154** (the Rift's lake) | rift |
-| 9 Cube to 10 Theodiga | 381 | -224 to -495 | -2,304 to 1,614 | 115 | **229** | 23 | rift, volcanic |
+| 8 The Tubes to 9 the Pile | 228 | -77 to -224 | -2,600 to -36 | 0 | **219** | **154** (the Rift's lake) | rift |
+| 9 the Pile to 10 Theodiga | 381 | -224 to -495 | -2,304 to 1,614 | 115 | **229** | 23 | rift, volcanic |
 | 10 Theodiga to 11 Strongbow | 264 | -495 to 1,535 | -760 to 2,515 | **188** | 68 | 43 | rift |
 | 11 Strongbow to 12 Stair | 344 | 1,535 to 1,379 | 983 to 4,553 | **329** | 11 | 3 | granite, gneiss, sedimentary (the Catch's walls) |
 | **Ledge to Stair** | **1,795** | | | **861** | **838** | **274** | |
 
+**Routed by the network session** (2026-11-11, `openworld/ANCIENT-NETWORK.md` §8.6 on `claude/ancient-network-9cc3e7`, commit
+3e773f2bc, unpushed; the Ancient cost at 4 %, tunnels only above 8 km, water at 8x): Chimes to Cthonos 278 km (89 tunnel),
+Cthonos to The Tubes 221 km, **The Tubes to the Pile 292 km round the lake** rather than across it (put to the owner), the
+Pile to Theodiga 424 km, Theodiga to Strongbow 296 km, Strongbow to Stair (possible) the straight bore above, 344 km with
+329 bored; from Stair the existing Stair line runs north to **the Bowl's arcology, placed provisionally at 1024,1149**.
+The network keeps this plan's chainage as its `rift` route's datum (bore km 0 = route s 94 km), adopts the station
+numbers as `stations[].num`, and takes the corridor (`way`), the Louisiana decks (`trestle`) and the access road with
+its service bore for every route. The Line's bore is unchanged.
+
 - **The Rift floor is crossed high**: from Chimes to Theodiga the straight legs run more than half their length over
   ground far under the grade (the Rift's trenches and lakes): the Line rides a **continuous elevated way** there (section
   2.3), with tunnels through the ridges between (Cthonos to The Tubes). The router will bend it round the worst.
-- **The Tubes to Cube crosses the Rift's lake**: 154 km over water on the straight line; the router may keep to the
-  shore. Cube's own station (9) stands in Lizardmen country: the Line there is the reward's road, mostly broken.
+- **The Tubes to the Pile crosses the Rift's lake**: 154 km over water on the straight line; the router may keep to the
+  shore. the Pile's own station (9) stands in Lizardmen country: the Line there is the reward's road, mostly broken.
 - **Strongbow to Stair is one long bore** (329 km tunnel under the Catch's walls, 4.5 km high), kin of the Arcbeam-Stair
   tunnel closed by the quake (`biomes/catch/PLAN.md`). Strongbow was Xanadu's end of the line (`LORE.md` §4): *proposed*,
   the bore beyond it is sealed or fallen, and Xanadu keeps only its own short line.
@@ -694,7 +703,7 @@ question 14):
 1. **The Line's shape** (section 2): four segments (N, the long run, S1, S2), three gaps (G1 at the breccia's fault, G2
    where the gallery fell into a hypogene chamber, G3 a karst inrush), the hot section the middle of the long run (doors
    at km 55 and 203), three sealed ghost stations inside it, the long run's three sealed trains. Right, or move the gaps?
-2. **The numbering** (section 2): number the Line's stations **from the Rift's hub north** (Cube 1, Chimes 2, Nulab 3,
+2. **The numbering** (section 2): number the Line's stations **from the Rift's hub north** (the Pile 1, Chimes 2, Nulab 3,
    Ledge's lifts 4, the south portal 5, ... the north portal 15), so Loj Fower stays at Ledge; numbers past the stations'
    (Loj Twenny, 20) belong to lojes founded later in caverns? `LORE.md`'s "north to south" would change.
 3. **Loj Twenny** reached by a 25 km side gallery from the Twenny junction (km 218), as a cavern loj in the rift fill (not
