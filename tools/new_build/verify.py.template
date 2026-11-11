@@ -1,0 +1,26 @@
+#!/usr/bin/env python3
+"""python3 verify.py dist/<name>.html --assert [--views a,b]: the build's own asserts, then the universal ones."""
+import argparse, asyncio, os, sys
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(HERE, '..', '..', 'tools'))
+import harness                                      # noqa: E402  (imported at the top: the watchdog and the verify cache)
+
+
+async def main(a):
+    async with harness.verify_page(a.html, here=HERE, checks=harness.SURVEY) as V:   # items 27, 28
+        fails = V.fails
+        r = await V.page.evaluate("() => window._api ? _api.hostChecks() : null")
+        if a.assert_ and not r:
+            fails.append('no _api.hostChecks')
+        for v in harness.parse_views(a.views):          # view names: no apostrophe, no colon (item 30)
+            await V.page.evaluate("(v) => _api.view(v)", v)
+            await V.shot(os.path.join(a.out, 'view_%s.png' % v.replace(' ', '_')), view=v)
+    return V.exit()
+
+
+if __name__ == '__main__':
+    ap = argparse.ArgumentParser()
+    ap.add_argument('html'); ap.add_argument('--assert', dest='assert_', action='store_true')
+    ap.add_argument('--views', default=''); ap.add_argument('--out', default='shots')
+    sys.exit(asyncio.run(main(ap.parse_args())))

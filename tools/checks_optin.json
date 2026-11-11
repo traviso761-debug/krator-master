@@ -1,0 +1,10 @@
+{
+ "what": "The opt-in checks from the survey of 2026-11-11 (CORE-IMPROVEMENTS.md items 25-30). A build listed under a check takes it; \"*\" means every build. New builds list themselves here (README.md, \"Starting a new build\"); the next all-builds ride-along pass sets every list to \"*\" (TODO.md, \"switch on checks 22-31 everywhere\"). KRATOR_CHECKS=all (or a comma list of names) turns them on for one run. tools/buildlib.py opted_in() reads this file.",
+ "checks": {
+  "recorded": {"item": 25, "what": "a plain `python3 build.py` refuses to run unless under tools/build.py (which writes build-inputs.json), and refuses the Git LFS pointers it would read (item 23); tools/check_port.py, which every build.py runs first, enforces it", "builds": []},
+  "minset": {"item": 26, "what": "a page that holds core/biome/10-core-head.js holds every fragment of CORE_BIOME_MIN (tools/check_assembly.py, rule MINSET)", "builds": []},
+  "samplers": {"item": 27, "what": "the universal assert `samplers`: every linked program's active sampler count, fail at 16, warn at 15 (tools/harness.py verify_page)", "builds": []},
+  "drawn-ground": {"item": 28, "what": "the eye check measures the eye against the drawn ground (core/drawn, KDRAWN.h), not only by rays (tools/harness.py verify_page)", "builds": []},
+  "names": {"item": 30, "what": "tools/build.py fails a build whose view names hold an apostrophe or a colon (tools/check_views.py, rule VIEW-NAME)", "builds": []}
+ }
+}

@@ -208,3 +208,86 @@ def git_status():
             p = p.split(' -> ', 1)[1]
         out.append(p.strip('"'))
     return out
+
+
+# --------------------------------------------------------------------------
+# The opt-in checks of the 2026-11-11 survey (CORE-IMPROVEMENTS.md items 22-31): tools/checks_optin.json lists the builds
+# that take each; "*" is every build. KRATOR_CHECKS=all, or a comma list of check names, turns them on for one run.
+OPTIN = os.path.join(ROOT, 'tools', 'checks_optin.json')
+SURVEY_CHECKS = ('recorded', 'minset', 'samplers', 'drawn-ground', 'names')
+
+
+def optin_table():
+    try:
+        with open(OPTIN, encoding='utf-8') as fh:
+            return json.load(fh).get('checks', {})
+    except (OSError, ValueError):
+        return {}
+
+
+def opted_in(check, build=None):
+    """True when `build` (repo-relative, '/') takes `check`: listed in tools/checks_optin.json, the list is "*", or
+    KRATOR_CHECKS names it (or says all)."""
+    env = [c.strip() for c in os.environ.get('KRATOR_CHECKS', '').split(',') if c.strip()]
+    if 'all' in env or check in env:
+        return True
+    builds = optin_table().get(check, {}).get('builds', [])
+    if builds == '*' or '*' in builds:
+        return True
+    if build is None:
+        return False
+    b = build.replace(os.sep, '/').rstrip('/')
+    return b in builds
+
+
+# The core/biome fragments every page on the biome core takes, flora or not (item 26): four sessions hit `BIO.leafOn is
+# not a function` on a page that listed core/biome by hand without 31b. A build extends it:
+#     CORE_BIOME = buildlib.CORE_BIOME_MIN + ['core/biome/35-core-anim.js', ...]
+# tools/check_assembly.py's MINSET rule checks an opted-in build's pages hold all of it.
+CORE_BIOME_MIN = ['core/biome/10-core-head.js', 'core/biome/20-core-kit.js', 'core/biome/30-core-foliage.js',
+                  'core/biome/31b-core-leafset.js', 'core/biome/34-core-impostor.js', 'core/biome/40-core-place.js']
+
+
+def under_tools_build():
+    """True inside a build that tools/build.py started (it records the inputs: KRATOR_INPUTS_DIR)."""
+    return bool(os.environ.get('KRATOR_INPUTS_DIR'))
+
+
+PLAIN_OK = ('--list-sources', '--vendor-check', '--help', '-h')
+
+
+def through_tools_build(build_file, argv=None):
+    """Item 25, for a build.py: called at its top, a plain `python3 build.py ...` re-runs itself as
+    `python3 tools/build.py <build> ...`, so build-inputs.json is always written beside the page. A no-op under
+    tools/build.py, for --list-sources and --vendor-check, and with KRATOR_ALLOW_PLAIN_BUILD=1.
+
+        sys.path.insert(0, os.path.join(ROOT, 'tools')); import buildlib
+        buildlib.through_tools_build(__file__)
+    """
+    argv = sys.argv if argv is None else argv
+    if under_tools_build() or os.environ.get('KRATOR_ALLOW_PLAIN_BUILD') == '1' or any(a in PLAIN_OK for a in argv[1:]):
+        return
+    path = os.path.abspath(build_file)
+    build = rel(os.path.dirname(path))
+    if build is None:
+        return
+    script = os.path.basename(path)
+    cmd = [sys.executable, os.path.join(ROOT, 'tools', 'build.py'), build] + list(argv[1:]) + (
+        [] if script == 'build.py' else ['--script', script])
+    sys.stdout.write('build: through tools/build.py, so build-inputs.json is written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)\n')
+    sys.stdout.flush()
+    sys.exit(subprocess.call(cmd, cwd=ROOT))
+
+
+def plain_build_refusal(build):
+    """Item 25 for an opted-in build that has not called through_tools_build: the message tools/check_port.py exits with
+    when a plain build.py runs it (None when the build may go on). Pointers it would read are named too (item 23)."""
+    if under_tools_build() or os.environ.get('KRATOR_ALLOW_PLAIN_BUILD') == '1' or not opted_in('recorded', build):
+        return None
+    bad = preflight(build)
+    msg = ('%s takes the "recorded" check (tools/checks_optin.json): build it with `python3 tools/build.py %s`, which writes '
+           'build-inputs.json beside the page (KRATOR_ALLOW_PLAIN_BUILD=1 python3 build.py for a run that writes no dist/ you '
+           'will commit)' % (build, build))
+    if bad:
+        msg += '; it would also read %d Git LFS pointer(s): %s' % (len(bad), pull_hint(bad))
+    return msg

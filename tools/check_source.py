@@ -6,7 +6,8 @@
     python3 tools/check_source.py --write-baseline  # accept today's findings (after fixes, or for a deliberate case)
     python3 tools/check_source.py biomes/rift       # one folder (its keys only, against the baseline)
 
-It reads core/**/*.js and each build's src/, targets/ and stations/ (no dist/, no *.min.js, no test-*.js), lexed by
+It reads core/**/*.js, each build's src/, targets/ and stations/, and the *.js at a kit's top level (the catalog, fauna, mechs
+and motor-vehicles keep their fragments there; no dist/, no *.min.js, no test-*.js), lexed by
 tools/jsscan.py, so a rule sees code as code and a comment as a comment. Key: '<file>: <RULE>', counted per file, so a
 line that moves does not read as new. The ratchet is tools/ratchet.py: the piles below stay, and may only shrink.
 
@@ -49,6 +50,9 @@ def sources():
     for top in TOPS:
         for part in PARTS:
             out += glob.glob(os.path.join(ROOT, top, '*', part, '**', '*.js'), recursive=True)
+    # the kits that keep their fragments at the top level (catalog, fauna, mechs, motor-vehicles: the survey of 2026-11-11,
+    # item 32, found check_source never read them)
+    out += glob.glob(os.path.join(ROOT, 'kits', '*', '*.js'))
     keep = []
     for f in out:
         r = os.path.relpath(f, ROOT).replace(os.sep, '/')

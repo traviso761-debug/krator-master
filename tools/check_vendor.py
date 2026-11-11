@@ -74,7 +74,7 @@ def builds(only=None):
 def run(build):
     cwd = os.path.join(ROOT, build)
     cmd = [sys.executable, '-c', RUNPY_CODE] if build in RUNPY else [sys.executable, 'build.py', '--vendor-check']
-    env = dict(os.environ, PYTHONIOENCODING='utf-8')
+    env = dict(os.environ, PYTHONIOENCODING='utf-8', KRATOR_ALLOW_PLAIN_BUILD='1')   # a vendor check writes nothing (item 25)
     t = time.time()
     try:
         r = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True, encoding='utf-8', errors='replace',

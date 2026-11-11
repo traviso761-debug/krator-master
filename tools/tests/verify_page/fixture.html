@@ -46,6 +46,23 @@ if (CASE === 'inside-out') {
   for (let i = 0; i < ix.length; i += 3) { const t = ix[i]; ix[i] = ix[i + 1]; ix[i + 1] = t; }
   const m = new THREE.Mesh(g, box.material); m.name = 'inverted rock'; m.position.set(-9, 3, 0); scene.add(m);
 }
+if (CASE === 'eye-under-drawn') {
+  /* item 28: under the ground, with a seabed below: the ray rule sees solid ground down and passes; the drawn ground does not */
+  camera.position.set(20, -3, 20);
+  const bed = new THREE.Mesh(new THREE.PlaneGeometry(200, 200).rotateX(-Math.PI / 2), new THREE.MeshLambertMaterial({color: 0x334455}));
+  bed.name = 'seabed'; bed.position.y = -20; scene.add(bed);
+}
+if (CASE === 'samplers-16' || CASE === 'samplers-15') {
+  /* item 27: a program that samples 16 (or 15) textures, every one read so none is optimised away */
+  const k = CASE === 'samplers-16' ? 16 : 15, u = {}, dt = new THREE.DataTexture(new Uint8Array([255, 255, 255, 255]), 1, 1);
+  dt.needsUpdate = true;
+  let decl = '', sum = 'vec4 c = vec4(0.0);';
+  for (let i = 0; i < k; i++) { u['t' + i] = {value: dt}; decl += 'uniform sampler2D t' + i + ';'; sum += 'c += texture2D(t' + i + ', vec2(0.5));'; }
+  const m = new THREE.ShaderMaterial({uniforms: u, vertexShader: 'void main(){ gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+    fragmentShader: decl + 'void main(){ ' + sum + ' gl_FragColor = c / ' + k + '.0; }'});
+  m.name = 'sixteen maps';
+  const q = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 2), m); q.position.set(-5, 1, 0); scene.add(q);
+}
 if (CASE === 'error-panel') document.getElementById('errs').textContent = 'Error: a fragment threw';
 /* the probe the biome builds carry, enough for the NaN and registry asserts */
 window._api = {

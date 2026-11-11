@@ -25,7 +25,9 @@ and the default of an `add_argument('--views', default=...)` (split on , ; |), a
     Files directly in stations/ (biomes/rift's bake scripts) are not stations.
 
 (b) VIEW-NAME <name>. A view name becomes a screenshot's file name (verify.py `view_<name>.png`, replacing only spaces
-    and '/'), so it may not hold : \\ / * ? " < > |, a control character, or begin or end with a space or a dot.
+    and '/'), so it may not hold : \\ / * ? " < > |, a control character, or begin or end with a space or a dot; nor an
+    apostrophe (2026-11-11 survey, item 30: a view or check name spliced into single-quoted JS breaks the page's call).
+    tools/build.py fails a build that takes the "names" check (tools/checks_optin.json) on any of these, with no ratchet.
     Recognised forms in the JS (string keys only; a name built at run time, 'Tree '+i, cannot be read and is skipped):
       1. `VIEWS = { 'name': [...], ... }`  the keys at the literal's top level (also HOST_VIEWS: any <CAPS>_VIEWS)
       2. `VIEWS = (function(){ ... })()`   inside it, form 4's patterns
@@ -51,7 +53,7 @@ NAME = 'check_views'
 BUILD_TOPS = ('biomes', 'kits', 'settlements', 'openworld')
 
 STR = r"""(?:'(?:[^'\\\n]|\\.)*'|"(?:[^"\\\n]|\\.)*")"""
-BAD_CHARS = set(':\\/*?"<>|')
+BAD_CHARS = set(':\\/*?"<>|\'')   # the apostrophe: a name spliced into single-quoted JS ends the string (item 30)
 DEFINES = re.compile(r"\b(?:[A-Z]+_)?VIEWS\s*(?:=[^=]|\[)|\b(?:STAGE|STATION)\.views\s*=|\bget\s+views\s*\(|\bviews\s*:|\bviewList\s*:"
                      r"|\bviews\s*\([\w\s,]*\)\s*\{|\bfunction\s+STATION_VIEWS\s*\(")
 
