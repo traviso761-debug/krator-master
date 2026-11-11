@@ -23,6 +23,12 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `anomaly/20-core-anomaly.js` | 16.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | KANOM: anomaly records, at/walk/squash/owed, the hazard rows (crushing, aging, lift) put into the vocabulary at load; GDScript twin owed (PLAN-ANOMALIES 14) |
 | `anomaly/host/90-anomaly-walker.js` | 2.5 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | KANOM.bindWalker: the host camera's speed and eye from KANOM.walk; Godot: the CharacterBody3D reads KANOM.walk |
 | `atmos/fx/89-atmos-fx-localtime.js` | 12.9 | [G shader] | 0 | 0 | 0 | 0 | 0 | 1 | 3 | 1 | 0 | 0 | 0 | opt-in (subfolder): ATMOS.localFx, particles on a local clock and gravity; localFxData and localFxAt are [G data] (the records and the motion's twin); GPUParticles3D with the same process shader |
+| `atmos/fx/89-atmos-fx-plumes.js` | 8.2 | [G shader] | 0 | 0 | 0 | 0 | 0 | 1 | 3 | 1 | 0 | 0 | 0 | opt-in (subfolder): ATMOS.plumes; plumeRec, plumeOn and plumeAt are [G data]; GPUParticles3D |
+| `atmos/fx/89-atmos-fx-sparks.js` | 11.8 | [G shader] | 0 | 0 | 0 | 0 | 0 | 2 | 6 | 2 | 0 | 0 | 0 | opt-in (subfolder): ATMOS.sparks, ATMOS.arcs; the records, sparkEpoch, arcPoint and arcHazard are [G data] on lowbias32 |
+| `atmos/fx/89-atmos-fx-sludge.js` | 11.2 | [G shader] | 0 | 0 | 0 | 0 | 0 | 1 | 8 | 0 | 0 | 0 | 0 | opt-in (subfolder): the pool's material, the spill layer; spillAt and poolHazard are [G data]; krandGLSL is KRAND.h3 in GLSL |
+| `atmos/fx/89-atmos-fx-slag.js` | 5.0 | [G shader] | 0 | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | opt-in (subfolder): ATMOS.slagOn, a KHOOK layer; Godot EMISSION |
+| `atmos/fx/89-atmos-fx-spill.js` | 5.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | opt-in (subfolder): ATMOS.aqueductSpill (the record, WATER.fall's options); ATMOS.spill draws it on localFx |
+| `atmos/fx/89-atmos-fx-gustsheen.js` | 3.6 | [G shader] | 0 | 0 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | opt-in (subfolder): ATMOS.gustOn, a KHOOK layer on the shared atmGust; gustAt its JS twin |
 | `atmos/fxdemo/src/10-demo.js` | 16.6 | [web] | 0 | 0 | 4 | 1 | 3 | 22 | 0 | 1 | 0 | 0 | 0 | the effects demo page (a viewer, not a runtime dependency) |
 | `atmos/89-atmos-3d-dust.js` | 5.3 | [G shader] | 0 | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 |  |
 | `atmos/89-atmos-4-weather.js` | 12.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 3 | 12 | 0 | 0 | 0 | 0 | the state machine (weatherTarget, weatherStep, flashAt) is pure; the selector moved to 9-host |

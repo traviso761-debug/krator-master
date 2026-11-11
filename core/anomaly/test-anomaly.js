@@ -11,7 +11,7 @@ const V=KT.VOCAB,before=JSON.stringify(V);
 const N=require(path.join(__dirname,'20-core-anomaly.js'));const H=globalThis.KHAZ;
 let bad=0;const ok=(name,pass,neg)=>{const r=!!pass&&!neg;if(!r)bad++;console.log((r?'PASS  ':'FAIL  ')+name+(neg?' (its negative passed)':''));};
 const throws=f=>{try{f();return false;}catch(e){return true;}};
-const near=(a,b,e)=>Math.abs(a-b)<=(e||1e-9);
+const near=(a,b,e)=>Math.abs(a-b)<=(e==null?1e-9:e);
 
 // ---- the vocabulary: the three rows and the key go in, nothing else moves; a page without the module keeps its own
 const V2=JSON.parse(JSON.stringify(V));['crushing','aging','lift'].forEach(k=>delete V2.hazardKinds[k]);delete V2.keys.anomaly;
