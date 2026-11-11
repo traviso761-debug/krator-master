@@ -1,4 +1,4 @@
-// node biomes/clifflung/tests/test-lung.js — the Cliff Lungs' data (src/47-biome-lung-data.js; PLAN.md sections 3, 6, 9 and 16 L1): the breath's four
+// node biomes/clifflung/tests/test-lung.js — the Cliff Lungs' data (src/41-biome-lung-data.js; PLAN.md sections 3, 6, 9 and 16 L1): the breath's four
 // states against the clock and the weather, its determinism, the bands monotone in pressure, the yield and the stack against section 3's numbers,
 // the mirror share, the layout's invariants on a KRELIEF.scarp, the hazards on the breath. Each check with a broken input that must fail. No browser.
 'use strict';
@@ -14,7 +14,7 @@ const KT=require(path.join(ROOT,'core','tags','50-core-tags.js'));require(path.j
 for(const f of['core/biome/37-core-traps.js','core/hazard/20-core-hazard.js'])eval(rd(f));
 global.KHAZ=globalThis.KHAZ;
 eval(rd('core/terrain/38-core-relief.js')+';global.KRELIEF=KRELIEF;');
-eval(rd('biomes/clifflung/src/47-biome-lung-data.js')+';global.LUNG=LUNG;');
+eval(rd('biomes/clifflung/src/41-biome-lung-data.js')+';global.LUNG=LUNG;');
 const L=LUNG;
 let bad=0;const ok=(name,pass,neg)=>{const r=!!pass&&!neg;if(!r)bad++;console.log((r?'PASS  ':'FAIL  ')+name+(neg?' (its negative passed)':''));};
 const throws=f=>{try{f();return false;}catch(e){return true;}};

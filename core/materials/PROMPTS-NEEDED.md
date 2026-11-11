@@ -442,6 +442,72 @@ rails and every ruined metal. **3 prompts.** Each takes the base template, then:
 | `ground.ballast.rail` | Railway track ballast: angular grey granite stones 3 to 6 cm (#7e7a74, #8a8680, #6a6660), packed, dusty with rust-brown fines between them (#6a4a36), two faint darker bands across the tile where sleepers lay. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. |
 | `metal.rail.rusted` | The head and web of a steel rail a thousand years idle: flaking orange-brown rust (#8a4a2c, #a65a36) over pitted dark steel (#4a4644), the running surface a dull grey band along the tile's middle with rust creeping over it, scale lifting at the edges. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. |
 
+## 44. The Cliff Lungs (`biomes/clifflung`, 2026-11-11)
+
+The living flues on the southern Inner Wall (`biomes/clifflung/PLAN.md` section 15, moved here on the kit's build). The kit runs on reused sets
+until these land (its `materials.json` and `KNOWN_ISSUES.md` name each stand-in). **4 prompts**, paste-ready:
+
+**`organic.lung.ring`**: the ring's sun-side skin, ribbed in a shallow helix; tintable (the pressure band is the tint). Stand-in: `organic.pleat.skin`.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view,
+perfectly flat surface filling the whole frame edge to edge. Flat, even,
+shadowless lighting, as if scanned: no highlights, no vignette, no shading
+gradient across the image. No perspective, no objects, no text, no border,
+no watermark. The left edge must continue into the right edge and the top
+into the bottom. Material: the living skin of a huge fleshy tube, taut and
+slightly glossy, crossed by broad shallow ribs running diagonally at about
+twenty degrees from vertical, each rib a smooth rounded ridge a hand wide
+with a fine crease along its crest, the skin between the ribs finely
+pebbled with small pores and faint branching veins just under the surface.
+Keep colours natural but slightly muted and even, so the texture can be
+tinted to different palettes without looking stained.
+```
+
+**`organic.comb.throat`**: the throat comb, wet black; full colour. Stand-in: `organic.tendril.banded`.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view,
+perfectly flat surface filling the whole frame edge to edge. Flat, even,
+shadowless lighting, as if scanned: no highlights, no vignette, no shading
+gradient across the image. No perspective, no objects, no text, no border,
+no watermark. The left edge must continue into the right edge and the top
+into the bottom. Material: a wet black organic comb, thousands of short
+soft black filaments (#141210) packed in dense parallel rows like a baleen
+plate or a gill, beaded with clear water droplets, the rows wavering
+slightly, with a few pale grey-green specks of trapped dust and pollen
+(#9aa58a) caught between the filaments. Full colour: not tinted.
+```
+
+**`organic.husk.dry`**: a dead ring's papery split skin; tintable. Stand-in: `organic.lichen.plates`.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view,
+perfectly flat surface filling the whole frame edge to edge. Flat, even,
+shadowless lighting, as if scanned: no highlights, no vignette, no shading
+gradient across the image. No perspective, no objects, no text, no border,
+no watermark. The left edge must continue into the right edge and the top
+into the bottom. Material: the dried dead skin of a huge fleshy tube, thin,
+papery and brittle, split along shallow diagonal ribs into curling flakes,
+the surface crazed with fine cracks, dusty, with darker fibrous layers
+showing where the outer skin has flaked off. Keep colours natural but
+slightly muted and even, so the texture can be tinted to different
+palettes without looking stained.
+```
+
+**`card.fallout.lawn`**: the fall-out lawn's jungle seedlings, a cut-out on magenta. Stand-in: a canvas card drawn in `src/72-biome-lung.js` (KNOWN_ISSUES.md says so).
+
+```
+Flat sheet of cut-outs, square, 2048x2048, on a solid flat bright magenta
+background (#ff00ff); no magenta, pink or purple anywhere in the subject; no
+grey or white background. Flat, even, shadowless lighting. Subject: ten
+separate clumps of young tropical seedlings as a lawn, each clump a crowd of
+big soft cotyledons and first leaves in several shapes (round, heart-shaped,
+palmate, strap-like), bright fresh green (#5fae3c to #8fd05a), a few clumps
+yellowing and browning at the edges, no flowers, no soil. No text, no border,
+no watermark.
+```
+
 ## Gaps with no prompt yet
 
 Owed, but a prompt waits on something first; listed so they are not lost.

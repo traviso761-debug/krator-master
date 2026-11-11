@@ -17,7 +17,8 @@
 //   LUNG.hand(world, id)  +1 right-handed, -1 the mirror lung (one in forty by the hash: under one in thirty, the owner's rule)
 //   LUNG.layout(o) -> {lungs, mouths, bells, husks, lawns, sphincters}   lungs from a KRELIEF.scarp record's ravines and buttresses
 //        o {scarp, ground(x,z), world, n (lungs at most), deckY (the deck's top: the foot below it is not drawn), wind [x,z] (the way it blows),
-//           yTop (the altitude a lung stops climbing at), clip (the map's half-width)}
+//           yTop (the altitude a lung stops climbing at), clip (the map's half-width), offMap (the rim may lie past the map: the lungs
+//           are drawn from where they enter it, cut: true, with no mouth), footK (1.04: how far past the scarp's run the foot lies)}
 //   LUNG.hazards(L) -> [{name, x, y, z, r, h, tags:{hazard}}]   the draw, the cold breath, the film, the sphincter, the fall, the maw (section 9)
 //   LUNG.roleK(role, b) -> {state, k, on}   a hazard's state at breath b; LUNG.state, KHAZ.STATES['LUNG.breath'] (registered when KHAZ is there)
 //        reads LUNG.now() -> [t, W] (the host sets it to its clock)
@@ -89,12 +90,12 @@ var LUNG=(function(){
   const out={world,lungs:[],mouths:[],bells:[],husks:[],lawns:[],sphincters:[]};const step=o.step==null?10:o.step;
   for(const c of cand){if(out.lungs.length>=nMax)break;const k=out.lungs.length,id='lung'+k,u=c2=>U(world,k,c2,0xA4);
    const tx=-c.nz,tz=c.nx,ox=c.x+tx*c.off,oz=c.z+tz*c.off;
-   if(Math.abs(ox)>clip*.92||Math.abs(oz)>clip*.92)continue;
+   if(Math.abs(ox)>clip*.92||(!o.offMap&&Math.abs(oz)>clip*.92))continue;
    if(out.lungs.some(q=>Math.hypot(q.mouth0[0]-ox,q.mouth0[1]-oz)<70))continue;   /* a lung keeps its own line (KSPACE checks it again on the page) */
    const r=1.6+2.4*u(1),wall=.3*r,dead=u(2)<.15,young=!dead&&u(3)<.12,hand=L.hand(world,k);
    /* the centreline: from the mouth just back of the rim, down the face along n, the centre half a radius over the ground (the rock its back wall) */
-   const pts=[];const d0=-12-8*u(4),dEnd=young?S.run*(.35+.3*u(5)):S.run*1.15;
-   for(let d=d0;d<=dEnd;d+=step){const x=ox+c.nx*d,z=oz+c.nz*d;if(Math.abs(x)>clip||Math.abs(z)>clip)break;const y=G(x,z)+r*.55;pts.push([x,y,z]);if(y<deckY-80)break;}
+   const pts=[];const d0=-12-8*u(4),dEnd=young?S.run*(.35+.3*u(5)):S.run*(o.footK==null?1.04:o.footK);let cut=false;
+   for(let d=d0;d<=dEnd;d+=step){const x=ox+c.nx*d,z=oz+c.nz*d;if(Math.abs(x)>clip||Math.abs(z)>clip){if(pts.length)break;cut=true;continue;}const y=G(x,z)+r*.55;pts.push([x,y,z]);if(y<deckY-80)break;}
    if(pts.length<4)continue;
    /* young lungs grow from the foot: their top is the growing tip, their foot the bell */
    const P=young?pts.slice(Math.floor(pts.length*.55)):pts;
@@ -109,7 +110,8 @@ var LUNG=(function(){
     atm0:rings[0].atm,atm1:rings[rings.length-1].atm};
    out.lungs.push(lung);
    const top=P[0],foot=P[P.length-1];
-   if(!young){const lean=[wx,wz],mr=r*(1.15+.25*u(6));
+   lung.cut=cut;
+   if(!young&&!cut){const lean=[wx,wz],mr=r*(1.15+.25*u(6));
     const yl=dead?0:Math.round(L.yield(lung.bore)*10)/10;
     const m={id:id+'.mouth',lung:id,x:top[0],y:top[1],z:top[2],r:mr,lean,live:!dead,mirror:lung.mirror,yield:yl,collar:mr*1.35,
      well:{x:top[0]+wx*mr*2.2,z:top[2]+wz*mr*2.2,r:mr*.9+1.5}};
