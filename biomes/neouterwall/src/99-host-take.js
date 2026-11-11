@@ -78,6 +78,12 @@ HCHK.mouths=(reg,M)=>{const m=reg.filter(r=>r.key==='landform.mouth').length;con
  return{ok,detail:m+' mouths registered of '+M.length+(M.length?'; floors '+M.map(q=>q.floorY.toFixed(0)+' m over the tarn').join(', '):'')};};
 const _zoneCounts=()=>{const n={};for(let k=0;k<ZR.length;k++){const z=ZONE_IDS[ZR[k]];n[z]=(n[z]||0)+1;}return n;};
 const _allTrees=()=>(NWOW.TREES||[]).concat(NEOW.TREES||[]);
+// verify.py's export profile (core/export): its box round the station's start (SPINE[0]) where a tree stands in it, else round the tree
+// nearest the start (stations 4 and 5a start on bare meadow and ice: a box there held no tree, so no bucket); a page with no tree asks for no buckets
+const EXPORT_AT=(function(){const T=_allTrees(),s=SPINE[0];let b=null,d=1e18;T.forEach(t=>{const e=(t.x-s[0])*(t.x-s[0])+(t.z-s[1])*(t.z-s[1]);if(e<d){d=e;b=t;}});
+ const c=!b||Math.max(Math.abs(b.x-s[0]),Math.abs(b.z-s[1]))<140?s:[b.x,b.z],x=Math.round(c[0]),z=Math.round(c[1]);
+ return{box:[x-150,z-150,x+150,z+150],profile:T.length?null:['registry','items','materials','textures','terrain','stage','atmos']};})();
+window._exportBox=EXPORT_AT.box;
 HCHK.zonesOnly=(need,ZC)=>{const lack=need.filter(z=>!(ZC[z]>0));return{ok:!lack.length,detail:need.map(z=>z+' '+(ZC[z]||0)).join(', ')+(lack.length?'; missing '+lack.join(', '):'')};};
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),ZC=_zoneCounts();
  if(CAULDRON){
@@ -135,7 +141,7 @@ const H=KHOST.take({build:'neouterwall',title:'Krator biome — the NE outer wal
   site:SITE_RECS,therm:THERM?THERM.export({box:[-SITE.R,-SITE.R,SITE.R,SITE.R],cell:16}):null})},
  minimap:{title:'The NE outer wall: '+SITE.title},
  budget:BUDGET,types:()=>BIO.stats,
- api:{hostChecks,hostNegatives,
+ api:{hostChecks,hostNegatives,exportProfile:EXPORT_AT.profile,exportBox:EXPORT_AT.box,
   get totals(){const t=BIO.totals();return {rendered:BIO.lodShown?BIO.lodShown.tris:null,tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
   biome:()=>window._biome,season:()=>SEASON,zoneAt:(x,z)=>NEOW.zoneAt(x,z),heatAt:(x,z)=>heatAt(x,z)}});
 KHOST.on(function lodTick(){camera.updateMatrixWorld();if(BIO.lodTick)BIO.lodTick(camera);},'view');
