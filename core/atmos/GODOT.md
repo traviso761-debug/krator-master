@@ -275,5 +275,3 @@ thunder event at `t + dist / 343`; the autoload emits `thunder(dist, power)` and
 3. **Time comes from `A.clock`, the hour from the host, weather from `A.W`.** Never `performance.now()` in an effect.
 4. **Schedules live in data** (`[on, off]` hours per instance), evaluated in the shader, not in one JS hook per light.
 5. **Colours are display-space `[r,g,b]` in presets.** Convert them in each engine, once.
-
-**The katabatic wind (`fx/89-atmos-fx-katabatic.js`, 2026-11-10).** Its record (`type: 'katabatic'`: from, speed, on, off, ramp, gust, and the day's base) is in the export's effects; a port sets the wind's base each frame to `ATMOS.katabaticAt(hour)`'s `wind` (the same smoothstep of the hour, the same mix with the day's base) and the gust amplitude to at least its `gust`. No shader of its own: the riders read the one wind.
