@@ -93,6 +93,11 @@ them all out.
    few ventilation tunnels to the surface.
 4. **A clan of Travellers for the dark**, venturing into unexplored caverns and servicing and portering for the
    underground and the ventilation shafts (section 1.3, "The dark clan").
+5. **The shaft heads are hidden from outsiders**, and a striking Union may use them for direct action against Dalab's
+   caravans (section 1.2.1).
+6. **"Agree with proposals above"**: the dark clan as written and its name, the Kradz; the power plant on the deep
+   middle's heat, rare earths as the exotic and the recharged cells; the hidden heads' forms and the strike's raids; the
+   Travellers' Fair and their cant. Written into `LORE.md`.
 
 ## 0. What the kit is
 
@@ -466,8 +471,7 @@ by moving them, and by the road itself:
     the lamp code learned from the lojes; **way-marks** chalked and painted at every turn they have walked (an arrow, a
     tally of turns, a mark for bad air), so any caver can follow them out; maps scratched on enamel plate, the best of the
     Line's unknown parts anyone has, kept in the family and sold dear.
-  - **A name** (*proposed*, the owner's to choose): **the Kradz**, *dark* said backwards in the cant; the Tungangs call
-    them *Tdarkaz*.
+  - **A name** (agreed 2026-11-11): **the Kradz**, *dark* said backwards in the cant; the Tungangs call them *Tdarkaz*.
   - **The kit's pieces**: a dark clan's wagon (`fg-wagon`, variant `dark`: rope drums, the tripod lashed on, lamp racks),
     `fg-shaft-rig` (the tripod and gin wheel over a shaft head), `fg-waymark` (painted and chalked marks on rock, as records
     so a walker can follow them), and the cave gear as catalog pieces.

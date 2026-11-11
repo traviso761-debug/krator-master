@@ -234,8 +234,8 @@ The Ancients were the original civilization that colonized Krator, with roots, h
     the Line.
   - **What the Line gives them** (the owner, 2026-11-11): more to trade than copper. The bores cut **veins of metal** and the
     Tungangs work them, for they need metal to keep the trains running; *maybe* something more exotic keeps the power
-    running (*proposed*: rare earths from the rift fill's carbonatites for the magnets of a power plant that runs on the
-    deep middle's heat, and a few recharged Ancient power cells, the rarest thing they sell); they take **ice and other
+    running (agreed 2026-11-11: rare earths from the rift fill's carbonatites for the magnets of a power plant that runs on
+    the deep middle's heat by the hot doors, and a few recharged Ancient power cells, the rarest thing they sell); they take **ice and other
     things from the mountains**; and **at least a few ventilation shafts** reach the surface, whose heads are their second
     way out (`kits/tungang/PLAN.md` §1.2.1). **The shaft heads are kept well hidden from outsiders**, and a striking Union
     might use them to take **direct action against Dalab's caravans**: up by night, a caravan's road blocked or its cargo
@@ -249,9 +249,10 @@ The Ancients were the original civilization that colonized Krator, with roots, h
     owner, 2026-11-11) are the Fellgang families who live on the road, with some cultural similarities to the Irish
     Travellers: hauling, dealing in beasts and goods, mending salvage, guiding, portering on the Line's branches near the
     surface but never deeper in, save for **one clan that ventures into the dark unexplored caverns** and services and
-    porters for the underground and the ventilation shafts (the owner, 2026-11-11; its name, *proposed*, the Kradz);
+    porters for the underground and the ventilation shafts (the owner, 2026-11-11: **the Kradz**, *dark* said backwards in the cant; they marry into the lojes more than any other
+    family, and their way-marks and enamel-plate maps are the best of the Line's unknown parts);
     barrel-top sledge-wagons and halting places along the lantern roads; a yearly Fair
-    (*proposed*), and a cant of their own (`lore/tongues-of-krator.html`, "The Travellers' cant"; its forms proposed).
+    on a fell everyone knows, and a cant of their own (`lore/tongues-of-krator.html`, "The Travellers' cant").
 - **Language.** Two tongues. The priests' **high tongue** is our English, held in place because the God only answers to it; that is the root of priestly rule. The peasants' **low tongue** drifted like a creole: *the* fused on as *da-* (*Dalab* = the lab, *Daranch* = the ranch), plural *-dem*, tense particles *di/go/a*. Latin letters; the God's fixed-width letters are holy. The oldest prayers are the staff's prompts; the formula that let the God forget is lost. The lab had a rival at Ys (§6.16). `lore/tongues-of-krator.html` [the owner, Oct 2026]
 
 ### 6.2 The Empire of Iziz: the Izani (hyperjungle)
