@@ -4,14 +4,14 @@
 
 Docs: `BIOME-API.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PLAN.md`, `PORT.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/wouterwall.html`
+Built output (never open it; edit `src/` and rebuild): `dist/wouterwall-edge.html`, `dist/wouterwall-slumps.html`, `dist/wouterwall-sturzstrom.html`, `dist/wouterwall.html`
 
 Build: `cd biomes/wouterwall && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
 
 From `core/terrain/` (shared; see `core/README.md`): `30-core-field.js`, `35-core-strata.js`, `36-core-carve.js`, `37-core-stacks.js`, `38-core-relief.js`, `38c-core-landforms.js`, `43-core-ground.js`, `45-core-horizon.js`
 
-From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `31j-core-joint.js`, `34-core-impostor.js`, `40-core-place.js`, `41-core-env.js`, `42-core-export.js`, `43-core-export-host.js`, `44-core-stage.js`
+From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `31j-core-joint.js`, `32-core-variants.js`, `34-core-impostor.js`, `40-core-place.js`, `41-core-env.js`, `42-core-export.js`, `43-core-export-host.js`, `44-core-stage.js`
 
 From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
 
@@ -28,16 +28,20 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `44s-host-site.js` | 8 | one record a point (memo of the last): the heigh (66) |
-| `45-host-stage.js` | 7 | the station, its air and its season (22); the model's ground (bicubic over its 1 km cells) (36); the ground's height (46); renderer, light, camera (62) |
-| `46-biome-wow-layout.js` | 7 |  |
-| `47-host-land.js` | 35 **big** | the near box and a coarse look at the ground (7); the brook (its line, its water level never climb (15); the cave houses' mouths (core/terrain KCARVE alc (26); the water: the brook, the model's water (a sag p (61); the earth pillars (core/terrain KSTACKS 'balance (73); the fields (biomes/WORLD.md; BIOME-API.md) (92); the host binding (before the meshes: their paint (124); the library layers (or procedural without the pa (137); the ground material (one shader for the near and (161); the near ground: the baked field's own grid, one (234) |
+| `44s-host-site.js` | 13 | one record a point (memo of the last): the heigh (80) |
+| `45-host-stage.js` | 10 | the station, its air and its season (22); the model's ground (bicubic over its 1 km cells) (36); the ground's height (71); renderer, light, camera (89) |
+| `46-biome-wow-layout.js` | 9 |  |
+| `47-host-land.js` | 40 **big** | the near box and a coarse look at the ground (7); the brook (its line, its water level never climb (19); the cave houses' mouths (core/terrain KCARVE alc (30); the water: the brook, the model's water (a sag p (65); the stacks (core/terrain KSTACKS): the station's (82); the fields (biomes/WORLD.md; BIOME-API.md) (94); the host binding (before the meshes: their paint (128); the library layers (or procedural without the pa (141); the ground material (one shader for the near and (175); the near ground: the baked field's own grid, one (259) |
+| `50-biome-wow-species.js` | 7 | textures (procedural, the fallback without the p (24); geometries and materials (34); the terraces' crops (kits/crops: the wouterwall  (46) |
+| `60-biome-wow-natives.js` | 3 | the terraces' crops (kits/crops, the wouterwall  (18) |
 | `70-biome-wow.js` | 1 |  |
+| `88c-host-crops.js` | 2 |  |
+| `88k-host-lowlands.js` | 5 |  |
 | `89a-host-atmos.js` | 2 |  |
 | `89s-host-sky.js` | 4 |  |
-| `89w-host-water.js` | 2 |  |
-| `89z-host-build.js` | 7 | the air on everything drawn (once, after the bak (33) |
-| `99-host-take.js` | 10 | the inspector's words: a plant names its species (8); the probe's budgets and the kit's own checks (ve (21); the page, handed to the host (80) |
+| `89w-host-water.js` | 4 |  |
+| `89z-host-build.js` | 8 | the air on everything drawn (once, after the bak (35) |
+| `99-host-take.js` | 11 | the inspector's words: a plant names its species (8); the probe's budgets and the kit's own checks (ve (21); the page, handed to the host (83) |
 | `99-tail.html` | <1 |  |
 
 ## stations/
@@ -46,3 +50,6 @@ Each station builds one page (`build.py --station <name>`) from its own fragment
 
 | Station | Fragments | KB |
 |---|---|---|
+| edge | 44s-host-site.js | 10 |
+| slumps | 44s-host-site.js | 10 |
+| sturzstrom | 44s-host-site.js | 11 |

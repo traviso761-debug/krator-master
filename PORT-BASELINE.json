@@ -369,16 +369,16 @@
    "sha256": "229d45fb91d2ea93f71c7f2ce137399c84ed7ed34df96670df8572c4e1d6ee3d"
   },
   "biomes/nwouterwall/dist/nwouterwall-taiga.html": {
-   "bytes": 1333668,
-   "sha256": "bb7ee21fd4859ab44c2313e145f48892d9df43f6a8154e04cdb8634bcf192375"
+   "bytes": 1337693,
+   "sha256": "033158cc00f6366ef020b2c1b207afde313c83779beb3806972443974255c9e3"
   },
   "biomes/nwouterwall/dist/nwouterwall-yeti.html": {
-   "bytes": 1593274,
-   "sha256": "f51e956a98376e49f14b601530e30020f75827658c558b846dda767a7d57873b"
+   "bytes": 1597299,
+   "sha256": "adb841a1f15e4c6f895020b79ca45f55e53c9f705fe317e6c329b0b68c6f23ff"
   },
   "biomes/nwouterwall/dist/nwouterwall.html": {
-   "bytes": 1338538,
-   "sha256": "35bf6ee32ef90346a1537da021acf5f67b98b033cfc1b1f4e1ef9df4378406a7"
+   "bytes": 1342563,
+   "sha256": "f16b1bca53c652b652f66db9cac8baf9d83e554875eef544b0cc9a2f31c7d322"
   },
   "biomes/oidong/dist/oidong-hearths.html": {
    "bytes": 3666792,
@@ -576,9 +576,21 @@
    "bytes": 2253503,
    "sha256": "4ecf09e10f31552312f35290418d8711789f2a45d3e2fe8f317da562ab33c46b"
   },
+  "biomes/wouterwall/dist/wouterwall-edge.html": {
+   "bytes": 1631719,
+   "sha256": "adfcfa676302c42db568fa9b957067675b3b1680b1ca71482edb8e0d66dbcebc"
+  },
+  "biomes/wouterwall/dist/wouterwall-slumps.html": {
+   "bytes": 1505529,
+   "sha256": "5e0c1c168dc5db2b469b52223252c808ac2f5188a86f522ffde95fa261aa91b2"
+  },
+  "biomes/wouterwall/dist/wouterwall-sturzstrom.html": {
+   "bytes": 1519566,
+   "sha256": "e0c612230ca536ca9c7e2f92be6f849d28064497655bacd8e2361ddee9bd50a5"
+  },
   "biomes/wouterwall/dist/wouterwall.html": {
-   "bytes": 1457588,
-   "sha256": "942cb8b9a61b9c2e8d97e21d0731f8f542a8a92b9b7f462c8650423fc181009e"
+   "bytes": 1676812,
+   "sha256": "1935f78a7d049a29d38b98549ce958926cf732e2936002246f4e1654eeab75be"
   },
   "biomes/xanadu/dist/xanadu-cloud.html": {
    "bytes": 8387583,
@@ -817,8 +829,8 @@
    "sha256": "43d112c1308747841b1f9afc6f294cd8a3f9ba6821259d0837b8f7e52feaf8df"
   },
   "kits/crops/dist/crops.html": {
-   "bytes": 2570188,
-   "sha256": "d0e7f7827b2f5aba4bd5f2b429446d76a1963c4cc10b0feed26f79e5d588bb76"
+   "bytes": 2574213,
+   "sha256": "506a275222680b65665e1dff45b3ad12b4c15987e17d28dd232ad639565915b3"
   },
   "kits/desert-nomads/dist/desert-nomads.html": {
    "bytes": 16905357,
@@ -1129,8 +1141,8 @@
    "sha256": "e6c31625003c38418a1cecaf53bdb0d412b7eedde603f6943c1fb0ad09da713d"
   },
   "settlements/longsong/dist/longsong.html": {
-   "bytes": 5297116,
-   "sha256": "88bd9da9cc169bb53814ad2d0f072243ade6363a65c1b9f86c5edf943348a1e4"
+   "bytes": 5301141,
+   "sha256": "d2b818ccda9f9e67431195f6b8c2f9d2860488b1d06e32d78bf9401a66635326"
   },
   "settlements/mavs-refuge/mavs-refuge.html": {
    "bytes": 9075103,

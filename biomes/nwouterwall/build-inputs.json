@@ -139,9 +139,9 @@
     "core/water/ext/57-core-water-audit.js": "6dd616a15a7804c615c4e1638b250cb709a85e1f219ae9ea03f8c4faa20374c1",
     "core/water/ext/58-core-water-mirror.js": "abf23c31ba18ba7f4890646bb539fa41652a3331977cc0c6ed6bcda9c646083f",
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
-    "kits/crops/src/10-crop-core.js": "4f32df5c0260ed8412029ced94fe1c495b0c828c3bea1d69b6d7093a8fcdcb56",
-    "kits/crops/src/20-crop-records.js": "46dcc7ea9ea802974acc9895b5d3d0b1910b86829f452bf0b807c0ddadcf9f95",
-    "kits/crops/src/22-crop-material.js": "9f79ca919d26d19aa4377c5ed9d22cb75384291187374431b4a91af9133fa3f8",
+    "kits/crops/src/10-crop-core.js": "5d90c0e985a2a6ee6939f269c80902f1424932db7e166ba920429252ccd5f64d",
+    "kits/crops/src/20-crop-records.js": "bd368e611609b121e38c77c035b8e400cb64af5a35fcc909419acb049fa5fd13",
+    "kits/crops/src/22-crop-material.js": "c74a7c32754dcf22ca3ca1f2786109f6ca4b53f12f2885b6e03c00601fa974ea",
     "kits/crops/src/40-crop-query.js": "c4e1179691702ff13200d5b713c23e0f315ee99c61842a8735d671e63bfca439",
     "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
@@ -155,11 +155,11 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/nwouterwall/dist/nwouterwall.html": "35bf6ee32ef90346a1537da021acf5f67b98b033cfc1b1f4e1ef9df4378406a7",
+    "biomes/nwouterwall/dist/nwouterwall.html": "f16b1bca53c652b652f66db9cac8baf9d83e554875eef544b0cc9a2f31c7d322",
     "biomes/nwouterwall/dist/nwouterwall.tex.nwouterwall.js": "08175bef64624e00e3c15d3d315bf6ca255b4193475dab0f8ccb7f7e19794677"
    },
    "outputs_raw": {
-    "biomes/nwouterwall/dist/nwouterwall.html": "35bf6ee32ef90346a1537da021acf5f67b98b033cfc1b1f4e1ef9df4378406a7",
+    "biomes/nwouterwall/dist/nwouterwall.html": "f16b1bca53c652b652f66db9cac8baf9d83e554875eef544b0cc9a2f31c7d322",
     "biomes/nwouterwall/dist/nwouterwall.tex.nwouterwall.js": "08175bef64624e00e3c15d3d315bf6ca255b4193475dab0f8ccb7f7e19794677"
    }
   },
@@ -303,9 +303,9 @@
     "core/water/ext/57-core-water-audit.js": "6dd616a15a7804c615c4e1638b250cb709a85e1f219ae9ea03f8c4faa20374c1",
     "core/water/ext/58-core-water-mirror.js": "abf23c31ba18ba7f4890646bb539fa41652a3331977cc0c6ed6bcda9c646083f",
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
-    "kits/crops/src/10-crop-core.js": "4f32df5c0260ed8412029ced94fe1c495b0c828c3bea1d69b6d7093a8fcdcb56",
-    "kits/crops/src/20-crop-records.js": "46dcc7ea9ea802974acc9895b5d3d0b1910b86829f452bf0b807c0ddadcf9f95",
-    "kits/crops/src/22-crop-material.js": "9f79ca919d26d19aa4377c5ed9d22cb75384291187374431b4a91af9133fa3f8",
+    "kits/crops/src/10-crop-core.js": "5d90c0e985a2a6ee6939f269c80902f1424932db7e166ba920429252ccd5f64d",
+    "kits/crops/src/20-crop-records.js": "bd368e611609b121e38c77c035b8e400cb64af5a35fcc909419acb049fa5fd13",
+    "kits/crops/src/22-crop-material.js": "c74a7c32754dcf22ca3ca1f2786109f6ca4b53f12f2885b6e03c00601fa974ea",
     "kits/crops/src/40-crop-query.js": "c4e1179691702ff13200d5b713c23e0f315ee99c61842a8735d671e63bfca439",
     "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
@@ -320,11 +320,11 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/nwouterwall/dist/nwouterwall-taiga.html": "bb7ee21fd4859ab44c2313e145f48892d9df43f6a8154e04cdb8634bcf192375",
+    "biomes/nwouterwall/dist/nwouterwall-taiga.html": "033158cc00f6366ef020b2c1b207afde313c83779beb3806972443974255c9e3",
     "biomes/nwouterwall/dist/nwouterwall.tex.nwouterwall.js": "08175bef64624e00e3c15d3d315bf6ca255b4193475dab0f8ccb7f7e19794677"
    },
    "outputs_raw": {
-    "biomes/nwouterwall/dist/nwouterwall-taiga.html": "bb7ee21fd4859ab44c2313e145f48892d9df43f6a8154e04cdb8634bcf192375",
+    "biomes/nwouterwall/dist/nwouterwall-taiga.html": "033158cc00f6366ef020b2c1b207afde313c83779beb3806972443974255c9e3",
     "biomes/nwouterwall/dist/nwouterwall.tex.nwouterwall.js": "08175bef64624e00e3c15d3d315bf6ca255b4193475dab0f8ccb7f7e19794677"
    }
   },
@@ -481,9 +481,9 @@
     "core/water/ext/57-core-water-audit.js": "6dd616a15a7804c615c4e1638b250cb709a85e1f219ae9ea03f8c4faa20374c1",
     "core/water/ext/58-core-water-mirror.js": "abf23c31ba18ba7f4890646bb539fa41652a3331977cc0c6ed6bcda9c646083f",
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
-    "kits/crops/src/10-crop-core.js": "4f32df5c0260ed8412029ced94fe1c495b0c828c3bea1d69b6d7093a8fcdcb56",
-    "kits/crops/src/20-crop-records.js": "46dcc7ea9ea802974acc9895b5d3d0b1910b86829f452bf0b807c0ddadcf9f95",
-    "kits/crops/src/22-crop-material.js": "9f79ca919d26d19aa4377c5ed9d22cb75384291187374431b4a91af9133fa3f8",
+    "kits/crops/src/10-crop-core.js": "5d90c0e985a2a6ee6939f269c80902f1424932db7e166ba920429252ccd5f64d",
+    "kits/crops/src/20-crop-records.js": "bd368e611609b121e38c77c035b8e400cb64af5a35fcc909419acb049fa5fd13",
+    "kits/crops/src/22-crop-material.js": "c74a7c32754dcf22ca3ca1f2786109f6ca4b53f12f2885b6e03c00601fa974ea",
     "kits/crops/src/40-crop-query.js": "c4e1179691702ff13200d5b713c23e0f315ee99c61842a8735d671e63bfca439",
     "kits/yeti/src/10-core.js": "155a7d5b74997e4234af60b9c8385c906ca8c9220d6113dfa935b6a465cff09e",
     "kits/yeti/src/26k-kit.js": "64dae1679e418309f30a63367971db352eaa96e15c1c79d25dd18d0f4b297e5c",
@@ -656,13 +656,13 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/nwouterwall/dist/nwouterwall-yeti.html": "f51e956a98376e49f14b601530e30020f75827658c558b846dda767a7d57873b",
+    "biomes/nwouterwall/dist/nwouterwall-yeti.html": "adb841a1f15e4c6f895020b79ca45f55e53c9f705fe317e6c329b0b68c6f23ff",
     "biomes/nwouterwall/dist/nwouterwall.tex.nwouterwall.js": "08175bef64624e00e3c15d3d315bf6ca255b4193475dab0f8ccb7f7e19794677",
     "biomes/nwouterwall/dist/nwouterwall.tex.yeti-2.js": "d294bb1666b882b9823d97d6306709c7146b2e3e194e1e6d5ca898097026b2fa",
     "biomes/nwouterwall/dist/nwouterwall.tex.yeti.js": "6cbc14fdcd0d3eea7a82d0e300c01aac6bc0fb386f6ecd0cd05e1b8e87d8bdf7"
    },
    "outputs_raw": {
-    "biomes/nwouterwall/dist/nwouterwall-yeti.html": "f51e956a98376e49f14b601530e30020f75827658c558b846dda767a7d57873b",
+    "biomes/nwouterwall/dist/nwouterwall-yeti.html": "adb841a1f15e4c6f895020b79ca45f55e53c9f705fe317e6c329b0b68c6f23ff",
     "biomes/nwouterwall/dist/nwouterwall.tex.nwouterwall.js": "08175bef64624e00e3c15d3d315bf6ca255b4193475dab0f8ccb7f7e19794677",
     "biomes/nwouterwall/dist/nwouterwall.tex.yeti-2.js": "d294bb1666b882b9823d97d6306709c7146b2e3e194e1e6d5ca898097026b2fa",
     "biomes/nwouterwall/dist/nwouterwall.tex.yeti.js": "6cbc14fdcd0d3eea7a82d0e300c01aac6bc0fb386f6ecd0cd05e1b8e87d8bdf7"

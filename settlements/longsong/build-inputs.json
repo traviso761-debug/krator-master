@@ -153,9 +153,9 @@
     "kits/catalog/krator-master-furniture-generic.js": "990b05b8404c67ab960f6649babc8143c738ea600a04c0c22564296fa7786ea4",
     "kits/catalog/krator-master-furniture-xanadu.js": "ee233580d36e2fe88283f00556b3b9aa1d2a913edc29e875042e1e821158999b",
     "kits/catalog/krator-master-furniture.js": "09773ee896c9a5a9acd256dcf385c62a9e40e49e74f2b0d424749f10ee1905c2",
-    "kits/crops/src/10-crop-core.js": "4f32df5c0260ed8412029ced94fe1c495b0c828c3bea1d69b6d7093a8fcdcb56",
-    "kits/crops/src/20-crop-records.js": "46dcc7ea9ea802974acc9895b5d3d0b1910b86829f452bf0b807c0ddadcf9f95",
-    "kits/crops/src/22-crop-material.js": "9f79ca919d26d19aa4377c5ed9d22cb75384291187374431b4a91af9133fa3f8",
+    "kits/crops/src/10-crop-core.js": "5d90c0e985a2a6ee6939f269c80902f1424932db7e166ba920429252ccd5f64d",
+    "kits/crops/src/20-crop-records.js": "bd368e611609b121e38c77c035b8e400cb64af5a35fcc909419acb049fa5fd13",
+    "kits/crops/src/22-crop-material.js": "c74a7c32754dcf22ca3ca1f2786109f6ca4b53f12f2885b6e03c00601fa974ea",
     "kits/crops/src/40-crop-query.js": "c4e1179691702ff13200d5b713c23e0f315ee99c61842a8735d671e63bfca439",
     "kits/fauna/fauna-core.js": "c7acf79776905d200371271bfd9e634bed33d3f40fa215fc91a8189b7bc8d10c",
     "kits/fauna/fauna_bundle.py": "4f62f56596ff8458b1655efc885efde66e84138e9668094248803e9829f5de56",
@@ -429,14 +429,14 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "settlements/longsong/dist/longsong.html": "88bd9da9cc169bb53814ad2d0f072243ade6363a65c1b9f86c5edf943348a1e4",
+    "settlements/longsong/dist/longsong.html": "d2b818ccda9f9e67431195f6b8c2f9d2860488b1d06e32d78bf9401a66635326",
     "settlements/longsong/dist/longsong.tex.longsong-2.js": "81c204f5c6d5744d8a7d3c6be658aab37ac68088baccb1ac5bb39b7667deacd5",
     "settlements/longsong/dist/longsong.tex.longsong.js": "33596b44e155b7f214bd82a5c0ed5ecd3273fbac46bbdb015d73206522c9a605",
     "settlements/longsong/dist/longsong.tex.oidong.js": "e14667b94439abb336d0b2db7edee5ed5ab76b2d03aa2fe9a1d3e9f6e53a88b0",
     "settlements/longsong/dist/longsong.tex.xanadu.js": "ab86b56cf863dd8b19fbabdef7c70d83302cff8c1fc3f4caff86f367f7f7f945"
    },
    "outputs_raw": {
-    "settlements/longsong/dist/longsong.html": "88bd9da9cc169bb53814ad2d0f072243ade6363a65c1b9f86c5edf943348a1e4",
+    "settlements/longsong/dist/longsong.html": "d2b818ccda9f9e67431195f6b8c2f9d2860488b1d06e32d78bf9401a66635326",
     "settlements/longsong/dist/longsong.tex.longsong-2.js": "81c204f5c6d5744d8a7d3c6be658aab37ac68088baccb1ac5bb39b7667deacd5",
     "settlements/longsong/dist/longsong.tex.longsong.js": "33596b44e155b7f214bd82a5c0ed5ecd3273fbac46bbdb015d73206522c9a605",
     "settlements/longsong/dist/longsong.tex.oidong.js": "e14667b94439abb336d0b2db7edee5ed5ab76b2d03aa2fe9a1d3e9f6e53a88b0",

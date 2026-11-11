@@ -42,6 +42,31 @@ const MODEL=(function(){const G=WOW_REGION.grid,H=G.h,nx=G.nx,nz=G.nz;
   return cr(r[0],r[1],r[2],r[3],fv)-BASE;};})();
 // the model's water (the slump terraces' sag ponds, station 2; none at station 1): its cells and level, page metres
 const MODEL_WATER=WOW_REGION.grid.water.map(w=>({x:WOW_REGION.grid.x0+w[0]*WOW_REGION.grid.dx,z:WOW_REGION.grid.z0+w[1]*WOW_REGION.grid.dz,level:w[2]-BASE}));
+/* THE MODEL'S LAKE FITTED TO THE PAGE (station 2's trench lake): the model holds its water in 1 km cells, and its bicubic ground round them
+   dips under the level in places (the block's back, east of the lake, lies 100 m under it). Within SITE.lake.near of the page (null: no
+   lake drawn) the ground in a water cell is lowered to a bed under the level (deepening off the shore) and the ground in the ring round
+   the cells (ring m) lifted to stand over it, fading out across the ring: the drawn shore is where the ground crosses the level, and no
+   water hangs over a lower block. dist(x, z): m outside the water cells (<= 0 inside: minus the distance in from their edge) */
+const MODEL_LAKE_AT=(function(){const near=SITE.lake&&SITE.lake.near;if(!MODEL_WATER.length||!near)return null;const G=WOW_REGION.grid;
+ const lv=MODEL_WATER.reduce((a,w)=>a+w.level,0)/MODEL_WATER.length,cells=new Set(G.water.map(w=>w[0]+','+w[1])),ring=SITE.lake.ring==null?700:SITE.lake.ring;
+ const isW=(i,j)=>cells.has(i+','+j),K=Math.ceil(ring/G.dx)+1;
+ // the distance to the water cells' union (boxes of dx round each centre): out of it +, in it - (to the nearest dry cell's box)
+ const dist=(x,z)=>{const u=(x-G.x0)/G.dx,v=(z-G.z0)/G.dz,i=Math.round(u),j=Math.round(v),w=isW(i,j);let best=1e9;
+  for(let b=-K;b<=K;b++)for(let a=-K;a<=K;a++){if(isW(i+a,j+b)===w)continue;const cx=G.x0+(i+a)*G.dx,cz=G.z0+(j+b)*G.dz,
+   dx=Math.max(0,Math.abs(x-cx)-G.dx/2),dz=Math.max(0,Math.abs(z-cz)-G.dz/2);best=Math.min(best,Math.hypot(dx,dz));}
+  return w?-Math.min(best,K*G.dx):best;};
+ const depth=SITE.lake.depth==null?40:SITE.lake.depth,lift=SITE.lake.lift==null?6:SITE.lake.lift;
+ // the fit: a height h at (x, z) to its lake-fitted height (the bed in the water, the shore over it in the ring)
+ // the shore: the model's ground over a cell's edge can stand 150 m over the level (its bicubic reads the scarp beside the lake), so the
+ // ground is capped by a ramp from the level (shore m of rise a metre out: SITE.lake.shore, .45) and the bed under it inside
+ const sl=SITE.lake.shore==null?.45:SITE.lake.shore,bw=SITE.lake.beach==null?30:SITE.lake.beach,ramp=d=>.1*Math.min(d,bw)+sl*Math.max(0,d-bw);   /* a gravel beach bw m wide, then the ramp */
+ const fit=(x,z,h)=>{if(Math.max(Math.abs(x),Math.abs(z))>near)return h;const d=dist(x,z);
+  if(d<=0)return Math.min(h,lv-1.5-depth*smooth(0,600,-d),lv-1.5+.1*d);
+  // the lift: up to the same ramp, to `lift` m over the level, fading out across the ring; then the cap
+  if(d<ring){const k=1-smooth(ring*.35,ring,d),T=lv-1.5+Math.min(ramp(d),lift+1.5+d*.04);h=h+Math.max(0,T-h)*k;}
+  return Math.min(h,lv-1.5+ramp(d)+.02*d*d/ring);};
+ // drawR: the water is drawn (and held: 47's waterH) to this far out of the cells, inside the full lift's band: the shore is within it
+ return {level:lv,cells,dist,ring,fit,drawR:Math.min(ring*.3,120)};})();
 
 // ---------------------------------------------------------------- the ground's height
 // the far country's own roughness, scaled by how steep the model is there (a range gets crags, the plateau stays smooth): beyond
@@ -56,8 +81,10 @@ const _tm={x:NaN,z:NaN,h:0};
 siteBuild((x,z)=>MODEL(x,z)+siteSwell(x,z));
 // Past ~2.2 site radii the relief fades out (the knolls' and the terraces' metres would alias on the mid ground's 220 m cells).
 function baseH(x,z){const d=Math.hypot(x,z),fade=1-smooth(SITE.R*2.2,SITE.R*4,d);
- return MODEL(x,z)+(fade>0?siteRelief(x,z)*fade:0)+farRough(x,z)*smooth(SITE.R*1.2,SITE.R*3,d);}
-function groundH(x,z){if(x===_tm.x&&z===_tm.z)return _tm.h;const h=baseH(x,z);_tm.x=x;_tm.z=z;_tm.h=h;return h;}
+ const h=MODEL(x,z)+(fade>0?siteRelief(x,z)*fade:0)+farRough(x,z)*smooth(SITE.R*1.2,SITE.R*3,d);return MODEL_LAKE_AT?MODEL_LAKE_AT.fit(x,z,h):h;}
+// + the periglacial landforms once 47 has laid them (FROST: core/terrain KFROST, a station's SITE.frost; null without)
+let FROST=null;
+function groundH(x,z){if(x===_tm.x&&z===_tm.z)return _tm.h;const h=baseH(x,z)+(FROST?FROST.h(x,z):0);_tm.x=x;_tm.z=z;_tm.h=h;return h;}
 
 // ---------------------------------------------------------------- renderer, light, camera
 const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);

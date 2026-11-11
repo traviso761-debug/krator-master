@@ -1,6 +1,6 @@
 {
  "build": "wouterwall",
- "note": "The wouterwall kit's adapter onto the material library (core/materials/PLAN.md). The host's ground layers (47-host-land.js): ground.steppe (the feather-grass steppe, the base, tinted by season), ground.needles (the larch's litter on the shaded slopes), ground.gravel (ground.gravel019: the gully floor, the brook's bed), rock.loess (the loess walls, the terraces' risers and the earth pillars, read from the side on the steep: KGROUND's triplanar sides), ground.terrace (ground.terrace.field: the terraced fields, furrows along the contour), ground.tundra and ground.lichen (ground.lichen.crust: the upper bench). The flora at W1 is the NW outer wall's, read in place with its own pack (build.py). Still to wire (PLAN.md section 8): rock.megabreccia (the slump scarps, station 2), rock.rubble.sturzstrom (station 3), card.puya (W3). Run python3 tools/textures/pack.py biomes/wouterwall after any change, then python3 build.py.",
+ "note": "The wouterwall kit's adapter onto the material library (core/materials/PLAN.md). The host's ground layers (47-host-land.js): ground.steppe (the feather-grass steppe, the base, tinted by season), ground.needles (the larch's litter on the shaded slopes), ground.gravel (ground.gravel019: the gully floor, the brook's bed), rock.loess (the loess walls, the terraces' risers and the earth pillars, read from the side on the steep: KGROUND's triplanar sides), ground.terrace (ground.terrace.field: the terraced fields, furrows along the contour), ground.tundra and ground.lichen (ground.lichen.crust: the upper bench). The flora at W1 is the NW outer wall's, read in place with its own pack (build.py). The stations' slots (47: SITE.slots): rock.megabreccia (the crater's patchwork rock: the slump scarps, station 2; the scar and the megablocks, station 3; the box canyon's walls under the loess, station 4; and the stacks' mesh), ground.rubble (rock.rubble.sturzstrom: the runouts' deposit and the scarps' talus, stations 2-3). The kit's own species: organic.dusttower (the dust towers' bossed surface, on KSTACKS mounds), puya and puyaspike (card.puya: a rosette cell of the top row, the flower spike cut from the bottom rows). Run python3 tools/textures/pack.py biomes/wouterwall after any change, then python3 build.py. The terraces' crops (kits/crops, the wouterwall records, 2026-11-10; 50 and 60, station 1): crop.dustmillet (card.crop.grainhead's bushy panicle, greyscale, tinted by season), crop.redstem (card.crop.plume's red heads: Tartary buckwheat), crop.dust-lentil (card.crop.bean's low bushy row), crop.bench-garlic (card.crop.greens' strap leaves), crop.wallhemp (card.crop.nettle).",
  "size": 512,
  "families": {
   "ground.steppe": {
@@ -99,6 +99,179 @@
    "roughLift": 0.3,
    "specular": 0.2,
    "mapOnly": true
+  },
+  "rock.megabreccia": {
+   "lib": "rock.megabreccia",
+   "scale": [
+    6.0,
+    6.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "ground.rubble": {
+   "lib": "rock.rubble.sturzstrom",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "organic.dusttower": {
+   "lib": "organic.dusttower",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "puya": {
+   "lib": "card.puya",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.22,
+   "cell": [
+    0.3333,
+    0.0,
+    0.6667,
+    0.3333
+   ]
+  },
+  "puyaspike": {
+   "lib": "card.puya",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.22,
+   "cell": [
+    0.44,
+    0.555,
+    0.56,
+    0.8
+   ]
+  },
+  "crop.dustmillet": {
+   "lib": "card.crop.grainhead",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.7
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "cell": [
+    0.3333,
+    0.0,
+    0.6667,
+    0.3333
+   ]
+  },
+  "crop.redstem": {
+   "lib": "card.crop.plume",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "cell": [
+    0.0,
+    0.0,
+    0.3333,
+    0.3333
+   ]
+  },
+  "crop.dust-lentil": {
+   "lib": "card.crop.bean",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "cell": [
+    0.0,
+    0.6667,
+    0.3333,
+    1.0
+   ]
+  },
+  "crop.bench-garlic": {
+   "lib": "card.crop.greens",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "cell": [
+    0.0,
+    0.0,
+    0.3333,
+    0.3333
+   ]
+  },
+  "crop.wallhemp": {
+   "lib": "card.crop.nettle",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "cell": [
+    0.3333,
+    0.3333,
+    0.6667,
+    0.6667
+   ]
   }
  }
 }

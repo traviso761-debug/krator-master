@@ -234,12 +234,6 @@ the page wires `ground.beads.orange`, `ground.sand.black`, `ground.obsidian`, `g
 titanium basalt's grain is `rock.basalt.flowbanded` grey under KSTRATA's colours (the plan allows a tint). The optional
 `rock.basalt.titanium` (the ilmenite sheen in the map) was delivered 2026-10-27 (`PLAN.md`, "Delivered 2026-10-27"): not wired yet.
 
-## 21. The W outer wall (`biomes/wouterwall`, planned 2026-10-26)
-
-The loess bench, the slump scarps and the sturzstroms (`biomes/wouterwall/PLAN.md` section 8). Reused: `ground.steppe`,
-`ground.tundra`, `ground.turf.polygon`, `ground.tilled` (the terraces, tinted buff), `card.stipa`, `card.grass.dry`, the
-nwouterwall's sets (section 8 here) and `rock.megabreccia` (section 20). Needed before the kit's W1.
-
 ## 22. The SW highlands (`biomes/swhighlands`, planned 2026-10-26)
 
 Native fungoid life on the Inner Wall's south-west sector (`biomes/swhighlands/PLAN.md` section 8). Reused from the

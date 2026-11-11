@@ -93,15 +93,17 @@ if STN_DIR:
 # landforms (38, 38c: the station's gullies with their yuan and mao tops, and the terraces; PLAN.md section 2's table), KCARVE (36: the cave
 # houses' mouths, alcoves in the gully wall), KSTRATA and its shader (35: the `loess` recipe's beds on the walls), KGROUND (the
 # ground's library layers hex-tiled and height-blended, with triplanar sides on the loess walls), KHORIZON (the terrain's shadows at a low
-# sun) with its shade. KFROST is not taken at station 1 (+7 °C: no permafrost; the upper bench's stations will: PLAN.md section 4)
+# sun) with its shade. KFROST is taken by a station that asks (station.json "frost": station 3; station 1 lies at +7 °C, far under the permafrost: PLAN.md section 4)
 CORE_TERRAIN=['30-core-field.js','35-core-strata.js','36-core-carve.js','37-core-stacks.js','38-core-relief.js','38c-core-landforms.js','43-core-ground.js','45-core-horizon.js']
+# KFROST (42) on a station that asks for it (SITE.frost: station 3's solifluction lobes on the permafrost's edge); the others leave it out
+if STN.get('frost'): CORE_TERRAIN.append('42-core-frost.js')
 for f in CORE_TERRAIN:
     if f not in PATH: PATH[f]=J('core','terrain',f)
 PATH.setdefault('45-core-horizon-shade.js',J('core','terrain','host','45-core-horizon-shade.js'))
 PATH.setdefault('35z-core-strata-shade.js',J('core','terrain','host','35-core-strata-shade.js'))   # KSTRATA.shade: the loess's beds on the walls (47); slotted after 35-core-strata.js, which it reads
 # the biome core from core/biome (core/README.md): one copy for every kit, as the NW outer wall takes it (31j the limbs' joints, 34 the
 # impostors, 41 the environmental fields, 44 KSTAGE)
-CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','31j-core-joint.js','34-core-impostor.js','40-core-place.js','41-core-env.js','42-core-export.js','43-core-export-host.js','44-core-stage.js']
+CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','31b-core-leafset.js','31j-core-joint.js','32-core-variants.js','34-core-impostor.js','40-core-place.js','41-core-env.js','42-core-export.js','43-core-export-host.js','44-core-stage.js']   # 31b: BIO.leafOn (20 calls it; the lowland kits' trees use it); 32: BIO.kin (the lowlands' species on the bench, 88k)
 for f in CORE_BIOME:
     if f not in PATH: PATH[f]=J('core','biome',f)
 # core/rand and core/tags (core/tags/README.md): with BIO.init({tags}) every item set, instance and registered volume the kit
@@ -124,6 +126,28 @@ NW=J('biomes','nwouterwall')
 NW_KIT={'46n-nwow-layout.js':'src/46-biome-nwow-layout.js','48a-nwow-species.js':'src/50-biome-nwow-species.js','48b-nwow-trees.js':'src/55-biome-nwow-trees.js',
         '48c-nwow-floor.js':'src/60-biome-nwow-floor.js','48d-nwow-build.js':'src/70-biome-nwow.js'}
 for slot,p in NW_KIT.items(): PATH.setdefault(slot,os.path.join(NW,p))
+# THE LOWLANDS' SPECIES, read in place by key (PLAN.md section 4: the bench takes a few of each lowland kit's, blue-grey in the north over the
+# NW lowlands, red in the south over the SW lowlands; src/88k-host-lowlands.js grows them by BIO.kitBuilder, never the source kit's build).
+# A station names the kits it reads (station.json "lowlands"; station 1 the north's): each kit's species and tree builders after the NW outer
+# wall's (48a-48d, which need BIO.init) and before this kit's own (50), each in its own registry closed by a one-line kitEnd, its pack carrying
+# only the families those species draw with (as nwlowlands reads its neighbours)
+import json as _json
+LOWLANDS={'nwlowlands':(['50-biome-nwlowlands-species.js','55-biome-nwlowlands-trees.js'],'NWLOW',['bk.plate','bk.fibre','bk.birch','needle','broad','feather','wood']),
+          'swlowlands':(['50-biome-swlowlands-species.js','55-biome-swlowlands-trees.js'],'SWLOW',['bk.furrow','bk.ember','needle','broad','glossy','lance','wood'])}
+LOW_PACKS={}
+for _i,_k in enumerate(sorted(STN.get('lowlands',['nwlowlands']))):
+    _fs,_api,_keep=LOWLANDS[_k];_d=J('biomes',_k);_c='efgh'[_i]
+    for _j,_f in enumerate(_fs): PATH.setdefault('48%s%d-%s'%(_c,_j,_f),os.path.join(_d,'src',_f))
+    PATH['48%s9-%s-end.js'%(_c,_k)]=None;LOW_PACKS['48%s9-%s-end.js'%(_c,_k)]=chr(10)+'BIO.kitEnd(%s);   // its registry closed (its own page does it in a later fragment)'%_api+chr(10)
+    _pj=os.path.join(_d,'tex','pack.json')
+    _ex=[f for f in (sorted(_json.load(open(_pj,encoding='utf-8')).get('families',{})) if os.path.isfile(_pj) else []) if f not in _keep]
+    LOW_PACKS['44%s-host-matlib-pack-%s.js'%(_c,_k)]=(_d,_k,_ex);PATH['44%s-host-matlib-pack-%s.js'%(_c,_k)]=None
+# kits/crops, read in place (kits/crops/API.md, "Reading it from a build"; as nwouterwall reads it): the Hayrant's terrace crops (the wouterwall
+# records and biome entry, 2026-11-10), on a station with terraced fields (station.json "crops"; station 1 by default): 88c picks each field's
+# crop from it, 50 names the items after it
+if STN.get('crops',STN['name']=='tablelands'):
+    for f in ('10-crop-core.js','20-crop-records.js','22-crop-material.js','40-crop-query.js'):
+        PATH.setdefault('48'+f[:2]+'-'+f[3:],J('kits','crops','src',f))
 # a station's other kits read in place (station.json "kits": {slot: path from this folder})
 for slot,p in STN.get('kits',{}).items(): PATH[slot]=os.path.normpath(os.path.join(HERE,p))
 # core/water (core/water/README.md): the spring brook a WATER.flow, a station's still water a WATER.still
@@ -171,6 +195,7 @@ VIRTUAL={'44-host-matlib-pack.js':_mp.fragment(HERE,'wouterwall',side=SIDE),
          '44m-host-matlib-pack-nwow.js':_mp.fragment(NW,'nwouterwall',side=SIDE),
          '44n-host-region.js':'// the station on the scale model (region/far.py; generated: rerun it, do not edit)\nconst WOW_REGION='+json.dumps(REGION,separators=(',',':'))+';\n',
          khost.EDITS_JS:khost.edits_js(HERE,'wouterwall')}   # the page's edits (edits.json or this browser's draft)
+for _f,_v in LOW_PACKS.items(): VIRTUAL[_f]=_v if isinstance(_v,str) else _mp.fragment(_v[0],_v[1],side=SIDE,exclude=_v[2])
 for f in VIRTUAL: PATH[f]=None
 frags=sorted(PATH)
 out=[]; bad=[]

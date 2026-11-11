@@ -74,6 +74,12 @@ CROPS.BIOMES = {
      the thaw hollows' meadows and lakes on the permafrost */
   nwouterwall: {atm: 1, zones: {steppe: {warmth: [1, 1], arid: [1, 1]}, larchwood: {warmth: [0, 1], arid: [1, 2]}, alas: {warmth: [0, 1], arid: [3, 3], wet: true},
     tundra: {warmth: [0, 0], arid: [0, 1], atm: 0}, fellfield: {warmth: [0, 0], arid: [0, 0], atm: 0}}},
+  /* the W outer wall (biomes/wouterwall/PLAN.md section 4, accepted 2026-11-10): the loess bench under the airless crest. terrace: the
+     loess at 3-3.5 km (601 mm, +7.9 °C, 20/-4, Dsb); bench: 3.5-4.5 km (457-532 mm, Dsb, Dsc, Dfb); upper: 4.5-5 km (362 mm, Dfc); fell:
+     5-5.5 km (264 mm, ET; 0.83 atm, still standard); edge: the foot of the edge under 3 km (680 mm, Csa, Csb). The bands by the warmest
+     month (polar under 10 °C, cool 10-20, temperate 20-26) and the rain (arid under 250 mm, semiarid 250-500, subhumid 500-900) */
+  wouterwall:  {atm: 1, zones: {terrace: {warmth: [2, 2], arid: [2, 2]}, bench: {warmth: [1, 1], arid: [1, 2]}, upper: {warmth: [1, 1], arid: [1, 1]},
+    fell: {warmth: [0, 0], arid: [1, 1]}, edge: {warmth: [3, 3], arid: [2, 2]}}},
   /* the Cut (biomes/cut, PLAN.md section 7): the eigenweapon's bowl, ~1.9 atm on the floor and the lakes' shores (hot: the 4.22 floor's
      +31 degC), the salt steppe dry and salt; the walls and the lip standard air */
   cut:         {atm: 2, zones: {lake: {warmth: [5, 5], arid: [4, 4], wet: true}, floor: {warmth: [5, 5], arid: [1, 2], salt: true}, walls: {warmth: [3, 4], arid: [2, 3], atm: 1}, lip: {warmth: [1, 2], arid: [1, 2], atm: 1}}},

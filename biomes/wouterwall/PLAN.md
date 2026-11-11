@@ -10,13 +10,13 @@ Its theme is **a wall coming apart**:
 Owner's brief (2026-10-26): the landforms of the proposal, agreed "on all counts": the loess tablelands, the slump
 terraces, the long-runout rock avalanches (sturzstroms) and the edge. The references are in `refs/`.
 
-**Status: W1 begun (2026-11-09).** The owner said to start the build. Station 1 (the loess tablelands, px 352,716) is on the
-biome core: the kit's layout (`WOW`), the station's ground on map 5.1 with its landforms on `KRELIEF.gully` (`yuan` and `mao`
-tops) and `KRELIEF.terraces`, earth pillars on `KSTACKS`, the spring brook on `core/water`, and the NW outer wall's flora read in
-place, `KCARVE` cave-house mouths in the gully wall and the loess's beds on `KSTRATA`'s shader. Not yet: `KSTRATA.vary`/`drape`
-(the core amendment of section 8), the two native species, the lowlands' species, the crops entry, stations 2-4. The work log is
-at the end. (The 2026-11-09 pass re-read every number from map 5.1, which now carves this plan's landforms, and wrote
-the hazards and the core table.)
+**Status: W1-W4 built (2026-11-10).** All four stations are on the biome core (section 7): the loess tablelands (station 1), the
+slump terraces (`-slumps`: `KRELIEF.slump`, landslip pinnacles, the model's trench lake fitted), the sturzstrom (`-sturzstrom`: an old
+and a fresh `KRELIEF.runout`, megablocks, a dammed lake) and the edge (`-edge`: a `KRELIEF.gully` box canyon with its spring-fed fall).
+The two natives (the puya spike, the dust tower) are the kit's; the lowlands' species are read in place by key. Not yet:
+`KSTRATA.vary`/`drape` (the core amendment of section 8), the
+lowlands' tussock and saltbush (`KNOWN_ISSUES.md`). The work log is at the end. (The 2026-11-09 pass re-read every number from map
+5.1, which now carves this plan's landforms, and wrote the hazards and the core table.)
 
 | | |
 |---|---|
@@ -314,9 +314,9 @@ World km = 5.1 px × 2. Each page is the usual 5.2 km square.
 | Station | 5.1 px | Ground | What it shows |
 |---|---|---|---|
 | **1 The loess tablelands** (`wouterwall.html`) | **352,716** | a yuan at 3,664 m, flat to 128 m over 6 km; Dsb, 518 mm, +7 (20/-6); Yūt-Mā's gully beside it; Mirabilis 20 km south at 3,125 m | a yuan cut by a deep gully, terraced fields contouring the knolls, earth pillars in the gully, dust towers on the flat, cave-house fronts in a gully wall, larch in the shaded gullies, feather grass on the sunny slopes |
-| **2 The slump terraces** (`-slumps`) | **318,818** | the trench lake at 4,430 m, 84 km²; Dfc round it, 361 mm, +1 (14/-12) | an uphill-facing scarp in patchwork rock, the trench lake under it, the next block's back tilted toward the wall, landslip pinnacles below a broken front, puya spikes on the dry slopes |
+| **2 The slump terraces** (`-slumps`) | **318,818** (built at 316,818: the lake's west shore) | the trench lake at 4,430 m, 84 km²; Dfc round it, 361 mm, +1 (14/-12) | an uphill-facing scarp in patchwork rock, the trench lake under it, the next block's back tilted toward the wall, landslip pinnacles below a broken front, puya spikes on the dry slopes |
 | **3 The sturzstrom** (`-sturzstrom`) | **320,871** | the flagship lobe at 4.9-5.0 km under its scar (310,872); Dfc, 282 mm, -2 (11/-15); the wall rises to 7,075 m 64 km west, the airless rim beyond | a hummocky grooved lobe, a fresh lobe beside an old one, megablocks, a small lake dammed behind the rim (the kit's), fellfield; the airless crest over all |
-| **4 The edge** (`-edge`, the ecotone) | **360,1010** | Waywater Ironblack's box canyon at 3,448 m, 3,116-3,829 m within 6 km; Dsb, 596 mm, +5 (18/-8); the river leaves the bench at 2,580 m | a box canyon with its spring-fed fall, the spring line, the lowlands and Ancient's Valley 2 km below |
+| **4 The edge** (`-edge`, the ecotone) | **360,1010** (built at 360,1010.75: the plateau's rim) | Waywater Ironblack's box canyon at 3,448 m, 3,116-3,829 m within 6 km; Dsb, 596 mm, +5 (18/-8); the river leaves the bench at 2,580 m | a box canyon with its spring-fed fall, the spring line, the lowlands and Ancient's Valley 2 km below |
 
 **Station 1 comes first.** The owner named it (`HANDOFF-REBUILD.md`). It takes all four of the new core pieces at once
 (`gully`, `terraces`, `KSTRATA.vary`/`drape`, `KCARVE` mouths), and it is the only station with people's work in it.
@@ -368,7 +368,7 @@ The table of `README.md` "CORE MODULES ARE NOT OPTIONAL", for this kit:
 - **The Hayrant's cave houses**, and the Eternal State's hand on the bench.
 - **Station 3:** the flagship lobe at 4.9 km, or the northern lobe at 5.9 km?
 - **The upper bench is Dfc, not Ds.** Keep the model's classes, or ask Gemini for a drier upper bench to match the theme?
-- **The crops** (section 4, a proposal from `CROPS.at`, 2026-11-09): accept the `wouterwall` entry and its five zones
+- ~~**The crops**~~ (accepted 2026-11-10: the entry is in `kits/crops`, with seven made-up crops; the work log) (section 4, a proposal from `CROPS.at`, 2026-11-09): accept the `wouterwall` entry and its five zones
   (`terrace`, `bench`, `upper`, `fell`, `edge`), and the band thresholds it assumes (the kit's bands have no numbers yet:
   they belong in `kits/crops/PLAN.md` section 2)?
 - **The river names** changed on 5.1 (Waywater Ironblack and the rest). Are the draft's English-gloss names (Okbruk, the
@@ -431,3 +431,30 @@ To source or generate (generic ids; the prompts go into `core/materials/PROMPTS-
 **2026-11-09, the known issues.** The far land re-cut past the airless crest (`region/crest.json`; from station 1 the crest stands under
 the bench's own upper steps, so its sky did not change); the terraces on 2 m `KFIELD` insets with furrows along the contour; five cave-
 house mouths (`KCARVE` alcoves) in the trunk's sunny wall; the walls' soil bands on `KSTRATA.shade`'s `loess` recipe.
+
+**2026-11-10, W2-W4: stations 2-4, the natives, the lowlands' species.** The pages share src/'s host; each station's `stations/<name>/44s-host-site.js`
+is its site (records, stacks, pools, falls, views, checks), its `station.json` the lowland kits it reads. The host took:
+- **The ground's two station slots** (47: `SITE.slots`): layers 3 and 4 draw two of the loess, the terraced field, the patchwork rock
+  (`rock.megabreccia`, with `KSTRATA`'s `megabreccia` on it where layer 3 is rock) and the rubble (`ground.rubble`: `rock.rubble.sturzstrom`).
+  Seven layers on every page. A cut through the loess draws the rock under it (`F.thru`: station 4's lower canyon walls).
+- **Stacks from the site** (`siteStacks`): station 1's earth pillars and dust towers, station 2's landslip pinnacles (KSTACKS spires on the
+  slump's `front`), station 3's megablocks (buttes riding the lobes), station 4's dust towers; one mesh a texture.
+- **The model's water fitted** (45: `MODEL_LAKE_AT`): station 2's trench lake held by a ramped shore and a 30 m beach (`KNOWN_ISSUES.md`).
+  **Pools** (`sitePools`): station 2's sag ponds (`KRELIEF.waters` of the slump), station 3's dammed lake (carved here: the record's own
+  level stands over a flat lobe's ground). **Falls** (`siteFalls`): station 4's spring-fed fall down the head wall at the loess's foot.
+- **The checks per station** (99: `SITE.need`, `SITE.checks`, `SITE.negatives`).
+- Station 2 stands on the trench lake's west shore (px 316,818) and station 4 on the plateau's rim (px 360,1010.75): the plan's pixels
+  are the lake's middle and half way up the valley's wall. Station 3 is the flagship lobe (section 9's question stays open).
+- **Frost** at station 3 (`KFROST`, `station.json` "frost"): solifluction lobes on the old lobe's frozen flanks.
+- **The natives** (50, 60, 46): the puya spike on `card.puya` (2.5% of the rosettes in their century bloom), the dust tower as `KSTACKS`
+  mounds by cell on `organic.dusttower`. **The lowlands' species** (88k): crag pine, needle cypress and candle birch at station 1, tier
+  cedar (a `BIO.kin`) and ember manzanita at station 4. Section 21 of `core/materials/PROMPTS-NEEDED.md` (every set delivered) removed.
+
+**2026-11-10, the crops** (the owner: "make up some crops for it"). `kits/crops` takes section 4's `wouterwall` entry (terrace, bench, upper,
+fell, edge) and seven made-up crops of the Hayrant's terraces, on the Loess Plateau's habit: **dustmillet** (broomcorn millet), **redstem
+buckwheat** (Tartary buckwheat), **terrace lentil**, **bench garlic**, **cave-date** (the jujube by the yaodong doors), **wallhemp** (rope,
+sacking, lamp oil) and **cave madder** (the red dye). Larch bark, birch tar and the rosette lichen are home on the bench too: red, red-brown,
+black and brown make a plaid (`CROPS.canPlaid('wouterwall')`). Station 1's terraced fields grow them: each field (`KRELIEF.terraces`'
+`level:i,j`) one crop of a seeded rotation (millet 3, lentil 2, buckwheat 2, garlic 1, hemp 1, fallow 1; each checked against the crops
+kit's terrace zone), a library crop card every 2.4 m on the treads, its height and colour by the season (88c, 60, 50; `materials.json`'s
+`crop.*`). The cave-date waits for a tree builder.
