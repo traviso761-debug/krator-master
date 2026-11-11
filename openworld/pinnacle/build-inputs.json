@@ -187,7 +187,7 @@
     "core/world/88s-world-sites.js": "cbb7d10cbc75bc7e19465950dc44683332e4d5ff1078b46fa7070fdb44f8cd09",
     "core/world/90-world-camera.js": "a6c47c8ccfbb82323a68521b9643a5f9be918b2acb5459bde3d30381ba5d41a7",
     "core/world/91-world-probe.js": "7fb7ac1029bb0d348d56c49565edf0de21f89f796e1ccb7c549e909d0b6ac7fb",
-    "core/world/98-world-start.js": "ee26dc2dbbc1ce90133036d91177a23fef7435cc30121289756b86d9648c257b",
+    "core/world/98-world-start.js": "ba2749f1e1012dc621b20aada5a52b2d35bc8ba0ea5070162c44a75b7384b796",
     "core/world/99-tail.html": "5c1404e034c7ec0d2b8ac19a6c1a2c4786dbd3037cbb48efdc8cfe4820c14aea",
     "core/world/world_data.py": "2f28c84f8b87b4d63edbd35490addcee0880511df2472bca29d48c0510bf698c",
     "kits/beast-riders/PORT.md": "21b21a7447de96e139906446c400742ad30de08eadb175a61b58c8bdc0ee1e49",
@@ -491,7 +491,7 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "openworld/pinnacle/dist/pinnacle.html": "b96929ad47569280b7a83c5628600d2b811ca84b874c215e649562f85a10ace0",
+    "openworld/pinnacle/dist/pinnacle.html": "08504c675a3f5c448c4df592c384c94b4d0c255cbf0b9eb5dc589d6f3786ca75",
     "openworld/pinnacle/dist/pinnacle.tex.abyssal-savannah.js": "79098378216d55f9f51eb8b12deb98c79f8b2a65a2f0f6aed07d2f0572111fde",
     "openworld/pinnacle/dist/pinnacle.tex.brtowns.js": "8b0a64a836ed9f8241276c635367d5868add677be8077d5f2a8a957ac15621fa",
     "openworld/pinnacle/dist/pinnacle.tex.eastabyss.js": "adb215a74b951f5abfbe99995243b1852642413c63ff52cf206b1b3e6312892b",
@@ -499,7 +499,7 @@
     "openworld/pinnacle/dist/pinnacle.tex.kftex.js": "75223875a57f714df4f068e09e66292721bf3f11c05ee54ab9414a9e4daaa346"
    },
    "outputs_raw": {
-    "openworld/pinnacle/dist/pinnacle.html": "b96929ad47569280b7a83c5628600d2b811ca84b874c215e649562f85a10ace0",
+    "openworld/pinnacle/dist/pinnacle.html": "08504c675a3f5c448c4df592c384c94b4d0c255cbf0b9eb5dc589d6f3786ca75",
     "openworld/pinnacle/dist/pinnacle.tex.abyssal-savannah.js": "79098378216d55f9f51eb8b12deb98c79f8b2a65a2f0f6aed07d2f0572111fde",
     "openworld/pinnacle/dist/pinnacle.tex.brtowns.js": "8b0a64a836ed9f8241276c635367d5868add677be8077d5f2a8a957ac15621fa",
     "openworld/pinnacle/dist/pinnacle.tex.eastabyss.js": "adb215a74b951f5abfbe99995243b1852642413c63ff52cf206b1b3e6312892b",
