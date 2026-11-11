@@ -6,7 +6,7 @@
 // is DRY (PLACE_DRY: nothing is added to the kit's registry, no furniture is placed) into buckets of its own, flushed into one
 // group added to o.scene, so the station's own scene and registry are never touched.
 //   TG.fg.draw(V, o)       V.records (KHAMLET.village's: {key, x, z, ry, ...}), o {scene, ground(x, z), seed, label, variant?,
-//                          state?, pegs?, lost?}: each record's def at x, z, ry, seated as the stand-ins were (the floor at
+//                          state?, pegs?, lost?, character? ('stony' | 'low' | null: by default the village's, from its focus)}: each record's def at x, z, ry, seated as the stand-ins were (the floor at
 //                          the footprint's highest corner, the plinth to its lowest); returns the meshes (as FELLGANG.draw),
 //                          with .group, .recs (each drawn record: key, bbox, fg counts), .missing (keys the kit lacks), .tris,
 //                          .lights (the fires and lanterns: {x, y, z, r, g, b, big}) and .smokes (the smoke holes: {x, y, z, r})
@@ -23,6 +23,9 @@ function fgDrawInto(o,fn){const T={},keep={GB,GTARGET,CMS:CMS.slice(),CM,dry:PLA
  finally{GB=keep.GB;GTARGET=keep.GTARGET;CMS.length=0;keep.CMS.forEach(m=>CMS.push(m));CM=keep.CM;PLACE_DRY=keep.dry;CURREC=keep.rec;CURKEY=keep.key;DOORS_CUR=keep.doors;WINDOWS_CUR=keep.win;CUTC=keep.cut;
   SBS.length=0;keep.sbs.forEach(b=>SBS.push(b));SB=keep.sb;}
  const G=new THREE.Group();G.name=o.name||'fellgang';flushBuckets(T,G,o.shadow!==false);
+ /* the furniture the builders asked for, in a bundle sealed with the catalog (tungang_bundle.py furniture=True): one batch */
+ if(typeof FG_FURN_PENDING!=='undefined'&&FG_FURN_PENDING.length){const FB=KratorFurniture.batch({indexed:true});for(const p of FG_FURN_PENDING)FB.place(p.key,p.x,p.y,p.z,p.ry,{variant:p.v,setting:'indoor'});
+  const fg=FB.flush(G);fg.userData.furniture=true;fg.traverse(m=>{const c=m.geometry&&m.geometry.attributes.color;if(!c)return;const A=c.array;for(let i=0;i<A.length;i++){const v=A[i];A[i]=v<=.04045?v/12.92:Math.pow((v+.055)/1.055,2.4);}c.needsUpdate=true;});G.userData.furniture=FG_FURN_PENDING.length;FG_FURN_PENDING.length=0;}
  const out=G.children.slice();out.forEach(m=>{m.userData.host=true;m.userData.inspectLabel=o.label||'A Fellgang village';});
  if(out.length&&o.probe!==false)out[0].userData.probePoints=[].concat(...recs.filter(Boolean).map(r=>[r.x,r.y+1,r.z]));
  if(o.scene)o.scene.add(G);out.group=G;out.recs=recs.filter(Boolean);out.tris=Math.round(GSTAT.tris-t0);out.lights=HALOS.slice(h0);out.smokes=SMOKES.slice(s0);return out;}
@@ -38,10 +41,12 @@ TG.fg.dims=k=>TG.fg.BOX[k]?{w:TG.fg.BOX[k].w,d:TG.fg.BOX[k].d,h:TG.fg.BOX[k].h}:
 Object.defineProperty(TG.fg,'ROW',{get:()=>typeof KHAMLET!=='undefined'&&KHAMLET.CULTURES?KHAMLET.CULTURES.fellgang||null:null});
 TG.fg.draw=function(V,o){o=o||{};const G=o.ground||terrainH,seed=o.seed==null?7400:o.seed,missing={},recs=V&&V.records||[];
  const hh=Math.max(6,Math.round((V&&V.census&&V.census.pop?V.census.pop:140)/5)),variant=fgVariantOf(V,o);
+ /* the village's character biases its buildings' families: the Fowlers stacked and stony, the Ice-cutters low and barrow-like */
+ const character=o.character!==undefined?o.character:variant==='icecut'?'low':'stony';
  const out=fgDrawInto(o,()=>recs.map((r,i)=>{if(!DEFS[r.key]){missing[r.key]=(missing[r.key]==null?0:missing[r.key])+1;return null;}const B=TG.fg.BOX[r.key]||{w:r.w,d:r.d,h:r.h},S=fgSeat(r,B,G);
   /* a building's look varies by a hash of the world seed and its index (core/rand), never by what was drawn before it */
   const v=r.v!=null?r.v|0:o.v!=null?o.v|0:KRAND.hash(seed,i,0x5f6)%97;
-  const rec=place(r.key,r.x,r.z,r.ry==null?0:r.ry,{y:S.y,lo:S.lo,gl:S.gl,v,variant:r.variant||variant,state:r.state||o.state,pegs:o.pegs==null?hh:o.pegs,lost:o.lost});
+  const rec=place(r.key,r.x,r.z,r.ry==null?0:r.ry,{y:S.y,lo:S.lo,gl:S.gl,v,variant:r.variant||variant,state:r.state||o.state,pegs:o.pegs==null?hh:o.pegs,lost:o.lost,character:r.character||character||null});
   if(rec){rec.id=r.id;rec.low=S.low;rec.top=S.y;}return rec;}));
  out.missing=missing;return out;};
 TG.fg.ropes=function(list,o){o=o||{};return fgDrawInto(Object.assign({name:'fellgang:ropes',label:'The families\' ropes and ladders'},o),()=>(list||[]).map(R=>{const p0=R.pts&&R.pts[0];if(!p0)return null;
@@ -55,10 +60,13 @@ TG.fg.pieces=function(list,o){o=o||{};const G=o.ground||terrainH;return fgDrawIn
 TG.fg.proto=function(key,o){return fgDrawInto({name:key,probe:false,label:DEFS[key]?DEFS[key].name:key},()=>[place(key,0,0,0,Object.assign({y:0},o||{}))]);};
 /* ---------------------------------------------------------------- the checks (verify.py --assert; a station's too) */
 TG.fg.check={
- /* every drawn record's measured box within tol of its key's box (w, d along the local axes: a record at ry 0; h from the floor) */
- box(recs,tol){tol=tol==null?.5:tol;const bad=[],rows=[];for(const r of recs){const B=TG.fg.BOX[r.key]||(DEFS[r.key]&&{w:DEFS[r.key].w,d:DEFS[r.key].d,h:DEFS[r.key].h});if(!B||!r.bbox)continue;
-  const b=r.bbox,bw=b.mx[0]-b.mn[0],bd=b.mx[2]-b.mn[2],bh=b.mx[1]-r.y,e=Math.max(Math.abs(bw-B.w),Math.abs(bd-B.d),Math.abs(bh-B.h));
-  rows.push(r.key+' '+bw.toFixed(2)+'x'+bd.toFixed(2)+'x'+bh.toFixed(2));if(e>tol)bad.push(r.key+(r.v?'#'+r.v:'')+' '+bw.toFixed(2)+'x'+bd.toFixed(2)+'x'+bh.toFixed(2)+' vs '+B.w+'x'+B.d+'x'+B.h);}
+ /* every drawn record's measured box against its key's box (w, d along the local axes: a record at ry 0; h from the floor):
+    never more than tol past it on any axis, and filling at least fill.w, fill.d of its w, d and fill.h of its h (the box is an
+    upper bound: the owner's variation in size and massing, 2026-11-11) */
+ box(recs,tol,fill){tol=tol==null?.5:tol;fill=fill||{w:.65,d:.65,h:.75};const bad=[],rows=[];for(const r of recs){const B=TG.fg.BOX[r.key]||(DEFS[r.key]&&{w:DEFS[r.key].w,d:DEFS[r.key].d,h:DEFS[r.key].h});if(!B||!r.bbox)continue;
+  const b=r.bbox,bw=b.mx[0]-b.mn[0],bd=b.mx[2]-b.mn[2],bh=b.mx[1]-r.y,over=bw>B.w+tol||bd>B.d+tol||bh>B.h+tol,under=bw<B.w*fill.w||bd<B.d*fill.d||bh<B.h*fill.h;
+  const s=r.key+(r.v?'#'+r.v:'')+(r.fg&&r.fg.family?' ('+r.fg.family+')':'')+' '+bw.toFixed(2)+'x'+bd.toFixed(2)+'x'+bh.toFixed(2);rows.push(s+' of '+B.w+'x'+B.d+'x'+B.h);
+  if(over||under)bad.push(s+(over?' past ':' under ')+B.w+'x'+B.d+'x'+B.h);}
   return {ok:!bad.length&&rows.length>0,bad,rows};},
  /* the plinth reaches the footprint's lowest corner: the drawn foot at or under it, the floor at the highest */
  plinth(recs,G){const bad=[];for(const r of recs){const B=TG.fg.BOX[r.key];if(!B||!r.bbox)continue;const S=fgSeat(r,B,G);

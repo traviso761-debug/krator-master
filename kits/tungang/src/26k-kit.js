@@ -29,7 +29,7 @@ const SVPAL={
  /* the rim's stone (grey-brown gneiss and schist, lichen-flecked), the slate of the tallies, the turf (green in summer, brown
     on the north slope), the bell fir's silvered poles, the plank of a door frame */
  stone:[0x8a8274,0x7e786c,0x948c7c,0x857d70],stoneD:[0x5a5650,0x4e4b46],slate:[0x3e4246,0x464a4e,0x383c40],
- turf:[0x8e9c5e,0x86945a,0x98a666,0x7e8c54],turfB:[0x9a8a5e,0x8e7e56],pole:[0x9a9284,0x8e8678,0xa69e8e],wood:[0x7a6248,0x6e5840,0x846a4e],
+ turf:[0x8e9c5e,0x86945a,0x98a666,0x7e8c54],turfB:[0x9a8a5e,0x8e7e56],turfG:[0x86a052,0x7e9a4c,0x8ea85a],turfBr:[0xa89064,0x9c8660,0xb09a6c],pole:[0x9a9284,0x8e8678,0xa69e8e],wood:[0x7a6248,0x6e5840,0x846a4e],
  /* the salvage: the Ancients' white plate (old ivory now), rusted plate, scrap, tin; the painted colours of the slogans and
     the family marks (red, ochre, white, black, a blue from signal paint) */
  plate:[0xd8d4c8,0xcec9bc,0xe0dcd0],rust:[0x8a5a3a,0x7e5234,0x946240],scrap:[0x7a7266,0x6e675c],tin:[0x8e8a80,0x84807a],iron:[0x3e3a36,0x46423c],

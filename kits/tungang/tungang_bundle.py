@@ -14,7 +14,7 @@ furniture adapter, night, world, clock, host take, tail). Their top-level names 
 stay inside the closure, so they never meet the host's. It needs only a global THREE (r128).
 
 A draw from a host is DRY: nothing is registered (the host registers its records in core/tags first) and no furniture is
-placed (FURNISH is a stub here, as the isle demo's ISK has it): KNOWN_ISSUES.md lists the furniture as owed to the bundle.
+placed by default (FURNISH is a stub, as the isle demo's ISK has it); bundle(furniture=True) seals the catalog in and furnishes the draw.
 The plate doors are drawn shut into the buckets (no core/door in the closure). tex=False leaves the library maps out
 (vertex colours only); tex='lean' packs only the eight families the buildings' faces show most (stone, turf, pole, wood,
 plate, rust, rope, cord), about a third of the size."""
@@ -48,11 +48,25 @@ var document = (function () { var D = globalThis.document, stub = { style: {}, t
   return { getElementById: function (id) { return (D && D.getElementById(id)) || stub; }, createElement: function (n) { return D ? D.createElement(n) : stub; } }; })();
 var console = Object.create(globalThis.console || { log: function () {}, warn: function () {}, error: function () {} });
 var location = globalThis.location || { search: '', hash: '' };
-/* no furniture in a host's draw (the station's records are drawn from outside): FURNISH places nothing, the catalog is empty */
+'''
+
+STUB_FURN = r'''
+/* no furniture in a host's draw (bundle(furniture=False), the default): FURNISH places nothing, the catalog is empty */
 function FURNISH() { return null; }
 function FURNISH_HANG() { return null; }
 var KratorFurniture = { FURN_BY_KEY: {}, has: function () { return false; }, entryDims: function () { return { w: 1, d: 1, h: 1 }; }, setDetail: function () {} };
 '''
+
+# bundle(furniture=True): the catalog sealed in (kits/catalog/furniture_bundle.py), and a FURNISH that queues each piece in the
+# world frame; TG.fg.draw (src/80-fg-host.js fgDrawInto) places the queue through a KratorFurniture batch and flushes it into the
+# draw's group, so a world's buildings are furnished as the sheet's are (dry: nothing is registered)
+FURN_HEAD = r'''
+var FG_FURN_PENDING = [];
+function FURNISH(key, lx, ly, lz, lry, o) { if (!KratorFurniture.has(key)) return null; var p = new THREE.Vector3(lx, ly || 0, lz).applyMatrix4(CM), e = CM.elements;
+  var r = { key: key, x: p.x, y: p.y, z: p.z, ry: Math.atan2(e[8], e[10]) + (lry || 0), v: (o && o.v) | 0 }; FG_FURN_PENDING.push(r); return r; }
+function FURNISH_HANG(key, lx, topY, lz, lry, o) { var A = KratorFurniture.FURN_BY_KEY[key]; if (!A) return null; return FURNISH(key, lx, topY - KratorFurniture.entryDims(A, (o && o.v) | 0).h, lz, lry, o); }
+'''
+FURN_CULTURES = ['fellgang', 'generic', 'generic-goods']
 
 TAIL = r'''
 reportErr = function (m) { TG_ERRS.push(String(m).slice(0, 600)); if (globalThis.console) globalThis.console.error('TG: ' + m); };
@@ -83,6 +97,14 @@ def files():
     return fs
 
 
+def furn_text(on):
+    if not on:
+        return STUB_FURN
+    sys.path.insert(0, os.path.join(ROOT, 'kits', 'catalog'))
+    import furniture_bundle
+    return ('/* ---- kits/catalog (furniture_bundle.py: %s) ---- */' % ', '.join(FURN_CULTURES) + NL + furniture_bundle.bundle(FURN_CULTURES) + NL +
+            'KratorFurniture.setDetail(.6);' + NL + FURN_HEAD)
+
 def pack(tex=True):
     """KMAT.pack('tungang', ...) from the committed tex/ (bytes as data URLs: deterministic, no image library)"""
     pj = os.path.join(TEX, 'pack.json')
@@ -102,7 +124,9 @@ def pack(tex=True):
     return "KMAT.pack('tungang', {\n" + ',\n'.join(out) + '\n});\n'
 
 
-def bundle(tex=True, with_files=False):
+def bundle(tex=True, with_files=False, furniture=False):
+    """furniture=True seals the catalog's fellgang, generic and generic-goods pieces in (about 0.4 MB more: README.md, "For
+    another world"), so TG.fg.draw furnishes what it draws; off by default"""
     fs = files()
     names = sorted(list(fs) + ['26-matlib-pack.js'])
     body = ''
@@ -112,10 +136,10 @@ def bundle(tex=True, with_files=False):
         else:
             body += '/* ---- %s ---- */%s%s%s;%s' % (rel(fs[n]), NL, rd(fs[n]), NL, NL)
     js = safe('/* TG: the Tungang kit in one closure (kits/tungang/tungang_bundle.py). GENERATED: edit kits/tungang/src or core/. */' + NL +
-              'var TG = (function(){' + NL + HEAD + body + TAIL + '})();' + NL)
+              'var TG = (function(){' + NL + HEAD + furn_text(furniture) + body + TAIL + '})();' + NL)
     return (js, [rel(fs[n]) for n in names if n in fs] + ['kits/tungang/tex']) if with_files else js
 
 
 if __name__ == '__main__':
-    js = bundle(tex='--no-tex' not in sys.argv and ('lean' if '--lean' in sys.argv else True))
+    js = bundle(tex='--no-tex' not in sys.argv and ('lean' if '--lean' in sys.argv else True), furniture='--furniture' in sys.argv)
     print('%d KB' % (len(js) // 1024))

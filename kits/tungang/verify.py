@@ -38,7 +38,9 @@ ASSERT_JS = r"""()=>{const A=window._api,R=[],S=window._fgSheet||{},C=TG.fg.chec
  const worn=boxOf(wr),wornRecs=wr.length;
  const hut=top().find(r=>r.key==='fg-hut');
  add('box-within-contract',{ok:kept.ok&&worn.ok&&wornRecs>0,detail:'kept: '+kept.detail+'; worn: '+worn.detail},
-  (()=>{const q=C.box([Object.assign({},hut,{key:'fg-meethall'})]);return {ok:q.ok,detail:'a hut checked against the meeting hall\'s box: '+q.bad.join('')};})());
+  (()=>{const q=C.box([Object.assign({},top().find(r=>r.key==='fg-meethall'),{key:'fg-hut'})]);return {ok:q.ok,detail:'too big: a meeting hall checked against the hut\'s box: '+q.bad.join('')};})());
+ add('box-fills-its-share',{ok:kept.ok,detail:'every building fills 65 % of its box\'s w and d and 75 % of its h (the families: '+[...new Set(top().filter(r=>r.fg&&r.fg.family).map(r=>r.key.slice(3)+':'+r.fg.family))].length+' key-family pairs on the sheet)'},
+  (()=>{const q=C.box([Object.assign({},hut,{key:'fg-meethall'})]);return {ok:q.ok,detail:'too small: a hut checked against the meeting hall\'s box: '+q.bad.join('')};})());
  /* tags */
  const T=A.tags().audit;const scratch=KTAGS.create({build:'neg'});scratch.add({'class':'building',kind:'x',key:'x',name:'x',at:[0,0,0],ry:0,size:[1,1,1],tags:{culture:'nonesuch',types:['spaceport']}});const TN=scratch.audit();
  add('tags-vocabulary',{ok:T.unknown===0&&T.missingCulture===0&&T.missingTypes===0&&T.records>100,detail:T.records+' records ('+Object.entries(T.byClass).map(e=>e.join(' ')).join(', ')+'), unknown '+T.unknown+(T.unknown?' '+JSON.stringify(T.unknownValues)+JSON.stringify(T.unknownKeys):'')},
@@ -48,7 +50,7 @@ ASSERT_JS = r"""()=>{const A=window._api,R=[],S=window._fgSheet||{},C=TG.fg.chec
   ice=r=>!!r.fg&&r.fg.variant==='icecut'&&r.fg.slats>0&&r.fg.notches>=r.fg.slats*3&&!r.fg.pegs;
  const halls=top().filter(r=>r.key==='fg-meethall'),hf=halls.filter(r=>r.fg&&r.fg.variant==='fowlers'),hi=halls.filter(r=>r.fg&&r.fg.variant==='icecut');
  const vh=(S.villageDraw&&S.villageDraw.recs||[]).filter(r=>r.key==='fg-meethall'),pop=S.village&&S.village.census?S.village.census.pop:0,hh=Math.max(6,Math.round((pop||140)/5));
- add('meethall-variants',{ok:hf.length===2&&hi.length===2&&hf.every(fow)&&hi.every(ice)&&vh.length===1&&fow(vh[0])&&vh[0].fg.pegs===hh,
+ add('meethall-variants',{ok:hf.length===3&&hi.length===2&&hf.every(fow)&&hi.every(ice)&&vh.length===1&&fow(vh[0])&&vh[0].fg.pegs===hh,
    detail:'rope wall: '+hf.map(r=>r.fg.pegs+' pegs, '+r.fg.coils+' coils, '+r.fg.empty+' empty').join('; ')+'; tally board: '+hi.map(r=>r.fg.slats+' slats, '+r.fg.notches+' notches').join('; ')+'; the sample village\'s hall: '+(vh[0]&&vh[0].fg?vh[0].fg.variant+', '+vh[0].fg.pegs+' pegs for '+hh+' households':'none')},
   {ok:hi.length>0&&hi.every(fow),detail:'the tally board checked as a rope wall'});
  /* the sloped pad */
@@ -62,6 +64,15 @@ ASSERT_JS = r"""()=>{const A=window._api,R=[],S=window._fgSheet||{},C=TG.fg.chec
  const rr=(S.ropeDraw&&S.ropeDraw.recs)||[];
  add('fixed-line-follows',{ok:rc.ok&&ropes.length===6&&rr.length===6&&rr.every(r=>r.fg&&r.fg.rungs>20&&r.fg.pegs>=1),detail:ropes.length+' ropes, '+rc.verts+' vertices: the farthest from its record '+rc.far+' m, the record\'s farthest point from the line '+rc.gap+' m; pegs '+rr.map(r=>r.fg&&r.fg.pegs).join(',')+', rungs '+rr.map(r=>r.fg&&r.fg.rungs).join(',')},
   {ok:rn.ok,detail:'the records moved 3 m east: farthest '+rn.far+' m'});
+ /* walls block a walker (core/walk, from the boxes a building draws), an open door lets one through */
+ const wd=KDOOR.list.find(d=>d.key==='fg-hut'&&!d.locked),walkOk=(p,h)=>!KWALK.blocked(p[0],p[1]+.02,p[2],.3,h==null?1.5:h);
+ let walk={ok:false,detail:'no hut door'},walkNeg={ok:true,detail:'n/a'};
+ if(wd){const ux=Math.cos(wd.yaw),uz=-Math.sin(wd.yaw),wall=[wd.at[0]+ux*1.35,wd.at[1],wd.at[2]+uz*1.35],shut=walkOk(wd.at);
+  KDOOR.open(wd.id,{by:'verify'});for(let k=0;k<40;k++)KDOOR.step(.1);const open=walkOk(wd.at),wallBlocked=!walkOk(wall),blk=KWALK.blocked(wall[0],wall[1]+.02,wall[2],.3,1.5);
+  KDOOR.close(wd.id,{by:'verify'});for(let k=0;k<40;k++)KDOOR.step(.1);
+  walk={ok:open&&!shut&&wallBlocked,detail:'a hut\'s door ('+wd.id+'): shut it blocks '+(!shut)+', open a walker passes '+open+'; 1.35 m along its wall a walker is stopped '+wallBlocked+' (by '+(blk&&blk.tag)+'); '+KWALK.export().blocks.length+' blocks, '+KWALK.export().floors.length+' floors'};
+  walkNeg={ok:walkOk(wall),detail:'a walker put in the wall itself, checked as passing'};}
+ add('walls-block-doors-pass',walk,walkNeg);
  /* the host API on the sample village */
  const V=S.village||{},vd=S.villageDraw||[],neg=TG.fg.draw({records:[{key:'fg-nonesuch',x:0,z:0,ry:0}]},{ground:()=>0});
  add('host-api',{ok:!V.error&&V.records&&V.records.length>=8&&vd.recs&&vd.recs.length===V.records.length&&!Object.keys(vd.missing).length&&vd.length>3,

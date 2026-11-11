@@ -21,14 +21,16 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 |---|---|---|
 | `00-head.html` | 1 |  |
 | `26k-kit.js` | 6 |  |
+| `37-wk-rec.js` | 3 |  |
 | `40-fg-kit.js` | 18 |  |
-| `50-fg-dwell.js` | 9 |  |
-| `52-fg-civic.js` | 7 |  |
-| `54-fg-stores.js` | 8 |  |
-| `56-fg-works.js` | 12 |  |
+| `42-fg-mass.js` | 21 |  |
+| `50-fg-dwell.js` | 10 |  |
+| `52-fg-civic.js` | 8 |  |
+| `54-fg-stores.js` | 9 |  |
+| `56-fg-works.js` | 13 |  |
 | `60-fg-road.js` | 14 |  |
-| `80-fg-host.js` | 9 |  |
+| `80-fg-host.js` | 10 |  |
 | `89-rows.js` | 2 |  |
-| `91t-fg-sheet.js` | 8 |  |
+| `91t-fg-sheet.js` | 9 |  |
 | `96t-fg-views.js` | <1 |  |
 | `99-sheet-fg.js` | 1 |  |

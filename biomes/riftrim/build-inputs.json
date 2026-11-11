@@ -536,14 +536,16 @@
     "core/water/ext/57-core-water-audit.js": "6dd616a15a7804c615c4e1638b250cb709a85e1f219ae9ea03f8c4faa20374c1",
     "core/water/ext/58-core-water-mirror.js": "abf23c31ba18ba7f4890646bb539fa41652a3331977cc0c6ed6bcda9c646083f",
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
-    "kits/tungang/src/26k-kit.js": "e5762806cf501b7d71de5a13b96c15d5eeb27f39a0b128a32c74e62b68bd60e2",
+    "kits/tungang/src/26k-kit.js": "ce6235f27156b1447c497cb7e61bd1e5afa7a08952158af0b4ab2b16be097475",
+    "kits/tungang/src/37-wk-rec.js": "05b5e7cedc5b107b3ec783ce9dbbeff6e3bd141da0cd5a8978f84132b8d3de42",
     "kits/tungang/src/40-fg-kit.js": "240fef2e68819a70a544dd0eff4992741614bf78a802ef56542b67afe1e95403",
-    "kits/tungang/src/50-fg-dwell.js": "f023346b94bd525884f23fd4c0e3256b257f1f6396ffa06085065b6dfd5edcc1",
-    "kits/tungang/src/52-fg-civic.js": "6842256932e5cacfe6e927f22fa961a17f803b98a3a0f54433266a51f170e632",
-    "kits/tungang/src/54-fg-stores.js": "9a71dc696f624743ecd33c3a857a3b59eaccdc2f228dd103493e8c0392eec428",
-    "kits/tungang/src/56-fg-works.js": "c543c9d56ac0f23381264a36dea329e8199cc78dc21874ae616ea2ba2b0d8efd",
+    "kits/tungang/src/42-fg-mass.js": "0797c1605bc9d80d3c19e936f85d28ef018978a342c79d727ab9daec4ac4189c",
+    "kits/tungang/src/50-fg-dwell.js": "35f3eaf9e8da223330d564c28ea6a5207a941419f8ff3a8120acf9c60f0d49f7",
+    "kits/tungang/src/52-fg-civic.js": "e8ccb558a495c547aff649a69d8c1d6a2b7d602d351e1c2e9814e403a0872aab",
+    "kits/tungang/src/54-fg-stores.js": "a5088c1d9e919765c05a3f7df1e4c17b5fe83c8e0ebb29d99623c2e4849fde2c",
+    "kits/tungang/src/56-fg-works.js": "29c1c02812660b1e275de0e615ee11909011a9ab7e2860bd9b40e004cf87e134",
     "kits/tungang/src/60-fg-road.js": "9ed6ae0943fca70b991161e27f47ecb06793d65fc9c9e5b66d8aef47c85b23e1",
-    "kits/tungang/src/80-fg-host.js": "9c2f352b41d6f676b5364da3ff65e075eec5fbdced7fa6b7f478a09e91227ded",
+    "kits/tungang/src/80-fg-host.js": "dec187a9e4df1ddf39ccbbec3eed009dafd38be45fe19430813aebf6c83ccd44",
     "kits/tungang/tex/cord.albedo.webp": "54742b6031b995ffa672e8e9b356bbb32c8e57d7472b6d5a80aecaa60c349af3",
     "kits/tungang/tex/cord.normal.webp": "71b9b9eb6eee437f2835bea354804855f8c6230ea81a94fbab229dc8db0a8e94",
     "kits/tungang/tex/cord.rough.webp": "5aef38be822c96deda57efc12017ef38450d2ce0197197265065547b3d1d4397",
@@ -569,7 +571,7 @@
     "kits/tungang/tex/wood.albedo.webp": "af92ec5a90da3fb61efe4e041c3232dd7c10ae1e5484b016fc079799a2750966",
     "kits/tungang/tex/wood.normal.webp": "795ef401ec856aa70ef2659626f11e433e6bf0e39a3a4c2b4e21d7366950005b",
     "kits/tungang/tex/wood.rough.webp": "a0aaf35beedc4ad83f8ab4cd611e6a65ebd332b1fcfab7c33f2ad886bd0a7e17",
-    "kits/tungang/tungang_bundle.py": "6afe99acf0b830daa382d447388e723a9bb6c8601b85d4c03693677f3bfaf3b3",
+    "kits/tungang/tungang_bundle.py": "f5ea4b088a9d9fac42ea6773c72a28e5a66e630d26a2a47dfbd1487bc312e287",
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
@@ -577,14 +579,14 @@
     "biomes/riftrim/src": "3092de973855f2b53de0bde9a3943848d1776fc420995dadfa41ab1bbfdaa8d4",
     "biomes/riftrim/stations/fowlers": "5b4a1e1a3cf3e01c310bcb5902e9fd89629de7afc98bc18dd86e390fa0e2a764",
     "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
-    "kits/tungang/src": "66869c6a6dfc48c8688e828c14e316e2efdde8d205a0a5ac28eb169269273786",
+    "kits/tungang/src": "d629b12e501d15ba502b80c05efa7dfa218fd99873e85afd36a1fd3d6c05274b",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/riftrim/dist/riftrim-fowlers.html": "d373498f3249377ef041405d3d0886c8e6144deda4d1f626883007f34e4741dd"
+    "biomes/riftrim/dist/riftrim-fowlers.html": "753d2e9e8f1ddf5044132b9d9e45d7467bad8ad81a789fe5459edf15e47ccce6"
    },
    "outputs_raw": {
-    "biomes/riftrim/dist/riftrim-fowlers.html": "d373498f3249377ef041405d3d0886c8e6144deda4d1f626883007f34e4741dd"
+    "biomes/riftrim/dist/riftrim-fowlers.html": "753d2e9e8f1ddf5044132b9d9e45d7467bad8ad81a789fe5459edf15e47ccce6"
    }
   },
   "build.py --station gorge": {
@@ -1294,14 +1296,16 @@
     "core/water/ext/57-core-water-audit.js": "6dd616a15a7804c615c4e1638b250cb709a85e1f219ae9ea03f8c4faa20374c1",
     "core/water/ext/58-core-water-mirror.js": "abf23c31ba18ba7f4890646bb539fa41652a3331977cc0c6ed6bcda9c646083f",
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
-    "kits/tungang/src/26k-kit.js": "e5762806cf501b7d71de5a13b96c15d5eeb27f39a0b128a32c74e62b68bd60e2",
+    "kits/tungang/src/26k-kit.js": "ce6235f27156b1447c497cb7e61bd1e5afa7a08952158af0b4ab2b16be097475",
+    "kits/tungang/src/37-wk-rec.js": "05b5e7cedc5b107b3ec783ce9dbbeff6e3bd141da0cd5a8978f84132b8d3de42",
     "kits/tungang/src/40-fg-kit.js": "240fef2e68819a70a544dd0eff4992741614bf78a802ef56542b67afe1e95403",
-    "kits/tungang/src/50-fg-dwell.js": "f023346b94bd525884f23fd4c0e3256b257f1f6396ffa06085065b6dfd5edcc1",
-    "kits/tungang/src/52-fg-civic.js": "6842256932e5cacfe6e927f22fa961a17f803b98a3a0f54433266a51f170e632",
-    "kits/tungang/src/54-fg-stores.js": "9a71dc696f624743ecd33c3a857a3b59eaccdc2f228dd103493e8c0392eec428",
-    "kits/tungang/src/56-fg-works.js": "c543c9d56ac0f23381264a36dea329e8199cc78dc21874ae616ea2ba2b0d8efd",
+    "kits/tungang/src/42-fg-mass.js": "0797c1605bc9d80d3c19e936f85d28ef018978a342c79d727ab9daec4ac4189c",
+    "kits/tungang/src/50-fg-dwell.js": "35f3eaf9e8da223330d564c28ea6a5207a941419f8ff3a8120acf9c60f0d49f7",
+    "kits/tungang/src/52-fg-civic.js": "e8ccb558a495c547aff649a69d8c1d6a2b7d602d351e1c2e9814e403a0872aab",
+    "kits/tungang/src/54-fg-stores.js": "a5088c1d9e919765c05a3f7df1e4c17b5fe83c8e0ebb29d99623c2e4849fde2c",
+    "kits/tungang/src/56-fg-works.js": "29c1c02812660b1e275de0e615ee11909011a9ab7e2860bd9b40e004cf87e134",
     "kits/tungang/src/60-fg-road.js": "9ed6ae0943fca70b991161e27f47ecb06793d65fc9c9e5b66d8aef47c85b23e1",
-    "kits/tungang/src/80-fg-host.js": "9c2f352b41d6f676b5364da3ff65e075eec5fbdced7fa6b7f478a09e91227ded",
+    "kits/tungang/src/80-fg-host.js": "dec187a9e4df1ddf39ccbbec3eed009dafd38be45fe19430813aebf6c83ccd44",
     "kits/tungang/tex/cord.albedo.webp": "54742b6031b995ffa672e8e9b356bbb32c8e57d7472b6d5a80aecaa60c349af3",
     "kits/tungang/tex/cord.normal.webp": "71b9b9eb6eee437f2835bea354804855f8c6230ea81a94fbab229dc8db0a8e94",
     "kits/tungang/tex/cord.rough.webp": "5aef38be822c96deda57efc12017ef38450d2ce0197197265065547b3d1d4397",
@@ -1327,7 +1331,7 @@
     "kits/tungang/tex/wood.albedo.webp": "af92ec5a90da3fb61efe4e041c3232dd7c10ae1e5484b016fc079799a2750966",
     "kits/tungang/tex/wood.normal.webp": "795ef401ec856aa70ef2659626f11e433e6bf0e39a3a4c2b4e21d7366950005b",
     "kits/tungang/tex/wood.rough.webp": "a0aaf35beedc4ad83f8ab4cd611e6a65ebd332b1fcfab7c33f2ad886bd0a7e17",
-    "kits/tungang/tungang_bundle.py": "6afe99acf0b830daa382d447388e723a9bb6c8601b85d4c03693677f3bfaf3b3",
+    "kits/tungang/tungang_bundle.py": "f5ea4b088a9d9fac42ea6773c72a28e5a66e630d26a2a47dfbd1487bc312e287",
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
@@ -1335,14 +1339,14 @@
     "biomes/riftrim/src": "3092de973855f2b53de0bde9a3943848d1776fc420995dadfa41ab1bbfdaa8d4",
     "biomes/riftrim/stations/icecut": "4d5aa31277d224f04acc6a9e7e7152e72aaf524903d71ae1abd107de74863d04",
     "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
-    "kits/tungang/src": "66869c6a6dfc48c8688e828c14e316e2efdde8d205a0a5ac28eb169269273786",
+    "kits/tungang/src": "d629b12e501d15ba502b80c05efa7dfa218fd99873e85afd36a1fd3d6c05274b",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/riftrim/dist/riftrim-icecut.html": "a28c3f5263d734e0e5a75b44478677fe4a4529c5a2f4572741c89ccebfa89a66"
+    "biomes/riftrim/dist/riftrim-icecut.html": "0fa4d2b3d5ec8a514d0eb1e6af2d604f994085daffc2e160d248a72dd2b7001e"
    },
    "outputs_raw": {
-    "biomes/riftrim/dist/riftrim-icecut.html": "a28c3f5263d734e0e5a75b44478677fe4a4529c5a2f4572741c89ccebfa89a66"
+    "biomes/riftrim/dist/riftrim-icecut.html": "0fa4d2b3d5ec8a514d0eb1e6af2d604f994085daffc2e160d248a72dd2b7001e"
    }
   },
   "build.py --station lakes": {
