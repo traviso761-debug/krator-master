@@ -29,7 +29,7 @@
     "biomes/greatchasm/tex/rosette.albedo.webp": "d64f4f9dacecc23287597ecfce77318eafd93d65e466b8f987665e8d0a5641b1",
     "biomes/greatchasm/tex/sac.albedo.webp": "3bee153c51a31cc87ce53675e8589ecc24c51907c666fd1d6e86ea3ad74d0844",
     "biomes/greatchasm/tex/samph.albedo.webp": "eb2338dde1e90cbcf50e334594bdd8aa76dbfaa744809e2a22f112c864bfb8d2",
-    "biomes/loom-chasms/KNOWN_ISSUES.md": "7640951a80cdfa34d2006cccdbc90d5b476a07d6e243a53abfb9321b6eb9c58f",
+    "biomes/loom-chasms/KNOWN_ISSUES.md": "24ba047182b00965d9a62c00dac81e1bce7522b19a83b878812aff79ea2efd66",
     "biomes/loom-chasms/PORT.md": "d412e436fa5d8e46843530737fed38bf0b6552f6faf5b8910e9fc5b5fc5737b6",
     "biomes/loom-chasms/build.py": "39a57788eb8128f797a5ccec137879c84664098b12792c993a4eccee1c7b02d7",
     "biomes/loom-chasms/src/00-head.html": "c3bb5d17900f3b3d8c0b8839f8564c2e804ff3e06fcbc6c8a02956626e572bb8",
@@ -161,7 +161,6 @@
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
    },
    "listings": {
-    "biomes/loom-chasms": "9fd58b70dbd277433dd5a79e40a587020f86649afb267c7c8d4c38151e14c633",
     "biomes/loom-chasms/src": "f2af0762033fa2c4ad8a42b8935ecc207aea638b2c976d3adc292e59889c1ac5",
     "biomes/loom-chasms/stations/loom": "44776945535e02ef1dc17a022bbbbcd31e33d9da3d7b173ab67c285f9ee1179f",
     "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
@@ -203,7 +202,7 @@
     "biomes/greatchasm/tex/rosette.albedo.webp": "d64f4f9dacecc23287597ecfce77318eafd93d65e466b8f987665e8d0a5641b1",
     "biomes/greatchasm/tex/sac.albedo.webp": "3bee153c51a31cc87ce53675e8589ecc24c51907c666fd1d6e86ea3ad74d0844",
     "biomes/greatchasm/tex/samph.albedo.webp": "eb2338dde1e90cbcf50e334594bdd8aa76dbfaa744809e2a22f112c864bfb8d2",
-    "biomes/loom-chasms/KNOWN_ISSUES.md": "7640951a80cdfa34d2006cccdbc90d5b476a07d6e243a53abfb9321b6eb9c58f",
+    "biomes/loom-chasms/KNOWN_ISSUES.md": "24ba047182b00965d9a62c00dac81e1bce7522b19a83b878812aff79ea2efd66",
     "biomes/loom-chasms/PORT.md": "d412e436fa5d8e46843530737fed38bf0b6552f6faf5b8910e9fc5b5fc5737b6",
     "biomes/loom-chasms/build.py": "39a57788eb8128f797a5ccec137879c84664098b12792c993a4eccee1c7b02d7",
     "biomes/loom-chasms/src/00-head.html": "c3bb5d17900f3b3d8c0b8839f8564c2e804ff3e06fcbc6c8a02956626e572bb8",

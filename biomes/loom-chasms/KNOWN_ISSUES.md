@@ -6,7 +6,21 @@ Open items, each with what is owed. Stations 3 (the Loom) and 1 (the Weavers' Cr
 
 ## Verified (2026-11-11, the cloud session: SwiftShader, no GPU)
 
-VERIFY-TABLE
+`python3 verify.py <page> --assert --all-views`, 1280x800, software GL (`tools/harness.py`), each page on its committed bytes:
+
+| Page | Checks | Fails | Heaviest view (draw calls, scene triangles) | Attach audit |
+|---|---|---|---|---|
+| `dist/loom-chasms.html` (station 3, the Loom) | 65 pass | 0 | Along the slot: 41, 2.08 M | 1 of 921 cards float (0.11%: an ember, the Great Chasm kit's) |
+| `dist/loom-chasms-cradle.html` (station 1, the Cradle) | 59 pass | 0 | The Yuni farms: 30, 3.32 M | 0 of 1718 |
+
+The Loom: 93 cables (68 grown, 25 pioneer shoots), every anchor on the drawn rock within 5 cm, 1767 points on the spans all clear of the
+rock, the grown cables' low points 40-170 m over the slot's floor, the hardest pull 1.10 MN within its beds (one station left ungrown on
+weak rock); 642 wall curtains seated within 5 cm. The Cradle: 53 Yuni records (240 people, 40 households), every one a pending stand-in;
+612 fields of six crops kits/crops gives the Cradle's bands (flax, frost oat, emmer, saffron, woad, helix bean); Aina Bruk falls from
+2167.9 to 2146.7 m over 163 points, never climbing; the kin rows grew (poplar 60, apricot 292). Both: the ground at 15 texture units,
+every camera over the drawn ground, the hazards registered, each check fed a broken input that fails. What the first Cradle run caught:
+the wadi's view stood 16 km out under the far field (it stands on the wadi's first points inside the drawn ground now), and the fields'
+view looked at the orchard, not the terraces (it stands in a field now).
 
 ## Owed to the GPU run (the owner's PC)
 
