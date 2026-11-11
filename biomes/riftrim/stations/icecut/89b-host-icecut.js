@@ -7,8 +7,10 @@
 const ICE=(function(){const S=STATION,V0=S.VIL,G=terrainH,slope=(x,z)=>{const e=3;return Math.hypot(G(x+e,z)-G(x-e,z),G(x,z+e)-G(x,z-e))/(2*e);};
  const road=(x,z)=>nearLine(S.ROAD,x,z).d;
  const ok=(x,z)=>{if(waterH(x,z)>G(x,z)-.5)return false;if(z>S.shoreZ(x)-30)return false;if(road(x,z)<10&&Math.hypot(x-V0.x,z-V0.z)>120)return false;return slope(x,z)<.2;};
- const V=KHAMLET.village({id:'icecut',world:8410,culture:FELLGANG.ROW,focus:'quarry',site:{x:V0.x,z:V0.z},link:{x:V0.x+10,z:S.shoreZ(V0.x+10)-4},
-  resource:{x:V0.x,z:S.shoreZ(V0.x)+80,workers:40},popMax:120,dims:FELLGANG.dims,ground:{ok},siteReach:500});
+ /* on core/hamlet's opt-in Fellgang row with its `ice` focus when the build lists it (core/hamlet/fellgang/22), else 84f's row on `quarry`: the same village */
+ const FG=!!(KHAMLET.CULTURES&&KHAMLET.CULTURES.fellgang),KIT=typeof TG!=='undefined'&&TG.fg;
+ const V=KHAMLET.village({id:'icecut',world:8410,culture:FG?'fellgang':FELLGANG.ROW,focus:FG?'ice':'quarry',site:{x:V0.x,z:V0.z},link:{x:V0.x+10,z:S.shoreZ(V0.x+10)-4},
+  resource:{x:V0.x,z:S.shoreZ(V0.x)+80,workers:40},popMax:120,dims:KIT?TG.fg.dims:FELLGANG.dims,ground:{ok},siteReach:500});
  const out={village:V,site:V.site,lanes:[],stacks:[],sledges:[],lamps:[],error:V.error||null};
  if(V.error)reportErr('the Ice-cutters: '+V.error);
  const U=(i,s)=>KRAND.unit(KRAND.hash(8411,i,s)),cx=V.site?V.site.x:V0.x;
@@ -30,7 +32,10 @@ window._ice=ICE;
  const cx=V.site.x,cz=V.site.z;let rad=0;V.records.forEach(r=>rad=Math.max(rad,Math.hypot(r.x-cx,r.z-cz)));ICE.radius=rad+30;
  LAND.keep=(x,z)=>{if(Math.hypot(x-cx,z-cz)<ICE.radius)return 0;if(nearLine(STATION.ROAD,x,z).d<6)return 0;for(const s of ICE.stacks)if(Math.hypot(x-s.x,z-s.z)<8)return 0;return 1;};})();
 LAND.build=function(){const T=THREE,V=ICE.village;if(!V.records)return{village:0};
- FELLGANG.draw(V,{scene,ground:terrainH,seed:8412,label:'The Ice-cutters (a Fellgang village)'});FELLGANG.lanes(V,{scene,ground:terrainH});
+ /* the village: the Fellgang kit's (TG.fg.draw; the owner, 2026-11-11, swap the stand-ins) when its bundle is on the page, else 84f's stand-ins */
+ if(typeof TG!=='undefined'&&TG.fg)ICE.drawn=TG.fg.draw(V,{scene,ground:terrainH,seed:8412,label:'The Ice-cutters (a Fellgang village)'});
+ else FELLGANG.draw(V,{scene,ground:terrainH,seed:8412,label:'The Ice-cutters (a Fellgang village)'});
+ FELLGANG.lanes(V,{scene,ground:terrainH});
  const box=new T.BoxGeometry(1,1,1),m=new T.Matrix4(),q=new T.Quaternion(),e=new T.Euler();
  /* the lanes of open water: dark slabs at the water's level, a hair over the ice's top so they read through it */
  const IL=new T.InstancedMesh(box,new T.MeshStandardMaterial({color:0x0e1a22,roughness:.08,metalness:.1}),Math.max(1,ICE.lanes.length));
@@ -43,24 +48,33 @@ LAND.build=function(){const T=THREE,V=ICE.village;if(!V.records)return{village:0
  ICE.sledges.forEach(sl=>{q.setFromEuler(e.set(0,sl.ry,0));const R=new T.Vector3(Math.cos(sl.ry),0,-Math.sin(sl.ry));
   IS.setMatrixAt(s3++,m.compose(new T.Vector3(sl.x,sl.y+.45,sl.z),q,new T.Vector3(1.4,.12,3.2)));
   for(const d of [-.6,.6])IS.setMatrixAt(s3++,m.compose(new T.Vector3(sl.x+R.x*d,sl.y+.18,sl.z+R.z*d),q,new T.Vector3(.08,.3,3.4)));});IS.count=s3;
- /* the lantern posts and their lamps (the lamp's glow follows the night: RRIM.night's way, in the tick below) */
- const IP=new T.InstancedMesh(box,new T.MeshStandardMaterial({color:0x3a2e24,roughness:.9}),Math.max(1,ICE.lamps.length)),lampM=new T.MeshStandardMaterial({color:0xffd9a0,emissive:0xffb050,emissiveIntensity:1.6}),
-  IG=new T.InstancedMesh(new T.SphereGeometry(.16,8,6),lampM,Math.max(1,ICE.lamps.length));
- ICE.lamps.forEach((l,i)=>{IP.setMatrixAt(i,m.compose(new T.Vector3(l.x,l.y+1.1,l.z),q.set(0,0,0,1),new T.Vector3(.12,2.2,.12)));IG.setMatrixAt(i,m.compose(new T.Vector3(l.x,l.y+2.3,l.z),q,new T.Vector3(1,1.3,1)));});
- IP.count=IG.count=ICE.lamps.length;ICE.lampM=lampM;
- [[IL,'A cut lane in the ice (open water)'],[IB,'Ice blocks, stacked for the carry'],[IS,'A sledge for the carry'],[IP,'A lantern post on the ice road'],[IG,'A lantern (lit for the night carry)']].forEach(([o,l])=>{o.userData.host=true;o.userData.inspectLabel=l;scene.add(o);});
- IG.userData.noSnow=true;lampM.userData.noSnow=true;IL.material.userData.noSnow=true;IB.material.userData.noSnow=true;   /* open water and fresh-cut ice hold no snow (89z's snowOnScene skips them) */
- tick(()=>{if(ICE.lampM)ICE.lampM.emissiveIntensity=.2+1.8*(1-smooth(.04,.5,sun.intensity));});
- return{village:V.records.length,pop:V.census&&V.census.pop,lanes:ICE.lanes.length,blocks:b,lamps:ICE.lamps.length};};
+ [[IL,'A cut lane in the ice (open water)'],[IB,'Ice blocks, stacked for the carry'],[IS,'A sledge for the carry']].forEach(([o,l])=>{o.userData.host=true;o.userData.inspectLabel=l;scene.add(o);});
+ IL.material.userData.noSnow=true;IB.material.userData.noSnow=true;   /* open water and fresh-cut ice hold no snow (89z's snowOnScene skips them) */
+ /* the lantern posts up the ice road: the Fellgang kit's fg-lantern-post when its bundle is on the page (TG.fg.pieces), else a post and a lamp each,
+    the lamp's glow following the night (the tick below) */
+ const lpp=[].concat(...ICE.lamps.map(l=>[l.x,l.y+1.2,l.z]));
+ if(typeof TG!=='undefined'&&TG.fg){ICE.lampMeshes=TG.fg.pieces(ICE.lamps.map(l=>({key:'fg-lantern-post',x:l.x,z:l.z,y:l.y,id:l.id})),{scene,ground:terrainH});
+  if(ICE.lampMeshes&&ICE.lampMeshes[0])ICE.lampMeshes[0].userData.probePoints=(ICE.lampMeshes[0].userData.probePoints||[]).concat(lpp);}
+ else{const IP=new T.InstancedMesh(box,new T.MeshStandardMaterial({color:0x3a2e24,roughness:.9}),Math.max(1,ICE.lamps.length)),lampM=new T.MeshStandardMaterial({color:0xffd9a0,emissive:0xffb050,emissiveIntensity:1.6}),
+   IG=new T.InstancedMesh(new T.SphereGeometry(.16,8,6),lampM,Math.max(1,ICE.lamps.length));
+  ICE.lamps.forEach((l,i)=>{IP.setMatrixAt(i,m.compose(new T.Vector3(l.x,l.y+1.1,l.z),q.set(0,0,0,1),new T.Vector3(.12,2.2,.12)));IG.setMatrixAt(i,m.compose(new T.Vector3(l.x,l.y+2.3,l.z),q,new T.Vector3(1,1.3,1)));});
+  IP.count=IG.count=ICE.lamps.length;ICE.lampM=lampM;[[IP,'A lantern post on the ice road'],[IG,'A lantern (lit for the night carry)']].forEach(([o,l])=>{o.userData.host=true;o.userData.inspectLabel=l;scene.add(o);});
+  IG.userData.noSnow=true;lampM.userData.noSnow=true;
+  tick(()=>{if(ICE.lampM)ICE.lampM.emissiveIntensity=.2+1.8*(1-smooth(.04,.5,sun.intensity));});}
+ return{village:V.records.length,pop:V.census&&V.census.pop,lanes:ICE.lanes.length,blocks:b,lamps:ICE.lamps.length,kit:ICE.drawn?{tris:ICE.drawn.tris,missing:ICE.drawn.missing}:'stand-ins'};};
 // THE STATION'S CHECKS (99: LAND.checks / LAND.negatives), each with a broken input that must fail
 const FC9={village:V=>{const n=V&&V.records?V.records.length:0,keys=n?new Set(V.records.map(r=>r.key)):new Set(),need=['fg-meethall','fg-icehouse','fg-sledgeshed'],miss=need.filter(k=>!keys.has(k));
   return{ok:!!V&&!V.error&&n>=8&&!miss.length,detail:V&&V.error?V.error:n+' buildings, '+((V&&V.census&&V.census.pop)||0)+' people'+(miss.length?'; missing '+miss.join(', '):'')};},
  dry:V=>{const bad=(V.records||[]).filter(r=>waterH(r.x,r.z)>terrainH(r.x,r.z)-.3);return{ok:(V.records||[]).length>0&&!bad.length,detail:bad.length?bad.length+' buildings on the ice':'every building on the shore, dry'};},
  lanes:L=>{const bad=L.filter(l=>!(waterH(l.x,l.z0+1)>terrainH(l.x,l.z0+1))||!(waterH(l.x,l.z1-1)>terrainH(l.x,l.z1-1)));return{ok:L.length>=4&&!bad.length,detail:L.length+' cut lanes'+(bad.length?', '+bad.length+' off the ice':', all on the lake')};},
+ kit:D=>{if(typeof TG==='undefined')return{ok:true,detail:'no Fellgang kit on the page: the stand-ins drew the village'};const miss=D&&D.missing?Object.keys(D.missing):['(nothing drawn)'],err=(TG.errors||[]).length;
+  return{ok:!!D&&!miss.length&&!err,detail:(miss.length?'missing: '+miss.join(', '):D.recs.length+' buildings drawn by the kit, '+D.tris+' triangles')+(err?'; TG errors: '+TG.errors[0]:'')};},
  stacks:S=>{const bad=S.filter(s=>waterH(s.x,s.z)>terrainH(s.x,s.z)-.2);return{ok:S.length>=4&&!bad.length,detail:S.length+' stacks'+(bad.length?', '+bad.length+' on the ice':', all on the shore')};}};
 LAND.checks=(add,P)=>{add('the Ice-cutters\' village placed on its shelf (core/hamlet, the Fellgang row)',FC9.village(ICE.village));add('the village on dry ground',FC9.dry(ICE.village));
- add('the cut lanes on the ice',FC9.lanes(ICE.lanes));add('the blocks stacked on the shore',FC9.stacks(ICE.stacks));};
+ add('the cut lanes on the ice',FC9.lanes(ICE.lanes));add('the blocks stacked on the shore',FC9.stacks(ICE.stacks));
+ add('the Fellgang kit draws every building (TG.fg.draw: none missing, no error)',FC9.kit(ICE.drawn));};
 LAND.negatives=(add,P)=>{add('a village with no ice house',FC9.village({records:(ICE.village.records||[]).filter(r=>r.key!=='fg-icehouse'),census:ICE.village.census}));
  add('a building on the ice',FC9.dry({records:[{x:STATION.VIL.x,z:STATION.shoreZ(STATION.VIL.x)+300}]}));
  add('a cut lane on the land',FC9.lanes([{x:STATION.VIL.x,z:STATION.VIL.z,z0:STATION.VIL.z-30,z1:STATION.VIL.z+30,w:6}]));
- add('a stack out on the ice',FC9.stacks([{x:STATION.VIL.x,z:STATION.shoreZ(STATION.VIL.x)+300}]));};
+ add('a stack out on the ice',FC9.stacks([{x:STATION.VIL.x,z:STATION.shoreZ(STATION.VIL.x)+300}]));
+ if(typeof TG!=='undefined')add('a building the kit lacks',FC9.kit({missing:{'fg-unknown':1},recs:[],tris:0}));};
