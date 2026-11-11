@@ -96,7 +96,7 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
     'A honeycomb of growing pods':(()=>{const C=PLAN.clusters.filter(c=>c.kind==='pods'&&c.members.length>=4&&PLAN.roads.some(r=>r.id==='av.f.r.c'+c.id.split('.c')[1])).sort((a,b)=>Math.hypot(a.x-H.x,a.z-H.z)-Math.hypot(b.x-H.x,b.z-H.z))[0];
      if(!C)return V(spot(cl.x+dn[0]*150,cl.z+dn[1]*150,12),18,[cl.x,cl.z],8);   /* no pods' cluster keeps a road: from 18 m, over the orchards */const r=PLAN.roads.find(q=>q.id==='av.f.r.c'+C.id.split('.c')[1]),e=r.pts[r.pts.length-1];return V(e,18,[C.x,C.z],8);})(),   /* 18 m up: over the orchards' crowns (to 14 m) that close round the road's end */
     'The aqueduct on its arches':V(spot(mid.x-mid.dir[1]*70+mid.dir[0]*90,mid.z+mid.dir[0]*70+mid.dir[1]*90,14),3,[mid.x-mid.dir[0]*200,mid.z-mid.dir[1]*200],14),
-    'The growing stacks':V(spot(st.x+Math.sin(st.yaw)*170,st.z+Math.cos(st.yaw)*170,14),3,[st.x,st.z],14),
+    'The growing stacks':V(spot(st.x+Math.sin(st.yaw3)*170,st.z+Math.cos(st.yaw3)*170,14),3,[st.x,st.z],14),
     'The hub town':V(spot(H.x+H.along[0]*230+dn[0]*60,H.z+H.along[1]*230+dn[1]*60,10),1.8,[H.x,H.z],10),
     'An orchard gone to thicket':V(spot(orch.x,orch.z,8),1.8,[orch.x+Math.cos(orch.yaw)*80,orch.z+Math.sin(orch.yaw)*80],3),
     'A pylon line down the slope':V(spot(p0.x+30,p0.z,10),2,[p1.x,p1.z],20),
@@ -105,5 +105,5 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
   start:'The Terraces: the hub and the city below',
   spine:(function(){const S=[[PLAN.hub.x,PLAN.hub.z]];for(let x=-2400;x<=2400;x+=800)for(let z=-2400;z<=2400;z+=800)S.push([x,z]);return S;})(),
   /* the shared checks this station runs (99: STAGE.shared), and its own (70t: STAGE.checks, STAGE.negatives) */
-  shared:['handOfMan','standing','impHidden','feral','clear','cardsCut'],
+  shared:['handOfMan','standing','impHidden','feral','clear','cardsCut','cardsUp','floraHeld'],
   budgetTris:20000000,budgetCalls:1200};})();

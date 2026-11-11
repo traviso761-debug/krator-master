@@ -42,7 +42,11 @@ const AV_CREEPERS=(function(){let CR_MISS=0;const lib=n=>(typeof KMAT!=='undefin
    Pv.set(lx,h0,lz).applyQuaternion(Qt);const x=t.x+Pv.x,y=t.y+Pv.y,z=t.z+Pv.z,yawC=Math.PI/2-ang-(t.yaw||0);   /* the curtain square to its bearing: the bearing lies at ang + yaw in the world (70, avQuat turns by -yaw), and three turns a card's face to pi/2 - yawC */
    Pv.set(x,y,z);Q.setFromAxisAngle(Y,yawC);Sv.set(wd,len,wd);M.compose(Pv,Q,Sv);const kind=u2<.3?1:0;
    C.setHSL(.26+.1*u4-.06*u1,.35+.3*u5,.18+.17*u3);put[kind].push({m:M.clone(),c:C.clone()});got++;}});   /* up to three bearings a curtain: a bearing whose ray meets no wall (a gap in the ruin) is passed over and the next tried */
- const meshes=[];['creeper','mosshang'].forEach((fam,k)=>{const L=put[k];if(!L.length)return;const im=new THREE.InstancedMesh(geo,matOf(fam),L.length);
+ /* each curtain's two crossed quads show one plant each of its card's nine (the cards are nine-clump sheets: the whole sheet on a quad drew a 3 x 3
+    grid of clumps, the owner, 2026-11-10: "hanging moss is definitely not cut out properly"), cut by the plant's own box (41e, AV.CARD_RECTS), not
+    the sheet's thirds; the texture is flipped (a canvas-made DataTexture), so the cells are too */
+ const geoOf=fam=>{const R=AV.CARD_RECTS&&AV.CARD_RECTS[fam];if(!R)return geo;const g=BIO.geo.cells(geo.clone(),{rects:R,pick:fam==='mosshang'?[4,7]:[4,1],scale:1,flipY:true});g.userData.cellsFlipY=true;return g;};
+ const meshes=[];['creeper','mosshang'].forEach((fam,k)=>{const L=put[k];if(!L.length)return;const im=new THREE.InstancedMesh(geoOf(fam),matOf(fam),L.length);
   L.forEach((e,i)=>{im.setMatrixAt(i,e.m);im.setColorAt(i,e.c);});im.instanceMatrix.needsUpdate=true;if(im.instanceColor)im.instanceColor.needsUpdate=true;im.frustumCulled=false;
   im.userData.biome=true;im.userData.host=true;im.userData.inspectLabel=k?'hanging moss on a tower':'creepers on a tower';im.castShadow=false;im.receiveShadow=false;im.name='av.creepers.'+fam;scene.add(im);meshes.push(im);});
  const n=put[0].length+put[1].length;if(n)REGISTER({name:'the creepers of the wild half',kind:'creeper',x:0,z:0,r:STAGE.R,h:300,tags:{kind:'creeper',curtains:n,towers:towers.length}});

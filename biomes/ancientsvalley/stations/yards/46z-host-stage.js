@@ -137,7 +137,8 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
  let CRX=null;const crq=[];const AVT_T0=performance.now();
  const craterSum=(x,z)=>{if(!CRX)return 0;crq.length=0;CRX.query(x,z,0,crq);let h=0,rim=0;for(const c of crq){const d=Math.hypot(x-c.x,z-c.z);if(d>=c.r*1.6)continue;
   if(d<c.r){const q=d/c.r,t=1-q*q,v=-c.depth*t*t;if(v<h)h=v;}const u=d<c.r?(d-c.r)/(.35*c.r):(d-c.r)/(.6*c.r),w=Math.max(0,1-u*u),b=.16*c.depth*w*w;if(b>rim)rim=b;}return h+rim;};
- const carve=(x,z)=>KTRANSIT.sinkholeH(AVT.subway,x,z)+Math.min(0,craterSum(x,z));
+ const SINKG=AV.sinkGate(AVT.subway);   /* the subway's drops only where one reaches (41, AV.sinkGate) */
+ const carve=(x,z)=>(SINKG(x,z)?KTRANSIT.sinkholeH(AVT.subway,x,z):0)+Math.min(0,craterSum(x,z));
  AVT.net=KTRANSIT.network(AVT.defs,{ground:relief,carve});
  AVT.streets=AVT.defs.map((d,i)=>{const Rd=AVT.net.roads[i];return{id:d.id,pts:d.pts,width:Rd.width,pavement:Rd.pavement,ground:Rd.levelAt,av:d.av,axis:d.axis,k:d.k};});
  AVT.wars=AVT.streets.map((st,i)=>{const Rd=AVT.net.roads[i],ik=s=>{const q=Rd.path.at(s);return indK(q.x,q.z);},hi=Math.max(ik(0),ik(Rd.L*.5),ik(Rd.L));
@@ -146,7 +147,7 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
  AVT.cargo=KTRANSIT.rail(CARGO_PTS,{id:'cargo',ground:relief,streets:AVT.streets,catenary:true,seed:SEED+75});
  const lineHnear=(x,z)=>{const ku=Math.round(x/P-.5),kw=Math.round(z/P-.5);let h=0;const iu=AVT.ix[0][ku],iw=AVT.ix[1][kw];
   if(iu)for(const i of iu)h+=KTRANSIT.lineH(AVT.net.roads[i],x,z);if(iw)for(const i of iw)h+=KTRANSIT.lineH(AVT.net.roads[i],x,z);return h;};
- function ground(x,z){let h=relief(x,z);h+=KTRANSIT.sinkholeH(AVT.subway,x,z)+craterSum(x,z)+lineHnear(x,z)+KTRANSIT.lineH(AVT.cargo,x,z,{form:.45});return h;}
+ function ground(x,z){let h=relief(x,z);h+=(SINKG(x,z)?KTRANSIT.sinkholeH(AVT.subway,x,z):0)+craterSum(x,z)+lineHnear(x,z)+KTRANSIT.lineH(AVT.cargo,x,z,{form:.45});return h;}
  {const HP=KTRANSIT.path(VIA2,{ground:relief,radius:80}),xs=[];AVT.defs.forEach((d,i)=>{if(!d.av)return;KTRANSIT.intersections(HP,d.pts).forEach(c=>xs.push({s:c.sP,road:i}));});xs.sort((a,b)=>a.s-b.s);
   const pick=f=>{let best=null;for(const c of xs){if(c.s<400||c.s>HP.L-400)continue;if(best==null||Math.abs(c.s-f*HP.L)<Math.abs(best.s-f*HP.L))best=c;}return best;};
   const r1=pick(.25),r2=pick(.5),r3=pick(.75),ramps=[];[[r1,1,'off'],[r2,-1,'on'],[r3,1,'off']].forEach(([c,side,dir])=>{if(c)ramps.push({s:Math.max(200,c.s-240),side,dir,road:c.road});});

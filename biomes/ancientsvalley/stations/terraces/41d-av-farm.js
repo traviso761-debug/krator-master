@@ -47,7 +47,11 @@
   var out={towers:[],roads:[],pylons:[],fields:[],clusters:[],dropped:{pad:0,road:0,aq:0,edge:0,slope:0}};
   var PADS=KSPACE.create({cell:200});out.pads=PADS;
   /* a building record (AV.plan's shape, so the city stage draws it), its box for the conflicts: frame x along yaw */
-  var mk=function(fam,x,z,yaw,id,cuts,salt){var e=ext(fam),st=stateOf(cuts,u(salt,7,1));var T={id:id,key:fam+'.'+st,family:fam,state:st,x:x,z:z,y:G(x,z),yaw:yaw,kind:'farm',lean:0,leanDir:0,
+  /* THE YAW: the station turns its buildings in three.js's sense (yaw3: local x to (cos, -sin), with c and s for its own checks); the page draws
+     every tower in the plan's (yaw: local x to (cos, sin), the lobbies' finding, 2026-11-10), so the record's yaw is the negation. Before, every
+     farm building and aqueduct module drew mirrored about its own axis, the aqueduct's modules skewed off their line (the owner: "aqueduct does not
+     align segments properly") */
+  var mk=function(fam,x,z,yaw,id,cuts,salt){var e=ext(fam),st=stateOf(cuts,u(salt,7,1));var T={id:id,key:fam+'.'+st,family:fam,state:st,x:x,z:z,y:G(x,z),yaw:-yaw,yaw3:yaw,kind:'farm',lean:0,leanDir:0,
     c:Math.cos(yaw),s:Math.sin(yaw),rx:e[0]+margin,rz:e[1]+margin};T.padR=Math.hypot(T.rx,T.rz);T.ease=14;
    if(fam!=='aqueduct'&&(st==='broken'||st==='crown'||st==='stump'))T.lean=(st==='broken'?3:1.5)*u(salt,8,1);T.leanDir=u(salt,9,1)*Math.PI*2;return T;};
   /* the conflicts: another pad (their boxes closer than gap), a road, the aqueduct's corridor, the page's edge, the slope */

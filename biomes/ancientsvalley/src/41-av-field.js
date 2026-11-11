@@ -47,7 +47,21 @@ AV.debris=function(o){var out=[],seed=o.seed|0,C=o.craters||[];
  var n=o.n==null?300:o.n;for(var j=0;j<n*3&&out.length<n+C.length*24;j++){var x2=(KRAND.unit(KRAND.hash(seed,j,5))*2-1)*o.R,z2=(KRAND.unit(KRAND.hash(seed,j,6))*2-1)*o.R;if(Math.hypot(x2,z2)>o.R)continue;if(o.ok&&!o.ok(x2,z2))continue;
   var s2=.8+KRAND.unit(KRAND.hash(seed,j,7))*2.6;out.push({x:x2,z:z2,yaw:KRAND.unit(KRAND.hash(seed,j,8))*Math.PI*2,tilt:(KRAND.unit(KRAND.hash(seed,j,9))-.5)*.8,sx:3*s2,sy:.5*s2,sz:5*s2,kind:'slab'});}
  return out;};
-AV.craterH=function(list,x,z){var h=0;for(var i=0;i<list.length;i++){var c=list[i],d=Math.hypot(x-c.x,z-c.z);if(d>c.r*1.6)continue;var u=d/c.r;
+/* the items that can reach a cell (2026-11-10: the page's build spent most of its time in these fields, every sample scanning every crater and scar:
+   53 s in craterH and 37 s in scar of a 560 s software-GL profile). A grid of `cell` metres lists, in the list's own order, the items whose reach
+   (rad(item)) overlaps each cell; a field reads only its cell's items and gives the same numbers, bit for bit (the skipped items add nothing).
+   AV.bucket(list, rad, cell) -> (x, z) => [indices] (an empty array outside every reach); cached on the list for its reach function */
+AV.bucket=function(list,rad,cell){cell=cell||128;var G={},none=[];for(var i=0;i<list.length;i++){var r=rad(list[i]),it=list[i];
+  for(var gx=Math.floor((it.x-r)/cell);gx<=Math.floor((it.x+r)/cell);gx++)for(var gz=Math.floor((it.z-r)/cell);gz<=Math.floor((it.z+r)/cell);gz++){var k=gx+','+gz;(G[k]||(G[k]=[])).push(i);}}
+ return function(x,z){return G[Math.floor(x/cell)+','+Math.floor(z/cell)]||none;};};
+/* where a subway's sinkholes, voids and stair pits can reach (kits/ancient-transit KTRANSIT.sinkholeH: the least of their drops, 0 beyond them all): a
+   page calls the kit's function only where this says one reaches, the same numbers for the 27 s the scan cost (the 2026-11-10 profile).
+   AV.sinkGate(SW) -> (x, z) => true where some drop may reach */
+AV.sinkGate=function(SW){var L=[];(SW.sinkholes||[]).forEach(function(k){L.push({x:k.x,z:k.z,r:k.r});});
+ (SW.voids||[]).forEach(function(V){L.push({x:V.x,z:V.z,r:Math.hypot(V.w/2,V.len/2)+V.ramp*1.5+1});});
+ (SW.pits||[]).forEach(function(p){L.push({x:p.x,z:p.z,r:Math.hypot(p.w/2,p.run+.6)+1});});
+ var B=AV.bucket(L,function(e){return e.r;},128);return function(x,z){var I=B(x,z);for(var q=0;q<I.length;q++){var e=L[I[q]];if(Math.hypot(x-e.x,z-e.z)<e.r)return true;}return false;};};
+AV.craterH=function(list,x,z){var h=0,B=list._avB||(list._avB=AV.bucket(list,function(c){return c.r*1.6;},128)),I=B(x,z);for(var q=0;q<I.length;q++){var c=list[I[q]],d=Math.hypot(x-c.x,z-c.z);if(d>c.r*1.6)continue;var u=d/c.r;
   if(u<1){var b=1-u*u;h-=c.depth*b*b;}h+=c.rim*AV.smooth(.6,1,u)*AV.smooth(1.6,1.1,u);}return h;};
 AV.BANDS=[['floor',100],['shelf',300],['terraces',600],['forest',Infinity]];
 AV.band=function(h){for(var i=0;i<AV.BANDS.length;i++)if(h<AV.BANDS[i][1])return AV.BANDS[i][0];return 'forest';};
@@ -74,7 +88,8 @@ AV.model=function(G){var H=G.h,nx=G.nx,nz=G.nz;
 AV.fields=function(o){var S=AV.smooth,seed=o.seed|0,scars=o.scars||[],basins=o.basins||[],cities=o.cities||[];
  var hAbs=function(x,z){return o.ground(x,z)+o.base;};
  var nearCity=function(x,z){var d=1e9;for(var i=0;i<cities.length;i++){var e=Math.hypot(x-cities[i].x,z-cities[i].z);if(e<d)d=e;}return d;};
- var scar=function(x,z){var s=0;for(var i=0;i<scars.length;i++){var e=scars[i],c=Math.cos(e.yaw||0),sn=Math.sin(e.yaw||0),dx=x-e.x,dz=z-e.z,u=(dx*c+dz*sn)/e.rx,v=(-dx*sn+dz*c)/e.rz,r=Math.hypot(u,v);
+ var scarB=AV.bucket(scars,function(e){return 1.15*Math.max(e.rx,e.rz);},128);
+ var scar=function(x,z){var s=0,I=scarB(x,z);for(var q=0;q<I.length;q++){var e=scars[I[q]],c=Math.cos(e.yaw||0),sn=Math.sin(e.yaw||0),dx=x-e.x,dz=z-e.z,u=(dx*c+dz*sn)/e.rx,v=(-dx*sn+dz*c)/e.rz,r=Math.hypot(u,v);
    var k=S(1.15,.75,r)*(e.k==null?1:e.k);if(k>s)s=k;}
   for(var b=0;b<basins.length;b++){var B=basins[b],rb=Math.hypot(x-B.x,z-B.z)/B.r;var kb=rb<1?1:S(1.5,1.05,rb);if(kb>s)s=kb;}return s;};
  var park=function(x,z){var zn=AV.band(hAbs(x,z));if(zn==='floor'||zn==='forest')return 0;var n=KRAND.fbm(x*.0011+2.3,z*.0011-7.1,0,3,seed+11);return S(.56,.66,n)*(zn==='terraces'?1:.85);};

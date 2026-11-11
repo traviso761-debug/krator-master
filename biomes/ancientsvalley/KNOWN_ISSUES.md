@@ -99,6 +99,10 @@
   white banded shaft and torn concrete chunks hanging in the air, with the sky's upper right black. The nearest tower (`av.t.5.-2`, a
   spindle stump) stands 40 m off behind and to the left; the meshes named `spindle.stump.*` round the eye are in no tier group. Taking out
   the radiation glow or the space warp does not change the frame. The extraplanar wiring branch's shot of the same view (06:35) was clear.
+- [ ] **The Yards' halls may face the other way** (2026-11-10): the Yards was built before the yaw's sign was fixed (the lobbies' finding); its
+  industry turns by 0, a quarter or a half turn, so a quarter-turned hall now faces the opposite street (its footprint is the same). Check its views.
+- [ ] **The card boxes are measured from the packed textures** (`card_rects.py`): rerun it after a crops or creeper pack changes, or a plant is cut
+  by the old box. Cards outside the crops kit and the creepers still cut by the sheet's thirds (core/biome's kits).
 - [ ] **The House is bare** (`41c`, `75`, 2026-11-09): ash-grey boxes with dim strips, no furniture, no sound (the growl at a fixed distance
   the plan wants is `core/audio`'s), no NPC can follow the walker through a threshold (the paths need teleport edges), and rewiring opens one of
   three fixed rooms. Flying (not walking) through a door also crosses it. The visit count is this browser's (localStorage).
@@ -173,7 +177,15 @@
   impostors of the eight families come from `70-host-city.js` unchanged (box shells): a pod's dome is a box at 600 m and beyond.
 - [ ] **The shared checks are the Overlook's** (`99-host-take.js`): a station names the ones it runs (`STAGE.shared`) and adds its own
   (`STAGE.checks`); the lattice, transit, wreck, keeper and extraplanar checks stay the Overlook's.
-- [ ] **The build takes about 50 s in the browser** (two kits' rainforest at R 2,740 and the bake): the lowlands' own pages take as long.
+- [ ] **The build is long and blocks the page** (the owner, 2026-11-10: "the station pages really seem to take forever to load ... station 0 keeps
+  freezing on load"). Measured on the GPU verify lanes that day, with other sessions' jobs sharing the machine: station 0 112 to 329 s, the Yards
+  343 s, the Terraces 35 to 55 s; nearly all of it the two lowland kits' forest (the marks `_t.swlowlands`, `_t.nwlowlands`), which ask the page's
+  ground and mask for every sample. The build is one synchronous run, so the page freezes until it ends. A CPU profile of station 0 on software GL
+  (560 s) found the valley's own fields scanning every crater and scar per sample (90 s) and the subway's sinkholes (27 s): bucketed by cell now
+  (41, `AV.bucket`, `AV.sinkGate`: the same numbers bit for bit, tested), 346 s to 218 s there. Left: core/biome's `BIO.alphaTex` reads a canvas
+  back for each of the lowland kits' 52 generated cards (52 s; a `willReadFrequently` canvas is the likely fix, core-wide); the model's bicubic
+  heights (`at`, `cr`: 50 s; a fine pre-sampled grid would do, at a few millimetres' difference); the relief's noise (27 s); and the build yielding
+  to the browser between kits so the page shows progress instead of freezing (core/biome's kit loop).
 - [ ] **The ground's detail map is sampled raw** (`47-host-land.js`, the lint's one RAWTEX on this build, locked in the baseline): the library's
   `groundDetail` albedo multiplies the ground's colour without an sRGB decode, as the two lowlands' pages do (the valley copies their ground). A
   decode darkens the ground a fifth; do it with the lowlands together and retune the gain, not here alone.

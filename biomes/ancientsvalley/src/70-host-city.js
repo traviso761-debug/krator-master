@@ -110,7 +110,27 @@ function avClipHero(H,top){H.updateMatrixWorld(true);const kill=[];H.traverse(m=
    const a=new Float32Array(keep.length*16),A0=m.instanceMatrix.array,C=m.instanceColor?new Float32Array(keep.length*3):null,C0=C?m.instanceColor.array:null;
    keep.forEach((i,j)=>{for(let q=0;q<16;q++)a[j*16+q]=A0[i*16+q];if(C){C[j*3]=C0[i*3];C[j*3+1]=C0[i*3+1];C[j*3+2]=C0[i*3+2];}});m.instanceMatrix=new THREE.InstancedBufferAttribute(a,16);if(C)m.instanceColor=new THREE.InstancedBufferAttribute(C,3);m.count=keep.length;return;}
   const g=clipGeoY(m.geometry,m,top);if(g===m.geometry)return;if(!g){kill.push(m);return;}m.geometry=g;});kill.forEach(m=>{if(m.parent)m.parent.remove(m);});return H;}
-const heroOf=(key,lite)=>{const p=key.split('.'),F=MP.FAMILY[p[0]];let H=MP.hero(p[0],p[1],lite);if(F&&F.design&&AV_RUINY[p[1]]){let top=null;try{top=MP.ruin(F,p[1]).top;}catch(e){}if(top!=null)avClipHero(H,top+.5);}return avRust(H,key);};
+/* a ruined farm building keeps no piece that touches nothing (the owner, 2026-11-10: "water tower has floating geometry and flora"): the kit's
+   check lets a ruin keep loose remnants (kits/metropolis 70f, "remnants loose"), the crown water tower's gallery among them, and the roof trees took
+   the loose ring for its roof. As the kit measures it (MPF.measure): each mesh's connected pieces (triangles sharing corners to 1 cm) and each
+   instance a piece; a piece stands when a chain of pieces touching within 0.5 m reaches the ground (under 0.6 m); the rest are cut out (their
+   triangles off the index, their instances zeroed). Returns how many were dropped */
+const avDropFloaters=H=>{H.updateMatrixWorld(true);const P=[],v=new THREE.Vector3(),M=new THREE.Matrix4();
+ H.traverse(m=>{if(!m.isMesh||!m.geometry||m.name==='a door leaf'||/debris|rubble/i.test(m.name||''))return;const g=m.geometry;
+  if(m.isInstancedMesh){if(!g.boundingBox)g.computeBoundingBox();for(let i=0;i<m.count;i++){m.getMatrixAt(i,M);if(M.elements[0]===0&&M.elements[5]===0)continue;P.push({m,inst:i,b:g.boundingBox.clone().applyMatrix4(M).applyMatrix4(m.matrixWorld)});}return;}
+  const Ps=g.attributes.position,I=g.index,n=I?I.count:Ps.count,at=q=>I?I.getX(q):q,id=new Map(),par=[],vk=[],find=a=>{while(par[a]!==a){par[a]=par[par[a]];a=par[a];}return a;};
+  for(let q=0;q<n;q++){const i=at(q),k=Math.round(Ps.getX(i)*100)+','+Math.round(Ps.getY(i)*100)+','+Math.round(Ps.getZ(i)*100);let x=id.get(k);if(x==null){x=par.length;par.push(x);id.set(k,x);}vk.push(x);}
+  for(let t=0;t+2<vk.length;t+=3){const a=find(vk[t]);par[find(vk[t+1])]=a;par[find(vk[t+2])]=a;}
+  const by=new Map();for(let t=0;t+2<vk.length;t+=3){const r=find(vk[t]);let e=by.get(r);if(!e){e={m,tris:[],b:new THREE.Box3()};by.set(r,e);}e.tris.push(t);for(let c=0;c<3;c++)e.b.expandByPoint(v.fromBufferAttribute(Ps,at(t+c)).applyMatrix4(m.matrixWorld));}
+  by.forEach(e=>P.push(e));});
+ const E=.5,touch=(a,b)=>a.min.x-E<=b.max.x&&b.min.x-E<=a.max.x&&a.min.y-E<=b.max.y&&b.min.y-E<=a.max.y&&a.min.z-E<=b.max.z&&b.min.z-E<=a.max.z;
+ const on=P.map(p=>p.b.min.y<.6);let grew=true;while(grew){grew=false;for(let i=0;i<P.length;i++){if(on[i])continue;for(let j=0;j<P.length;j++)if(on[j]&&touch(P[i].b,P[j].b)){on[i]=true;grew=true;break;}}}
+ const cut=new Map();let n=0;P.forEach((p,i)=>{if(on[i])return;n++;if(p.inst!=null){p.m.setMatrixAt(p.inst,M.makeScale(0,0,0));p.m.instanceMatrix.needsUpdate=true;return;}let s=cut.get(p.m);if(!s){s=new Set();cut.set(p.m,s);}p.tris.forEach(t=>s.add(t));});
+ cut.forEach((s,m)=>{const g=m.geometry,I=g.index,n0=I?I.count:g.attributes.position.count,keep=[];for(let t=0;t+2<n0;t+=3){if(s.has(t))continue;for(let c=0;c<3;c++)keep.push(I?I.getX(t+c):t+c);}
+  const G=g.clone();G.setIndex(keep);G.userData=Object.assign({},g.userData,{avOwn:true});m.geometry=G;});
+ return n;};
+const heroOf=(key,lite)=>{const p=key.split('.'),F=MP.FAMILY[p[0]];let H=MP.hero(p[0],p[1],lite);if(F&&F.design&&AV_RUINY[p[1]]){let top=null;try{top=MP.ruin(F,p[1]).top;}catch(e){}if(top!=null)avClipHero(H,top+.5);}
+ if(AV_TWO_SIDED.has(p[0])&&p[1]!=='intact'){try{H.userData.avDropped=avDropFloaters(H);}catch(e){}}return avRust(H,key);};
 /* the measured shape of a look: the drawn hero's horizontal extent in 6 m bands up its height, in the tower's own frame (x, z about the axis,
    y from the base). The creepers (71) hang and the roof trees (88) stand on THIS, not on the family's footprint: a spindle's footprint is 46 m
    and its shaft 15 m across at its break, so a curtain hung at the footprint's radius 140 m up floated 30 m off the ruin (the owner,
@@ -213,7 +233,14 @@ AVC.boot=function(){if(AVC.ready)return true;if(window._texPending>0)return fals
  AVC.bakeAllMs=Math.round(performance.now()-t0);AVC.impMs=0;AVC.ready=true;AVC.nextTier=0;return true;};
 AVC.impTick=function(){if(!AVC.impQ||!AVC.impQ.length)return;const r=AVC.impQ.shift(),t0=performance.now();BIO.IMP.list.length=0;BIO.IMP.list.push(r);AVC.impN+=BIO.bakeImpostors(renderer,{wait:0})||0;AVC.impMs+=Math.round(performance.now()-t0);};
 // a hero placed on the ground: a clone that shares the geometry
-function avHero(key,x,y,z,yaw,fade,nearR){const H=AVC.hero[key]||(AVC.hero[key]=heroOf(key)),g=new THREE.Group();H.children.forEach(m=>{let c;if(m.isInstancedMesh){c=new THREE.InstancedMesh(m.geometry,m.material,m.count);c.instanceMatrix=m.instanceMatrix;c.instanceColor=m.instanceColor;c.frustumCulled=false;c.position.copy(m.position);c.quaternion.copy(m.quaternion);c.scale.copy(m.scale);c.userData=m.userData;}else c=m.clone();g.add(c);});
+/* the farm families are walked into (the Terraces' pods, vaults, halls): their walls are single strips facing out, so from inside their back faces were
+   culled and the walls stood transparent (the owner, 2026-11-10: "it's pod walls that are transparent from inside"). Their hero templates take
+   two-sided copies of the kit's materials, once per material, cloned as the fade clones are (the composed hook carried, its layers each run once) */
+const AV_TWO_SIDED=new Set(MP.FARM_KEYS||[]),avTwoMats=new Map();
+const avTwoSided=(H,key)=>{if(H.userData.avTwo||!AV_TWO_SIDED.has(key.split('.')[0]))return;H.userData.avTwo=true;
+ H.traverse(m=>{if(!m.isMesh||!m.material||Array.isArray(m.material)||m.material.side===THREE.DoubleSide)return;let k=avTwoMats.get(m.material);
+  if(!k){k=m.material.clone();k.onBeforeCompile=m.material.onBeforeCompile;k.customProgramCacheKey=m.material.customProgramCacheKey;k.userData=Object.assign({},m.material.userData);k.side=THREE.DoubleSide;avTwoMats.set(m.material,k);}m.material=k;});};
+function avHero(key,x,y,z,yaw,fade,nearR){const H=AVC.hero[key]||(AVC.hero[key]=heroOf(key)),g=new THREE.Group();avTwoSided(H,key);H.children.forEach(m=>{let c;if(m.isInstancedMesh){c=new THREE.InstancedMesh(m.geometry,m.material,m.count);c.instanceMatrix=m.instanceMatrix;c.instanceColor=m.instanceColor;c.frustumCulled=false;c.position.copy(m.position);c.quaternion.copy(m.quaternion);c.scale.copy(m.scale);c.userData=m.userData;}else c=m.clone();g.add(c);});
  /* fade: false, or the shell key whose frame the hero fades over (its own key, or the stump's for a skeleton) */
  g.position.set(x,y,z);g.rotation.y=-(yaw==null?0:yaw);if(MP.shadow)MP.shadow.cast(g);const fk=fade===true?key:fade;if(fk&&AVC.rec[fk])avFade(g,fk,x,y,z,yaw,nearR);g.userData.av={key,x,y,z,yaw:yaw==null?0:yaw};scene.add(g);AVC.live.push(g);return g;}
 /* a broken tower's lean (AV.lean: up to 5 degrees, a direction by hash): one quaternion per tower, the heroes, the shells and the rubble share it.

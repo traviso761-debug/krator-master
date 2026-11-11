@@ -347,11 +347,32 @@ orchard trees, every one grown by the feral wrap; 14.97 M scene triangles (budge
 held at .9 and .7: at 1.6 and 1.1 it was 13.9 M and two items passed the 250k instance cap). Per view 530 to 695 calls (ceiling 1,200) and 3.1 to
 5.2 M triangles, the hub town the worst. Every assert and negative passes.
 
-**The atmosphere panel** (the owner, 2026-11-10: "in the viewer for ancients' valley pages, add controls for the atmospheric effects";
-`98-host-atmos-ui.js`). A foldable panel at the bottom right of every station's page: haze (the fog's density, scaled after the sky writes the
-hour's fog each frame), the smog's mist and its cloud band (the height fog, 89v), the cloud cover, the radiation's strength (89wr) and the
-distortions on or off (89y), each a multiplier on what the page set; a control shows only where its object is on the page. The weather mode
-stays the bar's selector. A viewer's control: nothing is saved or exported.
+**The atmosphere panel** (the owner, 2026-11-10: "add controls for the atmospheric effects", then "let me select sky color, cloud pattern, trigger
+environmental effects"; `98-host-atmos-ui.js`). A foldable panel at the bottom right of every station's page. AIR: haze (the fog's density, scaled
+after the sky writes the hour's fog), the smog's mist and band, cloud cover, radiation, the distortions on or off. WEATHER: every mode the page offers
+(the oily rain among them). SKY: the clouds' mood held by hand, each part on its own and "auto" giving it back to the shifting episodes: the sky's
+colour (the mood's palette, two more, or any colour) and its strength, the darkness, the cloud pattern (still, violent, ordered streets, glitched
+sheets, ripple rings) and its strength, the glow (ethereal, lightning, orbs) and its strength. EFFECTS: a lightning strike ahead (the lightning fx's
+bolt and a flash under the cloud), a pillar of light and a light ascending (the sky events, drawn as the mood's own), and the sky back to auto. The
+spot an effect lands on is drawn from core/rand by how many have been asked for. A viewer's control: nothing is saved or exported.
+
+**The flora, audited** (the owner, 2026-11-10: "audit flora for 1) orientation, 2) proper cut-out of leaves, and 3) attachment"). On all three pages:
+- *Orientation:* the Terraces' crop and orchard cards loaded with three's default flip (`flipY`), so every crop stood upside down and its cells were
+  cut from the mirrored rows ("cotton is upside down"); they load unflipped now, the library's convention. A page check holds it for every card cut
+  from a sheet's cells (`HCHK.cardsUp`, with a negative). Elsewhere only a few staghorn ferns (epiphytes) lean past level.
+- *Cut-out:* the crop and creeper cards are generated nine-plant sheets on a rough grid; the even thirds cut a straight edge through leaves that
+  reach past them ("the herbs still have a straight boundary"), and the creepers and hanging moss drew the whole sheet on each quad (a 3 x 3 grid of
+  clumps: "hanging moss is definitely not cut out properly"). Each plant is cut by its own box now: `card_rects.py` measures them from the packed
+  textures into `41e-av-cardrects.js` (`AV.CARD_RECTS`, read by BIO.geo.cells' o.rects). Every readable alpha map is cut (`HCHK.cardsCut`).
+- *Attachment:* core/biome's attachment audit finds 0.2 to 0.4% of the leaf cards clear of a branch (blooms, needles, lance leaves: the core's
+  known 1%, KNOWN_ISSUES).
+
+**The farm buildings walked into** (the Terraces, 2026-11-10). Their walls are single strips facing out, so from inside they stood transparent ("it's pod
+walls that are transparent from inside"; the aqueduct's trough read the same from above): the eight farm families' heroes take two-sided copies of
+the kit's materials (`70`, `avTwoSided`). A ruined farm building keeps no piece that touches nothing (`avDropFloaters`: the kit lets a ruin keep loose
+remnants, and the crown water tower's gallery hung in the air with palms on it). And the Terraces' towers were turned in three.js's sense while the
+page draws the plan's since the lobbies' finding (the yaw's sign): every farm building and aqueduct module drew mirrored, the aqueduct's modules
+skewed off their line ("aqueduct does not align segments properly"); `41d` stores the plan's yaw now.
 
 ## Read next
 

@@ -102,7 +102,8 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
     bowl and rim, the deepest bowl and the highest rim winning, on the craters within reach */
  const craterSum=(x,z)=>{if(!CRX)return 0;crq.length=0;CRX.query(x,z,0,crq);let h=0,rim=0;for(const c of crq){const d=Math.hypot(x-c.x,z-c.z);if(d>=c.r*1.6)continue;
   if(d<c.r){const q=d/c.r,t=1-q*q,v=-c.depth*t*t;if(v<h)h=v;}const u=d<c.r?(d-c.r)/(.35*c.r):(d-c.r)/(.6*c.r),w=Math.max(0,1-u*u),b=.16*c.depth*w*w;if(b>rim)rim=b;}return h+rim;};
- const carve=(x,z)=>KTRANSIT.sinkholeH(AVT.subway,x,z)+Math.min(0,craterSum(x,z));
+ const SINKG=AV.sinkGate(AVT.subway);   /* the subway's drops only where one reaches (41, AV.sinkGate) */
+ const carve=(x,z)=>(SINKG(x,z)?KTRANSIT.sinkholeH(AVT.subway,x,z):0)+Math.min(0,craterSum(x,z));
  AVT.net=KTRANSIT.network(AVT.defs,{ground:relief,carve});
  AVT.streets=AVT.defs.map((d,i)=>{const Rd=AVT.net.roads[i];return{id:d.id,pts:d.pts,width:Rd.width,pavement:Rd.pavement,ground:Rd.levelAt,av:d.av,axis:d.axis,k:d.k};});
  AVT_WARS=AVT.streets.map((st,i)=>{const Rd=AVT.net.roads[i],lk=s=>{const q=Rd.path.at(s);return AVT.lakeK(q.x,q.z);},hi=Math.max(lk(0),lk(Rd.L*.5),lk(Rd.L));
@@ -113,7 +114,7 @@ const STAGE=(function(){const RG=AV_REGION,BASE=RG.site.base,LAKE_Y=RG.lake.y,R=
  const lineHnear=(x,z)=>{const lx=x*ct+z*snt,lz=-x*snt+z*ct,p=PLAN.pitch,ku=Math.round(lx/p-.5),kw=Math.round(lz/p-.5);let h=0;const iu=AVT.ix[0][ku],iw=AVT.ix[1][kw];
   if(iu!=null)h+=KTRANSIT.lineH(AVT.net.roads[iu],x,z);if(iw!=null)h+=KTRANSIT.lineH(AVT.net.roads[iw],x,z);return h;};
  /* the ground everything stands on: the relief, the subway's holes, the war's craters, the roads' and the cargo line's cuttings */
- function ground(x,z){let h=relief(x,z);if(h<LAKE_Y+1.5)return h;h+=KTRANSIT.sinkholeH(AVT.subway,x,z)+craterSum(x,z)+lineHnear(x,z)+KTRANSIT.lineH(AVT.cargo,x,z,{form:.45});return LOBQ?lobbyH(x,z,h):h;}
+ function ground(x,z){let h=relief(x,z);if(h<LAKE_Y+1.5)return h;h+=(SINKG(x,z)?KTRANSIT.sinkholeH(AVT.subway,x,z):0)+craterSum(x,z)+lineHnear(x,z)+KTRANSIT.lineH(AVT.cargo,x,z,{form:.45});return LOBQ?lobbyH(x,z,h):h;}
  /* the lobbies' approaches (PLAN.md section 15; 41c AV.lobbies, made below once the streets are graded): the ground takes the plane of each flight
     across its width, blended over 1.5 m at its sides, so the bank between the pavement and the plinth is cut or filled where the steps are */
  let LOBQ=null;const lobq=[];

@@ -13,19 +13,25 @@ const AV_THICKET=(function(){const out={ok:false,fields:0,plants:0,trees:0,grown
     orchards' crowns white on instance colour alone), the instance colour a variation round it */
  /* core's foliage material (BIO.leafMat: Lambert, the two faces' light mixed, the wind, the fade): a Standard card went cream from under the canopy
     and black on its other face (its 4% specular at grazing, its normal flipped: the second GPU run, 2026-11-10; 30-core-foliage.js's own lesson) */
- const cardMat=(f,tint)=>{const Pk=lib(f),T=Pk?KMAT.textures(Pk,{aniso:4}):{};const m=BIO.leafMat(T.map||null,'thk.'+f,{alphaTest:.45});m.color.setRGB(tint[0],tint[1],tint[2]).convertSRGBToLinear();m.name='thicket.'+f;return m;};
+ /* the card loads UNFLIPPED (flipY false: row 0 of the sheet at v 0), the library's convention that BIO.geo.cells, the clump and the stand below
+    all draw in, as BIO.libSwap loads its cards; with three's default flip every crop and orchard crown stood upside down and its cells were cut
+    from the mirrored rows of the sheet (the owner, 2026-11-10: "cotton is upside down", "these plants seem weirdly cut-out") */
+ const cardMat=(f,tint)=>{const Pk=lib(f),T=Pk?KMAT.textures(Pk,{aniso:4,flipY:false}):{};const m=BIO.leafMat(T.map||null,'thk.'+f,{alphaTest:.45});m.color.setRGB(tint[0],tint[1],tint[2]).convertSRGBToLinear();m.name='thicket.'+f;return m;};
  /* a plant standing on its foot: three vertical quads crossed at 60 degrees, 1 m wide and tall, the image's top (v 0, the library's convention) up */
  const stand=(function(){const pos=[],nor=[],uv=[];for(let k=0;k<3;k++){const a=k*Math.PI/3,c=Math.cos(a),s=Math.sin(a),n=[-s,0,c];const Q=[[-.5,0,1],[.5,0,1],[.5,1,0],[-.5,1,0]].map(q=>[c*q[0],q[1],s*q[0],q[0]+.5,q[2]]);
    [0,1,2,0,2,3].forEach(i=>{pos.push(Q[i][0],Q[i][1],Q[i][2]);nor.push(n[0],n[1],n[2]);uv.push(Q[i][3],Q[i][4]);});}return BIO.geo._make(pos,nor,uv);})();
  const prev=BIO.kit('farmcrops'),api={SPECIES:[],TREES:[]};
  /* the items: a crop's card as two sets of three cells (its rows show six of its nine plants), an orchard's crown as the clump's tripod in three cells,
     one trunk for every orchard tree */
+ /* each plant cut by its own box on the sheet (41e, AV.CARD_RECTS: the crops kit's sheets are nine plants on a rough grid, and the even thirds
+    sliced a straight edge through the leaves that reach past them: the owner, 2026-11-10, "the herbs still have a straight boundary") */
+ const RX=f=>AV.CARD_RECTS&&AV.CARD_RECTS[f]||undefined;
  const hue=id=>KRAND.unit(KRAND.hash(STAGE.seed,id.length,id.charCodeAt(0),id.charCodeAt(id.length-1)));
- const items={};L.forEach((c,ci)=>{const h=hue(c.id),m=cardMat(c.fam,c.form==='tree'?[.56+.1*h,.70-.05*h,.34]:[.64+.12*h,.74-.06*h,.38]);   /* the cards are pale beige: these tints over them read as olive and leaf green (darker, the thicket read black from the air) */   /* sRGB: a first cut set these as linear and the crowns read cream (2026-11-10) */if(c.form==='tree'){const n='thk.crown.'+c.id;BIO.def(n,BIO.geo.cells(BIO.geo.clump(),{n:3,pick:[0,4,8]}),m,{cls:'flora',kind:'tree',label:c.name+' (an orchard gone wild)',tags:{origin:'farm',crop:c.id}});items[c.id]=[n];api.SPECIES.push({key:c.id,name:c.name});}
-  else{const a='thk.'+c.id+'.a',b='thk.'+c.id+'.b';BIO.def(a,BIO.geo.cells(stand.clone(),{n:3,pick:[0,4,8],scale:1}),m,{cls:'flora',kind:'plant',label:c.name+' (a field gone wild)',tags:{origin:'farm',crop:c.id}});
+ const items={};L.forEach((c,ci)=>{const h=hue(c.id),m=cardMat(c.fam,c.form==='tree'?[.56+.1*h,.70-.05*h,.34]:[.64+.12*h,.74-.06*h,.38]);   /* the cards are pale beige: these tints over them read as olive and leaf green (darker, the thicket read black from the air) */   /* sRGB: a first cut set these as linear and the crowns read cream (2026-11-10) */if(c.form==='tree'){const n='thk.crown.'+c.id;BIO.def(n,BIO.geo.cells(BIO.geo.clump(),{n:3,pick:[0,4,8],rects:RX(c.fam)}),m,{cls:'flora',kind:'tree',label:c.name+' (an orchard gone wild)',tags:{origin:'farm',crop:c.id}});items[c.id]=[n];api.SPECIES.push({key:c.id,name:c.name});}
+  else{const a='thk.'+c.id+'.a',b='thk.'+c.id+'.b';BIO.def(a,BIO.geo.cells(stand.clone(),{n:3,pick:[0,4,8],scale:1,rects:RX(c.fam)}),m,{cls:'flora',kind:'plant',label:c.name+' (a field gone wild)',tags:{origin:'farm',crop:c.id}});
    /* each its own copy: BIO.geo.cells rewrites a non-indexed geometry's uv in place, and one shared stand, cut again for every crop, smeared its
       cells across the sheet (the fields drew as solid quads: the third GPU run, 2026-11-10) */
-   BIO.def(b,BIO.geo.cells(stand.clone(),{n:3,pick:[2,6,7],scale:1}),m,{cls:'flora',kind:'plant',label:c.name+' (a field gone wild)',tags:{origin:'farm',crop:c.id}});items[c.id]=[a,b];}});
+   BIO.def(b,BIO.geo.cells(stand.clone(),{n:3,pick:[2,6,7],scale:1,rects:RX(c.fam)}),m,{cls:'flora',kind:'plant',label:c.name+' (a field gone wild)',tags:{origin:'farm',crop:c.id}});items[c.id]=[a,b];}});
  /* the trunks are merged triangles (a bucket), not instances: the feral wrap grows a tree whose span holds triangles and keeps one of cards alone at
     its size (46: a cane palm's trunk is drawn apart from its fronds), so a trunk here lets the wrap grow the whole orchard tree (the first GPU run,
     2026-11-10: 24,877 orchard trees, none grown) */
@@ -60,6 +66,6 @@ const AV_THICKET=(function(){const out={ok:false,fields:0,plants:0,trees:0,grown
  const g0=AV.FERAL.grown;AV.feralKit(api,{ground:terrainH,feral:AVQ_ON('feral')?(x,z)=>STAGE.F.feral(x,z):()=>0,capH:14,floor:true,seed:STAGE.seed+59});
  try{api.buildTrees();api.buildFloor();}catch(e){reportErr('thicket: '+(e.stack||e));}
  BIO.kitEnd(api);BIO.kit(prev||'');out.unmapped=Object.values(BIO.kits.farmcrops?BIO.kits.farmcrops.defs:{}).filter(d=>d.mat&&d.mat.isMaterial&&/thicket\.card/.test(d.mat.name||'')&&!d.mat.map).map(d=>d.mat.name);
- /* every card quad inside one cell of its sheet (a third of it each way): a quad wider shows several plants or the sheet's margins */
- out.cellBad=[];{const D=BIO.kits.farmcrops?BIO.kits.farmcrops.defs:{};for(const n in D){if(!/^thk\.(?!trunk)/.test(n))continue;const U=D[n].geo.attributes.uv.array;for(let q=0;q*12<U.length;q++){let u0=9,u1=-9,v0=9,v1=-9;for(let v=0;v<6;v++){const u=U[q*12+v*2],w=U[q*12+v*2+1];u0=Math.min(u0,u);u1=Math.max(u1,u);v0=Math.min(v0,w);v1=Math.max(v1,w);}if(u1-u0>.34||v1-v0>.34){out.cellBad.push(n);break;}}}}
+ /* every card quad inside one plant's box of its sheet (a third each way, or its plant's box, 41e, at most 0.6): a quad wider shows several plants */
+ out.cellBad=[];{const D=BIO.kits.farmcrops?BIO.kits.farmcrops.defs:{};for(const n in D){if(!/^thk\.(?!trunk)/.test(n))continue;const U=D[n].geo.attributes.uv.array;for(let q=0;q*12<U.length;q++){let u0=9,u1=-9,v0=9,v1=-9;for(let v=0;v<6;v++){const u=U[q*12+v*2],w=U[q*12+v*2+1];u0=Math.min(u0,u);u1=Math.max(u1,u);v0=Math.min(v0,w);v1=Math.max(v1,w);}if(u1-u0>.6||v1-v0>.6){out.cellBad.push(n);break;}}}}
  out.grown=AV.FERAL.grown-g0;out.crops=L.map(c=>c.name);out.ok=out.plants>0;_mark('thicket');return out;})();

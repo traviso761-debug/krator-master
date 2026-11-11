@@ -141,4 +141,10 @@ ok('every deck is above its ground and every pier reaches it',V.decks.every(d=>d
   ok('every fallen tower\'s shaft is blocked ('+LB.fallen.length+' boxes; the negative: a walk without them)',LB.fallen.length>0&&shut(W),shut(KWALK.create()));}
  ok('the same seed, the same doors; another seed, others',JSON.stringify(mk().doors.map(d=>d.mode))===JSON.stringify(D.map(d=>d.mode))&&JSON.stringify(mk({seed:32}).doors.map(d=>d.mode))!==JSON.stringify(D.map(d=>d.mode)));
 }
+/* the bucketed fields give the brute-force scan's numbers, bit for bit (AV.bucket, 2026-11-10: the build's time was the scan) */
+{const C=AV.craters({R:3000,n:24,seed:5,rMin:35,rMax:150,ok:()=>true}),brute=(x,z)=>{let h=0;for(const c of C){const d=Math.hypot(x-c.x,z-c.z);if(d>c.r*1.6)continue;const u=d/c.r;if(u<1){const b=1-u*u;h-=c.depth*b*b;}h+=c.rim*AV.smooth(.6,1,u)*AV.smooth(1.6,1.1,u);}return h;};
+ let diff=0,hit=0;for(let i=0;i<20000;i++){const x=(KRAND.unit(KRAND.hash(9,i,1,0))*2-1)*3200,z=(KRAND.unit(KRAND.hash(9,i,2,0))*2-1)*3200,a=AV.craterH(C,x,z),b=brute(x,z);if(a!==b)diff++;if(b)hit++;}
+ ok('the bucketed craters give the scan\'s heights at 20,000 points ('+hit+' inside a crater\'s reach, '+diff+' different)',diff===0&&hit>100);
+ const C2=C.map(c=>Object.assign({},c));C2._avB=AV.bucket(C2,c=>c.r*.5,128);let d2=0;for(let i=0;i<20000;i++){const x=(KRAND.unit(KRAND.hash(9,i,1,0))*2-1)*3200,z=(KRAND.unit(KRAND.hash(9,i,2,0))*2-1)*3200;if(AV.craterH(C2,x,z)!==brute(x,z))d2++;}
+ ok('...and a bucket with too short a reach differs (the negative)',d2>0);}
 console.log(fails?fails+' FAILED of '+n:'all '+n+' passed');process.exit(fails?1:0);
