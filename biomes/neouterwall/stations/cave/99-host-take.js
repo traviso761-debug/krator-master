@@ -13,6 +13,8 @@ function describe(hit){const p=hit.point,o=hit.object,t=Math.round(CAVE.temp(p.x
 const BUDGET={showcase:{tris:2500000,calls:80},cls:{rock:900000,crystal:1200000,host:400000},type:{cavern:'rock',hypogene:'crystal',selenite:'crystal',blades:'crystal'}};
 const hazList=()=>typeof KHAZ!=='undefined'?KHAZ.list().map(r=>KHAZ.of(r)||r).filter(Boolean):[];
 const HCHK={
+ // the rock drawn: KCAVERN's chunks meshed (a cavern never built lists no chunk, and the page draws its crystals in the dark)
+ rock(R){return{ok:R.chunks>0&&R.tris>0&&R.meshes>0,detail:R.chunks+' chunks, '+R.meshes+' meshes, '+R.tris+' triangles'};},
  /* the Marble Hall carved as the tube record has it: open at its middle and out toward its ends and sides, under its crown */
  hall(Hl,sdf){const P=[[0,2,0],[.75,2,0],[-.75,2,0],[0,2,.75],[0,2,-.75],[0,.8,0]].map(q=>[Hl.c[0]+q[0]*Hl.rx,Hl.c[1]+(q[1]>1.5?q[1]:Hl.h*q[1]),Hl.c[2]+q[2]*Hl.rz]);
   const shut=P.filter(p=>sdf(p[0],p[1],p[2])<=.3),ok=!shut.length&&Hl.rx*2>=240&&Hl.rz*2>=150&&Hl.h>=55;
@@ -42,6 +44,7 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),H
  add('bad air pooled on every chamber of the lower storey',HCHK.gas(hazList()));
  add('the water scalds only near the feeders (KTHERM)',HCHK.poolHeat(CAVE.water?CAVE.water.pools:[],CAVE.hazards));
  add('sealed under the crest (no vent, no daylight)',HCHK.sealed(CAVE.throats,SITE.ground(Hl.c[0],Hl.c[2])-Hl.c[1]));
+ add('the cave\'s rock drawn (KCAVERN\'s chunks)',HCHK.rock(ROCK));
  add('the views\' cameras stand in the open',HCHK.eyes(_cams()));
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),Hl=CAVE.hall;
@@ -53,6 +56,7 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  {const P=(CAVE.water?CAVE.water.pools:[]).map(p=>Object.assign({},p));const h=P.find(p=>p.temp>=SITE.therm.scald);
   add('a pool marked wrongly',h?HCHK.poolHeat(P,CAVE.hazards.filter(r=>r.id!==h.id+':heat')):HCHK.poolHeat(P.length?[Object.assign({},P[0],{temp:SITE.therm.scald+10})]:[],[]));}
  add('a vent to the surface',HCHK.sealed([{c:[0,0]}],6200));
+ add('the cavern never built',HCHK.rock({chunks:0,meshes:0,tris:0}));
  add('a camera in the rock',HCHK.eyes([{view:'rock',x:Hl.c[0],y:Hl.c[1]-8,z:Hl.c[2]}]));
  return R;}
 const EXPORT_BOX=[FX-60,FZ-60,FX+60,FZ+60].map(Math.round);
