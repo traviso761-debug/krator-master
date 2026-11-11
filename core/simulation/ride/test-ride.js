@@ -12,7 +12,7 @@ function fresh(seed){
   const S=window.SIM,clock={h:6,d:0,t:0};S.init({seed:seed||11,hour:()=>clock.h,day:()=>clock.d,t:()=>clock.t,err:()=>{}});
   return {S,clock};
 }
-function tick(S,clock){clock.t+=60;const m=Math.round(clock.t/60)+6*60;clock.d=Math.floor(m/1440);clock.h=(m%1440)/60;S.step();}
+function tick(S,clock){clock.t+=60;const m=Math.round(clock.t/60)+6*60;clock.d=Math.floor(m/1440);clock.h=(m%1440)/60+1e-7;S.step();}
 
 // ---------------------------------------------------------------- the sources refuse what cannot run
 {const {S}=fresh();const L=RIDELAB.declare({});const tr=S.rideRoute([[0,0,0],[100,0,0]]);
