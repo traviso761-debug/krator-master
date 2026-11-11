@@ -357,7 +357,12 @@ fault mirror, contact marble. `stone.obsidian` exists and may serve the glass.
 - **The heat.** The model has no vent here. Is the cauldrons' warmth hot springs only (the plan), or also fumaroles on the
   crest (Gemini's `fumarole_crest`)?
 - **The air curve.** Copper Glacier's (used here and in the Outlands plan) or `WORLD.md`'s (used by Gemini's sketches)?
-- **Overlaps.** The polygon overlaps N Outlands, the Arachnoids and the Tiers. Trim it on the model?
+- **Overlaps.** The polygon overlaps N Outlands, the Arachnoids and the Tiers. Trim it on the model? (The Tiers: only 3
+  cells, trimmed to the crest in the Tiers' map edit, `biomes/tiers/PLAN.md` section 8a; the owner, 2026-11-10.)
+- **The Hounds' Road** (`biomes/tiers/PLAN.md` section 8; the owner asked for it, 2026-11-10): the Tierhounds' road to the
+  Gate crosses this polygon, down into the **Vitreous Hollow** (station 1) at its halfway point and east along the wall's
+  back at 5.5-6 km to the gap. The hollow becomes a road station, not empty ground; the village of Howl stands in the gap,
+  not here (the owner, 2026-11-10).
 - **Who quarries the skarns:** the Tierhounds, Spider Lake's people, or nobody yet?
 - **Names:** the tarns keep Gemini's English names. Hum names (the Coyote tongue, as the rivers have) are open.
 - **Order:** after Korona's 5.1 station sites (`STATIONS-MAP-5.1.md`). The Outland Gate ruling is made (the owner,

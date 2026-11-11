@@ -326,9 +326,11 @@ Each with the module that makes it. **New** marks a core amendment (section 12).
 - **The four tribes**: **Sunset, Sunrise, Valley, Peak**. *Proposed* homes: the **Valley** tribe, the sedentary bronze-age
   farmers, on the river (S2-S3); the **Peak** tribe on the fog wall and the gem hills (miners and tappers, S1, S4); **Sunrise**
   and **Sunset**, nomadic goat-and-ostrich herders on the N plains (N1), east and west.
-- **The Tierhounds** rule the **Kingdom of the Tiers** (the "Coyote Kingdom" to outsiders) on the threshold and keep the Gate
-  (*proposed*: hound-headed therians, kin to the Coyote Men). The Gate is now their toll fort and long wall in the gap's
-  Narrows (2026-11-09); the Tiers reach the gap's floor over crests no higher than about 3.9 km.
+- **The Tierhounds** rule the **Kingdom of the Tiers** (the "Coyote Kingdom" to outsiders) on the threshold and keep the Gate.
+  **They are Coyote Men** (the owner, 2026-11-10; the "hound-headed kin" proposal is dropped): the Coyote Men's most
+  organized polity, among the Tiers' lakes and canyons, its capital Coyote Canyon. The Gate is now their toll fort and long
+  wall in the gap's Narrows (2026-11-09), a frontier post reached by the Hounds' Road (about 900 km, top 6.0 km) through
+  the village of Howl (`biomes/tiers/PLAN.md` sections 6 and 8).
 - **The trickster** is a god in the shape of **the runner bird**, who runs the ancient roads (the easter egg: it reads as the
   cartoon Road Runner, drawn as the Outlands' own bird, not a copy). **The god's road** runs from the Sleeping City through the
   Gate to Trickster's House, where **the god lives**: the Coyote Men **shun the ruin** as cursed, and misfortune is a **real
@@ -411,7 +413,8 @@ The owner's decision (2026-10-26): **`tiers` is a biome of its own**, on the `Ti
 the same ground as Korona's NE and the Coyote Kingdom). The dry, terraced country of the Tierhounds between Korona's rings
 and the Gate: sedesert and ebadlands scrub (read in place) with Outlands species leaking out by the gap (pleat columns and
 cap-shrubs in gardens and as stragglers), terraced fields, the stepped towns. It gets its own `PLAN.md` before it is built
-(phase O8).
+(phase O8). **Planned 2026-11-10: `biomes/tiers/PLAN.md`** (the polygon is 5.1 px 1158-1391 by 382-609; the px above are
+the older geographic polygon's on the 4.2x canvas). Outlands species grow there in the Kingdom's gardens only.
 
 ## 11. Textures
 
