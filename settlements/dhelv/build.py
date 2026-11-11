@@ -61,8 +61,9 @@ KIT_SRC = os.path.join(KIT, 'src')
 KIT_SKIP = {'00-head.html', '41-zj-block.js', '89-rows.js', '90-scene.js', '91-probe.js',   # the kit sheet's host
             '92-camera.js', '92-world.js', '99-host-take.js'}   # the kit sheet's views and take: Dhelv's are core/host's (src/92-dhelv-camera.js, src/99-start.js)
 TEX_DIR = os.path.join(KIT, 'tex')
-CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('shader', 'rand', 'walk', 'materials/record', 'tags', 'furnish', 'atmos', 'sockets', 'clock', 'sched', 'simulation')]   # clock, sched, simulation: the ramblers (P6)
-CORE_FILES = [os.path.join(ROOT, 'core', 'terrain', '39-core-cavern.js')]   # one file of a core folder
+CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('shader', 'rand', 'walk', 'materials/record', 'tags', 'furnish', 'atmos', 'sockets', 'door', 'clock', 'sched', 'simulation')]   # clock, sched, simulation: the ramblers (P6)
+CORE_FILES = [os.path.join(ROOT, 'core', 'terrain', '39-core-cavern.js'),   # one file of a core folder
+              os.path.join(ROOT, 'core', 'engine', '36o-open.js')]       # the engine's doors and glass on core/door, as kits/zeijani/build.py takes them (the page lost them: "box is not a function")
 # the biome core (BIO: the kits' registry, foliage, placement, the stage) for the kipuka's forest (P5b)
 CORE_FILES += [os.path.join(ROOT, 'core', 'biome', f) for f in ('10-core-head.js', '20-core-kit.js', '30-core-foliage.js', '40-core-place.js', '44-core-stage.js')]
 # core/host (core/host/README.md; ROADMAP.md section 10, stage 3 step 5): the whole interface less core/space (core/biome's
@@ -72,6 +73,9 @@ sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))
 import host as khost
 CORE_HOST = [f for f in khost.FULL if f not in ('20-core-space.js', '40-core-edits.js')]
 CORE_FILES += [khost.path(f) for f in CORE_HOST]
+sys.path.insert(0, os.path.join(ROOT, 'core', 'atmos', 'placeholder'))
+import placeholder as psky   # the placeholder sky (KratorSky), read in place since MODULARITY-PLAN.md step 1 moved it out of the kit's src/ (the page lost it: "KratorSky is not defined")
+CORE_FILES += list(psky.paths(psky.SKY).values())
 # the HYPERJUNGLE kit, read in place and WRAPPED in one closure: its 41 declares the core's helpers (TAU, rng, fbm...) at top
 # level for itself, which the Zeijani kit declares too; inside the closure they and its PRNG stream stay its own. Its fauna
 # (58, which wants core/biome 35-core-anim) is left out
