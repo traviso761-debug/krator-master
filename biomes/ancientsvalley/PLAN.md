@@ -211,7 +211,15 @@ All *proposed* until the owner settles them; the lore is in LORE.md 4 (l.149), 6
   figures, voids with eyes, a sun-headed giant, geometric solids with their own weather. `kits/extraplanar`, because they are neither fauna nor
   characters: the **hunters** on the fauna kit's gaits with the `centaur` and stilt builders, and the **phenomena** (a void that drifts, a solid
   that hums, a haloed presence) as anomaly records. Where they come through: **portals**, an anomaly kind (`PLAN-ANOMALIES.md` 4), thickest at
-  `city3`. Their far-tier silhouettes are shared with the mutants' and the robots' (section 9).
+  `city3`. Their far-tier silhouettes are shared with the mutants' and the robots' (section 9). *Built 2026-11-09* (`kits/extraplanar`, the session
+  valley-extraplanar: four hunters on the mechs machinery, the phenomena and portals as records, the shared silhouette set; `README.md`, `API.md`)
+  and **on station 0 the same day** (`75-host-extraplanar.js`, the bundle `39x`): three hunters on avenue-block rounds like the keepers (the Stilter
+  toward the lake to the south, the Haloed over the drowned inlet, the Crawler deep in the wild half; the tell, then the blow, at the corners; R
+  rides with them), the three phenomena where the themes table puts them (the void over the water of the inlet, the solid humming in a plaza of
+  the foul half, the presence in the park gone feral; their weather on the page's core/atmos, the solid's tint in the clouds' mood), three
+  drowned-hall portals on the shore under the towers with the lake's line across the arch, each leading to `city3`, and a tear standing alone on
+  the dead lobe. Not yet: a dormant pose (a hunter is awake or absent), the robots' and mutants' far tiers on the shared cards, a hit test for the
+  gaze (the kit's `KNOWN_ISSUES.md`).
 - **The Lizardmen** (settled 2026-11-04). The war loosed them **here**: they came through in the Valley and crossed the Outer Wall to the Rift
   floor, where LORE 6.20 has them now. A few remnants stay in the Valley, and Thera's stair (`city6`) is the way they went. LORE 6.20 gets a
   line to say so when the valley's lore is written up.
@@ -319,21 +327,28 @@ needs `anomaly` in `ALL_MODULES` and a `NOT_APPLICABLE` reason wherever the over
 | `core/rand` | `KRAND.hash`, `unit`, `fbm` | every draw of the valley's own (the plan, the fields, the relief); the kits keep their streams |
 | `core/tags` | `BIO.init({tags:'ancientsvalley'})`; towers and lines as records | records before anything is drawn |
 | `core/space` | `KSPACE` | the plinths in reach of a point (the ground, the masks, the views) |
-| `core/terrain` | `KGROUND` (seven layers), `KRUBBLE` (the ruins' heaps, through the metropolis kit), `KRELIEF` listed for its noise | the ground, the rubble |
+| `core/terrain` | `KGROUND` (seven layers), `KRUBBLE` (the ruins' heaps, through the metropolis kit; the lobbies' heaps and rubble ramps, `76`), `KRELIEF` listed for its noise | the ground, the rubble |
 | `core/water` | `WATER.open` x 2 | the lake and the inlets, the far lake |
 | `core/atmos` | the shared sky with the model's ridges, `bindHost`, `bindWeather`, `skylight`, `cloudShade` | the air |
 | `core/shader` | `KHOOK.add` (the taint's tint), `KGROUND.hook` | the shader layers; the warp (`KWARP`) waits for the Bend |
 | `core/shadow` | `KSHADOW.attach` behind `?shadow=1` | off by default (the owner) |
-| `core/walk` | listed for the metropolis kit's floors | nothing walks a storey on this page yet |
+| `core/walk` | `KWALK` strips, polys, blocks and zones (`41c` `AV.lobbyWalk`); the take's `walk` is `AVL.walk` (`76`) | the lobbies' approaches, the open towers' storeys and stairs, the rubble at the blocked doors and stairs, the fallen towers' shafts, the weak floors (section 15) |
 | `core/materials` | `KMAT` packs: the valley's, the two lowlands', the metropolis's (sidecars) | the library |
 | `core/export` | `BIO.export` | the export profile |
 | `kits/metropolis` | records, plans, facades, shells, designs, heroes, rubble, floors, ruins, the shell bake and draw; not its stage, land, sky, take, interiors, cut-away or the Ancients builders | the towers |
 | `kits/interiors`, `kits/ancients-interiors` | bundled | the plans the heroes' windows come from |
 | `biomes/swlowlands`, `biomes/nwlowlands` | 50/55/60/70 in place, wrapped by `AV.feralKit` | the forest |
+| `kits/mechs` | bundled (`39k`, culture `ancient`) | the keepers (`72`) |
+| `kits/extraplanar` | bundled (`39x`: `KratorExtraplanar`, the mechs machinery in its own closure) | the hunters, the phenomena and the portals (`75`), their weather (`89x`) |
+
+**The Terraces (2026-11-10)** take the same modules through the shared fragments, and: `core/rand` and `core/space` in its plan (`41d`, [G data]:
+every placement a hash of (seed, index, salt), the pads, roads and fields on `KSPACE`); `kits/crops` read in place (`10`, `20`, `22`, `40` as `38a`-`38d`:
+`AV.farmCrops` on `CROPS.forBiome('swlowlands')`) with its pack as a sidecar; `core/biome` for the thicket (a kit of its own, `farmcrops`, its cards cut
+by `BIO.geo.cells`, wrapped by `AV.feralKit`); `kits/metropolis`'s farm families (`46f`, `54f`) through the city stage's tiers.
 
 Not taken yet: `core/anomaly` (none on station 0), `core/hazard`, `core/clock` beyond the host's, `core/city` (the plan is a lattice on
 records until the streets want lots), `core/mask` (every field is a function), `core/furnish`, `core/hamlet`, `core/camp`, `core/charactermodels`,
-`kits/fauna`, `kits/mechs`, `kits/crops`.
+`kits/fauna`, `kits/crops`.
 
 ## 12. Order of work
 
@@ -342,13 +357,46 @@ records until the streets want lots), `core/mask` (every field is a function), `
 2. **Station 0, the Overlook: no anomaly.** The look of the valley on a normal day: the city's tiers from a residential edge toward a core, a
    park district gone feral in purple-green, a dead lobe, a viaduct line across the view, the lake's steam, a keeper robot at its routine.
    **This is the test of the brief: the hand of man in every view, and the feel. Stop for the owner's eye.** It also measures the budget split.
-   *Built 2026-11-04* (`README.md`, `KNOWN_ISSUES.md`): the city, the forest, the tint, the viaduct, the dead lobe, the lake; not yet the steam
-   or the robot. Waiting on the owner's eye and the GPU verify.
+   *Built 2026-11-04* (`README.md`, `KNOWN_ISSUES.md`): the city, the forest, the tint, the viaduct, the dead lobe, the lake. *2026-11-08:* the
+   steam (banks of mist and plumes on the water, `89u`), the keepers (four kits/mechs walkers on avenue rounds, `72`), the second viaduct across
+   the Overlook's view, the land split half wild and half foul (`AV.fields` wild/foul), and the owner's smog (`89v`: the height fog's mist and
+   band, the sky's clouds low and turbulent, the air turbid). *2026-11-09:* the transit pass (section 14), the Ancients' keepers (kits/mechs
+   culture `ancient`), the wrecks, and the extraplanars from `kits/extraplanar` (`75`: three hunters on rounds, the void over the inlet, the
+   solid in a foul plaza, the presence in the park, three drowned-hall portals on the shore and a tear on the dead lobe; section 6). Waiting on
+   the owner's eye.
+2a. **The Yards: the industrial district, a station of its own** (the owner, 2026-11-10: "we need an industrial district ... these may need
+   to be separate stations"; station 0 stays the Overlook as it is). On the shelf (100-300 m), where the plan's industrial ring lies, a
+   site on the cargo line inside the subway's reach, upwind of nothing: it is where the foul ground comes from. What stands there: the
+   twelve industrial buildings `kits/metropolis` already has and the Overlook never places (`46b`, `46e`: the Vault, the Perforated Stacks,
+   the Assembler, the Rig, the Foundry, the Pilotis Works, the Well, the Tank Yard, the Cooling Towers, the Gantry Hall, the Furnace Stacks, the
+   Spheres) with their ruin states, shells and impostors; a rail yard on the cargo line (sidings fanning from it, wagons standing and
+   overturned from the transit kit's trains, a turntable, loading gantries); and **new** pieces (section 3's table): tank farms in bunds,
+   pipe racks between the halls, the dish arrays of the references, chimneys and conveyors. The ground: the spill grounds and toxic pools
+   as dead ground (`scar`, section 9), slag heaps, the oily rain over it on most days (`89x`'s mode, here the default), the smog thickest.
+   The keepers here are the robots' factory kinds (`kits/mechs` culture `ancient`). Its own stage (`stations/yards/`), site and views.
+   *Built 2026-11-10* (`README.md`, "Station 2a"): px 470,921 (a west-east trough on the shelf, 210 m, the line's grade toward Thera and Span),
+   the twelve buildings in superblocks round an eight-siding yard with a turntable and gantries, the new pieces as records (`kits/metropolis`
+   46f, 57y), the oily rain and the thickest smog, the factory keepers, and three of the owner's new Engines (the same day: "cyclopean machines
+   of unclear and mysterious purpose" among the industry; `kits/ancients` targets/engines 8aj, ten of them, the Hive, the Star and the Iris here).
+   Waiting on the owner's eye.
+2b. **The Terraces: the Soleri farm belt, a station of its own** (the owner, 2026-11-10). On the terraces (300-600 m), past station 0's
+   edge: Soleri's planned developments, hexagonal and terraced growing pods round a civic hub town (reference *landscape* 8), aqueducts on
+   arches and pump houses, pylon lines, the crop rows and orchards gone to thicket (`kits/crops`, `CROPS.forBiome` on the Cfa/Af climate,
+   run wild), the city's skyline below toward the lake. Needs the farm families in `kits/metropolis` first (settled 2026-11-04, section 13
+   question 9): the pods, the terrace stacks, the hub's civic buildings, the aqueduct and the pump house, each with ruin states, shells
+   and impostors by the towers' machinery. Its own stage (`stations/terraces/`), site and views.
+   *Built 2026-11-10* (`README.md`, "The Terraces"; `python3 build.py --station terraces`): the eight farm families in `kits/metropolis` (`46f`,
+   `54f`: pod, vault house, growing stack, hub hall, market, water tower, aqueduct module, pump house); the site at **px 455,899** (330 m, Cfa,
+   1,694 mm), the south face of the ridge north of city1, the page falling about 180 m to the shelf, city1 and the Overlook's ridge 16-18 km due
+   south; the plan as records (`stations/terraces/41d-av-farm.js`, `tests/test-farm.js`): a hub town, the aqueduct on a contour, 36 clusters of
+   pods, vault houses and stacks, 33 roads crossing under arches, two pylon lines, about 1,900 parcels of crops and orchards from `kits/crops`
+   gone to thicket under the feral wrap, and the city below as a far skyline. Waiting on the owner's eye.
 3. `core/anomaly`, then **the Stilled Ground and the Press** (cheap, as `PLAN-ANOMALIES.md` 11 has it), each as a district with its basin.
 4. **The House at Babel**, with the subway.
 5. The Lake That Falls, the Fast Water, the Bend; radiation and portals as they come.
 6. The Broken Country.
-7. The people: mutants, the augmented, the robots, the extraplanars, each when its kit exists.
+7. The people: mutants, the augmented, the robots, the extraplanars, each when its kit exists. *The robots (keepers) and the extraplanars are on
+   station 0 since 2026-11-09 (section 6).*
 8. Streaming into the open world, after the stations have shown what the valley's language is (the owner, 2026-11-04: stations first).
 
 ## 13. Open questions for the owner
@@ -372,3 +420,141 @@ records until the streets want lots), `core/mask` (every field is a function), `
 12. ~~The fields' names~~ **Settled 2026-11-04:** `taint` and `scar`.
 
 **Every question of the plan is settled as of 2026-11-04**, except Carcosa's part (4) and which extraplanar figures come first (7). Station 0 can start.
+
+## 14. The transit pass (the owner, 2026-11-09): the real street grid, the highway, the lines, the war toward the lake
+
+The owner's words: "the transit kit has roads, streets, trains and subways basically ready to go. let's add this in, building a real street grid
+with these streets, placing buildings in relation to it, then applying a ton of damage to it. Wrecked vehicles and signs of violence (barricades,
+military posts, wrecked tanks and copters) will increase as we approach the lake, as will the height of the average building (nice lake front
+property values....) there will be an elevated highway that crosses the map and interfaces appropriately with the street grid, with at least 3
+on/off ramp placements. There will be a subway line build with subway stations leading to short stretched of tunnel, though most is blocked off.
+A cargo train line will also cross the map. if we need any special functionality for these new intersections, message the transit kit session."
+
+The kit is `kits/ancient-transit` (branch `claude/ancient-transit-2600a6`; its hand-over note `ancient-transit.md` in the shared notes folder,
+its `API.md`): road networks as node-and-segment graphs with kerb-line junctions, graded roads that cut and fill, the war along a street (riot to
+bombed: scorch, craters, barricades of wrecked vehicles, military positions), the highway with ramps and ruin states, rail at grade with level
+crossings and elevated with stations, the subway with stations, entrances and sinkholes, trains standing, derailed or fallen, the street
+furniture (replaces `AV_LAMPS`), and depressions the host adds to its own ground (`craterH`, `sinkholeH`, `lineH`).
+
+How the valley takes it (the plan; the work follows the overgrowth commit):
+- **The grid stays the lattice** (pitch 165 m, 17 degrees, an avenue every third line): every lattice line inside the page becomes a network def
+  (`avenue` 26 m, `road` 11 m) from edge to edge, so the kit's junctions fall at the lattice's crossings and the towers, already kept off the lines,
+  stand in relation to real streets with pavements and corners. The roadbed sinking in `ground()` goes; the kit's `lineH` and each road's `levelAt`
+  grade the surface instead, and the ground mesh (47) refines along the lines and the carvings as the kit's demo does.
+- **Toward the lake** (`lakeK(x,z)` 0..1 from the distance to the water): the family mix leans tall (the Spindle, the Ledger, the Organ, the Reed)
+  near the shore in `AV.plan`; the war's `damage(s)` climbs from a riot inland to bombed at the shore, with the military positions, the blockades
+  and the tanks and helicopters only in the lakeward half; the strewn wrecks (the wrecks session's records) follow the same gradient.
+- **The highway** replaces the second viaduct's boxes: waypoints across the page crossing the Overlook's sight 1.1 km out, at least three ramps
+  landing on avenues (the ramp's road at grade joining the network at a junction: special functionality if the kit lacks it, asked of the transit
+  session), `cull` against the plinths, the ruin shares by the scar and the lake, overgrowth by the feral field with the kits' species on
+  `span.growth.plants`.
+- **The lines**: the north viaduct becomes the elevated passenger line with two stations and a fallen train; a cargo line at grade crosses the page
+  with level crossings at every street it meets and a derailed freight train; the subway under one avenue with three stations, their entrances on
+  the pavements, short open stretches of tunnel between collapsed and silted sections (most of it blocked), sinkholes over the falls.
+- **The checks** (`99`): junctions at the lattice's crossings and no tower on a road; the highway's ramps (three or more) and its spans clear of
+  the streets; the cargo line's crossings; the subway's stations; the war's damage and the wrecks rising toward the lake (a correlation, with its
+  negative). The GPU verify on every view; the budgets (`BUDGETS.json`: 15 M, 900 calls) hold or are raised with a why.
+
+**Built (2026-11-09, `46z-host-stage.js` the records, `74-host-transit.js` the drawing, `99` the checks):** the grid (64 streets on the lattice's
+lines, avenues and roads, 824 cross junctions with kerb corners and crosswalks), the war on every street with its damage `.1 + .85 lakeK^1.3`
+(the lakeward streets' mean damage 0.57 against 0.31 inland), the military positions and the blockades on the lakeward avenues, the highway on
+the second viaduct's line with three ramps (off, on, off) at avenue crossings, the elevated passenger line on the north viaduct (two stations, a
+fallen train), the cargo line at grade (37 crossings, a derailed train), the subway under the avenue nearest v = 900 (three stations, 44
+sinkholes, two metro trains), the ground carved by the kit's `craterH`, `sinkholeH` and `lineH`. The draw: every road's surface in one builder
+finished in 1.5 km chunks, the kit's own draws chunked the same (the kit's 400 m chunks a street were 3,000 draw calls here), the furniture and
+the war bucketed into 400 m cells and drawn as the eye comes within 750 m. The triangle budget is 20 M (`BUDGETS.json`), the call ceiling 900.
+The ramps' feet are T junctions of the grid (`KTRANSIT.joinRamps`, the transit session's answer the same day). The family mix leans tall toward
+the lake (`AV.plan` lakeK/tall/short) and the furniture has a far tier of posts. The towers stand on the kerb lines (`AV.kerbPlace`, 41): each
+slides off its node to front a street, its plinth 3 m behind the pavement, an avenue three times as often as a road, a third of them on corners.
+
+## 15. Lobbies and climbs (the owner, 2026-11-09): a fraction of the towers enterable and climbable, the rest blocked by rubble
+
+The owner's words: "i'd like at least a fraction of the buildings here to be actually enterable and climbable; we can strategically block entrance
+or ascent to most with well-placed rubble"; "no proper ramp to get into lobby"; and later the same day, "some of these may be more climbable
+stumps" and "the more wrecked ones might have a collapsing floor hazard".
+
+**What was wrong.** A tower's plinth is a level pad at the raw ground's height under its centre (`AV.plan`), 3 m behind the pavement; the street is
+graded on its own (`KTRANSIT.road`). Measured on the page (552 kerb towers): the plinth stands within 1 m of the street at 40%, within 3 m at 85%,
+up to 7 m above or 6 m below it at the tail, a handful further. Between them the ground is a bank of the plinth's 14 m ease cut by the road's
+grading: no steps, no ramp. And nothing on the page stands a walker on anything but the ground (`core/walk` was listed, empty): the heroes' storeys
+are open frames once ruined (`MP.ruinDesign` cuts the glass and the floors), the planned families' storeys are drawn only on the kit's own page.
+
+**The records first (`41c-av-lobbies.js`, `[G data]`, node-tested).** For every tower that fronts a street (`T.kerb`) and has not fallen:
+- **A door** on its skin facing the street: a family with portals (the Spindle's three, between the fins; the Cupola's four) takes the portal
+  nearest the street, the rest the middle of the frontage. Its point, its facing, its width.
+- **An approach** from the pavement's back edge straight to the door's line on the plinth: the pavement's level (`Rd.levelAt` plus the kerb) at
+  its foot, the plinth's (`T.y`) at its head; **steps** (risers of 0.17 m, a slope of 0.55) when the rise is over 0.6 m, else a **ramp**; its run
+  as long as the rise wants, eating into the pavement and then the plinth's 6 m rim (a sunk stair) before it reaches the street; 6 m wide at an
+  open tower, 4 m at a blocked one. A rise over 6.3 m has no room for a flight: its approach is a **rubble ramp** (a long KRUBBLE heap from the
+  pavement to the plinth's edge, the steps fallen), and such a tower is never chosen open. The stage folds every approach into its ground
+  (`46z` `ground()`: the plane of the flight across its width, blended over 1.5 m at its sides), so the bank is cut or filled where the steps are
+  and the drawn steps sit on the ground mesh.
+- **Open or blocked** by `KRAND.hash(seed, tower index, salt)`, never by order. Eligible to open: not fallen, a rise of 6.3 m or less, a family
+  with storeys and a stair shaft (all sixteen have), and a climb of two floors at least (the Stalk's 50 m stem has no stair). Every ruin on the
+  page leans a little (`AV.lean`, up to 5 degrees) and the climb's plates are level, so an open tower is set plumb: its record's lean is
+  cleared before anything is drawn. The share by state:
+  **stumps 30%** (the owner: climbable stumps, five to twelve storeys to a view over the streets), skeletons 15%, broken and crown-gone 10%,
+  intact and gutted 8%; and the eligible tower nearest the Overlook's start is always open, so the owner finds one. About one tower in eight of
+  the kerb towers opens; the rest are **blocked**: seven in ten **at the door** (a heap of rubble against the skin across the doorway, 3.5 to 4 m
+  high, and blocks across the door's line), three in ten **at the stair** (the lobby open, the stair choked by a heap on its landing at the first
+  to third storey: a flight or two climbed, then nothing).
+- **Cut off** (found building it, 2026-11-10): a door whose flight, plinth path or doorway is crossed by a fallen tower's shaft, by a neighbour's
+  doorway rubble (two towers on a corner, doors facing), or by a cutting or sinkhole deeper than 2.5 m in its plinth is never open and is left out
+  of the blocked check (its way is shut by something else). A door within 1.6 m of its flight's head may stand past its plinth's edge (the slab
+  towers were drawn turned against their plinths until the parent session's -yaw fix); its flight ends at the door and a level path runs 4 m in.
+- **A climb** for an open tower (`AV.climb(F, state, T)`): the family's storeys (`F.levels`, each `y` and `h`) up to what the ruin leaves:
+  intact and gutted to the roof, the rest to the whole skin's top (`MP.ruin`'s cut less its torn depth), at most 70 storeys. On each, **a plate**
+  (a disc of 0.8 of the skin's radius at that height, `F.envR` or the Spindle's lathe, from 2 m outside the stair to 26 m; a slab family without
+  `envR`, the Ledger, its rectangle less 2.5 m) cut into four pieces round the stair's hole; **a switchback stair** in the family's first stair
+  shaft (moved to the axis when the shaft's place leaves it outside the plate): a box 3 m by 7.2 m, two flights of 1.4 m a storey with a landing at
+  each end, the run fixed (4.6 m) and the riser the storey's (a 7.2 m lobby is steep). The top storey's plate is the roof, or the ruin's torn
+  floor: its outer bands broken off by hash.
+- **Weak floors** (the owner's hazard): in an open tower that is broken, crown-gone or a skeleton, one plate piece in about one storey in five,
+  away from the stair, never the lobby's or the top two: cracked, sagging and darker. A walker standing on one for half a second brings it
+  down: the piece falls and is gone, and the walker drops to the storey below. The stair is never weak, so the route up survives a fall.
+- **The route** of each door: the approach, the plinth to the door, and for an open tower the stair's landings and flights to its top plate, as
+  points; `AV.walkRoute(W, ground, pts)` walks it with the camera's own rules (`core/host`'s `stand`: a step up of 0.7 m at most, the highest
+  floor at or under the feet, a block stops it) against a `KWALK` registry. An open tower's route reaches its top; a blocked one's stops at its
+  rubble.
+
+**The modules.** `core/walk` carries the walking: every approach is a `KWALK.strip`, every plate piece and landing a level `KWALK.poly` (tag
+`weak` on the weak ones), every flight a `strip`, every heap's surface `KRUBBLE.walkTris` as polys and its doorway or stair as `KWALK.block`s
+(axis boxes along the door's line every 0.5 m); the weak floors are also `KWALK.zone`s of kind `collapse` for the Godot export. The take hands
+the camera `AVL.walk`, a view of `KWALK` that leaves out the floors that have fallen (`core/walk` has no way to take a floor out, and the
+records stay as built). `core/space` (`KSPACE`) finds the doors near the eye. `core/tags`: one record a 400 m cell, `REGISTER`ed before anything is
+drawn, its tags counting the cell's doors by fate, its climbs, heaps and weak floors (the wrecks' and street cells' way: a door's pieces are
+drawn only near the eye, so a record of its own stands empty in every other view and the probe's occupancy check fails it); the doors themselves
+are `STAGE.lobbies`' records, keyed by id. `core/rand` (`KRAND`) for every pick: open or blocked, the blocking's kind and storey, the
+weak pieces, the torn bands, the heaps' seeds. `core/terrain`'s `KRUBBLE` for every heap. Nothing is copied into the build.
+
+**The drawing (`76-host-lobbies.js`).** A door's group (its steps or ramp, its heap, and for an open tower its plates and stair) is built when the
+eye comes within 420 m, one a frame, in the metropolis kit's concrete and rubble (`MP.mats()`, shared) with vertex tints toward the page's rust;
+freed (out of the scene, geometry disposed) at 650 m, as `AVTR.freeCell` frees a street cell. The records and the walk registry stay (a few MB).
+
+**The checks (`99`).** Every kerb tower that stands has a door and an approach, its foot on the pavement's level and its head on the plinth's
+(within 0.25 m), its slope under 0.6; the open share between 8% and 25% with stumps the most open; each open tower's route continuous from the
+pavement to its top plate, rising at least two storeys (a stump's top within 2 m of its ruin's skin); each blocked tower's route stopped by its
+rubble, at the door or on the stair; the weak floors only in broken, crown-gone and skeleton towers, never on the route. Negatives: an open tower
+with a heap in its stair (the route check fails), a blocked door with its heap taken away (fails), an approach a metre short of the plinth
+(fails), a weak floor in an intact tower (fails).
+
+## 16. The effects for the Yards and the Terraces (the owner, 2026-11-10)
+
+The owner's "work on effects we're gonna need for stations 1 and 2", then "both pairs" (the other pair is `PLAN-ANOMALIES.md` 14). Shared
+pieces on `core/atmos/fx/`, each a record first (a pure function fills it, seeded on `core/rand` by its id), drawn after, freed or hidden past
+its reach, and shown on `core/atmos/fxdemo/` (`#scene=yards`, `#scene=terraces`). **Built 2026-11-10 on `claude/wizardly-cerf-605ac6`.**
+*Merged into the valley's branch on 2026-11-10: only its commit a9b780177 (`core/anomaly`, `fx/89-atmos-fx-localtime.js`, the fx demo page).
+The plumes, sparks and arcs, sludge, slag and spills below were uncommitted on that branch then and are not here; no valley page takes any of
+them yet.*
+
+| Effect | Where | What |
+|---|---|---|
+| the plumes | `fx/89-atmos-fx-plumes.js` | `ATMOS.plumes(list)`: a **stack**'s soot, thin and long, bent over downwind and seen for kilometres; a **cooling** tower's white cloud, fat and slow, billowing and evaporating as it rises; a **flare**'s flame at a pipe's mouth; a **vent**'s steam from a broken main. A plume may be intermittent (its duty from its id) |
+| sparks and arcs | `fx/89-atmos-fx-sparks.js` | `ATMOS.sparks(list)`: a dead machine's showers on a hashed period, falling and fading; `ATMOS.arcs(list)`: a pylon line's arc between two points, a jagged bolt re-drawn each flash from an integer hash of (id, flash, segment), with its flicker light. Each may register a `trap`-like `shock` hazard |
+| toxic pools and spill ground | `fx/89-atmos-fx-sludge.js` | `ATMOS.sludgeMaterial(o)`: a pool's surface (yellow-green foam rafts drifting and joining, an oily sheen in bands, slow bubbles); `ATMOS.spillOn(material, spills)`: a `KHOOK` layer on the ground's material for the spill ground (black oily stains with crusted rims and a bleached fringe, up to 16 records); `ATMOS.sludgeFume(pools)`: the low haze over them. Pools register an `acid` hazard |
+| the slag glow | `fx/89-atmos-fx-slag.js` | `ATMOS.slagOn(material, o)`: glowing seams in a heap's dark crust (an integer-hash Voronoi in world space), hottest at the fresh pour, breathing slowly, brighter at night |
+| the aqueduct spills | `fx/89-atmos-fx-spill.js` | `ATMOS.spillRec(o)` from an aqueduct's deck line and its break: the curtain's lip, direction, speed and drop (also as `WATER.fall`'s options for a page with `core/water`), drips from the cracks along the span, the spray and the wet stain at the foot; `ATMOS.spill(rec)` draws them on `localFx` and the smoke's `spray` |
+| wind over the crop rows | `fx/89-atmos-fx-gustsheen.js` | `ATMOS.gustSheenOn(material)`: the paler band that runs across a field as a gust front bends the stems (the foliage's own `atmGust`, so the sheen and the sway agree); `ATMOS.chaff(fields)`: seed heads and chaff lifted along the front |
+
+The Yards' smog and oily rain are the Overlook's (`89v`, `89x`) with the Yards' defaults; the stations place these records on their own
+ground (the tank farms' pools, the stacks of the twelve industrial buildings, the aqueduct's breaks, the farm pods' crops).

@@ -333,6 +333,57 @@ the Furnace Stacks' halls are `floors: false`). A short bridge's doorway now spl
 near the opening) and drops a kit piece under 4 m reaching in: 374 of the 377 doorways are clear. A ruin's cut instances are taken out of
 the count rather than hidden at zero scale, and its slab cells go in runs: every design's ruins are within budget.
 
+**The yards' pieces** (the owner, 2026-11-10: the Ancient's Valley's industrial district, its Yards station; `46f-mp-yards.js` records,
+`57y-mp-yards-draw.js` drawing). What stands between the industrial halls, as plain records first (`MP.yards`, [G data]: numbers in, records
+out, every figure fixed or a KRAND position hash, the ruin by `o.damage`): `tankFarm` (a bund and its tanks in rows: upright cylinders with
+cone, floating or domed roofs, and a share of spheres on leg rings after the owner's refinery reference; whole, holed, burnt, collapsed or
+gone), `pipeRack` (bents along a polyline carrying one or two tiers of pipes; `o.skip` leaves a bent out where a street or a track runs, so
+the pipes span it; runs of bents down sag the pipes to the ground), `dishArray`, `chimney` (tapered, banded, broken at a height by damage),
+`conveyor` (an enclosed gallery on trestles, `o.skip` for the trestles, a section down), `slagHeap` and `slagH` (heaps the host adds to its
+ground), `spill` (dead ground and pools), `turntable` (the pit, its bridge and a fan of roundhouse stalls), `gantry` (a loading gantry over
+tracks), `railYard` (sidings fanning off a line's path at a spacing, each turnout longer than the last, buffer stops, the yard's outline)
+and `inside`. `MP.yardsDraw(records, {kt: KTRANSIT})` draws them into one builder (the transit kit's, handed in: its library families rust,
+steel, concrete, corrugated, white, paint) by family and chunk, so a district of them is a few calls a chunk. The kit's own sheet does not
+show them yet; the valley's Yards station is where they stand (`biomes/ancientsvalley/stations/yards/`).
+
+**The farm belt: Soleri's planned developments** (the owner, 2026-11-04 and 2026-11-10; `biomes/ancientsvalley/PLAN.md` section 12, 2b, for the
+valley's Terraces station). Eight families, each a design with plans on this kit's machinery, so nothing downstream changed: `46f-mp-farm.js`
+([G data]) holds their records (`MP.DESIGNS` for the shape, `MP.FAMILY` with `design: true, farm: true` for the storeys, core, `envR` and the
+seven ruin states; `MP.FARM_KEYS`; `MP.aqueductJoin`), `54f-mp-hero-farm.js` ([draw]) their builders on `DK` (added to `MP.DESIGN_BUILD`), and
+`70f-mp-stage-farm.js` ([web]) shows them on this page. `MP.hero(key, state)` draws them, `MP.ruinDesign` cuts their ruins, `MP.debrisPlan` heaps
+them, `MP.storey` plans them and `MP.audit` checks them; a box shell (`F.shell`, the valley's middle tier for every design) and an impostor are
+baked from their heroes.
+
+| Key | Name | What | Storeys | Intact tris |
+|---|---|---|---|---|
+| `pod` | the Growing Pod | a hexagonal plinth (pumps and tanks, louvred, two doors) and a faceted hexagonal glass dome over the growing floor and a mezzanine of beds, a lantern | plant, 2 hydroponics | about 2 k |
+| `vault` | the Vault House | a glazed barrel vault ribbed every 8 m on an elongated hexagonal plinth, glazed ends, a gallery of beds | plant, 2 hydroponics (rect rings) | about 3 k |
+| `stack` | the Growing Stack | five glazed tiers stepping back up a slope (its +z downhill), each roof the next tier's planted terrace, a blank retaining wall into the hill | plant, 4 hydroponics (rect rings) | about 2.6 k |
+| `hall` | the Hub Hall | a drum of two storeys under a ribbed shell dome with an oculus, a parabolic apse arch over its doors | hall, offices, records | about 8 k |
+| `market` | the Market | a glass drum of stalls under a folded concrete umbrella of twelve petals, a lantern | 2 market | about 5 k |
+| `watertower` | the Water Tower | a pump drum, a fluted shaft holding the stair and the lift, a tank bowl with a gallery, a cap | plant, 3 tanks | about 2 k |
+| `aqueduct` | the Aqueduct | a module of three arches (66 m), half piers at its ends so modules laid end to end meet in one pier, a dry trough | none | about 400 |
+| `pumphouse` | the Pump House | an octagonal drum (a pump hall and a switch floor), an eight-sided roof, a standpipe, a sluice channel | 2 plant | about 1.3 k |
+
+Each is far under its budget (12 to 18 k). The greenhouses' glass is `glassClear` (the beds show through it), so a gutted pod or vault keeps its
+ribs and mullions and loses its panes. **A wall is drawn in bands of 4 m or less** (`MP.FARM_FIX`'s quads and lathes): the ruin cut keeps a
+triangle only when all of it stands under the torn line, and the first cut of the aqueduct, whose piers were single 23 m quads, left a broken
+module as heaps on the ground. The skeleton state keeps a design's piers (instanced panels) and its slabs, not its merged ribs: a pod's or a
+vault's skeleton is its plinth with its beds and slabs open to the sky (the notes say so).
+
+**On this page** (views `Farm, <name>: hero, shell, impostor`, intact and gutted, in a showroom 5 km south of the tiers; `Farm ruins, <name>`, the
+seven states in a row; `Farm, all eight`; `Farm, an aqueduct of ten modules`, laid on a curve of 4 degrees a joint). The farm's shells pack an atlas
+of their own and its impostors a set and a kit of their own (`mpfarm`, baked apart from the towers'). Its checks join the page's through
+`MP.EXTRA_CHECKS` and `MP.EXTRA_NEGATIVES` (`99-host-take.js`): the audit, every state built under budget with no NaN and no floating piece (a mesh's
+connected pieces by shared corners, flooded from the ground), the ruins lower than the intact and cut rather than erased, a shell and an impostor
+baked, the pod's dome on its plinth, the aqueduct's modules meeting end to end; each with a negative. `node tests/test-metropolis.js` audits the
+eight, their ruins, rubble and box shell records, the joint and its arches. **Checked 2026-11-10 on the Arc 140T** (`verify.py --assert`, the
+last of four runs): every check and negative passes, the 16 farm impostors bake. The runs before it found the lantern caps of the gutted pod and
+market and the hall's canopy standing on nothing once their glass went (posts added), the vault's stump record as tall as its broken one, and the
+ruin cut erasing single tall quads (the banding above). A whole or gutted hero must have no loose piece; a ruin past gutted is counted, not
+failed: its loose remnants are the kit's cut (59b) as every design's are (a skeleton's piers between its slabs), from 0 (the pump house) to 216
+(the stack's tiers), `KNOWN_ISSUES.md`.
+
 **Which shapes shell well** (from these two and the geometry; only the first two are measured):
 
 | Shape | Expected | Why |

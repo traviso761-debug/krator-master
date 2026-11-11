@@ -55,8 +55,14 @@ NOT_APPLICABLE = {
     'kits/resources': {'tags': 'data kit; nodes are tagged by the works that take them'},
 }
 
-ALL_MODULES = ['atmos', 'biome', 'camp', 'city', 'clock', 'engine', 'export', 'furnish', 'hamlet', 'host', 'lod', 'mask', 'materials', 'minimap', 'rand',
-               'sched', 'simulation', 'space', 'tags', 'terrain', 'walk', 'water', 'world']
+# OWN rules a build's named fragment may break on purpose, with the reason (the only one so far: a verify-time audit that reads pixels to
+# CHECK the page, not to place anything on it; placement reads stay on core/mask).
+OWN_OK = {
+    'biomes/ancientsvalley': {('getImageData', 'src/99-host-take.js'): 'the cards-cut audit (HCHK.cardsCut, the owner 2026-11-09) reads a 32 x 32 downsample of each map for its alpha share at verify time; nothing is placed from it'},
+}
+
+ALL_MODULES = ['anomaly', 'atmos', 'biome', 'camp', 'city', 'clock', 'engine', 'export', 'furnish', 'hamlet', 'host', 'lod', 'mask', 'materials',
+               'minimap', 'rand', 'sched', 'simulation', 'space', 'tags', 'terrain', 'walk', 'water', 'world']
 
 # Settlements already PLACED on a site of the world map, with that site's biome data (the owner, 2026-10-23). They read the
 # biome files, so they are rebuilt whenever those change: the biome-sync rules apply to them like a biome. Every other
@@ -168,6 +174,8 @@ def scan(build):
             text = open(p, encoding='utf-8', errors='replace').read()
             for rule, rx in OWN.items():
                 if skip_sync and rule in BIOME_SYNC_RULES:
+                    continue
+                if (rule, rel) in OWN_OK.get(build, {}):
                     continue
                 n = len(rx.findall(text))
                 if n:

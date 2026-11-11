@@ -1,5 +1,13 @@
 # kits/metropolis: known issues
 
+- [ ] **The farm belt's ruins leave loose remnants** (`46f`, `54f`, 2026-11-10): `MP.ruinDesign` (59b) keeps a skeleton's piers (instanced
+  panels) to the frame's top and drops every merged triangle above the skin, so piers stand between slabs with a gap under them, and the tear can
+  leave a pier's head over a dropped panel. The kit page counts them (`Farm ...: every state built`): from 0 (the pump house) to 216 (the stack's
+  tiers); the whole and gutted heroes have none. Every design's ruins do the same; a skeleton that keeps its ribs (the pod's dome, the vault's)
+  needs the ruin cut to keep merged frame members, not only instanced ones. A growing stack's ruin keeps its terraces' slabs over the tiers that fell.
+- [ ] **The farm families' shells are boxes** (the valley's middle tier for every design): a pod's dome or the aqueduct's arches read as a box
+  past the hero's band (600 m on the valley's page). The polar mode would suit the pod, the market and the water tower.
+
 - [ ] **The shells and impostors take no shadow and cast none** (they draw their own light): a tower's shadow on the street stops when it turns into a shell, past 300 m, mostly outside the shadow box (`core/shadow`, 90 to 600 m). One box, no cascades: far shadows wait on cascades (`core/shadow/README.md`).
 - [ ] **Site:** the sky stands at `core/atmos`'s default site. The valley's own comes with the valley.
 - [ ] **Soffits under 200 m** break up in the shell, inside the hero's range: a problem only if the switch is held closer than 300 m.

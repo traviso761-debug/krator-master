@@ -17,6 +17,22 @@ The readout gives the date in Jimjam's months and counts, and where the sun, the
 
 **URL hash** for repeatable shots: `#site=rim&view=winter&look=cluster&day=-88&hour=0&fov=50`.
 
+**The smog** (2026-11-09, `core/atmos/README.md` "The smog"): four toggles on the clouds' mood, each on its own: **Colour** (none,
+smog brown-purple, dull red, sickly green, ash grey, ghostly purple, jaundice yellow), **Pattern** (none; violent: torn, broken
+edges; ordered: regular rows; glitched: two more sheets of cloud sliding on their own winds; ripple: rings spreading from an
+epicentre 2.5 km north, slow), **Glow** at night (none; an ethereal breathe over the whole sky; lightning under one patch at a
+time, each flash striking a visible bolt from the cloud to the ground; orbs: two small bright lights wandering under the cloud), **Sky events** (none; flashing pillars of light; lights ascending to the heavens; both: one a minute here, 3-8 km off, in the glow's
+colour), **Dark** (0..1), **Pace** (how much faster than the page's wind
+the pattern's own motions run, x3 by default, so they read at 1x) and **Sheet tints** (the glitched sheets in the tint's
+complement and its hue-rotated twin). **Shifting** hands them to `ATMOS.cloudMood` (a new episode each minute
+here: the three effects together or apart, the readout names the episode). **Smog mist** turns on a height fog whose mist has a
+field: a "city" 3 km to the north-west where the smog is universal, thinning to a tenth by 4 km out, all day. The ground and the
+test pieces take it; the sky pass does not (the far ridges stand clear of it, as they would behind a valley's smog). **Radiation** (`fx/89-atmos-fx-radiation.js`) lights two zones of air with a warm additive glow that wavers: one 350 m across
+1 km to the north-east (`#rad=1&az=41&el=4`), one 80 m close by to the north-west. **Heat haze** (on with Radiation) is `ATMOS.radiationHaze`: the land and sky behind a zone swim as through hot air. **Sound** binds `core/audio/24-core-audio-sky.js`: thunder after each flash, a crack when it is near, a boom after a pillar, a rising
+tone with an ascent, the orbs' hum and the breathe's drone, from a stand-in synth until the catalogue's clips are chosen. URL hash:
+`#colour=brown&pattern=violent&glow=ethereal&dark=.6&smog=1&az=300&el=22&alt=80` (then the Hour slider to 22 for the glow), or the
+shortcuts `#mood=smog|ash|green|shift`.
+
 **Sites** are scale-model pixels through the site frame (`ATMOS.siteAt`): Voth (446,690, the reference), the
 hyperjungle at Pinnacle Rock (755,351), Korona (814,189), the Throne's glacier (545,560, 0.5 atm) and an Outer Wall crest
 (450,1040, 0.3 atm). The glacier and the rim pixels are approximate. **The ridges are demo stand-ins**, not any biome's.

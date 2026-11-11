@@ -201,6 +201,59 @@
                 "core/charactermodels/dist"
             ],
             "port": 8799
+        },
+        {
+            "name": "mechs",
+            "runtimeExecutable": "python",
+            "runtimeArgs": [
+                "-m",
+                "http.server",
+                "8847",
+                "--bind",
+                "127.0.0.1",
+                "--directory",
+                "kits/mechs/dist"
+            ],
+            "port": 8847
+        },
+        {
+            "name": "extraplanar",
+            "runtimeExecutable": "python",
+            "runtimeArgs": [
+                "-m",
+                "http.server",
+                "8797",
+                "--directory",
+                "kits/extraplanar"
+            ],
+            "port": 8797
+        },
+        {
+            "name": "audio-lab",
+            "runtimeExecutable": "python",
+            "runtimeArgs": [
+                "-m",
+                "http.server",
+                "8842",
+                "--bind",
+                "127.0.0.1",
+                "--directory",
+                "C:/Users/travi/Documents/krator-audio/lab"
+            ],
+            "port": 8842,
+            "autoPort": false
+        },
+        {
+            "name": "fxdemo",
+            "runtimeExecutable": "python",
+            "runtimeArgs": [
+                "-m",
+                "http.server",
+                "8859",
+                "--directory",
+                "core/atmos/fxdemo/dist"
+            ],
+            "port": 8859
         }
     ]
 }

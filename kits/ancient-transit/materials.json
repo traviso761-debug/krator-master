@@ -1,0 +1,17 @@
+{
+ "build": "ancient-transit",
+ "note": "kits/ancient-transit's adapter onto the material library (core/materials/PLAN.md): the Ancients' transport infrastructure in ruin. Run python3 tools/textures/pack.py kits/ancient-transit after any change. Scales are world metres per tile; the builder writes UVs in metres.",
+ "size": 512,
+ "families": {
+  "asphalt": {"lib": "ground.asphalt", "scale": [6.0, 6.0], "tint": {"keep": 0.3, "mean": 0.5}, "metal": 0, "roughLift": 0.1, "specular": 0.3, "note": "the deck surface, the ramps, the roads at grade"},
+  "concrete": {"lib": "concrete.board", "scale": [4.0, 4.0], "tint": {"keep": 0.3, "mean": 0.7}, "metal": 0, "roughLift": 0.1, "specular": 0.4, "note": "decks' sides, piers, guideways, stair towers, jersey barriers"},
+  "pave": {"lib": "concrete.slab", "scale": [6.0, 6.0], "tint": {"keep": 0.3, "mean": 0.62}, "metal": 0, "roughLift": 0.15, "specular": 0.3, "note": "pavements, platforms, the kerb"},
+  "steel": {"lib": "metal.steel.brushed", "scale": [2.0, 2.0], "tint": {"keep": 0.2, "mean": 0.6}, "metal": 0.6, "roughLift": 0.0, "specular": 0.5, "note": "rails, crash barriers, masts, the furniture's metal"},
+  "rust": {"lib": "metal.rust.heavy", "scale": [2.0, 2.0], "tint": {"keep": 0.75, "mean": 0.5}, "metal": 0.3, "roughLift": 0.05, "specular": 0.3, "note": "every ruined metal: a bent lamp, a fallen gantry, a derailed wagon's frame"},
+  "paint": {"lib": "metal.painted.chipped", "scale": [1.5, 1.5], "tint": {"keep": 0.15, "mean": 0.72}, "metal": 0.1, "roughLift": 0.05, "specular": 0.4, "note": "the furniture bodies and the cars: the palette's colour, the set's chipping"},
+  "white": {"lib": "metal.ancient.white", "scale": [4.0, 4.0], "tint": {"keep": 0, "mean": 0.875}, "metal": 0.12, "roughLift": 0.1, "specular": 0.4, "note": "the Ancients' seamed white panel: canopies, kiosks, the coaches"},
+  "ballast": {"lib": "ground.gravel042", "scale": [3.0, 3.0], "tint": {"keep": 0.6, "mean": 0.55}, "metal": 0, "roughLift": 0.1, "specular": 0.3, "note": "the cargo line's bed; a rail ballast set is owed (PROMPTS-NEEDED.md 37)"},
+  "rubble": {"lib": "ground.ruin", "scale": [3.0, 3.0], "tint": {"keep": 0.7, "mean": 0.55}, "metal": 0, "roughLift": 0.05, "specular": 0.3, "note": "the chunks under a collapsed span, the pavement heaps"},
+  "corrugated": {"lib": "metal.corrugated.rusty", "scale": [1.2, 1.2], "tint": {"keep": 0.6, "mean": 0.55}, "metal": 0.3, "roughLift": 0.05, "specular": 0.4, "note": "box wagons' sides, the kiosk's shutter"}
+ }
+}

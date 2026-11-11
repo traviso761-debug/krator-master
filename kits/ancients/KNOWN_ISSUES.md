@@ -1062,3 +1062,26 @@ volumes; the beam's `rotation.y` advances frame to frame. Details in
 - [ ] The portal's hood is broken by hash in a ruin; a toppled mouth is a rubble mound, with no collapsed lining slabs.
 - [ ] Dalab's own additions (the Line, salvage parapets, gates in the portal) are not here: they are the Dalab set's, in
       settlements/span (SP4). The rehabilitated state is the kit's generic `repairPass`.
+
+## The industrial set of Engines (`--target engines`, `targets/engines/8aj-engines3.js`; the owner, 2026-11-10)
+
+Ten more machines after the owner's two reference sheets (the Coil, the Procession, the Mortar, the Vigil, the Receiver, the Loom, the
+Iris, the Hive, the Star, the Abacus), north of the first ten on the engines sheet. They live in the target's folder, so they reach
+`engines.html` and the Ancient's Valley's Yards (which reads the fragment by path), no other target.
+- [x] **The quality pass (the owner, 2026-11-10: "focus on disconnected geometry and make sure detached pieces lie on the ground properly").**
+  core/ruins (`KRUINS`) measured each engine on the sheet: the Coil's snapped pipe stubs hung 40 m over the pipes they broke from, its deck lights
+  and the Procession's stood off their rims, the Procession's machinery off its rings' inner faces and three plates in its broken ring's gap; 8ah's
+  `enDebris` stood its plates at 0.12 of their size whatever the tilt (some sunk 5 m, some lifted), and the fallen tubes, cylinders, beads, sails
+  and boxes sat at fixed heights. Now every wreck is seated on its lowest points (`enSeatY`; `en3Debris`, 8ah's scatter seated), the stubs
+  rise from their own tops, the lights sit on the rims, the Vigil's broken capsule leans from the podium to the ground, and `91y` watches the ten
+  with `KRUINS.watch`: the shared harness asserts each (no floater, every wreck within 0.3 m above to 1 m below the ground) with the module's
+  self-test as its negative. The first ten engines (8ah, 8ai) are not watched yet: their `enDebris` plates would fail it.
+- [ ] **A first pass, decay 1 only checked.** Each builder takes d like the others (whole at 0), but only the ruined state has been
+  looked at. The masses are plain meshes (a hundred to an engine, the Star and the Abacus the most): a host merges them by material
+  (the Yards does, `stations/yards/70y-host-yards.js`); the sheet draws them as they are (about 400 calls in the industrial view).
+- [ ] **`MAT.dark` is a pale plaster in this kit** (the "no dark voids" round above), so the set brings its own dark iron (`EN_IRON`,
+  a plain MeshStandardMaterial, not a library set): the Iris, the Hive's core, the Mortar's sphere and barrels, the Star's caps.
+- [ ] **The kit's `qEuler` turns about the world's axes (XYZ)**, so a plate on a sphere or a leaning sail is placed with `enQn` (a turn
+  from the face's normal); the earlier engines' plates are untouched.
+- The Coil's sails are plates, not the reference's triangles; the Vigil's eyes are lit squares behind a round port; the Procession's
+  inner machinery is boxes. Detail passes to come with the owner's eye.

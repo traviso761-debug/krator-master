@@ -15,6 +15,8 @@ vehicle build on its next build.
 
 A name in `cultures` is a FILE SUFFIX: 'geomancer' picks krator-vehicles-geomancer.js.
 tex=False leaves the detail maps out (KV_TEX null: vertex colours only, as before 2026-10-06).
+The ruin families (RUIN_SLOTS: the runtime's ruin pass paints rust and verdigris on any culture's vehicle built in a
+ruin state, 2026-11-08) ride in every bundle, about 300 KB as data URLs (Locus's and Mungo's geomancer bundle: 993 KB).
 """
 import base64, json, os
 
@@ -23,6 +25,7 @@ CATALOG = os.path.join(os.path.dirname(HERE), 'catalog')
 CORE = [(os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'catalog'), 'krator-furniture-core.js'), (HERE, 'vehicles-core.js'), (HERE, 'vehicles-detail.js')]
 TEX = os.path.join(HERE, 'tex')                 # tools/textures/pack.py kits/motor-vehicles (materials.json)
 DEFAULT_SLOTS = ('paint', 'metal', 'rubber')    # vehicles-detail.js falls back to these for any culture
+RUIN_SLOTS = ('rust', 'rustHeavy', 'verdigris', 'char', 'scorched')  # the runtime's ruin pass paints these on any culture's vehicle (every bundle)
 RUNTIME = (HERE, 'krator-vehicles-runtime.js')
 PREFIX = 'krator-vehicles-'
 
@@ -66,7 +69,7 @@ def textures(fs, on=True):
     pack = json.load(open(pj, encoding='utf-8'))
     slots = json.load(open(os.path.join(HERE, 'materials.json'), encoding='utf-8'))['slots']
     text = ''.join(read(d, f) for d, f in fs if f.startswith(PREFIX))
-    used = [s for s in slots if s in DEFAULT_SLOTS or ("'%s'" % s) in text]
+    used = [s for s in slots if s in DEFAULT_SLOTS or s in RUIN_SLOTS or ("'%s'" % s) in text]
     fam = {}
     for s in used:
         e = pack['families'].get(s)
@@ -78,8 +81,9 @@ def textures(fs, on=True):
             raw = open(os.path.join(TEX, name), 'rb').read()
             f[k] = 'data:image/webp;base64,' + base64.b64encode(raw).decode('ascii')
         fam[s] = f
-    top = max([slots.index(s) for s in fam] or [0])          # the atlas grows to 4 rows only when a slot past 8 is packed
-    return 'const KV_TEX = %s;\n' % json.dumps({'size': pack['size'], 'cols': 4, 'rows': 2 if top < 8 else 4, 'slots': slots, 'fam': fam},
+    top = max([slots.index(s) for s in fam] or [0])          # the atlas has the rows the highest packed slot needs (2 to 8: 32 slots, the shader's tables)
+    rows = max(2, min(8, -(-(top + 1) // 4)))
+    return 'const KV_TEX = %s;\n' % json.dumps({'size': pack['size'], 'cols': 4, 'rows': rows, 'slots': slots, 'fam': fam},
                                                 sort_keys=True, separators=(',', ':'))
 
 

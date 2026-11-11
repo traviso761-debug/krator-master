@@ -1,6 +1,34 @@
 {
  "build": "ancientsvalley",
  "families": {
+  "creeper": {
+   "anchor": "center",
+   "breakup": null,
+   "card": true,
+   "files": {
+    "map": "creeper.albedo.webp"
+   },
+   "lib": "card.creeper.beach",
+   "metal": 0,
+   "normalScale": 1.0,
+   "plants": 9,
+   "roughLift": 0.0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "ce2d5133a98743796aac2ef7bdc519afe05ad71e"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.7,
+    "mean": 0.4,
+    "sourceMean": 0.4547
+   }
+  },
   "ground.asphalt": {
    "breakup": null,
    "card": false,
@@ -223,6 +251,34 @@
     "keep": 0.0,
     "mean": 0.9,
     "sourceMean": 0.453
+   }
+  },
+  "mosshang": {
+   "anchor": "center",
+   "breakup": null,
+   "card": true,
+   "files": {
+    "map": "mosshang.albedo.webp"
+   },
+   "lib": "card.moss.hanging",
+   "metal": 0,
+   "normalScale": 1.0,
+   "plants": 9,
+   "roughLift": 0.0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "7845e9e78ef5f0585c603d11f13ed10aae609c9d"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.7,
+    "mean": 0.4,
+    "sourceMean": 0.4007
    }
   }
  },

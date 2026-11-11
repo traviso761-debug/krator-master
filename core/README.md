@@ -11,6 +11,11 @@ thing is: ids, class, tags), `space/` (the one spatial index placement passes sh
 clothes, peoples and clips, with two labs) is a build of its own as well as a module. `audio/` (sound: the clip
 catalogue and its license policy so far; cues, soundscapes, the music director and the Audio Lab to come; `audio/PLAN.md`).
 
+## `ruins/`
+
+`KRUINS`: every ruined structure is watched once drawn (`KRUINS.watch(root, {name, ground})`), and the verify harness asserts it: no piece
+touching nothing, every wreck on its lowest points on the ground (the owner, 2026-11-10: the default for ruined structures). `ruins/README.md`.
+
 ## `shader/`
 
 `KHOOK` (the one door for shader hooks: layers in a fixed order, a program keyed from them, an anchor that throws, `checkPrograms`)
@@ -789,6 +794,15 @@ relief kinds is not written), a GPU look at every drawn piece, the slope wind in
 texture), the flood's `WATER.flowAt` (it takes no time: use `F.flowAt(x, z, t)`), and the rows for the Kimr, the Painted Men, the
 Yuni and the Coyote Men.
 
+## `anomaly/`
+
+`KANOM` (2026-11-10, `anomaly/README.md`; `biomes/ancientsvalley/PLAN-ANOMALIES.md` 4 and 14): zones where physics fails, as
+records (`gravity`, `time`, `bend`, `space`, `portal`; a circle or a polygon, a rim ramp, a strength), registered in core/tags
+with their hazards on core/hazard before they are drawn. `KANOM.at` (gravity and time multiplied in log scale), `walk` (the heavy
+and the slow walk, never stuck), `squash` (the Press's placement), `owed` (the world's time on leaving, capped at a day). Free when
+absent: no record in reach and every reader gets the same frozen NORMAL. Its hazard rows (`crushing`, `aging`, `lift`) go into the
+vocabulary when the file loads, so a page without it is byte-identical. `host/90-anomaly-walker.js` binds the host camera's
+walker. `[G data]`; `node core/anomaly/test-anomaly.js`. The particles it holds or presses are core/atmos's `fx/89-atmos-fx-localtime.js`.
 ## `atmos/`
 
 The atmosphere and street-dressing module: evening lights and a glow layer, particles, weather, ivy and window boxes,

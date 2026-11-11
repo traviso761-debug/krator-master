@@ -13,6 +13,8 @@
 //   OUTSIDE   curtains: tall grey panels of falling streaks, one per cell of the field where it rains, standing on the ground
 //             up into the cloud base (o.top), turned to the eye about the vertical, faded out near the eye (where the
 //             weather's streaks take over) and far off. Cells are seeded by KRAND.hash(seed, ix, iz, salt), never draw order
+//   A FIELD of the host's own (2026-11-09, the Ancient's Valley's oily rain over its polluted half): o.field(x, z) -> 0..1 replaces
+//   the orographic formula, rain(x, z) = rain * clamp(field(x, z)); everything else (the curtains, inside) is the same
 //   ATMOS.rainWallMake(o) -> R           the record with its defaults (pure): y0, y1 (m; default 1700, 2600), edge (default
 //                                        a quarter of the band), windward [x, z] (where the wind comes from), lee (default .1),
 //                                        slope (default .3), reach (m, default 300), rain (0..1 at full, default 1)
@@ -29,8 +31,8 @@
 (function(){const A=ATMOS;
  A.rainWallMake=o=>{o=o||{};const y0=o.y0==null?1700:o.y0,y1=o.y1==null?2600:o.y1;
   return{y0,y1,edge:Math.max(1,o.edge==null?(y1-y0)*.25:o.edge),windward:o.windward||[-1,0],lee:o.lee==null?.1:o.lee,slope:o.slope==null?.3:o.slope,
-   reach:o.reach==null?300:o.reach,rain:o.rain==null?1:o.rain};};
- A.rainWallAt=(R,x,z,ground)=>{const g=ground(x,z),band=A.ss(R.y0-R.edge,R.y0,g)*(1-A.ss(R.y1,R.y1+R.edge,g));if(band<=0)return 0;
+   reach:o.reach==null?300:o.reach,rain:o.rain==null?1:o.rain,field:typeof o.field==='function'?o.field:null};};
+ A.rainWallAt=(R,x,z,ground)=>{if(R.field){const k=+R.field(x,z);return R.rain*(k>0?(k<1?k:1):0);}const g=ground(x,z),band=A.ss(R.y0-R.edge,R.y0,g)*(1-A.ss(R.y1,R.y1+R.edge,g));if(band<=0)return 0;
   return R.rain*band*(R.lee+(1-R.lee)*A.ss(0,R.slope,A.windwardAt(ground,x,z,R.windward,R.reach)));};
  A.rainWallCells=(R,ground,seed)=>{const e=R.extent,c=R.cell,out=[],nx=Math.ceil((e[2]-e[0])/c),nz=Math.ceil((e[3]-e[1])/c),s=seed==null?0:seed;
   for(let iz=0;iz<nz;iz++)for(let ix=0;ix<nx;ix++){const gx=Math.floor(e[0]/c)+ix,gz=Math.floor(e[1]/c)+iz;   /* world cells: the same curtain from any extent */
