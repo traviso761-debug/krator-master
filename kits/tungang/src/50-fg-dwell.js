@@ -37,12 +37,12 @@ function fgFurnishHome(S,C,o){o=o||{};const rich=o.tier==='rich',poor=o.tier==='
 /* the family's slogan beside the door, on whatever face the house shows */
 function fgDoorSign(S,C,o){o=o||{};const d=S.doors&&S.doors[0];if(!d)return;const x=d[0]+(d[0]>0?-1:1)*(d[1]/2+.85);if(Math.abs(x)>S.hw-.6)return;
  fgSign(o.text||fgSlogan(),x,Math.min(1.05,S.wh-.55),S.hd+.02,0,C,{ch:o.ch==null?.13:o.ch,kind:o.kind||'plate',ink:o.ink});}
-defBuilding({key:'fg-hut',name:'A Fellgang hut',seed:9101,cut:true,w:6,d:5,h:4.2,budget:26000,
+defBuilding({key:'fg-hut',name:'A Fellgang hut',seed:9101,cut:true,w:6,d:5,h:4.2,budget:4200,
  tags:{types:['dwelling-single'],wealth:'poor',style:'drystone',role:'dwelling'},
  note:'a one-room hut: drystone walls, a turf roof on bell-fir poles, a door of Ancient plate on cable hinges, the hearth under a smoke hole; poor. Families: a gabled hut, a blackhouse, a hut with a beehive cell, a croft with an outshot, a hut with a wreck\'s cab for a porch',
  build(o){const C=fgCx(o);fgHouse(TG.fg.BOX['fg-hut'],C,FG_FAMS['fg-hut'],S=>{fgFurnishHome(S,C,{tier:'poor'});fgDoorSign(S,C,{kind:'rust',ink:'white',text:C.v===0?'NO SKABS':null});
   if(fgU(C,41)<.5)fgPatch(-S.hw+.3,Math.min(1.9,S.wh-.5),0,.9,.8,-PI/2,C,'tin');},{doorW:.9,doorH:1.75});}});
-defBuilding({key:'fg-house',name:'A Fellgang house (two hearths)',seed:9102,cut:true,w:9,d:6,h:4.8,budget:38000,
+defBuilding({key:'fg-house',name:'A Fellgang house (two hearths)',seed:9102,cut:true,w:9,d:6,h:4.8,budget:6500,
  tags:{types:['dwelling-single'],wealth:'middle',style:'drystone',role:'dwelling'},
  note:'two hearths and a cross wall, a box bed against the back wall, a store loft over the second room; the family\'s slogan by the door. Families: a gabled house with a gable stack, a blackhouse, a burstabaer of gabled fronts, a croft with an outshot, a double-pile house with a buried container store',
  build(o){const C=fgCx(o);fgHouse(TG.fg.BOX['fg-house'],C,FG_FAMS['fg-house'],S=>{
@@ -57,7 +57,7 @@ defBuilding({key:'fg-house',name:'A Fellgang house (two hearths)',seed:9102,cut:
   fgDoorSign(S,C,{});if(fgU(C,42)<.5)fgPatch(S.hw-.02,Math.min(1.2,S.wh-.6),-S.hd*.3,1,.9,PI/2,C);});}});
 /* the longhouse reads its footing: the byre takes the end that sits lower (the drain runs out of it), so on a slope the
    beasts are down-slope of the hearth; on the flat the byre is at +x */
-defBuilding({key:'fg-longhouse',name:'A Fellgang longhouse (house and byre)',seed:9103,cut:true,w:15,d:6.5,h:5.2,budget:52000,
+defBuilding({key:'fg-longhouse',name:'A Fellgang longhouse (house and byre)',seed:9103,cut:true,w:15,d:6.5,h:5.2,budget:9000,
  tags:{types:['dwelling-single','farm'],wealth:'middle',style:'drystone',role:'dwelling',job:'herding'},
  note:'house and byre under one roof, the byre at the low end (the def reads the footing\'s fall and puts the byre down-slope), a drain through the gable. Families: a gabled longhouse, a Norse bow-sided one, a Welsh longhouse with a cross passage, a long blackhouse, a hipped croft with a plate lean-to',
  build(o){const C=fgCx(o),B=TG.fg.BOX['fg-longhouse'],hw=B.w/2;
@@ -73,7 +73,7 @@ defBuilding({key:'fg-longhouse',name:'A Fellgang longhouse (house and byre)',see
    fgDoorSign(S,C,{});},
   {doorW:1,doorH:1.85,doors:(S0,F)=>{const byreL=S0.w*.4,xw=bs*(S0.hw-byreL),dh=Math.min(1.85,S0.wh-.3);
    return [[F.welsh?xw-bs*.9:-bs*S0.hw*.42,1,dh],[bs*(S0.hw-byreL/2),Math.min(1.7,byreL-1.6),Math.min(1.9,S0.wh-.3)]];}});}});
-defBuilding({key:'fg-headhouse',name:'The head\'s house',seed:9104,cut:true,w:13,d:8,h:5.8,budget:56000,
+defBuilding({key:'fg-headhouse',name:'The head\'s house',seed:9104,cut:true,w:13,d:8,h:5.8,budget:8500,
  tags:{types:['dwelling-single'],wealth:'rich',style:'drystone',role:'dwelling'},
  note:'the head\'s house (the village\'s elected head, not a steward): two rooms and a porch or a front where the head hears complaints. Families: a porched house, a burstabaer of three or four fronts, a double-pile house with a cab porch, a bow-sided house with a beehive cell, a half-hipped house with an outshot',
  build(o){const C=fgCx(o);fgHouse(TG.fg.BOX['fg-headhouse'],C,FG_FAMS['fg-headhouse'],S=>{const xc=S.x0+(S.x1-S.x0)*.36,col=fgCol('stone',C);

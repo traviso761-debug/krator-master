@@ -21,8 +21,8 @@ function fgShed(B,C,o){o=o||{};const hw=B.w/2,hd=B.d/2,th=.6,bh=B.h-.4,fe=o.fe==
 /* a family's spare coils on pegs along a wall at zb (facing +z), from x0 to x1, at height y: n pegs, each with its mark */
 function fgPegRow(n,x0,x1,y,zb,C,o){o=o||{};const sp=(x1-x0)/n,pc=fgCol('pole',C);for(let i=0;i<n;i++){const x=x0+(i+.5)*sp,col=fgMarkCol(i+(o.off|0));
  pole('pole',[x,y+.15,zb],[x,y+.2,zb+.3],.035,pc,5);fgMark(i+(o.off|0),x,y+.48,zb+.02,0,.18,col);fgNote('pegs');
- if(!o.empty||o.empty.indexOf(i)<0){ring('rope',x,y-.07,zb+.2,.2,.045,hc(col).clone().lerp(hc(0x8a7656),.55),0,PI/2,0,14);fgNote('coils');}}}
-defBuilding({key:'fg-ropehouse',name:'The rope house and rope walk',seed:9131,cut:true,w:20,d:5,h:4,budget:90000,
+ if(!o.empty||o.empty.indexOf(i)<0){ring('rope',x,y-.07,zb+.2,.2,.045,hc(col).clone().lerp(hc(0x8a7656),.55),0,PI/2,0,8);fgNote('coils');}}}
+defBuilding({key:'fg-ropehouse',name:'The rope house and rope walk',seed:9131,cut:true,w:20,d:5,h:4,budget:6000,
  tags:{types:['industry'],style:'drystone',role:'works',job:'ropemaking'},
  note:'the rope walk: a long open shed, the twisting posts, lobe-larch bark cordage laid up and Ancient cable spliced in, every family\'s spare coil on its own peg',
  build(o){const C=fgCx(o),B=fgFillBox(TG.fg.BOX['fg-ropehouse'],C,[.78,1],[.8,1],[.82,1]),S=fgShed(B,C,{fe:fgLerp([2.2,2.6],fgU(C,24))}),pc=fgCol('pole',C),wc=fgCol('wood',C);
@@ -36,11 +36,11 @@ defBuilding({key:'fg-ropehouse',name:'The rope house and rope walk',seed:9131,cu
   ring('cable',3.4,.82,S.z0+.5,.32,.04,P('cable'));ring('cable',3.4,.9,S.z0+.5,.28,.04,P('cable'));beam('horn',[2.4,.8,S.z0+.4],[2.75,.8,S.z0+.6],.025,P('horn'),true,5,.005);
   /* every family's spare coil on its own peg along the back wall */
   fgPegRow(o.pegs==null?14:o.pegs|0,S.x0+.6,S.x1-.6,2.2,S.z0+.01,C);
-  fgFurn('job_pole_rack',-5.5,null,S.z0+.4,0);fgFurn('generic_floor_basket',-3,null,S.z0+.4,0);
+  fgFurn('job_pole_rack',-S.hw*.6,null,S.z0+.4,0);fgFurnBack('fellgang_common_wall_peg_rack',S.hw*.35,S.z0);fgFurn('generic_floor_basket',-3,null,S.z0+.4,0);
   fgSign('HOLD FAST',0,S.fe-.7,S.hd-.08,0,C,{ch:.16});}});
 /* pens (the stand-ins' `pen` form): drystone walls with a turf coping, a footing under each run down to its own ground, the
    gate on the lane side of plate and stakes, a shelter of plate against the back wall, a trough */
-defBuilding({key:'fg-pens',name:'The pens',seed:9132,w:14,d:12,h:1.4,budget:50000,
+defBuilding({key:'fg-pens',name:'The pens',seed:9132,w:14,d:12,h:1.4,budget:1500,
  tags:{types:['farm'],style:'drystone',role:'works',job:'herding'},
  note:'drystone pens with a gate of plate and stakes, a shelter wall',
  build(o){const C=fgCx(o),B=fgFillBox(TG.fg.BOX['fg-pens'],C,[.7,1],[.7,1],[.82,1]),hw=B.w/2,hd=B.d/2,t=.6,wh=1.15,col=fgCol('stone',C),tc=fgCol('turf',C);
@@ -63,7 +63,7 @@ defBuilding({key:'fg-pens',name:'The pens',seed:9132,w:14,d:12,h:1.4,budget:5000
 /* the ice house (the stand-ins' `barrow` form): a turf barrow over a corbelled stone vault; its front dented back for the
    entrance, a drystone facade faced with salvage plate, the plate door; inside (the cut-away) the blocks packed in tiers in
    sawdust under snow, the reckoning chalked on a plate by the door */
-defBuilding({key:'fg-icehouse',name:'An ice house',seed:9133,cut:true,w:12,d:9,h:4.5,budget:100000,
+defBuilding({key:'fg-icehouse',name:'An ice house',seed:9133,cut:true,w:12,d:9,h:4.5,budget:5500,
  tags:{types:['industry'],style:'drystone',role:'works',job:'warehousing'},
  note:'a turf barrow over a corbelled stone vault, a stone door frame faced with salvage plate; inside (cut-away) the blocks packed in sawdust and snow, the reckoning chalked by the door',
  build(o){const C=fgCx(o),B=fgFillBox(TG.fg.BOX['fg-icehouse'],C,[.75,1],[.85,1],[.8,1]),rw=B.w/2,rd=B.d/2,H=B.h,dent=2.1*Math.min(1,B.d/9);
@@ -97,12 +97,14 @@ function fgSledge(x,y,z,ry,C,o){o=o||{};const L=o.L==null?3.2:o.L,W2=o.w==null?1
    for(const z of [-L/2+.4,0,L/2-.8])pole('pole',[xr,.08,z],[xr,.38,z],.04,pc,5);}
   for(let k=0;k<6;k++){const z=-L/2+.25+k*(L-.9)/5;box('wood',0,.4,z,W2,.05,(L-.9)/5-.04,k%2?bc:hc(0xe8e2d4));}
   for(const s of [-1,1])box('wood',s*(W2/2-.02),.45,-.2,.05,.22,L-.9,bc);});}
-defBuilding({key:'fg-sledgeshed',name:'The sledge shed',seed:9134,cut:true,w:16,d:7,h:4.2,budget:90000,
+defBuilding({key:'fg-sledgeshed',name:'The sledge shed',seed:9134,cut:true,w:16,d:7,h:4.2,budget:4500,
  tags:{types:['industry'],style:'drystone',role:'works',job:'carpentry'},
  note:'an open shed, the sledges racked, runners from tyres, paint pots',
  build(o){const C=fgCx(o),B=fgFillBox(TG.fg.BOX['fg-sledgeshed'],C,[.75,1],[.8,1],[.82,1]),S=fgShed(B,C,{fe:fgLerp([2.3,2.7],fgU(C,24))}),wc=fgCol('wood',C);
   /* three sledges on the floor, two racked on end against the back wall, one half painted on trestles */
-  for(let k=0;k<3;k++)fgSledge(-S.hw*.82+k*S.hw*.4,.06,.4,0,C,{paint:[0xa8321e,0xc8902e,0x2e5a8a][(k+C.v)%3]});
+  /* the catalog's ice sledge where the catalog is loaded (the sheet; a world's bundle with furniture), else the kit's own */
+  const cat=typeof KratorFurniture!=='undefined'&&KratorFurniture.has('fellgang_common_ice_sledge');
+  for(let k=0;k<3;k++){const x=-S.hw*.82+k*S.hw*.4;if(cat)fgFurn('fellgang_common_ice_sledge',x,null,.4,0,{v:(k+C.v)%2});else fgSledge(x,.06,.4,0,C,{paint:[0xa8321e,0xc8902e,0x2e5a8a][(k+C.v)%3]});}
   for(let k=0;k<2;k++)WX(S.hw*.36+k*1.7,.06,S.z0+.62,0,-PI/2+.12,0,()=>fgSledge(0,0,1.6,0,C,{paint:0x3a7a4a}));
   {const tx=S.hw-1.6;for(const s of [-1,1])box('wood',tx+s*.9,.06,.6,.12,.7,1.2,wc);fgSledge(tx,.76,.6,0,C,{paint:0xe8e2d4,L:2.8});}
   /* the paint pots on a bench: cut cans, each its colour at the brim */

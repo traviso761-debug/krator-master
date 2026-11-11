@@ -41,6 +41,11 @@ ASSERT_JS = r"""()=>{const A=window._api,R=[],S=window._fgSheet||{},C=TG.fg.chec
   (()=>{const q=C.box([Object.assign({},top().find(r=>r.key==='fg-meethall'),{key:'fg-hut'})]);return {ok:q.ok,detail:'too big: a meeting hall checked against the hut\'s box: '+q.bad.join('')};})());
  add('box-fills-its-share',{ok:kept.ok,detail:'every building fills 65 % of its box\'s w and d and 75 % of its h (the families: '+[...new Set(top().filter(r=>r.fg&&r.fg.family).map(r=>r.key.slice(3)+':'+r.fg.family))].length+' key-family pairs on the sheet)'},
   (()=>{const q=C.box([Object.assign({},hut,{key:'fg-meethall'})]);return {ok:q.ok,detail:'too small: a hut checked against the meeting hall\'s box: '+q.bad.join('')};})());
+ /* each def within its triangle budget (the def's own, kept and worn); the sample village's total */
+ const budgetOf=(recs,k)=>{const over=recs.filter(r=>DEFS[r.key]&&DEFS[r.key].budget&&r.tris>DEFS[r.key].budget*k);return {ok:!over.length&&recs.length>0,detail:over.slice(0,6).map(r=>r.key+'#'+r.v+' '+r.tris+' > '+Math.round(DEFS[r.key].budget*k)).join(' | ')};};
+ const bk=budgetOf(top(),1),bw2=budgetOf(wr,1),heavy=top().slice().sort((a,b)=>b.tris-a.tris).slice(0,3).map(r=>r.key+' '+r.tris).join(', '),vt=(S.villageDraw&&S.villageDraw.tris)||0;
+ add('triangle-budget',{ok:bk.ok&&bw2.ok&&vt<130000,detail:'every def within its budget, kept and worn (heaviest '+heavy+'); the sample village '+vt+' triangles'+(bk.detail||bw2.detail?': '+bk.detail+' '+bw2.detail:'')},
+  (()=>{const q=budgetOf(top(),.25);return {ok:q.ok,detail:'the budgets cut to a quarter: '+q.detail.slice(0,160)};})());
  /* tags */
  const T=A.tags().audit;const scratch=KTAGS.create({build:'neg'});scratch.add({'class':'building',kind:'x',key:'x',name:'x',at:[0,0,0],ry:0,size:[1,1,1],tags:{culture:'nonesuch',types:['spaceport']}});const TN=scratch.audit();
  add('tags-vocabulary',{ok:T.unknown===0&&T.missingCulture===0&&T.missingTypes===0&&T.records>100,detail:T.records+' records ('+Object.entries(T.byClass).map(e=>e.join(' ')).join(', ')+'), unknown '+T.unknown+(T.unknown?' '+JSON.stringify(T.unknownValues)+JSON.stringify(T.unknownKeys):'')},

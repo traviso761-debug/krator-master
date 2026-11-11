@@ -23,5 +23,5 @@ const FAMILIES=[
  {name:'Fellgang: the ice house',keys:FG_SEEDS('fg-icehouse')},
  {name:'Fellgang: the sledge shed',keys:FG_SEEDS('fg-sledgeshed')},
  {name:'Fellgang: the wall (stations, nest gear, a burial ledge)',keys:[{key:'fg-wall-station',o:{v:0}},{key:'fg-wall-station',o:{v:1}},{key:'fg-nest-ledge',o:{v:0}},{key:'fg-burial-ledge',o:{v:0}},{key:'fg-burial-ledge',o:{v:3}}]},
- {name:'Fellgang: the road (lantern posts, a halt, the Travellers\' wagons)',keys:[...FG_SEEDS('fg-lantern-post',3),{key:'fg-halt',o:{v:0}},{key:'fg-halt',o:{v:1}},...FG_SEEDS('fg-wagon',3)]}
+ {name:'Fellgang: the road (lantern posts, a halt, the Travellers\' wagons)',keys:[...FG_SEEDS('fg-lantern-post',3),{key:'fg-halt',o:{v:0}},{key:'fg-halt',o:{v:1}},...FG_SEEDS('fg-wagon',3),{key:'fg-ice-tools',o:{v:0}}]}
 ];

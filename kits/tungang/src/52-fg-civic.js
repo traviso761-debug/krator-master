@@ -11,7 +11,7 @@
 const FG_HALL_FAMS=[{id:'porch',wf:[.85,1],df:[.75,.82],hf:[.85,1],add:['porch'],pitch:[38,46],stony:1.3},
  {id:'bow',plan:'bow',roof:'bow',wf:[.88,1],df:[.88,1],hf:[.82,1],pitch:[36,44],stony:1.4,low:1.2},
  {id:'halfhip',roof:'halfhip',wf:[.82,1],df:[.85,1],hf:[.78,.92],pitch:[32,40],low:2}];
-defBuilding({key:'fg-meethall',name:'The meeting hall',seed:9111,cut:true,w:18,d:10,h:7,budget:70000,
+defBuilding({key:'fg-meethall',name:'The meeting hall',seed:9111,cut:true,w:18,d:10,h:7,budget:10000,
  tags:{types:['civic'],wealth:'middle',style:'drystone',role:'civic'},
  note:'the one large room: benches down both walls, the fire down the middle; the Fowlers\' rope wall (a peg for each family, its coil hung on it, an empty peg where a family lost its rope) or the Ice-cutters\' tally board on the back wall, by a variant the station passes (fowlers or icecut). Families: a porched hall, a bow-sided hall, a low half-hipped hall',
  build(o){const C=fgCx(o),B=TG.fg.BOX['fg-meethall'],variant=o.variant==='icecut'?'icecut':'fowlers';fgSet('variant',variant);
@@ -36,7 +36,7 @@ defBuilding({key:'fg-meethall',name:'The meeting hall',seed:9111,cut:true,w:18,d
     box('wood',0,1.8,zb+.02,per*sp+.3,.08,.06,wc);box('wood',0,2.75,zb+.02,per*sp+.3,.08,.06,wc);
     for(let i=0;i<n;i++){const row=i<per?0:1,k=row?i-per:i,x=(k-(per-1)/2)*sp,y=row?2.8:1.85,col=fgMarkCol(i);
      pole('pole',[x,y+.15,zb+.03],[x,y+.2,zb+.33],.035,pc,4);fgNote('pegs');fgMark(i,x,y+.5,zb+.05,0,.2,col);
-     if(lost.indexOf(i)<0){const rc=hc(col).clone().lerp(hc(0x8a7656),.55);ring('rope',x,y-.07,zb+.2,.2,.045,rc,0,PI/2,0,10);fgNote('coils');}
+     if(lost.indexOf(i)<0){const rc=hc(col).clone().lerp(hc(0x8a7656),.55);ring('rope',x,y-.07,zb+.2,.2,.045,rc,0,PI/2,0,8);fgNote('coils');}
      else fgNote('empty');}
    } else {
     /* THE TALLY BOARD: a long board of slats, each notched for the blocks cut and carried; chalk at its end for this season */
@@ -45,7 +45,7 @@ defBuilding({key:'fg-meethall',name:'The meeting hall',seed:9111,cut:true,w:18,d
      for(let k=0;k<nn;k++){quad('plain',x+.02,1.61+k*.15,zb+.105,.07,.025,P('dark'));fgNote('notches');}}
     fgText('OWED',L2/2+.5,2.45,zb+.04,0,.16,P('white'));}},
   {doorW:1.9,doorH:2.2,noHood:true,doors:(S0)=>[[(fgU(C,52)-.5)*Math.max(0,S0.w-8),1.9,Math.min(2.2,S0.wh-.3)]]});}});
-defBuilding({key:'fg-cairnhall',name:'The cairn house',seed:9112,cut:true,w:7,d:7,h:6,budget:80000,
+defBuilding({key:'fg-cairnhall',name:'The cairn house',seed:9112,cut:true,w:7,d:7,h:6,budget:6500,
  tags:{types:['religious','funerary'],style:'drystone',role:'religious',job:'worship'},
  note:'a corbelled drystone round house; inside, the dead\'s names scratched on slate tallies hung in rows (no carving); the old rules said aloud from its step',
  build(o){const C=fgCx(o),fr=fgLerp([.72,1],fgU(C,21)),r=3.5*fr,t=.8,wh=2.6*fgLerp([.85,1],fgU(C,22)),Ht=6*Math.max(.78,fgLerp([.78,1],fgU(C,23))),g=.2/fr,col=fgCol('stone',C),a0=PI/2+g,a1=PI/2-g+TAU;fgSet('fill',+fr.toFixed(2));
@@ -60,7 +60,7 @@ defBuilding({key:'fg-cairnhall',name:'The cairn house',seed:9112,cut:true,w:7,d:
   box('stoneD',0,0,r+.02,1.9,.26,.42,fgCol('stoneD',C));fgDoor(0,r-t/2,.95,1.75,C,{th:t,name:'the cairn house door'});
   /* inside: a stone bench round the wall, and the slate tallies on cords in three rows (a name scratched on each) */
   const ri=r-t-.02;sector('stone',0,0,ri-.42,ri,a0+.15,a1-.15,0,.45,fgCol('stoneD',C));
-  for(const y of [1.15,1.6,2.05]){const P0=[],arc=(a1-a0-.4)*ri,n=Math.floor(arc/.24);
+  for(const y of [1.15,1.6,2.05]){const P0=[],arc=(a1-a0-.4)*ri,n=Math.floor(arc/.3);
    for(let k=0;k<=12;k++){const a=a0+.2+(a1-a0-.4)*k/12;P0.push([Math.cos(a)*(ri-.03),y+.12,Math.sin(a)*(ri-.03)]);}cord('cord',P0,.008,P('rope'));
    for(let k=0;k<n;k++){const a=a0+.2+(a1-a0-.4)*(k+.5)/n,x=Math.cos(a)*(ri-.05),z=Math.sin(a)*(ri-.05),ry=Math.atan2(-x,-z);
     box('stoneD',x,y-.08,z,.1,.16,.015,P('slate'),ry,rr(-.08,.08));W(x,y,z,ry,()=>quad('plain',0,-.02,.009,.06,.008,P('white')));fgNote('tallies');}}
