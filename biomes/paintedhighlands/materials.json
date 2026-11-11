@@ -1,0 +1,297 @@
+{
+ "build": "paintedhighlands",
+ "note": "The painted highlands' adapter onto the material library (core/materials/PLAN.md; PLAN.md section 10). The ground's KGROUND layers by family (84-host-ground.js: the steppe, the popcorn clay and the danxia sandstone as grey detail under the strata shader's bed colour, the wash's cobble, the playa's crust), the cards by material slot (BIO.libSwap: grass -> card.grass.dry, sage and rabbit -> card.sage, fl0..fl8 -> the nine flowers of card.flower.bloom.highland). Owed: the banded badland rock's greyscale bedded tile (core/materials/PROMPTS-NEEDED.md section 9). Run python3 tools/textures/pack.py biomes/paintedhighlands after any change, then python3 build.py --all.",
+ "size": 512,
+ "families": {
+  "ground.steppe": {
+   "lib": "ground.steppe",
+   "scale": [
+    2.6,
+    2.6
+   ],
+   "tint": {
+    "keep": 0.6,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.clay.popcorn": {
+   "_note": "the clay hills' cover: grey detail, the bed's colour from the strata shader (84: tint _gT)",
+   "lib": "ground.clay.popcorn",
+   "scale": [
+    2.2,
+    2.2
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.62
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "rock.sandstone.bedded.red": {
+   "_note": "the danxia faces: grey detail under the strata colour",
+   "lib": "rock.sandstone.bedded.red",
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.wadi.cobble": {
+   "lib": "ground.wadi.cobble",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.playa.red": {
+   "_note": "the playa's crust, tinted by its bed",
+   "lib": "ground.playa.red",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.62
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "grass": {
+   "lib": "card.grass.dry",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.62
+   },
+   "size": 512,
+   "cell": [
+    0.34,
+    0.01,
+    0.66,
+    0.32
+   ]
+  },
+  "sage": {
+   "lib": "card.sage",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.62
+   },
+   "size": 512,
+   "cell": [
+    0.01,
+    0.01,
+    0.32,
+    0.32
+   ]
+  },
+  "rabbit": {
+   "lib": "card.sage",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "size": 512,
+   "cell": [
+    0.34,
+    0.01,
+    0.66,
+    0.32
+   ],
+   "_note": "the flowering sprig: rabbitbrush gold"
+  },
+  "fl0": {
+   "lib": "card.flower.bloom.highland",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "size": 512,
+   "cell": [
+    0.01,
+    0.01,
+    0.32,
+    0.32
+   ]
+  },
+  "fl1": {
+   "lib": "card.flower.bloom.highland",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "size": 512,
+   "cell": [
+    0.34,
+    0.01,
+    0.66,
+    0.32
+   ]
+  },
+  "fl2": {
+   "lib": "card.flower.bloom.highland",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "size": 512,
+   "cell": [
+    0.68,
+    0.01,
+    0.99,
+    0.32
+   ]
+  },
+  "fl3": {
+   "lib": "card.flower.bloom.highland",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "size": 512,
+   "cell": [
+    0.01,
+    0.34,
+    0.32,
+    0.66
+   ]
+  },
+  "fl4": {
+   "lib": "card.flower.bloom.highland",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "size": 512,
+   "cell": [
+    0.34,
+    0.34,
+    0.66,
+    0.66
+   ]
+  },
+  "fl5": {
+   "lib": "card.flower.bloom.highland",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "size": 512,
+   "cell": [
+    0.68,
+    0.34,
+    0.99,
+    0.66
+   ]
+  },
+  "fl6": {
+   "lib": "card.flower.bloom.highland",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "size": 512,
+   "cell": [
+    0.01,
+    0.68,
+    0.32,
+    0.99
+   ]
+  },
+  "fl7": {
+   "lib": "card.flower.bloom.highland",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "size": 512,
+   "cell": [
+    0.34,
+    0.68,
+    0.66,
+    0.99
+   ]
+  },
+  "fl8": {
+   "lib": "card.flower.bloom.highland",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "size": 512,
+   "cell": [
+    0.68,
+    0.68,
+    0.99,
+    0.99
+   ]
+  }
+ }
+}

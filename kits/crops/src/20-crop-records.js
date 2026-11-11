@@ -43,6 +43,7 @@ R('sweet-potato', 'Sweet potato', 'tuber', [3, 4], [1, 3], {card: 'card.crop.yam
 R('steambed-yam', 'Steambed yam', 'tuber', [4, 5], [3, 4], {needs: 'heated', card: 'card.crop.yam', home: ['geyser'], note: 'planted in the warm crust'});
 R('frostroot', 'Frostroot', 'tuber', [0, 1], [1, 2], {atm: [0, 1], reach: 0, card: 'card.crop.clover', home: ['ehighlands'], stores: ['dried'], note: 'freeze-dried like chuno'});
 R('murnong', 'Murnong', 'tuber', [2, 3], [1, 2], {reach: 1, card: 'card.crop.rosette', home: ['nwlowlands'], note: 'a yam-daisy'});
+R('painted-camas', 'Painted camas', 'tuber', [1, 3], [1, 2], {reach: 1, home: ['paintedhighlands'], src: 'proposed', stores: ['dried', 'ground'], note: 'a camas or mariposa-lily bulb of the washes and the melt flats, dug after the bloom and roasted in pits (biomes/paintedhighlands/PLAN.md section 4)'});
 R('shade-manioc', 'Shade manioc', 'tuber', [4, 4], [2, 4], {card: 'card.crop.palmate', home: ['hyperjungle'], stores: ['ground', 'dried']});
 R('ashroot', 'Ashroot', 'tuber', [3, 4], [2, 4], {reach: 1, card: 'card.crop.umbrella', home: ['throne'], stores: ['pressed'], note: 'a konjac-like corm on ash soil'});
 R('stub-cone', 'Stub cone', 'tuber', [4, 4], [0, 2], {reach: 1, form: 'plant', src: 'abyssal-savannah', home: ['abyssal-savannah'], stores: ['ground', 'dried'], note: 'the single cone of the stub lycopsid, pounded for its starch'});
@@ -116,7 +117,7 @@ R('bell-date', 'Bell date', 'dried-fruit', [4, 4], [1, 3], {form: 'tree', card: 
 
 /* ---- flavour and drink */
 R('clove', 'Clove', 'spice', [4, 4], [3, 4], {form: 'tree', card: 'card.croptree.glossy', src: 'ringisles', home: ['ringisles'], stores: ['dried']});
-R('juniper', 'Juniper berries', 'spice', [1, 3], [0, 2], {form: 'tree', card: 'card.juniper', src: 'ebadlands', home: ['ebadlands'], stores: ['dried']});
+R('juniper', 'Juniper berries', 'spice', [1, 3], [0, 2], {form: 'tree', card: 'card.juniper', src: 'ebadlands', home: ['ebadlands', 'paintedhighlands'], stores: ['dried']});
 R('umbel-seed', 'Umbel seed', 'spice', [2, 3], [0, 2], {src: 'ebadlands', home: ['ebadlands'], stores: ['dried']});
 R('saffron', 'Vale saffron', 'spice', [2, 3], [1, 2], {also: ['dye'], card: 'card.crop.saffron', colour: 'saffron', home: ['xanadu'], stores: ['dried']});
 R('herbs', 'Herbs (lemongrass, ginger, basil)', 'herb', [3, 4], [2, 3], {card: 'card.crop', src: 'ringisles', home: ['ringisles'], stores: ['fresh', 'dried']});
@@ -151,6 +152,7 @@ R('measuremelon', 'Measure melon', 'fruit', [3, 4], [1, 3], {form: 'vine', card:
 R('glasswort', 'Glasswort (sea asparagus)', 'vegetable', [3, 5], [0, 3], {also: ['oil'], needs: 'salt', card: 'card.samphire', src: 'sedesert', home: ['sedesert'], stores: ['fresh', 'pressed'], note: 'Salicornia: the jointed shoots in spring, an oil seed in autumn when it turns crimson'});
 R('tamarisk-manna', 'Tamarisk manna', 'sweetener', [3, 5], [0, 2], {form: 'tree', card: 'card.tamarisk', src: 'sedesert', home: ['sedesert'], stores: ['dried'], yield: 0.5, note: 'the sweet secretion scale insects leave on tamarisk twigs: gathered, not sown'});
 R('saxaul', 'Saxaul wood', 'fuel', [3, 5], [0, 1], {form: 'tree', src: 'sedesert', home: ['sedesert'], stores: ['dried'], note: 'Haloxylon: the densest firewood there is, and charcoal'});
+R('paintbrush', 'Painter\'s brush', 'medicine', [1, 3], [0, 2], {also: ['dye'], card: 'card.flower.bloom.highland', src: 'paintedhighlands', home: ['paintedhighlands'], stores: ['dried'], colour: 'red', note: 'an Indian-paintbrush of the spring bloom: the Painted Men\'s medicine (a wash for sores and a tea for the women\'s ills), and its bracts a pale red (biomes/paintedhighlands, the flower phfl3)'});
 R('brine-lamp', 'Brine lamp', 'medicine', [4, 5], [0, 1], {needs: 'salt', card: 'card.brinelamp', src: 'sedesert', home: ['sedesert'], stores: ['dried'], note: "Krator's: the crystal-crusted leaf, steeped, is a salt-and-bitters remedy for heat sickness"});
 /* ---- the steppe fringe (biomes/sedesert/PLAN-STEPPE.md; drawn on its station 3) */
 R('myrrh', 'Myrrh', 'medicine', [4, 5], [0, 2], {form: 'tree', also: ['fuel'], src: 'sedesert', home: ['sedesert'], stores: ['dried'], note: "Commiphora: the resin bled from the peeling bark; a wound wash and an incense, the merchant houses' second trade"});

@@ -27,7 +27,7 @@ R('indigo', 'Jungle indigo', 'dye', [4, 4], [2, 4], {form: 'shrub', card: 'card.
 R('woad', 'Valley woad', 'dye', [1, 3], [1, 3], {atm: [0, 2], card: 'card.crop.woad', colour: 'blue', home: ['ebadlands', 'nhighlands'], note: 'also Clan woad: the northern clans'});
 R('broom', 'Heath broom', 'dye', [0, 2], [1, 3], {atm: [0, 2], form: 'shrub', card: 'card.broom', colour: 'yellow', home: ['nhighlands']});
 R('lichen', 'Rosette lichen', 'dye', [0, 3], [1, 3], {atm: [0, 2], colour: 'brown', home: ['shighlands', 'sedesert', 'nwouterwall'], src: 'shighlands', note: 'a lichen dye (the colour is not named in the kits)'});
-R('rabbitbrush', 'Rabbitbrush flowers', 'dye', [2, 4], [0, 1], {form: 'shrub', colour: 'yellow', home: ['ebadlands'], src: 'ebadlands'});
+R('rabbitbrush', 'Rabbitbrush flowers', 'dye', [2, 4], [0, 1], {form: 'shrub', colour: 'yellow', home: ['ebadlands', 'paintedhighlands'], src: 'ebadlands'});
 R('ghost-gum', 'Ghost-gum leaf', 'dye', [2, 4], [0, 2], {form: 'tree', card: 'card.ghostwood', colour: 'gold', home: ['nwlowlands']});
 R('alder-bark', 'Grey alder bark', 'dye', [1, 2], [3, 3], {form: 'tree', colour: 'red', also: [], home: ['nhighlands'], src: 'nhighlands', note: 'red and black'});
 R('ironbark-tannin', 'Ironbark bark', 'dye', [4, 4], [2, 3], {form: 'tree', colour: 'brown', home: ['nwbay', 'swbay'], src: 'swbay'});
@@ -47,6 +47,10 @@ R('falu-red', 'Falu red', 'dye', [0, 3], [1, 3], {atm: [0, 2], homeOnly: true, n
 R('verdigris', 'Verdigris and malachite', 'dye', [0, 5], [0, 4], {homeOnly: true, node: 'copper', colour: 'teal', home: ['eastabyss', 'swlowlands'], note: 'green; azurite blue'});
 R('sulfur-yellow', 'Sulfur yellow', 'dye', [0, 5], [0, 4], {homeOnly: true, node: 'sulfur', colour: 'yellow', home: ['geyser', 'ebadlands', 'throne']});
 R('tar-black', 'Tar black', 'dye', [0, 5], [0, 4], {homeOnly: true, node: 'oil', colour: 'black', home: ['ringisles']});
+/* the Painted Men's paint (biomes/paintedhighlands/PLAN.md sections 4 and 9, defaults taken 2026-11-11): black from the badland stack's own lignite
+   partings (a coal node), teal from the teal bed dug as a clay (celadonite: no node, pigment only); the red is the iron node's (falu-red, hill-terracotta) */
+R('lignite-black', 'Lignite black', 'dye', [0, 5], [0, 4], {homeOnly: true, node: 'coal', colour: 'black', home: ['paintedhighlands'], note: 'the badland beds\' lignite partings ground to a black paint: the Painted Men\'s black'});
+R('celadonite-teal', 'Celadonite teal', 'dye', [0, 5], [0, 4], {homeOnly: true, colour: 'teal', home: ['paintedhighlands'], note: 'a green-blue clay dug from the teal bed of the badland stack, pigment only: the Painted Men\'s teal'});
 R('flametip-tanbark', 'Flametip tanbark', 'dye', [4, 4], [2, 3], {form: 'tree', colour: 'brown', home: ['necanyons'], src: 'necanyons', note: 'the benches\' scrub tree: tans hides, dyes brown'});
 R('laterite-ochre', 'Laterite ochre', 'dye', [3, 5], [0, 3], {homeOnly: true, node: 'iron', colour: 'ochre', home: ['abyssal-savannah'], note: 'the red-yellow earth of the abyss rim, washed and burnt to a red; the abyssal people paint with it on umbrella gum'});
 R('slickrock-orchil', 'Slickrock orchil', 'dye', [4, 5], [0, 2], {homeOnly: true, colour: 'purple', home: ['necanyons'], note: 'the caps\' orange crust lichens, steeped in stale urine: a red-purple, as orchil is'});

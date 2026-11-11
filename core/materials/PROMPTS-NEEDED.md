@@ -87,8 +87,18 @@ still draw a procedural stand-in (`biomes/nwouterwall/KNOWN_ISSUES.md`, "Procedu
 
 ## 9. Painted highlands (`biomes/paintedhighlands`, planned 2026-10-23)
 
-The banded plateau by Korona (`biomes/paintedhighlands/PLAN.md` section 5, which lists the library sets it reuses). One
-greyscale bedded tile tinted by the strata field (cheaper, preferred), and the bloom's flowers.
+The banded plateau by Korona (`biomes/paintedhighlands/PLAN.md` section 10, which lists the library sets it reuses). **Built
+2026-11-11** (its branch): the bloom's flowers are `card.flower.bloom.highland` (its nine cells are the plan's nine Earth models: lupin,
+penstemon, globe mallow, paintbrush, blazing star, desert dandelion, evening primrose, Namaqualand daisy, pata de guanaco), so no flower
+card is owed. Still owed, one set; until it comes the beds are KSTRATA's colours under `rock.sandstone.bedded.red` and
+`ground.clay.popcorn` as grey detail (`biomes/paintedhighlands/KNOWN_ISSUES.md`, "The banded rock's own grain"):
+
+`rock.badland.bedded` (greyscale, tinted by the strata field in the shader; the preferred, cheaper option of the plan): the base
+template, then: "Weathered bentonite clay badland slope seen straight on: thin horizontal beds 2 to 20 cm thick running edge to edge,
+alternating smooth soft clay layers and slightly harder ledges that stand a few millimetres proud, a crumbly popcorn-textured crust
+of swollen clay on the soft layers, fine vertical rills where rain has run down, a few thin dark partings. Render it in neutral
+greyscale only (no colour at all), even mid-grey, so the shader can tint each bed: the beds differ in texture, not colour. The beds
+must stay horizontal and continue across the left and right edges."
 
 ## 10. The Cut (`biomes/cut`, planned 2026-10-23)
 

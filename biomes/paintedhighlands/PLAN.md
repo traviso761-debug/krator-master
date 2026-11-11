@@ -7,15 +7,17 @@ slopes of wildflowers in drifts of colour. The Painted Men's country.
 Owner's brief (2026-10-23): the plateau by Korona is a new biome, the painted highlands, with spectacular bands of
 exposed rock and colourful wildflowers.
 
-**Status: plan, awaiting the owner.** Nothing built. Kits come after the rebuild's frozen integration pass; this is a plan
-only. The 2026-11-09 pass re-read every number from map 5.1 and wrote the stations, hazards and core table.
+**Status: built 2026-11-11 on `claude/paintedhighlands-biome`, for the owner's review** (the owner asked for it on 2026-11-11: that request
+settled P0 and overrode the old line "kits come after the rebuild's frozen integration pass"). Four pages, `KNOWN_ISSUES.md` for what is owed,
+section 9 for the defaults taken on the open questions. The 2026-11-09 pass re-read every number from map 5.1 and wrote the stations, hazards
+and core table.
 
 | | |
 |---|---|
 | Folder | `biomes/paintedhighlands/` (the usual kit layout: `src/`, `stations/`, `build.py`, `verify.py`, `materials.json`, `tex/`, `BIOME-API.md`, `PORT.md`) |
 | Pages | `dist/paintedhighlands.html` (station 1), `-bloom`, `-canyon`, `-cliff` (section 7) |
 | Object | `PAINTED` (`build`, `dress`, `SPECIES`, `PLANTS`) on the `BIOME-API.md` contract |
-| Read in place | `biomes/korona` (its western ring species at station 4), `biomes/ehighlands` (cushions on the highest ground), `biomes/nhighlands` (a few steppe and rim plants); nothing copied |
+| Read in place | built: `biomes/ebadlands` (the Great Basin kit: Utah juniper and pinyon on the rims and ledges, Gambel oak and bigtooth maple on the cliff town's wet wall, by `BIO.kin` with ebadlands' own builder). Planned and not on a page yet: `biomes/korona` (its western ring species at station 4), `biomes/ehighlands` (cushions over 4 km: no station reaches 4 km), `biomes/nhighlands` (ebadlands' rim plants serve); nothing copied (section 9, "Defaults taken") |
 | Out of scope | the Painted Men's villages as settlements (a settlement plan; the kit leaves the cliff ledges for them), Korona's moat itself (Korona's kit) |
 
 ## 1. What the map carves (map 5.1)
@@ -366,12 +368,52 @@ The table of `README.md` "CORE MODULES ARE NOT OPTIONAL", for this kit:
 - **The teal bed.** Copper (a resource node, `kits/resources`) or a clay (pigment only)?
 - **The fourth station:** re-sited to the canyon-mouth town's wall (1101,624) as the cliff dwellers' page: wanted?
 
+### Defaults taken 2026-11-11 (the build session; owner to confirm)
+
+The owner's rule for this session: take the recommended or the most conservative option, build no settlement (leave the ledges for them),
+edit neither `LORE.md` nor the scale model. Each line below is **default taken 2026-11-11, owner to confirm**.
+
+- **The cliff sites and their names.** The four sites of section 5a stand as proposed; the kit builds site 1 as station 4 and marks its alcoves,
+  ledges and talus benches as records, and the canyon's contact bench at station 3 as ledge records. Names stay English working names: no
+  `painted`-tongue names are invented (they belong in `LORE.md` and the model, which this session does not touch). *Default taken 2026-11-11,
+  owner to confirm.*
+- **The moat-wall villages on Korona's ground.** Left where the model puts them and not marked by this kit (they are outside both polygons):
+  whether they are the Painted Men's by treaty is a settlement-plan and lore question. *Default taken 2026-11-11, owner to confirm.*
+- **Markers on the model (`60-settlements.js`).** Not added (no scale-model edits this session). *Default taken 2026-11-11, owner to confirm.*
+- **The new pieces (alcove house, daub front, niche granary, notched-log ladder).** The plan's first option, the Highlands Tribal kit, when a
+  settlement plan is written; nothing is built here. The site records carry what that kit needs (floor height, width, depth, aspect, the seep,
+  the ladder line). *Default taken 2026-11-11, owner to confirm.*
+- **The crops.** The `paintedhighlands` entry and its five zones as proposed (section 4), the bulb (`painted-camas`) and the paintbrush
+  (`paintbrush`) as native records, `lignite-black` on a `coal` node (the badland stack's own lignite partings), and `celadonite-teal` as a clay
+  dug from the bed (`node: null`), so `CROPS.canPlaid` passes with iron red, the clay's teal and the lignite's black. *Default taken 2026-11-11,
+  owner to confirm.*
+- **The lost playa.** Keep the three that survive on 5.1; ask for no move. *Default taken 2026-11-11, owner to confirm.*
+- **The polygon.** Not trimmed (a model edit). The kit draws nothing under 2 km: the moat and the crater's edge are Korona's and the crater
+  kits' ecotones. *Default taken 2026-11-11, owner to confirm.*
+- **Names** for the canyon, the playas and the hogbacks: English only, as above. *Default taken 2026-11-11, owner to confirm.*
+- **The teal bed.** A clay (celadonite), pigment only: no copper node is added to `kits/resources`, and `verdigris` stays for a copper node
+  elsewhere. The more conservative of the two (no new resource placed on the map). *Default taken 2026-11-11, owner to confirm.*
+- **The fourth station.** Built at 1101,624 as re-sited (`-cliff`). *Default taken 2026-11-11, owner to confirm.*
+
+Choices the build needed that the questions above did not cover (each also owner to confirm):
+- **The cliff wall's column.** One `badland`-under-`danxia` contact gives one seep line; the canyon-mouth wall's 2.2 km needs several, so its
+  stack interfingers four sandstone packets with lake clays between them (`40-biome-painted-sites.js`, `cliff.strata`): four tiers of
+  alcoves. The other stations keep the plan's single contact.
+- **The neighbours read in place.** The plan named korona, ehighlands and nhighlands. The Great Basin trees the plan's Earth models call for
+  (junipers on the rims, pinyon) are the eastern badlands' (`ebadlands`), so they are read in place from there; ehighlands' cushions grow only
+  over 4 km and no station reaches 4 km; Korona's ring species at station 4 are owed (Korona's species fragment reads the necanyons kit's
+  geometry and the hyperjungle's: `KNOWN_ISSUES.md`), with ebadlands' Gambel oak and bigtooth maple standing in on the wet wall.
+- **The site key.** The plan proposed a `site` tag; core/tags has `zone` (free) already, so the records carry `zone: 'cliff-alcove' |
+  'cliff-ledge' | 'talus-bench' | 'pigment-pit' | 'stone-circle'` and their detail in the record's own `site` field (no core change).
+
 ## 10. Textures
 
 In the library: `ground.clay.popcorn`, `rock.sandstone.bedded.red`, `ground.playa.red`, `rock.gossan`, `rock.malachite`,
-`ground.steppe`, `card.grass.dry`. To source or generate (prompts first):
-- banded badland rock: one greyscale bedded tile tinted by the strata field (cheaper and preferred), or tiles in the bed colours;
-- flower cards for the bloom.
+`ground.steppe`, `card.grass.dry`. Built with (`materials.json`): the steppe, the popcorn clay, the bedded red sandstone, the playa, the wash's
+`ground.wadi.cobble`, `card.grass.dry`, `card.sage` (the sage and the rabbitbrush's flowering sprig) and **`card.flower.bloom.highland`, whose
+nine cells are the bloom's nine Earth models**, so the flower cards are not owed. To source or generate (prompts first):
+- banded badland rock: one greyscale bedded tile tinted by the strata field (cheaper and preferred): `rock.badland.bedded`, its prompt in
+  `PROMPTS-NEEDED.md` section 9. Until it comes the beds are KSTRATA's colours over the popcorn clay and the sandstone as grey detail.
 
 **The prompts**: `core/materials/PROMPTS-NEEDED.md` section 9 (2026-10-23).
 
