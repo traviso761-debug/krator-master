@@ -79,7 +79,7 @@
     "kits/catalog/krator-master-furniture-generic.js": "990b05b8404c67ab960f6649babc8143c738ea600a04c0c22564296fa7786ea4",
     "kits/catalog/krator-master-furniture-jobs.js": "598ea1c1eeeeb4c30206d397021a579b281399ba4bea85fdaf0060d6a433674d",
     "kits/tungang/KNOWN_ISSUES.md": "db532c3e972891123a1f461f21baa7e1d569f9cd09c8f34a57921323ad3a03d9",
-    "kits/tungang/PORT.md": "7b80e2e5edada67a6c24347a7e4f95bb404e3dff4eae551fb7c92e6986964904",
+    "kits/tungang/PORT.md": "d3ec48dfa68059f4697c795ea92ccf8d4006843fd06edc073b426e2f725717c5",
     "kits/tungang/build.py": "a7f195c9c755e1700495defb7233ae1b38dcb3e4678c0158d67ec900228a7fd2",
     "kits/tungang/src/00-head.html": "fba12988e841f1850990769e31c4ee6ca7a12a59ecf113ebd50bc39c76b8bc9b",
     "kits/tungang/src/26k-kit.js": "ce6235f27156b1447c497cb7e61bd1e5afa7a08952158af0b4ab2b16be097475",
@@ -91,7 +91,7 @@
     "kits/tungang/src/54-fg-stores.js": "a5088c1d9e919765c05a3f7df1e4c17b5fe83c8e0ebb29d99623c2e4849fde2c",
     "kits/tungang/src/56-fg-works.js": "29c1c02812660b1e275de0e615ee11909011a9ab7e2860bd9b40e004cf87e134",
     "kits/tungang/src/60-fg-road.js": "9ed6ae0943fca70b991161e27f47ecb06793d65fc9c9e5b66d8aef47c85b23e1",
-    "kits/tungang/src/80-fg-host.js": "e01a9cf735ba99ce58c2525e408f059b881c63d290d0d1db0da803d5f45e0243",
+    "kits/tungang/src/80-fg-host.js": "dec187a9e4df1ddf39ccbbec3eed009dafd38be45fe19430813aebf6c83ccd44",
     "kits/tungang/src/89-rows.js": "5351381284c4f3b30291f6f5084971cf50128a4646ce7c6024b7811b8c800771",
     "kits/tungang/src/91t-fg-sheet.js": "4b0f950ff4e6876616233943e5830644913b2e853672a77eaaa478e49f43af13",
     "kits/tungang/src/96t-fg-views.js": "d4c53acbff1400cdb1a08af0e3f5e798b6505c621e690b2442c3ba759cb0641a",
@@ -209,13 +209,13 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/tungang/build-manifest.json": "f801d5b027c246816bc5b6efc200f5922839a11c33cfe82e265219363388a845",
-    "kits/tungang/dist/tungang.html": "0fee764f44b5b8b8500b3d1427ef2ff0e7622765cb62900f70de9ffe53b24d6f",
+    "kits/tungang/build-manifest.json": "eddd7fca9566265aeb7ab30c41754aa17289192eb4e5e7490b82238be666cd25",
+    "kits/tungang/dist/tungang.html": "6193412a4c3357d317979ead68825ebe995a9309443d77407eaf39c00f6d2078",
     "kits/tungang/dist/tungang.tex.tungang.js": "73eef3c4e0daa2fc1d384aa8fa154fe6e7c142dd91d258fb88776c8bf35a56a6"
    },
    "outputs_raw": {
-    "kits/tungang/build-manifest.json": "f801d5b027c246816bc5b6efc200f5922839a11c33cfe82e265219363388a845",
-    "kits/tungang/dist/tungang.html": "0fee764f44b5b8b8500b3d1427ef2ff0e7622765cb62900f70de9ffe53b24d6f",
+    "kits/tungang/build-manifest.json": "eddd7fca9566265aeb7ab30c41754aa17289192eb4e5e7490b82238be666cd25",
+    "kits/tungang/dist/tungang.html": "6193412a4c3357d317979ead68825ebe995a9309443d77407eaf39c00f6d2078",
     "kits/tungang/dist/tungang.tex.tungang.js": "73eef3c4e0daa2fc1d384aa8fa154fe6e7c142dd91d258fb88776c8bf35a56a6"
    }
   }

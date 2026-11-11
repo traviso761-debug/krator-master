@@ -46,5 +46,11 @@ ok('a fixed line follows its record (' + rc.verts + ' vertices, farthest ' + rc.
   !TG.fg.check.rope([Object.assign({}, rope, { pts: rope.pts.map(p => [p[0], p[1] + 2, p[2]]) })], RD).ok);
 const P = TG.fg.pieces([{ key: 'fg-lantern-post', x: 5, z: 5 }, { key: 'fg-halt', x: 20, z: 5 }, { key: 'fg-wagon', x: 30, z: 5, ry: 1 }], { ground });
 ok('the road pieces draw where they are put, on the ground', P.recs.length === 3 && P.recs.every(r => Math.abs(r.y - ground(r.x, r.z)) < 1e-6), P.recs.length !== 4);
+/* the bundle with the catalog sealed in: a world's draw comes furnished (the default bundle places nothing) */
+const nofurn = D1.group.userData.furniture | 0;
+vm.runInThisContext(cp.execFileSync(py, ['-c', 'import sys; sys.path.insert(0, "."); import tungang_bundle; sys.stdout.write(tungang_bundle.bundle(tex=False, furniture=True))'], { cwd: KIT, encoding: 'utf8', maxBuffer: 64 << 20 }), { filename: 'tungang_bundle_furniture.js' });
+const F1 = TG.fg.draw(fow, { ground, seed: 8312 });
+ok('bundle(furniture=True) furnishes a world\'s draw (' + (F1.group.userData.furniture | 0) + ' catalog pieces in the Fowlers\' village)', (F1.group.userData.furniture | 0) > 50 && TG.errors.length === 0,
+  nofurn === 0, TG.errors.join('; '));
 console.log(bad ? '\n' + bad + ' FAILED' : '\nOK');
 process.exit(bad ? 1 : 0);

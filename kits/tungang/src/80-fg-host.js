@@ -23,6 +23,9 @@ function fgDrawInto(o,fn){const T={},keep={GB,GTARGET,CMS:CMS.slice(),CM,dry:PLA
  finally{GB=keep.GB;GTARGET=keep.GTARGET;CMS.length=0;keep.CMS.forEach(m=>CMS.push(m));CM=keep.CM;PLACE_DRY=keep.dry;CURREC=keep.rec;CURKEY=keep.key;DOORS_CUR=keep.doors;WINDOWS_CUR=keep.win;CUTC=keep.cut;
   SBS.length=0;keep.sbs.forEach(b=>SBS.push(b));SB=keep.sb;}
  const G=new THREE.Group();G.name=o.name||'fellgang';flushBuckets(T,G,o.shadow!==false);
+ /* the furniture the builders asked for, in a bundle sealed with the catalog (tungang_bundle.py furniture=True): one batch */
+ if(typeof FG_FURN_PENDING!=='undefined'&&FG_FURN_PENDING.length){const FB=KratorFurniture.batch({indexed:true});for(const p of FG_FURN_PENDING)FB.place(p.key,p.x,p.y,p.z,p.ry,{variant:p.v,setting:'indoor'});
+  const fg=FB.flush(G);fg.userData.furniture=true;fg.traverse(m=>{const c=m.geometry&&m.geometry.attributes.color;if(!c)return;const A=c.array;for(let i=0;i<A.length;i++){const v=A[i];A[i]=v<=.04045?v/12.92:Math.pow((v+.055)/1.055,2.4);}c.needsUpdate=true;});G.userData.furniture=FG_FURN_PENDING.length;FG_FURN_PENDING.length=0;}
  const out=G.children.slice();out.forEach(m=>{m.userData.host=true;m.userData.inspectLabel=o.label||'A Fellgang village';});
  if(out.length&&o.probe!==false)out[0].userData.probePoints=[].concat(...recs.filter(Boolean).map(r=>[r.x,r.y+1,r.z]));
  if(o.scene)o.scene.add(G);out.group=G;out.recs=recs.filter(Boolean);out.tris=Math.round(GSTAT.tris-t0);out.lights=HALOS.slice(h0);out.smokes=SMOKES.slice(s0);return out;}
