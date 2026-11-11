@@ -1,5 +1,5 @@
 # core/simulation/ride's motion in GDScript: the twin of 78-sim-ride.js (SIM.rideCarPose, the frame leg in SIM.pose) and of
-# core/sched's KSCHED.timeline.at (the train's s(t)). A ride source's car k stands at s(t) + off along its track, its bogies
+# core/sched's KSCHED.timeline.at (the train's s(t), its A end). A ride source's car k stands at s(t) - off along its track, its bogies
 # at +-b, its frame's origin their midpoint, yaw and pitch rear bogie to front; a leg carrying `frame` [source, k] is posed
 # through that car (its route in the car's coordinates); every other leg is KSim.pose's. Same numbers as the page: doubles
 # in the JS order of operations. Read from SIM.rideExportMotion (the motion block plus `ride`: the sources); tested against
@@ -54,7 +54,7 @@ static func timeline_at(TL: Dictionary, t: float) -> float:
 
 static func car_pose(S: Dictionary, k: int, t: float) -> Dictionary:
 	var C: Dictionary = S["cars"][k]
-	var s := timeline_at(S["timeline"], t) + float(C["off"])
+	var s := timeline_at(S["timeline"], t) - float(C["off"])
 	var F := KSim.at(S["track"], s + float(C["b"]))
 	var R := KSim.at(S["track"], s - float(C["b"]))
 	var dx: float = F["x"] - R["x"]
@@ -84,14 +84,15 @@ static func dwell(S: Dictionary, g: int) -> Dictionary:
 	for s in TL["segments"]:
 		var nm := String(s.get("name", ""))
 		if nm.begins_with("stop:"):
-			D.append({"stop": nm.substr(5), "start": start, "dur": float(s["dur"])})
+			var part := nm.substr(5).split(":")
+			D.append({"stop": part[0], "side": int(part[1]) if part.size() > 1 else null, "start": start, "dur": float(s["dur"])})
 		start += float(s["dur"])
 	var n := D.size()
 	var c := int(floor(float(g) / n))
 	var j := posmod(g, n)
 	var d: Dictionary = D[j]
 	var t0: float = c * float(TL["period"]) - float(TL.get("phase", 0.0)) + float(d["start"])
-	var side := int(S["stops"][d["stop"]].get("side", 0))
+	var side := int(d["side"]) if d["side"] != null else int(S["stops"][d["stop"]].get("side", 0))
 	return {"g": g, "stop": d["stop"], "side": side, "t0": t0, "t1": t0 + float(d["dur"]),
 		"o0": t0 + float(S["doorLag"]), "o1": t0 + float(d["dur"]) - float(S["doorClose"])}
 

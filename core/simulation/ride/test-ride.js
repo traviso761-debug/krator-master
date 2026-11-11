@@ -79,6 +79,11 @@ const last=Math.max(...people.map(a=>a.task.arrive));while(clock.t<last+120)tick
 const atWork=people.every(a=>{const p=S.pose(a,clock.t);return Math.hypot(p.x-L.stops.twenny.x,p.z+40)<1;});
 ok('every traveller arrives at the works at Twenny, past the gap',atWork&&Object.keys(S.RIDE.riders).length===0,!atWork);
 ok('a journey arrives within a minute of the planner\'s time',people.every(a=>Math.abs(a.task.arrive-a.task.ride.plan.arrive)<60),false);
+// the hook as the Line agreed it (biomes/line/PLAN.md section 8): a dwell named stop:<id>:<side> opens that side whatever the
+// stop record says; the gap's walk is the route on the record (SIM.rideFootpath), walked as an ordinary leg
+{const gapLeg=T0.legs.find(l=>l.layer==='gap'),P=S.RIDE.paths['gap.n>gap.s'];
+ ok('the walk across the gap is the recorded route, its whole length',gapLeg&&P&&gapLeg.route===P&&P.len>300,!gapLeg);
+}
 // the export carries the frames, and its trace is SIM.pose's
 const M=S.rideExportMotion({actors:people.slice(0,6),times:Array.from({length:60},(_,i)=>i*45-clock.t)});
 // for Godot's cars (godot/krator/ride_cars.gd): the cars' walk records in their own frames, and the doors' state sampled
@@ -94,4 +99,10 @@ ok('two runs of the same world give the same trace',trace()===trace(),false);
 const GOLD=path.join(__dirname,'golden-ride.json');
 if(process.argv.includes('--write'))fs.writeFileSync(GOLD,JSON.stringify(M));
 else ok('the golden trace is unchanged (node test-ride.js --write after a change meant to move it)',fs.existsSync(GOLD)&&fs.readFileSync(GOLD,'utf8')===JSON.stringify(M),false);
+// (last: a throwaway train, so it reaches neither the export nor the planner above)
+{ const tr=S.rideRoute([[0,0,0],[100,0,0]]),stops={a:{side:1,wait:[[0,1,0]]},b:{side:1,wait:[[0,1,0]]}};
+ S.rideSource({id:'sides',track:tr,stops,cars:[{off:0,b:4,doors:[{id:'p',side:1,at:[1,1,0]},{id:'m',side:-1,at:[-1,1,0]}]}],
+   timeline:{period:200,segments:[{dur:80,from:10,name:'stop:a:-1'},{dur:20,from:10,to:90},{dur:80,from:90,name:'stop:b'},{dur:20,from:90,to:10}]}});
+ ok('a dwell named stop:<id>:-1 opens side -1 though its stop says +1; one named stop:<id> takes the stop\'s side',
+   S.rideDoorOpen('sides',0,'m',40)&&!S.rideDoorOpen('sides',0,'p',40)&&S.rideDoorOpen('sides',0,'p',140)&&!S.rideDoorOpen('sides',0,'m',140),S.rideDoorOpen('sides',0,'p',40));}
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);

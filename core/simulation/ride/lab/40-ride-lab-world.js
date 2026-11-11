@@ -24,11 +24,14 @@
   var SEG=[
     { id:'line.n', x0:0, x1:1000, stops:[{ id:'ledge', s:60, name:'Ledge' }, { id:'gap.n', s:880, name:'the north gap station' }] },
     { id:'line.s', x0:1100, x1:2100, stops:[{ id:'gap.s', s:60, name:'the south gap station' }, { id:'twenny', s:880, name:'Loj Twenny' }] } ];
-  var OFF=[-14, 0, 14], B=4.5, DWELL=90, RUN=75;
+  /* the train: three cars of 13 m, 1 m apart, 41 m long; s(t) is its A end (facing +s), each car's middle OFF behind it
+     (biomes/line/PLAN.md section 8); a stop's `s` below is where the train's middle stands, so its timeline runs AEND on */
+  var AEND=20.5, OFF=[34.5, 20.5, 6.5], B=4.5, DWELL=90, RUN=75;
   function track(S){ return SIM.rideRoute([[S.x0, 0, 0], [S.x1, 0, 0]]); }
   function timeline(S){ var a=S.stops[0], b=S.stops[1];
-    return { period:2*(DWELL+RUN), phase:0, segments:[{ dur:DWELL, from:a.s, name:'stop:'+a.id }, { dur:RUN, from:a.s, to:b.s, ease:'smooth', name:'run' },
-      { dur:DWELL, from:b.s, name:'stop:'+b.id }, { dur:RUN, from:b.s, to:a.s, ease:'smooth', name:'run' }] }; }
+    var sa=a.s+AEND, sb=b.s+AEND;
+    return { period:2*(DWELL+RUN), phase:0, segments:[{ dur:DWELL, from:sa, name:'stop:'+a.id+':1' }, { dur:RUN, from:sa, to:sb, ease:'smooth', name:'run' },
+      { dur:DWELL, from:sb, name:'stop:'+b.id+':1' }, { dur:RUN, from:sb, to:sa, ease:'smooth', name:'run' }] }; }
   function stopX(S, st){ return S.x0+st.s; }
   function declare(o){
     o=o||{};
@@ -59,11 +62,14 @@
     SEG.forEach(function(S){ S.stops.forEach(function(st){ var x=st.x, wait=[];
         [-18, -11, -4, 3, 10, 17].forEach(function(dx){ wait.push([x+dx, Y, -3.4]); });
         SIM.place({ id:st.id+'.stop', kind:'station', x:x, z:-4, y:Y, door:{ x:x, y:Y, z:-4 }, activities:{} });
-        L.stops[st.id]={ place:st.id+'.stop', side:1, wait:wait, x:x, name:st.name }; }); });
+        L.stops[st.id]={ place:st.id+'.stop', side:1, gap:0.10, wait:wait, x:x, name:st.name }; }); });
     var spm=o.secPerMinute==null ? 60 : o.secPerMinute;
     L.sources=SEG.map(function(S){ var stops={}; S.stops.forEach(function(st){ stops[st.id]=L.stops[st.id]; });
       return SIM.rideSource({ id:S.id, kind:'train', track:track(S), timeline:timeline(S), stops:stops, stepSec:spm,
         cars:OFF.map(function(off){ return { off:off, b:B, cap:CAR.cap, seats:CAR.seats, stand:CAR.stand, doors:CAR.doors }; }) }); });
+    /* the gap's walk as a route on the record (the Line's LN.gaps[i].walk): the north gap station's platform, the cavern, the south's */
+    var w0=L.stops['gap.n'].wait[0], w1=L.stops['gap.s'].wait[0];
+    SIM.rideFootpath({ from:'gap.n', to:'gap.s', pts:[w0].concat(L.cavern, [w1]) });
     return L;
   }
   /* the walk records, static and riding */

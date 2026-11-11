@@ -6,12 +6,14 @@
 // alighting are all such legs, so riding adds one idea to the motion and none to the stepper.
 //
 //   SIM.rideSource({id, track:{pts:[[x,y,z]...], cum, len}, timeline, cars:[{k, off, b, cap:{seats, stand}, seats:[{id, at, yaw}],
-//                   stand:[[x0,x1,z0,z1,y]...], doors:[{id, side, at}], sealed}], stops:{id:{place, side, wait:[[x,y,z]...]}},
+//                   stand:[[x0,x1,z0,z1,y]...], doors:[{id, side, at}], sealed}], stops:{id:{place, side, gap, wait:[[x,y,z]...]}},
 //                   doorLag:4, doorClose:6, stepSec:60})
-//        timeline: a KSCHED.timeline record (period, phase, segments) of the train's MIDDLE along its track, s metres; a dwell
-//        is a segment that holds (no `to`, or to === from) named 'stop:<stopId>' (its doors open on the stop's side: +1, -1 or
-//        0 for both). Car k's middle is at s(t) + off (+ toward rising s); its bogies at +-b along the track; its frame's origin
-//        their midpoint, +z toward rising s, +x side +1, y up (KTRANSIT.frame's axes). A seat's `at`, a door's `at` and the
+//        timeline: a KSCHED.timeline record (period, phase, segments) of the train's fixed A END (the end facing +s) along its
+//        track, s metres (biomes/line/PLAN.md section 8: Line trains shuttle and never turn round); a dwell is a segment that
+//        holds (no `to`, or to === from) named 'stop:<stopId>:<side>' (its doors open on that side: +1, -1 or 0 for both) or
+//        'stop:<stopId>' (the stop record's `side`). Car k's middle is at s(t) - off (off measured from the A end toward -s);
+//        its bogies at +-b along the track; its frame's origin their midpoint, +z toward rising s, +x side +1, y up
+//        (KTRANSIT.frame's axes). A stop's `gap` (0.10 m) is the platform edge's gap to the car side. A seat's `at`, a door's `at` and the
 //        stand rects are in that frame. Every car must stay on the track over the whole timetable, and every dwell must outlast
 //        `stepSec` motion seconds (a minute's step), so a step sees each stop (SIM.trade's carriers dock by looking)
 //   SIM.rideHead(id, t) -> s            SIM.rideCarPose(id, k, t) -> {x, y, z, yaw, pitch, roll}
@@ -23,6 +25,8 @@
 //   SIM.rideDoorOpen(id, k, doorId, t) -> bool
 //   SIM.vehiclePose(id, k, t)           answers a ride source's id too: car k's pose, h its yaw, `at` the stop's place through
 //        a dwell (so SIM.trade({line: id}) carries goods on a train: PLAN-RIDING.md section 5)
+//   SIM.rideFootpath({from, to, pts:[[x,y,z]...]})   a recorded walk between two stops (a gap's walk on the Line's record,
+//        LN.gaps[i].walk): the planner and the journeys walk it, both ways, in place of the nav's route
 //   SIM.journeyPlan(from:{x,y,z}, to:{x,y,z}, t, opt) -> {arrive, steps:[{kind:'walk'|'ride', ...}]} | null
 //        a connection scan over every source's runs (earliest arrival; with fewer rides on a tie); its walks are the nav's
 //        routes (opt.layer 'pedestrian', opt.speed), the walk between two stops (a gap) among them when under opt.maxWalk (2000 m)
@@ -61,16 +65,16 @@
     var TL=K.timeline(tl), segs=tl.segments, start=0, D=[], smin=1e300, smax=-1e300;
     segs.forEach(function(s, i){ var to=s.to===undefined ? s.from : s.to; smin=Math.min(smin, s.from, to); smax=Math.max(smax, s.from, to);
       var nm=s.name||''; if(nm.indexOf('stop:')===0){ if(to!==s.from) throw new Error('SIM.rideSource '+id+': dwell '+nm+' must hold (to === from)');
-        D.push({ i:i, stop:nm.slice(5), start:start, dur:s.dur, s:s.from }); }
+        var part=nm.slice(5).split(':'); D.push({ i:i, stop:part[0], nameSide:part.length>1 ? +part[1] : null, start:start, dur:s.dur, s:s.from }); }
       start+=s.dur; });
     if(!D.length) throw new Error('SIM.rideSource '+id+': no dwell (a segment named stop:<id>)');
     var stops=o.stops||{}, lag=nz(o.doorLag, 4), close=nz(o.doorClose, 6), step=nz(o.stepSec, 60);
     D.forEach(function(d){ var S=stops[d.stop]; if(!S) throw new Error('SIM.rideSource '+id+': dwell at unknown stop '+d.stop);
       if(d.dur<=step) throw new Error('SIM.rideSource '+id+': the dwell at '+d.stop+' ('+d.dur+' s) must outlast a step ('+step+' s)');
       if(d.dur-lag-close<10) throw new Error('SIM.rideSource '+id+': the door window at '+d.stop+' is under 10 s');
-      d.side=nz(S.side, 0); });
+      d.side=d.nameSide!=null ? d.nameSide : nz(S.side, 0); });
     var cars=(o.cars||[]).map(function(c, k){ if(c.off==null || !(c.b>0)) throw new Error('SIM.rideSource '+id+': car '+k+' needs off and b');
-      if(smin+c.off-c.b<0 || smax+c.off+c.b>T.len) throw new Error('SIM.rideSource '+id+': car '+k+' leaves the track');
+      if(smin-c.off-c.b<0 || smax-c.off+c.b>T.len) throw new Error('SIM.rideSource '+id+': car '+k+' leaves the track');
       var cap=c.cap||{}; return { k:k, off:c.off, b:c.b, cap:{ seats:nz(cap.seats, (c.seats||[]).length), stand:nz(cap.stand, 0) }, seats:(c.seats||[]).slice(0, nz(cap.seats, (c.seats||[]).length)),
         stand:c.stand||[], doors:c.doors||[], sealed:!!c.sealed }; });
     if(!cars.length) throw new Error('SIM.rideSource '+id+': no cars');
@@ -83,7 +87,7 @@
   function src(id){ var S=SIM.RIDE.sources[id]; if(!S) throw new Error('SIM.ride: unknown source '+id); return S; }
   SIM.rideHead = function(id, t){ return src(id).TL.at(t).value; };
   function carPose(S, k, t){
-    var C=S.cars[k], s=S.TL.at(t).value+C.off, F=SIM.at(S.track, s+C.b), R=SIM.at(S.track, s-C.b);
+    var C=S.cars[k], s=S.TL.at(t).value-C.off, F=SIM.at(S.track, s+C.b), R=SIM.at(S.track, s-C.b);
     var dx=F.x-R.x, dz=F.z-R.z, dy=F.y-R.y, L=Math.hypot(dx, dz);
     return { x:(F.x+R.x)/2, y:(F.y+R.y)/2, z:(F.z+R.z)/2, yaw:Math.atan2(dx, dz), pitch:L>0 ? Math.atan2(dy, L) : 0, roll:0 };
   }
@@ -141,9 +145,16 @@
     if(!L.route) SIM.legRoute(L);
     return L;
   }
+  /* a recorded walk between two stops (a gap's walk on the Line's record), both ways */
+  SIM.RIDE.paths = {};
+  SIM.rideFootpath = function(o){
+    if(!o || o.from==null || o.to==null || !o.pts || o.pts.length<2) throw new Error('SIM.rideFootpath: from, to and pts (two or more)');
+    var R=route(o.pts), B=route(o.pts.slice().reverse()); SIM.RIDE.paths[o.from+'>'+o.to]=R; SIM.RIDE.paths[o.to+'>'+o.from]=B; SIM.RIDE.foot={}; return R;
+  };
   function foot(sa, sb, opt){
-    var key=sa+'>'+sb+'@'+opt.layer+'@'+opt.speed, F=SIM.RIDE.foot;
+    var key=sa+'>'+sb+'@'+opt.layer+'@'+opt.speed, F=SIM.RIDE.foot, Pth=SIM.RIDE.paths[sa+'>'+sb];
     if(F[key]!==undefined) return F[key];
+    if(Pth){ F[key]={ dur:Pth.len/opt.speed, len:Pth.len, path:true }; return F[key]; }
     var A=stopPt(sa), B=stopPt(sb), L=null;
     if(A && B && Math.hypot(A.x-B.x, A.z-B.z)<=opt.maxWalk) L=walkLeg(A, B, opt.speed, opt.layer);
     F[key]=L ? { dur:L.dur, len:L.route.len } : null; return F[key];
@@ -201,14 +212,18 @@
     function push(L){ legs.push(L); tau+=L.dur; }
     function walkTo(p){ var L=walkLeg(cur, p, speed, layer); if(!L){ ok=false; return; } push(L); cur=p; }
     plan.steps.forEach(function(st){ if(!ok) return;
-      if(st.kind==='walk'){ walkTo(stopPt(st.to)); return; }
+      if(st.kind==='walk'){ var Pth=SIM.RIDE.paths[st.from+'>'+st.to];
+        if(!Pth){ walkTo(stopPt(st.to)); return; }
+        var p0=Pth.pts[0], pn=Pth.pts[Pth.pts.length-1]; walkTo({ x:p0[0], y:p0[1], z:p0[2] }); if(!ok) return;
+        push({ route:Pth, speed:speed, dur:Pth.len/speed, mode:'walk', layer:'gap' }); cur={ x:pn[0], y:pn[1], z:pn[2] }; return; }
       var S=SIM.RIDE.sources[st.src], A=dwell(S, st.g0), B=dwell(S, st.g1);
       var w0=waitSpot(st.from, a); walkTo(w0); if(!ok) return;
       var pl=allot(S, st.g0, st.g1, a); if(!pl){ ok=false; return; }
       var C=S.cars[pl.k], place=pl.seat ? pl.seat.at : pl.stand, face=pl.seat ? nz(pl.seat.yaw, 0) : h32(a.k, 67)*Math.PI*2;
       var dA=nearestDoor(C, A.side, place), dB=nearestDoor(C, B.side, place); if(!dA || !dB){ ok=false; return; }
       var PA=carPose(S, pl.k, A.t0+1), sideA=dA.side===0 ? 1 : dA.side;
-      var out=toWorld(PA, [dA.at[0]+sideA*0.6, dA.at[1], dA.at[2]]), inn=toWorld(PA, [dA.at[0]-sideA*0.45, dA.at[1], dA.at[2]]);
+      var gapA=nz(stopIndex()[st.from].gap, 0.10), gapB=nz(stopIndex()[st.to].gap, 0.10);
+      var out=toWorld(PA, [dA.at[0]+sideA*(0.5+gapA), dA.at[1], dA.at[2]]), inn=toWorld(PA, [dA.at[0]-sideA*0.45, dA.at[1], dA.at[2]]);
       var bw=route([[w0.x, w0.y, w0.z], out, inn]), bdur=bw.len/speed, span=A.o1-A.o0-bdur-SIM.RIDE.margin;
       if(span<0 || tau>A.o1-bdur){ ok=false; return; }
       var start=Math.max(tau, A.o0+h32(a.k, A.g)*span);
@@ -220,7 +235,7 @@
       var sideB=dB.side===0 ? 1 : dB.side, alight=B.o0+h32(a.k, B.g+7)*Math.max(0, (B.o1-B.o0)*SIM.RIDE.jitter);
       push(holdLeg(place, alight-tau, 'ride', { source:S.id, k:pl.k }, face));
       var dIn=[dB.at[0]-sideB*0.45, dB.at[1], dB.at[2]], fl2=frameLeg(S, pl.k, [place, [0, dB.at[1], place[2]], [0, dB.at[1], dB.at[2]], dIn], speed, face); push(fl2);
-      var PB=carPose(S, pl.k, B.t0+1), w1=waitSpot(st.to, a), bo=route([toWorld(PB, dIn), toWorld(PB, [dB.at[0]+sideB*0.6, dB.at[1], dB.at[2]]), [w1.x, w1.y, w1.z]]);
+      var PB=carPose(S, pl.k, B.t0+1), w1=waitSpot(st.to, a), bo=route([toWorld(PB, dIn), toWorld(PB, [dB.at[0]+sideB*(0.5+gapB), dB.at[1], dB.at[2]]), [w1.x, w1.y, w1.z]]);
       boards.push({ kind:'alight', actor:a.id, src:S.id, k:pl.k, door:dB.id, t:tau, o0:B.o0, o1:B.o1, g:B.g });
       var bod=bo.len/speed; if(tau+bod>B.o1){ ok=false; return; }
       push({ route:bo, speed:speed, dur:bod, mode:'walk', layer:'board' }); cur=w1;

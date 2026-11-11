@@ -84,25 +84,41 @@ KWALKFRAME.export(KWALK)                     // {format: 'krator-walk-frames', f
 
 ## 3. The hook with the Line (`KTRANSIT`'s `line` kind: the Line session's)
 
-Proposed to the Line session (`the-line-biome-train-and`, 2026-11-11); its answer is recorded here when it comes.
+**Agreed with the Line session, 2026-11-11** (`biomes/line/PLAN.md` section 8, commit 9e4f9f338 on
+`claude/awesome-varahamihira-66a852`; proposed there until the owner approves the Line's plan), with its three
+refinements, all built: s(t) is the train's fixed **A end**; a stop carries its own `gap`; a gap's walk is a route on
+the record. The numbers it gave to stand in with (four tracks at -10.5, -4.5, +4.5, +10.5 m in a 32 m gallery, bogies
+at ±8.5 m on 24 m cars and ±7.5 m on 22 m ones, 1 m between cars, the car floor 1.2 m over the guideway top, saloons
+of 64 seats and 40 standing) are in the shared notes (`line-biome-to-riding.md`); the lab keeps its smaller stand-in.
 
 1. **Track.** Each track of a segment gives a route in the simulation's shape, `{pts: [[x, y, z]...], cum, len}`, along
-   the rail head, so `SIM.at` and `KSim.at` evaluate it on the page and in Godot.
-2. **Timetable.** A train's head position s(t) is a `KSCHED.timeline` export: segments of s along its track's route; a
-   dwell is a segment without `to`, named `stop:<stopId>:<side>` (+1, -1 or 0 for both sides' doors).
+   the guideway top (the floor + 0.6 m) at the track's offset, 4 m samples (1 m through crossovers), one route per track
+   per segment, so `SIM.at` and `KSim.at` evaluate it on the page and in Godot. v1 timetables keep a train on one route;
+   a run that crosses over later gets an optional `route` id on a timeline segment.
+2. **Timetable.** The position s(t) of the train's fixed A end (the end facing +s: Line trains shuttle and never turn
+   round) is a `KSCHED.timeline` export: segments of s along its track's route; a dwell is a segment that holds, named
+   `stop:<stopId>:<side>` (+1, -1 or 0 for both sides' doors; `stop:<stopId>` takes the stop record's `side`); `doorLag`
+   4 s and `doorClose` 6 s, overridable on the train.
 3. **Car pose.** `carPose(train, k, t) -> {x, y, z, yaw, pitch, roll}` by a fixed formula Godot twins in a few lines:
-   car k's middle at `s(t) - off_k`, its bogies at `± b_k` along the route, the origin at their midpoint on the rail head,
-   yaw and pitch from the rear bogie to the front one. Frame axes as `KTRANSIT.frame`.
+   car k's middle at `s(t) - off_k` (off measured from the A end toward -s, whichever way the train moves), its bogies
+   at `± b_k` along the route, the origin at their midpoint, yaw and pitch from the rear bogie to the front one. Frame
+   axes as `KTRANSIT.frame`. The Line's pitch is at most 0.04, its roll 0. (`SIM.rideCarPose`, `KRide.car_pose`)
 4. **Interior and capacity** (on the car's record in the vehicles kit; the owner's round-2 shape): `cap: {seats, stand,
    slots}` and `interior: {floors, blocks, doors: [{id, side, at, w, h}], seats: [{id, at, yaw}], stand: [rects], slots:
    [{id, kind, size, at}]}`, all in the car's frame.
-5. **Stops.** `{id, track, s, side, floor, gap}`: where a dwell's doors meet a platform's floor.
+5. **Stops.** `{id, track, s, side, floor, gap}`: where a dwell's doors meet a platform's floor, one per platform face
+   per track (`LN.stations[i].platforms`); `floor` the platform's KWALK record id; `gap` per stop (0.10 m, a kept
+   station's worn edge 0.15): the boarding walk steps out `0.5 + gap` from the door, and the car's step plate is made
+   deep enough for the widest gap it meets.
+6. **Gap walks.** `LN.gaps[i].walk` `{pts, len, minutes, hazards}` is handed to `SIM.rideFootpath({from, to, pts})`: the
+   planner and the journeys walk it, both ways, as an ordinary leg (the lab registers its cavern the same way).
 
 **The door window** is read from the timetable: open from a dwell's start plus `doorLag` (4 s) to its end less
-`doorClose` (6 s), on the dwell's side. A car door is a `KDOOR` record in the car's frame (`slide` or `biparting`) whose
-openness the host sets from the window each frame, instead of `KDOOR.step`; its walk block lives in the frame's
-registry and is switched by the same window. Whether that needs an opt-in `KDOOR.drive(D, open(t))` or only a host
-call is settled when the door is built (it touches `core/door` only if a record must say it is driven).
+`doorClose` (6 s), on the dwell's side (`SIM.rideDoorOpen`, `KRide.door_open`). Its walk block (tagged `door:<id>`) and
+its step plate live in the car's frame registry and are switched by the same window. **As built** the lab draws its
+door leaves itself, sliding with the window; `core/door` is not touched. A real car door becomes a `KDOOR` record in
+the car's frame when the Line's cars exist; whether `KDOOR` then needs an opt-in `KDOOR.drive(D, open(t))` (a door
+whose state is a function of time, not stepped) is settled then.
 
 Riding is generic: any vehicle that can give a pose function, a door window and a capacity is a **ride source**
 (section 4). A `SIM.transport` route is wrapped as one (`SIM.vehiclePose`, yaw only) for Voth's ferries, the isle demo's
@@ -217,9 +233,10 @@ wrapped lookups. Pages without the fragment are unchanged.
   route and timeline; its floors and blocks from `KWALKFRAME.export` as its children. The player's `CharacterBody3D`
   rides it by the platform velocity Godot applies to a body standing on an `AnimatableBody3D`.
 - **Doors**: a `NavigationLink3D` per car door and stop, enabled by the door window; the leaf posed as in the page.
-- **Riders**: `kride.gd` beside `ksim.gd` (synced by `godot/tools/sync_core.py`): the `KSCHED.timeline` twin (`at`,
-  the eases), `carPose`, and the frame leg in `KSim.pose`. The motion export gains a `frames` block (each source's
-  route index, timeline, car offsets and bogies) and legs carry `frame: [source, k]`.
+- **Riders**: `kride.gd` in `core/simulation/ride/` (synced by `godot/tools/sync_core.py`): the `KSCHED.timeline` twin
+  (`at`, the eases), `carPose`, the door window, and the frame leg (every other leg is `KSim.pose`'s). The motion export
+  (`SIM.rideExportMotion`) gains a `ride` block (each source's track, timeline, cars, stops) and legs carry
+  `frame: [source, k]`.
 - **The golden trace**: the page's poses of riders, cars and consignments' holders at fixed times, replayed by a
   headless Godot test to the same numbers (as `dhelv_sim_test.gd`).
 
@@ -258,6 +275,31 @@ alights; about forty NPCs on journeys across the gap; porters carry cargo across
 | R4 | the host fragment and the lab page, `verify.py --assert` | the page shows the walker riding through a door window, the NPC journey with a gap walk, cargo across the gap |
 | R5 | `kride.gd`, the export's frames block, the Godot cars and the golden-trace test | the replay matches |
 | R6 (later) | the resolver choosing the train; through consignments in `SIM.trade` and the ledger (every bundling build rebuilt); ferries and ships as ride sources; the swap to the Line's kind and cars | as each user needs it |
+
+## 8b. What was built (2026-11-11, R1 to R5, branch `claude/clever-rhodes-cb3fec`, unpushed)
+
+| Phase | Files | Result |
+|---|---|---|
+| R1 | `core/walk/frame/26-core-walk-frame.js`, `test-walk-frame.js` | 27 checks with negatives; `test-walk.js` unchanged |
+| R2 | `core/simulation/ride/78-sim-ride.js`, `test-ride.js`, `lab/40-ride-lab-world.js` (the world, shared with the page) | 25 checks with negatives; 60 travellers across the gap, 120 boards and 120 alights inside their windows; `test-sim.js` unchanged |
+| R3 | `core/simulation/ride/79-sim-ride-porters.js`, `test-ride-cargo.js` | 8 checks with negatives: grain and wax the length of the Line by train, porters, train; conserved every minute; `SIM.ledger` on every leg |
+| R4 | `core/host/95c-host-ride.js`, `core/simulation/ride/lab/` (`build.py`, `verify.py`, `dist/ride-lab.html`) | the walker driven by real keys: kept out with the doors shut, aboard in the window, carried 362 m on the car's floor, E sits and stands; riders on their floors, door windows, capacity, cargo, the porters; the universal asserts (software GL) |
+| R5 | `core/simulation/ride/kride.gd`, `kride_test.gd`, `golden-ride.json` (synced to `godot/tests/ride/`), `godot/krator/ride_cars.gd`, `godot/tests/ride/ride_cars_test.gd` | the replay: 360 rows, 32 aboard a moving car, none differ (a timetable 5 s late moves 18); door states agree with the page's 1920 samples; a `CharacterBody3D` rides an `AnimatableBody3D` car 820 m and is back in its place (0.000 m) once it stops, a body on the platform is not carried. Both tests in `test_all.py`'s Godot list |
+
+**Where it differs from the plan above:**
+- The hook as the Line session agreed it (section 3): s(t) is the train's A end, a dwell may name its side, a stop
+  carries its gap, and a gap's walk can be a recorded route (`SIM.rideFootpath`).
+- `SIM.rideFromTransport` (section 4.1: a `SIM.transport` route as a ride source) is not built: no user yet. R6.
+- Two checks of section 8 were done another way: the journey's arrival is checked against the planner's (within a
+  minute) without the "timetable shifted after planning" negative; the door's walk block is checked by `blocked` and
+  the plate by `floorBelow` with the window shut and open (the walk-frame test), and the car's floors are reached from
+  its door in its own frame, rather than a `reach` from the platform with the block left on.
+- In Godot a body standing on a moving car trails its place by one physics frame of the car's travel (0.27 m at the
+  train's 16 m/s top speed): Godot applies the platform's velocity a frame late. It does not build up (back to 0.000 m
+  when the car stops); the test caps it at 0.35 m. A player camera in Godot should follow the car's transform, not the
+  body, while aboard.
+- The lab's door leaves are drawn by the lab; `core/door` is untouched (section 3).
+- The lab page is kept in plain Git, as the core examples' pages are (`sim-example.html`, `host-example.html`).
 
 ## 9. Questions for the owner
 
