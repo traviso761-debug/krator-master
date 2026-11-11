@@ -94,7 +94,7 @@ for nm, p in d['extra'].items():
 # legend
 leg = [('The Rift line, the Inner Wall and Stair lines: centre = keeper', 'line'), ('Trunk, coloured by keeper', 'trunk'), ('Kept (Iziz, the State, Voth, Republic, Tungangs)', UP['kept']),
        ('Partly kept (Yuni, Xanadu)', UP['partly']), ('Lapsed since the Empire broke', UP['lapsed']), ('Badly decayed', UP['decayed']), ('Tunnel (none open over 8 km)', 'tun'),
-       ('Causeway / viaduct', 'wat'), ('Possible: the line on by Stair to the Bowl', 'pos'), ('Izani highway (not Ancient)', 'iz'), ('Vothic highway (not Ancient)', 'vo'), ('Trade highway, Jimjam to Lux (spottily kept)', 'tr'), ("Yuni's road to Mungo", 'yu'), ("Dirt roads (Dalab's; the path to Nereus)", 'da'), ('Beast Rider undergrowth trail', 'trl'), ('Extension, lore to come', 'ext')]
+       ('Causeway / viaduct', 'wat'), ('Possible: the line on by Stair to Parabola', 'pos'), ('Izani highway (not Ancient)', 'iz'), ('Vothic highway (not Ancient)', 'vo'), ('Trade highway, Jimjam to Lux (spottily kept)', 'tr'), ("Yuni's road to Mungo", 'yu'), ("Dirt roads (Dalab's; the path to Nereus)", 'da'), ('Beast Rider undergrowth trail', 'trl'), ('Extension, lore to come', 'ext')]
 x0, y0 = 18 * K, 56 * K
 dr.rectangle([x0, y0, x0 + 520 * K, y0 + (24 * len(leg) + 66) * K], fill=(14, 17, 16), outline=(70, 80, 76), width=2 * K)
 dr.text((x0 + 14 * K, y0 + 12 * K), 'The proposed Ancient network, scale model 5.1', font=f22, fill=(244, 242, 234))

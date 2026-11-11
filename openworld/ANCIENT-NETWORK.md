@@ -763,6 +763,10 @@ The owner: "Bowl will be a new arcology; propose me a design."
 The existing targets in `kits/ancients/targets` are hill, ring, spire, wheel, lozenge, monolith, lighthouse, crescent,
 canyon, forest, blades and the rest. None is a dish, so the recommended form is new.
 
+**Chosen by the owner (2026-11-11): A, Parabola.** The Bowl's arcology is **Parabola**. The name was the working name
+that came with the design, so it stands unless the owner renames it. The router and the picture carry it at 970,1186 as
+the Rift line's possible station 13.
+
 **A. Recommended: Parabola** (working name; others: the Dish, the Lens). A city that was a solar furnace.
 
 | | |
@@ -784,7 +788,9 @@ calendar, and the floor is still marked with the hour lines. It is striking, but
 
 ### 8.12 Still open
 
-1. **The Bowl arcology**: which design (A Parabola, B the Escarpment, C the Gnomon), and its name.
+1. **The Bowl arcology**: answered. It is **Parabola**, design A. Building it is a task of its own: a target in
+   `kits/ancients/targets/parabola` on the Pile's pattern, with its blueprint. The scale-model session adds it to the
+   settlements as an arcology at 970,1186 (M10).
 2. **Amaro**: should an Ancient route cross Shumar (the Wing-Pluton trunk through the plateau), with Amaro on it, or does
    Amaro sit at the Dalab-Pluton trunk's nearest point (652,1266)?
 3. **Driyan's place** (596,1068): right?

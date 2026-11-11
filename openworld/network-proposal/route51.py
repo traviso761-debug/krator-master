@@ -56,8 +56,8 @@ for n in FORT_STOPS:
 nodes['Farport'] = {'id': S['Farport']['id'], 'name': 'Farport', 'type': 'city', 'px': [S['Farport']['px'], S['Farport']['py']], 'kind': 'site',
                     'note': 'an Ancient node (the owner): part of its plateau hollowed out as an Ancient storage depot; the Ancient port it served long since washed away'}
 nodes['Quintagon'] = {'id': 'new.quintagon', 'name': 'Quintagon', 'type': 'arcology', 'px': [1349, 830], 'kind': 'site', 'note': 'new (the owner): NE of Verge in the eastern badlands; 2,320 m, 14 degC'}
-nodes['Bowl arcology'] = {'id': 'tbd.bowl', 'name': 'Bowl arcology (to be named)', 'type': 'arcology', 'px': [970, 1186], 'kind': 'site',
-                          'note': "the Bowl's most temperate ground near the Godsgate: 15 degC, 1,716 m, 314 mm"}
+nodes['Bowl arcology'] = {'id': 'tbd.bowl', 'name': 'Parabola', 'type': 'arcology', 'px': [970, 1186], 'kind': 'site',
+                          'note': "Parabola (the owner chose design A, 2026-11-11): the Bowl's arcology, a terraced solar dish on three piers; the Bowl's most temperate ground near the Godsgate: 15 degC, 1,716 m, 314 mm"}
 _R = {r['name']: r for r in json.load(open(SP + '/regions.json', encoding='utf8'))}
 def _mask(n):
     im = Image.new('L', (W2w, H2), 0); ImageDraw.Draw(im).polygon([tuple(q) for q in _R[n]['points']], fill=1); return np.array(im).astype(bool)
@@ -231,7 +231,7 @@ add('rift.twenny', 'branch', 'Twenny junction', 'Loj Twenny', straight(EXTRA_PTS
 SBS = straight(P('Strongbow'), P('Stair'))
 add('rift.bowl', 'possible', 'Strongbow', 'Stair', SBS, level=level_for(SBS, 329), name='Possible: the Rift line on from Strongbow (11) to Stair (12) under the Catch\'s walls',
     note='the Line session\'s straight bore, 329 km')
-add('rift.bowl', 'possible', 'Stair', 'Bowl arcology', routed('Stair', 'Bowl arcology'), name='Possible: the Rift line on from Stair (12) to the Bowl arcology (13), by the Godsgate')
+add('rift.bowl', 'possible', 'Stair', 'Bowl arcology', routed('Stair', 'Bowl arcology'), name='Possible: the Rift line on from Stair (12) to Parabola (13), by the Godsgate')
 # ---- the Inner Wall tunnel, bent under Cascade
 IW = straight(P('Drum'), P('Cascade')) + straight(P('Cascade'), P('Babel'))[1:]
 IWL = 2400.0
