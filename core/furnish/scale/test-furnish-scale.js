@@ -1,9 +1,9 @@
-/* node core/furnish/test-furnish-scale.js: the per-culture scale (54-core-furnish-scale.js) against a stub adapter */
+/* node core/furnish/scale/test-furnish-scale.js: the per-culture scale (54-core-furnish-scale.js) against a stub adapter */
 'use strict';
 const path = require('path'), fs = require('fs'), vm = require('vm');
 const ctx = { module: undefined, console: console, Math: Math, Object: Object, WeakMap: WeakMap, Error: Error, Float32Array: Float32Array, String: String };
 vm.createContext(ctx);
-for (const f of ['50-core-furnish.js', '54-core-furnish-scale.js']) vm.runInContext(fs.readFileSync(path.join(__dirname, f), 'utf8'), ctx, { filename: f });
+for (const f of ['../50-core-furnish.js', '54-core-furnish-scale.js']) vm.runInContext(fs.readFileSync(path.join(__dirname, f), 'utf8'), ctx, { filename: f });
 const K = vm.runInContext('KFURN', ctx);
 let fails = 0;
 function ok(c, m) { if (!c) { fails++; console.log('FAIL', m); } else console.log('ok  ', m); }

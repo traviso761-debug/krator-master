@@ -20,7 +20,7 @@
   const KEEP_LIGHTS = Q.lights === 'keep';
   const catalog = IX.catalogAdapter({ lights: KEEP_LIGHTS ? 'keep' : 'strip' });
   /* a room of a people drawn to their own measure (the Tungangs at 0.94) furnishes through a scaled adapter, when the page
-     carries core/furnish/54-core-furnish-scale.js (KFURN.adapterFor); every other room through the catalog's own */
+     carries core/furnish/scale/54-core-furnish-scale.js (KFURN.adapterFor); every other room through the catalog's own */
   const catalogFor = function (R) { return typeof KFURN !== 'undefined' && KFURN.adapterFor ? KFURN.adapterFor(catalog, R) : catalog; };
   const BASE_Y = 0.15, LIGHT_POOL = 6, ROW_W = 150, GAP = 7;
   const SETS = IX.sets.list.filter(function (S) { return !Q.set || Q.set.split(',').indexOf(S.set) >= 0; });

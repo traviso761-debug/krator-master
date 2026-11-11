@@ -628,7 +628,7 @@ food_pot, sleeping_mat, grain_bin, reed_mat and kilim (`yuni_poor_*`, `yuni_comm
 `krator-master-furniture-tungang.js` grew from 23 pieces to 73 for the rooms of a hold (`kits/tungang/PLAN.md` 3.2 and 4;
 `kits/interiors/sets/tungang.js` furnishes them). Fitted salvage of the Line: plate and pipe, rivets, enamel cream and red chipped to
 black, red worn to rust-pink; nothing carved. Drawn at a human's measure: a hold draws them at 0.94 through
-`core/furnish/54-core-furnish-scale.js`.
+`core/furnish/scale/54-core-furnish-scale.js`.
 
 | Group | Pieces |
 |---|---|

@@ -13,7 +13,7 @@
     "core/catalog/krator-furniture-core.js": "4872bf46f2707b3fa156b18b8110f42ba830f10fdf670a1e79cf9c25f8941498",
     "core/catalog/krator-furniture-kit.js": "5220ef8dd95dd5c33960ad1452f09f437379c2e26d40c9b480877b1a4e65f16b",
     "core/sockets/38-symbols.js": "cea0673f7b5bdc52886497f9a452fda756d4d17b0d2fd7e692bfcab5610822db",
-    "kits/catalog/KNOWN_ISSUES.md": "7bfe38722c7b1d8ec972ce58296640eff156b6979193192cfcc35231a68f2536",
+    "kits/catalog/KNOWN_ISSUES.md": "70a9a92273567fead320695287b9bd20117ae4a668aeea331544b11a1d33913f",
     "kits/catalog/PORT.md": "3dd243fb709e9abe62970ff81f1d2d1d98628beeca760f8a9634ba81c7707a32",
     "kits/catalog/build.py": "c820ad3e33201817d2df34ce9f8f6c2d7000dbf696470429af9ae7f0e9de3c36",
     "kits/catalog/krator-master-furniture-arms.js": "5d1f2ee60bcfc1db0bc4d7ad69bdcc1d66c157e7dd2171521207e139cbe71ab3",
@@ -47,7 +47,7 @@
     "kits/catalog/krator-master-furniture-scyvoi.js": "29528a7dc2861760eb6103d5a3dd20a4fc9cc47d2709aa96908620e94b6f4227",
     "kits/catalog/krator-master-furniture-talia.js": "787d7995661567f6493aca06b2aed05c8973219410bb9b70eeb8825b5437bffe",
     "kits/catalog/krator-master-furniture-talovolci.js": "fc3c2d0954bc12df8e9ecad9964cb8f7a53843e7048ed01919c22aa87ed5653b",
-    "kits/catalog/krator-master-furniture-tungang.js": "602a3662a3bb20c0e8a309986adf6014977a46ac31355186b4235864e527e663",
+    "kits/catalog/krator-master-furniture-tungang.js": "c60edb2aa4ec770fb38bd756beefed295e96f91318ba813488ba8923095bbefc",
     "kits/catalog/krator-master-furniture-voth.js": "ecaaa8edd850358e6e121d114954cc9427cc87b76f437d680842ec39dc26cf1e",
     "kits/catalog/krator-master-furniture-xanadu.js": "ee233580d36e2fe88283f00556b3b9aa1d2a913edc29e875042e1e821158999b",
     "kits/catalog/krator-master-furniture-yuni-common.js": "83e51a44ed9323529bb3e2d312c1b5550523f6ff6bc44d0677b60cedc87b5cd7",
@@ -69,12 +69,12 @@
     "tools": "2d2fdaca850a104a2a2c553313ccb3ad18dc6bc48cb554c8c714fc1ca39607bf"
    },
    "outputs": {
-    "kits/catalog/build-manifest.json": "40c9b6729c3d697c5b7b8217f21cbe839fae21cf0a56981d57354ccee6077f4f",
-    "kits/catalog/dist/catalog.html": "70e3001167687b1d199cc67abc71ba8e2860b6dd9593511703692aa2a350f7b8"
+    "kits/catalog/build-manifest.json": "6c9f0d1d138ebe07c7e493356cae5aab1771357aa09542540aad967945e0c9d9",
+    "kits/catalog/dist/catalog.html": "dec018cd62e34dbbf9649b2b5128eb2a8018860f2ea18f42d18fc38ddd860d00"
    },
    "outputs_raw": {
-    "kits/catalog/build-manifest.json": "bf6680d7600cdfe48c870082e1e1848ab439014525846717ca6518c2e7c43df9",
-    "kits/catalog/dist/catalog.html": "70e3001167687b1d199cc67abc71ba8e2860b6dd9593511703692aa2a350f7b8"
+    "kits/catalog/build-manifest.json": "9063f9d145210793dbbfbefafa0aacdcce001941cdf53dcf73a1a483de1fddd6",
+    "kits/catalog/dist/catalog.html": "dec018cd62e34dbbf9649b2b5128eb2a8018860f2ea18f42d18fc38ddd860d00"
    }
   }
  }

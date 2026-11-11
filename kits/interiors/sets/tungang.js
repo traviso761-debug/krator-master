@@ -14,7 +14,7 @@
    is the one source of the rooms. Two rooms of one def stand 0.5 to 1.0 m apart (a hewn partition, the doorway through
    it); the 0.8 m of rock Dhelv keeps between voids holds between defs, which the hold's layout spaces (core/city).
    THE SCALE: a hold is cut to its people, 0.94 of a human (PLAN.md 3.1): doorways about 1.95 m, rooms 2.4 to 2.6 m clear.
-   The furniture is drawn at 0.94 where a page carries core/furnish/54-core-furnish-scale.js (the sets sheet does), the
+   The furniture is drawn at 0.94 where a page carries core/furnish/scale/54-core-furnish-scale.js (the sets sheet does), the
    generic pieces a room falls back on too. The outlines here are already in the hold's measure.
    THE LAMP CODE AND THE DOOR DRESS (PLAN.md 1.2, 3.1: "every door on a gallery has its lamp of the code's colour, a
    stencilled number and a click-rib"): an item's `dress` is what the def puts on its front, in the item's frame (y above
@@ -159,13 +159,13 @@
   }
   if (!IX.CULTURE_FAMILY.tungang) IX.CULTURE_FAMILY.tungang = ['generic'];
 
-  /* ---------------- the lamp code and the door dress (PLAN.md 1.2): variant of tungang_common_door_lamp, the light it gives */
+  /* ---------------- the lamp code and the door dress (PLAN.md 1.2; colours from PLAN.md 1.5.1, shared with the outfits): variant of tungang_common_door_lamp, the light it gives */
   const CODE = {
-    home:    { v: 0, color: 0xd8402c, intensity: 0.35, distance: 3.0 },    /* red: a dim red keeps dark-sight */
-    line:    { v: 1, color: 0x58d070, intensity: 0.5, distance: 5.0 },     /* green: the galleries, the platforms, the way */
-    work:    { v: 2, color: 0xf0a030, intensity: 0.55, distance: 4.5 },    /* amber: the dark beds, the workshops */
+    home:    { v: 0, color: 0xd8462e, intensity: 0.35, distance: 3.0 },    /* red: a dim red keeps dark-sight */
+    line:    { v: 1, color: 0x46c27a, intensity: 0.5, distance: 5.0 },     /* green: the galleries, the platforms, the way */
+    work:    { v: 2, color: 0xf0a63a, intensity: 0.55, distance: 4.5 },    /* amber: the dark beds, the workshops */
     passage: { v: 3, color: 0x9fe8c0, intensity: 0.3, distance: 3.5 },     /* glow-cap: the common light of passages and the poor */
-    danger:  { v: 4, color: 0xf4f0e0, intensity: 0.9, distance: 7.0, hooded: true }   /* white: the surface, danger; hooded at once */
+    danger:  { v: 4, color: 0xf6f3ea, intensity: 0.9, distance: 7.0, hooded: true }   /* white: the surface, danger; hooded at once */
   };
   /* the dress of a front door at [x, z] (the room's front edge, +z out), w wide, h high: the face is the cut, CUT m out.
      o: { code, number (the berth plate's seed), plate (0 cream on red, 1 red on cream, 2 cream on green: the siding's livery),

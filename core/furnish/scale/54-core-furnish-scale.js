@@ -3,7 +3,8 @@
    Tungangs at 0.94 (kits/tungang/PLAN.md 3.1, TG.SCALE), the Khaayken at 1.15 (kits/yeti/PLAN.md: YT.SCALE). The
    catalog draws every piece at a human's measure; this fragment scales a piece where it is placed, so one constant
    per culture does it and no culture file carries a scattered number.
-   OPT-IN: a page takes it by listing this file after 50-core-furnish.js. A page that does not list it draws as
+   OPT-IN: a page takes it by listing this file after 50-core-furnish.js. It lives in core/furnish/scale/ because Girder,
+   Mav's Refuge and Highlands take every numbered file of core/furnish/ itself. A page that does not list it draws as
    before (its hash unchanged); a page that lists it scales only the cultures in KFURN.SCALE.
    THE RULE: a piece placed in a room of a scaled culture takes that culture's scale (the generic and scrap pieces a
    Tungang hold falls back on are cut to its people too); a piece of a scaled culture placed anywhere else takes its

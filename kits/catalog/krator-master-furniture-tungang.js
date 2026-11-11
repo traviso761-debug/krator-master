@@ -20,7 +20,7 @@ FURN_CULTURE('tungang', { name: 'Tungangs', pack: null, influences: 'post-apocal
     glowcap: 0x9fe8c0, glowcapBlue: 0x8ad0e8, fungusPale: 0xd8d0b4, fungusCap: 0xb09a78, fungusMat: 0x6a5a48,
     paperBook: 0xd8cca8, ink: 0x2a2622, leather: 0x5a3a26, brass: 0xb08a48, glass: 0xbfd4cc, flame: 0xffa040,
     seatBlue: 0x3a4a6a, seatWhite: 0xc8c8c0,
-    lampRed: 0xd8402c, lampGreen: 0x58d070, lampAmber: 0xf0a030, lampWhite: 0xf4f0e0, hood: 0x2e3030,
+    lampRed: 0xd8462e, lampGreen: 0x46c27a, lampAmber: 0xf0a63a, lampWhite: 0xf6f3ea, hood: 0x2e3030,
     enamelGreen: 0x2e6a4a, enamelBlue: 0x2a4a7a, plasterWhite: 0xe6e2d6, plasterRule: 0xa8a294, wax: 0xe8dcb0, waxDark: 0xc8b47c,
     oreCopper: 0x4e8a6a, oreRust: 0x8a5a3a, oreGrey: 0x5e5a56, ice: 0xcfe4ec, crystal: 0xdce8ee, felt: 0x6e6252,
     mosaicOchre: 0xc89a48, mosaicBlue: 0x3a5a8a, mosaicGold: 0xd8b058, cellCase: 0x3a4044, cellGlow: 0x8ae0f0, stoke: 0x8a3a5a
@@ -471,7 +471,7 @@ FURN({
    the stoke room, the last stop, the crystal cleft, the vein working, the ore store, the refinery, the power hall, the
    shaft foot and head. The rule of salvage (PLAN.md 2.1): the Tungangs FIT salvage, bolted, pressed and riveted, the
    joints neat and painted, the part's old use still legible. Nothing carved; enamel cream and red chipped to black, red
-   paint worn to rust-pink. Drawn at a human's measure: a hold draws them at 0.94 (core/furnish/54-core-furnish-scale.js).
+   paint worn to rust-pink. Drawn at a human's measure: a hold draws them at 0.94 (core/furnish/scale/54-core-furnish-scale.js).
    THE LAMP CODE (PLAN.md 1.2): the coloured lamps mark the ways and the doors, the rooms are lit by wax light, so only
    the wax lamps here carry a light (F.lamp); the code's lamps are emissive glass, and their light is a record the set
    writes (kits/interiors/sets/tungang.js, `TGDRESS`).
