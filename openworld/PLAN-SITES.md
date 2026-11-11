@@ -39,11 +39,35 @@
   ground (hash `8ad035b1`), and every check passes in the browser.
 - **Not moved yet:** Pinnacle Rock's own page and the published model (`openworld/pinnacle/KNOWN_ISSUES.md`).
 
+**The second region, Xanadu, Oidong and the High Rift (2026-11-10): `openworld/xanadu-oidong-highrift`.**
+- **The cut:** 1,780 x 582 km at 1 km cells, in about 40 s.
+- **The villages:** Erehwon's and Qiblai's farming and ranching villages and Longsong's three, 15 in all (577 buildings),
+  on core/hamlet's `xanadu` row. They are drawn with the Xanadu building kit, with roads joined into a network.
+- **The links** between the towns are planned but not laid (no bridges yet).
+- **The flora:** the Xanadu and Oidong kits.
+- **Core changes on the way:**
+  - `KSITES` plans villages and links;
+  - the drawing draws villages;
+  - the world's river check judges only rivers that carry water, inside the region.
+
+**The third region, the Iziz cluster (2026-11-11): `openworld/iziz-cluster`.**
+- **The cut:** each town's square and a 10 km corridor between the towns (Mav's Refuge to Girder, Girder to Talia):
+  `cut_site.py` gained corridors (`SITES.json`, a region's `corridors`). 417 x 745 cells at 500 m, 11,060 km² inside.
+- **The camps:** the spider, longcrawler and dragonfly bands round Mav's Refuge, the raptor and threehorn bands round
+  Girder, each with its track to the town.
+- **The villages:** Talia's four farming villages and a ranch (1,095 people, 242 buildings) on a new core/hamlet row,
+  `iziz` (`core/hamlet/21-hamlet-iziz.js`: the Iziz Vernacular), drawn through the isle demo's IZV bundle.
+- **The links are laid:** 135 and 154 km at 8 %, kept inside the corridors (routed in 8 km hops, never along a river's
+  bed); every river station holds water. Along them, 20 stops: a caravanserai every 25 km and a rest stop between.
+- **The flora:** the hyperjungle and the abyssal savannah (which reads `upland` as the height above the abyss floor).
+- **Core changes on the way:** `88s` picks a village's drawing by its row's kit (`VK`); the bake reads `VERN.def` boxes.
+  One kit on several overlays is a shim in the region until `41` takes a list (`TODO.md`, "Ride along").
+
 **Not yet:**
-- Step 3 (the generic town steps lifted out of `ISLE`): the first site has no town.
+- Step 3 (the generic town steps lifted out of `ISLE`): no region plans a town yet.
 - Step 6 (the region's planner page).
 - Step 7 (Godot reading `plan/`).
-- The other two regions.
+- Bridges (the Iziz cluster's links ride their rivers as causeways; region 2's stay unlaid).
 - The mesa in the world: `openworld/pinnacle/PLAN.md`, "What is left".
 
 **The owner's brief (2026-11-09):** take sites off the scale map straight into the open world, and plan settlements

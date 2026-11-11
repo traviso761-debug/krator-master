@@ -18,12 +18,20 @@ sys.path.insert(0, HERE)
 import world_data as WD   # noqa: E402
 
 # the kits whose boxes a site's camps take (a key's box: its own, or its variant's: variantDims)
-DIMS_SOURCES = [os.path.join(ROOT, 'kits', 'beast-riders', 'src', f) for f in
-                ('70-br-tent-kit.js', '71-br-tents-dwell.js', '72-br-tents-trade.js', '73-br-tents-pens.js', '74-br-tents-bands.js', '75-br-tents-bounds.js')]
+DIMS_SOURCES = ([os.path.join(ROOT, 'kits', 'beast-riders', 'src', f) for f in
+                 ('70-br-tent-kit.js', '71-br-tents-dwell.js', '72-br-tents-trade.js', '73-br-tents-pens.js', '74-br-tents-bands.js', '75-br-tents-bounds.js')]
+                # the Xanadu kit's buildings (core/hamlet's `xanadu` row), as XAK.dims() gives them on a page
+                + sorted(os.path.join(ROOT, 'kits', 'xanadu', 'src', f) for f in os.listdir(os.path.join(ROOT, 'kits', 'xanadu', 'src')) if f.endswith('.js'))
+                # the Iziz Vernacular's (core/hamlet's `iziz` row, 21-hamlet-iziz.js), as IZV.dims() gives them: its VERN.def records
+                + sorted(os.path.join(ROOT, 'kits', 'iziz-vernacular', 'src', f) for f in os.listdir(os.path.join(ROOT, 'kits', 'iziz-vernacular', 'src')) if f.endswith('.js')))
 JS = [('core', 'rand', '08-core-rand.js'), ('core', 'terrain', '38-core-relief.js'), None,
       ('core', 'world', '41-world-fields.js'), ('core', 'world', '42-world-roads.js'), ('core', 'space', '20-core-space.js'),
       ('core', 'camp', '10-camp-cultures.js'), ('core', 'camp', '20-camp-census.js'), ('core', 'camp', '30-camp-pitch.js'),
-      ('kits', 'beast-riders', 'src', '79-br-camp.js'), ('core', 'world', '48s-world-sites.js')]
+      ('kits', 'beast-riders', 'src', '79-br-camp.js'),
+      ('core', 'city', '33-city-strategies.js'), ('core', 'hamlet', '10-hamlet-wood.js'), ('core', 'hamlet', '12-hamlet-gather.js'),
+      ('core', 'hamlet', '14-hamlet-farmland.js'), ('core', 'hamlet', '16-hamlet-names.js'), ('core', 'hamlet', '18-hamlet-names.js'),
+      ('core', 'hamlet', '20-hamlet-cultures.js'), ('core', 'hamlet', '21-hamlet-iziz.js'), ('core', 'hamlet', '30-hamlet-village.js'),
+      ('core', 'world', '48s-world-sites.js')]
 
 
 def node():
@@ -35,13 +43,15 @@ def node():
 
 
 def kit_dims(files=DIMS_SOURCES):
-    """{key: {w, d, h, variants: [{w, d, h}] | None}} from the ASSET({...}) blocks' declared boxes"""
+    """{key: {w, d, h, variants: [{w, d, h}] | None}} from the declared boxes of the ASSET({...}) blocks (the catalog's kits),
+    the XA.def({...}) records (the Xanadu kit: XAK.dims() on a page reads the same w, d, h) and the VERN.def({...}) records
+    (the Iziz Vernacular: IZV.dims())"""
     out = {}
     num = r'(-?[\d.]+)'
     box = re.compile(r'\bw:\s*' + num + r',\s*d:\s*' + num + r',\s*h:\s*' + num)
     for f in files:
         s = open(f, encoding='utf-8').read()
-        for m in re.finditer(r'ASSET\(\{', s):
+        for m in re.finditer(r'ASSET\(\{|XA\.def\(\{|VERN\.def\(\{', s):
             end = s.find('build:', m.end())
             head = s[m.end(): end if end > 0 else m.end() + 3000]
             k = re.search(r"key:\s*'([^']+)'", head)

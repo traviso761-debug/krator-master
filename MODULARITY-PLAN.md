@@ -387,6 +387,15 @@ Pylon and Talia -> Iziz, and Beast Riders -> Girder and Mav's Refuge (below).
       (`58-isle-protos.js`), which seal Girder's and Mav's Refuge's towns, as `openworld/isle-demo` does. These are code
       reads, and go when `kits/beast-riders` owns its bundle and the instancer moves to core/world
       (`openworld/pinnacle/KNOWN_ISSUES.md`).
+    - `openworld/xanadu-oidong-highrift -> settlements/xanadu` and `-> settlements/isle-demo` (2026-11-10): the
+      second region's villages draw the Xanadu building kit with the library pack that is still settlements/xanadu's
+      (`kits/xanadu/kit_bundle.py`'s note), and flatten its pieces with the isle demo's `isleFlatten`, as Longsong does
+      (both allow-listed for Longsong). These go when `kits/xanadu` owns its pack and the flattener moves to core/world.
+    - `openworld/iziz-cluster -> settlements/isle-demo`, `-> settlements/girder`, `-> settlements/mavs-refuge` and
+      `-> settlements/iziz` (2026-11-11): the third region's camps take the tents as Pinnacle's do (`cat_bundle`, which seals
+      Girder's and Mav's Refuge's towns), and Talia's villages draw the Iziz Vernacular through the isle demo's `izv_bundle`
+      (the Vernacular with Iziz's Ancients core) and Iziz's library pack, through the same instancer, as `openworld/isle-demo`
+      does. These go when the kits own their bundles and packs and the instancer moves to core/world.
   - **`vendored`**, every module -> upstream pair a build keeps copies of and checks with `--vendor-check` (38 today,
     counting pairs a build also reads, which DEPS.json's "vendored" leaves out). A new copy is an error: read the
     upstream in place, or record here why it must drift. The rule is per pair, not per file (a per-file list would

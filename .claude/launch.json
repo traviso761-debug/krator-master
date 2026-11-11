@@ -254,6 +254,36 @@
                 "core/atmos/fxdemo/dist"
             ],
             "port": 8859
+        },
+        {
+            "name": "xoh-world",
+            "runtimeExecutable": "python",
+            "runtimeArgs": [
+                "-m",
+                "http.server",
+                "8875",
+                "--bind",
+                "127.0.0.1",
+                "--directory",
+                "openworld/xanadu-oidong-highrift/dist"
+            ],
+            "port": 8875,
+            "autoPort": false
+        },
+        {
+            "name": "iziz-world",
+            "runtimeExecutable": "python",
+            "runtimeArgs": [
+                "-m",
+                "http.server",
+                "8877",
+                "--bind",
+                "127.0.0.1",
+                "--directory",
+                "openworld/iziz-cluster/dist"
+            ],
+            "port": 8877,
+            "autoPort": false
         }
     ]
 }

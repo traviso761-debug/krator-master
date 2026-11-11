@@ -32,9 +32,12 @@ function spaced(recs){const B=new Map(),C=24,key=(i,j)=>i*100003+j;let bad=0,fir
 // rivers: at every station along each named river (the middle of each step of its line), water stands in the channel
 // somewhere across it within 500 m (the carve's warp moves the bed off the drawn line by up to ~250 m)
 function rivers(waterF){waterF=waterF||WORLD.water;const R=WORLD_DATA.meta.rivers||[];let n=0,wet=0,first=null;
- for(const r of R)for(let i=0;i<r.line.length-1;i++){const a=r.line[i],b=r.line[i+1],x=(a[0]+b[0])/2,z=(a[1]+b[1])/2,l=Math.hypot(b[0]-a[0],b[1]-a[1])||1,nx=-(b[1]-a[1])/l,nz=(b[0]-a[0])/l;
+ /* a river the model records dry (depth_m 0: a dry valley, which the world carves but fills with no water) is not judged */
+ for(const r of R){if(r.depth_m!=null&&!(r.depth_m>0))continue;for(let i=0;i<r.line.length-1;i++){const a=r.line[i],b=r.line[i+1],x=(a[0]+b[0])/2,z=(a[1]+b[1])/2,l=Math.hypot(b[0]-a[0],b[1]-a[1])||1,nx=-(b[1]-a[1])/l,nz=(b[0]-a[0])/l;
+  /* a station outside the region's polygon (a river through the cut's margin) is not judged: the world draws no water there */
+  if(!WORLD.inside(x,z))continue;
   n++;let ok=false;for(let s=-500;s<=500&&!ok;s+=8){const px=x+nx*s,pz=z+nz*s;if(waterF(px,pz)>WORLD.H(px,pz)+.5)ok=true;}
-  if(ok)wet++;else first=first||[Math.round(x),Math.round(z)];}
+  if(ok)wet++;else first=first||[Math.round(x),Math.round(z)];}}
  return{ok:R.length>0&&wet===n,detail:R.length+' rivers, '+n+' stations, '+wet+' with water in the channel'+(first?' (first dry at '+first+')':'')};}
 // highways: the ground under each road's centre line is the road's finished height (within 0.3 m) and no step of the
 // line is steeper than the ruling grade (+ 0.5 % for the rounding); eF: the road's height as the check reads it

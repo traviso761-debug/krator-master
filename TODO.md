@@ -111,6 +111,11 @@ rebuilds once, rewrites the baseline once, then deletes these items; the spot re
     read `KDRAWN.h` when the page lists `core/drawn/10-core-drawn.js` and registers its ground; cameras stand on it.
   - Already done before the survey closed (no row needed): `kits/fauna/src/90-sheet.js`'s `_texPending` is a getter (15ca3363);
     hyperjungle's harvest-wood phrases parse (`node core/hamlet/test-hamlet.js` passes).
+- **core/world: a kit on several biome overlays** (2026-11-11, the Iziz cluster's open-world region): `core/world/41-world-fields.js`
+  matches a `WORLD_KITS` entry's `overlay` to one biome name (`k.overlay===name`). Let it take a list (`Array.isArray(k.overlay)?
+  k.overlay.indexOf(name)>=0:...`), then drop the shim in `openworld/iziz-cluster/src/47-world-kits.js` (`WORLD_KITS.findIndex`, which
+  tries each name of a list). It moves every page that reads core/world (the isle demo's two city pages, Longsong, Pinnacle Rock and the
+  open-world regions) without changing what they draw.
 
 - **`KSHADOW.units` counts what the GPU links** (2026-11-09, found by the Throne's fix): `core/shadow/host/12-core-shadow-host.js` counts
   declared samplers (some are never read and the GPU drops them), misses `scene.environment` on standard materials, and judges against the

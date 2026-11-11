@@ -40,6 +40,13 @@ A new region's build lists it the same way.
 Settlements change the land only through `WORLD.landHook` (ground deltas, eased at their edge) and keep the flora off
 through `WORLD.clearHook`. `openworld/PLAN-SITES.md` section 3 has the plan.
 
+**Sites** (`48s` plans, `bake_sites.py` bakes, `88s` draws): a region's `SITE_SPEC` names camps (core/camp, the Beast
+Riders' `BR_CAMP`), hamlets (core/hamlet: a row's `kit` picks the drawing, `88s` `VK`: `xanadu` through `XAK`, `iziz`
+through the isle demo's `IZV` bundle and its instancer) and roads, joined or not, and `links` between its towns (`keep`: routed in hops inside the polygon, off rivers' beds; `stops`: an inn every
+`every` m of road and a rest stop between, drawn as one-building villages; a stop with no ground is a `gap`). The bake
+reads the kits' declared boxes from their source (`ASSET`, `XA.def`, `VERN.def`); a new village kit adds its records
+there and an entry in `VK`.
+
 **Known debt, moved with it** (from `tools/core_use_baseline.json` and `check_source_baseline.json`, where these were
 the isle demo's):
 - `98-world-start.js` reads canvas pixels once (`getImageData`), to decode the rasters, not for placement;
