@@ -1,33 +1,47 @@
 {
-  "canvas": "5.1 (1821x1723)",
-  "name": "Ostrukh Terraces (station 1): the cold arable piedmont, glacial meltwater braided streams from the Stalker wall, loess crop terraces, domestic Ghaunt-Ox herds, turf-roofed stone farmsteads",
-  "out": "siphon-terraces.html",
-  "site": {
-    "name": "terraces",
-    "title": "Ostrukh Terraces",
-    "px": 1519,
-    "py": 1453,
-    "base": 2156.0,
-    "atm": 1.31,
-    "mean": 15.0,
-    "rain": 439,
-    "cls": "Cwb",
-    "lat": -28.2
-  },
-  "water": [
-    {
-      "kind": "flow",
-      "name": "Meltwater Run",
-      "width": 6.0,
-      "depth": 0.8
-    }
-  ],
-  "crops": {
-    "zone": "terrace",
-    "species": [
-      "barley",
-      "frostwheat",
-      "tuber"
-    ]
+ "canvas": "5.1 (1821x1723)",
+ "name": "Ostrukh Terraces (station 1): the cold arable piedmont, glacial meltwater braided streams from the Stalker wall, loess crop terraces, domestic Ghaunt-Ox herds, turf-roofed stone farmsteads",
+ "out": "siphon-pits-terraces.html",
+ "site": {
+  "name": "terraces",
+  "title": "Ostrukh Terraces",
+  "px": 1519,
+  "py": 1453,
+  "base": 2157.0,
+  "atm": 1.22,
+  "mean": 15,
+  "rain": 439,
+  "cls": "Cwb",
+  "lat": -28.2,
+  "warm": 28,
+  "cold": 2,
+  "high": 36,
+  "low": -6,
+  "surveyed": "scale model 5.1, 2026-11-11 (PLAN.md section 0): atm = 1.6 exp(-h/8000); temperatures tm/tw/tc/th/tl"
+ },
+ "water": [
+  {
+   "kind": "flow",
+   "name": "Meltwater Run",
+   "width": 6.0,
+   "depth": 0.8
   }
+ ],
+ "crops": {
+  "query": {
+   "warmth": "temperate",
+   "atm": "standard",
+   "arid": "semiarid"
+  },
+  "buckets": [
+   "grain",
+   "pulse",
+   "tuber"
+  ],
+  "note": "CROPS.at on the station axes (kits/crops has no terrace zone)"
+ },
+ "wind": {
+  "speed": 7.4,
+  "note": "mean from the model (wd)"
+ }
 }

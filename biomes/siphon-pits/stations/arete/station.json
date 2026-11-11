@@ -1,23 +1,36 @@
 {
-  "canvas": "5.1 (1821x1723)",
-  "name": "The Ar\u00eate Way (station 4): the 6m knife-edge basalt ridge between two 420m drop abysses, gale-force blizzard winds, flenser-hound ambush lairs along the fog rim, iron cable caravan stanchions, rim windlass gantries",
-  "out": "siphon-arete.html",
-  "site": {
-    "name": "arete",
-    "title": "The Ar\u00eate Way",
-    "px": 1678,
-    "py": 1542,
-    "base": 4269.0,
-    "atm": 0.99,
-    "mean": -5.0,
-    "rain": 173,
-    "cls": "ET",
-    "lat": -30.2
-  },
-  "water": [],
-  "wind": {
-    "speed": 35.0,
-    "gust": 48.0,
-    "dir": 290
+ "canvas": "5.1 (1821x1723)",
+ "name": "The Arête Way (station 4): the 6m knife-edge basalt ridge between two 420m drop abysses, gale-force blizzard winds, flenser-hound ambush lairs along the fog rim, iron cable caravan stanchions, rim windlass gantries",
+ "out": "siphon-pits-arete.html",
+ "site": {
+  "name": "arete",
+  "title": "The Arête Way",
+  "px": 1678,
+  "py": 1542,
+  "base": 4269.0,
+  "atm": 0.94,
+  "mean": -5,
+  "rain": 173,
+  "cls": "ET",
+  "lat": -30.2,
+  "warm": 8,
+  "cold": -18,
+  "high": 15,
+  "low": -26,
+  "surveyed": "scale model 5.1, 2026-11-11 (PLAN.md section 0): atm = 1.6 exp(-h/8000); temperatures tm/tw/tc/th/tl",
+  "pits": {
+   "floor": 3850.0,
+   "depth": 420
   }
+ },
+ "water": [],
+ "wind": {
+  "speed": 7.4,
+  "blizzard": {
+   "speed": 25.0,
+   "gust": 35.0
+  },
+  "dir": 290,
+  "note": "mean from the model (wd); the blizzard is a weather state"
+ }
 }

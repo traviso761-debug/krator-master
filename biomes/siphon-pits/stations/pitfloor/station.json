@@ -1,31 +1,50 @@
 {
-  "canvas": "5.1 (1821x1723)",
-  "name": "Siphon Maar Floor (station 3): the 420m sunken crater floor, trapped amber inversion fog, geothermal steam vents, woolly siphon groves in full machine-wax pelt, siphon-felt turf, roper harvesting camp",
-  "out": "siphon-pitfloor.html",
-  "site": {
-    "name": "pitfloor",
-    "title": "Siphon Maar Floor",
-    "px": 1687,
-    "py": 1555,
-    "base": 2277.0,
-    "rim": 4269.0,
-    "depth": 1992.0,
-    "atm": 1.29,
-    "mean": 18.0,
-    "rain": 439,
-    "cls": "Cfa-thermal",
-    "lat": -30.4
-  },
-  "water": [
-    {
-      "kind": "spring",
-      "name": "Boiling Vent Well",
-      "temp": 65.0
-    }
+ "canvas": "5.1 (1821x1723)",
+ "name": "Siphon Maar Floor (station 3): the 420m sunken crater floor, trapped amber inversion fog, geothermal steam vents, woolly siphon groves in full machine-wax pelt, siphon-felt turf, roper harvesting camp",
+ "out": "siphon-pits.html",
+ "site": {
+  "name": "pitfloor",
+  "title": "Siphon Maar Floor",
+  "px": 1687,
+  "py": 1555,
+  "base": 2277.0,
+  "rim": 2697.0,
+  "atm": 1.2,
+  "mean": 18,
+  "rain": 439,
+  "cls": "Cfa",
+  "lat": -30.4,
+  "warm": 32,
+  "cold": 6,
+  "high": 40,
+  "low": -2,
+  "surveyed": "scale model 5.1, 2026-11-11 (PLAN.md section 0): atm = 1.6 exp(-h/8000); temperatures tm/tw/tc/th/tl",
+  "shoulder": [
+   4000,
+   4800
   ],
-  "fog": {
-    "top": 2580.0,
-    "color": "#d4a359",
-    "density": 0.08
+  "note": "the maar is 420 m deep in the floor of the sink; the shoulders are the plateau 8-16 km out"
+ },
+ "water": [
+  {
+   "kind": "geyser",
+   "name": "Boiling Vent Well",
+   "temp": 96.0,
+   "vent_px": [
+    1684,
+    1552
+   ],
+   "vent_floor": 2203.2
   }
+ ],
+ "fog": {
+  "top": 2580.0,
+  "color": "#d4a359",
+  "density": 0.02,
+  "visibility": 200
+ },
+ "wind": {
+  "speed": 7.6,
+  "note": "mean from the model (wd)"
+ }
 }
