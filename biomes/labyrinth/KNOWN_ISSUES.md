@@ -10,6 +10,11 @@
   (`biomes/nwlowlands/src/60-biome-nwlowlands-floor.js`, `blooms()`; core/biome README, "the residual floaters": `BIO.holdTo` or
   `{onLeaf:true}`). The kit's quality does not move it (0.7: 1.35%, 1: 1.33%). The fix is in that shared kit and reaches every page
   that reads it, so it is not made from here; it goes away anyway when the Labyrinth's own flora replaces the stand-in.
+  **Diagnosed 2026-11-11** (the session on `claude/infallible-pike-2c68d9`): the 90 floaters are the grass trees' flower-spike blooms,
+  0.1 m from the spike's rod. They are a false positive of `BIO.attachAudit` (`core/biome/20-core-kit.js` 646-650), which measures
+  an instanced item at points 2 m apart along its axis, not to the segment as `core/biome/README.md` says. The audit fix rebuilds
+  every biome page, so it is parked in `TODO.md` for the next all-builds rebuild; the kit's real bloom floaters (ground clusters,
+  rhodo) are fixed on that branch.
 - [ ] **No animals yet.** The megafauna wait for `kits/fauna` (PLAN.md section 4); no herd, trail or wallow is drawn.
 - [ ] **No hazards.** `core/hazard` is not taken yet: station 1 draws no fall at the stacks' walls and no charge (PLAN.md section 7,
   amendment 2).
