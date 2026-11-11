@@ -221,8 +221,8 @@
    "sha256": "85c82d3f2fbc952a9d2288fe57e8ce5060ef02fcc4963a09eea93e9ec6a6dd46"
   },
   "biomes/throne/dist/throne-isle.html": {
-   "bytes": 1208515,
-   "sha256": "9d1d14459fa2d0612027a3bc6167fb198ea005501aecf69b7f04de1718541991"
+   "bytes": 1208755,
+   "sha256": "026390a983484861e3d6b76c154bf715a56a1229a5d336ac41d63c1aa42b8e3a"
   },
   "biomes/throne/dist/throne-kipuka.html": {
    "bytes": 1294816,
@@ -241,12 +241,12 @@
    "sha256": "8ae2984e46615892fe8743a5e934578a1fa5b50446db61ed12aa8b158d8de20b"
   },
   "biomes/throne/dist/throne-vents.html": {
-   "bytes": 1256947,
-   "sha256": "bac0fe3ca33c8eaa27c26aa3f9f8f2270329d4a5f135222002f22002d0803db2"
+   "bytes": 1257187,
+   "sha256": "0d4af9b1867af8c135864bad703a34bc208aa582a8de321d85bb9ad02b362aa4"
   },
   "biomes/throne/dist/throne.html": {
-   "bytes": 1184207,
-   "sha256": "460d1b8fa5d776783a099a334691a35b8da23694aeeacad8d29f4dce8bdaa30c"
+   "bytes": 1184447,
+   "sha256": "939186352f116b0e3cd8ad61b31934db6fac5afb8b99e37fa61bb80a720d58a0"
   },
   "biomes/xanadu/dist/xanadu-cloud.html": {
    "bytes": 8369116,
@@ -269,8 +269,8 @@
    "sha256": "8cf706c9f2576c9cc851398c187246fa2447442351f03336209558757e6297d0"
   },
   "biomes/xanadu/dist/xanadu.html": {
-   "bytes": 7654473,
-   "sha256": "70a584c371a6c6c44ef6895550322af8a3152da3828c09de022653e4f867adfe"
+   "bytes": 7654713,
+   "sha256": "14284ef00ef85cf439a841bf4a52f0c85a6b39bd1c89f266288f4860a124a6ce"
   },
   "core/sockets/example/sockets-example.html": {
    "bytes": 184370,
@@ -557,12 +557,12 @@
    "sha256": "d97f6da704acfa3275efe886af974432c66101fe058450aebc529150f0a47da4"
   },
   "openworld/isle-demo/dist/isle-demo.artifact.html": {
-   "bytes": 6330864,
-   "sha256": "eec120b34cfc3f9787418b0e49a0155287d843e889e4648f73ce42bc0b676dec"
+   "bytes": 6691121,
+   "sha256": "c2f588b9ad92979f6b1d9fed88e85ef5bf27f05bf8168656f640ff27c026cc6e"
   },
   "openworld/isle-demo/dist/isle-demo.html": {
-   "bytes": 6331122,
-   "sha256": "8916070151e7b679487fce8bcebc1322b9919e096e7fc5fffbf4f5907b50ad6b"
+   "bytes": 6691379,
+   "sha256": "7ca5d9d96a30f6dfbd8cf13e61845fb8517912ee0f0099c58fae2d495b3a1fee"
   },
   "openworld/little-demo/dist/little-demo.artifact.html": {
    "bytes": 5088461,
