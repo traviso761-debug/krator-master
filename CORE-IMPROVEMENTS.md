@@ -845,31 +845,42 @@ sessions hit is a check request here, not a third paragraph. Most are tools-only
 
 - **22. A "GPU" verify in SwiftShader** (7 sessions). Make `gpu-renderer` a hard fail whenever a lane lock is held (a lane
   without `KRATOR_GL=gpu` is a mistake, not a mode), and print the renderer in the harness's first line.
+  **Done 2026-11-11:** `verify_page` prints `harness: renderer ...; lane ...; KRATOR_GL=...` first, and a lane lock held without `KRATOR_GL=gpu` fails `gpu-renderer`, which the ratchet cannot excuse (`HARD`). `python3 tools/tests/test_verify_page.py` (case lane-no-gpu). On for every build.
 - **23. LFS pointers read in place** (10+). `tools/build.py --pull` (or a `tools/lfs_needs.py <build>`) that lists every
   `tex/` and `dist/*.js` a page reads, from `--list-sources` and `fragment_needs.json`, and pulls them in one go; plain
   `build.py` files refuse pointers as `tools/build.py` does; node tests that require a `dist/` file name the pull to run.
+  **Done 2026-11-11:** `python3 tools/lfs_needs.py <build> [--pull] [--pages]` (its tex/, its manifest's inputs, `--list-sources` and their `fragment_needs.json` needs, the tex/ and dist/ folders its sources name) and `--test <node test>`; `test_all.py` skips a node test whose bundle is a pointer, naming that command; a build listed under `recorded` refuses a plain run and names its pointers (`tools/check_port.py`). `python3 tools/tests/test_survey_checks.py`.
 - **24. Docs and listed folders as build inputs** (5). `check_stale` says "docs only: rebuild, bytes unchanged" when the
   only changed inputs are `KNOWN_ISSUES.md`/`PORT.md` or a folder listing, so nobody chases it.
+  **Done 2026-11-11:** `python3 tools/check_stale.py` reports such a run as `DOCS-ONLY` ("docs/listing only: rebuild, bytes unchanged") and never fails on it; a listing counts only when the run read no fragment in that folder (tools/, on Python's import path); a listing of src/ or core/water/ stays STALE. 119 findings were only that. `python3 tools/tests/test_survey_checks.py`.
 - **25. Builds that skip `tools/build.py`** (5). Each kit's `build.py` writes `build-inputs.json` itself (shared helper),
   or refuses to write `dist/` unless called through `tools/build.py`.
+  **Done 2026-11-11 (opt-in):** `buildlib.through_tools_build(__file__)` at a build.py's top re-runs a plain run through `tools/build.py`; a build listed under `recorded` in `tools/checks_optin.json` is refused a plain run by `tools/check_port.py`. `python3 tools/tests/test_survey_checks.py`.
 - **26. Missing core fragments on hand-listed pages** (4: `31b-core-leafset.js`). `check_assembly` names the fragment to add,
   and a `CORE_BIOME_MIN` list (10, 20, 30, 31b, 34, 40) is the default a build extends.
+  **Done 2026-11-11:** a MISSING finding names the core fragment that defines the call (`add core/biome/31b-core-leafset.js (it defines BIO.leafOn)`); `buildlib.CORE_BIOME_MIN`, and rule MINSET for the builds listed under `minset`. `python3 tools/check_assembly.py`; `python3 tools/tests/test_survey_checks.py`.
 - **27. Texture units** (4 + the ground that vanished). A universal assert that reads every linked program's sampler count
   (fail at 16 on any lane, warn at 15), replacing `samplersOf`'s guess, which overcounts.
+  **Done 2026-11-11 (opt-in):** the universal assert `samplers` reads each linked program's active samplers (`getActiveUniform`), fails at 16 and warns at 15 for a build listed under `samplers` (or `checks=harness.SURVEY`), and is a report elsewhere. `python3 tools/tests/test_verify_page.py` (samplers-16, samplers-15). Proved on SwiftShader only: the Arc's and the RTX's counts want a GPU run; the Throne's `samplersOf` goes at the ride-along.
 - **28. Audits against the drawn ground** (5). `drawnH` as a core function (strip cells, else the mesh's triangles); the
   eye check, the water audit, the cliff gate and the attach audit's ground all take it by default.
+  **Done 2026-11-11 (part, opt-in):** `core/drawn` (`KDRAWN.grid`, `KDRAWN.mesh`, `KDRAWN.h`, `KDRAWN.compare`; `node core/drawn/test-drawn.js`); the harness's eye check measures the eye against it for a build listed under `drawn-ground` (`python3 tools/tests/test_verify_page.py`, case eye-under-drawn). The water audit, the cliff gate and the attach audit are page code: TODO.md "Ride along".
 - **29. Negatives written backwards, predicates shadowing `ok`** (3). The node test helper refuses a negative that passes
   on the fixed code and refuses a local named `ok`; the pass count is printed against the number of `ok(` calls in the file.
+  **Done 2026-11-11:** `tools/ktest.js` (`T.ok`, `T.neg(name, check, faulty, fixed)`, `T.done()`): refuses a local `ok`, a negative that passes on the fault or fails the fix, and an `ok(` site that never ran. `python3 tools/tests/test_ktest.py`; `core/drawn/test-drawn.js` is the first test on it.
 - **30. Windows text traps** (9 commit messages, 8 heredocs, BOMs twice). A `tools/commit.py -m-file` helper; a pre-commit
   check for a BOM, mojibake (`Ã`, `â€`) or CRLF in staged text; `check_views` and the build both refuse apostrophes and
   colons in view and check names.
+  **Done 2026-11-11:** `python3 tools/commit.py -F msg.txt` (the message cleaned of a BOM and CRLF, mojibake refused, the staged text checked); `python3 tools/check_text.py` (staged; `--files`; `--install-hook` per clone); `check_views` refuses apostrophes (99 existing names baselined) and `tools/build.py` fails a build listed under `names` on either. `python3 tools/tests/test_survey_checks.py`.
 - **31. Stale committed pages passing verify** (3). The verify cache records the page's source hash; a pass on a page whose
   sources moved since is reported "stale pass", not "pass".
+  **Done 2026-11-11:** `harness.page_sources` reads the page's build-inputs.json; `VerifyPage.exit` prints "OK, but a STALE PASS" and a cached pass on such a page "cached STALE pass"; the cache entry records the sources' state and hash. `python3 tools/tests/test_survey_checks.py`.
 - **32. Owed fixes the survey found** (one session each, each small): KHOOK clones re-running layers; `43-core-ground.js`
   reading `kEye`; `kits/fauna/src/90-sheet.js:147` `_texPending` as a function; `BIO.alphaTex` without
   `willReadFrequently`; library-card mipmap fringes (fill transparent texels as `alphaTex` does); KKARST duplicate sink ids
   across branch levels; 19 biome `build.py` files writing CRLF pages; `check_source` not scanning kits' top-level files;
   hyperjungle's harvest-wood phrases failing `test-hamlet.js`; the ISK error loop.
+  **Done 2026-11-11 (the tools-only ones):** `check_source` reads kits' top-level files (19 keys baselined); the eleven page writers left of the nineteen write `newline='\n'` (Linux bytes unchanged; their builds' stale keys recorded). The fauna `_texPending` and the hyperjungle phrases were already fixed. Every fix that moves page bytes is a row in TODO.md "Ride along" with its file and line.
 
 ## Order of work this suggests
 

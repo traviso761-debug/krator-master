@@ -268,7 +268,7 @@ def main():
     BSRC.report()   # --list-sources: every file read so far is what the page is made of; then exit
     os.makedirs(DIST, exist_ok=True)
     html = matlib_pack.write_sidecar(SIDE, html, DIST, 'verge.tex.js')
-    with open(os.path.join(DIST, OUT), 'w', encoding='utf-8') as fh:
+    with open(os.path.join(DIST, OUT), 'w', encoding='utf-8', newline='\n') as fh:
         fh.write(html)
     m = re.search(r'<script>\n(?!document)(.*)</script>\s*</body>', html, re.S)
     chk = os.path.join(HERE, '.syntax.js')

@@ -1,0 +1,30 @@
+#!/usr/bin/env python3
+"""<build>: what it is. python3 tools/build.py <top>/<name> (a plain python3 build.py comes through it by itself)."""
+import os, sys
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+ROOT = os.path.dirname(os.path.dirname(HERE))
+sys.path.insert(0, os.path.join(ROOT, 'tools'))
+import buildlib                                   # noqa: E402
+buildlib.through_tools_build(__file__)            # item 25: build-inputs.json is always written
+import build_sources as BSRC                      # noqa: E402  (--list-sources: tools/dep_graph.py)
+
+# the port lint first (tools/check_port.py); it also refuses a plain run of a build listed under "recorded"
+import subprocess
+if '--no-checks' not in sys.argv and subprocess.call([sys.executable, os.path.join(ROOT, 'tools', 'check_port.py'), '--quiet', HERE]) != 0:
+    sys.exit('build.py: the port lint failed (tools/check_port.py)')
+
+CORE_RAND = ['core/rand/08-core-rand.js']
+CORE_BIOME = buildlib.CORE_BIOME_MIN + []          # item 26: extend the minimum set, never list core/biome by hand
+CORE_DRAWN = ['core/drawn/10-core-drawn.js']       # item 28: the drawn ground for the audits
+SRC = sorted(os.path.join('src', f) for f in os.listdir(os.path.join(HERE, 'src')) if f.endswith('.js'))
+
+paths = [os.path.join(ROOT, p) for p in CORE_RAND + CORE_BIOME + CORE_DRAWN] + [os.path.join(HERE, p) for p in SRC]
+parts = []
+for p in paths:
+    with open(p, encoding='utf-8') as fh:
+        parts.append('// ==================== %s\n' % os.path.relpath(p, ROOT).replace(os.sep, '/') + fh.read())
+BSRC.report(paths)                                  # --list-sources stops here, before the first write
+os.makedirs(os.path.join(HERE, 'dist'), exist_ok=True)
+with open(os.path.join(HERE, 'dist', '<name>.html'), 'w', encoding='utf-8', newline='\n') as fh:   # LF on every machine
+    fh.write('<!doctype html>...<script>' + '\n'.join(parts) + '</script>...')

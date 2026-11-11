@@ -148,7 +148,7 @@ BSRC.report(PATH)   # --list-sources: what the page is made of, then exit
 os.makedirs(DIST,exist_ok=True)
 html=''.join(out)
 if SIDE: html=_mp.write_sidecar(SIDE,html,DIST,'guilin.tex.js')
-open(os.path.join(DIST,OUT),'w',encoding='utf8').write(html)
+open(os.path.join(DIST,OUT),'w',encoding='utf8', newline='\n').write(html)
 # syntax check on the script body
 m=re.search(r'<script>\n(?!document)(.*)</script>\s*</body>',html,re.S)
 js=m.group(1) if m else ''

@@ -66,6 +66,51 @@ rebuilds once, rewrites the baseline once, then deletes these items; the spot re
   eight builds record as a listing input (kits/catalog, crops, interiors, mechs, motor-vehicles, port; settlements/isle-demo, longsong), so
   `check_stale` calls them stale though no file they read changed. Their next rebuild clears it. Worth a look: the listing likely comes from
   Python's importer reading `tools/` when a build imports from it, so any new tool file does this.
+- **Switch on checks 22-31 everywhere** (the survey of 2026-11-11, CORE-IMPROVEMENTS.md items 22-31; landed opt-in on
+  `claude/survey-checks` with no page moved). Items 22 (lane without `KRATOR_GL=gpu`), 24 (DOCS-ONLY) and 31 (STALE PASS) are on
+  already. The rest is `tools/checks_optin.json`; set each check's `"builds"` to `"*"` in this order, inside the rebuild:
+  1. Pull and rebuild everything through `tools/build.py --all` (`python3 tools/lfs_needs.py <build> --pull` per build in a fresh
+     worktree), so every `build-inputs.json` is current; then `python3 tools/check_stale.py --write-baseline` (it should be `{}`).
+  2. `names`: rename the 99 view names holding an apostrophe and the 40 holding a colon (`python3 tools/check_views.py --list`),
+     rebuild those builds, `check_views.py --write-baseline` (it shrinks), then `"*"`: `tools/build.py` fails any new one.
+  3. `recorded`: add `buildlib.through_tools_build(__file__)` at the top of every `build.py` (the template is `tools/new_build/`),
+     then `"*"`: a plain run of a build that lacks it is refused by `tools/check_port.py` (dep_graph and check_vendor pass
+     `KRATOR_ALLOW_PLAIN_BUILD=1`).
+  4. `minset`: `"*"`, then `python3 tools/check_assembly.py`; extend each MINSET page's list from `buildlib.CORE_BIOME_MIN`
+     (`CORE_BIOME = buildlib.CORE_BIOME_MIN + [...]`) rather than baselining it; `--write-baseline` only for a page that cannot take
+     one, with the why in its KNOWN_ISSUES.md.
+  5. `samplers` and `drawn-ground`: `"*"`, then on the GPU lane (`KRATOR_GL=gpu`), per rebuilt page, `python3 tools/harness.py
+     ratchet --write <page>` records the pages over 16 samplers or with an eye under the drawn ground in `tools/verify_ratchet.json`;
+     fix them at each page's own turn. The sampler count replaces the Throne's `samplersOf` (the KSHADOW row above).
+  6. Node tests: move each test's own `ok` onto `tools/ktest.js` as it is next touched (`core/terrain/test-scarp.js` passes a
+     negative as a third argument to its own `ok`); then add a `test_all.py` step that runs `ktest.shadows` over every `test-*.js`,
+     ratcheted, so no new test declares an `ok`.
+  7. `check_source` now reads kits' top-level files: 19 keys were added to its baseline (catalog, fauna, mechs, motor-vehicles);
+     fix them with those kits' rebuild and rerun `--write-baseline` (it shrinks).
+  Write each baseline only from pages rebuilt and checked in that pass, never over a page you did not build.
+
+- **The owed fixes the survey found** (2026-11-11, CORE-IMPROVEMENTS.md item 32; each moves the pages that take the file):
+  - KHOOK clones re-run layers (`core/shader/06-core-khook.js:72,81`): about 40 sites do `c=m.clone(); c.onBeforeCompile=m.onBeforeCompile`,
+    which stores m's composed hook as the clone's page hook, so each layer runs twice ("Vertex shader is not compiled"). Tag the
+    composed hook with its state (`st.hook.__khst=st`); in the setter and in `state()`, when the value is another material's
+    composed hook take that state's page as the page and copy its layers by name (`K.copy`), never the composite as a page.
+  - `core/terrain/43-core-ground.js:199,223` inlines the eye as `-(viewMatrix[3].xyz*mat3(viewMatrix))` twice: put `K.EYE`
+    (`#ifndef KHOOK_EYE`) in front of the kground layer's fragment declarations (about line 333) and call `kEye()` in both.
+  - `BIO.alphaTex` (`core/biome/30-core-foliage.js:110`): `c.getContext('2d',{willReadFrequently:true})` (about 1 s a card now);
+    the same at line 473 where that canvas's context is first made.
+  - Library-card mipmap fringes (`core/biome/20-core-kit.js:242-245`, `BIO.libSwap`; the image lands raw in
+    `core/materials/record/25-matlib-host.js:27`): when a `flipY:false` card decodes, draw it to a `willReadFrequently` canvas and
+    fill the texels under alpha 48 with the mean opaque colour, as `alphaTex` does (`30-core-foliage.js:112-114`), once per cached sheet.
+  - KKARST duplicate sink ids across branch levels (`core/terrain/39c-core-karst.js:184`): `id:'sink:'+lv+':'+si+','+sj` (the node
+    ids already carry the level); the shaft and doline ids follow; add `s.level` to the radius hash at line 207.
+  - The ISK error loop (`settlements/isle-demo/bundles.py:101` and `:173`): `reportErr` logs `console.error('ISK: '+m)`, which
+    `core/engine/10-core.js:11`'s wrapper matches again (`/shader|WebGLProgram|GL_INVALID/`) until the stack overflows. Log with the
+    saved `console.error` or `console.warn` there, and give the wrapper a re-entry guard.
+  - The in-page audits on the drawn ground (item 28): the water audit (`core/water/ext/57-core-water-audit.js`), the cliff gate
+    (`core/biome/40-core-place.js`, `cliffOld`) and the attach audit's ground (`core/biome/20-core-kit.js:609`, `BIO.attachAudit`)
+    read `KDRAWN.h` when the page lists `core/drawn/10-core-drawn.js` and registers its ground; cameras stand on it.
+  - Already done before the survey closed (no row needed): `kits/fauna/src/90-sheet.js`'s `_texPending` is a getter (15ca3363);
+    hyperjungle's harvest-wood phrases parse (`node core/hamlet/test-hamlet.js` passes).
 
 - **`KSHADOW.units` counts what the GPU links** (2026-11-09, found by the Throne's fix): `core/shadow/host/12-core-shadow-host.js` counts
   declared samplers (some are never read and the GPU drops them), misses `scene.environment` on standard materials, and judges against the

@@ -917,6 +917,13 @@ async def smoke(pages, settle_ms=2500):
 # --------------------------------------------------------------------------
 # verify_page: the universal asserts every verify.py runs (CORE-IMPROVEMENTS.md items 2c, 2d, 3c, 6, 10a, 16)
 RATCHET = os.path.join(ROOT, "tools", "verify_ratchet.json")
+# The opt-in checks of the 2026-11-11 survey (tools/checks_optin.json; tools/buildlib.py opted_in): a verify.py passes
+# verify_page(..., checks=SURVEY) (a new build's template does), the build is listed in tools/checks_optin.json, or
+# KRATOR_CHECKS=all. Off, `samplers` is a report and the eye check uses its rays only.
+SURVEY = ("samplers", "drawn-ground")
+HARD = ("gpu-renderer",)   # never ratcheted: a lane without the GPU is a mistake, not a page's fault (item 22)
+SAMPLER_FAIL, SAMPLER_WARN = 16, 15   # item 27: ANGLE on the Arc fails a program AT 16 fragment samplers (ebadlands)
+DRAWN_JS_FILE = os.path.join(ROOT, "core", "drawn", "10-core-drawn.js")
 INSTANCE_CAP = 250000      # item 3c: one instanced item past this many is a runaway pass (918,541 cobra lilies)
 EYE_NEAR = 1.0             # item 10a: a view nearer than this to a solid surface it faces
 # The scene and camera of a page: its top-level `scene` and `camera` (a classic script's top-level const is visible to
@@ -929,6 +936,30 @@ FIND_JS = """const __kfind=()=>{ let sc=null,cam=null;
  if(!sc||!cam){ for(const k of Object.keys(window)){ let v; try{ v=window[k]; }catch(e){ continue; }
    if(!v||typeof v!=='object') continue; if(!sc&&v.isScene) sc=v; if(!cam&&v.isPerspectiveCamera) cam=v; } }
  return {sc,cam}; };"""
+# Item 27: the samplers each LINKED program really has (getActiveUniform: what the GPU kept after #ifdef pruning and dead-code
+# removal), not a count of declared maps; the worst first. `samplersOf` in biomes/throne guessed from the shader text and
+# overcounted (ringisles).
+SAMPLERS_JS = """()=>{ let R=null; try{ R=(typeof renderer!=='undefined'&&renderer)||window.renderer||(window._api&&window._api.renderer); }catch(e){}
+ if(!R||!R.info||!R.info.programs||!R.getContext) return null; const gl=R.getContext();
+ const S=new Set([0x8B5E,0x8B60,0x8B5F,0x8DC1,0x8B62,0x8DC4,0x8DC5,0x8DCA,0x8DCB,0x8DCC,0x8DCF,0x8DD2,0x8DD3,0x8DD4,0x8DD7]);
+ const out=[]; for(const p of R.info.programs){ const g=p.program; if(!g||!gl.getProgramParameter(g,gl.LINK_STATUS)) continue;
+  const n=gl.getProgramParameter(g,gl.ACTIVE_UNIFORMS); let k=0; const names=[];
+  for(let i=0;i<n;i++){ const u=gl.getActiveUniform(g,i); if(u&&S.has(u.type)){ k+=u.size; names.push(u.name.replace(/\\[0\\]$/,'')); } }
+  out.push({name:p.name||'program '+p.id, n:k, names:names.slice(0,20)}); }
+ out.sort((a,b)=>b.n-a.n); return {programs:out.length, max:out.length?out[0].n:0, top:out.slice(0,5), units:gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS)}; }"""
+# Item 28: the eye against the ground as drawn (core/drawn, KDRAWN.h): the page's own KDRAWN sources when it registers them,
+# else its ground meshes (userData.ground, or named ground / terrain), read triangle by triangle. The ray rule misses an eye
+# under the ground when something solid lies below it (a seabed, a cave floor); this does not.
+DRAWN_EYE_JS = "(src)=>{" + FIND_JS + """
+ const {sc,cam}=__kfind(); if(!sc||!cam) return {skipped:'no scene or camera'};
+ if(typeof KDRAWN==='undefined'){ (0,eval)(src); }
+ const K=window.KDRAWN||KDRAWN; let srcs=K.sources, from='KDRAWN sources registered by the page';
+ if(!srcs.length){ if(!window.__kdrawnAuto){ const a=[]; sc.updateMatrixWorld(true); sc.traverse(o=>{ if(o.isMesh&&!o.isInstancedMesh&&o.visible!==false&&((o.userData&&o.userData.ground)||/^(ground|terrain)/i.test(o.name||''))){ const s=K.fromObject(o); if(s){ s.name=o.name||'ground'; a.push(s); } } }); window.__kdrawnAuto=a; }
+  srcs=window.__kdrawnAuto; from='ground meshes ('+srcs.map(s=>s.name).slice(0,4).join(', ')+')'; }
+ if(!srcs.length) return {skipped:'no ground source: register KDRAWN.add(KDRAWN.grid(...)) or name the ground mesh ground'};
+ cam.updateMatrixWorld(); const e=cam.matrixWorld.elements, x=e[12], y=e[13], z=e[14]; let h=null;
+ for(const s of srcs){ const v=s.h(x,z); if(v!==null&&(h===null||v>h)) h=v; }
+ return {from, h, eye:[+x.toFixed(2),+y.toFixed(2),+z.toFixed(2)], under:h!==null&&y<h}; }"""
 SAMPLE_JS = "()=>{ try{ return {calls:renderer.info.render.calls, tris:renderer.info.render.triangles}; }catch(e){ return null; } }"
 UNIVERSAL_JS = "(cap)=>{" + FIND_JS + """
  const {sc}=__kfind(); const A=window._api||null; const R={scene:!!sc};
@@ -1106,6 +1137,57 @@ def load_budget(here, html):
     return None, "BUDGETS.json has no entry for %s" % base
 
 
+def survey_checks(here, checks=None):
+    """The survey's opt-in checks (SURVEY) this verify runs: `checks` (SURVEY, a name, or names), plus those the build is
+    listed for in tools/checks_optin.json, plus KRATOR_CHECKS."""
+    want = set()
+    if checks:
+        want.update([checks] if isinstance(checks, str) else checks)
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    try:
+        import buildlib
+        b = os.path.relpath(os.path.abspath(here or "."), ROOT).replace(os.sep, "/")
+        want.update(c for c in SURVEY if buildlib.opted_in(c, None if b.startswith("..") else b))
+    except Exception:
+        pass
+    return {c for c in want if c in SURVEY}
+
+
+def page_sources(html):
+    """Item 31: (state, reasons, rebuild command, source hash) for a built page, from its build's build-inputs.json:
+    'current' when every input of the run that wrote it is unchanged, 'stale' when one moved (tools/check_stale.py's
+    reading; docs and import-path listings do not count), 'unrecorded' when the page differs from what that run wrote.
+    None when no manifest records the page."""
+    import hashlib
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    try:
+        import buildlib, check_stale
+    except Exception:
+        return None
+    page = buildlib.rel(html)
+    if not page:
+        return None
+    d = os.path.dirname(page)
+    while d and not os.path.isfile(os.path.join(ROOT, d, buildlib.MANIFEST)):
+        d = os.path.dirname(d)
+    if not d:
+        return None
+    m = buildlib.load_manifest(d) or {}
+    cmd = next((c for c, r in m.get("runs", {}).items() if page in r.get("outputs", {})), None)
+    if cmd is None:
+        return None
+    run = m["runs"][cmd]
+    src = hashlib.sha256(json.dumps(sorted((p, check_stale.h(p)) for p in run.get("inputs", {}))).encode("utf-8")).hexdigest()
+    check_stale._hash.clear()
+    for key, why, line in check_stale.check(d):
+        if key.endswith(" " + cmd) or key.endswith(": STALE " + cmd) or key.endswith(": UNRECORDED " + cmd):
+            if ": STALE " in key:
+                return ("stale", [w.strip() for w in why], line, src)
+            if ": UNRECORDED " in key and page in " ".join(why):
+                return ("unrecorded", why, line, src)
+    return ("current", [], None, src)
+
+
 class Abort(Exception):
     """Raised inside `async with verify_page(...)` to stop the build's own checks early with an exit code (the page did
     not initialise): the universal asserts still run, and V.exit() returns the code."""
@@ -1118,8 +1200,10 @@ class Abort(Exception):
 class VerifyPage:
     """What verify_page yields: the page, its page errors and the build's own fails list, and the views it visits."""
 
-    def __init__(self, html, here):
+    def __init__(self, html, here, checks=None):
         self.html, self.here, self.key = os.path.abspath(html), here, _page_key(html)
+        self.checks = survey_checks(here, checks)
+        self.renderer = None
         self.page = self.browser = self.port = self.code = None
         self.errs, self.fails, self.ready = [], [], False
         self.samples, self.eyes, self.universal = [], [], []   # (view, calls, tris); (view, result); (name, ok, detail)
@@ -1132,11 +1216,21 @@ class VerifyPage:
         return s
 
     async def eye(self, view):
-        """The eye check (item 10a) at the camera as it is now, under the view's name."""
+        """The eye check (item 10a) at the camera as it is now, under the view's name; with the drawn-ground check
+        (item 28) the eye is also measured against the ground as drawn (core/drawn)."""
         try:
             r = await self.page.evaluate(EYE_JS, {"near": EYE_NEAR, "far": 50})
         except Exception as e:
             r = {"skipped": "eye check threw: " + str(e).splitlines()[0][:200]}
+        if "drawn-ground" in self.checks and not r.get("skipped"):
+            try:
+                with open(DRAWN_JS_FILE, encoding="utf-8") as fh:
+                    d = await self.page.evaluate(DRAWN_EYE_JS, fh.read())
+            except Exception as e:
+                d = {"skipped": "drawn-ground threw: " + str(e).splitlines()[0][:200]}
+            if d.get("under"):
+                r["drawn"] = "under the drawn ground: eye y %.2f, ground %.2f (%s)" % (d["eye"][1], d["h"], d["from"])
+            r["drawnNote"] = d.get("skipped") or ("drawn ground %.2f m below the eye (%s)" % (d["eye"][1] - d["h"], d["from"]) if d.get("h") is not None else "off the drawn ground")
         self.eyes.append((view, r))
         return r
 
@@ -1260,22 +1354,49 @@ class VerifyPage:
                             ("did NOT stand on the floor at %s (feet %s)" % (fl["at"], fl["feet"]) if fl else "no raised floor to stand on"),
                             ("a wall stopped the walker %s m on, %s m from its face" % (bl["moved"], bl["gap"])) if bl and bl["ok"] else
                             ("the walker was NOT stopped by %s: from %s to %s" % (bl["box"], bl["from"], bl["end"]) if bl else "no wall with clear ground before it"))))
-        if is_gpu():
-            try:
-                rn = await pg.evaluate(RENDERER_JS)
-            except Exception as e:
-                rn = "unknown: " + str(e)[:80]
+        held = os.environ.get("KRATOR_GPU_LOCK_HELD")
+        if is_gpu() or held:
+            rn = self.renderer
+            if not rn:
+                try:
+                    rn = await pg.evaluate(RENDERER_JS)
+                except Exception as e:
+                    rn = "unknown: " + str(e)[:80]
             ln = os.environ.get("KRATOR_GPU_LANE_HELD") or ""   # the vendor is checked only where a lane was taken
-            U.append(("gpu-renderer", "swiftshader" not in rn.lower() and lane_vendor(ln) in rn.lower(), "lane %s: %s" % (ln or "-", rn)))
+            if not is_gpu():   # item 22: seven sessions ran a "GPU verify" in SwiftShader under a lane lock
+                U.append(("gpu-renderer", False, "a GPU lane lock is held (lane %s) but KRATOR_GL is not gpu, so this ran in %s: "
+                          "rerun as KRATOR_GL=gpu python3 tools/harness.py lock --lane %s -- python3 verify.py ..." % (ln or "?", rn, ln or "auto")))
+            else:
+                U.append(("gpu-renderer", "swiftshader" not in rn.lower() and lane_vendor(ln) in rn.lower(), "lane %s: %s" % (ln or "-", rn)))
             _touched({"lane": ln, "renderer": rn})
+        try:   # item 27
+            sm = await pg.evaluate(SAMPLERS_JS)
+        except Exception as e:
+            sm = {"error": str(e).splitlines()[0][:200]}
+        if sm is not None:
+            on = "samplers" in self.checks
+            if sm.get("error"):
+                U.append(("samplers", not on, ("" if on else "report: ") + "could not read the programs: " + sm["error"]))
+            else:
+                top = "; ".join("%s %d (%s)" % (t["name"], t["n"], ", ".join(t["names"][:8])) for t in sm["top"][:3] if t["n"] >= SAMPLER_WARN) or (
+                    "worst %s %d" % (sm["top"][0]["name"], sm["top"][0]["n"]) if sm["top"] else "no programs")
+                msg = "%d linked programs, the most samplers %d (fail at %d, warn at %d; this GL allows %s): %s" % (
+                    sm["programs"], sm["max"], SAMPLER_FAIL, SAMPLER_WARN, sm["units"], top)
+                if not on:
+                    U.append(("samplers", True, "report: " + msg + ' (opt in: tools/checks_optin.json "samplers")'))
+                elif sm["max"] >= SAMPLER_FAIL:
+                    U.append(("samplers", False, msg))
+                else:
+                    U.append(("samplers", True, ("WARN: " if sm["max"] >= SAMPLER_WARN else "") + msg))
         if not self.eyes:
             await self.eye("as loaded")
         for v, r in self.eyes:
             if r.get("skipped"):
                 U.append(("eye:" + v, True, "skipped: " + r["skipped"]))
                 continue
-            bad = [k + " " + r[k] for k in ("inside", "under", "foliage", "near") if r.get(k)]
-            U.append(("eye:" + v, not bad, ("eye %s: %s" % (r["eye"], "; ".join(bad))) if bad else "clear at %s" % r["eye"]))
+            bad = [k + " " + r[k] for k in ("inside", "under", "foliage", "near", "drawn") if r.get(k)]
+            U.append(("eye:" + v, not bad, ("eye %s: %s" % (r["eye"], "; ".join(bad))) if bad else "clear at %s%s" % (
+                r["eye"], "; " + r["drawnNote"] if r.get("drawnNote") else "")))
         b, src = load_budget(self.here, self.html)
         if b is None:
             U.append(("budget", True, src))
@@ -1300,8 +1421,9 @@ class VerifyPage:
         rat = load_ratchet().get("pages", {}).get(self.key, {})
         print("\n--- universal asserts (tools/harness.py verify_page) ---")
         for name, ok, detail in self.universal:
-            known = name in rat or (name.startswith("eye:") and "eye:*" in rat)
-            tag = "  PASS  " if ok else ("  KNOWN " if known else "  FAIL  ")
+            known = name not in HARD and (name in rat or (name.startswith("eye:") and "eye:*" in rat))
+            tag = ("  REPORT" if detail.startswith("report: ") else "  WARN  " if detail.startswith("WARN: ") else "  PASS  ") if ok else (
+                "  KNOWN " if known else "  FAIL  ")
             print(tag + name + " : " + detail)
             if not ok and not known:
                 self.fails.append("universal " + name)
@@ -1312,22 +1434,27 @@ class VerifyPage:
         if self.fails:
             print("\nFAILED: " + "; ".join(self.fails))
             return code or 1
-        print("\nOK")
+        st = page_sources(self.html)
+        if st and st[0] == "stale":   # item 31: a pass on a page its sources have moved past proves nothing about src/
+            print("\nOK, but a STALE PASS: %s was built before its sources moved (%s); rebuild: %s" % (self.key, "; ".join(st[1][:4]), st[2]))
+        else:
+            print("\nOK")
         return code or 0
 
 
 @contextlib.asynccontextmanager
 async def verify_page(html, here=None, size="1280x800", query="", root=None, init=(), settle_ms=2500, lock=True, args=None,
-                      ready_js=None, routes=()):
+                      ready_js=None, routes=(), checks=None):
     """Open `html` for a verify and run the universal asserts after the build's own (see the module docstring).
     here: the build's folder (its BUDGETS.json, its three.min.js); root: the folder to serve (default the page's);
     ready_js: the page's own ready test when it is not one READY_JS knows (the error panel filling still counts);
-    routes: what the page loads from elsewhere (open_page)."""
+    routes: what the page loads from elsewhere (open_page); checks: the survey's opt-in checks for this run (SURVEY, or
+    names from it; tools/checks_optin.json adds the build's own)."""
     html = os.path.abspath(html)
     folder = os.path.dirname(html)
     if here is None:
         here = os.path.dirname(folder) if os.path.basename(folder) == "dist" else folder
-    V = VerifyPage(html, here)
+    V = VerifyPage(html, here, checks)
     for f in (html, os.path.join(here, "BUDGETS.json"), RATCHET):
         if os.path.isfile(f):
             _touched(f)
@@ -1337,14 +1464,22 @@ async def verify_page(html, here=None, size="1280x800", query="", root=None, ini
     from playwright.async_api import async_playwright
     lk = gpu_lock(what=V.key) if (lock and is_gpu()) else contextlib.nullcontext()
     try:
-        if lk.__enter__():
-            print("harness: on the %s lane" % os.environ.get("KRATOR_GPU_LANE_HELD", "arc"), flush=True)
+        lk.__enter__()
     except GpuLockTimeout as e:
         print("FAILED: " + str(e))
         raise SystemExit(3)
     try:
         async with async_playwright() as p:
             V.browser = await launch_chromium(p, args or GL_ARGS)
+            try:   # item 22: the renderer first, so a log says at its head where the page ran
+                p0 = await V.browser.new_page()
+                V.renderer = await p0.evaluate(RENDERER_JS)
+                await p0.close()
+            except Exception as e:
+                V.renderer = "unknown: " + str(e).splitlines()[0][:80]
+            print("harness: renderer %s; lane %s; KRATOR_GL=%s%s" % (
+                V.renderer, os.environ.get("KRATOR_GPU_LANE_HELD") or "none", "gpu" if is_gpu() else "swiftshader (software)",
+                "; survey checks: " + ", ".join(sorted(V.checks)) if V.checks else ""), flush=True)
             try:
                 with serve(root or folder) as port:
                     V.port = port
@@ -1867,6 +2002,10 @@ def cache_record(script, args, touched_lines, cwd=None):
         return None
     e = {"script": _rel(script, root), "args": args_n, "hash": h, "files": sorted(files), "passed": time.strftime("%Y-%m-%dT%H:%M:%S"),
          "lane": info.get("lane") or ("gpu (no lane)" if is_gpu() else "swiftshader"), "renderer": info.get("renderer", "")}
+    page = next((a for a in args_n if a.endswith(".html")), None)   # item 31: the page's sources when it passed
+    st = page_sources(os.path.join(root, page)) if page else None
+    if st:
+        e["sources"], e["sources_hash"] = st[0], st[3]
     path = cache_entry_path(e["script"], args_n)
     os.makedirs(CACHE_DIR, exist_ok=True)
     tmp = path + ".%d.tmp" % os.getpid()
@@ -1883,9 +2022,14 @@ def verify_wrap(script, args, no_cache=False):
     if cacheable:
         e = cache_lookup(script, args)
         if e:
-            print("harness: cached pass: %s %s passed %s on the same bytes (lane %s%s); nothing rerun, no shots written. "
-                  "--no-cache to rerun." % (e["script"], " ".join(e["args"]), e["passed"], e["lane"],
+            page = next((a for a in e["args"] if a.endswith(".html")), None)
+            st = page_sources(os.path.join(_repo_root(script), page)) if page else None
+            stale = st and st[0] == "stale"   # item 31: the page's sources moved since it was built
+            print("harness: cached %spass: %s %s passed %s on the same bytes (lane %s%s); nothing rerun, no shots written. "
+                  "--no-cache to rerun." % ("STALE " if stale else "", e["script"], " ".join(e["args"]), e["passed"], e["lane"],
                                              ", " + e["renderer"] if e.get("renderer") else ""), flush=True)
+            if stale:
+                print("harness: STALE PASS: the page was built before its sources moved (%s); rebuild: %s" % ("; ".join(st[1][:4]), st[2]), flush=True)
             return 0
     if is_gpu() and not timing_run([script] + args) and _cloud().load_config():
         return _verify_routed(script, args, cacheable)

@@ -302,7 +302,7 @@ def main():
         sys.path.insert(0, os.path.join(_ROOT, 'tools', 'textures'))
         import matlib_pack as _mp
         html = _mp.write_sidecar(SIDE, html, HERE, 'yuni.tex.js', prune=False)
-    with open(OUT, 'w', encoding='utf-8') as fh:
+    with open(OUT, 'w', encoding='utf-8', newline='\n') as fh:
         fh.write(html)
     def flavour(target, title, h1, loading):
         t = html.replace('<title>Yuni</title>', '<title>%s</title>' % title, 1)
@@ -311,9 +311,9 @@ def main():
 
     sheet = flavour('sheet', 'Yuni Building Kit', 'Yuni — building kit', 'Laying out the kit…')
     flora = flavour('flora', 'Yuni Plants',       'Yuni — plants',       'Laying out the plants…')
-    with open(OUT_SHEET, 'w', encoding='utf-8') as fh:
+    with open(OUT_SHEET, 'w', encoding='utf-8', newline='\n') as fh:
         fh.write(sheet)
-    with open(OUT_FLORA, 'w', encoding='utf-8') as fh:
+    with open(OUT_FLORA, 'w', encoding='utf-8', newline='\n') as fh:
         fh.write(flora)
     # artifact flavour: the publish skeleton supplies doctype/html/head/body, so strip ours
     import re as _re
@@ -322,7 +322,7 @@ def main():
         a_ = src_html
         for tag in ('<!DOCTYPE html>','<html lang="en">','<head>','</head>','<body>','</body>','</html>','<meta charset="utf-8">','<meta name="viewport" content="width=device-width,initial-scale=1">'):
             a_ = a_.replace(tag,'')
-        with open(os.path.join(HERE,'publish',name),'w', encoding='utf-8') as fh: fh.write(a_.lstrip())
+        with open(os.path.join(HERE,'publish',name),'w', encoding='utf-8', newline='\n') as fh: fh.write(a_.lstrip())
     with open(MANIFEST, 'w', encoding='utf-8') as fh:
         json.dump({f: hashlib.sha1(bodies[f].encode()).hexdigest()[:12] for f in order},
                   fh, indent=1, sort_keys=True)

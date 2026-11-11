@@ -9,6 +9,9 @@
     python3 tools/test_all.py --no-build   # skip the rebuild and the baseline (lints and tests only, on the committed pages)
     python3 tools/test_all.py --nightly --no-cache   # run every verify, even one that passed on the same page before
     python3 tools/test_all.py --list       # print the steps and exit
+    python3 tools/test_all.py --help       # this text
+
+A node test that requires a dist/ bundle still a Git LFS pointer is skipped, naming the pull (tools/lfs_needs.py --test).
 
 Exit code 1 if any step fails. Each step prints PASS, FAIL or SKIP with its time; failures print the tail of their
 output. Nothing here edits a tracked file except the rebuild, which writes the pages every build.py writes and each
@@ -131,6 +134,16 @@ def node_tests():
     return [os.path.relpath(t, ROOT) for t in tests]
 
 
+def node_pointers(test):
+    """The dist/ bundles a node test requires that are still LFS pointers (tools/lfs_needs.py; item 23)."""
+    sys.path.insert(0, os.path.join(ROOT, 'tools'))
+    import lfs_needs
+    try:
+        return lfs_needs.pointers(lfs_needs.test_reads(test.replace(os.sep, '/')))
+    except OSError:
+        return []
+
+
 def steps(nightly, build):
     s = [('port lint (every build and core)', [PY, 'tools/check_port.py']),
          ('port lint (openworld/outposts: shared data, not a build)', [PY, 'tools/check_port.py', 'openworld/outposts']),
@@ -213,6 +226,9 @@ def steps(nightly, build):
 
 
 def main(argv):
+    if '--help' in argv or '-h' in argv:   # the survey: `--help` used to run the whole suite
+        print(__doc__)
+        return 0
     nightly, build = '--nightly' in argv, '--no-build' not in argv
     plan = steps(nightly, build)
     if '--list' in argv:
@@ -226,6 +242,11 @@ def main(argv):
         if cmd is None:
             print('SKIP  %s (tool missing)' % name, flush=True)
             continue
+        if name.startswith('node '):   # item 23: a bundle the test requires is still an LFS pointer: say the pull, do not run it
+            ptr = node_pointers(name[5:])
+            if ptr:
+                print('SKIP  %s (needs %s, an LFS pointer: python3 tools/lfs_needs.py --test %s --pull)' % (name, ', '.join(ptr), name[5:]), flush=True)
+                continue
         t = time.time()
         r = subprocess.run(cmd, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
                            encoding='utf-8', errors='replace', timeout=1800)

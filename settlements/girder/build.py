@@ -278,7 +278,7 @@ def main():
         sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
         import matlib_pack as _mp
         html = _mp.write_sidecar(SIDE, html, os.path.dirname(OUT), 'girder.tex.js', prune=False)
-    with open(OUT, 'w', encoding='utf-8') as fh:
+    with open(OUT, 'w', encoding='utf-8', newline='\n') as fh:
         fh.write(html)
     with open(MANIFEST, 'w', encoding='utf-8') as fh:
         json.dump({f: hashlib.sha1(bodies[f].encode()).hexdigest()[:12] for f in order},

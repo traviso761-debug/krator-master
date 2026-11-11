@@ -146,7 +146,7 @@ def main():
         print('BIOME FRAGMENT DEPENDS ON THE HOST:\n  ' + '\n  '.join(bad)); return 1
     BSRC.report(vendor_check=vendor_check)   # --list-sources: every file read so far is what the page is made of (and what --vendor-check compares); then exit
     os.makedirs(DIST, exist_ok=True)
-    html = ''.join(out); open(os.path.join(DIST, OUT), 'w', encoding='utf8').write(html)
+    html = ''.join(out); open(os.path.join(DIST, OUT), 'w', encoding='utf8', newline='\n').write(html)
     m = re.search(r'<script>\n(?!document)(.*)</script>\s*</body>', html, re.S)
     chk = os.path.join(HERE, '.syntax.js'); open(chk, 'w', encoding='utf8').write(m.group(1) if m else '')
     try:
