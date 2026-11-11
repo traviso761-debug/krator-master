@@ -100,7 +100,7 @@ function miresBuild(){
 // ---------------------------------------------------------------- the stage record
 const T_={sph:new THREE.Color(0x8a7a4a),sph2:new THREE.Color(0x9a6a48),str:new THREE.Color(0x6a6a3e),flark:new THREE.Color(0x4a4a32),peat:new THREE.Color(0x3a2a20),
  pal:new THREE.Color(0x7a7262),red:new THREE.Color(0x7a4a32)};
-const STREAM_PTS=STREAM.map((p,k)=>[p[0],STREAM_W(k),p[1]]);
+const STREAM_PTS=STREAM.map((p,k)=>[p[0],p[1],STREAM_W(k)]);   /* WATER.flow's points are [x, z, y] */
 Object.assign(STAGE,{
  types:['mast','river','rim'],unlike:[['mast','river']],size:{mast:.45},share:{mast:1.2,river:1,rim:1},reach:{mast:[50,320],river:[50,380],rim:[40,260]},cell:180,
  tint:{mast:0x5a6a3a,river:0x4a5a3a,rim:0x8a8278},tintK:.14,seamCol:0x2a2018,

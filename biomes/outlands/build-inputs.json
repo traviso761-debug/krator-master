@@ -138,7 +138,7 @@
     "biomes/outlands/stations/_shared/89z-host-atmos.js": "d36481b3a0db47f0d5b1d965a2ad078e35f669cbf962d221f1546b5fb9311802",
     "biomes/outlands/stations/_shared/89zw-host-water.js": "6372912b501df116e73dd0e3523d9d74b56af591cc756bb6764bc8b96492db23",
     "biomes/outlands/stations/_shared/89zx-host-build.js": "c1d74fd5dddaac778c8542de3182fe7d7bf42158182acc333752a998eac011f4",
-    "biomes/outlands/stations/_shared/98-host-views.js": "a24f90e486328558c5d04eda48dca0736e59f4fca9d5fc439b0c3888ccdf1e15",
+    "biomes/outlands/stations/_shared/98-host-views.js": "c38080d349687413aea0ecda25cad64e179cfbfdf6b6b085ecd13f19c8d1d8e7",
     "biomes/outlands/stations/gems/45-host-stage.js": "8803d3d30af7ca345bda41f3b1cc3f38d95a3eaffb950b13c4069e876e142d59",
     "biomes/outlands/stations/gems/station.json": "eb8f117b6905d8e492a3d6a1f6a03e1eea03bcb3c25308b6aa7c2d2ef9532720",
     "biomes/outlands/tex/flesh.cells.albedo.webp": "6e4e9e482797e7216b9c62b2017dee347b7b4f81ffb88296066231af6dd22964",
@@ -228,10 +228,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/outlands/dist/outlands-gems.html": "1cf39b5acaf581b9b04461598784fcf6129710e2b1415b7add3603842ae3ce91"
+    "biomes/outlands/dist/outlands-gems.html": "2ab534e667ab723ba0a1ce0a183219c2b924788bb9f416f3a5a6e3835bd2972c"
    },
    "outputs_raw": {
-    "biomes/outlands/dist/outlands-gems.html": "1cf39b5acaf581b9b04461598784fcf6129710e2b1415b7add3603842ae3ce91"
+    "biomes/outlands/dist/outlands-gems.html": "2ab534e667ab723ba0a1ce0a183219c2b924788bb9f416f3a5a6e3835bd2972c"
    }
   },
   "build.py --station house": {
@@ -256,7 +256,7 @@
     "biomes/outlands/stations/_shared/89z-host-atmos.js": "d36481b3a0db47f0d5b1d965a2ad078e35f669cbf962d221f1546b5fb9311802",
     "biomes/outlands/stations/_shared/89zw-host-water.js": "6372912b501df116e73dd0e3523d9d74b56af591cc756bb6764bc8b96492db23",
     "biomes/outlands/stations/_shared/89zx-host-build.js": "c1d74fd5dddaac778c8542de3182fe7d7bf42158182acc333752a998eac011f4",
-    "biomes/outlands/stations/_shared/98-host-views.js": "a24f90e486328558c5d04eda48dca0736e59f4fca9d5fc439b0c3888ccdf1e15",
+    "biomes/outlands/stations/_shared/98-host-views.js": "c38080d349687413aea0ecda25cad64e179cfbfdf6b6b085ecd13f19c8d1d8e7",
     "biomes/outlands/stations/house/45-host-stage.js": "eb7c7e4d7ba752bf7bfb520fb7d00f338e62878c28abb8d0e3c098ae3733293a",
     "biomes/outlands/stations/house/station.json": "14de2a6b7395f64b2dfd1b39739902c27a5777a67367892fd959a5e95248a452",
     "biomes/outlands/tex/cap.glossy.albedo.webp": "5b4745225501ca21225aee1463d132dffa24511cae875285af4efcf4a5fa4576",
@@ -368,10 +368,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/outlands/dist/outlands-house.html": "f65cd5d97e77be560878647424bd9d0ddfbfa3ab4571dfff04dff8cf7396e878"
+    "biomes/outlands/dist/outlands-house.html": "e1ecf63eb8bd0e559fbd1a1e4cb32239ed3e8e060c2fcd878ca66c82a3f1a60a"
    },
    "outputs_raw": {
-    "biomes/outlands/dist/outlands-house.html": "f65cd5d97e77be560878647424bd9d0ddfbfa3ab4571dfff04dff8cf7396e878"
+    "biomes/outlands/dist/outlands-house.html": "e1ecf63eb8bd0e559fbd1a1e4cb32239ed3e8e060c2fcd878ca66c82a3f1a60a"
    }
   },
   "build.py --station mires": {
@@ -396,8 +396,8 @@
     "biomes/outlands/stations/_shared/89z-host-atmos.js": "d36481b3a0db47f0d5b1d965a2ad078e35f669cbf962d221f1546b5fb9311802",
     "biomes/outlands/stations/_shared/89zw-host-water.js": "6372912b501df116e73dd0e3523d9d74b56af591cc756bb6764bc8b96492db23",
     "biomes/outlands/stations/_shared/89zx-host-build.js": "c1d74fd5dddaac778c8542de3182fe7d7bf42158182acc333752a998eac011f4",
-    "biomes/outlands/stations/_shared/98-host-views.js": "a24f90e486328558c5d04eda48dca0736e59f4fca9d5fc439b0c3888ccdf1e15",
-    "biomes/outlands/stations/mires/45-host-stage.js": "d5f414db5c004b426df7b81fccbf81644f7981c7d9325ebcf0c5cb7b10047f4d",
+    "biomes/outlands/stations/_shared/98-host-views.js": "c38080d349687413aea0ecda25cad64e179cfbfdf6b6b085ecd13f19c8d1d8e7",
+    "biomes/outlands/stations/mires/45-host-stage.js": "9a1c1a9f8a45dd34f0a073c61f39e257a431390a74fa79c43e703589d8f4e6d9",
     "biomes/outlands/stations/mires/station.json": "077d5e916d5d15bc41a00e5d8edb2b2013d8efa691a1848dea50293ca4b3701a",
     "biomes/outlands/tex/cap.glossy.albedo.webp": "5b4745225501ca21225aee1463d132dffa24511cae875285af4efcf4a5fa4576",
     "biomes/outlands/tex/flesh.cells.albedo.webp": "6e4e9e482797e7216b9c62b2017dee347b7b4f81ffb88296066231af6dd22964",
@@ -487,10 +487,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/outlands/dist/outlands-mires.html": "2ddd6c96ed61023b117abcd50e25915b109460d204038518121eeb4dcc8cdef7"
+    "biomes/outlands/dist/outlands-mires.html": "4566fc528dd23e64c95dea785cf40926858262d2d73651d6b3432f8ae24fac63"
    },
    "outputs_raw": {
-    "biomes/outlands/dist/outlands-mires.html": "2ddd6c96ed61023b117abcd50e25915b109460d204038518121eeb4dcc8cdef7"
+    "biomes/outlands/dist/outlands-mires.html": "4566fc528dd23e64c95dea785cf40926858262d2d73651d6b3432f8ae24fac63"
    }
   },
   "build.py --station nursery": {
@@ -515,7 +515,7 @@
     "biomes/outlands/stations/_shared/89z-host-atmos.js": "d36481b3a0db47f0d5b1d965a2ad078e35f669cbf962d221f1546b5fb9311802",
     "biomes/outlands/stations/_shared/89zw-host-water.js": "6372912b501df116e73dd0e3523d9d74b56af591cc756bb6764bc8b96492db23",
     "biomes/outlands/stations/_shared/89zx-host-build.js": "c1d74fd5dddaac778c8542de3182fe7d7bf42158182acc333752a998eac011f4",
-    "biomes/outlands/stations/_shared/98-host-views.js": "a24f90e486328558c5d04eda48dca0736e59f4fca9d5fc439b0c3888ccdf1e15",
+    "biomes/outlands/stations/_shared/98-host-views.js": "c38080d349687413aea0ecda25cad64e179cfbfdf6b6b085ecd13f19c8d1d8e7",
     "biomes/outlands/stations/nursery/45-host-stage.js": "694854488917517a25f33b39974cbcb2a3e4ad32c2dc94ca10a400c77572f067",
     "biomes/outlands/stations/nursery/station.json": "4d2b71fc5868ac5ffad2798a7c6bf50df13a6289cd8109f1fe70740a77ab3988",
     "biomes/outlands/tex/cap.glossy.albedo.webp": "5b4745225501ca21225aee1463d132dffa24511cae875285af4efcf4a5fa4576",
@@ -605,10 +605,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/outlands/dist/outlands-nursery.html": "0a2ea5e02c40e017c25b50143afb19e5d8a85daa7163067cf3e1251ba1b056ef"
+    "biomes/outlands/dist/outlands-nursery.html": "58936c0388873b3a301047dd192814b64b7171ce869e85942ee929a0bb17fe2f"
    },
    "outputs_raw": {
-    "biomes/outlands/dist/outlands-nursery.html": "0a2ea5e02c40e017c25b50143afb19e5d8a85daa7163067cf3e1251ba1b056ef"
+    "biomes/outlands/dist/outlands-nursery.html": "58936c0388873b3a301047dd192814b64b7171ce869e85942ee929a0bb17fe2f"
    }
   },
   "build.py --station plains": {
@@ -633,7 +633,7 @@
     "biomes/outlands/stations/_shared/89z-host-atmos.js": "d36481b3a0db47f0d5b1d965a2ad078e35f669cbf962d221f1546b5fb9311802",
     "biomes/outlands/stations/_shared/89zw-host-water.js": "6372912b501df116e73dd0e3523d9d74b56af591cc756bb6764bc8b96492db23",
     "biomes/outlands/stations/_shared/89zx-host-build.js": "c1d74fd5dddaac778c8542de3182fe7d7bf42158182acc333752a998eac011f4",
-    "biomes/outlands/stations/_shared/98-host-views.js": "a24f90e486328558c5d04eda48dca0736e59f4fca9d5fc439b0c3888ccdf1e15",
+    "biomes/outlands/stations/_shared/98-host-views.js": "c38080d349687413aea0ecda25cad64e179cfbfdf6b6b085ecd13f19c8d1d8e7",
     "biomes/outlands/stations/plains/45-host-stage.js": "4167de156d93ceee9d77c6b9e8fde9fb396a5f04936c7982a6ce6e9f925bc01b",
     "biomes/outlands/stations/plains/station.json": "ebf99769299f1c31d1ec1cc62d330eb09464973241b3b60438a9b19411836316",
     "biomes/outlands/tex/flesh.cells.albedo.webp": "6e4e9e482797e7216b9c62b2017dee347b7b4f81ffb88296066231af6dd22964",
@@ -723,10 +723,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/outlands/dist/outlands-plains.html": "289ba2e573f1a075299fe3c64290e206d02acf26db5776c9ffa4df782518c536"
+    "biomes/outlands/dist/outlands-plains.html": "d70303111b08f684fc4db33178af6ab13c4c276c34d366fe7c00ee32cc70e411"
    },
    "outputs_raw": {
-    "biomes/outlands/dist/outlands-plains.html": "289ba2e573f1a075299fe3c64290e206d02acf26db5776c9ffa4df782518c536"
+    "biomes/outlands/dist/outlands-plains.html": "d70303111b08f684fc4db33178af6ab13c4c276c34d366fe7c00ee32cc70e411"
    }
   },
   "build.py --station river": {
@@ -751,8 +751,8 @@
     "biomes/outlands/stations/_shared/89z-host-atmos.js": "d36481b3a0db47f0d5b1d965a2ad078e35f669cbf962d221f1546b5fb9311802",
     "biomes/outlands/stations/_shared/89zw-host-water.js": "6372912b501df116e73dd0e3523d9d74b56af591cc756bb6764bc8b96492db23",
     "biomes/outlands/stations/_shared/89zx-host-build.js": "c1d74fd5dddaac778c8542de3182fe7d7bf42158182acc333752a998eac011f4",
-    "biomes/outlands/stations/_shared/98-host-views.js": "a24f90e486328558c5d04eda48dca0736e59f4fca9d5fc439b0c3888ccdf1e15",
-    "biomes/outlands/stations/river/45-host-stage.js": "a4ab11d7557148920ef6407d922afc90fb03c751f9dac5867853235b7355656e",
+    "biomes/outlands/stations/_shared/98-host-views.js": "c38080d349687413aea0ecda25cad64e179cfbfdf6b6b085ecd13f19c8d1d8e7",
+    "biomes/outlands/stations/river/45-host-stage.js": "029dcef0fa8c879e15879f492a04058f039e424e4a18877dc4782f5c2d73d9e5",
     "biomes/outlands/stations/river/station.json": "5aadd6657ec2fdf0d126928296443e15fe560a594d731cd30d4ac7e12d974f65",
     "biomes/outlands/tex/cap.glossy.albedo.webp": "5b4745225501ca21225aee1463d132dffa24511cae875285af4efcf4a5fa4576",
     "biomes/outlands/tex/flesh.cells.albedo.webp": "6e4e9e482797e7216b9c62b2017dee347b7b4f81ffb88296066231af6dd22964",
@@ -840,10 +840,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/outlands/dist/outlands-river.html": "d45811d50d1ddb5b2f3d7c5a9337e83269289fd1dd73d4f42e043c3d032188aa"
+    "biomes/outlands/dist/outlands-river.html": "be2d60db20be7215d4c162092242434ec5c103bc6f48f26853e8a4c75370b728"
    },
    "outputs_raw": {
-    "biomes/outlands/dist/outlands-river.html": "d45811d50d1ddb5b2f3d7c5a9337e83269289fd1dd73d4f42e043c3d032188aa"
+    "biomes/outlands/dist/outlands-river.html": "be2d60db20be7215d4c162092242434ec5c103bc6f48f26853e8a4c75370b728"
    }
   }
  }

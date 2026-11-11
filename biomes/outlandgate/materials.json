@@ -1,0 +1,10 @@
+{
+ "build": "ogate",
+ "note": "The Outland Gate kit's adapter onto the material library (core/materials/PLAN.md; biomes/outlandgate/PLAN.md section 8). Station 1, the Narrows: three ground layers (src/84-host-ground.js, KGROUND): ground.grass.lush (the Cfa floor's meadow), ground.shingle (the braid bars), ground.brown_mud_02 (the channels' lips). The trees are ebadlands' (read in place: their families come from its pack, build.py's KIN). Run python3 tools/textures/pack.py biomes/outlandgate after any change, then build.",
+ "size": 512,
+ "families": {
+  "ground.grass": {"lib": "ground.grass.lush", "scale": [2.5, 2.5], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.3, "specular": 0.25, "mapOnly": true},
+  "ground.shingle": {"lib": "ground.shingle", "scale": [3.0, 3.0], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.3, "specular": 0.25, "mapOnly": true},
+  "ground.mud": {"lib": "ground.brown_mud_02", "scale": [3.0, 3.0], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.3, "specular": 0.25, "mapOnly": true}
+ }
+}

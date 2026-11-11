@@ -96,7 +96,7 @@ function riverBuild(){
 // ---------------------------------------------------------------- the stage record
 const T_={loam:new THREE.Color(0x4a4434),moss:new THREE.Color(0x4e6244),green:new THREE.Color(0x5a7a42),gold:new THREE.Color(0xb09a52),brown:new THREE.Color(0x7a5e3e),
  floor:new THREE.Color(0xa88a62),floor2:new THREE.Color(0x8e7454),mud:new THREE.Color(0x5e5240),rock:new THREE.Color(0x7a6a5e),gravel:new THREE.Color(0x8e8070)};
-const RIVER_PTS=(function(){const P=[];for(let z=-3700;z<=RIV_Z1+120;z+=30)P.push([rivX(z),Math.max(rivW(z),LAKE_L+.05),z]);return P;})();
+const RIVER_PTS=(function(){const P=[];for(let z=-3700;z<=RIV_Z1+120;z+=30)P.push([rivX(z),z,Math.max(rivW(z),LAKE_L+.05)]);return P;})();   /* WATER.flow's points are [x, z, y] */
 Object.assign(STAGE,{
  types:['mast','river'],unlike:[['mast','river']],share:{mast:1,river:1.5},
  tint:{mast:0x3e5a46,river:0x6a7a3a},tintK:.16,
@@ -119,7 +119,7 @@ Object.assign(STAGE,{
  atmos:{climate:{wet:true,cold:false},fog:{falloff:1/700,sun:.3,sky:.35}},
  water:{lakes:[{name:'The 705 m lake',label:'The 705 m lake (the river colony\'s shallows)',level:LAKE_L,box:[-3740,700,1400,3740],seed:[LAKE.x,LAKE.z],cell:6,band:40,
    land:(x,z)=>lakeD(x,z)>1.3,shallow:0x5a7a68,deep:0x234a50}],
-  flows:[{name:'The river',pts:RIVER_PTS,width:RIVER_PTS.map(p=>34+10*smooth(-1000,1200,p[2])),speed:1.6,shallow:0x6a8070,deep:0x2e4a48,step:8,across:4,margin:1.6}]},
+  flows:[{name:'The river',pts:RIVER_PTS,width:RIVER_PTS.map(p=>34+10*smooth(-1000,1200,p[1])),speed:1.6,shallow:0x6a8070,deep:0x2e4a48,step:8,across:4,margin:1.6}]},
  build:{decay:true,quality:.55},decayForms:['logcrust'],
  structures:riverBuild,
  views(){const K=STAGEKIT,D=K.near('deckcap',rivX(-1800)-700,-1800),C=K.near('curtain',rivX(-1500)-300,-1500),W=K.near('combmast',rivX(-1500)+700,-1500),
@@ -141,9 +141,9 @@ Object.assign(STAGE,{
    'Log crust on a fallen mast':K.at(Lg,8,1.6,2,.4),
   };},
  checks(add){add('the fields and the village kept clear of the colonies',RVCHK.clear(OUTL.INST));add('the river graded (it never climbs)',RVCHK.graded(RIVER_PTS));},
- negatives(add){add('a deck cap in a field',RVCHK.clear([{key:'deckcap',x:PLOTS[0]?PLOTS[0].x:0,z:PLOTS[0]?PLOTS[0].z:0}]));add('a river that climbs',RVCHK.graded([[0,700,0],[0,710,30],[0,700,60]]));},
+ negatives(add){add('a deck cap in a field',RVCHK.clear([{key:'deckcap',x:PLOTS[0]?PLOTS[0].x:0,z:PLOTS[0]?PLOTS[0].z:0}]));add('a river that climbs',RVCHK.graded([[0,0,700],[0,30,710],[0,60,700]]));},
 });
 const RVCHK={
  clear(I){const bad=I.filter(f=>FIELDZ(f.x,f.z)>.35&&terrainH(f.x,f.z)>LAKE_L+3||Math.hypot(f.x-VILLAGE.x,f.z-VILLAGE.z)<VILLAGE.r-1);
   return{ok:!bad.length&&PLOTS.length>0,detail:bad.length?bad.length+' forms in the fields or the village (first '+bad[0].key+')':PLOTS.length+' field plots and the village, no colony form in them'};},
- graded(P){let up=0;for(let i=1;i<P.length;i++)if(P[i][1]>P[i-1][1]+.01)up++;return{ok:up===0,detail:up?up+' steps that climb':P.length+' points, every step level or down'};}};
+ graded(P){let up=0;for(let i=1;i<P.length;i++)if(P[i][2]>P[i-1][2]+.01)up++;return{ok:up===0,detail:up?up+' steps that climb':P.length+' points, every step level or down'};}};

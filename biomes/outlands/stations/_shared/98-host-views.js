@@ -23,6 +23,8 @@ const COLCHK={
   return{ok:fl.length>0&&!bad.length,detail:bad.length?bad.length+' of '+fl.length+' floating forms off the water':fl.length+' mire pads afloat, each on water over .2 m deep at its level'};},
  unlike(W,pairs){const got=new Set();W.forEach(f=>{if(f.c2type&&f.c2type!==f.type)got.add([f.type,f.c2type].sort().join('|'));});const miss=pairs.map(p=>p.slice().sort().join('|')).filter(p=>!got.has(p));
   return{ok:!miss.length&&(got.size>0||!pairs.length),detail:miss.length?'no warden on a seam between '+miss.join(', ')+(got.size?' (found '+[...got].join(', ')+')':''):got.size?'wardens stand on seams between '+[...got].join(', '):'no unlike seam asked'};},
+ flat(D){const bad=D.filter(f=>{f.d.mesh.geometry.computeBoundingBox();const b=f.d.mesh.geometry.boundingBox,lo=Math.min(...f.F.pts.map(p=>p[2])),hi=Math.max(...f.F.pts.map(p=>p[2]));return b.min.y<lo-6||b.max.y>hi+6;});
+  return{ok:!bad.length,detail:bad.length?bad.length+' water ribbons not lying on their line\'s levels (first '+bad[0].F.name+')':D.length+' water ribbons, each within 6 m of its line\'s levels'};},
  units(n,max){return{ok:n<=max,detail:n+' of '+max+' texture units on the ground (its map, '+KGL.length+' library layers, the horizon, the rain cover, the height fog; +1 for the shadow map)'};},
  drawn(C){const bad=C.filter(c=>c.y<Math.max(terrainH(c.x,c.z),drawnH(c.x,c.z))+.5);return{ok:!bad.length,detail:bad.length?'under the drawn ground: '+bad.map(c=>c.view).join(', '):C.length+' cameras over the drawn ground (the mesh\'s triangles)'};},
 };
@@ -39,6 +41,7 @@ function STATION_CHECKS(add){const I=OUTL.INST,R=I.map(f=>f.role);
  if(R.indexOf('nurse')>=0)add('nurses by the nests',COLCHK.nurse(I));
  if(I.some(f=>f.float))add('floating forms on the water',COLCHK.floats(I));
  if(STAGE.unlike)add('seams between colonies of different types ('+STAGE.unlike.map(p=>p.join('|')).join(', ')+')',COLCHK.unlike(I.filter(f=>f.role==='warden'),STAGE.unlike));
+ if(FLOW_DRAWS.length)add('the streams\' water lies on its line (a ribbon, not a wall)',COLCHK.flat(FLOW_DRAWS));
  add('the ground within 16 texture units (counted)',COLCHK.units(groundUnits(),16));
  add('preset cameras over the drawn ground',COLCHK.drawn(Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
  if(STAGE.checks)STAGE.checks(add);}
@@ -56,6 +59,7 @@ function STATION_NEGATIVES(add){const I=OUTL.INST,A={},C=I.filter(f=>f.colony);
  if(nu)add('brood pads far from any nest',COLCHK.nurse([Object.assign({},nu,{nest:0})]));
  if(fl)add('a mire pad on dry ground',COLCHK.floats([Object.assign({},fl,{x:0,z:0,y:terrainH(0,0)})]));
  if(STAGE.unlike&&STAGE.unlike.length)add('wardens only between colonies of one type',COLCHK.unlike([{type:STAGE.unlike[0][0],c2type:STAGE.unlike[0][0]}],STAGE.unlike));
+ if(FLOW_DRAWS.length){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute([0,0,0,0,3900,0,1,0,0],3));add('a water ribbon stood on end',COLCHK.flat([{F:{name:'test',pts:[[0,0,0],[1,0,0]]},d:{mesh:{geometry:g}}}]));}
  add('a ground reading 17 texture units',COLCHK.units(17,16));
  add('a camera under the drawn ground',COLCHK.drawn([{view:'under',x:100,y:Math.min(terrainH(100,100),drawnH(100,100))-3,z:100}]));
  if(STAGE.negatives)STAGE.negatives(add);}
