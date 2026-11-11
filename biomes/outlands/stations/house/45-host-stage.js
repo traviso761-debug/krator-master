@@ -24,14 +24,27 @@ const LAKE_L=2132;
 const GX=-520,GZ=-470,GY=LAKE_L-6;
 const toW=(xl,zl)=>[GX+zl,GZ-xl],toL=(x,z)=>[GZ-z,x-GX];
 const SITE={x0:GX-1250,x1:GX+760,z0:GZ-570,z1:GZ+1500};
-const inSite=(x,z,m)=>{m=m==null?0:m;return x>SITE.x0-m&&x<SITE.x1+m&&z>SITE.z0-m&&z<SITE.z1+m;};
+// THE WHOLE ESCARPMENT. The kit ends its massif on a MASTER JOINT (its builder's x 150: here z = GZ - 150), a plane that lays the galleries,
+// the passages and the lens open in section for the kit's own sheet. In the world the cliff goes on: this page's ground carries the
+// escarpment past the joint (and past the kit's west taper) as one wall, its face on the kit's brow line, its top at the kit's rim plateau
+// (690 m over the water), so the joint's cut face is inside the rock and no room shows on the side. Inside the site's box the kit's rock is
+// the cliff; beyond the joint, west of the face, this page's is (inSite leaves that corner out)
+const ZJ=GZ-150,PLAT=GY+690;
+const xFace=z=>GX-110+22*Math.sin(z*.004+.7)+18*(fbm(5,z*.006,577,2)-.5);   /* the cliff's face: the kit's brow at mid-height */
+function massifH(x,z){const xc=xFace(z);return LAKE_L+4+(PLAT-LAKE_L-4)*smooth(xc+55,xc-18,x)+8*(fbm(x*.012,z*.012,579,2)-.5)*smooth(xc+10,xc-60,x);}
+const beyondJoint=(x,z)=>z<ZJ&&x<xFace(z)+70;
+const inSite=(x,z,m)=>{m=m==null?0:m;return x>SITE.x0-m&&x<SITE.x1+m&&z>SITE.z0-m&&z<SITE.z1+m&&!beyondJoint(x,z);};
 // the wall west of the lake (rising west), the east shore rising to the BSk tableland
 function baseH(x,z){const w=-x-350+120*Math.sin(z*.0011+.5)+80*(fbm(x*.0012,z*.0012,571,2)-.5);   /* metres west of the shore line */
  const wall=w>0?690*smooth(0,1500,w)+.18*Math.max(0,w-1500)+60*smooth(200,1400,w)*(fbm(x*.003,z*.003,573,2)-.5):-18*smooth(0,300,-w);
  const east=x-1900+150*Math.sin(z*.0013+2.2),shore=east>0?240*smooth(0,1200,east)+60*(fbm(x*.002,z*.002,575,3)-.5):0;
  return LAKE_L+4+(w>0?wall:east>0?shore:-22*smooth(0,500,-w)*smooth(0,600,-east));}
 // inside the ruin's box this page's ground sinks under the kit's own (its rock, its plateau, its gorge), meeting it at the box's edge
-function land0(x,z){const h=baseH(x,z);if(!inSite(x,z,40))return h;const k=Math.min(smooth(-40,30,x-SITE.x0),smooth(-40,30,SITE.x1-x),smooth(-40,30,z-SITE.z0),smooth(-40,30,SITE.z1-z));
+function rockH(x,z){return Math.max(baseH(x,z),massifH(x,z));}
+function land0(x,z){const h=rockH(x,z),inB=x>SITE.x0-40&&x<SITE.x1+40&&z>SITE.z0-40&&z<SITE.z1+40;if(!inB)return h;
+ /* the sink under the kit's site; none beyond the joint west of the face, and it starts at the joint itself (the kit's own rock from there) */
+ let k=Math.min(smooth(-40,30,x-SITE.x0),smooth(-40,30,SITE.x1-x),smooth(-40,30,z-SITE.z0),smooth(-40,30,SITE.z1-z));
+ k*=1-smooth(ZJ+6,ZJ-6,z)*smooth(xFace(z)+90,xFace(z)+60,x);
  return mix(h,Math.min(h,LAKE_L-30),k);}
 const _tm={x:NaN,z:NaN,h:0};
 function terrainH(x,z){if(x===_tm.x&&z===_tm.z)return _tm.h;const h=land0(x,z);_tm.x=x;_tm.z=z;_tm.h=h;return h;}
@@ -40,7 +53,7 @@ const POOLS=[];
 // THE RING of turned-away stones: on the land round the ruin, 1.9 km out, a stone every ~55 m (the Coyote Men set them facing outward)
 const RING_R=1900,RING_C=[GX+200,GZ+465];
 const RING=(function(){const out=[];for(let k=0;k<220;k++){const a=k/220*TAU,x=RING_C[0]+Math.cos(a)*RING_R,z=RING_C[1]+Math.sin(a)*RING_R;
-  if(Math.abs(x)>TERR.R-60||Math.abs(z)>TERR.R-60||inSite(x,z,60)||baseH(x,z)<LAKE_L+3)continue;out.push({x,z,a,k});}return out;})();
+  if(Math.abs(x)>TERR.R-60||Math.abs(z)>TERR.R-60||inSite(x,z,60)||rockH(x,z)<LAKE_L+3)continue;out.push({x,z,a,k});}return out;})();
 // ---------------------------------------------------------------- the fields
 const SPINE=[[GX,GZ+465],[GX+500,GZ+465],[RING_C[0]+RING_R*.7,RING_C[1]],[2600,-1500],[2600,1500],[-2400,-2400],[-2400,2400]];for(let x=-2800;x<=2800;x+=1100)for(const z of[-2700,-900,900,2700])SPINE.push([x,z]);
 const NEAR=STAGEKIT.nearField(SPINE,90,260);
@@ -130,16 +143,22 @@ function houseAfter0(){BIO.cur='outl/house';const M=OUTL.COLONY,A={},F=OUTL.byKe
   BIO.put('tubeglow',[p.x,p.y-.04,p.z],Q(0,u(3)*TAU,0),[w,H,w],col(PAL.tubeg,u(4)),{label:S.name+' (out of pattern: the House colony\'s glow in the hollow)'});note(S,null,p.x,p.z,p.y,{H,hollow:true});});
  return out;}
 // ---------------------------------------------------------------- the stage record
-const T_={rock:new THREE.Color(0x8a6a58),rock2:new THREE.Color(0x7a5e50),tan:new THREE.Color(0xa08a6a),tan2:new THREE.Color(0x8a7a5e),mud:new THREE.Color(0x5e5444),bed:new THREE.Color(0x4a4a40)};
+const t_=new THREE.Color();
+const T_={sand1:new THREE.Color(0xb08e70),sand2:new THREE.Color(0x8a6c54),sand3:new THREE.Color(0x6a5040),varn:new THREE.Color(0x4e3a2e),
+ rock:new THREE.Color(0x8a6a58),rock2:new THREE.Color(0x7a5e50),tan:new THREE.Color(0xa08a6a),tan2:new THREE.Color(0x8a7a5e),mud:new THREE.Color(0x5e5444),bed:new THREE.Color(0x4a4a40)};
 Object.assign(STAGE,{
  types:['copper','steppe','river'],seeds:[{id:'house',x:HSEED[0],z:HSEED[1],type:'copper'}],reach:{copper:[900,1500]},share:{copper:.05},unlike:[['river','steppe']],
  tint:{copper:0x6e8a7a,steppe:0x8a6e52,river:0x5a6a4a},tintK:.12,
  paint(x,z,H,c,f){const p1=fbm(x*.012+5,z*.012-2,.7,2),p2=fbm(x*.03-3,z*.03+8,.9,2),rk=f('rock'),sh=f('shore'),west=x<-300?1:0;
-  c.copy(T_.tan).lerp(T_.tan2,smooth(.4,.7,p1)*.5);c.lerp(T_.rock,west*.6);c.lerp(T_.rock2,west*smooth(.45,.7,p2)*.4);c.lerp(T_.rock,rk*.7);c.lerp(T_.mud,sh*.6);if(H<LAKE_L)c.lerp(T_.bed,.8);},
+  c.copy(T_.tan).lerp(T_.tan2,smooth(.4,.7,p1)*.5);c.lerp(T_.rock,west*.6);c.lerp(T_.rock2,west*smooth(.45,.7,p2)*.4);c.lerp(T_.mud,sh*.6);if(H<LAKE_L)c.lerp(T_.bed,.8);
+  /* the escarpment's face, in the kit's bedded sandstone (its aiRockTx: tan beds, darker partings) so this page's cliff past the joint and the
+     kit's own read as one wall: beds by height, warped a little along the wall; desert varnish streaking down from the rim */
+  const fc=smooth(.25,.6,rk);if(fc>0){const u=H*.11+2.2*(fbm(x*.004,z*.004,581,2)-.5),b=u-Math.floor(u),bed=b<.18?T_.sand3:b<.55?T_.sand1:T_.sand2;
+   t_.copy(bed).lerp(T_.sand2,smooth(.3,.7,fbm(x*.02,H*.02,583,2))*.35);t_.lerp(T_.varn,smooth(.55,.8,fbm(z*.03,H*.004,585,2))*.45);c.lerp(t_,fc*.92);}},
  layers:[{fam:'ground.gravel',name:'gravel',amt:.4,gain:1.2},{fam:'ground.steppe',name:'steppe',amt:.45,gain:1.2},{fam:'ground.mud',name:'the lake\'s mud',amt:.55,gain:1.15}],
  gl(x,z){const sh=smooth(.2,.7,FC.at(FC.a.shore,x,z)),st=smooth(.2,.6,FC.at(FC.a.z_steppe,x,z))*(1-sh);return[(1-sh)*(1-st),st,sh];},
  landmarks:[{name:'The lake under Trickster\'s House (2,132 m)',x:1200,z:0,y:LAKE_L-25,r:700,h:30}],probes:[[1200,-4,0]],
- far:{h:(x,z)=>baseH(x,z)+(x<-3400?.35*(-3400-x):0),col(x,z,y,q){const L=a=>a.map(v=>Math.pow(v/255,2.2)),R=L([140,108,90]),T=L([160,140,108]),HZ=L([200,204,206]),w=x<0?1:0;
+ far:{h:(x,z)=>rockH(x,z)+(x<-3400?.35*(-3400-x):0),col(x,z,y,q){const L=a=>a.map(v=>Math.pow(v/255,2.2)),R=L([140,108,90]),T=L([160,140,108]),HZ=L([200,204,206]),w=x<0?1:0;
    const c=[T[0]+(R[0]-T[0])*w,T[1]+(R[1]-T[1])*w,T[2]+(R[2]-T[2])*w],t=.55*smooth(3500,10000,q.r);return[c[0]+(HZ[0]-c[0])*t,c[1]+(HZ[1]-c[1])*t,c[2]+(HZ[2]-c[2])*t];}},
  sky:{"air":{"pressure":1.22,"humidity":0.4},"clouds":{"cover":0.3,"cumulus":0.6,"cirrus":0.45},"fogDensity":0.00013,
   "ridges":[{"base":3.4,"amp":1.2,"cycles":18,"octaves":2,"seed":63,"win":[270,100,2.2],"floor":-0.2,"dist":30000,"haze":0.05,"forestH":0,"rock":[0.58,0.48,0.42]},
