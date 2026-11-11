@@ -17,3 +17,12 @@
   at the inset's scale (at least 2 m) inside one.
 - **The far land.** `region/crest.json` widens the cut past the airless crest. From station 1 it changes nothing: the planet is small
   (R 4,813 km), so the crest 194 km off drops ~3.9 km and sits under the bench's upper steps. Stations 2 and 3 will see it.
+- **Stations** (2026-11-10). src/ is the host for every page; a station's `stations/<name>/44s-host-site.js` replaces src/'s site (BIOME-API.md,
+  "What the host reads beside the kit"), and its `station.json` names the lowland kits it reads (`"lowlands"`; none given means station 1's
+  nwlowlands). A station's region is `region/station-<name>.json` (`region/far.py`'s SITES). Build one with `python build.py --station <name>`,
+  every page with `--all`.
+- **Reading the lowlands by key.** build.py slots each lowland kit's species and tree builders as `48e*`/`48f*` (after the NW outer wall's,
+  before this kit's 50), closes each registry with a one-line kitEnd, and packs only the families its species draw with (`LOWLANDS`). 88k
+  grows them with `BIO.kitBuilder` (or `BIO.kin`), drawn once (no runtime LOD: core/biome's LOD audit then reads one kind of card).
+- **The kit's registry** is `wouterwall` (50 opens it, 70 closes it with `BIO.kitEnd(WOW)`), so the kit's own functions run in it; the NW
+  outer wall's functions run in theirs (do not call `NWOW.place` for this kit's items: it switches to nwouterwall's registry).

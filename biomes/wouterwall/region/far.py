@@ -40,6 +40,15 @@ D = os.path.join(HERE, 'data')
 SITES = {
     # a yuan at ~3.66 km, Dsb, beside Yut-Ma's gully; Mirabilis 20 km south
     'tablelands': {'px': 352, 'py': 716, 'title': 'The loess tablelands'},
+    # the trench lake at 4,430 m (84 km2) under the middle bench's head scarp, Dfc. The plan's px 318,818 is the lake's middle (its 1 km cells
+    # span px 316.5-319.5 there): the page stands 4 km west, on the head scarp over its west shore, the lake filling its east third
+    'slumps': {'px': 316, 'py': 818, 'title': 'The slump terraces'},
+    # the flagship lobe at 4.9-5.0 km under its scar (px 310,872), Dfc; the wall to 7 km 64 km west, the airless rim beyond
+    'sturzstrom': {'px': 320, 'py': 871, 'title': 'The sturzstrom'},
+    # Waywater Ironblack's country at ~3.45 km, Dsb; the river leaves the bench at 2,580 m. The plan's px 360,1010 is half way up the
+    # valley's south wall (3,430 m); the page stands 3 km south of it (half a pixel), on the plateau's rim (3,640 m), so its box canyon
+    # runs from the plateau down through the wall to the valley floor inside the page
+    'edge': {'px': 360, 'py': 1010.75, 'title': 'The edge'},
 }
 EYE = 30.0            # m over the ground: a viewer on a rise
 R_PLANET = 84.0 * 360 / (2 * math.pi) * 1000      # m: the sky model's frame (kmPerDeg 84)

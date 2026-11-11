@@ -51,7 +51,11 @@ WOW.zoneOf=function(F){
  if(F.cave)return 'cave';
  if(F.floor)return 'floor';
  if(F.pillar)return 'pillar';
- if(F.g>1.0)return F.loess>2?'wall':'scarp';
+ if(F.g>1.0)return F.loess>2&&!F.thru?'wall':'scarp';   /* F.thru: a cut gone down through the loess into the rock (the host's) */
+ // a sturzstrom's deposit (F.rubble: 1 on a fresh lobe, about half on an old one, its hummocks softened and grown over)
+ if(F.rubble>.8)return 'runout';
+ if(F.rubble>.3)return 'hummock';
+ if(F.shore>.5)return 'shore';
  if(F.terrace)return 'terrace';
  const warm=F.mean+WOW.AMP.warm;
  if(warm<WOW.BANDS.tundra)return 'fellfield';
@@ -69,7 +73,10 @@ WOW.ZONES={
  pillar:{nw:'none',name:'an earth pillar (a loess column under its capstone)'},
  cave:{nw:'none',name:'a cave house (a yaodong: a vaulted room dug into the loess)'},
  wall:{nw:'none',name:'a loess wall (buff silt standing sheer, its old soils faint dark bands)'},
- scarp:{nw:'rock',name:'a scarp in the crater\'s patchwork rock (megabreccia)'},
+ scarp:{nw:'none',name:'a scarp in the crater\'s patchwork rock (megabreccia): bare (the NW outer wall\'s rock zone roots its stone pine\'s mats, not on a face)'},
+ runout:{nw:'none',name:'a fresh sturzstrom\'s deposit (angular rubble of every rock, hummocks and grooves: nothing has rooted yet)'},
+ hummock:{nw:'fellfield',name:'an old sturzstrom\'s hummocks (the rubble softened under lichen and cushions)'},
+ shore:{nw:'floor',name:'a trench lake\'s shore (gravel, the willows\' fringe)'},
  terrace:{nw:'field',name:'terraced fields (contouring the slope, the Hayrant\'s)'},
  fellfield:{nw:'fellfield',name:'fellfield'},tundra:{nw:'tundra',name:'shrub tundra'},
  gully:{nw:'gully',name:'a side gully (silverthorn, the loess\'s runnels)'},
@@ -77,5 +84,17 @@ WOW.ZONES={
  yuan:{nw:'steppe',name:'the yuan (the tableland\'s flat top: feather-grass steppe)'},
  steppe:{nw:'steppe',name:'feather-grass steppe (a sunny, north-facing slope)'}};
 WOW.nwZone=z=>(WOW.ZONES[z]||{nw:'none'}).nw;
+// THE DUST TOWER (PLAN.md section 4, refs/01): the loess tablelands' own builders, colonies that trap the wind-blown dust and cement it into
+// towers 5-30 m tall, black, with orange spiral bosses: core/terrain's KSTACKS mounds (fluted spires fused on a skirt) BY CELL, so any window
+// over the same world gives the same towers. o: {world, box [x0, z0, x1, z1], ground, accept(x, z), avoid(x, z, r)}; spec overrides WOW.DUST.
+// Each record named and keyed (plant.dusttower) and drawn on organic.dusttower (the host's stacks)
+WOW.DUST={cell:110,p:.2,H:[6,24],r:[2.2,5.5],gap:8,clay:[.2,.18,.17]};
+WOW.dustTowers=function(o,spec){if(typeof KSTACKS==='undefined'||!KSTACKS.mounds)return [];const S=Object.assign({},WOW.DUST,spec||{});
+ return KSTACKS.mounds({id:'dusttower',world:o.world,cell:S.cell,x0:o.box[0],z0:o.box[1],x1:o.box[2],z1:o.box[3],per:1,p:S.p,H:S.H,r:S.r,gap:S.gap,ground:o.ground,soil:S.clay,
+  accept:(x,z,r)=>o.accept(x,z)&&!(o.avoid&&o.avoid(x,z,r))}).map(B=>Object.assign(B,{key:'plant.dusttower',tex:'organic.dusttower',
+  name:'A dust tower ('+(B.top-B.y0).toFixed(0)+' m: a colony that traps the wind-blown dust and cements it into a tower, black with orange spiral bosses)'}));};
+// THE PUYA SPIKE (PLAN.md section 4, refs/02): a giant rosette of grey spears on the dry bench at 4-5 km, its flower spike 8-12 m tall
+// blooming once in a century. Where it grows (50 places it): the band, the zones, a sunny slope's share and the bloomers' share
+WOW.PUYA={mean:[-4.5,4.5],zones:['steppe','tundra','hummock'],cell:16,p:.2,bloom:.025,sunny:-.05};
 WOW.lay=function(o){WOW.FIELDS=o.fields;WOW.R=o.R;WOW.seed=o.seed==null?5200:o.seed;return WOW;};
 WOW.at=function(x,z){const F=WOW.FIELDS(x,z);return {zone:WOW.zoneOf(F),F,clim:WOW.climate(F.mean)};};

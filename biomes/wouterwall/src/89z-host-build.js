@@ -20,6 +20,8 @@ window._biome=null;window._shadow='off';
  if(Q.get('diet')==='0')NWOW.IMPOSTORS=false;   /* ?diet=0: the far trees keep their blobs (nwouterwall's 55) */
  try{window._biome=WOW.build({R:SITE.R-40,quality:q});}catch(e){reportErr('wouterwall: '+e.stack);}
  _mark('wouterwall');
+ try{window._lowlands=growLowlands();}catch(e){reportErr('lowlands: '+e.stack);}   /* 88k: the lowlands' species by key */
+ try{window._crops=growCrops();}catch(e){reportErr('crops: '+e.stack);}   /* 88c: the terraces' crops (kits/crops) */
  (NWOW.TREES||[]).forEach(T=>OBSTACLES.push({x:T.x,z:T.z,r:T.crownR*.4+.6,y0:T.y0-3,y1:T.y0+T.H}));
  if(Q.has('nobake')){window._stats=JSON.parse(JSON.stringify(BIO.stats));window._instances=0;window._bakeCalls=0;return;}
  const b=BIO.bake();

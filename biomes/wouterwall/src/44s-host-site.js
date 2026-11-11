@@ -29,6 +29,16 @@ const SITE={
  caves:{u:.32,n:5,gap:7.5,hw:1.9,depth:9,h:3.6,step:1},
  // the earth pillars (refs/05): loess columns under a capstone, on the trunk gully's dry upper floor
  pillars:{n:12,seed:5211},
+ // the dust towers on the yuan (46: WOW.DUST's defaults; cell m, p a cell's chance)
+ dust:{cell:110,p:.2},
+ // the terraces' crops (88c; kits/crops' wouterwall records): each field one of the rotation, by weight; step: a card every step m
+ crops:{step:2.4,rotation:[['dustmillet',3],['dust-lentil',2],['redstem',2],['bench-garlic',1],['wallhemp',1],['fallow',1]]},
+ // the crops on the terraces (99): at least three of the rotation drawn, every field's crop fitting the crops kit's terrace zone
+ checks:()=>[{name:'the Hayrant\'s crops on the terraced fields (kits/crops: the terrace zone)',run:()=>SITE_CROP_CHECK(window._crops)}],
+ negatives:()=>[{name:'no crop on the terraces',run:()=>SITE_CROP_CHECK(Object.assign({},window._crops,{byCrop:{},plants:0}))},
+  {name:'a crop that does not fit the terraces',run:()=>SITE_CROP_CHECK(Object.assign({},window._crops,{rotation:(window._crops?window._crops.rotation:[]).concat(['rice'])}))}],
+ // what the checks want (99): the zones on the raster, the registered landforms
+ need:{zones:['yuan','wall','floor','terrace','larch','steppe','gully'],keys:{'landform.pillar':6,'house.yaodong':3,'plant.dusttower':8},larch:150},
  snow:{autumn:[700,1200],winter:[-2000,-1900],spring:[-2000,-1900],summer:[2200,3000]},
  eye:30,
  views:V=>{const T=SITE_TRUNK_AT,P0=(typeof PILLARS!=='undefined'&&PILLARS[0])||null,a=T(.25),b=T(.45),s=SITE_SPRING||T(.65),c=SITE_BELOW_SPRING(260);const o={
@@ -91,6 +101,25 @@ function siteRelief(x,z){return sitePoint(x,z).rel;}
 function siteFloor(x,z){const P=sitePoint(x,z);return P.part==='floor'&&P.order===0?1:0;}
 function siteGully(x,z){const P=sitePoint(x,z);return (P.part==='floor'||P.part==='head')&&P.order>0?1:0;}
 function siteYuan(x,z){const P=sitePoint(x,z);return P.part==='yuan'?1:0;}
+// THE STACKS (47 draws and registers them; core/terrain KSTACKS): the earth pillars (refs/05) on the trunk gully's dry upper floor, loess
+// columns capped by a boulder that sheltered them while the gully ate the loess round them away (at 0.75 g they stand taller than Earth's:
+// Bolzano's Erdpyramiden reach 30 m), where the ground is gentle enough to hold one, the foot under the lowest ground round it; and the
+// DUST TOWERS on the yuan (the kit's own colonies, 46's WOW.DUST: KSTACKS mounds by cell, so any window gives the same towers)
+function siteStacks(ctx){const T=SITE.pillars,L=[];if(T){const s=KRAND.stream(KRAND.hash(T.seed,1));
+ const F0=SITE_RECS.trunk.lines[0].pts,n0=F0.length;
+ for(let t=0;t<900&&L.length<T.n;t++){const q=F0[Math.floor(s.range(.08,.6)*n0)],x=q[0]+s.range(-30,30),z=q[1]+s.range(-30,30),r=s.range(2.2,4.6),H=s.range(9,30);
+  const P=sitePoint(x,z);if(P.rec!=='trunk'||P.part!=='floor')continue;if(ctx.CAVES.some(Q=>Math.hypot(Q.c[0]-x,Q.c[1]-z)<Q.depth+r+12))continue;
+  if(ctx.STREAM&&ctx.STREAM.near(x,z,40).d<14)continue;if(L.some(B=>Math.hypot(B.x-x,B.z-z)<B.R+r+9))continue;
+  const G=ctx.COARSE.grade(x,z);if(G.g>.75)continue;
+  const B=KSTACKS.make({id:'pillar'+L.length,kind:'balanced',x,z,y0:ctx.footY(x,z,r),seed:T.seed+L.length,H,r,e:s.range(1,1.35),ry:s.range(0,TAU),taper:s.range(.3,.5),lean:s.range(0,.04)});
+  B.name='An earth pillar (a loess column '+H.toFixed(0)+' m tall under its capstone)';B.key='landform.pillar';B.tex='rock.loess';L.push(B);}}
+ if(SITE.dust)L.push(...WOW.dustTowers({world:SITE.seed,box:[-SITE.R,-SITE.R,SITE.R,SITE.R],ground:ctx.ground,accept:(x,z)=>sitePoint(x,z).part==='yuan'&&ctx.COARSE.grade(x,z).g<.09,
+  avoid:(x,z,r)=>L.some(B=>Math.hypot(B.x-x,B.z-z)<B.R+r+6)},SITE.dust));
+ return L;}
 // the brook: from the spring down the trunk's floor to its mouth (the record's floor never climbs downstream)
 const SITE_STREAM={name:'The spring brook (it rises where the gully reaches the foot of the loess)',width:2.4,
  pts:()=>{if(!SITE_RECS||!SITE_SPRING)return [];return SITE_RECS.trunk.lines[0].pts.slice(SITE_SPRING[2]).map(p=>[p[0],p[1],p[2]]);}};
+// the crops' check: three crops or more drawn in the season, and every crop in the rotation fits the crops kit's terrace zone
+function SITE_CROP_CHECK(C){if(!C)return{ok:false,detail:'no crops pass'};const fit=new Set(CROPS.forBiome('wouterwall').filter(r=>r.zone==='terrace').map(r=>r.crop.id)),
+ bad=(C.rotation||[]).filter(id=>id!=='fallow'&&!fit.has(id)),n=Object.keys(C.byCrop||{}).length,want=SEASON==='winter'?1:3;
+ return{ok:n>=want&&!bad.length,detail:(C.plants||0)+' plants in '+(C.fields||0)+' fields ('+(C.fallow||0)+' fallow): '+Object.keys(C.byCrop||{}).map(k=>k+' '+C.byCrop[k]).join(', ')+(bad.length?'; not a terrace crop: '+bad.join(', '):'')};}
