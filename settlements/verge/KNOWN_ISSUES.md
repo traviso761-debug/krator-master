@@ -2,6 +2,11 @@
 
 What is still open, as of 2026-10-05. Each item says what it is, where it lives and what would close it.
 
+## The build
+
+- [x] **Verge takes `core/biome/35-core-anim.js`** (2026-11-10): sedesert's fauna is drawn on `BIO.animMat` since the biome rebuild, so a rebuild
+  of Verge without it threw "BIO.animMat is not a function" on load (the committed page was older than the change and hid it).
+
 ## The host (core/host)
 
 - [x] (2026-10-15) **Verge is on core/host** (ROADMAP.md section 10, stage 3 step 5; `core/host/README.md`). `build.py` takes

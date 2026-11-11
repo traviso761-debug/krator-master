@@ -59,6 +59,10 @@
   "core/biome/30-core-foliage.js",
   "afa83d883601"
  ],
+ "35-core-anim.js": [
+  "core/biome/35-core-anim.js",
+  "5ffb84c40f4b"
+ ],
  "35-core-strata.js": [
   "biomes/sedesert/src/35-core-strata.js",
   "ff19ab2b49c0"
