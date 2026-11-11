@@ -79,8 +79,8 @@
     "kits/tungang/KNOWN_ISSUES.md": "db532c3e972891123a1f461f21baa7e1d569f9cd09c8f34a57921323ad3a03d9",
     "kits/tungang/PORT.md": "1d92d62833a625692729fb69ab3e221ca433773e7ce0562f95fd11bf603e9eee",
     "kits/tungang/build.py": "5e2a53c1dfd129330d99e199c7d7ed24e2736762c8fe675da31338506089397c",
-    "kits/tungang/src/00-head.html": "72032d6ccd6efe1a3b6edd5792e68f4a829c4333b8dfa6ec8fae546f99aaef9f",
-    "kits/tungang/src/26k-kit.js": "b74ed99af1776d8d5c7eecbbd2ebe8d89a732fdd2f97111154000b594b8a7c7e",
+    "kits/tungang/src/00-head.html": "fba12988e841f1850990769e31c4ee6ca7a12a59ecf113ebd50bc39c76b8bc9b",
+    "kits/tungang/src/26k-kit.js": "e5762806cf501b7d71de5a13b96c15d5eeb27f39a0b128a32c74e62b68bd60e2",
     "kits/tungang/src/40-fg-kit.js": "240fef2e68819a70a544dd0eff4992741614bf78a802ef56542b67afe1e95403",
     "kits/tungang/src/50-fg-dwell.js": "f023346b94bd525884f23fd4c0e3256b257f1f6396ffa06085065b6dfd5edcc1",
     "kits/tungang/src/52-fg-civic.js": "6842256932e5cacfe6e927f22fa961a17f803b98a3a0f54433266a51f170e632",
@@ -140,7 +140,7 @@
     "kits/tungang/tex/iron.albedo.webp": "46e256df913b8b1146386d6900b96cb72197a88fa21710b3db30bb23c9559a8b",
     "kits/tungang/tex/iron.normal.webp": "045bf080011e2549ac9af199ddd93427b37cb3c04f7d7dd9ddd7d1e3d85d441b",
     "kits/tungang/tex/iron.rough.webp": "17724d82ae27c19cf237115eafc7a93cebb76a135d556a904a50f596a6600231",
-    "kits/tungang/tex/pack.json": "80f2ed824f8f4c71dfe26356a0ed07d86ba6827be15ed803c4922ddf0588bda9",
+    "kits/tungang/tex/pack.json": "1b4129f0a58dd01c0a6892d1dbba0078d66d773a8c9bf9a2e6d6e9d807a651b8",
     "kits/tungang/tex/paint.albedo.webp": "21a4732c081e0879a047d1bf3c136f9a36eca6d97793b267362ffa58ba27d37b",
     "kits/tungang/tex/paint.normal.webp": "0cd28856f5d519e0c5099cee294cb502ed2ce73a7419fc8bebe0e8e4196790d1",
     "kits/tungang/tex/paint.rough.webp": "dd0a75429d070ca9ebfba0bea007ad32a84444a58c845176d465aa4f0c84cb5d",
@@ -171,7 +171,7 @@
     "kits/tungang/tex/tin.albedo.webp": "8ba6e1ec5bce01cb35b45d81181c2dd4d8c16bf241ee9ba0a21d48fed7c111b6",
     "kits/tungang/tex/tin.normal.webp": "9625c739d77997c2a640a26949c7a86a17ba678747056fc2a32dfda53fd98ba0",
     "kits/tungang/tex/tin.rough.webp": "993fc55a1c58ebfae4ba1c93f88b9a69e6992786a111ee0fc171e5819828fad1",
-    "kits/tungang/tex/turf.albedo.webp": "fb637d996ddd563154f8ba90d2dfae43e485931a3199293624301b58d80de624",
+    "kits/tungang/tex/turf.albedo.webp": "079e5ef5fd7e06e9f1387b73ead893e4b26cad237d8470367535662348f02d0e",
     "kits/tungang/tex/turf.normal.webp": "c1c79a1118a4e7417a5a91bebac2e6a5e7cec64bbc6047ad1cb8ae68d1f8b8ee",
     "kits/tungang/tex/turf.rough.webp": "6849a7acdb13fc53db29db94f4e7b4fa7964d29cb3f0bbc2df4a0d251aa994c5",
     "kits/tungang/tex/tyre.albedo.webp": "4d1caf5fd7456976fdffbc843d6b8616ccb1cac5a0fe08bb41db447f21f0e303",
@@ -203,14 +203,14 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/tungang/build-manifest.json": "f98b62ee5a253118170fb76fb3ab5a3323c1d1df912fb60978c6877a248af59e",
-    "kits/tungang/dist/tungang.html": "c8f3d5dde850adf72e9db16ebc23fcbf9f69ed15c922f5fdac9b8d42e8fdd7d1",
-    "kits/tungang/dist/tungang.tex.tungang.js": "0436577dd91dd987f4ff2ac7cb2be662f0f0239a08b37383db66041eb8087415"
+    "kits/tungang/build-manifest.json": "44bc19a19dd00e8ee949256e1ce0131e05a02d6a02abcc84fc4859785d0aefc0",
+    "kits/tungang/dist/tungang.html": "8754988c106d77283f1edf5de8eeced96f471873fbcf66f0cf192cf86fa36d7b",
+    "kits/tungang/dist/tungang.tex.tungang.js": "73eef3c4e0daa2fc1d384aa8fa154fe6e7c142dd91d258fb88776c8bf35a56a6"
    },
    "outputs_raw": {
-    "kits/tungang/build-manifest.json": "f98b62ee5a253118170fb76fb3ab5a3323c1d1df912fb60978c6877a248af59e",
-    "kits/tungang/dist/tungang.html": "c8f3d5dde850adf72e9db16ebc23fcbf9f69ed15c922f5fdac9b8d42e8fdd7d1",
-    "kits/tungang/dist/tungang.tex.tungang.js": "0436577dd91dd987f4ff2ac7cb2be662f0f0239a08b37383db66041eb8087415"
+    "kits/tungang/build-manifest.json": "44bc19a19dd00e8ee949256e1ce0131e05a02d6a02abcc84fc4859785d0aefc0",
+    "kits/tungang/dist/tungang.html": "8754988c106d77283f1edf5de8eeced96f471873fbcf66f0cf192cf86fa36d7b",
+    "kits/tungang/dist/tungang.tex.tungang.js": "73eef3c4e0daa2fc1d384aa8fa154fe6e7c142dd91d258fb88776c8bf35a56a6"
    }
   }
  }

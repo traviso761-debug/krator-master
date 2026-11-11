@@ -814,8 +814,8 @@
    "specular": 0.08,
    "tint": {
     "contrast": 1.0,
-    "keep": 0.45,
-    "mean": 0.42,
+    "keep": 0.2,
+    "mean": 0.6,
     "sourceMean": 0.4699
    }
   },
