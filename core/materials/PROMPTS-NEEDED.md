@@ -3,7 +3,7 @@
 Every texture or pattern sheet the owner still has to source or generate, each with its finished prompt. Paste a block
 as it is, one image per block. **Everything delivered lives in `PROMPTS-archived.md`** (checked against `core/materials/library/`, `patterns/` and each build's `materials.json` on `origin/main`, 2026-10-19); this file holds only what is still owed.
 
-**Count: 41 prompt blocks** (counted 2026-11-10 at the second integration merge: +1 for the Firebliss Range, section 47; +3 for the Ancient Transit kit, section 46; the owner's delivery of that day -5; 2026-11-09: +11 for Erewhon's citadel, section 41; +2 for the Tents kit's army and Eternian cloths, section 42; the gypsum maze and the Hearth field, sections 43-44; raw clay, section 45; +3 for the southern highlands' upper stations, section 37; +15 for the hyperjungle's lands and the savannah rims, section 40, 2026-11-08).
+**Count: 43 prompt blocks** (counted 2026-11-10 at the second integration merge: +2 for the NE outer wall, section 48; +1 for the Firebliss Range, section 47; +3 for the Ancient Transit kit, section 46; the owner's delivery of that day -5; 2026-11-09: +11 for Erewhon's citadel, section 41; +2 for the Tents kit's army and Eternian cloths, section 42; the gypsum maze and the Hearth field, sections 43-44; raw clay, section 45; +3 for the southern highlands' upper stations, section 37; +15 for the hyperjungle's lands and the savannah rims, section 40, 2026-11-08).
 
 **Delivered 2026-11-03:** section 31's five (the Gills: `rock.lamina.pipe`, `mineral.crust.ferromanganese`, `mineral.crust.brucite`,
 `card.breathfringe`, `card.turf.limed`) and ten owed on unmerged branches (High Rift, nwbay, nhighlands, ringisles, the rift rim, Copper Glacier),
@@ -586,6 +586,24 @@ The four stations are wired on library sets that already exist (`ground.ash`, `g
 `ground.snow` greyed by the plume's ash-fall mask in the paint, `aAshfall` in `84-host-ground.js`; a family under the snow layer where the deposit is high):
 ```
 Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: old wind-packed snow on a volcano's flank dusted and streaked with fine dark basaltic-andesite ash: grey-white snow with a sugary grain, the ash lying in soft dark grey wind streaks and patches, thicker in the small hollows of the snow's surface, a few scattered black lapilli grains, thin grey-brown sun-cupped edges where the ash has warmed the snow, no footprints, no plants. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
+```
+
+## 48. The NE outer wall (`biomes/neouterwall`, station 1 Vitreous Hollow, 2026-11-10)
+
+The Glass-Skarn Bastion (`biomes/neouterwall/PLAN.md` sections 2 and 8). Station 1 stands on stand-ins until these come: the cauldron's
+wall is `rock.megabreccia` (the impact rim's host rock, under KSTRATA's megabreccia blocks) where it should be banded skarn, and the
+pseudotachylite mirrors are not drawn (station 4's slump faces need them most). Reused: `ground.sinter`, `ground.mat.thermal`,
+`ground.grass.lush`, `ground.moss001`, `ground.gravel019`, `ground.tundra`, `rock.basalt.polygonal` (the dikes), `card.treefern`,
+`card.reed`, `bark.mossy`; the contact marble is `rock.marble.white` until a closer set is wanted. Full colour (the bands are the rock's own).
+
+`rock.skarn.banded` (the cauldrons' walls and the Epidote Badlands' ribs: KGROUND's rock layer on the steep, read from the side):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a weathered rock face of contact-metamorphic skarn, seen square-on: irregular lensing bands from a finger to a forearm thick that pinch and swell and bend round each other, never flat beds: apple-to-olive green epidote (#7a8a3a, #5e7030), red-brown grossular garnet in granular sugary masses with a few clear dodecahedral crystals (#7a3a2a, #8e4a32), black metallic magnetite seams with a faint blue-grey sheen (#1e2024), and white to pale grey coarse-crystalline marble (#e8e4dc, #c8c4bc); thin rusty orange iron stains bleeding down from the magnetite, a few hairline fractures filled with white calcite; sharp contacts between the bands; dry rock, no lichen, no moss.
+```
+
+`rock.pseudotachylite.mirror` (the slump faults' glassy faces: station 4's mirror scarp, and the rim's inner face at station 1 when it is drawn; a KGROUND rock layer, roughness low):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a natural fault surface of black pseudotachylite friction-melt glass, polished to a dull mirror by the fault's slip: smooth, very dark glassy black-brown (#14110f, #221c18), long straight parallel slickenside grooves and fine striations all running the same way across the whole image, a few thin pale grey host-rock gneiss slivers (#8a8780) and small angular clasts dragged out into streaks along the grooves, thin black glass veins branching into the grey host rock at one or two places, faint iridescent oily blue-green and bronze tints on the smoothest patches, a few small chips where the glass has spalled off showing grey rock under it; no lichen, no dirt.
 ```
 
 ## Gaps with no prompt yet

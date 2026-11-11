@@ -1,0 +1,11 @@
+{
+ "build": "neouterwall-cave",
+ "note": "The NE outer wall's cave station (the Epidote Cave's Marble Hall; build_cave.py). The rock's layers (stations/cave/84-host-rock.js): rock.marble (rock.marble.white: the skarn's marble band the hypogene water dissolved, the cave's walls), rock.skarn (rock.gossan: the skarn's iron-stained bands round the marble, a STAND-IN for the skarn's own texture, owed: core/materials/PROMPTS-NEEDED.md section 41), ground.gypsum (ground.gypsum.crust: the sulphuric acid's replacement gypsum on the floors and the crust band). crystal.gypsum (stone.alabaster: the gypsum blocks and blades). Run python3 tools/textures/pack.py biomes/neouterwall/stations/cave after any change, then python3 build.py --station cave.",
+ "size": 512,
+ "families": {
+  "rock.marble": {"lib": "rock.marble.white", "scale": [4.0, 4.0], "tint": {"keep": 0.7, "mean": 0.62}, "roughLift": 0.15, "specular": 0.25, "mapOnly": true},
+  "rock.skarn": {"lib": "rock.gossan", "scale": [3.0, 3.0], "tint": {"keep": 0.55, "mean": 0.42}, "roughLift": 0.15, "specular": 0.2, "mapOnly": true},
+  "ground.gypsum": {"lib": "ground.gypsum.crust", "scale": [1.5, 1.5], "tint": {"keep": 0.75, "mean": 0.6}, "roughLift": 0.2, "specular": 0.25, "mapOnly": true},
+  "crystal.gypsum": {"lib": "stone.alabaster", "scale": [2.0, 2.0], "tint": {"keep": 0.5, "mean": 0.8}, "roughLift": 0.0, "specular": 0.5, "mapOnly": true}
+ }
+}
