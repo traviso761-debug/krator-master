@@ -41,4 +41,7 @@
 - [ ] **The breach's maze is drawn rock only.** `KKARST` lays the maze and `KKARST.build` carves it, but its floors are not walk floors (only the
   chamber's are), its pools and spring are not drawn (core/water's), its hazards are not registered (one gas pool on the chamber's floor is), and
   KSPELEO's hypogene dress (gypsum crust as crystals) is a shader band only.
+- [ ] **The fault's bores have no step at the shear.** The east bore's two pieces meet at the fault with no wall between their offset rings (the
+  shared lining draws an end wall only between one section and several); the rubble mound and the cut lining hide the join. The twin bores are
+  each a vaulted room with the gallery's lining profile, not the round bores of `KTRANSIT.line`'s owed `twin` form.
 

@@ -445,7 +445,7 @@ question.
 | 3 | `station` | 218 (445,1266) | the Twenny junction: an Ancient station cavern in three states (`?state=built`, `kept`, `abandoned`): platforms, the mezzanine, sidings and sheds, workshops, cistern, ventilation, the branch gallery's mouth toward Loj Twenny; **the great shaft's foot** (2.2 km up to the fells: the hoist, the draught, the ice coming down); **empty of the Tungang kit's rooms** (kept shows only catalog pieces already built: benches, lamps, signs) | the Ancient station's architecture; the hold view's test bed (T3) (built 2026-11-11: section 14) |
 | 4 | `hotdoor` | 55 (455,1186) | the hot section's north doors: two door walls a train's length apart (an airlock), each a bulkhead across the gallery with four train leaves and a walkway hatch; **the power plant and the cooling plant** kept by rite (the heat exchangers' pipes through the inner door, the generators' rare-earth magnets, power cells on charge: section 2); a sealed train waiting; through the inner door the deep stretch, spalls on the lining, the heat haze, the cyan strips still lit; a granite cleft shrine behind a rail (`ANCIENT-TUNNELS.md` cave 7) | **heat and machinery**; the one place the Ancients' light still burns (built 2026-11-11: section 14) |
 | 5 | `breach` | 225 (444.5,1270) | the bore cuts a hypogene chamber in the rift fill (`KKARST` `hypogene`, as the Hearths): a bulkhead in the lining, a window, a stair down into the natural cave | **the join of built and natural** (built 2026-11-11: section 14) |
-| 6 | `fault` | 40-48 (455.5,1180) | the gallery split into two twin bores through the impact breccia; a slump fault shears one bore (its two tracks cut, the beams offset 3 m), the trains crossing over in the junction hall to the other; a low point flooded over two tracks; CO2 pooled | **the ruin states by track** |
+| 6 | `fault` | 40-48 (455.5,1180) | the gallery split into two twin bores through the impact breccia; a slump fault shears one bore (its two tracks cut, the beams offset 3 m), the trains crossing over in the junction hall to the other; a low point flooded over two tracks; CO2 pooled | **the ruin states by track** (built 2026-11-11: section 14) |
 | 7 | `portal` | 280-304 (440.5,1305) | the shallow south: the cut-and-cover gallery under 30-60 m of fill, light shafts, one stretch fallen in to an open cutting with the sky over it, and the portal onto the tableland, the guideway running on toward Ledge; **a shaft head** on the tableland (a stand-in for the kit's winch house, ice store and hooded lamp) | **daylight to the dark**: the exposure ramp |
 
 **The order** (*proposed*): `bore` first (the section must be right before anything else), then `station`, `gap`,
@@ -729,6 +729,12 @@ question 14):
   at the end of a short passage, a stair cut 21 m down to the chamber's floor, the Tungangs' green lamps down it and across; the chamber joined
   to a `KKARST` hypogene maze beyond (its gypsum crust round the water table by shader). Its checks: rock behind the lining but at its two
   openings, the window looking into the chamber, the maze joined; each with its negative.
+- **The `fault` station** (6, km 44): the gallery divides in a junction hall into twin bores through the breccia (the tracks splayed 5 m apart,
+  the trains crossing from the east pair to the west); the west bore kept with the road; the east bore left, sheared by a slump fault (both
+  tracks cut, the beams and the bore offset 3 m east), flooded 0.9 m at a low point beyond under CO2, its walkway kept passable by a scramble over
+  the rubble. A ring may now hold several sections (`LINE.sectionsAt`): the shared lining draws each, with the end wall from one gallery into
+  two bores; the clearance and lining checks take each. Its checks: the shear, the trains on through the west, the flood over 0.6 m, the
+  pillar between the bores, no gap; each with its negative.
 - **The bore hazards**: `core/hazard/22-core-hazard-bore.js` (`KHAZ.rockburst`, `inrush`, `seal`), opt-in, as presets on the kinds the
   vocabulary has (`crush`, `drown`, `gas`), so no other page changes; `test-hazard-bore.js`.
 

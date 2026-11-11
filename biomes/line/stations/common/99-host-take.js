@@ -18,16 +18,16 @@ const keptTracks=()=>SEC.tracks.filter(T=>(LINE.cond[T.id]||[]).some(c=>c.state=
 const keptAt=(id,z)=>(LINE.cond[id]||[]).some(c=>(c.state==='kept'||c.state==='built')&&SITE.s0+z>=c.s0&&SITE.s0+z<c.s1);
 const LCHK={
  clearance(tracks,obstacles){const E=SEC.car,hw=E.half+E.margin,top=SEC.guide.h+E.h+E.margin,bad=[];let n=0;
-  tracks.forEach(T=>(LINE.clearSpans||[]).forEach(([z0,z1])=>{for(let z=z0;z<=z1;z+=4){if(!keptAt(T.id,z))continue;n++;const cx=LINE.trackX(T.id,z),S=LINE.sectionAt(z);
+  tracks.forEach(T=>(LINE.clearSpans||[]).forEach(([z0,z1])=>{for(let z=z0;z<=z1;z+=4){if(!keptAt(T.id,z))continue;n++;const cx=LINE.trackX(T.id,z),SS=SECS_AT(z),S=SS.find(s=>cx>=s.x0&&cx<=s.x1)||SS[0];
    if(S)for(const x of [cx-hw,cx+hw])if(LK.ceilOf(S,x)<top||x<S.x0||x>S.x1){bad.push(T.id+' z '+z+': the lining at x '+x.toFixed(1));break;}
    for(const o of obstacles){if(o.z1<z-2||o.z0>z+2)continue;if(o.x1>cx-hw&&o.x0<cx+hw&&o.y1>SEC.guide.h&&o.y0<top){bad.push(T.id+' z '+z+': '+o.name);break;}}
    if(bad.length>8)return;}}));
   return{ok:!bad.length&&n>0,detail:bad.length?'fouled: '+bad.slice(0,4).join('; '):n+' envelope samples on '+tracks.length+' tracks clear of the lining and '+obstacles.length+' works'};},
  liningInVoid(offset){const bad=[];let n=0;
-  for(let z=LINE.WIN.walk0+1;z<LINE.WIN.walk1;z+=37){const S=LINE.sectionAt(z);if(!S)continue;const P=LINE.profileAt(z),cx=(S.x0+S.x1)/2,L=(S.lining||SEC.lining)+(offset||0);
-   for(let i=1;i+1<P.length;i+=3){if(LINE.liningCut&&LINE.liningCut(Math.floor(z/2)*2,i,P))continue;const p=P[i],dx=cx-p[0],dy=(S.spring+1)-p[1],l=Math.hypot(dx,dy)||1,nx=dx/l,ny=dy/l;n++;
+  for(let z=LINE.WIN.walk0+1;z<LINE.WIN.walk1;z+=37)SECS_AT(z).forEach(S=>{const P=LINE.profileAt(z,S),cx=(S.x0+S.x1)/2,L=(S.lining||SEC.lining)+(offset||0);
+   for(let i=1;i+1<P.length;i+=3){if(LINE.liningCut&&LINE.liningCut(Math.floor(z/2)*2,i,P,S))continue;const p=P[i],dx=cx-p[0],dy=(S.spring+1)-p[1],l=Math.hypot(dx,dy)||1,nx=dx/l,ny=dy/l;n++;
     const fin=CAVE_C.sdf(p[0]+nx*.05,p[1]+ny*.05,z),back=CAVE_C.sdf(p[0]-nx*L,p[1]-ny*L,z);
-    if(fin<=0)bad.push('face in rock at '+p[0].toFixed(1)+','+p[1].toFixed(1)+' z '+z);else if(back>1.1||back<-1.1)bad.push('back '+back.toFixed(2)+' m off the rock at '+p[0].toFixed(1)+','+p[1].toFixed(1)+' z '+z);}}
+    if(fin<=0)bad.push('face in rock at '+p[0].toFixed(1)+','+p[1].toFixed(1)+' z '+z);else if(back>1.1||back<-1.1)bad.push('back '+back.toFixed(2)+' m off the rock at '+p[0].toFixed(1)+','+p[1].toFixed(1)+' z '+z);}});
   return{ok:!bad.length&&n>0,detail:bad.length?bad.slice(0,3).join('; ')+(bad.length>3?' (+'+(bad.length-3)+')':''):n+' points of the lining: face open, back on the rock (1 m lattice)'};},
  lampCode(lamps){const G=lamps.filter(l=>l.kind==='green'&&l.on!==false),bad=[];let n=0;
   SEC.tracks.forEach(T=>(LINE.lampSpans||[]).forEach(([z0,z1])=>{for(let z=z0;z<=z1;z+=10){if(!keptAt(T.id,z))continue;n++;if(!G.some(l=>Math.abs(l.z-z)<=55)){bad.push(T.id+' z '+z);return;}}}));

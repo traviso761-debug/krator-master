@@ -9,7 +9,7 @@
   REGISTER({name:'Guideway '+T.id.toUpperCase()+' ('+c.state+'): bore m '+Math.round(c.s0)+' to '+Math.round(c.s1),key:'line.track.'+T.id+'.'+i,x,z:(za+zb)/2,y:0,r:(zb-za)/2,h:1,
    tags:{line:{kind:'track',track:T.id,state:c.state,s0:c.s0,s1:c.s1}}});}));
  (LINE.crossovers||[]).forEach(X=>REGISTER({name:'A crossover, '+X.a.toUpperCase()+' to '+X.b.toUpperCase()+' (flexing beams, '+X.state+')',key:X.id,x:(LINE.trackX(X.a,X.z0)+LINE.trackX(X.b,X.z1))/2,z:(X.z0+X.z1)/2,y:0,r:(X.z1-X.z0)/2,h:1.5,tags:{line:{kind:'crossover',a:X.a,b:X.b,state:X.state}}}));
- (LINE.openings||[]).forEach(O=>{const S=LINE.sectionAt((O.z0+O.z1)/2)||SEC;REGISTER({name:O.name||(O.kind==='niche'?'A refuge niche (enamel plate '+Math.round((S0+(O.z0+O.z1)/2)/10)+')':'An opening: '+O.kind),key:O.id,
+ (LINE.openings||[]).forEach(O=>{const S=O.sec||SECS_AT((O.z0+O.z1)/2)[0]||SEC;REGISTER({name:O.name||(O.kind==='niche'?'A refuge niche (enamel plate '+Math.round((S0+(O.z0+O.z1)/2)/10)+')':'An opening: '+O.kind),key:O.id,
   x:O.wall==='e'?S.x1+.9:S.x0-.9,z:(O.z0+O.z1)/2,y:O.y0,r:Math.max(1,(O.z1-O.z0)/2),h:O.y1-O.y0,tags:{line:{kind:O.kind}}});});
  LINE.lamps.forEach(l=>REGISTER({name:'A lamp of the code: '+l.kind+(l.kind==='green'?' (the Line)':l.kind==='white'?' (danger, hooded)':l.kind==='amber'?' (work)':'')+(l.on===false?', dead':''),key:l.id,x:l.x,z:l.z,y:l.y-.3,r:.4,h:.6,tags:{line:{kind:'lamp',code:l.kind,on:l.on!==false}}}));
  (LINE.trains||[]).concat(LINE.standingTrains||[]).forEach(T=>REGISTER({name:(T.label||'A kept train')+' ('+T.cars.length+' cars) on '+T.track.toUpperCase()+(T.timeline?': its timetable':': standing'),key:T.id,
