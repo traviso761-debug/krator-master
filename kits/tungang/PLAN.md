@@ -43,6 +43,59 @@ them all out.
 
 A new kit goes into the gallery when it first reaches `main`.
 
+### 0.1 The precedent: the Zeijani kit and Dhelv
+
+Dhelv, the Zeijani's capital (`kits/zeijani`, `settlements/dhelv`), is Krator's one finished underground city: carved
+defs on `KCAVERN`, a walk map written from the plan, a cut-away for carved rooms, a cave's light, a switch that draws only
+what is seen, ramblers on the nav graph, and a Godot replay. The Tungang kit takes its machinery and its lessons, and
+**must not take its look**.
+
+**What to take.**
+
+| In Dhelv and the Zeijani kit | For the Tungangs |
+|---|---|
+| A carved def is a **front** and a **void plan**; "the void plan is the one source": the cavern carves it, `core/walk` takes its floors, `kits/interiors` furnishes it, `core/tags` records it (`kits/zeijani/PLAN.md` 6.3). The plans are data in `kits/interiors/sets/zeijani.js`, carved by `cvFromItem` | every Tungang and Glazier carved def, its plan in `kits/interiors/sets/tungang.js` |
+| **The cut-away for carved rooms**: each void's rock opens 2 m above its own floor ("a dollhouse at every level"), shafts open whole, the ground over a sunk def opens; at Dhelv the 32 carved sites nearest the camera get cut boxes in the rock shader (`CV_OPTS.cutBoxes`, `dhCutBoxes`) | the hold view's deck cut (section 6.3) is this, per deck; lifted into core (question 14) |
+| `camGroundY`: the orbit camera has no floor inside a void; underground the sky is hidden and a dark fog closes the distance | the follow camera and the hold view |
+| Dhelv's own map (`93-dhelv-map.js`): **the ways within 6 m of your height drawn bright** | the deck filter of section 6.3, moved into `core/minimap` |
+| **What is drawn** (`dhSeen`, every quarter second): carved cells within 420 m, a carved site's furniture only from inside it or before its front, built interiors within 90 m; budgets of 450 draws and 1.1 M triangles underground, checked at every view | a hold's draw switch and budget from the start, with the same check |
+| The rock **meshed near the camera only** (16 m chunks within 120 m, about 7 ms a chunk, `DH_STREAM`) | a hold's rock streamed the same way (a line hold is far smaller than Dhelv's 5,600 chunks) |
+| **The cave's light** (`94-dhelv-light.js`): underground the sun and the sky's reflections go out and exposure rises; lamps are records and the 14 nearest the eye are real lights; glow fungus every 18 m along the tunnels | the lamp code as light records; the same pool of real lights |
+| **The checks**, each with its negative: a walk route per def, `walk-joins`, 0.8 m of rock between voids, no void open to the air but at its openings, nav edges walked every 0.5 m with 2 m headroom, stacked lookups by y, the cut-away boxes, the view budgets | all of them, with section 6.7's camera checks |
+| **Ramblers** on `core/simulation`, with groups that try the hard routes (the scouts' patrol, a funeral to the catacombs, porters, the guard at the stone door) | the turn change down the Line, the Fixers' patrol, the Big Meeting's march, a funeral to the last stop |
+
+**What it learned the hard way** (its progress log and `KNOWN_ISSUES.md`), kept as rules here:
+
+- Every doorway passage **overlaps the floors it joins**, or walkers cannot get in.
+- A straight stair between stacked rooms passes under the upper room: **stairs come in from the side** and end on a level
+  landing clear of the ways at their top.
+- Carved rooms are furnished in their outline **inset 0.25 m** (rounded corners put pieces in the rock); frames stand 2 cm
+  inside every cut, lintels under the ceiling.
+- Underground the sun casts no shadow: floor-standing pieces need **contact shadows** or they float.
+- **Every lookup takes y**: an x-z search finds a passage on the wrong level.
+- **One cell size per cavern** (0.5 m): chunks of two sizes crack at their seams.
+- The cavern's `ceilingAt` costs about **1 ms a query**, so Dhelv checks headroom only on ways and doors. The follow
+  camera's distance queries (section 6.3) are measured before they are relied on.
+- **Glow as the main light turned the reds to mud.** Dhelv keeps its key light near white (warm-white lamps, daylight down
+  the wells) and the glow fungus as an accent. This changes the lamp code (section 1.2): the coloured lamps mark the ways
+  and doors, and rooms are lit by wax light.
+
+**What not to take: the look.** The Zeijani's sources are fantasy dwarves, the Pueblo and the kiva, Cappadocia, Petra,
+Lalibela and Kailasa (`kits/zeijani/PLAN.md` 6.2): rounded, rock-cut, ornate, polished oxide "red rooms", monoliths left
+standing, columned fronts. That is the look the owner ruled out for the Tungangs, and Dhelv already owns it.
+
+| | The Zeijani (Dhelv) | The Tungangs |
+|---|---|---|
+| Form | rounded: domes, round rooms and doorways | squared: rectangular rooms and doors in plate frames, the bore's circle the one curve |
+| Surface | a finish by wealth: hewn, plastered and painted, polished | hewn or plastered only; wealth is in the salvage fitted (enamel, brass, a carriage), never in the rock |
+| Ornament | relief, labyrinth carving, jali, friezes | nothing carved: stencils, enamel signs, livery bands, banners, the crew mosaic |
+| Grandeur | Kailasa and Lalibela: monuments cut from the rock | none: the Ancients' station is their biggest room, and they did not cut it |
+| Light | a white key, oil lamps, daylight down the wells, glow as accent | the lamp code on the ways, wax light in the rooms, no daylight but the night mouth |
+| Plan | a hub hall under a light well, satellites, a braid of tubes | a line: platform spine, sidings, sets, decks |
+
+The Glaziers' carved fronts come nearest the Zeijani's. They differ by being whitewashed and painted (cholet colours,
+gilt on plate) and tiered and battered like the Potala, never columned or relief-carved.
+
 ## 1. The peoples
 
 ### 1.1 Friendly Morlocks, not dwarves
@@ -101,7 +154,9 @@ them; Ledge's lifts are Loj Fower; **Loj Twenny** (a lava-tube loj on `tube_rift
   **green** the Line (the galleries, the platforms, the way); **amber** work (the dark beds' tending lamps, the
   workshops); **blue-green** glow-cap, the common light of passages and the poor; **white** the surface, the Gaffers and
   danger: a white lamp means "stop" and is hooded at once. A visitor's torch is rude. This is the culture's and the
-  player's wayfinding at once (section 6).
+  player's wayfinding at once (section 6). **The code marks the ways and the doors; rooms are lit by wax light**, low
+  and warm-white (hearth wax burns clean), so the salvage's enamel, rust and paint read true: Dhelv found that coloured
+  light as the main light turns every surface to mud (section 0.1). A home's red lamp hangs at its door, not in it.
 - **Food.** Hearth wax, the staple (*proposed* in `biomes/hearths`: tallow beads gathered at dawn, eaten and burned);
   **the dark crops** of `kits/crops` grown in the dark beds: pale fungi (the mash), alecap (beer and a purple dye), the
   mat (pressed to felt sheets for sealed beds); glow mushrooms for light, not food; **cavern leapers** (the Hearth
@@ -521,7 +576,7 @@ John Nesky, "50 Game Camera Mistakes" (GDC 2014); Mark Haigh-Hutchinson, "Real-T
 | `core/host` cut-away (`99-host-cutaway.js`, `KHOST.cut`) | five clipping planes intersected into a box: everything above the storey cut **and** inside the unit's box goes; the storey bar; X opens the nearest unit, `]` `[` PageUp PageDown change storey | a unit is a box with flat storeys; no caps (the cut rock reads hollow); no vertical section |
 | `kits/interiors` cut-away (`IX.view.cutaway`) | `cut`, `fade`, `roof`, `off`; `setLevel(k)` hides every storey above k | built buildings only, not rock |
 | `core/terrain` cavern (`KCAVERN`, `39-core-cavern.js`, draw `host/39e`) | voids as records (room, tube, hall, shaft, stair, trench, pipe, monolith), floors written to `KWALK` from the plan, chunked meshes, and **`C.sdf(x, y, z)`**, the exact signed distance to the rock | a cut through its rock is kit-local (below) |
-| `kits/zeijani` (Dhelv) | the rock shader opens **2 m above each void's own floor** inside up to 32 cut boxes ("a dollhouse at every level", `CV_OPTS.cutBoxes`); `camGroundY` so the camera has no floor while inside a void | it is the Zeijani kit's fork, not core |
+| `kits/zeijani`, `settlements/dhelv` (section 0.1) | the rock shader opens **2 m above each void's own floor** inside up to 32 cut boxes ("a dollhouse at every level", `CV_OPTS.cutBoxes`); `camGroundY` so the camera has no floor while inside a void; a map that brightens **the ways within 6 m of your height**; a draw switch by the camera's place; the lamps' pool | all of it is the Zeijani kit's or Dhelv's own, not core; no follow camera (Dhelv walks in first person) |
 | `core/walk` (`KWALK`) | every floor, strip and block; the reach audit | nothing missing |
 | `core/minimap` (`KMAP`) | a plan drawn from records, `fromWalk` coloured by height, `export()` for Godot | overlapping storeys stack; no above/below marks; no schematic |
 
@@ -540,6 +595,9 @@ before it is planned in detail (question 14).
    (ropes, crystal blades, banners, lamp chains: a `thin` tag), they dither out instead (aid 1). Under 1.2 m of boom the
    camera goes over the shoulder, under 0.6 m to first person; an upward cast from the pivot lowers the pitch limit under a
    low ceiling. Built meshes (huts, scaffolds) answer through `KWALK` blocks as boxes in the same distance query.
+   **The cost is measured first** (T1): Dhelv found the cavern's `ceilingAt` costs about 1 ms a query over hundreds of
+   voids. If `C.sdf` is as slow, the arm reads a small distance grid cached round the camera (0.5 m, the meshing
+   lattice's own samples, refreshed as the camera moves), or `C.voidSD` over only the voids near the camera.
 2. **Hold view (orbit, with the storey cut)**. The orbit camera over a hold, with `KHOST.cut` opening **one storey at a
    time** (X, `]`, `[`): every hold is planned in **decks** at fixed heights (section 5.2), so one cut height opens every
    room of a deck at once, the way The Sims' floor button does. Three additions:
@@ -681,7 +739,7 @@ of lights to the halos nearest the camera).
 | Phase | What | Done when |
 |---|---|---|
 | T0 | the owner's answers (section 10); the owed prompts written and pasted; `LORE.md` updated with what the owner confirms | the questions are answered |
-| T1 | the core camera work of section 6.5, agreed piece by piece: the follow camera on `o.solid`, caps, decks by tag, the soft band, the section plane, the deck map and the line map, the dither and x-ray; tried first on hearths' built hold page (with the hearths session) | `test-walk.js`, `test-minimap.js` and the new tests pass; every page that does not opt in is byte-identical (the hash baseline) |
+| T1 | first, on Dhelv's page as it is: the cost of `C.sdf` and `C.voidSD` at the camera (section 6.3), and what the player cannot read today (a walk of its braid and wells with the existing views, written down). Then the core camera work of section 6.5, agreed piece by piece: the follow camera on `o.solid`, caps, decks by tag, the soft band, the section plane, the deck map and the line map, the dither and x-ray; tried first on hearths' built hold page (with the hearths session) | `test-walk.js`, `test-minimap.js` and the new tests pass; every page that does not opt in is byte-identical (the hash baseline) |
 | T2 | the scaffold: `kits/tungang` on `core/engine`, the carved-def layer in core (agreed), `materials.json`, the salvage foundation (lining segment, carriage, plate, pipe, rivets, enamel, cable, the three rules of fitting), the sheet | the ring house and the carriage house build in three states and `--assert` passes |
 | T3 | the Tungang set: every def of section 3.2; the **test hold** on the sheet (two decks of a line station, carved, lit by the lamp code, with the four views) | the owner's walk through the test hold; the camera checks of section 6.7 pass |
 | T4 | the Hearth hold furnished: the kit's defs dropped into `CAVE.HOLD`'s volumes on hearths' pages (the hearths session places, the kit publishes) | the hold reads as a loj at eye level |
@@ -714,8 +772,11 @@ of lights to the halos nearest the camera).
 14. **Core extensions** (no new module): may I plan, with each owner's agreement, (a) the follow camera and ceiling clamp in
     `core/host` on an opt-in distance query, (b) caps, decks hidden by tag, the soft band and a section plane in the
     cut-away, (c) deck bands, above/below marks and a line map in `core/minimap`, (d) the dither fade and x-ray in
-    `core/shader`, (e) lifting Zeijani's rock cut (rock opens above each void's floor) and its carved-def layer into core
-    (`core/terrain/host`, `core/engine`)?
+    `core/shader`, (e) lifting Zeijani's rock cut (rock opens above each void's floor), its carved-def layer
+    (`cvRoom` and the rest, `cvFromItem`), Dhelv's height-band map and its draw switch into core (`core/terrain/host`,
+    `core/engine`, `core/minimap`, `core/lod`), with the Zeijani session's agreement and Dhelv's pages proven unchanged?
+    The other way is to read `kits/zeijani/src/40-zj-cave.js` in place, as Locus reads the Yuni kit, but it is written
+    against the Zeijani's fork of the engine.
 15. **A hold's layout**: ask the city-layout work for a **cavern setting** in `core/city` (spine, sidings, sets, decks) now,
     or lay the test hold by hand on the sheet and port it when the setting exists?
 16. **Textures**: the eight owed sets of section 7: write their prompts into `PROMPTS-NEEDED.md`?
