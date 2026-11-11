@@ -1,0 +1,424 @@
+# The Ancients' network: roads, lines and tunnels as one picture (assessment and proposal, 2026-11-11)
+
+**Status: a proposal. Nothing is built, and no other file is edited.** This file pulls together three things:
+- `ANCIENT-ROADS.md`: the highways, with the draft router;
+- `ANCIENT-TUNNELS.md`: the bores and the caves they meet;
+- the Line: the Rift line as a biome and a train (`biomes/line/PLAN.md` on `claude/awesome-varahamihira-66a852`, and
+  `kits/tungang/PLAN.md` on `claude/tungang-fellgang-kits-a56ece`).
+
+It sets them against scale model 5.1 and the transit kit (`kits/ancient-transit` on `claude/ancientsvalley-7f521c`). It
+then proposes one record set for the whole network, which the model, the open world, the stations and Godot all read.
+
+The two older files stay the source for what they settled. This one does not repeat them; it says how the pieces join.
+
+- Every px is on the **5.1 canvas** (1821 x 1723, 2 km a px) unless it is marked *old*. 5.1 = old + (272, 330).
+- *Proposed* marks everything not already settled by the owner.
+- Section 7 holds the numbered questions.
+
+**Why one file and not a fourth plan beside the others.** The roads, the tunnels and the Line are one system: "one broad
+way with a guideway down its middle", whose underground stretches are the Line's gallery. Each plan so far has drawn its
+own piece in its own record shape. This file is the join; the pieces keep their plans.
+
+## 1. State
+
+### 1.1 In lore (settled)
+
+- **Mostly above ground.** Highways join **every arcology and every ruin**, and the cities on Ancient ground (Hook, Iziz,
+  Yuni, Ys, Dalab, Roketstad, Verge). They pass under the mountains only where they must (`LORE.md` §4; `ANCIENT-ROADS.md` §1).
+- **The profile.** One broad 30 m way with a guideway down its middle: road and line are one. The ruling grade is about 4 %,
+  with no switchbacks: cuttings, viaducts, spiral tunnels and causeways instead (`ANCIENT-ROADS.md` §2).
+- **The Rift line.** It runs **Dalab to Ledge, mostly underground**, and Ledge is where it comes out of the Wall. Arccube
+  (Cube) is the Rift's hub. The line "once ran the length of the Rift" (`LORE.md` §6.20), worked by the crews who became the
+  Tungangs.
+  - Its tunnel is a **four-track gallery**, mostly working, cut into segments by gaps that travellers walk (the owner,
+    2026-11-10).
+  - The Line is a **`line` kind in `KTRANSIT`**, and its cars live in `kits/motor-vehicles` (the owner, 2026-11-10).
+  - **The Travellers** porter on its branches near the surface, never deeper in (the owner, 2026-11-11).
+- **The Inner Wall tunnel** runs west from the crater to the Valley of the Ancients. It is in very bad condition, and it can
+  be reached by shafts from surface settlements, one of them an Iron Republic arcology (name open).
+- **The Stair tunnel** (Arcbeam to Stair in the Catch) was closed by an earthquake near the Cataclysm and is sealed halfway.
+  Yuni stripped its northern half; the southern half, entered from Stair, is the divers' prospect.
+- **Hub 01 to Yuni.** No human has reached Hub 01 since the Cataclysm and come back.
+- **Pluton** (743,1328, 9,650 m) is the key to the Ancients' own tunnels up the Godthrone. They are not public and are
+  uninhabitable now.
+- **Xanadu's short line ends at Strongbow**, and the network there was never extensive.
+- **Trickster's House** joins the network by one route only, to Verge, through a rim tunnel. The god's road through the Gate
+  is a separate thing.
+- **Span** (554,1010) has two Ancient tunnels (`settlements/span/PLAN.md`):
+  - the **Basin Tunnel**, intact and cleared, a broad way with its guideway, 20 to 30 km, from the SW lowlands up to the plateau;
+  - the **Valley Tunnel**, ruined and held by no one, toward the Valley.
+- **Upkeep** comes from who kept a stretch. The Empire of Iziz, the Eternal State and the Cut road are kept; Voth, the
+  Republic and Dilihan maintain what the Empire built; the rest of the former Empire has lapsed; Xanadu and Yuni keep theirs
+  in part; everywhere else is badly decayed. **The land then sets how a stretch failed**: flood-scoured, buried under jungle,
+  drifted with sand, broken at rivers, deleted at the Cut, intact on the airless rim (`ANCIENT-ROADS.md` §4).
+- **Smaller Ancient transit inside sites.** None of this is the intercity network, but it shares the kit:
+  - Verge's funicular (`kits/ancients` `FUNICULAR`);
+  - Hook's town grid and its stair and funicular stump;
+  - Roketstad's spaceport table;
+  - the Valley's city: a street grid, an elevated highway, elevated and cargo lines, and a subway, all built on the
+    transit kit.
+
+### 1.2 On the scale model (5.1)
+
+**The model has no network layer.** There is no `DATA.ancient_roads`, no layer on the page and nothing in
+`extract_region.py`. `tools/scale-model/README.md` has listed the layer as "left for later" since 2026-10-23.
+
+What exists is the second draft, made on 2026-10-26 by `tools/scale-model/ancient_roads.py`. Its output is
+`openworld/ancient-roads-draft.json` and `.jpg`: **54 nodes, 63 routes, ~17,200 km, 241 km of it in tunnel.** It is drawn
+on the **4.22 canvas and 4.22 heights**, and its routes are keyed by node **names**, not ids.
+
+I shifted it to 5.1 and measured it against 5.1's heights and the settlements on `claude/openworld-sites-24defd` (the
+script is in this session's scratchpad: `measure.py`, `lines.py`).
+- Every node except Flooded Tower is still within 3 km of its settlement.
+- The faults are in section 1.4.
+
+**The tunnel lines, profiled on 5.1** (straight lines; the bores are the earlier plans'):
+
+| Line | Ends (5.1 px) | Straight | On 5.1 | Source |
+|---|---|---|---|---|
+| **The Rift line**, bored | N portal 458.2,1158.6 (3,846 m, bore km 0, line km 94 from Dalab) to S portal 439.5,1309.5 (km 304); then 42 km on the surface to Ledge 437,1330 | 439 km Dalab-Ledge | 304 km bored. Cover is over 6 km for 36 km, peaking at 6,881 m at km 124. The rock is over 60 degC from km 57 to 201 | Line plan §1 (`survey_line.py`), agreeing with `ANCIENT-TUNNELS.md` §1 within 2 km |
+| **Dalab's road** over the crest | tunnel portals 488,1220 (7,969 m) and 477,1245 (8,052 m), ~60 km under the airless crest (9,645 m at 483,1236) | 528 km Dalab-Ledge by Shelf | a separate road tunnel, 59 km east of the bore | `biomes/riftrim/PLAN.md` 5.1 survey (l.73-80); the Line plan §12 agrees |
+| **The Inner Wall tunnel** | Drum 673,932; E portal 623,940 (3,758 m); W portal 553,952 (2,982 m); Dorado 483,964 | 385 km | crest 6,574 m at 597,945; 142 km bored under at most ~3.1 km. **Cascade is 214 km from this line, and Span 114 km** | `ANCIENT-TUNNELS.md` §1; measured here |
+| **The Stair tunnel** | Arcbeam 1016,1058 to Stair 1106,1442 | 789 km | crest 8,292 m at 1063,1260 (20 km of it over 8 km). seouterwall proposes a 180 km base tunnel and a vent shaft, Bab al-Hawa (1033,1258) | `biomes/catch/PLAN.md`; `biomes/seouterwall/PLAN.md` l.157-166 (*proposed*) |
+| **Hub 01 to Yuni** | Hub 01 1344,1409 (4,351 m) to Yuni 1263,1089 | 660 km | 357 km over 8 km; peak 13,327 m at 1310,1275 | `biomes/catch/PLAN.md` l.238 |
+| **The Trickster's rim tunnel** | rim crossing ~1450,749 (*old* 1178,419), under ~9.8 km | 758 km to Verge | 140 km over 8 km on the straight line | `biomes/outlands/SURVEY.md` §7 (*old* px) |
+| **Pluton's tunnels** (private) | Pluton 743,1328 (9,650 m) to the Godthrone's summit **861,1272** (24,822 m) | 261 km | a climb of 15.2 km (`godthrone/PLAN.md`'s "~15 km" holds) | `ANCIENT-ROADS.md` §3; `biomes/godthrone/PLAN.md` |
+
+### 1.3 In the open world and the kits
+
+- **The open world has no world-scale road layer.**
+  - `core/world` (on `claude/openworld-sites-24defd`) keeps roads per region, in the region's own metre frame (origin = the
+    cut's centre px, 2000 m a px).
+  - A road record is `{from, to, hw, pts: [[x, z, e]...], length_m, maxGrade, cutMax_m, fillMax_m, ...}`. It reshapes the
+    ground through a 1024 m cell hash (`RSEG`/`RHASH`, `WORLD.H` vs `WORLD.Hland`), and it is drawn only as the terrain
+    shader's `aRoad` band.
+  - It has **no per-vertex kind** (viaduct, tunnel and cutting cannot be said), a fixed 8 % grade, a fixed 8 m width and
+    150 m reach, and no record that leaves its region.
+  - Rivers are the one linear feature carried in from the model, and they are clipped to the cut's box with no seam vertex
+    (`extract_region.py` l.1236-1258).
+  - Sites are keyed by the model's settlement ids (`PLAN-SITES.md` §2), and every plan id starts with one. Edits as id-keyed
+    deltas (`core/edits`, `openworld/<region>/edits.json`) are planned, not wired.
+- **The transit kit** (`KTRANSIT`, `[G data]` records, drawn after) is built for a city.
+  - It has: the road network (nodes, segments, kerb-line junctions, four kinds from a 26 m avenue to a 5 m lane, graded at
+    8 %); the elevated highway (spans, piers, ramps, interchanges, ruin and overgrowth); rail at grade and elevated, with
+    stations; the subway (20 m sections in ruin states, stations, sinkholes the host carves); trains (standing, derailed,
+    fallen); street furniture; the war, the blockades and the quake.
+  - Ids are stable and every choice is a `KRAND` hash of id and index.
+  - The `line` kind (the four-track gallery, state per track and per 20 m section, gaps and segments derived) is **planned by
+    the Line session**, not written.
+  - The Valley takes the kit for its grid, highway, two lines and subway (its PLAN §14).
+- **The vehicles kit's `ancient` culture** (`claude/ancient-vehicles-935f93`, unmerged) has the tram (`anc_tram`, a
+  guideway car) and wreck forms for every vehicle. The Line's cars are planned there.
+
+### 1.4 Gaps and contradictions
+
+| # | What | Where (5.1 px) | Says what | Proposed resolution |
+|---|---|---|---|---|
+| G1 | **The draft is on the 4.22 canvas and heights**, keyed by names | `openworld/ancient-roads-draft.json` | every px is 272, 330 short of 5.1; Godthrone, Stalker Peaks and the Catch have changed under it | rerun on 5.1, keyed by settlement id (edit M1) |
+| G2 | **Draft routes on airless surface** (over 8 km, not in tunnel) on 5.1's heights | Cube-Pluton 221 km (peak 13,182 m); Hub 01-Yuni 147 km; Hub 01-Stair 99 km; Loj Twenny-Shelf 51 km; Trickster's House-Verge 40 km; Pluton-Shelf 15 km | the router forbids it (`ancient_roads.py` l.45), but the land rose after the run | rerun; question 4 decides whether an open way may run airless at all |
+| G3 | **The Rift line in the draft is a surface road**: Dalab-Shelf-Loj Twenny-Ledge, 34 km in tunnel | Loj Twenny-Shelf crosses the crest at 9,718 m | settled as a ~304 km bore | pin the Line's alignment as an authored route; the router does not route it (M2) |
+| G4 | **The Rift line past Ledge** | draft: Ledge-Chimes (163 km), Chimes-Cthonos (277 km, up to 2,313 m), Cthonos-The Tubes, The Tubes-Cube | lore: it "ran the length of the Rift"; the Line plan numbers stations from Cube (Cube 1, Chimes 2, Nulab 3, Ledge's lifts 4) | one route `rift`, Dalab to Cube by Ledge, Nulab and Chimes; question 3 |
+| G5 | **Loj numbering**: "north to south" | `riftrim/PLAN.md` l.371-410, `LORE.md` §6.1 | the Line plan proposes numbering from Cube north (its question 2) | the network takes whichever the owner chooses: station numbers are a field |
+| G6 | **Loj Twenny's cave** | 457,1269 | riftrim and the tungang plan put it "on `tube_rift_08`", but that tube is at 628,1528-594,1558, 300 km off | the Line plan's side gallery from km 218 (25 km); its question 3 |
+| G7 | **The Inner Wall tunnel's surface access** | Cascade 568,841 is 214 km from the Drum-Dorado line (the doc's "~140 km" was measured on the old line) | the draft found surface passes (Cascade-Drum, 6 km of tunnel) instead of the tunnel | pin the tunnel (M2); question 5 |
+| G8 | **Span's tunnels are not in the draft** | Span 554,1010: the Basin Tunnel's lower portal is unplaced; the Valley Tunnel's portal is on the Deep Reach floor | span's plan says "the two Ancient highways meet on the Cross" | branch routes `span.basin`, `span.valley`; question 6 |
+| G9 | **The Stair tunnel** | Arcbeam-Stair | the draft has an 860 km surface route with 16 km of tunnel; seouterwall *proposes* a 180 km base tunnel, the Bab al-Hawa shaft (1033,1258) and a surface highway through the Godsgate; catch has the caravans enter by the 6.2 km notch (*old* 726,896) | question 7 |
+| G10 | **Xanadu's line** | Strongbow 1026,1594 to Theodiga 908,1535 (264 km, under 2,600 m); Theodiga to Cube 381 km | the draft joins them; no doc says how Strongbow's line meets the rest, and the caravans use the Lasso pass (1040,1566) | *proposed*: the Rift line's east end runs Cube-Theodiga-Strongbow, so "the end of the line" is literal; question 3 |
+| G11 | **Nodes the draft lacks or should drop** | new: Fort Ebon 695,782, Nulab 443,1359; in the valley plan but not in the model's source: Wheel 406,886, Thera 526,955; the three Zeijani caverns (876,802; 834,882; 806,818) and Dhelv would be picked up as "cavern" nodes | the draft skips only Dhelv | M1 |
+| G12 | **Upkeep spheres by polygon name** | `ancient_roads.py` `UPKEEP` | names are stale: "Dalab Council" is now "Realm of Dalab"; "Dilihan Province", "Tungang Union", "Fellgangs" and "Shell Province" are unmapped; there is no "Beast Riders" or "The Cut" political polygon | M1, M3 |
+| G13 | **Flooded Tower** | the draft end is 11 km off the node at 1028,840 | the node moved | M1 |
+| G14 | **The airless rim** | `ANCIENT-ROADS.md` | §2: "crossable only in tunnel"; §4: the airless rim is "intact: the high stretches look new" | question 4 |
+| G15 | **Old px in the docs** | `ANCIENT-ROADS.md` §3-4c, `LORE.md` §4 (Cube "448,1237", Pluton "471,998"), `biomes/outlands/SURVEY.md`, `biomes/godthrone/PLAN.md` | old canvas | annotate 5.1 beside them when each is next edited (no edit now) |
+| G16 | **The Godthrone's summit** | `tools/scale-model/README.md` 5.1 section: "Godthrone (px 968, 1012)" | 968,1012 is at -883 m on 5.1; the summit is **861,1272** (24,822 m) | M6 |
+| G17 | **Name clashes** | Span's "the Line" (Dalab's salvage barricade, `span/PLAN.md` l.201, `TODO.md` l.64); swhighlands' "Drum" (a Vothic town) and "Cascade" (the Kaskejt Rivr) | the network uses the Rift line's id `rift` and the crater's Drum and Cascade arcologies | rename one side when its owner next edits (question 11) |
+| G18 | **Modern links ignore the Ancient alignments** | iziz-cluster's links (Mav's Refuge-Girder 135 km, Girder-Talia 154 km at 8 %); the draft's Iziz-Stump, Fort Ordo-Stump and Stump-Verge meet at Stump (1044,952) inside that region's box | `ANCIENT-ROADS.md`: "modern highways prefer the Ancient alignment" | the corridor discount (section 2.3) |
+| G19 | **Lines that end nowhere** | none in the draft but the intended ends (Strongbow, Trickster's House) and the north spur Leng-Tilted Tower-Veladiga (614,490 to 685,479) | | keep; question 9 confirms the northern ruins |
+
+## 2. Representation
+
+**One rule for every scale: the network is records, and a page or a region draws a window of them by chainage.** The
+records are plain data (`[G data]`): ids stable, edits kept as deltas by id, no three.js or DOM. Godot reads the same
+JSON, and `core/world` streams it.
+
+### 2.1 The records (*proposed*)
+
+```
+network.json  (model px; one file for the world; deterministic from the model + the authored routes + edits.json)
+  nodes:  [{ id, name, kind: 'site' | 'portal' | 'junction' | 'station' | 'shaft' | 'end', px: [x, y], sett?: <settlement id> }]
+  routes: [{ id: 'rift' | 'innerwall' | 'r.<sett id>.<sett id>' | 'span.basin' ...,
+             class: 'trunk' | 'branch' | 'line' | 'private',
+             section: 'way' | 'gallery' | 'bore2' | 'road',          the cross-section family (2.2)
+             tracks: n, from: nodeId, to: nodeId,
+             px: [[x, y]...], s: [m...],                              global chainage in metres from `from`, at every vertex
+             z:  [m...],                                              the graded floor
+             datum?: { name, s },                                     a named zero (the Line's bore km: 'N portal', s = 94,000)
+             forms:    [{ s0, s1, form }],                            open | cut | fill | viaduct | causeway | spiral | portal | tunnel | gallery | twin | junction | shallow
+             cond:     [{ s0, s1, track | '*', state, depth? }],      section 2.4's vocabulary
+             upkeep:   [{ s0, s1, sphere, keeper }],                  from the political polygons
+             breaks:   [{ s0, s1, kind: 'gap' | 'deleted' | 'sealed' | 'collapsed', walk? }],
+             stations: [{ id: '<route>.st<n>', s, num?, kind, state, loj? }],
+             openings: [{ id, s, kind: 'portal' | 'adit' | 'shaft' | 'vent', to: [x, y, z]?, state }],
+             joins:    [{ s, node }] }]                               where a route meets a node or another route
+```
+
+- **Global chainage is the key.** A station, a gap, a portal or a state run is placed by `(route id, s)`. Clipping a route
+  to a region, a station or a settlement keeps its global `s`, so the same station is the same everywhere. Two regions meet
+  at an exact seam point found by `s`, not by whichever vertex fell inside each box.
+- **Runs, not per-vertex arrays.** `forms`, `cond`, `upkeep` and `breaks` are runs over `s`. The world's ~17,000 km is a
+  few thousand runs. The Line's 20 m sections are derived inside a window, never stored for the world.
+- **Derived, never written:** the segments and gaps of a line (the Line plan's rule), the junctions between routes, and
+  the upkeep from the polygons.
+- **Edits are deltas by id** (`network.edits.json`, replayed after the router):
+  - `{op: 'add' | 'cut' | 'move' | 'set' | 'pin', id, ...}`: add a route, cut one, move a vertex by `s`, set a run, pin an
+    authored alignment.
+  - A rerun of the router keeps the owner's edits, and an added route moves no other route's id.
+- **Authored routes are pinned.** The router does not route these: `rift` (from `survey_line.py`), `innerwall`, `stair`,
+  `hub01`, `trickster.rim`, `span.basin`, `span.valley` and `pluton`. It routes only the open trunks and branches between
+  nodes.
+
+### 2.2 The cross-sections and what draws them
+
+| `section` | What | Where | Drawn by (KTRANSIT) | In the kit today? |
+|---|---|---|---|---|
+| `way` | the 30 m paved way with its guideway(s) down the middle; at 4 %; cuttings, fills, viaducts, causeways, spiral tunnels; waystations and milestones | every open trunk and branch | **new: `KTRANSIT.way`**: a graded alignment (`road`'s cut-and-fill at 4 %) + the pavement + guideway beams on the `line` kind's track vocabulary; the viaducts reuse `highway`'s spans and piers (ruin, `cull`, overgrowth); the cuttings `lineH`; the portals `kits/ancients` `buildSpanPortal` | no: the road (8 %, 26 m at most), highway and rail exist; the way, the causeway and the portal piece are owed |
+| `gallery` | the Line's four-track tunnel, 32 m x 13 m, its split bores, crossovers, hot doors | the Rift line underground | the **`line` kind** (the Line session) | planned (Line plan §4) |
+| `bore2` | a twin-track bore, 10-14 m (`ANCIENT-TUNNELS.md` §2) | the Inner Wall, Stair, Hub 01, rim tunnels | the `line` kind with `forms: twin` and 2 tracks | planned through `line` |
+| `road` | Dalab's road over the crest and its road tunnel; modern roads on Ancient alignments | riftrim, the reused stretches | `KTRANSIT.road` / `core/world` ROADS | yes |
+
+*Proposed*: **one `line` record for every Ancient route, open or underground.** The `way` is the `line` kind's open-air
+form, not a sibling kit. The Line plan's `forms` already lists `open`, so this is its record carried to the surface.
+
+### 2.3 At each scale
+
+**The scale model and the map.**
+- `DATA.ancient_network` holds `network.json`, with a layer on the page (a new fragment beside `60-settlements.js`):
+  - lines coloured by condition;
+  - tunnels dashed, private tunnels hidden behind a toggle;
+  - stations and portals as glyphs;
+  - a hover readout giving the route id, `s` in km, form, condition and keeper.
+- The layer is for the owner's review: trunks, branches, ends and conditions.
+- Later, `core/minimap` and the game map draw the same records.
+
+**An open-world region** (`core/world`).
+- **The cut.** `cut_site.py` / `extract_region.py` write a region's network window into `region.json`:
+  - each route's clipped stretch in region metres, with its global `s` at every vertex and the exact seam points;
+  - its runs clipped by `s`;
+  - the stations, openings and joins inside the box;
+  - a corridor strip along every trunk (`cut_site.py corridor()` exists).
+- **The ground.** The open forms become `WORLD_DATA.roads` entries with a **kind per run**. This needs three things in
+  `core/world` `42`/`41`, all opt-in:
+  - a road record's `runs: [{s0, s1, form}]`;
+  - `bound()` skipping `viaduct`, `tunnel`, `gallery` and `portal` runs (no ground forced up to a deck or down to a bore);
+  - per-road `hw`, grade and reach, in place of the constants.
+  
+  The 1:1 alignment is the model's, **refined inside its corridor and held to 4 %**, not re-routed. A tunnel carves nothing
+  but its portals, its adits and the sinkholes over its collapsed shallow stretches (`KTRANSIT.sinkholeH`'s pattern).
+- **The draw**, by distance:
+  - the way's band in the terrain shader at range (`aRoad`, as roads now);
+  - KTRANSIT meshes within ~2 km, built per 400 m chunk of `s` (the kit's `B.finish` chunks), streamed by the terrain's
+    tiles through a per-tile index of `(route, s0, s1)`;
+  - the viaducts' piers and the stations as far-tier instances;
+  - a tunnel's inside only near a portal or for an eye underground: a station page, or a `KCAVERN` window.
+- **Sites.** The stations, waystations and portals become sites keyed `net.<route>.st<n>`, beside the settlements' own
+  sites, in `SITES.json`. Modern links (`KSITES` LINK records) prefer the Ancient corridor (a cost discount inside it), so
+  the Ancient alignment shows through today's roads.
+
+**A biome station or a settlement a line crosses.**
+- The page takes the windows of the routes in its box, at their global `s`. For example:
+  - `biomes/line --station bore` is the window `rift` 302-303.2 km (bore km 208-209.2);
+  - Span's Basin Tunnel is `span.basin` from its upper portal down;
+  - Ledge's terminus is `rift` at its lifts.
+- A settlement's own street network joins a route at a junction node (`KTRANSIT.join`, as a highway ramp joins the
+  Valley's grid).
+- The record is the same on the page, in the region and in Godot. A page never invents an Ancient line of its own.
+  The exception is the city-scale transit inside a site (the Valley's grid, subway and elevated lines; Verge's funicular;
+  Hook's grid), which stays the site's own, registered under the site's id.
+
+### 2.4 Condition: one vocabulary
+
+The roads plan, the transit kit and the Line plan each have a list. *Proposed* mapping, with the network's `cond` the
+first column:
+
+| Network `cond` | `ANCIENT-ROADS.md` §4 | KTRANSIT (span / rail / subway / furniture) | The Line (track / section) |
+|---|---|---|---|
+| `intact` | intact (airless) | intact | built |
+| `kept` | kept | intact + the keeper's dress | kept |
+| `worn` | worn | cracked / bent | worn / cracked |
+| `broken` | broken | collapsed / gone / bent | blocked / spalled |
+| `buried` | buried | silted / overgrowth 2 | silted |
+| `flooded` | (the tunnels') | silted | flooded (depth) |
+| `cut` | gone | gone | cut / fallen |
+
+- **The keeper's dress** generalises the Line plan's `kept` car state, "a culture's upkeep dress over another's vehicle",
+  to the infrastructure:
+  - Izani masonry spans on Ancient piers, waystations and milestones (the Empire);
+  - the Eternal State's registered patching;
+  - the Tungangs' lamp posts and number plates;
+  - Yuni's partial repair.
+- It is a `keeper` field on the upkeep run, drawn as a dress layer. The ruin is unchanged.
+
+### 2.5 What the transit kit has, lacks, and where the network lives
+
+- **It has:** records first; stable ids; KRAND choices; graded alignments; viaduct spans and piers with ruin and
+  overgrowth; elevated guideways and stations; the subway's sections and sinkholes; trains in ruin states; furniture; the
+  war and the blockades; the quake's shift; 400 m chunks.
+- **It lacks:**
+  - the `way` section;
+  - the `line` kind (planned, not written);
+  - a causeway;
+  - a portal piece (`kits/ancients` has `buildSpanPortal`);
+  - long-line windows by global `s` (its paths are page-local polylines);
+  - kilometre LOD (shells or impostors for spans and stations at range: `KNOWN_ISSUES.md`);
+  - the keeper's dress;
+  - waystations and milestones;
+  - walk floors on decks and platforms.
+- **Where the world graph lives.** The world graph (nodes, routes, chainage, runs, deltas, windows, the per-tile index) is
+  needed by:
+  - `core/world` (streaming);
+  - `core/city` (a settlement's join);
+  - `core/simulation` (the riding plan's carriers; `SIM.trade` land carriers; `core/camp`'s caravans);
+  - the stations;
+  - Godot.
+  
+  That is infrastructure, not a kit's drawing. *Proposed*: **a small data-only core module, `core/network` (`KNET`)**:
+  - the record schema;
+  - `window(route, s0, s1)`;
+  - `clip(box)`;
+  - `at(route, s)`;
+  - `nearest(x, y)`;
+  - the derived segments and junctions;
+  - the edit replay;
+  - node tests.
+  
+  `KTRANSIT` keeps the drawing and the piece records it builds from a window. **I ask before planning it** (question 1;
+  `README.md` "CORE MODULES ARE NOT OPTIONAL", `GODOT-PLAN.md` §6). The alternatives are a data side inside
+  `kits/ancient-transit` (a kit that `core/world` would then depend on) or a layer of `core/world` (which the stations and
+  settlement pages do not take).
+
+### 2.6 Where this would change the other sessions' work
+
+**The Line session** (`biomes/line/PLAN.md`):
+- (a) Its `KTRANSIT.line` record becomes the network's route `rift`. Its chainage stays "km from the north portal" as the
+  route's named `datum` (s = 94 km). Nothing in its station table moves.
+- (b) Its `forms` gains the open-air forms (`cut`, `fill`, `viaduct`, `causeway`, `spiral`, `portal`; it has `open`).
+  `tracks` and `cond` per track serve every route.
+- (c) The Rift line continues past Ledge (Nulab, Chimes, Cube, and perhaps Theodiga and Strongbow: question 3). Its
+  numbering question (its question 2) is the owner's either way.
+- (d) The window it builds comes from `KNET.window` rather than from `survey_line.py` direct. The survey becomes the
+  authored alignment the model pins.
+- (e) Its `kept` car state is proposed here as one case of the keeper's dress.
+
+None of these changes its stations, its section, its train or the riding hook.
+
+**The Tungang and Fellgang session** (`kits/tungang/PLAN.md`):
+- (a) The Travellers' rule, "branches near the surface, not deeper in", becomes data: every `openings` entry and every
+  branch run carries its cover. Their working ground is the stretches within a set depth of a portal or adit (*proposed*:
+  under 500 m of cover, or within 5 km of an opening).
+- (b) Loj Twenny's reach is the Line plan's side gallery (G6).
+- (c) The Glaziers stay off the network: "a train that never comes" fits a line that ends at Strongbow down the valley
+  (question 3).
+
+**The transit kit and vehicles sessions:**
+- the `way` section;
+- windows by global `s`;
+- a causeway;
+- the portal piece;
+- the keeper's dress.
+
+Each is agreed with them before code.
+
+**`core/world` (openworld-sites):**
+- road runs by kind;
+- per-road width, grade and reach;
+- the network window in the cut;
+- the corridor discount for modern links.
+
+Each is opt-in, so a region without a network is byte-identical.
+
+## 3. Edits the scale model needs (for the scale-model session to apply)
+
+| # | Edit | Detail |
+|---|---|---|
+| M1 | **Rerun the router on 5.1** (`ancient_roads.py`) | Read `model/data` and the 5.1 settlements by **id**. Node types as now, minus the Zeijani caverns (Nūru-Šaplu, Qarnu-Tūbu, Šurpu-Dhelv) and Dhelv, plus Nulab and the cities on Ancient ground. Add Fort Ebon. Add Wheel and Thera once they are in the settlements (M4). `UPKEEP` keyed by polygon **id**, with Realm of Dalab, Dilihan Province, Tungang Union and Fellgangs mapped. Airless cells in tunnel only (or as question 4 decides). A finer climbing cost (`ANCIENT-ROADS.md` §4b). Write `network.json` in the schema of 2.1, not the draft's shape. |
+| M2 | **Pin the authored routes** | `rift` (the Line's survey alignment, Dalab-Shelf-N portal-S portal-Ledge, then on per question 3); `innerwall` (Drum, 623,940, 553,952, Dorado; the access shafts per question 5); `stair` (sealed at its mid-point; per question 7); `hub01`; `trickster.rim` (re-surveyed on 5.1); `span.basin`, `span.valley` (once span places the Basin Tunnel's lower portal); `pluton` (private, a hidden layer). The router routes round them and joins them at their nodes. |
+| M3 | **Upkeep polygons** | A polygon for the Cut road's corridor ("The Cut" is no political region), and one for the Beast Riders if their lapsed roads are to be told apart (no political polygon holds them). |
+| M4 | **Settlements** | Wheel (406,886, ruined arcology) and Thera (526,955, ruin) from the valley plan's list, if the owner confirms they are on the shared store. The Ancient portals, stations and shafts go in `network.json`, not the settlements collection. |
+| M5 | **The page layer** | `DATA.ancient_network` and a fragment drawing it (section 2.3), with its legend. `model/INDEX.md` and `BRIEF-GEMINI.md` updated. Publish the split copy as now. |
+| M6 | **README fix** | the 5.1 section's "Godthrone (px 968, 1012)": the summit is 861,1272 (24,822 m). |
+| M7 | **The cut** | `extract_region.py` and `cut_site.py` write the network window (section 2.3). Their tests take a region the network crosses. |
+| M8 | **Retire the 4.22 draft files** | `openworld/ancient-roads-draft.*` replaced by `network.json` and its picture, or marked "4.22 canvas" in their names, so no one reads 4.22 px as 5.1. |
+
+## 4. Phases
+
+| Phase | What | Done when |
+|---|---|---|
+| N0 | The owner's answers (section 7); the Line, Tungang, transit, vehicles and openworld-sites sessions asked through the coordinator | the questions are answered |
+| N1 | **`core/network`** (or wherever question 1 puts it): the schema, `window`, `clip`, `at`, the derived segments, gaps and junctions, the edit replay; the Line's survey imported as route `rift` | `node core/network/test-network.js` passes; the digest is stable; a window's `s` matches across two clips |
+| N2 | **The model** (the scale-model session: M1-M6): the router on 5.1, the authored routes, the layer | the owner reviews the layer: trunks, branches, ends, conditions |
+| N3 | **The cut and the ground** (M7; `core/world` road runs by kind) | a region's network window round-trips; the seam check passes on two neighbouring cuts |
+| N4 | **The kit** (with the transit session): `way` on the `line` record, windows by `s`, causeway, portal, the keeper's dress, far-tier instances | `tests/test-transit.js` with the new kinds; the kit page shows a way in each condition and keeper |
+| N5 | **The first region** (question 10) | GPU-verified on a lane: the way on the ground at 4 %, viaducts over the rivers, a portal |
+| N6 | **The joins**: the stations and settlements a line crosses take their windows (Span's two tunnels, Ledge, Dalab, `biomes/line`'s stations from `KNET`) | each page's record digest matches the region's for the same `s` |
+| N7 | **Godot**: an importer for `network.json` and the windows; **the simulation**: the network as carriers' routes (the riding plan's trains, `SIM.trade` land carriers, `core/camp` caravans) | the golden trace replays |
+
+**Checks** (each with its negative control):
+- `seam`: a route clipped by two neighbouring regions meets at one point within 0.1 m, with equal `s`. Negative: one box
+  shifted 1 px.
+- `grade`: every open run holds 4 % (spirals included). Negative: a vertex lifted 50 m.
+- `air`: no open run over 8 km, unless question 4 allows it. Negative: an open run across the Stalker Peaks.
+- `ends`: every route ends at a node or joins another. Negative: an end moved 3 km.
+- `cover`: every tunnel run lies under at least 30 m of rock. Negative: a bore point raised over the ground.
+- `stable`: an added route moves no other route's id, chainage or runs.
+- `windows`: a station page's window equals the region's at the same `s`.
+
+## 5. What this round did not do
+
+- No edit to the scale model, `kits/ancient-transit`, `kits/tungang`, the Line's branch or any biome plan.
+- No router rerun committed.
+- The 5.1 measurements above were made in this session's scratchpad (`measure.py`, `lines.py`, `netdata.py`) and are
+  quoted here.
+- The settlements were read from the model's source on `claude/openworld-sites-24defd`. The shared store may hold more
+  (Wheel and Thera, for instance), which this round could not read.
+
+## 6. Hand-over
+
+The notes folder of this session group carries `ancient-network.md`: the short version of sections 1.4, 2.6 and 7 for
+the sessions named in 2.6.
+
+## 7. Questions for the owner
+
+1. **Where the network's data lives.** A new data-only core module, `core/network` (`KNET`: the records, windows by
+   chainage, clips, edits), which `core/world`, `core/city`, `core/simulation`, the stations and Godot take, with
+   `KTRANSIT` drawing from it? Or keep it in `kits/ancient-transit`, or in `core/world`? *Recommended: `core/network`.*
+2. **One record for every Ancient route**: the Line's `line` kind carried to the surface as its open `way` form (the
+   30 m paved way at 4 %, with viaducts, cuttings, causeways and portals), so one code draws the Rift line and every trunk?
+   And **how many guideways** does an open trunk carry: one (as "a guideway down its middle" says), or two, one each way?
+   Does the Rift line's four-track width carry on the surface from its south portal to Ledge?
+3. **The Rift line past Ledge.** Does one route run on from Ledge's lifts by Nulab and Chimes to Cube, on the Rift floor or
+   in tunnels along its walls? And east from Cube to Theodiga and Strongbow, so Strongbow is literally the end of the line,
+   the crews who came east came along it, and the Glaziers live just off its end?
+4. **The airless rim.** May an open way run over 8 km (sealed cars; its stretches "look new", `ANCIENT-ROADS.md` §4), or
+   only in tunnel (§2, and the router)? On 5.1 the draft's Hub 01, Pluton and rim routes would cross 15-221 km of
+   airless surface.
+5. **The Inner Wall tunnel's access.** Cascade is 214 km from the tunnel's straight line on 5.1. Should the tunnel bend
+   north under Cascade? Should the Republic's arcology be a new site near the east portal (623,940)? Or does Span's
+   Valley Tunnel (Span is 114 km from the line) join the Inner Wall tunnel as a branch?
+6. **Span's tunnels.** Are the Basin Tunnel (to the SW lowlands, toward Dalab) and the Valley Tunnel part of a trunk
+   Dalab-Span-Valley ("the two Ancient highways meet on the Cross")? Where is the Basin Tunnel's lower portal?
+7. **The Stair tunnel.** Accept seouterwall's proposal: a 180 km base tunnel under the Godsgate, the Bab al-Hawa shaft
+   (1033,1258) and a surface construction highway as the surviving way? Or keep it a tunnel only, with the caravans on
+   the notch?
+8. **The condition vocabulary** of section 2.4 (`intact kept worn broken buried flooded cut`), mapped onto the kit's and
+   the Line's states, and **the keeper's dress** (Izani, Eternian, Tungang, Yuni upkeep drawn over the Ancient structure,
+   generalising the Line's `kept` cars)?
+9. **The nodes.**
+   - Add Fort Ebon, Nulab, Wheel and Thera, and drop the Zeijani caverns?
+   - Which other cities stand on Ancient ground (Voth, Jimjam, Dilihan, Theodiga's Xanadui)?
+   - Are the tentative ruins (`ANCIENT-ROADS.md` §7.3) settled enough to route for good, or is the 5.1 run another draft?
+10. **The first region to carry the network.** *Recommended*: **iziz-cluster** (built; three draft routes meet at Stump,
+    1044,952, inside its box; the Empire's kept trunks; its modern links to bend onto the Ancient corridor). The
+    alternatives:
+    - the Rift line's north end, Dalab to the north portal (a city, a climb on spirals, a portal);
+    - the Valley's edge, Span and the Inner Wall's west portal.
+11. **Names.** Span's barricade is called "the Line", and swhighlands has a "Drum" and a "Cascade". Rename those, or the
+    network's?
