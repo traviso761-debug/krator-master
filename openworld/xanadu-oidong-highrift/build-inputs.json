@@ -137,7 +137,7 @@
     "core/world/80-world-sky.js": "824f51c793e1835057f01241b306fc9e4cda0ee4d2fd1277010d0cb201852ad2",
     "core/world/81-world-terrain.js": "4c254a79afd5b964b616928abd1744e5ab58902ddac2519bbfefcb22976a128d",
     "core/world/83-world-water.js": "5dcd8b2a4ad41fa8a288dd14277cfde482223c7eef6a512bf0be29e52644f3c5",
-    "core/world/83w-world-seas.js": "3e326653d23de08d1bd3eebf78140be3da6131092dce25abeb56c05feecb8df7",
+    "core/world/83w-world-seas.js": "4343db7a7c00a09c8e915de92033dccfcd483b5d57a068ff5be4ee2f2a504131",
     "core/world/84-world-nursery.js": "527af1608c8011b8bfc78d0c2ce84d256aa6745bad782f7deeaa0cf198942938",
     "core/world/85-world-flora.js": "c9f5d993402edd41f0596a26eb41377bbd1b78ed618cca69012ed737458a9bcd",
     "core/world/86-world-floor.js": "92528cb595295f88b2a1fd040014636a8dc443d79e14391b2e50cda36d3510a5",
@@ -287,12 +287,12 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.html": "a477c7ddf08e15d389c4d59620c81210d0e41d3479ab9c468e6d911a34f3fa0a",
+    "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.html": "09b282220f3d4508517835ce70a3ea0e9bae6d9d1b80b122767ec85318ebaced",
     "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.tex.oidong.js": "88510acf50c6f8c3830549722810e5183c685781ea2deaa2904e9297452e8086",
     "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.tex.xanadu.js": "7216145e7a4349521c0a4ed9f2f4478f5a709cb771ad7fa4c30270d0df288196"
    },
    "outputs_raw": {
-    "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.html": "a477c7ddf08e15d389c4d59620c81210d0e41d3479ab9c468e6d911a34f3fa0a",
+    "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.html": "09b282220f3d4508517835ce70a3ea0e9bae6d9d1b80b122767ec85318ebaced",
     "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.tex.oidong.js": "88510acf50c6f8c3830549722810e5183c685781ea2deaa2904e9297452e8086",
     "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.tex.xanadu.js": "7216145e7a4349521c0a4ed9f2f4478f5a709cb771ad7fa4c30270d0df288196"
    }

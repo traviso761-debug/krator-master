@@ -177,7 +177,7 @@
     "core/world/80-world-sky.js": "824f51c793e1835057f01241b306fc9e4cda0ee4d2fd1277010d0cb201852ad2",
     "core/world/81-world-terrain.js": "4c254a79afd5b964b616928abd1744e5ab58902ddac2519bbfefcb22976a128d",
     "core/world/83-world-water.js": "5dcd8b2a4ad41fa8a288dd14277cfde482223c7eef6a512bf0be29e52644f3c5",
-    "core/world/83w-world-seas.js": "3e326653d23de08d1bd3eebf78140be3da6131092dce25abeb56c05feecb8df7",
+    "core/world/83w-world-seas.js": "4343db7a7c00a09c8e915de92033dccfcd483b5d57a068ff5be4ee2f2a504131",
     "core/world/84-world-nursery.js": "527af1608c8011b8bfc78d0c2ce84d256aa6745bad782f7deeaa0cf198942938",
     "core/world/85-world-flora.js": "c9f5d993402edd41f0596a26eb41377bbd1b78ed618cca69012ed737458a9bcd",
     "core/world/86-world-floor.js": "92528cb595295f88b2a1fd040014636a8dc443d79e14391b2e50cda36d3510a5",
@@ -491,7 +491,7 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "openworld/pinnacle/dist/pinnacle.html": "2249f234124e2807228cee581f2c6f5b1ec3c3409f68be58de94a20cad766591",
+    "openworld/pinnacle/dist/pinnacle.html": "9254e38221b27685658eb856a325f04fcc9c829029632be5f846072bda960626",
     "openworld/pinnacle/dist/pinnacle.tex.abyssal-savannah.js": "f30478be1254d8bbc8efe1104b91a26fcce2573ed021d0386a506c4bcee2ae64",
     "openworld/pinnacle/dist/pinnacle.tex.brtowns.js": "8b0a64a836ed9f8241276c635367d5868add677be8077d5f2a8a957ac15621fa",
     "openworld/pinnacle/dist/pinnacle.tex.eastabyss.js": "adb215a74b951f5abfbe99995243b1852642413c63ff52cf206b1b3e6312892b",
@@ -499,7 +499,7 @@
     "openworld/pinnacle/dist/pinnacle.tex.kftex.js": "0bccb579a7fae125f77c2db5d2d4cd5d294d58a281697a8230fb0e5829c4d4a6"
    },
    "outputs_raw": {
-    "openworld/pinnacle/dist/pinnacle.html": "2249f234124e2807228cee581f2c6f5b1ec3c3409f68be58de94a20cad766591",
+    "openworld/pinnacle/dist/pinnacle.html": "9254e38221b27685658eb856a325f04fcc9c829029632be5f846072bda960626",
     "openworld/pinnacle/dist/pinnacle.tex.abyssal-savannah.js": "f30478be1254d8bbc8efe1104b91a26fcce2573ed021d0386a506c4bcee2ae64",
     "openworld/pinnacle/dist/pinnacle.tex.brtowns.js": "8b0a64a836ed9f8241276c635367d5868add677be8077d5f2a8a957ac15621fa",
     "openworld/pinnacle/dist/pinnacle.tex.eastabyss.js": "adb215a74b951f5abfbe99995243b1852642413c63ff52cf206b1b3e6312892b",

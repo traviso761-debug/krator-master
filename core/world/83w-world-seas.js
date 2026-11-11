@@ -8,7 +8,9 @@
 //    the flood from the body's own cells over the ground under its level, so a lower hollow beside a lake inside its
 //    ring stays dry, and the shore grid's breakers, shoaling and wet-sand band (the ground does not take the band yet:
 //    the terrain is this world's own ShaderMaterial; KNOWN_ISSUES.md);
-//  * at 1:1: 17 CDLOD levels (a 524 km root, the horizon in reach) and a camera-relative origin (the mesh stands within 2 km
+//  * at 1:1: 19 CDLOD levels (a 2,097 km root) and a camera-relative origin. The root is centred on the camera snapped to
+//    half its size, so its reach is a quarter of the root at worst: 17 levels (524 km) dropped lakes 130 km away (the
+//    owner, 2026-11-11: "water does not show up from far away"); 19 keeps every body inside SEAS's 400 km in reach. And a camera-relative origin (the mesh stands within 2 km
 //    of the camera and the vertex shader draws relative to it: no float jitter a million metres out, as the terrain's
 //    chunks have their own origins).
 // The sky in the water is core/atmos's skylight (a capture of this world's dome and giant, given to the water only).
@@ -23,7 +25,7 @@ for(const B of BODIES){const big=B.cells>1000,salt=B.salt>.5,id=B.id;
  const S=WATER.open({name:big?'The Ring Sea':(salt?'salt lake ':'lake ')+id,level:B.level,field:big?.8:salt?.25:.4,tilt:salt?.6:1,bounds:B.box,mask:B.mask,
   bed:(x,z)=>WORLD.H(x,z,48),shore:{window:WIN,cell:CELL,band:big?120:60,seeds:(x,z)=>WORLD.waterBodyAt(x,z)===id}});
  const D=WATER.draw(S,{color:salt?0x6fa79c:0x1d3c48,shallow:salt?0xc8dccd:0x6d9c92,deep:salt?0x6fa79c:0x1d3c48,roughness:salt?.3:.16,metalness:.1,
-  envMapIntensity:salt?.25:.45,transparent:true,renderOrder:2,cdlod:{levels:17},origin:2048,hideEmpty:true});
+  envMapIntensity:salt?.25:.45,transparent:true,renderOrder:2,cdlod:{levels:19},origin:2048,hideEmpty:true});
  D.mesh.userData.inspectLabel=S.name;list.push({B,S,D,job:null,at:null});}
 // the body's nearest point to the camera (its box), and whether the window there is stale
 const near=(e,P)=>{const b=e.B.box,dx=Math.max(b[0]-P.x,0,P.x-b[2]),dz=Math.max(b[1]-P.z,0,P.z-b[3]);return Math.hypot(dx,dz);};
