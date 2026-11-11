@@ -12,7 +12,7 @@
     "core/atmos/sky/89-atmos-g-sky.js": "45f083d44aa9834b558b48ec3815a4637a71475e672b3a678388a2466bcee21c",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "60d066abf6678b08bff3be1c66a075ad93e27fe242c8d0e4b78e79e5111a24d5",
+    "core/biome/30-core-foliage.js": "4d8473efce268373b1a65a91132ea3072bf6e597180faf0db9c849975ec3e955",
     "core/biome/31b-core-leafset.js": "e58ebcc03d77e6da79d54c90eb7582fb806775454c8ed0879e1d7f2359a2788f",
     "core/biome/34-core-impostor.js": "b67d538fbcb5c7a4b077a20c1cffab6bdc48e0e157ea3e240696041403468f53",
     "core/biome/40-core-place.js": "f1277b48ab3c5d779bf85452c581888be7d5b2ed94a0d21e21ade12f0602c9d7",
@@ -147,7 +147,8 @@
     "kits/motor-vehicles/vehicle_bundle.py": "3ca455526d032d01bc31bde32f7b7c2fb64e1c72bed35245aae296a9859a2e2a",
     "kits/motor-vehicles/vehicles-core.js": "85b818f33a3305886128379a011df40103dc76cbdd2656d422a2d5af6d472990",
     "kits/motor-vehicles/vehicles-detail.js": "833b14b967d19983c354920b5ad13850363118fc260dc11f358101ab8ae80ce8",
-    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
+    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
@@ -155,16 +156,17 @@
     "kits/ancient-transit/dist": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "kits/ancient-transit/src": "9f9a9ace88a6dc538fc856953f0d80e9c6e9935835874dd1b45a990fd9a3df3a",
     "kits/motor-vehicles": "ff3e33605586ef337255d94b8cf790b481fc6067868b2c9bd8e2902aab54da77",
+    "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/ancient-transit/build-manifest.json": "a7898b2121917712300d99e945eac4ba3aa3be037e30326ae76005bb67fcd796",
-    "kits/ancient-transit/dist/ancient-transit.html": "579a0cd991291656912e96bd2ac5de381ecba7514e21270c7860509bd58d0fdb",
+    "kits/ancient-transit/build-manifest.json": "356db103f4fb1ba37ffcff7161ed189c4c59640dc2141d2197ccb80a5662d093",
+    "kits/ancient-transit/dist/ancient-transit.html": "2846cbefcc916f3b72dbd8b8c69642989fa3fff7a8208700db483a302a8207fb",
     "kits/ancient-transit/dist/ancient-transit.tex.ancient-transit.js": "006858241b75ab6107bbac839d32b32b193f166df8aa30816d70ab975c61a306"
    },
    "outputs_raw": {
-    "kits/ancient-transit/build-manifest.json": "a7898b2121917712300d99e945eac4ba3aa3be037e30326ae76005bb67fcd796",
-    "kits/ancient-transit/dist/ancient-transit.html": "579a0cd991291656912e96bd2ac5de381ecba7514e21270c7860509bd58d0fdb",
+    "kits/ancient-transit/build-manifest.json": "356db103f4fb1ba37ffcff7161ed189c4c59640dc2141d2197ccb80a5662d093",
+    "kits/ancient-transit/dist/ancient-transit.html": "2846cbefcc916f3b72dbd8b8c69642989fa3fff7a8208700db483a302a8207fb",
     "kits/ancient-transit/dist/ancient-transit.tex.ancient-transit.js": "006858241b75ab6107bbac839d32b32b193f166df8aa30816d70ab975c61a306"
    }
   }

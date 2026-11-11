@@ -74,7 +74,7 @@
     "core/atmos/sky/89-atmos-j-fog.js": "c6fbc34d9dc0552623f7f22c79b2d8f94c6965b3bc4090c2e65b381d209320c5",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "60d066abf6678b08bff3be1c66a075ad93e27fe242c8d0e4b78e79e5111a24d5",
+    "core/biome/30-core-foliage.js": "4d8473efce268373b1a65a91132ea3072bf6e597180faf0db9c849975ec3e955",
     "core/biome/31b-core-leafset.js": "e58ebcc03d77e6da79d54c90eb7582fb806775454c8ed0879e1d7f2359a2788f",
     "core/biome/31j-core-joint.js": "2b32f93de6dc08f1a5044449be80346697b2bb87cf764982ab6ab3c0a6847950",
     "core/biome/32-core-variants.js": "523b7c9c5eeb01db68e0033656ec8400fbbf6f1b172989cbe986078053ac2a47",
@@ -139,7 +139,8 @@
     "kits/fauna/krator-fauna-runtime.js": "9e4b6ba0f3c429c4927a8371d6ee4d4c8a11c509644a938c437ce4f6fadf1a7d",
     "kits/fauna/krator-fauna-wild.js": "74671e89e005bd0f3635ad411b3e224bb76a3329ce5550b4eb1531715ffb0ff0",
     "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
-    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
+    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
@@ -147,16 +148,16 @@
     "biomes/crater-drylands/stations": "71afee8c4086661fb59f114a5adbbe49e1a9fff07fce2695338f920d5191d40f",
     "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
     "kits/fauna": "15ddf75514bc2fb08858cc3e94a1fff2bf1cafb60c1014a7cdc4463763fb2e5c",
-    "tools": "6631bdd33a724ae4afb19e5705fb6b95c13d305435fd8d325567b5e7f68c5f8c",
+    "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/crater-drylands/dist/crater-drylands-n.html": "27f37fd5e12c71cc019b54be8ed5e07636e5d243874c7c763ca4b096e6053df2",
-    "biomes/crater-drylands/dist/crater-drylands.html": "27f37fd5e12c71cc019b54be8ed5e07636e5d243874c7c763ca4b096e6053df2"
+    "biomes/crater-drylands/dist/crater-drylands-n.html": "a4513f580268869e4ad55a13a3ef9ce82f0e486e6cf7b72e467ad8ced449336d",
+    "biomes/crater-drylands/dist/crater-drylands.html": "a4513f580268869e4ad55a13a3ef9ce82f0e486e6cf7b72e467ad8ced449336d"
    },
    "outputs_raw": {
-    "biomes/crater-drylands/dist/crater-drylands-n.html": "27f37fd5e12c71cc019b54be8ed5e07636e5d243874c7c763ca4b096e6053df2",
-    "biomes/crater-drylands/dist/crater-drylands.html": "27f37fd5e12c71cc019b54be8ed5e07636e5d243874c7c763ca4b096e6053df2"
+    "biomes/crater-drylands/dist/crater-drylands-n.html": "a4513f580268869e4ad55a13a3ef9ce82f0e486e6cf7b72e467ad8ced449336d",
+    "biomes/crater-drylands/dist/crater-drylands.html": "a4513f580268869e4ad55a13a3ef9ce82f0e486e6cf7b72e467ad8ced449336d"
    }
   },
   "build.py --station edge": {
@@ -278,7 +279,7 @@
     "core/atmos/sky/89-atmos-j-fog.js": "c6fbc34d9dc0552623f7f22c79b2d8f94c6965b3bc4090c2e65b381d209320c5",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "60d066abf6678b08bff3be1c66a075ad93e27fe242c8d0e4b78e79e5111a24d5",
+    "core/biome/30-core-foliage.js": "4d8473efce268373b1a65a91132ea3072bf6e597180faf0db9c849975ec3e955",
     "core/biome/31b-core-leafset.js": "e58ebcc03d77e6da79d54c90eb7582fb806775454c8ed0879e1d7f2359a2788f",
     "core/biome/31j-core-joint.js": "2b32f93de6dc08f1a5044449be80346697b2bb87cf764982ab6ab3c0a6847950",
     "core/biome/32-core-variants.js": "523b7c9c5eeb01db68e0033656ec8400fbbf6f1b172989cbe986078053ac2a47",
@@ -346,7 +347,8 @@
     "kits/fauna/krator-fauna-runtime.js": "9e4b6ba0f3c429c4927a8371d6ee4d4c8a11c509644a938c437ce4f6fadf1a7d",
     "kits/fauna/krator-fauna-wild.js": "74671e89e005bd0f3635ad411b3e224bb76a3329ce5550b4eb1531715ffb0ff0",
     "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
-    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
+    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
@@ -355,14 +357,14 @@
     "biomes/crater-drylands/stations/edge": "c18cb86d880f61f14a4edc0ec25d5e2b8189b6164387d7025a6e5b2dbd568c09",
     "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
     "kits/fauna": "15ddf75514bc2fb08858cc3e94a1fff2bf1cafb60c1014a7cdc4463763fb2e5c",
-    "tools": "6631bdd33a724ae4afb19e5705fb6b95c13d305435fd8d325567b5e7f68c5f8c",
+    "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/crater-drylands/dist/crater-drylands-edge.html": "fe53ad16dda33c2f4308968475e58c5a2c007e4cb9555ca1889f9425d72c8f7a"
+    "biomes/crater-drylands/dist/crater-drylands-edge.html": "14f5780659101a52ab0e0d9a9afe6785c3678ef0995d0549c7df8a3b809bfeae"
    },
    "outputs_raw": {
-    "biomes/crater-drylands/dist/crater-drylands-edge.html": "fe53ad16dda33c2f4308968475e58c5a2c007e4cb9555ca1889f9425d72c8f7a"
+    "biomes/crater-drylands/dist/crater-drylands-edge.html": "14f5780659101a52ab0e0d9a9afe6785c3678ef0995d0549c7df8a3b809bfeae"
    }
   },
   "build.py --station salt": {
@@ -375,7 +377,7 @@
     "biomes/abyssal-savannah/tex/bark1.albedo.webp": "1acde04c70f219ed275b8edb54410bdf1f4a31357eca645f50d19f9b48673f19",
     "biomes/abyssal-savannah/tex/bark2.albedo.webp": "76c78b97289e346fe1781c378816204654665fe78dc7227cf71559292c1eef50",
     "biomes/abyssal-savannah/tex/bark3.albedo.webp": "9e932c675ea63a8f1c2392d2b58f38d0d6c74652cf07c909f3f7bdad2e8ccf00",
-    "biomes/abyssal-savannah/tex/blind.albedo.webp": "6e9ee7909b552a580e4fd9a02f14cda0951292489d2dffb012f02563714575ce",
+    "biomes/abyssal-savannah/tex/blind.albedo.webp": "dfd6b6db37b56367b8aada322565620593b501611e308c908a075e7eec7e18a7",
     "biomes/abyssal-savannah/tex/bunch.albedo.webp": "7b253bf55dd63240b4d81a91f1ec46658084d3bab7bf20f4ab8070731b24f0ea",
     "biomes/abyssal-savannah/tex/cap.albedo.webp": "3427b779689393ce7b387251e26bf175002d0bc768cdfbf27834b927bca165bb",
     "biomes/abyssal-savannah/tex/charred.albedo.webp": "7e0d5dd6cae78f725514d54a2856ee3123ffe678fb904d341da13cc713ed3133",
@@ -386,11 +388,11 @@
     "biomes/abyssal-savannah/tex/forb0.albedo.webp": "a3140b9737adae09cf28929282342081f72f3e4886a45d814d157885856a7f80",
     "biomes/abyssal-savannah/tex/forb1.albedo.webp": "a3140b9737adae09cf28929282342081f72f3e4886a45d814d157885856a7f80",
     "biomes/abyssal-savannah/tex/forb2.albedo.webp": "a3140b9737adae09cf28929282342081f72f3e4886a45d814d157885856a7f80",
-    "biomes/abyssal-savannah/tex/grass.albedo.webp": "1c6bea28bcb10a6d44808af6ac9d29340e0c13c178febc30c63a01173ebe7e5b",
+    "biomes/abyssal-savannah/tex/grass.albedo.webp": "61d781fbe0a60a418a3030f89f2c78203c19006e783f02f41f641fd63363e207",
     "biomes/abyssal-savannah/tex/incensebark.albedo.webp": "ce03a78da4075bcd11b286f4f9c80599b1c662e55cd680d6145a1b93deede2aa",
     "biomes/abyssal-savannah/tex/leaflet.albedo.webp": "3d4db5c92e00db01794c2cce3c1362bd4e3472e11266b9817c198a6a095406ab",
     "biomes/abyssal-savannah/tex/lily.albedo.webp": "9034cb7576e11a6b23713e109f8f48b53215a99360120345a5c34bf0475b39d5",
-    "biomes/abyssal-savannah/tex/pack.json": "3479c0304385bede6f52ee217d8b85396784c01507f51bae5bf98b106ff318b1",
+    "biomes/abyssal-savannah/tex/pack.json": "5d8eeb63a01053b6c2d4d6d2dae46e684d69096fdd90d3ebc78d079e6134b8db",
     "biomes/abyssal-savannah/tex/palmbark.albedo.webp": "c3dd614882aca85505c40ca8cd1d0bc3fe59d259eb9ec21247351637266bb8a5",
     "biomes/abyssal-savannah/tex/pangrass.albedo.webp": "6e9ee7909b552a580e4fd9a02f14cda0951292489d2dffb012f02563714575ce",
     "biomes/abyssal-savannah/tex/plate.albedo.webp": "244c60f1e2c0304dad9d85122439d68b1334234688e5e641c62bd73b84c0c0bb",
@@ -476,7 +478,7 @@
     "core/atmos/sky/89-atmos-j-fog.js": "c6fbc34d9dc0552623f7f22c79b2d8f94c6965b3bc4090c2e65b381d209320c5",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "60d066abf6678b08bff3be1c66a075ad93e27fe242c8d0e4b78e79e5111a24d5",
+    "core/biome/30-core-foliage.js": "4d8473efce268373b1a65a91132ea3072bf6e597180faf0db9c849975ec3e955",
     "core/biome/31b-core-leafset.js": "e58ebcc03d77e6da79d54c90eb7582fb806775454c8ed0879e1d7f2359a2788f",
     "core/biome/31j-core-joint.js": "2b32f93de6dc08f1a5044449be80346697b2bb87cf764982ab6ab3c0a6847950",
     "core/biome/32-core-variants.js": "523b7c9c5eeb01db68e0033656ec8400fbbf6f1b172989cbe986078053ac2a47",
@@ -546,7 +548,8 @@
     "kits/fauna/krator-fauna-runtime.js": "9e4b6ba0f3c429c4927a8371d6ee4d4c8a11c509644a938c437ce4f6fadf1a7d",
     "kits/fauna/krator-fauna-wild.js": "74671e89e005bd0f3635ad411b3e224bb76a3329ce5550b4eb1531715ffb0ff0",
     "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
-    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
+    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
@@ -555,14 +558,14 @@
     "biomes/crater-drylands/stations/salt": "f942c792aec615dbab06f4c99c7cbc0a205cf2294c7a49423e00c58c2628aac9",
     "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
     "kits/fauna": "15ddf75514bc2fb08858cc3e94a1fff2bf1cafb60c1014a7cdc4463763fb2e5c",
-    "tools": "6631bdd33a724ae4afb19e5705fb6b95c13d305435fd8d325567b5e7f68c5f8c",
+    "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/crater-drylands/dist/crater-drylands-salt.html": "49aa27c917de53231ed70316b9a8faa922d59db05bb9b6f8e352c921116b160e"
+    "biomes/crater-drylands/dist/crater-drylands-salt.html": "6ba89d904140b3010456bf197a5b573dacbcb74a0586d2e68ef31f6c3ab8aa43"
    },
    "outputs_raw": {
-    "biomes/crater-drylands/dist/crater-drylands-salt.html": "49aa27c917de53231ed70316b9a8faa922d59db05bb9b6f8e352c921116b160e"
+    "biomes/crater-drylands/dist/crater-drylands-salt.html": "6ba89d904140b3010456bf197a5b573dacbcb74a0586d2e68ef31f6c3ab8aa43"
    }
   },
   "build.py --station south": {
@@ -571,7 +574,7 @@
     "biomes/abyssal-savannah/src/rim/55-biome-savrim-trees.js": "0156c6325bad33ff01f502a876eba7c97b6388f627bf18f30c326303de3534fb",
     "biomes/abyssal-savannah/src/rim/56-biome-savrim-southeast.js": "7526a64058b7b2ef756307161c02112112527a84d7f5624c51b866bc45b25d97",
     "biomes/abyssal-savannah/tex/incensebark.albedo.webp": "ce03a78da4075bcd11b286f4f9c80599b1c662e55cd680d6145a1b93deede2aa",
-    "biomes/abyssal-savannah/tex/pack.json": "3479c0304385bede6f52ee217d8b85396784c01507f51bae5bf98b106ff318b1",
+    "biomes/abyssal-savannah/tex/pack.json": "5d8eeb63a01053b6c2d4d6d2dae46e684d69096fdd90d3ebc78d079e6134b8db",
     "biomes/crater-drylands/KNOWN_ISSUES.md": "41c29cb68a7e42ab6ae6eb81f9be62552a502228e5d786adee90e2939a19f288",
     "biomes/crater-drylands/PORT.md": "65849c105bfb82a580ff7a8d2e683ad1ee44cf62f731a36a8d6a3bb0d3ad6e5b",
     "biomes/crater-drylands/build.py": "32c8513d796b6fb3a043d09490cabdb3d7f6f8602476033bf02b531e1f3f9b73",
@@ -703,7 +706,7 @@
     "core/atmos/sky/89-atmos-j-fog.js": "c6fbc34d9dc0552623f7f22c79b2d8f94c6965b3bc4090c2e65b381d209320c5",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "60d066abf6678b08bff3be1c66a075ad93e27fe242c8d0e4b78e79e5111a24d5",
+    "core/biome/30-core-foliage.js": "4d8473efce268373b1a65a91132ea3072bf6e597180faf0db9c849975ec3e955",
     "core/biome/30s-core-season-flush.js": "2367234f998ebaa2e6480f7ee00af648a361aef85ccac606286155a478260a14",
     "core/biome/31b-core-leafset.js": "e58ebcc03d77e6da79d54c90eb7582fb806775454c8ed0879e1d7f2359a2788f",
     "core/biome/31j-core-joint.js": "2b32f93de6dc08f1a5044449be80346697b2bb87cf764982ab6ab3c0a6847950",
@@ -773,7 +776,8 @@
     "kits/fauna/krator-fauna-runtime.js": "9e4b6ba0f3c429c4927a8371d6ee4d4c8a11c509644a938c437ce4f6fadf1a7d",
     "kits/fauna/krator-fauna-wild.js": "74671e89e005bd0f3635ad411b3e224bb76a3329ce5550b4eb1531715ffb0ff0",
     "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
-    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
+    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
@@ -782,14 +786,14 @@
     "biomes/crater-drylands/stations/south": "ea5d7d903b99541f173bf365a13320d0de42c9db9b31b5c432fdfb7c6214d1b0",
     "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
     "kits/fauna": "15ddf75514bc2fb08858cc3e94a1fff2bf1cafb60c1014a7cdc4463763fb2e5c",
-    "tools": "6631bdd33a724ae4afb19e5705fb6b95c13d305435fd8d325567b5e7f68c5f8c",
+    "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/crater-drylands/dist/crater-drylands-s.html": "c5517a3c6ceda97aa66f40229aa7a53d804e22791d80e1999ba697f43f3d0f0a"
+    "biomes/crater-drylands/dist/crater-drylands-s.html": "d26f80d94a968d9f7df15e1c5ab290285df75b3eb923b0484cb19e0aebe391bb"
    },
    "outputs_raw": {
-    "biomes/crater-drylands/dist/crater-drylands-s.html": "c5517a3c6ceda97aa66f40229aa7a53d804e22791d80e1999ba697f43f3d0f0a"
+    "biomes/crater-drylands/dist/crater-drylands-s.html": "d26f80d94a968d9f7df15e1c5ab290285df75b3eb923b0484cb19e0aebe391bb"
    }
   }
  }

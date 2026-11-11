@@ -942,7 +942,8 @@
     "settlements/ys/src/79-hyk-markets.js": "7d799c2cf0f5214021b3ed42420f84b8e46aa21fdaef11fc830e8de47851194c",
     "settlements/ys/src/79z-ys-matlib.js": "4c49a4c02c89eda07d05b6dd45a4d3869af182fcc53c27fc9dc34c137dd5630e",
     "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
-    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
+    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
@@ -963,7 +964,7 @@
     "settlements/isle-demo/dist": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "settlements/isle-demo/src": "052f01c20260402e7eac5d16d2c284e7e0149a227442a49f654a14b2a56a6f2f",
     "settlements/voth": "cd227f3cfafa6ad03e77e0ece3e7f18ccf586efc7337c2db25c84e90334fa86b",
-    "tools": "6631bdd33a724ae4afb19e5705fb6b95c13d305435fd8d325567b5e7f68c5f8c",
+    "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {

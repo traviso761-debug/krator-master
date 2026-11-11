@@ -3,9 +3,9 @@
  "runs": {
   "build.py": {
    "inputs": {
-    "biomes/hyperjungle/KNOWN_ISSUES.md": "67f106ceadd2fb0810832603568714514672609b951a326c3f8776d6875035cf",
+    "biomes/hyperjungle/KNOWN_ISSUES.md": "e7095a1f6221c11baf1a579ba480942ef02750f54a9b720d9f1de4d5efe0926f",
     "biomes/hyperjungle/PORT.md": "f89e0836359a95005584b39dc2270fcd3c1169dc1df23809e1e3b959401cb623",
-    "biomes/hyperjungle/build.py": "b6bb2ce5a4f077e1a7ec114872dda6c3ea91d980f46d51b9d5715651275ee56a",
+    "biomes/hyperjungle/build.py": "519ad6be86519c027a942ff598e04acfa943f2acdfda3395a5028f05595d0254",
     "biomes/hyperjungle/src/00-head.html": "e93cd2d1452e0c253b1e098d21245bf3d73e9d84fd0feaddfcd3775c3a29a48e",
     "biomes/hyperjungle/src/41-hyperjungle-globals.js": "522689f321f04ca138230497b065907019b16731915fc5e40c4b348f7f26ca1c",
     "biomes/hyperjungle/src/45-host-stage.js": "00f7548f52c4227c58e7b85833acb779578cd73f20ce27e5c7b1e17f41f5ef7b",
@@ -85,7 +85,7 @@
     "core/atmos/sky/89-atmos-j-fog.js": "c6fbc34d9dc0552623f7f22c79b2d8f94c6965b3bc4090c2e65b381d209320c5",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "60d066abf6678b08bff3be1c66a075ad93e27fe242c8d0e4b78e79e5111a24d5",
+    "core/biome/30-core-foliage.js": "4d8473efce268373b1a65a91132ea3072bf6e597180faf0db9c849975ec3e955",
     "core/biome/32-core-variants.js": "523b7c9c5eeb01db68e0033656ec8400fbbf6f1b172989cbe986078053ac2a47",
     "core/biome/33-core-fungoid.js": "07e80dc4677ce326830d5a2318185fbf0b918dc9ff4d78f4b2c9c246e81d76a6",
     "core/biome/34-core-impostor.js": "b67d538fbcb5c7a4b077a20c1cffab6bdc48e0e157ea3e240696041403468f53",
@@ -125,20 +125,21 @@
     "core/water/51-core-water-kinds.js": "e0c2edba19b476b4b46a4e08a63f0af695423d88b1da15b380795b2e4d07ead4",
     "core/water/ext/56-core-water-breakup.js": "30c6de1a8913f7fa59ac92cd40526eb148d683b02dc31b6b521a3a768a2926bb",
     "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
-    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
+    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
     "biomes/hyperjungle/src": "f74b92072f15d6b3d2ee5734dfceff762993c23f17e3c604ad7607756a64bcd6",
     "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
-    "tools": "6631bdd33a724ae4afb19e5705fb6b95c13d305435fd8d325567b5e7f68c5f8c",
+    "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/hyperjungle/dist/hyperjungle.html": "4add2a8c3fb1cd67188b4a1c9a7632b0f2fee36f97b069cac1b82b8777a82be2"
+    "biomes/hyperjungle/dist/hyperjungle.html": "c0905cad1e0c4f216cee71cb300c71ace5a4dea113288412775ae45dc72d126a"
    },
    "outputs_raw": {
-    "biomes/hyperjungle/dist/hyperjungle.html": "1cb2d5b7b4da662d3e0426a37008d6de684c22a428babb40a9fdf506a4292d9d"
+    "biomes/hyperjungle/dist/hyperjungle.html": "c0905cad1e0c4f216cee71cb300c71ace5a4dea113288412775ae45dc72d126a"
    }
   },
   "build.py --station lake": {
@@ -149,9 +150,9 @@
     "biomes/geyser/tex/pack.json": "146cc72b486a04b78de56e13a51121eddb166778dc1e6b94f173c3433ed376ef",
     "biomes/geyser/tex/rosette.albedo.webp": "e7b5d68f18fe713f33839e0922b354d1a6e7f8393a9f9913202d267a64d5537b",
     "biomes/geyser/tex/strap.albedo.webp": "430aa3766da7c02406d5fa3eded5a572eab69a31a84c85eb52266876c52bc7aa",
-    "biomes/hyperjungle/KNOWN_ISSUES.md": "67f106ceadd2fb0810832603568714514672609b951a326c3f8776d6875035cf",
+    "biomes/hyperjungle/KNOWN_ISSUES.md": "e7095a1f6221c11baf1a579ba480942ef02750f54a9b720d9f1de4d5efe0926f",
     "biomes/hyperjungle/PORT.md": "f89e0836359a95005584b39dc2270fcd3c1169dc1df23809e1e3b959401cb623",
-    "biomes/hyperjungle/build.py": "b6bb2ce5a4f077e1a7ec114872dda6c3ea91d980f46d51b9d5715651275ee56a",
+    "biomes/hyperjungle/build.py": "519ad6be86519c027a942ff598e04acfa943f2acdfda3395a5028f05595d0254",
     "biomes/hyperjungle/src/00-head.html": "e93cd2d1452e0c253b1e098d21245bf3d73e9d84fd0feaddfcd3775c3a29a48e",
     "biomes/hyperjungle/src/41-hyperjungle-globals.js": "522689f321f04ca138230497b065907019b16731915fc5e40c4b348f7f26ca1c",
     "biomes/hyperjungle/src/50-biome-hyperjungle-species.js": "3b7d97dfa23999e8e49a77ce47a02ce081ec6b1e849446d4c8f37d47091361db",
@@ -232,7 +233,7 @@
     "core/atmos/sky/89-atmos-j-fog.js": "c6fbc34d9dc0552623f7f22c79b2d8f94c6965b3bc4090c2e65b381d209320c5",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "60d066abf6678b08bff3be1c66a075ad93e27fe242c8d0e4b78e79e5111a24d5",
+    "core/biome/30-core-foliage.js": "4d8473efce268373b1a65a91132ea3072bf6e597180faf0db9c849975ec3e955",
     "core/biome/32-core-variants.js": "523b7c9c5eeb01db68e0033656ec8400fbbf6f1b172989cbe986078053ac2a47",
     "core/biome/33-core-fungoid.js": "07e80dc4677ce326830d5a2318185fbf0b918dc9ff4d78f4b2c9c246e81d76a6",
     "core/biome/34-core-impostor.js": "b67d538fbcb5c7a4b077a20c1cffab6bdc48e0e157ea3e240696041403468f53",
@@ -274,21 +275,22 @@
     "core/water/ext/55b-core-water-confluence-draw.js": "a28ff05647a423d73bfa38cc2bb6b6870db967fdb22768015bc5d4a5cd19bc79",
     "core/water/ext/56-core-water-breakup.js": "30c6de1a8913f7fa59ac92cd40526eb148d683b02dc31b6b521a3a768a2926bb",
     "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
-    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
+    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
     "biomes/hyperjungle/src": "f74b92072f15d6b3d2ee5734dfceff762993c23f17e3c604ad7607756a64bcd6",
     "biomes/hyperjungle/stations/lake": "6769b792aaeb5ab37c31132b8c6c3e091977f87e06b64bf931ae63ac48c752e2",
     "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
-    "tools": "6631bdd33a724ae4afb19e5705fb6b95c13d305435fd8d325567b5e7f68c5f8c",
+    "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/hyperjungle/dist/hyperjungle-lake.html": "079972646ca0939de4e25d8050517b33ab85ba28554309eda13e708b9e7fbb29"
+    "biomes/hyperjungle/dist/hyperjungle-lake.html": "a4c6bb858d9f3b92d84d7197c6aee771283cbb54de92bb0e2c4fd0f30f45929a"
    },
    "outputs_raw": {
-    "biomes/hyperjungle/dist/hyperjungle-lake.html": "39b7d62b8d3be20e7164164588131bb514f17e5bb5edcd7afb1b48624a86f465"
+    "biomes/hyperjungle/dist/hyperjungle-lake.html": "a4c6bb858d9f3b92d84d7197c6aee771283cbb54de92bb0e2c4fd0f30f45929a"
    }
   },
   "build.py --station north": {
@@ -296,12 +298,12 @@
     "biomes/abyssal-savannah/src/rim/50-biome-savrim-species.js": "d24d2f7955691b052313903f60be4d3a9b8f4c6aae2d4c6d9305a15f9d4a8859",
     "biomes/abyssal-savannah/src/rim/55-biome-savrim-trees.js": "0156c6325bad33ff01f502a876eba7c97b6388f627bf18f30c326303de3534fb",
     "biomes/abyssal-savannah/src/rim/60-biome-savrim-floor.js": "21e8feabfacf07b5a9aafa5edd2ed59d94b052024bea68231b188e67b4f5b415",
-    "biomes/abyssal-savannah/tex/blind.albedo.webp": "6e9ee7909b552a580e4fd9a02f14cda0951292489d2dffb012f02563714575ce",
-    "biomes/abyssal-savannah/tex/grass.albedo.webp": "1c6bea28bcb10a6d44808af6ac9d29340e0c13c178febc30c63a01173ebe7e5b",
-    "biomes/abyssal-savannah/tex/pack.json": "3479c0304385bede6f52ee217d8b85396784c01507f51bae5bf98b106ff318b1",
-    "biomes/hyperjungle/KNOWN_ISSUES.md": "67f106ceadd2fb0810832603568714514672609b951a326c3f8776d6875035cf",
+    "biomes/abyssal-savannah/tex/blind.albedo.webp": "dfd6b6db37b56367b8aada322565620593b501611e308c908a075e7eec7e18a7",
+    "biomes/abyssal-savannah/tex/grass.albedo.webp": "61d781fbe0a60a418a3030f89f2c78203c19006e783f02f41f641fd63363e207",
+    "biomes/abyssal-savannah/tex/pack.json": "5d8eeb63a01053b6c2d4d6d2dae46e684d69096fdd90d3ebc78d079e6134b8db",
+    "biomes/hyperjungle/KNOWN_ISSUES.md": "e7095a1f6221c11baf1a579ba480942ef02750f54a9b720d9f1de4d5efe0926f",
     "biomes/hyperjungle/PORT.md": "f89e0836359a95005584b39dc2270fcd3c1169dc1df23809e1e3b959401cb623",
-    "biomes/hyperjungle/build.py": "b6bb2ce5a4f077e1a7ec114872dda6c3ea91d980f46d51b9d5715651275ee56a",
+    "biomes/hyperjungle/build.py": "519ad6be86519c027a942ff598e04acfa943f2acdfda3395a5028f05595d0254",
     "biomes/hyperjungle/src/00-head.html": "e93cd2d1452e0c253b1e098d21245bf3d73e9d84fd0feaddfcd3775c3a29a48e",
     "biomes/hyperjungle/src/41-hyperjungle-globals.js": "522689f321f04ca138230497b065907019b16731915fc5e40c4b348f7f26ca1c",
     "biomes/hyperjungle/src/50-biome-hyperjungle-species.js": "3b7d97dfa23999e8e49a77ce47a02ce081ec6b1e849446d4c8f37d47091361db",
@@ -385,7 +387,7 @@
     "core/atmos/sky/89-atmos-j-fog.js": "c6fbc34d9dc0552623f7f22c79b2d8f94c6965b3bc4090c2e65b381d209320c5",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "60d066abf6678b08bff3be1c66a075ad93e27fe242c8d0e4b78e79e5111a24d5",
+    "core/biome/30-core-foliage.js": "4d8473efce268373b1a65a91132ea3072bf6e597180faf0db9c849975ec3e955",
     "core/biome/31b-core-leafset.js": "e58ebcc03d77e6da79d54c90eb7582fb806775454c8ed0879e1d7f2359a2788f",
     "core/biome/32-core-variants.js": "523b7c9c5eeb01db68e0033656ec8400fbbf6f1b172989cbe986078053ac2a47",
     "core/biome/33-core-fungoid.js": "07e80dc4677ce326830d5a2318185fbf0b918dc9ff4d78f4b2c9c246e81d76a6",
@@ -435,7 +437,8 @@
     "kits/fauna/krator-fauna-hyperjungle.js": "ea2405a3e4c05f158c0cd0c6274f857268ce5b39ec2033bd4860b454c41480d7",
     "kits/fauna/krator-fauna-runtime.js": "9e4b6ba0f3c429c4927a8371d6ee4d4c8a11c509644a938c437ce4f6fadf1a7d",
     "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
-    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
+    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
@@ -443,21 +446,21 @@
     "biomes/hyperjungle/stations/north": "87957a18d6f1573ea63a1deb2e118cfe681b9c2454996b84098cecfb4105de99",
     "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
     "kits/fauna": "15ddf75514bc2fb08858cc3e94a1fff2bf1cafb60c1014a7cdc4463763fb2e5c",
-    "tools": "6631bdd33a724ae4afb19e5705fb6b95c13d305435fd8d325567b5e7f68c5f8c",
+    "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/hyperjungle/dist/hyperjungle-north.html": "49e6eb0a9b088b5d0bfb955cf8ab6ac2fb284ae4312607094baa8d5ec8e5c3c3"
+    "biomes/hyperjungle/dist/hyperjungle-north.html": "2c7446a09b904c0d0fba38eb1d8b197426427402c92f92e32efd92de31696b23"
    },
    "outputs_raw": {
-    "biomes/hyperjungle/dist/hyperjungle-north.html": "2c99a45ac8b2ca478a85534618101ef9a0f261f31615d77ad2497e37645e9480"
+    "biomes/hyperjungle/dist/hyperjungle-north.html": "2c7446a09b904c0d0fba38eb1d8b197426427402c92f92e32efd92de31696b23"
    }
   },
   "build.py --station savage": {
    "inputs": {
-    "biomes/hyperjungle/KNOWN_ISSUES.md": "67f106ceadd2fb0810832603568714514672609b951a326c3f8776d6875035cf",
+    "biomes/hyperjungle/KNOWN_ISSUES.md": "e7095a1f6221c11baf1a579ba480942ef02750f54a9b720d9f1de4d5efe0926f",
     "biomes/hyperjungle/PORT.md": "f89e0836359a95005584b39dc2270fcd3c1169dc1df23809e1e3b959401cb623",
-    "biomes/hyperjungle/build.py": "b6bb2ce5a4f077e1a7ec114872dda6c3ea91d980f46d51b9d5715651275ee56a",
+    "biomes/hyperjungle/build.py": "519ad6be86519c027a942ff598e04acfa943f2acdfda3395a5028f05595d0254",
     "biomes/hyperjungle/src/00-head.html": "e93cd2d1452e0c253b1e098d21245bf3d73e9d84fd0feaddfcd3775c3a29a48e",
     "biomes/hyperjungle/src/41-hyperjungle-globals.js": "522689f321f04ca138230497b065907019b16731915fc5e40c4b348f7f26ca1c",
     "biomes/hyperjungle/src/50-biome-hyperjungle-species.js": "3b7d97dfa23999e8e49a77ce47a02ce081ec6b1e849446d4c8f37d47091361db",
@@ -540,7 +543,7 @@
     "core/atmos/sky/89-atmos-j-fog.js": "c6fbc34d9dc0552623f7f22c79b2d8f94c6965b3bc4090c2e65b381d209320c5",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "60d066abf6678b08bff3be1c66a075ad93e27fe242c8d0e4b78e79e5111a24d5",
+    "core/biome/30-core-foliage.js": "4d8473efce268373b1a65a91132ea3072bf6e597180faf0db9c849975ec3e955",
     "core/biome/31b-core-leafset.js": "e58ebcc03d77e6da79d54c90eb7582fb806775454c8ed0879e1d7f2359a2788f",
     "core/biome/32-core-variants.js": "523b7c9c5eeb01db68e0033656ec8400fbbf6f1b172989cbe986078053ac2a47",
     "core/biome/33-core-fungoid.js": "07e80dc4677ce326830d5a2318185fbf0b918dc9ff4d78f4b2c9c246e81d76a6",
@@ -592,7 +595,8 @@
     "kits/fauna/krator-fauna-runtime.js": "9e4b6ba0f3c429c4927a8371d6ee4d4c8a11c509644a938c437ce4f6fadf1a7d",
     "kits/fauna/krator-fauna-voth.js": "a79bf22196a5943a26f1199bf03cf29d3d1c3774ef6af65386b36fb349e7373a",
     "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
-    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
+    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
@@ -600,14 +604,14 @@
     "biomes/hyperjungle/stations/savage": "87957a18d6f1573ea63a1deb2e118cfe681b9c2454996b84098cecfb4105de99",
     "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
     "kits/fauna": "15ddf75514bc2fb08858cc3e94a1fff2bf1cafb60c1014a7cdc4463763fb2e5c",
-    "tools": "6631bdd33a724ae4afb19e5705fb6b95c13d305435fd8d325567b5e7f68c5f8c",
+    "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/hyperjungle/dist/hyperjungle-savage.html": "b33a15e1a1b846b1e9cfd26d28354dff6e4a20182dbf32c685b4466cb867a19f"
+    "biomes/hyperjungle/dist/hyperjungle-savage.html": "e1f98539a8dd70bb7fbfd991c624a010b1d4b70ad9feded0cb9be4cd096b75a0"
    },
    "outputs_raw": {
-    "biomes/hyperjungle/dist/hyperjungle-savage.html": "71a25cba3987ebc5a56b9c66cb8a77faf5d0c0082e8da24f1e37cb754d73f583"
+    "biomes/hyperjungle/dist/hyperjungle-savage.html": "e1f98539a8dd70bb7fbfd991c624a010b1d4b70ad9feded0cb9be4cd096b75a0"
    }
   },
   "build.py --station savanna": {
@@ -638,9 +642,9 @@
     "biomes/eastabyss/tex/strap.albedo.webp": "239c1711955791d357f52e8df4d5a510283e28b35aa07cfc26cecb3cdd49ff49",
     "biomes/eastabyss/tex/strapfrond.albedo.webp": "297af55b1d22641fcef36a74ea88b899a65bacec248c78782f259adfc12fb0d8",
     "biomes/eastabyss/tex/wood.albedo.webp": "795145ca323cf91bb2d05c131c700a66903a1c5df927836aaa8b99553049ea11",
-    "biomes/hyperjungle/KNOWN_ISSUES.md": "67f106ceadd2fb0810832603568714514672609b951a326c3f8776d6875035cf",
+    "biomes/hyperjungle/KNOWN_ISSUES.md": "e7095a1f6221c11baf1a579ba480942ef02750f54a9b720d9f1de4d5efe0926f",
     "biomes/hyperjungle/PORT.md": "f89e0836359a95005584b39dc2270fcd3c1169dc1df23809e1e3b959401cb623",
-    "biomes/hyperjungle/build.py": "b6bb2ce5a4f077e1a7ec114872dda6c3ea91d980f46d51b9d5715651275ee56a",
+    "biomes/hyperjungle/build.py": "519ad6be86519c027a942ff598e04acfa943f2acdfda3395a5028f05595d0254",
     "biomes/hyperjungle/src/00-head.html": "e93cd2d1452e0c253b1e098d21245bf3d73e9d84fd0feaddfcd3775c3a29a48e",
     "biomes/hyperjungle/src/41-hyperjungle-globals.js": "522689f321f04ca138230497b065907019b16731915fc5e40c4b348f7f26ca1c",
     "biomes/hyperjungle/src/50-biome-hyperjungle-species.js": "3b7d97dfa23999e8e49a77ce47a02ce081ec6b1e849446d4c8f37d47091361db",
@@ -721,7 +725,7 @@
     "core/atmos/sky/89-atmos-j-fog.js": "c6fbc34d9dc0552623f7f22c79b2d8f94c6965b3bc4090c2e65b381d209320c5",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "60d066abf6678b08bff3be1c66a075ad93e27fe242c8d0e4b78e79e5111a24d5",
+    "core/biome/30-core-foliage.js": "4d8473efce268373b1a65a91132ea3072bf6e597180faf0db9c849975ec3e955",
     "core/biome/32-core-variants.js": "523b7c9c5eeb01db68e0033656ec8400fbbf6f1b172989cbe986078053ac2a47",
     "core/biome/33-core-fungoid.js": "07e80dc4677ce326830d5a2318185fbf0b918dc9ff4d78f4b2c9c246e81d76a6",
     "core/biome/34-core-impostor.js": "b67d538fbcb5c7a4b077a20c1cffab6bdc48e0e157ea3e240696041403468f53",
@@ -762,21 +766,22 @@
     "core/water/51-core-water-kinds.js": "e0c2edba19b476b4b46a4e08a63f0af695423d88b1da15b380795b2e4d07ead4",
     "core/water/ext/56-core-water-breakup.js": "30c6de1a8913f7fa59ac92cd40526eb148d683b02dc31b6b521a3a768a2926bb",
     "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
-    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
+    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
     "biomes/hyperjungle/src": "f74b92072f15d6b3d2ee5734dfceff762993c23f17e3c604ad7607756a64bcd6",
     "biomes/hyperjungle/stations/savanna": "6769b792aaeb5ab37c31132b8c6c3e091977f87e06b64bf931ae63ac48c752e2",
     "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
-    "tools": "6631bdd33a724ae4afb19e5705fb6b95c13d305435fd8d325567b5e7f68c5f8c",
+    "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/hyperjungle/dist/hyperjungle-savanna.html": "574e83c144172d8e2cb48f52b03af01960a16418b47d41fd8415d08a0ca0434a"
+    "biomes/hyperjungle/dist/hyperjungle-savanna.html": "fb9085c7bf7f0303779ab7d6b5c3d6920d47485f7f81d562d3e14dc23e305497"
    },
    "outputs_raw": {
-    "biomes/hyperjungle/dist/hyperjungle-savanna.html": "45a7597b2e80a2999625fedcecb2f47fb5c4f2e356bca03336d0f29f2b3db1a2"
+    "biomes/hyperjungle/dist/hyperjungle-savanna.html": "fb9085c7bf7f0303779ab7d6b5c3d6920d47485f7f81d562d3e14dc23e305497"
    }
   }
  }

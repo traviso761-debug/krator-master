@@ -311,7 +311,8 @@
     "settlements/span/tex/pack.json": "f0bec4f6ff307f474a5a8ae4f1e6884d4175f8caf07ca51bce9c3f2b0829f8f1",
     "settlements/span/tex/pillarTop.albedo.webp": "2a32ef5f23c9215dbb367499da0d9ceb4e0faa27530c3e0a3723c1eb00d2217f",
     "settlements/span/tex/pillarWall.albedo.webp": "d8bbfcef4d0c6e3aba12874b970a25a3e78496e96e6fc22f1615d485506447f7",
-    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
+    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
@@ -328,6 +329,7 @@
     "kits/post-apoc": "19071375fa232acb6833543345098ce4eae840d12e6ddcdc5402c9e877e0ca29",
     "settlements/span/dist": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "settlements/span/src": "0b2e8d7c4405bdba1dd77240fbaaca729d0b2be7587a7ab28ba5d34e3c4b5594",
+    "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {

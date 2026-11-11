@@ -5,7 +5,7 @@
    "inputs": {
     "biomes/guilin/KNOWN_ISSUES.md": "ffc5dd28823dcb64fdff4c73e639a1eb02e99dd46f0951a40f1052230a53fe5e",
     "biomes/guilin/PORT.md": "2e9c60a252032eb4fa378f45e6fdd13498125c42307f65da65bac9de2602a708",
-    "biomes/guilin/build.py": "c824ab320d895f984c1e6296f98a8c1dbe600171ba22b624cf8d34524ca183ca",
+    "biomes/guilin/build.py": "40575a33c35e05afd9a83492b1bbc17515aa4f72b3156ee92019f746decbff49",
     "biomes/guilin/src/00-head.html": "62b0cc44a296d92a7b80ffdacd2e51c5b8c04b7656e568049cc1543cddd5224c",
     "biomes/guilin/src/45-host-stage.js": "1d96846948411b0ddac9bc96bff666bc4425ce7bbf8f8a11911b8f2995baecfa",
     "biomes/guilin/src/46-biome-guilin-layout.js": "d6866bfb8f9a29afa931eeb69fd44ad0ab1b3098bdf432d6acb2f14d456c5e01",
@@ -70,7 +70,7 @@
     "core/atmos/sky/89-atmos-g-sky.js": "45f083d44aa9834b558b48ec3815a4637a71475e672b3a678388a2466bcee21c",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "60d066abf6678b08bff3be1c66a075ad93e27fe242c8d0e4b78e79e5111a24d5",
+    "core/biome/30-core-foliage.js": "4d8473efce268373b1a65a91132ea3072bf6e597180faf0db9c849975ec3e955",
     "core/biome/40-core-place.js": "f1277b48ab3c5d779bf85452c581888be7d5b2ed94a0d21e21ade12f0602c9d7",
     "core/biome/42-core-export.js": "d3a95fe4dede2daa20504e712a57dbe9e3a18ea1bc57bfe59e53945f12fd0b2b",
     "core/biome/43-core-export-host.js": "15e7613a6210a39203ee80a56eeb1ab21906645033925759db50da27c0757fde",
@@ -111,22 +111,23 @@
     "core/water/51-core-water-kinds.js": "e0c2edba19b476b4b46a4e08a63f0af695423d88b1da15b380795b2e4d07ead4",
     "core/water/ext/56-core-water-breakup.js": "30c6de1a8913f7fa59ac92cd40526eb148d683b02dc31b6b521a3a768a2926bb",
     "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
-    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
+    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
     "biomes/guilin/dist": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "biomes/guilin/src": "5cb814932b07b8b3bd38fc54999404c88595a9a5d797f4c657895aa4d5ca7687",
     "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
-    "tools": "6631bdd33a724ae4afb19e5705fb6b95c13d305435fd8d325567b5e7f68c5f8c",
+    "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/guilin/dist/guilin.html": "a5004e0cc2de3f76763952b85e1add9f112ed88c638ec06b1041701723555c38",
+    "biomes/guilin/dist/guilin.html": "fe91b77699ba6891f6965361e0a010278e3fae16cbc498b9605672a99b0c3587",
     "biomes/guilin/dist/guilin.tex.guilin.js": "deb12bd8f8b448cebcbdb09128463f205cc8d96a33339892ef2bc143af06cbd3"
    },
    "outputs_raw": {
-    "biomes/guilin/dist/guilin.html": "3450339ac8cfbf23ceb89523452f6e78dc58ce812159610f9e0e18d090eb337e",
+    "biomes/guilin/dist/guilin.html": "fe91b77699ba6891f6965361e0a010278e3fae16cbc498b9605672a99b0c3587",
     "biomes/guilin/dist/guilin.tex.guilin.js": "deb12bd8f8b448cebcbdb09128463f205cc8d96a33339892ef2bc143af06cbd3"
    }
   }

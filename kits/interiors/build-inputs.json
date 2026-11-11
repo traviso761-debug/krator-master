@@ -110,7 +110,8 @@
     "kits/interiors/walk/shells/locus.js": "04f17a6b7adfe42f41be63e4804b01f372e74c47e726d837167b30c7433f6b0f",
     "kits/interiors/walk/shells/post-apoc.js": "02eb5c875d44fd23d5907051e4a21c6448360416ae913b643e11ceba390401fd",
     "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
-    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
+    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
     "core/atmos/placeholder": "93e72701f4f204e698b400c25d1989704d985203b33d5a076ec9e170c3bb9552",
@@ -121,7 +122,7 @@
     "kits/interiors/src-sets": "07ffc3d747d249f686768e05e4c7f7ed41986959a0650856faba817ca2a1c8d1",
     "kits/interiors/src-walk": "564a956690796ed907a5d3eb3844e366352d94de026d323a7aef1de9c9aa237c",
     "kits/interiors/walk/shells": "94b79a7337fc0e85c9f2825918b338b9487224cb35f91bc1202af8480f588084",
-    "tools": "6631bdd33a724ae4afb19e5705fb6b95c13d305435fd8d325567b5e7f68c5f8c"
+    "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512"
    },
    "outputs": {
     "kits/interiors/build-manifest.json": "9c037a395520cfb434bf88b31f259bb3f71cb87a43fc7332333ef3680ce56549",

@@ -142,7 +142,8 @@
     "settlements/jimjam/tex/white.rough.webp": "f37b360b881a590c030870f69a1da83031e7aaa8301284ff6e239357bd3e6299",
     "settlements/jimjam/three.min.js": "9274bbcec8d96168626c732b5d31c775aa8cfb7eaa0599bec0c175908a2c1ce2",
     "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
-    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
+    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
     "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
@@ -152,7 +153,7 @@
     "settlements/jimjam/src": "2ed4c32a2df05baa2061d098e8c63e91070663193d3810b66e45f1d61a844e54",
     "settlements/jimjam/targets": "cbc8a597a67c465497550c4a4a7eebdb138442c06be06a78cc1ee8715658ff44",
     "settlements/jimjam/targets/kit": "110dafb507a2d12553bf9fae67bff24f62ea606ee3c6843801219bd84ed1cdc4",
-    "tools": "6631bdd33a724ae4afb19e5705fb6b95c13d305435fd8d325567b5e7f68c5f8c"
+    "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512"
    },
    "outputs": {
     "settlements/jimjam/VENDOR.json": "0deb21032d5bdba31a9cec357bbddaf48f0bd72fee63f27f473976b9aab6bc3a",

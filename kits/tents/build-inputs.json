@@ -106,13 +106,13 @@
     "kits/interiors/src/49-exports.js": "96edc46b9aa75036235144bdbff17c505fc0678217cf2cf7d6f8442b89d55ca9",
     "kits/interiors/src/49b-walk.js": "d90cf2cba70ac876a1831790124e5a4c5ba7072e90599572e458dca1704c16ac",
     "kits/scyvoi/src/40-tk-tentkit.js": "3e889f0a53217c64ee1c6b23711c32ddb140dfd9593f1babd5a29a74b57750ee",
-    "kits/tents/KNOWN_ISSUES.md": "e5be46008b7fdb8dab98109e4c912e226eaae9b535567fac88b20a4cbbf59b8c",
-    "kits/tents/PORT.md": "eed663ed6c6df5a8d03774e0c94622537c7931567994b01da48db60526227d2a",
+    "kits/tents/KNOWN_ISSUES.md": "97e0a567be9442e4edca0e7dc6f6849f7ffd76db9990bb2b861704c110cd93f0",
+    "kits/tents/PORT.md": "f19f01a4a4ec50e186ff25940e0f02784ff8fe72f3e1cf01872e813975470013",
     "kits/tents/build.py": "f53273de2a61a83b1d39b92142a371877085b9d5bceae64c709e2d4098f2bacf",
     "kits/tents/src/00-head.html": "36e774358d785cb9a61d0e7d177860a06b0be229654ea34e0c8dbc95a1da5d02",
-    "kits/tents/src/26k-kit.js": "086a9a671e92792f375a5d50e8e0e0bf8082a1c9b9d58d24baa6a894df3f6440",
+    "kits/tents/src/26k-kit.js": "9dfeb68590dfed53823dd9d44914a94d22bcac6745b4a530737abb14012ad92b",
     "kits/tents/src/33-tn-table.js": "65328b56780f85252eb4623857f97b2fe39d741955f50b3a5bef35fde04adf78",
-    "kits/tents/src/41-tn-dress.js": "7f5d2ef20465661db2202368aafe59f59229202eb632dd3879cd6d4941a540a6",
+    "kits/tents/src/41-tn-dress.js": "159fefcae88ff32f524168ee634458e86bd6b91c533513bccb59dbc84da2e53e",
     "kits/tents/src/42-tn-parts.js": "25f68ff895c13d16aa4547ccf4aebb631163c04756cf069dca209e136993895d",
     "kits/tents/src/44-tn-forms.js": "d69c4389cbd4b7fbf88d5f00228930e72e5606199093f6190f277676599394ee",
     "kits/tents/src/46-tn-roles.js": "9d66c69f5a35f53e033fc226819a0b4ab875a5da996492d6eb006949050c90e0",
@@ -122,6 +122,9 @@
     "kits/tents/src/89-rows.js": "714c8ce1a52eba5d1d02d0c1594fd66cafbfb04eda2e8ffbcaeba3ce221a38e3",
     "kits/tents/src/91t-tn-interiors.js": "2aafcb4286e3fb1578a5fe0acb76c24013bcecbc8ad63e6f419e904a5d86c377",
     "kits/tents/src/99-host-tn.js": "63a191f31dbfdc156bf2bbb54f24b5f4cf68fec2a2419fdeb5b79b88be9205ce",
+    "kits/tents/tex/armyc.albedo.webp": "39abbb6e294c1113ed2cb9c4c361a26feea073aa60d98e6907ed3af657502f07",
+    "kits/tents/tex/armyc.normal.webp": "e2bdf5d5c74931aa955e5179f3d0e8dcf7d0ff2f1483049c0f6db2a488b25819",
+    "kits/tents/tex/armyc.rough.webp": "39b1656b917a4425c9bc882b77757b248131284f4af7352c12e7bf1516d63103",
     "kits/tents/tex/ashc.albedo.webp": "83dd853a12fdcde4470fce9a4fdd70714f5a9541d610f6192362655eaa8875e4",
     "kits/tents/tex/ashc.normal.webp": "c46c8d5e04445900e75e9fbcece988889e7fca42b0d93bc09c4842d69ca33937",
     "kits/tents/tex/ashc.rough.webp": "0998e7b15c6e35501233fb42cac15de9b9665dc3f04eaf34681c8a556997dd35",
@@ -214,7 +217,7 @@
     "kits/tents/tex/mat.albedo.webp": "c74ddd937d8d04f59a86f3d5d2b40dd1ed01166740f1cf4a596effc39a20cfee",
     "kits/tents/tex/mat.normal.webp": "798fb278aaf97b089c8ef52dae4002cdf60f7b8364b2f5317aed9ba49adbfcce",
     "kits/tents/tex/mat.rough.webp": "4962b50ea7c2dca66b126149eb230c690b051731f04c080fc1f8eab2af90294c",
-    "kits/tents/tex/pack.json": "d9cfc28a1c7f6e8beb87c1b86e4c1437b3c9741c3084e5553fcb3f09a03a3b90",
+    "kits/tents/tex/pack.json": "7570a25454f4a6f4869d30ea0cdba5338e153ddbbf8346bde1481a44ee374493",
     "kits/tents/tex/patApp.albedo.webp": "80158d45bd325b8f557eba59dfe29bf42b17b4f1005eab9208e5d44ca9a311c7",
     "kits/tents/tex/patApp.normal.webp": "9f7693ae4450ce84f5cd571df0a8513606c9a63d3d622d1d4bbad4b880740a66",
     "kits/tents/tex/patApp.rough.webp": "0b4a858a8608266f4af61855ef5e843d5b92d8d4ee4086ad23e72dcbdc547038",
@@ -245,6 +248,9 @@
     "kits/tents/tex/patXan.albedo.webp": "23c7da3cf9b5c288dec19cba50f5da88eac7151c83a6049529cec53b5f17a6e8",
     "kits/tents/tex/patXan.normal.webp": "7b837c92a1dc2c7029607452848cbb875e85a00a9f02d4ddb03218a68bb15769",
     "kits/tents/tex/patXan.rough.webp": "abafd96891e06bbe67e2b7d508dd445b30c96804b3718e72895958067719923b",
+    "kits/tents/tex/ripstop.albedo.webp": "3f78d25162bc82e26141bdaa8db6246aaea1e244eb9631c716c24da8eb74c60f",
+    "kits/tents/tex/ripstop.normal.webp": "8c6b8a2fbb3624b648fb57c1d9f642a55360d0f71bf278fde5943bb3ace54507",
+    "kits/tents/tex/ripstop.rough.webp": "bb8294856351f7d30dcda9651923a4b4d5a324a0f551be71fdf37b549f41091b",
     "kits/tents/tex/rope.albedo.webp": "b499fa8a77cb9707371711ce63c765b742accbf2c0ffd0deec674c57f1397056",
     "kits/tents/tex/rope.normal.webp": "7967da2c709667ee88c285995f6bc99bfd7b39c9074d638b3d994eafc786e530",
     "kits/tents/tex/rope.rough.webp": "24f5eaf3fcf31c412493b7b81666664803d6783256386cd3668d61bcf6d779e4",
@@ -267,7 +273,8 @@
     "kits/tents/tex/wood.normal.webp": "2c098d726acbb980695f3f73b78546a36565d86c93d222ce0df76ff9a9e01bb0",
     "kits/tents/tex/wood.rough.webp": "2598d0e9751dc7b27ce9329cf95a859076a13f386a9d97027b62ba63362205b2",
     "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
-    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
+    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
@@ -291,20 +298,20 @@
     "kits/interiors/sets": "25e1fa66e47b9b929bd298c5bc39a8afb287b6cc27aee48c82a238a7c99fc191",
     "kits/interiors/src": "fe72f6be1b5eb6012c769b91a5fc7c558f24144155f758942db210e347392bab",
     "kits/tents/src": "22958826179ccb694e0f9769c67eff7a280db651834aabe975258e3fd6816369",
-    "tools": "6631bdd33a724ae4afb19e5705fb6b95c13d305435fd8d325567b5e7f68c5f8c",
+    "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/tents/build-manifest.json": "2b5bd904f268775d0c15d4c8b27c361d0317d59f0908d5248b9b06f3a41340e3",
-    "kits/tents/dist/tents.html": "5aaf4585da2d5c3946e6031cfc108d3d0b3b2f55180ee374dd7270d553accc66",
-    "kits/tents/dist/tents.tex.tents-2.js": "5ab59a279e40079db75dbfad4a598435060d73a142c12d73a3ed44ba37c7f85c",
-    "kits/tents/dist/tents.tex.tents.js": "cf61a7ffef6c50066b7a65366ad2561a105042fa7de63c23865aa52b9fca1e66"
+    "kits/tents/build-manifest.json": "2b48f391ba23aa3231d5449cbda32167537040258680115f5584474d3c61d0ac",
+    "kits/tents/dist/tents.html": "99f747d6a75f04c365495ea847d2ebf9f9cee74a5bad2bf505302838e89d0a5f",
+    "kits/tents/dist/tents.tex.tents-2.js": "1ca77094c33eadde3154e2a71c0b188077946810fe964abe4bc9a0bd75a5a050",
+    "kits/tents/dist/tents.tex.tents.js": "d4ee9ffdce465caf3fa6e94d95640eeaadd5e37e0495567489c9188e2a9c37e3"
    },
    "outputs_raw": {
-    "kits/tents/build-manifest.json": "2b5bd904f268775d0c15d4c8b27c361d0317d59f0908d5248b9b06f3a41340e3",
-    "kits/tents/dist/tents.html": "5aaf4585da2d5c3946e6031cfc108d3d0b3b2f55180ee374dd7270d553accc66",
-    "kits/tents/dist/tents.tex.tents-2.js": "5ab59a279e40079db75dbfad4a598435060d73a142c12d73a3ed44ba37c7f85c",
-    "kits/tents/dist/tents.tex.tents.js": "cf61a7ffef6c50066b7a65366ad2561a105042fa7de63c23865aa52b9fca1e66"
+    "kits/tents/build-manifest.json": "2b48f391ba23aa3231d5449cbda32167537040258680115f5584474d3c61d0ac",
+    "kits/tents/dist/tents.html": "99f747d6a75f04c365495ea847d2ebf9f9cee74a5bad2bf505302838e89d0a5f",
+    "kits/tents/dist/tents.tex.tents-2.js": "1ca77094c33eadde3154e2a71c0b188077946810fe964abe4bc9a0bd75a5a050",
+    "kits/tents/dist/tents.tex.tents.js": "d4ee9ffdce465caf3fa6e94d95640eeaadd5e37e0495567489c9188e2a9c37e3"
    }
   }
  }

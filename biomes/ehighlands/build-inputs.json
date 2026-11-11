@@ -60,7 +60,7 @@
     "core/atmos/sky/89-atmos-j-fog.js": "c6fbc34d9dc0552623f7f22c79b2d8f94c6965b3bc4090c2e65b381d209320c5",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "60d066abf6678b08bff3be1c66a075ad93e27fe242c8d0e4b78e79e5111a24d5",
+    "core/biome/30-core-foliage.js": "4d8473efce268373b1a65a91132ea3072bf6e597180faf0db9c849975ec3e955",
     "core/biome/31-core-dither.js": "4a37f1858f180a6558981be196997e11726832486a418a8c33bffceca4ef9872",
     "core/biome/31b-core-leafset.js": "e58ebcc03d77e6da79d54c90eb7582fb806775454c8ed0879e1d7f2359a2788f",
     "core/biome/31j-core-joint.js": "2b32f93de6dc08f1a5044449be80346697b2bb87cf764982ab6ab3c0a6847950",
@@ -116,19 +116,20 @@
     "core/water/ext/57-core-water-audit.js": "6dd616a15a7804c615c4e1638b250cb709a85e1f219ae9ea03f8c4faa20374c1",
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
     "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
-    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
+    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
     "biomes/ehighlands/src": "bfcf0e83189fc3ee7bced7841251bcf64d8baf2300e43cad0c94c8a177e42fcd",
     "biomes/ehighlands/stations": "a98fcbb7031a1f9776a4e45247385dad79ed699debaa3060c6cb9dc701cc4a0d",
     "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
-    "tools": "6631bdd33a724ae4afb19e5705fb6b95c13d305435fd8d325567b5e7f68c5f8c"
+    "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512"
    },
    "outputs": {
-    "biomes/ehighlands/dist/ehighlands.html": "c20c4bf42fdc2b73b64400331566aa5497fa94ee61a4158477eff7f5a9b9825b"
+    "biomes/ehighlands/dist/ehighlands.html": "02645fb7b527ab299df7871491b8acc79d60f67626c1cc703a4df6c5a5423671"
    },
    "outputs_raw": {
-    "biomes/ehighlands/dist/ehighlands.html": "c20c4bf42fdc2b73b64400331566aa5497fa94ee61a4158477eff7f5a9b9825b"
+    "biomes/ehighlands/dist/ehighlands.html": "02645fb7b527ab299df7871491b8acc79d60f67626c1cc703a4df6c5a5423671"
    }
   },
   "build.py --station face": {
@@ -197,7 +198,7 @@
     "core/atmos/sky/89-atmos-j-fog.js": "c6fbc34d9dc0552623f7f22c79b2d8f94c6965b3bc4090c2e65b381d209320c5",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "60d066abf6678b08bff3be1c66a075ad93e27fe242c8d0e4b78e79e5111a24d5",
+    "core/biome/30-core-foliage.js": "4d8473efce268373b1a65a91132ea3072bf6e597180faf0db9c849975ec3e955",
     "core/biome/31-core-dither.js": "4a37f1858f180a6558981be196997e11726832486a418a8c33bffceca4ef9872",
     "core/biome/31b-core-leafset.js": "e58ebcc03d77e6da79d54c90eb7582fb806775454c8ed0879e1d7f2359a2788f",
     "core/biome/31j-core-joint.js": "2b32f93de6dc08f1a5044449be80346697b2bb87cf764982ab6ab3c0a6847950",
@@ -253,20 +254,21 @@
     "core/water/ext/57-core-water-audit.js": "6dd616a15a7804c615c4e1638b250cb709a85e1f219ae9ea03f8c4faa20374c1",
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
     "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
-    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
+    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
     "biomes/ehighlands/src": "bfcf0e83189fc3ee7bced7841251bcf64d8baf2300e43cad0c94c8a177e42fcd",
     "biomes/ehighlands/stations": "a98fcbb7031a1f9776a4e45247385dad79ed699debaa3060c6cb9dc701cc4a0d",
     "biomes/ehighlands/stations/face": "4deb5409817bd00a8486733f5d87817d34285c6750828c8c2a2cc15ebb715e07",
     "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
-    "tools": "6631bdd33a724ae4afb19e5705fb6b95c13d305435fd8d325567b5e7f68c5f8c"
+    "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512"
    },
    "outputs": {
-    "biomes/ehighlands/dist/ehighlands-face.html": "df9792acab19cd9342e838fb1f02c8de310661eada1820c51faa9dc522f7153d"
+    "biomes/ehighlands/dist/ehighlands-face.html": "851f8f2c38f30046df283f71fe1bbad0959821f148973dc36da71595cc403bb3"
    },
    "outputs_raw": {
-    "biomes/ehighlands/dist/ehighlands-face.html": "df9792acab19cd9342e838fb1f02c8de310661eada1820c51faa9dc522f7153d"
+    "biomes/ehighlands/dist/ehighlands-face.html": "851f8f2c38f30046df283f71fe1bbad0959821f148973dc36da71595cc403bb3"
    }
   },
   "build.py --station lesser": {
@@ -331,7 +333,7 @@
     "core/atmos/sky/89-atmos-j-fog.js": "c6fbc34d9dc0552623f7f22c79b2d8f94c6965b3bc4090c2e65b381d209320c5",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "60d066abf6678b08bff3be1c66a075ad93e27fe242c8d0e4b78e79e5111a24d5",
+    "core/biome/30-core-foliage.js": "4d8473efce268373b1a65a91132ea3072bf6e597180faf0db9c849975ec3e955",
     "core/biome/31-core-dither.js": "4a37f1858f180a6558981be196997e11726832486a418a8c33bffceca4ef9872",
     "core/biome/31b-core-leafset.js": "e58ebcc03d77e6da79d54c90eb7582fb806775454c8ed0879e1d7f2359a2788f",
     "core/biome/31j-core-joint.js": "2b32f93de6dc08f1a5044449be80346697b2bb87cf764982ab6ab3c0a6847950",
@@ -387,20 +389,21 @@
     "core/water/ext/57-core-water-audit.js": "6dd616a15a7804c615c4e1638b250cb709a85e1f219ae9ea03f8c4faa20374c1",
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
     "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
-    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
+    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
     "biomes/ehighlands/src": "bfcf0e83189fc3ee7bced7841251bcf64d8baf2300e43cad0c94c8a177e42fcd",
     "biomes/ehighlands/stations": "a98fcbb7031a1f9776a4e45247385dad79ed699debaa3060c6cb9dc701cc4a0d",
     "biomes/ehighlands/stations/lesser": "4deb5409817bd00a8486733f5d87817d34285c6750828c8c2a2cc15ebb715e07",
     "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
-    "tools": "6631bdd33a724ae4afb19e5705fb6b95c13d305435fd8d325567b5e7f68c5f8c"
+    "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512"
    },
    "outputs": {
-    "biomes/ehighlands/dist/ehighlands-lesser.html": "ac6cca0d536e4b52532c49b0a68709990fd8de5cfb0037944aa17c5847c43f68"
+    "biomes/ehighlands/dist/ehighlands-lesser.html": "4d75b336510861b0cc8c7a3f57e7e811f09a9617b11d8de96373332be44a51b1"
    },
    "outputs_raw": {
-    "biomes/ehighlands/dist/ehighlands-lesser.html": "ac6cca0d536e4b52532c49b0a68709990fd8de5cfb0037944aa17c5847c43f68"
+    "biomes/ehighlands/dist/ehighlands-lesser.html": "4d75b336510861b0cc8c7a3f57e7e811f09a9617b11d8de96373332be44a51b1"
    }
   },
   "build.py --station mixed": {
@@ -472,7 +475,7 @@
     "core/atmos/sky/89-atmos-j-fog.js": "c6fbc34d9dc0552623f7f22c79b2d8f94c6965b3bc4090c2e65b381d209320c5",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "60d066abf6678b08bff3be1c66a075ad93e27fe242c8d0e4b78e79e5111a24d5",
+    "core/biome/30-core-foliage.js": "4d8473efce268373b1a65a91132ea3072bf6e597180faf0db9c849975ec3e955",
     "core/biome/31-core-dither.js": "4a37f1858f180a6558981be196997e11726832486a418a8c33bffceca4ef9872",
     "core/biome/31b-core-leafset.js": "e58ebcc03d77e6da79d54c90eb7582fb806775454c8ed0879e1d7f2359a2788f",
     "core/biome/31j-core-joint.js": "2b32f93de6dc08f1a5044449be80346697b2bb87cf764982ab6ab3c0a6847950",
@@ -528,20 +531,21 @@
     "core/water/ext/57-core-water-audit.js": "6dd616a15a7804c615c4e1638b250cb709a85e1f219ae9ea03f8c4faa20374c1",
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
     "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
-    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
+    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
     "biomes/ehighlands/src": "bfcf0e83189fc3ee7bced7841251bcf64d8baf2300e43cad0c94c8a177e42fcd",
     "biomes/ehighlands/stations": "a98fcbb7031a1f9776a4e45247385dad79ed699debaa3060c6cb9dc701cc4a0d",
     "biomes/ehighlands/stations/mixed": "4deb5409817bd00a8486733f5d87817d34285c6750828c8c2a2cc15ebb715e07",
     "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
-    "tools": "6631bdd33a724ae4afb19e5705fb6b95c13d305435fd8d325567b5e7f68c5f8c"
+    "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512"
    },
    "outputs": {
-    "biomes/ehighlands/dist/ehighlands-mixed.html": "c01efda93a5c6fd7dd332b8ea234439d19c266f047e1a6d6e62d0a9522091aef"
+    "biomes/ehighlands/dist/ehighlands-mixed.html": "d6bd346da63deb18bc749692e742ad2ad0fb94d6ac85fb733f914448ea36493e"
    },
    "outputs_raw": {
-    "biomes/ehighlands/dist/ehighlands-mixed.html": "c01efda93a5c6fd7dd332b8ea234439d19c266f047e1a6d6e62d0a9522091aef"
+    "biomes/ehighlands/dist/ehighlands-mixed.html": "d6bd346da63deb18bc749692e742ad2ad0fb94d6ac85fb733f914448ea36493e"
    }
   },
   "build.py --station montane": {
@@ -609,7 +613,7 @@
     "core/atmos/sky/89-atmos-j-fog.js": "c6fbc34d9dc0552623f7f22c79b2d8f94c6965b3bc4090c2e65b381d209320c5",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "60d066abf6678b08bff3be1c66a075ad93e27fe242c8d0e4b78e79e5111a24d5",
+    "core/biome/30-core-foliage.js": "4d8473efce268373b1a65a91132ea3072bf6e597180faf0db9c849975ec3e955",
     "core/biome/31-core-dither.js": "4a37f1858f180a6558981be196997e11726832486a418a8c33bffceca4ef9872",
     "core/biome/31b-core-leafset.js": "e58ebcc03d77e6da79d54c90eb7582fb806775454c8ed0879e1d7f2359a2788f",
     "core/biome/31j-core-joint.js": "2b32f93de6dc08f1a5044449be80346697b2bb87cf764982ab6ab3c0a6847950",
@@ -665,20 +669,21 @@
     "core/water/ext/57-core-water-audit.js": "6dd616a15a7804c615c4e1638b250cb709a85e1f219ae9ea03f8c4faa20374c1",
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
     "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
-    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
+    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
     "biomes/ehighlands/src": "bfcf0e83189fc3ee7bced7841251bcf64d8baf2300e43cad0c94c8a177e42fcd",
     "biomes/ehighlands/stations": "a98fcbb7031a1f9776a4e45247385dad79ed699debaa3060c6cb9dc701cc4a0d",
     "biomes/ehighlands/stations/montane": "4deb5409817bd00a8486733f5d87817d34285c6750828c8c2a2cc15ebb715e07",
     "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
-    "tools": "6631bdd33a724ae4afb19e5705fb6b95c13d305435fd8d325567b5e7f68c5f8c"
+    "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512"
    },
    "outputs": {
-    "biomes/ehighlands/dist/ehighlands-montane.html": "bfa100ad0fe039d5321dc921e82c2d4545694010a845453abdd253c0571df18a"
+    "biomes/ehighlands/dist/ehighlands-montane.html": "03a27d5ed8a858dbed01ad23b6875a0a582e4a00ed63fa3a6768d654c8f19843"
    },
    "outputs_raw": {
-    "biomes/ehighlands/dist/ehighlands-montane.html": "bfa100ad0fe039d5321dc921e82c2d4545694010a845453abdd253c0571df18a"
+    "biomes/ehighlands/dist/ehighlands-montane.html": "03a27d5ed8a858dbed01ad23b6875a0a582e4a00ed63fa3a6768d654c8f19843"
    }
   },
   "build.py --station treeline": {
@@ -749,7 +754,7 @@
     "core/atmos/sky/89-atmos-j-fog.js": "c6fbc34d9dc0552623f7f22c79b2d8f94c6965b3bc4090c2e65b381d209320c5",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "60d066abf6678b08bff3be1c66a075ad93e27fe242c8d0e4b78e79e5111a24d5",
+    "core/biome/30-core-foliage.js": "4d8473efce268373b1a65a91132ea3072bf6e597180faf0db9c849975ec3e955",
     "core/biome/31-core-dither.js": "4a37f1858f180a6558981be196997e11726832486a418a8c33bffceca4ef9872",
     "core/biome/31b-core-leafset.js": "e58ebcc03d77e6da79d54c90eb7582fb806775454c8ed0879e1d7f2359a2788f",
     "core/biome/31j-core-joint.js": "2b32f93de6dc08f1a5044449be80346697b2bb87cf764982ab6ab3c0a6847950",
@@ -805,20 +810,21 @@
     "core/water/ext/57-core-water-audit.js": "6dd616a15a7804c615c4e1638b250cb709a85e1f219ae9ea03f8c4faa20374c1",
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
     "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
-    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
+    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
     "biomes/ehighlands/src": "bfcf0e83189fc3ee7bced7841251bcf64d8baf2300e43cad0c94c8a177e42fcd",
     "biomes/ehighlands/stations": "a98fcbb7031a1f9776a4e45247385dad79ed699debaa3060c6cb9dc701cc4a0d",
     "biomes/ehighlands/stations/treeline": "4deb5409817bd00a8486733f5d87817d34285c6750828c8c2a2cc15ebb715e07",
     "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
-    "tools": "6631bdd33a724ae4afb19e5705fb6b95c13d305435fd8d325567b5e7f68c5f8c"
+    "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512"
    },
    "outputs": {
-    "biomes/ehighlands/dist/ehighlands-treeline.html": "ddb9615f11e7a88c2416f40937cbebcfec49ff3c8f69d68f18a599b745a16bef"
+    "biomes/ehighlands/dist/ehighlands-treeline.html": "ce4212fbbc6253f617ced64748e15e5d2c20f47ac47fc2c0bd5a618315b600de"
    },
    "outputs_raw": {
-    "biomes/ehighlands/dist/ehighlands-treeline.html": "ddb9615f11e7a88c2416f40937cbebcfec49ff3c8f69d68f18a599b745a16bef"
+    "biomes/ehighlands/dist/ehighlands-treeline.html": "ce4212fbbc6253f617ced64748e15e5d2c20f47ac47fc2c0bd5a618315b600de"
    }
   }
  }

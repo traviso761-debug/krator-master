@@ -137,7 +137,8 @@
     "kits/iziz-vernacular/tex/woodV.rough.webp": "8df792868de730da67949922940e6e1ae855351c9d3d1ae092ed812b05e91d84",
     "kits/iziz-vernacular/vernacular.py": "dcae438a176751059c9a0a11431f7aa08ac8724894fa6b082a64389ba3534ad0",
     "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
-    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
+    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
@@ -147,7 +148,7 @@
     "kits/iziz-vernacular/src": "4add7a31b18bd16063818ad685970c0660bd99fccbc27c50037561a45189976d",
     "kits/iziz-vernacular/targets": "78af7bdb5626eb0a046772b3edda705ca9e60ba7af0960eea89f7fa201d685a8",
     "kits/iziz-vernacular/targets/sheet": "2d7e6be58300dfc87f876ccd24ad80e4312c0fee1b9f7bf4e64a99ea95a2ab7b",
-    "tools": "6631bdd33a724ae4afb19e5705fb6b95c13d305435fd8d325567b5e7f68c5f8c",
+    "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {

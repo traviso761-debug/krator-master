@@ -91,7 +91,7 @@
     "kits/interiors/src/49b-walk.js": "d90cf2cba70ac876a1831790124e5a4c5ba7072e90599572e458dca1704c16ac",
     "settlements/girder/KNOWN_ISSUES.md": "713331aefb3bf1e2c715e084488caca90388b7bbe38efb726c5e0f161e038f32",
     "settlements/girder/PORT.md": "240a19780352f4f2ebcbdf5d67bcf025d4a5aa2815e7b3b7dd2ff2ceab1b19e1",
-    "settlements/girder/build.py": "081cbdbff297c068f35901cb53716cced1b5e6781e92bbfc06912053325aed08",
+    "settlements/girder/build.py": "5860a64d439484644a2c0be2d998288b785ff3fbadcd7cf495316197552c788a",
     "settlements/girder/src/00-head.html": "2a4d5ee9bffd42cbcfafb5ee734ff769d213629f29b9819b95269fbead40e722",
     "settlements/girder/src/05-palette.js": "3afc1f53de2f208c548d951f99d96bc5517c9c33703b16b0f073846c6b14deb8",
     "settlements/girder/src/10-core.js": "fd5492097ae57c82d2bcdf540c179b6c6194dfdd71bb6c821db4787dc474589e",
@@ -266,7 +266,8 @@
     "settlements/girder/tex/wall.normal.webp": "10538c0561a575ac090eeb9b12658116d7f9a698f4ef2c179e456da435b1f95f",
     "settlements/girder/tex/wall.rough.webp": "7b7d15580f9a3172b41867c437c4414b07578e2c381a2a1b19c0c60f65d9d201",
     "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
-    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
+    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
@@ -287,7 +288,7 @@
     "kits/interiors/sets": "25e1fa66e47b9b929bd298c5bc39a8afb287b6cc27aee48c82a238a7c99fc191",
     "kits/interiors/src": "fe72f6be1b5eb6012c769b91a5fc7c558f24144155f758942db210e347392bab",
     "settlements/girder/src": "f9541fe2ad5d3c6a2f7ec509b7faeb96ed638a0a452d328c0dd43185683ca1e7",
-    "tools": "6631bdd33a724ae4afb19e5705fb6b95c13d305435fd8d325567b5e7f68c5f8c",
+    "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
@@ -298,7 +299,7 @@
    },
    "outputs_raw": {
     "settlements/girder/build-manifest.json": "b7a0ac80180a27a60b1438c7a99416c6e51dd9cb2d387073c14fe9f405932218",
-    "settlements/girder/girder.html": "2f79a8b8964eca346b55c0840ed073ab9f16070676fbc799cb7bb159b81c6e30",
+    "settlements/girder/girder.html": "7395848fd5f2ac2992786a85ed20012ecfb1bb1c0dc83063107527f571919004",
     "settlements/girder/girder.tex.girder-2.js": "cedd39d3ce85526bc37f6f86fc997c823d2b32e7f1f2453d223cb6439c10a14d",
     "settlements/girder/girder.tex.girder.js": "29e06cdc13d0c29b626cf91029e60feae6a357b3a6bd399b0deeca3f526cd047"
    }

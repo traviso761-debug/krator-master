@@ -54,6 +54,22 @@ Fixed on the way: its transit and extraplanar bundles read the catalog's engine 
 recipe from `src/`; `metal.scorched` packed for the vehicles' ruins. Its `core/atmos` sky, fog and height-fog changes move every biome page
 (204 pages), all rebuilt and GPU-verified again (below), on the local lanes and the cloud lanes `vast0`/`vast1` together.
 `origin/claude/rebuild-nwouterwall-cloud` adds nothing (already in).
+**The sweep of 2026-11-11** (the owner: "merge in all ready but unmerged work on sibling branches"), merged:
+- the valley's later commits (the overgrowth, the Terraces' vine mats) and its two stragglers (`claude/wizardly-cerf-605ac6`: the Yards' and
+  Terraces' fx and their demo; `claude/mystifying-wescoff-d88527`: the lobbies);
+- **Firebliss and the NE outer wall again**, their reverts undone: each session fixed what failed here (Firebliss: the hazard bands, the
+  Glen's density; NE: the cave's drawn rock, the export boxes);
+- `origin/claude/greatchasm` (the Great Chasm, five stations), `origin/claude/survey-checks` (checks 22-31, opt-in; the harness keeps the
+  cloud-aware vendor check), riftrim stations 8 and 9 (`claude/rift-hearths-cavern-b8baf6`), W outer wall stations 2-4
+  (`claude/wouterwall-finish-345445`), two more site regions (`claude/openworld-sites-24defd`: Xanadu-Oidong-High Rift, the Iziz cluster),
+  the rest of the 2026-11-10 texture delivery (`ccr-55bd6ee1-p1si44-textures`, 22 sets; disjoint from main's six), the Golden Way
+  (`origin/ccr-55bd6ee1-p1si44`), the scablands high line's hulks (`claude/pensive-leakey-341312`), garment-defects' later commits, the
+  Tiers plan, the cloud lanes' verify-cache change, `origin/main`'s skill notes;
+- PROMPTS-NEEDED: sections 46-50 are the Ancient Transit, Firebliss, the NE outer wall, the Great Chasm and the Tiers.
+Left out: `claude/dreamy-davinci-30f3c1` (a scale-model edit made on an older model: it claims "edit 2" and its rasters conflict as
+binaries; re-run it on the current model), `origin/claude/seouterwall-s1` (its failures here are not fixed), `claude/hungry-burnell-e6cad9`
+(WIP), `claude/tungang-fellgang-kits-a56ece` (its session is working; a plan), `claude/ancient-transit-2600a6` (superseded by the valley's copy),
+`claude/hook-p1` and `claude/review-round-3` (the owner's design calls, above).
 
 **Retired:** Girder's hero page (the owner, 2026-11-10) to `archive/girder-hero` (its README); Styv's and Phil's models to
 `core/charactermodels/donors` (the canonical bind pose); its gallery entry and baseline row gone.

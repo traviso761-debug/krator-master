@@ -16,7 +16,7 @@
     "core/atmos/sky/89-atmos-k-cloudmood.js": "95ade1790b9515a96f3281502c1ae397dfe1a2904f7fafec55a8ed947e81f185",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "60d066abf6678b08bff3be1c66a075ad93e27fe242c8d0e4b78e79e5111a24d5",
+    "core/biome/30-core-foliage.js": "4d8473efce268373b1a65a91132ea3072bf6e597180faf0db9c849975ec3e955",
     "core/biome/31b-core-leafset.js": "e58ebcc03d77e6da79d54c90eb7582fb806775454c8ed0879e1d7f2359a2788f",
     "core/biome/34-core-impostor.js": "b67d538fbcb5c7a4b077a20c1cffab6bdc48e0e157ea3e240696041403468f53",
     "core/biome/40-core-place.js": "f1277b48ab3c5d779bf85452c581888be7d5b2ed94a0d21e21ade12f0602c9d7",
@@ -61,21 +61,23 @@
     "kits/mechs/mechs-parts.js": "fc84e5714ca7b1c6e40d5baa613cf988a3bdb79c9505e2ef70c5e6fca42d57e0",
     "kits/mechs/mechs-runtime.js": "bd5b92b7988b773907f8c37527b454364d0508c2552fd247f9170ecba0510af9",
     "kits/motor-vehicles/vehicles-core.js": "85b818f33a3305886128379a011df40103dc76cbdd2656d422a2d5af6d472990",
-    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
+    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
     "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
     "kits/extraplanar": "1a6babae3861fdde133b86a8910501e340b0d736370c7445dfc7ea9d1798fe52",
-    "kits/extraplanar/src": "acb4bb8a69a5cf87ccb9a6482b9fdeb41ecf6dd37f4b59a2ae4851fae6b3be1a"
+    "kits/extraplanar/src": "acb4bb8a69a5cf87ccb9a6482b9fdeb41ecf6dd37f4b59a2ae4851fae6b3be1a",
+    "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512"
    },
    "outputs": {
-    "kits/extraplanar/build-manifest.json": "b33ca2de95e1f0524784be3b8137a86a88ae7d2e3c66b8ca5eaa3dbcb50ce861",
-    "kits/extraplanar/dist/extraplanar.html": "6f96d37e07791f1280107197dbe669710197c395ac9374e1ffc1b0353d428cae",
+    "kits/extraplanar/build-manifest.json": "a104964881ae19a98b608ee2814ae7ef629cbc0c5d559767ed0283ca56ebdc62",
+    "kits/extraplanar/dist/extraplanar.html": "de967feb6e4cc3e9764cc35e84378c5c046772bcd5402137f313a785516b7b1e",
     "kits/extraplanar/dist/krator-extraplanar.js": "c114210057d531c05c7bb860e7f17073cf28fa343c0cef4ad4f856a163f37012"
    },
    "outputs_raw": {
-    "kits/extraplanar/build-manifest.json": "b33ca2de95e1f0524784be3b8137a86a88ae7d2e3c66b8ca5eaa3dbcb50ce861",
-    "kits/extraplanar/dist/extraplanar.html": "6f96d37e07791f1280107197dbe669710197c395ac9374e1ffc1b0353d428cae",
+    "kits/extraplanar/build-manifest.json": "a104964881ae19a98b608ee2814ae7ef629cbc0c5d559767ed0283ca56ebdc62",
+    "kits/extraplanar/dist/extraplanar.html": "de967feb6e4cc3e9764cc35e84378c5c046772bcd5402137f313a785516b7b1e",
     "kits/extraplanar/dist/krator-extraplanar.js": "c114210057d531c05c7bb860e7f17073cf28fa343c0cef4ad4f856a163f37012"
    }
   }

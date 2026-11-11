@@ -53,7 +53,7 @@
     "core/atmos/sky/89-atmos-g-sky.js": "45f083d44aa9834b558b48ec3815a4637a71475e672b3a678388a2466bcee21c",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "60d066abf6678b08bff3be1c66a075ad93e27fe242c8d0e4b78e79e5111a24d5",
+    "core/biome/30-core-foliage.js": "4d8473efce268373b1a65a91132ea3072bf6e597180faf0db9c849975ec3e955",
     "core/biome/31b-core-leafset.js": "e58ebcc03d77e6da79d54c90eb7582fb806775454c8ed0879e1d7f2359a2788f",
     "core/biome/34-core-impostor.js": "b67d538fbcb5c7a4b077a20c1cffab6bdc48e0e157ea3e240696041403468f53",
     "core/biome/35-core-anim.js": "22fb42a40a972749b03260cff244169c7148df6161cbc6171ebf2e4d537a2cef",
@@ -109,7 +109,7 @@
     "core/terrain/36-core-carve.js": "782cd16a5ff9bbaf22739f9d9b25085c13d9d439718762aa70a6addfbe0da2a5",
     "settlements/shade/KNOWN_ISSUES.md": "7f6a835f7fd8582a793ca931027c0cb9c22641da403ac17ac1f6fb8a023df147",
     "settlements/shade/PORT.md": "6401cab8be334a4e75070e1ecc9b7c2fb54e8bff54968f016318f745f712a421",
-    "settlements/shade/build.py": "ced7fd8f45a904ff03e7d23d7e8b1861111c3c6847f664aadb820361e89fb126",
+    "settlements/shade/build.py": "973084de75560f52f8866d7452028d4f8d8ab569d09a73c6fec75b38b147519e",
     "settlements/shade/src/00-head.html": "95644831964f8bb0145376b84ab76f95b7db78b6ec3a6b1072d951478200eaa5",
     "settlements/shade/src/44-host-layout.js": "e0eabcd95b04038ff8426434ae4a8b4bcb91dba3550c7d593166e4f9d1cf5e9a",
     "settlements/shade/src/45-host-stage.js": "d70c318600880606201efc50d78748831395102759903a2c32cde9791045fa76",
@@ -141,7 +141,8 @@
     "settlements/shade/world/orgs.json": "91e1201a3eb4816d7f34384c6bb19a5abe35e29521212c375985eb02de02947e",
     "settlements/shade/world/roles.json": "83750caac6010f9e1278a99f69ec915f8ef4e9c53a4eba1f91afc2f26db92503",
     "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
-    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
+    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
@@ -153,14 +154,14 @@
     "core/tags": "cd6f040d0e4dc63956ba50d287f27cda97e471bfd15ee98f2638981d4f9e1127",
     "settlements/shade/src": "007f7988b030872f22ef6b8571f153d6a2e1af58a0f01b556a17e1c44bb6f788",
     "settlements/shade/world": "451457ef10f68b3136be829a2576e01092745db084da738b8bf1cf3123d14a34",
-    "tools": "6631bdd33a724ae4afb19e5705fb6b95c13d305435fd8d325567b5e7f68c5f8c",
+    "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "settlements/shade/dist/shade.html": "81211b18a0a76344ea5e4a65a7d35fb09db93faca4e5a4b6871557f6e64bd625"
+    "settlements/shade/dist/shade.html": "b218d3b70d4585337796ea27cf3292df83986790bf654549f7467629099bfc27"
    },
    "outputs_raw": {
-    "settlements/shade/dist/shade.html": "10fd8079c66dbe3c0f32b2fb80c7429d242f08b91f8959be72c0d1fc183a2d8a"
+    "settlements/shade/dist/shade.html": "b218d3b70d4585337796ea27cf3292df83986790bf654549f7467629099bfc27"
    }
   }
  }

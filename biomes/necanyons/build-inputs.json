@@ -135,7 +135,7 @@
     "core/atmos/sky/89-atmos-j-fog.js": "c6fbc34d9dc0552623f7f22c79b2d8f94c6965b3bc4090c2e65b381d209320c5",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "60d066abf6678b08bff3be1c66a075ad93e27fe242c8d0e4b78e79e5111a24d5",
+    "core/biome/30-core-foliage.js": "4d8473efce268373b1a65a91132ea3072bf6e597180faf0db9c849975ec3e955",
     "core/biome/33-core-fungoid.js": "07e80dc4677ce326830d5a2318185fbf0b918dc9ff4d78f4b2c9c246e81d76a6",
     "core/biome/34-core-impostor.js": "b67d538fbcb5c7a4b077a20c1cffab6bdc48e0e157ea3e240696041403468f53",
     "core/biome/35-core-anim.js": "22fb42a40a972749b03260cff244169c7148df6161cbc6171ebf2e4d537a2cef",
@@ -195,23 +195,24 @@
     "core/water/ext/56-core-water-breakup.js": "30c6de1a8913f7fa59ac92cd40526eb148d683b02dc31b6b521a3a768a2926bb",
     "core/water/ext/57-core-water-audit.js": "6dd616a15a7804c615c4e1638b250cb709a85e1f219ae9ea03f8c4faa20374c1",
     "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
-    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
+    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
     "biomes/necanyons/dist": "379307a5641cca885b9b5dc007346f4bd5d1ce8c4d808f7864752efc5fa89050",
     "biomes/necanyons/src": "f8737b4c07039ae8847d79ddb08a335729b8eff7967e39941b488c8497d6a95a",
     "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
-    "tools": "6631bdd33a724ae4afb19e5705fb6b95c13d305435fd8d325567b5e7f68c5f8c",
+    "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/necanyons/dist/necanyons.html": "d20b10d3a0c04a6b172865ea89dcba1bc7249f55f7fb704f75a2b4823e633cf0",
+    "biomes/necanyons/dist/necanyons.html": "1eb2ee667d6c37e2d06b10090a30db56b24459be183cfe54cfd0c5183bd16a57",
     "biomes/necanyons/dist/necanyons.tex.hyperjungle.js": "fb8c15e07052806b71c9359c0c751747b857a7e6163b9caaac488c8f7c45dd7f",
     "biomes/necanyons/dist/necanyons.tex.necanyons.js": "62e53597d74616360437b80b4751a8d1e10b04adf64366533786f7d5fdf71419"
    },
    "outputs_raw": {
-    "biomes/necanyons/dist/necanyons.html": "d20b10d3a0c04a6b172865ea89dcba1bc7249f55f7fb704f75a2b4823e633cf0",
+    "biomes/necanyons/dist/necanyons.html": "1eb2ee667d6c37e2d06b10090a30db56b24459be183cfe54cfd0c5183bd16a57",
     "biomes/necanyons/dist/necanyons.tex.hyperjungle.js": "fb8c15e07052806b71c9359c0c751747b857a7e6163b9caaac488c8f7c45dd7f",
     "biomes/necanyons/dist/necanyons.tex.necanyons.js": "62e53597d74616360437b80b4751a8d1e10b04adf64366533786f7d5fdf71419"
    }
@@ -351,7 +352,7 @@
     "core/atmos/sky/89-atmos-j-fog.js": "c6fbc34d9dc0552623f7f22c79b2d8f94c6965b3bc4090c2e65b381d209320c5",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "60d066abf6678b08bff3be1c66a075ad93e27fe242c8d0e4b78e79e5111a24d5",
+    "core/biome/30-core-foliage.js": "4d8473efce268373b1a65a91132ea3072bf6e597180faf0db9c849975ec3e955",
     "core/biome/33-core-fungoid.js": "07e80dc4677ce326830d5a2318185fbf0b918dc9ff4d78f4b2c9c246e81d76a6",
     "core/biome/34-core-impostor.js": "b67d538fbcb5c7a4b077a20c1cffab6bdc48e0e157ea3e240696041403468f53",
     "core/biome/35-core-anim.js": "22fb42a40a972749b03260cff244169c7148df6161cbc6171ebf2e4d537a2cef",
@@ -411,7 +412,8 @@
     "core/water/ext/56-core-water-breakup.js": "30c6de1a8913f7fa59ac92cd40526eb148d683b02dc31b6b521a3a768a2926bb",
     "core/water/ext/57-core-water-audit.js": "6dd616a15a7804c615c4e1638b250cb709a85e1f219ae9ea03f8c4faa20374c1",
     "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
-    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
+    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
@@ -419,16 +421,16 @@
     "biomes/necanyons/src": "f8737b4c07039ae8847d79ddb08a335729b8eff7967e39941b488c8497d6a95a",
     "biomes/necanyons/stations/benches": "87957a18d6f1573ea63a1deb2e118cfe681b9c2454996b84098cecfb4105de99",
     "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
-    "tools": "6631bdd33a724ae4afb19e5705fb6b95c13d305435fd8d325567b5e7f68c5f8c",
+    "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/necanyons/dist/necanyons-benches.html": "c98ff3b95a9e027df4c5f8bbeb02a5bf45c98753eab268796cdcf416bdb31f21",
+    "biomes/necanyons/dist/necanyons-benches.html": "c9be9e25a719e04cb1c4a3cee4033f3703d289b8e1934e819c847d2e3369f7fd",
     "biomes/necanyons/dist/necanyons-benches.tex.hyperjungle.js": "b579813791c7c74175a396d57c3a8d042dcf8e02812d64189ae3ead39fe954a9",
     "biomes/necanyons/dist/necanyons-benches.tex.necanyons.js": "949e440ca95a53a5378feac73539cefb3f33fcbad3c8a84625b12361a73e03e9"
    },
    "outputs_raw": {
-    "biomes/necanyons/dist/necanyons-benches.html": "c98ff3b95a9e027df4c5f8bbeb02a5bf45c98753eab268796cdcf416bdb31f21",
+    "biomes/necanyons/dist/necanyons-benches.html": "c9be9e25a719e04cb1c4a3cee4033f3703d289b8e1934e819c847d2e3369f7fd",
     "biomes/necanyons/dist/necanyons-benches.tex.hyperjungle.js": "b579813791c7c74175a396d57c3a8d042dcf8e02812d64189ae3ead39fe954a9",
     "biomes/necanyons/dist/necanyons-benches.tex.necanyons.js": "949e440ca95a53a5378feac73539cefb3f33fcbad3c8a84625b12361a73e03e9"
    }
@@ -569,7 +571,7 @@
     "core/atmos/sky/89-atmos-j-fog.js": "c6fbc34d9dc0552623f7f22c79b2d8f94c6965b3bc4090c2e65b381d209320c5",
     "core/biome/10-core-head.js": "03851959a28938a9472f9eba941b9de4b505e14d2a6cafdc43aa41875abacf54",
     "core/biome/20-core-kit.js": "a6135fc9005921df0c2e00b5d4b6b85d61d713d4bdcc912bd1aeb9789a6fbc0a",
-    "core/biome/30-core-foliage.js": "60d066abf6678b08bff3be1c66a075ad93e27fe242c8d0e4b78e79e5111a24d5",
+    "core/biome/30-core-foliage.js": "4d8473efce268373b1a65a91132ea3072bf6e597180faf0db9c849975ec3e955",
     "core/biome/33-core-fungoid.js": "07e80dc4677ce326830d5a2318185fbf0b918dc9ff4d78f4b2c9c246e81d76a6",
     "core/biome/34-core-impostor.js": "b67d538fbcb5c7a4b077a20c1cffab6bdc48e0e157ea3e240696041403468f53",
     "core/biome/35-core-anim.js": "22fb42a40a972749b03260cff244169c7148df6161cbc6171ebf2e4d537a2cef",
@@ -629,7 +631,8 @@
     "core/water/ext/56-core-water-breakup.js": "30c6de1a8913f7fa59ac92cd40526eb148d683b02dc31b6b521a3a768a2926bb",
     "core/water/ext/57-core-water-audit.js": "6dd616a15a7804c615c4e1638b250cb709a85e1f219ae9ea03f8c4faa20374c1",
     "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
-    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
+    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
@@ -637,16 +640,16 @@
     "biomes/necanyons/src": "f8737b4c07039ae8847d79ddb08a335729b8eff7967e39941b488c8497d6a95a",
     "biomes/necanyons/stations/savanna": "060f83e94c94b85fe36ab3dae962b20c1af06c1eea8404d36624cceaa23edcab",
     "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
-    "tools": "6631bdd33a724ae4afb19e5705fb6b95c13d305435fd8d325567b5e7f68c5f8c",
+    "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/necanyons/dist/necanyons-savanna.html": "871ef28a9bbbd3e902410b8b40fe93c2b5d74c16fb20f22149d93befa0ec8734",
+    "biomes/necanyons/dist/necanyons-savanna.html": "c79b0b9ace277071af7749028c37c41c7d914f1200abb4139208d35daca880ab",
     "biomes/necanyons/dist/necanyons-savanna.tex.hyperjungle.js": "1c9ef0f2563a79f1c28e8e25c46c80e0dd13ad7f7f538d16c60c400ff60bf692",
     "biomes/necanyons/dist/necanyons-savanna.tex.necanyons.js": "21fe9b018e4541c864f3eddfeac8c87d35223656df2aed02975716ac78ab56b7"
    },
    "outputs_raw": {
-    "biomes/necanyons/dist/necanyons-savanna.html": "871ef28a9bbbd3e902410b8b40fe93c2b5d74c16fb20f22149d93befa0ec8734",
+    "biomes/necanyons/dist/necanyons-savanna.html": "c79b0b9ace277071af7749028c37c41c7d914f1200abb4139208d35daca880ab",
     "biomes/necanyons/dist/necanyons-savanna.tex.hyperjungle.js": "1c9ef0f2563a79f1c28e8e25c46c80e0dd13ad7f7f538d16c60c400ff60bf692",
     "biomes/necanyons/dist/necanyons-savanna.tex.necanyons.js": "21fe9b018e4541c864f3eddfeac8c87d35223656df2aed02975716ac78ab56b7"
    }

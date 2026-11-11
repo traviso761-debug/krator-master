@@ -252,7 +252,7 @@
     "settlements/xanadu/tex/corrugate.albedo.webp": "126df447175c976fbb151d697d094b1470aa2f09bb30b00d8c018063b6719921",
     "settlements/xanadu/tex/corrugate.normal.webp": "de2b7847269a25ebd18850386992144f5b6ef88e1731572df61d633cf3844af9",
     "settlements/xanadu/tex/corrugate.rough.webp": "d22c69a1e318fd11734d6eb10d15a931490f8b0f6f07f6ab6f48721c283eafe4",
-    "settlements/xanadu/tex/pack.json": "18de2b5f24b8b310fcba8f7b8457bb1feb3bb1ab692c41aa963b69e1a5bdff81",
+    "settlements/xanadu/tex/pack.json": "d144b7d56c7fa4854c0913c75010b1757cbdb524a5c4162c8d9606812d8a53c5",
     "settlements/xanadu/tex/plaster.albedo.webp": "8111b9e2cb94581d8b926949f2b3a140a5e7c871b3bc2cb708506612b3dc5d88",
     "settlements/xanadu/tex/plaster.normal.webp": "59d6f39781dc5b18df450b3e8a94abad8426a00e9d3bf5345244d40796e9ad2a",
     "settlements/xanadu/tex/plaster.rough.webp": "0b1a2a33e609b165bbe967d4b9ca0baa5370c4d74ad22456265df9f368df630d",
@@ -281,7 +281,8 @@
     "settlements/xanadu/tex/xWash.normal.webp": "57841d092925afa12258b073ca2acf360c9446d3889ed704cb95360cab61f56b",
     "settlements/xanadu/tex/xWash.rough.webp": "f35064c19cfa76777eefc2a14a1a56420c5adffa9f9e1d69e951550674808ad7",
     "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
-    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
+    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
@@ -296,7 +297,7 @@
     "kits/iziz-vernacular": "4a1c35741a306f725b4dbc4e35c5987534d6fd34a8045e1851e67ecb5b264cee",
     "kits/iziz-vernacular/src": "4add7a31b18bd16063818ad685970c0660bd99fccbc27c50037561a45189976d",
     "kits/xanadu": "df175a486cebf570bba84ea57280fe5f95a927a91d99bf2027f4c983167ab286",
-    "tools": "6631bdd33a724ae4afb19e5705fb6b95c13d305435fd8d325567b5e7f68c5f8c",
+    "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {

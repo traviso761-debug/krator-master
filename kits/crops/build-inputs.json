@@ -5,12 +5,12 @@
    "inputs": {
     "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
     "kits/crops/KNOWN_ISSUES.md": "38cf9627732f17f42c630cfceef7ba559bfcbea2a7758409bcee76d3416571d0",
-    "kits/crops/PORT.md": "d895f865b3742332ba35a723b4bd0add888effea291e12820ca319eabdbf8fd6",
+    "kits/crops/PORT.md": "a73120c5eeb9685203ce0fd01fb2ae82d466ade13499ddbfed990fb3925b526d",
     "kits/crops/build.py": "e4bdeb91d84951f9f6b8654c2487ae26d8d73019916225842e6b4ff22859838a",
     "kits/crops/src/00-head.html": "4ca8c0ff8a3db59c594067ef2b9dfc6bb993d73868dc3ca1cb3c342dd63203de",
-    "kits/crops/src/10-crop-core.js": "4f32df5c0260ed8412029ced94fe1c495b0c828c3bea1d69b6d7093a8fcdcb56",
-    "kits/crops/src/20-crop-records.js": "53a2b4c275eb4f3b05082083dc61f3c16ac81504417654962cdc49ac27d8755f",
-    "kits/crops/src/22-crop-material.js": "9f79ca919d26d19aa4377c5ed9d22cb75384291187374431b4a91af9133fa3f8",
+    "kits/crops/src/10-crop-core.js": "5d90c0e985a2a6ee6939f269c80902f1424932db7e166ba920429252ccd5f64d",
+    "kits/crops/src/20-crop-records.js": "daf082d84691e67c6944b786c5d2a76199c439ed0842fe18512e25c96ed0b715",
+    "kits/crops/src/22-crop-material.js": "c74a7c32754dcf22ca3ca1f2786109f6ca4b53f12f2885b6e03c00601fa974ea",
     "kits/crops/src/40-crop-query.js": "c4e1179691702ff13200d5b713c23e0f315ee99c61842a8735d671e63bfca439",
     "kits/crops/src/89-sheet.js": "c61d8a99942e93f8e93a2666d7ca1d4a8af3ef5f6d3135514a428ff69541ae7f",
     "kits/crops/src/99-tail.html": "893cb35f3016a3523c33b676c4dfbe5686c4b99a1e7128d78e2e3fa271cd4829",
@@ -66,20 +66,21 @@
     "kits/crops/tex/card_weeper.albedo.webp": "7ef86069f5079e75e54d94af13d1993f5d5babadc9dbb731b13b7a6076c516e7",
     "kits/crops/tex/pack.json": "3eeb40b45a192fbe9218361a774a5d505b1198e46fd542cea0ed8db72193af4a",
     "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
-    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
+    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
     "core/rand": "2174a8e3e509270343eb7e2c6e69ec9c0a221daa415e05d960123007b253bc77",
     "kits/crops/src": "c100e0782accd64b2c1d4bb7ba5bbeb90c7a9a4565ecc398c509507027336ff1",
-    "tools": "6631bdd33a724ae4afb19e5705fb6b95c13d305435fd8d325567b5e7f68c5f8c"
+    "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512"
    },
    "outputs": {
-    "kits/crops/build-manifest.json": "8029f175d66fbf7075910635aa83798a705c13d2c3a51820331088a52bc39c52",
-    "kits/crops/dist/crops.html": "000315cee56acfc01b762d8654abfd8e2e484bd9d0f2e6556e986b57b09c69db"
+    "kits/crops/build-manifest.json": "ae967200623f4d50b7b6f849de77ed66d864ec962009aaeb9bc84edecb1a9972",
+    "kits/crops/dist/crops.html": "b575c1a2b9a7616994ad1d9c1ec77fc61c16f253ac2cf58e6b2c927f134ede82"
    },
    "outputs_raw": {
-    "kits/crops/build-manifest.json": "8029f175d66fbf7075910635aa83798a705c13d2c3a51820331088a52bc39c52",
-    "kits/crops/dist/crops.html": "000315cee56acfc01b762d8654abfd8e2e484bd9d0f2e6556e986b57b09c69db"
+    "kits/crops/build-manifest.json": "ae967200623f4d50b7b6f849de77ed66d864ec962009aaeb9bc84edecb1a9972",
+    "kits/crops/dist/crops.html": "b575c1a2b9a7616994ad1d9c1ec77fc61c16f253ac2cf58e6b2c927f134ede82"
    }
   }
  }

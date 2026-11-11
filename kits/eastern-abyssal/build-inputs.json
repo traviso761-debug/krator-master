@@ -175,7 +175,8 @@
     "settlements/locus/tex/tinmirror.normal.webp": "7546ebd86205682e39987e2599cd18343deff47117e0a5854e0927cc172f3792",
     "settlements/locus/tex/tinmirror.rough.webp": "9702d367cc4bcfd50ae07f76f3ce21660c59520b0044f52d30a83ea3cf4cbc04",
     "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
-    "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
+    "tools/buildlib.py": "24ec6d636869007e626446a0b8e9cc886fd595af0c9f95b78c4d4b272a18ec0e",
+    "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47",
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
@@ -196,7 +197,7 @@
     "kits/locus": "def117585c2c9fcfd579c370b33e79a91b1442f8b0755a7402311e3cfb05b782",
     "kits/locus/src": "8795515269e5f23e5418f30f422e7d1d66882ad23b81dce7d27e7c8a2379d813",
     "kits/yuni": "42740c9a5971ea85e2d704c15f1f90f72979a7ad85723c246a5e582c9178670f",
-    "tools": "6631bdd33a724ae4afb19e5705fb6b95c13d305435fd8d325567b5e7f68c5f8c",
+    "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
