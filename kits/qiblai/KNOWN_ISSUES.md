@@ -1,0 +1,16 @@
+# kits/qiblai: known issues
+
+- [ ] **The culture `qiblai` is not in core/tags' vocabulary yet.** The kit tags its buildings `culture:'qiblai'` (the owner's brief);
+  `core/tags/52-core-tags-vocab.js` does not list it, so `KTAGS.page.audit()` counts it as an unknown value (counted, never thrown).
+  Adding it moves every page that takes core/tags, so it waits in `TODO.md`, "Ride along with the next all-builds rebuild".
+- [ ] **The eight monasteries and the council have no names yet** (PLAN.md section 9, item 1). `qb_monastery` is one def in eight
+  dresses (`o.v` 0-7) labelled "spoke 1" to "spoke 8"; the names go in when the owner gives them.
+- [ ] **The mixed rich street leaves a 4 m alley after the Xanadu merchant's konak** (`xa_rich_c`): it draws 3.3 m past its plot's `w`
+  (its cumba), which the street audit measures. A fix belongs in `kits/xanadu` (an honest `w`), not here.
+- [ ] **No Qiblai textures of its own.** Qiblai is drawn in the Xanadu pack (`settlements/xanadu/materials.json`). The plan's three
+  candidates (dressed ashlar for the terraces and ring walls, a beaten-gold roof sheet, prayer-wheel copper with mantra relief) wait for
+  the owner's word (PLAN.md section 9, item 2).
+- [ ] **No city yet (Q7).** The nested-squares site on core/city is the core/city session's work (PLAN.md section 7); the kit stops at Q6.
+- [ ] **The Xanadu kit's own pages are behind main's core** (found 2026-11-11, not this kit's doing): a rebuild of `settlements/xanadu`
+  today changes `dist/xanadu.html` and `dist/erewhon.html` (core/shader's `06-core-khook.js` and core/water's fragments moved on main
+  without a Xanadu rebuild). The `--kit` option leaves those pages byte-identical to what the old `build.py` makes from the same tree.
