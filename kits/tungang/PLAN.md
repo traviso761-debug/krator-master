@@ -51,6 +51,25 @@ them all out.
 4. **The Glaziers' language is half Xanadui** by now: written up on the tongues page (section 1.4, "Tongue and look").
 5. **The Glaziers wear turbans like the Xanadui**, with similar slight touches of Orientalism (sections 1.4, 1.5, 3.4, 4).
 
+## The owner's answers, round 3 (2026-11-11)
+
+1. **Riding gets a session of its own** (question 28): started as `riding`; section 0.2.1 is its brief. The Line's biome
+   session keeps the Line, its cars and the `line` kind, and gives riding the cars' poses and the doors' open windows.
+2. **Wildcat's customs stand** (question 24): the Boast and the show of hands, the Deeds, the earned horn helmet, no
+   spirits on its walls.
+3. **The Glaziers' history stands** (question 25): the crews who came east and were not absorbed, a loj a thousand years
+   apart, the timetable of a train that never comes, the Xanadui's name for them, the Mārā. Written into `LORE.md`.
+4. **"Agree with your suggestions"** for the concept page's eight questions, so these are settled as proposed:
+   - the Line's shape (question 22): one four-track gallery splitting into bores in bad ground, crossovers, trains
+     trapped in their segments, holds at the gaps, the hot section one segment kept whole;
+   - the biome (question 23): `biomes/line` with its seven stations, built by its own session (running);
+   - the High Rift's outpost (question 26): the Order's, in Longsong's style, a note to those plans, not this kit's;
+   - the lamp code (question 6, on ways and doors, rooms in wax light), the count wall and the click-ribs (7), the
+     carriage houses (8), the Big Meeting (10), shine for rank (11), the 0.94 scale (12);
+   - the core extensions (question 14), each planned with its module's owner, and the eight owed textures (question
+     16), now in `core/materials/PROMPTS-NEEDED.md` section 43.
+   Written into `LORE.md` where they are lore.
+
 ## 0. What the kit is
 
 | | |
@@ -205,6 +224,9 @@ section's doors), so the Line's sections, signals, states and trains are drawn b
   registry, rig and ruin states), placed and moved on the Line by `KTRANSIT`'s `line` kind.
 
 #### 0.2.1 Riding: people and cargo aboard (the owner, 2026-11-10: "we do need to add functionality for people and cargo to ride them")
+
+**Its own session** (the owner, 2026-11-11): `riding`. What follows is that session's brief; it agrees the car-pose and
+door-window hooks with the Line's biome session.
 
 Nothing in Krator rides today: `core/walk`'s floors stand still, and `core/simulation`'s walkers walk. The Line needs four
 things, all engine-neutral data, each an opt-in extension of a module that exists (*proposed*; question 28):
@@ -1002,8 +1024,8 @@ station); `metal.ancient`, `metal.ancient.white` (plate, Fellgang armour), `meta
 `ceramic.celadon.crackle` (Glazier tea), `paper.parchment` (sailwort); patterns `port/hazard` (the Line's stripes),
 `ancients/glyph-band`, `xanadu/*` (lozenge, zigzag, star, sun-emblem), `order/*` (prayer-wheel, mani-stone, book-spines).
 
-**Owed** (*proposed*, to be written into `core/materials/PROMPTS-NEEDED.md` as paste-ready prompts **only after the
-owner agrees**, question 16):
+**Owed** (agreed 2026-11-11; the paste-ready prompts are in `core/materials/PROMPTS-NEEDED.md` section 43, ten blocks for
+these eight sets, the banner in three variants):
 
 | Id | What | Why no library set does it |
 |---|---|---|
@@ -1013,7 +1035,7 @@ owner agrees**, question 16):
 | `patterns/tungang/loj-banner` | a lodge banner: painted canvas, a central scene (crews at a lamp, the show of hands), a scroll with a number and a worn-English motto, fringe, a thousand years' fading (three variants) | the miners' banner is the culture's centrepiece |
 | `patterns/tungang/enamel-signs` | an enamel sign sheet: station numbers, the lamp-code symbols, arrows, red on cream and cream on green, chipped to black iron (a 4 x 4 atlas) | signage is everywhere in a hold |
 | `patterns/tungang/crew-mosaic` | a worn scrap-tile mural of the crews (Soviet metro mosaic in style: workers with lamps and spanners, a train, rays), tiles missing | the platform's landmark wall |
-| `patterns/fellgang/slogans` | daubed and stencilled slogans on plate (NO SKABS, T FELL IZ US, numbers, the wheel), drips, scraped and repainted (a 2 x 2 atlas) | the Fellgangs' look |
+| `patterns/fellgang/daub` | daubed marks on rusty plate (the wheel, a charging aurochs, handprints and tallies, a red X), drips, scraped and repainted (a 2 x 2 atlas); the slogans' letters are the kit's own decals, since generated images cannot be trusted with words | the Fellgangs' look |
 | `patterns/glazier/cholet-front` | a carved front's painted band: Andean cholet colours (rose, teal, saffron, white) in Xanadui lozenge and zigzag, gilt edges, on whitewash | the Glaziers' fronts |
 
 Lighting needs no texture: the lamp code is emissive colour and point-light pools (as Dhelv's `91n-night.js` moves a pool
@@ -1057,7 +1079,7 @@ The owner's order (2026-11-10): **the biome first, then the cavern layout, then 
 | Phase | What | Done when |
 |---|---|---|
 | T0 | the owner's answers (section 10); the owed prompts written and pasted; `LORE.md` updated with what the owner confirms | the questions are answered |
-| T1 | **The Line's biome and its train** (section 0.2), its own plan first (`biomes/line/PLAN.md`): the tunnel record with tracks, per-track states and segments; the four-track gallery and its split bores on `KCAVERN`; the stations `bore`, `gap`, `station`, `hotdoor`, `breach`, `fault`, `portal`; the lining texture; the lamp code as light records; the hot section's hazards. The train: the Ancient Line cars in `kits/motor-vehicles`' `ancient` culture with `built`, `kept`, `derelict` and `wreck` states, the Fixers' trolley, running a segment on a timetable. On `KTRANSIT` as a `line` kind once `kits/ancient-transit` is merged (settled). **Riding** (section 0.2.1): frame floors, door windows, ride legs and cargo (question 28) | the owner's walk along a bore, across a gap and into a station; a train runs its segment and the player rides it; `--assert` passes |
+| T1 | **The Line's biome and its train** (section 0.2), its own plan first (`biomes/line/PLAN.md`): the tunnel record with tracks, per-track states and segments; the four-track gallery and its split bores on `KCAVERN`; the stations `bore`, `gap`, `station`, `hotdoor`, `breach`, `fault`, `portal`; the lining texture; the lamp code as light records; the hot section's hazards. The train: the Ancient Line cars in `kits/motor-vehicles`' `ancient` culture with `built`, `kept`, `derelict` and `wreck` states, the Fixers' trolley, running a segment on a timetable. On `KTRANSIT` as a `line` kind once `kits/ancient-transit` is merged (settled). The cars' poses and door windows as data for riding, which is its own session (section 0.2.1) | the owner's walk along a bore, across a gap and into a station; a train runs its segment and the player rides it; `--assert` passes |
 | T2 | **The cavern setting in `core/city`** (section 5.6), with the city-layout work: Dhelv's layout ported first, its golden digest unchanged and its `CAVERN` exemption removed | `test-city.js`, Dhelv's `test-layout.js` and `verify.py --assert`, Voth's and Verge's pages unchanged |
 | T3 | the camera work (section 6): first measured on Dhelv's page as it is (the cost of `C.sdf` and `C.voidSD` at the camera; what a player cannot read there today); then the opt-in extensions of section 6.5, agreed piece by piece, tried on the Line's stations and Dhelv | the new tests pass; every page that does not opt in is byte-identical (the hash baseline) |
 | T4 | the kit's scaffold: `kits/tungang` on `core/engine`, the carved-def layer in core (agreed), `materials.json`, the salvage foundation (lining segment, carriage, plate, pipe, rivets, enamel, cable, the three rules of fitting), the sheet | the ring house and the carriage house build in three states and `--assert` passes |
@@ -1070,55 +1092,26 @@ The owner's order (2026-11-10): **the biome first, then the cavern layout, then 
 
 ## 10. Questions for the owner
 
-**Answered 2026-11-10**: 1 (one kit, three sets), 2 (the Glaziers to Opal Valley), 15 (a cavern setting in `core/city`,
-for Dhelv and the Zeijani too). Question 4 fell with question 2; question 9 moved to the Hearth loj.
+**Answered.** 1 one kit, three sets; 2 the Glaziers to Opal Valley; 15 a cavern setting in `core/city`, for Dhelv and the
+Zeijani too (all 2026-11-10); 20 the Line a `line` kind in `KTRANSIT`; 21 the cars in the vehicles kit; 24 Wildcat in the
+Fellgang set as a scrap pueblo, its customs standing; 25 the Glaziers' history standing; 28 riding its own session; and,
+"agree with your suggestions" (2026-11-11), 6 the lamp code, 7 the count wall and click-ribs, 8 carriage houses, 10 the
+Big Meeting, 11 shine for rank, 12 the 0.94 scale, 14 the core extensions (each with its owner), 16 the eight textures,
+22 the Line's shape, 23 the biome and its session, 26 the High Rift's outpost the Order's. Question 4 fell with question
+2.
 
-3. **The Glaziers' name and culture id.** *Proposed*: still the **Glaziers** (Tungang *glaizaz*), for the moonglass they
-   cut from potch; the Xanadui call them **the Mārā**; catalog and tags culture `glazier`. Or a name of yours?
+**Still open:**
+
+3. **The Glaziers' culture id**: catalog and tags culture `glazier` (the name itself is in use and the tongue is written)?
 5. **The Fellgangs as three ways of living** (bands, villages, carriers), the punk strongest in the bands: right?
-6. **The lamp code**: red home, green Line, amber work, blue-green glow-cap, white surface and danger; on ways and doors
-   only, rooms in wax light?
-7. **The count wall** (hands counted by their shadows) and **click-ribs** (each junction's own echo): keep?
-8. **Carriages**: the derelict cars of each segment's trapped stock become carriage houses, the running trains kept apart?
 9. **The Hearth loj's cooling suits** run on the Ice-cutters' ice, and a turn in the crystals lasts one block's melt: keep?
-10. **The Big Meeting** (one festival, the banners walked down the Line to the Tpresden, across the gaps): keep?
-11. **Dress**: smoked goggles from visor glass; rank as **shine** (ground-glass bead strips on a faded orange tabard)?
-12. **Body scale**: Tungangs and Glaziers at 0.94 of a human (doors 1.95 m), Fellgangs and Wildcat at 1.0?
 13. **Food words**: the bait tin and the brew (steeped stalk-pith) as the anti-mead; alecap beer only by the cup?
-14. **Core extensions** (no new module): may I plan, with each owner's agreement, (a) the follow camera and ceiling clamp in
-    `core/host` on an opt-in distance query, (b) caps, decks hidden by tag, the soft band and a section plane in the
-    cut-away, (c) deck bands, above/below marks and a line map in `core/minimap`, (d) the dither fade and x-ray in
-    `core/shader`, (e) lifting Zeijani's rock cut (rock opens above each void's floor), its carved-def layer
-    (`cvRoom` and the rest, `cvFromItem`), Dhelv's height-band map and its draw switch into core (`core/terrain/host`,
-    `core/engine`, `core/minimap`, `core/lod`), with the Zeijani session's agreement and Dhelv's pages proven unchanged?
-    The other way is to read `kits/zeijani/src/40-zj-cave.js` in place, as Locus reads the Yuni kit, but it is written
-    against the Zeijani's fork of the engine.
-16. **Textures**: the eight owed sets of section 7: write their prompts into `PROMPTS-NEEDED.md`?
 17. **Which hold first** after the Line's biome: a loj at a gap, the Hearth hold (built and empty), or Loj Twenny?
-18. **The riftrim stand-ins as the contract**: the kit keeps riftrim's `fg-*` keys and boxes so its stations swap without a
-    layout change; and the `fellgang` row moves into `core/hamlet` with its own fowling and ice-cutting focuses?
+18. **The riftrim stand-ins as the contract** (section 3.3.1): the kit keeps riftrim's `fg-*` keys and boxes, and the
+    `fellgang` row moves into `core/hamlet` with `fowling` and `ice` focuses?
 19. **Loj Nahn** as a fourth set later (the Tungang shell under the sky on the Pile's crown), or the Tungang set dressed?
-20. *Answered 2026-11-10*: the Line is a `line` kind in `KTRANSIT`.
-21. *Answered 2026-11-10*: the cars live in the vehicles kit.
-22. **The Line's shape**: one wide four-track gallery that splits into bores in bad ground; crossovers round a broken
-    track; trains trapped in their segments since the collapses, shuttling between gap stations; holds at the gaps as
-    well as at the old stations; the hot section one segment that must stay whole. Right?
-23. **The biome**: `biomes/line`, with the stations `bore`, `gap`, `station`, `hotdoor`, `breach`, `fault` and `portal`,
-    built by a session of its own from section 0.2?
-24. *Answered 2026-11-10*: Wildcat in the Fellgang set for now, as a scrap pueblo. Still open: the Boast and the show of
-    hands, the Deeds, the earned horn helmet, no spirits on its walls?
-25. **The Glaziers' history**: the crews who came east and were not absorbed, a loj a thousand years apart, reading the
-    timetable of a train that never comes; the Xanadui call them the Mārā. Right? (The tongue is settled as half
-    Xanadui; the forms on the tongues page are proposals. They wait on `biomes/opalvalley`, a draft plan today.)
-26. **The High Rift's outpost**: the Order's (monks at the Singing Gjár's crystals), in Longsong's style, with a note to
-    the High Rift and Longsong plans; not this kit's?
-27. **The Fellgang villages ahead of the order?** The Fowlers and the Ice-cutters are built on stand-ins and need neither the
-    Line nor the cavern setting: build the Fellgang village defs of section 3.3.1 (and the row's move into `core/hamlet`)
-    in parallel with the Line's biome, rather than after the Tungang set?
-28. **Riding** (section 0.2.1): may I plan it as three opt-in core extensions (frame groups in `core/walk` so floors can
-    ride; a ride leg and a rail carrier in `core/simulation`; the cars' poses and door windows in `KTRANSIT`), built
-    generically so the Valley's trams, the Ring Sea's ships and the caravans' wagons can use them later? And does it
-    belong to the Line's biome session (T1) or a session of its own?
+27. **The Fellgang villages ahead of the order?** They need neither the Line nor the cavern setting: build the Fellgang
+    village defs of section 3.3.1 (and the row's move into `core/hamlet`) in parallel with the Line's biome?
 
 ## 11. Rejected and parked ideas
 
