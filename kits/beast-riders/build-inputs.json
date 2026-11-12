@@ -42,7 +42,7 @@
     "kits/beast-riders/src/73-br-tents-pens.js": "22828f5363d15c7e7e3c94a183282e8403e2fa1b76fad152c9e7fee245bbe767",
     "kits/beast-riders/src/74-br-tents-bands.js": "54c2fcdd55d6c0607860845cd368f4e22d6d3129e80e81e6c99a2687663e1c41",
     "kits/beast-riders/src/75-br-tents-bounds.js": "869617890635ff19d85a127a6480eef7f8d5a924467d0cef4a764b6c45f01fba",
-    "kits/beast-riders/src/79-br-camp.js": "468aead89e40ff670270786c8f610fef48ac6b72d9779ade0723bf7b418d612a",
+    "kits/beast-riders/src/79-br-camp.js": "542b1fb3b46f02c3c6ddc93ac582fe9e2cefab83a53e3a1dde713a77664b98dd",
     "kits/beast-riders/src/90-br-sheet.js": "bc88005a3c7d3fbb0b7a817ee14ba6812373dfe4980fcc5cc5ec63722999985d",
     "kits/beast-riders/src/99-tail.html": "fc837380d9f5351ff0a5776c8e1f523bb2107106f2ac860e0e76535377ec5b78",
     "kits/beast-riders/tex/bark.albedo.webp": "9aebafd0d55fc0618af2077cf085b806478c4e4e3b844f56675d03e873e26470",
@@ -304,12 +304,12 @@
     "tools": "2d2fdaca850a104a2a2c553313ccb3ad18dc6bc48cb554c8c714fc1ca39607bf"
    },
    "outputs": {
-    "kits/beast-riders/build-manifest.json": "9fe57269f4d288fe1864d03608d42397f7c3b1e538af7ad862028c0c3102a471",
-    "kits/beast-riders/dist/beast-riders.html": "71e5206e79268cf08fd9aac70dfe7916a3d1521c50b0c282a2b70de37844d9e8"
+    "kits/beast-riders/build-manifest.json": "5a04944f87cd1c99227249746099c3d0ca769d122bb5aaadd05a9855a8ec5bd8",
+    "kits/beast-riders/dist/beast-riders.html": "1371ed8412f995c9e8a84a34ae48b21dda32bc194900759ab92cd33bdf80629a"
    },
    "outputs_raw": {
-    "kits/beast-riders/build-manifest.json": "9fe57269f4d288fe1864d03608d42397f7c3b1e538af7ad862028c0c3102a471",
-    "kits/beast-riders/dist/beast-riders.html": "71e5206e79268cf08fd9aac70dfe7916a3d1521c50b0c282a2b70de37844d9e8"
+    "kits/beast-riders/build-manifest.json": "5a04944f87cd1c99227249746099c3d0ca769d122bb5aaadd05a9855a8ec5bd8",
+    "kits/beast-riders/dist/beast-riders.html": "1371ed8412f995c9e8a84a34ae48b21dda32bc194900759ab92cd33bdf80629a"
    }
   }
  }

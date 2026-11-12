@@ -227,7 +227,7 @@
     "kits/beast-riders/src/73-br-tents-pens.js": "22828f5363d15c7e7e3c94a183282e8403e2fa1b76fad152c9e7fee245bbe767",
     "kits/beast-riders/src/74-br-tents-bands.js": "54c2fcdd55d6c0607860845cd368f4e22d6d3129e80e81e6c99a2687663e1c41",
     "kits/beast-riders/src/75-br-tents-bounds.js": "869617890635ff19d85a127a6480eef7f8d5a924467d0cef4a764b6c45f01fba",
-    "kits/beast-riders/src/79-br-camp.js": "468aead89e40ff670270786c8f610fef48ac6b72d9779ade0723bf7b418d612a",
+    "kits/beast-riders/src/79-br-camp.js": "542b1fb3b46f02c3c6ddc93ac582fe9e2cefab83a53e3a1dde713a77664b98dd",
     "kits/beast-riders/tex/bark.albedo.webp": "9aebafd0d55fc0618af2077cf085b806478c4e4e3b844f56675d03e873e26470",
     "kits/beast-riders/tex/brClothA.albedo.webp": "38009f3000a123d81c483e464c11e6a13081a701de1e08e7ce793301b296666a",
     "kits/beast-riders/tex/brClothB.albedo.webp": "16ee8bcaedacec55f525ba77db8380145c9fe9ae651763fa18053fa2b9e193d1",
@@ -715,7 +715,7 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "openworld/iziz-cluster/dist/iziz-cluster.html": "0fc56d449ac24ad014a891d2fc1602762fb81d55b3e0312418a25c34597aca4c",
+    "openworld/iziz-cluster/dist/iziz-cluster.html": "14b058de4747d6e14c2548320277417dcdcd85cb9802663bdf5cabf0b0c35b47",
     "openworld/iziz-cluster/dist/iziz-cluster.tex.abyssal-savannah.js": "1eb39f4b778a6bc8b25aefa0a150ceb8dac7bd338e60213fe7f1a68b10d3e390",
     "openworld/iziz-cluster/dist/iziz-cluster.tex.brtowns.js": "b12ca256d909e39fcbbb58164e9437b081de65a23b5651d3079814610dddc1c0",
     "openworld/iziz-cluster/dist/iziz-cluster.tex.eastabyss.js": "2c9de989f067e7da3195016b3a53efd7338695428cd54b2573cf52f7c6dd7b14",
@@ -725,7 +725,7 @@
     "openworld/iziz-cluster/dist/iziz-cluster.tex.kftex.js": "76bf85ce1437d8c1a34f4bb2aca0af4fce566d9a24caa3691055d1511a500101"
    },
    "outputs_raw": {
-    "openworld/iziz-cluster/dist/iziz-cluster.html": "0fc56d449ac24ad014a891d2fc1602762fb81d55b3e0312418a25c34597aca4c",
+    "openworld/iziz-cluster/dist/iziz-cluster.html": "14b058de4747d6e14c2548320277417dcdcd85cb9802663bdf5cabf0b0c35b47",
     "openworld/iziz-cluster/dist/iziz-cluster.tex.abyssal-savannah.js": "1eb39f4b778a6bc8b25aefa0a150ceb8dac7bd338e60213fe7f1a68b10d3e390",
     "openworld/iziz-cluster/dist/iziz-cluster.tex.brtowns.js": "b12ca256d909e39fcbbb58164e9437b081de65a23b5651d3079814610dddc1c0",
     "openworld/iziz-cluster/dist/iziz-cluster.tex.eastabyss.js": "2c9de989f067e7da3195016b3a53efd7338695428cd54b2573cf52f7c6dd7b14",

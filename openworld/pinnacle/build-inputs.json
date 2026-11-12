@@ -214,7 +214,7 @@
     "kits/beast-riders/src/73-br-tents-pens.js": "22828f5363d15c7e7e3c94a183282e8403e2fa1b76fad152c9e7fee245bbe767",
     "kits/beast-riders/src/74-br-tents-bands.js": "54c2fcdd55d6c0607860845cd368f4e22d6d3129e80e81e6c99a2687663e1c41",
     "kits/beast-riders/src/75-br-tents-bounds.js": "869617890635ff19d85a127a6480eef7f8d5a924467d0cef4a764b6c45f01fba",
-    "kits/beast-riders/src/79-br-camp.js": "468aead89e40ff670270786c8f610fef48ac6b72d9779ade0723bf7b418d612a",
+    "kits/beast-riders/src/79-br-camp.js": "542b1fb3b46f02c3c6ddc93ac582fe9e2cefab83a53e3a1dde713a77664b98dd",
     "kits/beast-riders/tex/bark.albedo.webp": "9aebafd0d55fc0618af2077cf085b806478c4e4e3b844f56675d03e873e26470",
     "kits/beast-riders/tex/brClothA.albedo.webp": "38009f3000a123d81c483e464c11e6a13081a701de1e08e7ce793301b296666a",
     "kits/beast-riders/tex/brClothB.albedo.webp": "16ee8bcaedacec55f525ba77db8380145c9fe9ae651763fa18053fa2b9e193d1",
@@ -504,7 +504,7 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "openworld/pinnacle/dist/pinnacle.html": "fbd1a1ff2d24f72bdc92c87b6e8496cab26fb605a0f849dfd72623d3c43530f4",
+    "openworld/pinnacle/dist/pinnacle.html": "629d43b1de1501110b4c07b29d508533a3389a516e21d0de9f3e9257eb73ec53",
     "openworld/pinnacle/dist/pinnacle.tex.abyssal-savannah.js": "bd781c949ef3d14548d47dda1c157d95520495568aadb8eb7ee148d76d55180b",
     "openworld/pinnacle/dist/pinnacle.tex.brtowns.js": "8b0a64a836ed9f8241276c635367d5868add677be8077d5f2a8a957ac15621fa",
     "openworld/pinnacle/dist/pinnacle.tex.eastabyss.js": "adb215a74b951f5abfbe99995243b1852642413c63ff52cf206b1b3e6312892b",
@@ -512,7 +512,7 @@
     "openworld/pinnacle/dist/pinnacle.tex.kftex.js": "0bccb579a7fae125f77c2db5d2d4cd5d294d58a281697a8230fb0e5829c4d4a6"
    },
    "outputs_raw": {
-    "openworld/pinnacle/dist/pinnacle.html": "fbd1a1ff2d24f72bdc92c87b6e8496cab26fb605a0f849dfd72623d3c43530f4",
+    "openworld/pinnacle/dist/pinnacle.html": "629d43b1de1501110b4c07b29d508533a3389a516e21d0de9f3e9257eb73ec53",
     "openworld/pinnacle/dist/pinnacle.tex.abyssal-savannah.js": "bd781c949ef3d14548d47dda1c157d95520495568aadb8eb7ee148d76d55180b",
     "openworld/pinnacle/dist/pinnacle.tex.brtowns.js": "8b0a64a836ed9f8241276c635367d5868add677be8077d5f2a8a957ac15621fa",
     "openworld/pinnacle/dist/pinnacle.tex.eastabyss.js": "adb215a74b951f5abfbe99995243b1852642413c63ff52cf206b1b3e6312892b",

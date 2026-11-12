@@ -135,10 +135,17 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?5:o.scale,yr=365,win=w=>{co
  /* the intermediaries (everything else: the far market off the map at a mark-up, the isle demo's foreign ships' rule) */
  S.push({id:'intermediaries',name:'The intermediaries (off the map)',faction:'far',people:0,x:0,z:-900000,eats:{},keepDays:0,start:Object.assign({},T.pools),works:[{id:'int.market',kind:'market',name:'the factors',crew:0,out:[],rate:0}]});
  R.push({id:'intermediaries',from:town,to:'intermediaries',minutes:30*1440,cap:8000,keep:60,want:120,goods:{[town]:['hides'],intermediaries:['salt','iron','cloth']},expect:{intermediaries:{hides:2},[town]:{salt:30,iron:2,cloth:3}}});
+ /* ATTACHED (2026-11-12, the full sim: tests/test-pr-sim.js): the town is the region host's (its people, households and
+    shops on core/region 40-49), so the valley drops its own town and its roads end at the town's granary (o.attach.place);
+    its kilograms become the town's servings (o.attach.unit a kilo) */
+ if(o.attach){const u=(o.attach.unit==null?1:o.attach.unit),sc=x=>{const r={};Object.keys(x||{}).forEach(g=>r[g]=x[g]*u);return r;};
+  const i=S.findIndex(s=>s.id===town);if(i>=0)S.splice(i,1);
+  S.forEach(s=>{s.eats=sc(s.eats);if(s.feeds)s.feeds=sc(s.feeds);s.start=sc(s.start);if(s.reserve)s.reserve=sc(s.reserve);s.works.forEach(w=>{if(w.rate)w.rate*=u;});});
+  R.forEach(r=>{r.cap*=u;if(r.expect)Object.keys(r.expect).forEach(k=>r.expect[k]=sc(r.expect[k]));});}
  return {seed:20261111,scale:K,start:0,calendar:T.calendar,goods:T.goods,food:T.food,
   factions:[{id:'beast-riders',name:'The Beast Riders'},{id:'iziz',name:'The Empire of Iziz'},{id:'far',name:'The far markets'}],
   relations:[{a:'beast-riders',b:'far',stance:'friendly'},{a:'far',b:'beast-riders',stance:'friendly'},{a:'beast-riders',b:'iziz',stance:'hostile'},{a:'iziz',b:'beast-riders',stance:'hostile'}],
-  settlements:S,roads:R,bands:B};};
+  settlements:S,roads:R,bands:B,attach:!!o.attach,extern:o.attach?{[town]:o.attach.place}:null};};
 /* the far legs as a road graph (core/world 48t KTRAVEL): each leg of PR_LEGS an edge from the rock, marked planned; a
    region that lays the real links replaces them (pass its plans as o.graph) */
 T.graph=function(){const L=PR_LEGS.legs;return KTRAVEL.graph([],{extra:Object.keys(L).sort().map(id=>({id:'staiytii0y~'+id,a:'staiytii0y',b:id,nodeA:{id:'staiytii0y',name:'Pinnacle Rock',x:0,z:0},
