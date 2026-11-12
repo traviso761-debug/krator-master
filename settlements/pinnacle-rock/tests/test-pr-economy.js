@@ -43,9 +43,9 @@ const T1=Y.B1[TOWN],T2=Y.B2[TOWN],y2=k=>D(T2[k],T1[k]);
   (Y.ledger.ok?'all settlements':Y.ledger.problems.slice(0,2).join('; '))+'; bands\' worst residual '+worst.toExponential(1));}
 // 3. the town is fed all year by its four streams, its stores as full at the year's end; without the dry season's haul it goes short
 {const ate=ge(y2('eaten')),hung=ge(y2('hungry')),st1=ge(T1.stock),st2=ge(T2.stock);
- const N=years({world:{assign:()=>null}}),N2=D(N.B2[TOWN].hungry,N.B1[TOWN].hungry);
- ok('the town fed all year (short under 0.5 % of what it ate), its stores as full at the year\'s end; with no haul it goes short',hung<ate*.005&&st2>=st1*.85,ge(N2)<ate*.005,
-  'ate '+t(ate)+' grain-equivalent, went without '+t(hung)+'; stores '+t(st1)+' -> '+t(st2)+'; with no haul it went without '+t(ge(N2)));}
+ const N=years({world:{assign:()=>null},edit:V=>{V.roads=V.roads.filter(r=>!/^caravan\./.test(r.id));}}),N2=D(N.B2[TOWN].hungry,N.B1[TOWN].hungry);   /* no haul and no caravans */
+ ok('the town fed all year (short under 0.5 % of what it ate), its stores as full at the year\'s end; with no haul and no caravans it goes short',hung<ate*.005&&st2>=st1*.85,ge(N2)<ate*.005,
+  'ate '+t(ate)+' grain-equivalent, went without '+t(hung)+'; stores '+t(st1)+' -> '+t(st2)+'; with no haul and no caravans it went without '+t(ge(N2)));}
 // 4. the four streams of the proposal: the floor ring, the clearings, the bands at home, their dry-season haul
 {const R2=Y.R2,R1=Y.R1,landed=(re)=>{const o={};Object.keys(R2).filter(k=>re.test(k)).forEach(k=>{const l2=R2[k].landed||{},l1=(R1[k]||{}).landed||{};Object.keys(l2).forEach(leg=>{if(!leg.endsWith('>'+TOWN))return;Object.keys(l2[leg]).forEach(g=>o[g]=(o[g]||0)+l2[leg][g]-((l1[leg]||{})[g]||0));});});return o;};
  const fromBands=landed(/^home\./),made={},imp={};Y.V.bands.forEach(b=>{const m=D(Y.B2[b.id].made,Y.B1[b.id].made),im=D(Y.B2[b.id].imported,Y.B1[b.id].imported);Object.keys(m).forEach(g=>made[g]=(made[g]||0)+m[g]);Object.keys(im).forEach(g=>imp[g]=(imp[g]||0)+im[g]);});
@@ -87,6 +87,12 @@ const T1=Y.B1[TOWN],T2=Y.B2[TOWN],y2=k=>D(T2[k],T1[k]);
   marches=Y.W.ops.filter(o=>o.what==='march'&&(o.args.why==='raid'||o.args.why==='caravan')),onLegs=marches.length>0&&marches.every(o=>o.args.planned);
  const G=T.graph(),P=KTRAVEL.path(G,'staiytii0y',T.ids['coyote-canyon'],{kmDay:25,hours:8}),Pb=KTRAVEL.path(G,T.ids['coyote-canyon'],'staiytii0y',{kmDay:25,hours:8});
  ok('the far legs: every partner\'s from the scale model\'s pins and heights, marked planned; the ventures marched on them; a climb slows a leg',all&&onLegs&&P.legs[0].planned&&P.moving!==Pb.moving,
-  !(L[T.ids.shade].px>0),ids.length+' legs ('+ids.map(id=>L[id].name+' '+Math.round(L[id].length_m/1000)+' km').join(', ')+'); '+marches.length+' venture marches, all planned; Coyote Canyon '+Math.round(P.moving/60)+' h out, '+Math.round(Pb.moving/60)+' h back');}console.log('\nPinnacle Rock, the second year: made '+Object.entries(y2('made')).map(([g,n])=>g+' '+Math.round(n)).join(', ')+'\n  imported '+Object.entries(y2('imported')).map(([g,n])=>g+' '+Math.round(n)).join(', ')+
+  !(L[T.ids.shade].px>0),ids.length+' legs ('+ids.map(id=>L[id].name+' '+Math.round(L[id].length_m/1000)+' km').join(', ')+'); '+marches.length+' venture marches, all planned; Coyote Canyon '+Math.round(P.moving/60)+' h out, '+Math.round(Pb.moving/60)+' h back');}// 11. the caravans to the granary town (the owner, 2026-11-12): the Beast Rider cities' pack trains top the town's stores up
+//     the year round, staples and fruit in; with the bands' haul gone they carry the town (it does not go short)
+{const cv=(R2,R1,k)=>{const l2=(R2[k]||{}).landed||{},l1=(R1[k]||{}).landed||{},o={};Object.keys(l2).forEach(leg=>{if(!leg.endsWith('>'+TOWN))return;Object.keys(l2[leg]).forEach(g=>o[g]=(o[g]||0)+l2[leg][g]-((l1[leg]||{})[g]||0));});return o;};
+ const full=Object.keys(Y.R2).filter(k=>/^caravan\./.test(k)).reduce((s,k)=>s+ge(cv(Y.R2,Y.R1,k)),0);
+ const N=years({world:{assign:()=>null}}),NH=ge(D(N.B2[TOWN].hungry,N.B1[TOWN].hungry)),land=Object.keys(N.R2).filter(k=>/^caravan\./.test(k)).map(k=>[k,ge(cv(N.R2,N.R1,k))]),tot=land.reduce((s,x)=>s+x[1],0);
+ ok('the caravans from Talon and Fort Kreia: idle while the haul keeps the granary over 40 days; with no haul they carry the town',land.length===2&&tot>50000&&NH<ge(D(Y.B2[TOWN].eaten,Y.B1[TOWN].eaten))*.005,false,
+  t(full)+' landed in a year with the haul; with none '+land.map(x=>x[0]+' '+t(x[1])).join(', ')+' grain-equivalent, and the town went without '+t(NH));}console.log('\nPinnacle Rock, the second year: made '+Object.entries(y2('made')).map(([g,n])=>g+' '+Math.round(n)).join(', ')+'\n  imported '+Object.entries(y2('imported')).map(([g,n])=>g+' '+Math.round(n)).join(', ')+
  '\n  ate '+Object.entries(y2('eaten')).map(([g,n])=>g+' '+Math.round(n)).join(', ')+'\n  stores '+JSON.stringify(T1.stock)+' -> '+JSON.stringify(T2.stock));
 console.log(bad?'\n'+bad+' FAILED':'\nOK');process.exit(bad?1:0);

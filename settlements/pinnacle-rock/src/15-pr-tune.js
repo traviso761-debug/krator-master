@@ -89,6 +89,12 @@ T.targets={};Object.keys(TG).forEach(k=>T.targets[T.ids[k]]=TG[k]);
 T.slots=['raid:goto','raid:goto','raid:goto','raid:goto','raid:nusidi','raid:nusidi','raid:nusidi','far:coyote-canyon','far:shade','far:shade',
  'city:talon','city:talon','city:fort-kreia','city:fort-kreia','city:mavs','city:mavs','city:fort-ordo','city:girder'];
 T.near=['talon','fort-kreia'];
+/* THE CARAVANS TO THE GRANARY TOWN (2026-11-12, the owner: 'we could also have carts or caravans deliver additional goods to
+   the granary towns from the main settlement'): the nearest Beast Rider cities' merchants run pack trains to Pinnacle Rock
+   the year round, topping its stores up when they fall under want days of its use (the bands' haul fills them in the wet
+   season; the caravans keep the dry season's end from running short). Each a SIM.trade carrier on its planned leg (PR_LEGS)
+   at a pack train's pace, cap kg a train; staples and fruit in, the town's hides and silk out */
+T.caravans={from:['talon','fort-kreia'],carriers:2,cap:8000,want:40,kmDay:20,goods:['grain','fruit','meat','salt'],back:['hides','silk']};
 /* the eighteen bands: every ground of BR_CAMP (the six ground tribes' upper and lower grounds, the flyers' upper, the
    Dragonfly's, Spider's and Mammoth's lower), each a band of 40-70 by core/camp's census, ids as the page's */
 T.bands=function(world){const out=[];BR_CAMP_TRIBES.forEach(t=>['upper','lower'].forEach(g=>{const G=brcGround(t,g);if(!G)return;
@@ -135,6 +141,9 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?5:o.scale,yr=365,win=w=>{co
   works:[{id:m+'.fields',kind:'farmstead',name:'the fields',crew,out:['grain'],rate:rate(Tg.fieldsT*1000,crew,win('harvest')),season:'harvest'}]});});
  /* the intermediaries (everything else: the far market off the map at a mark-up, the isle demo's foreign ships' rule) */
  S.push({id:'intermediaries',name:'The intermediaries (off the map)',faction:'far',people:0,x:0,z:-900000,eats:{},keepDays:0,start:Object.assign({},T.pools),works:[{id:'int.market',kind:'market',name:'the factors',crew:0,out:[],rate:0}]});
+ T.caravans.from.forEach(k=>{const id=T.ids[k],L=PR_LEGS.legs[id],C=T.caravans,days=Math.ceil(L.fwd/C.kmDay);
+  R.push({id:'caravan.'+k,from:id,to:town,minutes:days*1440,carriers:C.carriers,stagger:Math.round(days*1440/C.carriers),cap:C.cap,want:C.want,keep:0,
+   goods:{[id]:C.goods,[town]:C.back}});});
  R.push({id:'intermediaries',from:town,to:'intermediaries',minutes:30*1440,cap:8000,keep:60,want:120,goods:{[town]:['hides'],intermediaries:['salt','iron','cloth']},expect:{intermediaries:{hides:2},[town]:{salt:30,iron:2,cloth:3}}});
  /* ATTACHED (2026-11-12, the full sim: tests/test-pr-sim.js): the town is the region host's (its people, households and
     shops on core/region 40-49), so the valley drops its own town and its roads end at the town's granary (o.attach.place);

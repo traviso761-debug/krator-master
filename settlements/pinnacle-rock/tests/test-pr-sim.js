@@ -48,7 +48,9 @@ console.log(DAYS + ' days of Pinnacle Rock in ' + ((Date.now() - t0) / 1000).toF
 if (YEAR) {
   // 6. the year: the town never past grumbling, ending with food in store
   const worst = log.reduce((m, r) => Math.min(m, r.unrest), 100);
-  ok('the year: the town never past grumbling (pool over 40), food in store at the year\'s end', worst > 40 && last.food > 0, false, 'pool at least ' + Math.round(worst) + ', ' + Math.round(last.food) + ' servings at the end');
+  /* the caravans (PR_TUNE.caravans) keep the granary over about a month of the town's use, so the next year starts fed */
+  const month = X.pop.actors * 4 * 30;
+  ok('the year: the town never past grumbling (pool over 40), at least a month of food in store at the year\'s end (the caravans)', worst > 40 && last.food >= month, false, 'pool at least ' + Math.round(worst) + ', ' + Math.round(last.food) + ' servings at the end (a month: ' + month + ')');
   console.log(log.filter((r, i) => i % 15 === 0 || i === log.length - 1).map(r => 'day ' + r.d + ': happy ' + Math.round(r.happy) + ', hunger ' + Math.round(r.eat) + ', ' + r.stage + ', ' + Math.round(r.food) + ' servings, bands home ' + r.home).join('\n'));
 }
 console.log(bad ? '\n' + bad + ' FAILED' : '\nOK'); process.exit(bad ? 1 : 0);

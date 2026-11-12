@@ -369,8 +369,10 @@ of isle demo including needs and happiness and see what happens").
 - **What happened:** the first year starved with a full granary. A meal is two foods, and households buying by the
   warehouses' stock bought nearly all grain. **Fixed in core** (the owner): the balanced basket, `77-sim-6-items.js`.
   The year now runs fed (hunger 17-18) and calm (happiness 74) every day.
-- **Still to balance:** the town ends the year with about 0.3 million servings in store against 1.47 million at the start, so a
-  second year would go short. Caravans or carts bringing more to the granary town (the owner's suggestion) is the next step.
+- **The caravans to the granary town** (the owner's suggestion): Talon's and Fort Kreia's pack trains (`PR_TUNE.caravans`)
+  top Pinnacle Rock's stores up whenever they fall under 40 days of its use. They stay idle while the bands' haul keeps the
+  granary full. With no haul they carry the town, which then goes without only 0.2 t (`test-pr-economy.js` check 11).
+  In the full sim the year ends with 390,000 servings in store, over a month of food (`test-pr-sim.js --year`).
   About half the town is "uneasy", on material wants.
 
 **Still open after S7:**
