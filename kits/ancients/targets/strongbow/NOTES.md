@@ -47,6 +47,7 @@ west end, toward Qiblai, and the face looks south-east over the valley.
    prominence up top, and comes down in one intermittently sloping column of drums and terraces". So the two Spines beside the bay
    are gone. The hull is now **the sail**, on the upper half of the face. **One Spine** of drums and terraces comes down from the sail's
    keel to the foot, plumb in places and stepping out from the rock in others.
+6. **The population**: about 29,300 as built, kept ("Keep ~29,000"), rather than growing the sail back to 40,000.
 
 ## The plan
 
@@ -71,7 +72,7 @@ The plan's records are the model (`8aw0-strongbow-plan.js`, [G data]). The drawi
 | The rim gallery | A long bar on the plateau along the lip west of the bay: 600 m long, 36 m wide and 28 m tall. Its roof carries the way to the arc ramp |
 | The heliostats | The face looks south, and Krator's noon sun stands in the north (the settlements lie near 40 S), so the face is in shade all day. Banks of mirrors on posts along the lip either side of the crown each turn to throw the sun down onto the hull. Each mirror's normal bisects the direction to the sun and the direction to the hull's middle (a node test) |
 | The terminus | The Rift line's station 11, the end of the line. A hall in the bay's mouth, 300 m long, with platforms; the Spine stands on its roof. The guideway and the road arrive along the floor from the west |
-| People | About 29,300 as built (`STRONGBOW.plan().stats`: the sail 16,700, the Spine 5,900, the lower hull 2,500, the Nock 1,700, the rim gallery 1,500, the galleries 900). They live in the sail's flanks (the lit band behind the glazing), the Spine's drums and terraces, the galleries, the lower hull and the rim gallery. This is less than the 40,000 the owner chose for the 800 m hull: the sail is half its length. **Open**: keep it, or grow the sail to bring the count back |
+| People | About 29,300 as built (`STRONGBOW.plan().stats`: the sail 16,700, the Spine 5,900, the lower hull 2,500, the Nock 1,700, the rim gallery 1,500, the galleries 900). They live in the sail's flanks (the lit band behind the glazing), the Spine's drums and terraces, the galleries, the lower hull and the rim gallery. This is less than the 40,000 the owner chose for the 800 m hull, since the sail is half its length; the owner kept it (2026-11-11: "Keep ~29,000") |
 
 **The ruin**, as deltas by id (`STRONGBOW.ruin`):
 - **The east stays have snapped.** That is all three east anchor fans and half the east string fan, 39% of the string and anchors. A few cables hang limp from the sail.
