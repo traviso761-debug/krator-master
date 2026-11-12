@@ -199,6 +199,23 @@ loads each build's `tex/` pack, which is WebP. What is left:
 
 ## Features
 
+- **Open-world terrain: terraces only where they belong, roughness that follows the ground** *(the owner, 2026-11-12:
+  "a lot of the terrain seems to follow simple contour lines and produces a terracing effect we don't usually want";
+  parked for later)*. The cause is not mainly the scale model's 2 km pixels but the mesa pass in
+  `core/world/41-world-fields.js` `H()` (the `S.terr` block, about line 326): it snaps the height to fixed 30-80 m steps
+  at 25-75 % strength in the desert, badland, korona, savanna, highland, dryland and abyss styles wherever the relief is
+  40-4,200 m, so every hillside there gets flat treads along its contours. The plan:
+  - terraces only on bare, flat-bedded rock: gate the pass by a rock or strata mask (the style's `rock`, `KSTRATA` where a
+    region has it) times patch noise, and let each step's level wander with position so treads do not follow contours;
+  - roughness that answers slope, rock and drainage: stronger on steep and rocky ground, ridged erosion detail running
+    downslope (rills down a face, not round bumps), calm on floodplains and farmland; every wavelength under 2 km, so the
+    scale model cannot see it (the `rough` passes at 420, 90 and 13 m read only the style and the local relief today);
+  - the scale model's own staircases are the other half, already built: `WSMOOTH` (`core/world/40-world-smooth.js`) on
+    `claude/exciting-curie-1c0022`, opt-in per region (Pinnacle and Oidong-High Rift so far). It changes the river carve
+    in `41`, not `H()`'s detail lines, so the two merge cleanly; turn it on for the other regions once it is merged;
+  - a node test with a negative (a contour-terraced slope fails it), then rebuild and GPU-verify every page `41` reaches
+    (`python3 tools/reach.py core/world/41-world-fields.js`: the open-world regions, Longsong, Pinnacle Rock, the
+    isle-demo settlement pages).
 - **Revisit taxes when the economy is more fleshed out** *(the owner, 2026-11-03)*. For now money is taxed only by an
   excise on imports and exports (core/simulation/PLAN-MONEY.md, M5). Wage, sales, land or poll taxes, tolls on the roads
   and harbour dues wait until wages, prices and the player's towns run: decide then which each nation levies, and who
