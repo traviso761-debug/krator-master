@@ -89,7 +89,7 @@ function slotCanopy(o){const S=o.slot,P=S.pts,W=o.W,PFX=o.prefix==null?'cable':o
    REGISTER({name:'A cable-stryder, asleep under its cable (kits/fauna)',key:d.id,x:dp[0],z:dp[2],y:dp[1]-1.2,r:1.8,h:1.6,tags:{fauna:'cable-stryder',kit:'kits/fauna',on:d.C.id,pose:'rest'}});
    let gr;try{gr=KratorFauna.build('cable-stryder',{seed:d.seed,variant:d.variant})}catch(err){reportErr('fauna cable-stryder: '+err.message);continue;}
    gr.position.set(dp[0],dp[1],dp[2]);gr.quaternion.copy(d.q);try{KratorFauna.animate(gr,0,'rest',{phase:0});}catch(err){}
-   gr.traverse(m=>{if(m.isMesh){m.userData.probeSkip=true;m.userData.inspectLabel='Cable-stryder (kits/fauna)';}});gr.userData.fauna=true;scene.add(gr);d.g=gr;}}
+   gr.traverse(m=>{if(m.isMesh)m.userData.inspectLabel='Cable-stryder (kits/fauna)';});   /* counted by the probe: its core/tags volume holds it */gr.userData.fauna=true;scene.add(gr);d.g=gr;}}
  function hazards(){const H=[];
   for(const D of STRYDERS){const r=14,h=D.p[1]-D.floor+4;H.push(Object.assign(KHAZ.PREDATOR.lair(r,{fauna:'cable-stryder',count:1,note:'drops from the canopy on what crosses the floor below'}),
    {name:'Under a cable-stryder (it drops on what crosses)',x:D.p[0],z:D.p[2],y:D.floor-1,r,h:h,shape:{type:'cyl',r,h:h},tell:{fx:'bones',sound:null,sign:'bones on the slot\'s floor under a cable'}}));}

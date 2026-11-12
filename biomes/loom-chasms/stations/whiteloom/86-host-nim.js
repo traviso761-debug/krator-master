@@ -32,11 +32,17 @@ const NIM=(function(){const S=STATION,W=99520;
   for(const k in acc){const byG=new Map();for(const e of acc[k]){if(!byG.has(e.g))byG.set(e.g,[]);byG.get(e.g).push(e.M);}
    for(const [g,Ms] of byG){const m=new THREE.InstancedMesh(g,new THREE.MeshLambertMaterial({color:COL[k]}),Ms.length);Ms.forEach((M,i)=>m.setMatrixAt(i,M));m.userData.host=true;m.userData.post=true;
     m.userData.inspectLabel={cloth:'Tent cloth (a stand-in)',stone:'The hearth\'s stones',salt:'Cut salt slabs',wood:'Poles'}[k];scene.add(m);}}
+  /* each pool's rim: the raised halite lip round still brine (the Danakil's pools), lumps of crust a little outside the water, on the drawn ground */
+  {const G=new THREE.DodecahedronGeometry(.5,0),Ms=[],Q=new THREE.Quaternion(),E=new THREE.Euler();
+   S.POOLS.forEach((p,pi)=>{const n=Math.max(16,Math.round(Math.PI*2*p.r/1.6));for(let j=0;j<n;j++){const u=k=>KRAND.unit(KRAND.hash(W,pi*1000+j,k,0x54)),a=j/n*Math.PI*2+u(1)*.2,d=p.r*(1.03+.07*u(2)),
+     x=p.x+Math.cos(a)*d,z=p.z+Math.sin(a)*d,sz=.5+.8*u(3);Ms.push(new THREE.Matrix4().compose(new THREE.Vector3(x,drawnH(x,z)+sz*.08,z),Q.clone().setFromEuler(E.set(u(4)*3,u(5)*3,u(6)*3)),new THREE.Vector3(sz*1.4,sz*.45,sz)));}});
+   const m=new THREE.InstancedMesh(G,new THREE.MeshLambertMaterial({color:0xece4cc}),Ms.length);Ms.forEach((M,i)=>m.setMatrixAt(i,M));m.userData.host=true;m.userData.post=true;
+   m.userData.inspectLabel='A brine pool\'s halite rim';scene.add(m);out.rims=Ms.length;}
   if(typeof KratorFauna!=='undefined'&&KratorFauna.has('halite-sifter'))for(const s of SIFT){s.y=drawnH(s.x,s.z);
    REGISTER({name:'A halite sifter (kits/fauna), grazing the brine mats',key:s.id,x:s.x,z:s.z,y:s.y-.2,r:3,h:2.2,tags:{fauna:'halite-sifter',kit:'kits/fauna',pool:s.pool,pose:'graze'}});
    let g;try{g=KratorFauna.build('halite-sifter',{seed:s.seed,variant:s.variant});}catch(e){reportErr('fauna halite-sifter: '+e.message);continue;}
    g.position.set(s.x,s.y,s.z);g.rotation.y=s.yaw;try{KratorFauna.animate(g,0,'graze',{phase:s.seed%10});}catch(e){}
-   g.traverse(m=>{if(m.isMesh){m.userData.probeSkip=true;m.userData.inspectLabel='Halite sifter (kits/fauna)';}});g.userData.fauna=true;scene.add(g);s.g=g;out.sifters++;}
+   g.traverse(m=>{if(m.isMesh)m.userData.inspectLabel='Halite sifter (kits/fauna)';});   /* counted by the probe: its core/tags volume holds it */g.userData.fauna=true;scene.add(g);s.g=g;out.sifters++;}
   window._nim=out;return out;}
  function hazards(){const H=[];
   for(const p of S.POOLS){H.push({name:'The crust over a brine pool (it breaks underfoot)',kind:'sink',x:p.x,z:p.z,y:p.level-2,r:p.r*1.7,h:3,danger:.6,tell:{sign:'the crust rings hollow and darkens'}});
