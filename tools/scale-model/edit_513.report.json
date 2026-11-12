@@ -1,0 +1,645 @@
+{
+ "edit": "5.1 edit 3",
+ "date": "2026-11-11",
+ "old_bay": {
+  "cells": 308,
+  "km2": 1232,
+  "bed_m": [
+   -1560,
+   -1537,
+   -1503
+  ],
+  "x": [
+   732,
+   751
+  ],
+  "y": [
+   1005,
+   1028
+  ]
+ },
+ "old_rim_m_over_sea": {
+  "median": 353,
+  "p90": 659,
+  "cells": 86
+ },
+ "rim": {
+  "cells": 522,
+  "lowered_max_m": 888,
+  "raised_max_m": 284,
+  "kept_rivers": [
+   "r072",
+   "r347",
+   "r115",
+   "r131",
+   "r348",
+   "r337",
+   "r159",
+   "r335",
+   "r378",
+   "r336",
+   "r349",
+   "r242",
+   "r263"
+  ]
+ },
+ "turm_cells": 39,
+ "pits": {
+  "before_cells": 39,
+  "old_pits_reached": 15,
+  "after_cells": 24,
+  "new_cells": 0,
+  "filled_cells": 51,
+  "filled_max_m": 35.7,
+  "filled_at": [
+   [
+    735,
+    1008
+   ],
+   [
+    736,
+    1008
+   ],
+   [
+    735,
+    1009
+   ],
+   [
+    736,
+    1009
+   ],
+   [
+    736,
+    1010
+   ],
+   [
+    751,
+    1010
+   ],
+   [
+    732,
+    1011
+   ],
+   [
+    733,
+    1011
+   ],
+   [
+    751,
+    1011
+   ],
+   [
+    737,
+    1013
+   ],
+   [
+    733,
+    1014
+   ],
+   [
+    769,
+    1014
+   ],
+   [
+    732,
+    1015
+   ],
+   [
+    733,
+    1015
+   ],
+   [
+    734,
+    1015
+   ],
+   [
+    752,
+    1015
+   ],
+   [
+    776,
+    1015
+   ],
+   [
+    731,
+    1016
+   ],
+   [
+    732,
+    1016
+   ],
+   [
+    733,
+    1016
+   ]
+  ]
+ },
+ "spill": {
+  "level_m": -1500.0,
+  "spill_m": -1507.97,
+  "through_strait": true,
+  "spill_with_strait_blocked_m": -1423.4,
+  "closed_otherwise": true
+ },
+ "water": {
+  "cells": 20,
+  "page_cells": 5,
+  "strait_cells": 15,
+  "km2_cells": 80,
+  "km2_page_water": 21.2,
+  "km2_in_page_frame": 20.8,
+  "km2_with_strait_to_sea": 37.4,
+  "x": [
+   741,
+   745
+  ],
+  "y": [
+   1004,
+   1018
+  ],
+  "bed_m": [
+   -1534.0,
+   -1505.6
+  ],
+  "page_cells_px": [
+   [
+    742,
+    1016
+   ],
+   [
+    741,
+    1017
+   ],
+   [
+    742,
+    1017
+   ],
+   [
+    743,
+    1017
+   ],
+   [
+    742,
+    1018
+   ]
+  ],
+  "strait_cells_px": [
+   [
+    742,
+    1015
+   ],
+   [
+    743,
+    1015
+   ],
+   [
+    743,
+    1014
+   ],
+   [
+    743,
+    1013
+   ],
+   [
+    743,
+    1012
+   ],
+   [
+    743,
+    1011
+   ],
+   [
+    743,
+    1010
+   ],
+   [
+    744,
+    1010
+   ],
+   [
+    744,
+    1009
+   ],
+   [
+    744,
+    1008
+   ],
+   [
+    744,
+    1007
+   ],
+   [
+    744,
+    1006
+   ],
+   [
+    745,
+    1006
+   ],
+   [
+    745,
+    1005
+   ],
+   [
+    745,
+    1004
+   ]
+  ],
+  "old_bay_to_land_cells": 289,
+  "inlet_head_to_land_cells": 20
+ },
+ "new_shore_m_over_sea": {
+  "median": 66.3,
+  "min": 0.4,
+  "max": 211.0
+ },
+ "rim_after_m_over_sea": {
+  "median": 250,
+  "p90": 286
+ },
+ "new_land_m_over_sea": {
+  "p10": 58,
+  "median": 226,
+  "p90": 272
+ },
+ "steepest_step_m_per_cell": {
+  "before": 612,
+  "after": 407
+ },
+ "pins": {
+  "Torus": {
+   "px": [
+    774,
+    1007
+   ],
+   "before_m": -789,
+   "after_m": -789,
+   "wet_after": false
+  },
+  "Voth": {
+   "px": [
+    742,
+    1018
+   ],
+   "before_m": -1560,
+   "after_m": -1515,
+   "wet_after": true
+  }
+ },
+ "temperatures": {
+  "new_land_C": {
+   "tm": 31.0,
+   "th": 40.0,
+   "tl": 21.0,
+   "tw": 35.0,
+   "tc": 26.0
+  },
+  "water_C": {
+   "tm": 32.0,
+   "th": 41.0,
+   "tl": 23.0,
+   "tw": 36.0,
+   "tc": 28.0
+  },
+  "delta_C": {
+   "tm": 30.0,
+   "th": 39.0,
+   "tl": 21.0,
+   "tw": 34.0,
+   "tc": 26.0
+  }
+ },
+ "reclimate": {
+  "cells": 1048,
+  "class_changed": 760,
+  "rain_mean_before_mm": 1504.0,
+  "rain_mean_after_mm": 1938.0,
+  "classes_now": {
+   "Af": 235,
+   "Am": 139,
+   "Aw": 54,
+   "Csa": 1,
+   "Cfa": 46,
+   "XA": 573
+  }
+ },
+ "new_land_climate": {
+  "rain_mm_median": 1917,
+  "classes": {
+   "XA": 289
+  }
+ },
+ "shore_climate": {
+  "XA": 40
+ },
+ "rivers": {
+  "r029": {
+   "was": {
+    "n": 10,
+    "last": [
+     778.7,
+     1017.0
+    ],
+    "to": {
+     "sea": "Ring Sea",
+     "at_px": [
+      776.7,
+      1017.0
+     ]
+    },
+    "length_km": 46,
+    "q_mouth_m3s": 131.9,
+    "catchment_km2": 5294
+   },
+   "now": {
+    "n": 28,
+    "last": [
+     742.44,
+     1018.58
+    ],
+    "to": {
+     "sea": "Ring Sea",
+     "at_px": [
+      741.91,
+      1018.45
+     ],
+     "through": "Voth's bay, the narrows, the lake and the strait (edit_513)"
+    },
+    "length_km": 117,
+    "q_mouth_m3s": 289.4,
+    "catchment_km2": 16958,
+    "mouth_m": -1499.6,
+    "width_m": 77,
+    "depth_m": 3.0,
+    "order": 4,
+    "confluence_px": [
+     774.6,
+     1019.2
+    ],
+    "bed_at_confluence_m": -1475.1,
+    "bed_at_frame_m": -1498.3,
+    "diverted_at_px": [
+     780.7,
+     1019.0
+    ]
+   }
+  },
+  "r023": {
+   "was": {
+    "to": {
+     "sea": "Ring Sea",
+     "at_px": [
+      774.6,
+      1019.0
+     ]
+    }
+   },
+   "now": {
+    "to": {
+     "river": "r029",
+     "name": "Turm Rivrh",
+     "at_px": [
+      774.6,
+      1019.2
+     ]
+    }
+   }
+  }
+ },
+ "basin": {
+  "at_px": [
+   742.13,
+   1016.55
+  ],
+  "level_m": -1500,
+  "km2": 21,
+  "depth_m": 52,
+  "kind": "through lake",
+  "climate": "XA",
+  "spill_m": -1500,
+  "name": "Voth's lake",
+  "notes": "Voth's page's water (edit_513, 2026-11-11): the bay, the narrows and the lake, at sea level, brackish, open to the Ring Sea by its strait; the Turm (r029) in at the bay's south-east corner. km2 is the page's water (20 cells on the model)."
+ },
+ "landforms": [
+  {
+   "id": "lf_voth_water",
+   "kind": "water",
+   "form": "page",
+   "px": 742.0,
+   "py": 1018.0,
+   "water_m": -1500.0,
+   "origin_px": [
+    742,
+    1018
+   ],
+   "m_per_px": 2000.0,
+   "north": "-z",
+   "smin_m": 210.0,
+   "source": "settlements/voth/src/10-core.js:87-117"
+  },
+  {
+   "id": "lf_voth_narrows",
+   "kind": "water",
+   "form": "narrows",
+   "px": 742.015,
+   "py": 1017.9,
+   "width_m": 1120,
+   "water_m": -1500.0,
+   "bed_m": -1521.6
+  },
+  {
+   "id": "lf_voth_strait",
+   "kind": "water",
+   "form": "strait",
+   "px": 742.28,
+   "py": 1016.1,
+   "width_m": 680,
+   "water_m": -1500.0,
+   "bed_m": -1513.8,
+   "length_km": 25.7,
+   "cells_px": [
+    [
+     742,
+     1015
+    ],
+    [
+     743,
+     1015
+    ],
+    [
+     743,
+     1014
+    ],
+    [
+     743,
+     1013
+    ],
+    [
+     743,
+     1012
+    ],
+    [
+     743,
+     1011
+    ],
+    [
+     743,
+     1010
+    ],
+    [
+     744,
+     1010
+    ],
+    [
+     744,
+     1009
+    ],
+    [
+     744,
+     1008
+    ],
+    [
+     744,
+     1007
+    ],
+    [
+     744,
+     1006
+    ],
+    [
+     745,
+     1006
+    ],
+    [
+     745,
+     1005
+    ],
+    [
+     745,
+     1004
+    ]
+   ]
+  },
+  {
+   "id": "lf_voth_shelf",
+   "kind": "shelf",
+   "px": 742.0,
+   "py": 1018.0,
+   "of": "lf_voth_water",
+   "width_m": 70.0,
+   "depth_m": [
+    1.2,
+    4.8
+   ],
+   "water_m": -1500.0
+  },
+  {
+   "id": "lf_voth_river",
+   "kind": "water",
+   "form": "river",
+   "river": "r029",
+   "px": 742.44,
+   "py": 1018.58,
+   "width_m": [
+    80,
+    170
+   ],
+   "floodplain_m": [
+    260,
+    1160
+   ],
+   "water_m": -1500.0
+  },
+  {
+   "id": "lf_voth_isle_1",
+   "kind": "island",
+   "px": 741.785,
+   "py": 1018.44,
+   "r_m": 78.0,
+   "crest_m": -1484.0,
+   "water_m": -1500.0,
+   "role": "shrine"
+  },
+  {
+   "id": "lf_voth_isle_2",
+   "kind": "island",
+   "px": 741.993,
+   "py": 1018.161,
+   "r_m": 58.0,
+   "crest_m": -1488.0,
+   "water_m": -1500.0,
+   "role": "rock"
+  },
+  {
+   "id": "lf_voth_isle_3",
+   "kind": "island",
+   "px": 741.73,
+   "py": 1018.03,
+   "r_m": 70.0,
+   "crest_m": -1485.0,
+   "water_m": -1500.0,
+   "role": "light"
+  },
+  {
+   "id": "lf_voth_isle_4",
+   "kind": "island",
+   "px": 742.125,
+   "py": 1017.62,
+   "r_m": 84.0,
+   "crest_m": -1480.0,
+   "water_m": -1500.0,
+   "role": "light"
+  },
+  {
+   "id": "lf_voth_isle_5",
+   "kind": "island",
+   "px": 741.62,
+   "py": 1017.51,
+   "r_m": 58.0,
+   "crest_m": -1488.0,
+   "water_m": -1500.0,
+   "role": "shrine"
+  },
+  {
+   "id": "lf_voth_isle_6",
+   "kind": "island",
+   "px": 742.32,
+   "py": 1017.29,
+   "r_m": 52.0,
+   "crest_m": -1489.0,
+   "water_m": -1500.0,
+   "role": "rock"
+  },
+  {
+   "id": "lf_voth_isle_7",
+   "kind": "island",
+   "px": 741.92,
+   "py": 1017.075,
+   "r_m": 76.0,
+   "crest_m": -1483.0,
+   "water_m": -1500.0,
+   "role": "light"
+  }
+ ],
+ "cells_changed": {
+  "tm": 719,
+  "tw": 727,
+  "tc": 660,
+  "th": 721,
+  "tl": 644,
+  "p": 1038,
+  "c": 760,
+  "z": 252,
+  "h": 944
+ },
+ "box": {
+  "y": [
+   995,
+   1040
+  ],
+  "x": [
+   718,
+   800
+  ]
+ }
+}

@@ -95,7 +95,10 @@ with tempfile.TemporaryDirectory() as tmp:
         open(os.path.join(tmp, f), 'rb').read() == open(os.path.join(P.DATA_DIR, f), 'rb').read() for f in names))
 
 # ---- 2. a test edit, run through both
-R = P.docs(os.path.join(TOOL, '..', '..', 'openworld', 'little-demo', 'source', 'regions.json'))
+# the little demo's sources (openworld/little-demo, retired to archive/little-demo on 2026-11)
+LD_SRC = next(d_ for d_ in (os.path.join(TOOL, '..', '..', 'openworld', 'little-demo', 'source'),
+                            os.path.join(TOOL, '..', '..', 'archive', 'little-demo', 'source')) if os.path.isdir(d_))
+R = P.docs(os.path.join(LD_SRC, 'regions.json'))
 su, sv = P.grid(D)
 pts = next(r for r in R if r['name'] == 'little demo')['points']
 check('region_mask', same(G.region_mask(R, 'little demo', su, sv, E.shape), E422.region_mask(R, 'little demo', su, sv, E.shape)))
@@ -202,8 +205,8 @@ import copy as _copy   # noqa: E402
 from smodel import river_names as RN   # noqa: E402
 r002_entry = next((r for r in D.get('rivers', []) if str(r.get('id')) in ('2', 'r002')), None)
 check('r002 is named Ling-Ma', r002_entry is not None and r002_entry.get('name') == 'L\u012bng-M\u0101')
-regs_path = os.path.join(REPO_ROOT, 'openworld', 'little-demo', 'source', 'regions.json')
-setts_path = os.path.join(REPO_ROOT, 'openworld', 'little-demo', 'source', 'settlements.json')
+regs_path = os.path.join(LD_SRC, 'regions.json')
+setts_path = os.path.join(LD_SRC, 'settlements.json')
 if os.path.exists(regs_path) and os.path.exists(setts_path):
     regs_doc = _json.load(open(regs_path, encoding='utf-8'))
     setts_doc = _json.load(open(setts_path, encoding='utf-8'))
@@ -359,7 +362,7 @@ for pol_id, pol_nm, pol_npts in [
           pol_reg is not None and pol_reg.get('name') == pol_nm and len(pol_reg.get('points', [])) == pol_npts)
 check('Superseded political region IDs (rmudhwjkmjc1e, rmufwoc7586da, rmuooahhlhlnu, rmukx7n441l62, rmvyl36gozner) are removed',
       not any(r.get('id') in {'rmudhwjkmjc1e', 'rmufwoc7586da', 'rmuooahhlhlnu', 'rmukx7n441l62', 'rmvyl36gozner'} for r in R))
-S = P.docs(os.path.join(TOOL, '..', '..', 'openworld', 'little-demo', 'source', 'settlements.json'))
+S = P.docs(os.path.join(LD_SRC, 'settlements.json'))
 tw_sett = next((s for s in S if s.get('id') == 'stallwalls01' or s.get('name') == 'Tallwalls'), None)
 check('Tallwalls settlement stallwalls01 is present at (650, 1268)', tw_sett is not None and (int(tw_sett['px']), int(tw_sett['py'])) == (650, 1268))
 gv_t1_e = float(E[1212, 638])
@@ -571,4 +574,49 @@ for r_id in ('r613', 'r753', 'r492', 'r272'):
 for r_id in ('r488', 'r616'):
     r_t = next(r for r in D['rivers'] if r['id'] == r_id)
     check('%s joins the Alph in the Vale' % r_id, r_t['to'].get('river') == 'r070')
+# ---- 16. 5.1 edit 3 (edit_513.py, 2026-11-11): the Bay of Voth shrunk to Voth's page, its rim softened, the Turm
+#          re-routed into the bay's south-east corner
+import edit_513 as E513   # noqa: E402
+sea_v = whas & (np.abs(np.nan_to_num(wlev, nan=0.0) - E513.SEA) <= 1.0)
+vp_x, vp_y = E513.PIN
+page_v = [(741, 1017), (742, 1016), (742, 1017), (742, 1018), (743, 1017)]
+check("Voth's page water: its pin and %d cells wet at sea level (-1,500 m), 5-55 m deep" % len(page_v),
+      bool(sea_v[vp_y, vp_x]) and all(bool(sea_v[j_, i_]) for i_, j_ in page_v)
+      and all(-1555.0 <= float(E[j_, i_]) <= -1505.0 for i_, j_ in page_v))
+lab_v, _ = nd.label(sea_v)
+check("Voth's lake reaches the Ring Sea by its strait (one water body with 745,1004)",
+      lab_v[vp_y, vp_x] == lab_v[1004, 745] and bool(sea_v[1010, 743]) and bool(sea_v[1006, 744]))
+ob_v = np.zeros(E.shape, bool)
+ob_v[1005:1029, 732:752] = True
+check("the old Bay of Voth is land but for the page's water and the strait (%d of %d cells wet)" % (
+    int((whas & ob_v).sum()), int(ob_v.sum())), int((whas & ob_v).sum()) <= 25)
+nl_v = np.zeros(E.shape, bool)
+nl_v[1006:1027, 734:751] = True                # the old bay's inside (its rectangle's edges are the old rim)
+nl_v &= ~whas
+check('the old bay\'s floor is low land, %.0f-%.0f m over the sea' % (float(E[nl_v].min()) + 1500.0, float(E[nl_v].max()) + 1500.0),
+      float(E[nl_v].min()) > -1500.0 and float(E[nl_v].max()) < -1100.0)
+rim_v = nd.binary_dilation(sea_v & ob_v, structure=np.ones((3, 3))) & ~whas
+check("Voth's shore is low: %.0f m over the water at the median (<= 120 m)" % (float(np.median(E[rim_v])) + 1500.0),
+      float(np.median(E[rim_v])) + 1500.0 <= 120.0 and float(E[rim_v].min()) > -1500.0)
+turm = next(r for r in D['rivers'] if r['id'] == 'r029')
+check("the Turm (r029) ends at the page's river mouth (%s) in the bay, %.1f m3/s, its last ~5 km at sea level" % (
+    turm['px'][-1], turm['q_mouth_m3s']),
+      abs(turm['px'][-1][0] - 742.44) < 0.05 and abs(turm['px'][-1][1] - 1018.58) < 0.05
+      and turm['to'].get('sea') == 'Ring Sea' and 280.0 <= turm['q_mouth_m3s'] <= 300.0
+      and all(-1500.5 <= b_ <= -1497.0 for b_ in turm['bed_m'][-3:]) and 'Voth' in turm['settlements'])
+check('the Turm passes the Vindos\'s confluence (774.6, 1019.2) and the Vindos (r023) joins it',
+      any(abs(p_[0] - 774.6) < 1.1 and abs(p_[1] - 1019.2) < 0.6 for p_ in turm['px'])
+      and next(r for r in D['rivers'] if r['id'] == 'r023')['to'].get('river') == 'r029')
+check('the eastern inlet\'s head is a dry delta (774-777 x 1018-1019) and the brayt still reaches the inlet',
+      not bool(whas[1018:1020, 774:778].any()) and bool(sea_v[1015, 775]))
+lf_v = {l_['id']: l_ for l_ in D['landforms']['landforms'] if l_['id'].startswith('lf_voth_')}
+check('DATA.landforms holds Voth\'s water, narrows (1,120 m), strait (680 m), shelf, river and seven islets',
+      {'lf_voth_water', 'lf_voth_narrows', 'lf_voth_strait', 'lf_voth_shelf', 'lf_voth_river'} <= set(lf_v)
+      and sum(k_.startswith('lf_voth_isle_') for k_ in lf_v) == 7 and lf_v['lf_voth_strait']['width_m'] == 680
+      and lf_v['lf_voth_narrows']['width_m'] == 1120 and len(lf_v['lf_voth_water']['parts']) == 10)
+check("DATA.basins holds Voth's lake at -1,500 m and DATA.outlets its strait",
+      any(b_.get('name') == "Voth's lake" and b_['level_m'] == -1500 for b_ in D['basins'])
+      and any(o_.get('name') == "Voth's strait" for o_ in D['outlets']))
+check('Torus (774,1007) unchanged: dry at %.0f m' % float(E[1007, 774]),
+      not bool(whas[1007, 774]) and abs(float(E[1007, 774]) + 789.0) <= 2.0)
 print('%d checks passed' % ok)
