@@ -151,7 +151,7 @@ The Order's house in the High Rift, ~690 km east of Longsong by the beck and the
 - the fissures' walls are lined with chalcedony, opal, bladed quartz and amethyst, and they **sing in the wind**;
 - the bake puts copper, gold, silver and sulfur here: an epithermal field.
 
-**Why the Order is there** (*proposed*, the owner to settle):
+**Why the Order is there** (the owner, 2026-11-11: "keep as proposed"):
 - a **listening house**: the singing heard and recorded, as the History Monks record everything;
 - the **crystal works** that feed Longsong's lens house: optical quartz and chalcedony are what a lens house needs, and
   the gjár is where they grow;
@@ -343,7 +343,7 @@ Raptor programme.
   - They should also have **at least one other village in a hospitable spot farther north**, not yet on the model. Place
     it with the open world's propose tool or on the scale model, then `tools/scale-model/propose_site.py`. It would be
     the Pinnacle bands' nearer Dasri market.
-- The Singing Gjár outpost's purpose. The listening house and the crystal works are this proposal's reading; no lore text
-  was found.
+- ~~The Singing Gjár outpost's purpose~~: settled (the owner, 2026-11-11: "keep as proposed"), with the two accessory
+  houses `openworld/oidong-highrift/PLAN.md` adds (the Mirror Grange, the Caldron House).
 - The new region's exact cut (`openworld/SITES.json`). It could keep the Mirror Graben and the beck road whole, so the
   outpost's grain trade stays inside it.

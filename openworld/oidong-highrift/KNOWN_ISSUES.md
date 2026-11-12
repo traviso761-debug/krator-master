@@ -14,6 +14,6 @@
 - [ ] **The Order's buildings are the Xanadu kit's pieces.** Its chapter house is `xa_monastery`, its scriptorium
   `xa_guild_gold`, its relic works `xa_guild_alch`; the Vein Camp's adits (`xa_adit`) are pending boxes. The Order's
   own architecture (Longsong's `62-ls-arch`, battered stone halls) is not a kit yet.
-- [ ] **The Singing Gjár's purpose and the two accessory houses** are this plan's proposals (PLAN.md sections 3a to 3c),
-  for the owner to confirm or move.
+- [x] **The Singing Gjár's purpose and the two accessory houses**: confirmed by the owner (2026-11-11: "keep as
+  proposed").
 - [ ] **Strongbow** (an arcology on the model's list, px 1026,1594) is inside the cut and planned by no one.

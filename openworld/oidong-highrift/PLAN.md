@@ -89,7 +89,7 @@ There is no mill, furnace or foundry: the Order has no heavy industry.
 ### 3a. The Singing Gjár (`ssinggjar01`, px 1572,1643; 3,683 m, Dsb, 220 mm, +2 °C)
 
 The house of ~350 beside the faith's pilgrimage site (LORE.md 6.13: the Gjár is the Decree's holiest place outside
-Qiblai). Its purpose is the proposal's reading, still for the owner to confirm:
+Qiblai). Its purpose, confirmed by the owner (2026-11-11: "keep as proposed"):
 - a **listening house**: the singing heard and recorded;
 - the **crystal works** for Longsong's lens house;
 - the peace of the vugs (the Fellgangs' offerings are not taken; the Vein Camp works only fissures that no longer sing).
@@ -178,8 +178,8 @@ section 4, "Done".
 
 ## Open
 
-- The Singing Gjár's purpose (the listening house, the crystal works): the proposal's reading, for the owner to confirm.
-- The two accessory houses: proposed here (3b, 3c), for the owner to confirm or move.
+- Settled (the owner, 2026-11-11: "keep as proposed"): the Singing Gjár's purpose (the listening house, the crystal
+  works) and the two accessory houses (3b, 3c).
 - The three off-model sites onto the scale model's list, after the Qiblai move lands.
 - The xanadu-oidong-highrift region still plans Longsong's first three villages. When that region is recut, drop
   Longsong from it.
