@@ -88,6 +88,15 @@ const ISLAND=(function(){const raw=terrainBase,S=4,N=45,land=(i,j)=>raw(ISLAND_C
 const ER_WORLD={px:805,py:1516,turn:0,lake:-520,mPerPx:2000,island:'lf_pleasure_dome_isle'};
 function erWorldPx(x,z){return[ER_WORLD.px+x/ER_WORLD.mPerPx,ER_WORLD.py+z/ER_WORLD.mPerPx];}
 if(ISLAND){const raw=terrainBase;terrainBase=function(x,z){const h=raw(x,z);if(h>=ISLAND_LEVEL)return h;const e=ISLAND.edge(x,z);if(e<=0)return h;return h+(ISLAND_LEVEL-h)*smoothstep(0,ISLAND_RAMP,e);};}
+// ---------------------------------------------------------------- the west flank, under the citadel (the owner, 2026-11-12)
+// The citadel stands on a table over everything round it ("this ridge runs higher than the citadel's ridge, when it should
+// run lower"). The map's steep west flank climbed from the shore to 240-275 m along its cliff line (z +20 to +80, x -650 to
+// the frame's edge), over the citadel's grounds (147-191 m). West of the plateau's west cliff its heights over the lake
+// are scaled to WEST_K (the crest about 125 m), easing in over the 50 m outside the cliff (WEST_X) and out toward the
+// mountain behind the town (WEST_Z: whole north of z 150, none south of z 450). The shore and the lake bed keep theirs.
+const WEST_K=.45,WEST_X=[-575,-625],WEST_Z=[450,150];
+{const raw=terrainBase;terrainBase=function(x,z){const h=raw(x,z);if(h<=0||x>=WEST_X[0]||z>=WEST_Z[0])return h;
+ const w=smoothstep(WEST_X[0],WEST_X[1],x)*smoothstep(WEST_Z[0],WEST_Z[1],z);return h*(1-(1-WEST_K)*w);};}
 // nearest point on a polyline set: {x,z,d,seg:[a,b]}
 function nearestOnLines(lines,x,z){let best=null;for(const P of lines)for(let i=0;i<P.length-1;i++){const ax=P[i][0],az=P[i][1],bx=P[i+1][0],bz=P[i+1][1];const dx=bx-ax,dz=bz-az,l2=dx*dx+dz*dz||1;const t=clamp(((x-ax)*dx+(z-az)*dz)/l2,0,1);
  const qx=ax+dx*t,qz=az+dz*t,d=Math.hypot(x-qx,z-qz);if(!best||d<best.d)best={x:qx,z:qz,d,a:P[i],b:P[i+1]};}return best;}

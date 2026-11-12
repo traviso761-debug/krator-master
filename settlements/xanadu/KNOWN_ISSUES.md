@@ -82,6 +82,15 @@ hash differs between two runs of the same page too.
   `biomes/xanadu`'s does now (same values).
 * **Not done:** about 1 s in core/lod's `IHash.get` and `cluster`, and 0.8 s of texture uploads. Both are core work.
 
+## Erewhon: the citadel's table (2026-11-12, fixed)
+The owner: "this ridge runs higher than the citadel's ridge, when it should run lower; the citadel will be on a plateau/
+table overlooking its surroundings". The map's steep west flank climbed to 240-275 m along its cliff line (z +20 to +80),
+over the citadel's grounds (147-191 m). `84-er-geo.js` now scales its heights over the lake to 45 % west of the plateau's
+west cliff (`WEST_K`, `WEST_X`, `WEST_Z`). West of x -650 it is 66-124 m; the citadel's side is 166-222 m; the mountain
+south of z 450 keeps its height. The streets and houses on the flank follow the new ground: 1,546 buildings, from 1,652,
+and 263 streets, from 270. The map's source PNG is not in the repo, so the fix is in the page's geometry, not in
+`tools/erewhon-map.py`.
+
 ## Erewhon (round 9)
 * The garden district's rectangle lies on 15–40° ground; its tiles are a stepped surface (no neighbour more than a
   waterfall apart) on levelled pads, so from the ring road the grid reads as a hanging garden of terraces rather than

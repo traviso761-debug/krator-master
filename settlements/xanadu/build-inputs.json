@@ -447,7 +447,7 @@
     "settlements/xanadu/src/99-start.js": "4b8e47b4ad95662cc3c3dde20be212e4355560e3f59a54e5680434080d6af1af",
     "settlements/xanadu/src/99-tail.html": "65abfb642de580808a65c6ec8bf3bc2c410397558a5ac28e825accdb7c590d3b",
     "settlements/xanadu/targets/erewhon/83-er-data.js": "120ced59b69c3d232fdd1faf8b50217086b4b93573d7221359bcd0479a0d9789",
-    "settlements/xanadu/targets/erewhon/84-er-geo.js": "64ea52a677201a8b0009c09bc8bbd0de4633558d994b16cf20f25b061fdfe6af",
+    "settlements/xanadu/targets/erewhon/84-er-geo.js": "0c656b7ed2e54eb20e92aef052776a368e1f1a8129d7fb3089d17f3d0430ecdb",
     "settlements/xanadu/targets/erewhon/85-er-paint.js": "ebb002d6e51c869db6dfef74f0d9d04a3aa16ecb5cf1e9f77afa913fd9131f87",
     "settlements/xanadu/targets/erewhon/86-bio-46-er-init.js": "5ca03fd6169267ed57e3b6949f1f38964d2d9ccf80a9c60fea02fb1943eb8351",
     "settlements/xanadu/targets/erewhon/87-er-layout.js": "c9e8f31874020f19953a8414b3d7aa95d47a169d237b2afeb061e738e98aab56",
@@ -580,14 +580,14 @@
    },
    "outputs": {
     "settlements/xanadu/VENDOR.json": "ed46582fb92d0f1c1c13a0cb7b6fcf37196d84c1499934f72636be1ce164f158",
-    "settlements/xanadu/build-manifest-erewhon.json": "17274f1f0d1953ebec451b0074ac44a296b11c03e62486d62fa240cdef027dc5",
-    "settlements/xanadu/dist/erewhon.html": "65492a6d178a5ced8e5aa99c2c863e5ed13b50d81e83b951b4cb4960ba58e6cb",
+    "settlements/xanadu/build-manifest-erewhon.json": "9aa256aa77e5c185116992eb87cc76d1377ebf21348cbc242013979163906b22",
+    "settlements/xanadu/dist/erewhon.html": "ce351b14f2ce481614b3114462c4067819baf114adc5103238d3a41157a11c54",
     "settlements/xanadu/dist/xanadu.tex.xanadu.js": "b7ab9af39727de5892634a26e39a4a716e0a4621dd7bf3d8765decbfaa712197"
    },
    "outputs_raw": {
     "settlements/xanadu/VENDOR.json": "b1fad8bfd5cb2f141d50db7274657b16776136800f5366c81529c4243e605402",
-    "settlements/xanadu/build-manifest-erewhon.json": "f34f042d5e0748c89a038c4b4c11cff5ee7981dda2066bb9cf837ba37ffef564",
-    "settlements/xanadu/dist/erewhon.html": "65492a6d178a5ced8e5aa99c2c863e5ed13b50d81e83b951b4cb4960ba58e6cb",
+    "settlements/xanadu/build-manifest-erewhon.json": "7296a62ad5ca3e5432b5c9b9dd1dc811dcf38befd225d0d7ecf68e6483071df0",
+    "settlements/xanadu/dist/erewhon.html": "ce351b14f2ce481614b3114462c4067819baf114adc5103238d3a41157a11c54",
     "settlements/xanadu/dist/xanadu.tex.xanadu.js": "b7ab9af39727de5892634a26e39a4a716e0a4621dd7bf3d8765decbfaa712197"
    }
   }
