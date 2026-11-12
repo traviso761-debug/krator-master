@@ -17,6 +17,12 @@ Gate maples ~1,000), ~10,000 reed beds' rods placed near the eye, 928 stones of 
 keep, the land 'outlandgate.narrows' (kits/fauna) and the people's runner birds, camels, donkeys and goats; ~5.7 M triangles of the 14 M
 pass budget.
 
+As built, the stations (software GL): **the seeps** ~13,200 trees read in place (iron birch ~6,800, wind spruce ~4,400, banner larch
+~1,500, seep tree ferns ~430, brook willows ~140), three rimstone stairs of 35 pools, 2 dikes of fin ribs, the caravanserai, ~5.2 M
+triangles; **the tarn** ~4,300 trees (station 1's ebadlands kin), 23 young Outlands colonies, 84 erratics, the outlet coulee and its
+river, ~3.8 M; **the mouth** ~1,800 trees (paperbark, spindle poplar, ghost gum), ~9,000 reed beds' rods, 53 webs in 59 spider zones, 4
+warm coves, the landing, ~3.7 M. Each passes its checks with their negatives and the core's card guard, attach audit and one-LOD-key check.
+
 ## By design (the plan's, or this kit's, said here)
 
 - **The gap's wind is core/atmos's katabatic fx** (`89z`: `ATMOS.katabatic`, aimed down the river's line): the Outland Bore north down
