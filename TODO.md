@@ -34,6 +34,16 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
   native to the isles (clove, coffee, kava, sugar cane) or to cacao bought in. The stocks proof and `test-sim.js` move on
   purpose and are re-baselined. Do it when the rule lands in `kits/crops`, not before.
 
+## Lacquerware for Xanadu and the Eternians *(the owner, 2026-11-12; `openworld/TRADE-SCOPE.md` section 7.6)*
+
+- **Both make lacquerware; nothing builds it yet.** It needs:
+  - a lacquer source in `kits/crops`: a lacquer tree native to the Vale and to the NW lowlands, or one each; the abyss's
+    `abyss-lac` is an insect lac and stays the abyss's;
+  - the lacquer workshop in `kits/xanadu` and in the Eternian kit;
+  - the goods row and the recipe (sap to lacquer to lacquerware) in the sim's culture tables (`core/simulation`).
+
+  `biomes/twins/PLAN.md:90` already has Xanadui lacquerware as caravan cargo.
+
 ## Ride along with the next all-builds rebuild
 
 - **core/world: a kit on several biome overlays** (2026-11-11, the Iziz cluster's open-world region): `core/world/41-world-fields.js`

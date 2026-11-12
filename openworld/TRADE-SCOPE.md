@@ -392,8 +392,12 @@ And the documents: `TRADE-GOODS.md`'s tables are rerun and rewritten once the ru
 
 The owner: "look over all biome plans for valuable goods we may have missed". Three read-only sweeps read the `.md` files of
 every folder under `biomes/` (61 kits), plus `biomes/CRYSTAL-CAVES-5.1.md` and `KARST-SITES-5.1.md`, for goods worth carrying
-far. Each find was checked against `kits/crops`. The strongest rows were spot-checked at their cited lines. **Nothing here is
-chosen yet**: the owner picks.
+far. Each find was checked against `kits/crops`. The strongest rows were spot-checked at their cited lines.
+
+**The owner's picks (2026-11-12):** all fourteen goods of 7.1 are **chosen** ("agree with the above"). Of the incenses, the
+Outlands' comb-mast drip gum and the north highlands' table-cedar resin stay. The owner did not name the abyssal savannah's
+incense tree, so this file reads it as trimmed (to confirm). The Painted Men's dyes are taken as a small trade (7.6). The
+owner's additions (lacquerware, the Ancient's Valley, Korona's guided route) are in 7.6.
 
 ### 7.1 The strongest finds: long-range goods with a seller
 
@@ -445,12 +449,51 @@ bell-pod. These need only a goods row each.
 - Larch gum. The Labyrinth's wild melon.
 - The Throne's other drugs and poisons: Ranj arrow poison, pyre-thistle anaesthetic ("an anaesthetic the ash nomads trade"),
   Korona's numb thorn.
-- The Painted Men's proposed paints and paintbrush medicine (`paintedhighlands/PLAN.md:186-194`).
+- ~~The Painted Men's proposed paints and paintbrush medicine~~: taken as a small trade (7.6).
 - The SW highlands' genepriest curiosities (shelf coral as ore-finder, fishing-bridge venom, cell-lamp spheres).
 - **Contraband:** the Outlands' golden bird feathers. The Sill post refuses them, and every Coyote tribe attacks whoever
   carries them (`greatchasm/PLAN.md:208`): a story hook, not a good.
-- **Xanadu's lacquerware** is named only as caravan cargo (`twins/PLAN.md:90`, with Xanadui silk and tea), and nothing makes
-  it. A Vale lacquer would need a source tree.
+- ~~Xanadu's lacquerware~~: the owner gives it to Xanadu and the Eternians both (7.6, a to-do).
+
+### 7.6 The owner's additions (2026-11-12)
+
+**Lacquerware: Xanadu and the Eternians.** "Xanadu and Eternia should both produce lacquerware". The twins plan names
+Xanadui lacquerware as caravan cargo (`twins/PLAN.md:90`), but nothing makes it: there is no lacquer tree in `kits/crops` but
+the abyss's lac insect (`abyss-lac`), no lacquer workshop in either kit, and no good or recipe in the sim. **A to-do**
+(`TODO.md`): a lacquer source for each (a lacquer tree, *Toxicodendron vernicifluum*'s kind, native to the Vale and to the
+NW lowlands, or each its own), the workshops in `kits/xanadu` and the Eternian kit, and the goods row and recipe in the
+sim. In the trade model it is a craft, a specialty of both, made where the trees grow.
+
+**The Painted Men's dyes.** "the painted men could trade dyes to the occasional trader that comes their way". Their paints
+are proposed in `paintedhighlands/PLAN.md:186-194`: black, red and teal (celadonite-teal clay, lignite black), with a
+paintbrush medicine. They sell them in small amounts, through Korona's winter tribes, whose lichen dyes they already buy
+(7.1), and to the rare trader. In the model they are a small export with a low route weight.
+
+**The Ancient's Valley: ruin ground, and a barrier.** "the ancient's valley should be ruin ground on the model. however, it is
+extremely dangerous and a barrier to trade."
+- **Ruin ground.** The geology's ruin bit (`kits/resources/GEOLOGY.md` table, "+128 ruin ground") marks only cells within 12 km of
+  a ruin pin and the region Ruins of Nazar (`tools/scale-model/geology.py:66`, `RUIN_REGIONS = ('ruins of nazar',)`). Adding
+  `"ancient's valley"` there marks the whole Valley (its two polygons: `rmucbbtytfxy1` and the biome polygon `rmvowuvfa6urs`,
+  px ~330-540 by 846-1036). That is a rebake: it reaches every page that reads the geology, the ledger and the hash baseline, so
+  it rides with the delta-oil rule (2.4) and the scrap-to-iron ruin bit for lived-in cities (2.7).
+- **Salvage there is rich but hard to reach.** The trade model's scrap shares each ruin's salvage among the living within 80
+  km. For the Valley that share is cut by its danger, proposed at a tenth: only Dalab's outpost at Span and the Eternians'
+  Veil stand at its edge, and the Valley is "home only to mutants, killer robots, and the rare bandit" (`LORE.md` section 4).
+- **No route crosses it.** Like the Lizardmen's floor (2.1), the trade model blocks any route whose straight line crosses the
+  Valley's polygon; goods go round.
+
+**Korona: dangerous, but guided.** "only moderately less dangerous, with both flora and fauna known to be aggressive, and native
+tribes suspicious of outsiders. there is still a trade route to the arachnoid river where silk from spider lake is received;
+one human and one therian tribe (the toad men) are known to guide merchants through the maze."
+- **A costly corridor, not a wall.** Routes through Korona (`Korona / NE`, `rmuqm3urh0mo6`, px ~867-1343 by 339-682) count at
+  several times their length (proposed x4), except on the one guided route.
+- **The guided silk route.** Spider Lake (`spider lake`, `rmvyj4v2ozgb1`, px ~1225-1417 by 154-291) to the Arachnoid River,
+  where the silk is received, with the guides through the maze: a human tribe and **the toad men**, a therian tribe. Their
+  names, homes and fees are to come. The Arachnoid River is probably the model's **Hām-Tsēk (Web-Cleaver River)** (`rivers.json`
+  id 9102: "890 km canyon river carving through the Northern Korona & Arachnoid Scenic Gorge into the Ria River", mouth at px
+  898,174). To confirm.
+- **Spider Lake's silk (7.1) travels this way.** It reaches the crater through the receiving post on the river; the guides
+  take a fee. The silk-wrights, the guides and the post have no pins yet: settlement work for later, through the queue.
 
 ### 7.5 Gaps the sweep turned up
 
