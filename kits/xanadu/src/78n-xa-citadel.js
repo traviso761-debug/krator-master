@@ -121,6 +121,11 @@ function xcPlan(it,o){o=o||{};const S=window._citadel,R=it.rooms,out={walls:0,do
    skin(e,ext.band,ext.bandC,r.y+r.h,r.y+r.h+SL+.25,e.u0-TE/2,e.u1+TE/2,off-.02);}
  // ---- the openings drawn: arch heads, rings, leaves, thresholds; the windows' jali and glass
  for(const D of doors){const d=D.d,ry=D.axis==='z'?0:Math.PI/2,x=D.axis==='z'?D.u:D.c,z=D.axis==='z'?D.c:D.u,t=(D.other&&!isCourt(D.other)&&D.d.to!=='street')?TP:TE;S.doors++;out.doors++;
+  /* steps on the lower side of a door over a sill: a dar's rooms stand 0.45 m over its court and the street, and no door had
+     one (a walk audit, 2026-11-12: every dar sealed). Risers of 0.3 m or less, treads 0.32 m, a little wider than the door */
+  {const yo=D.other?D.other.y:0,rise=D.y-yo,lo=Math.abs(rise);if(lo>.28&&lo<1.6){const sg=(rise>0?-1:1)*D.side,n=Math.ceil(lo/.3)-1,base=Math.min(D.y,yo),off0=t/2+.16;
+    for(let k=1;k<=n;k++){const h=lo*(n+1-k)/(n+1),o=off0+(k-1)*.32,px2=D.axis==='z'?x:x+sg*o,pz2=D.axis==='z'?z+sg*o:z;
+     vB('vStone',px2,base-.02,pz2,D.axis==='z'?D.w+.3:.32,h+.02,D.axis==='z'?.32:D.w+.3,0,xC(XPAL.stone[0]));}S.doorSteps=(S.doorSteps||0)+n;}}
   if(d.head){const a=D.axis==='z'?[D.u-D.w/2,D.c]:[D.c,D.u-D.w/2],b=D.axis==='z'?[D.u+D.w/2,D.c]:[D.c,D.u+D.w/2];void a;void b;continue;}
   const H=D.style.head;xmArchHead(H[0],x,D.y+D.s,z,ry,D.w,D.P,t+.12,H[1],H[2],H[1]==='Yes'?XM_C.ochre:null);
   if(typeof KWALK!=='undefined'){const n=D.axis==='z'?[0,1]:[1,0];KWALK.strip({a:xcW(x-n[0]*1.1,z-n[1]*1.1,D.y),b:xcW(x+n[0]*1.1,z+n[1]*1.1,D.y),w:Math.max(.6,D.w-.2),name:'citadel door',tag:'interior:xa-citadel'});}

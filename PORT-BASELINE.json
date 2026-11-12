@@ -1253,8 +1253,8 @@
    "sha256": "99f747d6a75f04c365495ea847d2ebf9f9cee74a5bad2bf505302838e89d0a5f"
   },
   "kits/xanadu/dist/xanadu.html": {
-   "bytes": 1148071,
-   "sha256": "c78c5df24621345801eff7d8c6937efe9883a76c8c7d6dfe6eac2a37d3f73e58"
+   "bytes": 1148757,
+   "sha256": "6e320ffb8a09f3f165ace62705af627c85827a667266eec28d16cda23e9aebbc"
   },
   "kits/yeti/dist/yeti.html": {
    "bytes": 1466611,
@@ -1565,12 +1565,12 @@
    "sha256": "62072fe13143fd60c928119cf5d3e496ef1b9e6f4db5dbbd5d2ce612ffc08870"
   },
   "settlements/xanadu/dist/erewhon.html": {
-   "bytes": 8994975,
-   "sha256": "6dd7268a86ab6e6c22398b776a523e7c0818c3c5c074767cbd7fa6ddb80c68e1"
+   "bytes": 8995661,
+   "sha256": "e62e87cca981dcd896563814f4400d17b9bbcaf2869ea05f98ecee14b16407c8"
   },
   "settlements/xanadu/dist/xanadu.html": {
-   "bytes": 8805001,
-   "sha256": "8de862be80fb3138a7a7df94bab6d1acac5c146fa55b3c0f82e8ce862ea2f6d2"
+   "bytes": 8805687,
+   "sha256": "4ad23eafc823cc03e1c8953e8e04ab15cf34562aedfdcc508b40bab6774bd648"
   },
   "settlements/ys/dist/kit.html": {
    "bytes": 1716760,

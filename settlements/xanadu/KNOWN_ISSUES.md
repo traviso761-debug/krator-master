@@ -235,8 +235,16 @@ Open:
   pass draws the right things (flower drifts, thyme, clipped box domes on `XANADU.CUSHIONTEX`) but keeps them private
   to `60-biome-xanadu-floor.js`; exporting them reaches the biome's six pages.
 * The Golden Way's gate passage ends at a blank wall (walk -344,154,-213).
-* The citadel's layout: a walk audit (crow-flies against walked distance between entrances, hedges and steps over
-  0.3 m as obstacles) is the next step; the paths come first, the garden pieces and stairs are fitted to them.
+* The citadel's layout. A walk audit (2026-11-12; every 0.25 m column of the drawn geometry, hedges, beds, walls and
+  steps over 0.3 m as obstacles; 44 entrances routed to each other) first found 498 of 946 pairs with no route: the
+  dars' rooms stand 0.45 m over their courts and the street and no door had a step. `xcPlan` now sets steps on the low
+  side of a door whose rise is 0.28 to 1.6 m (31 doors); every pair then has a route. Still: the median walk is 1.77
+  times the straight line, 363 pairs over 2 (each dar's one street door faces away from the way in; the palace, 153.4 m,
+  and the Pleasure Dome, 171.3 m, meet only on the east: its south door and the palace gate are 10 m apart and 104 m
+  walked); a palace door at (-323, 166.6, -274) opens 13 m over the ground; the Court Temple's doors are not in
+  KDOOR. Next: the path network first (a spine from the citadel gate, a stair between the two levels at the Golden
+  Way, a branch to every door), then the garden pieces and stairs fitted to it. The audit script is in the session
+  notes (`walk_audit.js`).
 
 ## Erewhon (round 9)
 * The garden district's rectangle lies on 15–40° ground; its tiles are a stepped surface (no neighbour more than a
