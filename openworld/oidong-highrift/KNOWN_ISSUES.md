@@ -1,8 +1,8 @@
 # The Oidong Valley and the High Rift: known issues
 
-- [x] **The Order's road is laid** (2026-11-11), bridged over the rivers (core/world 42b, 88b), so their fill buries
-  none. It runs from Longsong up the valley (`guide`; the straight line had taken it over 6,000 m) to Strongbow's foot,
-  where the Sultanate's road from the west ends, then up the beck's staircase.
+- [x] **The roads are laid** (2026-11-11), bridged over the rivers (core/world 42b, 88b), so their fill buries none:
+  the Order's road up the valley and the staircase (`guide`; the straight line had taken it over 6,000 m), and the
+  Sultanate's road down the valley to Strongbow.
 - [ ] **Three sites are not on the scale model's list.** The Singing Gjár, the Mirror Grange and the Caldron House are
   `"model": false` rows in `openworld/SITES.json` (their own pixel). Add them to
   `tools/scale-model/model/src/60-settlements.js` once the open-world sites session's Qiblai move has landed.
@@ -16,7 +16,6 @@
   own architecture (Longsong's `62-ls-arch`, battered stone halls) is not a kit yet.
 - [x] **The Singing Gjár's purpose and the two accessory houses**: confirmed by the owner (2026-11-11: "keep as
   proposed").
-- [ ] **Strongbow**, the Ancients' cliff arcology, moved on 2026-11-11 to the valley's east end (px 1298,1647, at the foot
-  of the High Rift's escarpment over Oidong's lake; the owner). It is a site and a road's end only. The arcology itself
-  (a tower down the cliff on cables and terraces, pads at its lip: the owner's two reference pictures) is not built, and
-  the Ancient network's routes to it (G10, xanadu.3.4, xanadu.3.5) still start from its old place.
+- [ ] **Strongbow**, the Ancients' cliff arcology, is at the valley's west end toward Qiblai (px 1013,1585, the foot of
+  the north-west wall; the owner, 2026-11-11, after a first move to the east end the same day). It is a site and a road's
+  end only: the arcology is the Strongbow session's (its own cliff landform: the wall here rises about 1,300 m in 4 km).
