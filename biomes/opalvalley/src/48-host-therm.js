@@ -10,4 +10,4 @@ if(THERM_F)HEAT_AT=(x,z)=>KTHERM.fieldAt(THERM_F,x,z);
 (SITE.vents||[]).forEach((v,i)=>{const r=Math.min(90,v.reach*.6),y=terrainH(v.x,v.z)-4;
  REGISTER({name:'A warm silica seep ('+v.T+' degC under a paper-thin opaline crust)',x:v.x,z:v.z,y,r,h:12,
   tags:{hazard:{kind:'heat',danger:.6,falloff:'linear',shape:{type:'cyl',r:Math.min(26,v.reach*.25),h:4},radiant:{reach:6,dose:.3}}}});
- REGISTER({name:'The thin crust (it breaks: scalding mud under it)',x:v.x,z:v.z,y,r:Math.min(24,v.reach*.22),h:6,tags:{hazard:{kind:'sink',danger:.55}}});});
+ BIO.record({name:'The thin crust (it breaks: scalding mud under it)',x:v.x,z:v.z,y,r:Math.min(24,v.reach*.22),h:6,tags:{hazard:{kind:'sink',danger:.55}}});});   /* a core/tags record (core/hazard reads it), not an inspector volume: the crust is a skin over the ground, nothing stands in it */

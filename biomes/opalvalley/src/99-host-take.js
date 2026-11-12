@@ -2,7 +2,7 @@
 const gh=(x,z,dy)=>terrainH(x,z)+(dy==null?0:dy);
 const look=(cx,cz,dyc,tx,tz,dyt)=>[cx,gh(cx,cz,dyc),cz,tx,gh(tx,tz,dyt),tz];
 const VIEWS=(function(){const S=SITE;
- if(GL){const sn=GL.snout,C0=GCAVES[0],L=OUTW&&OUTW.lip;return{'The snout and its ice caves':look(C0.x-120,C0.z-60,6,C0.x,C0.z,6),'The tongue':look(sn-520,-520,70,sn+1300,GCEN(sn+1300),60),
+ if(SKEY==='glacier'){const sn=GL.snout,C0=GCAVES[0],L=OUTW&&OUTW.lip;return{'The snout and its ice caves':look(C0.x-120,C0.z-60,6,C0.x,C0.z,6),'The tongue':look(sn-520,-520,70,sn+1300,GCEN(sn+1300),60),
   'The icefall':look(sn+1050,G.W(sn+1050)+160,30,sn+1550,GCEN(sn+1550),40),'The moraine flats':look(sn-200,G.W(sn)+260,1.7,sn-380,G.W(sn)+120,0),
   'The first milky cascade':L?look(L[0]-90,L[1]+50,8,L[0],L[1],-6):look(-1600,60,8,-1750,0,0),'From afar':look(-2300,900,240,sn+600,0,40)};}
  const Lm=LAKES[Math.min(1,LAKES.length-1)],xm=(Lm.x0+Lm.x1)/2,zc=axisZ(xm),A=SITE.chain[1],B=SITE.chain[2]||SITE.chain[1],xr=(A.x1+B.x0)/2,zr=axisZ(xr);
@@ -15,6 +15,7 @@ const VIEWS=(function(){const S=SITE;
  else{v['The lakes stepping down']=look(LAKES[0].x0+260,axisZ(LAKES[0].x0+260)-520,110,LAKES[LAKES.length-1].x1,axisZ(LAKES[LAKES.length-1].x1),0);
   v[{sinter:'The sinter dams',moraine:'A moraine bar',tuff:'A tuff sill'}[SITE.dam]]=look(xr-170,zr-90,14,xr+60,zr,6);
   v['The station\'s lake from its shore']=look(0,0,1.7,0,axisZ(0)+120,0);
+  if(SKEY==='upperbed')v['A placer sluice on the bar']=(function(){const s=DIGS.find(r=>r.kind==='sluice'&&r.x);return s?look(s.x+24,s.z+(s.z>axisZ(s.x)?22:-22),5,s.x,s.z,1):look(300,-200,8,0,axisZ(0),0);})();
   if(SITE.canyon)v['Down the canyon']=look(LAKES[0].x1+100,axisZ(LAKES[0].x1+100)-30,30,LAKES[2].x1,axisZ(LAKES[2].x1),0);}
  if(ad){const ca=Math.cos(ad.az),sa=Math.sin(ad.az),cx=ad.x+ca*30+sa*14,cz=ad.z+sa*30-ca*14;v['An adit on the wall']=[cx,gh(cx,cz,3),cz,ad.x,gh(ad.x,ad.z,1.4),ad.z];}   /* from down the slope and a little to the side */
  if(pl&&SKEY!=='riftmouth')v['The placer pits']=look(pl.x+30,pl.z-24,6,pl.x,pl.z,0);
@@ -66,13 +67,16 @@ const HCHK={
 const AXIS_WATER=()=>{const o=[];if(TREADS){for(let x=TERR.R;x>=-TERR.R;x-=5){const w=waterH(x,axisZ(x));if(w>-1e8)o.push(w);}}else if(OUTW)OUTW.pts.forEach(p=>o.push(p[2]));return o;};
 /* a point on the station's water: a lake's middle, or the glacier's outwash */
 const WATER_PT=()=>{if(LAKES.length){const x=(LAKES[0].x0+LAKES[0].x1)/2,z=axisZ(x);return[x,waterH(x,z),z];}const p=OUTW.pts[Math.floor(OUTW.pts.length/2)];return[p[0],p[2],p[1]];};
-const MATS=()=>{const s=new Set();scene.traverse(o=>{const m=o.material;if(!m)return;(Array.isArray(m)?m:[m]).forEach(x=>s.add(x));});return[...s];};
+/* the kit's own materials, whether a station places their plants or not (the glacier has no ferns), and whatever else the scene draws */
+const MATS=()=>{const s=new Set(Object.values(OPAL.M));scene.traverse(o=>{const m=o.material;if(!m)return;(Array.isArray(m)?m:[m]).forEach(x=>s.add(x));});return[...s];};
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P=instPoints(),w=window._water||{};
  add('the station\'s species placed',HCHK.placed(window._station));
  add('the kin grown by their source kits\' builders (BIO.kin)',HCHK.kin(OPAL.KINS,window._station));
  add('nothing grows on the glacier\'s ice',HCHK.ice(P,ICE));
  add('nothing rooted under the water',HCHK.dry(P));
- add('the lakes step down tread by tread (the water never climbs)',HCHK.steps(w.levels||[],w.lakeLevels||[],AXIS_WATER()));
+ /* the glacier: the pool behind the moraine, then the outwash's foot below it (its water down the outwash never climbs) */
+ const lv=GL?(POND&&OUTW?[POND.level,OUTW.pts[OUTW.pts.length-1][2]]:[]):(w.levels||[]),lk=GL?(POND?[POND.level]:[]):(w.lakeLevels||[]);
+ add(GL?'the pool and the outwash step down (the water never climbs)':'the lakes step down tread by tread (the water never climbs)',HCHK.steps(lv,lk,AXIS_WATER()));
  add('the station\'s pressure and height agree with the plan',HCHK.air(SITE,terrainH(0,0)));
  add('the diggings stand on dry ground',HCHK.digs(DIGS));
  add('the iridescence is the core\'s own kinds',HCHK.irid(MATS()));

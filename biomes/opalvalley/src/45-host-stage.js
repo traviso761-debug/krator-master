@@ -58,7 +58,7 @@ const axisZ=x=>AX.z0+AX.amp[0]*Math.sin(x*AX.f[0]+AX.ph[0])+AX.amp[1]*Math.sin(x
 // ---- THE TREADS (the chain, expanded): east to west
 const STEP={sinter:5,moraine:10,tuff:9,cataract:1e9}[SITE.dam]||8,STEP_HW={sinter:40,moraine:26,tuff:24,cataract:30}[SITE.dam]||28,CH=8;   /* a step's pool half-width; a channel's */
 const TREADS=(function(){const C=SITE.chain;if(!C)return null;const T=[];
- C.forEach((L,i)=>{T.push(Object.assign({},L,{link:i,hw:L.kind==='lake'?L.hw:(L.w||14)/2}));const N=C[i+1];if(!N)return;
+ C.forEach((L,i)=>{T.push(Object.assign({},L,{link:i,hw:L.kind==='lake'?L.hw:(L.w==null?14:L.w)/2}));const N=C[i+1];if(!N)return;
   const G=L.x1-N.x0,drop=L.y-N.y,n=Math.max(1,Math.round(drop/STEP)),r=n===1?G:3,pl=n>1?(G-n*r)/(n-1):0;let x=L.x1;
   for(let k=1;k<n;k++){x-=r;T.push({kind:'step',x0:x,x1:x-pl,y:L.y-drop*k/n,hw:STEP_HW*(.75+.5*KRAND.unit(KRAND.hash(5521,i,k))),depth:1.2,link:i,step:k});x-=pl;}});
  T.forEach((t,i)=>{t.i=i;});return T;})();

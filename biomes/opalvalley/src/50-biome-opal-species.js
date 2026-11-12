@@ -19,7 +19,7 @@ const HV=(wood,edible,medicinal,note)=>({wood,edible:edible||[],medicinal:!!medi
 const PAL=OPAL.PAL={
  cushion:[0xc8d4d8,0xd4dee0,0xbac8d0],cushionC2:[0xb8a0e8,0x98c8f0,0xc8b0f0],
  fern:[0xdce8ea,0xe6eeee,0xd4e2e6,0xeaf0ec],fernC2:[0xd8c4f4,0xc8d0f6,0xe4c8ee],   /* near white: card.irisfern carries its own blue-violet (a dark tint made it black) */
- pad:[0x2f7a6a,0x3a8a74,0x2a6e66],padC2:[0xe08a6a,0xd86a8a,0xf0a070],
+ pad:[0xa4d8c4,0xb0e0cc,0x96ccb8],padC2:[0xf4c4ac,0xf0b0c4,0xf8d4a8],   /* light: the pad map is green-grey already (a dark tint drew blots on the water) */
  chalice:[0xe2e0d8,0xd8dcdc,0xeae4dc],stalk:[0xb0a898,0xa49a8a],
  tussock:[0xa89a6a,0xb4a676,0x9a8c60,0xc0b282]};
 // ---------------------------------------------------------------- the Xanadu kin (data: the source, the delta, where it stands; PLAN.md section 3.2)

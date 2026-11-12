@@ -59,13 +59,13 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.unifor
  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;varying vec3 vGWN;attribute vec4 aGL;varying vec4 vGL;attribute float aOp;varying float vOp;attribute float aWet;varying float vWet;')
   .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vGWN=normalize(mat3(modelMatrix)*objectNormal);vGL=aGL;vOp=aOp;vWet=aWet;');
  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail;uniform float uOpal;varying vec3 vGWP;varying vec3 vGWN;varying vec4 vGL;varying float vOp;varying float vWet;float gSteep;')
-  .replace('#include <map_fragment>','#include <map_fragment>\n{vec3 dt=texture2D(uDetail,vGWP.xz*0.165).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.021+0.37).rgb;gSteep=smoothstep(0.32,0.62,1.0-clamp(vGWN.y,0.0,1.0));vec3 _gT=diffuseColor.rgb*1.5;'+(USE_KG?'\n/*KGROUND*/\n':'')+
-  'diffuseColor.rgb*=dt*dt2*1.12;'+
+  .replace('#include <map_fragment>','#include <map_fragment>\n{vec3 dt=pow(texture2D(uDetail,vGWP.xz*0.165).rgb,vec3(2.2));vec3 dt2=pow(texture2D(uDetail,vGWP.xz*0.021+0.37).rgb,vec3(2.2));gSteep=smoothstep(0.32,0.62,1.0-clamp(vGWN.y,0.0,1.0));vec3 _gT=diffuseColor.rgb*1.5;'+(USE_KG?'\n/*KGROUND*/\n':'')+
+  'diffuseColor.rgb*=dt*dt2*1.85;'+   /* decoded, its mean ~0.71 a sample: the gain keeps the old brightness */
   (STRATA_SH?'diffuseColor.rgb=mix(diffuseColor.rgb,strataColor(vSWP,vSWN),gSteep*0.9);':'')+
   /* THE OPAL SHEEN: a thin film's colour by the angle (the eye from the view matrix: r128 gives Lambert no cameraPosition), broken by the detail map so it
      reads as flecks and seams, not a coat; it multiplies the ground's colour (it never adds light) */
   '{vec3 _oE=-(viewMatrix[3].xyz*mat3(viewMatrix));float _oF=1.0-abs(dot(normalize(vGWN),normalize(_oE-vGWP)));float _oP=_oF*2.6+dot(vGWP.xz,vec2(0.017,0.011))+dt.r*2.3+dt2.g*1.1;'+
-  'vec3 _oC=0.5+0.5*cos(6.2831853*(_oP+vec3(0.0,0.33,0.67)));float _oK=uOpal*vOp*smoothstep(0.86,0.99,dt.g*0.75+dt2.r*0.35+_oF*0.2);'+
+  'vec3 _oC=0.5+0.5*cos(6.2831853*(_oP+vec3(0.0,0.33,0.67)));float _oK=uOpal*vOp*smoothstep(0.69,0.82,dt.g*0.75+dt2.r*0.35+_oF*0.2);'+
   'diffuseColor.rgb=mix(diffuseColor.rgb,diffuseColor.rgb*(0.8+0.45*_oC),_oK);}'+   /* flecks where the detail peaks, a soft swing (x0.8..1.25): reads as opal in the white, not paint */
   'diffuseColor.rgb*=mix(vec3(1.0),vec3(0.62,0.6,0.56),vWet);}');};
 const LAYERS={

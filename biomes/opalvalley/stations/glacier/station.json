@@ -1,5 +1,41 @@
 {
  "note": "Station 1, the Prism Glacier (PLAN.md section 6). core: KFROST (the moraines' and the outwash's sorted ground) and KGLACIER with its drawer (the tongue, the seracs, the crevasses, the ice caves at the snout). kin: Oidong's high country read in place (OIDONG.buildHigh: cushions, the snow lotus, sky poppies) on the cold ground off the ice.",
- "core": {"42-core-frost.js": "core/terrain/42-core-frost.js", "44g-core-glacier.js": "core/terrain/44g-core-glacier.js", "44h-core-glacier-draw.js": "core/terrain/host/44h-core-glacier-draw.js"},
- "kin": {"oidong": [["src/50-biome-oidong-species.js", "src/55-biome-oidong-trees.js", "src/60-biome-oidong-floor.js"], "OIDONG", ["cherrybloom", "heart", "lace", "leaf.moss", "leaf.small", "lily", "organic.mossball", "stone.granite"]]}
+ "core": {
+  "42-core-frost.js": "core/terrain/42-core-frost.js",
+  "44g-core-glacier.js": "core/terrain/44g-core-glacier.js",
+  "44h-core-glacier-draw.js": "core/terrain/host/44h-core-glacier-draw.js"
+ },
+ "kin": {
+  "oidong": [
+   [
+    "src/50-biome-oidong-species.js",
+    "src/55-biome-oidong-trees.js",
+    "src/60-biome-oidong-floor.js"
+   ],
+   "OIDONG",
+   [
+    "bark.bamboo",
+    "bark.carved",
+    "bark.cedar",
+    "bark.cherry",
+    "bark.marble",
+    "bark.smooth",
+    "bark.whorled",
+    "beadscard",
+    "cherrybloom",
+    "heart",
+    "lace",
+    "leaf.moss",
+    "leaf.small",
+    "lily",
+    "mooncapcard",
+    "organic.cap",
+    "organic.mossball",
+    "padcard",
+    "peyotecard",
+    "stone.granite",
+    "stone.marblecliff"
+   ]
+  ]
+ }
 }

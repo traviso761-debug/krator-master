@@ -16,8 +16,8 @@ const CREV=[];(GL.crevasses||[]).forEach(u=>CREV.push(...G.crevasses({u})));
 GD.crevasses(CREV,(x,z)=>terrainH(x,z));GLACIER.crevasses=CREV.length;
 CREV.forEach(r=>BIO.record({name:'A crevasse (hidden under the snow where it bridges)',x:r.x,z:r.z,y:terrainH(r.x,r.z)-6,r:r.len*.5,h:8,tags:{hazard:{kind:'fall',danger:.9}}}));
 G.caves(GCAVES).forEach((C,i)=>GD.cave(Object.assign({},C,{reg:{cave:i}})));
-{const u=GL.snout+4,c=G.at(u,GCEN(u)),W=G.W(GL.snout);if(G.T(GL.snout+20)>12)REGISTER({name:'The snout\'s ice cliff (it calves onto the outwash)',x:c[0],z:c[1],y:landH(c[0],c[1])-2,r:Math.min(W,700),h:G.T(GL.snout+20)+10,
- tags:{hazard:{kind:'crush',danger:.6}}});}
+{const u=GL.snout+4,c=G.at(u,GCEN(u)),W=G.W(GL.snout);if(G.T(GL.snout+20)>12)BIO.record({name:'The snout\'s ice cliff (it calves onto the outwash)',x:c[0],z:c[1],y:landH(c[0],c[1])-2,r:Math.min(W,700),h:G.T(GL.snout+20)+10,
+ tags:{hazard:{kind:'crush',danger:.6}}});}   /* a core/tags record, as the crevasses: a face, not an inspector volume (nothing stands in it) */
 if(POND){const TM=G.TERM,c=G.at((G.termU(TM.p0)+GL.snout)/2,TM.p0);REGISTER({name:POND.name,x:c[0],z:c[1],y:POND.level-8,r:TM.W0*.9,h:14});}
 OBSTACLES.push(...CREV.map(r=>({x:r.x,z:r.z,r:r.len*.5})));
 let NIGHT=null;TICKS.push(()=>{const hr=typeof ATMOS!=='undefined'&&ATMOS.clock?ATMOS.clock.hour:12,n=hr<5.5||hr>19.5;if(n!==NIGHT){NIGHT=n;LIGHTS.forEach(f=>f(n?'night':'day'));}});
