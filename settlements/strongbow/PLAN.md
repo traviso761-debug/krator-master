@@ -2,7 +2,7 @@
 
 Strongbow is the Ancients' cliff arcology on the Oidong Valley's north-west wall at its west end, toward Qiblai (scale model 5.1 px
 1013,1585). It stands on a bench at 2,568 m, about 430 m above the valley floor, at about +6 °C. The valley road from Longsong
-ends at its foot, and the Rift line reaches it from the uplands to the south.
+ends at its foot. The Rift line reached it from the uplands to the south, but it is abandoned now (the owner, 2026-11-11).
 
 The arcology as the Ancients built it, and the shape of its ruin, are `kits/ancients/targets/strongbow` (`NOTES.md` there). Its
 parts are the tower with its crown and mast, the Nock and its landing pad, the Spine of drums and terraces, the lower hull, the
@@ -23,6 +23,12 @@ Xanadu built across its gaps, the lobby at the foot, and the trades. Facts the o
    method, which lays the building out as data, checks it by rules and draws sheets per level.
 7. **A budget of trades** within the arcology, against the trades in a more conventional city built radially around it.
 8. **About half the people live in the arcology and its terraces, and half outside**, in other buildings.
+
+The owner's answers to this plan's questions (2026-11-11):
+- **The line is abandoned.** The way is broken near Strongbow, and the terminus hall is a ruin the town builds over.
+- **Outcasts hold the upper Spine**, above the third terrace: people beyond the Sultan's law, reached by their own rope ways.
+- **The Order occasionally uses the Nock** to launch hot-air balloons and for signalling.
+- **The town is rings and spokes** on the bench round the foot.
 
 Earlier answers that still hold:
 - the Sultanate lives below and the Order above;
@@ -48,20 +54,21 @@ records count them from the top):
 
 | Zone | What | Who now | Reached by |
 |---|---|---|---|
-| **Z0 The foot** | the lobby, the terminus hall, the podium's wings (section 4) | Xanadu: the bazaar, the serai, the governor, the garrison, the salvagers' yards | the plaza; the road and the line |
+| **Z0 The foot** | the lobby, the terminus hall (a ruin), the podium's wings (section 4) | Xanadu: the bazaar, the serai built over the hall's ruin, the governor, the garrison, the salvagers' yards | the plaza; the valley road |
 | **Z1 The lower Spine** | the drums from the foot up to T1, and T1 | Xanadu: homes and workshops | the lobby's great stair; lift L1 |
 | **Z2 The middle Spine** | the runs from T1 up to T3, and T2 and T3 | Xanadu, **partly**: T2 and its runs reclaimed; the run from T2 to T3 burned and sealed; T3 a garden terrace, half reclaimed | lift L2 over the burned run |
-| **Z3 The upper Spine** | the runs above T3 and the terraces T4 and T5 | **no one.** Cut off, unsafe, overgrown; the salvagers go up under licence | the salvagers' lift L3, gated |
+| **Z3 The upper Spine** | the runs above T3 and the terraces T4 and T5 | **the outcasts** (the owner, 2026-11-11): about 200 people beyond the Sultan's law, in the soundest drums; the rest unsafe and overgrown. *Proposed*: runaways, debtors, deserters and those the Decree's courts cast out, living on salvage they trade down at night and on the terraces' wild gardens | **their own rope ways**: ropes, ladders and baskets down the face to the scree west of the Spine, out of the town's sight; the salvagers' lift L3, gated and guarded |
 | **Z4 The Spine's head** | the top run and T6, torn off when the tower leaned (the target's ruin) | gone: its drums lie on the floor | nothing |
-| **Z5 The Nock** | the deck at 520 m: the landing pad, the west wing on the rock, the centre leaning with the tower | **no one**; *proposed*: the Order watches it and lets no one land | from the tower only, by the Order's stair |
+| **Z5 The Nock** | the deck at 520 m: the landing pad, the west wing on the rock, the centre leaning with the tower | **the Order, now and then** (the owner, 2026-11-11): it launches **hot-air balloons** from the landing pad and **signals** from the deck. *Proposed*: a balloon shed and a burner store on the pad's edge, a signal mast with mirrors and lamps on the west wing, which sees down the valley | from the tower only, by the Order's stair |
 | **Z6 The tower** | 126 storeys, from 498 m to the crown at 960 m | **the Order of History Monks**: a sealed house in its upper storeys and on the crown, about 100 monks. The lower two-thirds are empty and sealed by the Order | the arc ramp from the plateau, through the Order's gate |
 | **Z7 The face** | the galleries beside the Spine, the stays' sockets | the east galleries below T3: Xanadu (a few households, reached by girder bridges from T2); the rest no one | girder bridges from the Spine |
 | **Z8 The lower hull** | fallen in three pieces in the scree (the target's ruin) | the salvagers' **quarry**: they cut it up for panels, glass and girders | the quarry road from the town |
 | **Z9 The plateau** | the rim gallery, the pad and its craft, the heliostats | **no one**, but the Order's road passes; *proposed*: the Order keeps the rim gallery's west end as its gatehouse at the ramp's foot | the Order's road |
 
-**Cut off from each other**: Z0 to Z2 are one place, joined by the stairs and lifts. Z3 is reached only by L3, under licence. Z4
-is gone, so nothing joins Z3 to the Nock and the tower. Z5 and Z6 are the Order's, reached only from the plateau by the ramp. A
-rule checks this: remove L3 and Z3 is unreachable; nothing in Z0 to Z3 reaches Z5 or Z6.
+**Cut off from each other**: Z0 to Z2 are one place, joined by the stairs and lifts. Z3 is the outcasts', reached by their rope
+ways from the scree and by the salvagers' lift L3, which the garrison guards. Z4 is gone, so nothing joins Z3 to the Nock and the
+tower. Z5 and Z6 are the Order's, reached only from the plateau by the ramp. A rule checks this: with L3 shut, Z3 is reached
+from the town only by the rope ways, which start outside it; nothing in Z0 to Z3 reaches Z5 or Z6.
 
 ## 3. The ruination, part by part (deltas by id on the target's records)
 
@@ -80,7 +87,7 @@ Each part's state comes from its own seed (`KRAND.child(world, 'sb:' + id)`) wit
 | Z0 the foot | lobby, serai, bazaar, governor's wing: about 70% | the east wing's upper floors (fire, *proposed*) | the lower vaults (flooded) | none |
 | Z1 the lower Spine | about 80% of its drums | 20%, used as stores | none | none |
 | Z2 the middle Spine | T2 and its runs, about 50% | T3's pavilion ring | the burned run from T2 to T3 | none |
-| Z3 the upper Spine | none | about 60%, the salvagers' working faces | none | about 40%, the drums nearest the break, unsafe |
+| Z3 the upper Spine | none (the outcasts' drums are *squatted*, a sixth state: lived in, not reclaimed), about 25% | about 35%, the salvagers' working faces | none | about 40%, the drums nearest the break, unsafe |
 | Z4 the Spine's head | none | none | none | gone |
 | Z5 the Nock | none | the west wing | none | the centre: leaning, cracked |
 | Z6 the tower | the Order's upper 25 storeys and the crown | none | the lower 100 storeys (the Order's seals) | none |
@@ -97,7 +104,7 @@ foot**, the Ancients' podium where the Spine lands and the line ended. *Proposed
 | Part | As built (the Ancients) | Now (Xanadu) |
 |---|---|---|
 | **The lobby** | a glazed hall 40 m tall and 120 m across, round the Spine's foot: the Spine's lifts rise from its centre, a great stair winds up round the first drum to T1, galleries on three levels | **the bazaar**: stalls on the floor, the money changers and scribes on the first gallery, the Spine's dead lift shafts used as light wells. The glazing is scrap glass in bronze frames (the scrap set's style) |
-| **The terminus hall** | the Rift line's station 11: platforms under a vault on the west side, opening west onto the line | **the terminus serai**: the caravans' court and stables in the old platforms (`xa_scrap_serai`), customs at its west mouth |
+| **The terminus hall** | the Rift line's station 11: platforms under a vault on the west side, opening west onto the line | **a ruin the town builds over** (the owner, 2026-11-11: the line is abandoned). Its vault has half fallen, and the platforms are filled. The terminus serai (`xa_scrap_serai`) stands on them, with customs at the road's gate; the rest of the hall's floor is the caravans' yard |
 | **The forecourt** | a plaza before the lobby, stepping down to the road, fountains | **the plaza**: the town's market square; the Wheel shrine (`xa_scrap_shrine`) on its east side; the girder gate where the road enters |
 | **The east wing** | the arcology's works: freight docks, workshops, store vaults | **the salvagers' yards**: the guildhall (`xa_scrap_guild_salvage`), cutting sheds, stores. The upper floors are fire-damaged |
 | **The west wing** | offices, the line's administration | **the governor's wing and the garrison**: the Sultan's governor, customs, the barracks (`xa_scrap_gate` at its door) |
@@ -115,7 +122,8 @@ The Spine's own lifts died with the Ancients. Xanadu's lifts are **girder lift f
 |---|---|---|---|
 | **L1** | the lobby (inside a dead shaft) to T1 | the great stair is long; goods go up | public, the lift guild's crew |
 | **L2** | T1 to T2, on the outside of the Spine | the run from T2 down is sound, but the burned run above T2 is sealed, so L2 also climbs on to T3 past it | public to T2; T3 by permit |
-| **L3** | T3 up the face to T5 | the only way into Z3, for the salvagers | the Salvagers' Guild, gated and guarded |
+| **L3** | T3 up the face to T5 | the salvagers' way into Z3, which the outcasts hold | the Salvagers' Guild, gated, guarded by the garrison; *proposed*: the salvagers pay the outcasts in kind to work their faces |
+| **The rope ways** | the scree west of the Spine up to the outcasts' drums | the outcasts' own way (the owner, 2026-11-11): ropes, ladders, hauled baskets | the outcasts; not Xanadu's |
 | **The bridges** | T2 to the two lowest east galleries | girder footbridges (`xa_scrap_bridge`) | public |
 
 Each lift is a record: a frame, a cage and a capstan house at its head, with a lift crew. The layout's rule holds that every lift
@@ -127,10 +135,11 @@ stands on a reclaimed or damaged part at both ends and clears the drums.
 |---|---|---|
 | **The arcology** | **about 3,500** | |
 | the foot | 900 | the bazaar's traders, the serai, the governor's household, the garrison (150 soldiers in barracks), the salvagers' yards |
-| the lower Spine (Z1) | 1,500 | homes in the drums, workshops on the lower floors |
-| the middle Spine (Z2) | 900 | T2's homes and gardens; T3's garden terrace; the lift crews |
+| the lower Spine (Z1) | 1,400 | homes in the drums, workshops on the lower floors |
+| the middle Spine (Z2) | 800 | T2's homes and gardens; T3's garden terrace; the lift crews |
+| the upper Spine (Z3) | 200 | the outcasts (not the Sultan's census) |
 | the face (Z7) | 100 | the gallery households |
-| the tower (Z6) | 100 | the Order (not Xanadu's census) |
+| the tower (Z6) | 100 | the Order (not the Sultan's census), with its balloon and signal crews on the Nock |
 | **The town** | **about 3,500** | radial, on the bench round the foot (section 7) |
 
 ## 7. The town (radial, on the bench)
@@ -179,7 +188,7 @@ set.
 
 ## 9. Order of work
 
-1. **The owner's answers** to section 10.
+1. **The owner's answers** (given 2026-11-11: section 10).
 2. **The lobby** in `kits/ancients/targets/strongbow`: the foot's records and drawing, as built and as ruined; GPU-verify; baseline.
 3. **SB1, the layout as data**: zones, parts, states, lifts, ways, rooms of the foot; the rules and their negatives; the sheets
    and `AREAS.md`. The owner reviews the sheets.
@@ -189,12 +198,12 @@ set.
 6. **SB4, life** on `core/simulation`.
 7. Placement in the open world: the region's job, from the records.
 
-## 10. Open questions for the owner
+## 10. Answered (2026-11-11)
 
-1. **The line**: do trains run to Strongbow? *Proposed*: no. Xanadu keeps the way as a road, the caravans use it, and the
-   terminus hall is their serai.
-2. **The cut-off upper Spine (Z3)**: is it empty? *Proposed*: empty and dangerous, entered only by the salvagers' lift.
-   Alternatives: outcasts squatting beyond the Sultan's law, or beasts nesting in it.
-3. **The Order and the Nock**: should the Order keep the landing pad? *Proposed*: the Order watches it from the tower and lets no one
-   land; the Nock is otherwise empty.
-4. **The town's form**: rings and spokes on the bench round the foot (*proposed*), or a walled town on the road below the bench?
+1. **The line**: abandoned. The way is broken near Strongbow, and the terminus hall is a ruin the town builds over.
+2. **The upper Spine (Z3)**: outcasts, people beyond the Sultan's law, reached by their own rope ways.
+3. **The Nock**: the Order occasionally uses it to launch hot-air balloons and for signalling.
+4. **The town's form**: rings and spokes on the bench round the foot.
+
+Still *proposed*, for the owner to correct: who the outcasts are; the balloon shed and signal mast on the Nock; the fire in the
+foot's east wing; the burned run from T2 to T3; the trades' numbers.
