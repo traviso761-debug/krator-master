@@ -186,10 +186,11 @@ vnBannerPole vnChimney vnFence vnPalisade vnFolk vnPaving`.
   (along x), `xsCable`, `xsBronzeB/C/Oct`, `xsBulbB`, `xsBall`, `xsConeB`, `xsRing`.
 * Helpers: `xnXSBlock` (a block faced in panel courses, windows and doors in whole cells), `xnXSWin` (glass, a bronze jali,
   a stepped cholet frame or a pointed hood), `xnXSCol`, `xnXSBeam`, `xnXSRail`, `xnXSLantern`, `xnXSDome`, `xnXSFinial`,
-  `xnXSWheel`, `xnXSDrumFace`, `xnXSPool`; in 87u `xnXSBay`, `xnXSRoof`, `xnXSRoofRails`, `xnXSPavilion`. Paint schemes
+  `xnXSWheel`, `xnXSDrumFace`, `xnXSPool`; in 87u `xnXSBay`, `xnXSRoof`, `xnXSRoofRails`, `xnXSPavilion`, `xnXSEyes`. Paint schemes
   `XS_SCHEMES[v]`; per-panel variation `xsU` (core/rand's hash of the building's seed, face, column and row).
-* Defs (seeds 33000-33099): `xa_scrap_house`, `xa_scrap_row`, `xa_scrap_court`, `xa_scrap_bazaar`, `xa_scrap_serai`,
-  `xa_scrap_gate`, `xa_scrap_tower`, `xa_scrap_shrine`, `xa_scrap_pavilion`, `xa_scrap_bridge`.
+* Defs (seeds 33000-33199): `xa_scrap_house`, `xa_scrap_row`, `xa_scrap_court`, `xa_scrap_bazaar`, `xa_scrap_serai`,
+  `xa_scrap_gate`, `xa_scrap_tower`, `xa_scrap_shrine`, `xa_scrap_pavilion`, `xa_scrap_bridge`, `xa_scrap_guild_salvage`,
+  `xa_scrap_guild_hall`, `xa_scrap_granary`, `xa_scrap_store`, `xa_scrap_bath`; `xnXSEyes` (a hammam dome's glass eyes).
 
 ## The biome in the kit (`86-bio-*`, `86b-xa-plants.js`)
 * `86-bio-10…70` are the Vale of Xanadu biome (vendored from `../../biomes/xanadu/src`, byte-identical but for the

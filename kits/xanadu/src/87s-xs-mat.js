@@ -22,7 +22,7 @@ MAT.xsBronze=xStd({roughness:.34,metalness:.55});    /* reclaimed bronze and bra
 MAT.xsSteel=xStd({roughness:.5,metalness:.3});       /* a dressed girder: cleaned, painted, its flanges sharp */
 MAT.xsCable=xStd({roughness:.42,metalness:.6});      /* the Ancients' cable, drawn taut */
 
-kdef('xsPanel',XS_SHEET,MAT.white);kdef('xsPanelV',XS_SHEET,MAT.verdigris);
+kdef('xsPanel',XS_SHEET,MAT.white);kdef('xsPanelV',VBOX,MAT.verdigris);   /* the copper skin shows its whole patina map per panel: one sheet's crop of it reads brown */
 kdef('xsShellB',VBOX,MAT.white);kdef('xsVerdB',VBOX,MAT.verdigris);
 kdef('xsGlassB',VBOX,MAT.glass);kdef('xsGlassDome',XDOME,MAT.glass);
 kdef('xsDomeV',XDOME,MAT.verdigris);kdef('xsDomeW',XDOME,MAT.white);kdef('xsDrumV',XDRUM,MAT.verdigris);kdef('xsDrumW',XDRUM,MAT.white);

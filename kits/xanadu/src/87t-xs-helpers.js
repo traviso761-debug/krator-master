@@ -23,7 +23,7 @@
      xnXSPool(x,y,z,w,d,ry,o)                a pool in a surround of two glazed tiles in waves; its water the kit's xWaterB
    Per-panel variation is core/rand's hash of (the building's seed, face, column, row): never the draw order. */
 
-const XS={bronze:0xc0904c,bronzeD:0x8a5c2c,joint:0x2a2624,cable:0x2c2e32,room:0xf2c47a,stone:0xb8b0a0};
+const XS={verd:0x9ee0c4,bronze:0xc0904c,bronzeD:0x8a5c2c,joint:0x2a2624,cable:0x2c2e32,room:0xf2c47a,stone:0xb8b0a0};
 /* the paint schemes, one per variant: a = the field (the Ancients' own white), b = the course's second paint, frame the
    cholet frames, steel the girders' paint (the owner's references: Casa Vicens; the cholets; the lapis city) */
 const XS_SCHEMES=[
@@ -107,7 +107,7 @@ function xnXSLantern(x,y,z,r,h,o){o=o||{};const n=(o.n==null?8:o.n),br=xC(XS.bro
 const XS_RIB=[[1,0],[1.12,.26],[.92,.62],[.38,.9],[0,1]];   /* XDOME's profile, read at its turns */
 function xnXSDome(x,y,z,r,kind,o){o=o||{};const H=r*(o.rise==null?.95:o.rise),br=xC(XS.bronze),n=o.ribs!=null?o.ribs:o.n!=null?o.n:8;
  const it=kind==='glass'?'xsGlassDome':kind==='verd'?'xsDomeV':'xsDomeW';
- kput(it,[x,y,z],null,[r,H,r],kind==='panel'?xC((o.S||XS_SCHEMES[0]).a):null);
+ kput(it,[x,y,z],null,[r,H,r],kind==='panel'?xC((o.S||XS_SCHEMES[0]).a):kind==='verd'?xC(XS.verd):null);   /* the patina map is muted: the copper's green is tinted in */
  if(kind==='glass')kput('xOctP',[x,y,z],null,[r*.5,H*.5,r*.5],o.lit?xC(XS.room):IZ_ROOMC);
  for(let k=0;k<n;k++){const a=k*TAU/n,P=XS_RIB.map(q=>[x+Math.sin(a)*r*1.01*q[0],y+H*q[1],z+Math.cos(a)*r*1.01*q[0]]);
   for(let i=0;i<P.length-1;i++)beam('xsBronzeB',P[i],P[i+1],.08,.06,br);}
@@ -133,7 +133,7 @@ function xnXSDrumFace(x,y,z,r,h,o){o=o||{};const S=o.S||XS_SCHEMES[0],item=o.ite
    for(let k=1;k<Math.round((h-1.2)/.6);k++){const q=[x+Math.sin(a)*(r+.11),z+Math.cos(a)*(r+.11)];vB('xsBronzeB',q[0],y+.6+k*.6,q[1],cw-.12,.04,.03,a,br);}
    for(const s of[-1,1]){const b=a+s*cw/(2*r);vB('xsBronzeB',x+Math.sin(b)*(r+.06),y+.4,z+Math.cos(b)*(r+.06),.12,h-.8,.12,b,br);}continue;}
   for(let j=0;j<ns*rs;j++){const p=[x+Math.sin(a)*(r+t/2),z+Math.cos(a)*(r+t/2)];
-   const col=o.pat?xC(xsPat(o.pat,i,j,S,n,rs)).multiplyScalar(.93+.1*xsU(9,i,j)):xC(0xffffff).multiplyScalar(.9+.14*xsU(9,i,j));
+   const col=o.pat?xC(xsPat(o.pat,i,j,S,n,rs)).multiplyScalar(.93+.1*xsU(9,i,j)):xC(item==='xsPanelV'?XS.verd:0xffffff).multiplyScalar(.9+.14*xsU(9,i,j));
    vB(item,p[0],y+j*ph+gap/2,p[1],cw-gap,ph-gap,t,a,col);}}
  for(let s=0;s<=ns;s++)kput('xsRing',[x,y+s*h/ns,z],qEuler(Math.PI/2,0,0),[r+.12,r+.12,r*2],br);   /* the bronze bands */
  return y+h;}
