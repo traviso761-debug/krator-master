@@ -89,7 +89,11 @@ The plan's records are the model (`8aw0-strongbow-plan.js`, [G data]). The drawi
 | People | About 28,000 as built (`STRONGBOW.plan().stats`: the tower 12,700, the Spine 6,500, the Nock 2,500, the lower hull 2,500, the rim gallery 1,500, the foot 1,200, the galleries 900). They live in the tower's flanks (the lit band behind the glazing), the Spine's drums and terraces, the Nock's decks, the foot's wings, the galleries, the lower hull and the rim gallery. The owner kept about 29,000 for the sail (2026-11-11) |
 
 **The ruin**, as deltas by id (`STRONGBOW.ruin`):
-- **The east stays have snapped.** That is all three east anchor fans and half the east string fan, 39% of the string and anchors. A few cables hang limp from the sail.
+- **The east stays have snapped.** That is all three east anchor fans and the whole east string fan, half of the string and anchors. The string
+  held the Nock's east wing, which fell, so none of it is left standing (2026-11-12; before, half the string stood and ended in the air).
+  A few cables hang limp from the tower.
+- **The arc ramp lands on the crown.** Its end runs 6 m onto the deck, 0.6 m under it, through a gate in the crown's parapet
+  (2026-11-12; before, it stopped about 9 m short of the deck's west flank).
 - **The tower leans off the face.** It has swung about its hinge at the crown's back, 3.5 degrees out and 2 degrees west, so its
   foot stands about 25 m out from where it was. The gap behind it opens toward the foot.
 - **The Nock is broken.** Its east wing has fallen to the scree. The deck stays on the rock, and the tower leans through its cracked

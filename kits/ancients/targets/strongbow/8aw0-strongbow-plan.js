@@ -22,7 +22,7 @@
 const STRONGBOW={};
 STRONGBOW.DIM={LIP:900,BATTER:30,STO:25.6/7,BAY:{w:190,d:90},
  HULL:{top:960,tip:498,W:110,D:170,gap:40,LIT:20,NSEG:8},
- CROWN:{h:10,over:30,pool:[44,16]},MAST:{h:170,rake:12},RAMP:{p0:[-300,-34],c:[-260,190],p2:[-62,40],w:14,pitch:26,back:[[-150,-230],[0,-260],[150,-230]]},
+ CROWN:{h:10,over:30,pool:[44,16]},MAST:{h:170,rake:12},RAMP:{p0:[-300,-34],c:[-260,190],p2:[-47,29],w:14,pitch:26,back:[[-150,-230],[0,-260],[150,-230]]},
  NOCK:{y:520,th:22,over:96,wing:120,storeys:5,landing:{r:30,at:.52}},
  STRING:{n:12,u:.45,y0:700,y1:880,x0:125,x1:208},
  ANCHORS:[{y:840,n:10,b0:790,b1:880},{y:740,n:10,b0:660,b1:780},{y:620,n:9,b0:540,b1:640}],SOCK:{x0:130,x1:270,u:.62},
@@ -94,7 +94,10 @@ STRONGBOW.plan=function(o){o=o||{};const D=STRONGBOW.DIM,F=STRONGBOW.frame(o),S=
  // (a quadratic curve from the plateau west of the bay, out over the bay's mouth and back onto the crown's west flank)
  {const R=D.RAMP,bz=f=>{const a=(1-f)*(1-f),b=2*f*(1-f),c=f*f;return[a*R.p0[0]+b*R.c[0]+c*R.p2[0],a*R.p0[1]+b*R.c[1]+c*R.p2[1]];};
   let L=0;for(let i=0;i<64;i++){const p=bz(i/64),q=bz((i+1)/64);L+=Math.hypot(q[0]-p[0],q[1]-p[1]);}
-  const n=Math.round(L/R.pitch),pts=[];for(let i=0;i<=n;i++){const f=i/n,p=bz(f);pts.push([p[0],LY+(cy-LY)*f,p[1],f]);}
+  /* its end runs 6 m onto the crown's deck (p2: both edges inside the deck's flank) and lands 0.6 m under it, a step up through
+     the gate in the crown's parapet (8aw1): an end at the deck's own height would lie in its plane and z-fight (the owner,
+     2026-11-12: "the suspension bridge at the top does not fully connect to the wedge tower") */
+  const n=Math.round(L/R.pitch),pts=[];for(let i=0;i<=n;i++){const f=i/n,p=bz(f);pts.push([p[0],LY+(cy-.6-LY)*f,p[1],f]);}
   P.ramp={id:'sb.ramp',pts,w:R.w,len:L};
   for(let i=1;i<pts.length-1;i++)P.stays.push({id:'sb.st.ramp.'+i,fan:'ramp',side:-1,i,a:'mast',b:pts[i].slice(0,3)});
   // the backstays: from the mast head to the plateau behind the bay
@@ -178,9 +181,11 @@ STRONGBOW.plan=function(o){o=o||{};const D=STRONGBOW.DIM,F=STRONGBOW.frame(o),S=
 // ---- the ruin: deltas by id ---------------------------------------------------------------------------------------
 STRONGBOW.ruin=function(P){const D=P.dim,R=D.RUIN,F=P.frame,S=P.seed,h=(a,b,c,e)=>STRONGBOW.h(S,a,b,c,e);
  const side=R.side,sn=side<0?'w':'e',RU={gone:[],limp:[],skin:[],helio:[],spineGone:[],debris:[]};
- // the stays: every anchor on the failed side, half its string; some hang limp from the hull
+ // the stays: every anchor on the failed side, and all its string: the string held the Nock's wing on that side, which fell
+ // (RU.nockGone), so none of it ends on anything (the owner, 2026-11-12: "these cables attach to nothing"; stringGone, the
+ // half it was before, is kept in RUIN for older readers and no longer read). Some hang limp from the hull
  for(const st of P.stays){if(st.side!==side||st.fan==='ramp'||st.fan==='quiver')continue;
-  const snap=st.fan.indexOf('anchor')===0||(st.fan==='string'&&h(201,st.i,st.fan.length)<R.stringGone);
+  const snap=st.fan.indexOf('anchor')===0||st.fan==='string';
   if(!snap)continue;RU.gone.push(st.id);
   if(h(202,st.i,st.fan.length,st.id.length)<R.limp)RU.limp.push({id:st.id,len:40+160*h(203,st.i,st.id.length)});}
  // the Bow's lean about its hinge at the crown's back (degrees about x: out; about z: the roll)

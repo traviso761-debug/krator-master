@@ -89,7 +89,11 @@ function sbCrown(X){const P=X.P,F=X.F,D=X.D,C=P.crown,w0=F.w(0),d0=F.d(0),kx=1+C
  const c=[0,F.back+d0*.35];
  SBG.put(X,'deck',gridSurface((u,v)=>{const o=out(u);return[lerp(c[0],o[0],v),C.y1,lerp(c[1],o[1],v)];},60,6,{uS:30,vS:6}),true);
  SBG.put(X,'shade',gridSurface((u,v)=>{const o=out(u);return[lerp(c[0],o[0],v),C.y0,lerp(c[1],o[1],v)];},60,6,{uS:30,vS:6}),true);
- SBG.put(X,ow,gridSurface((u,v)=>{const o=out(u);return[o[0],lerp(C.y0,C.y1+1.4,v),o[1]];},120,1,{uS:60,vS:1}),true);
+ /* its edge: the fascia, and the parapet over the deck with a gate where the arc ramp lands */
+ const RP=P.ramp.pts,sd=(o,a,b)=>{const dx=b[0]-a[0],dz=b[2]-a[2],l=dx*dx+dz*dz||1,t=Math.max(0,Math.min(1,((o[0]-a[0])*dx+(o[1]-a[2])*dz)/l));return Math.hypot(o[0]-a[0]-t*dx,o[1]-a[2]-t*dz);};
+ const gate=u=>{const o=out(u);for(let i=1;i<RP.length;i++)if(sd(o,RP[i-1],RP[i])<P.ramp.w/2+1.5)return true;return false;};
+ SBG.put(X,ow,gridSurface((u,v)=>{const o=out(u);return[o[0],lerp(C.y0,C.y1,v),o[1]];},120,1,{uS:60,vS:1}),true);
+ SBG.put(X,ow,gridSurface((u,v)=>{const o=out(u);return[o[0],lerp(C.y1,C.y1+1.4,v),o[1]];},240,1,{uS:120,vS:1,hole:(u,v)=>gate(u)}),true);
  // the pool: a glazed pad at the deck's front; the pavilion behind it
  const pl=C.pool;SBG.put(X,X.dd?'poolR':'pool',gridSurface((u,v)=>[lerp(-pl.size[0]/2,pl.size[0]/2,u),C.y1+.25,pl.at[2]+lerp(-pl.size[1]/2,pl.size[1]/2,v)],2,2,{}),true);
  const pv=[F.back+30,F.back+62],pw=Math.min(40,w0*.5);

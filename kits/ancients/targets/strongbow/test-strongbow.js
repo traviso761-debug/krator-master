@@ -72,10 +72,10 @@ ok(RU.town.houses.length>40,'the town at the foot ('+RU.town.houses.length+' hou
 ok(RU.town.houses.every(hs=>FT.rects.every(r=>!(hs.at[0]>r[0]-10&&hs.at[0]<r[1]+10&&hs.at[2]>r[2]-10&&hs.at[2]<r[3]+10))),'no house in the foot or on the plaza');
 ok(RU.quiver.pieces.every(q=>q.at[0]<RU.foot.hallCut+20&&q.at[2]>FT.hall.z0&&q.at[2]<FT.hall.z1),'the fallen lower hull lies on the terminus hall crushed west half');
 ok(RU.town.houses.every(h=>F.scree(h.at[0],h.at[2])<=16),'no house on the heaped scree');
-// the ruin: half the stays (every one on the failed side's anchors, about half its string), none on the other side
+// the ruin: half the stays (every anchor and all the string on the failed side, whose Nock wing fell; 2026-11-12), none on the other side
 const all=P.stays.filter(s=>s.fan==='string'||s.fan.indexOf('anchor')===0),gone=new Set(RU.gone);
 const share=all.filter(s=>gone.has(s.id)).length/all.length;
-ok(share>.35&&share<.5,'the ruin stands on half its stays ('+(100*share).toFixed(0)+'% of string and anchors gone)');
+ok(share>.35&&share<=.5,'the ruin stands on half its stays ('+(100*share).toFixed(0)+'% of string and anchors gone)');
 ok(all.filter(s=>gone.has(s.id)).every(s=>s.side===D.RUIN.side),'only the failed side\'s stays have snapped');
 ok(Math.hypot(RU.lean.ax,RU.lean.az)>3&&Math.hypot(RU.lean.ax,RU.lean.az)<5,'the Bow leans a few degrees off the face');
 const tipOut=S.hull*Math.sin(-RU.lean.ax*Math.PI/180);ok(tipOut>20&&tipOut<35,'its keel stands about 27 m out, off the Spine\'s head ('+tipOut.toFixed(0)+' m)');
