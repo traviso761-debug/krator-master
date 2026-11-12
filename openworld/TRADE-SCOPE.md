@@ -92,8 +92,22 @@ not a city. **The queue edit is a type change** (section 4); the census should r
 ### 2.4 Oil and rare earths: who can extract them, concessions, demand, Locus
 
 **The extraction rule.** Only **Yuni (the Geomancers), the Eternians and the Order** extract oil and rare earths; the
-**Tungangs** extract rare earths too. **The Geomancers work other polities' oil fields under licence**: the oil is sold as
-Yuni's and the host takes a cut (its own burning is met first). Nobody else's rare earths are worked.
+**Tungangs** extract rare earths too, but **only the deposits they reach from the tunnels**. **The Geomancers work other
+polities' oil fields under licence**: the oil is sold as Yuni's. **The licence's terms** (the owner, 2026-11-12): the host
+gets **10% of the profits** and **20% off the oil from that site only**. **The Geomancers may also work rare earths in Yuni's
+lands and nearby.** Nobody else's rare earths are worked.
+
+**The Tungangs' tunnels.** The Rift line's bore (`openworld/ANCIENT-TUNNELS.md` section 1: 439 km, px 464,1112 to 437,1330,
+Dalab to Ledge, Loj Twenny on it) runs through rich rare-earth ground: within 5 km of the bore, 3,056 km² are over 100
+(max 190, mean 111); within 10 km, 6,160 km². So the Tungangs' rare earths are limited by hands, not ground: Loj Twenny's
+500 people work 0.9 t today. The model counts a Tungang settlement's rare earths only within a few km of a bore or its
+caverns (5 km proposed), so the Line has to go into the model as a polyline. Ledge, where the line comes out (Ledge's lifts
+are Loj Fower, LORE.md:221), reaches the bore's southern end; Dalab's own rare earths there stay unworked.
+
+**"Yuni's lands and nearby."** Yuni's pins stand on granite with rare earths at 160 almost everywhere: within 50 km of a
+Yuni pin 12,500 km² are over 100, within 200 km 126,800 km². "Nearby" is proposed as **200 km of a Yuni pin**. That takes
+in no other polity's pin today (the nearest are Mungo, 265 km from Verge, and Talia, 391 km), so in practice the
+concession is Yuni's own ground, worked as far as its hands reach.
 
 **Oil, before and after** (net exports, t a year):
 
@@ -148,10 +162,10 @@ so cacao, coffee, clove, sugar and cotton grow in every warm belt and barely tra
 | `ringisles` | clove, coffee, kava, sugar cane | the League, Kautoa (and Voth's Spice Isles' re-export) | `native` on the four |
 | `oidong` | mist tea, lotus silk, camphor, sky poppy | the Order | `native` on the four (tea and poppy shared with the Vale) |
 | `hyperjungle` | jungle indigo, sunseed annatto (and bloodwood red, 5a) | the Screamers | `native` on indigo and annatto |
-| `nwlowlands` (the Eternians) | **an Eternian tea** and **an Eternian wine grape** | the Eternians | two new records; Eternian wine also a specialty in the trade model ("famed for their wine") |
+| `nwlowlands` (the Eternians) | **an Eternian tea** and **an Eternian wine grape** | the Eternians | two new records; the grape is a crop the farms grow, and **Eternian wine** is a specialty in the trade model made from it ("famed for their wine"; the owner: "wine has a grape crop to go with it") |
 | `swlowlands` (Dalab), and where Dalab spread it | **hashish** | Dalab | a new record (the resin of a hemp), `native`, home `swlowlands`; **transplanted by polity**: wherever Dalab holds ground its climate fits, the rift rim first (`riftrim`: Ledge, Nulab). The owner: "for dalab, Sw lowlands and places they spread their crops to like the rift rim" |
 | `swbay`, `swhighlands` | **four valuable natives** (2.5a, a proposal) | Voth (the bay); the Republic's north and Dalab's Span (the highlands) | four new records |
-| `sedesert`, `ebadlands` | incense: myrrh (sedesert) and an ebadlands incense | the Bowl's and the badlands' holders | dragon's blood resin's home trimmed toward `sedesert`; a new ebadlands incense record; Oidong's temple-cedar incense and monk's sage stay (the owner's "mostly") |
+| `sedesert`, `ebadlands` | incense: myrrh and dragon's blood (sedesert), and a badlands incense (2.5b) | the south-east desert's holders; Yuni (the badlands) | dragon's blood resin's home **trimmed to `sedesert`** (from `nwbay`, `rift`, `sedesert`, `swbay`; the owner, 2026-11-12); a new ebadlands record; Oidong's temple-cedar incense and monk's sage stay (the owner's "mostly") |
 | the inner crater | tobacco | the inner crater's polities | tobacco (`src: 'proposed'`, no home today) made `native`, home: `crater-drylands`, `nwbay`, `swbay`, `hyperjungle`, `ringisles`, `geyser` (the Steampits' field), `abyssal-savannah` (its rim) and `throne`, wherever its climate fits there (warmth 3-4, aridity 2-3). The owner: "any appropriate koppen within" those biomes |
 
 **Homes outside `CROPS.BIOMES`.** `riftrim`, `abyssal-savannah` and `swhighlands` are biome kits but not crop zones yet
@@ -164,9 +178,11 @@ Voth, Jimjam, Dalab, Erehwon, Fulcrum; tea's the Republic (27%), Dalab, Iziz, th
 Voth 2,396 t, Xanadu 1,658, the Eternians 1,493, Dalab 1,445. Under the rule most of these fall to their homes'; the
 trade model must place each settlement in a biome (the scale model's biome polygons) before it can say how much.
 
-**The isle demo meets this first.** Its plantations (`settlements/isle-demo/src/15-isle-tune.js`: Nephtos's cacao, indigo,
-annatto and tobacco, worked by hired Islanders, `:663`) grow crops that would no longer be native to the Ring Isles. Either
-they are recorded as transplants (the colony brought them) or they change; either way the economy's test case moves.
+**The isle demo must be reworked** (the owner, 2026-11-12; a to-do in `TODO.md`). Its plantations
+(`settlements/isle-demo/src/15-isle-tune.js`: Nephtos's cacao, indigo, annatto and tobacco, worked by hired Islanders,
+`:663`) and the traders' buy lists (`:335`, `:346`, `:347`) carry crops these rules take off the Ring Isles: cacao (the
+Vale's), indigo and annatto (the hyperjungle's). Tobacco stays (`ringisles` is in its inner crater). The plantations and the
+buy lists change to crops native to the isles or bought in, and the stocks proof and `test-sim.js` move on purpose.
 
 ### 2.5a The SW natives (a proposal; the owner: "make me a proposal")
 
@@ -182,6 +198,19 @@ Each is a luxury that travels: dried, light and dear.
 
 A fifth if you want one: **torch-spike red**, the tableland's red flower spikes picked for their stigmas, a red dye and
 spice. It would compete with the Vale's saffron, so I left it out.
+
+### 2.5b The badlands incense (a proposal; the owner: "make me a proposal")
+
+The badlands (`biomes/ebadlands`) are pinyon-juniper country: pinyon and Utah juniper in stands on the steppe and the
+canyon benches, sagebrush between, bristlecones up high (`BIOME-API.md`, the zone table). Station 2, the canyons, is at
+px 1279,1111, beside Yuni, so the badlands' incense is Yuni's.
+
+| Record (proposed id) | Bucket | Home | From the drawn species | What it is |
+|---|---|---|---|---|
+| **Pinyon copal** (`pinyon-copal`) | fuel (also medicine) | `ebadlands` | the pinyon pine (species 0) | the pitch that beads on the pinyon's wounds, gathered in tears and aged: a clear amber incense with a sweet pine smoke, and a salve for cuts. Pinyon pitch was burned and used as a medicine in the American south-west |
+
+One for the trade model to carry; **juniper smoke** (the Utah juniper's shavings and sagebrush, burned together) could be its
+cheaper partner, but juniper berries are already the badlands' spice, so I would keep it to the copal.
 
 ### 2.6 The craft-only polities' natural exports
 
@@ -252,10 +281,10 @@ Each pin wants the census's rescan and the trade model's rerun after it lands (`
 | 2.1 gateways | the trade model: a side per settlement, blocked routes, the re-export leg | none | none | `SIM.trade`'s land carriers (core/camp's caravans) and the sea lanes need a route rule: no route across the Lizardmen's floor; the Catch by Stair |
 | 2.2 salt | the trade model | none | two SETT_ADDED | a salt good exists; the works are new hamlets (`KHAMLET.village`, salt kind) when a region with them is built |
 | 2.3 Tallwalls | the census rescan | none | a type change | none until the south-west is a region |
-| 2.4 extraction, concessions, oil demand | the trade model: who may work a family; the licence as a record (host, operator, cut) | none | none | **no oil good or use in the sim yet**: an oil good, the derrick under licence (operator Yuni, the host's cut: a contract record in `core/simulation/SCHEMA.md`), and the uses (generators, vehicles, lamps) when a region needs them; the isle demo has none of these today |
+| 2.4 extraction, concessions, oil demand | the trade model: who may work a family; the licence's terms; rare earths within 200 km of a Yuni pin; the Rift line as a polyline for the Tungangs | none | none | **no oil good or use in the sim yet**: an oil good, the derrick under licence (a contract record in `core/simulation/SCHEMA.md`: site, host, operator Yuni, the host's 10% of the profits and 20% off that site's oil); the same record for the Geomancers' rare-earth works, and the uses (generators, vehicles, lamps) when a region needs them; the isle demo has none of these today |
 | 2.4 Locus lode | `kits/resources/data/lodes.json`, the stamp, the digest | the Resources kit (`verify.py --assert`); every page that reads `geology.json` (`python3 tools/reach.py kits/resources/data/geology.json`); Godot via `sync_core.py` | none | the oil node field round Locus (the derrick is Locus's pumpjack) |
 | 2.4 the delta rule (later) | `tools/scale-model/geology.py`, `kits/resources/GEOLOGY.md` | a full rebake: every page that reads the geology, the ledger, the hash baseline | none | as the lode |
-| 2.5 native crops | `kits/crops` (`native`, `transplanted` by settlement or by polity, new records: Eternian tea, Eternian wine grape, hashish, an ebadlands incense, the four SW natives; dragon's blood's and tobacco's homes; three new zones in `CROPS.BIOMES`: `riftrim`, `abyssal-savannah`, `swhighlands`); the trade model's biome per settlement | `kits/crops` (`build.py`, `tests/test-crops.js`, `verify.py --assert`) and every build that reads it (`tools/reach.py kits/crops/src/20-crop-records.js`) | none | **the isle demo's plantations** (cacao, indigo, annatto, tobacco) and every `CROPS.pick`/`palette` call: the hamlets' fields (`core/hamlet`) and the farms' palettes change; the stocks proof and `test-sim.js` move on purpose, re-baselined |
+| 2.5 native crops | `kits/crops` (`native`, `transplanted` by settlement or by polity, new records: Eternian tea, Eternian wine grape, hashish, pinyon copal, the four SW natives; dragon's blood's and tobacco's homes; three new zones in `CROPS.BIOMES`: `riftrim`, `abyssal-savannah`, `swhighlands`); the trade model's biome per settlement | `kits/crops` (`build.py`, `tests/test-crops.js`, `verify.py --assert`) and every build that reads it (`tools/reach.py kits/crops/src/20-crop-records.js`) | none | **the isle demo's plantations** (cacao, indigo, annatto, tobacco) and every `CROPS.pick`/`palette` call: the hamlets' fields (`core/hamlet`) and the farms' palettes change; the stocks proof and `test-sim.js` move on purpose, re-baselined |
 | 2.6 craft-only | gypsum a trade good in the trade model | none | two SETT_ADDED | none |
 | 2.7 scrap to iron | the trade model (smelting before buying) | the geology's ruin bit for lived-in Ancient cities (Iziz, Pylon, Roketstad, Yuni, Hook): a rebake item | none | phase S2's goods row (`scrap`) and recipe (smelter: scrap 1 + fuel 1 = iron 1, 2 h); a `SIM.site` salvage kind on ruin ground whose yield falls as it is stripped; the breakers' floor (`pyl_breakers_floor`), smelter (`pyl_smelter`, `hl_rep_smelter`) and salvage yards (`pyl_scrap_yard`, `vern_salvage_yard`, `hl_rep_salvage_forge`) mapped to them; the isle demo has scrap huts but no ruin ground |
 
@@ -264,15 +293,20 @@ And the documents: `TRADE-GOODS.md`'s tables are rerun and rewritten once the ru
 
 ## 6. Still open (the owner's calls)
 
-Settled 2026-11-12: hashish's home (`swlowlands`, spread by Dalab to the rift rim), tobacco's inner crater (2.5); the SW
-natives are proposed in 2.5a.
+**Settled 2026-11-12:**
+- hashish's home: `swlowlands`, spread by Dalab to the rift rim (2.5);
+- tobacco's inner crater (2.5);
+- dragon's blood trimmed to the sedesert (2.5);
+- the Tungangs work only the deposits their tunnels reach (2.4);
+- the licence: 10% of the profits and 20% off that site's oil (2.4);
+- the Geomancers' rare earths in Yuni's lands and nearby (2.4);
+- the isle demo reworked for these crops, a to-do (2.5);
+- Eternian wine comes with its grape crop (2.5).
+
+**Proposed, awaiting the owner:** the four SW natives (2.5a) and pinyon copal (2.5b).
 
 1. **The SW natives:** take the four in 2.5a, change them, or add torch-spike red?
-2. **"The hyperjungle biomes":** `hyperjungle` alone, or more of the jungle kits?
-3. **Incense:** trim dragon's blood resin to the sedesert (it is also home in the NW bay, the Rift and the SW bay today), and
-   what the ebadlands' incense is (a pinyon or juniper resin fits the kit's flora).
-4. **The Tungangs' rare earths:** may they work Dalab's rare earths (Nulab and Ledge: 15.5 t of the old 22%) under a bargain like
-   the Geomancers' licence? Today they work only their own (0.9 t).
-5. **The licence's cut:** how much of a concession's oil or its price the host keeps (the model needs a number).
-6. **The isle demo's plantations:** transplants (they stay, recorded) or changed to native crops?
-7. **Eternian wine:** a crop the farms grow (a wine grape record) and also a specialty the model sells, or only the specialty?
+2. **The badlands incense:** take pinyon copal (2.5b)?
+3. **"The hyperjungle biomes":** `hyperjungle` alone, or more of the jungle kits?
+4. **"Nearby" for the Geomancers' rare earths:** 200 km of a Yuni pin (2.4)?
+5. **The Tungangs' reach from a bore:** 5 km (2.4)?

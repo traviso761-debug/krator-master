@@ -26,6 +26,14 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 - **Reroute the Ostrukh Riba south into Lake Ostrukh.** The owner agreed that Mid Basin's springs and Lake Ostrukh share one aquifer, fed by the Stalker Range's snow (`biomes/midbasin/PLAN.md`). Today the river runs north from the flagship pool (2,040 m) into Region 99 and ends at 334 m, although its note says it feeds the lake (1,850 m). A southern course needs a carve about 70-80 m deep; its highest point is 2,082 m at 1588,1392. Retrace the river downhill and fix its note. The scale-model edits session (`claude/dreamy-davinci-30f3c1`, edit 5.1.1 at f1d1501cf, artifact version 92) has the details. Held for the next map edit, not done alone.
 - **Reed, Nazar and Mungo:** the biome plans' coordinates for them add the canvas shift twice (Reed really stands at 1277,676). Correct the plans when the next edit lands.
 
+## With the native-crop rule *(the owner, 2026-11-12; `openworld/TRADE-SCOPE.md` section 2.5)*
+
+- **Rework the isle demo's crops.** Under the native-crop rule cacao is the Vale's and indigo and annatto the
+  hyperjungle's, so the Ring Isles can no longer grow them. Nephtos's plantations (`settlements/isle-demo/src/15-isle-tune.js:663`)
+  and the traders' buy lists (`:335`, `:346`, `:347`) change to crops native to the isles (clove, coffee, kava, sugar cane;
+  tobacco stays, the isles being in its inner crater) or to goods bought in. The stocks proof and `test-sim.js` move on
+  purpose and are re-baselined. Do it when the rule lands in `kits/crops`, not before.
+
 ## Ride along with the next all-builds rebuild
 
 - **core/world: a kit on several biome overlays** (2026-11-11, the Iziz cluster's open-world region): `core/world/41-world-fields.js`
