@@ -6,7 +6,7 @@ The Loom-Chasms: a rift basin of basalt mesas split by a net of chasms a kilomet
 
 Docs: `BIOME-API.md`, `KNOWN_ISSUES.md`, `PLAN.md`, `PORT.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/loom-chasms-cradle.html`, `dist/loom-chasms.html`
+Built output (never open it; edit `src/` and rebuild): `dist/loom-chasms-caelum.html`, `dist/loom-chasms-cradle.html`, `dist/loom-chasms-monocline.html`, `dist/loom-chasms-whiteloom.html`, `dist/loom-chasms.html`
 
 Build: `cd biomes/loom-chasms && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -17,13 +17,14 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 |---|---|---|
 | `00-head.html` | 1 |  |
 | `44v-host-landlib.js` | 9 |  |
-| `45-host-stage.js` | 26 | the climate fields, cached (the land's fieldsAt: (34); the host binding (52); the ground (63); the rock bodies (KSTACKS, 44w: the chaos's mesas (196); the water (220) |
+| `45-host-stage.js` | 27 | the climate fields, cached (the land's fieldsAt: (34); the host binding (52); the ground (63); the rock bodies (KSTACKS, 44w: the chaos's mesas (200); the water (224) |
 | `45d-host-drawn.js` | 3 |  |
 | `50-biome-loom-species.js` | 7 | procedural cards (the fallback when the page car (37); geometries (44); materials (the slots are materials.json's famili (58); instanced items (67) |
 | `60-biome-loom-cables.js` | 4 |  |
 | `62-biome-loom-fields.js` | 3 |  |
 | `70-biome-loom.js` | <1 |  |
 | `83-host-far.js` | 4 |  |
+| `85-host-canopy.js` | 16 |  |
 | `87-host-kin.js` | 3 |  |
 | `88-host-hazard.js` | 3 |  |
 | `89-host-sky.js` | 2 |  |
@@ -39,7 +40,8 @@ Each station builds one page (`build.py --station <name>`) from its own fragment
 
 | Station | Fragments | KB |
 |---|---|---|
-| caelum |  | <1 |
-| cradle | 44f-host-far-data.js, 44w-host-land.js, 86-host-farms.js | 108 |
-| loom | 44f-host-far-data.js, 44w-host-land.js, 86-host-slot.js | 101 |
-| monocline |  | <1 |
+| caelum | 44f-host-far-data.js, 44w-host-land.js, 86-host-caelum.js | 94 |
+| cradle | 44f-host-far-data.js, 44w-host-land.js, 86-host-farms.js | 110 |
+| loom | 44f-host-far-data.js, 44w-host-land.js, 86-host-slot.js | 87 |
+| monocline | 44f-host-far-data.js, 44w-host-land.js, 86-host-step.js | 104 |
+| whiteloom | 44f-host-far-data.js, 44w-host-land.js, 86-host-nim.js | 96 |

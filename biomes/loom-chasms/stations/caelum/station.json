@@ -1,36 +1,28 @@
 {
-  "canvas": "5.1 (1821x1723)",
-  "name": "Mount Caelum Caldera (station 4): the central low-angle shield dome, steaming geothermal vents, the colossal ancient Parent Loom colony anchoring regional tension spans, high thin-air summit overlooking the white Lake Nim playa",
-  "out": "loom-caelum.html",
-  "site": {
-    "name": "caelum",
-    "title": "Mount Caelum Caldera & Lake Nim Overlook",
-    "px": 1622,
-    "py": 1166,
-    "base": 4431.0,
-    "playa_level": 344.0,
-    "atm": 0.95,
-    "mean": -2.0,
-    "rain": 439,
-    "cls": "ET",
-    "lat": -27.4
-  },
-  "water": [
-    {
-      "kind": "vent",
-      "name": "Caelum Fumaroles",
-      "px": 1622,
-      "py": 1166,
-      "temp_c": 115.0
-    },
-    {
-      "kind": "playa",
-      "name": "Lake Nim",
-      "px": 1692,
-      "py": 1180,
-      "level_m": 344.0,
-      "area_km2": 45.0,
-      "hypersaline": true
-    }
+ "canvas": "5.1 (1821x1723)",
+ "note": "Station 4, Mount Caelum (PLAN.md section 7; built 2026-11-12 at the plan's site, 1622,1166: the summit and the model's vent there, a `geyser` record of the scale model's vents.json). v2's record joined the summit and Lake Nim, 140 km apart: Lake Nim is station 5's (the White Loom), and this record's playa fields are gone with it (PLAN.md section 7, 'Records to fix'). kin: the Great Chasm's kit for the ground cover (its cushions, lichen and puff on the high walls), as on the Loom. The site record below is the plan's data, corrected (atm 0.92); build.py reads only kin, core and base.",
+ "name": "Mount Caelum (station 4): the shield's summit caldera and its fumaroles, the parent colony of the cable spinners across the rift fissures, the chasm net spread out below",
+ "out": "loom-chasms-caelum.html",
+ "site": {
+  "name": "caelum",
+  "title": "Mount Caelum",
+  "px": 1622,
+  "py": 1166,
+  "base": 4431.0,
+  "atm": 0.92,
+  "mean": -2.0,
+  "rain": 439,
+  "cls": "ET",
+  "lat": -27.4
+ },
+ "water": [
+  {"kind": "vent", "name": "The Caelum fumaroles", "px": 1622, "py": 1166, "temp_c": 115.0}
+ ],
+ "kin": {
+  "greatchasm": [
+   ["src/50-biome-greatchasm-species.js", "src/60-biome-greatchasm-floor.js", "src/70-biome-greatchasm.js"],
+   "GCH",
+   "*"
   ]
+ }
 }

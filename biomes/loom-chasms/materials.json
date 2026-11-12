@@ -1,6 +1,6 @@
 {
  "build": "loom-chasms",
- "note": "The Loom-Chasms' own adapter onto the material library (core/materials/PLAN.md): the cable spinner's parts (50-biome-loom-species.js: BIO.libSwap). bark.cord.braided stands in for the grown cable's iron-silica fibre (tinted iron by the instance colour), organic.flesh.cells for the anchor tuber, organic.pleat.skin for the shoot's gas bladders, card.beard for the canopy's beard (one cell of its sheet), card.moss.hanging for the slots' wall curtains (one cell, its own colour: keep 1). The ground's library layers are the Great Chasm's pack, read in place (build.py). Run python3 tools/textures/pack.py biomes/loom-chasms after any change, then python3 build.py --all. The Cradle (station 1): the crop cards (card.crop.grainhead tinted by the crop, bean, flax, saffron and woad on their own colours: 62-biome-loom-fields.js) and its own two ground layers, ground.field (the terraces' treads, ground.terrace.field) and ground.grass (the river's banks).",
+ "note": "The Loom-Chasms' own adapter onto the material library (core/materials/PLAN.md): the cable spinner's parts (50-biome-loom-species.js: BIO.libSwap). bark.cord.braided stands in for the grown cable's iron-silica fibre (tinted iron by the instance colour), organic.flesh.cells for the anchor tuber, organic.pleat.skin for the shoot's gas bladders, card.beard for the canopy's beard (one cell of its sheet), card.moss.hanging for the slots' wall curtains (one cell, its own colour: keep 1). The ground's library layers are the Great Chasm's pack, read in place (build.py). Run python3 tools/textures/pack.py biomes/loom-chasms after any change, then python3 build.py --all. The Cradle (station 1): the crop cards (card.crop.grainhead tinted by the crop, bean, flax, saffron and woad on their own colours: 62-biome-loom-fields.js) and its own two ground layers, ground.field (the terraces' treads, ground.terrace.field) and ground.grass (the river's banks). Mount Caelum (station 4): ground.cinder (the summit's scoria) and ground.sulphur (the vents' crust: ground.efflorescence's relief under the painted sulphur colour, keep 0, a stand-in until a geothermal crust set exists: core/materials/PROMPTS-NEEDED.md section 44).",
  "size": 512,
  "families": {
   "cable": {
@@ -212,6 +212,32 @@
     "mean": null
    },
    "roughLift": 0.15,
+   "mapOnly": true
+  },
+  "ground.cinder": {
+   "lib": "ground.cinder",
+   "scale": [
+    3,
+    3
+   ],
+   "tint": {
+    "keep": 0.8,
+    "mean": null
+   },
+   "roughLift": 0.1,
+   "mapOnly": true
+  },
+  "ground.sulphur": {
+   "lib": "ground.efflorescence",
+   "scale": [
+    3,
+    3
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": null
+   },
+   "roughLift": 0.1,
    "mapOnly": true
   }
  }

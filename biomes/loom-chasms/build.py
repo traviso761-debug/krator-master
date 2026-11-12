@@ -64,7 +64,7 @@ def find_node():
 HERE = os.path.dirname(os.path.abspath(__file__)); SRC = os.path.join(HERE, 'src'); DIST = os.path.join(HERE, 'dist')
 ROOT = os.path.normpath(os.path.join(HERE, '..', '..'))
 sys.path.insert(0, os.path.join(ROOT, 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
-STATIONS = ['loom', 'cradle']
+STATIONS = ['loom', 'cradle', 'monocline', 'caelum', 'whiteloom']
 if '--all' in sys.argv:
     _rc = 0
     for _s in STATIONS:

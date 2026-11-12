@@ -324,13 +324,25 @@
    "bytes": 1523367,
    "sha256": "ec622309bf951dd3093bccdf6df80fb2deb63284eaad7d62a191178d545a1cb0"
   },
+  "biomes/loom-chasms/dist/loom-chasms-caelum.html": {
+   "bytes": 6765481,
+   "sha256": "7a24e1a388891e2210a1b271a53092fa050b0417e37635843a834ec1217ef2b8"
+  },
   "biomes/loom-chasms/dist/loom-chasms-cradle.html": {
-   "bytes": 10985131,
-   "sha256": "c5f5f2faef8828934161550ac29cd1e8960718ba0f3412e33f1b7c5d365cf55b"
+   "bytes": 11292872,
+   "sha256": "0536020e05617ac8d113d49dd4f8ce5ff1fcb4e9f0f1ca912a07d48912191897"
+  },
+  "biomes/loom-chasms/dist/loom-chasms-monocline.html": {
+   "bytes": 6776049,
+   "sha256": "a3bdd1fccd267e2d67cd9a8657ce232dd37791a719c0680d948418459bda91d1"
+  },
+  "biomes/loom-chasms/dist/loom-chasms-whiteloom.html": {
+   "bytes": 7164640,
+   "sha256": "88f30eb28aff531f414991ca2598e31ca64d3f34ad11f0a1796c10f8ae9dc35f"
   },
   "biomes/loom-chasms/dist/loom-chasms.html": {
-   "bytes": 6466010,
-   "sha256": "bd79dc57d9186fbd499ff1fd187814b1f0a41cf46b7a18a809ab9159a3cb7b54"
+   "bytes": 7156005,
+   "sha256": "5ccd4362ccbd7cc85dad9f47f547569893f59da80573b25c5c7a77aa4feeadda"
   },
   "biomes/necanyons/dist/necanyons-benches.html": {
    "bytes": 1597720,

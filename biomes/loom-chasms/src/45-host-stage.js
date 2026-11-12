@@ -32,7 +32,7 @@ const sun=new THREE.DirectionalLight(0xfff2dc,1.55);sun.position.set(-1000,1150,
 const fill=new THREE.DirectionalLight(0xd8c0a8,.22);fill.position.set(900,300,900);scene.add(fill);
 
 // ---------------------------------------------------------------- the climate fields, cached (the land's fieldsAt: these are a grid of them)
-const FNAMES=['wet','flow','upland','canyon','rim','rock','dune','oasis','slope','abyss','salt','cold','hot','geo','barren','strata','crack','snow','pave','polyg','talus','wash','char','fog','farm','ice','road'];
+const FNAMES=['wet','flow','upland','canyon','rim','rock','dune','oasis','slope','abyss','salt','cold','hot','geo','barren','strata','crack','snow','pave','polyg','talus','wash','char','fog','farm','ice','road','cinder'];
 const FC=(function(){const N=420,S=TERR.R*2.2,a={};FNAMES.forEach(n=>a[n]=new Float32Array(N*N));a.h=new Float32Array(N*N);
  // the bed under each cell, as the strata shader draws it (S.surface: the wash down a gentle slope, the loose cover in the bed's colour): the painter's colour
  const SF=STRATA.surface?{r:new Float32Array(N*N),g:new Float32Array(N*N),b:new Float32Array(N*N)}:null;
@@ -69,7 +69,7 @@ BIO.setSun([-1000,1150,-560]);
 const TEX_GROUND=BIO.canvasTex(1536,1536,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;const S=TERR.R*2.2;
  const c=new THREE.Color(),t=new THREE.Color(),K=hx=>new THREE.Color(hx);
  const P={floor:K(0x3a3830),floor2:K(0x4a463a),des:K(0x9a8466),des2:K(0x8a7458),wall:K(0x5a5450),wall2:K(0x4a4542),rock:K(0x3e3a38),rock2:K(0x5a4a40)};
- const SALT=K(0xd8d2c4),FROST=K(0xe6e8ec),ROAD=K(0xb8a888),WASH=K(0x8a7e6a),bed=new THREE.Color();
+ const SALT=K(0xd8d2c4),FROST=K(0xe6e8ec),ROAD=K(0xb8a888),WASH=K(0x8a7e6a),CINDER=K(0x4e3a32),CINDER2=K(0x3a2e2a),SULPH=K(0xc8b04a),bed=new THREE.Color();
  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;const wx=(x/w-.5)*S,wz=(y/h-.5)*S;
   const n=fbm(x/24,y/24,.3,2)-.5,n2=(BIO.fn.h3(x,y,3)-.5);
   const A=k=>FC.at(FC.a[k],wx,wz),rock=A('rock'),cold=A('cold'),hot=A('hot'),ab=A('abyss'),salt=A('salt'),str=A('strata'),tal=A('talus'),snow=A('snow'),road=A('road'),wash=A('wash');
@@ -81,6 +81,8 @@ const TEX_GROUND=BIO.canvasTex(1536,1536,(g,w,h)=>{const id=g.createImageData(w,
   t.copy(P.rock2).lerp(P.des2,clamp(.5+n2*1.2,0,1));c.lerp(t,tal*.5);
   t.copy(WASH).lerp(P.des,clamp(.5+n2,0,1));c.lerp(t,wash*.6);
   t.copy(SALT).lerp(P.floor2,clamp(.3+n*2,0,1)*.4);c.lerp(t,smooth(.2,.7,salt)*.85);
+  {const cn=A('cinder'),geo=A('geo');if(cn>0){t.copy(CINDER).lerp(CINDER2,clamp(.5+n*1.8,0,1));c.lerp(t,cn*.8*(1-rock*.4));}   /* a volcano's scoria top (Caelum) */
+   if(geo>0)c.lerp(SULPH,smooth(.2,.7,geo)*.85);}   /* the vents' sulphur crust */
   c.lerp(ROAD,smooth(.2,.8,road)*.55);
   c.lerp(FROST,snow*smooth(.85,.5,A('slope'))*.9);
   const k=1+n*.10+n2*.05;
@@ -117,7 +119,9 @@ const GLW=(function(){
   ['lichen',F=>F.rock*open(F)*smooth(.2,.5,F.cold)],                                                         /* lichen crust on the walls' rock */
   ['snow',F=>F.snow*smooth(.8,.4,F.slope)],
   ['field',F=>F.farm*open(F)],                                                                              /* the Cradle's terraced fields (the farm field) */
-  ['grass',F=>smooth(.25,.6,F.wet)*(1-F.farm)*(1-F.rock)*open(F)]];})();                                    /* the river's and the spring's green banks */                                                          /* the high walls' frost and firn */
+  ['grass',F=>smooth(.25,.6,F.wet)*(1-F.farm)*(1-F.rock)*open(F)],                                        /* the river's and the spring's green banks */
+  ['cinder',F=>F.cinder*open(F)*(1-F.rock*.5)*(1-smooth(.2,.6,F.geo))],                                    /* Caelum's scoria and cinder */
+  ['sulphur',F=>smooth(.2,.6,F.geo)*open(F)]];})();                                                          /* the vents' crust (the efflorescence's relief under the painted sulphur) */                                    /* the river's and the spring's green banks */                                                          /* the high walls' frost and firn */
 
 /* A FRAGMENT SHADER HAS 16 TEXTURE UNITS (WebGL's floor), AND ANGLE ON THE ARC LINKS 15 AT MOST (riftrim's and ebadlands' measure): the ground's paint
    and grain (2), the strata (5), the horizon (2), the rain's cover map (1) and KGROUND's noise (1) leave 5, so a land names the FOUR it shows

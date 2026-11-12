@@ -50,7 +50,7 @@ function lineIndex(pts,cell){const C=cell==null?64:cell,B=new Map(),key=(i,j)=>i
 // THE STATION'S LAND. o:
 //   R (2600), ground(x,z) the whole ground (the model's surface with the station's landforms), lakes [] (stills: {name, kind, level, poly}),
 //   rockAt(x,z,h,slope), strataK(x,z,h,slope), talus(x,z), pave(x,z), salt(x,z) (a salt crust), polyg(x,z) (its polygons), wash(x,z) (a wadi's
-//   cobble floor), road(x,z) (the bench road's worn track, 0..1), barren(x,z,h), snowAt(x,z,h,slope), rock() -> KSTACKS bodies, spine [[x,z]],
+//   cobble floor), geo(x,z) (hot ground at the vents: the sulphur crust), cinder(x,z) (scoria and cinder: a volcano's top), road(x,z) (the bench road's worn track, 0..1), barren(x,z,h), snowAt(x,z,h,slope), rock() -> KSTACKS bodies, spine [[x,z]],
 //   strata (a KSTRATA stack), river {pts [[x,z,y]] (the water's line and level, downstream), width, half(x,z), name, speed} | null (riftrim's form:
 //   the Cradle's Aina Bruk; the water is wet ground beside it), canals [{name, pts [[x,z,y]], width}] (dug channels: their water is the
 //   page's water where they run, wet ground beside them, each drawn as a core/water flow; the station cuts their beds in its ground)
@@ -72,7 +72,7 @@ function chasmLand(o){
   const rk=o.rockAt?o.rockAt(x,z,h,slope):smooth(.5,.82,slope),tal=f0(o.talus,x,z)*smooth(.08,.3,slope);
   const barren=clamp(Math.max(smooth(8600,8900,h),o.barren?o.barren(x,z,h):0),0,1);   /* over 8.8 km the air will not hold a plant (PLAN.md section 4: nothing over 8.8 km) */
   const F={wet:clamp(Math.max(.04+.06*smooth(2600,1200,h),RP?smooth(90,RIV.width*.5,nearLine(RP,x,z).d)*.85:0,CN.length?smooth(24,0,canalD(x,z))*.7:0,o.wet?o.wet(x,z,h):0),0,1),flow:under?1:0,upland:clamp((h+1500)/12000,0,1),canyon:0,rim:0,rock:clamp(Math.max(rk,tal*.6),0,1),dune:0,oasis:0,slope,
-   abyss:smooth(-150,-350,h),salt:f0(o.salt,x,z),cold,hot,geo:0,barren,strata:o.strataK?o.strataK(x,z,h,slope):0,crack:0,
+   abyss:smooth(-150,-350,h),salt:f0(o.salt,x,z),cold,hot,geo:f0(o.geo,x,z),cinder:f0(o.cinder,x,z),barren,strata:o.strataK?o.strataK(x,z,h,slope):0,crack:0,
    snow:clamp(o.snowAt?o.snowAt(x,z,h,slope):0,0,1),pave:f0(o.pave,x,z),polyg:f0(o.polyg,x,z),talus:tal,wash:f0(o.wash,x,z),char:0,fog:0,farm:f0(o.farm,x,z),ice:0,road:f0(o.road,x,z)};
   F.pave*=1-F.road;return F;}
  const RIVER_SPEC=RIV?{name:RIV.name||'The river',pts:RIV.pts,width:RIV.width==null?20:RIV.width,speed:RIV.speed==null?1.2:RIV.speed}:null;

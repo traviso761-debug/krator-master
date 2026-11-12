@@ -41,8 +41,11 @@ const STATION=(function(){
    let dh=want-hd;dh=Math.atan2(Math.sin(dh),Math.cos(dh));hd+=clamp(dh,-.26,.26);const best={qx:x+Math.cos(hd)*step,qz:z+Math.sin(hd)*step};
    x=best.qx;z=best.qz;y=ny;if(Math.abs(x)>2350||Math.abs(z)>2350||(s>150&&(inWadi(x,z)||nearLine(RLINE,x,z).d<RIVW)))break;pts.push([x,z,y]);}
   return{name:'The spring canal (the Yuni\'s irrigation, off Aina Bruk\'s pool)',pts,width:2.2,depth:.75,speed:.4};})();
- const CIX=lineIndex(CANAL.pts),canalCut=(x,z,h)=>{const hw=CANAL.width*.5,n=CIX.near(x,z,hw*3);if(!n)return h;const a=CANAL.pts[n.i],b=CANAL.pts[Math.min(CANAL.pts.length-1,n.i+1)],y=mix(a[2],b[2],n.u),bed=y-CANAL.depth;
-  return n.d<hw?Math.min(h,bed+(CANAL.depth+.15)*(n.d/hw)*(n.d/hw)):mix(Math.min(h,y+.15+(n.d-hw)*.3),h,smooth(hw*1.4,hw*3,n.d));};
+ /* its cutting: the channel runs between stone kerbs (86 draws them) in a cutting 12 m across, its floor half a metre under the water, the sides
+    easing out over 8 m more: wide enough for the drawn ground's cells (9.5 m) to open it, so the water shows */
+ CANAL.cut=6;CANAL.ease=8;CANAL.sink=.5;
+ const CIX=lineIndex(CANAL.pts),canalCut=(x,z,h)=>{const n=CIX.near(x,z,CANAL.cut+CANAL.ease);if(!n)return h;const a=CANAL.pts[n.i],b=CANAL.pts[Math.min(CANAL.pts.length-1,n.i+1)],y=mix(a[2],b[2],n.u);
+  return mix(Math.min(h,y-CANAL.sink),h,smooth(CANAL.cut,CANAL.cut+CANAL.ease,n.d));};
  // the terraces: east of the spring on both banks, a 30 m strip kept wild along the river and the wadis
  const ZONE=[PX(1557.9,1138.6),PX(1559.45,1138.6),PX(1559.45,1140.25),PX(1558.5,1140.45),PX(1557.95,1140.0)];
  const TER=KRELIEF.terraces({rise:.5,riser:.18,bund:.22,field:60,wobble:.1,fill:.5,zone:{poly:ZONE},fade:40,seed:99520});
@@ -51,7 +54,7 @@ const STATION=(function(){
   const dp=Math.hypot(x-POOL.x,z-POOL.z);if(dp<POOL.r*1.8)h=mix(Math.min(h,POOL.level-2.2*smooth(POOL.r,POOL.r*.3,dp)-.2),h,smooth(POOL.r,POOL.r*1.8,dp));
   return h;}
  const terAt=(x,z)=>{const a=KRELIEF.at(TER,x,z,g1(x,z));return a&&a.w>.5?a:null;};
- const farm=(x,z)=>{const a=terAt(x,z);if(!a||a.part!=='tread')return 0;const r=wet(x,z);return smooth(26,40,r.d)*smooth(.5,.9,a.w)*(washAt(x,z)||CIX.near(x,z,CANAL.width*1.4)?0:1);};
+ const farm=(x,z)=>{const a=terAt(x,z);if(!a||a.part!=='tread')return 0;const r=wet(x,z);return smooth(26,40,r.d)*smooth(.5,.9,a.w)*(washAt(x,z)||CIX.near(x,z,CANAL.cut+CANAL.ease)?0:1);};
  const washAt=(x,z)=>{for(const W of [W1,W2]){const a=KRELIEF.at(W,x,z,base(x,z));if(a&&(a.part==='floor'||a.part==='bar'||a.part==='bank'))return true;}return false;};
  // THE FARMS: core/hamlet's village on the Yuni row, laid here as data (its records drawn in 86); its works reach the fields
  const site=PX(1557.55,1140.4),link=PX(1559.5,1140.0);
