@@ -585,7 +585,7 @@ the gorge floor 53 km off (Chimes station 56 km), with no shaft head on the fell
 away and Nulab 82 km. The two runners-up were the Wait Riba head (480,1378) and the high fell (464,1430: clear of Dalab's
 polygon, no water on the model).
 
-**What it is** (*proposed*; working name **Blakhed**, or **Twine**: rope and ice twined). The rim's market and meeting
+**What it is** (the name **Blakhed**, the owner's, 2026-11-11; the rest *proposed*). The rim's market and meeting
 town, 150-300 households in longhouses, of mixed descent, ten times either village's size. It lives by storing and carrying,
 not one craft:
 - ice houses holding the Ice-cutters' blocks for the warm great-lake basin (+16 °C) and Nulab;
@@ -604,7 +604,7 @@ caravans and toll-men are seen in the market, and the town stands between the Re
 *Proposed:* the toll is paid in kind, as ice, eggs and rope, at Dalab's toll house by the gorge stair's head. And where
 the town sits when the Union strikes against Dalab's caravans (section 1.2.1) is the town's own politics.
 
-**Open:** the town's name (question 29). Wind direction, grazing, and water and slope at town
+**Not on the model:** wind direction, grazing, and water and slope at town
 scale are not on the 2 km model. The survey's scripts and outputs (`survey.py`, `detail.py`, `rays.py`, `lineprof.py`) were
 scratch, not committed.
 
@@ -1346,8 +1346,7 @@ Big Meeting, 11 shine for rank, 12 the 0.94 scale, 14 the core extensions (each 
 19. **Loj Nahn** as a fourth set later (the Tungang shell under the sky on the Pile's crown), or the Tungang set dressed?
 27. **The Fellgang villages ahead of the order?** They need neither the Line nor the cavern setting: build the Fellgang
     village defs of section 3.3.1 (and the row's move into `core/hamlet`) in parallel with the Line's biome?
-29. **The market town's name** (section 1.3.2): Blakhed, Twine, or another? (*Answered 2026-11-11*: the town pays
-    Dalab a toll.)
+29. *Answered 2026-11-11*: the market town is **Blakhed**, and it pays Dalab a toll (section 1.3.2).
 
 ## 11. Rejected and parked ideas
 

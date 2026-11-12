@@ -252,7 +252,7 @@ The Ancients were the original civilization that colonized Krator, with roots, h
     room blocks faced in salvage, ladders pulled up at night. A raid is proposed by **a Boast** from the round room's roof and
     joined by **show of hands**; the minute book became **the Deeds**, every boast and whether it was made good; the
     Aurochs-horn helmet is earned, never inherited; its walls carry heroes and trophies, no spirits. A **market town** of
-    1,000-2,000 (the owner, 2026-11-11: the site; working name Blakhed) stands at **the Blak Riba head** (5.1 px 441,1400),
+    1,000-2,000, **Blakhed** (the owner, 2026-11-11), stands at **the Blak Riba head** (5.1 px 441,1400),
     where the south road tops out of the Chimes gorge, the one land crossing between the rims. Kin to both villages and
     raiding no one, it stores the Ice-cutters' ice and the Fowlers' eggs and keeps the gorge stair's ropes; it **pays
     Dalab a toll**, whose realm holds the ground, and keeps its market peace under Dalab's claim
