@@ -719,7 +719,32 @@ raster outside its box (the edit_512 pattern).
     merges.
 13. **The isle demo's 5.1 recut**: only when the owner wants the economy's baseline moved.
 
-## 6. Questions for the owner
+## 6. The owner's answers (2026-11-11)
+
+The numbers are this section's questions below.
+
+| # | Settlement | Answer |
+|---|---|---|
+| 1 | All B grades | **Both, settlement by settlement.** Some will be rebuilt entirely on the open world's ground; others hand their ground over and only need the world to influence them a little. |
+| 2 | Verge | **Yes:** the pin to the Rrivar Blaca's fall off the scarp (~1265,949), and the frame turned so the plateau lies N-NW. |
+| 3 | Yuni | **North-west** is correct. The page's NE uses (`:240`, `20-stage.js:129`) are to be fixed. |
+| 4 | Mungo | **Yes:** the pin out of the lake to its east shore. |
+| 5 | Shade | **Move it to an oasis in the north, closer to Pinnacle Rock.** |
+| 6 | Noah's Regret | **Turn the frame 90°.** |
+| 7 | Mav's Refuge | **(b):** move it to a river 68-79 km off, and recut the region (iziz-cluster). |
+| 8 | Roketstad | **Move the pin** (to where the page's ranges and forest are). |
+| 9 | Erewhon | **The Pleasure Dome's island off the quays (0.6 km)**, as on the page. The landform record moves. |
+| 10 | Longsong | **Move the pin onto the 550 m³/s river.** |
+| 11 | Jimjam | **Yes:** 8 km N to the lake's shore. |
+| 12 | Dalab | **Yes:** move it to the -9 m lowland 27 km ENE. |
+| 13 | Ys | **Yes:** move to the shore and turn the frame. Choose a spot on the nearby coast with a good number of rock stacks. |
+| 14 | The Hexahedron (Screamers) | **Move it into the hyperjungle.** |
+| 15 | Strongbow | Settled earlier: 1001,1596 on the Xanadu-Oidong scarp. |
+| 16 | Loj Twenny | **Under the great shaft** (station 3). |
+| 17 | Reed Lake | **There will be a larger reed village at the model's Reed.** A short way off is a **large town of Tabisti buildings, the centre of pure-strain Tabisti culture**: a new settlement for the map and the lore. |
+| 18 | Regions | Not answered yet. |
+
+The questions as asked:
 
 1. **Handing over vs rebuilding (all B grades).** PLAN-VOTH's question 4, for every B page: hand each page's own ground
    to the world (this scope), or plan each to be rebuilt on the world's ground later?
