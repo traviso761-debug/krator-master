@@ -24,7 +24,7 @@ model (`smodel.page`, 2026-11-09, at `gemini/scale-model-5.1-r3`, dfdf64d1a); th
   - the Yuni Emirate (`rmw8ca6baau47`), 21,624 cells (28%): the west is Yuni land on paper;
   - the Stalker Gate (`rmvstalkergate`), 3,426 cells, and the Stalker Range (`rmvkknh1am4fw`), 1,084, on the west;
   - the Great Chasm (`rmw4vh9t20da4`), 1,509 cells on the north: its south end and the sill lie inside Region 99;
-  - Mid Basin (`rmvmidbasin101`), 2 cells: the two meet edge to edge.
+  - The Slabfields (`rmvmidbasin101`), 2 cells: the two meet edge to edge.
 - **Heights:** p1/p5/p10/p25/p50/p75/p90/p95/p99 = 256 / 331 / 498 / 1,344 / 1,764 / 2,729 / 6,498 / 8,203 / 9,726 m.
   - **Lowest:** 164 m at 1697,1006, in the Great Chasm's floor where the two polygons overlap. The Loom's own floor bottoms
     at 218 m, in Lake Nim's bed.
@@ -63,7 +63,7 @@ model (`smodel.page`, 2026-11-09, at `gemini/scale-model-5.1-r3`, dfdf64d1a); th
   - **A tarn** of 13 cells at 7,270 m on the east wall (1775-1777,1087-1092).
   - **Rivers** (`rivers.json`): 42 records cross the polygon, all named in the Yuni tongue (`river_names.py`: Region 99 is
     `yuni`). Three are perennial:
-    - **Ostrukh Riba** (`r_mb_siphon_breach`, from Mid Basin): 300 km, **340 m³/s**, ending at 334 m at 1618,1214 on the
+    - **Ostrukh Riba** (`r_mb_siphon_breach`, from the Slabfields): 300 km, **340 m³/s**, ending at 334 m at 1618,1214 on the
       chasm floor;
     - **Aina Bruk** (`r174`): 59 km, 26.9 m³/s, from Spindle Fan's fan (1557.7,1139.2) to the Weave-Step's foot;
     - **Stara Bruk** (`r235`): 72 km, 17.7 m³/s, on the floor (1,361 m to 261 m).
@@ -82,7 +82,7 @@ model (`smodel.page`, 2026-11-09, at `gemini/scale-model-5.1-r3`, dfdf64d1a); th
 - **Water budget.** v2 wants "a little water, but not much", and the classes agree: the floor is desert. But Ostrukh Riba
   alone brings 340 m³/s (10.7 km³ a year) onto the floor. At the floor's mean of about 24 °C, Turc's open-water loss
   (L = 300 + 25T + 0.05T³) is about 1,590 mm a year. Evaporating that river would take about 6,700 km² of lake. Lake Nim is
-  500 km². Either the river's flow is too high, or the lake is too small (section 9; Mid Basin's plan, section 10, already
+  500 km². Either the river's flow is too high, or the lake is too small (section 9; the Slabfields' plan, section 10, already
   questions the river's course).
 - **Settlements** (`model/src/60-settlements.js`; old canvas px plus 272, 330):
   - **Spindle Fan** (`sloomspindle01`, Yuni village, 1561,1140, 2,150 m): "Yuni farming and spring outpost on the Weavers'
@@ -105,11 +105,11 @@ in it:
 
 | Landform | What it is (Earth's like) | Where | Drawn by |
 |---|---|---|---|
-| **The Cradle's terraces** | Loess over coalescing alluvial fans (a bajada), terraced by people | x 1445-1540, 2.2-2.9 km | `KRELIEF.terraces` (38c; the 2026-11-03 audit gave loom-chasms this one), `KSTRATA.vary` for the loess-and-tuff (as Mid Basin's) |
+| **The Cradle's terraces** | Loess over coalescing alluvial fans (a bajada), terraced by people | x 1445-1540, 2.2-2.9 km | `KRELIEF.terraces` (38c; the 2026-11-03 audit gave loom-chasms this one), `KSTRATA.vary` for the loess-and-tuff (as the Slabfields') |
 | **The Weave-Step** | Structural benches on a monocline: flood basalt flexed down to the rift, each step a flow top (the Colorado Plateau's monoclines in basalt) | x 1540-1585 | `KRELIEF.scarp` and `relay` (38c) for the steps; `runout` for the talus skirts |
 | **The Shuttle Mesas** | Horsts of columnar flood basalt (the Columbia Plateau; Ethiopia's traps) | 1.3-1.8 km | the model's heights; `KSTRATA` basalt flows in the edges, the columns in the faces |
 | **The warp chasms and weft canyons** | Grabens and their conjugate splays, 1-1.3 km deep, floored by fans and salt (the Danakil's grabens; Canyonlands' grabens on a larger scale) | the floor | the model's heights; `KRELIEF.stepcut` for the walls' steps at page scale |
-| **The slots** | Narrow tension fissures on the mesa rims and the chasm floors, 100-300 m wide and 150-200 m deep: **v2's "180 m chasms"**, at page scale, below the model's 2 km grid | where a station needs them | `KRELIEF.stepcut` along a line; the chasm head (an amendment shared with Mid Basin) |
+| **The slots** | Narrow tension fissures on the mesa rims and the chasm floors, 100-300 m wide and 150-200 m deep: **v2's "180 m chasms"**, at page scale, below the model's 2 km grid | where a station needs them | `KRELIEF.stepcut` along a line; the chasm head (an amendment shared with the Slabfields) |
 | **Mount Caelum** | A basalt shield where the faults cross (the Afar's Erta Ale range; Marion Island), with fumaroles at its summit | 1622,1166 | `KRELIEF.volcano` with the model's flanks; `KSTRATA` |
 | **The White Loom** | A playa: halite crust, salt polygons, pressure ridges, brine pools (the Danakil's salt flats, Badwater) | round Lake Nim | `W.pan` with the `brine` look (`core/water`); `KGROUND` salt layers |
 | **The geodes** | Amethyst geodes in the thick flows (`biomes/CRYSTAL-CAVES-5.1.md`, site 3) | the Weave-Step's basalt terraces; one walk-in geode in a chasm wall | `KGEODE` (built in the scablands' coulee, 2026-11-09), `KSPELEO.AMETHYST` |
@@ -147,7 +147,7 @@ pinnacles. A buried evaporite sequence (a Danakil-like rift fill) would allow na
 
 ## 4. Life
 
-Nothing of the Loom's life is built. v2's species exist only in its text. Mid Basin and the Great Chasm both plan to read them
+Nothing of the Loom's life is built. v2's species exist only in its text. The Slabfields and the Great Chasm both plan to read them
 in place, so this kit should write its species file early.
 
 ### The living cables (the region's invention)
@@ -168,7 +168,7 @@ compression.
   Mosses, epiphytes and the cable-stryder live on it.
 - **Where:** v2 says the cables bridge "200 m vertical rifts". The model's chasms are 2-20 km wide, far beyond a 300 m span.
   The cables cross the **slots** (section 2): the fissures on the mesa rims, the narrow weft canyons and the chasm heads where
-  they pinch out (Mid Basin's Warp Head). The great chasms below them are open sky.
+  they pinch out (the Slabfields' Warp Head). The great chasms below them are open sky.
 - **The parent colony** (`stations/caelum`): the oldest spinners on Mount Caelum's summit, where fumarole heat and steam rise.
   *Proposed:* the bladders' gas is made by partners that need the vents' warmth, so the colony is where the pioneer shoots
   are bred and released on the up-slope wind.
@@ -194,7 +194,7 @@ as the Hearths plan uses it). v2's two fit that body:
 | `cable_stryder` | **Cable-stryder** | 2.4 m, sinuous, six limbs with pincer claws and locking tendons: runs along single cables and sleeps hanging. An ambusher on the canopy: drops on what crosses below |
 | `halite_sifter` | **Halite sifter** | 2.2 t, low and armoured, four legs and two shovel limbs: breaks the playa crust for the brine mats under it |
 
-Plus, read in place: the Outlands' and the Great Chasm's desert animals on the mesas, and Mid Basin's flenser-hound off the
+Plus, read in place: the Outlands' and the Great Chasm's desert animals on the mesas, and the Slabfields' flenser-hound off the
 Siphon Pits' rims (*proposed*). The Yuni's draft animals in the Cradle (the station record's "ghaunt-ox") are the Yuni's
 livestock: whatever the Yuni build uses.
 
@@ -213,7 +213,7 @@ livestock: whatever the Yuni build uses.
 - **Mungo** (village, 1593,1155) stands at the Weave-Step's foot. It has no notes: its people are the owner's.
 - **Caravans and expeditions:** caravans on the Yuni road and expeditions down to the floor and the playa make night camps
   (`core/camp`).
-- **The outlaws:** Mid Basin's Yuni outlaws (*proposed* there) roam north into the Loom's southern chasms.
+- **The outlaws:** the Slabfields' Yuni outlaws (*proposed* there) roam north into the Loom's southern chasms.
 - **The Stalkers** (`LORE.md` §4, Hub 01). Quiet robotic killers out of Hub 01 in the Stalker Peaks, run by a mad AI that no one
   in the world knows of. They work in pairs or triads and lie in wait under the sand. Their models exist (`kits/mechs`,
   culture `stalker`: the Harpooner has two pneumatic harpoon guns, v2's "harpoon winches"). v2's ambush lines in the cable
@@ -222,7 +222,7 @@ livestock: whatever the Yuni build uses.
   nothing for them:
   - a spring on a Cradle fan;
   - a slot head on a mesa rim (water from the rim's seeps, a cable bridge for a gate);
-  - Mid Basin's chasm heads on the south edge.
+  - The Slabfields' chasm heads on the south edge.
 
 ## 6. Dangers
 
@@ -292,7 +292,7 @@ when they are built.
 | city | `core/city` | no |
 
 **Core amendments** (none is a new module; all but the last are listed by other plans: cite them):
-1. **A chasm head for `stepcut`**: a graben whose depth tapers to nothing and ends in an amphitheatre (Mid Basin's amendment 3).
+1. **A chasm head for `stepcut`**: a graben whose depth tapers to nothing and ends in an amphitheatre (the Slabfields' amendment 3).
    The slots need it at both ends.
 2. **Hazards:** a crust that breaks underfoot (the playa); a flood that runs a gorge on a cycle (the wadis and slots).
 3. **Geothermal surfaces** (fumaroles) at Caelum's summit (`core/water/README.md`, "Not here (yet)").
@@ -310,7 +310,7 @@ when they are built.
 
 ## 9. For the owner
 
-- **The water:** Ostrukh Riba's 340 m³/s onto a desert floor with a 500 km² lake. Cut the river (Mid Basin's plan questions its
+- **The water:** Ostrukh Riba's 340 m³/s onto a desert floor with a 500 km² lake. Cut the river (the Slabfields' plan questions its
   course), or grow Lake Nim to several thousand km² (a real terminal lake, as the Danakil's were)?
 - **The Cradle's people:** Yuni colonists, or an older people under Yuni rule? Who lives at Mungo? Reed stands on airless
   ground: move it, or remove it?
@@ -321,7 +321,7 @@ when they are built.
 - **Caelum:** a Hearth field at the summit vents, or the cable spinners' parent colony alone?
 - **Names:** "the Loom", "the Shuttle Mesas", "the Weave-Step", "the White Loom", "Lake Nim" and "Mount Caelum" are Gemini's
   English. Do they get Yuni names, like the rivers?
-- **Order:** after the integration pass. Mid Basin and the Great Chasm read this kit's species, so its species file (the cable
+- **Order:** after the integration pass. The Slabfields and the Great Chasm read this kit's species, so its species file (the cable
   spinner, the stryder, the sifter) should come before either.
 
 ## Changes from the plan v2 (2026-10-28)
@@ -329,7 +329,7 @@ when they are built.
 - **The terrain was carved in 4.24** (`edit_424.py`), not by the `edit_loom_chasms.py` sketched in v2's section 6. That section
   and its assertions are dropped:
   - the "minimum spill elevation over 3,850 m on the perimeter" was never the model's: the Great Chasm's sill (1,550-2,000 m)
-    and Mid Basin's corridor are lower;
+    and the Slabfields' corridor are lower;
   - the "Lake Nim 35-55 km²" check does not match the model's 500 km².
 - **Numbers from the data:**
   - the area is 306,000 km², not 386,000;
@@ -344,7 +344,7 @@ when they are built.
 - **Buoyancy** carries the pioneer shoots, not the grown cables.
 - **Namakiers** are dropped unless the owner adds a salt body.
 - **Station 4** is split into Caelum and the White Loom.
-- **Added:** people, life by zone, dangers, the core adoption, and the neighbours (Mid Basin, the Great Chasm, the Yuni, the
+- **Added:** people, life by zone, dangers, the core adoption, and the neighbours (the Slabfields, the Great Chasm, the Yuni, the
   Stalkers).
 
 ## Sources
@@ -354,7 +354,7 @@ when they are built.
   conversion, the re-survey);
 - the model's data at dfdf64d1a (`gemini/scale-model-5.1-r3`), read with `smodel.page`: heights, water, `tm`/`tw`/`tc`/`p`/`c`,
   `rivers.json`, `vents.json`, `tubes.json`, `model/src/51-region-store.js`, `model/src/60-settlements.js`;
-- `biomes/midbasin/PLAN.md` (2026-11-09) and `biomes/greatchasm/PLAN.md` (the expansion in progress, read 2026-11-09);
+- `biomes/slabfields/PLAN.md` (2026-11-09) and `biomes/greatchasm/PLAN.md` (the expansion in progress, read 2026-11-09);
 - `core/biome/45-core-span.js` (`KSPAN`), `core/README.md`, `HANDOFF-REBUILD.md` (the 2026-11-03 pieces: `terraces`, `KSPAN`);
 - `biomes/CRYSTAL-CAVES-5.1.md` (site 3), `biomes/KARST-SITES-5.1.md` (the White Loom);
 - `LORE.md` (§4 Hub 01 and the Stalkers; the Yuni), `kits/mechs/README.md` (the Stalkers);

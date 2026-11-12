@@ -196,7 +196,7 @@ ground here. Siphon Pits' woolly siphon and siphon felt (`biomes/siphon-pits/PLA
 | **Oidong** (`biomes/oidong`, west) | reads | `OIDONG.buildHigh` (cushions, snow lotus, sky poppies) on stations 3 and 5, in place (station.json `kin`). The staircase opens into Oidong's lakes: Oidong's valley floor is the far field west of station 1 |
 | **The Hearths** (`biomes/hearths`) | reads | `HEARTH.layout` on every vent's ground, `rim` dress (High Rift's vents are on 1.0-1.16 atm ground, between Oidong's cold rim and the Rift rim) |
 | **Siphon Pits** (east, not built) | vends, later | the opal cane and the bead cap to its pit floors' hot ground; it would vend its woolly siphon to the gjár's vent |
-| **Stalker Gate**, **Mid Basin** (north, not planned) | none yet | the north wall is the far field |
+| **Stalker Gate**, **the Slabfields** (north; the Slabfields planned 2026-11-12) | none yet | the north wall is the far field |
 | **kits/crops** | none | nothing is farmed in the region (section 7) |
 | **kits/resources** | publishes | the nodes the geology gives (copper, gold, silver, sulfur, iron) are the resource kit's; the kit marks the gjár's veins and the acid ground as sites |
 | **kits/fauna** | for the fauna kit | the Siphon Pits plan's woolly ghaunt-ox would summer on the Mirror's meadows and the flenser-hound hunt the gjár's edges: candidates, not placed |

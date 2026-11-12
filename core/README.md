@@ -431,7 +431,7 @@ new file, opt-in, and node-tested with negatives. No page takes one yet, so no p
 - **`KRELIEF.slump`, `runout`, `gully`, `terraces`, `maar`, `relay`, `stepcut`, `KRELIEF.waters`** (`38c-core-landforms.js`,
   `test-landforms.js`; `LANDFORMS.md` has the table of parts and plans):
   - wouterwall's slump terraces, sturzstrom fields, loess gullies with box-canyon heads and yuan, liang and mao, and its terraced fields;
-  - Mid Basin's breached maars and relay benches;
+  - The Slabfields' breached maars and relay benches;
   - the Siphon Pits' sheer stepped graben and pits (no falloff; KFIELD's brushes stay smooth).
 
   *Adopting it:* list the file after `38-core-relief.js`, and put the records in `KRELIEF.apply` with the others. `KRELIEF.waters(rec,
@@ -442,7 +442,7 @@ new file, opt-in, and node-tested with negatives. No page takes one yet, so no p
   stratigraphic height is remapped piecewise linearly between the moved contacts, so beds keep their place and thin or thicken with their
   formation. Where two contacts cross, the higher-numbered wins, and the formation between them pinches out. `KSTRATA.drape(S, k, ground,
   {box, step, th})` lays formation k's base `th` under the ground: a mantle following the land it fell on.
-  - It serves Mid Basin's interbedded loess and tuff and the W outer wall's loess.
+  - It serves the Slabfields' interbedded loess and tuff and the W outer wall's loess.
   - *Adopting it:* list it after `35-core-strata.js`, then `const V = KSTRATA.vary(S, {contacts: [{at: 2, by: KSTRATA.drape(S, 2, ground,
     {box, step: 16, th: 40})}]})`, and read `V.at` / `V.surface` where `S`'s were read.
   - **The shaders still draw the flat column** (`BIO.strata`, `strata.gdshaderinc`). A varied stack is the CPU's, for painters, plant passes

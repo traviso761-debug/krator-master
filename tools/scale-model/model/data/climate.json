@@ -248,8 +248,8 @@
    "code": "ET",
    "name": "tundra",
    "color": "#b2b2b2",
-   "pct": 9.55,
-   "km2": 1199124
+   "pct": 9.56,
+   "km2": 1199488
   },
   {
    "code": "WS",
@@ -263,7 +263,7 @@
    "name": "ice cap",
    "color": "#666666",
    "pct": 6.15,
-   "km2": 771356
+   "km2": 771368
   },
   {
    "code": "HF",
@@ -284,21 +284,21 @@
    "name": "cold steppe",
    "color": "#ffdc64",
    "pct": 3.53,
-   "km2": 442576
+   "km2": 442556
   },
   {
    "code": "Dsc",
    "name": "dry-summer subarctic",
    "color": "#963296",
-   "pct": 3.36,
-   "km2": 421092
+   "pct": 3.35,
+   "km2": 420284
   },
   {
    "code": "Dfc",
    "name": "subarctic (boreal)",
    "color": "#007d7d",
    "pct": 3.25,
-   "km2": 407804
+   "km2": 408016
   },
   {
    "code": "BSh",
@@ -312,7 +312,7 @@
    "name": "dry-summer warm continental",
    "color": "#c800c8",
    "pct": 2.81,
-   "km2": 353132
+   "km2": 353212
   },
   {
    "code": "BWk",
@@ -396,7 +396,7 @@
    "name": "highland lake",
    "color": "#5c9ea8",
    "pct": 0.51,
-   "km2": 64244
+   "km2": 64392
   },
   {
    "code": "WX",
@@ -424,7 +424,7 @@
    "name": "dry-summer hot continental",
    "color": "#ff00ff",
    "pct": 0.12,
-   "km2": 14636
+   "km2": 14648
   },
   {
    "code": "Dfa",

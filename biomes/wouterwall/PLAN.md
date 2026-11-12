@@ -351,7 +351,7 @@ The table of `README.md` "CORE MODULES ARE NOT OPTIONAL", for this kit:
 
 **Core amendments needed:**
 1. **A baked offset texture for varied strata.** `KSTRATA.vary` is CPU-only: "the shaders still draw the flat column". Without
-   the bake, the loess's soil bands on a gully wall must be painted on the CPU or will not follow the drape. Mid Basin needs it
+   the bake, the loess's soil bands on a gully wall must be painted on the CPU or will not follow the drape. The Slabfields needs it
    too. This is the one new core item.
 2. **Katabatic and cold-air wind**: already listed by other plans; cite it.
 3. **The gorge flood** (a timed `drown`/`crush` in a channel): already listed; cite it.

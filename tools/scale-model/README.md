@@ -482,7 +482,7 @@ Completes the southeastern mountain-and-basin complex by sculpting three contigu
 2. **`Stalker Gate` (`rmvstalkergate`)**: A trans-divide structural pass network (`76,412 km²`) cutting through the
    glaciated Stalker Range (`+5,200–9,400 m`), featuring *Lake Vapora* (`+2,340 m`) and progressive WNW outer-wall slopes
    connecting `Weavers' Cradle` (`Region 99`) and `Ostrukh Terraces` (`Siphon Pits`) to the central basins.
-3. **`Mid Basin` (`rmvmidbasin101`)**: An enclosed intermontane piedmont basin (`79,164 km²`) with coalescing alluvial fans
+3. **`Mid Basin` (`rmvmidbasin101`; the Slabfields since 5.1 edit 3)**: An enclosed intermontane piedmont basin (`79,164 km²`) with coalescing alluvial fans
    and step-faulted benches bridging `Stalker Gate`, `High Rift`, and `Siphon Pits`.
 
 ## 5.0 & 5.1: `build_425_master.py` (Nov 2026) — Unified 2 km/cell Grid, N/W Canvas Expansion (`1821 × 1723`), & Planetary Remodeling
@@ -598,6 +598,58 @@ Completes the southeastern mountain-and-basin complex by sculpting three contigu
 - `tests/test_smodel.py` section 14 checks the valley's floor and trough, the cave record, the lake (29 wet cells at
   6,420 m, a lip over 6.7 km, r442's head, the basin record), the cavern note, the climate (floor, lapse, Cwb), The Gate
   and the sill.
+
+## 5.1 edit 3: `edit_513.py` (2026-11-12): the Slabfields (was Mid Basin)
+
+`python3 tools/scale-model/edit_513.py` edits `model/data` and `model/src/51-region-store.js` in place and writes
+`edit_513.report.json` (`--dry-run` runs every step and check and writes nothing); it refuses to run twice (the springs list
+is its marker). Every number is `biomes/slabfields/PLAN.md`'s (sections 3 and 5): the owner's decision of 2026-11-12 to
+re-plan Mid Basin around Io-style tilted crustal blocks. (Edit 2, `edit_512.py`, the Firebliss patera and the pancake
+domes, is another session's; the two touch no common cell, and whichever merges second reruns its own script on the merged
+data.)
+
+- **Four slabs, one split**, each a block of flood basalt thrust up on the squeezed side of the stress hinge (the plan's
+  section 3.2: the middle bench, y 1355-1400) and tilted: a cliff one to two cells high on a lobate front, a straight ramp
+  falling to the plain behind, its crest tapering over the last 5-6 km at each end and the slab narrowing there.
+
+  | Slab | Centre | Size | Cliff faces | Plain / crest | Ramp |
+  |---|---|---|---|---|---|
+  | the Anvil | 1662,1376 | 40 x 18 km | N | 3,287 / 5,356 m | 7.0 degrees |
+  | the Halves, NW and SE | 1715,1366; 1729,1382 | 14 x 10 km each, 42 km apart | N | 3,234 / 4,674; 3,435 / 4,875 m | 9.1 |
+  | the Leaner | 1600,1397 | 30 x 12 km | NNW | 2,110 / 3,355 m | 6.7 |
+  | the Backstop | 1690,1411 | 28 x 12 km | S (a back-thrust) | 4,367 / 5,370 m | 5.7 |
+
+- **An apron** in front of every cliff: a lobe 60-140 m thick at the foot, running out about four cliff heights (Heim's ratio
+  about 0.25), narrower than the cliff; 56-264 km2 each.
+- **Two paterae with spring lakes**, closed: the Leaner's (1601.5,1388.6; 10 km across, floor 1,907 m, lake 16 cells at
+  1,997 m, spill 2,073 m) and the Halves' (1722,1374, in the split slab's gap; 12 km, floor 3,062 m, lake 21 cells at
+  3,102 m, spill 3,260 m). Each has a **basin record** (`kind: 'lake'`, with `name`, `region` and `source: 'spring'`).
+- **`DATA.springs`** (new: `model/data/springs.json`): the region's eight springs, one record each (`id`, `name`, `px`,
+  `ground_m`, `kind`, `water`, `region`, `source`, `notes`): the model's three maar springs and the Warp Head, and the
+  edit's two patera springs, the Anvil's apron toe and the Leaner's ramp foot. The page does not draw them yet.
+- **The climate** follows as edit 1's did: temperatures lapsed with the surface (437 cells), rain, class and zone
+  recomputed by `smodel.climate.reclimate` (891 cells, 219 changed class: the crests ET, the ramps Dsc and Dfc), the lakes
+  `WH`; `rt` and `ct` repainted, all four maps relit, `st` and `t` retinted, the lakes painted the flagship maar's lake.
+- **Only the Slabfields' own cells move**: its polygon less the 2,879 cells it shares with the Stalker Gate, Region 99 and
+  the Siphon Pits, and at least 6 px inside that. Every other cell of `h`, `wl`, `wd`, `p`, `c`, `z` and the five
+  temperature rasters is asserted unchanged; `h` and `wl` change only on the 641 moved cells. The painted JPEGs are
+  re-encoded whole, as every edit's are, and the codec's round trip is not exact (up to 58 levels on `ct`), so the check is
+  that away from the region (16 px) each map is **byte for byte the untouched map put through the same two encodes**. No
+  river, vent or station lies in the edit.
+- **The region renamed** in the page's defaults: `rmvmidbasin101` is now "The Slabfields" with a new note, and the Stalker
+  Gate's note names it; a one-time reconcile (`krator.regMerged.5.1e3`) puts both on browsers that hold a saved list. **The
+  id is kept** (a stable key). `extract_region.py` maps both names to its biome kit.
+- `tests/test_smodel.py` section 15 checks the name, the five crests, the Anvil's cliff and ramp, the two lakes and their
+  basins, and the eight springs. (The test also reads the retired little demo's regions from `archive/little-demo` now:
+  `openworld/little-demo` moved there on 2026-11-08, and the test had failed on `main` since.)
+
+**Owed by the owner (this session wrote neither):**
+1. **The live artifact's region database:** write `rmvmidbasin101` on the 5.1 canvas as the defaults hold it (name "The
+   Slabfields", the new note, the points unchanged, `canvas: "5.1 (1821x1723)"`), as edit 1 wrote `rmvraoas90co7`; and
+   `rmvstalkergate`'s note ("... Loom-Chasms, the Slabfields, and Siphon Pits ..."). The rest of the database is still on
+   the old canvas (edit 1's note).
+2. **Publish:** `python3 tools/scale-model/model/build.py --split`, then publish `model/dist/split/index.html` with
+   `data-1.js` and `data-2.js` beside it to the artifact's URL (as version 91 was), and look at the page.
 
 ## Cutting a region out for the open world
 

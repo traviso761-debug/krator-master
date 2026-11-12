@@ -95,7 +95,11 @@ with tempfile.TemporaryDirectory() as tmp:
         open(os.path.join(tmp, f), 'rb').read() == open(os.path.join(P.DATA_DIR, f), 'rb').read() for f in names))
 
 # ---- 2. a test edit, run through both
-R = P.docs(os.path.join(TOOL, '..', '..', 'openworld', 'little-demo', 'source', 'regions.json'))
+# the little demo's regions moved to archive/little-demo (retired 2026-11-08); read them there when the old path is gone
+OW_SRC = os.path.join(TOOL, '..', '..', 'openworld', 'little-demo', 'source')
+if not os.path.exists(os.path.join(OW_SRC, 'regions.json')):
+    OW_SRC = os.path.join(TOOL, '..', '..', 'archive', 'little-demo', 'source')
+R = P.docs(os.path.join(OW_SRC, 'regions.json'))
 su, sv = P.grid(D)
 pts = next(r for r in R if r['name'] == 'little demo')['points']
 check('region_mask', same(G.region_mask(R, 'little demo', su, sv, E.shape), E422.region_mask(R, 'little demo', su, sv, E.shape)))
@@ -202,8 +206,8 @@ import copy as _copy   # noqa: E402
 from smodel import river_names as RN   # noqa: E402
 r002_entry = next((r for r in D.get('rivers', []) if str(r.get('id')) in ('2', 'r002')), None)
 check('r002 is named Ling-Ma', r002_entry is not None and r002_entry.get('name') == 'L\u012bng-M\u0101')
-regs_path = os.path.join(REPO_ROOT, 'openworld', 'little-demo', 'source', 'regions.json')
-setts_path = os.path.join(REPO_ROOT, 'openworld', 'little-demo', 'source', 'settlements.json')
+regs_path = os.path.join(OW_SRC, 'regions.json')
+setts_path = os.path.join(OW_SRC, 'settlements.json')
 if os.path.exists(regs_path) and os.path.exists(setts_path):
     regs_doc = _json.load(open(regs_path, encoding='utf-8'))
     setts_doc = _json.load(open(setts_path, encoding='utf-8'))
@@ -359,7 +363,7 @@ for pol_id, pol_nm, pol_npts in [
           pol_reg is not None and pol_reg.get('name') == pol_nm and len(pol_reg.get('points', [])) == pol_npts)
 check('Superseded political region IDs (rmudhwjkmjc1e, rmufwoc7586da, rmuooahhlhlnu, rmukx7n441l62, rmvyl36gozner) are removed',
       not any(r.get('id') in {'rmudhwjkmjc1e', 'rmufwoc7586da', 'rmuooahhlhlnu', 'rmukx7n441l62', 'rmvyl36gozner'} for r in R))
-S = P.docs(os.path.join(TOOL, '..', '..', 'openworld', 'little-demo', 'source', 'settlements.json'))
+S = P.docs(os.path.join(OW_SRC, 'settlements.json'))
 tw_sett = next((s for s in S if s.get('id') == 'stallwalls01' or s.get('name') == 'Tallwalls'), None)
 check('Tallwalls settlement stallwalls01 is present at (650, 1268)', tw_sett is not None and (int(tw_sett['px']), int(tw_sett['py'])) == (650, 1268))
 gv_t1_e = float(E[1212, 638])
@@ -523,4 +527,25 @@ gc_t = next(r for r in R if r.get('id') == 'rmw4vh9t20da4')
 m99_t, mgc_t = G.poly(r99_t['points'], 1.0, 1.0, E.shape), G.poly(gc_t['points'], 1.0, 1.0, E.shape)
 check('the Great Chasm\'s sill (1697,1028) is the Great Chasm\'s, not Region 99\'s; overlap %d edge cells' % int((m99_t & mgc_t).sum()),
       bool(mgc_t[1028, 1697]) and not bool(m99_t[1028, 1697]) and int((m99_t & mgc_t).sum()) <= 80)
+
+# ---- 15. 5.1 edit 3 (edit_513.py, 2026-11-12): the Slabfields (was Mid Basin): the slabs, the paterae, the springs
+import re as _re   # noqa: E402
+slab_src = open(os.path.join(TOOL, 'model', 'src', '51-region-store.js'), encoding='utf-8').read()
+check('rmvmidbasin101 is named The Slabfields in the page\'s defaults, with its reconcile',
+      '"id": "rmvmidbasin101", "name": "The Slabfields"' in slab_src and 'krator.regMerged.5.1e3' in slab_src)
+for sl_x, sl_y, sl_lo, sl_name in ((1662, 1373, 4800, 'the Anvil'), (1715, 1364, 4300, 'the Halves (north-west)'),
+                                   (1729, 1380, 4500, 'the Halves (south-east)'), (1599, 1396, 3000, 'the Leaner'),
+                                   (1690, 1414, 5100, 'the Backstop')):
+    sl_win = E[sl_y - 3:sl_y + 4, sl_x - 3:sl_x + 4]
+    check('%s stands over %d m near %d,%d (max %.0f m)' % (sl_name, sl_lo, sl_x, sl_y, sl_win.max()), float(sl_win.max()) >= sl_lo)
+an_col = [float(E[y, 1662]) for y in range(1368, 1385)]
+check('the Anvil: a cliff on the north, a ramp falling south (%s)' % [round(v) for v in an_col],
+      max(an_col[i + 1] - an_col[i] for i in range(4)) > 800 and all(b <= a + 5 for a, b in zip(an_col[4:12], an_col[5:13])))
+for pa_x, pa_y, pa_lev, pa_nm in ((1601.5, 1388.6, 1997, 'the Leaner\'s Patera'), (1722.0, 1374.0, 3102, 'the Halves\' Patera')):
+    pa_m = np.hypot(xx_b - pa_x, yy_b - pa_y) <= 1.5
+    check('%s holds a closed spring lake at %d m' % (pa_nm, pa_lev),
+          bool(whas[pa_m].all()) and float(np.abs(wlev[pa_m] - pa_lev).max()) <= 2.0
+          and any(b.get('name') == pa_nm[0].upper() + pa_nm[1:] and b['level_m'] == pa_lev for b in D['basins']))
+spr_ids = {r['id'] for r in D.get('springs', [])}
+check('the Slabfields\' eight springs are in DATA.springs', len([i for i in spr_ids if i.startswith('spr_slab_')]) == 8)
 print('%d checks passed' % ok)

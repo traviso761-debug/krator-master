@@ -1,0 +1,321 @@
+{
+ "edit": "5.1 edit 3",
+ "date": "2026-11-12",
+ "region": "rmvmidbasin101",
+ "cells": {
+  "polygon": 42226,
+  "own": 39347,
+  "shared": 2879
+ },
+ "slabs": [
+  {
+   "id": "slab_anvil",
+   "name": "The Anvil",
+   "centre_px": [
+    1662.0,
+    1376.0
+   ],
+   "strike_deg_from_E": 8.0,
+   "cliff_faces": "N",
+   "length_km": 40.0,
+   "width_km": 18.0,
+   "plain_m": 3287,
+   "height_over_plain_m": 2200.0,
+   "crest_m": 5356,
+   "toe_m": 3401,
+   "cliff_foot_m": 3372,
+   "ramp_dip_deg": 7.0,
+   "cells": 180,
+   "apron_cells": 66,
+   "apron_km2": 264,
+   "crest_atm": 0.82,
+   "plain_atm": 1.06,
+   "note": "the tallest: a lone slab on the middle bench, cliff north over the bench edge, ramp south to the upper step"
+  },
+  {
+   "id": "slab_halves_n",
+   "name": "The Halves (north-west)",
+   "centre_px": [
+    1715.0,
+    1366.0
+   ],
+   "strike_deg_from_E": 0.0,
+   "cliff_faces": "N",
+   "length_km": 14.0,
+   "width_km": 10.0,
+   "plain_m": 3234,
+   "height_over_plain_m": 1600.0,
+   "crest_m": 4674,
+   "toe_m": 3394,
+   "cliff_foot_m": 3210,
+   "ramp_dip_deg": 9.1,
+   "cells": 36,
+   "apron_cells": 18,
+   "apron_km2": 72,
+   "crest_atm": 0.89,
+   "plain_atm": 1.07,
+   "note": "the split slab's west half: one slab cut by a NW-SE fault, the halves slid 42 km apart along it"
+  },
+  {
+   "id": "slab_halves_se",
+   "name": "The Halves (south-east)",
+   "centre_px": [
+    1729.0,
+    1382.0
+   ],
+   "strike_deg_from_E": 0.0,
+   "cliff_faces": "N",
+   "length_km": 14.0,
+   "width_km": 10.0,
+   "plain_m": 3435,
+   "height_over_plain_m": 1600.0,
+   "crest_m": 4875,
+   "toe_m": 3595,
+   "cliff_foot_m": 3382,
+   "ramp_dip_deg": 9.1,
+   "cells": 36,
+   "apron_cells": 18,
+   "apron_km2": 72,
+   "crest_atm": 0.87,
+   "plain_atm": 1.04,
+   "note": "the split slab's east half, its cliff the same cut as its twin's"
+  },
+  {
+   "id": "slab_leaner",
+   "name": "The Leaner",
+   "centre_px": [
+    1600.0,
+    1397.0
+   ],
+   "strike_deg_from_E": 30.0,
+   "cliff_faces": "NNW",
+   "length_km": 30.0,
+   "width_km": 12.0,
+   "plain_m": 2110,
+   "height_over_plain_m": 1400.0,
+   "crest_m": 3355,
+   "toe_m": 2230,
+   "cliff_foot_m": 2190,
+   "ramp_dip_deg": 6.7,
+   "cells": 94,
+   "apron_cells": 29,
+   "apron_km2": 116,
+   "crest_atm": 1.05,
+   "plain_atm": 1.23,
+   "note": "the still-tilting slab: a sill inflating under its cliff end lifts it, the ramp steepening; its patera at the cliff's west foot by the road"
+  },
+  {
+   "id": "slab_backstop",
+   "name": "The Backstop",
+   "centre_px": [
+    1690.0,
+    1411.0
+   ],
+   "strike_deg_from_E": 0.0,
+   "cliff_faces": "S",
+   "length_km": 28.0,
+   "width_km": 12.0,
+   "plain_m": 4367,
+   "height_over_plain_m": 1200.0,
+   "crest_m": 5370,
+   "toe_m": 4367,
+   "cliff_foot_m": 4396,
+   "ramp_dip_deg": 5.7,
+   "cells": 85,
+   "apron_cells": 24,
+   "apron_km2": 96,
+   "crest_atm": 0.82,
+   "plain_atm": 0.93,
+   "note": "a back-thrust: its cliff faces south, toward the load, the ramp falling north to the upper step's edge"
+  }
+ ],
+ "paterae": [
+  {
+   "id": "patera_leaner",
+   "name": "The Leaner's Patera",
+   "centre_px": [
+    1601.5,
+    1388.6
+   ],
+   "across_km": 10.0,
+   "rim_m": 2087,
+   "floor_m": 1907,
+   "lake_cells": 16,
+   "lake_km2": 64,
+   "level_m": 1997,
+   "spill_m": 2073,
+   "closed": true,
+   "shore_min_m": 2012
+  },
+  {
+   "id": "patera_halves",
+   "name": "The Halves' Patera",
+   "centre_px": [
+    1722.0,
+    1374.0
+   ],
+   "across_km": 12.0,
+   "rim_m": 3312,
+   "floor_m": 3062,
+   "lake_cells": 21,
+   "lake_km2": 84,
+   "level_m": 3102,
+   "spill_m": 3260,
+   "closed": true,
+   "shore_min_m": 3180
+  }
+ ],
+ "moved_cells": 641,
+ "raised_m_max": 2079,
+ "cut_m_max": 249,
+ "reclimate": {
+  "cells": 891,
+  "class_changed": 219,
+  "rain_mean_before_mm": 177.0,
+  "rain_mean_after_mm": 177.0,
+  "classes_now": {
+   "BSk": 205,
+   "Dsa": 3,
+   "Dsb": 20,
+   "Dsc": 360,
+   "Dfc": 53,
+   "ET": 247,
+   "EF": 3
+  }
+ },
+ "lake_paint_rgb": [
+  140,
+  166,
+  136
+ ],
+ "springs": [
+  {
+   "id": "spr_slab_siphon_breach",
+   "px": [
+    1584.0,
+    1348.0
+   ],
+   "ground_m": 2029,
+   "kind": "maar"
+  },
+  {
+   "id": "spr_slab_caldron",
+   "px": [
+    1626.0,
+    1366.0
+   ],
+   "ground_m": 2174,
+   "kind": "maar"
+  },
+  {
+   "id": "spr_slab_east_central",
+   "px": [
+    1696.0,
+    1372.0
+   ],
+   "ground_m": 2280,
+   "kind": "maar"
+  },
+  {
+   "id": "spr_slab_warp_head",
+   "px": [
+    1702.0,
+    1340.0
+   ],
+   "ground_m": 1616,
+   "kind": "chasm head"
+  },
+  {
+   "id": "spr_slab_leaner_patera",
+   "px": [
+    1601.5,
+    1388.6
+   ],
+   "ground_m": 1907,
+   "kind": "patera"
+  },
+  {
+   "id": "spr_slab_halves_patera",
+   "px": [
+    1722.0,
+    1374.0
+   ],
+   "ground_m": 3062,
+   "kind": "patera"
+  },
+  {
+   "id": "spr_slab_anvil_apron",
+   "px": [
+    1662.0,
+    1366.0
+   ],
+   "ground_m": 3123,
+   "kind": "apron toe"
+  },
+  {
+   "id": "spr_slab_leaner_ramp",
+   "px": [
+    1604.0,
+    1401.5
+   ],
+   "ground_m": 2106,
+   "kind": "contact"
+  }
+ ],
+ "cells_changed": {
+  "p": 278,
+  "c": 256,
+  "z": 111,
+  "tm": 437,
+  "th": 200,
+  "tl": 200,
+  "tw": 437,
+  "tc": 437
+ },
+ "jpeg_outside": {
+  "st": {
+   "same_as_untouched_reencoded": true,
+   "codec_drift_max": 5,
+   "codec_drift_mean": 0.001,
+   "changed_px_in_region": 1440
+  },
+  "t": {
+   "same_as_untouched_reencoded": true,
+   "codec_drift_max": 8,
+   "codec_drift_mean": 0.011,
+   "changed_px_in_region": 1412
+  },
+  "rt": {
+   "same_as_untouched_reencoded": true,
+   "codec_drift_max": 15,
+   "codec_drift_mean": 0.349,
+   "changed_px_in_region": 1104
+  },
+  "ct": {
+   "same_as_untouched_reencoded": true,
+   "codec_drift_max": 58,
+   "codec_drift_mean": 2.272,
+   "changed_px_in_region": 17984
+  }
+ },
+ "survey_after": {
+  "h_p1_5_25_50_75_95_99": [
+   916,
+   1494,
+   2022,
+   2138,
+   2882,
+   4694,
+   8445
+  ],
+  "atm_p5_50_95": [
+   0.89,
+   1.22,
+   1.33
+  ]
+ },
+ "records": {
+  "region_name_was": "Mid Basin",
+  "region_name_now": "The Slabfields"
+ }
+}

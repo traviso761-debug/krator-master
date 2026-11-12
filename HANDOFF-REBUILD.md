@@ -91,7 +91,7 @@ These entries are left as they were:
 - **NW bay gets limestone caverns, maybe as a new station, at its next rebuild** (the owner, 2026-11-03). nwbay's pair-1 turn is merged, so this rides with its next pass (the close-out rebuild or a station turn of its own). Take `KKARST` (`core/terrain/39c-core-karst.js`, e3c4ddfce) with `rock:'limestone'`, on site 1 of `biomes/KARST-SITES-5.1.md` (the Hykkousoi karst, shared with Ys and k-guilin): the plain's branchwork draining to the lake shore, the existing sinkhole and two flooded shafts given a cave under them, flooded passages as the water-breathers' roads, not hazards.
 - **The same for swhighlands and the rift** (the owner, 2026-11-03): limestone or gypsum caverns, maybe a new station, at each build's next rebuild, with `KKARST` on `biomes/KARST-SITES-5.1.md`'s site 2 (swhighlands' ring folds: `rock:'limestone'`, branchwork with the river cave station 1 already has, the sinkhole chain, one old dry level, the springs where swlowlands' spring cypress stands) and site 3 (Cube's plateau, rift station 4: `rock:'gypsum'`, a dry two-storey maze in the rift fill, its springs at the foot of the scarp at station 2; the maze is linked to Cube, the Ancients' hub, and the rumoured lost Tungang lodge in the east: the owner approved it, 2026-11-03).
 - **The Hearth hold's hypogene chambers** (survey site 4; the owner, 2026-11-03): `KKARST` gets a proper rising-water (hypogene) mode in core first, so the hearths' warm chambers are not a maze stand-in.
-- **New kits to add to the queue:** Copper Glacier, Siphon Pits, Loom-Chasms, Mid Basin, High Rift, the NE outer wall, Outland Gate.
+- **New kits to add to the queue:** Copper Glacier, Siphon Pits, Loom-Chasms, the Slabfields, High Rift, the NE outer wall, Outland Gate.
 - **The new north and west, except Copper Glacier, the NE outer wall and Outland Gate:** Gemini may do map work there, but no biome kits and no open world there for some time.
 - **The tsunami reaches Farside.** Farport's old city moves to the near-shore plateau; the harbour stays below (the station review).
 - **Added, not started:** `core/charactermodels/HANDOFF-GARMENT-DEFECTS.md`, `settlements/isle-demo/PLAN-ECONOMY.md`.
@@ -103,7 +103,7 @@ opt-in, and no page moves (`core/README.md`, "The unbuilt plans' pieces"). A kit
 
 - **Landform kinds** (`core/terrain/38c-core-landforms.js`, `LANDFORMS.md`):
   - **wouterwall** takes `slump`, `runout`, `gully` and `terraces`;
-  - **Mid Basin** takes `maar`, `relay` and `terraces`;
+  - **The Slabfields** (was Mid Basin) takes `maar`, `relay` and `terraces`, and `scarp` for its slabs;
   - **loom-chasms** takes `terraces` (the Cradle);
   - **siphon-pits** takes `stepcut` (the graben and the pits) and `maar` (the pit floors).
 - **Varied contacts** (`KSTRATA.vary` and `KSTRATA.drape`, `core/terrain/35c-core-strata-vary.js`; Godot twin `kstrata_vary.gd`): **Mid

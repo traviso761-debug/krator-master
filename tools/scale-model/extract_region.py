@@ -132,6 +132,7 @@ KITS = {
     'outland gate': 'outlandgate',
     'ne outer wall': 'neouterwall',
     'mid basin': 'outlands',
+    'the slabfields': 'outlands',      # Mid Basin renamed (5.1 edit 3); its own kit, biomes/slabfields, is planned
     'steaming seamounts': 'geyser',
 }
 WATER_OVERLAYS = ('ring sea', 'nwern ocean', 'bay of voth', 'lake of shim')
@@ -573,7 +574,7 @@ def synthesize_option_c_relief(D, elev, whas, wflag, bmap, biomes, omap, overlay
             fam_ids['volcanic'].append(bid)
         elif nm in ('n highlands', 's highlands', 'e inner wall', 'e highlands', 'nw outer wall', 'copper glacier',
                     'tharn uplands', 'rift rim n', 'rift rim s', 'w rift highland', 'stalker range', 'stalker gate',
-                    'mid basin', 'n outlands', 's outlands'):
+                    'mid basin', 'the slabfields', 'n outlands', 's outlands'):
             fam_ids['alpine'].append(bid)
         elif nm in ('korona / ne', 'arachnoid canyons', 'rift', 'high rift', 'xanadu'):
             fam_ids['tepui_rift'].append(bid)

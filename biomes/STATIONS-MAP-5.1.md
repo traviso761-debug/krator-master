@@ -97,7 +97,7 @@ River names are frozen (`smodel/frozen_river_names.json`), and Farport's river i
 | Copper Glacier | `rmvcopperglacier` | 217,000 km² | 2.4-11.2 km, median 6.2 km | The one kit in the Crook that counts as near-term |
 | Siphon Pits | `rmvra9zogfm9t` | 176,000 km² | 2.0-5.3 km, median 4.4 km | `PLAN.md`, `PLAN-STATIONS.md` and 4 station records exist; no kit |
 | Loom-Chasms | `rmvraoas90co7` (Region 99) | 307,000 km² | 0.3-8.2 km, median 1.8 km | `PLAN.md` and 4 station records exist; the page is a showcase, not a kit |
-| Mid Basin | `rmvmidbasin101` | 169,000 km² | 1.5-4.4 km, median 2.2 km | The transition between Siphon Pits and Loom-Chasms: no plan yet |
+| The Slabfields (was Mid Basin) | `rmvmidbasin101` | 169,000 km² | 1.5-4.4 km, median 2.2 km | The transition between Siphon Pits and Loom-Chasms: Io-style tilted slabs south of the stress hinge (`biomes/slabfields/PLAN.md`) |
 | High Rift | `rmvhighrift100` | 86,000 km² | 2.9-11.4 km, median 4.0 km | Five zones: no plan yet |
 | NE outer wall | `ne outer wall` | | | On the map, with `biomes/neouterwall/PLAN.md`. Overlaps `arachnoid canyons` |
 | Outland Gate | `outland gate` | | | Added by the owner, 2026-11-02; `biomes/outlandgate/PLAN.md` on Gemini's branch |

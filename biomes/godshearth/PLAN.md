@@ -336,7 +336,7 @@ The modules this kit takes (`README.md`, "CORE MODULES ARE NOT OPTIONAL"), with 
 
 **Core amendments** (none is a new module; the first three are already listed by other plans: cite, don't re-propose):
 1. **Geothermal surfaces:** mud pots, the fumarole kind (steam and run-off), sinter and mat decals. Owed in
-   `core/water/README.md` ("Not here (yet)"). Firebliss, Mid Basin, twins, greatchasm and seouterwall want them too.
+   `core/water/README.md` ("Not here (yet)"). Firebliss, the Slabfields, twins, greatchasm and seouterwall want them too.
 2. **Hazard kinds:** a crust that breaks underfoot; gas that pools at night and in still air (a `cycle` bound to `core/clock`).
 3. **Cold-air and katabatic wind** in `core/atmos`: the walls' night drainage and the steam banks on the floor.
 
@@ -406,7 +406,7 @@ The modules this kit takes (`README.md`, "CORE MODULES ARE NOT OPTIONAL"), with 
 - `biomes/godthrone/PLAN.md` (sections 1, 3, 4: the ice country, the rock, the bloodfalls);
 - `biomes/geyser/PLAN-STATIONS.md` and `NOTES.md`;
 - `core/water/README.md` (`WATER.spring`, `geyser`, `terraces`), `core/terrain/47-core-therm.js`, `core/README.md`;
-- `LORE.md` (§6.12, the Nazarites), `biomes/firebliss/PLAN.md` and `biomes/midbasin/PLAN.md` (the shared amendments);
+- `LORE.md` (§6.12, the Nazarites), `biomes/firebliss/PLAN.md` and `biomes/slabfields/PLAN.md` (the shared amendments);
 - 2026-11-09 pass: a priority flood for closed hollows over 780-1000 x 1280-1500 and a carve-and-fill search for the brine
   lake's site; `biomes/godthrone/stations/` (no `blood` station built); `HEARTH.work`'s code
   (`biomes/hearths/src/50-biome-hearths-species.js`, rebuild worktree); Lhasa's normals as the climate's Earth analogue.
