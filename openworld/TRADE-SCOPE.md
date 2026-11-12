@@ -247,7 +247,7 @@ everything below comes from the three plans, and the trade model has none of it.
 | **White Loom salt** | Lake Nim's playa, ~1697,1176 | the Loom-Chasms' halite crust | salt for the Emirate's own east: Spindle Fan, the expeditions, the Cradle's farms. Too far from any customer to export | **chosen**, local only |
 
 **What it needs.**
-- **A works pin for the wax.** No pin reaches the maar floors: Ostrukh-on-Water is ~170 km off. The model counts a good only
+- **A works pin for the wax.** No pin reaches the maar floors: Ostrukh-on-Water is ~380 km off (the queue's check; the ~170 km in `biomes/midbasin/PLAN.md` is to Region 98's edge). The queue confirmed the site: 2,277 m on the maar floor, inside Region 98, the plan's px on the 5.1 canvas (`biomes/STATIONS-MAP-5.1.md` is wrong to call them old-canvas). The model counts a good only
   in a settlement's reach, so machine-wax needs **the Ropers' camp, Pit-Head 04, as an outpost pin** at ~1687,1555 (Yuni).
   That is a queue row (section 4), sent on the owner's go (2026-11-12: "yes to the taking the se basin goods and the pin").
 - **A goods row each** in the trade model: machine-wax as a natural good, with demand by machine use like oil (2.4); the
@@ -387,3 +387,76 @@ And the documents: `TRADE-GOODS.md`'s tables are rerun and rewritten once the ru
 - the eastern highlands' harvesters placed at 1095,911 (2.5d).
 
 **Nothing else is open.** Section 7 is the sweep of every biome plan for goods this round missed, for the owner to pick from.
+
+## 7. Goods the biome plans name that this round missed (the sweep, 2026-11-12)
+
+The owner: "look over all biome plans for valuable goods we may have missed". Three read-only sweeps read the `.md` files of
+every folder under `biomes/` (61 kits), plus `biomes/CRYSTAL-CAVES-5.1.md` and `KARST-SITES-5.1.md`, for goods worth carrying
+far. Each find was checked against `kits/crops`. The strongest rows were spot-checked at their cited lines. **Nothing here is
+chosen yet**: the owner picks.
+
+### 7.1 The strongest finds: long-range goods with a seller
+
+| Good | Biome, where | What it is, why it travels | Who sells it | Record | Evidence |
+|---|---|---|---|---|---|
+| **Ranj** | `throne`: wild at the seam, the rift edges, the shoulders, the geyser isle (station 4); Zey'danin's plantations fail | a red resin that "closes wounds and knits bone in days"; chewed raw, a stimulant like coca. Strategic and fought over. **It may be what the trade model's "Spice Isles spice (re-export)" really is** | the Throne's natives (resin camps); Voth and the Hykkousoi want it | none (`biomes/FRUIT.md:210` says so) | `throne/NOTES.md:121-129` |
+| **Precious opal** (Rift black, harlequin, fire, crystal) | `opalvalley`: the Middle Terrace mines (station 3), near Strongbow | "the single most valuable gemstone per carat"; also photonic opal and spicule glass for the Geomancers' optics, opal-dust pigment for the monks | **Xanadu**: its factors take the Sultan's Fifth; prospectors, Tungangs | none (a stone) | `opalvalley/PLAN.md:65, 113, 120` |
+| **Spider Lake silk** (three grades: Golden Cable, Cloud-Fleece, Lake-Sheen Gossamer) | `spiderlake`, the NW lowlands' edge (stations 1, 2, 4) | "Spider Lake's famous export": rigging, bowstrings and armour backing; parkas and dressings; court cloth | the silk-wrights (no pin or polity in the trade model yet) | none | `spiderlake/PLAN.md:116-122` |
+| **Lung salt** (*Lãg Solṭ*) | `gills`: the White Gills (the one sold; the Red is stronger), on the Catch-to-Xanadu road | an oxygen-carrying salt chewed against thin-air sickness on the 7.3 km pass; Dalab's genepriests want it | the gateway caravans (Yuni, Izani, Dasri, Xanadui): fits the gateway rule (2.1) | none (the plan names zone `gills`) | `gills/PLAN.md:454-455` |
+| **Emeralds, turquoise; ostrich and runner-bird feathers; comb-mast drip gum** | `outlands` (the Gem Hills, S4; the plains; the fog belt), sold at the Great Chasm's Sill post (1697,1028) | gems; luxury feathers (the runner bird's sacred and dearest); the caravans' incense | **the Coyote Men** (the Peak tribe mines, the herders, the tappers); Izani caravans carry them | none | `outlands/PLAN.md:7, 113, 223-224`; `greatchasm/PLAN.md:206` |
+| **Hearth wax and stoke** | `hearths`: the hearth discs over the holds (and Oidong's cold hearths) | a clean lamp wax and food fat; stoke, a cold remedy (an overdose kills) | **the Tungangs**, "their trade good to Dalab at Ledge"; the monks | none (the plan promises `kits/crops` records: `hearths/PLAN.md:410, 552`) | `hearths/PLAN.md:412-415` |
+| **Ivory, glyptodont shell, aurochs horn** | `labyrinth` (pit chains, graben floors); `firebliss` (the summer hunt) | mammoth and pachyderm ivory and bone; shell roofs and shields; horn vessels | the Kimr; the Fellgangs hunt Firebliss | none (fauna) | `labyrinth/PLAN.md:143-151`; `firebliss/PLAN.md:76` |
+| **Orange titanium glass** ("Pele's amber") | `godthrone` (the glass-bead halos, 7.5-9 km), `godshearth`, `seouterwall` (the Amber-Sinter Tarn, 1064,1272) | "a pigment and a trade good", gathered on bottled air | climbing parties; the Talovolci (who hold the mountain sacred); Dalab's runaway mods | none | `godthrone/PLAN.md:209`; `seouterwall/PLAN.md:188` |
+| **Lung-skin rope** | `clifflung`: the paramo crest | rope that does not rot, from the lung rings' shed skin | the Talovolci, *proposed* as their trade good to Voth | none | `clifflung/PLAN.md:377` |
+| **Rimroot; iris-lichen violet** | `riftrim`: the south (black) rim | a purgative and fever remedy; a violet dye, a rare colour | the Tungangs and Dalab, at the lifts | rimroot is a catalog fruit only | `riftrim/PLAN.md:254-255` |
+| **Madder red, weld yellow** | `greenstep`, at Tallwalls | the dyes of the checked wool | the Free Giants (Vrivolci): they would supply the Talovolci's checked cloth (`TRADE-GOODS.md` section 2) | woad only | `greenstep/PLAN.md:133` |
+| **Orchil and the stone dyes** | `korona`: the hoar tables over 3,500 m | lichen dyes traded down to the warm rings | the winter tribes, to the Painted Men | partly (`slickrock-orchil` is necanyons') | `korona/NOTES.md:215-216` |
+| **Stone orchid** (*Dendrobium*) | `guilin`, `k-guilin`: the tower cliffs | a medicine | not stated | none | `guilin/NOTES.md:96`; `k-guilin/PLAN.md:107` |
+| **Goldroot, qiviut** | `nwouterwall`: the fellfield, the High Country | a remedy for fatigue and thin air ("the Yeti's trade good"); the finest wool | the Yeti | `goldroot`, `qiviut` | `nwouterwall/PLAN.md:186, 280` |
+
+**Three incenses outside the owner's incense rule** (2.5: "mostly limited to the sedesert/ebadlands"): the Outlands'
+comb-mast drip gum, the north highlands' table-cedar resin (`nhighlands/HANDOFF-FLORA.md:281`) and the abyssal savannah's
+south-east-rim incense tree (`abyssal-savannah/PLAN.md:286`). Keep them as the "mostly" exceptions, or trim them?
+
+### 7.2 Gems and crystals (stones for `kits/resources`, not crops)
+
+Precious opal and the Outlands' emeralds and turquoise (7.1) are the ones with sellers. Also named: garnet and epidote as gem
+rough in the north-east wall's skarns (`neouterwall/PLAN.md:189`); chalcedony and opal crusts in the high rift's veins
+(`highrift/PLAN.md:109`); aura quartz on the Godstep (`godstep/PLAN.md:233`); the basalt geodes' agate, chalcedony, tourmaline
+and celestine (the scablands, the Siphon Pits, the Loom-Chasms: `CRYSTAL-CAVES-5.1.md:94`, `scablands/PLAN.md:96-101`);
+opal-shell limestone, "Krator's ammolite" (`swhighlands/PLAN.md:110`); selenite, bismuth, celestine and cave onyx as
+specimens. The Zeijani's thundereggs are shrine stones, not trade (`CRYSTAL-CAVES-5.1.md:103-104`). Galena in the
+Neo-Ozarks is silver ore, so it is geology's.
+
+### 7.3 Already records in `kits/crops`, not yet goods in the trade model
+
+Umbrella gum and laterite ochre (the abyssal savannah); circle lichen (the Cut: an antiseptic and an orange dye); wine weed
+(Farside: agar and a red dye); goldroot, qiviut, ivan-chai, silverthorn, birch tar (the Yeti's country); rimdew, rock-bottle
+sap (an arrow poison) and ember-plum powder (the necanyons, carried by Pinnacle Rock's Wings); tamarisk manna, glasswort and
+brine lamp (the Bowl); Oidong's peyote, snow lotus, valley ginseng, moon caps, rainbow brackets ("the long-life tea") and
+bell-pod. These need only a goods row each.
+
+### 7.4 Weak or inferred: not recommended
+
+- Farside's fog sponges, kelp-fed goat meat and iodine. Firebliss's spring minerals. The geyser kit's glass-cane silica.
+- The still trees' wax: the hearths plan proposes it as "the isles' lamp oil", so it is the strongest of these.
+- Nwbay's prism-gum nectar. The north highlands' serpentwood (bows). Greenstep's cork. Nsemiarid's balloon-pod floss.
+- The rift rim's sailwort parchment, prism-heath honey, frost-frill varnish and spiral aloe. The Throne's maleo eggs.
+- Larch gum. The Labyrinth's wild melon.
+- The Throne's other drugs and poisons: Ranj arrow poison, pyre-thistle anaesthetic ("an anaesthetic the ash nomads trade"),
+  Korona's numb thorn.
+- The Painted Men's proposed paints and paintbrush medicine (`paintedhighlands/PLAN.md:186-194`).
+- The SW highlands' genepriest curiosities (shelf coral as ore-finder, fishing-bridge venom, cell-lamp spheres).
+- **Contraband:** the Outlands' golden bird feathers. The Sill post refuses them, and every Coyote tribe attacks whoever
+  carries them (`greatchasm/PLAN.md:208`): a story hook, not a good.
+- **Xanadu's lacquerware** is named only as caravan cargo (`twins/PLAN.md:90`, with Xanadui silk and tea), and nothing makes
+  it. A Vale lacquer would need a source tree.
+
+### 7.5 Gaps the sweep turned up
+
+- The hearths plan promises `kits/crops` records for hearth wax and stoke. Neither exists.
+- Korona's notes promise "rare herbs and reagents" and spice buckets, but name none (`korona/NOTES.md:15, 280`).
+- `biomes/STATIONS-MAP-5.1.md` calls the Siphon Pits plan's px old-canvas. The scale-model queue checked them, and they are
+  5.1 (2.5c).
+- If Ranj is the Spice Isles' spice, the trade model's re-export through Temora and Zey'danin (`TRADE-GOODS.md` section 2)
+  should become Ranj, gathered wild on the Throne and fought over: Zey'danin's failing plantations are the story.
