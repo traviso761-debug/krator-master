@@ -30,6 +30,7 @@ R('lichen', 'Rosette lichen', 'dye', [0, 3], [1, 3], {atm: [0, 2], colour: 'brow
 R('rabbitbrush', 'Rabbitbrush flowers', 'dye', [2, 4], [0, 1], {form: 'shrub', colour: 'yellow', home: ['ebadlands'], src: 'ebadlands'});
 R('ghost-gum', 'Ghost-gum leaf', 'dye', [2, 4], [0, 2], {form: 'tree', card: 'card.ghostwood', colour: 'gold', home: ['nwlowlands']});
 R('alder-bark', 'Grey alder bark', 'dye', [1, 2], [3, 3], {form: 'tree', colour: 'red', also: [], home: ['nhighlands'], src: 'nhighlands', note: 'red and black'});
+R('bloodwood', 'Bloodwood sap', 'dye', [4, 4], [2, 4], {form: 'tree', colour: 'red', home: ['hyperjungle'], homeOnly: true, src: 'hyperjungle', stores: ['dried'], note: 'the red of the Screamers\' painted dots (LORE.md 6.6); the north hyperjungle\'s bloodwood (biomes/hyperjungle 57), tapped, not planted: Screamer Country\'s one export no other polity has (the owner, 2026-11-12; openworld/TRADE-GOODS.md)'});
 R('ironbark-tannin', 'Ironbark bark', 'dye', [4, 4], [2, 3], {form: 'tree', colour: 'brown', home: ['nwbay', 'swbay'], src: 'swbay'});
 R('purple-fan', 'Purple fan leaves', 'dye', [3, 4], [1, 2], {colour: 'purple', home: ['rift'], src: 'rift'});
 R('aril-blue', 'Aril blue', 'dye', [3, 4], [2, 3], {homeOnly: true, colour: 'pale blue', home: ['nwbay'], src: 'nwbay', note: 'the traveller\'s fan arils; the Hykkousoi pale blue, slate with ironbark tannin'});

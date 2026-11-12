@@ -456,6 +456,19 @@ uses ground already on the map or a line already in the lore, cheapest first.
 - **Yuni** buys **oil** (43%) and **coal** for its generators from Mav's Refuge and Iziz (about 650 km).
 - **Iziz** buys **rare earths** (82%) for its mechs and generators, from Erehwon, Nulab and Voth.
 
+## 5a. Applied (the owner, 2026-11-12: "apply both")
+
+The four fixes and Xanadu's gold field are in. This model's tables above are as computed **before** them; rerun the
+scripts (scratchpad `trade\`) to see them.
+
+| Polity | Its unique export now | How |
+|---|---|---|
+| Tungang Union | saltpeter (cave works) and Rift-line salvage | `SETT_ADDED['5.1e9']`: Tungang saltpeter works at 492,1255, on rich saltpeter (200) |
+| Fellgangs | gold | Fellgang gold camp at 438,1448, on decent gold (140), 24 km from Wildcat |
+| Screamer Country | bloodwood red | `kits/crops` record `bloodwood` (a dye, `homeOnly`, home the hyperjungle: tapped, not planted, so only its home has it) |
+| Coyote Kingdom | rock salt | Coyote salt works at 1190,463, on rich rock salt (229); its sulfur is low grade (60), so salt is the export |
+| Xanadu | gold, from its own mines | the gold lode `lode:xanadu-gold` (911,1665, r 16 km, peak 225; ~380 km² rich), stamped by `tools/scale-model/geology.py --lodes` from `kits/resources/data/lodes.json`, and the Xanadu gold mines village on it |
+
 ## 6. Decisions for the owner
 
 1. **The four fixes** (section 5): a Tungang saltpeter works at 492,1255, a Fellgang gold camp at 438,1448, bloodwood red for the
