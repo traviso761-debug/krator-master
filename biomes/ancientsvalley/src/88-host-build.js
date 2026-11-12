@@ -9,10 +9,19 @@ window._swlow=null;window._nwlow=null;
    the same calls in the same order (each kit's build() is its trees then its floor, under its own BIO.cur), so the page is the same. What follows
    this fragment on the page waits for it: the build splits the page there (build.py: the fragments after 88 are a text block, run when this
    finishes, AV_AFTER), so the towers, the atmosphere and the host's take start on the finished forest as before */
-const avLoadNote=(()=>{let el=null;return t=>{if(!el){el=document.createElement('div');el.id='av-loading';el.style.cssText='position:fixed;left:50%;top:46%;transform:translate(-50%,-50%);z-index:50;background:rgba(24,21,15,.88);color:#f3ecd8;font:13px Georgia,serif;padding:10px 16px;border-radius:8px;pointer-events:none';document.body.appendChild(el);}
+const avLoadNote=(()=>{let el=null;return t=>{if(!el)el=document.getElementById('av-loading');if(!el){el=document.createElement('div');el.id='av-loading';el.style.cssText='position:fixed;left:50%;top:46%;transform:translate(-50%,-50%);z-index:50;background:rgba(24,21,15,.88);color:#f3ecd8;font:13px Georgia,serif;padding:10px 16px;border-radius:8px;pointer-events:none';document.body.appendChild(el);}
   if(t==null){el.remove();el=null;return;}el.textContent='Building the valley: '+t+'…';};})();
-const avYield=t=>{avLoadNote(t);return new Promise(r=>setTimeout(r,0));};
-const AV_AFTER=()=>{avLoadNote(null);const el=document.getElementById('av-after');if(!el)return;const s=document.createElement('script');s.textContent=el.textContent;el.remove();document.body.appendChild(s);};
+/* the note says which stage of how many and the seconds so far (the owner, 2026-11-11: the pages "still seem to get stuck on 'building the valley'":
+   a stage of 20 to 40 s on a slow machine showed one unchanging line); the page cannot repaint inside a stage, so it says that too */
+const AV_STAGES={n:0,of:(typeof SWLOW!=='undefined'&&STAGE.swQ?2:0)+(typeof NWLOW!=='undefined'&&STAGE.nwQ?2:0)+1,t0:typeof AV_PARTS!=='undefined'?AV_PARTS.t0:0};   /* the seconds since the page's first script (46y) */
+const avYield=t=>{AV_STAGES.n++;avLoadNote(t+' (stage '+AV_STAGES.n+' of '+AV_STAGES.of+', '+Math.round((performance.now()-AV_STAGES.t0)/1000)+' s so far; the page is busy until each stage ends)');return avTurn();};
+/* a turn for the browser that includes a paint: a frame, then a task after it (a bare zero timeout can run before the note is painted); a hidden tab
+   draws no frames, so a 150 ms timer goes on without one */
+function avTurn(){return new Promise(r=>{let done=false;const go=()=>{if(!done){done=true;r();}};requestAnimationFrame(()=>setTimeout(go,0));setTimeout(go,150);});}
+/* the rest of the page (the towers, the transit, the sky, the first frame: one task of 15 s or more on a slow machine) runs under a note of its own,
+   painted first; the note goes once that task ends, the first frame drawn */
+const AV_AFTER=()=>{const el=document.getElementById('av-after');if(!el){avLoadNote(null);return;}avLoadNote('the towers, the streets and the sky (the last stage)');
+ avTurn().then(()=>{const s=document.createElement('script');s.textContent=el.textContent;el.remove();document.body.appendChild(s);avLoadNote(null);});};
 (async function(){const t0=performance.now();const Q=new URLSearchParams(location.search),q=Q.has('q')?+Q.get('q'):1;
  const adjust=(T,w)=>{for(let i=REG.length-1;i>=0&&i>=REG.length-400;i--){const r=REG[i];if(r.kind==='tree'&&r.x===T.x&&r.z===T.z){if(!w){REG.splice(i,1);break;}r.h=w.h;r.r=r.r*w.kx;break;}}};
  /* a kit's build() in its two passes, each a stage: the same calls, BIO.cur and output as the kit's own build (each lowland kit's 70 fragment) */

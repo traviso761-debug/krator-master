@@ -75,7 +75,9 @@ AV.lattice=function(fn,o){var c=o.cell,hf=o.half,T=o.tile==null?8:o.tile,tol=o.t
   st.tiles++;st.cells+=T*T;return tiles[k]={A:A,S:S};}
  return{h:function(x,z){var u=(x+hf)/c,v=(z+hf)/c;if(!(u>=0&&v>=0&&u<n&&v<n))return fn(x,z);
    var i=Math.floor(u),j=Math.floor(v),ti=(i/T)|0,tj=(j/T)|0,k=tj*nt+ti,L=tiles[k]||tile(k,ti,tj),li=i-ti*T,lj=j-tj*T;if(L.S[lj*T+li])return fn(x,z);
-   var A=L.A,p=lj*W+li,a=A[p],b=A[p+1],d=A[p+W],e=A[p+W+1],fu=u-i,fv=v-j;return a+(b-a)*fu+(d-a)*fv+(a-b-d+e)*fu*fv;},stats:st};};
+   var A=L.A,p=lj*W+li,a=A[p],b=A[p+1],d=A[p+W],e=A[p+W+1],fu=u-i,fv=v-j;return a+(b-a)*fu+(d-a)*fv+(a-b-d+e)*fu*fv;},stats:st,
+  /* tiles nt x nt; fill(k) fills tile k now if it is not yet (a page fills them ahead in slices, 46y; the same values as filled on first read) */
+  nt:nt,fill:function(k){if(!tiles[k])tile(k,k%nt,(k/nt)|0);}};};
 AV.craterH=function(list,x,z){var h=0,B=list._avB||(list._avB=AV.bucket(list,function(c){return c.r*1.6;},128)),I=B(x,z);for(var q=0;q<I.length;q++){var c=list[I[q]],d=Math.hypot(x-c.x,z-c.z);if(d>c.r*1.6)continue;var u=d/c.r;
   if(u<1){var b=1-u*u;h-=c.depth*b*b;}h+=c.rim*AV.smooth(.6,1,u)*AV.smooth(1.6,1.1,u);}return h;};
 AV.BANDS=[['floor',100],['shelf',300],['terraces',600],['forest',Infinity]];
