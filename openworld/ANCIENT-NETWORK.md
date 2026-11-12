@@ -897,25 +897,25 @@ It stands on the valley floor at the foot of the High Rift's escarpment, over Oi
 - **Source:** the Oidong-High Rift session's scale-model edit 5.1e5, on branch `claude/cool-tereshkova-d594e8` (`bd01a61f5`).
 - **The router:** `route51.py` takes the new place before `setts.json`'s snapshot catches up.
 
-Re-routed:
-- **The Rift line, Theodiga (10) to Strongbow (11): 890 km** (was 296), 120 km in tunnel.
-  - Its route: Theodiga, Qiblai, the valley of Strongbow's old site, Longsong, then east along the Oidong Valley to Strongbow.
-  - Xanadu's short line now runs on through Oidong, and Longsong stands on it.
-- **The Xanadu roads to Strongbow are dropped** as redundant beside the line: Qiblai to Strongbow, Strongbow to Longsong,
-  Qiblai to Longsong. Strongbow to Strongwall is no longer a neighbour pair. The line is an Ancient way, road and guideway in
-  one record (section 8.1), so Strongbow and Longsong are reached by it.
-- **Possible: Strongbow (11) to Stair (12): 562 km**, 403 km of it bored (was 344 and 329). It now runs north-west under the High
-  Rift.
+Re-routed (the owner's corrections the same day: "qiblai shouldnt be a line stop it was built much later", "longsong shouldnt be a
+line stop either", "there is no rift line in oidong valley, just a road", "it goes to strongbow"):
+- **The Rift line, Theodiga (10) to Strongbow (11): 1,124 km**, 197 km of it in tunnel (it was 296 km to the old site).
+  - It stays out of the Oidong Valley: the router traces it with the valley's polygon at 1,000x the cost, except within 10 km
+    of Strongbow.
+  - Its route runs south from Theodiga past Strongwall, east along the uplands south of the valley, then north into Strongbow.
+  - It stops at neither Qiblai (a much later city) nor Longsong.
+- **The valley has a road and no line.** With the line out of the valley, the Xanadu roads come back: Strongbow to Longsong on
+  the valley floor (162 km), Qiblai to Longsong (583 km) and Qiblai to Strongbow (745 km). The Oidong session's surface road
+  (Longsong to Strongbow, then the Order's road up the beck) is the same road.
+- **Possible: the dead bore from Theodiga (10) to Stair (12)**, 438 km, 385 km of it bored. The owner: "theodiga could go to
+  stair". It replaces the possible leg from Strongbow, which from the new site would have been a 562 km bore.
+  - It is a third way across, but a hard one: dark, with little food or water.
+  - **The trains do not run in it.**
+  - From Stair, the possible leg on to Parabola (13) by the Godsgate is unchanged.
 
-**Leg ids** (for the open world's links, the Oidong-High Rift session's ask): every leg in `net51.json` now has a unique `id`,
-with the shared one kept as `line` (`legs51.py`). The Theodiga–Strongbow leg is split where it passes Qiblai and Longsong:
-- `rift.theodiga-qiblai`, 133 km;
-- `rift.qiblai-longsong`, 592 km;
-- `rift.longsong-strongbow`, 166 km.
-
-**Open for the owner:**
-- Should the line still continue (possibly) from Strongbow to Stair? From the new site, the bore is much longer.
-- Or should the possible leg to Stair branch from the line nearer Qiblai?
+**Leg ids** (for the open world's links, the Oidong-High Rift session's ask): every leg in `net51.json` has a unique `id`, with the
+id its legs share kept as `line` (`legs51.py`). The line's last leg is `rift.theodiga-strongbow`, uncut. The dead bore is
+`rift.bowl.theodiga-stair`.
 
 ### 8.9 Still open (earlier list; items 2 to 5 answered in 8.10)
 

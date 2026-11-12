@@ -118,7 +118,7 @@ dist = dijkstra(GR, indices=src, directed=False); C = dist[:, src]
 # ---- the authored routes (pinned: the router does not choose them)
 AUTH = [
   ('rift', [('Dalab', 'Shelf'), ('Shelf', 'Ledge', 'bore'), ('Ledge', 'Nulab', 'lift'), ('Nulab', 'Chimes'), ('Chimes', 'Cthonos'), ('Cthonos', 'The Tubes'), ('The Tubes', 'Cube'),
-            ('Cube', 'Theodiga'), ('Theodiga', 'Strongbow'), ('Strongbow', 'Stair', 'bore')]),
+            ('Cube', 'Theodiga'), ('Theodiga', 'Strongbow'), ('Theodiga', 'Stair', 'bore')]),
   ('rift.twenny', [('Twenny junction', 'Loj Twenny', 'bore')]),
   ('innerwall', [('Drum', 'Cascade', 'bore'), ('Cascade', 'Babel', 'bore')]),
   ('span', [('Dalab', 'Span'), ('Span', 'Thera')]),
@@ -232,21 +232,36 @@ def via(pts):
         seg = trace(cellof(*a), cellof(*b)); out += seg if not out else seg[1:]
     return out
 # ---- the Rift line (the Line session's survey for the bore; the owner: underground through the Lizardmen's country)
+# NO RIFT LINE IN THE OIDONG VALLEY (the owner, 2026-11-11: "there is no rift line in oidong valley, just a road"; "it goes to strongbow"):
+# the Theodiga-Strongbow leg is traced with the valley's polygon ('Oidong Valley') at 1000x, but for the last 10 km round Strongbow,
+# so the line comes to the cliff arcology from outside the valley
+def OIDONG_OFF(a, b):
+    m = _mask('Oidong Valley'); sb = P('Strongbow'); n = VW * VH
+    xs = (np.arange(n) % VW) * F; ys = (np.arange(n) // VW) * F
+    inside = m[np.clip(ys, 0, H2 - 1), np.clip(xs, 0, W2w - 1)] & (np.hypot(xs - sb[0], ys - sb[1]) > 5)
+    G = GR.tocoo(); w = G.data * np.where(inside[G.row] | inside[G.col], 1000.0, 1.0)
+    Go = coo_matrix((w, (G.row, G.col)), shape=G.shape).tocsr(); ca, cb = cellof(*P(a)), cellof(*P(b))
+    _, pred = dijkstra(Go, indices=ca, directed=False, return_predecessors=True)
+    q = [cb]
+    while q[-1] != ca and pred[q[-1]] >= 0: q.append(int(pred[q[-1]]))
+    return [pxof(c) for c in q[::-1]]
 rift_legs = [('Dalab', 'Shelf', routed('Dalab', 'Shelf'), False, None), ('Shelf', 'N portal', straight(P('Shelf'), EXTRA_PTS['N portal']), True, None),
              ('N portal', 'S portal', straight(EXTRA_PTS['N portal'], EXTRA_PTS['S portal']), True, None), ('S portal', 'Ledge', straight(EXTRA_PTS['S portal'], P('Ledge')), False, None),
              ('Ledge', 'Nulab', straight(P('Ledge'), P('Nulab')), False, None), ('Nulab', 'Chimes', routed('Nulab', 'Chimes'), False, None),
              ('Chimes', 'Cthonos', routed('Chimes', 'Cthonos'), False, 'tunnel'), ('Cthonos', 'The Tubes', routed('Cthonos', 'The Tubes'), False, 'tunnel'),
              ('The Tubes', 'the Pile', routed('The Tubes', 'Cube'), False, 'tunnel'), ('the Pile', 'Theodiga', routed('Cube', 'Theodiga'), False, None),
-             ('Theodiga', 'Strongbow', routed('Theodiga', 'Strongbow'), False, None)]
+             ('Theodiga', 'Strongbow', OIDONG_OFF('Theodiga', 'Strongbow'), False, None)]
 NUM = {'Dalab': 1, 'Shelf': 2, 'Ledge': 4, 'Nulab': 5, 'Chimes': 6, 'Cthonos': 7, 'The Tubes': 8, 'the Pile': 9, 'Theodiga': 10, 'Strongbow': 11, 'Stair': 12, 'Bowl arcology': 13}
 lab = lambda n: n + (' (%d)' % NUM[n] if n in NUM else '')
 for a, b, pts, bore, force in rift_legs:
     add('rift', 'line', a, b, pts, bore, name='The Rift line: ' + lab(a) + ' to ' + lab(b), force=force,
         note='lifts down the cliff, 1.3 km' if (a, b) == ('Ledge', 'Nulab') else ('underground through the Lizardmen\'s country (the owner); surface where the tunnel wars broke it open, to be authored' if force else None))
 add('rift.twenny', 'branch', 'Twenny junction', 'Loj Twenny', straight(EXTRA_PTS['Twenny junction'], P('Loj Twenny')), True, name='The Twenny gallery (bore km 218)')
-SBS = straight(P('Strongbow'), P('Stair'))
-add('rift.bowl', 'possible', 'Strongbow', 'Stair', SBS, level=level_for(SBS, 329), name='Possible: the Rift line on from Strongbow (11) to Stair (12) under the Catch\'s walls',
-    note='the Line session\'s straight bore, 329 km')
+# Theodiga to Stair (the owner, 2026-11-11, with Strongbow moved to Oidong): a dead bore, a third way across, dark, with little food or
+# water; the trains do not run there. Bored over most of its length
+TSB = straight(P('Theodiga'), P('Stair')); _tl = sum(2 * math.hypot(TSB[k][0] - TSB[k - 1][0], TSB[k][1] - TSB[k - 1][1]) for k in range(1, len(TSB)))
+add('rift.bowl', 'possible', 'Theodiga', 'Stair', TSB, level=level_for(TSB, 0.85 * _tl), name='Possible: the Rift line\'s dead bore from Theodiga (10) to Stair (12)',
+    note='a third way across: dark, little food or water; no trains run in it')
 add('rift.bowl', 'possible', 'Stair', 'Bowl arcology', routed('Stair', 'Bowl arcology'), name='Possible: the Rift line on from Stair (12) to Parabola (13), by the Godsgate')
 # ---- the Inner Wall tunnel, bent under Cascade
 IW = straight(P('Drum'), P('Cascade')) + straight(P('Cascade'), P('Babel'))[1:]
@@ -266,7 +281,7 @@ add('outland', 'trunk', "Trickster's House", 'the Ria valley', OG, name='The Out
 OK = via([EXTRA_PTS['the Gate'], [1230, 470], P('Korona site')])
 add('outland.korona', 'trunk', 'the Gate', 'Korona site', OK, name='The Outland Gate highway: the branch through the Tiers to the Korona site')
 pinned_names = {tuple(sorted(x)) for x in [('Dalab', 'Shelf'), ('Shelf', 'Ledge'), ('Ledge', 'Nulab'), ('Nulab', 'Chimes'), ('Chimes', 'Cthonos'), ('Cthonos', 'The Tubes'), ('The Tubes', 'Cube'),
-                                           ('Cube', 'Theodiga'), ('Theodiga', 'Strongbow'), ('Strongbow', 'Stair'), ('Stair', 'Bowl arcology'),
+                                           ('Cube', 'Theodiga'), ('Theodiga', 'Strongbow'), ('Theodiga', 'Stair'), ('Stair', 'Bowl arcology'),
                                            ('Drum', 'Cascade'), ('Cascade', 'Babel'), ('Dalab', 'Span'), ('Span', 'Thera')]}
 for i, j in sorted(edges):
     a, b = names[i], names[j]
@@ -469,7 +484,7 @@ for k, label_, pt in EXT:
 for r in routes:
     r['from'] = 'the Pit' if r['from'] == 'Korona site' else r['from']; r['to'] = 'the Pit' if r['to'] == 'Korona site' else r['to']
     r['name'] = r['name'].replace('the Korona site', 'the Pit').replace('Korona site', 'the Pit')
-# the last pass (legs51.py): the Theodiga-Strongbow leg split at Qiblai and Longsong, and a unique id on every leg (`line` keeps the shared one)
+# the last pass (legs51.py): and a unique id on every leg (`line` keeps the shared one)
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import legs51
 routes = legs51.finish(routes, {n: (s['px'], s['py']) for n, s in S.items()})

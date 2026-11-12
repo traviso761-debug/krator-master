@@ -1,13 +1,14 @@
 """The last pass on the network's routes before net51.json is written (route51.py calls finish(); run alone it rewrites net51.json in place:
 python legs51.py <folder holding net51.json and setts.json>).
 
-1. The Rift line's Theodiga-Strongbow leg is split where it passes Qiblai and Longsong (pass-through points, not numbered stations), so an
-   open-world link can follow the stretch it needs (the Oidong-High Rift session, 2026-11-11: the valley links Longsong-Strongbow).
+1. A leg named in SPLIT is cut at pass-through points (none at present: the owner, 2026-11-11, wants no stop at Qiblai or Longsong).
 2. Every route gets a UNIQUE id: a route id several legs share ('rift', 'rift.bowl', 'span') becomes id.<from>-<to> on each leg, and the
    shared id is kept as `line`. A route whose id is already unique keeps it (and `line` is its id)."""
 import sys, json, math, re
 
-SPLIT = {('Theodiga', 'Strongbow'): ['Qiblai', 'Longsong']}
+# legs cut at pass-through points: none. The Rift line stops at neither Qiblai (a much later city) nor Longsong (the owner, 2026-11-11);
+# a link that follows part of a leg takes the stretch it needs from the leg's px
+SPLIT = {}
 
 
 def slug(n):
