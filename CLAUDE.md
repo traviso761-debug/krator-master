@@ -20,8 +20,8 @@ every node test under `core/`, a rebuild of every build and the hash baseline (`
 what is new): `check_assembly` (clashes, order and missing fragments on the built pages; `tools/fragment_needs.json` declares a shared fragment's
 needs), `check_source` (trailing `//`, `|| <number>`, shader text), `check_vendor`, `check_views`, `check_cells --ratchet`, `check_stale`, with `check_budgets`
 hard. **Build with `python3 tools/build.py <build>`**: the same build, plus the LFS refusal, the page cap, the fragment needs and its
-`build-inputs.json`; `python3 tools/reach.py <file>` says which pages a shared file reaches before you change it. CI runs it on every push
-(`.github/workflows/`); the nightly job runs on `main`. A `verify.py` takes the shared harness (`tools/harness.py`:
+`build-inputs.json`; `python3 tools/reach.py <file>` says which pages a shared file reaches before you change it. CI runs it on pushes to `main`
+and on pull requests, not on working branches, so run it yourself before a merge (`.github/workflows/`); the nightly job runs on `main`. A `verify.py` takes the shared harness (`tools/harness.py`:
 the Chromium launcher, the local three.js, `smoke`, `walk`, `export`); do not paste a launcher into one. Every
 `build*.py` imports `tools/build_sources.py` and calls `report()` before its first write, so `--list-sources` prints
 what it reads; `tools/dep_graph.py` builds `DEPS.json` from those lists (a new build copies the pattern from the
