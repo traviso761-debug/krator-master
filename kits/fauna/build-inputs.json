@@ -26,7 +26,7 @@
     "kits/fauna/krator-fauna-runtime.js": "9e4b6ba0f3c429c4927a8371d6ee4d4c8a11c509644a938c437ce4f6fadf1a7d",
     "kits/fauna/krator-fauna-voth.js": "a79bf22196a5943a26f1199bf03cf29d3d1c3774ef6af65386b36fb349e7373a",
     "kits/fauna/krator-fauna-wild.js": "74671e89e005bd0f3635ad411b3e224bb76a3329ce5550b4eb1531715ffb0ff0",
-    "kits/fauna/krator-fauna-xeno.js": "4df1de08ee0488e00ef7e5f5c32671e2bc7a422c709d96f2ba9a1310e601e4d5",
+    "kits/fauna/krator-fauna-xeno.js": "4e5cad47a862f747163fcab1ced2cc0c7edf4dbc80d3246f068bc18d236eb0cd",
     "kits/fauna/models/beetle.json": "fe71845c6336af545b05b1e926c628d715ff86d8d7e5c082962ebdaaf07459f5",
     "kits/fauna/models/bison.json": "af967b139183eaac25706fc062faba5f612585e9ceea7b6a10860f46f705701f",
     "kits/fauna/models/bowl-mantis.json": "17882b9ca2ecc1cd34299e48163574dbaaf961495e2c2650cae345779eaaa2e8",
@@ -84,18 +84,18 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/fauna/build-manifest.json": "c1f3253e911e1055d0d6a15597ea645ee5d240a239f64ed361ecfce4426d2b29",
-    "kits/fauna/dist/fauna.html": "e0634416ccea6112c0eda594a24569963568635c362c2642f6c8e8683bca99ed",
+    "kits/fauna/build-manifest.json": "9112d017a46eb50b6526f4044d1796aaa67790bb0fbe24b38df7b88072b822dd",
+    "kits/fauna/dist/fauna.html": "b3ed09afe1ec34207fc92228aaeb54e8354e9b0a9a80ca1fb69604503dcec6db",
     "kits/fauna/dist/fauna.tex.models-2.js": "0feebe9a2fc05eec1d7f6140f07b483caf5c9e28a45275e7d538d49581625dca",
     "kits/fauna/dist/fauna.tex.models.js": "f16de0d117e49ce2465f7c31709ef02a86d02ec08862d10da41d503c1725d000",
-    "kits/fauna/dist/krator-fauna.js": "677b810736f767ac82551f23cafde0693978e68dfdae89f24a83102dc4c6342d"
+    "kits/fauna/dist/krator-fauna.js": "2314a3924b2225e9f0a3222a89e2da470505a7bb558a8f94998a80b04e2238a1"
    },
    "outputs_raw": {
-    "kits/fauna/build-manifest.json": "c1f3253e911e1055d0d6a15597ea645ee5d240a239f64ed361ecfce4426d2b29",
-    "kits/fauna/dist/fauna.html": "e0634416ccea6112c0eda594a24569963568635c362c2642f6c8e8683bca99ed",
+    "kits/fauna/build-manifest.json": "9112d017a46eb50b6526f4044d1796aaa67790bb0fbe24b38df7b88072b822dd",
+    "kits/fauna/dist/fauna.html": "b3ed09afe1ec34207fc92228aaeb54e8354e9b0a9a80ca1fb69604503dcec6db",
     "kits/fauna/dist/fauna.tex.models-2.js": "0feebe9a2fc05eec1d7f6140f07b483caf5c9e28a45275e7d538d49581625dca",
     "kits/fauna/dist/fauna.tex.models.js": "f16de0d117e49ce2465f7c31709ef02a86d02ec08862d10da41d503c1725d000",
-    "kits/fauna/dist/krator-fauna.js": "677b810736f767ac82551f23cafde0693978e68dfdae89f24a83102dc4c6342d"
+    "kits/fauna/dist/krator-fauna.js": "2314a3924b2225e9f0a3222a89e2da470505a7bb558a8f94998a80b04e2238a1"
    }
   }
  }

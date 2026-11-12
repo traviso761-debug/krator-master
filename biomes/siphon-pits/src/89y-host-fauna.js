@@ -15,7 +15,7 @@ const FAUNA=(function(){const Q=new URLSearchParams(location.search),out={land:'
    note:'the farms\' Ghaunt-Ox, yoked in pairs to the stone seed-drills'},
   scarp:{include:['ghaunt-ox'],exclude:['pipe-borer'],weight:{'ghaunt-ox':1},density:{grazer:.35,predator:.06,flyer:0,water:0},maxGroup:12,note:'wild Ghaunt-Ox on the ledges; a flenser now and then'},
   pitfloor:{include:['ghaunt-ox'],exclude:['flenser-hound'],weight:{'ghaunt-ox':2,'pipe-borer':1},density:{grazer:.6,predator:0,flyer:0,water:0},maxGroup:10,note:'wild Ghaunt-Ox on the felt; the Pipe-Borers\' warrens'},
-  arete:{exclude:['ghaunt-ox','pipe-borer'],density:{grazer:0,predator:.5,flyer:0,water:0},maxGroup:2,note:'the Flenser-Hounds at the rims'}}[SKEY];
+  arete:{exclude:['ghaunt-ox','pipe-borer'],density:{grazer:0,predator:.02,flyer:0,water:0},maxGroup:2,note:'the Flenser-Hounds at the rims: about one a lair (89s: five), alone or a pair'}}[SKEY];
  FAUNALANDS.land(out.land,LANDS);
  const DRYk=(x,z)=>DRY(x,z)>0,slope=SLOPE_AT;
  const pitEdge=(x,z)=>{if(SKEY!=='arete')return false;const s=z<0?-1:1,cz=s*1253,dx=-x,dz=cz-z,L=Math.hypot(dx,dz)||1,px=x+dx/L*30,pz=z+dz/L*30;return terrainH(px,pz)<SITE.base-60;};

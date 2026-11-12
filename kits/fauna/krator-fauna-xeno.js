@@ -18,18 +18,31 @@ function faXnAnimal(d) {
   if (d.lives) e.tags.stations = d.lives;
   return e;
 }
+/* a coat over the wild file's hexapod (o.coat [amp, freq]): a shaggy shell round the torso, shoulder to rump, hanging to the knees as a musk
+   ox's skirt does, the back a little proud of the body. Here and not in faWdHex, so no other group's bundle changes */
+function faXnCoat(A, o) {
+  faWdHex(A, o);
+  if (!o.coat) return;
+  const S = A.S, c = o.c, kS = o.stock || 1, yb = o.yb / kS, th = {}, ab = {};
+  for (const a in o.th) th[a] = o.th[a] * kS;
+  for (const a in o.ab) ab[a] = o.ab[a] * kS;
+  const W = (th.w + ab.w) * 0.5, H = (th.h + ab.h) * 0.5, row = (z, w, h, dy) => [0, (yb + (dy || 0) + 0.025 * h) * S, z * S, w * S, h * 1.025 * S];
+  faHjRows(A, 'shag', [row(th.l * 0.95, th.w * 0.55, th.h * 0.6, 0.05), row(th.l * 0.55, th.w * 1.1, th.h * 1.05, 0.06), row(0, th.w * 1.14, th.h * 1.1, 0.04),
+    row(-ab.z * 0.5, W * 1.14, H * 1.08), row(-ab.z, ab.w * 1.12, ab.h * 1.06), row(-ab.z - ab.l * 0.55, ab.w * 0.9, ab.h * 0.92), row(-ab.z - ab.l * 0.8, ab.w * 0.3, ab.h * 0.3)],
+    18, 22, null, { round: [0.1, 0.12], shag: o.coat, colf: (t, a, q) => faWdM(faWdM(c.a, c.m || c.d, 0.35), c.d, 0.4 * faNoise(q[0] / S * 5, q[1] / S * 5, q[2] / S * 5)) });
+}
 const FA_XN_98 = { biomes: ['siphon-pits'], aridity: ['semiarid', 'subhumid'], climate: ['temperate', 'cold'] };
 
 /* THE WOOLLY GHAUNT-OX (Ovisaphon borealis): 1,800 kg; crampon forelimbs for the talus, columnar middle limbs, hind levers that jump a ledge.
    Domesticated on the Ostrukh Terraces (pairs at the stone seed-drills), wild herds on the scarp's ledges and the pit floors */
-faXnAnimal(Object.assign({}, FA_WD_C, FA_XN_98, { koppen: ['Cfb', 'Dfb', 'ET', 'Cfa'], dom: true, herdedBy: ['the Ostrukh farmers'], key: 'ghaunt-ox', name: 'Woolly Ghaunt-Ox', kind: faWdHex,
+faXnAnimal(Object.assign({}, FA_WD_C, FA_XN_98, { koppen: ['Cfb', 'Dfb', 'ET', 'Cfa'], dom: true, herdedBy: ['the Ostrukh farmers'], key: 'ghaunt-ox', name: 'Woolly Ghaunt-Ox', kind: faXnCoat,
   dim: [1.95, 5.25, 1.85], mass: 1800, meat: 650, hide: 7, hideNote: 'thick, oily under the wool: boots, harness, the ropers\' cradles',
   extra: { wool: { amount: 9, note: 'a shaggy undercoat combed out each spring: the terraces\' felt and rope' }, milk: { amount: 5, note: 'thick and fatty: the farms\' cheese' } },
   traits: { rideable: true, draught: true, milkable: true }, lives: ['terraces', 'scarp', 'pitfloor'],
   tags: { diet: 'herbivore', feeding: 'grazer', temperament: 'docile', activity: 'diurnal', habitat: ['ground', 'rock', 'pen'], locomotion: ['walks', 'runs', 'leaps'] },
   note: 'the woolly six-limbed ox of Region 98: a deep barrel body in a shaggy brown coat, a low broad head with short curved tusks; its fore pair end in crampon claws that grip the talus, the middle pair are columns that carry its weight, the hind pair are long levers that jump it up a ledge; the terraces yoke them in pairs to the stone seed-drills, and the wild herds walk the scarp\'s ledges and graze the felt of the pit floors',
   herd: 'a farm keeps two to six; wild herds of twenty', life: [4, 35, 1, 300], speed: { walk: 1.1, run: 6 }, flee: 10, aggr: 0.15, gait: { type: 'centaur', freq: 0.85, stride: 0.9 }, grazePitch: 0.6, sch: 'graze',
-  spec: { stock: 1.1, amb: true, fam: 'shag', yb: 1.25, th: { w: 0.66, h: 0.62, l: 0.9 }, ab: { w: 0.7, h: 0.62, l: 1.2, z: 1.05, dy: 0.04 }, hd: { w: 0.38, h: 0.32, l: 0.52 }, tusks: 0.28, tail: { len: 0.6 }, R: 0.85, Hh: 0.7, lt: 0.18 },
+  spec: { stock: 1.1, amb: true, fam: 'shag', coat: [0.14, 5], yb: 1.25, th: { w: 0.66, h: 0.62, l: 0.9 }, ab: { w: 0.7, h: 0.62, l: 1.2, z: 1.05, dy: 0.04 }, hd: { w: 0.38, h: 0.32, l: 0.52 }, tusks: 0.28, tail: { len: 0.6 }, R: 0.85, Hh: 0.7, lt: 0.18 },
   variants: [['brown', { a: 0x6a4a2c, b: 0x8a6a48, m: 0x4a3420, d: 0x3a2814 }], ['grey-dun', { a: 0x8a8070, b: 0xa89c88, m: 0x5e564a, d: 0x403a30 }], ['wax-stained (the pits\')', { a: 0x8a6230, b: 0xb08a50, m: 0x5e4220, d: 0x3e2c14 }]] }));
 
 /* THE FLENSER-HOUND (Scyllatherium fissum): the Arete Way's ambusher. Tripartite limbs: two folding raptorial scythe-arms for a silent strike at
