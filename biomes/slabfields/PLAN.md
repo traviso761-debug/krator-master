@@ -21,7 +21,8 @@ The owner's briefs (all kept):
 - **2026-11-12:** rename it the Slabfields and re-plan it around Io-style tilted crustal blocks; write the scale model's
   micro edit that carves them (edit 3 of 5.1, `tools/scale-model/edit_513.py`).
 
-**Status.** A plan, plus the model edit. No kit page is built. The region's id `rmvmidbasin101` is **kept**: ids are stable
+**Status.** A plan, the model edit, and **station 1 built** (2026-11-12): the Anvil's Foot, `dist/slabfields.html` (`python3 build.py`;
+`NOTES.md` has its numbers, `KNOWN_ISSUES.md` what it owes). Stations 2-5 are not built. The region's id `rmvmidbasin101` is **kept**: ids are stable
 keys, and the model's own code (`build_425_master.py`'s protected SE complex, `51-region-store.js`'s reconciles, the
 river's id `r_mb_siphon_breach`) names it in places a rename would have to chase for no gain. Only the name changed.
 `LORE.md` is untouched: section 17 proposes its sentences. Marks used below: **default taken, owner to confirm** where
@@ -460,6 +461,13 @@ World km = 5.1 px x 2. A page's site is the old canvas px (5.1 px less 272, 330)
 | 5 **The Warp Head** | 1702,1340 | chasm floor about 1.35-1.6 km; BWk | the north side of the hinge: a Loom chasm dying into the benches, its spring line, the needles; the Anvil's cliff 60 km south |
 
 Station 1 comes first: it shows what the region is now. Station 2 next: the drama and the outpost.
+
+**Station 1 as built** (2026-11-12): px 1662,1369, the Anvil's cliff along the page's south (`KRELIEF.scarp`, 1,990 m over the bench on a
+650 m run, three flow-top ledges, ravines, buttresses, a talus skirt with fresh fallen blocks), its ramp falling 7 degrees behind the rim;
+the last collapse's apron (3.6 km, H/L 0.46: one lobe of the many the model's 264 km2 sums) with its hummocks, levees, raised toe and 48
+blocks (7 field-sized, `KSTACKS`); nine seeps on the spring line at the toe and their brook; void fern, seep reed, bench bunchgrass and
+block lichen (the kit's own Earth stand-ins: `KNOWN_ISSUES.md`), Oidong's cushions read in place on the dry bench; the cliff (`fall`),
+the rockfall belt (`crush`) and the night's CO2 in the toe's hollows and the blocks' voids (`gas`, pooled) as hazard records.
 
 ## 14. Core adoption (written first, as the working rules ask)
 

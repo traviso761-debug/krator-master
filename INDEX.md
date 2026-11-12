@@ -86,6 +86,7 @@ Every build is a folder with `src/` fragments and a `build.py`. Open a build's `
 | [`biomes/scablands`](biomes/scablands/INDEX.md) | 5 | 46 | 16 | The scablands, an overlay (biomes/scablands/PLAN.md): the ground the dam break's flood tore down, on the n semiarid kit read in place (its build(overlay=...)) and core/terrain's KSCOUR. Station 1 (dist/coulee.html): a coulee and dry falls on the west breach, its walls stepped by the basalt flows, a plunge-pool lake, potholes holding rain, bars with giant current ripples, streamlined loess islands. |
 | [`biomes/sedesert`](biomes/sedesert/INDEX.md) | 17 | 246 | 50 | Biome kit: see `biomes/README.md`. |
 | [`biomes/shighlands`](biomes/shighlands/INDEX.md) | 14 | 171 | 52 | Biome kit: see `biomes/README.md`. |
+| [`biomes/slabfields`](biomes/slabfields/INDEX.md) | 17 | 67 | 14 | Biome kit: see `biomes/README.md`. |
 | [`biomes/swbay`](biomes/swbay/INDEX.md) | 18 | 223 | 58 | Biome kit: see `biomes/README.md`. |
 | [`biomes/swhighlands`](biomes/swhighlands/INDEX.md) | 20 | 204 | 29 | Biome kit: see `biomes/README.md`. |
 | [`biomes/swlowlands`](biomes/swlowlands/INDEX.md) | 18 | 247 | 68 | Biome kit: see `biomes/README.md`. |
