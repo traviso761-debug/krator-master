@@ -39,7 +39,7 @@ LT_LIFE.wall=(function(){const s=SIM.R.place['lt.loj-hall']&&LT.plan().byId['lt.
  const cs=Math.cos(s.ry),sn=Math.sin(s.ry),lz=-16.38;m.position.set(s.x+lz*sn,s.y+2.65,s.z+lz*cs);m.rotation.y=s.ry;scene.add(m);
  const paint=()=>{const g=c.getContext('2d'),W=LTS.countWall();g.clearRect(0,0,1024,420);g.fillStyle='rgba(40,34,30,.86)';g.font='bold 34px monospace';
   const rows=[['FUNGUS',W.fungus],['GRAIN',W.grain],['WAX',W.wax],['ORE',W.ore],['PLATE',W.plate],['ICE',W.ice]];
-  g.fillText('HANDS '+W.hands+'   ON SHIFT '+W.people,40,46);
+  g.fillText('HANDS '+W.hands+'   ON SHIFT '+W.people+(W.happy!=null?'   HEART '+W.happy+' '+String(W.stage).toUpperCase():''),40,46);
   rows.forEach(([k,v],i)=>{const x=40+(i%3)*330,y=112+Math.floor(i/3)*120;g.fillText(k,x,y);g.fillText(String(v),x,y+46);
    /* the tallies in fives under each, a stroke a ten */
    const n=Math.min(40,Math.round(v/10));for(let j=0;j<n;j++){const tx0=x+(j%20)*12+(j%5===4?-48:0);if(j%5===4){g.fillRect(x+Math.floor(j/5)%4*60-4,y+62+Math.floor(j/20)*14,58,3);}else g.fillRect(tx0,y+52+Math.floor(j/20)*14,3,18);}});

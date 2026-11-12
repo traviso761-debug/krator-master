@@ -38,7 +38,7 @@ const LTH=KHOST.take({build:'loj-twenny',title:'Loj Twenny',
   const turn=LTS.turns.length?LTS.turns[LTS.turns.length-1]:null;
   return 'day '+LTCLOCK.day+' '+String(Math.floor(LTCLOCK.hour)).padStart(2,'0')+':'+String(Math.floor(LTCLOCK.hour%1*60)).padStart(2,'0')+(turn?'  turn '+turn.turn:'')+
    '\nthe segment\'s train: '+(d?'at '+(d.stop==='lt'?'station 3':'the G2 gap')+(d.open?' (doors open)':''):'running')+(R.aboard?'  you: aboard':'')+
-   '\nthe count wall: fungus '+W.fungus+' grain '+W.grain+' wax '+W.wax+' ore '+W.ore+' plate '+W.plate+' ice '+W.ice+(W.hands?'  hands '+W.hands:'')+
+   '\nthe count wall: fungus '+W.fungus+' grain '+W.grain+' wax '+W.wax+' ore '+W.ore+' plate '+W.plate+' ice '+W.ice+(W.hands?'  hands '+W.hands:'')+(W.happy!=null?'\nthe heart of the hold: happiness '+W.happy+', '+W.stage:'')+
    '\n'+(LT_LIFE.shown||0)+' people about of '+LTS.people()+'; rock '+LT_DRAW.tris+' tris; lights '+LT_LIGHT.n+' (pool '+(S.pool||0)+')';},
  api:{lt:{LT,LTS,LTR,LTC,LT_HOLD,LT_LIFE,LT_LIGHT,solid:LT_SOLID}}});
 LTRIDE=KHOST.ride?KHOST.ride(LTH,{walk:KWALK,t:()=>LTCLOCK.t,reach:3,seats:F=>{const fr=LT_LIFE.L.frames.find(q=>q.F===F);return fr?fr.car.ride.seats:[];}}):null;

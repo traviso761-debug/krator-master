@@ -226,16 +226,16 @@
     "settlements/loj-twenny/build.py": "d872be61379b7478a72025d0239737cde913c42399b774bd96e88679cde3598b",
     "settlements/loj-twenny/src/00-head.html": "cdfb923480c49219a95ee38d24e2c88448d1a2f92835f0708e8b31c0ebf8d49f",
     "settlements/loj-twenny/src/20-lt-plan.js": "5d5d5191f80b8b2e3796bfe73842a90640120e448c1a4a31687dd5e44e594ded",
-    "settlements/loj-twenny/src/40-lt-sim.js": "ad9496bf1693ee79c6fd511717160b02278da141071e838761bf9a344ea42bdd",
+    "settlements/loj-twenny/src/40-lt-sim.js": "bef7625db9f58f4866d381319337fabf745cb69495c15440fa514235f9aa0a72",
     "settlements/loj-twenny/src/42-lt-ride.js": "ae9dcdb04ba852a616688785f3bff64019428694067a579b17c50073a923ced5",
     "settlements/loj-twenny/src/50-lt-cavern.js": "e97a21c23b3587404312954e1e61bc1715c0b38156c1d8a85f173ecf9fa1eda7",
     "settlements/loj-twenny/src/60-lt-scene.js": "cb348c1251819546ebd71f9c59edd84be98d6084cc9a607bf0949ca4da648d92",
     "settlements/loj-twenny/src/64-lt-hold.js": "ba5b47266f60d852a2fc1a86aafed319f03f37891d6c48ad788ab9d78dcec068",
     "settlements/loj-twenny/src/66-lt-train.js": "35ae1bfe664fd2d9223abe436278685230d7406954a91571d5c119976cc2e4d8",
     "settlements/loj-twenny/src/70-lt-light.js": "092ed27077b0e932054d1f5abfee6d6ef11187c9880e954489990410329247b3",
-    "settlements/loj-twenny/src/80-lt-life.js": "f08eea4e0a1459c32eecdd6b6941b0f927be338d28e07fb513569c19c752996d",
-    "settlements/loj-twenny/src/90-lt-checks.js": "03d327a2f336a67dee12a7bd2c8906ea116b1f796b33875555e462359d373e17",
-    "settlements/loj-twenny/src/98-lt-take.js": "be9358fe468cce58ac3b756aaf313793502982ff82ba3d50db6cba08c7daff55",
+    "settlements/loj-twenny/src/80-lt-life.js": "adee4cf08615507445c26b38255145da3e7db90c89cd23862ad2c4e2c5c50d2d",
+    "settlements/loj-twenny/src/90-lt-checks.js": "53257c4a30452961fdde72a1601caed2237575be9d40132ac650a626dee9b319",
+    "settlements/loj-twenny/src/98-lt-take.js": "f0c1cab26f09dd1a81452da2166dcaa0b863d4679de54a0bf3c91cb4df926569",
     "settlements/loj-twenny/src/99-tail.html": "893cb35f3016a3523c33b676c4dfbe5686c4b99a1e7128d78e2e3fa271cd4829",
     "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7",
@@ -254,10 +254,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "settlements/loj-twenny/dist/loj-twenny.html": "50ebfea1041574de13bae4f6a70198092a7a55fe0bca3eedd6095394bcb8fb25"
+    "settlements/loj-twenny/dist/loj-twenny.html": "74253e2800c5e01ef71a4bba9b790f4b92a078ec5797be2c19d86b317eaa157a"
    },
    "outputs_raw": {
-    "settlements/loj-twenny/dist/loj-twenny.html": "50ebfea1041574de13bae4f6a70198092a7a55fe0bca3eedd6095394bcb8fb25"
+    "settlements/loj-twenny/dist/loj-twenny.html": "74253e2800c5e01ef71a4bba9b790f4b92a078ec5797be2c19d86b317eaa157a"
    }
   }
  }

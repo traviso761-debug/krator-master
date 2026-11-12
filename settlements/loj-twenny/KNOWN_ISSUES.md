@@ -11,7 +11,15 @@
 - [ ] **The train's doors are drawn shut** (the vehicles kit's doors do not open: the riding session's note); the door lamps
   light green in the window and the walk frames open.
 - [ ] **No riders from the sim yet**: the player rides; the people walk the hold, and the trade's carriers are timers, not the
-  ride source (`SIM.trade({line})` is the next step).
+  ride source (`SIM.trade({line})` is the next step). The timer now keeps the drawn train's timetable (`LTS.LINE_RUN`, held to
+  the ride source by the page's `mood` check), but its phase is its own: the trade's train and the drawn one need not stand at
+  the platform at the same minute.
+- [ ] **The mood's numbers are placeholders** (`LTS.NEEDS`, `MEALS`, `RULES`, `UNREST`: the isle demo's lines where the hold has
+  none of its own). The miners run least happy (labour 1); a blight of the beds reaches grumbling in about twelve days and a
+  refused demand in fourteen; nothing yet strikes in the crisis run, because the Fixers, first to the strike stage, work at a shop
+  that makes nothing a strike can hold (a strike holds recipes).
+- [ ] **Nobody is born, dies, comes or leaves**: the census is the beds. A hungry hold grumbles and demands, it does not shrink.
+- [ ] **The Big Meeting is yearly**, so a run of weeks sees it once (day 1); the loj meeting is the weekly one that fills `voice`.
 - [ ] **The station's lining** stands in with `concrete.ancient` until `concrete.lining.segment` comes (`core/materials/PROMPTS-NEEDED.md`
   section 41); the hold's own rooms are the cavern's hewn rock in vertex colours.
 - [ ] **The Godot export** is not wired (core/export): the plan (`KCITY.cavern.exportPlan`), the light (`KCAVELIGHT.export`) and the

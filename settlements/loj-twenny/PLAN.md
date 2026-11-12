@@ -56,12 +56,30 @@ On the isle demo's pattern (keyed settlements and economies, a trade route) and 
 | The settlements | `loj-twenny` (presented), `g2` (the G2 gap station 18 km south, the porters' hold toward Ledge: abstract, books only), `icecutters` (abstract) |
 | The census | the homes' beds (a set 6, a cut 2, a carriage house 8; worn half, abandoned none): 165 people; every worker on one of **three turns** (A 6-14, B 14-22, C 22-6), dealt round-robin; the bell rings each turn |
 | The trades | the dark beds grow **fungus**; the vein working cuts **ore** (copper and rare earths: PLAN.md 1.2.1); **power upkeep** in wax (the lamps) and plate (the Fixers); **ice** from the Fellgangs straight down the great shaft to the hold's foot on the Travellers' backs (ore goes up); grain from Dalab; the segment's train takes ore and fungus south to the G2 gap and brings wax, plate and grain |
-| The events | the Fixers' patrol (posts, fans, the stop), the Travellers' porters from the stop to the stores, **the Big Meeting** (a scheduled event: `LTS.MEETING`, day 1 at 18:00 by default: every grown member commanded to the loj hall for two hours) |
-| The count wall | `LTS.countWall()`: the stocks and the hands in the hall, painted on the loj hall's wall |
+| The events | the Fixers' patrol (posts, fans, the stop), the Travellers' porters from the stop to the stores, **the meetings** (`LTS.MEETINGS`: the Big Meeting on day 1 at 18:00 and yearly after, the loj meeting weekly from day 4; every grown member commanded to the loj hall for two hours; the Big Meeting cheers the hold) |
+| The trade's timetable | the segment's train's own (`LTS.LINE_RUN`: a passage of 431 world minutes, a stay of 90; the page's `mood` check holds it to the ride source's timeline within 3%) |
+| The count wall | `LTS.countWall()`: the stocks, the hands in the hall and the hold's heart (its happiness and stage), painted on the loj hall's wall |
 
-**No new record kinds**: the hold uses SCHEMA.md's (settlements, places, roles, events, ports, the keyed economies, trades) and
-the riding records (`SIM.rideSource`). Nothing in `core/simulation` changed, so its tests, Voth's stocks proof and the
-baseline do not move.
+### 4.1 Needs, meals, the economy's rules, unrest (2026-11-12; the owner: "wire them")
+
+core/simulation's opt-in modules, tuned in `40-lt-sim.js` (`LTS.NEEDS`, `TOLL`, `MEALS`, `RULES`, `UNREST`), no copy of them:
+
+| | |
+|---|---|
+| Needs (`77-sim-6-needs.js`) | a meter a person for **eat, sleep, company, wash, voice** (the say in the loj meeting); rising by the hour and by the turn's labour (the miners 1, the bedsmen 0.7 ...), filled by meals, sleep, the platform and the hall, the bath, the meetings; a trait a person (talker, quiet, hungry, lean, hands, meek); happiness from the meters, hunger past 60 capping it; its band's efficiency at the beds and the vein; loyalty after it. The walks count at six times life for the meters (`LTS.TIMESCALE`, the Voth city's `timeScale`): a world minute is 3 motion seconds, and a 300 m walk would otherwise eat every hour-long meal |
+| Meals (`77-sim-6-items.js`, the food alone) | every home keeps a store of mash and grain, bought at the island market from the hold's stores at the diet (three of mash to one of grain); a bowl of mash alone is a Tungang's meal (`single` 1.6), mash and grain the better one. The flat hourly draw of the first run is gone. No home of children alone (the census deals beds by role: a child there trades beds with an elder) |
+| The economy's rules (`77-sim-6-govern.js`) | the mash rots 6% a night in the stores, the Fellgangs' ice keeps 60% of it (an ice for three servings); the governor turns the beds down when the stores are full, at most 1800 held (`SIM.stockpile`): the glut of the first run is gone |
+| Unrest (`77-sim-6-unrest.js`) | the pool by trade (the beds, the vein, the Fixers, the loj): grumbling, a demand to the Union (a shipment from the gap station, or a new steward by show of hands: the loj grants that itself), a strike after a refused demand (the beds or the vein held), treason. The isle demo's lines, placeholders |
+
+What the test proves (`tests/test-lt-sim.js`): three days content (happiness about 95, calm), every person with meters, the homes
+eating from their stores, the mash bought and rotted equal to what was used, the ice keeping, the governor watching; and in a
+second process **the crisis**: the dark beds blighted from day 3 for good, the stores dry in a day, the homes in four, happiness
+falling to about 30 by day 20, grumbling by day 15, a demand for mash and grain refused (no town of the Union can spare mash),
+the books holding throughout. A 45-day run stands at about 90, calm, no shortage.
+
+**No new record kinds**: the hold uses SCHEMA.md's (settlements, places, roles, events, ports, the keyed economies, trades, a
+home's `people` and food `store`) and the riding records (`SIM.rideSource`). Nothing in `core/simulation` changed, so its tests,
+Voth's stocks proof and the baseline do not move.
 
 ## 5. Core adoption (README.md, "CORE MODULES ARE NOT OPTIONAL")
 

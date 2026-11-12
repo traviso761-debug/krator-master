@@ -13,6 +13,17 @@ let bad = 0;
 const ok = (name, pass, neg) => { const r = !!pass && !neg; if (!r) bad++; console.log((r ? 'PASS  ' : 'FAIL  ') + name + (neg ? '  [its negative passed]' : '')); };
 const S = global.SIM, clock = { hour: 0, day: 0, t: 0, dayLength: 4320 };
 LTS.declare(clock);
+if (process.argv[2] === '--crisis') {   /* the crisis run (the parent's last check): the beds blighted from day 3, 22 days */
+  const s0 = S.ledgerSnap(), days = [];
+  LTS.run(clock, 22 * 1440, M => {
+    if (M === 3 * 1440) for (const s of LT.plan().sites) if (s.key === 'tg-dark-beds' && S.R.place[s.id]) S.recipeHold(s.id, 'blight', 999 * 1440);
+    if (M % 1440 === 1439) { const W = LTS.countWall(); days.push({ day: Math.floor(M / 1440), happy: W.happy, stage: W.stage, fungus: W.fungus }); }
+  });
+  const R = LTS.moodReport(), L = S.ledger(s0, S.ledgerSnap()), ev = (S.unrestReport().events || []);
+  const first = k => { const e = ev.find(e => e.kind === 'stage' && e.to === k || (k === 'demand' && e.kind === 'demand')); return e ? Math.floor(e.m / 1440) : null; };
+  console.log('CRISIS ' + JSON.stringify({ days, demands: R.demands, strikes: R.strikes, firstGrumble: first('grumble'), firstDemand: first('demand'), ledger: L.ok, problems: L.problems.slice(0, 2) }));
+  process.exit(0);
+}
 ok('the hold declares cleanly (' + LTS.places + ' places, ' + LTS.people() + ' people; problems: ' + (LTS.problems.slice(0, 3).join(' | ') || 'none') + ')',
   LTS.problems.length === 0 && LTS.places > 50 && LTS.people() > 150, false);
 const P = LTS.pop, roles = Object.keys(P.byRole).map(k => k + ' ' + P.byRole[k]).join(', ');
@@ -43,8 +54,11 @@ ok('the vein working cuts ore (' + Math.round(made.ore || 0) + ' lots) and the s
 ok('the train and the shaft bring wax, plate, grain and ice in (' + ['wax', 'plate', 'grain', 'ice'].map(g => g + ' ' + Math.round(imp[g] || 0)).join(', ') + ')',
   ['wax', 'plate', 'grain', 'ice'].every(g => imp[g] > 0), false);
 const TR = S.tradeReport(), br = TR['lt.line'], sh = TR['lt.shaft'];
-ok('the segment train ran ' + (br ? br.voyages : 0) + ' voyages; the Travellers carried the Fellgangs\' ice down the great shaft ' + (sh ? sh.voyages : 0) + ' times',
-  br && br.voyages >= 20 && sh && sh.voyages >= 2 && sh.shipped && Object.keys(sh.shipped).some(k => sh.shipped[k].ice > 0), false);
+/* the train on its own timetable (LTS.LINE_RUN: a passage of 431 world minutes and a stay of 90, the drawn train's): about eight
+   passages in three days, not the 25-minute timer's 170 */
+const perDay = 1440 / (LTS.LINE_RUN.minutes + LTS.LINE_RUN.mins);
+ok('the segment train ran ' + (br ? br.voyages : 0) + ' passages on its timetable (' + (3 * perDay).toFixed(1) + ' expected); the Travellers carried the Fellgangs\' ice down the great shaft ' + (sh ? sh.voyages : 0) + ' times',
+  br && Math.abs(br.voyages - 3 * perDay) <= 2 && sh && sh.voyages >= 2 && sh.shipped && Object.keys(sh.shipped).some(k => sh.shipped[k].ice > 0), br && br.voyages > 30);
 const ice = daily.map(d => d.ice), wax = daily.map(d => d.wax), fu = daily.map(d => d.fungus);
 ok('the count wall\'s stocks move day to day (fungus ' + fu.join(' > ') + '; wax ' + wax.join(' > ') + '; ice ' + ice.join(' > ') + ')',
   new Set(fu).size > 1 && daily.every(d => d.people === LTS.people()), new Set(fu).size === 1);
@@ -58,4 +72,39 @@ ok('the Big Meeting sat on day ' + (Mt ? Mt.day + ' at ' + Mt.hour + ':00, ' + M
 /* the walkers: the Fixers' patrol and the porters fired; the routes held; poses on the hold's levels */
 const evs = S.LOG.filter(e => e.kind === 'event').length, fails = S.routeFail.length;
 ok('the Fixers\' patrol and the Travellers\' porters walked (' + evs + ' firings), ' + fails + ' routes failed', evs >= 4 && fails === 0, false);
+/* NEEDS AND MOOD (core/simulation's needs, items, the economy's rules, unrest; LTS.NEEDS ...) */
+const hold = S.all('actor').filter(a => !a.driven && S.settlementOf(a) === LTS.S), MR = LTS.moodReport();
+ok('every one of the ' + hold.length + ' has meters (' + S.NEED.list.join(', ') + '), a trait and a class (' + [...new Set(hold.map(a => a.cls))].sort().join(', ') + ')',
+  LTS.mood && hold.every(a => a.nd && a.nd.length === S.NEED.list.length && a.trait && a.cls), !LTS.mood);
+const homes = S.all('place').filter(P => P.people), alone = homes.filter(P => !hold.some(a => a.home === P.id && a.role !== 'child'));
+ok('no home of children alone (' + LTS.rehoused + ' children traded beds with an elder); ' + homes.filter(P => P.store).length + ' homes keep a food store',
+  alone.length === 0 && homes.every(P => P.store), alone.length > 0);
+const ML = MR.meals, eatenAt = (ML.meal || 0) + (ML.single || 0);
+ok('the homes eat from their stores: ' + (ML.meal || 0) + ' meals of mash and grain, ' + (ML.single || 0) + ' of mash alone, ' + (ML.none || 0) + ' with nothing; the market sold ' +
+  JSON.stringify(S.ITEMS.stats.bought), eatenAt > hold.length * 4 && (ML.none || 0) <= eatenAt * 0.02 && S.ITEMS.stats.bought.fungus > 0, eatenAt === 0);
+ok('the flat meal draw is gone: what the hold used of mash is what the homes bought and what rotted (' + Math.round(used.fungus) + ' = ' + S.ITEMS.stats.bought.fungus + ' + ' + (MR.spoiled.fungus || 0) + ')',
+  Math.abs(used.fungus - S.ITEMS.stats.bought.fungus - (MR.spoiled.fungus || 0)) < 1, false);
+ok('the mash rots in the stores and the Fellgangs\' ice keeps some (' + (MR.spoiled.fungus || 0) + ' rotted, ' + (MR.kept.fungus || 0) + ' kept for ' + (MR.kept.ice || 0) + ' ice)',
+  MR.spoiled.fungus > 0 && MR.kept.fungus > 0 && MR.kept.ice > 0, !(MR.spoiled.fungus > 0));
+const G = MR.governed || {};
+ok('the governor watches what the hold makes (fungus: use ' + Math.round(G.fungus ? G.fungus.use : 0) + ' a day, held ' + Math.round(G.fungus ? G.fungus.pos : 0) + ', target ' + (G.fungus ? G.fungus.target : '?') + ', the beds at ' + (G.fungus ? G.fungus.mult.toFixed(2) : '?') + ')',
+  G.fungus && G.fungus.target === LTS.RULES.max.fungus && G.fungus.mult > 0 && G.ore, !G.fungus);
+const pool = MR.pool.all.mean, cls = Object.keys(MR.pool.byClass).sort().map(c => c + ' ' + Math.round(MR.pool.byClass[c].mean)).join(', ');
+ok('the hold is content after three days: happiness ' + Math.round(pool) + ' (' + cls + '), the stage calm, no demand, no strike', pool > 70 && MR.stage.all === 'calm' && !MR.demands.length && !MR.strikes.length, !(pool > 0));
+const M2 = MR.needs;
+console.log('      needs by class: ' + Object.keys(M2).sort().map(c => c + ' ' + JSON.stringify(M2[c].mean) + ' eff ' + M2[c].eff).join('\n                      '));
+ok('the loj meeting is weekly and the Big Meeting yearly (' + LTS.MEETINGS.map(M => M.name + ' every ' + M.every + ' days from day ' + M.day).join('; ') + ')',
+  LTS.MEETINGS.find(M => M.id === 'loj').every === 7 && LTS.MEETINGS.find(M => M.id === 'big').every === 365 && LTS.meetings.length === 1 && LTS.meetings[0].id === 'big', false);
+/* THE CRISIS (a child process: SIM is one per process): the dark beds blighted from day 3 for good. The stores and then the
+   homes run dry, hunger caps happiness, the pool sinks, the hold grumbles and demands mash of the Union, which nobody can
+   spare: refused. The books hold all the while. Its negative: the content three days above, no demand made */
+if (process.argv[2] !== '--crisis') {
+  const out = require('child_process').execFileSync(process.execPath, [__filename, '--crisis'], { encoding: 'utf8' });
+  const R = JSON.parse(out.split('\n').filter(l => l.startsWith('CRISIS '))[0].slice(7));
+  console.log('      the crisis, day by day: ' + R.days.map(d => d.day + ':' + d.happy + (d.stage !== 'calm' ? ' ' + d.stage : '')).join(' '));
+  const low = Math.min(...R.days.map(d => d.happy)), refused = R.demands.filter(D => D.answer === 'refused' && D.goods.indexOf('fungus') >= 0);
+  ok('the crisis: happiness falls to ' + low + ', the hold grumbles by day ' + R.firstGrumble + ' and demands mash of the Union by day ' + R.firstDemand + ' (' + R.demands.map(D => 'day ' + D.day + ' ' + D.key + ' ' + D.kind + ' ' + D.goods.join('+') + ': ' + D.answer).join('; ') + ')',
+    low < 50 && R.firstGrumble != null && refused.length > 0 && R.ledger, MR.demands.length > 0);
+  ok('and the books hold through it (' + (R.ledger ? 'balanced' : R.problems.join('; ')) + ')', R.ledger, false);
+}
 process.exit(bad ? 1 : 0);

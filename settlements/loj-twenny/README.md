@@ -7,7 +7,7 @@ core adoption).
 - **Page:** `dist/loj-twenny.html`.
 - **Build:** `python3 tools/build.py settlements/loj-twenny` (runs `build.py`, records `build-inputs.json`).
 - **Check:** `python3 verify.py dist/loj-twenny.html --assert` (`KRATOR_GL=gpu` for the real GPU), with `--all-views` for the
-  walk-through's shots; `node tests/test-lt-sim.js` (the hold's sim three days: stocks, turns, trades, the Big Meeting, the books).
+  walk-through's shots; `node tests/test-lt-sim.js` (the hold's sim three days: stocks, turns, trades, the Big Meeting, the books, the needs, the meals, the rot and the ice, the hold's mood; then a blight of the beds in a second process, to grumbling and a refused demand: `PLAN.md` 4.1).
 
 | Key | What |
 |---|---|

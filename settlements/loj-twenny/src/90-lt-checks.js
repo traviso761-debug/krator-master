@@ -35,6 +35,9 @@ const LTCHK=(function(){
    const inWin=plate(tm),out=plate(d.t1+30);LTR.doors(L,LTCLOCK.t,KWALK);KWALKFRAME.at(KWALK,LTCLOCK.t);
    return {ok:inWin&&!out,detail:'car '+fr.k+' door '+id+': its step plate a floor in the door window '+inWin+', after it '+out};},
   'sim':()=>{const P=LTS.places,n=LTS.people(),pr=LTS.problems.length;return {ok:pr===0&&P>50&&n>150&&SIM.R.place['lt.loj-hall']&&SIM.R.place['lt.vein'],detail:P+' places, '+n+' people, '+LTS.pop.bySettlement[LTS.S]+' dealt to the hold'+(pr?'; '+LTS.problems.slice(0,2):'')};},
+  'mood':()=>{const T=LT_LIFE.L.timeline,per=T.period/LT_SPM,want=2*(LTS.LINE_RUN.minutes+LTS.LINE_RUN.mins),hold=SIM.all('actor').filter(a=>!a.driven&&SIM.settlementOf(a)===LTS.S);
+   const met=hold.filter(a=>a.nd&&a.nd.length===SIM.NEED.list.length&&a.trait&&a.cls).length,homes=SIM.all('place').filter(P=>P.people&&P.store).length,alone=SIM.all('place').filter(P=>P.people&&!hold.some(a=>a.home===P.id&&a.role!=='child')).length,W=LTS.countWall();
+   return {ok:LTS.mood&&met===hold.length&&homes>=30&&!alone&&Math.abs(per-want)<=want*.03&&W.happy!=null,detail:met+' of '+hold.length+' with meters, a trait and a class; '+homes+' homes keep a food store, '+alone+' of children alone; the round trip of the train '+Math.round(per)+' world minutes, of the trade '+want+'; happiness '+W.happy+' ('+W.stage+')'};},
   'walkers-on-floors':()=>{let about=SIM.all('actor').filter(a=>{const p=SIM.pose(a,LTCLOCK.t);return p&&!p.hidden;}).length;
    /* few about (a turn at work indoors): run the world to five minutes past the next turn's bell, when the turns change hands */
    if(about<20){const h=LTCLOCK.hour,next=[6,14,22,30].find(x=>x>h+.01),mins=Math.max(1,Math.round((next-h)*60)+5);LT_LIFE.run(mins);}
@@ -50,6 +53,7 @@ const LTCHK=(function(){
   try_('hold-drawn',()=>{const o=TG.tg.draw([{id:'neg',key:'tg-nonesuch',x:0,y:0,z:0,ry:0}],{});return {ok:!Object.keys(o.missing).length};});
   try_('lamp-code',()=>({ok:!TG.tg.check.lamps(Object.assign({},LT_HOLD.draws[0],{lights:[]})).length}));
   try_('train-on-guideway',()=>{const p=SIM.rideCarPose('lt.train',0,0);return {ok:Math.abs(p.x+3-LINE.trackX('t1',p.z))<.05};});
+  try_('mood',()=>{const per=LT_LIFE.L.timeline.period/LT_SPM,want=2*(25+30);return {ok:Math.abs(per-want)<=want*.03};});
   try_('station-match',()=>({ok:Math.abs((LT.ST.platforms.east[0]+.4)-LINE.platforms[1].x0)<.05}));
   try_('walkers-on-floors',()=>{const f=KWALK.floorBelow(60,600,1.8+.3,.8);return {ok:!!f&&C().sdf(60,2.7,600)>.05};});
   try_('tags',()=>{const T=KTAGS.create({build:'neg'});T.add({'class':'building',kind:'x',key:'x',name:'x',at:[0,0,0],ry:0,size:[1,1,1],tags:{culture:'nonesuch'}});return {ok:T.audit().unknown===0};});
