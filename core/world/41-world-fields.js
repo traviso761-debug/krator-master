@@ -219,6 +219,10 @@ function riverWater(x,z){if(!CHASH)return -1e9;
 const RIVPOOL=2;
 const warpQ=(x,z)=>[x+(NM.fbm(x/2600,z/2600,2)-.5)*440+(NM.vn(x/380,z/380)-.5)*60,z+(NM.fbm(x/2600+31,z/2600-77,2)-.5)*440+(NM.vn(x/380+9,z/380+5)-.5)*60];
 W.unwarp=(qx,qz)=>{let x=qx,z=qz;for(let k=0;k<24;k++){const q=warpQ(x,z);x+=qx-q[0];z+=qz-q[1];}return[x,z];};
+// The named rivers' courses: the line each is carved along, [{name, exact, pts: [[x, z]...]}]. An exact course (a smoothed
+// region's) is the river itself; any other is in the carve's warped space (W.unwarp brings a point back)
+W.riverCourse=function(){return RIVSEG.map(R=>{const pts=[];for(let s=R.s0;s<R.s0+R.n;s++){const o=s*9;pts.push([SEG[o],SEG[o+1]]);if(s===R.s0+R.n-1)pts.push([SEG[o+2],SEG[o+3]]);}
+ return{name:R.name,exact:R.exact,pts};});};
 W.riverLines=function(step){step=step==null?40:step;const out=[];
  for(const R of RIVSEG){const pts=[];let carry=0;
   for(let s=R.s0;s<R.s0+R.n;s++){const o=s*9,ax=SEG[o],az=SEG[o+1],bx=SEG[o+2],bz=SEG[o+3],L=Math.hypot(bx-ax,bz-az);

@@ -33,7 +33,12 @@ function spaced(recs){const B=new Map(),C=24,key=(i,j)=>i*100003+j;let bad=0,fir
 // somewhere across it within 500 m (the carve's warp moves the bed off the drawn line by up to ~250 m)
 function rivers(waterF){waterF=waterF||WORLD.water;const R=WORLD_DATA.meta.rivers||[];let n=0,wet=0,first=null;
  /* a river the model records dry (depth_m 0: a dry valley, which the world carves but fills with no water) is not judged */
- for(const r of R){if(r.depth_m!=null&&!(r.depth_m>0))continue;for(let i=0;i<r.line.length-1;i++){const a=r.line[i],b=r.line[i+1],x=(a[0]+b[0])/2,z=(a[1]+b[1])/2,l=Math.hypot(b[0]-a[0],b[1]-a[1])||1,nx=-(b[1]-a[1])/l,nz=(b[0]-a[0])/l;
+ /* a smoothed region carves each river along its curve (WORLD.riverCourse, exact), which can pass more than the 500 m
+    searched from a long chord's middle: there each station moves onto the course, abreast of the chord's middle */
+ const CO={};if(WORLD.riverCourse)for(const c of WORLD.riverCourse())if(c.exact)CO[c.name]=c.pts;
+ for(const r of R){if(r.depth_m!=null&&!(r.depth_m>0))continue;for(let i=0;i<r.line.length-1;i++){const a=r.line[i],b=r.line[i+1];let x=(a[0]+b[0])/2,z=(a[1]+b[1])/2,l=Math.hypot(b[0]-a[0],b[1]-a[1])||1,nx=-(b[1]-a[1])/l,nz=(b[0]-a[0])/l;
+  const C=CO[r.name];if(C&&C.length>1){let k=0,d=1e18;for(let j=0;j<C.length;j++){const q=(C[j][0]-x)*(C[j][0]-x)+(C[j][1]-z)*(C[j][1]-z);if(q<d){d=q;k=j;}}
+   const p=C[Math.max(0,k-1)],n=C[Math.min(C.length-1,k+1)],tl=Math.hypot(n[0]-p[0],n[1]-p[1])||1;x=C[k][0];z=C[k][1];nx=-(n[1]-p[1])/tl;nz=(n[0]-p[0])/tl;}
   /* a station outside the region's polygon (a river through the cut's margin) is not judged: the world draws no water there */
   if(!WORLD.inside(x,z))continue;
   n++;let ok=false;for(let s=-500;s<=500&&!ok;s+=8){const px=x+nx*s,pz=z+nz*s;if(waterF(px,pz)>WORLD.H(px,pz)+.5)ok=true;}

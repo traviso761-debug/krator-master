@@ -116,20 +116,25 @@ would draw shores from a finer source.
 1. `tools/scale-model/cut_site.py` passes `--smooth` to `extract_region.py`, which runs the JS in node
    (`core/world/smooth.py`), keeps every river vertex in region.json (two past the box at each end), and writes
    region.json's `smooth` record. A cut of 1.5 cells a model pixel or coarser is left alone (isle-demo, north-basin).
-2. `41` reads the `smooth` record, and throws if `40` is not on the page.
+2. `41` reads the `smooth` record, and throws if `40` is not on the page. `WORLD.riverCourse()` gives each named
+   river's carved line. The probe's river check (`91`) puts a smoothed river's stations on that line, since a curve
+   can pass more than the 500 m it searches from a long chord's middle (593 m on the Rīfar al-Jadwal).
 3. The region's `build.py` lists `40` before `41`. `core/world/bake_sites.py` always loads it.
 4. Re-bake (`bake_sites.py <region>`, `--resources`), rebuild, GPU-verify.
 
 Without the flag the cut is byte-identical to before (checked on pinnacle) and `41` takes the old path.
 
-**Where it is on** (2026-11-12): `openworld/pinnacle`. Re-cut, re-baked (its nine camps and tracks all stand, plan hash
-`10e4ebe9`), and verified on the GPU (`verify.py --assert --views 1,2,6`, 0 failures).
+**Where it is on:**
+- `openworld/pinnacle` (2026-11-12): re-cut, re-baked (its nine camps and tracks all stand), verified on the GPU.
+- `openworld/oidong-highrift` (2026-11-12, after Longsong's move onto the Bīruk al-Ghaym): re-cut and re-baked. Its 23
+  hamlets and 937 records are unchanged. It has 15 bridges where it had 18: the curved rivers cross three fewer roads.
+  Longsong's pin stays on the south bank, 401 m from the river as the page draws it.
 
 **Rollout to the other regions**, one region at a time, after the owner's word:
 
 | Region | Cells | What it reaches | Notes |
 |---|---|---|---|
-| `xanadu-oidong-highrift` | 1789 x 589 at 1 km (2 a pixel) | its own page (Erehwon's, Longsong's and Qiblai's sites are in it) | **The owner's case, so first.** Wait for the session moving Longsong onto the Bīruk al-Ghaym (`claude/cool-tereshkova-d594e8`) to land, then cut with the flag. Expect about 15 s of smoothing in the cut. Check Longsong's river pin against the curved river (a traced river moves at most 400 m at a bend), and Strongbow's scarp with `hillshade.py --crop 1180 1300 1585 1665` |
+| `xanadu-oidong-highrift` | 1789 x 589 at 1 km (2 a pixel) | its own page (Erehwon's and Qiblai's sites are in it) | Longsong and the valley moved to `oidong-highrift` (on now). Cut this one with the flag when Erehwon or Qiblai is next worked on; expect about 15 s of smoothing in the cut |
 | `iziz-cluster` | 329 x 609 at 500 m | its own page | Girder, Mav's Refuge and Talia's ground. Re-bake its sites and check the corridors' roads |
 | `isle-demo`, `north-basin` | 4 km cells (half a pixel) | `isle-demo`: its page and `settlements/isle-demo` | **Nothing to do.** Coarser than the model, so no stairs (the flag is ignored). `isle-demo`'s rivers could take `WSMOOTH.river` alone, but it is cut by hand, not by `cut_site.py` |
 
