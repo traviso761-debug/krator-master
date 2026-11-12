@@ -28,6 +28,29 @@ python3 tools/build.py kits/ancients --target strongbow-today
 cd kits/ancients && python3 verify.py dist/strongbow-today.html --assert --all-views
 ```
 
+## Level of detail
+
+The town draws each building in three layers (`src/8ax1-sb-town.js`). Each layer is merged by material over the whole town, and
+the town is cut into 120 m cells:
+- **The big pieces** are those at least 1.5 m in radius: walls, roofs, domes and towers, 1.24M of the town's 5.94M triangles.
+  They draw at every distance, and core/lod simplifies them far off, as it does any static mesh.
+- **The skin** is the plain boxes: panel courses, paint and bronze bands, 2.63M triangles, which give a house its colours.
+  It draws in the cells within 300 m of the eye.
+- **The detail** is the rest: lamps, bulbs, rings, bottles, cables and finials, 2.07M triangles. It draws within 200 m.
+
+The skin's and the detail's index holds only the cells in reach, rewritten when a cell comes into reach or leaves it; core/lod
+leaves those meshes alone. Beyond 300 m a house loses its panel courses, which shows a little at the edge.
+
+Measured 2026-11-12 in the browser pane, with core/lod on and its proxies built (before → after, triangles drawn; draw calls in brackets):
+
+| View | Before | After |
+|---|---|---|
+| Strongbow today (the overview) | 0.88M (321) | 0.44M (96) |
+| The town from above | 1.39M (312) | 0.58M (89) |
+| The inner ring | 4.32M (338) | 2.75M (129) |
+| The road spoke | 3.20M (340) | 1.66M (136) |
+| The outer ring and the farms | 1.81M (315) | 0.68M (101) |
+
 ## Not yet
 
 - **The foot's crops.** The fields are grain, fodder and fallow by turn, as a placeholder: what the foot grows is owed to its height

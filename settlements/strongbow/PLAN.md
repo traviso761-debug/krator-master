@@ -250,7 +250,11 @@ where they work and the scrap set's buildings, plus the Order's and the outcasts
      and their fields, and that a rerun gives the same town. Each check has a negative.
    - The page (`src/8ax1-sb-town.js`) draws the lots and the foot's four (the serai on the hall's platforms, the plaza's gate,
      shrine and pavilion) as the kit's own, built once per variant and footing (`XAK.proto`), flattened, and merged by
-     material per ring. The reclamation's stand-ins remain only for a page without the kit.
+     material. The reclamation's stand-ins remain only for a page without the kit.
+   - Level of detail (2026-11-12, the owner: "Yes, add LOD"): each building in three layers. The big pieces draw at every
+     distance, the panel courses within 300 m of the eye, and the small detail within 200 m. At street level the town draws
+     about 60% of the triangles it did, at the overview half, and the calls fell from about 320 to about 100-136 (README.md,
+     "Level of detail").
 6. **SB4, life** on `core/simulation`.
 7. Placement in the open world: the region's job, from the records.
 
