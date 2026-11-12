@@ -6,7 +6,7 @@ shadows"); `kits/metropolis` takes it first.
 | File | Tag | What |
 |---|---|---|
 | `10-core-shadow.js` | [G data] | `KSHADOW.basis`, `KSHADOW.fit`, `KSHADOW.radiusFor`: where the sun's shadow camera stands and how big its box is, as plain arrays |
-| `host/12-core-shadow-host.js` | [web] | `KSHADOW.attach(o)`: the renderer's shadow map readied (off), the switch, the page's sun moved each frame, `cast(root)` |
+| `host/12-core-shadow-host.js` | [web] | `KSHADOW.attach(o)`: the renderer's shadow map readied (off), the switch, the page's sun moved each frame, `cast(root)`; `KSHADOW.units(material, renderer, scene)`: the texture units a material will link (read samplers only, the scene's environment); `KSHADOW.maxUnits(renderer)`: min(16, the GL's), the limit a page judges against (a host's `samplersOf` calls these) |
 | `test-shadow.js` | node | the basis, the texel snapping, the radius steps, the switch (on stubs); each check with a negative |
 
 ## Off by default
@@ -22,6 +22,11 @@ it took `KSHADOW`. The switch follows `WATER.mirrorSwitch` (core/water ext/58):
 
 Turning it either way recompiles the lit materials once (their shadow define and sampler come and go). A page whose materials have no texture
 unit to spare for the map must not offer the switch (the Throne's isle and vents: `biomes/throne/src/89zz-host-core.js`).
+`KSHADOW.units(material, renderer, scene)` counts the units a material's program links (its maps, `scene.environment` on a standard
+material, every sampler its hooks declare and read again: one declared and never read is dropped by the compiler) and
+`KSHADOW.maxUnits(renderer)` is the limit, min(16, this GL's): SwiftShader allows 32, the GPUs 16. `H.fits` uses both; a page that keeps
+units free for its own passes (the rain cover, the horizon) counts with them, not with its own copy (2026-11-09: the Throne's `samplersOf`
+moved here; geyser, highrift, nhighlands, cut, shighlands, catch and ringisles dropped theirs).
 
 ## Taking it
 

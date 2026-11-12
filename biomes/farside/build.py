@@ -139,7 +139,7 @@ for f in ['89-atmos-fx-raincover.js','89-atmos-fx-lightning.js']:
 # (the lagoon's and the harbour's masks), 61 the plume (Ling-Ma's silt out of the harbour mouth on a current, station 1)
 for f in ['20-core-water.js','21-core-water-shore.js','22-core-water-flow.js','50-core-water-draw.js','51-core-water-kinds.js']:
     if f not in PATH: PATH[f]=core('water',f)
-for f,src in [('57-core-water-audit.js','57-core-water-audit.js'),('58-core-water-mirror.js','58-core-water-mirror.js'),
+for f,src in [('56-core-water-breakup.js','56-core-water-breakup.js'),('57-core-water-audit.js','57-core-water-audit.js'),('58-core-water-mirror.js','58-core-water-mirror.js'),
               ('58-core-water-shore.js','58-core-water-shore.js'),('61-core-water-plume.js','61-core-water-plume.js')]:
     PATH.setdefault(f,core('water','ext',src))
 miss=[f for f in ('10-core-head.js','20-core-kit.js','30-core-foliage.js','40-core-place.js') if f not in PATH]

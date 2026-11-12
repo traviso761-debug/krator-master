@@ -1,5 +1,13 @@
 # kits/metropolis: known issues
 
+- [ ] **The farm belt's ruins leave loose remnants** (`46f`, `54f`, 2026-11-10): `MP.ruinDesign` (59b) keeps a skeleton's piers (instanced
+  panels) to the frame's top and drops every merged triangle above the skin, so piers stand between slabs with a gap under them, and the tear can
+  leave a pier's head over a dropped panel. The kit page counts them (`Farm ...: every state built`): from 0 (the pump house) to 216 (the stack's
+  tiers); the whole and gutted heroes have none. Every design's ruins do the same; a skeleton that keeps its ribs (the pod's dome, the vault's)
+  needs the ruin cut to keep merged frame members, not only instanced ones. A growing stack's ruin keeps its terraces' slabs over the tiers that fell.
+- [ ] **The farm families' shells are boxes** (the valley's middle tier for every design): a pod's dome or the aqueduct's arches read as a box
+  past the hero's band (600 m on the valley's page). The polar mode would suit the pod, the market and the water tower.
+
 - [ ] **The shells and impostors take no shadow and cast none** (they draw their own light): a tower's shadow on the street stops when it turns into a shell, past 300 m, mostly outside the shadow box (`core/shadow`, 90 to 600 m). One box, no cascades: far shadows wait on cascades (`core/shadow/README.md`).
 - [ ] **Site:** the sky stands at `core/atmos`'s default site. The valley's own comes with the valley.
 - [ ] **Soffits under 200 m** break up in the shell, inside the hero's range: a problem only if the switch is held closer than 300 m.
@@ -32,3 +40,17 @@
 - [x] **A big machine hall was worked only round its core** (240 pieces a storey, the rest of the Vault's 400 m floor bare): fixed 2026-11-04. The runs past the cap come back from `MP.machineLayout` as blocks (`o.far`: a run of ten racks, a bay's bench and station, one box each, 12 triangles) and the storey draws them as one instanced dark box (4000 a storey at most): the Vault's ground floor 231 pieces round the core and 2834 blocks beyond, 141 k triangles. The layout's outline tests take their edges from 4 m buckets (387 ms a hall to 21; the Vault's storey furnished in 0.12 s, was 1.4).
 - [ ] **The ledges are left unworked:** a machine hall's part under 200 m2 that no shaft, bridge or street reaches (the Assembler's sheds' shelves, a mezzanine's end) is a ledge, as the room plan's thin parts are corridors; there is no way onto it.
 - [ ] **The Terrarium's plants are the kits' as they are now:** they are vended through `SWLOW.treeAt`, `SWLOW.plantAt` and `BIO.kitBuilder`; a change to those kits' species moves the deck's planting, and the page's hash with it.
+- [ ] **A wild shell holds no leaf-card plants** (2026-11-09): the biome kits' trees and floor plants planted on a wild hero are flagged `noShell` and left out of
+  the bake (a leaf card bakes as a solid quad). The shell holds the strands, the moss, the soil and the kit's solid stand-ins; the planted trees show
+  to the kits' own LOD range. A host that wants canopies in its shells draws solid stand-ins at the tree sockets (`MP.overgrow` with `standins: true`)
+  and plants its own on top, or bakes canopy blobs of its own.
+- [ ] **Moss is per vertex:** a blotch smaller than a facade quad (a 3 m bay by a storey) reads as a gradient across the quad, not a patch; the reaches are
+  set wide (2.4 to 6 m) so it reads as damp staining. A moss layer in the materials would not reach the shells (the bake reads colours), so a finer
+  moss wants the facade quads split or a moss map in the library blended by the same field.
+- [ ] **Wild shells and impostors on this page are the Spindle's and the Ledger's only** (six wild looks shelled, two with impostors): the designs' box
+  shells are the valley's (`biomes/ancientsvalley/70-host-city.js`), which bakes from its own flattened stubs; for a wild key it runs `MP.overgrow` on
+  the stub after its rust (`API.md`). A wild design here is a hero in its `Wild, <family>` view only.
+- [ ] **The Swell's growth is capped** (`MP.WILD_CAP`, 900 sockets of its 4,300 at a density of 1): its four lobes carry more sills than any other family,
+  and uncapped its growth was 130 k triangles. The cap keeps the lowest unit hashes, so it is deterministic and the host's density still orders them.
+- [ ] **A wild hero takes half a second to a second and a half to build** (the Spindle 0.5 s, the Swell 1.7 s, mostly the moss pass over its vertices):
+  the page's boot grew by about 4 s for its six wild keys. A host building many wild keys should spread them over frames or bake them at build time.

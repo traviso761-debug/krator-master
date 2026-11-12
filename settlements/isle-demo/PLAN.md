@@ -1232,7 +1232,8 @@ settlements; their off map commerce will be abstracted for now."
 - **Its countryside** (48 `hamlet-*-n`; tune `hamlets.farming.crops.nephtos`): two farming hamlets (taro, sweet potato,
   banana, coconut), the plantations (clove, cacao, indigo, annatto, tobacco), a fishing village on the nearest coast with
   a sea leg (core/hamlet's fishing focus: its landing stage and canoe shed, `fishery` grounds that restock), a lumber
-  village in the island's forest, and the copper mine on the high ground inland (a `copper` node of kits/resources' grades;
+  village in the island's forest, and the copper mine on the foothills under the plateau's escarpment (2026-11-10: `maxRise` 450 m; on the plateau its road
+  ran 100 m under the slope) (a `copper` node of kits/resources' grades;
   `hamlets.metals` makes its works' good copper, not iron ore). Their hands are hired Islanders under the colony's
   overseers: the Hykkousoi wither if they stay long in dry places (settlements/ys/DESIGN.md), so the island's interior is
   worked by others. Tobacco joins the Crops kit (`kits/crops`, a herb-bucket leaf crop that fits the ring isles' wet zone).
@@ -1286,6 +1287,19 @@ barnacle skyscrapers Ys does".
 - **Checked:** tests/test-isle-nephtos-plan.js plans a TEST drawing (`tests/fixtures/nephtos-test-site.json`, not the
   owner's) with the programme: no box missing, every lot Hykkousoi, the markers' landmarks, the harbour and its landing,
   declared, housed, staffed, fed; on the world the same drawing built 373 lots for 1,480 people (looked at, not committed).
-- **Not yet:** the pale plinths and kerbs the town drawing lays under lots (the Islanders' look) and the towns' far level
-  of detail, which draws a cone-roofed box per lot (it reads as a tent); the Hykkousoi canals, drowned streets and water
-  doors; the triangles (a piece up to 130k; the towns' distance levels carry it).
+- **The drawing (2026-11-10):** a Hykkousoi lot (kit `hyk`) gets no Islander compound wall; its footing on a slope is a
+  terrace of dark coral rag, inset under the piece (the test drawing climbs from 40 m to 86 m, so most lots stand on 2 to
+  4 m of it); its far massing is a white-limed drum under a sea-green dome, not a box under a hall roof (60
+  `DRAW.massHB`/`massHR`; `DRAW.massHide(i)`, `massShown(i)`, `massDirty()` for the world's LOD, 88t).
+- **Built and kept in shell, nacre and pearl (the owner, 2026-11-10: "the Hykkousoi houses are built with and cost
+  maintenance in pearls, nacre, and shells, with only minimal wood").** Two goods, `nacre` and `shells` (building
+  shell, not the Kautoan shell money), come up with the Hykkousoi pearl ships' catch (`expeditions.kinds.pearl` `by`: a
+  nacre and four shells with each pearl), kept at Nephtos to a ceiling, Tethys buying the spare nacre. A Hykkousoi piece
+  is kept as its kit's own kind (`build.byKit.hyk`: `hyk-house` 60 shells, 12 nacre, a pearl, 4 timber; `hyk-great`;
+  `hyk-works`), its empty lots built of the same (47b `ISLE.kitKind`, `ISLE.lotKind`; the placeholder's boxes too), the
+  building sites piling shells in a heap and nacre in slabs (kits/construction `heap`, `slabs`). On the test drawing the
+  town's upkeep is about 18 shells, 3.5 nacre, 0.3 pearls and 1.2 timber a day, and no stone or thatch. Nephtos has a
+  builders' crew of five; a street opened outside its gates takes Hykkousoi houses (`spurs.keys`).
+- **Not yet:** the Hykkousoi canals, drowned streets and water doors; the triangles (a piece up to 130k; the towns'
+  distance levels carry it); shell got any other way than with the pearls (a shell-gathering village, the middens);
+  lime burnt from shell for the mortar.

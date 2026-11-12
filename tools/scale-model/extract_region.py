@@ -123,6 +123,7 @@ KITS = {
     'xanadu': 'xanadu',
     'the catch': 'catch',
     'region 99': 'loom-chasms',
+    'loom chasms': 'loom-chasms',     # region 99's name since 5.1 edit 3 (2026-11-11)
     'siphon pits': 'siphon-pits',
     'n outlands': 'outlands',
     's outlands': 'outlands',
@@ -558,7 +559,7 @@ def synthesize_option_c_relief(D, elev, whas, wflag, bmap, biomes, omap, overlay
             fam_ids['karst'].append(bid)
         elif nm in ('n semiarid', 'ria valley'):
             fam_ids['scabland'].append(bid)
-        elif nm in ('siphon pits', 'region 99'):
+        elif nm in ('siphon pits', 'region 99', 'loom chasms'):
             fam_ids['maar_chasm'].append(bid)
         elif nm == 'sw highlands':
             fam_ids['ringfold'].append(bid)

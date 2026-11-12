@@ -11,6 +11,8 @@ sharing one vocabulary:
 | **Rustic** (`rustic`) | the relatively civilised villages north-east of the Republic | Norse + Alpine | footings and chalet ground storeys only | none |
 | **Tribal** (`tribal`) | the Painted Men and other raider tribes | raw logs, bamboo, thatch; the heaviest carving and paint; cliff settlements | stone circles, hearths | none |
 
+The Republic's head of state is **the First Citizen** (the owner, 2026-11-09), who lives and commands in Roketstad's Fortress; the Hall of the Republic is the Assembly of Citizens' house (`kits/highlands/fortress/BLUEPRINT.md`, `kits/highlands/hall/BLUEPRINT.md`).
+
 ## The shared vocabulary (what makes the three one family)
 
 * **Wood first.** Round-log walls with saddle-notched corners (`hnLogBox`), board walls, carved posts. Poor

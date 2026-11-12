@@ -51,6 +51,7 @@ def core(folder, names):
 
 
 core('rand', ['08-core-rand.js'])
+core('shader', ['06-core-khook.js', '06b-core-kcolor.js'])   # core/biome 20 and core/atmos 0 call KHOOK and KCOLOR since the 2026-11 core pass (tools/fragment_needs.json)
 core('terrain', ['37c-core-rubble.js'])   # KRUBBLE: a ruin's rubble heaps (57-mp-debris.js)
 core('shadow', ['10-core-shadow.js'])   # KSHADOW: the sun's shadow box that follows the view (47-host-land.js attaches it)
 core('shadow/host', ['12-core-shadow-host.js'])

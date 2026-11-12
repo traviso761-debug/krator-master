@@ -1,5 +1,5 @@
 /* ======================================================================
-   Voth — Building Registry (27 keys / 31 build "looks")
+   Voth — Building Registry (28 keys / 32 build "looks")
    culture: 'voth'   |  key prefix: voth_bldg_
    Requires krator-asset-engine.js (ASSET/F/shade/TAU) loaded first.
 
@@ -2222,5 +2222,204 @@ ASSET({
     /* bollards and a capstan on the waterfront edge */
     [-13, 13].forEach(function (x) { F.cyl(x, 0.5, 1.5, 0.35, 1.0, 0, iron, 'metal'); });
     F.cyl(-8, 0.5, -2, 0.7, 1.1, 0, timber, 'wood'); F.cyl(-8, 1.6, -2, 0.95, 0.18, 0, iron, 'metal');
+  }
+});
+
+/* ======================================================================
+   The Ordinators' citadel (owner, 2026-10-15, from the Morrowind reference sheet: "Their citadel model, which they'll
+   have in other cities, resembles 'citadel'"). The Fortress canton's garrison keeps one in each city it holds: a
+   battered, stepped stone mass on a raised terrace, low domed wings either side, a tall slab keep flaring to a crowned
+   top, a long straight stair up to the main door between two pylons. Dark grey-green stone, the order's green and gold
+   on its banners. Its `ix` is the stepped mass: a guard hall, the training hall and the armoury on the ground storey,
+   barracks above, the offices on top (TUNE.ix.byKey).
+   ====================================================================== */
+ASSET({
+  key: 'voth_bldg_citadel', name: "Ordinators' Citadel", culture: 'voth', family: 'defensive', types: ['civic', 'infrastructure'],
+  districts: ['canton', 'gate', 'common'], wealth: [0.5, 0.9], w: 51.2, d: 52.7, h: 63.8, variants: 1,
+  ix: { block: [0, -8.7, 22, 22], y: 4.2, h: 12.6, storeys: 3 },
+  build: function (F) {
+    F.shift(0, 0.3); /* authored from z -26.6 to +26.0: centre the footprint on the origin */
+    const c = F.pick([0x59604f, 0x5c6252, 0x555b4b]), trim = shade(c, -0.15), dark = shade(c, -0.3), lt = shade(c, 0.07);
+    const GREEN = 0x1e6b3c, GOLD = 0xc9a227, doorC = 0x191814, slitC = 0x23241f, glow = 0xffcf87, gem = 0x7fe0d4;
+    /* T: the terrace's top; BZ: the centre of the stepped mass and the keep; Y2: the keep's foot */
+    const T = 4.2, BZ = -9, Y2 = T + 19.8;
+    /* half-widths at height y: the stepped mass (13 at its foot, 11.6 at its cornice), its second step, the keep and its crown */
+    const rAt = function (y) { return 13 - 1.4 * (y - T) / 13.5; };
+    const r2At = function (y) { return 10.8 - (y - T - 14.1) / 5.2; };
+    const kAt = function (y) { return y <= Y2 + 22 ? 6.4 - 1.4 * (y - Y2) / 22 : 5.4 + 2.0 * (y - Y2 - 22.5) / 10; };
+    const XO = 2.6; /* the keep's slab: its half-width is its half-depth + XO */
+    /* side: 0 = +z (front), 1 = -z, 2 = +x, 3 = -x */
+    function nrm(s) { return s === 0 ? [0, 1] : s === 1 ? [0, -1] : s === 2 ? [1, 0] : [-1, 0]; }
+    /* a pointed-arch opening on face s at (px, pz), sill y, w by h to the springing; `frame` adds jambs and a pointed hood */
+    function arch(px, y, pz, ww, hh, s, fill, frame) {
+      const n = nrm(s), flat = n[1] !== 0, peak = ww * 0.55;
+      F.box(px, y, pz, flat ? ww : 0.5, hh, flat ? 0.5 : ww, 0, fill, 'stone');
+      F.pyrRoof(px, y + hh, pz, flat ? ww : 0.5, peak, flat ? 0.5 : ww, 0, fill, 'stone');
+      if (!frame) return;
+      const ox = n[0] * 0.14, oz = n[1] * 0.14;
+      [-1, 1].forEach(function (k) {
+        const u = k * (ww / 2 + 0.2), jx = px + ox + (flat ? u : 0), jz = pz + oz + (flat ? 0 : u);
+        F.box(jx, y, jz, flat ? 0.4 : 0.6, hh, flat ? 0.6 : 0.4, 0, trim, 'stone');
+        F.beam(jx, y + hh, jz, px + ox, y + hh + peak + 0.3, pz + oz, flat ? 0.4 : 0.6, flat ? 0.6 : 0.4, trim, 'stone');
+      });
+    }
+    /* a slit on the stepped mass, the second step or the keep: face s, offset u along the face, sill y, w by h; xo widens a
+       side face out (the keep's slab) */
+    function slit(at, s, u, y, ww, hh, xo) {
+      const n = nrm(s), r = at(y + hh / 2) + 0.04, rx = r + (xo == null ? 0 : xo);
+      arch(n[0] ? n[0] * rx : u, y, BZ + (n[1] ? n[1] * r : u), ww, hh, s, slitC, false);
+    }
+    /* an Ordinator banner on a front face: the order's green, gold edges and fringe, the order's sigil (a gold oval boss
+       on green, an upright gold sword through it), hung from a gilt rod. Plain geometry, no painted map: the catalog's
+       LOD merge and the city's batches keep colours, not canvas maps */
+    function banner(px, y, pz, ww, hh) {
+      const b = Math.min(0.14, ww * 0.08), r = ww * 0.3, cy = y + hh * 0.6;
+      F.box(px, y, pz, ww, hh, 0.08, 0, GREEN, 'cloth');
+      F.box(px, y + hh - b, pz + 0.05, ww, b, 0.04, 0, GOLD, 'cloth');
+      F.box(px, y, pz + 0.05, ww, b * 1.6, 0.04, 0, GOLD, 'cloth');
+      for (let i = 0; i < 7; i++) F.box(px - ww / 2 + ww * (i + 0.5) / 7, y - 0.25, pz, ww * 0.06, 0.25, 0.04, 0, GOLD, 'cloth');
+      [-1, 1].forEach(function (k) { F.box(px + k * (ww / 2 - b / 2), y, pz + 0.05, b * 0.7, hh, 0.04, 0, GOLD, 'cloth'); });
+      F.ell(px, cy, pz + 0.07, r, r * 1.3, 0.05, 0, GOLD, 'metal');
+      F.ell(px, cy, pz + 0.1, r * 0.66, r * 0.9, 0.04, 0, GREEN, 'cloth');
+      F.box(px, cy - r * 2.0, pz + 0.12, ww * 0.08, r * 3.9, 0.03, 0, GOLD, 'metal');
+      F.box(px, cy + r * 1.42, pz + 0.12, r * 1.4, ww * 0.07, 0.03, 0, GOLD, 'metal');
+      F.rod(px - ww / 2 - 0.2, y + hh + 0.05, pz, px + ww / 2 + 0.2, y + hh + 0.05, pz, 0.07, GOLD, 'metal');
+      [-1, 1].forEach(function (k) { F.ball(px + k * (ww / 2 + 0.24), y + hh + 0.05, pz, 0.12, GOLD, 'metal'); });
+    }
+
+    /* the terrace: a dark plinth, the platform, its cornice and pilasters, a low parapet round it */
+    F.box(0, 0, -8, 51.2, 0.8, 37.2, 0, dark, 'stone');
+    F.box(0, 0.8, -8, 50, T - 1.2, 36, 0, shade(c, -0.08), 'stone');
+    F.box(0, T - 0.4, -8, 50.6, 0.4, 36.6, 0, trim, 'stone');
+    for (let x = -22; x <= 22; x += 6) if (Math.abs(x) > 5) F.box(x, 0.8, 10.1, 1.0, T - 1.2, 0.4, 0, trim, 'stone');
+    for (let z = -24; z <= 8; z += 6) { F.box(25.1, 0.8, z, 0.4, T - 1.2, 1.0, 0, trim, 'stone'); F.box(-25.1, 0.8, z, 0.4, T - 1.2, 1.0, 0, trim, 'stone'); }
+    for (let x = -21; x <= 21; x += 6) F.box(x, 0.8, -26.1, 1.0, T - 1.2, 0.4, 0, trim, 'stone');
+    [-1, 1].forEach(function (s) {
+      F.box(s * 14.5, T, 9.6, 21, 1.0, 0.6, 0, trim, 'stone');
+      F.box(s * 24.7, T, -8, 0.6, 1.0, 36, 0, trim, 'stone');
+    });
+    F.box(0, T, -25.7, 50, 1.0, 0.6, 0, trim, 'stone');
+
+    /* the long stair: twenty treads up the terrace's front, stepped side walls, pylons at its foot and at its head */
+    for (let i = 0; i < 20; i++) F.box(0, 0, 23.65 - 0.7 * i, 6, 0.21 * (i + 1), 0.7, 0, i % 2 ? trim : shade(trim, 0.05), 'stone');
+    [-1, 1].forEach(function (s) {
+      for (let j = 0; j < 7; j++) {
+        const zc = 23 - 2 * j, hh = (25 - zc) / 14 * T + 0.9;
+        F.box(s * 3.5, 0, zc, 1.0, hh, 2.0, 0, c, 'stone');
+        F.box(s * 3.5, hh, zc, 1.2, 0.2, 2.0, 0, trim, 'stone');
+      }
+      const fx = s * 4.6, fz = 24.8;
+      F.box(fx, 0, fz, 2.6, 0.6, 2.6, 0, dark, 'stone');
+      F.frustum(fx, 0.6, fz, 1.1, 0.8, 7.0, 0, lt, 'stone', 4);
+      F.box(fx, 7.6, fz, 2.0, 0.5, 2.0, 0, trim, 'stone');
+      F.pyrRoof(fx, 8.1, fz, 1.6, 1.4, 1.6, 0, trim, 'stone');
+      banner(fx, 2.0, 26.0, 1.4, 4.8);
+      F.rod(fx, 6.85, 25.6, fx, 6.85, 26.0, 0.05, GOLD, 'metal');
+      const hx = s * 4.6, hz = 9.2;
+      F.frustum(hx, T, hz, 0.9, 0.65, 8.5, 0, lt, 'stone', 4);
+      F.box(hx, T + 8.5, hz, 1.7, 0.45, 1.7, 0, trim, 'stone');
+      F.pyrRoof(hx, T + 8.95, hz, 1.4, 1.2, 1.4, 0, trim, 'stone');
+      banner(hx, T + 3.2, 10.2, 1.2, 4.4);
+    });
+
+    /* the stepped mass: a dark plinth, the battered block, two string courses, the cornice, its corner buttresses */
+    F.frustum(0, T, BZ, 13.8, 13.4, 1.2, 0, dark, 'stone', 4);
+    F.frustum(0, T, BZ, 13, 11.6, 13.5, 0, c, 'stone', 4);
+    [4.4, 8.8].forEach(function (dy) { const r = rAt(T + dy); F.frustum(0, T + dy, BZ, r + 0.3, r + 0.25, 0.35, 0, trim, 'stone', 4); });
+    F.box(0, T + 13.5, BZ, 24.6, 0.6, 24.6, 0, trim, 'stone');
+    [[1, 1], [1, -1], [-1, 1], [-1, -1]].forEach(function (q) {
+      F.beam(q[0] * 13.3, T, BZ + q[1] * 13.3, q[0] * 11.9, T + 13.5, BZ + q[1] * 11.9, 1.3, 1.3, trim, 'stone');
+    });
+    /* its slits on every elevation, a door each side of the portal and one at the back */
+    [1, 2, 3].forEach(function (s) {
+      [-8, -3, 3, 8].forEach(function (u) { slit(rAt, s, u, T + 1.8, 0.8, 1.8); slit(rAt, s, u, T + 5.6, 0.8, 2.0); slit(rAt, s, u, T + 9.8, 0.8, 2.0); });
+    });
+    [-9.5, 9.5].forEach(function (u) { slit(rAt, 0, u, T + 5.6, 0.8, 2.0); slit(rAt, 0, u, T + 9.8, 0.8, 2.0); });
+    [-2.2, 2.2].forEach(function (u) { slit(rAt, 0, u, T + 10.2, 0.7, 1.6); });
+    [-1, 1].forEach(function (s) { arch(s * 8.5, T, BZ + rAt(T + 1.5), 2.2, 3.0, 0, doorC, true); });
+    arch(0, T, BZ - rAt(T + 1.6), 2.4, 3.2, 1, doorC, true);
+
+    /* the main portal: a projecting gate block, its pilasters and stepped cap, the pointed door, the order's boss over it,
+       lamps and the two green-glass lights; tall banners either side hung from the cornice */
+    F.box(0, T, 4.4, 8, 8.2, 2.8, 0, lt, 'stone');
+    [-1, 1].forEach(function (s) { F.box(s * 4.4, T, 5.4, 0.9, 8.2, 0.9, 0, trim, 'stone'); F.ball(s * 4.4, T + 5.0, 5.95, 0.3, glow, 'glow'); });
+    F.box(0, T + 8.2, 4.4, 9.4, 0.55, 3.4, 0, trim, 'stone');
+    F.box(0, T + 8.75, 4.2, 6.4, 1.1, 2.6, 0, lt, 'stone');
+    F.pyrRoof(0, T + 9.85, 4.2, 6.8, 1.3, 3.0, 0, trim, 'stone');
+    arch(0, T, 5.85, 3.2, 4.0, 0, doorC, true);
+    F.ell(0, T + 7.05, 5.85, 0.8, 0.9, 0.18, 0, GOLD, 'metal');
+    F.ell(0, T + 7.05, 5.98, 0.5, 0.6, 0.12, 0, GREEN, 'stone');
+    [-1, 1].forEach(function (s) {
+      F.ball(s * 0.9, T + 6.55, 6.05, 0.16, gem, 'glow');
+      banner(s * 6.0, T + 5.0, 4.35, 1.8, 7.4);
+      F.rod(s * 6.0, T + 12.45, BZ + rAt(T + 12.45), s * 6.0, T + 12.45, 4.35, 0.07, GOLD, 'metal');
+    });
+
+    /* the second step, its slits, the order's oval shields on its front, the foot of the keep's rib */
+    F.frustum(0, T + 14.1, BZ, 10.8, 9.8, 5.2, 0, shade(c, 0.04), 'stone', 4);
+    F.box(0, T + 19.3, BZ, 20.4, 0.5, 20.4, 0, trim, 'stone');
+    [1, 2, 3].forEach(function (s) { [-5, 0, 5].forEach(function (u) { slit(r2At, s, u, T + 15.2, 0.7, 1.7); }); });
+    [-3, 3].forEach(function (u) { slit(r2At, 0, u, T + 15.2, 0.7, 1.7); });
+    [-1, 1].forEach(function (s) {
+      const z = BZ + r2At(T + 16.6);
+      F.ell(s * 6.6, T + 16.6, z + 0.12, 0.9, 1.25, 0.3, 0, GOLD, 'metal');
+      F.ell(s * 6.6, T + 16.6, z + 0.3, 0.6, 0.9, 0.2, 0, GREEN, 'stone');
+    });
+    F.beam(0, T + 14.1, BZ + 10.8 + 0.5, 0, T + 19.3, BZ + 9.8 + 0.5, 2.8, 1.2, shade(c, 0.06), 'stone');
+
+    /* the keep: a tall battered slab with corner pilasters, a waist course, the crown flaring out over it, the cornice and
+       parapet, the capstone block and its little dome; the rib up its front ends in a point under the crown's cornice */
+    /* a slab, wider than deep: two square battered blocks XO either side of the middle, one front face between them */
+    [-XO, XO].forEach(function (ox) {
+      F.frustum(ox, Y2, BZ, 6.4, 5.0, 22, 0, lt, 'stone', 4);
+      F.frustum(ox, Y2 + 22.5, BZ, 5.4, 7.4, 10, 0, c, 'stone', 4);
+    });
+    [[1, 1], [1, -1], [-1, 1], [-1, -1]].forEach(function (q) {
+      F.beam(q[0] * (6.45 + XO), Y2, BZ + q[1] * 6.45, q[0] * (5.05 + XO), Y2 + 22, BZ + q[1] * 5.05, 1.0, 1.0, trim, 'stone');
+    });
+    F.box(0, Y2 + 22, BZ, 2 * (5 + XO) + 1.2, 0.5, 11.2, 0, trim, 'stone');
+    F.box(0, Y2 + 32.5, BZ, 2 * (7.4 + XO) + 0.8, 0.7, 15.6, 0, trim, 'stone');
+    F.box(0, Y2 + 33.2, BZ, 2 * (7.4 + XO) - 0.8, 0.6, 14, 0, shade(c, -0.06), 'stone');
+    F.box(0, Y2 + 33.8, BZ, 5.2, 3.4, 5.2, 0, lt, 'stone');
+    F.box(0, Y2 + 37.2, BZ, 5.8, 0.4, 5.8, 0, trim, 'stone');
+    F.dome(0, Y2 + 37.6, BZ, 2.3, 1.7, 0, c, 'roof');
+    F.cyl(0, Y2 + 39.2, BZ, 0.22, 0.6, 0, GOLD, 'metal');
+    [-1, 1].forEach(function (k) { F.box(k * 2.61, Y2 + 34.6, BZ, 0.2, 1.8, 0.7, 0, slitC, 'stone'); F.box(0, Y2 + 34.6, BZ + k * 2.61, 0.7, 1.8, 0.2, 0, slitC, 'stone'); });
+    F.beam(0, Y2 - 0.3, BZ + 6.4 + 0.5, 0, Y2 + 22, BZ + 5.0 + 0.5, 2.4, 1.4, shade(c, 0.06), 'stone');
+    F.beam(0, Y2 + 22, BZ + 5.0 + 0.5, 0, Y2 + 29, BZ + kAt(Y2 + 29) + 0.5, 2.0, 1.4, shade(c, 0.06), 'stone');
+    F.pyrRoof(0, Y2 + 29, BZ + kAt(Y2 + 29) + 0.5, 2.0, 2.4, 1.4, 0, trim, 'stone');
+    [0, 1].forEach(function (s) {
+      [Y2 + 3, Y2 + 8, Y2 + 13, Y2 + 18].forEach(function (y) { [-6.4, -3.4, 3.4, 6.4].forEach(function (u) { slit(kAt, s, u, y, 0.7, 1.8); }); });
+      if (s) [-6.6, -2.6, 2.6, 6.6].forEach(function (u) { slit(kAt, s, u, Y2 + 25, 1.0, 3.2); });
+    });
+    [2, 3].forEach(function (s) {
+      [Y2 + 3, Y2 + 8, Y2 + 13, Y2 + 18].forEach(function (y) { [-2.6, 2.6].forEach(function (u) { slit(kAt, s, u, y, 0.7, 1.8, XO); }); });
+      [-2.6, 2.6].forEach(function (u) { slit(kAt, s, u, Y2 + 25, 1.0, 3.2, XO); });
+    });
+    [-1, 1].forEach(function (s) { banner(s * 4.6, Y2 + 24.6, BZ + kAt(Y2 + 32.5) + 0.15, 2.0, 7.0); });
+
+    /* the low wings either side: a block on the terrace, its string course and cornice, two drummed domes, a pointed door
+       on the front and on the outer side, slits all round */
+    [-1, 1].forEach(function (s) {
+      const wx = s * 18.6, wz = -7, os = s > 0 ? 2 : 3;
+      F.box(wx, T, wz, 11.6, 0.8, 16.6, 0, dark, 'stone');
+      F.box(wx, T, wz, 11, 7.4, 16, 0, c, 'stone');
+      F.box(wx, T + 3.8, wz, 11.3, 0.3, 16.3, 0, trim, 'stone');
+      F.box(wx, T + 7.4, wz, 11.8, 0.6, 16.8, 0, trim, 'stone');
+      F.box(wx, T + 8.0, wz, 11, 0.6, 16, 0, shade(c, -0.05), 'stone');
+      [wz + 3.6, wz - 4].forEach(function (dz) {
+        F.cyl(wx, T + 8.6, dz, 3.6, 1.3, 0, lt, 'stone');
+        for (let i = 0; i < 8; i++) { const a = (i + 0.5) / 8 * Math.PI * 2; F.box(wx + Math.sin(a) * 3.58, T + 8.85, dz + Math.cos(a) * 3.58, 0.55, 0.8, 0.12, -a, slitC, 'stone'); }
+        F.cyl(wx, T + 9.9, dz, 3.85, 0.3, 0, trim, 'stone');
+        F.dome(wx, T + 10.2, dz, 3.7, 3.0, 0, shade(c, 0.02), 'roof');
+        F.cyl(wx, T + 13.1, dz, 0.5, 0.5, 0, trim, 'stone'); F.ball(wx, T + 13.85, dz, 0.3, GOLD, 'metal');
+      });
+      arch(wx, T, wz + 8.05, 2.4, 3.2, 0, doorC, true);
+      [-3.4, 3.4].forEach(function (u) { arch(wx + u, T + 1.6, wz + 8.05, 0.8, 1.7, 0, slitC, false); arch(wx + u, T + 4.6, wz + 8.05, 0.8, 1.7, 0, slitC, false); });
+      arch(wx + s * 5.55, T, wz, 2.2, 3.0, os, doorC, true);
+      [-5.5, 5.5].forEach(function (u) { arch(wx + s * 5.55, T + 1.6, wz + u, 0.8, 1.7, os, slitC, false); });
+      [-5.5, 0, 5.5].forEach(function (u) { arch(wx + s * 5.55, T + 4.6, wz + u, 0.8, 1.7, os, slitC, false); });
+      [-3, 0, 3].forEach(function (u) { arch(wx + u, T + 1.6, wz - 8.05, 0.8, 1.7, 1, slitC, false); arch(wx + u, T + 4.6, wz - 8.05, 0.8, 1.7, 1, slitC, false); });
+    });
   }
 });

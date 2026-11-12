@@ -1,0 +1,36 @@
+{
+ "what": "the inputs each build command read and the pages it wrote; tools/build.py writes it, tools/check_stale.py and tools/reach.py read it (tools/buildlib.py)",
+ "runs": {
+  "build.py": {
+   "inputs": {
+    "core/atmos/89-atmos-0-core.js": "d7207293ab01d6a6e3cf3440fd6f83febaddabff7f0e753c10284fa11ec881be",
+    "core/atmos/89-atmos-0p-presets.js": "1b55a3fc68023876348af4fcca6c19eafb623657a906089694c89767ea47abc0",
+    "core/atmos/89-atmos-b-skylight.js": "fdd81ff12eb4e98d7d9bc07691b033a71cd2add1b8a0d23d7ffb6149d781c6d0",
+    "core/atmos/demo/build.py": "8ebd91da389aa17cf4ed189f19abc58f4c9c241519a1e4ff0ca2fb37d7fc4158",
+    "core/atmos/demo/src/00-head.html": "7a69e733dce7b3e5c9f28785489160059e6d23077f6ca000bd87f6259007814a",
+    "core/atmos/demo/src/10-demo.js": "daec5a5f3318c3b5eb3a15ed4cb45645149b0b3e1873db2c684ec5a473bdbc05",
+    "core/atmos/host/89-atmos-h-skyhost.js": "40b4be9d7c0bd7a8d05dea3eff1d2f2110f3669d693737206872f5dd820a00c4",
+    "core/atmos/sky/89-atmos-e-skymodel.js": "a88e93cffe596d5362daa08d693c63795713514f850125feff8f2f9ee2b8e258",
+    "core/atmos/sky/89-atmos-f-skypresets.js": "459132ec76e796e76b8d58715ce3eb77d26e4d57cc61b59900135c0e747fe98d",
+    "core/atmos/sky/89-atmos-g-sky.js": "32b6b6e04be15df728ca7ad3502d2035f2c750426deb3dae964273228ea5a6eb",
+    "core/clock/20-core-clock.js": "27f205a2e908a21cb5d07f07431352d7a02a214baf543fc94cd545d7d588ddbe",
+    "core/materials/library/sky.moon.companion/albedo.jpg": "757c1b16df32464760214018ebe8663ab52fc412ab47269e2514d005a0638a1c",
+    "core/materials/library/sky.moon.day/albedo.jpg": "2a03a0a3d6294350258fc5a3f834dd06d0a50475b0ee5e3214b21de1da2fa918",
+    "core/materials/library/sky.moon.four-day/albedo.jpg": "f6db9b99565e9ccf654a1e3ffde107fd7e018eafc5e6d83db4895bd62466fd37",
+    "core/materials/library/sky.moon.thirteen/albedo.jpg": "f25ab0ff0bf6aacbafc75ec07019d09155a302272199a4da53ba321b79057f84",
+    "core/materials/library/sky.moon.two-day/albedo.jpg": "1961912b76c974a480c1240c4b237ceea7bb88d37c9efd2a0b402cc91db5aeae",
+    "core/materials/library/sky.moon.week/albedo.jpg": "b6fe4f2b182f860c60bfe8dae61398bb37b2a45763ed516ebdcf7d0560f84b92",
+    "core/shader/06-core-khook.js": "eb1a0436d3d5dbaab81c3e43de2b642c96d9c3b44331a8960801880e5e20c56d",
+    "core/shader/06b-core-kcolor.js": "ededfc6b8a1a8aae5bf3c6ab40863478f9beb8e1aaf2acf4ba9da25ef6392115",
+    "kits/ancients/three.min.js": "9274bbcec8d96168626c732b5d31c775aa8cfb7eaa0599bec0c175908a2c1ce2"
+   },
+   "listings": {},
+   "outputs": {
+    "core/atmos/demo/dist/sky-demo.html": "c6eac1d18b023e0ad2ff013e7f3632d03ccb4f973a8921c26e2978c05f01d85c"
+   },
+   "outputs_raw": {
+    "core/atmos/demo/dist/sky-demo.html": "c6eac1d18b023e0ad2ff013e7f3632d03ccb4f973a8921c26e2978c05f01d85c"
+   }
+  }
+ }
+}

@@ -109,6 +109,8 @@ g.userData   // { kind, state, variant, seed, tris, box: {min, max}, ruin, w, d,
 KratorTransitFurniture.list()           // [{ key, name, w, d, h, variants, states, where }]
 KratorTransitFurniture.dims(kind, v)    // the declared box
 KratorTransitFurniture.materials(fam)   // the plain material a family gets before a host skins it
+KratorTransitFurniture.dead = true      // every piece built after it is DEAD: no lens glows, the metal and paint rusted as a ruined piece's,
+                                        // standing or not (build's { dead } overrides; default false). The Ancient's Valley sets it (2026-11-09)
 ```
 
 The piece's origin is its footprint's centre on the ground, +z its front (a bench faces +z, a lamp's arm reaches +z). Vertex colours are

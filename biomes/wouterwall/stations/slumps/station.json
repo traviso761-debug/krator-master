@@ -1,0 +1,6 @@
+{
+ "name": "slumps",
+ "out": "wouterwall-slumps.html",
+ "note": "Station 2 (PLAN.md section 7): the slump terraces at px 316,818 on scale model 5.1 (region/station-slumps.json; the plan's 318,818 is the trench lake's middle, the page stands on its west shore). Its 44s-host-site.js replaces src/'s: a KRELIEF.slump on the head scarp (back-tilted blocks, uphill-facing scarps, sag ponds, sackung, toe), landslip pinnacles (KSTACKS spires) on the broken fronts, the model's trench lake fitted (45: SITE.lake); the patchwork rock and its talus in the ground's station slots.",
+ "lowlands": []
+}

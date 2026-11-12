@@ -2,6 +2,67 @@
 
 Open items are `- [ ]` lines; build.py prints them.
 
+- [ ] (2026-11-10) **The Pleasure Dome's interior: what is not there yet.** Built hollow in the black-and-white pattern system
+      (`citadel/PLEASURE-DOME.md` has the record and the table against the owner's twelve references). Open: the catalog
+      furniture is still the court set's colours (a tint in core/furnish's draw is owed) and comes only with `?interiors=1`; both
+      stones' sets (`stone.marble.black`, `stone.marble.calacatta`) and the op-art sheet (`patterns/xanadu/op-art-arcs`) arrived 2026-11-10
+      and are packed (`xMarbleB`, `xMarbleW`, `xOpArt`), so the built page shows them at its next rebuild (until then it is on
+      `rock.marble012` as `xMarble` and the shader's op-art): check their scale and the black stone's gloss then; no pierced
+      plaster ceilings, round windows, rib vaults or pierced balustrades; the Sultan's lattice box and the Golden Way are not
+      drawn; two stair halls are additions to the blueprint. The Dome of the Bay is hollow too (one rotunda, no furniture). The
+      Dome's block overlaps the palace's and the temple's lots by a metre: the combined rebuild checks that seam.
+- [ ] (2026-11-09, delivered 2026-11-10) **The citadel's textures: nine of the eleven owed sets are wired, the page not yet rebuilt.** Erewhon's
+      citadel (kits/xanadu 78l-78n, the interior set kits/interiors/sets/xanadu-citadel.js) draws its surfaces through eleven MAT keys, each a
+      family in materials.json (both copies). On 2026-11-10 the owner delivered ten of section 41's eleven (`core/materials/PLAN.md`, "Delivered
+      2026-11-10") and nine families went onto their sets (`owed` dropped): xZel patterns/xanadu/zellige-star, xHaft patterns/xanadu/haft-rangi,
+      xGiltC patterns/xanadu/mughal-gilt-ceiling, xYes stone.stucco.yeseria, xMuqT tile.muqarnas.turquoise, xBandR patterns/xanadu/peacock-band,
+      xPietra stone.pietra-dura, xMarW stone.marble.calacatta, xMarK stone.marble.black (the Domes' xMarbleB, xMarbleW and xOpArt were already on
+      those ids). Still a stand-in: xJaliC (patterns/xanadu/jali, `optional`: the procedural jali alpha until the card is delivered and keyed by
+      tools/textures/cards.py). xSandR (red sandstone) is the library's own rock.sandstone.red, owed nothing. `wood.cedar.moorish` (the door
+      leaves, shutters and painted beams) is in the library since 2026-11-10 but has no family yet: the leaves are core/door's panel leaf in the
+      kit's dark wood and the beams flat paint until the kit takes it up. tex/ of both copies is packed; rebuild and verify Xanadu and Erewhon,
+      and check the families' scales (haft-rangi and the peacock band tile a non-square period squeezed square) and the marbles' gloss.
+- [ ] (2026-11-09) **Erewhon's citadel: what is built and what is not.** Built (kits/xanadu/src/78n-xa-citadel.js): the Sultan's
+      palace (E1, E2a, E2b: 46 rooms, the forecourt, the two ranges, the palace block, the Sultan's floor, the roof terrace and
+      the ochre block under the twin domes, the Ramp of the Sultan as two laps from the Hall of Gifts to the bath and the roof),
+      the Grand Vizier's palace (E5a, E5b, the Divan, the pool garden), the Treasurer's, the Chancellor's and the Master of
+      Mines' houses, the envoys' house and the barracks (Moorish dars round fountain courts), the court temple (its great iwan,
+      the prayer hall under a star ceiling and a dome), the citadel kitchens; all hollow, walkable, storeyed. Not built: the
+      Golden Way (the covered court between the Dome's north door and the palace's postern: the 6 m gap is open ground; the
+      Pleasure Dome session owns its door), the citadel gate (xa_palace_gate, still the kit's solid piece, held), the curtain
+      walk and the palace's north curtain (the palace is pinned on the Dome's axis with its back on the citadel wall, which is
+      narrower there than the blueprint's 110 m curtain: CIT_SITES `at`), the corner towers' and the roof guard's rooms, the
+      upper floors' windows onto the courts' porticoes as galleries. The blueprint's NEW furniture (the Great Divan, the
+      palanquin, the hoist, the lattice boxes) is not in the catalog; the rooms take the catalog's xanadu court pieces by kind.
+      The furniture follows the page's switch (?interiors=1), as the rest of Erewhon. The kit's own sheet (kits/xanadu/build.py)
+      takes the citadel files (kxa.CITADEL) and the 'xanadu-citadel' interior set (2026-11-10, the combined rebuild). In Erewhon the
+      palace's two back piers now stand inside the citadel wall's thickness (3 x 1.5 m, were 4 x 3: with the palace 2 m north they
+      reached 1.5 to 2 m past the wall's outer face); its lot's back corners (z -307) lie outside CIT_POLY (6.9 m NW, 10.4 m NE of
+      the wall line), but nothing of it is built there: the rooms' back (z -296) is 2.3 to 7 m inside the line.
+- [x] (2026-11-10) **The seam between the palace and the Pleasure Dome: an 18 m step.** The palace's block is levelled at 153 m,
+      the Dome's at 171 m. Fixed the same day by the owner's choice: the Golden Way built as a descending court in the slot
+      between the two (kits/xanadu/src/78o-xa-golden-way.js; `citadel/PLEASURE-DOME.md`, "The Golden Way"): the ground there cut
+      to the palace's level, the Dome's North Door moved 4 m in to its north face, the gate iwan's preset back in a court before
+      it. Left: beyond the Way's end walls the slot keeps the terrain's 4 m slope between the two levels.
+- [ ] (2026-11-10) **Interiors (`?interiors=1`): hollow walls, the set, the reachability audit.** The furnished defs are drawn
+      hollow by the Vernacular's auto bodies (69e6) round the set's rooms (`kits/interiors/sets/xanadu.js`), their doors unlocked;
+      `verify.py --interiors` runs `tools/ix_reach_audit.js`. Fixed 2026-11-10: a battered block up to 5 m wider a side than its
+      INSET plan is drawn hollow (1.8 m before: the temples', guild halls' and manors' blocks stayed solid, their rooms sealed),
+      the band between such a wall and the rooms is walk floor, and an iwan on a hollow building is a passage with the door in
+      the wall behind it (89y; the held palace is never hollow, so untouched). The sheet: 3,671 of 3,972 floors reached (3,453
+      before), 391 slivers beside stairwells counted apart; 43 buildings keep an unreached floor: the hillside manors and the
+      konaks (`xa_rich_b`, `xa_rich_c`, their `_palopo`), the shop rows (`xa_shops`, `xa_shop_turk_a`), the monastery's hall,
+      the grand temple (its door 7.2 m up its flights), the fortress's keep, the baths' rooms, the granary, the farmhouse: in
+      each the builder's door is on a block the set's body does not match, or a raised door with no flight in core/walk. Erewhon
+      (`verify.py dist/erewhon.html --assert --interiors`, the combined rebuild, 2026-11-10; OK): 53,240 of 54,985 floors
+      reached. The citadel belongs to the citadel sessions (`-pleasuredome`, `-citadel`; 2026-11-09): every placement inside its
+      wall (CIT_POLY) builds as before here, with no hollow walls and no rooms from this set (`XAF.held`: 116), EXCEPT the
+      citadel's own buildings (`xa_cit_*`, 78n) and both Pleasure Domes, which take their items as on those sessions' pages
+      (the hold had taken their furniture and planned floors: the citadel's audit, 133 floors, could not run). The citadel:
+      133 of 133 floors reached (the palace 46, the Vizier's 13, the temple 6, the barracks, the Master of Mines', the
+      Treasurer's, the Chancellor's and the envoys' 13 each, the kitchens 3). The Garden Pleasure Dome is built with the hollow
+      wrap off and only furnished by its item (its walk is its builder's, 78d): `xdomeReach` 78 of 78. The furniture is textured (the catalog's detail maps, `tex=True`; the `tile` family on
+      the library's `ceramic.glaze` since 2026-11-10).
 - [ ] (2026-11-03) **Doors and glass: the kit's bodies are solid.** The kit takes core/door and the Vernacular's openings
       (69e5) and `kits/xanadu/src/71c-xa-openings.js` (kits/xanadu/README.md, "Doors and glass"): on the sheet 599 doors (each a
       real leaf in KDOOR, locked, with an id from its def and placement) and 5,912 panes where there were black plates and dark

@@ -117,6 +117,32 @@
    "metal": 0,
    "normalScale": 1.0,
    "mapOnly": true
+  },
+  "creeper": {
+   "lib": "card.creeper.beach",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.7,
+    "mean": 0.4
+   },
+   "mapOnly": true,
+   "note": "the creepers hung on the wild half's towers (71-host-creepers.js): a card, alpha-tested"
+  },
+  "mosshang": {
+   "lib": "card.moss.hanging",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.7,
+    "mean": 0.4
+   },
+   "mapOnly": true,
+   "note": "hanging moss among the creepers (71-host-creepers.js)"
   }
  }
 }

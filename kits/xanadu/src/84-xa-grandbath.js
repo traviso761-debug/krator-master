@@ -45,7 +45,8 @@ function xnXKLake(pts,y,c){for(const p of pts){kput('xDiscS',[p[0],y-.02,p[1]],n
 // long tiled pool running out to the tiled pavilion with its copper sun, with cypress avenues and parterres either side.
 function buildXaGrandBath(G,o){reseed(32201+(o.v|0));const V=xV(o),lit=xLit();
  const stone=xC(xPick([0xefe6d2,0xe8dfc8,0xf2ebdb])),gold=xC(xPick(XPAL.gold)),turq=xC(xPick([XPAL.turquoise,0x2a9aa0,0x3aa8a8])),tim=xC(xPick(XPAL.red));
- const HW=30,HD=30,HZ=-4,PH=V===2?17:14,PW=1.5,NX=5,NZ=5;   // the hall: 30×30 plan, five piers a side
+ const HW=30,HD=30,HZ=6,PH=V===2?17:14,PW=1.5,NX=5,NZ=5;   // the hall: 30×30 plan, five piers a side; HZ 6 (was -4 until 2026-11-10) centres
+ // the plan (garden gravel to the forecourt's rill, z -44 to 42) on the 88 m lot: it had stood 10 m out past the lot's back
  vnReg('Grand Baths — hall',0,HZ,HW/2+2,PH+3);vnReg('Grand Baths — iwan',0,HZ+HD/2+2.5,8,20);vnReg('Grand Baths — tiled pavilion',0,HZ-HD/2-26,4,10);
  // the ground: a paved forecourt, the hall floor in glazed tile, the garden gravel
  xnPave(0,HZ+HD/2+10,HW+8,14,0,stone,2.4);vB('xTilesB',0,-.06,HZ,HW+1,.14,HD+1,0,turq);vB('xEarthB',0,-.1,HZ-HD/2-18,HW+14,.1,34,0,xC(0xc8b088));
@@ -82,4 +83,4 @@ function buildXaGrandBath(G,o){reseed(32201+(o.v|0));const V=xV(o),lit=xLit();
  if(lit){for(const s of[-1,1]){vnLampPost(s*6,0,HZ+HD/2+9,3.4);vnLampPost(s*4.6,0,BZ-24,3.2);}for(let i=0;i<NX;i++)for(const s of[-1,1])vBall('vBulb',px[i],PH-2.2,HZ+s*(HD/2-.9),.09);}
  vnFolk(0,HZ+HD/2+8,4,3);vnFolk(0,BZ-10,3,2);}
 
-XA.def({key:'xa_grand_bath',name:'Grand Baths',family:'Public',tags:{type:['religious','infrastructure'],wealth:'civic',lit:true,landmark:true},w:62,d:88,h:26,fw:44,fd:82,eye:[1,30,0,13],eyes:[['garden',0,-72,0,-52],['pavilion',4,-35,0,-46],['hall',-13,12,3,-14]],build:buildXaGrandBath});
+XA.def({key:'xa_grand_bath',name:'Grand Baths',family:'Public',tags:{type:['religious','infrastructure'],wealth:'civic',lit:true,landmark:true},w:62,d:88,h:26,fw:44,fd:82,eye:[1,40,0,23],eyes:[['garden',0,-62,0,-42],['pavilion',4,-25,0,-36],['hall',-13,22,3,-4]],build:buildXaGrandBath});

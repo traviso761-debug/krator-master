@@ -97,7 +97,7 @@ Krator is an ancient, tidally flexed heat-pipe world orbiting a turquoise gas gi
 
 ## 4. Master Sound Design Brief: The New Biomes
 
-### 1. Loom-Chasms (`Region 99`: Weavers' Cradle & Deep Warp Sink)
+### 1. Loom-Chasms (`Loom Chasms`, was `Region 99`: Weavers' Cradle & Deep Warp Sink)
 * **Geological Identity**: Massive enclosed extensional tectonic basin ($386,000\text{ km}^2$) stepped down from $+2,200\text{ m}$ loess piedmont to $+480\text{ m}$ hypersaline playa (`Lake Nim`) and $+240\text{ m}$ graben trenches. Bounded by basalt horst pylons, wind-excavated yardangs, and Mount Caelum resurgent dome.
 * **Atmospheric Pressure**: $1.20\text{ atm}$ (benches) $\to 1.50\text{ atm}$ (deep chasm floors).
 * **Climate & Weather**: Arid rain shadow (`BWk`/`BSk`). Hot dry daytime winds, freezing clear desert nights, blinding dust devils.

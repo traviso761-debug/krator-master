@@ -265,6 +265,10 @@ open-world ready). It needs: a zone on `rock` (its crag pines, tussock and saltb
 `bed` and `silt` (young forest on the flood lake's silt, the rafted hulks among the trees), and the pass table and
 variants. Korona, later, needs the same `bed` and `salt` response for its share of the east bed.
 
+**Built 2026-11-10**: the zone on `rock`, the response to `bed`, `silt` and `yearsDry` (`biomes/nwlowlands/src/57-biome-nwlowlands-overlay.js`), and
+an overlay build (`build(overlay=...)`), on which the scablands' `highline-nw` station stands (`biomes/scablands/PLAN.md` section 8): the rafted wrack
+among the young forest's trees. Still owed: the hulks, the pass table and the variants.
+
 ## 9. Order of work
 
 1. **Data.** *Done 2026-10-20:* the live collections in `openworld/north-basin/source/` (little-demo's copy stays its
@@ -347,8 +351,11 @@ owner's call); seasons and KFIRE (their rows are for station 2, the high country
 judged not worth a redraw before the owner sees the first passes); a runtime range on the floor's bands (it would move what is drawn where: a
 performance pass of its own).
 
-**Station 2 (`--station high`)** waits, as its plan says, for nhighlands' station 2 (pair 7), so its trees are written once and this side takes kin
-of them. Map 5.1 asks nothing of this kit (`biomes/STATIONS-MAP-5.1.md`).
+**Station 2 (`--station high`)** waited, as its plan says, for nhighlands' station 2 (pair 7), so its trees are written once and this side takes kin
+of them. **Built 2026-11-09** (`PLAN-STATIONS.md`, "Station 2, as built"): the high country at 5.1 px 848,564 on the universal set (KGROUND with
+relief and its own layers, KSHADOW off at load, core/rand, core/tags, core/water's tarns, KRELIEF's scarp and talus; nothing reads a canvas, so no
+KMASK), nhighlands' station 2
+trees as kin and ebadlands' Great Basin trees read in place. Map 5.1 asks nothing of this kit (`biomes/STATIONS-MAP-5.1.md`).
 
 **The 5.1 geology** (`kits/resources/data/geology.json`, the province layer, read 2026-11-03): in a box round the region's old canvas px 360-560 x
 60-180, basalt 58%, evaporite 27% (the dam-lake beds), water 8%, the rest sedimentary, crystalline, impact and granite at 1-3% each; the kit's site
@@ -356,3 +363,23 @@ of them. Map 5.1 asks nothing of this kit (`biomes/STATIONS-MAP-5.1.md`).
 crust): **it agrees**, as `kits/resources/ROCK-PROPOSAL.md` says. Karst site 10 (`biomes/KARST-SITES-5.1.md`: limestone under the basalt near Jimjam,
 "low gain") is not taken: no station stands on a notch where the basement shows; the coulee's spring line at the basalt's base is a note for its
 next pass.
+
+## Fauna (proposed 2026-11-11, awaiting the owner)
+
+Drawn by `kits/fauna` and tagged by biome (`biomes/README.md`, "A fauna kit"); placed by `FAUNALANDS` (`kits/fauna/fauna-lands.js`).
+The brief (`kits/fauna/BIOME-FAUNA-PLAN.md`): two grazers, a predator, a flyer and a water creature, with **at least one animal
+found nowhere else**. **New** = to be built in the kit; *shared* = an existing key that also gets this biome's tag, because its
+range plausibly runs across the border. Nothing here is built.
+
+| Role | Animal | Status | Where | Why it is here |
+|---|---|---|---|---|
+| grazer | **burrcoat** | **new, unique** | the steppe and desert (BSh, BWh), migrating with the walking plants | a long-legged six-limbed herd grazer (`faWdHex`, `amb`, `stock`), shaggy and matted. It follows the walkers and the seed weather toward water, and its coat combs **hitchers** (section 7) out of the scrub: a herd sows the steppe behind it. Herds of 20-40, the burrs drawn as a coat variant |
+| flyer | **gale kite** | **new, unique** | ridges, dam walls and hulks to windward; over the seed weather | a fox-sized six-limbed glider (`faWdHex` `limbWeb`, `climbs`, centaur gait) that launches into the steppe's strong wind (median 228 W/m²) and feeds on the drifting seeds and drift lanterns. Dense air lets a web this small hold it up; it never flaps, it only hangs and slides |
+| grazer | *swift-pronghorn*, *plains-hopper*, *lowland-aurochs* | shared (nwlowlands) | the steppe; the aurochs on the Csa and the fruit forest | the seam with NW lowlands runs 200 px; the open-plains grazers cross it |
+| grazer | *ridge-ibex*, *badland-bighorn* | shared (nhighlands, ebadlands) | the highland spurs over 2.5 km | the spurs already read those kits' flora in place |
+| predator | *red-dire-fox*, *grey-highland-wolf* | shared (nwlowlands, nhighlands) | the fox on the steppe; the wolf in the uplands and the fruit forest | |
+| flyer | *marsh-harrier*, *crag-eagle* | shared | the harrier on the golden-poplar margins and reeds; the eagle on the spurs | |
+| water | *lake-sturgeon*, *giant-catfish*, *lake-diver* | shared (nwlowlands, nhighlands) | the two trapped lakes (-81 and -60 m) and the poplar margins | the Aral's sturgeon is the Earth basis; the catfish takes the warm, shrinking margins |
+| domestic | *horse*, *bactrian-camel*, *sheep*, *goat* | shared | wherever there are herders | the Central Asian basis |
+
+The burrcoat's burrs are the one fauna-flora tie: a host check can ask that hitcher seedlings lie along the herds' trails.

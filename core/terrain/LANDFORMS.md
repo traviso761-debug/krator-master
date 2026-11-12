@@ -41,3 +41,40 @@ index's cells. Its reach now covers the knoll zone.
 - No Godot twin: the relief kinds have none yet, and a page bakes them into its KFIELD.
 - `slump` and `relay` follow a polyline's nearest segment. A tightly curled line gives a crease, as `KRELIEF.scarp` does.
   Keep their lines gently arcuate.
+
+## The chasm head, the graben net and the flood ripples (2026-11-09)
+
+Three more pieces the plans owed: Mid Basin's amendment 3 (a chasm head, which the Loom-Chasms' slots want too), the Labyrinth's
+amendment 3 (the graben net, shared with the Siphon Pits and the Loom-Chasms' horst-and-graben), and Outland Gate's amendment 3
+(giant current ripples on its flood floor).
+
+**`stepcut` did not take a floor that varies along its line** (the depth was one number; the line's ends were round caps at full
+depth). `head` adds it, in place in `38c-core-landforms.js` and off by default: `KRELIEF.stepcut({line, ..., head: {at: 'end' |
+'start' | 'both', len, amph, wall}})`. Over the head's last `len` metres of line the outline narrows from the cut's half-width to the
+bowl's radius (`amph` x the half-width: 1 a box-canyon bowl as wide as the cut, 0 the walls closing to a point), as a tapered
+capsule whose distance is exact, so the treads and risers wrap round the bowl; the depth falls smoothly to `wall` x depth at the tip
+(0 by default: the chasm dies out; .4 a sapped headwall over a spring line). `at()` adds `head` (the depth's share lost) in the taper.
+A record without `head` is untouched: `test-landforms.js` holds a frozen digest of `shape` and `at` on six cuts, taken before the
+change (`55247ac0`).
+
+**`38d-core-landforms-net.js`** (loaded after `38c`; `node core/terrain/test-landforms-net.js`):
+
+| Kind | What it draws | Parts (`at`) | Plans it serves |
+|---|---|---|---|
+| `grabenNet` | Grabens on several fault trends (three for the Labyrinth). Each trend's faults lie on parallel lines `spacing` apart, each line jittered, broken into segments with gaps and each segment staggered across (en echelon), some left uncut (`p`); a segment is a `stepcut` line with chasm heads at both ends, its id `<net>:<trend>:<line>,<segment>`, its numbers hashed from (world, trend, line, segment). `keep` trims the segments off masked ground (the dome). The record lists the cuts, the corridors (their lines and widths), the nodes (where two trends' cuts cross) and the bastions (the horst blocks no cut reaches, as outlines on a grid, each with its area and top). Its `shape` is the cuts' union: where cuts cross, the deeper floor, not the sum. | the deepest cut's part (stepcut's), plus `cut` (its id) | the Labyrinth's maze (§7, amendment 3); the Siphon Pits' graben stamps; the Loom-Chasms' horst-and-graben |
+| `ripples` | Giant current ripples in a polygon (with a flow direction) or along a line (the flow runs along it): crests across the flow `wl` apart and `h` high, the stoss (upstream) face long and gentle, the lee short and steep; crests wander (`sinuous`) and fork, a crest inserted between two dislocations (the phase jumps exactly one wavelength across it, so there is no seam); height varies along a crest; mean-free (the floor keeps its volume); faded to nothing at the area's edge. | `crest`, `stoss`, `lee`, `trough`, with `t` (0..1 through a wavelength) and `fade` | Outland Gate's ripple benches (amendment 3; station 3's ripple bars); any scabland floor |
+
+**Adopting them.**
+- The head: add `head: {at: 'end', len: 1200, amph: .7, wall: .3}` to a `stepcut` line record; nothing else changes.
+- The net: list `38d-core-landforms-net.js` after `38c-core-landforms.js` in `CORE_TERRAIN`, with core/rand on the page.
+  `const N = KRELIEF.grabenNet({box, world, id: 'lab', trends: [{az, spacing, w, depth, len}, ...], keep: (x, z) => !inDome(x, z),
+  ground})`, then `KRELIEF.apply(ground, [N, ...])` (or put `N.cuts` in one by one where they never cross). Hand `N.corridors` to
+  `KSIGN.make`'s cost (cheap on a corridor's floor) and `N.bastions` to the flora and `KGLACIER` (the caps on the high blocks). A tile
+  built alone has the very cuts the whole box has there; bastions are clipped at the box (`edge`).
+- The ripples: the same file; `KRELIEF.ripples({poly, flow, wl: 100, h: 6, seed})` into `KRELIEF.apply` after the floor's own kinds;
+  `KRELIEF.at(rec, x, z).part` for cover (gravel on the crests, fines in the troughs) and `KSTACKS` erratics.
+- `KRELIEF.waters` lists nothing for either.
+
+**Not done.** No Godot twin (as for the other relief kinds). The net's cuts are straight segments (a curved fault would be a line of
+several points; the head already follows one). The bastions are found on a grid (`cell`, 25 m): a narrow neck of horst under a cell
+reads as two bastions. The ripples' forks are fixed at record time over the area's bounds (a record is global, not per tile).

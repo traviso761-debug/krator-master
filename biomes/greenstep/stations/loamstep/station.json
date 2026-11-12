@@ -1,0 +1,23 @@
+{
+ "note": "Station 2, the Loam-Step (PLAN.md section 6; 5.1 px 644,1242, 1,465 m, Cfa, +19 degC, 1,396 mm): Terrace II under the Great Veil (riser 2), the twin curtains into the Veil Basin, the Free Giants' wet paddies (core/mask) and cork groves, a lava tube's fallen pits under the bench and the tube barn's site (the settlement build's). kin: the SW lowlands' broadleaves, the S highlands' crozier and coilbark, read in place (BIO.kin; 87-host-kin.js)",
+ "kin": {
+  "swlowlands": [
+   [
+    "src/50-biome-swlowlands-species.js",
+    "src/52-biome-swlowlands-library.js",
+    "src/55-biome-swlowlands-trees.js"
+   ],
+   "SWLOW",
+   "*"
+  ],
+  "shighlands": [
+   [
+    "src/50-biome-shigh-species.js",
+    "src/55-biome-shigh-trees.js"
+   ],
+   "SHIGH",
+   "*",
+   "shigh"
+  ]
+ }
+}

@@ -30,6 +30,8 @@ Use `KRATOR_GL=gpu`: software GL loses the page's context (`KNOWN_ISSUES.md`). P
 | `55-mp-hero-ancients.js` | [draw] | `MP.heroAncient`: a kit builder run into a hero of its own, its instanced detail baked there |
 | `59-mp-floors.js` | [draw] | `MP.floors`: storeys and a core for the buildings without plans, read off the drawn shape |
 | `59b-mp-ruin-design.js` | [draw] | `MP.ruinDesign`: a design's hero cut to a ruin state of its record, with slabs, core and rubble |
+| `44b-mp-sockets.js` | [G data] | `MP.skin`, `MP.sockets`: where every family and state can carry a plant, as records (`API.md`) |
+| `59e-mp-overgrow.js` | [draw] | `MP.overgrow`, `MP.plant`, `MP.overgrowDress`: strands, roots, moss, soil and stand-ins drawn at the sockets; the planter adapter |
 | `58-mp-cutaway.js` | [web] | the cut-away: X cuts the building in front of you at a storey's ceiling, `[` and `]` move it |
 | `57-mp-debris.js` | [draw] | `MP.debris(F, state)`: a ruin's rubble (`KSTACKS` mounds, crushed shaft sections, the lamp's disc, slabs) and what stands free (a stump's fins, a skeleton's frame) |
 | `60-mp-shell-host.js` | [web] | `KSHELL`'s bake and draw |
@@ -98,6 +100,32 @@ rubble as records, a Spindle's along a fin, the Ledger's onto itself and into th
 - **Black shells were a hidden pane:** a page that boots with `innerHeight` 0 set the trace's pixel size to Infinity. It is set every frame now.
 
 The fallen Ledger keeps its arcade (the owner, 2026-11-03): its arches, piers and flares stand in the mound.
+
+## The overgrowth: sockets, growth, wild looks (2026-11-09)
+
+The owner: "I want the ruins themselves to be overgrown in places, like the middle sections of Girder but all over" (Midgar at the end of
+FF7). The kit now says **where** every family and every state can carry a plant, as records, and draws **what it draws itself** there;
+a biome grows its own species at the same places through a planter. `API.md` has the calls.
+
+- **Sockets** (`44b-mp-sockets.js`, `[G data]`): `MP.sockets(F, look, seed)` reads the family's skin (`MP.skin`: the same radius, rectangle,
+  arc and terrace numbers the builders draw from, as parts) and the state's tear, and gives plain records in the hero's frame: `floor`,
+  `ledge`, `edge`, `top`, `wall`, `root` and `heap`, each with its outward normal, the size of plant it holds, the room it has and a unit hash a
+  host filters by density with. Deterministic by KRAND from (family, state, seed, part, level, index). The node test proves every socket
+  of every family and state on its skin and under the state's top. About 1,100 a Spindle crown, 500 a Ledger, 4,300 the Swell (87 k in all).
+- **Growth** (`59e-mp-overgrow.js`, `[draw]`): `MP.overgrow(hero, F, state, o)` draws creeper strands as real tubes down the wall from sills,
+  torn edges and rims (forking, thinning, leaved), roots down the plinth, moss and soil in the vertex colours round each wet socket (blotches
+  from floors and tops, drips under sills, a damp band at the foot), rubble soil on the open floors, and the kit's own stand-in bushes and
+  small trees. Because it is geometry and vertex colour on the hero, **the shells and impostors bake it**: a wild Spindle's shell shows the
+  strands and the moss at 130 m. `MP.plant(F, state, at, o)` hands each kept socket to a host's planter in the world frame.
+- **Wild looks**: a look is a state or `state.wild`; `MP.look` splits it and every reader of a state takes one, so `MP.hero('spindle',
+  'crown.wild')`, `KSHELL.record(F, 'crown.wild')` and `MP.debris(F, 'crown.wild')` work. On this page the wild heroes are planted with the
+  lowland kits' trees and floor plants (`59d`) on their tops, floors, heaps and feet; the test bed stands every family in three states beside
+  their wild looks (`Wild, <family>`), the Spindle and the Ledger beside their baked wild shells, and two wild looks in the tiers' city. The
+  shells now pack as many 2048 atlases as they need (two).
+- **Fixed on the way:** `MP.ruinDesign` cut a design's triangles out of the index but kept every vertex, so a stump's bounding box (and the
+  impostor's card framed from it) still stood at the whole tower's height (an Organ stump read 240 m against its record's 47). The kept
+  triangles are compacted into a new geometry (`MP.compact`) and the hero's triangle count is recounted from its meshes (`MP.countTris`).
+  Also a `children.forEach(c => G.add(c))` that skipped every other child (THREE's `add` removes it from its parent mid-loop).
 
 ## The other fourteen, close up (2026-11-03)
 
@@ -332,6 +360,57 @@ triangles). A part's storeys above its core's run (the Rig's deck on its legs, 2
 the Furnace Stacks' halls are `floors: false`). A short bridge's doorway now splits a big triangle in its path (to about half a square metre
 near the opening) and drops a kit piece under 4 m reaching in: 374 of the 377 doorways are clear. A ruin's cut instances are taken out of
 the count rather than hidden at zero scale, and its slab cells go in runs: every design's ruins are within budget.
+
+**The yards' pieces** (the owner, 2026-11-10: the Ancient's Valley's industrial district, its Yards station; `46f-mp-yards.js` records,
+`57y-mp-yards-draw.js` drawing). What stands between the industrial halls, as plain records first (`MP.yards`, [G data]: numbers in, records
+out, every figure fixed or a KRAND position hash, the ruin by `o.damage`): `tankFarm` (a bund and its tanks in rows: upright cylinders with
+cone, floating or domed roofs, and a share of spheres on leg rings after the owner's refinery reference; whole, holed, burnt, collapsed or
+gone), `pipeRack` (bents along a polyline carrying one or two tiers of pipes; `o.skip` leaves a bent out where a street or a track runs, so
+the pipes span it; runs of bents down sag the pipes to the ground), `dishArray`, `chimney` (tapered, banded, broken at a height by damage),
+`conveyor` (an enclosed gallery on trestles, `o.skip` for the trestles, a section down), `slagHeap` and `slagH` (heaps the host adds to its
+ground), `spill` (dead ground and pools), `turntable` (the pit, its bridge and a fan of roundhouse stalls), `gantry` (a loading gantry over
+tracks), `railYard` (sidings fanning off a line's path at a spacing, each turnout longer than the last, buffer stops, the yard's outline)
+and `inside`. `MP.yardsDraw(records, {kt: KTRANSIT})` draws them into one builder (the transit kit's, handed in: its library families rust,
+steel, concrete, corrugated, white, paint) by family and chunk, so a district of them is a few calls a chunk. The kit's own sheet does not
+show them yet; the valley's Yards station is where they stand (`biomes/ancientsvalley/stations/yards/`).
+
+**The farm belt: Soleri's planned developments** (the owner, 2026-11-04 and 2026-11-10; `biomes/ancientsvalley/PLAN.md` section 12, 2b, for the
+valley's Terraces station). Eight families, each a design with plans on this kit's machinery, so nothing downstream changed: `46f-mp-farm.js`
+([G data]) holds their records (`MP.DESIGNS` for the shape, `MP.FAMILY` with `design: true, farm: true` for the storeys, core, `envR` and the
+seven ruin states; `MP.FARM_KEYS`; `MP.aqueductJoin`), `54f-mp-hero-farm.js` ([draw]) their builders on `DK` (added to `MP.DESIGN_BUILD`), and
+`70f-mp-stage-farm.js` ([web]) shows them on this page. `MP.hero(key, state)` draws them, `MP.ruinDesign` cuts their ruins, `MP.debrisPlan` heaps
+them, `MP.storey` plans them and `MP.audit` checks them; a box shell (`F.shell`, the valley's middle tier for every design) and an impostor are
+baked from their heroes.
+
+| Key | Name | What | Storeys | Intact tris |
+|---|---|---|---|---|
+| `pod` | the Growing Pod | a hexagonal plinth (pumps and tanks, louvred, two doors) and a faceted hexagonal glass dome over the growing floor and a mezzanine of beds, a lantern | plant, 2 hydroponics | about 2 k |
+| `vault` | the Vault House | a glazed barrel vault ribbed every 8 m on an elongated hexagonal plinth, glazed ends, a gallery of beds | plant, 2 hydroponics (rect rings) | about 3 k |
+| `stack` | the Growing Stack | five glazed tiers stepping back up a slope (its +z downhill), each roof the next tier's planted terrace, a blank retaining wall into the hill | plant, 4 hydroponics (rect rings) | about 2.6 k |
+| `hall` | the Hub Hall | a drum of two storeys under a ribbed shell dome with an oculus, a parabolic apse arch over its doors | hall, offices, records | about 8 k |
+| `market` | the Market | a glass drum of stalls under a folded concrete umbrella of twelve petals, a lantern | 2 market | about 5 k |
+| `watertower` | the Water Tower | a pump drum, a fluted shaft holding the stair and the lift, a tank bowl with a gallery, a cap | plant, 3 tanks | about 2 k |
+| `aqueduct` | the Aqueduct | a module of three arches (66 m), half piers at its ends so modules laid end to end meet in one pier, a dry trough | none | about 400 |
+| `pumphouse` | the Pump House | an octagonal drum (a pump hall and a switch floor), an eight-sided roof, a standpipe, a sluice channel | 2 plant | about 1.3 k |
+
+Each is far under its budget (12 to 18 k). The greenhouses' glass is `glassClear` (the beds show through it), so a gutted pod or vault keeps its
+ribs and mullions and loses its panes. **A wall is drawn in bands of 4 m or less** (`MP.FARM_FIX`'s quads and lathes): the ruin cut keeps a
+triangle only when all of it stands under the torn line, and the first cut of the aqueduct, whose piers were single 23 m quads, left a broken
+module as heaps on the ground. The skeleton state keeps a design's piers (instanced panels) and its slabs, not its merged ribs: a pod's or a
+vault's skeleton is its plinth with its beds and slabs open to the sky (the notes say so).
+
+**On this page** (views `Farm, <name>: hero, shell, impostor`, intact and gutted, in a showroom 5 km south of the tiers; `Farm ruins, <name>`, the
+seven states in a row; `Farm, all eight`; `Farm, an aqueduct of ten modules`, laid on a curve of 4 degrees a joint). The farm's shells pack an atlas
+of their own and its impostors a set and a kit of their own (`mpfarm`, baked apart from the towers'). Its checks join the page's through
+`MP.EXTRA_CHECKS` and `MP.EXTRA_NEGATIVES` (`99-host-take.js`): the audit, every state built under budget with no NaN and no floating piece (a mesh's
+connected pieces by shared corners, flooded from the ground), the ruins lower than the intact and cut rather than erased, a shell and an impostor
+baked, the pod's dome on its plinth, the aqueduct's modules meeting end to end; each with a negative. `node tests/test-metropolis.js` audits the
+eight, their ruins, rubble and box shell records, the joint and its arches. **Checked 2026-11-10 on the Arc 140T** (`verify.py --assert`, the
+last of four runs): every check and negative passes, the 16 farm impostors bake. The runs before it found the lantern caps of the gutted pod and
+market and the hall's canopy standing on nothing once their glass went (posts added), the vault's stump record as tall as its broken one, and the
+ruin cut erasing single tall quads (the banding above). A whole or gutted hero must have no loose piece; a ruin past gutted is counted, not
+failed: its loose remnants are the kit's cut (59b) as every design's are (a skeleton's piers between its slabs), from 0 (the pump house) to 216
+(the stack's tiers), `KNOWN_ISSUES.md`.
 
 **Which shapes shell well** (from these two and the geometry; only the first two are measured):
 

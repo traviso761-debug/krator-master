@@ -579,7 +579,7 @@
    "mapOnly": true
   },
   "grass": {
-   "lib": "card.grass.dry",
+   "lib": "card.grass.themeda",
    "scale": [
     1,
     1
@@ -588,16 +588,10 @@
     "keep": 0.0,
     "mean": 0.7
    },
-   "size": 512,
-   "cell": [
-    0.34,
-    0.34,
-    0.66,
-    0.66
-   ]
+   "size": 512
   },
   "blind": {
-   "lib": "card.rankgrass",
+   "lib": "card.grass.elephant",
    "scale": [
     1,
     1
@@ -606,13 +600,7 @@
     "keep": 0.0,
     "mean": 0.7
    },
-   "size": 512,
-   "cell": [
-    0.34,
-    0.34,
-    0.66,
-    0.66
-   ]
+   "size": 512
   },
   "fan": {
    "lib": "card.palm",

@@ -89,7 +89,7 @@ function buildXaTeahouse(G,o){reseed(32901+(o.v|0));const V=xV(o),stone=xC(xPick
  for(const s of[-1,1])for(const z of[-3.2,0,3.2]){vB('vWood',s*3.6,.5,z,1.4,.35,1.0,0,xC(0x5a3a1a));for(const q of[-1,1])vB('xPaint',s*3.6+q*1.2,.5,z,.7,.25,.7,0,xC(xPick([0xd04a8a,0xf2c12e,0x2a9ad8,0x8a3aa8,0xc9442a])));
   vPst('xDrumS',s*3.6,.85,z,.12,.4,xC(0xd8b070));vPst('xGold',s*3.6,1.25,z,.05,.2,gold);}
  for(const s of[-1,1])for(const z of[-3.5,3.5]){vBeam([s*3.6,3.7,z],[s*3.6,3.1,z],.012,xC(0x2e2a26),'vRope');kput('vBarrel',[s*3.6,2.8,z],qEuler(Math.PI,0,0),[.28,.5,.28],xC(0xd8b070));if(lit)vBall('vBulb',s*3.6,2.55,z,.07);}
- for(const s of[[-1,-1],[-1,1],[1,-1],[1,1]])xnXPPot(s[0]*7,0,s[1]*7,.34,XGP.turq);for(const s of[-1,1])xnTree(s*7.2,-7,3.6);
+ for(const s of[[-1,-1],[-1,1],[1,-1],[1,1]])xnXPPot(s[0]*7,0,s[1]*7,.34,XGP.turq);for(const s of[-1,1])xnTree(s*6.2,-6.2,3.6);   // the shade trees inside the 16 m tile (their crowns fitted to it)
  vnFolk(-3.6,0,3,2);vnFolk(3.6,0,2,2);}
 XA.def({key:'xa_teahouse',name:'Teahouse',family:'Garden tiles',tags:{type:['tavern/inn'],wealth:'middle',lit:true},w:16,d:16,h:8,fw:16,fd:16,snap:8,build:buildXaTeahouse});
 
@@ -164,12 +164,14 @@ function buildXaPleasureDomeBay(G,o){reseed(32941+(o.v|0));const V=xV(o),R=22,li
  for(const [r,y] of[[R+6,-.8],[R+4,0],[R+2,.8]])kput('xDiscS',[0,y,0],null,[r,.8,r],stone);kput('xDiscS',[0,1.6,0],null,[R+1,.4,R+1],stone);const y0=2.0;
  const NC=20,CR=R-1.2,CH=11;for(let i=0;i<NC;i++){const a=i/NC*TAU,x=Math.cos(a)*CR,z=Math.sin(a)*CR;xnCol(x,y0,z,CH,.36,-a,stone,gold);}
  for(let i=0;i<NC;i++){const a=(i+.5)/NC*TAU,x=Math.cos(a)*CR,z=Math.sin(a)*CR;xnArch('xArchP',x,y0+CH-3.6,z,Math.atan2(x,z),TAU*CR/NC-.4,4.2,.6,stone,{open:true});}
- kput('xDiscG',[0,y0+CH+.5,0],null,[CR+1.4,.4,CR+1.4],gold);xvFr(0,y0+CH+.1,0,.1,.1,.1,0);   // the gilt architrave ring
- const DR=R*.62,DH=8;kput('xDrumW',[0,y0,0],null,[DR,DH,DR],xC(xPick(XPAL.wash)));for(let i=0;i<12;i++){const a=i/12*TAU,x=Math.cos(a)*DR,z=Math.sin(a)*DR;xnXTArchWin(x,y0+1.4,z,Math.atan2(x,z),2.2,4.8,xC(XPAL.lapis),'xMosAB',lit);}
- vB('xBandB',0,y0+DH-.9,0,DR*2+.4,.7,DR*2+.4,0,xC(xPick(XPAL.maroon)));kput('xDiscS',[0,y0+DH,0],null,[DR+.6,.4,DR+.6],stone);
- xnDome(0,y0+DH+.4,0,DR-.6,'T',{c:turq,fin:2.6});for(let k=0;k<12;k++){const a=k/12*TAU;vB('xGoldB',Math.cos(a)*(DR-.4),y0+DH+.4,Math.sin(a)*(DR-.4),.5,.5,.5,-a,gold);}
- {const g=new THREE.Mesh(new THREE.SphereGeometry(DR-1.6,32,16,0,TAU,0,Math.PI/2),new THREE.MeshBasicMaterial({color:0xcfe6f0,side:THREE.BackSide,fog:false}));g.position.set(0,y0+DH+.4,0);g.userData.inspectLabel='The caves of ice (the dome, inside)';g.userData.probeSkip=true;G.add(g);}
- vnDoor(0,y0,DR-.2,0,3,5,'xPaint',xC(XPAL.maroon[0]),xC(0x2a1a10),false);xnFlight(0,0,R+7+.9,0,8,2.0,'vStone',stone);
+ // the gilt architrave: a ring now (it was a disc through the solid drum's dome), open over the rotunda
+ for(const dy of[.3,.7])kput('xpAnnG',[0,y0+CH+dy,0],null,[CR+1.4,1,CR+1.4],gold);for(let i=0;i<40;i++){const a=i/40*TAU;vB('xGoldB',Math.cos(a)*(CR+1.4),y0+CH+.3,Math.sin(a)*(CR+1.4),TAU*(CR+1.4)/40+.05,.4,.1,Math.atan2(Math.cos(a),Math.sin(a)),gold);}
+ xvFr(0,y0+CH+.1,0,.1,.1,.1,0);
+ // the drum is a hollow rotunda in the black-and-white pattern system, white over black (the owner, 2026-11-09; 78d xbayBuild)
+ const DR=R*.62,DH=8;xbayBuild(o,{y0,DR,DH,R,turq,wash:xC(xPick(XPAL.wash)),gold,stone,band:xC(xPick(XPAL.maroon))});
+ // (the twig band and the cornice are rings round the hollow drum now: xbayBuild draws them)
+ for(let k=0;k<12;k++){const a=k/12*TAU;vB('xGoldB',Math.cos(a)*(DR-.4),y0+DH+.4,Math.sin(a)*(DR-.4),.5,.5,.5,-a,gold);}
+ xnFlight(0,0,R+7+.9,0,8,2.0,'vStone',stone);
  for(let k=0;k<10;k++){const a=k/10*TAU+.3;xnXPPot(Math.cos(a)*(R-4),y0,Math.sin(a)*(R-4),.4,XGP.turq);}for(let k=0;k<6;k++){const a=k/6*TAU;xnTree(Math.cos(a)*(R+9),Math.sin(a)*(R+9),rr(3.5,5));}
  if(lit)for(let k=0;k<8;k++){const a=k/8*TAU+.2;vnLampPost(Math.cos(a)*(R+4.5),0,Math.sin(a)*(R+4.5),3.4);}
  xnXTQuay(0,R+12,24,8);xnSub('xa_barge',0,0,R+22,Math.PI/2,{v:V});vnFolk(0,R+9,4,4);}

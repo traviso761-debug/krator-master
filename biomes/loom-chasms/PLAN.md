@@ -1,6 +1,6 @@
 # The Loom-Chasms: the plan (2026-11-09)
 
-The Loom-Chasms (Region 99, `rmvraoas90co7`) are a rift basin in the south-east of map 5.1. On the west a terraced
+The Loom-Chasms (region `rmvraoas90co7`, named Loom Chasms on the model since 2026-11-11, Region 99 before) are a rift basin in the south-east of map 5.1. On the west a terraced
 piedmont, the **Weavers' Cradle**, steps down from the Stalker Range. In the middle a tableland of basalt mesas, the **Shuttle
 Mesas**, is split by a net of chasms about a kilometre deep. On the chasm floor, the lowest ground, lies the salt lake **Lake
 Nim** and its playa, **the White Loom**. Over the chasms grows the region's one invention: **living cables**, tensile plants
@@ -23,7 +23,7 @@ model (`smodel.page`, 2026-11-09, at `gemini/scale-model-5.1-r3`, dfdf64d1a); th
 - **Whose ground** (overlaps with other polygons):
   - the Yuni Emirate (`rmw8ca6baau47`), 21,624 cells (28%): the west is Yuni land on paper;
   - the Stalker Gate (`rmvstalkergate`), 3,426 cells, and the Stalker Range (`rmvkknh1am4fw`), 1,084, on the west;
-  - the Great Chasm (`rmw4vh9t20da4`), 1,509 cells on the north: its south end and the sill lie inside Region 99;
+  - the Great Chasm (`rmw4vh9t20da4`), 1,509 cells on the north: its south end and the sill lie inside the Loom Chasms;
   - Mid Basin (`rmvmidbasin101`), 2 cells: the two meet edge to edge.
 - **Heights:** p1/p5/p10/p25/p50/p75/p90/p95/p99 = 256 / 331 / 498 / 1,344 / 1,764 / 2,729 / 6,498 / 8,203 / 9,726 m.
   - **Lowest:** 164 m at 1697,1006, in the Great Chasm's floor where the two polygons overlap. The Loom's own floor bottoms
@@ -61,7 +61,7 @@ model (`smodel.page`, 2026-11-09, at `gemini/scale-model-5.1-r3`, dfdf64d1a); th
   - **Lake Nim:** 124 cells, about 500 km², level 240 m, bed 218 m (22 m deep), x 1685-1696, y 1169-1184, class WX on the
     water. Its shore (1697,1176) is 243 m, class XS. v2's 45 km² at 344 m is wrong; 4.24 set it at 240 m.
   - **A tarn** of 13 cells at 7,270 m on the east wall (1775-1777,1087-1092).
-  - **Rivers** (`rivers.json`): 42 records cross the polygon, all named in the Yuni tongue (`river_names.py`: Region 99 is
+  - **Rivers** (`rivers.json`): 42 records cross the polygon, all named in the Yuni tongue (`river_names.py`: the Loom Chasms is
     `yuni`). Three are perennial:
     - **Ostrukh Riba** (`r_mb_siphon_breach`, from Mid Basin): 300 km, **340 m³/s**, ending at 334 m at 1618,1214 on the
       chasm floor;
@@ -87,9 +87,10 @@ model (`smodel.page`, 2026-11-09, at `gemini/scale-model-5.1-r3`, dfdf64d1a); th
 - **Settlements** (`model/src/60-settlements.js`; old canvas px plus 272, 330):
   - **Spindle Fan** (`sloomspindle01`, Yuni village, 1561,1140, 2,150 m): "Yuni farming and spring outpost on the Weavers'
     Cradle piedmont fan: terraced crops supporting expeditions into the Loom-Chasms";
-  - **Mungo** (`s4xb8r0vmy`, village, old 1321,825 = 1593,1155, 1,764 m on the Weave-Step's foot, no notes);
-  - **Reed** (`sndrdffkyg`, village, old 1277,676 = 1549,1006) sits on the north edge on ground of 9,393 m. That is airless:
-    a village cannot stand there (section 9);
+  - ~~**Mungo** (`s4xb8r0vmy`, village, old 1321,825 = 1593,1155, 1,764 m on the Weave-Step's foot, no notes)~~ and
+    ~~**Reed** (`sndrdffkyg`, village, old 1277,676 = 1549,1006, on the north edge on airless ground)~~. **Corrected 2026-11-09:**
+    the pins' 1321,825 and 1277,676 are already 5.1 px (the shift was added twice). Both stand in the Eastern Abyss (e abyss,
+    Nomad Country), not here: Mungo at -1,807 m (WX), Reed at -2,342 m (XA). Neither is the Loom-Chasms';
   - **the Great Chasm's trade post** (planned, `biomes/greatchasm/PLAN.md` section 5) at the sill, 1697,1028, inside this
     polygon.
 
@@ -210,7 +211,8 @@ livestock: whatever the Yuni build uses.
 - **The Cradle's farmers.** The station record has turf-roofed stone longhouses and draft-ox teams. Whether they are Yuni
   colonists or an older people under Yuni rule is the owner's (section 9). Either way, the farms are NPC settlements
   (`core/hamlet`), not outposts.
-- **Mungo** (village, 1593,1155) stands at the Weave-Step's foot. It has no notes: its people are the owner's.
+- ~~**Mungo** (village, 1593,1155) stands at the Weave-Step's foot.~~ Corrected 2026-11-09: Mungo stands at 1321,825, in the
+  Eastern Abyss (section 1); no pin stands at the Weave-Step's foot.
 - **Caravans and expeditions:** caravans on the Yuni road and expeditions down to the floor and the playa make night camps
   (`core/camp`).
 - **The outlaws:** Mid Basin's Yuni outlaws (*proposed* there) roam north into the Loom's southern chasms.
@@ -249,7 +251,7 @@ summit and Lake Nim, 140 km apart; they are split here.
 | Station | 5.1 px | Ground (the model) | What |
 |---|---|---|---|
 | 1 **The Weavers' Cradle** (`cradle`) | 1555,1142 | 2,180 m (2,166-2,199 m within 3 px); 1.22 atm; Cwb, 11 °C (23/0), 439 mm; Spindle Fan 13 km north-east | the terraced loess fans, Aina Bruk off the fan, the Yuni farms, the road setting out east |
-| 2 **The Weave-Step** (`monocline`) | 1575,1163 | 1,479 m on a step; 978-1,900 m within 3 px; 1.33 atm; BSk, 15 °C (26/5), 125 mm; Mungo 39 km east-north-east | the basalt benches and box canyons, the talus skirts, a waystation on the road, the first view over the chasms |
+| 2 **The Weave-Step** (`monocline`) | 1575,1163 | 1,479 m on a step; 978-1,900 m within 3 px; 1.33 atm; BSk, 15 °C (26/5), 125 mm | the basalt benches and box canyons, the talus skirts, a waystation on the road, the first view over the chasms |
 | 3 **The Loom** (`loom`) | 1662,1162 | 748 m on a mesa's shoulder; the floor 264 m and the mesa top 1,592 m within 3 px; 1.46 atm; BWk, 19 °C (30/9), 78 mm | a slot on the mesa rim with its cable canopy in tiers, the cable-stryder, the great chasm opening below; Stara Bruk on the floor |
 | 4 **Mount Caelum** (`caelum`) | 1622,1166 | 4,431 m (pinned; 3,721-4,441 m within 3 px); 0.92 atm; ET, -2 °C (11/-15), 439 mm | the summit fumaroles, the parent colony, the chasm net spread out below |
 | 5 **The White Loom** (new, split from `caelum`) | about 1697,1176 | Lake Nim's shore at 243 m; the lake at 240 m; 1.55 atm; XS, 24 °C (36/13), 47 mm | the playa: salt polygons and crusts, the brine pools and their mats, the halite sifter, a salt-camp |
@@ -262,7 +264,7 @@ needs the salt-crust hazard.
 - every station's `atm`;
 - `loom`: `floor` 568 m and `chasm_depth` 180 m (the floor is 264 m; a slot's depth is the page's);
 - `caelum`: `playa_level` 344 m (it is 240 m) and Lake Nim's `area_km2` 45 (it is about 500);
-- `region98_99.json` still holds Region 99's older 10-vertex outline.
+- `region98_99.json` still holds the Loom Chasms' older 10-vertex outline.
 
 ## 8. Core adoption (written first, as the working rules ask)
 
@@ -285,7 +287,7 @@ when they are built.
 | hazards | `core/hazard` (`KHAZ`) | section 6; every record in `core/tags` before it is drawn |
 | fauna | `kits/fauna` | the cable-stryder and the halite sifter, as `BIO.record` records |
 | the Stalkers | `kits/mechs` (`KratorMechs`, culture `stalker`) | placed as hazard records by this kit, drawn by the mechs kit |
-| camps, settlements | `core/camp`, `core/hamlet` | caravan and salt camps; the Cradle's farms and Mungo; Spindle Fan is a Yuni settlement (`settlements/yuni`'s pieces) |
+| camps, settlements | `core/camp`, `core/hamlet` | caravan and salt camps; the Cradle's farms; Spindle Fan is a Yuni settlement (`settlements/yuni`'s pieces) |
 | resources | `kits/resources` (`KRES`) | sulphur at Caelum; *proposed* saltpeter on the playa's margins (the Atacama's nitrates form in such basins); read the geology bake at the build |
 | shadows | `core/shadow` | off at load |
 | tags, space, mask, host, export, materials | as every kit | |
@@ -304,16 +306,17 @@ when they are built.
 - the rivers' stale lake destinations (593-666 m);
 - the water budget (section 1);
 - Caelum's vent `floor`;
-- Reed's height;
+- ~~Reed's height~~ (corrected 2026-11-09: Reed is not here, section 1);
 - the region's empty `notes`;
 - the overlaps with the Great Chasm (1,509 cells) and the Stalker Gate (3,426), if they are not meant.
 
 ## 9. For the owner
 
-- **The water:** Ostrukh Riba's 340 m³/s onto a desert floor with a 500 km² lake. Cut the river (Mid Basin's plan questions its
-  course), or grow Lake Nim to several thousand km² (a real terminal lake, as the Danakil's were)?
-- **The Cradle's people:** Yuni colonists, or an older people under Yuni rule? Who lives at Mungo? Reed stands on airless
-  ground: move it, or remove it?
+- ~~**The water:** Ostrukh Riba's 340 m³/s onto a desert floor with a 500 km² lake.~~ **Settled (the owner, 2026-11-10):**
+  the river was rerouted south into Lake Ostrukh (scale model 5.1 edit 4, `tools/scale-model/edit_514.py`); it no longer
+  reaches the Loom Chasms, and its old gorge north of the maar is dry. Lake Nim keeps only its own wadis.
+- **The Cradle's people:** Yuni colonists, or an older people under Yuni rule? ~~Who lives at Mungo? Reed stands on airless
+  ground~~ (corrected 2026-11-09: Mungo and Reed are the Eastern Abyss's, section 1).
 - **Namakiers:** keep the playa's salt as crust and pinnacles (proposed), or add a buried salt layer so salt glaciers can flow?
 - **The cables:** spans of 100-300 m across slots (proposed), with the great chasms open; or does the owner want longer spans?
   At 2-20 km the chasms are beyond any cable.
@@ -350,7 +353,7 @@ when they are built.
 ## Sources
 
 - the plan v2 and the station records in this folder (Gemini, 2026-10-28);
-- `tools/scale-model/README.md` "4.24" (Part I, Region 99) and `history/edit_424.py`; `HANDOFF-GEMINI-5.1.md` (the records'
+- `tools/scale-model/README.md` "4.24" (Part I, the Loom Chasms) and `history/edit_424.py`; `HANDOFF-GEMINI-5.1.md` (the records'
   conversion, the re-survey);
 - the model's data at dfdf64d1a (`gemini/scale-model-5.1-r3`), read with `smodel.page`: heights, water, `tm`/`tw`/`tc`/`p`/`c`,
   `rivers.json`, `vents.json`, `tubes.json`, `model/src/51-region-store.js`, `model/src/60-settlements.js`;

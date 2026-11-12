@@ -153,7 +153,7 @@ function streamNear(x,z){let best=null;for(const r of streamsNear(x,z))if(!best|
 // a polynomial smooth minimum (k: the blend's width in the values' units): where two channels meet, the corner between their banks
 // is a fillet, not a crease (the owner, 2026-10-26: the confluence's edges wanted rounding)
 const smin=(a,b,k)=>{const q=Math.max(k-Math.abs(a-b),0)/k;return Math.min(a,b)-q*q*k*.25;};
-function terrainH0(x,z){const g=g1(x,z);let h=null;
+function terrainH0(x,z){const g=STATION_GROUND&&STATION_GROUND.surf?STATION_GROUND.surf(x,z):g1(x,z);let h=null;
  for(const r of streamsNear(x,z)){if(r.C.key==='cave'&&(KCARVE.keepOut(x,z,2)||x>BITE.x+BITE.r-2))continue;   /* the cave stream cuts no trench round its mouth: the hood and the hill stay one face */
   const w=r.w,dep=r.C.dep,t=Math.max(0,r.d-w);let hc=g;
   if(r.d<w)hc=Math.min(hc,r.y-dep*(1-.55*(r.d/w)*(r.d/w))-.15);
@@ -165,6 +165,10 @@ function terrainH0(x,z){const g=g1(x,z);let h=null;
  for(const C of COURSES){const P=C.joined&&C.joined.pool;if(!P)continue;const d=Math.hypot(x-P.x,z-P.z);if(d>P.r+12)continue;h=smin(h,P.level-.45+Math.max(0,d-P.r)*.6,1.2);}
  const K=GORGE.sink,ds=Math.hypot(x-K.x,z-K.z);if(ds<K.r+2)h=Math.min(h,K.level-.4-(K.r+2-ds)*.25);
  return h;}
+// A STATION OVER THIS GROUND (stations/<name>/, build.py --station): one that defines SWHI_STATION_GROUND (the caverns: KKARST under
+// the limestone ridge, stations/caverns/44k-host-karst.js) is handed the ground's records here and may give back a surface (surf: the
+// ground with its dolines, read by terrainH0) and a mask (0 where nothing roots: its wells); without one the ground is as it was
+const STATION_GROUND=typeof SWHI_STATION_GROUND==='function'?SWHI_STATION_GROUND({g1,streamNear,BITE,CAVE,GORGE,GP,RB,crestX,ARCH_X,ARCH_Z,BALD,COVE,TERR,WORLD}):null;
 // THE FIELD (core/terrain KFIELD): the ground baked once (6 m), with a 2 m inset over the gorge and the cave, where the
 // steps, the bridges' rims and the bite's walls are finer than the base grid; everything after this reads the field
 const FIELD_BAKED=(function(){const t0=performance.now();
@@ -231,6 +235,7 @@ BIO.init({tags:'swhighlands',THREE:THREE,scene:scene,terrainH:terrainH,waterH:wa
   const K=GORGE.sink;if(Math.hypot(x-K.x,z-K.z)<K.r+3)return 0;
   const r=streamNear(x,z);if(r&&r.d<r.w+1.5)return 0;if(r&&r.d<r.w+6&&terrainH(x,z)<r.y+.3)return 0;   // the water and its wet edge
   if(KCARVE.covered(x,z)!=null)return 0;                                                               // nothing roots in the cave
+  if(STATION_GROUND&&STATION_GROUND.mask&&STATION_GROUND.mask(x,z)===0)return 0;                        // a station's own (the caverns' wells)
   if(Math.hypot(x-BITE.x,z-BITE.z)<BITE.r+70&&x<BITE.x+BITE.r)return 0;                                 // the cave's floor and the ground before it stay open
   if(Math.abs(z-ARCH_Z)<50&&Math.abs(x-ARCH_X)<70)return 0;                                             // the arch's col: bare rock and turf
   return smooth(1.25,.8,FC.at(FC.a.slope,x,z))*(1-FC.at(FC.a.farm,x,z));},                           // the cliffs stay bare; the farm is the Republic's

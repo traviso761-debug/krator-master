@@ -358,8 +358,24 @@ G.rosette=function(){const pos=[],nor=[],uv=[],col=[];
 // (skin.cactus: six of the skin's eight ribs round the six of the mesh, v at the same texel size up a barrel ~2.7 of its
 // heights round)
 G.barrel=function(){return lathe([[0,.36],[.12,.47],[.45,.5],[.8,.44],[.95,.26],[1,.04]],12,.07,null,[.75,.28]);};
-// a ribbed COLUMN (the sail candelabra's stems), unit height, radius .5
-G.column=function(){return lathe([[0,.5],[.6,.49],[.9,.42],[1,.18]],8,.08,null,[.5,1.5]);};
+// a ribbed COLUMN (the sail candelabra's stems and arms, the censers' stalks), unit height, radius .5
+// the succulent columns' quality pass (TODO.md's ride-along: biomes/sedesert's 2026-10-26 work, backported 2026-11-09): the
+// profile starts at a NARROW, ROUNDED FOOT closed by a small cap (the stem constricts where it leaves the ground or the trunk,
+// as a Euphorbia's segments do), the top closes in a dome, and a profile row may give its normal's y (third value: down-out at
+// the foot, so the constriction shades as a curve; the lathe's were one flat guess). The lathe's ribs and uv tiling are kept.
+// 80 triangles (was 48, open at both ends)
+const columnGeo=(seg,prof,rib,top,uvs)=>{const pos=[],nor=[],uv=[],col=[],uR=uvs[0],vR=uvs[1];
+ const R=prof.map(p=>{const r=[];for(let s=0;s<seg;s++){const a=s/seg*TAU,k=1+rib*(s%2?1:-1);r.push([Math.cos(a)*p[1]*k,p[0],Math.sin(a)*p[1]*k,s%2?.82:1]);}return r;});
+ const ny=i=>prof[i][2]!=null?prof[i][2]:i===0?.15:.3;
+ const put=(p,n,u)=>{push3(pos,p);push3(nor,n);uv.push(u*uR,p[1]*vR);col.push(p[3],p[3],p[3]);};
+ for(let i=0;i<prof.length-1;i++)for(let s=0;s<seg;s++){const a=R[i][s],b=R[i][(s+1)%seg],c=R[i+1][s],d=R[i+1][(s+1)%seg],u0=s/seg,u1=(s+1)/seg;
+  const na=[a[0],ny(i),a[2]],nb=[b[0],ny(i),b[2]],nc=[c[0],ny(i+1),c[2]],nd=[d[0],ny(i+1),d[2]];
+  put(a,na,u0);put(d,nd,u1);put(c,nc,u0);put(a,na,u0);put(b,nb,u1);put(d,nd,u1);}
+ const tp=[0,top,0,1],L=R[prof.length-1];for(let s=0;s<seg;s++){const a=L[s],b=L[(s+1)%seg];put(a,[a[0],.6,a[2]],s/seg);put(b,[b[0],.6,b[2]],(s+1)/seg);put(tp,[0,1,0],(s+.5)/seg);}
+ /* the foot's cap, facing down (in the ground or the trunk it leaves, but shown where a stem leans) */
+ const bp=[0,-.01,0,.8],F=R[0];for(let s=0;s<seg;s++){const a=F[s],b=F[(s+1)%seg];put(a,[a[0],-.8,a[2]],s/seg);put(bp,[0,-1,0],(s+.5)/seg);put(b,[b[0],-.8,b[2]],(s+1)/seg);}
+ return BIO.geo._make(pos,nor,uv,col);};
+G.column=()=>columnGeo(8,[[0,.3,-.2],[.07,.46,-.12],[.17,.5,.15],[.62,.49],[.9,.4]],.08,1.0,[.5,1.5]);
 // a BEAD: a squashed sphere, unit height, origin at its base
 G.bead=function(){return lathe([[0,.05],[.25,.42],[.75,.42],[1,.05]],6,0,(p,i)=>.75+.25*Math.sin(i/3*Math.PI));};
 // a STEP CONE: tiers stacked like a termite tower (a tier a wet year), unit height, radius .5
@@ -653,4 +669,18 @@ BIO.def('rod',G.rod(),M.solid,{label:'Stems'});
 BIO.def('boulder',new T3.IcosahedronGeometry(1,1),M.rock,{label:'Boulders'});
 BIO.def('stone',new T3.IcosahedronGeometry(1,0),M.rock,{label:'Stones'});
 BIO.def('fruit',new T3.IcosahedronGeometry(1,1),M.solid,{label:'Fruit (apples, apricots, pears, walnuts, pomegranates, nuts)'});
+// THE POND BLADDERWORT (2026-11-09; EXCHANGES.md korona -> nsemiarid, `bladderpool`, taken as a cousin): Korona's sucking pool scaled down to a
+// fresh pool's bladderwort bed, danger 0, nothing sucked down: a mat of fine green threads set with bladders floating just under the surface of fresh
+// water, small yellow flowers on stalks above it (the floor's last pass, 60). Defined after every other item and drawn with no draw from the kit's
+// stream (its texture's marks are KRAND hashes), so no item's index and no other plant's look moves
+TX.bladder=BIO.alphaTex(256,(g,S)=>{const u=(i,k)=>KRAND.unit(KRAND.hash(6113,i,k));g.lineCap='round';
+ for(let i=0;i<70;i++){const a=u(i,1)*TAU,d=S*.42*Math.sqrt(u(i,2)),x=S/2+Math.cos(a)*d,y=S/2+Math.sin(a)*d,b=u(i,3)*TAU,L=S*(.06+.12*u(i,4));
+  g.strokeStyle='rgb('+Math.round(110+90*u(i,5))+','+Math.round(110+90*u(i,5))+','+Math.round(110+90*u(i,5))+')';g.lineWidth=1.2+u(i,6);g.beginPath();g.moveTo(x,y);g.lineTo(x+Math.cos(b)*L,y+Math.sin(b)*L);g.stroke();
+  for(let k=0;k<4;k++){const t=u(i,10+k),r=1.6+2.2*u(i,20+k);g.fillStyle='rgb('+Math.round(150+80*u(i,30+k))+','+Math.round(150+80*u(i,30+k))+','+Math.round(150+80*u(i,30+k))+')';
+   g.beginPath();g.arc(x+Math.cos(b)*L*t,y+Math.sin(b)*L*t,r,0,TAU);g.fill();}}},[140,140,140]);
+M.bladder=BIO.leafMat(TX.bladder,'bladder',{swayW:'0.0',swayA:0,alphaTest:.3});
+BIO.def('bladder',BIO.defs.litter.raw||BIO.defs.litter.geo,M.bladder,{label:'Pond bladderwort (a mat under the surface)'});
+NSEMIARID.PLANTS.bladderwort=Object.assign(PK('Pond bladderwort','temperate','subhumid','yes',['Csa','Cfa','BSh'],['bladder'],'fragments',
+ HV('none',[],false,'A cousin of Korona\'s sucking pool, scaled down for a fresh pool: a floating mat of threads set with tiny bladders that snap up water fleas, harmless to anything larger; birds carry its fragments from pool to pool.')),{kin:'korona.bladderpool'});
+NSEMIARID.PLANTS.bladderwort.tags.kin='korona.bladderpool';
 })();

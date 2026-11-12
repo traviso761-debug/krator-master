@@ -255,9 +255,15 @@ function xnFooting(x,z,w,d,ry,drop,c){c=c||xC(xPick(XPAL.rubble));kput('xBatS92'
 // a terrace: a retaining wall of rubble with an earth top; (x,z) the centre, w x d, h high
 function xnTerrace(x,y,z,w,d,ry,h,c,topC){kput('xBatS92',[x,y,z],ry?qEuler(0,ry,0):null,[w,h,d],c||xC(xPick(XPAL.rubble)));vB('xEarthB',x,y+h-.06,z,w*.94,.1,d*.94,ry,topC||xC(0x8a7a56));
  vB('vStone',x,y+h-.14,z,w*.96+.1,.14,d*.96+.1,ry,xC(xPick(XPAL.stone)));}
-// trees and cypresses stand on the ground unless a y is given (terraces, roof gardens)
-function xnTree(x,z,h,c,y){y=y||0;if(typeof xaPlant==='function'&&xaPlant('tree',x,y,z,h))return;vPst('vPostB',x,y,z,.14,h*.5,xC(0x5a4632));c=c||xC(xPick(XPAL.leaf));for(let k=0;k<5;k++)kput('xLeaf',[x+rr(-.7,.7),y+h*.62+rr(-.3,.5),z+rr(-.7,.7)],qEuler(rng(),rng(),0),[rr(.9,1.4),rr(.8,1.1),rr(.9,1.4)],c.clone().multiplyScalar(rr(.85,1.1)));}
-function xnCypress(x,z,h,y){y=y||0;if(typeof xaPlant==='function'&&xaPlant('cypress',x,y,z,h))return;const c=xC(xPick(XPAL.cypress));vPst('vPostB',x,y,z,.08,.6,xC(0x3a2a20));kput('xConeL',[x,y+.4,z],null,[h*.16,h,h*.16],c);kput('xConeL',[x,y+.3,z],null,[h*.2,h*.5,h*.2],c.clone().multiplyScalar(.9));}
+// the crown room (2026-11-10): how far a plant at the builder-local (x,z) may spread before it leaves the def's lot (w x d,
+// the footprint layouts place by: README.md, "Footprints"); Infinity outside a def. A crown is fitted to it (xaPlant, the
+// fallbacks below), so a canopy never hangs over the lot line however near its trunk stands; .3 m at least, so a trunk
+// set past the line still draws (kits/xanadu/tests/test-footprints.js finds it)
+function xaRoom(x,z){const c=VERN.cur;if(!c||!c.D||!(c.D.w>0)||!(c.D.d>0))return Infinity;return Math.max(.3,Math.min(c.D.w/2-Math.abs(x),c.D.d/2-Math.abs(z)));}
+// trees and cypresses stand on the ground unless a y is given (terraces, roof gardens); without the Vale biome a tree's five
+// leaf balls reach 2.1 m from its trunk and a cypress's cones h*.2, both shrunk to the crown room
+function xnTree(x,z,h,c,y){y=y||0;if(typeof xaPlant==='function'&&xaPlant('tree',x,y,z,h))return;const k=Math.min(1,xaRoom(x,z)/2.1);vPst('vPostB',x,y,z,.14,h*.5,xC(0x5a4632));c=c||xC(xPick(XPAL.leaf));for(let i=0;i<5;i++)kput('xLeaf',[x+rr(-.7,.7)*k,y+h*.62+rr(-.3,.5),z+rr(-.7,.7)*k],qEuler(rng(),rng(),0),[rr(.9,1.4)*k,rr(.8,1.1)*k,rr(.9,1.4)*k],c.clone().multiplyScalar(rr(.85,1.1)));}
+function xnCypress(x,z,h,y){y=y||0;if(typeof xaPlant==='function'&&xaPlant('cypress',x,y,z,h))return;const k=Math.min(1,xaRoom(x,z)/(h*.2)),c=xC(xPick(XPAL.cypress));vPst('vPostB',x,y,z,.08,.6,xC(0x3a2a20));kput('xConeL',[x,y+.4,z],null,[h*.16*k,h,h*.16*k],c);kput('xConeL',[x,y+.3,z],null,[h*.2*k,h*.5,h*.2*k],c.clone().multiplyScalar(.9));}
 // townsfolk at a given height (vnFolk stands them on y=0)
 function xnFolk(x,y,z,n,spread){for(let i=0;i<n;i++){const px=x+rr(-spread,spread),pz=z+rr(-spread,spread);kput('figB',[px,y,pz],qEuler(0,rng()*TAU,0),1,xC(xPick([0xe8d9b8,0xa8382a,0x2aa5a0,0x6e2a2a,0xe8a030,0x1e3f8a,0xf4efe4])));kput('figH',[px,y,pz],null,1,xC(0xc9a17e));}}
 // a stone-edged pool of water (y = ground); the rim sits proud, the water a little below the rim

@@ -144,8 +144,11 @@ side is the same open question.
     closed the Caspian Gates: a **long wall** from wall foot to wall foot (1431,326 to 1446,326), the fort and its toll gate on
     the river at its middle, towers every few kilometres, a citadel on the Gate shoulder. The river passes under a water
     gate. Every caravan, and the god's road, goes through the gate.
-  - **Reaching it:** the Tierhounds' own country (the Tiers) reaches the gap's floor over crests no higher than about 3.9 km
-    (a minimax flood fill from the Tiers' centre, 1275,495), so the fort is theirs to supply.
+  - **Reaching it** (corrected 2026-11-10, `biomes/tiers/PLAN.md` section 8): the 3.9 km crest was the Tiers' centre's own
+    height, and the way under it runs ~1,430 km round by Spider Lake. The owner chose an easier road (2026-11-10): the
+    **Hounds' Road**, 898 km from the Tierhounds' capital (Coyote Canyon) by the Vitreous Hollow and the Outer Wall's back,
+    top 6.0 km after one cut, coming down into the gap at the village of **Howl** (1393,283, the owner, 2026-11-10; in this polygon, north of the long wall) and up the floor to
+    the fort. The Gate is the Kingdom's frontier post.
   - **The old pass** at 1408,414 (8,002 m) loses the fort. *Proposed*: it keeps a cairn and a trickster's shrine as the
     "old gate" of the stories, crossed by nobody but pilgrims.
 - **Who passes:**

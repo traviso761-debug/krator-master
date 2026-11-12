@@ -17,18 +17,18 @@ const YS_CUT_UNITS=(function(){const by=new Map();
 /* core/host's inspector skips what the probe skips unless it has a label: the ground and the sea's pick plane have one, so
    a hover over open water or bare ground names it (ysInspect), as the page's own inspector did */
 scene.traverse(o=>{if(o.userData&&o.userData.isGround&&!o.userData.inspectLabel)o.userData.inspectLabel=o.name==='sea'?'open sea':'ground';});
-const YS_HOST=KHOST.take({
+const YS_HOST=KHOST.take(KHOST.standard({
  build:'ys-'+String(TITLE).toLowerCase().replace(/[^a-z]+/g,'-').replace(/^-|-$/g,''),title:TITLE,
  hint:'I hovers the inspector, a click inspects, P marks, M the map, X a building storey by storey, F walks at eye height, N noon or night',
  scene,camera,renderer,ground:terrainH,floor:ysFloorY,clear:1.2,minR:2,maxR:9000,walk:YS_WALK,views:VIEWS,
  onView:name=>{const v=VIEWS[name]||[];ysViewExtras(v[6],v[7],v[8]);},
  inspect:(hit,hits)=>ysInspect(hits),
  click:()=>typeof ED!=='undefined'&&ED.on,   // the city's editor takes the click while it is open (94-city-editor.js)
- keys:{n:()=>{if(typeof setHour==='function')setHour(YSCLOCK.hour>6&&YSCLOCK.hour<19?22.2:12);}},
+ std:{night:{on:()=>{if(typeof setHour==='function')setHour(YSCLOCK.hour>6&&YSCLOCK.hour<19?22.2:12);},state:()=>!(YSCLOCK.hour>6&&YSCLOCK.hour<19)}}   /* Night (N): the one key map (core/host/92k-host-keys.js) */,
  cutaway:YS_CUT_UNITS.length?{units:YS_CUT_UNITS,cutAt:1.4}:null,
  minimap:{title:TITLE},
  exporters:{tags:()=>KTAGS.page.export()},
  budget:BUDGET,api:window._api,
-});
+}));
 KHOST.on(function ysHooks(dt){const now=performance.now();for(const f of FRAME_HOOKS)f(dt,now);},'tick');
 KHOST.hover(true);   // the inspector's hover tip on, as Ys's was

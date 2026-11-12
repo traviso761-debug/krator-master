@@ -1,0 +1,45 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "center",
+   "choke": 2,
+   "key": "#ff00ff",
+   "key_hi": 170,
+   "key_lo": 60,
+   "pad": 0.02,
+   "size": 1024,
+   "spill": "edge"
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   2048,
+   2048
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "leaf",
+  "id": "card.leaf.miombo",
+  "kind": "card",
+  "metal": 0,
+  "roughness": 0.75,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "miombo-leaves-2048.png",
+  "generator": "supplied by the owner (Documents/Codex/2026-11-10, PNG 2048 px, as miombo-leaves-2048.png), generated from core/materials/PROMPTS-NEEDED.md section 40",
+  "licence": "generated for this project by its owner",
+  "prompt": "Square, 2048x2048. Orthographic view of a single cut-out object centred in the frame, on a solid flat bright magenta (#ff00ff) background that fills everything outside the object, with no shadow cast on the background. Flat, even, shadowless lighting: no highlights, no vignette. No perspective, no text, no border, no watermark. Object: a spray of miombo leaves (Brachystegia spiciformis) seen from above: pinnate leaves of four to seven pairs of oval leaflets on a slender twig, in the copper-red to wine flush of new growth, glossy, a few leaflets turning olive at their bases. Full colour: not tinted.",
+  "prompt_where": "core/materials/PROMPTS-NEEDED.md section 40 (delivered 2026-11-10)",
+  "reuse": "the se rim's rust miombo crown and the incense tree's leaflets (biomes/abyssal-savannah station serim, to wire); any pinnate leaf in red flush: Brachystegia, the flame-flush trees",
+  "sha1": "327da41b91682a05840903b5b5da02cfbd7b305d"
+ }
+}

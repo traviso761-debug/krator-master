@@ -20,6 +20,13 @@ table). It is the one near-term kit in the Crook (the owner, 2026-11-01: `HANDOF
   - classes: O (airless rim) 15,420 px, ET 12,425, EF 11,220, HF 6,590, HT 4,708, Dfb 2,085;
   - mean temperature: -32 / -8 / +10 °C;
   - rain: median 894 mm.
+- **Trimmed to the Firebliss Range (2026-11-09, scale model 5.1 edit 3; the owner).** The region overlapped 57% of the Firebliss
+  Range (`biomes/firebliss/PLAN.md`): its south edge ran at y 1345 across three of Firebliss's five volcanoes and two of its
+  warm valleys. It now follows Firebliss's north edge (`tools/scale-model/edit_513.py`). Read again on the trimmed region and
+  the rebaked resources: 37,747 cells (151,000 km²); heights p5/p50/p95 2,318 / 4,819 / 7,646 m; ET 13,972, EF 13,055, HT 4,332,
+  HF 2,409, Dfb 2,137, Cfa 605; mean temperature -25 / -8 / +10 °C; rain median 1,067 mm; provinces crystalline 3,339 four-km
+  cells, sedimentary 2,986, granite 2,621, rift 355; copper prospectivity up to 240, 371 cells over 120 (the eastern pass). The
+  three stations stand where they were and their pages were rebuilt on the rebake; the numbers below are the 2026-11-03 reading.
 - **The copper, read from the resource data, not invented** (`kits/resources/data/geology.json`, the 2026-11-03 rebake;
   `KRES.nodesIn` over the polygon):
   - The ground is crystalline (gneiss) 7,532 cells, sedimentary 2,825, granite 2,589, rift 355. No basalt, no volcanic and no

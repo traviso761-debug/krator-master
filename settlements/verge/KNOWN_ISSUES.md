@@ -2,6 +2,11 @@
 
 What is still open, as of 2026-10-05. Each item says what it is, where it lives and what would close it.
 
+## The build
+
+- [x] **Verge takes `core/biome/35-core-anim.js`** (2026-11-10): sedesert's fauna is drawn on `BIO.animMat` since the biome rebuild, so a rebuild
+  of Verge without it threw "BIO.animMat is not a function" on load (the committed page was older than the change and hid it).
+
 ## The host (core/host)
 
 - [x] (2026-10-15) **Verge is on core/host** (ROADMAP.md section 10, stage 3 step 5; `core/host/README.md`). `build.py` takes
@@ -112,6 +117,12 @@ What is still open, as of 2026-10-05. Each item says what it is, where it lives 
       the isle demo does: the panel is clean and every check passes. A file Iziz adds to the Vernacular has to be added here
       too. Verge takes 69e5 but not `95j-iziz-doors.js`: its doors are drawn shut and do not open (`TODO.md`, "Real doors
       and glass across the kits").
+- [x] (2026-11-09) **The Vernacular's doors are hosted** (`src/95-verge-doors.js`, core/door's `90-core-door-host.js`): posed by
+      KDOORHOST, eased on the frame, E within reach, walk blocks in core/walk; with the interiors on (the default) a Vernacular
+      def that has an interior item is built hollow (72), its doors cut and unlocked, and its footprint block goes when its rooms
+      are furnished (71 calls `vergeDoorsIn`). `verify.py --assert` `doors-open-and-shut`: 3,704 doors (2,345 locked as built,
+      14,572 walk blocks, 3,704 posed); 3 of 3 unlocked ones opened, cleared their doorway and shut; the negative (a locked one)
+      fails as it should. The YKIT buildings (Yuni, Locus, Abyss) keep their leaves drawn shut.
 - [ ] **Takes the material library from the builds it assembles** (build.py, no materials.json): the Iziz vernacular's seven
       families and its Ancients rows (IZV binds them), Locus's pack (YKIT's 47-texture.js) and both biomes' packs. The maps are in
       dist/verge.tex.<key>.js beside the page (tools/textures/matlib_pack.py), so the page stays 2.6 MB and no file passes the

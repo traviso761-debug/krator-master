@@ -10,8 +10,12 @@ const WATER_STATE={level:WATER_LEVEL,lakes:[]};
   key:()=>[SKY_CLOCK.day,Math.round(SKY_CLOCK.hour*4),SKY.look&&SKY.look.cover.toFixed(2)].join()});}
 const lin=c=>new THREE.Color(c).convertSRGBToLinear();
 const BOX=[-TERR.R*1.1,-TERR.R*1.1,TERR.R*1.1,TERR.R*1.1];
-/* the flood's seeds: the model's water cells inside the page (the inlets), at their cell centres, where the ground lies under the lake */
+/* the flood's seeds: the model's water cells inside the page (the inlets), at their cell centres, where the ground lies under the lake; and the page's
+   own ground under the lake on a 120 m lattice (the steam's and the transit's water, 89u and STAGE.transit.lakeK). The model's 2 km cells lie past
+   the page's edge (KNOWN_ISSUES: the water at its corners), so until 2026-11-09 the only seed was the fallback, on dry ground, and the near lake
+   flooded nothing: the drowned inlets were dry hollows under the lake's level (found placing the extraplanars' drowned portals, 75) */
 const WATER_SEEDS=(function(){const G=AV_REGION.grid,out=[];G.water.forEach(w=>{const x=G.x0+w[0]*G.dx,z=G.z0+w[1]*G.dz;if(Math.abs(x)<BOX[2]-200&&Math.abs(z)<BOX[3]-200&&terrainH(x,z)<WATER_LEVEL-1)out.push([x,z]);});
+ const R=STAGE.R;for(let x=-R;x<=R;x+=120)for(let z=-R;z<=R;z+=120){if(Math.hypot(x,z)>R+200)continue;if(STAGE.rawGround(x,z)<WATER_LEVEL-1&&terrainH(x,z)<WATER_LEVEL-1)out.push([x,z]);}
  if(!out.length)out.push([0,BOX[3]-300]);return out;})();
 const LAKE=WATER.open({name:STAGE.water.name,level:WATER_LEVEL,swell:[[.05,40,280,0,.04],[.03,16,240,1.3,.03]],field:.1,bounds:BOX,
  bed:terrainH,bedBox:BOX,bedCell:8,shore:{seeds:WATER_SEEDS}});

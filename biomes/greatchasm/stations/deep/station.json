@@ -1,0 +1,10 @@
+{
+ "note": "Station 3, the Deep (PLAN.md section 7). kin: the eastern abyss's jade shrub, read in place: the abyssal desert's one shrub (PLAN.md section 4), on the salt hollows' rims.",
+ "kin": {
+  "eastabyss": [
+   ["src/50-biome-eastabyss-species.js", "src/55-biome-eastabyss-trees.js"],
+   "EASTABYSS",
+   "*"
+  ]
+ }
+}

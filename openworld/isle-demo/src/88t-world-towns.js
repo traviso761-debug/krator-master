@@ -129,8 +129,8 @@ function bounded(im){const g0=im.geometry;if(!g0.boundingSphere)g0.computeBoundi
  const gs=g0.boundingSphere;g.boundingSphere=new THREE.Sphere(new THREE.Vector3(cx+gs.center.x,cy+gs.center.y,cz+gs.center.z),r+gs.radius*sc);im.geometry=g;im.frustumCulled=true;return im;}
 /* the vessels: their groups (60 DRAW.vessels draws them into the town's group, named by their record) */
 for(const X of T){X.ves=X.P.R.vessels.map(V=>({V,g:X.g.getObjectByName(V.id)})).filter(v=>v.g);X.mid=[];X.vprox=[];X.fullM=[];X.hlodAt=null;X.dirty=true;
- X.D.nearR=0;X.massZero=new THREE.Matrix4().makeScale(0,0,0);
- X.g.children.forEach(m=>{if(m.isInstancedMesh&&m!==X.D.massB&&m!==X.D.massR&&X.D.inst.indexOf(m)<0)bounded(m);});}   /* footings, compound walls, orchards: bounded once */
+ X.D.nearR=0;
+ X.g.children.forEach(m=>{if(m.isInstancedMesh&&(X.D.massMeshes||[]).indexOf(m)<0&&X.D.inst.indexOf(m)<0)bounded(m);});}   /* footings, compound walls, orchards: bounded once */
 const partsOfGroup=G=>{const out=[],inv=new THREE.Matrix4().copy(G.matrixWorld).invert();G.updateMatrixWorld(true);inv.copy(G.matrixWorld).invert();
  G.traverse(m=>{if(m.isMesh&&!m.isInstancedMesh&&m.geometry&&m.geometry.attributes.position)out.push({geo:m.geometry,mat:m.material,M:new THREE.Matrix4().multiplyMatrices(inv,m.matrixWorld)});
   else if(m.isInstancedMesh)for(let i=0;i<m.count;i++){m.getMatrixAt(i,_m);out.push({geo:m.geometry,mat:m.material,M:new THREE.Matrix4().multiplyMatrices(inv,m.matrixWorld).multiply(_m)});}});return out;};
@@ -150,11 +150,11 @@ function hlod(X,at,on){const D=X.D;drop(X.mid,X.g);drop(X.vprox,X.g);drop(X.full
  for(const id in fb){const E=fb[id],mk=(geo,mat,nm)=>{const im=new THREE.InstancedMesh(geo,mat,E.L.length);
    E.L.forEach((L,j)=>{const sx=L.cls==='wall'&&E.P&&E.P.w?L.w/E.P.w:1;im.setMatrixAt(j,D.matOf(L,[sx,1,1]));});im.name=nm;im.userData.isleFull=true;im.userData.lots=E.L.map(L=>L.tag);X.g.add(bounded(im));X.fullM.push(im);};
   E.A.meshes.forEach((m,k)=>mk(m.geo,m.mat,'atlas '+id+' '+k));E.A.rest.forEach((p,k)=>mk(p.geo,p.mat,'part '+id+' '+k));
-  E.i.forEach(i=>{D.massB.setMatrixAt(i,X.massZero);D.massR.setMatrixAt(i,X.massZero);});full+=E.L.length;}
+  E.i.forEach(i=>D.massHide(i));full+=E.L.length;}
  for(const id in by){const E=by[id],im=new THREE.InstancedMesh(E.B.geo,bakeMat,E.L.length);
-  E.L.forEach((L,j)=>{const sx=L.cls==='wall'&&E.P.w?L.w/E.P.w:1;im.setMatrixAt(j,D.matOf(L,[sx,1,1]));D.massB.setMatrixAt(E.i[j],X.massZero);D.massR.setMatrixAt(E.i[j],X.massZero);});
+  E.L.forEach((L,j)=>{const sx=L.cls==='wall'&&E.P.w?L.w/E.P.w:1;im.setMatrixAt(j,D.matOf(L,[sx,1,1]));D.massHide(E.i[j]);});
   im.name='baked '+id;im.userData.hlod=true;im.userData.lots=E.L.map(L=>L.tag);X.g.add(bounded(im));X.mid.push(im);mid+=E.L.length;}
- D.massB.instanceMatrix.needsUpdate=true;D.massR.instanceMatrix.needsUpdate=true;bounded(D.massB);bounded(D.massR);
+ D.massDirty();D.massMeshes.forEach(bounded);
  D.inst.forEach(m=>{if(!m.userData.bounded){bounded(m);m.userData.bounded=true;}});
  /* the vessels: in full near, baked and instanced by kind beyond */
  const vb={};X.ves.forEach(v=>{const d=Math.hypot(v.V.x-at[0],v.V.z-at[1]);if(d<VES_R){v.g.visible=true;return;}
@@ -179,7 +179,7 @@ function hlodCheck(o){o=o||{};const X=T.find(x=>x.full);if(!X)return{ok:false,de
  const add=(tag,how)=>{seen.set(tag,(seen.get(tag)||[]).concat(how));};
  D.inst.concat(X.fullM).forEach(m=>(m.userData.lots||[]).forEach(t=>add(t,'full')));X.mid.forEach(m=>(m.userData.lots||[]).forEach(t=>add(t,'baked')));
  if(o.twice&&X.mid.length)add(X.mid[0].userData.lots[0],'baked');
- D.recs.forEach((L,i)=>{D.massB.getMatrixAt(i,_m);if(_m.elements[0]!==0||_m.elements[5]!==0)add(L.tag,'massing');});
+ D.recs.forEach((L,i)=>{if(D.massShown(i))add(L.tag,'massing');});
  (D.lotWorks||[]).forEach(W=>{if(W.L.tag!=null&&D.recs.indexOf(W.L)>=0)add(W.L.tag,'works');});   /* an empty lot: its works and its house going up (60 DRAW.lots) */
  let twice=0,none=0;const missing=[];D.recs.forEach(L=>{const s=seen.get(L.tag)||[];const u=[...new Set(s)];if(s.length>1&&!(u.length===1&&u[0]==='full'))twice++;if(!s.length){none++;missing.push(L.key);}});
  const st=X.stats||{};return{ok:!twice&&!none&&X.mid.length>0,detail:X.P.town+': '+D.recs.length+' lots, '+(st.full||0)+' full, '+(st.mid||0)+' baked, '+(st.massing||0)+' massing, '+(D.lotWorks||[]).length+' lots as works; vessels baked '+(st.vesselsBaked||0)+

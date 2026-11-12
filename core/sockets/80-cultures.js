@@ -130,3 +130,9 @@ mkCulture({key:'screamer',name:'Screamers',field:'#b8683e',edge:'#2a1e16',band:'
 mkCulture({key:'zeijani',name:'Zeijani',field:'#5e3470',edge:'#221e1c',band:'#c49a4a',disc:null,ink:'#e8e0cc',ink2:'#221e1c',sym:'spiralarch',pole:0x4a3424,flagStyle:'pennant',
  awn:{mode:'cloth',cols:[0x5e3470,0xa23a2a,0xc49a4a,0x8a6a4a]},
  paint:[0x5e3470,0xa23a2a,0xc49a4a,0x3f8f88,0xe8e0cc],signBg:'#221e1c',signFg:'#e8e0cc',signFrame:0xa8683a});
+// Dalab (settlements/dalab, settlements/span; 2026-10-27, TODO.md): red ochre over rammed earth, cream bands, the God's single eye; ochre,
+// earth and hide awnings; signs cream on earth. Appended last: mkCulture draws from the shared stream at load (jc), so the packs above
+// draw what they drew before it; whatever a page draws after the packs moves
+mkCulture({key:'dalab',name:'Dalab',field:'#a8382a',edge:'#5a3e28',band:'#e6d6b4',disc:null,ink:'#efe4cc',ink2:'#2a1c12',sym:'eye',pole:0x5a3e28,
+ awn:{mode:'cloth',cols:[0xa8382a,0x8a5a36,0xc8a26a,0x6a4a30]},
+ paint:[0xa8382a,0x2f8a86,0xd8a838,0x1e1814,0xe6d6b4],signBg:'#5a3e28',signFg:'#efe4cc',signFrame:0x3a2a1c});

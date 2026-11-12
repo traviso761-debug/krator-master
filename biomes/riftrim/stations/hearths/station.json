@@ -1,0 +1,14 @@
+{
+ "note": "Station 7, the Hearth field (biomes/hearths/PLAN.md section 11 item 1; the N rim's shelf, 5.1 px 525,1400). kin: the Hearths' shared life (species and layout), read in place in its own registry; it draws on vertex colours, so no pack families. core: KTHERM (slotted 44t, before the land, so the fields read the heat), the breath (35, the fans' fold), the lean (39, the stalks' bow), the hot springs (core/water/geyser 52, 52b) and the steam's groups (core/atmos fx)",
+ "core": {
+  "44t-core-therm.js": "core/terrain/47-core-therm.js",
+  "35-core-anim.js": "core/biome/35-core-anim.js",
+  "39-core-lean.js": "core/biome/39-core-lean.js",
+  "52-core-water-geyser.js": "core/water/geyser/52-core-water-geyser.js",
+  "52b-core-water-geyser-draw.js": "core/water/geyser/52b-core-water-geyser-draw.js",
+  "89-atmos-fx-smokegroups.js": "core/atmos/fx/89-atmos-fx-smokegroups.js"
+ },
+ "kin": {
+  "hearths": [["src/50-biome-hearths-species.js", "src/55-biome-hearths-place.js"], "HEARTH", []]
+ }
+}

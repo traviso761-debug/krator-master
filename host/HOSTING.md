@@ -229,19 +229,14 @@ host\sitectl.bat update          (Linux service: cd host && ./sitectl update)
 
 Then restart `serve` if `krator.toml` changed.
 
-**Maintainers: bringing in new World Menagerie work.** The Menagerie lives in its own repository (at
-`../WorldMenagerie` on the original machine), and `host/WorldMenagerie/` is a copy of it with its history. Commit
-the work in the Menagerie first, then, from the root of this repository:
+**Maintainers: World Menagerie work.** `host/WorldMenagerie/` is the only copy of the Menagerie (added with
+`git subtree`, so its history is here). The separate checkout it came from (`../WorldMenagerie`) was retired on
+2026-11-02, everything in it being on `main` already. Work on the Menagerie here, on a Krator branch like any other
+change, then, from `host/`:
 
 ```
-git subtree pull --prefix=host/WorldMenagerie ../WorldMenagerie main
-cd host && ./sitectl update
+./sitectl sync && ./sitectl reload
 ```
-
-A fix made here, inside `host/WorldMenagerie/`, goes back with
-`git subtree push --prefix=host/WorldMenagerie ../WorldMenagerie <branch>`. Commit such fixes on their own, touching
-nothing outside that folder. One such fix is here and not yet in `../WorldMenagerie`: commit `ea0b6c1`, which lets
-`server.py` run on Windows.
 
 ## Changing what is served
 
@@ -255,9 +250,8 @@ Everything is set in `host/krator.toml`. After an edit, run `sync`, then restart
   Voth is dropped this way.
 - **Add a Krator page.** Add it to `ENTRIES` in `gallery/build_gallery.py` and run `build`. It appears in the
   gallery and at `/worlds/<slug>.html`.
-- **Replace the old Menagerie service (Linux, original machine).** The Menagerie's own service, `menagerie`, still
-  uses port 8000. To retire it and give its port to this one: `systemctl --user disable --now menagerie`, set
-  `port = 8000`, then `./sitectl sync && ./sitectl restart`.
+- **One server.** Port 8001 is the only site server. The Menagerie's own service (`menagerie`, port 8000) is
+  retired, and `host/WorldMenagerie/sitectl` no longer installs or starts one.
 
 ### Not served, on purpose
 
@@ -326,7 +320,7 @@ internet. It serves only the files its route table lists and nothing else, but i
 - **`host/server.py`** is a copy of `host/WorldMenagerie/server.py`, kept byte for byte identical. Fix it in the
   Menagerie copy, then copy it over.
 - **`host/menagerie.lock`** records the git tree hash of the Menagerie copy that was last synced. `sync --check`
-  compares the two. Commit the lock after a subtree pull and a sync.
+  compares the two. Commit the lock after a sync.
 - **Generated, never committed:** `host/site/`, `host/menagerie/`, `host/site.toml`.
 - `sitectl.bat` has been read through but not yet run on a real Windows machine. `sitectl.py`, which does all its
   work, has been tested from a fresh clone.
