@@ -46,9 +46,9 @@ The references the owner sent with the brief (2026-11-11), and what each gives t
    catalog entry, but it would have to vendor or bundle the whole Xanadu vocabulary it draws through.
 2. **Catalog culture id.** *Default:* `xanadu-scrap` (the tag `culture`; `kit` stays `xanadu`). Keys are `xa_scrap_*`, so
    `XAK.dims()` lists them.
-3. **Building types.** *Default built:* the ten below, for a town of a few thousand with a terminus and a garrison. Not
-   built yet, and asked: a bathhouse, a guildhall (the Salvagers' Guild, who hold the licence on the hull?), a
-   granary and the farms. Strongbow's terraces below the hull may want them.
+3. **Building types.** *Built:* the fifteen below, for a town of a few thousand with a terminus and a garrison. The
+   owner added the guildhalls, the grain and food stores and the bathhouse (2026-11-11). Not built yet: the farms;
+   Strongbow's terraces below the hull may want them.
 4. **Who quarries the hull.** *Proposed:* the Salvagers' Guild, under licence from the Sultanate and the History Monks.
    The Order keeps the upper hull sealed and says what may be cut (lore, not drawn).
 
@@ -66,6 +66,11 @@ The references the owner sent with the brief (2026-11-11), and what each gives t
 | `xa_scrap_shrine` | Wheel Shrine | Scrap: civic | the Decree's shrine: a glazed lantern drum (the clerestory), a verdigris dome on bronze ribs crowned by the eight-spoked Wheel, prayer wheels of panel drums round it |
 | `xa_scrap_pavilion` | Cistern Pavilion | Scrap: civic | an octagonal pavilion on eight girder columns over a mosaic pool, under a glass dome with a bronze finial |
 | `xa_scrap_bridge` | Cable Bridge | Scrap: civic | a footbridge between two stair towers: a girder span with a panel deck and cable balustrades, for the town's steps up the hull |
+| `xa_scrap_guild_salvage` | Salvagers' Guildhall | Scrap: guilds and stores | the guild that quarries the hull: a hall under a glass monitor roof, a two-storey girder portico with the guild's sign (one whole sheet and its four fasteners in a bronze ring), and its panel yard: sheets stacked by skin under a girder gantry |
+| `xa_scrap_guild_hall` | Merchants' Guildhall | Scrap: guilds and stores | a hall whose front is two tiers of glazed bays on girder brackets, under a glass lantern dome with four glass-domed kiosks at the corners |
+| `xa_scrap_granary` | Granary | Scrap: guilds and stores | bins of verdigris panels in bronze bands on a floor raised on girder stilts, each stilt under a bronze rat-guard; galleries on cable rails, a stair |
+| `xa_scrap_store` | Storehouse | Scrap: guilds and stores | the town's food and goods store: three loading doors under girder canopies, a hoist jib, bronze ventilator cowls on the roof, the goods at the door |
+| `xa_scrap_bath` | Bathhouse | Scrap: civic | a hammam: the changing hall under a panel dome set with rings of glass eyes, two smaller eyed domes over the hot rooms, the furnace and its chimney, a girder porch, a pool |
 
 Each has three variants (`o.v`): the pattern and paints of the panel courses, the storeys and the crowns change.
 
@@ -76,7 +81,7 @@ The set is a package of the Xanadu kit, so it takes what the kit takes and write
 | Need | Taken from | How |
 |---|---|---|
 | registry, tags | `VERN` / `XA.def` (the kit's registry), read into `core/tags` on the sheet (`91t-xanadu-tags.js`), core/rand for the tag uid | every def registers its inspector volume (`vnReg`) before it is drawn; tags `culture: 'xanadu-scrap'`, `type`, `wealth`, `lit` |
-| randomness | the kit's builder contract: each builder opens with `reseed(33001 + k*10 + v)` (seed block 33000-33099); per-panel variation is `KRAND.hash` of (def, face, row, column), never the draw order | `KRAND.hash` where core/rand is on the page, else the reseeded `rng()` (the bundle without core/rand) |
+| randomness | the kit's builder contract: each builder opens with `reseed(33001 + k*10 + v)` (seed block 33000-33199); per-panel variation is `KRAND.hash` of (def, face, row, column), never the draw order | `KRAND.hash` where core/rand is on the page, else the reseeded `rng()` (the bundle without core/rand) |
 | materials | `core/materials` (the Ancients' `MAT.white` panel sheet, `MAT.verdigris`, `MAT.glass`, `MAT.pipe`) and the kit's `MAT.xPaint`, `MAT.xGold` | `87s-xs-mat.js` names kit items over them (prefix `xs`); one new geometry: the I-girder, and a box whose UVs show exactly one Ancient sheet |
 | doors and glass | core/door (`KDOOR`, `KGLASS`) through the kit's `vnDoor`, `xnDoorway`, `xnPane` | every door a locked leaf, every window glass over the room card: no dark voids |
 | the sheet's host | core/host, core/lod, core/atmos, core/water: the Xanadu page shell | the `scrap` target of `settlements/xanadu` |

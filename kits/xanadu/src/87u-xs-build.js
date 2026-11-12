@@ -1,5 +1,5 @@
-/* ================================================================= SCRAP XANADU: the buildings (seeds 33000-33099)
-   Ten defs, family rows "Scrap: ...", culture 'xanadu-scrap' (kits/xanadu/PLAN-SCRAP.md section 3). Each has three
+/* ================================================================= SCRAP XANADU: the buildings (seeds 33000-33199)
+   Fifteen defs, family rows "Scrap: ...", culture 'xanadu-scrap' (kits/xanadu/PLAN-SCRAP.md section 3). Each has three
    variants: the paint scheme (XS_SCHEMES), the course pattern, and the storeys or crowns change with o.v. The Xanadu body
    stays (the battered whitewash, the maroon twig band, pointed arches); the Ancients' panels, glazing, girders, cable and
    bronze take the place of the timber and the stone of the upper works. */
@@ -219,3 +219,106 @@ function buildXaScrapBridge(G,o){reseed(33091+(o.v|0));XS_SEED=33091+(o.v|0);con
  for(const z of[-1.12,1.12])kput('xsGirder',[x1,Y(1)+.55,z],null,[.09,1.0,.09],st);
  vnReg('Cable Bridge',0,0,12,12);vnFolk(0,4,2,6);}
 XA.def({key:'xa_scrap_bridge',name:'Cable Bridge',family:'Scrap: civic',tags:XS_TAG('infrastructure','civic'),w:25,d:8,h:14,fw:24.6,fd:4.6,nv:3,eye:[3,13,0,0],build:buildXaScrapBridge});
+
+/* ---------------------------------------------------------------- the guilds, the stores and the baths (the owner, 2026-11-11) */
+/* glass eyes set in a dome (the hammam's "elephant eyes"): ts the heights as fractions of the dome, ns how many at each */
+const XS_DOMER=[[0,1],[.1,1.06],[.26,1.12],[.44,1.08],[.62,.92],[.78,.66],[.9,.38],[.97,.14],[1,0]];   /* XDOME's radius by height */
+function xsDomeR(t){for(let i=1;i<XS_DOMER.length;i++){const a=XS_DOMER[i-1],b=XS_DOMER[i];if(t<=b[0])return a[1]+(b[1]-a[1])*(t-a[0])/(b[0]-a[0]);}return 0;}
+function xnXSEyes(x,y,z,r,H,ts,ns){const br=xC(XS.bronze);
+ ts.forEach((t,l)=>{const n=ns[l],rr0=r*xsDomeR(t)*.99;for(let i=0;i<n;i++){const a=(i+.5*(l%2))*TAU/n,p=[x+Math.sin(a)*rr0,y+H*t,z+Math.cos(a)*rr0];
+  kput('xsGlassDome',p,null,[.3,.24,.3]);kput('xsRing',[p[0],p[1]+.02,p[2]],qEuler(Math.PI/2,0,0),[.34,.34,.8],br);}});}
+
+/* ---------------------------------------------------------------- 11. Salvagers' Guildhall (the guild that quarries the hull) */
+function buildXaScrapGuildSalvage(G,o){reseed(33101+(o.v|0));XS_SEED=33101+(o.v|0);const V=xV(o),S=xsS(V),lit=xLit(),HX=-6,W=22,D=14,br=xC(XS.bronze);
+ const wash=xC(xPick(XPAL.wash)),dark=xC(XPAL.dark[0]),stone=xC(xPick(XPAL.stone));
+ const k=xnWall(HX,0,0,W,4,D,0,wash,'wash'),Wu=W*k-.2,Du=D*k-.2;xnBand(HX,4,0,W*k,D*k,0,.45,null,{gold:true});
+ xnDoorway(HX,0,D/2,0,2.6,3.2,{c:dark});for(const s of[-1,1])xnXSWin(HX+s*6,1.1,D/2-.12,0,1.4,1.8,{S,arch:true,lit});
+ const top=xnXSBlock(HX,4.45,0,Wu,6,Du,0,{S,pat:'quoin',win:{rows:[1,2],every:2},lit});xnXSRoof(HX,top,0,Wu+.6,Du+.6,0,.3,S);
+ /* the portico: four dressed girders two storeys tall, a pediment of panels carrying the guild's sign, a panel in a ring */
+ const pz=D/2+2.4;for(const u of[-6,-2,2,6])xnXSCol(HX+u,0,pz,8,0,{S,s:.42});
+ xnXSBeam([HX-7,pz],[HX+7,pz],8.5,{S,h:.55});vB('xsShellB',HX,8.0,(D/2+pz)/2+.2,14.4,.3,pz-D/2+.8,0,xC(S.a).multiplyScalar(.85));
+ vB('xsShellB',HX,8.5,pz,14.4,1.8,.4,0,xC(S.b));kput('xsRing',[HX,9.4,pz+.26],null,[.75,.75,2],br);
+ vB('xsPanel',HX,9.12,pz+.24,1.0,.56,.06,0,xC(S.a));for(const a of[-1,1])for(const b of[-1,1])vBall('xsBall',HX+a*.4,9.4+b*.18,pz+.3,.05,br);   /* the sign: one whole sheet and its four fasteners */
+ vB('xsShellB',HX,10.3,pz,8,.4,.4,0,xC(S.frame[0]));vB('xsShellB',HX,10.7,pz,3.6,.4,.4,0,xC(S.frame[1]));xnXSFinial(HX,11.1,pz,1.2);
+ /* the monitor: a long lantern of glass down the roof, the hall's daylight */
+ const L=Wu-4,my=top+.3,nm=Math.round(L/1.2);vB('vPlaster',HX,my,0,L-.1,1.3,2.7,0,lit?xC(XS.room):IZ_ROOMC);
+ for(const s of[-1,1]){vB('xsGlassB',HX,my,s*1.4,L,1.3,.05,0);vB('xsGlassB',HX+s*L/2,my,0,.05,1.3,2.8,0);for(let i=0;i<=nm;i++)vPst('xsBronzeC',HX-L/2+L*i/nm,my,s*1.42,.04,1.3,br);}
+ vB('xsShellB',HX,my+1.3,0,L+.4,.18,3.3,0,xC(S.b));
+ /* the panel yard: whole sheets stacked on bearers, sorted by skin, under a girder gantry with its trolley and a sheet on the hook */
+ const YX=12;xnPave(YX,-2,13,12,0,stone,2.4);
+ [-4,-1.6,.8,3.2].forEach((x,i)=>{const it=i%2?'xsPanelV':'xsPanel',nl=8+Math.floor(xsU(11,i,0)*7);
+  for(const z of[-.9,.9])kput('xsGirderX',[YX+x,.15,-2+z],null,[1.5,.3,.2],xC(S.steel));
+  for(let j=0;j<nl;j++)vB(it,YX+x,.3+j*.09,-2,1.2,.07,2.4,0,xC(0xffffff).multiplyScalar(.9+.1*xsU(12,i,j)));});
+ for(const x of[-5.5,5.5])for(const z of[-5,1])xnXSCol(YX+x,0,z,7,0,{S,s:.36});
+ for(const z of[-5,1])xnXSBeam([YX-5.5,z],[YX+5.5,z],7.4,{S});for(const x of[-5.5,5.5])xnXSBeam([YX+x,-5],[YX+x,1],7.4,{S});xnXSBeam([YX-5.5,-2],[YX+5.5,-2],7.4,{S,h:.5});
+ vB('xsBronzeB',YX+1.5,6.45,-2,1,.45,.8,0,br);beam('xsCable',[YX+1.5,6.45,-2],[YX+1.5,3.55,-2],.015,.015,xC(XS.cable));vBall('xsBall',YX+1.5,3.5,-2,.14,br);
+ vB('xsPanel',YX+1.5,2.2,-2,2.4,1.2,.07,0,xC(S.a));
+ vnReg("Salvagers' Guildhall",HX,0,12,12);vnReg("Salvagers' Guildhall — panel yard",YX,-2,7,8);vnFolk(HX,D/2+5,3,4);vnFolk(YX,4,2,3);}
+XA.def({key:'xa_scrap_guild_salvage',name:"Salvagers' Guildhall",family:'Scrap: guilds and stores',tags:XS_TAG(['civic','industry'],'civic'),w:36,d:22,h:14,fw:35,fd:20,nv:3,eye:[-4,24,-4,0],build:buildXaScrapGuildSalvage});
+
+/* ---------------------------------------------------------------- 12. Merchants' Guildhall (a hall of glazed bays under a glass dome) */
+function buildXaScrapGuildHall(G,o){reseed(33111+(o.v|0));XS_SEED=33111+(o.v|0);const V=xV(o),S=xsS(V),lit=xLit(),W=18,D=15;
+ const wash=xC(xPick(XPAL.wash)),dark=xC(XPAL.dark[0]),stone=xC(xPick(XPAL.stone));
+ vB('vStone',0,0,0,W+2,.6,D+2,0,stone);xnFlight(0,0,D/2+1+1.36,0,4,.6,'vStone',stone);
+ const k=xnWall(0,.6,0,W,3.8,D,0,wash,'wash'),Wu=W*k-.2,Du=D*k-.2;xnBand(0,4.4,0,W*k,D*k,0,.5,null,{gold:true});
+ xnDoorway(0,.6,D/2,0,2.4,3.0,{c:dark});for(const s of[-1,1])xnXSCol(s*1.7,.6,D/2+.5,3.2,0,{S,s:.26});
+ kput('xArcP',[0,3.8,D/2+.5],null,[3.6,1.0,.2],xC(S.frame[1]));
+ for(const s of[-1,1])xnXSWin(s*5.5,1.6,D/2-.12,0,1.2,1.8,{S,arch:true,lit});
+ const top=xnXSBlock(0,4.9,0,Wu,6.6,Du,0,{S,pat:XS_PATS[(V+3)%4],sh:3.3,win:{rows:[1,2],every:2,faces:[1,2,3]},lit});
+ for(let s=0;s<2;s++)for(const x of[-5,0,5])xnXSBay(x,4.9+s*3.3+.5,Du/2+.08,0,2.8,2.2,.9,S,lit);
+ xnXSRoof(0,top,0,Wu+.6,Du+.6,0,.3,S);
+ xnXSLantern(0,top+.3,0,3.0,2.2,{n:12,dome:'glass',lit});
+ for(const a of[-1,1])for(const b of[-1,1])xnXSPavilion(a*(Wu/2-1.5),top+.3,b*(Du/2-1.5),1.1,2.0,S,lit);
+ vnReg("Merchants' Guildhall",0,0,10,19);vnFolk(0,D/2+5,4,4);}
+XA.def({key:'xa_scrap_guild_hall',name:"Merchants' Guildhall",family:'Scrap: guilds and stores',tags:XS_TAG(['civic','market/shop'],'civic'),w:20,d:21,h:19,fw:20,fd:17,nv:3,eye:[4,30,0,3],build:buildXaScrapGuildHall});
+
+/* ---------------------------------------------------------------- 13. Granary (bins of verdigris panels on a floor on girder stilts) */
+function buildXaScrapGranary(G,o){reseed(33121+(o.v|0));XS_SEED=33121+(o.v|0);const V=xV(o),S=xsS(V),br=xC(XS.bronze),st=xC(S.steel),DY=2.4,n=V===1?3:4,R=2.1,L=n*5;
+ const stone=xC(xPick(XPAL.stone));
+ /* the stilts, each under a bronze rat-guard (the staddle's cap), the girder bearers, the deck */
+ for(let i=0;i<=n*2;i++)for(const z of[-3,3]){const x=-L/2+i*L/(n*2);vB('vStone',x,0,z,.7,.3,.7,0,stone);kput('xsGirder',[x,.3+(DY-.3)/2,z],null,[.3,DY-.3,.3],st);kput('xsBronzeOct',[x,DY-.6,z],null,[.55,.08,.55],br);}
+ for(const z of[-3,3])xnXSBeam([-L/2-.3,z],[L/2+.3,z],DY,{S});vB('xsShellB',0,DY,0,L+1,.25,7.6,0,xC(S.a).multiplyScalar(.85));
+ /* the bins: drums of verdigris panels in bronze bands, panel caps, a bronze hatch to the gallery */
+ for(let i=0;i<n;i++){const x=-L/2+5*(i+.5),y0=DY+.25,t=xnXSDrumFace(x,y0,0,R,6,{S,item:'xsPanelV',pat:V===2?'band':null});
+  xnXSDome(x,t,0,R*1.03,'panel',{S,rise:.55,ribs:8,fin:1.0});vB('xsBronzeB',x,y0+.3,R+.08,.9,1.2,.06,0,br);}
+ xnXSRail([-L/2-.5,3.75],[L/2+.5,3.75],DY+.25,{S});xnXSRail([-L/2-.5,-3.75],[L/2+.5,-3.75],DY+.25,{S});
+ xnFlight(L/2+.5+5.44,0,2.0,Math.PI/2,1.4,DY+.25,'vStone',stone);
+ vnSacks(-L/2+2,0,5.6,5);vnSacks(L/2-3,0,5.6,3);vnCrate(1,0,5.8,.9,.3);
+ vnReg('Granary',0,0,L/2+2,DY+9);vnFolk(0,6.5,2,4);}
+XA.def({key:'xa_scrap_granary',name:'Granary',family:'Scrap: guilds and stores',tags:XS_TAG(['infrastructure','farm'],'civic'),w:32,d:13,h:12,fw:22,fd:8,nv:3,build:buildXaScrapGranary});
+
+/* ---------------------------------------------------------------- 14. Storehouse (the town's food and goods store) */
+function buildXaScrapStore(G,o){reseed(33131+(o.v|0));XS_SEED=33131+(o.v|0);const V=xV(o),S=xsS(V),lit=xLit(),W=22,D=11,br=xC(XS.bronze);
+ const wash=xC(xPick(XPAL.wash)),dark=xC(XPAL.dark[0]);
+ const k=xnWall(0,0,0,W,4.2,D,0,wash,'wash'),Wu=W*k-.2,Du=D*k-.2;xnBand(0,4.2,0,W*k,D*k,0,.45);
+ for(const x of[-7,0,7]){xnDoorway(x,0,D/2,0,2.4,3.0,{c:dark});for(const s of[-1,1])xnXSCol(x+s*1.6,0,D/2+2.2,3.4,0,{S,s:.24});
+  vB('xsShellB',x,3.4,D/2+1.1,4,.16,2.4,0,xC(S.b));}
+ const top=xnXSBlock(0,4.65,0,Wu,3,Du,0,{S,pat:'stripe',win:{rows:[1,2],every:4},lit});xnXSRoof(0,top,0,Wu+.6,Du+.6,0,.3,S);
+ /* the cowls: the store breathes through a row of bronze ventilators on panel drums */
+ for(let i=0;i<5;i++){const x=-8+i*4;kput('xsDrumW',[x,top+.3,0],null,[.36,.9,.36],xC(S.a));kput('xsBulbB',[x,top+1.2,0],null,[.46,.55,.46],br);}
+ /* the hoist: a girder jib over the middle door, its block and its line */
+ kput('xsGirderX',[0,top-.6,Du/2+1.0],qEuler(0,Math.PI/2,0),[2.2,.4,.25],xC(S.steel));vBall('xsBall',0,top-.95,Du/2+1.8,.16,br);
+ beam('xsCable',[0,top-1.0,Du/2+1.8],[0,1.2,Du/2+1.8],.012,.012,xC(XS.cable));vnSacks(0,0,D/2+1.9,2);
+ for(let i=0;i<4;i++)vnBarrel(-9.5+i*.9,0,D/2+3.4,.36,.95,xC(0x8a6a48));vnSacks(-4,0,D/2+3.2,4);vnCrate(4.4,0,D/2+3,1.0,.2);vnCrate(5.6,0,D/2+3.3,.9,-.2);vnSacks(9,0,D/2+3.1,3);
+ vnReg('Storehouse',0,0,11,10);vnFolk(0,D/2+5,3,6);}
+XA.def({key:'xa_scrap_store',name:'Storehouse',family:'Scrap: guilds and stores',tags:XS_TAG(['infrastructure','market/shop'],'civic'),w:24,d:17,h:10,fw:22.4,fd:11.4,nv:3,build:buildXaScrapStore});
+
+/* ---------------------------------------------------------------- 15. Bathhouse (a hammam: domes of panels set with glass eyes) */
+function buildXaScrapBath(G,o){reseed(33141+(o.v|0));XS_SEED=33141+(o.v|0);const V=xV(o),S=xsS(V),lit=xLit(),CZ=1,HZ=-9;
+ const wash=xC(xPick(XPAL.wash)),dark=xC(XPAL.dark[0]);
+ /* the changing hall: a battered cube, a drum, a great panel dome set with three rings of glass eyes */
+ const k=xnWall(0,0,CZ,12,6,12,0,wash,'wash'),cw=12*k;xnBand(0,6,CZ,cw,cw,0,.5);xnXSRoof(0,6.5,CZ,cw+.4,cw+.4,0,.3,S);
+ kput('xsDrumW',[0,6.8,CZ],qEuler(0,Math.PI/16,0),[4.6,1.2,4.6],xC(S.b));
+ const R=4.5,H=R*.95;xnXSDome(0,8.0,CZ,R,'panel',{S,ribs:12});xnXSEyes(0,8.0,CZ,R,H,[.32,.55,.74],[14,12,8]);
+ xnDoorway(0,0,CZ+6,0,2.2,2.8,{c:dark});kput('xArcP',[0,2.85,CZ+6.05],null,[3.0,1.1,.16],xC(S.frame[1]));
+ for(const s of[-1,1])xnXSWin(s*3.6,1.4,CZ+6-.15,0,1.1,1.7,{S,arch:true,lit,kind:'frosted'});
+ /* the porch: dressed girders, a lintel, a panel canopy */
+ const az=CZ+7.8;for(const x of[-4.5,-1.5,1.5,4.5])xnXSCol(x,0,az,3.6,0,{S,s:.3});xnXSBeam([-5,az],[5,az],4.0,{S});
+ vB('xsShellB',0,3.95,(CZ+6+az)/2+.15,10.4,.25,az-CZ-6+.9,0,xC(S.a).multiplyScalar(.85));xnXSRail([-5,az+.2],[5,az+.2],4.2,{S});
+ /* the hot rooms behind: a long low block under two smaller eyed domes; the furnace and its chimney at the back */
+ vB('xWashB',0,0,HZ,16,4.4,8,0,wash);xnBand(0,4.4,HZ,16,8,0,.4);xnXSRoof(0,4.8,HZ,16.4,8.4,0,.3,S);
+ for(const s of[-1,1]){kput('xsDrumW',[s*4,5.1,HZ],qEuler(0,Math.PI/16,0),[2.5,.6,2.5],xC(S.b));xnXSDome(s*4,5.7,HZ,2.4,'panel',{S,ribs:8});xnXSEyes(s*4,5.7,HZ,2.4,2.28,[.4,.68],[8,5]);}
+ vB('xWashB',5.5,0,HZ-5.5,4,3,3,0,wash);vnChimney(5.5,3,HZ-5.5,5,.4,false);vB('vStone',2.6,0,HZ-6,1.4,1.0,1.6,0,xC(XS.stone));
+ xnXSPool(0,0,CZ+12,7,3.6,0,{S});
+ vnReg('Bathhouse',0,CZ,7,15);vnReg('Bathhouse — hot rooms',0,HZ,8.5,9);vnFolk(0,CZ+15.5,3,4);}
+XA.def({key:'xa_scrap_bath',name:'Bathhouse',family:'Scrap: civic',tags:XS_TAG('civic','civic'),w:18,d:34,h:15,fw:16.4,fd:30,nv:3,eye:[3,27,0,3],build:buildXaScrapBath});
