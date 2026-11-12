@@ -9,9 +9,9 @@ const ok=(c,m)=>{console.log((c?'ok   ':'FAIL ')+m);if(!c)fails++;};
 const P=C.plan(),S=P.stats,F=P.frame,D=P.dim;
 console.log(JSON.stringify(S));
 ok(JSON.stringify(P,(k,v)=>typeof v==='function'?undefined:v)===JSON.stringify(C.plan(),(k,v)=>typeof v==='function'?undefined:v),'the plan is deterministic');
-ok(S.pop>26000&&S.pop<34000,'about 30 000 people as built ('+S.pop+')');
-ok(Math.abs(S.hull-440)<1,'the sail hangs 440 m, from the lip to its keel under the Nock ('+S.hull.toFixed(0)+' m)');
-ok(F.w(0)>=F.w(.5)&&F.w(.5)>F.w(1)&&F.d(1)<F.d(0)*.5,'the sail is widest at the crown and narrows to its keel');
+ok(S.pop>22000&&S.pop<30000,'about 26 000 people as built ('+S.pop+')');
+ok(Math.abs(S.hull-402)<1,'the tower stands 402 m, from the lip down through the Nock deck ('+S.hull.toFixed(0)+' m)');
+ok(F.w(0)>F.w(1)&&[0,.25,.5,.75,1].every(t=>F.d(t)>1.4*2*F.w(t)),'the tower is a slender wedge, deeper than wide at every height and widest at the crown');
 // unique ids over every record list
 const lists=['storeys','stays','drums','galleries','helio','rotors','saucers'],ids=new Set();let n=0;
 for(const l of lists)for(const r of P[l]){ids.add(r.id);n++;}
@@ -21,8 +21,7 @@ let bad=0;for(const k of P.storeys){const w=F.w(k.t);if(w>D.BAY.w/2-8)bad++;}
 ok(bad===0,'the Bow stands clear of the bay\'s side walls at every storey ('+bad+' too wide)');
 ok(Math.abs(F.back-(-D.BAY.d+D.HULL.gap))<1e-9,'the Bow\'s back stands '+D.HULL.gap+' m off the bay\'s back wall');
 // the prow bows: deepest below the middle, then tapers
-const dz=[0,.1,.2,.3,.4,.5,.6,.7,.8,.9,.95].map(t=>F.d(t)),dm=Math.max(...dz),tm=dz.indexOf(dm)/10;
-ok(dm>dz[0]*1.02&&tm>=.2&&tm<=.5&&dz[10]<dz[0]*.5,'the prow bows out below the top and narrows to the keel ('+dz.map(v=>v.toFixed(0)).join(' ')+')');
+ok(F.d(0)-F.d(1)<25&&F.d(1)>0,'the prow runs nearly plumb down the tower ('+F.d(0).toFixed(0)+' m deep at the crown, '+F.d(1).toFixed(0)+' at the Nock)');
 // every anchor and string stay runs in front of the rock: sampled along its length, south of the face
 let inRock=[];for(const st of P.stays){if(st.a==='mast')continue;for(let i=1;i<20;i++){const f=i/20,p=st.a.map((v,j)=>v+(st.b[j]-v)*f);
  const inBay=Math.abs(p[0])<D.BAY.w/2;if(!inBay&&p[2]<F.faceZ(p[0],p[1])-1){inRock.push(st.id);break;}}}
@@ -37,7 +36,7 @@ const str=P.stays.filter(s=>s.fan==='string');ok(str.every(s=>Math.abs(s.b[0])>D
 const Q=P.quiver;ok(Math.abs(Q.x)-Q.W/2>D.BAY.w/2+10&&Q.top<P.nock.y-P.nock.th-20,'the lower hull hangs on the face west of the bay, under the Nock');
 // THE SPINE: one column from the keel to the foot, its runs joined, a terrace at every turn, in the bay or before it
 const SPN=P.spine,nd=SPN.nodes;
-ok(Math.abs(nd[0][1]-F.tip)<3&&Math.abs(nd[nd.length-1][1]-(F.FL+D.TERM.h))<1e-6,'the Spine runs from the sail\'s keel to the terminus roof');
+ok(Math.abs(nd[0][1]-F.tip)<3&&nd[0][1]<P.nock.y-P.nock.th+.5&&Math.abs(nd[nd.length-1][1]-(F.FL+D.TERM.h))<1e-6,'the Spine runs from the sail\'s keel to the terminus roof');
 ok(SPN.runs.some(r=>r.slope)&&SPN.runs.some(r=>!r.slope)&&SPN.runs.every((r,i)=>i===0||r.slope!==SPN.runs[i-1].slope||!r.slope),'the Spine alternates plumb runs and sloping ones');
 let gap=0;for(let i=1;i<P.drums.length;i++){const a=P.drums[i-1],b=P.drums[i];const g=a.at[1]-(b.at[1]+b.h);if(g<-.01||g>D.SPINE.necks+6.01)gap++;}
 ok(gap===0,'every drum sits on a neck or a terrace on the one below it ('+P.drums.length+' drums)');

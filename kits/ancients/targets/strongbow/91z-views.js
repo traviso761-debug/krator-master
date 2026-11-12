@@ -10,10 +10,12 @@ const SBW=(S,x,y,z)=>[S.x+x,y,S.z+z];
 const SBHERO=S=>SBW(S,-780,560,1480).concat(SBW(S,0,500,0));
 const VIEWS={
  'Strongbow':                    SBHERO(SBA),
- // square on from the valley floor: the sail in its bay, the Spine coming down under it, the strata
+ // square on from the valley floor: the tower in its bay, the Spine coming down under it, the strata
  'From the valley':              SBW(SBA,0,180,2600).concat(SBW(SBA,0,460,0)),
  // over the lip from the plateau's edge: the crown, its pool, the mast, the arc ramp, the heliostats
  'The crown':                    (function(S){return SBW(S,260,S.crown.y+160,330).concat(SBW(S,0,S.crown.y,S.back+60));})(SBA),
+ // the landing pad on the Nock's deck before the tower's prow, the stays fanning down to the deck's wings (the owner's reference)
+ 'The landing pad':              (function(S){const L=S.landing||[0,520,120];return SBW(S,L[0]-160,L[1]+90,L[2]+190).concat(SBW(S,L[0]+10,L[1]+60,L[2]-60));})(SBA),
  // the Nock from the east: the string fans coming down to its wing tips, the pads
  'The Nock':                     (function(S){return SBW(S,520,S.nock.y+120,420).concat(SBW(S,0,S.nock.y,60));})(SBA),
  // up the east flank from under the Nock: the stays fanning to the rock, the teal fin

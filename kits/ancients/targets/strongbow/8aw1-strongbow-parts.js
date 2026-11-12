@@ -74,8 +74,8 @@ function sbBow(X){const P=X.P,F=X.F,D=X.D,NK=P.storeys.length,top=F.top,tip=F.to
  // the keel's soffit: a shallow glazed dish where the Spine's head meets it
  {const y=tip,t=F.t(y),pnt=[0,tip-6,P.bow.keelZ];for(const s of [-1,1])SBG.put(X,'glass',gridSurface((u,v)=>{const q=F.flank(t,s,u);return[lerp(q[0],pnt[0],v),lerp(y,pnt[1],v),lerp(q[1],pnt[2],v)];},NS*2,2,{uS:3,vS:2}),true);
   SBG.put(X,'glass',gridSurface((u,v)=>{const w=F.w(t);return[lerp(-w,w,u)*(1-v),lerp(y,pnt[1],v),lerp(F.back,pnt[2],v)];},4,2,{uS:3,vS:2}),true);}
- // the back, against the bay's wall
- SBG.put(X,'shade',gridSurface((u,v)=>{const y=yAt(v),w=F.w(F.t(y));return[lerp(-w,w,u),y,F.back];},4,40,{uS:8,vS:30}),true);
+ // the back, standing free of the bay's wall
+ SBG.put(X,X.dd?'whiteW':'white',gridSurface((u,v)=>{const y=yAt(v),w=F.w(F.t(y));return[lerp(-w,w,u),y,F.back];},4,40,{uS:8,vS:30}),true);
  // the prow fin: white, 7 m proud of the prow, full height
  SBG.put(X,'white',gridSurface((u,v)=>{const y=yAt(v);return[0,y,F.prowZ(F.t(y))+7*u*(1-v*v*.6)];},2,80,{uS:1,vS:60}),true);
  // white bands every 28 storeys (a refuge floor), standing proud 1.2 m
@@ -92,10 +92,10 @@ function sbCrown(X){const P=X.P,F=X.F,D=X.D,C=P.crown,w0=F.w(0),d0=F.d(0),kx=1+C
  SBG.put(X,ow,gridSurface((u,v)=>{const o=out(u);return[o[0],lerp(C.y0,C.y1+1.4,v),o[1]];},120,1,{uS:60,vS:1}),true);
  // the pool: a glazed pad at the deck's front; the pavilion behind it
  const pl=C.pool;SBG.put(X,X.dd?'poolR':'pool',gridSurface((u,v)=>[lerp(-pl.size[0]/2,pl.size[0]/2,u),C.y1+.25,pl.at[2]+lerp(-pl.size[1]/2,pl.size[1]/2,v)],2,2,{}),true);
- const pv=[F.back+30,F.back+62];
- for(const z of pv)SBG.put(X,'res',gridSurface((u,v)=>[lerp(-40,40,u),lerp(C.y1,C.y1+12,v),z],4,1,{uS:80/25.6,vS:12/25.6}),true);
- for(const s of [-1,1])SBG.put(X,'res',gridSurface((u,v)=>[s*40,lerp(C.y1,C.y1+12,v),lerp(pv[0],pv[1],u)],2,1,{uS:32/25.6,vS:12/25.6}),true);
- SBG.put(X,ow,gridSurface((u,v)=>[lerp(-44,44,u),C.y1+12.4,lerp(pv[0]-4,pv[1]+4,v)],2,2,{uS:4,vS:2}),true);
+ const pv=[F.back+30,F.back+62],pw=Math.min(40,w0*.5);
+ for(const z of pv)SBG.put(X,'res',gridSurface((u,v)=>[lerp(-pw,pw,u),lerp(C.y1,C.y1+12,v),z],4,1,{uS:2*pw/25.6,vS:12/25.6}),true);
+ for(const s of [-1,1])SBG.put(X,'res',gridSurface((u,v)=>[s*pw,lerp(C.y1,C.y1+12,v),lerp(pv[0],pv[1],u)],2,1,{uS:32/25.6,vS:12/25.6}),true);
+ SBG.put(X,ow,gridSurface((u,v)=>[lerp(-pw-4,pw+4,u),C.y1+12.4,lerp(pv[0]-4,pv[1]+4,v)],2,2,{uS:4,vS:2}),true);
  // the mast: a raked blade tapering to a needle; in the ruin kinked over above KINK
  const M=P.mast,ax=[M.head[0]-M.foot[0],M.head[1]-M.foot[1],M.head[2]-M.foot[2]],L=M.h;
  let bendAt=null,BM=null;if(X.RU){const k=X.RU.mast,K=[M.foot[0]+ax[0]*k.kink,M.foot[1]+ax[1]*k.kink,M.foot[2]+ax[2]*k.kink];
@@ -117,6 +117,11 @@ function sbCrown(X){const P=X.P,F=X.F,D=X.D,C=P.crown,w0=F.w(0),d0=F.d(0),kx=1+C
 
 // ---- the Nock: the deck at mid-height, its glazed front, its pads; the centre rides with the Bow -------------------
 function sbNock(X){const P=X.P,F=X.F,D=X.D,N=P.nock,gone=X.RU?new Set(X.RU.nockGone):null;
+ // the landing pad before the tower's prow: a glazed disc in a white rim, a ring and a cross of light strips (dark in the ruin)
+ {const L=P.landing,c=L.at;SBG.put(X,X.dd?'poolR':'pool',SBG.disc(c,0,L.r,c[1]+.3,48),true);
+  SBG.put(X,X.dd?'whiteW':'white',SBG.disc(c,L.r,L.r+3,c[1]+.35,48),true);SBG.put(X,X.dd?'whiteW':'white',SBG.cyl(c,L.r+3,c[1],c[1]+1.2,48),true);
+  if(!X.dd){SBG.put(X,'white',SBG.disc(c,L.r*.55,L.r*.62,c[1]+.4,48),true);
+   for(const a of [0,Math.PI/2])SBG.put(X,'white',gridSurface((u,v)=>{const o=lerp(-L.r*.5,L.r*.5,u),q=lerp(-1.2,1.2,v);return[c[0]+o*Math.cos(a)-q*Math.sin(a),c[1]+.42,c[2]+o*Math.sin(a)+q*Math.cos(a)];},2,1,{}),true);}}
  for(const part of N.parts){if(gone&&gone.has(part.id))continue;const bound=part.side===0,bk=x=>bound?F.back+1:-8;
   const g=(y,list,uS)=>SBG.put(X,list,gridSurface((u,v)=>{const x=lerp(part.x0,part.x1,u);return[x,y,lerp(bk(x),N.front(x),v)];},16,4,{uS:(part.x1-part.x0)/14,vS:6}),bound);
   g(N.y,'deck');g(N.y-N.th,'shade');

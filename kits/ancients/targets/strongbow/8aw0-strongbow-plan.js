@@ -1,16 +1,17 @@
 // ================================================================= STRONGBOW — the cliff arcology: the plan (records)
 // The Ancients' city hung down a cliff face. The site is the Oidong Valley's north-west wall at its west end, toward Qiblai (scale model
 // 5.1 px 1013,1585; the owner, 2026-11-11, after an earlier move to the east end, for which the design was first drawn). The owner's
-// answers: an 800 m hull for about 40 000 people (since the composition change, a sail and one Spine, about 29 000), standing in ruin
+// answers: an 800 m hull for about 40 000 people (since the owner's composition notes, a tower with a landing pad and one Spine, about 26 000), standing in ruin
 // on half its stays, the Sultanate below and the Order above, a showcase cliff with a cut bay (targets/strongbow/NOTES.md).
 //
 // THE FRAME   x east along the face, y up, z SOUTH (out of the rock); the valley floor y = floor (0 on the kit page), the face
 //             line z = 0 at the foot, battered back BATTER m by the lip (y = LIP). The plateau is north of the lip.
 // THE BAY     a notch quarried into the face, |x| < BAY.w/2, back wall z = -BAY.d, from the lip to the floor.
-// THE SAIL    the main hull (the Bow): a wedge in plan, its flat back against the bay's back wall, two flanks meeting in a sharp
-//             prow to the south. At height y (t = 0 at the lip, 1 at the keel) the half width w(t) and the depth d(t); a flank point
-//             at u (0 the back corner, 1 the prow) is [s w (1-u), back + d (1 - (1-u)^1.25)]. Widest at the crown, it narrows under
-//             the Nock to its keel.
+// THE TOWER   the main hull (the Bow; a sail until the owner's note of 2026-11-11): a slender wedge in plan standing free in the bay,
+//             its flat back GAP m off the back wall, two flanks meeting in a sharp prow to the south. At height y (t = 0 at the lip,
+//             1 at the foot) the half width w(t) and the depth d(t); a flank point at u (0 the back corner, 1 the prow) is
+//             [s w (1-u), back + d (1 - (1-u)^1.25)]. It runs from the crown down to the
+//             Nock, whose deck carries the landing pad before its prow.
 // THE NOCK    the deck at mid-height that spans the bay and runs into the rock on both sides; the string fans come down to its tips.
 // THE SPINE   one column of glazed drums and terraces from the keel to the foot (the owner, 2026-11-11), plumb runs alternating with
 //             runs that step out from the rock, a terrace at every turn; the lifts run inside it.
@@ -20,15 +21,15 @@
 // nothing. Metres.
 const STRONGBOW={};
 STRONGBOW.DIM={LIP:900,BATTER:30,STO:25.6/7,BAY:{w:320,d:90},
- HULL:{top:900,tip:460,W:260,D:230,BOW:.12,gap:4,LIT:20,NSEG:8},
- CROWN:{h:10,over:30,pool:[44,16]},MAST:{h:170,rake:12},RAMP:{p0:[-300,-34],c:[-270,170],p2:[-96,46],w:14,rise:10,pitch:26,back:[[-150,-230],[0,-260],[150,-230]]},
- NOCK:{y:520,th:22,over:40,wing:120,storeys:5},
+ HULL:{top:900,tip:498,W:110,D:170,gap:40,LIT:20,NSEG:8},
+ CROWN:{h:10,over:30,pool:[44,16]},MAST:{h:170,rake:12},RAMP:{p0:[-300,-34],c:[-260,190],p2:[-62,40],w:14,rise:10,pitch:26,back:[[-150,-230],[0,-260],[150,-230]]},
+ NOCK:{y:520,th:22,over:96,wing:120,storeys:5,landing:{r:30,at:.52}},
  STRING:{n:12,u:.45,y0:700,y1:880,x0:190,x1:275},
  ANCHORS:[{y:840,n:10,b0:790,b1:880},{y:740,n:10,b0:660,b1:780},{y:620,n:9,b0:540,b1:640}],SOCK:{x0:175,x1:320,u:.62},
  QUIVER:{x:-245,top:400,tip:150,W:100,D:80,n:7},
- // THE SPINE (the owner, 2026-11-11: 'one intermittently sloping column of drums and terraces' under the sail): nodes from the
+ // THE SPINE (the owner, 2026-11-11: 'one intermittently sloping column of drums and terraces'): nodes from the
  // keel to the foot, [x, y, z from the keel's centre]; plumb runs and runs that step out from the rock; a terrace at every turn
- SPINE:{r:36,neck:24,drum:26,necks:6,nodes:[[0,458,0],[0,410,0],[40,350,42],[40,290,42],[-34,230,86],[-34,170,86],[0,108,130],[0,36,130]],
+ SPINE:{r:36,neck:24,drum:26,necks:6,nodes:[[0,497,0],[0,430,0],[40,350,42],[40,290,42],[-34,230,86],[-34,170,86],[0,108,130],[0,36,130]],
   tr:[0,60,70,60,70,60,70],rotor:[2,4],arm:80,rr:26,pad:5,struts:[1,2]},
  GALL:{e:[180,330],w:[340,480],ys:[150,270,390],deep:14,storeys:5},
  PAD:{at:[300,-140],r:45},RIM:{x0:-200,x1:-800,z0:-50,z1:-86,h:28},
@@ -56,10 +57,10 @@ STRONGBOW.frame=function(o){o=o||{};const D=STRONGBOW.DIM,LIP=o.lip==null?D.LIP:
  F.ground=(x,z)=>FL+F.scree(x,z);
  // the hull's plan at t
  F.t=y=>(top-y)/(top-tip);
- // THE SAIL: widest at the crown, bowing out a little, narrowing under the Nock to its keel, where the Spine takes it
- F.blade=t=>1-.6*SB_SS(.75,1,t);
- F.w=t=>H.W/2*(1-.42*t)*F.blade(t);
- F.d=t=>H.D*(1+H.BOW*Math.sin(Math.PI*t))*(1-.2*t)*F.blade(t);
+ // THE TOWER: a slender wedge standing free in the bay, widest at the crown and tapering a little to the Nock, where it ends on
+ // the landing deck and the Spine takes it
+ F.w=t=>H.W/2*(1-.25*t);
+ F.d=t=>H.D*(1-.12*t);
  // a flank runs nearly straight from the back corner to the prow, a little convex: a sharp prow, not a round one
  F.flank=(t,s,u)=>[s*F.w(t)*(1-u),back+F.d(t)*(1-Math.pow(1-u,1.25))];
  F.prowZ=t=>back+F.d(t);
@@ -78,7 +79,7 @@ STRONGBOW.plan=function(o){o=o||{};const D=STRONGBOW.DIM,F=STRONGBOW.frame(o),S=
  const NK=Math.floor((F.top-F.tip)/ST);
  for(let i=0;i<NK;i++){const y0=F.top-(i+1)*ST,y1=y0+ST,t=F.t((y0+y1)/2),sl=STRONGBOW.slice(F,t);
   const lit=Math.min(sl.A,sl.P*H.LIT);P.storeys.push({id:'sb.k.'+i,i,y0,y1,t,A:sl.A,P:sl.P,lit,pop:Math.round(lit*D.SHARE/D.M2)});}
- P.bow={id:'sb.bow',top:F.top,tip:F.tip,back:F.back,storeys:NK,keelZ:F.back+F.d(1)*.42};
+ P.bow={id:'sb.bow',top:F.top,tip:F.tip,back:F.back,storeys:NK,keelZ:F.back+F.d(1)*.32};
  // the crown and the mast
  const C=D.CROWN,cy=F.top+C.h;
  P.crown={id:'sb.crown',y0:F.top,y1:cy,over:C.over,pool:{id:'sb.crown.pool',at:[0,cy,F.prowZ(0)-40],size:C.pool}};
@@ -98,7 +99,9 @@ STRONGBOW.plan=function(o){o=o||{};const D=STRONGBOW.DIM,F=STRONGBOW.frame(o),S=
   const front=x=>{const q=Math.min(1,Math.abs(x)/wx);return 40+(zc-40)*(1-q*q);};
   P.nock={id:'sb.nock',y:F.FL+N.y*F.k,th:N.th,wx,zc,storeys:N.storeys,front,
    parts:[{id:'sb.nock.w',x0:-wx,x1:-D.BAY.w/2,side:-1},{id:'sb.nock.c',x0:-D.BAY.w/2,x1:D.BAY.w/2,side:0},{id:'sb.nock.e',x0:D.BAY.w/2,x1:wx,side:1}],
-   pads:[-1,1].map(s=>({id:'sb.nock.pad.'+(s<0?'w':'e'),at:[s*(D.BAY.w/2+60),F.FL+N.y*F.k,30],size:[60,30]}))};}
+   pads:[-1,1].map(s=>({id:'sb.nock.pad.'+(s<0?'w':'e'),at:[s*(D.BAY.w/2+60),F.FL+N.y*F.k,30],size:[60,30]}))};
+  // the landing pad: a glazed disc on the deck before the tower's prow, where the flyers come in (the owner's reference)
+  const lz=lerpSB(F.prowZ(t),zc,N.landing.at);P.landing={id:'sb.landing',at:[0,P.nock.y,lz],r:N.landing.r};}
  // the stays: the string (hull's upper flank to the Nock's wing tips) and the anchors (hull's flank to sockets in the face)
  const hullPt=(y,s,u)=>{const t=F.t(y),q=F.flank(t,s,u);return[q[0],y,q[1]];};
  for(const s of [-1,1]){const G=D.STRING,sn=s<0?'w':'e';
@@ -175,7 +178,7 @@ STRONGBOW.ruin=function(P){const D=P.dim,R=D.RUIN,F=P.frame,S=P.seed,h=(a,b,c,e)
  for(const k of P.storeys)for(const s of [-1,1])for(let j=0;j<D.HULL.NSEG;j++)if(h(220,k.i,s+2,j)<R.skin)RU.skin.push('sb.sk.'+k.i+'.'+s+'.'+j);
  // the mast kinked over to the south-east
  RU.mast={kink:R.mastKink,bend:R.mastBend,dir:[.7071,0,.7071]};
- // the Spine broken at its head: as the sail leaned it tore off the top run and the first terrace, which fell; the rest stands
+ // the Spine broken at its head: as the tower leaned it tore off the top run and the first terrace, which fell; the rest stands
  // (the Sultanate lives in its lower drums), and the gap parts the town from the Order's house above
  for(const d of P.drums)if(d.run<R.spineBreak){RU.spineGone.push(d.id);const x=(d.i?1:-1)*(150+60*h(231,d.i)),z=200+60*h(232,d.i);
   RU.debris.push({id:d.id+'.fallen',kind:'drum',at:[x,F.ground(x,z),z],r:d.r,ry:h(233,d.i)*Math.PI,roll:h(234,d.i)*.6});}

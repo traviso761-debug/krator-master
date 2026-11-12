@@ -24,7 +24,8 @@ function buildStrongbow(scene,gx,gz,d){reseed(9040+d);KOFF=[gx,0,gz];
   const B=T.add({id:pre+P.id,'class':'building',kind:'arcology',key:'ancients:strongbow',name:'Strongbow',at:[gx,F.FL,gz],r:600,h:P.stats.height,
    tags:{culture:'ancient',types:['dwelling-multi','civic','infrastructure','transport'],state:ST,landmark:true}});
   const part=(id,kind,at,o)=>T.child(B.id,Object.assign({'class':'part',kind,key:id,at:W(at)},o||{}));
-  part(P.bow.id,'hull',[0,F.tip,F.back+F.d(.3)/2],{h:F.top-F.tip,tags:{role:'main hull',state:ST}});
+  part(P.bow.id,'hull',[0,F.tip,F.back+F.d(.3)/2],{h:F.top-F.tip,tags:{role:'the tower',state:ST}});
+  part(P.landing.id,'landing-pad',P.landing.at,{r:P.landing.r});
   part(P.crown.id,'deck',[0,P.crown.y1,F.back+F.d(0)/2],{tags:{role:'crown'}});
   part(P.mast.id,'mast',P.mast.foot,{h:P.mast.h});
   part(P.ramp.id,'ramp',P.ramp.pts[0].slice(0,3));
@@ -51,7 +52,7 @@ function buildStrongbow(scene,gx,gz,d){reseed(9040+d);KOFF=[gx,0,gz];
    for(const b of RU.order.banners)T.child(B.id,{'class':'fixture',kind:'banner',key:b.id,at:W(b.at),tags:{culture:'order'}});}}
 
  REGISTER({name:'Strongbow ('+STATE(d)+')',x:0,z:0,r:620,y:F.FL,h:P.stats.height});
- REGISTER({name:'Strongbow — the Bow',x:0,z:F.back+F.d(.3)/2,r:F.w(0),y:F.tip,h:F.top-F.tip});
+ REGISTER({name:'Strongbow — the tower',x:0,z:F.back+F.d(.3)/2,r:F.w(0),y:F.tip,h:F.top-F.tip});
  REGISTER({name:'Strongbow — the crown and the mast',x:0,z:F.back+40,r:110,y:F.top,h:P.mast.head[1]-F.top});
  REGISTER({name:'Strongbow — the Nock',x:0,z:P.nock.zc/2,r:P.nock.wx,y:P.nock.y-P.nock.th,h:P.nock.th+2});
  {const st=P.drums.filter(r=>!gone.has(r.id)),xs=st.map(r=>r.at[0]),zs=st.map(r=>r.at[2]),y0=Math.min(...st.map(r=>r.at[1])),y1=Math.max(...st.map(r=>r.at[1]+r.h));
@@ -211,7 +212,7 @@ function buildStrongbow(scene,gx,gz,d){reseed(9040+d);KOFF=[gx,0,gz];
  meshMerged(Lst.poolR,MAT.sbPoolR,G);
  meshMerged(Lst.grass,dd?MAT.whGrassR:MAT.whGrass,G);
  SB_SITE[d]={x:gx,z:gz,d,lip:LY,floor:F.FL,top:F.top,tip:F.tip,back:F.back,prow:F.prowZ(0),bayW:D.BAY.w,
-  nock:{y:P.nock.y,zc:P.nock.zc,wx:P.nock.wx},crown:{y:P.crown.y1},mast:{foot:P.mast.foot,head:X.mastHead},
+  nock:{y:P.nock.y,zc:P.nock.zc,wx:P.nock.wx},landing:P.landing.at,crown:{y:P.crown.y1},mast:{foot:P.mast.foot,head:X.mastHead},
   spine:P.spine.nodes,pad:P.pad.at,term:{z1:P.term.z1,y1:P.term.y1},
   quiver:{x:P.quiver.x,top:P.quiver.top,tip:P.quiver.tip},galleries:P.galleries.map(g=>({x:(g.x0+g.x1)/2,y:g.y0})),
   stats:P.stats,gone:RU?RU.gone.length:0,town:RU?RU.town.houses.length:0,tags:KTAGS.strongbow?KTAGS.strongbow.audit():null};
