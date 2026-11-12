@@ -1,7 +1,7 @@
 // node settlements/isle-demo/tests/test-isle-sim.js [minutes] — the isle host on core/simulation (P7b) without a browser.
 // Runs the city page's [G data] half (dist/isle-city.plan.js), plans both towns, declares them on core/simulation
 // (src/40-45: one walking layer, a settlement and an economy each) and runs a world day minute by minute (or `minutes`),
-// then checks for each town what verify.py --assert checks (src/45-isle-sim-checks.js): every lot of a census trade a
+// then checks for each town what verify.py --assert checks (core/region/45-region-sim-checks.js): every lot of a census trade a
 // place, every resident a home and every worker a job in the town, the stocks map finding every place from its lot, the
 // food made, hauled and eaten with nothing short; each check with a negative. EVERY=360 prints the books every 6 hours.
 // Build first (python3 build.py).

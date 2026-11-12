@@ -6,7 +6,8 @@
     python3 tools/scale-model/cut_site.py --list            # the regions and sites in openworld/SITES.json
 
 openworld/SITES.json names each region's sites by their ids in the model's settlement list (model/src/60-settlements.js,
-the 5.1 canvas) and the model regions (by id) that join the cut. Each site becomes a square of its reach_km half-size round
+the 5.1 canvas) and the model regions (by id) that join the cut. A site the model does not list yet is a SITES.json row
+with "model": false and its own px, py (an outpost the owner placed before the model takes it). Each site becomes a square of its reach_km half-size round
 its pixel (2 km a pixel), each named region its own polygon, and each corridor ({from, to, width_km: 10} in the region's\n`corridors`) a strip from one site's pixel to another's, so the roads between sites have ground. The cut is their union:
   - the first polygon is written as the cut's named region into source/regions.json (with the model's regions, so the
     biome overlays are the model's own), with kind 'tool' so it is never read as a biome;
@@ -41,6 +42,12 @@ def polygons(S, region):
     """the cut's polygons: [{name, map_px, kind: 'site'|'region', ref}] in SITES.json's order (sites, then regions)"""
     G = S['regions'][region]
     sett = {s['id']: s for s in XR.load_model_defaults('settlements')}
+    # a site not on the model's list yet (SITES.json row with "model": false and its own px, py): planned before the model
+    # takes it, so a region can hold an outpost the owner has placed but the scale model does not show
+    for sid in G['sites']:
+        row = S['sites'].get(sid, {})
+        if sid not in sett and row.get('model') is False and row.get('px') is not None:
+            sett[sid] = {'id': sid, 'name': row['name'], 'type': row.get('type', 'outpost'), 'px': row['px'], 'py': row['py']}
     regs = {r['id']: r for r in XR.load_model_defaults('regions')}
     out = []
     for sid in G['sites']:

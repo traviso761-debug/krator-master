@@ -20,7 +20,7 @@ need work, and four more need small checks. Godthrone is better off.
 | **Abyssal savannah 1, the rim slope** | built | At px 1021,350: -179 -> -1,063 m (Aw -> XV) | Small: the same climb is about 5 px east. Move the site to about 1026,350, then check the two risers against the rim's new benches (`e abyss`, -1,600 to -1,150 and -550 to -100 m) |
 | **Outlands 5, the Nursery Plateau** | planned | At px 1269,130: 3,783 -> 1,676 m, BWk -> Cfa, rain 31 -> 1,553 mm | The dry plateau is now a wet graben floor. Re-site it on remaining BWk ground in N Outlands; the other Outlands stations are within 320 m |
 | **Farside: kelp coast, front, strand** | built | +262, +247, -246 m. All stay inside their plan bands, but relief at the front rises from 6.9 to 8.2 km | Check the heights, and add the tsunami's ground and Farport's plateau (below) |
-| **The Rift: highland, plateau** | built | Highland -234 m, rain 2,384 -> 1,788 mm. Cube's Plateau now has 1,200-1,600 m fault cliffs (30 km relief 1,590 -> 2,090 m). River 3's mouth -1,436 -> -1,858 m | Check the far field and the horizon; the stations themselves hold (plateau -17 m). `rift/stations/bake_far.py` needs a fresh cut |
+| **The Rift: highland, plateau** | built | Highland -234 m, rain 2,384 -> 1,788 mm. The Pile's plateau (Cube's) now has 1,200-1,600 m fault cliffs (30 km relief 1,590 -> 2,090 m). River 3's mouth -1,436 -> -1,858 m | Check the far field and the horizon; the stations themselves hold (plateau -17 m). `rift/stations/bake_far.py` needs a fresh cut |
 
 ## Small checks
 

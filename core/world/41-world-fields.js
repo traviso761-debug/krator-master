@@ -252,10 +252,13 @@ function scarpOf(v,o){const rise=o.U-o.L,t=clamp((v-o.L)/rise,0,1),ts=smooth(o.c
 // legs of a switchback and the roads at a junction each keep their level unless their banks truly clash (then the
 // middle). Min and max of continuous bounds stay continuous; the bounds fade out between RREACH-20 and RREACH. A
 // settlement's own ground is its build's: a road stops just outside the settlement's footprint (the routing trims it).
-const RDC=1024,RREACH=150,BANK=.8;let RSEG=null,RHASH=null;const RD={w:0,d:1e9,hw:0,e:0,lo:0,hi:0};
-function buildRoads(){const R=(WORLD_DATA.roads&&WORLD_DATA.roads.roads)||[],S=[];
- for(const r of R){const P=r.pts;for(let i=0;i<P.length-1;i++)S.push(P[i][0],P[i][1],P[i+1][0],P[i+1][1],P[i][2],P[i+1][2],r.hw);}
- RSEG=new Float64Array(S);RHASH=new Map();const n=RSEG.length/7;
+// A road's SPANS (42b-world-bridges.js: [[i0, i1]], its segments i0..i1-1 on a bridge's deck) keep their distance (the
+// flora keeps off them) but neither shape nor paint the ground under them: the river runs on in its channel below.
+const RDC=1024,RREACH=150,BANK=.8;let RSEG=null,RHASH=null,RSPAN=null;const RD={w:0,d:1e9,hw:0,e:0,lo:0,hi:0,span:false};
+function buildRoads(){const R=(WORLD_DATA.roads&&WORLD_DATA.roads.roads)||[],S=[],SP=[];
+ for(const r of R){const P=r.pts,sp=r.spans||[];for(let i=0;i<P.length-1;i++){S.push(P[i][0],P[i][1],P[i+1][0],P[i+1][1],P[i][2],P[i+1][2],r.hw);
+   let on=0;for(let k=0;k<sp.length;k++)if(i>=sp[k][0]&&i<sp[k][1]){on=1;break;}SP.push(on);}}
+ RSEG=new Float64Array(S);RSPAN=new Uint8Array(SP);RHASH=new Map();const n=RSEG.length/7;
  for(let s=0;s<n;s++){const o=s*7,x0=Math.min(RSEG[o],RSEG[o+2])-RREACH,x1=Math.max(RSEG[o],RSEG[o+2])+RREACH,z0=Math.min(RSEG[o+1],RSEG[o+3])-RREACH,z1=Math.max(RSEG[o+1],RSEG[o+3])+RREACH;
   for(let iz=Math.floor(z0/RDC);iz<=Math.floor(z1/RDC);iz++)for(let ix=Math.floor(x0/RDC);ix<=Math.floor(x1/RDC);ix++){const k=(ix+32768)*65536+(iz+32768);
    let a=RHASH.get(k);if(!a){a=[];RHASH.set(k,a);}a.push(s);}}
@@ -265,12 +268,13 @@ function buildRoads(){const R=(WORLD_DATA.roads&&WORLD_DATA.roads.roads)||[],S=[
 W.addRoad=function(r){if(!WORLD_DATA.roads)WORLD_DATA.roads={format:'krator-openworld-roads',version:1,roads:[]};WORLD_DATA.roads.roads.push(r);buildRoads();return WORLD_DATA.roads.roads.length;};
 // the roads' bounds at (x,z): fills RD {lo, hi: the envelopes, w: how much they apply (0 beyond reach), d, hw and e of
 // the nearest segment}. bound(h) is the ground h held between them
-function roadAt(x,z,h,o){o.w=0;o.d=1e9;o.hw=0;o.e=h;o.lo=-1e9;o.hi=1e9;if(!RHASH)return o;
+function roadAt(x,z,h,o){o.w=0;o.d=1e9;o.hw=0;o.e=h;o.lo=-1e9;o.hi=1e9;o.span=false;if(!RHASH)return o;
  const L=RHASH.get((Math.floor(x/RDC)+32768)*65536+(Math.floor(z/RDC)+32768));if(!L)return o;
  for(let i=0;i<L.length;i++){const s=L[i]*7,ax=RSEG[s],az=RSEG[s+1],dx=RSEG[s+2]-ax,dz=RSEG[s+3]-az,l2=dx*dx+dz*dz;
   let t=l2>0?((x-ax)*dx+(z-az)*dz)/l2:0;t=t<0?0:t>1?1:t;const ex=ax+dx*t-x,ez=az+dz*t-z,d=Math.sqrt(ex*ex+ez*ez);
   if(d>RREACH)continue;const hw=RSEG[s+6],e=lerp(RSEG[s+4],RSEG[s+5],t),b=Math.max(0,d-hw-1.5)*BANK;
-  if(d<o.d){o.d=d;o.hw=hw;o.e=e;}
+  const sp=RSPAN[L[i]]===1;if(d<o.d){o.d=d;o.hw=hw;o.e=e;o.span=sp;}
+  if(sp)continue;   /* a bridge's deck: no bank, no fill under it */
   if(e+b<o.hi)o.hi=e+b;if(e-b>o.lo)o.lo=e-b;}
  if(o.d<1e9)o.w=1-smooth(RREACH-20,RREACH,o.d);
  return o;}
@@ -280,7 +284,7 @@ W.roadD=(x,z)=>{roadAt(x,z,0,RD);return RD.d<1e9?RD.d-RD.hw:1e9;};
 W.road=(x,z)=>{const h=H(x,z,0,null,true);roadAt(x,z,h,RD);return RD.d<1e9?{d:RD.d,hw:RD.hw,w:RD.w,e:RD.e}:null;};
 // how much of a road's carriageway covers (x,z), 0..1, prefiltered for a grid of spacing sp (m): a far terrain chunk
 // draws a road narrower than its spacing as a faint band rather than losing it between vertices
-W.roadCover=(x,z,sp)=>{if(!RHASH)return 0;roadAt(x,z,0,RD);if(RD.d>RREACH)return 0;const e=Math.max(.6,sp*.5);
+W.roadCover=(x,z,sp)=>{if(!RHASH)return 0;roadAt(x,z,0,RD);if(RD.d>RREACH||RD.span)return 0;const e=Math.max(.6,sp*.5);
  return clamp((RD.hw-RD.d)/e+.5,0,1)*Math.min(1,2*RD.hw/Math.max(sp,1e-3));};
 
 // ---------------------------------------------------------------- the towns: a built settlement's own ground
@@ -353,7 +357,7 @@ function H(x,z,minWave,P,nr,nt){minWave=minWave||0;
  if(!nt&&TOWNS.length){townAt(x,z);if(TW.w>0)h=lerp(h,TW.h,TW.w);}
  // the roads, last: the carriageway is level at the road's height whatever the detail did (a road stops outside a
  // town's footprint, and was routed over the land with the towns in it, so it meets the town's ground at its edge)
- let rw=0;if(!nr&&RHASH){roadAt(x,z,h,RD);if(RD.w>0){h=bound(h,RD);rw=RD.d<=RD.hw+1.5?1:0;}}
+ let rw=0;if(!nr&&RHASH){roadAt(x,z,h,RD);if(RD.w>0){h=bound(h,RD);rw=RD.d<=RD.hw+1.5&&!RD.span?1:0;}}
  if(P){P.base=b;P.rel=rel;P.cd=cd;P.cut=cut;P.cw=cw;P.co=co;P.road=rw;SKEYS.forEach(k=>P[k]=S[k]);}
  return h;}
 W.H=(x,z,minWave)=>H(x,z,minWave||0,null);

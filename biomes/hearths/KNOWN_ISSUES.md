@@ -7,9 +7,10 @@ is read in place by `biomes/oidong` (its station 3) and has no page here.
 
 ## The Cave of Crystals (stations/crystals, 2026-11-03)
 
-- [ ] **Textures owed.** The selenite is `stone.alabaster` (massive gypsum) tinted pale green and the iron stain is `rock.gossan`
-  toned down: stand-ins until `mineral.selenite` and `rock.limestone.ironstained` are delivered (`core/materials/PROMPTS-NEEDED.md`
-  section 36). Wire them as `crystal.selenite` and `rock.ironstain` in `materials.json`, re-pack, rebuild, verify.
+- [x] **Textures delivered and wired (2026-11-10).** `crystal.selenite` is `mineral.selenite` (full colour, up the crystal's length, 2 m),
+  `rock.ironstain` is `rock.limestone.ironstained` (full colour at the stand-in's brightness, 3 m); `core/materials/PLAN.md` "Delivered
+  2026-11-10". The iron-stained set came a little off its prompt (rust over most of the face, little grey-buff limestone, no white gypsum
+  crusts): usable, since the stain is the point; a redo is the owner's call.
 - [ ] **The hold's massing is proposed.** Which chambers a loj takes (the three cooler ones round the feeders), the shelves, the night
   road and the way down are this station's proposal (PLAN.md section 18); the settlement kit and the owner decide. The records are
   `CAVE.HOLD` (export: the panel's "export hold", or `_api.hold()`).

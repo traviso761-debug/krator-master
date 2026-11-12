@@ -1847,6 +1847,32 @@ period (three diamonds by two bands, about 1.6 m). Wired in `kits/islanders` as 
 weaver walls (`63-ie-trade.js`); `28-is-paint.js` draws the twill as its stand-in without the pack. Reuse: any patterned
 plaited mat, floor mat or wall hanging in black, ochre and red.
 
+#### Delivered 2026-11-10 and processed: the Cave of Crystals, the Cut's face, Farside's bench, the umbrella plate, the scorched panel (6 images, WebP)
+
+Saved by the owner in `Downloads/krator-textures-2026-11-10/`, named by id (1254 px, the selenite 2000 px: under the prompts' 2048, so
+nothing was upscaled: the pipeline writes 1024 px sets; each `meta.json`'s `size_note`). Batches `tools/textures/batches/owner-2026-11-10.json`
+(5 surfaces, `process.py`) and `owner-2026-11-10-cards.json` (1 cut-out on magenta, `cards.py`, anchor none); each `meta.json` carries the
+full prompt and the source's sha1. Contact sheets: `core/materials/demo/delivery-2026-11-10/`. A seventh image (`unmatched-black-stone`)
+matches no prompt and is not installed: the owner was asked what it is for.
+
+| id | scale | wired | slot (what it replaces) |
+|---|---|---|---|
+| `mineral.selenite` | 2 m, up the crystal's length | `biomes/hearths` station `crystals` | `crystal.selenite`, full colour (`stone.alabaster` tinted pale green) |
+| `rock.limestone.ironstained` | 3 m | `biomes/hearths` station `crystals` | `rock.ironstain`, full colour at mean .42 (`rock.gossan` toned down) |
+| `rock.megabreccia.polished` | 2 m (the face packs it at 3 m) | `biomes/cut` station `face` | `ground.breccia`, a grey detail at mean .7, read through the core hex-cell dither (`kdither`: the owner saw the tile repeat from afar) (`rock.megabreccia`'s weathered face) |
+| `ground.bench` | 3 m, grooves across | `biomes/farside` (every page; the bench is station 1's) | `ground.bench`, the ground's eighth layer over the wet rock, weight `FIELD.bench` times the rock's (`ground.rock` whitened by the vertex tint, now dropped where the set is packed) |
+| `card.umbrella.plate` | the whole sheet | `biomes/abyssal-savannah` | `plate`, keep 0, mean .7, no cell (one `card.acacia` sprig stretched over the disc) |
+| `metal.scorched` | 1.5 m, tintable grey | **not wired** | the Motor Vehicles kit's `scorched` slot exists only on `claude/ancient-vehicles-935f93` (and the valley branches): wire it there at their merge, and delete its PROMPTS-NEEDED entry (their section 36) then |
+
+- **Look.** Selenite and the polished breccia take a faint normal (`normal_strength` .35 and .25): their luminance is colour, not relief,
+  and the default normal made a satin crystal and a polished slab read bumpy. The breccia has two clasts with a hairline crack (the prompt
+  said none): kept. **`rock.limestone.ironstained` came a little off its prompt**: rust over most of the face, little of the grey-buff
+  limestone, no white gypsum crusts; usable, since the stain is the point, so a redo is the owner's call. The bench's grooves turn with
+  KGROUND's hex tiles (rot .6) rather than all running one way (`biomes/farside/KNOWN_ISSUES.md`).
+- **Keying.** `card.umbrella.plate`'s rim sprays are blended into the magenta in the source: the default key (spill all) left them mauve,
+  unmix pink; `spill: 'vlahos'` (`key_gain` 1.3) leaves them a dry tan. 60% of the sheet is over alpha 0.5.
+- **Still owed:** `rock.megabreccia` for nhighlands' crater wall (PROMPTS-NEEDED.md section 32): the polished slab is not it.
+
 #### Delivered 2026-11-03 and processed: the Gills, High Rift, nwbay, nhighlands, ringisles, the rift rim, Copper Glacier (15 images, 1254 px WebP)
 
 Saved by the owner in `Downloads/krator-delivery-2026-11-03/`, named by id. Batches `tools/textures/batches/owner-2026-11-03.json` (10 surfaces,

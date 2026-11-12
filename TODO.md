@@ -28,6 +28,12 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 
 ## Ride along with the next all-builds rebuild
 
+- **core/hamlet: a work camp** (2026-11-11, the oidong-highrift region's Vein Camp; the owner: "mostly miners"). A camp's people
+  are nearly all at work (no families), so `openworld/oidong-highrift/src/48-world-site.js` defines a row of its own,
+  `KHAMLET.CULTURES['xanadu-camp']` (the `xanadu` row with workShare .9, household 4, a cookhouse, store and tally house for
+  services). Give `KHAMLET.census` a `camp` option (or a row's `camp` overrides, taken when `spec.camp`) and pass it through
+  `core/world/48s-world-sites.js` from a hamlet's spec, then drop that row. core/hamlet reaches 56 pages (`tools/reach.py`).
+
 - **core/world: a kit on several biome overlays** (2026-11-11, the Iziz cluster's open-world region): `core/world/41-world-fields.js`
   matches a `WORLD_KITS` entry's `overlay` to one biome name (`k.overlay===name`). Let it take a list (`Array.isArray(k.overlay)?
   k.overlay.indexOf(name)>=0:...`), then drop the shim in `openworld/iziz-cluster/src/47-world-kits.js` (`WORLD_KITS.findIndex`, which

@@ -1,0 +1,69 @@
+# core/region: the region host
+
+The code that turns a census, its towns and their villages into economies on `core/simulation`. It was the isle demo's
+page code (`settlements/isle-demo/src/40-49`, under `ISLE.*`). Phase S0 of `core/simulation/PROPOSAL-LONGSONG-PINNACLE.md`
+lifted it here (the owner, 2026-11-11), so a second economy runs on the same code: Longsong's valley.
+
+## How a page takes it
+
+```js
+KREGION.use(H);        // the page's host object: every part loaded after this runs on it at once
+// ... then the core/region fragments, by path, in the order below
+```
+
+- The isle demo's host is `ISLE`: `settlements/isle-demo/src/39-isle-region.js` calls `KREGION.use(ISLE)` before the
+  parts.
+- `settlements/isle-demo/build.py` (`CITY_DATA_JS`) and `openworld/isle-demo/build.py` (`ISLE_DATA_JS`) list the parts by
+  path, interleaved with the page's own fragments exactly where the page's 40-49 stood (47 and 47k, 47x, 47y are still
+  the page's: the canoe line, the colony, the sea expeditions). So every part runs where it ran before, on the same
+  object, and the isle's tests give the same results.
+- `KREGION.install(H2)` runs every part again on another host.
+- Inside the lifted parts the host is named `RH`: `ISLE.` was renamed `RH.`. It is not `H`, because the isle code's own
+  functions declare locals named `H`, which shadowed the host on the first try.
+
+A host carries its culture as data: `H.TUNE.sim`. That is the isle's `15-isle-tune.js`, or Longsong's
+`settlements/longsong/src/15-ls-tune.js`. `H.TUNE.sim.culture` names the culture's own literals, with the isle's values
+when it is absent (S0 step B):
+
+| Key | Default (the isle) | Read by |
+|---|---|---|
+| `faction`, `factionName` | `islanders`, "The Ring Sea Islanders" | 40 |
+| `keys.farm`, `keys.orchard`, `keys.quay` | `ie-farm`, `ie-farm-poor`, `ie-quay` | 40, 47h |
+| `hamletRow` | `islander_east` (a spec's own `row` first) | 47h |
+| `names` | `islander` (core/hamlet's name list) | 47f |
+| `tag` | `islander` (the guild's tag culture) | 47c |
+| `herders.perHousehold` (in the tune's `herders`) | 5 | 47n |
+
+## The parts
+
+| Fragment | What |
+|---|---|
+| `00-region-core.js` | `KREGION`: `use`, `part`, `install`, `parts` |
+| `40-region-sim.js` | the binding (`simInit`), the places from a city plan (`simPlaces`), `simDeclare`, `simRun` |
+| `41-region-nav.js` | the walking graph from a core/city plan's ways |
+| `42-region-people.js` | roles by job and age, households mixed, demography |
+| `43-region-items.js` | the items, households and shops |
+| `44-region-economy.js` | each town's producers, warehouses, carts, governor |
+| `45-region-sim-checks.js` | the checks per town |
+| `46-region-stocks.js` | the stocks panel's id map |
+| `47b`, `47c`, `47f`, `47h`, `47m`, `47n`, `47r`, `47u` | building and upkeep, crime, founding, the hamlets, money, herders, refugees, unrest |
+| `48-region-week.js` | the week's books and checks |
+| `49-region-govern.js` | the governor's and spoilage rules |
+| `50-region-valley.js` | **a valley at the abstract level** (S3): settlements declared from a plain spec, not a city plan; works as their own stores; the people eating by the hour; tithe roads; a road's `want` and `most` passed to SIM.trade (a long road needs a want that covers the gap between its carriers); the transfers. Longsong's valley runs on it |
+
+## Still the isle's
+
+The isle demo's tests still run its `plan.js`. Some couplings are still isle-only, but each is inert where its tune
+section or route is absent:
+- the lakatoi in 47h (`SIM.TRADE.routes.lakatoi`);
+- the foreign ships' account in 47m (`money.foreign`);
+- the two-town week in 48 (`simWeek`'s `other`);
+- salt as the keeping good in 49.
+
+Lift them into the tune when a culture needs them otherwise.
+
+## Tests
+
+- **The isle demo:** `node settlements/isle-demo/tests/test-isle-*.js` (they run its `dist/isle-city.plan.js`), and
+  `settlements/isle-demo/tools/export-sim.js` for the golden books.
+- **Longsong's valley:** `node settlements/longsong/tests/test-ls-economy.js`. It runs a year by the hour, about 6 s.

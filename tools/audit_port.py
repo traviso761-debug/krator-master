@@ -150,7 +150,7 @@ def fragments(build):
                         p = os.path.join(dp, f)
                         out.append((os.path.relpath(p, os.path.join(ROOT, 'core')).replace(os.sep, '/'), p))
         return out
-    if build in ('kits/catalog', 'kits/motor-vehicles'):   # their registries are top-level files (read by other builds' bundles)
+    if build in ('kits/catalog', 'kits/motor-vehicles', 'kits/ancient-transit'):   # their registries are top-level files (read by other builds' bundles)
         d = os.path.join(ROOT, build)
         for f in sorted(os.listdir(d)):
             if f.endswith('.js') and not f.startswith('.') and not f.startswith('three'):
