@@ -202,3 +202,7 @@ Girder carry no size declarations, so there is nothing there to sync. The catalo
       cords carry up to 23, and Highlands' interiors went from 462 meshes to 580). `Batch.flush` now merges the panels that
       share a material (one canvas map each) into one mesh, the transforms baked in (Dhelv: 1746 panels in 152 meshes).
       `batch.textured` is still the list of placed panel meshes until the flush (Girder and Mav's Refuge read it).
+
+- [x] **The sheet's lamps overflowed the shader's uniforms** (2026-11-11, after the Tungang and the Fellgang pieces met in the
+  merge on `claude/loj-twenny-059a5e`: "FRAGMENT shader uniforms count exceeds MAX_FRAGMENT_UNIFORM_VECTORS(1024)" on both GPU
+  lanes). `src/90-sheet.js` keeps at most 24 of the pieces' PointLights on, the nearest the camera, re-picked every half second.

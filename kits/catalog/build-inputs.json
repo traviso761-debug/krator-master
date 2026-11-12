@@ -22,7 +22,7 @@
     "kits/catalog/krator-master-furniture-dalab.js": "b10c7416a46f718ecf6a394624e8d9183debef1368f47c3a9896293faa706e9a",
     "kits/catalog/krator-master-furniture-eastabyss.js": "c954ea72a5a724eda8543e81d2d49a6aed07bbc58e3e4ee7953c187e7a1fa5f1",
     "kits/catalog/krator-master-furniture-eternian.js": "bbbea71651baf5596b2d3ab3206e4d39383779ee44fc8de53755d7246473df07",
-    "kits/catalog/krator-master-furniture-fellgang.js": "1ee782b43dd12f1700744187dfb694da346600f4c38a749ad40d60d48308e475",
+    "kits/catalog/krator-master-furniture-fellgang.js": "8dbcc3f21911f52c909717857db3f4a9ea7fe9e083f88a4c4c41530924e7e5bc",
     "kits/catalog/krator-master-furniture-generic-fruit.js": "858ded98e076a6c6f96b5350718a514da4ecf5b161bcaed0805b837999b5dba5",
     "kits/catalog/krator-master-furniture-generic-goods.js": "1436ca9a4c6d8556cb1c6e1647150f5ec7f80c8ab0ded0ba54638805b6c750de",
     "kits/catalog/krator-master-furniture-generic.js": "990b05b8404c67ab960f6649babc8143c738ea600a04c0c22564296fa7786ea4",
@@ -54,7 +54,7 @@
     "kits/catalog/krator-master-furniture-zeijani.js": "407280d6f0bf33842c9d8114d1435d795d7659fc800f8298adb2bdc75feebf2f",
     "kits/catalog/krator-master-furniture.js": "09773ee896c9a5a9acd256dcf385c62a9e40e49e74f2b0d424749f10ee1905c2",
     "kits/catalog/src/00-head.html": "d9e9d85686c150ca6b68f53cc77e49bf804c168fff8304e6d8346cd4c6129810",
-    "kits/catalog/src/90-sheet.js": "3994b697bde55ecd744c24131926444bd74dc8a755d394452fc16f5c2291d37f",
+    "kits/catalog/src/90-sheet.js": "035710c4afb8dc651dbf10fd00898366ad026ad34bb818f2213fab891860228f",
     "kits/catalog/src/92-hover.js": "caf2efd0b8e1c16d53f072e89f0cbc4382093bfc94178a3e0fcb06b73d4458dd",
     "kits/catalog/src/93-polygon.js": "999d4f1f1dcc7b8fcf5b48631b6365c4b117c670dfbc35156732a0e88f5be2e1",
     "kits/catalog/src/99-tail.html": "fc837380d9f5351ff0a5776c8e1f523bb2107106f2ac860e0e76535377ec5b78",
@@ -69,12 +69,12 @@
     "tools": "2d2fdaca850a104a2a2c553313ccb3ad18dc6bc48cb554c8c714fc1ca39607bf"
    },
    "outputs": {
-    "kits/catalog/build-manifest.json": "6c9f0d1d138ebe07c7e493356cae5aab1771357aa09542540aad967945e0c9d9",
-    "kits/catalog/dist/catalog.html": "dec018cd62e34dbbf9649b2b5128eb2a8018860f2ea18f42d18fc38ddd860d00"
+    "kits/catalog/build-manifest.json": "4d673ee654a27a11be0234510d8db740e5375c966912dbb5e1eb1865ca4acfe5",
+    "kits/catalog/dist/catalog.html": "253c6771bed94a46094b704e75080d4f3508a2081db6629181a92bf0207a033b"
    },
    "outputs_raw": {
-    "kits/catalog/build-manifest.json": "9063f9d145210793dbbfbefafa0aacdcce001941cdf53dcf73a1a483de1fddd6",
-    "kits/catalog/dist/catalog.html": "dec018cd62e34dbbf9649b2b5128eb2a8018860f2ea18f42d18fc38ddd860d00"
+    "kits/catalog/build-manifest.json": "96e143326ac0a3348fd65f10617da0aec9f182fe4ac44689791a2c52ab8048d6",
+    "kits/catalog/dist/catalog.html": "253c6771bed94a46094b704e75080d4f3508a2081db6629181a92bf0207a033b"
    }
   }
  }
