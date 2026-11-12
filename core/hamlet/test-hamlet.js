@@ -174,5 +174,71 @@ ok('a key the host has no box for is placed as its declared box and marked pendi
   ok('the felling order is nearest the works first, ties by the tree\'s own id (never by what loaded first)', order === 'cab', order !== 'cba');
 }
 
+
+// ---- the farmland (14-hamlet-farmland.js): the land estimate, the parcels in crop and fallow round a farming village
+{
+  const need = H.farmNeed(8135);
+  ok('8,135 people need about 610 ha in crop, 2,440 farmed with the fallow, some 814 hands (settlements/isle-demo PLAN.md section 11)',
+    Math.abs(need.inCrop - 610.1) < 0.2 && Math.abs(need.farmed - 2440.5) < 0.2 && need.hands === 814,
+    H.farmNeed(8135, { perPerson: 0.5 }).inCrop > 4000 && H.farmNeed(8135, { fallow: 0 }).farmed < need.farmed, JSON.stringify(need));
+  const crops = [{ crop: 'taro', kind: 'field', w: 2 }, { crop: 'rice', kind: 'field', w: 3, maxSlope: 0.06 }, { crop: 'banana', kind: 'orchard', w: 1 }];
+  const toy = { ok: (x, z) => x > -500, h: (x, z) => 50 + (z > 800 ? (z - 800) * 0.3 : 0), slope: (x, z) => z > 800 ? 0.1 : 0.02 };
+  const avoid = (x, z, r) => Math.hypot(x - 100, z - 100) < 150 + r;
+  const Fm = H.farmland({ id: 'test-farm', world: 7, centre: { x: 100, z: 100 }, hands: 140, crops, ground: toy, avoid });
+  const ha = Fm.parcel * Fm.parcel / 1e4, share = Fm.inCropHa / Fm.farmedHa;
+  ok('140 hands get their 105 ha in crop (to a parcel), a quarter of the farmed land with three fallow years (' + Fm.parcels.length + ' parcels, ' + Fm.inCropHa + ' ha in crop of ' + Fm.farmedHa + ')',
+    !Fm.capped && Fm.inCropHa >= 105 && Fm.inCropHa < 105 + ha + 1e-9 && Math.abs(share - 0.25) < 0.05,
+    H.farmland({ id: 'test-farm', world: 7, centre: { x: 100, z: 100 }, hands: 140, crops, ground: toy, avoid, rMax: 600 }).capped === true, Fm.target + ' ha wanted');
+  const bad = Fm.parcels.filter(p => p.x <= -500 || Math.hypot(p.x - 100, p.z - 100) < 150 || (p.crop === 'rice' && p.z > 800));
+  ok('no parcel on refused ground, on the village itself, or of a crop its slope refuses (rice on the steep north)', bad.length === 0 && Fm.parcels.some(p => p.z > 800) && Fm.parcels.some(p => p.crop === 'rice'),
+    H.farmland({ id: 'test-farm', world: 7, centre: { x: 100, z: 100 }, hands: 140, crops, ground: { ok: toy.ok } }).parcels.some(p => Math.hypot(p.x - 100, p.z - 100) < 150), bad.slice(0, 3).map(p => p.id).join(', '));
+  const by = {}; Fm.parcels.forEach(p => { by[p.crop] = (by[p.crop] || 0) + 1; });
+  ok('every crop of the list is grown, the heavier more (' + JSON.stringify(by) + ')', by.taro > by.banana && by.rice > 0 && by.banana > 0, !(by.banana > by.taro));
+  const same = (p, q) => q.block[0] === p.block[0] && q.block[1] === p.block[1];
+  ok('one block of nine parcels shares one rotation year, and one crop where its ground takes the same crops', Fm.parcels.every(p => Fm.parcels.every(q => !same(p, q) || (q.rot === p.rot && (q.crop === p.crop || (p.z > 800) !== (q.z > 800))))),
+    Fm.parcels.some(p => Fm.parcels.some(q => !same(p, q) && q.rot !== p.rot)));
+  ok('the same spec gives the same farmland; another world seed another', H.farmlandHash(H.farmland({ id: 'test-farm', world: 7, centre: { x: 100, z: 100 }, hands: 140, crops, ground: toy, avoid })) === H.farmlandHash(Fm),
+    H.farmlandHash(H.farmland({ id: 'test-farm', world: 8, centre: { x: 100, z: 100 }, hands: 140, crops, ground: toy, avoid })) !== H.farmlandHash(Fm));
+  /* the holdings: a farmhouse on every field, a track to each (the owner, 2026-11-09) */
+  const Fh = H.farmland({ id: 'test-farm', world: 7, centre: { x: 100, z: 100 }, hands: 140, crops, ground: toy, avoid, farms: { key: 'ie-farm', n: 13, box: { w: 33, d: 30.5, h: 13 } }, from: { x: 100, z: -80 } });
+  const yards = Fh.parcels.filter(p => p.state === 'yard'), byFarm = {}; Fh.parcels.forEach(p => { if (p.state !== 'yard') byFarm[p.farm] = (byFarm[p.farm] || 0) + 1; });
+  ok('thirteen farmsteads out on the land, each on its own yard parcel, every parcel a holding\'s, no holding empty (' + Fh.holdings.map(h => h.parcels).join(', ') + ' parcels)',
+    Fh.records.length === 13 && yards.length === 13 && Fh.holdings.length === 13 && Fh.holdings.every(h => h.parcels > 5) && Fh.parcels.every(p => p.farm != null) && Fh.records.every(r => yards.some(y => y.x === r.x && y.z === r.z)),
+    H.farmland({ id: 'test-farm', world: 7, centre: { x: 100, z: 100 }, hands: 140, crops, ground: toy, avoid }).records.length === 0);
+  const close = []; Fh.records.forEach((a, i) => Fh.records.forEach((b, j) => { if (j > i && Math.hypot(a.x - b.x, a.z - b.z) < H.FARM.farmGap) close.push(a.id + ' ' + b.id); }));
+  ok('no two farmhouses within ' + H.FARM.farmGap + ' m of each other', close.length === 0, H.FARM.farmGap > 60, close.join('; '));
+  /* every farmhouse is reached from the root by the tracks: walk the tree */
+  const reach = new Set(['100,-80']), key = p => Math.round(p[0]) + ',' + Math.round(p[1]); let grew = true;
+  while (grew) { grew = false; for (const t of Fh.tracks) { const a = key(t.pts[0]), b = key(t.pts[1]); if (reach.has(a) && !reach.has(b)) { reach.add(b); grew = true; } } }
+  const doors = Fh.records.map(r => [r.x + Math.sin(r.ry) * (30.5 / 2 + 3), r.z + Math.cos(r.ry) * (30.5 / 2 + 3)]);
+  ok('a track to every farmhouse, the tracks one tree from the village (' + Fh.tracks.length + ' tracks)', Fh.tracks.length === 13 && doors.every(d => reach.has(key(d))),
+    !doors.every(d => new Set(['100,-80']).has(key(d))));
+  ok('the farmhouses are in the hash (a farmhouse moved changes it)', H.farmlandHash(Fh) !== H.farmlandHash(Fm), (() => { const G2 = JSON.parse(JSON.stringify(Fh)); G2.records[0].x += 1; return H.farmlandHash(G2) !== H.farmlandHash(Fh); })());
+  ok('the farmland\'s hull holds every parcel; its area in km2 is the farmed land', Fm.poly.length >= 3 && Fm.parcels.every(p => KHAMLET.hull(Fm.poly.concat([[p.x, p.z]])).length === Fm.poly.length) && Math.abs(Fm.cap - Fm.farmedHa / 100) < 0.01,
+    KHAMLET.hull(Fm.poly.concat([[9000, 9000]])).length !== Fm.poly.length);
+}
+
+// ---- the landing (30 spec.landing): a coastal village's quay on the shore, facing the sea, a lane to it
+{
+  const Lv = H.village(spec('lumber', { landing: { x: 520, z: 300, ux: 0.866, uz: 0.5 } })), q = Lv.records.find(r => r.role === 'landing'), ln = Lv.lanes.find(l => l.landing);
+  ok('a coastal village has a quay with its cargo shed on the shore, facing the sea, and a lane to it', !!q && q.key === 'ie-quay' && Math.abs(Math.atan2(0.866, 0.5) - q.ry) < 1e-6 && Math.hypot(q.x - 520, q.z - 300) < 20 && !!ln && Math.hypot(ln.pts[1][0] - q.x, ln.pts[1][1] - q.z) < 30 && Lv.landing && Lv.landing.quay === q.id && !Lv.error,
+    !V.lumber.records.some(r => r.role === 'landing') && !V.lumber.landing, Lv.error || '');
+  ok('the quay is on its own lane: no other lane runs out to it', Lv.lanes.filter(l => !l.landing).every(l => Math.hypot(l.pts[1][0] - l.pts[0][0], l.pts[1][1] - l.pts[0][1]) <= H.TUNE.laneMax + 1e-6), H.TUNE.laneMax < 500);
+}
+
+// ---- the names (16, 18): a long list from the tongue, dealt by hash, no two hamlets of a world alike
+{
+  const L = H.NAMES.islander, ids = []; for (let i = 0; i < 14; i++) ids.push('hamlet-' + i);
+  const D = H.dealNames('islander', 4242, ids), names = ids.map(i => D[i].name);
+  ok('the Islanders have a hundred names and more, each one of a kind, each a head and a describing word (' + L.length + ': ' + L.slice(0, 3).map(r => r.name).join(', ') + '...)',
+    L.length >= 100 && new Set(L.map(r => r.name)).size === L.length && L.every(r => /^\S+ \S+$/.test(r.name) && r.gloss), !L.every(r => r.name === r.gloss));
+  ok('fourteen hamlets dealt fourteen different names; the same world deals the same, another world otherwise (' + names.slice(0, 3).join(', ') + ')',
+    new Set(names).size === 14 && JSON.stringify(H.dealNames('islander', 4242, ids)) === JSON.stringify(D) && H.dealNames('islander', 7, ids)['hamlet-0'].name !== D['hamlet-0'].name || H.dealNames('islander', 7, ids)['hamlet-1'].name !== D['hamlet-1'].name,
+    H.hamletName('nonesuch', 4242, 'x', {}) === null);
+  const used = {}; names.forEach(n => { used[n] = true; });
+  ok('a hamlet founded later draws a name no one has, without moving the others', !used[H.hamletName('islander', 4242, 'hamlet-founded', used).name.slice(0, 0) + H.hamletName('islander', 4242, 'hamlet-founded', {}).name] || !names.includes(H.hamletName('islander', 4242, 'hamlet-founded', Object.assign({}, used)).name),
+    names.includes(H.hamletName('islander', 4242, ids[3], {}).name));
+}
+
 console.log(bad ? '\n' + bad + ' FAILED' : '\nOK');
 process.exit(bad ? 1 : 0);

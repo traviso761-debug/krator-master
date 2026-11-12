@@ -20,7 +20,7 @@ python3 verify.py dist/isle-site.html --assert [--shots DIR]
 
 **On the open world's ground.** The page carries:
 - the region (`openworld/isle-demo/data`);
-- the world's own height and colour fragments: `openworld/isle-demo/src/world/41-world-fields.js` and `42-world-roads.js`, and
+- the world's own height and colour fragments: `core/world/41-world-fields.js` and `42-world-roads.js`, and
   `openworld/isle-demo/src/43-world-isles.js` (the coast as terrain, the climate classes' colours).
 
 So the planner's ground is the world's, to the centimetre (a verify check). What the owner draws here will stand where
@@ -54,7 +54,7 @@ it, then run `build.py --accept`, or vendor the file and track its drift.
 
 - **The buttons and keys are Voth's** (the hint line explains each tool). 1-6 draw districts, 7 places a marker, 8 an
   avenue, 9 a causeway or jetty, R/L/M edit the ground, B places a canoe landing, N a land stop, K makes a line.
-- **Kautoa / Valapo** switch towns. The page reloads on the other town; unsaved changes stay as that town's draft.
+- **Kautoa / Valapo / Nephtos** switch towns (Nephtos: the Hykkousoi colony, PLAN.md section 15a; its markers and district names). The page reloads on the other town; unsaved changes stay as that town's draft.
 - **save** writes this town into `site/isle-site.json` (serve.py must be running), else downloads it.
   **export JSON** / **copy JSON** give this town's site with its frame. **import** takes a town's site or the whole file.
 

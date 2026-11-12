@@ -12,7 +12,7 @@ import http.server, json, os, re, socketserver, sys, urllib.parse
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 FILE = os.path.join(HERE, 'site', 'isle-site.json')
-TOWNS = ('Kautoa', 'Valapo')
+TOWNS = ('Kautoa', 'Valapo', 'Nephtos')   # Nephtos: the Hykkousoi colony (PLAN.md section 15)
 
 
 def write(data):

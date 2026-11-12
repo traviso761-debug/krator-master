@@ -478,6 +478,25 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
   - The **Pleasure Dome of the Bay** is the Sultans' own extravagance, built for their feasts. It is not Ancient: no Ancient dome stood there. [the owner, Oct 2026]
   - **The Caves of Ice** are an Ancient construction, not a natural cave. Something deep inside keeps them unnaturally cold. The sacred river Alph. [the owner, Oct 2026]
 - **Origins:** the Xanadui likely descend from **Theodiga**, the Ancient dam arcology at the valley mouth that harnessed the cascade (§4). *Xanadu*, *Alph* and the *Caves of Ice* are Ancient names, taken from Coleridge's *Kubla Khan*. [the owner, Oct 2026]
+- **The faith: the Decree (*Ḍikrī*) and the Broken Wheel** [the owner, 2026-11-11; the detail is *proposed*:
+  `kits/qiblai/PLAN.md` section 2a].
+  - **Scripture.** It is *Kubla Khan*, kept by **sound alone** since the Latin letters were lost. The temple grammarians'
+    sound-grid syllabary writes how the Song (*Gīt*) sounds, not what it means.
+  - **Belief.** The Khan (*Qublā*) decreed the dome and the Ancients built it. They did not heed the "ancestral voices
+    prophesying war", and it fell.
+  - **The Broken Wheel.** The **dome in air is the Station**, the Ancients' broken wheel in the sky. The eight-spoked
+    wheel is its picture, whole.
+  - **The prayer wheels.** Every turn sings the Song once and turns where the broken Wheel cannot. Sung whole, the Song
+    will mend the Wheel.
+  - **Prophet and sacraments.** The prophet is the Damsel (*the Ḍāmsal*) with her dulcimer. The sacraments are honey and
+    milk.
+  - **Pilgrimage.** The kora is walked three times with eyes lowered. The **Ālph** is the sacred river; the geysers, the
+    Caves of Ice and **the Singing Gjár** in the High Rift are holy places.
+  - **Qiblai** (Kubla's city) is its holy city, under a council of abbots.
+  - **Theodiga.** *Proposed:* Theodiga, the arcology the Xanadui come from, is the dome on earth; it is to be redesigned
+    with a dome or domes.
+  - **Distinct from the History Monks,** who keep the same poem as an English text with its author's name, and say
+    nothing.
 - What to say of the fabled city of Erewhon, Pearl of Xanadu, Queen of Cities? Its great wealth and great remoteness make it a byword for exoticism and luxury among the peoples of the northern crater. The Vale of Xanadu is blessed by geography – a lush vale in an eastern rift lake, rising above the abyssal lakes that stretch west; to the north, rough high passes, often blocked by lava flows or earthquakes, are the most direct way to reach the teeming peoples of the Crater. With this ruggedness, only brave adventurers and traders brave the country, its bandits, and the robotic stalkers rumored to haunt it to venture south to Xanadu. But ah, what rewards! For Xanadu has plentiful gold mines and lush fields of cacao and other spices to match. Even the poorest of Erewhon eat like nobles elsewhere – and the Sultan himself? Well, the feasts and orgies of the Pleasure Dome have made Xanadu a byword for decadence as well. With its closest neighbors being the peaceful History Monks of the chilly Oidong Valley, and the lowlands tribes of Lizardmen who occasionally raid, but find the highland air too thin and chilly, the Sultanate has enjoyed splendid isolation for most of its history; even Iziz at its height was not so arrogant as to try to conquer it.
 - Things may be poised to change however. The current Sultan, a tremendously fat man who relies on 4 servants to carry him around in a palanquin, is such a prodigal spender that even the Sultanate’s ledgers are running in the red; and his longsuffering Grand Vizier has been pulling his beard out trying to muster up more money for guard patrols. The Lizardmen, from as much as can be gathered about that famously hostile race, seem to have new leadership, and their raids grow increasingly bold. While rich, the Sultanate is rather deficient in iron ore and scrap, and their best weapons are always obtained from Izizian and Yuni traders. If something were to cut that trade off, trouble may well come to paradise….
 - Sign: the **eight-spoked wheel**, saffron and maroon. Ships: a swan barge, a dragon boat, a bullion carrack.
@@ -1081,5 +1100,5 @@ Rule: a building never names a culture. Its sockets (awning, banner, flag, emble
 - **Farside** (`biomes/farside/PLAN.md` section 8): the species and the animals; the lung octopus's build; the people's relation to the coast and the State's view of the traders' invasion.
 - **The Catch** (`biomes/catch/PLAN.md` section 8): what drove Hub 01 mad (contamination, a virus or reprogramming: left open); the five oases' names (in Yuni, Izani, Dasrī or Xanadui); the preserved salvage (proposed); whether the sealed tunnel ever opens fully.
 - When did the scablands' lake fill and break (the Ancients' time, a wetter age)? Did the Godthrone ever erupt explosively? (Not needed for the Catch any more: its soft rock is old lake beds.)
-- What are the religions of Iziz, Yuni, the Beast Riders and the Hykkousoi? On record so far: The God at Dalab, the Republic's Pantheon, Voth's Temple and ancestor cult, Xanadu's prayer-wheel faith, the Altar of the Abyss, the Deep Aquifer, Jimjam's calendar, and the Beast Riders' nature shrines.
+- What are the religions of Iziz, Yuni, the Beast Riders and the Hykkousoi? On record so far: The God at Dalab, the Republic's Pantheon, Voth's Temple and ancestor cult, Xanadu's Decree and the Broken Wheel (§6.13), the Altar of the Abyss, the Deep Aquifer, Jimjam's calendar, and the Beast Riders' nature shrines.
 - Is there a common calendar (Jimjam's reckoning is the nearest, §6.14), a common language, or writing (post-apoc signs are pictographs)? *Coinage is settled* (the owner, 2026-11-03): each nation has its own currency (the Republic has a Mint), and the Izani Talent is the trade money everyone takes (§6.2). The other nations' currencies are still to be named.

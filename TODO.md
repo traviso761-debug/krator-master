@@ -28,6 +28,17 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 
 ## Ride along with the next all-builds rebuild
 
+- **core/world: a kit on several biome overlays** (2026-11-11, the Iziz cluster's open-world region): `core/world/41-world-fields.js`
+  matches a `WORLD_KITS` entry's `overlay` to one biome name (`k.overlay===name`). Let it take a list (`Array.isArray(k.overlay)?
+  k.overlay.indexOf(name)>=0:...`), then drop the shim in `openworld/iziz-cluster/src/47-world-kits.js` (`WORLD_KITS.findIndex`, which
+  tries each name of a list). It moves every page that reads core/world (the isle demo's two city pages, Longsong, Pinnacle Rock and the
+  open-world regions) without changing what they draw.
+- **core/world: a `xanadu` style** (2026-11-11, the owner: "Xanadu should be lush where moisture allows"). `41-world-fields.js`
+  `BIOME_STYLE` has no entry for the 'xanadu' overlay, so it takes `desert`: the red sandstone palette and desert shaping (terraces .75
+  at 55 m steps). Add a `xanadu` style and palette (green by wetness, as `openworld/xanadu-oidong-highrift/src/43-world-xoh.js`'s
+  `WORLD.ground` wrapper does now; shaping nearer `highland`), then drop that wrapper. The shaping changes `WORLD.H`, so the region's
+  `plan/sites.json` re-bakes. Same reach as the item above.
+
 - **`KSHADOW.units` counts what the GPU links** (2026-11-09, found by the Throne's fix): `core/shadow/host/12-core-shadow-host.js` counts
   declared samplers (some are never read and the GPU drops them), misses `scene.environment` on standard materials, and judges against the
   renderer's own limit (32 in SwiftShader, so shadows turn on where the GPU cannot link them). The Throne's `samplersOf`

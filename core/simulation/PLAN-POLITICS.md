@@ -190,7 +190,15 @@ the refugees at work: the camps at 63-67 happy against the towns' 81-83, none ye
 in the order the ships came).
 
 **The countryside** (2026-11-04, the owner: move agriculture into the countryside, the requisite number of farming
-hamlets; planned, not built): `settlements/isle-demo/PLAN.md` section 11 has the estimate (about 610 ha in crop and
-2,400 ha farmed for the islands' 8,100 people, against 81 ha today) and the plan (the fields within the walls removed,
-the farm ring left alone, about four farming hamlets for Kautoa and two for Valapo, a plantation each). The hamlets that
-grow and the work crews (the owner's earlier three) come after, on the same machinery.
+hamlets; **built 2026-11-09**): `settlements/isle-demo/PLAN.md` section 11 has the estimate (about 610 ha in crop and
+2,400 ha farmed for the islands' 8,100 people, against 81 ha before) and what was built (the fields within the walls
+removed, the farm ring left alone, four farming hamlets for Kautoa and two for Valapo, a plantation each, a farmhouse on
+every holding with a track to it, every hamlet on the baked highway network). The hamlets that grow and the work crews
+(the owner's earlier three) come after, on the same machinery.
+
+**Where refugees and migrants may go (the owner, 2026-11-09; for the flows above, not built):** besides the isles' camps,
+the "open for settlement" destinations are Farside; the south-eastern desert and the Abyss (both on their own account, to
+Shade, Mungo and the like, and sponsored by Iziz to shore up Mantis and Verge); the Voth and Hykkousoi colonies on and
+round the Throne and the Ring Sea; the south-eastern tectonic basin (a great outback, lightly dotted with Yuni outposts);
+and the west rim and Nulab, when the Tungangers are cooperative. Korona is an option for the desperate. A camp's people
+who move on (section 4, "move on to the next town") choose among these by what a nation offers and what they can reach.

@@ -842,7 +842,114 @@ every module under `core/` and CLAUDE.md's rules.
    `core/space`, and the whole engine onto `core/host`.
 6. **The site planner** runs on Voth's editor engine read in place (its LCG shim, Voth's textures): ROADMAP section 10.
 
-## 11. The countryside: farmland and farming hamlets (planned 2026-11-04; not built)
+## 11. The countryside: farmland and farming hamlets (planned 2026-11-04; built 2026-11-09)
+
+**Status (2026-11-09): steps 1 to 5 are built** (step 5 the same day as 1 to 4, with the coastal landings the owner asked for).
+- **Step 1:** Valapo's programme has no `farm` (`30`): its 49 parcels are gone, and the census check reads "no farm parcel
+  within the town" for both towns (`34`). The ground is the village's to build on (its spurs and camp read `fields`
+  empty); the builders put houses only on the plan's empty lots, so the freed ground is not yet lots (the Valapo plan's
+  frontage density is the dial: `30` `dens.res`).
+- **Step 2:** Kautoa's farm ring is untouched (`15` `ring`, 40 holdings).
+- **Step 3:** `openworld/isle-demo/src/48-world-hamlets.js` has eight farming specs: four farming hamlets for Kautoa, two
+  for Valapo, a plantation each (Kautoa's cloves and cacao, Valapo's cane, cotton and upland coffee). A farming spec names
+  no patch: the **hinterland survey** (`farmSite`) scores 500 m cells from 2 km beyond the town's square out to 14 km by
+  the share of dry, gentle, off-town ground that takes one of the hamlet's crops, takes the best less half its distance,
+  at least 3 km from every village and resource placed before it. Each hamlet is sized from the land estimate on its
+  town's census (`core/hamlet/14-hamlet-farmland.js` `KHAMLET.farmNeed`: 0.075 ha in crop a person, 0.75 ha a hand;
+  Kautoa 151 hands a hamlet, Valapo 105), and its **farmland** (`KHAMLET.farmland`, by `47h` `ISLE.farmlandOf`) is laid
+  round a centre 350 m beyond the village: 60 m parcels on the same ground rule, in blocks of nine that share a crop and
+  a rotation year, three years' fallow for each in crop (`KHAMLET.FARM.fallow`, the owner's open question), nearest the
+  centre first until the hands' land is in crop. The open world paints the parcels on the ground (crop tones, fallow the
+  dun of garden scrub), registers every parcel in core/tags under its farmland, and keeps the flora off the parcels in
+  crop (`88h`). On stand-in ground (the node test) the eight come to 611 ha in crop against the 610 ha estimate.
+- **Step 4:** in the sim (`47h`) a farming village's farmsteads each grow one of its town's crop rows (`15`
+  `hamlets.farming.crops`, dealt by weight), its granaries are stores, its farmland a site that regrows all its hands can
+  take (the governor's ceiling included), its road keeps a day of its own food back and carries the rest to its town.
+  A town counts the crops its hamlets bring as its own (`44`: Valapo's bread from their sweet potato, its sugar and cloth
+  from the plantation's cane and cotton) and Valapo drops its stand-in (`40` `standinOff`), so on the open world and in
+  the node test **Valapo grows none of its staples itself: they all come by road**. On the city page, which declares no
+  hamlets, Valapo's food stand-in is its programme's `farms` record beyond the village, declared as holdings as Kautoa's
+  ring is (`15` `farms`: 25 sites 200 to 1,200 m beyond the village, each on a track from its streets; sweet potato,
+  taro, banana, coconut, cane, cotton, coffee). The refugee camp and the spur lots open on a street, never on a holding's
+  track (`41` `door` `skip`): when the holdings first came within reach of Valapo's camp, its people took the track for
+  their door and stalled on it, the camp starving while the town ate. Valapo's farmhand posts inside
+  the village went with the fields; the hamlets' people are their own (about 275 each; Kautoa's about 375).
+- **Proofs** (each with a negative): `tests/test-isle-hamlets.js` (fourteen villages on stand-in ground, five days: the
+  countryside's land in crop within a fifth of the estimate; every crop landed in its town by road and booked imported;
+  Valapo grows none itself and ran short of none of them after the first day; the ring's holdings in Kautoa, none in
+  Valapo) and `openworld/isle-demo/verify.py` (six farming hamlets and two plantations in the hinterlands, their land in
+  crop within a fifth, every parcel dry; the same sim checks over two days on the map). `core/hamlet/test-hamlet.js`
+  holds the estimate and the parcels' rules.
+- **The holdings (the owner, 2026-11-09: "a rational road network going to each field and each field should have a
+  farmhouse"):** a farming village keeps its farmsteads out of its own layout (`KHAMLET.village` `worksOut`, 30's
+  `outWorks`) and the farmland divides among them, one HOLDING each (`KHAMLET.farmHoldings`): the farmhouse on a yard
+  parcel of its own, spread over the land on a sunflower spiral (a resting parcel preferred, 110 m apart at least), every
+  other parcel the nearest farmhouse's; the FARM TRACKS a tree from the village's works lane, each farmhouse joined by a
+  straight track to the nearest point already on the network (the root or another farmhouse's door), so the tracks
+  branch out through the holdings; a farmhouse faces its track. The records join the village's own (drawn, tagged, the
+  sim's places), the tracks its lanes (`kind: 'track'`). Kautoa's hamlets: 13 farmsteads each; Valapo's 9.
+- **The highway network (the owner, 2026-11-09: "the hamlets should all connect to the regional highway network as well
+  to facilitate cart travel"):** `openworld/isle-demo/bake.py roads` routes it once in a headless page (`48r`
+  `ISLE_ROADS.bake` over the world's own `ROADS.route`, the grade held to 8 %) to `data/roads.json`, which the page reads
+  as `WORLD_DATA.roads` (the ground shaped to it, the carriageway drawn, the flora off it, the probe's grade check now
+  applies). Heads: Kautoa's gate stubs (the plan's `highway` record), Valapo's avenue ends; then every village, nearest
+  its town first, joined by one road from its best lane end (a straight approach past its last house) to the nearest
+  point of the network so far, so the roads branch and share a trunk; a through road keeps off every village's ground.
+  Fourteen roads: Kautoa's farming hamlets 7-14 km by road, Valapo's 7-15; the mine 26 km; the ranch 72 km and the salt
+  village 101 km up the north trunk; **the lumber village 171 km**, round the gulf (20 km of sea 140 m deep lies between
+  it and Kautoa; a sea leg is the rational carrier there, KNOWN_ISSUES.md). The sim takes each village's road length
+  (`townKm`) as its cart time, and a far village opens with food for a round trip. The survey reads the land without
+  roads (`WORLD.Hland`), so a rebake gives the same network; `verify.py` fails when a village's lane end is no longer a
+  road's end (rebake after any change that moves a village).
+- **Names (the owner, 2026-11-09):** every hamlet is dealt a Sikau name at load from `core/hamlet/16-hamlet-names.js`
+  (116 names: English place names worn down by the tongues page's Islander rules, `tools/names/sikau.py`, a head and the
+  describing word after it: White Landing is *Laniñi Vai*), by a hash of the world and the hamlet's id, no two alike
+  (`18-hamlet-names.js`); a hamlet founded later draws its own. The drawing's tag, the sim's settlement and the verify
+  show it; the spec's role label stays beside it ("Kama Ema (Kautoa farming hamlet 1)").
+- **Step 5, the hamlets grow (built 2026-11-09):** every village lays empty plots (core/hamlet 30 `vacant`, a share of its
+  households: `hamlets.grow.vacant`); in the sim they are lots on core's building (`47h`, as the towns' are in `47b`): the
+  village's own hands (`grow.posts`, on the first lot only; core's rebalance moves them lot to lot) build a house of the
+  towns' kinds, its bill (timber, stone, mats) brought by the village's IN cart with its food, a day's worth at the
+  builders' pace expected ahead so a load is worth carrying (the builders' own draws alone book too little a tick);
+  built, the plot is a home with its beds, and `88h` draws the house. The hamlets test and the world's checks: every
+  village's first house under way or built, each plot a lot or a home (with a negative).
+- **Step 5, a farming camp founded, converting to a hamlet (built 2026-11-09; `47f`; the owner: "highways are buildable
+  when a farming camp converts to a farming hamlet"):** a town whose refugee camp holds `found.households` households that
+  have waited `found.waitDays` for a house sends them out as a FARMING CAMP, a settlement of the town's on farmland the
+  page finds beyond its villages (`ISLE.hooks.farmSite`: the hinterland survey of `48`, apart from every village and camp):
+  tents, a store opened with the town's food, the grown-ups on the town's first staple on a farmland site, carts to the
+  town at the detour rate. After `found.days` it CONVERTS: the page lays a farming village on the camp's site
+  (`ISLE.hooks.layVillage`), the sim declares it as the town's hamlet with the campers its first people (`47h` `people`:
+  housed household by household, at the posts first, settlers dealt for the rest), named from the Sikau list, and its
+  HIGHWAY is a PROJECT: routed live to the network as it stands (`ISLE.hooks.routeRoad`: `ISLE_ROADS.join`, the bake's
+  own router, milliseconds a road), a lot of the hamlet's at its lane's end with `found.road.posts` builders' posts and a
+  `road:<id>` kind of `hoursPerKm` worker-hours and `timberPerKm` timber a kilometre on core's building; built, the page
+  adds it to the world (`WORLD.addRoad`, the ground over it redrawn) and the hamlet's carts take it (their minutes retimed
+  from the detour rate to the road). The camp's tents and parcels are drawn while it stands (`88h`). A page without the
+  hooks (the city page) founds nothing. `tests/test-isle-found.js` runs one through with stand-in hooks at the test's
+  fast pace (45 days: the ship lands on day 3, waits 7, farms 20, then the road is building), with negatives; the world's
+  `verify.py` checks the hooks and the survey.
+- **The owner's second pass (2026-11-09):** the REAL PACE is a month's wait in the camp and a season's farming camp
+  (`found.waitDays` 30, `days` 45; tests set 7 and 20 themselves: "they'd spend longer before founding a new hamlet, at
+  least once we're out of functionality testing mode"); SEVERAL CAMPS a town (`maxPerTown` 3), one at a time, the next when
+  the last has converted. THE REFUGEES MOVE ON: a founded hamlet is declared with its founders only (no settlers dealt),
+  so its homes beyond theirs stand empty and its posts open, and every day (`found.settle.every`) each founded hamlet
+  with an open post and an empty bed takes the longest-waiting refugee households from EITHER town's camp (`47f`
+  `foundSettle`: a household to a home with beds enough, its grown-ups to the posts, the town's camp the lighter by it,
+  the refugees' books counting it "in the countryside"): the owner's incentive, "places with real open jobs, like a newly
+  founded, empty hamlet one town over". The camp's tents are the Islanders kit's new CAMP SHELTERS (`kits/islanders/src/
+  70-ie-camp.js`: a lean-to, a round hut, an A-frame, a long shelter, the camp kitchen and store), pitched in a ring round
+  the kitchen by `88h` and struck when the camp converts.
+- **The coast (built 2026-11-09; the owner: "a little port and cargo stop at lumber village, this would make sense for any
+  hamlets near the coast"):** a village within reach of a navigable sea gets a landing (core/hamlet 30 `landing`: the
+  Islanders' quay and cargo shed at the water's edge, a lane to it) and a SEA LEG (`47h` `sea`: a lakatoi of its own on
+  `SIM.trade` between its quay and its town's canoe stop, 25 km for Kautoa's lumber village against 175 by road); the road
+  stays and carries the food back. `openworld/isle-demo/src/48` sites a lumber village on the coastal stand nearest its
+  town whose shore has a sea route to the town's landing; Valapo's, first sited on the open east coast 35 km of land from
+  its harbour (the owner asked for a reef passage; the obstacle was the land, KNOWN_ISSUES.md), now stands on the north-west
+  coast with forest enough round it for its crew, 15 km by sea.
+- **Not yet:** orchard trees on the hamlets' orchards (the towns' orchards are drawn from the plan's tree records; the
+  parcels are ground colour only); the farm tracks are ribbons, not graded roads; the fallow dial is the owner's.
 
 **The owner (2026-11-04):** "we may also want to move agriculture into the country side ... based on historical figures, how
 much farmland would a population of this size really need? we may want to surround the cities in farming
@@ -868,7 +975,7 @@ arable a person (Clark; the northern European estimates). Hand cultivation works
 So the islands farm about a twentieth of what they eat today: the rest is the sim's governor raising the rates of a
 handful of parcels. A quarter of the islands' people should live in the countryside.
 
-**The plan (in order):**
+**The plan (in order; the status above says what is built):**
 1. **Remove the fields within the walls.** Valapo's 49 parcels inside the village (2.8 ha: banana, sweet potato, sugar
    cane, cotton, coconut) come out of its plan (`32`'s `R.fields`, the programme's farmland districts inside the zone);
    their ground goes to the town (more empty lots: the housing the refugees need). Kautoa has none inside its walls.
@@ -898,3 +1005,287 @@ stocks steady) with the food coming in by road; the open world's verify (the ham
 **Questions for the owner:** the fallow (shifting gardens with three fallow years, or permanent fields worked every
 year?); whether the farm ring should later become hamlets too (left alone for now, as asked); how many plantations, and
 whether they are worked by the town's people or by their own village.
+
+## 12. Camps by boat: the expedition camps on the other isles (planned and built 2026-11-09)
+
+**The owner (2026-11-09):** "can we arrange to have the cities deploy camps by boat to the other islands and collect
+resources? what do the other islands out there have that they'd want to import?"
+
+**What is out there (the survey of 2026-11-09, on the sea router's 500 m grid: 15 landmasses inside the region).**
+
+| Island (the survey's id) | km² | Forest | Of it hypertropic jungle (XA) | Savanna / steppe | Vents | Nearest shore by sea |
+|---|---|---|---|---|---|---|
+| Kautoa's (0) | 4,407 | 32 % | 22 % | 51 % / 16 % (the ranch's and the salt village's country) | 2 | home |
+| Valapo's (8) | 4,398 | 63 % | 29 % | 22 % / 15 % | 4 | home |
+| The forest island east (1) | 4,196 | 93 % | 34 % (rainforest 33 %, monsoon 26 %) | 7 % | 1 | 24.5 km from Kautoa (Kautoa's lumber village already stands on its near shore: its sea leg is the first boat line there; the road round the gulf is 172 km) |
+| The forest island west (9) | 1,234 | 93 % | 29 % (rainforest 52 %) | 6 % | 2 | 23.2 km from Valapo (a routed shore at -24400, 33084) |
+| The jungle island far west (10) | 599 | 99 % | 60 % | 0 | 1 | 50.6 km from Valapo (a routed shore at -59970, 48948) |
+| Islets (3, 4, 5, 6, 12, 13, 14) | 1 to 9 each | jungle or rainforest | | | 0 | 36 to 180 km |
+
+No other island has a salt pan (Kautoa's has the only one), and none has a town; the only pasture worth a herd is on
+Kautoa's own island. What the other isles hold that the towns do not is FOREST of the two kinds the Ring Sea isles kit
+grows and the hyperjungle kit's species (`biomes/hyperjungle/src/50`, `HARVEST`), and the VENTS' thermal ground.
+
+**What the towns would import (goods they have no maker for; each a new good in `15` `goods` with a consumer).**
+
+| Good | From | Used by | Why they want it |
+|---|---|---|---|
+| `mahogany` (the finest red timber) | the forest islands' mahogany stands | the dockyard (hulls, the lakatoi's planks: `woodtools` and a `canoe` batch), the rich houses' carving (a bill good for the wealthy kinds, `47b`) | the home islands' lumber villages cut common timber and charcoal; a hull or a chief's house wants hardwood |
+| `gum` (prism gum resin) | the jungle's prismgum trees | the dockyard (caulking: every hull's batch), the potters' lamps (torch resin) | hulls are sealed with it; the towns have no resin |
+| `kapok` (floss and seed oil) | the jungle's kapok | the potters' lamps (oil and wicks beside coconut), the weavers (stuffing: `mats`, bedding), tinder | Valapo's lamps ran short of coconut once already; kapok oil is a second source |
+| `medicinals` (ghostwood and mahogany bark, ginger) | the jungle's understorey | the healer's poultices (an input where today the healer makes them from nothing) | the only medicine the isles name |
+| `sulphur` | the vents' thermal ground (a `kits/resources` sulfur node dealt at each vent by hash) | the healer (a salve), the weavers (bleaching cloth), fire | a volcanic good no home village digs |
+| `pearls` / `shell` | the reefs (`gather.fish` zones: a diving camp) | the jewellers (beside stone) | a luxury the courts buy; the money chain's first export |
+
+**The mechanism (built on what stands):** an EXPEDITION CAMP is a work camp of `core/camp` (40: the crew that migrates
+through stands, the lumber village's machine) whose YARD is a town's quay, carried out and supplied BY BOAT. A town's
+dockyard sends a crew (`crew.share` of its dockers and unemployed, or a refugee household at the settle step) in a
+lakatoi to the nearest shore of a forest island with a sea route from its trade landing (`48` `shoreOf`, as the coastal
+hamlets'); the camp PITCHES with the Islanders kit's shelters (`70-ie-camp.js`, `88h` `pitchCamp`) on the shore, its
+stands the jungle round it (the flora's `harvest.wood` by species: mahogany and kapok for timber, prismgum tapped not
+felled), a `SIM.site` per stand; a SEA LEG (`47h` `sea`: `SIM.trade` between the camp's shore and the town's canoe stop)
+carries the goods back and the camp's food out; when its stands are down to their seed trees it STRIKES and marches
+along the shore to the next (`KCAMP.workDue`), and when the season turns or the hold is full it comes home. The first
+build: Kautoa's mahogany and gum camp on the forest island east beside its lumber village (24.5 km by sea; the crew
+and the boat line are there already), Valapo's on the forest island west (23 km).
+
+**The order of work.** (1) The goods and their consumers in `15` (mahogany, gum, kapok: the dockyard's hull batch, the
+lamps' second oil, the healer's input), with the week test's checks. (2) `47x-isle-expeditions.js` (`[G data]`): the camp
+declared from a town's crew (settlement kind `camp` as the farming camp's, `47f`), its stands from the island's trees
+(the page's hook: `ISLE.hooks.standsAt(shore)` over the flora's records, `core/hamlet` 40's felling), its sea leg, its
+strike and march, its return; a node test with stand-in hooks and negatives. (3) The world: the shore survey of the other
+isles (`48x`: the nearest routed shore of each island with jungle enough behind it), the camp pitched and struck (`88h`),
+the boats on the line (`88c`), the trees felled (`88h`'s stumps as the lumber village's), `verify.py` checks. (4) The
+politics: an island camp is a claim (PLAN-POLITICS.md: the Kautoa-Valapo rivalry over the forest islands; a camp's
+palisade when the other town's boats come).
+
+**Built (2026-11-09; the owner: "sounds good, go").** Steps 1 to 3 of the order above: `15` `goods` has `mahogany`,
+`gum`, `kapok` and `canoes`, both towns' canoe sheds build canoes of the mahogany and gum (`expeditions.yards`, a
+40-hour batch, a stockpile ceiling of ten; Kautoa's dockyard keeps its woodtools; kapok is stocked with a ceiling,
+its lamps' use the next step), and `expeditions`
+is the tune: a crew of 12 (the town's unemployed first, then its dockers, never a refugee or an elder) sails on `firstDay`
+for a season of `days` 90, then `rest`. `47x-isle-expeditions.js`: the camp a settlement of the town's (kind `camp`: a
+mess, a store on the shore that is the boat's stop) with the lumber village's work camp (47h `simCrewPlace` with the
+crew's own posts) ranging the island's forest, its recipe held "at sea" for the voyage; two sea legs (`boat`: the goods
+to the town's canoe stop, the town's food out); after the season or when the range is worked out the crew comes home to
+the places it left and the camp is struck. `tests/test-isle-expeditions.js` (40 days at a 30-day season): both crews
+sailed on day 1 and pitched, made mahogany with gum and kapok from their stands, the goods landed and were booked
+imported, the camps fed by the boat, canoes built, every hand home after the season; each with a negative. The world:
+`openworld/isle-demo/src/48x` finds each town's shore from the survey's candidate points (a sea route from the landing,
+dry forested ground inland of it, apart from every village): Kautoa's camp on the forest island east 3 km from its lumber
+village (24.3 km by sea), Valapo's on the forest island west (23.2 km); `88h` pitches the kit's shelters when the boat
+lands and strikes them when the crew sails home, and draws the crew's camp among the trees as the lumber village's;
+`88c` puts the goods boat and the food boat on the line; `verify.py` checks the shores and the sim's first check.
+
+**The merchant houses (built 2026-11-09; the owner: "experiment with intra-city factions by making each city's long
+distance expeditions organized by a merchant house"; core/simulation/PLAN-MONEY.md 2a's "trading houses to merchant
+princes").** `47y-isle-houses.js`: each town charters a house from its treasury (`expeditions.house.capital`, paid, not
+minted), headed by its richest household, which runs the town's expeditions as a business. It decides to sail on the
+season's expected margin: the haul (its last season's catch a hand a day, else `prior`) at the town's WHOLESALE price
+(its live price over its markup: the goods' cost with M2's scarcity in it, nothing for a good already at its ceiling),
+against the crew's wages, the provisions at wholesale and the boat's `charter`; it declines and tries again a week later
+when the margin is not there or its purse is short. The camp's workplaces are its own, so core's payroll pays the crew
+from them and the house covers them; the camp's treasury opens empty (no money is made for a camp: the farming camps
+and their hamlets are now funded by their town's treasury the same way, `47m` `fundedBy`). Each night it settles with
+the town: the haul landed bought by the town at wholesale, the provisions paid for, the charter; the crew's mess sends its
+wages home to the households they left. A thin purse recalls the crew. When the crew is home and the boats' last loads
+are in, the season is booked and the house pays its head household half of what it holds over its capital and a
+quarter (the merchant family's wealth). The island goods are costed at a crew's hours (`money.m1.fallback`: mahogany
+60, gum 45, kapok 30 shells), no longer the placeholder every unmade good had.
+
+**How long it sails.** The house plans its season to what its town will buy: as many days as the haul of its main good
+(mahogany) takes to fill the room under the town's ceiling, net of what the town uses meanwhile, at most `expeditions.days`
+and at least `minDays`; a stocked town sends none. On the world both houses plan 50 days on their first season
+(600 mahogany of room at 12 a day) and expect about 4,000 shells of profit each.
+
+**What the runs say.** In tests/test-isle-expeditions.js (40 days, a 30-day season at most) Kautoa's house sold 43,504
+shells of haul against 20,592 of wages, 4,364 of provisions and 1,800 of charter: a profit of 16,748 and a dividend to its
+head household. In that test the towns have no hamlets (the city page's own farms feed them) and Valapo's house declined
+every week: its food is twice Kautoa's at wholesale there. On the world, where the hamlets feed Valapo, both sail.
+
+**The houses' wider trade (built 2026-11-09; the owner: "I like all these ideas let's implement them").**
+- **Three kinds of camp** (`expeditions.kinds`): the FOREST's crew (core/camp's work camp: mahogany, with gum, kapok and
+  now MEDICINAL bark by it), the VENTS' diggers (SULPHUR at a geyser vent off the town's own island) and the REEF's
+  divers (PEARLS from a fishing reef within 1.5 km of a routed shore); the vents and the reef are a works at one node,
+  its site a SIM.site. The house weighs every kind not already out by its expected margin and sends the best, up to
+  `house.maxOut` (two) at once; a kind that came home rests `rest` days. On the world: Kautoa's forest camp on the east
+  island, a reef camp off the north-east islet, a vents camp at the vent on the south of Valapo's island (72.9 km by
+  sea); Valapo's forest camp on the west island and a vents camp 137 km out (its reef beach is its forest camp's).
+- **Their buyers** (`expeditions.yards`, a batch on every `every`th place of a kind, only where expeditions sail): a town's
+  second healer makes poultices of the bark, every eighth potter lamps of kapok oil, every fourth workshop jewellery of
+  pearls; the households use the bark and the sulphur a person a day (`expeditions.uses`); each good has a ceiling and
+  a cost at a crew's hours (`money.m1.fallback`).
+- **The ships from beyond** (`house.exports`): every week a trader calls at each town with a purse of Talents; the house
+  buys the cash crops the town holds over 20 days of its own use (cloves, cacao, coffee, sugar) at wholesale and sells
+  them for Talents when the ship's price beats wholesale by a tenth; the Talents are the house's (a Talent account),
+  changed to shells at the money changers when its purse runs short.
+- **The lines between the towns** (`house.carry`): every load the lakatoi and the oruwa land is the sending town's
+  house's, bought at the sender's wholesale and sold to the receiving town at its own, settled each night; a house that
+  cannot pay, or a load that would sell for less than it cost, it leaves to the towns, which settle at the sender's price.
+  What sails is still the towns' want: choosing the goods by price is M3 proper, not this.
+- **The 40-day test (a 30-day season at most)**: Kautoa's house made 20,098 on its forest season and 9,943 on its vents
+  season, 2,808 carrying, and sold 43,750 shells of cash crops for 3,520 Talents (about 68,000 shells at the changers);
+  Valapo's made 641 on its forest season, lost 6,144 on its vents season, made 8,430 carrying and took 1,255 Talents.
+  Before the house could leave a losing load to the towns, Valapo's lost 13,297 carrying and went nearly bankrupt.
+
+**The money's fixes on the way.** (1) The cost tables: money's cost of a good a settlement does not make is found by
+recursing into the maker's table, and a table first computed while the asker is mid-way keeps the placeholder; so the
+second town priced the first's rice and salt at 30 shells against 1 and 3, and the carrying trade saw tenfold gaps that
+would have emptied Valapo's treasury into Kautoa's house in weeks. `47m` `ISLE.moneyRecost` recomputes each table in
+turn after the money opens, and again once the hamlets exist; Valapo's markup moved from 7.4 to 8.6.
+(2) **The money's first fix on the way.** The world page costed Valapo's staples at money's placeholder (30 shells a serving, not 1)
+since the farming hamlets took over its food (section 11): the towns' cost tables were fixed before the hamlets existed,
+and a table computed while a village it buys from is mid-way keeps the placeholder. `47h` recomputes the tables once the
+villages are declared, in two passes (the villages' first, then the towns' again).
+
+**Not this:** no colony yet (a camp strikes; a village on another island is the owner's "Voth and Hykkousoi colonies"
+question, PLAN-POLITICS.md), no metals (the region has no deposit map: a node is dealt where a camp digs, as the mine's).
+
+## 13. The herding bands and more ranches (built 2026-11-09)
+
+**The owner (2026-11-09):** "Give Valapo cloves and add some ranch hamlets / semi nomadic herding camps on the map".
+
+- **Cloves for Valapo**: its plantation's cash crops (`15` `hamlets.farming.crops.valapo.cash`) grew cloves beside the
+  sugar cane, cotton and coffee (moved the same day to its plantation overseas, section 14; and out of the city page's
+  farms stand-in, where they took banana and coconut parcels and left Valapo too short for the polity's famine relief); Valapo's wet forest suits them as Kautoa's does (the
+  crops kit: tropic, humid to wet), and the ships from beyond pay best for them (section 12's exports).
+- **Two ranch hamlets** on the existing ranch machinery (`openworld/isle-demo/src/48`): Kautoa's south ranch on the
+  savanna 17 km south-west of the town, Valapo's ranch on its island's savanna 18 km south (the pasture survey's picks:
+  the isles kit's `gather` pasture, 5 km from every village), both on the highway network (16 roads).
+- **The herding bands** (`47n-isle-herders.js`; `openworld/isle-demo/src/48n-world-herders.js`): each town's band of six
+  households (about 30 people) lives in a camp of the kit's camp shelters and drives its herd over a pasture range
+  (`herders` in the tune): core/camp 40's work camp on 800 m cells of pasture (head a hectare, meat a head); the herd
+  grazes a cell down to a third and the band moves its whole camp, store and herd to the next, the grass back in 45
+  days. The herders' meat and hides go to the town by cart from wherever the camp stands (the road's minutes follow
+  it), the town's staples back; it eats its own meat first; its money comes from its town's treasury. Kautoa's band
+  ranges the savanna 30 km south-west between its ranches, Valapo's the open grassland 46 km north; each is named from
+  the Sikau list. `88h` draws its shelters round its kitchen and a herd of the kit's water buffalo, pitched again
+  where the band moves. tests/test-isle-herders.js (20 days, stand-in pasture): every band in its camp beside its herd,
+  fed, grazing, its meat in its town, its camp moving with its herd (Valapo's moved four times), each with a negative;
+  `verify.py` checks each band's camp on dry pasture, named and drawn, and in two days of the sim fed and at work.
+- **Not yet:** the band's seasons (a wet-season and a dry-season range, the transhumance proper); the herd as animals
+  the sim counts (the meat is a yield of the pasture, as the ranch's is); a band settling into a ranch hamlet, or a
+  ranch sending out a band; the Beast Riders' own bands (core/camp's plan) meeting the islanders' herders.
+
+## 14. Clay for the potters; Valapo's clove plantation overseas (built 2026-11-09)
+
+**The owner (2026-11-09):** "do we have clay harvesting for pottery? If not, we should. Valapo can have a clove plantation
+on the west forest island. It should also try to feed itself by growing its own food."
+
+- **Clay.** There was none: the potters made pots from nothing. Now a `clay` focus in core/hamlet (`20-hamlet-cultures.js`:
+  the Islanders' `ie-claypit`, 24 jobs, the smallest works village) and a clay pit in the Islanders kit (`69-ie-hamlet.js`:
+  the pit cut to the grey clay, its spoil banked, the treading trough, the drying shed of racked blocks; the library's
+  clay set is fired, so raw clay is a tinted stand-in owed a texture: `core/materials/PROMPTS-NEEDED.md` 22). One clay
+  village a town (`48` `hamlet-clay-k`, `hamlet-clay-v`): the isles have no rivers, so the clay is the alluvial clay of the
+  low wet margins, a pit on dry flat ground within 300 m of the mangrove flats, the nearest beyond the town's ground
+  (Kautoa's 8 km east, 6.8 km by road, with a sea leg; Valapo's 9 km north-east, 20 km by road). The sim (`15`
+  `hamlets`): the clay diggers' works (`claypit`, half a lot a worker-hour), the clay bank a site that lasts fifty years,
+  and each town's potters take two lots of clay a pot (`hamlets.town[...].inputs`; the city page, without the villages,
+  makes its pots as before). tests/test-isle-hamlets.js checks the clay dug, landed and used two lots a pot;
+  `verify.py` each town's clay village by the mangrove flats with the kit's clay pits.
+- **Valapo's clove plantation overseas** (`48` `hamlet-plant-vw`, `islandSite`; `47h` `overseas`): a farming village
+  of 90 hands on the coast of the forest island west, its crops the town's `island` list (cloves four parts in seven,
+  sweet potato, taro and banana the rest), which its people eat first; the cloves leave its home plantation for it. It
+  has no road to its town: both its routes go by sea, its quay to Valapo's canoe stop (a lakatoi each way, 32 km and
+  about five hours in the node test's stand-in), the town's other foods coming back on the IN route. The survey
+  (`islandSite`) takes the best-fitting farmland within 9 km of the island's point with the sea within a kilometre
+  and a sea route from that shore to Valapo's landing, nearest the landing first. The road bake leaves it out.
+  tests/test-isle-hamlets.js: both routes sea legs, its cloves landed in Valapo, its staples grown and eaten;
+  `verify.py`: on the island with a landing and no road, cloves and its own staples, both routes by sea in the sim.
+- **Not yet:** the clay's other uses (bricks, the kilns' linings, a daub for the walls); fired-clay roof tiles for the
+  colonies; a clay village that fires its own pots and sells them; the overseas plantation's own boats drawn on its
+  IN route (only the OUT route's lakatoi is drawn); the plantation taking the island's forest down for its fields.
+
+## 15. Nephtos, the Hykkousoi colony of Tethys (built 2026-11-09; a placeholder plan)
+
+**The owner (2026-11-09):** "Forest island east will have a new element: a Hykkousoi colony. Since im not at computer I
+can't lay it out, so for now we'll use a place holder radial layout. This colony, Nephtos, will be a port colony of Tethys
+run by its merchant family. It will be about 1/2 the size of Valapo and have dependent clove, cacao, Indigo, anatto, and
+tobacco plantations, in addition to having farming, fishing, and lumber hamlet/camps. We can add a copper deposit which
+will also be worked for export. The Hykkoussoi merchants also will deploy pearl diving ships with much higher yield than
+the Islanders' (breathing water and all). There will be ships from Tethys that stop at the colony and new ships built
+there count as Tethys; other poleis (Ys, Pontus) will have seperate fleets that can visit here or the Islander
+settlements; their off map commerce will be abstracted for now."
+
+- **The plan** (`47k-isle-colony.js`, `ISLE.colonyPlan`; a PLACEHOLDER for the owner's layout): in the shape of a core/city
+  plan, so the town goes through the same declaration as Kautoa and Valapo. The agora 150 m inland of the harbour's beach;
+  eight spokes from it (one an avenue down to the beach), six ring streets 58 m apart; the harbour's customs house,
+  warehouses, fish market, shipyard and the marines' barracks along the harbour spoke; the merchant family's palazzo, the
+  council hall, the temple of the sea, the market, shops, taverns, the bakehouse, healer and school on the first ring;
+  villas on the second, houses outward until 210 households are housed; the potters, weavers and the coppersmith on the
+  outer rings; every lot on dry ground. 1,065 people in 213 households (Valapo: 2,095). The buildings are stand-ins
+  (`ISLE.COLONY_DIMS`, each carrying its Islander counterpart's census trade): the Ys kit's Hykkousoi buildings
+  (`settlements/ys`) are a 2 MB engine of their own, not bundled into the world for a placeholder.
+- **On the world** (`openworld/isle-demo` `48p`, `88p`): on the west coast of the forest island west, the island north-west
+  of Valapo (the owner, 2026-11-09: "that's in the wrong place, i wanted it on the island NW of valapo", its west coast;
+  first built on the forest island east, my misreading of the survey's names): the survey's pick (-56.5, 20.1 km) and round
+  it, within 9 km, the beach with the open sea off it and the most dry, gentle ground behind it (it stands at -54.2,
+  15.2 km, its beach facing north-west, 82 % of its ground dry). Valapo's clove plantation is on the same island's
+  south-east corner, 33 km away; its six villages all stand on the island. Drawn as white-limed walls under sea-green
+  roofs, the civic four domed, streets of pale stone, a stone quay with the Ring Sea kit's Hykkousoi corbita and pearl ship
+  at its berths. Its ground is kept from the flora and the villages; its spokes are road heads (the bake routes its
+  villages to them).
+- **On the sim**: `ISLE.simDeclare(..., {colonies})` declares it after the two towns: the Hykkousoi of Tethys (a faction of
+  its own), its books in Tethyan drachmae (`money.extra`, near the shells' worth, changed through the Talent; added only
+  where a town keeps them), its own goods (`towns.Nephtos.goods`: indigo, annatto, tobacco, copper, hulls). Its merchant
+  house is the house of Pherekles of Tethys (47y), chartered from its treasury like the Islanders' houses.
+- **Its countryside** (48 `hamlet-*-n`; tune `hamlets.farming.crops.nephtos`): two farming hamlets (taro, sweet potato,
+  banana, coconut), the plantations (clove, cacao, indigo, annatto, tobacco), a fishing village on the nearest coast with
+  a sea leg (core/hamlet's fishing focus: its landing stage and canoe shed, `fishery` grounds that restock), a lumber
+  village in the island's forest, and the copper mine on the high ground inland (a `copper` node of kits/resources' grades;
+  `hamlets.metals` makes its works' good copper, not iron ore). Their hands are hired Islanders under the colony's
+  overseers: the Hykkousoi wither if they stay long in dry places (settlements/ys/DESIGN.md), so the island's interior is
+  worked by others. Tobacco joins the Crops kit (`kits/crops`, a herb-bucket leaf crop that fits the ring isles' wet zone).
+- **The pearl ships** (47x `pearl`, Nephtos's only: `only`, `towns.nephtos.kinds`): its house sends ten divers in a
+  Hykkousoi pearl ship (faster than a lakatoi) to a reef's shore; they work the bed without coming up for air, a pearl in
+  four hours against the Islanders' twenty (in the node test, 0.74 pearls a diver a day against the Islanders' best 0.4).
+  Its pearl ceiling is a few calls of Tethys's (600).
+- **The poleis' fleets** (`trade.buyers`): Tethys's merchantmen call every four days and take the colony's crops, copper,
+  pearls and every hull its shipyard has finished (`hamlets.town.nephtos.batches`: a hull of 40 timber and 240 worker-hours;
+  `ships`, carted one at a time): those hulls are Tethys's fleet. Ys's traders (the "Hykkousoi traders" of 2026-10-19)
+  call at Kautoa, Valapo and Nephtos; Pontus's at Valapo and Nephtos. Their commerce off the map is abstracted: they buy and
+  leave. A call at a town the page has not declared is skipped (the city page has no Nephtos). The lore names Ys, Tethys and
+  Trigon as the major poleis; Pontus is the owner's addition.
+- **Checked**: tests/test-isle-colony.js (ten days on stand-in ground): the plan's size, lots dry and apart, the harbour;
+  declared, housed, staffed, fed; its villages' goods landed; its house and pearl ships; Tethys's calls taking crops,
+  copper and hulls; Ys and Pontus calling; each with a negative. The world's `verify.py`: the colony on the island's coast,
+  half Valapo's size, lots dry and off the towns and villages, tagged, drawn with its ships, its villages its own; after two
+  days of the sim, housed, staffed, fed, its villages at work, Tethys calling (negatives for each).
+- **Not yet:** the owner's layout and the Ys kit's buildings in place of the stand-ins (and the drowned streets, canals and
+  water doors a Hykkousoi town would have); its people seen walking its streets (not yet
+  looked at: its nav is the placeholder's); the Tethyan ships drawn coming and going (they are moored at the quay); the hulls sailing away; the
+  colony's trade with the Islander towns (a line of its own); the merchant family as people of the house; Trigon's fleet.
+
+### 15a. The real Hykkousoi buildings, and Nephtos from the owner's drawing (2026-11-09)
+
+**The owner:** "i'm home so i can do a real layout. can we get real hykkousoi buildings in there? we don't need all the
+barnacle skyscrapers Ys does".
+
+- **The bundle** (`bundles.py` `HYKB`, read in place from `settlements/ys/src`, sealed like the Iziz Vernacular's IZV): the
+  Ancients core, the Hykkousoi materials, shell kit, helpers and furniture, and the 63 free-standing pieces (houses, shops,
+  taverns and inn, the two shrines, markets, the treasury and guilds, harbour pieces, warehouses, smithies, shipwright,
+  windmill, barracks, farm pieces, spans); NOT the Scallop Stack hosts and their grown-on pods, the Ys landmarks (the
+  Amphitriton, the citadel, the arena, the temples of the Tides and the Winds), the Ys port, towers, ruins or offices.
+  `HYKB.proto(key)` builds a piece once on flat ground, its shells flushed into it (exterior skins only), its kit items
+  baked; `58-isle-protos.js` knows the kit `hyk`. The world takes it and Ys's texture pack (the Hykkousoi families and the
+  plain ones, 18 MB beside the page, as Iziz's 21 MB). The boat shed's moored skiffs are the Ys port's: none drawn.
+  The pieces' boxes join `ISLE_DIMS` (build.py, kit `hyk`, Ys's type words as the vocabulary's).
+- **The site planner** has Nephtos as a third town (`?town=Nephtos`; its frame at the colony's site; `serve.py` saves it
+  into `site/isle-site.json` under `towns.Nephtos`).
+- **The programme** (`30` `ISLE.PROG.Nephtos`): laid out as Valapo is, every lot a Hykkousoi piece. The names it reads:
+  markers AGORA (the centre), PALAZZO, TEMPLE, COUNCIL HALL, CUSTOMS HOUSE, SHIPYARD, BARRACKS, GRANARY, WINDMILL, INN;
+  districts `harbor` / `harbor 2` (the quay, piers, wet landing and sheds on the shore, warehouses, guilds and the
+  shipwright inland), `Market 1` / `Market 2`, `Funerary 1`; parks and plazas by core/city's roles. Every Hykkousoi house
+  is one household (the kit's multi-family homes are the stacks' pods), so the colony is a town of small houses.
+  `34` `ISLE.EXPECT.Nephtos`: about half Valapo's people, a landing, the palazzo, temple and council hall.
+- **The world** plans Nephtos with the towns when the site file has a drawing (48t), draws it with them (88t), and the
+  colony's record follows that plan (48p `drawn`: the placeholder steps aside); the sim declares it with the towns
+  (`simDeclare` sorts a non-Islander town after them). Without a drawing the placeholder radial plan stands, as before.
+- **The road bake** (48r) routes a road again to the next network point, or from another lane end, when it comes out
+  steeper than the grade or finds no route (the island's highland: a plantation lane ending at a 57 m drop).
+- **Checked:** tests/test-isle-nephtos-plan.js plans a TEST drawing (`tests/fixtures/nephtos-test-site.json`, not the
+  owner's) with the programme: no box missing, every lot Hykkousoi, the markers' landmarks, the harbour and its landing,
+  declared, housed, staffed, fed; on the world the same drawing built 373 lots for 1,480 people (looked at, not committed).
+- **Not yet:** the pale plinths and kerbs the town drawing lays under lots (the Islanders' look) and the towns' far level
+  of detail, which draws a cone-roofed box per lot (it reads as a tent); the Hykkousoi canals, drowned streets and water
+  doors; the triangles (a piece up to 130k; the towns' distance levels carry it).

@@ -5,7 +5,7 @@
       still at the start view. That view comes from little-demo: "west of Shade". This region has no Shade, so it falls back
       to (-6000, 2500), 1.6 km deep in the Ring Sea. `verify.py` now sets the view over Kautoa and settles before
       the world's checks. Checked there: 269,676 records, seeding identical in three orders, 25,313 trees spaced. The page
-      still opens over that sea: an isle start view in `src/world/98-world-start.js` is owed.
+      still opens over that sea: an isle start view in `core/world/98-world-start.js` is owed.
 
 - [x] **The towns' buildings read washed out next to their kits** (the owner, 2026-10-20, on the Governor's House). Two
       losses, both in the flatten every town piece goes through (settlements/isle-demo 58), so the city page had them
@@ -55,8 +55,8 @@
       match the city page); the hamlets keep theirs. A region registry in world coordinates is still to do.
 
 - [ ] **The world's light ignores the clock** (2026-10-19). `core/clock` runs here now (the hamlets' felling reads it), but
-      the sun (`HOST.SUN_DIR`) and the atmosphere (`ATMOS.init`'s `hour: () => 11.5`, little-demo's `src/world/83-world-water.js`)
-      are still pinned at 11:30. Moving them onto `HOST.clock.hour` is a change to `src/world/` (little-demo is deprecated).
+      the sun (`HOST.SUN_DIR`) and the atmosphere (`ATMOS.init`'s `hour: () => 11.5`, little-demo's `core/world/83-world-water.js`)
+      are still pinned at 11:30. Moving them onto `HOST.clock.hour` is a change to `core/world/` (little-demo is deprecated).
 - [ ] **The hamlets were seen in the browser only at the lumber village** (2026-10-19). The salt village, the mine and the
       ranch are checked by their data (`verify.py`'s hamlet check), not yet by eye.
 - [ ] **The lumber village's stand is nearly all saplings** at the default felling rate (`core/hamlet/PLAN.md`, H4): a
@@ -89,7 +89,7 @@
       seen from 260 km up.
 - [ ] **Headless verify fails on this machine** (2026-10-15). SwiftShader throws "Cannot read properties of null
       (reading 'trim')" compiling the sky's capture (`ATMOS.skylight`'s PMREMGenerator, called from
-      `src/world/83w-world-seas.js`), so the page stops at start.
+      `core/world/83w-world-seas.js`), so the page stops at start.
       - **The same happened to little-demo's own page here, before it was deprecated, committed sources included.** It comes from this machine,
         not from this build.
       - **In the browser pane (a real GPU) both pages load clean.** The isle's checks and negatives were run there,
@@ -101,3 +101,17 @@
       Checked on a real GPU in the browser pane: 14 vents, 43 geysers and 62 springs build, the world clock ticks (`GEYSER.SHOW.t`),
       a geyser in its column phase erupts with spray, the console has no errors. Headless `verify.py` fails with the same
       SwiftShader `trim` error as before the change (identical output), so no new failures.
+- [ ] **The jungle stands through a farming camp pitched live** (2026-11-09): a camp's shelters (88h, kits/islanders 70-ie-camp.js)
+      and a founded hamlet's buildings are drawn where the sim puts them, and the ground over the parcels is repainted
+      (TERRAIN.refresh), but the flora tiles already built there are not rebuilt, so the trees placed before the founding stay
+      among the shelters until the tile is dropped and rebuilt (leave and come back). The baked hamlets are clear because
+      `WORLD.clearHook` knew their ground before the tiles were built. A live clear needs the flora module to drop the tiles
+      over a box as the terrain does; the camp should also fell what stands on its site (the felling of core/hamlet 40).
+- [ ] Nephtos (48p, 88p, 2026-11-09): stand-in boxes on a placeholder radial plan, on the natural ground (no terraces, no
+      land hook: its lots stand where the slope allows); its whole reach is cleared of flora, gardens and streets alike.
+      Its thieves' guild (settlements/isle-demo 47c) runs in the sim and has a mark on the region map, but no landmark or sign:
+      its tavern is a stand-in with no registry record in the towns' sense (verify checks the two Islander towns' guilds).
+- [ ] Nephtos's copper mine (2026-11-09) stands on the highest ground of its patch (the mine survey's rule) and its road keeps
+      low, cutting up to 104 m into the hill rather than climbing: within the grade and on the ground, but a deep cutting.
+      A drawn Nephtos (the owner's layout) is drawn with the towns: the pale lot plinths and kerbs and the far level of
+      detail (a cone-roofed box per lot, which reads as an Islander tent) are the Islanders' look, not yet the Hykkousoi's.

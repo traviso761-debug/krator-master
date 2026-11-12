@@ -3,14 +3,18 @@
    declared" and "Settlements and their economies"), in the order Dhelv's 74-dhelv-sim.js gives, one town at a time:
      ISLE.simInit(clock)        the host binding (SIM.init: the clock's hour, day and motion seconds), the activities,
                                 the faction, the items (43); once a page
-     ISLE.simDeclare(plans)     plans: [{R, G}] from ISLE.plan / ISLE.city. Each town's nav (41) joins one 'pedestrian'
+     ISLE.simDeclare(plans, clock, opts)   plans: [{R, G}] from ISLE.plan / ISLE.city. Each town's nav (41) joins one 'pedestrian'
                                 layer; then, town by town, its settlement record, its places (below), its people (42),
-                                its households and shops (43) and its own economy (44); SIM.check last
+                                its households and shops (43) and its own economy (44); SIM.check last. opts.hamlets: the
+                                village specs a page will declare after (47h: the open world's ISLE_HAMLETS.SPECS), so a
+                                town whose farming hamlets are coming drops its own farms stand-in and counts their crops
+                                as its own (PLAN.md section 11); ISLE.hamletSpecs(focus, town) reads them
+       - every farm parcel (R.fields) by its kind, its crop kept for the economy (none since 2026-11-09: the countryside
+         grows the food); a town's farm ring (Kautoa's: the programme's world record beyond the wall) as holdings, the
+         owner's stand-in kept as it is, and Valapo's farms the same on a page without its hamlets (15 `ring`, `farms`);
      ISLE.simPlaces(TS, R, G, nav)  the places, from the plan's records alone:
        - every lot whose key ISLE.TUNE.sim.kinds names, as [kind, {ACTIVITY: slots}] (Dhelv's table), its slots from its
          footprint (no interiors yet: Verge's rule), a dwelling's from its households (34: ISLE.households);
-       - every farm parcel (R.fields) by its kind, its crop kept for the economy; a town's farm ring (Kautoa's: the
-         programme's world record beyond the wall) as holdings, a stand-in until core/hamlet's farming villages (H6);
        - the door on the street nearest the lot (41: a split of the way), so a walk starts and ends on its street; a
          parcel or holding far from every way gets a track (the farm ring's from the highways out of the gates).
      Places are in WORLD metres (the town's frame added), keyed to their settlement; each carries tags {key, lot, trade
@@ -32,10 +36,20 @@ ISLE.simInit = function (clock) {
     jitter: NE.jitter, keep: NE.keep, done: NE.done, bands: NE.bands, loyalty: NE.loyalty, pain: NE.pain, vital: NE.vital, secPerMinute: T.clock.secPerMinute });
   return S;
 };
+/* the village specs the page will declare (opts.hamlets of ISLE.simDeclare), by focus and parent town: [] on a page without */
+ISLE.hamletSpecs = function (focus, town) {
+  return ((ISLE.SIM && ISLE.SIM.hamletSpecs) || []).filter(function (sp) { return (!focus || sp.focus === focus) && (!town || sp.parent === town); });
+};
+/* a farming village's crop rows (15 hamlets.farming.crops[town][list]: the spec names the list, or carries its own rows) */
+ISLE.hamletCrops = function (townId, sp) {
+  var F = ISLE.TUNE.sim.hamlets && ISLE.TUNE.sim.hamlets.farming, L = sp && sp.crops;
+  if (L && typeof L !== 'string') return L;
+  return (F && F.crops[townId] && F.crops[townId][L || 'staples']) || [];
+};
 /* the census trade a key carries (the first IS_TRADES row naming it), or null */
 ISLE.tradeOf = function (key) {
   if (!ISLE._trade) { ISLE._trade = {}; (typeof ISLE_TRADES !== 'undefined' ? ISLE_TRADES : []).forEach(function (r) { (r.east || []).concat(r.west || []).forEach(function (k) { if (!ISLE._trade[k]) ISLE._trade[k] = r.trade; }); }); }
-  return ISLE._trade[key] || null;
+  return ISLE._trade[key] || (ISLE.COLONY_AS && ISLE.COLONY_AS[key] ? ISLE.tradeOf(ISLE.COLONY_AS[key]) : null);   /* a colony's stand-in: its Islander counterpart's trade (47k) */
 };
 ISLE.simPlaces = function (TS, R, G, nav) {
   var T = ISLE.TUNE.sim, F = G.frame, s = TS.id, out = { places: [], homes: 0, beds: 0, posts: 0, byKind: {}, unmapped: {}, far: 0 };
@@ -73,17 +87,22 @@ ISLE.simPlaces = function (TS, R, G, nav) {
       { key: 'field:' + Fr.crop, lot: Fr.id, tag: Fr.tag, trade: ISLE.tradeOf(Fr.kind === 'orchard' ? 'ie-farm-poor' : 'ie-farm'), cls: Fr.kind, district: 'farmland', role: null, crop: Fr.crop },
       { track: T.track });
   });
-  /* the farm ring beyond the square (a world record's sites: Kautoa's), each site a holding with one crop by a hash */
-  var Rg = T.ring, wt = Rg.crops.reduce(function (n, c) { return n + c.w; }, 0);
+  /* the farm ring beyond the square (a world record's sites: Kautoa's), each site a holding with one crop by a hash; and
+     Valapo's farms the same way, unless the page declares its farming hamlets (then its food comes by road: 47h) */
+  [T.ring, T.farms].forEach(function (Rg) {
+    if (!Rg || !(R.world || []).some(function (W) { return W.kind === Rg.kind && W.sites; })) return;
+    if (Rg.unlessHamlets && ISLE.hamletSpecs('farming', TS.name).length) { (ISLE.SIM.standinOff || (ISLE.SIM.standinOff = {}))[s] = Rg.kind; return; }
+    var wt = Rg.crops.reduce(function (n, c) { return n + c.w; }, 0);
   (R.world || []).filter(function (W) { return W.kind === Rg.kind && W.sites; }).forEach(function (W) {
     W.sites.forEach(function (q, i) {
       var r = KRAND.unit(KRAND.hash(T.seed, 73, TS.prefix.charCodeAt(0), i)) * wt, c = Rg.crops[Rg.crops.length - 1];
       for (var k = 0; k < Rg.crops.length; k++) { r -= Rg.crops[k].w; if (r <= 0) { c = Rg.crops[k]; break; } }
       var A = Rg.size * Rg.size, F0 = T.field[c.kind], K = [F0[0], { WORK: Rg.posts[c.kind] * 100 / A }, F0[2]];
       put(s + '.r' + i, c.kind + ' of ' + c.crop + ' (the farm ring)', K, q[0], q[1], 0, A, 0,
-        { key: 'field:' + c.crop, lot: W.id + '.' + i, trade: ISLE.tradeOf(c.kind === 'orchard' ? 'ie-farm-poor' : 'ie-farm'), cls: c.kind, district: 'farm ring', role: null, crop: c.crop },
+        { key: 'field:' + c.crop, lot: W.id + '.' + i, trade: ISLE.tradeOf(c.kind === 'orchard' ? 'ie-farm-poor' : 'ie-farm'), cls: c.kind, district: Rg.kind, role: null, crop: c.crop },
         { track: T.track, prefer: 'highway' });
     });
+  });
   });
   /* the places to be in company: the plan's pocket parks and plazas, and its park and beach districts (each at its
      middle), SOCIALIZE by their ground, open */
@@ -108,18 +127,22 @@ ISLE.simPlaces = function (TS, R, G, nav) {
   homes.sort(function (a, b) { return a.h - b.h || (a.rec[0] < b.rec[0] ? -1 : 1); }).forEach(function (H) { put.apply(null, H.rec); });
   /* the doors of what opens later (2026-11-04): the refugee camp (47r) and the streets outside the gates (33, 47b) get their
      doors on the walking graph now, while it is still being made, so their people can walk home */
-  var doorOf = function (x, z) { var dn = nav.door(x, z, 3000), w = world(x, z); return dn >= 0 ? nav.at(dn) : { x: w.x, y: w.y, z: w.z }; };
+  var doorOf = function (x, z) { var dn = nav.door(x, z, 3000, { skip: 'track' }), w = world(x, z); return dn >= 0 ? nav.at(dn) : { x: w.x, y: w.y, z: w.z }; };   /* on a street, never a holding's track (41) */
   if (R.camp) R.camp.door = doorOf(R.camp.x, R.camp.z);
   (R.spurs || []).forEach(function (Sp) { Sp.lots.forEach(function (L) { L.door = doorOf(L.x, L.z); }); });
   return out;
 };
 /* the towns declared: plans [{R, G}], in ISLE.TOWNS order whatever the order given (so every page deals the same) */
-ISLE.simDeclare = function (plans, clock) {
+ISLE.simDeclare = function (plans, clock, opts) {
   var S = ISLE.simInit(clock), T = ISLE.TUNE.sim, t0 = Date.now();
-  plans = plans.slice().sort(function (a, b) { return ISLE.TOWNS.indexOf(a.R.town) - ISLE.TOWNS.indexOf(b.R.town); });
+  if (opts && opts.hamlets) S.hamletSpecs = opts.hamlets.slice();
+  var rank = function (p) { var i = ISLE.TOWNS.indexOf(p.R.town); return i < 0 ? 1e3 : i; };   /* the towns first; a drawn colony (47k) after them */
+  plans = plans.slice().sort(function (a, b) { return rank(a) - rank(b) || (a.R.town < b.R.town ? -1 : a.R.town > b.R.town ? 1 : 0); });
+  if (opts && opts.colonies) plans = plans.concat(opts.colonies);   /* the colonies' plans (47k: Nephtos), after the towns, in the order given */
   var navs = plans.map(function (p) { var TS = T.towns[p.R.town]; return ISLE.navOf(p.R, p.G, TS.prefix + 'n'); });
   plans.forEach(function (p, i) {
     var TS = T.towns[p.R.town], t1 = Date.now(); if (S.towns[TS.id]) return;
+    if (!SIM.R.faction[TS.faction]) SIM.faction({ id: TS.faction, name: TS.factionName || TS.faction });   /* a colony's (47k) */
     SIM.settlement({ id: TS.id, faction: TS.faction, name: TS.name });
     if (!SIM.R.org[TS.id + '.folk']) SIM.org({ id: TS.id + '.folk', faction: TS.faction, name: 'The people of ' + TS.name });
     var PL = ISLE.simPlaces(TS, p.R, p.G, navs[i]);
@@ -143,9 +166,12 @@ ISLE.simDeclare = function (plans, clock) {
   S.trade = ISLE.simTrade();
   S.build = ISLE.simBuild();   /* the empty lots and upkeep (47b), before the money opens the lots' accounts */
   S.crime = ISLE.simCrime();   /* crime and punishment (47c), after everyone is placed */
+  S.yards = ISLE.expYards ? ISLE.expYards() : null;   /* the canoe sheds' canoes of the islands' goods (47x), before the money prices them and opens their accounts */
   S.money = ISLE.simMoney();   /* the accounts (47m: money's M0), after the crime's guild */
   S.unrest = ISLE.simUnrest();   /* unrest from the happiness pool (47u: PLAN-MONEY.md M6) */
   S.refugees = ISLE.simRefugees ? ISLE.simRefugees() : null;   /* the camps and the weekly ship (47r), after the money's accounts */
+  S.founding = ISLE.simFound ? ISLE.simFound() : null;   /* the farming camps the towns' refugees found, and the hamlets they become (47f) */
+  S.expeditions = ISLE.simExpeditions ? ISLE.simExpeditions() : null;   /* the camps by boat to the other isles (47x) */
   S.problems = S.problems.concat(SIM.check());
   S.ms.declare = Date.now() - t0;
   return S;

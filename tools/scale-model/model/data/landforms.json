@@ -1,0 +1,26 @@
+{
+ "format": "krator-landforms",
+ "version": 1,
+ "landforms": [
+  {
+   "id": "lf_pleasure_dome_isle",
+   "kind": "island",
+   "px": 806.6,
+   "py": 1513.3,
+   "r_m": 300.0,
+   "crest_m": -498.0,
+   "water_m": -520.0,
+   "note": "The Pleasure Dome of the Bay's island in Erehwon's bay, about 5 km off the town's quays (22 m over the lake; the Erewhon page's island with its lagoon, dome and barge dock). Sub-cell: its cell's bed is held as a shoal (40 m) for the stamp. edit_512, 2026-11-11."
+  },
+  {
+   "id": "lf_west_stack",
+   "kind": "island",
+   "px": 784.4,
+   "py": 1491.6,
+   "r_m": 160.0,
+   "crest_m": -478.0,
+   "water_m": -520.0,
+   "note": "A basalt stack off the lake's west shore, 42 m over the water. Sub-cell; its cell's bed held as a shoal. edit_512, 2026-11-11."
+  }
+ ]
+}

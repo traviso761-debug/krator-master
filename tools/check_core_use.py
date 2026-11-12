@@ -42,7 +42,7 @@ REQUIRED = {
     'biomes': ['biome', 'rand', 'tags', 'host', 'atmos', 'water'],
     'settlements': ['rand', 'tags'],
     'kits': ['rand', 'tags'],
-    'openworld': ['rand', 'tags'],
+    'openworld': ['rand', 'tags', 'world'],   # core/world: the open world's runtime (openworld/PLAN-SITES.md, 2026-11-09)
 }
 
 # build -> modules it is excused from, with the reason (keep this short; an entry is a decision, not a convenience)
@@ -55,8 +55,8 @@ NOT_APPLICABLE = {
     'kits/resources': {'tags': 'data kit; nodes are tagged by the works that take them'},
 }
 
-ALL_MODULES = ['atmos', 'biome', 'city', 'clock', 'engine', 'export', 'furnish', 'hamlet', 'host', 'lod', 'mask', 'materials', 'minimap', 'rand',
-               'sched', 'simulation', 'space', 'tags', 'terrain', 'walk', 'water']
+ALL_MODULES = ['atmos', 'biome', 'camp', 'city', 'clock', 'engine', 'export', 'furnish', 'hamlet', 'host', 'lod', 'mask', 'materials', 'minimap', 'rand',
+               'sched', 'simulation', 'space', 'tags', 'terrain', 'walk', 'water', 'world']
 
 # Settlements already PLACED on a site of the world map, with that site's biome data (the owner, 2026-10-23). They read the
 # biome files, so they are rebuilt whenever those change: the biome-sync rules apply to them like a biome. Every other

@@ -10,6 +10,7 @@ Write code with an eye to an eventual port to Godot.
   |---|---|
   | randomness, a seed, a hash of (world, cell, index, salt) | `core/rand` (`KRAND`): never `Math.random`, a hand-rolled PRNG or `fract(sin())` |
   | height, relief, strata, noise, rivers on the ground | `core/terrain` (and the scale model's fields), not your own `fbm` or `terrainH` |
+  | the scale model's land at 1:1, an open-world region, a settlement on the map's ground | `core/world` (`WORLD.H`, `ROADS`, the streamed flora; `openworld/PLAN-SITES.md`), never a copy of it or a ground of your own |
   | what is where, overlap tests, occupancy | `core/space` (`KSPACE`), `core/mask` (`KMASK.canvas`); never `getImageData` for placement |
   | sky, sun, fog, light, weather, cloud deck, the wave field | `core/atmos` (`ATMOS.bindHost` from `core/atmos/host`), the standard skybox plus local detail |
   | a sky for a kit's viewer page (its pieces are lit by their site's sky in the world) | the placeholder sky, `core/atmos/placeholder` (`KratorSky`), read by path through its `placeholder.py`: never a copy in `src/` |

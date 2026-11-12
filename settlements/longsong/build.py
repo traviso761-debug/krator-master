@@ -11,7 +11,7 @@ Valley, built in situ on the scale model's land (PLAN.md, README.md; the program
   40-ls-plan          THE PLAN as data [G data]: the site, the rock, the ward, every building, the Vault, the sealed
                       things, the people and their schedules
   40b-ls-farms        THE FARMS AND GARDENS as data [G data]: fields, terraces, pools, groves, orchards, beds, herds
-  41-world-fields     the open world's fields, read in place (openworld/isle-demo/src/world, moved from the deprecated little-demo): WORLD.H, the land at 1:1
+  41-world-fields     the open world's fields, read in place (core/world, moved from the deprecated little-demo): WORLD.H, the land at 1:1
   42-ls-world         HOST: WORLD.init, the page's origin on the model
   44-host-matlib-pack GENERATED (tools/textures/matlib_pack.py): Longsong's library maps and the Oidong kit's, as sidecars
   45-host-stage       HOST: renderer, light, the land and the plan's shapes on it, the fields, BIO.init
@@ -125,8 +125,8 @@ for f in ('10-hamlet-wood.js', '12-hamlet-gather.js', '20-hamlet-cultures.js', '
 PATH.setdefault('33-city-strategies.js', os.path.join(ROOT, 'core', 'city', '33-city-strategies.js'))
 for f in ('09-lod.js', '97-lod-auto.js'):
     PATH.setdefault(f, os.path.join(ROOT, 'core', 'lod', f))
-# the open world's fields (openworld/isle-demo/src/world), read in place: the land round the site at 1:1
-PATH['41-world-fields.js'] = os.path.join(ROOT, 'openworld', 'isle-demo', 'src', 'world', '41-world-fields.js')
+# the open world's fields (core/world), read in place: the land round the site at 1:1
+PATH['41-world-fields.js'] = os.path.join(ROOT, 'core', 'world', '41-world-fields.js')
 # the host shell from core/host, the whole interface (core/host/README.md): the inspector, marks, pictures, the minimap,
 # the editor, the cutaway, and the core modules they read (core/edits, core/space, core/minimap)
 sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))

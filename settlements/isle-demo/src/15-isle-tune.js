@@ -32,7 +32,13 @@ ISLE.TUNE.sim = {
   towns: {
     Valapo: { id: 'valapo', name: 'Valapo', faction: 'islanders', prefix: 'v', carts: 20, inputs: { bread: { 'sweet-potato': 1 } } },
     /* Kautoa grows nothing inside its wall: its farms are the programme's farm ring beyond it (`ring`), its bread is taro */
-    Kautoa: { id: 'kautoa', name: 'Kautoa', faction: 'islanders', prefix: 'k', carts: 40, inputs: { bread: { taro: 1 } } }
+    Kautoa: { id: 'kautoa', name: 'Kautoa', faction: 'islanders', prefix: 'k', carts: 40, inputs: { bread: { taro: 1 } } },
+    /* NEPHTOS (47k; the owner, 2026-11-09): the Hykkousoi port colony of Tethys on the west coast of the forest island west (north-west of Valapo), about half
+       Valapo's size, run by Tethys's merchant family; declared only where a page hands its plan in (ISLE.simDeclare
+       opts.colonies: the open world). Its bread is taro; its carts are fewer than Valapo's */
+    Nephtos: { id: 'nephtos', name: 'Nephtos', faction: 'hykkousoi', factionName: 'The Hykkousoi of Tethys', prefix: 'n',   /* its books in Tethyan drachmae (money.extra) */ carts: 12, inputs: { bread: { taro: 1 } },
+      goods: ['indigo', 'annatto', 'tobacco', 'copper', 'ships'],   /* its own goods beside the economy's (44): its plantations' dyes and leaf, its mine's copper, its shipyard's hulls */
+      colony: { polis: 'tethys', polisName: 'Tethys', family: 'the house of Pherekles', households: 210 } }
   },
   activities: ['SLEEP', 'EAT', 'REST', 'IDLE', 'WORK', 'BUY', 'SOCIALIZE', 'WORSHIP', 'HAUL', 'STUDY', 'HOUSEWORK', 'PATROL'],
   indoor: ['SLEEP', 'REST', 'IDLE'],
@@ -72,18 +78,57 @@ ISLE.TUNE.sim = {
     vern_house_mid_a: ['home', {}, { cls: 'middle' }], vern_house_mid_b: ['home', {}, { cls: 'middle' }], vern_house_mid_c: ['home', {}, { cls: 'middle' }],
     vern_house_rich_a: ['home', {}, { cls: 'rich' }], vern_house_rich_b: ['home', {}, { cls: 'rich' }],
     vern_governor_palace: ['residence', { WORK: 1 }, { cls: 'rich' }], vern_guard_tower: ['watchtower', { WORK: 1.5 }], vern_watch_house: ['watchtower', { WORK: 4 }],
-    vern_shops: ['shop', { WORK: 3, BUY: 4 }, { open: [6, 21], shop: 'staples' }], vern_tavern: ['tavern', { WORK: 2.5, EAT: 6, SOCIALIZE: 16, BUY: 6 }, { open: [10, 24], shop: 'meal' }],
+    vern_shops: ['shop', { WORK: 3, BUY: 4 }, { open: [6, 21], shop: 'staples' }],
+    /* Nephtos (47k): the Hykkousoi stand-ins of the colony's placeholder plan */
+    'hyk-house': ['home', {}, { cls: 'middle' }], 'hyk-house-poor': ['home', {}, { cls: 'poor' }], 'hyk-villa': ['home', {}, { cls: 'rich' }],
+    'hyk-palazzo': ['residence', { WORK: 1, SOCIALIZE: 0.3 }, { cls: 'rich' }], 'hyk-temple': ['temple', { WORK: 2.5, WORSHIP: 8, STUDY: 10 }, { open: [5, 21] }],
+    'hyk-agora-hall': ['hall', { WORK: 2.5, SOCIALIZE: 8 }, { open: [7, 21] }], 'hyk-customs': ['customs', { WORK: 2.5 }],
+    'hyk-market': ['market', { WORK: 3, BUY: 5, SOCIALIZE: 12 }, { open: [6, 21], out: true, wander: 4, shop: 'market' }],
+    'hyk-shop': ['shop', { WORK: 3, BUY: 4 }, { open: [6, 21], shop: 'staples' }], 'hyk-tavern': ['tavern', { WORK: 2.5, EAT: 6, SOCIALIZE: 16, BUY: 6 }, { open: [10, 24], shop: 'meal' }],
+    'hyk-bakehouse': ['bakehouse', { WORK: 2.5, BUY: 3 }, { open: [5, 18], shop: 'bread' }], 'hyk-warehouse': ['warehouse', { WORK: 2.5 }],
+    'hyk-fishdock': ['fishdock', { WORK: 2.5, BUY: 1 }, { out: true, wander: 6, shop: 'fish' }], 'hyk-shipyard': ['dockyard', { WORK: 1 }, { out: true, wander: 10 }],
+    'hyk-potter': ['potter', { WORK: 2.5 }], 'hyk-weaver': ['weaver', { WORK: 2.5 }], 'hyk-smithy': ['smithy', { WORK: 2.5 }], 'hyk-healer': ['healer', { WORK: 2.5 }],
+    'hyk-school': ['school', { WORK: 2.5, STUDY: 60 }, { open: [6, 16] }], 'hyk-barracks': ['barracks', { WORK: 0 }, { mess: true, posts: 'beds' }],
+    /* Nephtos from the owner's drawing (30 PROG.Nephtos): the Ys kit's free-standing Hykkousoi pieces (bundles.py HYKB) */
+    hyk_house_poor_1: ['home', {}, { cls: 'poor' }], hyk_house_poor_2: ['home', {}, { cls: 'poor' }], hyk_house_poor_3: ['home', {}, { cls: 'poor' }],
+    hyk_house_mid_1: ['home', {}, { cls: 'middle' }], hyk_house_mid_2: ['home', {}, { cls: 'middle' }], hyk_house_mid_3: ['home', {}, { cls: 'middle' }],
+    hyk_house_rich_1: ['home', {}, { cls: 'rich' }], hyk_house_rich_2: ['home', {}, { cls: 'rich' }], hyk_house_rich_3: ['residence', { WORK: 1, SOCIALIZE: 0.3 }, { cls: 'rich' }],
+    hyk_farmhouse_1: ['home', {}, { cls: 'poor' }], hyk_farmhouse_2: ['home', {}, { cls: 'poor' }],
+    hyk_shop_general: ['shop', { WORK: 3, BUY: 4 }, { open: [6, 21], shop: 'staples' }], hyk_shop_food: ['shop', { WORK: 3, BUY: 4 }, { open: [6, 21], shop: 'staples' }],
+    hyk_shop_chandler: ['shop', { WORK: 3, BUY: 4 }, { open: [6, 21], shop: 'staples' }], hyk_shop_salt: ['shop', { WORK: 3, BUY: 4 }, { open: [6, 21], shop: 'staples' }],
+    hyk_fishmonger: ['fishdock', { WORK: 2.5, BUY: 1 }, { out: true, wander: 6, shop: 'fish' }], hyk_shop_cloth: ['weaver', { WORK: 2.5 }], hyk_shop_potter: ['potter', { WORK: 2.5 }],
+    hyk_shop_pearl: ['workshop', { WORK: 2.5 }], hyk_shop_weapon: ['workshop', { WORK: 2.5 }], hyk_shop_armour: ['smithy', { WORK: 2.5 }], hyk_shop_alchemy: ['healer', { WORK: 2.5 }],
+    hyk_tavern_1: ['tavern', { WORK: 2.5, EAT: 6, SOCIALIZE: 16, BUY: 6 }, { open: [10, 24], shop: 'meal' }], hyk_inn: ['inn', { WORK: 2.5, EAT: 5, SOCIALIZE: 8 }, { open: [6, 23], shop: 'meal' }],
+    hyk_caravanserai: ['inn', { WORK: 2.5, EAT: 5, SOCIALIZE: 8 }, { open: [6, 23], shop: 'meal' }],
+    hyk_market_main: ['market', { WORK: 3, BUY: 5, SOCIALIZE: 12 }, { open: [6, 21], out: true, wander: 4, shop: 'market' }],
+    hyk_market_nbhd_1: ['market', { WORK: 3, BUY: 5, SOCIALIZE: 12 }, { open: [6, 21], out: true, wander: 4, shop: 'market' }],
+    hyk_market_nbhd_2: ['market', { WORK: 3, BUY: 5, SOCIALIZE: 12 }, { open: [6, 21], out: true, wander: 4, shop: 'market' }],
+    hyk_shrine_seagods: ['temple', { WORK: 2.5, WORSHIP: 8, STUDY: 10 }, { open: [5, 21] }], hyk_shrine_tides: ['temple', { WORK: 2.5, WORSHIP: 8 }, { open: [5, 21] }],
+    hyk_treasury: ['hall', { WORK: 2.5 }], hyk_navigators_guild: ['hall', { WORK: 2.5, SOCIALIZE: 8, STUDY: 10 }, { open: [7, 21] }], hyk_pearlmongers_guild: ['customs', { WORK: 2.5 }],
+    hyk_quay: ['quay', { WORK: 1.7 }, { out: true, wander: 6 }], hyk_pier: ['quay', { WORK: 1.7 }, { out: true, wander: 6 }], hyk_wet_landing: ['quay', { WORK: 1.7 }, { out: true, wander: 6 }],
+    hyk_boat_shed: ['canoeshed', { WORK: 2.5 }], hyk_aquaculture_pen: ['fishdock', { WORK: 2.5 }, { out: true, wander: 6 }],
+    hyk_warehouse_small: ['warehouse', { WORK: 2.5 }], hyk_warehouse_large: ['warehouse', { WORK: 2.5 }], hyk_warehouse_round: ['warehouse', { WORK: 2.5 }], hyk_granary: ['granary', { WORK: 1 }],
+    hyk_smithy_small: ['smithy', { WORK: 2.5 }], hyk_smithy_large: ['smithy', { WORK: 2.5 }], hyk_shipwright: ['dockyard', { WORK: 1 }, { out: true, wander: 10 }], hyk_windmill: ['mill', { WORK: 2 }],
+    hyk_barracks: ['watchtower', { WORK: 4 }], hyk_ballista: ['watchtower', { WORK: 2 }], hyk_muster: ['square', { WORK: 0.2, SOCIALIZE: 6 }, { out: true, wander: 15 }], vern_tavern: ['tavern', { WORK: 2.5, EAT: 6, SOCIALIZE: 16, BUY: 6 }, { open: [10, 24], shop: 'meal' }],
     vern_smithy: ['smithy', { WORK: 2.5 }], vern_workshop_a: ['workshop', { WORK: 2.5 }], vern_workshop_b: ['workshop', { WORK: 2.5 }]
   },
   /* the canoe stop (P7c): its dockers' posts per 100 m2 of the landing (the last number: its area, m2) */
   stop: ['canoe stop', { WORK: 3 }, { out: true, wander: 6 }, 200],
   field: { field: ['field', { WORK: 0.9 }, { out: true, wander: 8, open: [5, 19] }], orchard: ['orchard', { WORK: 0.55 }, { out: true, wander: 8, open: [5, 19] }] },
   /* a town's farm ring (a world record of `kind` beyond the square: R.world's sites): each site a holding of `size` metres
-     square with one crop by a hash of the town and the site (core/rand), weighted; a stand-in until core/hamlet's farming
-     villages (H6) take the ring over; `posts` its hands. Only Kautoa's programme has one */
+     square with one crop by a hash of the town and the site (core/rand), weighted; `posts` its hands. Kautoa's `ring` is
+     the owner's stand-in, kept as it is (2026-11-04: "leave the farming ring alone"), worked from the town on every page.
+     Valapo's `farms` (its programme's farms beyond the village) is the city page's stand-in for the fields that left the
+     village (PLAN.md section 11, 2026-11-09): `unlessHamlets` drops it on a page that declares Valapo's farming hamlets
+     (the open world, the node test), where its food comes in by road instead (47h, 44) */
   ring: { kind: 'farm ring', size: 140, posts: { field: 20, orchard: 13 },
     crops: [{ crop: 'rice', kind: 'field', w: 3 }, { crop: 'taro', kind: 'field', w: 2 }, { crop: 'banana', kind: 'orchard', w: 2 }, { crop: 'coconut', kind: 'orchard', w: 1 },
       { crop: 'cloves', kind: 'orchard', w: 2 }, { crop: 'cacao', kind: 'orchard', w: 1 }] },
+  farms: { kind: 'farms', size: 140, posts: { field: 12, orchard: 8 }, unlessHamlets: true,
+    crops: [{ crop: 'sweet potato', kind: 'field', w: 3 }, { crop: 'taro', kind: 'field', w: 2 }, { crop: 'banana', kind: 'orchard', w: 1 }, { crop: 'coconut', kind: 'orchard', w: 1 },
+      { crop: 'sugar cane', kind: 'field', w: 2 }, { crop: 'cotton', kind: 'field', w: 2 }, { crop: 'coffee', kind: 'orchard', w: 1 }] },   /* coconut: the potters' lamp oil (economy.inputs). No cloves
+         here (2026-11-09): a clove orchard in the stand-in took banana and coconut parcels and left Valapo too short for the
+         polity's relief to cover a famine (test-isle-unrest.js); Valapo's cloves are its plantation hamlet's (hamlets.farming.crops) */
   jobs: {
     farmhand: { kinds: ['field', 'orchard', 'pens', 'byre'] }, fisher: { kinds: ['fishdock'] }, docker: { kinds: ['quay', 'warehouse', 'granary', 'customs', 'ferry', 'beacon', 'canoe stop'] },
     trader: { kinds: ['market', 'shop', 'butcher'] }, baker: { kinds: ['bakehouse', 'mill'] }, keeper: { kinds: ['tavern', 'inn'] },
@@ -219,16 +264,17 @@ ISLE.TUNE.sim = {
   },
   economy: {
     goods: ['sweet-potato', 'taro', 'rice', 'banana', 'coconut', 'fish', 'meat', 'bread', 'sugar-cane', 'sugar', 'cotton', 'cloth', 'pots', 'coffee',
-      'clove', 'cacao', 'salt', 'stone', 'leather', 'garments', 'sandals', 'armour', 'tools', 'kava', 'mats', 'lamps', 'jewellery', 'woodtools', 'nets', 'poultices', 'hats'],
+      'clove', 'cacao', 'salt', 'stone', 'leather', 'garments', 'sandals', 'armour', 'tools', 'kava', 'mats', 'lamps', 'jewellery', 'woodtools', 'nets', 'poultices', 'hats',
+      'mahogany', 'gum', 'kapok', 'canoes', 'medicinals', 'sulphur', 'pearls'],   /* the other isles' goods the expedition camps bring (47x, PLAN.md 12: the forest's timber, gum, kapok and medicinal bark, the vents' sulphur, the reefs' pearls) and the hulls the canoe sheds build */
     /* each town's bread is its own (towns[town].inputs over these) */
     inputs: { sugar: { 'sugar-cane': 2 }, cloth: { cotton: 2 }, garments: { cloth: 2 }, sandals: { leather: 1 }, armour: { leather: 3 }, tools: { stone: 4 }, lamps: { coconut: 1 }, jewellery: { stone: 1 }, nets: { cotton: 2 } },
     every: 30, window: 1, imports: { days: 2, scan: 60 }, cart: { cap: 400, load: 10, unload: 10, minLoad: 40, urgent: 1 },
     /* a good's own load worth a cart's trip (the cart's minLoad otherwise): the oruwa's light, dear goods land a few dozen
        at a time, under the 40 a cart waits for, and sat at the canoe stop (2026-10-19) */
-    minLoad: { clove: 5, cacao: 5, coffee: 5, armour: 5, tools: 5, pots: 10, kava: 10, mats: 10, lamps: 10, jewellery: 5, woodtools: 5, nets: 2, poultices: 5, hats: 10 },
+    minLoad: { ships: 1, pearls: 2, medicinals: 10, sulphur: 20, clove: 5, cacao: 5, coffee: 5, armour: 5, tools: 5, pots: 10, kava: 10, mats: 10, lamps: 10, jewellery: 5, woodtools: 5, nets: 2, poultices: 5, hats: 10 },
     /* a crop's own rate, times the parcels' (the owner, 2026-10-19: the spice, cane and cacao cut tenfold); the governor
        below holds the rest to what is wanted */
-    cropRate: { clove: 0.1, cacao: 0.1, 'sugar-cane': 0.1, cotton: 1 },
+    cropRate: { clove: 0.1, cacao: 0.1, 'sugar-cane': 0.1, cotton: 1, indigo: 0.2, annatto: 0.2, tobacco: 0.3 },
     /* the production governor (49), an order-up-to rule: a producer's rate is its full one times what is wanted of its
        good (demand, plus `alpha` of the gap to `cover` days of it, closed over `ti` days) over what it makes at full,
        clamped to [min, max], looked at every `every` minutes, its estimates smoothed over `smooth` days, its demand over the
@@ -247,7 +293,7 @@ ISLE.TUNE.sim = {
       'sugar-cane': 0.03, cotton: 0.002, clove: 0.002, cacao: 0.003, coffee: 0.002, sugar: 0.001 },
     /* the crops of the parcels (30-isle-programme.js farm) as the economy's goods */
     crops: { 'sweet potato': 'sweet-potato', banana: 'banana', coconut: 'coconut', 'sugar cane': 'sugar-cane', cotton: 'cotton', coffee: 'coffee',
-      rice: 'rice', taro: 'taro', cloves: 'clove', cacao: 'cacao' },
+      rice: 'rice', taro: 'taro', cloves: 'clove', cacao: 'cacao', indigo: 'indigo', annatto: 'annatto', tobacco: 'tobacco' },   /* the last three Nephtos's plantations' (47k) */
     /* servings (food) or lots a worker-hour, into the place's own store up to cap */
     producers: {
       field: { rate: 6, cap: 3000 }, orchard: { rate: 6, cap: 3000 }, fishdock: { out: ['fish'], rate: 7, cap: 3000 }, pens: { out: ['meat'], rate: 4, cap: 1500 },
@@ -267,7 +313,8 @@ ISLE.TUNE.sim = {
     warehouses: ['warehouse', 'granary'],
     /* a town opens with `startDays` of its food, each food in its share of the town's making (its producers' posts times
        rate), and these lots of the other goods it makes (not of what it must import) */
-    startDays: 3, startLots: { cloth: 1000, pots: 500, garments: 500, sandals: 200, armour: 20, salt: 300, sugar: 300, clove: 60, cacao: 60, stone: 40, leather: 40, tools: 60, kava: 300, mats: 200, lamps: 400, jewellery: 50, woodtools: 60, nets: 10, poultices: 50, hats: 200 },
+    startDays: 3, startLots: { cloth: 1000, pots: 500, garments: 500, sandals: 200, armour: 20, salt: 300, sugar: 300, clove: 60, cacao: 60, stone: 40, leather: 40, tools: 60, kava: 300, mats: 200, lamps: 400, jewellery: 50, woodtools: 60, nets: 10, poultices: 50, hats: 200,
+      'sugar-cane': 400, cotton: 600 },   /* the mill's and the weavers' raw crops (2026-11-09): grown by the plantation and brought by road, so a town opens with some */
     /* salt (owner, 2026-10-19): a preserver, so `keep` of the fish and the meat that would spoil in a night is salted
        instead where the town's warehouses hold salt, a salt for `per` servings kept; and an improver of meals: while a
        town holds salt its people season their food (`uses`), and a meal at home counts `season` times its foods' quality */
@@ -285,11 +332,20 @@ ISLE.TUNE.sim = {
        salvagers and Islanders of the outer isles (their islands yet to be named) call at a town's landing every `every`
        days (from day `phase`), at `at` minutes past midnight, and buy up to `buys` of each good, above the `floor` the
        town keeps (for the canoe line and itself). Kautoa's civilian harbour moors their vessels (30-isle-programme.js) */
-    buyers: { at: 720, floor: { clove: 300, cacao: 300, sugar: 300, coffee: 100 },
+    buyers: { at: 720, floor: { clove: 300, cacao: 300, sugar: 300, coffee: 100, indigo: 50, annatto: 50, tobacco: 100, copper: 50, ships: 0 },
       ships: [
         { id: 'voth', name: 'Voth traders', vessel: 'vothDhow', every: 3, phase: 0, calls: ['kautoa'], buys: { clove: 600, cacao: 400 } },
         { id: 'izani', name: 'Izani merchants', vessel: 'izizDhoni', every: 4, phase: 1, calls: ['kautoa'], buys: { cacao: 600, clove: 300 } },
-        { id: 'hykkousoi', name: 'Hykkousoi traders', vessel: 'hykCorbita', every: 5, phase: 2, calls: ['kautoa', 'valapo'], buys: { clove: 800, sugar: 200, iron: 300 } },
+        /* THE POLEIS' FLEETS (47k; the owner, 2026-11-09: "There will be ships from Tethys that stop at the colony and new
+           ships built there count as Tethys; other poleis (Ys, Pontus) will have separate fleets that can visit here or the
+           Islander settlements; their off map commerce will be abstracted for now"). Tethys's merchantmen call at its colony
+           and take its crops, copper and pearls home, and every hull its shipyard finishes into Tethys's fleet (`ships`);
+           Ys's (the Hykkousoi traders of 2026-10-19) and Pontus's call at the Islander towns and at Nephtos. A ship's call at
+           a town the page has not declared is skipped (the city page has no Nephtos) */
+        { id: 'tethys', name: 'Tethyan merchantmen', vessel: 'hykCorbita', every: 4, phase: 1, calls: ['nephtos'], polis: 'tethys',
+          buys: { clove: 600, cacao: 600, indigo: 300, annatto: 300, tobacco: 400, copper: 400, pearls: 150, ships: 4 } },
+        { id: 'hykkousoi', name: 'Ys traders', vessel: 'hykCorbita', every: 5, phase: 2, calls: ['kautoa', 'valapo', 'nephtos'], polis: 'ys', buys: { clove: 800, sugar: 200, iron: 300, tobacco: 200, indigo: 100 } },
+        { id: 'pontus', name: 'Pontic traders', vessel: 'hykGalley', every: 6, phase: 4, calls: ['valapo', 'nephtos'], polis: 'pontus', buys: { sugar: 200, coffee: 100, copper: 200, annatto: 100, cacao: 200 } },
         { id: 'salvagers', name: 'Ancient salvagers', vessel: 'salvageTug', every: 6, phase: 3, calls: ['kautoa'], buys: { cacao: 300, clove: 300 } },
         { id: 'outer', name: 'Islanders of the outer isles', vessel: 'islanderLakatoi', every: 2, phase: 1, calls: ['valapo', 'kautoa'], buys: { sugar: 100, coffee: 100, clove: 200, cacao: 200 } }
       ] },
@@ -331,8 +387,11 @@ ISLE.TUNE.sim = {
      2a: the treasury owns them all to start), the treasury with `treasury` shells a person (three days' wages), the guild `guild`, the money
      changers' reserves, the traders from beyond in Talents. The numbers are placeholders for M1's tuning */
   money: { currencies: { talent: { name: 'Izani Talent', talent: 1, unit: 'talent' }, shell: { name: 'Kautoan shells', talent: 0.05, unit: 'shell' } },
-    spread: 0.03, nation: { islanders: 'shell' }, endow: { poor: 300, middle: 800, rich: 3000 }, treasury: 60, guild: 500,
-    changers: { shell: 20000, talent: 1000 }, foreign: { talent: 5000 },
+    spread: 0.03, nation: { islanders: 'shell', hykkousoi: 'drachma' },
+    /* Nephtos's (47k): the Tethyan drachma, near the shells' worth (so the money's costs and wages read alike), changed through the Talent */
+    extra: { drachma: { name: 'Tethyan drachmae', talent: 0.04, unit: 'drachma' } },
+    endow: { poor: 300, middle: 800, rich: 3000 }, treasury: 60, guild: 500,
+    changers: { shell: 20000, talent: 1000, drachma: 20000 }, foreign: { talent: 5000 },
     /* M1 (PLAN-MONEY.md, 2026-11-03): every trade earns `wage` shells a rota hour (the same for all to start), paid at midnight
        into its household (a barracks' soldiers into their mess); prices are each good's labour cost at `wage` an hour times a
        markup, set after `calibrate` days of measuring (after a warm-up: the opening restock's waves would bias it) so that what the households spend is the wage bill (the officials,
@@ -341,7 +400,10 @@ ISLE.TUNE.sim = {
        member with no work (the children, the elders, the kin at home), so the markup is set on the earners' own keep: a wage
        keeps its earner, the ration the rest, and the treasury breaks even. Money does not limit anything yet: what a
        household cannot pay is fed on its treasury's dole */
-    m1: { wage: 6, calibrate: { after: 2, days: 3 }, fallback: 30, ration: true,
+    m1: { wage: 6, calibrate: { after: 2, days: 3 }, ration: true,
+      /* a good no settlement makes: its labour cost (`_` the rest); the forest islands' goods at what a crew's hours make them
+         (the expeditions of 2026-11-09: about 10 crew-hours a load of mahogany, the gum and the kapok by it) */
+      fallback: { _: 30, mahogany: 60, gum: 45, kapok: 30, medicinals: 40, sulphur: 80, pearls: 320 },   /* the vents' and the reefs' at a digger's and a diver's hours (a load of sulphur a hand a day, a pearl in four) and a little over */
       /* SPENDING THAT FOLLOWS SAVINGS (M1's second part, 2026-11-03): a household's savings in days of its keep, over `days`,
          set its people's wealth within their class's band (the items' wealthSpread: the class stays, the household sits
          higher or lower in it); a treat's bar on the material meter falls by `treatDrop` at a full purse; a treat or a meal
@@ -413,6 +475,80 @@ ISLE.TUNE.sim = {
        people are, on the mean, under `leave` happy moves on (leaves the isles) */
     tent: { n: 12, stay: 45, leave: 70 },
     camp: { size: 48, reach: 900, step: 15, drop: 3, tent: 5 } },
+  /* FOUNDING (47f; PLAN.md section 11 step 5; the owner, 2026-11-09): a town whose refugee camp holds `households` households
+     that have waited `waitDays` sends them out as a farming camp (at most `maxPerTown` camps a town), looked at every `every`
+     minutes; after `days` the camp converts to a farming hamlet sized for `settlers` times its people, and its highway is
+     a project of `road.hoursPerKm` worker-hours and `road.timberPerKm` timber a kilometre with `road.posts` of the hamlet's
+     hands on it */
+  /* FOUNDING (47f; the owner, 2026-11-09): households that waited `waitDays` in the camp go out as a farming camp of
+     `households`, which converts to a hamlet after `days`; up to `maxPerTown` camps a town, one at a time (the next
+     when the last has converted). The real pace: a month's wait, a season's camp (the owner: "they'd spend longer before
+     founding a new hamlet"); tests set the fast pace (waitDays 7, days 20) themselves. `settle`: a founded hamlet fills
+     its open homes and posts from the towns' waiting refugees (every `every` minutes), not from settlers dealt */
+  found: { every: 60, households: 6, waitDays: 30, days: 45, maxPerTown: 3, settlers: 2.5, settle: { every: 1440 }, road: { hoursPerKm: 400, timberPerKm: 20, posts: 8 } },
+  /* THE HERDING BANDS (47n; the owner, 2026-11-09: "add some ranch hamlets / semi nomadic herding camps on the map"):
+     each town's band of `households` (a camp of the kit's shelters, 88h) drives its herd over a RANGE of pasture `range` m
+     round its home ground: core/camp's work camp (47h's machine) on `cfg.cell` m cells of the isles kit's pasture, each
+     holding its pasture share x its hectares x `headPerHa` head x `lotsPerHead` meat lots; the herd grazes a cell down to
+     `strikeAt`, then the band strikes and moves its whole camp to the next (the grass back in `regrowDays`). Its herders
+     (`hands`) work the herd (`batch`: meat, hides by it); its meat and hides go to its town by cart at the detour rate,
+     the town's staples back; it eats its own meat first */
+  herders: { households: 6, hands: 14, startDays: 6, carts: 1,
+    crew: { range: 8000, samples: 3, treesPerHa: 1.5, lotsPerTree: 6, batch: { 'in': {}, out: { meat: 1 }, by: { hides: 0.08 }, hours: 3 }, cap: 1500,
+      cfg: { cell: 800, regrowDays: 45, strikeAt: 0.35, marchKmh: 3 } } },
+  /* EXPEDITIONS (47x; PLAN.md section 12; the owner, 2026-11-09: "have the cities deploy camps by boat to the other islands
+     and collect resources"): each town sends a crew of `hands` (its unemployed first, then its dockers) by lakatoi to the
+     nearest forest island shore with a sea route from its trade landing (the page's hook), on `firstDay`; the camp works
+     the jungle as the lumber village's crew works its stands (core/camp 40: `crew`, the batch mahogany with gum and kapok
+     by it), its goods home and its food out on a sea leg (`boat`); after `days` (a season) the crew comes home and the
+     camp is struck; `rest` days later the next sails */
+  expeditions: { hands: 12, firstDay: 1, days: 90, rest: 30, maxPerTown: 99, startDays: 6,
+    /* THE WORKSHOPS that take the camps' goods (`yards`: a batch on every `every`th place of a kind, counting from `from`;
+       `expOnly`: only where expeditions sail, so a page without them keeps its makers as they were): the canoe sheds build
+       canoes of the mahogany and gum (Kautoa three, Valapo one; the dockyard keeps its woodtools); a town's second healer
+       makes poultices of the medicinal bark; every eighth potter kapok-oil lamps; every fourth workshop pearl jewellery */
+    yards: { canoeshed: { batch: { 'in': { mahogany: 2, gum: 1 }, out: { canoes: 1 }, hours: 40 }, cap: 20 },
+      healer: { every: 2, from: 1, expOnly: true, batch: { 'in': { medicinals: 1 }, out: { poultices: 4 }, hours: 4 }, cap: 200 },
+      potter: { every: 8, from: 7, expOnly: true, batch: { 'in': { kapok: 1 }, out: { lamps: 2 }, hours: 3 }, cap: 400 },
+      workshop: { every: 4, from: 3, expOnly: true, batch: { 'in': { pearls: 1 }, out: { jewellery: 3 }, hours: 6 }, cap: 200 } },
+    /* what the households use of them a person a day (the bark teas, the sulphur against rot and for the fires) */
+    uses: { medicinals: 0.003, sulphur: 0.002 },
+    stockpile: { canoes: { max: 10 }, mahogany: { max: 600 }, gum: { max: 300 }, kapok: { max: 600 }, medicinals: { max: 300 }, sulphur: { max: 300 }, pearls: { max: 120 } },
+    /* THE KINDS of camp: the FOREST's crew (core/camp 40's work camp ranging the stands: mahogany, the gum, kapok and the
+       medicinal bark by it), the VENTS' diggers and the REEF's divers (a works at one node: a SIM.site of `amount`, its
+       `regen` a night); each its hands, its main good (the season's length is the room for it) and its `prior` a hand a day */
+    kinds: {
+      forest: { hands: 12, main: 'mahogany', prior: { mahogany: 1.0, gum: 0.3, kapok: 0.3, medicinals: 0.15 },
+        crew: { range: 3000, samples: 4, treesPerHa: 21, lotsPerTree: 40, batch: { 'in': {}, out: { mahogany: 1 }, by: { gum: 0.3, kapok: 0.3, medicinals: 0.15 }, hours: 2 }, cap: 1500, share: 0, cfg: { cell: 400, regrowDays: 365, strikeAt: 0.1 } } },
+      vents: { hands: 8, main: 'sulphur', prior: { sulphur: 1.0 }, node: { place: 'sulphur pit', kind: 'sulfur', batch: { 'in': {}, out: { sulphur: 1 }, hours: 4 }, cap: 1500, amount: 200000, regen: 0 } },
+      reef: { hands: 8, main: 'pearls', prior: { pearls: 0.25 }, node: { place: 'pearl bed', kind: 'pearl bed', batch: { 'in': {}, out: { pearls: 1 }, hours: 20 }, cap: 400, amount: 5000, regen: 2 } },
+      /* THE HYKKOUSOI PEARL SHIPS (47k; the owner, 2026-11-09: "The Hykkousoi merchants also will deploy pearl diving ships
+         with much higher yield than the Islanders' (breathing water and all)"): Nephtos's house only (`only`), a reef's
+         shore as the Islanders' (`shore`), in the Ring Sea kit's Hykkousoi pearl ship (`boat`, faster than a lakatoi);
+         its divers work the bed without coming up for air, a pearl in four hours against the Islanders' twenty */
+      pearl: { hands: 10, main: 'pearls', prior: { pearls: 1.25 }, only: ['nephtos'], shore: 'reef', boat: { vessel: 'hykPearl', kmh: 9 },
+        node: { place: 'pearl bed', kind: 'pearl bed', batch: { 'in': {}, out: { pearls: 1 }, hours: 4 }, cap: 400, amount: 5000, regen: 2 } } },
+    /* a town's own kinds (47k): the colony sends its pearl ships only (the Islanders' kinds take no `only`, so every town
+       but one listed here may send them) */
+    towns: { nephtos: { kinds: ['pearl'], stockpile: { pearls: { max: 600 } } } },   /* its pearls go to Tethys: its ceiling a few calls' worth */
+    boat: { vessel: 'islanderLakatoi', kmh: 5.85, cap: 3000, carriers: 1, mins: 120, keep: 0 },
+    /* THE MERCHANT HOUSE (47y; the owner, 2026-11-09: "make each city's long distance expeditions organized by a merchant
+       house"): each town charters one from its treasury with `capital` shells, headed by its richest household. It runs
+       the expeditions as a business: it decides to sail on the expected margin (the haul at the town's wholesale price, by
+       its last season's catch or `prior` a hand a day, against the crew's wages, the provisions at wholesale and the
+       boat's `charter` a day), pays the crew (the camp's workplaces are its own), buys the provisions and sells the haul to
+       the town at wholesale (the town's price over its markup) each night; recalls the crew when its purse holds less than
+       `recallDays` of wages; sails for as long as its town will buy (at least `minDays`); after a season pays its head `dividend` of what it holds over its capital and `keep` */
+    house: { capital: 40000, charter: 60, maxOut: 2, minDays: 10, reserveDays: 10, recallDays: 2, retryDays: 7, dividend: 0.5, keep: 0.25,
+      /* THE SHIPS FROM BEYOND (PLAN-MONEY M3's faucet; the owner, 2026-11-09): every `every` days a trader calls at each town
+         with `purse` Talents; the house sells it the plantations' cash crops, what the town holds over `keepDays` of its own
+         use, up to `load` of each, when the foreign price (Talents, at the changers' rate) beats the town's wholesale by
+         `margin`; the Talents are the house's (a Talent account), changed to shells when its purse runs short */
+      exports: { every: 7, purse: 2000, keepDays: 20, load: 400, margin: 0.1, prices: { clove: 1.0, cacao: 0.8, coffee: 0.12, sugar: 1.5 } },
+      /* THE LINES BETWEEN THE TOWNS: each load the canoe line lands is the SENDING town's house's: bought at the sender's
+         wholesale, sold at the receiver's, settled each night (the goods still sail by the towns' want: M3's choosing by
+         price is not this) */
+      carry: ['lakatoi', 'oruwa'] } },
   /* THE HAMLETS IN THE SIM (core/hamlet H5, 2026-10-26; 47h): the resource villages (core/hamlet's KHAMLET.village
      records: the open world's four, openworld/isle-demo 48) as settlements of their parent town, at the abstract level
      always (books and carts, nobody posed). Declared only when a page hands them in, so a page without villages keeps
@@ -425,23 +561,32 @@ ISLE.TUNE.sim = {
                    stay of `mins`; `cap` a load. Two routes a village: OUT, all it makes but its own use (`keep` 0, the want
                    unbounded: the village works for its town); IN, the parent's foods it eats (its want, `want` days)
        town        what the villages' goods feed in their towns (`stockpile`: the town's ceilings on the iron chain): new `inputs` (the tannery's leather from hides, the
-                   dockyard's wooden tools from timber, the smithies' iron from ore and charcoal), `recipes` for a kind's
+                   dockyard's wooden tools from timber, the smithies' iron from ore and charcoal, the potters' pots from the clay village's clay, two lots a pot), `recipes` for a kind's
                    places that have none (Valapo's smithies, idle till now, smelt iron), `uses` a person a day drawn hourly (Kautoa builds with timber),
                    `expect` a day on the lakatoi (the charcoal Valapo's smelting wants before any has come) */
   hamlets: {
     kinds: {
       house: ['home', { SLEEP: 1, EAT: 1, REST: 1, IDLE: 1, HOUSEWORK: 1 }],
-      'ie-saltworks': ['saltworks', {}], 'ie-mine': ['mine', {}], 'ie-quarry': ['quarry', {}], 'ie-sawpit': ['sawpit', {}], 'ie-kiln': ['kiln', {}],
+      'ie-saltworks': ['saltworks', {}], 'ie-mine': ['mine', {}], 'ie-quarry': ['quarry', {}], 'ie-claypit': ['claypit', {}], 'ie-sawpit': ['sawpit', {}], 'ie-kiln': ['kiln', {}],
       'ie-byre': ['byre', {}], 'ie-pens': ['pens', {}], 'ie-corral': ['corral', {}], br_bldg_raptor_stable: ['stable', {}], br_bldg_rookery_tower: ['rookery', {}],
+      'ie-farm': ['farm', {}], 'ie-granary': ['granary', {}],
+      'ie-fishdock': ['fishdock', {}], 'ie-canoeshed': ['canoeshed', {}],   /* a fishing village (Nephtos's, 47k): its landing stage and its canoe shed */   /* a farming village's farmsteads and granaries (the granary a store too) */
       warehouse: ['warehouse', {}], food: ['staples', { BUY: 6 }], general: ['trader', { BUY: 4 }], civic: ['hall', { SOCIALIZE: 30 }], religious: ['shrine', { WORSHIP: 20 }]
     },
     producers: {
       saltworks: { out: ['salt'], rate: 0.6, cap: 3000 }, mine: { out: ['ore'], rate: 0.6, cap: 3000 },   /* raking a pan by hand: slower than the town's boiling works */
+      claypit: { out: ['clay'], rate: 0.5, cap: 1500 },   /* the clay diggers (2026-11-09: the owner, "clay harvesting for pottery"): dug, trodden clean, cut and dried */
       quarry: { out: ['stone'], rate: 0.25, cap: 1500 },   /* Valapo's quarry (2026-11-04, the owner: less productive than Kautoa's: 0.25 a worker-hour against its 0.4, and a third of the hands) */
       sawpit: { out: ['timber'], rate: 0.5, cap: 3000 }, kiln: { out: ['charcoal'], rate: 1, cap: 3000 },
-      byre: { out: ['meat'], rate: 4, cap: 1500 }, pens: { out: ['meat'], rate: 4, cap: 1500 }, corral: { out: ['hides'], rate: 0.6, cap: 1000 }
+      byre: { out: ['meat'], rate: 4, cap: 1500 }, pens: { out: ['meat'], rate: 4, cap: 1500 }, corral: { out: ['hides'], rate: 0.6, cap: 1000 },
+      /* a farmstead grows one of its village's crops (`farming.crops`, dealt by weight over the farmsteads: 47h), at the
+         town's field rate a worker-hour times the crop's own (economy.cropRate) */
+      farm: { out: 'crops', rate: 6, cap: 3000 },
+      fishdock: { out: ['fish'], rate: 5, cap: 3000 }   /* a fishing village's canoes on its grounds, a little under a town's fish market */
     },
-    goods: ['ore', 'timber', 'charcoal', 'hides', 'iron', 'irontools', 'logs', 'fuelwood'],
+    /* a mine's goods by its node's metal (Nephtos's copper, 47k): the mine's `ore` is iron ore */
+    metals: { copper: 'copper' },
+    goods: ['ore', 'timber', 'charcoal', 'hides', 'iron', 'irontools', 'logs', 'fuelwood', 'clay'],
     /* PLAN-ECONOMY.md Phase 1: a village's works draw on its resource record from the map, by that record's id: its grade
        sets the yield (kits/resources RES_ORE.grades); `sites` by kind: what it regrows a night (`regen`) and the `years` it
        lasts worked flat out (the owner, 2026-11-02: resources deplete, over the 2026-10-18 rule; an ore node does not come
@@ -453,8 +598,9 @@ ISLE.TUNE.sim = {
        `stockpile`: its goods' ceilings, its town's stock with its own: at `max` its makers stop */
     gradeYield: { low: 0.5, medium: 1, high: 2 },
     life: { years: 5, minDays: 30 },
-    sites: { iron: { years: { low: 5, medium: 10, high: 20 } }, stone: { years: { low: 20, medium: 30, high: 50 } }, salt: { regen: 300 }, pasture: { regen: 2000 }, stand: { regen: 330 } },
-    stockpile: { salt: { max: 3000 }, ore: { max: 3000 }, stone: { max: 1500 }, timber: { max: 1500 }, charcoal: { max: 1500 }, hides: { max: 1000 }, logs: { max: 1500 }, fuelwood: { max: 1500 } },
+    sites: { iron: { years: { low: 5, medium: 10, high: 20 } }, stone: { years: { low: 20, medium: 30, high: 50 } }, salt: { regen: 300 }, pasture: { regen: 2000 }, stand: { regen: 330 },
+      farmland: { regen: 'full' }, clay: { years: 50 }, fishery: { regen: 'full' }, copper: { years: { low: 5, medium: 10, high: 20 } } },   /* a fishing ground restocks what it gives */   /* a stream's clay bank: dug for generations (it does not come back, but there is a great deal of it) */   /* farmland regrows what its hands take: the fallow (core/hamlet 14) keeps it; a site that never runs down */
+    stockpile: { salt: { max: 3000 }, ore: { max: 3000 }, clay: { max: 1500 }, copper: { max: 3000 }, stone: { max: 1500 }, timber: { max: 1500 }, charcoal: { max: 1500 }, hides: { max: 1000 }, logs: { max: 1500 }, fuelwood: { max: 1500 } },
     /* THE FELLING CREW, a work camp that migrates (core/camp 40-camp-work.js; owner, 2026-11-02): the lumber village is the
        yard (its sawpits saw logs into timber, its kilns burn fuelwood into charcoal) and `share` of its sawpits' posts go out
        as a crew that camps at one stand of the forest at a time, fells it down to its seed trees, strikes and marches to the
@@ -466,21 +612,59 @@ ISLE.TUNE.sim = {
     crew: { focus: 'lumber', share: 0.5, range: 3000, samples: 4, treesPerHa: 21, lotsPerTree: 40,
       batch: { 'in': {}, out: { logs: 1 }, by: { fuelwood: 2 }, hours: 2 }, cap: 1500,
       inputs: { timber: { logs: 1 }, charcoal: { fuelwood: 1 } }, cfg: { cell: 400, regrowDays: 365, strikeAt: 0.1 } },
-    minLoad: { ore: 20, timber: 20, charcoal: 20, hides: 10, iron: 10, irontools: 5, logs: 20, fuelwood: 20 },
-    carts: 2, startDays: 3, startLots: { ore: 100, timber: 100, charcoal: 100, hides: 60, salt: 100 },
+    minLoad: { ore: 20, timber: 20, charcoal: 20, clay: 20, copper: 20, hides: 10, iron: 10, irontools: 5, logs: 20, fuelwood: 20 },
+    carts: 2, startDays: 3, startLots: { ore: 100, timber: 100, charcoal: 100, hides: 60, salt: 100, clay: 100 },
     road: { kmh: 4, detour: 1.3, mins: 90, cap: 4000, keep: 1, want: 6 },
     town: {
-      kautoa: { inputs: { leather: { hides: 1 }, woodtools: { timber: 1 } }, uses: { timber: 0.02 }, startLots: { hides: 200, timber: 200, charcoal: 100, iron: 40 },
+      kautoa: { inputs: { leather: { hides: 1 }, woodtools: { timber: 1 }, pots: { clay: 2 } }, uses: { timber: 0.02 }, startLots: { hides: 200, timber: 200, charcoal: 100, iron: 40, clay: 200 },
         /* every `every`th smithy works the iron into iron tools, a batch (PLAN-ECONOMY.md Phase 2): Valapo smelts, Kautoa works the iron */
         batches: { smithy: { every: 4, batch: { 'in': { iron: 1, charcoal: 1 }, out: { irontools: 2 }, hours: 8 }, cap: 200 } },
         /* the iron chain's ceilings (SIM.stockpile, 2026-11-02): the governor never runs a maker under its floor, so without
            them the smithies smelted and forged three to eight times what was bought, and the mine (which does not come
            back) ran down for a pile. At `max` (the town's warehouses, sites, carts and what is at sea toward it) the makers stop */
         stockpile: { irontools: { max: 80 } } },
-      valapo: { inputs: { iron: { ore: 2, charcoal: 1 } }, recipes: { smithy: { batch: { 'in': { ore: 2, charcoal: 1 }, out: { iron: 1 }, hours: 2 }, cap: 600 } }, startLots: { ore: 200, charcoal: 100 },
-        stockpile: { iron: { max: 120 } } }
+      valapo: { inputs: { iron: { ore: 2, charcoal: 1 }, pots: { clay: 2 } }, recipes: { smithy: { batch: { 'in': { ore: 2, charcoal: 1 }, out: { iron: 1 }, hours: 2 }, cap: 600 } }, startLots: { ore: 200, charcoal: 100, clay: 200 },
+        stockpile: { iron: { max: 120 } } },
+      /* NEPHTOS'S SHIPYARD (47k; the owner, 2026-11-09: "new ships built there count as Tethys"): its hulls of the lumber
+         camp's timber, each finished hull Tethys's when its merchantmen next call (trade.buyers `tethys` buys `ships`) */
+      nephtos: { batches: { dockyard: { every: 1, batch: { 'in': { timber: 40 }, out: { ships: 1 }, hours: 240 }, cap: 6 } }, startLots: { timber: 120 }, stockpile: { ships: { max: 6 } } }
     },
-    lakatoi: { kautoa: ['charcoal', 'irontools'], valapo: ['iron'] }, expect: { valapo: { charcoal: 60 }, kautoa: { iron: 10 } },
+    lakatoi: { kautoa: ['charcoal', 'irontools'], valapo: ['iron'] }, expect: { valapo: { charcoal: 60, irontools: 2 }, kautoa: { iron: 10 } },   /* irontools (2026-11-09): Valapo's planned use, so a load leaves before its people have missed many (its errands fell under a load once its fields went) */
+    /* THE FARMING HAMLETS (PLAN.md section 11; the owner, 2026-11-04: agriculture moves to the countryside; built 2026-11-09).
+       A farming village (core/hamlet's `farming` focus) grows `crops[town][list]` (the programme's crop names, PLAN 8c:
+       `staples` what the town eats, `cash` its plantation's export crops), one crop a farmstead dealt by weight, on the
+       farmland core/hamlet 14 lays round it (the land estimate: KHAMLET.FARM). Its road OUT keeps `keep` days of its own
+       food back for its people; its granaries open with `startDays` of each crop so the first loads roll before the first
+       harvest is in. The towns' own stand-ins: Kautoa's farm ring stays; Valapo's farms (`farms` above) go when its
+       hamlets are declared */
+    /* THE SEA LEG (the owner, 2026-11-09: "a little port and cargo stop at lumber village, this would make sense for any
+       hamlets near the coast"): a coastal village (core/hamlet 30 `landing`: its quay and cargo shed a canoe stop of its own)
+       sends its goods to its town's canoe stop by a lakatoi of its own on SIM.trade, `kmh` over the sea route the page found
+       (48: `seaKm`), a load every trip, keeping `keep` days of its own; the road stays beside it (the lumber village: 7 hours by
+       sea, 43 by road). Food still comes by road */
+    sea: { vessel: 'islanderLakatoi', kmh: 5.85, cap: 3000, carriers: 1, mins: 120, keep: 1 },
+    /* THE HAMLETS GROW (PLAN.md section 11 step 5; the owner, 2026-11-04: up to double their first size by empty lots): a
+       village's plan has `vacant` of its households as empty plots (core/hamlet 30), each a lot of the village's on core's
+       building (47b's machinery: its bill of timber, stone and mats carted from its town, `posts` of the village's own hands
+       on the lot being built, growth's households moving in as the towns' do) */
+    grow: { vacant: 1, posts: 4, goods: ['timber', 'stone', 'mats'] },
+    farming: { startDays: 6, keep: 1,
+      crops: {
+        kautoa: { staples: [{ crop: 'rice', kind: 'field', w: 3, maxSlope: 0.08 }, { crop: 'taro', kind: 'field', w: 2 }, { crop: 'banana', kind: 'orchard', w: 1 }],
+          cash: [{ crop: 'cloves', kind: 'orchard', w: 1 }, { crop: 'cacao', kind: 'orchard', w: 1 }] },
+        valapo: { staples: [{ crop: 'sweet potato', kind: 'field', w: 3 }, { crop: 'taro', kind: 'field', w: 2 }, { crop: 'banana', kind: 'orchard', w: 1 }, { crop: 'coconut', kind: 'orchard', w: 1, maxH: 120 }],
+          cash: [{ crop: 'sugar cane', kind: 'field', w: 2 }, { crop: 'cotton', kind: 'field', w: 2 }, { crop: 'coffee', kind: 'orchard', w: 1, minH: 180 }],
+          /* THE CLOVE PLANTATION OVERSEAS (the owner, 2026-11-09: "Valapo can have a clove plantation on the west forest
+             island. It should also try to feed itself by growing its own food"): Valapo's cloves move there from its home
+             plantation (where the owner's first ask had put them the same day); a third of its farmsteads on its own staples,
+             which its people eat first (its road IN brings only the town's foods it does not grow) */
+          island: [{ crop: 'cloves', kind: 'orchard', w: 4 }, { crop: 'sweet potato', kind: 'field', w: 1 }, { crop: 'taro', kind: 'field', w: 1 }, { crop: 'banana', kind: 'orchard', w: 1 }] },
+        /* NEPHTOS (47k; the owner, 2026-11-09): its farming hamlets' staples (taro first: its bread), and its plantations'
+           clove, cacao, indigo, annatto and tobacco; worked by hired Islanders (the Hykkousoi wither if they stay long in dry
+           places, settlements/ys/DESIGN.md), the colony's overseers over them */
+        nephtos: { staples: [{ crop: 'taro', kind: 'field', w: 2 }, { crop: 'sweet potato', kind: 'field', w: 1 }, { crop: 'banana', kind: 'orchard', w: 1 }, { crop: 'coconut', kind: 'orchard', w: 1, maxH: 120 }],
+          cash: [{ crop: 'cloves', kind: 'orchard', w: 2 }, { crop: 'cacao', kind: 'orchard', w: 2 }, { crop: 'indigo', kind: 'field', w: 1 }, { crop: 'annatto', kind: 'orchard', w: 1 }, { crop: 'tobacco', kind: 'field', w: 1 }] }
+      } },
     /* the iron tools' sellers in both towns (items.tools 'iron tool'): added to these kinds' wares once the villages are declared */
     wares: { market: ['iron tool'], shop: ['iron tool'], smithy: ['iron tool'] }
   }

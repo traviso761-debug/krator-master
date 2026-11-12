@@ -111,7 +111,7 @@ No kit reads a settlement. No core module reads a kit or settlement (`tools/chec
   Allow-list: seven lines deleted (the comment-only and never-read edges above); two added, `kits/beast-riders ->
   settlements/girder` and `-> settlements/mavs-refuge`, real reads the scan never saw (step 5).
   Found on the way: `settlements/pinnacle-rock`, `settlements/longsong` and `openworld/little-demo` name
-  `openworld/little-demo/src/41-world-fields.js`, which moved to `openworld/isle-demo/src/world/` (d848c157), so they
+  `openworld/little-demo/src/41-world-fields.js`, which moved to `core/world/` (d848c157), so they
   do not build; their lists report the path they name. `settlements/yuni/build_fragments.py` fails its own build rules.
   (Fixed by the session `claude/great-hopper-7f0rbq`: both read the fields from the isle demo, little-demo is archived,
   `build_fragments.py` is gone; merged into this branch 2026-11-03.)
@@ -339,6 +339,24 @@ Pylon and Talia -> Iziz, and Beast Riders -> Girder and Mav's Refuge (below).
   - **`lateral`**, a settlement or open-world region reading another (31 today). What should stay are content links
     (the isle demo's two towns and its region, Longsong's and Pinnacle Rock's neighbours); the code reads go as their
     shared files reach a kit or core (Mungo and Verge -> Locus, Verge -> Iziz, Voth -> Dalab, Jimjam, Ys).
+    Added 2026-11-09 (openworld/PLAN-SITES.md):
+    - `settlements/isle-demo -> settlements/ys` and `openworld/isle-demo -> settlements/ys`: busy-keller's Nephtos, the
+      Hykkousoi colony, reads Ys's free-standing pieces and pack in place (`settlements/isle-demo/bundles.py` HYKB). This
+      is a code read, and goes when the Hykkousoi buildings are a kit.
+    - `openworld/pinnacle -> settlements/isle-demo`, `-> settlements/girder` and `-> settlements/mavs-refuge`: the first
+      site's camps take the Beast Riders' tents through the isle demo's `cat_bundle` and its piece instancer
+      (`58-isle-protos.js`), which seal Girder's and Mav's Refuge's towns, as `openworld/isle-demo` does. These are code
+      reads, and go when `kits/beast-riders` owns its bundle and the instancer moves to core/world
+      (`openworld/pinnacle/KNOWN_ISSUES.md`).
+    - `openworld/xanadu-oidong-highrift -> settlements/xanadu` and `-> settlements/isle-demo` (2026-11-10): the
+      second region's villages draw the Xanadu building kit with the library pack that is still settlements/xanadu's
+      (`kits/xanadu/kit_bundle.py`'s note), and flatten its pieces with the isle demo's `isleFlatten`, as Longsong does
+      (both allow-listed for Longsong). These go when `kits/xanadu` owns its pack and the flattener moves to core/world.
+    - `openworld/iziz-cluster -> settlements/isle-demo`, `-> settlements/girder`, `-> settlements/mavs-refuge` and
+      `-> settlements/iziz` (2026-11-11): the third region's camps take the tents as Pinnacle's do (`cat_bundle`, which seals
+      Girder's and Mav's Refuge's towns), and Talia's villages draw the Iziz Vernacular through the isle demo's `izv_bundle`
+      (the Vernacular with Iziz's Ancients core) and Iziz's library pack, through the same instancer, as `openworld/isle-demo`
+      does. These go when the kits own their bundles and packs and the instancer moves to core/world.
   - **`vendored`**, every module -> upstream pair a build keeps copies of and checks with `--vendor-check` (38 today,
     counting pairs a build also reads, which DEPS.json's "vendored" leaves out). A new copy is an error: read the
     upstream in place, or record here why it must drift. The rule is per pair, not per file (a per-file list would
