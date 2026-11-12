@@ -1,5 +1,21 @@
 # Pinnacle: known issues
 
+- [ ] **The frame's origin moved with the corridors** (2026-11-11): from the rock's pixel (1007,686) to the box's centre
+      (1091,690). The rock is now at x -168 km, z -8 km. Anything that placed itself in this region's frame by offsets
+      from the origin must add the rock's point: the camps' spec was already relative to the site, so nothing here moved.
+      `settlements/pinnacle-rock` does not read this region (it has its own 4.21 cut); when it is rebuilt on the open
+      world (the sim's S7), it takes the rock's point from `region.json`'s `sites`, not the origin.
+- [ ] **The links' stops are the Iziz Vernacular's** on every road, the Beast Rider trails and the coyotemen's and
+      Dasri's roads included: core/world 88s draws a stop only from a village kit it knows (xanadu, iziz). `PLAN.md`,
+      "What is left" 6.
+- [ ] **The corridors east of the rock grow nothing** (the crater's east wall, the Nomad Country's sedesert, the Tiers):
+      no kit for them in `src/47-world-kits.js`. `PLAN.md`, "What is left" 7.
+- [ ] **Fort Kreia's road is a guide**, not the network's: the trunk to Kreia starts at the Crescent and crosses the
+      Talon trail. If the network gains a Pinnacle-Kreia leg, switch the corridor to `net`.
+- [ ] **The rasters are a file beside the page** (`dist/pinnacle.land.js`, 8.7 MB): written into the page they took it to
+      98 % of its 16 MB cap. A page opened without that file has no land. Publishing must carry it (as the texture
+      sidecars).
+
 - [ ] **No mesa in the world.** The rock is `settlements/pinnacle-rock`'s own landform (KSTACKS records from its layout).
       The world's ground is the model's: the bands' camps stand round a knoll, not round a 500 m mesa. `PLAN.md`, "What is left" 1.
       On the list for the next scale-model run (the owner, 2026-11-10: `tools/scale-model/README.md`, "To do on the

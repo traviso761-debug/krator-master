@@ -6,7 +6,7 @@
 
 | Module | Use here |
 |---|---|
-| `core/world` | the runtime: the land, roads, terrain, water, flora, floor, camera and probe; `world_data.py` (the rasters decoded at build time: no canvas read); `KSITES` and `bake_sites.py` (the site's plan); `88s` (its drawing) |
+| `core/world` | the runtime: the land, roads, terrain, water, flora, floor, camera and probe; the rasters as PNGs decoded in the page (`98-world-start.js`; since the corridors, in `dist/pinnacle.land.js`); `KSITES` and `bake_sites.py` (the site's plan and its links); `42b`, `88b` (the links' bridges); `88s` (its drawing) |
 | `core/rand` | every seed (the flora by cell, the camps' bands, the hedges' runs) |
 | `core/space` | the camps' boxes (`KCAMP.pitch`) |
 | `core/tags` | every camp, tent, pen and hedge registered before it is drawn (build `pinnacle:sites`) |
@@ -38,3 +38,16 @@ Not taken, each with its reason:
 3. **The bands on core/simulation** (the isle demo's `48k simDeclare`, lifted into `core/world` or `core/camp`).
 4. **The savannah kit's world fragment** moves into `biomes/abyssal-savannah`, with its floor (`WORLD_FLOOR`).
 5. **The planner page** for the region (`openworld/PLAN-SITES.md` section 4).
+6. **The links' own culture.** The stops are the Iziz Vernacular's, and the bridges Iziz's. The Beast Rider trails
+   (Talon, Mav's Refuge) and the far roads (Coyote Canyon, Shade) want their builders' own inns: the Beast Riders' roadside
+   inn (`br_bldg_riders_inn`) once core/world 88s draws a stop from that kit; the coyotemen and the Dasri have no kit.
+7. **The corridors east of the rock grow nothing.** The crater's east wall, the Nomad Country's sedesert and the Tiers by
+   Coyote Canyon have no kit in the registry.
+8. **The Dasri's northern village** (PROPOSAL-LONGSONG-PINNACLE.md section 6): when it is placed, the Shade road gains a
+   nearer end (a link to it, or Shade's road rerouted by it).
+
+## The corridors (2026-11-11)
+
+The owner kept the 60 km cut for the rock; the sim's land logistics (S5) need its far legs laid. The cut gained the
+partners' squares and a 10 km corridor along each road (`openworld/SITES.json`, `cut_site.py`'s `net` and `guide`), and
+the spec its links (`src/48-world-site.js`). The frame's origin moved from the rock's pixel to the box's centre.
