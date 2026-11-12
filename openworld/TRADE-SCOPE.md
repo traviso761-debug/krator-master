@@ -149,10 +149,15 @@ so cacao, coffee, clove, sugar and cotton grow in every warm belt and barely tra
 | `oidong` | mist tea, lotus silk, camphor, sky poppy | the Order | `native` on the four (tea and poppy shared with the Vale) |
 | `hyperjungle` | jungle indigo, sunseed annatto (and bloodwood red, 5a) | the Screamers | `native` on indigo and annatto |
 | `nwlowlands` (the Eternians) | **an Eternian tea** and **an Eternian wine grape** | the Eternians | two new records; Eternian wine also a specialty in the trade model ("famed for their wine") |
-| Dalab's lands | **hashish** | Dalab | a new record (resin of a hemp, `homeOnly`-like); its home biome to name (section 6) |
-| `swbay`, `swhighlands` | **valuable natives, to name** | the SW bay's and SW highlands' holders | new records, from `biomes/swbay/PLAN-FLORA.md` and `biomes/swhighlands/PLAN.md`'s flora (section 6) |
+| `swlowlands` (Dalab), and where Dalab spread it | **hashish** | Dalab | a new record (the resin of a hemp), `native`, home `swlowlands`; **transplanted by polity**: wherever Dalab holds ground its climate fits, the rift rim first (`riftrim`: Ledge, Nulab). The owner: "for dalab, Sw lowlands and places they spread their crops to like the rift rim" |
+| `swbay`, `swhighlands` | **four valuable natives** (2.5a, a proposal) | Voth (the bay); the Republic's north and Dalab's Span (the highlands) | four new records |
 | `sedesert`, `ebadlands` | incense: myrrh (sedesert) and an ebadlands incense | the Bowl's and the badlands' holders | dragon's blood resin's home trimmed toward `sedesert`; a new ebadlands incense record; Oidong's temple-cedar incense and monk's sage stay (the owner's "mostly") |
-| the inner crater | tobacco | the inner crater's polities | tobacco (`src: 'proposed'`, no home today) given the inner crater's biomes (section 6) |
+| the inner crater | tobacco | the inner crater's polities | tobacco (`src: 'proposed'`, no home today) made `native`, home: `crater-drylands`, `nwbay`, `swbay`, `hyperjungle`, `ringisles`, `geyser` (the Steampits' field), `abyssal-savannah` (its rim) and `throne`, wherever its climate fits there (warmth 3-4, aridity 2-3). The owner: "any appropriate koppen within" those biomes |
+
+**Homes outside `CROPS.BIOMES`.** `riftrim`, `abyssal-savannah` and `swhighlands` are biome kits but not crop zones yet
+(`kits/crops/src/10-crop-core.js` `CROPS.BIOMES`). A `home` can name one (laterite ochre's home is `abyssal-savannah`), but
+`CROPS.at` cannot place it on the axes until the zone is added: three zones to add, from each kit's `PLAN.md`.
+"The hyperjungle biomes" is read as `hyperjungle`; say if more of the jungle kits belong.
 
 **Today's producers these cut** (the published tables): cacao's top five are Voth, Jimjam, Dalab, Fulcrum, Erehwon; coffee's
 Voth, Jimjam, Dalab, Erehwon, Fulcrum; tea's the Republic (27%), Dalab, Iziz, the Free Giants, the Talovolci; tobacco's
@@ -162,6 +167,21 @@ trade model must place each settlement in a biome (the scale model's biome polyg
 **The isle demo meets this first.** Its plantations (`settlements/isle-demo/src/15-isle-tune.js`: Nephtos's cacao, indigo,
 annatto and tobacco, worked by hired Islanders, `:663`) grow crops that would no longer be native to the Ring Isles. Either
 they are recorded as transplants (the colony brought them) or they change; either way the economy's test case moves.
+
+### 2.5a The SW natives (a proposal; the owner: "make me a proposal")
+
+Two for each biome. Each comes from a plant its kit already draws, so the crop and the drawn species are the same thing.
+Each is a luxury that travels: dried, light and dear.
+
+| Record (proposed id) | Bucket | Home | From the drawn species | What it is | Who sells it |
+|---|---|---|---|---|---|
+| **Rosette vanilla** (`rosette-vanilla`) | spice | `swbay` | the red and purple epiphyte rosettes on every bole, with their flower spikes (`biomes/swbay/NOTES.md`, "The flora") | the seed pods of the rosettes, hand-pollinated and cured for months: vanilla is an epiphytic orchid, and among the dearest spices | Voth (the bay) |
+| **Capgill** (`capgill`) | medicine | `swbay` | the cap-tree, the bay's giant mushroom, its gills under the cap | the gills scraped, dried and pressed into cakes: a painkiller and fever cure. The bay's fungoid theme as a drug trade, apart from Dalab's hashish and the Oidong poppy's sleep | Voth |
+| **Bead-cone gold silk** (`beadcone-silk`) | spinning | `swhighlands` (the bead cone grows in the bay's understorey too: `swbay` as a second home) | the bead cone, "hung with strings of gold eggs (an insect's nursery)" (`biomes/swhighlands/PLAN.md`, "Trees") | the nursery's cocoons reeled into a wild gold silk, like tussah or golden orb-weaver silk: a silk none of the mulberry or lotus silks match | the Republic's north, Dalab's Span; Voth from the bay |
+| **Brush oil** (`brush-oil`) | medicine | `swhighlands` | the bottle brush of the dry-summer woods, 3.5-5 km (Dsb, Dsc) | oil steamed from the bristle crowns: an antiseptic and liniment, like tea-tree oil | the Republic's north, Dalab's Span |
+
+A fifth if you want one: **torch-spike red**, the tableland's red flower spikes picked for their stigmas, a red dye and
+spice. It would compete with the Vale's saffron, so I left it out.
 
 ### 2.6 The craft-only polities' natural exports
 
@@ -235,7 +255,7 @@ Each pin wants the census's rescan and the trade model's rerun after it lands (`
 | 2.4 extraction, concessions, oil demand | the trade model: who may work a family; the licence as a record (host, operator, cut) | none | none | **no oil good or use in the sim yet**: an oil good, the derrick under licence (operator Yuni, the host's cut: a contract record in `core/simulation/SCHEMA.md`), and the uses (generators, vehicles, lamps) when a region needs them; the isle demo has none of these today |
 | 2.4 Locus lode | `kits/resources/data/lodes.json`, the stamp, the digest | the Resources kit (`verify.py --assert`); every page that reads `geology.json` (`python3 tools/reach.py kits/resources/data/geology.json`); Godot via `sync_core.py` | none | the oil node field round Locus (the derrick is Locus's pumpjack) |
 | 2.4 the delta rule (later) | `tools/scale-model/geology.py`, `kits/resources/GEOLOGY.md` | a full rebake: every page that reads the geology, the ledger, the hash baseline | none | as the lode |
-| 2.5 native crops | `kits/crops` (`native`, `transplanted`, new records: Eternian tea, Eternian wine grape, hashish, an ebadlands incense, the SW natives; dragon's blood's and tobacco's homes); the trade model's biome per settlement | `kits/crops` (`build.py`, `tests/test-crops.js`, `verify.py --assert`) and every build that reads it (`tools/reach.py kits/crops/src/20-crop-records.js`) | none | **the isle demo's plantations** (cacao, indigo, annatto, tobacco) and every `CROPS.pick`/`palette` call: the hamlets' fields (`core/hamlet`) and the farms' palettes change; the stocks proof and `test-sim.js` move on purpose, re-baselined |
+| 2.5 native crops | `kits/crops` (`native`, `transplanted` by settlement or by polity, new records: Eternian tea, Eternian wine grape, hashish, an ebadlands incense, the four SW natives; dragon's blood's and tobacco's homes; three new zones in `CROPS.BIOMES`: `riftrim`, `abyssal-savannah`, `swhighlands`); the trade model's biome per settlement | `kits/crops` (`build.py`, `tests/test-crops.js`, `verify.py --assert`) and every build that reads it (`tools/reach.py kits/crops/src/20-crop-records.js`) | none | **the isle demo's plantations** (cacao, indigo, annatto, tobacco) and every `CROPS.pick`/`palette` call: the hamlets' fields (`core/hamlet`) and the farms' palettes change; the stocks proof and `test-sim.js` move on purpose, re-baselined |
 | 2.6 craft-only | gypsum a trade good in the trade model | none | two SETT_ADDED | none |
 | 2.7 scrap to iron | the trade model (smelting before buying) | the geology's ruin bit for lived-in Ancient cities (Iziz, Pylon, Roketstad, Yuni, Hook): a rebake item | none | phase S2's goods row (`scrap`) and recipe (smelter: scrap 1 + fuel 1 = iron 1, 2 h); a `SIM.site` salvage kind on ruin ground whose yield falls as it is stripped; the breakers' floor (`pyl_breakers_floor`), smelter (`pyl_smelter`, `hl_rep_smelter`) and salvage yards (`pyl_scrap_yard`, `vern_salvage_yard`, `hl_rep_salvage_forge`) mapped to them; the isle demo has scrap huts but no ruin ground |
 
@@ -244,14 +264,15 @@ And the documents: `TRADE-GOODS.md`'s tables are rerun and rewritten once the ru
 
 ## 6. Still open (the owner's calls)
 
-1. **Hashish's home biome:** which biome kit is "Dalab's lands" (the biome under Dalab, Daranch and Shelf)?
-2. **The SW natives:** which plants of the SW bay and the SW highlands are the valuable ones (a medicine, a perfume, a dye, a
-   drug)? Name them, or have a session propose three or four from the two kits' flora.
-3. **Tobacco's inner crater:** which biome kits count as the inner crater?
-4. **Incense:** trim dragon's blood resin to the sedesert (it is also home in the NW bay, the Rift and the SW bay today), and
+Settled 2026-11-12: hashish's home (`swlowlands`, spread by Dalab to the rift rim), tobacco's inner crater (2.5); the SW
+natives are proposed in 2.5a.
+
+1. **The SW natives:** take the four in 2.5a, change them, or add torch-spike red?
+2. **"The hyperjungle biomes":** `hyperjungle` alone, or more of the jungle kits?
+3. **Incense:** trim dragon's blood resin to the sedesert (it is also home in the NW bay, the Rift and the SW bay today), and
    what the ebadlands' incense is (a pinyon or juniper resin fits the kit's flora).
-5. **The Tungangs' rare earths:** may they work Dalab's rare earths (Nulab and Ledge: 15.5 t of the old 22%) under a bargain like
+4. **The Tungangs' rare earths:** may they work Dalab's rare earths (Nulab and Ledge: 15.5 t of the old 22%) under a bargain like
    the Geomancers' licence? Today they work only their own (0.9 t).
-6. **The licence's cut:** how much of a concession's oil or its price the host keeps (the model needs a number).
-7. **The isle demo's plantations:** transplants (they stay, recorded) or changed to native crops?
-8. **Eternian wine:** a crop the farms grow (a wine grape record) and also a specialty the model sells, or only the specialty?
+5. **The licence's cut:** how much of a concession's oil or its price the host keeps (the model needs a number).
+6. **The isle demo's plantations:** transplants (they stay, recorded) or changed to native crops?
+7. **Eternian wine:** a crop the farms grow (a wine grape record) and also a specialty the model sells, or only the specialty?
