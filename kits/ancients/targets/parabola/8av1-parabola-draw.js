@@ -29,6 +29,9 @@ function buildParabola(scene,gx,gz,d){reseed(9920+d);KOFF=[gx,0,gz];
  // (the kit's sun is in the south-west; the dish faces north, so its inner face would be lit only by the fill)
  if(typeof camera!=='undefined'&&camera.far<30000){camera.far=30000;camera.updateProjectionMatrix();}
  if(typeof sky!=='undefined')sky.renderOrder=-1;
+ /* the Pile's fix (8at1): the sky's pow() kept off a negative, or the band over the horizon comes out black on some GPUs */
+ if(typeof skyMat!=='undefined'&&skyMat.fragmentShader.indexOf('pow(h,.55)')>=0){
+  skyMat.fragmentShader=skyMat.fragmentShader.replace('pow(h,.55)','pow(max(h,0.),.55)');skyMat.needsUpdate=true;}
  if(typeof sun!=='undefined')sun.position.set(-700,1100,-1000);
  const ST=dd?'ruined':'intact',W=a=>[a[0]+gx,a[1],a[2]+gz];
 

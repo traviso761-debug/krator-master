@@ -883,7 +883,7 @@
     "kits/ancients/targets/monolith/91z-views.js": "b5a48012889ca124c1faee55fe5f880de5a5de99e0c3167b9b553c3f6d377727",
     "kits/ancients/targets/parabola/89z-rows.js": "edd8eaef4f8b4f1048b3d5384755da9c727f2e01079c3d5bfdf98e94390f05ac",
     "kits/ancients/targets/parabola/8av0-parabola-plan.js": "d87dc3f834530d5d9dcd04065dcc63d4fe2ca2016e2f6650b6b6e37dd8af156e",
-    "kits/ancients/targets/parabola/8av1-parabola-draw.js": "c61db827ca7fa01141b153fb302827c267d265f706dc3283fc903c495840c89c",
+    "kits/ancients/targets/parabola/8av1-parabola-draw.js": "6535fde9e1ba81fd226895521627771481bacd6df8a20905aaaebee3d852bc50",
     "kits/ancients/targets/parabola/90p-parabola-lake.js": "42dc1fa7d56c241fd5c56acad01d2d3ed529a2d31be3a5a40722de084d4a90cf",
     "kits/ancients/targets/parabola/91z-views.js": "55a44cd577d769edf8b412f39a793011e40ecf0d61f65094817d997dbea173f1",
     "kits/ancients/targets/parabola/test-parabola.js": "7f0688a7f3d7f231bef174f355ad855ce0483dc1c0ae041d6b270620d15e69dc",
@@ -1056,14 +1056,14 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/ancients/build-manifest-parabola.json": "6787bfd42cd30f22f2b8da70f6f780c41dd70213d7cf1e969eb635c7761301bb",
+    "kits/ancients/build-manifest-parabola.json": "dbbca876adc9fea039a494b4a9356338c00a41af41a735a7371009ee7337e39c",
     "kits/ancients/dist/ancients.tex.ancients.js": "c7ed83f8f8f6137f51a41f8e4e6d9d29f58231c89061aff467c3d4710a313883",
-    "kits/ancients/dist/parabola.html": "79f12d192bea67d0765ee5735a9ff32b98a92f5f44a6c01fec98a722c70255af"
+    "kits/ancients/dist/parabola.html": "499f94cd094c02b6ec59854d1532ddaa60947c553f89d954a9a01f83303c8421"
    },
    "outputs_raw": {
-    "kits/ancients/build-manifest-parabola.json": "e9a49e6824efe265aed3ffcc784ca2b21bd76025df1329aec25d237b03a5e596",
+    "kits/ancients/build-manifest-parabola.json": "a454a2571dab272f4b518de43f3189a4299c2ae4cee4889ba8caf1ab9e925156",
     "kits/ancients/dist/ancients.tex.ancients.js": "c7ed83f8f8f6137f51a41f8e4e6d9d29f58231c89061aff467c3d4710a313883",
-    "kits/ancients/dist/parabola.html": "79f12d192bea67d0765ee5735a9ff32b98a92f5f44a6c01fec98a722c70255af"
+    "kits/ancients/dist/parabola.html": "499f94cd094c02b6ec59854d1532ddaa60947c553f89d954a9a01f83303c8421"
    }
   }
  }
