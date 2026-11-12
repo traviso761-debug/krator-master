@@ -3,7 +3,9 @@
  "use": ["44z-host-common.js", "84-host-ground.js", "85-host-far.js", "86-host-works.js", "87-host-hazards.js", "87b-host-fauna.js",
          "89-host-sky.js", "89z-host-atmos.js", "89zw-host-water.js", "89zx-host-build.js", "98-host-views.js", "99-host-take.js"],
  "drop": ["86-host-gate.js"],
+ "core": {"34-core-impostor.js": "core/biome/34-core-impostor.js"},
  "kinDrop": ["ebadlands"],
+ "kinNoImpostors": ["nwlowlands"],
  "kin": {
   "nwlowlands": [["50-biome-nwlowlands-species.js", "55-biome-nwlowlands-trees.js"], "NWLOW", ["bk.paper", "bk.ghost", "bk.smooth", "lance", "drape", "broad", "feather"]]
  },

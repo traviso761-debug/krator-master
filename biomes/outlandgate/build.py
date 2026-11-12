@@ -125,6 +125,9 @@ for _i,(_k,(_fs,_api,_keep)) in enumerate(sorted(KIN.items())):
     _d=os.path.normpath(os.path.join(HERE,'..',_k));_c='abcdefgh'[_i]
     for _j,_f in enumerate(_fs): PATH['47%s%d-%s'%(_c,_j,_f)]=os.path.join(_d,'src',_f)
     VIRTUAL['47%s9-%s-end.js'%(_c,_k)]=chr(10)+'BIO.kitEnd(%s);   // its registry closed (its own page does it in a later fragment)'%_api+chr(10)
+    if _k in SJ.get('kinNoImpostors',[]):   # its far trees as the verified page draws them: core/biome's impostors (34) are on the page for its
+        # calls to resolve (tools/check_assembly.py), switched off for this kit before its trees load
+        VIRTUAL['47%s05-%s-noimp.js'%(_c,_k)]=chr(10)+'%s.IMPOSTORS=false;   // no octahedral impostors for this kin (station.json "kinNoImpostors")'%_api+chr(10)
     _pj=os.path.join(_d,'tex','pack.json');_mj=os.path.join(_d,'materials.json');_pk=_k
     if os.path.isfile(_mj):
         with open(_mj,encoding='utf-8') as _fh: _pk=_json.load(_fh).get('build',_k)   # the kit's own pack name (the Outlands': 'outl')
