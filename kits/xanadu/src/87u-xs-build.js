@@ -4,7 +4,7 @@
    stays (the battered whitewash, the maroon twig band, pointed arches); the Ancients' panels, glazing, girders, cable and
    bronze take the place of the timber and the stone of the upper works. */
 
-const XS_TAG=(types,wealth)=>({type:[].concat(types),wealth,lit:wealth!=='common',culture:'xanadu-scrap'});
+const XS_TAG=(types,wealth)=>({type:[].concat(types),wealth,lit:wealth==='rich'||wealth==='civic',culture:'xanadu-scrap'});   /* the lighting rule: rich or civic only */
 const XS_PATS=['checker','band','diamond','stripe'];
 /* a glazed bay on girder brackets, its floor and roof of whole panels: (x,z) on the wall's face, ry outward, y its floor */
 function xnXSBay(x,y,z,ry,w,h,dp,S,lit){const st=xC(S.steel),br=xC(XS.bronze),c=loc(x,z,0,dp/2,ry),f=loc(x,z,0,dp,ry);
