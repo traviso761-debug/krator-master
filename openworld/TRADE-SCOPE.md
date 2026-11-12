@@ -933,7 +933,7 @@ and +19 °C. Two kinds of livable pocket show:
   - 1196,606 on the Rīfar al-Bālm: Nomad Country, the Dasri's ground, 90 km from their village 4.
 - **Spacing:** the four are 100-140 km apart, and 100 km or more from the K sites.
 
-Not sent: the owner picks.
+**Sent** (the owner, 2026-11-12: "Send all nine"): E1-E4 as village pins, no polity, to the queue.
 
 **The north and north-east** (the owner: "any microclimates in the north/northeast portion?"). North of py 480 and east of px 990,
 Korona is 125,000 km² (36,500 of it in the Coyote Kingdom's polygon). It is a cold, dry high plateau: median height 3,816 m, mean
@@ -955,4 +955,4 @@ lower tables:
   Csa), a near twin of N4.
 - **The high north-east** (east of px 1150, north of py 420) has nothing livable: a summer range for bands at most.
 
-Not sent: the owner picks.
+**Sent** (the owner, 2026-11-12: "Send all nine"): N1-N5 as village pins, no polity, to the queue.
