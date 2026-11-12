@@ -395,8 +395,8 @@ every folder under `biomes/` (61 kits), plus `biomes/CRYSTAL-CAVES-5.1.md` and `
 far. Each find was checked against `kits/crops`. The strongest rows were spot-checked at their cited lines.
 
 **The owner's picks (2026-11-12):** all fourteen goods of 7.1 are **chosen** ("agree with the above"). Of the incenses, the
-Outlands' comb-mast drip gum and the north highlands' table-cedar resin stay. The owner did not name the abyssal savannah's
-incense tree, so this file reads it as trimmed (to confirm). The Painted Men's dyes are taken as a small trade (7.6). The
+Outlands' comb-mast drip gum and the north highlands' table-cedar resin stay. The abyssal savannah's incense tree is
+**trimmed** (the owner: "trim abyssal savannah tree"). One incense is added to the east abyss's coal-swamp flora (7.6). The Painted Men's dyes are taken as a small trade (7.6). The
 owner's additions (lacquerware, the Ancient's Valley, Korona's guided route) are in 7.6.
 
 ### 7.1 The strongest finds: long-range goods with a seller
@@ -468,6 +468,14 @@ sim. In the trade model it is a craft, a specialty of both, made where the trees
 are proposed in `paintedhighlands/PLAN.md:186-194`: black, red and teal (celadonite-teal clay, lignite black), with a
 paintbrush medicine. They sell them in small amounts, through Korona's winter tribes, whose lichen dyes they already buy
 (7.1), and to the rare trader. In the model they are a small export with a low route weight.
+
+**An incense for the east abyss** (the owner: "we can add one incense to the carboniferous east abyss flora as well"; a
+proposal). The kit's coal-swamp pass drew the **strap cordaite** "at the shore and up the rivers" (`eastabyss/NOTES.md:46-48`).
+Cordaites are conifer kin, and their kind left Carboniferous amber in the coal swamps. The proposal is **swamp copal**
+(`swamp-copal`, bucket fuel, `homeOnly`, home `eastabyss`): the strap cordaite's resin, tapped fresh from the trunks, and older
+semi-fossil lumps dug from the peat of the coal swamps, as kauri gum was dug from New Zealand's swamps. It burns with a dark,
+smoky sweetness. The abyssal people gather it, so it is the Tabisti's (Nomad Country) and Locus's to sell. The rope araucaria
+of the upper slopes would give a similar gum. One incense was asked for, so the cordaite's is the proposal.
 
 **The Ancient's Valley: ruin ground, and a barrier.** "the ancient's valley should be ruin ground on the model. however, it is
 extremely dangerous and a barrier to trade."
