@@ -42,7 +42,7 @@ function slotCanopy(o){const S=o.slot,P=S.pts,W=o.W,PFX=o.prefix==null?'cable':o
    CABLES.push(rec);continue;}
   const tier=Math.floor(u(k,4)*o.tiers),y=floor+o.band[0]+tier*((o.band[1]-o.band[0])/(o.tiers-1))+(u(k,5)-.5)*12;
   if(y>rim-8){REJECT.miss++;continue;}
-  const o=[c.x,y,c.z],ha=wallHit(o,dx,dz),hb=wallHit(o,-dx,-dz);if(!ha||!hb){REJECT.tread++;continue;}
+  const org=[c.x,y,c.z],ha=wallHit(org,dx,dz),hb=wallHit(org,-dx,-dz);if(!ha||!hb){REJECT.tread++;continue;}
   const rec={id:PFX+':'+k,stage:'grown',a:ha.p,b:hb.p,na:ha.n,nb:hb.n,seed:KRAND.hash(W,k,3,0x62),tier,s,floor,rim,
    r:mix(GR[0],GR[1],u(k,6)),slack:mix(LOOM.SPAN.grownSlack[0],LOOM.SPAN.grownSlack[1],u(k,7))};
   /* the span solved here, before it is a record: one that would pass through the drawn rock (a wall it crosses aslant, a tread under its sag) is not grown */
@@ -85,10 +85,10 @@ function slotCanopy(o){const S=o.slot,P=S.pts,W=o.W,PFX=o.prefix==null?'cable':o
    M.makeBasis(X.clone().negate(),Y.clone().negate(),F);
    STRYDERS.push({id:'stryder:'+C.id,C,S,t,p:[p[0],p[1]-C.r*.9,p[2]],q:new THREE.Quaternion().setFromRotationMatrix(M),floor:drawnH(p[0],p[2]),seed:(e.h>>>8)%99991+1,variant:e.h%2});}}
  planStryders();
- function stryders(){for(const d of STRYDERS){const o=d.p;
-   REGISTER({name:'A cable-stryder, asleep under its cable (kits/fauna)',key:d.id,x:o[0],z:o[2],y:o[1]-1.2,r:1.8,h:1.6,tags:{fauna:'cable-stryder',kit:'kits/fauna',on:d.C.id,pose:'rest'}});
+ function stryders(){for(const d of STRYDERS){const dp=d.p;
+   REGISTER({name:'A cable-stryder, asleep under its cable (kits/fauna)',key:d.id,x:dp[0],z:dp[2],y:dp[1]-1.2,r:1.8,h:1.6,tags:{fauna:'cable-stryder',kit:'kits/fauna',on:d.C.id,pose:'rest'}});
    let gr;try{gr=KratorFauna.build('cable-stryder',{seed:d.seed,variant:d.variant})}catch(err){reportErr('fauna cable-stryder: '+err.message);continue;}
-   gr.position.set(o[0],o[1],o[2]);gr.quaternion.copy(d.q);try{KratorFauna.animate(gr,0,'rest',{phase:0});}catch(err){}
+   gr.position.set(dp[0],dp[1],dp[2]);gr.quaternion.copy(d.q);try{KratorFauna.animate(gr,0,'rest',{phase:0});}catch(err){}
    gr.traverse(m=>{if(m.isMesh){m.userData.probeSkip=true;m.userData.inspectLabel='Cable-stryder (kits/fauna)';}});gr.userData.fauna=true;scene.add(gr);d.g=gr;}}
  function hazards(){const H=[];
   for(const D of STRYDERS){const r=14,h=D.p[1]-D.floor+4;H.push(Object.assign(KHAZ.PREDATOR.lair(r,{fauna:'cable-stryder',count:1,note:'drops from the canopy on what crosses the floor below'}),

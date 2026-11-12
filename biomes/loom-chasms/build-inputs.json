@@ -41,7 +41,7 @@
     "biomes/loom-chasms/src/62-biome-loom-fields.js": "7f5127d57ff68dfa3a1392b927cb316c24ff37379ce3439203905a547e5929a4",
     "biomes/loom-chasms/src/70-biome-loom.js": "403e26b9d3148d989f89aafe02b684eef88eeea75c8bc775097b48762ba20aca",
     "biomes/loom-chasms/src/83-host-far.js": "90ee09709da83ff8d4a225ea0b00e21440fc87779e35e1ed21d99c06f97eea74",
-    "biomes/loom-chasms/src/85-host-canopy.js": "8e96957e3a7d0804bb62dc3a1734b7e37b9dc8e2d97078e3c0414f98a38c696d",
+    "biomes/loom-chasms/src/85-host-canopy.js": "1f6e45bd5c6381ec1b83ecbb1fe1e2fb27fda29f160b3f9442b22ea78f35aa55",
     "biomes/loom-chasms/src/87-host-kin.js": "00fd49008723248a05faf820ae11e0ac0697cafb4a3d4cc43bad21fba0529a0b",
     "biomes/loom-chasms/src/88-host-hazard.js": "a0d60432a53ad7e3ee374698b99f167b2979f4bb4a3530a30250920863662047",
     "biomes/loom-chasms/src/89-host-sky.js": "e6ed6aa8053e168a3ec45f52803e9133d5c045eb03613fd455dc60b0741db2c9",
@@ -177,10 +177,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/loom-chasms/dist/loom-chasms.html": "5ccd4362ccbd7cc85dad9f47f547569893f59da80573b25c5c7a77aa4feeadda"
+    "biomes/loom-chasms/dist/loom-chasms.html": "3550f807d474e5e4787246ca2d4757a39d1196c99233e2d885c53082739a0bc1"
    },
    "outputs_raw": {
-    "biomes/loom-chasms/dist/loom-chasms.html": "5ccd4362ccbd7cc85dad9f47f547569893f59da80573b25c5c7a77aa4feeadda"
+    "biomes/loom-chasms/dist/loom-chasms.html": "3550f807d474e5e4787246ca2d4757a39d1196c99233e2d885c53082739a0bc1"
    }
   },
   "build.py --station caelum": {
@@ -223,7 +223,7 @@
     "biomes/loom-chasms/src/62-biome-loom-fields.js": "7f5127d57ff68dfa3a1392b927cb316c24ff37379ce3439203905a547e5929a4",
     "biomes/loom-chasms/src/70-biome-loom.js": "403e26b9d3148d989f89aafe02b684eef88eeea75c8bc775097b48762ba20aca",
     "biomes/loom-chasms/src/83-host-far.js": "90ee09709da83ff8d4a225ea0b00e21440fc87779e35e1ed21d99c06f97eea74",
-    "biomes/loom-chasms/src/85-host-canopy.js": "8e96957e3a7d0804bb62dc3a1734b7e37b9dc8e2d97078e3c0414f98a38c696d",
+    "biomes/loom-chasms/src/85-host-canopy.js": "1f6e45bd5c6381ec1b83ecbb1fe1e2fb27fda29f160b3f9442b22ea78f35aa55",
     "biomes/loom-chasms/src/87-host-kin.js": "00fd49008723248a05faf820ae11e0ac0697cafb4a3d4cc43bad21fba0529a0b",
     "biomes/loom-chasms/src/88-host-hazard.js": "a0d60432a53ad7e3ee374698b99f167b2979f4bb4a3530a30250920863662047",
     "biomes/loom-chasms/src/89-host-sky.js": "e6ed6aa8053e168a3ec45f52803e9133d5c045eb03613fd455dc60b0741db2c9",
@@ -353,10 +353,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/loom-chasms/dist/loom-chasms-caelum.html": "7a24e1a388891e2210a1b271a53092fa050b0417e37635843a834ec1217ef2b8"
+    "biomes/loom-chasms/dist/loom-chasms-caelum.html": "812c135f497d9d619454f31313eaa777f5e67decaca5b773184d364bd9508552"
    },
    "outputs_raw": {
-    "biomes/loom-chasms/dist/loom-chasms-caelum.html": "7a24e1a388891e2210a1b271a53092fa050b0417e37635843a834ec1217ef2b8"
+    "biomes/loom-chasms/dist/loom-chasms-caelum.html": "812c135f497d9d619454f31313eaa777f5e67decaca5b773184d364bd9508552"
    }
   },
   "build.py --station cradle": {
@@ -399,7 +399,7 @@
     "biomes/loom-chasms/src/62-biome-loom-fields.js": "7f5127d57ff68dfa3a1392b927cb316c24ff37379ce3439203905a547e5929a4",
     "biomes/loom-chasms/src/70-biome-loom.js": "403e26b9d3148d989f89aafe02b684eef88eeea75c8bc775097b48762ba20aca",
     "biomes/loom-chasms/src/83-host-far.js": "90ee09709da83ff8d4a225ea0b00e21440fc87779e35e1ed21d99c06f97eea74",
-    "biomes/loom-chasms/src/85-host-canopy.js": "8e96957e3a7d0804bb62dc3a1734b7e37b9dc8e2d97078e3c0414f98a38c696d",
+    "biomes/loom-chasms/src/85-host-canopy.js": "1f6e45bd5c6381ec1b83ecbb1fe1e2fb27fda29f160b3f9442b22ea78f35aa55",
     "biomes/loom-chasms/src/87-host-kin.js": "00fd49008723248a05faf820ae11e0ac0697cafb4a3d4cc43bad21fba0529a0b",
     "biomes/loom-chasms/src/88-host-hazard.js": "a0d60432a53ad7e3ee374698b99f167b2979f4bb4a3530a30250920863662047",
     "biomes/loom-chasms/src/89-host-sky.js": "e6ed6aa8053e168a3ec45f52803e9133d5c045eb03613fd455dc60b0741db2c9",
@@ -576,10 +576,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/loom-chasms/dist/loom-chasms-cradle.html": "0536020e05617ac8d113d49dd4f8ce5ff1fcb4e9f0f1ca912a07d48912191897"
+    "biomes/loom-chasms/dist/loom-chasms-cradle.html": "0d4b66afb785f0c606f7eaf7f1c5f3db00d5479be3ae975a1c02168ca822f312"
    },
    "outputs_raw": {
-    "biomes/loom-chasms/dist/loom-chasms-cradle.html": "0536020e05617ac8d113d49dd4f8ce5ff1fcb4e9f0f1ca912a07d48912191897"
+    "biomes/loom-chasms/dist/loom-chasms-cradle.html": "0d4b66afb785f0c606f7eaf7f1c5f3db00d5479be3ae975a1c02168ca822f312"
    }
   },
   "build.py --station loom": {
@@ -622,7 +622,7 @@
     "biomes/loom-chasms/src/62-biome-loom-fields.js": "7f5127d57ff68dfa3a1392b927cb316c24ff37379ce3439203905a547e5929a4",
     "biomes/loom-chasms/src/70-biome-loom.js": "403e26b9d3148d989f89aafe02b684eef88eeea75c8bc775097b48762ba20aca",
     "biomes/loom-chasms/src/83-host-far.js": "90ee09709da83ff8d4a225ea0b00e21440fc87779e35e1ed21d99c06f97eea74",
-    "biomes/loom-chasms/src/85-host-canopy.js": "8e96957e3a7d0804bb62dc3a1734b7e37b9dc8e2d97078e3c0414f98a38c696d",
+    "biomes/loom-chasms/src/85-host-canopy.js": "1f6e45bd5c6381ec1b83ecbb1fe1e2fb27fda29f160b3f9442b22ea78f35aa55",
     "biomes/loom-chasms/src/87-host-kin.js": "00fd49008723248a05faf820ae11e0ac0697cafb4a3d4cc43bad21fba0529a0b",
     "biomes/loom-chasms/src/88-host-hazard.js": "a0d60432a53ad7e3ee374698b99f167b2979f4bb4a3530a30250920863662047",
     "biomes/loom-chasms/src/89-host-sky.js": "e6ed6aa8053e168a3ec45f52803e9133d5c045eb03613fd455dc60b0741db2c9",
@@ -758,10 +758,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/loom-chasms/dist/loom-chasms.html": "5ccd4362ccbd7cc85dad9f47f547569893f59da80573b25c5c7a77aa4feeadda"
+    "biomes/loom-chasms/dist/loom-chasms.html": "3550f807d474e5e4787246ca2d4757a39d1196c99233e2d885c53082739a0bc1"
    },
    "outputs_raw": {
-    "biomes/loom-chasms/dist/loom-chasms.html": "5ccd4362ccbd7cc85dad9f47f547569893f59da80573b25c5c7a77aa4feeadda"
+    "biomes/loom-chasms/dist/loom-chasms.html": "3550f807d474e5e4787246ca2d4757a39d1196c99233e2d885c53082739a0bc1"
    }
   },
   "build.py --station monocline": {
@@ -804,7 +804,7 @@
     "biomes/loom-chasms/src/62-biome-loom-fields.js": "7f5127d57ff68dfa3a1392b927cb316c24ff37379ce3439203905a547e5929a4",
     "biomes/loom-chasms/src/70-biome-loom.js": "403e26b9d3148d989f89aafe02b684eef88eeea75c8bc775097b48762ba20aca",
     "biomes/loom-chasms/src/83-host-far.js": "90ee09709da83ff8d4a225ea0b00e21440fc87779e35e1ed21d99c06f97eea74",
-    "biomes/loom-chasms/src/85-host-canopy.js": "8e96957e3a7d0804bb62dc3a1734b7e37b9dc8e2d97078e3c0414f98a38c696d",
+    "biomes/loom-chasms/src/85-host-canopy.js": "1f6e45bd5c6381ec1b83ecbb1fe1e2fb27fda29f160b3f9442b22ea78f35aa55",
     "biomes/loom-chasms/src/87-host-kin.js": "00fd49008723248a05faf820ae11e0ac0697cafb4a3d4cc43bad21fba0529a0b",
     "biomes/loom-chasms/src/88-host-hazard.js": "a0d60432a53ad7e3ee374698b99f167b2979f4bb4a3530a30250920863662047",
     "biomes/loom-chasms/src/89-host-sky.js": "e6ed6aa8053e168a3ec45f52803e9133d5c045eb03613fd455dc60b0741db2c9",
@@ -934,10 +934,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/loom-chasms/dist/loom-chasms-monocline.html": "a3bdd1fccd267e2d67cd9a8657ce232dd37791a719c0680d948418459bda91d1"
+    "biomes/loom-chasms/dist/loom-chasms-monocline.html": "0e941767457bb585978ec0520f9df4d67bde85d57c88cd1ac797f5c09942119c"
    },
    "outputs_raw": {
-    "biomes/loom-chasms/dist/loom-chasms-monocline.html": "a3bdd1fccd267e2d67cd9a8657ce232dd37791a719c0680d948418459bda91d1"
+    "biomes/loom-chasms/dist/loom-chasms-monocline.html": "0e941767457bb585978ec0520f9df4d67bde85d57c88cd1ac797f5c09942119c"
    }
   },
   "build.py --station whiteloom": {
@@ -980,7 +980,7 @@
     "biomes/loom-chasms/src/62-biome-loom-fields.js": "7f5127d57ff68dfa3a1392b927cb316c24ff37379ce3439203905a547e5929a4",
     "biomes/loom-chasms/src/70-biome-loom.js": "403e26b9d3148d989f89aafe02b684eef88eeea75c8bc775097b48762ba20aca",
     "biomes/loom-chasms/src/83-host-far.js": "90ee09709da83ff8d4a225ea0b00e21440fc87779e35e1ed21d99c06f97eea74",
-    "biomes/loom-chasms/src/85-host-canopy.js": "8e96957e3a7d0804bb62dc3a1734b7e37b9dc8e2d97078e3c0414f98a38c696d",
+    "biomes/loom-chasms/src/85-host-canopy.js": "1f6e45bd5c6381ec1b83ecbb1fe1e2fb27fda29f160b3f9442b22ea78f35aa55",
     "biomes/loom-chasms/src/87-host-kin.js": "00fd49008723248a05faf820ae11e0ac0697cafb4a3d4cc43bad21fba0529a0b",
     "biomes/loom-chasms/src/88-host-hazard.js": "a0d60432a53ad7e3ee374698b99f167b2979f4bb4a3530a30250920863662047",
     "biomes/loom-chasms/src/89-host-sky.js": "e6ed6aa8053e168a3ec45f52803e9133d5c045eb03613fd455dc60b0741db2c9",
@@ -1116,10 +1116,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/loom-chasms/dist/loom-chasms-whiteloom.html": "cb62af501149dcecd02a5bd828aee0fdd9ad26f3cd32d26c1eff43775f285aa5"
+    "biomes/loom-chasms/dist/loom-chasms-whiteloom.html": "7363e066facac85781704c6efb67e3a0686b6a65ae343e2f4a96c13b458e0bd9"
    },
    "outputs_raw": {
-    "biomes/loom-chasms/dist/loom-chasms-whiteloom.html": "cb62af501149dcecd02a5bd828aee0fdd9ad26f3cd32d26c1eff43775f285aa5"
+    "biomes/loom-chasms/dist/loom-chasms-whiteloom.html": "7363e066facac85781704c6efb67e3a0686b6a65ae343e2f4a96c13b458e0bd9"
    }
   }
  }
