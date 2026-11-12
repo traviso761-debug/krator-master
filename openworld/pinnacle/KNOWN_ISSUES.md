@@ -1,7 +1,14 @@
 # Pinnacle: known issues
 
+- [ ] **The flora's spacing across tile edges fails once here** (verify, 2026-11-12: 1 of 294 trees inside a stronger
+      tree's keep-clear, at -167295,8241, 49 m from a tile edge). A core/world bug: `85-world-flora.js` places the
+      neighbouring cells only within `MARGIN` (64 m) of a tile, but a cell's tree is jittered up to a whole cell (165 m in
+      the hyperjungle's giant pass) from its corner, so a stronger neighbour 64-165 m out is never seen and both trees
+      survive. The recut for the 5.1e6 moves shifted the tile grid 7 km and put one such pair in the probe's sample. The
+      fix (a margin of a cell plus the reach) reaches every page that takes core/world.
+
 - [ ] **The frame's origin moved with the corridors** (2026-11-11): from the rock's pixel (1007,686) to the box's centre
-      (1091,690). The rock is now at x -168 km, z -8 km. Anything that placed itself in this region's frame by offsets
+      (1091,683). The rock is now at x -168 km, z +6 km. Anything that placed itself in this region's frame by offsets
       from the origin must add the rock's point: the camps' spec was already relative to the site, so nothing here moved.
       `settlements/pinnacle-rock` does not read this region (it has its own 4.21 cut); when it is rebuilt on the open
       world (the sim's S7), it takes the rock's point from `region.json`'s `sites`, not the origin.

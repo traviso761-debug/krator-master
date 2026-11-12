@@ -5,15 +5,15 @@ The first site cut off the scale model into the open world, with a settlement pl
 the roads to the bands' raid and trade partners (`core/simulation/PROPOSAL-LONGSONG-PINNACLE.md`, S5: the sim's land
 logistics book these links).
 
-- **The cut:** `tools/scale-model/cut_site.py pinnacle`, from `openworld/SITES.json`, at 500 m cells (1,553 x 1,689 cells,
-  a box of about 770 x 840 km, px 900..1284 x 482..900 on map 5.1). It is the union of:
+- **The cut:** `tools/scale-model/cut_site.py pinnacle`, from `openworld/SITES.json`, at 500 m cells (1,553 x 1,625 cells,
+  a box of about 770 x 840 km, px 900..1284 x 482..884 on map 5.1). It is the union of:
   - Pinnacle Rock's 60 km square (`staiytii0y`, map px 1007,686): the owner kept the 60 km cut for the rock;
   - each partner's own square (its type's reach: a village 15 km, a ruin or outpost 8 km, Mav's Refuge its 30 km);
   - a 10 km corridor along each road. A corridor follows the Ancient network's route where one joins the two towns (`net`,
     `openworld/network-proposal/net51.json`), else the region's own guide on the valley floors (`guide`); cut_site.py lays
     it as a quad a stretch and an octagon a bend, and keeps the line in `region.json`'s `cut.corridors`.
-- **The frame's origin moved** to the box's centre pixel, 1091,690 (it was the rock's pixel while the cut was its square).
-  Every view and check reads a site's own point; Pinnacle Rock is at x -168 km, z -8 km.
+- **The frame's origin moved** to the box's centre pixel, 1091,683 (it was the rock's pixel while the cut was its square).
+  Every view and check reads a site's own point; Pinnacle Rock is at x -168 km, z +6 km.
   - **Moved 2026-11-10** (the owner: "a spot not too far that's got a bit more forest"): 41 km west of 1027,681, where
     map 5.1 had left the rock in the NE rim's savanna.
   - The rock is on the **savage hyperjungle's north-east edge**: a knoll 110 m over its 14 km round, at -1,287 m.
@@ -30,23 +30,25 @@ logistics book these links).
 
   | Link | Line | Km | Up / down m | Inns + rests | Bridges | For |
   |---|---|---|---|---|---|---|
-  | Pinnacle Rock - Port Goto | Izani highway `izani.17.22` | 186 | 1,724 / 1,758 | 7 + 7 | 0 | raids (Iziz's port) |
-  | Pinnacle Rock - Talon | Beast Rider trail `trail.1.3` | 161 | 1,564 / 1,385 | 6 + 6 | 2 | trade |
-  | Pinnacle Rock - Fort Kreia | guide up onto the NE rim | 131 | 2,896 / 583 | 4 + 5 | 2 | trade |
-  | Talon - Mav's Refuge | Beast Rider trail `trail.0.3` | 93 | 506 / 729 | 3 + 3 | 0 | trade (Girder beyond: the Iziz cluster) |
-  | Mav's Refuge - Nusidi | Izani highway `izani.20.24` | 161 | 1,134 / 1,086 | 6 + 6 | 2 | raids |
-  | Fort Kreia - Fort Ordo | the trunks by the Sleeping City | 210 | 1,785 / 3,978 | 8 + 8 | 6 | trade |
-  | Pinnacle Rock - Coyote Canyon | `dirt.coyote`, on the north half of the trough's floor east of the rock | 722 | 7,847 / 5,049 | 28 + 29 | 3 | long-distance trade (the coyotemen) |
-  | Pinnacle Rock - Shade | guide: the trough, the gap north of the crater's east wall, south down the Nomad Country | 788 | 9,884 / 6,223 | 31 + 31 | 1 | long-distance trade (the Dasri) |
+  | Pinnacle Rock - Port Goto | Izani highway `izani.17.22` | 186 | 1,757 / 1,797 | 7 + 7 | 0 | raids (Iziz's port) |
+  | Pinnacle Rock - Talon | Beast Rider trail `trail.1.3` | 164 | 1,582 / 1,409 | 6 + 6 | 1 | trade |
+  | Pinnacle Rock - Fort Kreia | guide up onto the NE rim | 131 | 2,887 / 578 | 4 + 5 | 2 | trade |
+  | Talon - Mav's Refuge | Beast Rider trail `trail.0.3`, then a guide to the new spot | 176 | 1,155 / 1,346 | 6 + 7 | 2 | trade (Girder beyond: the Iziz cluster) |
+  | Fort Kreia - Fort Ordo | the trunks by the Sleeping City | 210 | 1,782 / 3,972 | 8 + 8 | 7 | trade |
+  | Fort Ordo - Mav's Refuge | the Ordo-Nusidi trunk | 26 | 25 / 324 | 0 + 1 | 0 | trade |
+  | Mav's Refuge - Nusidi | the Ordo-Nusidi trunk | 125 | 636 / 562 | 4 + 5 | 0 | raids |
+  | Pinnacle Rock - Shade | `dirt.coyote`, the trough east of the rock | 156 | 1,994 / 1,137 | 5 + 6 | 3 | long-distance trade (the Dasri) |
+  | Shade - Coyote Canyon | `dirt.coyote`, out of the trough and up by the basin | 566 | 5,555 / 3,626 | 22 + 22 | 0 | long-distance trade (the coyotemen) |
 
   - Fort Kreia has no network route from the rock: the network's trunk to it starts at the Crescent, 26 km south-west,
     and crosses the Talon trail.
-  - The Coyote road and the Shade road share the trough east of the rock, 10 km apart on its floor: the Coyote road on
-    its north half turns north-east, the Shade road on its south half turns south-east, and they never cross. (Guided
-    onto the trough's north wall, the Coyote road switchbacked, and its upper leg's cut showed under the lower.)
+  - The scale model's 5.1e6 moves (2026-11-11): Shade went from the sunken basin (1229,885) to the oasis at 1085,683, on
+    the Coyote road (it passes 3 km off), so Shade is that road's waystation: Coyote Canyon is 721 km from the rock by way
+    of it. Mav's Refuge went from 1024,807 to 1049,841, beside the Ordo-Nusidi trunk, which now carries its roads to Fort
+    Ordo and Nusidi; the Talon trail reaches its old spot and a guide carries it on.
   - Each link leaves its towns from 1.8 km out, beyond the camps' ring round the rock.
-  - The stops: on the Izani highways (Goto, Nusidi) the Iziz Vernacular's (`vern_caravanserai`, `vern_rest_stop`), as in
-    the Iziz cluster; on the Beast Rider trails and the far roads the Beast Riders kit's roadside inn (`br_bldg_riders_inn`)
+  - The stops: on the Izani highway to Goto the Iziz Vernacular's (`vern_caravanserai`, `vern_rest_stop`), as in
+    the Iziz cluster; on the trails, trunks and far roads the Beast Riders kit's roadside inn (`br_bldg_riders_inn`)
     and a watch tower for a rider post (`br_bldg_watch_tower`), drawn through core/world 88s's `beast-riders` kit.
   - The partners' towns are not planned here: a link's end is the town's point.
 - **The plan is records:**

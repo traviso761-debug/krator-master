@@ -12,7 +12,7 @@ The checks, each with a negative:
   - the region: the site where the cut put it (WORLD_DATA.meta.sites: Pinnacle Rock at map px 1007,686 since the owner's
     move of 2026-11-10; the frame's origin is the box's centre since the corridors of 2026-11-11), on dry land in the
     savage hyperjungle, and its kit growing there (the negative reads the site 40 km off, out of the cut); every partner
-    at its pixel inside the cut (the negative reads Shade 40 km east of its corridor); every corridor's link baked along
+    at its pixel inside the cut (the negative reads Coyote Canyon 40 km east, out of the box); every corridor's link baked along
     the line it was cut on, inside the cut, with its caravanserais (the negative drops the Shade road);
   - the sites (core/world/88s-world-sites.js _sites.checks): the baked plan is the plan made again in the browser (the
     negative changes the world seed), every camp whole and apart on good ground with its track at its gate (the negative
@@ -45,11 +45,11 @@ REGION = r"""(neg)=>{const R=[],M=WORLD_DATA.meta,F=M.frame,S=(M.sites||[])[0],b
    if(!(WORLD.kitW(HJ,x,z)>.5))bad.push('the hyperjungle kit weighs '+WORLD.kitW(HJ,x,z).toFixed(2)+' there');}}
  R.push({name:'the region: the site where the cut put it, on dry land in the savage hyperjungle, its kit growing there',ok:!bad.length,
   detail:bad.length?bad.join('; '):S.name+' ('+S.id+') at px '+S.px+','+S.py+' (the frame\'s origin px '+F.origin_px+'); '+WORLD.biomeAt(S.x,S.z).name+', the hyperjungle kit weighs '+WORLD.kitW(HJ,S.x,S.z).toFixed(2)});
- /* the partners: each at its pixel, inside the cut (the negative reads Shade 40 km east, off its corridor) */
- const want={ski7uk8fjc:[918,698],sghb3jlsk5:[1026,760],s1kaqxmg10:[1049,736],s5c6ysqazg:[1060,831],skukf2qmmq:[1024,807],
-  s2199308wr:[996,870],soksvzt1h9:[1265,500],slfozs6c7z:[1229,885]},bad2=[],lines=[];
+ /* the partners: each at its pixel, inside the cut (the negative reads Coyote Canyon 40 km east, out of the box) */
+ const want={ski7uk8fjc:[918,698],sghb3jlsk5:[1026,760],s1kaqxmg10:[1049,736],s5c6ysqazg:[1060,831],skukf2qmmq:[1049,841],
+  s2199308wr:[996,870],soksvzt1h9:[1265,500],slfozs6c7z:[1085,683]},bad2=[],lines=[];
  for(const id in want){const T=(M.sites||[]).find(s=>s.id===id);if(!T){bad2.push('no site '+id);continue;}
-  const x=neg==='partner'&&id==='slfozs6c7z'?T.x+40000:T.x;
+  const x=neg==='partner'&&id==='soksvzt1h9'?T.x+40000:T.x;
   if(T.px!==want[id][0]||T.py!==want[id][1])bad2.push(T.name+' at px '+T.px+','+T.py);
   if(!WORLD.inside(x,T.z))bad2.push(T.name+' outside the cut');else lines.push(T.name+' px '+T.px+','+T.py+' ('+((WORLD.biomeAt(x,T.z)||{}).name||'no biome')+')');}
  R.push({name:'the region: every partner where the cut put it, inside the cut',ok:!bad2.length,detail:bad2.length?bad2.join('; '):lines.join('; ')});
@@ -66,7 +66,7 @@ REGION = r"""(neg)=>{const R=[],M=WORLD_DATA.meta,F=M.frame,S=(M.sites||[])[0],b
   if(out)bad3.push(Lk.id+': '+out+' points outside the cut');if(far>6000)bad3.push(Lk.id+': '+(far/1000).toFixed(1)+' km off its line');
   if(km>30&&!inns)bad3.push(Lk.id+': '+km.toFixed(0)+' km of road and no caravanserai');
   L3.push(Lk.from.slice(0,4)+'-'+Lk.to.slice(0,4)+' '+km.toFixed(0)+' km '+inns+'+'+rests+(Lk.gaps?' ('+Lk.gaps.length+' gaps)':''));}
- if(C.length!==8)bad3.push(C.length+' corridors with a line in region.json, not 8');
+ if(C.length!==9)bad3.push(C.length+' corridors with a line in region.json, not 9');
  R.push({name:'the links: every corridor\'s road baked along its line, inside the cut, with its stops',ok:!bad3.length,detail:bad3.length?bad3.join('; '):L3.join('; ')});
  return R;}"""
 

@@ -71,7 +71,7 @@ T.food={grain:1,meat:1.6,fruit:.5};
 T.calendar={year:{yearD:365,startDay:0,solsticeDay:172},windows:{home:[120,300],harvest:[255,300],'clearing-harvest':[250,295]}};   /* the sim's year day is the world tick's (day 0 the year's first) */
 T.ring={ha:80,tHa:1,crew:300,fruitT:40,fruitCrew:80,beetleT:8,beetleCrew:40};
 T.clearing={inCropHa:1.5,yieldTHa:1.2,seed:1/6,sells:.9,fruitT:5};
-T.home={hunt:{meat:1.5,hides:.3},huntMeat:{meat:5.5,hides:.6},gather:{fruit:4},breed:1/6,silkT:.2,graze:1.05,want:250,keep:10};
+T.home={hunt:{meat:1.5,hides:.3},huntMeat:{meat:6,hides:.6},gather:{fruit:4},breed:1/6,silkT:.2,graze:1.05,want:250,keep:10};   /* huntMeat 6 (was 5.5): on the open world's roads (S5) the bands come home on the roads' own days, and the meat-eaters' home larder ran 3.1 % short */
 T.rules={diet:T.diet.band,food:T.food,hunt:{meat:10,hides:1},spoil:{meat:.01,fruit:.03},gather:{fruit:6},minDays:3,cross:.7,detour:1.3,siteKm:15,hours:8,roadside:1,
  marchHunt:.5,selfHunt:.4,again:30,keepTrade:{}};
 T.range={n:8,r0:15000,r1:70000,cap:{meat:3500,hides:300,fruit:1800,fodder:40000},regrow:120};
@@ -139,10 +139,21 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?5:o.scale,yr=365,win=w=>{co
   factions:[{id:'beast-riders',name:'The Beast Riders'},{id:'iziz',name:'The Empire of Iziz'},{id:'far',name:'The far markets'}],
   relations:[{a:'beast-riders',b:'far',stance:'friendly'},{a:'far',b:'beast-riders',stance:'friendly'},{a:'beast-riders',b:'iziz',stance:'hostile'},{a:'iziz',b:'beast-riders',stance:'hostile'}],
   settlements:S,roads:R,bands:B};};
-/* the far legs as a road graph (core/world 48t KTRAVEL): each leg of PR_LEGS an edge from the rock, marked planned; a
-   region that lays the real links replaces them (pass its plans as o.graph) */
-T.graph=function(){const L=PR_LEGS.legs;return KTRAVEL.graph([],{extra:Object.keys(L).sort().map(id=>({id:'staiytii0y~'+id,a:'staiytii0y',b:id,nodeA:{id:'staiytii0y',name:'Pinnacle Rock',x:0,z:0},
-  nodeB:{id,name:L[id].name,x:L[id].x,z:L[id].z},length_m:L[id].length_m,up_m:L[id].up_m,down_m:L[id].down_m,fwd:L[id].fwd,back:L[id].back,planned:true}))});};
+/* the roads as a graph (core/world 48t KTRAVEL). T.graph(plans): the open world's baked links (openworld/pinnacle's plan
+   first, then any other region's that shares a town with it: the Iziz cluster's, where Girder is), moved into this
+   table's frame (the rock at 0, 0; another plan aligned on the town it shares), so the hub's and the ranges' cross-country
+   legs measure true; a partner no plan links keeps its PR_LEGS leg from the rock, marked planned. T.graph(): every leg
+   from PR_LEGS, planned (the scale model's estimate, before a region laid them) */
+const legEdge=id=>{const L=PR_LEGS.legs[id];return{id:'staiytii0y~'+id,a:'staiytii0y',b:id,nodeA:{id:'staiytii0y',name:'Pinnacle Rock',x:0,z:0},
+  nodeB:{id,name:L.name,x:L.x,z:L.z},length_m:L.length_m,up_m:L.up_m,down_m:L.down_m,fwd:L.fwd,back:L.back,planned:true};};
+const shiftPlan=(P,dx,dz)=>Object.assign({},P,{sites:P.sites.map(S=>Object.assign({},S,{x:S.x-dx,z:S.z-dz})),
+  links:(P.links||[]).map(Lk=>Object.assign({},Lk,{stops:(Lk.stops||[]).map(s=>Object.assign({},s,{x:s.x-dx,z:s.z-dz}))}))});
+T.graph=function(plans){
+ if(!plans||!plans.length)return KTRAVEL.graph([],{extra:Object.keys(PR_LEGS.legs).sort().map(legEdge)});
+ const R=plans[0].sites.find(s=>s.id==='staiytii0y'),out=[shiftPlan(plans[0],R.x,R.z)];
+ plans.slice(1).forEach(P=>{const S=P.sites.find(s=>out[0].sites.some(q=>q.id===s.id));if(!S)return;const Q=out[0].sites.find(q=>q.id===S.id);out.push(shiftPlan(P,S.x-Q.x,S.z-Q.z));});
+ const G0=KTRAVEL.graph(out),miss=Object.keys(PR_LEGS.legs).sort().filter(id=>!G0.nodes[id]);
+ return miss.length?KTRAVEL.graph(out,{extra:miss.map(legEdge)}):G0;};
 /* the bands' world (core/camp): their ranges (eight sites each in its sector, 15-70 km out), the markets and the targets as
    places, the ventures, the culture's assign (the slots turned each season). V the valley spec, host the sim's adapter */
 T.world=function(V,host,o){o=o||{};const world=1027681,Rg=T.range,sites=[],bands=[],place={};

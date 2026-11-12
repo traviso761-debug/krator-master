@@ -13,21 +13,21 @@
 //             Talon          Beast Rider trail trail.1.3               trade
 //             Fort Kreia     a guide up onto the NE rim (the network's trunk to Kreia starts at the Crescent, 26 km
 //                            south-west, and crosses the Talon trail)  trade
-//             Mav's Refuge   from Talon, Beast Rider trail trail.0.3   trade (Girder beyond it: openworld/iziz-cluster)
-//             Nusidi         from Mav's Refuge, Izani highway 20.24    raid
 //             Fort Ordo      from Kreia, the trunks by the Sleeping City trade
-//             Coyote Canyon  dirt.coyote, on the north half of the trough's floor east of the rock (the Shade road on
-//                            its south half, 10 km apart: one turns north-east, the other south-east, and they never
-//                            cross; on the trough's north wall the road had switchbacked)
-//                                                                      long-distance trade (the coyotemen)
-//             Shade          a guide: the trough east, the gap north of the crater's east wall, then south down the
-//                            Nomad Country's floor                     long-distance trade (the Dasri, until their
+//             Mav's Refuge   from Talon, the Beast Rider trail trail.0.3 to its old spot, then a guide south-east to the
+//                            new (the owner moved it onto the Beesh Baatar, 2026-11-11); and from Fort Ordo on the
+//                            Ordo-Nusidi trunk, which passes 3 km from it trade (Girder beyond it: openworld/iziz-cluster)
+//             Nusidi         from Mav's Refuge, the Ordo-Nusidi trunk  raid
+//             Shade          dirt.coyote along the trough east of the rock to the oasis (moved by the owner to 1085,683,
+//                            on that road)                             long-distance trade (the Dasri, until their
 //                                                                      northern village is placed)
+//             Coyote Canyon  from Shade, dirt.coyote out of the trough's north-east end and up by the basin
+//                                                                      long-distance trade (the coyotemen)
 //           each leaving its towns from 1.8 km out (r), beyond the ring of the bands' camps round the rock (1.0 to 1.64 km
 //           out: from 900 m the Talon road ran through the raptor camp and the Kreia road past the longcrawlers'),
 //           laid (the ground is shaped to them), kept inside the cut (routed in 8 km hops along the line), bridged where
 //           they cross a named river (core/world 42b, SITE_SPEC.bridges), with an inn every 25 km of road (a caravan's
-//           day) and a rest stop halfway between. The Izani highways (Goto, Nusidi) take the Iziz Vernacular's
+//           day) and a rest stop halfway between. The Izani highway to Goto takes the Iziz Vernacular's
 //           (vern_caravanserai, vern_rest_stop), as in the Iziz cluster; the Beast Riders' trails and the far roads take
 //           the Beast Riders kit's (br_bldg_riders_inn, its roadside inn; br_bldg_watch_tower, a rider post), drawn through
 //           core/world 88s's `beast-riders` village kit (S7) by core/hamlet's `beast-rider` row below. The coyotemen and the
@@ -64,5 +64,5 @@ var SITE_SPEC={region:'pinnacle',world:1027681,bridges:{culture:'iziz'},
   /* the partners: their towns are not planned here (their own pages, or none yet); each is a link's end */
   ski7uk8fjc:{},sghb3jlsk5:{},s1kaqxmg10:{},s5c6ysqazg:{},skukf2qmmq:{},s2199308wr:{},soksvzt1h9:{},slfozs6c7z:{}},
  links:[LINK('staiytii0y','ski7uk8fjc',{stops:STOPS}),LINK('staiytii0y','sghb3jlsk5'),LINK('staiytii0y','s1kaqxmg10'),
-  LINK('sghb3jlsk5','skukf2qmmq'),LINK('skukf2qmmq','s2199308wr',{stops:STOPS}),LINK('s1kaqxmg10','s5c6ysqazg'),
-  LINK('staiytii0y','soksvzt1h9'),LINK('staiytii0y','slfozs6c7z')]};
+  LINK('sghb3jlsk5','skukf2qmmq'),LINK('s1kaqxmg10','s5c6ysqazg'),LINK('s5c6ysqazg','skukf2qmmq'),
+  LINK('skukf2qmmq','s2199308wr'),LINK('staiytii0y','slfozs6c7z'),LINK('slfozs6c7z','soksvzt1h9')]};
