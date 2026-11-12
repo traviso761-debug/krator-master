@@ -900,7 +900,7 @@ north-west wall, at 5.1 px 1013,1585 and 2,568 m, with about 1,300 m of rise wit
 - **The router:** `setts.json` is now taken from that branch (at `3db1e2b3e`), which has Strongbow there and also moves Qiblai to
   922,1595 and Erehwon to 805,1516.
 - **The valley road:** the Oidong session lays it on the valley floor, 452 km from Longsong to Strongbow, with 4 bridges. The
-  network's trace of it is 463 km.
+  network takes the same line.
 
 The owner's other answers the same day: "qiblai shouldnt be a line stop it was built much later", "longsong shouldnt be a line
 stop either", "there is no rift line in oidong valley, just a road", "it goes to strongbow".
@@ -908,10 +908,12 @@ stop either", "there is no rift line in oidong valley, just a road", "it goes to
   the valley: the router traces it with the 'Oidong Valley' polygon at 1,000x the cost, except within 10 km of Strongbow.
 - **It stops at neither Qiblai nor Longsong.**
 - **The valley has a road and no line:**
-  - Strongbow to Longsong down the valley, 463 km;
+  - Strongbow to Longsong down the valley floor, 449 km, laid on the Oidong session's least-climb guide (`route51.py` `GUIDES`),
+    so the network map and the open world share one alignment;
   - Qiblai to Strongbow, 207 km;
   - Strongbow to Strongwall, 237 km;
-  - Qiblai to Longsong, 639 km. This one runs beside the Strongbow road for most of the valley; drop it if one road is enough.
+  - **Qiblai to Longsong is dropped** (the owner: "Drop it"). It ran beside the Strongbow road for most of the valley; Qiblai
+    reaches Longsong by Strongbow (`route51.py` `DROPPED`).
 - **Possible: the dead bore from Theodiga (10) to Stair (12)**, 438 km, 385 km of it bored. The owner: "theodiga could go to
   stair". It replaces the possible leg from Strongbow.
   - It is a third way across, but a hard one: dark, with little food or water.

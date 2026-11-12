@@ -313,7 +313,11 @@ def mtrace(a_cell, b_cell):
     while p[-1] != a_cell and pred[p[-1]] >= 0: p.append(int(pred[p[-1]]))
     return [pxof(c) for c in p[::-1]]
 # roads laid on a hand-drawn guide instead of the router's trace (5.1 px), so the network and the open world share one alignment:
-GUIDES = {}   # (the Longsong-Strongbow guide went with Strongbow's move to the valley's west end)
+# Longsong to Strongbow on the Oidong Valley floor: the oidong-highrift region's least-climb guide (2026-11-11), inside the valley's polygon
+# and off the water; at 1:1 it lays as 452 km, never above 2,706 m, with 4 bridges
+# pairs the owner dropped: Qiblai to Longsong ran beside the Strongbow-Longsong road down the Oidong Valley ("Drop it", 2026-11-11)
+DROPPED = {tuple(sorted(('Qiblai', 'Longsong')))}
+GUIDES = {('Longsong', 'Strongbow'): [[1226,1626],[1219,1626],[1213,1624],[1207,1623],[1201,1620],[1195,1618],[1189,1618],[1183,1615],[1177,1613],[1171,1613],[1165,1607],[1159,1605],[1153,1602],[1147,1603],[1135,1603],[1123,1603],[1111,1602],[1099,1602],[1093,1599],[1087,1598],[1081,1597],[1075,1595],[1063,1595],[1051,1595],[1045,1594],[1039,1592],[1033,1592],[1027,1590],[1021,1590],[1015,1590],[1013,1585]]}
 def mesh(cls, members, prefix, label, k_near=2, skip_pairs=()):
     """a road network among `members` (names -> px): a relative-neighbourhood graph plus each member's k nearest (the owner:
     'their highway network would connect its nodes to multiple nearby cities'), minus pairs the Ancient trunks already join"""
@@ -327,7 +331,7 @@ def mesh(cls, members, prefix, label, k_near=2, skip_pairs=()):
             if np.isfinite(Dm[i, j]) and Dm[i, j] < 3 * np.median(Dm[i][np.isfinite(Dm[i])]): es.add(tuple(sorted((i, int(j)))))
     made = 0
     for i, j in sorted(es):
-        if tuple(sorted((nm[i], nm[j]))) in skip_pairs: continue
+        if tuple(sorted((nm[i], nm[j]))) in skip_pairs or tuple(sorted((nm[i], nm[j]))) in DROPPED: continue
         g_ = GUIDES.get((nm[i], nm[j])) or (GUIDES.get((nm[j], nm[i])) or [])[::-1]
         pts_ = [q for k, (u, v) in enumerate(zip(g_, g_[1:])) for q in straight(u, v, 2.0)[(1 if k else 0):]] if g_ else mtrace(cells[i], cells[j])
         av = np.array([q for r in routes if r['class'] in ('trunk', 'line') for k, q in enumerate(r['px']) if r['form'][min(k, len(r['form']) - 1)] != 'tunnel'])
