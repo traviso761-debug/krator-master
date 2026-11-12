@@ -22,6 +22,7 @@ lowlands' bark and cards, the Ancients kit's skins). A fresh worktree needs `git
 | the ground's layers | `KGROUND` with this kit's pack (`materials.json`: steppe, mud, gravel, sand, the dome's gneiss) | `src/84-host-ground.js` |
 | the far field and the horizon | `KFAR`, `KHORIZON` | `src/85-host-far.js` |
 | the chaos's wild knobs | `KSTACKS` | `src/86-host-knobs.js` |
+| a Kimr pueblo on a knob (the Mesas only: `SITE.pueblos`) | `kits/kimr`'s `km-house` (core/pueblo) through its sealed bundle `KMK` (`kits/kimr/kit_bundle.py`), which a station takes with `"kits": ["kimr"]` in its `station.json` (the Gate never does); the knob is the rock, its edges read off the drawn outline | `src/86p-host-pueblo.js` (the fit, the registration, the draw); `KEEP` in `src/45-host-stage.js` keeps the flora and the overgrowth off its site |
 | the Hall of Heroes and its five stacks | `kits/ancients` targets/gatearc, read in place with the kit's runtime | `src/89g-host-gate.js` |
 | the pond, the river, the fall, the pools | `core/water` | `src/89w-host-water.js` |
 | the flora (a first cut) | `biomes/nwlowlands`, read in place | `src/89z-host-build.js` |

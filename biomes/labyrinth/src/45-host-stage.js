@@ -85,7 +85,12 @@ const RELIEF=SCARPS.concat(PITS);
 // THE ROCK: the Hall's five stacks (GATESTACKS, the same records the Hall's builder draws) and the wild knobs (SITE.knobs), on the floor
 const groundAt0=(x,z)=>{let g=floorH(x,z)+3*(kfbm(x*.0012,z*.0012,91,3)-.5);for(const W of RELIEF)g=KRELIEF.shape(W,x,z,g);return g;};
 const STACKS=HALL?GATESTACKS.plan({hall:HALL,ground:(x,z)=>groundAt0(x,z)-LEVEL}).stacks:[];   /* the Hall's frame: y over LEVEL */
-const KNOBS=(SITE.knobs||[]).map((k,i)=>KSTACKS.make(Object.assign({id:'gate.knob.'+i,y0:groundAt0(k.x,k.z)-4,bed:[10,22],weather:.85},k)));
+const KNOBS=(SITE.knobs||[]).map((k,i)=>{const S=KSTACKS.make(Object.assign({id:'gate.knob.'+i,y0:groundAt0(k.x,k.z)-4,bed:[10,22],weather:.85},k));
+ /* k.flat: the top bed's roughness in metres (KSTACKS' rg, .7 by default): a knob a pueblo stands on (86p) has a flat top */
+ if(k.flat!=null){const b=S.beds[S.beds.length-1];b.rg=k.flat;}return S;});
+/* KEEP: footprints the flora and the overgrowth keep off (86p fills it: a pueblo's site box), {x, z, c, s (its yaw's cos, sin), hw, hd} */
+const KEEP=[];
+function keptOff(x,z,pad){pad=pad||0;for(const K of KEEP){const dx=x-K.x,dz=z-K.z,u=dx*K.c-dz*K.s,w=dx*K.s+dz*K.c;if(Math.abs(u)<K.hw+pad&&Math.abs(w)<K.hd+pad)return true;}return false;}
 const ROCK=KNOBS;   /* the host draws the knobs (86); the Hall's builder draws its own five */
 function rockFoot(x,z){let d=1e9;const f=KSTACKS.foot(ROCK,x,z);if(f)d=Math.min(d,f.d);
  for(const S of STACKS){const g=KSTACKS.foot([S],x,z);if(g)d=Math.min(d,g.d);}return d;}
@@ -138,7 +143,7 @@ const OBSTACLES=(HALL?[{x:0,z:0,r:230}]:[]).concat(STACKS.map(S=>({x:S.x,z:S.z,r
 const SPINE=[[0,0]];for(let z=-2000;z<=2000;z+=800)for(let x=-2000;x<=2000;x+=800)SPINE.push([x,z]);
 RIVER.lines.forEach(P=>{for(let i=0;i<P.length;i+=30)SPINE.push([P[i][0],P[i][1]]);});
 // the mask: nothing roots in the water, on the rock, under the Hall
-function rootMask(x,z){if(pondE(x,z)<1.03)return 0;if(rockFoot(x,z)<3)return 0;
+function rootMask(x,z){if(pondE(x,z)<1.03)return 0;if(rockFoot(x,z)<3)return 0;if(KEEP.length&&keptOff(x,z))return 0;
  /* no trees or tufts on a cliff (the owner's rule): a wall's face, a knob's talus, any ground over 35 degrees; the drawn ground's 12 m cells
     also bridge a steep face, so a plant there would float */
  {const rk=FIELD.rock(x,z),sl=FIELD.slope(x,z);if(rk>.6||sl>.7)return 0;if(rk>.35)return (.6-rk)/.25;}

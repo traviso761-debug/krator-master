@@ -71,13 +71,13 @@
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
     "kits/catalog/furniture_bundle.py": "e9de2aa4a449de0baf2a1b00842dcd03a318fc966f9bbfe618a66bd36bf9ef3a",
     "kits/catalog/krator-master-furniture-generic.js": "990b05b8404c67ab960f6649babc8143c738ea600a04c0c22564296fa7786ea4",
-    "kits/kimr/KNOWN_ISSUES.md": "e9a710f9308471e2da5b2826ad87dbcd117b44efc38ae8ece4c406e2ab09e5b8",
+    "kits/kimr/KNOWN_ISSUES.md": "95035f505dca43178d682b36d7b7a31566b8657bf710400215930e55ccc5d81a",
     "kits/kimr/PORT.md": "b2e71faa496e6db0385a700bb8198e154b1d8a4dea5d6a0e18965d629b36b2b3",
     "kits/kimr/build.py": "977b19e5451f867b18c8e47368445aea16fdc608dd36710d373107cf303c71f2",
     "kits/kimr/src/00-head.html": "4f26f0b1c0e0e336cfa7223661b7f0609f6fdcb36b5a3e8f34e5000e56263e27",
     "kits/kimr/src/26k-kit.js": "5df80d9ea8e67de2666d02c0d526defa87e704c9714831356d981c06771f7fdd",
-    "kits/kimr/src/44-km-plan.js": "61ee1019e3a62428d0df0e099c478b67fe348b9d429c2a6979c259aca9a30034",
-    "kits/kimr/src/46-km-draw.js": "17dac3ff009e9380a338a89dac4d483f205a5ba8c9b9c367a8dfe264dc30ed5f",
+    "kits/kimr/src/44-km-plan.js": "c2bddb37d193534210c05fcd0fb83cd1d96f9088ac37ee2f9d9c3ed9e52b3b06",
+    "kits/kimr/src/46-km-draw.js": "61ab23ce508a7d6d4ccc18c3883c8b98f1ca065d8faefc1b9bd4461c6f31232b",
     "kits/kimr/src/89-rows.js": "9d37030cb00e29760477cd2d3ea4d4620cc5211f081fa86efe5b7ad91753c1b2",
     "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2",
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
@@ -101,12 +101,12 @@
     "tools": "2d2fdaca850a104a2a2c553313ccb3ad18dc6bc48cb554c8c714fc1ca39607bf"
    },
    "outputs": {
-    "kits/kimr/build-manifest.json": "69e2ddece88c9476ee998b33d3b79749886f0af492b2e94b85fb0fa15cad69d5",
-    "kits/kimr/dist/kimr.html": "6cb373214fb7e404565b3f661320f9ea11c6d2de642bf3a17bd048a0673f60fd"
+    "kits/kimr/build-manifest.json": "f16de1b9828f8926f47dd988b656e98c38ca8ae3f22f7ad592e8f0e2f503dc86",
+    "kits/kimr/dist/kimr.html": "c7c4687ae9addb6cbf4a5611e2e322c6ec11806339d81a87ea1ff20bd4110243"
    },
    "outputs_raw": {
-    "kits/kimr/build-manifest.json": "69e2ddece88c9476ee998b33d3b79749886f0af492b2e94b85fb0fa15cad69d5",
-    "kits/kimr/dist/kimr.html": "6cb373214fb7e404565b3f661320f9ea11c6d2de642bf3a17bd048a0673f60fd"
+    "kits/kimr/build-manifest.json": "f16de1b9828f8926f47dd988b656e98c38ca8ae3f22f7ad592e8f0e2f503dc86",
+    "kits/kimr/dist/kimr.html": "c7c4687ae9addb6cbf4a5611e2e322c6ec11806339d81a87ea1ff20bd4110243"
    }
   }
  }

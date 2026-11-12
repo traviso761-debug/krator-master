@@ -28,9 +28,12 @@ function kmU(P,a,b,salt){return KRAND.unit(KRAND.hash(P.world,a|0,b|0,salt|0));}
 function kmEdge(c,side){const e=KPUEBLO.edgeOf(c,side),n=KPUEBLO.outN(e[0],e[1],[c.cx,c.cz]),L=Math.hypot(e[1][0]-e[0][0],e[1][1]-e[0][1]);
  return {a:e[0],b:e[1],m:[(e[0][0]+e[1][0])/2,(e[0][1]+e[1][1])/2],n,L,ry:Math.atan2(n[0],n[1])};}
 /* ---------------------------------------------------------------- the site: the rock and everything below it */
-function kmSite(P){const B=P.bounds,h=P.storey,u=(a,b,s)=>kmU(P,a,b,s);
+/* o.rock (a world's own rock, 2026-11-12: biomes/labyrinth's Mesas stands the house on a knob of the chaos): any of {x0, x1, z0,
+   z1 (its top edge in the plan's frame), h (its top over the floor in front), batter (its foot's run over h), drawn} over the
+   kit's; drawn false: the world draws the rock (kmBuild draws no plinth), the dress below it stands on the floor past its foot */
+function kmSite(P,o){const B=P.bounds,h=P.storey,u=(a,b,s)=>kmU(P,a,b,s);
  /* the rock: a ledge of 2.5 m round the blocks, a 6 m landing in front of the yard; 7 to 10 m high, battered 12 degrees */
- const rock={x0:B.x0-2.5,x1:B.x1+2.5,z0:B.z0-2.5,z1:B.z1+6,h:+(7+u(1,1,31)*3).toFixed(2),batter:.21};
+ const rock=Object.assign({x0:B.x0-2.5,x1:B.x1+2.5,z0:B.z0-2.5,z1:B.z1+6,h:+(7+u(1,1,31)*3).toFixed(2),batter:.21},o&&o.rock||{});
  const foot=rock.h*rock.batter;   /* the batter's run: the rock's foot stands this far out from its top edge */
  const S={rock,entries:[],round:null,pen:null,dung:[],crest:[],ribs:[],hands:[],racks:[]};
  /* two long ladders up the front face, either side of the landing's middle; their feet on the floor */
@@ -61,4 +64,4 @@ function kmSite(P){const B=P.bounds,h=P.storey,u=(a,b,s)=>kmU(P,a,b,s);
  const top=P.bounds.h+.45+(S.crest.length?S.crest[0].post+1.2:0);
  S.box={w:+(x1-x0).toFixed(2),d:+(z1-z0).toFixed(2),h:+(rock.h+top).toFixed(2)};S.off=[-(x0+x1)/2,-(z0+z1)/2];
  return S;}
-KM.spec=KM_HOUSE;KM.plan=v=>kmPlan(KM_HOUSE.spec(v));KM.site=kmSite;
+KM.spec=KM_HOUSE;KM.plan=v=>kmPlan(KM_HOUSE.spec(v));KM.site=kmSite;   /* KM.site(P, {rock}) */

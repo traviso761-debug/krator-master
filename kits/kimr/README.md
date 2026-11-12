@@ -30,6 +30,15 @@ ladders, the rock, the round room, the pen, the crest).
 **Matrilineal:** the house's rooms pass from mother to daughter (LORE.md 6.24). The plan's census counts households; the house's
 records carry no owner yet.
 
+**For a world whose page has its own globals** (`kit_bundle.py`, 2026-11-12): `bundle()` seals the kit, `core/pueblo` and the
+engine files it draws through (core/engine 10, 27, 30, 36, 36o, 36s) in one closure, `KMK`, after `kits/xanadu/kit_bundle.py`.
+`KMK.proto(key, v, {rock})` the def built at the origin into a group (dry: nothing registered), `KMK.register(T, {v, rock, at, ry,
+name})` the house and its parts into the page's core/tags registry, `KMK.plan(v)`, `KMK.site(v, {rock})`, `KMK.dims()`,
+`KMK.bind(KMAT)`, `KMK.errors`. The page carries three.js, `core/rand`, `core/space`, `core/materials/record` and `core/tags`.
+**A world's own rock:** `kmSite(P, {rock: {x0, x1, z0, z1, h, batter, drawn: false}})` stands the house on the world's knob or
+bench instead of the kit's plinth (no plinth drawn; the dress below stands on the floor past the given foot). First host:
+`biomes/labyrinth`'s Mesas (`src/86p-host-pueblo.js`), which reads the edges off the knob's drawn outline.
+
 ## Read in place, never copied
 
 `core/engine` (the building-kit engine), `core/pueblo`, `core/rand`, `core/space`, `core/tags`, `core/materials/record`, `core/furnish`,

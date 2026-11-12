@@ -27,17 +27,18 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 |---|---|---|
 | `00-head.html` | 1 |  |
 | `44z-host-site.js` | 3 |  |
-| `45-host-stage.js` | 15 | the land (40); the fields (cached below) (109); the host binding (135) |
+| `45-host-stage.js` | 16 | the land (40); the fields (cached below) (114); the host binding (140) |
 | `84-host-ground.js` | 5 |  |
 | `85-host-far.js` | 3 |  |
 | `86-host-knobs.js` | 2 |  |
+| `86p-host-pueblo.js` | 5 |  |
 | `89-host-sky.js` | 1 |  |
 | `89a-host-atmos.js` | 2 |  |
 | `89g-host-gate.js` | 4 |  |
 | `89h-host-hazards.js` | 6 |  |
 | `89w-host-water.js` | 4 |  |
 | `89z-host-build.js` | 6 |  |
-| `99-host-take.js` | 12 |  |
+| `99-host-take.js` | 14 |  |
 | `99-tail.html` | <1 |  |
 
 ## stations/
@@ -46,6 +47,6 @@ Each station builds one page (`build.py --station <name>`) from its own fragment
 
 | Station | Fragments | KB |
 |---|---|---|
-| mesas | 44z-host-site.js | 3 |
+| mesas | 44z-host-site.js | 4 |
 | paddocks | 44z-host-site.js | 3 |
 | pits | 44z-host-site.js | 3 |

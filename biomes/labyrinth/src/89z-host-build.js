@@ -29,7 +29,9 @@ const SHADOW_ON=new URLSearchParams(location.search).get('shadow')!=='0'&&typeof
    const covered=i=>{const ax=p.getX(i),ay=p.getY(i),az=p.getZ(i),bx=p.getX(i+1)-ax,by=p.getY(i+1)-ay,bz=p.getZ(i+1)-az,cx=p.getX(i+2)-ax,cy=p.getY(i+2)-ay,cz=p.getZ(i+2)-az;
     const nx=by*cz-bz*cy,ny=bz*cx-bx*cz,nz=bx*cy-by*cx,nl=Math.hypot(nx,ny,nz)||1;if(Math.abs(ny/nl)<.6)return false;
     const mx=ax+(bx+cx)/3,my=ay+(by+cy)/3,mz=az+(bz+cz)/3,t=Math.max(KSTACKS.topAt(KNOBS,mx,mz),KSTACKS.topAt(STACKS,mx,mz)+LEVEL);return t>my+1;};
-   for(let i=0;i<p.count;i+=3){if(p.getY(i)<y0||p.getY(i+1)<y0||p.getY(i+2)<y0||covered(i))continue;for(let k=0;k<3;k++){P.push(p.getX(i+k),p.getY(i+k),p.getZ(i+k));if(uv)U.push(uv.getX(i+k),uv.getY(i+k));}}
+   /* and nothing on a pueblo's knob under its site (KEEP, 86p): the house stands on that top */
+   const kept=i=>KEEP.length&&keptOff((p.getX(i)+p.getX(i+1)+p.getX(i+2))/3,(p.getZ(i)+p.getZ(i+1)+p.getZ(i+2))/3,2);
+   for(let i=0;i<p.count;i+=3){if(p.getY(i)<y0||p.getY(i+1)<y0||p.getY(i+2)<y0||covered(i)||kept(i))continue;for(let k=0;k<3;k++){P.push(p.getX(i+k),p.getY(i+k),p.getZ(i+k));if(uv)U.push(uv.getX(i+k),uv.getY(i+k));}}
    const o=new THREE.BufferGeometry();o.setAttribute('position',new THREE.Float32BufferAttribute(P,3));if(uv)o.setAttribute('uv',new THREE.Float32BufferAttribute(U,2));o.computeVertexNormals();return o;};
   const take=o=>{if(o.isMesh&&!o.isInstancedMesh&&o.geometry&&o.geometry.attributes.position&&!(o.material&&(o.material.transparent||o.material===MAT.acVoid)))geos.push(dry(o.geometry.clone().applyMatrix4(o.matrixWorld)));};
   scene.children.forEach(o=>{if(/^host:knob\./.test(o.name))take(o);});if(GATE)GATE.holder.traverse(take);
