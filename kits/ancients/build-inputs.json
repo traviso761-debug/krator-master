@@ -899,7 +899,7 @@
     "kits/ancients/targets/spire/89z-rows.js": "64ba85c8d9b2f09e3cf430061a0099556d281b1117fa24671fb02c4063eb121c",
     "kits/ancients/targets/spire/91z-views.js": "d0680b6c5634e43d0ba1ad1a1013e1d4829a14a7bee28e562239d88bc80b87ac",
     "kits/ancients/targets/strongbow/89z-rows.js": "c9821873798772fd25590424ae33b99144c85cbd14329d66db453a95d17e239c",
-    "kits/ancients/targets/strongbow/8aw0-strongbow-plan.js": "29b89e0780bc2728d83f622f2ca6f17ed06d9e2dec5c9087c2c0f1f1120bdd50",
+    "kits/ancients/targets/strongbow/8aw0-strongbow-plan.js": "c6f14e81e2116ec4320e3fb7cc9480333ab1cc7fc41eb143b97dfe29670719d2",
     "kits/ancients/targets/strongbow/8aw1-strongbow-parts.js": "2236f2f59fb54b5f03f22485347f18d747c29a22c992d874bdf2abed5b6c2e89",
     "kits/ancients/targets/strongbow/8aw2-strongbow-draw.js": "e8525a5d55b87649e506d8c724acf769945d173f6605ceb23d504d0d5976c33e",
     "kits/ancients/targets/strongbow/8aw3-strongbow-foot.js": "b1439b533e06421c651e073d80639c2c8aeca3fd98c36b320090822cbc65907a",
@@ -1046,14 +1046,14 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/ancients/build-manifest-strongbow.json": "b40561eccef3467c38b99d563ef25ff52ce9a9dd90f52c502c4eaa36a50c7755",
+    "kits/ancients/build-manifest-strongbow.json": "9855e1965055b1f28d848e2f00c17d0889c9ee1d07895a50379042f9ebcacd2a",
     "kits/ancients/dist/ancients.tex.ancients.js": "c7ed83f8f8f6137f51a41f8e4e6d9d29f58231c89061aff467c3d4710a313883",
-    "kits/ancients/dist/strongbow.html": "b53f9bddde945ac314c99f9786680f42c582dee2b8da7281dfbd4e588bbc006e"
+    "kits/ancients/dist/strongbow.html": "5a7322c87d77b2caff0496bb13b863b987ebd71e2513720ec195de0d489a2fb5"
    },
    "outputs_raw": {
-    "kits/ancients/build-manifest-strongbow.json": "0b6b0a9fb3477e1aa2e074df6d5c7d1560e28da6330cabebc8af7c19e834a9ae",
+    "kits/ancients/build-manifest-strongbow.json": "d6300347e459346ea5d28f0fcfd00d30840c855b33e7114e93fc570ce7c4a66e",
     "kits/ancients/dist/ancients.tex.ancients.js": "c7ed83f8f8f6137f51a41f8e4e6d9d29f58231c89061aff467c3d4710a313883",
-    "kits/ancients/dist/strongbow.html": "b53f9bddde945ac314c99f9786680f42c582dee2b8da7281dfbd4e588bbc006e"
+    "kits/ancients/dist/strongbow.html": "5a7322c87d77b2caff0496bb13b863b987ebd71e2513720ec195de0d489a2fb5"
    }
   }
  }

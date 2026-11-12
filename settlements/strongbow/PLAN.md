@@ -210,8 +210,15 @@ where they work and the scrap set's buildings, plus the Order's and the outcasts
 
 1. **The owner's answers** (given 2026-11-11: section 10).
 2. **The lobby** in `kits/ancients/targets/strongbow`: the foot's records and drawing, as built and as ruined; GPU-verify; baseline.
-3. **SB1, the layout as data**: zones, parts, states, lifts, ways, rooms of the foot; the rules and their negatives; the sheets
-   and `AREAS.md`. The owner reviews the sheets.
+3. **SB1, the layout as data** (done 2026-11-11). The parts:
+   - `src/30-sb-layout.js`: 79 parts and 73 ways, among them the lifts, read off the arcology's own records;
+   - `src/31-sb-rules.js`: 15 rules;
+   - `test-strongbow-town.js`: every rule with a negative, plus `AREAS.md` checked current;
+   - `layout_dump.js` and `strongbow_blueprint.py`: the sheets in `floors/`. S0 is the site, S1 and S2 the foot's two levels, S3 the
+     Spine Xanadu holds, S4 the outcasts' Spine, S5 the Nock, S6 the top, and S7 the elevation with every way up.
+
+   Found on the way: the wall lifts W1 to W5 stand on the face 12 m west of the bay. The west anchor stays' sockets moved 20 m
+   further west in the arcology's plan, to clear them by 6 m. The owner reviews the sheets.
 4. **SB2, the page**: the arcology read in place; the reclamation drawn (scrap glass, re-hung panels, sealed doors, the lifts,
    the bridges); the foot dressed.
 5. **SB3, the town** on `core/city`, with the scrap set.

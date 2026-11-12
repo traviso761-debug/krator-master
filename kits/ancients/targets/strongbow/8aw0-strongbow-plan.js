@@ -25,7 +25,7 @@ STRONGBOW.DIM={LIP:900,BATTER:30,STO:25.6/7,BAY:{w:190,d:90},
  CROWN:{h:10,over:30,pool:[44,16]},MAST:{h:170,rake:12},RAMP:{p0:[-300,-34],c:[-260,190],p2:[-62,40],w:14,pitch:26,back:[[-150,-230],[0,-260],[150,-230]]},
  NOCK:{y:520,th:22,over:96,wing:120,storeys:5,landing:{r:30,at:.52}},
  STRING:{n:12,u:.45,y0:700,y1:880,x0:125,x1:208},
- ANCHORS:[{y:840,n:10,b0:790,b1:880},{y:740,n:10,b0:660,b1:780},{y:620,n:9,b0:540,b1:640}],SOCK:{x0:110,x1:255,u:.62},
+ ANCHORS:[{y:840,n:10,b0:790,b1:880},{y:740,n:10,b0:660,b1:780},{y:620,n:9,b0:540,b1:640}],SOCK:{x0:130,x1:270,u:.62},
  QUIVER:{x:-245,top:400,tip:150,W:100,D:80,n:7},
  // THE SPINE (the owner, 2026-11-11: 'one intermittently sloping column of drums and terraces'): nodes from the
  // keel to the foot, [x, y, z from the keel's centre]; plumb runs and runs that step out from the rock; a terrace at every turn
@@ -205,7 +205,7 @@ STRONGBOW.ruin=function(P){const D=P.dim,R=D.RUIN,F=P.frame,S=P.seed,h=(a,b,c,e)
  RU.lit=P.drums.filter(d=>d.run>=3).map(d=>d.id);
  // the foot: the terminus hall's west half crushed by the fallen lower hull; most of the lobby's glazing gone; the east wing's
  // upper floors burned; the plaza's pools dry
- {const H=P.foot.hall;RU.foot={hallCut:lerpSB(H.x0,H.x1,.5),glass:.7,galleries:P.foot.lobby.galleries.map(g=>({id:g.id,lost:.25+.2*h(250,g.y|0)})),
+ {const H=P.foot.hall;RU.foot={hallCut:lerpSB(H.x0,H.x1,.57),glass:.7,galleries:P.foot.lobby.galleries.map(g=>({id:g.id,lost:.25+.2*h(250,g.y|0)})),
   burned:{id:'sb.foot.e',storeys:2},dry:true};}
  // the heliostats: most fallen or askew
  for(const m of P.helio){const u=h(240,m.row,m.i,m.grp==='e'?1:2);if(u<R.helio)RU.helio.push({id:m.id,fallen:u<R.helio*.6,tilt:(h(241,m.row,m.i)-.5)*1.4});}
