@@ -358,6 +358,21 @@ Longsong can be on the sim after S0-S3. Pinnacle Rock needs S0-S7.
     but on the page's mesa two of them no longer fit (Raptor 6 of 8 pitched, Longcrawler 7 of 8), so they are back to their
     five tents.
 
+**Done (2026-11-12): eighteen bands, and Pinnacle Rock's full sim** (the owner: "18 bands"; "implement full sim to the level
+of isle demo including needs and happiness and see what happens").
+- **Eighteen bands of 40-70:** the six ground tribes' upper grounds are widened on the mesa and pitch their seven tents.
+- **The full sim** (`settlements/pinnacle-rock/tests/test-pr-sim.js`; `--year` for the whole year):
+  - the town's 2,934 people on core/region's host, read from the page's exported plan (`tools/export_plan.py`), with needs,
+    happiness, loyalty, items, the economy and unrest;
+  - the valley attached: the clearings, the bands, the markets and the targets;
+  - the bands on core/camp's world tick.
+- **What happened:** the first year starved with a full granary. A meal is two foods, and households buying by the
+  warehouses' stock bought nearly all grain. **Fixed in core** (the owner): the balanced basket, `77-sim-6-items.js`.
+  The year now runs fed (hunger 17-18) and calm (happiness 74) every day.
+- **Still to balance:** the town ends the year with about 0.3 million servings in store against 1.47 million at the start, so a
+  second year would go short. Caravans or carts bringing more to the granary town (the owner's suggestion) is the next step.
+  About half the town is "uneasy", on material wants.
+
 **Still open after S7:**
 - **For the owner:** the proposal counts eighteen bands, but the six ground tribes' upper grounds hold 23-27 people each,
   under core/camp's 40-person floor. Are they bands of their own, needing room on the mesa for two more tents each? Or are
