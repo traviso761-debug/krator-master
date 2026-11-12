@@ -202,7 +202,7 @@ STRONGBOW.ruin=function(P){const D=P.dim,R=D.RUIN,F=P.frame,S=P.seed,h=(a,b,c,e)
  // the rotors stripped to their hubs
  RU.rotors=P.rotors.map(r=>({id:r.id,blades:RU.spineGone.indexOf(r.terrace)>=0?-1:0}));
  // the town's lamps in the Spine's lower drums
- RU.lit=P.drums.filter(d=>d.run>=3).map(d=>d.id);
+ RU.lit=P.drums.filter(d=>d.run>=5).map(d=>d.id);   /* the runs Xanadu holds (settlements/strongbow: run 4 is burned and sealed, run 3 the outcasts') */
  // the foot: the terminus hall's west half crushed by the fallen lower hull; most of the lobby's glazing gone; the east wing's
  // upper floors burned; the plaza's pools dry
  {const H=P.foot.hall;RU.foot={hallCut:lerpSB(H.x0,H.x1,.57),glass:.7,galleries:P.foot.lobby.galleries.map(g=>({id:g.id,lost:.25+.2*h(250,g.y|0)})),

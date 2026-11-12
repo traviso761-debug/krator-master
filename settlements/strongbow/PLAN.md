@@ -219,8 +219,19 @@ where they work and the scrap set's buildings, plus the Order's and the outcasts
 
    Found on the way: the wall lifts W1 to W5 stand on the face 12 m west of the bay. The west anchor stays' sockets moved 20 m
    further west in the arcology's plan, to clear them by 6 m. The owner reviews the sheets.
-4. **SB2, the page**: the arcology read in place; the reclamation drawn (scrap glass, re-hung panels, sealed doors, the lifts,
-   the bridges); the foot dressed.
+4. **SB2, the page** (done 2026-11-11): `kits/ancients/dist/strongbow-today.html`, the kit's target `strongbow-today`. It reads
+   the arcology's fragments and `src/` in place and draws the ruin with the reclamation from the layout's records
+   (`src/8ax0-sb-reclaim.js`):
+   - the girder lift frames with their cages, capstan houses and the elevator's banners;
+   - the wall landings and the girder bridges;
+   - the outcasts' rope ways and their fires;
+   - the sealed run's soot and the barred stair at T3;
+   - the lobby's scrap glass on its south side and the bazaar's stalls;
+   - stand-ins for the serai, the gate, the shrine and the pavilion;
+   - the Order's balloon, shed and signal mast on the Nock;
+   - the Sultanate's post and caravan yard at the lip, and the Order's banners on its gatehouse.
+
+   The arcology's placeholder town is left out (`SB_TODAY`). Its lamps now burn only in the runs Xanadu holds.
 5. **SB3, the town** on `core/city`, with the scrap set.
 6. **SB4, life** on `core/simulation`.
 7. Placement in the open world: the region's job, from the records.

@@ -116,11 +116,15 @@ INTERIOR_CORE = [(CORE_RAND, '08-core-rand.js'), (CORE_TAGS, '50-core-tags.js'),
                  (CORE_FURNISH, '53-core-furnish-host.js')]
 # A target listed here takes the shared core/rand and core/tags (no interiors): its placement draws from KRAND and it
 # registers what it places with KTAGS before drawing it (CLAUDE.md, "Write code that is the same on every machine").
-TAGS_TARGETS = {'podium', 'sanctum', 'span', 'arcpile', 'strongbow'}
+TAGS_TARGETS = {'podium', 'sanctum', 'span', 'arcpile', 'strongbow', 'strongbow-today'}
 TAGS_CORE = INTERIOR_CORE[:4]
 # fragments a target reads in place from another kit: the Sanctum's statuary is the Eternian kit's head generator
 # (kits/eternian/src/42-et-head.js, [G data]: one generator for every build that carries the Eternians' faces)
+SB_TODAY_READS = ([(os.path.join(HERE, 'targets', 'strongbow'), f) for f in ('8aw0-strongbow-plan.js', '8aw1-strongbow-parts.js', '8aw2-strongbow-draw.js', '8aw3-strongbow-foot.js')]
+                  + [(os.path.join(ROOT, 'settlements', 'strongbow', 'src'), f) for f in ('20-sb-census.js', '30-sb-layout.js', '31-sb-rules.js', '8ax0-sb-reclaim.js')])
 TARGET_READS = {'podium': [(os.path.join(ROOT, 'kits', 'eternian', 'src'), '42-et-head.js')],
+                # Strongbow today (settlements/strongbow, SB2): the arcology's fragments and the settlement's layout and reclamation, read in place
+                'strongbow-today': SB_TODAY_READS,
                 # the Sanctum (2026-10-22) shares the Podium's skins and materials (MAT.sn*), read in place
                 'sanctum': [(os.path.join(ROOT, 'kits', 'eternian', 'src'), '42-et-head.js'),
                             (os.path.join(HERE, 'targets', 'podium'), '8aq2-podium-skins.js')]}
@@ -176,6 +180,7 @@ TARGET_OUT = {
     'lozenge': 'lozenge.html',               # the cube at a quarter height, its upper faces terraced (targets/lozenge)
     'arcpile': 'arcpile.html',               # the pile of blocks, the Rift's ruin (targets/arcpile)
     'strongbow': 'strongbow.html',           # the cliff arcology hung down the High Rift's escarpment at Oidong (targets/strongbow)
+    'strongbow-today': 'strongbow-today.html',   # Strongbow as it stands now, with the settlement's reclamation (settlements/strongbow)
     'wing': 'wing.html',                     # memorial group: the Wing
     'drum': 'drum.html',                     # memorial group: the Drum
     'blades': 'blades.html',                 # memorial group: the Blades
@@ -231,6 +236,7 @@ DETERMINISTIC = {
     '8aq5-kept-pass.js',                               # targets/kept: a material pass, no placement
     '8at0-arcpile-plan.js',                            # targets/arcpile: KRAND-hashed records, no rng()
     '8aw0-strongbow-plan.js', '8aw1-strongbow-parts.js', '8aw3-strongbow-foot.js',   # targets/strongbow: KRAND-hashed records; the drawing's parts and the foot, hashed, no rng()
+    '20-sb-census.js', '30-sb-layout.js', '31-sb-rules.js', '8ax0-sb-reclaim.js',   # settlements/strongbow, read by strongbow-today: records and a hashed drawing, no rng()
 }
 DETERMINISTIC |= {'06-core-khook.js', '06b-core-kcolor.js'}   # core/shader (no rnd())
 

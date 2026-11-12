@@ -19,7 +19,9 @@ const SB_STATES=['reclaimed','kept','squatted','damaged','sealed','cutoff','gone
 const SB_ZONES=['Z0','Z1','Z2','Z3','Z4','Z5','Z6','Z7','Z8','Z9','town'];
 const SB_BY=['xanadu','order','outcasts','ancient'];
 
-const SB_LAYOUT=(function(){
+/* built on first use (sbLayout()), so a page that loads this fragment before the arcology's plan still works */
+let SB_LAYOUT_=null;
+function sbLayout(){if(SB_LAYOUT_)return SB_LAYOUT_;SB_LAYOUT_=(function(){
  const P=STRONGBOW.plan({seed:1647}),RU=STRONGBOW.ruin(P),F=P.frame,D=P.dim,FT=P.foot,ST=D.STO;
  const parts=[],ways=[],T={};
  const part=(o)=>{const p=Object.assign({y:0,h:0,st:0,people:0,sheets:[],note:''},o);parts.push(p);return p;};
@@ -176,4 +178,4 @@ const SB_LAYOUT=(function(){
 
  return {frame:{lip:ly,top:F.top,face:'z = faceZ(x, y)'},terraces:Object.fromEntries(Object.entries(T).map(([i,t])=>[i,{src:t.id,y:t.at[1],at:t.at,r:t.r}])),
   wallX:WX,parts,ways,people:SB_CENSUS.people,m2:45,bay:{w:D.BAY.w,d:D.BAY.d},lobby:{at:L.at,r:L.r},hall:{x0:H.x0,x1:H.x1,z0:H.z0,z1:H.z1,cut},
-  plaza:{x0:pz.x0,x1:pz.x1,z0:pz.z0,z1:pz.z1},nock:{y:N.y,wx:N.wx,zc:N.zc},stays:P.stays.filter(s=>RU.gone.indexOf(s.id)<0&&s.a!=='mast').map(s=>({id:s.id,a:s.a,b:s.b}))};})();
+  plaza:{x0:pz.x0,x1:pz.x1,z0:pz.z0,z1:pz.z1},nock:{y:N.y,wx:N.wx,zc:N.zc},stays:P.stays.filter(s=>RU.gone.indexOf(s.id)<0&&s.a!=='mast').map(s=>({id:s.id,a:s.a,b:s.b}))};})();return SB_LAYOUT_;}

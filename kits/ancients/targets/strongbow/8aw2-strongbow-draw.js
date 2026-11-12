@@ -5,6 +5,8 @@
 // off the kit's reseed() stream.
 const SB_SITE={};
 function buildStrongbow(scene,gx,gz,d){reseed(9040+d);KOFF=[gx,0,gz];
+ /* SB_TODAY (settlements/strongbow's page): the town is the settlement's (its rings on core/city), so the placeholder town here is left out */
+ const sbTown=!(typeof SB_TODAY!=='undefined'&&SB_TODAY);
  const dd=d>0?1:0,P=STRONGBOW.plan({seed:1647}),F=P.frame,D=P.dim,RU=dd?STRONGBOW.ruin(P):null,G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);
  const h=(a,b,c,e)=>STRONGBOW.h(1647,a,b,c,e),ST=dd?'ruined':'intact',W=a=>[a[0]+gx,a[1],a[2]+gz],LY=F.lipY;
  if(typeof camera!=='undefined'&&camera.far<30000){camera.far=30000;camera.updateProjectionMatrix();}
@@ -50,9 +52,9 @@ function buildStrongbow(scene,gx,gz,d){reseed(9040+d);KOFF=[gx,0,gz];
   for(const s of P.stays)if(!gone.has(s.id))T.child(B.id,{'class':'fixture',kind:'stay',key:s.id,at:W(s.a==='mast'?P.mast.head:s.a),tags:{role:s.fan}});
   for(const m of P.helio)T.child(B.id,{'class':'fixture',kind:'heliostat',key:m.id,at:W(m.at),tags:{state:ST}});
   if(RU){const Tn={culture:'xanadu',state:'reclaimed'};
-   for(const hs of RU.town.houses)T.child(B.id,{'class':'building',kind:'house',key:hs.id,at:W(hs.at),tags:Object.assign({types:['dwelling']},Tn)});
-   T.child(B.id,{'class':'building',kind:'caravanserai',key:RU.town.han.id,name:'the han',at:W(RU.town.han.at),tags:Object.assign({types:['inn','market']},Tn)});
-   T.child(B.id,{'class':'building',kind:'watchtower',key:RU.town.tower.id,name:'the garrison',at:W(RU.town.tower.at),tags:Object.assign({types:['military']},Tn)});
+   if(sbTown)for(const hs of RU.town.houses)T.child(B.id,{'class':'building',kind:'house',key:hs.id,at:W(hs.at),tags:Object.assign({types:['dwelling']},Tn)});
+   if(sbTown)T.child(B.id,{'class':'building',kind:'caravanserai',key:RU.town.han.id,name:'the han',at:W(RU.town.han.at),tags:Object.assign({types:['inn','market']},Tn)});
+   if(sbTown)T.child(B.id,{'class':'building',kind:'watchtower',key:RU.town.tower.id,name:'the garrison',at:W(RU.town.tower.at),tags:Object.assign({types:['military']},Tn)});
    T.child(B.id,{'class':'building',kind:'monastery',key:RU.order.id,name:"the Order's sealed house",at:W([0,P.crown.y1,F.back+40]),tags:{culture:'order',state:'reclaimed',types:['civic']}});
    for(const b of RU.order.banners)T.child(B.id,{'class':'fixture',kind:'banner',key:b.id,at:W(b.at),tags:{culture:'order'}});}}
 
@@ -163,18 +165,18 @@ function buildStrongbow(scene,gx,gz,d){reseed(9040+d);KOFF=[gx,0,gz];
  if(!dd){for(let i=0;i<60;i++){const s=h(480,i)<.5?-1:1,x=s*(D.BAY.w/2+20+100*h(481,i)),z=8+30*h(482,i),y=P.nock.y;
    kput('figB',[x,y,z],qEuler(0,h(483,i)*6.28,0),1,new THREE.Color().setHSL(h(484,i)*.1,.35,.4));kput('figH',[x,y,z],null,1,new THREE.Color(0xc9a17e));}}
  else{const XC=[0xebe4d4,0xdcb67e,0xc6805e,0xe8e0cc],TR=[0x9a2a1e,0xc89a3a,0x3a5a8a,0x7a3a5a],tw=RU.town;
-  for(const hs of tw.houses){const s=hs.size,c=hs.at,q=qEuler(0,hs.ry,0);
+  for(const hs of (sbTown?tw.houses:[])){const s=hs.size,c=hs.at,q=qEuler(0,hs.ry,0);
    kput('acBox',[c[0],c[1]+s[1]/2,c[2]],q,s,new THREE.Color(XC[hs.colour]));
    kput('acBox',[c[0],c[1]+s[1]+.35,c[2]],q,[s[0]+.6,.7,s[2]+.6],new THREE.Color(TR[(hs.colour+1)%4]));
    kput('acBox',[c[0]+Math.sin(hs.ry)*0,c[1]+1.2,c[2]+s[2]/2+.05],q,[1.4,2.4,.2],new THREE.Color(0x5a3a24));}
-  {const H=tw.han,c=H.at;for(const [ox,oz,w,dp] of [[0,-H.d/2+4,H.w,8],[0,H.d/2-4,H.w,8],[-H.w/2+4,0,8,H.d-16],[H.w/2-4,0,8,H.d-16]]){
+  if(sbTown){const H=tw.han,c=H.at;for(const [ox,oz,w,dp] of [[0,-H.d/2+4,H.w,8],[0,H.d/2-4,H.w,8],[-H.w/2+4,0,8,H.d-16],[H.w/2-4,0,8,H.d-16]]){
     kput('acBox',[c[0]+ox,c[1]+3.6,c[2]+oz],null,[w,7.2,dp],new THREE.Color(0xe6dcc6));kput('acBox',[c[0]+ox,c[1]+7.5,c[2]+oz],null,[w+.6,.6,dp+.6],new THREE.Color(0x9a2a1e));}
    kput('acBox',[c[0],c[1]+5,c[2]+H.d/2+.5],null,[10,10,2],new THREE.Color(0xc89a3a));
    for(let i=0;i<10;i++)kput('figB',[c[0]+(h(490,i)-.5)*H.w*.6,c[1],c[2]+(h(491,i)-.5)*H.d*.5],qEuler(Math.PI/2,h(492,i)*6,0),[2.2,1.6,2.2],new THREE.Color(0x6a4a2e));}
-  {const T=tw.tower,c=T.at;kput('acBox',[c[0],c[1]+T.h/2,c[2]],null,[T.w,T.h,T.w],new THREE.Color(0xe2d8c2));
+  if(sbTown){const T=tw.tower,c=T.at;kput('acBox',[c[0],c[1]+T.h/2,c[2]],null,[T.w,T.h,T.w],new THREE.Color(0xe2d8c2));
    for(let i=0;i<4;i++){const a=i*Math.PI/2;kput('acBox',[c[0]+Math.cos(a)*T.w*.4,c[1]+T.h+1.4,c[2]+Math.sin(a)*T.w*.4],null,[3,2.8,3],new THREE.Color(0x9a2a1e));}
    kput('acBox',[c[0],c[1]+T.h+7,c[2]],null,[.4,12,.4],new THREE.Color(0x5a4630));kput('acBox',[c[0]+2.2,c[1]+T.h+11,c[2]],null,[4.4,2.6,.1],new THREE.Color(0xc8302a));}
-  for(let i=0;i<120;i++){const x=(h(493,i)-.5)*700,z=60+280*h(494,i);if(F.scree(x,z)>14||(Math.abs(x)<160&&z<70))continue;
+  for(let i=0;i<(sbTown?120:0);i++){const x=(h(493,i)-.5)*700,z=60+280*h(494,i);if(F.scree(x,z)>14||(Math.abs(x)<160&&z<70))continue;
    kput('figB',[x,F.ground(x,z),z],qEuler(0,h(495,i)*6.28,0),1,new THREE.Color().setHSL(.02+.1*h(496,i),.45,.38));kput('figH',[x,F.ground(x,z),z],null,1,new THREE.Color(0xa87a56));}
   // lamps in the Bow's lowest storeys (the town's), and a few in the Order's house at the top
   if(M)KXF={m:M,q:new THREE.Quaternion().setFromRotationMatrix(M)};
