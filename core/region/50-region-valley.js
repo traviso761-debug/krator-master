@@ -28,9 +28,13 @@
    nothing for want from it; the other end sends for want as any road does. Deterministic: no draws but SIM.init's. */
 KREGION.part('50-region-valley', function (H) {
 H.simValley = function (V) {
-  var K = V.scale == null ? 10 : V.scale, m0 = V.start == null ? 0 : V.start, C = { m: m0, day: Math.floor(m0 / 1440), hour: (m0 % 1440 + 0.5) / 60, t: 0 };
-  var S = H.SIM = { clock: C, valley: V, towns: {}, order: [], problems: [], eaten: {}, hungry: {}, fed: {}, starved: {}, away: {}, carry: {}, moves: [], last: m0 };
-  SIM.init({ seed: V.seed == null ? 1 : V.seed, hour: function () { return C.hour; }, day: function () { return C.day; }, t: function () { return C.t; }, err: function (m) { S.problems.push(m); } });
+  /* V.attach (2026-11-12, Pinnacle Rock's full sim): the valley joins a sim the region host has already declared (its towns
+     on 40-49, RH.SIM): no SIM.init, the host's clock, its own walking layer; a road may end at one of the host's towns,
+     at the place V.extern names for it ({settlement: place}) */
+  var K = V.scale == null ? 10 : V.scale, m0 = V.start == null ? 0 : V.start, C = V.attach && H.SIM ? H.SIM.clock : { m: m0, day: Math.floor(m0 / 1440), hour: (m0 % 1440 + 0.5) / 60, t: 0 };
+  var S = H.VALLEY = { clock: C, valley: V, towns: {}, order: [], problems: [], eaten: {}, hungry: {}, fed: {}, starved: {}, away: {}, carry: {}, moves: [], last: C.m };
+  if (!V.attach) H.SIM = S;
+  if (!V.attach) SIM.init({ seed: V.seed == null ? 1 : V.seed, hour: function () { return C.hour; }, day: function () { return C.day; }, t: function () { return C.t; }, err: function (m) { S.problems.push(m); } });
   ['SLEEP', 'WORK', 'REST'].forEach(function (a) { if (!SIM.R.activity[a]) SIM.activity({ id: a, indoor: a !== 'WORK' }); });
   if (V.calendar) SIM.calendar(V.calendar);
   (V.factions || []).forEach(function (f) { if (!SIM.R.faction[f.id]) SIM.faction(f); });
@@ -70,11 +74,12 @@ H.simValley = function (V) {
     if (W0) Object.keys(Sd.start || {}).forEach(function (g) { W0.stock[g] = (W0.stock[g] || 0) + Sd.start[g]; });
     S.order.push(s); S.eaten[s] = {}; S.hungry[s] = {}; S.carry[s] = {};
   });
-  SIM.nav.layer('pedestrian', { nodes: nodes, edges: edges });
+  SIM.nav.layer(V.attach ? 'valley' : 'pedestrian', { nodes: nodes, edges: edges });
+  var stopOf = function (id) { var X = S.towns[id]; if (X) return { settlement: id, place: X.spec.works[0].id }; var p = (V.extern || {})[id]; return p ? { settlement: id, place: p } : null; };
   (V.roads || []).forEach(function (Rd) {
-    var a = S.towns[Rd.from], b = S.towns[Rd.to];
+    var a = stopOf(Rd.from), b = stopOf(Rd.to);
     if (!a || !b) { S.problems.push('road ' + Rd.id + ': no settlement ' + (a ? Rd.to : Rd.from)); return; }
-    SIM.trade({ id: Rd.id, stops: [{ settlement: Rd.from, place: a.spec.works[0].id }, { settlement: Rd.to, place: b.spec.works[0].id }], cap: Rd.cap, carriers: Rd.carriers,
+    SIM.trade({ id: Rd.id, stops: [a, b], cap: Rd.cap, carriers: Rd.carriers,
       minutes: Rd.minutes, stagger: Rd.stagger, mins: Rd.mins == null ? 60 : Rd.mins, goods: Rd.goods, expect: Rd.expect, share: Rd.share, keep: Rd.keep, want: Rd.want });
   });
   (V.transfers || []).forEach(function (Tr) { SIM.transfer(Tr); });
@@ -101,16 +106,16 @@ H.simValley = function (V) {
           var got = SIM.supply(g, n, false, s); F[g] = (F[g] || 0) + got; if (got < n) St[g] = (St[g] || 0) + n - got; }); } });
   });
   S.order.forEach(function (s) { SIM.level(s, 'abstract'); });
-  S.problems = S.problems.concat(SIM.check());
+  if (!V.attach) S.problems = S.problems.concat(SIM.check());
   return S;
 };
 H.valleyRun = function (minutes, step) {
-  var C = H.SIM.clock, st = step == null ? 60 : step, end = C.m + minutes;
+  var C = H.VALLEY.clock, st = step == null ? 60 : step, end = C.m + minutes;
   while (C.m < end) { C.m = Math.min(end, C.m + st); C.day = Math.floor(C.m / 1440); C.hour = (C.m % 1440 + 0.5) / 60; C.t += st; SIM.step(); }
   return C.m;
 };
 H.valleyBooks = function () {
-  var S = H.SIM, out = { minute: S.clock.m, towns: {}, ledger: SIM.ledgerSnap ? SIM.ledgerSnap() : null };
+  var S = H.VALLEY, out = { minute: S.clock.m, towns: {}, ledger: SIM.ledgerSnap ? SIM.ledgerSnap() : null };
   S.order.forEach(function (s) { var E = SIM.econ(s), st = {};
     Object.keys(E.goods).forEach(function (g) { var n = SIM.stockOf(g, s); if (n) st[g] = Math.round(n); });
     out.towns[s] = { people: S.towns[s].spec.people, stock: st, made: Object.assign({}, E.made), imported: Object.assign({}, E.imported), exported: Object.assign({}, E.exported),
@@ -122,28 +127,29 @@ H.valleyBooks = function () {
    stock handed in lands in its settlement's warehouses (imported); taken back out (exported) when it leaves; a market's
    side of a caravan's barter; a raid's loot leaving the target (exported, tallied in H.SIM.raided) and its dead. Every
    load is booked, so the sim's ledger holds across the hand-overs (off the map: the ledger's abroad columns) */
-H.valleyHost = function () {
-  var S = H.SIM; S.raided = S.raided || {}; S.killed = S.killed || {};
+H.valleyHost = function (u) {   /* u: the sim's units of a world unit (the world tick books kilograms; an attached valley may book servings) */
+  var S = H.VALLEY; u = u == null ? 1 : u; S.raided = S.raided || {}; S.killed = S.killed || {};
+  var sc = function (o, k) { var r = {}; Object.keys(o || {}).forEach(function (g) { r[g] = o[g] * k; }); return r; };
   var wh = function (s, g) { var n = 0; SIM.econ(s).warehouses.forEach(function (P) { n += P.stock[g] || 0; }); return n; };
   var put = function (s, goods, kind) { var out = {}; SIM.withEcon(s, function () { Object.keys(goods).sort().forEach(function (g) { var n = goods[g];
     if (!(n > 0) || !SIM.ECON.goods[g]) return; if (SIM.economyLand(g, n) == null) return; SIM.economyBook(kind || 'imported', g, n); out[g] = n; }); }); return out; };
   var out = function (s, goods) { var got = {}; SIM.withEcon(s, function () { Object.keys(goods).sort().forEach(function (g) { var n = Math.floor(Math.min(goods[g], wh(s, g)));
     if (!(n > 0)) return; n = SIM.economyTake(g, n); if (n > 0) { SIM.economyBook('exported', g, n); got[g] = n; } }); }); return got; };
   return {
-    land: function (s, goods) { return put(s, goods); },
-    take: function (s) { var all = {}; Object.keys(SIM.econ(s).goods).forEach(function (g) { var n = Math.floor(wh(s, g)); if (n > 0) all[g] = n; }); return out(s, all); },
+    land: function (s, goods) { return sc(put(s, sc(goods, u)), 1 / u); },
+    take: function (s) { var all = {}; Object.keys(SIM.econ(s).goods).forEach(function (g) { var n = Math.floor(wh(s, g)); if (n > 0) all[g] = n; }); return sc(out(s, all), 1 / u); },
     away: function (s, a) { H.valleyAway(s, a); },
     people: function (s) { return S.towns[s].spec.people; },
-    stock: function (s, g) { return wh(s, g); },
-    raid: function (s, goods) { var got = out(s, goods), R = S.raided[s] || (S.raided[s] = {}); Object.keys(got).forEach(function (g) { R[g] = (R[g] || 0) + got[g]; }); return got; },
+    stock: function (s, g) { return wh(s, g) / u; },
+    raid: function (s, goods) { var got = sc(out(s, sc(goods, u)), 1 / u), R = S.raided[s] || (S.raided[s] = {}); Object.keys(got).forEach(function (g) { R[g] = (R[g] || 0) + got[g]; }); return got; },
     kill: function (s, n) { var Sd = S.towns[s].spec; n = Math.min(n, Sd.people); Sd.people -= n; S.killed[s] = (S.killed[s] || 0) + n; },
-    trade: function (s, sold, bought) { put(s, sold); out(s, bought); }
+    trade: function (s, sold, bought) { put(s, sc(sold, u)); out(s, sc(bought, u)); }
   };
 };
 /* a band out ranging (S6: core/camp's hand-over): away, its people and beasts neither eat here nor its works make (each
    held by SIM.recipeHold, 'away'); home again, they do */
 H.valleyAway = function (s, away) {
-  var S = H.SIM, X = S.towns[s]; if (!X) return false;
+  var S = H.VALLEY, X = S.towns[s]; if (!X) return false;
   S.away[s] = !!away;
   X.spec.works.forEach(function (Wk) { SIM.recipeHold(Wk.id, away ? 'away' : null); if (Wk.pasture) SIM.recipeHold(Wk.pasture.id, away ? 'away' : null); });
   return true;
