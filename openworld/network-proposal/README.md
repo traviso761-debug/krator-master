@@ -12,7 +12,7 @@ once the model carries it.
 | `legs51.py` | the router's last pass: a unique id for every leg (`python legs51.py <folder>` also runs it on its own) |
 | `render51.py` | the picture's drawing |
 | `setts.py` | extracts `setts.json` (the settlements) from the model's `model/src/60-settlements.js` |
-| `setts.json`, `regions.json` | snapshots of the inputs: the settlements from `claude/cool-tereshkova-d594e8` (2026-11-11), the regions from `model/src/51-region-store.js` |
+| `setts.json`, `regions.json` | snapshots of the inputs: the settlements from `claude/cool-tereshkova-d594e8` at `3db1e2b3e` (2026-11-11), the regions from `model/src/51-region-store.js` |
 
 **`net51.json`** has:
 - `nodes`, each `{id, name, type, px, kind: site | dock | tbd}`;

@@ -897,8 +897,10 @@ north-west wall, at 5.1 px 1013,1585 and 2,568 m, with about 1,300 m of rise wit
 - **History:** it was at 1026,1594. The same day it went first to the valley's east end (1298,1647), then back west (the owner:
   "strongbow should be at the other end of the valley, by qiblai").
 - **Source:** the Oidong-High Rift session's scale-model edit 5.1e5, on branch `claude/cool-tereshkova-d594e8`.
-- **The router:** `setts.json` is now taken from that branch (at `0b360a4f5`), which also moves Qiblai to 922,1595 and Erehwon to
-  805,1516. `route51.py` places Strongbow at 1013,1585 until that branch's edit follows.
+- **The router:** `setts.json` is now taken from that branch (at `3db1e2b3e`), which has Strongbow there and also moves Qiblai to
+  922,1595 and Erehwon to 805,1516.
+- **The valley road:** the Oidong session lays it on the valley floor, 452 km from Longsong to Strongbow, with 4 bridges. The
+  network's trace of it is 463 km.
 
 The owner's other answers the same day: "qiblai shouldnt be a line stop it was built much later", "longsong shouldnt be a line
 stop either", "there is no rift line in oidong valley, just a road", "it goes to strongbow".
