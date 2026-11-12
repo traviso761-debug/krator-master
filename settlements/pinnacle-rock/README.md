@@ -18,7 +18,7 @@ cd dist && python3 ../verify.py pinnacle-rock.html --assert [--all-views --out .
   model's regions and the cut's box in `region/source/regions-cut.json`).
 - **On the sim** (2026-11-12, phase S7 of `core/simulation/PROPOSAL-LONGSONG-PINNACLE.md`): `src/15-pr-tune.js` (`PR_TUNE`,
   `[G data]`) is the Beast Riders' table. It holds the beasts' appetites and loads, and the town of 3,000. It also holds the
-  floor ring, the four clearings of `openworld/pinnacle`'s plan, and the eighteen bands with their dry-season ventures.
+  floor ring, the four clearings of `openworld/pinnacle`'s plan, and the eighteen bands with their dry-season ventures (twelve of 42-51 people; the six ground tribes' upper grounds keep their five tents on the mesa, 23-27 people each).
   `node tests/test-pr-economy.js` runs two years on core/region's valley host and core/camp's world tick, and holds the
   second year to the proposal. The page itself does not run the sim yet. `tools/world_data.py` decodes the rasters at build time into the typed
   arrays the open world's fields take (`openworld/little-demo/src/41-world-fields.js`, read in place: `WORLD.H`). The

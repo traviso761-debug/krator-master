@@ -337,8 +337,9 @@ Longsong can be on the sim after S0-S3. Pinnacle Rock needs S0-S7.
 - **S7:** the year test, `settlements/pinnacle-rock/tests/test-pr-economy.js`, on the valley host. Its pieces:
   - the town of 3,000, the floor ring, and **four clearings** (core/hamlet's `beast-rider` row) laid on openworld/pinnacle's
     plan at 6-8 km, 229 people each;
-  - the **eighteen bands** (every `BR_CAMP` ground, 42-51 people each, 833 in all), home every day of the wet season (year
-    days 120-300) and ranging in the dry;
+  - the **eighteen bands** (every `BR_CAMP` ground, 714 people in all), home every day of the wet season (year days
+    120-300) and ranging in the dry. The twelve floor and flyer bands are 42-51 each. The six ground tribes' upper grounds on the
+    mesa keep their laid five tents (23-27 people): more tents do not fit the mesa's margin;
   - their caravans to Talon, Fort Kreia, Mav's Refuge, Fort Ordo and Girder, the long roads to the coyotemen (Coyote
     Canyon) and the Dasri (Shade), and raids on Goto and Nusidi;
   - the intermediaries off the map for the rest.
@@ -350,10 +351,15 @@ Longsong can be on the sim after S0-S3. Pinnacle Rock needs S0-S7.
 - **Section 5's Pinnacle items:**
   - The page now stands at its open-world site. Its `region/` is re-cut from map 5.1 round px 1007,686, and LORE's entry is
     corrected (about 1,500 mm, the knoll ~110 m over its round).
-  - Mammoth, Dragonfly, Quetzal, Nightwing and the six ground tribes' upper grounds gained households: every ground's band
-    is now 40-70. The census test checks all eighteen (`test-pr-economy.js` check 1).
+  - Mammoth, Dragonfly, Quetzal and Nightwing gained a double dome each: those four bands are now 40-70, and the census test
+    checks all eighteen grounds (`test-pr-economy.js` check 1). The six ground tribes' upper grounds took more tents too,
+    but on the page's mesa two of them no longer fit (Raptor 6 of 8 pitched, Longcrawler 7 of 8), so they are back to their
+    five tents.
 
 **Still open after S7:**
+- **For the owner:** the proposal counts eighteen bands, but the six ground tribes' upper grounds hold 23-27 people each,
+  under core/camp's 40-person floor. Are they bands of their own, needing room on the mesa for two more tents each? Or are
+  they each tribe's riders posted up top, so a ground tribe is one band on two grounds, twelve bands in all?
 - The long legs' real roads: the corridor region (`claude/pinnacle-corridors`) lays them; until then they are planned.
 - The Dasri's nearer northern village, which is not on the model: they trade at Shade until it is placed.
 - Shares nearer the proposal's estimate would need more from the clearings or the bands at home.

@@ -147,7 +147,7 @@ def main():
             if os.path.join(ROOT, 'settlements', 'isle-demo') not in sys.path:
                 sys.path.insert(0, os.path.join(ROOT, 'settlements', 'isle-demo'))
             import bundles as _bd
-            js, _ = _bd.cat_bundle(SIDE, tents=True)
+            js, _ = _bd.cat_bundle(SIDE, tents=True, trades=True)   # trades: the clearings' buildings
             out.append('\n// ==================== the CAT bundle (settlements/isle-demo/bundles.py)\n')
             out.append(js)
             continue

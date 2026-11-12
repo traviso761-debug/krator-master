@@ -71,7 +71,7 @@ T.food={grain:1,meat:1.6,fruit:.5};
 T.calendar={year:{yearD:365,startDay:0,solsticeDay:172},windows:{home:[120,300],harvest:[255,300],'clearing-harvest':[250,295]}};   /* the sim's year day is the world tick's (day 0 the year's first) */
 T.ring={ha:80,tHa:1,crew:300,fruitT:40,fruitCrew:80,beetleT:8,beetleCrew:40};
 T.clearing={inCropHa:1.5,yieldTHa:1.2,seed:1/6,sells:.9,fruitT:5};
-T.home={hunt:{meat:1.5,hides:.3},huntMeat:{meat:5.5,hides:.6},gather:{fruit:4},breed:1/6,silkT:.2,graze:1.05,want:250,keep:10};
+T.home={hunt:{meat:1.5,hides:.3},huntMeat:{meat:6.5,hides:.6},gather:{fruit:4},breed:1/6,silkT:.2,graze:1.05,want:250,keep:10};
 T.rules={diet:T.diet.band,food:T.food,hunt:{meat:10,hides:1},spoil:{meat:.01,fruit:.03},gather:{fruit:6},minDays:3,cross:.7,detour:1.3,siteKm:15,hours:8,roadside:1,
  marchHunt:.5,selfHunt:.4,again:30,keepTrade:{}};
 T.range={n:8,r0:15000,r1:70000,cap:{meat:3500,hides:300,fruit:1800,fodder:40000},regrow:120};
