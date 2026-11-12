@@ -10,10 +10,12 @@ The first site cut off the scale model into the open world, with a settlement pl
   - The new spot is on the **savage hyperjungle's north-east edge**: a knoll 110 m over its 14 km round, at -1,287 m.
     77 % of the ground within 9 km is jungle; the NE rim's savanna is the other half of the cut.
   - The square is from `openworld/SITES.json`; `tools/scale-model/cut_site.py pinnacle` makes the cut.
-  - The frame's origin is the site's pixel. Pinnacle Rock's own page still stands on its old cut at the old pixel, until
-    it is rebuilt on the new spot (`KNOWN_ISSUES.md`).
+  - The frame's origin is the site's pixel. Pinnacle Rock's own page stands on the same spot since 2026-11-12 (its
+    `region/` re-cut round 1007,686).
 - **The site:** the nine Beast Rider bands that camp on the floor round the rock, and a track from each camp's gate to
-  the rock.
+  the rock; and **four clearings** 6-8 km out (2026-11-12, phase S7 of `core/simulation/PROPOSAL-LONGSONG-PINNACLE.md`),
+  farming villages of the ground tribes (core/hamlet's `beast-rider` row: the Beast Riders kit's own buildings, 229 people
+  each), with their roads to the rock. Pinnacle Rock's year on the sim reads them (`settlements/pinnacle-rock/tests/test-pr-economy.js`).
   - **The bands:** their tribes' `lower` grounds (`kits/beast-riders` `BR_CAMP`), each searched from the spot the rock's
     page gives its camp. All nine stand there: 147 tents and pens, with 2,177 hedge and rail pieces.
   - **The tracks:** `core/world` `ROADS`, the grade held to 8 %.

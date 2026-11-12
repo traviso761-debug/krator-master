@@ -8,9 +8,12 @@
 - [x] **The savage hyperjungle grew nothing** while the rock stood on the rim. Since the move of 2026-11-10 the
       hyperjungle is in the registry on that overlay (little-demo's pass table). The cut's two overlays (the savage
       hyperjungle and the NE rim) both grow now.
-- [ ] **Pinnacle Rock's own page has not moved.** `settlements/pinnacle-rock` still reads its 4.21 cut round the old
-      pixel (755,351 on the old canvas, 1027,681 on 5.1). The model's record and this region moved on 2026-11-10; the page
-      moves when it is next rebuilt (recut its `region/` at 1007,686, and recheck its rock against the new ground).
+- [x] **Pinnacle Rock's own page has moved** (2026-11-12, phase S7 of `core/simulation/PROPOSAL-LONGSONG-PINNACLE.md`): its
+      `region/` is re-cut from map 5.1 round px 1007,686, the same 120 km box at 2 km cells, so the page and this region stand
+      on one spot.
+- [ ] **The clearings are drawn in the Beast Riders kit's buildings on the world's ground** (2026-11-12: four farming
+      villages, core/hamlet's `beast-rider` row in `src/48-world-site.js`; `core/world` 88s draws them through CAT). Their
+      fields are core/hamlet's; no Beast Rider crop or terrace dressing is laid on them yet.
 - [ ] **The live scale model has not taken the move.** The record is changed in the model's source
       (`tools/scale-model/model/src/60-settlements.js`: the default and `SETT_MOVED['5.1e2']`), but the published artifact
       and its database still hold the old pixel. Republishing the model is the owner's call.
