@@ -956,3 +956,67 @@ lower tables:
 - **The high north-east** (east of px 1150, north of py 420) has nothing livable: a summer range for bands at most.
 
 **Sent** (the owner, 2026-11-12: "Send all nine"): N1-N5 as village pins, no polity, to the queue.
+
+## 13. The desert west of the east abyss: Dasri villages and camps (a proposal, 2026-11-12)
+
+The owner: "also scope the desert region west of the east abyss for dasri camps and settlements".
+
+**The ground.** The sedesert polygon west of the east abyss's floor (the abyss's west rim, px ~1230-1290; py 560-1120): 252,000 km².
+It is 91% arid (BSh 127,000 km², BWh 97,000), with a mean of +21 °C and 317 mm. The Empire of Iziz holds 107,000 km² of it (the
+south and west), Nomad Country 126,000 (the north and east), and the Yuni and the Talovolci the rest. The wetter Csa and Cfa ground
+is on its western edge under the Iziz highlands.
+
+**The search.**
+- **Villages:** water (a river, a fresh lake or wadis within 10 km), scored on farmland, half the pasture, and the water. 60 km or
+  more from any pin, and 80 km from every site already proposed (the Dasri town and villages, the Tabisti town, the Yuni village,
+  the queued pins).
+- **Camps:** any water (a spring line, a wadi, a small river) on arid ground, scored on pasture and water. 25 km or more from any
+  pin, and 45 km from each other and from the villages.
+- Four of the villages are section 9's western oases, now ranked among the rest.
+
+| Village | Site | Ground | Water | Farmland, pasture (10 km) | Polity | Nearest pin |
+|---|---|---|---|---|---|---|
+| **W1** | **1270,745**, the abyss's west rim | 204 m, BSh, 564 mm, +24 °C | wadis (12 px) | 188, 245 | Nomad Country | Reed 135 km; the Tabisti town (1311,761) 88 km |
+| **W2** | **1190,671** (a section 9 oasis) | 502 m, BSh, 596 mm, +23 °C | wadis and springs (10 px) | 156, 243 | Nomad Country | the Tabist town 160 km |
+| **W3** | **1243,844**, mid-desert | 582 m, BSh, 486 mm, +22 °C | wadis (8 px) | 92, 232 | Nomad Country | Mungo 161 km |
+| **W4** | **1184,935** (a section 9 oasis) | 324 m, BSh, 407 mm, +23 °C | the Rrivar Blaca (11 m³/s), wadis | 61, 216 | Empire of Iziz | Verge 170 km |
+| **W5** | **1172,1042** (a section 9 oasis) | 465 m, BSh, 423 mm, +22 °C | the Winda Riba (11) | 50, 235 | Empire of Iziz | Locus 190 km |
+| **W6** | **1240,960** | 180 m, BSh, 423 mm, +24 °C | the Bruk Loña (11) | 69, 241 | Empire of Iziz | Verge 60 km |
+| **W7** | **1042,1083** (a section 9 oasis) | 895 m, BSh, 345 mm, +19 °C | the Bruk cedra (10) | 52, 186 | Empire of Iziz | Arcbeam 72 km |
+| W8 | 1172,974 | 1,044 m, **Cfa**, 1,019 mm, +20 °C | wadis | **222**, 233 | Empire of Iziz | Verge 198 km |
+
+**Reading it.**
+- **The Dasri's own villages:** W1, W2 and W3 lie in Nomad Country. W1 is the best: the most farmland of the desert proper, on the
+  abyss's west rim between the Tabist country and Mungo.
+- **In Iziz land:** W4-W7 are oasis villages on the desert's rivers and spring lines. Dasri villages there would be tolerated by
+  the Empire, as the owner allowed (section 9).
+- **W8 is not desert ground:** Cfa, wet, the best farmland here. It reads as an Izani farming village, not a Dasri one.
+
+**The camps** (14): seasonal sites by water with good pasture (186-252 km²-eq within 10 km), for the bands between the villages
+(`core/camp`, not pins). They pair with the eastern valleys' summer camps (section 9): the Dasri winter here in the low desert.
+
+| Camp | Water | Ground | Polity |
+|---|---|---|---|
+| 1163,672 | wadis (10 px) | 375 m, BSh, +24 °C | Nomad Country |
+| 1204,628 | the Rīfar al-Bālm (11) | -45 m, BSh, +27 °C | Nomad Country |
+| 1278,625 | wadis (13 px), 800 mm | -167 m, BSh, +28 °C; 28 km from Furrow | Nomad Country |
+| 1233,716 | wadis | 254 m, BSh, +25 °C | Nomad Country |
+| 1257,764 | wadis | 490 m, BSh, +23 °C | Nomad Country |
+| 1254,819 | wadis | 34 m, BSh, +25 °C | Nomad Country |
+| 1230,825 | wadis | 416 m, BSh, +23 °C | Nomad Country |
+| 1204,829 | wadis and springs (section 9's mid-desert oasis) | 732 m, BSh, +22 °C | Nomad Country |
+| 1187,844 | wadis | 809 m, BSh, +21 °C | Nomad Country |
+| 1165,950 | wadis | 773 m, BSh, +21 °C | Empire of Iziz |
+| 1208,945 | the Rrivar Blaca (14) | 995 m, BSh, +19 °C | Empire of Iziz |
+| 1195,1049 | the Winda Riba (11) | 315 m, BSh, +22 °C | Yuni Emirate |
+| 1134,1041 | wadis | 868 m, BSh, +20 °C | Empire of Iziz |
+| 1117,1114 | wadis on the Bowl's north side (a section 9 oasis) | -991 m, BSh, +29 °C | Empire of Iziz |
+
+- **The mid-desert cluster** (1187-1257, 819-844) is the desert's heart: five spring lines 45-55 km apart, where the bands gather.
+  A khan, the lore's caravanserai, could stand at one of them.
+- **The southern camps** (1117-1208, 945-1114) lie on the caravan line toward the Bowl and the Dasri town (section 9).
+
+**What it reaches:** village pins for the queue, when the owner picks, named in Dasrī; the camps as `core/camp` records; the
+trade model's Nomad Country members.
+
+Not sent: the owner picks.
