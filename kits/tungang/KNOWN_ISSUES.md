@@ -58,6 +58,6 @@
 - [ ] **Not yet built** from `PLAN.md` 3.3: the bands (`fg-war-camp`, `fg-raid-cache`); Wildcat's scrap pueblo (`fg-wc-*`) is the
       wildcat-pueblo session's (the owner, 2026-11-11: a pueblo builder and ONE Chaco-sized great house for 1-2k people at most, maybe one or two small hamlets), not this branch's;
       the fells (`fg-shieling`, `fg-cairn`, `fg-stone-sign`); the Tungang (`tg`) and Glazier (`gz`) sets.
-- [ ] **The sheet's catalog furniture is vertex colours only**: `build.py` seals the catalog without its detail maps
-      (`furniture_bundle.bundle(FURN_CULTURES)`). Loj Twenny's furniture is textured (`tungang_bundle.bundle(furniture_tex=True)`,
-      2026-11-12); the sheet would take `furniture_bundle.bundle(FURN_CULTURES, tex=True)` and `KratorFurniture.setDetail`, about 1.9 MB more.
+- [x] **The sheet's catalog furniture is textured** (2026-11-12, the owner): `build.py` seals the catalog with its library detail
+      maps (`furniture_bundle.bundle(FURN_CULTURES, tex=True)`: about 1.5 MB more), as Loj Twenny does through
+      `tungang_bundle.bundle(furniture_tex=True)`.

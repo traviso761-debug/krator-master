@@ -265,7 +265,7 @@
     "kits/tungang/src/42-fg-mass.js": "9f8afab43289c36515b62ff8922d26f98ff612fc5737d506de96b1bf9b6fd59b",
     "kits/tungang/src/44-tg-kit.js": "9545ff2696eabd0a7e4c5b84d7b82197e37911f5e0e3dffe20166a0c94263015",
     "kits/tungang/src/46-tg-homes.js": "40821d01dd26ad8054f1eb2f49a6fd3323e7124196c766a4303d6672d096e087",
-    "kits/tungang/src/48-tg-civic.js": "cb23694eb196a1e28363aa29b9a200d53104ce804bf9412a4b3b5c998fa373a5",
+    "kits/tungang/src/48-tg-civic.js": "4e53ff3139cf8a0e1b8a734ef4d272a404654c30673482feb535abf0ad561f7a",
     "kits/tungang/src/50-fg-dwell.js": "f1c450d279138cb3e7cb024a590a3a4d20ad82e45c858ab5dee4c37f560c03ef",
     "kits/tungang/src/52-fg-civic.js": "098cc6d064efaeb885c570a76b48ab2efd1cebe6058276112f0d2c1406ba60f5",
     "kits/tungang/src/54-fg-stores.js": "1e7dd9f1339e158f12b8180dcef8e968b83fe6a8148f2cf366c2180c1c6be6bc",
@@ -332,10 +332,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "settlements/loj-twenny/dist/loj-twenny.html": "0e2d4c591bd0e0a2a91bbb6c3c5946ef90760aa54b7031443bf585e98ba3a3ee"
+    "settlements/loj-twenny/dist/loj-twenny.html": "ab249eb9c8316506816844be3fbde19e2537f079c541616ac4e168adb839073b"
    },
    "outputs_raw": {
-    "settlements/loj-twenny/dist/loj-twenny.html": "0e2d4c591bd0e0a2a91bbb6c3c5946ef90760aa54b7031443bf585e98ba3a3ee"
+    "settlements/loj-twenny/dist/loj-twenny.html": "ab249eb9c8316506816844be3fbde19e2537f079c541616ac4e168adb839073b"
    }
   }
  }

@@ -993,8 +993,8 @@
    "sha256": "d3add636535274fd3f722369655b0025e5bf244eec089cc2e0b8e4f3ea9abd78"
   },
   "kits/tungang/dist/tungang.html": {
-   "bytes": 1301741,
-   "sha256": "e39f363a3a4e9fc03296169b1122cca9bf90fa21738f30689634657886bfb425"
+   "bytes": 2843929,
+   "sha256": "4d19163d62ca5813730ab543312b020a261172a1b221d8ab326e38d24f76ce6c"
   },
   "kits/yeti/dist/yeti.html": {
    "bytes": 1065402,
@@ -1109,8 +1109,8 @@
    "sha256": "e6c31625003c38418a1cecaf53bdb0d412b7eedde603f6943c1fb0ad09da713d"
   },
   "settlements/loj-twenny/dist/loj-twenny.html": {
-   "bytes": 14610024,
-   "sha256": "0e2d4c591bd0e0a2a91bbb6c3c5946ef90760aa54b7031443bf585e98ba3a3ee"
+   "bytes": 14610154,
+   "sha256": "ab249eb9c8316506816844be3fbde19e2537f079c541616ac4e168adb839073b"
   },
   "settlements/longsong/dist/longsong.html": {
    "bytes": 5297116,

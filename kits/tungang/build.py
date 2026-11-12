@@ -23,7 +23,7 @@ The page is one <script> made of, in filename order:
   core/door             10-core-door.js, 20-core-glass.js, 90-core-door-host.js (KDOOR, KGLASS, KDOORHOST: the plate
                         doors on their cable hinges open with E; core/engine/36o-open.js draws them)
   26-matlib-pack.js     GENERATED from tex/ (tools/textures/pack.py from materials.json): the library maps as data URLs
-  38-furniture-bundle.js GENERATED (kits/catalog/furniture_bundle.py): the catalog as one closure, KratorFurniture
+  38-furniture-bundle.js GENERATED (kits/catalog/furniture_bundle.py, tex=True): the catalog as one closure, KratorFurniture
 tungang_bundle.py seals the same kit fragments for another world (TG, its API.md): the riftrim stations' villages.
 
 Checks (fragments share one JS scope):
@@ -141,7 +141,7 @@ def matlib_pack():
 def virtual_bodies():
     sys.path.insert(0, os.path.join(ROOT, 'kits', 'catalog'))
     import furniture_bundle
-    return {'26-matlib-pack.js': matlib_pack(), '38-furniture-bundle.js': furniture_bundle.bundle(FURN_CULTURES)}
+    return {'26-matlib-pack.js': matlib_pack(), '38-furniture-bundle.js': furniture_bundle.bundle(FURN_CULTURES, tex=True)}   # with the library detail maps: the pieces textured, not vertex colours only
 
 
 RE_DECL = re.compile(r'^(?:const|let|var|function|class)\s+([A-Za-z_$][\w$]*)', re.M)
@@ -170,7 +170,7 @@ def main():
     files = sorted(list(paths) + list(vb))
     bodies = dict(vb)
     bodies.update({f: open(paths[f], encoding='utf-8', newline='').read() for f in files if f not in vb})
-    BSRC.report(paths, vendored=VENDORED.values())   # --list-sources: what the page is made of, then exit
+    BSRC.report(dict(paths, **{'(catalog detail maps)': os.path.join(ROOT, 'kits', 'catalog', 'tex', 'pack.json')}), vendored=VENDORED.values())   # --list-sources: what the page is made of, then exit
     is_core = lambda f: f in core and paths[f] == core[f]
     errs = []
     if '--no-checks' not in sys.argv:
