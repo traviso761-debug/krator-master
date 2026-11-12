@@ -3,7 +3,7 @@
 Every texture or pattern sheet the owner still has to source or generate, each with its finished prompt. Paste a block
 as it is, one image per block. **Everything delivered lives in `PROMPTS-archived.md`** (checked against `core/materials/library/`, `patterns/` and each build's `materials.json` on `origin/main`, 2026-10-19); this file holds only what is still owed.
 
-**Count: 19 prompt blocks** (2026-11-11: +1, `metal.scorched` for the Motor Vehicles kit's burnt ruins, section 36; 2026-11-10: -5, the owner's delivery of that day; 2026-11-09: +3 for the southern highlands' upper stations, section 37; +15 for the hyperjungle's lands and the savannah rims, section 40, 2026-11-08; counted 2026-11-04 before them).
+**Count: 28 prompt blocks** (2026-11-11: +9 for the Kimr, section 41; 2026-11-11: +1, `metal.scorched` for the Motor Vehicles kit's burnt ruins, section 36; 2026-11-10: -5, the owner's delivery of that day; 2026-11-09: +3 for the southern highlands' upper stations, section 37; +15 for the hyperjungle's lands and the savannah rims, section 40, 2026-11-08; counted 2026-11-04 before them).
 
 **Delivered 2026-11-03:** section 31's five (the Gills: `rock.lamina.pipe`, `mineral.crust.ferromanganese`, `mineral.crust.brucite`,
 `card.breathfringe`, `card.turf.limed`) and ten owed on unmerged branches (High Rift, nwbay, nhighlands, ringisles, the rift rim, Copper Glacier),
@@ -429,6 +429,58 @@ and point the ruin pass's sooted surfaces at it (`krator-vehicles-runtime.js` `r
 | id | Prompt |
 |---|---|
 | `metal.scorched` | Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: burnt-out vehicle body panel after a fire: sheet steel whose paint has burnt off in blistered, curling flakes, leaving bare heat-scaled metal with a fine crazed pattern, patches of matte soot, a few blisters of paint still clinging at the edges of the burnt areas, light surface rust blooming through the scale, faint heat-tint rings (straw, brown, blue) where the metal got hottest, a little grey ash caught in the seams. Near-colourless grey only (the heat-tint rings faint), so it can be tinted. |
+
+## 41. The Kimr (`biomes/labyrinth/KIMR.md`, planned 2026-11-11)
+
+The Labyrinth's people (`LORE.md` section 6.24): their pueblos, masks, armour and the Hall of Heroes' funerary dressing. No Kimr kit is
+built yet; these land with the first one (`kits/kimr`, or the Labyrinth's pueblo station), and the two surfaces marked *fauna* are
+wanted by `kits/fauna`'s megafauna too. Everything else the Kimr need is already in the library (`KIMR.md` section 4's table: horn,
+ivory, skull, ossuary, adobe, ochre plaster, buckskin, fur, rawhide, terracotta). Palette hexes are `KIMR.md` section 2's.
+
+`hide.pachyderm` (near-colourless; tusker-hide armour, drums and litters; *fauna*: every pachyderm's skin):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: thick elephant or mammoth hide, a deep net of crossing wrinkles and creases dividing the skin into small irregular polygons, each slightly domed with a fine pebbled grain, deeper folds running in long roughly parallel lines, a few sparse coarse bristles, dried mud caught in the deepest creases, one or two old healed scratches. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
+```
+
+`shell.glyptodont` (near-colourless; round-room roofs, cisterns, scale armour, shields; *fauna*: the glyptodont's carapace):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: the bony carapace of a giant fossil armadillo (glyptodont), a tight mosaic of thick hexagonal and pentagonal bone plates about the size of a palm, fitted edge to edge with narrow dark seams, each plate carrying a raised rosette: a central round boss ringed by six smaller bosses, the bone surface finely pitted and porous, weathered matte, a few plates chipped at the rim. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
+```
+
+`earth.dung.stack` (near-colourless; the dung-cake walls at the foot of every pueblo's rock):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic front view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a wall of dried dung fuel cakes stacked flat in rough courses, each cake a round flattened disc about 30 cm across seen edge-on and slightly overlapping, with straw and coarse grass fibres showing in the cracked dry surface, hand-pressed finger marks on some, crumbs and dust between the courses. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
+```
+
+`patterns/kimr/handprints` (full colour; the Hall's niches and the houses' walls):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a rough wall of white clay wash (#ece5d3) over earth plaster, covered with prehistoric hand-prints in red ochre (#9c3b23): about twenty adult and a few child hand-prints, fingers spread, some solid prints and some stencilled outlines with the ochre sprayed round the hand, at slightly different angles, overlapping in places, the older ones faded to pink, the plaster a little cracked. The pattern repeats in both directions. Full colour.
+```
+
+`patterns/kimr/bowl-band` (full colour; black-on-white bowls and ollas):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a painted pottery band in the Mimbres black-on-white style, flat matte kaolin white slip (#ece5d3) with fine hand-painted black (#221c18) lines: two thin framing lines top and bottom, between them a row of stepped terraces alternating with fine zigzag hatching, and a narrow lower band of small walking animals (shaggy cattle, mammoths, elk) all facing right, each a few strokes. The pattern repeats horizontally. Hand-painted, slightly uneven line weight, faint brush marks, no glaze shine.
+```
+
+`patterns/kimr/kilt-band` (full colour; woven kilt and sash borders, mantle edges):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a hand-woven border band of coarse undyed wool (#e8dfca) with a visible plain weave, carrying a pattern woven in black (#221c18) and red ochre (#9c3b23): a central row of large black stepped pyramids (terraces) each with a red stepped core, small red diamonds between them, and thin black and red stripes above and below. The pattern repeats horizontally. Slightly uneven dye and weave, a few slubs.
+```
+
+`patterns/kimr/shield` (full colour; one centred figure: shields and hide screens):
+```
+Square, 2048x2048. Orthographic front view of a flat, front-on decorative panel, flat even shadowless lighting, as if scanned: no highlights, no vignette, no perspective, no text, no border, no watermark. A single centred figure with a clear margin of plain ground all round: a round painted rawhide shield face seen flat, filling about 80 % of the frame, the ground natural tan rawhide (#8b6a48) with faint hair follicles and stretch marks; painted in flat red ochre (#9c3b23), yellow ochre (#d0a03c), charcoal black (#221c18) and white (#ece5d3): two concentric rings near the rim, short black rays between them, and in the centre a frontal bull's head with great horns raised into a lyre. Hand-painted with mineral pigments, edges slightly uneven, worn at the rim.
+```
+
+`patterns/kimr/mural` (full colour; the round rooms' murals):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a wall mural on matte clay plaster in the style of Pueblo kiva murals: a procession of four stiff frontal masked dancers on a pale ground (#e7d6b5), each with a tall cylindrical white mask with black eye bars and a different crown (great bull horns, ivory tusks, an elk antler, a big cat's fangs), red ochre (#9c3b23) and yellow ochre (#d0a03c) kilts and sashes, black (#221c18) outlines, one small touch of turquoise (#3a9e94) on the first mask's brow; under them a narrow band of small walking animals in black. Flat colour, no shading, plaster cracks and a few flaked patches. The pattern repeats horizontally.
+```
+
+`patterns/kimr/labyrinth` (full colour; one centred figure: the emblem on banners, hatches and rock art):
+```
+Square, 2048x2048. Orthographic front view of a flat, front-on decorative panel, flat even shadowless lighting, as if scanned: no highlights, no vignette, no perspective, no text, no border, no watermark. A single centred figure with a clear margin of plain ground all round: the classical seven-circuit labyrinth, its paths drawn as thick red ochre (#9c3b23) lines on a flat kaolin white (#ece5d3) ground, square-cornered as in Hopi rock art, with its one entrance at the bottom; above it, touching its top, a frontal bull's head in charcoal black (#221c18) with great horns curving up into a lyre. Painted with mineral pigment, edges slightly uneven, the white ground with a faint plaster grain.
+```
 
 ## Gaps with no prompt yet
 

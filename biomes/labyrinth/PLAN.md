@@ -154,6 +154,9 @@ pueblos.
 - **Their villages in the biome kit:** the biome kit places the village sites, plinths and keep-clears, as Crystal Cavern
   massed its caverns for the Hearth hold. The pueblos themselves are a **settlement kit** of their own: a culture in
   `kits/catalog` and a building kit, placed with `core/hamlet`.
+- **Their culture, tongue and look** (a first draft, 2026-11-11, awaiting the owner): the culture in `LORE.md` section 6.24 (virtue-taking,
+  the masked heroes, the Hall as necropolis, the Aurochs-horn kingship, the Fellgangs and the Monk); the tongue, Kimr tog, with its
+  names for the Labyrinth's places, in `lore/kimr-tongue.md`; the art and material rules for the kits in `KIMR.md`.
 
 ## 6. The arcology at the gate: the Hall of Heroes
 

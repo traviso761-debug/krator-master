@@ -202,7 +202,9 @@ Cauldron, or the Copper-Fissure Vent's lava, if the owner wants either.
   outpost?
 - **The volcanoes' activity:** which vents are live (steaming, puffing ash, lava) and which are quiet? The plan takes all
   five as degassing and only the Copper-Fissure Vent as flowing.
-- **The two peoples:** do the Fellgangs and the Kimr have a truce here, a border, or a feud?
+- **The two peoples:** do the Fellgangs and the Kimr have a truce here, a border, or a feud? (Proposed 2026-11-11 in `LORE.md`
+  section 6.24, "Relations": a water truce at the tarns, feuds elsewhere, trade by signs. The Kimr call the range *Mawʼn Ffair*:
+  `lore/kimr-tongue.md`.)
 - **Names:** the valleys and volcanoes keep Gemini's English names. Do they want Tungang or Kimr names too?
 - **Order:** after the Labyrinth, since station 3 and its strays lean on the Labyrinth's fauna. The four core amendments can
   go first: the open world and the other region kits want them too.
