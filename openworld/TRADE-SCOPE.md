@@ -756,8 +756,12 @@ reach 33 °C, with 22-34 km²-eq of farmland.
   middle lakes (Mungo's, and the new Tabisti town at 1311,761) are left alone.
 - **The rule:** compress the pit's depth below -1,000 m to 30%: new height = -1,000 - 0.3 x (-1,000 - h). So -2,333 m (Reed)
   rises to -1,400 m (+933 m), -1,651 m (the median) to -1,195 m (+456 m), and -1,000 m does not move. The rim stays where it is,
-  with no step. The lakes re-settle over the shallower pit (`ABYSS_LAKES`), and the climate re-lapses (`reclimate`), with rain and
-  class recomputed.
+  with no step. The climate re-lapses (`reclimate`), with rain and class recomputed.
+- **The lakes** (the queue's plan, 2026-11-12): `ABYSS_LAKES` lays its winding lakes out only on ground under -1,400 m, and after the
+  compression the deepest floor is about -1,370 m. So the queue does not re-lay them. It **lifts the existing lakes with the
+  ground**: each lake's level and bed by the same rule, outlines and relative depths kept. Then it re-routes the water. Laying the
+  lakes out afresh on the new floor is the alternative, the owner's to ask for before the edit runs. Furrow (-593 m) and Reed's
+  upriver fields (-780 m) are above -1,000 m and do not move.
 - **The effect, at 6.5 °C per km:** Reed's spot from 39 °C to ~33 °C. Land over 33 °C in the pit from 11,684 km² to about 860; over
   36 °C from 2,028 km² to about 260. (These are the lapse alone, before the lakes and rain re-settle.)
 - **What it reaches:**
