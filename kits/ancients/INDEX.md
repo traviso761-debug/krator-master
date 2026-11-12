@@ -207,7 +207,7 @@ Each target adds its own fragments to `src/` and builds one output.
 | `spaceport` | `89z-rows.js`, `91z-views.js` | 2 |
 | `span` | `89z-rows.js`, `8as0-span-parts.js`, `91z-views.js` | 30 |
 | `spire` | `89z-rows.js`, `91z-views.js` | 4 |
-| `strongbow` | `89z-rows.js`, `8aw0-strongbow-plan.js`, `8aw1-strongbow-parts.js`, `8aw2-strongbow-draw.js`, `8aw3-strongbow-foot.js`, `91z-views.js` | 73 |
+| `strongbow` | `89z-rows.js`, `8aw0-strongbow-plan.js`, `8aw1-strongbow-parts.js`, `8aw2-strongbow-draw.js`, `8aw3-strongbow-foot.js`, `91z-views.js` | 77 |
 | `strongbow-today` | `89z-rows.js`, `91z-views.js` | 3 |
 | `theodiga` | `89z-rows.js`, `91z-views.js` | 1 |
 | `trigon` | `89z-rows.js`, `91z-views.js` | 5 |

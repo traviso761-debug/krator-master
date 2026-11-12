@@ -72,6 +72,8 @@ function buildStrongbow(scene,gx,gz,d){reseed(9040+d);KOFF=[gx,0,gz];
 
  // ---- the cliff, the Bow, the crown, the Nock, the stays (8aw1) ---------------------------------------------------
  sbCliff(X,G);sbBow(X);sbCrown(X);sbNock(X);sbStays(X);
+ /* the rubble heaps (core/terrain KRUBBLE); hy(x, z) is their surface, so what lies in them lies on it */
+ const HEAPS=sbHeaps(X,G),hy=(x,z)=>HEAPS.length?KRUBBLE.at(HEAPS,x,z):-Infinity;
 
  // ---- the lower hull: hung on the face west of the bay; in the ruin three pieces in the scree -----------------------
  {const Q=P.quiver,n=Math.max(8,Math.round((Q.top-Q.tip)/D.STO)),wq=t=>Q.W/2*Math.pow(Math.max(0,1-t),.55),dq=t=>Q.D*(1+.3*Math.sin(.9*Math.PI*t))*Math.pow(Math.max(0,1-t),.4);
@@ -82,12 +84,11 @@ function buildStrongbow(scene,gx,gz,d){reseed(9040+d);KOFF=[gx,0,gz];
    return gs;};
   if(!RU)for(const [k,g] of loft(0,1))Lst[k].push(g);
   else for(const pc of RU.quiver.pieces){const t0=pc.i/3,t1=(pc.i+1)/3,mid=qp((t0+t1)/2,1,.3);
-   const MQ=new THREE.Matrix4().makeTranslation(pc.at[0],pc.at[1]+wq((t0+t1)/2)*.6,pc.at[2]).multiply(new THREE.Matrix4().makeRotationY(pc.ry))
+   const MQ=new THREE.Matrix4().makeTranslation(pc.at[0],Math.max(pc.at[1],hy(pc.at[0],pc.at[2])-wq((t0+t1)/2)*.5)+wq((t0+t1)/2)*.6,pc.at[2]).multiply(new THREE.Matrix4().makeRotationY(pc.ry))
     .multiply(new THREE.Matrix4().makeRotationZ(Math.PI/2+pc.tilt*.3)).multiply(new THREE.Matrix4().makeRotationX(pc.roll))
     .multiply(new THREE.Matrix4().makeTranslation(-mid[0],-mid[1],-mid[2]));
    for(const [k,g] of loft(t0,t1)){g.applyMatrix4(MQ);Lst[k].push(g);}
-   for(let j=0;j<10;j++)kput('rubble',[pc.at[0]+(h(440,pc.i,j)-.5)*pc.len,pc.at[1]+1,pc.at[2]+(h(441,pc.i,j)-.5)*40],qEuler(h(442,pc.i,j)*3,h(443,pc.i,j)*3,0),
-    [3+6*h(444,pc.i,j),2+3*h(445,pc.i,j),3+5*h(446,pc.i,j)],new THREE.Color(0xc8c2b4));}}
+  }}
 
  // ---- the Spine: drums on necks down from the keel, a terrace at every turn, struts to the bay's walls, the rotors, the pad ----
  {const SP=D.SPINE,col0=dd?'whiteW':'white',above=new Map();
@@ -100,9 +101,7 @@ function buildStrongbow(scene,gx,gz,d){reseed(9040+d);KOFF=[gx,0,gz];
    const up=above.get(r.id),ty=up?up.at[1]:F.tip;
    if(ty>y1+.5&&!(up&&gone.has(up.id))&&!(!up&&dd)){const a=[c[0],y1,c[2]],b=up?[up.at[0],ty,up.at[2]]:SBG.tp(X,[c[0],ty,c[2]]);
     Lst[col0].push(gridSurface((u,v)=>{const th=u*TAU;return[lerp(a[0],b[0],v)+r.nr*Math.cos(th),lerp(a[1],b[1],v),lerp(a[2],b[2],v)+r.nr*Math.sin(th)];},20,1,{uS:4,vS:1}));}
-   // the break: a ragged top on the highest standing drum
-   if(RU&&up&&gone.has(up.id))for(let j=0;j<9;j++){const a=j/9*TAU;
-    kput('rubble',[c[0]+Math.cos(a)*r.r*.7,y1+2,c[2]+Math.sin(a)*r.r*.7],qEuler(h(450,j)*3,h(451,j)*3,0),[5+5*h(452,j),3+4*h(453,j),4+4*h(454,j)],new THREE.Color(0xb8b2a4));}}
+   /* the break: the Spine's broken head is a rubble heap on the highest standing drum (RU.heaps) */}
   for(const t of P.spine.terraces)if(!gone.has(t.id)&&t.struts)for(const st of t.struts)beam('acBox',st.a,st.b,4,5,new THREE.Color(dd?0x8e887a:0xe6e0d2));
   // the town's lamps in the Spine's lower drums
   if(RU)for(const id of RU.lit){const r=P.drums.find(q=>q.id===id);for(let j=0;j<14;j++){if(h(505,r.run,r.i,j)>.4)continue;const a=-Math.PI*(j+.5)/14,
@@ -187,9 +186,17 @@ function buildStrongbow(scene,gx,gz,d){reseed(9040+d);KOFF=[gx,0,gz];
   KXF=null;
   {const g=RU.order.gate.at;kput('acBox',[g[0],g[1]+2.6,g[2]],null,[16,5.2,1.2],new THREE.Color(0x7a5a34));kput('acBox',[g[0],g[1]+5.6,g[2]],null,[17,.8,1.6],new THREE.Color(0xe0901a));}
   // the fallen: the west Spine's drums, the east wing's slab
-  for(const db of RU.debris){if(db.kind==='drum'){kput('sbCyl',[db.at[0],db.at[1]+6,db.at[2]],qEuler(.35+db.roll*.6,db.ry,.25),[db.r,26,db.r],new THREE.Color(0xb8b2a4)); /* lying tilted, half buried */
-    for(let j=0;j<5;j++)kput('rubble',[db.at[0]+(h(510,j,db.at[0])-.5)*50,db.at[1]+1,db.at[2]+(h(511,j,db.at[0])-.5)*40],qEuler(j,j*2,0),[4+5*h(512,j),3,4+4*h(513,j)],new THREE.Color(0xc0baac));}
-   else kput('acBox',[db.at[0],db.at[1]+db.size[1]*.4,db.at[2]],qEuler(db.roll*.4,db.ry,db.roll),db.size,new THREE.Color(0xa8a294));}
+  for(const db of RU.debris){const yh=Math.max(db.at[1],hy(db.at[0],db.at[2]));if(db.kind==='drum'){
+    /* a drum that fell 400 m does not lie whole: curved shards of its glazed wall (with a collar), tipped and half buried in its heap */
+    for(let k=0;k<4;k++){const a0=h(520,k,Math.round(db.at[0]))*TAU,da=.7+.6*h(521,k,Math.round(db.at[2])),hh=6+9*h(522,k,Math.round(db.at[0])),rr=db.r*(.9+.15*h(523,k,1));
+     const off=[(h(524,k,2)-.5)*db.r*1.4,0,(h(525,k,3)-.5)*db.r*1.1],ox=db.at[0]+off[0],oz=db.at[2]+off[2],oy=Math.max(db.at[1],hy(ox,oz))-1.5;
+     const MS=new THREE.Matrix4().makeTranslation(ox,oy,oz).multiply(new THREE.Matrix4().makeRotationY(h(526,k,4)*TAU)).multiply(new THREE.Matrix4().makeRotationX((h(527,k,5)-.5)*1.6+Math.PI/2*(k%2)))
+      .multiply(new THREE.Matrix4().makeTranslation(-rr*Math.cos(a0+da/2),-hh/2,-rr*Math.sin(a0+da/2)));
+     const arc=(r0,list,uS)=>{const g=gridSurface((u,v)=>{const a=a0+da*u;return[r0*Math.cos(a),hh*v,r0*Math.sin(a)];},8,2,{uS:r0*da/25.6*uS,vS:hh/25.6*uS});g.applyMatrix4(MS);Lst[list].push(g);};
+     arc(rr,'res',1);arc(rr-2,'frab',4);
+     const gc=gridSurface((u,v)=>{const a=a0+da*u;return[(rr+1.2)*Math.cos(a),hh-2.2+2.2*v,(rr+1.2)*Math.sin(a)];},8,1,{uS:4,vS:1});gc.applyMatrix4(MS);Lst.whiteW.push(gc);}
+   }
+   else kput('acBox',[db.at[0],yh,db.at[2]],qEuler(db.roll*.4,db.ry,db.roll),db.size,new THREE.Color(0xa8a294));}
   // stains down the Bow's flanks and the face under the sockets
   for(let i=0;i<40;i++){const s=h(520,i)<.5?-1:1,y=F.tip+60+(F.top-F.tip-80)*h(521,i),t=F.t(y),u=.1+.8*h(522,i),q=F.flank(t,s,u);
    const p=SBG.tp(X,[q[0],y,q[1]+.4]);kput('stain',p,qFacing([s*.5,0,.8]),[6+8*h(523,i),30+40*h(524,i),1],null);}}

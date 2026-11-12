@@ -92,8 +92,8 @@ The plan's records are the model (`8aw0-strongbow-plan.js`, [G data]). The drawi
 - **The east stays have snapped.** That is all three east anchor fans and half the east string fan, 39% of the string and anchors. A few cables hang limp from the sail.
 - **The tower leans off the face.** It has swung about its hinge at the crown's back, 3.5 degrees out and 2 degrees west, so its
   foot stands about 25 m out from where it was. The gap behind it opens toward the foot.
-- **The Nock is broken.** Its centre goes with the hull, the east wing has fallen to the scree, and the west wing still bridges to
-  the rock with a gap at the bay's edge.
+- **The Nock is broken.** Its east wing has fallen to the scree. The deck stays on the rock, and the tower leans through its cracked
+  centre; the Order uses that centre as its balloon field.
 - **The lower hull has fallen.** It lies in three broken pieces on the terminus hall's west half, which it crushed: the vault there is
   white shards on rubble.
 - **The foot**: most of the lobby's glazing is gone (by a hash of each pane), its galleries are broken in places, and the
@@ -118,7 +118,7 @@ The plan's records are the model (`8aw0-strongbow-plan.js`, [G data]). The drawi
 |---|---|---|
 | `core/rand` (`KRAND`) | yes | Every choice in the plan and the ruin is `KRAND.hash` of the plan's seed, a salt and a record's own indices, never a count of draws. The drawing's scree and trees keep the kit's `reseed()` stream, as every builder does |
 | `core/tags` (`KTAGS`) | yes | Through `TAGS_TARGETS` in `build.py`. Registered before anything is drawn: the arcology as a building, with its tower, decks, landing pad, drums, terraces, lifts, galleries, pads, terminus and mast as parts; the stays and heliostats as fixtures; the town's houses as buildings |
-| `core/terrain` | no | The kit page's ground is the flat showcase plain, as on every target. The cliff and plateau are the target's own stand-in mesh. The plan takes `o.lip` (the face's height) and `o.floor` (the floor's height), so the open world passes its own scarp |
+| `core/terrain` | yes, its rubble | The ruin's debris is `KRUBBLE` heaps (`core/terrain/37c-core-rubble.js`, read in place through `TARGET_READS`, as the Ancient's Valley's ruined towers take it): lumpy mounds at the talus angle with knolls, loose blocks and a cover of broken chunks, one where each thing fell (`RU.heaps`). The heaps cover the terminus hall's crushed half, each fallen drum, the Nock's fallen east wing and the Spine's broken head. The page's ground is the flat showcase plain; the cliff and plateau are the target's own stand-in mesh, and the plan takes `o.lip` and `o.floor` so the open world passes its own scarp |
 | `core/water` | no | The valley's water belongs to the open world. The kit page shows the valley floor only |
 | `core/space`, `core/mask` | no | Nothing is placed by search or by a raster: every record's place is a function of the frame |
 | `core/atmos` sky, `core/host` | no | The kit page's sky, camera, probe and inspector are the kit's, shared by every target. The builder moves the kit's sun to the north-east for this page, as it would stand on a morning here |
@@ -142,6 +142,7 @@ The plan's records are the model (`8aw0-strongbow-plan.js`, [G data]). The drawi
 - The tower's flanks are lofted storey bands with the Arccube's dwelling map. They have no balconies or recessed decks, and the teal fins carry no art-nouveau curls beyond their outward swell at the crown and the Nock.
 - The stays are straight boxes with no sag. The sockets are plain blocks.
 - The town is placeholder boxes, waiting for the scrap Xanadu set.
-- The ruin's fallen pieces (the lower hull, the drums, the east wing) are whole shapes laid down, not shattered.
+- The lower hull's pieces lie whole on the hall's heap; the fallen drums are shards of wall in theirs. The heaps are KRUBBLE's general
+  debris, not sorted by what fell (no glass, no twisted girders).
 
 Build: `python3 tools/build.py kits/ancients --target strongbow`. Plan seed 1647 (KRAND); the builder's own stream is reseed(9040 + d).

@@ -124,7 +124,9 @@ SB_TODAY_READS = ([(os.path.join(HERE, 'targets', 'strongbow'), f) for f in ('8a
                   + [(os.path.join(ROOT, 'settlements', 'strongbow', 'src'), f) for f in ('20-sb-census.js', '30-sb-layout.js', '31-sb-rules.js', '8ax0-sb-reclaim.js')])
 TARGET_READS = {'podium': [(os.path.join(ROOT, 'kits', 'eternian', 'src'), '42-et-head.js')],
                 # Strongbow today (settlements/strongbow, SB2): the arcology's fragments and the settlement's layout and reclamation, read in place
-                'strongbow-today': SB_TODAY_READS,
+                'strongbow-today': SB_TODAY_READS + [(os.path.join(ROOT, 'core', 'terrain'), '37c-core-rubble.js')],
+                # Strongbow's rubble is core/terrain's KRUBBLE heaps (the Ancient's Valley's method), read in place
+                'strongbow': [(os.path.join(ROOT, 'core', 'terrain'), '37c-core-rubble.js')],
                 # the Sanctum (2026-10-22) shares the Podium's skins and materials (MAT.sn*), read in place
                 'sanctum': [(os.path.join(ROOT, 'kits', 'eternian', 'src'), '42-et-head.js'),
                             (os.path.join(HERE, 'targets', 'podium'), '8aq2-podium-skins.js')]}
@@ -236,6 +238,7 @@ DETERMINISTIC = {
     '8aq5-kept-pass.js',                               # targets/kept: a material pass, no placement
     '8at0-arcpile-plan.js',                            # targets/arcpile: KRAND-hashed records, no rng()
     '8aw0-strongbow-plan.js', '8aw1-strongbow-parts.js', '8aw3-strongbow-foot.js',   # targets/strongbow: KRAND-hashed records; the drawing's parts and the foot, hashed, no rng()
+    '37c-core-rubble.js',                              # core/terrain's KRUBBLE heaps, read by targets/strongbow: KRAND-hashed, no rng()
     '20-sb-census.js', '30-sb-layout.js', '31-sb-rules.js', '8ax0-sb-reclaim.js',   # settlements/strongbow, read by strongbow-today: records and a hashed drawing, no rng()
 }
 DETERMINISTIC |= {'06-core-khook.js', '06b-core-kcolor.js'}   # core/shader (no rnd())

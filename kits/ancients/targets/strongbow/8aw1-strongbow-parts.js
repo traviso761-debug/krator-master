@@ -118,18 +118,17 @@ function sbCrown(X){const P=X.P,F=X.F,D=X.D,C=P.crown,w0=F.w(0),d0=F.d(0),kx=1+C
 // ---- the Nock: the deck at mid-height, its glazed front, its pads; the centre rides with the Bow -------------------
 function sbNock(X){const P=X.P,F=X.F,D=X.D,N=P.nock,gone=X.RU?new Set(X.RU.nockGone):null;
  // the landing pad before the tower's prow: a glazed disc in a white rim, a ring and a cross of light strips (dark in the ruin)
- {const L=P.landing,c=L.at;SBG.put(X,X.dd?'poolR':'pool',SBG.disc(c,0,L.r,c[1]+.3,48),true);
-  SBG.put(X,X.dd?'whiteW':'white',SBG.disc(c,L.r,L.r+3,c[1]+.35,48),true);SBG.put(X,X.dd?'whiteW':'white',SBG.cyl(c,L.r+3,c[1],c[1]+1.2,48),true);
-  if(!X.dd){SBG.put(X,'white',SBG.disc(c,L.r*.55,L.r*.62,c[1]+.4,48),true);
-   for(const a of [0,Math.PI/2])SBG.put(X,'white',gridSurface((u,v)=>{const o=lerp(-L.r*.5,L.r*.5,u),q=lerp(-1.2,1.2,v);return[c[0]+o*Math.cos(a)-q*Math.sin(a),c[1]+.42,c[2]+o*Math.sin(a)+q*Math.cos(a)];},2,1,{}),true);}}
- for(const part of N.parts){if(gone&&gone.has(part.id))continue;const bound=part.side===0,bk=x=>bound?F.back+1:-8;
+ {const L=P.landing,c=L.at;SBG.put(X,X.dd?'poolR':'pool',SBG.disc(c,0,L.r,c[1]+.3,48),false);
+  SBG.put(X,X.dd?'whiteW':'white',SBG.disc(c,L.r,L.r+3,c[1]+.35,48),false);SBG.put(X,X.dd?'whiteW':'white',SBG.cyl(c,L.r+3,c[1],c[1]+1.2,48),false);
+  if(!X.dd){SBG.put(X,'white',SBG.disc(c,L.r*.55,L.r*.62,c[1]+.4,48),false);
+   for(const a of [0,Math.PI/2])SBG.put(X,'white',gridSurface((u,v)=>{const o=lerp(-L.r*.5,L.r*.5,u),q=lerp(-1.2,1.2,v);return[c[0]+o*Math.cos(a)-q*Math.sin(a),c[1]+.42,c[2]+o*Math.sin(a)+q*Math.cos(a)];},2,1,{}),false);}}
+ for(const part of N.parts){if(gone&&gone.has(part.id))continue;const bound=false,bk=x=>part.side===0?F.back+1:-8;   /* the Nock stays on the rock: in the ruin the tower leans through its cracked centre (no gap opens between centre and wings) */
   const g=(y,list,uS)=>SBG.put(X,list,gridSurface((u,v)=>{const x=lerp(part.x0,part.x1,u);return[x,y,lerp(bk(x),N.front(x),v)];},16,4,{uS:(part.x1-part.x0)/14,vS:6}),bound);
   g(N.y,'deck');g(N.y-N.th,'shade');
   SBG.put(X,'res',gridSurface((u,v)=>{const x=lerp(part.x0,part.x1,u);return[x,lerp(N.y-N.th,N.y-1.2,v),N.front(x)];},24,1,{uS:(part.x1-part.x0)/25.6,vS:N.th/25.6}),bound);
   SBG.put(X,X.dd?'whiteW':'white',gridSurface((u,v)=>{const x=lerp(part.x0,part.x1,u);return[x,lerp(N.y-1.2,N.y+1.4,v),N.front(x)+.2];},24,1,{uS:20,vS:1}),bound);
-  // the wings' break at the bay's edge in the ruin: a ragged end face
-  if(X.RU&&part.side!==0){const xe=part.side<0?part.x1:part.x0;SBG.put(X,'frab',gridSurface((u,v)=>[xe+(X.h(420,Math.round(u*8),Math.round(v*3))-.5)*4,lerp(N.y-N.th,N.y,v),lerp(bk(xe),N.front(xe),u)],8,3,{uS:4,vS:2}),false);}}
- for(const pd of N.pads){if(gone&&gone.has('sb.nock.'+(pd.at[0]<0?'w':'e')))continue;const bound=Math.abs(pd.at[0])<D.BAY.w/2;
+  /* the Nock stays whole on the rock; the tower leans through its centre */}
+ for(const pd of N.pads){if(gone&&gone.has('sb.nock.'+(pd.at[0]<0?'w':'e')))continue;const bound=false;
   SBG.put(X,X.dd?'poolR':'pool',gridSurface((u,v)=>[pd.at[0]+lerp(-pd.size[0]/2,pd.size[0]/2,u),N.y+.25,pd.at[2]+lerp(-pd.size[1]/2,pd.size[1]/2,v)],2,2,{}),bound);}}
 
 // ---- the stays and their sockets --------------------------------------------------------------------------------------
@@ -141,3 +140,25 @@ function sbStays(X){const P=X.P,gone=X.RU?new Set(X.RU.gone):null,limp=X.RU?new 
    if(st.fan.indexOf('anchor')===0)kput('acBox',B,null,[3.2,3.2,2.4],sk);continue;}
   beam('acBox',A,B,st.fan==='string'?1.4:1.1,st.fan==='string'?1.4:1.1,cc);
   if(st.fan.indexOf('anchor')===0||st.fan==='quiver')kput('acBox',B,null,[3.2,3.2,2.4],sk);}}
+
+// ---- the rubble: heaps of loose debris on core/terrain KRUBBLE (the Ancient's Valley's method, kits/metropolis 57-mp-debris) ---
+// Each of the ruin's heaps (STRONGBOW.ruin: RU.heaps) is a KRUBBLE heap: a lumpy mound at the talus angle, knolls on it, loose blocks
+// lying on it, a cover of broken chunks sunk into it, so it reads as discrete pieces, not a slab. All the heaps' beds are one mesh
+// (rubble grey, its hollows dark) and all their chunks and blocks another (the Ancients' white concrete, each a shade of its own).
+MAT.sbRubble=new THREE.MeshStandardMaterial({map:TEX.concrete,vertexColors:true,color:0xffffff,roughness:1,metalness:0,side:DS});
+MAT.sbRubbleChunk=new THREE.MeshStandardMaterial({map:TEX.concrete,vertexColors:true,color:0xffffff,roughness:.95,metalness:0,side:DS});
+function sbHeaps(X,G){if(!X.RU||!X.RU.heaps||typeof KRUBBLE==='undefined')return [];
+ const acc=[{p:[],c:[],u:[],i:[]},{p:[],c:[],u:[],i:[]}],recs=[];
+ for(const spec of X.RU.heaps){const H=KRUBBLE.heap(spec),o=KRUBBLE.mesh(H,{cell:4});recs.push(H);
+  /* each triangle goes to the bed (part 0) or the chunks and blocks (parts 1, 2), its vertices copied once per mesh */
+  for(const k of [0,1]){const A=acc[k],m=new Map();
+   for(let t=0;t<o.idx.length;t+=3){if((o.part[o.idx[t]]?1:0)!==k)continue;
+    for(let j=0;j<3;j++){const v=o.idx[t+j];
+     if(!m.has(v)){m.set(v,A.p.length/3);A.p.push(o.pos[3*v],o.pos[3*v+1],o.pos[3*v+2]);A.u.push(o.uv[2*v]/4,o.uv[2*v+1]/4);
+      /* the bed a shade under the chunks and darker in the hollows; each chunk vertex its own shade */
+      const sh=k?(.86+.2*KRAND.unit(KRAND.hash(H.seed,v,31)))*(1-.35*o.occ[v]):.72*(1-.55*o.occ[v]);A.c.push(.82*sh,.79*sh,.74*sh);}
+     A.i.push(m.get(v));}}}}
+ for(const k of [0,1]){const A=acc[k];if(!A.i.length)continue;const g=new THREE.BufferGeometry();
+  g.setAttribute('position',new THREE.Float32BufferAttribute(A.p,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(A.u,2));g.setAttribute('color',new THREE.Float32BufferAttribute(A.c,3));
+  g.setIndex(A.p.length/3>65535?new THREE.Uint32BufferAttribute(A.i,1):new THREE.Uint16BufferAttribute(A.i,1));g.computeVertexNormals();mesh(g,k?MAT.sbRubbleChunk:MAT.sbRubble,G);}
+ return recs;}

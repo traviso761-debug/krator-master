@@ -88,7 +88,7 @@ function sbLayout(){if(SB_LAYOUT_)return SB_LAYOUT_;SB_LAYOUT_=(function(){
  // ---- Z5 the Nock, Z6 the tower: the Order's ----------------------------------------------------------------------------------
  const N=P.nock,nw=N.parts.find(q=>q.side<0),nc=N.parts.find(q=>q.side===0),zf=x=>N.front(x),lz=P.landing.at;
  part({id:'sb.nock.c',name:'the Nock\'s centre: the Order\'s balloon field',zone:'Z5',kind:'deck',by:'order',state:'kept',shape:['box',nc.x0,nc.x1,F.back,zf(0)],y:N.y,sheets:['S5'],
-  note:'leaning with the tower, cracked; the Order launches hot-air balloons and signals from it (the owner, 2026-11-11)'});
+  note:'cracked round the leaning tower; the Order launches hot-air balloons and signals from it (the owner, 2026-11-11)'});
  part({id:'sb.nock.pad',name:'the landing pad: the balloons\' launch',zone:'Z5',kind:'pad',by:'order',state:'kept',in:'sb.nock.c',shape:['circ',lz[0],lz[2],P.landing.r],y:N.y,sheets:['S5']});
  part({id:'sb.nock.shed',name:'the balloon shed and burner store',zone:'Z5',kind:'shed',by:'order',state:'kept',in:'sb.nock.c',shape:['box',30,80,lz[2]-70,lz[2]-30],y:N.y,h:12,st:1,sheets:['S5'],note:'proposed'});
  part({id:'sb.nock.mast',name:'the signal mast (mirrors and lamps)',zone:'Z5',kind:'mast',by:'order',state:'kept',in:'sb.nock.c',shape:['circ',nc.x0+14,20,5],y:N.y,h:30,sheets:['S5'],note:'sees down onto Xanadu (proposed)'});

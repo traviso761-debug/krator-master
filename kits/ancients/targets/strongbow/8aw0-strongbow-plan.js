@@ -212,6 +212,14 @@ STRONGBOW.ruin=function(P){const D=P.dim,R=D.RUIN,F=P.frame,S=P.seed,h=(a,b,c,e)
  // the east wing's slab in the scree
  RU.debris.push({id:'sb.nock.'+sn+'.fallen',kind:'slab',at:[side*260,F.ground(side*260,90),90],size:[110,12,60],ry:.3*side,roll:.5});
  // who lives there now (the owner, 2026-11-11): the Xanadui town at the foot, the Order's house above
+ // the rubble: heaps of loose debris (core/terrain KRUBBLE: a lumpy mound at the talus angle, knolls, loose blocks, a cover of broken
+ // chunks), one where each thing fell: the terminus hall's crushed west half under the lower hull, each fallen drum, the Nock's fallen
+ // east wing, and the Spine's broken head on the highest standing drum. Plain records; the drawing builds them with KRUBBLE.heap
+ {const H=P.foot.hall,cut=RU.foot.hallCut,top=P.drums.filter(d=>RU.spineGone.indexOf(d.id)<0)[0];
+  RU.heaps=[{id:'sb.heap.hall',x:(H.x0+cut)/2,z:(H.z0+H.z1)/2,y0:F.FL,rx:(cut-H.x0)/2+8,rz:(H.z1-H.z0)/2+16,ry:0,h:13,lumps:7,blocks:24,size:[2,7],cover:3}];
+  for(const d of RU.debris)if(d.kind==='drum')RU.heaps.push({id:d.id+'.heap',x:d.at[0],z:d.at[2],y0:d.at[1],rx:d.r*1.5,rz:d.r*1.15,ry:d.ry,h:9,lumps:5,blocks:14,size:[2,6],cover:3});
+  else if(d.kind==='slab')RU.heaps.push({id:d.id+'.heap',x:d.at[0],z:d.at[2],y0:d.at[1],rx:d.size[0]*.6,rz:d.size[2]*.7,ry:d.ry,h:8,lumps:6,blocks:16,size:[2,6],cover:3});
+  if(top)RU.heaps.push({id:'sb.heap.head',x:top.at[0],z:top.at[2],y0:top.at[1]+top.h,rx:top.r*.8,rz:top.r*.7,ry:0,h:5,lumps:4,blocks:9,size:[1.5,4],cover:2.5});}
  RU.town=STRONGBOW.town(P,RU.debris);
  RU.order={id:'sb.order',banners:[-1,1].map(s=>({id:'sb.order.banner.'+(s<0?'w':'e'),at:[s*60,P.crown.y1,F.prowZ(0)-20]})),gate:{id:'sb.order.gate',at:P.ramp.pts[1]},lit:[0,1,2,3,4,5]};
  return RU;};

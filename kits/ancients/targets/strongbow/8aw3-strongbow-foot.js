@@ -57,9 +57,10 @@ function sbFoot(X){const P=X.P,F=X.F,FT=P.foot,L=FT.lobby,H=FT.hall,RU=X.RU,dd=X
   L2.deck.push(gridSurface((u,v)=>[lerp(xa,H.x1,u),H.y0+.25,lerp(H.z0,H.z1,v)],8,2,{uS:(H.x1-xa)/12,vS:6}));
   for(const pl of H.platforms){const x0=Math.max(pl.x0,xa);kput('acBox',[(x0+pl.x1)/2,H.y0+.6,pl.z],null,[pl.x1-x0,1.2,pl.w],new THREE.Color(dd?0x6a6355:0xcfc6b2));}
   /* the ruin: the crushed half, its vault in white shards on the rubble under the lower hull's pieces */
-  if(RU)for(let i=0;i<46;i++){const x=lerp(H.x0,xa,h(620,i)),z=lerp(H.z0-6,H.z1+6,h(621,i)),s=4+10*h(622,i);
-   if(i%3)kput('rubble',[x,H.y0+s*.25,z],qEuler(h(623,i)*3,h(624,i)*3,0),[s,s*.45,s*.8],new THREE.Color(0xb8b2a4));
-   else kput('acBox',[x,H.y0+2+6*h(625,i),z],qEuler(h(626,i)*1.4,h(627,i)*3,h(628,i)*1.2),[s*1.4,1.2,s],new THREE.Color(0xd4cec0));}}
+  /* the crushed half is a rubble heap (RU.heaps, drawn by sbHeaps); white shards of the vault lie on it, set on its surface */
+  if(RU){const hh=RU.heaps.find(q=>q.id==='sb.heap.hall'),HR=hh&&typeof KRUBBLE!=='undefined'?[KRUBBLE.heap(hh)]:[];
+   for(let i=0;i<18;i++){const x=lerp(H.x0+8,xa-6,h(620,i)),z=lerp(H.z0-4,H.z1+4,h(621,i)),s=5+9*h(622,i),y=HR.length?Math.max(H.y0,KRUBBLE.at(HR,x,z)):H.y0;
+    kput('acBox',[x,y+.4,z],qEuler(h(626,i)*.9-.45,h(627,i)*3,h(628,i)*.8-.4),[s*1.4,1.1,s],new THREE.Color(0xd4cec0).multiplyScalar(.82+.2*h(629,i)));}}}
 
  // ---- the plaza: a raised forecourt before the lobby, steps down to the road, two pools ------------------------------------
  {const Z=FT.plaza,y0=F.FL;
