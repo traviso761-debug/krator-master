@@ -83,6 +83,7 @@ function limb(fam,pts,col,st,parentR,seg,near){const j=near&&!!BIO.flareJoin&&pt
 // a crown card at a point on the wood, nudged at most a tenth of its size off it: held (its sprigs start at the origin, 20-core-kit.js "stems";
 // the audit's limit for a stem card is .25 size + .5)
 function clumpOn(item,p,size,flat,col,T,st){const a=rr(0,TAU),d=size*.1*Math.sqrt(rng()),x=p.x+Math.cos(a)*d,z=p.z+Math.sin(a)*d,y=p.y+size*flat*rr(0,.08);
+ if(y<Math.max(BIO.terrainH(x,z),BIO.waterH(x,z))+.6)return;   /* never under the water or the ground (a willow on a pit's rim arches out over its tarn) */
  const dx=x-T.x,dz=z-T.z,dy=y-(T.y0+T.H*.7),nl=Math.hypot(dx,dy*.6+T.crownR*.6,dz)||1;
  BIO.put(item,[x,y,z],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),[size,size*flat,size],col,{n:[dx/nl,(dy*.6+T.crownR*.6)/nl,dz/nl]});st.clumps++;}
 const browsed=(T,y)=>T.browse&&y<T.y0+T.browse;
@@ -131,7 +132,8 @@ B.broad=function(T,st,lv){const S=SP[T.sp],poplar=S.habit==='poplar',item=poplar
 B.willow=function(T,st,lv){const S=SP[T.sp],fam=S.bark,bc=C(pick(S.barkC)),nS=lv===2?ri(S.stems[0],S.stems[1]):ri(2,3),a0=rr(0,TAU),szs=lv===2?[1.3,1.8]:[2.2,2.8];
  for(let si=0;si<nS;si++){const a=a0+si/nS*TAU+rr(-.4,.4),out=T.crownR*rr(.6,.95),H=T.H*rr(.8,1),rb=T.rb*rr(.6,.9),pts=[];
   for(let i=0;i<=5;i++){const u=i/5,rise=Math.sin(Math.PI*.5*Math.min(1,u*1.25)),dr=out*Math.pow(u,1.3);
-   pts.push({x:T.x+Math.cos(a)*dr,y:T.y0-.2+H*rise-(u>.8?(u-.8)*H*.5:0),z:T.z+Math.sin(a)*dr,r:Math.max(.04,rb*(1-.8*u))});}
+   const px=T.x+Math.cos(a)*dr,pz=T.z+Math.sin(a)*dr,floor=i?Math.max(BIO.terrainH(px,pz),BIO.waterH(px,pz))+.5:-1e9;   /* the arching tip stays over the ground or the water */
+   pts.push({x:px,y:Math.max(floor,T.y0-.2+H*rise-(u>.8?(u-.8)*H*.5:0)),z:pz,r:Math.max(.04,rb*(1-.8*u))});}
   limb(fam,pts,bc,st,T.rb,lv===2?5:4,false);
   const spots=[];for(let i=2;i<pts.length;i++){spots.push(pts[i]);if(i<pts.length-1)spots.push({x:mix(pts[i].x,pts[i+1].x,.5),y:mix(pts[i].y,pts[i+1].y,.5),z:mix(pts[i].z,pts[i+1].z,.5)});}
   if(lv===2)for(let w=0;w<3;w++){const p=pts[ri(2,4)],tw=dirOf(a+rr(-1.4,1.4),rr(.1,.7)),Lt=T.crownR*rr(.3,.5),tip={x:p.x+tw[0]*Lt,y:p.y+tw[1]*Lt,z:p.z+tw[2]*Lt,r:.03};
