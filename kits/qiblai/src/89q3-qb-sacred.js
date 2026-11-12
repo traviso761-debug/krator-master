@@ -57,13 +57,13 @@ function buildQbMonastery(G,o){const V=xV(o)%8;reseed(33501+V);const W=52,D=52,P
  const piece=V%4;
  if(piece===0)qnChorten(0,P,cz,.9);
  else if(piece===1){vPst('vPostB',0,P,cz,.22,14,xC(0x5a4632));vBall('xGold',0,P+14.2,cz,.3,xC(XPAL.gold[0]));for(let i=0;i<8;i++){const a=i*Math.PI/4;qnFlags([0,P+13.6,cz],[Math.cos(a)*14,P+3.6,cz+Math.sin(a)*8],18);}}
- else if(piece===2){kput('xDrumT',[0,P,cz],null,[2.0,.5,2.0],stone);kput('xDrumM',[0,P+.5,cz],null,[1.6,3.4,1.6],null);for(const t of[.5,2.1,3.9])kput('xDrumS',[0,P+t,cz],null,[1.68,.2,1.68],xC(XPAL.gold[0]));qnRoof(0,P+4.2,cz,4,4,0,wash,{parapet:.3});for(const sx of[-1,1])for(const sz of[-1,1])vPst('xColS',sx*1.8,P,cz+sz*1.8,.2,4.2,stone);}
+ else if(piece===2){kput('xDrumT',[0,P,cz],null,[2.0,.5,2.0],stone);kput('qSongDrum',[0,P+.5,cz],null,[1.6,3.4,1.6],null);for(const t of[.5,2.1,3.9])kput('xDrumS',[0,P+t,cz],null,[1.68,.2,1.68],xC(XPAL.gold[0]));qnRoof(0,P+4.2,cz,4,4,0,wash,{parapet:.3});for(const sx of[-1,1])for(const sz of[-1,1])vPst('xColS',sx*1.8,P,cz+sz*1.8,.2,4.2,stone);}
  else{xnTree(0,cz,9,null,P);vB('vStone',0,P,cz,4,.6,4,0,stone);}
  for(const s of[-1,1])vnLamp(s*3.4,P+3.4,D/2+.5,0);xnFolk(0,P,cz+4,5,6);}
 
 // ---------------------------------------------------------------- the grammarians' college
 // a smaller cloistered court of two-storey ranges, the library hall at the back: its walls carry the sound-grid
-// syllabary (holy writing) as a band of black and white panels under the parapet
+// syllabary (holy writing): the first line of the Song in the real Xanadui script, a band under the parapet (qnSongBand)
 function buildQbCollege(G,o){reseed(33511+(o.v|0));const V=xV(o),W=34,D=32,P=1.0,Dr=6,hr=[3.4,3.0];
  const red=xC(xPick(XPAL.redwall)),wash=xC(xPick(XPAL.wash)),stone=xC(xPick(QSTONE)),band=xC(xPick(XPAL.maroon)),trim=xC(XPAL.saffron);
  vnReg("Grammarians' college",0,0,20,P+12+4);
@@ -75,8 +75,9 @@ function buildQbCollege(G,o){reseed(33511+(o.v|0));const V=xV(o),W=34,D=32,P=1.0
  // the library hall
  const HW=W-4,HD=11,hz=-D/2+HD/2,hh=[4.6,3.8];const H=qnStack(0,P,hz,HW,HD,0,hh,red,'wash',xC(XPAL.white));
  qnWins(0,P,hz,HW,HD,0,hh,H.k,{pitch:2.4,ww:1.0,wh:1.5,kind:'lit',trim,skip:[[-2,2]],val:'all',back:false});qnDoor(0,P,hz+HD/2,0,2,3,{c:xC(XPAL.red),step:false});
- // the syllabary band: a grid of black and white tiles, strict as the city, under the band on the court face
- const sy=P+hh[0]+hh[1]-1.3;for(let i=0;i<Math.floor(H.w/.5);i++)for(let j=0;j<2;j++){const u=-H.w/2+.25+i*.5;kput('xPaintPl',[u,sy+j*.45,hz+H.d/2+.08],null,[.4,.38,1],xC(((i*7+j*3+V)%5)<2?XPAL.black:XPAL.white));}
+ // the syllabary band: the Song's first line in the chart's own script (src/89q0y-qb-script.js), along the court face at the
+ // string course between the storeys (clear of the windows' lintels; the face there is the ground storey's top, 98 %)
+ qnSongBand(0,P+hh[0]-.45,hz+HD*.98/2+.04,0,HW*.98-1.2,.62);
  const ht=qnRoof(0,H.y,hz,H.w,H.d,0,red,{band,gold:true,parapet:.7,corner:'gold'});qnCrown(0,ht,hz,H.w,H.d,0,{pav:[8,5],deerS:1});
  qnPave(0,2,W-2*Dr-5,D-Dr-HD-4,0,P);qnChorten(0,P,3,.55);xnFolk(0,P,6,4,4);}
 
@@ -133,7 +134,7 @@ function buildQbWheelHouse(G,o){reseed(33561+(o.v|0));const V=xV(o),W=10,D=10,P=
  const t=qnRoof(0,P+H,-.5,W,D,0,wash,{band,gold:true,parapet:.6});qnCrown(0,t,-.5,W,D,0,{pav:[5,4.4],deerS:.85});
  // the wheel: a tall drum in the mosaic (the Song in the sound-grid script), gilt bands, a red cap, on its axle
  const cz=-.8,R2=2.0,Hw=5.2;kput('xDrumS',[0,P,cz],null,[R2+.3,.4,R2+.3],stone);
- kput('xDrumM',[0,P+.4,cz],null,[R2,Hw,R2],null);for(const t2 of[.4,P+Hw*.5-.4,Hw+.25])kput('xDrumS',[0,P+t2,cz],null,[R2+.08,.16,R2+.08],g);
+ kput('qSongDrum',[0,P+.4,cz],null,[R2,Hw,R2],null);for(const t2 of[.4,P+Hw*.5-.4,Hw+.25])kput('xDrumS',[0,P+t2,cz],null,[R2+.08,.16,R2+.08],g);
  kput('xDomeT',[0,P+.4+Hw,cz],null,[R2,.6,R2],red);vPst('vIron',0,P+Hw+.9,cz,.08,H-Hw-1.2,xC(0x3a3430));
  if(V===2){vB('xWaterB',0,.05,0,2.2,.15,D+2,0,xC(XPAL.water));vB('vStone',-1.4,0,0,.5,.6,D+2,0,stone);vB('vStone',1.4,0,0,.5,.6,D+2,0,stone);}
  xnFolk(0,0,D/2+1.2,3,2);}

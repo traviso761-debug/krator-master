@@ -48,6 +48,10 @@ and fails on two neighbours that overlap by more than 0.3 m.
   the kora's buildings.
 - **Gilt crowns** (`qnCrown`): a gilt pavilion roof, victory banners (`qnBanner`), the eight-spoked wheel and the two deer
   (`qnWheel`, `qnWheelDeer`): only on temples, monasteries, gate towers and the kora. Domes only on the Temple Mountain.
+- **The script** (`src/89q0x-qb-xanadui.js`, `src/89q0y-qb-script.js`): the real Xanadui syllabary, lifted at every build from the
+  Tongues of Krator chart (`lore/tongues-of-krator.html`; `xanadui_script.py`), drawn onto canvas textures: the Song round the prayer
+  wheels' drums, its first line along the college, *Qiblai* over the gates, *Ḍikrī* on the Hall of the Decree (`QSCRIPT`: proposed
+  romanizations by the chart's sound changes).
 - **Prayer wheels instead of minarets**: drum rows (`qnDrums`), the kora's arcades, the wheel houses, the great wheel house.
 
 ## The buildings

@@ -4,6 +4,8 @@
  },
  "deterministic": [
   "89q0-qb-helpers.js",
+  "89q0x-qb-xanadui.js",
+  "89q0y-qb-script.js",
   "89q0z-qb-matlib.js",
   "90q-qb-furnish.js"
  ],

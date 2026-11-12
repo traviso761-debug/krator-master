@@ -54,6 +54,7 @@ function buildQbHallDecree(G,o){reseed(33711+(o.v|0));const V=xV(o),W=40,D=28,P=
  xnFlight(0,0,F+4+Math.max(2,Math.round(P/.17))*.34-.2,0,16,P,'vStone',stone);
  const t=qnRoof(0,S.y,ZB,S.w,S.d,0,red,{band,gold:true,eave:true,eaveC:xC(xPick(XPAL.dark)),parapet:.8,corner:'gold'});
  qnCrown(0,t,ZB,S.w,S.d,0,{pav:[S.w*.42,S.d*.45],deerS:1.5,banners:false});
+ kput('qPlaqueHall',[0,t-.42,ZB+S.d/2+.16],null,[4.8,1.2,1],null);   /* the Decree, in its script, on the front parapet */
  for(let i=0;i<8;i++){const u=-S.w/2+2+i*(S.w-4)/7;qnBanner(u,t,ZB+S.d/2-.4,3.2,null,xC(QSPOKE[i].wall));}   /* one per Prismarch, in his colour */
  for(const s of[-1,1])for(const sz of[-1,1])qnBanner(s*(S.w/2-.4),t,ZB+sz*(S.d/2-.4)-(sz>0?0:0),2.4);
  qnPave(0,F+4+4.5,W,3,0);xnFolk(0,0,F+9,6,10);}
@@ -84,7 +85,7 @@ function buildQbGreatWheel(G,o){reseed(33731+(o.v|0));const V=xV(o),W=20,P=1.4,H
   const f=loc(0,0,0,W/2+qnRun(P),ry);xnFlight(f[0],0,f[1],ry,6,P,'vStone',stone);}
  const t=qnRoof(0,P+H,0,W,W,0,wash,{band,gold:true,parapet:.7,corner:'gold'});
  // the wheel
- const R2=4.2,Hw=9;kput('xDrumS',[0,P,0],null,[R2+.5,.5,R2+.5],stone);kput('xDrumM',[0,P+.5,0],null,[R2,Hw,R2],null);
+ const R2=4.2,Hw=9;kput('xDrumS',[0,P,0],null,[R2+.5,.5,R2+.5],stone);kput('qSongDrum',[0,P+.5,0],null,[R2,Hw,R2],null);
  for(const tt of[.5,Hw*.33+.5,Hw*.66+.5,Hw+.4])kput('xDrumS',[0,P+tt,0],null,[R2+.1,.26,R2+.1],g);kput('xDomeT',[0,P+.5+Hw,0],null,[R2,1.0,R2],xC(XPAL.red));
  // the drum and the gilt dome over it, the wheel and deer on its four faces
  kput('xDrumT',[0,t,0],null,[6.4,2.6,6.4],red);vB('xBandB',0,t+2.2,0,13,.4,13,0,band);
@@ -123,7 +124,8 @@ function buildQbWallGate(G,o){reseed(33761+(o.v|0));const V=xV(o),inner=V===1,W=
  qnCube(0,0,0,W+.6,1.4,D+.6,0,stone,'ashlar');const S=qnStack(0,1.4,0,W,D,0,[H-1.4],wash,'wash');
  // the passage: its dark through-way, the arch frame and the leaves on both faces, the wheel above
  vB('vDarkB',0,0,0,pw,ph,D+.8,0);for(const s of[-1,1]){xnArch('xArchS',0,0,s*(D/2+.32),s>0?0:Math.PI,pw+1.6,ph+1.4,.5,stone);xnDoorway(0,0,s*(D/2+.05),s>0?0:Math.PI,pw,ph-.2,{});}
- qnWheel(0,ph+2.4,D/2+.3,0,inner?.9:1.5,g);
+ qnWheel(0,ph+(inner?3.05:3.9),D/2+.3,0,inner?.9:1.5,g);   /* the wheel over the city's name in its script */
+ for(const s of[-1,1])kput('qPlaqueGate',[0,ph+(inner?1.75:1.9),s*(D/2+.33)],qEuler(0,s>0?0:Math.PI,0),inner?[2.8,.7,1]:[4,1,1],null);
  qnWins(0,1.4,0,W,D,0,[H-1.4],S.k,{pitch:2.8,ww:.9,wh:1.2,kind:'lit',trim,skip:[[-pw/2-1.6,pw/2+1.6]],skipUp:[[-pw/2-1.6,pw/2+1.6]],left:false,right:false,sill:ph+.8});
  const t=qnRoof(0,S.y,0,S.w,S.d,0,wash,{band,gold:true,parapet:.8});
  for(const s of[-1,1]){const x=s*(W/2+(inner?1.6:2.8)),tw=inner?3.6:6,th=H+(inner?2.4:4);const Tt=qnStack(x,0,0,tw,D+1.2,0,[th],wash,'wash');

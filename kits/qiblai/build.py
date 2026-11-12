@@ -23,6 +23,12 @@ if '--no-checks' not in sys.argv:
     if subprocess.call([sys.executable, os.path.join(ROOT, 'tools', 'check_port.py'), '--quiet', HERE]) != 0:
         sys.exit('build.py: the port lint failed (tools/check_port.py); fix the fragment or retag it in PORT.md')
 
+# the Xanadui script, lifted from the Tongues of Krator chart at every build (xanadui_script.py): the chart is the one copy
+sys.path.insert(0, HERE); import xanadui_script
+BSRC.note(xanadui_script.CHART, os.path.join(HERE, 'xanadui_script.py'))
+if not BSRC.LISTING and xanadui_script.write():
+    print('the Xanadui script changed in the chart: rewrote src/89q0x-qb-xanadui.js')
+
 args = [a for a in sys.argv[1:]]
 _rc = subprocess.call([sys.executable, os.path.join(ROOT, 'settlements', 'xanadu', 'build.py'), '--kit', HERE] + args,
                       cwd=os.path.join(ROOT, 'settlements', 'xanadu'))
