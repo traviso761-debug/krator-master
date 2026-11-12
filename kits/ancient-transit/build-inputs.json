@@ -18,7 +18,7 @@
     "core/biome/40-core-place.js": "f1277b48ab3c5d779bf85452c581888be7d5b2ed94a0d21e21ade12f0602c9d7",
     "core/biome/42-core-export.js": "d3a95fe4dede2daa20504e712a57dbe9e3a18ea1bc57bfe59e53945f12fd0b2b",
     "core/biome/43-core-export-host.js": "15e7613a6210a39203ee80a56eeb1ab21906645033925759db50da27c0757fde",
-    "core/catalog/krator-furniture-core.js": "1c8bfa11d261b36895fd50645358e2c4ebe54febf67daeed700a38fbd6256fe9",
+    "core/catalog/krator-furniture-core.js": "4872bf46f2707b3fa156b18b8110f42ba830f10fdf670a1e79cf9c25f8941498",
     "core/clock/20-core-clock.js": "27f205a2e908a21cb5d07f07431352d7a02a214baf543fc94cd545d7d588ddbe",
     "core/export/07-core-export.js": "b50800e8f1f2ab9f566c877d24c112c3d12899d5589a63fbb9aa283ca9c16f2c",
     "core/export/09-core-export-adapters.js": "bb08d2140882dc07c0a9c33787d103c67301e4444b31dce0f6d53e4fd8938316",
@@ -27,7 +27,7 @@
     "core/host/92-host-panel.js": "3d65cd6c0bb873e48eb4189fffad906ab21aef1950164a454254a4fefe7a0b88",
     "core/host/94-host-polytool.js": "73178f8a6f8632fa25802d8024ce753a209e29af018ae4b2297cea6e1b84d730",
     "core/host/95-host-probe.js": "8713ba26cc8356af1f242beec35b3c55688baff96b9ca67f54a873c76f1de9fc",
-    "core/host/host.py": "323a7dc0adb48ff4f9668c3a562be28b76dcb56a944f7bfe0e1dcc982144b84c",
+    "core/host/host.py": "dd8321daff2fb62092110d9d11cb00e38e253ebca03b8c99f725ef135dc38167",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
@@ -150,20 +150,21 @@
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
-    "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
+    "core/host": "13a23ba7547721c83a6fbac768aa30aeefa41705bff03a4018df0924005743b4",
+    "kits/ancient-transit": "222d21eb8f705b66e9a7a9a8509adf40329fa0a04b8c2861137f2bd575e82118",
     "kits/ancient-transit/dist": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "kits/ancient-transit/src": "2bf74bfb76f09ced143ccf18227e9739da6fb51849eb02387328c52e1e264810",
     "kits/motor-vehicles": "da054ee59998be533d646147985ef22ca715974bda88399a700432602056e261",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/ancient-transit/build-manifest.json": "2c7af6dc5c5a1931416fbb9709fb2a2fdbd9e9b5e298b2fb297521e13b193010",
-    "kits/ancient-transit/dist/ancient-transit.html": "b1759fbc03cea1818b6ec58068cbd3acc36ad5d74f5fdff00238fa9d00a49e8c",
+    "kits/ancient-transit/build-manifest.json": "7b7718fce0262d4d96bfb572829301bac8d717cc10a95ae1a509d77b586836a6",
+    "kits/ancient-transit/dist/ancient-transit.html": "d85211fcd89b5447860d2e2203423caece97a8ecdc4218cdac51838cda1850a7",
     "kits/ancient-transit/dist/ancient-transit.tex.ancient-transit.js": "006858241b75ab6107bbac839d32b32b193f166df8aa30816d70ab975c61a306"
    },
    "outputs_raw": {
-    "kits/ancient-transit/build-manifest.json": "2c7af6dc5c5a1931416fbb9709fb2a2fdbd9e9b5e298b2fb297521e13b193010",
-    "kits/ancient-transit/dist/ancient-transit.html": "b1759fbc03cea1818b6ec58068cbd3acc36ad5d74f5fdff00238fa9d00a49e8c",
+    "kits/ancient-transit/build-manifest.json": "7b7718fce0262d4d96bfb572829301bac8d717cc10a95ae1a509d77b586836a6",
+    "kits/ancient-transit/dist/ancient-transit.html": "d85211fcd89b5447860d2e2203423caece97a8ecdc4218cdac51838cda1850a7",
     "kits/ancient-transit/dist/ancient-transit.tex.ancient-transit.js": "006858241b75ab6107bbac839d32b32b193f166df8aa30816d70ab975c61a306"
    }
   }

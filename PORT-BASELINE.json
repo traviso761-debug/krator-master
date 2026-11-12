@@ -304,6 +304,34 @@
    "bytes": 1523367,
    "sha256": "ec622309bf951dd3093bccdf6df80fb2deb63284eaad7d62a191178d545a1cb0"
   },
+  "biomes/line/dist/line-bore.html": {
+   "bytes": 7962182,
+   "sha256": "e1e1f9fd2182a06819a86fd89f3c27d52faefae380264258eb1e28f0b750e7c3"
+  },
+  "biomes/line/dist/line-breach.html": {
+   "bytes": 7970477,
+   "sha256": "60d8e8b74b17befb53af14010b39a28539ddd75b4f18393692c6748fa2020d34"
+  },
+  "biomes/line/dist/line-fault.html": {
+   "bytes": 7974305,
+   "sha256": "7b5eb2449e18cc88b3d10a7bb07f259e31a2d0e201077a98fe592729031f4691"
+  },
+  "biomes/line/dist/line-gap.html": {
+   "bytes": 7979242,
+   "sha256": "26af391c421ef268107e51ffebb550e67ac5ef37eb98ff3b8d10024d00107fc8"
+  },
+  "biomes/line/dist/line-hotdoor.html": {
+   "bytes": 7983475,
+   "sha256": "557148a47d7d6a6cb35e466d9f89e5b4765ff08465a6c8d6ee997f9798a8c36f"
+  },
+  "biomes/line/dist/line-portal.html": {
+   "bytes": 8115859,
+   "sha256": "0387c53d4e49f695043dd5ad7846dd9e1552c2bddfc52a4513be84244b6c29d5"
+  },
+  "biomes/line/dist/line-station.html": {
+   "bytes": 7986310,
+   "sha256": "0e80fe95a361ceca4b43eee1fa782e27e096b1c5b7d21b28434bdd195833a7fa"
+  },
   "biomes/necanyons/dist/necanyons-benches.html": {
    "bytes": 1597720,
    "sha256": "8e7a4dc6a6feaae25d3f3e21ab12d78fe46c6361bf6c259703279ea358c5f5f9"
@@ -584,6 +612,10 @@
    "bytes": 184370,
    "sha256": "b3bc24644b4dffdc5ed00100131fdae5f409ba18dd428cc24e80e2b320afa220"
   },
+  "kits/ancient-transit/dist/ancient-transit.html": {
+   "bytes": 2426401,
+   "sha256": "d85211fcd89b5447860d2e2203423caece97a8ecdc4218cdac51838cda1850a7"
+  },
   "kits/ancients-interiors/dist/ancients-interiors.html": {
    "bytes": 349896,
    "sha256": "cbb2af24c864a2cf3c828cfde7c125029eac7e0fdc78e16219a559366ff096a5"
@@ -785,8 +817,8 @@
    "sha256": "7ee92af99c76cfad101519a3e72e968a1e497d1e24dff056419fbfa3999730f2"
   },
   "kits/beast-riders/dist/beast-riders.html": {
-   "bytes": 13420396,
-   "sha256": "caeca149d7a9a2a567164e45cede8b1fa77957e97a552bea4b89c0f59fbf27bf"
+   "bytes": 13620185,
+   "sha256": "2ba551bc581a362194a90c9125bc0391836d1f6e92e419b83ef59b970a8f0d6e"
   },
   "kits/catalog/dist/catalog.html": {
    "bytes": 2299911,
@@ -829,16 +861,16 @@
    "sha256": "fcaaf91f3781e306f1966b67c866f921714cc2638f03186a8dd7447987d0c2d2"
   },
   "kits/mechs/dist/mechs.html": {
-   "bytes": 1715496,
-   "sha256": "ba00e9294660255830ed63a1e1c8784c4d253676b63fcd0178268d868243cbc6"
+   "bytes": 1723383,
+   "sha256": "75308c4251199c2931771e5e603edb5a28a4653daba418062b9c05977ff6169c"
   },
   "kits/metropolis/dist/metropolis.html": {
    "bytes": 4120583,
    "sha256": "49864e7da42437b705368786a6c313fb199ca012b5d144ec47379f9522f62a87"
   },
   "kits/motor-vehicles/dist/motor-vehicles.html": {
-   "bytes": 1584221,
-   "sha256": "9f6b2b8fac066129c9138f90d0a3e07aa61c38625e85495ec1cac055b196bb2c"
+   "bytes": 2332720,
+   "sha256": "5776b9be9194dfb3b122598d449bf47ba19c63aa0ecae8ad6b7d820a5b37f774"
   },
   "kits/port/dist/cgBox.html": {
    "bytes": 1024088,
@@ -969,8 +1001,8 @@
    "sha256": "19a97e1b9c3c9484d30dafbbc66ba7ccffd4a829b3327c37dc7869ba86261501"
   },
   "kits/post-apoc/dist/post-apoc.html": {
-   "bytes": 8080648,
-   "sha256": "2468226f8b0fa8ef9b546e395b119b7b7e7232de781a3ebdc2e6595af6e3b323"
+   "bytes": 8081969,
+   "sha256": "90197ac759279637fc50a0a80e05f18359dbcc5bcd48ca366b970601b79b52b2"
   },
   "kits/pylon/dist/pylon.html": {
    "bytes": 2604792,
@@ -1053,12 +1085,12 @@
    "sha256": "c4a59a537b6331d763782da7440ac1b08ae3d38a1c2bfb2ece22f983fce8f7dd"
   },
   "settlements/isle-demo/dist/isle-city.html": {
-   "bytes": 6292302,
-   "sha256": "fee9dbf7199805a3d06cce97f5f01a0f65ea7b7b9c399e00ca24b72ef39499bd"
+   "bytes": 6296265,
+   "sha256": "d1bf6171aa85090364be6a2a1c72f30acebd22965b7162bf2232b720d7ead0bf"
   },
   "settlements/isle-demo/dist/isle-site.html": {
-   "bytes": 1319857,
-   "sha256": "6e870f39249832f7e957a07d8bc14111d9980faf1e1244db66930bbc05b172a0"
+   "bytes": 1321178,
+   "sha256": "67b4c57471afb725c6cac04268a4d1e49799be3bf5ae41014d6548ada4274539"
   },
   "settlements/iziz/dist/iziz-ixtest.html": {
    "bytes": 2102347,

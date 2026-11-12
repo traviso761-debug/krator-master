@@ -5,7 +5,7 @@
    "inputs": {
     "core/catalog/catalog.py": "5d4a79810193b831fc1c686c934990afd10ecb63b5a55d05e0f3d7dd4c84d88a",
     "core/catalog/files.json": "a400e7bf3e1197698d129db83964d883fd9ea2818173fe7df3c7d1b4a054d72f",
-    "core/catalog/krator-furniture-core.js": "1c8bfa11d261b36895fd50645358e2c4ebe54febf67daeed700a38fbd6256fe9",
+    "core/catalog/krator-furniture-core.js": "4872bf46f2707b3fa156b18b8110f42ba830f10fdf670a1e79cf9c25f8941498",
     "core/catalog/krator-furniture-kit.js": "5220ef8dd95dd5c33960ad1452f09f437379c2e26d40c9b480877b1a4e65f16b",
     "core/catalog/krator-furniture-runtime.js": "5bd95301145e7adfb6528e85de8d2fb39206b0cf558409718dbd85db437e57c9",
     "core/door/10-core-door.js": "ea311c818042be40ee41ac69acd3d7fdf3960c8ddae477fbfda007a3e6882f00",
@@ -129,26 +129,27 @@
    "listings": {
     "core/catalog": "30a9e7a2a0ea642339cc1158c3060327682167fbeb74a8c68a584185e0c6d094",
     "core/door": "606c86cebee6cecd509a1319eb00f4f3b96202499526068992bd052a85bdca4a",
-    "core/furnish": "09dc20b7272ccbab9dbdf81fa2c1eecb624e5d192d40370d2ae9c1443e6c81c7",
+    "core/furnish": "ce80f99bac79c2ceb339d05ec0e601e97b7ebdf9aba7b964e57178fb20fccdd4",
     "core/rand": "2174a8e3e509270343eb7e2c6e69ec9c0a221daa415e05d960123007b253bc77",
     "core/sockets": "6216ac29803c8319ef932a89b4c3913096098f5698307764f731bbd769c202f9",
     "core/tags": "cd6f040d0e4dc63956ba50d287f27cda97e471bfd15ee98f2638981d4f9e1127",
-    "core/walk": "c6769307f01d663d946e7a69638ff7e4fee9c46e1ff5bc8acc98125dd4bb4619",
+    "core/walk": "c2dba1d905c6546cc60841fa95b468a852915494776bd7eee35713cb4f48c648",
     "kits/catalog": "10322ea778934242b7ce59b2a1b14f40befde097c5b9b80081f11fd0cb8a57ce",
     "kits/interiors": "c343f7e77884e1f4a489c5a2327ea3c5a7a54a1f9bc070a21766131363cf07f7",
-    "kits/interiors/sets": "8601faf52d9185f777a2302548cc31885baa8c99b62113b20e6535c3a46ca360",
+    "kits/interiors/sets": "f229d4858a6855b98c5916d9508eb1716c25148bc4b912d13e31fd2360f0e90c",
     "kits/interiors/src": "fe72f6be1b5eb6012c769b91a5fc7c558f24144155f758942db210e347392bab",
+    "kits/post-apoc": "0ec8020e60cc954729a885f0fb01aa77233f1ed2e5d01e11eb59e668d24869ad",
     "kits/post-apoc/src": "897db31aede74d53acb5150e2d180993eae2c1cb748bd1f84838bb94b0679470",
     "tools": "2d2fdaca850a104a2a2c553313ccb3ad18dc6bc48cb554c8c714fc1ca39607bf",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/post-apoc/build-manifest.json": "861b03e91a9661f115b78050b92953789ef8578e5b6932fbf15a4dc1271bd947",
-    "kits/post-apoc/dist/post-apoc.html": "2468226f8b0fa8ef9b546e395b119b7b7e7232de781a3ebdc2e6595af6e3b323"
+    "kits/post-apoc/build-manifest.json": "dcc60f6f44fa037bd84d793bcf7847d02eefd6b295b05153f470131ff07a79ab",
+    "kits/post-apoc/dist/post-apoc.html": "90197ac759279637fc50a0a80e05f18359dbcc5bcd48ca366b970601b79b52b2"
    },
    "outputs_raw": {
-    "kits/post-apoc/build-manifest.json": "3ceeadbe825b426b499544a1167aaeb02fed457b2f32fdfc48a7708e72f5e2f8",
-    "kits/post-apoc/dist/post-apoc.html": "2468226f8b0fa8ef9b546e395b119b7b7e7232de781a3ebdc2e6595af6e3b323"
+    "kits/post-apoc/build-manifest.json": "0e50e136632de9142a239d83064a407f33b49fbaf312b1ba1ae71c0ce58b1c5a",
+    "kits/post-apoc/dist/post-apoc.html": "90197ac759279637fc50a0a80e05f18359dbcc5bcd48ca366b970601b79b52b2"
    }
   }
  }

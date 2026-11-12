@@ -7,7 +7,7 @@
     "core/atmos/placeholder/81-sky.js": "ad22fb31cdfbbd20cb1f8ad919e4720e7db54094e4e778c46e7bd8ce7780e6ab",
     "core/atmos/placeholder/placeholder.py": "a56878038fdd42d4d41752866926a3cf59815924a08f2ef42b56484766848aab",
     "core/catalog/krator-asset-engine.js": "857d45d9a71f62c958eb29dbe273d572b9e8262669c29f9f0433675451e2139d",
-    "core/catalog/krator-furniture-core.js": "1c8bfa11d261b36895fd50645358e2c4ebe54febf67daeed700a38fbd6256fe9",
+    "core/catalog/krator-furniture-core.js": "4872bf46f2707b3fa156b18b8110f42ba830f10fdf670a1e79cf9c25f8941498",
     "kits/motor-vehicles/KNOWN_ISSUES.md": "6a646d98f9279af1a0d1229c1464d080d4eec1e266a12d7b647a0f58e55eb779",
     "kits/motor-vehicles/PORT.md": "6dccaf0053b612038e012624a28762e5c2cc312f764d6109149726e7b1324dfc",
     "kits/motor-vehicles/build.py": "23508c4009e370ddcfc447eb2417d3cb6fa0ec6f850334be7de00c6c7e234e69",
@@ -115,14 +115,14 @@
     "tools": "2d2fdaca850a104a2a2c553313ccb3ad18dc6bc48cb554c8c714fc1ca39607bf"
    },
    "outputs": {
-    "kits/motor-vehicles/build-manifest.json": "9e3ea7d964f936c191d92060b5601be22a739cf068bdf9575ef298b8d918de75",
-    "kits/motor-vehicles/dist/krator-vehicles.js": "9986f59c95f5f9595a23f367bc5c8637bc662ebce7c0761f682241cef2cdf2e8",
-    "kits/motor-vehicles/dist/motor-vehicles.html": "27ceb176d61f04e4a7be55769455ec1ec86123b2493ddce0c1671b028282ea41"
+    "kits/motor-vehicles/build-manifest.json": "a53472601d6211af052702c8be0eb6a699d624e73e2d028b67a5245a75d48a78",
+    "kits/motor-vehicles/dist/krator-vehicles.js": "f9e6553baeb5ddfb43d272bccb10c3c37bf0380debb219b9485d21dc268ca973",
+    "kits/motor-vehicles/dist/motor-vehicles.html": "5776b9be9194dfb3b122598d449bf47ba19c63aa0ecae8ad6b7d820a5b37f774"
    },
    "outputs_raw": {
-    "kits/motor-vehicles/build-manifest.json": "2f7e1039ac4f6f3e8ab5af31b12442730df08ae738189538bb37d2fcaaa38203",
-    "kits/motor-vehicles/dist/krator-vehicles.js": "9986f59c95f5f9595a23f367bc5c8637bc662ebce7c0761f682241cef2cdf2e8",
-    "kits/motor-vehicles/dist/motor-vehicles.html": "27ceb176d61f04e4a7be55769455ec1ec86123b2493ddce0c1671b028282ea41"
+    "kits/motor-vehicles/build-manifest.json": "072de0144cb65d324b427864e88c8c590e03b7d029e282c29d8861ff673ac623",
+    "kits/motor-vehicles/dist/krator-vehicles.js": "f9e6553baeb5ddfb43d272bccb10c3c37bf0380debb219b9485d21dc268ca973",
+    "kits/motor-vehicles/dist/motor-vehicles.html": "5776b9be9194dfb3b122598d449bf47ba19c63aa0ecae8ad6b7d820a5b37f774"
    }
   }
  }
