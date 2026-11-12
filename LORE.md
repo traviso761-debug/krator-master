@@ -544,8 +544,9 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
 - **The Labyrinth report** [the owner, 2026-11-09]. A Monk posted from Longsong to the Labyrinth, a remote and savage region, wrote
   that its Two-Snouts keep their own funeral customs, paint one another with ochre and mud, and set fermented melons aside for later
   occasions. Many at Longsong think he had a few too many fermented melons himself. The Monk was **Lu-Tze** [the owner,
-  2026-11-11], and the Two-Snouts are in fact sapient, or very nearly so. *Proposed*: the report is in Longsong's archive with the
-  Kimr's Tellings he wrote down, the only written record of them; the Kimr remember him as the Melon Monk (§6.24).
+  2026-11-11], and the Two-Snouts are in fact sapient, or very nearly so. **The report is in Longsong's archive** [the owner,
+  2026-11-11], with the Kimr's Tellings he wrote down, the only written record of them; the Kimr remember him as the Melon Monk
+  (§6.24).
 
 ### 6.16 Hykkousoi
 
@@ -1016,7 +1017,9 @@ everything else *proposed*, 2026-11-11; what is still open is at the end of the 
   the Hall and the villages, keep them, feed them and speak for them between the dances, and the proverb's *we* who carry the
   heroes is the women. **Men wear them in the ceremonies**: a man puts the mask on only for the dance, and gives it back to the
   woman who carries it when the dance is done. *Proposed*: a mask travels as a **hide bundle** on a carrier's back, wrapped like a
-  child; a man who keeps a mask overnight has stolen it.
+  child; a man who keeps a mask overnight has stolen it. **Households are matrilineal** [the owner, 2026-11-11]: the rooms, the
+  clan and the masks a house carries pass from mother to daughter, and a husband moves into his wife's house. The other offices
+  of the society (Tellers, Painters, clowns) are filled by **women and men both** [the owner, 2026-11-11].
 - **How a hero is made.** *Proposed*:
   1. **The drying.** A dead Kimr of note lies a year in the Hall (below), and the deeds are gathered from the living.
   2. **The Telling** (*telyn*). At the next Go Awd (the year below), the **Teller** recites the life before the masked society, name by
@@ -1171,16 +1174,15 @@ everything else *proposed*, 2026-11-11; what is still open is at the end of the 
 Fellgangs, most through the raiders; the Ancients are among the ancestors, and the Hall's people fought the Dark Spirit; women
 carry the heroes and men wear them; only the rarest, most Amazonian women have been war-queens; the Boss's Count stays; the
 Fellgangs are intermarried and feuded with like any house, and every great house has its ally and enemy house; the Monk is
-Lu-Tze; the Two-Snouts are sapient, or very nearly so.
+Lu-Tze; the Two-Snouts are sapient, or very nearly so. Then (the owner, 2026-11-11, third round): **households are matrilineal**
+(a *haws*, its rooms and its clan pass through the mother, as among the Hopi and Zuni: a husband moves into his wife's house); **the
+Tellers, the Painters and the clowns are both women and men**; **Lu-Tze's report is in Longsong's archive** (§6.15).
 
-**Still open**
+**TBD (the owner, 2026-11-11: open for now)**
 
-1. **The name.** *Kimr* < *keepers*, the preserve's staff and their town: keep?
+1. **The name.** *Kimr* < *keepers*, the preserve's staff and their town, stays the working etymology until the owner decides.
 2. **The Dark Spirit.** Is it something the Historians know by another name (one of the Cataclysm's other enemies, §4, §6.19), or
    the Kimr's alone?
-3. **The houses.** Is a Kimr house (*haws*) the mother's, as the Hopi and Zuni houses were, now that the women keep the heroes?
-4. **The Tellers, the Painters and the clowns:** women's, men's, or both?
-5. **Lu-Tze's report** as a record in Longsong's archive (§6.15), with the Tellings he wrote down?
 
 ## 7. Peoples of Krator (species and kinds)
 
@@ -1331,8 +1333,8 @@ Rule: a building never names a culture. Its sockets (awning, banner, flag, emble
 - **Shell Province** (§6.2): the Izani names of Shell and Port Goto.
 - What does the abyssal people's ruler call themselves (the Headman placeholder)?
 - What exactly do the Screamers do with their captives in the Hexahedron?
-- **The Kimr** (§6.24, 2026-11-11; the first draft's questions answered): still open are the name *Kimr* < *keepers*, what the Dark
-  Spirit was, whether a Kimr house is the mother's, and who keeps the other offices. The list is at the end of §6.24.
+- **The Kimr** (§6.24, 2026-11-11; the drafts' questions answered): TBD are the name *Kimr* < *keepers* and what the Dark Spirit
+  was. The list is at the end of §6.24.
 - **The rift rim** (§6.1, §6.20, `biomes/riftrim/PLAN.md` section 12): the Fellgangs (proposed name) and how far they have diverged; the Rift's ruins other than Arccube and Pluton (Chimes, Cthonos, The Tubes: names and places very tentative; Chimes may become The Span, which clashes with Dalab's Span); the model's Rift settlements want a rework; Ledge's own settlement plan.
 - **The Ancients' highways** (§4, `openworld/ANCIENT-ROADS.md` section 7): the Republic's arcology over the Inner Wall tunnel (Cascade or a new site), other cities on Ancient ground, and the tentative ruins, before the network is routed for good.
 - **The Talovolci** (§6.21): the Empire's loans *Emparos* and *comandaros* are proposed; their clans, chiefs and the ceremonial rites at Daridel are open.

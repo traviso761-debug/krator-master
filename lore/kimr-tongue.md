@@ -240,7 +240,7 @@ their clan after their names: *Ffern Helg, Llan Elg*.
 | **blwdbrwddr** | blood brother | sworn brother or sister in arms |
 | **kin** | kin | kin |
 | **llan** | clan | clan |
-| **haws** | house | household, and its rooms in the pueblo |
+| **haws** | house | household, and its rooms in the pueblo; it passes from mother to daughter (matrilineal) |
 | **eldr** | elder | an elder |
 | **man**, **wman**, **pyrsn** | man, woman, person | |
 | **pibl** | people | people; a society |
@@ -416,7 +416,7 @@ holy figures and never as words.
 
 **Settled** (2026-11-11): the family is the keepers' English, with Fellgang loans both ways (sections 1 and 7).
 
-1. **The name.** *Kimr* < *keepers*: the people named for their ancestors' work, keeping the preserve's beasts. Keep, or is *Kimr* a
-   name with another history?
+1. **The name** (TBD, the owner, 2026-11-11: open for now). *Kimr* < *keepers*, the people named for their ancestors' work keeping
+   the preserve's beasts, stays the working etymology until it is decided.
 2. **She and he.** The draft keeps *hi* and *shi* apart.
 3. **The tab.** A Kimr tab on `lore/tongues-of-krator.html` (family row, phrasebook, sound-change table), now the family is settled?
