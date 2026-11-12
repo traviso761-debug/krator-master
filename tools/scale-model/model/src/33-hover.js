@@ -20,6 +20,7 @@
     return best.name+' ('+(best.kind||'lava tube').replace(/_/g,' ')+(best.depth_m?' · -'+best.depth_m+' m':'')+(best.width_m?' · ~'+best.width_m+' m wide':'')+')'; }
   function riverAt(x,y){
     const tb=tubeAt(x,y); if(tb) return tb;
+    const nt=netAt(x,y); if(nt) return nt;
     let best=null,bd=9;
     for(let gx=Math.floor(x/8)-1;gx<=Math.floor(x/8)+1;gx++)for(let gy=Math.floor(y/8)-1;gy<=Math.floor(y/8)+1;gy++){const a=RIVG.get(gx+','+gy);if(!a)continue;
       for(let i=0;i<a.length;i+=2){const r=DATA.rivers[a[i]],p=r.px[a[i+1]],d=(p[0]-x)*(p[0]-x)+(p[1]-y)*(p[1]-y);if(d<bd){bd=d;best=[r,a[i+1]];}}}

@@ -18,11 +18,40 @@ DATA_DIR = os.path.join(HERE, 'data')
 OUT = os.path.join(HERE, 'dist', 'scale-model.html')
 DATA_PREFIX = 'const DATA = '
 # the page, in order; 'DATA' is the `const DATA = {...};` line, written from data/
-ORDER = ['00-head.html', '10-panel.html', 'DATA', '20-decode.js', '21-scene.js', '22-temp-ramp.js', '23-wind.js',
+ORDER = ['00-head.html', '10-panel.html', 'DATA', 'NET', '20-decode.js', '21-scene.js', '22-temp-ramp.js', '23-wind.js',
          '24-temp-map.js', '25-zones.js', '26-overlay.js', '27-water.js', '30-vents.js', '31-orbit.js', '32-fly.js',
          '33-hover.js', '40-regions.js', '41-region-layers.js', '42-labels.js', '43-region-list.js',
-         '44-region-draw.js', '45-region-status.js', '50-measure.js', '51-region-store.js', '60-settlements.js',
-         '90-ui.js', '99-tail.html']
+         '44-region-draw.js', '45-region-status.js', '50-measure.js', '51-region-store.js', '52-network.js',
+         '60-settlements.js', '90-ui.js', '99-tail.html']
+# the Ancient network (a proposal), drawn by 52-network.js: its own data (the 'NET' line), not DATA, so it stays out of the
+# model's edit queue
+NET_JSON = os.path.join(HERE, '..', '..', '..', 'openworld', 'network-proposal', 'net51.json')
+
+
+def net_line():
+    """`const NET = {...};` from net51.json, compacted: each route [id, class, from, to, name, km, tunnel_km, note, px
+    flattened to whole map px, form runs [[i, form]...], upkeep runs [[i, up]...]], each node [name, x, y, kind, type].
+    Without the file, an empty network"""
+    if not os.path.isfile(NET_JSON):
+        return 'const NET = {"routes": [], "nodes": []};\n'
+    d = json.load(open(NET_JSON, encoding='utf-8'))
+
+    def runs(v):
+        out = []
+        for i, x in enumerate(v):
+            if not out or out[-1][1] != x:
+                out.append([i, x])
+        return out
+    routes = []
+    for r in d['routes']:
+        flat = []
+        for p in r['px']:
+            flat += [int(round(p[0])), int(round(p[1]))]
+        routes.append([r['id'], r['class'], r['from'], r['to'], r['name'], r['km'], r['tunnel_km'], r.get('note') or '',
+                       flat, runs(r['form']), runs(r['up'])])
+    nodes = [[n['name'], int(round(n['px'][0])), int(round(n['px'][1])), n.get('kind', 'site'), n.get('type', '')]
+             for n in d['nodes']]
+    return 'const NET = ' + json.dumps({'routes': routes, 'nodes': nodes}, ensure_ascii=False, separators=(',', ':')) + ';\n'
 
 
 def strip_wrapper(text):
@@ -61,6 +90,8 @@ def page(D):
     for name in ORDER:
         if name == 'DATA':
             parts.append(DATA_PREFIX + json.dumps(D) + ';\n')
+        elif name == 'NET':
+            parts.append(net_line())
         else:
             parts.append(open(os.path.join(SRC, name), encoding='utf-8', newline='').read())
     return ''.join(parts)
@@ -85,6 +116,8 @@ def split(D, cap=12_000_000):
     for name in ORDER:
         if name == 'DATA':
             parts.append(DATA_PREFIX + '{};\n</script>\n' + tags + '<script>\n')
+        elif name == 'NET':
+            parts.append(net_line())
         else:
             parts.append(open(os.path.join(SRC, name), encoding='utf-8', newline='').read())
     return ''.join(parts), [(nm, 'Object.assign(DATA, ' + json.dumps(f) + ');\n') for nm, f in zip(names, files)]
