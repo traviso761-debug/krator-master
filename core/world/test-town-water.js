@@ -16,7 +16,9 @@ const N = 21, C = 10, LEVEL = -1500;
 function region(opt) {
   const elev = new Float32Array(N * N), wlev = new Float32Array(N * N), whas = new Uint8Array(N * N);
   for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) {
-    const k = j * N + i, land = i >= 15 || j >= 11;   // land east of x = +10 km and south of z = +2 km, rising away from the sea
+    // land east of x = +10 km and south of z = +2 km, rising away from the sea; a strip of coarse wet cells across the east
+    // land at z = -4 km (the model's 2 km cells carrying a strait 400 m wide: the strait's stamp closes them to its width)
+    const strip = opt.strip !== false && j === 8 && i >= 15, k = j * N + i, land = (i >= 15 || j >= 11) && !strip;
     elev[k] = land ? -1440 + Math.max(i - 15, j - 11, 0) * 30 : -1540; whas[k] = land ? 0 : 1; wlev[k] = land ? -1540 : LEVEL; }
   const map = v => new Uint8Array(N * N).fill(v), f32 = () => new Float32Array(N * N);
   const R = { elev, wlev, whas, wflag: map(0), clim: map(0), rain: map(120), temp: map(115), biome: map(0), mask: map(255), scarpL: f32(), scarpU: f32(), scarpW: f32() };
@@ -26,9 +28,18 @@ function region(opt) {
     rain: { scale_mm: 4000 / 255 }, temp: { offset: -90 }, pressure: { atm0: 1.6, scale_m: 8000 },
     drainage: { min_accum: 1000, lines: [] },
     // the Turm: from the south (z +18 km) north toward the town, at -1,300 m falling to the sea's level
-    rivers: opt.river === false ? [] : [{ name: 'Turm', line: [[0, 18000, -1300], [200, 12000, -1380], [-300, 6000, -1420], [0, 2000, -1440], [0, 0, -1500]], width_m: 60, depth_m: 4 }],
+    // named by the model's id and name, as edit_513 left the Turm (r029, 'Turm Rivrh')
+    rivers: opt.river === false ? [] : [{ id: 'r029', name: 'Turm Rivrh', line: [[0, 18000, -1300], [200, 12000, -1380], [-300, 6000, -1420], [0, 2000, -1440], [0, 0, -1500]], width_m: 60, depth_m: 4 }],
+    // edit_512's and edit_513's kinds (px on the frame: x = (px - 10) * 2 km)
     landforms: [{ id: 'lf_test_isle', kind: 'island', x: -6000, z: -6000, r_m: 300, crest_m: -1470, water_m: -1500 },
-                { id: 'lf_test_unknown', kind: 'arch', x: -8000, z: -2000, r_m: 100, crest_m: -1480, water_m: -1500 }] };
+                { id: 'lf_test_unknown', kind: 'arch', x: -8000, z: -2000, r_m: 100, crest_m: -1480, water_m: -1500 },
+                // a strait across the wet strip, from x 19 km west into the sea at x 7 km (its sea end, where its raise fades)
+                { id: 'lf_test_strait', kind: 'water', form: 'strait', px: 19.5, py: 8, path_px: [[19.5, 8], [13.5, 8]], width_m: 400, water_m: -1500, bed_m: -1512 },
+                // a page's water: a pool on the strait, a circle and a capsule joined smoothly, with the page's shelf
+                { id: 'lf_test_page', kind: 'water', form: 'page', px: 18, py: 8, water_m: -1500, smin_m: 210,
+                  parts: [{ shape: 'circle', px: [18, 8], r_m: 500 }, { shape: 'capsule', px: [18, 8], px_to: [18, 7.6], r_m: 180 }] },
+                { id: 'lf_test_shelf', kind: 'shelf', of: 'lf_test_page', width_m: 70, depth_m: [1.2, 4.8], water_m: -1500 },
+                { id: 'lf_test_river', kind: 'water', form: 'river', river: 'r029', path_px: [[10, 10.5], [10, 11]], width_m: [80, 170], water_m: -1500 }] };
   return { meta, R };
 }
 
@@ -52,7 +63,7 @@ function town(opt) {
   return { name: opt.name || 'Testtown', x: opt.x || 0, z: opt.z || 0, rot: 0, centre: [0, 0], R: 800, band: 400, onWater: true, drawn: false, level: 0,
     grid: { n, step, x0: -half, z0: -half, h0, s, h: Buffer.from(h.buffer).toString('base64') },
     water: opt.noWater ? undefined : { n, step, x0: -half, z0: -half, rle: rleEncode(w) },
-    river: { name: 'Test river', join: 'Turm', pts: [[0, 440, 30], [0, 700, 30], [0, 1000, 30]] }, shore, shoreSkip: skip };
+    river: { name: 'Test river', join: opt.join == null ? 'r029' : opt.join, pts: [[0, 440, 30], [0, 700, 30], [0, 1000, 30]] }, shore, shoreSkip: skip };
 }
 
 // ---------------------------------------------------------------- the world with these
@@ -94,7 +105,7 @@ ok('the link runs from the cut (on the land, over the sea\'s level) to where the
   L ? L.pts.length + ' points, ' + L.len.toFixed(0) + ' m, from ' + L.ya.toFixed(1) : 'none');
 const linkDry = L.pts.filter(p => !(W.riverWater(p[0], p[1]) > W.H(p[0], p[1]) + .3));
 ok('...its water stands over its carved bed all the way (the land hook)', linkDry.length === 0, true, linkDry.length ? 'dry at ' + linkDry.map(p => p.map(Math.round).join(',')).slice(0, 3).join(' ') : '');
-const lines = W.riverLines(40), J = lines.find(r => r.name === 'Turm');
+const lines = W.riverLines(40), J = lines.find(r => r.name === 'Turm Rivrh');
 ok('riverLines: the Turm runs on down the link and under the town\'s water, never climbing', !!J && J.joined === 'Testtown'
   && J.pts.every((p, i) => i === 0 || p[2] <= J.pts[i - 1][2] + 1e-9) && J.pts[J.pts.length - 1][2] < lv, true, J ? J.pts.length + ' points' : '');
 
@@ -110,6 +121,15 @@ const lc = WL.check(), isle = lc.find(c => c.id === 'lf_test_isle');
 ok('the islet is stamped: its top at the crest, its waterline near r_m on every ray', isle && isle.ok, WL.skipped.length === 1 && WL.skipped[0].kind === 'arch',
   isle ? 'top ' + isle.top + ', waterline ' + isle.waterline.join(' ') : '');
 ok('...and the sea round it as it was', W.Hbare(-6000 + 900, -6000) < -1530, true);
+const st = lc.find(c => c.id === 'lf_test_strait'), pg = lc.find(c => c.id === 'lf_test_page');
+ok('the strait is cut to its bed under the water, and the coarse wet cells beside it are closed to its width (dry banks)', st && st.ok && st.banks > 4, true,
+  st ? st.wet + ' of ' + st.stations + ' stations wet, ' + st.dryBanks + ' of ' + st.banks + ' banks dry' + (st.firstBad ? ', first bad ' + st.firstBad : '') : 'no check');
+ok('...its raise fades into the sea at its end (the sea floor 500 m off its mouth as it was)', W.Hbare(7400, -4000 + 800) < -1530, true, W.Hbare(7400, -3200).toFixed(1));
+ok('the page form: its parts joined smoothly, under the water, on the page\'s shelf (1.2 m deep at the shore, 13.8 m at 330 m)', pg && pg.ok
+  && WL.waterAt(16000, -4000).s < -400 && Math.abs(W.Hbare(16000, -4000 + 500 - 330) - (LEVEL - 13.8)) < 3, true,
+  pg ? pg.wet + ' of ' + pg.stations + ' parts wet; 330 m in ' + W.Hbare(16000, -3830).toFixed(1) : 'no check');
+ok('the river form is left to 41\'s named river (not stamped, not skipped); the shelf is read with its water',
+  !WL.waters.some(R => R.id === 'lf_test_river' || R.id === 'lf_test_shelf') && !WL.skipped.some(s => /river|shelf/.test(s.id)), true);
 
 // ---- negatives
 { const W2 = world({ towns: [town({ shoreR: 480 })] }), c2 = vm.runInThisContext('WTOWN').check({ step: 40 })[0];
@@ -118,7 +138,12 @@ ok('...and the sea round it as it was', W.Hbare(-6000 + 900, -6000) < -1530, tru
   ok('a town without water leaves the world\'s water alone (the model\'s sea in its footprint, the Turm whole)',
     W3.lakeWater(600, 0) === LEVEL && WORLD_DATA.meta.rivers[0].line.length === 5 && vm.runInThisContext('WTOWN').list.length === 0, true); }
 { const W4 = world({ towns: [town({})], water: false });
-  ok('negative: without 41t the town\'s land in the sea\'s cells reads as sea (what 41t fixes)', true, W4.lakeWater(600, 0) === LEVEL); }
+  ok('negative: without 41t the town\'s land in the sea\'s cells reads as sea (what 41t fixes)', true, W4.lakeWater(600, 0) === LEVEL);
+  ok('negative: without 41l the strait\'s coarse cells stand under the water 600 m off its line (what its stamp closes)', true,
+    W4.Hbare(14000, -3400) < LEVEL && W4.water(14000, -3400) > W4.Hbare(14000, -3400)); }
+{ world({ towns: [town({ join: 'r999' })] });
+  ok('a town whose river joins a river the region does not hold stands alone (no link, its river still served)', true,
+    vm.runInThisContext('WTOWN').list[0].link === null && vm.runInThisContext('WORLD').riverWater(0, 600) === LEVEL); }
 
 console.log(bad ? bad + ' FAILED' : 'all passed');
 process.exit(bad ? 1 : 0);

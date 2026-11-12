@@ -46,7 +46,7 @@ TOWNS = {
         'js': ['settlements/voth/src/10-core.js', 'settlements/voth/src/15-shore.js'],
         'edits': {'model': 'settlements/voth/targets/voth-site/10-site-model.js', 'site': 'settlements/voth/site/voth-site.json'},
         'frame': 5400, 'step': 10, 'R': 4800, 'band': 1500, 'level': 0,
-        'river': {'name': 'Voth river', 'join': 'Turm', 'var': 'RIVER'},
+        'river': {'name': 'Voth river', 'join': 'r029', 'var': 'RIVER'},   # the Turm (Turm Rivrh), by its id in DATA.rivers
         'note': 'Voth\'s ground (openworld/PLAN-VOTH.md): the page\'s terrainH with the site editor\'s edits, its bay, narrows, '
                 'lake and strait as the water, its river as a named river joined to the Turm (r029, re-routed by edit_513)'},
 }

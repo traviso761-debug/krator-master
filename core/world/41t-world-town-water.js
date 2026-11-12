@@ -89,7 +89,9 @@ W.init=function(R){const cuts=cutRivers();base.init(R);T.length=0;
    let C=null,ci=pts.length-1;for(let i=1;i<pts.length;i++){const d0=Math.hypot(pts[i-1][0]-t.x,pts[i-1][1]-t.z),d1=Math.hypot(pts[i][0]-t.x,pts[i][1]-t.z);
     if(d0<t.R&&d1>=t.R){const f=(t.R-d0)/(d1-d0);C=[lerp(pts[i-1][0],pts[i][0],f),lerp(pts[i-1][1],pts[i][1],f),lerp(pts[i-1][2],pts[i][2],f)];ci=i;break;}}
    const inR=C?pts.slice(0,ci).concat([C]):pts;
-   e.river={name:rec.river.name,join:rec.river.join||null,joined:null,pts:inR,cum:cumOf(inR),C:C||pts[pts.length-1]};}
+   // the river it joins, named by the model's id (r029) or name, as the region carries it (its name from here on)
+   const jr=rec.river.join==null?null:(WORLD_DATA.meta.rivers||[]).find(r=>r.id===rec.river.join||r.name===rec.river.join);
+   e.river={name:rec.river.name,join:jr?jr.name:null,joinAs:rec.river.join==null?null:rec.river.join,joined:null,pts:inR,cum:cumOf(inR),C:C||pts[pts.length-1]};}
   T.push(e);});
  // the link: from the cut model river's last point A (in the world, out of the carve's warped space) round the outside of
  // the band to D, on the radius through C, then straight in along that radius to C. Inside the band 41 eases the land to

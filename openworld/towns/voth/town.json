@@ -47,7 +47,7 @@
  "drawn": false,
  "river": {
   "name": "Voth river",
-  "join": "Turm",
+  "join": "r029",
   "mouth_first": true,
   "length_m": 5318.3,
   "pts": [
@@ -3796,7 +3796,7 @@
    "settlements/voth/targets/voth-site/10-site-model.js",
    "settlements/voth/site/voth-site.json"
   ],
-  "hash": "eee8ccc03e0b138d",
+  "hash": "c3f5f5d34e7616c8",
   "by": "core/world/bake_towns.py"
  }
 }
