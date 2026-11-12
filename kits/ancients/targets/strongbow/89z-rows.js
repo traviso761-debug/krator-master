@@ -1,5 +1,5 @@
-// TARGET: strongbow — Strongbow, the Ancients' cliff arcology: a city hung down the High Rift's escarpment over Oidong's lake, as
-// built and as the High Rift has left it.
+// TARGET: strongbow — Strongbow, the Ancients' cliff arcology: a city hung down a cliff at the Oidong Valley's west end, toward
+// Qiblai, as built and as a thousand years have left it.
 //
 // The sail, a wedge hull 440 m long hung from the lip in a bay quarried into a 900 m face, held by fans of stays; the crown with its
 // raked mast and arc ramp; the Nock, the deck at mid-height; the Spine, one column of drums and terraces coming down from the sail's

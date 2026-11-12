@@ -1,16 +1,24 @@
 # Strongbow — notes
 
-Strongbow is the Ancients' **cliff arcology**: a city hung down the face of the High Rift's escarpment at the Oidong Valley's east end. It
-looks south over Oidong's lake and the valley.
+Strongbow is the Ancients' **cliff arcology**: a city hung down a cliff face. Its site is the north-west wall at the Oidong Valley's
+west end, toward Qiblai, and the face looks south-east over the valley.
 
-- **Site:** scale model 5.1 px 1298,1647. The valley floor is at 2,463 m; the escarpment rises about 1,100 m in 2 km to the north,
-  and 4,470 m within 6 km.
-- **When it moved:** the owner moved it here from 1026,1594 on 2026-11-11. The scale model has it as edit 5.1e5, and `openworld/SITES.json`
-  as `sfgtxw10kr`.
-- **The network:** it is the Rift line's station 11, the end of the line (`openworld/ANCIENT-NETWORK.md` 8.16; the leg is
-  `rift.longsong-strongbow`).
-- **The roads:** the Sultanate's road up the valley ends at its foot. The Order's road climbs on past it, up the beck's staircase, to the
-  Caldron House (`openworld/oidong-highrift`).
+- **Site:** scale model 5.1 px **1013,1585**, at the foot of the valley's north-west wall, about 183 km from Qiblai (922,1595). The
+  site is at 2,568 m and about +6 °C, on a bench about 430 m above the valley floor. The wall rises about 1,300 m within 4 km. That
+  wall is lower and less sheer than this page's cliff, so the kit's own landform (the face, the bay quarried into it) carries the
+  arcology there.
+- **When it moved:** all on 2026-11-11.
+  - The owner first moved it from 1026,1594 to the valley's east end (1298,1647), under the High Rift's escarpment. This target was
+    designed for that place.
+  - The owner then moved it back to the west end: "strongbow should be at the other end of the valley, by qiblai".
+  - On branch `claude/cool-tereshkova-d594e8`: the scale model is `0b360a4f5` and `openworld/SITES.json` (`sfgtxw10kr`) is `3db1e2b3e`.
+    Read the site's terrain there.
+- **The network:** it is the Rift line's station 11, the end of the line. After the move the line reaches it by the uplands to its
+  south, not along the valley (`openworld/ANCIENT-NETWORK.md`; commit `765d811b9`).
+- **The roads:** the valley road from Longsong ends at its foot.
+- **Facing:** the page's frame faces south (+z), with Krator's noon sun in the north behind the face. The site faces south-east, so
+  the open world turns the frame. The heliostats are aimed from the frame's sun vector (`HELIO.sun`), which the placement must turn
+  with it.
 - **The references:** the owner's two pictures (2026-11-11), with two more for inspiration:
   1. a tall, slender wedge tower set into a canyon wall and held by fans of cable stays, with a mid-height deck and a spire with a
      cable-stayed mast;
@@ -93,7 +101,7 @@ The plan's records are the model (`8aw0-strongbow-plan.js`, [G data]). The drawi
 | `core/rand` (`KRAND`) | yes | Every choice in the plan and the ruin is `KRAND.hash` of the plan's seed, a salt and a record's own indices, never a count of draws. The drawing's scree and trees keep the kit's `reseed()` stream, as every builder does |
 | `core/tags` (`KTAGS`) | yes | Through `TAGS_TARGETS` in `build.py`. Registered before anything is drawn: the arcology as a building, with its sail, decks, drums, terraces, lifts, galleries, pads, terminus and mast as parts; the stays and heliostats as fixtures; the town's houses as buildings |
 | `core/terrain` | no | The kit page's ground is the flat showcase plain, as on every target. The cliff and plateau are the target's own stand-in mesh. The plan takes `o.lip` (the face's height) and `o.floor` (the floor's height), so the open world passes its own scarp |
-| `core/water` | no | Oidong's lake belongs to the open world. The kit page shows the valley floor only |
+| `core/water` | no | The valley's water belongs to the open world. The kit page shows the valley floor only |
 | `core/space`, `core/mask` | no | Nothing is placed by search or by a raster: every record's place is a function of the frame |
 | `core/atmos` sky, `core/host` | no | The kit page's sky, camera, probe and inspector are the kit's, shared by every target. The builder moves the kit's sun to the north-east for this page, as it would stand on a morning here |
 | `core/materials` | yes, the kit's | The kit's bound families: `MAT.white` for the shell, the Arccube's dwelling, deck, frame and shade maps, and the Hill's bedded rock map with vertex-coloured strata. **Owed**: the verdigris fins are an untextured standard material, and a layered-rock set for the strata (`core/materials/PROMPTS-NEEDED.md`) |

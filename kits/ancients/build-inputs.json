@@ -898,10 +898,10 @@
     "kits/ancients/targets/span/89z-rows.js": "6d4d7cc02daf01a32b46a80feba12674a8ecae4f29274259ddd55d2d6833fcf6",
     "kits/ancients/targets/spire/89z-rows.js": "64ba85c8d9b2f09e3cf430061a0099556d281b1117fa24671fb02c4063eb121c",
     "kits/ancients/targets/spire/91z-views.js": "d0680b6c5634e43d0ba1ad1a1013e1d4829a14a7bee28e562239d88bc80b87ac",
-    "kits/ancients/targets/strongbow/89z-rows.js": "1a2d3602823efad9a063b09b83e38bcd757cb4916f2407c3484a90081d90fc42",
-    "kits/ancients/targets/strongbow/8aw0-strongbow-plan.js": "bb7dbf4525b733a456a2d3f36c25d061c752431e4be1c4277b4acc8af7fd19fc",
-    "kits/ancients/targets/strongbow/8aw1-strongbow-parts.js": "5859a06a7a32111d982a7ed24646b88113879a3c3ab31d632b2703b76fdab0bf",
-    "kits/ancients/targets/strongbow/8aw2-strongbow-draw.js": "c270181897e1d688a90f2b7b20db96adf39aa5cdb85a72f376d00c3f9612b782",
+    "kits/ancients/targets/strongbow/89z-rows.js": "eaa17739b87ee9f5ccfc5d97f58a3929b04faeae497cf3ff11f8acd59bd065c5",
+    "kits/ancients/targets/strongbow/8aw0-strongbow-plan.js": "07217c886768e054322cd96a9952a65097a53fb738e0a42b5ad33087b550a756",
+    "kits/ancients/targets/strongbow/8aw1-strongbow-parts.js": "b0597b1a112c1a60105d69ba201277bb1f0215e7fc7e62c5b0da90f4209f88d3",
+    "kits/ancients/targets/strongbow/8aw2-strongbow-draw.js": "b6579f7fc004664b57b56599dbe03f642fc1c3f9b303135f8645e67b8ee6d62e",
     "kits/ancients/targets/strongbow/91z-views.js": "75c3be5455eac493f9c03dcb27a632737bd380acf07dd1dd654036ce57a4bad7",
     "kits/ancients/targets/strongbow/test-strongbow.js": "28078f4239e63d6c19c0c6ca514d2be70203f71bf7f73da7ee1ea5470feb6514",
     "kits/ancients/targets/theodiga/89z-rows.js": "c03afddb7684310ae68df8cdcb07d516bdd63ac86491f3a754efe6a4b5d01526",
@@ -1045,14 +1045,14 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/ancients/build-manifest-strongbow.json": "8e84b93277f185082f744c8d60fb88a0bc7cadf197457dbfd57e0306066c182c",
+    "kits/ancients/build-manifest-strongbow.json": "50a2c0db953a188d5a4214f5f8ba04ea686cf8da01f7337b158b76fd48e6192a",
     "kits/ancients/dist/ancients.tex.ancients.js": "c7ed83f8f8f6137f51a41f8e4e6d9d29f58231c89061aff467c3d4710a313883",
-    "kits/ancients/dist/strongbow.html": "3753ab40d305fc6ae0c1ab7d4c457676d0213e548b517e227dfc4a14b3b4ad4b"
+    "kits/ancients/dist/strongbow.html": "7ac31925ac92ab5d7864f44c5ff4da04b112073346a48390207421b69cf3a7e7"
    },
    "outputs_raw": {
-    "kits/ancients/build-manifest-strongbow.json": "342f2ee3fb5157cedf783e94b9d1a0c644d6a2c31c82aaa46e6549f11cdd55b5",
+    "kits/ancients/build-manifest-strongbow.json": "12dd44d10d782db02db6560933d3c4dd0a0f0f22c506830bb24acef884bc410b",
     "kits/ancients/dist/ancients.tex.ancients.js": "c7ed83f8f8f6137f51a41f8e4e6d9d29f58231c89061aff467c3d4710a313883",
-    "kits/ancients/dist/strongbow.html": "3753ab40d305fc6ae0c1ab7d4c457676d0213e548b517e227dfc4a14b3b4ad4b"
+    "kits/ancients/dist/strongbow.html": "7ac31925ac92ab5d7864f44c5ff4da04b112073346a48390207421b69cf3a7e7"
    }
   }
  }

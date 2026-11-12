@@ -1,5 +1,5 @@
 // ================================================================= STRONGBOW — the builder
-// buildStrongbow draws the plan (8aw0) as the Ancients built it (d = 0) and as the High Rift has left it (d = 1: the plan with
+// buildStrongbow draws the plan (8aw0) as the Ancients built it (d = 0) and as a thousand years have left it (d = 1: the plan with
 // STRONGBOW.ruin's deltas). Everything placed is registered in core/tags first, then drawn from the record. The cliff, the Bow,
 // the crown, the Nock and the stays are 8aw1's parts; the rest is here. Only the plain's trees and the scree's loose rubble come
 // off the kit's reseed() stream.

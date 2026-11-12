@@ -1,8 +1,8 @@
 // ================================================================= STRONGBOW — the cliff arcology: the plan (records)
-// The Ancients' city hung down the High Rift's escarpment at the Oidong Valley's east end, over Oidong's lake (scale model 5.1
-// px 1298,1647; the owner moved it there and made it a cliff arcology, 2026-11-11). The owner's answers: an 800 m hull for about
-// 40 000 people (since the composition change, a sail and one Spine, about 29 000), standing in ruin on half its stays, the Sultanate below and the Order above, a showcase cliff with a cut bay
-// (targets/strongbow/NOTES.md).
+// The Ancients' city hung down a cliff face. The site is the Oidong Valley's north-west wall at its west end, toward Qiblai (scale model
+// 5.1 px 1013,1585; the owner, 2026-11-11, after an earlier move to the east end, for which the design was first drawn). The owner's
+// answers: an 800 m hull for about 40 000 people (since the composition change, a sail and one Spine, about 29 000), standing in ruin
+// on half its stays, the Sultanate below and the Order above, a showcase cliff with a cut bay (targets/strongbow/NOTES.md).
 //
 // THE FRAME   x east along the face, y up, z SOUTH (out of the rock); the valley floor y = floor (0 on the kit page), the face
 //             line z = 0 at the foot, battered back BATTER m by the lip (y = LIP). The plateau is north of the lip.

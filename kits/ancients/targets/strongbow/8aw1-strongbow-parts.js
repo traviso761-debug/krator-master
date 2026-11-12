@@ -30,7 +30,7 @@ const SBG={
  put:(X,list,g,bound)=>{if(bound&&X.M)g.applyMatrix4(X.M);X.L[list].push(g);return g;},
  tp:(X,p)=>{if(!X.M)return p;const v=new THREE.Vector3(p[0],p[1],p[2]).applyMatrix4(X.M);return[v.x,v.y,v.z];}};
 
-// the strata: bands of the High Rift's bedded rock, dipping a little east, with thin vivid beds (the reference's violet and orange)
+// the strata: bands of bedded rock, dipping a little east, with thin vivid beds (the reference's violet and orange)
 const SB_BEDS=[[1.25,1.16,1.02],[1.18,.86,.68],[1.3,1.08,.76],[1.0,.92,1.02],[1.38,1.32,1.2],[.96,.84,.74],[1.2,1.02,.86]];
 function sbStrata(S,x,y){const yy=y+.018*x+6*KRAND.vnoise(x/210,y/60,0,S+21),b=Math.floor(yy/23),f=yy/23-b,u=STRONGBOW.h(S,401,b);
  if(f<.16&&u<.4)return u<.2?[.95,.55,1.05]:[1.4,.78,.32];
