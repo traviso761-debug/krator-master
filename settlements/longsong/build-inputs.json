@@ -137,7 +137,7 @@
     "core/water/22-core-water-flow.js": "eab9b6ee42e8747dfd1082a1b6d76804b4659d5fd3a2b3d4bc1a566af13dbed7",
     "core/water/50-core-water-draw.js": "9b487271223b64c2935b3336667963139dddcc055b852ac4f0a1912b2a9dd7e0",
     "core/water/51-core-water-kinds.js": "e0c2edba19b476b4b46a4e08a63f0af695423d88b1da15b380795b2e4d07ead4",
-    "core/world/41-world-fields.js": "88c947260ab20ea94f7785ef0df48e744866d2464e953fb4155b6147c006af90",
+    "core/world/41-world-fields.js": "3fd35502d7c53a262c30c3c8d4bf8b5dae44a2ad314298c6f610b1c75cc242fe",
     "core/world/world_data.py": "1449e45b98b60464a5079f29ef43afc835a1b657873cbed31dc5212e17f6e4e9",
     "kits/ancients/src/10-core.js": "7c31cf7eb63a1666c0f1c8cd97fd810c1531d10e8d014c105f807a2ad521138b",
     "kits/ancients/src/12-stats.js": "67d17e87faa80d6e5503dd3dc0d53cb2b9e0d68ce77f256187968ee914f881bd",
@@ -422,6 +422,7 @@
     "kits/interiors/sets": "8601faf52d9185f777a2302548cc31885baa8c99b62113b20e6535c3a46ca360",
     "kits/interiors/src": "fe72f6be1b5eb6012c769b91a5fc7c558f24144155f758942db210e347392bab",
     "kits/xanadu": "445ee23c7971ed904367370de3c9c6700b120dacfa25feb3e0575e3fa2886e50",
+    "settlements/longsong": "23ff3e4c6a02422c3dfde47e3f6d2f445ae822878f3ac4c6a430151859017c28",
     "settlements/longsong/dist": "e8369b62114b67a71705113e9239835f0d9183d06be85b52d09ab7d620de8783",
     "settlements/longsong/dist/kchar": "e34294fd7391b08971c4b861732948db5db56714b34571afb6243d05ec0958a2",
     "settlements/longsong/src": "d0af995c86e0e722f0452ffdcca14dda13f91c23085366b5ecac93d78cb361cd",
@@ -430,14 +431,14 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "settlements/longsong/dist/longsong.html": "ee4f1b042f680e7b3fb6b19effb84fd33f2ea0760e3113e857e0c19f2d8b1be1",
+    "settlements/longsong/dist/longsong.html": "a45c2d84c5469f221608713a6df8e21ab2c1c0b37f058dee3de119a01a1ce7ba",
     "settlements/longsong/dist/longsong.tex.longsong-2.js": "81c204f5c6d5744d8a7d3c6be658aab37ac68088baccb1ac5bb39b7667deacd5",
     "settlements/longsong/dist/longsong.tex.longsong.js": "33596b44e155b7f214bd82a5c0ed5ecd3273fbac46bbdb015d73206522c9a605",
     "settlements/longsong/dist/longsong.tex.oidong.js": "e14667b94439abb336d0b2db7edee5ed5ab76b2d03aa2fe9a1d3e9f6e53a88b0",
     "settlements/longsong/dist/longsong.tex.xanadu.js": "ab86b56cf863dd8b19fbabdef7c70d83302cff8c1fc3f4caff86f367f7f7f945"
    },
    "outputs_raw": {
-    "settlements/longsong/dist/longsong.html": "ee4f1b042f680e7b3fb6b19effb84fd33f2ea0760e3113e857e0c19f2d8b1be1",
+    "settlements/longsong/dist/longsong.html": "a45c2d84c5469f221608713a6df8e21ab2c1c0b37f058dee3de119a01a1ce7ba",
     "settlements/longsong/dist/longsong.tex.longsong-2.js": "81c204f5c6d5744d8a7d3c6be658aab37ac68088baccb1ac5bb39b7667deacd5",
     "settlements/longsong/dist/longsong.tex.longsong.js": "33596b44e155b7f214bd82a5c0ed5ecd3273fbac46bbdb015d73206522c9a605",
     "settlements/longsong/dist/longsong.tex.oidong.js": "e14667b94439abb336d0b2db7edee5ed5ab76b2d03aa2fe9a1d3e9f6e53a88b0",

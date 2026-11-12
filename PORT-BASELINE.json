@@ -1001,16 +1001,16 @@
    "sha256": "a3843bca9538ce870335a22d6b7f4a30d2b69fd8cf7b372f928c62346733e1eb"
   },
   "openworld/isle-demo/dist/isle-demo.artifact.html": {
-   "bytes": 8521854,
-   "sha256": "44843ee70d623c5b08576653c82a018b03a240339100fca5d46e4e56daa5bcd1"
+   "bytes": 8523068,
+   "sha256": "f8ea8e75e7e17cc6d736b35db66c01b4697cfbbd002016508a652263ac4cfb17"
   },
   "openworld/isle-demo/dist/isle-demo.html": {
-   "bytes": 8522112,
-   "sha256": "5ca26aa95e9f7f434b1e107590ff29265a2e22401eaf4cf2c0940727199470ba"
+   "bytes": 8523326,
+   "sha256": "d30deaf0a80f154ed329e36e21f49ec511bcd5ce24a978671550d8c9bc8f78c6"
   },
   "openworld/iziz-cluster/dist/iziz-cluster.html": {
-   "bytes": 5630766,
-   "sha256": "ccec90534b1c73b499d786529f21103d9f83656164b35d2388e5fe56090d2bb0"
+   "bytes": 5631980,
+   "sha256": "e112713ce4f4fa3a15a202e8a9ac9126d3d51ea8817f0b1229deb2a9dace561c"
   },
   "openworld/little-demo/dist/little-demo.artifact.html": {
    "bytes": 5088461,
@@ -1021,12 +1021,12 @@
    "sha256": "43e0dc8e7d2fb8a2fa2a6eeb2c8e7036806cee73e1fc250735abcef1f242b87a"
   },
   "openworld/pinnacle/dist/pinnacle.html": {
-   "bytes": 5600016,
-   "sha256": "4bd7684ba087db648857be16459f5ae4cae7736e6bd857456564c4dff80e6504"
+   "bytes": 5615793,
+   "sha256": "7565f0033b3f42b411991730e308e46b00385817169aa5e8673d82f076a81438"
   },
   "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.html": {
-   "bytes": 8291146,
-   "sha256": "678888b2e6419f24af4b4f4613814760d172f0bd06d6acc30898ae2868a22cd4"
+   "bytes": 8292360,
+   "sha256": "3a47d290f6a2da1565d3349dd31c1ae314f7616fab3bd9009c18e603e56ade88"
   },
   "settlements/dalab/dist/dalab-set.html": {
    "bytes": 6603017,
@@ -1061,12 +1061,12 @@
    "sha256": "c4a59a537b6331d763782da7440ac1b08ae3d38a1c2bfb2ece22f983fce8f7dd"
   },
   "settlements/isle-demo/dist/isle-city.html": {
-   "bytes": 6514900,
-   "sha256": "b8f5395a9f8f7116fd42929e3de8db49b0df82a80bb0e74c0743fcb8c03f5f03"
+   "bytes": 6516114,
+   "sha256": "00e60c8e6b35294c83fb0905823b3ae8cfb44524f686f2a47a67c75ff4b79d13"
   },
   "settlements/isle-demo/dist/isle-site.html": {
-   "bytes": 1322381,
-   "sha256": "23cc25c029b634212de1bf0679391da237a4fb1172c4f6eef33cacdce989c4ae"
+   "bytes": 1323595,
+   "sha256": "3e83e1586a09e5e8f52ba734e9bc7cd6944c4f2b221c8d1b03963de4229e9c0c"
   },
   "settlements/iziz/dist/iziz-ixtest.html": {
    "bytes": 2102347,
@@ -1117,8 +1117,8 @@
    "sha256": "e6c31625003c38418a1cecaf53bdb0d412b7eedde603f6943c1fb0ad09da713d"
   },
   "settlements/longsong/dist/longsong.html": {
-   "bytes": 5304086,
-   "sha256": "ee4f1b042f680e7b3fb6b19effb84fd33f2ea0760e3113e857e0c19f2d8b1be1"
+   "bytes": 5305300,
+   "sha256": "a45c2d84c5469f221608713a6df8e21ab2c1c0b37f058dee3de119a01a1ce7ba"
   },
   "settlements/mavs-refuge/mavs-refuge.html": {
    "bytes": 9075103,
