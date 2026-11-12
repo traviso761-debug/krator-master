@@ -227,6 +227,12 @@
    "name": "highland lake",
    "color": "#5c9ea8",
    "group": "W"
+  },
+  {
+   "code": "L",
+   "name": "patera (lava-lake crust)",
+   "color": "#5a1a0a",
+   "group": "L"
   }
  ],
  "present": [
@@ -242,14 +248,14 @@
    "name": "humid subtropical",
    "color": "#c8ff50",
    "pct": 9.65,
-   "km2": 1210532
+   "km2": 1210536
   },
   {
    "code": "ET",
    "name": "tundra",
    "color": "#b2b2b2",
    "pct": 9.55,
-   "km2": 1199124
+   "km2": 1198936
   },
   {
    "code": "WS",
@@ -263,7 +269,7 @@
    "name": "ice cap",
    "color": "#666666",
    "pct": 6.15,
-   "km2": 771356
+   "km2": 771472
   },
   {
    "code": "HF",
@@ -277,7 +283,7 @@
    "name": "hot-summer Mediterranean",
    "color": "#ffff00",
    "pct": 5.54,
-   "km2": 695368
+   "km2": 695388
   },
   {
    "code": "BSk",
@@ -291,28 +297,28 @@
    "name": "dry-summer subarctic",
    "color": "#963296",
    "pct": 3.36,
-   "km2": 421092
+   "km2": 421100
   },
   {
    "code": "Dfc",
    "name": "subarctic (boreal)",
    "color": "#007d7d",
    "pct": 3.25,
-   "km2": 407804
+   "km2": 407696
   },
   {
    "code": "BSh",
    "name": "hot steppe",
    "color": "#f5a500",
    "pct": 3.04,
-   "km2": 381584
+   "km2": 381800
   },
   {
    "code": "Dsb",
    "name": "dry-summer warm continental",
    "color": "#c800c8",
    "pct": 2.81,
-   "km2": 353132
+   "km2": 353144
   },
   {
    "code": "BWk",
@@ -333,7 +339,7 @@
    "name": "warm-summer continental",
    "color": "#37c8ff",
    "pct": 2.19,
-   "km2": 274920
+   "km2": 274976
   },
   {
    "code": "HT",
@@ -347,7 +353,7 @@
    "name": "tropical savanna",
    "color": "#46aafa",
    "pct": 1.61,
-   "km2": 202112
+   "km2": 202296
   },
   {
    "code": "XA",
@@ -360,15 +366,15 @@
    "code": "BWh",
    "name": "hot desert",
    "color": "#ff0000",
-   "pct": 1.56,
-   "km2": 195220
+   "pct": 1.55,
+   "km2": 194984
   },
   {
    "code": "Cfb",
    "name": "oceanic",
    "color": "#64ff50",
-   "pct": 1.43,
-   "km2": 179576
+   "pct": 1.42,
+   "km2": 178560
   },
   {
    "code": "Af",
@@ -382,21 +388,21 @@
    "name": "warm-summer Mediterranean",
    "color": "#c8c800",
    "pct": 0.72,
-   "km2": 89992
+   "km2": 90212
   },
   {
    "code": "XV",
    "name": "abyssal savanna",
    "color": "#8a3ca8",
    "pct": 0.73,
-   "km2": 92172
+   "km2": 92228
   },
   {
    "code": "WH",
    "name": "highland lake",
    "color": "#5c9ea8",
    "pct": 0.51,
-   "km2": 64244
+   "km2": 64004
   },
   {
    "code": "WX",
@@ -417,7 +423,7 @@
    "name": "abyssal salt steppe",
    "color": "#b8542a",
    "pct": 0.28,
-   "km2": 34844
+   "km2": 34604
   },
   {
    "code": "Dsa",
@@ -480,7 +486,7 @@
    "name": "cold-summer Mediterranean",
    "color": "#969600",
    "pct": 0.0,
-   "km2": 324
+   "km2": 332
   },
   {
    "code": "Dwa",
@@ -488,6 +494,13 @@
    "color": "#aaafff",
    "pct": 0.0,
    "km2": 0
+  },
+  {
+   "code": "L",
+   "name": "patera (lava-lake crust)",
+   "color": "#5a1a0a",
+   "pct": 0.01,
+   "km2": 1128
   }
  ],
  "assumptions": {

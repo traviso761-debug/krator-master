@@ -1,0 +1,387 @@
+{
+ "edit": "5.1 edit 2",
+ "date": "2026-11-12",
+ "patera": {
+  "name": "Firebliss Patera",
+  "centre_px": [
+   181.0,
+   1317.5
+  ],
+  "semi_axes_px": [
+   12.0,
+   8.0
+  ],
+  "size_km": [
+   48.0,
+   32.0
+  ],
+  "rot_deg": -6.0,
+  "crust_m": 2240.0,
+  "lava_cells": 282,
+  "lava_km2": 1128,
+  "oval_km2": 1216,
+  "tarn_cells_replaced": 60,
+  "tarn_level_m": 2280.0,
+  "cut_m_max": 2370,
+  "fill_m_max": 23,
+  "shore_min_m": 2740,
+  "shore_median_m": 3607,
+  "lip_cells_raised": 71,
+  "lip_fill_m_max": 441,
+  "heat_TW_at_1_3_5_kW_m2": [
+   1.13,
+   3.38,
+   5.64
+  ],
+  "pit_cells_outside_lava_before_after": [
+   554,
+   325
+  ]
+ },
+ "holm": {
+  "name": "the Holm",
+  "centre_px": [
+   175.5,
+   1315.0
+  ],
+  "size_km": [
+   12.0,
+   8.8
+  ],
+  "cells": 22,
+  "km2": 88,
+  "top_m": 2700.0,
+  "over_crust_m": 460.0,
+  "edge_min_m": 2561
+ },
+ "domes": [
+  {
+   "id": "dome_fb_north",
+   "name": "North Glass",
+   "region": "Firebliss Range",
+   "px": [
+    175.0,
+    1302.0
+   ],
+   "d_km": 12.0,
+   "base_m": 5133,
+   "top_m": 5633,
+   "h_m": 500,
+   "cells": 25,
+   "wall_m_max": 1071,
+   "kind": "pancake_dome",
+   "rock": "rhyolite_obsidian",
+   "pit_cells_before_after": [
+    109,
+    106
+   ]
+  },
+  {
+   "id": "dome_fb_west",
+   "name": "West Glass",
+   "region": "Firebliss Range",
+   "px": [
+    157.0,
+    1324.0
+   ],
+   "d_km": 10.0,
+   "base_m": 4819,
+   "top_m": 5269,
+   "h_m": 450,
+   "cells": 21,
+   "wall_m_max": 529,
+   "kind": "pancake_dome",
+   "rock": "rhyolite_obsidian",
+   "pit_cells_before_after": [
+    157,
+    158
+   ]
+  },
+  {
+   "id": "dome_fb_south",
+   "name": "South Glass",
+   "region": "Firebliss Range",
+   "px": [
+    175.0,
+    1335.0
+   ],
+   "d_km": 14.0,
+   "base_m": 4503,
+   "top_m": 5053,
+   "h_m": 550,
+   "cells": 37,
+   "wall_m_max": 637,
+   "kind": "pancake_dome",
+   "rock": "rhyolite_obsidian",
+   "pit_cells_before_after": [
+    23,
+    47
+   ]
+  },
+  {
+   "id": "dome_fb_southeast",
+   "name": "Ember Glass",
+   "region": "Firebliss Range",
+   "px": [
+    201.0,
+    1331.0
+   ],
+   "d_km": 8.0,
+   "base_m": 4679,
+   "top_m": 5079,
+   "h_m": 400,
+   "cells": 9,
+   "wall_m_max": 493,
+   "kind": "pancake_dome",
+   "rock": "rhyolite_obsidian",
+   "pit_cells_before_after": [
+    23,
+    30
+   ]
+  },
+  {
+   "id": "dome_fb_east",
+   "name": "Gate Glass",
+   "region": "Firebliss Range",
+   "px": [
+    211.0,
+    1305.0
+   ],
+   "d_km": 10.0,
+   "base_m": 5396,
+   "top_m": 5846,
+   "h_m": 450,
+   "cells": 21,
+   "wall_m_max": 452,
+   "kind": "pancake_dome",
+   "rock": "rhyolite_obsidian",
+   "pit_cells_before_after": [
+    27,
+    27
+   ]
+  },
+  {
+   "id": "dome_ko_nw_trench",
+   "name": "Korona dome 1 (NW trench)",
+   "region": "Korona / NE",
+   "px": [
+    1007.0,
+    490.0
+   ],
+   "d_km": 14.0,
+   "base_m": -1492,
+   "top_m": -892,
+   "h_m": 600,
+   "cells": 37,
+   "wall_m_max": 446,
+   "kind": "pancake_dome",
+   "rock": "rhyolite_obsidian",
+   "pit_cells_before_after": [
+    24,
+    34
+   ]
+  },
+  {
+   "id": "dome_ko_ne_trench",
+   "name": "Korona dome 2 (NE trench)",
+   "region": "Korona / NE",
+   "px": [
+    1131.0,
+    494.0
+   ],
+   "d_km": 12.0,
+   "base_m": -901,
+   "top_m": -379,
+   "h_m": 522,
+   "cells": 25,
+   "wall_m_max": 1030,
+   "kind": "pancake_dome",
+   "rock": "rhyolite_obsidian",
+   "pit_cells_before_after": [
+    25,
+    25
+   ]
+  },
+  {
+   "id": "dome_ko_s_trench",
+   "name": "Korona dome 3 (S trench)",
+   "region": "Korona / NE",
+   "px": [
+    1038.0,
+    581.0
+   ],
+   "d_km": 16.0,
+   "base_m": -852,
+   "top_m": -202,
+   "h_m": 650,
+   "cells": 45,
+   "wall_m_max": 844,
+   "kind": "pancake_dome",
+   "rock": "rhyolite_obsidian",
+   "pit_cells_before_after": [
+    34,
+    44
+   ]
+  },
+  {
+   "id": "dome_ko_se_moat",
+   "name": "Korona dome 4 (SE moat)",
+   "region": "Korona / NE",
+   "px": [
+    1179.0,
+    578.0
+   ],
+   "d_km": 16.0,
+   "base_m": -103,
+   "top_m": 547,
+   "h_m": 650,
+   "cells": 45,
+   "wall_m_max": 681,
+   "kind": "pancake_dome",
+   "rock": "rhyolite_obsidian",
+   "pit_cells_before_after": [
+    67,
+    57
+   ]
+  },
+  {
+   "id": "dome_ko_n_trench",
+   "name": "Korona dome 5 (N trench)",
+   "region": "Korona / NE",
+   "px": [
+    1071.0,
+    430.0
+   ],
+   "d_km": 14.0,
+   "base_m": -297,
+   "top_m": 303,
+   "h_m": 600,
+   "cells": 37,
+   "wall_m_max": 622,
+   "kind": "pancake_dome",
+   "rock": "rhyolite_obsidian",
+   "pit_cells_before_after": [
+    55,
+    53
+   ]
+  }
+ ],
+ "reclimate": {
+  "cells": 963,
+  "class_changed": 274,
+  "rain_mean_before_mm": 671.0,
+  "rain_mean_after_mm": 687.0,
+  "classes_now": {
+   "Aw": 83,
+   "BWh": 30,
+   "BSh": 222,
+   "Csa": 5,
+   "Csb": 72,
+   "Csc": 2,
+   "Cfa": 1,
+   "Cfb": 45,
+   "Dsb": 3,
+   "Dsc": 2,
+   "Dfb": 14,
+   "Dfc": 43,
+   "ET": 255,
+   "EF": 107,
+   "XV": 51,
+   "XS": 28
+  }
+ },
+ "rain_ring": {
+  "cells": 3970,
+  "peak_mm": 900.0,
+  "peak_km_off_shore": [
+   8.0,
+   24.0
+  ],
+  "zero_km_off_shore": 56.0,
+  "mean_mm_before_after": [
+   647,
+   1191
+  ],
+  "classes_in_ring": {
+   "ET": 2710,
+   "EF": 841,
+   "Dfc": 197,
+   "Cfb": 115,
+   "Csb": 90,
+   "Dfb": 7,
+   "Dsc": 4,
+   "Dsb": 3,
+   "Csc": 2,
+   "Cfa": 1
+  },
+  "dry_class_cells_in_ring": 0
+ },
+ "vent": {
+  "name": "Firebliss Patera",
+  "px": [
+   181.0,
+   1317.5
+  ],
+  "floor": 2240.0,
+  "scale": 0.6,
+  "radius": 16.0,
+  "kind": "patera",
+  "region": "Firebliss Range",
+  "notes": "The Firebliss Patera: a lava lake 48 x 32 km under a thin black crust, in the Great Firebliss Vale's old floor, its crust at 2,240 m behind walls of 2.7-4.5 km. Once a year the crust founders: two fronts start at the west shore and run round both sides of the Holm at about a kilometre a day, meeting on the east shore some 40-60 days later. About 3-4 TW: a permanent heat low, its storm column over the lake and a ring of rain and lightning round it. biomes/firebliss/PLAN.md section 1a; the owner, 2026-11-12."
+ },
+ "basin": {
+  "at_px": [
+   181.0,
+   1317.5
+  ],
+  "level_m": 2240,
+  "km2": 1128,
+  "kind": "lava lake",
+  "climate": "L",
+  "island": {
+   "name": "the Holm",
+   "at_px": [
+    175.5,
+    1315.0
+   ],
+   "km2": 88,
+   "top_m": 2700.0,
+   "notes": "The Holm: the patera's island, 12 x 9 km, its top 2,700 m (460 m over the crust), which the turn never reaches. Reached only across the crust. biomes/firebliss/PLAN.md section 1b."
+  },
+  "notes": "The Firebliss Patera: a lava lake 48 x 32 km under a thin black crust, in the Great Firebliss Vale's old floor, its crust at 2,240 m behind walls of 2.7-4.5 km. Once a year the crust founders: two fronts start at the west shore and run round both sides of the Holm at about a kilometre a day, meeting on the east shore some 40-60 days later. About 3-4 TW: a permanent heat low, its storm column over the lake and a ring of rain and lightning round it. biomes/firebliss/PLAN.md section 1a; the owner, 2026-11-12."
+ },
+ "tlahn_warra": {
+  "dropped_points": [
+   [
+    190.0,
+    1319.0
+   ]
+  ],
+  "head_px": [
+   199.0,
+   1323.0
+  ],
+  "head_bed_m": 2292.2,
+  "length_km_before_after": [
+   325.7,
+   306.0
+  ]
+ },
+ "cells_changed": {
+  "tm": 659,
+  "tw": 659,
+  "tc": 659,
+  "th": 469,
+  "tl": 469,
+  "p": 4667,
+  "c": 556,
+  "z": 98,
+  "h": 677,
+  "wl": 60,
+  "h_in_firebliss_korona_other": [
+   488,
+   189,
+   0
+  ]
+ }
+}

@@ -99,5 +99,6 @@
 {"name": "Cinder-Crown", "px": [148.0, 1292.0], "peak": 5940, "kind": "stratovolcano", "region": "Firebliss Range"},
 {"name": "Firebliss Mons", "px": [206.0, 1284.0], "peak": 6380, "kind": "stratovolcano", "region": "Firebliss Range"},
 {"name": "Brimstone Spire", "px": [254.0, 1288.0], "peak": 5780, "kind": "stratovolcano", "region": "Firebliss Range"},
-{"name": "Copper-Fissure Vent", "px": [298.0, 1286.0], "peak": 5360, "kind": "stratovolcano", "region": "Firebliss Range"}
+{"name": "Copper-Fissure Vent", "px": [298.0, 1286.0], "peak": 5360, "kind": "stratovolcano", "region": "Firebliss Range"},
+{"name": "Firebliss Patera", "px": [181.0, 1317.5], "floor": 2240.0, "scale": 0.6, "radius": 16.0, "kind": "patera", "region": "Firebliss Range", "notes": "The Firebliss Patera: a lava lake 48 x 32 km under a thin black crust, in the Great Firebliss Vale's old floor, its crust at 2,240 m behind walls of 2.7-4.5 km. Once a year the crust founders: two fronts start at the west shore and run round both sides of the Holm at about a kilometre a day, meeting on the east shore some 40-60 days later. About 3-4 TW: a permanent heat low, its storm column over the lake and a ring of rain and lightning round it. biomes/firebliss/PLAN.md section 1a; the owner, 2026-11-12."}
 ]

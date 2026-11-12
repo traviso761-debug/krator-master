@@ -164,5 +164,6 @@
 {"at_px": [1285.3, 1115.1], "level_m": 2487, "km2": 16, "depth_m": 160, "kind": "through lake", "climate": "Csa"},
 {"at_px": [738.6, 1169.2], "level_m": 1093, "km2": 16, "depth_m": 199, "kind": "through lake", "climate": "Cfa"},
 {"at_px": [1273.3, 1641.9], "level_m": 2395, "km2": 16, "depth_m": 154, "kind": "through lake", "climate": "Cfa"},
-{"at_px": [646.5, 654.5], "level_m": 2880, "km2": 16, "depth_m": 179, "kind": "through lake", "climate": "Cfa"}
+{"at_px": [646.5, 654.5], "level_m": 2880, "km2": 16, "depth_m": 179, "kind": "through lake", "climate": "Cfa"},
+{"at_px": [181.0, 1317.5], "level_m": 2240, "km2": 1128, "kind": "lava lake", "climate": "L", "island": {"name": "the Holm", "at_px": [175.5, 1315.0], "km2": 88, "top_m": 2700.0, "notes": "The Holm: the patera's island, 12 x 9 km, its top 2,700 m (460 m over the crust), which the turn never reaches. Reached only across the crust. biomes/firebliss/PLAN.md section 1b."}, "notes": "The Firebliss Patera: a lava lake 48 x 32 km under a thin black crust, in the Great Firebliss Vale's old floor, its crust at 2,240 m behind walls of 2.7-4.5 km. Once a year the crust founders: two fronts start at the west shore and run round both sides of the Holm at about a kilometre a day, meeting on the east shore some 40-60 days later. About 3-4 TW: a permanent heat low, its storm column over the lake and a ring of rain and lightning round it. biomes/firebliss/PLAN.md section 1a; the owner, 2026-11-12."}
 ]

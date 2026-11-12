@@ -95,7 +95,11 @@ with tempfile.TemporaryDirectory() as tmp:
         open(os.path.join(tmp, f), 'rb').read() == open(os.path.join(P.DATA_DIR, f), 'rb').read() for f in names))
 
 # ---- 2. a test edit, run through both
-R = P.docs(os.path.join(TOOL, '..', '..', 'openworld', 'little-demo', 'source', 'regions.json'))
+# the little demo's sources moved to archive/ with the demo (2026-11); read them there when openworld/ has none
+LD_SRC = os.path.join(TOOL, '..', '..', 'openworld', 'little-demo', 'source')
+if not os.path.isdir(LD_SRC):
+    LD_SRC = os.path.join(TOOL, '..', '..', 'archive', 'little-demo', 'source')
+R = P.docs(os.path.join(LD_SRC, 'regions.json'))
 su, sv = P.grid(D)
 pts = next(r for r in R if r['name'] == 'little demo')['points']
 check('region_mask', same(G.region_mask(R, 'little demo', su, sv, E.shape), E422.region_mask(R, 'little demo', su, sv, E.shape)))
@@ -202,8 +206,8 @@ import copy as _copy   # noqa: E402
 from smodel import river_names as RN   # noqa: E402
 r002_entry = next((r for r in D.get('rivers', []) if str(r.get('id')) in ('2', 'r002')), None)
 check('r002 is named Ling-Ma', r002_entry is not None and r002_entry.get('name') == 'L\u012bng-M\u0101')
-regs_path = os.path.join(REPO_ROOT, 'openworld', 'little-demo', 'source', 'regions.json')
-setts_path = os.path.join(REPO_ROOT, 'openworld', 'little-demo', 'source', 'settlements.json')
+regs_path = os.path.join(LD_SRC, 'regions.json')
+setts_path = os.path.join(LD_SRC, 'settlements.json')
 if os.path.exists(regs_path) and os.path.exists(setts_path):
     regs_doc = _json.load(open(regs_path, encoding='utf-8'))
     setts_doc = _json.load(open(setts_path, encoding='utf-8'))
@@ -359,7 +363,7 @@ for pol_id, pol_nm, pol_npts in [
           pol_reg is not None and pol_reg.get('name') == pol_nm and len(pol_reg.get('points', [])) == pol_npts)
 check('Superseded political region IDs (rmudhwjkmjc1e, rmufwoc7586da, rmuooahhlhlnu, rmukx7n441l62, rmvyl36gozner) are removed',
       not any(r.get('id') in {'rmudhwjkmjc1e', 'rmufwoc7586da', 'rmuooahhlhlnu', 'rmukx7n441l62', 'rmvyl36gozner'} for r in R))
-S = P.docs(os.path.join(TOOL, '..', '..', 'openworld', 'little-demo', 'source', 'settlements.json'))
+S = P.docs(os.path.join(LD_SRC, 'settlements.json'))
 tw_sett = next((s for s in S if s.get('id') == 'stallwalls01' or s.get('name') == 'Tallwalls'), None)
 check('Tallwalls settlement stallwalls01 is present at (650, 1268)', tw_sett is not None and (int(tw_sett['px']), int(tw_sett['py'])) == (650, 1268))
 gv_t1_e = float(E[1212, 638])
@@ -455,13 +459,12 @@ check('Xanadu (rmvkkmitffbjk) has fine-scale Rift microclimate mosaic (%d classe
 fb_reg = next((r for r in R if r.get('id') == 'rmw8hj62nmugn'), None)
 mask_fb_test = G.poly(fb_reg['points'], 1.0, 1.0, (D['fullH'], D['fullW'])) > 0.5
 fb_c_codes = {codes_test[int(k)] for k in c_grid_full[mask_fb_test]}
-fb_vents = [v for v in D.get('vents', []) if v.get('region') == 'Firebliss Range']
+fb_vents = [v for v in D.get('vents', []) if v.get('region') == 'Firebliss Range' and v.get('kind') == 'stratovolcano']
 check('Firebliss Range (rmw8hj62nmugn) has 5 volcanic vents (%d) and sheltered temperate geothermal valleys (classes: %s)' % (
     len(fb_vents), sorted(fb_c_codes)),
     len(fb_vents) == 5 and 'WH' in fb_c_codes and bool(fb_c_codes & {'Cfa', 'Cfb', 'Csb'}) and 'EF' in fb_c_codes)
 for fb_lk_nm, fb_x, fb_y, fb_wl in [
     ('West Bliss Cauldron Tarn', 126, 1344, 2640.0),
-    ('Great Firebliss Vale Lake', 184, 1318, 2280.0),
     ('Solfatara Glen Tarn', 238, 1322, 2120.0),
     ('East Bliss Vale Tarn', 284, 1318, 1960.0),
 ]:
@@ -523,4 +526,48 @@ gc_t = next(r for r in R if r.get('id') == 'rmw4vh9t20da4')
 m99_t, mgc_t = G.poly(r99_t['points'], 1.0, 1.0, E.shape), G.poly(gc_t['points'], 1.0, 1.0, E.shape)
 check('the Great Chasm\'s sill (1697,1028) is the Great Chasm\'s, not Region 99\'s; overlap %d edge cells' % int((m99_t & mgc_t).sum()),
       bool(mgc_t[1028, 1697]) and not bool(m99_t[1028, 1697]) and int((m99_t & mgc_t).sum()) <= 80)
+# ---- 15. 5.1 edit 2 (edit_512.py, 2026-11-12): the Firebliss Patera and its domes, and the Korona domes
+pat_v = next((v for v in D['vents'] if v.get('kind') == 'patera'), None)
+check('the Firebliss Patera is a vent record (kind patera, floor 2,240 m, region Firebliss Range)',
+      pat_v is not None and pat_v['floor'] == 2240.0 and pat_v['region'] == 'Firebliss Range')
+pt = np.radians(-6.0)
+pdx, pdy = xx_b - 181.0, yy_b - 1317.5
+p_rho = np.hypot((pdx * np.cos(pt) + pdy * np.sin(pt)) / 12.0, (-pdx * np.sin(pt) + pdy * np.cos(pt)) / 8.0)
+hdx, hdy = xx_b - 175.5, yy_b - 1315.0
+h_rho = np.hypot((hdx * np.cos(pt) + hdy * np.sin(pt)) / 3.0, (-hdx * np.sin(pt) + hdy * np.cos(pt)) / 2.2)
+p_lava = (p_rho < 1.0) & (h_rho >= 1.0)
+p_ring = (p_rho >= 1.0) & (p_rho < 1.15)
+check('the patera\'s crust is flat at 2,240 m over %d cells, dry, class L' % int(p_lava.sum()),
+      int(p_lava.sum()) >= 270 and float(np.abs(E[p_lava] - 2240.0).max()) <= 2.0 and not bool(whas[p_lava].any())
+      and {codes_test[int(k)] for k in c_grid_full[p_lava]} == {'L'})
+check('the patera is closed: its shore stands 400 m over the crust all round (min %.0f m)' % float(E[p_ring].min()),
+      float(E[p_ring].min()) >= 2640.0)
+check('the Holm stands over the crust (top %.0f m, lowest %.0f m)' % (E[h_rho < 1].max(), E[h_rho < 1].min()),
+      abs(float(E[h_rho < 0.8].max()) - 2700.0) <= 2.0 and float(E[h_rho < 1].min()) >= 2490.0)
+check('the Great Firebliss Vale\'s tarn is gone (184,1318 dry)', not bool(whas[1318, 184]))
+tw_t = next(r for r in D['rivers'] if r['id'] == 'r_fb_central')
+check('the Tlahn Warra heads off the lava, on the patera\'s east lip (%s)' % tw_t['px'][0],
+      tw_t['px'][0] == [199.0, 1323.0] and tw_t['bed_m'][0] < 2300)
+check('the patera\'s basin record is a lava lake at 2,240 m', any(b.get('kind') == 'lava lake' and b['level_m'] == 2240
+                                                                 for b in D['basins']))
+temps_p = {k: float(np.median(P.raster(D, k, 'L').astype(float)[p_lava] - 90)) for k in ('tm', 'tw', 'tc', 'th', 'tl')}
+check('the patera\'s floor is the heat island (%s)' % temps_p,
+      temps_p == {'tm': 28.0, 'tw': 34.0, 'tc': 20.0, 'th': 50.0, 'tl': 8.0})
+rain_t = P.raster(D, 'p', 'L').astype(float) / 255 * 4000
+p_out = nd.distance_transform_edt(~(p_rho < 1.0))
+ring_c = (p_out >= 6) & (p_out <= 10) & ~whas
+far_c = (p_out >= 30) & (p_out <= 40) & ~whas & mask_fb_test
+check('the heat low\'s rain ring: %.0f mm 12-20 km off the shore vs %.0f mm 60-80 km off' % (
+    np.median(rain_t[ring_c]), np.median(rain_t[far_c])), np.median(rain_t[ring_c]) >= np.median(rain_t[far_c]) + 500)
+domes_t = D.get('domes', [])
+check('ten pancake domes: five in Firebliss, five in Korona', len(domes_t) == 10
+      and sum(d['region'] == 'Firebliss Range' for d in domes_t) == 5 and sum(d['region'] == 'Korona / NE' for d in domes_t) == 5)
+for d in domes_t:
+    dcx, dcy, dR = d['px'][0], d['px'][1], d['d_km'] / 4.0
+    dr = np.hypot(xx_b - dcx, yy_b - dcy) / dR
+    top_cells = E[dr < 0.6]
+    check('dome %s: flat top at %d m (spread %.0f m) and %.0f m over the ground 1.5 radii out' % (
+        d['id'], d['top_m'], float(top_cells.max() - top_cells.min()), d['top_m'] - float(np.median(E[(dr > 1.4) & (dr < 1.7)]))),
+        float(top_cells.max() - top_cells.min()) <= 2.0 and abs(float(top_cells.max()) - d['top_m']) <= 2.0
+        and d['top_m'] - float(np.median(E[(dr > 1.4) & (dr < 1.7)])) >= 300.0)
 print('%d checks passed' % ok)

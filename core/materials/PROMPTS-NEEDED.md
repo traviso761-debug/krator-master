@@ -442,6 +442,15 @@ rails and every ruined metal. **3 prompts.** Each takes the base template, then:
 | `ground.ballast.rail` | Railway track ballast: angular grey granite stones 3 to 6 cm (#7e7a74, #8a8680, #6a6660), packed, dusty with rust-brown fines between them (#6a4a36), two faint darker bands across the tile where sleepers lay. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. |
 | `metal.rail.rusted` | The head and web of a steel rail a thousand years idle: flaking orange-brown rust (#8a4a2c, #a65a36) over pitted dark steel (#4a4644), the running surface a dull grey band along the tile's middle with rust creeping over it, scale lifting at the edges. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. |
 
+## 43. The Firebliss Patera's domes and Korona's (`biomes/firebliss`, `biomes/korona`, 2026-11-12)
+
+The pancake domes' walls: flow-banded rhyolite and obsidian (`biomes/firebliss/PLAN.md` section 8a, `biomes/korona/PLAN.md`
+"Amendment 2026-11-12"). Stand-in until it lands: `stone.obsidian`. **1 prompt.** It takes the base template, then:
+
+| id | Material line |
+|---|---|
+| `rock.rhyolite.flowbanded` | A cliff face of flow-banded rhyolite lava: thin wavy bands of black glassy obsidian (#141416, #22222a) alternating with dull pink-grey and ash-grey devitrified rhyolite (#8a7a78, #a09490, #6e6a6c), the bands folded and stretched as a stiff lava flowed, with small white spherulites (#d8d4cc) strung along a few grey bands and conchoidal fracture surfaces catching a faint sheen on the black ones. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. |
+
 ## Gaps with no prompt yet
 
 Owed, but a prompt waits on something first; listed so they are not lost.
