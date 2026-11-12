@@ -39,7 +39,7 @@
     "biomes/highrift/tex/rock.tuff.albedo.webp": "2ce71dd4caf500d22ee426e7617488b2c9cf0ad54b7c2249068c384b0206b1d4",
     "biomes/highrift/tex/tussock.albedo.webp": "ddc080a2fe2d492631cd3dd58fc9d94b16b8698539c801b241a66411788843ce",
     "biomes/oidong/src/50-biome-oidong-species.js": "8fb72d34cdcb21f2ba36eed2915dcca765d14947a8163ac616c9fb88956ca7b2",
-    "biomes/oidong/src/55-biome-oidong-trees.js": "0bfbf5317e3ce66bfaf06791240809f1250e59884942d5b031bb0d4d9b0d83a3",
+    "biomes/oidong/src/55-biome-oidong-trees.js": "16583d5760513b782c7415847a6781d5c158a2004d31def9db3ec8a6ae30c7ca",
     "biomes/oidong/src/60-biome-oidong-floor.js": "b6edfa252b83ec9616baa44113d6cb4e2e9c47ea802e6d634f77fa85098c4c64",
     "biomes/oidong/tex/bark.bamboo.albedo.webp": "1352096326f9e57dbde745c79dc14f9cce110db47b8f0afa1e2108731f6746a5",
     "biomes/oidong/tex/bark.carved.albedo.webp": "ea3bbde51d584b91a9cea12021e1cbc5a720e4e3d98873df767170a48600e6d2",
@@ -159,15 +159,16 @@
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
+    "biomes/highrift": "6fdecef50212fe839ef0f8fb9b32af14aa3684d3a6633e2919e2184f05ed667d",
     "biomes/highrift/src": "740676022ed38f47a0a5c9ac471fe95e95912851a05e65463a1a13f788a18a39",
     "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/highrift/dist/highrift.html": "81f986cc41193db8897e71bdd32fc83863438191731319e9d1efbbc0dab7ae7c"
+    "biomes/highrift/dist/highrift.html": "8927796574cdc2fcaedcebd369e6fd20a08a49504d006a2fa933f33cb6efec4b"
    },
    "outputs_raw": {
-    "biomes/highrift/dist/highrift.html": "81f986cc41193db8897e71bdd32fc83863438191731319e9d1efbbc0dab7ae7c"
+    "biomes/highrift/dist/highrift.html": "8927796574cdc2fcaedcebd369e6fd20a08a49504d006a2fa933f33cb6efec4b"
    }
   },
   "build.py --station coulee": {
@@ -209,7 +210,7 @@
     "biomes/highrift/tex/rock.tuff.albedo.webp": "2ce71dd4caf500d22ee426e7617488b2c9cf0ad54b7c2249068c384b0206b1d4",
     "biomes/highrift/tex/tussock.albedo.webp": "ddc080a2fe2d492631cd3dd58fc9d94b16b8698539c801b241a66411788843ce",
     "biomes/oidong/src/50-biome-oidong-species.js": "8fb72d34cdcb21f2ba36eed2915dcca765d14947a8163ac616c9fb88956ca7b2",
-    "biomes/oidong/src/55-biome-oidong-trees.js": "0bfbf5317e3ce66bfaf06791240809f1250e59884942d5b031bb0d4d9b0d83a3",
+    "biomes/oidong/src/55-biome-oidong-trees.js": "16583d5760513b782c7415847a6781d5c158a2004d31def9db3ec8a6ae30c7ca",
     "biomes/oidong/src/60-biome-oidong-floor.js": "b6edfa252b83ec9616baa44113d6cb4e2e9c47ea802e6d634f77fa85098c4c64",
     "biomes/oidong/tex/bark.bamboo.albedo.webp": "1352096326f9e57dbde745c79dc14f9cce110db47b8f0afa1e2108731f6746a5",
     "biomes/oidong/tex/bark.carved.albedo.webp": "ea3bbde51d584b91a9cea12021e1cbc5a720e4e3d98873df767170a48600e6d2",
@@ -335,10 +336,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/highrift/dist/highrift-coulee.html": "f992a99a5945221a0df178ea99c5141bd44f47ffaea6bfdc6993bb93973e3bbe"
+    "biomes/highrift/dist/highrift-coulee.html": "850fd80f37f5cc4ca1d7024a1afff23d53b08730b0fbd5893e18268833a9e3f4"
    },
    "outputs_raw": {
-    "biomes/highrift/dist/highrift-coulee.html": "f992a99a5945221a0df178ea99c5141bd44f47ffaea6bfdc6993bb93973e3bbe"
+    "biomes/highrift/dist/highrift-coulee.html": "850fd80f37f5cc4ca1d7024a1afff23d53b08730b0fbd5893e18268833a9e3f4"
    }
   },
   "build.py --station gjar": {
@@ -380,7 +381,7 @@
     "biomes/highrift/tex/rock.tuff.albedo.webp": "2ce71dd4caf500d22ee426e7617488b2c9cf0ad54b7c2249068c384b0206b1d4",
     "biomes/highrift/tex/tussock.albedo.webp": "ddc080a2fe2d492631cd3dd58fc9d94b16b8698539c801b241a66411788843ce",
     "biomes/oidong/src/50-biome-oidong-species.js": "8fb72d34cdcb21f2ba36eed2915dcca765d14947a8163ac616c9fb88956ca7b2",
-    "biomes/oidong/src/55-biome-oidong-trees.js": "0bfbf5317e3ce66bfaf06791240809f1250e59884942d5b031bb0d4d9b0d83a3",
+    "biomes/oidong/src/55-biome-oidong-trees.js": "16583d5760513b782c7415847a6781d5c158a2004d31def9db3ec8a6ae30c7ca",
     "biomes/oidong/src/60-biome-oidong-floor.js": "b6edfa252b83ec9616baa44113d6cb4e2e9c47ea802e6d634f77fa85098c4c64",
     "biomes/oidong/tex/bark.bamboo.albedo.webp": "1352096326f9e57dbde745c79dc14f9cce110db47b8f0afa1e2108731f6746a5",
     "biomes/oidong/tex/bark.carved.albedo.webp": "ea3bbde51d584b91a9cea12021e1cbc5a720e4e3d98873df767170a48600e6d2",
@@ -506,10 +507,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/highrift/dist/highrift-gjar.html": "bb8ea97aa7e294222a6ef99744838c9ac917973cdb90f0340562a65c8d3e3c8a"
+    "biomes/highrift/dist/highrift-gjar.html": "e62ea42307d672cb9f301699b4165db8b6dee0117c54dd9e9adb46261384ab0c"
    },
    "outputs_raw": {
-    "biomes/highrift/dist/highrift-gjar.html": "bb8ea97aa7e294222a6ef99744838c9ac917973cdb90f0340562a65c8d3e3c8a"
+    "biomes/highrift/dist/highrift-gjar.html": "e62ea42307d672cb9f301699b4165db8b6dee0117c54dd9e9adb46261384ab0c"
    }
   },
   "build.py --station mirror": {
@@ -562,7 +563,7 @@
     "biomes/nhighlands/tex/nwood.albedo.webp": "677160f0c90c1ee870e0e570f1ab2ccec4f5704c2488ef4a308884da10c2d6ba",
     "biomes/nhighlands/tex/pack.json": "9fcdba40c9f2644df7520723179061bb9c02b08bc1f520b07daca06cbff1be61",
     "biomes/oidong/src/50-biome-oidong-species.js": "8fb72d34cdcb21f2ba36eed2915dcca765d14947a8163ac616c9fb88956ca7b2",
-    "biomes/oidong/src/55-biome-oidong-trees.js": "0bfbf5317e3ce66bfaf06791240809f1250e59884942d5b031bb0d4d9b0d83a3",
+    "biomes/oidong/src/55-biome-oidong-trees.js": "16583d5760513b782c7415847a6781d5c158a2004d31def9db3ec8a6ae30c7ca",
     "biomes/oidong/src/60-biome-oidong-floor.js": "b6edfa252b83ec9616baa44113d6cb4e2e9c47ea802e6d634f77fa85098c4c64",
     "biomes/oidong/tex/bark.bamboo.albedo.webp": "1352096326f9e57dbde745c79dc14f9cce110db47b8f0afa1e2108731f6746a5",
     "biomes/oidong/tex/bark.carved.albedo.webp": "ea3bbde51d584b91a9cea12021e1cbc5a720e4e3d98873df767170a48600e6d2",
@@ -688,10 +689,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/highrift/dist/highrift-mirror.html": "ae52161ffb8b4c7d1480bf2cf664cd87c1e2a1597ce5d4de2af1fdef2408c1c8"
+    "biomes/highrift/dist/highrift-mirror.html": "c971ce8de0aa7cdf3c3581499ec54a2634552532e12471f5ab983b199a38a35f"
    },
    "outputs_raw": {
-    "biomes/highrift/dist/highrift-mirror.html": "ae52161ffb8b4c7d1480bf2cf664cd87c1e2a1597ce5d4de2af1fdef2408c1c8"
+    "biomes/highrift/dist/highrift-mirror.html": "c971ce8de0aa7cdf3c3581499ec54a2634552532e12471f5ab983b199a38a35f"
    }
   },
   "build.py --station wedge": {
@@ -733,7 +734,7 @@
     "biomes/highrift/tex/rock.tuff.albedo.webp": "2ce71dd4caf500d22ee426e7617488b2c9cf0ad54b7c2249068c384b0206b1d4",
     "biomes/highrift/tex/tussock.albedo.webp": "ddc080a2fe2d492631cd3dd58fc9d94b16b8698539c801b241a66411788843ce",
     "biomes/oidong/src/50-biome-oidong-species.js": "8fb72d34cdcb21f2ba36eed2915dcca765d14947a8163ac616c9fb88956ca7b2",
-    "biomes/oidong/src/55-biome-oidong-trees.js": "0bfbf5317e3ce66bfaf06791240809f1250e59884942d5b031bb0d4d9b0d83a3",
+    "biomes/oidong/src/55-biome-oidong-trees.js": "16583d5760513b782c7415847a6781d5c158a2004d31def9db3ec8a6ae30c7ca",
     "biomes/oidong/src/60-biome-oidong-floor.js": "b6edfa252b83ec9616baa44113d6cb4e2e9c47ea802e6d634f77fa85098c4c64",
     "biomes/oidong/tex/bark.bamboo.albedo.webp": "1352096326f9e57dbde745c79dc14f9cce110db47b8f0afa1e2108731f6746a5",
     "biomes/oidong/tex/bark.carved.albedo.webp": "ea3bbde51d584b91a9cea12021e1cbc5a720e4e3d98873df767170a48600e6d2",
@@ -859,10 +860,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/highrift/dist/highrift-wedge.html": "704df0438a26d85494fd2c735391665a50e28be0be1a16cde317a942c9fbe52a"
+    "biomes/highrift/dist/highrift-wedge.html": "e4ba5e74e052c28a16e07bcfa35ac7d27272d3484daddee76cdeda5d856730d3"
    },
    "outputs_raw": {
-    "biomes/highrift/dist/highrift-wedge.html": "704df0438a26d85494fd2c735391665a50e28be0be1a16cde317a942c9fbe52a"
+    "biomes/highrift/dist/highrift-wedge.html": "e4ba5e74e052c28a16e07bcfa35ac7d27272d3484daddee76cdeda5d856730d3"
    }
   }
  }

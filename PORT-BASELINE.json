@@ -237,24 +237,24 @@
    "sha256": "87f20a9658a90fb53c82f5b2453c9d0ce6bf328aef0b4b8e31cafb782d689b29"
   },
   "biomes/highrift/dist/highrift-coulee.html": {
-   "bytes": 5129823,
-   "sha256": "f992a99a5945221a0df178ea99c5141bd44f47ffaea6bfdc6993bb93973e3bbe"
+   "bytes": 5130174,
+   "sha256": "850fd80f37f5cc4ca1d7024a1afff23d53b08730b0fbd5893e18268833a9e3f4"
   },
   "biomes/highrift/dist/highrift-gjar.html": {
-   "bytes": 5129817,
-   "sha256": "bb8ea97aa7e294222a6ef99744838c9ac917973cdb90f0340562a65c8d3e3c8a"
+   "bytes": 5130168,
+   "sha256": "e62ea42307d672cb9f301699b4165db8b6dee0117c54dd9e9adb46261384ab0c"
   },
   "biomes/highrift/dist/highrift-mirror.html": {
-   "bytes": 6188096,
-   "sha256": "ae52161ffb8b4c7d1480bf2cf664cd87c1e2a1597ce5d4de2af1fdef2408c1c8"
+   "bytes": 6188447,
+   "sha256": "c971ce8de0aa7cdf3c3581499ec54a2634552532e12471f5ab983b199a38a35f"
   },
   "biomes/highrift/dist/highrift-wedge.html": {
-   "bytes": 5129820,
-   "sha256": "704df0438a26d85494fd2c735391665a50e28be0be1a16cde317a942c9fbe52a"
+   "bytes": 5130171,
+   "sha256": "e4ba5e74e052c28a16e07bcfa35ac7d27272d3484daddee76cdeda5d856730d3"
   },
   "biomes/highrift/dist/highrift.html": {
-   "bytes": 5129572,
-   "sha256": "81f986cc41193db8897e71bdd32fc83863438191731319e9d1efbbc0dab7ae7c"
+   "bytes": 5129923,
+   "sha256": "8927796574cdc2fcaedcebd369e6fd20a08a49504d006a2fa933f33cb6efec4b"
   },
   "biomes/hyperjungle/dist/hyperjungle-lake.html": {
    "bytes": 5953906,
@@ -369,16 +369,16 @@
    "sha256": "35bf6ee32ef90346a1537da021acf5f67b98b033cfc1b1f4e1ef9df4378406a7"
   },
   "biomes/oidong/dist/oidong-hearths.html": {
-   "bytes": 3666792,
-   "sha256": "20d5876748b5b26f0c2108ee4745f16d984d48957d51785c96f40e059444e197"
+   "bytes": 3667143,
+   "sha256": "1f0bfca46e90262e035587fd2de6ffe17316ff35ed4eeb237004518153ef4b4b"
   },
   "biomes/oidong/dist/oidong-passes.html": {
-   "bytes": 3620187,
-   "sha256": "29d275673bc7ab41ca73f2ee47a252c5f7ba2df07946e470f88d7cff350ab6a7"
+   "bytes": 3620538,
+   "sha256": "065c0dd14d2ce4f51e8ad105650f0d6b59183ec226f7ebb91571e3e19ee4dddc"
   },
   "biomes/oidong/dist/oidong.html": {
-   "bytes": 3643337,
-   "sha256": "8f9968ae2635680365d8793464b252210fd82b53dd723929cdddd67325be755b"
+   "bytes": 3643688,
+   "sha256": "b94f86eee90867c6730e57e3e010150301e6ddc984a1b9fb09e87778f52667b3"
   },
   "biomes/rift/dist/rift-highland.html": {
    "bytes": 7521099,
@@ -557,8 +557,8 @@
    "sha256": "b3618758c70692ecb2ceeba6fe4ae346b13fcadef27351a989e38495284f6e49"
   },
   "biomes/xanadu/dist/xanadu-cloud.html": {
-   "bytes": 8387583,
-   "sha256": "9fe4dc1394ffc2355afbcc30f717c5e63eb072597a0f2527d69b1859340059ca"
+   "bytes": 8388072,
+   "sha256": "2ec2ad49a2f5d5c7eb8fd7b681d324755ce67b0ec98500cbfc1fd39a0777fa4d"
   },
   "biomes/xanadu/dist/xanadu-descent.html": {
    "bytes": 7662754,
@@ -1029,8 +1029,8 @@
    "sha256": "77f39e70ded96153b94ae5945f3c4631e7dc380fc52f670338d02c1ece968a90"
   },
   "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.html": {
-   "bytes": 8300443,
-   "sha256": "15b75bfefb0674e9289e3fb5bca2d61fb8e7a53035528958116cd7253d026433"
+   "bytes": 8300794,
+   "sha256": "a2041a2618d518840016da10ad4d525a1dd05aea1e48314b5b51114f4da38b4f"
   },
   "settlements/dalab/dist/dalab-set.html": {
    "bytes": 6603017,
