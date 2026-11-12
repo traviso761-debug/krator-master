@@ -28,6 +28,15 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 
 ## Ride along with the next all-builds rebuild
 
+- **`BIO.attachAudit` measures a thin instanced item at points, not to its segment** (2026-11-11, found on the Labyrinth's station 1):
+  `core/biome/20-core-kit.js:646-650` samples an instanced structure (a rod, a beam) at points CELL/4 (2 m) apart along its axis, less its
+  radius, not point-to-segment as `core/biome/README.md` ("What held means") says. A card beside the middle of a long thin rod reads as
+  floating. The case: the NW lowlands grass trees' flower-spike blooms (`biomes/nwlowlands/src/55-biome-nwlowlands-trees.js`,
+  `B.grasstree`), 0.1 m off a 2.5-4.5 m rod, read 0.85-0.89 m off against a 0.57 m tolerance. That puts `biomes/labyrinth` at 1.30%
+  (90 of 930 blooms) and fails its attach assert (`biomes/labyrinth/KNOWN_ISSUES.md`). The fix: for each near sample, the distance to
+  the segment A-B less r (query KSPACE round the segment's box), and a case in `core/biome/test-attach.js` (a card beside a rod's
+  middle holds; lifted off it, floats). It moves every biome page (the owner's call). Do not split the rods in a kit to pass the audit.
+
 - **`KSHADOW.units` counts what the GPU links** (2026-11-09, found by the Throne's fix): `core/shadow/host/12-core-shadow-host.js` counts
   declared samplers (some are never read and the GPU drops them), misses `scene.environment` on standard materials, and judges against the
   renderer's own limit (32 in SwiftShader, so shadows turn on where the GPU cannot link them). The Throne's `samplersOf`

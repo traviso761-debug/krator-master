@@ -6,19 +6,14 @@
   forbs, larch, birch, poplar, willow, dwarf scrub, the wild melon) is a kit still to make.
 - [ ] **The GPU verify fails one assert: the core attach audit** (2026-11-11, RTX lane): 97 of 7,302 cards above the ground float,
   1.33% against a 1% limit (biome:bloom 92/916, biome:drape 5/1,084; worst about 0.85 m off with 0.57 m tolerance). Every other
-  assert and every negative control passes. These are the NW lowlands kit's blooms, scattered round a shrub's centre with no hold
-  (`biomes/nwlowlands/src/60-biome-nwlowlands-floor.js`, `blooms()`; core/biome README, "the residual floaters": `BIO.holdTo` or
-  `{onLeaf:true}`). The kit's quality does not move it (0.7: 1.35%, 1: 1.33%). The fix is in that shared kit and reaches every page
-  that reads it, so it is not made from here; it goes away anyway when the Labyrinth's own flora replaces the stand-in.
-  **Diagnosed 2026-11-11** (the session on `claude/infallible-pike-2c68d9`): the 90 floaters are the grass trees' flower-spike blooms,
-  0.1 m from the spike's rod. They are a false positive of `BIO.attachAudit` (`core/biome/20-core-kit.js` 646-650), which measures
-  an instanced item at points 2 m apart along its axis, not to the segment as `core/biome/README.md` says. The audit fix rebuilds
-  every biome page, so it is parked in `TODO.md` for the next all-builds rebuild; the kit's real bloom floaters (ground clusters,
-  rhodo) are fixed on that branch.
-  **Latest (2026-11-11, Arc lane): 1.27%**, every other assert and negative control passing. The rock's growth adds some (1.44% before
-  its hidden-face and water clipping). The NW lowlands' growth pass puts blooms up to 7 m off any
-  card on the ledges (`65-biome-nwlowlands-dress.js`). Its flowered curtains (ledge edges, soffits) are turned off here because they
-  floated worse (1.81%). That pass is a fix in the same shared kit.
+  assert and every negative control passes. After the NW lowlands floor fix (ground bloom clusters on the ground, rhodo blooms held
+  in the shrub's cards; branch `claude/infallible-pike-2c68d9`, merged here 2026-11-11) the floaters are the grass trees' flower-spike
+  blooms (`biomes/nwlowlands/src/55-biome-nwlowlands-trees.js`, `B.grasstree`), 0.1 m off the spike's rod: a false positive of
+  `BIO.attachAudit` (`core/biome/20-core-kit.js` 646-650), which measures an instanced item at points 2 m apart along its axis, not to
+  the segment as `core/biome/README.md` says. The audit fix rebuilds every biome page, so it is parked in `TODO.md` ("Ride along with
+  the next all-builds rebuild"). The rock's growth adds a little: the NW lowlands' growth pass puts some blooms up to 7 m off any card
+  on the ledges (`65-biome-nwlowlands-dress.js`); its flowered curtains (ledge edges, soffits) are off here because they floated worse.
+  It stays until the core fix lands, or until the Labyrinth's own flora replaces the stand-in.
 - [ ] **No animals yet.** The megafauna wait for `kits/fauna` (PLAN.md section 4); no herd, trail or wallow is drawn.
 - [x] **Hazards** (2026-11-11, `src/89h-host-hazards.js`, core/hazard). 178 records:
   - **fall:** every stack's and knob's rim (a 6 m band of boxes along the top outline, so a top's middle is safe), the torn bridge ends, the Hall's broken upper slab and its sheared column;
@@ -30,7 +25,7 @@
   readPixels on an 800 x 600 frame, give the Hall's face 53,57,59 against the floor's 124,117,75. The ruin palette (`MAT.ac*R`, the
   darkened instance colours) is toned for the kit sheet's brighter lights. The earlier "near-black" probe readings came from a
   1 x 1 drawing buffer: with the browser pane hidden the window is 0 x 0, so set `renderer.setSize(800,600,false)` before probing.
-  `src/89g-host-gate.js` now only clones the kit's materials and lifts their colour 2.2x (74,78,80; `?lift=1` for the kit's own).
+  `src/89g-host-gate.js` now only clones the kit's materials and lifts their colour 1.7x (`?lift=1` for the kit's own; 2.2x blew the sunlit cells white).
 - [x] **The far walls are bedded** (2026-11-11, `src/85-host-far.js`). From 1,700 m up their colour takes KSTRATA's beds (the Rift's
   recipe with its red taken out, dipping east). **Still open:** the walls are the model's 2 km cells with noise spurs and gullies,
   so their shape is soft; their real relief waits for the open world's cut of this region.
