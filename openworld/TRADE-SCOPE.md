@@ -244,6 +244,38 @@ everything below comes from the three plans, and the trade model has none of it.
 - **Records:** machine-wax and spinner cord as `homeOnly` material records in `kits/crops`, home `siphon-pits` and
   `loom-chasms` (two more homes outside `CROPS.BIOMES`). The ghaunt-ox is fauna (`kits/fauna`); amethyst is a stone (`kits/resources`).
 
+### 2.5d The eastern highlands' harvesters (the owner, 2026-11-12: "someone on the eastern highland harvesting the cushion wool and other native products"; culture and lore to come)
+
+**The ground.** The eastern highlands kit (`biomes/ehighlands`) stands on the polygon `e inner wall` (5.1 px 946-1201 by
+691-1085, 104,700 km²; `PLAN-STATIONS.md` section 0). Its cushion plateau is the high, dry ground: 48,900 km² are over
+3.4 km with under 700 mm of rain. **What it yields** (`NOTES.md`, "How the ideas became species" and "The chemistry"):
+- **cushion wool** from the woolbacks (the vegetable sheep's woolly lobes);
+- **thorn gum** tapped from the thorn cushions (tragacanth);
+- **wormwick**, the fungus-cured tonic from the glass towers' roots, "worth its weight in silver in the lowland cities";
+- **tower honey**, the wild bees' pallidine honey;
+- cushion turf for fuel, as the llareta is burned on the puna.
+
+**The site: 1095,911.** I searched the polygon for the best village reach (10 km), at least 30 km from any pin, with cushion
+ground within 20 km:
+
+| | **1095,911 (chosen)** | 1024,1042 (the most fertile with no cushions near) |
+|---|---|---|
+| Farmland in a 10 km reach | 223 km²-eq (288 km² over .5) | 298 km²-eq (308 km² over .5) |
+| Height, climate | 3,502 m, Dsb, 862 mm (920 mean over the reach), +7 °C | 2,581 m, Cfa, 784 mm, +12 °C |
+| Air | ~1.03 atm | ~1.16 atm |
+| Ground | a flat high basin (slope .02, 3,270-3,666 m over the reach), sedimentary; pasture .75, woods .56 | a flat bench, sedimentary |
+| Cushion ground within 20 km | **380 km²** (the nearest 6 km off) | none (32 km off) |
+| Polity | none (no polygon) | Empire of Iziz |
+| Nearest pin | Talia, 71 km | Arcbeam, 36 km |
+
+1024,1042 has the most farmland in the polygon (the wet face's benches, all Iziz's), but no cushions within reach.
+**1095,911 is the best place to farm and harvest at once**: a high basin on the wet face just under the plateau's edge,
+wet enough to farm (Dsb) and 6 km from the woolbacks, on ground no polity claims. The reach has no river (the model's
+rivers start lower), so its water is rain and springs.
+
+**The marker:** a village pin "Eastern highlands harvesters (to be named)" at 1095,911, no polity, sent to the queue on the
+owner's word ("place a marker"); culture, lore and polity to come.
+
 ### 2.6 The craft-only polities' natural exports
 
 | Polity | Today | The natural export | Ground (census) | How |
@@ -298,6 +330,7 @@ For the scale-model session's queue (`local_bf163a02`), not edited here. A propo
 | SETT_ADDED | the Lipp tin mine (to be named) | 706,628 | village | Iron Republic | tin, 25 node-yield (2.6) |
 | SETT_ADDED | **Ṣilbaru** (Zeijani, "silver"), the Dhelv silver works | 851,774 | village | Zeijani | gold 10.5 and silver 11.3 node-yield (2.6) |
 | type change | Tallwalls | 650,1268 (unchanged) | city to **town** | Free Giants | the owner: poorer (2.3) |
+| SETT_ADDED (**sent, the owner's go**) | Eastern highlands harvesters (to be named) | 1095,911 | village | none yet | the cushion plateau's harvesters (2.5d); culture and lore to come |
 | SETT_ADDED (**proposed**, not yet sent) | Pit-Head 04, the Ropers' camp (the Siphon Pits' plan names it) | ~1687,1555 | outpost | Yuni Emirate | the machine-wax works on the maar floor (2.5c) |
 | page code | a **town** settlement type | - | - | - | the page's `SETT_TYPES` has no town (city, outpost, village, cavern, arcology, the ruins); the owner chose to add one, a glyph and a key entry, rather than make Tallwalls a village. The Tabist town takes it too |
 
