@@ -15,7 +15,7 @@ function load(){L('core/clock/20-core-clock.js');fs.readdirSync(path.join(ROOT,'
  return H;}
 /* the plain data, once (core/camp, the travel, the kit's camp table, the culture's table): the sim and the host each run */
 L('core/rand/08-core-rand.js');fs.readdirSync(path.join(ROOT,'core','camp')).filter(f=>/^\d\d-camp-.*\.js$/.test(f)).sort().forEach(f=>L('core/camp/'+f));
-L('core/world/48t-world-travel.js');L('kits/beast-riders/src/79-br-camp.js');L('settlements/pinnacle-rock/src/15-pr-tune.js');
+L('core/world/48t-world-travel.js');L('kits/beast-riders/src/79-br-camp.js');L('settlements/pinnacle-rock/src/14-pr-legs.js');L('settlements/pinnacle-rock/src/15-pr-tune.js');
 let bad=0;const ok=(name,pass,neg,detail)=>{const r=pass&&!neg;if(!r)bad++;console.log((r?'PASS  ':'FAIL  ')+name+(detail?'  ('+detail+')':'')+(neg?' (its negative passed)':''));};
 const t=n=>(n/1000).toFixed(1)+' t',TOWN='staiytii0y';
 const D=(a,b)=>{const r={};Object.keys(a||{}).forEach(g=>{const v=(a[g]||0)-((b||{})[g]||0);if(Math.abs(v)>1e-9)r[g]=v;});return r;};
@@ -32,7 +32,7 @@ const T1=Y.B1[TOWN],T2=Y.B2[TOWN],y2=k=>D(T2[k],T1[k]);
 {const cl=Y.V.settlements.filter(s=>/hamlet\.clearing/.test(s.id)),bands=Y.V.bands,pops=bands.map(b=>b.census.pop),floor=['mammoth','dragonfly'].map(tr=>bands.find(b=>b.tribe===tr).census.pop);
  const markets=Object.keys(T.markets),ok1=Y.V.settlements.find(s=>s.id===TOWN).people===3000&&cl.length===4&&bands.length===18&&pops.every(p=>p>=40&&p<=70)&&!Y.S.problems.length;
  ok('declared: Pinnacle Rock of 3,000, the floor ring, the plan\'s four clearings, eighteen bands of 40-70 (Mammoth and Dragonfly too), seven markets, Goto and Nusidi',
-  ok1&&markets.length===7&&Y.V.settlements.some(s=>s.id==='goto')&&Y.V.settlements.some(s=>s.id==='nusidi'),pops.some(p=>p<40)||floor.some(p=>p<40),
+  ok1&&markets.length===7&&Y.V.settlements.some(s=>s.id===T.ids.goto)&&Y.V.settlements.some(s=>s.id===T.ids.nusidi),pops.some(p=>p<40)||floor.some(p=>p<40),
   cl.length+' clearings ('+cl.map(c=>c.people).join(', ')+'), bands '+Math.min(...pops)+'-'+Math.max(...pops)+' ('+pops.reduce((a,b)=>a+b,0)+' people; Mammoth '+floor[0]+', Dragonfly '+floor[1]+'); problems: '+(Y.S.problems.slice(0,2).join('; ')||'none'));}
 // 2. the books balance: the sim's ledger over the second year, and every band's world books across its hand-overs
 {let worst=0;Y.W.order.forEach(id=>Object.values(KCAMP.books(Y.W,id)).forEach(r=>worst=Math.max(worst,Math.abs(r.residual))));
@@ -63,22 +63,28 @@ const T1=Y.B1[TOWN],T2=Y.B2[TOWN],y2=k=>D(T2[k],T1[k]);
   Math.abs(N.meat/Nf.meat-2/3)<1e-9&&b.feeds.meat===N.meat&&both&&starved<need*.03&&wshort<wneed*.03,Math.abs(Nf.meat/N.meat-1)<.01,
   'the raptors\' band '+Math.round(N.meat)+' kg of meat a day (full '+Math.round(Nf.meat)+'); meat short '+t(starved)+' at home of '+t(need)+', '+t(wshort)+' away of '+t(wneed));}
 // 7. the raids: Goto and Nusidi struck within the caps, neither broken, their people within a tenth
-{const log=Y.raids.log,tg=['goto','nusidi'],caps=KCAMP.RAID_CAPS;let worst=0;log.forEach(l=>Object.keys(l.loot).forEach(g=>worst=Math.max(worst,l.loot[g]/l.before[g])));
+{const log=Y.raids.log,tg=[T.ids.goto,T.ids.nusidi],caps=KCAMP.RAID_CAPS;let worst=0;log.forEach(l=>Object.keys(l.loot).forEach(g=>worst=Math.max(worst,l.loot[g]/l.before[g])));
  const low=tg.map(x=>Y.raids.standing[x]==null?1:Y.raids.standing[x]),pop=tg.map(x=>Y.S.towns[x].spec.people/T.targets[x].people);
  ok('the raids on Goto and Nusidi: within the caps (15 % of a good), neither broken, their people within a tenth',tg.every(x=>log.some(l=>l.target===x))&&log.some(l=>l.outcome==='success')&&worst<=caps.stock+1e-9&&low.every(s=>s>=.6)&&pop.every(p=>p>=.9),
-  false,log.length+' raids ('+log.map(l=>l.target[0]+':'+l.outcome).join(', ')+'); most taken '+(worst*100).toFixed(1)+'%; standing '+low.map(s=>s.toFixed(2)).join('/')+'; people '+pop.map(p=>Math.round(p*100)+'%').join('/'));}
+  false,log.length+' raids ('+log.map(l=>(l.target===T.ids.goto?'g':'n')+':'+l.outcome).join(', ')+'); most taken '+(worst*100).toFixed(1)+'%; standing '+low.map(s=>s.toFixed(2)).join('/')+'; people '+pop.map(p=>Math.round(p*100)+'%').join('/'));}
 // 8. the trade: caravans to the Beast Rider cities; the long roads to the coyotemen and the Dasri with high-value goods; the
 //    intermediaries for the rest
-{const tr=Y.W.trades||[],cities=['talon','fort-kreia','mavs','fort-ordo','girder'],far=['coyote-canyon','shade'],hv=['silk','beasts','hides'];
+{const tr=Y.W.trades||[],cities=['talon','fort-kreia','mavs','fort-ordo','girder'].map(k=>T.ids[k]),far=['coyote-canyon','shade'].map(k=>T.ids[k]),hv=['silk','beasts','hides'];
  const visited=cities.filter(c=>tr.some(x=>x.market===c)),farT=tr.filter(x=>far.indexOf(x.market)>=0),farOk=far.every(m=>farT.some(x=>x.market===m))&&farT.every(x=>Object.keys(x.sold).every(g=>hv.indexOf(g)>=0));
  const I=((Y.R2.intermediaries||{}).landed||{})['intermediaries>'+TOWN]||{},Io=((Y.R2.intermediaries||{}).landed||{})[TOWN+'>intermediaries']||{};
  ok('the caravans: to the Beast Rider cities, the long roads to the coyotemen and the Dasri (hides, beasts and silk out), the intermediaries\' salt in',visited.length>=4&&farOk&&(I.salt||0)>0,
-  !farT.length,tr.length+' trades; cities '+visited.join(', ')+'; far '+farT.length+' ('+far.map(m=>m+' '+farT.filter(x=>x.market===m).length).join(', ')+'); the intermediaries landed '+JSON.stringify(Object.fromEntries(Object.entries(I).map(([g,n])=>[g,Math.round(n)]))));}
+  !farT.length,tr.length+' trades; cities '+visited.map(m=>T.markets[m].name).join(', ')+'; far '+farT.length+' ('+far.map(m=>T.markets[m].name+' '+farT.filter(x=>x.market===m).length).join(', ')+'); the intermediaries landed '+JSON.stringify(Object.fromEntries(Object.entries(I).map(([g,n])=>[g,Math.round(n)]))));}
 // 9. every band's year: fed wherever it is (its hunt, trade and loot covering its own needs), and the haul home
 {const hungry=Y.W.order.filter(id=>(Y.W.bands[id].books.short.food||0)>1||ge(D(Y.B2[id].hungry,Y.B1[id].hungry))>Y.W.bands[id].people*.6*180*.01);
  const brought=Y.W.order.map(id=>ge(D(Y.B2[id].imported,Y.B1[id].imported)));
  ok('every band fed at home and away by its own hunt, trade and loot; each brings a haul home',!hungry.length&&brought.every(x=>x>0),false,
   (hungry.join(', ')||'none hungry')+'; brought home '+t(Math.min(...brought))+' to '+t(Math.max(...brought))+' grain-equivalent a band');}
-console.log('\nPinnacle Rock, the second year: made '+Object.entries(y2('made')).map(([g,n])=>g+' '+Math.round(n)).join(', ')+'\n  imported '+Object.entries(y2('imported')).map(([g,n])=>g+' '+Math.round(n)).join(', ')+
+// 10. the far legs (S5, the owner's answer B): every partner's leg from the scale model's own pins and heights, marked planned,
+//     the ventures' marches booked on them; Shade read from the model, not typed in
+{const L=PR_LEGS.legs,ids=Object.values(T.ids),all=ids.every(id=>L[id]&&L[id].planned&&L[id].length_m>0&&L[id].up_m>=0),
+  marches=Y.W.ops.filter(o=>o.what==='march'&&(o.args.why==='raid'||o.args.why==='caravan')),onLegs=marches.length>0&&marches.every(o=>o.args.planned);
+ const G=T.graph(),P=KTRAVEL.path(G,'staiytii0y',T.ids['coyote-canyon'],{kmDay:25,hours:8}),Pb=KTRAVEL.path(G,T.ids['coyote-canyon'],'staiytii0y',{kmDay:25,hours:8});
+ ok('the far legs: every partner\'s from the scale model\'s pins and heights, marked planned; the ventures marched on them; a climb slows a leg',all&&onLegs&&P.legs[0].planned&&P.moving!==Pb.moving,
+  !(L[T.ids.shade].px>0),ids.length+' legs ('+ids.map(id=>L[id].name+' '+Math.round(L[id].length_m/1000)+' km').join(', ')+'); '+marches.length+' venture marches, all planned; Coyote Canyon '+Math.round(P.moving/60)+' h out, '+Math.round(Pb.moving/60)+' h back');}console.log('\nPinnacle Rock, the second year: made '+Object.entries(y2('made')).map(([g,n])=>g+' '+Math.round(n)).join(', ')+'\n  imported '+Object.entries(y2('imported')).map(([g,n])=>g+' '+Math.round(n)).join(', ')+
  '\n  ate '+Object.entries(y2('eaten')).map(([g,n])=>g+' '+Math.round(n)).join(', ')+'\n  stores '+JSON.stringify(T1.stock)+' -> '+JSON.stringify(T2.stock));
 console.log(bad?'\n'+bad+' FAILED':'\nOK');process.exit(bad?1:0);

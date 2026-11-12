@@ -7,7 +7,8 @@
    and works run there; leaving, the settlement's books fold back into the band's stock. Every decision is an op in the
    log; between ops a band's place is a pure function of the minute (KCAMP.at). Plain data and pure functions of the
    records: no three.js, no DOM, no SIM.rng (every choice is KRAND.hash(world, band, day, salt)).
-     KCAMP.world(o) -> W   o: {world (seed), cal: {yearD (365), home: [from, to] year days (the home season; wrapping)},
+     KCAMP.world(o) -> W   o: {world (seed), cal: {yearD (365), home: [from, to] year days (the home season; wrapping)}, hub (the
+                           graph's node a band joins the roads at, from its range: its home's),
                            beasts (a culture's beast table, 50), rules (the band rules, below), host (the sim's adapter,
                            below; null: no hand-over), graph (KTRAVEL.graph, or null), place: {id: {x, z, name}} (the
                            markets', targets' and homes' points), sites: [SITE], bands: [BAND], ventures: (65, 66 add)}
@@ -35,7 +36,7 @@
          core/region's valley gives one (H.valleyHost). */
 KCAMP.world = function (o) {
   var W = { world: o.world == null ? 1 : o.world, cal: Object.assign({ yearD: 365 }, o.cal || {}), beasts: o.beasts, rules: o.rules, host: o.host || null,
-    graph: o.graph || null, place: o.place || {}, sites: {}, bands: {}, order: [], ops: [], day: null, ventures: o.ventures || {}, assign: o.assign || null, dayHooks: o.dayHooks || [], log: [] };
+    graph: o.graph || null, hub: o.hub || null, place: o.place || {}, sites: {}, bands: {}, order: [], ops: [], day: null, ventures: o.ventures || {}, assign: o.assign || null, dayHooks: o.dayHooks || [], log: [] };
   (o.sites || []).forEach(function (S) { W.sites[S.id] = Object.assign({ left: Object.assign({}, S.cap), lastLeft: -1e9, taken: null }, S); });
   (o.bands || []).forEach(function (B) {
     var b = W.bands[B.id] = Object.assign({ stock: {}, at: null, state: 'home', leg: null, venture: null, last: null, loaded: false }, B);
@@ -69,6 +70,11 @@ function kcPoint(W, id) { var S = W.sites[id]; if (S) return S; var P = W.place[
 KCAMP.travel = function (W, from, to, pace) {
   var R = W.rules, G = W.graph;
   if (G && G.nodes[from] && G.nodes[to] && typeof KTRAVEL !== 'undefined') { var P = KTRAVEL.path(G, from, to, pace); if (P) return { minutes: P.minutes, length_m: P.length_m, planned: P.legs.some(function (l) { return l.planned; }), path: P }; }
+  /* one end off the roads (a band at a site of its range): across country to the hub (its home's node), then the roads */
+  if (G && W.hub && G.nodes[W.hub] && typeof KTRAVEL !== 'undefined' && (!!G.nodes[from] !== !!G.nodes[to])) {
+    var off = G.nodes[from] ? to : from, P2 = G.nodes[from] ? KTRAVEL.path(G, from, W.hub, pace) : KTRAVEL.path(G, W.hub, to, pace), o2 = kcPoint(W, off), h = G.nodes[W.hub];
+    if (P2 && o2) { var m2 = Math.hypot(o2.x - h.x, o2.z - h.z) * (R.detour == null ? 1.3 : R.detour), d2 = m2 / 1000 / (pace.kmDay * (R.cross == null ? 0.7 : R.cross));
+      return { minutes: P2.minutes + Math.floor(d2) * 1440 + (d2 % 1) * pace.hours * 60, length_m: P2.length_m + m2, planned: P2.legs.some(function (l) { return l.planned; }), path: P2 }; } }
   var a = kcPoint(W, from), b = kcPoint(W, to); if (!a || !b) return null;
   var m = Math.hypot(b.x - a.x, b.z - a.z) * (R.detour == null ? 1.3 : R.detour), kmDay = pace.kmDay * (R.cross == null ? 0.7 : R.cross);
   var days = m / 1000 / kmDay; return { minutes: Math.floor(days) * 1440 + (days % 1) * pace.hours * 60, length_m: m, planned: true, path: null };

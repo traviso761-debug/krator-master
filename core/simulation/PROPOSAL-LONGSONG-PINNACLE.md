@@ -310,9 +310,19 @@ Longsong can be on the sim after S0-S3. Pinnacle Rock needs S0-S7.
   - the column sleeps at the inns and rest stops, or camps where the day runs out;
   - journeys go multi-hop, and each stretch counts the bridges it crosses.
 
-  Tested on the Oidong and Iziz cluster plans (`core/world/test-travel.js`). Pinnacle's partners are 130-640 km out,
-  beyond its 60 km cut, so their legs are booked as **planned**: the straight line x 1.3, crossed at 0.7 of the pace,
-  marked `planned` in the ops. The open-world corridor region that would lay them is not cut (question below).
+  Tested on the Oidong and Iziz cluster plans (`core/world/test-travel.js`).
+
+  Pinnacle's partners are 170-830 km out by road, beyond its 60 km cut. By the owner's answer (B, 2026-11-12), their legs
+  are **planned legs from the scale model**:
+  - `settlements/pinnacle-rock/tools/bake_legs.py` reads the rock's and each partner's pin from the model's own settlement
+    list, so a moved pin moves its leg (Shade is to move north);
+  - each leg is the straight line x 1.3, with its climbs and descents from the model's heights every 2 km, baked to
+    `src/14-pr-legs.js`;
+  - core/camp reads the legs as `KTRAVEL.graph` `extra` edges keyed by the model's ids, marked `planned`; a band joins
+    them at the rock (the world's `hub`).
+
+  The corridor region that will lay the real links is its own session (`claude/pinnacle-corridors`); its baked links
+  replace these edges.
 - **S6:** core/camp's world level, its world tick and hand-over (C3, C4) in `60-camp-world.js`:
   - the bands eat, forage, strike spent sites and come home in time;
   - at home they are handed over to the sim (`core/region` `H.valleyHost`), their books balanced across every hand-over;
@@ -333,9 +343,9 @@ Longsong can be on the sim after S0-S3. Pinnacle Rock needs S0-S7.
     Canyon) and the Dasri (Shade), and raids on Goto and Nusidi;
   - the intermediaries off the map for the rest.
 
-  A spin-up year starts the bands mid-season; the second year balances. The town goes without 0.4 t of 569 t
-  grain-equivalent, and its stores end at 91 % of their start. With no haul it would go without 122 t. The four streams
-  come out ring 20 %, clearings 17 %, bands at home 13 %, the dry-season haul 50 %, against this proposal's estimated
+  A spin-up year starts the bands mid-season; the second year balances. The town goes without nothing of its 561 t of
+  grain-equivalent, and its stores grow (265 t to 299 t). With no haul it would go without 122 t. The four streams come
+  out ring 19 %, clearings 16 %, bands at home 12 %, the dry-season haul 53 %, against this proposal's estimated
   20/20/20/40.
 - **Section 5's Pinnacle items:**
   - The page now stands at its open-world site. Its `region/` is re-cut from map 5.1 round px 1007,686, and LORE's entry is
@@ -344,7 +354,7 @@ Longsong can be on the sim after S0-S3. Pinnacle Rock needs S0-S7.
     is now 40-70. The census test checks all eighteen (`test-pr-economy.js` check 1).
 
 **Still open after S7:**
-- The long legs' real roads: cut a corridor region (as the Iziz cluster), or another way to lay them.
+- The long legs' real roads: the corridor region (`claude/pinnacle-corridors`) lays them; until then they are planned.
 - The Dasri's nearer northern village, which is not on the model: they trade at Shade until it is placed.
 - Shares nearer the proposal's estimate would need more from the clearings or the bands at home.
 - Spoilage in the town's stores.
