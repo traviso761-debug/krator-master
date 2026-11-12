@@ -4,7 +4,7 @@
   "build.py": {
    "inputs": {
     "biomes/galvanic/KNOWN_ISSUES.md": "6f9724483a07375d7041267bcab38224ec9fc52f28d28095a84838f8d68ec19f",
-    "biomes/galvanic/PORT.md": "fa6c8eee87072e14b746454c1c0b2c6ea65a7e913f79fbe7d1f1976f7fc51883",
+    "biomes/galvanic/PORT.md": "0a11669766864154ccf5250183468fab38eabd6a85be3549d8b5c846829eaf39",
     "biomes/galvanic/build.py": "f968e40c25440422bb882dfab67de00aba784f127d560f7cce5edaa6c5230814",
     "biomes/galvanic/src/00-head.html": "3ef3735937a749ea7af0b51828100f0b99c60419307de986c60b2f89c924096d",
     "biomes/galvanic/src/40-galvanic-cell.js": "a60c60670c30f95833fd7a72b90298b8cd5ee261388dcd6f8c318bf79e717e9d",

@@ -1429,8 +1429,8 @@
     "kits/iziz-vernacular/src/74b-vern-frontier.js": "a488d92600d611e571ca6a7e2b0e0dbcaeb697ce1ff9fa98889101c008f2d86b",
     "kits/iziz-vernacular/src/74z-vern-trades.js": "8ff3ccda50c56e14f469753b70253b570c31666b09510f098ec6c45b686f4c9c",
     "kits/iziz-vernacular/vernacular.py": "dcae438a176751059c9a0a11431f7aa08ac8724894fa6b082a64389ba3534ad0",
-    "kits/resources/src/42r-res-ore.js": "795b57d189506369e35b7e2b3de5795d940d8bff91bb51e6dedb7df3f2432a04",
-    "kits/resources/src/44r-res-nodes.js": "e52c3cb3eace32606700aef4991b9032cdf0be9a21f56ffad90c657ca89359e3",
+    "kits/resources/src/42r-res-ore.js": "b90fca3f8c77f027527e9a312602ad8912c7018834c2752a2d77c284821e1e2f",
+    "kits/resources/src/44r-res-nodes.js": "4b52520d1539cc40dc01dac8a90142d7b10a08ba922dbd832518091ab10290a1",
     "kits/ringsea/src/00-head.html": "3c3bc4894f147593ea5e8a914e240098c44e6df322ae753a706d4c3933132d6e",
     "kits/ringsea/src/10-core.js": "7c31cf7eb63a1666c0f1c8cd97fd810c1531d10e8d014c105f807a2ad521138b",
     "kits/ringsea/src/12-stats.js": "67d17e87faa80d6e5503dd3dc0d53cb2b9e0d68ce77f256187968ee914f881bd",
@@ -1884,7 +1884,7 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "settlements/isle-demo/dist/isle-city.html": "fee9dbf7199805a3d06cce97f5f01a0f65ea7b7b9c399e00ca24b72ef39499bd",
+    "settlements/isle-demo/dist/isle-city.html": "afc0cbe200850f93f934e6ec88a3bd08273e330506e560a121765803893993c2",
     "settlements/isle-demo/dist/isle-city.plan.js": "02909400ccf205a7683b165caa6caa676d64a498a28e6d5a40e9fb51670ab314",
     "settlements/isle-demo/dist/isle-city.tex.brtowns.js": "7e593dd1b45394583a5fb854cf7186f70472a71c929c365a495d3ef0748d6c5d",
     "settlements/isle-demo/dist/isle-city.tex.islanders-2.js": "a869e63f728e5f1ad426a9ab6bbbb2e84ef86800b51c1c78cbe72b0b1ec606d8",
@@ -1897,7 +1897,7 @@
     "settlements/isle-demo/voth-sources.json": "4154c89cfbd4872012e90dedfa9f727c1c6d72c48f1f7b7191321b70d82e17e5"
    },
    "outputs_raw": {
-    "settlements/isle-demo/dist/isle-city.html": "fee9dbf7199805a3d06cce97f5f01a0f65ea7b7b9c399e00ca24b72ef39499bd",
+    "settlements/isle-demo/dist/isle-city.html": "afc0cbe200850f93f934e6ec88a3bd08273e330506e560a121765803893993c2",
     "settlements/isle-demo/dist/isle-city.plan.js": "02909400ccf205a7683b165caa6caa676d64a498a28e6d5a40e9fb51670ab314",
     "settlements/isle-demo/dist/isle-city.tex.brtowns.js": "7e593dd1b45394583a5fb854cf7186f70472a71c929c365a495d3ef0748d6c5d",
     "settlements/isle-demo/dist/isle-city.tex.islanders-2.js": "a869e63f728e5f1ad426a9ab6bbbb2e84ef86800b51c1c78cbe72b0b1ec606d8",
