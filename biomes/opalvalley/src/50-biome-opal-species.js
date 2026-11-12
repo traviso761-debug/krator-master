@@ -83,7 +83,7 @@ const solid=()=>{const m=BIO.solidMat?BIO.solidMat(null):new T3.MeshLambertMater
 // section 9, item 3): the opal stays the rare thing it is priced as
 OPAL.IRID={cushion:[[1.0,1.02,1.04],[0.86,0.84,1.22]],chalice:[[1.04,1.0,0.94],[0.78,1.06,1.16]],stalk:[[1.02,1.0,0.96],[1.12,0.92,0.84]]};
 const M=OPAL.M={
- tussock:BIO.leafMat(TX.tussock,'op-tussock',{aN:true,swayW:'1.0',swayA:.10}),
+ tussock:BIO.leafMat(TX.tussock,'op-tussock',{swayW:'1.0',swayA:.10}),   /* no aN: its item declares none (the cards drew black)*/
  fern:BIO.leafMat(TX.fern,'op-fern',{aN:true,irid:true,swayW:'(position.y)',swayA:.05}),
  pad:BIO.leafMat(TX.pad,'op-pad',{aN:true,irid:true,swayW:'0.0',swayA:0}),
  cushion:BIO.iridBarkMat(null,'op-cushion',...OPAL.IRID.cushion),

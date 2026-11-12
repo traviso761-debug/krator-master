@@ -19,7 +19,7 @@ const VIEWS=(function(){const S=SITE;
   if(SITE.canyon)v['Down the canyon']=look(LAKES[0].x1+100,axisZ(LAKES[0].x1+100)-30,30,LAKES[2].x1,axisZ(LAKES[2].x1),0);}
  if(ad){const ca=Math.cos(ad.az),sa=Math.sin(ad.az),cx=ad.x+ca*30+sa*14,cz=ad.z+sa*30-ca*14;v['An adit on the wall']=[cx,gh(cx,cz,3),cz,ad.x,gh(ad.x,ad.z,1.4),ad.z];}   /* from down the slope and a little to the side */
  if(pl&&SKEY!=='riftmouth')v['The placer pits']=look(pl.x+30,pl.z-24,6,pl.x,pl.z,0);
- if(SKEY==='middlebed'&&S.vents){const vv=S.vents[0];v['The warm seeps\' crust']=look(vv.x+60,vv.z-40,3,vv.x,vv.z,0);}
+ if(SKEY==='middlebed'&&S.vents){const vv=S.vents[0];v['The warm seeps\' crust']=look(vv.x+34,vv.z-24,11,vv.x,vv.z,0);}
  v['From afar']=look(-2300,-900,260,xm,zc,0);
  return v;})();
 const KIN_NAME={};OPAL.KIN.concat(OPAL.EDGE[SKEY]||[]).forEach(k=>{KIN_NAME[k.key]=k.name;});

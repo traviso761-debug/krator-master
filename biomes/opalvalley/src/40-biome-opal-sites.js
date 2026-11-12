@@ -73,9 +73,9 @@ var OPAL_SITES={
  riftmouth:{key:'riftmouth',name:'The Opal Cataract and the Xanadu Threshold',zone:5,px:[972,1636],sky:{px:700,py:1306},base:60,atm:1.59,koppen:'Af',rain:1110,
   temp:{mean:22,warm:29,cold:15},soil:22,snow:[9000,9500],
   axis:{z0:330,amp:[40,15],f:[.0015,.005],ph:[.2,1.3],bend:.24},
-  chain:[{kind:'stream',x0:2900,x1:1700,y:265,w:18},{kind:'lake',x0:1672,x1:1400,y:150,hw:62,depth:5,name:'The ledge pool (150 m)'},
+  chain:[{kind:'stream',x0:2900,x1:1700,y:265,w:34},{kind:'lake',x0:1672,x1:1400,y:150,hw:62,depth:5,name:'The ledge pool (150 m)'},
    {kind:'lake',x0:1372,x1:820,y:45,hw:175,depth:16,name:'The plunge pool (45 m)'}],   /* the gaps (28 m) are the falls' faces: a curtain, not a chute */
-  river:{y0:43,y1:-112,w:22},fan:{at:60,slope:.045},gorge:[[820,175],[0,110],[-2860,80]],
+  river:{y0:43,y1:-112,w:34},fan:{at:60,slope:.045},gorge:[[820,175],[0,110],[-2860,80]],
   dam:'cataract',walls:{N:300,n0:2600,n1:9000,S:9000,s0:1600,s1:6000},water:{shallow:0x9adcc8,deep:0x206e80,milk:.25},
   sites:[{id:'tollhouse',name:'The Sultanate\'s toll-house (the Opal River\'s landing; caravans for Strongbow and the north)',x:-260,z:-260,r:40,kind:'civic',culture:'xanadu'},
    {id:'landing',name:'The caravan landing (the ford above the gorge\'s mouth)',x:-1700,z:-480,r:60,kind:'infrastructure',culture:'xanadu'}],
