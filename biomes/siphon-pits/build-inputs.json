@@ -182,7 +182,7 @@
   },
   "build.py --station arete": {
    "inputs": {
-    "biomes/siphon-pits/KNOWN_ISSUES.md": "103e2fa392e1208b08823dec7eb1e8cab93df998ac2ec3ad8b2e9aed6885637d",
+    "biomes/siphon-pits/KNOWN_ISSUES.md": "748a664c047a58178cb8f3cebc255f756a5361523d42c7aa76821fe6d9be5942",
     "biomes/siphon-pits/PORT.md": "9138d3b953ee1a07f39d54b09cda380bfaeff2735cf3f3c93691c1b3248044b8",
     "biomes/siphon-pits/build.py": "c35b3d7d97f0d1ef0a38c9e3e21eae556ef7388c80974e8a6bee199d1f7153de",
     "biomes/siphon-pits/src/00-head.html": "46dce391908f223555d3724525ae864a522ff82addaa3b59c83363161aba3af3",
@@ -329,7 +329,7 @@
     "kits/fauna/krator-fauna-hyperjungle.js": "ea2405a3e4c05f158c0cd0c6274f857268ce5b39ec2033bd4860b454c41480d7",
     "kits/fauna/krator-fauna-runtime.js": "9e4b6ba0f3c429c4927a8371d6ee4d4c8a11c509644a938c437ce4f6fadf1a7d",
     "kits/fauna/krator-fauna-wild.js": "74671e89e005bd0f3635ad411b3e224bb76a3329ce5550b4eb1531715ffb0ff0",
-    "kits/fauna/krator-fauna-xeno.js": "4df1de08ee0488e00ef7e5f5c32671e2bc7a422c709d96f2ba9a1310e601e4d5",
+    "kits/fauna/krator-fauna-xeno.js": "4e5cad47a862f747163fcab1ced2cc0c7edf4dbc80d3246f068bc18d236eb0cd",
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
    },
    "listings": {
@@ -341,16 +341,16 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/siphon-pits/dist/siphon-pits-arete.html": "e1c2c28f8b7ecf1daf55f4fc1286d75300f7bde3372f85f89c0547e3bfd2f466"
+    "biomes/siphon-pits/dist/siphon-pits-arete.html": "7e7678e5969433ea4da12a592c272927ae60211964dc7bd16e1489ab3796b79b"
    },
    "outputs_raw": {
-    "biomes/siphon-pits/dist/siphon-pits-arete.html": "e1c2c28f8b7ecf1daf55f4fc1286d75300f7bde3372f85f89c0547e3bfd2f466"
+    "biomes/siphon-pits/dist/siphon-pits-arete.html": "7e7678e5969433ea4da12a592c272927ae60211964dc7bd16e1489ab3796b79b"
    }
   },
   "build.py --station pitfloor": {
    "inputs": {
-    "biomes/siphon-pits/KNOWN_ISSUES.md": "103e2fa392e1208b08823dec7eb1e8cab93df998ac2ec3ad8b2e9aed6885637d",
-    "biomes/siphon-pits/PORT.md": "be5b7d17641f20ef031888d6065d9acf21d79176f6ff3ab3245d8e908ea6ce55",
+    "biomes/siphon-pits/KNOWN_ISSUES.md": "748a664c047a58178cb8f3cebc255f756a5361523d42c7aa76821fe6d9be5942",
+    "biomes/siphon-pits/PORT.md": "9138d3b953ee1a07f39d54b09cda380bfaeff2735cf3f3c93691c1b3248044b8",
     "biomes/siphon-pits/build.py": "c35b3d7d97f0d1ef0a38c9e3e21eae556ef7388c80974e8a6bee199d1f7153de",
     "biomes/siphon-pits/src/00-head.html": "46dce391908f223555d3724525ae864a522ff82addaa3b59c83363161aba3af3",
     "biomes/siphon-pits/src/40-biome-siphon-sites.js": "60214820f117fadcb98b91f56fa8ff816bf8eb6fa68b908ccc548879b20ae144",
@@ -368,7 +368,7 @@
     "biomes/siphon-pits/src/89b-host-steam.js": "36494e8e19f3afa87bb7aa5da2fab105d76d2faad67769f1fd2e2b7f8a997b34",
     "biomes/siphon-pits/src/89s-host-sites.js": "27ee9a794ea232a378b4a3d3e3f66adc8fb6f8aba781fd447b23d77dfb177c4b",
     "biomes/siphon-pits/src/89w-host-water.js": "a428ea8f1b4da9dd4b2b7568c583df87d4717484162189538358c5147cea0872",
-    "biomes/siphon-pits/src/89y-host-fauna.js": "ef6d75d39fd810ae42af555c8e9adeb98c35a668dad76507672315f2205dad99",
+    "biomes/siphon-pits/src/89y-host-fauna.js": "34dba7d37174b806c8a38f98562f43ea46d7f1d82ab8285261dd2f81e815ab6e",
     "biomes/siphon-pits/src/89z-host-build.js": "5b9b91609469bc8377c6e410972b4619199585629cf36df7f3f52fe082c9a4f8",
     "biomes/siphon-pits/src/99-host-take.js": "9ba41bedf956f75415aafdcf158d1f6d87229a89fcc76d2519e43f56f0b6e421",
     "biomes/siphon-pits/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
@@ -508,7 +508,7 @@
     "kits/fauna/krator-fauna-hyperjungle.js": "ea2405a3e4c05f158c0cd0c6274f857268ce5b39ec2033bd4860b454c41480d7",
     "kits/fauna/krator-fauna-runtime.js": "9e4b6ba0f3c429c4927a8371d6ee4d4c8a11c509644a938c437ce4f6fadf1a7d",
     "kits/fauna/krator-fauna-wild.js": "74671e89e005bd0f3635ad411b3e224bb76a3329ce5550b4eb1531715ffb0ff0",
-    "kits/fauna/krator-fauna-xeno.js": "4df1de08ee0488e00ef7e5f5c32671e2bc7a422c709d96f2ba9a1310e601e4d5",
+    "kits/fauna/krator-fauna-xeno.js": "4e5cad47a862f747163fcab1ced2cc0c7edf4dbc80d3246f068bc18d236eb0cd",
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
    },
    "listings": {
@@ -520,16 +520,16 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/siphon-pits/dist/siphon-pits.html": "710573b74c281df2a2998dd90f45be4dd16fb519148c3815d21017463b65808d"
+    "biomes/siphon-pits/dist/siphon-pits.html": "88d55bbff64004ab0703918ab868620d9e5f75ca54efb6740fe18cdea6389e53"
    },
    "outputs_raw": {
-    "biomes/siphon-pits/dist/siphon-pits.html": "710573b74c281df2a2998dd90f45be4dd16fb519148c3815d21017463b65808d"
+    "biomes/siphon-pits/dist/siphon-pits.html": "88d55bbff64004ab0703918ab868620d9e5f75ca54efb6740fe18cdea6389e53"
    }
   },
   "build.py --station scarp": {
    "inputs": {
-    "biomes/siphon-pits/KNOWN_ISSUES.md": "103e2fa392e1208b08823dec7eb1e8cab93df998ac2ec3ad8b2e9aed6885637d",
-    "biomes/siphon-pits/PORT.md": "be5b7d17641f20ef031888d6065d9acf21d79176f6ff3ab3245d8e908ea6ce55",
+    "biomes/siphon-pits/KNOWN_ISSUES.md": "748a664c047a58178cb8f3cebc255f756a5361523d42c7aa76821fe6d9be5942",
+    "biomes/siphon-pits/PORT.md": "9138d3b953ee1a07f39d54b09cda380bfaeff2735cf3f3c93691c1b3248044b8",
     "biomes/siphon-pits/build.py": "c35b3d7d97f0d1ef0a38c9e3e21eae556ef7388c80974e8a6bee199d1f7153de",
     "biomes/siphon-pits/src/00-head.html": "46dce391908f223555d3724525ae864a522ff82addaa3b59c83363161aba3af3",
     "biomes/siphon-pits/src/40-biome-siphon-sites.js": "60214820f117fadcb98b91f56fa8ff816bf8eb6fa68b908ccc548879b20ae144",
@@ -547,7 +547,7 @@
     "biomes/siphon-pits/src/89b-host-steam.js": "36494e8e19f3afa87bb7aa5da2fab105d76d2faad67769f1fd2e2b7f8a997b34",
     "biomes/siphon-pits/src/89s-host-sites.js": "27ee9a794ea232a378b4a3d3e3f66adc8fb6f8aba781fd447b23d77dfb177c4b",
     "biomes/siphon-pits/src/89w-host-water.js": "a428ea8f1b4da9dd4b2b7568c583df87d4717484162189538358c5147cea0872",
-    "biomes/siphon-pits/src/89y-host-fauna.js": "ef6d75d39fd810ae42af555c8e9adeb98c35a668dad76507672315f2205dad99",
+    "biomes/siphon-pits/src/89y-host-fauna.js": "34dba7d37174b806c8a38f98562f43ea46d7f1d82ab8285261dd2f81e815ab6e",
     "biomes/siphon-pits/src/89z-host-build.js": "5b9b91609469bc8377c6e410972b4619199585629cf36df7f3f52fe082c9a4f8",
     "biomes/siphon-pits/src/99-host-take.js": "9ba41bedf956f75415aafdcf158d1f6d87229a89fcc76d2519e43f56f0b6e421",
     "biomes/siphon-pits/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
@@ -675,7 +675,7 @@
     "kits/fauna/krator-fauna-hyperjungle.js": "ea2405a3e4c05f158c0cd0c6274f857268ce5b39ec2033bd4860b454c41480d7",
     "kits/fauna/krator-fauna-runtime.js": "9e4b6ba0f3c429c4927a8371d6ee4d4c8a11c509644a938c437ce4f6fadf1a7d",
     "kits/fauna/krator-fauna-wild.js": "74671e89e005bd0f3635ad411b3e224bb76a3329ce5550b4eb1531715ffb0ff0",
-    "kits/fauna/krator-fauna-xeno.js": "4df1de08ee0488e00ef7e5f5c32671e2bc7a422c709d96f2ba9a1310e601e4d5",
+    "kits/fauna/krator-fauna-xeno.js": "4e5cad47a862f747163fcab1ced2cc0c7edf4dbc80d3246f068bc18d236eb0cd",
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
    },
    "listings": {
@@ -687,16 +687,16 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/siphon-pits/dist/siphon-pits-scarp.html": "38862ae0d0d0793ff17496816942e48a7885ab301680fc5342040cbceea1b8aa"
+    "biomes/siphon-pits/dist/siphon-pits-scarp.html": "9a65825233d74b4278a597fbefb6f5e35aa00f1ba0a31408f7dbaea1892fe1a5"
    },
    "outputs_raw": {
-    "biomes/siphon-pits/dist/siphon-pits-scarp.html": "38862ae0d0d0793ff17496816942e48a7885ab301680fc5342040cbceea1b8aa"
+    "biomes/siphon-pits/dist/siphon-pits-scarp.html": "9a65825233d74b4278a597fbefb6f5e35aa00f1ba0a31408f7dbaea1892fe1a5"
    }
   },
   "build.py --station terraces": {
    "inputs": {
-    "biomes/siphon-pits/KNOWN_ISSUES.md": "103e2fa392e1208b08823dec7eb1e8cab93df998ac2ec3ad8b2e9aed6885637d",
-    "biomes/siphon-pits/PORT.md": "be5b7d17641f20ef031888d6065d9acf21d79176f6ff3ab3245d8e908ea6ce55",
+    "biomes/siphon-pits/KNOWN_ISSUES.md": "748a664c047a58178cb8f3cebc255f756a5361523d42c7aa76821fe6d9be5942",
+    "biomes/siphon-pits/PORT.md": "9138d3b953ee1a07f39d54b09cda380bfaeff2735cf3f3c93691c1b3248044b8",
     "biomes/siphon-pits/build.py": "c35b3d7d97f0d1ef0a38c9e3e21eae556ef7388c80974e8a6bee199d1f7153de",
     "biomes/siphon-pits/src/00-head.html": "46dce391908f223555d3724525ae864a522ff82addaa3b59c83363161aba3af3",
     "biomes/siphon-pits/src/40-biome-siphon-sites.js": "60214820f117fadcb98b91f56fa8ff816bf8eb6fa68b908ccc548879b20ae144",
@@ -714,7 +714,7 @@
     "biomes/siphon-pits/src/89b-host-steam.js": "36494e8e19f3afa87bb7aa5da2fab105d76d2faad67769f1fd2e2b7f8a997b34",
     "biomes/siphon-pits/src/89s-host-sites.js": "27ee9a794ea232a378b4a3d3e3f66adc8fb6f8aba781fd447b23d77dfb177c4b",
     "biomes/siphon-pits/src/89w-host-water.js": "a428ea8f1b4da9dd4b2b7568c583df87d4717484162189538358c5147cea0872",
-    "biomes/siphon-pits/src/89y-host-fauna.js": "ef6d75d39fd810ae42af555c8e9adeb98c35a668dad76507672315f2205dad99",
+    "biomes/siphon-pits/src/89y-host-fauna.js": "34dba7d37174b806c8a38f98562f43ea46d7f1d82ab8285261dd2f81e815ab6e",
     "biomes/siphon-pits/src/89z-host-build.js": "5b9b91609469bc8377c6e410972b4619199585629cf36df7f3f52fe082c9a4f8",
     "biomes/siphon-pits/src/99-host-take.js": "9ba41bedf956f75415aafdcf158d1f6d87229a89fcc76d2519e43f56f0b6e421",
     "biomes/siphon-pits/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
@@ -846,7 +846,7 @@
     "kits/fauna/krator-fauna-hyperjungle.js": "ea2405a3e4c05f158c0cd0c6274f857268ce5b39ec2033bd4860b454c41480d7",
     "kits/fauna/krator-fauna-runtime.js": "9e4b6ba0f3c429c4927a8371d6ee4d4c8a11c509644a938c437ce4f6fadf1a7d",
     "kits/fauna/krator-fauna-wild.js": "74671e89e005bd0f3635ad411b3e224bb76a3329ce5550b4eb1531715ffb0ff0",
-    "kits/fauna/krator-fauna-xeno.js": "4df1de08ee0488e00ef7e5f5c32671e2bc7a422c709d96f2ba9a1310e601e4d5",
+    "kits/fauna/krator-fauna-xeno.js": "4e5cad47a862f747163fcab1ced2cc0c7edf4dbc80d3246f068bc18d236eb0cd",
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
    },
    "listings": {
@@ -858,10 +858,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/siphon-pits/dist/siphon-pits-terraces.html": "3c52d66793cfc46e5c4e8e483b8c5a398c619391626f91063feb3ae7d179dad2"
+    "biomes/siphon-pits/dist/siphon-pits-terraces.html": "6614b20f987db3b684aac4c94c8c0220b098a4fe6c00da1712071c54a20d6d0c"
    },
    "outputs_raw": {
-    "biomes/siphon-pits/dist/siphon-pits-terraces.html": "3c52d66793cfc46e5c4e8e483b8c5a398c619391626f91063feb3ae7d179dad2"
+    "biomes/siphon-pits/dist/siphon-pits-terraces.html": "6614b20f987db3b684aac4c94c8c0220b098a4fe6c00da1712071c54a20d6d0c"
    }
   }
  }
