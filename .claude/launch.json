@@ -159,6 +159,24 @@
                                                    "biomes/ancientsvalley/dist"
                                                ],
                                "port":  8831
+                           },
+                           {
+                             "name": "motor-vehicles",
+                             "runtimeExecutable": "python",
+                             "runtimeArgs": ["-m", "http.server", "8797", "--directory", "kits/motor-vehicles"],
+                             "port": 8797
+                           },
+                           {
+                             "name": "line",
+                             "runtimeExecutable": "python",
+                             "runtimeArgs": ["-m", "http.server", "8841", "--directory", "biomes/line/dist"],
+                             "port": 8841
+                           },
+                           {
+                             "name": "repo-root",
+                             "runtimeExecutable": "python",
+                             "runtimeArgs": ["-m", "http.server", "8798", "--directory", "."],
+                             "port": 8798
                            }
                        ]
 }

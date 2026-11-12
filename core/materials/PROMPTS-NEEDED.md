@@ -3,7 +3,7 @@
 Every texture or pattern sheet the owner still has to source or generate, each with its finished prompt. Paste a block
 as it is, one image per block. **Everything delivered lives in `PROMPTS-archived.md`** (checked against `core/materials/library/`, `patterns/` and each build's `materials.json` on `origin/main`, 2026-10-19); this file holds only what is still owed.
 
-**Count: 28 prompt blocks** (2026-11-11: +10 for the Tungang kit, section 43; 2026-11-10: -5, the owner's delivery of that day; 2026-11-09: +3 for the southern highlands' upper stations, section 37; +15 for the hyperjungle's lands and the savannah rims, section 40, 2026-11-08; counted 2026-11-04 before them).
+**Count: 35 prompt blocks** (2026-11-11: +10 for the Tungang kit, section 43; +3 more for the Rift line's later stations, section 41; +3 for the Rift line, section 41; +1, `metal.scorched` for the Motor Vehicles kit's burnt ruins, section 36; 2026-11-10: -5, the owner's delivery of that day; 2026-11-09: +3 for the southern highlands' upper stations, section 37; +15 for the hyperjungle's lands and the savannah rims, section 40, 2026-11-08; counted 2026-11-04 before them).
 
 **Delivered 2026-11-03:** section 31's five (the Gills: `rock.lamina.pipe`, `mineral.crust.ferromanganese`, `mineral.crust.brucite`,
 `card.breathfringe`, `card.turf.limed`) and ten owed on unmerged branches (High Rift, nwbay, nhighlands, ringisles, the rift rim, Copper Glacier),
@@ -419,6 +419,71 @@ Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfec
 ```
 Square, 2048x2048. Orthographic view of a single cut-out object centred in the frame, on a solid flat bright magenta (#ff00ff) background that fills everything outside the object, with no shadow cast on the background. Flat, even, shadowless lighting: no highlights, no vignette. No perspective, no text, no border, no watermark. Object: a spray of miombo leaves (Brachystegia spiciformis) seen from above: pinnate leaves of four to seven pairs of oval leaflets on a slender twig, in the copper-red to wine flush of new growth, glossy, a few leaflets turning olive at their bases. Full colour: not tinted.
 ```
+## 36. The Motor Vehicles kit's burnt metal (`kits/motor-vehicles`, 2026-11-08)
+
+`kits/motor-vehicles/KNOWN_ISSUES.md`, "No scorched-metal set": the kit's ruin states (`KratorVehicles.build(key,
+{ state: 'burnt' })`, the Ancient's Valley's streets) paint burnt bodies with `metal.rust.heavy` for want of a burnt
+set. Lands as the family `scorched` in `kits/motor-vehicles/materials.json` (already there, optional): re-pack the kit
+and point the ruin pass's sooted surfaces at it (`krator-vehicles-runtime.js` `ruinColour`). One image, near-colourless.
+
+| id | Prompt |
+|---|---|
+| `metal.scorched` | Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: burnt-out vehicle body panel after a fire: sheet steel whose paint has burnt off in blistered, curling flakes, leaving bare heat-scaled metal with a fine crazed pattern, patches of matte soot, a few blisters of paint still clinging at the edges of the burnt areas, light surface rust blooming through the scale, faint heat-tint rings (straw, brown, blue) where the metal got hottest, a little grey ash caught in the seams. Near-colourless grey only (the heat-tint rings faint), so it can be tinted. |
+
+## 41. The Rift line (`biomes/line`, the owner's go-ahead 2026-11-11)
+
+The Line's four-track gallery, its guideways and the Tungangs' kept trains (`biomes/line/PLAN.md` section 13; the owner
+answered "write the prompts" on 2026-11-11). Until they come, `concrete.ancient` stands in for the lining, `concrete.slab`
+for the guideway and `metal.rust.plate` for the kept plate. Reuse notes: the lining serves every Ancient bore and the
+subway (`kits/ancient-transit`); the riveted painted plate serves any salvaged vehicle or kept Ancient machine.
+
+`concrete.lining.segment` (the gallery's and every bore's precast lining, seen face-on; about 4 m across the image, so a 2 m
+ring and its joints repeat twice):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: the inside face of a precast concrete tunnel lining, very old: smooth pale warm-grey concrete (#a8a49a to #8f8b82) cast in curved segments 2 m long and about 1.5 m wide, laid in rings so the joints form a regular grid, the ring joints straight across, the long joints staggered from ring to ring like brickwork; each joint a narrow dark groove with a black rubber gasket line; four round bolt pockets 12 cm across near the corners of each segment, filled flush with darker grout; a small grout port in the middle of each segment; faint stencilled ring numbers in faded black at the same spot on every ring; long pale calcite drip stains and darker damp streaks running down from the joints, a few rust blooms from the bolts, a light film of grey dust and soot. Full colour: not tinted.
+```
+
+`concrete.guideway` (the guideway beam's running surface, along the beam; about 3 m across the image):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: the running surface of a concrete guideway beam for a train, running vertically through the frame: dense smooth trowelled concrete, mid-grey (#8a8984) with a faint warm cast, worn into two broad polished running bands of darker smoother concrete (#6f6e6a) where wheels have rolled for centuries, between them a straight central guide slot 30 cm wide with worn steel lips along both edges, dark rust-brown inside, a dull grey metal power strip at its bottom; fine transverse expansion joints every 1.5 m filled with black sealant; oil and rust streaks along the slot, chips and spalls along the beam's outer edges, grey dust in the hollows. The slot and the bands run exactly vertical and continue off the top and bottom edges. Full colour: not tinted.
+```
+
+`metal.plate.riveted.painted` (salvaged plate riveted over the Ancients' white panel: the kept cars and kept stations; about 2 m across the image):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a patchwork of salvaged steel plates riveted over old smooth white metal panel: rectangular plates of different sizes overlapping at their edges, each fixed with neat rows of round domed rivets 2 cm across every 10 cm; the plates painted long ago in faded railway colours, dull bottle green (#3f5a43), cream (#d8cfb0) and red oxide (#8a3e2a), the paint worn through at the edges and around the rivets to brown rust and bare grey steel, chalky and faded, a few brush-painted repairs in slightly different shades; in two or three gaps between plates the original seamed white panel (#e6e5df) shows, scuffed and yellowed; soot and grime darkest at the plate edges. Full colour: not tinted.
+```
+
+**Added 2026-11-11 with the stations hotdoor, breach, fault and portal** (the owner: "write prompts for all textures"). The portal's
+turf needs no prompt: `ground.turf.native` (in the library) is the wet tableland's grass; wire it as the portal's `turf` family. Reuse notes:
+the spalled lining serves every ruined bore and the subway's cracked sections; the blast door serves any Ancient bulkhead, vault or hangar door;
+the smoky quartz serves any crystal cleft, geode or druse (KSPELEO's owed smoky-quartz preset takes its colours from it).
+
+`concrete.lining.spalled` (the hot section's vault where rockbursts broke the lining: about 3 m across the image):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: an old precast concrete tunnel lining (#a8a49a to #8f8b82) badly spalled by rock pressure and heat: large shallow craters where the face has burst off in slabs 20 to 60 cm across, their broken surfaces rough, coarse and paler (#b8b2a6) with grey aggregate showing; in the deepest craters rusted steel reinforcing bars (#7a4630, flaking orange-brown) crossing in a 15 cm grid; between the craters the original smooth face with its dark joint grooves and a few fine branching cracks; fine grey dust and small fragments in the hollows, a faint heat-darkened tan cast. Full colour: not tinted.
+```
+
+`metal.door.blast` (the hot doors' train leaves, the walkway hatches, the breach's bulkhead: about 2.5 m across the image):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: the face of a massive Ancient blast door: heavy dark grey steel plate (#5e6264, #4e5254) in large flush panels joined by deep recessed seams, horizontal stiffening ribs every 1.2 m raised 4 cm with rounded edges, rows of countersunk bolts along each seam, a narrow inset band of dull bronze (#8a6a3c) along one horizontal rib; the paint mostly gone to bare blued steel, a few chips of old cream enamel (#d8cfb0) left at the edges, worn bright where hands and tools have touched it, dark grime and dried water streaks below each rib, a little rust in the seams. Full colour: not tinted.
+```
+
+`mineral.quartz.smoky` (the crystal cleft shrine's points and any quartz-lined pocket: about 30 cm across the image):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a dense crust of smoky quartz crystals seen from above, a close-packed druse of six-sided pointed crystals 1 to 6 cm across pointing toward the viewer at varied angles, translucent smoky brown to dark grey-brown (#6e665c, #4a443e) with clearer pale tips (#d8d6cc) and bright internal planes, a few milky white quartz crystals (#e6e4dc) among them, fine brown iron-oxide dust and tiny chlorite flecks (#4a5a42) in the gaps between the crystals. Full colour: not tinted.
+```
+
+## 42. The Ancient Transit kit (`kits/ancient-transit`, 2026-11-08)
+
+The Ancients' transport infrastructure in ruin (the valley's highway, cargo and passenger lines, street furniture). Stand-ins until these
+land: `ground.asphalt` for the decks and roads (the lane paint is geometry), `ground.gravel042` for the ballast, `metal.rust.heavy` for the
+rails and every ruined metal. **3 prompts.** Each takes the base template, then:
+
+| id | Material line |
+|---|---|
+| `ground.asphalt.lanes` | Worn dark asphalt road surface with faded lane paint: fine aggregate showing through the bitumen (#4a4846, #585450), a patched crack running across, and one broken white lane dash (#d8d4c8, worn to 60%) along one edge of the tile and a faded yellow edge line (#c8a040) along the other, so the tile repeats as a lane. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. |
+| `ground.ballast.rail` | Railway track ballast: angular grey granite stones 3 to 6 cm (#7e7a74, #8a8680, #6a6660), packed, dusty with rust-brown fines between them (#6a4a36), two faint darker bands across the tile where sleepers lay. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. |
+| `metal.rail.rusted` | The head and web of a steel rail a thousand years idle: flaking orange-brown rust (#8a4a2c, #a65a36) over pitted dark steel (#4a4644), the running surface a dull grey band along the tile's middle with rust creeping over it, scale lifting at the edges. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. |
 
 ## 43. The Tungang kit (`kits/tungang`, 2026-11-11)
 
