@@ -785,7 +785,8 @@ reach 33 °C, with 22-34 km²-eq of farmland.
 Sent to the queue on the owner's choice (2026-11-12) as a terrain edit, to run in its turn; the crops wait for implementation.
 
 **A Coyote village on the northern fresh lake** (the owner: "we can add a coyote village at C"). The survey for Reed turned up the
-big fresh lake north of the abyss (~1227,546, 3,428 km², shore ~-287 m). Its south shore at **1220,564** is Aw, ~1,270 mm, +26 °C,
+big fresh lake north of the abyss (~1227,546, 3,428 km², its shore's median ~-287 m). The site at **1220,564** is a knoll at
++132 m a few km above the south shore (the nearest water 1.4 px NE, the queue's check). It is Aw, ~1,270 mm, +26 °C,
 with ~148 km²-eq of farmland within 10 km, inside the Coyote Kingdom's polygon, ~156 km from Coyote Canyon. A village, to be named,
 sent to the queue on the owner's word.
 
