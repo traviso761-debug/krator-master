@@ -349,8 +349,10 @@ Longsong can be on the sim after S0-S3. Pinnacle Rock needs S0-S7.
   out ring 19 %, clearings 16 %, bands at home 12 %, the dry-season haul 53 %, against this proposal's estimated
   20/20/20/40.
 - **Section 5's Pinnacle items:**
-  - The page now stands at its open-world site. Its `region/` is re-cut from map 5.1 round px 1007,686, and LORE's entry is
-    corrected (about 1,500 mm, the knoll ~110 m over its round).
+  - LORE's entry is corrected to the open-world site (about 1,500 mm, the knoll ~110 m over its round).
+  - **The page has not moved.** A re-cut of its `region/` at 5.1 px 1007,686 built, but the page did not finish loading in 16
+    minutes (GPU verify: two timeouts at 15). It keeps its old cut, which loads in ~6.5 minutes; the cause is not diagnosed
+    (`settlements/pinnacle-rock/KNOWN_ISSUES.md`).
   - Mammoth, Dragonfly, Quetzal and Nightwing gained a double dome each: those four bands are now 40-70, and the census test
     checks all eighteen grounds (`test-pr-economy.js` check 1). The six ground tribes' upper grounds took more tents too,
     but on the page's mesa two of them no longer fit (Raptor 6 of 8 pitched, Longcrawler 7 of 8), so they are back to their

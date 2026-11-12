@@ -8,9 +8,8 @@
 - [x] **The savage hyperjungle grew nothing** while the rock stood on the rim. Since the move of 2026-11-10 the
       hyperjungle is in the registry on that overlay (little-demo's pass table). The cut's two overlays (the savage
       hyperjungle and the NE rim) both grow now.
-- [x] **Pinnacle Rock's own page has moved** (2026-11-12, phase S7 of `core/simulation/PROPOSAL-LONGSONG-PINNACLE.md`): its
-      `region/` is re-cut from map 5.1 round px 1007,686, the same 120 km box at 2 km cells, so the page and this region stand
-      on one spot.
+- [ ] **Pinnacle Rock's own page has not moved.** `settlements/pinnacle-rock` still reads its 4.21 cut round the old
+      pixel. A re-cut at 1007,686 (2026-11-12) left that page loading past 16 minutes (its `KNOWN_ISSUES.md`).
 - [ ] **The clearings are drawn in the Beast Riders kit's buildings on the world's ground** (2026-11-12: four farming
       villages, core/hamlet's `beast-rider` row in `src/48-world-site.js`; `core/world` 88s draws them through CAT). Their
       fields are core/hamlet's; no Beast Rider crop or terrace dressing is laid on them yet.

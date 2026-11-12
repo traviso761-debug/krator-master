@@ -12,10 +12,10 @@ cd dist && python3 ../verify.py pinnacle-rock.html --assert [--all-views --out .
 
 ## What the page is
 
-- **The site is the open world's** (map 5.1, px 1007,686: `openworld/SITES.json` `staiytii0y`, the spot the owner moved
-  the rock to on 2026-11-10; re-cut here 2026-11-12). Before that the page stood on 4.21 px 755,351. `region/` holds the
-  cut round it (120 km square at 2 km cells, from `tools/scale-model/extract_region.py` on the model's 5.1 data; the
-  model's regions and the cut's box in `region/source/regions-cut.json`).
+- **The site is the scale model's** (4.21, px 755,351). `region/` holds the cut round it (120 km square, from
+  `tools/scale-model/extract_region.py`; the model's regions and settlements as read on 2026-10-19 in `region/source/`,
+  the cut's box added as `regions-cut.json`). The rock's open-world spot is map 5.1 px 1007,686 (moved 2026-11-10). A
+  re-cut there (2026-11-12) left the page loading past 16 minutes (`KNOWN_ISSUES.md`), so the page keeps this cut.
 - **On the sim** (2026-11-12, phase S7 of `core/simulation/PROPOSAL-LONGSONG-PINNACLE.md`): `src/15-pr-tune.js` (`PR_TUNE`,
   `[G data]`) is the Beast Riders' table. It holds the beasts' appetites and loads, and the town of 3,000. It also holds the
   floor ring, the four clearings of `openworld/pinnacle`'s plan, and the eighteen bands with their dry-season ventures (twelve of 42-51 people; the six ground tribes' upper grounds keep their five tents on the mesa, 23-27 people each).
