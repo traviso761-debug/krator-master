@@ -97,7 +97,7 @@ const STAGE={key:'mouth',px:STATION_PX,seed:400,title:'the Spider Lake Threshold
   if(h<waterH(x,z)-.2)c.lerp(LIN(0x4a4a3c),.85);c.lerp(LIN(0x9a8462),rd*.75);},
  layers:[{fam:'ground.grass',name:'meadow',amt:.45},{fam:'ground.reedbed',name:'reed bed',amt:.6},{fam:'ground.mud',name:'bank mud',amt:.55}],
  gl(x,z){const sw=Math.max(FC.at(FC.a.swamp,x,z),FC.at(FC.a.shore,x,z)*.8),lv=FC.at(FC.a.levee,x,z)*(1-sw),m=(1-sw)*(1-lv)*(1-FC.at(FC.a.road,x,z));return[m,sw,lv];},
- probes:[[CH[0].P[60][0],-1.5,CH[0].P[60][1]],[COVES[0].x,-.4,COVES[0].z]],
+ probes:[[CH[0].P[60][0],-1.5,CH[0].P[60][1]]].concat(COVES.map(V=>[V.x,-.4,V.z])),
  landmarks:[{name:'Spider Lake (its eastern bay; the lake\'s level 1,460 m)',kind:'water',x:shoreX(0)-1600,z:0,y:LV-20,r:2200,h:22},
   {name:'Hau-Gel\'s delta (three mouths into Spider Lake)',kind:'landform',x:SPLIT[0]-700,z:SPLIT[1]-100,y:LV-3,r:1300,h:6}]
   .concat(COVES.map((V,i)=>({name:'A warm cove (Spider Lake\'s hydrothermal seeps: 32-45 °C, travertine-rimmed)',kind:'water',x:V.x,z:V.z,y:base(V.x,V.z)-2,r:V.r+4,h:4}))),
