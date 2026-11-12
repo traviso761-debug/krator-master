@@ -299,9 +299,9 @@
    }
   },
   "farm": {
-   "mean": 0.271,
-   "good_km2": 800,
-   "best_km2": 160,
+   "mean": 0.287,
+   "good_km2": 880,
+   "best_km2": 176,
    "peak": {
     "score": 0.773,
     "x": 4000,
@@ -353,8 +353,8 @@
    "family": "farmland",
    "x": 16000,
    "z": -6000,
-   "score": 0.63,
-   "label": "Farmland: good (63%, 1365 mm, 31 °C)",
+   "score": 0.62,
+   "label": "Farmland: good (62%, 1365 mm, 31 °C)",
    "why": "warm, watered, flat and deep-soiled (Af)"
   },
   {
@@ -363,18 +363,18 @@
    "family": "farmland",
    "x": 8000,
    "z": 26000,
-   "score": 0.53,
-   "label": "Farmland: good (53%, 1757 mm, 32 °C)",
+   "score": 0.55,
+   "label": "Farmland: good (55%, 1757 mm, 32 °C)",
    "why": "warm, watered, flat and deep-soiled (XA)"
   },
   {
-   "id": "res-farm--16--14",
+   "id": "res-farm--20--14",
    "kind": "farm",
    "family": "farmland",
-   "x": -16000,
+   "x": -20000,
    "z": -14000,
-   "score": 0.5,
-   "label": "Farmland: good (50%, 1459 mm, 32 °C)",
+   "score": 0.48,
+   "label": "Farmland: fair (48%, 1475 mm, 32 °C)",
    "why": "warm, watered, flat and deep-soiled (XA)"
   }
  ]

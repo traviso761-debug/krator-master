@@ -9,6 +9,7 @@ page that reads it came out byte-identical after the move.
 | Fragment | Tag | What |
 |---|---|---|
 | `00-head.html` | [web] | the page shell; a region's `build.py` swaps in its title and caption |
+| `40-world-smooth.js` | [G data] | `WSMOOTH`: the smoothing that takes the scale model's linear artifacts out of the land ("Smoothing" below): `heights` (along the contours, at the cut), `river` and `line` (the curves a smoothed region carves). A smoothed region's build lists it before `41` |
 | `41-world-fields.js` | [G data] | `WORLD`: the region's rasters decoded into the land. It holds:<ul><li>`WORLD.H(x, z, minWave)`: the model's heights, synthesized relief, scarps, river channels and `landHook`;</li><li>the water (`water`, `lakeWater`, `riverWater`);</li><li>the fields every kit reads (`at`, `fieldsFrom`);</li><li>`townW`, `clearHook`, the climate's colour.</li></ul> |
 | `42-world-roads.js` | [G data] | `ROADS`: least-cost routing on the land at a held grade; the carriageway shaped into the ground |
 | `45-world-host.js` | [web] | the renderer, scene and frame loop the world draws into |
@@ -63,6 +64,65 @@ the isle demo's):
 - `91-world-probe.js` writes its own PRNG for the probe's samples;
 - `80-world-sky.js` draws its own sky dome, not core/atmos's standard skybox;
 - numeric defaults written with `||` in `41`, `84`, `85` and `88`.
+
+## Smoothing
+
+The owner, 2026-11-11, on a census map's hillshade of `openworld/xanadu-oidong-highrift`: "we might need a world module to
+smooth over linear artifacts". Seen at the height grid's own resolution (`python3 core/world/hillshade.py <region>`), the
+land had three kinds, each traced to its source:
+
+| Artifact | Where it came from | The fix |
+|---|---|---|
+| **Staircases** along scarps and ridges | The model's 2 km pixels: a diagonal scarp is a run of pixel steps, and the cut's cubic upsample keeps them | The cut smooths the upsampled heights **along their contours** (`WSMOOTH.heights`) before its synthesis, so the synthesis's ledges follow clean contours. The scarps' levels (`scarpl`, `scarpu`) are upsampled by the B-spline, not bilinearly, so their 4 km seams go too |
+| **Streaks** along the rows and columns | The cut clamped its cubic to the bilinear interpolation of 3x3 min and max boxes, whose squares and seams show; the model's own rows show through a cubic | The cut upsamples by the cubic B-spline, which cannot overshoot, so it needs no clamp; streaks across a slope's contours are smoothed with the stairs |
+| **Ruler-straight river cuts** | The cut carved each river's trench along its polyline's straight 2 km runs, rounded to cells (dashed trenches at 500 m). The page carved along every fourth vertex (8 km) after two Chaikin passes. The model's traced rivers (`px` with `q_m3s`) are themselves D8 paths in axis and diagonal moves | Both carve along `WSMOOTH.river`: a centripetal Catmull-Rom through every vertex, with a traced river's zigzag relaxed first (one 1-2-1 pass, at most 400 m) and a little seeded meander (about its width, zero at every vertex). The page carves a smoothed region's rivers unwarped, so they lie on their curve through the model's vertices, not up to 250 m off (the offset seen at Longsong). The D8 drainage lines are relaxed into curves (`WSMOOTH.line`) |
+
+**How the heights are smoothed.** A pass takes the structure tensor (Gaussians, the only kernel both separable and
+round): at every cell the contour's direction and how sure it is. The new height is the weighted mean of the heights down
+the streamline through the cell, followed both ways for 4 model pixels and bending with the contour, and blended in by
+coherence. Across a contour nothing moves, so a cliff keeps its profile, and nothing is aligned to the grid, so there is
+no axis or 45-degree bias. Two passes, at 3 model pixels' integration scale; about 1 s for 50,000 cells, about 15 s for a
+million. A plain blur strong enough to fill the stairs widens a scarp by 70 %; this widens it by under 2 %.
+`node core/world/test-smooth.js` proves it on synthetic land. Each check has a negative:
+- a staircase is filled at every angle, and the staircase itself fails that check;
+- the profile is kept, and the blur fails that check;
+- a smooth scarp moves equally little at 24 angles;
+- streaks across a slope go;
+- a peak stays;
+- the curves pass through their vertices with no corners, and the meander is seeded and the same in any cut.
+
+**What it does not do.** A streak running *along* the contours reads as a terrace, so it stays. Lakes keep the model's
+2 km masks: where the land round a lake lies under its level (pinnacle's), only the mask draws the shore. A follow-up
+would draw shores from a finer source.
+
+**Turning it on.** A region opts in with `"smooth": true` in `openworld/SITES.json`. Then:
+1. `tools/scale-model/cut_site.py` passes `--smooth` to `extract_region.py`, which runs the JS in node
+   (`core/world/smooth.py`), keeps every river vertex in region.json (two past the box at each end), and writes
+   region.json's `smooth` record. A cut of 1.5 cells a model pixel or coarser is left alone (isle-demo, north-basin).
+2. `41` reads the `smooth` record, and throws if `40` is not on the page.
+3. The region's `build.py` lists `40` before `41`. `core/world/bake_sites.py` always loads it.
+4. Re-bake (`bake_sites.py <region>`, `--resources`), rebuild, GPU-verify.
+
+Without the flag the cut is byte-identical to before (checked on pinnacle) and `41` takes the old path.
+
+**Where it is on** (2026-11-12): `openworld/pinnacle`. Re-cut, re-baked (its nine camps and tracks all stand, plan hash
+`10e4ebe9`), and verified on the GPU (`verify.py --assert --views 1,2,6`, 0 failures).
+
+**Rollout to the other regions**, one region at a time, after the owner's word:
+
+| Region | Cells | What it reaches | Notes |
+|---|---|---|---|
+| `xanadu-oidong-highrift` | 1789 x 589 at 1 km (2 a pixel) | its own page (Erehwon's, Longsong's and Qiblai's sites are in it) | **The owner's case, so first.** Wait for the session moving Longsong onto the Bīruk al-Ghaym (`claude/cool-tereshkova-d594e8`) to land, then cut with the flag. Expect about 15 s of smoothing in the cut. Check Longsong's river pin against the curved river (a traced river moves at most 400 m at a bend), and Strongbow's scarp with `hillshade.py --crop 1180 1300 1585 1665` |
+| `iziz-cluster` | 329 x 609 at 500 m | its own page | Girder, Mav's Refuge and Talia's ground. Re-bake its sites and check the corridors' roads |
+| `isle-demo`, `north-basin` | 4 km cells (half a pixel) | `isle-demo`: its page and `settlements/isle-demo` | **Nothing to do.** Coarser than the model, so no stairs (the flag is ignored). `isle-demo`'s rivers could take `WSMOOTH.river` alone, but it is cut by hand, not by `cut_site.py` |
+
+Each turn:
+1. Re-cut the region without the flag first, to confirm it reproduces its committed data. A re-cut takes whatever the
+   model holds now, such as pins moved since.
+2. Cut it with the flag.
+3. Run `hillshade.py` on the old and new `elev.png` with `--diff`.
+4. Re-bake, rebuild what `tools/reach.py openworld/<region>/data/elev.png` lists, GPU-verify, and `port_baseline.py --update`
+   the pages.
 
 **Next** (`openworld/PLAN-SITES.md` section 6):
 - `WORLD.H`'s land rule becomes core/terrain `KLAND` (Hook's lift on `claude/silly-hawking-929a87`, redone from this

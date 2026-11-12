@@ -1,5 +1,9 @@
 # Pinnacle: known issues
 
+- [ ] **The lakes keep the model's 2 km masks.** The smoothing (2026-11-12, `core/world/README.md`, "Smoothing") took
+      the staircases, the streaks and the straight river cuts out of the land. The cross-shaped lake west of the K'etsaal
+      Baatar's mouth still has square shores: the land round it lies under its level, so only the mask draws it.
+
 - [ ] **No mesa in the world.** The rock is `settlements/pinnacle-rock`'s own landform (KSTACKS records from its layout).
       The world's ground is the model's: the bands' camps stand round a knoll, not round a 500 m mesa. `PLAN.md`, "What is left" 1.
       On the list for the next scale-model run (the owner, 2026-11-10: `tools/scale-model/README.md`, "To do on the

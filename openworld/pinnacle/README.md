@@ -10,6 +10,11 @@ The first site cut off the scale model into the open world, with a settlement pl
   - The new spot is on the **savage hyperjungle's north-east edge**: a knoll 110 m over its 14 km round, at -1,287 m.
     77 % of the ground within 9 km is jungle; the NE rim's savanna is the other half of the cut.
   - The square is from `openworld/SITES.json`; `tools/scale-model/cut_site.py pinnacle` makes the cut.
+  - **Smoothed** (`"smooth": true` in SITES.json, 2026-11-12; `core/world/README.md`, "Smoothing"):
+    - the cut's heights have no pixel staircases on their scarps and no row streaks;
+    - its rivers are carved along curves through the model's vertices, not in straight cell-rounded runs;
+    - the page lists `core/world/40-world-smooth.js` and carves the same curves.
+    The first region on it.
   - The frame's origin is the site's pixel. Pinnacle Rock's own page still stands on its old cut at the old pixel, until
     it is rebuilt on the new spot (`KNOWN_ISSUES.md`).
 - **The site:** the nine Beast Rider bands that camp on the floor round the rock, and a track from each camp's gate to

@@ -10,6 +10,7 @@
    "sites": ["staiytii0y"],
    "polygons": [],
    "upsample": "auto",
+   "smooth": true,
    "note": "the first site (the owner, 2026-11-09): the town on its mesa stays settlements/pinnacle-rock's own; the site holds its countryside, bands and roads planned on the world's ground"
   },
   "xanadu-oidong-highrift": {

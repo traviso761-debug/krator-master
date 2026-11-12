@@ -150,20 +150,29 @@ W.saltAt=(x,z)=>{if(!SALTA){SALTA=new Float32Array(CL.length);for(let i=0;i<CL.l
 // The extractor's polylines (4 km steps), smoothed twice (Chaikin), the bed made to fall monotonically to the mouth.
 // A spatial hash of the segments (4 km cells, each segment in every cell its reach can touch) answers "the nearest
 // channel" in a handful of segments.
-const CHC=4096,CHREACH=900;let SEG=null,CHASH=null;const RIVSEG=[];
+const CHC=4096,CHREACH=900;let SEG=null,SEGX=null,CHASH=null;const RIVSEG=[];
 // A named river (region.json 'rivers': the scale model's DATA.rivers) joins as a channel of its own width, its flow
 // the accumulation that gives that width, flagged (slot 8: its water depth) so W.water gives it a surface.
-function buildChannels(){const L=M.drainage.lines.slice(),S=[];
- for(const r of M.rivers||[]){const a=M.drainage.min_accum*Math.pow(10,(r.width_m-10)/55),line=r.line.map(p=>[p[0],p[1],a,p[2]]);line.riv=r.depth_m;line.name=r.name;line.width=r.width_m;L.push(line);}
- for(const line of L){let P=line.map(p=>({x:p[0],z:p[1],a:p[2],e:p[3]}));
-  for(let it=0;it<2;it++){if(P.length<3)break;const Q=[P[0]];
+// A smoothed region (region.json 'smooth': core/world/README.md, "Smoothing"; 40-world-smooth.js) carves each river
+// along WSMOOTH.river through its vertices, as the cut carved its trench, and EXACT (SEGX 1): not in the warped space the
+// drainage takes, so it lies on its curve through the model's vertices, not up to 250 m off; the drainage's D8 lines are
+// relaxed into curves (WSMOOTH.line). Either way no Chaikin after.
+const WARPMAX=260;   /* m: the most the carve's warp moves a point (440/2 + 60/2), so an exact segment's reach in the hash */
+function buildChannels(){const L=M.drainage.lines.slice(),S=[],X=[],SMO=!!M.smooth;
+ if(SMO&&typeof WSMOOTH==='undefined')throw new Error('41-world-fields: region.json asks for core/world smoothing: list 40-world-smooth.js before 41');
+ for(const r of M.rivers||[]){const a=M.drainage.min_accum*Math.pow(10,(r.width_m-10)/55);let line=r.line.map(p=>[p[0],p[1],a,p[2]]);
+  if(SMO){line=WSMOOTH.river(line,{width:r.width_m,name:r.id||r.name,ox:cx*2000,oz:cy*2000,step:M.smooth.river_step,relax:r.relax||0});line.exact=1;}
+  line.riv=r.depth_m;line.name=r.name;line.width=r.width_m;L.push(line);}
+ for(let li=0;li<L.length;li++){let line=L[li];if(SMO&&!line.riv)line=WSMOOTH.line(line,{step:250});
+  let P=line.map(p=>({x:p[0],z:p[1],a:p[2],e:p[3]}));
+  for(let it=0;it<(SMO?0:2);it++){if(P.length<3)break;const Q=[P[0]];
    for(let i=0;i<P.length-1;i++){const a=P[i],b=P[i+1],m=(t)=>({x:lerp(a.x,b.x,t),z:lerp(a.z,b.z,t),a:lerp(a.a,b.a,t),e:lerp(a.e,b.e,t)});Q.push(m(.25),m(.75));}
    Q.push(P[P.length-1]);P=Q;}
   let lo=1e9;for(const p of P){lo=Math.min(lo,p.e);p.bed=lo;}
-  if(line.riv)RIVSEG.push({name:line.name,width:line.width,s0:S.length/9,n:P.length-1});
-  for(let i=0;i<P.length-1;i++){const a=P[i],b=P[i+1];S.push(a.x,a.z,b.x,b.z,a.a,b.a,a.bed,b.bed,line.riv||0);}}
- SEG=new Float64Array(S);CHASH=new Map();const n=SEG.length/9;
- for(let s=0;s<n;s++){const o=s*9,x0=Math.min(SEG[o],SEG[o+2])-CHREACH,x1=Math.max(SEG[o],SEG[o+2])+CHREACH,z0=Math.min(SEG[o+1],SEG[o+3])-CHREACH,z1=Math.max(SEG[o+1],SEG[o+3])+CHREACH;
+  if(L[li].riv)RIVSEG.push({name:L[li].name,width:L[li].width,s0:S.length/9,n:P.length-1,exact:!!L[li].exact});
+  for(let i=0;i<P.length-1;i++){const a=P[i],b=P[i+1];S.push(a.x,a.z,b.x,b.z,a.a,b.a,a.bed,b.bed,L[li].riv||0);X.push(L[li].exact?1:0);}}
+ SEG=new Float64Array(S);SEGX=new Uint8Array(X);CHASH=new Map();const n=SEG.length/9;
+ for(let s=0;s<n;s++){const o=s*9,R=CHREACH+(SEGX[s]?WARPMAX:0),x0=Math.min(SEG[o],SEG[o+2])-R,x1=Math.max(SEG[o],SEG[o+2])+R,z0=Math.min(SEG[o+1],SEG[o+3])-R,z1=Math.max(SEG[o+1],SEG[o+3])+R;
   for(let iz=Math.floor(z0/CHC);iz<=Math.floor(z1/CHC);iz++)for(let ix=Math.floor(x0/CHC);ix<=Math.floor(x1/CHC);ix++){const k=(ix+32768)*65536+(iz+32768);
    let a=CHASH.get(k);if(!a){a=[];CHASH.set(k,a);}a.push(s);}}
  W.channelCount=L.length;W.segmentCount=n;}
@@ -176,8 +185,8 @@ function carveAt(x,z,h,wallK,C,SC){C.k=0;C.d=1e9;C.hw=0;C.co=0;C.cut=0;
  const qx=x+(NM.fbm(x/2600,z/2600,2)-.5)*440+(NM.vn(x/380,z/380)-.5)*60,qz=z+(NM.fbm(x/2600+31,z/2600-77,2)-.5)*440+(NM.vn(x/380+9,z/380+5)-.5)*60;
  const L=CHASH.get((Math.floor(qx/CHC)+32768)*65536+(Math.floor(qz/CHC)+32768));if(!L)return C;
  let nd=1e18;
- for(let i=0;i<L.length;i++){const o=L[i]*9,ax=SEG[o],az=SEG[o+1],dx=SEG[o+2]-ax,dz=SEG[o+3]-az,l2=dx*dx+dz*dz;
-  let t=l2>0?((qx-ax)*dx+(qz-az)*dz)/l2:0;t=t<0?0:t>1?1:t;const ex=ax+dx*t-qx,ez=az+dz*t-qz,d=Math.sqrt(ex*ex+ez*ez);
+ for(let i=0;i<L.length;i++){const o=L[i]*9,ax=SEG[o],az=SEG[o+1],dx=SEG[o+2]-ax,dz=SEG[o+3]-az,l2=dx*dx+dz*dz,ux=SEGX[L[i]]?x:qx,uz=SEGX[L[i]]?z:qz;   /* an exact river: the point itself */
+  let t=l2>0?((ux-ax)*dx+(uz-az)*dz)/l2:0;t=t<0?0:t>1?1:t;const ex=ax+dx*t-ux,ez=az+dz*t-uz,d=Math.sqrt(ex*ex+ez*ez);
   if(d>CHREACH)continue;
   const s=chanS(lerp(SEG[o+4],SEG[o+5],t)),hw=(10+s*55)*.5,depth=2+s*5,bed=SC&&SC.w>0?scarpOf(lerp(SEG[o+6],SEG[o+7],t),SC):lerp(SEG[o+6],SEG[o+7],t);   // a bed falls over the cliff as the land does: a cataract
   const Dc=h-Math.min(h-depth,bed-depth*.5),outer=Math.min(CHREACH-40,hw+6+Dc*wallK);
@@ -193,10 +202,10 @@ function riverWater(x,z){if(!CHASH)return -1e9;
  const L=CHASH.get((Math.floor(qx/CHC)+32768)*65536+(Math.floor(qz/CHC)+32768));if(!L)return -1e9;
  let best=-1e9,bd=1e9,cxp=0,czp=0,wd=0;
  for(let i=0;i<L.length;i++){const o=L[i]*9;if(!(SEG[o+8]>0))continue;
-  const ax=SEG[o],az=SEG[o+1],dx=SEG[o+2]-ax,dz=SEG[o+3]-az,l2=dx*dx+dz*dz;
-  let t=l2>0?((qx-ax)*dx+(qz-az)*dz)/l2:0;t=t<0?0:t>1?1:t;const px=ax+dx*t,pz=az+dz*t,d=Math.hypot(px-qx,pz-qz);
+  const ax=SEG[o],az=SEG[o+1],dx=SEG[o+2]-ax,dz=SEG[o+3]-az,l2=dx*dx+dz*dz,ux=SEGX[L[i]]?x:qx,uz=SEGX[L[i]]?z:qz;
+  let t=l2>0?((ux-ax)*dx+(uz-az)*dz)/l2:0;t=t<0?0:t>1?1:t;const px=ax+dx*t,pz=az+dz*t,d=Math.hypot(px-ux,pz-uz);
   const s=chanS(lerp(SEG[o+4],SEG[o+5],t)),hw=(10+s*55)*.5;
-  if(d<hw&&d<bd){bd=d;cxp=px-qx;czp=pz-qz;wd=Math.min(SEG[o+8],.7*(2+s*5));}}
+  if(d<hw&&d<bd){bd=d;cxp=px-ux;czp=pz-uz;wd=Math.min(SEG[o+8],.7*(2+s*5));}}
  if(bd<1e9)best=H(x+cxp,z+czp,0,null,true)+wd;   // the land without a road's fill: a road crosses on a causeway
  return best;}
 // The named rivers as lines in metres (core/water's flow lines). The channels are carved in WARPED space (q = p + warp(p),
@@ -213,7 +222,7 @@ W.unwarp=(qx,qz)=>{let x=qx,z=qz;for(let k=0;k<24;k++){const q=warpQ(x,z);x+=qx-
 W.riverLines=function(step){step=step==null?40:step;const out=[];
  for(const R of RIVSEG){const pts=[];let carry=0;
   for(let s=R.s0;s<R.s0+R.n;s++){const o=s*9,ax=SEG[o],az=SEG[o+1],bx=SEG[o+2],bz=SEG[o+3],L=Math.hypot(bx-ax,bz-az);
-   for(let d=carry;d<L;d+=step){const t=d/L,w=W.unwarp(ax+(bx-ax)*t,az+(bz-az)*t),y=riverWater(w[0],w[1]);if(y>-1e8)pts.push([w[0],w[1],y]);}
+   for(let d=carry;d<L;d+=step){const t=d/L,w=R.exact?[ax+(bx-ax)*t,az+(bz-az)*t]:W.unwarp(ax+(bx-ax)*t,az+(bz-az)*t),y=riverWater(w[0],w[1]);if(y>-1e8)pts.push([w[0],w[1],y]);}
    carry=L>carry?carry+Math.ceil((L-carry)/step)*step-L:carry-L;}
   for(let i=pts.length-2;i>=0;i--)if(pts[i][2]<pts[i+1][2])pts[i][2]=Math.min(pts[i+1][2],pts[i][2]+RIVPOOL);
   out.push({name:R.name,width:R.width,pts});}

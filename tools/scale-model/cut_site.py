@@ -90,6 +90,8 @@ def cut(region, dry=False):
            os.path.join(src, 'regions.json'), 'model', name, data, '--upsample', str(G.get('upsample', 'auto'))]
     if added:
         cmd += ['--add', os.path.join(src, 'added-areas.json')]
+    if G.get('smooth'):   # the region opts into core/world's smoothing (core/world/README.md, "Smoothing")
+        cmd += ['--smooth']
     for p in P:
         xs = [q[0] for q in p['map_px']]; ys = [q[1] for q in p['map_px']]
         print('  %-56s px %7.1f..%7.1f x %7.1f..%7.1f' % (p['name'][:56], min(xs), max(xs), min(ys), max(ys)))
