@@ -45,6 +45,11 @@ def pxof(c): return [(c % VW) * F, (c // VW) * F]
 
 # ---- nodes (the owner, 2026-11-11)
 S = {s['name']: s for s in json.load(open(SP + '/setts.json', encoding='utf8'))}
+# Strongbow stands on the Xanadu-Oidong scarp (the owner, 2026-11-11: "right on the xanadu-oidong border - the same cliff the cataract is
+# on - so that it offers a real advantage to anyone using its elevator"): its top on the Oidong lip (S['Strongbow'], about 1,400 m), its foot
+# on the Xanadu floor about 3,100 m below. A route from Xanadu's side ends at the FOOT; the Oidong Valley road ends at the top
+STRONGBOW_FOOT = [991, 1596]
+FOOT_NOTE = "ends at Strongbow's foot on the Xanadu floor; the arcology's elevator climbs about 3,100 m to the Oidong lip"
 ANC = ('arcology', 'ruined arcology', 'ruin', 'cavern')
 ZEIJ = tuple(n for n, s in S.items() if n == 'Dhelv' or (s['type'] == 'cavern' and 'Zeijani' in s['notes']))
 FORTS = [n for n in S if n.startswith('Fort ')]
@@ -237,7 +242,7 @@ def OIDONG_OFF(a, b):
     xs = (np.arange(n) % VW) * F; ys = (np.arange(n) // VW) * F
     inside = m[np.clip(ys, 0, H2 - 1), np.clip(xs, 0, W2w - 1)] & (np.hypot(xs - sb[0], ys - sb[1]) > 5)
     G = GR.tocoo(); w = G.data * np.where(inside[G.row] | inside[G.col], 1000.0, 1.0)
-    Go = coo_matrix((w, (G.row, G.col)), shape=G.shape).tocsr(); ca, cb = cellof(*P(a)), cellof(*P(b))
+    Go = coo_matrix((w, (G.row, G.col)), shape=G.shape).tocsr(); ca, cb = cellof(*P(a)), cellof(*(STRONGBOW_FOOT if b == 'Strongbow' else P(b)))
     _, pred = dijkstra(Go, indices=ca, directed=False, return_predecessors=True)
     q = [cb]
     while q[-1] != ca and pred[q[-1]] >= 0: q.append(int(pred[q[-1]]))
@@ -252,7 +257,7 @@ NUM = {'Dalab': 1, 'Shelf': 2, 'Ledge': 4, 'Nulab': 5, 'Chimes': 6, 'Cthonos': 7
 lab = lambda n: n + (' (%d)' % NUM[n] if n in NUM else '')
 for a, b, pts, bore, force in rift_legs:
     add('rift', 'line', a, b, pts, bore, name='The Rift line: ' + lab(a) + ' to ' + lab(b), force=force,
-        note='lifts down the cliff, 1.3 km' if (a, b) == ('Ledge', 'Nulab') else ('underground through the Lizardmen\'s country (the owner); surface where the tunnel wars broke it open, to be authored' if force else None))
+        note='lifts down the cliff, 1.3 km' if (a, b) == ('Ledge', 'Nulab') else ('underground through the Lizardmen\'s country (the owner); surface where the tunnel wars broke it open, to be authored' if force else (FOOT_NOTE if b == 'Strongbow' else None)))
 add('rift.twenny', 'branch', 'Twenny junction', 'Loj Twenny', straight(EXTRA_PTS['Twenny junction'], P('Loj Twenny')), True, name='The Twenny gallery (bore km 218)')
 # Theodiga to Stair (the owner, 2026-11-11, with Strongbow moved to Oidong): a dead bore, a third way across, dark, with little food or
 # water; the trains do not run there. Bored over most of its length
@@ -317,7 +322,7 @@ def mtrace(a_cell, b_cell):
 # and off the water; at 1:1 it lays as 452 km, never above 2,706 m, with 4 bridges
 # pairs the owner dropped: Qiblai to Longsong ran beside the Strongbow-Longsong road down the Oidong Valley ("Drop it", 2026-11-11)
 DROPPED = {tuple(sorted(('Qiblai', 'Longsong')))}
-GUIDES = {('Longsong', 'Strongbow'): [[1226,1626],[1219,1626],[1213,1624],[1207,1623],[1201,1620],[1195,1618],[1189,1618],[1183,1615],[1177,1613],[1171,1613],[1165,1607],[1159,1605],[1153,1602],[1147,1603],[1135,1603],[1123,1603],[1111,1602],[1099,1602],[1093,1599],[1087,1598],[1081,1597],[1075,1595],[1063,1595],[1051,1595],[1045,1594],[1039,1592],[1033,1592],[1027,1590],[1021,1590],[1015,1590],[1013,1585]]}
+GUIDES = {('Longsong', 'Strongbow'): [[1226,1626],[1219,1626],[1213,1624],[1207,1623],[1201,1620],[1195,1618],[1189,1618],[1183,1615],[1177,1613],[1171,1613],[1165,1607],[1159,1605],[1153,1602],[1147,1603],[1135,1603],[1123,1603],[1111,1602],[1099,1602],[1093,1599],[1087,1598],[1081,1597],[1075,1595],[1063,1595],[1051,1595],[1045,1594],[1039,1592],[1033,1592],[1027,1590],[1021,1590],[1016,1593],[1010,1596],[1004,1596],[1001,1596]]}
 def mesh(cls, members, prefix, label, k_near=2, skip_pairs=()):
     """a road network among `members` (names -> px): a relative-neighbourhood graph plus each member's k nearest (the owner:
     'their highway network would connect its nodes to multiple nearby cities'), minus pairs the Ancient trunks already join"""
@@ -333,13 +338,15 @@ def mesh(cls, members, prefix, label, k_near=2, skip_pairs=()):
     for i, j in sorted(es):
         if tuple(sorted((nm[i], nm[j]))) in skip_pairs or tuple(sorted((nm[i], nm[j]))) in DROPPED: continue
         g_ = GUIDES.get((nm[i], nm[j])) or (GUIDES.get((nm[j], nm[i])) or [])[::-1]
-        pts_ = [q for k, (u, v) in enumerate(zip(g_, g_[1:])) for q in straight(u, v, 2.0)[(1 if k else 0):]] if g_ else mtrace(cells[i], cells[j])
+        foot_ = not g_ and 'Strongbow' in (nm[i], nm[j])
+        ci_ = cellof(*STRONGBOW_FOOT) if foot_ and nm[i] == 'Strongbow' else cells[i]; cj_ = cellof(*STRONGBOW_FOOT) if foot_ and nm[j] == 'Strongbow' else cells[j]
+        pts_ = [q for k, (u, v) in enumerate(zip(g_, g_[1:])) for q in straight(u, v, 2.0)[(1 if k else 0):]] if g_ else mtrace(ci_, cj_)
         av = np.array([q for r in routes if r['class'] in ('trunk', 'line') for k, q in enumerate(r['px']) if r['form'][min(k, len(r['form']) - 1)] != 'tunnel'])
         pa = np.array(pts_, float)
         near = np.array([np.hypot(av[:, 0] - x, av[:, 1] - y).min() <= 4 for x, y in pa]) if len(av) else np.zeros(len(pa), bool)
         if near.mean() > 0.5:
             REDUNDANT.append('%s: %s to %s (%d%% beside an Ancient road)' % (label, nm[i], nm[j], 100 * near.mean())); continue
-        add('%s.%s.%s' % (prefix, i, j), cls, nm[i], nm[j], pts_, name='%s: %s to %s' % (label, nm[i], nm[j])); made += 1
+        add('%s.%s.%s' % (prefix, i, j), cls, nm[i], nm[j], pts_, name='%s: %s to %s' % (label, nm[i], nm[j]), note=FOOT_NOTE if foot_ else None); made += 1
     return made
 PXOF = lambda n: [S[n]['px'], S[n]['py']] if n in S else nodes[n]['px']
 ancient_pairs = {tuple(sorted((r['from'], r['to']))) for r in routes if r['class'] in ('trunk', 'line')}

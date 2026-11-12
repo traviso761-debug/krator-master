@@ -892,28 +892,35 @@ The Ancient network is 63 sites and 22,026 km, 3,627 km of it in tunnel, with no
 
 ### 8.16 Strongbow moves to Oidong (the owner, 2026-11-11)
 
-**Where it is now.** Strongbow is a cliff arcology at the Oidong Valley's **west** end, by Qiblai: at the foot of the valley's
-north-west wall, at 5.1 px 1013,1585 and 2,568 m, with about 1,300 m of rise within 4 km.
-- **History:** it was at 1026,1594. The same day it went first to the valley's east end (1298,1647), then back west (the owner:
-  "strongbow should be at the other end of the valley, by qiblai").
-- **Source:** the Oidong-High Rift session's scale-model edit 5.1e5, on branch `claude/cool-tereshkova-d594e8`.
-- **The router:** `setts.json` is now taken from that branch (at `3db1e2b3e`), which has Strongbow there and also moves Qiblai to
-  922,1595 and Erehwon to 805,1516.
-- **The valley road:** the Oidong session lays it on the valley floor, 452 km from Longsong to Strongbow, with 4 bridges. The
-  network takes the same line.
+**Where it is now.** Strongbow is a cliff arcology on the **Xanadu–Oidong scarp**, at 5.1 px 1001,1596, 3 km north of the
+cataract. The owner: "right on the xanadu-oidong border - the same cliff the cataract is on - so that it offers a real advantage
+to anyone using its elevator".
+- **Its two ends:** its top is on the Oidong lip, at about 1,400 m. Its foot is on the Xanadu floor, about 3,100 m below, to the
+  west (around 991,1596).
+- **History:** it was at 1026,1594. The same day it went to the valley's east end (1298,1647), then to its west end (1013,1585),
+  then to the scarp.
+- **Source:** the Oidong-High Rift session's scale-model edit 5.1e5, on branch `claude/cool-tereshkova-d594e8`. `setts.json` is
+  taken from that branch at `7cff97d0c`, which also moves Qiblai to 922,1595 and Erehwon to 805,1516.
+
+**Routes from Xanadu's side end at the foot; the valley road ends at the top** (`route51.py` `STRONGBOW_FOOT`). Each route that
+ends at the foot carries a note: the arcology's elevator climbs the 3,100 m to the lip.
 
 The owner's other answers the same day: "qiblai shouldnt be a line stop it was built much later", "longsong shouldnt be a line
 stop either", "there is no rift line in oidong valley, just a road", "it goes to strongbow".
-- **The Rift line, Theodiga (10) to Strongbow (11): 250 km**, 106 km of it in tunnel. It reaches Strongbow from Theodiga, outside
-  the valley: the router traces it with the 'Oidong Valley' polygon at 1,000x the cost, except within 10 km of Strongbow.
-- **It stops at neither Qiblai nor Longsong.**
-- **The valley has a road and no line:**
-  - Strongbow to Longsong down the valley floor, 449 km, laid on the Oidong session's least-climb guide (`route51.py` `GUIDES`),
-    so the network map and the open world share one alignment;
-  - Qiblai to Strongbow, 207 km;
-  - Strongbow to Strongwall, 237 km;
-  - **Qiblai to Longsong is dropped** (the owner: "Drop it"). It ran beside the Strongbow road for most of the valley; Qiblai
-    reaches Longsong by Strongbow (`route51.py` `DROPPED`).
+- **The Rift line, Theodiga (10) to Strongbow's foot (11): 253 km**, 48 km of it in tunnel.
+  - It stays out of the Oidong Valley (the 'Oidong Valley' polygon is traced at 1,000x the cost).
+  - It stops at neither Qiblai nor Longsong. A 40 km Xanadu spur joins Qiblai to it.
+- **The Xanadu roads:**
+  - Qiblai to Strongbow's foot, 160 km;
+  - Strongbow's foot to Strongwall, 187 km;
+  - Qiblai to Strongwall, 83 km;
+  - Erehwon to Qiblai and to Theodiga.
+  - Qiblai to Theodiga is dropped as redundant, since 61 % of it runs beside the Rift line. Theodiga to Strongwall is no longer a
+    neighbour pair.
+- **The valley road**, from Strongbow's top down the Oidong Valley floor to Longsong, is 469 km. It is laid on the Oidong
+  session's least-climb guide (`GUIDES`), so the network map and the open world share one alignment.
+- **Qiblai to Longsong is dropped** (the owner: "Drop it"). It ran beside the valley road; Qiblai reaches Longsong by Strongbow
+  (`DROPPED`).
 - **Possible: the dead bore from Theodiga (10) to Stair (12)**, 438 km, 385 km of it bored. The owner: "theodiga could go to
   stair". It replaces the possible leg from Strongbow.
   - It is a third way across, but a hard one: dark, with little food or water.
