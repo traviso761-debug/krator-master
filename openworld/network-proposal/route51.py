@@ -45,9 +45,10 @@ def pxof(c): return [(c % VW) * F, (c // VW) * F]
 
 # ---- nodes (the owner, 2026-11-11)
 S = {s['name']: s for s in json.load(open(SP + '/setts.json', encoding='utf8'))}
-# Strongbow moved (the owner, 2026-11-11): a cliff arcology at the Oidong Valley's east end, under the High Rift's escarpment; the scale model's
-# edit 5.1e5 (branch claude/cool-tereshkova-d594e8, bd01a61f5), not yet in setts.json's snapshot
-S['Strongbow'] = dict(S['Strongbow'], px=1298, py=1647)
+# Strongbow (the owner, 2026-11-11): a cliff arcology at the Oidong Valley's WEST end, by Qiblai, at the foot of the valley's north-west
+# wall ("strongbow should be at the other end of the valley, by qiblai"); setts.json (from claude/cool-tereshkova-d594e8 at 0b360a4f5)
+# still has it at the east end until that branch's scale-model edit follows
+S['Strongbow'] = dict(S['Strongbow'], px=1013, py=1585)
 ANC = ('arcology', 'ruined arcology', 'ruin', 'cavern')
 ZEIJ = tuple(n for n, s in S.items() if n == 'Dhelv' or (s['type'] == 'cavern' and 'Zeijani' in s['notes']))
 FORTS = [n for n in S if n.startswith('Fort ')]
@@ -315,6 +316,8 @@ def mtrace(a_cell, b_cell):
     p = [b_cell]
     while p[-1] != a_cell and pred[p[-1]] >= 0: p.append(int(pred[p[-1]]))
     return [pxof(c) for c in p[::-1]]
+# roads laid on a hand-drawn guide instead of the router's trace (5.1 px), so the network and the open world share one alignment:
+GUIDES = {}   # (the Longsong-Strongbow guide went with Strongbow's move to the valley's west end)
 def mesh(cls, members, prefix, label, k_near=2, skip_pairs=()):
     """a road network among `members` (names -> px): a relative-neighbourhood graph plus each member's k nearest (the owner:
     'their highway network would connect its nodes to multiple nearby cities'), minus pairs the Ancient trunks already join"""
@@ -329,7 +332,8 @@ def mesh(cls, members, prefix, label, k_near=2, skip_pairs=()):
     made = 0
     for i, j in sorted(es):
         if tuple(sorted((nm[i], nm[j]))) in skip_pairs: continue
-        pts_ = mtrace(cells[i], cells[j])
+        g_ = GUIDES.get((nm[i], nm[j])) or (GUIDES.get((nm[j], nm[i])) or [])[::-1]
+        pts_ = [q for k, (u, v) in enumerate(zip(g_, g_[1:])) for q in straight(u, v, 2.0)[(1 if k else 0):]] if g_ else mtrace(cells[i], cells[j])
         av = np.array([q for r in routes if r['class'] in ('trunk', 'line') for k, q in enumerate(r['px']) if r['form'][min(k, len(r['form']) - 1)] != 'tunnel'])
         pa = np.array(pts_, float)
         near = np.array([np.hypot(av[:, 0] - x, av[:, 1] - y).min() <= 4 for x, y in pa]) if len(av) else np.zeros(len(pa), bool)

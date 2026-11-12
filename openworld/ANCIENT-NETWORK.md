@@ -892,23 +892,26 @@ The Ancient network is 63 sites and 22,026 km, 3,627 km of it in tunnel, with no
 
 ### 8.16 Strongbow moves to Oidong (the owner, 2026-11-11)
 
-**Where it is now.** Strongbow is a cliff arcology at the Oidong Valley's east end, at 5.1 px 1298,1647. It was at 1026,1594.
-It stands on the valley floor at the foot of the High Rift's escarpment, over Oidong's lake.
-- **Source:** the Oidong-High Rift session's scale-model edit 5.1e5, on branch `claude/cool-tereshkova-d594e8` (`bd01a61f5`).
-- **The router:** `route51.py` takes the new place before `setts.json`'s snapshot catches up.
+**Where it is now.** Strongbow is a cliff arcology at the Oidong Valley's **west** end, by Qiblai: at the foot of the valley's
+north-west wall, at 5.1 px 1013,1585 and 2,568 m, with about 1,300 m of rise within 4 km.
+- **History:** it was at 1026,1594. The same day it went first to the valley's east end (1298,1647), then back west (the owner:
+  "strongbow should be at the other end of the valley, by qiblai").
+- **Source:** the Oidong-High Rift session's scale-model edit 5.1e5, on branch `claude/cool-tereshkova-d594e8`.
+- **The router:** `setts.json` is now taken from that branch (at `0b360a4f5`), which also moves Qiblai to 922,1595 and Erehwon to
+  805,1516. `route51.py` places Strongbow at 1013,1585 until that branch's edit follows.
 
-Re-routed (the owner's corrections the same day: "qiblai shouldnt be a line stop it was built much later", "longsong shouldnt be a
-line stop either", "there is no rift line in oidong valley, just a road", "it goes to strongbow"):
-- **The Rift line, Theodiga (10) to Strongbow (11): 1,124 km**, 197 km of it in tunnel (it was 296 km to the old site).
-  - It stays out of the Oidong Valley: the router traces it with the valley's polygon at 1,000x the cost, except within 10 km
-    of Strongbow.
-  - Its route runs south from Theodiga past Strongwall, east along the uplands south of the valley, then north into Strongbow.
-  - It stops at neither Qiblai (a much later city) nor Longsong.
-- **The valley has a road and no line.** With the line out of the valley, the Xanadu roads come back: Strongbow to Longsong on
-  the valley floor (162 km), Qiblai to Longsong (583 km) and Qiblai to Strongbow (745 km). The Oidong session's surface road
-  (Longsong to Strongbow, then the Order's road up the beck) is the same road.
+The owner's other answers the same day: "qiblai shouldnt be a line stop it was built much later", "longsong shouldnt be a line
+stop either", "there is no rift line in oidong valley, just a road", "it goes to strongbow".
+- **The Rift line, Theodiga (10) to Strongbow (11): 250 km**, 106 km of it in tunnel. It reaches Strongbow from Theodiga, outside
+  the valley: the router traces it with the 'Oidong Valley' polygon at 1,000x the cost, except within 10 km of Strongbow.
+- **It stops at neither Qiblai nor Longsong.**
+- **The valley has a road and no line:**
+  - Strongbow to Longsong down the valley, 463 km;
+  - Qiblai to Strongbow, 207 km;
+  - Strongbow to Strongwall, 237 km;
+  - Qiblai to Longsong, 639 km. This one runs beside the Strongbow road for most of the valley; drop it if one road is enough.
 - **Possible: the dead bore from Theodiga (10) to Stair (12)**, 438 km, 385 km of it bored. The owner: "theodiga could go to
-  stair". It replaces the possible leg from Strongbow, which from the new site would have been a 562 km bore.
+  stair". It replaces the possible leg from Strongbow.
   - It is a third way across, but a hard one: dark, with little food or water.
   - **The trains do not run in it.**
   - From Stair, the possible leg on to Parabola (13) by the Godsgate is unchanged.

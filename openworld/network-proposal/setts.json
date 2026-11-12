@@ -210,9 +210,9 @@
 "id": "s57bkv9741",
 "name": "Erehwon",
 "type": "city",
-"px": 800,
-"py": 1503,
-"notes": "",
+"px": 805,
+"py": 1516,
+"notes": "Pearl of Xanadu, 20,000 on its mountain lake (LORE.md 6.13; settlements/xanadu, target erewhon). Moved 2026-11-11 with edit 5.1-512, which remade its lake as an Atitlan-like caldera (121 x 66 km at -520 m, three volcanoes set back from the south shore, four islands; the Pleasure Dome of the Bay on its own small isle, landforms.json). The old pin 800,1503 is under the new lake. 805,1516 is a south-shore bench (-497 m): the town climbs to -415 m, a 90 m grey cliff to the palace plateau at -305 m, the mountainside behind, between the west and middle volcanoes 14 and 20 px back.",
 "createdAt": "2026-09-28T02:12:45.696Z"
 },
 {
@@ -669,9 +669,9 @@
 "id": "skm4jjo2vl",
 "name": "Qiblai",
 "type": "city",
-"px": 963,
-"py": 1566,
-"notes": "",
+"px": 922,
+"py": 1595,
+"notes": "Holy city of the Decree, ~12,000, under a council of abbots (kits/qiblai/PLAN.md; LORE.md 6.13). Moved 2026-11-11 (the owner: by a river, near plentiful resources) from 963,1566, 65 km from any river and without salt, 101 km to the cataracts of Nahr ash-Shalalat (~1,100 m3/s, the region's biggest river): flat ground for the 1.6 km mandala (37 m relief), rock salt, potash, rare earths, saltpeter, copper and oil within 30 km, farmland 40% (openworld/PLAN-SITES.md).",
 "createdAt": "2026-09-24T07:35:46.046Z"
 },
 {
@@ -795,9 +795,9 @@
 "id": "sfgtxw10kr",
 "name": "Strongbow",
 "type": "arcology",
-"px": 1026,
-"py": 1594,
-"notes": "",
+"px": 1298,
+"py": 1647,
+"notes": "A cliff arcology of the Ancients built into the face of the High Rift's escarpment where it rises 1,100 m in 2 km over the east end of the Oidong Valley (2,463 m at its foot, Oidong's lake below it): a tower hung down the wall on cables and terraces, with platforms and pads at its lip. Moved 2026-11-11 (the owner: 'a cliff arcology set in the side of a cliff ... relocating to the far end of oidong valley') from 1026,1594, the valley's west end; openworld/oidong-highrift.",
 "createdAt": "2026-09-24T07:16:16.398Z"
 },
 {
