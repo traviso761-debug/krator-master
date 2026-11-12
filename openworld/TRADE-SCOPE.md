@@ -934,3 +934,25 @@ and +19 °C. Two kinds of livable pocket show:
 - **Spacing:** the four are 100-140 km apart, and 100 km or more from the K sites.
 
 Not sent: the owner picks.
+
+**The north and north-east** (the owner: "any microclimates in the north/northeast portion?"). North of py 480 and east of px 990,
+Korona is 125,000 km² (36,500 of it in the Coyote Kingdom's polygon). It is a cold, dry high plateau: median height 3,816 m, mean
++12 °C, 294 mm; Dsc, BWk, BSk, BWh and ET lead. **The plateau itself holds no village site.** Every pocket that passes (water,
++2 to +27 °C, under 4,800 m, gentle ground) lies on its southern edge, where it falls to the inner rings, or on the northern rim's
+lower tables:
+
+| | Site | Kind | Ground | Against its surroundings (20 km) | Farmland, pasture (10 km) |
+|---|---|---|---|---|---|
+| **N1** | **1063,468** | a wet windward pocket | 451 m, **Cfa, 1,929 mm**, +26 °C | **wetter** (1,413 mm around) | 149, 148: the best here |
+| **N2** | **1117,421** | a lowland pocket | 6 m, Aw, 800 mm, +27 °C | wetter (542 around) | 50, 132 |
+| **N3** | **1063,345** | a table on the northern rim, east of K6 and K7 | 2,328 m, Cfa, 862 mm, +17 °C, ~1.2 atm | 2 °C cooler | 13, 165: herders' ground, summer pasture |
+| **N4** | **1026,456** | a ring crest | 1,745 m, Cfa, 752 mm, +19 °C | 2 °C cooler | 53, 142 |
+| **N5** | **1158,472** | a lowland in the north-east, outside the Coyote polygon | -291 m, Aw, 721 mm, +27 °C | wetter (622 around) | 78, 221 |
+
+- **The best:** N1 is a village site, a pocket the wind wrings 1,900 mm of rain out on. N2 and N5 are small lowland villages.
+- **Highland:** N3 and N4 are hamlets and herders' camps; N3 could be a second winter-modded tribe's ground beside K7.
+- **Also passing, not proposed:** a lake shore at 1039,434 (Aw, +27 °C, 102 km²-eq farmland), 83 km from N1; and 998,431 (2,320 m,
+  Csa), a near twin of N4.
+- **The high north-east** (east of px 1150, north of py 420) has nothing livable: a summer range for bands at most.
+
+Not sent: the owner picks.
