@@ -1,0 +1,39 @@
+# settlements/qiblai: Qiblai, the holy city of the Decree
+
+The city of the faith of the Decree (*Ḍikrī*) in the Xanadu Sultanate, at the cataracts of Nahr ash-Shalālāt: a mandala of
+nested walled squares round the Temple Mountain and its Rainbow Temple, ruled by the Prismarchy (`LORE.md` §6.13). Built from
+the Qiblai kit (`kits/qiblai`) and the Xanadu kit on core/city's nested-squares site. `PLAN.md` is the build plan (Q7) and the
+owner's answers; `kits/qiblai/PLAN.md` the design.
+
+## Build and verify
+
+```
+python3 build.py                                   # dist/qiblai.html
+KRATOR_GL=gpu python3 verify.py dist/qiblai.html --assert --views "Overview,From the south gate,The Rainbow Temple"
+python3 ../../tools/build.py settlements/qiblai    # the same through the repo's build wrapper
+```
+
+`build.py` writes `gen/69q-kcity-bundle.js` (core/city and core/space sealed in one closure, as Verge seals core/city) and
+the Qiblai kit's Xanadui script, then runs `settlements/xanadu/build.py --kit settlements/qiblai`: the city is a target on
+Xanadu's page as Erewhon is, with the Qiblai kit's fragments read in place (`kit.json` `externalDirs`) and its texture pack
+(`packFrom`). Xanadu's own pages come out byte-identical without `--kit`.
+
+## How the city is made
+
+| Fragment | What |
+|---|---|
+| `targets/city/89z-rows.js` | `window.CITY` (Xanadu's showcase is skipped), the title, no sheet rows |
+| `targets/city/89zq-qc-site.js` | the site and the plan, as records: `KCITY.squares.plan` on the country (a plane falling gently east), the terraces built up (`KCITY.squares.ground`), the river's channel; the gardens (40 % of the lay blocks, 60 % of the poor ones); the core/city instance (`KCITY.squares.steps`, then `infill`: frontage-courts with the kits' keys by pool, a third of the lay houses Xanadu's); row houses' party walls (`o.ends` from their neighbours); the Temple Mountain, the eight monasteries (whole on the diagonal spokes, split astride the avenue on the axial four), the gate markets; the people by ring |
+| `targets/city/90q-qc-world.js` | the Krator sky and its light, the ground mesh (8 m cells) wearing a canvas painted from the plan's records (never read back), the river |
+| `targets/city/90r-qc-build.js` | the walls (each segment a `qb_wall` run of its length on an ashlar retaining face), gates and towers; the kora's arcades and its chortens; the ghat way, the ghats, the caravanserai; every building, chunk by chunk (400 m), each chunk baked into its own group and drawn while in view and range |
+| `targets/city/91z-views.js` | the views; the city as one budget (as Erewhon's) |
+| `verify.py` | Xanadu's verify plus the city's invariants: the site laid, the monasteries on their spokes' bearings, the people by ring and the Xanadu share (reported) |
+
+**Spokes and colours.** core/city's site numbers the spokes 0-7 clockwise from north and gives each monastery `colour = spoke`;
+the kit's `QSPOKE` is in the same order, and the Rainbow Temple's banners face the same bearings. The Temple Mountain is placed
+unturned, so the banners face true bearings.
+
+## What is not here yet (`KNOWN_ISSUES.md`)
+
+The biome's flora, the river's cataracts as core/water flow, life (Q7e), the open world (Q7f), the Godot export and the
+gallery (Q7g).

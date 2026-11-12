@@ -142,7 +142,8 @@ TARGET_OUT = {
 # its PLAN.md section 6) on this build's page, with no copy of it, as settlements/iziz/build.py --kit builds Pylon and Talia.
 # The kit folder holds src/ (its own fragments, merged into the one sorted order with this build's; a name that clashes stops
 # the build), targets/<t>/ (rows and views, as here) and kit.json: {"targets": {"kit": "qiblai.html"}, "deterministic":
-# [...], "external": ["repo/relative/fragment.js"], "core": {"kit": ["mask"]}, "files": {"kit": [["core/water", [...]]]}}
+# [...], "external": ["repo/relative/fragment.js"], "externalDirs": ["kits/x/src"], "scoped": [closures], "packFrom": "kits/x",
+# "core": {"kit": ["mask"]}, "files": {"kit": [["core/water", [...]]]}}
 # ("external" fragments are read in place by their own names; "core" and "files" are TARGET_CORE and TARGET_FILES for the
 # kit's targets). Its pages and manifests go to the kit's dist/ and folder; its KNOWN_ISSUES.md is the one printed. The
 # kit's build.py calls this. Without --kit nothing below changes: Xanadu's own pages come out byte-identical.
@@ -201,7 +202,7 @@ SEED_COLLISION_EXCEPTIONS = set()
 # reseed rule does not apply either. Matched by filename prefix.
 SCOPED_PREFIXES = ('86-bio-',)
 def scoped(f):
-    return f.startswith(SCOPED_PREFIXES) or f in CORE_HOST or (KIT is not None and f == KIT_FURN_BUNDLE)   # core/host: each file one IIFE (KHOST); a kit's furniture bundle
+    return f.startswith(SCOPED_PREFIXES) or f in CORE_HOST or (KIT is not None and (f == KIT_FURN_BUNDLE or f in KIT.get('scoped', [])))   # core/host: each file one IIFE (KHOST); a kit's furniture bundle and its own closures (kit.json "scoped")
 
 
 RE_BUILDER = re.compile(r'^function\s+(build[A-Za-z0-9_]*)\s*\(([^)]*)\)\s*\{(.{0,80})', re.M)
@@ -313,7 +314,10 @@ def build_one(target, do_checks):
         clash = set(src) & set(kf)
         if clash:
             sys.exit('kit %s shadows a fragment of settlements/xanadu: %s' % (KIT['dir'], ', '.join(sorted(clash))))
-        for rel in KIT.get('external', []):   # fragments read in place from elsewhere in the repo (no copy)
+        ext = list(KIT.get('external', []))
+        for d in KIT.get('externalDirs', []):   # every numbered fragment of a folder read in place (another kit's src/)
+            ext += sorted(d + '/' + f for f in os.listdir(os.path.join(ROOT, *d.split('/'))) if f[0].isdigit() and f.endswith('.js'))
+        for rel in ext:   # fragments read in place from elsewhere in the repo (no copy)
             f = os.path.basename(rel)
             if f in src or f in kf:
                 sys.exit('kit %s: external fragment %s clashes with a fragment already in the order' % (KIT['dir'], f))
@@ -344,8 +348,9 @@ def build_one(target, do_checks):
     order = sorted(order + [MATLIB_PACK])
     # a kit with library families of its own (kit.json "pack": its name; its materials.json packed into its tex/ by
     # tools/textures/pack.py): KMAT.pack('<name>') inlined here, bound by the kit's own fragment (KMAT.bindMat), as Iziz's --kit
-    if KIT and KIT.get('pack') and os.path.isfile(os.path.join(KIT['dir'], 'tex', 'pack.json')):
-        bodies[KIT_MATLIB_PACK] = matlib_pack.fragment(KIT['dir'], KIT['pack'])
+    _pd = os.path.join(ROOT, *KIT['packFrom'].split('/')) if KIT and KIT.get('packFrom') else (KIT['dir'] if KIT else None)   # "packFrom": a kit's pack another folder's build takes (the city of Qiblai takes kits/qiblai's)
+    if KIT and KIT.get('pack') and os.path.isfile(os.path.join(_pd, 'tex', 'pack.json')):
+        bodies[KIT_MATLIB_PACK] = matlib_pack.fragment(_pd, KIT['pack'])
         order = sorted(order + [KIT_MATLIB_PACK])
     if KIT and target in KIT.get('interiors', []):   # a kit target with interiors: the furniture bundle and the interiors core
         sys.path.insert(0, os.path.join(ROOT, 'kits', 'catalog'))

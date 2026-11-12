@@ -19,6 +19,32 @@ says how it is built, in what order, and how each step is proved. Written 2026-1
 which (nothing here pushes or merges without the owner's word). The kits/interiors clearance fix (`claude/agitated-meitner-15ed1a`)
 and `qiblai` in core/tags' vocabulary (`TODO.md`, the ride-along) are not prerequisites: the kit works round both.
 
+## Progress (2026-11-11)
+
+- **Q7a** done in part: the Temple Mountain compound (`qb_temple_mountain`), the monastery astride its avenue
+  (`qb_monastery_half`), the half gate market (`qb_gate_market_half`), walls and kora arcades by length (`o.len`). Not yet:
+  the terrace stair (`qb_terrace_stair`; the avenues climb by the ground's slope), QBK (the city is a target on Xanadu's page,
+  so it needs no bundle; the open world will).
+- **Q7b-Q7d** built as a first city (`README.md`): the site laid, the walls, gates and towers, the kora, the monasteries on
+  their spokes, the gate markets, the rings filled (2,253 lots, a third of the lay houses Xanadu's), the ghat way
+  and the ghats, the caravanserai, the temple estates' fields, the Vale of Xanadu flora as a stand-in; GPU-verified. Open:
+  the people by ring (`KNOWN_ISSUES.md`), the Af flora, the river's cataracts and the open world's ground.
+- **The density fades from the centre** (the owner, 2026-11-11: "a 4-way symmetrical pattern of squares with mostly gardens
+  on the edge and some gardens placed like enclosed courtyards in the more built up area"). A lay block's use is set by its
+  ring r and its step t along the side from the avenue, so the pattern is the same under both mirrors and both diagonals
+  (`QC_GARDEN`, `QC_COURT` in `targets/city/89zq-qc-site.js`):
+
+  | ring (r) | whole gardens (t) | courtyard blocks (t) | built (t) |
+  |---|---|---|---|
+  | 4, rich | | 1, 3 | 0, 2, 4 |
+  | 5, middle | 3 | 1, 5 | 0, 2, 4 |
+  | 6, poor | 2, 4, 6 | 5 | 0, 1, 3 |
+  | 7, poor, at the wall | 2, 3, 5, 6, 7 | 4 | 0, 1 |
+
+  64 garden blocks and 44 courtyard blocks. A courtyard block keeps its frontage round a square cleared of houses (48 m in
+  the rich ring, 44 m beyond) with a chahar-bagh in it; every garden faces the centre.
+- **Q7e-Q7g** not started.
+
 ## 1. What the city build is
 
 **A settlement build, `settlements/qiblai`,** with its own `build.py` on Verge's pattern (`settlements/verge/build.py`):

@@ -113,7 +113,7 @@ function qnArcadeRun(x,z,ry,L,V){const dep=3.4,H=3.4,wash=xC(xPick(V===2?XPAL.re
  const n=Math.max(2,Math.round(L/2.6));for(let i=0;i<=n;i++){const p=loc(x,z,-L/2+.2+(L-.4)*i/n,dep/2-.3,ry);xnCol(p[0],.25,p[1],H-.25,.15,ry,red,xC(XPAL.saffron));}
  const r=loc(x,z,0,0,ry);vB('vWood',r[0],H,r[1],L+.2,.24,dep+.3,ry,xC(xPick(XPAL.dark)));vB('xWashB',r[0],H+.24,r[1],L+.3,.3,dep+.4,ry,wash);
  vB('xBandB',r[0],H+.54,r[1],L+.36,.32,dep+.46,ry,band);const f=loc(x,z,0,dep/2+.25,ry);xvFr(f[0],H+.86,f[1],L+.36,.28,.04,ry,null);vB('xWashB',r[0],H+.86,r[1],L+.3,.42,dep+.4,ry,wash);}
-function buildQbKoraArcade(G,o){reseed(33541+(o.v|0));const V=xV(o);vnReg('Kora arcade',0,0,12,5);qnArcadeRun(0,0,0,24,V);xnFolk(0,0,2.6,3,9);}
+function buildQbKoraArcade(G,o){reseed(33541+(o.v|0));const V=xV(o),L=o.len==null?24:o.len;vnReg('Kora arcade',0,0,L/2,5);qnArcadeRun(0,0,0,L,V);xnFolk(0,0,2.6,Math.max(1,Math.round(L/8)),L*.35);}   /* o.len: the city's run between two crossings */
 function buildQbKoraCorner(G,o){reseed(33551+(o.v|0));const V=xV(o);vnReg('Kora arcade corner',0,0,9,8);
  // two runs meeting at the plot's back-left: one along the back (front +z), one along the left side (front +x), and a
  // chorten-capped corner block where they meet
@@ -207,6 +207,32 @@ function buildQbGhats(G,o){reseed(33601+(o.v|0));const V=xV(o),W=48,D=30,H=4.8,s
  qnDrums(0,H,sz-3.2,Math.PI,6);xnFolk(0,H,sz+5,6,8);
  if(V===1)for(let i=0;i<5;i++)vBall('xGold',-6+i*3,.2,D/2-1.5,.12,xC(0xe8a030));}   // the evening's floated lamps
 
+// ---------------------------------------------------------------- the monastery astride its avenue (Q7a; the owner, 2026-11-11)
+// The four axial spokes' blocks are halved by their 24 m avenue into ~36 m strips: there the monastery is split, a half on
+// each strip, the avenue its processional way between them. A half: the cell range along the far side, the two short ranges,
+// the court open to the avenue behind a low wall and gate, the assembly hall in the court; the spoke's colour as the whole
+// monastery's. Its front (+z) faces the avenue; o.v the spoke.
+function buildQbMonasteryHalf(G,o){const V=xV(o)%8;reseed(33611+V);const W=56,D=32,P=1.2,Dr=6;
+ const SP=QSPOKE[V],red=xC(SP.wall).multiplyScalar(rr(.96,1.02)),wash=xC(xPick(XPAL.wash)),stone=xC(xPick(QSTONE)),band=xC(SP.band),trim=xC(SP.trim),hr=[3.4,3.0];
+ vnReg('Great monastery (spoke '+(V+1)+', '+SP.name+', astride its avenue)',0,0,29,P+15+5,{colour:SP.name.toLowerCase()});
+ qnPlinth(0,0,W,D,P,0,stone);
+ // the cell ranges: the long one at the back, the two short ones at the ends, open to the avenue
+ for(const [x,z,L,dd,ry] of[[0,-D/2+Dr/2,W,Dr,Math.PI],[W/2-Dr/2,Dr/2,D-Dr,Dr,Math.PI/2],[-W/2+Dr/2,Dr/2,D-Dr,Dr,-Math.PI/2]]){
+  const S=qnStack(x,P,z,L,dd,ry,hr,red,'wash',xC(XPAL.white));
+  qnWins(x,P,z,L,dd,ry,hr,S.k,{pitch:2.6,ww:.75,wh:1.0,trim,left:false,right:false,val:'all'});
+  qnRoof(x,S.y,z,S.w,S.d,ry,red,{band,gold:true,parapet:.6,corner:'gold'});}
+ // the assembly hall in the court, its portico toward the avenue, the gilt crown
+ const HW=22,HD=12,hz=-D/2+Dr+HD/2+.6,hh=[4.6,3.8];qnPlinth(0,hz,HW+1,HD+1,P+.5,0,stone);
+ const H=qnStack(0,P+.5,hz,HW,HD,0,hh,red,'wash',xC(XPAL.white));
+ qnWins(0,P+.5,hz,HW,HD,0,hh,H.k,{pitch:2.8,ww:1.0,wh:1.4,kind:'lit',trim,val:'all',skip:[[-5,5]],skipUp:[[-1.6,1.6]]});
+ xnPortico(0,P+.5,hz+HD/2,0,10,2.6,4.2,wash,{band:true,valC:trim,colC:xC(XPAL.red)});qnDoor(0,P+.5,hz+HD/2,0,2.4,3.2,{c:xC(XPAL.red),step:false});
+ for(const s of[-1,1])qnDrums(s*(HW/2-2.6),P+.5,hz+HD/2,0,4.6);
+ const ht=qnRoof(0,H.y,hz,H.w,H.d,0,red,{band,gold:true,eave:true,eaveC:xC(xPick(XPAL.dark)),parapet:.7,corner:'gold'});qnCrown(0,ht,hz,H.w,H.d,0,{pav:[H.w*.42,H.d*.45],deerS:1.1});
+ // the front: a low wall in the spoke's colour with its gate on the avenue, banners either side, the court paved
+ for(const s of[-1,1]){vB('xWashB',s*(W/4+3.5),P,D/2-.4,W/2-Dr-7,1.6,.6,0,red);vB('xBandB',s*(W/4+3.5),P+1.6,D/2-.4,W/2-Dr-7,.3,.7,0,band);qnBanner(s*5,P,D/2-1.2,3.4,null,xC(SP.wall));}   /* victory banners in the spoke's colour (a spoke banner faces a world bearing: the Rainbow Temple's) */
+ qnDoor(0,P,D/2-.1,0,3.0,2.8,{c:xC(XPAL.red),step:false});xnFlight(0,0,D/2+Math.max(2,Math.round(P/.17))*.34-.1,0,5,P,'vStone',stone);
+ qnPave(0,(hz+HD/2+2.6+D/2)/2,W-2*Dr-2,D/2-(hz+HD/2+2.6)-1,0,P);xnFolk(0,P,D/2-4,3,6);}
+QB.def({key:'qb_monastery_half',name:'Great monastery (astride its avenue)',family:'Sacred — the monasteries',tags:QTAG('civic',['religious','multi-family dwelling'],{job:'worship',note:'a half of an axial spoke\'s monastery, the avenue between the halves (o.v the spoke)'}),w:56,d:35,h:24,fw:56,fd:32,nv:8,build:buildQbMonasteryHalf});
 QB.def({key:'qb_monastery',name:'Great monastery',family:'Sacred — the monasteries',tags:QTAG('civic',['religious','multi-family dwelling'],{job:'worship',note:'one of the eight, a spoke of the wheel (o.v 0-7); names asked of the owner'}),w:52,d:56,h:28,fw:52,fd:52,nv:8,build:buildQbMonastery});
 QB.def({key:'qb_college',name:"Grammarians' college",family:'Sacred — the monasteries',tags:QTAG('civic',['religious','civic'],{job:'scribing'}),w:34,d:36,h:20,fw:34,fd:32,build:buildQbCollege});
 QB.def({key:'qb_gate_temple',name:'Gate temple',family:'Sacred — the kora',tags:QTAG('civic',['religious']),w:17,d:20,h:20,fw:17,fd:15.8,build:buildQbGateTemple});
