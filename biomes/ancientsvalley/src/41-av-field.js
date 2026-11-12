@@ -51,7 +51,7 @@ AV.debris=function(o){var out=[],seed=o.seed|0,C=o.craters||[];
    53 s in craterH and 37 s in scar of a 560 s software-GL profile). A grid of `cell` metres lists, in the list's own order, the items whose reach
    (rad(item)) overlaps each cell; a field reads only its cell's items and gives the same numbers, bit for bit (the skipped items add nothing).
    AV.bucket(list, rad, cell) -> (x, z) => [indices] (an empty array outside every reach); cached on the list for its reach function */
-AV.bucket=function(list,rad,cell){cell=cell||128;var G={},none=[];for(var i=0;i<list.length;i++){var r=rad(list[i]),it=list[i];
+AV.bucket=function(list,rad,cell){cell=cell==null?128:cell;var G={},none=[];for(var i=0;i<list.length;i++){var r=rad(list[i]),it=list[i];
   for(var gx=Math.floor((it.x-r)/cell);gx<=Math.floor((it.x+r)/cell);gx++)for(var gz=Math.floor((it.z-r)/cell);gz<=Math.floor((it.z+r)/cell);gz++){var k=gx+','+gz;(G[k]||(G[k]=[])).push(i);}}
  return function(x,z){return G[Math.floor(x/cell)+','+Math.floor(z/cell)]||none;};};
 /* where a subway's sinkholes, voids and stair pits can reach (kits/ancient-transit KTRANSIT.sinkholeH: the least of their drops, 0 beyond them all): a

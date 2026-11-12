@@ -3,12 +3,12 @@
  "runs": {
   "build.py": {
    "inputs": {
-    "biomes/ancientsvalley/KNOWN_ISSUES.md": "599a55ce5ea209935b5495d95795d5ac0b1bd3cf45b8f86ff5d3d471059e18a7",
-    "biomes/ancientsvalley/PORT.md": "f83ec9ec87886903b36bbfc09e1ce98502b90a517b74eccdc9e5db152494d916",
+    "biomes/ancientsvalley/KNOWN_ISSUES.md": "5b32cad72d49915a21e284068e167c1df182e3f6e512687dbc9cb9db26678b46",
+    "biomes/ancientsvalley/PORT.md": "0860268ca9bfe4063e389be0029010b31bc75d80976d9f164a2d6605a8ecb0b1",
     "biomes/ancientsvalley/build.py": "6c1b10be6c54fb59e20fbdf4f4da12d4149c618fac34bd3a2af086a1beef9432",
     "biomes/ancientsvalley/region/station-overlook.json": "e8dce9536af165c67b4fbae3b4f21e825e46a57f1c1de052a3646446d2304715",
     "biomes/ancientsvalley/src/00-head.html": "265ebf3f5be223e063e402f2096920705e4d5fc2ded75532d057b60b9a451c8f",
-    "biomes/ancientsvalley/src/41-av-field.js": "15b419dd81d593c6aa1f9696548150eb1365f3e91a6a26d16b12e7c4808aeb38",
+    "biomes/ancientsvalley/src/41-av-field.js": "eef285af37b7113161eb6d79f25dfbadc5dc0a7476e861607b086801309d3ae1",
     "biomes/ancientsvalley/src/41b-av-wrecks.js": "c611b3247270dfd4dd84de4214fe4c772df8c3d0f0b25e98bcd2ff375b00cbab",
     "biomes/ancientsvalley/src/41c-av-house.js": "df630a5d1468fc4b90b7bea34b93f01c93b9e176a9e6aa4245fcc47914e640d8",
     "biomes/ancientsvalley/src/41c-av-lobbies.js": "2c9343e32ae0a6289bf0c8a3fc1523a43b4f773a098ef89522ee1da0698847aa",
@@ -354,7 +354,7 @@
     "kits/mechs/mechs-core.js": "0aa66251019e87b453082c42bdc396f7dc429e046387b7aa216b1aa90e4cd38a",
     "kits/mechs/mechs-parts.js": "fc84e5714ca7b1c6e40d5baa613cf988a3bdb79c9505e2ef70c5e6fca42d57e0",
     "kits/mechs/mechs-runtime.js": "bd5b92b7988b773907f8c37527b454364d0508c2552fd247f9170ecba0510af9",
-    "kits/metropolis/src/40-mp-records.js": "f42f9f4795bf0376cf786923776d355bb6f08cab9b4fc5633a67b0e1670f4b55",
+    "kits/metropolis/src/40-mp-records.js": "51e7904e81ddb4fccdd7e6e155a40e2ab42b4c7985f9d29e1b34c2e55d6b5d4e",
     "kits/metropolis/src/41-mp-plans.js": "8be1130319b53d602a5e813fa26736b6be3d3de3ae974587ca309513bddfa063",
     "kits/metropolis/src/42-mp-facade.js": "4b10eddb18aab346280fef83bbcfc16f21a65abb45dc908b1b1fd61b3493db1d",
     "kits/metropolis/src/43-mp-shell.js": "4fc31635bd7135c1a6f8932429dd008fee07b070885139d4074a8b0adadec203",
@@ -368,7 +368,7 @@
     "kits/metropolis/src/53-mp-hero-ledger.js": "51beeef4f479d751f2746c747ac82f5710f7ef93c38961edd1e85789e7afc250",
     "kits/metropolis/src/54-mp-hero-designs.js": "8d5b1d0ea294bd29654df36a3a0e9fed94dedb1dca042e761a995dec4ba9dd3c",
     "kits/metropolis/src/55-mp-hero-ancients.js": "156684fb8464e2b5311bc8c54686a2b9d77759d9be91a1d8583b97ff4296cb45",
-    "kits/metropolis/src/57-mp-debris.js": "f7bb836348acfec6f0e759bd9815037056146e99b9e5aa5e27cc5a7ab8132eee",
+    "kits/metropolis/src/57-mp-debris.js": "bcd2bc4b6cfccc4ca1f611655ed72553327251ff481a534dec8da3b2b4ec0006",
     "kits/metropolis/src/59-mp-floors.js": "86a07393098e76729c8fa4fed18af84d673208dd9914ec234696c7fb76bc8065",
     "kits/metropolis/src/59b-mp-ruin-design.js": "560b618f138a803214edab32e5bf245e4f585faaf5a5aa0cacf687287dc3b682",
     "kits/metropolis/src/60-mp-shell-host.js": "73dac35d3aab6bda2158c7e537793b1ab4fd7b2840df814eab3a67142f45aede",
@@ -458,7 +458,7 @@
     "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
    },
    "outputs": {
-    "biomes/ancientsvalley/dist/ancientsvalley.html": "82d5c6a60248515ec310b90e24b9d3d237aa8ebe40072a8dba800b08652de864",
+    "biomes/ancientsvalley/dist/ancientsvalley.html": "8b8d22d94f1bdc8e14d1972a17adc15e75180a40604a69114de43b9cb057f0ee",
     "biomes/ancientsvalley/dist/ancientsvalley.tex.ancient-transit.js": "b13ef800cf6bbdbe4decb9cb2bc7b6f330c6685f5c68642c7ecc80478d7e8e54",
     "biomes/ancientsvalley/dist/ancientsvalley.tex.ancients.js": "17de40a4b90658fd58685b4c1ba56cedc7c6f7e238e3fcbb697cd9a1e69fdb96",
     "biomes/ancientsvalley/dist/ancientsvalley.tex.ancientsvalley.js": "c4e5e39e31dd88de3b37f96d194b1428aaa448866bf283216828658177759d75",
@@ -467,7 +467,7 @@
     "biomes/ancientsvalley/dist/ancientsvalley.tex.swlowlands.js": "7a3a86c197197df1099911a7ca138f4f5b077c48fe2fad5d8fe9ee804b4f4400"
    },
    "outputs_raw": {
-    "biomes/ancientsvalley/dist/ancientsvalley.html": "82d5c6a60248515ec310b90e24b9d3d237aa8ebe40072a8dba800b08652de864",
+    "biomes/ancientsvalley/dist/ancientsvalley.html": "8b8d22d94f1bdc8e14d1972a17adc15e75180a40604a69114de43b9cb057f0ee",
     "biomes/ancientsvalley/dist/ancientsvalley.tex.ancient-transit.js": "b13ef800cf6bbdbe4decb9cb2bc7b6f330c6685f5c68642c7ecc80478d7e8e54",
     "biomes/ancientsvalley/dist/ancientsvalley.tex.ancients.js": "17de40a4b90658fd58685b4c1ba56cedc7c6f7e238e3fcbb697cd9a1e69fdb96",
     "biomes/ancientsvalley/dist/ancientsvalley.tex.ancientsvalley.js": "c4e5e39e31dd88de3b37f96d194b1428aaa448866bf283216828658177759d75",
@@ -478,12 +478,12 @@
   },
   "build.py --station terraces": {
    "inputs": {
-    "biomes/ancientsvalley/KNOWN_ISSUES.md": "599a55ce5ea209935b5495d95795d5ac0b1bd3cf45b8f86ff5d3d471059e18a7",
-    "biomes/ancientsvalley/PORT.md": "f83ec9ec87886903b36bbfc09e1ce98502b90a517b74eccdc9e5db152494d916",
+    "biomes/ancientsvalley/KNOWN_ISSUES.md": "5b32cad72d49915a21e284068e167c1df182e3f6e512687dbc9cb9db26678b46",
+    "biomes/ancientsvalley/PORT.md": "0860268ca9bfe4063e389be0029010b31bc75d80976d9f164a2d6605a8ecb0b1",
     "biomes/ancientsvalley/build.py": "6c1b10be6c54fb59e20fbdf4f4da12d4149c618fac34bd3a2af086a1beef9432",
     "biomes/ancientsvalley/region/station-terraces.json": "2093548870cd773348ca913c6d0544332893da3f8468c9c467af361632423fad",
     "biomes/ancientsvalley/src/00-head.html": "265ebf3f5be223e063e402f2096920705e4d5fc2ded75532d057b60b9a451c8f",
-    "biomes/ancientsvalley/src/41-av-field.js": "15b419dd81d593c6aa1f9696548150eb1365f3e91a6a26d16b12e7c4808aeb38",
+    "biomes/ancientsvalley/src/41-av-field.js": "eef285af37b7113161eb6d79f25dfbadc5dc0a7476e861607b086801309d3ae1",
     "biomes/ancientsvalley/src/41b-av-wrecks.js": "c611b3247270dfd4dd84de4214fe4c772df8c3d0f0b25e98bcd2ff375b00cbab",
     "biomes/ancientsvalley/src/41c-av-house.js": "df630a5d1468fc4b90b7bea34b93f01c93b9e176a9e6aa4245fcc47914e640d8",
     "biomes/ancientsvalley/src/41c-av-lobbies.js": "2c9343e32ae0a6289bf0c8a3fc1523a43b4f773a098ef89522ee1da0698847aa",
@@ -888,7 +888,7 @@
     "kits/mechs/mechs-core.js": "0aa66251019e87b453082c42bdc396f7dc429e046387b7aa216b1aa90e4cd38a",
     "kits/mechs/mechs-parts.js": "fc84e5714ca7b1c6e40d5baa613cf988a3bdb79c9505e2ef70c5e6fca42d57e0",
     "kits/mechs/mechs-runtime.js": "bd5b92b7988b773907f8c37527b454364d0508c2552fd247f9170ecba0510af9",
-    "kits/metropolis/src/40-mp-records.js": "f42f9f4795bf0376cf786923776d355bb6f08cab9b4fc5633a67b0e1670f4b55",
+    "kits/metropolis/src/40-mp-records.js": "51e7904e81ddb4fccdd7e6e155a40e2ab42b4c7985f9d29e1b34c2e55d6b5d4e",
     "kits/metropolis/src/41-mp-plans.js": "8be1130319b53d602a5e813fa26736b6be3d3de3ae974587ca309513bddfa063",
     "kits/metropolis/src/42-mp-facade.js": "4b10eddb18aab346280fef83bbcfc16f21a65abb45dc908b1b1fd61b3493db1d",
     "kits/metropolis/src/43-mp-shell.js": "4fc31635bd7135c1a6f8932429dd008fee07b070885139d4074a8b0adadec203",
@@ -904,7 +904,7 @@
     "kits/metropolis/src/54-mp-hero-designs.js": "8d5b1d0ea294bd29654df36a3a0e9fed94dedb1dca042e761a995dec4ba9dd3c",
     "kits/metropolis/src/54f-mp-hero-farm.js": "c480a537461063d7cdce9cb5fdf9e77553f4ae5c1d5d51fb0ed5ece511eb3f83",
     "kits/metropolis/src/55-mp-hero-ancients.js": "156684fb8464e2b5311bc8c54686a2b9d77759d9be91a1d8583b97ff4296cb45",
-    "kits/metropolis/src/57-mp-debris.js": "f7bb836348acfec6f0e759bd9815037056146e99b9e5aa5e27cc5a7ab8132eee",
+    "kits/metropolis/src/57-mp-debris.js": "bcd2bc4b6cfccc4ca1f611655ed72553327251ff481a534dec8da3b2b4ec0006",
     "kits/metropolis/src/59-mp-floors.js": "86a07393098e76729c8fa4fed18af84d673208dd9914ec234696c7fb76bc8065",
     "kits/metropolis/src/59b-mp-ruin-design.js": "560b618f138a803214edab32e5bf245e4f585faaf5a5aa0cacf687287dc3b682",
     "kits/metropolis/src/60-mp-shell-host.js": "73dac35d3aab6bda2158c7e537793b1ab4fd7b2840df814eab3a67142f45aede",
@@ -995,7 +995,7 @@
     "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
    },
    "outputs": {
-    "biomes/ancientsvalley/dist/ancientsvalley-terraces.html": "4f34b8a0ce7078bb4bb2982708589ff828bccc8ba72dc5fb0a381474ec236b89",
+    "biomes/ancientsvalley/dist/ancientsvalley-terraces.html": "3912d654863fc55e5f85da746751d0907e7223a04bce7f944f47dc5a15cf8825",
     "biomes/ancientsvalley/dist/ancientsvalley.tex.ancient-transit.js": "b13ef800cf6bbdbe4decb9cb2bc7b6f330c6685f5c68642c7ecc80478d7e8e54",
     "biomes/ancientsvalley/dist/ancientsvalley.tex.ancients.js": "17de40a4b90658fd58685b4c1ba56cedc7c6f7e238e3fcbb697cd9a1e69fdb96",
     "biomes/ancientsvalley/dist/ancientsvalley.tex.ancientsvalley.js": "c4e5e39e31dd88de3b37f96d194b1428aaa448866bf283216828658177759d75",
@@ -1005,7 +1005,7 @@
     "biomes/ancientsvalley/dist/ancientsvalley.tex.swlowlands.js": "7a3a86c197197df1099911a7ca138f4f5b077c48fe2fad5d8fe9ee804b4f4400"
    },
    "outputs_raw": {
-    "biomes/ancientsvalley/dist/ancientsvalley-terraces.html": "4f34b8a0ce7078bb4bb2982708589ff828bccc8ba72dc5fb0a381474ec236b89",
+    "biomes/ancientsvalley/dist/ancientsvalley-terraces.html": "3912d654863fc55e5f85da746751d0907e7223a04bce7f944f47dc5a15cf8825",
     "biomes/ancientsvalley/dist/ancientsvalley.tex.ancient-transit.js": "b13ef800cf6bbdbe4decb9cb2bc7b6f330c6685f5c68642c7ecc80478d7e8e54",
     "biomes/ancientsvalley/dist/ancientsvalley.tex.ancients.js": "17de40a4b90658fd58685b4c1ba56cedc7c6f7e238e3fcbb697cd9a1e69fdb96",
     "biomes/ancientsvalley/dist/ancientsvalley.tex.ancientsvalley.js": "c4e5e39e31dd88de3b37f96d194b1428aaa448866bf283216828658177759d75",
@@ -1017,12 +1017,12 @@
   },
   "build.py --station yards": {
    "inputs": {
-    "biomes/ancientsvalley/KNOWN_ISSUES.md": "599a55ce5ea209935b5495d95795d5ac0b1bd3cf45b8f86ff5d3d471059e18a7",
-    "biomes/ancientsvalley/PORT.md": "f83ec9ec87886903b36bbfc09e1ce98502b90a517b74eccdc9e5db152494d916",
+    "biomes/ancientsvalley/KNOWN_ISSUES.md": "5b32cad72d49915a21e284068e167c1df182e3f6e512687dbc9cb9db26678b46",
+    "biomes/ancientsvalley/PORT.md": "0860268ca9bfe4063e389be0029010b31bc75d80976d9f164a2d6605a8ecb0b1",
     "biomes/ancientsvalley/build.py": "6c1b10be6c54fb59e20fbdf4f4da12d4149c618fac34bd3a2af086a1beef9432",
     "biomes/ancientsvalley/region/station-yards.json": "8b39595ec640f3b057d3405d7fcb5891a5008e9138c586f92331bc2e7d1f49fd",
     "biomes/ancientsvalley/src/00-head.html": "265ebf3f5be223e063e402f2096920705e4d5fc2ded75532d057b60b9a451c8f",
-    "biomes/ancientsvalley/src/41-av-field.js": "15b419dd81d593c6aa1f9696548150eb1365f3e91a6a26d16b12e7c4808aeb38",
+    "biomes/ancientsvalley/src/41-av-field.js": "eef285af37b7113161eb6d79f25dfbadc5dc0a7476e861607b086801309d3ae1",
     "biomes/ancientsvalley/src/41b-av-wrecks.js": "c611b3247270dfd4dd84de4214fe4c772df8c3d0f0b25e98bcd2ff375b00cbab",
     "biomes/ancientsvalley/src/41c-av-house.js": "df630a5d1468fc4b90b7bea34b93f01c93b9e176a9e6aa4245fcc47914e640d8",
     "biomes/ancientsvalley/src/41c-av-lobbies.js": "2c9343e32ae0a6289bf0c8a3fc1523a43b4f773a098ef89522ee1da0698847aa",
@@ -1390,7 +1390,7 @@
     "kits/mechs/mechs-core.js": "0aa66251019e87b453082c42bdc396f7dc429e046387b7aa216b1aa90e4cd38a",
     "kits/mechs/mechs-parts.js": "fc84e5714ca7b1c6e40d5baa613cf988a3bdb79c9505e2ef70c5e6fca42d57e0",
     "kits/mechs/mechs-runtime.js": "bd5b92b7988b773907f8c37527b454364d0508c2552fd247f9170ecba0510af9",
-    "kits/metropolis/src/40-mp-records.js": "f42f9f4795bf0376cf786923776d355bb6f08cab9b4fc5633a67b0e1670f4b55",
+    "kits/metropolis/src/40-mp-records.js": "51e7904e81ddb4fccdd7e6e155a40e2ab42b4c7985f9d29e1b34c2e55d6b5d4e",
     "kits/metropolis/src/41-mp-plans.js": "8be1130319b53d602a5e813fa26736b6be3d3de3ae974587ca309513bddfa063",
     "kits/metropolis/src/42-mp-facade.js": "4b10eddb18aab346280fef83bbcfc16f21a65abb45dc908b1b1fd61b3493db1d",
     "kits/metropolis/src/43-mp-shell.js": "4fc31635bd7135c1a6f8932429dd008fee07b070885139d4074a8b0adadec203",
@@ -1406,7 +1406,7 @@
     "kits/metropolis/src/53-mp-hero-ledger.js": "51beeef4f479d751f2746c747ac82f5710f7ef93c38961edd1e85789e7afc250",
     "kits/metropolis/src/54-mp-hero-designs.js": "8d5b1d0ea294bd29654df36a3a0e9fed94dedb1dca042e761a995dec4ba9dd3c",
     "kits/metropolis/src/55-mp-hero-ancients.js": "156684fb8464e2b5311bc8c54686a2b9d77759d9be91a1d8583b97ff4296cb45",
-    "kits/metropolis/src/57-mp-debris.js": "f7bb836348acfec6f0e759bd9815037056146e99b9e5aa5e27cc5a7ab8132eee",
+    "kits/metropolis/src/57-mp-debris.js": "bcd2bc4b6cfccc4ca1f611655ed72553327251ff481a534dec8da3b2b4ec0006",
     "kits/metropolis/src/57y-mp-yards-draw.js": "b20c0a25d51230c892d212ab4f959bbbc8b86a85130253bb80cf12545f9efdaa",
     "kits/metropolis/src/59-mp-floors.js": "86a07393098e76729c8fa4fed18af84d673208dd9914ec234696c7fb76bc8065",
     "kits/metropolis/src/59b-mp-ruin-design.js": "560b618f138a803214edab32e5bf245e4f585faaf5a5aa0cacf687287dc3b682",
@@ -1498,7 +1498,7 @@
     "tools/textures": "e9e8e410dd41443cab29de32239cb584a56bc92fc446ee05ad09081cd5dc91a0"
    },
    "outputs": {
-    "biomes/ancientsvalley/dist/ancientsvalley-yards.html": "ec88d472bf123d0df977963e204fcad192332c42489649c29c574d51413f044e",
+    "biomes/ancientsvalley/dist/ancientsvalley-yards.html": "d7a434c19c01fcaaf2b52b0ed71914c5fccf2ee3b7267d9942e3fac61a8600fb",
     "biomes/ancientsvalley/dist/ancientsvalley.tex.ancient-transit.js": "b13ef800cf6bbdbe4decb9cb2bc7b6f330c6685f5c68642c7ecc80478d7e8e54",
     "biomes/ancientsvalley/dist/ancientsvalley.tex.ancients.js": "17de40a4b90658fd58685b4c1ba56cedc7c6f7e238e3fcbb697cd9a1e69fdb96",
     "biomes/ancientsvalley/dist/ancientsvalley.tex.ancientsvalley.js": "c4e5e39e31dd88de3b37f96d194b1428aaa448866bf283216828658177759d75",
@@ -1507,7 +1507,7 @@
     "biomes/ancientsvalley/dist/ancientsvalley.tex.swlowlands.js": "7a3a86c197197df1099911a7ca138f4f5b077c48fe2fad5d8fe9ee804b4f4400"
    },
    "outputs_raw": {
-    "biomes/ancientsvalley/dist/ancientsvalley-yards.html": "ec88d472bf123d0df977963e204fcad192332c42489649c29c574d51413f044e",
+    "biomes/ancientsvalley/dist/ancientsvalley-yards.html": "d7a434c19c01fcaaf2b52b0ed71914c5fccf2ee3b7267d9942e3fac61a8600fb",
     "biomes/ancientsvalley/dist/ancientsvalley.tex.ancient-transit.js": "b13ef800cf6bbdbe4decb9cb2bc7b6f330c6685f5c68642c7ecc80478d7e8e54",
     "biomes/ancientsvalley/dist/ancientsvalley.tex.ancients.js": "17de40a4b90658fd58685b4c1ba56cedc7c6f7e238e3fcbb697cd9a1e69fdb96",
     "biomes/ancientsvalley/dist/ancientsvalley.tex.ancientsvalley.js": "c4e5e39e31dd88de3b37f96d194b1428aaa448866bf283216828658177759d75",

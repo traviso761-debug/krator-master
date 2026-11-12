@@ -193,7 +193,16 @@ MP.debrisPlan = function (F, state) {
       if (state === 'fallen') { mnd(0, 0, R0 * 1.05, R0 * 1.05, [6, 5, 4], 0); mnd(R0 + 10, 0, R0 * 0.4, R0 * 0.2, [3, 2], 1); }
     } else {
       if (state === 'crown') { mnd(R0 + 0.06 * s2, 0, 0.1 * s2, 0.06 * s2, [3, 2.5, 2], 0); sec(R0 + 0.03 * s2, -0.04 * s2, H * 0.9, 0.06 * s2, 0.4, 0.1); if (F.discs) dsc(R0 + 0.12 * s2, 0.02 * s2, F.discs[F.discs.length - 1], 0.4); }
-      if (state === 'broken') { mnd(R0 + 0.25 * s2, 0, 0.28 * s2, 0.1 * s2, [5, 4, 3], 0); sec(R0 + 0.12 * s2, 2, H * 0.65, 0.12 * s2, 0.08, 0.06); sec(R0 + 0.36 * s2, -4, H * 0.8, 0.1 * s2, -0.15, -0.05); if (F.discs) dsc(R0 + 0.5 * s2, 0, F.discs[F.discs.length - 1], 0.5); }
+      /* broken: a single tower's top lies along the fall line as itself (the owner, 2026-11-11: a heap and two slabs did not read as a tower's
+         top): its storeys from the tear's mean to the tip, in two lengths broken at a little over half (a kink of a few degrees and a 3 m gap),
+         the foot 3 m off the stump, a heap where it struck. A tower of several (F.towers) keeps its heap and sections */
+      if (state === 'broken' && !F.towers) {
+        var y0 = R.cut - (R.torn == null ? 0 : R.torn) * 0.5, top = Math.max(H, F.height.tip == null ? 0 : F.height.tip), L1 = (top - y0) * 0.55, s0 = R0 + 3, f0 = at2(s0, 0), f1 = at2(s0 + L1 + 3, 1.5);
+        mnd(R0 + 0.08 * s2, 0, 0.12 * s2, 0.07 * s2, [4, 3, 2.5], 0);
+        P.push({ kind: 'top', x: f0[0], z: f0[1], y0: y0, y1: y0 + L1, ry: ph2 + 0.03, tilt: 0.02 });
+        P.push({ kind: 'top', x: f1[0], z: f1[1], y0: y0 + L1, y1: top + 50, ry: ph2 - 0.07, tilt: -0.015 });
+        if (F.discs) dsc(R0 + 0.5 * s2, 6, F.discs[F.discs.length - 1], 0.5);
+      } else if (state === 'broken') { mnd(R0 + 0.25 * s2, 0, 0.28 * s2, 0.1 * s2, [5, 4, 3], 0); sec(R0 + 0.12 * s2, 2, H * 0.65, 0.12 * s2, 0.08, 0.06); sec(R0 + 0.36 * s2, -4, H * 0.8, 0.1 * s2, -0.15, -0.05); if (F.discs) dsc(R0 + 0.5 * s2, 0, F.discs[F.discs.length - 1], 0.5); }
       if (state === 'stump') { mnd(R0 * 0.5, 0, R0 * 1.1, R0 * 0.9, [6, 5, 4], 0); mnd(R0 + 0.15 * s2, 0.1 * s2, 0.12 * s2, 0.07 * s2, [3, 2], 1); sec(R0 + 0.06 * s2, -0.08 * s2, H * 0.4, 0.1 * s2, 0.4, 0.05); }
       if (state === 'skeleton') { mnd(R0 + 4, 0, 0.08 * s2, 0.05 * s2, [3, 2], 0); mnd(R0 + 2, -0.12 * s2, 0.06 * s2, 0.04 * s2, [2.5, 2], 1); }
       if (state === 'fallen') { mnd(R0 + 0.35 * s2, 0, 0.4 * s2, Math.max(R0 * 0.7, 0.08 * s2), [7, 5, 4], 0); mnd(R0 * 0.3, 0, R0 * 0.9, R0 * 0.8, [5, 4], 1);
