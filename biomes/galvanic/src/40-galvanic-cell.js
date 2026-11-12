@@ -71,12 +71,12 @@ var GALV_PHYS=(function(){
 var GALV_SITES={
  strand:{key:'strand',name:'The Gossan Strand',px:[800.2,1572.4],world:[1600400,3144800],sky:{px:528.2,py:1242.4},
   sea:-2600,atm:2.21,koppen:'XV',rain:1051,temp:{mean:36,warm:40,cold:32},soil:36,day:70,
-  // the strand's fall: from the hills' foot (z -1350) at -2,598.4 to the sea floor; the hills rise north of it
-  strand:{z0:-1350,y0:-2598.4,z1:2600,y1:-2601.2},hills:{z0:-1350,h:150},
+  // the strand's fall: from the hills' foot (z -1350) at -2,597.2 (the model's strand top, -2,597 m) to the sea floor; the hills rise north of it
+  strand:{z0:-1350,y0:-2597.2,z1:2600,y1:-2601.4},hills:{z0:-1350,h:150},
   // the vent's crater: its floor 100 m under the sea (the model's vent record), hot brine to the sea's level, a rim of mounds
   deep:{x:1500,z:1050,r:560,floor:-2700,rim:3.5,T:62},
   // the relict sulfide mounds (x, z, r, h): gossan caps, acid springs at their feet; the last three ring the Deep
-  mounds:[[-1550,-760,75,10],[-760,-380,50,7],[180,-980,85,12],[-1150,420,40,5],[820,120,48,7],[1080,520,60,9],[2050,700,52,8],[1500,330,40,6]],
+  mounds:[[-1550,-760,75,14],[-760,-380,50,10],[180,-980,85,17],[-1150,420,40,7],[820,120,48,10],[1080,520,60,12],[2050,700,52,11],[1500,330,40,8]],
   // the acid streams: polylines from a spring at a mound's foot to the sea (pH0 at the spring, Q0 L/s, q L/s gained per metre)
   streams:[{name:'The west stream',pts:[[-1500,-690],[-1640,-200],[-1480,400],[-1600,1100],[-1500,1900],[-1560,2600]],pH0:1.9,Q0:4,q:.03},
    {name:'The middle stream',pts:[[150,-900],[0,-420],[-260,100],[-180,700],[-320,1400],[-260,2600]],pH0:2.0,Q0:6,q:.04},

@@ -261,7 +261,7 @@ page's centre at px 800.2,1572.4 (world 1,600,400, 3,144,800 m), the vent's crat
 across the middle at -2,600 to -2,596 m, the sea's edge along the south at the season's level, the hills' foot rising
 to about -2,450 m along the north edge. **The page compresses the strand**: the model's 16 km from the vent to the water
 are drawn as about 3 km, so the vent, the mounds, the terraces and the season's shore stand on one page. The strand's fall
-is kept (about a metre and a half across it), which is what makes a metre of sea level move the shore by hundreds of metres. Sky at old-canvas px 528.2,1242.4. `ATMOS.siteAt` to be confirmed at the build
+is kept (about four metres across it, from the model's -2,597 m at the hills' foot to the sea floor), which is what makes a metre of sea level move the shore by hundreds of metres. Sky at old-canvas px 528.2,1242.4. `ATMOS.siteAt` to be confirmed at the build
 (section 16).
 
 ## 6. The ground (`core/terrain`, `core/water`)
