@@ -35,6 +35,11 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 
 ## Left red by the second integration pass *(2026-11-11; HANDOFF-REBUILD.md)*
 
+- **`tools/scale-model/tests/test_smodel.py`, two station heights from the NE outer wall's merge** (found 2026-11-12 by the scale-model
+  re-run, failing on claude/integration-3 before it too): station-garnet is stated at 2,810 m (the Garnet-Mirror Tarn, `biomes/neouterwall`
+  PLAN.md and NOTES.md) where the model's ground is 3,352 m, station-vitreous at 2,950 m where it is 4,004 m. The kit's pages stand on
+  those heights, so the NE wall's session decides: restate them from the model, or carve the model's cauldron and hollow to them.
+
 - **The NE wall's `HV('thatch, mats, arrow shafts', ...)`**: `core/hamlet/test-hamlet.js` cannot read "arrow shafts". Add it to the
   craft rule in `core/hamlet/10-hamlet-wood.js` with the next rebuild that takes core/hamlet (54 pages), or call it `poles` in the kit.
 
