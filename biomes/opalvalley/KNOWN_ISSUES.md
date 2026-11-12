@@ -30,3 +30,16 @@ First pass, 2026-11-11, built in the cloud: checked under software GL (SwiftShad
 - [ ] **No sound**: `OPAL.SOUND` is data for a `core/audio` that does not exist (High Rift's records are the model).
 - [ ] The `KSTRATA` opal recipes are handed to `KSTRATA.add` by the kit (`src/84-host-ground.js`) rather than written into core's
   `RECIPES`: adding them there changes every page that loads `35-core-strata.js`. Move them on the next all-builds rebuild (`TODO.md`).
+
+## The look (judged in the software-GL shots, 2026-11-11; the GPU pass is owed)
+
+- [ ] **The walls above the cliff band are pale and smooth** past the near gullies (the ground's paint, not a library set): reads as
+  scree or snow at a distance, but flat near. A rock layer on the walls (`rock.tuff` or the owed `rock.opal.matrix`) and the far field's
+  colours are the next pass.
+- [ ] **The sheen's strength** (`?sheen=`, default .7 on flecks): judged once under SwiftShader; the GPU may want it lower. The first pass's
+  coat over the whole mask read as paint and was cut (PLAN.md section 9, item 3).
+- [ ] **The prism cloud pines dominate the upper bed** (over a thousand on the page): its tree as the plan has it, but the stand could be
+  thinner with more of the glass-plume willows on the tarns' shores.
+- [ ] **The Rift's trumpet trees outnumber the kin on the mouth's fan** (~870): right for the threshold, but the Xanadu kin there are few.
+- [ ] **The glacier's ice is drawn as ground** (the ice layer on the ground mesh, KGLACIER's thickness in `terrainH`), its seracs and caves by
+  KGLACIER's drawer: no subsurface blue in the ice itself.
