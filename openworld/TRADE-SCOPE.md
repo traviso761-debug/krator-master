@@ -675,7 +675,39 @@ names. The best village sites there, 60 km or more from any pin and 80 km from t
 | 1372,773 | Rīfar al-Kawkab, 12 m³/s | 3,063 m, Cfa, 470 mm, +10 °C | 234, 122 | Nomad Country | the highest; summer grazing |
 
 The valleys are pasture country at 1.5-3 km, cooler and wetter than the sedesert: summer grounds for herds, rather than towns.
-The Rīfar al-Ṣakhr and the upper Rīfar al-Qaṣr would make good seasonal camps (`core/camp`) for the same bands.
+
+**They are the Dasri's seasonal camp sites** (the owner, 2026-11-12: "we can designate those eastern river valley sites as
+seasonal camp sites"). Five sites: the Braita Riba (1334,949), the Rīfar al-Ṣakhr (1353,732), the upper Rīfar al-Qaṣr (1359,671),
+the Solt Riba (1338,1012) and the Rīfar al-Kawkab (1372,773). Village 2 on the Rīfar al-Dhahab stays a village, the bands' fixed
+point in the valleys; say if it should be a camp too.
+- **Not pins.** They are `core/camp` records: a band's summer pitch on a named site, struck and moved with the season (`KCAMP`,
+  `core/camp/PLAN.md`). The sim's world tick moves the bands between them and the villages.
+- **In the trade model** their pasture counts toward the Dasri's mounts and hides (camels, goats), not a settlement's reach.
+
+**The western oases** (the owner: "check western region of the map too for other good oases"). The sedesert west of px 1210 is
+80% arid ground. The search kept cells with water (a river, a fresh lake, or wadis and springs) where at least half the ground
+within 10 km is arid. They are 60 km or more from any pin and 80 km from every site above:
+
+| Oasis | Water | Ground | Pasture, farmland (10 km) | Arid around | Polity | Nearest |
+|---|---|---|---|---|---|---|
+| **1204,829** | wadis and springs (9 wadi px) | 732 m, BSh, 439 mm, +22 °C | 252, 78 | 100% | Nomad Country | Mungo 236 km: the most isolated, mid-desert |
+| **1180,941** | the Rrivar Blaca (Verge's river) crossing the desert, 10 m³/s, and wadis | 446 m, BSh, 564 mm, +23 °C | 226, 110 | 64% | Empire of Iziz | Verge 177 km |
+| **1190,671** | wadis and springs (10 wadi px) | 502 m, BSh, 596 mm, +23 °C | 243, 156 | 91% | Nomad Country | the Tabist town 160 km; village 4 81 km |
+| **1119,1113** | wadis on the Bowl's north side | -1,012 m, BSh, 392 mm, +28 °C | 245, 89 | 100% | Empire of Iziz | Mantis 103 km |
+| 1172,1042 | the Winda Riba, 11 m³/s | 465 m, BSh, 423 mm, +22 °C | 235, 50 | 100% | Empire of Iziz | village 1 81 km |
+| 1042,1083 | the Bruk cedra, 10 m³/s | 895 m, BSh, 345 mm, +19 °C | 186, 52 | 100% | Empire of Iziz | Arcbeam 72 km |
+| 1203,974 | the Bruk Loña, 10 m³/s | 1,065 m, BSh, 282 mm, +20 °C | 178, 38 | 100% | Empire of Iziz | Verge 139 km |
+| 1132,1048 | wadis | 835 m, BSh, 423 mm, +20 °C | 236, 79 | 99% | Empire of Iziz | Solta 217 km |
+
+These are true oases: a spring line or a small river in open desert, with pasture round them and little farmland. Uses:
+- **Caravan stages:** the first four (bold) mark a line down the desert's west side from the Tabist country to the Bowl,
+  140-260 km apart, a day or more by camel each.
+- **Winter camps:** they pair with the eastern valleys' summer grounds. The Dasri winter in the low desert at the oases and
+  summer in the high valleys.
+- **Village alternatives:** 1204,829 or 1190,671 could replace a village above if the owner wants the Dasri's villages further west.
+
+The four bold ones, if taken, are `core/camp` sites like the valleys, or caravanserai pins (the lore's khans) for the queue:
+the owner's call.
 
 **A Tabisti town in the middle of the east abyss** (the owner: "between mungo and reed"). The Tabisti live "on the salt marshes and
 river deltas at the edge of the eastern abyss" (`LORE.md` section 6.9). So the search kept the abyss floor (under -800 m), on a
