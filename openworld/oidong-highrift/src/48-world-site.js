@@ -50,10 +50,8 @@ var SITE_SPEC={region:'oidong-highrift',world:1311634,bridges:{culture:'order'},
    {id:'shelf',name:'The Caldron shelf village',culture:'xanadu',focus:'farming',bearing:120,km:2.5,look:3000,pop:150}]}},
  /* the Order's road up the Oidong Valley and the beck's staircase (`guide`, 5.1 px: the straight line crosses the range
     south of the valley, which took it over 6,000 m), past Oidong's lake on its north shore */
- /* the Sultanate's surface road up the valley, on the valley floor (`guide`). The Rift line (the Ancients' way by
-    Qiblai and Longsong to Strongbow: the network's leg rift.longsong-strongbow) runs beside it, but it tunnels through four
-    ridges a surface road at 8 % must climb: on its line this road came to 188 km and 3,659 m, against 153 km and
-    2,992 m here. The Rift line itself is the transit kit's to lay (2026-11-11) */
+ /* the Sultanate's road up the valley, on the valley floor (`guide`): the only way up the Oidong Valley (the owner,
+    2026-11-11: "there is no rift line in oidong valley, just a road") */
  links:[['sq80bzd7ep','sfgtxw10kr',{hw:3,r:800,keep:true,stops:XANADU_STOPS,culture:'xanadu',guide:[[1226,1626],[1240,1628],[1255,1632],[1265,1636],
    [1275,1640],[1282,1643],[1288,1645],[1294,1647],[1298,1647]]}],
   /* Strongbow at the valley's east end (moved 2026-11-11: the cliff arcology) stands on the road: the Sultanate's road up
