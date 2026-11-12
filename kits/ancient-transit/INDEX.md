@@ -31,7 +31,7 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `42-tr-highway.js` | 15 |  |
 | `43-tr-rail.js` | 15 |  |
 | `43b-tr-subway.js` | 11 |  |
-| `43c-tr-line.js` | 25 |  |
+| `43c-tr-line.js` | 28 |  |
 | `44-tr-dress.js` | 9 |  |
 | `44b-tr-war.js` | 16 |  |
 | `44c-tr-quake.js` | 4 |  |
@@ -41,7 +41,7 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `55-tr-draw-highway.js` | 22 |  |
 | `56-tr-draw-rail.js` | 18 |  |
 | `56b-tr-draw-subway.js` | 12 |  |
-| `56c-tr-draw-line.js` | 12 |  |
+| `56c-tr-draw-line.js` | 21 |  |
 | `57-tr-draw-dress.js` | 5 |  |
 | `70-host-stage.js` | 10 |  |
 | `89-host-sky.js` | <1 |  |

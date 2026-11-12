@@ -6,7 +6,7 @@
 // tracks' runs, their offsets and its crossovers from it, so the seven pages are windows of the same line and Godot reads the same record.
 // The pages still draw their window flat (the invert at y 0): the record's heights (the bore's -0.04 % grade) are not drawn.
 //   RIFT.line                  the record (LN)
-//   RIFT.window(S0, WIN)       -> {W (the lineWindow), cond (by track: [{s0, s1, state, depth?}] in chainage, as the pages keep it),
+//   RIFT.window(S0, WIN)       -> {W (the lineWindow), local (it again in the page's frame, flat: what the page draws), cond (by track: [{s0, s1, state, depth?}] in chainage, as the pages keep it),
 //                                  trackX(id, z) (the page's z), crossovers ([{id, a, b, z0, z1, state}] in the page's z), gaps, segments}
 const RIFT=(function(){const T=KTRANSIT,SEC=LK.SEC,nom={};SEC.tracks.forEach(t=>nom[t.id]=t.x);
  const sm=LK.sm;
@@ -38,7 +38,11 @@ const RIFT=(function(){const T=KTRANSIT,SEC=LK.SEC,nom={};SEC.tracks.forEach(t=>
  const snap=v=>Math.round(v*1e6)/1e6;
  function windowOf(S0,WIN){const a=S0+WIN.z0,b=S0+WIN.z1,W=T.lineWindow(line,a,b),cond={};
   W.tracks.forEach(t=>cond[t.id]=W.cond[t.id].map(r=>Object.assign({s0:snap(r.s0+a),s1:snap(r.s1+a),state:r.state},r.state==='flooded'?{depth:r.depth}:{})));
-  return {W,cond,trackX:(id,z)=>z==null?nom[id]:W.offAt(id,z-WIN.z0),   /* a track named without a z: its nominal offset (a straight window's) */
+  /* the window again in the page's own frame (straight along z from WIN.z0, the invert flat at y 0): what the pages draw through KTRANSIT.draw.line */
+  const local=T.line({id:W.id,seed:W.seed,base:W.base,pts:[[0,0,WIN.z0],[0,0,WIN.z1]],section:W.sec,tracks:W.tracks.map(t=>({id:t.id,off:t.off})),offAt:(tid,s)=>W.offAt(tid,s),state:'kept',
+   cond:[].concat(...W.tracks.map(t=>W.cond[t.id].map(r=>({s0:r.s0,s1:r.s1,track:t.id,state:r.state,depth:r.depth})))),forms:W.forms.map(F=>({s0:F.s0,s1:F.s1,kind:F.kind})),
+   sectionStates:W.sections.reduce((m,x)=>{m[x.id]=x.state;return m;},{}),crossovers:W.crossovers.map(X=>({id:X.id,s:X.s,a:X.a,b:X.b,len:X.len,dir:X.dir,state:X.state})),nicheStep:0,furniture:false});
+  return {W,local,cond,trackX:(id,z)=>z==null?nom[id]:W.offAt(id,z-WIN.z0),   /* a track named without a z: its nominal offset (a straight window's) */
   
    crossovers:W.crossovers.map(X=>({id:'line.xo.'+Math.round(X.s0+a),a:X.a,b:X.b,z0:snap(X.s0+a-S0),z1:snap(X.s1+a-S0),state:X.state})),
    gaps:W.gaps.map(g=>({id:g.id,s0:snap(g.s0+a),s1:snap(g.s1+a),kind:g.kind})),segments:W.segments.map(g=>({id:g.id,s0:snap(g.s0+a),s1:snap(g.s1+a)}))};}

@@ -40,8 +40,8 @@
     "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
     "core/walk/20-core-walk.js": "66c2a5dfacc6e4ffc2cdc03dfa7d0f82ea991c312d5725d299e4e281fe148e03",
-    "kits/ancient-transit/KNOWN_ISSUES.md": "e344f62b5d106595a5c82b032b750c74f87217f01fef7846ad774e9d1dbefea8",
-    "kits/ancient-transit/PORT.md": "ba896fc636c43cf230cc6f39d0c242e5d073eaa0aceaf0b7739dec3a93fbeb6e",
+    "kits/ancient-transit/KNOWN_ISSUES.md": "eab13cab64c1d432bc323e67f75cf63243c5ba69bb676a0176b90f0cbf417d1f",
+    "kits/ancient-transit/PORT.md": "71b1c26b3919c06163c34187598f08a323a9c81b81579b4a443577cb506f92dc",
     "kits/ancient-transit/build.py": "da8c732e435d8c82b9ea698b25d4dc76d9a266c50e55e27ce59a99eb530d067a",
     "kits/ancient-transit/krator-transit-furniture.js": "90fcfeb59f86fd99f9a23cce2033e518577aecabd76f28858da161ab339ddd7c",
     "kits/ancient-transit/src/00-head.html": "9f7e4aec7da5945663d27b1a506787e17657b6c31dd99d3dbdd1d96d131add55",
@@ -61,7 +61,7 @@
     "kits/ancient-transit/src/55-tr-draw-highway.js": "b9e5763776ab5ea256ebabf82ea32b19f4d9cde4a18a71e8c2066bf83a788d1c",
     "kits/ancient-transit/src/56-tr-draw-rail.js": "a6c46b79bebe749ad462399112e491a2ead6e1edcfb094b7de0b97466386f884",
     "kits/ancient-transit/src/56b-tr-draw-subway.js": "7f283287bcc81f594b4694bd0050b4ef2cc2f5cff7e13b9cf5e551cfe19fe9ee",
-    "kits/ancient-transit/src/56c-tr-draw-line.js": "945138f7c1cb884a0ee7040524c5877dcdf2d1d0737a109959e4ab3f1d1fc45b",
+    "kits/ancient-transit/src/56c-tr-draw-line.js": "417f40f94bd4d7dba1116f16fe13ac3bb757cb5db7329ea433b8559e9087d21d",
     "kits/ancient-transit/src/57-tr-draw-dress.js": "0921a5ebc5554a72bfef576defc91830ae3cf9881fd4fc91a8091a6179b77493",
     "kits/ancient-transit/src/70-host-stage.js": "461e2eff7fd9a7ae5bb1e1ec6bd8a141f32748018c8b851e595db16d5e53db69",
     "kits/ancient-transit/src/89-host-sky.js": "39a1f55a76c99aeec2a5fe6e7142ef4cac7c71a3c0efc107ea3e06e9846c70e7",
@@ -157,13 +157,13 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/ancient-transit/build-manifest.json": "1e2b9d0abefa85852d6efbe684c094dff398603e058e867a95c25ec8d32cf8a2",
-    "kits/ancient-transit/dist/ancient-transit.html": "301961a8370e8a30d1a04ae6c90ac460aa2d48ab63842977abd062fdf6b1858a",
+    "kits/ancient-transit/build-manifest.json": "2c7af6dc5c5a1931416fbb9709fb2a2fdbd9e9b5e298b2fb297521e13b193010",
+    "kits/ancient-transit/dist/ancient-transit.html": "b1759fbc03cea1818b6ec58068cbd3acc36ad5d74f5fdff00238fa9d00a49e8c",
     "kits/ancient-transit/dist/ancient-transit.tex.ancient-transit.js": "006858241b75ab6107bbac839d32b32b193f166df8aa30816d70ab975c61a306"
    },
    "outputs_raw": {
-    "kits/ancient-transit/build-manifest.json": "1e2b9d0abefa85852d6efbe684c094dff398603e058e867a95c25ec8d32cf8a2",
-    "kits/ancient-transit/dist/ancient-transit.html": "301961a8370e8a30d1a04ae6c90ac460aa2d48ab63842977abd062fdf6b1858a",
+    "kits/ancient-transit/build-manifest.json": "2c7af6dc5c5a1931416fbb9709fb2a2fdbd9e9b5e298b2fb297521e13b193010",
+    "kits/ancient-transit/dist/ancient-transit.html": "b1759fbc03cea1818b6ec58068cbd3acc36ad5d74f5fdff00238fa9d00a49e8c",
     "kits/ancient-transit/dist/ancient-transit.tex.ancient-transit.js": "006858241b75ab6107bbac839d32b32b193f166df8aa30816d70ab975c61a306"
    }
   }

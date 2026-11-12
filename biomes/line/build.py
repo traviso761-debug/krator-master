@@ -88,8 +88,10 @@ PATH.setdefault('20-core-space.js',J('core','space','20-core-space.js'))
 PATH.setdefault('20-core-walk.js',J('core','walk','20-core-walk.js'))
 PATH.setdefault('20-core-sched.js',J('core','sched','20-core-sched.js'))
 # the transit kit's data side (kits/ancient-transit, [G data]): the `line` kind every station's window is cut from (stations/common/47c-line-record.js);
-# its path, profile and records, and the subway's carving that the line's lineCarveH reads. No three.js: the drawing stays the stations'
+# its path, profile and records, and the subway's carving that the line's lineCarveH reads
 for f in ['40-tr-records.js','41-tr-path.js','43b-tr-subway.js','43c-tr-line.js']: PATH.setdefault(f,J('kits','ancient-transit','src',f))
+# and its drawing of the line (KTRANSIT.draw.line through the stations' o.host: their sections, cuts and openings), with the builder it needs
+for f in ['46-tr-mats.js','56c-tr-draw-line.js']: PATH.setdefault(f,J('kits','ancient-transit','src',f))
 CORE_TAGS={'08-core-rand.js':'rand','50-core-tags.js':'tags','52-core-tags-vocab.js':'tags','53-core-tags-host.js':'tags'}
 for f,d in CORE_TAGS.items(): PATH.setdefault(f,J('core',d,f))
 for f in ['07-core-export.js','09-core-export-adapters.js']: PATH.setdefault(f,J('core','export',f))

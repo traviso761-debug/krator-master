@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 150 (48%) | 0 (0%) | 0 (0%) | 41 (13%) | 122 (39%) |
+| KB | 152 (47%) | 0 (0%) | 0 (0%) | 41 (13%) | 131 (40%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -21,7 +21,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/42-tr-highway.js` | 15.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/43-tr-rail.js` | 15.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/43b-tr-subway.js` | 11.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | plain records on KRAND; tests/test-transit.js |
-| `src/43c-tr-line.js` | 25.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/43c-tr-line.js` | 27.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/44-tr-dress.js` | 9.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/44b-tr-war.js` | 16.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | plain records on KRAND; tests/test-transit.js |
 | `src/44c-tr-quake.js` | 4.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | plain records on KRAND; tests/test-transit.js |
@@ -31,7 +31,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/55-tr-draw-highway.js` | 22.4 | [draw] | 8 | 0 | 0 | 0 | 0 | 31 | 0 | 3 | 0 | 0 | 0 |  |
 | `src/56-tr-draw-rail.js` | 17.9 | [draw] | 8 | 0 | 0 | 0 | 0 | 52 | 0 | 1 | 0 | 0 | 0 |  |
 | `src/56b-tr-draw-subway.js` | 12.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 31 | 0 | 0 | 0 | 0 | 0 | KTRANSIT.subway's records as meshes |
-| `src/56c-tr-draw-line.js` | 12.4 | [draw] | 0 | 0 | 0 | 0 | 0 | 29 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/56c-tr-draw-line.js` | 20.9 | [draw] | 2 | 0 | 0 | 0 | 0 | 42 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/57-tr-draw-dress.js` | 5.4 | [draw] | 0 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/70-host-stage.js` | 9.8 | [web] | 1 | 0 | 0 | 0 | 2 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/89-host-sky.js` | 0.4 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | host: the shared sky bound (core/atmos) |

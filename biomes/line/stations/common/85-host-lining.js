@@ -48,41 +48,19 @@ const LB=(function(){
 /* the sections at z: the window's LINE.sectionsAt(z) where a ring has more than one (twin bores), else its one LINE.sectionAt(z); a section's
    profile is LINE.profileAt(z, S) */
 const SECS_AT=z=>LINE.sectionsAt?LINE.sectionsAt(z):(s=>s?[s]:[])(LINE.sectionAt(z));
-const LINING=(function(){const W=LINE.WIN,B=LB.B(100),rg=LB.rgb,ST=STATION.state||'kept';
- const base=rg(ST==='abandoned'?0x8e8a80:0xa8a49a),joint=rg(0x5a5852),band=rg(0x8a6a3c),stain=rg(0x8e8a80);
- const inward=(S,pt)=>{const cx=(S.x0+S.x1)/2,dx=cx-pt[0],dy=(S.spring+1)-pt[1],l=Math.hypot(dx,dy)||1;return [dx/l,dy/l];};
- /* the openings in a wall segment of this ring: the z spans to leave out where a segment lies within an opening's height on its wall */
- const gapsFor=(S,z,p,q)=>(LINE.openings||[]).filter(O=>{const wx=O.wall==='e'?S.x1:S.x0;return p[0]===wx&&q[0]===wx&&O.z1>z&&O.z0<z+2&&
-  Math.min(p[1],q[1])>=O.y0-1e-6&&Math.max(p[1],q[1])<=O.y1+1e-6;}).map(O=>[Math.max(z,O.z0),Math.min(z+2,O.z1)]).sort((a,b)=>a[0]-b[0]);
- const outline=P=>P.map(p=>[p[0],p[1]]);
- let ring=0,prevKey=null,prevP=null;
- for(let z=W.z0;z<W.z1-1e-6;z+=2,ring++){
-  const SS=SECS_AT(z+1),PS=SS.map(S=>LINE.profileAt(z+1,S)),key=SS.map(S=>S.key).join('+');
-  /* the end wall where the sections change between two lined rings: the wider ring outside, the other ring's sections its holes (one gallery
-     into a junction, a junction into twin bores); two sets of several sections side by side draw none (their step is the window's) */
-  if(SS.length&&prevKey&&key!==prevKey&&prevP&&(SS.length===1||prevP.length===1)){const A=prevP.map(outline),Bo=PS.map(outline),span=L=>Math.max(...L.map(o=>o[o.length-1][0]))-Math.min(...L.map(o=>o[0][0]));
-   const one=A.length===1&&(Bo.length>1||span(A)>span(Bo))?A:Bo,other=one===A?Bo:A;try{B.polyZ('lining',z,one[0],other,stain);}catch(e){reportErr('end wall at z '+z+': '+e.message);}}
-  prevKey=SS.length?key:null;prevP=SS.length?PS:null;
-  if(!SS.length)continue;
-  const h=KRAND.unit(KRAND.hash(SITE.world,ring,7)),k=.93+.12*h,col=[base[0]*k,base[1]*k,base[2]*k];
-  SS.forEach((S,si)=>{const P=PS[si];
-  for(let i=0;i+1<P.length;i++){if(LINE.liningCut&&LINE.liningCut(z,i,P,S))continue;const p=P[i],q=P[i+1];
-   const seg=(z0,z1,c)=>{if(z1-z0<1e-3)return;B.quad('lining',[p[0],p[1],z0],[p[0],p[1],z1],[q[0],q[1],z1],[q[0],q[1],z0],c,[[z0,p[2]],[z1,p[2]],[z1,q[2]],[z0,q[2]]]);};
-   seg(z,z+.05,joint);
-   let cur=z+.05;for(const g of gapsFor(S,z,p,q)){seg(cur,g[0],col);cur=Math.max(cur,g[1]);}seg(cur,z+2,col);}
-  /* the bronze band where the structure transfers (every 3.6 m: wherever a 3.6 m mark falls in this ring), above the floors */
-  const m=Math.ceil(z/3.6)*3.6;if(m<z+2){for(let i=0;i+1<P.length;i++){if(LINE.liningCut&&LINE.liningCut(z,i,P,S))continue;const p=P[i],q=P[i+1];if(p[1]<2&&q[1]<2)continue;
-   const np=inward(S,p),nq=inward(S,q),a=[p[0]+np[0]*.025,p[1]+np[1]*.025],b=[q[0]+nq[0]*.025,q[1]+nq[1]*.025];
-   B.quad('bronze',[a[0],a[1],m-.06],[a[0],a[1],m+.06],[b[0],b[1],m+.06],[b[0],b[1],m-.06],band);}}});}
- /* the openings' jambs through the lining's thickness, a sill where one opens above the floor, and a niche's enamel plate beside it */
- const cream=rg(0xe6dcc0),red=rg(0x8a2e24);
- (LINE.openings||[]).forEach(O=>{const S=O.sec||SECS_AT((O.z0+O.z1)/2)[0];if(!S)return;const L=S.lining||LK.SEC.lining,sx=O.wall==='e'?1:-1,x0=O.wall==='e'?S.x1:S.x0,x1=x0+sx*L,z0=O.z0,z1=O.z1,y0=O.y0,y1=O.y1;
-  B.quad('lining',[x0,y0,z0],[x1,y0,z0],[x1,y1,z0],[x0,y1,z0],stain);B.quad('lining',[x0,y0,z1],[x0,y1,z1],[x1,y1,z1],[x1,y0,z1],stain);
-  B.quad('lining',[x0,y1,z0],[x1,y1,z0],[x1,y1,z1],[x0,y1,z1],stain);if(y0>.05)B.quad('lining',[x0,y0,z0],[x0,y0,z1],[x1,y0,z1],[x1,y0,z0],stain);
-  if(O.kind==='niche'){const xa=x0-sx*.01,xb=x0-sx*.03;B.box('paint',Math.min(xa,xb),Math.max(xa,xb),y1-.55,y1-.2,z1+.2,z1+.65,red);
-   B.box('paint',Math.min(x0-sx*.03,x0-sx*.04),Math.max(x0-sx*.03,x0-sx*.04),y1-.52,y1-.23,z1+.23,z1+.62,cream);}});
- const g=B.finish('the lining',{label:{lining:'The lining: precast segments in 2 m rings (concrete.lining.segment owed; concrete.ancient stands in)',bronze:'A bronze band where the structure transfers (every 3.6 m)',paint:'An enamel plate: the niche\'s number'}});
- g.userData.lining=true;scene.add(g);
+/* THE LINING, THE WAY'S WORKS, THE GUIDEWAYS AND THE CROSSOVERS through the line kind's draw (KTRANSIT.draw.line, kits/ancient-transit 56c): the
+   window of the one record (RIFT.window(...).local, the page's frame) with this page as its host: its sections (several a ring where bores run
+   side by side), its profile, the lining it has lost (LINE.liningCut), its openings (niches, doors, windows, a branch's mouth: holes with jambs),
+   the gallery's works where LINE.gallerySpans say, the cyan lit where LINE.cyanLit says; the station's own works stay its own. The page's
+   materials (materials.json) by the kind's family names */
+const LINING=(function(){const W=LINE.WIN,z0=W.z0,RW=RIFT.window(SITE.s0,W),M={tunnel:LB.mat('lining'),concrete:LB.mat('conc'),steel:LB.mat('metal'),asphalt:LB.mat('road'),line:LB.mat('paint'),
+  glow:LB.mat('glow'),glass:LB.mat('glass'),rubble:LB.mat('rubble'),paint:LB.mat('paint'),pave:LB.mat('conc'),bronze:LB.mat('bronze'),white:LB.mat('white'),rust:LB.mat('metal')};
+ const cyLit=z=>typeof LINE.cyanLit==='function'?!!LINE.cyanLit(z):!!LINE.cyanLit,spans=LINE.gallerySpans||[[W.z0,W.z1]];
+ const host={sectionsAt:s=>SECS_AT(s+z0),profileAt:(s,S)=>LINE.profileAt(s+z0,S),cut:LINE.liningCut?(s,i,P,S)=>LINE.liningCut(s+z0,i,P,S):null,
+  openings:(LINE.openings||[]).map(O=>({s0:O.z0-z0,s1:O.z1-z0,wall:O.wall,y0:O.y0,y1:O.y1,kind:O.kind,sec:O.sec})),
+  works:s=>spans.some(([a,b])=>s+z0>=a&&s+z0<b),lit:s=>cyLit(s+z0)};
+ const g=KTRANSIT.draw.line(RW.local,{host,mats:M,niches:false,shafts:false,branches:false,doors:false,stations:false});
+ g.name='the lining and the way (KTRANSIT.draw.line)';g.userData.lining=true;g.children.forEach(m=>{m.userData.inspectLabel=m.userData.inspectLabel||('The Line: '+(m.userData.family||'')+' (the line kind\'s draw)');});scene.add(g);
  /* the probe's points: one an opening (its middle), so the merged lining's pieces count where they stand (core/host's regOccupancy) */
  if(g.children[0])g.children[0].userData.probePoints=(LINE.openings||[]).flatMap(O=>{const S=O.sec||SECS_AT((O.z0+O.z1)/2)[0]||LK.SEC;return [O.wall==='e'?S.x1+.3:S.x0-.3,(O.y0+O.y1)/2,(O.z0+O.z1)/2];});
- return {group:g,tris:B.tris,rings:ring};})();
+ return {group:g,tris:g.userData.tris||0,rings:0,RW};})();

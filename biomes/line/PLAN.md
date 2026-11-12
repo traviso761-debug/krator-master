@@ -748,6 +748,10 @@ question 14):
   `KTRANSIT.lineWindow`; the pages read their tracks' states, splays, crossovers and gaps from it and run their trains on the kind's
   `carPose` and `lineConsist`. Every page's tracks, crossovers and triangle counts came out as before (the cars' seeds now
   `KRAND.child`, so their wear differs); `tests/test-line-record.js`.
+- **The stations are drawn by the kind** (2026-11-11): `85-host-lining.js` calls `KTRANSIT.draw.line` on each window's local copy with the
+  page as its host (o.host: its sections, profile, lining cuts and openings; the gallery's spans; the cyan), drawing the lining (merged sweeps,
+  end walls, jambs, ribs), the guideways and their stops, the crossovers' beams, the invert and the gallery's works in the page's materials;
+  `86-host-way.js` keeps only what the kind does not draw. The lining and the way fell from 70-200 k triangles a page to 15-50 k.
 - **The bore hazards**: `core/hazard/22-core-hazard-bore.js` (`KHAZ.rockburst`, `inrush`, `seal`), opt-in, as presets on the kinds the
   vocabulary has (`crush`, `drown`, `gas`), so no other page changes; `test-hazard-bore.js`.
 

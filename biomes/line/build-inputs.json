@@ -3,9 +3,9 @@
  "runs": {
   "build.py": {
    "inputs": {
-    "biomes/line/KNOWN_ISSUES.md": "41659bdbe88884bef07500e081087c172ef2f40d5c1b052412cbb49e3567e5a5",
+    "biomes/line/KNOWN_ISSUES.md": "0089c55d296f0a9e3d07bdf249a2f6d11d70c45c23da8006c7b08d50afbc1f05",
     "biomes/line/PORT.md": "7c4aed253023c97e4560b65c1d21636e5270dae543b6954f701fe3f254aae343",
-    "biomes/line/build.py": "6522a5582f304ccd0d0094c2ddf96085fba5d91801953811c37b1ce334a3c289",
+    "biomes/line/build.py": "5c0cbbf85f84829df75f17b3357030d8dcb652e07e1fa4e01b0fe55548bc4aa7",
     "biomes/line/stations/bore/00-head.html": "22fdc4b472063b0f201a43324bf734621d40766fd9de2e76609062d6fe118d43",
     "biomes/line/stations/bore/44z-host-site.js": "1e204e2ff4e9218ed896a19aaa9a7b8cf6f6dd5970a34e6b40df32fef2710b44",
     "biomes/line/stations/bore/44zs-host-station.js": "43a7367210a5f729d48e2883463e114649c3e89db47664a80139c1b43afc0bb6",
@@ -14,11 +14,11 @@
     "biomes/line/stations/bore/station.json": "be4e8ef8bf47470fd81e41bf9fe2b85091ec2894ecf53b9476cccc33561ba6f5",
     "biomes/line/stations/common/47-line-core.js": "19230c576a199635c0e311fa565feae5d535578684f6e84afaddf22336074c8f",
     "biomes/line/stations/common/47b-line-help.js": "ecbfe631252cf05343025f4ae93c7d13f416a7951966fa440f1460c9e6286756",
-    "biomes/line/stations/common/47c-line-record.js": "72d3ead2895ecce0306a5374e0908157b7c865d47675c5c71abd3b5b2178687b",
+    "biomes/line/stations/common/47c-line-record.js": "c6c9bef195b58ff4133c7c0fdfe141c11af093e6a9d3fa0602ae70bdefbe8bc1",
     "biomes/line/stations/common/49-host-stage.js": "b6b692b56db4e7b188e71eaddd61d3d0ec06cf9dda8649c879ba3d587a89c0ad",
     "biomes/line/stations/common/84-host-rock.js": "23dda5edba76b1b8877c32737ac9f418df57a4d21596c7d3d100e48d978d3b35",
-    "biomes/line/stations/common/85-host-lining.js": "a2f588b4ac37024c47afbb4824249e642dd66bc6b464b45baa606ede94a271bd",
-    "biomes/line/stations/common/86-host-way.js": "5c79afd66b7862bd118eae81411a67ce07513bb85a948b47c01bdf55f41a1d36",
+    "biomes/line/stations/common/85-host-lining.js": "a1c2f596c493f91ba75c7c40deb96cd1c88a3bec79328c6ac15cbf4728aac4c0",
+    "biomes/line/stations/common/86-host-way.js": "978f2797d7dddfb92ca39e50d4ff22f900d51e3ff2643a3cc8eab5b47f824f00",
     "biomes/line/stations/common/87-host-train.js": "076049c7427d6172c852e2b586c2310e6f888b92551633642aac4f59225ac56c",
     "biomes/line/stations/common/89x-host-air.js": "86f066a3666fbf068256187ee15a63875ad357e8ee31c1adff9d1eb0f12a712d",
     "biomes/line/stations/common/89z-host-build.js": "97df74d40d080eca0c87042a922cd7aef54902afb12d305d38214c361ec931c4",
@@ -123,6 +123,8 @@
     "kits/ancient-transit/src/41-tr-path.js": "f4f42db21f7fba6fb6fe1687ebdc388a57e9d6553c1644f010ef67c2c2ef2239",
     "kits/ancient-transit/src/43b-tr-subway.js": "897320f6543a79e458f13b4cc83b90e70a6e63c04a09e7899b4301869f39b5a3",
     "kits/ancient-transit/src/43c-tr-line.js": "bb7d48753f18efe4303fb1007d291eab99a5a3b409afb9560ccf529ab3e2840d",
+    "kits/ancient-transit/src/46-tr-mats.js": "89375a15ce38bf466c1a80667d1af3ea8d386dccfad55243db2eaf2a7f59b8bc",
+    "kits/ancient-transit/src/56c-tr-draw-line.js": "417f40f94bd4d7dba1116f16fe13ac3bb757cb5db7329ea433b8559e9087d21d",
     "kits/motor-vehicles/krator-vehicles-ancient.js": "3ebaf2da088d67bd2270589a7b0d9c7c98339595ea5eb866d99b55a3638e8a6d",
     "kits/motor-vehicles/krator-vehicles-line.js": "cf8107cb932d8f31374d1388804b5e1785b2809dc42f3bede60a91de9de9429b",
     "kits/motor-vehicles/krator-vehicles-runtime.js": "a04a76ec57ff3c3c03cded34c65b15b3db04701fbf4ed7ca3815c5eaf34b5f50",
@@ -184,10 +186,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/line/dist/line-bore.html": "e0b1934fa0e5c2446e2afd669b2fe5408f6553a1edf3a1c6a3092db7222a4225"
+    "biomes/line/dist/line-bore.html": "72be8d94eab0f000601efee3c6e61528a11ce2836174ec8ed39e77f3bf33b814"
    },
    "outputs_raw": {
-    "biomes/line/dist/line-bore.html": "e0b1934fa0e5c2446e2afd669b2fe5408f6553a1edf3a1c6a3092db7222a4225"
+    "biomes/line/dist/line-bore.html": "72be8d94eab0f000601efee3c6e61528a11ce2836174ec8ed39e77f3bf33b814"
    }
   }
  }

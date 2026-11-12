@@ -2,17 +2,17 @@
 
 ## Open
 
-- [ ] **The pages draw their windows flat and with their own builder** (2026-11-11). The record is the transit kit's `KTRANSIT.line`
-  (`stations/common/47c-line-record.js`: the one Rift line, each station's window cut by `KTRANSIT.lineWindow`; its track states, splays,
-  crossovers and gaps read from it; the trains on `KTRANSIT.carPose`). But the pages keep the invert at y 0 across a window (the record's
-  -0.04 % grade, about 0.5 m over a page, is not drawn), keep their own section (`LK.SEC`, the same numbers as `KTRANSIT.LINE_SEC`), their own
-  niches, lamps and works, and draw with this build's builder (`85-host-lining.js`, `LB`: 2 m rings, joints, bands, openings), not
-  `KTRANSIT.draw.line` (which sweeps 20 m sections). Moving the drawing to the kind is the next step, and it changes the pages' look.
+- [ ] **The pages draw their windows flat** (2026-11-11). The record is `KTRANSIT.line` (`stations/common/47c-line-record.js`) and the
+  lining, the guideways, their buffers, the crossovers' beams, the invert and the gallery's works are drawn by the kind (`KTRANSIT.draw.line`,
+  through its host hooks: the page's sections, profile, cuts and openings) from each window again in the page's frame (`RIFT.window().local`).
+  But that copy is flat: the record's -0.04 % grade (about 0.5 m over a page) is not drawn. The page's own: its lamps, crown fittings, the
+  walkway's grating and posts, the cyan strips, the Fixers' patches, the switch machines, and every station's works.
 - [ ] **Three surfaces stand in for owed sets** (`core/materials/PROMPTS-NEEDED.md` section 41): the lining on `concrete.ancient` (owed
   `concrete.lining.segment`: bolt pockets, gasket joints, ring numbers), the guideways on `concrete.board` (owed `concrete.guideway`),
   the kept cars' plate on the vehicles kit's `paintWorn` (owed `metal.plate.riveted.painted`).
-- [ ] **The lining's joints are colour, not geometry.** Each 2 m ring is a tone and a dark 5 cm groove; the staggered segment joints and the
-  bolt pockets wait for the owed texture.
+- [ ] **The lining is the kind's: sweeps and ribs, not rings.** Since the drawing moved to `KTRANSIT.draw.line` the lining is laid in merged
+  sweeps (one tone a run, a rib every 10 m where the ring is whole), not the 2 m rings with joints and the bronze bands every 3.6 m it had; the
+  segment joints and bolt pockets wait for the owed `concrete.lining.segment` map.
 - [ ] **The tracks are crossed only at the stations' stairs.** The walkway stands 1.2 m over the invert and the guideways 0.6 m: a walker on
   the walkway cannot step down to the tracks here (the walk check runs along the east side only). The stations' stairs and the
   cross-passages (PLAN.md section 3) bring the crossings.

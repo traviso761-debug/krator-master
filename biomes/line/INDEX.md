@@ -29,8 +29,8 @@ The Rift line's biome (`PLAN.md`): stations, each a window of the one Line recor
 | `47b-line-help.js` | [G data] | `LW`: the plain gallery's walk floors, the invert's gaps, strips along a polyline, the section's floor, the gallery's works, the vein's stain |
 | `49-host-stage.js` | [web] | renderer, the lamp code's light pool, the window's lights, the visitor's lamp, the floor for the eye, BIO.init |
 | `84-host-rock.js` | [draw] | the cavern built; its rock drawn where the window says it shows (`LINE.rockShows`), stained by the vein and the gypsum, on KGROUND |
-| `85-host-lining.js` | [draw] | the builder (LB) and the lining: rings by section, joints, bronze bands, end walls, the openings' jambs and plates, the ragged cut |
-| `86-host-way.js` | [draw] | the guideways along each track's runs (splayed by `LINE.trackX`), the plain gallery's works, the crossovers, the lamps, the crown fittings, the vein's working |
+| `85-host-lining.js` | [draw] | the builder (LB) for the stations' works, and the lining and the way through the kind: `KTRANSIT.draw.line` on the window's local copy with this page as its host (sections, profile, cuts, openings, the gallery's spans, the cyan) |
+| `86-host-way.js` | [draw] | what the kind does not draw: the Fixers' patches, the walkway's grating and posts, the cyan strips, the switch machines, the lamps, the crown fittings, the vein's working |
 | `87-host-train.js` | [web] | the trains moved by the car pose (running on timelines, standing), the standing vehicles |
 | `89x-host-air.js` | [web] | core/atmos bound; dust in the lamps |
 | `89z-host-build.js` | [web] | the records and hazards registered (core/tags), the bake |
