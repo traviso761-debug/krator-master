@@ -3,26 +3,27 @@
  "runs": {
   "build.py": {
    "inputs": {
-    "biomes/opalvalley/KNOWN_ISSUES.md": "4ea2d66ef6322b45970b196d57856a31f174dcbd724e0326925a97b796afcf7a",
-    "biomes/opalvalley/PORT.md": "19c39f3d13ec21824321adbc752a1dc4fb360cb1ab28e1b272048df0e69dc9c8",
-    "biomes/opalvalley/build.py": "e900a5a2b3efc23095c929073842a8830d22aa06d53bc30fdb02148ddc9952fe",
+    "biomes/opalvalley/KNOWN_ISSUES.md": "92ae68c341ee33aa4d54051abe4ab8e43b7c1737e1c0be14710a278bfa7a3946",
+    "biomes/opalvalley/PORT.md": "5b8fbd4f4196d1f3ee3614aef29ce6a5798cf6007c1f5e5eb9b0f7828b6328be",
+    "biomes/opalvalley/build.py": "03b8e416558a245addc22bd1fab938d5397cc426c3fa5ef5163621571dab3f5e",
     "biomes/opalvalley/src/00-head.html": "ec54f246c9861756fc21bc21f8108a90acd1d1c5b79739662167573a243707b8",
     "biomes/opalvalley/src/40-biome-opal-sites.js": "a1fad917772e6451ad5e757142453456dccad2df08cc31f8e898ba8fe7cd3e49",
-    "biomes/opalvalley/src/45-host-stage.js": "7e4e2108920c185eb168a75290cbbb80973be251b2ed8489e8ca2e3d6fe5653f",
+    "biomes/opalvalley/src/45-host-stage.js": "0cd1da827f63793fc01f4d364e6bdc3c4423f0f0fa5e3740555853bc6b6f6a07",
     "biomes/opalvalley/src/48-host-therm.js": "113cdec677b8e78491e687f26068761b7274aa70cf4de40f64b7e2f3b9b12dc9",
-    "biomes/opalvalley/src/50-biome-opal-species.js": "0098ca6c4e3d6f491a326358d8af6f7f779a5cdd1c9ab1183ddcf43a5d0ae6b6",
+    "biomes/opalvalley/src/50-biome-opal-species.js": "5eeb1c88f879cc2c2f07107d88b6341176b610209ff61a72b54427a481ed9ef8",
     "biomes/opalvalley/src/55-biome-opal-place.js": "508c1a6cee4eeda04b8fb4e927ad4b33504f2de5290eaf1c6d500e9faee76cb5",
     "biomes/opalvalley/src/70-biome-opal.js": "f32accbf740aba64e150faaac47b3d449585712ee92e594f396becabb4460d25",
-    "biomes/opalvalley/src/84-host-ground.js": "11733c9dfe29e5a85eb987111e27fd9260818af74b087b2df7dfb543c646065e",
+    "biomes/opalvalley/src/84-host-ground.js": "6d68c7be7abbe97b8a6dc5edef553ea1750512e039ac851e4cae29edb4180f77",
     "biomes/opalvalley/src/85-host-far.js": "c9c616bda40aeaabd5764394b400ff570be162a90f01c83b632f8bb2d42c939e",
-    "biomes/opalvalley/src/86-host-digs.js": "35db8837cea525dcc15d8783a51faa8920c881caabaa0bc432010f9d682e65a3",
+    "biomes/opalvalley/src/85w-host-adit.js": "8757d0b5968cbefa2ff568332d2b0f46673cacf7ea9a47207903acd4bd04eaad",
+    "biomes/opalvalley/src/86-host-digs.js": "5a70425d0d9b1b298d260469fa8298a7f4b74bcb1a5b0d5f42c8d61e36ff8986",
     "biomes/opalvalley/src/88-host-flora.js": "1d6f92d3ccf0ddd01d41c825d1d5e983d897b8c23c5bb4dcc53b88b07660b26d",
     "biomes/opalvalley/src/89-host-sky.js": "efc4af348a314a68642c3ad66097d939fa60a7ca95acc5c59cb76ba42b131676",
     "biomes/opalvalley/src/89a-host-atmos.js": "dc57ce000921de22d95fe4b4c1aa5f0491c71ffb21724fce3ee6c6f46aac77bc",
     "biomes/opalvalley/src/89b-host-spray.js": "18a7e6bc194db5ea823a6d11d23ae837b17e58dc8470aebb2ec049a78b58e0ab",
-    "biomes/opalvalley/src/89w-host-water.js": "3f9cfc2dbcb9dc4d7e50cef1beb05fd38862faacb51d70aac78a80f5166aeb4b",
+    "biomes/opalvalley/src/89w-host-water.js": "2c5f9ddf16f48c87d9270553d8509da119ff6612d9f037940545ef3169c94262",
     "biomes/opalvalley/src/89z-host-build.js": "45acfdcf35c350f7b793d5e89b926de31900a60c76c54d19d81bed76f8873de6",
-    "biomes/opalvalley/src/99-host-take.js": "bcf1dc2ba0d316ec59d83a750be886808086a5c4fc15b721668803ccf2b81afa",
+    "biomes/opalvalley/src/99-host-take.js": "7e69f3ed29654f3daf97d933087ad32338ece230dfa466ce0250d902c21867f2",
     "biomes/opalvalley/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
     "biomes/opalvalley/tex/fern.albedo.webp": "84fcb0273e9e315228ac6afa2646280bfffbb2600f7839d27f8d9ee02f4b0fbc",
     "biomes/opalvalley/tex/ground.gravel042.albedo.webp": "aa221e881242d88d773652179fac5037df723bb4694bdd24d22336f200a169dc",
@@ -32,8 +33,14 @@
     "biomes/opalvalley/tex/ice.clear.albedo.webp": "a1a9f7573518e9c49bc1e6c195fe4349168d635327555eec92eb8e6558072518",
     "biomes/opalvalley/tex/ice.debris.albedo.webp": "ec0a16a9d9ff366d9ce28719ea727f9c46d7bbfb9756ffd1e041dfdc2fa948c5",
     "biomes/opalvalley/tex/ice.glacier.albedo.webp": "63b8079427e5ea259208720355ba7a89e248f305577f726bc6122c23582fec14",
-    "biomes/opalvalley/tex/pack.json": "2c7d900b7b5d3f3ee263a3ad54c4440e1e6f5f5a373bf9f73a6ad98818695172",
+    "biomes/opalvalley/tex/pack.json": "b704e1a69027642d02c40605d00d98762040266c80da60291d90859cee7d50f5",
+    "biomes/opalvalley/tex/rock.basalt.titanium.albedo.webp": "cd7754ef8b8c6b46d1f3b47df94a8599d80834b4ad7c5d95c67aed3ba3d8e953",
+    "biomes/opalvalley/tex/rock.basalt.titanium.normal.webp": "ead7a4e4fa1265d3a511dc828c07b5912b74c76f4808753187af225ec791950f",
+    "biomes/opalvalley/tex/rock.basalt.titanium.rough.webp": "b67b351feb1078a711bed08578702244952fa0ac705f16bff4753208854e5bb0",
     "biomes/opalvalley/tex/rock.lichen.iris.albedo.webp": "fe7810f5467f365681a25f2681338a1e0c5ff8f0bfc0817af2b9fe24631db066",
+    "biomes/opalvalley/tex/rock.tuff.albedo.webp": "18492aa45fd0788ccb81c5f811cf3e3551d0351e8bea001dc8a6aaafd00294e6",
+    "biomes/opalvalley/tex/rock.tuff.normal.webp": "8cac65e89bf72a5e8b79ea27efb79ffebc02e30588cf5df845e135ef90e68aa3",
+    "biomes/opalvalley/tex/rock.tuff.rough.webp": "aae5dea0db83e1c4d081f577dd22931a2497a2576a1ab63c569a616fee6c5f2a",
     "biomes/opalvalley/tex/stone.geyserite.albedo.webp": "c15e4530beb363f9ba78f7dc4f7ee8201c4faedfdc70400641221437554c3d8a",
     "biomes/opalvalley/tex/tussock.albedo.webp": "ddc080a2fe2d492631cd3dd58fc9d94b16b8698539c801b241a66411788843ce",
     "biomes/xanadu/src/50-biome-xanadu-species.js": "e237bfed92c0ece4dd6714d4653eee967ffe4d48fe7c2f09d42c70c4f95ae3a3",
@@ -121,6 +128,8 @@
     "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
     "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
     "core/terrain/35-core-strata.js": "411b14b18413498c532a9a3fab9893c5726630c8387098b3a1190d0817a505b1",
+    "core/terrain/39-core-cavern.js": "54c9c5227ff726739c4584dd30a1b98968985da89ab81e027242281bab7cdcf2",
+    "core/terrain/39b-core-speleo.js": "67d8b4de97442264ee953d34640d5873ade69644e2eefb69b17ad3505518e2c3",
     "core/terrain/43-core-ground.js": "3a5cb6fe6eda54b3d616dea63191d4a3899dc2e32bbfff87eebdc345eb74e25c",
     "core/terrain/44-core-farfield.js": "0a8832b2dbb91460ecfcb968da5104ebf2d2cfca3887d76f6c0cd09f753023fd",
     "core/terrain/45-core-horizon.js": "e597aa2e3bbd3826d60908d43a3ecf65509b7c27467913d538fe1e0babb20b1e",
@@ -145,16 +154,16 @@
     "tools/check_port.py": "a1b677c740f40cade7fd43fd166399ed96b6a5125f2f6b68591b0579d32365a7"
    },
    "listings": {
-    "biomes/opalvalley/src": "e1739d947a99f324b860524bc4e3b5ae159ee32502b224f97e9c050309768460",
+    "biomes/opalvalley/src": "70d599ec65da32f0d13512259fcc57da4ca47255a511e3f563f2d80f1ac8267d",
     "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
     "tools": "2d2fdaca850a104a2a2c553313ccb3ad18dc6bc48cb554c8c714fc1ca39607bf",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/opalvalley/dist/opalvalley.html": "42da9a5fab15951a8378580d1229ee682ef6568e82b5335cab8d5cce78b47b05"
+    "biomes/opalvalley/dist/opalvalley.html": "66aa5a1bc6118174837f27d619723657bf68c3a6fde5b4e400a1471a909d50b9"
    },
    "outputs_raw": {
-    "biomes/opalvalley/dist/opalvalley.html": "42da9a5fab15951a8378580d1229ee682ef6568e82b5335cab8d5cce78b47b05"
+    "biomes/opalvalley/dist/opalvalley.html": "66aa5a1bc6118174837f27d619723657bf68c3a6fde5b4e400a1471a909d50b9"
    }
   }
  }

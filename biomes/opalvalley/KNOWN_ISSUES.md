@@ -43,6 +43,8 @@ pass is owed.
 - [ ] **The miner's lamp is drawn in the rock's own shader** (an emitted term from the eye, `uLamp`), not a `THREE.PointLight`: the
   page's horizon layer (`khorizonl`) shades everything under the hill as under it, which put out a point light's term. The vug's opal
   (`BIO.iridBarkMat`, a Lambert kind) takes no lamp: it shows its colour by the ambient alone, as asked (no glow on the opal).
+- [ ] **The lower bed's portal opens as a trench**: its adit stands on a gentle slope, so the cut runs a few metres into the ground
+  before the face; the middle bed's is a face in the wall.
 - [ ] **One adit a page walks in** (the one nearest the centre); the rest stay mouths on the wall (`src/86-host-digs.js`).
 - [ ] **The two rock sets** (`rock.basalt.titanium`, `rock.tuff`) are packed into every page (about 1.4 MB), the glacier, upper-bed and
   mouth pages too, which have no walk-in adit: `materials.json` is one list for the kit. A per-station list is a `tools/textures/pack.py`
