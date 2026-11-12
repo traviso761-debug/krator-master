@@ -172,16 +172,6 @@ def page(key, data, out):
         s = open(p, encoding='utf-8').read()
         if where == 'ld' and f == '00-head.html':
             s = s.replace('<title>Krator Little Demo</title>', '<title>Krator: %s on its own ground</title>' % T['name'])
-        # 98 and 88 know only towns drawn from a baked tile: 98 drops every town when the first one's tile cannot be
-        # fetched, 88 loads each one's tile. A town whose ground the world draws itself (drawn: false) has none, so this
-        # scratch page checks and loads only the towns with a tile. The same change to 98 and 88 is owed before V4
-        # (TODO.md); it is made here, not in core/world, so the open-world pages they reach are not moved now
-        for old, new in (('if(T&&T.length){msg(\'looking for the towns\');const u=T[0].tile;', 'if(T&&T.some(t=>t.tile)){msg(\'looking for the towns\');const u=T.find(t=>t.tile).tile;'),
-                         ('const RECS=(WORLD_DATA.towns&&WORLD_DATA.towns.towns)||[];', 'const RECS=((WORLD_DATA.towns&&WORLD_DATA.towns.towns)||[]).filter(r=>r.tile);')):
-            if where == 'ld' and old in s:
-                s = s.replace(old, new)
-            elif where == 'ld' and f in ('98-world-start.js', '88-world-towns.js') and old.split('=')[0] in s and new not in s:
-                sys.exit('town_view: %s changed: the drawn-false patch no longer applies' % f)
         parts.append(('\n// ==================== %s/%s\n' % (where, f)) if f.endswith('.js') else '')
         parts.append(s)
     dst = os.path.join(out, '%s-world.html' % key)

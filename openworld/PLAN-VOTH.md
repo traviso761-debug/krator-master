@@ -147,8 +147,10 @@ V1 and V2 can run in parallel.
     the water, the coarse cells closed to its 680 m at all 192 bank points); the page water, the narrows, the shelf and the river lie
     inside the town, which draws them from Voth's own ground;
   - the town's water is the Ring Sea's body, joined through the strait.
+- **Towns without a tile** (2026-11-12): `98-world-start.js` checks and drops only towns with a tile, and `88-world-towns.js` draws
+  only those, so a town whose ground the world draws itself (`drawn: false`) is kept on every page. The four open-world builds were
+  rebuilt for it (no region had a town without a tile, so they behave as before).
 - **What V3/V4 still need:**
-  - the towns-without-a-tile change to 98 and 88 (`TODO.md`);
   - the 'SW Bay' overlay has no ground palette or style in 41, so the world's ground there is the desert's terracotta;
   - inside the band the land eases from the town's ground to the model's; where the model is coarse, the side-by-side shows the seam.
 

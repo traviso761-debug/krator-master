@@ -329,12 +329,12 @@
     "core/world/85-world-flora.js": "c9f5d993402edd41f0596a26eb41377bbd1b78ed618cca69012ed737458a9bcd",
     "core/world/86-world-floor.js": "92528cb595295f88b2a1fd040014636a8dc443d79e14391b2e50cda36d3510a5",
     "core/world/87-world-places.js": "c2e365d5edf628bb849a1c0e00453d4a6d0489fc2c2afd278d71df00d1471682",
-    "core/world/88-world-towns.js": "e223a019a784cadc3f0a1c9891c0721e660498610064cde49a0850cae1152f67",
+    "core/world/88-world-towns.js": "59db64b6f6aa1c4a7c59f0e1f64ddb069161f182c30f9e7dfaad6914a59e0c25",
     "core/world/89r-world-resources-map.js": "710c0886b885ee442c5426afc6f0896823a665d5111170ad66a71ebe4ec35563",
     "core/world/90-world-camera.js": "a772ca7598b110af2c126df79b3e76add563a9e0ff7407905548669f71124a65",
     "core/world/91-world-probe.js": "7fb7ac1029bb0d348d56c49565edf0de21f89f796e1ccb7c549e909d0b6ac7fb",
     "core/world/93-world-propose.js": "df6242ce0b069c014d9e4250610a7db1479b647974f00d9c1dda0432fe0c6917",
-    "core/world/98-world-start.js": "ee26dc2dbbc1ce90133036d91177a23fef7435cc30121289756b86d9648c257b",
+    "core/world/98-world-start.js": "f6a669d20364f63d59ff7ce166ff1e37841de235564513d10b0803e9d4e5cd84",
     "core/world/99-tail.html": "5c1404e034c7ec0d2b8ac19a6c1a2c4786dbd3037cbb48efdc8cfe4820c14aea",
     "core/world/world_data.py": "1449e45b98b60464a5079f29ef43afc835a1b657873cbed31dc5212e17f6e4e9",
     "kits/ancients/src/10-core.js": "7c31cf7eb63a1666c0f1c8cd97fd810c1531d10e8d014c105f807a2ad521138b",
@@ -1336,8 +1336,8 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "openworld/isle-demo/dist/isle-demo.artifact.html": "44843ee70d623c5b08576653c82a018b03a240339100fca5d46e4e56daa5bcd1",
-    "openworld/isle-demo/dist/isle-demo.html": "5ca26aa95e9f7f434b1e107590ff29265a2e22401eaf4cf2c0940727199470ba",
+    "openworld/isle-demo/dist/isle-demo.artifact.html": "57221630dbdd17a0eb3137315f1d37cfed8d6849cf5b775ff424b5dd84b3305d",
+    "openworld/isle-demo/dist/isle-demo.html": "eae90505fb81329944dbd5f4811887cedec0c71febd44fdde25ace6c1a8ab4b8",
     "openworld/isle-demo/dist/isle-demo.tex.brtowns.js": "2eb5c136bd57139376043468141dddd302ea18ddc16a8219ae972c9dbedf4a71",
     "openworld/isle-demo/dist/isle-demo.tex.eastabyss.js": "419fd1d89cff71c282481dfb0e3b7e1ea7c15bc59e46270f8f4f6bd6759438f0",
     "openworld/isle-demo/dist/isle-demo.tex.geyser.js": "e0b88e7b3ecd6d9514b9b9baff00640e267a5e9f08efc3d0f5b52c1eaa7932c0",
@@ -1354,8 +1354,8 @@
     "openworld/isle-demo/dist/isle-demo.tex.ys.js": "e6efa558623b2fcf0bf9703025bc8547cc4d732ef30f81d54f4e3422aaef157c"
    },
    "outputs_raw": {
-    "openworld/isle-demo/dist/isle-demo.artifact.html": "44843ee70d623c5b08576653c82a018b03a240339100fca5d46e4e56daa5bcd1",
-    "openworld/isle-demo/dist/isle-demo.html": "5ca26aa95e9f7f434b1e107590ff29265a2e22401eaf4cf2c0940727199470ba",
+    "openworld/isle-demo/dist/isle-demo.artifact.html": "57221630dbdd17a0eb3137315f1d37cfed8d6849cf5b775ff424b5dd84b3305d",
+    "openworld/isle-demo/dist/isle-demo.html": "eae90505fb81329944dbd5f4811887cedec0c71febd44fdde25ace6c1a8ab4b8",
     "openworld/isle-demo/dist/isle-demo.tex.brtowns.js": "2eb5c136bd57139376043468141dddd302ea18ddc16a8219ae972c9dbedf4a71",
     "openworld/isle-demo/dist/isle-demo.tex.eastabyss.js": "419fd1d89cff71c282481dfb0e3b7e1ea7c15bc59e46270f8f4f6bd6759438f0",
     "openworld/isle-demo/dist/isle-demo.tex.geyser.js": "e0b88e7b3ecd6d9514b9b9baff00640e267a5e9f08efc3d0f5b52c1eaa7932c0",

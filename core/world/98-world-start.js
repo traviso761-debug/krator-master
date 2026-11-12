@@ -25,11 +25,13 @@ async function decodeAll(){
 async function start(){
  const R=typeof WORLD_R!=='undefined'&&WORLD_R?WORLD_R:await decodeAll();
  // the towns' tiles are files beside the page: where the page cannot fetch them (the gallery's frame blocks fetch) the
- // towns are dropped before the land is laid out, so it keeps its own ground instead of empty town footprints
- const T=WORLD_DATA.towns&&WORLD_DATA.towns.towns;
- if(T&&T.length){msg('looking for the towns');const u=T[0].tile;
+ // tiled towns are dropped before the land is laid out, so it keeps its own ground instead of empty town footprints. A
+ // town with no tile (drawn: false, core/world/bake_towns.py: the world draws its ground itself) needs no fetch and stays
+ const T=WORLD_DATA.towns&&WORLD_DATA.towns.towns,TT=T?T.filter(t=>t.tile):[];
+ if(TT.length){msg('looking for the towns');const u=TT[0].tile;
   const ok=await fetch(u,{method:'HEAD'}).then(r=>r.ok).catch(()=>false)||await fetch(u+'.0.txt',{method:'HEAD'}).then(r=>r.ok).catch(()=>false);
-  if(!ok){WORLD_DATA.towns=null;console.warn('town tiles cannot be fetched here: the world runs without its towns');}}
+  if(!ok){const keep=T.filter(t=>!t.tile);if(keep.length)WORLD_DATA.towns.towns=keep;else WORLD_DATA.towns=null;
+   console.warn('town tiles cannot be fetched here: the world runs without its tiled towns');}}
  WORLD.init(R);
  msg('laying out the land');for(const f of LATE)f();
  CAM.paintBase(R);

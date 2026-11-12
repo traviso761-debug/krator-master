@@ -73,6 +73,9 @@ layout is keyed to its page's ground (its shore, its river) hands that ground to
   `WLAND.check()` on the real town in node, builds a viewing page, and with `--shots` takes the same views on the town's
   page and in the world side by side (GPU, under the harness's lock). It writes nothing in the repo.
 
+A town with no tile (`drawn: false`) is kept by `98-world-start.js` when the tiles cannot be fetched, and `88-world-towns.js`
+draws only the towns that have one (2026-11-12).
+
 41t and 41l are new fragments so that 41's reach (eight builds) is untouched; folding them into 41 waits for the next
 all-builds rebuild (`TODO.md`).
 

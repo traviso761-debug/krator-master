@@ -10,7 +10,7 @@
 // build's painted ground canvas over it, cut to the footprint's circle (or the build's own ground mesh, as drawn).
 var TOWNS_DRAW;LATE.push(()=>{TOWNS_DRAW=(function(){'use strict';
 const scene=HOST.scene,camera=HOST.camera;
-const RECS=(WORLD_DATA.towns&&WORLD_DATA.towns.towns)||[];
+const RECS=((WORLD_DATA.towns&&WORLD_DATA.towns.towns)||[]).filter(r=>r.tile);   /* a town with no tile: the world draws its ground (41t) */
 const NEAR=30000,FAR=38000;
 const S={towns:RECS.length,loaded:0,loading:0,meshes:0,tris:0,instances:0,failed:[],ms:0};
 const live=new Map();   // name -> {group|null, promise}
