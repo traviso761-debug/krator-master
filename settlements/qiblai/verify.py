@@ -2,7 +2,8 @@
 """Headless verification of the city of Qiblai. The page is built on Xanadu's (build.py), so its probe (window._api),
 invariants and views are Xanadu's, and settlements/xanadu/verify.py runs it (on tools/harness.py), with the city's own:
 
-  qiblai-laid           the site laid on core/city (KCITY.squares) with no error, its walls, gates, monasteries and markets
+  qiblai-laid           the site laid on core/city (KCITY.squares) with no error, its walls, gates, monasteries, markets and the
+                        four meditation gardens, over 1,500 placed (the owner's 'more gardens', 2026-11-11, left ~1,850)
   monastery-bearings    each of the eight monasteries within 10 degrees of its spoke's bearing from the Temple Mountain
                         (spoke i on i x 45 degrees clockwise from north): so each of the Rainbow Temple's banners faces its own
   people-by-ring        the residents by ring against kits/qiblai/PLAN.md section 3's table (clergy ~2,400, kora ~3,000, lay
@@ -21,7 +22,7 @@ _spec.loader.exec_module(xv)   # its argparse block is under __main__: nothing r
 
 CITY_JS = r"""
 {const Q=window._qiblai||{};
- R.push({name:'qiblai-laid',ok:!Q.err&&Q.placed>2000&&Q.walls===6&&Q.monasteries===8&&Q.markets===4,
+ R.push({name:'qiblai-laid',ok:!Q.err&&Q.placed>1500&&Q.walls===6&&Q.monasteries===8&&Q.markets===4&&(Q.byKind||{}).meditation===4,
   detail:Q.err?('the site did not lay: '+Q.err):(Q.placed+' placed ('+JSON.stringify(Q.byKind)+'), '+Q.chunks+' chunks')});
  const by={};for(const p of (typeof QC_PLACE!=='undefined'?QC_PLACE:[]))if(p.kind==='monastery'){(by[p.spoke]=by[p.spoke]||[]).push(p);}
  const off=[];for(let s=0;s<8;s++){const L=by[s]||[];if(!L.length){off.push(s+': none');continue;}

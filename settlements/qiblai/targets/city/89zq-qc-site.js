@@ -48,11 +48,17 @@ const qcDims=(key,v)=>{const D=VERN.defs[key];return D?{key,v:v==null?0:v,w:D.w,
 // avenues stay built (the gate quarters), and so does t = 1 beside them.
 const qcD=(x,d)=>x==null?d:x;   // a numeric default: 0 is a value
 const qcHash=(s)=>{let h=2166136261;for(let i=0;i<s.length;i++)h=Math.imul(h^s.charCodeAt(i),16777619)>>>0;return h;};
-const QC_GARDEN={7:[2,3,5,6,7],6:[2,4,6],5:[3]},QC_COURT={7:[4],6:[5],5:[1,5],4:[1,3]};
+const QC_GARDEN={7:[2,3,4,5,6,7],6:[2,3,4,5,6],5:[3]},QC_COURT={7:[1],6:[1],5:[1,2,4,5],4:[1,2,3,4]};
 const qcCentre=b=>[(b.box[0]+b.box[2])/2,(b.box[1]+b.box[3])/2];
 const qcRT=b=>[Math.max(Math.abs(b.a),Math.abs(b.b)),Math.min(Math.abs(b.a),Math.abs(b.b))];
 for(const b of QC_S.blocks){if(b.kind!=='lay'||b.use!=='quarter'||b.half)continue;const[r,t]=qcRT(b);
  if((QC_GARDEN[r]||[]).includes(t))b.use='garden';else if((QC_COURT[r]||[]).includes(t))b.courtyard=true;}
+// the four meditation gardens in the city's corners (the owner, 2026-11-11), each in the colours of the two monasteries whose
+// sides of the wall meet there (kits/qiblai qb_meditation_garden, v the corner: 0 NE, 1 SE, 2 SW, 3 NW); turned so its two
+// gates (its front +z and its left -x) open inward
+const QC_MED={'1,-1':[0,0],'1,1':[1,-Math.PI/2],'-1,1':[2,Math.PI],'-1,-1':[3,Math.PI/2]};
+const QC_RMAX=QC_S.rings[QC_S.rings.length-1].to;
+for(const b of QC_S.blocks)if(b.kind==='lay'&&!b.half&&Math.abs(b.a)===QC_RMAX&&Math.abs(b.b)===QC_RMAX){b.use='meditation';b.med=QC_MED[Math.sign(b.a)+','+Math.sign(b.b)];}
 // ---------------------------------------------------------------- the instance: the site's steps, then the blocks filled
 const QC_TUNE={cell:2.5,rasterHalf:1000,maxSlope:.35,exact:true,width:{avenue:12,main:8,side:5.5,alley:3,highway:10,lane:4.5},
  lot:{side:1.6,setback:1.4,rear:3,inset:1.0,step:3},classes:{middle:[['qb_row_mid',0]],poor:[['qb_row_poor',0]]},fallback:{middle:'poor',poor:null}};
@@ -74,7 +80,7 @@ if(QC_PLAN&&QC_PLAN.courts){
  // frontage round it stays. b.court is that square, for the garden (below), the ground and the flora
  const qcFoot=L=>{const q=Math.abs(Math.sin(L.ry))>.7,hx=(q?L.d:L.w)/2,hz=(q?L.w:L.d)/2;return[L.x-hx,L.z-hz,L.x+hx,L.z+hz];};
  const qcHit=(A,B,m)=>A[0]<B[2]+m&&A[2]>B[0]-m&&A[1]<B[3]+m&&A[3]>B[1]-m;
- const QC_COURT_S={4:24,5:22,6:22,7:22},inCourt={},byBlock={};
+ const QC_COURT_S={4:24,5:27,6:28,7:28},inCourt={},byBlock={};
  for(const L of QC_PLAN.courts.lots)(byBlock[L.court]=byBlock[L.court]||[]).push(L);
  for(const b of QC_S.blocks){if(!b.courtyard)continue;const c=qcCentre(b),s=qcD(QC_COURT_S[qcRT(b)[0]],22);
   b.court=[c[0]-s,c[1]-s,c[0]+s,c[1]+s];
@@ -107,6 +113,7 @@ for(const K of QC_S.markets)for(const id of K.blocks){const b=qcBlock[id];if(!b)
 // its front toward the centre along the block's longer offset, its variant by ring: mirrored blocks get the same garden
 const qcToCentre=b=>Math.abs(b.a)>Math.abs(b.b)?(b.a<0?Math.PI/2:-Math.PI/2):(b.b<0?0:Math.PI);
 for(const b of QC_S.blocks)if(b.use==='garden'){const c=qcCentre(b);QC_PLACE.push({key:'xa_garden',x:c[0],z:c[1],ry:qcToCentre(b),o:{v:qcRT(b)[0]%3,y:b.level},kind:'garden',id:'garden:'+b.id,h:9});}
+for(const b of QC_S.blocks)if(b.use==='meditation'){const c=qcCentre(b);QC_PLACE.push({key:'qb_meditation_garden',x:c[0],z:c[1],ry:b.med[1],o:{v:b.med[0],y:b.level},kind:'meditation',id:'meditation:'+b.id,h:12});}
 const QC_COURTS=QC_S.blocks.filter(b=>b.court);
 for(const b of QC_COURTS){const c=qcCentre(b);QC_PLACE.push({key:'xa_garden',x:c[0],z:c[1],ry:qcToCentre(b),o:{v:qcRT(b)[0]%3,y:b.level},kind:'court',id:'court:'+b.id,h:9});}
 // ---------------------------------------------------------------- the temple estates' fields round the walls (PLAN.md 3: "outside the
@@ -144,7 +151,7 @@ if(typeof BIO!=='undefined'&&BIO.host){Object.assign(BIO.host,{mask:qcBioMask,or
 // ---------------------------------------------------------------- the people (PLAN.md, kits/qiblai/PLAN.md section 3's table)
 // residents a building holds, by key (est.: a household of 6-7, servants in the rich houses, the monks of a monastery, the
 // staff of the hostels and halls; pilgrims are not residents); summed by ring and checked against the plan's table in verify
-const QC_PEOPLE={qb_row_poor:6,qb_row_mid:7,qb_row_rich:9,qb_corner_house:7,qb_court_house:14,xa_poor_a:6,xa_poor_b:12,xa_poor_c:4,xa_mid_a:7,xa_mid_b:9,xa_mid_c:16,
+const QC_PEOPLE={qb_meditation_garden:6,qb_row_poor:6,qb_row_mid:7,qb_row_rich:9,qb_corner_house:7,qb_court_house:14,xa_poor_a:6,xa_poor_b:12,xa_poor_c:4,xa_mid_a:7,xa_mid_b:9,xa_mid_c:16,
  xa_rich_a:12,xa_rich_c:11,qb_shop_row:8,qb_bakery:5,qb_butcher:5,qb_weaver:6,qb_brewhouse:5,qb_tannery:5,qb_workshop:5,qb_hostel:25,qb_guild_gold:6,qb_guild_mason:6,
  qb_guild_spice:6,qb_guild_lodge:4,qb_wheel_house:2,qb_bath:6,qb_college:60,qb_granary:4,qb_monastery:300,qb_monastery_half:150,qb_gate_market:30,qb_gate_market_half:15,
  xa_garden:4,qb_temple_mountain:400};

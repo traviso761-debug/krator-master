@@ -31,7 +31,7 @@ const qcCv=qcCanvas(),qcMask=qcCanvas();
  g.fillStyle='#5e6358';g.fillRect(0,0,qcCv.width,qcCv.height);   /* the country: the lush grass muted a little */m.fillStyle='#000';m.fillRect(0,0,qcMask.width,qcMask.height);
  g.fillStyle='#8a8784';g.fillRect(qgx(B.x0),qgz(B.z0),(B.x1-B.x0)*QCG_PX,(B.z1-B.z0)*QCG_PX);m.fillStyle=DIRT;m.fillRect(qgx(B.x0),qgz(B.z0),(B.x1-B.x0)*QCG_PX,(B.z1-B.z0)*QCG_PX);
  const tint={clergy:'#8e8a84',kora:'#908a82',lay:'#878480',temple:'#94908a'};
- for(const b of QC_S.blocks){g.fillStyle=b.use==='garden'?'#62685c':(tint[b.kind]||'#878480');poly(g,b.poly);g.fill();m.fillStyle=b.use==='garden'?'#000':DIRT;poly(m,b.poly);m.fill();
+ for(const b of QC_S.blocks){const gd=b.use==='garden'||b.use==='meditation';g.fillStyle=gd?'#62685c':(tint[b.kind]||'#878480');poly(g,b.poly);g.fill();m.fillStyle=gd?'#000':DIRT;poly(m,b.poly);m.fill();
   if(b.court){const c=b.court,X=qgx(c[0]),Z=qgz(c[1]),W=(c[2]-c[0])*QCG_PX,H=(c[3]-c[1])*QCG_PX;g.fillStyle='#62685c';g.fillRect(X,Z,W,H);m.fillStyle='#000';m.fillRect(X,Z,W,H);}}   /* a courtyard garden: grass, as a garden block */
  // the temple estates' fields (89zq): tilled soil (the dirt, a darker brown), a standing crop (the grass, yellowed), fallow (the
  // grass, paler); each strip a shade of its own by its hash, so the belt is a patchwork, not one green

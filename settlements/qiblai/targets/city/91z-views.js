@@ -11,6 +11,9 @@ const VIEWS=(function(){const V={},S=QC_B.z1,E=QC_B.x1,L=QC_LM;
  const h=QC_PLACE.find(p=>p.kind==='lot'&&p.cls==='poor');if(h)V['A lay street']=qcEye(h.x+Math.sin(h.ry)*9,h.z+Math.cos(h.ry)*9,h.x+Math.cos(h.ry)*40,h.z-Math.sin(h.ry)*40,0);
  V['The ghats']=qcEye(QC_RIVER.x+20,30,QC_RIVER.x-40,0,1.5);
  V['From above the Temple Mountain']=[L.x+240,340,L.z+300,L.x,10,L.z];
+ // the four meditation gardens in the corners, each from above its two gates (from inside the city, looking to the corner)
+ for(const p of QC_PLACE)if(p.kind==='meditation'){const sx=Math.sign(p.x-L.x),sz=Math.sign(p.z-L.z),cx=p.x-sx*52,cz=p.z-sz*52;
+  V['Meditation garden: '+QMED[p.o.v].name]=[cx,terrainH(cx,cz)+34,cz,p.x,terrainH(p.x,p.z)+1,p.z];}
  return V;})();
 // the city as one budget (as Erewhon's 93-er-ui.js): every type in the class 'city'
 BUDGET.showcase={tris:30000000,calls:3000};BUDGET.cls.city=30000000;for(const k in TSTAT.by)BUDGET.type[k.split('/')[0]]='city';

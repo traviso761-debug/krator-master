@@ -36,13 +36,21 @@ and `qiblai` in core/tags' vocabulary (`TODO.md`, the ride-along) are not prereq
 
   | ring (r) | whole gardens (t) | courtyard blocks (t) | built (t) |
   |---|---|---|---|
-  | 4, rich | | 1, 3 | 0, 2, 4 |
-  | 5, middle | 3 | 1, 5 | 0, 2, 4 |
-  | 6, poor | 2, 4, 6 | 5 | 0, 1, 3 |
-  | 7, poor, at the wall | 2, 3, 5, 6, 7 | 4 | 0, 1 |
+  | 4, rich | | 1, 2, 3, 4 | 0 |
+  | 5, middle | 3 | 1, 2, 4, 5 | 0 |
+  | 6, poor | 2, 3, 4, 5, 6 | 1 | 0 |
+  | 7, poor, at the wall | 2, 3, 4, 5, 6 (7: a meditation garden) | 1 | 0 |
 
-  64 garden blocks and 44 courtyard blocks. A courtyard block keeps its frontage round a square cleared of houses (48 m in
-  the rich ring, 44 m beyond) with a chahar-bagh in it; every garden faces the centre.
+  84 garden blocks and 72 courtyard blocks ("more gardens", the owner, 2026-11-11: the lay rings ~6,350 against the plan's
+  6,000). A courtyard block keeps its frontage round a square cleared of houses (48 m in the rich ring, 54 m in the middle,
+  56 m at the wall) with a chahar-bagh in it; every garden faces the centre.
+- **The four meditation gardens** (the owner, 2026-11-11: "a unique meditation garden in each corner, featuring the colors
+  of the two closest monasteries"; "pick flora tastefully by color"): `qb_meditation_garden` (kits/qiblai) in each corner
+  block, in the colours of the two monasteries whose sides of the wall meet there: NE the Stone Garden (crimson, gold), SE
+  the Lotus Water (gold, turquoise), SW the Walking Circle (turquoise, violet), NW the Grove of Cells (violet, crimson).
+  Their plants are picked by colour (`targets/city/90p-qc-flora.js`) from the Rift, the Rift Rim and Oidong, sealed with
+  today's core/biome in `gen/69r-flora-bundle.js` (Xanadu's page runs an older biome core those kits cannot load on),
+  and the gold from the page's own Vale (the ginkgo). The gaps are in `KNOWN_ISSUES.md`.
 - **Q7e-Q7g** not started.
 
 ## 1. What the city build is

@@ -2,9 +2,17 @@
  "targets": {
   "city": "qiblai.html"
  },
- "externalDirs": ["kits/qiblai/src"],
- "external": ["settlements/qiblai/gen/69q-kcity-bundle.js"],
- "scoped": ["69q-kcity-bundle.js"],
+ "externalDirs": [
+  "kits/qiblai/src"
+ ],
+ "external": [
+  "settlements/qiblai/gen/69q-kcity-bundle.js",
+  "settlements/qiblai/gen/69r-flora-bundle.js"
+ ],
+ "scoped": [
+  "69q-kcity-bundle.js",
+  "69r-flora-bundle.js"
+ ],
  "pack": "qiblai",
  "packFrom": "kits/qiblai",
  "deterministic": [
@@ -15,6 +23,8 @@
   "69q-kcity-bundle.js",
   "89zq-qc-site.js",
   "90q-qc-world.js",
-  "90r-qc-build.js"
+  "90r-qc-build.js",
+  "69r-flora-bundle.js",
+  "90s-qc-flora.js"
  ]
 }

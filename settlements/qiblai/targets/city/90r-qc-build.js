@@ -53,6 +53,8 @@ if(typeof BIO!=='undefined'&&BIO.host){BIO.setScene(scene);BIO.setSun([-.5,.76,.
  try{window._biome=XANADU.build({R:2300,quality:.8,lakeHue:XANADU_LAKE.hue});}catch(e){reportErr('biome: '+(e&&e.stack||e));}
  try{window._bioBake=BIO.bake();}catch(e){reportErr('biome bake: '+e.message);}
  if(BIO.lodTick)FRAME_HOOKS.push(()=>BIO.lodTick(camera));}
+// the meditation gardens' plants from the sealed biome kits (90p-qc-flora.js), on their own core/biome
+try{qcFloraBake();}catch(e){reportErr('qiblai flora: '+(e&&e.stack||e));}
 LABELS=new THREE.Group();LABELS.userData.probeSkip=true;scene.add(LABELS);
 window._registered=REG.length;window._chunks=QC_GROUPS.length;window._buildMs=Math.round(performance.now()-QC_B0);
 window._qiblai=Object.assign(window._qiblaiPlan||{},{placed:QC_ALL.length,extra:QC_EXTRA.length,chunks:QC_GROUPS.length,
