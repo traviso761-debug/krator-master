@@ -909,7 +909,9 @@ tribe and the toad men guide merchants through the maze (7.6).
 - **`core/charactermodels`:** the winter mods (`NOTES.md:210`).
 - **The sim:** the hamlets and bands.
 
-**Sent** (the owner, 2026-11-12: "send them"): K1-K10 as village pins, no polity, to the queue.
+**Sent** (the owner, 2026-11-12: "send them"): K1-K10 as village pins, no polity, to the queue. **Queued:** collision-checked with
+ruins included, and none collides. The nearest pin to any of them is Ardent, 115 km from K9; the closest pairs, K6-K7 and K9-K10,
+are 61 km apart. The queue re-checks against the pins of waves 3-4 and the live database when the edit runs.
 
 **The east side's microclimates** (the owner: "see if we can find any microclimates on the east side that would be livable"). East
 of px 1050 (outside the Coyote Kingdom), Korona is 155,000 km² of mostly dry ground: BSk, BSh, BWh and BWk lead; the mean is 638 mm
