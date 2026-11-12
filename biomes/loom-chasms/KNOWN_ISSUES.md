@@ -13,7 +13,7 @@ and 5 in the same session the next day, with
 |---|---|---|---|---|
 | `dist/loom-chasms.html` (station 3, the Loom) | 69 pass | 0 | From afar: 83, 2.10 M | 1 of 921 cards float (0.11%: an ember, the Great Chasm kit's) |
 | `dist/loom-chasms-cradle.html` (station 1, the Cradle) | 63 pass | 0 | From afar: 33, 3.33 M | 0 of 1707 |
-| `dist/loom-chasms-monocline.html` (station 2, the Weave-Step) | 59 pass (on the bytes before the last shared change; the re-run is going) | 0 | | 0 of 1 |
+| `dist/loom-chasms-monocline.html` (station 2, the Weave-Step) | 59 pass | 0 | Up the benches: 20, 1.77 M | 0 of 1 |
 | `dist/loom-chasms-caelum.html` (station 4, Mount Caelum) | 75 pass | 0 | From afar: 39, 1.69 M | 2 of 341 (0.59%: lichen, the Great Chasm kit's) |
 | `dist/loom-chasms-whiteloom.html` (station 5, the White Loom) | 58 pass | 0 | From afar: 86, 2.19 M | none drawn (no cards on the playa) |
 
