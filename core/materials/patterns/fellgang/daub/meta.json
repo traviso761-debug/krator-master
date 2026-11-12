@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.336,
+    2.814
+   ],
+   "seam_before": [
+    2.784,
+    7.208
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.0,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.3,
+   "pattern": false,
+   "rough": 0.8,
+   "rough_var": 0.1,
+   "seam_axes": "none",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "paint",
+  "id": "patterns/fellgang/daub",
+  "metal": 0,
+  "roughness": 0.8,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "patterns_fellgang_daub.png",
+  "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d13d-d029-7b12-9f7d-82d4d6f1a1a9)",
+  "licence": "generated for this project by its owner",
+  "original_title": "exec-82dcff46-6206-45b1-bde3-0cd80ef7f496.png",
+  "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '43. The Tungang kit (`kits/tungang`, 2026-11-11)' on claude/kind-cori-9c4452 (id patterns/fellgang/daub)",
+  "sha1": "96c22d66008a46d85bf1e76781c2f7256ab6d24a"
+ }
+}

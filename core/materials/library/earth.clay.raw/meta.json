@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.24,
+    1.122
+   ],
+   "seam_before": [
+    1.303,
+    1.366
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.6,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.95,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "earth",
+  "id": "earth.clay.raw",
+  "metal": 0,
+  "roughness": 0.95,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "earth.clay.raw.png",
+  "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d136-ef67-7422-8e99-82364e0a406b)",
+  "licence": "generated for this project by its owner",
+  "original_title": "exec-4ed6292d-e17a-471f-8ffd-2081b9d4ac98.png",
+  "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '45. Raw clay (`kits/islanders`, the clay pit, 2026-11-09)' on origin/main (id earth.clay.raw)",
+  "sha1": "070b9cdaa26c10f5993066c7fee5eec286f5a9e1"
+ }
+}

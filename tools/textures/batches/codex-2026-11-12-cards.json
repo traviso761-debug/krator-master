@@ -1,0 +1,312 @@
+[
+ {
+  "src": "card.heath.whorl.png",
+  "out": "core/materials/library/card.heath.whorl",
+  "record": {
+   "id": "card.heath.whorl",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d135-aa89-7f72-a8bd-f8267367a34a)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '37. The southern highlands' upper stations (`biomes/shighlands --station conifers` and `--station fellfield`, 2026-11-09)' on origin/main (id card.heath.whorl)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-4a4d2f4a-b608-4155-8ff5-6060b58575a9.png",
+    "note": "a sheet: hosts show one cell"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ },
+ {
+  "src": "card.arum.carrion.png",
+  "out": "core/materials/library/card.arum.carrion",
+  "record": {
+   "id": "card.arum.carrion",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d135-c5cf-7851-b902-9652dbfeca2b)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '40. The hyperjungle's lands and the savannah rims (`biomes/hyperjungle` stations `savage` and `north`, `biomes/abyssal-savannah` stations `serim`, `erim` and `north`; J2-J6, 2026-11-08)' on origin/main (id card.arum.carrion)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-e8af9fb6-9107-4057-b32d-f5a35b9ae6e2.png"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "bottom",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ },
+ {
+  "src": "card.bamboo.leaf.png",
+  "out": "core/materials/library/card.bamboo.leaf",
+  "record": {
+   "id": "card.bamboo.leaf",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d136-4042-7c02-9da0-053fee9f1bef)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '40. The hyperjungle's lands and the savannah rims (`biomes/hyperjungle` stations `savage` and `north`, `biomes/abyssal-savannah` stations `serim`, `erim` and `north`; J2-J6, 2026-11-08)' on origin/main (id card.bamboo.leaf)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-f1346f79-a8ec-470c-8ec5-4c2b9e95e810.png"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ },
+ {
+  "src": "card.flower.hand.png",
+  "out": "core/materials/library/card.flower.hand",
+  "record": {
+   "id": "card.flower.hand",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d136-5bbf-7043-8e10-24383460d222)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '40. The hyperjungle's lands and the savannah rims (`biomes/hyperjungle` stations `savage` and `north`, `biomes/abyssal-savannah` stations `serim`, `erim` and `north`; J2-J6, 2026-11-08)' on origin/main (id card.flower.hand)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-cb423e9a-1c92-42bf-a62b-6045b75a6114.png"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ },
+ {
+  "src": "card.pod.skull.png",
+  "out": "core/materials/library/card.pod.skull",
+  "record": {
+   "id": "card.pod.skull",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d136-7674-72c3-a810-a8ab75ee8c18)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '40. The hyperjungle's lands and the savannah rims (`biomes/hyperjungle` stations `savage` and `north`, `biomes/abyssal-savannah` stations `serim`, `erim` and `north`; J2-J6, 2026-11-08)' on origin/main (id card.pod.skull)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-ce61b7f4-0211-479a-81d3-d8a1ef5e8f08.png"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ },
+ {
+  "src": "patterns_xanadu_jali.png",
+  "out": "core/materials/patterns/xanadu/jali",
+  "record": {
+   "id": "patterns/xanadu/jali",
+   "family": "stone",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d136-9c39-7020-a861-275fce9038fc)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '41. Erewhon's citadel: the Pleasure Domes and the Moorish and Mughal palaces (`kits/xanadu`, `settlements/xanadu/citadel`, 2026-11-09)' on origin/main (id patterns/xanadu/jali)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-8922daee-21a1-4611-9e9c-415c92a23b1e.png"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ },
+ {
+  "src": "card.shelfoak.png",
+  "out": "core/materials/library/card.shelfoak",
+  "record": {
+   "id": "card.shelfoak",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d137-d6ff-7642-a6a2-f81cd0f76b36)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '50. The Tiers (`biomes/tiers`, planned 2026-11-10)' on origin/main (id card.shelfoak)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-5c0a6f62-d795-49b6-a72d-2309cccbd2c5.png",
+    "note": "a sheet: hosts show one cell"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ },
+ {
+  "src": "card.birch.silver.png",
+  "out": "core/materials/library/card.birch.silver",
+  "record": {
+   "id": "card.birch.silver",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d13e-0d70-7c00-bb2d-9b196875f14b)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '44. The Labyrinth's flora (`biomes/labyrinth` src/50-70, 2026-11-12)' on claude/relaxed-ritchie-611932 (id card.birch.silver)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-bd985fe0-5577-4c5f-ae05-867933011968.png",
+    "note": "a sheet: hosts show one cell"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ },
+ {
+  "src": "card.leaf.photonic.png",
+  "out": "core/materials/library/card.leaf.photonic",
+  "record": {
+   "id": "card.leaf.photonic",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d13e-a9b8-73f3-b2b4-a775a68127af)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '46. Opal Valley (`biomes/opalvalley`, 2026-11-11)' on claude/zealous-allen-0cd44d (id card.leaf.photonic)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-5104eb48-8229-4e57-8f4b-641e7df1b540.png"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.02
+  }
+ },
+ {
+  "src": "card.fallout.lawn.png",
+  "out": "core/materials/library/card.fallout.lawn",
+  "record": {
+   "id": "card.fallout.lawn",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d13f-4cb7-7b41-96c9-0acc3a123912)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '44. The Cliff Lungs (`biomes/clivobredos`, 2026-11-11)' on origin/claude/clifflung-biome (id card.fallout.lawn)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-bdb8c158-9704-4b54-8cf0-9c404f6c1d59.png",
+    "note": "a sheet: hosts show one cell"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ }
+]
