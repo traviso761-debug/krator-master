@@ -907,6 +907,12 @@ Re-routed:
 - **Possible: Strongbow (11) to Stair (12): 562 km**, 403 km of it bored (was 344 and 329). It now runs north-west under the High
   Rift.
 
+**Leg ids** (for the open world's links, the Oidong-High Rift session's ask): every leg in `net51.json` now has a unique `id`,
+with the shared one kept as `line` (`legs51.py`). The Theodiga–Strongbow leg is split where it passes Qiblai and Longsong:
+- `rift.theodiga-qiblai`, 133 km;
+- `rift.qiblai-longsong`, 592 km;
+- `rift.longsong-strongbow`, 166 km.
+
 **Open for the owner:**
 - Should the line still continue (possibly) from Strongbow to Stair? From the new site, the bore is much longer.
 - Or should the possible leg to Stair branch from the line nearer Qiblai?
