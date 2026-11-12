@@ -183,8 +183,10 @@ About **3,150 working** of 7,000 (45%). *Proposed*:
 | Fuel (charcoal, dung, the wood carts) | none | 60 | the outer ring |
 | **Total** | **1,530** | **1,605** | plus about 100 monks in the tower |
 
-Done when a node test checks the sums against the people (section 6) and that every trade in the town has a building key in the
-set.
+**The trades census** (the owner, 2026-11-11: "also give me a trades census"): the budget trade by trade, as data in
+`src/20-sb-census.js` ([G data], for `core/simulation` later). It covers 50 trades, with their workers in and out, the workplaces,
+where they work and the scrap set's buildings, plus the Order's and the outcasts' work. `CENSUS.md` is written from the records, and
+`node settlements/strongbow/test-census.js` checks the sums against this section and section 6 (each check with a negative).
 
 ## 9. Order of work
 
