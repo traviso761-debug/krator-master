@@ -1,6 +1,62 @@
 {
  "build": "arch",
  "families": {
+  "ground.lava.aa": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "ground.lava.aa.albedo.webp"
+   },
+   "lib": "ground.lava.aa",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "43c59a6c36029892638594d461000e09bf1aba0c",
+    "normal": "b1fc5cbcb2ccc42f9c38ba34a4c800301a2b7da0",
+    "roughness": "8fc29139dc95aa46efb4fc4b0774a61fc40ce591"
+   },
+   "specular": 0.25,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.25533688126208737,
+    "sourceMean": 0.2553
+   }
+  },
+  "ground.lichen.crust": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "ground.lichen.crust.albedo.webp"
+   },
+   "lib": "ground.lichen.crust",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "0a7cf252bdea1e2b1b0784a703e27fb9e5c4c2c1",
+    "normal": "828eb1b0e811ab2ac99cd5a34c14491d61a5e112",
+    "roughness": "ffe2696c7b28dcb54762fcba003b16f5eb62fa03"
+   },
+   "specular": 0.25,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.41579232116699216,
+    "sourceMean": 0.4158
+   }
+  },
   "ground.redsoil": {
    "breakup": null,
    "card": false,
@@ -27,6 +83,34 @@
     "keep": 0.7,
     "mean": 0.7,
     "sourceMean": 0.4164
+   }
+  },
+  "ground.sand.black": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "ground.sand.black.albedo.webp"
+   },
+   "lib": "ground.sand.black",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "e278f53d123a1aa0061a9f9bc8216bc22d8028d8",
+    "normal": "a2d1e4d1f8ed83593793aaa52a36ab393d9202d1",
+    "roughness": "33dceea7705bfde3d665bf28f9df5908f615de9e"
+   },
+   "specular": 0.25,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.20892572071449428,
+    "sourceMean": 0.2089
    }
   },
   "ground.sulphur": {
@@ -111,6 +195,90 @@
     "keep": 1.0,
     "mean": 0.7930494135478898,
     "sourceMean": 0.793
+   }
+  },
+  "rock.basalt.vesicular": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "rock.basalt.vesicular.albedo.webp"
+   },
+   "lib": "rock.basalt.vesicular",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "654dab235239c4db6aeaa87c311a6e6751e02ac7",
+    "normal": "b4baee6c1bcc17183e90f8a3fdb55969e297fbbf",
+    "roughness": "ec4af55e04f8ab2fd2dc4f0bf2785734c3362882"
+   },
+   "specular": 0.25,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.38126152411367376,
+    "sourceMean": 0.3813
+   }
+  },
+  "rock.palagonite": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "rock.palagonite.albedo.webp"
+   },
+   "lib": "rock.palagonite",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "0735ee83cb01c97977d29591cdba19755e0c7d13",
+    "normal": "3a46a239c7e5c272bd1c58f189cd9dad55bcb961",
+    "roughness": "896375f7a025199be855fc2235eff99668cead42"
+   },
+   "specular": 0.25,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.4931400580432368,
+    "sourceMean": 0.4931
+   }
+  },
+  "rock.tuff": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "rock.tuff.albedo.webp"
+   },
+   "lib": "rock.tuff",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "7183aa52bdd834668d8367245902cbc19ff0bb98",
+    "normal": "d2433f653e168d4b48a04af40661324658521237",
+    "roughness": "52974122ab97fb33c3f9ad47dc1236eff165c2f6"
+   },
+   "specular": 0.25,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.6909600179634842,
+    "sourceMean": 0.691
    }
   }
  },

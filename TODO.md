@@ -28,6 +28,12 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 
 ## Ride along with the next all-builds rebuild
 
+- **`WATER.drawFlow`'s program cache key leaves out its colours** (2026-11-12, found by `biomes/arch`): `core/water/51-core-water-kinds.js`
+  bakes `o.shallow` and `o.deep` into the fragment shader text but builds `customProgramCacheKey` from the common chunk and the flags only, so
+  every flow on a page after the first draws the first one's colours (three.js reuses the program). Add the two colours (and `o.color`) to the
+  key. `biomes/arch/src/89w-host-water.js` works round it by extending the key itself; drop that once core has it. It moves every page that
+  draws a flow (147 build commands, `python3 tools/reach.py core/water/51-core-water-kinds.js`).
+
 - **`KSHADOW.units` counts what the GPU links** (2026-11-09, found by the Throne's fix): `core/shadow/host/12-core-shadow-host.js` counts
   declared samplers (some are never read and the GPU drops them), misses `scene.environment` on standard materials, and judges against the
   renderer's own limit (32 in SwiftShader, so shadows turn on where the GPU cannot link them). The Throne's `samplersOf`

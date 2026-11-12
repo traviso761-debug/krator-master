@@ -36,12 +36,35 @@ var ARCH_SITES={
   shear:{a:[-2400,1500],b:[2200,-1100],w:60},
   seed:0x4A2C02},
  // STATION 3, THE BARRENS: the south-eastern horst's lee, the driest ground (Aw)
+ // a rolling laterite plateau falling gently south-east (~1.2%), cut by lavaka: amphitheatres where the red earth has slumped away down to the
+ // mottled zone and the green garnierite at the laterite's base (Madagascar's lavaka, New Caledonia's mine scars); seeps at their heads (the pitchers),
+ // the richest nickel round their rims (the verdigris caps beside the sève bleue). x, z: the head; dir: the way the mouth opens; r, depth (m)
  barrens:{key:'barrens',name:'The barrens: the nickel maquis',px:[258,246],world:[516000,492000],sky:{px:-14,py:-84},
-  base:155,atm:1.57,koppen:'Aw',rain:1427,temp:{mean:27,warm:32,cold:22,low:16},soil:27,lat:-21.6},
+  base:155,atm:1.57,koppen:'Aw',rain:1427,temp:{mean:27,warm:32,cold:22,low:16},soil:27,lat:-21.6,slope:.012,
+  lavaka:[{x:-900,z:-600,r:140,depth:24,dir:[.6,.8],len:520},{x:300,z:-1100,r:110,depth:18,dir:[.7,.7],len:420},{x:-300,z:200,r:160,depth:28,dir:[.5,.86],len:640},
+   {x:1100,z:-100,r:90,depth:14,dir:[.75,.66],len:360},{x:-1500,z:700,r:120,depth:20,dir:[.6,.8],len:480},{x:700,z:1000,r:130,depth:22,dir:[.66,.75],len:500}],
+  seed:0x4A2C03},
  // STATION 4, THE SOUND: the graben's floor on the drowned axis (5-8 m of water, ~12 km wide)
+ // the page in the band's own frame: `al` along the axis (north-east +), `w` across it (south-east +, toward the sound's middle). The floor falls
+ // gently to the shore (w ~1,750), mangrove flats before it; the eruptive fissure of segment 9 runs along the axis at w -400 with its spatter
+ // ramparts; that episode's flow (ARCH.episode(9, 0): 61 years before game start, 7.9 m of opening) spread south-east over the wet flats and blew
+ // rootless cones where it did; open fissures (gjar) en echelon north-west of it hold clear water at sea level; a CO2 hollow at its north-east end;
+ // the White Stacks (brucite and carbonate chimneys where alkaline springs meet the sea) stand out in the sound, their tops awash at low tide
  sound:{key:'sound',name:'The sound: the graben\'s floor',px:[299,220],world:[598000,440000],sky:{px:27,py:-110},
-  base:7,atm:1.60,koppen:'Am',rain:1804,temp:{mean:30,warm:34,cold:26,low:21},soil:30,lat:-21.0,sound:{depth:[5,8],width:12000}},
+  base:7,atm:1.60,koppen:'Am',rain:1804,temp:{mean:30,warm:34,cold:26,low:21},soil:30,lat:-21.0,sound:{depth:[5,8],width:12000},
+  axis:[.84,-.54],segment:9,year:0,shoreW:1750,
+  fissure:{w:-400,al:[-2200,1700]},flow:{al:[-1700,1300],front:950,amp:380},
+  gjar:[{al:-1500,w:-950,len:600,wd:9},{al:-950,w:-1050,len:520,wd:14},{al:-400,w:-1150,len:700,wd:11},{al:200,w:-1000,len:560,wd:7},{al:800,w:-1120,len:640,wd:12}],
+  hollow:{al:1500,w:-260,r:70,depth:7},stacks:{w:[2050,2500],al:[-900,900],n:11},
+  seed:0x4A2C04},
  // STATION 5, THE COAST: the seamount island's south-west shore; the Surtseyan caldera (DATA.vents px 166,338) 3 km offshore
+ // the page in the shore's frame: `al` along the shore (south-east +), `w` toward the sea (south-west +). A tuff cone inland (a satellite of the
+ // island's caldera: its rim 70 m, its crater dry), its flank falling to dunes and a black sand beach; a platform of old pillow lava at the
+ // beach's north-west end, awash, with tide pools; the sea deepening south-west to the Surtseyan caldera, 3 km off, whose steam stands over the
+ // water at the page's edge; warm, steaming ground on the cone's flank where the ash brooders lay (the fauna is PLAN.md section 8's, to come)
  coast:{key:'coast',name:'The steaming coast',px:[167,336],world:[334000,672000],sky:{px:-105,py:6},
-  base:2,atm:1.60,koppen:'Am',rain:1710,temp:{mean:28,warm:33,cold:23,low:18},soil:28,lat:-23.7,vent:{px:[166,338],floor:-540,rim:-18}}
+  base:2,atm:1.60,koppen:'Am',rain:1710,temp:{mean:28,warm:33,cold:23,low:18},soil:28,lat:-23.7,vent:{px:[166,338],floor:-540,rim:-18,km:3},
+  shore:[-.7071,.7071],cone:{al:500,w:-1500,r:520,rim:70,crater:300},platform:{al:[-1300,-450],w:[-60,260]},
+  steam:{al:[-800,800],w:2350},warm:[{al:150,w:-1050,r:60,T:62},{al:420,w:-980,r:45,T:58},{al:-80,w:-1150,r:50,T:55}],
+  seed:0x4A2C05}
 };

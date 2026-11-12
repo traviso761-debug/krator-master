@@ -3,6 +3,8 @@
 const STEAM=(function(){const G={};if(SITE.solfatara){const V=SITE.solfatara,E=[];
  for(let k=0;k<9;k++){const a=k/9*TAU,r=k?20+12*(k%3):0,x=V.x+Math.cos(a)*r,z=V.z+Math.sin(a)*r;E.push([x,terrainH(x,z)+.4,z,'steam']);}
  V.pots.forEach(p=>E.push([p[0],terrainH(p[0],p[1])+.3,p[1],'steam']));G.solfatara={emitters:E,n:18,k:.8};}
+ if(L.WARM)G.warm={emitters:L.WARM.map(v=>[v.x,terrainH(v.x,v.z)+.3,v.z,'steam']),n:10,k:.45};
+ if(SITE.steam){const E=[];for(let k=0;k<12;k++){const p=L.XZ(lerp(SITE.steam.al[0],SITE.steam.al[1],k/11),SITE.steam.w+40*Math.sin(k*1.7));E.push([p[0],.6,p[1],'steam']);}G.caldera={emitters:E,n:28,k:1.2};}
  if(SITE.springs)G.springs={emitters:SITE.springs.map(sp=>[sp.x,terrainH(sp.x,sp.z)+.3,sp.z,'steam']),n:8,k:.25};
  try{return ATMOS.smokeGroups?ATMOS.smokeGroups(G):null;}catch(e){reportErr('steam: '+e.stack);return null;}})();
 // THE ETERNAL FLAMES (PLAN.md 3.7, Chimaera's): hydrogen and methane from the serpentinite burning in a cleft on the dome's flank. Each flame a few small

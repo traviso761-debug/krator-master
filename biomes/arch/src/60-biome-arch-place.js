@@ -11,12 +11,13 @@ const pickC=(a,j)=>{const c=C(a[Math.floor(rng()*a.length)%a.length]);if(j)c.off
 const Y=(x,z)=>BIO.host.terrainH(x,z);
 ARCHB.LOG=[];   /* every placed plant's chemistry check, for the verify: [item, x, z, life] */
 ARCHB.buildArch=function(R,q,o){o=o||{};q=q==null?1:q;R=R==null?2500:R;
- const st={araucaria:0,gymnostoma:0,pycnandra:0,sedge:0,pitchers:0,limeshelf:0,verdigris:0,felt:0,fans:0},seed=KRAND.child(1000031,'arch/life'),
-  keep=o.keep||(()=>1),heat=o.heat||(()=>28),ph=o.ph||(()=>6),soil=o.soil||((x,z)=>({ni:3000,pH:ph(x,z),caMg:.08}));
+ const st={araucaria:0,gymnostoma:0,pycnandra:0,sedge:0,pitchers:0,limeshelf:0,verdigris:0,felt:0,fans:0,ohia:0,uluhe:0,mangrove:0,casuarina:0,naupaka:0,ipomoea:0,coconut:0},seed=KRAND.child(1000031,'arch/life'),
+  keep=o.keep||(()=>1),strand=o.strand||null,lava=o.lava||(()=>null),mud=o.mud||(()=>0),heat=o.heat||(()=>28),ph=o.ph||(()=>6),soil=o.soil||((x,z)=>({ni:3000,pH:ph(x,z),caMg:.08}));
  const F=n=>(x,z)=>BIO.field(n,x,z),wet=F('wet'),rock=F('rock'),slope=F('slope');
  const Lv=BIO.LOD(),c0=BIO.center();
- const chem=(x,z)=>({pH:ph(x,z),T:heat(x,z),caMg:soil(x,z).caMg});
- const earth=(x,z)=>ARCH.earthOk(chem(x,z)),life=(x,z)=>ARCH.lifeAt(chem(x,z));
+ const chem=(x,z)=>({pH:ph(x,z),T:heat(x,z),caMg:soil(x,z).caMg,lavaAge:lava(x,z)});
+ /* the maquis is serpentine ground's: never on the basalt of a flow or in the sound's mud */
+ const earth=(x,z)=>!strand&&ARCH.earthOk(chem(x,z))&&lava(x,z)==null&&!mud(x,z),pioneer=(x,z)=>lava(x,z)!=null&&ARCH.earthOk(chem(x,z)),life=(x,z)=>ARCH.lifeAt(chem(x,z));
  const cellPass=(cell,salt,maxD,fn)=>{const N=Math.ceil(R*2/cell);for(let iz=0;iz<N;iz++)for(let ix=0;ix<N;ix++){
   const x=c0[0]-R+(ix+.5)*cell,z=c0[1]-R+(iz+.5)*cell;if(Math.hypot(x-c0[0],z-c0[1])>R)continue;const ld=BIO.lodD(x,z);if(ld>maxD)continue;
   reseed(KRAND.cell(seed+salt,ix,iz));const px=x+rr(-.5,.5)*cell,pz=z+rr(-.5,.5)*cell;if(BIO.mask(px,pz)<=0||keep(px,pz)<=0)continue;
@@ -61,6 +62,30 @@ ARCHB.buildArch=function(R,q,o){o=o||{};q=q==null?1:q;R=R==null?2500:R;
   const s=rr(.3,1.6),hs=rr(.3,.7)*s;BIO.put('arverdstalk',[x,y-.05,z],qEuler(0,rr(0,TAU),0),[s*.6,hs,s*.6],pickC(PAL.verdFlesh,.02));
   BIO.put('arverd',[x,y+hs*.95,z],qEuler(rr(-.12,.12),rr(0,TAU),rr(-.12,.12)),[s,s,s],pickC(PAL.verd,.03));
   ARCHB.HOARD.push({x,z,leaf:ARCH.uptake('verdigris',sl).leaf,native:true});log('arverd',x,z);st.verdigris++;});
+ // THE LAVA'S PIONEERS: ohia and uluhe on a flow older than their lag (ARCH.earthOk), denser with its age
+ cellPass(16,10,Lv.mid,(x,y,z,lv)=>{if(!pioneer(x,z))return;const a=.55*smooth(30,160,lava(x,z))*q;if(rng()>a)return;const H=rr(2,7),yaw=rr(0,TAU);
+  BIO.put('arohiatrunk',[x,y-.1,z],qEuler(rr(-.12,.12),yaw,rr(-.12,.12)),[H*.9,H*.75,H*.9],pickC(PAL.trunk,.03));
+  BIO.put('arohia',[x,y+H*.6,z],qEuler(0,rr(0,TAU),0),[H*.4,H*.35,H*.4],pickC(rng()<.25?PAL.ohiaFlower:PAL.ohia,.03));log('arohia',x,z);st.ohia++;});
+ cellPass(5,11,Lv.floor[1],(x,y,z,lv)=>{if(!pioneer(x,z))return;const a=.6*smooth(20,120,lava(x,z))*q;if(rng()>a)return;const s=rr(.6,1.4);
+  BIO.put('aruluhe',[x,y-.05,z],qEuler(0,rr(0,TAU),0),[s*1.3,s*.7,s*1.3],pickC(PAL.uluhe,.03));log('aruluhe',x,z);st.uluhe++;});
+ // THE STRAND (the coast station: o.strand(x, z) 0..1, the dunes and the back of the beach): she-oak, naupaka, the creeping glory, drift palms
+ if(strand){const ok=(x,z)=>strand(x,z)>.05&&ARCH.earthOk(chem(x,z));
+  cellPass(22,13,Lv.far,(x,y,z,lv)=>{if(!ok(x,z))return;const a=.55*smooth(.2,.7,strand(x,z))*q;if(rng()>a)return;const H=rr(6,16),yaw=rr(0,TAU);
+   BIO.put('arcastrunk',[x,y-.2,z],qEuler(rr(-.05,.05),yaw,rr(-.05,.05)),[(.12+H*.01)/.05,H,(.12+H*.01)/.05],pickC(PAL.trunk,.03));
+   for(let k=0;k<3;k++)BIO.put('arcas',[x+rr(-1,1),y+H*(.55+.15*k),z+rr(-1,1)],qEuler(0,rr(0,TAU),0),[H*.28,H*.3,H*.28],pickC(PAL.casuar2,.03));log('arcastrunk',x,z);st.casuarina++;});
+  cellPass(26,14,Lv.far,(x,y,z,lv)=>{if(!ok(x,z))return;const w=BIO.field('wet',x,z),a=.35*smooth(.4,.9,strand(x,z))*q;if(rng()>a)return;const H=rr(8,17),yaw=rr(0,TAU),lean=rr(.15,.4);
+   BIO.put('arpalmtrunk',[x,y-.2,z],qEuler(0,yaw,lean),[(.32)/.05,H,(.32)/.05],pickC(PAL.palmtrunk,.02));
+   /* the crown on the leaning tip: (0, H, 0) turned by the trunk's own rotation */
+   const tx=x-Math.cos(yaw)*Math.sin(lean)*H,ty=y+H*Math.cos(lean)*.97,tz=z+Math.sin(yaw)*Math.sin(lean)*H;
+   for(let k=0;k<8;k++)BIO.put('arpalm',[tx,ty,tz],qEuler(0,k/8*TAU+rr(-.2,.2),0),[3.2,1,3.2],pickC(PAL.palm,.03));void w;log('arpalmtrunk',x,z);st.coconut++;});
+  cellPass(6,15,Lv.mid,(x,y,z,lv)=>{if(!ok(x,z))return;const a=.5*smooth(.1,.5,strand(x,z))*q;if(rng()>a)return;const s=rr(.8,2);
+   BIO.put('arnaupaka',[x,y-.1,z],qEuler(0,rr(0,TAU),0),[s*1.2,s,s*1.2],pickC(PAL.naupaka,.03));log('arnaupaka',x,z);st.naupaka++;});
+  cellPass(3,16,Lv.floor[1],(x,y,z,lv)=>{const sa=o.sand?o.sand(x,z):0;if(sa<.3||!ARCH.earthOk(chem(x,z)))return;const a=.45*q;if(rng()>a)return;const n=lv===2?ri(2,5):1;
+   for(let k=0;k<n;k++){const px=x+rr(-1.2,1.2),pz=z+rr(-1.2,1.2);if(BIO.mask(px,pz)<=0)continue;const s=rr(.2,.5);BIO.put('aripomoea',[px,Y(px,pz)+.01,pz],qEuler(0,rr(0,TAU),0),[s,s,s],pickC(PAL.ipomoea,.03));log('aripomoea',px,pz);st.ipomoea++;}});}
+ // THE MANGROVES: the sound's tidal mud (from just under the water to a metre over it), dense
+ cellPass(7,12,Lv.mid,(x,y,z,lv)=>{if(!mud(x,z)||ARCH.lifeAt(chem(x,z))==='none')return;const a=.75*q;if(rng()>a)return;const H=rr(3,7),yaw=rr(0,TAU),r0=Math.max(y,BIO.host.waterH(x,z));
+  if(lv>0)for(let k=0;k<6;k++){const az=yaw+k/6*TAU;BIO.put('armangroveprop',[x,r0+H*.32,z],qEuler(0,az,Math.PI-rr(.5,.8)),[1.2,H*.38,1.2],pickC(PAL.prop,.02));}
+  BIO.put('armangrove',[x,r0+H*.45,z],qEuler(0,rr(0,TAU),0),[H*.55,H*.5,H*.55],pickC(PAL.mangrove,.02));log('armangrove',x,z);st.mangrove++;});
  return st;};
 // THE CURTAINS: along a meeting's dividing line, a wall every 1.2-2 m wherever the sample says it can stand; a few short side walls where the halves braid;
 // the young hems on the margin of the stand. line(s, a) -> [x, z] the meeting's frame; level(s) the water's surface; the +z (white) face to the alkaline

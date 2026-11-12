@@ -29,7 +29,11 @@ const STRATA=GQ.get('strata')==='0'||typeof KSTRATA==='undefined'?null:KSTRATA.c
 const STRATA_SH=STRATA?KSTRATA.shade(STRATA,{dust:0x8a5a3a}):null;
 function setStones(){}
 const MIRROR_AT=(x,z)=>0;
-function masksAt(x,z,h,out){const T=HEAT_AT(x,z),rock=FC.at(FC.a.rock,x,z),ap=L.APRON?L.APRON(x,z):0,ac=L.ACIDG?L.ACIDG(x,z):0;
+function masksAt(x,z,h,out){if(SKEY==='coast'){const rock=FC.at(FC.a.rock,x,z),sa=L.SAND(x,z),pl=L.PLAT(x,z),tu=L.TUFF(x,z)*(1-sa)*(1-pl);let warm=0;for(const v of L.WARM)warm=Math.max(warm,smooth(v.r*1.5,v.r*.4,Math.hypot(x-v.x,z-v.z)));
+  out[0]=sa*(1-pl);out[1]=pl;out[2]=clamp(tu*(1-.5*rock),0,1);out[3]=clamp(Math.max(tu*rock,warm),0,1);return out;}
+ if(SKEY==='sound'){const lv=L.LAVA(x,z)!=null?1:0,sh=(1-lv)*smooth(2.2,.6,h),rock=FC.at(FC.a.rock,x,z);
+  out[0]=lv;out[1]=sh;out[2]=clamp((1-lv)*(1-sh)*(1-.6*rock),0,1);out[3]=lv*.35*smooth(.45,.6,fbm(x*.02,z*.02,7.7,2));return out;}
+ const T=HEAT_AT(x,z),rock=FC.at(FC.a.rock,x,z),ap=L.APRON?L.APRON(x,z):0,ac=L.ACIDG?L.ACIDG(x,z):0;
  const trav=clamp(ap*(1-.5*rock),0,1),acid=clamp(ac*(1-trav)*(1-.4*rock),0,1),sul=clamp(smooth(50,70,T)*(1-trav),0,1);
  out[0]=trav;out[1]=Math.max(acid,sul*.5);out[2]=clamp((1-trav)*(1-acid)*(1-sul)*(1-.7*rock),0,1);out[3]=sul;return out;}
 // THE PAINT: the macro colour under the layers: red laterite and the maquis's dark green over it, the serpentinite's green-black on the steeps
@@ -42,8 +46,11 @@ const TEX_GROUND=BIO.canvasTex(1536,1536,(g,w,h)=>{const id=g.createImageData(w,
   c.copy(BASE).lerp(DRY,smooth(.5,.25,wet)*.5+.2*smooth(.4,.7,fbm(x/60,y/60,.9,2)));
   c.lerp(SCRUB,m[2]*(.35+.4*smooth(.35,.65,fbm(x/9,y/9,1.3,2))));   /* the maquis's patchy dark green over the red */
   c.lerp(ROCK,smooth(.3,.65,rock)*.7);
+  if(L.RIM){c.lerp(K(0xc87a48),L.FLOOR(wx,wz)*.55);c.lerp(K(0x6a8a5a),L.RIM(wx,wz)*.5*smooth(.35,.65,fbm(x/11,y/11,2.7,2)));}   /* the lavaka: mottled floors, garnierite green on the walls */
   if(L.SHEAR)c.lerp(K(0x8a9a6a),L.SHEAR(wx,wz)*.55*smooth(.3,.7,fbm(x/7,y/7,4.1,2)));   /* the shear zone: scaly green rock with pale chrysotile */
-  c.lerp(TRAV,m[0]*.9);c.lerp(ACID,m[1]*.75);c.lerp(SUL,m[3]*.7);
+  if(SKEY==='coast'){c.lerp(K(0x2a2a2c),m[0]*.9);c.lerp(K(0x343230),m[1]*.9);c.lerp(K(0xa08a62),m[2]*.8);c.lerp(K(0xb07a3a),m[3]*.7);}
+  else if(SKEY==='sound'){c.lerp(K(0x2a2826),m[0]*.92);c.lerp(K(0x3a3632),m[1]*.8);c.lerp(K(0xd8dcd4),m[3]*.8);}
+  else{c.lerp(TRAV,m[0]*.9);c.lerp(ACID,m[1]*.75);c.lerp(SUL,m[3]*.7);}
   const k=1+n*.08;d[i]=clamp(c.r*255*k,0,255);d[i+1]=clamp(c.g*255*k,0,255);d[i+2]=clamp(c.b*255*k,0,255);d[i+3]=255;}
  g.putImageData(id,0,0);});
 const TEX_DETAIL=BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
@@ -59,7 +66,15 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};
   'diffuseColor.rgb*=dt*dt2*1.12;'+
   (STRATA_SH?'diffuseColor.rgb=mix(diffuseColor.rgb,strataColor(vSWP,vSWN),gSteep*(1.0-vMir)*0.9);':'')+
     'diffuseColor.rgb*=mix(vec3(1.0),vec3(0.62,0.6,0.56),vWet);}');};
-if(USE_KG)KGROUND.hook(MAT_GROUND,{key:'arch-'+SKEY+'-ground',at:'/*KGROUND*/',relief:KG_RELIEF?{bump:.075,cavity:.8,mesh:1}:null,layers:[
+if(USE_KG)KGROUND.hook(MAT_GROUND,{key:'arch-'+SKEY+'-ground',at:'/*KGROUND*/',relief:KG_RELIEF?{bump:.075,cavity:.8,mesh:1}:null,layers:SKEY==='coast'?[
+ KGROUND.layer('arch','ground.sand.black',{w:'vGL.x',amt:.9,gain:1.0,tint:'vec3(1.0)',name:'black sand'}),
+ KGROUND.layer('arch','rock.basalt.vesicular',{w:'vGL.y',amt:.85,gain:1.0,tint:'vec3(1.0)',name:'pillow lava (stand-in: rock.basalt.pillow is owed)'}),
+ KGROUND.layer('arch','rock.tuff',{w:'vGL.z',amt:.8,gain:1.0,tint:'vec3(1.0)',name:'the tuff cone'}),
+ KGROUND.layer('arch','rock.palagonite',{w:'vGL.w',amt:.8,gain:1.0,tint:'vec3(1.0)',name:'palagonite (stand-in for rock.hyaloclastite, owed); the warm ground'})]:SKEY==='sound'?[
+ KGROUND.layer('arch','ground.lava.aa',{w:'vGL.x',amt:.9,gain:1.0,tint:'vec3(1.0)',name:'the last flow (61 years)'}),
+ KGROUND.layer('arch','ground.sand.black',{w:'vGL.y',amt:.85,gain:1.0,tint:'vec3(1.0)',name:'black sand and tidal mud'}),
+ KGROUND.layer('arch','ground.redsoil',{w:'vGL.z',amt:.75,gain:1.0,tint:'_gT',name:'laterite (washed down from the horsts)'}),
+ KGROUND.layer('arch','ground.lichen.crust',{w:'vGL.w',amt:.8,gain:1.0,tint:'vec3(1.0)',name:'Stereocaulon lichen on the flow'})]:[
  KGROUND.layer('arch','ground.travertine.white',{w:'vGL.x',amt:.9,gain:1.05,tint:'vec3(1.0)',name:'travertine (the alkaline aprons)'}),
  KGROUND.layer('arch','ground.travertine.acid',{w:'vGL.y',amt:.85,gain:1.0,tint:'vec3(1.0)',name:'acid crust'}),
  KGROUND.layer('arch','ground.redsoil',{w:'vGL.z',amt:.75,gain:1.0,tint:'_gT',name:'laterite (red earth)'}),
@@ -86,3 +101,16 @@ if(SKEY==='dome'){const S=SITE;
  REGISTER({name:'The dome (a core complex: mantle pulled up along a detachment, corrugated along the opening direction)',x:0,z:0,y:terrainH(0,0)-60,r:1500,h:200});
  S.springs.forEach((sp,i)=>REGISTER({name:'Type II spring '+(i+1)+' at a trough\'s head (Ca-OH, pH ~11.5, hydrogen; '+sp.flow+' L/s)',x:sp.x,z:sp.z,y:terrainH(sp.x,sp.z)-4,r:sp.r+14,h:10}));
  L.TER.forEach((T,i)=>REGISTER({name:'Travertine terraces down trough '+(i+1)+' ('+T.levels.length+' treads)',x:(T.F.A[0]+T.F.B[0])/2,z:(T.F.A[1]+T.F.B[1])/2,y:T.levels[T.levels.length-1]-5,r:T.F.L/2,h:T.levels[0]-T.levels[T.levels.length-1]+12}));}
+if(SKEY==='barrens')L.LV.forEach((k,i)=>REGISTER({name:'A lavaka (the laterite slumped away to its mottled zone and the green garnierite: the richest nickel)',x:k.x+k.dir[0]*k.len*.3,z:k.z+k.dir[1]*k.len*.3,y:terrainH(k.x,k.z)-5,r:k.r+k.len*.3,h:k.depth+30}));
+if(SKEY==='sound'){const S=SITE;
+ REGISTER({name:'The last flow (segment 9\'s episode, '+L.AGE.toFixed(0)+' years before game start; '+L.EP.opening.toFixed(1)+' m of opening)',x:0,z:0,y:-10,r:1800,h:40});
+ {const a=L.XZ(S.fissure.al[0],S.fissure.w),b=L.XZ(S.fissure.al[1],S.fissure.w);REGISTER({name:'The eruptive fissure and its spatter ramparts (rifting episodes every ~'+L.EP.recur.toFixed(0)+' years)',x:(a[0]+b[0])/2,z:(a[1]+b[1])/2,y:-12,r:Math.hypot(b[0]-a[0],b[1]-a[1])/2,h:30,tags:{hazard:{kind:'fall',danger:.6}}});}
+ L.CONES.forEach(c=>REGISTER({name:'A rootless cone (the lava boiled the wet flats under it)',x:c.x,z:c.z,y:terrainH(c.x,c.z)-c.h-4,r:c.r*1.5,h:c.h*2+8}));
+ L.GJ.forEach(g=>{const m=g.F.p(g.F.L/2,0);REGISTER({name:'A gja (an open fissure: clear water filtered through the rock, '+g.wd+' m wide)',x:m[0],z:m[1],y:-14,r:g.F.L/2,h:24,tags:{hazard:{kind:'drown',danger:.6}}});});
+ REGISTER({name:'A gas hollow (CO2 pools here in still air: Dieng, 1979)',x:L.HP[0],z:L.HP[1],y:terrainH(L.HP[0],L.HP[1])-2,r:S.hollow.r,h:S.hollow.depth+4,tags:{hazard:{kind:'gas',danger:.85}}});
+ L.STACKS.forEach((k,i)=>REGISTER({name:'One of the White Stacks (a brucite and carbonate chimney: alkaline water meeting the sea)',x:k.x,z:k.z,y:terrainH(k.x,k.z)-1,r:k.r*1.6,h:k.h-terrainH(k.x,k.z)+4}));}
+if(SKEY==='coast'){const S=SITE;
+ REGISTER({name:'A tuff cone (a satellite of the island\'s caldera: phreatomagmatic ash, palagonitised)',x:L.CP[0],z:L.CP[1],y:terrainH(L.CP[0],L.CP[1])-10,r:S.cone.r*1.2,h:S.cone.rim+40});
+ {const P=S.platform,m=L.XZ((P.al[0]+P.al[1])/2,(P.w[0]+P.w[1])/2);REGISTER({name:'A platform of old pillow lava at the tide line, with tide pools',x:m[0],z:m[1],y:-3,r:(P.al[1]-P.al[0])/2,h:6});}
+ {const m=L.XZ(0,-200);REGISTER({name:'The black sand beach (the seamounts\' tephra)',x:m[0],z:m[1],y:-2,r:900,h:10});}
+ {const m=L.XZ(0,S.steam.w);REGISTER({name:'The Surtseyan caldera\'s steam (the vent 3 km offshore, its rim 18 m under the sea: base surges, tsunamis)',x:m[0],z:m[1],y:-2,r:500,h:60,tags:{hazard:{kind:'heat',danger:.9}}});}}

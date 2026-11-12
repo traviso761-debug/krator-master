@@ -24,7 +24,7 @@ Two objects. `ARCH` is the data (`[G data]`: no THREE, no DOM; runs in node), `A
 | Call | What |
 |---|---|
 | `ARCHB.SPECIES`, `ARCHB.PAL`, `ARCHB.HARVEST`, `ARCHB.TRAP` | the species records (tags: climate, aridity, riparian, Koppen, `ph`, `native`, `partner`, `nickel`) |
-| `ARCHB.buildArch(R, q, {heat, ph, soil, keep})` | the life on the ground, every plant checked against `ARCH.lifeAt` / `ARCH.earthOk`; logs each to `ARCHB.LOG`, the hoarders to `ARCHB.HOARD` |
+| `ARCHB.buildArch(R, q, {heat, ph, soil, keep, lava, mud, strand, sand})` | the life on the ground, every plant checked against `ARCH.lifeAt` / `ARCH.earthOk` (with `lavaAge` from `lava(x, z)`); the serpentine maquis off the lava, the mud and the strand; the lava pioneers (ohia, uluhe) on flows past their lag; mangroves on the tidal mud; the strand (beach she-oak, naupaka, beach glory, drift palms) where `strand` is given. Logs each plant to `ARCHB.LOG`, the hoarders to `ARCHB.HOARD` |
 | `ARCHB.curtains(meet, line, level, q)` | the curtain field along a meeting's dividing line; returns the placed curtains' records |
 | `ARCHB.combs(list, q)` | the seep combs round the flames |
 | `ARCHB.build(opt)` | `buildArch` in the kit's registry |

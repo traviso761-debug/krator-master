@@ -4,7 +4,7 @@
 // flame cleft (ARCHB.combs, on the flames 89b lights).
 const DRY=(x,z)=>{const w=waterH(x,z);return w<-1e8||terrainH(x,z)>w+.3?1:0;};
 const STATION_BUILD=function(Q){Q=Q==null?1:Q;const st={};
- BIO.cur='arch/life';Object.assign(st,ARCHB.buildArch(TERR.R-150,Q,{heat:HEAT_AT,ph:PH_AT,soil:SOIL_AT,keep:DRY}));
+ BIO.cur='arch/life';Object.assign(st,ARCHB.buildArch(TERR.R-150,Q,{heat:HEAT_AT,ph:PH_AT,soil:SOIL_AT,keep:DRY,lava:LAVA_AT,mud:L.MUD||null,strand:L.STRAND||null,sand:L.SAND||null}));
  if(L.MEET){BIO.cur='arch/curtains';const O=L.OUT;st.curtains=ARCHB.curtains(L.MEET,(s,a)=>O.p(s,a),L.outLv,Q);}
  if(FLAMES.list.length){BIO.cur='arch/combs';st.combs=ARCHB.combs(FLAMES.list,Q).combs;}
  BIO.cur=null;return st;};

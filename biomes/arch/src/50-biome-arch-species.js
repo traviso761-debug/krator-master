@@ -19,6 +19,8 @@ const PAL=ARCHB.PAL={
  verd:[0x5a9a7a,0x4a8a72,0x6aa886,0x3f7f6a],verdFlesh:[0xe8e0cc,0xdcd4c0],comb:[0xe6dcc0,0xf0e6cc,0xd8ccb0],felt:[0xc06a2a,0xb85a24,0xd0843a,0xa84e1e],
  fan:[0x8a9a7a,0x7a8a6e,0x96a486],
  trunk:[0x7a6a5a,0x6a5c4e,0x84746a],needles:[0x2e4a32,0x36553a,0x284430,0x3a5a3e],casuar:[0x4a5e40,0x56684a,0x405438],
+ casuar2:[0x6a7a62,0x74846a,0x5e6e58],naupaka:[0x5a9a4a,0x6aa856,0x4e8e42],ipomoea:[0x4a8a3a,0x5a9846],palm:[0x5a7a3a,0x668844,0x4e6e34],palmtrunk:[0x8a7a62,0x7e705a],
+ ohia:[0x7a8a6a,0x6a7e60,0x8a9472],ohiaFlower:[0xc0302a,0xb02a24],uluhe:[0x9ab04a,0xa8b856,0x8aa040],mangrove:[0x2a4a2a,0x30522e,0x26442a],prop:[0x6a5a48,0x5e5040],
  glossy:[0x2e5a34,0x3a6a3e,0x2a5030,0x46743e],sedge:[0x8a8a52,0x7a7c48,0x9a9660,0x6e7044],pitcher:[0x9a3a2a,0x8a4a2a,0x6a8a3a,0xb8562e]};
 // ---------------------------------------------------------------- the species
 const SPECIES=ARCHB.SPECIES=[
@@ -46,6 +48,20 @@ const SPECIES=ARCHB.SPECIES=[
   items:['arpycn','arpycntrunk'],tags:E('tropical','humid','both',['Am'],{ph:[4.5,7.5],nickel:'hyper'})},
  {key:'costularia',name:'Maquis sedge (Costularia)',how:'stiff tussocks of sedge between the shrubs on the bare laterite',
   items:['arsedge'],tags:E('tropical','humid','no',['Am','Aw'],{ph:[4.5,8.5],nickel:'excluder'})},
+ {key:'ohia',name:'Ohia lehua (Metrosideros polymorpha)',how:'the first tree on new lava in the wet tropics (Hawaii): a crooked grey-barked tree 2-8 m, grey-green leaves, red brush flowers; it roots in the flow\'s cracks once the lava is a few decades old',
+  items:['arohia','arohiatrunk'],tags:E('tropical','humid','no',['Am'],{ph:[4.5,8],lava:'pioneer'})},
+ {key:'uluhe',name:'Uluhe (Dicranopteris linearis)',how:'a forking fern that scrambles over young lava in thickets, yellow-green: with the ohia, the lava\'s first cover',
+  items:['aruluhe'],tags:E('tropical','humid','no',['Am'],{ph:[4.5,8],lava:'pioneer'})},
+ {key:'mangrove',name:'Red mangrove (Rhizophora)',how:'the sound\'s sheltered shores: a dense dark crown on arching prop roots, standing in the tidal mud',
+  items:['armangrove','armangroveprop'],tags:E('tropical','humid','yes',['Am'],{ph:[6,8.5],tidal:true})},
+ {key:'casuarina',name:'Beach she-oak (Casuarina equisetifolia)',how:'a drooping, wiry, grey-green she-oak 6-18 m on the dunes behind the black sand; it fixes its own nitrogen and holds the sand',
+  items:['arcastrunk','arcas'],tags:E('tropical','humid','no',['Am','Aw'],{ph:[5,9],strand:true})},
+ {key:'naupaka',name:'Beach naupaka (Scaevola taccada)',how:'a rounded shrub of fleshy bright-green leaves on the dune\'s front, white half-flowers',
+  items:['arnaupaka'],tags:E('tropical','humid','no',['Am','Aw'],{ph:[5,9],strand:true})},
+ {key:'ipomoea',name:'Beach morning glory (Ipomoea pes-caprae)',how:'a creeping vine of round leaves running over the black sand toward the tide line, pink flowers',
+  items:['aripomoea'],tags:E('tropical','humid','no',['Am','Aw'],{ph:[5,9],strand:true})},
+ {key:'coconut',name:'Coconut palm (Cocos nucifera), drift-sown',how:'leaning palms along the back of the beach, sown by the sea (default taken, owner to confirm: PLAN.md section 16)',
+  items:['arpalmtrunk','arpalm'],tags:E('tropical','humid','both',['Am'],{ph:[5,9],strand:true})},
  {key:'nepenthes',name:'Pitcher plant (Nepenthes vieillardii)',how:'red-green pitchers on the seeps of the laterite, where the ground is poorest and wettest: it eats what drowns in it (a trap record)',
   items:['arpitch'],tags:E('tropical','humid','both',['Am'],{ph:[4.5,7],nickel:'excluder'})}];
 SPECIES.forEach((S,i)=>{S.i=i;});
@@ -54,7 +70,9 @@ ARCHB.HARVEST={curtain:HV('none',[],false,'Nothing eats a curtain but the seam w
  seepcomb:HV('none',[],false,'Where the combs stand, the gas burns.'),acidfelt:HV('none',[],false,'Dried, an ochre pigment.'),steamfan:HV('none',[],false,''),
  araucaria:HV('timber (straight, resinous)',[],false,''),gymnostoma:HV('fuel (hard, hot)',[],false,'It feeds the ground: the maquis is thicker round it.'),
  pycnandra:HV('none',[],false,'Its latex is a quarter nickel: tapped and burnt, the richest nickel ore there is (agromining).'),costularia:HV('thatch',[],false,''),
- nepenthes:HV('none',['the pitchers\' fluid is drunk in need, filtered'],false,'')};
+ nepenthes:HV('none',['the pitchers\' fluid is drunk in need, filtered'],false,''),
+ casuarina:HV('fuel (the best: hot and slow)',[],false,''),naupaka:HV('none',[],true,'Its leaves are a poultice.'),ipomoea:HV('none',[],true,''),coconut:HV('timber, thatch, coir',['coconuts'],false,''),
+ ohia:HV('fuel, carving',[],false,'Its red flowers are the first colour on a new flow.'),uluhe:HV('thatch, mulch',[],false,''),mangrove:HV('timber (dense, rot-proof), tannin',[],false,'The bark is a tannin for nets and hides.')};
 SPECIES.forEach(S=>{S.tags.harvest=ARCHB.HARVEST[S.key];});
 const byKey={};SPECIES.forEach(S=>byKey[S.key]=S);ARCHB.byKey=byKey;
 ARCHB.plantOfItem=it=>{for(const S of SPECIES)if(S.items.indexOf(it)>=0)return S;return null;};
@@ -73,7 +91,7 @@ const M=ARCHB.M={
  needles:BIO.leafMat(TX.needles,'ar-needles',{aN:false,swayW:'.6',swayA:.04}),
  glossy:BIO.leafMat(TX.glossy,'ar-glossy',{aN:false,swayW:'.6',swayA:.05}),
  sedge:BIO.leafMat(TX.sedge,'ar-sedge',{aN:false,swayW:'1.0',swayA:.08}),
- curtain:vcol({roughness:.32}),lime:vcol({roughness:.7}),flesh:vcol({roughness:.6}),comb:vcol({roughness:.25,metalness:.15}),felt:vcol({roughness:.95}),
+ curtain:vcol({roughness:.38,envMapIntensity:.35}),lime:vcol({roughness:.7}),flesh:vcol({roughness:.6}),comb:vcol({roughness:.25,metalness:.15}),felt:vcol({roughness:.95}),
  bark:vcol({roughness:.9}),rope:vcol({roughness:.85})};
 ARCHB.SWAP=BIO.libSwap('arch',M);
 // ---------------------------------------------------------------- the items
@@ -82,7 +100,7 @@ ARCHB.SWAP=BIO.libSwap('arch',M);
 {const nx=16,ny=8,pos=[],col=[],nor=[],idx=[];const W=(x,y)=>.07*Math.sin(x*TAU*1.3+y*1.1)+.03*Math.sin(x*TAU*4.1+1.7);
  for(const side of [1,-1]){const b=pos.length/3;for(let j=0;j<=ny;j++)for(let i=0;i<=nx;i++){const x=i/nx,y=j/ny,rib=.012*Math.cos(x*TAU*9),z=W(x,y)+side*(.015+rib);
    pos.push(x,y*(1-.06*Math.sin(x*TAU)),z);nor.push(0,0,side);
-   const t=y,k=.85+.15*Math.cos(x*TAU*9);if(side>0)col.push(.92*k,.93*k,.9*k);else col.push((.08+.06*t)*k,(.12+.08*t)*k,(.1+.05*t)*k);}
+   const t=y,k=.85+.15*Math.cos(x*TAU*9);if(side>0)col.push(.92*k,.93*k,.9*k);else col.push((.025+.03*t)*k,(.045+.05*t)*k,(.035+.03*t)*k);}
   for(let j=0;j<ny;j++)for(let i=0;i<nx;i++){const a=b+j*(nx+1)+i,c=a+nx+1;if(side>0)idx.push(a,a+1,c,a+1,c+1,c);else idx.push(a,c,a+1,a+1,c,c+1);}}
  const g=new T3.BufferGeometry();g.setAttribute('position',new T3.Float32BufferAttribute(pos,3));g.setAttribute('normal',new T3.Float32BufferAttribute(nor,3));
  g.setAttribute('color',new T3.Float32BufferAttribute(col,3));g.setIndex(idx);g.computeVertexNormals();
@@ -104,5 +122,16 @@ BIO.def('argymno',BIO.geo.clump(),M.needles,{label:'Maquis she-oak'});
 BIO.def('arpycn',BIO.geo.clump(),M.glossy,{label:'Sève bleue'});
 BIO.def('arpycntrunk',BIO.fung.stalk({r0:.06,r1:.04,seg:6,rings:3}),M.bark,{label:'Sève bleue (stem)'});
 BIO.def('arsedge',BIO.geo.clump(),M.sedge,{label:'Maquis sedge'});
+BIO.def('arcastrunk',BIO.fung.stalk({r0:.05,r1:.025,seg:6,rings:5,bend:.08}),M.bark,{label:'Beach she-oak (trunk)'});
+BIO.def('arcas',BIO.geo.clump(),M.needles,{label:'Beach she-oak'});
+BIO.def('arnaupaka',BIO.geo.clump(),M.glossy,{label:'Beach naupaka'});
+BIO.def('aripomoea',BIO.fung.cap({form:'disc',h:.05,seg:8,rings:2,lump:.6,wav:6,wavA:.2,under:'none',uv:'planar',seed:20204}),M.flesh,{label:'Beach morning glory'});
+BIO.def('arpalmtrunk',BIO.fung.stalk({r0:.05,r1:.035,seg:7,rings:8,bend:.25,ribs:18,ribA:.08}),M.bark,{label:'Coconut palm (trunk)'});
+BIO.def('arpalm',BIO.fung.comb({w:1,d:.22,tilt:-.35,lobes:5,seg:8}),M.flesh,{label:'Coconut palm (fronds)'});
+BIO.def('arohiatrunk',BIO.fung.stalk({r0:.06,r1:.035,seg:6,rings:4,bend:.2}),M.bark,{label:'Ohia lehua (trunk)'});
+BIO.def('arohia',BIO.geo.clump(),M.glossy,{label:'Ohia lehua'});
+BIO.def('aruluhe',BIO.geo.clump(),M.needles,{label:'Uluhe fern'});
+BIO.def('armangroveprop',BIO.fung.stalk({r0:.05,r1:.04,seg:5,rings:5,bend:.45}),M.bark,{label:'Red mangrove (prop roots)'});
+BIO.def('armangrove',BIO.geo.clump(),M.glossy,{label:'Red mangrove'});
 BIO.def('arpitch',BIO.fung.bladder({swell:.55,neck:.42,pleats:0,seg:9,rings:5,h:1.6}),M.flesh,{label:'Pitcher plant'});
 })();

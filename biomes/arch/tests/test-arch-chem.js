@@ -5,6 +5,8 @@ const fs=require('fs'),path=require('path'),ROOT=path.join(__dirname,'..','..','
 global.window=global;
 eval(fs.readFileSync(path.join(ROOT,'core','rand','08-core-rand.js'),'utf8')+';global.KRAND=KRAND;');
 eval(fs.readFileSync(path.join(__dirname,'..','src','40-biome-arch-chem.js'),'utf8')+';global.ARCH=ARCH;');
+eval(fs.readFileSync(path.join(__dirname,'..','src','41-biome-arch-sites.js'),'utf8')+';global.ARCH_SITES=ARCH_SITES;');
+eval(fs.readFileSync(path.join(__dirname,'..','src','42-biome-arch-meeting.js'),'utf8'));
 const A=ARCH;
 let bad=0;const ok=(name,pass,neg)=>{const r=!!pass&&!neg;if(!r)bad++;console.log((r?'PASS  ':'FAIL  ')+name+(neg?' (its negative passed)':''));};
 const near=(a,b,t)=>Math.abs(a-b)<=t;
@@ -69,4 +71,14 @@ ok('a Ca:Mg of .01 refuses Earth life; .05 allows it',!A.earthOk({pH:6.5,caMg:0.
  const e=A.episode(3,500);ok('since + next is the recurrence',near(e.since+e.next,e.recur,1e-6),near(e.since+e.next,e.recur+1,1e-6));
  let cyc=true;for(let y=0;y<3000;y+=37){const a=A.episode(5,y),b=A.episode(5,y+a.recur);if(a.state!==b.state||!near(a.since,b.since,1e-6))cyc=false;}
  ok('the clock repeats with its recurrence',cyc,false);}
+// ---- the confluence's meeting (PLAN.md 3.2, 11; 42): the curtains stand on the bench and stop where the outflow drops over the edge fault
+{const S=ARCH_SITES.confluence,M=ARCH.meeting(S),M2=ARCH.meeting(S);
+ const scarpS=(S.profile.scarpU[0]-ARCH.uOf(S.meet.x,S.meet.z))/((M.dir[0]+M.dir[1])*Math.SQRT1_2);
+ ok('the curtains end at the edge fault (s '+M.end+', the fault at s '+scarpS.toFixed(0)+')',Math.abs(M.end-scarpS)<30,Math.abs(M.end-scarpS-200)<30);
+ ok('every sample before the end can stand, none after',M.samples.every(x=>x.s<M.end?x.stand:!x.stand),M.samples.every(x=>x.stand));
+ ok('the meeting is the same twice',JSON.stringify(M)===JSON.stringify(M2),false);
+ ok('the halves keep apart while curtains stand (difference over 7 to the end) and mix after',M.samples.filter(x=>x.stand).every(x=>x.pHa-x.pHb>7)&&Math.abs(M.samples[M.samples.length-1].pHa-M.samples[M.samples.length-1].pHb)<.01,false);
+ const fast=Object.assign({},S,{profile:Object.assign({},S.profile,{bench:.08})});
+ ok('on a steeper bench (8%) no curtain can stand at all',ARCH.meeting(fast).end===0,ARCH.meeting(S).end===0);
+ ok('the profile falls south-east and steps down the fault by its drop',ARCH.profile(S,-500)>ARCH.profile(S,0)&&ARCH.profile(S,S.profile.scarpU[0])-ARCH.profile(S,S.profile.scarpU[1])>S.profile.scarpDrop-1,false);}
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);

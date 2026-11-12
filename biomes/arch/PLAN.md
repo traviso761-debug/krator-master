@@ -10,7 +10,7 @@ The owner asked for it on 2026-11-11: **"I do want earth plants here too where a
 here but fully explore all possibilities an exposed mid ocean ridge offers."** So the plan is broad first (sections 1-4
 take every lead and say what is kept and why) and narrows to stations after (sections 11-15).
 
-Status: **a proposal for the owner** (2026-11-11). **Built so far** (2026-11-12): A1 (the chemistry, `tests/test-arch-chem.js`), A3, station 1, the confluence (`dist/arch.html`), and station 2, the dome (`dist/arch-dome.html`), each `verify.py --assert` on software GL; the other stations have site records only (`KNOWN_ISSUES.md`). Nothing on the scale model is changed; `LORE.md` is untouched (section
+Status: **a proposal for the owner** (2026-11-11). **Built so far** (2026-11-12): A1 (the chemistry and the meeting, `tests/test-arch-chem.js`), A3 and A4: all five stations, the confluence (`dist/arch.html`), the dome, the barrens, the sound and the coast (`dist/arch-<station>.html`), each `verify.py --assert` on software GL. Not yet: the fauna (A5), a `KLAVA` bake of the sound's flow, library cards for the Earth flora (`KNOWN_ISSUES.md`). Nothing on the scale model is changed; `LORE.md` is untouched (section
 10 holds proposed sentences only); `core/simulation` is untouched (the nickel and jade trade is a later sim pass). Every
 species' and place's name is a working name. Where the owner has not answered, the conservative default is taken and
 marked **"default taken, owner to confirm"**.

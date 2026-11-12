@@ -3,7 +3,7 @@
 // the one temperature field the ground's sulphur (84), the steam fans and the plants' ARCH.lifeAt (60) and the hazards read, so they cannot disagree.
 // The springs are warm (the type II water ~33-45 degC at the boil), not hot: a small vent each so the steam fans can find them.
 const VENTS=(function(){const S=SITE,V=[];if(S.solfatara){V.push({x:S.solfatara.x,z:S.solfatara.z,T:S.solfatara.T,reach:S.solfatara.reach,decay:2.2});
- S.solfatara.pots.forEach(p=>V.push({x:p[0],z:p[1],T:92,reach:p[2]*5,decay:2}));}(S.springs||[]).forEach(sp=>V.push({x:sp.x,z:sp.z,T:44,reach:sp.r*3,decay:2.4}));return V;})();
+ S.solfatara.pots.forEach(p=>V.push({x:p[0],z:p[1],T:92,reach:p[2]*5,decay:2}));}(S.springs||[]).forEach(sp=>V.push({x:sp.x,z:sp.z,T:44,reach:sp.r*3,decay:2.4}));(L.WARM||[]).forEach(v=>V.push({x:v.x,z:v.z,T:v.T,reach:v.r*2,decay:2}));return V;})();
 const THERM=KTHERM.create({soil:SITE.soil,vents:VENTS.map((v,i)=>({id:SKEY+'-vent'+i,kind:'point',x:v.x,z:v.z,T:v.T,reach:v.reach,decay:v.decay})),
  detail:{amp:1.2,scale:.02,seed:7300},world:'arch-'+SKEY});
 const THERM_BOX=[-TERR.R*1.1,-TERR.R*1.1,TERR.R*1.1,TERR.R*1.1],THERM_F=THERM.bake({box:THERM_BOX,cell:8});
@@ -17,3 +17,4 @@ if(SITE.solfatara){const S=SITE,V=S.solfatara;
 (SITE.springs||[]).forEach(sp=>REGISTER({name:'A type II spring (pH ~11.5, hydrogen: an alkali burn on long contact)',x:sp.x,z:sp.z,y:terrainH(sp.x,sp.z)-3,r:sp.r+2,h:6,tags:{hazard:{kind:'acid',danger:.35}}}));
 if(SITE.shear){const q=L.SH,m=[(q.A[0]+q.B[0])/2,(q.A[1]+q.B[1])/2];REGISTER({name:'A chrysotile shear zone (asbestos: its dust in the dry season, when disturbed)',x:m[0],z:m[1],y:terrainH(m[0],m[1])-30,r:q.L/2,h:80,
  tags:{hazard:{kind:'poison',danger:.3}}});}
+(L.WARM||[]).forEach(v=>REGISTER({name:'Warm, steaming ground ('+v.T+' degC under the surface: the ash brooders bury their eggs here; PLAN.md section 8)',x:v.x,z:v.z,y:terrainH(v.x,v.z)-3,r:v.r*1.4,h:8,tags:{hazard:{kind:'heat',danger:.3}}}));

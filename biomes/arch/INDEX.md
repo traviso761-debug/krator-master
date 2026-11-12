@@ -4,7 +4,7 @@
 
 Docs: `BIOME-API.md`, `KNOWN_ISSUES.md`, `PLAN.md`, `PORT.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/arch.html`
+Built output (never open it; edit `src/` and rebuild): `dist/arch-barrens.html`, `dist/arch-coast.html`, `dist/arch-dome.html`, `dist/arch-sound.html`, `dist/arch.html`
 
 Build: `cd biomes/arch && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -27,20 +27,31 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 |---|---|---|
 | `00-head.html` | 1 |  |
 | `40-biome-arch-chem.js` | 9 |  |
-| `41-biome-arch-sites.js` | 4 |  |
+| `41-biome-arch-sites.js` | 8 |  |
 | `42-biome-arch-meeting.js` | 4 |  |
-| `45-host-stage.js` | 14 | the land (33); the climate fields (the field contract's units:  (112); the host binding (139) |
-| `48-host-therm.js` | 2 |  |
-| `50-biome-arch-species.js` | 13 | palettes (sRGB hex) (16); the species (23); textures and materials (procedural cards; the pa (63); the items (79) |
-| `60-biome-arch-place.js` | 10 |  |
+| `45-host-stage.js` | 24 | the land (33); the climate fields (the field contract's units:  (210); the host binding (237) |
+| `48-host-therm.js` | 3 |  |
+| `50-biome-arch-species.js` | 16 | palettes (sRGB hex) (16); the species (25); textures and materials (procedural cards; the pa (81); the items (97) |
+| `60-biome-arch-place.js` | 14 |  |
 | `70-biome-arch.js` | <1 |  |
-| `84-host-ground.js` | 9 |  |
+| `84-host-ground.js` | 14 |  |
 | `85-host-far.js` | 5 |  |
-| `88-host-place.js` | <1 |  |
+| `88-host-place.js` | 1 |  |
 | `89-host-sky.js` | 1 |  |
 | `89a-host-atmos.js` | 3 |  |
 | `89b-host-steam.js` | 3 |  |
-| `89w-host-water.js` | 5 |  |
+| `89w-host-water.js` | 8 |  |
 | `89z-host-build.js` | 5 |  |
-| `99-host-take.js` | 11 |  |
+| `99-host-take.js` | 18 |  |
 | `99-tail.html` | <1 |  |
+
+## stations/
+
+Each station builds one page (`build.py --station <name>`) from its own fragments, with `src/` or its `base` station.
+
+| Station | Fragments | KB |
+|---|---|---|
+| barrens | 44z-host-site.js | <1 |
+| coast | 44z-host-site.js | <1 |
+| dome | 44z-host-site.js | <1 |
+| sound | 44z-host-site.js | <1 |
