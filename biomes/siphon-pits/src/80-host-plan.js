@@ -19,7 +19,7 @@ const PLAN=(function(){const P={station:SKEY};
   const Q=SITE.crops&&SITE.crops.query||{warmth:'temperate',atm:'standard',arid:'semiarid'};
   if(typeof CROPS!=='undefined'){const R=CROPS.BIOMES['siphon-pits']?CROPS.forBiome('siphon-pits').filter(r=>r.zone==='terraces'||r.zone==='braids'):CROPS.at(Q),pk=(b,pref,salt)=>{const r=CROPS.pick(R,b,{seed:9850,salt:salt==null?0:salt,prefer:[pref]});return r?r.crop:null;};
    const paint={grain:0xb8a060,pulse:0x6a8a3e,tuber:0x587044};
-   P.crops=[pk('grain','frostoat',1),pk('grain','emmer',2),pk('pulse','helix-bean',3),pk('tuber','murnong',4)].filter(Boolean).map(c=>({id:c.id,name:c.name,bucket:c.bucket,card:c.card,paint:paint[c.bucket]||0xa09060}));
+   P.crops=[pk('grain','frostoat',1),pk('grain','emmer',2),pk('pulse','helix-bean',3),pk('tuber','maar-yam',4)].filter(Boolean).map(c=>({id:c.id,name:c.name,bucket:c.bucket,card:c.card,paint:paint[c.bucket]||0xa09060}));
    P.query=Q;P.offered=R.length;}
   else P.crops=[];
   SIPHON.CROP_OF={};P.crops.forEach(c=>{SIPHON.CROP_OF[SIPHON.CROP_ITEMS[c.bucket]]=c;});

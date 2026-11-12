@@ -295,6 +295,7 @@ camp ground.
 | sky, weather | `core/atmos` | the standard sky; the dust season over the corridor |
 | hazards | `core/hazard` (`KHAZ`, with `21-core-hazard-flow.js`) | section 5 |
 | camps | `core/camp` (`KCAMP`) | the outlaws' camps (section 5) |
+| crops | `kits/crops` (`CROPS.forBiome('midbasin')`: zones `maar`, `corridor`, `benches`, `chasmfloor`, from section 3's climate) | the maar floors' gardens; the hinge's own crops, shared with the Siphon Pits and the Loom-Chasms: the **maar yam** and **fumewort** (`kits/crops`, `homeOnly`: they grow nowhere else, and are traded beyond; the owner, 2026-11-12) |
 | fauna | `kits/fauna` | as `BIO.record` records registered before they are drawn |
 | resources | `kits/resources` (`KRES`) | read the region's rock (`kits/resources/ROCK-PROPOSAL.md`: basalt, tuff) when the kit starts |
 | shadows | `core/shadow` | off at load |

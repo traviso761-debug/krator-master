@@ -5,7 +5,8 @@
    water          'rain' (default), 'paddy' (wants standing water or flooded beds), 'aquatic' (a wet zone only), 'bed' (dark-grown)
    needs          'salt' (a salt zone) or 'heated' (warm ground)
    home [biomes]  where it is native or already drawn: always plausible there, as 'wild'
-   homeOnly       true for a dye or fibre that is not a climate crop (animal, mineral, resin): home or traded, nothing else
+   homeOnly       true for a dye or fibre that is not a climate crop (animal, mineral, resin), or a crop the owner made its homes' own
+                  (the maar yam, fumewort): home or traded, nothing else
    also [buckets] other buckets it can stand in for
    grown 'field' (default) | 'underground'   (a dark-grown crop ignores the axes; a works that keeps it takes it)
    form, stores, yield (0.5 / 1 / 2), card (a core/materials/library card id), src ('proposed' or the kit that draws it), colour (a dye)
@@ -43,6 +44,10 @@ R('sweet-potato', 'Sweet potato', 'tuber', [3, 4], [1, 3], {card: 'card.crop.yam
 R('steambed-yam', 'Steambed yam', 'tuber', [4, 5], [3, 4], {needs: 'heated', card: 'card.crop.yam', home: ['geyser'], note: 'planted in the warm crust'});
 R('frostroot', 'Frostroot', 'tuber', [0, 1], [1, 2], {atm: [0, 1], reach: 0, card: 'card.crop.clover', home: ['ehighlands'], stores: ['dried'], note: 'freeze-dried like chuno'});
 R('murnong', 'Murnong', 'tuber', [2, 3], [1, 2], {reach: 1, card: 'card.crop.rosette', home: ['nwlowlands'], note: 'a yam-daisy'});
+/* THE HINGE'S OWN (the owner, 2026-11-12): Region 98's maar oases and loess terraces (biomes/siphon-pits), the Mid Basin's maar floors
+   (biomes/midbasin) and the Loom-Chasms' Cradle (biomes/loom-chasms) share a yam and a herb that grow nowhere else: homeOnly, traded beyond */
+R('maar-yam', 'Maar yam', 'tuber', [2, 3], [1, 2], {homeOnly: true, atm: [1, 2], card: 'card.crop.yam', src: 'siphon-pits', home: ['siphon-pits', 'midbasin', 'loom-chasms'],
+  stores: ['fresh', 'dried', 'ground'], note: 'a climbing yam of the maar floors and the loess terraces: its long tubers go down a metre into the tuff\'s warm crust, sweetened by the vents\' heat; dug in autumn, kept in pits, dried and pounded to a flour for the caravans'});
 R('shade-manioc', 'Shade manioc', 'tuber', [4, 4], [2, 4], {card: 'card.crop.palmate', home: ['hyperjungle'], stores: ['ground', 'dried']});
 R('ashroot', 'Ashroot', 'tuber', [3, 4], [2, 4], {reach: 1, card: 'card.crop.umbrella', home: ['throne'], stores: ['pressed'], note: 'a konjac-like corm on ash soil'});
 R('stub-cone', 'Stub cone', 'tuber', [4, 4], [0, 2], {reach: 1, form: 'plant', src: 'abyssal-savannah', home: ['abyssal-savannah'], stores: ['ground', 'dried'], note: 'the single cone of the stub lycopsid, pounded for its starch'});

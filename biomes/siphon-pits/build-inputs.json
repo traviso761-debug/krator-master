@@ -13,7 +13,7 @@
     "biomes/siphon-pits/src/50-biome-siphon-species.js": "b7d8e1e2e7d0f3624d4f4862b5a45f859459acafa008fd9ebc8a8277505c6bf3",
     "biomes/siphon-pits/src/60-biome-siphon-place.js": "129796f26f3f29171bd2f22cbf09eac9655c83a8509e170c59929b221cc3dcb0",
     "biomes/siphon-pits/src/70-biome-siphon.js": "a9fc6db7c348aa49316989ad8b69df181341577a2b805ee1866679c36d175ea2",
-    "biomes/siphon-pits/src/80-host-plan.js": "88533f16f5ebd6438b3dc7d055c318de87da43d18ebefa7f3c01c1a439a0745f",
+    "biomes/siphon-pits/src/80-host-plan.js": "833f08bf113c4d3cbd0771da9483a22f8dbcd3b488a4ad233c2f6756c2481b0c",
     "biomes/siphon-pits/src/84-host-ground.js": "44c362fd91c4db46b86f9c3c31639dcc44f3a38e8b7a6520592b5e418a1cc57c",
     "biomes/siphon-pits/src/85-host-far.js": "9c7829c4c0a1cc4d890166af475c5e543787004590da954726513943b2c6629f",
     "biomes/siphon-pits/src/88-host-place.js": "3eb33032cd218b5687cf4ad4dbe59c44db5cedc7ee237ab7790d6a6966e657fc",
@@ -174,10 +174,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/siphon-pits/dist/siphon-pits.html": "88d55bbff64004ab0703918ab868620d9e5f75ca54efb6740fe18cdea6389e53"
+    "biomes/siphon-pits/dist/siphon-pits.html": "3fc534b01c8b4a25a521a9cff2095a71f20c3b7ffe0f816ce3c62dbb37564d74"
    },
    "outputs_raw": {
-    "biomes/siphon-pits/dist/siphon-pits.html": "88d55bbff64004ab0703918ab868620d9e5f75ca54efb6740fe18cdea6389e53"
+    "biomes/siphon-pits/dist/siphon-pits.html": "3fc534b01c8b4a25a521a9cff2095a71f20c3b7ffe0f816ce3c62dbb37564d74"
    }
   },
   "build.py --station arete": {
@@ -192,7 +192,7 @@
     "biomes/siphon-pits/src/50-biome-siphon-species.js": "b7d8e1e2e7d0f3624d4f4862b5a45f859459acafa008fd9ebc8a8277505c6bf3",
     "biomes/siphon-pits/src/60-biome-siphon-place.js": "129796f26f3f29171bd2f22cbf09eac9655c83a8509e170c59929b221cc3dcb0",
     "biomes/siphon-pits/src/70-biome-siphon.js": "a9fc6db7c348aa49316989ad8b69df181341577a2b805ee1866679c36d175ea2",
-    "biomes/siphon-pits/src/80-host-plan.js": "88533f16f5ebd6438b3dc7d055c318de87da43d18ebefa7f3c01c1a439a0745f",
+    "biomes/siphon-pits/src/80-host-plan.js": "833f08bf113c4d3cbd0771da9483a22f8dbcd3b488a4ad233c2f6756c2481b0c",
     "biomes/siphon-pits/src/84-host-ground.js": "44c362fd91c4db46b86f9c3c31639dcc44f3a38e8b7a6520592b5e418a1cc57c",
     "biomes/siphon-pits/src/85-host-far.js": "9c7829c4c0a1cc4d890166af475c5e543787004590da954726513943b2c6629f",
     "biomes/siphon-pits/src/88-host-place.js": "3eb33032cd218b5687cf4ad4dbe59c44db5cedc7ee237ab7790d6a6966e657fc",
@@ -341,10 +341,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/siphon-pits/dist/siphon-pits-arete.html": "7e7678e5969433ea4da12a592c272927ae60211964dc7bd16e1489ab3796b79b"
+    "biomes/siphon-pits/dist/siphon-pits-arete.html": "ebdc695a47015549c69b93b0d74e1d03d38f92c1e696d3449a6bb3204ba756e1"
    },
    "outputs_raw": {
-    "biomes/siphon-pits/dist/siphon-pits-arete.html": "7e7678e5969433ea4da12a592c272927ae60211964dc7bd16e1489ab3796b79b"
+    "biomes/siphon-pits/dist/siphon-pits-arete.html": "ebdc695a47015549c69b93b0d74e1d03d38f92c1e696d3449a6bb3204ba756e1"
    }
   },
   "build.py --station pitfloor": {
@@ -359,7 +359,7 @@
     "biomes/siphon-pits/src/50-biome-siphon-species.js": "b7d8e1e2e7d0f3624d4f4862b5a45f859459acafa008fd9ebc8a8277505c6bf3",
     "biomes/siphon-pits/src/60-biome-siphon-place.js": "129796f26f3f29171bd2f22cbf09eac9655c83a8509e170c59929b221cc3dcb0",
     "biomes/siphon-pits/src/70-biome-siphon.js": "a9fc6db7c348aa49316989ad8b69df181341577a2b805ee1866679c36d175ea2",
-    "biomes/siphon-pits/src/80-host-plan.js": "88533f16f5ebd6438b3dc7d055c318de87da43d18ebefa7f3c01c1a439a0745f",
+    "biomes/siphon-pits/src/80-host-plan.js": "833f08bf113c4d3cbd0771da9483a22f8dbcd3b488a4ad233c2f6756c2481b0c",
     "biomes/siphon-pits/src/84-host-ground.js": "44c362fd91c4db46b86f9c3c31639dcc44f3a38e8b7a6520592b5e418a1cc57c",
     "biomes/siphon-pits/src/85-host-far.js": "9c7829c4c0a1cc4d890166af475c5e543787004590da954726513943b2c6629f",
     "biomes/siphon-pits/src/88-host-place.js": "3eb33032cd218b5687cf4ad4dbe59c44db5cedc7ee237ab7790d6a6966e657fc",
@@ -520,10 +520,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/siphon-pits/dist/siphon-pits.html": "88d55bbff64004ab0703918ab868620d9e5f75ca54efb6740fe18cdea6389e53"
+    "biomes/siphon-pits/dist/siphon-pits.html": "3fc534b01c8b4a25a521a9cff2095a71f20c3b7ffe0f816ce3c62dbb37564d74"
    },
    "outputs_raw": {
-    "biomes/siphon-pits/dist/siphon-pits.html": "88d55bbff64004ab0703918ab868620d9e5f75ca54efb6740fe18cdea6389e53"
+    "biomes/siphon-pits/dist/siphon-pits.html": "3fc534b01c8b4a25a521a9cff2095a71f20c3b7ffe0f816ce3c62dbb37564d74"
    }
   },
   "build.py --station scarp": {
@@ -538,7 +538,7 @@
     "biomes/siphon-pits/src/50-biome-siphon-species.js": "b7d8e1e2e7d0f3624d4f4862b5a45f859459acafa008fd9ebc8a8277505c6bf3",
     "biomes/siphon-pits/src/60-biome-siphon-place.js": "129796f26f3f29171bd2f22cbf09eac9655c83a8509e170c59929b221cc3dcb0",
     "biomes/siphon-pits/src/70-biome-siphon.js": "a9fc6db7c348aa49316989ad8b69df181341577a2b805ee1866679c36d175ea2",
-    "biomes/siphon-pits/src/80-host-plan.js": "88533f16f5ebd6438b3dc7d055c318de87da43d18ebefa7f3c01c1a439a0745f",
+    "biomes/siphon-pits/src/80-host-plan.js": "833f08bf113c4d3cbd0771da9483a22f8dbcd3b488a4ad233c2f6756c2481b0c",
     "biomes/siphon-pits/src/84-host-ground.js": "44c362fd91c4db46b86f9c3c31639dcc44f3a38e8b7a6520592b5e418a1cc57c",
     "biomes/siphon-pits/src/85-host-far.js": "9c7829c4c0a1cc4d890166af475c5e543787004590da954726513943b2c6629f",
     "biomes/siphon-pits/src/88-host-place.js": "3eb33032cd218b5687cf4ad4dbe59c44db5cedc7ee237ab7790d6a6966e657fc",
@@ -687,10 +687,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/siphon-pits/dist/siphon-pits-scarp.html": "9a65825233d74b4278a597fbefb6f5e35aa00f1ba0a31408f7dbaea1892fe1a5"
+    "biomes/siphon-pits/dist/siphon-pits-scarp.html": "e7e897bdd463717fed923765902f1a452b745dc08aaa3911d17afab0283e300b"
    },
    "outputs_raw": {
-    "biomes/siphon-pits/dist/siphon-pits-scarp.html": "9a65825233d74b4278a597fbefb6f5e35aa00f1ba0a31408f7dbaea1892fe1a5"
+    "biomes/siphon-pits/dist/siphon-pits-scarp.html": "e7e897bdd463717fed923765902f1a452b745dc08aaa3911d17afab0283e300b"
    }
   },
   "build.py --station terraces": {
@@ -705,7 +705,7 @@
     "biomes/siphon-pits/src/50-biome-siphon-species.js": "b7d8e1e2e7d0f3624d4f4862b5a45f859459acafa008fd9ebc8a8277505c6bf3",
     "biomes/siphon-pits/src/60-biome-siphon-place.js": "129796f26f3f29171bd2f22cbf09eac9655c83a8509e170c59929b221cc3dcb0",
     "biomes/siphon-pits/src/70-biome-siphon.js": "a9fc6db7c348aa49316989ad8b69df181341577a2b805ee1866679c36d175ea2",
-    "biomes/siphon-pits/src/80-host-plan.js": "88533f16f5ebd6438b3dc7d055c318de87da43d18ebefa7f3c01c1a439a0745f",
+    "biomes/siphon-pits/src/80-host-plan.js": "833f08bf113c4d3cbd0771da9483a22f8dbcd3b488a4ad233c2f6756c2481b0c",
     "biomes/siphon-pits/src/84-host-ground.js": "44c362fd91c4db46b86f9c3c31639dcc44f3a38e8b7a6520592b5e418a1cc57c",
     "biomes/siphon-pits/src/85-host-far.js": "9c7829c4c0a1cc4d890166af475c5e543787004590da954726513943b2c6629f",
     "biomes/siphon-pits/src/88-host-place.js": "3eb33032cd218b5687cf4ad4dbe59c44db5cedc7ee237ab7790d6a6966e657fc",
@@ -836,9 +836,9 @@
     "core/water/ext/60-core-water-fields.js": "8e877798226558edf744fccd1e6e92edf28bf059af5f087a10d733eaf5ecac2a",
     "core/water/geyser/52-core-water-geyser.js": "804a8b84e108965002396666c0647991ef073416f0206b02aeba81be3be19ac1",
     "core/water/geyser/52b-core-water-geyser-draw.js": "2e403145a06bf9b7a06fe4a5e6831d3ae0724a8eba1fbb21b4039ab2ae6cfd3e",
-    "kits/crops/src/10-crop-core.js": "9aa631073465369fc31b8fc27a62909a4079580d59b2926c39c37c43698f6fbb",
-    "kits/crops/src/20-crop-records.js": "46dcc7ea9ea802974acc9895b5d3d0b1910b86829f452bf0b807c0ddadcf9f95",
-    "kits/crops/src/22-crop-material.js": "641c1a2a64c808fb839da23831b8488e21acd2bc92443d865411627529223c58",
+    "kits/crops/src/10-crop-core.js": "d6d532b23a26a7f66286bb50315c4388fd6916577d80a3a90ee0ac2daa3591a7",
+    "kits/crops/src/20-crop-records.js": "d24c00e3220c98ab6e3a0850058c3dea648cb61f87d782157d04b468f16ab494",
+    "kits/crops/src/22-crop-material.js": "857e1cd9257d48bcea5a91520883253ff2fccf9402394ab362e857f2897c9770",
     "kits/crops/src/40-crop-query.js": "c4e1179691702ff13200d5b713c23e0f315ee99c61842a8735d671e63bfca439",
     "kits/fauna/fauna-core.js": "c7acf79776905d200371271bfd9e634bed33d3f40fa215fc91a8189b7bc8d10c",
     "kits/fauna/fauna-lands-host.js": "803b7a425ab4fbbcbf1562ca4e689550d72bdb2f1ecd9bc0f9f28b22a6e59db3",
@@ -858,10 +858,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/siphon-pits/dist/siphon-pits-terraces.html": "6614b20f987db3b684aac4c94c8c0220b098a4fe6c00da1712071c54a20d6d0c"
+    "biomes/siphon-pits/dist/siphon-pits-terraces.html": "686e2e5dee23a6d67faa6930d341c09c16d9261841f6da269018fdba0caa4471"
    },
    "outputs_raw": {
-    "biomes/siphon-pits/dist/siphon-pits-terraces.html": "6614b20f987db3b684aac4c94c8c0220b098a4fe6c00da1712071c54a20d6d0c"
+    "biomes/siphon-pits/dist/siphon-pits-terraces.html": "686e2e5dee23a6d67faa6930d341c09c16d9261841f6da269018fdba0caa4471"
    }
   }
  }

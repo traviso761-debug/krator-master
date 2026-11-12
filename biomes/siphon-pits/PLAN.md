@@ -131,7 +131,7 @@ To physically deliver the owner's brief, three targeted terrain edits are propos
 ### Station 1: Ostrukh Terraces (The Cold Arable Basin — NW)
 * **Metadata:** `stations/terraces/station.json` (`px: 1519, 1453`, elev $+2,157\text{ m}$, $1.22\text{ atm}$, mean $+15^\circ\text{C}$ (warm $+28$, cold $+2$), rain $439\text{ mm}$, Cwb, wind $7.4\text{ m/s}$).
 * **Landscape:** Fertile loess terraces stepping down to braided meltwater streams fed by Stalker glaciers; dry-stone retaining walls, sod-roofed basalt farmhouses, communal grain elevators.
-* **Agriculture & Ecology:** the grain, pulse and tuber `kits/crops` gives for Region 98 (`CROPS.forBiome('siphon-pits')`, its `terraces` and `braids` zones: the entry added 2026-11-11); domesticated Ghaunt-Ox pairs pulling stone seed-drills.
+* **Agriculture & Ecology:** the grain, pulse and tuber `kits/crops` gives for Region 98 (`CROPS.forBiome('siphon-pits')`, its `terraces` and `braids` zones: the entry added 2026-11-11); the tuber is the **maar yam**, which with **fumewort** (a herb) Region 98 shares with the Mid Basin and the Loom-Chasms and nothing else grows (`homeOnly`, the owner, 2026-11-12); domesticated Ghaunt-Ox pairs pulling stone seed-drills.
 * **Role:** The agricultural breadbasket of the south-east, feeding the mining and wax-harvesting camps of the higher zones.
 
 ### Station 2: The Scarp Pass (The Central Dividing Fault)

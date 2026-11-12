@@ -357,16 +357,16 @@
    "sha256": "229d45fb91d2ea93f71c7f2ce137399c84ed7ed34df96670df8572c4e1d6ee3d"
   },
   "biomes/nwouterwall/dist/nwouterwall-taiga.html": {
-   "bytes": 1334151,
-   "sha256": "4d64287b9dc80d7ba94c42690b59483891c881160eb0940a01d0976525ac1bf6"
+   "bytes": 1336660,
+   "sha256": "d44e48f0b604b2e4837634ee262df549fb66b0b7bd2659fa4a760e297830ad27"
   },
   "biomes/nwouterwall/dist/nwouterwall-yeti.html": {
-   "bytes": 1593757,
-   "sha256": "8e4d9b9bf1cd33065fb58b48e9281a66baa21213a058ea558d7f73bb286e46b5"
+   "bytes": 1596266,
+   "sha256": "bc00eb22defb361d0653ed907f1700cd40f751c71d270e401e8bf7ac182d1877"
   },
   "biomes/nwouterwall/dist/nwouterwall.html": {
-   "bytes": 1339021,
-   "sha256": "918ca578195536a13c681983a6861dae869ba2815b7bf697a860067e6262162b"
+   "bytes": 1341530,
+   "sha256": "5895e72f9f5b606b7b0f7c49dbfd3dd5a2b2866add74a11a408caf766cf24d91"
   },
   "biomes/oidong/dist/oidong-hearths.html": {
    "bytes": 3666792,
@@ -469,20 +469,20 @@
    "sha256": "b053c9661c53cc37fe78f4fc6b7c3edbd20a799f5f8bcb17459d5ef09489c013"
   },
   "biomes/siphon-pits/dist/siphon-pits-arete.html": {
-   "bytes": 4984560,
-   "sha256": "7e7678e5969433ea4da12a592c272927ae60211964dc7bd16e1489ab3796b79b"
+   "bytes": 4984561,
+   "sha256": "ebdc695a47015549c69b93b0d74e1d03d38f92c1e696d3449a6bb3204ba756e1"
   },
   "biomes/siphon-pits/dist/siphon-pits-scarp.html": {
-   "bytes": 4984560,
-   "sha256": "9a65825233d74b4278a597fbefb6f5e35aa00f1ba0a31408f7dbaea1892fe1a5"
+   "bytes": 4984561,
+   "sha256": "e7e897bdd463717fed923765902f1a452b745dc08aaa3911d17afab0283e300b"
   },
   "biomes/siphon-pits/dist/siphon-pits-terraces.html": {
-   "bytes": 5042521,
-   "sha256": "6614b20f987db3b684aac4c94c8c0220b098a4fe6c00da1712071c54a20d6d0c"
+   "bytes": 5045031,
+   "sha256": "686e2e5dee23a6d67faa6930d341c09c16d9261841f6da269018fdba0caa4471"
   },
   "biomes/siphon-pits/dist/siphon-pits.html": {
-   "bytes": 5537537,
-   "sha256": "88d55bbff64004ab0703918ab868620d9e5f75ca54efb6740fe18cdea6389e53"
+   "bytes": 5537538,
+   "sha256": "3fc534b01c8b4a25a521a9cff2095a71f20c3b7ffe0f816ce3c62dbb37564d74"
   },
   "biomes/swbay/dist/swbay.html": {
    "bytes": 8889448,
@@ -813,8 +813,8 @@
    "sha256": "43d112c1308747841b1f9afc6f294cd8a3f9ba6821259d0837b8f7e52feaf8df"
   },
   "kits/crops/dist/crops.html": {
-   "bytes": 2570671,
-   "sha256": "b81ef7abf7a3a67ef35eed445432d5f3fcd985856bd70e29e6d56a8a05b2927c"
+   "bytes": 2573180,
+   "sha256": "30a37b14cf3f6248060b1bbd2decc8f8d2880afaaabbbbd77dda4519a0bdaf11"
   },
   "kits/desert-nomads/dist/desert-nomads.html": {
    "bytes": 16905357,
@@ -1125,8 +1125,8 @@
    "sha256": "e6c31625003c38418a1cecaf53bdb0d412b7eedde603f6943c1fb0ad09da713d"
   },
   "settlements/longsong/dist/longsong.html": {
-   "bytes": 5297599,
-   "sha256": "0545c2fac2c08adabec54a755b0bf0cd35e7615d3bacfc8149bfdb5593bdebc0"
+   "bytes": 5300108,
+   "sha256": "e8d6f4786f2176c3d3ed3e3c0d09339be629c751a1f6911714e93711534da539"
   },
   "settlements/mavs-refuge/mavs-refuge.html": {
    "bytes": 9075103,

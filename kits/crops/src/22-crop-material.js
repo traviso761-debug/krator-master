@@ -26,7 +26,7 @@ R('annatto', 'Sunseed annatto', 'dye', [4, 4], [3, 4], {form: 'shrub', card: 'ca
 R('indigo', 'Jungle indigo', 'dye', [4, 4], [2, 4], {form: 'shrub', card: 'card.crop.indigo', colour: 'blue', home: ['hyperjungle']});
 R('woad', 'Valley woad', 'dye', [1, 3], [1, 3], {atm: [0, 2], card: 'card.crop.woad', colour: 'blue', home: ['ebadlands', 'nhighlands'], note: 'also Clan woad: the northern clans'});
 R('broom', 'Heath broom', 'dye', [0, 2], [1, 3], {atm: [0, 2], form: 'shrub', card: 'card.broom', colour: 'yellow', home: ['nhighlands']});
-R('lichen', 'Rosette lichen', 'dye', [0, 3], [1, 3], {atm: [0, 2], colour: 'brown', home: ['shighlands', 'sedesert', 'nwouterwall', 'siphon-pits'], src: 'shighlands', note: 'a lichen dye (the colour is not named in the kits)'});
+R('lichen', 'Rosette lichen', 'dye', [0, 3], [1, 3], {atm: [0, 2], colour: 'brown', home: ['shighlands', 'sedesert', 'nwouterwall', 'siphon-pits', 'midbasin', 'loom-chasms'], src: 'shighlands', note: 'a lichen dye (the colour is not named in the kits)'});
 R('rabbitbrush', 'Rabbitbrush flowers', 'dye', [2, 4], [0, 1], {form: 'shrub', colour: 'yellow', home: ['ebadlands'], src: 'ebadlands'});
 R('ghost-gum', 'Ghost-gum leaf', 'dye', [2, 4], [0, 2], {form: 'tree', card: 'card.ghostwood', colour: 'gold', home: ['nwlowlands']});
 R('alder-bark', 'Grey alder bark', 'dye', [1, 2], [3, 3], {form: 'tree', colour: 'red', also: [], home: ['nhighlands'], src: 'nhighlands', note: 'red and black'});
@@ -82,6 +82,9 @@ R('chalice-grass', 'Chalice-rim grass', 'sheet', [1, 2], [3, 4], {homeOnly: true
 R('maple-syrup', 'Paper-maple syrup', 'sweetener', [1, 2], [3, 4], {form: 'tree', src: 'oidong', home: ['oidong'], stores: ['pressed']});
 R('peyote', 'Peyote buttons', 'reagent', [1, 2], [1, 2], {atm: [0, 2], src: 'oidong', home: ['oidong'], stores: ['dried'], hazard: 'the seeing: a day of visions', note: 'dried buttons from the gravel flats; the monks\' seeing reagent'});
 R('sky-poppy', 'Sky poppy', 'reagent', [0, 2], [2, 3], {also: ['dye', 'herb'], atm: [0, 2], colour: 'blue', src: 'oidong', home: ['oidong'], stores: ['dried'], hazard: 'the seed: sleep', note: 'the seed a sleeping draught and a reagent of the stillness rites; the leaves the vat of the Order\'s blue'});
+/* the hinge's own herb (with the maar yam, 20-crop-records.js): Region 98, the Mid Basin, the Loom-Chasms; homeOnly, traded beyond */
+R('fumewort', 'Fumewort', 'herb', [2, 3], [0, 2], {also: ['medicine', 'spice'], homeOnly: true, atm: [1, 2], src: 'siphon-pits', home: ['siphon-pits', 'midbasin', 'loom-chasms'],
+  stores: ['dried'], note: 'a low grey aromatic of the warm crust at the vents\' edges and the loess banks, smelling of lemon and struck flint; steeped against the altitude\'s headache, rubbed on meat'});
 R('snow-lotus', 'Snow lotus', 'herb', [0, 1], [2, 3], {atm: [0, 1], reach: 0, src: 'oidong', home: ['oidong'], stores: ['dried'], note: 'the valley\'s strongest medicine, for the heart and the breath; the whole plant dried'});
 R('valley-ginseng', 'Valley ginseng', 'herb', [1, 2], [3, 4], {also: ['reagent'], src: 'oidong', home: ['oidong'], stores: ['dried'], note: 'a tonic root dug after seven years'});
 R('monks-sage', 'Monk\'s sage', 'herb', [1, 2], [1, 2], {atm: [0, 2], also: ['fuel'], card: 'card.sage', src: 'oidong', home: ['oidong'], stores: ['dried'], note: 'a silver wormwood: incense and a bitter for the stomach'});

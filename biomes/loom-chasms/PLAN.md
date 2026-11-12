@@ -280,7 +280,7 @@ when they are built.
 | water | `core/water`: `WATER.open`, `flow`, `W.pan` (the `brine` look), `WATER.spring` | Lake Nim, the three perennial rivers, the playa and its brine pools, Caelum's and the Cradle's vents |
 | cables | `KSPAN` (`core/biome/45-core-span.js`) | `solve` (with `up` for the pioneer shoots), `strands` for the tiers, `tension` for the anchors; anchors found by rays at the drawn rock, never at `terrainH` |
 | flora | `core/biome` | the cable spinner and the playa's species in this kit; the neighbours' read in place (section 4) |
-| crops | `kits/crops` (`CROPS.forBiome`, `at`) | the Cradle's fields |
+| crops | `kits/crops` (`CROPS.forBiome('loom-chasms')`: zones `cradle`, `weavestep`, `floor`, `playa`; `at`) | the Cradle's fields; the hinge's own crops, shared with the Siphon Pits and the Mid Basin: the **maar yam** and **fumewort** (`kits/crops`, `homeOnly`: they grow nowhere else, and are traded beyond; the owner, 2026-11-12) |
 | sky, weather | `core/atmos` | the standard sky; the shimmer over the floor (`fx/89-atmos-fx-shimmer.js`); the dust season |
 | hazards | `core/hazard` (`KHAZ`) | section 6; every record in `core/tags` before it is drawn |
 | fauna | `kits/fauna` | the cable-stryder and the halite sifter, as `BIO.record` records |
