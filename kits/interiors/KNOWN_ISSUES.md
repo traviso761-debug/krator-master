@@ -7,6 +7,20 @@ pieces a seed, 16 walkers; seeds 0–2, and seeds 0–7 with `--seeds 8`) with n
 What follows is what the checks do not cover, or what the kit does not do yet.
 
 ## Open
+- [ ] **42 build commands are stale until the joint all-builds rebuild** (2026-11-11, branch `claude/tungang-furniture-4a00dd`).
+  The Tungang holds' pieces (`krator-master-furniture-tungang.js`), the culture-scoped `FAMILY_SPLITS` in
+  `core/catalog/krator-furniture-core.js`, the `tg*` texture rows in `materials.json` and the new set `kits/interiors/sets/tungang.js`
+  reach 44 build commands (`tools/reach.py`). Only kits/catalog and kits/interiors were rebuilt, verified on the GPU and given
+  PORT-BASELINE rows. The coordinating session's ruling: the other builds, and their baseline rows, are rebuilt ONCE, after this branch
+  and the Fellgang branch (`claude/tungang-fellgang-kits-a56ece`) merge, which is after Integration 2. Until then these pages are behind
+  their sources (check_stale lists them):
+  - settlements: dhelv, girder (build.py and build_hero.py), highlands (with roketstad), isle-demo (build.py and --accept), iziz, locus,
+    longsong, mavs-refuge, mungo, noahs-regret, pinnacle-rock, screamers, span, verge, voth;
+  - kits: ancients, ancients-interiors, ash-nomads, beast-riders, desert-nomads, eternian, islanders, lizardmen, mechs, metropolis,
+    motor-vehicles, post-apoc, pylon, resources, scyvoi, talia, tungang (it also lists `core/furnish/`), yeti, zeijani;
+  - biomes: ancientsvalley, catch (and its stations fan, lake, oasis); openworld/isle-demo.
+  Nothing else changes for a culture other than `tungang`: the new splits name their culture, and no page but the interiors sets sheet
+  lists `core/furnish/scale/54-core-furnish-scale.js`.
 - [x] **`verify.py dist/interiors-sets.html --assert` and `dist/interiors-walk.html --assert` threw in the snapshot (2026-11-09).**
   Both ran the demo's checks: the demo's snapshot reads `window._interiors.walkers`, which neither page has (the sets sheet needs
   `--sets`; the walk mockup had no verify, only `tools/walkshots.py`). `verify.py` now takes the mode from the page's name

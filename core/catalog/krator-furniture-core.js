@@ -844,8 +844,26 @@ function furnCol(culture, key) {
    set of its own gets a texture family on top of the family its builder passed, so a host can map it (f_<texFamily>,
    falling back to f_<family>). The render family, the look, the batch's grouping by family and the declared
    `materials` are unchanged. [key pattern, families it applies to, texture family]. A part splits only when every key
-   of the culture that has its colour matches, so a hex two keys share never splits; shaded colours do not split. */
+   of the culture that has its colour matches, so a hex two keys share never splits; shaded colours do not split.
+   An optional fourth element names the cultures a rule is for (a key name another culture also uses keeps its own set);
+   culture-scoped rules come first. */
 const FAMILY_SPLITS = [
+  /* the Tungangs' fitted salvage (kits/tungang/PLAN.md section 7, the library sets it reuses; 2026-11-11) */
+  [/^enamel(Cream|Red|Green|Blue|Chip)$/, ['ceramic', 'metal'], 'tgEnamel', ['tungang']],
+  [/^paint(Red|Rose|Cream)$/, ['metal'], 'tgPainted', ['tungang']],
+  [/^(plate|plateDark|rivet|hood|cellCase)$/, ['metal'], 'tgPlate', ['tungang']],
+  [/^(rust|rustDeep)$/, ['rust', 'metal'], 'tgRust', ['tungang']],
+  [/^(blanketGrey|blanketRed|blanketBrown|seatBlue|seatWhite)$/, ['cloth'], 'tgWool', ['tungang']],
+  [/^felt$/, ['cloth'], 'tgFelt', ['tungang']],
+  [/^(canvasRaw|bannerRed)$/, ['cloth'], 'tgCanvas', ['tungang']],
+  [/^(plasterWhite|plasterRule)$/, ['plaster', 'stone'], 'tgPlaster', ['tungang']],
+  [/^concrete$/, ['concrete'], 'tgConcrete', ['tungang']],
+  [/^(wax|waxDark)$/, ['food'], 'tallow', ['tungang']],
+  [/^(timberOld|timberDark)$/, ['wood'], 'tgTimber', ['tungang']],
+  [/^ice$/, ['glass'], 'tgIce', ['tungang']],
+  [/^crystal$/, ['glass'], 'tgCrystal', ['tungang']],
+  [/^leather$/, ['leather', 'hide'], 'tgLeather', ['tungang']],
+  [/^oreCopper$/, ['stone'], 'tgOre', ['tungang']],
   /* the library's variants and extras (2026-10-19): candle and tallow wax, twisted rope, linen and patched canvas, red brick,
      the second and olive scale skins, the second plumage, and the shell sets: abalone, soft abalone and the pearls on a nacre
      part, conch on the shell family (a part on the shell family keeps the conch; its whites take the second nacre) */
@@ -914,7 +932,7 @@ function furnFamily(culture, color, family) {
   let keys = rev.get(color);
   if (!keys && family === 'food') keys = _nearFruitKeys(rev, color);
   if (!keys) return family;
-  for (const [re, from, to] of FAMILY_SPLITS) if (from.indexOf(family) >= 0 && keys.every(k => re.test(k))) return to + '/' + family;
+  for (const [re, from, to, cults] of FAMILY_SPLITS) if ((!cults || cults.indexOf(culture) >= 0) && from.indexOf(family) >= 0 && keys.every(k => re.test(k))) return to + '/' + family;
   return family;
 }
 

@@ -623,5 +623,38 @@ rest are new. Loose items that overran a Yuni piece's height (jars on the counte
 on the tavern table) became the surface pieces. Re-harvested 2026-10-05: the interiors pass's lidded_basket,
 food_pot, sleeping_mat, grain_bin, reed_mat and kilim (`yuni_poor_*`, `yuni_common_*`).
 
+### The Tungang holds' pieces (2026-11-11)
+
+`krator-master-furniture-tungang.js` grew from 23 pieces to 73 for the rooms of a hold (`kits/tungang/PLAN.md` 3.2 and 4;
+`kits/interiors/sets/tungang.js` furnishes them). Fitted salvage of the Line: plate and pipe, rivets, enamel cream and red chipped to
+black, red worn to rust-pink; nothing carved. Drawn at a human's measure: a hold draws them at 0.94 through
+`core/furnish/scale/54-core-furnish-scale.js`.
+
+| Group | Pieces |
+|---|---|
+| fixtures (rooms `doorway`: placed by a set's door dress or room fixtures, never by the placer) | `door_lamp` (5 variants: the lamp code, red home, green Line, amber work, glow-cap passage, white hooded), `berth_plate` (its seed is the number), `enamel_sign` (the way, the lamp code, STOP, NO SKABS), `click_ribs` (hanging plates, a grooved panel), `count_wall`, `count_lamps`, `seal_plate` (numbered by seed), and `enamel_minutes` |
+| homes | `bait_locker` (larder), `mash_bin` (bin), `plate_shelves`, `carriage_seats`, `carriage_galley`, `lamp_shrine` (the turn lamps), `sign_floor` (a rug of enamel signs), `bait_tin` (surface) |
+| the loj and the platform | `turn_bell`, `pipe_band`, `platform_stall`, `crew_mosaic` (a painted stand-in for the owed `patterns/tungang/crew-mosaic`) |
+| the signal box, the doors, the lift | `lever_frame`, `door_winch`, `hook_rack` (pick-and-hooks, spring bows) |
+| works | `tending_lamp` (amber), `mat_bed`, `fixers_bench`, `screw_press`, `salvage_bins`, `wax_moulds` and `wax_vat` (job `lampmaking`: `wax` is not in `FURN_JOBS`), `gypsum_kiln` (masonry), `plaster_sacks`, `bait_range`, `brew_urn`, `cistern_tap`, `fan_frame`, `wash_trough`, `leaper_pen` |
+| care, the dead, the shrine | `ward_cot`, `stoke_cabinet` (role `stoke`: only the stoke room and the signal box), `last_lamp`, `cleft_rail` |
+| the mines, the power hall, the shafts | `ore_tub`, `pick_rack`, `ore_bins`, `batch_still` (alchemy), `cell_rack` (the recharged power cells), `rota_board`, `ice_hoist`, `ice_blocks` |
+
+Roles added to old pieces: the gallery bunk `bunk` (a residence counts it as two beds), the glow-cap trays `spawn_rack`, the lift gear
+`lift_gear`; the Tpresden's chair now lists `tg_loj` and `court` only, the drum seat the hold's working rooms. The code's lamps are emissive
+glass; only the wax lamps carry a light (`F.lamp`), and a door lamp's light is a record its set writes.
+
+**Textures (detail maps, `tex=True` bundles).** The Tungang pieces reach the library sets PLAN.md section 7 names through
+**culture-scoped** `FAMILY_SPLITS` (a rule's fourth element, `['tungang']`, so another culture's keys of the same name keep
+their set) and rows in `materials.json`: `tgEnamel` `metal.enamel.scoured` (the enamel keys), `tgPlate` `metal.ancient` (plate,
+rivets, hoods, cell cases; 2 m tile, contrast 0.55 so the seams read as plate, not stone), `tgPainted` `metal.painted.chipped`
+(paint on metal), `tgRust` `metal.rust.plate`, `tgWool` `cloth.wool` (blankets, carriage seats), `tgFelt` `cloth.felt`, `tgCanvas`
+`cloth.canvas` (raw canvas, the banner; 1.2 m tile), `tgPlaster` `plaster.white_stucco_02` (the count wall), `tgConcrete`
+`concrete.ancient`, `tgTimber` `wood.reclaimed` (carried-down timber, never carved), `tgIce` `glass.frosted`, `tgCrystal`
+`mineral.selenite`, `tgLeather` `hide.leather009` (not 008, the crocodile crackle), `tgOre` `rock.malachite` (copper ore); hearth
+wax takes `tallow`, the fungus keys `fungus`, paint on wood `paint`. Owed and not yet wired (core/materials/PROMPTS-NEEDED.md
+section 43): `organic.fungus.leather` (the leather is meant to be fungus leather), `patterns/tungang/enamel-signs` (the plates and
+signs paint their own decals until then), `patterns/tungang/crew-mosaic` and `patterns/tungang/loj-banner` (painted stand-ins).
+
 The frame convention and geometry-kit caveats are in the engine's header comment.
 Read it before writing a piece.
