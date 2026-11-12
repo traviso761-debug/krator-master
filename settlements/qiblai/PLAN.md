@@ -90,10 +90,10 @@ Each block's `use` decides what fills it; the lay blocks are filled by `frontage
 
 | Ring | Fill | Keys |
 |---|---|---|
-| **1, the clergy** | the eight great monasteries on their spoke blocks, **each on its spoke's bearing** (the site's `monasteries` records: spoke 0-7 clockwise from north, `colour = spoke`, the kit's `QSPOKE` order); the other blocks: the grammarians' colleges, the Prismarchy's offices (a new def or the college's dress), the temple granaries, gardens | `qb_monastery` (`o.v = spoke`, split on the axial four), `qb_college`, `qb_granary` |
+| **1, the clergy** | the eight great monasteries on their spoke blocks, **each on its spoke's bearing** (the site's `monasteries` records: spoke 0-7 clockwise from north, `colour = spoke`, the kit's `QSPOKE` order); the other blocks: the grammarians' colleges, the temple granaries, gardens (the Prismarchy works from the Hall of the Decree: the owner, 2026-11-11) | `qb_monastery` (`o.v = spoke`, split on the axial four), `qb_college`, `qb_granary` |
 | **2, the kora** | the kora's arcades along the ring street with a chorten at every crossing; wheel houses at its corners and gates; the four gate markets on the axial blocks; the pilgrims' hostels; the guild halls; shops on the kora's outer face | `qb_kora_arcade`, `qb_kora_corner`, `qb_wheel_house`, `qb_chorten`, `qb_gate_market` (`o.half`), `qb_hostel`, `qb_guild_*`, `qb_shop_row` |
-| **3-5, the lay folk** | row houses on party walls in runs (`o.ends`), the corner houses at block corners, courtyard houses for the rich; the trades and the baths by the census; wayside shrines at street corners; **a share of Xanadu houses** (the Sultanate's merchants and officials: the owner's call, proposed 15 %) | `qb_row_*`, `qb_corner_house`, `qb_court_house`, the trades, `qb_bath`, `qb_shrine`, `xa_*` |
-| **Outside the wall** | the ghats at the cataracts, the ghat way from the east gate; the caravanserai on the Erewhon road; the temple estates' gardens | `qb_ghats`, `qb_caravanserai` |
+| **3-5, the lay folk** | row houses on party walls in runs (`o.ends`), the corner houses at block corners, courtyard houses for the rich; the trades and the baths by the census; wayside shrines at street corners; **a third of the houses Xanadu's** (the Sultanate's merchants and officials; the owner, 2026-11-11: 33 %, spread through the lay rings) | `qb_row_*`, `qb_corner_house`, `qb_court_house`, the trades, `qb_bath`, `qb_shrine`, `xa_*` |
+| **Outside the wall** | the ghats at the cataracts; the ghat way from the east gate, a pilgrims' road lined with chortens and wayside shrines (the owner, 2026-11-11); the caravanserai on the Erewhon road; the temple estates' gardens | `qb_ghats`, `qb_caravanserai` |
 
 - **Wealth** by ring: rich nearest the kora, poor at the outer wall (the city rises toward the Temple Mountain).
 - **The trades** by the census: `tools/trades_census.json` scaled to ~12,000, each trade to a Qiblai key or a Xanadu key
@@ -144,18 +144,16 @@ Each block's `use` decides what fills it; the lay blocks are filled by `frontage
 - **Triangles** at the opening view under the showcase's cap on the arc lane; the interiors only on demand (a monastery's
   hall, the Hall of the Decree, a hostel), not city-wide.
 
-## 5. Open for the owner
+## 5. The owner's answers (2026-11-11)
 
-1. **Which branch Q7 starts from:** the kit (`claude/zealous-allen-0cd44d`) and the site module (`claude/nostalgic-cray-50aac5`)
-   merged to main first, or together on one branch.
-2. **The axial monasteries:** split by their avenue (proposed, Q7a), or moved off the axes (the site module would put the
-   eight on the ring's diagonal-adjacent blocks instead).
-3. **The Xanadu share** of the lay quarters (proposed 15 %), and where (spread, or a merchants' quarter by the south gate on
-   the Erewhon road).
-4. **The Prismarchy's offices:** a building of their own in ring 1, or the Hall of the Decree's (it is in ring 0).
-5. **The ghat way:** the city stands ~1 km from the bank; the processional way from the east gate to the ghats is that long
-   (proposed: lined with chortens and wayside shrines, a pilgrims' road).
-6. **The terrace steps:** 6, 4, 2, 2, 2, 2 m from the centre out (the site module's default), or another rise.
+1. **The branches:** the kit (`claude/zealous-allen-0cd44d`) and the site module (`claude/nostalgic-cray-50aac5`) merge to
+   main first; Q7 builds on main.
+2. **The axial monasteries** are split by their avenue (Q7a's `o.split`): the avenue is the monastery's processional way.
+3. **The Xanadu share** of the lay quarters is **33 %**, spread through them (no merchants' quarter).
+4. **The Prismarchy works from the Hall of the Decree** (ring 0): no office building of its own in ring 1.
+5. **The ghat way** is a pilgrims' road from the east gate to the ghats, lined with chortens and wayside shrines.
+6. **The terrace steps:** the site module's default (6, 4, 2, 2, 2, 2 m from the centre out), to be judged built ("only one
+   way to see if it works").
 
 ## 6. Core adoption
 
