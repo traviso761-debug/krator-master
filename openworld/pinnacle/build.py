@@ -91,7 +91,13 @@ ORDER = (
     # core/camp and the Beast Riders' camp table, the site planner and this region's spec
     + [('bundle', 'cat'), ('settlements/isle-demo/src', '58-isle-protos.js'),
        ('core/camp', '10-camp-cultures.js'), ('core/camp', '20-camp-census.js'), ('core/camp', '30-camp-pitch.js'),
-       ('kits/beast-riders/src', '79-br-camp.js'), ('ld', '48s-world-sites.js'), ('src', '48-world-site.js'),
+       ('kits/beast-riders/src', '79-br-camp.js'),
+       # the clearings (2026-11-12): core/city's primitives and core/hamlet, as the Oidong region's build takes them
+       ('core/city', '33-city-strategies.js'), ('core/city', '15-city-ground.js'),
+       ('core/hamlet', '10-hamlet-wood.js'), ('core/hamlet', '12-hamlet-gather.js'),
+       ('core/hamlet', '14-hamlet-farmland.js'), ('core/hamlet', '16-hamlet-names.js'), ('core/hamlet', '18-hamlet-names.js'),
+       ('core/hamlet', '20-hamlet-cultures.js'), ('core/hamlet', '30-hamlet-village.js'),
+       ('ld', '48s-world-sites.js'), ('src', '48-world-site.js'),
        ('src', '49-world-absav.js')]   # the savannah kit as the world reads it (its own trees and the eastern abyss's)
     + LDF('80-world-sky.js', '81-world-terrain.js', '83-world-water.js', '83w-world-seas.js', '84-world-nursery.js',
           '85-world-flora.js', '86-world-floor.js', '87-world-places.js', '88-world-towns.js', '88s-world-sites.js')
