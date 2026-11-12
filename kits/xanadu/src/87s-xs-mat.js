@@ -32,3 +32,13 @@ kdef('xsCable',new THREE.CylinderGeometry(1,1,1,5),MAT.xsCable);
 kdef('xsBronzeB',VBOX,MAT.xsBronze);kdef('xsBronzeC',XCOL,MAT.xsBronze);kdef('xsBronzeOct',XOCT,MAT.xsBronze);
 kdef('xsBulbB',XBULB,MAT.xsBronze);kdef('xsBall',VBALL,MAT.xsBronze);kdef('xsConeB',VCONE,MAT.xsBronze);
 kdef('xsRing',new THREE.TorusGeometry(1,.035,5,28),MAT.xsBronze);
+/* the poor tier (87v): the hull's vault lived in as found (a half cylinder along z, open ended, standing on y 0), the
+   mud end wall that closes it (a half disc facing +z), bottle ends set in mud (a short cylinder facing +z), the glinting
+   cone, the round glass of a porthole (a disc facing +z) */
+MAT.xsBottle=xStd({roughness:.12,metalness:.35});    /* glass bottle ends and can lids: tinted per instance, they catch the sun */
+kdef('xsVault',new THREE.CylinderGeometry(1,1,1,18,1,true,-Math.PI/2,Math.PI).rotateX(-Math.PI/2),MAT.white);
+kdef('xsVaultV',new THREE.CylinderGeometry(1,1,1,18,1,true,-Math.PI/2,Math.PI).rotateX(-Math.PI/2),MAT.verdigris);
+kdef('xsMudHalf',new THREE.CircleGeometry(1,18,0,Math.PI),MAT.xEarth);
+kdef('xsBottle',new THREE.CylinderGeometry(1,1,1,6).rotateX(Math.PI/2),MAT.xsBottle);
+kdef('xsConeW',VCONE,MAT.white);
+kdef('xsGlassDisc',new THREE.CylinderGeometry(1,1,1,16).rotateX(Math.PI/2),MAT.glass);

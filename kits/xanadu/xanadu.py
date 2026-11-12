@@ -22,7 +22,7 @@ FILES = sorted(FOUNDATION + BUILDINGS)
 # Scrap Xanadu (PLAN-SCRAP.md; the owner, 2026-11-11): the Xanadu body in the Ancients' reclaimed panels, glazing, girders,
 # cable and bronze. Opt-in: not in FILES, so the pages that take the kit stay as they are. The sheet is settlements/xanadu's
 # `scrap` target; kit_bundle.bundle(scrap=True) seals it into XAK (with core/rand, whose hash varies its panels).
-SCRAP = ['87s-xs-mat.js', '87t-xs-helpers.js', '87u-xs-build.js']
+SCRAP = ['87s-xs-mat.js', '87t-xs-helpers.js', '87u-xs-build.js', '87v-xs-poor.js']
 # what the kit draws through, by name, and where each now lives
 ANCIENTS_CORE = ['10-core.js', '12-stats.js', '30-kit.js', '32-surfaces.js', '34-kitdefs.js', '36-decor.js', '38-helpers2.js',
                  '50-registry.js', '54-mat-concrete.js', '69-mat-salvage.js']          # kits/ancients/src

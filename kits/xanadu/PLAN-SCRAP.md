@@ -46,9 +46,8 @@ The references the owner sent with the brief (2026-11-11), and what each gives t
    catalog entry, but it would have to vendor or bundle the whole Xanadu vocabulary it draws through.
 2. **Catalog culture id.** *Default:* `xanadu-scrap` (the tag `culture`; `kit` stays `xanadu`). Keys are `xa_scrap_*`, so
    `XAK.dims()` lists them.
-3. **Building types.** *Built:* the fifteen below, for a town of a few thousand with a terminus and a garrison. The
-   owner added the guildhalls, the grain and food stores and the bathhouse (2026-11-11). Not built yet: the farms;
-   Strongbow's terraces below the hull may want them.
+3. **Building types.** *Built:* the twenty-one below, for a town of a few thousand with a terminus and a garrison. The
+   owner added the guildhalls, the grain and food stores and the bathhouse, then a farmhouse and the poor (2026-11-11).
 4. **Who quarries the hull.** *Proposed:* the Salvagers' Guild, under licence from the Sultanate and the History Monks.
    The Order keeps the upper hull sealed and says what may be cut (lore, not drawn).
 
@@ -74,6 +73,28 @@ The references the owner sent with the brief (2026-11-11), and what each gives t
 
 Each has three variants (`o.v`): the pattern and paints of the panel courses, the storeys and the crowns change.
 
+## 3b. The poor tier and the farm (`src/87v-xs-poor.js`)
+
+The owner, 2026-11-11: "a set that's more clearly reclaimed and a bit more ramshackle, with fewer after-market
+modifications, but still tastefully arranged". References: a house built round a tank with a ring gallery; a cluster of
+silos lived in under tarps; Cano's Castle (cones clad in can lids and hubcaps); an Earthship wall of bottle ends in
+rainbow arcs; a workshop round a blue tank; a tower house round a green tank.
+
+The poor live in the pieces nearly as found: whole tanks and silos stood up, a hull section laid down as a vault, sheets
+lapped on as they come (unpainted, one in six of copper, trimmed round the openings), bottle ends set in mud, cones clad
+in lids. It stays tasteful because every piece is whole and set square, the colours come in order (one tarp to a house,
+in a fixed sequence), and the ends of things are closed (mud walls, framed doors, portholes in bronze rings). Poor defs
+take no lamps.
+
+| Key | Name | Family | What |
+|---|---|---|---|
+| `xa_scrap_tank_house` | Tank House | Scrap: poor | a whole tank stood up as a house: portholes, a plank gallery on girder brackets, a small copper upper room, a tarp porch, the water butt fed from the roof |
+| `xa_scrap_silos` | Silo Court | Scrap: poor | four silos round a yard under two tarps, a deck and stair between the tall ones, a dish as a rain catcher, a lamp mast |
+| `xa_scrap_hull` | Hull House | Scrap: poor | a section of hull laid down as a vault on a rubble plinth; mud end walls with bottle ends in rainbow arcs round a pointed door; a bottled yard wall |
+| `xa_scrap_glint` | Glint House | Scrap: poor | a mud house walled with bottle arcs, under two cones clad in rings of glinting lids; a fence hung with lids, a small Wheel by the gate |
+| `xa_scrap_shacks` | Shack Row | Scrap: poor | four one-room houses of sheets as found, each with its own tarp in the row's order, a string of lanterns |
+| `xa_scrap_farm` | Tank Farm | Scrap: farms | a whitewash farmhouse with an as-found upper storey and fodder on the roof; a copper tank on a girder water tower; a hull-vault barn; a yak pen of cable; stacks, a threshing floor, crop rows |
+
 ## 4. Core adoption
 
 The set is a package of the Xanadu kit, so it takes what the kit takes and writes nothing the core owns.
@@ -81,7 +102,7 @@ The set is a package of the Xanadu kit, so it takes what the kit takes and write
 | Need | Taken from | How |
 |---|---|---|
 | registry, tags | `VERN` / `XA.def` (the kit's registry), read into `core/tags` on the sheet (`91t-xanadu-tags.js`), core/rand for the tag uid | every def registers its inspector volume (`vnReg`) before it is drawn; tags `culture: 'xanadu-scrap'`, `type`, `wealth`, `lit` |
-| randomness | the kit's builder contract: each builder opens with `reseed(33001 + k*10 + v)` (seed block 33000-33199); per-panel variation is `KRAND.hash` of (def, face, row, column), never the draw order | `KRAND.hash` where core/rand is on the page, else the reseeded `rng()` (the bundle without core/rand) |
+| randomness | the kit's builder contract: each builder opens with `reseed(33001 + k*10 + v)` (seed block 33000-33299); per-panel variation is `KRAND.hash` of (def, face, row, column), never the draw order | `KRAND.hash` where core/rand is on the page, else the reseeded `rng()` (the bundle without core/rand) |
 | materials | `core/materials` (the Ancients' `MAT.white` panel sheet, `MAT.verdigris`, `MAT.glass`, `MAT.pipe`) and the kit's `MAT.xPaint`, `MAT.xGold` | `87s-xs-mat.js` names kit items over them (prefix `xs`); one new geometry: the I-girder, and a box whose UVs show exactly one Ancient sheet |
 | doors and glass | core/door (`KDOOR`, `KGLASS`) through the kit's `vnDoor`, `xnDoorway`, `xnPane` | every door a locked leaf, every window glass over the room card: no dark voids |
 | the sheet's host | core/host, core/lod, core/atmos, core/water: the Xanadu page shell | the `scrap` target of `settlements/xanadu` |
