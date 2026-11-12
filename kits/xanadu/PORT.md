@@ -34,6 +34,9 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/87-xa-spicer.js` | 9.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/87b-xa-andean.js` | 12.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/87c-xa-erewhon.js` | 23.8 | [draw] | 10 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/87s-xs-mat.js` | 2.9 | [draw] | 6 | 0 | 0 | 0 | 0 | 22 | 0 | 0 | 0 | 0 | 0 | Scrap Xanadu (opt-in, xanadu.py SCRAP): kit items over core/materials; the one-sheet panel UVs and the I-girder |
+| `src/87t-xs-helpers.js` | 13.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | Scrap Xanadu: the xnXS* vocabulary (kput records only); per-panel variation from KRAND.hash |
+| `src/87u-xs-build.js` | 20.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | Scrap Xanadu: the ten xa_scrap_* defs |
 | `src/88-xa-dress.js` | 11.8 | [draw] | 4 | 6 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | canvas painters: TEX.def or bake |
 | `src/89-xa-trades.js` | 4.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the Voth census table: plain data |
 

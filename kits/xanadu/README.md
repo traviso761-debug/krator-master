@@ -38,3 +38,12 @@ city of Erewhon); `settlements/longsong` takes `kit_bundle.py`'s `XAK` (with Xan
 
 **Its own sheet.** Not yet: the sheet is Xanadu's `xanadu` target, on Xanadu's page shell, and `verify.py dist/xanadu.html
 --assert` in `settlements/xanadu` is its check.
+
+**Scrap Xanadu** (the owner, 2026-11-11; `PLAN-SCRAP.md`). The Xanadu body built with the Ancients' reclaimed materials,
+well ordered and never ramshackle (the contrast is `kits/post-apoc`). Whole shell panels are laid in courses as checker,
+band and stripe facings; glazing becomes jali grilles, lantern clerestories and glass domes on bronze ribs; girders are
+dressed columns and lintels; cable makes the balustrades; bronze the finials and the eight-spoked Wheel. Ten defs,
+`xa_scrap_*` (culture `xanadu-scrap`), in `src/87s-xs-mat.js` (items), `87t-xs-helpers.js` (the `xnXS*` vocabulary) and
+`87u-xs-build.js` (the buildings). The package is **opt-in**: `xanadu.py` lists it as `SCRAP`, not in `FILES`, so the
+pages that take the kit do not change. Its sheet is `settlements/xanadu`'s `scrap` target (`dist/xanadu-scrap.html`);
+`kit_bundle.bundle(scrap=True)` seals it into `XAK` for a world (Strongbow's town first) with core/rand.

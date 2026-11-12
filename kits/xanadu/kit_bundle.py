@@ -35,12 +35,15 @@ SKIP = ('81-sky.js', '88y-xanadu-matlib.js')
 SKIP_FROM = '90'
 
 
-def files():
+def files(scrap=False):
     """The kit's fragments and what they draw through, in filename order: the Ancients core from kits/ancients/src, the
     Vernacular's materials and helpers from kits/iziz-vernacular, core/materials (until 2026-11-03 the first two were
     Xanadu's byte-identical copies in settlements/xanadu/src)."""
     import xanadu as kxa
     names = {f: p for f, p in kxa.paths().items() if f not in SKIP and f[:2] < SKIP_FROM}
+    if scrap:   # Scrap Xanadu (PLAN-SCRAP.md), opt-in, and core/rand, whose hash varies its panels
+        names.update(kxa.paths(kxa.SCRAP))
+        names['08-core-rand.js'] = os.path.join(ROOT, 'core', 'rand', '08-core-rand.js')
     names.update({f: os.path.join(ROOT, 'kits', 'ancients', 'src', f) for f in kxa.ANCIENTS_CORE})
     names.update({f: os.path.join(ROOT, 'kits', 'iziz-vernacular', 'src', f) for f in kxa.VERNACULAR + kxa.OPENINGS_VERN})
     names.update({f: os.path.join(ROOT, 'core', 'door', f) for f in kxa.DOOR})   # core/door's records and glass, as the Vernacular bundle carries them
@@ -112,12 +115,17 @@ return { proto: xakProto, dims: xakDims, bind: xakBind, rotors: xakRotors, VERN:
 
 # after core/door's glass: its two globals, set on the kit's shadow window, become the kit's own KDOOR and KGLASS
 DOOR_BIND = 'KDOOR = XAK_WIN.KDOOR; KGLASS = XAK_WIN.KGLASS;' + NL
+RAND_BIND = 'KRAND = XAK_WIN.KRAND;' + NL
 
 
-def bundle(key='XAK'):
-    fs = files()
+def bundle(key='XAK', scrap=False):
+    """scrap=True adds Scrap Xanadu (kits/xanadu/PLAN-SCRAP.md: the xa_scrap_* defs) and core/rand (its KRAND lands on the
+    kit's shadow window and is bound as the kit's own, as core/door's are). Without it the bundle is what it always was."""
+    fs = files(scrap)
     body = ''.join('/* ---- %s ---- */%s%s%s;%s' % (rel(f), NL, rd(f), NL, NL) + (DOOR_BIND if f.endswith('20-core-glass.js') else '')
-                   for f in fs)
+                   + (RAND_BIND if f.endswith('08-core-rand.js') else '') for f in fs)
+    if scrap:
+        body = 'var KRAND;' + NL + body
     js = ('/* %s: the Xanadu building kit and its Ancients core in one closure (kits/xanadu/kit_bundle.py). GENERATED: '
           'edit kits/xanadu/src, kits/ancients/src, kits/iziz-vernacular/src or core/materials. */' % key + NL + 'var %s = (function(){' % key + NL + HEAD + body + TAIL +
           '})();' + NL)
@@ -125,7 +133,8 @@ def bundle(key='XAK'):
 
 
 if __name__ == '__main__':
-    js, fs = bundle()
+    import sys as _sys
+    js, fs = bundle(scrap='--scrap' in _sys.argv)
     print('%d files, %d KB' % (len(fs), len(js) // 1024))
     for f in fs:
         print('  ' + f)
