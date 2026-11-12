@@ -161,6 +161,20 @@
                                "port":  8831
                            },
                            {
+                             "name": "network-testbed",
+                             "runtimeExecutable": "python",
+                             "runtimeArgs": ["-m", "http.server", "8871", "--bind", "127.0.0.1", "--directory", "openworld/network-proposal/testbed/dist"],
+                             "port": 8871,
+                             "autoPort": false
+                           },
+                           {
+                             "name": "scale-model-split",
+                             "runtimeExecutable": "python",
+                             "runtimeArgs": ["-m", "http.server", "8872", "--bind", "127.0.0.1", "--directory", "tools/scale-model/model/dist/split"],
+                             "port": 8872,
+                             "autoPort": false
+                           },
+                           {
                              "name": "motor-vehicles",
                              "runtimeExecutable": "python",
                              "runtimeArgs": ["-m", "http.server", "8797", "--directory", "kits/motor-vehicles"],
