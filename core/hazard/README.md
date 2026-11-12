@@ -11,6 +11,7 @@ module is plain functions on those records (`[G data]`: no THREE, no DOM), porte
 | `test-hazard.js` | `node core/hazard/test-hazard.js`: every function, each check with a negative |
 | `21-core-hazard-flow.js` | opt-in: `KHAZ.moveAt`, `drift`, `poolK`: a hazard's `move` read (`move.pull` toward the core) and gas pooled on a band's floor (`shape.pool`); `test-hazard-flow.js` |
 | `22-core-hazard-env.js` | opt-in: crusts that break underfoot (`KHAZ.crust`, `KHAZ.under`, `load`, `mend`, `saveCrusts`), air that pools at night and in still air (`KHAZ.night`, `bindClock`, `bindWind`), fronts that travel a path (`KHAZ.front`: the gorge flood and the charge; `frontAt`, `floodLevel`, `bindHerd`), `KHAZ.ENV` builders; `test-hazard-env.js` |
+| `22-core-hazard-tunnel.js` | opt-in: the tunnels' kinds `rockburst`, `inrush`, `seal` (their rows added to the vocabulary at first use), `KHAZ.TUNNEL`, `burstAt`, `spalls`, `flood`, `pressure`, `breach`, `reseal`, `bindDoor`, `sealStep`, `tunnelAudit`; `test-hazard-tunnel.js` |
 | `GODOT.md` | the Area3D, navigation and status mapping for the port |
 
 What else it touches (all in this workstream, 2026-10-26):
@@ -381,6 +382,35 @@ without 21.
 ## Tests
 
 `node core/hazard/test-hazard.js`, `node core/hazard/test-hazard-flow.js` (the pull and the pool), `node core/hazard/test-hazard-env.js` (crusts, night, fronts: on 20 + 22 and on 20 + 21 + 22, with broken variants of the laws), `node core/biome/test-traps.js` (the clock), `node core/walk/test-walk.js` (zones),
+## The tunnels' kinds (`22-core-hazard-tunnel.js`, opt-in, 2026-11-11)
+
+The Line (`biomes/line/PLAN.md` section 6, the owner's answer 13; `openworld/ANCIENT-TUNNELS.md` section 4). **Opt-in by
+file**: the three rows are not in core/tags' vocabulary (that would change every page); the file adds them to
+`KTAGS.VOCAB.hazardKinds` the first time any `KHAZ` function runs, so it may sort before core/tags. A page that does not list
+it is byte-identical; on a page that does, every older record answers as before (`test-hazard-tunnel.js` reads a registry
+before and after loading it).
+
+Each kind runs on a state function, so **write its record with the builder** (it names the function and fills the
+defaults; any field of `o` overrides). `KHAZ.tunnelAudit(T)` lists a record of these kinds written without its function, or
+with a bad field: make it a verify check.
+
+| Kind | Effect | Row | Builder | What it does |
+|---|---|---|---|---|
+| `rockburst` | damage | danger 1, dose 20, walkable (travel 2): the trains run through | `KHAZ.TUNNEL.rockburst({shape, cycle, burst: {cell 40, throw 6, spall [.05, .4]}})` | a crush on a cycle (default 30 min): rock talk 12 s (warn, k 0), the burst (.4 s rise, 1.6 s), falling slabs 40 s (k .25), quiet. Each period bursts in **one cell** along the shape's long axis (`KRAND` by the period's number) and harms only within `throw` m of it |
+| `inrush` | drown | danger .9, dose .5, travel 6 | `KHAZ.TUNNEL.inrush({shape, cycle \| inrush: {at}, inrush: {depth 3, deep 1.4}})` | karst water breaks in: the rock sweats (warn 90 s), the water rises over the ramp (240 s) to `depth` m over the shape's floor, stays (15 min), drains, leaves a pool (k .15), dry; or once at `inrush.at` and flooded for good. At a point, k is the water over the feet over `deep` |
+| `seal` | suffocate | danger 1, dose 1 | `KHAZ.TUNNEL.seal({shape (the section), seal: {door, inside 1, outside .05 \| fn(t), bleed 40, refill 900, fail, events}})` | the section behind a door: while the door is open its air relaxes toward the surface it reaches (e-folding `bleed` s), shut it refills (`refill` s); k is the `thin-air` ambient row's ramp of that pressure. The door's openness: a bound function (`KHAZ.bindDoor(rec, t => open)`, integrated live by `KHAZ.sealStep(t, dt, T)` each frame), else the page's `KHAZ.breach(rec, t, open)` / `KHAZ.reseal(rec, t)` and the record's `seal.events`, else `seal.fail` (a cycle whose k is how far it stands failed) |
+
+- `KHAZ.burstAt(rec, t)`: `{n, cell, cells, x, z, t0, state}`: where this period bursts and when.
+- `KHAZ.spalls(rec, t, n)`: the last n bursts begun by t, newest first, each `{n, t, cell, x, z, along, side, up, spall}`: where a
+  host draws fresh spalls on the lining (the same hashes every time: the Line's `hotdoor` station's scars).
+- `KHAZ.flood(rec, t)`: `{state, level, y, k, left}`: the water's height for a `WATER.open` plane.
+- `KHAZ.pressure(rec, t)`: the section's atm now.
+- Once loaded, `KHAZ.at`, `dose`, `doses`, `here` and `exposure().step` take an inrush's water over the point (as 21's pool share;
+  with no `y`, the level over the floor). The export adds each tunnel record's own fields as `hazard.raw`.
+
+## Tests
+
+`node core/hazard/test-hazard.js`, `node core/hazard/test-hazard-flow.js` (the pull and the pool), `node core/hazard/test-hazard-tunnel.js` (the tunnels' kinds), `node core/biome/test-traps.js` (the clock), `node core/walk/test-walk.js` (zones),
 `node core/tags/test-tags.js` (the key, the label; the export digest moved with the vocabulary: 5ee8e4c7, then f8fc8840
 with lava, fire, luck, trap, time, the taboo key, the ambient rows, acid rain and the dust storms). test-hazard checks the new kinds against a stub of `KFIRE.run`'s contract, and
 against the real `KFIRE.run` cell for cell once `core/biome/38-core-fire.js` is in the tree (it says `skip` before then),

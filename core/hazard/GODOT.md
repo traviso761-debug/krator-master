@@ -100,6 +100,21 @@ port with `KHazard` by name.
   status passes the body's height straight to `KHazard.state` (the page threads it through its queries instead). The
   Area3D is the box round the path; the water mesh reads the same `front`. A bound herd (`bindHerd`) is the herd's own
   bodies: their `Area3D`s, not the path.
+## The tunnels' kinds (`22-core-hazard-tunnel.js`, opt-in, 2026-11-11)
+
+The rows ride in the export's `kinds` (only on a page that lists the file); each record's own fields (`burst`, `inrush`,
+`seal`) ride as its filled hazard's `raw`, since `make` keeps only the fields it knows. `KHazard` gains the three state
+functions by name (`KHAZ.rockburst`, `KHAZ.inrush`, `KHAZ.seal`), each a plain function of (record, t, point):
+- **rockburst**: the cycle as any other; the cell is `KRAND.hash(KRAND.child(0x524f43, seed), n) % cells` with `n` the
+  period's number (`floor((t + off) / L)`), and a point outside the cell (plus `burst.throw` along the long axis) takes k 0.
+  The `Area3D` is the whole stretch; the cell test is in the status. The spalls a host draws are `KHAZ.spalls`' list, the
+  same hashes (salt `0x53504c`), so a Godot scene and the page show the same fresh scars.
+- **inrush**: the water's level is `depth x k` of the cycle (or the one-off rise from `inrush.at`); a `WATER.open` plane at
+  `KHAZ.flood(rec, t).y`, moved each frame. The dose at the status's height y is scaled by `(floor + level - y) / deep`
+  over the state's k (the page passes the walker's feet; the drowning is in the water over them).
+- **seal**: the section's pressure is a closed form of t for events and a fail cycle (exponential relaxation per stretch of
+  constant openness; the cycle's steady state by its affine period map), and a live integration for a bound door (the
+  status calls `sealStep` each physics tick with the `KDoor` leaf's openness). k is the `thin-air` ambient row's ramp.
 
 ## Navigation: NavigationRegion3D
 
