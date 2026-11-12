@@ -46,7 +46,7 @@ NIGHTLY_VERIFY = [
 GODOT_TESTS = ['res://tests/rand/krand_test.gd', 'res://tests/clock/kseason_test.gd', 'res://tests/clock/kseason_flush_test.gd', 'res://tests/fire/kfire_test.gd', 'res://tests/tags/ktags_test.gd', 'res://tests/tags/ksound_test.gd',
                'res://tests/mask/kmask_test.gd', 'res://tests/mask/kmask_distance_test.gd', 'res://tests/atmos/atmos_test.gd',
                'res://tests/verge/verge_sim_test.gd', 'res://tests/dhelv/dhelv_sim_test.gd', 'res://tests/isle/isle_books_test.gd', 'res://tests/export/isle_test.gd', ('res://tests/export/isle_test.gd', '--case=world-isle-valapo', '--town=valapo'),
-               'res://tests/dhelv/dhelv_nav_test.gd', 'res://tests/terrain/kfield_test.gd', 'res://tests/terrain/kstrata_test.gd', 'res://tests/terrain/kstrata_vary_test.gd', 'res://tests/terrain/klava_test.gd', 'res://tests/resources/kres_field_test.gd',
+               'res://tests/dhelv/dhelv_nav_test.gd', 'res://tests/terrain/kfield_test.gd', 'res://tests/terrain/kstrata_test.gd', 'res://tests/terrain/kstrata_vary_test.gd', 'res://tests/terrain/klava_test.gd', 'res://tests/terrain/kslab_test.gd', 'res://tests/resources/kres_field_test.gd',
                'res://tests/terrain/field_import_test.gd', 'res://tests/tags/records_test.gd',
                'res://tests/export/world_test.gd', 'res://tests/export/iziz_test.gd', 'res://tests/export/yuni_test.gd', 'res://tests/export/yuni_interiors_test.gd', 'res://tests/export/longsong_test.gd', 'res://tests/water/water_test.gd',
                'res://tests/water/falls_case_test.gd', 'res://tests/water/gaps_test.gd',

@@ -66,4 +66,16 @@ ok('continuous: the steepest step a metre is '+J.toFixed(1)+' m (under 40: a bac
 ok('refuses a line of one point, a zero h, a NaN',throws(()=>R.slab({pts:[[0,0]],h:10}))&&throws(()=>R.slab({pts:[[0,0],[9,0]],h:0}))&&throws(()=>R.slab({pts:[[0,NaN],[9,0]]})),
   throws(()=>R.slab({pts:[[0,0],[9,0]],h:10})));
 ok('waters: none',Array.isArray(R.waters(S,()=>0))&&R.waters(S,()=>0).length===0,false);
+// ---- the golden file for kslab.gd (the station's setting on a bent rim, a big seed, a scar): --write rewrites golden-slab.json
+const gR=R.slab({pts:[[-3000,200],[-1000,0],[800,60],[3000,-150]],side:1,h:1990,run:650,dip:.123,seed:3735928559,
+  spurs:{sp:520,spread:[.4,1.9],w:[.7,.97],out:[20,170],run:[.65,1.6],power:[1,1.9],dh:[-.08,.03],tip:[.02,.12]},gullies:{back:[20,130]},
+  cones:{h:[50,150],reach:[160,360]},skirt:{h:.075,reach:.58},scars:[{s:3200,w:600,back:170,run:.6}]});
+const gP=[];for(let x=-2800;x<=2800;x+=83)for(let z=-1300;z<=500;z+=31)gP.push([x,z]);
+const gF=path.join(__dirname,'golden-slab.json'),golden={slab:R.slabExport(gR),points:gP,shape:gP.map(p=>R.shape(gR,p[0],p[1],3290)),
+  at:gP.map(p=>{const a=R.at(gR,p[0],p[1]);return a?[a.part,a.spur,a.fresh,a.share]:null;})},gJ=JSON.stringify(golden);
+if(process.argv.includes('--write')){fs.writeFileSync(gF,gJ);console.log('wrote golden-slab.json');}
+ok('golden-slab.json is the module\'s output (--write rewrites it)',fs.existsSync(gF)&&fs.readFileSync(gF,'utf8')===gJ,false);
+ok('the export is plain data (format krator-slab) and refuses another kind',golden.slab.format==='krator-slab'&&golden.slab.spurs.length===gR.spurs.length,!throws(()=>R.slabExport(sc)));
+const gParts={};golden.at.forEach(a=>{if(a)gParts[a[0]]=1;});
+ok('the golden reaches every part ('+Object.keys(gParts).join(', ')+')',['plateau','spur','face','gully','cone','skirt','scar'].every(k=>gParts[k]),false);
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);

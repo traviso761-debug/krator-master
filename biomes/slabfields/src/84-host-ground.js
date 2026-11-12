@@ -5,6 +5,7 @@
 //   aGL.y  STEPPE   ground.steppe: the bench's dry ground off the apron (141 mm, Dsc)
 //   aGL.z  SEEP     ground.reedbed: the spring line's wet ground and the brook's banks
 //   aGL.w  LICHEN   ground.lichen.crust: the slab's old surface behind the rim, and the bench's bare patches
+//   aFr    the fresh scar (KRELIEF.at(...).fresh off the slab's plateau): paler, bare of lichen and steppe
 //   aWet   the water's wet band from WATER.fieldAt's shore (89z)
 // ?kground=0: the paint alone. ?strata=0: no beds on the faces.
 const GQ=new URLSearchParams(location.search),USE_KG=typeof KGROUND!=='undefined'&&GQ.get('kground')!=='0';
@@ -13,12 +14,15 @@ const KG_RELIEF=USE_KG&&GQ.get('kgrelief')!=='0';
 const STRATA=GQ.get('strata')==='0'||typeof KSTRATA==='undefined'?null:KSTRATA.create({seed:4130+SITE.station,recipe:'slab-floodbasalt',range:[SITE.base-600,SITE.slab.crest+200],
  dip:[0,-1,SITE.slab.dip],warp:[22,7]});   /* warped: the flows thicken and pinch along the face, not ruled lines */
 const STRATA_SH=STRATA?KSTRATA.shade(STRATA,{dust:0x8a7e70}):null;
+/* THE SCAR: the fresh collapse's face and its skirt, from KRELIEF.at's fresh (38d); paler, unweathered, bare of lichen (aFr) */
+const SCAR_X=SITE.apron.x0;   /* 45: the scar sits on the rim over the apron's axis */
+function freshAt(x,z){if(Math.abs(x-SCAR_X)>1700)return 0;const a=KRELIEF.at(L.W,x,z);return a&&a.part&&a.part!=='plateau'?clamp(a.fresh*1.4,0,1):0;}
 function masksAt(x,z,h,out){const wet=FC.at(FC.a.wet,x,z),rock=FC.at(FC.a.rock,x,z),ap=FC.at(FC.a.rim,x,z),behind=z-L.rimZ(x);
  const rub=clamp(ap*1.2,0,1)*(1-smooth(.6,.85,rock)*.5);
  const seep=clamp(smooth(.45,.75,wet)*(1-rub*.6),0,1);
  const lich=clamp(Math.max(smooth(0,120,behind),.6*smooth(.55,.75,fbm(x*.004,z*.004,81,2))*(1-ap))*(1-seep),0,1);
  const step=clamp((1-ap)*(1-smooth(-40,60,behind))*(1-seep)*(1-rock*.8),0,1);
- out[0]=rub;out[1]=step;out[2]=seep;out[3]=lich;return out;}
+ const fr=freshAt(x,z);out[0]=rub*(1-fr*.7);out[1]=step*(1-fr);out[2]=seep;out[3]=lich*(1-fr);return out;}
 // THE PAINT: the macro colour under the layers
 const PAINT={base:0x8e8264,dry:0x9e9070,rub:0x5a524c,lich:0x7a7670,seep:0x5e6e42,snow:0xe8ecf2,rock:0x4a4440};
 const TEX_GROUND=BIO.canvasTex(1536,1536,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;const S=TERR.R*2.2;
@@ -38,12 +42,13 @@ const TEX_DETAIL=BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h)
 const MAT_GROUND=USE_KG?new THREE.MeshStandardMaterial({map:TEX_GROUND,color:0xd8d4cc,roughness:.95,metalness:0}):new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0xd8d4cc});
 MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};
  if(STRATA_SH)STRATA_SH.inject(sh);
- sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;varying vec3 vGWN;attribute vec4 aGL;varying vec4 vGL;attribute float aWet;varying float vWet;')
-  .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vGWN=normalize(mat3(modelMatrix)*objectNormal);vGL=aGL;vWet=aWet;');
- sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail;varying vec3 vGWP;varying vec3 vGWN;varying vec4 vGL;varying float vWet;float gSteep;')
+ sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;varying vec3 vGWN;attribute vec4 aGL;varying vec4 vGL;attribute float aWet;varying float vWet;attribute float aFr;varying float vFr;')
+  .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vGWN=normalize(mat3(modelMatrix)*objectNormal);vGL=aGL;vWet=aWet;vFr=aFr;');
+ sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail;varying vec3 vGWP;varying vec3 vGWN;varying vec4 vGL;varying float vWet;varying float vFr;float gSteep;')
   .replace('#include <map_fragment>','#include <map_fragment>\n{vec3 dt=texture2D(uDetail,vGWP.xz*0.165).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.021+0.37).rgb;gSteep=smoothstep(0.32,0.62,1.0-clamp(vGWN.y,0.0,1.0));vec3 _gT=diffuseColor.rgb*1.5;'+(USE_KG?'\n/*KGROUND*/\n':'')+
   'diffuseColor.rgb*=dt*dt2*1.12;'+
   (STRATA_SH?'diffuseColor.rgb=mix(diffuseColor.rgb,strataColor(vSWP,vSWN),gSteep*0.92);':'')+
+  'diffuseColor.rgb=mix(diffuseColor.rgb,diffuseColor.rgb*vec3(1.42,1.38,1.32)+vec3(0.05,0.045,0.04),vFr);'+   /* the scar: fresh rock, paler and unweathered */
   'diffuseColor.rgb*=mix(vec3(1.0),vec3(0.62,0.6,0.56),vWet);}');};
 if(USE_KG)KGROUND.hook(MAT_GROUND,{key:'slabfields-'+SKEY+'-ground',at:'/*KGROUND*/',relief:KG_RELIEF?{bump:.08,cavity:.8,mesh:1}:null,layers:[
  KGROUND.layer('slabfields','rock.rubble.sturzstrom',{w:'vGL.x',amt:.9,gain:1.0,tint:'vec3(1.0)',name:'the apron\'s rubble'}),
@@ -52,13 +57,13 @@ if(USE_KG)KGROUND.hook(MAT_GROUND,{key:'slabfields-'+SKEY+'-ground',at:'/*KGROUN
  KGROUND.layer('slabfields','ground.lichen.crust',{w:'vGL.w',amt:.7,gain:1.0,tint:'vec3(1.0)',name:'lichen crust'}),
  {kind:'clast',w:'gSteep*0.85',amt:.7,proj:'tri',size:1.1,matrix:.12,matrixColor:0x4e4844,sub:.2,fleck:0,jitter:.9,vary:.35,palette:[0x4a4440,0x5a524c,0x3e3a36,0x6a5a50,0x7a4a3a],seed:513,name:'talus'}]});
 const GROUND=(function(){const N=640,S=TERR.R*2.2,cs=S/N,nx=N+1,m4=[0,0,0,0];
- const pos=new Float32Array(nx*nx*3),uv=new Float32Array(nx*nx*2),gl=new Float32Array(nx*nx*4);
+ const pos=new Float32Array(nx*nx*3),uv=new Float32Array(nx*nx*2),gl=new Float32Array(nx*nx*4),fr=new Float32Array(nx*nx);
  for(let j=0;j<nx;j++)for(let i=0;i<nx;i++){const k=j*nx+i,x=-S/2+i*cs,z=-S/2+j*cs,y=landH(x,z);pos[k*3]=x;pos[k*3+1]=y;pos[k*3+2]=z;uv[k*2]=x/S+.5;uv[k*2+1]=.5-z/S;
-  masksAt(x,z,y,m4);gl[k*4]=m4[0];gl[k*4+1]=m4[1];gl[k*4+2]=m4[2];gl[k*4+3]=m4[3];}
+  masksAt(x,z,y,m4);gl[k*4]=m4[0];gl[k*4+1]=m4[1];gl[k*4+2]=m4[2];gl[k*4+3]=m4[3];fr[k]=freshAt(x,z);}
  const idx=new Uint32Array(N*N*6);let t=0;
  for(let j=0;j<N;j++)for(let i=0;i<N;i++){const a=j*nx+i,b=a+nx,c=b+1,d=a+1;idx[t++]=a;idx[t++]=b;idx[t++]=d;idx[t++]=b;idx[t++]=c;idx[t++]=d;}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('uv',new THREE.BufferAttribute(uv,2));
- g.setAttribute('aGL',new THREE.BufferAttribute(gl,4));g.setAttribute('aWet',new THREE.BufferAttribute(new Float32Array(nx*nx),1));
+ g.setAttribute('aGL',new THREE.BufferAttribute(gl,4));g.setAttribute('aWet',new THREE.BufferAttribute(new Float32Array(nx*nx),1));g.setAttribute('aFr',new THREE.BufferAttribute(fr,1));
  g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);if(KG_RELIEF)KGROUND.cavityMesh(m);m.receiveShadow=true;m.userData.probeSkip=true;m.userData.inspectLabel=SITE.name;scene.add(m);return m;})();
 // the places, as records the inspector and the export read; the hazards on them (core/hazard reads the tags; PLAN.md section 11)
 REGISTER({name:SITE.name,x:0,z:0,y:terrainH(0,0)-40,r:600,h:200});

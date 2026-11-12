@@ -212,6 +212,7 @@ Godot (`biomes/GODOT.md`).
 | `47-core-therm.js` | the ground's temperature (global `KTHERM`, [G data], opt-in): vents as point or line records over the country's soil; `heatAt`, `bake`, `contour`, `snowMask`, `export`. Below |
 | `test-therm.js`, `golden-therm.json` | `node core/terrain/test-therm.js` (each check with a negative; `--write` rewrites the golden file) |
 | `ktherm.gd`, `ktherm_test.gd` | the GDScript twin (`class_name KTherm`) and its test on the golden file; copies in `godot/tests/terrain/` |
+| `kslab.gd`, `kslab_test.gd`, `golden-slab.json` | `KRELIEF.slab`'s GDScript twin (`class_name KSlab`): samples a `KRELIEF.slabExport` record; its test on the golden file `test-slab.js --write` writes; copies in `godot/tests/terrain/` |
 | `host/46-core-lava-gpu.js`, `host/46-core-lava-draw.js` | KLAVA's three.js halves: `KLAVA.gpu` (the step as render passes on float textures, ping-pong; `KLAVA.gpuCheck` against the CPU) and `KLAVA.surface` (the moving surface on core/atmos's lava chunk, its glow by temperature) |
 | `host/` | the three.js halves of 35, 44 and 45 (`35-core-strata-shade.js`, `44-core-farfield-draw.js`, `45-core-horizon-shade.js`: named to sort before a page's host fragment of the same number, and merging into the same global as the data half whichever loads first), listed by explicit path in a build.py (below) |
 

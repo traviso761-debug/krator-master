@@ -6,7 +6,7 @@ const VIEWS=(function(){const S=SITE,zf=L.footZ(0),zt=L.toeZ(0)||-2000,big=BLOCK
   'The cliff\'s face':look(400,zf-700,30,200,zf+300,700),
   'Under the face (the talus)':look(-600,zf-260,2,-500,zf+100,300),
   'A field-sized block':look(B0.x-B0.r*2.6,B0.z-B0.r*2.2,2,B0.x,B0.z,(B0.top-B0.y0)*.5),
-  'The spring line':look(s.x+60,s.z-80,1.8,s.x,s.z,0),
+  'The spring line':look(s.x+s.r*1.4+8,s.z-s.r*2.2-14,6,s.x,s.z,-1),   /* from a hummock on the toe's rim, looking down into the seep */
   'Along the toe':look(-2000,(L.toeZ(-1200)||zt)-60,4,1500,(L.toeZ(1200)||zt)+40,10),
   'From afar':look(-1600,-2700,260,0,zf,600)};})();
 function describe(hit){const p=hit.point,o=hit.object;

@@ -18,6 +18,7 @@
 //     scars:[{s (m along the rim), w (half-width, m), back (m), run (factor: <1 steeper, fresh)}],
 //     rough:{face:.03, flute:.018, crest:.05}})   -> a record {kind:'slab', ...} (plain data, JSON-safe)
 //   KRELIEF.shape(S, x, z, g)   the ground with the slab on it (g the ground without it: the floor before the slab, the plain)
+//   KRELIEF.slabExport(S)       the record as plain JSON (format 'krator-slab'): the GDScript twin core/terrain/kslab.gd samples it the same
 //   KRELIEF.at(S, x, z)         {part:'plateau'|'spur'|'face'|'ledge'|'gully'|'scar'|'cone'|'skirt', s, d, dd, share, spur, fresh} or null
 //   KRELIEF.slabProfile(S, s, n) the height over g (no noise) at n points across the face at arc length s, for the model's side
 // Every draw is KRAND.hash(seed, slot, salt); the noise is KRAND.fbm on (s, d) and (x, z). Opt-in; needs core/rand and
@@ -122,5 +123,8 @@
   KR.apply=function(ground,recs){return function(x,z){var g=ground(x,z);for(var i=0;i<recs.length;i++)g=KR.shape(recs[i],x,z,g);return g;};};
   KR.kinds=function(){return kinds0().concat(['slab']);};
   KR.waters=function(R,ground){if(R&&R.kind==='slab')return [];return waters0?waters0(R,ground):[];};
-  KR.slab=slab;KR.slabProfile=slabProfile;KR._slab=true;
+  /* the record as plain data for Godot (core/terrain/kslab.gd reads it; golden-slab.json holds the two to the same heights) */
+  function slabExport(R){if(!R||R.kind!=='slab')throw new Error('KRELIEF.slabExport: not a slab record');
+    return JSON.parse(JSON.stringify(Object.assign({format:'krator-slab',version:1},R)));}
+  KR.slab=slab;KR.slabProfile=slabProfile;KR.slabExport=slabExport;KR._slab=true;
 })(typeof window!=='undefined'?window:globalThis);

@@ -96,7 +96,12 @@ const BLOCKS=(function(){const B=SITE.blocks,AP=SITE.apron,out=[],SPC=KSPACE.cre
    let y0=1e9;for(let a=0;a<12;a++){const an=a/12*TAU;y0=Math.min(y0,L.land(x+Math.cos(an)*r,z+Math.sin(an)*r));}
    const ry=h(4)*TAU,e=lerp(1,1.7,h(5)),split=h(6)<.55;
    const tiers=split?[{h:H*.62,r,e,ry},{h:H*.38,r:r*lerp(.55,.85,h(7)),e:e*lerp(.9,1.2,h(8)),ry:ry+lerp(-.4,.4,h(9)),dx:lerp(-.15,.15,h(10))*r,dz:lerp(-.15,.15,h(11))*r}]:[{h:H,r,e,ry}];
-   let S=null;try{S=KSTACKS.make({kind:'butte',id:'block'+i,x,z,y0:y0-1.5,seed:KRAND.hash(WORLD,1100+i,7),tiers,bed:[4,12],lobes:.14,weather:.25});}catch(e){continue;}
+   /* BROKEN BASALT, not a pile of beds (the owner, 2026-11-12): one or two thick beds (a block broken across a flow), columnar
+      jointing on its walls (the colonnade's prisms, o.columns), squared corners (footR's superellipse) and crisp edges (the chamfer
+      and the partings' notch cut to a third) */
+   let S=null;try{S=KSTACKS.make({kind:'butte',id:'block'+i,x,z,y0:y0-1.5,seed:KRAND.hash(WORLD,1100+i,7),tiers,bed:[H*.45,H*.75],lobes:.035,weather:0,
+    columns:{w:[1.4,2.8],d:.4,ent:.4}});}catch(e){continue;}
+   S.beds.forEach((b,k)=>{b.sq=lerp(6,11,KRAND.hash(WORLD,1300+i,k)/4294967296);b.ch*=.3;b.nt*=.3;});
    S.name=big?'A field-sized block of the Anvil\'s basalt ('+Math.round(r*2)+' m across, '+Math.round(H)+' m high)':'A block of the Anvil\'s basalt ('+Math.round(H)+' m)';
    S.big=big;S.r=r;out.push(S);SPC.insert(S,x,z,r);break;}}
  // THE TALUS'S FRESH BLOCKS: the rockfall's latest, lying on the skirt under the face (2-4 a 500 m length; spires and small buttes, 3-9 m)
@@ -104,7 +109,8 @@ const BLOCKS=(function(){const B=SITE.blocks,AP=SITE.apron,out=[],SPC=KSPACE.cre
   for(let k=0;k<n;k++){const h=j=>KRAND.hash(WORLD,1500+k,(x+3000)*8+j)/4294967296;const bx=x+lerp(-220,220,h(0)),bz=L.footZ(bx)-lerp(40,SITE.slab.talus.reach*.75,h(1)),r=lerp(3,8,h(2)),H=lerp(3,9,h(3));
    if(SPC.some(bx,bz,r+20,o=>Math.hypot(o.x-bx,o.z-bz)<o.r+r+4))continue;
    let y0=1e9;for(let a=0;a<8;a++){const an=a/8*TAU;y0=Math.min(y0,L.land(bx+Math.cos(an)*r,bz+Math.sin(an)*r));}
-   let S=null;try{S=KSTACKS.make({kind:'butte',id:'talus'+x+'_'+k,x:bx,z:bz,y0:y0-1,seed:KRAND.hash(WORLD,1600+k,x+3000),tiers:[{h:H,r,e:lerp(1,1.5,h(4)),ry:h(5)*TAU}],bed:[1,3],lobes:.25,weather:.5});}catch(e){continue;}
+   let S=null;try{S=KSTACKS.make({kind:'butte',id:'talus'+x+'_'+k,x:bx,z:bz,y0:y0-1,seed:KRAND.hash(WORLD,1600+k,x+3000),tiers:[{h:H,r,e:lerp(1,1.5,h(4)),ry:h(5)*TAU}],bed:[H,H],lobes:.03,weather:0});}catch(e){continue;}
+   S.beds.forEach(b=>{b.sq=lerp(6,12,h(6));b.ch*=.25;b.nt*=.2;});   /* fresh: sharp and squared */
    S.name='A block fallen from the face (fresh: no lichen on it)';S.big=false;S.talus=true;S.r=r;out.push(S);SPC.insert(S,bx,bz,r);}}
  return out;})();
 function landH(x,z){return L.land(x,z);}

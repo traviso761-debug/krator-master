@@ -20,8 +20,8 @@
   "ground.steppe": {
    "lib": "ground.steppe",
    "scale": [
-    3.0,
-    3.0
+    6.5,
+    6.5
    ],
    "tint": {
     "keep": 0.6,

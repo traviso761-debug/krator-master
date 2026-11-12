@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 18 (28%) | 12 (19%) | 2 (2%) | 24 (37%) | 9 (14%) |
+| KB | 9 (13%) | 9 (13%) | 2 (2%) | 27 (38%) | 23 (33%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -15,19 +15,19 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/00-head.html` | 1.2 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `src/40-biome-slab-sites.js` | 2.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/41-biome-slab-strata.js` | 1.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | a KSTRATA recipe (KSTRATA.add): plain data |
-| `src/45-host-stage.js` | 13.2 | [web] | 7 | 0 | 3 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/50-biome-slab-species.js` | 5.5 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: the records are data; the items and materials draw (BIO.def, BIO.alphaTex) |
+| `src/45-host-stage.js` | 15.6 | [web] | 7 | 0 | 3 | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/50-biome-slab-species.js` | 5.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: the records are data; the items and materials draw (BIO.def, BIO.alphaTex) |
 | `src/60-biome-slab-place.js` | 3.9 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | placement on KRAND cells; its colours are THREE.Color (SLAB.C): data once colours are hex |
 | `src/70-biome-slab.js` | 0.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/84-host-ground.js` | 8.3 | [G shader] | 5 | 2 | 0 | 0 | 0 | 1 | 5 | 0 | 0 | 0 | 0 |  |
-| `src/85-host-far.js` | 4.8 | [web] | 3 | 0 | 0 | 0 | 2 | 0 | 2 | 0 | 0 | 0 | 0 |  |
-| `src/86-host-blocks.js` | 4.1 | [draw] | 5 | 1 | 0 | 0 | 0 | 1 | 5 | 0 | 0 | 0 | 0 | the blocks registered, then meshed (KSTACKS.mesh) on a triplanar shader |
+| `src/84-host-ground.js` | 9.3 | [G shader] | 5 | 2 | 0 | 0 | 0 | 1 | 5 | 0 | 0 | 0 | 0 |  |
+| `src/85-host-far.js` | 4.9 | [web] | 3 | 0 | 0 | 0 | 2 | 0 | 2 | 0 | 0 | 0 | 0 |  |
+| `src/86-host-blocks.js` | 4.5 | [draw] | 5 | 1 | 0 | 0 | 0 | 1 | 5 | 0 | 0 | 0 | 0 | the blocks registered, then meshed (KSTACKS.mesh) on a triplanar shader |
 | `src/88-host-place.js` | 1.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/89-host-sky.js` | 1.6 | [G native] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/89a-host-atmos.js` | 3.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/89w-host-water.js` | 2.0 | [draw] | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/89z-host-build.js` | 5.2 | [web] | 1 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/99-host-take.js` | 7.0 | [draw] | 1 | 0 | 0 | 0 | 0 | 2 | 0 | 2 | 0 | 0 | 0 |  |
+| `src/99-host-take.js` | 7.3 | [draw] | 1 | 0 | 0 | 0 | 0 | 2 | 0 | 2 | 0 | 0 | 0 |  |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 
 ## Notes

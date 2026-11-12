@@ -57,7 +57,9 @@ Its own file, not part of `38c`, so no page that takes `38c` moves. It composes 
 `KRELIEF.slabProfile(rec, s, n)` gives the height over the ground across the face at arc length `s` (no noise), for the model's
 side. Test: `node core/terrain/test-slab.js` (every check with a negative: the spurs differ, a spur stands out past a gully, gullies
 notch the crest, the ramp's fall, the floor exactly untouched, the cones, the ledges, a scar, every part, continuity, the inputs).
-No Godot twin yet.
+**Godot:** `KRELIEF.slabExport(rec)` gives the record as plain JSON (`format: 'krator-slab'`); `kslab.gd` (`class_name KSlab`) samples it
+with the same arithmetic (`shape`, `at`), held to `golden-slab.json` (`test-slab.js --write`) by `kslab_test.gd` within 1e-6 m (it reads 1e-12 on
+Godot 4.7.2); copies in `godot/tests/terrain/`.
 
 | Kind | What it draws | Parts (`at`) | Plans it serves |
 |---|---|---|---|
