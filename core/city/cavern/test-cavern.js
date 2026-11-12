@@ -210,6 +210,24 @@ const G = path.join(__dirname, 'golden.json');
   ok(p.some(q => q.a === 'far'), 'negative: a house 100 m down the tube has none');
   ok(CV.frontage(D).length === 0, 'Dhelv\'s shape: the floor and wall sites front their ways (' + CV.frontage(D).map(q => q.msg).join('; ') + ')');
 }
+/* a terminus: two platforms (two spines) joined by a concourse link across the buffers' end; sites on both reach each other */
+{
+  const T = CV.lineHold({ id: 'term', world: 77, decks: [{ i: 0, y: 1.8 }],
+    spine: { id: 'pn', pts: [[0, 1.8, -9], [100, 1.8, -9]], w: 4, h: 6, deck: 0 },
+    spines: [{ id: 'ps', pts: [[0, 1.8, 9], [100, 1.8, 9]], w: 4, h: 6, deck: 0 }],
+    links: [{ id: 'concourse', kind: 'passage', a: 'pn:b', b: 'ps:b', pts: [[100, 1.8, -9], [104, 1.8, -9], [104, 1.8, 9], [100, 1.8, 9]], w: 4, h: 4, deck: 0, prim: 'none' }],
+    sidings: [{ id: 'n1', at: 30, side: -1, len: 30, deck: 0 }, { id: 's1', from: 'ps', at: 50, side: 1, len: 30, deck: 0 }],
+    fill: [{ way: 'n1', defs: SETS }, { way: 's1', defs: SETS }] });
+  const N = CV.nav(T), adj = {};
+  N.edges.forEach(e => { (adj[e.a] = adj[e.a] || []).push(e.b); (adj[e.b] = adj[e.b] || []).push(e.a); });
+  const seen = new Set(['pn:a']), st = ['pn:a'];
+  while (st.length) { const n = st.pop(); for (const m of adj[n] || []) if (!seen.has(m)) { seen.add(m); st.push(m); } }
+  ok(T.sites.length > 6 && T.sites.every(s => seen.has(s.id)) && CV.audit(T).ok, 'a terminus: two platforms and a concourse; every site on either side reached (' + T.sites.length + ')');
+  const T2 = CV.lineHold({ id: 'term2', world: 77, decks: [{ i: 0, y: 1.8 }], spine: { id: 'pn', pts: [[0, 1.8, -9], [100, 1.8, -9]], w: 4, h: 6, deck: 0 },
+    spines: [{ id: 'ps', pts: [[0, 1.8, 9], [100, 1.8, 9]], w: 4, h: 6, deck: 0 }], sidings: [{ id: 's1', from: 'ps', at: 50, side: 1, len: 30, deck: 0 }], fill: [{ way: 's1', defs: SETS }] });
+  const N2 = CV.nav(T2), D2 = CV.dist(T2, 'pn:a');
+  ok(D2['s1:end'] == null, 'negative: without the concourse the siding off the far platform is out of reach');
+}
 /* [G data]: no three.js, no DOM */
 {
   const src = fs.readFileSync(path.join(__dirname, '10-city-cavern.js'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');

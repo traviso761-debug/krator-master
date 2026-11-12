@@ -111,3 +111,16 @@ for measuring (verify.py checks the worn state this way).
 
 `core/hamlet/fellgang/22-hamlet-fellgang.js` (opt-in; `core/hamlet/fellgang/README.md`): `KHAMLET.CULTURES.fellgang`,
 `KHAMLET.FOCI` + `fowling`, `ice`, `KHAMLET.FOCUS_INFO`.
+
+## TG.tg: the Tungang set (src/44-tg-kit.js, 82-tg-host.js)
+
+| Call | What |
+|---|---|
+| `TG.tg.draw(sites, o)` | draw a plan's sites (KCITY.cavern's records `{id, key, x, y, z, ry, state, num, loj, span, h}`: x, y, z the foot of the front) after the world has carved the rock and registered the sites; `o {scene, seed, state, label}`. Dry. Returns the meshes with `.group`, `.recs`, `.missing`, `.tris`, `.lights` (light records), `.furniture` (pieces placed), `.missingFurn` |
+| `TG.tg.plan(key, o)` / `TG.tg.planOf(site)` | a def's void plan: `[{id, kind: 'room', x, z, w, d, y, h}]` or a stair `{kind: 'stair', a, b, w, h}`, in the front-foot frame |
+| `TG.tg.BOX`, `TG.tg.dims(key)` | each def's box behind its front, its tier and its door's lamp code |
+| `TG.tg.LAMP`, `TG.tg.PAL`, `TG.tg.SCALE` | the lamp code (colour, KCAVELIGHT kind, range, intensity), the palette (PLAN.md 1.5.1), 0.94 |
+| `TG.tg.proto(key, o)` | one def alone at the origin |
+| `TG.tg.check.box(recs)`, `.plans()`, `.lamps(out)` | the checks verify.py runs |
+
+A world that loads the bundle with the Tungang pieces passes `cultures` (see `tungang_bundle.bundle`) including `tungang`.

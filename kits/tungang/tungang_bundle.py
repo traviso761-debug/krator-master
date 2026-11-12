@@ -28,7 +28,7 @@ NL = '\n'
 ENGINE = ['10-core.js', '27-mat.js', '30-geo.js', '36-def.js', '36o-open.js', '36s-stair.js']
 CORE = [('core/rand', '08-core-rand.js'), ('core/materials/record', '23-mat-record.js'), ('core/materials/record', '24-tex-def.js'),
         ('core/materials/record', '25-matlib-host.js')]
-KIT_SKIP = ('00-head.html', '89-rows.js', '91t-fg-sheet.js', '96t-fg-views.js', '99-sheet-fg.js')
+KIT_SKIP = ('00-head.html', '89-rows.js', '91t-fg-sheet.js', '96t-fg-views.js', '99-sheet-fg.js', '91g-tg-sheet.js', '96g-tg-views.js')
 LEAN = ('stone', 'turf', 'pole', 'wood', 'plate', 'rust', 'rope', 'cord')
 
 HEAD = r'''
@@ -97,12 +97,13 @@ def files():
     return fs
 
 
-def furn_text(on):
+def furn_text(on, cultures=None):
     if not on:
         return STUB_FURN
     sys.path.insert(0, os.path.join(ROOT, 'kits', 'catalog'))
     import furniture_bundle
-    return ('/* ---- kits/catalog (furniture_bundle.py: %s) ---- */' % ', '.join(FURN_CULTURES) + NL + furniture_bundle.bundle(FURN_CULTURES) + NL +
+    cs = cultures or FURN_CULTURES
+    return ('/* ---- kits/catalog (furniture_bundle.py: %s) ---- */' % ', '.join(cs) + NL + furniture_bundle.bundle(cs) + NL +
             'KratorFurniture.setDetail(.6);' + NL + FURN_HEAD)
 
 def pack(tex=True):
@@ -124,9 +125,10 @@ def pack(tex=True):
     return "KMAT.pack('tungang', {\n" + ',\n'.join(out) + '\n});\n'
 
 
-def bundle(tex=True, with_files=False, furniture=False):
+def bundle(tex=True, with_files=False, furniture=False, cultures=None):
     """furniture=True seals the catalog's fellgang, generic and generic-goods pieces in (about 0.4 MB more: README.md, "For
-    another world"), so TG.fg.draw furnishes what it draws; off by default"""
+    another world"), so TG.fg.draw furnishes what it draws; off by default. cultures: the catalog cultures sealed in with the
+    furniture (default FURN_CULTURES; a Tungang hold passes ['tungang', 'generic', 'generic-goods'] for TG.tg.draw)"""
     fs = files()
     names = sorted(list(fs) + ['26-matlib-pack.js'])
     body = ''
@@ -136,7 +138,7 @@ def bundle(tex=True, with_files=False, furniture=False):
         else:
             body += '/* ---- %s ---- */%s%s%s;%s' % (rel(fs[n]), NL, rd(fs[n]), NL, NL)
     js = safe('/* TG: the Tungang kit in one closure (kits/tungang/tungang_bundle.py). GENERATED: edit kits/tungang/src or core/. */' + NL +
-              'var TG = (function(){' + NL + HEAD + furn_text(furniture) + body + TAIL + '})();' + NL)
+              'var TG = (function(){' + NL + HEAD + furn_text(furniture, cultures) + body + TAIL + '})();' + NL)
     return (js, [rel(fs[n]) for n in names if n in fs] + ['kits/tungang/tex']) if with_files else js
 
 

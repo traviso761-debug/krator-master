@@ -3,7 +3,8 @@
 The culture kit of the Rift's tunnel people, the Tungangs, their kin on the rim and the fells, the Fellgangs, and the
 Glaziers of Opal Valley: **one kit, three sets** on one salvage foundation (`PLAN.md`, the design; its owner's answers
 blocks are the decisions). **Built so far: the Fellgang set (`fg`)**, the fell villages of `PLAN.md` section 3.3.1 (the
-owner, 2026-11-11: "build the fellgang villages now"). The Tungang (`tg`) and Glazier (`gz`) sets come later.
+owner, 2026-11-11: "build the fellgang villages now") and **the Tungang set (`tg`)**, the carved defs Loj Twenny needs (`PLAN.md`
+section 3.2; below). The Glazier (`gz`) set comes later.
 
 - **Page:** `dist/tungang.html` (the kit sheet), its library pack beside it (`dist/tungang.tex.tungang.js`).
 - **Build:** `python3 tools/build.py kits/tungang` (runs `build.py`, records `build-inputs.json`).
@@ -125,3 +126,36 @@ What this set takes (trimmed from `PLAN.md` section 8 to what is built; `python3
 `node tests/test-bundle.js` runs the sealed bundle without a browser: both riftrim villages (their stations' specs) drawn on a
 slope, the plinth, the hall variants by focus, every key at 8 seeds in three characters within the contract, the ice village
 lower than the Fowlers', a rope, the road pieces, the furnished bundle; each with its negative.
+
+## The Tungang set (`tg`, 2026-11-11)
+
+The Line's crews' rooms, cut into the rock (`PLAN.md` 3.1-3.2, 5): squared, small and many, hewn or plastered; every door on a
+gallery with its lamp of the code's colour, a stencilled number and its click-ribs; wealth in the salvage fitted. **Carved
+first**: a def is its front and a **void plan** (`TG.tg.plan(key)`: rooms behind its front at -z, a doorway .4 m out past it),
+the one source the world carves (KCAVERN through `KCITY.cavern.carve(H, {plan: TG.tg.planOf})`), the builder draws inside
+and core/city's cavern setting lays out. The frame is a wall site's: the origin the foot of the front, the door facing +z.
+
+| Key | Box (w x d x h) | What it is |
+|---|---|---|
+| `tg-cut` | 2.8 x 3.6 x 2.4 | a single hewn cell: a curtain door, a red lamp, a bunk, a glow-cap jar, a peg wall |
+| `tg-set` | 7.4 x 8.6 x 2.6 | a household's cut rooms: the hearth room (drum stove, trestle, seats, peg wall, bait locker), the sleeping room (box beds), the store; the doorway plastered white with the berth numbers, a child's chalk on it |
+| `tg-loj-hall` | 14 x 17 x 6 | the meeting: the white count wall ruled in squares behind the steward's desk, its low lamp row behind six rows of raked benches, the banner wall, the minutes on enamel, the crew mosaic, the Book's lectern, the Tpresden's chair, the minute chest, the turn bell |
+| `tg-signal-box` | 6.4 x 5.2 x 3 | the steward's office: the lever frame, the desk, the timetable, the rota, the lockers |
+| `tg-carriage-house` | 27 x 8.6 x 5.4 | a Line carriage drawn into a cut bay: plated slit windows, the livery band, the number plate, a brass bell, the banner, the carriage seats set out, a cut galley behind |
+| `tg-dark-beds` | 12.4 x 14 x 3.2 | racks of fungus trays in four rows under amber tending lamps, the mat beds, the mash bin, the drip gutter |
+| `tg-cistern` | 8.4 x 9.4 x 3.6 | a sunk tank of dark water under a plate walk and rails, the drip gutters, the tap and the butts |
+| `tg-bath` | 8.4 x 9.4 x 3.2 | a plastered pool of warm water with steps, benches, the wash trough, the steam |
+| `tg-fan-house` | 6.4 x 8.2 x 4.4 | the Ancients' fan in its frame before the duct, the draught doors, the rota |
+| `tg-doors` | 10 x 4.4 x 5 | the gate across the way (`span`): two plate leaves folded back, the winding gear, the guard cut, the white lamp hooded |
+| `tg-night-mouth` | 3.4 x 16 x 3 | a porch with its click-ribs and hooded white lamp, a cut stair climbing 4.2 m toward the surface, a door at its head |
+| `tg-last-stop` | 7 x 12 x 3 | the seal plates across the siding with the berth numbers painted, the last lamps burning down, the dead in their berths behind |
+
+**States**: `kept`, `worn` (greyed, lamps dimmed, curtains rags, rubble), `abandoned` (dark, the furniture thinned, doors
+hanging, the plaster stained); `o.state`, a site's `state`, or `?tgstate=` on the sheet. **Light**: every lamp is a light
+record in `TG.tg.LIGHTS` (core/cavelight's shape: the lamp code's `lamp-red`, `lamp-green`, `lamp-amber`, `glowcap`,
+`lamp-white` hooded, and `wax` in the rooms). **Furniture**: the catalog's Tungang pieces at **0.94** (`tgFurn` queues them;
+`TG.tg.draw` places them in a batch of their own scaled by `TG.tg.SCALE`: KFURN.drawRec passes no scale).
+
+**The sheet's test hold** (`src/91g-tg-sheet.js`, south of the rows): three galleries, kept, worn and abandoned, each lined
+with every def, laid on `KCITY.cavern`, carved in KCAVERN (drawn as a dollhouse with the rock cut, `39h`), drawn through
+`TG.tg.draw`. Its views start "Test hold". `verify.py --assert` runs the `tg-*` checks.

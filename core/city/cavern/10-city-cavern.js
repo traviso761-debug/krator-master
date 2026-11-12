@@ -165,6 +165,13 @@
     H.nodes.forEach(function (n) { if (n.on) (byNode[n.id] || []).forEach(function (w) { link(w, n.on.way); }); });
     H.sites.forEach(function (s) { if (s.way) link(s.id, s.way); s.joins.forEach(function (j) { link(s.id, j); }); });
     H.spaces.forEach(function (s) { s.joins.forEach(function (j) { link(s.id, j); }); });
+    /* a way that runs in a space (an end node names it: a platform in its station hall) is joined to it, and so are the sites
+       on its walls and the ways that open off it through a node lying along it */
+    function spacesOf(wid) { var w = H.byId[wid], out = []; if (!w) return out;
+      [w.a, w.b].forEach(function (n) { var N = H.byId[n]; if (N && N.space && out.indexOf(N.space) < 0) out.push(N.space); }); return out; }
+    H.ways.forEach(function (w) { spacesOf(w.id).forEach(function (sp) { link(w.id, sp); }); });
+    H.sites.forEach(function (s) { if (s.way) spacesOf(s.way).forEach(function (sp) { link(s.id, sp); }); });
+    H.nodes.forEach(function (n) { if (n.on) spacesOf(n.on.way).forEach(function (sp) { (byNode[n.id] || []).forEach(function (w) { link(w, sp); }); }); });
     return J;
   }
   CV.voids = function (H) {
@@ -512,6 +519,12 @@
       var plan = o.plan ? o.plan(s) : null, c = siteCentre(s), cs = Math.cos(s.ry), sn = Math.sin(s.ry);
       if (!plan || !plan.length) { room(s.id, s.id, c.x, s.y, c.z, s.w, s.d + ov, s.h, s.ry, s.deck, { site: s.id }); return; }
       plan.forEach(function (v, i) {
+        /* a plan's stair (a climb cut in the rock: {kind: 'stair', a, b, w, h} in the site's frame) is KCAVERN's stair */
+        if (v.kind === 'stair' && v.a && v.b) {
+          var T = function (q) { return [r3(s.x + q[0] * cs + q[2] * sn), r3(s.y + q[1]), r3(s.z - q[0] * sn + q[2] * cs)]; };
+          out.push({ id: s.id + '.' + (v.id || i), prim: 'stair', owner: s.id, a: T(v.a), b: T(v.b), w: v.w, h: v.h, deck: s.deck, site: s.id, room: v.id || i });
+          return;
+        }
         /* the plan's boxes in the site's frame (a wall site's origin at its front, the rooms at local -z) */
         var X = s.x + v.x * cs + v.z * sn, Z = s.z - v.x * sn + v.z * cs;
         room(s.id + '.' + (v.id || i), s.id, X, s.y + num(v.y, 0), Z, v.w, v.d, v.h, s.ry + num(v.ry, 0), s.deck, { site: s.id, room: v.id || i, kind: v.kind || null });
@@ -545,6 +558,7 @@
        o.id, o.world, o.tune
        o.decks    [{i, y, name, light}]
        o.spine    {id, pts, w, h, deck, prim ('none': the host carved it), kind, space: a space record the spine runs in}
+       o.spines   more spines of the same shape (a terminus's other platform); o.links ways joining existing nodes
        o.spaces   [space records] (halls, the platform cavern: prim 'none' when the host carved it)
        o.sidings  [{id, at (metres along the spine), side, len, deck, w, h, band, district, kind, from (another siding's id:
                    branch off it instead), drop (a ramp or stair down or up to its deck before it runs level)}]
@@ -561,10 +575,21 @@
     CV.addNode(H, { id: sp.id + ':a', kind: 'end', x: a[0], y: a[1], z: a[2], space: sp.space || null });
     CV.addNode(H, { id: sp.id + ':b', kind: 'end', x: b[0], y: b[1], z: b[2], space: sp.space || null });
     var spine = CV.addWay(H, { id: sp.id, kind: sp.kind || 'gallery', a: sp.id + ':a', b: sp.id + ':b', pts: sp.pts, w: sp.w, h: sp.h, prim: sp.prim, deck: sp.deck });
+    /* more spines (a terminus's second platform), each with its own end nodes, and the links that join existing nodes (a
+       concourse across the buffers' end, a footbridge): ways like any other, joined at their nodes */
+    (o.spines || []).forEach(function (q) {
+      var qa = q.pts[0], qb = q.pts[q.pts.length - 1];
+      CV.addNode(H, { id: q.id + ':a', kind: 'end', x: qa[0], y: qa[1], z: qa[2], space: q.space || null });
+      CV.addNode(H, { id: q.id + ':b', kind: 'end', x: qb[0], y: qb[1], z: qb[2], space: q.space || null });
+      CV.addWay(H, { id: q.id, kind: q.kind || 'gallery', a: q.id + ':a', b: q.id + ':b', pts: q.pts, w: q.w, h: q.h, prim: q.prim, deck: q.deck, joins: q.joins });
+    });
+    (o.links || []).forEach(function (l) { CV.addWay(H, l); });
     (o.sidings || []).forEach(function (S) {
       var base = S.from ? H.byId[S.from] : spine, P = CV.wayAt(base, S.at), side = S.side == null ? 1 : S.side;
       var nx = -P.tz * side, nz = P.tx * side, out = base.w / 2, y0 = P.y;
       var deckY = S.deck == null ? y0 : H.decks.filter(function (d) { return d.i === S.deck; })[0].y;
+      /* the first way out of the base's wall is joined to the base and to the space the base runs in (a platform's hall) */
+      var bsp = [base.a, base.b].map(function (n) { return H.byId[n] && H.byId[n].space; }).filter(Boolean), j0 = [base.id].concat(bsp);
       var jn = S.id + ':j', x0 = P.x + nx * out, z0 = P.z + nz * out;
       CV.addNode(H, { id: S.id + ':on', kind: 'junction', x: P.x, y: y0, z: P.z, on: { way: base.id, s: S.at } });
       CV.addNode(H, { id: jn, kind: 'mouth', x: x0, y: y0, z: z0 });
@@ -577,14 +602,14 @@
         var stair = S.drop === 'stair', run = Math.abs(deckY - y0) / (stair ? 0.7 : 1 / 9), lx = cx + nx * run, lz = cz + nz * run;
         CV.addNode(H, { id: S.id + ':land', kind: 'junction', x: lx, y: deckY, z: lz });
         CV.addWay(H, { id: S.id + ':' + (stair ? 'stair' : 'ramp'), kind: stair ? 'stair' : 'ramp', a: cur, b: S.id + ':land', pts: [[cx, cy, cz], [lx, deckY, lz]],
-          w: S.w == null ? 2.6 : S.w, h: S.h == null ? 2.8 : S.h, district: S.district, joins: [base.id] });
+          w: S.w == null ? 2.6 : S.w, h: S.h == null ? 2.8 : S.h, district: S.district, joins: j0 });
         cur = S.id + ':land'; cx = lx; cz = lz; cy = deckY;
       }
       var ex = cx + nx * S.len, ez = cz + nz * S.len;
       CV.addNode(H, { id: S.id + ':end', kind: 'end', x: ex, y: cy, z: ez });
       CV.addWay(H, { id: S.id, kind: S.kind || 'siding', a: cur, b: S.id + ':end', pts: [[cx, cy, cz], [ex, cy, ez]], w: S.w == null ? 2.6 : S.w,
         h: S.h == null ? 2.8 : S.h, deck: S.deck == null ? null : S.deck, band: S.band || null, district: S.district || null,
-        joins: cur === jn ? [base.id] : [] });
+        joins: cur === jn ? j0 : [] });
     });
     (o.civic || []).forEach(function (c) {
       var w = H.byId[c.way], P = CV.wayAt(w, c.s), side = c.side == null ? 1 : c.side, nx = -P.tz * side, nz = P.tx * side;
