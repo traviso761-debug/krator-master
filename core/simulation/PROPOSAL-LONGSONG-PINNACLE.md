@@ -374,6 +374,34 @@ Longsong can be on the sim after S0-S3. Pinnacle Rock needs S0-S7.
 **The bands:** Mammoth (33) and Dragonfly (34) bake below the 40-person band floor, and the census test checks only the
 Raptor programme.
 
+## 7. Scrap to iron (accepted by the owner, 2026-11-12; not built)
+
+The owner: "there may also be a mechanic to melt scrap to iron". Several cities lack decent ore (Iziz, the Eternian
+capital before it moved to Fulcrum), so Ancient salvage is a second source of iron.
+
+**What exists:**
+- **In the sim:** no `scrap` or `salvage` good and no recipe. The isle demo's iron chain is a smithy: ore 2 + charcoal 1 →
+  iron 1 in 2 h.
+- **In the kits:** the buildings: `pyl_breakers_floor`, `pyl_smelter`, `pyl_scrap_yard`, `pyl_salvagers_guild` (Pylon),
+  `hl_rep_smelter`, `hl_rep_salvage_forge` (the Republic), `vern_salvage_yard` (the Iziz Vernacular).
+- **Planned, not built:** core/camp C8's Salvagers' expeditions; a salvage node family on ruin ground (kits/resources
+  `PLACEMENT-RESEARCH.md` §10).
+
+**The design:**
+- **A salvage site kind:** a `SIM.site` on Ancient ruin ground. Its yield falls as the ruin is stripped, and it does not
+  regrow.
+- **A breakers' floor:** salvage → `scrap`.
+- **A smelter:** scrap 1 + charcoal or coal 1 → iron 1 in 2 h. It beats ore 2 + charcoal 1, because Ancient steel is
+  already refined.
+- **The ruin bit should mark lived-in Ancient cities too** (Pylon, Iziz). Today it marks only ruin pins, so neither counts,
+  and none of the iron-short cities has recorded ruin ground within 60 km.
+- **Fuel within reach** (coal max): Iziz 222, Voth 174, Lux 135, Pylon 108.
+
+**Where it lands:**
+- a goods row and the recipe in the culture tables (phase S2);
+- the site kind in core/simulation;
+- the ruin bit for lived-in Ancient cities in kits/resources' geology.
+
 ## 6. The owner's answers (2026-11-11)
 
 1. **Pinnacle Rock is 3,000.**
