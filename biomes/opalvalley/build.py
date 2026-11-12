@@ -95,7 +95,7 @@ if STATION:
 # core/terrain, opt-in by name (core/README.md "terrain/"): 35 KSTRATA (the risers' banded rhyolite and opal seams, the recipe handed to it as data
 # by 40), 43 KGROUND, 44 KFAR, 45 KHORIZON, 47 KTHERM (the middle bed's warm silica seeps); a station adds its own by station.json "core" (the glacier:
 # 42 KFROST, 44g KGLACIER and its drawer; the upper bed: 42 KFROST). A local src/ copy wins.
-CORE_TERRAIN=['35-core-strata.js','43-core-ground.js','44-core-farfield.js','45-core-horizon.js','47-core-therm.js']
+CORE_TERRAIN=['35-core-strata.js','39-core-cavern.js','39b-core-speleo.js','43-core-ground.js','44-core-farfield.js','45-core-horizon.js','47-core-therm.js']   # 39, 39b: the walk-in adit and its vug (src/85w-host-adit.js)
 for f in CORE_TERRAIN: PATH.setdefault(f,J('core','terrain',f))
 PATH.setdefault('44-core-farfield-draw.js',J('core','terrain','host','44-core-farfield-draw.js'))
 PATH.setdefault('45-core-horizon-shade.js',J('core','terrain','host','45-core-horizon-shade.js'))

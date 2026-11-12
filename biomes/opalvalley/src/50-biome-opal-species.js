@@ -32,25 +32,25 @@ OPAL.KIN=[
   zone:{middlebed:1,lowerbed:.8},ground:'forest',tags:K('temperate','humid','both',['Cfb','Cfa'])},
  {key:'peacockredwood',from:'xanadu.dawnredwood',name:'Peacock dawn redwood',why:'Xanadu\'s dawn redwood on the lakes\' shores and in their shallows: burnished copper sprays in the sun, peacock teal in the shade',
   delta:{colour:{leaf:[0xc8702e,0xd8803a,0xb8642a,0xe0904a]},irid:'TL',scale:{H:.62,rb:.8,crownR:.85}},
-  zone:{upperbed:.55,middlebed:1,lowerbed:1,riftmouth:.6},ground:'shore',tags:K('temperate','humid','yes',['Dfc','Cfb','Cfa','Af'])},
+  zone:{upperbed:.55,middlebed:1,lowerbed:1,riftmouth:1.2},ground:'shore',tags:K('temperate','humid','yes',['Dfc','Cfb','Cfa','Af'])},
  {key:'prismpine',from:'xanadu.cloudpine',name:'Prism cloud pine',why:'Xanadu\'s cloud pine on the moraines and the sinter ledges, its needle pads waxed frost-white with silica',
   delta:{colour:{leaf:[0x5e8a8a,0x6e9aa0,0x4e7a80,0x86a8ac],bark:[0x8a5a4a,0x7a4e44,0x9a6a54]},scale:{H:.85,crownR:.9}},
-  zone:{upperbed:1,middlebed:.2},ground:'dry',tags:K('cold-temperate','subhumid','no',['Dfc','Cfb'])},
+  zone:{upperbed:.5,middlebed:.2},ground:'dry',   /* the upper bed's tree, but thinned: the willows on the tarns' shores share it */tags:K('cold-temperate','subhumid','no',['Dfc','Cfb'])},
  {key:'glassplume',from:'xanadu.frostwillow',name:'Glass-plume frost willow',why:'Xanadu\'s frost willow on the tarns\' and lakes\' shores: curtains of silica-spicule twigs, silver-mint going amethyst',
   delta:{colour:{leaf:[0xc8e8dc,0xd2f0e4,0xb8dcd0]},irid:'SL',scale:{H:.85}},
-  zone:{upperbed:1,middlebed:.8},ground:'shore',tags:K('cold-temperate','humid','yes',['Dfc','Cfb'])},
+  zone:{upperbed:1.6,middlebed:.8},ground:'shore',tags:K('cold-temperate','humid','yes',['Dfc','Cfb'])},
  {key:'firebreaker',from:'xanadu.breakercrown',name:'Fire-opal breaker crown',why:'Xanadu\'s breaker crown on the risers\' rims and the cataract\'s: silica-stiffened blades garnet-black in shade, harlequin orange and gold in the spray',
   delta:{colour:{leaf:[0x8a1420,0xc8341c,0xf06a2a,0xffa030,0xe8502a]},irid:'TL'},
-  zone:{middlebed:.7,lowerbed:1,riftmouth:1},ground:'rim',tags:K('temperate..subtropic','semiarid..subhumid','no',['Cfb','Cfa','Af'])},
+  zone:{middlebed:.7,lowerbed:1,riftmouth:1.4},ground:'rim',tags:K('temperate..subtropic','semiarid..subhumid','no',['Cfb','Cfa','Af'])},
  {key:'nacretrumpet',from:'xanadu.lotustrumpet',name:'Nacre lotus trumpet',why:'Xanadu\'s lotus trumpet at the lower lakes\' margins: its trumpets fringed with mother-of-pearl blooms',
   delta:{colour:{leaf:[0x6aa890,0x7ab89c,0x5a9884,0x88c0a8]},scale:{H:.8}},
-  zone:{middlebed:.5,lowerbed:1,riftmouth:.8},ground:'shore',tags:K('subtropic','humid','both',['Cfa','Cfb','Af'])},
+  zone:{middlebed:.5,lowerbed:1,riftmouth:1.4},ground:'shore',tags:K('subtropic','humid','both',['Cfa','Cfb','Af'])},
  {key:'harlequinfrill',from:'xanadu.cloudfrill',name:'Harlequin frill',why:'Xanadu\'s chasm frill in the falls\' mist between the terraces: ribbed columns banded like matrix opal',
   delta:{colour:{bark:[0x8a5a7a,0x5a8a8a,0xb07a48,0x6a6a9a]},scale:{H:.6,rb:.8}},
-  zone:{middlebed:.8,lowerbed:1,riftmouth:.6},ground:'mist',tags:K('temperate','humid','both',['Cfb','Cfa'])}];
+  zone:{middlebed:.8,lowerbed:1,riftmouth:1.2},ground:'mist',tags:K('temperate','humid','both',['Cfb','Cfa'])}];
 // the neighbours at the edges (PLAN.md section 9, item 7): the Rift's trumpet tree and bell palm on the mouth's fan, read in place (riftmouth's kin)
-OPAL.EDGE={riftmouth:[{key:'rifttrumpet',from:'rift.trumpet',name:'Trumpet tree (the Rift\'s, at the threshold)',delta:{scale:{H:.8}},ground:'fan',w:.7},
- {key:'riftbellpalm',from:'rift.bellpalm',name:'Bell palm (the Rift\'s, at the threshold)',delta:{scale:{H:.55,rb:.8,crownR:.7}},ground:'fan',w:.35}]};
+OPAL.EDGE={riftmouth:[{key:'rifttrumpet',from:'rift.trumpet',name:'Trumpet tree (the Rift\'s, at the threshold)',delta:{scale:{H:.8}},ground:'fan',w:.25}   /* the edge, not the stand: the threshold is Opal Valley's */,
+ {key:'riftbellpalm',from:'rift.bellpalm',name:'Bell palm (the Rift\'s, at the threshold)',delta:{scale:{H:.55,rb:.8,crownR:.7}},ground:'fan',w:.12}]};
 // ---------------------------------------------------------------- the kit's own species
 const SPECIES=OPAL.SPECIES=[
  {key:'silicacushion',name:'Silica cushion',how:'hard rosettes 10-60 cm on the moraines and the glacier\'s margins, their leaves cased in silica: frost-white facing the sun, violet and ice-blue at a slant',

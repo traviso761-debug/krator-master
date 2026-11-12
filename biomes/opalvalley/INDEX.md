@@ -9,7 +9,7 @@ Built output (never open it; edit `src/` and rebuild): `dist/opalvalley-glacier.
 Build: `cd biomes/opalvalley && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
 
-From `core/terrain/` (shared; see `core/README.md`): `35-core-strata.js`, `43-core-ground.js`, `44-core-farfield.js`, `45-core-horizon.js`, `47-core-therm.js`
+From `core/terrain/` (shared; see `core/README.md`): `35-core-strata.js`, `39-core-cavern.js`, `39b-core-speleo.js`, `43-core-ground.js`, `44-core-farfield.js`, `45-core-horizon.js`, `47-core-therm.js`
 
 From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
 
@@ -27,21 +27,22 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 |---|---|---|
 | `00-head.html` | 1 |  |
 | `40-biome-opal-sites.js` | 15 |  |
-| `45-host-stage.js` | 24 | the land (42); the diggings (40: OPAL_DIGGINGS), put on this gr (170); the heat (the middle bed's seeps; KTHERM in 48): (194); the climate fields (the field contract's units:  (197); the host binding (237) |
+| `45-host-stage.js` | 24 | the land (42); the diggings (40: OPAL_DIGGINGS), put on this gr (170); the heat (the middle bed's seeps; KTHERM in 48): (196); the climate fields (the field contract's units:  (199); the host binding (240) |
 | `48-host-therm.js` | 2 |  |
 | `50-biome-opal-species.js` | 12 | palettes (sRGB hex). c2: the second colour, at g (18); the Xanadu kin (data: the source, the delta, whe (25); the kit's own species (54); textures and materials (the procedural map is th (72); the items (94) |
-| `55-biome-opal-place.js` | 7 |  |
+| `55-biome-opal-place.js` | 8 |  |
 | `70-biome-opal.js` | <1 |  |
-| `84-host-ground.js` | 12 |  |
+| `84-host-ground.js` | 13 |  |
 | `85-host-far.js` | 5 |  |
-| `86-host-digs.js` | 6 |  |
+| `85w-host-adit.js` | 12 |  |
+| `86-host-digs.js` | 7 |  |
 | `88-host-flora.js` | 2 |  |
 | `89-host-sky.js` | 2 |  |
 | `89a-host-atmos.js` | 3 |  |
 | `89b-host-spray.js` | 1 |  |
-| `89w-host-water.js` | 8 |  |
+| `89w-host-water.js` | 9 |  |
 | `89z-host-build.js` | 5 |  |
-| `99-host-take.js` | 16 |  |
+| `99-host-take.js` | 18 |  |
 | `99-tail.html` | <1 |  |
 
 ## stations/

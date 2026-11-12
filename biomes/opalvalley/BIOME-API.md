@@ -52,3 +52,9 @@ Every species: `climate`, `aridity`, `abyssal`, `riparian`, `koppen`, `zone` (th
 (`biomes/FRUIT.md`'s shape). The kin keep their source's tags with the delta's, and `tags.kin` names the source (`xanadu.agatetree`).
 The diggings: `class: 'site'`, `kind: 'digging'`, `mining: 'opal'`, `resource: {kind: 'opal', grade}` (`kits/resources`' grade
 contract), `harvest: {item: 'rough_opal', efficiency, works: 'mine'}`.
+
+**The walk-in adit** (host, `src/85w-host-adit.js`, the middle and lower beds): the adit record nearest the page's centre gets
+`walkIn: true` and is cut as a `KCAVERN` (`window._adit`: `{id, len, tris, crystals, cut, ms}`): a `tube` from the portal to a `hall`
+(the vug), a `well` opening where it meets the ground as drawn (`GROUND.userData.heightAt`, the page grid's own height), its floors in
+`KWALK`. The vug's opal is `KSPELEO.place` records (`mineral: 'opal'`). Two more records in `core/tags`: the adit (`kind: 'digging'`,
+`hazard: {kind: 'gas'}`) and the vug, both with the digging's `resource`. `HCHK.adit` (verify) walks the tube and the vug.

@@ -281,6 +281,34 @@
      ]
     }
    ]
+  },
+  "rock.basalt.titanium": {
+   "lib": "rock.basalt.titanium",
+   "_note": "the walk-in adit's rock (src/85w-host-adit.js): the middle bed's titanium basalt (Rift Black Opal's host), the lower bed's tuff",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.2,
+   "specular": 0.25
+  },
+  "rock.tuff": {
+   "lib": "rock.tuff",
+   "_note": "the walk-in adit's rock (src/85w-host-adit.js): the middle bed's titanium basalt (Rift Black Opal's host), the lower bed's tuff",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.2,
+   "specular": 0.25
   }
  }
 }

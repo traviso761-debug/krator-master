@@ -67,7 +67,7 @@ const LAKES=TREADS?TREADS.filter(t=>t.kind==='lake'):[];
 const FLOOR=(function(){if(!TREADS)return null;const X0=-3200,N=6401,y=new Float32Array(N),id=new Int16Array(N);const T=TREADS,first=T[0],last=T[T.length-1];
  for(let k=0;k<N;k++){const x=X0+k;let v=null,ii=-1;
   if(x>first.x0){v=first.y+(x-first.x0)*.03;ii=x<first.x0+400?0:-1;}
-  else if(x<last.x1){const W=SITE.west;v=W?last.y-W.drop*smooth(0,1,(last.x1-x)/260):last.y;ii=-1;}
+  else if(x<last.x1){const W=SITE.west;v=W?last.y-W.drop*smooth(0,1,(last.x1-x)/45):last.y;   /* the next riser: a cliff past the lip, its fall drawn (89w) */ii=-1;}
   else for(let i=0;i<T.length;i++){const t=T[i];if(x<=t.x0&&x>=t.x1){v=t.y;ii=i;break;}const N2=T[i+1];if(N2&&x<t.x1&&x>N2.x0){v=lerp(t.y,N2.y,(t.x1-x)/(t.x1-N2.x0));ii=-1;break;}}
   y[k]=v;id[k]=ii;}
  const at=x=>{const k=clamp(Math.round(x-X0),0,N-1);return k;};

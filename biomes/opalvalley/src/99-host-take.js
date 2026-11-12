@@ -20,6 +20,9 @@ const VIEWS=(function(){const S=SITE;
  if(ad){const ca=Math.cos(ad.az),sa=Math.sin(ad.az),cx=ad.x+ca*30+sa*14,cz=ad.z+sa*30-ca*14;v['An adit on the wall']=[cx,gh(cx,cz,3),cz,ad.x,gh(ad.x,ad.z,1.4),ad.z];}   /* from down the slope and a little to the side */
  if(pl&&SKEY!=='riftmouth')v['The placer pits']=look(pl.x+30,pl.z-24,6,pl.x,pl.z,0);
  if(SKEY==='middlebed'&&S.vents){const vv=S.vents[0];v['The warm seeps\' crust']=look(vv.x+34,vv.z-24,11,vv.x,vv.z,0);}
+ if(typeof ADIT!=='undefined'&&ADIT){const P=ADIT.pts,a=P[1],b=P[Math.min(3,P.length-1)],V=ADIT.vug,e=P[P.length-1];
+  v['Inside the adit']=[a[0],a[1]+1.6,a[2],b[0],b[1]+1.4,b[2]];
+  {const r=ADIT.record,ca=Math.cos(r.az),sa=Math.sin(r.az),cx=r.x+ca*13+sa*2.5,cz=r.z+sa*13-ca*2.5;v['An adit on the wall']=[cx,gh(cx,cz,1.8),cz,r.x,ADIT.y0+1.5,r.z];}   /* the walk-in adit: in front of its portal, looking in */v['The opal vug']=[e[0],e[1]+1.6,e[2],V[0],V[1]+1.2,V[2]];}
  v['From afar']=look(-2300,-900,260,xm,zc,0);
  return v;})();
 const KIN_NAME={};OPAL.KIN.concat(OPAL.EDGE[SKEY]||[]).forEach(k=>{KIN_NAME[k.key]=k.name;});
@@ -61,7 +64,13 @@ const HCHK={
  irid(mats){const own=mats.filter(m=>m.userData.bio&&/^opalvalley\|/.test(m.userData.bio.key||'')),kinds=[...new Set(own.map(m=>m.userData.bio.kind))],
   bad=own.filter(m=>['leaf','irid','bark','solid'].indexOf(m.userData.bio.kind)<0),bark=own.filter(m=>m.userData.bio.kind==='irid').length,leaf=own.filter(m=>m.userData.bio.kind==='leaf'&&(m.userData.bio.opts||{}).irid).length;
   return{ok:!bad.length&&bark>0&&leaf>0,detail:bad.length?'not a core kind: '+bad.map(m=>m.userData.bio.kind).join(','):'kinds '+kinds.join(', ')+': '+bark+' irid barks, '+leaf+' irid leaf cards'};},
- camerasOut(C){const bad=C.filter(c=>c.y<terrainH(c.x,c.z)+.5);return{ok:!bad.length,detail:bad.length?'under the ground: '+bad.map(c=>c.view).join(', '):C.length+' cameras above the ground'};},
+ // THE WALK-IN ADIT: every point down the tube and in the vug is open (KCAVERN's void) with a floor under it (KWALK), and the page's ground is open at the mouth
+ adit(A,probe){if(!A)return{ok:!DIGS.some(r=>r.kind==='adit'),detail:'no adit on this station'};const W=typeof KWALK!=='undefined'?KWALK:null,bad=[];
+  const P=probe||A.pts.slice(1).map(p=>[p[0],p[1]+1.2,p[2]]).concat([[A.vug[0],A.vug[1]+1.2,A.vug[2]]]);
+  for(const p of P){const sd=A.C.voidSD(p[0],p[1],p[2]),f=W?W.floorBelow(p[0],p[2],p[1],1.5):true;if(!(sd<0)||!f)bad.push(p.map(v=>v|0).join(',')+(sd<0?' (no floor)':' (in rock)'));}
+  if(!(A.cut>0))bad.push('the page\'s ground not opened at the mouth');
+  return{ok:!bad.length,detail:bad.length?bad.slice(0,3).join('; '):P.length+' points down '+Math.round(A.record.len)+' m to the vug, open and floored; '+A.crystals+' opal crystals; '+A.cut+' ground cells opened'};},
+ camerasOut(C){const bad=C.filter(c=>c.y<terrainH(c.x,c.z)+.5&&!(typeof ADIT!=='undefined'&&ADIT&&ADIT.C.voidSD(c.x,c.y,c.z)<0));return{ok:!bad.length,detail:bad.length?'under the ground: '+bad.map(c=>c.view).join(', '):C.length+' cameras above the ground'};},
  water(){const w=window._water||{};const ok=GL?w.pond>0&&w.outwash>0:w.treads>=LAKES.length&&w.falls>0&&(SKEY!=='riftmouth'||w.river>0);return{ok,detail:JSON.stringify(w).slice(0,220)};}};
 // the water along the axis, east to west, every 5 m (the chain), or down the outwash (the glacier)
 const AXIS_WATER=()=>{const o=[];if(TREADS){for(let x=TERR.R;x>=-TERR.R;x-=5){const w=waterH(x,axisZ(x));if(w>-1e8)o.push(w);}}else if(OUTW)OUTW.pts.forEach(p=>o.push(p[2]));return o;};
@@ -81,6 +90,7 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P
  add('the diggings stand on dry ground',HCHK.digs(DIGS));
  add('the iridescence is the core\'s own kinds',HCHK.irid(MATS()));
  add('the station\'s water drawn',HCHK.water());
+ add('the walk-in adit reaches its vug',HCHK.adit(typeof ADIT!=='undefined'?ADIT:null));
  add('preset cameras above the ground',HCHK.camerasOut(Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail});
@@ -95,6 +105,7 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  {const q=WATER_PT();add('a digging in the water',HCHK.digs([{id:'test',kind:'placer',grade:'low',x:q[0],z:q[2]}]));}
  add('an iridescent material of a new kind',HCHK.irid([{userData:{bio:{key:'opalvalley|x',kind:'opalglass'}}},{userData:{bio:{key:'opalvalley|y',kind:'irid'}}},{userData:{bio:{key:'opalvalley|z',kind:'leaf',opts:{irid:true}}}}]));
  add('a camera under the ground',HCHK.camerasOut([{view:'under',x:0,y:terrainH(0,0)-5,z:0}]));
+ if(typeof ADIT!=='undefined'&&ADIT){const p=ADIT.pts[2],px=-Math.sin(ADIT.record.az)*8,pz=Math.cos(ADIT.record.az)*8;add('a point in the rock beside the adit',HCHK.adit(ADIT,[[p[0]+px,p[1]+1.2,p[2]+pz]]));}
  return R;}
 KHOST.on(SKY.view,'view');
 KHOST.on(function lodTick(){camera.updateMatrixWorld();if(BIO.lodTick)BIO.lodTick(camera);},'view');
@@ -108,7 +119,10 @@ const HINT={glacier:"Station 1 of Opal Valley (scale model 5.1, px 1124,1676; 4,
  lowerbed:"Station 4 of Opal Valley (px 998,1646; 275 m, Cfa, 1.55 atm, +21 degC): Terrace Bed III, three canyon pools (340 / 275 / 210 m) behind tuff sills in walls of cherry-orange fire-opal tuff, mist and opal lotus pads; cliffside galleries (ideal type)",
  riftmouth:"Station 5 of Opal Valley (px 972,1636; the 60 m bench, Af, 1.59 atm, +22 degC): the Opal River falls from Terrace III's lip (265 m) in two drops to its plunge pool (45 m) and runs west through the gorge it has cut into the old fan toward the Rift floor; the Rift lake is 70 km north-west at -1,685 m; the toll-house's and the caravan landing's sites (ideal type)"}[SKEY];
 KHOST.take({build:'opalvalley'+(SKEY==='middlebed'?'':'-'+SKEY),title:'Krator biome — Opal Valley: '+SITE.name,hint:HINT,
- scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,regHas,views:VIEWS,ticks:TICKS,
+ scene,camera,renderer,ground:terrainH,clear:1.8,walk:typeof KWALK!=='undefined'?KWALK:null,
+ /* the eye may stand in the walk-in adit (KCAVERN's void: under the ground there); everywhere else it is kept 1.8 m over the ground */
+ clampCam:(p,t)=>{if(typeof ADIT!=='undefined'&&ADIT&&ADIT.C.voidSD(p.x,p.y,p.z)<-.3)return;const g=terrainH(p.x,p.z)+1.8;if(p.y<g)p.y=g;},
+ registry:REG,regHas,views:VIEWS,ticks:TICKS,
  clock:{hour:ATMOS.SKY.viewHour},draw:MIRROR?()=>{MIRROR.update();SKY.draw();}:SKY.draw,
  inspect:describe,stats:()=>'inst '+window._instances,
  layers:{'flora':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'rings':{objects:()=>[giantRing]}},

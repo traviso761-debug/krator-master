@@ -56,12 +56,14 @@ const MAT_GROUND=USE_KG?new THREE.MeshStandardMaterial({map:TEX_GROUND,color:0xd
 const U_OPAL={value:SHEEN};
 MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.uniforms.uOpal=U_OPAL;
  if(STRATA_SH)STRATA_SH.inject(sh);
- sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;varying vec3 vGWN;attribute vec4 aGL;varying vec4 vGL;attribute float aOp;varying float vOp;attribute float aWet;varying float vWet;')
-  .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vGWN=normalize(mat3(modelMatrix)*objectNormal);vGL=aGL;vOp=aOp;vWet=aWet;');
- sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail;uniform float uOpal;varying vec3 vGWP;varying vec3 vGWN;varying vec4 vGL;varying float vOp;varying float vWet;float gSteep;')
-  .replace('#include <map_fragment>','#include <map_fragment>\n{vec3 dt=pow(texture2D(uDetail,vGWP.xz*0.165).rgb,vec3(2.2));vec3 dt2=pow(texture2D(uDetail,vGWP.xz*0.021+0.37).rgb,vec3(2.2));gSteep=smoothstep(0.32,0.62,1.0-clamp(vGWN.y,0.0,1.0));vec3 _gT=diffuseColor.rgb*1.5;'+(USE_KG?'\n/*KGROUND*/\n':'')+
+ sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;varying vec3 vGWN;attribute vec4 aGL;varying vec4 vGL;attribute float aOp;varying float vOp;attribute float aWet;varying float vWet;attribute float aWall;varying float vWall;')
+  .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vGWN=normalize(mat3(modelMatrix)*objectNormal);vGL=aGL;vOp=aOp;vWet=aWet;vWall=aWall;');
+ sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail;uniform float uOpal;varying vec3 vGWP;varying vec3 vGWN;varying vec4 vGL;varying float vOp;varying float vWet;varying float vWall;float gSteep;')
+  .replace('#include <map_fragment>','#include <map_fragment>\n{vec3 dt=pow(texture2D(uDetail,vGWP.xz*0.165).rgb,vec3(2.2));vec3 dt2=pow(texture2D(uDetail,vGWP.xz*0.021+0.37).rgb,vec3(2.2));gSteep=smoothstep(0.32,0.62,1.0-clamp(vGWN.y,0.0,1.0));vec3 _gT=diffuseColor.rgb*1.5;'+
+  /* the beds first, on the faces and up the walls (vWall: the walls' banded rhyolite, off the snow), so the library layers (the lichen on the faces) lie over them */
+  (STRATA_SH?'diffuseColor.rgb=mix(diffuseColor.rgb,strataColor(vSWP,vSWN),max(gSteep*0.9,vWall*0.8));':'')+(USE_KG?'\n/*KGROUND*/\n':'')+
   'diffuseColor.rgb*=dt*dt2*1.85;'+   /* decoded, its mean ~0.71 a sample: the gain keeps the old brightness */
-  (STRATA_SH?'diffuseColor.rgb=mix(diffuseColor.rgb,strataColor(vSWP,vSWN),gSteep*0.9);':'')+
+  (GL?'diffuseColor.rgb*=mix(vec3(1.0),vec3(0.6,0.8,1.0),vGL.y*(0.25+0.75*gSteep));':'')+   /* the glacier's ice: blue where it is thick in the eye's line (its steep faces, the crevasses' walls) */
   /* THE OPAL SHEEN: a thin film's colour by the angle (the eye from the view matrix: r128 gives Lambert no cameraPosition), broken by the detail map so it
      reads as flecks and seams, not a coat; it multiplies the ground's colour (it never adds light) */
   '{vec3 _oE=-(viewMatrix[3].xyz*mat3(viewMatrix));float _oF=1.0-abs(dot(normalize(vGWN),normalize(_oE-vGWP)));float _oP=_oF*2.6+dot(vGWP.xz,vec2(0.017,0.011))+dt.r*2.3+dt2.g*1.1;'+
@@ -79,14 +81,19 @@ if(USE_KG)KGROUND.hook(MAT_GROUND,{key:'opalvalley-'+SKEY+'-ground',at:'/*KGROUN
  .concat([KGROUND.layer('opalvalley','rock.lichen.iris',{w:'gSteep*0.55',amt:.5,gain:1.0,tint:'vec3(1.0)',name:'opaline lichen'})])
  .concat(GL?[{kind:'polygon',w:'vGL.w',amt:.7,size:3.4,width:.07,edgeTint:'vec3(0.4,0.38,0.36)',warp:.16,rim:.06,rimTint:'vec3(0.55,0.53,0.5)',seed:442,name:'sorted polygons'}]:[])});
 const GROUND=(function(){const N=560,S=TERR.R*2.2,cs=S/N,nx=N+1,m5=[0,0,0,0,0];
- const pos=new Float32Array(nx*nx*3),uv=new Float32Array(nx*nx*2),gl=new Float32Array(nx*nx*4),op=new Float32Array(nx*nx);
+ const pos=new Float32Array(nx*nx*3),uv=new Float32Array(nx*nx*2),gl=new Float32Array(nx*nx*4),op=new Float32Array(nx*nx),wl=new Float32Array(nx*nx);
  for(let j=0;j<nx;j++)for(let i=0;i<nx;i++){const k=j*nx+i,x=-S/2+i*cs,z=-S/2+j*cs,y=terrainH(x,z);pos[k*3]=x;pos[k*3+1]=y;pos[k*3+2]=z;uv[k*2]=x/S+.5;uv[k*2+1]=.5-z/S;
-  masksAt(x,z,y,m5);gl[k*4]=m5[0];gl[k*4+1]=m5[1];gl[k*4+2]=m5[2];gl[k*4+3]=m5[3];op[k]=m5[4];}
+  masksAt(x,z,y,m5);gl[k*4]=m5[0];gl[k*4+1]=m5[1];gl[k*4+2]=m5[2];gl[k*4+3]=m5[3];op[k]=m5[4];
+  wl[k]=smooth(.35,.8,FC.at(FC.a.upland,x,z))*(1-smooth(SITE.snow[1],SITE.snow[1]+500,y))*(1-m5[1]*(GL?1:0));}   /* the walls' rock, off the snow and the ice */
  const idx=new Uint32Array(N*N*6);let t=0;
  for(let j=0;j<N;j++)for(let i=0;i<N;i++){const a=j*nx+i,b=a+nx,c=b+1,d=a+1;idx[t++]=a;idx[t++]=b;idx[t++]=d;idx[t++]=b;idx[t++]=c;idx[t++]=d;}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('uv',new THREE.BufferAttribute(uv,2));
- g.setAttribute('aGL',new THREE.BufferAttribute(gl,4));g.setAttribute('aOp',new THREE.BufferAttribute(op,1));g.setAttribute('aWet',new THREE.BufferAttribute(new Float32Array(nx*nx),1));
- g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);if(KG_RELIEF)KGROUND.cavityMesh(m);m.receiveShadow=true;m.userData.probeSkip=true;m.userData.inspectLabel=SITE.name;scene.add(m);return m;})();
+ g.setAttribute('aGL',new THREE.BufferAttribute(gl,4));g.setAttribute('aOp',new THREE.BufferAttribute(op,1));g.setAttribute('aWall',new THREE.BufferAttribute(wl,1));g.setAttribute('aWet',new THREE.BufferAttribute(new Float32Array(nx*nx),1));
+ g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);if(KG_RELIEF)KGROUND.cavityMesh(m);m.receiveShadow=true;m.userData.probeSkip=true;m.userData.inspectLabel=SITE.name;scene.add(m);
+ /* the height of the ground AS DRAWN (this grid's two triangles a cell, a-b-d and b-c-d): what a cut into it must meet (85w's adit) */
+ m.userData.heightAt=(x,z)=>{const gi=clamp((x+S/2)/cs,0,N-1e-6),gj=clamp((z+S/2)/cs,0,N-1e-6),i=Math.floor(gi),j=Math.floor(gj),fx=gi-i,fz=gj-j,Y=k=>pos[k*3+1];
+  const a=j*nx+i,b=a+nx,c=b+1,d=a+1;return fx+fz<=1?Y(a)+(Y(d)-Y(a))*fx+(Y(b)-Y(a))*fz:Y(c)+(Y(b)-Y(c))*(1-fx)+(Y(d)-Y(c))*(1-fz);};
+ return m;})();
 // THE PLACES, as records the inspector and the export read (the lakes, the dams, the glacier's parts; the diggings are 86's)
 REGISTER({name:SITE.name,x:0,z:0,y:terrainH(0,0)-40,r:600,h:200});
 LAKES.forEach(L=>{const x=(L.x0+L.x1)/2;REGISTER({name:L.name+(SITE.dam==='sinter'?' (dammed by opaline sinter)':SITE.dam==='moraine'?' (behind a moraine bar)':SITE.dam==='tuff'?' (behind a tuff sill)':''),

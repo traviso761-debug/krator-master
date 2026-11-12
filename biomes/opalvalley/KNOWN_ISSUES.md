@@ -1,6 +1,7 @@
 # biomes/opalvalley: known issues
 
-First pass, 2026-11-11, built in the cloud: checked under software GL (SwiftShader) only. The GPU look pass is owed.
+First pass, 2026-11-11; the open issues worked 2026-11-12. Built in the cloud: checked under software GL (SwiftShader) only. The GPU look
+pass is owed.
 
 ## Stand-ins (procedural, until a library set comes: `core/materials/PROMPTS-NEEDED.md` section 46)
 
@@ -15,12 +16,8 @@ First pass, 2026-11-11, built in the cloud: checked under software GL (SwiftShad
 
 ## Open
 
-- [ ] **No walk-in adit.** The adits are mouths on the wall (`src/86-host-digs.js`); a `KCAVERN` adit with an opal vug (`KSPELEO.VUG`
-  and a `KGEODE.MINERALS` row for precious opal) is `PLAN.md` section 10, step O7.
 - [ ] **No opal node in `kits/resources`.** The diggings carry `{kind: 'opal', grade}` in that kit's shape; the node reaches 39 pages
   (5 builds, the isle demo and its open world among them): `PLAN.md` section 9, item 5.
-- [ ] **The west lip's fall is not drawn** on the three terrace pages: the last stream ends at its lip near the page's edge (past the
-  walkable disc) and the ground drops away; the next station's riser is that drop's own page.
 - [ ] **The ten lakes are a page-scale chain**: the model has one lake a tread (`PLAN.md` section 1.0); the pages compress each tread's
   56 km into 5 km, so the drops between the lakes come close together (an ideal type, as High Rift's).
 - [ ] **The model's to-dos** (`PLAN.md` section 1.0): `r682`'s stale `to`, the carve's "-460 m" comment. Owed to the next scale model update.
@@ -33,13 +30,31 @@ First pass, 2026-11-11, built in the cloud: checked under software GL (SwiftShad
 
 ## The look (judged in the software-GL shots, 2026-11-11; the GPU pass is owed)
 
-- [ ] **The walls above the cliff band are pale and smooth** past the near gullies (the ground's paint, not a library set): reads as
-  scree or snow at a distance, but flat near. A rock layer on the walls (`rock.tuff` or the owed `rock.opal.matrix`) and the far field's
-  colours are the next pass.
 - [ ] **The sheen's strength** (`?sheen=`, default .7 on flecks): judged once under SwiftShader; the GPU may want it lower. The first pass's
   coat over the whole mask read as paint and was cut (PLAN.md section 9, item 3).
-- [ ] **The prism cloud pines dominate the upper bed** (over a thousand on the page): its tree as the plan has it, but the stand could be
-  thinner with more of the glass-plume willows on the tarns' shores.
-- [ ] **The Rift's trumpet trees outnumber the kin on the mouth's fan** (~870): right for the threshold, but the Xanadu kin there are few.
 - [ ] **The glacier's ice is drawn as ground** (the ice layer on the ground mesh, KGLACIER's thickness in `terrainH`), its seracs and caves by
-  KGLACIER's drawer: no subsurface blue in the ice itself.
+  KGLACIER's drawer. Since 2026-11-12 the ice takes a cold blue in the ground shader, strongest on its steep faces (`src/84-host-ground.js`,
+  `GL`): a tint, not subsurface scattering.
+
+## The walk-in adit (2026-11-12, `src/85w-host-adit.js`)
+
+- [ ] **The portal's edge steps** at the cavern's 0.5 m cell where the tube meets the slope (surface nets); the timber set hides the
+  middle of it. A finer cell costs four times the triangles (`core/terrain/39-core-cavern.js`, header).
+- [ ] **The miner's lamp is drawn in the rock's own shader** (an emitted term from the eye, `uLamp`), not a `THREE.PointLight`: the
+  page's horizon layer (`khorizonl`) shades everything under the hill as under it, which put out a point light's term. The vug's opal
+  (`BIO.iridBarkMat`, a Lambert kind) takes no lamp: it shows its colour by the ambient alone, as asked (no glow on the opal).
+- [ ] **One adit a page walks in** (the one nearest the centre); the rest stay mouths on the wall (`src/86-host-digs.js`).
+- [ ] **The two rock sets** (`rock.basalt.titanium`, `rock.tuff`) are packed into every page (about 1.4 MB), the glacier, upper-bed and
+  mouth pages too, which have no walk-in adit: `materials.json` is one list for the kit. A per-station list is a `tools/textures/pack.py`
+  change, for later.
+
+## Fixed 2026-11-12 (the first pass's open items)
+
+- The walk-in adit with its opal vug (above; `PLAN.md` section 10, O7), on the middle and lower beds.
+- The west lip's fall: `WATER.fall` from the last tread's lip down the riser (`src/89w-host-water.js`; 160 m on the middle bed), the
+  ground there a cliff over 45 m (`src/45-host-stage.js`).
+- The walls: a cliff band and gullies in the stage (`wallsAt`), the strata mixed on the walls before the ground layers (`aWall`,
+  `src/84-host-ground.js`).
+- The upper bed's pines thinned (weight 1 to .5) and the glass-plume willows raised; the Xanadu kin at the Rift's mouth raised against
+  the Rift's own trumpets and bell palms (`src/50-biome-opal-species.js`).
+- The glacier's ice blue (above).

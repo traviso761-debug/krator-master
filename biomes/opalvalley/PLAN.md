@@ -221,6 +221,7 @@ highrift's does not). Every module the stations take, and for each one it does n
 | randomness | `core/rand` (`KRAND`: `hash`, `cell`, `child`, `fbm`) | every placement cell seeded from (world, cell, index, salt); the diggings and spoil records |
 | the ground | `core/terrain`: **`35` `KSTRATA`** + its shade (the banded rhyolite-ignimbrite column with potch and precious-opal seams, a recipe the kit hands to `KSTRATA.add` as data: section 2), **`43` `KGROUND`** (the library layers), **`44` `KFAR`** + draw (the walls to 14 km), **`45` `KHORIZON`** + shade, **`47` `KTHERM`** (the Middle Terrace's warm silica seeps under the thin crust) | the stage carves each station's ground from its site record, as High Rift's does: the terraces, risers and lake benches are the stage's land function, not a module (see "Not taken") |
 | the glacier | `core/terrain` **`44g` `KGLACIER`** + **`host/44h`** (its drawer: seracs, crevasses, the ice caves at the snout), station 1 only | the tongue, its trough, lateral and terminal moraines, the proglacial pool |
+| the walk-in adit | `core/terrain` **`39` `KCAVERN`** (a `tube`, a `hall` for the vug, a `well` opening; `KWALK` floors) + **`39b` `KSPELEO`** (the vug's opal druse and blocks), stations 3 and 4 (taken 2026-11-12, section 10, O7) | the adit nearest each terrace page's centre, cut into the ground as drawn; its rock a library set (`rock.basalt.titanium`, `rock.tuff`); the vug's opal on `BIO.iridBarkMat` |
 | the frost | `core/terrain` **`42` `KFROST`** (sorted polygons and solifluction lobes on the moraines), stations 1 and 2 | the periglacial ground |
 | water | `core/water`: `20`, `21`, `22`, `50`, `51`; ext **`53`/`53b` (`WATER.terraces`: the lake chain on each tread and the spills between)**, `56`, `57` (audit), **`58` (`WATER.mirrorSwitch`, off at load)**, `60` (fields) (**not `61`** `tintFlow`: the lakes are `WATER.terraces`' pools, which take a gradient, not a moving tint; the milky rock flour is the gradient's, `KNOWN_ISSUES.md`); `geyser/52`/`52b` (`WATER.spring`: the Middle Terrace's warm seeps) | every lake (`WATER.open`, `surf:false, breakers:false`: still water), the spill streams (`WATER.flow`), the falls between benches and the cataract (`WATER.fall`) |
 | the air | `core/atmos` (the core, presets, particles, export, waves, skylight, `bindHost`, the shared sky `skyBiome`, `bindWeather`, height fog, rain cover, lightning, snow cover, smoke groups) | the sky, the light, the spray, the snow that lies on the glacier station |
@@ -237,9 +238,7 @@ highrift's does not). Every module the stations take, and for each one it does n
 **Not taken, and why:** `KFIELD` (the stage's land is a pure function of the site record, as High Rift's; the baked field is the
 open world's step, when the region is cut from the model); **`KBASIN`** (it marks the *old* water of a drained lake by height:
 strandlines, bathtub rings. Opal Valley's lakes are full; the terrace lakes are drawn on `WATER.terraces` and the treads by the
-stage. Taken later if the owner wants the old high stands of the terrace lakes marked on the benches); `KCAVERN`/`KSPELEO` (the
-adits are drawn as mouths with their spoil, the ice caves by `KGLACIER`'s drawer; a walk-in adit with an opal vug is owed, section
-10, step O7); `KGEODE` (no basalt geodes here: the opal is in veins and nodules, drawn as the diggings' records); `KRELIEF`,
+stage. Taken later if the owner wants the old high stands of the terrace lakes marked on the benches); `KGEODE` (no basalt geodes here: the opal is in veins and nodules, drawn as the diggings' records); `KRELIEF`,
 `KSTACKS`, `KLAVA`, `KSCOUR`, `KKARST` (no scarps by recipe, pillars, flows, megaflood channels or karst on these pages);
 `core/city`, `core/hamlet`, `core/camp`, `core/simulation`, `core/furnish` (no settlement is placed: the diggings and the Sultanate's
 assay pavilion and toll-house are **sites as records** for the settlement and economy work, section 4.3); `kits/resources`
@@ -297,8 +296,11 @@ Each is the conservative choice; each is "default taken 2026-11-11, owner to con
 - **O6.** `verify.py --assert`: each station's pressure and temperature equal the corrected plan's; the lakes step down tread by tread
   (each level below the one upstream, every spill falling); nothing roots on the glacier's ice; every digging on dry ground; each
   with a negative. `PORT.md`, `INDEX.md`, `BIOME-API.md`, `KNOWN_ISSUES.md`, `tools/check_core_use.py`, `tools/test_all.py`.
-- **O7.** Owed after the first pass: a walk-in adit on `KCAVERN` with an opal vug (`KSPELEO.VUG` lined with opal: a `KGEODE.MINERALS`
-  row for precious opal), the owed textures (section 11), the GPU look pass.
+- **O7.** After the first pass. **Done 2026-11-12:** a walk-in adit on `KCAVERN` (`src/85w-host-adit.js`; the middle bed's in titanium
+  basalt, the lower bed's in fire-opal tuff): a tube from the wall's portal to an opal vug (a `hall`), the cavern cutting the page's ground
+  as drawn, walkable (`KWALK` floors), its rock the library's set; the vug lined with `KSPELEO.place` druse and blocks of mineral `opal`
+  on the core's irid bark kind (no `KGEODE.MINERALS` row was needed: `KSPELEO` takes the mineral as a name). The other adits stay mouths
+  on the wall. **Still owed:** the textures (section 11), the GPU look pass.
 - **O8.** For other work: the `opal` node in `kits/resources` (its grade contract; section 9, item 5), the opal trade in
   `core/simulation` (section 4), the open world's cut of the region, the model's to-dos (section 1.0).
 

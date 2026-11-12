@@ -287,6 +287,36 @@
     "sourceMean": 0.8049
    }
   },
+  "rock.basalt.titanium": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "rock.basalt.titanium.albedo.webp",
+    "normalMap": "rock.basalt.titanium.normal.webp",
+    "roughnessMap": "rock.basalt.titanium.rough.webp"
+   },
+   "lib": "rock.basalt.titanium",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.2,
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "ea72085481bbe615122b259c27df405f2246e199",
+    "normal": "5d412a322b90f5175318d88779d087780878b147",
+    "roughness": "6f0289410d11813b3a2cd4d03deb9475711e3a4a"
+   },
+   "specular": 0.25,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.22654326254751167,
+    "sourceMean": 0.2265
+   }
+  },
   "rock.lichen.iris": {
    "breakup": null,
    "card": false,
@@ -313,6 +343,36 @@
     "keep": 1.0,
     "mean": 0.3072730479790183,
     "sourceMean": 0.3073
+   }
+  },
+  "rock.tuff": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "rock.tuff.albedo.webp",
+    "normalMap": "rock.tuff.normal.webp",
+    "roughnessMap": "rock.tuff.rough.webp"
+   },
+   "lib": "rock.tuff",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.2,
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "7183aa52bdd834668d8367245902cbc19ff0bb98",
+    "normal": "d2433f653e168d4b48a04af40661324658521237",
+    "roughness": "52974122ab97fb33c3f9ad47dc1236eff165c2f6"
+   },
+   "specular": 0.25,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.6909600179634842,
+    "sourceMean": 0.691
    }
   },
   "stone.geyserite": {

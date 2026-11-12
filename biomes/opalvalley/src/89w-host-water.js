@@ -33,6 +33,11 @@ const TERR_WATER=(function(){if(!TREADS)return null;const WC=SITE.water,X0=Math.
   fall:{color:lin(SITE.water.milk>.6?0xe6f0ee:0xeaf2f0),opacity:.9,rowStep:2,cols:10,spray:'drop',plungeR:SITE.dam==='cataract'?36:8,renderOrder:3}});
  const pm=D.pools&&D.pools.mesh;if(pm){pm.userData.inspectLabel=SITE.name+': the lakes';pm.userData.probePoints=[].concat(...LAKES.map(L=>{const x=(L.x0+L.x1)/2;return[x,L.y-1,axisZ(x)];}));MIRROR_MATS.push(pm.material);}
  const fm=D.falls&&D.falls.mesh;if(fm){const P=[];for(let i=0;i+1<SITE.chain.length;i++){const A=SITE.chain[i],B=SITE.chain[i+1],x=(A.x1+B.x0)/2;if(A.y-B.y>=5)P.push(x,(A.y+B.y)/2,axisZ(x));}fm.userData.probePoints=P;}
+ /* THE WEST LIP: the last stream falls over the next riser (its foot off the page's square, in the next station's country) */
+ if(SITE.west){const t=TREADS[TREADS.length-1],x=t.x1,z=axisZ(x),hw=Math.max(5,t.hw*.9),fx=x-60,fz=axisZ(fx),fy=FLOOR.y(fx);
+  const WF=WATER.fall({name:'The west lip\'s fall (to the next terrace)',lip:[[x,z-hw,t.y+.1],[x,z+hw,t.y+.1]],dir:[-1,0],drop:t.y-fy,foot:[fx,fz,fy],fit:true,spread:5,face:terrainH,faceLift:.6,faceN:40});
+  const WD=WATER.drawFall(WF,{color:lin(SITE.water.milk>.6?0xe6f0ee:0xeaf2f0),opacity:.9,rowStep:3,cols:10,spray:'drop',plungeR:20,footK:.8,envMapIntensity:.25,renderOrder:3,pick:true});
+  WD.mesh.userData.inspectLabel='The west lip\'s fall';W_OUT.westFall=Math.round(t.y-fy);}
  Object.assign(W_OUT,{treads:TR.pools.length,falls:TR.falls.length,levels:TR.treads.map(t=>t.y),lakeLevels:LAKES.map(L=>L.y)});
  return{TR,D,sOf,xOf};})();
 // THE MOUTH'S RIVER: from the plunge pool west through the gorge toward the Rift floor

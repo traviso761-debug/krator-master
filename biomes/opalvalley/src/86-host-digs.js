@@ -15,11 +15,14 @@ const DIG_MESH=(function(){const T={p:[],n:[],c:[]},V={p:[],n:[],c:[]};
  const WOOD=[0x6a4a32,0x7a5638,0x5e4230],wood=()=>pick(WOOD),st={adits:0,sluices:0,landings:0,pits:0,stakes:0};reseed(9101);
  const PP=[];   /* one probe point a digging (the probe counts a merged mesh's pieces by userData.probePoints) */
  DIGS.forEach(r=>{const y=terrainH(r.x,r.z);
-  if(r.kind==='adit'){const yaw=Math.PI/2-r.az,   /* the box's x across the mouth ([sin az, -cos az]), its z out of the wall */cx=Math.cos(r.az),cz=Math.sin(r.az),w=r.mw/2,h=r.h,back=-2.2;   /* the mouth faces down the slope (az): its frame across it */
-   const bx=r.x-cx*.6,bz=r.z-cz*.6,by=Math.max(y,terrainH(bx,bz))-.2;
+  if(r.kind==='adit'){const yaw=Math.PI/2-r.az,   /* the box's x across the mouth ([sin az, -cos az]), its z out of the wall */cx=Math.cos(r.az),cz=Math.sin(r.az),h=r.h,back=-2.2;let w=r.mw/2;   /* the mouth faces down the slope (az): its frame across it */
+   let bx=r.x-cx*.6,bz=r.z-cz*.6,by=Math.max(y,terrainH(bx,bz))-.2;
+   if(r.walkIn&&typeof ADIT!=='undefined'&&ADIT&&ADIT.record===r){   /* the walk-in adit's set stands in its portal: on the tube's floor, where the drawn ground first clears the crown */
+    const P=ADIT.pts,GH=GROUND.userData.heightAt,dx=P[1][0]-P[0][0],dz=P[1][2]-P[0][2],dl=Math.hypot(dx,dz);
+    for(let s=0;s<=16;s+=.25){const x=P[0][0]+dx/dl*s,z=P[0][2]+dz/dl*s;if(GH(x,z)>=ADIT.y0+h+.4){bx=x-dx/dl*.4;bz=z-dz/dl*.4;break;}}by=ADIT.y0-.05;w=(r.mw+.4)/2-.1;}
    box(T,bx-Math.sin(r.az)*w,by+h/2,bz+Math.cos(r.az)*w,.14,h/2,.14,yaw,wood());box(T,bx+Math.sin(r.az)*w,by+h/2,bz-Math.cos(r.az)*w,.14,h/2,.14,yaw,wood());
    box(T,bx,by+h+.12,bz,w+.35,.14,.16,yaw,wood());   /* the posts and the cap */
-   box(V,bx+cx*back,by+h/2,bz+cz*back,w-.05,h/2-.05,1.9,yaw,0x0c0a0a);   /* the dark throat, set into the wall */
+   if(!r.walkIn)box(V,bx+cx*back,by+h/2,bz+cz*back,w-.05,h/2-.05,1.9,yaw,0x0c0a0a);   /* the dark throat, set into the wall (the walk-in adit's is carved: 85w) */
    REGISTER({name:'An adit on the basalt contact ('+r.gem+' opal, '+r.grade+' grade; '+r.id+')',x:bx,z:bz,y:by-1,r:Math.max(4,w+1.5),h:h+3,
     tags:{class:'site',kind:'digging',mining:'opal',resource:r.resource,hazard:{kind:'gas',danger:.25}}});PP.push(bx,by+h/2,bz);st.adits++;}
   if(r.kind==='sluice'&&r.x){const yaw=Math.atan2(0,1),L=r.len,y0=terrainH(r.x+L/2,r.z),y1=terrainH(r.x-L/2,r.z),top=Math.max(y0,y1)+1.2,pitch=0;
