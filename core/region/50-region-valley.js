@@ -13,7 +13,8 @@
                       works: [{id, kind, name?, crew (people at work), out?: [good], rate? (units an actor-hour), cap?,
                                season?, seasonRate?, batch?: {in, out, hours}, herd?: {out, rate, animals, seasonRate?},
                                pasture?: {id, window} (a summer pasture the herd moves to while `window` is open)}]}],
-       roads: [{id, from, to, minutes, cap, carriers?, stagger?, share?: {settlement: {good: fraction}} (a tithe),
+       roads: [{id, from, to, minutes, cap, carriers?, stagger?, want? (days of use a load fills the far end to: SIM.trade's
+                `want`; a long road's carriers come seldom, so its want must cover the gap), most?, share?: {settlement: {good: fraction}} (a tithe),
                 goods?: {settlement: [goods]}, expect?: {settlement: {good: a day}}, keep?}],
        transfers: [SIM.transfer's spec] (the grant of fealty, the grants of esteem)
      H.valleyRun(minutes, step)   the clock stepped `step` minutes at a time (60: the abstract level's hour)
@@ -73,7 +74,7 @@ H.simValley = function (V) {
     var a = S.towns[Rd.from], b = S.towns[Rd.to];
     if (!a || !b) { S.problems.push('road ' + Rd.id + ': no settlement ' + (a ? Rd.to : Rd.from)); return; }
     SIM.trade({ id: Rd.id, stops: [{ settlement: Rd.from, place: a.spec.works[0].id }, { settlement: Rd.to, place: b.spec.works[0].id }], cap: Rd.cap, carriers: Rd.carriers,
-      minutes: Rd.minutes, stagger: Rd.stagger, mins: Rd.mins == null ? 60 : Rd.mins, goods: Rd.goods, expect: Rd.expect, share: Rd.share, keep: Rd.keep });
+      minutes: Rd.minutes, stagger: Rd.stagger, mins: Rd.mins == null ? 60 : Rd.mins, goods: Rd.goods, expect: Rd.expect, share: Rd.share, keep: Rd.keep, want: Rd.want, most: Rd.most });
   });
   (V.transfers || []).forEach(function (Tr) { SIM.transfer(Tr); });
   /* the herds to their summer pasture and home again (77-sim-6-season.js: the window's turn) */

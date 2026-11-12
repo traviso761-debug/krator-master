@@ -49,7 +49,7 @@ when it is absent (S0 step B):
 | `47b`, `47c`, `47f`, `47h`, `47m`, `47n`, `47r`, `47u` | building and upkeep, crime, founding, the hamlets, money, herders, refugees, unrest |
 | `48-region-week.js` | the week's books and checks |
 | `49-region-govern.js` | the governor's and spoilage rules |
-| `50-region-valley.js` | **a valley at the abstract level** (S3): settlements declared from a plain spec, not a city plan; works as their own stores; the people eating by the hour; tithe roads; the transfers. Longsong's valley runs on it |
+| `50-region-valley.js` | **a valley at the abstract level** (S3): settlements declared from a plain spec, not a city plan; works as their own stores; the people eating by the hour; tithe roads; a road's `want` and `most` passed to SIM.trade (a long road needs a want that covers the gap between its carriers); the transfers. Longsong's valley runs on it |
 
 ## Still the isle's
 
