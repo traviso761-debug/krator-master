@@ -46,6 +46,14 @@
 - [x] **The stone door's lintel fought the masonry wall Dhelv adds round it** (their soffits shared a plane): the wall's pieces
       stand clear of the jambs and over the lintel (`53-zj-additions.js`).
 - [x] **The cut-away's boxes had no top**: a box now stops over its site's height when the world gives one (`CV_BOXCUT`, uBoxB.w).
+- [ ] **The rock cut is a fork of the core layer now** (2026-11-11, the owner's leave: `kits/tungang/PLAN.md` 6.5, question 14). The cut-away's
+  "each void's rock opens 2 m above its own floor" and the cut boxes (`CV_BOXCUT`, `CVU.uBoxA`/`uBoxB`, `CV_OPTS.cutBoxes`) were lifted into
+  `core/terrain/host/39h-core-cavern-cut.js` (`KCAVERN.cutLayer`, `cutWeight`, `KCAVERN.cut.boxes`; `node core/terrain/test-cavern-cut.js`).
+  The kit and Dhelv keep this fork until they adopt it, so their pages do not move. The drift so far: the core layer reads a vertex's
+  floor from its own primitive (`aKCut`, from drawRock's weight), not the kit's `aCut` (centre, floor, on); a box's top is its own field,
+  not `+10000` in `uBoxB.w`; `above` is a uniform (2 m here); and the rule runs in JS too (`KCAVERN.cut.discards`), for picks.
+  `tools/check_core_use.py`'s `rock-cut` rule baselines this file (3 matches). Adopting it means: the rock material takes `cutLayer`,
+  `cvChunkMesh` writes `aKCut`, Dhelv's `dhCutBoxes` calls `KCAVERN.cut.boxes`; then the baseline entry goes.
 - [ ] **Stale words in headers and the plan** (found writing API.md, 2026-10-08): `36-def.js` documents a def field `carve`
       no def uses and leaves out `originFront`, `sunk` and `note`; `verify.py`'s docstring speaks of tents (from Scyvoi) and
       its footprint check's message says + 0.8 m where the threshold is 1.6 m; `build.py`'s docstring leaves `core/sockets`

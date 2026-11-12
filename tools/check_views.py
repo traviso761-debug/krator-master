@@ -252,6 +252,20 @@ def scan(build):
         for s in stations:
             name = os.path.basename(s)
             own = [f for f in glob.glob(os.path.join(s, '*')) if f.endswith(('.js', '.html')) and DEFINES.search(read(f))]
+            # a station on a "base" (station.json; biomes/hearths' camera on the hold, on the crystals) takes the base's views unless it
+            # replaces them: follow the chain to the first station that defines some
+            b, chain = s, set()
+            while not own:
+                try:
+                    with open(os.path.join(b, 'station.json'), encoding='utf-8') as fh:
+                        nb = json.load(fh).get('base')
+                except (ValueError, OSError):
+                    nb = None
+                if not nb or nb in chain:
+                    break
+                chain.add(nb)
+                b = os.path.join(d, 'stations', nb)
+                own = [f for f in glob.glob(os.path.join(b, '*')) if f.endswith(('.js', '.html')) and DEFINES.search(read(f))]
             branch = re.search(r'==\s*([\'"])%s\1' % re.escape(name), src_view_text)
             if not own and not branch:
                 add('STATION-NO-VIEWS %s' % name, 'stations/%s/ defines no views and no src/ view fragment branches on it' % name)
