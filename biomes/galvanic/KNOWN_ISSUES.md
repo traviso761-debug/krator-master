@@ -19,7 +19,7 @@ Open items are `- [ ]`; `build.py` counts them.
 - [ ] **GPU verify**: built and checked in the cloud with software GL (SwiftShader); the two GPU lanes have not run it. The showcase budget, the
   shaders on a 16-unit GPU and the look are to be confirmed there (`KRATOR_GPU_LANE=auto python3 verify.py dist/galvanic.html --assert --all-views`).
 - [ ] **The ochre wader** (`PLAN.md` section 8) is a data proposal for `kits/fauna`, not drawn.
-- [ ] **Zinc as a resource node** (`PLAN.md` section 9): not added; proposed for the next `kits/resources` rebake.
+- [x] **Zinc as a resource node** (`PLAN.md` section 9): added to `kits/resources` in place, 2026-11-12.
 - [ ] **No steam over the Deep**: the brine is ~60 degC in +36 degC air at 2.2 atm; a faint morning haze would be honest and is not drawn.
 - [ ] **The tidal pump** (`PLAN.md` section 3, question 1): not taken (the owner's call).
 - [ ] **`tests/test-galvanic.js` is not in `tools/test_all.py`**: that runner collects `core/`, `settlements/` and `kits/` tests only, not `biomes/`.

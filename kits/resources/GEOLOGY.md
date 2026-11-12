@@ -49,6 +49,16 @@ rings, the rocks' contacts and blocks) is written in km (`cells(km, cell_km)`), 
 **Before 5.1** the bake read a saved 4.23 page and the database (`<page.html> <db>/regions <db>/settlements`). The carbonate
 and the other rocks were first added to that bake in place (`--carbonate`, `--rocks`, below); the 5.1 bake runs both itself.
 
+**Zinc was added in place** (2026-11-12, `--zinc`): today's model no longer bakes the committed file byte for byte (it has moved
+since 2026-11-03), so a full rebake would have moved every family's nodes. `--zinc` computes the family from the layers the file
+already holds (province, mask, copper, skarn) with the same `zinc_byte` the full bake uses (checked: a full bake's zinc and `--zinc`
+on that bake agree), and changes nothing else: every other layer, the stats, the placers and every other node are as they were.
+Then `node kits/resources/tests/test-res.js --ledger` (zinc in 12 of 28 polities' imports; the ledger without zinc is unchanged).
+
+```
+python3 tools/scale-model/geology.py --zinc kits/resources/data/geology.json
+```
+
 ```
 python3 tools/scale-model/geology.py --carbonate kits/resources/data/geology.json tools/scale-model/model/src/51-region-store.js --shift=-272,-330
 python3 tools/scale-model/geology.py --rocks kits/resources/data/geology.json tools/scale-model/model/src/51-region-store.js --vents tools/scale-model/model/data --shift=-272,-330
@@ -117,6 +127,7 @@ airless.
 | iron | gneiss 160, granite and impact 120, basin margins (sedimentary within 12 km of the crystalline rocks or volcanic) 140, rift 70, volcanic and basalt 60, sedimentary and quartzite 40, + .7 x skarn |
 | coal | sedimentary x lowland x (0.25 + 0.75 wet) x flat, at most 230 (subsiding wet basins) |
 | oil | 0.9 x coal smoothed over ~44 km, halved off the margins and folds; + 110 on low rift floors |
+| zinc | sphalerite (2026-11-12, the owner; `biomes/galvanic/PLAN.md` section 9): the higher of the ground's own (volcanic 150, rift 120, carbonate 90, + .5 x skarn) and .8 x copper where copper is over 100 (copper-zinc-iron massive sulfide: zinc follows copper); none on the evaporites. `zinc_byte` in geology.py; a node kind, cell 4 km |
 | saltpeter | 200 x aridity (rain under 600 mm), + 40 on evaporites |
 | gypsum, halite, potash, alkali | the ringed basins (below); halite also 40 under flat, dry sedimentary basins (bedded rock salt) |
 | stone, clay, wood, water | the ledger's basics only (no node kind): relief and hard rock (every province but sedimentary, evaporite and carbonate; sedimentary over 200 m of relief), at least 150 on basalt and granite (building stone on the flat) and 120 on carbonate (ashlar); floodplains and lake shores; rain and warmth; rivers, shores and rain |

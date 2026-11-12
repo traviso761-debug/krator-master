@@ -8,12 +8,15 @@ the same (kits/resources/PLACEMENT-RESEARCH.md, features 1 and 3; kits/resources
            tools/scale-model/model/src/60-settlements.js kits/resources/data/geology.json)
     python3 tools/scale-model/geology.py --carbonate <geology.json> <regions> [--shift dx,dy]
     python3 tools/scale-model/geology.py --rocks <geology.json> <regions> --vents <page.html | model data> [--shift dx,dy]
+    python3 tools/scale-model/geology.py --zinc <geology.json>
 
 <page.html>        the scale model page as saved (Artifact read); its DATA object holds the rasters
 <regions dir>      the artifact's `regions` collection (a folder of one JSON per document, or one JSON list)
 <settlements dir>  the artifact's `settlements` collection, the same way
 <out.json>         kits/resources/data/geology.json
 --preview <dir>    also write province.png and one PNG per family there (for the eye; not shipped)
+--zinc             add the zinc family (sphalerite: zinc_byte below) to a bake made before it, in place, from the layers the
+                   file already holds (province, mask, copper, skarn), leaving every other byte as it was (biomes/galvanic, 2026-11-12)
 --carbonate        add the carbonate province and the limestone layer to a bake made before them, in place, leaving every
                    other byte as it was: <regions> is a collection as above or a region store (model/src/51-region-store.js,
                    its default regions); --shift moves the regions' px onto the bake's canvas (-272,-330 takes 5.1's onto 4.23's)
@@ -46,7 +49,8 @@ WORLD = 20261026            # the node field's world seed (KRAND.child(WORLD, 'r
 # of 2 x inset x cell with no neighbour reads). Rarer kinds take larger cells.
 FIELD = {'iron': 3000, 'copper': 4000, 'gold': 5000, 'tin': 4000, 'silver': 5000, 'rare-earth': 6000, 'coal': 3000,
          'sulfur': 2000, 'saltpeter': 4000, 'oil': 5000, 'gypsum': 2500, 'halite': 2500, 'potash': 2500, 'alkali': 2500,
-         'nickel': 5000, 'marble': 3000}   # nickel and marble: REBAKE-PLAN.md R3 (the owner, 2026-11-03)
+         'nickel': 5000, 'marble': 3000,   # nickel and marble: REBAKE-PLAN.md R3 (the owner, 2026-11-03)
+         'zinc': 4000}   # zinc (sphalerite): the owner, 2026-11-12 (biomes/galvanic/PLAN.md section 9)
 INSET = 0.15
 NODE_FAMILIES = list(FIELD)
 LEDGER_FAMILIES = ['stone', 'clay', 'wood', 'water']
@@ -353,6 +357,45 @@ def model_vents(src, OW, shift):
     return [(v['px'][0] + shift[0], v['px'][1] + shift[1], v.get('radius', 3)) for v in D['vents']]
 
 
+def zinc_byte(prov, copper, skarn):
+    """Zinc (sphalerite), 0..255 (biomes/galvanic/PLAN.md section 9; the owner, 2026-11-12). The higher of two: the ground's own
+    (volcanic 150: the vent fields' massive sulfide; rift 120: the rift floors' metal brines and muds, the Atlantis II Deep's kind;
+    carbonate 90: Mississippi Valley-type lead-zinc in the platforms; + half the skarn byte), and 0.8 x the copper byte where that
+    is over 100 (copper-zinc-iron massive sulfide, Rio Tinto's kind: zinc follows copper). None on the evaporites. Pure numpy
+    on the province and two layers, so a full bake and --zinc on a saved one give the same bytes."""
+    PI = PROVINCES.index
+    p = prov & 127
+    base = 150.0 * (p == PI('volcanic')) + 120.0 * (p == PI('rift')) + 90.0 * (p == PI('carbonate')) + 0.5 * skarn.astype(float)
+    cu = copper.astype(float)
+    z = np.maximum(base, 0.8 * cu * (cu > 100))
+    return np.clip(np.round(z * (p != PI('evaporite'))), 0, 255).astype(np.uint8)
+
+
+def add_zinc(argv):
+    """--zinc: the zinc family added to a bake made before it, in place (the field's families and cells, the layer, its mean)"""
+    path = argv[2]
+    data = json.load(open(path, encoding='utf-8'))
+    if 'zinc' in data['families']:
+        sys.exit(path + ' already has the zinc layer')
+    g = data['grid']; VW, VH = g['w'], g['h']; n = VW * VH
+    L = lambda k: unrle(data['layers'][k], n).reshape(VH, VW)
+    prov_b, mask = L('province'), L('mask')
+    land = (mask & 1) == 0
+    z = zinc_byte(prov_b, L('copper'), L('skarn')) * land
+    z = z.astype(np.uint8)
+    # the family list's order is the full bake's: the node kinds (FIELD's order, zinc last), then the ledger's and the rocks'
+    fam = data['families']; at = fam.index(data['field']['families'][-1]) + 1
+    data['families'] = fam[:at] + ['zinc'] + fam[at:]
+    data['field']['families'] = data['field']['families'] + ['zinc']
+    data['field']['cells']['zinc'] = FIELD['zinc']
+    data['layers']['zinc'] = rle(z)
+    data['stats']['mean']['zinc'] = round(float(z[land].mean()), 2)
+    assert (unrle(data['layers']['zinc'], n) == z.ravel()).all()
+    with open(path, 'w', encoding='utf-8', newline='\n') as fh:
+        json.dump(data, fh, separators=(',', ':'), sort_keys=True)
+    print('added zinc to %s: mean %s on land; cells over 100: %d of %d' % (path, data['stats']['mean']['zinc'], int((z[land] > 100).sum()), int(land.sum())))
+
+
 def add_rocks(argv):
     """--rocks: the other rocks added to a bake that has the carbonate, in place, leaving every other byte as it was"""
     path, src = argv[2], argv[3]
@@ -433,6 +476,8 @@ def main(argv):
         return add_carbonate(argv)
     if '--rocks' in argv[1:2]:
         return add_rocks(argv)
+    if '--zinc' in argv[1:2]:
+        return add_zinc(argv)
     if len(argv) < 5:
         sys.exit(__doc__)
     page, regs_dir, setts_dir, out = argv[1:5]
@@ -608,6 +653,7 @@ def main(argv):
     margin = S & ndimage.binary_dilation(Cl | V, iterations=cells(12, CELL_KM))
     sk = P['skarn'].astype(float)
     g = {}
+    hard_cu = ~(prov == PI('evaporite'))
     g['copper'] = 210 * V + 120 * Rf + 50 * Cl + 10 * (S | Qz) + 120 * Ba + 0.6 * sk
     g['silver'] = 150 * V + 110 * (Gn | Gr) + 80 * (Rf | Im)
     g['gold'] = 140 * V + 110 * (Gn | Gr) + 90 * (Rf | Im)
@@ -619,6 +665,8 @@ def main(argv):
     g['oil'] = 0.9 * ndimage.uniform_filter(coal, cells(44, CELL_KM)) * (0.5 + 0.5 * (margin | (S & (relief > 200) & (relief < 1200)))) + 110 * Rf * low
     g['nickel'] = np.maximum(P['nickel'].astype(float), 180.0 * Um)
     g['marble'] = P['marble'].astype(float)
+    # zinc follows copper and the sulfide grounds (zinc_byte): taken from the copper byte as the bake writes it (land, off the evaporites)
+    g['zinc'] = zinc_byte(prov, np.clip(np.round(g['copper'] * land * hard_cu), 0, 255).astype(np.uint8), P['skarn']).astype(float)
     hardp = Cl | V | Rf | Ba | Qz | Um
     g['stone'] = np.maximum.reduce([60 + 195 * np.clip(relief / 900, 0, 1) * (hardp | (S & (relief > 200))),
                                     150.0 * (Ba | Gr), 120.0 * (prov == PI('carbonate'))])   # columnar basalt, granite, ashlar

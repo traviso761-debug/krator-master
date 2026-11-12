@@ -70,17 +70,17 @@
     "kits/resources/KNOWN_ISSUES.md": "55ddc8535fa13338843ff1c0a9064f2369ace9e8e70732e375038600a229b5ed",
     "kits/resources/PORT.md": "5e98d12d17ee61dd04af7bd1fbf107343851ca51458fada022cdd2d11d7a12f9",
     "kits/resources/build.py": "93bd0f608fb0e90c36944115a36fcfe60f0542e51ef8d997e8ea5cb414d23cc9",
-    "kits/resources/data/geology.json": "19058fbb95a026cb5106840a13bd93b341ad9557f65304bc9e68c0b873a11292",
-    "kits/resources/data/ledger.json": "63bece6cc7b2b033da8512b4476ae250f6d7b172420ca7ac19c43a17523681b5",
+    "kits/resources/data/geology.json": "ff46b6f8b3c3ae5d1cf3de99a223414047c06d594fa639bb980ab4632aa6ca0c",
+    "kits/resources/data/ledger.json": "c10e64d38a31b3e20221af154772bd523dcb1a8bf7c66b63e62d53d4392a8022",
     "kits/resources/src/00-head.html": "6881b3d04acb3667ea877cc3480990284f27fc0f74e01197f1872ed461e906a7",
     "kits/resources/src/26k-kit.js": "92d4998c100ffc83c79c1383087faa9a4757ac583e0cd6188f7c84afa97f63bb",
-    "kits/resources/src/42r-res-ore.js": "795b57d189506369e35b7e2b3de5795d940d8bff91bb51e6dedb7df3f2432a04",
+    "kits/resources/src/42r-res-ore.js": "b90fca3f8c77f027527e9a312602ad8912c7018834c2752a2d77c284821e1e2f",
     "kits/resources/src/43r-res-fields.js": "0a9325061c1d4526405b636391f26d9330012c3c6b36aa939e7ad461ec83a60f",
-    "kits/resources/src/44r-res-nodes.js": "e52c3cb3eace32606700aef4991b9032cdf0be9a21f56ffad90c657ca89359e3",
+    "kits/resources/src/44r-res-nodes.js": "4b52520d1539cc40dc01dac8a90142d7b10a08ba922dbd832518091ab10290a1",
     "kits/resources/src/45r-res-field.js": "ca8bf0860266e0eef84783236767da2b4758be920bd26e7aef63c1f8447440ab",
     "kits/resources/src/46r-res-ledger.js": "2f6286fd49a1e32e46a8e404c2696d057145acce14ab676cb26bc73fa5614fff",
-    "kits/resources/src/89-rows.js": "47a88164c34dcf75681c7b199da353d07d76bddcf2638e123630651637b36700",
-    "kits/resources/src/98r-host-geomap.js": "138a75d08d5129ee1e1d2b61b64cc9233753a3c72a0f70ec9acdc9e9d76a0bbd",
+    "kits/resources/src/89-rows.js": "4f704f326b7ea0f977714939bf3aecff98a9d23ad534bc8de3836f6f6d7bceba",
+    "kits/resources/src/98r-host-geomap.js": "823435bb9740502393ad4ddd669d5da2f3dc2cebb359d34bc58e07e078562ab7",
     "kits/resources/tex/cassiterite.albedo.webp": "1be6480d761bb34f35466447607184b916396db6faab49a35542913176fce39f",
     "kits/resources/tex/cassiterite.normal.webp": "60e08f91c83fd972db1e01ada0b1cb4e62c023c40a5dae2bd6cb5af46579075f",
     "kits/resources/tex/cassiterite.rough.webp": "faba76be0558e02362b3734386630e5b3058ee3feaf7b89bdd330540225f01a6",
@@ -152,13 +152,13 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/resources/build-manifest.json": "0607ff857ad36efd93d4c6ccc87c816de666c7dd355e0c34612179acd10960f0",
-    "kits/resources/dist/resources.html": "6ea46649bb724a490bf96d5c0c1726b92327fbff237aa35306dc4defa7f88045",
+    "kits/resources/build-manifest.json": "3abdfbd53a623706c58e769becc46a61176dc4d1a4e44f27073d2c903e714f8c",
+    "kits/resources/dist/resources.html": "c770eed929c2e2ebff4ece412aac2d1de1da442bf87142994624be077d49c24c",
     "kits/resources/dist/resources.tex.resources.js": "71a4d5020e9e8fa48901bd901b654606f85d081fd2fbc187e79f75463e3c8224"
    },
    "outputs_raw": {
-    "kits/resources/build-manifest.json": "0607ff857ad36efd93d4c6ccc87c816de666c7dd355e0c34612179acd10960f0",
-    "kits/resources/dist/resources.html": "6ea46649bb724a490bf96d5c0c1726b92327fbff237aa35306dc4defa7f88045",
+    "kits/resources/build-manifest.json": "3abdfbd53a623706c58e769becc46a61176dc4d1a4e44f27073d2c903e714f8c",
+    "kits/resources/dist/resources.html": "c770eed929c2e2ebff4ece412aac2d1de1da442bf87142994624be077d49c24c",
     "kits/resources/dist/resources.tex.resources.js": "71a4d5020e9e8fa48901bd901b654606f85d081fd2fbc187e79f75463e3c8224"
    }
   }

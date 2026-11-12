@@ -20,3 +20,5 @@ FAMILIES.push({name:'Gypsum (a salt basin rim)',keys:['node-gypsum-low','node-gy
 /* the new rocks' kinds (2026-11-03, REBAKE-PLAN.md R3) */
 FAMILIES.push({name:'Nickel ore (the melt sheet\'s margin)',keys:['node-nickel-low','node-nickel-medium','node-nickel-high']},
  {name:'Marble (a quarry)',keys:['node-marble-low','node-marble-medium','node-marble-high']});
+/* zinc (2026-11-12, biomes/galvanic) */
+FAMILIES.push({name:'Zinc ore (sphalerite)',keys:['node-zinc-low','node-zinc-medium','node-zinc-high']});

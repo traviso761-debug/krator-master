@@ -316,13 +316,12 @@ Vertebrate-grade hexapods only, never insects.
   - **ochre and red oxide** from the terraces: pigment (section 10's lacquer);
   - **sulfur** from the dead runners: a small, clean source;
   - **zinc and copper ore** in the mounds (sphalerite, chalcopyrite).
-  **Zinc as a resource node: default taken, owner to confirm: not added this session.** `kits/resources` places nodes from
-  a baked prospectivity layer per family (`GEOLOGY.md`, "The families"; `tools/scale-model/geology.py`): a `zinc` family
-  means a new layer in the bake, a rebake of `data/geology.json`, its ledger, the Godot golden vectors and every page that
-  inlines the data. That is not small, and the grade contract (one byte per cell per family, the hash's grade) wants the
-  layer, not a node definition alone. Proposed for the next resources rebake: `zinc` (sphalerite) with weights rift 120,
-  volcanic 150 (the Gills' and the vents' fields), carbonate 90 (Mississippi Valley-type ore), plus `0.8 x copper` where
-  the copper byte is over 100 (copper-zinc-iron massive sulfide, Rio Tinto's kind). Copper and iron nodes already favour the
+  **Zinc is a resource node** (the owner, 2026-11-12: built). `kits/resources` places nodes from a baked prospectivity layer per
+  family; the `zinc` layer was added to `data/geology.json` in place (`geology.py --zinc`: the committed bake no longer reproduces
+  from today's model, so a full rebake would have moved every other node), with these weights: the higher of the ground's own
+  (volcanic 150, rift 120, carbonate 90 for Mississippi Valley-type ore, + half the skarn byte) and 0.8 x copper where the copper
+  byte is over 100 (copper-zinc-iron massive sulfide, Rio Tinto's kind). The node is a sphalerite outcrop (`node-zinc-*`); the ledger
+  carries it (12 of 28 polities import it). Copper and iron nodes already favour the
   Rift; this strand is their best showcase.
 - **Hazards** (`core/hazard`, `KHAZ`). **Acid** (the streams and pools at pH 2: skin burns, ruined leather), **poison**
   (no water on the strand is drinkable: zinc and copper), **the Deep's brine** (hot, dense and anoxic: a body that falls in
@@ -384,7 +383,7 @@ Vertebrate-grade hexapods only, never insects.
 | `core/export`, `core/shadow`, `core/edits`, `core/minimap` | yes | through the host shell, as High Rift |
 | `core/mask` | no | the placement masks are the stage's own functions of the ground (`BIO.mask`); nothing reads canvas pixels |
 | `kits/fauna` | no (this turn) | the ochre wader is a data proposal (section 8) |
-| `kits/resources` | no (this turn) | no node field on the page; zinc is a proposal for the next rebake (section 9) |
+| `kits/resources` | the zinc family (section 9) | zinc added to the node field; the station's page draws no node field (its ore is the strand itself) |
 | `core/simulation`, `core/city`, `core/hamlet`, `core/camp` | no | no people on the strand; the trade is a later sim pass |
 
 ## 14. New in core

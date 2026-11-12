@@ -37,16 +37,16 @@
    "sha256": "b325a6d45ecc5d6f67e7eaa73eb410a18596fd00972afae5cff0911cd19773e7"
   },
   "biomes/copperglacier/dist/copperglacier-icefield.html": {
-   "bytes": 5135671,
-   "sha256": "a7334ef5b4d036cf57542ba8eb6c7f81c260eac2335c52aaec6af37e22cff429"
+   "bytes": 5135680,
+   "sha256": "a03426ca8037f3c52593dc046edac629477b65e7281252e01d4660d88640ce4d"
   },
   "biomes/copperglacier/dist/copperglacier-pass.html": {
-   "bytes": 5136413,
-   "sha256": "27db125a75584e98f171315204baa9ea103d176628496884f6c8fd435a41ed58"
+   "bytes": 5136570,
+   "sha256": "c0c73e06b5703a4e584fb6c3dc457d55ffd178d3241feddbd39ea24d172cbe4d"
   },
   "biomes/copperglacier/dist/copperglacier.html": {
-   "bytes": 5136240,
-   "sha256": "bf8bc4bc0207130ac9a45c5dd012ff789ed5418329464c9b7a7f84373c852042"
+   "bytes": 5136249,
+   "sha256": "30fdc71964e2bc6a667b4b9e7aa20872bc639e3a486cf5fcdf53ac7ade6c0a13"
   },
   "biomes/crater-drylands/dist/crater-drylands-edge.html": {
    "bytes": 9822977,
@@ -829,8 +829,8 @@
    "sha256": "a0ee049196d9800b59309a3ea156f9cc566e40a6494e4d6db3931d617b32d9b1"
   },
   "kits/islanders/dist/islanders.html": {
-   "bytes": 1756463,
-   "sha256": "3ec993b3aaa7b568f592ffae5f39f2b443d2a1fe6226b1ea5551b0324a59dff7"
+   "bytes": 1758607,
+   "sha256": "e28bcbcf57f233f1ecd75ec9973a079098103f94498f356826d1102de339236d"
   },
   "kits/lizardmen/dist/lizardmen.html": {
    "bytes": 1731452,
@@ -985,8 +985,8 @@
    "sha256": "bf855d052d7a0f64d405e0703d9544ab471ab3823fbf6458722a0f092af59c14"
   },
   "kits/resources/dist/resources.html": {
-   "bytes": 5250600,
-   "sha256": "6ea46649bb724a490bf96d5c0c1726b92327fbff237aa35306dc4defa7f88045"
+   "bytes": 5286250,
+   "sha256": "c770eed929c2e2ebff4ece412aac2d1de1da442bf87142994624be077d49c24c"
   },
   "kits/ringsea/dist/ringsea.html": {
    "bytes": 5033320,
@@ -1009,12 +1009,12 @@
    "sha256": "a3843bca9538ce870335a22d6b7f4a30d2b69fd8cf7b372f928c62346733e1eb"
   },
   "openworld/isle-demo/dist/isle-demo.artifact.html": {
-   "bytes": 6330864,
-   "sha256": "eec120b34cfc3f9787418b0e49a0155287d843e889e4648f73ce42bc0b676dec"
+   "bytes": 7071940,
+   "sha256": "a48c70940aafff7c3be18303271a97c2d2afea5718c3b7d2cac2333486eac270"
   },
   "openworld/isle-demo/dist/isle-demo.html": {
-   "bytes": 7069307,
-   "sha256": "8a977c462ef1eb4e38cd787184df7905666cc6aa61bc0f6d2c497ad1d58a02a0"
+   "bytes": 7072198,
+   "sha256": "d492eb423fd8192a42a9d24048ecb300ec491d556caee004ad3b4775ba6bb36a"
   },
   "openworld/little-demo/dist/little-demo.artifact.html": {
    "bytes": 5088461,
@@ -1057,8 +1057,8 @@
    "sha256": "c4a59a537b6331d763782da7440ac1b08ae3d38a1c2bfb2ece22f983fce8f7dd"
   },
   "settlements/isle-demo/dist/isle-city.html": {
-   "bytes": 6292302,
-   "sha256": "fee9dbf7199805a3d06cce97f5f01a0f65ea7b7b9c399e00ca24b72ef39499bd"
+   "bytes": 6294446,
+   "sha256": "afc0cbe200850f93f934e6ec88a3bd08273e330506e560a121765803893993c2"
   },
   "settlements/isle-demo/dist/isle-site.html": {
    "bytes": 1319857,
