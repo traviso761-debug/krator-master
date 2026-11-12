@@ -171,12 +171,23 @@ so cacao, coffee, clove, sugar and cotton grow in every warm belt and barely tra
 **Homes outside `CROPS.BIOMES`.** `riftrim`, `abyssal-savannah` and `swhighlands` are biome kits but not crop zones yet
 (`kits/crops/src/10-crop-core.js` `CROPS.BIOMES`). A `home` can name one (laterite ochre's home is `abyssal-savannah`), but
 `CROPS.at` cannot place it on the axes until the zone is added: three zones to add, from each kit's `PLAN.md`.
-**"The hyperjungle biomes"** (the owner: "the jungle biomes that take parts of its kit") are the kits that read the
-hyperjungle's flora in place, by their `build.py`: `hyperjungle` itself; `geyser` (the jungle that walls the basin);
-`korona` (the gorge floor's and the rim's forest); `necanyons` (the canyon floor's forest); `dambasins` (station 3, the east
-bed); `abyssal-savannah` (the savannah rims, from the hyperjungle's northern savannah). Not counted: `guilin`, `k-guilin` and
-`ringisles` take only its helper globals and sky, and `crater-drylands` only its fauna. Wherever this file says "the
-hyperjungle" as a home, it means these six.
+**"The hyperjungle biomes"** (the owner, 2026-11-12: "the jungle biomes that take parts of its kit", then "ring isles and
+k-guilin can count as hyperjungle biomes. dambasins should not count, and only hyperjungle geysers should count. throne
+stations that are damp enough to support the flora should count"):
+- `hyperjungle` itself;
+- `ringisles` and `k-guilin`;
+- `korona` (the gorge floor's and the rim's forest);
+- `necanyons` (the canyon floor's forest);
+- `abyssal-savannah` (the savannah rims, from the hyperjungle's northern savannah);
+- `geyser`'s showcase only: station 1, the Steampits' basin walled by the hyperjungle. Not the stations on other ground
+  (`puna`, `ice`, `corona`, `field`, `stills`);
+- `throne`'s damp stations: the kipuka (2, "islands of old hyperjungle"), the spice frontier (3, the windward jungle), the
+  geyser isle (4) and the cloud forest (5). Not the dry ones: the savanna, the ash desert, vent country, the caldera, the
+  penitentes, the glacier, the tube, the lava delta, the blast zone.
+
+Not counted: `dambasins`, `guilin` (helper globals and sky only), `crater-drylands` (fauna only). A home that names "the
+hyperjungle" means this list. Because the Throne and the geyser kit count by station, `CROPS.at` needs the station's zone
+(the Throne's `windward`), not the whole kit.
 
 **Today's producers these cut** (the published tables): cacao's top five are Voth, Jimjam, Dalab, Fulcrum, Erehwon; coffee's
 Voth, Jimjam, Dalab, Erehwon, Fulcrum; tea's the Republic (27%), Dalab, Iziz, the Free Giants, the Talovolci; tobacco's
@@ -229,16 +240,16 @@ everything below comes from the three plans, and the trade model has none of it.
 | Good | Where (5.1 px) | From | What it is and who buys it | Status |
 |---|---|---|---|---|
 | **Machine-wax** | the Siphon Pits' maar floors: station 3 at 1687,1555, the Ropers' camp Pit-Head 04 | the woolly siphon's "shaggy hydrocarbon fleece", 15 cm lanolin-wax pelts, rendered in copper kettles into amber ingots (`PLAN.md` section 3; `machine_wax` is a planned material slot) | a lubricant and grease for every machine: generators, buggies, Iziz's mechs, the Republic's firearms and rockets, Xanadu's salvaged engines; also a candle and sealing wax. Only the Siphon Pits grow it, so it is **Yuni's natural unique**. Buyers by machine count: Iziz, the Republic, the Eternians, Xanadu (through the gateways) | the owner named it: **chosen** |
-| **Suture-gall wax** | the same pits, on damp basalt column fractures | the suture-galls, "fleshy, wax-storing bulbs" | a second, softer wax: folded into machine-wax as its low grade, not a good of its own | proposed |
-| **Spinner cord** | the Loom-Chasms' slots, the parent colony on Mount Caelum (summit ~1622,1166) | the cable spinner's lines: "iron-silica fibre" grown into cables 15-40 cm thick | the young shoots' lines stripped and laid into cord and rope stronger than any fibre crop: lift cables, winch lines, ship rigging. A grown cable is tens of tonnes, so only the cord travels | proposed |
-| **Ghaunt-ox** (beasts, wool and hides) | the Ostrukh Terraces (station 1, 1519,1453), the Siphon Pits' arable north-west | the woolly ghaunt-ox: a 1,800 kg six-limbed draft beast, domesticated on the terraces, wild on the scarps | draft teams and wool for the cold uplands; the trade model's "mounts and hides" class, with Yuni as a seller beside the Beast Riders and the Dasri | proposed |
-| **Amethyst** | geodes on the Siphon Pits' rims (`biomes/CRYSTAL-CAVES-5.1.md`, site 3) | walk-in amethyst geodes in the basalt flows | gemstones, a luxury. The Zeijani revere thundereggs and vugs as shrines (`kits/zeijani/PLAN.md`), so they are a natural buyer | proposed |
-| **White Loom salt** | Lake Nim's playa, ~1697,1176 | the Loom-Chasms' halite crust | salt for the Emirate's own east: Spindle Fan, the expeditions, the Cradle's farms. Too far from any customer to export | proposed, local only |
+| **Suture-gall wax** | the same pits, on damp basalt column fractures | the suture-galls, "fleshy, wax-storing bulbs" | a second, softer wax: folded into machine-wax as its low grade, not a good of its own | **chosen** |
+| **Spinner cord** | the Loom-Chasms' slots, the parent colony on Mount Caelum (summit ~1622,1166) | the cable spinner's lines: "iron-silica fibre" grown into cables 15-40 cm thick | the young shoots' lines stripped and laid into cord and rope stronger than any fibre crop: lift cables, winch lines, ship rigging. A grown cable is tens of tonnes, so only the cord travels | **chosen** |
+| **Ghaunt-ox** (beasts, wool and hides) | the Ostrukh Terraces (station 1, 1519,1453), the Siphon Pits' arable north-west | the woolly ghaunt-ox: a 1,800 kg six-limbed draft beast, domesticated on the terraces, wild on the scarps | draft teams and wool for the cold uplands; the trade model's "mounts and hides" class, with Yuni as a seller beside the Beast Riders and the Dasri | **chosen** |
+| **Amethyst** | geodes on the Siphon Pits' rims (`biomes/CRYSTAL-CAVES-5.1.md`, site 3) | walk-in amethyst geodes in the basalt flows | gemstones, a luxury. The Zeijani revere thundereggs and vugs as shrines (`kits/zeijani/PLAN.md`), so they are a natural buyer | **chosen** |
+| **White Loom salt** | Lake Nim's playa, ~1697,1176 | the Loom-Chasms' halite crust | salt for the Emirate's own east: Spindle Fan, the expeditions, the Cradle's farms. Too far from any customer to export | **chosen**, local only |
 
 **What it needs.**
 - **A works pin for the wax.** No pin reaches the maar floors: Ostrukh-on-Water is ~170 km off. The model counts a good only
   in a settlement's reach, so machine-wax needs **the Ropers' camp, Pit-Head 04, as an outpost pin** at ~1687,1555 (Yuni).
-  That is a queue row (section 4), proposed.
+  That is a queue row (section 4), sent on the owner's go (2026-11-12: "yes to the taking the se basin goods and the pin").
 - **A goods row each** in the trade model: machine-wax as a natural good, with demand by machine use like oil (2.4); the
   others as their classes.
 - **Records:** machine-wax and spinner cord as `homeOnly` material records in `kits/crops`, home `siphon-pits` and
@@ -331,7 +342,7 @@ For the scale-model session's queue (`local_bf163a02`), not edited here. A propo
 | SETT_ADDED | **Ṣilbaru** (Zeijani, "silver"), the Dhelv silver works | 851,774 | village | Zeijani | gold 10.5 and silver 11.3 node-yield (2.6) |
 | type change | Tallwalls | 650,1268 (unchanged) | city to **town** | Free Giants | the owner: poorer (2.3) |
 | SETT_ADDED (**sent, the owner's go**) | Eastern highlands harvesters (to be named) | 1095,911 | village | none yet | the cushion plateau's harvesters (2.5d); culture and lore to come |
-| SETT_ADDED (**proposed**, not yet sent) | Pit-Head 04, the Ropers' camp (the Siphon Pits' plan names it) | ~1687,1555 | outpost | Yuni Emirate | the machine-wax works on the maar floor (2.5c) |
+| SETT_ADDED (**sent, the owner's go**) | Pit-Head 04, the Ropers' camp (the Siphon Pits' plan names it) | ~1687,1555 | outpost | Yuni Emirate | the machine-wax works on the maar floor (2.5c) |
 | page code | a **town** settlement type | - | - | - | the page's `SETT_TYPES` has no town (city, outpost, village, cavern, arcology, the ruins); the owner chose to add one, a glyph and a key entry, rather than make Tallwalls a village. The Tabist town takes it too |
 
 The names are the owner's picks (2026-11-12) from proposals in each tongue (`LORE.md` 6.8 for Dasrī, `tools/names/izani.py`,
@@ -367,13 +378,12 @@ And the documents: `TRADE-GOODS.md`'s tables are rerun and rewritten once the ru
 - the licence: 10% of the profits and 20% off that site's oil (2.4);
 - the Geomancers' rare earths in Yuni's lands and nearby (2.4);
 - the isle demo reworked for these crops, a to-do (2.5);
-- Eternian wine comes with its grape crop (2.5).
-
-- indigo and annatto also in the Ring Isles, the NW and SW bays and the Throne; "the hyperjungle biomes" are the six kits
-  that read its flora (2.5); the isle demo's conflict is now cacao alone;
+- Eternian wine comes with its grape crop (2.5);
+- indigo and annatto also in the Ring Isles, the NW and SW bays and the Throne; the isle demo's conflict is now cacao alone (2.5);
+- "the hyperjungle biomes" listed by kit and by station (2.5);
 - the proposals accepted ("i like the proposals"): the four SW natives (2.5a), pinyon copal (2.5b), 200 km of a Yuni pin
   for the Geomancers' rare earths and 5 km of a bore for the Tungangs (2.4);
-- machine-wax is a Yuni export (2.5c).
+- machine-wax and the SE basins' other goods taken, and Pit-Head 04 sent to the queue (2.5c);
+- the eastern highlands' harvesters placed at 1095,911 (2.5d).
 
-1. **The SE basins' other goods** (2.5c): take spinner cord, the ghaunt-ox, amethyst and suture-gall wax as proposed?
-2. **Pit-Head 04 as a pin** for the wax works (sections 2.5c and 4): send it to the queue with 5.1e10?
+**Nothing else is open.** Section 7 is the sweep of every biome plan for goods this round missed, for the owner to pick from.
