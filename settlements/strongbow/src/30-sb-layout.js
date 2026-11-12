@@ -21,6 +21,8 @@ const SB_BY=['xanadu','order','outcasts','ancient'];
 
 /* built on first use (sbLayout()), so a page that loads this fragment before the arcology's plan still works */
 let SB_LAYOUT_=null;
+/* a lift car's half width (m): the layout places the frames, src/32-sb-walk.js the cars */
+const SB_CAR=3;
 function sbLayout(){if(SB_LAYOUT_)return SB_LAYOUT_;SB_LAYOUT_=(function(){
  const P=STRONGBOW.plan({seed:1647}),RU=STRONGBOW.ruin(P),F=P.frame,D=P.dim,FT=P.foot,ST=D.STO;
  const parts=[],ways=[],T={};
@@ -156,11 +158,24 @@ function sbLayout(){if(SB_LAYOUT_)return SB_LAYOUT_;SB_LAYOUT_=(function(){
  // the elevator's wall lifts W1 to W5 on the face west of the bay
  const lift=(id,a,b,y0,y1,x,z,o)=>way(Object.assign({id,kind:'lift',a,b,y0,y1,frame:[x,z],by:'xanadu'},o||{}));
  lift('L1','sb.lobby.core','sb.T1',0,T[1].at[1],L.at[0],L.at[2],{note:'inside the dead core shaft'});
- lift('L2a','sb.T1','sb.T2',T[1].at[1],T[2].at[1],T[1].at[0]-T[1].r+8,T[1].at[2]+8,{note:'on the outside of the Spine'});
- lift('L2b','sb.T2','sb.T3',T[2].at[1],T[3].at[1],T[2].at[0]-T[2].r+8,T[2].at[2]+8,{note:'past the burned run; T3 by permit'});
+ /* the lifts are placed so a car rises clear of every deck it passes and stops beside its landings (the owner, 2026-11-12:
+    "move the elevators as necessary"; src/32-sb-walk.js walks them). CAR is a car's half width */
+ const CAR=SB_CAR,faceMax=(x,y0,y1)=>{let z=-1e9;for(let y=y0;y<=y1;y+=5)z=Math.max(z,F.faceZ(x,y));return z;};
+ /* L2: one frame for L2a and L2b, outside T2 and T3 (which share a centre, so no frame can stand on T2 and clear T3's dish),
+    standing on T1's garden outside its ring building, clear of the drums above T1; girder gangways reach T2 and T3 */
+ const L2F=(()=>{const c1=[T[1].at[0],T[1].at[2]],c2=[T[2].at[0],T[2].at[2]],R=Math.max(T[2].r,T[3].r)+CAR+1.5,dr=['sb.sp.5.1','sb.sp.5.0'].map(id=>P.drums.find(d=>d.id===id));
+  let best=null;for(let a=0;a<720;a++){const t=a/720*Math.PI*2,p=[c2[0]+R*Math.cos(t),c2[1]+R*Math.sin(t)],d1=Math.hypot(p[0]-c1[0],p[1]-c1[1]);
+   if(d1<T[1].r-12+CAR+.8||d1>T[1].r-.5-CAR)continue;if(dr.some(d=>Math.hypot(p[0]-d.at[0],p[1]-d.at[2])<d.r+CAR+3))continue;
+   const sc=Math.abs(d1-(T[1].r-6-CAR/2))-p[1]*.01;if(!best||sc<best.sc)best={p,sc};}return best.p;})();
+ lift('L2a','sb.T1','sb.T2',T[1].at[1],T[2].at[1],L2F[0],L2F[1],{note:'on the outside of the Spine, on T1 garden; a girder gangway to T2'});
+ lift('L2b','sb.T2','sb.T3',T[2].at[1],T[3].at[1],L2F[0],L2F[1],{note:'past the burned run; T3 by permit (the same frame as L2a)'});
  lift('L3','sb.T3','sb.T5',T[3].at[1],T[5].at[1],T[3].at[0]+T[3].r-6,T[3].at[2]+30,{gated:true,note:'the Salvagers\' Guild, guarded by the garrison'});
  way({id:'bridge.T3~sb.wl.0',kind:'bridge',a:'sb.T3',b:'sb.wl.0',pts:[[T[3].at[0]-T[3].r,T[3].at[2]],[WX,F.faceZ(WX,T[3].at[1])+4]],note:'a girder bridge to W1\'s foot'});
- for(let i=0;i<5;i++)lift('W'+(i+1),landAt(i),landAt(i+1),wl[i][0],wl[i+1][0],WX,F.faceZ(WX,(wl[i][0]+wl[i+1][0])/2)+4,{elevator:true});
+ /* the wall lifts alternate 6 m either side of WX, so two cars meeting at a landing do not overlap; each stands 1.5 m in front
+    of the face over its whole run (the face batters back as it rises), and the landing ledges grow to hold the cars */
+ for(let i=0;i<5;i++){const x=WX+(i%2?-6:6),y0=wl[i][0],y1=wl[i+1][0];lift('W'+(i+1),landAt(i),landAt(i+1),y0,y1,x,faceMax(x,y0,y1+4)+CAR+1.5,{elevator:true});}
+ for(const p of parts){if(p.kind!=='landing'||p.id==='sb.nock.landing')continue;const s=p.shape;
+  for(const w of ways)if(w.kind==='lift'&&(w.a===p.id||w.b===p.id)){const f=w.frame;s[1]=Math.min(s[1],f[0]-CAR-.5);s[2]=Math.max(s[2],f[0]+CAR+.5);s[3]=Math.min(s[3],f[1]-CAR-.5);s[4]=Math.max(s[4],f[1]+CAR+.5);}}
  way({id:'bridge.T2~sb.gal.e.0',kind:'bridge',a:'sb.T2',b:'sb.gal.e.0',pts:[[T[2].at[0]+T[2].r,T[2].at[2]],[180,F.faceZ(255,150)+5]]});
  way({id:'bridge.T3~sb.gal.e.1',kind:'bridge',a:'sb.T3',b:'sb.gal.e.1',pts:[[T[3].at[0]+T[3].r,T[3].at[2]],[180,F.faceZ(255,270)+5]],note:'a girder bridge and stair'});
  // the outcasts' rope ways: from the scree up the face to their drums
