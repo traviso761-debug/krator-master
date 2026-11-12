@@ -33,3 +33,10 @@ and the card draws black (the shader normalises zero). Found here on 2026-11-12;
 
 **The LOD origins.** Every seep is one of the stage's LOD origins (`L.spine`): the reed is near-field life placed within `Lv.mid` (560 m) of an
 origin, and the outer seeps, more than a kilometre from the slab's points, stood bare until they were added (2026-11-12).
+
+**The face's irregularity** (the owner, 2026-11-12: "too blocky and regular"). The scarp's three even benches are gone; in their place, in
+the stage: five ledges whose heights wander along the strike and fade in and out (a smooth stair in the share of the height, back-tilted a
+little where strongest); the cliff's height wandering 1-2 km scale (the throw is uneven); a ragged skyline (notches and towers at 25-250 m,
+the top only); the face's profile convex in some stretches and concave in others; face noise at three scales and vertical fluting (the
+columns' joints); fewer, wider, varied gullies; buttresses closer and bolder; the beds warped (KSTRATA warp 22 / 7 m). Still panel-like
+from afar: the face is one profile with noise on it, and a stepped, spur-and-gully form would break it further (KNOWN_ISSUES).

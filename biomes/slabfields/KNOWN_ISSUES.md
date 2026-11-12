@@ -17,3 +17,6 @@
 - [ ] **The spring line's view hides its water.** From 1.8 m the seeps (7-20 m across) sit too low in the frame to read; move the camera onto
       the toe's rim or lower its target.
 - [ ] **The bench's steppe looks noisy close up** (ground.steppe at a 3 m scale under the detail map): a larger scale or a softer detail.
+- [ ] **The cliff still reads as a few broad panels from afar.** It is one KRELIEF.scarp profile with the stage's noise, ledges and bulges
+      on it (NOTES.md). A real break-up wants spurs and gullies as their own forms (each spur its own profile, talus cones at the gullies'
+      mouths, a few collapse scars where the apron came from): a `KRELIEF.slab` amendment (PLAN.md section 15, item 5).

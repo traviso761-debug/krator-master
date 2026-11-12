@@ -42,8 +42,21 @@ const L=(function(){const S=SITE,SL=S.slab,AP=S.apron;
  // THE CLIFF: the slab's rim on its lobate front (the front bows out north at the slab's middle, PLAN.md 3.4), the plateau (the slab) on the south
  const rimZ=x=>SL.rimZ+SL.bow*Math.pow(x/SL.half,2);
  const pts=[];for(let x=-16000;x<=16000;x+=1000)pts.push([x,rimZ(x)]);
- const W=KRELIEF.scarp({pts,side:1,h:SL.h,run:SL.run,power:1.3,benches:{n:SL.benches,w:22},ravines:{n:34,w:[50,110],head:[120,320],depth:[50,180]},
-  buttresses:{sp:480,amp:60},talus:{h:SL.talus.h,reach:SL.talus.reach},rim:{lip:5,w:30},warp:{amp:35},rough:.012,ends:4000,seed:KRAND.hash(WORLD,1,51)});
+ const W=KRELIEF.scarp({pts,side:1,h:SL.h,run:SL.run,power:1.3,benches:{n:0},ravines:{n:18,w:[90,280],head:[150,520],depth:[40,190]},
+  buttresses:{sp:300,amp:130,w:.5},talus:{h:SL.talus.h,reach:SL.talus.reach},rim:{lip:5,w:30},warp:{amp:130,scale:1/900},rough:.03,ends:4000,seed:KRAND.hash(WORLD,1,51)});
+ // THE FACE'S IRREGULARITY (the owner, 2026-11-12: the cliff read too blocky and regular): the cliff's height wanders along the strike (the
+ // throw is not even, and the beds' share of it carries the ledges up and down with it); the face takes noise at three scales, strongest
+ // mid-face (spalled buttresses, slabs half fallen, joints opened), none on the rim's lip or the floor
+ const hVar=x=>170*n2(x,0,.00045,91)+70*n2(x,0,.0018,92);
+ const crestN=x=>120*n2(x,0,.0042,96)+50*n2(x,0,.013,99)+18*n2(x,0,.04,100);   /* the skyline: notches and towers at 25-250 m, near the top only */
+ const bulge=x=>.16*n2(x,0,.0011,102)+.07*n2(x,0,.0037,103);   /* the face's profile: convex (a steep slope) here, concave (a sheer wall over a ramp) there */
+ const faceN=(x,z)=>85*n2(x,z,.0038,93)+30*n2(x,z,.012,94)+9*n2(x,z,.04,95)+34*n2(x,0,.022,97)+12*n2(x,0,.07,98);   /* the last two: vertical fluting, the columns' joints weathered into grooves down the face */
+ // THE LEDGES (in place of the scarp's even benches): where a hard flow's top stands out of the face. Five, each at its own share of the
+ // height that wanders along the strike, each fading in and out (k 0..1); a smooth stair in the share, sh - k w sin(2 pi (sh - L) / w) / 2 pi,
+ // flat where k is 1 and steeper either side, so the face's height is kept
+ const LEDGES=[0,1,2,3,4].map(i=>({L:(i+1)/6.2,w:.1,s:101+i}));
+ function ledge(x,sh){let d=0;for(const E of LEDGES){const L=E.L+.035*n2(x,0,.0009,E.s),u=(sh-L)/E.w;if(Math.abs(u)>=.5)continue;
+  const k=clamp(.7+2*n2(x,0,.0011,E.s+40),0,1.25);   /* over 1: the ledge tilts back a little (a real bench, with a lip) */d-=k*E.w*Math.sin(TAU*u)/TAU;}return d;}
  const footZ=x=>rimZ(x)-SL.run;
  // THE APRON: the last collapse's lobe, t 0 at the cliff's foot to 1 at the toe, u across (-1..1 its flanks)
  const hwAt=t=>lerp(AP.half[0],AP.half[1],clamp(t,0,1));
@@ -70,6 +83,7 @@ const L=(function(){const S=SITE,SL=S.slab,AP=S.apron;
  const brookBed=(i)=>s0.level-.3-.004*Math.max(0,s0.z-brookL[i][1]);
  const nearBrook=(x,z)=>{let best=1e9,bi=0;for(let i=0;i<brookL.length;i+=1){const d=Math.hypot(x-brookL[i][0],z-brookL[i][1]);if(d<best){best=d;bi=i;}}return{d:best,i:bi};};
  function land(x,z){const g=bench(x,z);let y=KRELIEF.shape(W,x,z,g);
+  {const sh=clamp((y-g)/SL.h,0,1.05);if(sh>.002){const s1=Math.min(sh,1);y+=(ledge(x,s1)+bulge(x)*Math.sin(Math.PI*s1))*SL.h+s1*hVar(x)+Math.pow(s1,3)*crestN(x)+faceN(x,z)*smooth(.03,.2,sh)*smooth(1.0,.85,sh);}}
   const behind=z-rimZ(x);if(behind>0)y-=SL.dip*behind*smooth(0,300,behind);   /* the slab's ramp: falling 7 degrees south behind the rim */
   y+=apronT(x,z);
   for(const s of SEEPS){const d=Math.hypot(x-s.x,z-s.z);if(d<s.r*2.2)y=Math.min(y,mix(s.level-1.6*(1-Math.pow(Math.min(1,d/s.r),2)),y,smooth(s.r*.9,s.r*2.2,d)));}

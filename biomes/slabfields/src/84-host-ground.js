@@ -11,7 +11,7 @@ const GQ=new URLSearchParams(location.search),USE_KG=typeof KGROUND!=='undefined
 const KG_RELIEF=USE_KG&&GQ.get('kgrelief')!=='0';
 /* the beds: the slab's 2 km of flows over the bench (3.3 km) to its crest (5.4 km); they rise north 0.123 a metre (the ramp's 7 degrees south) */
 const STRATA=GQ.get('strata')==='0'||typeof KSTRATA==='undefined'?null:KSTRATA.create({seed:4130+SITE.station,recipe:'slab-floodbasalt',range:[SITE.base-600,SITE.slab.crest+200],
- dip:[0,-1,SITE.slab.dip],warp:[6,2]});
+ dip:[0,-1,SITE.slab.dip],warp:[22,7]});   /* warped: the flows thicken and pinch along the face, not ruled lines */
 const STRATA_SH=STRATA?KSTRATA.shade(STRATA,{dust:0x8a7e70}):null;
 function masksAt(x,z,h,out){const wet=FC.at(FC.a.wet,x,z),rock=FC.at(FC.a.rock,x,z),ap=FC.at(FC.a.rim,x,z),behind=z-L.rimZ(x);
  const rub=clamp(ap*1.2,0,1)*(1-smooth(.6,.85,rock)*.5);
