@@ -240,7 +240,7 @@ merged in. Its sheet is a Xanadu page: the kit's buildings, the mixed street, th
 | Q4 | sacred: monasteries, college, gate temples, chortens, the kora's arcades and wheel houses, wayside shrines, the ghats |
 | Q5 | the Temple Mountain (great temple, Hall of the Decree, treasury, great wheel house); walls and gate towers |
 | Q6 | catalog furniture (`kits/catalog` Xanadu culture: the prayer wheels exist) and interiors for the monastery, the hall and the hostel |
-| Q7 | the city: the nested-squares site on core/city (the grid generator asked of the core/city session) and the infill; the open-world site at Qiblai with its ring re-planned; the bundle, Godot export, gallery |
+| Q7 | the city: the nested-squares site on core/city (the grid generator asked of the core/city session) and the infill; the open-world site at Qiblai with its ring re-planned; the bundle, Godot export, gallery. **The step-by-step build plan is `settlements/qiblai/PLAN.md`** (2026-11-11) |
 
 **Who else this touches:**
 - `settlements/xanadu/build.py` gets the `--kit` option. Its own page must come out byte-identical (proved by the
