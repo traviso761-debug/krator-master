@@ -26,22 +26,43 @@
 //           each leaving its towns from 1.8 km out (r), beyond the ring of the bands' camps round the rock (1.0 to 1.64 km
 //           out: from 900 m the Talon road ran through the raptor camp and the Kreia road past the longcrawlers'),
 //           laid (the ground is shaped to them), kept inside the cut (routed in 8 km hops along the line), bridged where
-//           they cross a named river (core/world 42b, SITE_SPEC.bridges), with a caravanserai every 25 km of road (a
-//           caravan's day) and a rest stop halfway between: the Iziz Vernacular's (vern_caravanserai, vern_rest_stop),
-//           the kit the Izani highways' stops take in the Iziz cluster. The Beast Riders have a roadside inn
-//           (br_bldg_riders_inn) but core/world 88s draws a stop only from a village kit (xanadu, iziz): KNOWN_ISSUES.md
+//           they cross a named river (core/world 42b, SITE_SPEC.bridges), with an inn every 25 km of road (a caravan's
+//           day) and a rest stop halfway between. The Izani highways (Goto, Nusidi) take the Iziz Vernacular's
+//           (vern_caravanserai, vern_rest_stop), as in the Iziz cluster; the Beast Riders' trails and the far roads take
+//           the Beast Riders kit's (br_bldg_riders_inn, its roadside inn; br_bldg_watch_tower, a rider post), drawn through
+//           core/world 88s's `beast-riders` village kit (S7) by core/hamlet's `beast-rider` row below. The coyotemen and the
+//           Dasri have no kit: the Pinnacle bands' own posts stand in on their roads (KNOWN_ISSUES.md).
 // KSITES (core/world/48s-world-sites.js) plans it; core/world/bake_sites.py bakes it to plan/sites.json.
+/* THE CLEARINGS (core/simulation/PROPOSAL-LONGSONG-PINNACLE.md section 3, phase S7; the owner, 2026-11-11): four farming
+   villages of the ground tribes in jungle clearings 5 to 9 km from the rock, the town's second stream of food (the floor
+   ring is the first, the bands at home the third, their dry-season haul the fourth). core/hamlet's `beast-rider` row: the
+   Beast Riders kit's own buildings (CAT: its farmhouses, terrace rows and longhouse blocks, the chief's compound, the
+   temple, the mead hall, the shophouse and the bake house, the granary and the beetle pens). The row lives here until a
+   second region takes it (core/hamlet reaches 56 pages) */
+KHAMLET.CULTURES['beast-rider']={kit:'beast-riders',household:6,workShare:0.45,slopeMax:0.22,
+ religious:'br_bldg_temple',civic:'br_bldg_mead_hall',general:'br_bldg_shophouse',food:'br_bldg_bakehouse',warehouse:'br_bldg_granary',
+ services:{religious:1,civic:2,general:2,food:2,warehouse:3},
+ houses:{poor:[['br_bldg_terrace_row',2,3],['br_bldg_longhouse_block',3,2]],middling:[['br_bldg_great_house',3,2],['br_bldg_farmhouse',2,1]],
+  head:[['br_bldg_chief_compound',1,1]],middlingShare:0.3},
+ works:{farming:[{key:'br_bldg_farmhouse',jobs:10,share:0.75},{key:'br_bldg_granary',jobs:4,share:0.1},{key:'br_bldg_beetle_pen',jobs:4,share:0.15}]},
+ focusJobs:{farming:90},reach:{farming:460}};
 var STOPS={every:25000,inn:'vern_caravanserai',rest:'vern_rest_stop',culture:'iziz',look:5000};
+var BR_STOPS={every:25000,inn:'br_bldg_riders_inn',rest:'br_bldg_watch_tower',culture:'beast-rider',look:5000};
 /* a link along its corridor's line (region.json cut.corridors, written by cut_site.py from openworld/SITES.json) */
 var CORRIDOR=(a,b)=>{const C=((WORLD_DATA.meta.cut||{}).corridors||[]).find(c=>c.from===a&&c.to===b);return C?C.px:null;};
-var LINK=(a,b,o)=>[a,b,Object.assign({hw:3,r:1800,keep:true,stops:STOPS,guide:CORRIDOR(a,b)},o||{})];
+var LINK=(a,b,o)=>[a,b,Object.assign({hw:3,r:1800,keep:true,stops:BR_STOPS,guide:CORRIDOR(a,b)},o||{})];
 var SITE_SPEC={region:'pinnacle',world:1027681,bridges:{culture:'iziz'},
- sites:{staiytii0y:{road:{r:700,hw:1.6},camps:[
+ sites:{staiytii0y:{culture:'beast-rider',road:{r:700,hw:1.6},hamlets:[
+  {id:'clearing-w',name:'The Threehorn clearing',focus:'farming',bearing:280,km:6,look:2500,pop:240},
+  {id:'clearing-sw',name:'The Hardshell clearing',focus:'farming',bearing:215,km:7.5,look:2500,pop:240},
+  {id:'clearing-nw',name:'The Staghorn clearing',focus:'farming',bearing:330,km:8,look:2500,pop:240},
+  {id:'clearing-s',name:'The Longcrawler clearing',focus:'farming',bearing:170,km:6.5,look:2500,pop:240}],
+  camps:[
   {tribe:'threehorn',near:[-1230,200]},{tribe:'hardshell',near:[-870,-500]},{tribe:'longcrawler',near:[-1120,800]},
   {tribe:'staghorn',near:[-860,1350]},{tribe:'raptor',near:[1100,1080]},{tribe:'tiger',near:[1180,480]},
   {tribe:'mammoth',near:[-170,1480]},{tribe:'spider',near:[930,-330]},{tribe:'dragonfly',near:[815,1385]}]},
   /* the partners: their towns are not planned here (their own pages, or none yet); each is a link's end */
   ski7uk8fjc:{},sghb3jlsk5:{},s1kaqxmg10:{},s5c6ysqazg:{},skukf2qmmq:{},s2199308wr:{},soksvzt1h9:{},slfozs6c7z:{}},
- links:[LINK('staiytii0y','ski7uk8fjc'),LINK('staiytii0y','sghb3jlsk5'),LINK('staiytii0y','s1kaqxmg10'),
-  LINK('sghb3jlsk5','skukf2qmmq'),LINK('skukf2qmmq','s2199308wr'),LINK('s1kaqxmg10','s5c6ysqazg'),
+ links:[LINK('staiytii0y','ski7uk8fjc',{stops:STOPS}),LINK('staiytii0y','sghb3jlsk5'),LINK('staiytii0y','s1kaqxmg10'),
+  LINK('sghb3jlsk5','skukf2qmmq'),LINK('skukf2qmmq','s2199308wr',{stops:STOPS}),LINK('s1kaqxmg10','s5c6ysqazg'),
   LINK('staiytii0y','soksvzt1h9'),LINK('staiytii0y','slfozs6c7z')]};

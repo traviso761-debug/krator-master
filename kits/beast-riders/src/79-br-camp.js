@@ -28,7 +28,7 @@ function brcPasture(ha) { return { fence: { key: 'br_fence_rail', v: 0, gate: { 
 /* the six ground tribes' upper ground: the chief's pavilion, two family domes, a small dome, one trade, a hitching line */
 function brcUpperGround(trade, tv, line) {
   return { where: "the mesa top's open margin, away from the Crown",
-    tents: [brcE('br_tent_chief', 1, 1), brcE('br_tent_dome_family', 2, 0), brcE('br_tent_dome_small', 1, 0), brcE(trade, 1, tv)],
+    tents: [brcE('br_tent_chief', 1, 1), brcE('br_tent_dome_double', 1, 0), brcE('br_tent_dome_family', 3, 0), brcE('br_tent_dome_small', 1, 0), brcE(trade, 1, tv)],
     pens: [brcE('br_tent_hitch_line', 1, line)] };
 }
 /* a ground tribe's lower ground: its camp (the chief, the council, the dwellings, the shrine, its trades) and its pens */
@@ -42,7 +42,7 @@ function brcLowerGround(trades, pens, ha) {
 const BR_CAMP = {
   quetzal: { name: 'Quetzal', note: 'the reigning tribe; a Wing posted at Pinnacle Rock', mount: 'flyer', beast: 'quetzalcoatlus', size: [7.5, 5.6], banner: 0x2f7a5a,
     grounds: { upper: { where: "the east fins, by the Quetzal Wing's roosts",
-      tents: [brcE('br_tent_chief', 1, 0), brcE('br_tent_council', 1, 1), brcE('br_tent_dome_family', 3, 0), brcE('br_tent_dome_small', 2, 0), brcE('br_tent_shrine', 1, 0), brcE('br_tent_shaman', 1, 0)],
+      tents: [brcE('br_tent_chief', 1, 0), brcE('br_tent_council', 1, 1), brcE('br_tent_dome_double', 1, 0), brcE('br_tent_dome_family', 3, 0), brcE('br_tent_dome_small', 2, 0), brcE('br_tent_shrine', 1, 0), brcE('br_tent_shaman', 1, 0)],
       pens: [brcE('br_tent_perch_frame', 3, 0), brcE('br_tent_feed_shelter', 1, 1)] } } },
   wingclaw: { name: 'Wingclaw', note: "the roost town's own tribe (giant archaeopteryx)", mount: 'flyer', beast: 'giant-archaeopteryx', size: [7.5, 3.7], banner: 0xb08432,
     grounds: { upper: { where: "the north fins over the gorge, by the Wingclaw Wing's roosts",
@@ -50,12 +50,12 @@ const BR_CAMP = {
       pens: [brcE('br_tent_perch_frame', 3, 1), brcE('br_tent_feed_shelter', 2, 1)] } } },
   dragonfly: { name: 'Dragonfly', note: 'flyers whose beasts live by water, not on the fins: they camp on the floor by a netted breeding pond', mount: 'pond', beast: 'giant-dragonfly', size: [6.9, 1.9], banner: 0x3a7aa0,
     grounds: { lower: { where: 'the floor south-east of the gate, by its pond',
-      tents: [brcE('br_tent_chief', 1, 1), brcE('br_tent_dome_family', 3, 2), brcE('br_tent_dome_small', 2, 0), brcE('br_tent_shrine', 1, 1), brcE('br_tent_shaman', 1, 1)],
+      tents: [brcE('br_tent_chief', 1, 1), brcE('br_tent_dome_double', 1, 0), brcE('br_tent_dome_family', 3, 2), brcE('br_tent_dome_small', 2, 0), brcE('br_tent_shrine', 1, 1), brcE('br_tent_shaman', 1, 1)],
       pens: [brcE('br_tent_pond_nets', 1, 0), brcE('br_tent_pond_nets', 1, 1), brcE('br_tent_net_house', 1, 1), brcE('br_tent_feed_shelter', 1, 1)],
       hedge: brcHedge(), pasture: null } } },
   nightwing: { name: 'Nightwing', note: 'giant bats; a Wing posted at Pinnacle Rock', mount: 'flyer', beast: 'giant-bat', size: [2.6, 2.2], banner: 0x3a2a4a,
     grounds: { upper: { where: "the west fins, by the Nightwing Wing's roosts",
-      tents: [brcE('br_tent_chief', 1, 0), brcE('br_tent_dome_family', 2, 1), brcE('br_tent_dome_small', 3, 2), brcE('br_tent_shrine', 1, 0), brcE('br_tent_shaman', 1, 0), brcE('br_tent_smithy', 1, 1)],
+      tents: [brcE('br_tent_chief', 1, 0), brcE('br_tent_dome_double', 1, 0), brcE('br_tent_dome_family', 2, 1), brcE('br_tent_dome_small', 3, 2), brcE('br_tent_shrine', 1, 0), brcE('br_tent_shaman', 1, 0), brcE('br_tent_smithy', 1, 1)],
       pens: [brcE('br_tent_perch_frame', 2, 2), brcE('br_tent_feed_shelter', 1, 1)] } } },
   spider: { name: 'Spider', note: 'spider-riders live in silk houses and work silk looms (LORE 6.6); their grove at the forest edge, away from the grazers', mount: 'grove', beast: 'giant-spider', size: [6.6, 3.7], banner: 0xe8e8e0,
     grounds: { lower: { where: "the forest's edge north-east of the mesa",
@@ -84,7 +84,7 @@ const BR_CAMP = {
         [brcE('br_tent_kennel_row', 1, 0), brcE('br_tent_corral', 1, 0), brcE('br_tent_lunge_ring', 1, 0), brcE('br_tent_breaking_pen', 1, 0), brcE('br_tent_training_yard', 1, 1), brcE('br_tent_hitch_line', 1, 0), brcE('br_tent_feed_shelter', 1, 1)], 6) } },
   mammoth: { name: 'Mammoth', note: 'a paddock and byre south of the mesa, west of the forest road (not in kits/fauna yet: about 6 m long, 4 m high)', mount: 'great', beast: null, size: [6, 4], banner: 0x7a5a3a,
     grounds: { lower: { where: 'the floor south of the mesa, west of the forest road',
-      tents: [brcE('br_tent_chief', 1, 0), brcE('br_tent_dome_family', 3, 0), brcE('br_tent_dome_small', 2, 2), brcE('br_tent_shrine', 1, 1), brcE('br_tent_smithy', 1, 0), brcE('br_tent_hidemaker', 1, 1)],
+      tents: [brcE('br_tent_chief', 1, 0), brcE('br_tent_dome_double', 1, 0), brcE('br_tent_dome_family', 3, 0), brcE('br_tent_dome_small', 2, 2), brcE('br_tent_shrine', 1, 1), brcE('br_tent_smithy', 1, 0), brcE('br_tent_hidemaker', 1, 1)],
       pens: [brcE('br_tent_mammoth_paddock', 1, 1), brcE('br_tent_breaking_pen', 1, 1), brcE('br_tent_lunge_ring', 1, 1), brcE('br_tent_hitch_line', 1, 1), brcE('br_tent_feed_shelter', 1, 0)],
       hedge: brcHedge(), pasture: brcPasture(5) } } },
   longcrawler: { name: 'Longcrawler', note: 'giant millipedes: sheds over leaf litter', mount: 'crawler', beast: 'draught-millipede', size: [7.3, 1.05], banner: 0x3f7a3a,

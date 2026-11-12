@@ -5,9 +5,8 @@
       from the origin must add the rock's point: the camps' spec was already relative to the site, so nothing here moved.
       `settlements/pinnacle-rock` does not read this region (it has its own 4.21 cut); when it is rebuilt on the open
       world (the sim's S7), it takes the rock's point from `region.json`'s `sites`, not the origin.
-- [ ] **The links' stops are the Iziz Vernacular's** on every road, the Beast Rider trails and the coyotemen's and
-      Dasri's roads included: core/world 88s draws a stop only from a village kit it knows (xanadu, iziz). `PLAN.md`,
-      "What is left" 6.
+- [ ] **The far roads' stops are the Beast Riders' own** (their roadside inn and a watch tower) on the coyotemen's and the
+      Dasri's roads: neither people has a kit. `PLAN.md`, "What is left" 6.
 - [ ] **The corridors east of the rock grow nothing** (the crater's east wall, the Nomad Country's sedesert, the Tiers):
       no kit for them in `src/47-world-kits.js`. `PLAN.md`, "What is left" 7.
 - [ ] **Fort Kreia's road is a guide**, not the network's: the trunk to Kreia starts at the Crescent and crosses the

@@ -88,12 +88,17 @@ ORDER = (
      ('biomes/hyperjungle/src', '41-hyperjungle-globals.js')]
     + [('pack', k) for k in PACK_KITS] + [('izpack', 'iziz')]
     + KIT_FRAGS
-    # the site: the Beast Riders' buildings with the kit's tent set (CAT), the Iziz Vernacular (IZV: the links' stops), the
-    # kit-piece instancer the isle demo shares, core/camp and the Beast Riders' camp table, the site planner, this region's
-    # spec and the savannah kit as the world reads it (no village is planned here, so no core/hamlet or core/city)
+    # the site: the Beast Riders' buildings with the kit's tent set (CAT: the camps, the clearings, the trails' inns), the
+    # Iziz Vernacular (IZV: the Izani highways' stops), the kit-piece instancer the isle demo shares, core/camp and the
+    # Beast Riders' camp table, core/city's primitives and core/hamlet (the clearings: the spec's `beast-rider` row), the
+    # site planner, this region's spec and the savannah kit as the world reads it
     + [('bundle', 'cat'), ('bundle', 'izv'), ('settlements/isle-demo/src', '58-isle-protos.js'),
        ('core/camp', '10-camp-cultures.js'), ('core/camp', '20-camp-census.js'), ('core/camp', '30-camp-pitch.js'),
        ('kits/beast-riders/src', '79-br-camp.js'),
+       ('core/city', '33-city-strategies.js'), ('core/city', '15-city-ground.js'),   # 15 after 33, which makes KCITY: the stance 33's strategies name
+       ('core/hamlet', '10-hamlet-wood.js'), ('core/hamlet', '12-hamlet-gather.js'),
+       ('core/hamlet', '14-hamlet-farmland.js'), ('core/hamlet', '16-hamlet-names.js'), ('core/hamlet', '18-hamlet-names.js'),
+       ('core/hamlet', '20-hamlet-cultures.js'), ('core/hamlet', '30-hamlet-village.js'),
        ('ld', '48s-world-sites.js'), ('src', '48-world-site.js'), ('src', '49-world-absav.js')]
     + LDF('80-world-sky.js', '81-world-terrain.js', '83-world-water.js', '83w-world-seas.js', '84-world-nursery.js',
           '85-world-flora.js', '86-world-floor.js', '87-world-places.js', '88-world-towns.js', '88s-world-sites.js', '88b-world-bridges.js')
@@ -175,7 +180,7 @@ def main():
             continue
         if where == 'bundle':   # settlements/isle-demo/bundles.py: CAT (the Beast Riders' buildings and tents), IZV
             _bd = bundles()
-            js, _ = _bd.izv_bundle() if f == 'izv' else _bd.cat_bundle(SIDE, tents=True)
+            js, _ = _bd.izv_bundle() if f == 'izv' else _bd.cat_bundle(SIDE, tents=True, trades=True)   # trades: the clearings' and trails' Beast Rider buildings
             out.append('\n// ==================== the %s bundle (settlements/isle-demo/bundles.py)\n' % f.upper())
             out.append(js)
             continue

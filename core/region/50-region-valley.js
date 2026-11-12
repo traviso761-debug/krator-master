@@ -8,12 +8,13 @@
      H.simValley(V)          declare it; V:
        seed, scale (people an actor stands for: 10), start (the clock's first minute), calendar (77-sim-6-season.js),
        factions: [{id, name}], relations: [{a, b, stance}], goods: {good: {unit, ...}} (every economy knows them all),
-       settlements: [{id, name, faction, parent?, people, x, z, eats: {good: a person a day}, start: {good: n},
+       settlements: [{id, name, faction, parent?, people, x, z, eats: {good: a person a day}, start: {good: n}, feeds?, reserve?: {good: n},
                       keepDays? (days of its own use a road keeps back: 30),
                       works: [{id, kind, name?, crew (people at work), out?: [good], rate? (units an actor-hour), cap?,
                                season?, seasonRate?, batch?: {in, out, hours}, herd?: {out, rate, animals, seasonRate?},
                                pasture?: {id, window} (a summer pasture the herd moves to while `window` is open)}]}],
-       roads: [{id, from, to, minutes, cap, carriers?, stagger?, share?: {settlement: {good: fraction}} (a tithe),
+       food?: {good: grain-equivalent of a unit} (S7: a food short is made up from the others by value; else it is hungry),
+       roads: [{id, from, to, minutes, cap, carriers?, stagger?, want? (days of want a load fills: SIM.trade's), share?: {settlement: {good: fraction}} (a tithe),
                 goods?: {settlement: [goods]}, expect?: {settlement: {good: a day}}, keep?}],
        transfers: [SIM.transfer's spec] (the grant of fealty, the grants of esteem)
      H.valleyRun(minutes, step)   the clock stepped `step` minutes at a time (60: the abstract level's hour)
@@ -64,6 +65,7 @@ H.simValley = function (V) {
         X.works.push({ id: Wk.id, pasture: Wk.pasture.id, window: Wk.pasture.window });
       }
     });
+    if (Sd.reserve) SIM.stockpile(s, Object.keys(Sd.reserve).reduce(function (o, g) { o[g] = { reserve: Sd.reserve[g] }; return o; }, {}));   /* S7: kept back from every road (SIM.trade reads a policy's reserve) */
     var W0 = SIM.econ(s).warehouses[0];
     if (W0) Object.keys(Sd.start || {}).forEach(function (g) { W0.stock[g] = (W0.stock[g] || 0) + Sd.start[g]; });
     S.order.push(s); S.eaten[s] = {}; S.hungry[s] = {}; S.carry[s] = {};
@@ -73,7 +75,7 @@ H.simValley = function (V) {
     var a = S.towns[Rd.from], b = S.towns[Rd.to];
     if (!a || !b) { S.problems.push('road ' + Rd.id + ': no settlement ' + (a ? Rd.to : Rd.from)); return; }
     SIM.trade({ id: Rd.id, stops: [{ settlement: Rd.from, place: a.spec.works[0].id }, { settlement: Rd.to, place: b.spec.works[0].id }], cap: Rd.cap, carriers: Rd.carriers,
-      minutes: Rd.minutes, stagger: Rd.stagger, mins: Rd.mins == null ? 60 : Rd.mins, goods: Rd.goods, expect: Rd.expect, share: Rd.share, keep: Rd.keep });
+      minutes: Rd.minutes, stagger: Rd.stagger, mins: Rd.mins == null ? 60 : Rd.mins, goods: Rd.goods, expect: Rd.expect, share: Rd.share, keep: Rd.keep, want: Rd.want });
   });
   (V.transfers || []).forEach(function (Tr) { SIM.transfer(Tr); });
   /* the herds to their summer pasture and home again (77-sim-6-season.js: the window's turn) */
@@ -90,7 +92,10 @@ H.simValley = function (V) {
     var hrs = (minute - S.last) / 60; if (hrs <= 0) return; S.last = minute;
     S.order.forEach(function (s) { var Sd = S.towns[s].spec, E = Sd.eats || {}; if (S.away && S.away[s]) return;
       Object.keys(E).sort().forEach(function (g) { var c = (S.carry[s][g] || 0) + Sd.people * E[g] * hrs / 24, n = Math.floor(c); S.carry[s][g] = c - n; if (n <= 0) return;
-        var got = SIM.supply(g, n, false, s); S.eaten[s][g] = (S.eaten[s][g] || 0) + got; if (got < n) S.hungry[s][g] = (S.hungry[s][g] || 0) + n - got; });
+        var got = SIM.supply(g, n, false, s); S.eaten[s][g] = (S.eaten[s][g] || 0) + got; if (got >= n) return;
+        var Fd = V.food, v = Fd && Fd[g] ? (n - got) * Fd[g] : 0;   /* S7: a food short, the others stand in by their value (V.food: {good: grain-equivalent of a unit}) */
+        if (v > 0) Object.keys(Fd).sort().forEach(function (f) { if (f === g || v <= 1e-9) return; var k = Math.floor(v / Fd[f]); if (k <= 0) return; var g2 = SIM.supply(f, k, false, s); S.eaten[s][f] = (S.eaten[s][f] || 0) + g2; v -= g2 * Fd[f]; });
+        var left = Fd && Fd[g] ? v / Fd[g] : n - got; if (left > 1e-9) S.hungry[s][g] = (S.hungry[s][g] || 0) + left; });
       if (Sd.feeds) { var F = S.fed[s] || (S.fed[s] = {}), St = S.starved[s] || (S.starved[s] = {});
         Object.keys(Sd.feeds).sort().forEach(function (g) { var k = 'beast:' + g, c = (S.carry[s][k] || 0) + Sd.feeds[g] * hrs / 24, n = Math.floor(c); S.carry[s][k] = c - n; if (n <= 0) return;
           var got = SIM.supply(g, n, false, s); F[g] = (F[g] || 0) + got; if (got < n) St[g] = (St[g] || 0) + n - got; }); } });
@@ -112,6 +117,28 @@ H.valleyBooks = function () {
       used: Object.assign({}, E.used), short: Object.assign({}, E.short), eaten: Object.assign({}, S.eaten[s]), hungry: Object.assign({}, S.hungry[s]) };
     if (S.towns[s].spec.feeds) { out.towns[s].fed = Object.assign({}, S.fed[s]); out.towns[s].starved = Object.assign({}, S.starved[s]); } });
   return out;
+};
+/* core/camp's host (C4, S6: core/camp/60-camp-world.js, THE HOST): the world tick's view of the valley's books. A band's
+   stock handed in lands in its settlement's warehouses (imported); taken back out (exported) when it leaves; a market's
+   side of a caravan's barter; a raid's loot leaving the target (exported, tallied in H.SIM.raided) and its dead. Every
+   load is booked, so the sim's ledger holds across the hand-overs (off the map: the ledger's abroad columns) */
+H.valleyHost = function () {
+  var S = H.SIM; S.raided = S.raided || {}; S.killed = S.killed || {};
+  var wh = function (s, g) { var n = 0; SIM.econ(s).warehouses.forEach(function (P) { n += P.stock[g] || 0; }); return n; };
+  var put = function (s, goods, kind) { var out = {}; SIM.withEcon(s, function () { Object.keys(goods).sort().forEach(function (g) { var n = goods[g];
+    if (!(n > 0) || !SIM.ECON.goods[g]) return; if (SIM.economyLand(g, n) == null) return; SIM.economyBook(kind || 'imported', g, n); out[g] = n; }); }); return out; };
+  var out = function (s, goods) { var got = {}; SIM.withEcon(s, function () { Object.keys(goods).sort().forEach(function (g) { var n = Math.floor(Math.min(goods[g], wh(s, g)));
+    if (!(n > 0)) return; n = SIM.economyTake(g, n); if (n > 0) { SIM.economyBook('exported', g, n); got[g] = n; } }); }); return got; };
+  return {
+    land: function (s, goods) { return put(s, goods); },
+    take: function (s) { var all = {}; Object.keys(SIM.econ(s).goods).forEach(function (g) { var n = Math.floor(wh(s, g)); if (n > 0) all[g] = n; }); return out(s, all); },
+    away: function (s, a) { H.valleyAway(s, a); },
+    people: function (s) { return S.towns[s].spec.people; },
+    stock: function (s, g) { return wh(s, g); },
+    raid: function (s, goods) { var got = out(s, goods), R = S.raided[s] || (S.raided[s] = {}); Object.keys(got).forEach(function (g) { R[g] = (R[g] || 0) + got[g]; }); return got; },
+    kill: function (s, n) { var Sd = S.towns[s].spec; n = Math.min(n, Sd.people); Sd.people -= n; S.killed[s] = (S.killed[s] || 0) + n; },
+    trade: function (s, sold, bought) { put(s, sold); out(s, bought); }
+  };
 };
 /* a band out ranging (S6: core/camp's hand-over): away, its people and beasts neither eat here nor its works make (each
    held by SIM.recipeHold, 'away'); home again, they do */

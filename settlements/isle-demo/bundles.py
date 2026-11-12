@@ -274,6 +274,10 @@ CAT_PORTS = os.path.join(BR, 'src', '60-br-ports.js')
 # open world takes it (cat_bundle(tents=True)); the city page does not, so its bundle is as it was
 CAT_TENTS = [os.path.join(BR, 'src', f) for f in ('70-br-tent-kit.js', '71-br-tents-dwell.js', '72-br-tents-trade.js',
                                                   '73-br-tents-pens.js', '74-br-tents-bands.js', '75-br-tents-bounds.js')]
+# the kit's trades and houses (src/51-54), for a page that plans Beast Rider villages or roadside inns on core/hamlet's
+# `beast-rider` row (openworld/pinnacle's clearings and its trails' inns, 2026-11-12: core/world/bake_sites.py reads their
+# boxes, so the page must have them to plan again and to draw them): opt-in, so the other pages' bundles are as they were
+CAT_TRADES = [os.path.join(BR, 'src', f) for f in ('51-br-trades.js', '52-br-trades-b.js', '53-br-trades-c.js', '54-br-houses.js')]
 # the kit's DETAIL MAPS (2026-10-20: its own buildings read flat and washed out here next to its page): the kit's page draws
 # its buildings with the catalog's detail maps (krator-furniture-detail.js: each material's texture family, projected
 # triplanar from the mesh's own position, its mean brightness divided out), over KF_TEX (kits/beast-riders/build.py
@@ -315,7 +319,7 @@ var window = new Proxy(globalThis.window || globalThis, { get: function (t, k) {
 '''
 
 
-def cat_bundle(side=None, tents=False):
+def cat_bundle(side=None, tents=False, trades=False):
     """CAT: the catalog's geometry kit, the Beast Riders kit's own buildings and its ports (the two towns sealed, their
     maps BR_TOWN_IMG: in side['brtowns'] when side is given, a sidecar file), sealed; CAT.proto(key, v) builds one at the
     origin into a new group (no furniture: the catalog's pieces are not on this page; a port keeps the furniture its
@@ -325,7 +329,7 @@ def cat_bundle(side=None, tents=False):
     import towns
     tjs, tfiles = towns.bundle(side)
     kf = _kf_tex()
-    files = CAT_FILES + (CAT_TENTS if tents else [])
+    files = CAT_FILES + (CAT_TRADES if trades else []) + (CAT_TENTS if tents else [])
     if side is None:
         kfjs = 'var KF_TEX = ' + kf + ';' + NL
     else:

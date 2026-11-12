@@ -19,8 +19,9 @@ logistics book these links).
   - The rock is on the **savage hyperjungle's north-east edge**: a knoll 110 m over its 14 km round, at -1,287 m.
   - Pinnacle Rock's own page (`settlements/pinnacle-rock`) still stands on its own 4.21 cut (`region/`): it does not
     read this region (`KNOWN_ISSUES.md`).
-- **The site:** the nine Beast Rider bands that camp on the floor round the rock, and a track from each camp's gate to
-  the rock.
+- **The site:** the nine Beast Rider bands that camp on the floor round the rock, a track from each camp's gate to the
+  rock, and four farming clearings 6-8 km out (the sim's S7: core/hamlet's `beast-rider` row, 229 people each), each with
+  its road to the rock.
   - **The bands:** their tribes' `lower` grounds (`kits/beast-riders` `BR_CAMP`), each searched from the spot the rock's
     page gives its camp.
   - **The tracks:** `core/world` `ROADS`, the grade held to 8 %.
@@ -44,7 +45,9 @@ logistics book these links).
     its north half turns north-east, the Shade road on its south half turns south-east, and they never cross. (Guided
     onto the trough's north wall, the Coyote road switchbacked, and its upper leg's cut showed under the lower.)
   - Each link leaves its towns from 1.8 km out, beyond the camps' ring round the rock.
-  - The stops are the Iziz Vernacular's (`vern_caravanserai`, `vern_rest_stop`), as on the Iziz cluster's Izani highways.
+  - The stops: on the Izani highways (Goto, Nusidi) the Iziz Vernacular's (`vern_caravanserai`, `vern_rest_stop`), as in
+    the Iziz cluster; on the Beast Rider trails and the far roads the Beast Riders kit's roadside inn (`br_bldg_riders_inn`)
+    and a watch tower for a rider post (`br_bldg_watch_tower`), drawn through core/world 88s's `beast-riders` kit.
   - The partners' towns are not planned here: a link's end is the town's point.
 - **The plan is records:**
   - `core/world/48s-world-sites.js` (`KSITES`) plans on the world's land: `WORLD.Hland`, the land without the roads.
