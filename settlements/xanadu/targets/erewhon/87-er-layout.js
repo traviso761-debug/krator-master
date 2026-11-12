@@ -157,14 +157,17 @@ const CIT_SITES=[
  // Each checked against the wall and the others (2026-11-09): the Vizier west of the Dome, the court temple south, the guard
  // and the Treasurer in the east lobe, the Master of Mines and the kitchens west, the Chancellor between the Vizier and the
  // palace, the envoys south-east of the temple
- {key:'xa_cit_vizier',w:46,d:94,v:0,t:[-424,-145],at:[-424,-145]},
- {key:'xa_cit_temple',w:62,d:56,v:0,t:[-360,-69],at:[-360,-69]},
- {key:'xa_cit_barracks',w:44,d:42,v:0,t:[-264,-169],at:[-264,-169]},
- {key:'xa_cit_mines',w:42,d:42,v:0,t:[-480,-105],at:[-480,-105]},
- {key:'xa_cit_treasurer',w:40,d:44,v:0,t:[-260,-225],at:[-260,-225]},
- {key:'xa_cit_chancellor',w:34,d:44,v:0,t:[-419,-224],at:[-419,-224]},
- {key:'xa_cit_envoys',w:30,d:42,v:0,t:[-305,-70],at:[-305,-70]},
- {key:'xa_cit_kitchens',w:28,d:42,v:0,t:[-466,-150],at:[-466,-150]}];
+ // face: the side of the plot its street door opens on (the walk audit's path draft, 2026-11-12); the plot is levelled to the
+ // tiles on that side, not to the mean of the ground under it, which sank the houses up to 6 m below their paths (the owner:
+ // "raise plots to the paths"). face 'ring': no street door yet, the median of the tiles round it
+ {key:'xa_cit_vizier',w:46,d:94,v:0,t:[-424,-145],at:[-424,-145],face:'z1'},
+ {key:'xa_cit_temple',w:62,d:56,v:0,t:[-360,-69],at:[-360,-69],face:'ring'},
+ {key:'xa_cit_barracks',w:44,d:42,v:0,t:[-264,-169],at:[-264,-169],face:'z1'},
+ {key:'xa_cit_mines',w:42,d:42,v:0,t:[-480,-105],at:[-480,-105],face:'x0'},
+ {key:'xa_cit_treasurer',w:40,d:44,v:0,t:[-260,-225],at:[-260,-225],face:'z1'},
+ {key:'xa_cit_chancellor',w:34,d:44,v:0,t:[-419,-224],at:[-419,-224],face:'z1'},
+ {key:'xa_cit_envoys',w:30,d:42,v:0,t:[-305,-70],at:[-305,-70],face:'ring'},
+ {key:'xa_cit_kitchens',w:28,d:42,v:0,t:[-466,-150],at:[-466,-150],face:'z0'}];
 // a gridded garden over a polygon: cells of CIT_UNIT inside it at least CLEAR from its edge (and not where skip says),
 // SITES squared to it on whole cells, levels stepped as the garden's; at(x,z) the level at a point (null where skipped)
 function tileGround(CP,SITES,CLEAR,skip){const U=CIT_UNIT;let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9;for(const p of CP){x0=Math.min(x0,p[0]);x1=Math.max(x1,p[0]);z0=Math.min(z0,p[1]);z1=Math.max(z1,p[1]);}
@@ -188,9 +191,23 @@ function tileGround(CP,SITES,CLEAR,skip){const U=CIT_UNIT;let x0=1e9,x1=-1e9,z0=
  const NB=[[0,1],[1,0],[0,-1],[-1,0]],nb=(r,c,f)=>{for(const [a,b] of NB){const rr2=r+a,cc=c+b;if(rr2>=0&&cc>=0&&rr2<NR&&cc<NC&&ok[rr2][cc])f(rr2,cc);}};
  const relax=(A,dir)=>{for(let it=0;it<120;it++){let ch=false;for(let r=0;r<NR;r++)for(let c=0;c<NC;c++){if(!ok[r][c])continue;nb(r,c,(rr2,cc)=>{if(dir<0&&A[r][c]>A[rr2][cc]+3){A[r][c]=A[rr2][cc]+3;ch=true;}if(dir>0&&A[r][c]<A[rr2][cc]-3){A[r][c]=A[rr2][cc]-3;ch=true;}});}if(!ch)break;}return A;};
  {const lo=relax(Q.map(row=>row.slice()),-1),hi=relax(Q.map(row=>row.slice()),1);for(let r=0;r<NR;r++)for(let c=0;c<NC;c++)if(ok[r][c])Q[r][c]=Math.round((lo[r][c]+hi[r][c])/2/1.5)*1.5;}
- for(const B of blocks){let sm=0,n=0;const R0=Math.max(0,B.r0),R1=Math.min(NR,B.r0+B.nr),C0=Math.max(0,B.c0),C1=Math.min(NC,B.c0+B.nc);for(let r=R0;r<R1;r++)for(let c=C0;c<C1;c++){sm+=Q[r][c];n++;}B.y=Math.round(sm/n/1.5)*1.5;for(let r=R0;r<R1;r++)for(let c=C0;c<C1;c++)Q[r][c]=B.y;}
- for(let it=0;it<300;it++){let ch=false;for(let r=0;r<NR;r++)for(let c=0;c<NC;c++){if(!ok[r][c]||used[r][c])continue;let mx=-1e9,mn=1e9;nb(r,c,(rr2,cc)=>{mx=Math.max(mx,Q[rr2][cc]);mn=Math.min(mn,Q[rr2][cc]);});if(mn===1e9)continue;
-   const a=mx-3,b2=mn+3;const v=a<=b2?clamp(Q[r][c],a,b2):Math.round((a+b2)/2/1.5)*1.5;if(v!==Q[r][c]){Q[r][c]=v;ch=true;}}if(!ch)break;}
+ /* a site with a face: the median of the free tiles along that side of it (or round it, 'ring'), so its street door meets its
+    path; without one, the mean of its own cells as before */
+ const faceLevel=B=>{const L=[],R0=B.r0-1,R1=B.r0+B.nr,C0=B.c0-1,C1=B.c0+B.nc;
+  for(let r=R0;r<=R1;r++)for(let c=C0;c<=C1;c++){const edge=r===R0||r===R1||c===C0||c===C1;if(!edge||r<0||c<0||r>=NR||c>=NC||!ok[r][c]||used[r][c])continue;
+   if(B.face==='ring'||(B.face==='z0'&&r===R0)||(B.face==='z1'&&r===R1)||(B.face==='x0'&&c===C0)||(B.face==='x1'&&c===C1))L.push(Q[r][c]);}
+  if(!L.length)return null;L.sort((a,b)=>a-b);return L[Math.floor(L.length/2)];};
+ /* the face is read from the tiles as they end, after the clamp round the plots, which moves them: so level every plot at its
+    mean and clamp, set each faced plot to its face once, and clamp again from the unclamped tiles. Once: iterating it ratchets
+    (a raised plot lifts its strips, the next plot follows them; the Chancellor climbed 18 m), 2026-11-12 */
+ const base=Q.map(row=>row.slice()),span=B=>[Math.max(0,B.r0),Math.min(NR,B.r0+B.nr),Math.max(0,B.c0),Math.min(NC,B.c0+B.nc)];
+ for(const B of blocks){let sm=0,n=0;const [R0,R1,C0,C1]=span(B);for(let r=R0;r<R1;r++)for(let c=C0;c<C1;c++){sm+=base[r][c];n++;}B.y=Math.round(sm/n/1.5)*1.5;}
+ const settle=()=>{for(let r=0;r<NR;r++)for(let c=0;c<NC;c++)Q[r][c]=base[r][c];
+  for(const B of blocks){const [R0,R1,C0,C1]=span(B);for(let r=R0;r<R1;r++)for(let c=C0;c<C1;c++)Q[r][c]=B.y;}
+  for(let it=0;it<300;it++){let ch=false;for(let r=0;r<NR;r++)for(let c=0;c<NC;c++){if(!ok[r][c]||used[r][c])continue;let mx=-1e9,mn=1e9;nb(r,c,(rr2,cc)=>{mx=Math.max(mx,Q[rr2][cc]);mn=Math.min(mn,Q[rr2][cc]);});if(mn===1e9)continue;
+    const a=mx-3,b2=mn+3;const v=a<=b2?clamp(Q[r][c],a,b2):Math.round((a+b2)/2/1.5)*1.5;if(v!==Q[r][c]){Q[r][c]=v;ch=true;}}if(!ch)break;}};
+ settle();
+ {let moved=false;const F=blocks.map(B=>B.face?faceLevel(B):null);blocks.forEach((B,i)=>{if(F[i]==null)return;const y=Math.round(F[i]/1.5)*1.5;if(y!==B.y){B.y=y;moved=true;}});if(moved)settle();}
  // the level at a point: its cell's, or the nearest cell's (the band along the wall)
  const at=(x,z)=>{if(skip&&skip(x,z))return null;const c0=Math.round((x-ox)/U),r0=Math.round((z-oz)/U);for(let k=0;k<=3;k++){let best=null,bd=1e9;for(let r=r0-k;r<=r0+k;r++)for(let c=c0-k;c<=c0+k;c++){if(r<0||c<0||r>=NR||c>=NC||!ok[r][c])continue;const d=Math.hypot(X(c)-x,Z(r)-z);if(d<bd){bd=d;best=Q[r][c];}}if(best!=null)return best;}return null;};
  return{ox,oz,U,NC,NR,X,Z,ok,used,Q,blocks,at,box:[x0,x1,z0,z1],poly:CP};}

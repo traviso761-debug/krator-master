@@ -245,6 +245,17 @@ Open:
   KDOOR. Next: the path network first (a spine from the citadel gate, a stair between the two levels at the Golden
   Way, a branch to every door), then the garden pieces and stairs fitted to it. The audit script is in the session
   notes (`walk_audit.js`).
+* **The path draft** (2026-11-12, the owner's review; session notes `citadel-path-draft.md` and `.jpg`): the plots
+  fill the citadel's 8 m tile grid but for one-tile strips, the wall band and the Pleasure Dome's precinct (171), so
+  the paths run there: 808 m, 22 stairs, the palace reached by a Golden Way stair 171 to 153. **Plots raised to their
+  paths** (the owner's choice; `87-er-layout.js` `CIT_SITES` `face`): a house's plot is levelled once to the tiles on
+  its street door's side (Vizier 174, barracks 171, Treasurer and Chancellor 163.5, kitchens 168, Mines 181.5; Temple
+  and Envoys, with no street door, 186 on the median round them), not to the mean of the ground under it, which sank
+  them up to 6 m. Once only: iterating ratchets (the Chancellor climbed 18 m). The Dome and the palace keep theirs. A
+  strip between two plots at different levels still lies between them (the Chancellor's at 169.5, 6 m over it), so
+  the entries need the draft's stairs. Audit after: median 1.71 (was 1.77), 277 pairs over 2 (was 363).
+  Still to build: the draft's stairs between tiles and at the plot entries; doors facing out for the Temple and the
+  Envoys; the kitchens' street door turned south.
 
 ## Erewhon (round 9)
 * The garden district's rectangle lies on 15–40° ground; its tiles are a stepped surface (no neighbour more than a
