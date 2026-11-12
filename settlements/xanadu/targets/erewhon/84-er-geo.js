@@ -156,6 +156,25 @@ const NORTH_FILL=(function(){const P=NORTH_FOOT,S=4;let x0=1e9,x1=-1e9,z0=1e9,z1
  return{inF,at(x,z){if(x<x0||z<z0||x>X(NX-1)||z>Z(NZ-1))return null;const u=(x-x0)/S,v=(z-z0)/S,i=Math.min(NX-2,Math.floor(u)),j=Math.min(NZ-2,Math.floor(v)),fu=u-i,fv=v-j,k=j*NX+i;
   return (G[k]*(1-fu)+G[k+1]*fu)*(1-fv)+(G[k+NX]*(1-fu)+G[k+NX+1]*fu)*fv;}};})();
 {const raw=terrainBase;terrainBase=function(x,z){const h=raw(x,z);if(!NORTH_FILL.inF(x,z))return h;const t=NORTH_FILL.at(x,z);return t==null?h:Math.min(h,t);};}
+// ---------------------------------------------------------------- the east streak steps down (the owner, 2026-11-12)
+// "the grey streak between the brown and green regions should be a step down toward the water, not a step up turning the
+// brown area into a canyon"; "lower east of streak". The map's cliff line east of the town runs from about (599,173)
+// south-east to (821,513). The ground beside it climbed from the lake at the steep class's 26 degrees, so its crest stood
+// on the cliff 70-85 m over the town's side (the ridge class, 9 degrees) and fell away east: a step up and a trough. East
+// of that line the heights over the lake are scaled to EAST_K, eased in across EAST_D metres about the line (so the
+// cliff face is the drop), from z EAST_Z[0] (south of the streak's north end, so the town and the east gate keep theirs)
+// and out toward the mountain (EAST_Z[1]). The shore and the lake bed keep theirs.
+const EAST_K=.5,EAST_A=[599,173],EAST_B=[821,513],EAST_D=[-10,30],EAST_Z=[[100,160],[800,550]];
+{const L=Math.hypot(EAST_B[0]-EAST_A[0],EAST_B[1]-EAST_A[1]),nx=(EAST_B[1]-EAST_A[1])/L,nz=-(EAST_B[0]-EAST_A[0])/L,raw=terrainBase;
+ const zf=z=>smoothstep(EAST_Z[0][0],EAST_Z[0][1],z)*smoothstep(EAST_Z[1][0],EAST_Z[1][1],z);
+ const low=(x,z,d)=>{const h=raw(x,z);if(h<=0)return h;return h*(1-(1-EAST_K)*smoothstep(EAST_D[0],EAST_D[1],d)*zf(z));};
+ /* the band about the line (BAND m either side) is capped by a ramp from the town side's height (BAND m west of the line)
+    down to the lowered east side's (BAND m east): the cliff's own cells stood over both sides, a blade, not a step */
+ const BAND=40;
+ terrainBase=function(x,z){if(z<=EAST_Z[0][0]||z>=EAST_Z[1][0])return raw(x,z);const d=(x-EAST_A[0])*nx+(z-EAST_A[1])*nz;if(d<=-BAND)return raw(x,z);
+  const h=low(x,z,d);if(d>=BAND||h<=0)return h;
+  const wx=x-nx*(d+BAND),wz=z-nz*(d+BAND),ex=x+nx*(BAND-d),ez=z+nz*(BAND-d),hw=raw(wx,wz),he=low(ex,ez,BAND);
+  const cap=hw+(he-hw)*smoothstep(-BAND*.6,BAND*.8,d),k=zf(z);return Math.min(h,h+(cap-h)*k);};}
 // nearest point on a polyline set: {x,z,d,seg:[a,b]}
 function nearestOnLines(lines,x,z){let best=null;for(const P of lines)for(let i=0;i<P.length-1;i++){const ax=P[i][0],az=P[i][1],bx=P[i+1][0],bz=P[i+1][1];const dx=bx-ax,dz=bz-az,l2=dx*dx+dz*dz||1;const t=clamp(((x-ax)*dx+(z-az)*dz)/l2,0,1);
  const qx=ax+dx*t,qz=az+dz*t,d=Math.hypot(x-qx,z-qz);if(!best||d<best.d)best={x:qx,z:qz,d,a:P[i],b:P[i+1]};}return best;}

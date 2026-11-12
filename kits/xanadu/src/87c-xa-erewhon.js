@@ -149,7 +149,10 @@ function buildXaPalaceGate(G,o){reseed(32931+(o.v|0));const V=xV(o),W=22,D=10,H=
  vnReg('Palace gate',0,0,W/2+3,H+12);
  vB('vStone',0,0,0,W+2,.6,D+2,0,stone);for(const s of[-1,1]){vPst('xDrumW',s*(W/2-3),.6,0,3.2,H,wash);xnBand(s*(W/2-3),.6+H-1.0,0,6.4,6.4,0,.8);vPst('xDrumS',s*(W/2-3),.6+H,0,3.5,.5,stone);
   xnGiltRoof(s*(W/2-3),.6+H+.5,0,6.2,6.2,0,{frame:.9,rise:2.6,over:.9});for(let k=0;k<3;k++)xnTibWin(s*(W/2-3),3+k*3.4,3.2,0,1.0,1.4,lit?'lit':'glass',xC(xPick(XPAL.trim)),{});}
- vB('xWashB',0,.6,0,W-8,H-2,D,0,wash);xnIwanOpen(0,.6,D/2,0,W-8.4,H-2,D,wash,{through:true,lamps:lit,guldasta:false});
+ /* the iwan is the gate's middle: its arched tunnel, pilasters and lintel (xnIwanOpen). A solid wash block the size of the
+    middle used to stand round it and filled the passage: from inside the citadel the gate read as a blank wall (the
+    owner, 2026-11-12: "palace gate only visible from outside, not inside") */
+ xnIwanOpen(0,.6,D/2,0,W-8.4,H-2,D,wash,{through:true,lamps:lit,guldasta:false});
  xnRoundel(0,.6+H-3.6,D/2+.3,0,2.6);vB('xGoldB',0,.6+H-2,0,W-7.6,.4,D+.4,0,gold);xnCrenel(0,.6+H-1.6,0,W-8,D,0,1.2,wash,{});
  for(const s of[-1,1])xnPennants([s*(W/2-3),.6+H+4.2,-2.6],[s*(W/2-3),.6+H+4.2,2.6],4);
  for(const s of[-1,1])xnXGSpears(s*7,D/2+2,0,3);vnFolk(0,D/2+5,3,3);}

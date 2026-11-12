@@ -169,6 +169,19 @@ The flank's edge is the map's grey cliff (the owner: "that grey streak should de
 * **Where the fix lives:** the map's source PNG is not in the repo, so the fix is in the page's geometry, not in
   `tools/erewhon-map.py`.
 
+## Erewhon: the east streak steps down toward the water (2026-11-12, fixed)
+* **What was wrong:** the owner: "the grey streak between the brown and green regions should be a step down toward the
+  water, not a step up turning the brown area into a canyon". The map's cliff line east of the town runs from about
+  (599,173) to (821,513). The ground east of it climbed from the lake at the steep class's 26 degrees, so it stood
+  70-85 m over the town's side (the ridge class, 9 degrees) at the cliff and fell away east. The cliff's own cells
+  stood over both sides, as a blade.
+* **The fix** (`84-er-geo.js`, `EAST_*`, the owner's "lower east of streak"):
+  - East of the line the heights over the lake are scaled to 50 %, eased in across the line.
+  - The 40 m band about the line is capped by a ramp from the town side's height down to the lowered east side's.
+  - It runs from south of the streak's north end (z 100-160) to the mountain (fading out between z 550 and 800).
+* **The result:** at mid-streak the ground runs 107, 106, 100, 91, 89 m from the town's side toward the lake.
+* **Left:** just past the streak's south end a 12 m rise remains at the line.
+
 ## Erewhon: the town wall from the west gate, and the Vale's ground (2026-11-12, fixed)
 * **The west gate's wall:** the owner: "we need to redo the city wall, it lost its southern part".
   - The map draws the west gate's wall south to the citadel as the head of the old palace loop. `90a-er-world.js` drops
@@ -194,6 +207,36 @@ The flank's edge is the map's grey cliff (the owner: "that grey streak should de
 * **The biome's library pack** (`86-bio-00-matlib-pack.js`) is registered as `xanadu-bio`. As `xanadu` the building
   kit's pack, packed after it, had replaced it whole (`KMAT.pack` sets, it does not merge), so its ground sets never
   reached the page. The vendored flora still reads its procedural textures, as before.
+
+## Erewhon: the citadel's surfaces, windows, stairs and plants (2026-11-12, Travis's walk-through)
+
+Fixed (kits/xanadu unless named):
+* **Coplanar faces** found by an in-page audit (faces of different pieces in one plane, overlapping): the Pleasure Dome's
+  voussoirs (`78b` `xpVoussoirs`: every other stone 6 mm proud on each face); a court's skin and a room's outside dado on
+  one face (`78n` `xcPlan`: no outside dado where a court lies across); the gate iwan's piers, bands, zellige strips,
+  the blocks behind it and the curtain's ends (`78m` `xmIwan`, `78n`); an arch head's soffit and its ring's
+  (`xmArchHead`: the ring's opening 1.5 cm wider).
+* **Tile skins on one grid:** the boxes of the `xm*` skins take their side faces' UVs from the world position
+  (`78m`, the box defs' material read at bake): the haft-rangi stripes over a door no longer start at another height.
+* **Windows hidden by skins:** `xcPlan` skinned one opening per column, so on a court face a window over a window drew
+  its column over the other; each column is now cut round all its openings. Windows keep clear of a cross wall
+  meeting their line (621 to 600).
+* **Stair wells:** a flat ceiling and its beams are cut round the wells as the slab is (`xcCeiling`).
+* **The gate iwan's jali** is the passage's transom, the opening's full width (`xmIwan`, `back:false`).
+* **Plants:** `xaPlant` declines a crowded or squeezed plant as `'crowded'` / `'tight'` (truthy), so `xnCypress` and
+  the other kit primitives no longer draw their cones in its place, and a crown within 0.7 of two crowns' reach of a
+  plant already set is not drawn (`86b`).
+* **Walking and depth (`src/99-start.js`):** Erewhon walks on core/walk's floors always (the citadel's flights and
+  ramps were walked through on the terrain alone); its near plane follows the eye's height (core/host's `depth`), so
+  the courts' floor layers no longer fight from 300 m.
+
+Open:
+* The bed plants (`xLeaf` balls with painted flowers) and the hedges (`xPaint` boxes) are untextured. The Vale's floor
+  pass draws the right things (flower drifts, thyme, clipped box domes on `XANADU.CUSHIONTEX`) but keeps them private
+  to `60-biome-xanadu-floor.js`; exporting them reaches the biome's six pages.
+* The Golden Way's gate passage ends at a blank wall (walk -344,154,-213).
+* The citadel's layout: a walk audit (crow-flies against walked distance between entrances, hedges and steps over
+  0.3 m as obstacles) is the next step; the paths come first, the garden pieces and stairs are fitted to them.
 
 ## Erewhon (round 9)
 * The garden district's rectangle lies on 15–40° ground; its tiles are a stepped surface (no neighbour more than a

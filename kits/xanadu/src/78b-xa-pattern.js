@@ -133,7 +133,9 @@ function xpVoussoirs(x,y,z,ry,span,kind,dep,o){xpLib();o=o||{};const vd=o.vd==nu
  for(let i=0;i<n;i++){const a=P[i],b=P[i+1],mx=(a[0]+b[0])/2,my=(a[1]+b[1])/2,tx=b[0]-a[0],ty=b[1]-a[1],l=Math.hypot(tx,ty)||1;let nx=-ty/l,ny=tx/l;
   if(nx*mx+ny*(my-rise*.35)<0){nx=-nx;ny=-ny;}
   const cx=mx+nx*vd/2,cy=my+ny*vd/2,p=loc(x,z,cx,0,ry||0),ang=Math.atan2(ty,tx);
-  kput('xp_solid',[p[0],y+cy,p[1]],qy.clone().multiply(qAxis(0,0,1,ang)),[l*(1+vd/Math.max(.6,span))+.03,vd,dep],xpInk(inks[(i+ph)%inks.length]));}
+  /* neighbours overlap at the intrados (the stones are over-long to close the extrados): every other stone stands 6 mm proud on
+     each face, so the overlap has one owner and the black and white do not fight (the owner, 2026-11-12) */
+  kput('xp_solid',[p[0],y+cy,p[1]],qy.clone().multiply(qAxis(0,0,1,ang)),[l*(1+vd/Math.max(.6,span))+.03,vd,dep+(i&1)*.012],xpInk(inks[(i+ph)%inks.length]));}
  // the jambs: the same checks carried down to the floor
  if(o.jamb){const h=y-o.floor,m=Math.max(1,Math.round(h/(o.len||vd))),bh=h/m,hx=Math.abs(P[0][0])+vd/2;
   for(const s of[-1,1])for(let j=0;j<m;j++){const p=loc(x,z,s*hx,0,ry||0);vB('xp_solid',p[0],o.floor+j*bh,p[1],vd,bh+.002,dep,ry||0,xpInk(inks[(j+ph+1+(s>0?n-1:0))%inks.length]));}}

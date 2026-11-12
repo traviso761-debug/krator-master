@@ -582,6 +582,7 @@
  "settlements/xanadu/src/86-bio-70-biome-xanadu.js: ORNUM": 1,
  "settlements/xanadu/src/90-scene.js: ORNUM": 4,
  "settlements/xanadu/targets/erewhon/88-er-place.js: ORNUM": 7,
+ "settlements/xanadu/targets/erewhon/90a-er-world.js: RAWTEX": 3,
  "settlements/xanadu/targets/erewhon/90b-er-build.js: ORNUM": 1,
  "settlements/ys/src/35-furn-frame.js: ORNUM": 4,
  "settlements/ys/src/42-offices.js: ORNUM": 2,

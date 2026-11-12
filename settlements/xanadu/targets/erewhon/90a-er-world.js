@@ -74,7 +74,11 @@ function erWallSeg(a,b,h){const dx=b[0]-a[0],dz=b[1]-a[1],L=Math.hypot(dx,dz);if
   const m=[(p[0]+q[0])/2,(p[1]+q[1])/2],ry=Math.atan2(q[0]-p[0],q[1]-p[1])-Math.PI/2,sl=Math.hypot(q[0]-p[0],q[1]-p[1])+.6;
   kput('xWallD',[m[0],y0,m[1]],qEuler(0,ry,0),[sl,y1-y0,3.4],c);vB('vStone',m[0],y1-.1,m[1],sl*.98,.14,3.2,ry,c.clone().multiplyScalar(1.06));
   const mn=Math.max(1,Math.round(sl/1.5));for(let i=0;i<=mn;i++)for(const s of[-1,1]){const pp=loc(m[0],m[1],-sl*.98/2+sl*.98*i/mn,s*1.4,ry);vB('vStone',pp[0],y1,pp[1],.6,1.2,.5,ry,c);}
-  if(k%4===0){vPst('xDrumS',p[0],y0,p[1],2.6,y1-y0+2.4,c);kput('xConeT',[p[0],y1+2.4,p[1]],null,[3,2.2,3],xC(xPick(XPAL.tile)));}}}
+  /* a drum tower every fourth piece. Its crown stands over the highest wall top that reaches it: a piece is at most 14 m,
+     so the ground's highest point within 14 m, plus the wall's height (the owner, 2026-11-12: "wall crenelations clip
+     thru tower roof": a stepping wall's higher neighbour ran its merlons through the cone of a drum sized to its own piece) */
+  if(k%4===0){let gt=-1e9;for(let a2=0;a2<8;a2++)for(const r of[0,7,14])gt=Math.max(gt,terrainH(p[0]+Math.cos(a2*Math.PI/4)*r,p[1]+Math.sin(a2*Math.PI/4)*r));
+   const yt=Math.max(y1,gt+h);vPst('xDrumS',p[0],y0,p[1],2.6,yt-y0+2.4,c);kput('xConeT',[p[0],yt+2.4,p[1]],null,[3,2.2,3],xC(xPick(XPAL.tile)));}}}
 TSTAT.cur='er_wall/0';
 // a segment inside the garden district (its own wall and ring road enclose it) is left out: the map's wall line crossed
 // the terraces (round 9c)
@@ -102,7 +106,9 @@ const erWallSegs=[];{const PALW=new Set(ER_LINES.wall.filter(P=>P.some(p=>Math.h
 for(let i=0;i<CIT.loop.length;i++){const a=CIT.loop[i],b=CIT.loop[(i+1)%CIT.loop.length],mx=(a[0]+b[0])/2,mz=(a[1]+b[1])/2;if(CIT.inS(CIT.bath,mx,mz,3))continue;erWallSegs.push([a,b,true]);}
 // the citadel's own loop keeps its clearance from the garden by construction: the garden filter is for the map's lines
 let erWallAt=null;   // a wall that stands: the inspector's volume for the walls (it stood at the palace district's rim, where no wall is since the citadel's loop)
-for(const [a,b,cit] of erWallSegs){if(GATES.some(g=>Math.hypot((a[0]+b[0])/2-g.x,(a[1]+b[1])/2-g.z)<18))continue;if(!cit&&erWallInGarden(a,b))continue;erWallSeg(a,b,8);if(!erWallAt&&cit)erWallAt=[(a[0]+b[0])/2,(a[1]+b[1])/2];
+/* the opening a gate leaves: a town gate 18 m either side; the palace gate (22 m wide, its drums at 8 m) only the 10 m its
+   iwan spans, so the citadel's wall runs into its drums (the owner, 2026-11-12: "fully connected to citadel walls") */
+for(const [a,b,cit] of erWallSegs){if(GATES.some(g=>Math.hypot((a[0]+b[0])/2-g.x,(a[1]+b[1])/2-g.z)<(g.kind==='palace'?10:18)))continue;if(!cit&&erWallInGarden(a,b))continue;erWallSeg(a,b,8);if(!erWallAt&&cit)erWallAt=[(a[0]+b[0])/2,(a[1]+b[1])/2];
  cstroke(mg,[a,b],10,'#000');const mm=[(a[0]+b[0])/2,(a[1]+b[1])/2];BIO_OBSTACLES.push({x:mm[0],z:mm[1],r:Math.hypot(b[0]-a[0],b[1]-a[1])/2+4});}
 erBakeMasks();   // placement reads the baked copy: without this the walls were never in it, and houses stood in them
 {const wa=erWallAt||[PAL.x,PAL.z+PAL.r];REG.push({name:'The city walls',x:wa[0],y:terrainH(wa[0],wa[1])-3,z:wa[1],r:20,h:12,cls:'building',key:'er_wall',tags:{culture:'xanadu',type:['military'],wealth:'civic',lit:false}});}

@@ -777,28 +777,28 @@
    "sha256": "c3ec43a1ff8fcd8246bd2a46b83bfb4134bb4991990e8e9eb3e8a9a603547a4e"
   },
   "biomes/xanadu/dist/xanadu-cloud.html": {
-   "bytes": 8413496,
-   "sha256": "c3f9076cf95846edb9476fd9ce7cf5312121c05603544edbccb33cc1589b0263"
+   "bytes": 8413955,
+   "sha256": "ae428f56f658d0d7b600d6dce1493ec4b034b74bfc87f7bfd074ffefd3137157"
   },
   "biomes/xanadu/dist/xanadu-descent.html": {
-   "bytes": 7688667,
-   "sha256": "bb77c39f44012d2e0788d09b9bfbd06d3bdf79d76dd0f94078fd5987cb3c7f42"
+   "bytes": 7689126,
+   "sha256": "9157bd4ec5cd53229dd4dc36ace48ca08c3ad811260623cedd4f1540290e1663"
   },
   "biomes/xanadu/dist/xanadu-floor.html": {
-   "bytes": 12651871,
-   "sha256": "170b921b116ed8e67bd3e047c6ba03970e0da9fb22cc875d141191dc417ae89c"
+   "bytes": 12652330,
+   "sha256": "3d3ba175e75fdb8989f8764d2e55879dba40d85b51aae2d54828ae2126cf9629"
   },
   "biomes/xanadu/dist/xanadu-gills.html": {
-   "bytes": 8185487,
-   "sha256": "3be3e34c15a19bc755091074deb6f2a1e3190571256a31e020230c27c1c7a654"
+   "bytes": 8185946,
+   "sha256": "0ff5a5c1527790329f7c35b70d9aee557fad842d6257b122e8407be8c76af71c"
   },
   "biomes/xanadu/dist/xanadu-ranges.html": {
-   "bytes": 7701770,
-   "sha256": "efc56226ca348837b0e53424b81b13b3c1b1084b75bad110272d6c69c36810a3"
+   "bytes": 7702229,
+   "sha256": "1a484bf129c0cbe894ad5cde03c71ef65c5c3fd96311a454a0ef4fdad51552ad"
   },
   "biomes/xanadu/dist/xanadu.html": {
-   "bytes": 7698853,
-   "sha256": "7d874fca0bb9602ee2bb1238eb26c3ceb44a653bbcf5c8445b99a7b374a1b47a"
+   "bytes": 7699312,
+   "sha256": "64e45627369ce58ba3ee9af2b97572b97be1030dd7c29575f5d97e3bf2e39e26"
   },
   "core/cavelight/demo/dist/cavelight-demo.html": {
    "bytes": 235369,
@@ -1025,8 +1025,8 @@
    "sha256": "60563658d0282d7aabf9c31475d6b22abcf46347d383ef987a3c1c7c658025c6"
   },
   "kits/construction/dist/construction.html": {
-   "bytes": 2235097,
-   "sha256": "8d2d1e72829e6a05819fc4e8f1490b4d43c4b61e57093c72c52a4b46c275d677"
+   "bytes": 2236582,
+   "sha256": "672a2b018dc2dc576a5291b0d1e5b718cdb27b630e5b2d99766e40d9dbbdc33f"
   },
   "kits/crops/dist/crops.html": {
    "bytes": 2574508,
@@ -1253,8 +1253,8 @@
    "sha256": "99f747d6a75f04c365495ea847d2ebf9f9cee74a5bad2bf505302838e89d0a5f"
   },
   "kits/xanadu/dist/xanadu.html": {
-   "bytes": 1143015,
-   "sha256": "6d0c34f0e5466f4fdec105eccb33783e6602902d3a8a9caf491ce4040774553d"
+   "bytes": 1148071,
+   "sha256": "c78c5df24621345801eff7d8c6937efe9883a76c8c7d6dfe6eac2a37d3f73e58"
   },
   "kits/yeti/dist/yeti.html": {
    "bytes": 1466611,
@@ -1293,8 +1293,8 @@
    "sha256": "08504c675a3f5c448c4df592c384c94b4d0c255cbf0b9eb5dc589d6f3786ca75"
   },
   "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.html": {
-   "bytes": 7915897,
-   "sha256": "237ed2cea2416ef8dd859b2790a2c524c46741edf2e9dad57f72236c1912ebb2"
+   "bytes": 8414441,
+   "sha256": "25d5ec42177a45c397db385c7c42463de9cf9063b15b330f8311f28a409e03dd"
   },
   "settlements/dalab/dist/dalab-set.html": {
    "bytes": 6718274,
@@ -1565,12 +1565,12 @@
    "sha256": "62072fe13143fd60c928119cf5d3e496ef1b9e6f4db5dbbd5d2ce612ffc08870"
   },
   "settlements/xanadu/dist/erewhon.html": {
-   "bytes": 8964430,
-   "sha256": "4db64bf4aaf26e98a59dbb8bd35dcadc5b054a5f0c14d169b2025ac23acadaa4"
+   "bytes": 8994975,
+   "sha256": "6dd7268a86ab6e6c22398b776a523e7c0818c3c5c074767cbd7fa6ddb80c68e1"
   },
   "settlements/xanadu/dist/xanadu.html": {
-   "bytes": 8798794,
-   "sha256": "519ea7f53a2872f9dc4566ede293c72fe70bea1546346197ac9e4167d2f729ac"
+   "bytes": 8805001,
+   "sha256": "8de862be80fb3138a7a7df94bab6d1acac5c146fa55b3c0f82e8ce862ea2f6d2"
   },
   "settlements/ys/dist/kit.html": {
    "bytes": 1716760,

@@ -199,7 +199,7 @@
     "kits/xanadu/src/77-xa-sacred.js": "fe56cdaba04b195a45374aa24f5e982fddf973e5931fadfe71ec98a735a94b4e",
     "kits/xanadu/src/78-xa-palace.js": "8cdd41c6ff55e1b29cd3710c1739ba3e8ecf043950304d5964600559bdadbaf2",
     "kits/xanadu/src/78a-xa-pattern-data.js": "3086facfafa8cd8d58e630d812502f29885172a556fd6ce551a62160e62386cd",
-    "kits/xanadu/src/78b-xa-pattern.js": "49c2aadd4ff6c1dfeebe5c95dc0e9fc1854f331777bbb94cfc7e0e8247d8c846",
+    "kits/xanadu/src/78b-xa-pattern.js": "eb97ee126314d5b01bee937808b0e699d0a2b581345bad971ae373d873729207",
     "kits/xanadu/src/78c-xa-dome-plan.js": "80c3f7ed9a9e3039a05310610a6e93bc7ee0421fe6cccd4b9af7c5090b8a4c63",
     "kits/xanadu/src/78d-xa-dome-in.js": "ca972dc7a21535e3e9c1d2c5a89bedc70111c4f385cf085eb41bfa8da385de49",
     "kits/xanadu/src/79-xa-guild.js": "28c5a5aa3c61afa493614ea45771b8953e7544ff08e740a0b19efe02634aafaa",
@@ -211,10 +211,10 @@
     "kits/xanadu/src/85-xa-water.js": "77705cdd79600992c5dbb862b84f068c0ecf5f6d78419d33fb25d453205695b6",
     "kits/xanadu/src/85b-xa-garden.js": "38f4801e1aa90fa4403a80877389f5bd36e9b5d83d82fd30682baa64687281d2",
     "kits/xanadu/src/86-xa-vizier.js": "dff28b74cc0c2b39adc55303263cfd04f5b1e3ce5ae221e5450d80348dbd4c59",
-    "kits/xanadu/src/86b-xa-plants.js": "e56132c583ab78182ee9d523ec093790488c1096926230444fca3867b38537e7",
+    "kits/xanadu/src/86b-xa-plants.js": "6c2692661d2ecb8b17eeb32167adaae5d0f2afce0e9067fe3e6fd98c4c8eede3",
     "kits/xanadu/src/87-xa-spicer.js": "a33e757eef4182ab5fe0003d6be20792c247da6d1cd74a4cdb511f503c6977c3",
     "kits/xanadu/src/87b-xa-andean.js": "a153512190df7ee8b6f31ad1e1d6661c1c2c861648e0fbc1a426345032581ede",
-    "kits/xanadu/src/87c-xa-erewhon.js": "363f50ec6d14578c777a8fbbc24915110e3e03a99c75462ea8d887846d2743ab",
+    "kits/xanadu/src/87c-xa-erewhon.js": "e19ce7c9662d187a11ac62c2edf8a435ac4cf75b9ca9224e68b351b149414cfc",
     "kits/xanadu/src/88-xa-dress.js": "92b383aae14ae16df38e04863d52344e1ee1b66aa243a37b8936f7bb7251ae3f",
     "kits/xanadu/src/89-xa-trades.js": "ea68acaefb8da0b319ca98fb43f8aa400763eccf0e734051065c4facca8662af",
     "kits/xanadu/xanadu.py": "70917961388f43ea3d80944de7272efe73f5c263c4c005865be50932e5c4ebd4",
@@ -301,14 +301,14 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/construction/dist/construction.html": "8d2d1e72829e6a05819fc4e8f1490b4d43c4b61e57093c72c52a4b46c275d677",
+    "kits/construction/dist/construction.html": "672a2b018dc2dc576a5291b0d1e5b718cdb27b630e5b2d99766e40d9dbbdc33f",
     "kits/construction/dist/construction.tex.construction.js": "7da0eac14adf0e12ec622c676cbf74f6d1bcd49552fec5d00f480f664143bdcf",
     "kits/construction/dist/construction.tex.islanders.js": "3c957f12243b7dd0790f5e970c307e017f5bddeaa7a6363fb387834e1881cd6b",
     "kits/construction/dist/construction.tex.iziz.js": "f0e484bf7e32aad2acca7621c41eb8c8eb4c3306c32b85ecc376ecff375710e3",
     "kits/construction/dist/construction.tex.xanadu.js": "f9f88f3553a52593ab87a0fa1f23e9eedbeb5dfb5ffbc66cfe17ddbad583f6b7"
    },
    "outputs_raw": {
-    "kits/construction/dist/construction.html": "8d2d1e72829e6a05819fc4e8f1490b4d43c4b61e57093c72c52a4b46c275d677",
+    "kits/construction/dist/construction.html": "672a2b018dc2dc576a5291b0d1e5b718cdb27b630e5b2d99766e40d9dbbdc33f",
     "kits/construction/dist/construction.tex.construction.js": "7da0eac14adf0e12ec622c676cbf74f6d1bcd49552fec5d00f480f664143bdcf",
     "kits/construction/dist/construction.tex.islanders.js": "3c957f12243b7dd0790f5e970c307e017f5bddeaa7a6363fb387834e1881cd6b",
     "kits/construction/dist/construction.tex.iziz.js": "f0e484bf7e32aad2acca7621c41eb8c8eb4c3306c32b85ecc376ecff375710e3",

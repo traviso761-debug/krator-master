@@ -31,7 +31,7 @@ placeTileGround(CIT_G,CIT_TILES);
 // on the palace's block, its top the Dome's floor (87-er-layout GOLDEN_WAY: its ground is cut to the palace's level)
 if(GOLDEN_WAY)planLandmark(XGW.key,GOLDEN_WAY.x,GOLDEN_WAY.z,0,{y:GOLDEN_WAY.y,ppad:0,noFlat:true,o:{top:GOLDEN_WAY.top}});
 window._citTiles=CIT_TILES.length;window._citBlocks=CIT_G.blocks.map(B=>B.key);
-{const g=GATES.find(g=>g.kind==='palace');if(g)planLandmark('xa_palace_gate',g.x,g.z,g.ry+Math.PI,{apron:8,rk:.7});}
+{const g=GATES.find(g=>g.kind==='palace');if(g)planLandmark('xa_palace_gate',g.x,g.z,g.ry,{apron:8,rk:.7});}   /* turned to face the plaza (the owner, 2026-11-12: "citadel gate needs to be turned 180 degrees") */
 // the plaza before the palace gate: a fountain garden tile and the mustering ground beside the military district
 {const pl=PLAZAS[0];planLandmark('xa_star_court',pl.x,pl.z,0,{apron:6,rk:.8});}
 // the city gates
