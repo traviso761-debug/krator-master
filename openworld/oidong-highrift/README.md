@@ -17,6 +17,7 @@ PROPOSAL-LONGSONG-PINNACLE.md` holds the economy it is planned for.
 
   | Site | Px | What is planned | People |
   |---|---|---|---|
+  | **Strongbow** (`sfgtxw10kr`) | 1298,1647 | the Ancients' cliff arcology in the escarpment over Oidong's lake (moved 2026-11-11); a road's end only so far | - |
   | **Longsong** (`sq80bzd7ep`) | 1226,1626 | the ring of 15 villages: Shar, Nub and Dzo-ling where its page lays them, ten more farming villages 4 to 8.5 km out, Drok-ri's high pastures, Dar-ling's silk and paper | 3,279 (the house itself is `settlements/longsong`'s, 1,344) |
   | **The Singing Gjár** (`ssinggjar01`) | 1572,1643 | the Order's house (350), the Beck Fields (89), the Vein Camp (49) | 488 |
   | **The Mirror Grange** (`smirrorgrange01`) | 1430,1644 | the Order's grange (80), its growers (200), the graben's herders (145) | 425 |
@@ -25,13 +26,12 @@ PROPOSAL-LONGSONG-PINNACLE.md` holds the economy it is planned for.
 - **The roads:**
   - **Village roads:** each village's lane end has a road to its site, the grade held to 8 %; they join the roads
     already laid, so they share a trunk. A house that is its site's heart lays none (`road: false`).
-  - **The Order's road:** Longsong to the Caldron House (312 km, up the Oidong Valley and the beck's staircase:
-    `guide`), to the Mirror Grange (137 km), to the Singing Gjár (284 km). It is kept inside the cut, with an Order rest
-    house or a teahouse every 12.5 km.
-  - **The Xanadu road** (the Ancient network's `xanadu.3.5`, merged from its session's branch): Strongbow to Longsong,
-    423 km on the network's line (`net`), with a han every 25 km.
+  - **The roads up the valley:** Longsong to Strongbow (153 km, the Sultanate's road with a han every 25 km), then the
+    Order's road up the beck's staircase to the Caldron House (151 km), the Mirror Grange (137 km) and the Singing Gjár
+    (284 km), with an Order rest house or a teahouse every 12.5 km. Each follows the valley (`guide`) and is kept inside
+    the cut.
   - **Bridges** (core/world 42b, 88b; `SITE_SPEC.bridges`): every link is laid on the ground and bridged where it
-    crosses a named river. That is 15 bridges, 3.7 km of deck and 139 piers, so the rivers run on under them.
+    crosses a named river. That is 7 bridges, 1.6 km of deck and 59 piers, so the rivers run on under them.
 - **The flora:**
   - the Oidong kit on the valley (its own `OIDONG.PASSES`);
   - the High Rift kit's floor on the rift (`src/49-world-highrift.js`): tussock, steam heath, opal cane, bead caps and

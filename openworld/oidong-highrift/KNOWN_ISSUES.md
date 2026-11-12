@@ -1,8 +1,8 @@
 # The Oidong Valley and the High Rift: known issues
 
-- [x] **The Order's road is laid** (2026-11-11), with the Xanadu road from Strongbow: bridged over the rivers (core/world
-  42b, 88b), so their fill buries none. The Longsong-Caldron link follows the valley (`guide`); the straight line had
-  taken it over 6,000 m.
+- [x] **The Order's road is laid** (2026-11-11), bridged over the rivers (core/world 42b, 88b), so their fill buries
+  none. It runs from Longsong up the valley (`guide`; the straight line had taken it over 6,000 m) to Strongbow's foot,
+  where the Sultanate's road from the west ends, then up the beck's staircase.
 - [ ] **Three sites are not on the scale model's list.** The Singing Gjár, the Mirror Grange and the Caldron House are
   `"model": false` rows in `openworld/SITES.json` (their own pixel). Add them to
   `tools/scale-model/model/src/60-settlements.js` once the open-world sites session's Qiblai move has landed.
@@ -16,5 +16,7 @@
   own architecture (Longsong's `62-ls-arch`, battered stone halls) is not a kit yet.
 - [x] **The Singing Gjár's purpose and the two accessory houses**: confirmed by the owner (2026-11-11: "keep as
   proposed").
-- [ ] **Strongbow** (an arcology on the model's list, px 1026,1594) is a site now, the Xanadu road's far end (the Ancient
-  network's `xanadu.3.5`); its countryside is not planned.
+- [ ] **Strongbow**, the Ancients' cliff arcology, moved on 2026-11-11 to the valley's east end (px 1298,1647, at the foot
+  of the High Rift's escarpment over Oidong's lake; the owner). It is a site and a road's end only. The arcology itself
+  (a tower down the cliff on cables and terraces, pads at its lip: the owner's two reference pictures) is not built, and
+  the Ancient network's routes to it (G10, xanadu.3.4, xanadu.3.5) still start from its old place.

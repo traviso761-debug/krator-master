@@ -42,7 +42,7 @@
    ]
   ],
   "area_km2": 900,
-  "union_km2": 154732,
+  "union_km2": 154588,
   "added": [
    {
     "name": "site The Singing Gjar (ssinggjar01)",
@@ -114,20 +114,20 @@
     "name": "site Strongbow (sfgtxw10kr)",
     "points_px": [
      [
-      1011.0,
-      1579.0
+      1283.0,
+      1632.0
      ],
      [
-      1041.0,
-      1579.0
+      1313.0,
+      1632.0
      ],
      [
-      1041.0,
-      1609.0
+      1313.0,
+      1662.0
      ],
      [
-      1011.0,
-      1609.0
+      1283.0,
+      1662.0
      ]
     ],
     "area_km2": 3600
@@ -610,7 +610,7 @@
    "drawn_px": 2529,
    "notes": "",
    "px": 2645,
-   "px_in_region": 78,
+   "px_in_region": 0,
    "dist_band": 1
   },
   {
@@ -624,7 +624,7 @@
    "drawn_px": 21450,
    "notes": "Propagating eastern tip of the Great Rift between Oidong Valley and Siphon Pits: Opaline Sinter Staircase, North Mirror Graben (Lake Verdigris & Lake Cinnabar), Dorsal Wedge median horst, South Fire-and-Ice Coulee, and The Singing Gjar.",
    "px": 46321,
-   "px_in_region": 21261,
+   "px_in_region": 21340,
    "dist_band": 2
   },
   {
@@ -638,7 +638,7 @@
    "drawn_px": 17257,
    "notes": "",
    "px": 34489,
-   "px_in_region": 17344,
+   "px_in_region": 17307,
    "dist_band": 3
   },
   {
@@ -12712,12 +12712,12 @@
    "name": "Strongbow",
    "type": "arcology",
    "doc": "sfgtxw10kr",
-   "px": 1026,
-   "py": 1594,
-   "x": -570000.0,
-   "z": -80000.0,
+   "px": 1298,
+   "py": 1647,
+   "x": -26000.0,
+   "z": 26000.0,
    "biome": "Oidong Valley",
-   "notes": ""
+   "notes": "A cliff arcology of the Ancients built into the face of the High Rift's escarpment where it rises 1,100 m in 2 km over the east end of the Oidong Valley (2,463 m at its foot, Oidong's lake below it): a tower hung down the wall on cables and terraces, with platforms and pads at its lip. Moved 2026-11-11 (the owner: 'a cliff arcology set in the side of a cliff ... relocating to the far end of oidong valley') from 1026,1594, the valley's west end; openworld/oidong-highrift."
   }
  ],
  "canyon_candidates": {},
@@ -13057,10 +13057,10 @@
    "name": "Strongbow",
    "type": "arcology",
    "culture": "xanadu",
-   "px": 1026,
-   "py": 1594,
-   "x": -570000.0,
-   "z": -80000.0,
+   "px": 1298,
+   "py": 1647,
+   "x": -26000.0,
+   "z": 26000.0,
    "reach_km": 30,
    "page": null
   }

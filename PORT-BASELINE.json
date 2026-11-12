@@ -1009,8 +1009,8 @@
    "sha256": "5ca26aa95e9f7f434b1e107590ff29265a2e22401eaf4cf2c0940727199470ba"
   },
   "openworld/iziz-cluster/dist/iziz-cluster.html": {
-   "bytes": 6024602,
-   "sha256": "16876969e0ba6aedeb04f2e513eba7d4cffd667eb6307c1f4ba972f4a1f9c9f3"
+   "bytes": 6033899,
+   "sha256": "8f76bdc6a61eaf9ceeae8689068e0a3ba5e94e9c9dd7f3f6e6fa701dd661ba47"
   },
   "openworld/little-demo/dist/little-demo.artifact.html": {
    "bytes": 5088461,
@@ -1020,13 +1020,17 @@
    "bytes": 5088719,
    "sha256": "43e0dc8e7d2fb8a2fa2a6eeb2c8e7036806cee73e1fc250735abcef1f242b87a"
   },
+  "openworld/oidong-highrift/dist/oidong-highrift.html": {
+   "bytes": 9660360,
+   "sha256": "78e501ca1a2833e670d5169f73288195792664b86ce3d6f140c31c23edc44eab"
+  },
   "openworld/pinnacle/dist/pinnacle.html": {
-   "bytes": 5600016,
-   "sha256": "4bd7684ba087db648857be16459f5ae4cae7736e6bd857456564c4dff80e6504"
+   "bytes": 5606764,
+   "sha256": "77f39e70ded96153b94ae5945f3c4631e7dc380fc52f670338d02c1ece968a90"
   },
   "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.html": {
-   "bytes": 8291146,
-   "sha256": "678888b2e6419f24af4b4f4613814760d172f0bd06d6acc30898ae2868a22cd4"
+   "bytes": 8300443,
+   "sha256": "15b75bfefb0674e9289e3fb5bca2d61fb8e7a53035528958116cd7253d026433"
   },
   "settlements/dalab/dist/dalab-set.html": {
    "bytes": 6603017,
@@ -1117,8 +1121,8 @@
    "sha256": "e6c31625003c38418a1cecaf53bdb0d412b7eedde603f6943c1fb0ad09da713d"
   },
   "settlements/longsong/dist/longsong.html": {
-   "bytes": 5304086,
-   "sha256": "ee4f1b042f680e7b3fb6b19effb84fd33f2ea0760e3113e857e0c19f2d8b1be1"
+   "bytes": 5331927,
+   "sha256": "fa7a70345921b8f2f48f69303838e1aea506f706e66857cf9e4844a1c911d7de"
   },
   "settlements/mavs-refuge/mavs-refuge.html": {
    "bytes": 9075103,
