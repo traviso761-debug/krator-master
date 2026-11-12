@@ -77,6 +77,16 @@ const ISLAND=(function(){const raw=terrainBase,S=4,N=45,land=(i,j)=>raw(ISLAND_C
  // the inward distance to the hull's edge (negative outside)
  const edge=(x,z)=>{if(x<x0-40||x>x1+40||z<z0-40||z>z1+40)return -1e9;let d=1e9;for(let i=0;i<H.length;i++){const a=H[i],b=H[(i+1)%H.length],l=Math.hypot(b[0]-a[0],b[1]-a[1])||1;d=Math.min(d,((b[0]-a[0])*(z-a[1])-(b[1]-a[1])*(x-a[0]))/l);}return d;};
  return{hull:H,edge};})();
+// ---------------------------------------------------------------- the page's place in the open world (the owner, 2026-11-11)
+// Scale-model edit 5.1-512 remade Erewhon's lake as a caldera and moved Erehwon's pin to 805,1516 on its south shore.
+// The page faces as the world does (x east, z south: the lake north, the mountain south), so it stands with its centre
+// on the pin, unturned, its lake (ER.LAKE) the caldera lake at -520 m. The world's 1:1 shore runs within ~250 m of the
+// page's; its 2 km cells hold none of the page's relief (the 90 m cliff, the palace plateau), which only a bake of
+// this page's ground into the world (a town grid) would give it. The Pleasure Dome's island (ISLAND_C) is the scale
+// model's landform lf_pleasure_dome_isle (tools/scale-model/model/data/landforms.json), stamped into the world by
+// openworld/xanadu-oidong-highrift: verify.py --assert checks the two stand on one spot.
+const ER_WORLD={px:805,py:1516,turn:0,lake:-520,mPerPx:2000,island:'lf_pleasure_dome_isle'};
+function erWorldPx(x,z){return[ER_WORLD.px+x/ER_WORLD.mPerPx,ER_WORLD.py+z/ER_WORLD.mPerPx];}
 if(ISLAND){const raw=terrainBase;terrainBase=function(x,z){const h=raw(x,z);if(h>=ISLAND_LEVEL)return h;const e=ISLAND.edge(x,z);if(e<=0)return h;return h+(ISLAND_LEVEL-h)*smoothstep(0,ISLAND_RAMP,e);};}
 // nearest point on a polyline set: {x,z,d,seg:[a,b]}
 function nearestOnLines(lines,x,z){let best=null;for(const P of lines)for(let i=0;i<P.length-1;i++){const ax=P[i][0],az=P[i][1],bx=P[i+1][0],bz=P[i+1][1];const dx=bx-ax,dz=bz-az,l2=dx*dx+dz*dz||1;const t=clamp(((x-ax)*dx+(z-az)*dz)/l2,0,1);

@@ -551,10 +551,12 @@ for i_id, i_x, i_y, i_rx, i_ry, i_c in E512.ISLANDS:
     check('island %s (%.1f, %.1f) is dry, %.0f m over the lake' % (i_id, i_x, i_y, E[i_j, i_i] + 520.0),
           not bool(whas[i_j, i_i]) and 20.0 <= float(E[i_j, i_i]) + 520.0 <= 160.0)
 lf = D.get('landforms', {})
-check('DATA.landforms holds the Pleasure Dome\'s island, in the lake on a shoal',
-      lf.get('format') == 'krator-landforms' and any(
-          l_['id'] == 'lf_pleasure_dome_isle' and bool(whas[int(round(l_['py'])), int(round(l_['px']))])
-          and float(E[int(round(l_['py'])), int(round(l_['px']))]) >= -560.5 for l_ in lf.get('landforms', [])))
+# the Pleasure Dome's isle is the Erewhon page's island (moved 2026-11-11 from edit_512's spot 5 km out): within a cell of
+# Erehwon's pin (805,1516), north of it, on the lake's side, a cell on the lake within its reach
+pd_ = next((l_ for l_ in lf.get('landforms', []) if l_['id'] == 'lf_pleasure_dome_isle'), None)
+check('DATA.landforms holds the Pleasure Dome\'s island, in Erehwon\'s bay off the pin (%s)' % (pd_ and (pd_['px'], pd_['py'])),
+      lf.get('format') == 'krator-landforms' and pd_ is not None and abs(pd_['px'] - 805) <= 1.0 and -1.0 <= pd_['py'] - 1516 < 0
+      and bool(whas[int(np.floor(pd_['py'])), int(round(pd_['px']))]))
 alph = next(r for r in D['rivers'] if r['id'] == 'r070')
 a_j, a_i = int(round(alph['px'][0][1])), int(round(alph['px'][0][0]))
 check('the Alph (r070) leaves the lake\'s east tip (%s, bed %.1f m) and reaches its old course at 903.5,1529.5' % (

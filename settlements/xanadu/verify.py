@@ -38,6 +38,28 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'
 import harness as _harness
 from check_trades import trades_check   # the Voth census table (tools/check_trades.py)
 
+LANDFORMS = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools', 'scale-model', 'model', 'data', 'landforms.json')
+# Erewhon only: the page's island stands where the scale model's landform record does (the page's centre on Erehwon's
+# pin, unturned: ER_WORLD in targets/erewhon/84-er-geo.js), within 10 m, and is land at its centre. The negative turns the
+# page a quarter turn round its pin: the island then lands 900 m off the record.
+ISLE_JS = r"""(turn)=>{if(typeof ER_WORLD==='undefined')return null;const c=Math.cos(turn),s=Math.sin(turn),x=ISLAND_C[0],z=ISLAND_C[1];
+ return{px:erWorldPx(x*c-z*s,x*s+z*c),land:terrainBase(ISLAND_C[0],ISLAND_C[1])>ER.LAKE,id:ER_WORLD.island,lake:ER_WORLD.lake};}"""
+
+
+async def _er_island(pg, turn=0.0):
+    r = await pg.evaluate(ISLE_JS, turn)
+    if r is None:
+        return None
+    rec = next((l for l in json.load(open(LANDFORMS, encoding='utf-8'))['landforms'] if l['id'] == r['id']), None)
+    if rec is None:
+        return {'name': 'erewhon-island-is-the-landform', 'ok': False, 'detail': 'no landform record ' + r['id']}
+    d = ((r['px'][0] - rec['px']) ** 2 + (r['px'][1] - rec['py']) ** 2) ** .5 * 2000
+    ok = d <= 10 and r['land'] and rec['water_m'] == r['lake']
+    return {'name': 'erewhon-island-is-the-landform', 'ok': ok,
+            'detail': 'the page\'s island at px %.4f,%.4f, %s %.1f m off; land at its centre: %s; lake %s / %s m' % (
+                r['px'][0], r['px'][1], rec['id'], d, r['land'], r['lake'], rec['water_m'])}
+
+
 def _voth_trades():
     # the trades table moved with the kit (kits/xanadu/src/89-*-trades.js, 2026-11-03: MODULARITY-PLAN.md step 4)
     ok, detail, _ = trades_check(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'kits', 'xanadu'))
@@ -142,6 +164,15 @@ async def run(a):
                 print(tag + r["name"] + " : " + r["detail"])
                 if not r["ok"] and not soft:
                     fails.append("assert " + r["name"])
+            isl = await _er_island(pg)
+            if isl is not None:
+                print(("  PASS  " if isl["ok"] else "  FAIL  ") + isl["name"] + " : " + isl["detail"])
+                if not isl["ok"]:
+                    fails.append("assert " + isl["name"])
+                neg = await _er_island(pg, 1.5708)
+                print(("  PASS  " if not neg["ok"] else "  MISSED") + " negative (the page a quarter turn) " + neg["name"] + " : " + neg["detail"])
+                if neg["ok"]:
+                    fails.append("negative " + isl["name"])
             print("\n--- per type (scene triangles, instances, meshes) ---")
             ts = await pg.evaluate("()=>window._api.typeStats()")
             for k in sorted(ts, key=lambda k: -ts[k]["tris"]):

@@ -31,9 +31,14 @@
       mapper exists yet) and the scale model has no soil layer.
 - [ ] **Proposals live in the browser until they are sent or exported.** `93-world-propose.js` keeps them in localStorage
       per region; clearing the site data loses unsent ones.
-- [ ] **The lake's small islands are records only.** Scale-model edit 5.1-512 wrote the Pleasure Dome's isle and a stack
-      as landforms (`tools/scale-model/model/data/landforms.json`). Each one's cell is a 40 m shoal; core/world does not
-      stamp them at 1:1 yet.
-- [ ] **Erewhon's page and the world disagree on its ground.** The page (`settlements/xanadu`, target erewhon) draws its own
-      terrain (lake at -0.5 m, its island at `ISLAND_C`). The world's town now stands on the caldera lake's south shore,
-      with the lake to the north; the page has not been fitted to it.
+- [ ] **The world holds none of Erewhon's own relief.** The page (`settlements/xanadu`, target erewhon) faces as the world
+      does and stands with its centre on the pin, unturned (`ER_WORLD`, the owner, 2026-11-11), and its shore runs within
+      ~250 m of the world's. But the world's 1:1 ground there is the model's 2 km cells smoothed: a 4 % rise from the shore,
+      no 90 m cliff, no palace plateau. Only a bake of the page's ground into the world as a town grid would give it that
+      (`openworld/isle-demo/src/48t-world-towns.js` does this for the isles' towns); nothing here does yet.
+- [ ] **The landform stamp is this region's, not core's.** `src/44-world-landforms.js` chains on `WORLD.landHook`. If a
+      core hook set after it does not chain (core/coast's `44c`, on `claude/coast-31ce37`, when it merges), the islands
+      vanish: the verify's island check catches it. The coast session proposed stamps in its field instead; lift the stamp
+      into core/world or core/coast when a second region has landforms.
+- [ ] **edit_512's old shoal is left.** The Pleasure Dome's record moved from 806.6,1513.3 (5 km out) to the page's island;
+      that cell's bed is still held as a 40 m shoal, with no island over it.

@@ -1029,8 +1029,8 @@
    "sha256": "4bd7684ba087db648857be16459f5ae4cae7736e6bd857456564c4dff80e6504"
   },
   "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.html": {
-   "bytes": 8291146,
-   "sha256": "678888b2e6419f24af4b4f4613814760d172f0bd06d6acc30898ae2868a22cd4"
+   "bytes": 8295419,
+   "sha256": "398a102480e209355cf60e3c60b235d5431115b9c6e0e1b908031a3496a35393"
   },
   "settlements/dalab/dist/dalab-set.html": {
    "bytes": 6603017,
@@ -1305,8 +1305,8 @@
    "sha256": "efedacdf87fae06ae85cc20164498bb7001bc23494ee5f60dc5044d91ca97771"
   },
   "settlements/xanadu/dist/erewhon.html": {
-   "bytes": 6479284,
-   "sha256": "b5b4ca87b0476b22030e1576861f2255520d07b249701b675571726ca266f4e3"
+   "bytes": 6699215,
+   "sha256": "3fa186a6254050e7ebf7054d43aab2ea8d5ae36e111cb3607d05acfc52f9f95c"
   },
   "settlements/xanadu/dist/xanadu.html": {
    "bytes": 6262060,

@@ -1,6 +1,6 @@
 {
  "00-head.html": "708a77399ad2",
- "06-core-khook.js": "4086274abd11",
+ "06-core-khook.js": "e6a2382acc0b",
  "06b-core-kcolor.js": "839444135298",
  "08-core-rand.js": "4a3aa47f25da",
  "09-lod.js": "e1f7db612b83",
@@ -50,7 +50,7 @@
  "82-xa-hill.js": "e0fdb540bbe4",
  "83-er-data.js": "297c6f12f409",
  "83-xa-turk.js": "593811b1a5b5",
- "84-er-geo.js": "6d16d736f38c",
+ "84-er-geo.js": "8ded27afcc75",
  "84-xa-grandbath.js": "b816c4af04e0",
  "85-er-paint.js": "769eb27f29d8",
  "85-xa-water.js": "10acb502608c",

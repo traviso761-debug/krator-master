@@ -24,7 +24,8 @@ The second region of sites cut off the scale model into the open world (`openwor
   ground with core/hamlet's `xanadu` row, drawn with the Xanadu building kit (`XAK`):
   - **Erehwon** (`s57bkv9741`, px 805,1516 since 2026-11-11, on the south shore of its caldera lake, scale-model edit
     5.1-512): the Sultanate's city (`settlements/xanadu`). Five farming villages along the shore and up the slopes
-    south, and a ranching village 14 km out on the uplands.
+    south, and a ranching village 14 km out on the uplands. The city's page stands with its centre on the pin, unturned
+    (its `ER_WORLD`); its island, the Pleasure Dome's, is stamped here (`src/44-world-landforms.js`).
   - **Qiblai** (`skm4jjo2vl`, px 922,1595 since 2026-11-11, moved from 963,1566 to the cataracts of Nahr ash-Shalālāt:
     by a river, near rock salt and ore; the owner's word), with no page yet: the same ring, re-planned on the new ground.
   - **Longsong** (`sq80bzd7ep`, px 1226,1626): the History Monks' monastery (`settlements/longsong`). Its three villages
@@ -59,7 +60,8 @@ On the GPU: `KRATOR_GL=gpu` and `python3 ../../tools/harness.py lock --lane auto
 | Fragment | Tag | What |
 |---|---|---|
 | `src/43-world-xoh.js` | [G data] | the fields the kits read that the world does not make: the Oidong kit's `flat` (0 everywhere until its pale flats are mapped) |
-| `src/46-world-config.js` | [G data] | the sites' markers, "Go to" (the region, each site, each village), the first view over Erehwon's villages |
+| `src/44-world-landforms.js` | [G data] | the lake's small islands at 1:1: the scale model's landform records inside the cut (`tools/scale-model/model/data/landforms.json`, copied into `WORLD_DATA.landforms` by `build.py`) stamped into the land, chained on `WORLD.landHook`: the Pleasure Dome's isle (the Erewhon page's island, 14 m over the lake) and the west stack (42 m) |
+| `src/46-world-config.js` | [G data] | the sites' markers, "Go to" (the region, each site, each village, each island), the first view over Erehwon's villages |
 | `src/47-world-kits.js` | [G data] | the kits that grow here: Xanadu on its overlay, Oidong on the valley |
 | `src/48-world-site.js` | [G data] | the sites' spec (`SITE_SPEC`): each site's villages (focus, spot, population), its roads, the links between the towns |
 | `src/49-world-xanadu.js` | [G data] | the Xanadu kit's pass table as data (`XANADU_WORLD`) |
@@ -71,6 +73,8 @@ Each check has a negative:
   outside the cut, spacing across tiles, the rivers that carry water, the roads on the land at their grade, nothing on
   a road or a village, no NaN.
 - **The region:** each site at its pixel, on dry land, in its overlay, with its kit growing there.
+- **The islands:** each landform over its lake at its centre, with the lake round it, and the Pleasure Dome's isle on the
+  Erewhon page's island (the negative reads the land without the stamp).
 - **The sites:**
   - the baked plan is the plan made again in the browser;
   - every village is whole, its buildings apart and on good ground, with every road at its lane end;

@@ -638,6 +638,11 @@ and every raster (heights, water, the five temperatures, rain, class, zone) is c
   version: 1, landforms: [{id, kind: 'island', px, py, r_m, crest_m, water_m, note}]}`, crest absolute) for core/world to
   stamp at 1:1: `lf_pleasure_dome_isle` (806.6,1513.3, r 300 m, 22 m over the lake, ~5 km off Erehwon's quays) and
   `lf_west_stack`; each one's cell is held as a 40 m shoal.
+  **Moved after the edit (the owner, 2026-11-11):** `lf_pleasure_dome_isle` is the Erewhon page's island. It is now at
+  805.035,1515.6935, r 80 m (half-axes `rx_m` 110, `rz_m` 55, optional fields), 14 m over the lake: the page's
+  `ISLAND_C`, with the page's centre on Erehwon's pin, unturned. Its old cell keeps its shoal. Section 15's check
+  now asks for it in Erehwon's bay, within a cell north of the pin and on a wet cell.
+  `openworld/xanadu-oidong-highrift/src/44-world-landforms.js` stamps both records.
 - **Checks**: the lake's bed filled to its way out spills at the outlet's sill (-521.8 m); with the outlet's gorge
   blocked, not under 340 m over the level; no new pit in the box (a few hollows at the cones' feet and on the vale floor,
   up to 63 m, filled); every settlement pin in the box but Erehwon's unchanged (Theodiga, Tuatara). Temperatures lapsed
@@ -648,7 +653,9 @@ and every raster (heights, water, the five temperatures, rain, class, zone) is c
   walls, the volcanoes, the islands, the Pleasure Dome's landform, the Alph's head, the vale and the rivers' mouths.
 - **Left for later**: the Erehwon settlement record (model/src/60-settlements.js and the live database), re-cutting
   `openworld/xanadu-oidong-highrift` and the Erewhon page's world coordinates, core/world's landform stamping, and the
-  stale basin record at 922.8,1527.7 (-759 m, outside the box).
+  stale basin record at 922.8,1527.7 (-759 m, outside the box). Since done: the settlement record and the re-cut
+  (5e31f0ceb). The page's placement and the stamp (a region fragment, not core/world) were done on 2026-11-11. The
+  live database and the basin record are still open.
 
 ## Cutting a region out for the open world
 
