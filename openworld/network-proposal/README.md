@@ -18,11 +18,11 @@ once the model carries it.
 - `nodes`, each `{id, name, type, px, kind: site | dock | tbd}`;
 - `routes`, each `{id, line, class: line | branch | trunk | possible | izani | extension, from, to, name, km, tunnel_km, airless_open_km, px, form, up, note}`.
   - `form` and `up` (the keeper) are given per vertex.
-  - **`id` is unique to its leg**, for example `rift.qiblai-longsong` or `span.dalab-span`. An open-world link names the leg it follows by
+  - **`id` is unique to its leg**, for example `rift.theodiga-strongbow` or `span.dalab-span`. An open-world link names the leg it follows by
     this id.
   - `line` is the id the legs of one route share (`rift`, `rift.bowl`, `span`). A route of one leg has `line` equal to its `id`.
-  - `legs51.py` assigns these as `route51.py`'s last pass. It also splits the Rift line's Theodiga–Strongbow leg where the line passes
-    Qiblai and Longsong; those are pass-through points, not numbered stations.
+  - `legs51.py` assigns these as `route51.py`'s last pass. It can also cut a leg at pass-through points (`SPLIT`), but none is
+    cut: the Rift line stops at neither Qiblai nor Longsong.
 
 **`route51.py`** works like this:
 - It applies the draft's Ancient cost on a 4 km grid of 5.1's heights: a 4 % ruling grade, tunnel at 6x the surface cost, and
