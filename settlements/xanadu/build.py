@@ -150,11 +150,17 @@ CORE_ATMOS = ['89-atmos-0-core.js', '89-atmos-0p-presets.js', '89-atmos-a-waves.
 WATER_DIR = os.path.join(ROOT, 'core', 'water')
 CORE_WATER = ['20-core-water.js', '21-core-water-shore.js', '22-core-water-flow.js', '50-core-water-draw.js', '51-core-water-kinds.js']
 CORE_WATER_EXT = ['56-core-water-breakup.js']   # the breakup (core/water ext/56), on by default since 2026-11-09
-TARGET_FILES = {'xanadu': [(ATMOS_DIR, CORE_ATMOS), (WATER_DIR, CORE_WATER), (os.path.join(WATER_DIR, 'ext'), CORE_WATER_EXT)]}
+TARGET_FILES = {'xanadu': [(ATMOS_DIR, CORE_ATMOS), (WATER_DIR, CORE_WATER), (os.path.join(WATER_DIR, 'ext'), CORE_WATER_EXT)],
+                'scrap': [(ATMOS_DIR, CORE_ATMOS), (WATER_DIR, CORE_WATER), (os.path.join(WATER_DIR, 'ext'), CORE_WATER_EXT),
+                          (os.path.join(TARGETS, 'xanadu'), ['90-xa-still.js'])]}   # the scrap sheet's still water, read in place
 TARGET_OUT = {
     'erewhon': 'erewhon.html',          # the city of Erewhon, Pearl of Xanadu
     'xanadu': 'xanadu.html',            # the whole kit in rows by family
+    'scrap': 'xanadu-scrap.html',       # Scrap Xanadu (kits/xanadu/PLAN-SCRAP.md): the reclaimed set's sheet
 }
+# the kit files a target takes when not all of them (kxa.FILES): the scrap sheet shows the opt-in scrap package on the
+# kit's foundation alone (86b-xa-plants: the plant shim xnTree routes through)
+TARGET_KIT = {'scrap': kxa.FOUNDATION + ['86b-xa-plants.js'] + kxa.SCRAP}
 
 # Fragments with no builder in them: helpers, materials, the scene, the shell.
 DETERMINISTIC = {
@@ -182,6 +188,7 @@ DETERMINISTIC |= set(CORE_ATMOS) | set(CORE_WATER) | set(CORE_WATER_EXT) | {'90-
 DETERMINISTIC |= set(CORE_HOST) | set(TAGS_FILES) | {'99-start.js', '91t-xanadu-tags.js', '89-xa-trades.js'}   # core/host (no rnd()); core/rand, core/tags; the take; REG into core/tags (reads only)
 DETERMINISTIC |= set(DOOR_FILES) | {'71c-xa-openings.js', '90-xa-doors.js', '89y-xa-interiors.js'}   # core/door, the openings (69e5, 71c), the leaves' hand-over: no rnd()
 DETERMINISTIC |= {'78a-xa-pattern-data.js', '78b-xa-pattern.js', '78c-xa-dome-plan.js', '78d-xa-dome-in.js'}   # the Pleasure Dome's pattern system, plan and interior: drawn inside buildXaPleasureDome's reseed (78-xa-palace.js)
+DETERMINISTIC |= {'87s-xs-mat.js', '87t-xs-helpers.js'}   # Scrap Xanadu's items and helpers: no rnd() outside its builders
 
 # Seed ranges known to collide, kept here so the build stays green while the
 # collision is tracked in KNOWN_ISSUES.md. Remove an entry when it is fixed;
@@ -292,9 +299,10 @@ def build_one(target, do_checks):
         sys.exit('no such target: %s (expected %s)' % (target, tdir))
 
     src = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()}
-    src.update({f: p for f, p in kxa.paths().items() if f not in src})   # the Xanadu kit (a src/ copy would win: none)
-    src.update({f: p for f, p in kxa.paths(kxa.CITADEL).items() if f not in src})   # the citadel's vocabulary and buildings (kits/xanadu/xanadu.py CITADEL)
-    src.update({f: p for f, p in kxa.paths(['78o-xa-golden-way.js']).items() if f not in src})   # the Golden Way with it (named here, not in xanadu.py: Longsong reads that)
+    src.update({f: p for f, p in kxa.paths(TARGET_KIT.get(target)).items() if f not in src})   # the Xanadu kit (a src/ copy would win: none)
+    if target not in TARGET_KIT:   # the scrap sheet takes the foundation and the scrap package alone
+        src.update({f: p for f, p in kxa.paths(kxa.CITADEL).items() if f not in src})   # the citadel's vocabulary and buildings (kits/xanadu/xanadu.py CITADEL)
+        src.update({f: p for f, p in kxa.paths(['78o-xa-golden-way.js']).items() if f not in src})   # the Golden Way with it (named here, not in xanadu.py: Longsong reads that)
     src.update({f: os.path.join(CORE, f) for f in CORE_FILES if f not in src})
     src.update({f: os.path.join(CORE_OPT, f) for f in CORE_OPT_FILES if f not in src})
     src.update({f: os.path.join(ROOT, 'core', 'materials', 'record', f) for f in RECORD_FILES if f not in src})

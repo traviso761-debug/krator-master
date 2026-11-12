@@ -1568,6 +1568,10 @@
    "bytes": 8964430,
    "sha256": "4db64bf4aaf26e98a59dbb8bd35dcadc5b054a5f0c14d169b2025ac23acadaa4"
   },
+  "settlements/xanadu/dist/xanadu-scrap.html": {
+   "bytes": 6319575,
+   "sha256": "7c590e011250e05328a6d166b29f14d4711c38cf6c3c39900d2292be5ffc85ce"
+  },
   "settlements/xanadu/dist/xanadu.html": {
    "bytes": 8798794,
    "sha256": "519ea7f53a2872f9dc4566ede293c72fe70bea1546346197ac9e4167d2f729ac"
