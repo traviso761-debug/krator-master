@@ -742,7 +742,7 @@ The numbers are this section's questions below.
 | 15 | Strongbow | Settled earlier: 1001,1596 on the Xanadu-Oidong scarp. |
 | 16 | Loj Twenny | **Under the great shaft** (station 3). |
 | 17 | Reed Lake | **There will be a larger reed village at the model's Reed.** A short way off is a **large town of Tabisti buildings, the centre of pure-strain Tabisti culture**: a new settlement for the map and the lore. |
-| 18 | Regions | Not answered yet. |
+| 18 | Regions | **Cut `east-rim`, `north-shore` and `southwest` as proposed** (§4), after the pin batch so the cuts see the new pins. |
 
 The questions as asked:
 
