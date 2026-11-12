@@ -160,6 +160,10 @@
    "bytes": 1178562,
    "sha256": "3dfcc8e073a0cdde74012f0b2969630b42942751ba8eb7969ddea8e6aa607e83"
   },
+  "biomes/galvanic/dist/galvanic.html": {
+   "bytes": 3283380,
+   "sha256": "3dc4724f906b01585bd417a4b68b78486eb682fbde08733cd802e38c3d5c7de6"
+  },
   "biomes/geyser/dist/geyser-basin.html": {
    "bytes": 1300468,
    "sha256": "a2e614fcbcb4de1828264c46e0e21abcaad79a27654911205fba8d6e7d2dcd5d"

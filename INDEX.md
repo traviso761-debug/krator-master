@@ -65,6 +65,7 @@ Every build is a folder with `src/` fragments and a `build.py`. Open a build's `
 | [`biomes/ebadlands`](biomes/ebadlands/INDEX.md) | 19 | 252 | 55 | Biome kit: see `biomes/README.md`. |
 | [`biomes/ehighlands`](biomes/ehighlands/INDEX.md) | 20 | 195 | 49 | Biome kit: see `biomes/README.md`. |
 | [`biomes/farside`](biomes/farside/INDEX.md) | 18 | 132 | 25 | Biome kit: see `biomes/README.md`. |
+| [`biomes/galvanic`](biomes/galvanic/INDEX.md) | 17 | 84 | 13 | Biome kit: see `biomes/README.md`. |
 | [`biomes/geyser`](biomes/geyser/INDEX.md) | 20 | 179 | 26 | Biome kit: see `biomes/README.md`. |
 | [`biomes/godthrone`](biomes/godthrone/INDEX.md) | 22 | 132 | 22 | Biome kit: see `biomes/README.md`. |
 | [`biomes/guilin`](biomes/guilin/INDEX.md) | 14 | 113 | 24 | Biome kit: see `biomes/README.md`. |
