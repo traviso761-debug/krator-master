@@ -98,8 +98,8 @@ TG_CULTURES = ['tungang', 'generic', 'generic-goods']
 
 def main():
     files = [p for p in FRAGS if not p.startswith('@')]
-    tg_js, tg_files = tungang_bundle.bundle(tex='lean', with_files=True, furniture=True, cultures=TG_CULTURES)
-    BSRC.report(files + [os.path.join(ROOT, *f.split('/')) for f in tg_files if not f.endswith('/tex')] + [os.path.join(ROOT, 'biomes', 'line', 'tex', 'pack.json')] +
+    tg_js, tg_files = tungang_bundle.bundle(tex='lean', with_files=True, furniture=True, cultures=TG_CULTURES, furniture_tex=True)
+    BSRC.report(files + [os.path.join(ROOT, *f.split('/')) for f in tg_files if not f.endswith('/tex')] + [os.path.join(ROOT, 'kits', 'catalog', 'tex', 'pack.json')] + [os.path.join(ROOT, 'biomes', 'line', 'tex', 'pack.json')] +
                 [os.path.join(ROOT, 'kits', 'tungang', 'tungang_bundle.py'), os.path.join(ROOT, 'kits', 'motor-vehicles', 'vehicle_bundle.py')])
     if '--no-checks' not in sys.argv:
         RE = re.compile(r'^(?:const|let|var|function|class)\s+([A-Za-z_$][\w$]*)', re.M)

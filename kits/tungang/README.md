@@ -11,6 +11,9 @@ section 3.2; below). The Glazier (`gz`) set comes later.
 - **Check:** `python3 verify.py dist/tungang.html --assert` (on `tools/harness.py`; `KRATOR_GL=gpu` for the real GPU),
   `node tests/test-bundle.js` (the sealed bundle in plain node), `node core/hamlet/test-hamlet.js` (the `fellgang` row).
 - **For another world:** `tungang_bundle.py` seals the kit as the global `TG`; `API.md` says what to call (`TG.fg.draw`).
+  `bundle(furniture=True, furniture_tex=True)` seals the catalog's library detail maps in with the furniture (about 1.9 MB:
+  every family, since a piece's family is known only when it is built), so the pieces are textured, not vertex colours only;
+  Loj Twenny takes it. Off by default, byte for byte.
 
 ## The Fellgang set
 

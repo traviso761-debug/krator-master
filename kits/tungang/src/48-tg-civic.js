@@ -22,7 +22,7 @@ defBuilding({key:'tg-loj-hall',name:'The loj hall',seed:9311,w:14,d:17,h:6,front
   const wc=tgCol(C.aband?'plasterA':'plaster',C);box('plain',0,0,Z1+.02,X*2-.2,4.8,.04,wc);
   if(!C.aband)for(let i=-5;i<=5;i++){box('plain',i*1.15,.6,Z1+.05,.025,4.0,.01,tgCol('hewn',C));}
   if(!C.aband)for(let y=.6;y<=4.65;y+=.81)box('plain',0,y,Z1+.05,11.6,.025,.01,tgCol('hewn',C));
-  if(tgKeep(C,10))tgFurnBack('tungang_court_count_wall',0,Z1+.08,{},.0);
+  if(tgKeep(C,10))tgFurnBack('tungang_court_count_wall',0,Z1+.08,{},1.1);   /* hung over the desk and the chair, not stood on the floor behind the dais */
   if(tgKeep(C,11))tgFurn('tungang_court_steward_desk',0,.4,Z1+1.8,0);box('wood',0,0,Z1+1.8,3.2,.4,2.4,tgCol('hewn',C));
   if(tgKeep(C,12))tgFurn('tungang_court_book_lectern',-2.6,.4,Z1+1.6,0);
   if(tgKeep(C,13))tgFurn('tungang_court_president_chair',1.6,.4,Z1+.9,0);

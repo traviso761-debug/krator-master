@@ -231,6 +231,12 @@ LTS.countWall=function(){const o={};for(const g of ['fungus','grain','wax','ore'
  o.hands=SIM.all('actor').filter(a=>a.present&&a.place==='lt.loj-hall'&&a.activity==='MEET').length;o.people=LTS.people();
  if(LTS.mood){const P=SIM.happinessPool(LTS.S);o.happy=P.all.mean==null?null:Math.round(P.all.mean);const U=SIM.unrestReport?SIM.unrestReport(LTS.S):null,T=U&&U.towns[LTS.S];o.stage=T&&T.stage.all?T.stage.all:'calm';}
  return o;};
+/* THE COUNT WALL'S WORDS, as the sekketri chalks them: Tungang spelt in the Book's letters (lore/tongues-of-krator.html,
+   "From English": the t' fused on, the h gone, long i to ah, long o to ua, a final t a catch). The mash, the grain, the
+   wax, the ore, the plate, the ice; the hands (anz) raised, the loj's people (Tloj), its heart (art) and how it stands: all
+   right (awreet), grumbling, asking, out on strike (strak), scab (skab: the treason stage, the worst word there is) */
+LTS.WALL={fungus:'MASH',grain:'GREYN',wax:'WAKS',ore:'UAR',plate:'PLAY\'',ice:'AHS',hands:'ANZ',people:'TLOJ',heart:'ART',
+ stage:{calm:'AWREET',grumble:'GRUMMLIN',demand:'ASKIN',strike:'STRAK',treason:'SKAB'}};
 /* the mood of the hold: its needs by class (the meters' means, how many at 70 or more, the bands), the happiness pool and the
    unrest's levels and stages, what rotted and what the ice kept, the meals eaten and missed */
 LTS.moodReport=function(){if(!LTS.mood)return null;const E=SIM.econ(LTS.S),U=SIM.unrestReport(LTS.S)||{towns:{},events:[]},T=U.towns[LTS.S]||{level:{},stage:{},demands:[],strikes:[]};

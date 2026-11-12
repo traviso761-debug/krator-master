@@ -5,6 +5,18 @@
 // and walking through an open door of the segment's train boards it (E by a seat sits). The views are the walk-through of
 // kits/tungang/PLAN.md 5.5 "A line loj", in its order.
 const LT_SOLID=KHOST.solidFrom({cavern:CAVE_C,walk:KWALK});
+/* THE PIN'S PICK (core/host's o.pick: double-click): the click's ray marched through the cavern (the rock's distance, the walk's
+   blocks), out of the rock it starts in (a camera above the cut, or in the rock cut's view) into the first void, and on to the
+   first walk floor it crosses there or the rock it meets; the pin stands on the floor under that point. The host's own pick
+   marches to `ground`, the rock's floor 60 m down, so a click on a room set the pin under the hold */
+function ltPick(R){const O=R.origin,D=R.direction;let t=0,rock=LT_SOLID(O.x,O.y,O.z)<0,yPrev=O.y;
+ for(let i=0;i<4000&&t<900;i++){const x=O.x+D.x*t,y=O.y+D.y*t,z=O.z+D.z*t,d=LT_SOLID(x,y,z);
+  if(rock){if(d>.05)rock=false;t+=Math.max(.2,Math.min(2,-d));yPrev=y;continue;}
+  const f=KWALK.floorBelow(x,z,yPrev,0);
+  if(f&&f[0]>=y-.02&&f[0]<=yPrev+.02)return [x,f[0],z];
+  if(d<.03){const b=Math.max(0,t-.4),X=O.x+D.x*b,Y=O.y+D.y*b,Z=O.z+D.z*b,g=KWALK.floorBelow(X,Z,Y,.3);return g&&Y-g[0]<8?[X,g[0],Z]:[X,Y,Z];}
+  yPrev=y;t+=Math.max(.05,Math.min(.5,d));}
+ return null;}
 const LT_VIEWS={
  'The night mouth - the climb down to the hooded lamp and the door':[-78,13.4,404.6,-78,9,418],
  'The platform under its vault, the green lamps':[19.2,3.7,306,14,4.2,440],
@@ -25,7 +37,7 @@ var LTRIDE=null;
 const LTH=KHOST.take({build:'loj-twenny',title:'Loj Twenny',
  hint:'the first Tungang hold (20), at station 3 of the Line under the great shaft · V follow · X deck cut, ] [ deck · H rock cut · U band · C section · M map · L line map · O stocks · F walk; walk through an open door to board the train, E sits',
  scene,camera,renderer,ground:()=>-60,clear:.3,minR:.5,maxR:900,
- walk:KWALK,walker:{step:.6,r:.28,h:1.6},eye:1.6,
+ walk:KWALK,walker:{step:.6,r:.28,h:1.6},eye:1.6,pick:ltPick,
  views:LT_VIEWS,start:'The platform under its vault, the green lamps',
  clock:{obj:LTCLOCK,speeds:[0,1,2,4,8,16,60]},
  solid:LT_SOLID,follow:{dist:4},

@@ -25,3 +25,7 @@
 - [ ] **The Godot export** is not wired (core/export): the plan (`KCITY.cavern.exportPlan`), the light (`KCAVELIGHT.export`) and the
   motion (`SIM.rideExportMotion`) are each exportable.
 - [ ] **Gallery.** A new settlement: it goes into the Krator Worlds gallery when it first reaches `main`.
+- [x] **Fixed 2026-11-12** (the owner's look at the hall): the count wall's chalk now fits the steward's board, which hangs 1.1 m up
+  over the desk instead of standing on the floor behind the dais; the chalk is in Tungang (`LTS.WALL`: MASH, GREYN, WAKS, UAR,
+  PLAY', AHS; ANZ, TLOJ, ART and the stage, AWREET to SKAB); the furniture is textured (the catalog's detail maps); a
+  double-click on a room stands the pin on its floor (`ltPick`: the host's own pick marched to the -60 m ground under the hold).

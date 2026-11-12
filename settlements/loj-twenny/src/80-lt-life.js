@@ -33,15 +33,21 @@ LT_LIFE.draw=function(t){let i=0;const live=SIM.all('actor').filter(a=>a.present
  LT_LIFE.shown=i;for(;i<LT_LIFE.N;i++){ltM.makeScale(0,0,0);LT_LIFE.figs.setMatrixAt(i,ltM);}LT_LIFE.figs.instanceMatrix.needsUpdate=true;};
 /* ---------------------------------------------------------------- the count wall: painted from the hold's stocks */
 LT_LIFE.wall=(function(){const s=SIM.R.place['lt.loj-hall']&&LT.plan().byId['lt.loj-hall'];if(!s)return null;
- const c=document.createElement('canvas');c.width=1024;c.height=420;const tx=new THREE.CanvasTexture(c);tx.encoding=THREE.sRGBEncoding;
- const m=new THREE.Mesh(new THREE.PlaneGeometry(10.4,4.2),new THREE.MeshBasicMaterial({map:tx,transparent:true}));m.name='the count wall: the hold\'s stocks';m.userData.deck=0;
- /* in the hall's frame: the back wall at local z -16.62, centred, 0.5 to 4.7 m up */
- const cs=Math.cos(s.ry),sn=Math.sin(s.ry),lz=-16.38;m.position.set(s.x+lz*sn,s.y+2.65,s.z+lz*cs);m.rotation.y=s.ry;scene.add(m);
- const paint=()=>{const g=c.getContext('2d'),W=LTS.countWall();g.clearRect(0,0,1024,420);g.fillStyle='rgba(40,34,30,.86)';g.font='bold 34px monospace';
-  const rows=[['FUNGUS',W.fungus],['GRAIN',W.grain],['WAX',W.wax],['ORE',W.ore],['PLATE',W.plate],['ICE',W.ice]];
-  g.fillText('HANDS '+W.hands+'   ON SHIFT '+W.people+(W.happy!=null?'   HEART '+W.happy+' '+String(W.stage).toUpperCase():''),40,46);
-  rows.forEach(([k,v],i)=>{const x=40+(i%3)*330,y=112+Math.floor(i/3)*120;g.fillText(k,x,y);g.fillText(String(v),x,y+46);
-   /* the tallies in fives under each, a stroke a ten */
-   const n=Math.min(40,Math.round(v/10));for(let j=0;j<n;j++){const tx0=x+(j%20)*12+(j%5===4?-48:0);if(j%5===4){g.fillRect(x+Math.floor(j/5)%4*60-4,y+62+Math.floor(j/20)*14,58,3);}else g.fillRect(tx0,y+52+Math.floor(j/20)*14,3,18);}});
+ /* on the steward's board (kits/tungang tg-loj-hall: tungang_court_count_wall, hung 1.1 m up at the back wall, its ruled face
+    4.55 x 2.67 m at 0.94 under a row of column numbers): the chalk fills the ruled face below the numbers, 4.3 x 2.25 m */
+ const BW=4.3,BH=2.25,CW=1024,CH=Math.round(CW*BH/BW);
+ const c=document.createElement('canvas');c.width=CW;c.height=CH;const tx=new THREE.CanvasTexture(c);tx.encoding=THREE.sRGBEncoding;
+ const m=new THREE.Mesh(new THREE.PlaneGeometry(BW,BH),new THREE.MeshBasicMaterial({map:tx,transparent:true,polygonOffset:true,polygonOffsetFactor:-2}));m.name='the count wall: the hold\'s stocks';m.userData.deck=0;
+ /* in the hall's frame: just proud of the board's face (local z -16.52), centred on its ruled area (1.1 + 1.30 m up) */
+ const cs=Math.cos(s.ry),sn=Math.sin(s.ry),lz=-16.5;m.position.set(s.x+lz*sn,s.y+2.4,s.z+lz*cs);m.rotation.y=s.ry;scene.add(m);
+ /* a line at `size` px, shrunk until it fits `w` px: nothing runs off the board */
+ const fit=(g,t,x,y,w,size)=>{let z=size;g.font='bold '+z+'px monospace';while(z>12&&g.measureText(t).width>w){z-=2;g.font='bold '+z+'px monospace';}g.fillText(t,x,y);};
+ const paint=()=>{const g=c.getContext('2d'),W=LTS.countWall(),T=LTS.WALL,M=36,col=(CW-2*M)/3;g.clearRect(0,0,CW,CH);g.fillStyle='rgba(40,34,30,.88)';
+  const rows=['fungus','grain','wax','ore','plate','ice'].map(k=>[T[k],W[k]]);
+  fit(g,T.hands+' '+W.hands+'   '+T.people+' '+W.people+(W.happy!=null?'   '+T.heart+' '+W.happy+' '+(T.stage[W.stage]||String(W.stage).toUpperCase()):''),M,58,CW-2*M,44);
+  rows.forEach(([k,v],i)=>{const x=M+(i%3)*col,y=150+Math.floor(i/3)*200;fit(g,k,x,y,col-20,40);fit(g,String(v),x,y+50,col-20,40);
+   /* the tallies in fives under each, a stroke a ten, at most two rows of twenty (inside its column) */
+   const n=Math.min(40,Math.round(v/10)),dx=Math.min(12,(col-30)/20);
+   for(let j=0;j<n;j++){const r=Math.floor(j/20),jj=j%20,y0=y+70+r*30;if(jj%5===4)g.fillRect(x+Math.floor(jj/5)*5*dx-4,y0+8,5*dx-2,3);else g.fillRect(x+jj*dx,y0,3,20);}});
   tx.needsUpdate=true;LT_LIFE.wallRead=W;};
  paint();return {mesh:m,paint};})();
