@@ -26,5 +26,10 @@ const VIEWS={
  'The inner ring':               (function(){const a=SBT.L.lobby.at;return SBV([a[0]+170,26,a[2]+300],[a[0]+40,6,a[2]+200]);})(),
  'The road spoke':               (function(){const a=SBT.L.lobby.at;return SBV([a[0]-520,40,a[2]+260],[a[0]-300,4,a[2]+120]);})(),
  'The outer ring and the farms': (function(){const a=SBT.L.lobby.at;return SBV([a[0]+260,90,a[2]+880],[a[0]+20,0,a[2]+560]);})(),
+ // the cutaway (src/8ax2-sb-cutaway.js): the column cut on its axis, every storey a slab in its holder's colour; these three views
+ // switch it on (the c key or the button anywhere)
+ 'Cutaway — the Spine':           (function(){const a=SBT.L.lobby.at;return SBV([a[0]+330,330,a[2]+620],[a[0]-10,250,a[2]-60]);})(),
+ 'Cutaway — the tower':          SBV([300,940,560],[0,905,30]),
+ 'Cutaway — the foot':            (function(){const a=SBT.L.lobby.at;return SBV([a[0]+120,70,a[2]+210],[a[0]-5,40,a[2]-10]);})(),
 };
 VIEWS['Strongbow today at night']=SBV([-560,600,1650],[0,500,0]).concat([1]);

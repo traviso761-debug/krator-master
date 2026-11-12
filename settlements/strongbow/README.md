@@ -13,6 +13,7 @@ the elevator to the lip, the outcasts in the upper Spine, the Order in the tower
 | `src/31-sb-rules.js` | the layout's 15 rules and its area |
 | `src/40-sb-town.js` | the town at the foot (SB3) on `core/city`: its site, ring roads and spokes, rules and fields; `SB_TOWN.make` gives its records |
 | `src/8ax0-sb-reclaim.js` | the page's drawing of the reclamation (the lifts, bridges, rope ways, the bazaar, the balloon, the post at the lip; stand-ins for the foot's four scrap buildings where the kit is not on the page) |
+| `src/8ax2-sb-cutaway.js` | the cutaway (the c key, the button, the views "Cutaway — the Spine / the tower / the foot"): the column cut on its axis by a KHOOK layer, a slab for every storey coloured by who holds it, and a legend of the people each holder houses |
 | `src/8ax1-sb-town.js` | the page's drawing of the town and the foot's four scrap buildings (the serai, the plaza's gate, shrine and pavilion) with the scrap Xanadu set (`XAK`) |
 | `floors/`, `AREAS.md` | the sheets and the area, drawn by `strongbow_blueprint.py` |
 | the page | `kits/ancients/dist/strongbow-today.html`, the kit's target `strongbow-today`, which reads the arcology's fragments and these in place (`kits/ancients/build.py` `TARGET_READS`). core/city with the town plan (`SBCITY`) and the Xanadu kit with its scrap set (`XAK`) go on it sealed, each in its own closure (`build.py` `sb_city`, `sb_xak`): core/city's `clamp` and `segDist` are the kit's names too |

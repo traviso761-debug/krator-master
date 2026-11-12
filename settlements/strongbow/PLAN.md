@@ -255,6 +255,10 @@ where they work and the scrap set's buildings, plus the Order's and the outcasts
      distance, the panel courses within 300 m of the eye, and the small detail within 200 m. At street level the town draws
      about 60% of the triangles it did, at the overview half, and the calls fell from about 320 to about 100-136 (README.md,
      "Level of detail").
+   - The cutaway (2026-11-12, the owner: "can we get a cutaway view so i can see the inhabited areas?"): `src/8ax2-sb-cutaway.js`.
+     The column (the lobby, the drums, the terraces, the tower) is cut along its axis, the half toward the viewer removed. Every
+     storey of every part with storeys is a slab coloured by its holder and state, from the layout's records, with a legend of
+     the people each holder houses. The Nock's deck, the cliff, the plaza and the town are not cut.
 6. **SB4, life** on `core/simulation`.
 7. Placement in the open world: the region's job, from the records.
 

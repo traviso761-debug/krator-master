@@ -127,6 +127,7 @@ SB_TODAY_READS = ([(os.path.join(HERE, 'targets', 'strongbow'), f) for f in ('8a
 # kit's names too): SB_CITY, core/space + core/city's [G data] fragments + the settlement's town plan (src/40-sb-town.js) as
 # SBCITY; SB_XAK, the Xanadu kit with the scrap set as XAK (kits/xanadu/kit_bundle.py). Every file is read live, never copied.
 SB_TOWN_READS = [(os.path.join(ROOT, 'settlements', 'strongbow', 'src'), '8ax1-sb-town.js'),
+                 (os.path.join(ROOT, 'settlements', 'strongbow', 'src'), '8ax2-sb-cutaway.js'),
                  (os.path.join(ROOT, 'settlements', 'isle-demo', 'src'), '58-isle-protos.js')]
 SB_CITY, SB_XAK = '8ax8-sb-city.js', '8ax9-sb-xak.js'
 
@@ -277,7 +278,7 @@ DETERMINISTIC = {
     '8aw0-strongbow-plan.js', '8aw1-strongbow-parts.js', '8aw3-strongbow-foot.js',   # targets/strongbow: KRAND-hashed records; the drawing's parts and the foot, hashed, no rng()
     '37c-core-rubble.js',                              # core/terrain's KRUBBLE heaps, read by targets/strongbow: KRAND-hashed, no rng()
     '20-sb-census.js', '30-sb-layout.js', '31-sb-rules.js', '8ax0-sb-reclaim.js',   # settlements/strongbow, read by strongbow-today: records and a hashed drawing, no rng()
-    '8ax1-sb-town.js', '58-isle-protos.js', '8ax8-sb-city.js', '8ax9-sb-xak.js',   # Strongbow's town (SB3): drawn from core/city's records (core/rand streams), the isle demo's flattener, the two sealed bundles
+    '8ax1-sb-town.js', '8ax2-sb-cutaway.js', '58-isle-protos.js', '8ax8-sb-city.js', '8ax9-sb-xak.js',   # Strongbow's town (SB3): drawn from core/city's records (core/rand streams), the isle demo's flattener, the two sealed bundles
 }
 DETERMINISTIC |= {'06-core-khook.js', '06b-core-kcolor.js'}   # core/shader (no rnd())
 

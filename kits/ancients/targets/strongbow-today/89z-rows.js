@@ -12,4 +12,4 @@ const ROWS={
  strongbow:{z:0,s:0,r:700},
 };
 const RUINS=[[0,300,700]];
-const EXTRA_BUILDERS={strongbow:(scene,gx,gz,d)=>{const G=buildStrongbow(scene,gx,gz,d);sbReclaim(gx,gz);sbTownDraw(gx,gz);return G;}};
+const EXTRA_BUILDERS={strongbow:(scene,gx,gz,d)=>{const G=buildStrongbow(scene,gx,gz,d);sbReclaim(gx,gz);sbTownDraw(gx,gz);sbCutaway(gx,gz);return G;}};
