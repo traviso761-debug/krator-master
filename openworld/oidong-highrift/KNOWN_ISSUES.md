@@ -16,6 +16,10 @@
   own architecture (Longsong's `62-ls-arch`, battered stone halls) is not a kit yet.
 - [x] **The Singing Gjár's purpose and the two accessory houses**: confirmed by the owner (2026-11-11: "keep as
   proposed").
-- [ ] **Strongbow**, the Ancients' cliff arcology, is at the valley's west end toward Qiblai (px 1013,1585, the foot of
-  the north-west wall; the owner, 2026-11-11, after a first move to the east end the same day). It is a site and a road's
-  end only: the arcology is the Strongbow session's (its own cliff landform: the wall here rises about 1,300 m in 4 km).
+- [ ] **Strongbow**, the Ancients' cliff arcology, hangs in the scarp between the Oidong Valley and Xanadu, 3 km north of
+  the cataract by which the valley's river leaves (px 1001,1596, its top on the lip at about 1,400 m; the owner,
+  2026-11-11: "right on the xanadu-oidong border - the same cliff the cataract is on - so that it offers a real advantage
+  to anyone using its elevator", after moves to the east end and to the north-west wall the same day). The scarp falls
+  about 3,100 m to the Xanadu floor over some 20 km (5.1 px 1001 to 991), steepest (1,300 m in 4 km) at px 994-996. It
+  is a site and a road's end only: the arcology is the Strongbow session's. The cut was widened west for it (box from
+  px 976, origin px 1306,1634), so every world coordinate moved 10 km from the earlier frame.

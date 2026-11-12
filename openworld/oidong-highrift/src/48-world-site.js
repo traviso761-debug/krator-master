@@ -28,11 +28,17 @@ if(typeof KTAGS!=='undefined')KTAGS.VOCAB.cultureAlias['xanadu-camp']={culture:'
 // crosses a named river, so the links are laid on the ground and the rivers run on under them
 var SITE_SPEC={region:'oidong-highrift',world:1311634,bridges:{culture:'order'},
  sites:{
-  /* Strongbow, the Ancients' cliff arcology in the north-west wall at the valley's west end, toward Qiblai (moved 2026-11-11;
-     no page yet, its countryside not planned): the Sultanate's road down the valley ends at its foot */
+  /* Strongbow, the Ancients' cliff arcology hung in the scarp between the Oidong Valley and Xanadu, 3 km north of the
+     cataract by which the valley's river leaves (moved 2026-11-11: "right on the xanadu-oidong border - the same cliff the
+     cataract is on - so that it offers a real advantage to anyone using its elevator"). Its point is the top, on the lip at
+     about 1,400 m; its foot is on the Xanadu floor about 3,100 m below. No page yet, its countryside not planned: the
+     Sultanate's road down the valley ends at its top */
   sfgtxw10kr:{culture:'xanadu'},
   sq80bzd7ep:{culture:'xanadu',road:{r:400,hw:2,join:true},hamlets:[
-   {id:'east',name:'Shar, the east village',focus:'farming',near:[760,60],look:1200,pop:220},
+   {id:'east',name:'Shar, the east village',focus:'farming',near:[780,100],look:1200,pop:220},
+   /* Shar is searched from 45 m south-east of where Longsong's page lays it (760,60): on the frame of 2026-11-11 (cut wider
+      for Strongbow on the scarp) the spot the page's point found had no road to the town; this one lands 92 m from it, inside
+      the page's 150 m check */
    {id:'west',name:'Nub, the west village',focus:'farming',near:[-880,60],look:1200,pop:220},
    {id:'herders',name:"Dzo-ling, the herders' village",focus:'ranch',near:[480,650],look:1200,pop:145},
    {id:'lho',name:'Lho, the south village',focus:'farming',bearing:180,km:4,pop:240},
@@ -64,12 +70,12 @@ var SITE_SPEC={region:'oidong-highrift',world:1311634,bridges:{culture:'order'},
     crosses the range south of the valley, which took it over 6,000 m), past Oidong's lake on its north shore */
  links:[['sq80bzd7ep','scaldronhouse01',{hw:2.5,r:800,keep:true,stops:ORDER_STOPS,guide:[[1226,1626],[1240,1628],[1255,1632],[1265,1636],
    [1275,1640],[1282,1643],[1288,1645],[1294,1647],[1306,1651],[1312,1653],[1318,1657],[1325,1662],[1332,1666],[1340,1667],[1347,1665],[1360,1664],[1366,1668]]}],
-  /* the Sultanate's road down the valley from Longsong to Strongbow at its west end, toward Qiblai: the only way along the
+  /* the Sultanate's road down the valley from Longsong to Strongbow's top on the lip above Xanadu: the only way along the
      valley (the owner, 2026-11-11: "there is no rift line in oidong valley, just a road"), on the valley floor (`guide`:
      a least-climb line on the region's heights, under 2,700 m) */
   ['sq80bzd7ep','sfgtxw10kr',{hw:3,r:800,keep:true,stops:XANADU_STOPS,culture:'xanadu',guide:[[1226,1626],[1219,1626],[1213,1624],[1207,1623],
    [1201,1620],[1195,1618],[1189,1618],[1183,1615],[1177,1613],[1171,1613],[1165,1607],[1159,1605],[1153,1602],[1147,1603],[1135,1603],
    [1123,1603],[1111,1602],[1099,1602],[1093,1599],[1087,1598],[1081,1597],[1075,1595],[1063,1595],[1051,1595],[1045,1594],[1039,1592],
-   [1033,1592],[1027,1590],[1021,1590],[1015,1590],[1013,1585]]}],
+   [1033,1592],[1027,1590],[1021,1590],[1016,1593],[1010,1596],[1004,1596],[1001,1596]]}],
   ['scaldronhouse01','smirrorgrange01',{hw:2.5,r:800,keep:true,stops:ORDER_STOPS}],
   ['smirrorgrange01','ssinggjar01',{hw:2.5,r:800,keep:true,stops:ORDER_STOPS}]]};

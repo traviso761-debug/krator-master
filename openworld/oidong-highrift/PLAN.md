@@ -54,7 +54,7 @@ Not taken, each with its reason:
 - Three of the sites are not on the scale model's list yet. `cut_site.py` takes a SITES.json row with `"model": false`
   and its own pixel. They go on `tools/scale-model/model/src/60-settlements.js` once the open-world sites session's
   Qiblai move has landed (that file is being edited there).
-- Inside the cut but not planned here: Strongbow (an arcology on the model's list, px 1026,1594, in the Oidong Valley).
+- Inside the cut but not planned here: Strongbow (an arcology on the model's list; moved 2026-11-11 to px 1001,1596, the scarp between the Oidong Valley and Xanadu beside the cataract: KNOWN_ISSUES.md).
 
 ## 2. Longsong and its ring
 

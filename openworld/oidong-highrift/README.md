@@ -17,7 +17,7 @@ PROPOSAL-LONGSONG-PINNACLE.md` holds the economy it is planned for.
 
   | Site | Px | What is planned | People |
   |---|---|---|---|
-  | **Strongbow** (`sfgtxw10kr`) | 1013,1585 | the Ancients' cliff arcology in the north-west wall at the valley's west end, toward Qiblai (moved 2026-11-11); a road's end only so far | - |
+  | **Strongbow** (`sfgtxw10kr`) | 1001,1596 | the Ancients' cliff arcology in the scarp between the valley and Xanadu, 3 km north of the cataract: its top on the lip (about 1,400 m), its elevator down about 3,100 m to the Xanadu floor (moved 2026-11-11); a road's end only so far | - |
   | **Longsong** (`sq80bzd7ep`) | 1226,1626 | the ring of 15 villages: Shar, Nub and Dzo-ling where its page lays them, ten more farming villages 4 to 8.5 km out, Drok-ri's high pastures, Dar-ling's silk and paper | 3,279 (the house itself is `settlements/longsong`'s, 1,344) |
   | **The Singing Gjár** (`ssinggjar01`) | 1572,1643 | the Order's house (350), the Beck Fields (89), the Vein Camp (50: 22 miners, 12 sorters, 6 smiths; a work camp, 90 % at work) | 489 |
   | **The Mirror Grange** (`smirrorgrange01`) | 1430,1644 | the Order's grange (80), its growers (200), the graben's herders (145) | 425 |
@@ -26,13 +26,13 @@ PROPOSAL-LONGSONG-PINNACLE.md` holds the economy it is planned for.
 - **The roads:**
   - **Village roads:** each village's lane end has a road to its site, the grade held to 8 %; they join the roads
     already laid, so they share a trunk. A house that is its site's heart lays none (`road: false`).
-  - **The Order's road:** Longsong to the Caldron House (312 km, up the valley and the beck's staircase: `guide`), the
+  - **The Order's road:** Longsong to the Caldron House (306 km, up the valley and the beck's staircase: `guide`), the
     Mirror Grange (137 km) and the Singing Gjár (284 km), with an Order rest house or a teahouse every 12.5 km.
-  - **The Sultanate's road:** Longsong down the valley to Strongbow at its west end (452 km on the valley floor, under
-    2,706 m: `guide`), with a han every 25 km. It is the only way along the valley: the Rift line does not run in it
+  - **The Sultanate's road:** Longsong down the valley to Strongbow's top on the lip above Xanadu (473 km on the valley
+    floor, under 2,700 m: `guide`), with a han every 25 km. It is the only way along the valley: the Rift line does not run in it
     (the owner, 2026-11-11).
   - **Bridges** (core/world 42b, 88b; `SITE_SPEC.bridges`): every link is laid on the ground and bridged where it
-    crosses a named river. That is 11 bridges and 106 piers, so the rivers run on under them.
+    crosses a named river. That is 14 bridges and 127 piers, so the rivers run on under them.
 - **The flora:**
   - the Oidong kit on the valley (its own `OIDONG.PASSES`);
   - the High Rift kit's floor on the rift (`src/49-world-highrift.js`): tussock, steam heath, opal cane, bead caps and
