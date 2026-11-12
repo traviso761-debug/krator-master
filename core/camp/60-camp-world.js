@@ -26,7 +26,7 @@
         loaded, books}
    RULES {diet: {good: kg a person a day} (the people's food, taken in that order, any food standing in for another by
          its `food` value), food: {good: grain-equivalent of a kg}, hunt: {meat, hides} (a hunter-day's take when the
-         game is there), selfHunt (the share of its own meat a meat-eating mount takes itself, hunting beside its rider), gather: {fruit} (a gatherer-day's), minDays (a site is struck when it holds fewer days of the
+         game is there), spoil: {good: share a day} (what spoils in the packs, booked lost), selfHunt (the share of its own meat a meat-eating mount takes itself, hunting beside its rider), gather: {fruit} (a gatherer-day's), minDays (a site is struck when it holds fewer days of the
          band's take than this), cross (pace factor across country, off the links), detour (the straight line's
          stretch), siteKm (a move inside the range: km), keep: {good: days} (what a band keeps of its own use when it
          lands its stock at home; the rest is the town's to trade for)}
@@ -157,14 +157,15 @@ KCAMP.tick = function (W, d) {
     if (b.state === 'march' && d >= b.leg.d1) {
       var to = b.leg.to, why = b.leg.why, V = b.venture && W.ventures[b.venture.kind];
       if (to === b.home.settlement) { b.state = 'home'; b.at = to; b.leg = null; b.venture = null; KCAMP.op(W, d, b.id, 'arrive', { at: to, why: why }); }
-      else if (W.sites[to]) { kcPitch(W, b, to, d); if (why === 'return') b.venture = null; }
+      else if (W.sites[to]) { kcPitch(W, b, to, d);   /* back from a venture: another, if the dry season has a month (rules.again) left */
+        if (why === 'return') { b.venture = null; b.trips = (b.trips || 0) + 1; if (!home && KCAMP.daysToHome(W, d) > (W.rules.again == null ? 1e9 : W.rules.again)) KCAMP.plan(W, b, d); } }
       else { b.state = 'venture'; b.at = to; b.leg = null; KCAMP.op(W, d, b.id, 'arrive', { at: to, why: why }); if (V && V.arrive) V.arrive(W, b, d, to); }
     }
     /* the home season: a loaded band lives in the sim; at its end it folds out and leaves */
     if (b.state === 'home') {
       if (home && !b.loaded) KCAMP.load(W, b, d);
       if (b.loaded && home) return;
-      if (b.loaded && !home) { KCAMP.unload(W, b, d); KCAMP.plan(W, b, d); }
+      if (b.loaded && !home) { KCAMP.unload(W, b, d); b.trips = 0; KCAMP.plan(W, b, d); }
       else if (!b.loaded && !home && KCAMP.daysToHome(W, d) > 2) KCAMP.plan(W, b, d);
     }
     /* homeward, to be there when the home season opens */
@@ -176,6 +177,7 @@ KCAMP.tick = function (W, d) {
     var S = b.state === 'camped' ? W.sites[b.at] : null;
     KCAMP.forage(W, b, d, S ? 1 : (W.rules.marchHunt == null ? 0.4 : W.rules.marchHunt), S);
     KCAMP.eat(W, b, d);
+    if (W.rules.spoil) Object.keys(W.rules.spoil).sort().forEach(function (g) { var n = (b.stock[g] || 0) * W.rules.spoil[g]; if (n > 0) KCAMP.bookOut(b, 'lost', { [g]: n }); });   /* what spoils in the packs (rules.spoil: a share a day) */
     var Vd = b.venture && W.ventures[b.venture.kind]; if (Vd && Vd.day) Vd.day(W, b, d);
     /* the move rule: the site is spent */
     if (b.state === 'camped' && S && !home) {

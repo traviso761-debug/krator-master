@@ -8,7 +8,8 @@
              of a meat-eater's meat the wild hunt and the kept herd are meant to give: the owner's "both"),
              rows: {kind: {mass (kg), diet, pack (kg a beast carries besides its rider), pace (km a day on a road),
                     offtake? (kg of meat a head gives a day, a kept herd's), mount? (true: ridden)}},
-             herd: {kind, perMeat (head a band keeps for each kg a day of meat it means its herd to give)}}
+             herd: {kind} (the kept herd's row), pack?: {kind, perTent} (the pack train a band keeps: core/camp/PLAN.md section 3's
+             'one pack beast a tent'; a band of that kind carries its own)}
      KCAMP.appetite(T, kind)          -> {good: kg a day} one beast of that kind: T.appetite[diet] x mass^0.75 x T.lowG
      KCAMP.beastNeeds(T, beasts)      -> {good: kg a day} beasts {kind: n}; the grazers' fodder is under its own good
      KCAMP.packCap(T, beasts)         -> kg a train of these beasts carries (each row's `pack` x n)
@@ -48,6 +49,7 @@ KCAMP.bandBeasts = function (T, tribe, census, row) {
   var out = {}, kind = row || tribe;
   if (!T.rows[kind]) return out;
   out[kind] = census.mounts;
+  var Pk = T.pack; if (Pk && Pk.perTent && T.rows[Pk.kind] && kind !== Pk.kind && census.tents) out[Pk.kind] = Math.ceil(census.tents * Pk.perTent);   /* the pack train: a beast a tent */
   var H = T.herd, A = KCAMP.appetite(T, kind), meat = A[(T.eats || {}).meat || 'meat'] || 0;
   if (H && meat > 0 && T.rows[H.kind] && T.rows[H.kind].offtake > 0) {
     var want = meat * census.mounts * ((T.meatFrom || {}).herd == null ? 0 : T.meatFrom.herd);

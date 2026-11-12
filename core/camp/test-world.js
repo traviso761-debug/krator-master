@@ -21,7 +21,8 @@ console.log(YEARS + ' years of ' + W.order.length + ' bands in ' + (Date.now() -
     bad1.length + ' home days missed, ' + out.length + ' dry days at home; read against a season ten days earlier, ' + late.length + ' missed'); }
 // 2. in its range: camped only at its own sites; a venture only to a market or a target the culture assigns
 { const stray = [], ventures = new Set();
-  W.order.forEach(id => { const b = W.bands[id]; X.trace[id].forEach(t => { if (t.state === 'camped' && b.range.indexOf(t.at) < 0) stray.push(id + '@' + t.at); if (t.state === 'venture') ventures.add(t.at); }); });
+  W.order.forEach(id => { const b = W.bands[id]; X.trace[id].forEach(t => { if (t.state === 'camped' && b.range.indexOf(t.at) < 0) stray.push(id + '@' + t.at); }); });
+  W.ops.forEach(o => { if (o.what === 'arrive' && (o.args.why === 'raid' || o.args.why === 'caravan')) ventures.add(o.args.at); });
   const allowed = ['mav', 'shade', 'goto', 'nusidi'], N = W.order.map(id => W.bands[id]).some(b => b.range.indexOf(W.order.map(i => W.bands[i]).find(c => c !== b).range[0]) >= 0);
   ok('every band camps only in its own range, and ventures only to the markets and targets', !stray.length && [...ventures].every(v => allowed.indexOf(v) >= 0) && ventures.size >= 3, !N,
     stray.length + ' strays; ventured to ' + [...ventures].join(', ')); }
