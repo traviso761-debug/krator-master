@@ -826,8 +826,23 @@ seats, or three seats and two outliers.
 - **The south is short:** from B1 down to Drum (-950) no site passes the tests. A sixth Baelu in the south would need a softer
   outcrop rule.
 
+**The owner's decisions (2026-11-12):** "pin as forts"; "let's add a fort type to the settlements in the scale model"; "can we make
+a terrain edit to put a plausible site between b3 and b4 and put one nw of drum?".
+- **A `fort` settlement type** goes on the scale model (`model/src/60-settlements.js` `SETT_TYPES`: a glyph and a key entry), as the
+  town type does.
+- **B1-B5 are fort pins**, polity Scyvoi, "Baelu (to be named)".
+- **Two more by a terrain edit.** No ground between B3 and B4, or north-west of Drum, passes the outcrop test, so the edit raises
+  an outcrop at each:
+  - **B6, 684,749** (between B3 and B4): ~-773 m, BSh, wadis within 10 km, 254 km²-eq pasture. It is 50 km from B4, 106 from B3
+    and 78 from Trigon. The true midpoint (~693,767) has no water within 10 km, so this is the nearest watered ground.
+  - **B7, 652,907** (north-west of Drum): ~-400 m, Csa, wadis, 236 km²-eq pasture. It is 65 km from Drum and 55 km from Tzunfort.
+  - **The stamp:** a smooth inselberg dome on the ground at each, peak +180 m, radius ~5 km, cosine profile, never lowering a
+    cell. That puts each 60 m or more over its ~6 km median, as B1-B5 are. The climate re-lapses on the raised cells. Optional: the
+    domes marked granite in the geology bake, as the lore's kopjes are (`LORE.md:581`).
+  - B6 and B7 then become fort pins too.
+- All of it was sent to the scale-model queue on the owner's word.
+
 **What it reaches:**
-- **A pin or a seat?** Either a pin each (an `outpost`, or a new `fort` type) through the queue, or a `core/camp` seat site that is
-  not a pin: the owner's call.
+- **The queue:** the fort type, seven fort pins, and the outcrop edit (above).
 - **The Baelu building:** `kits/scyvoi` (`54-bl-baelu.js`); its interiors and its quarry are open items (`kits/scyvoi/KNOWN_ISSUES.md:26, 98`).
 - **The trade model:** a Baelu is seasonal, so its people are the bands', counted once (a camp, not a town).
