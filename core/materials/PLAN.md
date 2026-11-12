@@ -2182,8 +2182,8 @@ their branches, which wire the slot and delete their entry at merge. `(tint)` ma
 | `claude/zealous-allen-0cd44d` | Opal Valley | `ground.sinter.opaline`, `rock.opal.matrix`, `card.leaf.photonic` |
 
 - **Not installed.** `rock.megabreccia` and `ground.coral.rubble` were generated again, but both have been in the library since 2026-10-26 and
-  2026-11-03 (section 38's entry was stale, so it is gone); replacing the megabreccia, which the Godthrone and the W outer wall use, is the
-  owner's call (the new image: Codex thread `01a1d135-08d2`). `patterns/tungang/enamel-signs` came out with steam locomotives from the old
+  2026-11-03 (section 38's entry was stale, so it is gone); the owner keeps the old megabreccia
+  (2026-11-12), which now answers section 32 for nhighlands' crater wall too (the new image: Codex thread `01a1d135-08d2`). `patterns/tungang/enamel-signs` came out with steam locomotives from the old
   prompt and is left out: the Tungang prompts were rewritten futuristic that day (`claude/tungang-fellgang-kits-a56ece`, b209ab0bd).
 - **One id, two prompts.** The Rift line's section (`claude/awesome-varahamihira-66a852`) and the Tungang kit's (`claude/kind-cori-9c4452`)
   each ask for `concrete.lining.segment` with a different prompt. The Line's (rings of curved segments) keeps the id; the Tungang's (one
@@ -2191,7 +2191,7 @@ their branches, which wire the slot and delete their entry at merge. `(tint)` ma
 - **Takes.** Two takes each of `card.leaf.photonic` and `organic.tube.waxy` came; the later is installed. Where a thread made two or three
   images of one prompt, the last is installed. `mineral.curtain` does not tile vertically (its pale-green top edge is in the prompt): use it
   on a curtain's height, not stacked.
-- **Still owed after this batch:** 8 prompts on main (`rock.megabreccia` if the new one is not taken, `rock.hematite.mirror`, the Ancient
+- **Still owed after this batch:** 7 prompts on main (`rock.hematite.mirror`, the Ancient
   Transit's three, `ground.snow.ash`, `organic.reef.galvanic`, `rock.hyaloclastite`), plus the branches' prompts that did not come
   (the Tungang murals and banners, `ground.flark.mud` among them).
 

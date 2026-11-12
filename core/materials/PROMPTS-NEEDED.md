@@ -3,14 +3,14 @@
 Every texture or pattern sheet the owner still has to source or generate, each with its finished prompt. Paste a block
 as it is, one image per block. **Everything delivered lives in `PROMPTS-archived.md`** (checked against `core/materials/library/`, `patterns/` and each build's `materials.json` on `origin/main`, 2026-10-19); this file holds only what is still owed.
 
-**Count: 8 prompts** (2026-11-12: -26 delivered through Codex, and section 38's stale `ground.coral.rubble` entry dropped: `PLAN.md`, "Delivered 2026-11-12"; three fenced blocks, the Ancient Transit's three table rows and one row each in sections 51 and 52; before that, 34: +6 for the Arch, section 52, and +3 for the Rift battery, section 51, at Integration 3, 2026-11-11; +3 for the Tiers, section 50; 19 fenced blocks, counted by their fences, and the Ancient Transit's three table rows at the second integration merge, 2026-11-11: sections 43-49 added since, the Ancient Transit, Firebliss, the NE outer wall and the Great Chasm among them; before that, 2026-11-10, after -22 delivered from sections 37, 40, 41 and 42: `PLAN.md`, "Delivered 2026-11-10"; the hand count before was 36, and two blocks had lost their closing fence; 2026-11-09: +11 for Erewhon's citadel, section 41; +2 for the Tents kit's army and Eternian cloths, section 42; +3 for the southern highlands' upper stations, section 37; +15 for the hyperjungle's lands and the savannah rims, section 40, 2026-11-08; counted 2026-11-04 before them).
+**Count: 7 prompts** (2026-11-12: -26 delivered through Codex; section 38's stale `ground.coral.rubble` entry dropped, and section 32's `rock.megabreccia` closed: the owner keeps the 2026-10-26 set: `PLAN.md`, "Delivered 2026-11-12"; two fenced blocks, the Ancient Transit's three table rows and one row each in sections 51 and 52; before that, 34: +6 for the Arch, section 52, and +3 for the Rift battery, section 51, at Integration 3, 2026-11-11; +3 for the Tiers, section 50; 19 fenced blocks, counted by their fences, and the Ancient Transit's three table rows at the second integration merge, 2026-11-11: sections 43-49 added since, the Ancient Transit, Firebliss, the NE outer wall and the Great Chasm among them; before that, 2026-11-10, after -22 delivered from sections 37, 40, 41 and 42: `PLAN.md`, "Delivered 2026-11-10"; the hand count before was 36, and two blocks had lost their closing fence; 2026-11-09: +11 for Erewhon's citadel, section 41; +2 for the Tents kit's army and Eternian cloths, section 42; +3 for the southern highlands' upper stations, section 37; +15 for the hyperjungle's lands and the savannah rims, section 40, 2026-11-08; counted 2026-11-04 before them).
 
 **Delivered 2026-11-12** (generated through Codex; `PLAN.md` "Delivered 2026-11-12"): every prompt in sections 37, 40, 41, 43, 44, 45, 48,
 49 and 50, two of section 51's and five of section 52's, moved to `PROMPTS-archived.md` with their wiring notes; in the library, none wired yet.
 The same batch delivered 37 sets whose prompts live only on unmerged branches (the Rift line, the Tungang kit, the Kimr, the Labyrinth's flora,
 Opal Valley, the Cliff Lungs, the Loom Chasms, the Firebliss domes, the Outlands, the Siphon Pits, the Qiblai kit): delete those entries and wire
-the slots at each branch's merge. `rock.megabreccia` was generated again but not installed: a set by that id has been in the library since
-2026-10-26 (Godthrone, the W outer wall), so replacing it is the owner's call.
+the slots at each branch's merge. `rock.megabreccia` was generated again and not installed: the owner keeps the set in the library since 2026-10-26
+(Godthrone, the W outer wall), which now answers section 32 too (moved to the archive).
 
 **Delivered 2026-11-10:** 22 of sections 37, 40, 41 and 42 (Erewhon's citadel but the jali, the Tents kit's two cloths and the cedar, the
 fellfield's two, seven of the hyperjungle's and the savannah rims'), `PLAN.md` "Delivered 2026-11-10": the citadel's, the tents' and the two grasses
@@ -26,7 +26,7 @@ of Crystals), `rock.megabreccia.polished` (section 33, the Cut's face), `ground.
 `card.umbrella.plate` (section 24, the abyssal savannah): installed and wired, their entries deleted here. Also `metal.scorched`, whose
 entry lives only on the Ancient's Valley branches (`claude/ancient-vehicles-935f93`, `claude/ancientsvalley-7f521c`, their section 36):
 in the library, not wired (the Motor Vehicles kit's `scorched` slot is on those branches); **delete that entry and wire the slot at
-their merge**. Still owed: `rock.megabreccia` (section 32, nhighlands' crater wall: the polished slab is not it).
+their merge**. `rock.megabreccia` (section 32, nhighlands' crater wall) was closed 2026-11-12: the owner keeps the 2026-10-26 set.
 
 Open prompt files elsewhere in this folder (`PROMPTS-ready.md`, `PROMPTS-nomads.md`, `PROMPTS-iziz-beast-riders.md`) are older history; their open rows were copied here.
 
@@ -275,16 +275,6 @@ the braid cap's strangling vines `bark.twisted.red` (twisted fibrous strands, as
 
 `biomes/guilin/KNOWN_ISSUES.md`: the osmanthus shares `card.broadleaf` tinted, and `card.osmanthus` is owed (its flowers
 are the point; `card.croptree.glossy` has the leaves but no flowers).
-
-## 32. The northern highlands' bog country and the crater wall (`biomes/nhighlands`, station 5 and station 1's crags, 2026-11-03)
-
-Pair 7's turn (`biomes/nhighlands/PLAN-STATIONS.md`, "Core adoption (pair 7)"). The 2026-11-03 delivery brought the bog's three (`ground.peat.hag`, `card.dwarfbirch`, `card.sedge.fen`: `core/materials/PLAN.md`, "Delivered 2026-11-03"); the crater wall's
-rock is still owed. Until it comes the megabreccia is KSTRATA's and KGROUND's procedural blocks (`clast`, no grain map).
-
-`rock.megabreccia` (the crater wall's rock: a grain map for KGROUND's `clast` blocks and KSTRATA's megabreccia on station 1's crag steps and pillars):
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a polished-looking but natural weathered rock face of impact megabreccia, angular clasts of many different rocks from fist size to a metre packed together at every angle in a fine grey crushed matrix: black basalt, rusty red basalt, banded pale grey gneiss, cream tuff, brick-red sandstone and pale grey limestone, a few clasts themselves made of smaller clasts, thin black glassy veins (pseudotachylite) cutting across several clasts, scattered tiny bottle-green and black glass flecks in the matrix, light grey-green lichen patches on a few clasts; every rock type clearly different in colour.
-```
 
 ## 39. High Rift (`biomes/highrift`, 2026-11-03)
 
