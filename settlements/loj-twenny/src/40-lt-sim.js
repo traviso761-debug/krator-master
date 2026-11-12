@@ -133,4 +133,4 @@ LTS.atWork=function(){const out={};for(const a of SIM.all('actor')){if(a.driven|
 LTS.countWall=function(){const o={};for(const g of ['fungus','grain','wax','ore','plate','ice'])o[g]=Math.round(SIM.stockOf(g,LTS.S));
  o.hands=SIM.all('actor').filter(a=>a.present&&a.place==='lt.loj-hall'&&a.activity==='MEET').length;o.people=LTS.people();return o;};
 /* the world run a minute at a time (the clock's day, hour and motion time) */
-LTS.run=function(clock,minutes,each){let M=SIM.minute();for(let m=0;m<minutes;m++){M++;clock.day=Math.floor(M/1440);clock.hour=(M%1440+.5)/60;clock.t+=(clock.dayLength||4320)/1440;SIM.step();if(each)each(M);}};
+LTS.run=function(clock,minutes,each){let M=SIM.minute();for(let m=0;m<minutes;m++){M++;clock.day=Math.floor(M/1440);clock.hour=(M%1440+.5)/60;clock.t+=(clock.dayLength==null?4320:clock.dayLength)/1440;SIM.step();if(each)each(M);}};

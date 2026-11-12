@@ -60,7 +60,10 @@ LT.spec=function(o){o=o||{};const P=LT.HALL,y=P.platformY,B=k=>({w:{'tg-loj-hall
   fill:[{way:'lt.n1',defs:LT.HOMES,salt:1},{way:'lt.n3',defs:LT.HOMES,salt:3,to:44},{way:'lt.s3',defs:LT.HOMES,salt:5},
    {way:'lt.s2',defs:[LT.HOMES[1]],salt:7,to:26},{way:'lt.s1',defs:[LT.HOMES[1]],sides:[-1],salt:9,from:34}],
   /* wealth from the loj hall's end; the hold has moved east with its heat over the centuries: its west and old ends worn */
-  hub:'lt.pn:b',reach:260,heart:'lt.pn:b',worn:160,abandoned:212,edits:o.edits};};
+  hub:'lt.pn:b',reach:260,heart:'lt.pn:b',worn:160,abandoned:212,
+  /* the works, the gate and the box are kept whatever their distance: the hold's work and its doors never go to ruin (edits by id) */
+  edits:LT.KEEP.map(id=>({id,op:'set',fields:{state:'kept'}})).concat(o.edits||[])};};
+LT.KEEP=['lt.doors','lt.signal-box','lt.beds-a','lt.beds-b','lt.beds-c','lt.cistern','lt.fan-house','lt.bath'];
 LT.plan=function(o){if(LT.H&&!o)return LT.H;const H=KCITY.cavern.lineHold(LT.spec(o));
  /* the berth numbers: each home a number by its siding and slot (the Line's count: the hold is 20, its berths 2xx) */
  let n=200;for(const s of H.sites)if(s.key==='tg-set'||s.key==='tg-cut'){s.num=n;n+=s.key==='tg-set'?2:1;}

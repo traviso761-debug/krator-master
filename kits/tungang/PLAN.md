@@ -4,6 +4,11 @@ The culture kit of the Rift's tunnel people, **the Tungangs**, their kin on the 
 and a third people this plan proposes, **the Glaziers**, the eastern loj of Opal Valley. **One kit, three sets** on one
 foundation, as `kits/highlands` carries the Republican, Rustic and Tribal sets (the owner, 2026-11-10).
 
+**Built since (2026-11-11, branch `claude/loj-twenny-059a5e`):** the cavern setting of section 5.6 (`core/city/cavern/`:
+`KCITY.cavern`, its line-hold strategy, its node test; Dhelv's port written up in its `PLAN.md`); the Tungang set's carved defs
+for Loj Twenny (section 3.2: `src/44`-`56`, the sheet's test hold in three states); **Loj Twenny** (`settlements/loj-twenny`: the
+hold on the setting and on the simulation layer, at the end of the 25 km branch per the owner's Line answer 3).
+
 **Status: a proposal.** No code is written. Every fact not already in `LORE.md` or a biome plan is marked *proposed* and
 waits on the owner; `LORE.md` is not edited until the owner confirms. Section 10 holds the numbered questions.
 
