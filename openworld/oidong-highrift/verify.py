@@ -91,6 +91,12 @@ async def run(a):
             for neg, key in (('plan', 'the baked plan'), ('ground', "on the world's ground"), ('clear', 'cleared of flora')):
                 r = [x for x in await pg.evaluate('_sites.checks(%r)' % neg) if key in x['name']][0]
                 if say(r, neg): fails.append('negative ' + neg)
+            print('--- the bridges (core/world 42b, 88b: the links laid across the rivers) ---')
+            for r in await pg.evaluate('_bridges.checks()'):
+                if say(r): fails.append(r['name'])
+            for neg, key in (('plan', 'every span a bridge'), ('water', 'the rivers run on')):
+                r = [x for x in await pg.evaluate('_bridges.checks(%r)' % neg) if key in x['name']][0]
+                if say(r, neg): fails.append('negative ' + neg)
         if a.assert_:
             await VW.resources(pg, V, a.out, fails)
         for v in [int(t) for t in a.views.split(',') if t.strip()]:

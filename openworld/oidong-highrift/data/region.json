@@ -42,7 +42,7 @@
    ]
   ],
   "area_km2": 900,
-  "union_km2": 154072,
+  "union_km2": 154732,
   "added": [
    {
     "name": "site The Singing Gjar (ssinggjar01)",
@@ -109,6 +109,28 @@
      ]
     ],
     "area_km2": 256
+   },
+   {
+    "name": "site Strongbow (sfgtxw10kr)",
+    "points_px": [
+     [
+      1011.0,
+      1579.0
+     ],
+     [
+      1041.0,
+      1579.0
+     ],
+     [
+      1041.0,
+      1609.0
+     ],
+     [
+      1011.0,
+      1609.0
+     ]
+    ],
+    "area_km2": 3600
    },
    {
     "name": "region Oidong Valley (rmuklrcae6jb5)",
@@ -588,7 +610,7 @@
    "drawn_px": 2529,
    "notes": "",
    "px": 2645,
-   "px_in_region": 0,
+   "px_in_region": 78,
    "dist_band": 1
   },
   {
@@ -616,7 +638,7 @@
    "drawn_px": 17257,
    "notes": "",
    "px": 34489,
-   "px_in_region": 17257,
+   "px_in_region": 17344,
    "dist_band": 3
   },
   {
@@ -13029,6 +13051,18 @@
    "z": 68000.0,
    "reach_km": 8,
    "page": null
+  },
+  {
+   "id": "sfgtxw10kr",
+   "name": "Strongbow",
+   "type": "arcology",
+   "culture": "xanadu",
+   "px": 1026,
+   "py": 1594,
+   "x": -570000.0,
+   "z": -80000.0,
+   "reach_km": 30,
+   "page": null
   }
  ],
  "cut": {
@@ -13056,6 +13090,11 @@
     "name": "site The Caldron House (scaldronhouse01)",
     "kind": "site",
     "ref": "scaldronhouse01"
+   },
+   {
+    "name": "site Strongbow (sfgtxw10kr)",
+    "kind": "site",
+    "ref": "sfgtxw10kr"
    },
    {
     "name": "region Oidong Valley (rmuklrcae6jb5)",

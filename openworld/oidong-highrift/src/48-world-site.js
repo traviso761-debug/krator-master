@@ -12,8 +12,14 @@
 // a day's walk. Each house of the Order is a village on core/hamlet's `order` row (its `monastery` focus), its work camps
 // and lay villages on the `xanadu` row.
 var ORDER_STOPS={every:25000,inn:'xa_rich_b',rest:'xa_teahouse',culture:'order',look:5000};
-var SITE_SPEC={region:'oidong-highrift',world:1311634,
+// the Sultanate's road (the Ancient network's Xanadu class, openworld/ANCIENT-NETWORK.md 8.14): a han every 25 km
+var XANADU_STOPS={every:25000,inn:'xa_house_turk_a',rest:'xa_teahouse',culture:'xanadu',look:5000};
+// bridges (core/world/42b-world-bridges.js, the owner 2026-11-11): every road and link this region lays is bridged where it
+// crosses a named river, so the links are laid on the ground and the rivers run on under them
+var SITE_SPEC={region:'oidong-highrift',world:1311634,bridges:{culture:'order'},
  sites:{
+  /* Strongbow (an arcology of the Sultanate; no page, its countryside not planned yet): the far end of the Xanadu road */
+  sfgtxw10kr:{culture:'xanadu'},
   sq80bzd7ep:{culture:'xanadu',road:{r:400,hw:2,join:true},hamlets:[
    {id:'east',name:'Shar, the east village',focus:'farming',near:[760,60],look:1200,pop:220},
    {id:'west',name:'Nub, the west village',focus:'farming',near:[-880,60],look:1200,pop:220},
@@ -41,6 +47,11 @@ var SITE_SPEC={region:'oidong-highrift',world:1311634,
   scaldronhouse01:{culture:'order',road:{r:150,hw:1.6,join:true},hamlets:[
    {id:'house',name:'The Caldron House',focus:'monastery',near:[0,0],look:3000,pop:60,link:[-3000,0],road:false},
    {id:'shelf',name:'The Caldron shelf village',culture:'xanadu',focus:'farming',bearing:120,km:2.5,look:3000,pop:150}]}},
- links:[['sq80bzd7ep','scaldronhouse01',{hw:2.5,r:800,keep:true,stops:ORDER_STOPS}],
+ /* the Order's road up the Oidong Valley and the beck's staircase (`guide`, 5.1 px: the straight line crosses the range
+    south of the valley, which took it over 6,000 m), past Oidong's lake on its north shore */
+ links:[['sq80bzd7ep','scaldronhouse01',{hw:2.5,r:800,keep:true,stops:ORDER_STOPS,guide:[[1226,1626],[1240,1628],[1255,1632],[1265,1636],
+   [1275,1640],[1282,1643],[1288,1645],[1294,1647],[1306,1651],[1312,1653],[1318,1657],[1325,1662],[1332,1666],[1340,1667],[1347,1665],[1360,1664],[1366,1668]]}],
   ['scaldronhouse01','smirrorgrange01',{hw:2.5,r:800,keep:true,stops:ORDER_STOPS}],
-  ['smirrorgrange01','ssinggjar01',{hw:2.5,r:800,keep:true,stops:ORDER_STOPS}]]};
+  ['smirrorgrange01','ssinggjar01',{hw:2.5,r:800,keep:true,stops:ORDER_STOPS}],
+  /* the Xanadu road, Strongbow to Longsong, on the Ancient network's line (xanadu.3.5: 427 km on the map) */
+  ['sfgtxw10kr','sq80bzd7ep',{hw:3,r:1500,keep:true,net:'xanadu.3.5',culture:'xanadu',stops:XANADU_STOPS}]]};

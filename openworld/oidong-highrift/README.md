@@ -25,10 +25,13 @@ PROPOSAL-LONGSONG-PINNACLE.md` holds the economy it is planned for.
 - **The roads:**
   - **Village roads:** each village's lane end has a road to its site, the grade held to 8 %; they join the roads
     already laid, so they share a trunk. A house that is its site's heart lays none (`road: false`).
-  - **The Order's road:** Longsong to the Caldron House (356 km), to the Mirror Grange (137 km), to the Singing Gjár
-    (284 km). It is kept inside the cut and off the rivers' beds (`keep: true`), with an Order rest house or a teahouse
-    every 12.5 km (59 stops). It is planned as records, not laid on the ground: the region's other links wait on bridges
-    too (`KNOWN_ISSUES.md`).
+  - **The Order's road:** Longsong to the Caldron House (312 km, up the Oidong Valley and the beck's staircase:
+    `guide`), to the Mirror Grange (137 km), to the Singing Gjár (284 km). It is kept inside the cut, with an Order rest
+    house or a teahouse every 12.5 km.
+  - **The Xanadu road** (the Ancient network's `xanadu.3.5`, merged from its session's branch): Strongbow to Longsong,
+    423 km on the network's line (`net`), with a han every 25 km.
+  - **Bridges** (core/world 42b, 88b; `SITE_SPEC.bridges`): every link is laid on the ground and bridged where it
+    crosses a named river. That is 15 bridges, 3.7 km of deck and 139 piers, so the rivers run on under them.
 - **The flora:**
   - the Oidong kit on the valley (its own `OIDONG.PASSES`);
   - the High Rift kit's floor on the rift (`src/49-world-highrift.js`): tussock, steam heath, opal cane, bead caps and
@@ -57,7 +60,7 @@ On the GPU, set `KRATOR_GL=gpu`; a verify takes a harness lane itself. A fresh w
 | `src/43-world-ohr.js` | [G data] | the fields the kits read that the world does not make: the Oidong kit's `flat`, the High Rift floor's `hrheat`, `hracid`, `hrgrass` |
 | `src/46-world-config.js` | [G data] | the sites' markers, "Go to" (the region, each site, each village and house), the first view over Longsong's ring |
 | `src/47-world-kits.js` | [G data] | the kits that grow here: Oidong on the valley, the High Rift's floor on the rift (its four ground profiles) |
-| `src/48-world-site.js` | [G data] | the sites' spec (`SITE_SPEC`): each site's villages and houses (focus, spot, ceiling), its roads, the Order's road with its stops |
+| `src/48-world-site.js` | [G data] | the sites' spec (`SITE_SPEC`): each site's villages and houses (focus, spot, ceiling), its roads, the Order's road and the Xanadu road with their stops, the bridges asked for |
 | `src/49-world-highrift.js` | [G data] | the High Rift kit's world adapter (`HRIFT_WORLD`): no trees; its floor through `HRIFT.buildRift`, the profiles picked by the vents' distance and the world's warmth |
 
 ## Checks (`verify.py --assert`)
@@ -68,4 +71,6 @@ Each check has a negative:
 - **The sites:** the baked plan is the plan made again in the browser; every village and house whole, its buildings
   apart and on good ground, with every road at its lane end; every village cleared of flora, tagged and drawn with the
   kit's pieces.
+- **The bridges** (`_bridges.checks`): every span a bridge, every deck clear of its water, the grade held, the piers on
+  the ground; the rivers running on under the decks; each drawn and tagged.
 - **The resources and the propose tool** (`core/world/verify_world.py`).
