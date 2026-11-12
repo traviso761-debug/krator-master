@@ -45,7 +45,8 @@ own piece in its own record shape. This file is the join; the pieces keep their 
 - **Hub 01 to Yuni.** No human has reached Hub 01 since the Cataclysm and come back.
 - **Pluton** (743,1328, 9,650 m) is the key to the Ancients' own tunnels up the Godthrone. They are not public and are
   uninhabitable now.
-- **Xanadu's short line ends at Strongbow**, and the network there was never extensive.
+- **Xanadu's short line ends at Strongbow**, and the network there was never extensive. (Since 2026-11-11 that leg is abandoned:
+  section 8.16.)
 - **Trickster's House** joins the network by one route only, to Verge, through a rim tunnel. The god's road through the Gate
   is a separate thing.
 - **Span** (554,1010) has two Ancient tunnels (`settlements/span/PLAN.md`):
@@ -908,6 +909,11 @@ ends at the foot carries a note: the arcology's elevator climbs the 3,100 m to t
 The owner's other answers the same day: "qiblai shouldnt be a line stop it was built much later", "longsong shouldnt be a line
 stop either", "there is no rift line in oidong valley, just a road", "it goes to strongbow".
 - **The Rift line, Theodiga (10) to Strongbow's foot (11): 253 km**, 48 km of it in tunnel.
+  - **It is abandoned** (the owner, 2026-11-11, in the Strongbow session; `settlements/strongbow/PLAN.md` on
+    `claude/keen-swanson-68a311`, `38ebac2ba`).
+    - The way is broken near Strongbow.
+    - The terminus hall at the foot, station 11, is a ruin the town builds over.
+    - The leg's upkeep is `decayed` all along, with the note on the route (`route51.py` `SB_ABANDONED`).
   - It stays out of the Oidong Valley (the 'Oidong Valley' polygon is traced at 1,000x the cost).
   - It stops at neither Qiblai nor Longsong. A 40 km Xanadu spur joins Qiblai to it.
 - **The Xanadu roads:**

@@ -495,6 +495,13 @@ for k, label_, pt in EXT:
 for r in routes:
     r['from'] = 'the Pit' if r['from'] == 'Korona site' else r['from']; r['to'] = 'the Pit' if r['to'] == 'Korona site' else r['to']
     r['name'] = r['name'].replace('the Korona site', 'the Pit').replace('Korona site', 'the Pit')
+# THE RIFT LINE TO STRONGBOW IS ABANDONED (the owner, 2026-11-11, in the Strongbow session; settlements/strongbow/PLAN.md on
+# claude/keen-swanson-68a311): no upkeep on the Theodiga-Strongbow leg, the way broken near Strongbow, the terminus hall at the foot a ruin
+# the town builds over
+SB_ABANDONED = "abandoned (the owner, 2026-11-11): no upkeep; the way is broken near Strongbow, and the terminus hall at its foot is a ruin the town builds over"
+for r in routes:
+    if r['class'] == 'line' and (r['from'], r['to']) == ('Theodiga', 'Strongbow'):
+        r['up'] = ['decayed'] * len(r['up']); r['note'] = SB_ABANDONED + ('; ' + r['note'] if r.get('note') else '')
 # the last pass (legs51.py): and a unique id on every leg (`line` keeps the shared one)
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import legs51
