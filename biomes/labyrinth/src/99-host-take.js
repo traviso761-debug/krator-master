@@ -9,6 +9,9 @@ const lookY=(cx,cy,cz,tx,ty,tz)=>[cx,cy,cz,tx,ty,tz];
 const recOf=re=>REG.find(r=>re.test(r.name));
 const stk=k=>STACKS.find(S=>S.key===k);
 const VIEWS=(function(){const V={},Y=LEVEL;
+ if(!HALL){/* a station without the Hall: its views are data in its site (44z: SITE.views [{name, c:[x, dy, z], t:[x, dy, z]}], dy over the drawn ground or water) */
+  for(const v of SITE.views||[])V[v.name]=look(v.c[0],v.c[2],v.c[1],v.t[0],v.t[2],v.t[1]);return V;}
+
  // the Hall from the south-east bank across the pond, the stacks behind it and the walls far off
  V['The Hall of Heroes']=lookY(950,Y+240,-420,-80,Y+170,40);   /* from the east-north-east, with the sun (north-north-east at 11:00 here) on the faces it sees; the stacks to the right */
  V['The Hall from the south bank']=lookY(-760,Y+210,980,160,Y+180,-260);   /* against the light: the stacks behind it, the neck's walls far off */
@@ -57,36 +60,39 @@ const HCHK={
   return{ok:P.length>0&&!bad.length&&typeof KHAZ!=='undefined',detail:bad.length?bad.map(p=>p.what+': '+(p.want?'no ':'a ')+p.kind).join('; '):(window._hazards?window._hazards.n+' hazard records; ':'')+P.length+' probes answered'};},
  camerasOut(Cm){const bad=Cm.filter(c=>c.y<terrainH(c.x,c.z)+.5);return{ok:!bad.length,detail:bad.length?'under the ground: '+bad.map(c=>c.view).join(', '):Cm.length+' cameras above the ground'};}};
 /* the hazard probes: the Garden Stack's top, 2 m in from its rim and at its middle, and the pond's deep middle */
-const hazProbes=(function(){const S=STACKS.find(s=>s.key==='S1'),r=KSTACKS.ring(S,S.top-.5,48)||[[S.x+30,S.z]],cx=r.reduce((s,p)=>s+p[0],0)/r.length,cz=r.reduce((s,p)=>s+p[1],0)/r.length;
+/* a station's probes are data (44z: SITE.probes); {knob: i} stands for that knob's rim, 2 m in from its edge (a fall) and its top's middle (none) */
+const knobProbes=i=>{const S=KNOBS[i],r=S&&KSTACKS.ring(S,S.top-.5,48);if(!r)return[];const cx=r.reduce((s,p)=>s+p[0],0)/r.length,cz=r.reduce((s,p)=>s+p[1],0)/r.length,p=r[4],d=Math.hypot(p[0]-cx,p[1]-cz)||1,k=(d-2)/d;
+ return[{what:'a knob\'s rim',kind:'fall',want:true,x:cx+(p[0]-cx)*k,z:cz+(p[1]-cz)*k,y:S.top},{what:'a knob\'s middle',kind:'fall',want:false,x:cx,z:cz,y:S.top}];};
+const hazProbes=!HALL?[].concat(...(SITE.probes||[]).map(p=>p.knob!=null?knobProbes(p.knob):[Object.assign({},p,{y:(p.y==null?terrainH(p.x,p.z):p.y)+(p.dy||0)})])):(function(){const S=STACKS.find(s=>s.key==='S1'),r=KSTACKS.ring(S,S.top-.5,48)||[[S.x+30,S.z]],cx=r.reduce((s,p)=>s+p[0],0)/r.length,cz=r.reduce((s,p)=>s+p[1],0)/r.length;
  const p=r[4],d=Math.hypot(p[0]-cx,p[1]-cz)||1,k=(d-2)/d,y=LEVEL+S.top;
  return[{what:'the Garden Stack\'s rim',kind:'fall',want:true,x:cx+(p[0]-cx)*k,z:cz+(p[1]-cz)*k,y},{what:'the Garden Stack\'s middle',kind:'fall',want:false,x:cx,z:cz,y},
   {what:'the pond',kind:'drown',want:true,x:0,z:PONDD.b*.6,y:LEVEL-2}];})();
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P=instPoints();
- add('the hazards: a fall at the rims, not in a top\'s middle; the pond drowns (core/hazard)',HCHK.hazards(hazProbes));
- add('the Hall of Heroes, its tombs and the funeral road drawn',HCHK.hall(window._gate,window._gatearc));
+ add('the hazards: a fall at the rims, not in a top\'s middle; the water drowns (core/hazard)',HCHK.hazards(hazProbes));
+ if(HALL)add('the Hall of Heroes, its tombs and the funeral road drawn',HCHK.hall(window._gate,window._gatearc));
  add('nothing rooted under the water',HCHK.dry(P));
  add('nothing rooted on the rock',HCHK.offRock(P));
- add('the Gowd Warra never climbs',HCHK.graded(RIVER.lines));
- add('every bridge\'s stack end is in its rock',HCHK.bridges(GATE.plan.bridges));
+ add('the rivers never climb',HCHK.graded(RIVER.lines));
+ if(GATE)add('every bridge\'s stack end is in its rock',HCHK.bridges(GATE.plan.bridges));
  add('preset cameras above the ground',HCHK.camerasOut(Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail});
- add('no Hall',HCHK.hall(null,null));
- add('a fall wanted in a top\'s middle',HCHK.hazards(hazProbes.map(p=>p.kind==='fall'?Object.assign({},p,{want:!p.want}):p)));
- add('a plant drowned',HCHK.dry([[0,LEVEL-3,PONDD.b*.6,'biome:x']]));
- {const S=STACKS[0];add('a plant inside a stack',HCHK.offRock([[S.x,S.y0+LEVEL,S.z,'biome:x']]));}
+ if(HALL)add('no Hall',HCHK.hall(null,null));
+ if(hazProbes.some(p=>p.kind==='fall'&&!p.want))add('a fall wanted in a top\'s middle',HCHK.hazards(hazProbes.map(p=>p.kind==='fall'?Object.assign({},p,{want:!p.want}):p)));
+ if(LAKES.length){const L=LAKES[0];add('a plant drowned',HCHK.dry([[L.cx,L.level-3,L.pond?L.b*.6:L.cz,'biome:x']]));}
+ {const S=STACKS[0]||KNOBS[0];if(S)add('a plant inside a stack',HCHK.offRock([[S.x,S.y0+(STACKS[0]?LEVEL:0),S.z,'biome:x']]));}
  add('a river that climbs',HCHK.graded([[[0,0,10],[10,0,12]]]));
- {const b=GATE.plan.bridges[0],bad=Object.assign({},b,{b:Object.assign({},b.b,{x:b.b.face[0]+b.b.n[0]*30,z:b.b.face[1]+b.b.n[1]*30})});add('a bridge end in the air',HCHK.bridges([bad].concat(GATE.plan.bridges.slice(1))));}
- add('a camera under the ground',HCHK.camerasOut([{view:'under',x:300,y:LEVEL-20,z:600}]));
+ if(GATE){const b=GATE.plan.bridges[0],bad=Object.assign({},b,{b:Object.assign({},b.b,{x:b.b.face[0]+b.b.n[0]*30,z:b.b.face[1]+b.b.n[1]*30})});add('a bridge end in the air',HCHK.bridges([bad].concat(GATE.plan.bridges.slice(1))));}
+ add('a camera under the ground',HCHK.camerasOut([{view:'under',x:300,y:terrainH(300,600)-20,z:600}]));
  return R;}
 KHOST.on(SKY.view,'view');
 KHOST.on(function lodTick(){camera.updateMatrixWorld();if(BIO.lodTick)BIO.lodTick(camera);},'view');
 const MS=STILLS[0];
-const EXPORT_BOX=(function(){const c=[PONDD.a*.5,PONDD.b+120];return[c[0]-300,c[1]-300,c[0]+300,c[1]+300].map(Math.round);})();
+const EXPORT_BOX=SITE.exportAt?[SITE.exportAt[0]-300,SITE.exportAt[1]-300,SITE.exportAt[0]+300,SITE.exportAt[1]+300]:(function(){const L=LAKES[0],c=!L?[0,0]:L.pond?[L.a*.5,L.b+120]:[clamp(L.cx,-2000,2000),clamp(L.cz,-2000,2000)];return[c[0]-300,c[1]-300,c[0]+300,c[1]+300].map(Math.round);})();
 const MIRROR=MS&&WATER.mirrorSwitch?WATER.mirrorSwitch({THREE,renderer,scene,camera,sky:SKY,materials:[MS.mat],level:MS.level,center:MS.center,radius:MS.radius,far:MS.far,
  hour:()=>ATMOS.clock?ATMOS.clock.hour:0}):null;window.MIRROR=MIRROR;
 KHOST.take({build:'labyrinth-'+SITE.key,title:'Krator biome — the Labyrinth: '+SITE.name,
- hint:SITE.region+' ('+SITE.koppen.join(', ')+', '+SITE.floor+' m, '+SITE.atm+' atm, '+SITE.rain+' mm): the Hall of Heroes (the Kimrs\' ancestral arcology, their necropolis) in its pond on the Gowd Warra, its five carved stacks bridged to it, the chaos\'s knobs; scale model 5.1 px '+SITE.px+','+SITE.py,
+ hint:SITE.region+' ('+SITE.koppen.join(', ')+', '+SITE.floor+' m, '+SITE.atm+' atm, '+SITE.rain+' mm): '+(HALL?'the Hall of Heroes (the Kimrs\' ancestral arcology, their necropolis) in its pond on the Gowd Warra, its five carved stacks bridged to it, the chaos\'s knobs':(SITE.blurb||SITE.name))+'; scale model 5.1 px '+SITE.px+','+SITE.py,
  scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,regHas,views:VIEWS,ticks:TICKS,
  clock:{hour:ATMOS.SKY.viewHour},draw:MIRROR?()=>{MIRROR.update();SKY.draw();}:SKY.draw,
  inspect:describe,stats:()=>'inst '+window._instances,
@@ -98,6 +104,6 @@ KHOST.take({build:'labyrinth-'+SITE.key,title:'Krator biome — the Labyrinth: '
  api:{hostChecks,hostNegatives,
  get totals(){const t=BIO.totals();return {tris:t.tris+(GATE?GATE.tris:0),inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
  biome:()=>window._biome,gate:()=>window._gate,
- exportProfile:['registry','items','materials','textures','terrain','stage','atmos','water'],
+ exportProfile:['registry','items','materials','textures','terrain','stage','atmos'].concat(LAKES.length||RIVER.lines.length?['water']:[]),   /* a dry station (the Mesas) has no water to export */
  exportBox:EXPORT_BOX,
  at:(x,z)=>{const o={h:terrainH(x,z),water:waterH(x,z)};FNAMES.forEach(n=>o[n]=+FIELD[n](x,z).toFixed(3));return o;}}});

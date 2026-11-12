@@ -229,6 +229,21 @@ World km = 5.1 px x 2; a page's site is the old canvas px (5.1 px less 272, 330)
 Each page is the usual 5.2 km square round its site. Station 1 comes first: it holds the people, the ruin and the animals all
 at once.
 
+**Built 2026-11-11** (`stations/<name>/44z-host-site.js`; one stage, `src/45-host-stage.js`, makes every station's land from its site's
+numbers: lakes, rivers, `KRELIEF.scarp` walls and `KRELIEF.stepcut` pits read off the model's cells, `KSTACKS` knobs, the model's own
+heights past the square). Each site was surveyed again on the model and moved where the plan's point did not suit a page:
+
+| Station | Built at (5.1 px) | Ground | What is drawn |
+|---|---|---|---|
+| 1 The Gate | 376.5,1473.5 (the neck, east of the gate lake: PLAN-GATE.md) | floor 1,131 m, Cfb | the Hall of Heroes in its pond, its five stacks and bridges, the Gowd Warra, six knobs |
+| 2 The Paddocks | 245.5,1479.5 (the graben lake's north-east shore) | lake 1,820 m, Cfb 9 degC, 894 mm | the lake filling the south-west half, the bastion's benched face rising 3.2 km to the north-east, a beck from its ravine |
+| 3 The Mesas | 257.5,1590 (the canyon floor at the east mesa's foot; the plan's point is the mesa's EF top) | floor 1,960 m, BSk 8 degC, 298 mm | the east mesa's face (4 km), the west mesa's prow (3.4 km), seven knobs and pyramids on the floor |
+| 4 The Pit Chain | 148,1466 (the NW pit tarn's north shore) | tarn 2,920 m, Dfc 1 degC, 830 mm | the tarn, the dome's wall 2.5 km to the north, three stepped pits, one holding its own small tarn |
+
+```
+python3 build.py --station paddocks | mesas | pits     # dist/labyrinth-<name>.html
+```
+
 ## 9. For the owner
 
 - **Names:** the arcology, the wild melon, and the Two-Snout's own name in the natives' tongue. The rivers are

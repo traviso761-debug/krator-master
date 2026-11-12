@@ -37,5 +37,12 @@
     The hero now looks from the east-north-east; the old view is kept as "The Hall from the south bank".
   - **The palette:** the Ancients kit's ruin palette is toned for the kit sheet's brighter lights, so its colours are lifted 1.7x
     on this page (`?lift=`), except the stacks' rock.
-- [ ] **The Kimr's pueblo** (PLAN.md section 5, a village on a knob above the gate) is not on this station: the Kimr keep away
-  from the Hall (PLAN-GATE.md section 9). It wants `core/hamlet`'s defended platform (PLAN.md section 7, amendment 4).
+- [ ] **Stations 2-4 (2026-11-11) share station 1's stand-ins:** the NW lowlands' flora (on the Mesas' dry floor its grass trees
+  are thick, so the attach audit's false positive is larger there), no animals, no Kimr. **The Pit Chain is cold (Dfc, 2,920 m)** and
+  its flora is still the temperate stand-in, thinned (`floraQ`); its cushions and lichens want the Labyrinth's own kit (or Copper
+  Glacier's cold lineage read in place). **The walls are KRELIEF scarps** whose rim and height step are read off the model's 2 km
+  cells by hand (`stations/<name>/44z-host-site.js`); the Paddocks' bastion faces south-west, so at 11:00 it stands in shadow.
+- [ ] **The Kimr's pueblo** is on no station yet (station 3's plan wants one on a bench). `kits/kimr` has the example house on
+  `core/pueblo`, but it draws through `core/engine`, whose globals clash with the Ancients runtime this page carries: it needs a sealed
+  bundle for a world page (as `kits/xanadu/kit_bundle.py` seals XAK) before a station can place it. The Kimr keep away from the Hall,
+  so station 1 never takes one (PLAN-GATE.md section 9).

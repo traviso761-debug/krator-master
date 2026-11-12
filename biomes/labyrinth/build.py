@@ -69,7 +69,7 @@ if STATION:
     for f in os.listdir(_sd):
         if re.match(r'\d',f): PATH[f]=os.path.join(_sd,f)
 # core/terrain, opt-in by name: 35 KSTRATA (the far walls' bedding: the Rift's recipe, the dome's rock), 37 KSTACKS (the Hall's stacks, the chaos's knobs), 38 KRELIEF, 43 KGROUND, 44 KFAR, 45 KHORIZON
-CORE_TERRAIN=['35-core-strata.js','37-core-stacks.js','38-core-relief.js','43-core-ground.js','44-core-farfield.js','45-core-horizon.js']
+CORE_TERRAIN=['35-core-strata.js','37-core-stacks.js','38-core-relief.js','38c-core-landforms.js','43-core-ground.js','44-core-farfield.js','45-core-horizon.js']
 for f in CORE_TERRAIN: PATH.setdefault(f,J('core','terrain',f))
 for f in ['44-core-farfield-draw.js','45-core-horizon-shade.js']: PATH.setdefault(f,J('core','terrain','host',f))
 # the biome core from core/biome

@@ -1,10 +1,11 @@
-# The Labyrinth (biome kit, station 1 built)
+# The Labyrinth (biome kit, four stations built)
 
 The canyon maze of the SW Glaciated Dome (`PLAN.md`), and at its one eastern opening the Hall of Heroes: the Kimrs' ancestral
 arcology, now their necropolis, with its five carved stacks (`PLAN-GATE.md`).
 
 ```
 python3 build.py                                      # dist/labyrinth.html: station 1, the Gate
+python3 build.py --station paddocks                   # dist/labyrinth-paddocks.html: station 2 (also mesas, pits: PLAN.md section 8)
 python3 verify.py dist/labyrinth.html --assert        # the host's checks and their negative controls, the export profile
 KRATOR_GL=gpu python3 ../../tools/harness.py lock --lane auto -- python3 verify.py dist/labyrinth.html --assert
 ```

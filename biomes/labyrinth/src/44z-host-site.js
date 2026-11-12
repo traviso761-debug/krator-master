@@ -10,7 +10,7 @@
 //   THE STACKS     five carved stacks on the pond's north bank, bridged to the Hall (the same target's set piece)
 //   THE RIVER      the Gowd Warra from the west edge into the pond's west inlet, out over the weir on the east into the neck
 //   THE FLOOR      steppe and parkland, gallery woods along the river; the chaos's wild knobs about the floor
-const SITE={key:'gate',name:'The Gate',region:'The Gate: the Labyrinth\'s eastern mouth (the Labyrinth, region rmw8bqrn3dnx4)',px:376.5,py:1473.5,old:{px:104.5,py:1143.5},
+const SITE={key:'gate',name:'The Gate',hall:true,region:'The Gate: the Labyrinth\'s eastern mouth (the Labyrinth, region rmw8bqrn3dnx4)',px:376.5,py:1473.5,old:{px:104.5,py:1143.5},
  atm:1.39,koppen:['Cfb','Dfb','ET'],rain:900,mean:13,
  floor:1131,                    /* the floor at the Hall (the model's cells 372-378, 1472-1476) */
  tilt:[-.0032,.0006],           /* the floor's fall along x and z (m/m): the river's way, west to east, 4 m/km as the model's bed falls */

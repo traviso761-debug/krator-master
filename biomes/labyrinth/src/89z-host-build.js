@@ -15,7 +15,7 @@ if(new URLSearchParams(location.search).get('fields')!=='0'){const S0=FIELD.shor
 window._biome=null;
 const SHADOW_ON=new URLSearchParams(location.search).get('shadow')!=='0'&&typeof KSHADOW!=='undefined'&&!!KSHADOW.attach;
 (function(){
- const t0=performance.now(),Q=new URLSearchParams(location.search),q=Q.has('q')?+Q.get('q'):1;   /* the kit's own quality: at .7 its thinned crowns leave 1.35% of the bloom cards floating (the core attach audit) */
+ const t0=performance.now(),Q=new URLSearchParams(location.search),q=Q.has('q')?+Q.get('q'):(SITE.floraQ==null?1:SITE.floraQ);   /* the kit's own quality: at .7 its thinned crowns leave 1.35% of the bloom cards floating (the core attach audit) */
  try{BIO.cur='labyrinth/'+SITE.key;window._biome=NWLOW.build({R:TERR.R-150,quality:q});BIO.cur=null;}catch(e){reportErr('flora: '+e.stack);}
  /* THE ROCK AND THE RUIN OVERGROWN (KNOWN_ISSUES.md): the same kit's growth on structures (NWLOW.dress: moss and plants on the ledges, hanging
     moss off the soffits, roots and curtains down the walls) over the knobs, the five stacks (their terraces and galleries) and the Hall's broken
@@ -32,7 +32,7 @@ const SHADOW_ON=new URLSearchParams(location.search).get('shadow')!=='0'&&typeof
    for(let i=0;i<p.count;i+=3){if(p.getY(i)<y0||p.getY(i+1)<y0||p.getY(i+2)<y0||covered(i))continue;for(let k=0;k<3;k++){P.push(p.getX(i+k),p.getY(i+k),p.getZ(i+k));if(uv)U.push(uv.getX(i+k),uv.getY(i+k));}}
    const o=new THREE.BufferGeometry();o.setAttribute('position',new THREE.Float32BufferAttribute(P,3));if(uv)o.setAttribute('uv',new THREE.Float32BufferAttribute(U,2));o.computeVertexNormals();return o;};
   const take=o=>{if(o.isMesh&&!o.isInstancedMesh&&o.geometry&&o.geometry.attributes.position&&!(o.material&&(o.material.transparent||o.material===MAT.acVoid)))geos.push(dry(o.geometry.clone().applyMatrix4(o.matrixWorld)));};
-  scene.children.forEach(o=>{if(/^host:knob\./.test(o.name))take(o);});GATE.holder.traverse(take);
+  scene.children.forEach(o=>{if(/^host:knob\./.test(o.name))take(o);});if(GATE)GATE.holder.traverse(take);
   BIO.cur='labyrinth/dress';NWLOW.dress(geos,{ledges:{moss:5000,plants:2600,edges:0,hang:10,mossR:8,size:5,treeH:14},soffits:{n:0},walls:{n:1600,hang:9}}
   /* no ledge-edge or soffit curtains: their flowers (65-biome-nwlowlands-dress.js, curtain {flowers}) float up to 6 m off any card and failed the
      core attach audit (1.81%); hangs of 24-30 m ran through the ground and into the rock, so the walls' hang is 9 m */);BIO.cur=null;
@@ -43,7 +43,7 @@ const SHADOW_ON=new URLSearchParams(location.search).get('shadow')!=='0'&&typeof
  BIO.setA2C(renderer);{const G=TERR.R*1.1;BIO.setGround(TEX_GROUND,[-G,G,G,-G]);}
  if(typeof GROUND_HZ!=='undefined'&&GROUND_HZ){try{window._horizon.mats=KHORIZON.shadeScene(scene,GROUND_HZ,{filter:m=>!m.userData.farField&&m!==MAT_GROUND});}catch(e){reportErr('horizon: '+e.stack);}}
  if(SHADOW_ON){try{window._shadow=KSHADOW.attach({renderer,scene,camera,sun,ground:terrainH});window._shadow.cast(scene,{cast:false});
-  GATE.holder.traverse(o=>{if(o.isMesh)o.castShadow=true;});if(FAR)FAR.mesh.castShadow=FAR.mesh.receiveShadow=false;}catch(e){reportErr('shadow: '+e.stack);}}
+  if(GATE)GATE.holder.traverse(o=>{if(o.isMesh)o.castShadow=true;});if(FAR)FAR.mesh.castShadow=FAR.mesh.receiveShadow=false;}catch(e){reportErr('shadow: '+e.stack);}}
  window._buildMs=Math.round(performance.now()-t0);
  {let lo=1e9,hi=-1e9;for(let z=-TERR.R;z<=TERR.R;z+=100)for(let x=-TERR.R;x<=TERR.R;x+=100){const h=terrainH(x,z);lo=Math.min(lo,h);hi=Math.max(hi,h);}
   REGISTER({name:SITE.region,x:0,z:0,y:Math.floor(lo-10),r:TERR.R,h:Math.ceil(hi-lo+60)});}

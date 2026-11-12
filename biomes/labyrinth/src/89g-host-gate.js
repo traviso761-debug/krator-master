@@ -6,7 +6,7 @@
 //   GATESTACKS.host  {water: false (89w draws the fall and the pools on core/water), ground: the page's ground in the Hall's frame}
 // The kit's own volumes (ANC_REG, in the Hall's frame) become the page's records; its core/tags records are the page's already (KTAGS.gatearc).
 const GATE_LIFT=(function(){const q=new URLSearchParams(location.search);return q.has('lift')?+q.get('lift'):1.7;})();
-const GATE=(function(){const t0=performance.now(),Q=new URLSearchParams(location.search),D=Q.has('decay')?+Q.get('decay'):1;
+const GATE=!HALL?null:(function(){const t0=performance.now(),Q=new URLSearchParams(location.search),D=Q.has('decay')?+Q.get('decay'):1;
  const SPLAN=GATESTACKS.plan({hall:HALL,ground:(x,z)=>groundAt0(x,z)-LEVEL});
  GATEARC.host={y:LEVEL,pond:false,stacks:SPLAN,sheet:false};
  GATESTACKS.host={water:false,ground:(x,z)=>groundAt0(x,z)-LEVEL};
@@ -29,4 +29,4 @@ const GATE=(function(){const t0=performance.now(),Q=new URLSearchParams(location
   if(m.geometry){const g=m.geometry,n=g.index?g.index.count/3:g.attributes.position.count/3;tris+=n*(m.isInstancedMesh?m.count:1);}}});
  scene.add(holder);
  return{holder,plan:SPLAN,decay:D,tris:Math.round(tris),ms:Math.round(performance.now()-t0)};})();
-window._gate={decay:GATE.decay,tris:GATE.tris,ms:GATE.ms};
+window._gate=GATE?{decay:GATE.decay,tris:GATE.tris,ms:GATE.ms}:null;
