@@ -6,6 +6,10 @@
     "biomes/oidong/src/50-biome-oidong-species.js": "8fb72d34cdcb21f2ba36eed2915dcca765d14947a8163ac616c9fb88956ca7b2",
     "biomes/oidong/src/55-biome-oidong-trees.js": "0bfbf5317e3ce66bfaf06791240809f1250e59884942d5b031bb0d4d9b0d83a3",
     "biomes/oidong/src/70-biome-oidong.js": "ad23374114d41f55b4c1c52fdeb69ed68fa0965ac347437cb85fc697bec2158d",
+    "biomes/opalvalley/src/40-biome-opal-sites.js": "a1fad917772e6451ad5e757142453456dccad2df08cc31f8e898ba8fe7cd3e49",
+    "biomes/opalvalley/src/50-biome-opal-species.js": "5eeb1c88f879cc2c2f07107d88b6341176b610209ff61a72b54427a481ed9ef8",
+    "biomes/opalvalley/src/55-biome-opal-place.js": "508c1a6cee4eeda04b8fb4e927ad4b33504f2de5290eaf1c6d500e9faee76cb5",
+    "biomes/opalvalley/src/70-biome-opal.js": "f32accbf740aba64e150faaac47b3d449585712ee92e594f396becabb4460d25",
     "biomes/rift/src/50-biome-rift-species.js": "d7168de668a540e2d06bc987e48c925d109f26edb35a9c9351128c848d45df9f",
     "biomes/rift/src/52-biome-rift-library.js": "e73c72080857134cc2a74004fe5e55f8491dbae9fc37d9658cd82ab0aff169b0",
     "biomes/rift/src/55-biome-rift-trees.js": "014b68fecd496dae054a4cb7901f3abc44e88728d0b9923b83b2f982f275dacc",
@@ -13,6 +17,10 @@
     "biomes/riftrim/src/50-biome-riftrim-species.js": "7fd1c15427f28fed5e5aa4870eb708aaa84208c823786094dbc547e88792e0ff",
     "biomes/riftrim/src/55-biome-riftrim-trees.js": "1c0a1675cddea8a5b326c1333393c85a856dfe99a0928850dab88833475b4ec3",
     "biomes/riftrim/src/70-biome-riftrim.js": "820bb04f4785f212d9afbae8217e8f1a281cbedc946b49db5858442d1e451600",
+    "biomes/xanadu/src/50-biome-xanadu-species.js": "e237bfed92c0ece4dd6714d4653eee967ffe4d48fe7c2f09d42c70c4f95ae3a3",
+    "biomes/xanadu/src/52-biome-xanadu-library.js": "e52d416ba9cf038b170e6e076287c2c86b86250b942ef609ff60b09253091a2c",
+    "biomes/xanadu/src/55-biome-xanadu-trees.js": "e507c1948f00b1305d9e9af9f1e544426f6565fd7ff739cfbfc06b54602cdc38",
+    "biomes/xanadu/src/70-biome-xanadu.js": "f1f73c701008c3708b5cf2c641143569b3b56a5d1472b96f3aa3e881816271d2",
     "biomes/xanadu/tex/anemone.albedo.webp": "fa020018b7ac3947f92ef56fa0068e6c96f9748cdf316f68bff15571872e5941",
     "biomes/xanadu/tex/banana.albedo.webp": "0a3eb9a9ab79762fdb32169b19af33d579bf01d7fa5ef8c0e9d20de87ebadcb3",
     "biomes/xanadu/tex/bark0.albedo.webp": "188b15d2877bb2456bff480e14405337ee894e905623ad4faf4daa6f0c91355d",
@@ -122,7 +130,7 @@
     "kits/qiblai/src/89q1-qb-houses.js": "c689265c61aeb563407a80f9d45b079b30c0f1479a571800a464315170be18ad",
     "kits/qiblai/src/89q2-qb-trades.js": "e889fc2c5cfdf491ac131606438af674fd52a59f4fa38c9eacf46fd8e855eba0",
     "kits/qiblai/src/89q3-qb-sacred.js": "ae4c470ccd4be13c205c04401565b8d491c9c2812e2e2ffefc1198c9e1e9255b",
-    "kits/qiblai/src/89q3m-qb-meditation.js": "5b7a52d0fdd9112232dfc997297efe89d1a9444b81684ebc87cae1244de97a3f",
+    "kits/qiblai/src/89q3m-qb-meditation.js": "d9418d86beb6478f62c2328a56ce76781eba78afbad2f6af571f25f589468f11",
     "kits/qiblai/src/89q4-qb-temple.js": "0f7a5ca275868333705c722d2f4e39ba258ba63caed42ffca7a9db5273804688",
     "kits/qiblai/src/89q5-qb-interiors.js": "8478102a9fd02a9b2fc32fe9ad3a8faba708adb0b7e997d7cb9989d45ff466e6",
     "kits/qiblai/src/89q9-qb-street.js": "cfee606a9261a5b5b55294f9b46af4c65d1e8b3b52268586c5a906b7bc1c1d72",
@@ -170,13 +178,14 @@
     "kits/xanadu/xanadu.py": "233e036b8d2d9d1e1b76d7c46ca3cc1b331a959cf5b3b161bedc7484324d98b0",
     "lore/tongues-of-krator.html": "41920e3d0c52123aa972afa1eb0b4b88363c2f0853bbc9c5f0e3fd9b95e6173d",
     "settlements/qiblai/KNOWN_ISSUES.md": "ae3f4b909d6ee4b84a2e08b7f95006252f76ee74142e61c69f7d1a6944e81a19",
-    "settlements/qiblai/PORT.md": "32a7bc3d779087fc6cd918c8f7f53a6df6198bfa6ff43be694146f80b7fe5a85",
-    "settlements/qiblai/build.py": "a5195858bc3da3933e4ee6068409c69ca92a467f1a95411fa8c103d3a7263f63",
+    "settlements/qiblai/PORT.md": "94cedb1045d26a6c92956695655de0b53c554409cec4b57d1fa18446872faf5f",
+    "settlements/qiblai/build.py": "608c7a6d47f6226081c3609b97d1729c96157a11bbe09346d06dc662a835f9ce",
     "settlements/qiblai/gen/69q-kcity-bundle.js": "cd4b3397adf37472963d64571fddbeac1a8773b13c07a09f4197dc99aaa1caa7",
+    "settlements/qiblai/gen/69r-flora-bundle.js": "511dbb929fdbc3918e2befd8268e7cb582510534a63e41178125948dd35f2281",
     "settlements/qiblai/kit.json": "ab3255f1da0dbd171aadea6874c092b870e81ea284d332ee78fc02d993e64e9a",
     "settlements/qiblai/targets/city/89z-rows.js": "85803e0c60a745d0dd10dc85f5477a36e50d77a240cec2629487c7eef4637518",
     "settlements/qiblai/targets/city/89zq-qc-site.js": "dc45d5018a1f0c46cf0cf3e56410a768d24620892c93a01777c71db275b224ec",
-    "settlements/qiblai/targets/city/90p-qc-flora.js": "1d7368e06e4aed645df7283c84e010d685f2b21ac5598b3be5bcfb59a237fdc9",
+    "settlements/qiblai/targets/city/90p-qc-flora.js": "b655648431135d190b99b2047050244971838c205effd9757b5e1238f757c0ea",
     "settlements/qiblai/targets/city/90q-qc-world.js": "b813f308be7e73dd60587b2a0c513839f5e6f9d43aa3f0a0d11ec623aa842b4f",
     "settlements/qiblai/targets/city/90r-qc-build.js": "49df8dc2b1329e9c028e349be82b283b28b7405b9cdd3adaff4680474555311d",
     "settlements/qiblai/targets/city/91z-views.js": "032947f3c42702ede123e59b2b6863acf1a2c6b706c16f423783eadfa203af93",
@@ -348,16 +357,14 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "settlements/qiblai/build-manifest-city.json": "11320589397f0b8d6f5d4ecc91e7fdc906a79d7a3ea4ba60d4f01b21515bcc15",
-    "settlements/qiblai/dist/qiblai.html": "6a9e0004ac0e91092b5b0984745de4242c07abe5a0f9f9fc87f1c6cf5b07d51c",
-    "settlements/qiblai/dist/xanadu.tex.xanadu.js": "b7ab9af39727de5892634a26e39a4a716e0a4621dd7bf3d8765decbfaa712197",
-    "settlements/qiblai/gen/69r-flora-bundle.js": "877c42e427230998ee4f9387b1bf3392d542735b7d85d79f90396149cb27ddf2"
+    "settlements/qiblai/build-manifest-city.json": "f680165fbc144955f4ebe4e627b3431ac3337948e20480e038b57b7d3eed6e91",
+    "settlements/qiblai/dist/qiblai.html": "ef40e30311cbf87d58f11cf49a963a25a0dbaa82af22cd311c2845c2c584434d",
+    "settlements/qiblai/dist/xanadu.tex.xanadu.js": "b7ab9af39727de5892634a26e39a4a716e0a4621dd7bf3d8765decbfaa712197"
    },
    "outputs_raw": {
-    "settlements/qiblai/build-manifest-city.json": "a4967d1e0ed15c3ee042b144d3af37c1ebbfcde7661a69083e9bea472602e1c5",
-    "settlements/qiblai/dist/qiblai.html": "6a9e0004ac0e91092b5b0984745de4242c07abe5a0f9f9fc87f1c6cf5b07d51c",
-    "settlements/qiblai/dist/xanadu.tex.xanadu.js": "b7ab9af39727de5892634a26e39a4a716e0a4621dd7bf3d8765decbfaa712197",
-    "settlements/qiblai/gen/69r-flora-bundle.js": "877c42e427230998ee4f9387b1bf3392d542735b7d85d79f90396149cb27ddf2"
+    "settlements/qiblai/build-manifest-city.json": "e0cd6fbd7c039cb6f6c5a0d00000cb80df0cd4bedce5a4a4e0819b6925e10f41",
+    "settlements/qiblai/dist/qiblai.html": "ef40e30311cbf87d58f11cf49a963a25a0dbaa82af22cd311c2845c2c584434d",
+    "settlements/qiblai/dist/xanadu.tex.xanadu.js": "b7ab9af39727de5892634a26e39a4a716e0a4621dd7bf3d8765decbfaa712197"
    }
   }
  }

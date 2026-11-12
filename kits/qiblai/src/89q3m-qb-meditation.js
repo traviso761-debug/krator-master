@@ -11,13 +11,14 @@
 // The plants go through qnMedPlant (one hook, a kind and a colour role), so a world can draw them from a biome kit's species.
 const QMED=[{name:'The Stone Garden',sp:[0,2]},{name:'The Lotus Water',sp:[2,4]},{name:'The Walking Circle',sp:[4,6]},{name:'The Grove of Cells',sp:[6,0]}];
 const QMED_W=74;   /* the walled square, inside a corner block's 83 m */
-// a plant by kind ('tree', 'blossom', 'shrub', 'bed', 'reed', 'cypress', 'lotus') in a colour (a hex, the role's colour): the
+// a plant by kind ('tree', 'blossom', 'shrub', 'bed', 'reed', 'cypress', 'lotus', 'pad': a lotus pad on the water, h its size) in a colour (a hex, the role's colour): the
 // stand-in draws the Xanadu kit's tree and leaf clusters tinted; a world may set qnMedPlant.use = fn(kind,x,z,h,hex) -> true
 function qnMedPlant(kind,x,z,h,hex){if(qnMedPlant.use&&qnMedPlant.use(kind,x,z,h,hex))return;const c=xC(hex);
  if(kind==='cypress'){xnCypress(x,z,h);return;}
  if(kind==='tree'||kind==='blossom'){vPst('vPostB',x,0,z,.16,h*.5,xC(0x4a3a2c));const n=kind==='blossom'?7:5;
   for(let k=0;k<n;k++)kput('xLeaf',[x+rr(-.9,.9),h*.62+rr(-.3,.6),z+rr(-.9,.9)],qEuler(rng()*3,rng()*3,0),[h*.2,h*.16,h*.2],k%3===2&&kind==='blossom'?xC(XPAL.white):c);return;}
  if(kind==='shrub'){for(let k=0;k<3;k++)kput('xLeaf',[x+rr(-.3,.3),h*.45,z+rr(-.3,.3)],qEuler(rng()*3,rng()*3,0),[h*.5,h*.45,h*.5],c);return;}
+ if(kind==='pad'){kput('xLeaf',[x,.33,z],qEuler(0,rng()*3,0),[h,.05,h],xC(xPick([0x4f7a3a,0x5e8a44,0x456e34])));return;}   /* a lotus pad on the water: h its size */
  if(kind==='reed'){for(let k=0;k<5;k++)vPst('vPostB',x+rr(-.4,.4),0,z+rr(-.4,.4),.03,h*rr(.7,1),c);return;}
  /* a bed: a low mound of flowers */for(let k=0;k<4;k++)kput('xLeaf',[x+rr(-.6,.6),.18,z+rr(-.6,.6)],qEuler(rng()*3,rng()*3,0),[.5,.22,.5],c);}
 // the wall: a low washed wall with a band of the two colours (each colour on the two sides nearest its monastery's quarter),
@@ -56,7 +57,7 @@ function buildQbMeditation(G,o){const V=((o.v|0)%4+4)%4;reseed(33621+V);const sp
  else if(V===1){ /* the Lotus Water: a square pool, lotus in the two colours, stepping stones to a turquoise island shrine */
   const P=44;vB('xWaterB',0,0,0,P,.3,P,0,xC(XPAL.water));for(const e of[-1,1]){vB('vStone',0,0,e*(P/2+.4),P+1.6,.45,.8,0,stone);vB('vStone',e*(P/2+.4),0,0,.8,.45,P,0,stone);}   /* the pool: its water up to .3, a stone kerb proud of it (xnPool's slab stands over its water) */
   for(let k=0;k<70;k++){const x=rr(-P/2+1.5,P/2-1.5),z=rr(-P/2+1.5,P/2-1.5);if(Math.hypot(x,z)<8||Math.abs(x)<1.6||Math.abs(z)<1.6)continue;
-   kput('xLeaf',[x,.33,z],qEuler(0,rng()*3,0),[rr(.7,1.2),.05,rr(.7,1.2)],xC(xPick([0x4f7a3a,0x5e8a44,0x456e34])));
+   qnMedPlant('pad',x,z,rr(.7,1.2),B);
    if(k%3===0)kput('xLeaf',[x+.2,.5,z],qEuler(rng(),rng()*3,0),[.32,.26,.32],xC(k%2?A:0xf4ece8));}
   for(const [x,z] of[[-13,-14],[14,-10],[-16,11],[11,15],[17,3],[-7,17]])qnMedPlant('lotus',x,z,2.6,B);   /* the giant lotus, standing from the water */
   vB('vStone',0,0,0,12,.6,12,0,stone);const top=qnStack(0,.6,0,6.4,6.4,0,[3.4],xC(B),'wash',false);

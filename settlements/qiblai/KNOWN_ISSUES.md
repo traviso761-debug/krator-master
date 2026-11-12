@@ -6,13 +6,13 @@
   more gardens (84 garden blocks, 72 courtyards). `verify.py` reports it as a budget. To calibrate with the owner: the people
   a building holds, the fade's table (`QC_GARDEN`, `QC_COURT`), the infill's gaps. The Xanadu kit's share of the lay houses is
   28.6 % (the owner: 33 %): the courtyards clear more of its larger houses than of Qiblai's rows.
-- [ ] **The meditation gardens' flora has gaps** (`targets/city/90p-qc-flora.js`, `window._gardensFlora.gaps`): no crimson
-  tree with a full crown in the Rift, Rift Rim or Oidong (the crimson is the Rift's anemone stalk, a stalk with red heads;
-  its thornwhip reads as black whips); no low crimson flower to plant (the Rift Rim's cushion anemone and prism heath, and
-  Oidong's poppies and mooncaps, are its floor's own planters, not exported: the four crimson beds keep the kit's stand-in);
-  no reed (the Lotus Water's reeds are the stand-in). Opal Valley has no code yet (biomes/opalvalley/PLAN.md), and High Rift's
-  plants place only as its whole grid (HRIFT.buildRift), so neither is drawn on. The gold is the page's own Vale (ginkgo) and
-  the Rift's croton.
+- [ ] **The meditation gardens' flora: no gaps left, three notes** (`targets/city/90p-qc-flora.js`, `window._gardensFlora`:
+  182 plants, `gaps` empty, 2026-11-12). The crimson tree is Opal Valley's fire-opal breaker crown (garnet to harlequin orange,
+  not a pure crimson); the low plants (the Rift Rim's cushion anemone, the Vale's reeds, Opal Valley's prism fern and opal
+  pads) are drawn from those kits' registered items by a copy of their floor passes' few lines (`QC_FL_PUT`), since their
+  planters are not exported: if a kit renames an item, its plant is missing (`gaps: 'missing put.<name>'`). High Rift's plants
+  place only as its whole grid (HRIFT.buildRift) and are not drawn on. Opal Valley is merged in from
+  `claude/opalvalley-biome` (not on main yet).
 - [ ] **The flora is a stand-in.** Xanadu's page carries the Vale of Xanadu biome (ginkgo, cloud pine, flame cypress, cacao...),
   bound here with the city's own mask (the country, the gardens, the odd yard tree) and a wet, lowland climate; the site's Af
   lowland biome kit is still to bind (PLAN.md Q7b). The country's plants thin out far from the LOD origins.

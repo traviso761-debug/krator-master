@@ -48,9 +48,10 @@ and `qiblai` in core/tags' vocabulary (`TODO.md`, the ride-along) are not prereq
   of the two closest monasteries"; "pick flora tastefully by color"): `qb_meditation_garden` (kits/qiblai) in each corner
   block, in the colours of the two monasteries whose sides of the wall meet there: NE the Stone Garden (crimson, gold), SE
   the Lotus Water (gold, turquoise), SW the Walking Circle (turquoise, violet), NW the Grove of Cells (violet, crimson).
-  Their plants are picked by colour (`targets/city/90p-qc-flora.js`) from the Rift, the Rift Rim and Oidong, sealed with
+  Their plants are picked by colour (`targets/city/90p-qc-flora.js`) from the Rift, the Rift Rim, Oidong, today's Vale of
+  Xanadu and Opal Valley (its fire-opal breaker crown for the crimson trees, its prism fern and opal pads), sealed with
   today's core/biome in `gen/69r-flora-bundle.js` (Xanadu's page runs an older biome core those kits cannot load on),
-  and the gold from the page's own Vale (the ginkgo). The gaps are in `KNOWN_ISSUES.md`.
+  and the gold from the page's own Vale (the ginkgo): 182 plants, no gaps (2026-11-12; notes in `KNOWN_ISSUES.md`).
 - **Q7e-Q7g** not started.
 
 ## 1. What the city build is

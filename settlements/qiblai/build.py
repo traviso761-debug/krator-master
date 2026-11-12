@@ -53,32 +53,36 @@ def kcity_bundle():
 # 'xanadu-1', without BIO.kit, kin, impostor or flareJoin, which these kits need). Each kit in a closure of its own inside
 # it (the kits share names: PAL, SP, T3, buildFar...); the closure's BIO hides the page's, and the closure hands its files a
 # window of its own (Object.create(window)) carrying that BIO (30s-core-season-flush.js finds BIO on its root); it exports QC_FLORA only
-# (targets/city/90s-qc-flora.js plants one named tree at a point, bakes, ticks its LOD). Opal Valley has no code yet
-# (biomes/opalvalley/PLAN.md); High Rift's ground plants place only as the whole grid (HRIFT.buildRift) and are left out.
+# (targets/city/90p-qc-flora.js plants one named tree at a point, bakes, ticks its LOD). Opal Valley (2026-11-12) grows its
+# trees as kin of the Vale of Xanadu's, so today's Xanadu kit is sealed in too (the page's own, older, stays the page's).
+# High Rift's ground plants place only as the whole grid (HRIFT.buildRift) and are left out.
 FLORA_CORE = ['10-core-head.js', '20-core-kit.js', '30-core-foliage.js', '30s-core-season-flush.js', '31-core-dither.js',
               '31b-core-leafset.js', '31j-core-joint.js', '32-core-variants.js', '33-core-fungoid.js', '33b-core-bamboo.js',
               '34-core-impostor.js', '35-core-anim.js', '35b-core-anim-turn.js', '40-core-place.js']
 FLORA_KITS = [('rift', 'RIFT', ['50-biome-rift-species.js', '52-biome-rift-library.js', '55-biome-rift-trees.js', '70-biome-rift.js']),
               ('riftrim', 'RRIM', ['50-biome-riftrim-species.js', '55-biome-riftrim-trees.js', '70-biome-riftrim.js']),
-              ('oidong', 'OIDONG', ['50-biome-oidong-species.js', '55-biome-oidong-trees.js', '70-biome-oidong.js'])]
+              ('oidong', 'OIDONG', ['50-biome-oidong-species.js', '55-biome-oidong-trees.js', '70-biome-oidong.js']),
+              # today's Vale of Xanadu: the source of Opal Valley's kin (BIO.kin('xanadu.breakercrown') and the rest) and its reeds
+              ('xanadu', 'XANADU', ['50-biome-xanadu-species.js', '52-biome-xanadu-library.js', '55-biome-xanadu-trees.js', '70-biome-xanadu.js']),
+              ('opalvalley', 'OPAL', ['40-biome-opal-sites.js', '50-biome-opal-species.js', '55-biome-opal-place.js', '70-biome-opal.js'])]
 
 
 def flora_bundle():
     part = lambda rel: '/* ---- %s ---- */\n%s\n' % (rel, rd(rel))
     boot = ('/* the bootstrap: THREE before the kits load (their fragment 50 makes textures); the city binds its scene and '
-            'ground later (90s-qc-flora.js) */\n'
+            'ground later (90p-qc-flora.js) */\n'
             'BIO.init({ THREE: THREE, scene: null, terrainH: function () { return 0; }, mask: function () { return 0; }, obstacles: [],\n'
             '  ticks: function (fn) { var last = null; (window._frameHooks = window._frameHooks || []).push(function (now) { var t = now / 1000, '
             'dt = last == null ? 0.016 : Math.min(0.1, t - last); last = t; fn(dt, t); }); },\n'
             '  seed: 33960, origin: [[0, 0]], center: [0, 0], fields: {} });\n')
     kits = ''.join('var %s = (function () {\n%s\nreturn %s;\n})();\n' % (g, ''.join(part('biomes/%s/src/%s' % (k, f)) for f in fs), g)
                    for k, g, fs in FLORA_KITS)
-    return ('/* QC_FLORA: core/biome and the Rift, Rift-Rim and Oidong kits in one closure (settlements/qiblai/build.py). '
+    return ('/* QC_FLORA: core/biome and the Rift, Rift-Rim, Oidong, Xanadu and Opal Valley kits in one closure (settlements/qiblai/build.py). '
             'GENERATED: edit core/biome and biomes/. */\n'
             'var QC_FLORA = (function (window) {\n' +
             "Object.defineProperty(window, 'BIO', { get: function () { return BIO; } });   /* the closure's own BIO, on its own window */\n" +
             ''.join(part('core/biome/' + f) for f in FLORA_CORE) + boot + kits +
-            'return { BIO: BIO, reseed: reseed, kits: { rift: RIFT, riftrim: RRIM, oidong: OIDONG } };\n})(Object.create(window));\n')
+            'return { BIO: BIO, reseed: reseed, kits: { rift: RIFT, riftrim: RRIM, oidong: OIDONG, xanadu: XANADU, opalvalley: OPAL } };\n})(Object.create(window));\n')
 
 
 def write_gen():
