@@ -1,0 +1,121 @@
+{
+ "edit": "5.1 edit 4",
+ "date": "2026-11-10",
+ "river": "r_mb_siphon_breach",
+ "was": {
+  "from_px": [
+   1583.0,
+   1342.8
+  ],
+  "to_px": [
+   1618.0,
+   1214.0
+  ],
+  "source_m": 2021.8,
+  "mouth_m": 333.5,
+  "length_km": 300.3,
+  "q_mouth_m3s": 340.0,
+  "gloss": "Ostrukh Riba ('Ostrukh Breach River') — Mid Basin & Siphon Pits overflow channel feeding Lake Ostrukh"
+ },
+ "north_sill": {
+  "cells": 39,
+  "raised_m_max": 32,
+  "held_m": 2050.0
+ },
+ "channel": {
+  "outlet_px": [
+   1584,
+   1351
+  ],
+  "outlet_m": 2036.0,
+  "mouth_px": [
+   1528,
+   1459
+  ],
+  "cells": 109,
+  "length_km": 262,
+  "bed_m": [
+   2036.0,
+   1850.0
+  ],
+  "cut_m_max": 148,
+  "cut_m_mean": 64,
+  "cut_at_px": [
+   1582,
+   1356
+  ]
+ },
+ "pool_spill": {
+  "to_lake": {
+   "spill_m": 2036.0,
+   "at_px": [
+    1584,
+    1351
+   ]
+  },
+  "to_north_gorge": {
+   "spill_m": 2050.0,
+   "at_px": [
+    1580,
+    1344
+   ]
+  }
+ },
+ "flow": {
+  "q_mouth_m3s": 0.9,
+  "runoff_m3s": 0.9,
+  "springs_m3s": 0.0,
+  "catchment_km2": 15396,
+  "lake_evap_m3s": 9.2,
+  "lake_rain_m3s": 3.1,
+  "land_runoff_into_lake_m3s": 13.4,
+  "note": "Turc runoff (evap_k 1.24) down the carved D8 drainage, plus the springs' discharge sized so that Lake Ostrukh (closed, fresh) evaporates what reaches it; the old 340 m3/s was Gemini's"
+ },
+ "now": {
+  "source_m": 2036.0,
+  "mouth_m": 1850.0,
+  "length_km": 262,
+  "q_mouth_m3s": 0.9,
+  "catchment_km2": 15396,
+  "width_m": 4,
+  "depth_m": 0.3,
+  "perennial": true,
+  "to": {
+   "at_px": [
+    1528.0,
+    1459.0
+   ],
+   "lake_m": 1850.0
+  }
+ },
+ "reclimate": {
+  "cells": 396,
+  "class_changed": 43,
+  "rain_mean_before_mm": 274.0,
+  "rain_mean_after_mm": 272.0,
+  "classes_now": {
+   "BSk": 349,
+   "Csb": 4,
+   "Cwb": 13,
+   "Dsa": 30
+  }
+ },
+ "godstep_playa": {
+  "region": "rmvkbfspgsmr3",
+  "cells": 437,
+  "km2": 1748,
+  "classes_now": {
+   "BSk": 383,
+   "Csb": 35,
+   "Csa": 11,
+   "Dsb": 8
+  }
+ },
+ "cells_changed": {
+  "h": 238,
+  "tm": 35,
+  "p": 91,
+  "c": 480,
+  "z": 0
+ }
+}

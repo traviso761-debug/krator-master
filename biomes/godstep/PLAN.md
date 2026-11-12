@@ -209,6 +209,8 @@ The model's names here are Izani (the Empire's maps); the Talovolci's own words 
 2. **Guli Cistal's `to.basin_m` 2,693** is stale: the ground at its mouth is 3,130-3,160 m and no closed hollow is there.
 3. **1,744 km² of WH** ("highland lake") on steps 3-4 and the low end with no water on the water layer: left over from an
    earlier pass. The owner's answer is a dry salt playa, so the class there would be BSk/BWh when the climate is next run.
+   **Done in scale model 5.1 edit 2** (`tools/scale-model/edit_512.py`, 2026-11-10): the 437 dry WH cells (1,748 km²) took
+   the class of the dry land most like them: BSk 383, Csb 35, Csa 11, Dsb 8.
 4. **The tube on the polygon's edge** below front 1: kept as it is (the rille station stays on step 1).
 
 ## 2. The rock

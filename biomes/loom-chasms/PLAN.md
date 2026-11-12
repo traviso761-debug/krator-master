@@ -1,6 +1,6 @@
 # The Loom-Chasms: the plan (2026-11-09)
 
-The Loom-Chasms (Region 99, `rmvraoas90co7`) are a rift basin in the south-east of map 5.1. On the west a terraced
+The Loom-Chasms (region `rmvraoas90co7`, named Loom Chasms on the model since 2026-11-11, Region 99 before) are a rift basin in the south-east of map 5.1. On the west a terraced
 piedmont, the **Weavers' Cradle**, steps down from the Stalker Range. In the middle a tableland of basalt mesas, the **Shuttle
 Mesas**, is split by a net of chasms about a kilometre deep. On the chasm floor, the lowest ground, lies the salt lake **Lake
 Nim** and its playa, **the White Loom**. Over the chasms grows the region's one invention: **living cables**, tensile plants
@@ -23,7 +23,7 @@ model (`smodel.page`, 2026-11-09, at `gemini/scale-model-5.1-r3`, dfdf64d1a); th
 - **Whose ground** (overlaps with other polygons):
   - the Yuni Emirate (`rmw8ca6baau47`), 21,624 cells (28%): the west is Yuni land on paper;
   - the Stalker Gate (`rmvstalkergate`), 3,426 cells, and the Stalker Range (`rmvkknh1am4fw`), 1,084, on the west;
-  - the Great Chasm (`rmw4vh9t20da4`), 1,509 cells on the north: its south end and the sill lie inside Region 99;
+  - the Great Chasm (`rmw4vh9t20da4`), 1,509 cells on the north: its south end and the sill lie inside the Loom Chasms;
   - Mid Basin (`rmvmidbasin101`), 2 cells: the two meet edge to edge.
 - **Heights:** p1/p5/p10/p25/p50/p75/p90/p95/p99 = 256 / 331 / 498 / 1,344 / 1,764 / 2,729 / 6,498 / 8,203 / 9,726 m.
   - **Lowest:** 164 m at 1697,1006, in the Great Chasm's floor where the two polygons overlap. The Loom's own floor bottoms
@@ -61,7 +61,7 @@ model (`smodel.page`, 2026-11-09, at `gemini/scale-model-5.1-r3`, dfdf64d1a); th
   - **Lake Nim:** 124 cells, about 500 km², level 240 m, bed 218 m (22 m deep), x 1685-1696, y 1169-1184, class WX on the
     water. Its shore (1697,1176) is 243 m, class XS. v2's 45 km² at 344 m is wrong; 4.24 set it at 240 m.
   - **A tarn** of 13 cells at 7,270 m on the east wall (1775-1777,1087-1092).
-  - **Rivers** (`rivers.json`): 42 records cross the polygon, all named in the Yuni tongue (`river_names.py`: Region 99 is
+  - **Rivers** (`rivers.json`): 42 records cross the polygon, all named in the Yuni tongue (`river_names.py`: the Loom Chasms is
     `yuni`). Three are perennial:
     - **Ostrukh Riba** (`r_mb_siphon_breach`, from Mid Basin): 300 km, **340 m³/s**, ending at 334 m at 1618,1214 on the
       chasm floor;
@@ -264,7 +264,7 @@ needs the salt-crust hazard.
 - every station's `atm`;
 - `loom`: `floor` 568 m and `chasm_depth` 180 m (the floor is 264 m; a slot's depth is the page's);
 - `caelum`: `playa_level` 344 m (it is 240 m) and Lake Nim's `area_km2` 45 (it is about 500);
-- `region98_99.json` still holds Region 99's older 10-vertex outline.
+- `region98_99.json` still holds the Loom Chasms' older 10-vertex outline.
 
 ## 8. Core adoption (written first, as the working rules ask)
 
@@ -312,8 +312,9 @@ when they are built.
 
 ## 9. For the owner
 
-- **The water:** Ostrukh Riba's 340 m³/s onto a desert floor with a 500 km² lake. Cut the river (Mid Basin's plan questions its
-  course), or grow Lake Nim to several thousand km² (a real terminal lake, as the Danakil's were)?
+- ~~**The water:** Ostrukh Riba's 340 m³/s onto a desert floor with a 500 km² lake.~~ **Settled (the owner, 2026-11-10):**
+  the river was rerouted south into Lake Ostrukh (scale model 5.1 edit 4, `tools/scale-model/edit_514.py`); it no longer
+  reaches the Loom Chasms, and its old gorge north of the maar is dry. Lake Nim keeps only its own wadis.
 - **The Cradle's people:** Yuni colonists, or an older people under Yuni rule? ~~Who lives at Mungo? Reed stands on airless
   ground~~ (corrected 2026-11-09: Mungo and Reed are the Eastern Abyss's, section 1).
 - **Namakiers:** keep the playa's salt as crust and pinnacles (proposed), or add a buried salt layer so salt glaciers can flow?
@@ -352,7 +353,7 @@ when they are built.
 ## Sources
 
 - the plan v2 and the station records in this folder (Gemini, 2026-10-28);
-- `tools/scale-model/README.md` "4.24" (Part I, Region 99) and `history/edit_424.py`; `HANDOFF-GEMINI-5.1.md` (the records'
+- `tools/scale-model/README.md` "4.24" (Part I, the Loom Chasms) and `history/edit_424.py`; `HANDOFF-GEMINI-5.1.md` (the records'
   conversion, the re-survey);
 - the model's data at dfdf64d1a (`gemini/scale-model-5.1-r3`), read with `smodel.page`: heights, water, `tm`/`tw`/`tc`/`p`/`c`,
   `rivers.json`, `vents.json`, `tubes.json`, `model/src/51-region-store.js`, `model/src/60-settlements.js`;
