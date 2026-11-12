@@ -100,6 +100,9 @@ OWN = {
     'water-shader': re.compile(r'\bMAT_WATER\s*='),
     'sky-dome': re.compile(r'\bskyTex\b[^;]{0,80}BackSide|BackSide[^;]{0,80}\bskyTex\b'),
     'sky-copy': re.compile(r'^(?:const|let|var)\s+KratorSky\s*=', re.M),
+    # the rock cut over each void's own floor and its cut boxes: core/terrain/host/39h-core-cavern-cut.js (KCAVERN.cutLayer), lifted from
+    # kits/zeijani (the owner, 2026-11-11). Zeijani's own fork is a baselined finding until the kit adopts the core layer
+    'rock-cut': re.compile(r'vCut\.z\s*\+\s*2\.|\buBoxA\s*\['),
 }
 
 # directories of a build whose fragments are written by the build (the rest of src/ is vendored or generated)
