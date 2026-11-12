@@ -256,7 +256,7 @@ The Ancients were the original civilization that colonized Krator, with roots, h
     where the south road tops out of the Chimes gorge, the one land crossing between the rims. Kin to both villages and
     raiding no one, it stores the Ice-cutters' ice and the Fowlers' eggs and keeps the gorge stair's ropes; it **pays
     Dalab a toll**, whose realm holds the ground, and keeps its market peace under Dalab's claim
-    (`kits/tungang/PLAN.md` 1.3.2). **The Travellers** (the
+    (`kits/tungang/PLAN.md` 1.3.3). **The Travellers** (the
     owner, 2026-11-11) are the Fellgang families who live on the road, with some cultural similarities to the Irish
     Travellers: hauling, dealing in beasts and goods, mending salvage, guiding, portering on the Line's branches near the
     surface but never deeper in, save for **one clan that ventures into the dark unexplored caverns** and services and

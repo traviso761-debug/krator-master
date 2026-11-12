@@ -570,7 +570,7 @@ south-western pueblo culture**.
 - **Not the Zeijani's pueblo.** Dhelv took the kiva into carved rock with katsina-style spirits (`kits/zeijani/PLAN.md`
   6.2). Wildcat's pueblo is built above ground and holds no spirits at all: its walls carry heroes, deeds and trophies.
 
-### 1.3.2 The rim's market town at the Blak Riba head (the owner, 2026-11-11: the site; the rest *proposed*)
+### 1.3.3 Blakhed: the rim's market town at the Blak Riba head (the owner, 2026-11-11: the site; the rest *proposed*)
 
 The owner asked for a non-raiding Fellgang settlement of 1,000-2,000, related to the Fowlers and the Ice-cutters and
 culturally tied to both. **The site is settled: the Blak Riba head, model pixel 441,1400** (5.1, 2 km per px).
@@ -1346,7 +1346,7 @@ Big Meeting, 11 shine for rank, 12 the 0.94 scale, 14 the core extensions (each 
 19. **Loj Nahn** as a fourth set later (the Tungang shell under the sky on the Pile's crown), or the Tungang set dressed?
 27. **The Fellgang villages ahead of the order?** They need neither the Line nor the cavern setting: build the Fellgang
     village defs of section 3.3.1 (and the row's move into `core/hamlet`) in parallel with the Line's biome?
-29. *Answered 2026-11-11*: the market town is **Blakhed**, and it pays Dalab a toll (section 1.3.2).
+29. *Answered 2026-11-11*: the market town is **Blakhed**, and it pays Dalab a toll (section 1.3.3).
 
 ## 11. Rejected and parked ideas
 
