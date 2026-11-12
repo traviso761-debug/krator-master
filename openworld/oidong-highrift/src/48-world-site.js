@@ -26,6 +26,9 @@ KHAMLET.CULTURES['xanadu-camp']=Object.assign({},KHAMLET.CULTURES.xanadu,{workSh
 if(typeof KTAGS!=='undefined')KTAGS.VOCAB.cultureAlias['xanadu-camp']={culture:'xanadu'};
 // bridges (core/world/42b-world-bridges.js, the owner 2026-11-11): every road and link this region lays is bridged where it
 // crosses a named river, so the links are laid on the ground and the rivers run on under them
+/* staffing (the owner, 2026-11-11: "make hamlets and monasteries be at least 70% fully staffed, increase pop if needed"):
+   every village's and house's ceiling lets KHAMLET.census fill at least 70 % of the focus jobs its row wants (farming 90,
+   monastery 260); the Beck Fields and the Caldron shelf village rose to 180 (66 of 90 field jobs), the Mirror Grange and the Caldron House to 260 (187 of 260) */
 var SITE_SPEC={region:'oidong-highrift',world:1311634,bridges:{culture:'order'},
  sites:{
   /* Strongbow, the Ancients' cliff arcology hung in the scarp between the Oidong Valley and Xanadu, 3 km north of the
@@ -55,15 +58,15 @@ var SITE_SPEC={region:'oidong-highrift',world:1311634,bridges:{culture:'order'},
    {id:'darling',name:'Dar-ling, the silk and paper village',focus:'silk',bearing:210,km:6,pop:160}]},
   ssinggjar01:{culture:'order',road:{r:150,hw:1.6,join:true},hamlets:[
    {id:'house',name:'The house at the Singing Gjar',focus:'monastery',near:[0,0],look:4000,pop:350,link:[-3000,0],road:false},
-   {id:'beck-fields',name:'The Beck Fields',culture:'xanadu',focus:'farming',bearing:265,km:10,look:5000,pop:90},
+   {id:'beck-fields',name:'The Beck Fields',culture:'xanadu',focus:'farming',bearing:265,km:10,look:5000,pop:180},
    {id:'vein-camp',name:'The Vein Camp',culture:'xanadu-camp',focus:'mine',bearing:40,km:5,look:4000,pop:50}]},
   smirrorgrange01:{culture:'order',road:{r:150,hw:1.6,join:true},hamlets:[
-   {id:'house',name:'The Mirror Grange',focus:'monastery',near:[0,0],look:3000,pop:80,link:[-3000,0],road:false},
+   {id:'house',name:'The Mirror Grange',focus:'monastery',near:[0,0],look:3000,pop:260,link:[-3000,0],road:false},
    {id:'growers',name:"The grange's growers",culture:'xanadu',focus:'farming',bearing:200,km:3,look:3000,pop:200},
    {id:'herders',name:"The graben's herders",culture:'xanadu',focus:'ranch',bearing:120,km:6,look:4000,pop:150}]},
   scaldronhouse01:{culture:'order',road:{r:150,hw:1.6,join:true},hamlets:[
-   {id:'house',name:'The Caldron House',focus:'monastery',near:[0,0],look:3000,pop:60,link:[-3000,0],road:false},
-   {id:'shelf',name:'The Caldron shelf village',culture:'xanadu',focus:'farming',bearing:120,km:2.5,look:3000,pop:150}]}},
+   {id:'house',name:'The Caldron House',focus:'monastery',near:[0,0],look:3000,pop:260,link:[-3000,0],road:false},
+   {id:'shelf',name:'The Caldron shelf village',culture:'xanadu',focus:'farming',bearing:120,km:2.5,look:3000,pop:180}]}},
  /* the Order's road up the Oidong Valley and the beck's staircase (`guide`, 5.1 px: the straight line crosses the range
     south of the valley, which took it over 6,000 m), past Oidong's lake on its north shore */
  /* the Order's road up the Oidong Valley and the beck's staircase to the Caldron House (`guide`, 5.1 px: the straight line

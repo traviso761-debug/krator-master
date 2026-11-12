@@ -97,7 +97,7 @@ Qiblai). Its purpose, confirmed by the owner (2026-11-11: "keep as proposed"):
 | Part | Row, focus | Ceiling | Where |
 |---|---|---|---|
 | The house | `order`, monastery | 350 | on the plateau's lee at the gjá's lip |
-| The Beck Fields | `xanadu`, farming | 90 | down the beck below the plateau (barley terraces on the beck's water, the vent's warm ground, the yaks) |
+| The Beck Fields | `xanadu`, farming | 180 (was 90; 70 % staffed, the owner 2026-11-11) | down the beck below the plateau (barley terraces on the beck's water, the vent's warm ground, the yaks) |
 | The Vein Camp | `xanadu-camp` (a work camp: 90 % at work, no families), mine | 50 | the dead fissures north-east of the gjá (optical quartz, chalcedony, sulfur, copper salts, trace gold and silver) |
 
 ### 3b. The Mirror Grange (`smirrorgrange01`, px 1430,1644; 2,952 m, Dfb, 439 mm, +10 °C): the productive house
@@ -105,7 +105,7 @@ Qiblai). Its purpose, confirmed by the owner (2026-11-11: "keep as proposed"):
 On the fans south of Lake Verdigris, where the beck leaves the lake: the High Rift's mildest ground, the one place up
 here a barley crop is sure. The proposal sent the outpost's last ~23 t of grain up from the Mirror's growers, paid in
 sulfur, copper salts and crystal. **A grange of the Order makes that supply the Order's own**:
-- a house of ~80 (`order`, monastery);
+- a house of ~260 (`order`, monastery; was ~80, raised so it is 70 % staffed: the owner, 2026-11-11);
 - one farming village of lay growers (~200);
 - a herders' village (~150) on the graben's meadows.
 
@@ -115,8 +115,8 @@ It is the outpost's granary and its seed store against a bad year on the plateau
 
 By the Caldron at the foot of the graben staircase, where the beck road from Longsong climbs into the High Rift past the
 Opaline Cataract. Every traveller between the valley and the rift passes it.
-- a hospice house of ~60 (`order`, monastery): the road's inn, its wardens and its relay of letters;
-- one farming village (~150) on the Cfb shelf to feed it.
+- a hospice house of ~260 (`order`, monastery; was ~60, raised so it is 70 % staffed: the owner, 2026-11-11): the road's inn, its wardens and its relay of letters;
+- one farming village (~180, was ~150; 70 % staffed) on the Cfb shelf to feed it.
 
 ### 3d. The road
 
@@ -140,9 +140,9 @@ It is a pack road for crystal, lenses, books and people (twice a summer), never 
 | Site | People (proposal) | Planned |
 |---|---|---|
 | Longsong's ring | ~3,250 | 15 villages |
-| The Singing Gjár | ~490 (350 + 90 + 50) | 3 |
-| The Mirror Grange | ~430 | 3 |
-| The Caldron House | ~210 | 2 |
+| The Singing Gjár | ~580 (350 + 180 + 50) | 3 |
+| The Mirror Grange | ~605 | 3 |
+| The Caldron House | ~440 | 2 |
 
 ## 6. The simulation (phases S0 to S3; the owner, 2026-11-11: "make sure S0-S3 are implemented")
 

@@ -19,9 +19,14 @@ PROPOSAL-LONGSONG-PINNACLE.md` holds the economy it is planned for.
   |---|---|---|---|
   | **Strongbow** (`sfgtxw10kr`) | 1001,1596 | the Ancients' cliff arcology in the scarp between the valley and Xanadu, 3 km north of the cataract: its top on the lip (about 1,400 m), its elevator down about 3,100 m to the Xanadu floor (moved 2026-11-11); a road's end only so far | - |
   | **Longsong** (`sq80bzd7ep`) | 1226,1626 | the ring of 15 villages: Shar, Nub and Dzo-ling where its page lays them, ten more farming villages 4 to 8.5 km out, Drok-ri's high pastures, Dar-ling's silk and paper | 3,279 (the house itself is `settlements/longsong`'s, 1,344) |
-  | **The Singing Gjár** (`ssinggjar01`) | 1572,1643 | the Order's house (350), the Beck Fields (89), the Vein Camp (50: 22 miners, 12 sorters, 6 smiths; a work camp, 90 % at work) | 489 |
-  | **The Mirror Grange** (`smirrorgrange01`) | 1430,1644 | the Order's grange (80), its growers (200), the graben's herders (145) | 425 |
-  | **The Caldron House** (`scaldronhouse01`) | 1366,1668 | the Order's hospice at the staircase foot (60), its shelf village (149) | 209 |
+  | **The Singing Gjár** (`ssinggjar01`) | 1572,1643 | the Order's house (350), the Beck Fields (180), the Vein Camp (50: 22 miners, 12 sorters, 6 smiths; a work camp, 90 % at work) | 580 |
+  | **The Mirror Grange** (`smirrorgrange01`) | 1430,1644 | the Order's grange (260), its growers (200), the graben's herders (145) | 605 |
+  | **The Caldron House** (`scaldronhouse01`) | 1366,1668 | the Order's hospice at the staircase foot (260), its shelf village (180) | 440 |
+
+- **Staffing** (the owner, 2026-11-11: "make hamlets and monasteries be at least 70% fully staffed, increase pop if
+  needed"): every village's and house's ceiling lets `KHAMLET.census` fill at least 70 % of the focus jobs its kind wants
+  (a farming village 90, a house of the Order 260). The Beck Fields and the Caldron shelf village rose to 180 (66 of 90),
+  the Mirror Grange and the Caldron House to 260 (187 of 260); every other place was already at 90 % or more.
 
 - **The roads:**
   - **Village roads:** each village's lane end has a road to its site, the grade held to 8 %; they join the roads

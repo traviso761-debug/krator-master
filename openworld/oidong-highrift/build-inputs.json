@@ -173,11 +173,11 @@
     "openworld/oidong-highrift/data/scarpw.png": "fade03d72f28febcdf6ed44bbe9a05d93eff06466c1f3a304a1d58581ec2f243",
     "openworld/oidong-highrift/data/temp.png": "e233c8507394bf5f1de6bb9f6efb0f628866abd3d4cb5d39d086b9a34f2f6eb5",
     "openworld/oidong-highrift/data/wlev.png": "1f22992b4cf06b4f055351f3329cd0a3525c3d2c310dee02b2e8e0cb6e5c22bf",
-    "openworld/oidong-highrift/plan/sites.json": "ae747d5a2800e9a7c95c2b21fe81c9412ec2e2e1bbe27fcc9c19221ead67f84d",
+    "openworld/oidong-highrift/plan/sites.json": "5bdc6d416c78540fbc61e2aed3a745dd7ffa265b82897010d6604beef9806cb7",
     "openworld/oidong-highrift/src/43-world-ohr.js": "b30af0da623021af79ac245f320332762cc99cf89f513257680038bf78649aa8",
     "openworld/oidong-highrift/src/46-world-config.js": "180a4ba0e59a3bd874222bb2d891769f2211900a6e1eb01c6844bef313a70d6b",
     "openworld/oidong-highrift/src/47-world-kits.js": "717bdc6f03ab0b9a39fc3cbdffec407b19f55e2a332ef1103ea1fe0239d76e71",
-    "openworld/oidong-highrift/src/48-world-site.js": "fc245e185c38b6c8e26a55b9475c7ea010786e57f28bd184de3a7a59319532cc",
+    "openworld/oidong-highrift/src/48-world-site.js": "76f9c88b9939ad46eaa9a4b9f56964ad322d730d24a63f9df81539b0870f1c73",
     "openworld/oidong-highrift/src/49-world-highrift.js": "0a9395b879b08ed2e4b926820a6711a2691b2e6e5c8dabe3906b2b298707409f",
     "settlements/isle-demo/src/58-isle-protos.js": "d52cad0d76dfb40a6b226e2c4691e60821b346efaf78d12cba7c0214ccc526c0",
     "settlements/xanadu/tex/cloth.albedo.webp": "5f30b44e60a910aa92157f3a8f748f59b3159057cb0978662e36410cca9be4bb",
@@ -254,13 +254,13 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "openworld/oidong-highrift/dist/oidong-highrift.html": "df202311496fede1c564f90a43824f59295b186b1efe8176e593f6574c541b2c",
+    "openworld/oidong-highrift/dist/oidong-highrift.html": "68c76941191ac9ba5787b59a6a14f066c3518fa76b58f51f50ab7941ac03cae7",
     "openworld/oidong-highrift/dist/oidong-highrift.tex.highrift.js": "4479466cd7a0b4b44fb528bf6bbabefa766177537b05169bd84b7c04df5d460a",
     "openworld/oidong-highrift/dist/oidong-highrift.tex.oidong.js": "e77e451ed26a6290e3b2b7d5178829b705319497eafae1126c2fd1f58ce793a0",
     "openworld/oidong-highrift/dist/oidong-highrift.tex.xanadu.js": "735252f2a934d5a6a0f3c9be75c27750935fa59e8a7240a329512fb8e01c27c3"
    },
    "outputs_raw": {
-    "openworld/oidong-highrift/dist/oidong-highrift.html": "df202311496fede1c564f90a43824f59295b186b1efe8176e593f6574c541b2c",
+    "openworld/oidong-highrift/dist/oidong-highrift.html": "68c76941191ac9ba5787b59a6a14f066c3518fa76b58f51f50ab7941ac03cae7",
     "openworld/oidong-highrift/dist/oidong-highrift.tex.highrift.js": "4479466cd7a0b4b44fb528bf6bbabefa766177537b05169bd84b7c04df5d460a",
     "openworld/oidong-highrift/dist/oidong-highrift.tex.oidong.js": "e77e451ed26a6290e3b2b7d5178829b705319497eafae1126c2fd1f58ce793a0",
     "openworld/oidong-highrift/dist/oidong-highrift.tex.xanadu.js": "735252f2a934d5a6a0f3c9be75c27750935fa59e8a7240a329512fb8e01c27c3"
