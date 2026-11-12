@@ -318,7 +318,7 @@ The fields and seeds are deterministic from the terrain (`KRAND` by cell), as ev
 ### 5a. The Talovolci's words (coined 2026-11-03, *proposed*)
 
 Coined by the tongue's rules (`lore/tongues-of-krator.html`, the Talovolci tab), as the Cliff Lungs plan coined its words
-(`biomes/clifflung/PLAN.md` section 10): English roots run through the Gaulish changes (nouns take *-os* one, *-oi* many, *-a* for
+(`biomes/clivobredos/PLAN.md` section 10): English roots run through the Gaulish changes (nouns take *-os* one, *-oi* many, *-a* for
 some; *f* > *v*; *w* > *u*; the old *gh* > *x*; *th* > *đ*, the tau gallicum; *sh*, *j*, *ch* > *s*, *g*, *c*; the article
 dropped), compounded the Gaulish way (the first word's *-os* cut to *-o-*; *ver-* over, great; *-dunon* a fort; *-magos* a field),
 with the model's own words and prefixes (`tools/scale-model/smodel/river_names.py`: *Uxo-* upper, *Ande-* lower, *Marios*

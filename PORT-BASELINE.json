@@ -36,17 +36,17 @@
    "bytes": 9615500,
    "sha256": "b325a6d45ecc5d6f67e7eaa73eb410a18596fd00972afae5cff0911cd19773e7"
   },
-  "biomes/clifflung/dist/clifflung-bells.html": {
-   "bytes": 8585557,
-   "sha256": "fd6e70bee4c8be8a1e5d24e842184bc9b846e0df5f87fba7c1d2d0d3e1694f03"
+  "biomes/clivobredos/dist/clivobredos-bells.html": {
+   "bytes": 8608961,
+   "sha256": "1b6beddf2001bc445fea74631abd3da528f9f7541b924a7b819e1cce30c7b214"
   },
-  "biomes/clifflung/dist/clifflung-stair.html": {
-   "bytes": 7339572,
-   "sha256": "c25416f9a2feccc4f982e876ac7c38ce4381e5e538fd6ef2e54e115742acbac2"
+  "biomes/clivobredos/dist/clivobredos-stair.html": {
+   "bytes": 7363158,
+   "sha256": "ba06c4adad75cdc7d2a7484ac07856daa7b0c03358f5a8f2a34ce7248d465a20"
   },
-  "biomes/clifflung/dist/clifflung.html": {
-   "bytes": 7333757,
-   "sha256": "f3a4db7a5304cefb9c2aa18b5d88e4ebb325efca6a53bdf1479d411a4b0a0958"
+  "biomes/clivobredos/dist/clivobredos.html": {
+   "bytes": 7357161,
+   "sha256": "d918ae66b28a6dc42526f068838548a3ef8dc296ad57cac8216695b38bd5b3d4"
   },
   "biomes/copperglacier/dist/copperglacier-icefield.html": {
    "bytes": 5135671,

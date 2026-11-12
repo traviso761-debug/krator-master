@@ -1,0 +1,16 @@
+{
+ "build": "lung",
+ "note": "The Cliff Lungs' adapter onto the material library (PLAN.md section 15; core/materials/PLAN.md). Reused sets only: the four the plan asks for (organic.lung.ring, organic.comb.throat, organic.husk.dry, card.fallout.lawn) are owed (core/materials/PROMPTS-NEEDED.md) and until they come the ring's sun-side skin is organic.pleat.skin, the comb organic.tendril.banded, the husk organic.lichen.plates, and the fall-out lawn a canvas card (KNOWN_ISSUES.md says so). skin, bore and husk are grey detail (keep 0) under the pressure band's instance colour. The southern highlands' own pack (the trees, the paramo's ground layers) is shighlands' and is inlined from biomes/shighlands/tex by build.py, not re-packed here. Run python3 tools/textures/pack.py biomes/clivobredos after any change, then python3 build.py.",
+ "size": 512,
+ "families": {
+  "lung.skin": {"lib": "organic.pleat.skin", "scale": [3.0, 3.0], "tint": {"keep": 0.0, "mean": 0.72}, "roughLift": 0.2, "specular": 0.35},
+  "lung.bore": {"lib": "organic.coil.ribbed", "scale": [2.0, 2.0], "tint": {"keep": 0.0, "mean": 0.7}, "roughLift": 0.1, "specular": 0.4},
+  "lung.collar": {"lib": "organic.flesh.cells", "scale": [1.5, 1.5], "tint": {"keep": 0.25, "mean": 0.5}, "roughLift": 0.0, "specular": 0.5},
+  "lung.husk": {"lib": "organic.lichen.plates", "scale": [3.0, 3.0], "tint": {"keep": 0.0, "mean": 0.78}, "roughLift": 0.4, "specular": 0.2},
+  "lung.comb": {"lib": "organic.tendril.banded", "scale": [1.0, 1.0], "tint": {"keep": 0.0, "mean": 0.45}, "roughLift": 0.0, "specular": 0.5},
+  "lung.crust": {"lib": "stone.geyserite", "scale": [2.0, 2.0], "tint": {"keep": 0.6, "mean": 0.7}, "roughLift": 0.3, "specular": 0.25, "mapOnly": true},
+  "ground.breccia": {"lib": "rock.megabreccia", "scale": [6.0, 6.0], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.3, "specular": 0.25, "mapOnly": true},
+  "ground.puna": {"lib": "ground.puna", "scale": [3.2, 3.2], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.35, "specular": 0.25, "mapOnly": true},
+  "ground.fan": {"lib": "ground.mat.thermal", "scale": [2.4, 2.4], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.2, "specular": 0.3, "mapOnly": true}
+ }
+}
