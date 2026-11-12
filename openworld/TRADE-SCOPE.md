@@ -909,4 +909,26 @@ tribe and the toad men guide merchants through the maze (7.6).
 - **`core/charactermodels`:** the winter mods (`NOTES.md:210`).
 - **The sim:** the hamlets and bands.
 
-Not sent to the queue: the owner picks first.
+**Sent** (the owner, 2026-11-12: "send them"): K1-K10 as village pins, no polity, to the queue.
+
+**The east side's microclimates** (the owner: "see if we can find any microclimates on the east side that would be livable"). East
+of px 1050 (outside the Coyote Kingdom), Korona is 155,000 km² of mostly dry ground: BSk, BSh, BWh and BWk lead; the mean is 638 mm
+and +19 °C. Two kinds of livable pocket show:
+
+| | Site | Kind | Ground | Against its surroundings (20 km) | Farmland, pasture (10 km) |
+|---|---|---|---|---|---|
+| **E1** | **1143,596** | a lakeside lowland pocket | 29 m, **Cfa**, 831 mm, +26 °C, a fresh lake | wetter (777 mm around) | 132, 165: the best farmland on the east side |
+| **E2** | **1096,572** | a ring crest over the trenches | 1,395 m, Cfa, 1,396 mm, +20 °C | **3 °C cooler** | 69, 112 |
+| **E3** | **1146,546** | a ring crest | 1,880 m, Cfa, 956 mm, +18 °C | **4 °C cooler** | 63, 107 |
+| **E4** | **1094,501** | a ring crest, north | 1,403 m, Cfa, 815 mm, +20 °C | 3 °C cooler | 56, 99 |
+
+- **The crests are the true microclimates.** Mild (17-22 °C) and wet (800-1,400 mm) Cfa tops, 3-8 °C cooler than the trenches beside
+  them, but narrow, with little flat ground: hamlets and a small village each.
+- **E1 is a village.** A lakeside pocket with real farmland.
+- **Also passing, not proposed:**
+  - the inner trenches' lake margins at -800 to -1,000 m: +31 °C, hot and dense-aired (1135,492; 1160,479; 1163,504);
+  - 1090,602: an Am pocket with 1,568 mm of rain, but at +31 °C;
+  - 1196,606 on the Rīfar al-Bālm: Nomad Country, the Dasri's ground, 90 km from their village 4.
+- **Spacing:** the four are 100-140 km apart, and 100 km or more from the K sites.
+
+Not sent: the owner picks.
