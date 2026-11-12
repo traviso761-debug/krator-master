@@ -736,3 +736,46 @@ too hot to farm), so it can farm a little. Nomad Country; a `town`.
 - **Shade's `DESIGN.md:8`** still says the sedesert: a lore fix (8.4).
 
 Not sent to the queue: the owner picks first.
+
+## 10. The northern abyss: lifted, and given heat-tolerant crops (the owner, 2026-11-12)
+
+**The question.** The owner: "can we move reed and the northern tabisti town somewhere on the lake but not too hot to farm?", then
+"can we do something to the terrain to make the northern abyss a bit less hot?".
+
+**Why it is hot.** The northern abyss is a pit: 21,220 km² under -1,000 m in px ~1215-1310 by 615-752, 1,956 km² of it lakes, its
+floor's median at -1,651 m. Reed's lake (836 km² at ~-2,230 m) has a shore averaging 41 °C, 36 °C at its coolest. Reed and the
+Tabist town stand at 39 °C, with almost no farmland in reach (3 and 0 km²-eq). 11,684 km² of the pit's land is over 33 °C. The
+model lapses temperature at 6.5 °C per km (`tools/scale-model/README.md`, step 7), and 4.21 lowered Region 65 "down to the abyss's
+level" on the owner's word (`README.md:270`). No cool, farmable shore exists in the pit: only the dry step lakes on its west edge
+reach 33 °C, with 22-34 km²-eq of farmland.
+
+**The owner's choice: lift the pit ~900 m, and add heat-tolerant abyss crops.** Reed and the Tabist town stay on their lake.
+
+**The lift** (a scale-model terrain edit, for the queue):
+- **The pit:** the ground under -1,000 m in px ~1215-1310 by 615-752, north of the sill to the middle abyss at about py 752. The
+  middle lakes (Mungo's, and the new Tabisti town at 1311,761) are left alone.
+- **The rule:** compress the pit's depth below -1,000 m to 30%: new height = -1,000 - 0.3 x (-1,000 - h). So -2,333 m (Reed)
+  rises to -1,400 m (+933 m), -1,651 m (the median) to -1,195 m (+456 m), and -1,000 m does not move. The rim stays where it is,
+  with no step. The lakes re-settle over the shallower pit (`ABYSS_LAKES`), and the climate re-lapses (`reclimate`), with rain and
+  class recomputed.
+- **The effect, at 6.5 °C per km:** Reed's spot from 39 °C to ~33 °C. Land over 33 °C in the pit from 11,684 km² to about 860; over
+  36 °C from 2,028 km² to about 260. (These are the lapse alone, before the lakes and rain re-settle.)
+- **What it reaches:**
+  - the scale model's build and its history entry;
+  - the census rescan (`res_scan.py`) and the trade model;
+  - the geology rebake: the pit's coal and oil follow lowland flat ground, so they may move;
+  - Reed's and the Tabist town's notes; Furrow (1276,639) at the pit's north end;
+  - Reed's upriver fields (1297,683, batch 5.1e8), which may no longer be needed;
+  - no open-world region is built there yet.
+
+**The abyss crops** (`kits/crops`):
+- **The gap:** the crop kit already has a hottest warmth band (29 °C and up, warmth 5), but the east abyss's `marsh` zone stops at
+  warmth 4 (`10-crop-core.js:45`). The 38 °C cutoff that leaves Reed no farmland is the census's farm index (the scale model's
+  `49r`), not `kits/crops`.
+- **A record:** a heat-tolerant paddy grain, **salt-rice**, the lore's crop at Locus and Mungo (`LORE.md:401`; `settlements/mungo/DESIGN.md:25`):
+  grain, warmth 4-5, wet, salt-tolerant, home `eastabyss`.
+- **A zone:** the `marsh` zone widened to warmth 5.
+- **The census:** its farm index lets abyss marsh farm to ~40 °C for these crops.
+- **What it reaches:** `kits/crops` (`build.py`, `tests/test-crops.js`, `verify.py --assert`) and every build that reads it.
+
+Sent to the queue on the owner's choice (2026-11-12) as a terrain edit, to run in its turn; the crops wait for implementation.
