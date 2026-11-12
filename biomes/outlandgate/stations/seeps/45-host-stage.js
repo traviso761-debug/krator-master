@@ -29,13 +29,13 @@ const STAIRS=SPRINGS.map(S=>{const P=[];let x=S.x,z=S.z;for(let s=0;s<=S.len;s+=
   const c=Math.cos(a),sn=Math.sin(a);x+=5*(DOWN[0]*c-DOWN[1]*sn);z+=5*(DOWN[0]*sn+DOWN[1]*c);}
  const A=[0];for(let i=1;i<P.length;i++)A.push(A[i-1]+Math.hypot(P[i][0]-P[i-1][0],P[i][1]-P[i-1][1]));const L=A[A.length-1];
  const at=s=>{let i=0;while(i<P.length-2&&A[i+1]<s)i++;const t=clamp((s-A[i])/((A[i+1]-A[i])||1),0,1);return[P[i][0]+(P[i+1][0]-P[i][0])*t,P[i][1]+(P[i+1][1]-P[i][1])*t];};
- const T=[];let s=0,k=0;while(s<L-20){const len=26+34*KRAND.unit(KRAND.hash(S.seed,k,1));const s1=Math.min(L,s+len);let lo=1e9;for(let u=s;u<=s1;u+=4){const p=at(u);lo=Math.min(lo,raw0(p[0],p[1]));}
-  const w=k===0?14:5+3*KRAND.unit(KRAND.hash(S.seed,k,2));T.push({s0:s,s1,y:lo+.5,w});s=s1+1.4;k++;}
+ const T=[];let s=0,k=0;while(s<L-20){const len=26+34*KRAND.unit(KRAND.hash(S.seed,k,1));const s1=Math.min(L,s+len);let lo=1e9;for(let u=s;u<=s1;u+=4){const p=at(u);for(const o of[-12,0,12])lo=Math.min(lo,raw0(p[0]-DOWN[1]*o,p[1]+DOWN[0]*o));}
+  const w=k===0?40:18+10*KRAND.unit(KRAND.hash(S.seed,k,2));   /* wider than the ground's 15.6 m cells, or its triangles bridge the pool */T.push({s0:s,s1,y:lo+.5,w});s=s1+1.4;k++;}
  for(let i=1;i<T.length;i++)if(T[i].y>T[i-1].y-.3)T[i].y=T[i-1].y-.3;   /* every tread below the one above it */
  return{S,P,A,L,at,T,line:STAGEKIT.line(P,40)};});
 // the stair at a point: the nearest stair, its tread (or riser) and the distance from its line
 const _st={};
-function stairAt(x,z){let b=null;for(const St of STAIRS){const n=St.line.near(x,z,60);if(n.k<0)continue;if(b&&n.d>=b.d)continue;const s=St.A[n.k]+n.t*(St.A[n.k+1]-St.A[n.k]);
+function stairAt(x,z){let b=null;for(const St of STAIRS){const n=St.line.near(x,z,80);if(n.k<0)continue;if(b&&n.d>=b.d)continue;const s=St.A[n.k]+n.t*(St.A[n.k+1]-St.A[n.k]);
   let tr=null,ri=null;for(let i=0;i<St.T.length;i++){const T=St.T[i];if(s>=T.s0&&s<=T.s1){tr=T;break;}if(i+1<St.T.length&&s>T.s1&&s<St.T[i+1].s0){ri=[T,St.T[i+1],(s-T.s1)/1.4];break;}}
   if(!tr&&!ri)continue;b={St,d:n.d,s,tr,ri};}return b;}
 function stairLevel(A){return A.tr?A.tr.y:mix(A.ri[0].y,A.ri[1].y,A.ri[2]);}
@@ -57,7 +57,7 @@ function terrainRaw(x,z){let h=raw0(x,z);
  const m=Math.max(Math.abs(x-SERAI.x),Math.abs(z-SERAI.z)),pw=1-smooth(SERAI.hw+14,SERAI.hw+50,m);if(pw>0)h=mix(h,SERAI.pad,pw);
  return h;}
 // the stair's own ground: the pool's bed inside its width, the rim at its edge, the sinter apron falling away over ~25 m (max with the land)
-function landAt(x,z){const h=terrainRaw(x,z),A=stairAt(x,z);if(!A||A.d>stairW(A)/2+30)return h;const y=stairLevel(A),hw=stairW(A)/2;
+function landAt(x,z){const h=terrainRaw(x,z),A=stairAt(x,z);if(!A||A.d>stairW(A)/2+40)return h;const y=stairLevel(A),hw=stairW(A)/2;
  if(A.d<hw)return y-.5;if(A.d<hw+1.5)return Math.max(h,y+.12);return Math.max(h,y+.12-(A.d-hw-1.5)*.12);}
 const _tm={x:NaN,z:NaN,h:0};
 function terrainH(x,z){if(x===_tm.x&&z===_tm.z)return _tm.h;const h=landAt(x,z);_tm.x=x;_tm.z=z;_tm.h=h;return h;}
