@@ -82,7 +82,7 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P
  add('no Earth plant where ARCH.earthOk is false',HCHK.earth(ARCHB.LOG));
  add('nothing alive where ARCH.lifeAt is none',HCHK.alive(ARCHB.LOG));
  if(SKEY==='sound')add('the pioneers on the flow, the maquis off it',HCHK.lava(ARCHB.LOG));
- add('every hoarder over 1,000 ug/g nickel (ARCH.uptake)',HCHK.hoard(ARCHB.HOARD||[]));
+ if(SKEY!=='coast')add('every hoarder over 1,000 ug/g nickel (ARCH.uptake)',HCHK.hoard(ARCHB.HOARD||[]));   /* the coast is tuff and basalt: no serpentine ground, no hoarders */
  add('nothing rooted under the water but the curtains',HCHK.dry(P));
  add('preset cameras above the ground',HCHK.camerasOut(Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
  return R;}

@@ -113,4 +113,4 @@ if(SKEY==='coast'){const S=SITE;
  REGISTER({name:'A tuff cone (a satellite of the island\'s caldera: phreatomagmatic ash, palagonitised)',x:L.CP[0],z:L.CP[1],y:terrainH(L.CP[0],L.CP[1])-10,r:S.cone.r*1.2,h:S.cone.rim+40});
  {const P=S.platform,m=L.XZ((P.al[0]+P.al[1])/2,(P.w[0]+P.w[1])/2);REGISTER({name:'A platform of old pillow lava at the tide line, with tide pools',x:m[0],z:m[1],y:-3,r:(P.al[1]-P.al[0])/2,h:6});}
  {const m=L.XZ(0,-200);REGISTER({name:'The black sand beach (the seamounts\' tephra)',x:m[0],z:m[1],y:-2,r:900,h:10});}
- {const m=L.XZ(0,S.steam.w);REGISTER({name:'The Surtseyan caldera\'s steam (the vent 3 km offshore, its rim 18 m under the sea: base surges, tsunamis)',x:m[0],z:m[1],y:-2,r:500,h:60,tags:{hazard:{kind:'heat',danger:.9}}});}}
+ {const m=L.XZ(0,S.steam.w);REGISTER({name:'The Surtseyan caldera\'s steam and discoloured water (the vent 3 km offshore, its rim 18 m under the sea: base surges, tsunamis)',x:m[0],z:m[1],y:-2,r:520,h:60,tags:{hazard:{kind:'heat',danger:.9}}});}}

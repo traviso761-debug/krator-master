@@ -52,6 +52,9 @@ if(SKEY==='coast'){const S=SITE;
  BIGW=WATER.open({name:'The Steaming Sea',level:0,swell:[[.02,14,60,0,.03],[.012,7,-40,1.3,.03]],field:0,bounds:BOX,bed:terrainH,bedCell:8,mask:maskOf(BOX,8,(x,z)=>L.WW(x,z)>-120&&L.land(x,z)<0)});
  BIG_DRAW=WATER.draw(BIGW,{surf:true,breakers:true,renderOrder:1,roughness:.12,metalness:.05,envMapIntensity:.6,shallow:lin(0x5ab0a8),deep:lin(0x0e4a64)});
  BIG_DRAW.mesh.userData.inspectLabel='The Steaming Sea';
+ // DISCOLOURED WATER over the Surtseyan vent: a milky green slick where the vent's gas and fine ash rise through the sea (a vent's first sign)
+ {const p=L.XZ(0,S.steam.w),g=new THREE.CircleGeometry(520,40);g.rotateX(-Math.PI/2);const m=new THREE.Mesh(g,new THREE.MeshBasicMaterial({color:0x9ac8a0,transparent:true,opacity:.35,depthWrite:false}));
+  m.position.set(p[0],.15,p[1]);m.renderOrder=2;m.userData.host=true;m.userData.inspectLabel='Discoloured water over the Surtseyan vent';scene.add(m);}
  W_OUT.sea=true;}
 if(SKEY==='sound'){const S=SITE,lin2=lin;
  const maskOf=(box,cell,fn)=>{const nx=Math.round((box[2]-box[0])/cell),nz=Math.round((box[3]-box[1])/cell),d=new Uint8Array(nx*nz);
@@ -70,6 +73,13 @@ if(SKEY==='sound'){const S=SITE,lin2=lin;
   pts.push(new THREE.Vector2(.01,k.h-terrainH(k.x,k.z)));const g=new THREE.LatheGeometry(pts,12),c=[],P=g.attributes.position;
   for(let j=0;j<P.count;j++){const y=P.getY(j)+terrainH(k.x,k.z),wet=smooth(1.2,-.4,y);c.push(.92-.35*wet,.93-.2*wet,.9-.38*wet);}g.setAttribute('color',new THREE.Float32BufferAttribute(c,3));
   const m=new THREE.Mesh(g,SM);m.position.set(k.x,terrainH(k.x,k.z),k.z);m.userData.host=true;m.userData.inspectLabel='One of the White Stacks';scene.add(m);});
+ // THE ROOTLESS CONES' SPATTER RIMS: a ring of welded, reddened spatter round each crater
+ const RM=new THREE.MeshStandardMaterial({color:0x5a3a2e,roughness:.95,metalness:0});
+ L.CONES.forEach((c,i)=>{const g=new THREE.TorusGeometry(c.r*.42,c.r*.09,5,18);g.rotateX(Math.PI/2);const m=new THREE.Mesh(g,RM);m.position.set(c.x,terrainH(c.x+c.r*.42,c.z)-c.r*.03,c.z);
+  m.userData.host=true;m.userData.inspectLabel='A rootless cone\'s spatter rim';scene.add(m);});
+ // THE GAS HOLLOW'S FLOOR: bare and pale, where the CO2 pools and kills what lies down in it
+ {const g=new THREE.CircleGeometry(S.hollow.r*.55,20);g.rotateX(-Math.PI/2);const m=new THREE.Mesh(g,new THREE.MeshStandardMaterial({color:0xb8b2a4,roughness:1,metalness:0,polygonOffset:true,polygonOffsetFactor:-2}));
+  m.position.set(L.HP[0],terrainH(L.HP[0],L.HP[1])+.08,L.HP[1]);m.userData.host=true;m.userData.inspectLabel='The gas hollow\'s bare floor';scene.add(m);}
  Object.assign(W_OUT,{sound:true,gjar:L.GJ.length,stacks:L.STACKS.length});}
 if(WATER.breakupFlows)WATER.breakupFlows();   /* core/water ext/56: the streams' glint broken up */
 window._water=Object.assign({station:SKEY,surfaces:WATER.surfaces.length},W_OUT);

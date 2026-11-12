@@ -21,24 +21,24 @@
    "sha256": "8f59e18a3b2d8095e4df83b4ab3e30c5e0146858c33365dbf45fe9fb40d4ab70"
   },
   "biomes/arch/dist/arch-barrens.html": {
-   "bytes": 2862024,
-   "sha256": "053d0d9d1ac90df03addb118b42b411ee185f2f940a230f7b7ad88b0636e6530"
+   "bytes": 2863565,
+   "sha256": "f019c7be1ac0925a3f88b0b99efc9bc97996686e3c93f98fc83e7aa7bbd03515"
   },
   "biomes/arch/dist/arch-coast.html": {
-   "bytes": 2862027,
-   "sha256": "d28e42f7c1f508860079e7659096493a1c3e379b6106f5ae8612dc1631984979"
+   "bytes": 2863568,
+   "sha256": "b51007c5c310ab4ea715eb6b920ca7df84f03b129cda97136e165843f1ba00ab"
   },
   "biomes/arch/dist/arch-dome.html": {
-   "bytes": 2862015,
-   "sha256": "9c0b3ad28c0301638d3f577fe3cbcfdd68eaf704e5343ec5eff665783fb95d52"
+   "bytes": 2863556,
+   "sha256": "e19ed6dd3dd755b3e603df911a87014452838f8a40054725d91fcfac5ed89df7"
   },
   "biomes/arch/dist/arch-sound.html": {
-   "bytes": 2862018,
-   "sha256": "32ef8bf1267bbe70285ac86a30d86c89f4296bb2b65bd0d1412987cd5dff7653"
+   "bytes": 2863559,
+   "sha256": "b980eeff73a51e62e10a2d9bd670ebf5aaa5b75560498d3c46578459f4d93b1b"
   },
   "biomes/arch/dist/arch.html": {
-   "bytes": 2861782,
-   "sha256": "aa001d51062716af1d86cf821930414b845f8c486b232897d2fe5ff53ae000d9"
+   "bytes": 2863323,
+   "sha256": "98a1dd8c71026f937015c05b8a3f9026c8310e4462d5b888ac1b21738087808c"
   },
   "biomes/catch/dist/catch-fan.html": {
    "bytes": 9618890,

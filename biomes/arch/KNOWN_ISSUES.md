@@ -29,3 +29,6 @@ Open items are `- [ ]`; read them before changing the kit.
 - [ ] **The maquis's cards are lit as facing up** (`aN:false`): with `aN:true` the foliage hook reads a per-instance normal the kit's items do not declare (`attrs:['aN']`), and every card drew black (seen 2026-11-12). Declare the attribute when the cards move to library cards.
 - [ ] **No fauna yet** (PLAN.md section 8): the five hexapods go to `kits/fauna` as data first.
 - [ ] `tests/test-arch-chem.js` is not in `tools/test_all.py`'s glob (it runs `core/`, `settlements/*/tests` and `kits/*/tests`, not `biomes/*/tests`): run it by hand.
+- [ ] **The coconut palms' crowns read as dark flat plates** (a fungoid comb per frond, seen 2026-11-12): wire `card.palm.coconut` and droop the fronds.
+- [ ] **The offshore vent's steam is faint at 2.4 km**; the discoloured-water slick over it (89w) is what reads. A taller steam column (or a plume on `core/water`'s plume ext) is the next pass.
+- [ ] **Far landforms carry no life past the LOD's reach** (the plants' cell passes stop at the mid and floor distances): the sound's far rootless cones and the gas hollow are given real geometry (spatter rims, a bare floor) so the registry's volumes are not empty.
