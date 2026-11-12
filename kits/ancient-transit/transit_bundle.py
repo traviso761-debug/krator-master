@@ -5,7 +5,7 @@
     js = transit_bundle.furniture()                 # ONE closure defining the global KratorTransitFurniture
     frags = transit_bundle.fragments()              # [(name, path)]: the KTRANSIT fragments to read in place, in order
 
-The furniture closure wraps the master catalog's engine-neutral core (kits/catalog/krator-furniture-core.js: makeFrame, the
+The furniture closure wraps the master catalog's engine-neutral core (core/catalog/krator-furniture-core.js: makeFrame, the
 mk* primitives, mat, FPAL, ASSET), the `ancient` culture's pieces (krator-transit-furniture.js) and the assembler
 (transit-furnish.js); their top-level names (TAU, shade, mat, FPAL, ASSET ...) stay inside, so they never meet a host's own.
 It needs a global THREE (r128) and KTRANSIT (src/40-tr-records.js, the kinds table) loaded before it.

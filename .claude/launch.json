@@ -284,6 +284,18 @@
             ],
             "port": 8877,
             "autoPort": false
+        },
+        {
+            "name": "motor-vehicles",
+            "runtimeExecutable": "python",
+            "runtimeArgs": [
+                "-m",
+                "http.server",
+                "8798",
+                "--directory",
+                "kits/motor-vehicles"
+            ],
+            "port": 8798
         }
     ]
 }
