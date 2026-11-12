@@ -5,16 +5,28 @@ and 5 in the same session the next day, with
 **no GPU**: `verify.py --assert --all-views` ran in software GL (SwiftShader). **The real-GPU verify is owed on the owner's PC**
 (`KRATOR_GL=gpu`: the log's `gpu-renderer` line must name the card), with the owner's look pass.
 
-## Verified (2026-11-11, the cloud session: SwiftShader, no GPU)
+## Verified (2026-11-12, the cloud session: SwiftShader, no GPU)
 
 `python3 verify.py <page> --assert --all-views`, 1280x800, software GL (`tools/harness.py`), each page on its committed bytes:
 
 | Page | Checks | Fails | Heaviest view (draw calls, scene triangles) | Attach audit |
 |---|---|---|---|---|
-| `dist/loom-chasms.html` (station 3, the Loom) | 65 pass | 0 | Along the slot: 41, 2.08 M | 1 of 921 cards float (0.11%: an ember, the Great Chasm kit's) |
-| `dist/loom-chasms-cradle.html` (station 1, the Cradle) | 59 pass | 0 | The Yuni farms: 30, 3.32 M | 0 of 1718 |
+| `dist/loom-chasms.html` (station 3, the Loom) | 69 pass | 0 | From afar: 83, 2.10 M | 1 of 921 cards float (0.11%: an ember, the Great Chasm kit's) |
+| `dist/loom-chasms-cradle.html` (station 1, the Cradle) | 63 pass | 0 | From afar: 33, 3.33 M | 0 of 1707 |
+| `dist/loom-chasms-monocline.html` (station 2, the Weave-Step) | 59 pass (on the bytes before the last shared change; the re-run is going) | 0 | | 0 of 1 |
+| `dist/loom-chasms-caelum.html` (station 4, Mount Caelum) | 75 pass | 0 | From afar: 39, 1.69 M | 2 of 341 (0.59%: lichen, the Great Chasm kit's) |
+| `dist/loom-chasms-whiteloom.html` (station 5, the White Loom) | 58 pass | 0 | From afar: 86, 2.19 M | none drawn (no cards on the playa) |
 
-The Loom: 93 cables (68 grown, 25 pioneer shoots), every anchor on the drawn rock within 5 cm, 1767 points on the spans all clear of the
+The Weave-Step: 23 Yuni records on the waystation's pad (within 0.6 m on the drawn ground), 23-24 risers on each of three fall-line
+transects, ten box-canyon floors never climbing, the road at 16.7% at its steepest. Mount Caelum: ten fumaroles (six on the caldera's
+floor, four in the rifts' throats), each on its floor, crusted, its gas a hazard; the parent colony 49 grown cables at 15-20 cm and 73
+pioneer shoots across the two rifts, every anchor on the drawn rock, every span clear of it, the hardest pull 0.50 MN. The White Loom:
+seven brine pools, each its water over its drawn bowl under its rim, four halite sifters on the biggest pool's rim, the salt camp's 11
+records on the flat crust. What the runs caught, all fixed: the canopy's options shadowed by a loop's own variable (src/85, after it was
+lifted out of the Loom's station), the fumaroles' and the pools' core/tags volumes holding nothing the probe counts (the vents' mouths
+and the pools' halite rims are drawn now; the fauna are counted), two of the Weave-Step's views (the benches seen from below now).
+
+Stations 3 and 1, 2026-11-11: The Loom: 93 cables (68 grown, 25 pioneer shoots), every anchor on the drawn rock within 5 cm, 1767 points on the spans all clear of the
 rock, the grown cables' low points 40-170 m over the slot's floor, the hardest pull 1.10 MN within its beds (one station left ungrown on
 weak rock); 642 wall curtains seated within 5 cm. The Cradle: 53 Yuni records (240 people, 40 households), every one a pending stand-in;
 612 fields of six crops kits/crops gives the Cradle's bands (flax, frost oat, emmer, saffron, woad, helix bean); Aina Bruk falls from
@@ -30,9 +42,10 @@ view looked at the orchard, not the terraces (it stands in a field now).
 
 ## Stations 2, 4 and 5 (built 2026-11-12)
 
-- [ ] **Their full software-GL verify** (`verify.py --assert --all-views`) is running after the build; the Weave-Step passed it
-  (59 checks, 0 fails) on its bytes before two views were re-aimed ("Up the benches": downhill the risers face away; "Over the chasms":
-  it stood in a hollow at the page's low east edge). The results table above takes their rows when the runs finish.
+- [x] **Their full software-GL verify** (2026-11-12): every page passes (the table above).
+- [ ] **For the owner's look pass** (the checks pass; these are the shots): the stryder's view stands on its cable, so the animal reads as
+  a dark shape along the span; Caelum's fumarole view stands about 90 m from its vent; past the pages the far field reads as a pale sandy
+  plain at range (the model's colours), not yet as the chasm net.
 - [ ] **The Weave-Step's road** is held to a pack train's grade (under 20%: 16.7% at its steepest), not a cart's: the model's ramp is 13% in
   the page's west and the road runs down its fall line. A cart road would switch back across the benches (the owner's call).
 - [ ] **The waystation and the salt camp are pending stand-ins** (Yuni records drawn at their boxes), as the Cradle's farms: the Yuni kit's
