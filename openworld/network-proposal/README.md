@@ -9,14 +9,20 @@ once the model carries it.
 | `ancient-network-proposal-5.1.jpg` | the picture |
 | `net51.json` | the routed network |
 | `route51.py` | the router |
+| `legs51.py` | the router's last pass: a unique id for every leg (`python legs51.py <folder>` also runs it on its own) |
 | `render51.py` | the picture's drawing |
 | `setts.py` | extracts `setts.json` (the settlements) from the model's `model/src/60-settlements.js` |
 | `setts.json`, `regions.json` | snapshots of the inputs: the settlements from `claude/openworld-sites-24defd`, the regions from `model/src/51-region-store.js` |
 
 **`net51.json`** has:
 - `nodes`, each `{id, name, type, px, kind: site | dock | tbd}`;
-- `routes`, each `{id, class: line | branch | trunk | possible | izani | extension, from, to, name, km, tunnel_km, airless_open_km, px, form, up, note}`.
-  `form` and `up` (the keeper) are given per vertex.
+- `routes`, each `{id, line, class: line | branch | trunk | possible | izani | extension, from, to, name, km, tunnel_km, airless_open_km, px, form, up, note}`.
+  - `form` and `up` (the keeper) are given per vertex.
+  - **`id` is unique to its leg**, for example `rift.qiblai-longsong` or `span.dalab-span`. An open-world link names the leg it follows by
+    this id.
+  - `line` is the id the legs of one route share (`rift`, `rift.bowl`, `span`). A route of one leg has `line` equal to its `id`.
+  - `legs51.py` assigns these as `route51.py`'s last pass. It also splits the Rift line's Theodiga–Strongbow leg where the line passes
+    Qiblai and Longsong; those are pass-through points, not numbered stations.
 
 **`route51.py`** works like this:
 - It applies the draft's Ancient cost on a 4 km grid of 5.1's heights: a 4 % ruling grade, tunnel at 6x the surface cost, and

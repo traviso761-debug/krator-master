@@ -45,6 +45,9 @@ def pxof(c): return [(c % VW) * F, (c // VW) * F]
 
 # ---- nodes (the owner, 2026-11-11)
 S = {s['name']: s for s in json.load(open(SP + '/setts.json', encoding='utf8'))}
+# Strongbow moved (the owner, 2026-11-11): a cliff arcology at the Oidong Valley's east end, under the High Rift's escarpment; the scale model's
+# edit 5.1e5 (branch claude/cool-tereshkova-d594e8, bd01a61f5), not yet in setts.json's snapshot
+S['Strongbow'] = dict(S['Strongbow'], px=1298, py=1647)
 ANC = ('arcology', 'ruined arcology', 'ruin', 'cavern')
 ZEIJ = tuple(n for n, s in S.items() if n == 'Dhelv' or (s['type'] == 'cavern' and 'Zeijani' in s['notes']))
 FORTS = [n for n in S if n.startswith('Fort ')]
@@ -466,6 +469,10 @@ for k, label_, pt in EXT:
 for r in routes:
     r['from'] = 'the Pit' if r['from'] == 'Korona site' else r['from']; r['to'] = 'the Pit' if r['to'] == 'Korona site' else r['to']
     r['name'] = r['name'].replace('the Korona site', 'the Pit').replace('Korona site', 'the Pit')
+# the last pass (legs51.py): the Theodiga-Strongbow leg split at Qiblai and Longsong, and a unique id on every leg (`line` keeps the shared one)
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import legs51
+routes = legs51.finish(routes, {n: (s['px'], s['py']) for n, s in S.items()})
 out = {'nodes': [dict(v) for v in nodes.values()], 'routes': routes, 'extra': EXTRA_PTS, 'move_candidates': moves,
        'excluded': {'zeijani': list(ZEIJ), 'forts_off_the_way': ['Fort Ebon', 'Fort Vaklu'], 'ports': PORTS}}
 json.dump(out, open(SP + '/net51.json', 'w', encoding='utf8'), ensure_ascii=False, separators=(',', ':'))
