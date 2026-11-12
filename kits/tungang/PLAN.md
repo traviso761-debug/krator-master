@@ -598,8 +598,13 @@ board**. It keeps a **market peace**, since it lives by the trade that raiding k
 permanent ground and their winter quarter, and the Kradz may winter near the western vent's caves. Its buildings are the
 Fellgang set's (3.3), at town scale.
 
-**Open:** the site lies inside the **Realm of Dalab** polygon on the model; whether Dalab holds the ground or the town
-pays it, trades with it or keeps it out is the owner's (question 29). Wind direction, grazing, and water and slope at town
+**Dalab** (the owner, 2026-11-11). The site lies inside the **Realm of Dalab** polygon, and Dalab holds the ground: **the
+town pays Dalab a toll** and keeps its market peace under Dalab's claim. That is the price of the crossing, so Dalab's
+caravans and toll-men are seen in the market, and the town stands between the Realm and the Fellgangs who resent it.
+*Proposed:* the toll is paid in kind, as ice, eggs and rope, at Dalab's toll house by the gorge stair's head. And where
+the town sits when the Union strikes against Dalab's caravans (section 1.2.1) is the town's own politics.
+
+**Open:** the town's name (question 29). Wind direction, grazing, and water and slope at town
 scale are not on the 2 km model. The survey's scripts and outputs (`survey.py`, `detail.py`, `rays.py`, `lineprof.py`) were
 scratch, not committed.
 
@@ -1341,10 +1346,8 @@ Big Meeting, 11 shine for rank, 12 the 0.94 scale, 14 the core extensions (each 
 19. **Loj Nahn** as a fourth set later (the Tungang shell under the sky on the Pile's crown), or the Tungang set dressed?
 27. **The Fellgang villages ahead of the order?** They need neither the Line nor the cavern setting: build the Fellgang
     village defs of section 3.3.1 (and the row's move into `core/hamlet`) in parallel with the Line's biome?
-29. **The market town and Dalab** (section 1.3.2): the Blak Riba head lies inside the Realm of Dalab polygon. Does Dalab
-    hold the ground (the town pays it a toll and keeps the market peace under it), merely claim it (the town trades with
-    Dalab and owes it nothing), or is the polygon to be pulled back off the gorge head? And the town's name: Blakhed, Twine,
-    or another?
+29. **The market town's name** (section 1.3.2): Blakhed, Twine, or another? (*Answered 2026-11-11*: the town pays
+    Dalab a toll.)
 
 ## 11. Rejected and parked ideas
 
