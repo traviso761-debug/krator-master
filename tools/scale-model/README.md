@@ -640,8 +640,15 @@ and every raster (heights, water, the five temperatures, rain, class, zone) is c
   `lf_west_stack`; each one's cell is held as a 40 m shoal.
   **Moved after the edit (the owner, 2026-11-11):** `lf_pleasure_dome_isle` is the Erewhon page's island. It is now at
   805.035,1515.6935, r 80 m (half-axes `rx_m` 110, `rz_m` 55, optional fields), 14 m over the lake: the page's
-  `ISLAND_C`, with the page's centre on Erehwon's pin, unturned. Its old cell keeps its shoal. Section 15's check
-  now asks for it in Erehwon's bay, within a cell north of the pin and on a wet cell.
+  `ISLAND_C`, with the page's centre on Erehwon's pin, unturned (the owner, `openworld/PLAN-SETTLEMENTS.md` question 9:
+  the island stays off the quays, about 0.6 km, as on the page). Section 15's check now asks for it in Erehwon's bay,
+  within a cell north of the pin and on a wet cell.
+  **Its old shoal is undone** (2026-11-11). edit_512 had held cell 807,1513 at -560 m for the stamp. With the record
+  moved, that cell is back to -783.6 m, the bed edit_512 gives it without that landform. Method: edit_512 was rerun on
+  the pre-edit data (`5e31f0ceb^`) in memory, once as it ran and once without that landform's shoal. The first run's
+  `h.png`, `t.jpg`, `rt.jpg`, `ct.jpg` and `st.jpg` are byte for byte the committed files, so the second run's bytes
+  replaced them. That is one height cell, and the paint round it over at most 41 x 25 px. Nothing else changed.
+  The new spot needs no shoal: its rounded cell (805,1516) is the shore bench, and the 1:1 lake is 6-10 m deep there.
   `openworld/xanadu-oidong-highrift/src/44-world-landforms.js` stamps both records.
 - **Checks**: the lake's bed filled to its way out spills at the outlet's sill (-521.8 m); with the outlet's gorge
   blocked, not under 340 m over the level; no new pit in the box (a few hollows at the cones' feet and on the vale floor,
