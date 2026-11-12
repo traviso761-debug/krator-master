@@ -1,5 +1,5 @@
-// TARGET: strongbow — Strongbow, the Ancients' cliff arcology: a city hung down a cliff at the Oidong Valley's west end, toward
-// Qiblai, as built and as a thousand years have left it.
+// TARGET: strongbow — Strongbow, the Ancients' cliff arcology: a city hung down the scarp between the Oidong Valley and Xanadu,
+// as built and as a thousand years have left it.
 //
 // The tower, a slender wedge hull 462 m tall, 60 m of it over the lip, standing free in a bay quarried into a 900 m face, held by fans of stays; the crown
 // with its raked mast and arc ramp; the Nock, the deck at mid-height with the landing pad before the tower's prow; the Spine, one

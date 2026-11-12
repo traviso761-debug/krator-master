@@ -9,7 +9,7 @@ const clone=o=>JSON.parse(JSON.stringify(o)),tally=x=>C.tally(Object.assign(clon
 const checks={
  people:x=>{const t=tally(x);return t.people.all===7000&&Math.abs(t.people.arcology+x.people.upperSpine+x.people.order-t.people.town)<=0;},
  budget:x=>{const t=tally(x);return x.sectors.every(s=>t.bySector[s.id].in===s.budget[0]&&t.bySector[s.id].out===s.budget[1]);},
- totals:x=>{const t=tally(x);return t.in===1530&&t.out===1605;},
+ totals:x=>{const t=tally(x);return t.in===1602&&t.out===1575;},
  working:x=>{const t=tally(x);return t.workers<=t.ages.adults&&t.workers/t.ages.adults>.7&&t.workers/t.ages.adults<.9;},
  ids:x=>new Set(x.trades.map(r=>r.id)).size===x.trades.length&&x.trades.every(r=>x.sectors.some(s=>s.id===r.sector)),
  places:x=>x.trades.every(r=>r.per>=1&&r.in>=0&&r.out>=0&&(r.in+r.out)>0&&r.where),
@@ -18,7 +18,7 @@ const t=C.tally(C);
 console.log(JSON.stringify({people:t.people,households:t.households,ages:t.ages,workers:t.workers,in:t.in,out:t.out,places:t.places}));
 ok(checks.people(C),'about 7,000 in all, half in the arcology (with the outcasts and the Order) and half in the town');
 ok(checks.budget(C),'every sector sums to the plan\'s budget, in the arcology and in the town');
-ok(checks.totals(C),'1,530 working in the arcology, 1,605 in the town');
+ok(checks.totals(C),'1,602 working in the arcology, 1,575 in the town');
 ok(checks.working(C),'the workers are '+(100*t.workers/t.ages.adults).toFixed(0)+'% of the Sultan\'s adults');
 ok(checks.ids(C),'unique trade ids, each in a sector');
 ok(checks.places(C),'every trade has workers, a workplace size and a place');

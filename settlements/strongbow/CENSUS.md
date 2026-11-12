@@ -4,7 +4,7 @@
 
 About **7,000** people (the owner, 2026-11-11), of whom **6,700** are in the Sultan's census: **3,200** in the arcology (the foot, the lower and middle Spine, the galleries on the face; about 640 households) and **3,500** in the town (about 700 households). Outside it: **200** outcasts in the upper Spine and **100** monks of the Order in the tower.
 
-Of the Sultan's people, about 2,345 are children and 469 elders. Of the 3,886 adults, **3,135** work at a trade: **1,530** in the arcology, at about 285 workplaces, and **1,605** in the town, at about 411. The other 751 keep house, are too ill to work, or are between work.
+Of the Sultan's people, about 2,345 are children and 469 elders. Of the 3,886 adults, **3,177** work at a trade: **1,602** in the arcology, at about 290 workplaces, and **1,575** in the town, at about 395. The other 709 keep house, are too ill to work, or are between work.
 
 Every number is a proposal for the owner (PLAN.md sections 6 and 8 are the budget it sums to).
 
@@ -13,20 +13,20 @@ Every number is a proposal for the owner (PLAN.md sections 6 and 8 are the budge
 | Sector | In the arcology | In the town | All |
 |---|---|---|---|
 | Salvage | 380 | 60 | 440 |
-| Caravans | 160 | 150 | 310 |
+| Caravans | 160 | 175 | 335 |
 | Trade | 220 | 120 | 340 |
 | Crafts from the hull | 240 | 60 | 300 |
 | Other crafts | 40 | 200 | 240 |
 | Food | 70 | 80 | 150 |
-| Farming and herding | 90 | 650 | 740 |
+| Farming and herding | 90 | 570 | 660 |
 | Building | 40 | 120 | 160 |
-| The garrison and the watch | 150 | 40 | 190 |
-| Government | 40 | 10 | 50 |
-| The lift crews | 60 | 0 | 60 |
+| The garrison and the watch | 150 | 55 | 205 |
+| Government | 50 | 20 | 70 |
+| The lift crews | 122 | 0 | 122 |
 | Care | 30 | 40 | 70 |
 | Faith | 10 | 15 | 25 |
 | Fuel | 0 | 60 | 60 |
-| **All** | **1,530** | **1,605** | **3,135** |
+| **All** | **1,602** | **1,575** | **3,177** |
 
 ## By trade
 
@@ -42,6 +42,7 @@ Every number is a proposal for the owner (PLAN.md sections 6 and 8 are the budge
 | porters | 70 | - | 2 / - | the plaza and the lobby | a room in the layout |
 | drovers and carters | - | 100 | - / 20 | the road spoke; the outer ring's yards | `xa_scrap_silos` |
 | innkeepers | - | 50 | - / 5 | the road spoke | `xa_scrap_court` |
+| stablemen at the lip | - | 25 | - / 1 | the Sultanate's caravan yard at the lip, where the valley road from Longsong ends | `xa_scrap_serai` |
 | **Trade** | | | | | |
 | the bazaar's stallkeepers | 150 | - | 75 / - | the lobby's floor and galleries | a room in the layout |
 | money changers | 30 | - | 15 / - | the lobby's first gallery | a room in the layout |
@@ -68,22 +69,23 @@ Every number is a proposal for the owner (PLAN.md sections 6 and 8 are the budge
 | cookshops | 30 | 10 | 15 / 5 | the lobby's galleries; the road spoke | a room in the layout |
 | **Farming and herding** | | | | | |
 | terrace gardeners | 90 | - | 15 / - | the second and third terraces | a room in the layout |
-| barley farmers | - | 380 | - / 95 | the bench's terraced fields | `xa_scrap_farm` |
-| herders (yak, sheep) | - | 220 | - / 44 | the high pastures above and below the bench | `xa_scrap_farm` |
+| farmers (crops owed: the foot's climate on the scarp) | - | 300 | - / 75 | the fields beyond the rings | `xa_scrap_farm` |
+| herders (beasts owed: the foot's climate) | - | 220 | - / 44 | the scarp's pastures | `xa_scrap_farm` |
 | fodder cutters | - | 50 | - / 10 | the fields spoke | `xa_scrap_granary` |
 | **Building** | | | | | |
 | scrap builders | 30 | 90 | 5 / 15 | yards on the quarry spoke | a room in the layout |
 | masons | 10 | 30 | 2 / 6 | yards on the quarry spoke | a room in the layout |
 | **The garrison and the watch** | | | | | |
 | the Sultan's garrison | 150 | - | 1 / - | the barracks in the foot's west wing; the guard on lift L3 | `xa_scrap_gate` |
-| the town watch | - | 40 | - / 4 | the watch towers on the rings | `xa_scrap_tower` |
+| the town watch and the lip's guard | - | 55 | - / 6 | the watch towers on the rings; the toll post at the lip | `xa_scrap_tower`, `xa_scrap_gate` |
 | **Government** | | | | | |
 | the governor's household and officials | 15 | - | 1 / - | the west wing | a room in the layout |
-| customs | 15 | - | 1 / - | the serai's gate on the plaza | a room in the layout |
+| customs (the elevator's tolls) | 25 | - | 1 / - | the serai's gate on the plaza; the lobby's lift hall | a room in the layout |
+| the toll post at the lip | - | 10 | - / 1 | the Sultanate's post at the lip | `xa_scrap_gate` |
 | scribes | 10 | - | 5 / - | the lobby's first gallery | a room in the layout |
 | the town headmen's clerks | - | 10 | - / 2 | the inner ring | a room in the layout |
 | **The lift crews** | | | | | |
-| capstan crews | 48 | - | 3 / - | the capstan houses of lifts L1, L2 and L3 | a room in the layout |
+| capstan crews | 110 | - | 8 / - | the capstan houses of L1 to L3 and the wall lifts W1 to W5 (the elevator to the lip) | a room in the layout |
 | bridge wardens | 12 | - | 2 / - | the girder bridges to the east galleries | `xa_scrap_bridge` |
 | **Care** | | | | | |
 | healers | 10 | 15 | 4 / 5 | the lower Spine; the inner ring | a room in the layout |

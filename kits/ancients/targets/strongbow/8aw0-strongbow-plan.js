@@ -1,6 +1,6 @@
 // ================================================================= STRONGBOW — the cliff arcology: the plan (records)
-// The Ancients' city hung down a cliff face. The site is the Oidong Valley's north-west wall at its west end, toward Qiblai (scale model
-// 5.1 px 1013,1585; the owner, 2026-11-11, after an earlier move to the east end, for which the design was first drawn). The owner's
+// The Ancients' city hung down a cliff face. The site is the scarp between the Oidong Valley and Xanadu, beside the cataract (scale
+// model 5.1 px 1001,1596; the owner, 2026-11-11, after earlier moves; the design was first drawn for the valley's east end). The owner's
 // answers: an 800 m hull for about 40 000 people (since the owner's composition notes, a tower with a landing pad and one Spine, about 27 000), standing in ruin
 // on half its stays, the Sultanate below and the Order above, a showcase cliff with a cut bay (targets/strongbow/NOTES.md).
 //

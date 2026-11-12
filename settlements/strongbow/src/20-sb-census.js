@@ -13,11 +13,11 @@ const SB_CENSUS={version:1,
  people:{arcology:{foot:900,lowerSpine:1400,middleSpine:800,face:100},upperSpine:200,order:100,town:3500,
   household:5,children:.35,elders:.07},
  sectors:[
-  {id:'salvage',name:'Salvage',budget:[380,60]},{id:'caravan',name:'Caravans',budget:[160,150]},{id:'trade',name:'Trade',budget:[220,120]},
+  {id:'salvage',name:'Salvage',budget:[380,60]},{id:'caravan',name:'Caravans',budget:[160,175]},{id:'trade',name:'Trade',budget:[220,120]},
   {id:'hullcraft',name:'Crafts from the hull',budget:[240,60]},{id:'craft',name:'Other crafts',budget:[40,200]},
-  {id:'food',name:'Food',budget:[70,80]},{id:'farm',name:'Farming and herding',budget:[90,650]},{id:'build',name:'Building',budget:[40,120]},
-  {id:'guard',name:'The garrison and the watch',budget:[150,40]},{id:'govern',name:'Government',budget:[40,10]},
-  {id:'lift',name:'The lift crews',budget:[60,0]},{id:'care',name:'Care',budget:[30,40]},{id:'faith',name:'Faith',budget:[10,15]},
+  {id:'food',name:'Food',budget:[70,80]},{id:'farm',name:'Farming and herding',budget:[90,570]},{id:'build',name:'Building',budget:[40,120]},
+  {id:'guard',name:'The garrison and the watch',budget:[150,55]},{id:'govern',name:'Government',budget:[50,20]},
+  {id:'lift',name:'The lift crews',budget:[122,0]},{id:'care',name:'Care',budget:[30,40]},{id:'faith',name:'Faith',budget:[10,15]},
   {id:'fuel',name:'Fuel',budget:[0,60]}],
  trades:[
   // salvage: the Salvagers' Guild quarries the hull (the upper Spine under the outcasts' eye, the fallen lower hull, the foot's dead floors)
@@ -30,6 +30,7 @@ const SB_CENSUS={version:1,
   {id:'porter',sector:'caravan',name:'porters',in:70,out:0,per:35,where:'the plaza and the lobby',keys:[]},
   {id:'drover',sector:'caravan',name:'drovers and carters',in:0,out:100,per:5,where:'the road spoke; the outer ring\'s yards',keys:['xa_scrap_silos']},
   {id:'innkeeper',sector:'caravan',name:'innkeepers',in:0,out:50,per:10,where:'the road spoke',keys:['xa_scrap_court']},
+  {id:'lipyard',sector:'caravan',name:'stablemen at the lip',in:0,out:25,per:25,where:'the Sultanate\'s caravan yard at the lip, where the valley road from Longsong ends',keys:['xa_scrap_serai']},
   // trade
   {id:'stallkeeper',sector:'trade',name:'the bazaar\'s stallkeepers',in:150,out:0,per:2,where:'the lobby\'s floor and galleries',keys:[]},
   {id:'changer',sector:'trade',name:'money changers',in:30,out:0,per:2,where:'the lobby\'s first gallery',keys:[]},
@@ -56,22 +57,23 @@ const SB_CENSUS={version:1,
   {id:'cook',sector:'food',name:'cookshops',in:30,out:10,per:2,where:'the lobby\'s galleries; the road spoke',keys:[]},
   // farming and herding at 2,568 m: barley, peas, roots; yak and sheep
   {id:'gardener',sector:'farm',name:'terrace gardeners',in:90,out:0,per:6,where:'the second and third terraces',keys:[]},
-  {id:'farmer',sector:'farm',name:'barley farmers',in:0,out:380,per:4,where:'the bench\'s terraced fields',keys:['xa_scrap_farm']},
-  {id:'herder',sector:'farm',name:'herders (yak, sheep)',in:0,out:220,per:5,where:'the high pastures above and below the bench',keys:['xa_scrap_farm']},
+  {id:'farmer',sector:'farm',name:'farmers (crops owed: the foot\'s climate on the scarp)',in:0,out:300,per:4,where:'the fields beyond the rings',keys:['xa_scrap_farm']},
+  {id:'herder',sector:'farm',name:'herders (beasts owed: the foot\'s climate)',in:0,out:220,per:5,where:'the scarp\'s pastures',keys:['xa_scrap_farm']},
   {id:'fodder',sector:'farm',name:'fodder cutters',in:0,out:50,per:5,where:'the fields spoke',keys:['xa_scrap_granary']},
   // building
   {id:'scrapbuilder',sector:'build',name:'scrap builders',in:30,out:90,per:6,where:'yards on the quarry spoke',keys:[]},
   {id:'mason',sector:'build',name:'masons',in:10,out:30,per:5,where:'yards on the quarry spoke',keys:[]},
   // the garrison and the watch
   {id:'soldier',sector:'guard',name:'the Sultan\'s garrison',in:150,out:0,per:150,where:'the barracks in the foot\'s west wing; the guard on lift L3',keys:['xa_scrap_gate']},
-  {id:'watch',sector:'guard',name:'the town watch',in:0,out:40,per:10,where:'the watch towers on the rings',keys:['xa_scrap_tower']},
+  {id:'watch',sector:'guard',name:'the town watch and the lip\'s guard',in:0,out:55,per:10,where:'the watch towers on the rings; the toll post at the lip',keys:['xa_scrap_tower','xa_scrap_gate']},
   // government
   {id:'governor',sector:'govern',name:'the governor\'s household and officials',in:15,out:0,per:15,where:'the west wing',keys:[]},
-  {id:'customs',sector:'govern',name:'customs',in:15,out:0,per:15,where:'the serai\'s gate on the plaza',keys:[]},
+  {id:'customs',sector:'govern',name:'customs (the elevator\'s tolls)',in:25,out:0,per:25,where:'the serai\'s gate on the plaza; the lobby\'s lift hall',keys:[]},
+  {id:'lippost',sector:'govern',name:'the toll post at the lip',in:0,out:10,per:10,where:'the Sultanate\'s post at the lip',keys:['xa_scrap_gate']},
   {id:'scribe',sector:'govern',name:'scribes',in:10,out:0,per:2,where:'the lobby\'s first gallery',keys:[]},
   {id:'headman',sector:'govern',name:'the town headmen\'s clerks',in:0,out:10,per:5,where:'the inner ring',keys:[]},
-  // the lifts and bridges (PLAN.md section 5)
-  {id:'capstan',sector:'lift',name:'capstan crews',in:48,out:0,per:16,where:'the capstan houses of lifts L1, L2 and L3',keys:[]},
+  // the lifts and bridges (PLAN.md section 5): with the wall lifts, the elevator between Xanadu and the Oidong Valley
+  {id:'capstan',sector:'lift',name:'capstan crews',in:110,out:0,per:14,where:'the capstan houses of L1 to L3 and the wall lifts W1 to W5 (the elevator to the lip)',keys:[]},
   {id:'bridgewarden',sector:'lift',name:'bridge wardens',in:12,out:0,per:6,where:'the girder bridges to the east galleries',keys:['xa_scrap_bridge']},
   // care
   {id:'healer',sector:'care',name:'healers',in:10,out:15,per:3,where:'the lower Spine; the inner ring',keys:[]},

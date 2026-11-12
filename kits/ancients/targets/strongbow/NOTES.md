@@ -1,24 +1,29 @@
 # Strongbow — notes
 
-Strongbow is the Ancients' **cliff arcology**: a city hung down a cliff face. Its site is the north-west wall at the Oidong Valley's
-west end, toward Qiblai, and the face looks south-east over the valley.
+Strongbow is the Ancients' **cliff arcology**: a city hung down a cliff face. Its site is **the scarp between the Oidong Valley
+and Xanadu**, on the cliff the valley's cataract falls from, and the face looks west over Xanadu.
 
-- **Site:** scale model 5.1 px **1013,1585**, at the foot of the valley's north-west wall, about 183 km from Qiblai (922,1595). The
-  site is at 2,568 m and about +6 °C, on a bench about 430 m above the valley floor. The wall rises about 1,300 m within 4 km. That
-  wall is lower and less sheer than this page's cliff, so the kit's own landform (the face, the bay quarried into it) carries the
-  arcology there.
+- **Site:** scale model 5.1 px **1001,1596**, 3 km north of the cataract by which the valley's river leaves (the owner, 2026-11-11:
+  "strongbow needs to be right on the xanadu-oidong border - the same cliff the cataract is on - so that it offers a real
+  advantage to anyone using its elevator").
+  - Its top is on the lip, at about 1,400 m, where the valley road from Longsong ends.
+  - The scarp falls about 3,100 m west to the Xanadu floor over some 20 km, steepest at px 994-996.
+  - The page's 900 m face and its bay stand for that steepest stretch. Below it the scarp goes on falling, and the town at the foot
+    (`settlements/strongbow/PLAN.md`) stands where the face meets it.
 - **When it moved:** all on 2026-11-11.
-  - The owner first moved it from 1026,1594 to the valley's east end (1298,1647), under the High Rift's escarpment. This target was
-    designed for that place.
-  - The owner then moved it back to the west end: "strongbow should be at the other end of the valley, by qiblai".
-  - On branch `claude/cool-tereshkova-d594e8`: the scale model is `0b360a4f5` and `openworld/SITES.json` (`sfgtxw10kr`) is `3db1e2b3e`.
-    Read the site's terrain there.
-- **The network:** it is the Rift line's station 11, the end of the line. After the move the line reaches it by the uplands to its
-  south, not along the valley (`openworld/ANCIENT-NETWORK.md`; commit `765d811b9`).
-- **The roads:** the valley road from Longsong ends at its foot.
-- **Facing:** the page's frame faces south (+z), with Krator's noon sun in the north behind the face. The site faces south-east, so
-  the open world turns the frame. The heliostats are aimed from the frame's sun vector (`HELIO.sun`), which the placement must turn
-  with it.
+  - 1026,1594, then the valley's east end (1298,1647), under the High Rift's escarpment. This target was designed for that place.
+  - Then the valley's west end (1013,1585): "strongbow should be at the other end of the valley, by qiblai".
+  - Then the scarp (1001,1596).
+  - On `claude/cool-tereshkova-d594e8`: the scale model is `aaed590fe`, `openworld/SITES.json` (`sfgtxw10kr`) is `7cff97d0c`, and
+    the region is `317dba7b4`. Read the site's terrain there.
+- **The network:** it was the Rift line's station 11, the end of the line, reached from the uplands to the south. **The line is
+  abandoned** (the owner, 2026-11-11): no upkeep, the way broken near Strongbow, and the terminus hall is a ruin the town builds over
+  (`openworld/ANCIENT-NETWORK.md` 8.16, `a65355184` on the network branch).
+- **The roads and the elevator:** the valley road from Longsong ends at the top. Xanadu's girder lifts carry the way down to the foot
+  (`settlements/strongbow/PLAN.md` section 5).
+- **Facing:** the page's frame faces south (+z), with Krator's noon sun in the north behind the face. The site faces west, so the
+  open world turns the frame. The heliostats are aimed from the frame's sun vector (`HELIO.sun`), which the placement must turn with
+  it.
 - **The references:** the owner's two pictures (2026-11-11), with two more for inspiration:
   1. a tall, slender wedge tower set into a canyon wall and held by fans of cable stays, with a mid-height deck and a spire with a
      cable-stayed mast;
