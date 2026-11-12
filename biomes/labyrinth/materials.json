@@ -1,12 +1,829 @@
 {
  "build": "labyrinth",
- "note": "The Labyrinth's adapter onto the material library (core/materials/PLAN.md). The ground's KGROUND layers (84-host-ground.js): ground.steppe (the grazed steppe and meadow: ground.ground003), ground.mud (the trodden banks, the trails and the wallows: ground.brown_mud_02), ground.gravel (the river's bars and the causeways' shoulders), ground.sand (the pond's beach where the banks are low), rock.dome (the knobs' talus and the walls: the glaciated dome's banded gneiss). The flora is the nwlowlands kit's, read in place with its own pack (station 1's first cut: PLAN-GATE.md, KNOWN_ISSUES.md); the Hall and its stacks take the Ancients kit's pack.",
+ "note": "The Labyrinth's adapter onto the material library (core/materials/PLAN.md). The ground's KGROUND layers (84-host-ground.js): ground.steppe (the grazed steppe and meadow: ground.ground003), ground.mud (the trodden banks, the trails and the wallows: ground.brown_mud_02), ground.gravel (the river's bars and the causeways' shoulders), ground.sand (the pond's beach where the banks are low), rock.dome (the knobs' talus and the walls: the glaciated dome's banded gneiss). THE FLORA (src/50-70, the kit's own mammoth steppe): the four trees' barks (larch, birch, the Euphrates poplar's for the steppe poplar, willow) and cards (card.larch's green row, card.birch.dwarf's summer row for the silver birch until its own card is delivered: core/materials/PROMPTS-NEEDED.md section 44, card.aspen for the poplar, card.willow.woolly), the scrub (card.dwarfbirch, the woolly willow, card.juniper), the floor (card.grass.dry, card.stipa, card.sage for wormwood, card.sedge.fen, card.cottongrass, card.flower.bloom.highland, card.flowerspike), the wild melon's leaves (card.crop.melon; its fruit is plain colour until its rind is delivered: PROMPTS-NEEDED.md section 44), the cold rock's lichens (card.lichen, card.cladonia), moss, cushions (surface.cushion), the boulders (rock.gneiss.banded), the pit tarns' natives (card.lily.iridescent, card.reed under an iridescent material). The Hall and its stacks take the Ancients kit's pack. Run python3 tools/textures/pack.py biomes/labyrinth after any change, then python3 build.py.",
  "size": 512,
  "families": {
-  "ground.steppe": {"lib": "ground.ground003", "scale": [2.4, 2.4], "tint": {"keep": 0.55, "mean": null}, "roughLift": 0.3, "mapOnly": true},
-  "ground.mud": {"lib": "ground.brown_mud_02", "scale": [2.0, 2.0], "tint": {"keep": 0.6, "mean": null}, "roughLift": 0.25, "mapOnly": true},
-  "ground.gravel": {"lib": "ground.gravel042", "scale": [2.2, 2.2], "tint": {"keep": 0.6, "mean": null}, "roughLift": 0.35, "mapOnly": true},
-  "ground.sand": {"lib": "ground.coast_sand_01", "scale": [2.4, 2.4], "tint": {"keep": 0.6, "mean": null}, "roughLift": 0.3, "mapOnly": true},
-  "rock.dome": {"lib": "rock.gneiss.banded", "scale": [4, 4], "tint": {"keep": 0.0, "mean": 0.6}, "mapOnly": true, "roughLift": 0.3}
+  "ground.steppe": {
+   "lib": "ground.ground003",
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": {
+    "keep": 0.55,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "mapOnly": true
+  },
+  "ground.mud": {
+   "lib": "ground.brown_mud_02",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.6,
+    "mean": null
+   },
+   "roughLift": 0.25,
+   "mapOnly": true
+  },
+  "ground.gravel": {
+   "lib": "ground.gravel042",
+   "scale": [
+    2.2,
+    2.2
+   ],
+   "tint": {
+    "keep": 0.6,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "mapOnly": true
+  },
+  "ground.sand": {
+   "lib": "ground.coast_sand_01",
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": {
+    "keep": 0.6,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "mapOnly": true
+  },
+  "rock.dome": {
+   "lib": "rock.gneiss.banded",
+   "scale": [
+    4,
+    4
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "mapOnly": true,
+   "roughLift": 0.3
+  },
+  "bark.larch": {
+   "lib": "bark.larch",
+   "scale": [
+    1.0,
+    1.4
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "bark.birch": {
+   "lib": "bark.birch",
+   "scale": [
+    1.0,
+    1.2
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "bark.poplar": {
+   "lib": "bark.poplar.euphrates",
+   "scale": [
+    1.2,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "bark.willow": {
+   "lib": "bark.bark_willow_02",
+   "scale": [
+    1.0,
+    1.4
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "larchspray": {
+   "lib": "card.larch",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.22,
+   "cell": [
+    0.3333,
+    0.0,
+    0.6667,
+    0.3333
+   ]
+  },
+  "birchleaf": {
+   "lib": "card.birch.dwarf",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.22,
+   "stems": [
+    {
+     "cell": [
+      0.009,
+      0.015,
+      0.325,
+      0.321
+     ],
+     "stem": [
+      0.2979,
+      0.2705
+     ],
+     "tip": [
+      0.0413,
+      0.1243
+     ],
+     "w": [
+      -0.1041,
+      0.1213
+     ]
+    }
+   ]
+  },
+  "poplarleaf": {
+   "lib": "card.aspen",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.66
+   },
+   "roughLift": 0,
+   "specular": 0.22,
+   "stems": [
+    {
+     "cell": [
+      0.015,
+      0.016,
+      0.327,
+      0.339
+     ],
+     "stem": [
+      0.0986,
+      0.3389
+     ],
+     "tip": [
+      0.2362,
+      0.017
+     ],
+     "w": [
+      -0.1165,
+      0.1317
+     ]
+    },
+    {
+     "cell": [
+      0.335,
+      0.329,
+      0.671,
+      0.671
+     ],
+     "stem": [
+      0.6045,
+      0.6709
+     ],
+     "tip": [
+      0.425,
+      0.3566
+     ],
+     "w": [
+      -0.1561,
+      0.1407
+     ]
+    },
+    {
+     "cell": [
+      0.661,
+      0.661,
+      0.968,
+      0.984
+     ],
+     "stem": [
+      0.7471,
+      0.9775
+     ],
+     "tip": [
+      0.8867,
+      0.6491
+     ],
+     "w": [
+      -0.1173,
+      0.1337
+     ]
+    }
+   ]
+  },
+  "willowleaf": {
+   "lib": "card.willow.woolly",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.22,
+   "stems": [
+    {
+     "cell": [
+      0.022,
+      0.013,
+      0.323,
+      0.327
+     ],
+     "stem": [
+      0.21,
+      0.3213
+     ],
+     "tip": [
+      0.1402,
+      0.0229
+     ],
+     "w": [
+      -0.1239,
+      0.1217
+     ]
+    },
+    {
+     "cell": [
+      0.358,
+      0.347,
+      0.657,
+      0.657
+     ],
+     "stem": [
+      0.6045,
+      0.6318
+     ],
+     "tip": [
+      0.4034,
+      0.389
+     ],
+     "w": [
+      -0.1296,
+      0.1194
+     ]
+    },
+    {
+     "cell": [
+      0.663,
+      0.673,
+      0.991,
+      0.985
+     ],
+     "stem": [
+      0.8525,
+      0.9795
+     ],
+     "tip": [
+      0.8117,
+      0.6827
+     ],
+     "w": [
+      -0.1231,
+      0.1394
+     ]
+    }
+   ]
+  },
+  "scrubwillow": {
+   "lib": "card.willow.woolly",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.22,
+   "stems": [
+    {
+     "cell": [
+      0.022,
+      0.013,
+      0.323,
+      0.327
+     ],
+     "stem": [
+      0.21,
+      0.3213
+     ],
+     "tip": [
+      0.1402,
+      0.0229
+     ],
+     "w": [
+      -0.1239,
+      0.1217
+     ]
+    },
+    {
+     "cell": [
+      0.358,
+      0.347,
+      0.657,
+      0.657
+     ],
+     "stem": [
+      0.6045,
+      0.6318
+     ],
+     "tip": [
+      0.4034,
+      0.389
+     ],
+     "w": [
+      -0.1296,
+      0.1194
+     ]
+    },
+    {
+     "cell": [
+      0.663,
+      0.673,
+      0.991,
+      0.985
+     ],
+     "stem": [
+      0.8525,
+      0.9795
+     ],
+     "tip": [
+      0.8117,
+      0.6827
+     ],
+     "w": [
+      -0.1231,
+      0.1394
+     ]
+    }
+   ]
+  },
+  "dwarfbirch": {
+   "lib": "card.dwarfbirch",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.5,
+    "mean": 0.6
+   },
+   "roughLift": 0,
+   "specular": 0.22,
+   "stems": [
+    {
+     "cell": [
+      0.001,
+      0.22,
+      0.331,
+      0.394
+     ],
+     "stem": [
+      0.0049,
+      0.3604
+     ],
+     "tip": [
+      0.3171,
+      0.2801
+     ],
+     "w": [
+      -0.0784,
+      0.0696
+     ]
+    },
+    {
+     "cell": [
+      0.001,
+      0.626,
+      0.319,
+      0.796
+     ],
+     "stem": [
+      0.0068,
+      0.7549
+     ],
+     "tip": [
+      0.3094,
+      0.6953
+     ],
+     "w": [
+      -0.0738,
+      0.0605
+     ]
+    },
+    {
+     "cell": [
+      0.671,
+      0.634,
+      1.0,
+      0.796
+     ],
+     "stem": [
+      0.9912,
+      0.7549
+     ],
+     "tip": [
+      0.6856,
+      0.6933
+     ],
+     "w": [
+      -0.0658,
+      0.0697
+     ]
+    }
+   ]
+  },
+  "juniper": {
+   "lib": "card.juniper",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.66
+   },
+   "roughLift": 0,
+   "specular": 0.22,
+   "stems": [
+    {
+     "cell": [
+      0.022,
+      0.03,
+      0.339,
+      0.339
+     ],
+     "stem": [
+      0.0752,
+      0.3389
+     ],
+     "tip": [
+      0.2765,
+      0.025
+     ],
+     "w": [
+      -0.1217,
+      0.1256
+     ]
+    },
+    {
+     "cell": [
+      0.329,
+      0.331,
+      0.671,
+      0.671
+     ],
+     "stem": [
+      0.4521,
+      0.6709
+     ],
+     "tip": [
+      0.542,
+      0.3721
+     ],
+     "w": [
+      -0.1628,
+      0.1523
+     ]
+    },
+    {
+     "cell": [
+      0.661,
+      0.661,
+      0.984,
+      0.97
+     ],
+     "stem": [
+      0.667,
+      0.9619
+     ],
+     "tip": [
+      0.9633,
+      0.6796
+     ],
+     "w": [
+      -0.1046,
+      0.1129
+     ]
+    }
+   ]
+  },
+  "grass": {
+   "lib": "card.grass.dry",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.68
+   },
+   "roughLift": 0,
+   "specular": 0.22,
+   "cell": [
+    0.3333,
+    0.3333,
+    0.6667,
+    0.6667
+   ]
+  },
+  "stipa": {
+   "lib": "card.stipa",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.66
+   },
+   "roughLift": 0,
+   "specular": 0.22,
+   "cell": [
+    0.3333,
+    0.3333,
+    0.6667,
+    0.6667
+   ]
+  },
+  "wormwood": {
+   "lib": "card.sage",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.66
+   },
+   "roughLift": 0,
+   "specular": 0.22,
+   "cell": [
+    0.333,
+    0.329,
+    0.644,
+    0.671
+   ]
+  },
+  "sedge": {
+   "lib": "card.sedge.fen",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.5,
+    "mean": 0.6
+   },
+   "roughLift": 0,
+   "specular": 0.22,
+   "cell": [
+    0.495,
+    0.091,
+    0.993,
+    0.464
+   ]
+  },
+  "cotton": {
+   "lib": "card.cottongrass",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.22,
+   "cell": [
+    0.3333,
+    0.3333,
+    0.6667,
+    0.6667
+   ]
+  },
+  "forb": {
+   "lib": "card.flower.bloom.highland",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.22,
+   "cell": [
+    0.68,
+    0.34,
+    0.99,
+    0.66
+   ]
+  },
+  "spike": {
+   "lib": "card.flowerspike",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.7
+   },
+   "roughLift": 0,
+   "specular": 0.22,
+   "cell": [
+    0.34,
+    0.34,
+    0.66,
+    0.66
+   ]
+  },
+  "melonleaf": {
+   "lib": "card.crop.melon",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.22,
+   "cell": [
+    0.3333,
+    0.3333,
+    0.6667,
+    0.6667
+   ]
+  },
+  "lichen": {
+   "lib": "card.lichen",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.7
+   },
+   "roughLift": 0,
+   "specular": 0.22,
+   "cell": [
+    0.3333,
+    0.3333,
+    0.6667,
+    0.6667
+   ]
+  },
+  "cladonia": {
+   "lib": "card.cladonia",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.22,
+   "cell": [
+    0.3333,
+    0.3333,
+    0.6667,
+    0.6667
+   ]
+  },
+  "moss": {
+   "lib": "card.moss",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.63
+   },
+   "roughLift": 0,
+   "specular": 0.22,
+   "cell": [
+    0.024,
+    0.042,
+    0.976,
+    0.954
+   ]
+  },
+  "tarnlily": {
+   "lib": "card.lily.iridescent",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.22,
+   "cell": [
+    0.028,
+    0.02,
+    0.972,
+    0.96
+   ]
+  },
+  "tarnreed": {
+   "lib": "card.reed",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.65
+   },
+   "roughLift": 0,
+   "specular": 0.22,
+   "cell": [
+    0.329,
+    0.329,
+    0.667,
+    0.671
+   ]
+  },
+  "cushion": {
+   "lib": "surface.cushion",
+   "scale": [
+    0.8,
+    0.8
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.62
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "rock.boulder": {
+   "lib": "rock.gneiss.banded",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.62
+   },
+   "roughLift": 0.3
+  }
  }
 }

@@ -10,6 +10,7 @@
 //   THE KNOBS       the chaos's tilted flat-topped mesas and knobby pyramids on the floor (KSTACKS), the sabre-tooth's talus among them
 const SITE={key:'mesas',exportAt:[-1100,1300],blurb:"the outflow floor between two great mesas, the chaos's tilted knobs and pyramids, dry steppe",name:'The Mesas',region:'The Mesas: the chaos\'s outflow floors (the Labyrinth, region rmw8bqrn3dnx4)',px:257.5,py:1590,
  old:{px:-14.5,py:1260},atm:1.25,koppen:['BSk','ET','EF'],rain:298,mean:8,
+ flora:'drysteppe',   /* the flora kit's profile (src/55, LABY.PROFILES): BSk: short grass, feather grass and wormwood, juniper on the rock's feet */
  floor:1960,tilt:[-.006,.004],flatR:[0,1],
  lakes:[],
  rivers:[],

@@ -1,9 +1,8 @@
 // ================================================================= HOST — build (every station; copperglacier's order)
 // The order a world follows: its own structures first (the knobs 86, the Hall 89g: they fill OBSTACLES), the water (89w), then the flora, then one
 // bake. THE WATER AS FIELDS (core/water ext/60; core/biome 41): one shore for the flora, the ground's wet band and the audit.
-// THE FLORA (station 1's first cut, PLAN-GATE.md section 6): the nwlowlands kit read in place (its temperate trees: candle birch, spindle poplar and
-// glow-willow by the water, the parkland's stands on the floor; its floor), on this page's fields (45: tropic 0, the steppe dry, the river and the pond
-// wet). The Labyrinth's own mammoth steppe (PLAN.md section 3) is a kit still to make: KNOWN_ISSUES.md.
+// THE FLORA: the kit's own mammoth steppe (src/50-70, PLAN.md section 3) on this page's fields (45: the steppe dry, the river and the lakes
+// wet, the rock and the cold), under the station's profile (44z: SITE.flora: parkland, tallsteppe, drysteppe or cold).
 const WATER_F=WATER.fields({box:[-TERR.R*1.1,-TERR.R*1.1,TERR.R*1.1,TERR.R*1.1],cell:8,ground:terrainH,surfaces:WATER.surfaces.filter(q=>q.kind!=='fall')});
 const WATER_FN=WATER.fieldFns(WATER_F);window._waterShore=WATER_FN.shore;   /* the root mask reads it (45) */
 const WET_SHORE=(x,z)=>{const s=WATER_FN.shore(x,z);return s!==s?0:smooth(24,1,s);};
@@ -15,12 +14,11 @@ if(new URLSearchParams(location.search).get('fields')!=='0'){const S0=FIELD.shor
 window._biome=null;
 const SHADOW_ON=new URLSearchParams(location.search).get('shadow')!=='0'&&typeof KSHADOW!=='undefined'&&!!KSHADOW.attach;
 (function(){
- const t0=performance.now(),Q=new URLSearchParams(location.search),q=Q.has('q')?+Q.get('q'):(SITE.floraQ==null?1:SITE.floraQ);   /* the kit's own quality: at .7 its thinned crowns leave 1.35% of the bloom cards floating (the core attach audit) */
- try{BIO.cur='labyrinth/'+SITE.key;window._biome=NWLOW.build({R:TERR.R-150,quality:q});BIO.cur=null;}catch(e){reportErr('flora: '+e.stack);}
- /* THE ROCK AND THE RUIN OVERGROWN (KNOWN_ISSUES.md): the same kit's growth on structures (NWLOW.dress: moss and plants on the ledges, hanging
-    moss off the soffits, roots and curtains down the walls) over the knobs, the five stacks (their terraces and galleries) and the Hall's broken
-    decks, handed over as world-space geometry; the dressing never touches the geometry. Densities scaled up for surfaces this size (the
-    Hexahedron's lesson, kits/ancients targets/hexahedron: BIO.upFaces weights by area, so the defaults are a few dozen specks). ?dress=0 off */
+ const t0=performance.now(),Q=new URLSearchParams(location.search),q=Q.has('q')?+Q.get('q'):(SITE.floraQ==null?1:SITE.floraQ);   /* the kit's quality: the floor's and the trees' share */
+ try{BIO.cur='labyrinth/'+SITE.key;window._biome=LABY.build({R:TERR.R-150,quality:q,profile:SITE.flora||'parkland'});BIO.cur=null;}catch(e){reportErr('flora: '+e.stack);}
+ /* THE ROCK AND THE RUIN OVERGROWN (KNOWN_ISSUES.md): the kit's growth on structures (LABY.dress: lichen on the walls, moss, grass, cushions,
+    juniper and dwarf birch on the ledges, a few young birches in the joints) over the knobs, the five stacks (their terraces and galleries)
+    and the Hall's broken decks, handed over as world-space geometry; the dressing never touches the geometry. ?dress=0 off */
  if(Q.get('dress')!=='0')try{const geos=[];scene.updateMatrixWorld(true);
   /* only what stands out of the water: a triangle with any corner under the pond's level + 0.5 m is dropped (the fallen cap's drums lie half
      in the pond, and the plinths stand in it; growth there would be rooted under the water) */
@@ -33,10 +31,8 @@ const SHADOW_ON=new URLSearchParams(location.search).get('shadow')!=='0'&&typeof
    const o=new THREE.BufferGeometry();o.setAttribute('position',new THREE.Float32BufferAttribute(P,3));if(uv)o.setAttribute('uv',new THREE.Float32BufferAttribute(U,2));o.computeVertexNormals();return o;};
   const take=o=>{if(o.isMesh&&!o.isInstancedMesh&&o.geometry&&o.geometry.attributes.position&&!(o.material&&(o.material.transparent||o.material===MAT.acVoid)))geos.push(dry(o.geometry.clone().applyMatrix4(o.matrixWorld)));};
   scene.children.forEach(o=>{if(/^host:knob\./.test(o.name))take(o);});if(GATE)GATE.holder.traverse(take);
-  BIO.cur='labyrinth/dress';NWLOW.dress(geos,{ledges:{moss:5000,plants:2600,edges:0,hang:10,mossR:8,size:5,treeH:14},soffits:{n:0},walls:{n:1600,hang:9}}
-  /* no ledge-edge or soffit curtains: their flowers (65-biome-nwlowlands-dress.js, curtain {flowers}) float up to 6 m off any card and failed the
-     core attach audit (1.81%); hangs of 24-30 m ran through the ground and into the rock, so the walls' hang is 9 m */);BIO.cur=null;
-  window._dress={geos:geos.length};}catch(e){reportErr('dress: '+e.stack);}
+  BIO.cur='labyrinth/dress';const ds=LABY.dress(geos,{ledges:{moss:4000,plants:2600,mossR:4,size:1.6,treeH:6,trees:.05},walls:{n:2400,lichenS:1.8}});BIO.cur=null;
+  window._dress=Object.assign({geos:geos.length},ds);}catch(e){reportErr('dress: '+e.stack);}
  if(Q.has('nobake')){window._stats=JSON.parse(JSON.stringify(BIO.stats));window._instances=0;window._bakeCalls=0;return;}
  const b=BIO.bake();
  window._instances=b.inst;window._bakeCalls=b.calls;

@@ -12,6 +12,7 @@
 //   THE FLOOR      steppe and parkland, gallery woods along the river; the chaos's wild knobs about the floor
 const SITE={key:'gate',name:'The Gate',hall:true,region:'The Gate: the Labyrinth\'s eastern mouth (the Labyrinth, region rmw8bqrn3dnx4)',px:376.5,py:1473.5,old:{px:104.5,py:1143.5},
  atm:1.39,koppen:['Cfb','Dfb','ET'],rain:900,mean:13,
+ flora:'parkland',   /* the flora kit's profile (src/55, LABY.PROFILES): Cfb: birch stands and scattered larch over a grazed floor, poplar and willow by the river and the pond */
  floor:1131,                    /* the floor at the Hall (the model's cells 372-378, 1472-1476) */
  tilt:[-.0032,.0006],           /* the floor's fall along x and z (m/m): the river's way, west to east, 4 m/km as the model's bed falls */
  flatR:[760,1100],              /* the floor is levelled round the Hall to here, so its pond's banks are level */

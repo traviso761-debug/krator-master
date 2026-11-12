@@ -141,13 +141,14 @@ RIVER.lines.forEach(P=>{for(let i=0;i<P.length;i+=30)SPINE.push([P[i][0],P[i][1]
 function rootMask(x,z){if(pondE(x,z)<1.03)return 0;if(rockFoot(x,z)<3)return 0;
  /* no trees or tufts on a cliff (the owner's rule): a wall's face, a knob's talus, any ground over 35 degrees; the drawn ground's 12 m cells
     also bridge a steep face, so a plant there would float */
- {const rk=FIELD.rock(x,z),sl=FIELD.slope(x,z);if(rk>.6||sl>.7)return 0;if(rk>.35)return (.6-rk)/.25;}
+ /* the rocky share thins the plants but never skips the water tests below (a steep beck bank let plants root under the water: 2026-11-12) */
+ let k=1;{const rk=FIELD.rock(x,z),sl=FIELD.slope(x,z);if(rk>.6||sl>.7)return 0;if(rk>.35)k=(.6-rk)/.25;}
  if(SBK.at(x,z).d<2.8)return 0;
  if(window._waterShore){const s=window._waterShore(x,z);if(s===s&&s<1.2)return 0;}
- const w=waterH(x,z);if(w>-1e8){const d=terrainH(x,z)-w;if(d<.7)return d<.15?0:(d-.15)/.55;}
+ const w=waterH(x,z);if(w>-1e8){const d=terrainH(x,z)-w;if(d<.7)return d<.15?0:k*(d-.15)/.55;}
  // the causeways and the banks' road ring: kept clear for the funeral road
  if(HALL)for(const c of HALL.causeways){const ux=Math.cos(c.a),uz=Math.sin(c.a),t=x*ux+z*uz,p=Math.abs(-x*uz+z*ux);if(t>c.r0&&t<c.r1+30&&p<c.w)return 0;}
- return 1;}
+ return k;}
 BIO.init({tags:'labyrinth',THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,mask:rootMask,
  obstacles:OBSTACLES,ticks:tick,seed:29,origin:SPINE,center:[0,0],fields:FIELD,register:REGISTER,err:reportErr,
  lod:{hero:230,mid:560,far:2400,floor:[180,440]},
