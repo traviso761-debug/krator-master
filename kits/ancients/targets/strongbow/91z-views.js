@@ -26,8 +26,10 @@ const VIEWS={
  'A terrace':                    (function(S){const n=S.spine[2];return SBW(S,n[0]+120,n[1]+40,n[2]+150).concat(SBW(S,n[0],n[1],n[2]));})(SBA),
  // the pad on the plateau and its craft, the heliostats beyond
  'The pad':                      (function(S){return SBW(S,S.pad[0]+150,S.pad[1]+70,S.pad[2]+160).concat(SBW(S,S.pad[0],S.pad[1]+15,S.pad[2]));})(SBA),
- // the foot: the terminus in the bay, the guideway and the road arriving from the west
- 'The terminus':                 (function(S){return SBW(S,-420,60,420).concat(SBW(S,0,40,0));})(SBA),
+ // the foot from the south-west: the glazed lobby round the Spine's foot, the plaza and its pools, the terminus hall's vault
+ 'The foot':                     (function(S){const L=S.lobby||{at:[0,0,128]};return SBW(S,L.at[0]-300,90,L.at[2]+330).concat(SBW(S,L.at[0]-40,24,L.at[2]-10));})(SBA),
+ // inside the lobby: the galleries on its wall, the great stair round the core
+ 'The lobby':                    (function(S){const L=S.lobby||{at:[0,0,128],r:60};return SBW(S,L.at[0]+52,L.at[1]+14,L.at[2]+14).concat(SBW(S,L.at[0]-45,L.at[1]+16,L.at[2]-12));})(SBA),
  'Strongbow at night':           SBHERO(SBA).concat([1]),
  'The ruin':                     SBHERO(SBB),
  'The ruin from the valley':     SBW(SBB,0,180,2600).concat(SBW(SBB,0,460,0)),
@@ -39,6 +41,8 @@ const VIEWS={
  'The broken Spine':             (function(S){const n=S.spine;return SBW(S,260,470,330).concat(SBW(S,0,420,n[1][2]));})(SBB),
  // the town at the foot: the han where the road ends, the garrison, the lamps in the Spine's lower drums
  'The town at the foot':         (function(S){return SBW(S,-380,90,620).concat(SBW(S,0,40,120));})(SBB),
+ // the terminus hall's west half under the fallen lower hull
+ 'The crushed hall':             (function(S){const t=S.term||{x0:-330,x1:-62};return SBW(S,t.x0-80,70,260).concat(SBW(S,(t.x0+t.x1)/2-40,8,75));})(SBB),
  // the fallen lower hull in the scree
  'The fallen hull':              (function(S){return SBW(S,S.quiver.x-60,160,560).concat(SBW(S,S.quiver.x,40,120));})(SBB),
  // the crown: the Order's banners, the bent mast

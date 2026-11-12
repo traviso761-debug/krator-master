@@ -54,6 +54,9 @@ west end, toward Qiblai, and the face looks south-east over the valley.
 8. **Centred, and standing over the lip** ("that sail seems like it's off center? i want that wedge to stick up past the cliff for at
    least 15 stories"). The bay was cut for the sail and left the tower adrift in it, so it is narrowed to 190 m, closing on the tower.
    The tower now rises 60 m (16.4 storeys) above the lip, and the ramp climbs to its crown. That gives about 26,700 people.
+9. **The lobby** ("the bottom portion should be more elaborate and have an actual lobby"). The terminus box became **the foot**: a
+   glazed lobby round the Spine's foot, the terminus hall's vault, two wings, a back block and a plaza. In the ruin, the fallen lower
+   hull crushed the hall's west half. What Xanadu made of the foot today is `settlements/strongbow/PLAN.md`.
 
 ## The plan
 
@@ -77,8 +80,8 @@ The plan's records are the model (`8aw0-strongbow-plan.js`, [G data]). The drawi
 | The pads | A circular landing pad on the plateau at the lip, east of the crown, with an Ancient craft standing on it. A second pad cantilevered from the Spine's fifth terrace |
 | The rim gallery | A long bar on the plateau along the lip west of the bay: 600 m long, 36 m wide and 28 m tall. Its roof carries the way to the arc ramp |
 | The heliostats | The face looks south, and Krator's noon sun stands in the north (the settlements lie near 40 S), so the face is in shade all day. Banks of mirrors on posts along the lip either side of the crown each turn to throw the sun down onto the hull. Each mirror's normal bisects the direction to the sun and the direction to the hull's middle (a node test) |
-| The terminus | The Rift line's station 11, the end of the line. A hall in the bay's mouth, 300 m long, with platforms; the Spine stands on its roof. The guideway and the road arrive along the floor from the west |
-| People | About 26,700 as built (`STRONGBOW.plan().stats`: the tower 12,700, the Spine 6,500, the Nock 2,500, the lower hull 2,500, the rim gallery 1,500, the galleries 900). They live in the tower's flanks (the lit band behind the glazing), the Spine's drums and terraces, the Nock's decks, the galleries, the lower hull and the rim gallery. The owner kept about 29,000 for the sail (2026-11-11); the tower brings it to about 26,700 |
+| **The foot** | The owner (2026-11-11): "the bottom portion should be more elaborate and have an actual lobby". The podium where the Spine lands, in and before the bay's mouth: **the lobby**, a glazed rotunda 120 m across and 36 m tall round the Spine's foot (the Spine's first drum stands on its roof), with a white core holding the Spine's lifts, a great stair winding two and a half turns round the core, three galleries on its wall and the cornice; **the terminus hall**, the Rift line's station 11, a barrel vault 268 m long and 70 m wide on the west, with three platforms, its west mouth where the line came in; **the west wing** (offices) and **the east wing** (works), six storeys each; **the back block** in the bay's mouth; **the plaza**, a raised forecourt off the lobby's south side, with two pools and steps, where the valley road ends |
+| People | About 28,000 as built (`STRONGBOW.plan().stats`: the tower 12,700, the Spine 6,500, the Nock 2,500, the lower hull 2,500, the rim gallery 1,500, the foot 1,200, the galleries 900). They live in the tower's flanks (the lit band behind the glazing), the Spine's drums and terraces, the Nock's decks, the foot's wings, the galleries, the lower hull and the rim gallery. The owner kept about 29,000 for the sail (2026-11-11) |
 
 **The ruin**, as deltas by id (`STRONGBOW.ruin`):
 - **The east stays have snapped.** That is all three east anchor fans and half the east string fan, 39% of the string and anchors. A few cables hang limp from the sail.
@@ -86,7 +89,10 @@ The plan's records are the model (`8aw0-strongbow-plan.js`, [G data]). The drawi
   foot stands about 25 m out from where it was. The gap behind it opens toward the foot.
 - **The Nock is broken.** Its centre goes with the hull, the east wing has fallen to the scree, and the west wing still bridges to
   the rock with a gap at the bay's edge.
-- **The lower hull has fallen.** It lies in three broken pieces on the scree below its place.
+- **The lower hull has fallen.** It lies in three broken pieces on the terminus hall's west half, which it crushed: the vault there is
+  white shards on rubble.
+- **The foot**: most of the lobby's glazing is gone (by a hash of each pane), its galleries are broken in places, and the
+  great stair has lost some treads. The east wing's two top storeys are burned. The plaza's pools are dry.
 - **Most of the glazing is gone**, by a hash of each panel's id. The skin is broken in places.
 - **The mast is bent.** Its upper 40% is kinked over to the south-east.
 - **The Spine is broken at its head.** As the tower leaned it tore off the Spine's top run and first terrace. Those drums lie on the
@@ -121,6 +127,7 @@ The plan's records are the model (`8aw0-strongbow-plan.js`, [G data]). The drawi
 | `8aw0-strongbow-plan.js` | The plan, [G data]: the frame, the tower's slices, the landing pad, the crown, the mast and ramp, the Nock, the stays, the lower hull, the Spine, the galleries, the pads, the rim gallery, the heliostats, the terminus, the stats, the ruin's deltas and the town. KRAND only, with stable ids |
 | `8aw1-strongbow-parts.js` | The drawing's parts, hashed and with no rng(): the cliff with its strata, the bay, the tower, the crown, the mast and ramp, the Nock, the stays |
 | `8aw2-strongbow-draw.js` | The builder. core/tags come first (`KTAGS.strongbow`), then the parts, the Spine, the lower hull, the plateau, the foot, the town and the ruin's pieces |
+| `8aw3-strongbow-foot.js` | The foot's drawing, hashed and with no rng(): the wings, the lobby (its transparent glazing, mullions, galleries, core, stair), the terminus hall, the plaza; the foot's ruin |
 | `test-strongbow.js` | `node kits/ancients/targets/strongbow/test-strongbow.js` |
 | `89z-rows.js`, `91z-views.js` | The two sites on one cliff (intact to the west, the ruin to the east) and the views |
 

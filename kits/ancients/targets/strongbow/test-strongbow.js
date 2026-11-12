@@ -48,7 +48,18 @@ ok(!inWall.length,'no drum cuts the bay\'s side walls');
 ok(P.drums.every(d=>d.at[2]-d.r>-D.BAY.d-1),'no drum cuts the bay\'s back wall');
 ok(SPN.terraces.filter(t=>t.struts).every(t=>t.struts.every(st=>Math.abs(st.b[0])>D.BAY.w/2&&Math.abs(st.b[2]-F.faceZ(st.b[0],st.b[1]))<1e-6)),'the struts land on the face beside the bay');
 ok(P.rotors.every(r=>Math.abs(r.hub[0])+r.r<D.BAY.w/2||r.hub[2]-12>F.faceZ(r.hub[0],r.hub[1])),'the rotors turn clear of the rock');
-const foot=nd[nd.length-1];ok(foot[0]>P.term.x0&&foot[0]<P.term.x1&&foot[2]>P.term.z0&&foot[2]<P.term.z1,'the Spine stands on the terminus');
+const foot=nd[nd.length-1],FT=P.foot,Lb=FT.lobby;
+ok(Math.hypot(foot[0]-Lb.at[0],foot[2]-Lb.at[2])<1e-6&&Math.abs(foot[1]-Lb.y1)<1e-6,'the Spine stands on the lobby roof, centred on it');
+ok(Lb.r>D.SPINE.r+15&&Lb.core<D.SPINE.r&&Lb.galleries.every(g=>g.r0>Lb.stair.r1+2&&g.r1<Lb.r&&g.y>Lb.y0&&g.y<Lb.y1),'the lobby galleries ring its wall, clear of the great stair round the core');
+const over=(a,b)=>a[0]<b[1]-1&&b[0]<a[1]-1&&a[2]<b[3]-1&&b[2]<a[3]-1,rs=FT.rects;let ov=[];
+for(let i=0;i<rs.length;i++)for(let j=i+1;j<rs.length;j++)if(i!==1&&j!==1&&over(rs[i],rs[j]))ov.push(i+'/'+j);
+ok(!ov.length,'the hall, the wings and the plaza do not overlap ('+ov.join(' ')+')');
+const inC=(x,z)=>Math.hypot(x-Lb.at[0],z-Lb.at[2])<Lb.r-1;
+ok(FT.wings.concat([FT.hall]).every(w=>!inC(Math.max(w.x0,Math.min(Lb.at[0],w.x1)),Math.max(w.z0,Math.min(Lb.at[2],w.z1)))),'no wing or the hall cuts into the lobby');
+ok(Math.abs(FT.plaza.z0-(Lb.at[2]+Lb.r))<1,'the plaza opens off the lobby south side');
+const lineEnd=P.line.pts[P.line.pts.length-1],roadEnd=P.road.pts[P.road.pts.length-1];
+ok(Math.abs(lineEnd[0]-FT.hall.x0)<1e-6&&lineEnd[2]>FT.hall.z0&&lineEnd[2]<FT.hall.z1,'the line came in at the terminus hall west mouth');
+ok(Math.abs(roadEnd[0]-FT.plaza.x0)<1e-6&&roadEnd[2]>FT.plaza.z0&&roadEnd[2]<FT.plaza.z1,'the valley road ends on the plaza');
 // the heliostats throw the noon sun onto the hull's middle: reflect the sun in each mirror's normal
 let worst=0;const sun=D.HELIO.sun,aim=[0,F.FL+D.HELIO.aim[1],D.HELIO.aim[2]];
 for(const m of P.helio){const d=m.n[0]*sun[0]+m.n[1]*sun[1]+m.n[2]*sun[2],r=m.n.map((v,j)=>2*d*v-sun[j]);
@@ -58,7 +69,8 @@ ok(P.helio.every(m=>Math.hypot(m.at[0]-P.pad.at[0],m.at[2]-P.pad.at[2])>P.pad.r+
 // the town keeps off the terminus, the line, the road and the heaped scree
 const RU=C.ruin(P),T=P.term;
 ok(RU.town.houses.length>40,'the town at the foot ('+RU.town.houses.length+' houses)');
-ok(RU.town.houses.every(h=>!(h.at[0]>T.x0-10&&h.at[0]<T.x1+10&&h.at[2]<T.z1+10)),'no house in the terminus');
+ok(RU.town.houses.every(hs=>FT.rects.every(r=>!(hs.at[0]>r[0]-10&&hs.at[0]<r[1]+10&&hs.at[2]>r[2]-10&&hs.at[2]<r[3]+10))),'no house in the foot or on the plaza');
+ok(RU.quiver.pieces.every(q=>q.at[0]<RU.foot.hallCut+20&&q.at[2]>FT.hall.z0&&q.at[2]<FT.hall.z1),'the fallen lower hull lies on the terminus hall crushed west half');
 ok(RU.town.houses.every(h=>F.scree(h.at[0],h.at[2])<=16),'no house on the heaped scree');
 // the ruin: half the stays (every one on the failed side's anchors, about half its string), none on the other side
 const all=P.stays.filter(s=>s.fan==='string'||s.fan.indexOf('anchor')===0),gone=new Set(RU.gone);

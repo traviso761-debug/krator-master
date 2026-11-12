@@ -15,7 +15,7 @@ function buildStrongbow(scene,gx,gz,d){reseed(9040+d);KOFF=[gx,0,gz];
  // the lean: about the hinge at the crown's back, out (about x) and the roll (about z)
  let M=null;if(RU){const L=RU.lean,c=L.hinge;M=new THREE.Matrix4().makeTranslation(c[0],c[1],c[2]).multiply(new THREE.Matrix4().makeRotationZ(L.az*Math.PI/180))
   .multiply(new THREE.Matrix4().makeRotationX(L.ax*Math.PI/180)).multiply(new THREE.Matrix4().makeTranslation(-c[0],-c[1],-c[2]));}
- const Lst={};for(const k of ['res','glass','frab','teal','shade','white','whiteW','deck','pave','cut','pool','poolR','grass'])Lst[k]=[];
+ const Lst={};for(const k of ['res','glass','lglass','frab','teal','shade','white','whiteW','deck','pave','cut','pool','poolR','grass'])Lst[k]=[];
  const X={P,F,D,RU,dd,M,L:Lst,h};
  const gone=new Set(RU?RU.gone.concat(RU.spineGone,RU.nockGone):[]);
 
@@ -38,7 +38,12 @@ function buildStrongbow(scene,gx,gz,d){reseed(9040+d);KOFF=[gx,0,gz];
   for(const g of P.galleries)part(g.id,'gallery',[(g.x0+g.x1)/2,g.y0,0]);
   part(P.pad.id,'landing-pad',P.pad.at,{r:P.pad.r});if(P.spinePad&&!gone.has(P.spinePad.terrace))part(P.spinePad.id,'landing-pad',P.spinePad.at,{r:P.spinePad.r});
   part(P.rim.id,'gallery',[(P.rim.x0+P.rim.x1)/2,P.rim.y0,(P.rim.z0+P.rim.z1)/2],{tags:{role:'rim gallery'}});
-  part(P.term.id,'terminus',[0,P.term.y0,(P.term.z0+P.term.z1)/2],{tags:{role:'the Rift line, station 11'}});
+  part(P.term.id,'terminus',[(P.term.x0+P.term.x1)/2,P.term.y0,(P.term.z0+P.term.z1)/2],{tags:{role:'the Rift line, station 11',state:ST}});
+  {const Lb=P.foot.lobby;part(Lb.id,'lobby',Lb.at,{r:Lb.r,h:Lb.y1-Lb.y0,tags:{role:'the lobby round the foot of the Spine',state:ST}});
+   for(const g of Lb.galleries)part(g.id,'gallery',[Lb.at[0],g.y,Lb.at[2]],{r:g.r1,tags:{role:'a gallery of the lobby'}});
+   part(Lb.stair.id,'stair',Lb.at,{h:Lb.y1-Lb.y0});
+   for(const w of P.foot.wings)part(w.id,'wing',[(w.x0+w.x1)/2,w.y0,(w.z0+w.z1)/2],{h:w.y1-w.y0,tags:{role:w.role}});
+   part(P.foot.plaza.id,'plaza',[(P.foot.plaza.x0+P.foot.plaza.x1)/2,P.foot.plaza.y,(P.foot.plaza.z0+P.foot.plaza.z1)/2]);}
   for(const l of P.lifts)part(l.id,'lift',[l.x,l.y0,P.spine.nodes[P.spine.nodes.length-1][2]],{h:l.y1-l.y0,tags:{role:'in the Spine'}});
   T.child(B.id,{'class':'infrastructure',kind:'guideway',key:P.line.id,at:W(P.line.pts[0])});
   T.child(B.id,{'class':'infrastructure',kind:'road',key:P.road.id,at:W(P.road.pts[0])});
@@ -58,7 +63,9 @@ function buildStrongbow(scene,gx,gz,d){reseed(9040+d);KOFF=[gx,0,gz];
  {const st=P.drums.filter(r=>!gone.has(r.id)),xs=st.map(r=>r.at[0]),zs=st.map(r=>r.at[2]),y0=Math.min(...st.map(r=>r.at[1])),y1=Math.max(...st.map(r=>r.at[1]+r.h));
   const cx=(Math.min(...xs)+Math.max(...xs))/2,cz=(Math.min(...zs)+Math.max(...zs))/2;
   REGISTER({name:'Strongbow — the Spine',x:cx,z:cz,r:D.SPINE.r+Math.hypot(Math.max(...xs)-cx,Math.max(...zs)-cz)+30,y:y0,h:y1-y0});}
- REGISTER({name:'Strongbow — the terminus (station 11)',x:0,z:(P.term.z0+P.term.z1)/2,r:(P.term.x1-P.term.x0)/2,y:P.term.y0,h:P.term.y1-P.term.y0});
+ REGISTER({name:'Strongbow — the terminus hall (station 11)',x:(P.term.x0+P.term.x1)/2,z:(P.term.z0+P.term.z1)/2,r:(P.term.x1-P.term.x0)/2,y:P.term.y0,h:P.term.y1-P.term.y0});
+ {const Lb=P.foot.lobby;REGISTER({name:'Strongbow — the lobby',x:Lb.at[0],z:Lb.at[2],r:Lb.r+2,y:Lb.y0,h:Lb.y1-Lb.y0+2});
+  for(const w of P.foot.wings)REGISTER({name:'Strongbow — the foot: '+w.role,x:(w.x0+w.x1)/2,z:(w.z0+w.z1)/2,r:Math.hypot(w.x1-w.x0,w.z1-w.z0)/2,y:w.y0,h:w.y1-w.y0});}
  if(RU)REGISTER({name:'Strongbow — the town at the foot',x:-40,z:220,r:360,y:F.FL,h:40});
 
  // ---- the cliff, the Bow, the crown, the Nock, the stays (8aw1) ---------------------------------------------------
@@ -141,13 +148,9 @@ function buildStrongbow(scene,gx,gz,d){reseed(9040+d);KOFF=[gx,0,gz];
    kput('sbMirror',m.at,Q,[HL.w,HL.h,.22],dd?new THREE.Color(0xa8b0b4):new THREE.Color(0xe6eef2));
    kput('sbCyl',[m.at[0],m.at[1]-m.post/2,m.at[2]],null,[.22,m.post,.22],pc);}}
 
- // ---- the foot: the terminus in the bay, its lifts, the guideway and the road ------------------------------------
- {const T=P.term,col=dd?'whiteW':'white';
-  Lst.res.push(gridSurface((u,v)=>[lerp(T.x0,T.x1,u),lerp(T.y0,T.y1,v),T.z1],12,1,{uS:(T.x1-T.x0)/25.6,vS:(T.y1-T.y0)/25.6}));
-  Lst.deck.push(gridSurface((u,v)=>[lerp(T.x0,T.x1,u),T.y1,lerp(T.z0,T.z1,v)],12,6,{uS:20,vS:10}));
-  Lst[col].push(gridSurface((u,v)=>[lerp(T.x0,T.x1,u),T.y1+lerp(-3,1.5,v),T.z1+.3],12,1,{uS:20,vS:1}));
-  for(const x of [T.x0,T.x1])Lst.shade.push(gridSurface((u,v)=>[x,lerp(T.y0,T.y1,v),lerp(T.z0,T.z1,u)],6,1,{uS:6,vS:2}));
-  for(const pl of T.platforms)kput('acBox',[(T.x0+T.x1)/2,T.y0+.6,(T.z0+T.z1)/2+pl.z],null,[pl.len,1.2,pl.w],new THREE.Color(dd?0x6a6355:0xcfc6b2));
+ // ---- the foot: the lobby, the terminus hall, the wings, the plaza (8aw3); the guideway and the road ------------------------
+ sbFoot(X);
+ {const col=dd?'whiteW':'white';
   /* the lifts run up inside the Spine (P.lifts): nothing of them shows outside */
   Lst[col].push(SBG.ribbon(P.line.pts.map(p=>[p[0],p[1]+1.6,p[2]]),P.line.w,0));
   for(const s of [-1,1])Lst[col].push(gridSurface((u,v)=>{const n=P.line.pts.length-1,f=u*n,i=Math.min(n-1,Math.floor(f)),q=f-i,a=P.line.pts[i],b=P.line.pts[i+1];
@@ -182,7 +185,7 @@ function buildStrongbow(scene,gx,gz,d){reseed(9040+d);KOFF=[gx,0,gz];
   KXF=null;
   {const g=RU.order.gate.at;kput('acBox',[g[0],g[1]+2.6,g[2]],null,[16,5.2,1.2],new THREE.Color(0x7a5a34));kput('acBox',[g[0],g[1]+5.6,g[2]],null,[17,.8,1.6],new THREE.Color(0xe0901a));}
   // the fallen: the west Spine's drums, the east wing's slab
-  for(const db of RU.debris){if(db.kind==='drum'){kput('sbCyl',[db.at[0],db.at[1]+db.r*.7,db.at[2]],qEuler(Math.PI/2+db.roll,db.ry,0),[db.r,26,db.r],new THREE.Color(0xb8b2a4));
+  for(const db of RU.debris){if(db.kind==='drum'){kput('sbCyl',[db.at[0],db.at[1]+6,db.at[2]],qEuler(.35+db.roll*.6,db.ry,.25),[db.r,26,db.r],new THREE.Color(0xb8b2a4)); /* lying tilted, half buried */
     for(let j=0;j<5;j++)kput('rubble',[db.at[0]+(h(510,j,db.at[0])-.5)*50,db.at[1]+1,db.at[2]+(h(511,j,db.at[0])-.5)*40],qEuler(j,j*2,0),[4+5*h(512,j),3,4+4*h(513,j)],new THREE.Color(0xc0baac));}
    else kput('acBox',[db.at[0],db.at[1]+db.size[1]*.4,db.at[2]],qEuler(db.roll*.4,db.ry,db.roll),db.size,new THREE.Color(0xa8a294));}
   // stains down the Bow's flanks and the face under the sockets
@@ -211,9 +214,10 @@ function buildStrongbow(scene,gx,gz,d){reseed(9040+d);KOFF=[gx,0,gz];
  meshMerged(Lst.pool,MAT.sbPool,G);
  meshMerged(Lst.poolR,MAT.sbPoolR,G);
  meshMerged(Lst.grass,dd?MAT.whGrassR:MAT.whGrass,G);
+ meshMerged(Lst.lglass,dd?MAT.sbLobbyGlassR:MAT.sbLobbyGlass,G);
  SB_SITE[d]={x:gx,z:gz,d,lip:LY,floor:F.FL,top:F.top,tip:F.tip,back:F.back,prow:F.prowZ(0),bayW:D.BAY.w,
   nock:{y:P.nock.y,zc:P.nock.zc,wx:P.nock.wx},landing:P.landing.at,crown:{y:P.crown.y1},mast:{foot:P.mast.foot,head:X.mastHead},
-  spine:P.spine.nodes,pad:P.pad.at,term:{z1:P.term.z1,y1:P.term.y1},
+  spine:P.spine.nodes,pad:P.pad.at,term:{z1:P.term.z1,y1:P.term.y1,x0:P.term.x0,x1:P.term.x1},lobby:{at:P.foot.lobby.at,r:P.foot.lobby.r,y1:P.foot.lobby.y1},plaza:{z1:P.foot.plaza.z1},
   quiver:{x:P.quiver.x,top:P.quiver.top,tip:P.quiver.tip},galleries:P.galleries.map(g=>({x:(g.x0+g.x1)/2,y:g.y0})),
   stats:P.stats,gone:RU?RU.gone.length:0,town:RU?RU.town.houses.length:0,tags:KTAGS.strongbow?KTAGS.strongbow.audit():null};
  KOFF=[0,0,0];return G;}

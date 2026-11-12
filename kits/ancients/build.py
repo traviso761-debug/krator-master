@@ -230,7 +230,7 @@ DETERMINISTIC = {
     '42-et-head.js',                                   # kits/eternian's head generator, read by the Sanctum: seeded by KRAND
     '8aq5-kept-pass.js',                               # targets/kept: a material pass, no placement
     '8at0-arcpile-plan.js',                            # targets/arcpile: KRAND-hashed records, no rng()
-    '8aw0-strongbow-plan.js', '8aw1-strongbow-parts.js',   # targets/strongbow: KRAND-hashed records; the drawing's parts, hashed, no rng()
+    '8aw0-strongbow-plan.js', '8aw1-strongbow-parts.js', '8aw3-strongbow-foot.js',   # targets/strongbow: KRAND-hashed records; the drawing's parts and the foot, hashed, no rng()
 }
 DETERMINISTIC |= {'06-core-khook.js', '06b-core-kcolor.js'}   # core/shader (no rnd())
 

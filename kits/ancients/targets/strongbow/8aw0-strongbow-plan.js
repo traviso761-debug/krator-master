@@ -34,7 +34,12 @@ STRONGBOW.DIM={LIP:900,BATTER:30,STO:25.6/7,BAY:{w:190,d:90},
  GALL:{e:[180,330],w:[340,480],ys:[150,270,390],deep:14,storeys:5},
  PAD:{at:[300,-140],r:45},RIM:{x0:-200,x1:-800,z0:-50,z1:-86,h:28},
  HELIO:{pitch:8,w:6,h:4,post:3,sun:[0,.766,-.643],aim:[0,700,80]},
- TERM:{x0:-150,x1:150,z0:-10,z1:170,h:36,lifts:[-12,12]},
+ TERM:{h:36,lifts:[-12,12]},
+ // THE FOOT (the owner, 2026-11-11: 'the bottom portion should be more elaborate and have an actual lobby'): the podium where the
+ // Spine lands. The lobby, a glazed rotunda round the Spine's foot; the terminus hall, a vault on the west where the line came in;
+ // the west wing (offices), the east wing (works), the back block in the bay's mouth; the forecourt plaza before the lobby
+ FOOT:{h:24,lobby:{r:60,gal:[9,18,27],core:14,ribs:36},hall:{x0:-330,x1:-62,z0:40,z1:110,h:22,platforms:3,ribs:20},
+  wings:{w:[-160,-62,120,186],e:[62,160,20,186],back:[-56,56,-8,64]},plaza:{x0:-110,x1:110,dz:60,d:74,h:1.5,pools:[-50,50]}},
  // population: the lit band behind glazing, SHARE of it homes, M2 gross a person
  SHARE:.68,M2:45,
  // the ruin (the owner, 2026-11-11): the east stays snapped, the lean, the lower hull fallen, the glazing, the mast, the west Spine
@@ -133,11 +138,21 @@ STRONGBOW.plan=function(o){o=o||{};const D=STRONGBOW.DIM,F=STRONGBOW.frame(o),S=
  // the pads, the rim gallery, the terminus
  P.pad={id:'sb.pad',at:[D.PAD.at[0],LY,D.PAD.at[1]],r:D.PAD.r,craft:{id:'sb.craft',h:38}};
  P.rim={id:'sb.rim',x0:D.RIM.x1,x1:D.RIM.x0,z0:D.RIM.z1,z1:D.RIM.z0,y0:LY,y1:LY+D.RIM.h};
- {const T=D.TERM;P.term={id:'sb.term',x0:T.x0,x1:T.x1,z0:T.z0,z1:T.z1,y0:F.FL,y1:F.FL+T.h,
-   platforms:[-24,0,24].map((z,i)=>({id:'sb.term.pl.'+i,z,len:T.x1-T.x0-20,w:8}))};
-  // the guideway and the road from the west (the Rift line's station 11; the Sultanate's road ends here)
-  P.line={id:'sb.line',pts:[[-1100,F.FL,230],[-560,F.FL,230],[-330,F.FL,90],[-150,F.FL,60]],w:12};
-  P.road={id:'sb.road',pts:[[-1100,F.FL,280],[-520,F.FL,280],[-300,F.FL,200],[-160,F.FL,150]],w:9};}
+ // THE FOOT: the lobby round the Spine's foot, the terminus hall, the wings, the plaza (in the bay's mouth and before it)
+ {const FT=D.FOOT,nd=P.spine.nodes,zf=nd[nd.length-1][2],L=FT.lobby,H=FT.hall,y0=F.FL,y1=F.FL+D.TERM.h;
+  const lobby={id:'sb.lobby',at:[0,y0,zf],r:L.r,y0,y1,core:L.core,ribs:L.ribs,galleries:L.gal.map((y,i)=>({id:'sb.lobby.gal.'+i,y:y0+y,r0:L.r-16,r1:L.r-1})),
+   stair:{id:'sb.lobby.stair',r0:L.core+8,r1:L.core+16,turns:2.5}};
+  const hall={id:'sb.term',x0:H.x0,x1:H.x1,z0:H.z0,z1:H.z1,y0,y1:y0+H.h,ribs:H.ribs,
+   platforms:Array.from({length:H.platforms},(_,i)=>({id:'sb.term.pl.'+i,z:lerpSB(H.z0,H.z1,(i+1)/(H.platforms+1)),x0:H.x0+20,x1:H.x1-8,w:8}))};
+  const wing=(k,r,role)=>({id:'sb.foot.'+k,role,x0:r[0],x1:r[1],z0:r[2],z1:r[3],y0,y1:y0+FT.h});
+  const wings=[wing('w',FT.wings.w,'offices'),wing('e',FT.wings.e,'works'),wing('back',FT.wings.back,'the back block')];
+  const pz=FT.plaza,plaza={id:'sb.plaza',x0:pz.x0,x1:pz.x1,z0:zf+pz.dz,z1:zf+pz.dz+pz.d,y:y0+pz.h,pools:pz.pools.map((x,i)=>({id:'sb.plaza.pool.'+i,at:[x,y0+pz.h,zf+pz.dz+pz.d*.5],r:14}))};
+  P.foot={id:'sb.foot',lobby,hall,wings,plaza,
+   rects:[[H.x0,H.x1,H.z0,H.z1],[-L.r,L.r,zf-L.r,zf+L.r]].concat(wings.map(w=>[w.x0,w.x1,w.z0,w.z1]),[[plaza.x0,plaza.x1,plaza.z0,plaza.z1]])};
+  P.term=hall;
+  // the line came in at the hall's west mouth; the valley road ends on the plaza's west side
+  P.line={id:'sb.line',pts:[[-1100,F.FL,250],[-600,F.FL,250],[-440,F.FL,75],[H.x0,F.FL,75]],w:12};
+  P.road={id:'sb.road',pts:[[-1100,F.FL,330],[-520,F.FL,330],[-260,F.FL,300],[plaza.x0,F.FL,(plaza.z0+plaza.z1)/2]],w:9};}
  // the heliostats: on the lip east of the crown (round the pad) and on the rim gallery's roof; each turned to throw the noon sun
  // (north, 50 degrees up) onto the hull's middle
  {const HL=D.HELIO,sun=HL.sun,aim=[HL.aim[0],F.FL+HL.aim[1]*F.k,HL.aim[2]];
@@ -154,6 +169,7 @@ STRONGBOW.plan=function(o){o=o||{};const D=STRONGBOW.DIM,F=STRONGBOW.frame(o),S=
  {const SP=D.SPINE;pop.spine=Math.round(P.drums.reduce((a,d)=>a+Math.PI*d.r*d.r*Math.floor(d.h/ST),0)*.7/D.M2)+Math.round(P.saucers.reduce((a,t)=>a+Math.PI*((t.r-10)*(t.r-10)-SP.r*SP.r)*2,0)*.4/D.M2);}
  pop.galleries=Math.round(P.galleries.reduce((a,g)=>a+Math.abs(g.x1-g.x0)*g.deep*D.GALL.storeys,0)*.7/D.M2);
  pop.rim=Math.round(Math.abs(P.rim.x1-P.rim.x0)*(P.rim.z1-P.rim.z0)*Math.floor(D.RIM.h/ST)*.45/D.M2);
+ {const FT=D.FOOT,n=Math.floor(FT.h/ST);pop.foot=Math.round(P.foot.wings.reduce((a,w)=>a+(w.x1-w.x0)*(w.z1-w.z0),0)*n*.3/D.M2);}
  pop.nock=Math.round((2*P.nock.wx)*(P.nock.zc*.6)*D.NOCK.storeys*.45/D.M2);
  P.stats={pop:Object.values(pop).reduce((a,b)=>a+b,0),parts:pop,height:P.mast.head[1]-F.FL,hull:F.top-F.tip,storeys:NK,
   stays:P.stays.length,drums:P.drums.length,helio:P.helio.length};
@@ -172,7 +188,7 @@ STRONGBOW.ruin=function(P){const D=P.dim,R=D.RUIN,F=P.frame,S=P.seed,h=(a,b,c,e)
  // the Nock: the failed side's wing fallen; the centre goes with the hull
  RU.nockGone=['sb.nock.'+sn];
  // the lower hull fallen into the scree in three pieces
- RU.quiver={id:P.quiver.id,pieces:[0,1,2].map(i=>{const x=P.quiver.x+(i-1)*55+(h(210,i)-.5)*20,z=22+14*i+10*h(211,i);
+ RU.quiver={id:P.quiver.id,pieces:[0,1,2].map(i=>{const x=P.quiver.x+(i-1)*50+(h(210,i)-.5)*16,z=58+16*i+8*h(211,i);
   return{id:'sb.quiver.p'+i,i,at:[x,F.ground(x,z),z],len:[95,70,60][i],tilt:(h(212,i)-.5)*.9,ry:(h(213,i)-.5)*1.6,roll:1.2+h(214,i)};})};
  // the skin: hull panels lost (storey band, side, segment)
  for(const k of P.storeys)for(const s of [-1,1])for(let j=0;j<D.HULL.NSEG;j++)if(h(220,k.i,s+2,j)<R.skin)RU.skin.push('sb.sk.'+k.i+'.'+s+'.'+j);
@@ -180,13 +196,17 @@ STRONGBOW.ruin=function(P){const D=P.dim,R=D.RUIN,F=P.frame,S=P.seed,h=(a,b,c,e)
  RU.mast={kink:R.mastKink,bend:R.mastBend,dir:[.7071,0,.7071]};
  // the Spine broken at its head: as the tower leaned it tore off the top run and the first terrace, which fell; the rest stands
  // (the Sultanate lives in its lower drums), and the gap parts the town from the Order's house above
- for(const d of P.drums)if(d.run<R.spineBreak){RU.spineGone.push(d.id);const x=(d.i?1:-1)*(150+60*h(231,d.i)),z=200+60*h(232,d.i);
+ for(const d of P.drums)if(d.run<R.spineBreak){RU.spineGone.push(d.id);const x=(d.i?1:-1)*(200+60*h(231,d.i)),z=250+60*h(232,d.i);
   RU.debris.push({id:d.id+'.fallen',kind:'drum',at:[x,F.ground(x,z),z],r:d.r,ry:h(233,d.i)*Math.PI,roll:h(234,d.i)*.6});}
  for(const t of P.spine.terraces)if(t.k<=R.spineBreak)RU.spineGone.push(t.id);
  // the rotors stripped to their hubs
  RU.rotors=P.rotors.map(r=>({id:r.id,blades:RU.spineGone.indexOf(r.terrace)>=0?-1:0}));
  // the town's lamps in the Spine's lower drums
  RU.lit=P.drums.filter(d=>d.run>=3).map(d=>d.id);
+ // the foot: the terminus hall's west half crushed by the fallen lower hull; most of the lobby's glazing gone; the east wing's
+ // upper floors burned; the plaza's pools dry
+ {const H=P.foot.hall;RU.foot={hallCut:lerpSB(H.x0,H.x1,.5),glass:.7,galleries:P.foot.lobby.galleries.map(g=>({id:g.id,lost:.25+.2*h(250,g.y|0)})),
+  burned:{id:'sb.foot.e',storeys:2},dry:true};}
  // the heliostats: most fallen or askew
  for(const m of P.helio){const u=h(240,m.row,m.i,m.grp==='e'?1:2);if(u<R.helio)RU.helio.push({id:m.id,fallen:u<R.helio*.6,tilt:(h(241,m.row,m.i)-.5)*1.4});}
  // the east wing's slab in the scree
@@ -201,11 +221,11 @@ STRONGBOW.ruin=function(P){const D=P.dim,R=D.RUIN,F=P.frame,S=P.seed,h=(a,b,c,e)
 STRONGBOW.town=function(P,debris){const F=P.frame,S=P.seed,h=(a,b,c,e)=>STRONGBOW.h(S,a,b,c,e),T=P.term,out={houses:[]};
  const nearLine=(x,z,pts,w)=>{for(let i=1;i<pts.length;i++){const a=pts[i-1],b=pts[i],dx=b[0]-a[0],dz=b[2]-a[2],L2=dx*dx+dz*dz;
   const t=Math.max(0,Math.min(1,((x-a[0])*dx+(z-a[2])*dz)/L2)),px=a[0]+t*dx-x,pz=a[2]+t*dz-z;if(px*px+pz*pz<w*w)return true;}return false;};
- out.han={id:'sb.town.han',at:[-250,F.FL,268],w:64,d:56};
- out.tower={id:'sb.town.tower',at:[205,F.FL,105],w:14,h:34};
+ out.han={id:'sb.town.han',at:[-330,F.FL,390],w:64,d:56};
+ out.tower={id:'sb.town.tower',at:[205,F.FL,230],w:14,h:34};
  const C=22;for(let gx=-17;gx<=17;gx++)for(let gz=3;gz<=15;gz++){const u=h(301,gx,gz);if(u>.42)continue;
   const x=gx*C+(h(302,gx,gz)-.5)*8,z=gz*C+(h(303,gx,gz)-.5)*8;
-  if(x>T.x0-14&&x<T.x1+14&&z<T.z1+16)continue;
+  if(P.foot.rects.some(r=>x>r[0]-14&&x<r[1]+14&&z>r[2]-14&&z<r[3]+14))continue;
   if(nearLine(x,z,P.line.pts,20)||nearLine(x,z,P.road.pts,16))continue;
   if(Math.abs(x-out.han.at[0])<out.han.w/2+10&&Math.abs(z-out.han.at[2])<out.han.d/2+10)continue;
   if(Math.abs(x-out.tower.at[0])<20&&Math.abs(z-out.tower.at[2])<20)continue;

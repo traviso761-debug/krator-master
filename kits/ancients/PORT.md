@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 389 (13%) | 39 (1%) | 176 (6%) | 48 (2%) | 2408 (79%) |
+| KB | 394 (13%) | 39 (1%) | 176 (6%) | 48 (2%) | 2416 (79%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -253,12 +253,13 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `targets/span/91z-views.js` | 1.1 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | view presets |
 | `targets/spire/89z-rows.js` | 1.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/spire/91z-views.js` | 2.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `targets/strongbow/89z-rows.js` | 1.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `targets/strongbow/8aw0-strongbow-plan.js` | 18.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 21 | 0 | 0 | 0 | 0 | 0 | records only: the 'geom' count is the frame's own F.w( / F.flank( calls, not geometry |
+| `targets/strongbow/89z-rows.js` | 1.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `targets/strongbow/8aw0-strongbow-plan.js` | 21.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 22 | 0 | 0 | 0 | 0 | 0 | records only: the 'geom' count is the frame's own F.w( / F.flank( calls, not geometry |
 | `targets/strongbow/8aw1-strongbow-parts.js` | 14.8 | [draw] | 15 | 0 | 0 | 0 | 0 | 23 | 0 | 0 | 0 | 0 | 0 |  |
-| `targets/strongbow/8aw2-strongbow-draw.js` | 22.2 | [draw] | 41 | 0 | 0 | 0 | 0 | 17 | 0 | 0 | 0 | 0 | 0 |  |
-| `targets/strongbow/91z-views.js` | 4.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `targets/strongbow/test-strongbow.js` | 7.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 | node test of the plan (no browser) |
+| `targets/strongbow/8aw2-strongbow-draw.js` | 22.8 | [draw] | 40 | 0 | 0 | 0 | 0 | 17 | 0 | 0 | 0 | 0 | 0 |  |
+| `targets/strongbow/8aw3-strongbow-foot.js` | 7.6 | [draw] | 9 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 |  |
+| `targets/strongbow/91z-views.js` | 4.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `targets/strongbow/test-strongbow.js` | 9.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 8 | 0 | 0 | 0 | 0 | 0 | node test of the plan (no browser) |
 | `targets/theodiga/89z-rows.js` | 0.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/theodiga/91z-views.js` | 0.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/trigon/89z-rows.js` | 1.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
