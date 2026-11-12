@@ -39,6 +39,36 @@
   ground (hash `8ad035b1`), and every check passes in the browser.
 - **Not moved yet:** Pinnacle Rock's own page and the published model (`openworld/pinnacle/KNOWN_ISSUES.md`).
 
+**Qiblai moved (the owner, 2026-11-11: "by a river and near plentiful resources").**
+- **Why it moved.** At 5.1 px 963,1566 the city stood 65 km from any river in the open world's data, with no salt
+  within 30 km.
+- **The survey.** Every river in the Xanadu overlay was scored, in 6 km steps, on resources within 30 km (`WRES.assess`),
+  farmland and flat ground for a 1.6 km grid. The owner chose **the cataracts of Nahr ash-Shalālāt, px 922,1595**: the
+  region's biggest river (~1,100 m³/s), 37 m of relief over the grid, rock salt (236), potash, rare earths, saltpeter,
+  copper and oil within reach, farmland 40%.
+  - The Ālph's best point was a gorge (~300 m of relief over the grid).
+  - Gūlī Qubbah was flat and mild but had no salt.
+- **The model's record moved** (`model/src/60-settlements.js`, `SETT_MOVED['5.1e3']`).
+- **The region followed it:** recut (the frame unchanged), the villages and links re-baked, the resources re-baked, the
+  verify's region check at the new pixel.
+- **Erewhon followed its lake** (below).
+
+**Erewhon's lake remade, and Erewhon on its shore (the owner, 2026-11-11: "more like Lake Atitlán, but bigger, with a few
+islands"; 120 x 65 km, the volcanoes a safe distance away).**
+- **The model edit** (`tools/scale-model/edit_512.py`, README "5.1 edit 2"): the 260 x 102 km rift lake became a caldera
+  lake, 121 x 66 km at -520 m, up to 945 m deep, with walls all round. Three volcanoes stand 13-14 px back from the south
+  shore (summits 1.9-2.4 km over the lake). There are four islands of 1-4 cells, and two small-island landform records
+  (`model/data/landforms.json`; the Pleasure Dome's isle among them), which core/world does not stamp yet.
+- **The Vale.** The old basin east of the lake is a farmed vale floor. The Ālph now rises at the lake's east tip and
+  crosses the vale to Theodiga's dam.
+- **Erewhon** moved from 800,1503 (now under the lake) to **805,1516** (`SETT_MOVED['5.1e4']`): a south-shore bench, with
+  the town's climb, a 90 m grey cliff, the palace plateau and the mountainside behind.
+- **Its ring** was re-laid for the new shore: along it east and west, and up the slopes south.
+- **Not done:**
+  - the published model and its database;
+  - the landforms' stamp;
+  - the Erewhon page's own terrain, which is drawn separately and may face another way from the new shore.
+
 **The second region, Xanadu, Oidong and the High Rift (2026-11-10): `openworld/xanadu-oidong-highrift`.**
 - **The cut:** 1,780 x 582 km at 1 km cells, in about 40 s.
 - **The villages:** Erehwon's and Qiblai's farming and ranching villages and Longsong's three, 15 in all (577 buildings),

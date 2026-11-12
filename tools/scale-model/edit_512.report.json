@@ -1,0 +1,579 @@
+{
+ "edit": "5.1 edit 2",
+ "date": "2026-11-11",
+ "old_lake": {
+  "cells": 2197,
+  "km2": 8788,
+  "bed_m": [
+   -2209,
+   -720
+  ],
+  "raster_spill_m": -487.6
+ },
+ "horst": {
+  "cells_lowered": 3057,
+  "max_lowered_m": 2511,
+  "rim_max_m_before_after": [
+   3297,
+   785
+  ]
+ },
+ "volcanoes": [
+  {
+   "id": "volc_erewhon_west",
+   "px": [
+    794.0,
+    1525.0
+   ],
+   "summit_m": 1410,
+   "over_lake_m": 1930,
+   "base_px": 5.5,
+   "from_shore_px": 13.0,
+   "from_shore_km": 26.0,
+   "from_erehwon_px": 14.2
+  },
+  {
+   "id": "volc_erewhon_middle",
+   "px": [
+    819.0,
+    1530.0
+   ],
+   "summit_m": 1710,
+   "over_lake_m": 2230,
+   "base_px": 5.5,
+   "from_shore_px": 14.0,
+   "from_shore_km": 28.0,
+   "from_erehwon_px": 19.8
+  },
+  {
+   "id": "volc_erewhon_east",
+   "px": [
+    843.0,
+    1523.0
+   ],
+   "summit_m": 1910,
+   "over_lake_m": 2430,
+   "base_px": 5.5,
+   "from_shore_px": 13.5,
+   "from_shore_km": 26.9,
+   "from_erehwon_px": 38.6
+  }
+ ],
+ "vale": {
+  "floor_cells": 1591,
+  "river_bed_m": [
+   -521.8,
+   -546.0
+  ],
+  "breach_bed_m": [
+   -548.0,
+   -568.0
+  ],
+  "floor_m": {
+   "p5": -537,
+   "median": -519,
+   "p95": -488
+  },
+  "floor_near_lake_m": -497,
+  "floor_near_theodiga_m": -535,
+  "fill_m_max": 1951
+ },
+ "pits": {
+  "before_cells": 723,
+  "after_cells": 153,
+  "new_cells": 0,
+  "filled_cells": 12,
+  "filled_max_m": 63.2,
+  "filled_at": [
+   [
+    847,
+    1485
+   ],
+   [
+    849,
+    1486
+   ],
+   [
+    876,
+    1507
+   ],
+   [
+    840,
+    1511
+   ],
+   [
+    898,
+    1523
+   ],
+   [
+    840,
+    1526
+   ],
+   [
+    840,
+    1527
+   ],
+   [
+    841,
+    1527
+   ],
+   [
+    841,
+    1528
+   ],
+   [
+    842,
+    1528
+   ],
+   [
+    841,
+    1529
+   ],
+   [
+    840,
+    1535
+   ]
+  ]
+ },
+ "spill": {
+  "level_m": -520.0,
+  "spill_m": -521.83,
+  "through_outlet": true,
+  "spill_with_outlet_blocked_m": -176.6,
+  "closed_otherwise": true,
+  "lake_surface_cells_in_a_pit": 0
+ },
+ "lake": {
+  "centre_px": [
+   810.0,
+   1499.5
+  ],
+  "axis_deg": 15.0,
+  "cells": 1495,
+  "km2": 5980,
+  "x": [
+   780,
+   838
+  ],
+  "y": [
+   1483,
+   1516
+  ],
+  "length_km": 121.3,
+  "width_km": 66.0,
+  "level_m": -520.0,
+  "bed_m": [
+   -1465,
+   -556
+  ],
+  "depth_max_m": 945,
+  "shore_min_m": -516,
+  "wall_m_at_2_px": -177,
+  "wall_m_at_3_px": -20
+ },
+ "islands": [
+  {
+   "id": "isle_erewhon_great",
+   "px": [
+    816.5,
+    1501.5
+   ],
+   "cells": 4,
+   "crest_m": -407,
+   "over_lake_m": 113,
+   "from_erehwon_km": 37.0
+  },
+  {
+   "id": "isle_erewhon_bay",
+   "px": [
+    808.5,
+    1509.0
+   ],
+   "cells": 2,
+   "crest_m": -456,
+   "over_lake_m": 64,
+   "from_erehwon_km": 15.7
+  },
+  {
+   "id": "isle_erewhon_west",
+   "px": [
+    797.0,
+    1494.0
+   ],
+   "cells": 1,
+   "crest_m": -420,
+   "over_lake_m": 100,
+   "from_erehwon_km": 46.8
+  },
+  {
+   "id": "isle_erewhon_east",
+   "px": [
+    828.0,
+    1497.0
+   ],
+   "cells": 1,
+   "crest_m": -475,
+   "over_lake_m": 45,
+   "from_erehwon_km": 59.7
+  }
+ ],
+ "erehwon": {
+  "px": [
+   805,
+   1516
+  ],
+  "ground_m": -497,
+  "profile_m_by_cells_back": {
+   "1": -497,
+   "2": -415,
+   "3": -325,
+   "4": -305,
+   "5": -210,
+   "6": -20,
+   "7": 180,
+   "8": 371
+  },
+  "lake_cell_north": true,
+  "old_pin_800_1503": {
+   "wet": true
+  }
+ },
+ "pins": {
+  "Erehwon": {
+   "px": [
+    800,
+    1503
+   ],
+   "before_m": -485,
+   "after_m": -1412,
+   "wet_after": true
+  },
+  "Theodiga": {
+   "px": [
+    908,
+    1535
+   ],
+   "before_m": -495,
+   "after_m": -495,
+   "wet_after": false
+  },
+  "Tuatara": {
+   "px": [
+    818,
+    1554
+   ],
+   "before_m": -1704,
+   "after_m": -1704,
+   "wet_after": false
+  }
+ },
+ "temperatures": {
+  "vale_C": {
+   "tm": 25.0,
+   "th": 37.0,
+   "tl": 10.0,
+   "tw": 32.0,
+   "tc": 18.0
+  },
+  "lake_C": {
+   "tm": 37.0,
+   "th": 46.0,
+   "tl": 29.0,
+   "tw": 41.0,
+   "tc": 33.0
+  },
+  "rim_C_at_volcano_summits": {
+   "volc_erewhon_west": 15.0,
+   "volc_erewhon_middle": 12.0,
+   "volc_erewhon_east": 10.0
+  }
+ },
+ "reclimate": {
+  "cells": 5069,
+  "class_changed": 3194,
+  "rain_mean_before_mm": 1247.0,
+  "rain_mean_after_mm": 920.0,
+  "classes_now": {
+   "Af": 4,
+   "Am": 9,
+   "Aw": 399,
+   "BSh": 5,
+   "Csa": 1059,
+   "Csb": 73,
+   "Cfa": 2397,
+   "Cfb": 990,
+   "Dsb": 80,
+   "Dsc": 40,
+   "Dfb": 11,
+   "XV": 2
+  }
+ },
+ "vale_climate": {
+  "rain_mm_median": 913,
+  "classes": {
+   "Cfa": 1252,
+   "Cfb": 2
+  }
+ },
+ "volcano_classes": {
+  "Cfb": 175,
+  "Csa": 84,
+  "Cfa": 16,
+  "Aw": 16
+ },
+ "lake_paint_rgb_st": [
+  48,
+  130,
+  131
+ ],
+ "lake_paint_rgb_t": [
+  84,
+  135,
+  119
+ ],
+ "rivers": {
+  "r613": {
+   "was": {
+    "n": 15,
+    "last": [
+     792.7,
+     1483.7
+    ],
+    "to": {
+     "lake_m": -717,
+     "at_px": [
+      792.7,
+      1485.7
+     ]
+    }
+   },
+   "now": {
+    "n": 15,
+    "last": [
+     792.7,
+     1483.7
+    ],
+    "to": {
+     "lake_m": -520,
+     "at_px": [
+      792.7,
+      1483.7
+     ]
+    },
+    "mouth_m": -604.6
+   }
+  },
+  "r753": {
+   "was": {
+    "n": 2,
+    "last": [
+     794.7,
+     1483.7
+    ],
+    "to": {
+     "lake_m": -717,
+     "at_px": [
+      794.7,
+      1485.7
+     ]
+    }
+   },
+   "now": {
+    "n": 2,
+    "last": [
+     794.7,
+     1483.7
+    ],
+    "to": {
+     "lake_m": -520,
+     "at_px": [
+      794.7,
+      1483.7
+     ]
+    },
+    "mouth_m": -614.1
+   }
+  },
+  "r492": {
+   "was": {
+    "n": 18,
+    "last": [
+     812.7,
+     1483.7
+    ],
+    "to": {
+     "lake_m": -717,
+     "at_px": [
+      812.7,
+      1485.7
+     ]
+    }
+   },
+   "now": {
+    "n": 19,
+    "last": [
+     812.0,
+     1484.0
+    ],
+    "to": {
+     "lake_m": -520,
+     "at_px": [
+      812.0,
+      1484.0
+     ]
+    },
+    "mouth_m": -561.2
+   }
+  },
+  "r272": {
+   "was": {
+    "n": 11,
+    "last": [
+     822.7,
+     1483.7
+    ],
+    "to": {
+     "lake_m": -717,
+     "at_px": [
+      822.7,
+      1485.7
+     ]
+    }
+   },
+   "now": {
+    "n": 13,
+    "last": [
+     821.0,
+     1487.0
+    ],
+    "to": {
+     "lake_m": -520,
+     "at_px": [
+      821.0,
+      1487.0
+     ]
+    },
+    "mouth_m": -601.4
+   }
+  },
+  "r488": {
+   "was": {
+    "n": 11,
+    "last": [
+     880.8,
+     1495.7
+    ],
+    "to": {
+     "lake_m": -717,
+     "at_px": [
+      878.8,
+      1497.7
+     ]
+    }
+   },
+   "now": {
+    "n": 18,
+    "last": [
+     876.12,
+     1506.75
+    ],
+    "to": {
+     "river": "r070",
+     "name": "Ālph",
+     "at_px": [
+      876.12,
+      1506.75
+     ]
+    },
+    "mouth_m": -534.5
+   }
+  },
+  "r616": {
+   "was": {
+    "n": 17,
+    "last": [
+     906.8,
+     1515.7
+    ],
+    "to": {
+     "lake_m": -717,
+     "at_px": [
+      904.8,
+      1517.7
+     ]
+    }
+   },
+   "now": {
+    "n": 23,
+    "last": [
+     898.07,
+     1523.35
+    ],
+    "to": {
+     "river": "r070",
+     "name": "Ālph",
+     "at_px": [
+      898.07,
+      1523.35
+     ]
+    },
+    "mouth_m": -543.6
+   }
+  },
+  "r070": {
+   "was": {
+    "n": 14,
+    "first": [
+     903.5,
+     1529.5
+    ],
+    "length_km": 59
+   },
+   "now": {
+    "n": 50,
+    "first": [
+     840.01,
+     1502.75
+    ],
+    "length_km": 204.6,
+    "source_m": -522.2,
+    "head_cells": 88
+   }
+  }
+ },
+ "basin": {
+  "at_px": [
+   810.0,
+   1499.5
+  ],
+  "level_m": -520,
+  "km2": 5980,
+  "depth_m": 945,
+  "kind": "through lake",
+  "climate": "Cfa",
+  "spill_m": -522,
+  "name": "Erewhon's lake",
+  "notes": "A caldera lake (edit_512, 2026-11-11): its outlet the Alph (r070)."
+ },
+ "cells_changed": {
+  "tm": 4765,
+  "tw": 4750,
+  "tc": 4769,
+  "th": 4728,
+  "tl": 4750,
+  "p": 5641,
+  "c": 3958,
+  "z": 2878,
+  "h": 6021
+ },
+ "box": {
+  "y": [
+   1464,
+   1556
+  ],
+  "x": [
+   758,
+   918
+  ]
+ }
+}

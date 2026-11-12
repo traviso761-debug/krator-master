@@ -3,13 +3,13 @@
  "version": 1,
  "region": "xanadu-oidong-highrift",
  "census": {
-  "area_km2": 294752,
+  "area_km2": 295584,
   "step_m": 4000,
   "provinces": {
    "volcanic": 8880,
    "granite": 44880,
    "crystalline": 73152,
-   "rift": 94064,
+   "rift": 94896,
    "water": 29616,
    "evaporite": 240,
    "sedimentary": 43808,
@@ -18,7 +18,7 @@
   },
   "families": {
    "iron": {
-    "mean": 102.5,
+    "mean": 102.4,
     "good_km2": 147264,
     "rich_km2": 29232,
     "peak": {
@@ -26,18 +26,18 @@
      "x": -320000,
      "z": 40000
     },
-    "nodes": 13162
+    "nodes": 13188
    },
    "copper": {
-    "mean": 67.8,
-    "good_km2": 105024,
+    "mean": 68,
+    "good_km2": 105856,
     "rich_km2": 10928,
     "peak": {
      "byte": 240,
      "x": -680000,
      "z": -260000
     },
-    "nodes": 4899
+    "nodes": 4923
    },
    "tin": {
     "mean": 61.9,
@@ -48,7 +48,7 @@
      "x": -740000,
      "z": -264000
     },
-    "nodes": 4472
+    "nodes": 4482
    },
    "nickel": {
     "mean": 0,
@@ -70,7 +70,7 @@
      "x": -744000,
      "z": -268000
     },
-    "nodes": 3560
+    "nodes": 3571
    },
    "silver": {
     "mean": 74.1,
@@ -81,18 +81,18 @@
      "x": -744000,
      "z": -268000
     },
-    "nodes": 3426
+    "nodes": 3436
    },
    "rare-earth": {
-    "mean": 110.7,
-    "good_km2": 212096,
-    "rich_km2": 94064,
+    "mean": 110.9,
+    "good_km2": 212928,
+    "rich_km2": 94896,
     "peak": {
      "byte": 190,
      "x": -680000,
      "z": -260000
     },
-    "nodes": 3555
+    "nodes": 3572
    },
    "coal": {
     "mean": 0,
@@ -107,14 +107,14 @@
    },
    "oil": {
     "mean": 15.3,
-    "good_km2": 31776,
+    "good_km2": 31872,
     "rich_km2": 0,
     "peak": {
      "byte": 110,
      "x": -772000,
      "z": -188000
     },
-    "nodes": 706
+    "nodes": 709
    },
    "sulfur": {
     "mean": 4.5,
@@ -128,15 +128,15 @@
     "nodes": 1301
    },
    "saltpeter": {
-    "mean": 103.3,
-    "good_km2": 168144,
+    "mean": 103.2,
+    "good_km2": 168336,
     "rich_km2": 81632,
     "peak": {
      "byte": 200,
      "x": -744000,
      "z": -268000
     },
-    "nodes": 7462
+    "nodes": 7477
    },
    "halite": {
     "mean": 3.1,
@@ -194,9 +194,9 @@
     "nodes": 171
    },
    "stone": {
-    "mean": 207.8,
-    "good_km2": 255872,
-    "rich_km2": 230864,
+    "mean": 207.9,
+    "good_km2": 256704,
+    "rich_km2": 231696,
     "peak": {
      "byte": 255,
      "x": -744000,
@@ -228,7 +228,7 @@
    },
    "water": {
     "mean": 92.8,
-    "good_km2": 114688,
+    "good_km2": 115200,
     "rich_km2": 80880,
     "peak": {
      "byte": 255,
@@ -238,7 +238,7 @@
     "nodes": 0
    },
    "limestone": {
-    "mean": 24.4,
+    "mean": 24.5,
     "good_km2": 544,
     "rich_km2": 0,
     "peak": {
@@ -305,9 +305,9 @@
    }
   },
   "farm": {
-   "mean": 0.142,
-   "good_km2": 41552,
-   "best_km2": 25024,
+   "mean": 0.15,
+   "good_km2": 44176,
+   "best_km2": 26928,
    "peak": {
     "score": 0.987,
     "x": 76000,

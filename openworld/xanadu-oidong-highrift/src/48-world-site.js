@@ -14,9 +14,11 @@
 var SITE_SPEC={region:'xanadu-oidong-highrift',world:1191569,
  sites:{
   s57bkv9741:{culture:'xanadu',road:{r:1500,hw:3,join:true},hamlets:[
-   {id:'farm-1',focus:'farming',bearing:20,km:7,pop:300},{id:'farm-2',focus:'farming',bearing:95,km:8,pop:300},
-   {id:'farm-3',focus:'farming',bearing:165,km:6.5,pop:300},{id:'farm-4',focus:'farming',bearing:240,km:7.5,pop:300},
-   {id:'farm-5',focus:'farming',bearing:310,km:8.5,pop:300},{id:'ranch-1',focus:'ranch',bearing:200,km:12,pop:200}]},
+   /* the caldera lake is north of the town (edit 5.1-512): the farms along the south shore east and west and up the
+      slopes toward the volcanoes, the ranch on the uplands between them */
+   {id:'farm-1',focus:'farming',bearing:70,km:8,pop:300},{id:'farm-2',focus:'farming',bearing:110,km:9,pop:300},
+   {id:'farm-3',focus:'farming',bearing:165,km:7,pop:300},{id:'farm-4',focus:'farming',bearing:215,km:7.5,pop:300},
+   {id:'farm-5',focus:'farming',bearing:265,km:8.5,pop:300},{id:'ranch-1',focus:'ranch',bearing:190,km:14,pop:200}]},
   skm4jjo2vl:{culture:'xanadu',road:{r:1500,hw:3,join:true},hamlets:[
    {id:'farm-1',focus:'farming',bearing:0,km:7,pop:300},{id:'farm-2',focus:'farming',bearing:75,km:8,pop:300},
    {id:'farm-3',focus:'farming',bearing:145,km:6.5,pop:300},{id:'farm-4',focus:'farming',bearing:215,km:7.5,pop:300},

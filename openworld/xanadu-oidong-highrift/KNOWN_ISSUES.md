@@ -31,3 +31,9 @@
       mapper exists yet) and the scale model has no soil layer.
 - [ ] **Proposals live in the browser until they are sent or exported.** `93-world-propose.js` keeps them in localStorage
       per region; clearing the site data loses unsent ones.
+- [ ] **The lake's small islands are records only.** Scale-model edit 5.1-512 wrote the Pleasure Dome's isle and a stack
+      as landforms (`tools/scale-model/model/data/landforms.json`). Each one's cell is a 40 m shoal; core/world does not
+      stamp them at 1:1 yet.
+- [ ] **Erewhon's page and the world disagree on its ground.** The page (`settlements/xanadu`, target erewhon) draws its own
+      terrain (lake at -0.5 m, its island at `ISLAND_C`). The world's town now stands on the caldera lake's south shore,
+      with the lake to the north; the page has not been fitted to it.
