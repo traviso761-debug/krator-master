@@ -45,7 +45,7 @@ const LAND={name:'The White Loom (loom-chasms station 5)',title:'Krator biome â€
  region:{name:'The White Loom (station 5)',x:0,z:0,r:TERR.R},sky:{px:SITE.sky[0],py:SITE.sky[1]},atm:atmAt(SITE.h),cloud:.08,
  fog:{falloff:1/1500,sun:.35,sky:.3},climate:{cold:false,dry:true},wet:false,groundN:720,shimmer:true,
  groundLayers:['salt','efflo','pave','sulphur'],
- plants:['salt','needle','pebble'],
+ plants:['needle','pebble'],   /* the Great Chasm kit's desert set on the rising ground; its salt tufts are keyed to the Deep's floor and do not place here (the playa's halophytes are owed: KNOWN_ISSUES.md) */
  modelTol:12,sculpt:(x,z)=>!!STATION.poolAt(x,z)&&STATION.poolAt(x,z).d<STATION.poolAt(x,z).p.r*1.6,
  /* nothing roots in a pool or its mats, nor on the camp's ground */
  noRoot:(x,z)=>{const q=STATION.poolAt(x,z);if(q&&q.d<q.p.r*2.1)return true;return Math.hypot(x-STATION.CAMP.x,z-STATION.CAMP.z)<55;},

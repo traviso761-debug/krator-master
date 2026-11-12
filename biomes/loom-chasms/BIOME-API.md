@@ -22,3 +22,11 @@ Items: `cable`, `shoot` (unit cylinders along +y, stretched along a span's segme
 `src/45d-host-drawn.js`: `drawnH(x, z)` and `drawnRay(o, d, far)`, the ground as drawn (its own triangles), the ray bucketed by the
 ground's cells. `stations/loom/86-host-slot.js` finds the anchors with it, solves each span before it is a record (a span through the
 drawn rock is not grown), registers every cable in core/tags, then calls the builders.
+
+## The host's shared pieces (every station)
+
+- `src/85-host-canopy.js`: `slotCanopy(o)`, the canopy across one cut (the Loom's slot, Caelum's two rifts): the cable stations along the
+  cut's line, the anchors by rays at the drawn walls, each span solved before it is a record, the hold check against KSTRATA's hardness,
+  the curtains, the stryders (kits/fauna), the hazards, the checks and negatives. Its options are in its header.
+- `src/44v-host-landlib.js`: `chasmLand(o)` takes `canals` (dug channels: the page's water and wet ground, each a core/water flow), `geo`
+  (the vents' and pools' crust) and `cinder` (a volcano's scoria); `lineIndex(pts, cell)` buckets a long line's segments by cell.

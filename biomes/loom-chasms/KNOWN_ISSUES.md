@@ -1,6 +1,7 @@
 # biomes/loom-chasms: known issues
 
-Open items, each with what is owed. Stations 3 (the Loom) and 1 (the Weavers' Cradle) were built in one cloud session (2026-11-11) with
+Open items, each with what is owed. Stations 3 (the Loom) and 1 (the Weavers' Cradle) were built in a cloud session (2026-11-11), stations 2, 4
+and 5 in the same session the next day, with
 **no GPU**: `verify.py --assert --all-views` ran in software GL (SwiftShader). **The real-GPU verify is owed on the owner's PC**
 (`KRATOR_GL=gpu`: the log's `gpu-renderer` line must name the card), with the owner's look pass.
 
@@ -27,12 +28,24 @@ view looked at the orchard, not the terraces (it stands in a field now).
 - [ ] `verify.py --assert --all-views` on both pages on the GPU: the ground at 15 texture units (the Arc's limit), the far
   field to 118 km under a camera far plane of 260 km and a near of 1.5 m (the cables' beards on the floor's view), the frame rate.
 
-## The stations still to build
+## Stations 2, 4 and 5 (built 2026-11-12)
 
-- [ ] Station 2, the Weave-Step; station 4, Mount Caelum (the parent colony at the fumaroles; geothermal surfaces owed in core/water);
-  station 5, the White Loom (the salt-crust hazard owed in core/hazard). Their `station.json` are records only (`check_views` carries
-  their STATION-NO-VIEWS in its baseline until they are built), and their records' `atm` and Caelum's playa level still want fixing
-  (PLAN.md section 7, "Records to fix").
+- [ ] **Their full software-GL verify** (`verify.py --assert --all-views`) is running after the build; the Weave-Step passed it
+  (59 checks, 0 fails) on its bytes before two views were re-aimed ("Up the benches": downhill the risers face away; "Over the chasms":
+  it stood in a hollow at the page's low east edge). The results table above takes their rows when the runs finish.
+- [ ] **The Weave-Step's road** is held to a pack train's grade (under 20%: 16.7% at its steepest), not a cart's: the model's ramp is 13% in
+  the page's west and the road runs down its fall line. A cart road would switch back across the benches (the owner's call).
+- [ ] **The waystation and the salt camp are pending stand-ins** (Yuni records drawn at their boxes), as the Cradle's farms: the Yuni kit's
+  buildings draw through the Yuni engine. core/hamlet has no `trade` focus (the waystation) and core/camp no Yuni row nor tent program
+  (the salt camp): both laid by hand, as the Great Chasm's post.
+- [ ] **Caelum's geothermal surfaces**: the vents' crust is the painted sulphur colour over `ground.efflorescence`'s relief (a stand-in:
+  `bark.sulphur.porous` is a bark, fibred, not a crust); the sinter and sulphur sets and the vents' warm ground in core/water are owed.
+  The steam is ATMOS.smoke's `steam`. The plan's hearth field at the summit is the owner's to allow: not drawn.
+- [ ] **The White Loom's halophytes and brine mats**: the playa's rim plants are this kit's (*proposed* in the plan) and are not made; the
+  Great Chasm kit's salt tufts are keyed to its Deep's floor and do not place here. The mats are the ground's paint (the geo field), not
+  their own surface. The salt crust over brine is registered as `sink` (the shared amendment, a crust that breaks underfoot, is owed in
+  core/hazard); the pools' brine burns as a mild `poison`.
+- [ ] **Lake Nim** is a still over the page's west edge at 240 m (the model's level); its shoreline is the model's, 2 km cells.
 
 ## Owed to core adoption and to the plan
 

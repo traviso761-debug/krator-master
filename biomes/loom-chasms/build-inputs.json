@@ -29,8 +29,8 @@
     "biomes/greatchasm/tex/rosette.albedo.webp": "d64f4f9dacecc23287597ecfce77318eafd93d65e466b8f987665e8d0a5641b1",
     "biomes/greatchasm/tex/sac.albedo.webp": "3bee153c51a31cc87ce53675e8589ecc24c51907c666fd1d6e86ea3ad74d0844",
     "biomes/greatchasm/tex/samph.albedo.webp": "eb2338dde1e90cbcf50e334594bdd8aa76dbfaa744809e2a22f112c864bfb8d2",
-    "biomes/loom-chasms/KNOWN_ISSUES.md": "ec2497f142f29dc890311d6e4ed3be4f6c79d8f114514e280252723d65024c44",
-    "biomes/loom-chasms/PORT.md": "d412e436fa5d8e46843530737fed38bf0b6552f6faf5b8910e9fc5b5fc5737b6",
+    "biomes/loom-chasms/KNOWN_ISSUES.md": "b8e9427321d0b100937e087c0656eb4b7479cc85ab99377001f588f74e4a5fc1",
+    "biomes/loom-chasms/PORT.md": "316bc2073547d9859cebddf864cc8959a1f0976610597013ff3529cc9a0409f0",
     "biomes/loom-chasms/build.py": "836e29ad2b1707d0e59347ac7f608704c9e7ebd93fef19cdcecc21ed6161c8c6",
     "biomes/loom-chasms/src/00-head.html": "c3bb5d17900f3b3d8c0b8839f8564c2e804ff3e06fcbc6c8a02956626e572bb8",
     "biomes/loom-chasms/src/44v-host-landlib.js": "9eeb185b33039c00225682c5b8a5312eb1844c98f9746bcd0abb9625671f9fe4",
@@ -211,8 +211,8 @@
     "biomes/greatchasm/tex/rosette.albedo.webp": "d64f4f9dacecc23287597ecfce77318eafd93d65e466b8f987665e8d0a5641b1",
     "biomes/greatchasm/tex/sac.albedo.webp": "3bee153c51a31cc87ce53675e8589ecc24c51907c666fd1d6e86ea3ad74d0844",
     "biomes/greatchasm/tex/samph.albedo.webp": "eb2338dde1e90cbcf50e334594bdd8aa76dbfaa744809e2a22f112c864bfb8d2",
-    "biomes/loom-chasms/KNOWN_ISSUES.md": "ec2497f142f29dc890311d6e4ed3be4f6c79d8f114514e280252723d65024c44",
-    "biomes/loom-chasms/PORT.md": "d412e436fa5d8e46843530737fed38bf0b6552f6faf5b8910e9fc5b5fc5737b6",
+    "biomes/loom-chasms/KNOWN_ISSUES.md": "b8e9427321d0b100937e087c0656eb4b7479cc85ab99377001f588f74e4a5fc1",
+    "biomes/loom-chasms/PORT.md": "316bc2073547d9859cebddf864cc8959a1f0976610597013ff3529cc9a0409f0",
     "biomes/loom-chasms/build.py": "836e29ad2b1707d0e59347ac7f608704c9e7ebd93fef19cdcecc21ed6161c8c6",
     "biomes/loom-chasms/src/00-head.html": "c3bb5d17900f3b3d8c0b8839f8564c2e804ff3e06fcbc6c8a02956626e572bb8",
     "biomes/loom-chasms/src/44v-host-landlib.js": "9eeb185b33039c00225682c5b8a5312eb1844c98f9746bcd0abb9625671f9fe4",
@@ -387,8 +387,8 @@
     "biomes/greatchasm/tex/rosette.albedo.webp": "d64f4f9dacecc23287597ecfce77318eafd93d65e466b8f987665e8d0a5641b1",
     "biomes/greatchasm/tex/sac.albedo.webp": "3bee153c51a31cc87ce53675e8589ecc24c51907c666fd1d6e86ea3ad74d0844",
     "biomes/greatchasm/tex/samph.albedo.webp": "eb2338dde1e90cbcf50e334594bdd8aa76dbfaa744809e2a22f112c864bfb8d2",
-    "biomes/loom-chasms/KNOWN_ISSUES.md": "ec2497f142f29dc890311d6e4ed3be4f6c79d8f114514e280252723d65024c44",
-    "biomes/loom-chasms/PORT.md": "d412e436fa5d8e46843530737fed38bf0b6552f6faf5b8910e9fc5b5fc5737b6",
+    "biomes/loom-chasms/KNOWN_ISSUES.md": "b8e9427321d0b100937e087c0656eb4b7479cc85ab99377001f588f74e4a5fc1",
+    "biomes/loom-chasms/PORT.md": "316bc2073547d9859cebddf864cc8959a1f0976610597013ff3529cc9a0409f0",
     "biomes/loom-chasms/build.py": "836e29ad2b1707d0e59347ac7f608704c9e7ebd93fef19cdcecc21ed6161c8c6",
     "biomes/loom-chasms/src/00-head.html": "c3bb5d17900f3b3d8c0b8839f8564c2e804ff3e06fcbc6c8a02956626e572bb8",
     "biomes/loom-chasms/src/44v-host-landlib.js": "9eeb185b33039c00225682c5b8a5312eb1844c98f9746bcd0abb9625671f9fe4",
@@ -792,8 +792,8 @@
     "biomes/greatchasm/tex/rosette.albedo.webp": "d64f4f9dacecc23287597ecfce77318eafd93d65e466b8f987665e8d0a5641b1",
     "biomes/greatchasm/tex/sac.albedo.webp": "3bee153c51a31cc87ce53675e8589ecc24c51907c666fd1d6e86ea3ad74d0844",
     "biomes/greatchasm/tex/samph.albedo.webp": "eb2338dde1e90cbcf50e334594bdd8aa76dbfaa744809e2a22f112c864bfb8d2",
-    "biomes/loom-chasms/KNOWN_ISSUES.md": "ec2497f142f29dc890311d6e4ed3be4f6c79d8f114514e280252723d65024c44",
-    "biomes/loom-chasms/PORT.md": "d412e436fa5d8e46843530737fed38bf0b6552f6faf5b8910e9fc5b5fc5737b6",
+    "biomes/loom-chasms/KNOWN_ISSUES.md": "b8e9427321d0b100937e087c0656eb4b7479cc85ab99377001f588f74e4a5fc1",
+    "biomes/loom-chasms/PORT.md": "316bc2073547d9859cebddf864cc8959a1f0976610597013ff3529cc9a0409f0",
     "biomes/loom-chasms/build.py": "836e29ad2b1707d0e59347ac7f608704c9e7ebd93fef19cdcecc21ed6161c8c6",
     "biomes/loom-chasms/src/00-head.html": "c3bb5d17900f3b3d8c0b8839f8564c2e804ff3e06fcbc6c8a02956626e572bb8",
     "biomes/loom-chasms/src/44v-host-landlib.js": "9eeb185b33039c00225682c5b8a5312eb1844c98f9746bcd0abb9625671f9fe4",
@@ -968,8 +968,8 @@
     "biomes/greatchasm/tex/rosette.albedo.webp": "d64f4f9dacecc23287597ecfce77318eafd93d65e466b8f987665e8d0a5641b1",
     "biomes/greatchasm/tex/sac.albedo.webp": "3bee153c51a31cc87ce53675e8589ecc24c51907c666fd1d6e86ea3ad74d0844",
     "biomes/greatchasm/tex/samph.albedo.webp": "eb2338dde1e90cbcf50e334594bdd8aa76dbfaa744809e2a22f112c864bfb8d2",
-    "biomes/loom-chasms/KNOWN_ISSUES.md": "ec2497f142f29dc890311d6e4ed3be4f6c79d8f114514e280252723d65024c44",
-    "biomes/loom-chasms/PORT.md": "d412e436fa5d8e46843530737fed38bf0b6552f6faf5b8910e9fc5b5fc5737b6",
+    "biomes/loom-chasms/KNOWN_ISSUES.md": "b8e9427321d0b100937e087c0656eb4b7479cc85ab99377001f588f74e4a5fc1",
+    "biomes/loom-chasms/PORT.md": "316bc2073547d9859cebddf864cc8959a1f0976610597013ff3529cc9a0409f0",
     "biomes/loom-chasms/build.py": "836e29ad2b1707d0e59347ac7f608704c9e7ebd93fef19cdcecc21ed6161c8c6",
     "biomes/loom-chasms/src/00-head.html": "c3bb5d17900f3b3d8c0b8839f8564c2e804ff3e06fcbc6c8a02956626e572bb8",
     "biomes/loom-chasms/src/44v-host-landlib.js": "9eeb185b33039c00225682c5b8a5312eb1844c98f9746bcd0abb9625671f9fe4",
@@ -990,7 +990,7 @@
     "biomes/loom-chasms/src/99-host-take.js": "f9bca04cbdc57fbd97033594aeedd3092bd1e7da4789ff999ccb36719da38773",
     "biomes/loom-chasms/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
     "biomes/loom-chasms/stations/whiteloom/44f-host-far-data.js": "02234c4253acef05a7c3341d0c1d1680b6e953a9228a9b5ff5e72144d3c80466",
-    "biomes/loom-chasms/stations/whiteloom/44w-host-land.js": "b318d466aab8230b02803082d4bd049b74e548bd97936647c8cfc157d33c3cb7",
+    "biomes/loom-chasms/stations/whiteloom/44w-host-land.js": "4d582b960751e292334e8c4d5f9054f7e8ee5616765c7fb414b19b759fbad351",
     "biomes/loom-chasms/stations/whiteloom/86-host-nim.js": "d4f41f0addf4d43c79c759ec694784d8bb35834a52e26ea33987a999069c2848",
     "biomes/loom-chasms/stations/whiteloom/station.json": "983e51923223b546e66cc0c85108b32b84dcc98d93235b2b1d9f55ff0c3780f2",
     "biomes/loom-chasms/tex/beard.albedo.webp": "7b5df02c6dc4337153f6473e4fc88c9b0a8d6146681aa5df408c607ec285cfbc",
@@ -1116,10 +1116,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/loom-chasms/dist/loom-chasms-whiteloom.html": "88f30eb28aff531f414991ca2598e31ca64d3f34ad11f0a1796c10f8ae9dc35f"
+    "biomes/loom-chasms/dist/loom-chasms-whiteloom.html": "cb62af501149dcecd02a5bd828aee0fdd9ad26f3cd32d26c1eff43775f285aa5"
    },
    "outputs_raw": {
-    "biomes/loom-chasms/dist/loom-chasms-whiteloom.html": "88f30eb28aff531f414991ca2598e31ca64d3f34ad11f0a1796c10f8ae9dc35f"
+    "biomes/loom-chasms/dist/loom-chasms-whiteloom.html": "cb62af501149dcecd02a5bd828aee0fdd9ad26f3cd32d26c1eff43775f285aa5"
    }
   }
  }

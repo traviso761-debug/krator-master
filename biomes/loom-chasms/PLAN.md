@@ -10,7 +10,8 @@ down off their peaks.
 This plan replaces the plan v2 (Gemini, 2026-10-28) and keeps its facts. **Built so far (2026-11-11, a cloud session):** station 3,
 the Loom, the plan's first (`build.py`: `dist/loom-chasms.html`), and station 1, the Weavers' Cradle (`build.py --station cradle`:
 `dist/loom-chasms-cradle.html`); section 7b the sites as drawn, 7c what was settled, section 8 the core adoption as built;
-`INDEX.md`, `KNOWN_ISSUES.md`. Stations 2, 4 and 5 are records only. The real-GPU verify is owed on
+`INDEX.md`, `KNOWN_ISSUES.md`. **2026-11-12:** stations 2 (the Weave-Step, `--station monocline`), 4 (Mount Caelum, `--station caelum`)
+and 5 (the White Loom, `--station whiteloom`), each `dist/loom-chasms-<station>.html`; the sites as drawn in 7b. The real-GPU verify is owed on
 the owner's PC (the cloud has no GPU). Its station records (`stations/*/station.json`) are on the 5.1 canvas. Names marked **TBD**
 are the owner's. What changed from v2 is listed at the end.
 
@@ -279,6 +280,14 @@ No water within 12 km. Mount Caelum stands 84 km west-south-west (4,431 m); the 
 | the plan's site | 1555,1142 | 2,180 m | 1.22 atm | Cwb | 11 (23 / 0) °C | 439 mm | the fan, near flat (2,153-2,177 m over 8 km); a seasonal wadi (Norta Waita Guli, r780) 2 km north; **Aina Bruk's head 7 km north-east, off the page** |
 | **the station** | **1558,1140** | 2,168 m | 1.22 atm | Cwb | 11 (22 / 0) °C | 439 mm | **Aina Bruk's spring** (r174, perennial, 26.9 m3/s) at 1557.7,1139.2, where Apa Aina Guli (r632, from the west) and Norta Waita Guli meet; the river's first 3.5 km east; the fan falling north and east at 0.4%; Spindle Fan 6 km east |
 
+### 7b2. Stations 2, 4 and 5 as drawn (the survey, 2026-11-12)
+
+| Station | 5.1 px | Height | Air | Class | tm (tw / tc) | Rain | What the cells show |
+|---|---|---|---|---|---|---|---|
+| 2 the Weave-Step | 1575,1163 (the plan's) | 1,479 m | 1.33 atm | BSk | 15 (26 / 5) °C | 125 mm | the monocline's ramp falling east across the page, 1,740 m at its west edge to 1,236 m at its east (13% in the west); a box canyon opening east-south-east past it (993 m 6 km out, 723 m 14 km); the wadi Loua Swifta Guli (r609) 3 km north, off the page |
+| 4 Mount Caelum | 1622,1166 (the plan's) | 4,431 m | 0.92 atm | ET | -2 (11 / -15) °C | 439 mm | the shield's summit plateau, 4,300-4,440 m over 4 km, with a shallow dip round the model's own vent (vents.json: a `geyser` at 1622,1166) |
+| 5 the White Loom | 1697,1176 (the plan's) | 243 m | 1.55 atm | XS | 24 (35 / 13) °C | 47 mm | Lake Nim (level 240 m) at the page's west edge, the playa rising east to 250 m, the scarp 8 km east (340-460 m) |
+
 ### 7c. Settled (2026-11-11)
 
 - **The order** (the owner, 2026-11-11): the Loom first, as section 7 says; station 1 after it.
@@ -334,6 +343,13 @@ surface). No core fragment is copied. `python3 tools/check_core_use.py biomes/lo
 | **station 1:** water | `core/water` | Aina Bruk a `WATER.flow` (drawn as core/water's ribbon), the spring a still |
 | **station 1:** settlement | `core/hamlet` (`KHAMLET.village`), `core/city/33` (its frontage cursor, read in place) | the Yuni farms, on the Yuni row (`ext/21`, new) |
 | **station 1:** crops | `kits/crops` (`CROPS.at`, `CROPS.pick`) | one crop a field, drawn by this kit on the crop's library card |
+| **station 1:** irrigation | `core/water` | the spring canal, a `WATER.flow` (chasmLand's `canals`) between drawn stone kerbs in a cutting |
+| **station 3:** fauna | `kits/fauna` (`KratorFauna`, its new `loom` group) | three cable-stryders asleep under grown cables, each over a `hunter` hazard (`KHAZ.PREDATOR.lair`) |
+| **station 2:** the land | `KRELIEF` | `terraces` (the basalt benches: 22 m risers), `gully` (two box canyons, `yuan` tops), `pavement` |
+| **station 4:** the land | `KRELIEF.stepcut` | the caldera (a pit, an ellipse) and two rift fissures (lines with `head`); the parent colony on the canopy code (`src/85`) |
+| **station 4:** vents | `core/atmos`, `core/hazard` | steam (`ATMOS.smoke`, `steam`); `KHAZ.GROUND.gasVent`, `hotGround`; the crust the ground's geo field |
+| **station 5:** water | `core/water` | Lake Nim and seven brine pools, `WATER.still`s with the `brine` look |
+| **station 5:** fauna | `kits/fauna` (`loom` group) | the halite sifters at the biggest pool |
 
 **Not taken at stations 3 and 1, each with its reason:** `KRELIEF.scarp`, `relay`, `volcano`, `runout`, `KRELIEF.waters`
 (the other stations' landforms); `KSTRATA.vary` (the Cradle's loess shows only as the ground's colour: the fan has no face to bed); `KGEODE`, `KSPELEO` (the geodes are the Weave-Step's and a chasm
