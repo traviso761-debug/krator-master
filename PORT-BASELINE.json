@@ -752,6 +752,10 @@
    "bytes": 2625089,
    "sha256": "5c10729af1b28d251635884839ef4d96c7379d9496ca15bee12816c2e353066d"
   },
+  "kits/ancients/dist/strongbow.html": {
+   "bytes": 2737912,
+   "sha256": "3753ab40d305fc6ae0c1ab7d4c457676d0213e548b517e227dfc4a14b3b4ad4b"
+  },
   "kits/ancients/dist/theodiga.html": {
    "bytes": 2622707,
    "sha256": "5ef82a3ae52ca4469933a74f89dccdc36e9f1eae18c2d470ed5c2bbd6689923b"

@@ -116,7 +116,7 @@ INTERIOR_CORE = [(CORE_RAND, '08-core-rand.js'), (CORE_TAGS, '50-core-tags.js'),
                  (CORE_FURNISH, '53-core-furnish-host.js')]
 # A target listed here takes the shared core/rand and core/tags (no interiors): its placement draws from KRAND and it
 # registers what it places with KTAGS before drawing it (CLAUDE.md, "Write code that is the same on every machine").
-TAGS_TARGETS = {'podium', 'sanctum', 'span', 'arcpile'}
+TAGS_TARGETS = {'podium', 'sanctum', 'span', 'arcpile', 'strongbow'}
 TAGS_CORE = INTERIOR_CORE[:4]
 # fragments a target reads in place from another kit: the Sanctum's statuary is the Eternian kit's head generator
 # (kits/eternian/src/42-et-head.js, [G data]: one generator for every build that carries the Eternians' faces)
@@ -175,6 +175,7 @@ TARGET_OUT = {
     'arcube': 'arcube.html',                 # the 1 km cube on its diagonal
     'lozenge': 'lozenge.html',               # the cube at a quarter height, its upper faces terraced (targets/lozenge)
     'arcpile': 'arcpile.html',               # the pile of blocks, the Rift's ruin (targets/arcpile)
+    'strongbow': 'strongbow.html',           # the cliff arcology hung down the High Rift's escarpment at Oidong (targets/strongbow)
     'wing': 'wing.html',                     # memorial group: the Wing
     'drum': 'drum.html',                     # memorial group: the Drum
     'blades': 'blades.html',                 # memorial group: the Blades
@@ -229,6 +230,7 @@ DETERMINISTIC = {
     '42-et-head.js',                                   # kits/eternian's head generator, read by the Sanctum: seeded by KRAND
     '8aq5-kept-pass.js',                               # targets/kept: a material pass, no placement
     '8at0-arcpile-plan.js',                            # targets/arcpile: KRAND-hashed records, no rng()
+    '8aw0-strongbow-plan.js', '8aw1-strongbow-parts.js',   # targets/strongbow: KRAND-hashed records; the drawing's parts, hashed, no rng()
 }
 DETERMINISTIC |= {'06-core-khook.js', '06b-core-kcolor.js'}   # core/shader (no rnd())
 
