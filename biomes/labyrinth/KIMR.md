@@ -1,4 +1,4 @@
-# The Kimr: art and material style guide (first draft, 2026-11-11)
+# The Kimr: art and material style guide (draft, 2026-11-11)
 
 "Southwestern meets Cimmerian" (the owner, 2026-11-11), written as rules for the kits that will draw the Kimr: the pueblos (a culture
 in `kits/catalog` plus a building kit, placed with `core/hamlet`: `PLAN.md` section 5), the Hall of Heroes' funerary dressing
@@ -47,7 +47,9 @@ The Kimr are the most literal case of it: their every object is part of an anima
 
 ### Architecture: the pueblo
 
-1. **On a rock.** Every village stands on a knob, a mesa bench or a built plinth **6-15 m** over the floor (`PLAN.md` section 5). The
+1. **On a rock.** Every village stands on a knob, a mesa bench or a built plinth **6-15 m** over the floor (`PLAN.md` section 5). A
+   **great house** (*greidhaws*: `LORE.md` 6.24) is the same at the scale of several hundred people, its blocks round a court
+   on a mesa bench, the lesser villages on the knobs about it. The
    plinth's face is **battered** (sloped 10-15°) dry-laid chaos rock, its stones largest at the foot, cyclopean, never coursed neatly.
 2. **Stepped room blocks**: 2-5 storeys of **2.4-2.8 m**, each set back **3-4 m** from the one below, so every storey has a roof
    terrace. Walls are rough stone below and **adobe or dung-straw plaster** above, the corners rounded by hand.
@@ -80,9 +82,16 @@ The Kimr are the most literal case of it: their every object is part of an anima
 4. **A ruff** at the neck of mammoth wool or dire-wolf fur (the Hopi spruce collar's place), dyed or plain.
 5. **A finger bone** of the hero sewn into the brow, under a small square of turquoise or ivory.
 6. **Silhouette rule:** a hero must read at 50 m by its crown alone. Two heroes on one stage never share a crown shape.
-7. **The Bogi** (Two-Snout ogres): black and red, **two hide trunks** hanging from one broad snout, little eyes, a strip of real
+7. **Worn by men, carried by women** (the owner, 2026-11-11). A mask is drawn on a man only in a dance; everywhere else it is a
+   **hide bundle** on a woman's back (a tied roll of painted hide, 50-60 cm, the crown's horns or tusks standing out of its top),
+   or hung in the Mask House. A kit never draws a man walking with a mask in his hands.
+8. **The First Keepers** (the Ancients, the Hall's own: the owner, 2026-11-11) are the only masks with a scrap of the Hall's white
+   Ancient metal on them, beside their turquoise.
+9. **Heroes, not spirits.** Dhelv's kiva carries katsina-style spirits (`kits/zeijani/PLAN.md` 6.2); a Kimr mask is always a person
+   who lived, so it carries that person's takings and sign, never a nature figure (no clouds, corn or birds as beings).
+10. **The Bogi** (Two-Snout ogres): black and red, **two hide trunks** hanging from one broad snout, little eyes, a strip of real
    Two-Snout hide; the only masks with a face that is not flat.
-8. **The clowns** (*llawn*): no mask; bodies painted in **ochre and white stripes**, gourd caps with knobs; the Melon Monk in a
+11. **The clowns** (*llawn*): no mask; bodies painted in **ochre and white stripes**, gourd caps with knobs; the Melon Monk in a
    saffron-dyed hide and a gourd hat.
 
 ### Dolls (*dol Hirw*)
@@ -245,6 +254,17 @@ sweeping up and forward. A mantle of a whole aurochs hide, fur inside, the outsi
 over a labyrinth sign; a cuirass of layered thick wrinkled grey pachyderm hide laced at the sides; a mammoth-wool kilt; a necklace of
 dire-wolf teeth. In the hand a greatsword made of a split mammoth tusk with black obsidian teeth set along both edges. No metal
 anywhere. Colours: red ochre #9c3b23, charcoal #221c18, ivory #e3d6b4, hide #8b6a48. Moebius-like clean line, flat colour.
+```
+
+**The war-queen** (the rarest Hawrog: the owner, 2026-11-11):
+```
+Full-body concept art of a barbarian war-queen, front and three-quarter views on one sheet, plain light grey background, even
+lighting, no text. An original design: a very tall, powerfully muscled woman, weathered ruddy-brown skin, black hair in long braids
+bound with bone tubes, pale grey eyes, ritual scars on her arms rubbed with red ochre. On her head a helm made from an aurochs's own
+skull, its horns spreading 1.6 m and sweeping up and forward. A mantle of a whole aurochs hide, a cuirass of layered thick grey
+pachyderm hide, a mammoth-wool kilt with a black and red stepped border, a necklace of dire-wolf teeth; a heavy spear with an ivory
+blade in one hand and a round painted hide shield on the other arm. No metal. Colours: red ochre #9c3b23, charcoal #221c18, ivory
+#e3d6b4, hide #8b6a48. Moebius-like clean line, flat colour; strong and grim, not glamorous.
 ```
 
 **The pueblo on its rock** (the building kit's reference):

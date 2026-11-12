@@ -115,12 +115,13 @@ below are the kit's targets: Earth's figure, then the Labyrinth's.
 to grip and throw. It is uncannily intelligent. Two-Snouts have been known to drop rocks from the graben rims on human
 hunters, and to set up feints: one shows itself while the rest of the family circles behind.
 
-**The History Monk's account.** A History Monk posted from Longsong to this remote and savage region wrote that the Two-Snouts:
+**The History Monk's account.** A History Monk (**Lu-Tze**: the owner, 2026-11-11) posted from Longsong to this remote and savage region wrote that the Two-Snouts:
 - keep their own funeral customs;
 - paint one another, with ochre and mud;
 - set fermented melons aside for later occasions.
 
-Many at Longsong think he may have had a few too many fermented melons himself. The kit may show all of it, as things a
+Many at Longsong think he may have had a few too many fermented melons himself. **The Two-Snouts are sapient, or very nearly so**
+(the owner, 2026-11-11): the kit shows it, never explains it. The kit may show all of it, as things a
 patient player might glimpse, never as anything explained:
 - a Two-Snout family standing round a bone heap;
 - smeared ochre on a flank;
@@ -237,7 +238,7 @@ at once.
   villages, and how many people? The floors could feed a few tens of thousands.
 - **The arcology's form** (section 6).
 - **Scale:** are the sizes in section 4 right? The Aurochs as a small bus is the owner's figure; the rest follow it.
-- **The Monk:** does he get a name and an entry in Longsong's records?
+- **The Monk:** Lu-Tze (the owner, 2026-11-11); his report is in `LORE.md` sections 6.15 and 6.24.
 - **Order:** this kit waits behind the integration pass and the queued new-region kits (`biomes/STATIONS-MAP-5.1.md`). The four
   core amendments (section 7) can be done first, since the open world and other kits want them too.
 

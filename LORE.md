@@ -543,9 +543,9 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
 - **Language.** The Historians keep the most careful English in the crater, in a rounded book hand, with a little Xanadui from Oidong (*sar*, dental th) and Xanadu's evidence grammar as margin marks: seen, said, and (their own) inferred. They keep Coleridge's *Kubla Khan*, which the Sultanate's names come from. `lore/tongues-of-krator.html` [the owner, Oct 2026]
 - **The Labyrinth report** [the owner, 2026-11-09]. A Monk posted from Longsong to the Labyrinth, a remote and savage region, wrote
   that its Two-Snouts keep their own funeral customs, paint one another with ochre and mud, and set fermented melons aside for later
-  occasions. Many at Longsong think he had a few too many fermented melons himself. *Proposed*: the report is in Longsong's archive
-  with the Kimr's Tellings he wrote down, the only written record of them; the Kimr remember him as the Melon Monk (§6.24). His
-  name is the owner's to give.
+  occasions. Many at Longsong think he had a few too many fermented melons himself. The Monk was **Lu-Tze** [the owner,
+  2026-11-11], and the Two-Snouts are in fact sapient, or very nearly so. *Proposed*: the report is in Longsong's archive with the
+  Kimr's Tellings he wrote down, the only written record of them; the Kimr remember him as the Melon Monk (§6.24).
 
 ### 6.16 Hykkousoi
 
@@ -936,8 +936,8 @@ marked *proposed* is this session's and waits on the owner. Its placeholder entr
 
 ### 6.24 The Kimr (the Labyrinth; the Hall of Heroes)
 
-[the owner, 2026-11-09 and 2026-11-11, where marked; everything else *proposed*, 2026-11-11: a first draft, its open questions at
-the end of the section. The land: `biomes/labyrinth/PLAN.md`; the Hall: `biomes/labyrinth/PLAN-GATE.md`; the tongue:
+[the owner, 2026-11-09 and 2026-11-11, where marked, with the owner's answers to the first draft (2026-11-11, second round);
+everything else *proposed*, 2026-11-11; what is still open is at the end of the section. The land: `biomes/labyrinth/PLAN.md`; the Hall: `biomes/labyrinth/PLAN-GATE.md`; the tongue:
 `lore/kimr-tongue.md`; the look: `biomes/labyrinth/KIMR.md`.]
 
 - **Who they are** [the owner]. The native people of **the Labyrinth**, the canyon maze in the SW Glaciated Dome that the Historians
@@ -946,17 +946,24 @@ the end of the section. The land: `biomes/labyrinth/PLAN.md`; the Hall: `biomes/
   a fortress on a rock or a plinth against the rampaging herds, entered by ladders pulled up at night, and they **use every part of
   every animal**. **Conan-the-barbarian types**, culturally obsessed with the idea that one can **draw strength, bravery or other
   qualities from the honoured dead**, animal and human. **Their art: southwestern meets Cimmerian.**
+- **The Hall's war** [the owner, 2026-11-11]. **The Ancients are among the Kimr's ancestors.** In the Cataclysm the Hall of Heroes
+  (then the preserve's arcology) was notable for **a united effort by its whole population to defeat an Enemy the Kimr now call the
+  Dark Spirit** (*y Sbirid Darg*). **They won, but the arcology was ruined in the process**: the Hall's broken cells and fallen decks
+  are the scars of that war, and the Hall is named for those who fought it. *Proposed*: the Tellings of the war are the oldest and
+  the most sung; they say the Dark Spirit came "out of the Boss's things" and was fought room by room down the columns, and that
+  the survivors walked down into the Range and became the Kimr. What the Dark Spirit was, no Kimr knows, and the Tellings disagree.
 - **The keepers.** *Proposed*: they call themselves **Kimr**, "keepers" (*keepers* > *kipr* > *Kimr*: `lore/kimr-tongue.md` section 3),
-  and they hold that their ancestors were set to keep the Range (*y Reinj*, the Labyrinth) by **the Boss** (*y Bos*), the Ancients'
-  one absent owner, who will come back one day to **count the herd** (*y Kawnt*, the Count). This is the root of their law:
+  for their ancestors were the preserve's staff and the town round them, who kept its beasts. They hold that they were set to keep
+  the Range (*y Reinj*, the Labyrinth) by **the Boss** (*y Bos*), the preserve's owner, who was never at the Hall, and who will come
+  back one day to **count the herd** (*y Kawnt*, the Count). This is the root of their law [the owner, 2026-11-11: keep it]:
   - **every part of every animal is used**, because the Boss will ask for an account of every beast, and a wasted one cannot be
     accounted for;
   - **the herds are counted** every spring from the Lookout (*Lwgawd*), and the tallies are painted on its walls, a thousand years of
     rows;
   - **the Aurochs is the Boss's own beast**, and the only one they hunt only in rites.
 
-  The Boss is not an ancestor and has no mask: no one may make his face. Whether the Boss will be pleased with the count is the
-  Kimr's oldest argument.
+  The Boss is not an ancestor, unlike the Hall's own Ancients, and has no mask: no one may make his face. Whether the Boss will be
+  pleased with the count, and whether he knows about the Dark Spirit, is the Kimr's oldest argument.
 - **How they look.** *Proposed*: baseline humans (no Ancient lineage of their own: §7's rule leaves them unmarked unless the owner
   says otherwise), big-framed and heavy from a meat diet: ruddy brown skin weathered dark, black or dark brown hair worn long and
   bound with bone and sinew, light grey or blue eyes common in some clans (the "keepers' eyes"). Warriors are scarred on purpose:
@@ -1004,7 +1011,12 @@ the end of the section. The land: `biomes/labyrinth/PLAN.md`; the Hall: `biomes/
 - **What a Hirw is.** A **hero of the dead, carried by the living in a mask**, after the Hopi and Zuni *katsina*: when a dancer puts on a
   hero's mask, the dancer **is** the hero for as long as the mask is on, and speaks with the hero's voice and authority. The heroes
   are always **"they"** (*ddei*), even one: a hero lives on in all who carry them (*Na dai Hirw: kari wi ddei*, "heroes do not die: we
-  carry them").
+  carry them"). Not Dhelv's spirits (`kits/zeijani/PLAN.md` 6.2): every Kimr mask is a person who lived.
+- **Women carry them; men wear them** [the owner, 2026-11-11]. The heroes live in **women's keeping**: women carry the masks between
+  the Hall and the villages, keep them, feed them and speak for them between the dances, and the proverb's *we* who carry the
+  heroes is the women. **Men wear them in the ceremonies**: a man puts the mask on only for the dance, and gives it back to the
+  woman who carries it when the dance is done. *Proposed*: a mask travels as a **hide bundle** on a carrier's back, wrapped like a
+  child; a man who keeps a mask overnight has stolen it.
 - **How a hero is made.** *Proposed*:
   1. **The drying.** A dead Kimr of note lies a year in the Hall (below), and the deeds are gathered from the living.
   2. **The Telling** (*telyn*). At the next Go Awd (the year below), the **Teller** recites the life before the masked society, name by
@@ -1016,19 +1028,25 @@ the end of the section. The land: `biomes/labyrinth/PLAN.md`; the Hall: `biomes/
 
   Most of the dead are not made heroes. They are the **honoured dead** (*Onr*), at rest in the Hall. The dead who are neither buried
   in the Hall nor carried (the drowned, the lost, those killed by a Two-Snout and not recovered) are **ghosts** (*Gosd*), and walk.
-- **The First Keepers.** The oldest heroes are the keepers who came down out of the Hall, and their masks have no small names, only
-  their old job titles (*proposed*; the owner's question below): **the Ranger** (*y Reinjr*, the hunt's mask), **the Warden**
-  (*y Wordn*, the law's mask: judges disputes at the dances), **the Vet** (*y Fed*, the healer's mask, with a horn of salve and a bone
-  knife), **the Counter** (*y Kawntr*, who opens the Count every spring and carries a tally staff). They dance first and last at
-  every festival, and their masks are the plainest: white, with the turquoise the Kimr keep for the Ancients' things (`KIMR.md`).
+- **The First Keepers: the Ancients carried** [the owner, 2026-11-11: the Ancients are among the ancestors]. The oldest heroes are the
+  Hall's own Ancients, who fought the Dark Spirit and came down out of the ruin. *Proposed*: their masks have no small names, only
+  their old job titles: **the Ranger** (*y Reinjr*, the hunt's mask), **the Warden** (*y Wordn*, the law's mask: judges disputes at
+  the dances), **the Vet** (*y Fed*, the healer's mask, with a horn of salve and a bone knife), **the Counter** (*y Kawntr*, who opens
+  the Count every spring and carries a tally staff), and behind them a long line of the war's dead known only by what they did in
+  it (*the One Who Held the Stair*, *the Ones Who Shut the Door*). They dance first and last at every festival, and their masks are
+  the plainest: white, with the turquoise the Kimr keep for the Ancients' things, and alone of all masks a scrap of the Hall's white
+  metal, which is theirs (`biomes/labyrinth/KIMR.md`).
 - **The masked society: the People of the Hall** (*Pibl y Hol*). *Proposed* offices:
-  - **The Mask-keeper** (*Kimr Masg*): the society's head, who keeps the masks in the Hall between seasons, judges the Tellings and
-    names the bearers. The same word as the people's own name: the keeper of keepers.
+  - **The Mask-keeper** (*Kimr Masg*): the society's head, always a woman (the women carry the heroes), who keeps the masks in the
+    Hall between seasons, judges the Tellings and names the wearers. The same word as the people's own name: the keeper of keepers.
+  - **The Carriers** (*karir*, women): each keeps one or more heroes' masks, carries them on the funeral road at Kwm In and Go Awd,
+    and hands the mask to its wearer at the dance.
   - **The Tellers** (*telr*): the memory of the deeds, the names and the nogo. Each knows the Tellings of a clan by heart.
   - **The Painters**: who make and renew the masks, the dolls and the hero signs on the niches, and grind the colours from bone,
     blood, fat, ochre and kaolin.
-  - **The Bearers**: the dancers who carry the heroes. A bearer usually carries a hero of their own clan and is chosen by the
-    Mask-keeper for a likeness of deeds: a young warrior who has taken Hemr may be given a Hemr hero to carry.
+  - **The Wearers** (*werr*, men): the dancers who wear the heroes in the ceremonies. A wearer usually wears a hero of his own clan
+    and is chosen by the Mask-keeper for a likeness of deeds: a young warrior who has taken Hemr may be given a Hemr hero to wear. A
+    woman hero is worn by a man too, as the Hopi men dance the women katsinas.
   - **The Clowns** (*llawn*, "the full ones"): sacred clowns drunk on melon beer, after the Hopi *koyemsi* and Zuni *koyemshi*, who
     mock everything at the dances, the heroes included. Since the Monk's visit (below), one of them always plays **the Melon Monk**,
     in a saffron hide and a gourd hat, writing nonsense on a melon rind.
@@ -1036,7 +1054,7 @@ the end of the section. The land: `biomes/labyrinth/PLAN.md`; the Hall: `biomes/
     to frighten disobedient children and are bought off with meat. The only masks that are not heroes, and the only ones that wear
     the Two-Snout's hide.
 - **The dances.** At each festival the heroes come down the ladders into the village courts in a line, the First Keepers leading,
-  each hero's bearer dancing the hero's deeds: the Hawrog's hunt, the Hemr's fight, the Telling of a life in steps. Drums of
+  each hero's wearer dancing the hero's deeds, the carriers at the court's edge with the empty bundles: the Hawrog's hunt, the Hemr's fight, the Telling of a life in steps. Drums of
   tusker hide and rattles of glyptodont osteoderms; the songs are the Tellings, sung. The heroes give gifts (dolls, meat, horn
   cups of melon beer) and judge: a dispute put before the Warden at a dance is settled, and no one appeals it.
 - **The dolls** (*dol Hirw*). Carved from poplar or larch root, or from ivory for a Hawrog, 15 to 40 cm, blocky, painted as the mask,
@@ -1069,7 +1087,8 @@ the end of the section. The land: `biomes/labyrinth/PLAN.md`; the Hall: `biomes/
     column halls' **bone houses** (*Bon Haws*), each clan to its own column;
   - **heroes**: their skulls go to the **high niches** of the residential skin, facing out over the Range, under an Aurochs skull if
     they held Hawrog; their sign is painted on the niche, and every mourner leaves an ochre hand-print;
-  - **the First Keepers** lie (the Kimr say) in the Hall's top, in the dwelling caps, where no one has climbed in living memory.
+  - **the First Keepers**, the Ancients who fought the Dark Spirit, lie (the Kimr say) where they fell, through the whole Hall,
+    and their leaders in its top, in the dwelling caps, where no one has climbed in living memory.
 - **The funeral** (*Ffiwn*). The dead are carried on a hide litter from the village down the Way Out's bank (*y Wei Awd*, the Gowd
   Warra) to the pond, and across the causeways by masked heroes of the dead person's clan, the mourners behind them with their hands
   wet with ochre. At the niche, a **burial bowl with a hole knocked through its centre** (the Mimbres "kill hole": `KIMR.md`) is laid
@@ -1079,7 +1098,8 @@ the end of the section. The land: `biomes/labyrinth/PLAN.md`; the Hall: `biomes/
   (`lore/kimr-tongue.md` section 6, "The Range: places"): the Garden (*y Gardn*), the Chimney (*y Chimni*, the Works Stack, which
   "smoked when the Boss was home"), the Mine (*y Main*, where the keepers dug the Boss's copper, now nogo), the Lookout (*Lwgawd*,
   where the Count is made) and the Quarry (*y Kwari*).
-- **The Ancient things are the dead's.** Any Ancient object found in the Hall belongs to the dead: it is nogo to take it out. The
+- **The Ancient things are the dead's.** Any Ancient object found in the Hall belongs to the dead, the Kimr's own Ancient
+  ancestors, and some of it (the Kimr say) to the Dark Spirit, which is why none of it may be woken: it is nogo to take it out. The
   Kimr have little metal for it, and the white Ancient metal in the ruin stays there. That leaves the Hall unlooted by its own
   people, and a temptation to every outsider (the Fellgangs; the Order).
 
@@ -1096,9 +1116,19 @@ the end of the section. The land: `biomes/labyrinth/PLAN.md`; the Hall: `biomes/
   its elders, and the Hawrog is a name and a seat at the dances. Any Kimr who has made the rite hunt may **challenge to the horns**
   at Long Naid, and a Hawrog may not refuse (the Hawrog's nogo). There may be several living Hawrog; only one leads at a time, the
   one the villages follow.
-- **War.** Mostly against the beasts: a herd stampeding at a village, a sabre-tooth that has learned the ladders, a Two-Snout
-  family. Between villages, **feuds** (*ffiwd*) over hunting grounds and stolen kills, fought by champions where possible. Against
-  outsiders, the Fellgangs (below).
+- **The war-queen** [the owner, 2026-11-11]. **Only the rarest and most Amazonian of women has ever been accepted as Hawrog.** The
+  rite is the same and the horns are the same; *proposed*: the Tellings name few enough that every Kimr child knows them all, and
+  each of them is a hero carried, and worn, at every festival. The word is the same, *Hawrog*: the Kimr have no other.
+- **The great houses** [the owner, 2026-11-11]. The Kimr feud with one another as readily as with anyone. **Each great-house-sized
+  pueblo** (*proposed*: *greidhaws*, after Chaco's great houses: a village of several hundred on its own rock, the head of the lesser
+  villages round it) **has its preferred ally house and its preferred enemy house.** *Proposed*: the ally is its *mara* (a Fellgang
+  word, below: they share hunts, Tellings and marriages, and stand together at the Hawrog's call); the enemy its *ffiwd*, the house
+  it raids for beasts and glory, whose champions its own meet, and whose dead it returns whole. Both pairings are old and remembered
+  in the Tellings, and they change only by a great deed or a great wrong. A Hawrog's first work is to make the feuding houses
+  follow one set of horns.
+- **War.** Against the beasts: a herd stampeding at a village, a sabre-tooth that has learned the ladders, a Two-Snout family. Between
+  the great houses, the feuds above, over hunting grounds and stolen kills, fought by champions where possible. And with the
+  Fellgangs (below), in the same way.
 - **The look of war** (`KIMR.md`, "Regalia" and "Weapons"): tusker-hide cuirasses, glyptodont scale shields, horn and skull helms,
   heavy spears with ivory or obsidian blades, spear-throwers, stone and femur war clubs, glyptodont tail maces, sabre-tooth daggers,
   and the ivory greatsword with obsidian teeth, carried by the Hawrog's band.
@@ -1107,43 +1137,50 @@ the end of the section. The land: `biomes/labyrinth/PLAN.md`; the Hall: `biomes/
 
 - **The Fellgangs** (§6.1). The Kimr's only neighbours: **Wildcat**, a Fellgang village, stands 100 km east of the Hall at the Rift's
   edge (`biomes/riftrim/PLAN.md`), and Fellgang hunters come over the fells into the **Firebliss Range** each summer, where the Kimr
-  hunt the strays (`biomes/firebliss/PLAN.md` section 3). *Proposed*:
-  - **A water truce.** The two peoples avoid each other and feud at need, but neither fights at a tarn or a spring: the beasts keep
-    that truce, say the Kimr, and so must people. The Firebliss's tarns are where they meet and trade, by signs (Fellgangs read
-    nothing, the Kimr write nothing, and the two tongues share almost no words: `lore/kimr-tongue.md` section 1).
-  - **The trade:** Kimr ivory, tusker hide, wool and melon beer for Fellgang obsidian, sulphur, salt and salvage metal from the
-    tunnels.
-  - **What each thinks of the other:** to the Kimr the Fellgangs are **the Pale** (*Peil*), a people with no Hall, who leave their dead
-    in the dark: the unburied, and so a people of ghosts. To the Fellgangs the Kimr are **t'Horns**, savages who live with the
-    beasts, and their Hall is a hoard of the Gaffers' metal guarded by nothing but taboo. The young of Wildcat dare each other to
-    rob it; the Kimr kill those who try, and leave them whole.
-- **The History Monk** [the owner, 2026-11-09; `biomes/labyrinth/PLAN.md` section 4]: a Monk of History posted from Longsong to this
-  remote and savage region wrote that the Two-Snouts **keep their own funeral customs, paint one another with ochre and mud, and set
-  fermented melons aside for later occasions**; many at Longsong think he had a few too many fermented melons himself (§6.15).
-  *Proposed*:
-  - **The Kimr** remember him as **the Melon Monk** (*Mwng Melyn*, for his saffron, the colour of the melons' flesh), whom they
+  hunt the strays (`biomes/firebliss/PLAN.md` section 3).
+  - **A complicated relationship** [the owner, 2026-11-11]. **The raider tribe has intermarried with the Kimr**: Wildcat is about
+    half Kimr by descent (§6.1, "The Fellgangs' villages and Wildcat"; `kits/tungang/PLAN.md` 1.3.1: Kimr bravado in a scrap
+    pueblo, the Boast, the Deeds, the earned horn helmet). **The Kimr feud with the Fellgangs just as they feud with each other**:
+    Wildcat stands in the great houses' web like one of them (*proposed*: with a Kimr great house for its *mara* and another for its
+    *ffiwd*, kin to both), and the other Fellgang bands are raided, traded with and married into by the same rules.
+  - **Words both ways** (`lore/kimr-tongue.md` section 7): the Kimr took *mara* (an ally, from *marra*), *sgab* (a nogo-breaker, from
+    *skab*), *Tlab* (Dalab) and *beid* (trail food, from *bait*) from the raiders; the fell speech took *Awrog*, *nogo*, *teig* and
+    *melinbru* (melon beer). At Wildcat both are spoken at one fire.
+  - **The trade** (*proposed*): Kimr ivory, tusker hide, wool and melon beer for Fellgang obsidian, sulphur, salt and salvage metal
+    from the tunnels.
+  - **What each thinks of the other** (*proposed*): to the Kimr the Fellgangs who are not kin are **the Pale** (*Peil*), a people with
+    no Hall, who leave their dead in the dark: the unburied, and so a people of ghosts; Wildcat's Kimr half bring their dead to the
+    Hall. To the Fellgangs the Kimr are **t'Horns**, and their Hall a hoard of the Gaffers' metal guarded by nothing but taboo. The
+    young of the other bands dare each other to rob it; the Kimr kill those who try, and leave them whole.
+- **The History Monk, Lu-Tze** [the owner, 2026-11-09 and 2026-11-11; `biomes/labyrinth/PLAN.md` section 4]: a Monk of History
+  posted from Longsong to this remote and savage region wrote that the Two-Snouts **keep their own funeral customs, paint one another
+  with ochre and mud, and set fermented melons aside for later occasions**; many at Longsong think he had a few too many fermented
+  melons himself (§6.15). He was right more than they think: **the Two-Snouts are sapient, or very nearly so** [the owner,
+  2026-11-11]. *Proposed*:
+  - **The Kimr** remember Lu-Tze as **the Melon Monk** (*Mwng Melyn*, for his saffron, the colour of the melons' flesh), whom they
     tolerated because he asked to be told the Tellings and wrote them down. He is a clown's mask now.
-  - **What the Kimr believe of the Two-Snouts**, which the Monk heard and could not prove: the Two-Snouts are **keepers too**, a herd
+  - **What the Kimr believe of the Two-Snouts**, which Lu-Tze heard and could not prove: the Two-Snouts are **keepers too**, a herd
     that took the cunning of the Kimr dead they killed, as the Kimr take the virtues of the beasts. That is why they mourn, paint and
     store as the Kimr do, and why their cunning is so dangerous. It is the reason the Kimr will go into a Two-Snout family's ground to
-    bring back a body: a Kimr left to the Two-Snouts makes them cleverer. The Monk's report says the Kimr believe this; it does not
-    say whether he did.
-- **Everyone else** knows the Kimr only through the Order. Dalab (*Lab*) is a rumour the Fellgangs carry; if Dalab ever comes for
+    bring back a body: a Kimr left to the Two-Snouts makes them cleverer. Lu-Tze's report says the Kimr believe this; it does not
+    say whether he did. Whether their cunning came from Kimr dead or from the Boss's breeding, the Two-Snouts' minds are real.
+- **Everyone else** knows the Kimr only through the Order. Dalab (*Tlab*, the raiders' word) is a rumour the Fellgangs carry; if Dalab ever comes for
   the Labyrinth's genes (§6.1, "Dalab collects peoples"), it will come for the beasts and the Kimr both.
 
-**For the owner (asked before more than this draft is written)**
+**Settled** (the owner, 2026-11-11, on the first draft): the tongue is the keepers' English, with loanwords to and from the
+Fellgangs, most through the raiders; the Ancients are among the ancestors, and the Hall's people fought the Dark Spirit; women
+carry the heroes and men wear them; only the rarest, most Amazonian women have been war-queens; the Boss's Count stays; the
+Fellgangs are intermarried and feuded with like any house, and every great house has its ally and enemy house; the Monk is
+Lu-Tze; the Two-Snouts are sapient, or very nearly so.
 
-1. **The language's family** (`lore/kimr-tongue.md` section 9): the keepers' English (as drafted), Tungang's sister, or a creole?
-2. **Are the Ancients among the ancestors?** The draft makes the **First Keepers** (the Ranger, the Warden, the Vet, the Counter)
-   heroes and the **Boss** (the Ancients as owners) not: an absent owner with no mask. Should the Ancients themselves be carried in
-   masks, be the Boss as drafted, or be nothing the Kimr remember?
-3. **Women's and men's roles in the cult.** The draft leaves the bearers open to both. Choices: men alone carry the heroes, as among
-   the Hopi (who carry the women heroes too); each sex carries its own; or both. Who keeps the masks, and is the Mask-keeper always a
-   woman (the Hopi and Zuni houses passed through the mother: is a Kimr house, *haws*, the mother's)? Can a woman be Hawrog?
-4. **The Boss and the Count.** Keep the Kimr's law of "every part of every animal" rooted in an owner who will count the herd?
-5. **The Fellgangs:** a water truce with feuds (as drafted), a border, or open feud? (`biomes/firebliss/PLAN.md` section 9 asks it too.)
-6. **The Monk:** a name, and his report as a record in Longsong's archive (§6.15)?
-7. **The Two-Snouts as keepers:** is the Kimr's belief true, partly true, or the Monk's melons?
+**Still open**
+
+1. **The name.** *Kimr* < *keepers*, the preserve's staff and their town: keep?
+2. **The Dark Spirit.** Is it something the Historians know by another name (one of the Cataclysm's other enemies, §4, §6.19), or
+   the Kimr's alone?
+3. **The houses.** Is a Kimr house (*haws*) the mother's, as the Hopi and Zuni houses were, now that the women keep the heroes?
+4. **The Tellers, the Painters and the clowns:** women's, men's, or both?
+5. **Lu-Tze's report** as a record in Longsong's archive (§6.15), with the Tellings he wrote down?
 
 ## 7. Peoples of Krator (species and kinds)
 
@@ -1262,8 +1299,9 @@ Rule: a building never names a culture. Its sockets (awning, banner, flag, emble
 - **The Ring Sea:** a shared sea for the Hykkousoi, Voth, Xanadu, Iziz, Beast Riders and Islanders.
 - **The Talovolci and Dalab** (§6.21): Dalab's skinchangers raided them for their genes, and made Dalab's Giants of them; **the Talovolci and the Free Giants**: kin by blood, uneasy, imitated.
 - **The Shumari, Voth, Nazar, and the Free Giants** (§6.23): the Shumari once held **Driyan** (formerly *Doriyan*) and the SW basin lakeshore before centuries of war with the Chichani drove them up to the highland plateau of **Shumar**, while their purchased slave-soldiers from Nazar, Dalab, and the lakeshore towns inverted into a Mamluk ruling caste (*Šubaru-šu*); escaped **Nazari** slaves and **Free Giants** from **Greenstep** still climb to Shumar to undergo **the Ordeal** (*Urudīru*) and join the ruling caste, and the Shumari alphabet helped shape the Vothic script.
-- **The Kimr and the Fellgangs** (§6.24, *proposed*): neighbours across the Firebliss Range and at Wildcat, by the Labyrinth's mouth; a
-  water truce at the tarns, feuds elsewhere, trade by signs. **The Kimr and the Order:** one Monk, the Labyrinth report (§6.15).
+- **The Kimr and the Fellgangs** (§6.24; the owner, 2026-11-11): intermarried (Wildcat is about half Kimr) and feuded with as the
+  Kimr feud with each other, every great house with its ally and its enemy house; loanwords both ways. **The Kimr and the Order:**
+  one Monk, Lu-Tze, and the Labyrinth report (§6.15).
 - **The Lizardmen** (§6.20): no contact at all; they never trade or treat. War with Xanadu (Rishtowar VII; the raids on the Vale), the tunnel wars with the Tungangs (§6.1), and the Monks of History's contradictory accounts.
 
 ## 12. Contradictions and open questions
@@ -1293,9 +1331,8 @@ Rule: a building never names a culture. Its sockets (awning, banner, flag, emble
 - **Shell Province** (§6.2): the Izani names of Shell and Port Goto.
 - What does the abyssal people's ruler call themselves (the Headman placeholder)?
 - What exactly do the Screamers do with their captives in the Hexahedron?
-- **The Kimr** (§6.24, a first draft of 2026-11-11): the tongue's family, whether the Ancients are among the ancestors (the
-  First Keepers and the Boss), women's and men's roles in the masked society, the Fellgang truce, the Monk's name, and whether the
-  Two-Snouts really are keepers. The list is at the end of §6.24.
+- **The Kimr** (§6.24, 2026-11-11; the first draft's questions answered): still open are the name *Kimr* < *keepers*, what the Dark
+  Spirit was, whether a Kimr house is the mother's, and who keeps the other offices. The list is at the end of §6.24.
 - **The rift rim** (§6.1, §6.20, `biomes/riftrim/PLAN.md` section 12): the Fellgangs (proposed name) and how far they have diverged; the Rift's ruins other than Arccube and Pluton (Chimes, Cthonos, The Tubes: names and places very tentative; Chimes may become The Span, which clashes with Dalab's Span); the model's Rift settlements want a rework; Ledge's own settlement plan.
 - **The Ancients' highways** (§4, `openworld/ANCIENT-ROADS.md` section 7): the Republic's arcology over the Inner Wall tunnel (Cascade or a new site), other cities on Ancient ground, and the tentative ruins, before the network is routed for good.
 - **The Talovolci** (§6.21): the Empire's loans *Emparos* and *comandaros* are proposed; their clans, chiefs and the ceremonial rites at Daridel are open.

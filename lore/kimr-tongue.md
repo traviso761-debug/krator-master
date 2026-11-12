@@ -1,11 +1,12 @@
-# Kimr tog: the keepers' talk (first draft, 2026-11-11)
+# Kimr tog: the keepers' talk (draft, 2026-11-11)
 
 The tongue of the **Kimr**, the people of the Labyrinth (`LORE.md` section 6.24, `biomes/labyrinth/PLAN.md` section 5). Every form
-here is *proposed*: a first draft from the owner's brief of 2026-11-11 ("conan-the-barbarian types... southwestern meets
-cimmerian"). The questions it leaves the owner are at the end. When the owner has settled them, the tongue gets its tab on
+here is *proposed* unless marked: a draft from the owner's brief of 2026-11-11 ("conan-the-barbarian types... southwestern meets
+cimmerian"), revised on the owner's answers of the same day (**the keepers' English, with loanwords to and from the Fellgangs,
+most through the raiders**: section 7). What is still open is at the end. When the owner has settled them, the tongue gets its tab on
 `lore/tongues-of-krator.html` (the family row, the phrasebook, a "From English" table), as every other tongue has.
 
-## 1. The family: English, by the keepers' road (not Tungang)
+## 1. The family: English, by the keepers' road (not Tungang) [the owner, 2026-11-11]
 
 Every tongue in the crater is English worn down (`lore/tongues-of-krator.html`, "One word, twenty-seven roads"). The question is
 which English, and the answer is **not the Tungangs'**.
@@ -14,14 +15,15 @@ which English, and the answer is **not the Tungangs'**.
   their Fellgang kin carried it onto the fells round the Labyrinth. That is why the Labyrinth's rivers carry Tungang names
   (*Siphon-Pit Beck*, *Graben-Tarn Gill*, the *Gowd Warra*): the scale model's namer gives the Labyrinth to the Tungang lexicon
   (`tools/scale-model/smodel/river_names.py`, `'Labyrinth': ('tungang', 2)`), and in the world they are **the Fellgangs' names**,
-  the names of neighbours who saw the maze from its rims. The Kimr have their own (section 7).
+  the names of neighbours who saw the maze from its rims. The Kimr have their own (section 8).
 - **The Kimr** come from the Hall of Heroes, the arcology at the Labyrinth's mouth (`biomes/labyrinth/PLAN-GATE.md`): the town of the
   preserve's **keepers**, not of tunnel crews. Their English was the keepers' working English: the speech of rangers, wardens, vets and
   stockmen on a ranch the size of a country, with its ranch words (*range*, *paddock*, *pen*, *count*, *boss*, *fall* for autumn,
   *y'all*). The people's own name is that job: **Kimr**, from *keepers* (section 3).
-- **What they share with the Tungangs** is only what all Krator English shares. Kimr tog keeps no *t'*, no *nobbut*, no *-na*, no
-  union words. A Fellgang and a Kimr understand each other's names for animals and almost nothing else, and they trade in signs
-  (`LORE.md` section 6.24, "Relations").
+- **What they share with the Tungangs** is what all Krator English shares, and the words that crossed at Wildcat and the Firebliss
+  camps (section 7). Kimr tog keeps no *t'*, no *nobbut*, no *-na*. A Kimr and a Fellgang who are not kin understand each other's
+  names for animals, the loans, and little else; at Wildcat, where the two peoples have married for generations, both tongues
+  are spoken at one fire (`LORE.md` section 6.24, "Relations").
 
 **The ear it was worn to.** The brief's two halves are given to the two halves of the tongue:
 - **The Cimmerian half, the sounds:** Welsh, the speech of the *Cymry*, whose name *Kimr* happens to echo (Howard's Cimmerians took
@@ -35,7 +37,7 @@ year and none of its words.
 
 ## 2. Sounds and spelling
 
-Kimr tog writes with Welsh habits on the Latin letters (no Kimr writes: section 8). It uses **k**, never *c*, because the owner
+Kimr tog writes with Welsh habits on the Latin letters (no Kimr writes: section 9). It uses **k**, never *c*, because the owner
 spells the people *Kimr*.
 
 **Vowels:** *a e i o* as in Welsh or Spanish; **w** is the vowel of *pool* (*bwl*, "bull"); **y** is the vowel of *the* (*melyn*,
@@ -161,7 +163,7 @@ their clan after their names: *Ffern Helg, Llan Elg*.
 
 **Animal virtues** are the animals' names in the taking mutation (section 4, and the glossary's third column).
 
-## 6. Glossary (158 entries)
+## 6. Glossary (162 entries)
 
 ### The beasts and what they give
 
@@ -260,7 +262,7 @@ their clan after their names: *Ffern Helg, Llan Elg*.
 | **bo**, **arw** | bow, arrow | |
 | **helm** | helm | helm |
 | **hornhelm** | horn helm | the Aurochs-horn helm |
-| **Hawrog** | (aurochs, taken) | the war-king |
+| **Hawrog** | (aurochs, taken) | the war-king; the war-queen, the rarest of all |
 | **Hed** | head | a village's head |
 | **band** | band | a war band |
 | **sgawd** | scout | scout |
@@ -290,6 +292,8 @@ their clan after their names: *Ffern Helg, Llan Elg*.
 | **dans** | dance | dance |
 | **dol** | doll | a hero doll |
 | **Pibl y Hol** | people of the Hall | the masked society |
+| **karir**, **werr** | carrier, wearer | the women who carry and keep the heroes' masks; the men who wear them in the dances |
+| **Sbirid Darg** | spirit (the) dark | the Dark Spirit, the Enemy the Hall's Ancients defeated in the Cataclysm |
 | **Kimr Masg** | keeper (of the) mask | the society's head, keeper of the masks |
 | **telr**, **telyn** | teller, telling | the keeper of deeds; the recital of a life |
 | **llawn** | clown | the sacred clowns |
@@ -342,6 +346,7 @@ their clan after their names: *Ffern Helg, Llan Elg*.
 | **Komr Ais** | copper ice | Copper Glacier |
 | **y Rifft** | the rift | the Rift |
 | **Tawn** | town | a village, a pueblo |
+| **greidhaws** | great house | a great-house pueblo, head of the villages round it; each has its *mara* (ally) and *ffiwd* (enemy) house |
 | **Rog** | rock | a village's plinth or knob |
 | **Rawnd** | round | a round room below the plinth (the kiva's place) |
 | **korl** | corral | the walled pen below a village |
@@ -353,8 +358,9 @@ their clan after their names: *Ffern Helg, Llan Elg*.
 |---|---|---|
 | **Peil** | pale | the Fellgangs |
 | **Mwng** | monk | a Monk of History |
-| **Mwng Melyn** | melon monk | the Monk who wrote of the Two-Snouts (section 6.24) |
-| **Lab** | lab | Dalab, known by rumour |
+| **Mwng Melyn** | melon monk | Lu-Tze, the Monk who wrote of the Two-Snouts (`LORE.md` section 6.24) |
+| **Tlab** | (fell speech) | Dalab, known by rumour (section 7) |
+| **mara**, **sgab**, **beid**, **bigwn**, **Bwsd** | (fell speech) | ally, nogo-breaker, trail food, raid leader, a Boast (section 7) |
 | **swn**, **mwn**, **sgai** | sun, moon, sky | |
 | **ffair**, **woʼr**, **sdon** | fire, water, stone | |
 | **rifr**, **leig**, **mawʼn**, **ais** | river, lake, mountain, ice | |
@@ -366,25 +372,51 @@ their clan after their names: *Ffern Helg, Llan Elg*.
 | **go**, **kwm**, **sii**, **sei**, **no** | go, come, see, say, know | |
 | **tog** | talk | speech: *Kimr tog*, the keepers' talk |
 
-## 7. Two names for every place
+## 7. Words both ways: the Fellgang loans
+
+[the owner, 2026-11-11: a few loanwords from the Fellgangs over time, and the other way, most through the raiders.] The two
+peoples have married, raided and traded for centuries, above all at **Wildcat**, the raiders' scrap pueblo, about half Kimr by
+descent (`kits/tungang/PLAN.md` 1.3.1). The loans are few and the ones that crossed are about raiding, trading and insult.
+*Proposed*:
+
+| Into Kimr | From the fell speech | Meaning in Kimr |
+|---|---|---|
+| **mara** | *marra*, a shift-mate | a sworn ally; a great house's ally house |
+| **sgab** | *skab*, traitor | one who broke a nogo; the worst word a Kimr can say of the living |
+| **Tlab** | *Tlab*, Dalab | Dalab, known by rumour (the Kimr's own *Lab* is gone) |
+| **beid** | *bait*, the food carried down | trail food on a hunt or a raid |
+| **bigwn** | *bigun*, a band's big man | a raid's leader, a little mocking: not a Hawrog |
+| **Bwsd** | *Boast* (Wildcat's rite) | a vow of a deed made aloud from a round room's roof, after Wildcat's custom; some great houses have taken it up |
+
+| Into the fell speech | From Kimr | Meaning there |
+|---|---|---|
+| **awrog** | *Awrog* | the great aurochs; an aurochs-horn helmet |
+| **nogo** | *nogo* | taboo; a rule of a band's rulebook that may not be voted away |
+| **tayg** | *teig* | to take a beast's strength by wearing or eating it |
+| **melinbru** | *Melyn brw* | melon beer |
+| **irras** | *Hirw* | Wildcat's heroes in the Deeds (the *h* lost, the plural the fell speech's own) |
+
+The Kimr's word for the Fellgangs who are not kin, *Peil*, the Pale, is not used at Wildcat.
+
+## 8. Two names for every place
 
 The Labyrinth's names on the map are the Fellgangs' (and the scale model's), in Tungang: the *Gowd Warra*, *Siphon-Pit Beck*,
 *Graben-Tarn Gill*. The Kimr's names are their own and say what a place is for: the Gowd Warra is *y Wei Awd*, the Way Out, the one
 river out of the Range, down which the dead are said to go (*Go awd, kwm in*). A kit that labels the Labyrinth for a player inside it
 uses the Kimr names; the map and a Fellgang use the Tungang ones.
 
-## 8. Writing
+## 9. Writing
 
 **The Kimr write nothing.** They paint **signs**, as the pueblos painted clan symbols: every hero has a sign (a figure on their mask's
 brow, on their doll and on their niche in the Hall), every clan its animal, and the Count is kept as rows of tally strokes on the
 Lookout's walls and on hide. The keepers' letters survive only as the Hall's stencilled Ancient signs, which the Kimr read as
 holy figures and never as words.
 
-## 9. For the owner
+## 10. For the owner
 
-1. **The family.** Kimr tog as drafted is English by the keepers' road (rangers' and ranchers' English), worn toward Welsh sounds and
-   Hopi grammar: not Tungang. Keep, or make it Tungang's sister (the keepers and the crews spoke one English), or a creole of both?
-2. **The name.** *Kimr* < *keepers*, the people named for their ancestors' job on the preserve. Keep, or is *Kimr* a name with another
-   history?
-3. **She and he.** The draft keeps *hi* and *shi* apart. The cult's women's and men's roles (`LORE.md` 6.24) may change that.
-4. **The tab.** When the forms are settled: a Kimr tab on `lore/tongues-of-krator.html` (family row, phrasebook, sound-change table)?
+**Settled** (2026-11-11): the family is the keepers' English, with Fellgang loans both ways (sections 1 and 7).
+
+1. **The name.** *Kimr* < *keepers*: the people named for their ancestors' work, keeping the preserve's beasts. Keep, or is *Kimr* a
+   name with another history?
+2. **She and he.** The draft keeps *hi* and *shi* apart.
+3. **The tab.** A Kimr tab on `lore/tongues-of-krator.html` (family row, phrasebook, sound-change table), now the family is settled?
