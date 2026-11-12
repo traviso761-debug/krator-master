@@ -36,6 +36,9 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
   (90 of 930 blooms) and fails its attach assert (`biomes/labyrinth/KNOWN_ISSUES.md`). The fix: for each near sample, the distance to
   the segment A-B less r (query KSPACE round the segment's box), and a case in `core/biome/test-attach.js` (a card beside a rod's
   middle holds; lifted off it, floats). It moves every biome page (the owner's call). Do not split the rods in a kit to pass the audit.
+- **core/tags: the culture `kimr`** (2026-11-11, `kits/kimr`): add `'kimr'` to `CULTURES` and `'kimr': 'Kimr'` to `CULTURE_NAMES` in
+  `core/tags/52-core-tags-vocab.js` (every page carries the vocabulary). Until then `kits/kimr/src/89-rows.js` adds it to its own page at
+  load; drop those two lines when the vocabulary has it.
 
 - **`KSHADOW.units` counts what the GPU links** (2026-11-09, found by the Throne's fix): `core/shadow/host/12-core-shadow-host.js` counts
   declared samplers (some are never read and the GPU drops them), misses `scene.environment` on standard materials, and judges against the
