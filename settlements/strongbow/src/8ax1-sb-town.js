@@ -113,7 +113,8 @@ function sbTownDraw(gx,gz){const O={buildings:0,people:0,protos:0,meshes:0,tris:
  // ---- the streets (packed earth, the avenues a shade paler) and the fields, laid on the ground -----------------------------------
  {const pos=[],col=[],C3=new THREE.Color(),quad=(a,b,c,d,hex)=>{C3.setHex(hex).convertSRGBToLinear();
    for(const p of [a,b,c,a,c,d]){pos.push(p[0]+gx,F.ground(p[0],p[1])+.07,p[1]+gz);col.push(C3.r,C3.g,C3.b);}};
-  for(const w of T.ways){const hw=w.w/2,hex=w.cls==='avenue'?0x9c8c6e:w.cls==='main'?0x928366:0x887a60;
+  /* the road spoke is the arcology's valley road (P.road), which the arcology draws: a second ribbon on it z-fights */
+  for(const w of T.ways){if(w.tag==='the road spoke')continue;const hw=w.w/2,hex=w.cls==='avenue'?0x9c8c6e:w.cls==='main'?0x928366:0x887a60;
    for(let i=1;i<w.pts.length;i++){const a=w.pts[i-1],b=w.pts[i],dx=b[0]-a[0],dz=b[1]-a[1],l=Math.hypot(dx,dz)||1,nx=-dz/l*hw,nz=dx/l*hw,ex=dx/l*.6,ez=dz/l*.6;
     quad([a[0]+nx-ex,a[1]+nz-ez],[b[0]+nx+ex,b[1]+nz+ez],[b[0]-nx+ex,b[1]-nz+ez],[a[0]-nx-ex,a[1]-nz-ez],hex);}}
   const CROP={grain:0xc8b46a,fodder:0x8a9a52,fallow:0x8a7454};
