@@ -11,6 +11,11 @@
 //   PR_SIM.sim            the host's table (core/region README: towns, kinds, field, jobs, sched, needs, items, economy, unrest)
 var PR_SIM=(function(){'use strict';
 const T={};
+/* the town opens its year (day 0, the dry season's middle) on its granaries: dry staples for the four months until the bands
+   come home, not the ring's mix (its fruit and meat rot at 4 % a night): about 3,000 people at 4 servings a day, an eighth of
+   a kilo each (PR_TUNE.valley's half-kilo of grain-equivalent). Core opens a town's foods by startDays alone, so the host
+   lays these in the granaries at declaration (tests/pr-sim-host.js) */
+T.granary={grain:1100000,rice:150000,pulse:200000};
 T.households={br_port_girder_dwelling:1,br_port_girder_house:1,br_bldg_terrace_row:4,br_bldg_great_house:2,br_bldg_chief_compound:3};
 const FOODS=['grain','rice','pulse','gourd','fruit','meat','bread','fungus'];
 const shop=FOODS.slice();
@@ -107,7 +112,7 @@ T.sim={
   wares:{market:['shirt','wrap','sarong','sun hat','sandal','pot','stone tool','wood tool','hoe','rug','lamp','charm'],
    shop:['shirt','wrap','sarong','sun hat','sandal','pot','stone tool','wood tool','hoe','rug','lamp','charm'],
    weaver:['shirt','wrap','rug','sarong','sun hat'],workshop:['sandal','stone tool','charm','wood tool','hoe','club'],smithy:['cuirass','iron tool'],
-   potter:['pot','cookpot','lamp'],tavern:['mead cup'],healer:['poultice']},
+   potter:['pot','cookpot','lamp'],tavern:['mead cup'],healer:['poultice'],tannery:['sandal']},
   meals:2,perMeal:2,low:1,days:3,stagger:0.5,mins:15,cool:120,storeDays:[1,3.5],eatOut:{base:0.04,wealth:0.08},wealth:{poor:0,middle:0.5,rich:1}},
  economy:{
   goods:FOODS.concat(['hides','leather','cloth','garments','boots','armour','tools','irontools','iron','pots','mead','rugs','lamps','charms','poultices','hats','salt','stone','silk']),
@@ -116,7 +121,9 @@ T.sim={
   minLoad:{armour:5,tools:5,irontools:5,pots:10,mead:10,rugs:10,lamps:10,charms:5,poultices:5,hats:10},
   govern:{every:60,cover:3,ti:1.5,alpha:0.3,min:0.3,max:1.5,smooth:2,window:3,minBy:{rugs:0.02,mead:0.05,pots:0.1,hats:0.02},
    least:{mead:600,rugs:200,lamps:400,hats:200,charms:50,pots:300,garments:300,boots:200,tools:60,irontools:30,poultices:50,stone:300}},
-  spoil:{meat:0.04,bread:0.06,fruit:0.04,gourd:0.02,fungus:0.05,pulse:0.003,grain:0.003,rice:0.003},
+  /* a granary town's dry staples keep: about a sixth lost a year (0.05 % a night), not the isle's 0.3 %, which cost a granary of
+     a million servings two thirds of it in a year */
+  spoil:{meat:0.04,bread:0.06,fruit:0.04,gourd:0.02,fungus:0.05,pulse:0.0005,grain:0.0005,rice:0.0005},
   /* the floor ring's crops (55) as goods: a serving of grain, rice, pulse, gourd or fruit; the beetle pens and the kitchen
      gardens give meat and fruit */
   crops:{fonio:'grain',millet:'grain',rice:'rice','pigeon pea':'pulse',gourd:'gourd','stack fig':'fruit','ember plum':'fruit','beetle pen':'meat','kitchen garden':'fruit'},
@@ -126,13 +133,11 @@ T.sim={
    field:{rate:0.35,cap:3000},orchard:{rate:0.4,cap:3000},pens:{out:['meat'],rate:0.4,cap:1500},
    bakehouse:{out:['bread'],rate:6,cap:1500},fungus:{out:['fungus'],rate:5,cap:1500},
    weaver:{out:['cloth','garments','rugs','hats'],rate:2,cap:600},potter:{out:['pots','lamps'],rate:0.2,cap:400},tavern:{out:['mead'],rate:1.5,cap:600},
-   healer:{out:['poultices'],rate:0.25,cap:200},quarry:{out:['stone'],rate:0.4,cap:400},tannery:{out:['leather'],rate:0.5,cap:400},
+   healer:{out:['poultices'],rate:0.25,cap:200},quarry:{out:['stone'],rate:0.4,cap:400},tannery:{out:['leather','boots'],rate:0.5,cap:400},   /* the tanners make the riders' boots (a hide town: one workshop could not shoe 3,000) */
+   
    workshop:{out:['boots','tools','charms'],rate:0.6,cap:400},smithy:{out:['armour','irontools'],rate:0.05,cap:100}},
   warehouses:['warehouse','granary'],
-  /* the town opens its year (day 0, the dry season's middle) on its granaries: dry staples for the four months until the
-     bands come home, not the ring's mix (its fruit and meat rot at 4 % a night): 3,000 people at 4 servings, an eighth of a
-     kilo each (PR_TUNE.valley's half-kilo of grain-equivalent a day) */
-  startDays:3,startLots:{grain:1100000,rice:150000,pulse:200000,cloth:1000,pots:500,garments:500,boots:200,armour:20,salt:300,stone:40,leather:40,hides:200,tools:60,irontools:20,iron:100,mead:300,rugs:200,lamps:400,charms:50,poultices:50,hats:200},
+  startDays:3,startLots:{cloth:1000,pots:500,garments:500,boots:200,armour:20,salt:300,stone:40,leather:40,hides:200,tools:60,irontools:20,iron:100,mead:300,rugs:200,lamps:400,charms:50,poultices:50,hats:200},
   salt:{keeps:['meat'],keep:0.75,per:4,season:1.15}},
  unrest:{smooth:5,hyst:5,stages:{grumble:50,demand:40,strike:30,treason:20},grumble:{arrest:0.7},
   demand:{goods:2,days:5,keep:2,every:5,grant:0.4,granted:{n:-10,days:10},refused:{n:5,days:10}},strike:{after:5,share:0.5,days:1}}

@@ -6,14 +6,16 @@ const fs = require('fs'), path = require('path'), vm = require('vm');
 const ROOT = path.join(__dirname, '..', '..', '..'), BUILD = path.join(__dirname, '..');
 const L = f => vm.runInThisContext(fs.readFileSync(path.join(ROOT, f), 'utf8'), { filename: f });
 global.window = global;
+let STATIC = false;
 function load() {
-  L('core/rand/08-core-rand.js'); L('core/clock/20-core-clock.js'); L('core/space/20-core-space.js');
+  if (!STATIC) { L('core/rand/08-core-rand.js'); L('core/clock/20-core-clock.js'); L('core/space/20-core-space.js'); }
   fs.readdirSync(path.join(ROOT, 'core', 'simulation')).filter(f => /^77-sim-.*\.js$/.test(f)).sort().forEach(f => L('core/simulation/' + f));
   L('core/tags/' + fs.readdirSync(path.join(ROOT, 'core', 'tags')).find(f => /^\d.*\.js$/.test(f)));
   L('core/region/00-region-core.js');
-  fs.readdirSync(path.join(ROOT, 'core', 'camp')).filter(f => /^\d\d-camp-.*\.js$/.test(f)).sort().forEach(f => L('core/camp/' + f));
-  L('core/world/48t-world-travel.js'); L('kits/beast-riders/src/79-br-camp.js');
-  L('settlements/pinnacle-rock/src/14-pr-legs.js'); L('settlements/pinnacle-rock/src/15-pr-tune.js'); L('settlements/pinnacle-rock/src/16-pr-sim.js');
+  if (!STATIC) {   /* the plain data and rules, once a process (their consts would clash); the sim and the host each run */
+    fs.readdirSync(path.join(ROOT, 'core', 'camp')).filter(f => /^\d\d-camp-.*\.js$/.test(f)).sort().forEach(f => L('core/camp/' + f));
+    L('core/world/48t-world-travel.js'); L('kits/beast-riders/src/79-br-camp.js');
+    L('settlements/pinnacle-rock/src/14-pr-legs.js'); L('settlements/pinnacle-rock/src/15-pr-tune.js'); L('settlements/pinnacle-rock/src/16-pr-sim.js'); STATIC = true; }
   const PR_SIM = vm.runInThisContext('PR_SIM');
   /* the host: the page's own hooks the region parts call (the isle's 34 census, 47 canoe line): a dwelling's households
      from the table, no canoe line, no census beyond the count, the buildings' role names from their keys */
@@ -47,7 +49,9 @@ function world(o) {
   const { H } = load(), { R, G } = plan(), PR_TUNE = vm.runInThisContext('PR_TUNE'), u = o.unit == null ? 8 : o.unit;   /* servings a kilo: the isle's 4 servings a day is the year test's half-kilo of grain-equivalent */
   if (o.startDays != null) H.TUNE.sim.economy.startDays = o.startDays;
   const S = H.simDeclare([{ R, G }]), town = 'staiytii0y';
-  const gran = SIM.all('place').filter(P => P.settlement === town && P.kind === 'granary').sort((a, b) => a.id < b.id ? -1 : 1)[0];
+  const grans = SIM.all('place').filter(P => P.settlement === town && P.kind === 'granary').sort((a, b) => a.id < b.id ? -1 : 1), gran = grans[0];
+  /* the opening granary (PR_SIM.granary), shared over the town's granaries: its stock at the start, not an import */
+  const GR = vm.runInThisContext('PR_SIM').granary || {}; if (o.granary !== false) Object.keys(GR).forEach(g => grans.forEach(P => { P.stock[g] = (P.stock[g] || 0) + GR[g] / grans.length; }));
   const OW = JSON.parse(fs.readFileSync(path.join(ROOT, 'openworld', 'pinnacle', 'plan', 'sites.json'), 'utf8'));
   const V = PR_TUNE.valley(OW, { attach: { place: gran.id, unit: u } });
   const VS = H.simValley(V), host = H.valleyHost(u);
