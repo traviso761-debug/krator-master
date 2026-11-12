@@ -48,7 +48,7 @@ var ARCH=(function(){
   var KSP_CAL=P10(-8.48),KSP_BRU=P10(-11.16);
   var mix=function(a,b,f){f=cl(f,0,1);var A=anc(a)*f+anc(b)*(1-f),dic=(a.dic||0)*f+(b.dic||0)*(1-f),pH=pHof(A,dic),s=species(pH,dic/1000),
     Ca=((a.Ca||0)*f+(b.Ca||0)*(1-f))/1000,Mg=((a.Mg||0)*f+(b.Mg||0)*(1-f))/1000;
-    return {pH:pH,T:(a.T||25)*f+(b.T||25)*(1-f),dic:dic,calcite:Ca*s.co3>KSP_CAL,brucite:Mg*s.oh*s.oh>KSP_BRU};};
+    return {pH:pH,T:(a.T==null?25:a.T)*f+(b.T==null?25:b.T)*(1-f),dic:dic,calcite:Ca*s.co3>KSP_CAL,brucite:Mg*s.oh*s.oh>KSP_BRU};};
   var gradient=function(a,b,T){return NERNST(T==null?30:T)*Math.abs(a-b);};
   var canStand=function(m){var why=[],al=m.alk,ac=m.acid;
     if(!al||!ac)return {ok:false,why:['two waters']};

@@ -1,0 +1,63 @@
+{
+ "build": "arch",
+ "note": "The Arch kit's adapter onto the material library (core/materials/PLAN.md; biomes/arch/PLAN.md section 15). The ground's KGROUND layers by family (84-host-ground.js): the alkaline aprons' white travertine, the acid crust, the laterite's red earth, the solfatara's sulphur. The owed sets (rock.serpentinite, rock.peridotite.rind, mineral.travertine.brucite, rock.basalt.pillow, rock.hyaloclastite, mineral.curtain: core/materials/PROMPTS-NEEDED.md section 43) are procedural stand-ins until they come (KNOWN_ISSUES.md). Run python3 tools/textures/pack.py biomes/arch after any change, then python3 build.py --all.",
+ "size": 512,
+ "families": {
+  "ground.travertine.white": {
+   "lib": "ground.travertine.white",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.travertine.acid": {
+   "lib": "ground.travertine.acid",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.redsoil": {
+   "lib": "ground.redsoil",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 0.7,
+    "mean": 0.7
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.sulphur": {
+   "lib": "ground.sulphur",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  }
+ }
+}
