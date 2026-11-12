@@ -234,7 +234,7 @@
     "biomes/loom-chasms/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
     "biomes/loom-chasms/stations/caelum/44f-host-far-data.js": "03d7422b432f0ba7b50a4676674924613b7728818f4235ae6923ececd19752d0",
     "biomes/loom-chasms/stations/caelum/44w-host-land.js": "a84ed515ee22a5946ad2de4dc34486acafbdd5f1058320754038df3a5e62c1b0",
-    "biomes/loom-chasms/stations/caelum/86-host-caelum.js": "3bfe0609bb713efc1a0cd3c3edc53630ccc5d0bb8dfb97bc38c799047eb633e9",
+    "biomes/loom-chasms/stations/caelum/86-host-caelum.js": "87eb0a49c8976f67ab6334c2c37407f494bc75844f3d401df9ed338ce6302f17",
     "biomes/loom-chasms/stations/caelum/station.json": "8faf1778dafbc4763d0970cd05f8a2ae5267cde4cd168392ebc323b2ffe9b817",
     "biomes/loom-chasms/tex/beard.albedo.webp": "7b5df02c6dc4337153f6473e4fc88c9b0a8d6146681aa5df408c607ec285cfbc",
     "biomes/loom-chasms/tex/bladder.albedo.webp": "9adcc0c13607b3d855cfc6866837a36cce7ef4e304a6386d7db3dabb3e9aa3c0",
@@ -353,10 +353,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/loom-chasms/dist/loom-chasms-caelum.html": "812c135f497d9d619454f31313eaa777f5e67decaca5b773184d364bd9508552"
+    "biomes/loom-chasms/dist/loom-chasms-caelum.html": "d3d7f85d7fbf4546578b60ca09406753bc234de45304131f499a5430e3cd1bde"
    },
    "outputs_raw": {
-    "biomes/loom-chasms/dist/loom-chasms-caelum.html": "812c135f497d9d619454f31313eaa777f5e67decaca5b773184d364bd9508552"
+    "biomes/loom-chasms/dist/loom-chasms-caelum.html": "d3d7f85d7fbf4546578b60ca09406753bc234de45304131f499a5430e3cd1bde"
    }
   },
   "build.py --station cradle": {

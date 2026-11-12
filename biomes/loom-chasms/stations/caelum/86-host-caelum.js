@@ -15,6 +15,15 @@ const CAELUM=(function(){const S=STATION;
  function build(){
   for(const v of S.VENTS){v.y=drawnH(v.x,v.z);
    REGISTER({name:'A fumarole (the Caelum fumaroles: steam and sulphur)',key:v.id,x:v.x,z:v.z,y:v.y-2,r:v.r,h:8,tags:{vent:true,pit:v.pit,kit:'loom-chasms'}});out.vents++;}
+  /* each vent's mouth: a squat mound of sulphur-crusted sinter with a dark throat, and broken blocks round it (the core/tags volume's drawing) */
+  {const MND=new THREE.CylinderGeometry(.18,.5,1,10,1,true).translate(0,.5,0),THR=new THREE.CircleGeometry(.2,10).rotateX(-Math.PI/2),BLK=new THREE.DodecahedronGeometry(.5,0),
+    mk=(g,col,n)=>{const m=new THREE.InstancedMesh(g,new THREE.MeshLambertMaterial({color:col,side:THREE.DoubleSide}),n);m.userData.host=true;m.userData.post=true;return m;};
+   const n=S.VENTS.length,mm=mk(MND,0xc8b04a,n),mt=mk(THR,0x2a2418,n),mb=mk(BLK,0x8a7a4a,n*6),M=new THREE.Matrix4(),Q=new THREE.Quaternion(),E=new THREE.Euler();
+   S.VENTS.forEach((v,i)=>{const R=v.r*.28,H=1+1.2*v.k;M.compose(new THREE.Vector3(v.x,v.y-.3,v.z),Q.identity(),new THREE.Vector3(R*2,H+.3,R*2));mm.setMatrixAt(i,M);
+    M.compose(new THREE.Vector3(v.x,v.y+H-.02,v.z),Q.identity(),new THREE.Vector3(R*2,1,R*2));mt.setMatrixAt(i,M);
+    for(let j=0;j<6;j++){const a2=j/6*Math.PI*2+v.k,d=R*1.4+.8*KRAND.unit(KRAND.hash(99430,i,j,1)),sz=.5+.7*KRAND.unit(KRAND.hash(99430,i,j,2)),bx=v.x+Math.cos(a2)*d,bz=v.z+Math.sin(a2)*d;
+     M.compose(new THREE.Vector3(bx,drawnH(bx,bz)+sz*.2,bz),Q.setFromEuler(E.set(a2,j,a2*.5)),new THREE.Vector3(sz,sz*.7,sz));mb.setMatrixAt(i*6+j,M);}});
+   mm.userData.inspectLabel=mt.userData.inspectLabel='A fumarole\'s mouth (sinter and sulphur)';mb.userData.inspectLabel='Sulphur-crusted blocks at a fumarole';scene.add(mm,mt,mb);}
   const a=NE.build(),b=SW.build();
   /* the steam: a few emitters over each vent, its strength the vent's */
   if(typeof ATMOS!=='undefined'&&ATMOS.smoke){const E=[];for(const v of S.VENTS){const n=1+Math.round(v.k*3);
