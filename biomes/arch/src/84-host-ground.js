@@ -29,7 +29,7 @@ const STRATA=GQ.get('strata')==='0'||typeof KSTRATA==='undefined'?null:KSTRATA.c
 const STRATA_SH=STRATA?KSTRATA.shade(STRATA,{dust:0x8a5a3a}):null;
 function setStones(){}
 const MIRROR_AT=(x,z)=>0;
-function masksAt(x,z,h,out){const T=HEAT_AT(x,z),rock=FC.at(FC.a.rock,x,z),ap=SKEY==='confluence'?L.APRON(x,z):0,ac=SKEY==='confluence'?L.ACIDG(x,z):0;
+function masksAt(x,z,h,out){const T=HEAT_AT(x,z),rock=FC.at(FC.a.rock,x,z),ap=L.APRON?L.APRON(x,z):0,ac=L.ACIDG?L.ACIDG(x,z):0;
  const trav=clamp(ap*(1-.5*rock),0,1),acid=clamp(ac*(1-trav)*(1-.4*rock),0,1),sul=clamp(smooth(50,70,T)*(1-trav),0,1);
  out[0]=trav;out[1]=Math.max(acid,sul*.5);out[2]=clamp((1-trav)*(1-acid)*(1-sul)*(1-.7*rock),0,1);out[3]=sul;return out;}
 // THE PAINT: the macro colour under the layers: red laterite and the maquis's dark green over it, the serpentinite's green-black on the steeps
@@ -42,6 +42,7 @@ const TEX_GROUND=BIO.canvasTex(1536,1536,(g,w,h)=>{const id=g.createImageData(w,
   c.copy(BASE).lerp(DRY,smooth(.5,.25,wet)*.5+.2*smooth(.4,.7,fbm(x/60,y/60,.9,2)));
   c.lerp(SCRUB,m[2]*(.35+.4*smooth(.35,.65,fbm(x/9,y/9,1.3,2))));   /* the maquis's patchy dark green over the red */
   c.lerp(ROCK,smooth(.3,.65,rock)*.7);
+  if(L.SHEAR)c.lerp(K(0x8a9a6a),L.SHEAR(wx,wz)*.55*smooth(.3,.7,fbm(x/7,y/7,4.1,2)));   /* the shear zone: scaly green rock with pale chrysotile */
   c.lerp(TRAV,m[0]*.9);c.lerp(ACID,m[1]*.75);c.lerp(SUL,m[3]*.7);
   const k=1+n*.08;d[i]=clamp(c.r*255*k,0,255);d[i+1]=clamp(c.g*255*k,0,255);d[i+2]=clamp(c.b*255*k,0,255);d[i+3]=255;}
  g.putImageData(id,0,0);});
@@ -80,4 +81,8 @@ if(SKEY==='confluence'){const S=SITE;
  S.springs.forEach((sp,i)=>REGISTER({name:'Type II spring '+(i+1)+' (Ca-OH, pH ~11.5, hydrogen; '+sp.flow+' L/s)',x:sp.x,z:sp.z,y:terrainH(sp.x,sp.z)-4,r:sp.r+4,h:10}));
  REGISTER({name:'The alkaline pool (milky turquoise, pH ~11) and its white rim',x:S.pool.x,z:S.pool.z,y:L.POOL_LV-4,r:S.pool.r+14,h:8});
  L.TER.forEach((T,i)=>REGISTER({name:'Travertine terraces from spring '+(i+1)+' ('+T.levels.length+' treads)',x:(T.F.A[0]+T.F.B[0])/2,z:(T.F.A[1]+T.F.B[1])/2,y:T.levels[T.levels.length-1]-5,r:T.F.L/2,h:T.levels[0]-T.levels[T.levels.length-1]+12}));
- REGISTER({name:'The meet: alkaline (pH '+L.MEET.alk.pH.toFixed(1)+') against acid (pH '+L.MEET.acid.pH.toFixed(1)+'): '+ARCH.gradient(L.MEET.alk.pH,L.MEET.acid.pH,30).toFixed(0)+' mV',x:S.meet.x,z:S.meet.z,y:terrainH(S.meet.x,S.meet.z)-4,r:40,h:12});}
+REGISTER({name:'The meet: alkaline (pH '+L.MEET.alk.pH.toFixed(1)+') against acid (pH '+L.MEET.acid.pH.toFixed(1)+'): '+ARCH.gradient(L.MEET.alk.pH,L.MEET.acid.pH,30).toFixed(0)+' mV',x:S.meet.x,z:S.meet.z,y:terrainH(S.meet.x,S.meet.z)-4,r:40,h:12});}
+if(SKEY==='dome'){const S=SITE;
+ REGISTER({name:'The dome (a core complex: mantle pulled up along a detachment, corrugated along the opening direction)',x:0,z:0,y:terrainH(0,0)-60,r:1500,h:200});
+ S.springs.forEach((sp,i)=>REGISTER({name:'Type II spring '+(i+1)+' at a trough\'s head (Ca-OH, pH ~11.5, hydrogen; '+sp.flow+' L/s)',x:sp.x,z:sp.z,y:terrainH(sp.x,sp.z)-4,r:sp.r+14,h:10}));
+ L.TER.forEach((T,i)=>REGISTER({name:'Travertine terraces down trough '+(i+1)+' ('+T.levels.length+' treads)',x:(T.F.A[0]+T.F.B[0])/2,z:(T.F.A[1]+T.F.B[1])/2,y:T.levels[T.levels.length-1]-5,r:T.F.L/2,h:T.levels[0]-T.levels[T.levels.length-1]+12}));}

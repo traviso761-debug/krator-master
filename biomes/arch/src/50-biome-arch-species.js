@@ -62,17 +62,17 @@ ARCHB.plantOfItem=it=>{for(const S of SPECIES)if(S.items.indexOf(it)>=0)return S
 ARCHB.TRAP=typeof KTRAPS!=='undefined'?KTRAPS.make({kind:'pitfall',mouth:.06,preyMax:'insect',cycle:{wait:86400,shut:0,digest:0,reopen:0},lure:'nectar',danger:0}):null;
 // ---------------------------------------------------------------- textures and materials (procedural cards; the pack's library maps swap in by slot)
 const TX={};
-TX.needles=BIO.alphaTex(256,(g,S)=>{g.strokeStyle='rgba(60,90,60,1)';g.lineWidth=2;for(let k=0;k<160;k++){const x0=S*(.1+.8*((k*37)%100)/100),y0=S*(.1+.8*((k*53)%100)/100),a=((k*29)%100)/100*TAU,l=S*(.08+.1*((k*17)%100)/100);
- g.beginPath();g.moveTo(x0,y0);g.lineTo(x0+Math.cos(a)*l,y0+Math.sin(a)*l);g.stroke();}},[60,90,60]);
+TX.needles=BIO.alphaTex(256,(g,S)=>{g.strokeStyle='rgba(225,235,220,1)';g.lineWidth=2.5;for(let k=0;k<220;k++){const x0=S*(.1+.8*((k*37)%100)/100),y0=S*(.1+.8*((k*53)%100)/100),a=((k*29)%100)/100*TAU,l=S*(.08+.1*((k*17)%100)/100);
+ g.beginPath();g.moveTo(x0,y0);g.lineTo(x0+Math.cos(a)*l,y0+Math.sin(a)*l);g.stroke();}},[225,235,220]);
 TX.glossy=BIO.alphaTex(256,(g,S)=>{for(let k=0;k<46;k++){const x=S*(.12+.76*((k*61)%100)/100),y=S*(.12+.76*((k*29+7)%100)/100),r=S*.07,a=((k*41)%100)/100*TAU;
- g.fillStyle='rgba(60,110,60,1)';g.beginPath();g.ellipse(x,y,r,r*.45,a,0,TAU);g.fill();}},[60,110,60]);
-TX.sedge=BIO.alphaTex(256,(g,S)=>{for(let k=0;k<60;k++){const x0=S*(.3+.4*((k*37)%100)/100),a=-1+2*((k*53)%100)/100;g.strokeStyle='rgba(150,150,90,1)';g.lineWidth=2;
- g.beginPath();g.moveTo(x0,S);g.quadraticCurveTo(x0+a*S*.1,S*.5,x0+a*S*.3,S*(.05+.2*((k*17)%100)/100));g.stroke();}},[150,150,90]);
+ g.fillStyle='rgba(225,240,220,1)';g.beginPath();g.ellipse(x,y,r,r*.45,a,0,TAU);g.fill();}},[225,240,220]);
+TX.sedge=BIO.alphaTex(256,(g,S)=>{for(let k=0;k<60;k++){const x0=S*(.3+.4*((k*37)%100)/100),a=-1+2*((k*53)%100)/100;g.strokeStyle='rgba(235,235,215,1)';g.lineWidth=2.5;
+ g.beginPath();g.moveTo(x0,S);g.quadraticCurveTo(x0+a*S*.1,S*.5,x0+a*S*.3,S*(.05+.2*((k*17)%100)/100));g.stroke();}},[235,235,215]);
 const vcol=(o)=>new T3.MeshStandardMaterial(Object.assign({color:0xffffff,roughness:.8,metalness:0,vertexColors:true},o||{}));
 const M=ARCHB.M={
- needles:BIO.leafMat(TX.needles,'ar-needles',{aN:true,swayW:'.6',swayA:.04}),
- glossy:BIO.leafMat(TX.glossy,'ar-glossy',{aN:true,swayW:'.6',swayA:.05}),
- sedge:BIO.leafMat(TX.sedge,'ar-sedge',{aN:true,swayW:'1.0',swayA:.08}),
+ needles:BIO.leafMat(TX.needles,'ar-needles',{aN:false,swayW:'.6',swayA:.04}),
+ glossy:BIO.leafMat(TX.glossy,'ar-glossy',{aN:false,swayW:'.6',swayA:.05}),
+ sedge:BIO.leafMat(TX.sedge,'ar-sedge',{aN:false,swayW:'1.0',swayA:.08}),
  curtain:vcol({roughness:.32}),lime:vcol({roughness:.7}),flesh:vcol({roughness:.6}),comb:vcol({roughness:.25,metalness:.15}),felt:vcol({roughness:.95}),
  bark:vcol({roughness:.9}),rope:vcol({roughness:.85})};
 ARCHB.SWAP=BIO.libSwap('arch',M);

@@ -27,8 +27,8 @@ ARCHB.buildArch=function(R,q,o){o=o||{};q=q==null?1:q;R=R==null?2500:R;
   const H=rr(8,20),tc=pickC(PAL.trunk,.02),rc=pickC(PAL.needles,.03),yaw=rr(0,TAU);BIO.put('artrunk',[x,y-.2,z],qEuler(rr(-.03,.03),yaw,rr(-.03,.03)),[(.15+H*.012)/.05,H,(.15+H*.012)/.05],tc);
   const tiers=Math.round(H/2.6);for(let t=0;t<tiers;t++){const hy=H*(.35+.6*t/Math.max(1,tiers-1)),n=t===tiers-1?0:ri(2,4),L=(1-t/tiers)*rr(1.6,3.6)+.6;
    for(let k=0;k<n;k++){const az=yaw+k/n*TAU+rr(-.3,.3);/* an arm out and turning up: a bowed stalk lying along its azimuth, its bow lifting the tip */
-    BIO.put('arbough',[x,y+hy,z],qEuler(0,az,Math.PI/2-rr(.12,.3)),[1,L,1],rc);}}
-  BIO.put('arbough',[x,y+H*.92,z],qEuler(0,yaw,0),[1.1,H*.18+1,1.1],rc);log('artrunk',x,z);st.araucaria++;});
+    BIO.put('arbough',[x,y+hy,z],qEuler(0,az,Math.PI/2-rr(.12,.3)),[2.2,L,2.2],rc);}}
+  BIO.put('arbough',[x,y+H*.85,z],qEuler(0,yaw,0),[2.4,H*.2+1.5,2.4],rc);log('artrunk',x,z);st.araucaria++;});
  // MAQUIS SHE-OAK: the commonest shrub, everywhere Earth can grow, thinning on the steeps
  cellPass(9,2,Lv.mid,(x,y,z,lv)=>{if(!earth(x,z))return;const a=.5*(1-smooth(.45,.75,rock(x,z)))*q;if(rng()>a)return;const n=lv===2?ri(2,4):1;
   for(let k=0;k<n;k++){const ang=rr(0,TAU),d=k?rr(.8,2.2):0,px=x+Math.cos(ang)*d,pz=z+Math.sin(ang)*d;if(BIO.mask(px,pz)<=0||!earth(px,pz))continue;

@@ -75,7 +75,7 @@ const L=(function(){const S=SITE;
    // the solfatara's hollow: bleached, steaming, a few metres sunk
    {const V=S.solfatara,d=Math.hypot(x-V.x,z-V.z);H.y-=4*smooth(V.reach*.8,V.reach*.15,d);for(const p of V.pots){const e=Math.hypot(x-p[0],z-p[1]);if(e<p[2]+3)H.y=Math.min(H.y,prof(p[0],p[1])-4-.4-1.2*smooth(p[2],0,e));}}
    // the flame cleft: a crack along its line on the dome's flank
-   {const C=S.flames,F2=segFrame([C.x,C.z],[C.x+C.dir[0]*C.len,C.z+C.dir[1]*C.len]),q=F2.at(x,z);if(q.s>-10&&q.s<F2.L+10)H.y-=2.4*smooth(3.5,.5,Math.abs(q.a))*smooth(-10,10,q.s)*smooth(F2.L+10,F2.L-10,q.s);}
+   {const C=S.flames,F2=segFrame([C.x,C.z],[C.x+C.dir[0]*C.len,C.z+C.dir[1]*C.len]),q=F2.at(x,z);if(q.s>-10&&q.s<F2.L+10)H.y-=.9*smooth(3.5,.5,Math.abs(q.a))*smooth(-10,10,q.s)*smooth(F2.L+10,F2.L-10,q.s);}
    return H.y;}
   function water(x,z){
    for(const T of TER){const q=T.F.at(x,z);if(q.s>=0&&q.s<T.F.L&&Math.abs(q.a)<15)return T.lv(q.s);}
@@ -98,6 +98,35 @@ const L=(function(){const S=SITE;
    return a;};
   return{land,water,MEET,TER,ALK,ACID,OUT,alkOff,acidOff,outOff,alkLv,acidLv,outLv,POOL_LV,prof,APRON,ACIDG,farBase:120,
    spine:[[M.x,M.z],[P.x,P.z],[S.solfatara.x,S.solfatara.z]].concat(S.springs.map(s=>[s.x,s.z])).concat([[S.flames.x,S.flames.z],OUT.p(OUT.L*.5,0)])};}
+
+ if(SKEY==='dome'){const SP=S.corrug.spacing,AMP=S.corrug.amp,uv=(u,v)=>[(u+v)*S2,(u-v)*S2];
+  // the springs and the flames placed in the dome's frame (41)
+  S.springs.forEach(sp=>{const p=uv(sp.u,sp.v);sp.x=p[0];sp.z=p[1];});{const F=S.flames,p=uv(F.u,F.v);F.x=p[0];F.z=p[1];F.dir=[S2,S2];}
+  // the whaleback: the fall south-east, the mullions across it (flat-topped ridges of laterite, troughs of serpentinite), a broad swell
+  const mull=(x,z)=>{const v=(x-z)*S2+30*n2(x,z,.0009,41);return AMP*smooth(-.55,.55,Math.sin(v/SP*TAU));};
+  const base=(x,z)=>{const u=ARCH.uOf(x,z);return S.base-S.slope*u+18*n2(x,z,.0005,42);};
+  const prof=(x,z)=>base(x,z)+mull(x,z);
+  const TER=S.springs.map(sp=>{const e=uv(sp.u+sp.len,sp.v),F=segFrame([sp.x,sp.z],e);const top=prof(sp.x,sp.z)-.6,bot=prof(e[0],e[1])+.2,n=Math.max(8,Math.round(F.L/110));
+   const levels=[];for(let i=0;i<n;i++)levels.push(+(top-(top-bot)*i/(n-1)).toFixed(2));const RS=3.5,TL=(F.L-(n-1)*RS)/n;
+   const lv=s=>{s=clamp(s,0,F.L-1e-6);const i=Math.min(n-1,Math.floor(s/(TL+RS))),r=s-i*(TL+RS);return r<=TL||i===n-1?levels[i]:lerp(levels[i],levels[i+1],(r-TL)/RS);};
+   return{F,levels,lv,sp};});
+  const SH=segFrame(S.shear.a,S.shear.b);
+  function land(x,z){let h=prof(x,z)+1.4*n2(x,z,.004,43)+.4*n2(x,z,.03,44);
+   // the shear zone: a soft band, a little sunk, scaly
+   {const q=SH.at(x,z);h-=2.5*smooth(S.shear.w,S.shear.w*.3,Math.abs(q.a));}
+   const H={x,z,y:h};
+   for(const T of TER){const q=T.F.at(x,z),aa=Math.abs(q.a);if(q.s>-40&&q.s<T.F.L+40&&aa<160){const lv=T.lv(q.s),ridge=lv+1.6*smooth(90,18,aa)-.2,
+     w=smooth(-40,10,q.s)*smooth(T.F.L+40,T.F.L,q.s);H.y=mix(H.y,Math.max(Math.min(H.y,ridge+12),ridge),w*smooth(160,70,aa));if(aa<15&&w>.5)H.y=lv-.7;}}
+   for(const sp of S.springs){const d=Math.hypot(x-sp.x,z-sp.z),top=prof(sp.x,sp.z);if(d<sp.r)H.y=top-.6-1.8*(1-Math.pow(d/sp.r,1.5));else if(d<sp.r+40)H.y=mix(top+.4,H.y,smooth(sp.r,sp.r+40,d));}
+   {const C=S.flames,F2=segFrame([C.x,C.z],[C.x+C.dir[0]*C.len,C.z+C.dir[1]*C.len]),q=F2.at(x,z);if(q.s>-10&&q.s<F2.L+10)H.y-=.9*smooth(3.5,.5,Math.abs(q.a))*smooth(-10,10,q.s)*smooth(F2.L+10,F2.L-10,q.s);}
+   return H.y;}
+  function water(x,z){for(const T of TER){const q=T.F.at(x,z);if(q.s>=0&&q.s<T.F.L&&Math.abs(q.a)<14)return T.lv(q.s);}
+   for(const sp of S.springs)if(Math.hypot(x-sp.x,z-sp.z)<sp.r+1)return prof(sp.x,sp.z)-.6;return -1e9;}
+  const APRON=(x,z)=>{let a=0;for(const T of TER){const q=T.F.at(x,z);if(q.s>-30&&q.s<T.F.L+30)a=Math.max(a,smooth(55,16,Math.abs(q.a)));}
+   for(const sp of S.springs)a=Math.max(a,smooth(sp.r+50,sp.r,Math.hypot(x-sp.x,z-sp.z)));return a;};
+  const SHEAR=(x,z)=>smooth(S.shear.w,S.shear.w*.4,Math.abs(SH.at(x,z).a));
+  return{land,water,TER,prof,APRON,ACIDG:()=>0,SHEAR,SH,mull,farBase:S.base-200,
+   spine:S.springs.map(s=>[s.x,s.z]).concat([[S.flames.x,S.flames.z],[0,0]])};}
  throw new Error('no station '+SKEY);})();
 function landH(x,z){return L.land(x,z);}
 function floor0(x){return L.farBase;}
@@ -142,7 +171,7 @@ function rootMask(x,z){const d=terrainH(x,z)-waterH(x,z);if(d<.15)return 0;retur
 const WBOX=[-TERR.R*1.1,-TERR.R*1.1,TERR.R*1.1,TERR.R*1.1];
 const OBSTACLES=[];
 BIO.init({tags:'arch',THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,mask:rootMask,
- obstacles:OBSTACLES,ticks:tick,seed:SITE.seed||1,origin:L.spine,center:[0,0],fields:FIELD,register:REGISTER,err:reportErr,
+ obstacles:OBSTACLES,ticks:tick,seed:SITE.seed==null?1:SITE.seed,origin:L.spine,center:[0,0],fields:FIELD,register:REGISTER,err:reportErr,
  lod:{hero:230,mid:560,far:2400,floor:[180,440]},
  windows:{water:WBOX}});
 BIO.setSun([-600,1300,-700]);

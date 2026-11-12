@@ -21,9 +21,20 @@ var ARCH_SITES={
   flames:{x:-1250,z:-250,dir:[.7,.7],len:160,n:7},   /* a cleft on the dome's flank: hydrogen and methane burning (Chimaera's) */
   corrug:{spacing:150,amp:6},   /* the dome's mullions, along the opening direction (north-west to south-east) */
   seed:0x4A2C01},
- // STATION 2, THE DOME: the corrugated whaleback's flank (to come)
+ // STATION 2, THE DOME: the core complex's south-east flank (the summit, 1,456 m, ~21 km north-north-west; the slope here ~6% on the model's 2 km
+ // cells, read as ~4% falling south-east with the mullions across it). The whaleback's corrugations run along the opening direction (north-west to
+ // south-east): flat-topped ridges of red laterite with candelabra araucarias, troughs between them where the green-black serpentinite shows on the
+ // flanks and type II springs rise at the troughs' heads, laying white terraces down the troughs; an eternal-flame cleft on a crest; a chrysotile
+ // shear zone crossing the whaleback south-west to north-east, its fibres pale gold in the green rock (the asbestos hazard)
  dome:{key:'dome',name:'The dome: a core complex of bare mantle',px:[318,178],world:[636000,356000],sky:{px:46,py:-152},
-  base:863,atm:1.44,koppen:'Am',rain:1616,temp:{mean:24,warm:28,cold:19,low:14},soil:24,lat:-20.0,summit:{px:[314,168],h:1456}},
+  base:863,atm:1.44,koppen:'Am',rain:1616,temp:{mean:24,warm:28,cold:19,low:14},soil:24,lat:-20.0,summit:{px:[314,168],h:1456,km:21},
+  slope:.04,corrug:{spacing:340,amp:24},
+  /* the springs at the troughs' heads and the flames on a crest, in the dome's own frame: u along the fall (south-east), v across (the troughs at
+     v = -85 + 340 k, the crests at 85 + 340 k); the stage gives them x, z */
+  springs:[{key:'d1',v:-425,u:-1500,r:13,flow:6,len:2300},{key:'d2',v:-85,u:-1350,r:10,flow:4,len:2100},{key:'d3',v:255,u:-1550,r:12,flow:5,len:2400}],
+  flames:{v:425,u:250,len:130,n:6},
+  shear:{a:[-2400,1500],b:[2200,-1100],w:60},
+  seed:0x4A2C02},
  // STATION 3, THE BARRENS: the south-eastern horst's lee, the driest ground (Aw)
  barrens:{key:'barrens',name:'The barrens: the nickel maquis',px:[258,246],world:[516000,492000],sky:{px:-14,py:-84},
   base:155,atm:1.57,koppen:'Aw',rain:1427,temp:{mean:27,warm:32,cold:22,low:16},soil:27,lat:-21.6},

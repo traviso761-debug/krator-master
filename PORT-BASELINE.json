@@ -20,6 +20,14 @@
    "bytes": 2166012,
    "sha256": "8f59e18a3b2d8095e4df83b4ab3e30c5e0146858c33365dbf45fe9fb40d4ab70"
   },
+  "biomes/arch/dist/arch-dome.html": {
+   "bytes": 1916399,
+   "sha256": "1b6fc4a1a26ca70d5be04284236140e820a9a318e634d81339185659b1d45a5f"
+  },
+  "biomes/arch/dist/arch.html": {
+   "bytes": 1916166,
+   "sha256": "e9da018c6773bd3b2bd19198e1c0da6ef1ac2920ed161e36e2e0edd3891eeab4"
+  },
   "biomes/catch/dist/catch-fan.html": {
    "bytes": 9618890,
    "sha256": "56db76b8f00127805c8a64380c861602daf3dd68bd7f31c0d067c3147f7f37f3"

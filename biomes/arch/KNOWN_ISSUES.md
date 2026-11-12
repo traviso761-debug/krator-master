@@ -18,6 +18,8 @@ Open items are `- [ ]`; read them before changing the kit.
 - [ ] **The mixed water is acid (pH ~3)**: with the springs' and the solfatara's flows as set (18 against 12 L/s, ARCH.spring's draws), the acid wins downstream (ARCH.mix). Honest, and drawn so; a wetter dome (more spring flow) would neutralise it. Owner to say which they want.
 - [ ] **The sound is not drawn**: the station's far field runs south-east to the sound's floor, but no open water is placed there (the sound is ~8 km off the page).
 - [ ] **Software GL only**: built in the cloud; `verify.py --assert` ran on SwiftShader. A GPU-lane run is owed.
-- [ ] **Only the confluence is built.** Stations `dome`, `barrens`, `sound` and `coast` have site records (41) and nothing else.
+- [ ] **Two stations are built**, the confluence (`dist/arch.html`) and the dome (`dist/arch-dome.html`, `python3 build.py --station dome`). Stations `barrens`, `sound` and `coast` have site records (41) and nothing else.
+- [ ] **The dome's summit is not on the page**: the station is the whaleback's south-east flank (~21 km from the 1,456 m summit); the far field carries the flank's fall only, the sky's ridges stand for the rest.
+- [ ] **The maquis's cards are lit as facing up** (`aN:false`): with `aN:true` the foliage hook reads a per-instance normal the kit's items do not declare (`attrs:['aN']`), and every card drew black (seen 2026-11-12). Declare the attribute when the cards move to library cards.
 - [ ] **No fauna yet** (PLAN.md section 8): the five hexapods go to `kits/fauna` as data first.
 - [ ] `tests/test-arch-chem.js` is not in `tools/test_all.py`'s glob (it runs `core/`, `settlements/*/tests` and `kits/*/tests`, not `biomes/*/tests`): run it by hand.

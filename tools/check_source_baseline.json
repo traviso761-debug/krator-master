@@ -5,6 +5,7 @@
  "biomes/ancientsvalley/src/47-host-land.js: RAWTEX": 1,
  "biomes/ancientsvalley/src/70-host-city.js: ORNUM": 2,
  "biomes/ancientsvalley/src/99-host-take.js: ORNUM": 3,
+ "biomes/arch/src/84-host-ground.js: RAWTEX": 1,
  "biomes/catch/src/45-host-scene.js: ORNUM": 1,
  "biomes/catch/src/45c-host-ground.js: CAMPOS": 1,
  "biomes/catch/src/45c-host-ground.js: ORNUM": 1,

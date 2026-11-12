@@ -16,14 +16,15 @@ function ribbon(name,pts,width,speed,shallow,deep,rapids){const F=WATER.flow({na
  const D=WATER.drawFlow(F,{shallow:lin(shallow),deep:lin(deep),color:0xffffff,roughness:.14,metalness:.05,envMapIntensity:.4,step:6,across:4,margin:.6,depthBias:1.5,renderOrder:2,pick:true});
  D.mesh.userData.inspectLabel=name;return F;}
 let BIGW=null,BIG_DRAW=null;const W_OUT={};
-if(SKEY==='confluence'){const S=SITE,M=L.MEET;
- // THE SPRINGS and THE POOL: hyperalkaline, warm, milky turquoise with a white rim
+if(SITE.springs){const S=SITE;
+ // THE SPRINGS: hyperalkaline, warm, milky turquoise with a white rim
  S.springs.forEach((sp,i)=>spring('spring'+i,'Type II spring '+(i+1)+' (pH ~11.5, '+sp.flow+' L/s, hydrogen)',sp.x,sp.z,sp.r,L.prof(sp.x,sp.z)-.6,.45,ALK_RAMP,{milky:.7}));
- spring('pool','The alkaline pool (pH ~11)',S.pool.x,S.pool.z,S.pool.r,L.POOL_LV,.3,ALK_RAMP,{milky:.8});
+ if(S.pool)spring('pool','The alkaline pool (pH ~11)',S.pool.x,S.pool.z,S.pool.r,L.POOL_LV,.3,ALK_RAMP,{milky:.8});
  // THE TERRACES: a white rimstone staircase from each spring to the pool
  W_OUT.terraces=L.TER.map((T,i)=>{const TR=WATER.terraces({name:'Travertine terraces from spring '+(i+1),line:[T.F.A,T.F.B],levels:T.levels,riser:3,width:28,speed:.9,spread:3});
   WATER.drawTerraces(TR,{pool:{color:0xffffff,roughness:.06,metalness:.05,envMapIntensity:.55,renderOrder:1,gradient:{centre:lin(0x5ab8c4).getHex(),rim:lin(0xe6eeec).getHex(),power:1.3}},
-   fall:{color:lin(0xeef4f2),opacity:.85,rowStep:1,cols:8,spray:false,plungeR:5,renderOrder:3}});return TR.pools.length;});
+   fall:{color:lin(0xeef4f2),opacity:.85,rowStep:1,cols:8,spray:false,plungeR:5,renderOrder:3}});return TR.pools.length;});W_OUT.springs=S.springs.length;}
+if(SKEY==='confluence'){const S=SITE,M=L.MEET;
  // THE ALKALINE STREAM: the pool's outflow to the meet
  const pAlk=[];for(let s=0;s<=L.ALK.L+.1;s+=8){const p=L.ALK.p(s,L.alkOff(s));pAlk.push([p[0],p[1],L.alkLv(s)]);}
  ribbon('The alkaline stream (pH ~11, milky blue)',pAlk,9,.25,0xb8e2e6,0x4aa8b8);
@@ -39,6 +40,6 @@ if(SKEY==='confluence'){const S=SITE,M=L.MEET;
  ribbon('The mixed water (pH ~'+M.mixed.pH.toFixed(1)+': the acid wins)',pm,hw*1.6,.5,0xc8b07a,0x7a7050,[.04,.12]);
  // THE MUD POTS: boiling acid mud on the sulphur ramp
  S.solfatara.pots.forEach((p,i)=>spring('pot'+i,'A mud pot (boiling acid mud)',p[0],p[1],p[2],L.prof(p[0],p[1])-4.2,.97,'sulfur',{milky:.9}));
- Object.assign(W_OUT,{springs:S.springs.length,curtainEnd:end,mixedPH:M.mixed.pH,halves:2});}
+ Object.assign(W_OUT,{curtainEnd:end,mixedPH:M.mixed.pH,halves:2});}
 if(WATER.breakupFlows)WATER.breakupFlows();   /* core/water ext/56: the streams' glint broken up */
 window._water=Object.assign({station:SKEY,surfaces:WATER.surfaces.length},W_OUT);

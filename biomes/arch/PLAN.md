@@ -10,7 +10,7 @@ The owner asked for it on 2026-11-11: **"I do want earth plants here too where a
 here but fully explore all possibilities an exposed mid ocean ridge offers."** So the plan is broad first (sections 1-4
 take every lead and say what is kept and why) and narrows to stations after (sections 11-15).
 
-Status: **a proposal for the owner** (2026-11-11). **Built so far** (2026-11-12): A1 (the chemistry, `tests/test-arch-chem.js`) and A3, station 1, the confluence (`dist/arch.html`, `verify.py --assert` on software GL); the other stations have site records only (`KNOWN_ISSUES.md`). Nothing on the scale model is changed; `LORE.md` is untouched (section
+Status: **a proposal for the owner** (2026-11-11). **Built so far** (2026-11-12): A1 (the chemistry, `tests/test-arch-chem.js`), A3, station 1, the confluence (`dist/arch.html`), and station 2, the dome (`dist/arch-dome.html`), each `verify.py --assert` on software GL; the other stations have site records only (`KNOWN_ISSUES.md`). Nothing on the scale model is changed; `LORE.md` is untouched (section
 10 holds proposed sentences only); `core/simulation` is untouched (the nickel and jade trade is a later sim pass). Every
 species' and place's name is a working name. Where the owner has not answered, the conservative default is taken and
 marked **"default taken, owner to confirm"**.
@@ -412,7 +412,7 @@ at px 294,588) across the sea to the south-east. No kit borders the Arch on land
 | Station | Site (5.1 px) | Height | Air | Rain | Mean (warm / cold) | Class | Lat |
 |---|---|---|---|---|---|---|---|
 | `confluence` (main page) | **324,180**, the dome's south-east foot, 8 km from the sound | 183 m | 1.56 | 1,788 mm | +27 (+32 / +23) | Am | 20.0 S |
-| `dome` | **318,178**, the dome's flank (summit 1,456 m at 314,168, 3 km NW) | 863 m | 1.44 | 1,616 mm | +24 (+28 / +19) | Am | 20.0 S |
+| `dome` | **318,178**, the dome's flank (summit 1,456 m at 314,168, ~21 km NNW) | 863 m | 1.44 | 1,616 mm | +24 (+28 / +19) | Am | 20.0 S |
 | `barrens` | **258,246**, the south-eastern horst's lee | 155 m | 1.57 | 1,427 mm | +27 (+32 / +22) | Aw | 21.6 S |
 | `sound` | **299,220**, the graben floor on the sound's shore | 7 m | 1.60 | 1,804 mm | +30 (+34 / +26) | Am | 21.0 S |
 | `coast` | **167,336**, the seamount island's south-west shore, the Surtseyan caldera 3 km off | 2 m | 1.60 | 1,710 mm | +28 (+33 / +23) | Am | 23.7 S |

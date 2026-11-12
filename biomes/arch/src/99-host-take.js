@@ -7,13 +7,18 @@ const look=(cx,cz,dyc,tx,tz,dyt)=>[cx,gh(cx,cz,dyc),cz,tx,gh(tx,tz,dyt),tz];
 const VIEWS=(function(){const S=SITE;
  if(SKEY==='confluence'){const O=L.OUT,M=S.meet,V=S.solfatara,T=L.TER[0].F,F=S.flames,c1=O.p(240,-26),c2=O.p(420,0),e=O.p(L.MEET.end-60,-40),e2=O.p(L.MEET.end+120,0),tm=T.p(T.L*.55,22),ts=T.p(T.L*.2,0);
   return{'The curtains':[c1[0],gh(c1[0],c1[1],2.2),c1[1],c2[0],gh(c2[0],c2[1],.5),c2[1]],
+   'The curtains from the acid side':(()=>{const p=O.p(300,30),t=O.p(420,0);return[p[0],gh(p[0],p[1],2.4),p[1],t[0],gh(t[0],t[1],.5),t[1]];})(),
    'The meet':look(M.x-70,M.z-40,6,M.x+30,M.z+40,0),
    'The terraces':look(tm[0],tm[1],4,ts[0],ts[1],2),
-   'The solfatara':look(V.x-180,V.z+150,10,V.x,V.z,0),
-   'The eternal flames':look(F.x-14,F.z+10,2,F.x+F.dir[0]*60,F.z+F.dir[1]*60,0),
+   'The solfatara':look(V.x-110,V.z+90,24,V.x,V.z,-3),
+   'The eternal flames':look(F.x-12,F.z+16,6,F.x+F.dir[0]*50,F.z+F.dir[1]*50,.5),
    'Over the edge fault':look(e[0],e[1],14,e2[0],e2[1],-10),
    'The maquis on the dome':look(-1500,-700,3,-900,-1500,8),
    'From afar':look(-1900,2100,240,M.x,M.z,0)};}
+ if(SKEY==='dome'){const T=L.TER[1].F,F=S.flames,sp=S.springs[1],a=T.p(T.L*.35,40),b=T.p(T.L*.15,0),c=T.p(T.L*.7,-200),d=T.p(T.L*.45,0),q=L.SH,m=[(q.A[0]+q.B[0])/2,(q.A[1]+q.B[1])/2];
+  return{'Down a trough':look(a[0],a[1],8,d[0],d[1],-4),'A spring at the trough\'s head':look(sp.x+60,sp.z+50,5,sp.x,sp.z,0),
+   'Across the mullions':look(c[0],c[1],40,c[0]-900,c[1]+900,0),'The eternal flames':look(F.x-12,F.z+16,6,F.x+F.dir[0]*50,F.z+F.dir[1]*50,.5),
+   'The shear zone':look(m[0]+60,m[1]+80,4,m[0]-200,m[1]+120,0),'From afar':look(1900,2100,300,0,-300,0)};}
  return{'From afar':look(-2300,-800,260,0,0,0)};})();
 function chemAt(x,z){const w=waterH(x,z),wet=w>-1e8&&w>terrainH(x,z)-.05;let pH=PH_AT(x,z),what='ground';
  if(SKEY==='confluence'&&wet){const q=L.OUT.at(x,z);if(q.s>=0&&q.s<=L.OUT.L&&Math.abs(q.a)<SITE.outflow.w/2){const smp=L.MEET.samples[Math.max(0,Math.min(L.MEET.samples.length-1,Math.round(q.s/10)))];
@@ -31,7 +36,7 @@ const instPoints=()=>{const o=[],m=new THREE.Matrix4(),p=new THREE.Vector3(),q=n
  scene.traverse(M=>{if(!M.isInstancedMesh||!M.userData.biome)return;for(let i=0;i<M.count;i++){M.getMatrixAt(i,m);m.decompose(p,q,sc);o.push([p.x,p.y,p.z,M.name]);}});return o;};
 const EARTH_ITEMS=['artrunk','argymno','arpycn','arsedge','arpitch'];
 const HCHK={
- placed(st){const need=['araucaria','gymnostoma','sedge','pitchers','limeshelf','felt','fans'],zero=need.filter(k=>!(st&&st[k]>0));
+ placed(st){const need=SKEY==='dome'?['araucaria','gymnostoma','sedge','limeshelf']:['araucaria','gymnostoma','sedge','pitchers','limeshelf','felt','fans'],zero=need.filter(k=>!(st&&st[k]>0));
   if(SKEY==='confluence'&&!(st&&st.curtains&&st.curtains.curtains>0))zero.push('curtains');
   return{ok:!zero.length,detail:zero.length?'none: '+zero.join(', '):need.map(k=>k+' '+st[k]).join(', ')+(st.curtains?', curtains '+st.curtains.curtains:'')};},
  // every curtain on a meeting sample where ARCH.canStand says yes, on the dividing line, before the meeting's end
@@ -51,11 +56,12 @@ const HCHK={
  dry(P){const bad=P.filter(p=>{const w=waterH(p[0],p[2]);return w>-1e8&&p[1]<w-.6&&['biome:arcurtain','biome:arcurtainhem','biome:arhem'].indexOf(p[3])<0;});return{ok:!bad.length,detail:bad.length?bad.length+' under the water (first '+bad[0][3]+')':P.length+' instances, none drowned but the curtains, which stand in the water'};},
  camerasOut(C){const bad=C.filter(c=>c.y<terrainH(c.x,c.z)+.5);return{ok:!bad.length,detail:bad.length?'under the ground: '+bad.map(c=>c.view).join(', '):C.length+' cameras above the ground'};}};
 const SIDES=(function(){const o=[];if(SKEY!=='confluence')return o;for(let s=40;s<L.MEET.end-20;s+=60){o.push({s,a:-1,want:'alk'});o.push({s,a:1,want:'acid'});}return o;})();
-const APRON_PTS=SKEY==='confluence'?L.TER.map(T=>[.3,.6,.9].map(f=>T.F.p(T.F.L*f,0))).flat():[];
+const APRON_PTS=L.TER?L.TER.map(T=>[.3,.6,.9].map(f=>T.F.p(T.F.L*f,0))).flat():[];
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P=instPoints(),st=window._station||{};
  add('the Arch\'s life placed',HCHK.placed(st));
  if(SKEY==='confluence'){add('every curtain stands where ARCH.canStand says so',HCHK.curtains(st.curtains?st.curtains.list:[]));
-  add('the page\'s pH is ARCH\'s',HCHK.ph(SIDES));add('every spring has its white apron downhill',HCHK.aprons(APRON_PTS));}
+  add('the page\'s pH is ARCH\'s',HCHK.ph(SIDES));}
+ if(APRON_PTS.length)add('every spring has its white apron downhill',HCHK.aprons(APRON_PTS));
  add('no Earth plant where ARCH.earthOk is false',HCHK.earth(ARCHB.LOG));
  add('nothing alive where ARCH.lifeAt is none',HCHK.alive(ARCHB.LOG));
  add('every hoarder over 1,000 ug/g nickel (ARCH.uptake)',HCHK.hoard(ARCHB.HOARD||[]));
@@ -63,18 +69,20 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P
  add('preset cameras above the ground',HCHK.camerasOut(Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),V=SITE.solfatara;
- add('no curtains placed',HCHK.placed(Object.assign({},window._station,{curtains:{curtains:0}})));
+ add(SKEY==='confluence'?'no curtains placed':'no lime shelves',HCHK.placed(Object.assign({},window._station,SKEY==='confluence'?{curtains:{curtains:0}}:{limeshelf:0})));
  if(SKEY==='confluence'){const p=L.OUT.p(L.MEET.end+60,0);add('a curtain past the edge fault',HCHK.curtains([{x:p[0],z:p[1],s:L.MEET.end+60}]));
   add('the halves swapped',HCHK.ph(SIDES.map(t=>({s:t.s,a:t.a,want:t.want==='alk'?'acid':'alk'}))));
-  add('a terrace point off its apron',HCHK.aprons([[V.x,V.z]]));
   add('a she-oak in the solfatara',HCHK.earth([['argymno',V.x,V.z]]));
   add('a plant in a boiling mud pot',HCHK.alive([['arfan',V.pots[0][0],V.pots[0][1]]]));}
+ if(APRON_PTS.length)add('a terrace point off its apron',HCHK.aprons([[2400,2400]]));
+ if(SKEY==='dome'){const sp=SITE.springs[0];add('a she-oak in a spring\'s pool',HCHK.earth([['argymno',sp.x,sp.z]]));}
  add('a hoarder on ordinary ground',HCHK.hoard([{leaf:ARCH.uptake('pycnandra',{ni:30,pH:7}).leaf}]));
  add('a camera under the ground',HCHK.camerasOut([{view:'under',x:0,y:terrainH(0,0)-5,z:0}]));
  return R;}
 KHOST.on(SKY.view,'view');
 KHOST.on(function lodTick(){camera.updateMatrixWorld();if(BIO.lodTick)BIO.lodTick(camera);},'view');
-const HINT={confluence:"The Arch, station 1 (scale model 5.1, px 324,180; 183 m, 1.56 atm, Am, 20 degrees S): the dome's foot, bare mantle under red laterite. Two hyperalkaline springs (pH ~11.5, hydrogen) lay white terraces down to a milky turquoise pool; a solfatara up the dome sends an acid stream (pH ~2.4) down the fault's line; where the two meet they run side by side, split by curtains (living walls, black on the acid face and white on the alkaline), until the outflow drops over the graben's edge fault and mixes. Eternal flames of hydrogen and methane in a cleft; New Caledonia's maquis (candelabra araucarias, she-oak, the blue-sap hoarder, pitchers) on the laterite (ideal type)"}[SKEY]||SITE.name;
+const HINT={confluence:"The Arch, station 1 (scale model 5.1, px 324,180; 183 m, 1.56 atm, Am, 20 degrees S): the dome's foot, bare mantle under red laterite. Two hyperalkaline springs (pH ~11.5, hydrogen) lay white terraces down to a milky turquoise pool; a solfatara up the dome sends an acid stream (pH ~2.4) down the fault's line; where the two meet they run side by side, split by curtains (living walls, black on the acid face and white on the alkaline), until the outflow drops over the graben's edge fault and mixes. Eternal flames of hydrogen and methane in a cleft; New Caledonia's maquis (candelabra araucarias, she-oak, the blue-sap hoarder, pitchers) on the laterite (ideal type)",
+ dome:"The Arch, station 2 (scale model 5.1, px 318,178; 863 m, 1.44 atm, Am, 20 degrees S): the dome's south-east flank, a core complex: mantle pulled up along a detachment fault, its whaleback corrugated along the opening direction. Flat-topped mullions of red laterite with candelabra araucarias and the maquis; troughs between them where the green-black serpentinite shows, type II springs at the troughs' heads laying white travertine terraces down them; an eternal-flame cleft on a crest; a chrysotile shear zone crossing the whaleback (asbestos) (ideal type)"}[SKEY]||SITE.name;
 KHOST.take({build:'arch'+(SKEY==='confluence'?'':'-'+SKEY),title:'Krator biome â€” The Arch: '+SITE.name,hint:HINT,
  scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,regHas,views:VIEWS,ticks:TICKS,
  clock:{hour:ATMOS.SKY.viewHour},draw:SKY.draw,
@@ -87,5 +95,5 @@ KHOST.take({build:'arch'+(SKEY==='confluence'?'':'-'+SKEY),title:'Krator biome â
  get totals(){const t=BIO.totals();return {tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
  biome:()=>window._station,site:()=>SITE,meeting:()=>SKEY==='confluence'?L.MEET:null,chem:chemAt,
  exportProfile:['registry','items','materials','textures','terrain','stage','atmos','water'],
- exportBox:[200,150,600,550],   /* the meet and the curtains' first 300 m */
+ exportBox:SKEY==='dome'?[-1215,-1094,-815,-694]:[200,150,600,550],   /* the meet and the curtains' first 300 m; the dome's second spring */
  at:(x,z)=>{const o={h:terrainH(x,z),water:waterH(x,z),heat:HEAT_AT(x,z),pH:PH_AT(x,z)};FNAMES.forEach(n=>o[n]=+FIELD[n](x,z).toFixed(3));return o;}}});
