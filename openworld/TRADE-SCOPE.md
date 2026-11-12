@@ -849,5 +849,64 @@ a terrain edit to put a plausible site between b3 and b4 and put one nw of drum?
 
 **What it reaches:**
 - **The queue:** the fort type, seven fort pins, and the outcrop edit (above).
-- **The Baelu building:** `kits/scyvoi` (`54-bl-baelu.js`); its interiors and its quarry are open items (`kits/scyvoi/KNOWN_ISSUES.md:26, 98`).
+- **The Baelu building (B1-B7):** `kits/scyvoi` (`54-bl-baelu.js`); its interiors and its quarry are open items (`kits/scyvoi/KNOWN_ISSUES.md:26, 98`).
 - **The trade model:** a Baelu is seasonal, so its people are the bands', counted once (a camp, not a town).
+
+## 12. Korona's villages (a proposal, 2026-11-12)
+
+The owner: "let's scope korona for plausible village sites. nothing here should be above 1k; really most of the population will be
+semi-nomadic or live in hamlet-size settlements". Korona's tribes are humans and therian mutants on the tepuis, apart for centuries,
+speaking the Hum (`biomes/korona/NOTES.md:16`). The flora and fauna are aggressive and the tribes suspicious of outsiders. One human
+tribe and the toad men guide merchants through the maze (7.6).
+
+**The ground.** The polygon `Korona / NE` (px ~867-1343 by 339-682, 430,000 km²) is a bull's-eye of rings round a trench country
+(`NOTES.md`, "The corona").
+- **The trenches:** under -1,200 m, abyss-hot (35-40 °C), unlivable.
+- **The ring crests:** flat-topped tepuis, 1,500-2,600 m.
+- **The rain:** the north-west wind drops it on each ring's windward west face.
+- **The hoar tables:** above 3,500 m, where the owner's winter gene-modded tribes live (`NOTES.md:206-216`).
+- **Coyote land:** the Coyote Kingdom's polygon overlaps the north-east; its sites are left out here.
+
+**The search.** Inside the polygon, outside the Coyote Kingdom:
+- **Kept:** land under 4,300 m, under 30 °C (no trenches), gentle ground, with water (a river, a fresh lake, wadis, or 900 mm of
+  rain).
+- **Scored:** farmland, half the pasture, the river, a lake beside it.
+- **Spacing:** 40 km or more from any pin, the sites 60 km apart.
+- **Hum names:** the rivers at several sites carry them already (Tōng-Hām, Sīng-Hām, Hau-Kē).
+
+| | Site | Zone | Ground | Water | Farmland, pasture (10 km) |
+|---|---|---|---|---|---|
+| **K1** | 952,423 | a lake basin on the north-west rings | 147 m, Aw, 690 mm, +27 °C | the Tōng-Hām (39 m³/s), a fresh lake | 169, 234 |
+| **K2** | 909,499 | the western rings | 516 m, Cfa, 737 mm, +24 °C | the Sīng-Hām (89 m³/s), a fresh lake | 147, 176 |
+| **K3** | 942,521 | the western rings | -30 m, Cfa, 941 mm, +27 °C | the Àirn Rìv (25), a fresh lake | 167, 236 |
+| **K4** | 978,540 | an inner ring's lake | -429 m, Aw, 1,223 mm, +28 °C, ~1.7 atm | the Ràv Rìv (18), a fresh lake | 147, 223 |
+| **K5** | 964,462 | an inner ring's lake | -381 m, Aw, 909 mm, +29 °C | the Hau-Kē (55), a fresh lake | 104, 188 |
+| **K6** | 1006,340 | the northern rim's table | 2,961 m, Cfa, 988 mm, +14 °C, ~1.1 atm | rain | 300, 217 |
+| **K7** | 1033,354 | **a hoar table**, 3,824 m | Dfc, 1,019 mm, +8 °C, ~1.0 atm | rain | 265, 146 |
+| **K8** | 1040,564 | the southern rings | 272 m, Csa, 1,019 mm, +27 °C | rain | 233, 201 |
+| **K9** | 907,586 | a south-west ring crest | 1,787 m, Cfa, 1,035 mm, +15 °C | rain | 206, 199 |
+| **K10** | 912,556 | the south-west rings | 625 m, Csa, 690 mm, +24 °C | the Sīng-Hām (upper, 10) | 225, 240 |
+
+**Reading it.**
+- **The west is livable:** the villages cluster on the western rings and the north rim, the windward wet side. The eastern rings
+  are the dry lee, and the north-east is the Coyote Kingdom's.
+- **The hoar table's people:** K7 is the one high site, a village of the winter-modded tribe, selling lichen dyes and snow lotus
+  down to the warm rings and the Painted Men (7.1).
+- **Possibly the guides' villages:** K6 and K7 stand on the northern rim, toward the arachnoid canyons and the Hām-Tsēk (the
+  Arachnoid River's likely course, 7.6), on the silk route. One could be the human guides', one the toad men's. The toad men,
+  as a therian tribe of the wet, might rather hold a lake village (K1, K4 or K5). The owner's call.
+- **K4 and K5** are the hottest and densest-aired sites (+28-29 °C, ~1.7 atm), on lakes in the inner rings, at the edge of the
+  livable.
+
+**Size, as the owner said.**
+- **Villages:** each 200-1,000 people, none above 1,000 (the trade model's village estimate is 300).
+- **Hamlets:** most of the people live in hamlets round them: `core/hamlet` records, not pins.
+- **Bands:** the semi-nomadic bands range between them (`core/camp`), as the Dasri's do.
+
+**What it reaches:**
+- **The queue:** village pins for the sites the owner takes, named in the Hum when names come.
+- **The trade model:** Korona's polity, perhaps "the Korona tribes": its villages, its dyes, the guides' fee on the silk route.
+- **`core/charactermodels`:** the winter mods (`NOTES.md:210`).
+- **The sim:** the hamlets and bands.
+
+Not sent to the queue: the owner picks first.
