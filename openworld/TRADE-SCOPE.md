@@ -636,7 +636,7 @@ settlements".
 |---|---|---|---|---|---|---|
 | **Town** | **1219,1148**, the Bowl's east shore | -1,056 m, BSh, 658 mm, +29 °C, ~1.8 atm | 874 km²-eq farmland, 994 pasture (20 km) | the Rvr Ḥmm, 119 m³/s | none | Solta (queued) 100 km, Yuni 147 km |
 | **Village 1** | **1200,1071**, the sedesert's wadi country north of the Bowl | 231 m, Csa, 580 mm, +24 °C | 218 farmland, 237 pasture (10 km) | wadis and springs (9 wadi px), no river | Yuni Emirate | Yuni 131 km, Locus 145 km |
-| **Village 2** | **1311,982**, the badlands, on the Sista Riba | 1,048 m, Csa, 768 mm, +20 °C | 264 farmland, 225 pasture | the Sista Riba, 37 m³/s | Yuni Emirate | Verge 108 km |
+| **Village 2** (revised) | **1333,886**, the eastern badlands, on the Rīfar al-Dhahab ("the gold river") | 1,715 m, BSk, 423 mm, +16 °C | 90 farmland, **275 pasture** (the most of any site here) | the Rīfar al-Dhahab, 18 m³/s | Nomad Country | Mungo 118 km |
 | **Village 3** | **1319,676**, the badlands by the east rim, on the Rīfar al-Qaṣr | 908 m, BSh, 564 mm, +22 °C | 207 farmland, 251 pasture | the Rīfar al-Qaṣr, 64 m³/s | Nomad Country | Reed 78 km, the Tabist town 100 km, Furrow 113 km |
 | **Village 4** | **1220,644**, the northern sedesert, on the Rīfar al-Bālm | -83 m, Aw, 800 mm, +28 °C | 159 farmland, 234 pasture | the Rīfar al-Bālm, 11 m³/s | Nomad Country | the Tabist town 109 km, Furrow 112 km; Shade 281 km |
 
@@ -651,14 +651,54 @@ settlements".
   - one in the northern sedesert, on the way to Shade and the Tabist town.
 - The five are 159-1,008 km apart. None is within 60 km of another pin.
 
+**Revised 2026-11-12** (the owner: "v2 would more likely be a yuni settlement. furrow is a dasri town fyi. are there any promising
+sites in the eastern portion river valleys? we should also add one more tabisti town in the middle east abyss somewhere between
+mungo and reed"):
+- **The first village 2 (1311,982, on the Sista Riba) becomes a Yuni village** (proposed): Csa, 1,048 m, 768 mm, 264 km²-eq farmland,
+  in the Emirate's land, 108 km from Verge. It is a Yuni farming village, not a Dasri one.
+- **The Dasri's village 2 is now the Rīfar al-Dhahab site** (1333,886, the table above): a herders' valley, the richest pasture
+  surveyed, in Nomad Country.
+- **Furrow is a Dasri town** (the owner). Its pin is an `outpost` on the model (1276,639), so with the new `town` type it could
+  become a town: a type change for the queue if the owner wants it. The trade model's estimate would rise from 150 to 2,500
+  people. Village 4 and the Rīfar al-Sarāb site lie ~110-125 km from it.
+
+**The eastern river valleys.** The e badlands east of px 1330 drain east off the abyss's far rim in long valleys. Most carry Dasrī
+names. The best village sites there, 60 km or more from any pin and 80 km from the sites above:
+
+| Site | River | Ground | Pasture, farmland (10 km) | Polity | Note |
+|---|---|---|---|---|---|
+| **1333,886** | Rīfar al-Dhahab, 18 m³/s | 1,715 m, BSk, 423 mm, +16 °C | 275, 90 | Nomad Country | **taken as Dasri village 2** |
+| 1334,949 | Braita Riba, 30 m³/s, a fresh lake | 1,553 m, BSh, 439 mm, +17 °C | 235, 108 | Yuni Emirate | the one fresh lake on the east side; Yuni-named, 132 km from Verge |
+| 1353,732 | Rīfar al-Ṣakhr, 15 m³/s, wadis | 2,357 m, Cfa, 533 mm, +15 °C | 232, 186 | Nomad Country | high and cool; 182 km from Reed |
+| 1359,671 | Rīfar al-Qaṣr (upper), 33 m³/s | 2,436 m, Cfa, 580 mm, +15 °C | 224, 202 | Nomad Country | 80 km up the same river from village 3 |
+| 1338,1012 | Solt Riba, 55 m³/s | 2,442 m, Dsb, 549 mm, +12 °C | 230, 181 | Yuni Emirate | Yuni-named; 81 km from the Yuni village at 1311,982 |
+| 1372,773 | Rīfar al-Kawkab, 12 m³/s | 3,063 m, Cfa, 470 mm, +10 °C | 234, 122 | Nomad Country | the highest; summer grazing |
+
+The valleys are pasture country at 1.5-3 km, cooler and wetter than the sedesert: summer grounds for herds, rather than towns.
+The Rīfar al-Ṣakhr and the upper Rīfar al-Qaṣr would make good seasonal camps (`core/camp`) for the same bands.
+
+**A Tabisti town in the middle of the east abyss** (the owner: "between mungo and reed"). The Tabisti live "on the salt marshes and
+river deltas at the edge of the eastern abyss" (`LORE.md` section 6.9). So the search kept the abyss floor (under -800 m), on a
+lake shore, between Mungo (1322,828) and Reed (1280,678), 55 km or more from any pin. It scored lake area, an inflowing river,
+farmland and pasture:
+
+| | Site | Ground | Water | Farmland, pasture (10 km) | Distances |
+|---|---|---|---|---|---|
+| **Proposed** | **1311,761**, the Rīfar al-Rīḥ's mouth into a salt lake | -1,707 m, XA, 1,741 mm, +33 °C | 40 km² of salt lake in 10 km; the Rīfar al-Rīḥ, 27 m³/s | 84, 92 | Mungo 136 km, Reed 177 km, the Tabist town 218 km: the middle of the stretch |
+| Alternative | 1290,735, the Rīfar al-Ṣakhr's mouth | -1,946 m, XV, 1,003 mm, +35 °C | 44 km² of salt lake; 21 m³/s | 58, 190 | Reed 116 km, Mungo 197 km |
+
+1311,761 is a river delta on a salt lake, the lore's Tabisti ground. It is cooler (+33 °C) than Reed and the Tabist town (+39 °C,
+too hot to farm), so it can farm a little. Nomad Country; a `town`.
+
 **Alternatives** if a site will not do:
 - **1325,609** on the Rīfar al-Sarāb ("the mirage river"): Csa, 872 m, 12 wadi px, 115 km from Furrow. In place of village 4,
   drier and more Dasri in climate.
 - **1301,1085** on the Bigga: BSk, 1,787 m, 116 m³/s, 76 km from Yuni. A southern badlands village nearer the Stalker Range.
 
 **What it reaches.**
-- **The queue:** five SETT_ADDED rows (one town, four villages), named in Dasrī when the owner picks names. The town takes the new
-  `town` type (section 4).
+- **The queue:** five Dasri SETT_ADDED rows (one town, four villages), named in Dasrī when the owner picks names; a Tabisti town
+  (1311,761, named in Tabist); a Yuni village (1311,982); and, if wanted, Furrow's type from `outpost` to `town`. The towns take
+  the new `town` type (section 4).
 - **The trade model:** the five as Nomad Country members; their reaches scanned by the census.
 - **The sim:** `core/camp`'s nomad bands range between them.
 - **Shade's `DESIGN.md:8`** still says the sedesert: a lore fix (8.4).
