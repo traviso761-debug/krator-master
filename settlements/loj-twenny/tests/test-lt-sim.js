@@ -40,10 +40,10 @@ console.log('      made ' + JSON.stringify(made) + '\n      used ' + JSON.string
   '\n      imported ' + JSON.stringify(imp) + '\n      exported ' + JSON.stringify(exp));
 ok('the dark beds grow the fungus (' + Math.round(made.fungus || 0) + ' servings) and the hold eats it (' + Math.round(used.fungus || 0) + ')', made.fungus > 500 && used.fungus > 500, (made.fungus || 0) === 0);
 ok('the vein working cuts ore (' + Math.round(made.ore || 0) + ' lots) and the shuttle takes it west (' + Math.round(exp.ore || 0) + ')', made.ore > 20 && exp.ore > 0, false);
-ok('the shuttle brings wax, plate, grain and ice in (' + ['wax', 'plate', 'grain', 'ice'].map(g => g + ' ' + Math.round(imp[g] || 0)).join(', ') + ')',
+ok('the train and the shaft bring wax, plate, grain and ice in (' + ['wax', 'plate', 'grain', 'ice'].map(g => g + ' ' + Math.round(imp[g] || 0)).join(', ') + ')',
   ['wax', 'plate', 'grain', 'ice'].every(g => imp[g] > 0), false);
-const TR = S.tradeReport(), br = TR['lt.branch'], sh = TR['lt.shaft'];
-ok('the branch shuttle ran ' + (br ? br.voyages : 0) + ' voyages; the Travellers carried the Fellgangs\' ice down the great shaft ' + (sh ? sh.voyages : 0) + ' times',
+const TR = S.tradeReport(), br = TR['lt.line'], sh = TR['lt.shaft'];
+ok('the segment train ran ' + (br ? br.voyages : 0) + ' voyages; the Travellers carried the Fellgangs\' ice down the great shaft ' + (sh ? sh.voyages : 0) + ' times',
   br && br.voyages >= 20 && sh && sh.voyages >= 2 && sh.shipped && Object.keys(sh.shipped).some(k => sh.shipped[k].ice > 0), false);
 const ice = daily.map(d => d.ice), wax = daily.map(d => d.wax), fu = daily.map(d => d.fungus);
 ok('the count wall\'s stocks move day to day (fungus ' + fu.join(' > ') + '; wax ' + wax.join(' > ') + '; ice ' + ice.join(' > ') + ')',

@@ -5,40 +5,46 @@ setting of `core/city`** (`core/city/cavern/`), not on a bespoke layout. The own
 session): the integration base of six branches, the cavern setting, the Tungang set, the hold as a page, the hold on the sim.
 The design is `kits/tungang/PLAN.md` (sections 1.2, 1.2.1, 3.2, 5, 6); this plan says what this page takes from it and where.
 
-## 1. Where it is (a design fork, settled provisionally)
+## 1. Where it is (settled: station 3, under the great shaft)
 
-`kits/tungang/PLAN.md` (lines 255-265, 330-335, 395-405) puts Loj Twenny "on `tube_rift_08`" under the 2.2 km great shaft by
-the Twenny junction; **the owner's later answer on the Line plan** (`biomes/line/PLAN.md` answer 3, line 24: "Loj Twenny: by a 25
-km side tunnel from the Twenny junction (km 218)"; and its section 2.1: `tube_rift_08` is 300 km off) puts it 25 km east of the
-junction, a cavern loj in the rift fill at model pixel 457,1269. The two disagree on whether the hold's spine is station 3 itself.
-This page takes **the owner's later answer**: the hold sits at the far end of the 25 km branch, its spine the branch's **kept
-terminus** (two tracks between two side platforms), the branch shuttle running in from the junction on the Line's own cars, and
-riding works on it. The great shaft stays at the junction (the Ice-cutters' ice comes down it to the junction, then up the
-branch). The question went to the coordinating session (2026-11-11) and has no answer yet; **switching to station 3 as the
-spine is cheap**: the plan's spine is one record (`LT.spec`'s `spine` and `spines`), the rest of the hold hangs off it.
+**The owner, 2026-11-11** (`openworld/PLAN-SETTLEMENTS.md` on `claude/openworld-sites-24defd`, question 16): "**Under the great
+shaft** (station 3)". Loj Twenny grew in the Ancients' station cavern of the Twenny junction (bore km 218, model pixel 445,1266),
+2,200 m of rift fill over it, the great shaft (the hot section's southern exhaust) rising from its west platform to the fells. This
+replaces the first build's siting at the end of a 25 km branch (the Line plan's answer 3; the station page still calls its branch
+"toward Loj Twenny": `biomes/line/stations/station/48-line-window.js`, for the Line session to rename). The branch tube in the east
+wall is now the hold's own main street, the loj's way.
 
 ## 2. The hold (`src/20-lt-plan.js`, on `KCITY.cavern.lineHold`)
 
+The frame is station 3's window (x across, east +; z along the Line, south +, z = s - 217700; y up from the invert). The station's
+numbers are written in the plan (`LT.ST`) so the node test runs without the page; the page checks they are the Line's
+(`station-match`).
+
 | Part | What |
 |---|---|
-| The terminus hall | 157 x 22 m under a flattened vault (10.5 m), two guideways (z -2.6, +2.6), side platforms at the car floor (1.8 m), the concourse across the buffers' end; the branch gallery in from the west |
-| The decks (5.2) | +1 the quiet deck (y 6.3: homes, red), 0 the Line deck (y 1.8: public, green), -1 the work deck (y -2.7: amber) |
-| The sidings (streets) | north: `lt.n1` homes up a ramp (cream over red), `lt.n2` the carriage siding (Line deck), `lt.n3` homes up a stair (cream over green); south: `lt.s1` the work deck down a stair (plain red), `lt.s2` the old siding of the last stop, `lt.s3` homes up a ramp |
-| Civic, by hand | the doors across the hall's mouth, the signal box by them, the loj hall at the buffers' end facing down the hall (the landmark), two carriage houses facing across their siding, the works (three dark beds, the cistern, the fan house, the bath), the last stop at its siding's end, the night mouth climbing from the end of the east homes |
-| Frontage runs | the sets and cuts along every homes siding, cuts at the old end |
-| Wealth | 1 at the loj hall's end falling along the graph over 260 m (Dhelv's rule) |
-| Ages (5.3) | the hold moved east with its heat: past 160 m along the graph worn, past 212 abandoned (the west homes); the works, the doors and the box kept by edit (deltas by id) |
+| The spines | station 3's east platform (the hold's side), its west platform and apron, the island, the two mezzanines (the Ancients' balconies at 7.6 m); the stairs and footbridges between them; all drawn and carved by the Line's own code |
+| The decks (5.2) | +1 the quiet deck at the mezzanines' level (7.6: homes, red), 0 the Line deck (the platforms, 1.8: green), -1 the work deck (-2.7: amber). The Ancients set the upper deck 5.8 m up, not 4.5 |
+| The streets | out through the station's own doors: two homes streets east off the east mezzanine (cream over red, cream over green), two west off the west mezzanine (cream over red; the old end, plain red), the work deck down a stair from the west platform's workshop door; and the branch tube east, the loj's way |
+| Civic and works | the signal box in the station's signal room, the cistern and the fan house behind the east platform's doors (the station's cistern and ventilation plant), the gate across the loj's way, two carriage houses facing across it, the loj hall at its end facing back down it (the landmark), three dark beds and the bath on the work deck, the night mouth at the end of the west homes (its climb toward the shaft's hoist), the last stop at the old end |
+| Stand-ins in the sim | the market on the island, the stores and the Fixers' shop in the station's own stores room and workshop, the train's stop on the east platform, the vein working at the work deck's end, the great shaft's foot (the hoist) |
+| Wealth, ages (5.3) | wealth falls from the loj hall along the graph; the hold grew out from the station, so the west mezzanine's far streets are the oldest, worn and abandoned; the works, the gate, the box and the night mouth kept by edit |
 
-67 sites (22 sets, 32 cuts, every civic and works def); every rule of the setting holds (`LT.audit()`).
+64 sites (23 sets, 28 cuts, every civic and works def); every rule of the setting holds (`LT.audit()`).
 
 ## 3. The page (`build.py`, `dist/loj-twenny.html`)
 
-The rock is one KCAVERN carved from the plan (`src/50-lt-cavern.js`); the defs are the Tungang set drawn by `TG.tg.draw`
-(`src/64-lt-hold.js`, one draw a deck); the shuttle is the Line's cars posed by the ride source (`src/42`, `66`); the light is
-KCAVELIGHT's records (`src/70`); the life is the sim with its people as figures and the count wall painted from the stocks
-(`src/80`); the take is core/host with the underground pieces (`src/98`). The walk-through views follow PLAN.md 5.5 "A line
-loj": the night mouth, the platform under its vault, the shuttle, a siding of homes, the dark beds, the loj hall's banner and
-count wall, the doors, the hold cut open.
+**Station 3 is drawn by the Line's own code**, read in place (`biomes/line/stations`): the window (`48-line-window.js`), the
+lining with its openings (85), the way's lamps and fittings (86), the trains (87: the kept train at the island, a train running
+through on track 3), the works (88: the platforms, the footbridges and mezzanines, the doors, the shaft's cage, the name boards).
+The page gives the names its stage gives (`scene`, `Q`, `tick`, `reportErr`, `SEC`, `CAVE_C`) and marks the doors its streets
+leave by `open` (88 hangs no plate in them: the one change in the Line's files, opt-in). The rock is one KCAVERN at 0.5 m
+(`src/50-lt-cavern.js`): the station's own primitives as the window has them and the hold's plan, drawn where it reaches out of the
+lined station. The defs are the Tungang set drawn by `TG.tg.draw` (`src/64`, one draw a deck); the segment's train is the Line's
+cars on a ride source (`src/42`, `66`); the light is KCAVELIGHT's records (`src/70`: the station's lamp code, the hold's ways, the
+defs' lamps and wax light); the life is the sim with its people as figures and the count wall painted from the stocks (`src/80`);
+the take is core/host with the underground pieces (`src/98`). The walk-through views follow PLAN.md 5.5 "A line loj": the night
+mouth, the platform under its vault, the train, a street of homes, the dark beds, the loj hall's banner and count wall, the
+loj's way, the shaft's foot, the station cut open, the last stop.
 
 ## 4. The simulation layer (`src/40-lt-sim.js`, `tests/test-lt-sim.js`)
 
@@ -47,9 +53,9 @@ On the isle demo's pattern (keyed settlements and economies, a trade route) and 
 | | |
 |---|---|
 | The polity | the Union (faction `tungang`), its orgs the loj (`loj20`) and the Fixers; the Fellgangs and the Travellers (their carriers) trade with it |
-| The settlements | `loj-twenny` (presented), `twenny-junction` (station 3: abstract, books only), `icecutters` (abstract) |
+| The settlements | `loj-twenny` (presented), `g2` (the G2 gap station 18 km south, the porters' hold toward Ledge: abstract, books only), `icecutters` (abstract) |
 | The census | the homes' beds (a set 6, a cut 2, a carriage house 8; worn half, abandoned none): 165 people; every worker on one of **three turns** (A 6-14, B 14-22, C 22-6), dealt round-robin; the bell rings each turn |
-| The trades | the dark beds grow **fungus**; the vein working cuts **ore** (copper and rare earths: PLAN.md 1.2.1); **power upkeep** in wax (the lamps) and plate (the Fixers); **ice** from the Fellgangs down the great shaft on the Travellers' backs; grain from Dalab; the branch shuttle takes ore and fungus west and brings wax, plate, grain and ice |
+| The trades | the dark beds grow **fungus**; the vein working cuts **ore** (copper and rare earths: PLAN.md 1.2.1); **power upkeep** in wax (the lamps) and plate (the Fixers); **ice** from the Fellgangs straight down the great shaft to the hold's foot on the Travellers' backs (ore goes up); grain from Dalab; the segment's train takes ore and fungus south to the G2 gap and brings wax, plate and grain |
 | The events | the Fixers' patrol (posts, fans, the stop), the Travellers' porters from the stop to the stores, **the Big Meeting** (a scheduled event: `LTS.MEETING`, day 1 at 18:00 by default: every grown member commanded to the loj hall for two hours) |
 | The count wall | `LTS.countWall()`: the stocks and the hands in the hall, painted on the loj hall's wall |
 

@@ -14,15 +14,15 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | <1 |  |
-| `20-lt-plan.js` | 8 |  |
+| `20-lt-plan.js` | 10 |  |
 | `40-lt-sim.js` | 16 |  |
-| `42-lt-ride.js` | 6 |  |
-| `50-lt-cavern.js` | 2 |  |
-| `60-lt-scene.js` | 7 |  |
+| `42-lt-ride.js` | 7 |  |
+| `50-lt-cavern.js` | 4 |  |
+| `60-lt-scene.js` | 6 |  |
 | `64-lt-hold.js` | 2 |  |
 | `66-lt-train.js` | 2 |  |
 | `70-lt-light.js` | 2 |  |
 | `80-lt-life.js` | 5 |  |
-| `90-lt-checks.js` | 7 |  |
+| `90-lt-checks.js` | 9 |  |
 | `98-lt-take.js` | 5 |  |
 | `99-tail.html` | <1 |  |

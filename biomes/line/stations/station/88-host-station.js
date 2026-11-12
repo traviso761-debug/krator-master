@@ -53,8 +53,9 @@ const STATION_WORKS=(function(){const B=LB.B(100),rg=LB.rgb,PY=SEC.platformY,CAV
   railX(Bl.z0+.05,Bl.x0,Bl.x1,D,C.rail);railX(Bl.z1-.05,Bl.x0,Bl.x1,D,C.rail);});
  LINE.landings.forEach(Lg=>B.box('conc',Lg.x0,Lg.x1,D-.3,D,Lg.z0,Lg.z1,C.walk));
  /* THE DOORS: a bronze frame proud of the lining; the leaf by state (built: shut, the platform's doors open; kept: open where a lamp hangs,
-    the rest patched with plate; abandoned: hanging, fallen) */
- LINE.openings.filter(O=>O.kind==='door').forEach((O,i)=>{const e=O.wall==='e',x=e?CAV.x1:CAV.x0,s=e?-1:1,lit=O.y0<2,h=u(i,31,1);
+    the rest patched with plate; abandoned: hanging, fallen). A page that opens a door into its own rooms marks the opening `open`
+    (settlements/loj-twenny: the hold's streets out through the mezzanines' doors); this station's page marks none */
+ LINE.openings.filter(O=>O.kind==='door').forEach((O,i)=>{const e=O.wall==='e',x=e?CAV.x1:CAV.x0,s=e?-1:1,lit=O.y0<2||!!O.open,h=u(i,31,1);
   B.box('bronze',Math.min(x,x+s*.12),Math.max(x,x+s*.12),O.y0,O.y1+.25,O.z0-.25,O.z0,C.bronze);B.box('bronze',Math.min(x,x+s*.12),Math.max(x,x+s*.12),O.y0,O.y1+.25,O.z1,O.z1+.25,C.bronze);
   B.box('bronze',Math.min(x,x+s*.12),Math.max(x,x+s*.12),O.y1,O.y1+.25,O.z0,O.z1,C.bronze);
   const xl=x-s*(CAV.lining*.5),leaf=(z0,z1,col)=>B.box('metal',xl-.04,xl+.04,O.y0,O.y1-.02,z0,z1,col);

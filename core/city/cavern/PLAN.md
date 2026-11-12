@@ -47,13 +47,17 @@ rule), `age` (the far end from the heart worn, then abandoned: "a hold moves whe
 **The strategy: `lineHold(o)`.** A hold is a station on a line (PLAN.md 5.1): a spine (the platform or the way off the Line),
 decks 4.5 m apart, sidings off the spine (or off another siding) as streets, a ramp (1 in 9) or a stair (0.7) down or up to a
 siding's deck, civic sites placed by hand, frontage runs along the sidings, wealth from the hub, ages from the heart, edits
-last. The kit's content (which defs on which siding) is the settlement's data, not the strategy's.
+last. The kit's content (which defs on which siding) is the settlement's data, not the strategy's. A station or a terminus has
+more than one spine: `spines` (more platforms, a mezzanine), `nodes` (a stair's foot `on` a spine at s), `links` (stairs,
+footbridges, a branch: ways joining existing nodes) and `sites` (placed by hand: a hall at a way's end). Nodes lying along a way
+are chained in order of their distance along it in the graph, so a walk between two stair feet on one platform goes straight
+there. Loj Twenny uses all of these on the Line's station 3 (its platforms, mezzanines, stairs, footbridges and branch).
 
 ## What the cases need, and where each stands
 
 | Case | How it maps | State |
 |---|---|---|
-| A Tungang line hold (Loj Twenny) | the spine its platform, sidings as streets, sets as wall sites, decks | built: `lineHold`, Loj Twenny's page |
+| A Tungang line hold (Loj Twenny) | the station's platforms and mezzanines as spines, its doors and branch as the streets' mouths, sets as wall sites, decks | built: `lineHold`, Loj Twenny's page at station 3 |
 | A cavern hold (the Hearth hold) | `CAVE.HOLD`'s chambers as `space` records with `prim: 'none'` (the biome carved them), galleries as ways, shelves as `shelf` sites | the records serve; a `cavernHold` strategy to write with that page |
 | The Glaziers' scarp | ledges and stairs as ways on an open face (`space` kind `face`), fronts as `wall` sites facing out | the records serve; no strategy yet |
 | Dhelv | below | the port is its own task (PLAN.md T2) |

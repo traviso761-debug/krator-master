@@ -326,13 +326,16 @@
       var L = CV.wayLen(w) + Math.abs(w.pts[w.pts.length - 1][1] - w.pts[0][1]);
       adj[w.a].push({ to: w.b, way: w.id, len: L }); adj[w.b].push({ to: w.a, way: w.id, len: L });
     });
-    /* a node that lies on a way (a siding's junction on the spine) joins that way's two ends at its distance along it */
-    H.nodes.forEach(function (n) {
-      if (!n.on) return;
-      var w = H.byId[n.on.way]; if (!w || w.state === 'fallen') return;
-      var L = CV.wayLen(w);
-      adj[n.id].push({ to: w.a, way: w.id, len: n.on.s }, { to: w.b, way: w.id, len: L - n.on.s });
-      adj[w.a].push({ to: n.id, way: w.id, len: n.on.s }); adj[w.b].push({ to: n.id, way: w.id, len: L - n.on.s });
+    /* the nodes that lie on a way (a siding's junction on the spine, a stair's foot) split it: its ends and those nodes are
+       chained in order of their distance along it, so a walk from one to the next goes straight there */
+    var on = {};
+    H.nodes.forEach(function (n) { if (n.on) (on[n.on.way] = on[n.on.way] || []).push(n); });
+    Object.keys(on).forEach(function (wid) {
+      var w = H.byId[wid]; if (!w || w.state === 'fallen') return;
+      var L = CV.wayLen(w), C = [{ id: w.a, s: 0 }].concat(on[wid].map(function (n) { return { id: n.id, s: n.on.s }; })
+        .sort(function (a, b) { return a.s - b.s || (a.id < b.id ? -1 : 1); }), [{ id: w.b, s: L }]);
+      for (var i = 1; i < C.length; i++) { var d = Math.max(0, C[i].s - C[i - 1].s);
+        adj[C[i - 1].id].push({ to: C[i].id, way: wid, len: d }); adj[C[i].id].push({ to: C[i - 1].id, way: wid, len: d }); }
     });
     return adj;
   };
@@ -558,7 +561,8 @@
        o.id, o.world, o.tune
        o.decks    [{i, y, name, light}]
        o.spine    {id, pts, w, h, deck, prim ('none': the host carved it), kind, space: a space record the spine runs in}
-       o.spines   more spines of the same shape (a terminus's other platform); o.links ways joining existing nodes
+       o.spines   more spines of the same shape (a terminus's other platform); o.nodes more nodes (`on` a spine at s: a stair's
+                  foot); o.links ways joining existing nodes (a footbridge, a stair, a branch); o.sites sites placed by hand
        o.spaces   [space records] (halls, the platform cavern: prim 'none' when the host carved it)
        o.sidings  [{id, at (metres along the spine), side, len, deck, w, h, band, district, kind, from (another siding's id:
                    branch off it instead), drop (a ramp or stair down or up to its deck before it runs level)}]
@@ -583,6 +587,8 @@
       CV.addNode(H, { id: q.id + ':b', kind: 'end', x: qb[0], y: qb[1], z: qb[2], space: q.space || null });
       CV.addWay(H, { id: q.id, kind: q.kind || 'gallery', a: q.id + ':a', b: q.id + ':b', pts: q.pts, w: q.w, h: q.h, prim: q.prim, deck: q.deck, joins: q.joins });
     });
+    /* nodes of the host's (a stair's foot along a platform: `on` a spine at s), then the links between nodes */
+    (o.nodes || []).forEach(function (n) { CV.addNode(H, n); });
     (o.links || []).forEach(function (l) { CV.addWay(H, l); });
     (o.sidings || []).forEach(function (S) {
       var base = S.from ? H.byId[S.from] : spine, P = CV.wayAt(base, S.at), side = S.side == null ? 1 : S.side;
@@ -618,6 +624,8 @@
         ry: Math.atan2(-nx, -nz), w: c.w, d: c.d, h: c.h, deck: c.deck == null ? w.deck : c.deck, district: c.district || w.district,
         tier: c.tier || 'civic', needs: c.needs || null, joins: c.joins });
     });
+    /* sites placed where the host wants them (a hall at a way's end), then the frontage runs round them */
+    (o.sites || []).forEach(function (q) { CV.addSite(H, q); });
     (o.fill || []).forEach(function (F) { CV.frontageRun(H, F.way, F); });
     if (o.hub) CV.wealth(H, { hub: o.hub, reach: o.reach });
     if (o.heart) CV.age(H, { heart: o.heart, worn: o.worn, abandoned: o.abandoned });

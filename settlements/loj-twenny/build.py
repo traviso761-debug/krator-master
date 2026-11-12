@@ -11,11 +11,15 @@ The page is one <script> of, in this order (no filename sort: each piece is name
   core/city/cavern/10-city-cavern.js   the cavern setting the hold is laid on (KCITY.cavern)
   core/simulation 77-sim-*.js and ride/78-81   the people, the economies, the trades, riding
   core/cavelight/10                KCAVELIGHT: the lamp code and the wax light as records
+  (KMAT is the sealed kit's: tungang_bundle's core/materials/record, exported to the page; the Line's pack registers on it and its
+   lining reads it, so the page carries one material host, not two: tools/check_assembly CLASH)
   GENERATED  kits/motor-vehicles (vehicle_bundle: ancient, line, tungang): the Line's cars (KratorVehicles)
   GENERATED  kits/tungang (tungang_bundle: lean textures, the Tungang catalog pieces): TG, the Tungang set
   core/host FULL + UNDERGROUND (the follow camera, the deck cut, the deck map and the line map, the fade), the stocks panel,
   core/walk/frame/95 (riding), core/cavelight/90 (the light's host)
-  src/20-lt-plan.js ... 90-lt-checks.js   the hold: its plan, its sim, its train, its cavern, its scene, its life, its checks
+  src/20-lt-plan.js ... 90-lt-checks.js   the hold: its plan, its sim, its train, its cavern, its scene, its life, its checks,
+                                  in filename order with station 3's fragments (biomes/line/stations: the site, the window, the
+                                  lining, the way, the trains, the works), the transit kit's line kind and the Line's texture pack
   src/98-lt-take.js, src/99-tail.html
 Checks: the port lint (tools/check_port.py), no top-level name declared in two of src/'s fragments, node --check.
 """
@@ -67,6 +71,14 @@ SIMD = C('simulation')
 SIMF = sorted(f for f in os.listdir(SIMD) if f.startswith('77-sim-') and f.endswith('.js'))
 OWN = sorted(f for f in os.listdir(SRC) if f[0].isdigit() and f.endswith('.js') and not f.startswith('98-'))
 HOST = sorted(set(khost.FULL + khost.UNDERGROUND) - {'20-core-clock.js', '20-core-space.js'})
+# station 3 of the Line (biomes/line, read in place): its window and its drawing are the hold's spine (PLAN.md section 1). Its data:
+# the site, the state, the Line's core, its help, the Rift record, the window; its drawing: the lining, the way, the trains, the works
+LINE_DIR = os.path.join(ROOT, 'biomes', 'line', 'stations')
+LINE_FRAGS = [os.path.join(LINE_DIR, 'station', f) for f in ('44z-host-site.js', '44zs-host-station.js', '48-line-window.js', '88-host-station.js')]
+LINE_FRAGS += [os.path.join(LINE_DIR, 'common', f) for f in ('47-line-core.js', '47b-line-help.js', '47c-line-record.js', '85-host-lining.js', '86-host-way.js', '87-host-train.js')]
+# the transit kit's `line` kind (KTRANSIT: the record the window is cut from, and its drawing of the lining), as the Line's build takes it
+LINE_FRAGS += [os.path.join(ROOT, 'kits', 'ancient-transit', 'src', f) for f in ('40-tr-records.js', '41-tr-path.js', '43b-tr-subway.js', '43c-tr-line.js', '46-tr-mats.js', '56c-tr-draw-line.js')]
+PAGE = sorted([os.path.join(SRC, f) for f in OWN] + LINE_FRAGS + ['@44-host-matlib-pack.js'], key=lambda p: os.path.basename(p).lstrip('@'))
 FRAGS = ([os.path.join(SRC, '00-head.html')] + [khost.path(f) for f in khost.SHADER]
          + [C('rand', '08-core-rand.js'), khost.path('20-core-clock.js'), C('sched', '20-core-sched.js'), C('space', '20-core-space.js'),
             C('walk', '20-core-walk.js'), C('walk', 'frame', '26-core-walk-frame.js')]
@@ -79,7 +91,7 @@ FRAGS = ([os.path.join(SRC, '00-head.html')] + [khost.path(f) for f in khost.SHA
          + ['@vehicles', '@tungang']
          + [khost.path(f) for f in HOST]
          + [C('walk', 'frame', '95-walk-frame-host.js'), C('cavelight', '90-core-cavelight-host.js')]
-         + [os.path.join(SRC, f) for f in OWN]
+         + PAGE
          + [os.path.join(SRC, '98-lt-take.js'), os.path.join(SRC, '99-tail.html')])
 TG_CULTURES = ['tungang', 'generic', 'generic-goods']
 
@@ -87,7 +99,7 @@ TG_CULTURES = ['tungang', 'generic', 'generic-goods']
 def main():
     files = [p for p in FRAGS if not p.startswith('@')]
     tg_js, tg_files = tungang_bundle.bundle(tex='lean', with_files=True, furniture=True, cultures=TG_CULTURES)
-    BSRC.report(files + [os.path.join(ROOT, *f.split('/')) for f in tg_files if not f.endswith('/tex')] +
+    BSRC.report(files + [os.path.join(ROOT, *f.split('/')) for f in tg_files if not f.endswith('/tex')] + [os.path.join(ROOT, 'biomes', 'line', 'tex', 'pack.json')] +
                 [os.path.join(ROOT, 'kits', 'tungang', 'tungang_bundle.py'), os.path.join(ROOT, 'kits', 'motor-vehicles', 'vehicle_bundle.py')])
     if '--no-checks' not in sys.argv:
         RE = re.compile(r'^(?:const|let|var|function|class)\s+([A-Za-z_$][\w$]*)', re.M)
@@ -102,6 +114,10 @@ def main():
     for p in FRAGS:
         if p == '@vehicles':
             out.append('\n// ==================== kits/motor-vehicles (vehicle_bundle.bundle: ancient, line, tungang)\n' + vehicle_bundle.bundle(['ancient', 'line', 'tungang']))
+            continue
+        if p == '@44-host-matlib-pack.js':
+            sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures')); import matlib_pack
+            out.append('\n// ==================== biomes/line/tex (matlib_pack.fragment: the Line\'s own sets)\n' + matlib_pack.fragment(os.path.join(ROOT, 'biomes', 'line'), 'line', own=True))
             continue
         if p == '@tungang':
             out.append('\n// ==================== kits/tungang (tungang_bundle.bundle: lean, furniture %s)\n' % ', '.join(TG_CULTURES) + tg_js)

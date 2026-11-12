@@ -1,69 +1,92 @@
 // prefix: lt
 // ================================================================= LOJ TWENNY: THE HOLD'S PLAN (PLAN.md sections 2-3) [G data]
 // Loj Twenny (20), the first Tungang hold, as plain records on core/city's cavern setting (KCITY.cavern.lineHold): no THREE, no
-// DOM. A cavern loj in the rift fill at the far end of the 25 km branch from the Twenny junction (biomes/line/PLAN.md, the
-// owner's answer 3): the branch's kept TERMINUS is its spine (a hold is a station on a line: kits/tungang/PLAN.md 5.1), two
-// tracks between two side platforms in a vaulted hall, the branch shuttle from the junction running in on them; sidings off
-// the platforms are its streets, the sets its houses; three decks 4.5 m apart (5.2): the quiet deck (+1, red, homes), the Line
-// deck (0, green, public: the platforms, the loj hall, the signal box, the carriage houses), the work deck (-1, amber: the dark
-// beds, the cistern, the fan house, the bath). The doors close the hold at the hall's mouth; the night mouth climbs from the
-// quiet deck toward the surface; the last stop, the sealed siding of the dead, at the hold's abandoned end.
-// Frame: x east (the branch comes in from the west, x < 0), z south, y up; the hall's invert y 0, the platforms 1.8 (the car
-// floor: the Line's SEC.platformY), the decks 6.3, 1.8 and -2.7.
-//   LT.HALL           the terminus hall's box, its tracks, its platforms (the drawing and the train read it)
+// DOM. **At station 3 of the Line, the Twenny junction, under the great shaft** (the owner, 2026-11-11: openworld/PLAN-SETTLEMENTS.md
+// question 16). A hold is a station on a line (kits/tungang/PLAN.md 5.1): the Ancients' station cavern is its spine, its platforms
+// and mezzanines the hold's public ways; its streets run out through the station's own doors into the rock (the platforms' doors
+// at the car floor, the mezzanines' doors at their deck), and down the branch tube in the east wall, at whose end stands the loj
+// hall. Three decks (5.2): the quiet deck (+1, the mezzanines' level, 7.6: homes, red), the Line deck (0, the platforms, 1.8:
+// public, green), the work deck (-1, -2.7: amber). The great shaft's foot on the west platform is the hold's way to the surface
+// (the hoist, the Ice-cutters' ice down it).
+// Frame: station 3's window (biomes/line/stations/station/48-line-window.js): x across (east +), z along the Line (south +,
+// z = s - 217700), y up from the invert. The station's numbers are written here (LT.ST) so the plan runs without the page (the
+// node test); the page checks they match LINE's (90-lt-checks.js, 'station-match').
+//   LT.ST             station 3's cavern, platforms, mezzanines, stairs, bridges, doors, branch and shaft (as LINE has them)
 //   LT.plan(o)        the hold's KCITY.cavern plan (o.world, o.edits): built once, cached as LT.H
 //   LT.audit()        KCITY.cavern.audit of it
 const LT={id:'loj-twenny',name:'Loj Twenny',num:20,world:20261120,
- /* the scale model's place (kits/tungang/PLAN.md 1.2; biomes/line/PLAN.md 1, 2.1): model pixel 457,1269 in the rift fill, the rock
-    about 44 degC, 25 km east of the Twenny junction (bore km 218, station 3) by the branch */
- site:{px:457,py:1269,rock:'rift fill',rockT:44,airT:27,branchKm:25,junction:{station:3,km:218}},
- /* THE TERMINUS HALL: 157 m long, 22 m wide, a flattened vault 10.5 m to the crown; two guideways at z -2.6 and +2.6 (0.6 m
-    high), the buffers at x 148; side platforms at the car floor (1.8 m) from the walls to 0.1 m off the cars */
- HALL:{x0:0,x1:157,z0:-11,z1:11,crown:10.5,spring:6,invert:0,
-  tracks:[{id:'lt.t1',z:-2.6},{id:'lt.t2',z:2.6}],guide:{h:.6,w:2.8},car:{half:1.8,floor:1.2},buffers:148,
-  platformY:1.8,platforms:[{id:'lt.pn',z0:-11,z1:-4.5,side:-1},{id:'lt.ps',z0:4.5,z1:11,side:1}],concourse:{x0:150,x1:157}},
- DECKS:[{i:1,y:6.3,name:'the quiet deck',light:'red'},{i:0,y:1.8,name:'the Line deck',light:'green'},{i:-1,y:-2.7,name:'the work deck',light:'amber'}]};
+ site:{px:445,py:1266,station:3,km:218,rock:'rift fill',rockT:45,airT:28,cover:2200,shaft:2200},
+ ST:{x0:-30,x1:22.5,lining:.6,z0:220,z1:680,crown:20,PY:1.8,DECK:7.6,
+  platforms:{east:[15.3,22.5,300,600],west:[-30,-15.3,262,638],island:[-5.5,5.5,300,600]},
+  mezz:{east:[19.5,22.5,320,580],west:[-30,-26.4,320,580]},
+  stairs:{e:[[17.4,1.8,500],[17.4,7.6,476]],w:[[-21,1.8,500],[-21,7.6,476]],ie:[[3.6,1.8,420],[3.6,7.6,445]],iw:[[-3.6,1.8,420],[-3.6,7.6,445]]},
+  bridgeZ:447.5,doors:{e:[330,380,520,570],w:[340,560]},mdoors:[340,380,420,500,540,580],
+  branch:{z:411,pts:[[22.5,1.8,411],[45,1.8,413],[85,1.6,418]],w:8,h:6},shaft:{c:[-22,540],r:3.5}},
+ DECKS:[{i:1,y:7.6,name:'the quiet deck',light:'red'},{i:0,y:1.8,name:'the Line deck',light:'green'},{i:-1,y:-2.7,name:'the work deck',light:'amber'}]};
 /* the homes' frontage: the households' sets and the poor's cuts (kits/tungang TG.tg.BOX's w, d, h) */
 LT.HOMES=[{key:'tg-set',w:7.4,d:8.6,h:2.6,weight:3},{key:'tg-cut',w:2.8,d:3.6,h:2.4,weight:2}];
-LT.spec=function(o){o=o||{};const P=LT.HALL,y=P.platformY,B=k=>({w:{'tg-loj-hall':14,'tg-signal-box':6.4,'tg-carriage-house':27,'tg-dark-beds':12.4,'tg-cistern':8.4,'tg-bath':8.4,'tg-fan-house':6.4,'tg-doors':10,'tg-night-mouth':3.4,'tg-last-stop':7}[k],
-  d:{'tg-loj-hall':17,'tg-signal-box':5.2,'tg-carriage-house':8.6,'tg-dark-beds':14,'tg-cistern':9.4,'tg-bath':9.4,'tg-fan-house':8.2,'tg-doors':4.4,'tg-night-mouth':16,'tg-last-stop':12}[k],
-  h:{'tg-loj-hall':6,'tg-signal-box':3,'tg-carriage-house':5.4,'tg-dark-beds':3.2,'tg-cistern':3.6,'tg-bath':3.2,'tg-fan-house':4.4,'tg-doors':5,'tg-night-mouth':3,'tg-last-stop':3}[k]});
- const civ=(id,key,way,s,side,x)=>Object.assign({id,key,way,s,side,at:'wall'},B(key),x||{});
+LT.BOX={'tg-loj-hall':[14,17,6],'tg-signal-box':[6.4,5.2,3],'tg-carriage-house':[27,8.6,5.4],'tg-dark-beds':[12.4,14,3.2],'tg-cistern':[8.4,9.4,3.6],'tg-bath':[8.4,9.4,3.2],
+ 'tg-fan-house':[6.4,8.2,4.4],'tg-doors':[10,4.4,5],'tg-night-mouth':[3.4,16,3],'tg-last-stop':[7,12,3]};
+LT.spec=function(o){o=o||{};const S=LT.ST,PY=S.PY,DK=S.DECK,P=S.platforms,M=S.mezz,mid=a=>(a[0]+a[1])/2,wid=a=>a[1]-a[0];
+ const civ=(id,key,way,s,side,x)=>{const b=LT.BOX[key];return Object.assign({id,key,way,s,side,at:'wall',w:b[0],d:b[1],h:b[2]},x||{});};
+ const on=(id,way,s,x,y,z)=>({id,on:{way,s},x,y,z});
  return {id:LT.id,world:o.world==null?LT.world:o.world,decks:LT.DECKS,
-  /* the hall: carved by the page (the Line's lining, its vault): prim none here, its box for the rock rule's joins */
-  spaces:[{id:'lt.hall',kind:'platform',x:(P.x0+P.x1)/2,y:P.invert,z:0,w:P.x1-P.x0,d:P.z1-P.z0,h:P.crown,deck:0,prim:'room'}],
-  spine:{id:'lt.pn',pts:[[3,y,-7.75],[150,y,-7.75]],w:6.5,h:7,deck:0,kind:'gallery',prim:'none',space:'lt.hall'},
-  spines:[{id:'lt.ps',pts:[[3,y,7.75],[150,y,7.75]],w:6.5,h:7,deck:0,kind:'gallery',prim:'none',space:'lt.hall'}],
-  /* the concourse across the buffers' end: from the north platform's end east, across, and back to the south's */
-  links:[{id:'lt.concourse',kind:'passage',a:'lt.pn:b',b:'lt.ps:b',pts:[[150,y,-7.75],[155,y,-7.75],[155,y,7.75],[150,y,7.75]],w:4,h:6,deck:0,prim:'none',joins:['lt.hall']}],
+  /* the Ancients' stairs to the mezzanines are long and shallow (5.8 m over 24 m): risers by the step rule down to 6 cm */
+  tune:{riser:[.06,.2]},
+  /* the station cavern: carved by the Line's own shape (the page's cavern takes LINE's primitives); here its box, so the rock rule
+     keeps every site out of its lining */
+  spaces:[{id:'lt.station',kind:'platform',x:(S.x0-S.lining+S.x1+S.lining)/2,y:-S.lining,z:(S.z0+S.z1)/2,w:S.x1-S.x0+2*S.lining,d:S.z1-S.z0,h:S.crown+S.lining,deck:0,prim:'room'}],
+  /* the spines: the east platform (the hold's side), the west platform and its apron, the island, the two mezzanines */
+  spine:{id:'lt.pe',pts:[[mid(P.east),PY,P.east[2]],[mid(P.east),PY,P.east[3]]],w:wid(P.east),h:9,deck:0,kind:'gallery',prim:'none',space:'lt.station'},
+  spines:[{id:'lt.pw',pts:[[mid(P.west),PY,P.west[2]],[mid(P.west),PY,P.west[3]]],w:wid(P.west),h:9,deck:0,kind:'gallery',prim:'none',space:'lt.station'},
+   {id:'lt.pi',pts:[[0,PY,P.island[2]],[0,PY,P.island[3]]],w:wid(P.island),h:9,deck:0,kind:'gallery',prim:'none',space:'lt.station'},
+   {id:'lt.me',pts:[[mid(M.east),DK,M.east[2]],[mid(M.east),DK,M.east[3]]],w:wid(M.east),h:3,deck:1,kind:'ledge',prim:'none',space:'lt.station'},
+   {id:'lt.mw',pts:[[mid(M.west),DK,M.west[2]],[mid(M.west),DK,M.west[3]]],w:wid(M.west),h:3,deck:1,kind:'ledge',prim:'none',space:'lt.station'}],
+  /* the nodes along them: the stairs' feet and heads, the footbridges' ends, the branch's mouth, the shaft's foot, the stores and
+     the Fixers' shop behind the east platform's doors, the market on the island */
+  nodes:[on('lt.pe@500','lt.pe',200,mid(P.east),PY,500),on('lt.me@476','lt.me',156,mid(M.east),DK,476),
+   on('lt.pw@500','lt.pw',238,mid(P.west),PY,500),on('lt.mw@476','lt.mw',156,mid(M.west),DK,476),
+   on('lt.pi@420','lt.pi',120,0,PY,420),on('lt.me@447','lt.me',127.5,mid(M.east),DK,S.bridgeZ),on('lt.mw@447','lt.mw',127.5,mid(M.west),DK,S.bridgeZ),
+   {id:'lt.be',x:3.6,y:DK,z:S.bridgeZ},{id:'lt.bw',x:-3.6,y:DK,z:S.bridgeZ},
+   on('lt.pe@411','lt.pe',111,mid(P.east),PY,411),{id:'lt.way:end',x:85,y:1.6,z:418},
+   on('lt.pw@540','lt.pw',278,mid(P.west),PY,540),on('lt.pe@330','lt.pe',30,mid(P.east),PY,330),on('lt.pe@520','lt.pe',220,mid(P.east),PY,520),
+   on('lt.pi@350','lt.pi',50,0,PY,350)],
+  /* the links (the host draws and carves them: prim none): the stairs, the footbridges, the branch (the hold's main street east) */
+  links:[{id:'lt.stair.e',kind:'stair',a:'lt.pe@500',b:'lt.me@476',pts:S.stairs.e,w:1.8,h:3,prim:'none',joins:['lt.station']},
+   {id:'lt.stair.w',kind:'stair',a:'lt.pw@500',b:'lt.mw@476',pts:S.stairs.w,w:1.8,h:3,prim:'none',joins:['lt.station']},
+   {id:'lt.stair.ie',kind:'stair',a:'lt.pi@420',b:'lt.be',pts:S.stairs.ie,w:1.8,h:3,prim:'none',joins:['lt.station']},
+   {id:'lt.stair.iw',kind:'stair',a:'lt.pi@420',b:'lt.bw',pts:S.stairs.iw,w:1.8,h:3,prim:'none',joins:['lt.station']},
+   {id:'lt.bridge.e',kind:'passage',a:'lt.be',b:'lt.me@447',pts:[[3.6,DK,S.bridgeZ],[mid(M.east),DK,S.bridgeZ]],w:5,h:3,deck:1,prim:'none',joins:['lt.station']},
+   {id:'lt.bridge.w',kind:'passage',a:'lt.bw',b:'lt.mw@447',pts:[[-3.6,DK,S.bridgeZ],[mid(M.west),DK,S.bridgeZ]],w:5,h:3,deck:1,prim:'none',joins:['lt.station']},
+   {id:'lt.way',kind:'gallery',a:'lt.pe@411',b:'lt.way:end',pts:S.branch.pts,w:S.branch.w,h:S.branch.h,prim:'none',district:'the loj\'s way',joins:['lt.station']}],
   sidings:[
-   /* the north side: the quiet deck's homes up a ramp (cream over red), the carriage siding on the Line deck, more homes up a stair (cream over green) */
-   {id:'lt.n1',at:24,side:-1,len:58,deck:1,drop:'ramp',band:'cream-red',district:'homes-west',w:3,h:2.9},
-   {id:'lt.n2',at:66,side:-1,len:34,deck:0,band:'red',district:'carriages',w:3.6,h:5.6},
-   {id:'lt.n3',at:112,side:-1,len:52,deck:1,drop:'stair',band:'cream-green',district:'homes-east',w:3,h:2.9},
-   /* the south side: the work deck down a stair (plain red), the old siding of the last stop on the Line deck, a third homes siding up a ramp */
-   {id:'lt.s1',from:'lt.ps',at:30,side:1,len:62,deck:-1,drop:'stair',band:'red',district:'works',w:3.4,h:3.6},
-   {id:'lt.s2',from:'lt.ps',at:80,side:1,len:40,deck:0,band:'red',district:'old end',w:3,h:2.9},
-   {id:'lt.s3',from:'lt.ps',at:118,side:1,len:46,deck:1,drop:'ramp',band:'cream-red',district:'homes-south',w:3,h:2.9}],
+   /* the quiet deck: out through the mezzanines' doors (cream over red, cream over green); the west's far end the old end */
+   {id:'lt.n1',from:'lt.me',at:60,side:-1,len:58,deck:1,band:'cream-red',district:'homes east',w:2.4,h:2.6},
+   {id:'lt.n2',from:'lt.me',at:220,side:-1,len:50,deck:1,band:'cream-green',district:'homes east',w:2.4,h:2.6},
+   {id:'lt.n3',from:'lt.mw',at:100,side:1,len:52,deck:1,band:'cream-red',district:'homes west',w:2.4,h:2.6},
+   {id:'lt.n4',from:'lt.mw',at:20,side:1,len:46,deck:1,band:'red',district:'old end',w:2.4,h:2.6},
+   /* the work deck: down a stair from the west platform's workshop door (plain red) */
+   {id:'lt.s1',from:'lt.pw',at:298,side:1,len:62,deck:-1,drop:'stair',band:'red',district:'works',w:3.4,h:3.6}],
   civic:[
-   /* on the Line deck: the doors across the hall's mouth (their guard cut in the south wall), the signal box by them, the loj hall
-      at the buffers' end facing down the hall (the landmark: PLAN.md 5.4) */
-   civ('lt.doors','tg-doors','lt.ps',4.5,1,{span:22,h:9}),civ('lt.signal-box','tg-signal-box','lt.pn',10,-1),
-   civ('lt.loj-hall','tg-loj-hall','lt.concourse',12.75,-1,{loj:20}),
-   /* the carriage siding: two carriage houses facing across it */
-   civ('lt.carriage-a','tg-carriage-house','lt.n2',17,-1,{num:301}),civ('lt.carriage-b','tg-carriage-house','lt.n2',17,1,{num:302}),
-   /* the work deck: two dark beds, the cistern, the fan house, the bath */
-   civ('lt.beds-a','tg-dark-beds','lt.s1',10,-1),civ('lt.beds-b','tg-dark-beds','lt.s1',26,-1),civ('lt.cistern','tg-cistern','lt.s1',8,1),
-   civ('lt.fan-house','tg-fan-house','lt.s1',20,1),civ('lt.bath','tg-bath','lt.s1',32,1),civ('lt.beds-c','tg-dark-beds','lt.s1',44,1),
-   /* the old end: the last stop sealed at the siding's end; the night mouth climbing from the end of the east homes */
-   civ('lt.last-stop','tg-last-stop','lt.s2',33,-1),civ('lt.night-mouth','tg-night-mouth','lt.n3',48,1)],
-  fill:[{way:'lt.n1',defs:LT.HOMES,salt:1},{way:'lt.n3',defs:LT.HOMES,salt:3,to:44},{way:'lt.s3',defs:LT.HOMES,salt:5},
-   {way:'lt.s2',defs:[LT.HOMES[1]],salt:7,to:26},{way:'lt.s1',defs:[LT.HOMES[1]],sides:[-1],salt:9,from:34}],
-  /* wealth from the loj hall's end; the hold has moved east with its heat over the centuries: its west and old ends worn */
-  hub:'lt.pn:b',reach:260,heart:'lt.pn:b',worn:160,abandoned:212,
+   /* the Line deck: the signal box at the west platform's signal room, the cistern and the fan house at the east platform's doors,
+      the gate across the branch's mouth, two carriage houses facing across the branch */
+   civ('lt.signal-box','tg-signal-box','lt.pw',78,1),civ('lt.cistern','tg-cistern','lt.pe',80,-1),civ('lt.fan-house','tg-fan-house','lt.pe',270,-1),
+   civ('lt.doors','tg-doors','lt.way',10,1,{span:8,h:6}),
+   civ('lt.carriage-a','tg-carriage-house','lt.way',40,-1,{num:301}),civ('lt.carriage-b','tg-carriage-house','lt.way',40,1,{num:302}),
+   /* the work deck: three dark beds and the bath */
+   civ('lt.beds-a','tg-dark-beds','lt.s1',10,-1),civ('lt.beds-b','tg-dark-beds','lt.s1',26,-1),civ('lt.bath','tg-bath','lt.s1',10,1),civ('lt.beds-c','tg-dark-beds','lt.s1',28,1),
+   /* the night mouth at the end of the west homes (its climb up toward the shaft's hoist room: the way to the surface); the last
+      stop at the old end */
+   civ('lt.night-mouth','tg-night-mouth','lt.n3',48,1),civ('lt.last-stop','tg-last-stop','lt.n4',40,-1)],
+  /* the loj hall at the branch's end, facing back down it: the landmark (PLAN.md 5.4) */
+  sites:[{id:'lt.loj-hall',at:'wall',key:'tg-loj-hall',way:'lt.way',x:85,y:1.6,z:418,ry:-Math.PI/2,w:14,d:17,h:6,tier:'civic',loj:20,district:'the loj\'s way'}],
+  fill:[{way:'lt.n1',defs:LT.HOMES,salt:1,from:3},{way:'lt.n2',defs:LT.HOMES,salt:3,from:3},{way:'lt.n3',defs:LT.HOMES,salt:5,from:3,to:42},
+   {way:'lt.n4',defs:[LT.HOMES[1]],salt:7,from:3,to:32},{way:'lt.s1',defs:[LT.HOMES[1]],sides:[-1],salt:9,from:42}],
+  /* wealth from the loj hall; the hold grew out from the station: the west mezzanine's far ends the oldest, worn and abandoned */
+  hub:'lt.way:end',reach:480,heart:'lt.way:end',worn:360,abandoned:430,
   /* the works, the gate and the box are kept whatever their distance: the hold's work and its doors never go to ruin (edits by id) */
   edits:LT.KEEP.map(id=>({id,op:'set',fields:{state:'kept'}})).concat(o.edits||[])};};
-LT.KEEP=['lt.doors','lt.signal-box','lt.beds-a','lt.beds-b','lt.beds-c','lt.cistern','lt.fan-house','lt.bath'];
+LT.KEEP=['lt.doors','lt.signal-box','lt.beds-a','lt.beds-b','lt.beds-c','lt.cistern','lt.fan-house','lt.bath','lt.night-mouth'];
 LT.plan=function(o){if(LT.H&&!o)return LT.H;const H=KCITY.cavern.lineHold(LT.spec(o));
  /* the berth numbers: each home a number by its siding and slot (the Line's count: the hold is 20, its berths 2xx) */
  let n=200;for(const s of H.sites)if(s.key==='tg-set'||s.key==='tg-cut'){s.num=n;n+=s.key==='tg-set'?2:1;}

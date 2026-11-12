@@ -228,6 +228,24 @@ const G = path.join(__dirname, 'golden.json');
   const N2 = CV.nav(T2), D2 = CV.dist(T2, 'pn:a');
   ok(D2['s1:end'] == null, 'negative: without the concourse the siding off the far platform is out of reach');
 }
+/* a station: a stair from a node along one platform up to a mezzanine; a branch off a node along it; a hall placed by hand at its end */
+{
+  const T = CV.lineHold({ id: 'st', world: 78, decks: [{ i: 0, y: 1.8 }, { i: 1, y: 7.6 }],
+    spine: { id: 'pe', pts: [[18, 1.8, 0], [18, 1.8, 300]], w: 8, h: 6, deck: 0 },
+    spines: [{ id: 'me', pts: [[21, 7.6, 20], [21, 7.6, 280]], w: 2, h: 3, deck: 1 }],
+    nodes: [{ id: 'pe@200', x: 18, y: 1.8, z: 200, on: { way: 'pe', s: 200 } }, { id: 'me@176', x: 21, y: 7.6, z: 176, on: { way: 'me', s: 156 } },
+      { id: 'pe@111', x: 18, y: 1.8, z: 111, on: { way: 'pe', s: 111 } }, { id: 'br:end', x: 80, y: 1.8, z: 111 }],
+    links: [{ id: 'stair', kind: 'stair', a: 'pe@200', b: 'me@176', pts: [[18, 1.8, 200], [18, 7.6, 176]], w: 1.8, h: 3, prim: 'none' },
+      { id: 'branch', kind: 'gallery', a: 'pe@111', b: 'br:end', pts: [[22, 1.8, 111], [80, 1.8, 111]], w: 8, h: 6, prim: 'none' }],
+    sites: [{ id: 'hall', at: 'wall', key: 'tg-loj-hall', way: 'branch', x: 80, y: 1.8, z: 111, ry: -Math.PI / 2, w: 14, d: 17, h: 6 }],
+    tune: { riser: [0.06, 0.2] } });
+  const D = CV.dist(T, 'pe:a');
+  ok(D['me:b'] > 0 && D['br:end'] > 0 && CV.frontage(T).length === 0, 'a station: the mezzanine reached by the stair, the hall at the end of the branch fronts it');
+  ok(CV.dist(T, 'pe:a')['me:b'] - (200 + CV.wayLen(T.byId['stair']) + 5.8) > 0, 'the stair is walked on the way up');
+  const T2 = CV.lineHold({ id: 'st2', world: 78, decks: [{ i: 0, y: 1.8 }], spine: { id: 'pe', pts: [[18, 1.8, 0], [18, 1.8, 300]], w: 8, h: 6, deck: 0 },
+    spines: [{ id: 'me', pts: [[21, 7.6, 20], [21, 7.6, 280]], w: 2, h: 3 }] });
+  ok(CV.dist(T2, 'pe:a')['me:b'] == null, 'negative: with no stair the mezzanine is out of reach');
+}
 /* [G data]: no three.js, no DOM */
 {
   const src = fs.readFileSync(path.join(__dirname, '10-city-cavern.js'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');

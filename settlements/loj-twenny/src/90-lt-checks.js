@@ -17,11 +17,20 @@ const LTCHK=(function(){
   'lamp-code':()=>{const bad=[].concat(...LT_HOLD.draws.map(d=>TG.tg.check.lamps(d)));const by={};LT_LAMPS.forEach(r=>{const dk=r.deck;(by[dk]=by[dk]||{})[r.kind]=(by[dk][r.kind]||0)+1;});
    const fall=by[1]&&by[1]['lamp-red']>0&&!by[1]['lamp-green']&&by[0]&&by[0]['lamp-green']>0&&!by[0]['lamp-red']&&by[-1]&&by[-1]['lamp-amber']>0&&!by[-1]['lamp-green'];
    return {ok:!bad.length&&fall&&LT_LIGHT.n>100,detail:'every kept door with the lamp of its code; the ways red on the quiet deck '+JSON.stringify(by[1])+', green on the Line deck '+JSON.stringify(by[0])+', amber on the work deck '+JSON.stringify(by[-1])+'; '+LT_LIGHT.n+' light records '+JSON.stringify(LT_LIGHT.byKind)+(bad.length?'; '+bad.slice(0,2):'')};},
-  'train-on-guideway':()=>{const L=LT_LIFE.L,P=L.timeline.period;let worst=0,n=0,off=0;for(let i=0;i<60;i++){const t=i*P/60;for(const c of L.source.cars){const p=SIM.rideCarPose('lt.shuttle',c.k,t);n++;
-    worst=Math.max(worst,Math.abs(p.y-LT.HALL.guide.h),Math.abs(p.z-LT.HALL.tracks[0].z));if(p.x>LT.HALL.buffers+.01)off++;}}
-   const d=SIM.rideDwell('lt.shuttle',0);return {ok:worst<.01&&off===0&&d.stop==='lt'&&d.side===1,detail:n+' car poses over a round trip: '+worst.toFixed(3)+' m off the guideway at worst, '+off+' past the buffers; its dwell at Loj Twenny opens side +1 (the north platform), '+(d.t1-d.t0)+' s'};},
-  'doors-open-at-the-platform':()=>{const L=LT_LIFE.L,d=SIM.rideDwell('lt.shuttle',0),tm=(d.o0+d.o1)/2,fr=L.frames.find(f=>Object.keys(f.doors).length&&L.train[f.k].ride.cap.seats>0),id=Object.keys(fr.doors).find(k=>fr.car.ride.doors.find(D=>D.id===k).side===1);
-   const D=fr.car.ride.doors.find(q=>q.id===id),pw=t=>SIM.rideToWorld(SIM.rideCarPose('lt.shuttle',fr.k,t),[D.side*(L.side-.05),1.2,D.at[2]]);
+  'train-on-guideway':()=>{const L=LT_LIFE.L,P=L.timeline.period,W=LINE.WIN;let worst=0,n=0,inWin=0;for(let i=0;i<120;i++){const t=i*P/120;for(const c of L.source.cars){const p=SIM.rideCarPose('lt.train',c.k,t);n++;
+    worst=Math.max(worst,Math.abs(p.y-SEC.guide.h));if(p.z>W.z0+20&&p.z<W.z1-20){inWin++;worst=Math.max(worst,Math.abs(p.x-LINE.trackX('t1',p.z)));}}}
+   const d=SIM.rideDwell('lt.train',0),dp=SIM.rideCarPose('lt.train',2,(d.t0+d.t1)/2);
+   return {ok:worst<.1&&inWin>20&&d.stop==='lt'&&d.side===1&&dp.z>LINE.P0&&dp.z<LINE.P1,detail:n+' car poses over a round trip ('+inWin+' in the window of the station; a car body on the splay is the chord between its bogies, so up to 0.1 m off the centreline): '+worst.toFixed(3)+' m off the guideway of track 1 at worst; its dwell at station 3 opens side +1 (the east platform), its middle car at z '+dp.z.toFixed(0)+', '+(d.t1-d.t0)+' s'};},
+  'station-match':()=>{const S=LT.ST,P=LINE.platforms,bad=[],near=(a,b,w)=>{if(Math.abs(a-b)>.05)bad.push(w+' '+a+' vs '+b);};
+   near(S.platforms.east[0],P[1].x0,'east platform x0');near(S.platforms.east[1],P[1].x1,'east platform x1');near(S.platforms.island[0],P[0].x0,'island x0');near(S.platforms.island[1],P[0].x1,'island x1');
+   near(S.platforms.west[1],P[2].x1,'west platform x1');near(S.DECK,LINE.DECK,'the mezzanine deck');near(S.PY,SEC.platformY,'the platforms');near(S.x0,LINE.CAV.x0,'the west wall');near(S.x1,LINE.CAV.x1,'the east wall');
+   near(S.shaft.c[0],LINE.shaft.c[0],'the shaft x');near(S.shaft.c[1],LINE.shaft.c[1],'the shaft z');near(S.branch.pts[2][0],LINE.branch.pts[2][0],'the branch end');
+   S.doors.e.concat(S.doors.w).forEach(z=>{if(!LINE.openings.some(O=>O.kind==='door'&&O.y0<2&&Math.abs((O.z0+O.z1)/2-z)<.1))bad.push('no platform door at z '+z);});
+   S.mdoors.forEach(z=>{if(!LINE.openings.some(O=>O.kind==='door'&&O.y0>7&&Math.abs((O.z0+O.z1)/2-z)<.1))bad.push('no mezzanine door at z '+z);});
+   const opened=LINE.openings.filter(O=>O.open).length;
+   return {ok:!bad.length&&opened>=5,detail:'the station of the plan (LT.ST) is the window of the Line: platforms, walls, mezzanine deck, doors, branch, shaft; '+opened+' of its doors opened for the streets of the hold'+(bad.length?'; '+bad.slice(0,4).join('; '):'')};},
+  'doors-open-at-the-platform':()=>{const L=LT_LIFE.L,d=SIM.rideDwell('lt.train',0),tm=(d.o0+d.o1)/2,fr=L.frames.find(f=>Object.keys(f.doors).length&&L.train[f.k].ride.cap.seats>0),id=Object.keys(fr.doors).find(k=>fr.car.ride.doors.find(D=>D.id===k).side===1);
+   const D=fr.car.ride.doors.find(q=>q.id===id),pw=t=>SIM.rideToWorld(SIM.rideCarPose('lt.train',fr.k,t),[D.side*(L.side-.05),1.2,D.at[2]]);
    const plate=t=>{LTR.doors(L,t,KWALK);KWALKFRAME.at(KWALK,t);const p=pw(t),f=KWALK.floorBelow(p[0],p[2],p[1]+.3,.6);return !!(f&&f[1]&&f[1].tag==='plate');};
    const inWin=plate(tm),out=plate(d.t1+30);LTR.doors(L,LTCLOCK.t,KWALK);KWALKFRAME.at(KWALK,LTCLOCK.t);
    return {ok:inWin&&!out,detail:'car '+fr.k+' door '+id+': its step plate a floor in the door window '+inWin+', after it '+out};},
@@ -40,8 +49,9 @@ const LTCHK=(function(){
   try_('carved',()=>{const s=H().sites[3],fx=Math.sin(s.ry),fz=Math.cos(s.ry);return {ok:C().sdf(s.x-fx*(s.d+1.6),s.y+1.2,s.z-fz*(s.d+1.6))>0&&C().sdf(s.x-fx*30,s.y+1.2,s.z-fz*30)>0};});
   try_('hold-drawn',()=>{const o=TG.tg.draw([{id:'neg',key:'tg-nonesuch',x:0,y:0,z:0,ry:0}],{});return {ok:!Object.keys(o.missing).length};});
   try_('lamp-code',()=>({ok:!TG.tg.check.lamps(Object.assign({},LT_HOLD.draws[0],{lights:[]})).length}));
-  try_('train-on-guideway',()=>{const p=SIM.rideCarPose('lt.shuttle',0,0);return {ok:Math.abs(p.y+1-LT.HALL.guide.h)<.01};});
-  try_('walkers-on-floors',()=>{const f=KWALK.floorBelow(80,-30,1.8+.3,.8);return {ok:!!f&&C().sdf(80,2.7,-30)>.05};});
+  try_('train-on-guideway',()=>{const p=SIM.rideCarPose('lt.train',0,0);return {ok:Math.abs(p.x+3-LINE.trackX('t1',p.z))<.05};});
+  try_('station-match',()=>({ok:Math.abs((LT.ST.platforms.east[0]+.4)-LINE.platforms[1].x0)<.05}));
+  try_('walkers-on-floors',()=>{const f=KWALK.floorBelow(60,600,1.8+.3,.8);return {ok:!!f&&C().sdf(60,2.7,600)>.05};});
   try_('tags',()=>{const T=KTAGS.create({build:'neg'});T.add({'class':'building',kind:'x',key:'x',name:'x',at:[0,0,0],ry:0,size:[1,1,1],tags:{culture:'nonesuch'}});return {ok:T.audit().unknown===0};});
   return out;}
  return {run,negatives,checks};})();
