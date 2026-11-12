@@ -511,3 +511,105 @@ one human and one therian tribe (the toad men) are known to guide merchants thro
   5.1 (2.5c).
 - If Ranj is the Spice Isles' spice, the trade model's re-export through Temora and Zey'danin (`TRADE-GOODS.md` section 2)
   should become Ranj, gathered wild on the Throne and fought over: Zey'danin's failing plantations are the story.
+
+## 8. The lore and the settlement docs against this scope (2026-11-12)
+
+The owner: "read thru the lore and settlement docs and note any additions or conflicts". Three read-only reads covered
+`LORE.md` whole and the `.md` files of all 30 folders under `settlements/` (plus `openworld/PLAN-SETTLEMENTS.md`). Each was
+checked against sections 1-7. The rows that change a decision were spot-checked at their lines.
+
+### 8.1 Settled by the owner
+
+- **Xanadu has no Ring Sea access** (the owner: "xanadu doesn't have ring sea access but does have boats in its lakes"). `LORE.md:1069`
+  lists Xanadu among the Ring Sea's peoples, and `:1014` gives it "swan barge, dragon boat, bullion carrack". Those boats are
+  the Vale's lake craft. **Lore fix owed:** take Xanadu out of the Ring Sea line and put its boats on its lakes (8.4). The
+  gateway rule (2.1) stands.
+- **Shim grows something else** (the owner: "shim can grow something else"). Shim's plantations grow the Blïtrit (the
+  blood-reed, Voth's purple) "and sugar cane second" (`settlements/shim/PLAN.md:106-107`, `LORE.md:442`), but sugar cane is now
+  the Ring Isles'. **Proposed second crop: Sunboll cotton**, native to the SW lowlands (`kits/crops` `cotton`, home `swlowlands`,
+  `nwlowlands`, `swbay`). Shim would then grow the cloth and its purple together: the robes and banners of Voth. The other native
+  of its ground, rattle coffee (`rattlepod`), is the alternative.
+
+### 8.2 Conflicts still to settle
+
+| # | Scope decision | What the docs say | Proposed resolution |
+|---|---|---|---|
+| 1 | **The Dasri are a gateway over the Catch** (2.1, 2.2) | Shade, the Dasri's oasis and the trade model's only Dasri pin, moved in batch 5.1e6 from 1229,885 to **1085,683**, under a 2,400 m wet wall 156 km from Pinnacle Rock (`openworld/PLAN-SETTLEMENTS.md:755`). That is ~1,500 km north of the Catch. Shade's own `DESIGN.md:8` still says the sedesert | **The owner's call:** where are the Dasri's home grounds now? Either the Dasri stay the Catch's caravaneers (their camps roam, `core/camp`; Ṣalṭ al-Bān is their one pin near it), or a Dasri pin is wanted nearer the Catch |
+| 2 | Coffee and sugar cane are the Ring Isles' (2.5) | Zey'danin's failed Ranj plantations went to coffee and sugar (`settlements/zeydanin/PLAN.md:17, 54`; `LORE.md:460`) | Record Zey'danin as `transplanted` for coffee and sugar cane: the rule allows it, and it is the Ranj story (7.1) |
+| 3 | Cacao is the Vale's (2.5) | **Kautoa** grows and exports cacao too (`settlements/isle-demo/PLAN.md:515` "Kautoa exports cloves, rice and cacao"; `:990`), not only Nephtos | Widen the isle demo to-do to Kautoa's plantation, the advantage table and the buyers' lists (done in `TODO.md`) |
+| 4 | Saffron is the Vale's (2.5) | Longsong has "a saffron terrace" and saffron in its dye garden (`settlements/longsong/README.md:76-79`) | Record Longsong as `transplanted` for saffron (the Order's garden), or add `oidong` to saffron's home |
+| 5 | The East Rift trades direct only through the gateways (2.1) | The Order keeps chapterhouses at Dalab, Ys, Verge, Iziz, Locus and Keepwell at Talia; its copies go to them (`longsong/BLUEPRINT.md:34, 94`; `LORE.md:555, 1053`) | Count a transfer inside the Order as not trade (books, letters, the Order's own goods), so the rule holds for merchants |
+| 6 | The Geomancers license the Hexahedron's oil (2.4) | The Screamers kidnap outsiders; "most caravans give the Hexahedron a wide berth" (`LORE.md:357`) | Strike the Hexahedron (127 t) from the licensed fields |
+| 7 | The Eternians are widely electrified (2.4, the owner) | "Yuni and Locus: The only fully electrified cities in the world" (`LORE.md:166`) | Lore fix (8.4): the Eternians beside them, partly on Ancient power |
+| 8 | The Order extracts its own oil (2.4) | A Geomancers' walled lodge stands in Longsong's ward (`longsong/BLUEPRINT.md:95`) | Minor: friendship (`LORE.md:559`, "Friendly with the Geomancers of Yuni") and the Vault; not oil work |
+| 9 | No route crosses the Ancient's Valley (7.6) | Dalab reaches Span by the Basin Tunnel (`settlements/span/PLAN.md:174-178`), a line that may clip the Valley's corner | Test the line against the polygon. If it crosses, exempt the tunnel: it runs under the Valley's edge |
+| 10 | Eternian tea and the wine grape are native to `nwlowlands` (2.5) | Roketstad's country and Dilihan's floor use the nwlowlands kit (`settlements/highlands/NOTES.md:150`; `dilihan/PLAN.md:31`) | Place crops by the scale model's biome polygons and the Eternian ground, never by which kit a page reads |
+| 11 | Who gains the jungle dyes and tobacco (2.5) | Mav's Refuge and Girder stand in hyperjungle (`mavs-refuge/NOTES.md:3`) | Add the Beast Riders to who gains indigo, annatto and tobacco |
+| 12 | Lacquerware is Xanadu's and the Eternians' (7.6) | Lacquer appears as decor of the Lizardmen's Tenders, the abyssal people and the Shumari (`LORE.md:875, 883, 1040, 1047`) and at Longsong (`BLUEPRINT.md:122`) | Minor: colour words or bought work. The Lizardmen never trade |
+
+### 8.3 Additions worth taking (proposed)
+
+**Goods**
+- **Shim's Blïtrit purple**: the blood-reed, "every purple robe and banner in Voth" (`LORE.md:442`). A Vothic natural dye, `homeOnly`
+  at Shim. The swbay's snail `bay-purple` is the other Vothic purple.
+- **Ys's murex purple, nacre inlay** and the Pearlmonger's Guild (`settlements/ys/DESIGN.md:234`): the League's crafts beside
+  pearls.
+- **Fridon's wormwick** (`LORE.md:1004`, "the source of Fridon's wormwick trade"): Iziz sells wormwick too, from the
+  savannah rim's glass wands. The eastern highlands' harvesters (2.5d) are a second source, not the only one.
+- **The Free Clans' bronze** (Ardent's copper and tin: `LORE.md:310`; `settlements/ardent/PLAN.md:10`): already their
+  natural unique (`TRADE-GOODS.md`). Lipp's tin (2.6) competes with it, which explains the Republic's interest in Ardent
+  (`LORE.md:1064`).
+- **The Order's paper and its own lenses** (Longsong's printing house, paper mill and lens workshop: `BLUEPRINT.md:94`). Paper is
+  a good the model lacks. Lenses need not be re-exported to the East Rift.
+- **Locus's and Mungo's salt-rice** (`LORE.md:401`; `settlements/mungo/DESIGN.md:25`): a crop record and a local staple.
+- **The Ring Isles' manufactures** (the isle demo): Valapo's iron ingots from a charcoal smelter (`PLAN.md:493, 519`);
+  Kautoa's soda ash, glass and indigo-dyed cloth (`:528`); Nephtos's copper and hulls (`:1230`).
+- **The Catch's salvage** (proposed in the lore): Ancient alloys and energy cells that "keep as nowhere else" (`LORE.md:91`).
+  The Stair divers' good, sold to Yuni.
+- **Relics and medicines** as goods rows: the caravans' list is "spice, gold, petrol, relics, scrap, and medicines"
+  (`LORE.md:184`).
+- **Korona's marble**, Jimjam's white marble's likely source (`LORE.md:515`). It travels the guided Korona route (7.6).
+- **Beast Rider spider silk**: Pinnacle Rock's Spider tribe's silk house (`settlements/pinnacle-rock/PLAN.md:83`) and Mav's
+  Refuge's Silk Loft (`mavs-refuge/API.md:95`). A second spider silk, beside Spider Lake's.
+- **Shade's goat-hair weaving, camel and goat dairy** (`settlements/shade/DESIGN.md:45`, `KNOWN_ISSUES.md:122`).
+- **Almua's chitin** (`settlements/almua/PLAN.md:45`), the beetle livestock's shells. Minor.
+
+**Places and powers in the trade**
+- **Talia, Iziz's eastern gateway**, "rich on the caravan trade", with its caravan customs (`LORE.md:252`;
+  `settlements/iziz/VASSAL-KITS.md:92`). It is the natural customs post for the re-export leg (2.1).
+- **Pylon's salvage tithe and assay** (`iziz/VASSAL-KITS.md`) and **Roketstad's smelter and scrap-iron market**
+  (`settlements/highlands/NOTES.md:251, 280`): both already smelt scrap. Add Roketstad to 2.7's table.
+- **The Eternians license the Ancient's Valley's salvage** (`LORE.md:723-725`, "quarantines the Valley and licenses its salvage")
+  and hold the over-sea goods "under State monopoly" (`:741`). The Valley's scrap (7.6) is the Eternians' to license.
+- **Mungo, the Geomancers' depot** in the abyss: a salt-and-goods warehouse for Locus and a fuel station
+  (`settlements/mungo/DESIGN.md:26`).
+- **Port Tobin** trades with Hook (`settlements/hook/PLAN.md:225`). **Pontus** sends ships to the isles (`isle-demo/README.md:175`).
+
+**Route costs, tolls and barriers**
+- **Tolls:** at Verge, a toll at each trailhead turns half the caravans back (`settlements/verge/DESIGN.md:114`). Span's customs
+  take tolls and "the priests' cut" (`span/PLAN.md:373`). The Matok keep toll-gates (`LORE.md:719`). The Yeti take "winter
+  gifts" that "everyone knows are tribute" (`:729`).
+- **Hostility:** Republican goods "may be seized, taxed or quietly copied" at Dilihan (`LORE.md:542`). The Screamers' country
+  is avoided (`:357`). The Order is banned from Voth (`:436`): no Order goods to Voth.
+- **The sea:** the Islanders are "lately, pirates" (`LORE.md:575`), the Pirate Emperors' heirs are about (`:262`), and Noah's
+  Regret is a pirate base (`settlements/noahs-regret/README.md:7-8`). Iziz retook Hook, and Voth's fleet is gone from the strait
+  (`LORE.md:461-462`): Voth's Spice Isles routes are at risk.
+- **The Beast Riders' raids** on Shell and the Port Goto road (`LORE.md:346`).
+- **The Ancient roads' state:** kept by Iziz, the Eternians and Yuni; elsewhere "most of it is in very bad condition"
+  (`LORE.md:154`). A route cost by road state.
+
+**Not modelled, for the owner to rule in or out:** the slave and labour trade (Shim's slave plantations, `LORE.md:442`; Hook's
+closed slave market, `:263`; Dalab taking people, `:199`; Talovolci recruits for the Legion, `:276`); currencies (the Izani Talent,
+`:270`; Kautoan shell money, `:576`); the Shumari plateau above Tallhouse, a West Rift neighbour where Free Giants go
+(`:952-953`); the Frogmen of the SW highlands, Dalab's clients (`:940`), who could be the 2.5a natives' gatherers.
+
+### 8.4 Lore fixes owed (the owner's word against the text)
+
+- `LORE.md:1069` and `:1014`: Xanadu off the Ring Sea; its swan barges, dragon boats and bullion carracks on the Vale's lakes.
+- `LORE.md:166` (section 5, "Electric light is power"): the Eternians widely electrified beside Yuni and Locus, partly on
+  Ancient power.
+- `LORE.md:442` and `settlements/shim/PLAN.md:106-107`: Shim's second crop, sugar cane, replaced (8.1).
+- `LORE.md:86-87`: the Catch's resources are "potash and alkali salts"; this round adds rock salt (2.2), as the geology has.
+- `settlements/shade/DESIGN.md:8`: Shade's biome (sedesert) after its move (8.2, 1).
+
+These are edits to shared lore and settlement docs, so they wait for the owner's go-ahead; none is made here.

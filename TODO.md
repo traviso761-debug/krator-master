@@ -29,9 +29,12 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 ## With the native-crop rule *(the owner, 2026-11-12; `openworld/TRADE-SCOPE.md` section 2.5)*
 
 - **Rework the isle demo's crops.** Under the native-crop rule cacao is the Vale's, so the Ring Isles can no longer grow
-  it (indigo, annatto and tobacco stay: the isles are in their homes). Nephtos's cacao plantings
-  (`settlements/isle-demo/src/15-isle-tune.js:663`) and the cacao in the traders' buy lists (`:335`, `:346`) change to a crop
-  native to the isles (clove, coffee, kava, sugar cane) or to cacao bought in. The stocks proof and `test-sim.js` move on
+  it (indigo, annatto and tobacco stay: the isles are in their homes). Change all of it to a crop native to the isles
+  (clove, coffee, kava, sugar cane) or to cacao bought in:
+  - Nephtos's cacao plantings (`settlements/isle-demo/src/15-isle-tune.js:663`);
+  - **Kautoa's own cacao plantation and export** (`settlements/isle-demo/PLAN.md:515`, `:990`; `README.md:174`) and the
+    advantage table;
+  - the cacao in the traders' buy lists (`15-isle-tune.js:335`, `:346`). The stocks proof and `test-sim.js` move on
   purpose and are re-baselined. Do it when the rule lands in `kits/crops`, not before.
 
 ## Lacquerware for Xanadu and the Eternians *(the owner, 2026-11-12; `openworld/TRADE-SCOPE.md` section 7.6)*
