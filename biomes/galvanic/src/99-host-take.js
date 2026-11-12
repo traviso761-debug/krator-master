@@ -15,9 +15,9 @@ function describe(hit){const p=hit.point,o=hit.object;
  const lab=o.userData.inspectLabel||o.name||'mesh',isItem=o.isInstancedMesh&&o.userData.biome,item=isItem?(o.name||'').replace(/^biome:/,''):null;
  const PLT=item&&GALV.plantOfItem(item);
  const name=PLT?PLT.name+'  ·  '+lab+(best?'  (at '+best.name+')':''):(best?best.name+'  ·  '+lab:lab),tg=PLT?PLT.tags:null;
- const c=GALV_PHYS.cell({pH:Math.min(PH_AT(p.x,p.z),6),o2:GALV_PHYS.season(DAY).o2At(terrainH(p.x,p.z)-SITE.sea)});
+ const c=GALV_PHYS.cell({pH:Math.min(PH_AT(p.x,p.z),6),o2:GALV_PHYS.season(DAY).o2At(terrainH(p.x,p.z)-SITE.sea),pump:window._tide?window._tide.pump:0});
  return name+'\n'+(isItem?(PLT?'native · the battery\'s':'flora')+' · '+SITE.name:'terrain / water')+(tg?'\n'+tg.climate+' · '+tg.aridity+' · Koppen '+tg.koppen.join(' ')+' · partner: '+tg.partner:'')+
-  (tg&&tg.harvest&&tg.harvest.note?'\n'+tg.harvest.note:'')+'\npH '+PH_AT(p.x,p.z).toFixed(1)+' · the couple here '+c.ocv.toFixed(2)+' V, '+c.p.toFixed(1)+' mW/m2 · flooded '+FLOOD_AT(p.x,p.z)+' days a year · '+HEAT_AT(p.x,p.z).toFixed(0)+' degC\n'+
+  (tg&&tg.harvest&&tg.harvest.note?'\n'+tg.harvest.note:'')+'\npH '+PH_AT(p.x,p.z).toFixed(1)+' · the couple here '+c.ocv.toFixed(2)+' V, '+c.p.toFixed(1)+' mW/m2 (the tidal pump at '+((window._tide?window._tide.pump:0)*100|0)+'%) · flooded '+FLOOD_AT(p.x,p.z)+' days a year · '+HEAT_AT(p.x,p.z).toFixed(0)+' degC\n'+
   p.x.toFixed(0)+', '+p.y.toFixed(1)+', '+p.z.toFixed(0)+'  range '+camera.position.distanceTo(p).toFixed(0)+' m';}
 const BUDGET={showcase:{tris:8000000,calls:120},cls:{life:3000000,kin:3000000,host:2500000},type:{'galvanic/strand':'life','galvanic/kin':'kin','host':'host'}};
 const instPoints=()=>{const o=[],m=new THREE.Matrix4(),p=new THREE.Vector3(),q=new THREE.Quaternion(),sc=new THREE.Vector3();
@@ -42,6 +42,9 @@ const HCHK={
   return{ok:n>0&&!bad.length,detail:bad.length?'out of the 2.8-4 band: '+bad.slice(0,3).join('; '):n+' treads, all where the water runs pH 2.8-4'};},
  // nothing glows: no emissive colour or map on any lit material but the sky's
  noGlow(list){const bad=[];list.forEach(m=>{if(m&&m.emissive&&(m.emissive.r+m.emissive.g+m.emissive.b>.003||m.emissiveMap))bad.push(m.name||m.type);});return{ok:!bad.length,detail:bad.length?'glowing: '+bad.slice(0,4).join(', '):list.length+' materials, none emissive'};},
+ // the page's pump is the sky's clock: GALV_PHYS.tide on ATMOS.libration at the page's own time
+ tide(T){if(!T||!ATMOS.libration)return{ok:false,detail:'no pump on the page (window._tide) or no ATMOS.libration'};const want=GALV_PHYS.tide(ATMOS.libration(T.t));
+  return{ok:Math.abs(T.pump-want)<1e-6,detail:'the pump '+(+T.pump).toFixed(3)+' at day '+(+T.t).toFixed(3)+' (the libration gives '+want.toFixed(3)+'); its peak at '+(+T.peakHour).toFixed(2)+' h today'};},
  sea(level){const want=SITE.sea+GALV_PHYS.level(DAY);return{ok:Math.abs(level-want)<1e-6,detail:'the sea at '+(+level).toFixed(3)+' m (day '+DAY+': '+want.toFixed(3)+')'};},
  camerasOut(C){const bad=C.filter(c=>c.y<terrainH(c.x,c.z)+.5);return{ok:!bad.length,detail:bad.length?'under the ground: '+bad.map(c=>c.view).join(', '):C.length+' cameras above the ground'};}};
 const litMats=()=>{const out=[];scene.traverse(o=>{if(!o.isMesh||o.userData.farField)return;const m=o.material;if(!m||(o.userData.sky))return;(Array.isArray(m)?m:[m]).forEach(x=>{if(x.isMeshStandardMaterial||x.isMeshLambertMaterial||x.isMeshPhongMaterial)out.push(x);});});return out;};
@@ -54,6 +57,7 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P
  add('the iron terraces where the pH has crossed 2.8',HCHK.terraces(STREAMS));
  add('nothing glows',HCHK.noGlow(litMats()));
  add('the sea at the season\'s level',HCHK.sea(window._water?window._water.sea:NaN));
+ add('the tidal pump on the giant\'s clock (ATMOS.libration)',HCHK.tide(window._tide));
  add('preset cameras above the ground',HCHK.camerasOut(Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail});
@@ -66,6 +70,7 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('a terrace at the spring',HCHK.terraces([Object.assign({},STREAMS[0],{T:[{s0:0,s1:20,y:0,w:8}]})]));
  add('a glowing material',HCHK.noGlow([new THREE.MeshStandardMaterial({emissive:0x404020})]));
  add('the sea at the wrong season',HCHK.sea(SITE.sea+GALV_PHYS.level(DAY+180)));
+ add('a pump a quarter-day out',HCHK.tide(window._tide?{t:window._tide.t,pump:GALV_PHYS.tide(window._tide.t+.25)+(Math.abs(GALV_PHYS.tide(window._tide.t+.25)-window._tide.pump)<1e-6?.5:0),peakHour:0}:null));
  add('a camera under the ground',HCHK.camerasOut([{view:'under',x:0,y:terrainH(0,0)-5,z:0}]));
  return R;}
 KHOST.on(SKY.view,'view');
@@ -76,13 +81,13 @@ const MIRROR=WATER.mirrorSwitch&&BIG_DRAW?WATER.mirrorSwitch({THREE,renderer,sce
 const HINT="Station 1 of the Rift battery (scale model 5.1, px 801,1573: the eastern terminal sea's north strand, -2,597 m, 2.21 atm, +36 degC; ideal type, the strand compressed): "+
  "metal-rich sulfide mud oxidising into its own acid, three wine-red streams laying orange iron terraces down to the brine sea, gossan-capped sulfide mounds with acid springs, "+
  "the vent's crater (the Deep) full of hot metal brine. The life lives on the current between pyrite and sphalerite: sulfur runners, wire crusts, brass masts, cell reefs, "+
- "store jars on the flood line. Day "+DAY+" (?day=0-364 moves the sea and the jars). Nothing glows. The Rift's baobabs and dragon trees on the hills, past the acid.";
+ "store jars on the flood line. Day "+DAY+" (?day=0-364 moves the sea and the jars). Once a day, at the top of the giant's nod, the tidal pump opens the ore: the springs rise and the current swells to 1.6x (the inspector shows it). Nothing glows. The Rift's baobabs and dragon trees on the hills, past the acid.";
 KHOST.take({build:'galvanic'+(SKEY==='strand'?'':'-'+SKEY),title:'Krator biome — the Rift battery: '+SITE.name,hint:HINT,
  scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,regHas,views:VIEWS,ticks:TICKS,
  clock:{hour:ATMOS.SKY.viewHour},draw:MIRROR?()=>{MIRROR.update();SKY.draw();}:SKY.draw,
  inspect:describe,stats:()=>'inst '+window._instances,
  layers:{'flora':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'rings':{objects:()=>[giantRing]}},
- exporters:{biome:()=>BIO.export(),physics:()=>({format:'krator-galvanic',version:0,site:SITE,day:DAY,sea:SEA_LEVEL,placed:GALV.PLACED.length})},
+ exporters:{biome:()=>BIO.export(),physics:()=>({format:'krator-galvanic',version:0,site:SITE,day:DAY,sea:SEA_LEVEL,placed:GALV.PLACED.length,tide:Object.assign({},GALV_PHYS.TIDE,window._tide)})},
  minimap:{title:SITE.name},
  budget:BUDGET,types:()=>BIO.stats,
  api:{hostChecks,hostNegatives,

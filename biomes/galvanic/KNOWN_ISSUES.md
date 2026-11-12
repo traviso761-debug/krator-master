@@ -21,6 +21,8 @@ Open items are `- [ ]`; `build.py` counts them.
 - [ ] **The ochre wader** (`PLAN.md` section 8) is a data proposal for `kits/fauna`, not drawn.
 - [x] **Zinc as a resource node** (`PLAN.md` section 9): added to `kits/resources` in place, 2026-11-12.
 - [ ] **No steam over the Deep**: the brine is ~60 degC in +36 degC air at 2.2 atm; a faint morning haze would be honest and is not drawn.
-- [ ] **The tidal pump** (`PLAN.md` section 3, question 1): not taken (the owner's call).
+- [x] **The tidal pump** (`PLAN.md` section 3): taken (the owner, 2026-11-12) and built.
+- [ ] **The pump shows only in the springs** (they rise up to 8 cm at its peak) and in the inspector's reading; the streams' flow and the
+  masts' frills do not change with it yet (`WATER.flow` is drawn once). A flow speed and a foam line on the springs' outflow would show it better.
 - [ ] **`tests/test-galvanic.js` is not in `tools/test_all.py`**: that runner collects `core/`, `settlements/` and `kits/` tests only, not `biomes/`.
   Run it by hand (`node biomes/galvanic/tests/test-galvanic.js`).

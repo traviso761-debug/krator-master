@@ -62,6 +62,27 @@ const near=(a,b,t)=>Math.abs(a-b)<=t;
  ok('a jar under a '+s50.floodDays+'-day flood lives (its low '+s50.min+' days of upkeep)',s50.alive,!s50.alive);
  ok('a jar is full at the dry season\'s end and low after the flood',G.store(y50,{day:226}).charge>.9&&G.store(y50,{day:272}).charge<.5,G.store(y50,{day:272}).charge>=G.store(y50,{day:226}).charge);
  ok('the same jar dies if it holds only 30 days',!G.store(y50,{cap:30}).alive,G.store(y50,{cap:30}).alive);}
+// ---- the tidal pump (the owner, 2026-11-12): the giant's libration's own clock, as the Gills' breath reads it
+{const ROOT=path.join(__dirname,'..','..','..');eval(fs.readFileSync(path.join(ROOT,'core','rand','08-core-rand.js'),'utf8')+';global.KRAND=KRAND;');
+ const AT=path.join(ROOT,'core','atmos'),FR=['89-atmos-0-core.js','89-atmos-0p-presets.js'].map(f=>path.join(AT,f))
+  .concat(fs.readdirSync(path.join(AT,'sky')).filter(f=>/^89-atmos-.*\.js$/.test(f)).sort().map(f=>path.join(AT,'sky',f)));
+ eval(FR.map(f=>fs.readFileSync(f,'utf8')).join('\n')+';global.ATMOS=ATMOS;');}
+{const A=ATMOS,L=A.SKY.giant.libration;
+ ok('the pump reads the sky\'s own constants (the nod\'s phase, the sidereal rate)',Math.abs(G.TIDE.NOD-L.phase)<1e-9&&Math.abs(G.TIDE.SID-1.0027379)<1e-12,Math.abs(G.TIDE.NOD+.1-L.phase)<1e-9);
+ const nodTop=d=>{let bt=d,bn=-2;for(let m=0;m<1440;m++){const t=d+m/1440,n=A.libration(t).nod;if(n>bn){bn=n;bt=t;}}return bt;};
+ const off=f=>{let worst=0;for(let d=0;d<6;d++){const t=nodTop(d);let bt=0,bp=-1;for(let m=-240;m<=240;m++){const p=f(t+m/1440);if(p>bp){bp=p;bt=m;}}worst=Math.max(worst,Math.abs(bt));}return worst;};
+ const worst=off(G.tide),wneg=off(t=>G.tide(t+.1));
+ ok('the pump peaks at the top of the giant\'s nod (ATMOS.libration), within 2 minutes on six days: worst '+worst+' min',worst<=2,wneg<=2);
+ {let w=0,wn=0;for(let m=0;m<2880;m+=7){const t=m/1440;w=Math.max(w,Math.abs(G.tide(A.libration(t))-G.tide(t)));wn=Math.max(wn,Math.abs(G.tide(A.libration(t+.25))-G.tide(t)));}
+  ok('GALV_PHYS.tide(ATMOS.libration(t)) is GALV_PHYS.tide(t) (worst '+w.toExponential(1)+')',w<1e-6,wn<1e-6);}
+ const d0=G.pumpHour(10),d1=G.pumpHour(11),dd=((d1-d0)*60+1440*3)%1440,drift=dd>720?dd-1440:dd;
+ ok('the pump comes '+(-drift).toFixed(2)+' min earlier each day (a sidereal day: it walks round the clock once a year)',Math.abs(drift+3.93)<.1,Math.abs(0+3.93)<.1);
+ ok('pumpHour is the peak',Math.abs(G.tide(10+d0/24)-1)<1e-9,Math.abs(G.tide(10+(d0+12)/24)-1)<1e-9);
+ let s=0;for(let m=0;m<1440;m++)s+=G.tide(10+m/1440);s/=1440;
+ ok('the pump\'s mean over a day is 3/8 ('+s.toFixed(4)+'), in 0..1',Math.abs(s-.375)<.002&&[0,.1,.25,.5,.9].every(u=>G.pumpAt(u)>=0&&G.pumpAt(u)<=1),Math.abs(s-.5)<.002);
+ const c0=G.cell({}),c1=G.cell({pump:1}),cm=G.cell({pump:.375});
+ ok('at the top of the nod the current swells 1.6x ('+(c1.i/c0.i).toFixed(3)+'), 1.225x on the day\'s mean',Math.abs(c1.i/c0.i-1.6)<1e-9&&Math.abs(cm.i/c0.i-1.225)<1e-9,Math.abs(c1.i/c0.i-1)<1e-9);
+ ok('no pump, the cell as before (pump 0 = no option)',G.cell({pump:0}).i===c0.i&&c0.i===G.cell({}).i,G.cell({pump:0}).i!==c0.i);}
 // ---- the site record: plain data, the numbers the survey gave
 {const S=GALV_SITES.strand;ok('the site is the survey\'s: 2.21 atm, +36 degC, 1,051 mm, the sea at -2,600 m, the Deep\'s floor 100 m under it',S.atm===2.21&&S.temp.mean===36&&S.rain===1051&&S.sea===-2600&&S.deep.floor===S.sea-100,S.deep.floor===S.sea);
  ok('the record is JSON (no functions: Godot reads it)',JSON.stringify(GALV_SITES)===JSON.stringify(JSON.parse(JSON.stringify(GALV_SITES))),false);}

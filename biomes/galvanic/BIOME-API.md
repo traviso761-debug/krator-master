@@ -9,12 +9,14 @@ place (the pooled-folder rule: name them in its `build.py`): `src/40-galvanic-ce
 | Call | Returns |
 |---|---|
 | `rest(mineral, pH, o2)` | a sulfide's rest potential, V (pyrite, chalcopyrite, galena, sphalerite; the table is at pH 2, 0.21 atm O2) |
-| `cell({cathode, anode, pH, o2, T, wet, insul})` | `{ocv, v, i, p, lost, alive}`: open circuit (V), the line (V, half the open circuit), current (mA/m2), power to the life (mW/m2), power lost to the rock's short circuit (the unsheathed share), alive when p is 2 mW/m2 or more |
+| `cell({cathode, anode, pH, o2, T, wet, insul, pump})` | `{ocv, v, i, p, lost, alive}`: open circuit (V), the line (V, half the open circuit), current (mA/m2), power to the life (mW/m2), power lost to the rock's short circuit (the unsheathed share), alive when p is 2 mW/m2 or more |
 | `yield(i, p, {eff, kJg, solid})` | a year of it: `{kJ, biomass (g/m2), eMol, feooh (g), crustMm, metreYears, zns (g), zinc (g), anodeMm}` |
 | `acid({ore, flow, o2, T})` | pyrite's run-off: `{rate, H, pH, vsRioTinto}` (ore: m2 of exposed grain surface; flow: L/s) |
 | `stream({pH0, Q0, q, s})`, `streamAtPH(stream, pH)` | down a stream at s m: `{pH, Q, terrace (0..1: the ochre's band, pH 2.8-4), colour (hex), acid}`; where it crosses a pH |
 | `level(day, {amp, low})`, `season(day)` | the terminal sea against its mean (m): lowest day 70, highest ~252, a 1.2 m swing (default taken); `{level, wet, o2At(y)}` |
 | `floodDays(y)`, `store(y, {cap, fill, day})` | the days a year a height lies under the sea; the store jar there: `{alive, charge, floodDays, min}` |
+
+| `tide(t)`, `tidePhase(t)`, `pumpAt(u)`, `pumpHour(day)`, `TIDE` | the daily tidal pump (the owner, 2026-11-12), 0..1: t a clock in world days or `ATMOS.libration(t)`'s record (the same phase the Gills' breath reads); peak at the top of the giant's nod, mean 3/8; `cell({pump})` swells the current by 0.6 x it; `pumpHour(day)` the hour of the peak |
 
 `GALV_SITES.strand` is the station's record (JSON: the survey's numbers, the strand, the Deep, the mounds, the streams).
 

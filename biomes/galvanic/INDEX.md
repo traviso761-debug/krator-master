@@ -26,7 +26,7 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `40-galvanic-cell.js` | 9 |  |
+| `40-galvanic-cell.js` | 11 |  |
 | `45-host-stage.js` | 13 | the land (38); the climate fields (the field contract's units:  (102); the host binding (132) |
 | `48-host-therm.js` | 2 |  |
 | `50-galvanic-species.js` | 6 | palettes (sRGB hex; the colour maths is the core (14); the species (21); materials (no maps: the forms are small and read (40); the items (46) |
@@ -38,7 +38,7 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `88-host-place.js` | 1 |  |
 | `89-host-sky.js` | 2 |  |
 | `89a-host-atmos.js` | 3 |  |
-| `89w-host-water.js` | 6 |  |
+| `89w-host-water.js` | 7 |  |
 | `89z-host-build.js` | 5 |  |
-| `99-host-take.js` | 11 |  |
+| `99-host-take.js` | 12 |  |
 | `99-tail.html` | <1 |  |

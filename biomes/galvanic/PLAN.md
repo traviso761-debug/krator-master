@@ -6,7 +6,9 @@ minerals. The idea in one line: **the life is the wire, not the battery**. Natur
 at a high voltage in acid touching one that sits low); the organism insulates the place where they touch, so the rock
 stops short-circuiting itself, and routes the current through its own body instead.
 
-Status: **a proposal for the owner** (asked for 2026-11-11), with station 1 built on it the same day (section 16). Nothing
+Status: **a proposal for the owner** (asked for 2026-11-11), with station 1 built on it the same day (section 16). **The owner's answers,
+2026-11-12**: a daily tidal pump (section 3, built); the 1.2 m swing; zinc as a resource node (section 9, built); no Lizardmen drawn; the
+kit stays its own kit. Nothing
 on the scale model is changed and `LORE.md` is untouched: every lore sentence is *proposed* (section 10). `galvanic` and
 every species' name are **working names**, waiting for the owner's or the Krator tongues' words. Where the owner has not
 answered, the conservative default is taken and marked **default taken, owner to confirm**.
@@ -187,12 +189,15 @@ quoted here, each check with a negative.
   spend through the flood, with a capacity that holds about 60 days of upkeep (*Geobacter*'s cytochromes hold minutes; a
   fist of mixed-valence iron is another matter, and the number is the plan's, not a measurement). A jar flat at the
   end of a long flood is a dead colony: the test checks that a 120-day flood kills one and a 50-day flood does not.
-- **The tide (a question, not a given).** Krator's daily tidal flex is canon for the Gills' fissures over heat-pipe vents
-  (`gills/PLAN.md` section 3). It could pump fresh acid and oxygen into the strand's cracked ore and flush the products out
-  once a day, so the current would swell daily: the Gills' breath again. **Default taken, owner to confirm: not taken.** The
-  strand is flat sediment over a sunken vent, not a fissure swarm, and a battery that breathes daily is a Gills idea; the
-  battery's own rhythm is the season. `GALV_PHYS.cell` takes an oxygen supply, so if the owner wants the tide, a daily term is one
-  line in `GALV_PHYS.season` and nothing else changes (section 18, question 1).
+- **The tide** (the owner, 2026-11-12: **taken**, a daily tidal pump). Krator's daily tidal flex is canon for the Gills'
+  fissures over heat-pipe vents (`gills/PLAN.md` section 3); here it works the strand's cracked ore. Once a sidereal day, at the top of
+  the giant's nod, the cracks gape, fresh oxygen and acid are drawn into the ore and the zinc sulfate flushed out, so the current swells
+  once a day. `GALV_PHYS.tide(t)` is the pump, 0..1, on the sky model's own libration (its sidereal rate and the nod's phase, the
+  constants the Gills' breath reads, held against `ATMOS.libration` by the test): a pulse (0.5 + 0.5 cos)^2 of the phase from the top
+  of the nod, 1 at the top, 0 half a day later, a mean of 3/8. `GALV_PHYS.cell({pump})` swells the current by 0.6 x the pump: 1.6x at the
+  top of the nod, 1.225x over the day; the hour walks round the clock once a year (about 3.9 minutes earlier each day). On the page
+  the mounds' springs rise up to 8 cm at the pump's peak and the inspector reads the current with it. The season stays the slow
+  rhythm (the flood drowns the cathode); the pump is the fast one.
 
 ## 4. Ideas considered and set aside
 
@@ -418,7 +423,9 @@ strand), `ground.travertine.acid`, `rock.galena`.
   (pH under 4, `GALV_PHYS.stream`); no native life on ground the acid never reaches, no kin tree on ground it does; every jar
   below the year's highest water; the terraces lie only where the stream's pH crosses 2.8-4; nothing glows (no emissive);
   the sea's level is the season's. `PORT.md`, `INDEX.md`, `BIOME-API.md`, `KNOWN_ISSUES.md`, `tools/check_core_use.py`.
-- **G5.** The owner's answers (section 18); stations 2 and 3; the wader in `kits/fauna`; zinc at the next resources rebake.
+- **G5** (2026-11-12). The owner's answers (section 18): the tidal pump (`GALV_PHYS.tide`, the springs' daily rise, the probe's
+  check against `ATMOS.libration`) and zinc in `kits/resources` (in place, every build it reaches rebuilt). Still to come: stations 2
+  and 3; the wader in `kits/fauna`.
 
 ## 17. Sources (checked 2026-11-11)
 
@@ -438,12 +445,11 @@ strand), `ground.travertine.acid`, `rock.galena`.
 
 ## 18. Questions for the owner
 
-1. **The tide**: should the daily tidal flex pump the strand's ore (the current swelling once a day, a Gills-like breath)?
-   Default: no; the season is the rhythm (section 3).
-2. **The kit's form**: a band kit with its own pages (as built), or a fifth station of `biomes/rift`?
+1. ~~**The tide**~~ **Answered (2026-11-12): yes**, a daily tidal pump (section 3, built).
+2. ~~**The kit's form**~~ **Answered (2026-11-12): its own kit**, as built.
 3. **The site**: the vent at px 801,1573 on the eastern terminal sea (as built), or nearer Sauropolis?
-4. **Zinc**: add the `zinc` family at the next `kits/resources` rebake with the weights of section 9?
-5. **The Lizardmen**: do they work the strand (the ochre for their oxblood lacquer, the vitriols), and may a page show it?
-6. **The season's swing**: 1.2 m a year (default), or more?
+4. ~~**Zinc**~~ **Answered (2026-11-12): build it** (section 9: added in place, the weights as proposed).
+5. **The Lizardmen**: **nothing drawn** (the owner, 2026-11-12). Whether they work the strand (the ochre for their oxblood lacquer, the vitriols) stays a lore question (section 10).
+6. ~~**The season's swing**~~ **Answered (2026-11-12): 1.2 m a year**, as built.
 7. **Names**: the kit, the five species, the wader; from which tongue (the Lizardmen's spiral script has no spoken names)?
 8. **The gallery**: a new biome kit's page; publish it at the merge to `main`, as the rule says?

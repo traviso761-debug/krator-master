@@ -11,7 +11,7 @@ const lin=c=>new THREE.Color(c).convertSRGBToLinear();
 const SWELL=[[.010,5,35,0,.015],[.006,3,-50,1.3,.015]];
 function maskOf(box,cell,fn){const nx=Math.round((box[2]-box[0])/cell),nz=Math.round((box[3]-box[1])/cell),d=new Uint8Array(nx*nz);
  for(let j=0;j<nz;j++)for(let i=0;i<nx;i++)if(fn(box[0]+(i+.5)*cell,box[1]+(j+.5)*cell))d[j*nx+i]=255;return{x0:box[0],z0:box[1],cell,nx,nz,data:d};}
-const SPRING_MATS=new Map();
+const SPRING_MATS=new Map(),SPRING_MESH=[];
 // THE ACID LOOK (data: GALV_PHYS.colourAt's ramp as a core/water look; t 0 is the deep end of the ramp, 1 the rim): wine-red to orange to rust
 GALV.LOOKS={acid:{stops:[[0,'#5a1014'],[.4,'#7e2018'],[.75,'#a63c1a'],[1,'#c0601e']],deep:1.2,clarity:.35,roughness:.12,opacity:.95},
  ochre:{stops:[[0,'#8a3a14'],[.5,'#b4581e'],[1,'#d08a3a']],deep:.6,clarity:.25,roughness:.14,opacity:.92}};
@@ -44,5 +44,12 @@ STREAMS.forEach(S=>{const pts=[],step=8,end=S.T.length?S.T[0].s0:S.F.L;
 // THE MOUNDS' ACID SPRINGS: a small pool at the foot of each, where its stream begins (or a seep where none does)
 MOUNDS.forEach((M,i)=>{const a=-.9+i*.7,x=M.x+Math.cos(a)*M.r*1.1,z=M.z+Math.sin(a)*M.r*1.1,y=terrainH(x,z);if(y<SEA_LEVEL+.05)return;
  const S=WATER.spring({key:'gvspring'+i,name:'An acid spring (pH ~2; iron, zinc and copper)',x,z,r:3+M.r*.04,level:y+.08,temp:.5,mineral:'iron',milky:.2,boil:0,steam:0});
- const d=WATER.drawSpring(S,{THREE,scene,fog:scene.fog,mats:SPRING_MATS,renderOrder:1});d.mesh.userData.probeSkip=true;d.mesh.userData.inspectLabel='An acid spring';W_OUT.springs++;});
+ const d=WATER.drawSpring(S,{THREE,scene,fog:scene.fog,mats:SPRING_MATS,renderOrder:1});d.mesh.userData.probeSkip=true;d.mesh.userData.inspectLabel='An acid spring (it rises once a day with the tidal pump)';SPRING_MESH.push(d.mesh);W_OUT.springs++;});
+// THE TIDAL PUMP (GALV_PHYS.tide; the owner, 2026-11-12): once a sidereal day, at the top of the giant's nod, the strand's cracked ore gapes and the
+// mounds' springs rise as the fresh acid is pushed through (up to 8 cm); window._tide carries the pump, its hour and the strand's current
+const TIDE_RISE=.08;window._tide={pump:0,peakHour:null};
+/* the world's time in days (the sky's own: ATMOS.skyState reads the same clock's day and hour) */
+const WORLD_T=()=>{const C=typeof KHOST!=='undefined'&&KHOST.host?KHOST.host.clock:null;return C?(C.day||0)+C.hour/24:SKY_HOUR0/24;},SKY_HOUR0=ATMOS.SKY&&ATMOS.SKY.viewHour!=null?ATMOS.SKY.viewHour:13;
+tick(()=>{const t=WORLD_T(),lib=ATMOS.libration?ATMOS.libration(t):t,p=GALV_PHYS.tide(lib);
+ for(const m of SPRING_MESH)m.position.y=TIDE_RISE*p;window._tide.pump=p;window._tide.t=t;window._tide.peakHour=GALV_PHYS.pumpHour(Math.floor(t));});
 W_OUT.sea=SEA_LEVEL;window._water=W_OUT;

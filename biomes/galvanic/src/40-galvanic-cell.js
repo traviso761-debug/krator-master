@@ -8,6 +8,8 @@
 //   GALV_PHYS.stream({pH0, Q0, q, s})        down a stream: the pH by dilution, where the ochre drops (the terraces) and the water's colour
 //   GALV_PHYS.season(day, o)                 the terminal sea's level against its mean (the falling shoreline) and the cathode's oxygen at a height
 //   GALV_PHYS.floodDays(y, o), GALV_PHYS.store(y, o)   how long a height lies under the sea each year, and whether a store jar there lives through it
+//   GALV_PHYS.tide(t)                        the daily tidal pump, 0..1 (the owner, 2026-11-12): t a clock in days or ATMOS.libration(t)'s record;
+//                                            GALV_PHYS.cell({pump}) swells the current with it; GALV_PHYS.pumpHour(day) the hour of its peak
 var GALV_PHYS=(function(){
  const F=96485,YEAR=365*86400,R=8.314;
  const clamp=(v,a,b)=>v<a?a:v>b?b:v,dflt=(v,d)=>v==null?d:v;
@@ -28,8 +30,9 @@ var GALV_PHYS=(function(){
   const ocv=Math.max(0,rest(c,pH,o2)-rest(a,pH,o2)),v=ocv/2;
   const ox=o=>Math.max(0,o)/(Math.max(0,o)+.1),pass=1-sm(3.5,5.5,pH);
   const i=REF.iMax*(ocv/REF.ocvMax)*(ox(o2)/ox(REF.o2))*arr(T)*wet*pass;
-  const p=v*i*ins,lost=v*i*(1-ins);
-  return{ocv,v,i,p,lost,alive:p>=2};}   /* under 2 mW/m2 the upkeep is not met (PLAN.md section 3: the cell is not worth living on) */
+  const pump=1+.6*clamp(dflt(o.pump,0),0,1);   /* the tidal pump (GALV_PHYS.tide): fresh oxygen and acid in, the products out */
+  const iP=i*pump,p=v*iP*ins,lost=v*iP*(1-ins);
+  return{ocv,v,i:iP,p,lost,alive:p>=2};}   /* under 2 mW/m2 the upkeep is not met (PLAN.md section 3: the cell is not worth living on) */
  // A YEAR OF CURRENT: energy, living matter (a tenth of it, 20 kJ/g), the cathodic crust (each electron spends an H+; FeOOH drops, 3 electrons a
  // mole; porous at half its 4 g/cm3), the sphalerite eaten (2 electrons a mole) and the zinc sent to the water
  function yieldOf(i,p,o){o=o||{};const eff=dflt(o.eff,.1),kJg=dflt(o.kJg,20),phi=dflt(o.solid,.5);
@@ -63,7 +66,18 @@ var GALV_PHYS=(function(){
  function store(y,o){o=o||{};const cap=dflt(o.cap,60),fill=dflt(o.fill,2);let c=cap,min=cap,at=null;const day=dflt(o.day,70);
   for(let d=0;d<730;d++){const flooded=level(d+.5,o)>y;c=flooded?c-1:Math.min(cap,c+fill);if(c<min)min=c;if(d===365+Math.floor(day))at=c;}
   return{alive:min>0,charge:clamp((at==null?c:at)/cap,0,1),floodDays:floodDays(y,o),min};}
- return{MIN,REF,SEA,rest,cell,yield:yieldOf,acid,stream,streamAtPH,colourAt,season,level,floodDays,store};})();
+ // THE TIDAL PUMP (the owner, 2026-11-12; PLAN.md section 3): once a sidereal day Krator's shell flexes with its slightly eccentric orbit, the
+ // strand's cracked ore gapes at the top of the giant's nod, fresh oxygen and acid are drawn into it and the zinc sulfate flushed out. The phase is
+ // the sky model's libration (core/atmos/sky/89-atmos-e-skymodel.js: SID, the nod's phase NOD), the same the Gills' breath reads, so the pump and the
+ // giant's nod are one motion (tests/test-galvanic.js holds the constants against ATMOS). The pulse: (0.5 + 0.5 cos)^2 of the phase from the top of
+ // the nod: 1 at the top, 0 half a day later, a mean of 3/8. The current swells by GAIN x pump: 1.6x at the top, 1.225x over the day
+ const TAU=Math.PI*2,SID=1.0027379,NOD=4.04,GAIN=.6,fr=x=>x-Math.floor(x);
+ const tidePhase=t=>fr(t*SID+(NOD-Math.PI/2)/TAU);
+ const pumpAt=u=>{const c=.5+.5*Math.cos(TAU*u);return c*c;};
+ const tide=t=>pumpAt(t!=null&&typeof t==='object'?fr(t.phase+(NOD-Math.PI/2)/TAU):tidePhase(t));
+ const pumpHour=day=>{const k=Math.ceil(day*SID+(NOD-Math.PI/2)/TAU),t=(k-(NOD-Math.PI/2)/TAU)/SID;return (t-day)*24;};
+ const TIDE={SID,NOD,GAIN,mean:3/8};
+ return{MIN,REF,SEA,TIDE,rest,cell,yield:yieldOf,acid,stream,streamAtPH,colourAt,season,level,floodDays,store,tide,tidePhase,pumpAt,pumpHour};})();
 
 // THE STATION'S SITE (PLAN.md section 5; scale model 5.1, surveyed 2026-11-11 by tools/survey.py). An ideal type of 5.2 km (R 2600 m), page metres:
 // x east, z south, origin the page's centre. The page compresses the model's 16 km of strand to ~3 km; the heights are the model's (-2,600 m is the
