@@ -753,12 +753,12 @@
    "sha256": "5c10729af1b28d251635884839ef4d96c7379d9496ca15bee12816c2e353066d"
   },
   "kits/ancients/dist/strongbow-today.html": {
-   "bytes": 2823257,
-   "sha256": "e530bfaec60896eb3b64a9c09d8c3983f9296371a50474934fd69a2a4c3b118c"
+   "bytes": 3593303,
+   "sha256": "26f312bd1b4e35d10930945ade505c6329226e6f898aaf374355a995cf23a7c9"
   },
   "kits/ancients/dist/strongbow.html": {
-   "bytes": 2768479,
-   "sha256": "3380cf6ca7ca801e47595dee20810b6f97b9050ebaac703c124f33782ac4e844"
+   "bytes": 2768874,
+   "sha256": "47714cd80e24a40c75cb128ef4822719739196f20e50264b1f8ce50b38c50716"
   },
   "kits/ancients/dist/theodiga.html": {
    "bytes": 2622707,

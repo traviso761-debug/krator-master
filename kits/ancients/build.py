@@ -122,9 +122,46 @@ TAGS_CORE = INTERIOR_CORE[:4]
 # (kits/eternian/src/42-et-head.js, [G data]: one generator for every build that carries the Eternians' faces)
 SB_TODAY_READS = ([(os.path.join(HERE, 'targets', 'strongbow'), f) for f in ('8aw0-strongbow-plan.js', '8aw1-strongbow-parts.js', '8aw2-strongbow-draw.js', '8aw3-strongbow-foot.js')]
                   + [(os.path.join(ROOT, 'settlements', 'strongbow', 'src'), f) for f in ('20-sb-census.js', '30-sb-layout.js', '31-sb-rules.js', '8ax0-sb-reclaim.js')])
+# Strongbow's town (SB3): its drawing and the isle demo's kit-piece flattener (isleFlatten), read in place; two GENERATED
+# bodies, each sealed in its own closure so its globals meet none of the kit's (core/city's clamp and segDist are the
+# kit's names too): SB_CITY, core/space + core/city's [G data] fragments + the settlement's town plan (src/40-sb-town.js) as
+# SBCITY; SB_XAK, the Xanadu kit with the scrap set as XAK (kits/xanadu/kit_bundle.py). Every file is read live, never copied.
+SB_TOWN_READS = [(os.path.join(ROOT, 'settlements', 'strongbow', 'src'), '8ax1-sb-town.js'),
+                 (os.path.join(ROOT, 'settlements', 'isle-demo', 'src'), '58-isle-protos.js')]
+SB_CITY, SB_XAK = '8ax8-sb-city.js', '8ax9-sb-xak.js'
+
+
+def sb_city_files():
+    city = os.path.join(ROOT, 'core', 'city')
+    return ([os.path.join(ROOT, 'core', 'space', '20-core-space.js')]
+            + [os.path.join(city, f) for f in sorted(os.listdir(city)) if re.match(r'^\d\d-city-.*\.js$', f) and 'host' not in f]
+            + [os.path.join(ROOT, 'settlements', 'strongbow', 'src', '40-sb-town.js')])
+
+
+def sb_city():
+    """core/city and the town plan in one closure: var SBCITY = {KCITY, town: SB_TOWN} (settlements/strongbow/src/40-sb-town.js)"""
+    body = ''
+    for f in sb_city_files():
+        with open(f, encoding='utf-8', newline='') as fh:
+            body += '/* ---- %s ---- */\n%s\n;\n' % (os.path.relpath(f, ROOT).replace(os.sep, '/'), fh.read())
+    return ('/* SBCITY: core/space, core/city and Strongbow\'s town plan sealed in one closure (kits/ancients/build.py sb_city). '
+            'GENERATED: edit core/city or settlements/strongbow/src. */\nvar SBCITY = (function(){\n' + body
+            + 'return { KCITY: KCITY, KSPACE: KSPACE, town: SB_TOWN };\n})();\n')
+
+
+def sb_xak():
+    """the Xanadu kit and its scrap set for Strongbow's town, sealed as XAK (kits/xanadu/kit_bundle.py, read live)"""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location('sb_xanadu_kit_bundle', os.path.join(ROOT, 'kits', 'xanadu', 'kit_bundle.py'))
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    js, _ = mod.bundle('XAK', scrap=True)
+    return js
+
+
 TARGET_READS = {'podium': [(os.path.join(ROOT, 'kits', 'eternian', 'src'), '42-et-head.js')],
                 # Strongbow today (settlements/strongbow, SB2): the arcology's fragments and the settlement's layout and reclamation, read in place
-                'strongbow-today': SB_TODAY_READS + [(os.path.join(ROOT, 'core', 'terrain'), '37c-core-rubble.js')],
+                'strongbow-today': SB_TODAY_READS + [(os.path.join(ROOT, 'core', 'terrain'), '37c-core-rubble.js')] + SB_TOWN_READS,
                 # Strongbow's rubble is core/terrain's KRUBBLE heaps (the Ancient's Valley's method), read in place
                 'strongbow': [(os.path.join(ROOT, 'core', 'terrain'), '37c-core-rubble.js')],
                 # the Sanctum (2026-10-22) shares the Podium's skins and materials (MAT.sn*), read in place
@@ -240,6 +277,7 @@ DETERMINISTIC = {
     '8aw0-strongbow-plan.js', '8aw1-strongbow-parts.js', '8aw3-strongbow-foot.js',   # targets/strongbow: KRAND-hashed records; the drawing's parts and the foot, hashed, no rng()
     '37c-core-rubble.js',                              # core/terrain's KRUBBLE heaps, read by targets/strongbow: KRAND-hashed, no rng()
     '20-sb-census.js', '30-sb-layout.js', '31-sb-rules.js', '8ax0-sb-reclaim.js',   # settlements/strongbow, read by strongbow-today: records and a hashed drawing, no rng()
+    '8ax1-sb-town.js', '58-isle-protos.js', '8ax8-sb-city.js', '8ax9-sb-xak.js',   # Strongbow's town (SB3): drawn from core/city's records (core/rand streams), the isle demo's flattener, the two sealed bundles
 }
 DETERMINISTIC |= {'06-core-khook.js', '06b-core-kcolor.js'}   # core/shader (no rnd())
 
@@ -358,7 +396,7 @@ def check(order, bodies):
     # 2. shared-scope collisions
     decl = {}
     for f in order:
-        if not f.endswith('.js') or '-biome-' in f:    # closures: see above
+        if not f.endswith('.js') or '-biome-' in f or f in (SB_CITY, SB_XAK):    # closures: see above; Strongbow's two sealed bundles
             continue
         for rx in (RE_DECL, RE_DECL_MULTI):
             for m in rx.finditer(bodies[f]):
@@ -420,6 +458,10 @@ def build_one(target, do_checks, assert_origin):
             with open(os.path.join(d, f), encoding='utf-8', newline='') as fh:
                 bodies[f] = fh.read()
             extra.append(f)
+        if target == 'strongbow-today':
+            bodies[SB_CITY] = sb_city()
+            bodies[SB_XAK] = sb_xak()
+            extra += [SB_CITY, SB_XAK]
         order = sorted(order + extra)
 
     if do_checks:

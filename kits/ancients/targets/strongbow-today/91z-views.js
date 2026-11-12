@@ -21,5 +21,10 @@ const VIEWS={
  'The balloon field':            (function(){const p=SBT.c('sb.nock.pad');return SBV([p[0]-180,p[1]+80,p[2]+180],[p[0]-40,p[1]+18,p[2]-20]);})(),
  // the top: the Sultanate's post where W5 lands, the caravan yard, the Order's gatehouse on the rim gallery
  'The post at the lip':          (function(){const p=SBT.c('sb.lip.post');return SBV([p[0]-230,p[1]+70,p[2]+150],[p[0]-30,p[1]+4,p[2]-70]);})(),
+ // SB3, the town (src/40-sb-town.js): the rings and spokes from above, a street in the inner ring, the outer ring and the farms
+ 'The town from above':          (function(){const a=SBT.L.lobby.at;return SBV([a[0]+120,560,a[2]+900],[a[0],0,a[2]+330]);})(),
+ 'The inner ring':               (function(){const a=SBT.L.lobby.at;return SBV([a[0]+170,26,a[2]+300],[a[0]+40,6,a[2]+200]);})(),
+ 'The road spoke':               (function(){const a=SBT.L.lobby.at;return SBV([a[0]-520,40,a[2]+260],[a[0]-300,4,a[2]+120]);})(),
+ 'The outer ring and the farms': (function(){const a=SBT.L.lobby.at;return SBV([a[0]+260,90,a[2]+880],[a[0]+20,0,a[2]+560]);})(),
 };
 VIEWS['Strongbow today at night']=SBV([-560,600,1650],[0,500,0]).concat([1]);

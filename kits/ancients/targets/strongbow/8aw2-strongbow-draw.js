@@ -203,8 +203,12 @@ function buildStrongbow(scene,gx,gz,d){reseed(9040+d);KOFF=[gx,0,gz];
 
  // ---- the plain's trees and the scree's loose stones (the kit's stream) ---------------------------------------------
  for(let i=0;i<150;i++){const x=rr(-1080,1080),z=rr(150,900);if(dd&&Math.abs(x+40)<420&&z<400)continue;if(Math.abs(z-P.road.pts[0][2])<14||Math.abs(z-P.line.pts[0][2])<14)continue;
-  const ht=rr(6,13),u=rng();kput('trunk',[x,F.FL,z],qEuler(0,u*6.28,0),[ht*.12,ht*.6,ht*.12],new THREE.Color().setHSL(.07,.3,.2));
-  kput('leafCard',[x,F.FL+ht*.55,z],qEuler(0,u*6.28,0),[ht*.4,ht*.55,ht*.4],new THREE.Color().setHSL(.22+.08*u,.3,.2+.06*u));}
+  const ht=rr(6,13),u=rng();
+  /* Strongbow today: none on the town at the foot (its rings to r 620 round the lobby) or on its farm spokes (settlements/strongbow) */
+  if(!sbTown&&(Math.hypot(x,z-P.foot.lobby.at[2])<640||(z>400&&Math.abs(x)<70)||Math.abs(z-P.road.pts[0][2])<50))continue;
+  /* the instance colour multiplies the kit's mid-green leaf map: lightness under .3 draws near-black (36-decor.js, VEG.tree) */
+  kput('trunk',[x,F.FL,z],qEuler(0,u*6.28,0),[ht*.12,ht*.6,ht*.12],new THREE.Color().setHSL(.07,.3,.32));
+  kput('leafCard',[x,F.FL+ht*.55,z],qEuler(0,u*6.28,0),[ht*.4,ht*.55,ht*.4],new THREE.Color().setHSL(.22+.08*u,.38,.42+.12*u));}
  for(let i=0;i<220;i++){const x=rr(-1080,1080),z=rr(0,135),y=F.ground(x,z);if(F.scree(x,z)<6)continue;
   kput('rubble',[x,y+.5,z],qEuler(rng()*3,rng()*3,0),[2+rng()*6,1.5+rng()*3,2+rng()*5],new THREE.Color().setHSL(.08,.08,.5+.15*rng()));}
 

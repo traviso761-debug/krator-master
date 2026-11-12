@@ -232,7 +232,25 @@ where they work and the scrap set's buildings, plus the Order's and the outcasts
    - the Sultanate's post and caravan yard at the lip, and the Order's banners on its gatehouse.
 
    The arcology's placeholder town is left out (`SB_TODAY`). Its lamps now burn only in the runs Xanadu holds.
-5. **SB3, the town** on `core/city`, with the scrap set.
+5. **SB3, the town** (built 2026-11-12) on `core/city`, with the scrap set:
+   - `src/40-sb-town.js` ([G data]): one `core/city` instance in the lobby's frame (`rand: 'krand'`). Its site is the half annulus
+     south of the face (r 200 to 610 from the lobby, z >= 30) and two farm corridors out to r 900. The foot, the quarry and the
+     scree west of the Spine are off it, and so is ground steeper than 0.22.
+   - Its avenues are the four ring roads (r 200, 330, 470, 600), each cut where the scree or the quarry stands, plus the road and
+     fields spokes. The quarry spoke is a main street to the fallen hull. core/city's steps 6 to 10 do the rest: thirteen civic
+     buildings by `near` (the bath and the merchants' guildhall in the inner ring, the salvagers' guildhall by the quarry, the
+     granaries, the stores, the bazaar arcades on the road, the town gate and its tower where the road leaves the rings, two
+     shrines), the lots along the avenues, main streets across the voids, and side streets. The side streets' lots and the
+     alleys are left out: a town this size keeps yards behind its houses.
+   - The wealth is by ring (the courtyard houses inside, panel houses and rows in the middle, the poor tier outside), and
+     `rules.vacant` leaves frontage open by ring. Beyond r 605 the choosers draw the farms, and each farm's fields are strips
+     behind it.
+   - As laid out: 425 buildings and 3,658 people, 908 / 1,395 / 1,058 / 297 by ring.
+   - `test-sb-town.js` checks no overlap, nothing on a street, the foot, the quarry or the scree, the rings' people, the farms
+     and their fields, and that a rerun gives the same town. Each check has a negative.
+   - The page (`src/8ax1-sb-town.js`) draws the lots and the foot's four (the serai on the hall's platforms, the plaza's gate,
+     shrine and pavilion) as the kit's own, built once per variant and footing (`XAK.proto`), flattened, and merged by
+     material per ring. The reclamation's stand-ins remain only for a page without the kit.
 6. **SB4, life** on `core/simulation`.
 7. Placement in the open world: the region's job, from the records.
 

@@ -9,7 +9,8 @@
 // - the Sultanate's post and caravan yard at the lip;
 // - the banners.
 // Everything is registered in core/tags first. Hashed only (no rng()): listed in build.py's DETERMINISTIC. The town's own
-// buildings (the rings, on core/city with the scrap Xanadu set) are SB3's; the serai here is a stand-in until then.
+// buildings (the rings, on core/city with the scrap Xanadu set) are SB3's (8ax1); the serai and the plaza's three are stand-ins only
+// where the scrap set is not on the page.
 kdef('sbBall',new THREE.SphereGeometry(1,18,12),MAT.acKit);
 const SB_RED=new THREE.Color(0x9a2a1e),SB_GOLD=new THREE.Color(0xc89a3a),SB_SAFFRON=new THREE.Color(0xe0901a),SB_GIRDER=new THREE.Color(0x7a3428),SB_BRONZE=new THREE.Color(0xb07a40);
 
@@ -21,7 +22,7 @@ function sbReclaim(gx,gz){const L=sbLayout(),P={},h=(a,b,c,e)=>STRONGBOW.h(1647,
    else if(w.kind==='bridge')T.child(B,{'class':'infrastructure',kind:'bridge',key:'sb.today.'+w.id,at:W(ctr(P[w.a])),tags:X});
    else if(w.kind==='rope')T.child(B,{'class':'infrastructure',kind:'rope-way',key:'sb.today.'+w.id,at:W(ctr(P[w.a])),tags:{culture:'outcasts'}});}
   for(const p of L.parts)if(p.kind==='landing'&&p.id!=='sb.nock.landing')T.child(B,{'class':'part',kind:'landing',key:'sb.today.'+p.id,at:W(ctr(p)),tags:X});
-  T.child(B,{'class':'building',kind:'caravanserai',key:'sb.today.serai',name:'the terminus serai (stand-in)',at:W(ctr(P['sb.hall.serai'])),tags:Object.assign({types:['inn','market']},X)});
+  if(!sbTownKit())T.child(B,{'class':'building',kind:'caravanserai',key:'sb.today.serai',name:'the terminus serai (stand-in)',at:W(ctr(P['sb.hall.serai'])),tags:Object.assign({types:['inn','market']},X)});
   T.child(B,{'class':'fixture',kind:'balloon',key:'sb.today.balloon',name:'the Order\'s balloon',at:W(ctr(P['sb.nock.pad'])),tags:{culture:'order'}});
   T.child(B,{'class':'building',kind:'toll-post',key:'sb.today.lippost',name:'the Sultanate\'s post at the lip',at:W(ctr(P['sb.lip.post'])),tags:Object.assign({types:['civic']},X)});}
 
@@ -73,15 +74,15 @@ function sbReclaim(gx,gz){const L=sbLayout(),P={},h=(a,b,c,e)=>STRONGBOW.h(1647,
    kput('acBox',[x,3.2,z],qEuler(0,-a,.1),[5,.15,4],new THREE.Color(cloth[i%5]));kput('acBox',[x,.6,z],qEuler(0,-a,0),[2.4,1.2,1.6],new THREE.Color(0x8a6a44));
    kput('figB',[x+1.5,0,z+1],qEuler(0,h(6,i)*6.28,0),1,new THREE.Color().setHSL(.03+.1*h(7,i),.45,.36));kput('figH',[x+1.5,0,z+1],null,1,new THREE.Color(0xa87a56));}
   REGISTER({name:'Strongbow today — the bazaar in the lobby',x:c[0],z:c[2],r:lb.r,y:0,h:6});}
- // ---- the serai on the hall's platforms (a stand-in for the scrap set's xa_scrap_serai) --------------------------------------
- {const p=P['sb.hall.serai'],s=p.shape,cx=(s[1]+s[2])/2,cz=(s[3]+s[4])/2,w=s[2]-s[1]-8,d=s[4]-s[3]-8;
+ // ---- the serai on the hall's platforms (a stand-in for the scrap set's xa_scrap_serai, drawn by 8ax1 where XAK is on the page)
+ if(!sbTownKit()){const p=P['sb.hall.serai'],s=p.shape,cx=(s[1]+s[2])/2,cz=(s[3]+s[4])/2,w=s[2]-s[1]-8,d=s[4]-s[3]-8;
   for(const [ox,oz,bw,bd] of [[0,-d/2+4,w,8],[0,d/2-4,w,8],[-w/2+4,0,8,d-16],[w/2-4,0,8,d-16]]){
    kput('acBox',[cx+ox,4,cz+oz],null,[bw,8,bd],new THREE.Color(0xe6dcc6));kput('acBox',[cx+ox,8.3,cz+oz],null,[bw+.6,.6,bd+.6],SB_RED);}
   kput('acBox',[cx+w/2,6,cz],null,[2,12,12],SB_GOLD);
   for(let i=0;i<12;i++)kput('figB',[cx+(h(8,i)-.5)*w*.6,0,cz+(h(9,i)-.5)*d*.5],qEuler(Math.PI/2,h(10,i)*6,0),[2.2,1.6,2.2],new THREE.Color(0x6a4a2e));
   REGISTER({name:'Strongbow today — the terminus serai (stand-in)',x:cx,z:cz,r:Math.hypot(w,d)/2,y:0,h:9});}
- // ---- the plaza's gate, shrine and pavilion (stand-ins for the scrap set's) ---------------------------------------------------
- {const g=P['sb.plaza.gate'],s=g.shape,c=ctr(g);for(const dz of [-1,1])kput('acBox',[c[0],g.y+8,c[2]+dz*12],null,[10,16,6],new THREE.Color(0xe2d8c2));
+ // ---- the plaza's gate, shrine and pavilion (stand-ins for the scrap set's, drawn by 8ax1 where XAK is on the page) -----------
+ if(!sbTownKit()){const g=P['sb.plaza.gate'],s=g.shape,c=ctr(g);for(const dz of [-1,1])kput('acBox',[c[0],g.y+8,c[2]+dz*12],null,[10,16,6],new THREE.Color(0xe2d8c2));
   beam('acBox',[c[0],g.y+15,c[2]-12],[c[0],g.y+15,c[2]+12],2,2,SB_GIRDER);
   for(const dz of [-1,1]){kput('acBox',[c[0],g.y+21,c[2]+dz*12],null,[.3,10,.3],new THREE.Color(0x5a4630));kput('acBox',[c[0]+1.8,g.y+24,c[2]+dz*12],null,[3.4,2,.08],SB_RED);}
   const sh=P['sb.plaza.shrine'],cs=ctr(sh);kput('sbCyl',[cs[0],sh.y+4,cs[2]],null,[sh.shape[3]*.8,8,sh.shape[3]*.8],new THREE.Color(0xe8e0cc));
