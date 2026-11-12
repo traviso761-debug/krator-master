@@ -744,6 +744,37 @@ The numbers are this section's questions below.
 | 17 | Reed Lake | **There will be a larger reed village at the model's Reed.** A short way off is a **large town of Tabisti buildings, the centre of pure-strain Tabisti culture**: a new settlement for the map and the lore. |
 | 18 | Regions | **Cut `east-rim`, `north-shore` and `southwest` as proposed** (§4), after the pin batch so the cuts see the new pins. |
 
+### The pin batch (`SETT_MOVED['5.1e6']`, 2026-11-11)
+
+Surveyed on the model; the owner chose among the options where a choice was needed.
+
+| Settlement | From | To | Frame turn | Note |
+|---|---|---|---|---|
+| Verge | 1263,946 | **1268,949** | about -10° | at the Rrivar Blaca's steepest step; the plateau lies W-WNW there (a -45° to -60° turn would set the page's river off the model's) |
+| Mungo | 1321,825 | **1322,828** | - | the east shore at the Gl Ṣḫr's mouth, 34 m over the lake |
+| Shade | 1229,885 | **1085,683** | - | a spring-head oasis under a 2,400 m wet wall; 156 km from Pinnacle Rock. No surface water on the model, so the pool goes in a towns water mask |
+| Mav's Refuge | 1024,807 | **1049,841** | - | the Béesh Baatar's floor (90 m³/s, 43 m wide; the page's river is 72 m). Girder is 58.7 km by road; the iziz-cluster region is recut |
+| Roketstad | 609,684 | **632,716** | - | a forest shelf on the Inner Wall's outer flank, +2,980 m, Cfb |
+| Jimjam | 746,550 | **745,546** | - | 56 m over its lake |
+| Dalab | 464,1112 | **477,1108** | about +45° | the Wind Bruk's delta at +7 m; **its flat plain needs a small map edit** (293 m of relief within 4 km; the owner chose surgery) |
+| Ys | 789,738 | **788,741** | about -55° | the cliffed shore with a lagoon shoal; the stacks are the page's own (none on the model at 2 km) |
+| The Hexahedron | 827,668 | **817,670** | - | the hyperjungle climate all round within 6 km |
+| Reed | 1277,676 | **1280,678** | - | the shallows by the east shore's landing |
+| **Tabist town (new)** | - | **1270,666** | - | `seur98e8mv`, type town, name to come: a flat strip on the strait between the lake's west arm and the main lake, 24 km NW of Reed (`SETT_ADDED['5.1e6']`) |
+
+**Not in this batch:**
+- Longsong: the Oidong-High Rift session moves it onto the Bīruk al-Ghaym (`SETT_MOVED['5.1e7']`, its branch).
+- Strongbow: `5.1e5`, on the same branch.
+- Erewhon's isle record: the Erewhon-fit session.
+
+**Still to do:**
+- **Frame turns** (Verge, Noah's Regret 90°, Ys, Dalab), each in its own page.
+- **Yuni's** north-east code paths turned to north-west.
+- **Dalab's** delta-plain edit.
+- **Dry pits beside three lakes** that a towns bake must not sample (Mungo, Dalab, Reed).
+- **Republishing** the model.
+- **Cutting** east-rim, north-shore and southwest.
+
 The questions as asked:
 
 1. **Handing over vs rebuilding (all B grades).** PLAN-VOTH's question 4, for every B page: hand each page's own ground
