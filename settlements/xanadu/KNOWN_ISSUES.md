@@ -108,6 +108,32 @@ The flank's edge is the map's grey cliff (the owner: "that grey streak should de
 * **Where the fix lives:** the map's source PNG is not in the repo, so the fix is in the page's geometry, not in
   `tools/erewhon-map.py`.
 
+## Erewhon: the town wall from the west gate, and the Vale's ground (2026-11-12, fixed)
+* **The west gate's wall:** the owner: "we need to redo the city wall, it lost its southern part".
+  - The map draws the west gate's wall south to the citadel as the head of the old palace loop. `90a-er-world.js` drops
+    that loop within 75 m of the citadel's own, so the run from the gate was never drawn. This was so before the
+    terrain work too: that page drew the same nine map segments.
+  - Now a map line that starts at a town gate keeps its run until it comes within 40 m of the citadel (`gateRun`), and
+    the connector joins it to the citadel's wall. No building stands on it.
+* **The ground:** the owner: "redo the ground texture as xanadu biome ground rather than the colors that originally
+  came from the png we used for planning".
+  - `85-er-paint.js` paints biomes/xanadu's ground (46-host-ground.js `TEX_GROUND`) on this map's fields, worked out
+    once on a 4 m grid (`ERG`):
+    - the meadow, gold where dry and lush by water, with flower drifts;
+    - the forest's litter and moss;
+    - the uplands' terra rossa, limestone and scrub;
+    - the rock and scree; the map's cliff and unbuildable classes are rock;
+    - the shore's sand and pebbles, and the stream's gravel.
+  - The building footings take the same colour.
+  - `90a-er-world.js` puts the biome's ground shader on the terrain (`erGroundShader`):
+    - the detail grain;
+    - the library's shore sand, pebbles and gravel by per-vertex masks, off the streets, plazas and courts;
+    - the petrified-wood strata on steep faces;
+    - marble on the high crags.
+* **The biome's library pack** (`86-bio-00-matlib-pack.js`) is registered as `xanadu-bio`. As `xanadu` the building
+  kit's pack, packed after it, had replaced it whole (`KMAT.pack` sets, it does not merge), so its ground sets never
+  reached the page. The vendored flora still reads its procedural textures, as before.
+
 ## Erewhon (round 9)
 * The garden district's rectangle lies on 15–40° ground; its tiles are a stepped surface (no neighbour more than a
   waterfall apart) on levelled pads, so from the ring road the grid reads as a hanging garden of terraces rather than

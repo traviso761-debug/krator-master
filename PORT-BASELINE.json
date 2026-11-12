@@ -1305,12 +1305,12 @@
    "sha256": "efedacdf87fae06ae85cc20164498bb7001bc23494ee5f60dc5044d91ca97771"
   },
   "settlements/xanadu/dist/erewhon.html": {
-   "bytes": 6709032,
-   "sha256": "40e39af1264cf9716e86a7fc8622a756877f11739b3ad9f9238541387170d5a7"
+   "bytes": 6720204,
+   "sha256": "404551cf8314b960f5973f7d69d8644b19a86ff36636bba7926ef29642e92847"
   },
   "settlements/xanadu/dist/xanadu.html": {
-   "bytes": 6530732,
-   "sha256": "1e8e0fc1edd1f2befa8b2f184809daf5bd15dc9bb25be4e5293a4a14b7626285"
+   "bytes": 6530736,
+   "sha256": "334f3d7f9660a3c831f2496b170ba2fd0355a919fc9661c82b6706d7e76567ce"
   },
   "settlements/ys/dist/kit.html": {
    "bytes": 1585127,

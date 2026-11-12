@@ -304,7 +304,9 @@ def build_one(target, do_checks):
     bodies[MATLIB_PACK] = matlib_pack.fragment(HERE, 'xanadu', side=side)
     order = sorted(order + [MATLIB_PACK])
     if any(f.startswith('86-bio-') for f in order):   # the vendored xanadu biome: its library pack, before the biome code
-        bodies['86-bio-00-matlib-pack.js'] = matlib_pack.fragment(os.path.join(ROOT, 'biomes', 'xanadu'), 'xanadu')
+        # under its own key (2026-11-12): as 'xanadu' the building kit's pack (88x, after it) replaced it whole (KMAT.pack
+        # sets, it does not merge), so its ground sets never reached the page. Erewhon's ground reads it (85-er-paint, 90a)
+        bodies['86-bio-00-matlib-pack.js'] = matlib_pack.fragment(os.path.join(ROOT, 'biomes', 'xanadu'), 'xanadu-bio')
         order = sorted(order + ['86-bio-00-matlib-pack.js'])
 
     if do_checks:

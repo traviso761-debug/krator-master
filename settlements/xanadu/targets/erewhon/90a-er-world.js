@@ -10,9 +10,47 @@ function erTerrainMesh(){const cell=4,NX=Math.round(ER.W/cell),NZ=Math.round(ER.
  // (round 9c: the island's "blue texture" was lake-bed paint from 60 m away; the streets' paint sat off their benches)
  const uv=g.attributes.uv;for(let i=0;i<p.count;i++){const lx=p.getX(i),ly=p.getY(i);p.setZ(i,terrainH(lx,-ly));uv.setXY(i,px(lx)/CS,1-pz(-ly)/CS);}g.computeVertexNormals();
  const tex=new THREE.CanvasTexture(gcv);tex.encoding=THREE.sRGBEncoding;tex.anisotropy=4;tex.minFilter=THREE.LinearMipmapLinearFilter;
- const m=new THREE.MeshStandardMaterial({map:tex,roughness:.96,metalness:0});groundM=new THREE.Mesh(g,m);groundM.rotation.x=-Math.PI/2;groundM.userData.isGround=true;groundM.userData.probeSkip=true;groundM.name='terrain';scene.add(groundM);window._terrainTex=tex;
+ const m=new THREE.MeshStandardMaterial({map:tex,roughness:.96,metalness:0});erGroundShader(g,m);groundM=new THREE.Mesh(g,m);groundM.rotation.x=-Math.PI/2;groundM.userData.isGround=true;groundM.userData.probeSkip=true;groundM.name='terrain';scene.add(groundM);window._terrainTex=tex;
  // beyond the map: a dark apron of far ground so the edges do not fall into the void
  const ap=new THREE.Mesh(new THREE.PlaneGeometry(9000,9000),new THREE.MeshStandardMaterial({color:0x4a5a3a,roughness:1}));ap.rotation.x=-Math.PI/2;ap.position.y=-2;ap.userData.probeSkip=true;scene.add(ap);}
+// ---------------------------------------------------------------- the ground's shader: biomes/xanadu's (46-host-ground.js, the owner 2026-11-12)
+// Over the painted albedo (85-er-paint, ERG): a tiled detail grain (the library's groundDetail, else a painted one), the
+// library's shore sand and pebbles in the beach band and the stream's gravel on its banks (each on two tiles, one turned,
+// blended by a slow wave: the biome's ?kground=0 mix), the petrified-wood strata banded by height on steep faces, and
+// marble on the high crags. Per-vertex masks (aGL: sand, pebbles, gravel, marble; aGM: the steep band) from ERG's fields,
+// as the biome documents them; none on a street, plaza, court or footing (the paint's klass). The library sets come from
+// the biome's own pack ('xanadu-bio', build.py)
+function erGroundShader(g,m){const T3=THREE,sm=smoothstep,p=g.attributes.position,lay=new Float32Array(p.count*4),gm=new Float32Array(p.count);
+ for(let i=0;i<p.count;i++){const x=p.getX(i),z=-p.getY(i),k=klass(x,z),paved=k===1||(k>=3&&k<=6)||k===9||k===10?0:1;
+  const sd=ERG.sd(x,z),shore=sm(70,6,sd)*sm(-8,4,sd),peb=sm(.42,.62,fbm(x*.012+4,z*.012-1,617,2));
+  lay[i*4]=shore*(1-peb)*paved;lay[i*4+1]=shore*peb*paved;lay[i*4+2]=sm(.55,.95,ERG.flow(x,z))*paved;lay[i*4+3]=sm(.6,.88,ERG.up(x,z));gm[i]=sm(.6,1.2,ERG.slope(x,z));}
+ g.setAttribute('aGL',new T3.BufferAttribute(lay,4));g.setAttribute('aGM',new T3.BufferAttribute(gm,1));
+ const P=n=>(typeof KMAT!=='undefined'&&KMAT.packed)?KMAT.packed('xanadu-bio',n):null,TX=L=>KMAT.textures(L,{aniso:8}).map;
+ const dL=P('groundDetail'),a=P('ground.shore'),b=P('ground.pebble'),c=P('ground.gravel'),d=P('rock.marble'),LIB=!!(a&&b&&c&&d);
+ let det;if(dL)det=TX(dL);else{const cv=document.createElement('canvas');cv.width=cv.height=256;const cx=cv.getContext('2d'),id=cx.createImageData(256,256),dd=id.data;
+  for(let y=0;y<256;y++)for(let x=0;x<256;x++){const o=(y*256+x)*4,v=232+(fbm(x/9,y/9,5,2)-.5)*36+(h3(x,y,9)-.5)*20;dd[o]=dd[o+1]=dd[o+2]=clamp(v,0,255);dd[o+3]=255;}
+  cx.putImageData(id,0,0);det=new T3.CanvasTexture(cv);}
+ det.wrapS=det.wrapT=T3.RepeatWrapping;
+ const L=LIB?{shore:TX(a),shoreK:1/a.scale[0],peb:TX(b),pebK:1/b.scale[0],grav:TX(c),gravK:1/c.scale[0],marb:TX(d),marbK:1/d.scale[0],marbM:Math.pow(d.tint&&d.tint.mean!=null?d.tint.mean:.7,2.2)}:null;
+ window._erGround={lib:LIB,detail:!!dL};
+ const f4=v=>v.toFixed(4),tri=(u,k)=>'mix(pow(texture2D('+u+',p*'+f4(k)+').rgb,vec3(2.2)),pow(texture2D('+u+',q*'+f4(k*.47)+'+vec2(0.31,0.17)).rgb,vec3(2.2)),mt)';
+ m.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:det};if(L){sh.uniforms.uLShore={value:L.shore};sh.uniforms.uLPeb={value:L.peb};sh.uniforms.uLGrav={value:L.grav};sh.uniforms.uLMarb={value:L.marb};}
+  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute vec4 aGL;attribute float aGM;varying vec4 vGL;varying float vGM;varying vec3 vGWP;varying vec3 vGWN;')
+   .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGL=aGL;vGM=aGM;vGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vGWN=normalize(mat3(modelMatrix)*objectNormal);');
+  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail;varying vec4 vGL;varying float vGM;varying vec3 vGWP;varying vec3 vGWN;'+(L?'uniform sampler2D uLShore;uniform sampler2D uLPeb;uniform sampler2D uLGrav;uniform sampler2D uLMarb;':''))
+   .replace('#include <map_fragment>',['#include <map_fragment>',
+    '{vec3 dt=texture2D(uDetail,vGWP.xz*0.165).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.021+0.37).rgb;diffuseColor.rgb*=mix(vec3(1.0),dt*dt2*1.12,0.85);',
+    L?['{vec2 p=vGWP.xz,q=mat2(0.799,-0.602,0.602,0.799)*p;float mt=smoothstep(-0.3,0.3,sin(p.x*0.017+2.0*sin(p.y*0.011))*sin(p.y*0.013+1.3));',
+     'vec3 ts='+tri('uLShore',L.shoreK)+';vec3 tp='+tri('uLPeb',L.pebK)+';vec3 tg='+tri('uLGrav',L.gravK)+';',
+     'diffuseColor.rgb=mix(diffuseColor.rgb,mix(diffuseColor.rgb,diffuse*ts*1.3,0.8),vGL.x);diffuseColor.rgb=mix(diffuseColor.rgb,mix(diffuseColor.rgb,diffuse*tp*1.3,0.8),vGL.y);',
+     'diffuseColor.rgb=mix(diffuseColor.rgb,mix(diffuseColor.rgb,diffuse*tg*1.3,0.8),vGL.z);}'].join('\n'):'',
+    ' float steep=1.0-clamp(vGWN.y,0.0,1.0); float y=vGWP.y+6.0*sin(vGWP.x*0.004+vGWP.z*0.003)+2.0*sin(vGWP.x*0.031);',
+    ' float b1=0.5+0.5*sin(y*0.21), b2=smoothstep(0.6,0.95,sin(y*0.07+1.3)), b3=smoothstep(0.75,1.0,sin(y*0.13+vGWP.x*0.001));',
+    ' vec3 st=mix(vec3(0.30,0.24,0.20),vec3(0.42,0.26,0.14),b1); st=mix(st,vec3(0.24,0.20,0.28),b2*0.8); st=mix(st,vec3(0.55,0.49,0.38),b3*0.7);',
+    ' st*=0.85+0.3*texture2D(uDetail,vec2(vGWP.x+vGWP.z,vGWP.y*3.0)*0.05).r;',
+    L?' {vec3 mb=pow(texture2D(uLMarb,mix(vGWP.xz,vec2(vGWP.x+vGWP.z*0.7,vGWP.y),smoothstep(0.3,0.7,steep))*'+f4(L.marbK)+').rgb,vec3(2.2))/'+f4(L.marbM)+';st*=mix(vec3(1.0),mb,vGL.w);}':'',
+    ' diffuseColor.rgb=mix(diffuseColor.rgb,mix(diffuseColor.rgb,st,0.30+0.25*texture2D(uDetail,vGWP.xz*0.004).r),max(smoothstep(0.45,0.8,steep),vGM*0.6));}'].join('\n'));};
+ m.customProgramCacheKey=()=>'er-ground|'+(L?1:0);}
 function erWater(){const LK=new THREE.Color().setHSL(XANADU_LAKE.hue,.6,.42);const w=new THREE.Mesh(new THREE.PlaneGeometry(9000,9000),new THREE.MeshStandardMaterial({color:LK,roughness:.12,metalness:.25,transparent:true,opacity:.86}));
  w.rotation.x=-Math.PI/2;w.position.y=ER.LAKE;w.material.polygonOffset=true;w.material.polygonOffsetFactor=1;w.material.polygonOffsetUnits=2;/* pushed back, not pulled forward (round 9c) */w.userData.probeSkip=true;w.name='lake';scene.add(w);
  // the stream: a ribbon along its line, resampled every 3 m and laid at the water's level there (streamY: over the
@@ -49,7 +87,15 @@ const erWallInGarden=(a,b)=>{for(let t=0;t<=1;t+=.25)if(inGarden(a[0]+(b[0]-a[0]
 const erWallSegs=[];{const PALW=new Set(ER_LINES.wall.filter(P=>P.some(p=>Math.hypot(p[0]-PAL.x,p[1]-PAL.z)<PAL.r+60)));
  const keep=(Wl,a,b)=>{const m=PALW.has(Wl)?75:8;if(inCitadel((a[0]+b[0])/2,(a[1]+b[1])/2,PALW.has(Wl)?75:14))return false;return !inCitadel(a[0],a[1],m)&&!inCitadel(b[0],b[1],m);};
  const nearLoop=(p)=>{let best=null,bd=1e9;for(const q of CIT.loop){const d=Math.hypot(q[0]-p[0],q[1]-p[1]);if(d<bd){bd=d;best=q;}}return{q:best,d:bd};};
- for(const Wl of ER_LINES.wall){const k=[];for(let i=0;i<Wl.length-1;i++)k.push(keep(Wl,Wl[i],Wl[i+1]));
+ // the town wall from a town gate (the owner, 2026-11-12: "the city wall lost its southern part"): the map draws the
+ // west gate's wall south to the citadel as the head of the old palace loop, which the 75 m cut above dropped whole.
+ // A map line that starts (or ends) within 30 m of a town gate keeps its run from the gate while the run stays 40 m
+ // clear of the citadel; the connector below then joins its end to the citadel's loop
+ const gateRun=Wl=>{const run=new Set();if(!PALW.has(Wl))return run;const tg=GATES.filter(g=>g.kind!=='palace');
+  const near=p=>tg.some(g=>Math.hypot(p[0]-g.x,p[1]-g.z)<30);const n=Wl.length-1;
+  if(near(Wl[0])){for(let i=0;i<n;i++){if(inCitadel(Wl[i+1][0],Wl[i+1][1],40))break;run.add(i);}}
+  if(near(Wl[n])){for(let i=n-1;i>=0;i--){if(inCitadel(Wl[i][0],Wl[i][1],40))break;run.add(i);}}return run;};
+ for(const Wl of ER_LINES.wall){const k=[],gr=gateRun(Wl);for(let i=0;i<Wl.length-1;i++)k.push(gr.has(i)||keep(Wl,Wl[i],Wl[i+1]));
   for(let i=0;i<Wl.length-1;i++){if(!k[i])continue;erWallSegs.push([Wl[i],Wl[i+1]]);
    // a kept run's end whose next segment was cut: join it to the loop
    for(const [e,j] of[[Wl[i],i-1],[Wl[i+1],i+1]]){if(j<0||j>=Wl.length-1||k[j])continue;const n=nearLoop(e);if(n.d<160)erWallSegs.push([e,n.q]);}}}}
