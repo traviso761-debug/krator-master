@@ -1,7 +1,7 @@
 // ================================================================= STRONGBOW — the cliff arcology: the plan (records)
 // The Ancients' city hung down a cliff face. The site is the Oidong Valley's north-west wall at its west end, toward Qiblai (scale model
 // 5.1 px 1013,1585; the owner, 2026-11-11, after an earlier move to the east end, for which the design was first drawn). The owner's
-// answers: an 800 m hull for about 40 000 people (since the owner's composition notes, a tower with a landing pad and one Spine, about 26 000), standing in ruin
+// answers: an 800 m hull for about 40 000 people (since the owner's composition notes, a tower with a landing pad and one Spine, about 27 000), standing in ruin
 // on half its stays, the Sultanate below and the Order above, a showcase cliff with a cut bay (targets/strongbow/NOTES.md).
 //
 // THE FRAME   x east along the face, y up, z SOUTH (out of the rock); the valley floor y = floor (0 on the kit page), the face
@@ -20,12 +20,12 @@
 // of draws. Records carry stable ids (sb.*); the ruin is a set of deltas by those ids (STRONGBOW.ruin). The drawing (8aw1) decides
 // nothing. Metres.
 const STRONGBOW={};
-STRONGBOW.DIM={LIP:900,BATTER:30,STO:25.6/7,BAY:{w:320,d:90},
- HULL:{top:900,tip:498,W:110,D:170,gap:40,LIT:20,NSEG:8},
- CROWN:{h:10,over:30,pool:[44,16]},MAST:{h:170,rake:12},RAMP:{p0:[-300,-34],c:[-260,190],p2:[-62,40],w:14,rise:10,pitch:26,back:[[-150,-230],[0,-260],[150,-230]]},
+STRONGBOW.DIM={LIP:900,BATTER:30,STO:25.6/7,BAY:{w:190,d:90},
+ HULL:{top:960,tip:498,W:110,D:170,gap:40,LIT:20,NSEG:8},
+ CROWN:{h:10,over:30,pool:[44,16]},MAST:{h:170,rake:12},RAMP:{p0:[-300,-34],c:[-260,190],p2:[-62,40],w:14,pitch:26,back:[[-150,-230],[0,-260],[150,-230]]},
  NOCK:{y:520,th:22,over:96,wing:120,storeys:5,landing:{r:30,at:.52}},
- STRING:{n:12,u:.45,y0:700,y1:880,x0:190,x1:275},
- ANCHORS:[{y:840,n:10,b0:790,b1:880},{y:740,n:10,b0:660,b1:780},{y:620,n:9,b0:540,b1:640}],SOCK:{x0:175,x1:320,u:.62},
+ STRING:{n:12,u:.45,y0:700,y1:880,x0:125,x1:208},
+ ANCHORS:[{y:840,n:10,b0:790,b1:880},{y:740,n:10,b0:660,b1:780},{y:620,n:9,b0:540,b1:640}],SOCK:{x0:110,x1:255,u:.62},
  QUIVER:{x:-245,top:400,tip:150,W:100,D:80,n:7},
  // THE SPINE (the owner, 2026-11-11: 'one intermittently sloping column of drums and terraces'): nodes from the
  // keel to the foot, [x, y, z from the keel's centre]; plumb runs and runs that step out from the rock; a terrace at every turn
@@ -89,7 +89,7 @@ STRONGBOW.plan=function(o){o=o||{};const D=STRONGBOW.DIM,F=STRONGBOW.frame(o),S=
  // (a quadratic curve from the plateau west of the bay, out over the bay's mouth and back onto the crown's west flank)
  {const R=D.RAMP,bz=f=>{const a=(1-f)*(1-f),b=2*f*(1-f),c=f*f;return[a*R.p0[0]+b*R.c[0]+c*R.p2[0],a*R.p0[1]+b*R.c[1]+c*R.p2[1]];};
   let L=0;for(let i=0;i<64;i++){const p=bz(i/64),q=bz((i+1)/64);L+=Math.hypot(q[0]-p[0],q[1]-p[1]);}
-  const n=Math.round(L/R.pitch),pts=[];for(let i=0;i<=n;i++){const f=i/n,p=bz(f);pts.push([p[0],LY+R.rise*f,p[1],f]);}
+  const n=Math.round(L/R.pitch),pts=[];for(let i=0;i<=n;i++){const f=i/n,p=bz(f);pts.push([p[0],LY+(cy-LY)*f,p[1],f]);}
   P.ramp={id:'sb.ramp',pts,w:R.w,len:L};
   for(let i=1;i<pts.length-1;i++)P.stays.push({id:'sb.st.ramp.'+i,fan:'ramp',side:-1,i,a:'mast',b:pts[i].slice(0,3)});
   // the backstays: from the mast head to the plateau behind the bay
@@ -125,7 +125,7 @@ STRONGBOW.plan=function(o){o=o||{};const D=STRONGBOW.DIM,F=STRONGBOW.frame(o),S=
   for(let k=1;k<nd.length-1;k++){const c=nd[k],T={id:'sb.ter.'+k,k,at:c.slice(),r:SP.tr[k]};P.spine.terraces.push(T);P.saucers.push(T);
    if(SP.rotor.indexOf(k)>=0){const s=c[0]>=0?1:-1;P.rotors.push({id:'sb.rot.'+k,terrace:T.id,at:[c[0]+s*T.r*.8,c[1]+4,c[2]],hub:[c[0]+s*SP.arm,c[1]+4,c[2]+40],r:SP.rr,blades:3,ph:h(103,k)*Math.PI*2});}
    if(k===SP.pad)P.spinePad={id:'sb.sp.pad',terrace:T.id,at:[c[0],c[1],c[2]+T.r+32],r:34};
-   if(SP.struts.indexOf(k)>=0)T.struts=[-1,1].map(s=>({id:T.id+'.strut.'+(s<0?'w':'e'),a:[c[0]+s*T.r*.9,c[1]-2,c[2]],b:[s*D.BAY.w/2,c[1]-22,c[2]]}));}
+   if(SP.struts.indexOf(k)>=0)T.struts=[-1,1].map(s=>({id:T.id+'.strut.'+(s<0?'w':'e'),a:[c[0]+s*T.r*.9,c[1]-2,c[2]],b:[s*(D.BAY.w/2+14),c[1]-22,F.faceZ(s*(D.BAY.w/2+14),c[1]-22)]}));}
   P.lifts=D.TERM.lifts.map((x,i)=>({id:'sb.lift.'+i,in:'sb.spine',x,y0:F.FL,y1:nd[0][1]}));}
  // the galleries on the face beside the Spine, below the Nock (east by the bay; west beyond the lower hull)
  for(const s of [-1,1])D.GALL.ys.forEach((y,j)=>{const yy=F.FL+y*F.k,sn=s<0?'w':'e',G=D.GALL[sn];
@@ -168,7 +168,7 @@ STRONGBOW.ruin=function(P){const D=P.dim,R=D.RUIN,F=P.frame,S=P.seed,h=(a,b,c,e)
   if(!snap)continue;RU.gone.push(st.id);
   if(h(202,st.i,st.fan.length,st.id.length)<R.limp)RU.limp.push({id:st.id,len:40+160*h(203,st.i,st.id.length)});}
  // the Bow's lean about its hinge at the crown's back (degrees about x: out; about z: the roll)
- RU.lean={hinge:[0,F.top,F.back],ax:R.lean,az:R.roll*-side};
+ RU.lean={hinge:[0,F.lipY,F.back],ax:R.lean,az:R.roll*-side};
  // the Nock: the failed side's wing fallen; the centre goes with the hull
  RU.nockGone=['sb.nock.'+sn];
  // the lower hull fallen into the scree in three pieces

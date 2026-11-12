@@ -10,7 +10,9 @@ const P=C.plan(),S=P.stats,F=P.frame,D=P.dim;
 console.log(JSON.stringify(S));
 ok(JSON.stringify(P,(k,v)=>typeof v==='function'?undefined:v)===JSON.stringify(C.plan(),(k,v)=>typeof v==='function'?undefined:v),'the plan is deterministic');
 ok(S.pop>22000&&S.pop<30000,'about 26 000 people as built ('+S.pop+')');
-ok(Math.abs(S.hull-402)<1,'the tower stands 402 m, from the lip down through the Nock deck ('+S.hull.toFixed(0)+' m)');
+ok(Math.abs(S.hull-462)<1,'the tower stands 462 m, from its crown down through the Nock deck ('+S.hull.toFixed(0)+' m)');
+ok((F.top-F.lipY)/D.STO>=15,'the tower stands '+((F.top-F.lipY)/D.STO).toFixed(1)+' storeys above the lip (the owner: at least 15)');
+ok(F.w(0)<D.BAY.w/2-20&&D.BAY.w<2*F.w(0)+90,'the bay fits the tower closely ('+D.BAY.w+' m bay, '+(2*F.w(0)).toFixed(0)+' m tower)');
 ok(F.w(0)>F.w(1)&&[0,.25,.5,.75,1].every(t=>F.d(t)>1.4*2*F.w(t)),'the tower is a slender wedge, deeper than wide at every height and widest at the crown');
 // unique ids over every record list
 const lists=['storeys','stays','drums','galleries','helio','rotors','saucers'],ids=new Set();let n=0;
@@ -44,6 +46,7 @@ ok(SPN.terraces.length===nd.length-2&&SPN.terraces.every(t=>t.r>D.SPINE.r+10),'a
 const inWall=P.drums.filter(d=>d.at[2]-d.r<0&&Math.abs(d.at[0])+d.r>D.BAY.w/2-2);
 ok(!inWall.length,'no drum cuts the bay\'s side walls');
 ok(P.drums.every(d=>d.at[2]-d.r>-D.BAY.d-1),'no drum cuts the bay\'s back wall');
+ok(SPN.terraces.filter(t=>t.struts).every(t=>t.struts.every(st=>Math.abs(st.b[0])>D.BAY.w/2&&Math.abs(st.b[2]-F.faceZ(st.b[0],st.b[1]))<1e-6)),'the struts land on the face beside the bay');
 ok(P.rotors.every(r=>Math.abs(r.hub[0])+r.r<D.BAY.w/2||r.hub[2]-12>F.faceZ(r.hub[0],r.hub[1])),'the rotors turn clear of the rock');
 const foot=nd[nd.length-1];ok(foot[0]>P.term.x0&&foot[0]<P.term.x1&&foot[2]>P.term.z0&&foot[2]<P.term.z1,'the Spine stands on the terminus');
 // the heliostats throw the noon sun onto the hull's middle: reflect the sun in each mirror's normal
@@ -69,5 +72,5 @@ ok(RU.spineGone.length>0&&P.drums.filter(d=>RU.spineGone.indexOf(d.id)<0).length
 ok(RU.town.houses.every(hs=>RU.debris.every(q=>Math.hypot(q.at[0]-hs.at[0],q.at[2]-hs.at[2])>(q.r==null?40:q.r))),'no house under the fallen drums');
 ok(JSON.stringify(RU)===JSON.stringify(C.ruin(C.plan())),'the ruin is deterministic');
 // the open world's scarp: a lower face scales the hull and keeps it in the bay
-const P2=C.plan({lip:700,floor:2463});ok(Math.abs(P2.frame.top-(2463+700))<1e-6&&P2.frame.tip>2463,'a passed lip and floor scale the frame');
+const P2=C.plan({lip:700,floor:2463});ok(Math.abs(P2.frame.top-(2463+D.HULL.top*700/900))<1e-6&&P2.frame.tip>2463,'a passed lip and floor scale the frame');
 console.log(fails?fails+' FAILED':'all passed');process.exitCode=fails?1:0;

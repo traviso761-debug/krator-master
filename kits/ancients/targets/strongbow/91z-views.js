@@ -1,13 +1,13 @@
 // Presets, DERIVED from what the builder left in SB_SITE (8aw2): the lip, the hull, the Nock, the crown, the Spine, the pad.
 // The face is 900 m tall and the mast stands to 1 076 m, facing south (+z), so a whole view stands about 2 400 m off.
 BUDGET.type.strongbow='mega';
-const SBDEF={x:0,z:0,lip:900,floor:0,top:900,tip:140,back:-86,prow:94,bayW:320,nock:{y:520,zc:200,wx:280},crown:{y:910},
+const SBDEF={x:0,z:0,lip:900,floor:0,top:960,tip:498,back:-50,prow:120,bayW:190,nock:{y:520,zc:250,wx:215},crown:{y:910},
  mast:{foot:[0,910,-66],head:[0,1076,-31]},spine:[[0,458,-53],[0,410,-53],[30,350,-11],[30,290,-11],[-26,230,33],[-26,170,33],[0,108,77],[0,36,77]],pad:[300,900,-140],term:{z1:60,y1:36},
  quiver:{x:-380,top:390,tip:150},galleries:[]};
 const SBA=Object.assign({},SBDEF,{x:-1100},SB_SITE[0]||{});
 const SBB=Object.assign({},SBDEF,{x:1100},SB_SITE[1]||{});
 const SBW=(S,x,y,z)=>[S.x+x,y,S.z+z];
-const SBHERO=S=>SBW(S,-780,560,1480).concat(SBW(S,0,500,0));
+const SBHERO=S=>SBW(S,-560,600,1650).concat(SBW(S,0,520,0));
 const VIEWS={
  'Strongbow':                    SBHERO(SBA),
  // square on from the valley floor: the tower in its bay, the Spine coming down under it, the strata
