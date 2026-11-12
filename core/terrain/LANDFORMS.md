@@ -41,3 +41,24 @@ index's cells. Its reach now covers the knoll zone.
 - No Godot twin: the relief kinds have none yet, and a page bakes them into its KFIELD.
 - `slump` and `relay` follow a polyline's nearest segment. A tightly curled line gives a crease, as `KRELIEF.scarp` does.
   Keep their lines gently arcuate.
+
+## `slab`: a tilted slab's cliff of spurs and gullies (`38d-core-slab.js`, 2026-11-12)
+
+The leading edge of a thrust-tilted block (`biomes/slabfields/PLAN.md` sections 3.4 and 15, item 5). `KRELIEF.scarp` draws one
+smoothstep profile along its line, so a long face reads as a few broad panels (the owner on the Slabfields' first station). `slab`
+draws a **row of spurs**, each with its own run, power, height, projection and fall of its top to its nose. Between them the face
+recedes into **gullies** whose heads cut back into the plateau, with **scree cones** at their mouths. Along the face run **ledges**
+(five by default) where hard flows stand out: their heights wander along the strike and they fade in and out, back-tilting a little
+where strongest. The odd fresh **scar** sets the face back and steepens it. The crest is ragged, the face rough and fluted, and behind the
+rim the slab's **ramp** falls at its dip. The profile drops steeply from the rim (`(1 - t)^power`, the lip eased over 3% of the run)
+and eases into the foot.
+
+Its own file, not part of `38c`, so no page that takes `38c` moves. It composes onto `KRELIEF` as `38c` does, with or without it.
+`KRELIEF.slabProfile(rec, s, n)` gives the height over the ground across the face at arc length `s` (no noise), for the model's
+side. Test: `node core/terrain/test-slab.js` (every check with a negative: the spurs differ, a spur stands out past a gully, gullies
+notch the crest, the ramp's fall, the floor exactly untouched, the cones, the ledges, a scar, every part, continuity, the inputs).
+No Godot twin yet.
+
+| Kind | What it draws | Parts (`at`) | Plans it serves |
+|---|---|---|---|
+| `slab` | A cliff of spurs and gullies along a rim, cones at the gullies' mouths, wandering ledges, scars, a ramp behind | `plateau`, `spur`, `face`, `ledge`, `gully`, `scar`, `cone`, `skirt` (and `fresh`: a scar's weight) | the Slabfields (station 1, the Anvil); any tilted block or basalt escarpment |

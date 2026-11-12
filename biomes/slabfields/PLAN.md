@@ -500,7 +500,7 @@ the rockfall belt (`crush`) and the night's CO2 in the toe's hollows and the blo
    flood that runs a gorge; and now **a rare, one-shot event** (a cliff's collapse, a limnic release) as a timed record.
 3. **A chasm head for `stepcut`** (kept; the Loom-Chasms want it too).
 4. **core/camp for outlaws** (kept): a war-camp culture row, a band size of 10-30, a lookout record and its siting rule.
-5. **`KRELIEF.slab`** (new; `38c`): a tilted block from a front polyline, a height, a width and a taper: the cliff by
+5. **`KRELIEF.slab`** (**built 2026-11-12** as its own file, `core/terrain/38d-core-slab.js`; `LANDFORMS.md`; station 1 draws the Anvil on it): a tilted block from a front polyline, a height, a width and a taper: the cliff by
    `scarp`, the ramp a plane, the lobate front and the narrowing ends as edit 513 draws them (`slab_add` is the profile, in
    model cells). A published profile, as `scarpProfile`, so the kit and the model agree. Its records: `crest`, `cliff`,
    `ramp`, `toe`, `end`. The Loom-Chasms' horsts could use the same form with the ramp level.

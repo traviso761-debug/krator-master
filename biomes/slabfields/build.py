@@ -93,8 +93,8 @@ if STATION:
         if re.match(r'\d',f): PATH[f]=os.path.join(_sd,f)
     for f,pth in SJ.get('core',{}).items(): PATH.setdefault(f,J(pth))
 # core/terrain, opt-in by name (core/README.md "terrain/"; PLAN.md section 14): 35 KSTRATA (the flood basalt on every steep face), 37 KSTACKS (the
-# apron's blocks), 38 KRELIEF (the Anvil's cliff: KRELIEF.scarp), 43 KGROUND, 44 KFAR, 45 KHORIZON. A local src/ copy wins.
-CORE_TERRAIN=['35-core-strata.js','37-core-stacks.js','38-core-relief.js','43-core-ground.js','44-core-farfield.js','45-core-horizon.js']
+# apron's blocks), 38 KRELIEF and 38d KRELIEF.slab (the Anvil's cliff of spurs and gullies), 43 KGROUND, 44 KFAR, 45 KHORIZON. A local src/ copy wins.
+CORE_TERRAIN=['35-core-strata.js','37-core-stacks.js','38-core-relief.js','38d-core-slab.js','43-core-ground.js','44-core-farfield.js','45-core-horizon.js']
 for f in CORE_TERRAIN: PATH.setdefault(f,J('core','terrain',f))
 PATH.setdefault('44-core-farfield-draw.js',J('core','terrain','host','44-core-farfield-draw.js'))
 PATH.setdefault('45-core-horizon-shade.js',J('core','terrain','host','45-core-horizon-shade.js'))

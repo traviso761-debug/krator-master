@@ -436,6 +436,12 @@ new file, opt-in, and node-tested with negatives. No page takes one yet, so no p
 
   *Adopting it:* list the file after `38-core-relief.js`, and put the records in `KRELIEF.apply` with the others. `KRELIEF.waters(rec,
   ground)` gives the ponds, lakes and spring pools.
+- **`KRELIEF.slab`, `KRELIEF.slabProfile`** (`38d-core-slab.js`, `test-slab.js`; `LANDFORMS.md`, "slab"; 2026-11-12): a tilted slab's
+  cliff as a row of spurs (each its own run, power, height, projection and nose), gullies cut back between them with scree cones at their
+  mouths, wandering ledges, fresh scars, a ragged crest and the ramp behind the rim. Its own file, so no page that takes `38c` moves.
+  - It serves the Slabfields' slabs (station 1 draws the Anvil on it); any tilted block or basalt escarpment.
+  - *Adopting it:* list it after `38-core-relief.js` (with or without `38c`), and put the record in `KRELIEF.apply` or call
+    `KRELIEF.shape(rec, x, z, g)`.
 - **`KSTRATA.vary`, `KSTRATA.drape`, `KSTRATA.loadVaried`** (`35c-core-strata-vary.js`, `test-strata-vary.js`; GDScript twin
   `kstrata_vary.gd`, golden `golden-strata-vary.json`, vendored to `godot/tests/terrain/`): a formation whose base varies from place to
   place. Contacts move by an offset of (x, z), which sums any of a constant, a plane, the stack's table noise, bumps or a grid. The

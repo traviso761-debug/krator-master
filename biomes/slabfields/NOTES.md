@@ -40,3 +40,10 @@ little where strongest); the cliff's height wandering 1-2 km scale (the throw is
 the top only); the face's profile convex in some stretches and concave in others; face noise at three scales and vertical fluting (the
 columns' joints); fewer, wider, varied gullies; buttresses closer and bolder; the beds warped (KSTRATA warp 22 / 7 m). Still panel-like
 from afar: the face is one profile with noise on it, and a stepped, spur-and-gully form would break it further (KNOWN_ISSUES).
+
+**The cliff on `KRELIEF.slab`** (2026-11-12, the owner: "do it"). The face is now core/terrain's `38d-core-slab.js`: spurs every 520 m on
+average (spacing 0.4-1.9 of that), each 70-97% of its spacing wide, standing 20-170 m out, its run 0.65-1.6 of 650 m and its power 1-1.9;
+gullies cut 20-130 m back between them, with scree cones 50-150 m high at their mouths; five wandering ledges; a fresh scar 1.8 km wide set
+170 m back over the apron's head; the ramp at the slab's 0.123. The stage's own ledges, bulges, crest and face noise are gone (the form's own
+replace them). A first setting (spurs 50-85% wide, standing out 40-240 m, gullies 50-200 m back) cut the face into sheer slots, a pleated
+curtain; the broad spurs read as one escarpment. Crest 5,324 m (the model's 5,356 m), the cliff 1.94 km over its foot.

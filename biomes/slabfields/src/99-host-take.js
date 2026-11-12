@@ -27,7 +27,7 @@ const HCHK={
   return{ok:!bad.length,detail:bad.length?bad.length+' on the wrong ground (first '+bad[0][3]+' at '+bad[0].slice(0,3).map(v=>v|0)+')':'reed at the spring line, fern in the shade'};},
  dry(P){const bad=P.filter(p=>{const w=waterH(p[0],p[2]);return w>-1e8&&p[1]<w-.6;});return{ok:!bad.length,detail:bad.length?bad.length+' under the water (first '+bad[0][3]+')':P.length+' instances, none drowned'};},
  // the slab: its crest stands within 150 m of the model's (edit 513's slab_anvil, 5,356 m) and its cliff is a cliff (2 km in under 900 m)
- slab(){const zr=L.rimZ(0),crest=Math.max(...[-200,0,200].map(x=>landH(x,L.rimZ(x)+20))),foot=landH(0,L.footZ(0)-40),run=L.footZ(0)-40-zr;
+ slab(){const zr=L.rimZ(0),crest=Math.max(...[...Array(51).keys()].map(i=>{const x=-2500+i*100;return landH(x,L.rimZ(x)+80);})),   /* the crest along the page (the scar cuts its middle back) */foot=landH(0,L.footZ(0)-40),run=L.footZ(0)-40-zr;
   const ok=Math.abs(crest-SITE.slab.crest)<=150&&crest-foot>1600&&Math.abs(run)<900;return{ok,detail:'crest '+crest.toFixed(0)+' m (model '+SITE.slab.crest+'), cliff '+(crest-foot).toFixed(0)+' m over '+Math.abs(run).toFixed(0)+' m'};},
  blocks(){const n=BLOCKS.filter(b=>!b.talus).length,big=BLOCKS.filter(b=>b.big).length,over=BLOCKS.filter((a,i)=>BLOCKS.some((b,j)=>j>i&&Math.hypot(a.x-b.x,a.z-b.z)<a.r+b.r));
   return{ok:n>=SITE.blocks.n*.6&&big>=3&&!over.length,detail:n+' blocks ('+big+' field-sized), '+over.length+' overlapping'};},
