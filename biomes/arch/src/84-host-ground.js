@@ -105,9 +105,9 @@ if(SKEY==='barrens')L.LV.forEach((k,i)=>REGISTER({name:'A lavaka (the laterite s
 if(SKEY==='sound'){const S=SITE;
  REGISTER({name:'The last flow (segment 9\'s episode, '+L.AGE.toFixed(0)+' years before game start; '+L.EP.opening.toFixed(1)+' m of opening)',x:0,z:0,y:-10,r:1800,h:40});
  {const a=L.XZ(S.fissure.al[0],S.fissure.w),b=L.XZ(S.fissure.al[1],S.fissure.w);REGISTER({name:'The eruptive fissure and its spatter ramparts (rifting episodes every ~'+L.EP.recur.toFixed(0)+' years)',x:(a[0]+b[0])/2,z:(a[1]+b[1])/2,y:-12,r:Math.hypot(b[0]-a[0],b[1]-a[1])/2,h:30,tags:{hazard:{kind:'fall',danger:.6}}});}
- L.CONES.forEach(c=>REGISTER({name:'A rootless cone (the lava boiled the wet flats under it)',x:c.x,z:c.z,y:terrainH(c.x,c.z)-c.h-4,r:c.r*1.5,h:c.h*2+8}));
+ L.CONES.forEach(c=>REGISTER({name:'A rootless cone (the lava boiled the wet flats under it)',x:c.x,z:c.z,y:terrainH(c.x,c.z)-c.h-4,r:c.r*2.4,h:c.h*2+8}));
  L.GJ.forEach(g=>{const m=g.F.p(g.F.L/2,0);REGISTER({name:'A gja (an open fissure: clear water filtered through the rock, '+g.wd+' m wide)',x:m[0],z:m[1],y:-14,r:g.F.L/2,h:24,tags:{hazard:{kind:'drown',danger:.6}}});});
- REGISTER({name:'A gas hollow (CO2 pools here in still air: Dieng, 1979)',x:L.HP[0],z:L.HP[1],y:terrainH(L.HP[0],L.HP[1])-2,r:S.hollow.r,h:S.hollow.depth+4,tags:{hazard:{kind:'gas',danger:.85}}});
+ REGISTER({name:'A gas hollow (CO2 pools here in still air: Dieng, 1979) and its rim',x:L.HP[0],z:L.HP[1],y:terrainH(L.HP[0],L.HP[1])-2,r:S.hollow.r*2,h:S.hollow.depth+8,tags:{hazard:{kind:'gas',danger:.85}}});
  L.STACKS.forEach((k,i)=>REGISTER({name:'One of the White Stacks (a brucite and carbonate chimney: alkaline water meeting the sea)',x:k.x,z:k.z,y:terrainH(k.x,k.z)-1,r:k.r*1.6,h:k.h-terrainH(k.x,k.z)+4}));}
 if(SKEY==='coast'){const S=SITE;
  REGISTER({name:'A tuff cone (a satellite of the island\'s caldera: phreatomagmatic ash, palagonitised)',x:L.CP[0],z:L.CP[1],y:terrainH(L.CP[0],L.CP[1])-10,r:S.cone.r*1.2,h:S.cone.rim+40});

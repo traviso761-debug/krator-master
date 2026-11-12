@@ -46,8 +46,11 @@ const instPoints=()=>{const o=[],m=new THREE.Matrix4(),p=new THREE.Vector3(),q=n
  scene.traverse(M=>{if(!M.isInstancedMesh||!M.userData.biome)return;for(let i=0;i<M.count;i++){M.getMatrixAt(i,m);m.decompose(p,q,sc);o.push([p.x,p.y,p.z,M.name]);}});return o;};
 const EARTH_ITEMS=['artrunk','argymno','arpycn','arsedge','arpitch','arohia','aruluhe','armangrove','arcastrunk','arnaupaka','aripomoea','arpalmtrunk'],MAQUIS=['artrunk','argymno','arpycn','arsedge','arpitch'],PIONEERS=['arohia','aruluhe'];
 const CHEM=(e)=>({pH:PH_AT(e[1],e[2]),T:HEAT_AT(e[1],e[2]),caMg:CAMG_AT(e[1],e[2]),lavaAge:e.age!==undefined?e.age:LAVA_AT(e[1],e[2])});
+/* what each station must place (the placed check; its negative zeroes the last) */
+const NEED={dome:['araucaria','gymnostoma','sedge','limeshelf'],barrens:['araucaria','gymnostoma','pycnandra','sedge','pitchers','verdigris'],sound:['ohia','uluhe','mangrove','gymnostoma','sedge'],
+ coast:['casuarina','naupaka','ipomoea','coconut','fans'],confluence:['araucaria','gymnostoma','sedge','pitchers','limeshelf','felt','fans']}[SKEY];
 const HCHK={
- placed(st){const need=SKEY==='dome'?['araucaria','gymnostoma','sedge','limeshelf']:SKEY==='barrens'?['araucaria','gymnostoma','pycnandra','sedge','pitchers','verdigris']:SKEY==='sound'?['ohia','uluhe','mangrove','gymnostoma','sedge']:SKEY==='coast'?['casuarina','naupaka','ipomoea','coconut','fans']:['araucaria','gymnostoma','sedge','pitchers','limeshelf','felt','fans'],zero=need.filter(k=>!(st&&st[k]>0));
+ placed(st){const need=NEED,zero=need.filter(k=>!(st&&st[k]>0));
   if(SKEY==='confluence'&&!(st&&st.curtains&&st.curtains.curtains>0))zero.push('curtains');
   return{ok:!zero.length,detail:zero.length?'none: '+zero.join(', '):need.map(k=>k+' '+st[k]).join(', ')+(st.curtains?', curtains '+st.curtains.curtains:'')};},
  // every curtain on a meeting sample where ARCH.canStand says yes, on the dividing line, before the meeting's end
@@ -84,7 +87,7 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P
  add('preset cameras above the ground',HCHK.camerasOut(Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),V=SITE.solfatara;
- add(SKEY==='confluence'?'no curtains placed':SKEY==='barrens'?'no verdigris caps':'no lime shelves',HCHK.placed(Object.assign({},window._station,SKEY==='confluence'?{curtains:{curtains:0}}:SKEY==='barrens'?{verdigris:0}:{limeshelf:0})));
+ add(SKEY==='confluence'?'no curtains placed':'no '+NEED[NEED.length-1],HCHK.placed(Object.assign({},window._station,SKEY==='confluence'?{curtains:{curtains:0}}:{[NEED[NEED.length-1]]:0})));
  if(SKEY==='confluence'){const p=L.OUT.p(L.MEET.end+60,0);add('a curtain past the edge fault',HCHK.curtains([{x:p[0],z:p[1],s:L.MEET.end+60}]));
   add('the halves swapped',HCHK.ph(SIDES.map(t=>({s:t.s,a:t.a,want:t.want==='alk'?'acid':'alk'}))));
   add('a she-oak in the solfatara',HCHK.earth([['argymno',V.x,V.z]]));
