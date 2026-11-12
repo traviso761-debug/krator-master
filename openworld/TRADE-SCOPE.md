@@ -814,8 +814,8 @@ round it.
 |---|---|---|---|---|---|---|
 | **B1** | **651,857**, the south | 103 m over its surroundings, -305 m | Aw, 752 mm, +26 °C | the Cakmak Riviri, 22 m³/s | 276 km²-eq | Tzunfort 69 km |
 | **B2** | **669,831** | 91 m, -651 m | Aw, 800 mm, +29 °C | the Stahr Rhyver, 19 m³/s | 285 | Pontus 68 km |
-| **B3** | **683,802**, the middle | 183 m, -563 m | BSh, 564 mm, +28 °C | wadis (6 wadi px) | 259 | Pontus 83 km |
-| **B4** | **703,733**, the north | **225 m**, the highest outcrop, -897 m | BSh, 564 mm, +30 °C | wadis (7 wadi px) | 185 | Trigon 40 km |
+| **B3** | **683,802**, the middle | 183 m, -563 m | BSh, 564 mm, +28 °C | wadis (6 wadi px) | 259 | the ruin Fort Ebon (695,782) 47 km; Pontus 83 km |
+| **B4** | **703,733**, the north | **238 m** (the queue's reading), the highest outcrop, -897 m | BSh, 564 mm, +30 °C | wadis (7 wadi px) | 185 | Trigon 40 km |
 | **B5** | **725,706**, the far north, on the polygon's edge by Trigon's lake | 84 m, -1,096 m | BSh, 658 mm, +31 °C | wadis (13 wadi px), the lake 8-10 km off | 198 | Trigon 68 km |
 
 They run the length of the Scyvoi's land, 63-336 km apart: two pairs (B1-B2, B4-B5) and B3 between. That reads as five tribes'
@@ -840,7 +840,12 @@ a terrain edit to put a plausible site between b3 and b4 and put one nw of drum?
     cell. That puts each 60 m or more over its ~6 km median, as B1-B5 are. The climate re-lapses on the raised cells. Optional: the
     domes marked granite in the geology bake, as the lore's kopjes are (`LORE.md:581`).
   - B6 and B7 then become fort pins too.
-- All of it was sent to the scale-model queue on the owner's word.
+- All of it was sent to the scale-model queue on the owner's word. **Queued** (2026-11-12): the fort type, the seven forts and the
+  two-dome edit, all collision-checked, none run yet.
+  - **The domes:** B6 and B7 today stand 60 and 55 m *under* their medians; the +180 m dome should put them ~+120 m over, checked
+    after the stamp. The queue will mark the two domes granite in the geology provinces.
+  - **Spacing:** the closest pair is B4 and B6, 50 km apart. B6's nearest pin is the ruin Fort Ebon, 70 km off.
+  - **The survey's miss:** it counted only living pins, so it missed the ruin Fort Ebon, 47 km from B3.
 
 **What it reaches:**
 - **The queue:** the fort type, seven fort pins, and the outcrop edit (above).
