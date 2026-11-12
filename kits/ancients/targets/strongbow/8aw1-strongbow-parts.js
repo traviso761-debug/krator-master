@@ -21,6 +21,7 @@ const SBG={
   g.setAttribute('color',new THREE.Float32BufferAttribute(c,3));return g;},
  // a cylinder side (world-scale UVs: the dwelling map's storeys stay level), a disc or annulus
  cyl:(c,r,y0,y1,n)=>gridSurface((u,v)=>[c[0]+r*Math.cos(u*TAU),lerp(y0,y1,v),c[2]+r*Math.sin(u*TAU)],n||32,1,{uS:r*TAU/25.6,vS:(y1-y0)/25.6}),
+ arc:(c,r,a0,a1,y0,y1,n)=>gridSurface((u,v)=>{const a=lerp(a0,a1,u);return[c[0]+r*Math.cos(a),lerp(y0,y1,v),c[2]+r*Math.sin(a)];},n||24,1,{uS:r*Math.abs(a1-a0)/25.6,vS:(y1-y0)/25.6}),
  disc:(c,r0,r1,y,n)=>gridSurface((u,v)=>{const r=lerp(r0,r1,v);return[c[0]+r*Math.cos(u*TAU),y,c[2]+r*Math.sin(u*TAU)];},n||32,1,{uS:r1*TAU/12,vS:(r1-r0)/12}),
  // a ribbon along a polyline of [x,y,z] points, w wide, lifted by dy
  ribbon:(pts,w,dy)=>{const n=pts.length-1,at=f=>{const s=Math.min(n-1,Math.floor(f*n)),q=f*n-s,a=pts[s],b=pts[s+1];return[lerp(a[0],b[0],q),lerp(a[1],b[1],q),lerp(a[2],b[2],q),b[0]-a[0],b[2]-a[2]];};
@@ -119,6 +120,18 @@ function sbCrown(X){const P=X.P,F=X.F,D=X.D,C=P.crown,w0=F.w(0),d0=F.d(0),kx=1+C
  for(const s of [-1,1])rib(s*R.w/2,-2.4,1.3,ow);
  X.rampAt=rp;}
 
+/* a Nock part's deck (or its underside) with a rectangular hole: the outline (its back edge, its front curve) and the hole as a
+   THREE.Shape, laid flat at y, facing up (or down) */
+function sbHoledDeck(part,bk,front,y,R,up){const sh=new THREE.Shape(),n=16;
+ for(let i=0;i<=n;i++){const x=lerp(part.x0,part.x1,i/n);i?sh.lineTo(x,bk(x)):sh.moveTo(x,bk(x));}
+ for(let i=n;i>=0;i--){const x=lerp(part.x0,part.x1,i/n);sh.lineTo(x,front(x));}
+ const hp=new THREE.Path(),x0=Math.max(R[0],part.x0+.5),x1=Math.min(R[1],part.x1-.5),z0=R[2],z1=R[3];hp.moveTo(x0,z0);hp.lineTo(x1,z0);hp.lineTo(x1,z1);hp.lineTo(x0,z1);hp.lineTo(x0,z0);sh.holes.push(hp);
+ const s=new THREE.ShapeGeometry(sh),q=s.attributes.position,pos=[],uv=[];
+ for(let i=0;i<q.count;i++){const x=q.getX(i),z=q.getY(i);pos.push(x,y,z);uv.push((x-part.x0)/14,(z-bk(x))/14);}
+ const idx=Array.from(s.index.array);/* the shape's (x, z) laid on y flips its winding: facing up wants it flipped back */
+ if(up)for(let i=0;i<idx.length;i+=3){const t=idx[i+1];idx[i+1]=idx[i+2];idx[i+2]=t;}
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.setIndex(idx);g.computeVertexNormals();return g;}
+
 // ---- the Nock: the deck at mid-height, its glazed front, its pads; the centre rides with the Bow -------------------
 function sbNock(X){const P=X.P,F=X.F,D=X.D,N=P.nock,gone=X.RU?new Set(X.RU.nockGone):null;
  // the landing pad before the tower's prow: a glazed disc in a white rim, a ring and a cross of light strips (dark in the ruin)
@@ -127,7 +140,9 @@ function sbNock(X){const P=X.P,F=X.F,D=X.D,N=P.nock,gone=X.RU?new Set(X.RU.nockG
   if(!X.dd){SBG.put(X,'white',SBG.disc(c,L.r*.55,L.r*.62,c[1]+.4,48),false);
    for(const a of [0,Math.PI/2])SBG.put(X,'white',gridSurface((u,v)=>{const o=lerp(-L.r*.5,L.r*.5,u),q=lerp(-1.2,1.2,v);return[c[0]+o*Math.cos(a)-q*Math.sin(a),c[1]+.42,c[2]+o*Math.sin(a)+q*Math.cos(a)];},2,1,{}),false);}}
  for(const part of N.parts){if(gone&&gone.has(part.id))continue;const bound=false,bk=x=>part.side===0?F.back+1:-8;   /* the Nock stays on the rock: in the ruin the tower leans through its cracked centre (no gap opens between centre and wings) */
-  const g=(y,list,uS)=>SBG.put(X,list,gridSurface((u,v)=>{const x=lerp(part.x0,part.x1,u);return[x,y,lerp(bk(x),N.front(x),v)];},16,4,{uS:(part.x1-part.x0)/14,vS:6}),bound);
+  /* SB_CUTS (settlements/strongbow, the today page): a lift shaft through this part (W2 rises through the Nock's west wing) */
+  const cut=typeof SB_CUTS!=='undefined'&&SB_CUTS&&SB_CUTS.nock&&SB_CUTS.nock.part===part.id?SB_CUTS.nock.rect:null;
+  const g=(y,list,uS)=>SBG.put(X,list,cut?sbHoledDeck(part,bk,N.front,y,cut,list==='deck'):gridSurface((u,v)=>{const x=lerp(part.x0,part.x1,u);return[x,y,lerp(bk(x),N.front(x),v)];},16,4,{uS:(part.x1-part.x0)/14,vS:6}),bound);
   g(N.y,'deck');g(N.y-N.th,'shade');
   SBG.put(X,'res',gridSurface((u,v)=>{const x=lerp(part.x0,part.x1,u);return[x,lerp(N.y-N.th,N.y-1.2,v),N.front(x)];},24,1,{uS:(part.x1-part.x0)/25.6,vS:N.th/25.6}),bound);
   SBG.put(X,X.dd?'whiteW':'white',gridSurface((u,v)=>{const x=lerp(part.x0,part.x1,u);return[x,lerp(N.y-1.2,N.y+1.4,v),N.front(x)+.2];},24,1,{uS:20,vS:1}),bound);

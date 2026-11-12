@@ -46,10 +46,12 @@ var SB_WALK=(function(){
   floor('sb.walk.plaza',{rect:[Z.x0,Z.x1,Z.z0,Z.z1],y:Z.y});wall('sb.plaza.body',[Z.x0,Z.x1,Z.z0,Z.z1,y0-1,y0+Z.y-.05]);   /* the plaza is a platform: its body is solid */
   for(let k=0;k<3;k++)floor('sb.walk.plaza.step.'+k,{rect:[-(Z.x1-Z.x0-40)/2,(Z.x1-Z.x0-40)/2,Z.z1+1.6*(2-k),Z.z1+1.6*(3-k)],y:y0+Z.y*(k+1)/3});
   floor('sb.walk.lobby',{disc:[c0[0],c0[1],LB.r+.5],y:fl});
-  const ld=door('sb.door.lobby',[c0[0],c0[1]+LB.r+.6],'x',fl,{name:'the lobby\'s door on the plaza',w:3.2});
+  /* the lobby's door: in the middle of the glass bay facing the plaza (between two mullions: targets/strongbow 8aw3 opens that bay) */
+  const aD=(Math.floor(LB.ribs/4)+.5)/LB.ribs*Math.PI*2,dx=c0[0]+(LB.r+.6)*Math.cos(aD),dz=c0[1]+(LB.r+.6)*Math.sin(aD);
+  const ld=door('sb.door.lobby',[dx,dz],'x',fl,{name:'the lobby\'s door on the plaza',w:3.2});S.lobbyDoor={a:aD,cell:Math.floor(LB.ribs/4),r:LB.r,w:3.2};
   /* the treads inside the door, down from the plaza (1.5) to the lobby's floor (0.25) */
-  [[1.05,LB.r-1.2,LB.r+.6],[.65,LB.r-2.4,LB.r-1.2]].forEach(([y,r0,r1],k)=>{const t=floor('sb.walk.lobby.tread.'+k,{rect:[c0[0]-2,c0[0]+2,c0[1]+r0,c0[1]+r1],y:y0+y});S.treads.push(t);});
-  ring('sb.wall.lobby',c0,LB.r+.6,fl,fl+8,[{a:Math.PI/2,ha:2/LB.r}],Math.PI*.12,Math.PI*.88);
+  [[1.05,LB.r-1.2,LB.r+.6],[.65,LB.r-2.4,LB.r-1.2]].forEach(([y,r0,r1],k)=>{const t=floor('sb.walk.lobby.tread.'+k,{rect:[dx-2,dx+2,c0[1]+r0*Math.sin(aD),c0[1]+r1*Math.sin(aD)+.6],y:y0+y});S.treads.push(t);});
+  ring('sb.wall.lobby',c0,LB.r+.6,fl,fl+8,[{a:aD,ha:1.8/LB.r}],Math.PI*.12,Math.PI*.88);
   const cd=door('sb.door.core',[c0[0],c0[1]+LB.core],'x',fl,{name:'the core\'s door'});
   ring('sb.wall.core',c0,LB.core,fl,fl+8,[{a:Math.PI/2,ha:GATE/LB.core+.02}]);
 
@@ -111,7 +113,8 @@ var SB_WALK=(function(){
 
   // ---- the wall: the girder bridge from T3, the ledges, the Nock's transfer landing, the shaft through its west wing ----------
   const br=L.ways.find(w=>w.id==='bridge.T3~sb.wl.0'),wl0=PT['sb.wl.0'],be=[br.pts[1][0],br.pts[1][1]];
-  {const d=nrm(v(T3.c,be)),a=[T3.c[0]+d[0]*(T3.r-2.5),T3.c[1]+d[1]*(T3.r-2.5)];S.bridge={a:[a[0],a[1],T3.y],b:[be[0],be[1],wl0.y],w:3};
+  /* from the layout's own start on T3's rim (the reclamation draws the truss there), 2.5 m in onto the deck */
+  {const p0=[br.pts[0][0],br.pts[0][1]],d=nrm(v(p0,T3.c)),a=[p0[0]+d[0]*2.5,p0[1]+d[1]*2.5];S.bridge={a:[a[0],a[1],T3.y],b:[be[0],be[1],wl0.y],w:3};
    floor('sb.walk.bridge.T3',{strip:{a:[a[0],a[1],T3.y],b:[be[0],be[1],wl0.y],w:3}});}
   for(const p of L.parts)if(p.kind==='landing'&&p.id!=='sb.nock.landing')floor('sb.walk.'+p.id.slice(3),{rect:p.shape.slice(1),y:p.y});
   {const p=PT['sb.nock.landing'];floor('sb.walk.nock.landing',{rect:p.shape.slice(1),y:p.y});}
@@ -130,6 +133,11 @@ var SB_WALK=(function(){
   {const hgap=(x)=>Math.abs(x-px)<GATE;for(const zz of [PO[3],PO[4]])for(let x=PO[1];x<PO[2];x+=2){const xm=x+1;if(hgap(xm))continue;wall('sb.wall.post',[x,x+2,zz-WALLT/2,zz+WALLT/2,ly,ly+6]);}
    for(const xx of [PO[1],PO[2]])wall('sb.wall.post',[xx-WALLT/2,xx+WALLT/2,PO[3],PO[4],ly,ly+6]);}
   S.post={rect:PO.slice(1),y:ly,doors:[pin.id,pout.id],px};
+  /* the yard's wall (the reclamation draws it, 2 m high) and its gate on the post's side */
+  const yg=door('sb.door.yard',[px,YD[4]],'x',ly,{name:'the caravan yard gate',w:3.6});
+  for(let x=YD[1];x<YD[2];x+=2){if(Math.abs(x+1-px)<1.8)continue;wall('sb.wall.yard',[x,x+2,YD[4]-.25,YD[4]+.25,ly,ly+2]);}
+  for(let x=YD[1];x<YD[2];x+=2)wall('sb.wall.yard',[x,x+2,YD[3]-.25,YD[3]+.25,ly,ly+2]);
+  for(const xx of [YD[1],YD[2]])wall('sb.wall.yard',[xx-.25,xx+.25,YD[3],YD[4],ly,ly+2]);S.yard={rect:YD.slice(1),y:ly,gate:yg.id};
 
   // ---- the route ---------------------------------------------------------------------------------------------------------------
   const go=(x,z,o)=>S.route.push(Object.assign({kind:'walk',at:[x,z]},o||{})),ride=(l,from,to)=>S.route.push({kind:'ride',lift:l.id,from,to});
@@ -153,11 +161,12 @@ var SB_WALK=(function(){
    go(...out(b,(b.gangway?b.gangway.len:0)+1.5),{name:'to '+n+'\'s gate'});go(...inCar(l),{name:'into '+n,door:b.gate.id});ride(l,b.y,t.y);
    go(...out(t,(t.gangway?t.gangway.len:0)+1.5),{name:'out of '+n+(t.gangway?' over its gangway':''),door:t.gate.id});prev=t;}
   go(px,PO[4]+2,{name:'across the plateau to the post\'s door'});go(px,PO[4]-3,{name:'into the Sultanate\'s post',door:pin.id});
-  go(px,PO[3]+2,{name:'through the post'});go(px,PO[3]-3,{name:'out of the post to the yard',door:pout.id});
+  go(px,PO[3]+2,{name:'through the post'});go(px,PO[3]-3,{name:'out of the post',door:pout.id});
+  go(px,YD[4]+2,{name:'to the yard gate'});go(px,YD[4]-3,{name:'through the yard gate',door:yg.id});
   go((YD[1]+YD[2])/2,(YD[3]+YD[4])/2,{name:'the caravan yard on the lip',end:true});
   return S;}
  /* the plate in the neck reaches past the drum's radius onto the terrace's deck */
- const SB_PLATE_R=P=>P.dim.SPINE.r+1.5;
+ const SB_PLATE_R=P=>P.dim.SPINE.r+1;   /* to the deck's inner edge (the saucer's deck starts at the drum's radius + 1) */
 
  // ---- the registry ------------------------------------------------------------------------------------------------------------
  function register(W,S,o){o=o||{};const skip=new Set(o.skip||[]),R={floors:[],walls:[],doors:{},cars:{}};
@@ -174,7 +183,7 @@ var SB_WALK=(function(){
 
  // ---- the walker (core/host's rules) ------------------------------------------------------------------------------------------
  function run(W,S,o){o=o||{};const RG=register(W,S,o),shut=new Set(o.shut||[]),stuck=new Set(o.stuck||[]),ground=o.ground||(()=>0);
-  const opened=[],rode=[],legs=[],path=[];let pos=null;
+  const opened=[],rode=[],legs=[],path=[],events=[];let pos=null;   /* events: {i (path index), door} and {i0, i1, lift}, for the page's replay */
   const at=(px,pz,ay)=>{const g=ground(px,pz),f=W.floorBelow(px,pz,ay,STEP);return f&&f[0]>=g-.3?f[0]:g;};
   const stand=(x,z)=>{const A=pos;let y=at(x,z,A[2]);
    if(A[2]-y>DROP&&W.floorBelow(A[0],A[1],A[2],STEP)){const yx=at(x,A[1],A[2]),yz=at(A[0],z,A[2]);
@@ -182,7 +191,7 @@ var SB_WALK=(function(){
    if(W.blocked(x,y,z,R,H)){const q=W.push(x,y,z,R,H);x=q[0];z=q[1];y=at(x,z,A[2]);}
    pos=[x,z,y];};
   const doors=()=>{for(const d of S.doors){if(opened.indexOf(d.id)>=0||shut.has(d.id))continue;
-   if(Math.hypot(pos[0]-d.at[0],pos[1]-d.at[1])<2.2&&Math.abs(pos[2]-d.y)<1.5){W.setBlock(RG.doors[d.id],false);opened.push(d.id);}}};
+   if(Math.hypot(pos[0]-d.at[0],pos[1]-d.at[1])<2.2&&Math.abs(pos[2]-d.y)<1.5){W.setBlock(RG.doors[d.id],false);opened.push(d.id);events.push({i:path.length,door:d.id});}}};
   for(let i=0;i<S.route.length;i++){const L=S.route[i],leg={i,kind:L.kind,name:L.name||L.lift,ok:false};legs.push(leg);
    if(L.kind==='walk'){if(L.start){pos=[L.at[0],L.at[1],at(L.at[0],L.at[1],1e9)];path.push(pos.slice());leg.ok=true;continue;}
     let still=0,n=0;const lim=Math.ceil(Math.hypot(L.at[0]-pos[0],L.at[1]-pos[1])/.25)*4+120;
@@ -194,9 +203,16 @@ var SB_WALK=(function(){
    else{const l=S.lifts.find(q=>q.id===L.lift),car=RG.cars[l.id],r=car.rect;
     if(!(pos[0]>r[0]&&pos[0]<r[1]&&pos[1]>r[2]&&pos[1]<r[3]&&Math.abs(pos[2]-car.y)<.3)){leg.msg='not in the car';leg.at=pos.slice();}
     else{const to=stuck.has(l.id)?car.y:L.to;let y=car.y;const dir=Math.sign(to-y);
-     while(Math.abs(to-y)>1e-6){y=dir>0?Math.min(to,y+.3):Math.max(to,y-.3);car.y=y;stand(pos[0],pos[1]);path.push(pos.slice());}
+     const i0=path.length;while(Math.abs(to-y)>1e-6){y=dir>0?Math.min(to,y+.3):Math.max(to,y-.3);car.y=y;stand(pos[0],pos[1]);path.push(pos.slice());}events.push({i0,i1:path.length,lift:l.id,from:L.from,to:L.to});
      leg.ok=Math.abs(pos[2]-L.to)<.05;if(leg.ok)rode.push(l.id);else leg.msg='the car did not take the walker to '+L.to.toFixed(1)+' (at '+pos[2].toFixed(1)+')';leg.at=pos.slice();}}
    if(!leg.ok)break;}
   const end=S.route[S.route.length-1],ok=legs.length===S.route.length&&legs.every(l=>l.ok);
-  return {ok,legs,path,opened,rode,end:pos,top:end.at,fail:legs.find(l=>!l.ok)||null};}
- return {plan,register,run,STEP,DROP,R,H,DECK};})();
+  return {ok,legs,path,events,opened,rode,end:pos,top:end.at,fail:legs.find(l=>!l.ok)||null};}
+ /* what the arcology must open for the walk (targets/strongbow reads it as SB_CUTS when the today page sets it): the lobby's door
+    bay, the core's door, the neck's and the ring building's doors at T1, L1's shaft through the drums over the lobby, W2's shaft
+    through the Nock's west wing */
+ function cuts(S,P){const LB=P.foot.lobby,D=id=>S.doors.find(d=>d.id===id),nd=D('sb.door.neck'),rd=D('sb.door.T1ring'),hole=S.holes.find(h=>h.in==='sb.nock.w');
+  return {lobby:{a:S.lobbyDoor.a,ha:(S.lobbyDoor.w/2+.15)/(LB.r+1.2),cell:S.lobbyDoor.cell},core:{a:Math.PI/2,ha:(GATE+.15)/LB.core,h:DOORH+.3},
+   neck:{drum:'sb.sp.6.0',a:nd.ring.a,ha:(GATE+.1)/nd.ring.r,y:S.neck.y,h:DOORH+.2},ring:{c:rd.ring.c,a:rd.ring.a,ha:(GATE+.15)/rd.ring.r,h:DOORH+.6},
+   drums:{ids:['sb.sp.6.1','sb.sp.6.0'],r:Math.hypot(S.car,S.car)+.4},nock:hole?{part:'sb.nock.w',rect:hole.rect}:null};}
+ return {plan,register,run,cuts,STEP,DROP,R,H,DECK,DOORH,GATE};})();

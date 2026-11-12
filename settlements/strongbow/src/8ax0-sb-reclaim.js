@@ -26,8 +26,23 @@ function sbReclaim(gx,gz){const L=sbLayout(),P={},h=(a,b,c,e)=>STRONGBOW.h(1647,
   T.child(B,{'class':'fixture',kind:'balloon',key:'sb.today.balloon',name:'the Order\'s balloon',at:W(ctr(P['sb.nock.pad'])),tags:{culture:'order'}});
   T.child(B,{'class':'building',kind:'toll-post',key:'sb.today.lippost',name:'the Sultanate\'s post at the lip',at:W(ctr(P['sb.lip.post'])),tags:Object.assign({types:['civic']},X)});}
 
- // ---- the girder lifts: four painted posts with bronze collars, X-braced faces, a cage, a capstan house at the head -----------
- for(const w of L.ways){if(w.kind!=='lift'||w.id==='L1')continue;const x=w.frame[0],z=w.frame[1],y0=w.y0,y1=w.y1+4,hw=3.5;
+ // ---- the girder lifts: four painted posts with bronze collars, X-braced faces, a capstan house at the head -------------------
+ /* with the walk up on the page (src/32-sb-walk.js, 8ax3): one frame a shaft (L2a and L2b share theirs), from its bottom stop to
+    over its top gate, no bracing across a gate, the capstan house clear over the car; the cars and gates are 8ax3's */
+ const SW=typeof sbWalkPlan==='function'?sbWalkPlan():null;
+ if(SW)for(const l of SW.lifts){if(l.id==='L1')continue;const x=l.frame[0],z=l.frame[1],DH=SB_WALK.DOORH,y0=l.stops[0].y-1.2,y1=l.stops[l.stops.length-1].y+DH+1.8,hw=SW.car+.5;
+  const gated=(sd,ya,yb)=>l.stops.some(s=>s.side[0]===sd[0]&&s.side[1]===sd[1]&&s.y<yb+.3&&s.y+DH>ya-.3);
+  for(const [dx,dz] of [[-1,-1],[1,-1],[1,1],[-1,1]])beam('acBox',[x+dx*hw,y0,z+dz*hw],[x+dx*hw,y1,z+dz*hw],1.1,1.1,SB_GIRDER);
+  for(let y=y0,k=0;y<y1-1;y+=12,k++){const ya=y,yb=Math.min(y+12,y1);
+   for(const [a,b,sd] of [[[-1,-1],[1,-1],[0,-1]],[[1,-1],[1,1],[1,0]],[[1,1],[-1,1],[0,1]],[[-1,1],[-1,-1],[-1,0]]]){if(gated(sd,ya,yb))continue;
+    beam('acBox',[x+a[0]*hw,ya,z+a[1]*hw],[x+b[0]*hw,yb,z+b[1]*hw],.5,.5,SB_GIRDER);
+    if(!gated(sd,ya-.5,ya+.5))beam('acBox',[x+a[0]*hw,ya,z+a[1]*hw],[x+b[0]*hw,ya,z+b[1]*hw],.6,.6,SB_GIRDER);}
+   if(k%2===0)for(const [dx,dz] of [[-1,-1],[1,-1],[1,1],[-1,1]])kput('sbCyl',[x+dx*hw,ya+1,z+dz*hw],null,[1,1.2,1],SB_BRONZE);}
+  kput('acBox',[x,y1+3,z],null,[11,6,11],new THREE.Color(0xe6dcc6));kput('acBox',[x,y1+6.4,z],null,[12,.8,12],SB_RED);
+  kput('sbCyl',[x,y1+3,z+6.2],qEuler(Math.PI/2,0,0),[3.4,.6,3.4],SB_BRONZE);
+  const w=L.ways.find(q=>q.id===l.ways[0]);if(w.elevator||w.id==='L2a'){kput('acBox',[x,y1+11,z],null,[.3,9,.3],new THREE.Color(0x5a4630));kput('acBox',[x+1.6,y1+14,z],null,[3,1.8,.08],SB_RED);}
+  REGISTER({name:'Strongbow today — lift '+l.id.replace('+','/')+(w.elevator?' (the elevator)':''),x,z,r:7,y:y0,h:y1-y0+8});}
+ for(const w of L.ways){if(SW||w.kind!=='lift'||w.id==='L1')continue;const x=w.frame[0],z=w.frame[1],y0=w.y0,y1=w.y1+4,hw=3.5;
   for(const [dx,dz] of [[-1,-1],[1,-1],[1,1],[-1,1]])beam('acBox',[x+dx*hw,y0,z+dz*hw],[x+dx*hw,y1,z+dz*hw],1.1,1.1,SB_GIRDER);
   for(let y=y0,k=0;y<y1-6;y+=12,k++){const ya=y,yb=Math.min(y+12,y1);
    for(const [a,b] of [[[-1,-1],[1,-1]],[[1,-1],[1,1]],[[1,1],[-1,1]],[[-1,1],[-1,-1]]]){
@@ -41,15 +56,22 @@ function sbReclaim(gx,gz){const L=sbLayout(),P={},h=(a,b,c,e)=>STRONGBOW.h(1647,
   REGISTER({name:'Strongbow today — lift '+w.id+(w.elevator?' (the elevator)':w.gated?' (the salvagers\', gated)':''),x,z,r:7,y:y0,h:y1-y0+8});}
  // ---- the wall landings: ledges bolted to the face, cable rails --------------------------------------------------------------
  for(const p of L.parts){if(p.kind!=='landing'||p.id==='sb.nock.landing')continue;const s=p.shape,c=ctr(p);
-  kput('acBox',[c[0],p.y-.6,c[2]],null,[s[2]-s[1],1.2,s[4]-s[3]],new THREE.Color(0xb8b0a0));
+  /* with the walk up: open where the car that arrives at this ledge rises through it (the deck in up to four pieces round it) */
+  const ho=SW&&SW.holes.find(q=>q.in===p.id),lc=new THREE.Color(0xb8b0a0);
+  if(ho){const r=ho.rect,pc=(x0,x1,z0,z1)=>{if(x1-x0>.05&&z1-z0>.05)kput('acBox',[(x0+x1)/2,p.y-.6,(z0+z1)/2],null,[x1-x0,1.2,z1-z0],lc);};
+   pc(s[1],r[0],s[3],s[4]);pc(r[1],s[2],s[3],s[4]);pc(r[0],r[1],s[3],r[2]);pc(r[0],r[1],r[3],s[4]);}
+  else kput('acBox',[c[0],p.y-.6,c[2]],null,[s[2]-s[1],1.2,s[4]-s[3]],lc);
   for(const sx of [-1,1])beam('acBox',[c[0]+sx*(s[2]-s[1])/2,p.y+1.1,s[3]],[c[0]+sx*(s[2]-s[1])/2,p.y+1.1,s[4]],.15,.15,new THREE.Color(0x2c3236));
   beam('acBox',[s[1],p.y+1.1,s[4]],[s[2],p.y+1.1,s[4]],.15,.15,new THREE.Color(0x2c3236));
   for(let i=0;i<3;i++)beam('acBox',[s[1]+(s[2]-s[1])*(i+.5)/3,p.y-1,s[3]],[s[1]+(s[2]-s[1])*(i+.5)/3,p.y-9,s[3]-2],.6,.6,SB_GIRDER);}
  // the Nock's transfer landing: a deck on the west wing's inner end and its wall against the Order's field
- {const p=P['sb.nock.landing'],s=p.shape,c=ctr(p);kput('acBox',[c[0],p.y+.6,c[2]],null,[s[2]-s[1],1.2,s[4]-s[3]],new THREE.Color(0xb8b0a0));
+ /* (with the walk up the landing is the Nock's own deck, which W2 rises through: no deck laid on it) */
+ {const p=P['sb.nock.landing'],s=p.shape,c=ctr(p);if(!SW)kput('acBox',[c[0],p.y+.6,c[2]],null,[s[2]-s[1],1.2,s[4]-s[3]],new THREE.Color(0xb8b0a0));
   const wl=P['sb.nock.wall'].shape;kput('acBox',[(wl[1]+wl[2])/2,p.y+3,(wl[3]+wl[4])/2],null,[1.4,6,wl[4]-wl[3]],new THREE.Color(0xd8ccb2));}
  // ---- the girder bridges: a truss from part to part --------------------------------------------------------------------------
- for(const w of L.ways){if(w.kind!=='bridge'||!w.pts)continue;const a=[w.pts[0][0],P[w.a].y+1,w.pts[0][1]],b=[w.pts[1][0],P[w.b].y+1,w.pts[1][1]];
+ for(const w of L.ways){if(w.kind!=='bridge'||!w.pts)continue;let a=[w.pts[0][0],P[w.a].y+1,w.pts[0][1]],b=[w.pts[1][0],P[w.b].y+1,w.pts[1][1]];
+  /* the bridge the walk up crosses: its deck's top at the walk's heights, from 2.5 m onto T3 */
+  if(SW&&w.id==='bridge.T3~sb.wl.0'){const B=SW.bridge;a=[B.a[0],B.a[2]-.4,B.a[1]];b=[B.b[0],B.b[2]-.4,B.b[1]];}
   beam('acBox',a,b,4,.8,new THREE.Color(0xc8bea8));
   for(const o of [-2,2]){const n=[b[2]-a[2],0,a[0]-b[0]],l=Math.hypot(n[0],n[2])||1,q=[n[0]/l*o,0,n[2]/l*o];
    beam('acBox',[a[0]+q[0],a[1]+1.2,a[2]+q[2]],[b[0]+q[0],b[1]+1.2,b[2]+q[2]],.2,.2,new THREE.Color(0x2c3236));
@@ -103,10 +125,11 @@ function sbReclaim(gx,gz){const L=sbLayout(),P={},h=(a,b,c,e)=>STRONGBOW.h(1647,
   kput('acBox',[mc[0]+2.5,y+24,mc[2]],null,[5,7,.12],SB_SAFFRON);
   REGISTER({name:'Strongbow today — the Order\'s balloon on the Nock',x:pad[0],z:pad[2],r:14,y:y,h:40});}
  // ---- the top: the Sultanate's post at the lip and the caravan yard -------------------------------------------------------
- {const po=P['sb.lip.post'],s=po.shape,c=ctr(po);kput('acBox',[c[0],po.y+5,c[2]],null,[s[2]-s[1],10,s[4]-s[3]],new THREE.Color(0xe2d8c2));
+ /* with the walk up the post is walls round a court with two doors, and the yard's wall has a gate (8ax3 draws both) */
+ {const po=P['sb.lip.post'],s=po.shape,c=ctr(po);if(!SW){kput('acBox',[c[0],po.y+5,c[2]],null,[s[2]-s[1],10,s[4]-s[3]],new THREE.Color(0xe2d8c2));
   kput('acBox',[c[0],po.y+10.4,c[2]],null,[s[2]-s[1]+1,.8,s[4]-s[3]+1],SB_RED);
-  kput('acBox',[c[0],po.y+16,c[2]],null,[.3,12,.3],new THREE.Color(0x5a4630));kput('acBox',[c[0]+2,po.y+20,c[2]],null,[4,2.4,.1],SB_RED);
-  const yd=P['sb.lip.yard'],t=yd.shape;for(const [a,b] of [[[t[1],t[3]],[t[2],t[3]]],[[t[2],t[3]],[t[2],t[4]]],[[t[2],t[4]],[t[1],t[4]]],[[t[1],t[4]],[t[1],t[3]]]])
+  kput('acBox',[c[0],po.y+16,c[2]],null,[.3,12,.3],new THREE.Color(0x5a4630));kput('acBox',[c[0]+2,po.y+20,c[2]],null,[4,2.4,.1],SB_RED);}
+  const yd=P['sb.lip.yard'],t=yd.shape;if(!SW)for(const [a,b] of [[[t[1],t[3]],[t[2],t[3]]],[[t[2],t[3]],[t[2],t[4]]],[[t[2],t[4]],[t[1],t[4]]],[[t[1],t[4]],[t[1],t[3]]]])
    beam('acBox',[a[0],yd.y+1,a[1]],[b[0],yd.y+1,b[1]],.4,2,new THREE.Color(0xc8b896));
   kput('acBox',[t[1]+10,yd.y+3,(t[3]+t[4])/2],null,[16,6,(t[4]-t[3])*.8],new THREE.Color(0xd8c8a8));
   for(let i=0;i<10;i++)kput('figB',[lerp(t[1]+24,t[2]-6,h(11,i)),yd.y,lerp(t[3]+6,t[4]-6,h(12,i))],qEuler(Math.PI/2,h(13,i)*6,0),[2.4,1.8,2.4],new THREE.Color(0x4a3a2e));

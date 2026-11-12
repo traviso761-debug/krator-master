@@ -12,4 +12,7 @@ const ROWS={
  strongbow:{z:0,s:0,r:700},
 };
 const RUINS=[[0,300,700]];
-const EXTRA_BUILDERS={strongbow:(scene,gx,gz,d)=>{const G=buildStrongbow(scene,gx,gz,d);sbReclaim(gx,gz);sbTownDraw(gx,gz);sbCutaway(gx,gz);return G;}};
+/* SB_CUTS: what the arcology opens for the walk up (settlements/strongbow/src/32-sb-walk.js: the lobby's and core's doors, the
+   neck's and ring building's at T1, L1's and W2's shafts), set before it builds; targets/strongbow reads it where defined */
+var SB_CUTS=null;
+const EXTRA_BUILDERS={strongbow:(scene,gx,gz,d)=>{SB_CUTS=sbWalkCuts();const G=buildStrongbow(scene,gx,gz,d);sbReclaim(gx,gz);sbTownDraw(gx,gz);sbWalkDraw(gx,gz);sbCutaway(gx,gz);return G;}};

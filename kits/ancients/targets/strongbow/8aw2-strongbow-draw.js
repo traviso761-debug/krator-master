@@ -96,11 +96,15 @@ function buildStrongbow(scene,gx,gz,d){reseed(9040+d);KOFF=[gx,0,gz];
   for(const r of P.drums){if(gone.has(r.id))continue;const c=r.at,y0=c[1],y1=y0+r.h;
    Lst.res.push(SBG.cyl(c,r.r,y0+2.5,y1-2.5));
    for(const yy of [y0,y1-2.5])Lst[col0].push(SBG.cyl(c,r.r+1.4,yy,yy+2.5));
-   Lst[col0].push(SBG.disc(c,0,r.r+1.4,y1),SBG.disc(c,0,r.r+1.4,y0));
+   /* SB_CUTS (the today page): L1's shaft through the drums over the lobby */
+   const CU=typeof SB_CUTS!=='undefined'&&SB_CUTS?SB_CUTS:null,hr=CU&&CU.drums&&CU.drums.ids.indexOf(r.id)>=0?CU.drums.r:0;
+   Lst[col0].push(SBG.disc(c,hr,r.r+1.4,y1),SBG.disc(c,hr,r.r+1.4,y0));
    // the neck up to the drum (or terrace, or keel) above: where the run steps out it leans across
    const up=above.get(r.id),ty=up?up.at[1]:F.tip;
    if(ty>y1+.5&&!(up&&gone.has(up.id))&&!(!up&&dd)){const a=[c[0],y1,c[2]],b=up?[up.at[0],ty,up.at[2]]:SBG.tp(X,[c[0],ty,c[2]]);
-    Lst[col0].push(gridSurface((u,v)=>{const th=u*TAU;return[lerp(a[0],b[0],v)+r.nr*Math.cos(th),lerp(a[1],b[1],v),lerp(a[2],b[2],v)+r.nr*Math.sin(th)];},20,1,{uS:4,vS:1}));}
+    const nk=CU&&CU.neck&&CU.neck.drum===r.id?CU.neck:null,NU=nk?72:20,NV=nk?Math.max(1,Math.round(ty-y1)):1;   /* the door in the neck at T1 (SB_CUTS) */
+    Lst[col0].push(gridSurface((u,v)=>{const th=u*TAU;return[lerp(a[0],b[0],v)+r.nr*Math.cos(th),lerp(a[1],b[1],v),lerp(a[2],b[2],v)+r.nr*Math.sin(th)];},NU,NV,{uS:4,vS:1,
+     hole:nk?(u,v)=>{const da=Math.atan2(Math.sin(u*TAU-nk.a),Math.cos(u*TAU-nk.a)),yy=lerp(a[1],b[1],v);return Math.abs(da)<nk.ha&&yy>nk.y&&yy<nk.y+nk.h;}:null}));}
    /* the break: the Spine's broken head is a rubble heap on the highest standing drum (RU.heaps) */}
   for(const t of P.spine.terraces)if(!gone.has(t.id)&&t.struts)for(const st of t.struts)beam('acBox',st.a,st.b,4,5,new THREE.Color(dd?0x8e887a:0xe6e0d2));
   // the town's lamps in the Spine's lower drums
@@ -111,7 +115,9 @@ function buildStrongbow(scene,gx,gz,d){reseed(9040+d);KOFF=[gx,0,gz];
    Lst[col].push(gridSurface((u,v)=>{const a=u*TAU,r=lerp(r0,s.r,v);return[c[0]+r*Math.cos(a),y-7*(1-v*v),c[2]+r*Math.sin(a)];},40,6,{uS:20,vS:4}));
    Lst[col].push(SBG.cyl(c,s.r,y,y+1.6,40));
    Lst.grass.push(SBG.disc(c,s.r-9,s.r-.5,y+1.6,40));Lst.deck.push(SBG.disc(c,r0,s.r-9,y+1.6,40));
-   Lst.res.push(SBG.cyl(c,s.r-12,y+1.6,y+8,40));Lst[col].push(SBG.disc(c,r0,s.r-8,y+8.4,40));}
+   const CR=typeof SB_CUTS!=='undefined'&&SB_CUTS&&SB_CUTS.ring&&Math.hypot(SB_CUTS.ring.c[0]-c[0],SB_CUTS.ring.c[1]-c[2])<1?SB_CUTS.ring:null;   /* the ring building's door at T1 (SB_CUTS) */
+   Lst.res.push(CR?gridSurface((u,v)=>[c[0]+(s.r-12)*Math.cos(u*TAU),lerp(y+1.6,y+8,v),c[2]+(s.r-12)*Math.sin(u*TAU)],160,6,{uS:(s.r-12)*TAU/25.6,vS:6.4/25.6,
+    hole:(u,v)=>{const da=Math.atan2(Math.sin(u*TAU-CR.a),Math.cos(u*TAU-CR.a)),yy=lerp(y+1.6,y+8,v);return Math.abs(da)<CR.ha&&yy<y+1.6+CR.h;}}):SBG.cyl(c,s.r-12,y+1.6,y+8,40));Lst[col].push(SBG.disc(c,r0,s.r-8,y+8.4,40));}
   for(const ro of P.rotors){if(gone.has(ro.terrace))continue;const rs=RU?RU.rotors.find(q=>q.id===ro.id):null,col=new THREE.Color(dd?0x9a9486:0xece6d8);
    beam('acBox',ro.at,ro.hub,4,4,col);kput('sbCyl',[ro.hub[0],ro.hub[1],ro.hub[2]+3],qEuler(Math.PI/2,0,0),[3.4,14,3.4],col);
    kput('finial',[ro.hub[0],ro.hub[1],ro.hub[2]+11],null,[2.6,2.6,2.6],col);

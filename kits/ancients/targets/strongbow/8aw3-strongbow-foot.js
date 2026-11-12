@@ -23,11 +23,14 @@ function sbFoot(X){const P=X.P,F=X.F,FT=P.foot,L=FT.lobby,H=FT.hall,RU=X.RU,dd=X
   kput('stain',[x,w.y1-6,w.z1+.4],qFacing([0,0,1]),[5+6*h(601,i),12+10*h(602,i),1],null);}
 
  // ---- the lobby: a glazed rotunda round the Spine's foot ---------------------------------------------------------------
- {const n=L.ribs,r=L.r,lostG=(u,v)=>RU&&h(610,Math.floor(u*n),Math.floor(v*4))<RU.foot.glass;
+ /* SB_CUTS (settlements/strongbow, the today page): the lobby's door on the plaza (a glass bay at the door's angle, the plinth
+    open there) and the core's door (the core's wall open for its height) */
+ const CU=typeof SB_CUTS!=='undefined'&&SB_CUTS?SB_CUTS:null,LD=CU&&CU.lobby,CD=CU&&CU.core;
+ {const n=L.ribs,r=L.r,lostG=(u,v)=>(RU&&h(610,Math.floor(u*n),Math.floor(v*4))<RU.foot.glass)||!!(LD&&Math.floor(v*4)===0&&Math.floor(u*n)===LD.cell);
   L2.lglass.push(gridSurface((u,v)=>[c[0]+r*Math.cos(u*TAUf),lerp(L.y0+1.5,L.y1,v),c[2]+r*Math.sin(u*TAUf)],n,4,{uS:n,vS:4,hole:lostG}));
   /* the mullions, the transoms at the galleries' levels, the plinth and the cornice */
   for(let i=0;i<n;i++){const a=i/n*TAUf;beam('acBox',[c[0]+r*Math.cos(a),L.y0,c[2]+r*Math.sin(a)],[c[0]+r*Math.cos(a),L.y1,c[2]+r*Math.sin(a)],1.2,1.6,wcol);}
-  L2[col].push(SBG.cyl(c,r+1.2,L.y0,L.y0+1.5,64),SBG.cyl(c,r+1.6,L.y1-2.2,L.y1+1.4,64));
+  L2[col].push(LD?SBG.arc(c,r+1.2,LD.a+LD.ha,LD.a-LD.ha+TAUf,L.y0,L.y0+1.5,64):SBG.cyl(c,r+1.2,L.y0,L.y0+1.5,64),SBG.cyl(c,r+1.6,L.y1-2.2,L.y1+1.4,64));
   for(const g of L.galleries)L2[col].push(SBG.cyl(c,r+.6,g.y-.4,g.y+.4,64));
   /* the roof: an annulus from the Spine's first drum out to the cornice, a parapet ring */
   L2.deck.push(SBG.disc(c,P.dim.SPINE.r+1.5,r+1.6,L.y1+1.4,64));
@@ -37,7 +40,7 @@ function sbFoot(X){const P=X.P,F=X.F,FT=P.foot,L=FT.lobby,H=FT.hall,RU=X.RU,dd=X
    L2.deck.push(gridSurface((u,v)=>{const a=u*TAUf,rr=lerp(g.r0,g.r1,v);return[c[0]+rr*Math.cos(a),g.y,c[2]+rr*Math.sin(a)];},m,1,{uS:m/2,vS:1,hole:(u,v)=>lost&&h(611,g.y|0,Math.floor(u*m))<lost}));
    L2[col].push(gridSurface((u,v)=>{const a=u*TAUf;return[c[0]+g.r0*Math.cos(a),g.y+lerp(-1.2,1.1,v),c[2]+g.r0*Math.sin(a)];},m,1,{uS:m/2,vS:1,hole:(u,v)=>lost&&h(611,g.y|0,Math.floor(u*m))<lost}));}
   /* the core: the Spine's lift shafts down to the floor, the lifts' light strips (dark in the ruin) */
-  L2[col].push(SBG.cyl(c,L.core,L.y0,L.y1,32));
+  if(CD)L2[col].push(SBG.arc(c,L.core,CD.a+CD.ha,CD.a-CD.ha+TAUf,L.y0,L.y0+CD.h,32),SBG.cyl(c,L.core,L.y0+CD.h,L.y1,32));else L2[col].push(SBG.cyl(c,L.core,L.y0,L.y1,32));
   if(!dd)for(let i=0;i<4;i++){const a=i*Math.PI/2+.4;kput('strip',[c[0]+Math.cos(a)*(L.core+.3),(L.y0+L.y1)/2,c[2]+Math.sin(a)*(L.core+.3)],qEuler(0,-a,Math.PI/2),[L.y1-L.y0-4,1.4,1.4],CYAN);}
   /* the great stair: treads winding up round the core to the first gallery and on to the roof */
   const st=L.stair,NT=Math.round(st.turns*36);for(let i=0;i<NT;i++){const f=i/NT,a=f*st.turns*TAUf,y=lerp(L.y0,L.y1,f),rm=(st.r0+st.r1)/2;

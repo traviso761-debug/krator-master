@@ -12,6 +12,8 @@ the elevator to the lip, the outcasts in the upper Spine, the Order in the tower
 | `src/30-sb-layout.js` | the layout: parts, ways and lifts, read off the arcology's records (`kits/ancients/targets/strongbow`); `sbLayout()` builds it on first use |
 | `src/31-sb-rules.js` | the layout's 15 rules and its area |
 | `src/40-sb-town.js` | the town at the foot (SB3) on `core/city`: its site, ring roads and spokes, rules and fields; `SB_TOWN.make` gives its records |
+| `src/32-sb-walk.js` | the walk up ([G data]): the floors, walls, doors, lift cars, gates and gangways from the town to the caravan yard on the lip, on core/walk, and a walker with core/host's rules (`SB_WALK.plan`, `.register`, `.run`, `.cuts`) |
+| `src/8ax3-sb-walk.js` | the walk up drawn on the page (cars, gates, doors, gangways, the T1 plate, the post), run once on the page (a failure is an error), and the `walk up (u)` replay |
 | `src/8ax0-sb-reclaim.js` | the page's drawing of the reclamation (the lifts, bridges, rope ways, the bazaar, the balloon, the post at the lip; stand-ins for the foot's four scrap buildings where the kit is not on the page) |
 | `src/8ax2-sb-cutaway.js` | the cutaway (the c key, the button, the views "Cutaway — the Spine / the tower / the foot"): the column cut on its axis by a KHOOK layer, a slab for every storey coloured by who holds it, and a legend of the people each holder houses |
 | `src/8ax1-sb-town.js` | the page's drawing of the town and the foot's four scrap buildings (the serai, the plaza's gate, shrine and pavilion) with the scrap Xanadu set (`XAK`) |
@@ -23,6 +25,7 @@ the elevator to the lip, the outcasts in the upper Spine, the Order in the tower
 ```
 node settlements/strongbow/test-census.js            # the census against the plan (--write rewrites CENSUS.md)
 node settlements/strongbow/test-strongbow-town.js    # the layout's rules, each with a negative; AREAS.md current
+node settlements/strongbow/test-sb-walk.js           # the walk up: town to the lip through 21 doors and 7 lifts, 9 negatives (-v lists the legs)
 node settlements/strongbow/test-sb-town.js           # the town on core/city: no overlap, off the streets and the foot, the rings' people, the farms
 python3 settlements/strongbow/strongbow_blueprint.py # the sheets and AREAS.md
 python3 tools/build.py kits/ancients --target strongbow-today

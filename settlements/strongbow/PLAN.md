@@ -259,6 +259,34 @@ where they work and the scrap set's buildings, plus the Order's and the outcasts
      The column (the lobby, the drums, the terraces, the tower) is cut along its axis, the half toward the viewer removed. Every
      storey of every part with storeys is a slab coloured by its holder and state, from the layout's records, with a legend of
      the people each holder houses. The Nock's deck, the cliff, the plaza and the town are not cut.
+5b. **The walk up** (2026-11-12, the owner: "do a proper walk/elevator test, such that one can walk in, climb stairs and go thru
+   doors starting from the bottom, to reach the top. add doors and stairs, and move the elevators as necessary"):
+   - `src/32-sb-walk.js` ([G data]) lays the elevator's way up as core/walk records: the floors, the walls, 21 doors and gates, the
+     lift cars and the girder gangways. A walker with core/host's rules walks it: a 0.7 m step, a 1.4 m drop, a body 0.35 m by 1.7 m
+     pushed out of every wall, and a door opens as it comes to it.
+   - The route runs up the plaza's steps, through the lobby's door and down its treads, and through the core's door into **L1**. L1
+     comes up into T1's neck onto a landing plate. From there the walker goes through the neck's door and the ring building's door,
+     across the garden to **L2**, past T2 to T3 by a gangway, round T3's promenade and over the girder bridge to **W1** to **W5**
+     (W2 rises through the Nock's west wing to its transfer landing, and W3 leaves it by an apron). From W5's gangway onto the
+     plateau, it goes through the Sultanate's post (a door in, a door out) and the yard gate into the caravan yard.
+   - **The lifts were moved** (`src/30-sb-layout.js`):
+     - L2a and L2b now share one frame on T1's east garden. Those two terraces share a centre, so no frame could stand on T2 and
+       still clear T3's dish. The layout finds the frame: it must clear T3's dish, the drums above T1, T3's rotor and its arm, the
+       girder bridges east to the galleries, the Spine's pad off T2 and its struts. Of the frames that fit, it takes the one with
+       the shortest gangway to T3. Gangways reach T2 (about 17 m) and T3 (about 7 m).
+     - The wall lifts alternate 6 m either side of their old line, so two cars meeting at a landing do not overlap. Each stands 1.5 m
+       off the face over its whole run, and the ledges grow to hold the cars.
+     - A car stops at its landing's floor, a terrace's deck being 1.6 m over its node.
+   - The arcology opens what the walk needs from `SB_CUTS`, set only by the today page:
+     - the lobby's door bay and the core's door;
+     - the neck's door and the ring building's door at T1;
+     - L1's shaft through the drums over the lobby;
+     - W2's shaft through the Nock's west wing.
+   - `test-sb-walk.js` walks it in node. Each of its nine negatives stops the walker where it breaks the way: a door or gate left
+     shut, a lift that does not move, a gangway or the plaza's steps taken away. On the page the walk runs once at load (a failure is
+     an error the verify sees). The `walk up (u)` button replays it at eye height, with the doors opening and the cars riding.
+   - **Not yet**: the walls of the drums and terraces are not in the walk (only the walls the route passes through are), and a car's
+     shaft is not shut over its hole when the car is away.
 6. **SB4, life** on `core/simulation`.
 7. Placement in the open world: the region's job, from the records.
 

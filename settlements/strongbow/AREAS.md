@@ -14,7 +14,7 @@ outcasts). People are the layout's, which match PLAN.md section 6 and the census
 | Z4 the Spine's head (gone) | 3 | 19,453 | 68,311 | 0 | 0 |
 | Z5 the Nock | 7 | 57,611 | 3,248 | 3,248 | 0 |
 | Z6 the tower (the Order) | 2 | 34,081 | 2,024,275 | 486,200 | 100 |
-| Z7 the face | 9 | 21,840 | 104,400 | 36,000 | 100 |
+| Z7 the face | 9 | 21,947 | 104,400 | 36,000 | 100 |
 | Z8 the quarry and the scree | 4 | 17,841 | 0 | 0 | 0 |
 | Z9 the top | 5 | 39,094 | 163,896 | 37,896 | 0 |
 | **Total** | | | **2,982,594** m2 | | **3,500** |

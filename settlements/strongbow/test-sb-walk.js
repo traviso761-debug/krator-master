@@ -31,6 +31,7 @@ const neg=(name,o)=>{const N=walk(o);ok(!N.ok,'negative: '+name+(N.fail?' (stops
 neg('the lobby\'s door left shut',{shut:['sb.door.lobby']});
 neg('the neck\'s door at T1 left shut',{shut:['sb.door.neck']});
 neg('the post\'s door to the yard left shut',{shut:['sb.door.post.n']});
+neg('the yard gate left shut',{shut:['sb.door.yard']});
 neg('a gate of W3 left shut',{shut:[S.lifts.find(l=>l.id==='W3').stops[0].gate.id]});
 neg('W2 does not move',{stuck:['W2']});
 neg('L2\'s gangway to T3 taken away',{skip:S.gangways.filter(g=>/L2a/.test(g.id)&&/T3/.test(g.id)).map(g=>g.id)});

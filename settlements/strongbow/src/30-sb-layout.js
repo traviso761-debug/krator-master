@@ -161,12 +161,22 @@ function sbLayout(){if(SB_LAYOUT_)return SB_LAYOUT_;SB_LAYOUT_=(function(){
  /* the lifts are placed so a car rises clear of every deck it passes and stops beside its landings (the owner, 2026-11-12:
     "move the elevators as necessary"; src/32-sb-walk.js walks them). CAR is a car's half width */
  const CAR=SB_CAR,faceMax=(x,y0,y1)=>{let z=-1e9;for(let y=y0;y<=y1;y+=5)z=Math.max(z,F.faceZ(x,y));return z;};
- /* L2: one frame for L2a and L2b, outside T2 and T3 (which share a centre, so no frame can stand on T2 and clear T3's dish),
-    standing on T1's garden outside its ring building, clear of the drums above T1; girder gangways reach T2 and T3 */
- const L2F=(()=>{const c1=[T[1].at[0],T[1].at[2]],c2=[T[2].at[0],T[2].at[2]],R=Math.max(T[2].r,T[3].r)+CAR+1.5,dr=['sb.sp.5.1','sb.sp.5.0'].map(id=>P.drums.find(d=>d.id===id));
-  let best=null;for(let a=0;a<720;a++){const t=a/720*Math.PI*2,p=[c2[0]+R*Math.cos(t),c2[1]+R*Math.sin(t)],d1=Math.hypot(p[0]-c1[0],p[1]-c1[1]);
-   if(d1<T[1].r-12+CAR+.8||d1>T[1].r-.5-CAR)continue;if(dr.some(d=>Math.hypot(p[0]-d.at[0],p[1]-d.at[2])<d.r+CAR+3))continue;
-   const sc=Math.abs(d1-(T[1].r-6-CAR/2))-p[1]*.01;if(!best||sc<best.sc)best={p,sc};}return best.p;})();
+ /* L2: one frame for L2a and L2b, standing on T1's garden (outside its ring building), outside T3's dish (T2 and T3 share a
+    centre, so no frame can stand on T2 and clear T3), clear of the drums above T1, of T3's rotor and its arm, of the girder
+    bridges east to the galleries, and either clear of the Spine's pad off T2 or well inside it (then it stops on the pad, a stair
+    from there up to T2), and of the pad's struts; of the frames that fit, the one with the shortest gangway to T3 */
+ const L2F=(()=>{const c1=[T[1].at[0],T[1].at[2]],c3=[T[3].at[0],T[3].at[2]],dr=['sb.sp.5.1','sb.sp.5.0'].map(id=>P.drums.find(d=>d.id===id));
+  const sd=(p,a,b)=>{const dx=b[0]-a[0],dz=b[1]-a[1],l=dx*dx+dz*dz||1,t=Math.max(0,Math.min(1,((p[0]-a[0])*dx+(p[1]-a[1])*dz)/l));return Math.hypot(p[0]-a[0]-t*dx,p[1]-a[1]-t*dz);};
+  const pad=P.spinePad,rot=P.rotors.find(r=>r.terrace===T[3].id),pdT=pad?P.spine.terraces.find(t=>t.id===pad.terrace):null;
+  const struts=pad?[-1,1].map(o=>[[pdT.at[0]+o*pdT.r*.5,pdT.at[2]+pdT.r*.8],[pad.at[0]+o*pad.r*.5,pad.at[2]]]):[];
+  const bridges=[[[T[2].at[0]+T[2].r,T[2].at[2]],[180,F.faceZ(255,150)+5]],[[T[3].at[0]+T[3].r,T[3].at[2]],[180,F.faceZ(255,270)+5]]];
+  let best=null;for(let x=-140;x<=100;x+=1)for(let z=20;z<=240;z+=1){const p=[x,z],d1=Math.hypot(x-c1[0],z-c1[1]),d3=Math.hypot(x-c3[0],z-c3[1]);
+   if(d1<T[1].r-12+CAR+.8||d1>T[1].r-.5-CAR||d3<T[3].r+CAR+.5)continue;
+   if(dr.some(d=>Math.hypot(x-d.at[0],z-d.at[2])<d.r+CAR+3))continue;
+   if(rot&&(Math.hypot(x-rot.hub[0],z-rot.hub[2])<rot.r+CAR+3||sd(p,[rot.at[0],rot.at[2]],[rot.hub[0],rot.hub[2]])<CAR+4))continue;
+   if(bridges.some(b=>sd(p,b[0],b[1])<CAR+3))continue;
+   if(pad){const dp=Math.hypot(x-pad.at[0],z-pad.at[2]);if(!(dp<=pad.r-CAR*1.5||dp>=pad.r+CAR+1.5))continue;if(struts.some(s=>sd(p,s[0],s[1])<CAR+3))continue;}
+   if(!best||d3<best.d3)best={p,d3};}return best.p;})();
  lift('L2a','sb.T1','sb.T2',T[1].at[1],T[2].at[1],L2F[0],L2F[1],{note:'on the outside of the Spine, on T1 garden; a girder gangway to T2'});
  lift('L2b','sb.T2','sb.T3',T[2].at[1],T[3].at[1],L2F[0],L2F[1],{note:'past the burned run; T3 by permit (the same frame as L2a)'});
  lift('L3','sb.T3','sb.T5',T[3].at[1],T[5].at[1],T[3].at[0]+T[3].r-6,T[3].at[2]+30,{gated:true,note:'the Salvagers\' Guild, guarded by the garrison'});

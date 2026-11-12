@@ -26,6 +26,10 @@ const VIEWS={
  'The inner ring':               (function(){const a=SBT.L.lobby.at;return SBV([a[0]+170,26,a[2]+300],[a[0]+40,6,a[2]+200]);})(),
  'The road spoke':               (function(){const a=SBT.L.lobby.at;return SBV([a[0]-520,40,a[2]+260],[a[0]-300,4,a[2]+120]);})(),
  'The outer ring and the farms': (function(){const a=SBT.L.lobby.at;return SBV([a[0]+260,90,a[2]+880],[a[0]+20,0,a[2]+560]);})(),
+ // the walk up (src/32-sb-walk.js; the 'walk up' button replays it): the lobby's door, L2 on T1's garden with its gangways, the wall lifts
+ 'Walk — the lobby door':       (function(){const a=SBT.L.lobby.at;return SBV([a[0]+14,8,a[2]+82],[a[0]-4,3,a[2]+58]);})(),
+ 'Walk — L2 and its gangways':   (function(){const w=SBT.L.ways.find(q=>q.id==='L2a');return SBV([w.frame[0]+60,190,w.frame[1]+90],[w.frame[0]-10,170,w.frame[1]-20]);})(),
+ 'Walk — the wall lifts':        SBV([-20,600,260],[-107,560,-10]),
  // the top: the arc ramp landing on the crown through the gate in its parapet; the east side, whose string fell with the Nock's wing
  'The ramp onto the crown':      SBV([-210,1010,190],[-50,968,30]),
  'The east stays':               SBV([180,959,299],[179,880,251]),
