@@ -67,6 +67,21 @@ first. Xanadu re-hooks them (`xUVKey`, 71-xa-mat.js); the vendored file is left 
 building the hook with `Function()` or by setting `mat.customProgramCacheKey=()=>'wuv'+K` (and carrying it across
 the clone in `kbake`).
 
+## Load time (2026-11-11, the load-time pass)
+Erewhon on the RTX 5060, back to back: ready in 15.9 s before, 13.8 s after. Nothing moved: 3,325 of 3,327 drawn objects
+hash the same, and the streets, doors, roads and counts match. The two that differ are an unnamed basic-material pair whose
+hash differs between two runs of the same page too.
+* **Streets:** `87-er-layout.js` `contourLines` samples the ground and the inside test once per grid (`contourGrid`), not
+  once per contour level. It asked `inside()` about 7 M times, about 3 s.
+* **Deliberate drift: the foliage's program key.** The vendored `src/86-bio-30-core-foliage.js` `leafMat` keys its shader
+  program on `foliageHook`'s options (`aN`, `irid`, `axis`, `swayW`, `swayA`), not the species. Species with the same options
+  share one program, with byte-identical text: 97 programs to 91. Upstream `core/biome/30-core-foliage.js` still keys on the
+  species; the fix there, and the library's and world-UV's numbers as uniforms, are in `TODO.md` ("Ride along": "Fewer
+  shader programs"). Compiling the 91 programs is still the largest single cost: about 4.7 s.
+* **Flora zones:** the vendored `src/86-bio-55-biome-xanadu-trees.js` `zones()` reads the ground's height lazily, as
+  `biomes/xanadu`'s does now (same values).
+* **Not done:** about 1 s in core/lod's `IHash.get` and `cluster`, and 0.8 s of texture uploads. Both are core work.
+
 ## Erewhon (round 9)
 * The garden district's rectangle lies on 15–40° ground; its tiles are a stepped surface (no neighbour more than a
   waterfall apart) on levelled pads, so from the ring road the grid reads as a hanging garden of terraces rather than

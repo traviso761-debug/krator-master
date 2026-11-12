@@ -224,11 +224,19 @@ for(const D of DIST)if(D.kind==='park')plaza(D.x,D.z,D.r*.7,D.name,'park');
 // ---------------------------------------------------------------- contour streets: the town's own streets follow the ground
 // marching squares over an 8 m grid at every ΔH of height inside the city's buildable ground, linked into polylines
 // and simplified; then stairs run down the fall line every ~70 m from one contour toward the next
+// The ground's heights at the grid's corners and the inside test at its cells' centres do not change from one contour
+// level to the next, so they are sampled once per (cell, inside) and kept (the load-time pass, 2026-11-11: the streets
+// asked inside() 7 M times, ~3 s of the page's load); the lines are the same as sampling them per level
+const CONTOUR_GRID=new Map();
+function contourGrid(cell,inside){let byC=CONTOUR_GRID.get(inside);if(!byC){byC={};CONTOUR_GRID.set(inside,byC);}if(byC[cell])return byC[cell];
+ const N=Math.ceil(ER.W/cell),M=Math.ceil(ER.H/cell),X=i=>-ER.W/2+i*cell,Z=j=>-ER.H/2+j*cell;
+ const B=new Float64Array((N+1)*(M+1)),IN=new Uint8Array(N*M);for(let j=0;j<=M;j++)for(let i=0;i<=N;i++)B[j*(N+1)+i]=terrainBase(X(i),Z(j));
+ for(let j=0;j<M;j++)for(let i=0;i<N;i++)IN[j*N+i]=inside((X(i)+X(i+1))/2,(Z(j)+Z(j+1))/2)?1:0;
+ return byC[cell]={B,IN};}
 function contourLines(h0,cell,inside){const N=Math.ceil(ER.W/cell),M=Math.ceil(ER.H/cell),segs=[];const X=i=>-ER.W/2+i*cell,Z=j=>-ER.H/2+j*cell;
- const V=[];for(let j=0;j<=M;j++){const row=[];for(let i=0;i<=N;i++)row.push(terrainBase(X(i),Z(j))-h0);V.push(row);}
+ const G=contourGrid(cell,inside),N1=N+1,Vh=(i,j)=>G.B[j*N1+i]-h0;
  const lerpP=(a,b,va,vb)=>{const t=va/(va-vb);return[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t];};
- for(let j=0;j<M;j++)for(let i=0;i<N;i++){const c=[[X(i),Z(j)],[X(i+1),Z(j)],[X(i+1),Z(j+1)],[X(i),Z(j+1)]],v=[V[j][i],V[j][i+1],V[j+1][i+1],V[j+1][i]];
-  if(!inside((c[0][0]+c[2][0])/2,(c[0][1]+c[2][1])/2))continue;
+ for(let j=0;j<M;j++)for(let i=0;i<N;i++){if(!G.IN[j*N+i])continue;const c=[[X(i),Z(j)],[X(i+1),Z(j)],[X(i+1),Z(j+1)],[X(i),Z(j+1)]],v=[Vh(i,j),Vh(i+1,j),Vh(i+1,j+1),Vh(i,j+1)];
   const pts=[];for(let e=0;e<4;e++){const a=e,b=(e+1)%4;if((v[a]<0)!==(v[b]<0))pts.push(lerpP(c[a],c[b],v[a],v[b]));}
   if(pts.length===2)segs.push(pts);else if(pts.length===4){segs.push([pts[0],pts[1]]);segs.push([pts[2],pts[3]]);}}
  // link: hash endpoints

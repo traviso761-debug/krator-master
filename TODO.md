@@ -38,6 +38,19 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
   at 55 m steps). Add a `xanadu` style and palette (green by wetness, as `openworld/xanadu-oidong-highrift/src/43-world-xoh.js`'s
   `WORLD.ground` wrapper does now; shaping nearer `highland`), then drop that wrapper. The shaping changes `WORLD.H`, so the region's
   `plan/sites.json` re-bakes. Same reach as the item above.
+- **Fewer shader programs: key a hook's program on what its text holds, and pass its numbers as uniforms** (2026-11-11, the
+  Xanadu load-time pass; measured on Erewhon, RTX 5060: 97 programs, about 58 ms each to compile under ANGLE/D3D11, the
+  largest single load cost). Three places compile one program per value of a number written into the shader's text:
+  - `core/biome/30-core-foliage.js` `leafMat` keys its program on the species (`'biofol|'+BIO.kitKey(key)`), though
+    `foliageHook`'s text varies only with `aN`, `irid`, `axis`, `swayW` and `swayA`. Erewhon's vendored copy keys on those
+    options already (`settlements/xanadu/src/86-bio-30-core-foliage.js`, its KNOWN_ISSUES): 97 to 91 programs there, the
+    same text.
+  - `core/materials/record/25-matlib-host.js` `KMAT.libKey`: one program per specular and breakup value (`|lib0.3|bu0.45_0.1_5`);
+    about 30 of Erewhon's 49 Standard programs differ only in these.
+  - `core/materials/opt/69a-world-uv.js`: one program per world-UV scale (`vUv=uv*_sw*0.5000`), about 15 more.
+  Writing the numbers as uniforms (set per material in `onBeforeCompile`) and keying on the text alone would compile each kind
+  once. The first is behaviour-identical; the uniforms change no value either, but every page that reads these files changes
+  bytes (`tools/reach.py`: 558 and 151 pages), so it rides with the next all-builds rebuild.
 
 - **`KSHADOW.units` counts what the GPU links** (2026-11-09, found by the Throne's fix): `core/shadow/host/12-core-shadow-host.js` counts
   declared samplers (some are never read and the GPU drops them), misses `scene.environment` on standard materials, and judges against the

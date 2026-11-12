@@ -20,8 +20,12 @@
       placed.
 - [ ] **No pale flats in the Oidong Valley.** The kit's `flat` field is 0 everywhere (`src/43-world-xoh.js`), so its
       flats and their plants (cloud pines leaning, peyote, stone-blooms) do not grow.
-- [ ] **Tiles are slow to place.** About 166 ms a 512 m tile over Erehwon's villages: the Xanadu kit's zones and the
-      villages' keep-clear test. They want a look in the performance pass.
+- [ ] **Tiles are slow to place.** Measured 2026-11-11 (RTX 5060, a 5 x 5 block south of Erehwon): 99 ms a 512 m tile,
+      43 % of it `WORLD.H`, which the Xanadu kit's `zones()` asked for every candidate though few passes read it. It now
+      reads it lazily (`biomes/xanadu/src/55-biome-xanadu-trees.js`): 55 ms a tile, with the same 15,814 records (hash
+      `ebd78a8d`). Settling the start view places its 95 tiles in 6.6 s, down from 11.6 s. What is left: the kit's
+      fields and fbm per candidate, and the per-tree checks in core/world 85 (`WORLD.H`, `townW`, `roadD`). A cheaper
+      ground read during placement would be core/world's change and would move trees slightly.
 - [ ] **The villages stand at given bearings.** They are 6 to 12 km out round the towns (`src/48-world-site.js`), each
       searched for good ground within 3 km. busy-keller's hinterland survey, lifted into core, would place them by the
       land's fitness. They have no farmland yet.
@@ -40,5 +44,3 @@
       core hook set after it does not chain (core/coast's `44c`, on `claude/coast-31ce37`, when it merges), the islands
       vanish: the verify's island check catches it. The coast session proposed stamps in its field instead; lift the stamp
       into core/world or core/coast when a second region has landforms.
-- [ ] **edit_512's old shoal is left.** The Pleasure Dome's record moved from 806.6,1513.3 (5 km out) to the page's island;
-      that cell's bed is still held as a 40 m shoal, with no island over it.
