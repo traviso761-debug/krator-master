@@ -58,7 +58,7 @@ Not taken, each with its reason:
 
 ## 2. Longsong and its ring
 
-Longsong (`sq80bzd7ep`, px 1226,1626; 2,076 m, Csa, 988 mm, +11 °C) stays `settlements/longsong`'s page. The region
+Longsong (`sq80bzd7ep`, px 1228.88,1621.23 on the Bīruk al-Ghaym since 2026-11-11, model edit 5.1e7; it was 1226,1626: 2,076 m, Csa, 988 mm, +11 °C) stays `settlements/longsong`'s page. The region
 plans its countryside: **15 villages on core/hamlet's `xanadu` row**, 3 to 12 km out, a day's walk, so the harvest
 labour the house calls on can come in and go home.
 

@@ -7,38 +7,38 @@
   "doc": "cut-oidong-highrift",
   "points_px": [
    [
-    1218.5,
-    1618.5
+    1221.38,
+    1613.73
    ],
    [
-    1233.5,
-    1618.5
+    1236.38,
+    1613.73
    ],
    [
-    1233.5,
-    1633.5
+    1236.38,
+    1628.73
    ],
    [
-    1218.5,
-    1633.5
+    1221.38,
+    1628.73
    ]
   ],
   "points_m": [
    [
-    -175000.0,
-    -31000.0
+    -169239.99999999977,
+    -40539.99999999996
    ],
    [
-    -145000.0,
-    -31000.0
+    -139239.99999999977,
+    -40539.99999999996
    ],
    [
-    -145000.0,
-    -1000.0
+    -139239.99999999977,
+    -10539.999999999964
    ],
    [
-    -175000.0,
-    -1000.0
+    -169239.99999999977,
+    -10539.999999999964
    ]
   ],
   "area_km2": 900,
@@ -12983,12 +12983,12 @@
    "name": "Longsong",
    "type": "village",
    "doc": "sq80bzd7ep",
-   "px": 1226,
-   "py": 1626,
-   "x": -160000.0,
-   "z": -16000.0,
+   "px": 1228.88,
+   "py": 1621.23,
+   "x": -154239.99999999977,
+   "z": -25539.999999999964,
    "biome": "Oidong Valley",
-   "notes": ""
+   "notes": "The History Monks' monastery on the south bank of the Bīruk al-Ghaym (r105, about 550 m3/s, 112 m wide) where it runs west-north-west down the Oidong Valley: the rock 356 m south of the river's centre as the open world draws it, the Great Gate's bridge crossing it. Moved 2026-11-11 (the owner, openworld/PLAN-SETTLEMENTS.md answer 10: 'Move the pin onto the 550 m3/s river') from 1226,1626, 11.7 km south-east; settlements/longsong (its frame turned 28.6 degrees so the river runs along its x axis), openworld/oidong-highrift."
   },
   {
    "name": "Strongbow",
@@ -13291,10 +13291,10 @@
    "name": "Longsong",
    "type": "village",
    "culture": "xanadu",
-   "px": 1226,
-   "py": 1626,
-   "x": -160000.0,
-   "z": -16000.0,
+   "px": 1228.88,
+   "py": 1621.23,
+   "x": -154239.99999999977,
+   "z": -25539.999999999964,
    "reach_km": 15,
    "page": "settlements/longsong"
   },

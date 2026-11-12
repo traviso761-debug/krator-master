@@ -18,7 +18,7 @@ PROPOSAL-LONGSONG-PINNACLE.md` holds the economy it is planned for.
   | Site | Px | What is planned | People |
   |---|---|---|---|
   | **Strongbow** (`sfgtxw10kr`) | 1001,1596 | the Ancients' cliff arcology in the scarp between the valley and Xanadu, 3 km north of the cataract: its top on the lip (about 1,400 m), its elevator down about 3,100 m to the Xanadu floor (moved 2026-11-11); a road's end only so far | - |
-  | **Longsong** (`sq80bzd7ep`) | 1226,1626 | the ring of 15 villages: Shar, Nub and Dzo-ling where its page lays them, ten more farming villages 4 to 8.5 km out, Drok-ri's high pastures, Dar-ling's silk and paper | 3,279 (the house itself is `settlements/longsong`'s, 1,344) |
+  | **Longsong** (`sq80bzd7ep`) | 1228.88,1621.23 (on the Bīruk al-Ghaym, moved 2026-11-11) | the ring of 15 villages: Shar, Nub and Dzo-ling where its page lays them, ten more farming villages 4 to 8.5 km out, Drok-ri's high pastures, Dar-ling's silk and paper | 3,279 (the house itself is `settlements/longsong`'s, 1,344) |
   | **The Singing Gjár** (`ssinggjar01`) | 1572,1643 | the Order's house (350), the Beck Fields (180), the Vein Camp (50: 22 miners, 12 sorters, 6 smiths; a work camp, 90 % at work) | 580 |
   | **The Mirror Grange** (`smirrorgrange01`) | 1430,1644 | the Order's grange (260), its growers (200), the graben's herders (145) | 605 |
   | **The Caldron House** (`scaldronhouse01`) | 1366,1668 | the Order's hospice at the staircase foot (260), its shelf village (180) | 440 |

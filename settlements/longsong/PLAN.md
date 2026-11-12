@@ -11,6 +11,25 @@ of more advanced techniques. `BLUEPRINT.md` (2026-10-15) remains the programme o
 
 ## 1. The site
 
+**On the river (map 5.1; the owner, 2026-11-11).** Answer 10 of `openworld/PLAN-SETTLEMENTS.md`: "Move the pin onto the
+550 m³/s river." On map 5.1 the r105 is the **Bīruk al-Ghaym**, ~550-580 m³/s and 112 m wide, running west-north-west
+(bearing 299) down the valley floor to the highland lake 60 km west. The pin (model edit 5.1e7) is now **px
+1228.88,1621.23**, the rock 356 m south of the river's centre as the world draws it (its 1:1 line runs ~150 m south of the model's vertex), 11.7 km from the 5.1 pin's old place (1226,1626):
+- **The frame turned 28.6 degrees** (`LS.SITE.rot`): the page's x runs along the river (up-valley, bearing 119) and its
+  north across it (bearing 29), so the Great Gate still faces the water and the sun's side. `LS.toWorld` and `LS.toPage`
+  turn between the page and the region cut; the sky's landmarks are turned with it (`LS.pageBearing`). The sun's arc
+  stays in the page's frame, as it was drawn (its noon 28.6 degrees off the true north).
+- **The river is ~100 m in front of the gate** (its south bank; the centre ~360 m north of the rock, in a trough ~16-20 m down; the mills and the Mirror take their water from a beck off the southern apron, the owner's choice of 2026-11-11): the bridge over it
+  (`LS.BRIDGE`, its length from the river's width) is a bridge over a big river; the track north of it was moved past the
+  far bank.
+- **The cut is 5.1's** (`tools/cut_region.py`: a 120 km square round the pin at 500 m cells, extract_region.py on the
+  model's data), replacing the 4.21 cut of 2026-10-19 described below. The valley floor here is flat (15 m of relief
+  within 2 km).
+- The open world plans the same spot: `openworld/oidong-highrift` (its ring's three near villages are the page's spots,
+  turned onto the compass).
+
+The rest of this section is the 4.21 site (2026-10-19), kept for its reasons.
+
 **Where the model has Longsong.** The scale model (4.21) marks Longsong at px 957,1294 in the geographic region
 'Oidong Valley' (px 725-1035 by 1234-1350, a 620 km trough running west-north-west), whose floor lies at 2,000-2,200 m
 between walls rising to 5-5.5 km. Two streams run down it: the **Longsong stream** (*Lõsõ-bi Siṭrīm*, r105, the

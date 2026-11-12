@@ -289,13 +289,14 @@ const FCHK={
  /* 2026-11-11: the house counts its 1,344 (it was 550), so its own grain is ~10 %; the ring's tithe (LS.RING) must cover
     the rest of its grain, the dairy a fifth of its food */
  /* the ring (LS.RING, openworld/oidong-highrift's plan): its make-up by focus, and the page's own three villages (40h)
-    standing in the plan within 150 m of where the page lays them (its spots are offsets from the house, as the plan's) */
+    standing in the plan within 150 m of where the page lays them (its spots are offsets from the house, as the plan's, the plan's on
+    the compass and the page's in its turned frame: LS.dirToPage) */
  ring(R,specs){if(!R||!R.villages)return{ok:false,detail:'no LS.RING (build.py: openworld/oidong-highrift/plan/sites.json)'};
   const n=f=>R.villages.filter(v=>v.focus===f).length,bad=[];
   if(n('farming')!==12||n('ranch')!==2||n('silk')!==1)bad.push(n('farming')+' farming, '+n('ranch')+' herding, '+n('silk')+' silk');
   const near={'longsong-east':'east','longsong-west':'west','longsong-herders':'herders'};
   (specs||[]).forEach(S=>{const V=R.villages.find(v=>v.id.endsWith('/'+near[S.id]));if(!V){bad.push(S.id+' not in the plan');return;}
-   const a=V.bearing*Math.PI/180,x=Math.sin(a)*V.km*1000,z=-Math.cos(a)*V.km*1000;if(Math.hypot(x-S.site.x,z-S.site.z)>150)bad.push(S.id+' '+Math.round(Math.hypot(x-S.site.x,z-S.site.z))+' m off');});
+   const a=V.bearing*Math.PI/180,q=LS.dirToPage(Math.sin(a)*V.km*1000,-Math.cos(a)*V.km*1000),x=q[0],z=q[1];if(Math.hypot(x-S.site.x,z-S.site.z)>150)bad.push(S.id+' '+Math.round(Math.hypot(x-S.site.x,z-S.site.z))+' m off');});
   return{ok:!bad.length,detail:(bad.length?bad.join('; ')+'; ':'')+R.villages.length+' villages, '+R.pop+' people (plan '+R.hash+'); the Order\'s houses: '+(R.houses||[]).map(h=>h.name+' '+h.parts.reduce((a,p)=>a+p.pop,0)).join(', ')};},
  provision(P){const ring=P.suppliedT!=null&&P.grainNeedT!=null;
   return{ok:P.share>.05&&P.share<.8&&!!P.tithe&&(!ring||P.suppliedT>=P.grainNeedT),detail:'own grain '+P.ownT.toFixed(1)+' t of '+P.needT.toFixed(0)+' t needed ('+(P.share*100).toFixed(0)+' %)'
@@ -309,7 +310,7 @@ function farmChecks(add){const F=LS.FARMS;add('the farms sow only what the Oidon
  const hOf=d=>{D.setYear(d);return D.uniforms.uH.value.slice(1,D.CAL.length);};const a=hOf(0),b=hOf(20);D.setYear(k0==null?0:k0);
  add('the fields go through the year (ploughed, sown, grown, ripe, cut)',FCHK.year(F.stage,D.CAL.slice(1),{ok:a.some((v,i)=>Math.abs(v-b[i])>.3),detail:'high summer\'s crops '+a.map(v=>v.toFixed(1)).slice(0,4).join('/')+', autumn\'s '+b.map(v=>v.toFixed(1)).slice(0,4).join('/')}));}
 function farmNegatives(add){add('a field of cotton (not the valley\'s)',FCHK.crops(Object.assign({cotton:['x']},LS.FARMS.sown())));
- add('a field laid across the stream',FCHK.clear([{id:'wet',kind:'strips',x0:-40,x1:40,z0:-300,z1:-280,run:'ns',w:14,off:0,rot:['frostoat'],wallEvery:4}]));
+ add('a field laid across the stream',FCHK.clear([{id:'wet',kind:'strips',x0:-40,x1:40,z0:-380,z1:-350,run:'ns',w:14,off:0,rot:['frostoat'],wallEvery:4}]));
  add('fields that stand the same all year',FCHK.year(()=>({h:1,ripe:0,soil:0,name:'standing'}),LS.FARMS?FARMDRAW.CAL.slice(1):[],null));
  add('a house that grows all its grain and names no other source',FCHK.provision({share:1,ownT:100,needT:100,tithe:''}));
  add('a ring of three villages (the old plan)',FCHK.ring(LS.RING&&Object.assign({},LS.RING,{villages:LS.RING.villages.slice(0,3)}),LS.HAMLETS.SPECS));

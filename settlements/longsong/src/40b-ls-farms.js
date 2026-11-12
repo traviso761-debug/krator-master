@@ -60,13 +60,17 @@ F.OTHER=[{id:'mirror',crops:['lotus-root','lotus-silk'],name:'The Mirror of Long
  {id:'mushroom-cellar',crops:['moon-cap'],works:['dark-beds'],name:'The mushroom cellar in the rock under the granaries (moon cap on cut bamboo)'}];
 
 // ---------------------------------------------------------------- the farm's works and marks
-// (the stream's south bank runs at z -260 to -272 along the front: the pools, beds and groves keep to dry ground north of it)
-// the leat: from the stream upstream of the bridge (the stream runs west), along the south bank, under the track (the
-// tsampa mill's wheel stands in it), into the ward under the north wall, along the paper mill's north side to its wheel;
-// the tail race on from the wheel, out under the wall west of the corner tower, to the Mirror. Its levels fall all the
-// way (the host's CANAL: from just under the stream's level at the intake to the pond's)
-// (2026-10-19: the intake moved from 300 m to 1.1 km upstream, for the head a mill needs: about 3 m to the paper mill)
-F.LEAT={pts:[[1100,-240],[960,-232],[760,-236],[560,-244],[400,-250],[300,-252],[220,-254],[40,-248],[-24,-240],[-100,-238],[-106,-226],[-108,-201],[-112,-194],[-150,-193.5]],w:2.2,name:'The leat (the paper mill\'s and the tsampa mill\'s water)'};
+// (the river's south bank runs at about z -300 along the front: the pools, beds and groves keep to dry ground south of it)
+// the leat (2026-11-11, the owner: the beck from the south): the Bīruk al-Ghaym runs in a trough ~16-20 m under the
+// ward and falls ~1 m a kilometre, so the mills and the Mirror take their water from uphill: a beck off the southern
+// apron (F.BECK, the spring line under the valley's southern wall), led by the leat down the east side of the ward,
+// then west along the front under the track (the tsampa mill's wheel stands in it), into the ward under the north
+// wall, along the paper mill's north side to its wheel; the tail race on from the wheel, out under the wall west of the
+// corner tower, to the Mirror, whose overflow drops to the river. Its levels fall all the way (the host's CANAL: from
+// just under the beck's level at the intake to the pond's). Until 2026-11-11 the leat left the Longsong stream 1.1 km
+// upstream, when the page stood on map 4.21 by a stream near the ward's own level
+F.BECK={x:262,z:760,name:'The beck of the southern apron (the intake of the leat: a stone weir on it)'};
+F.LEAT={pts:[[262,760],[255,560],[248,360],[242,180],[238,0],[236,-140],[232,-215],[220,-254],[40,-248],[-24,-240],[-100,-238],[-106,-226],[-108,-201],[-112,-194],[-150,-193.5]],w:2.2,name:'The leat (the paper mill\'s and the tsampa mill\'s water)'};
 F.TAIL={pts:[[-150,-193.5],[-186,-193.5],[-186,-206],[-214,-224],[-246,-233]],w:1.8,name:'The tail race to the Mirror'};
 F.WHEELS=[{id:'wheel-tsampa',at:'leat',x:-80,z:-238.6,r:2.4,name:'The tsampa mill\'s wheel (undershot, in the leat)'},
  {id:'wheel-paper',at:'leat',x:-150,z:-193.5,r:2.8,name:'The paper mill\'s wheel (undershot, in its race)'}];
