@@ -5,7 +5,7 @@
    "inputs": {
     "biomes/sedesert/src/35-core-strata.js": "0b9d9dca17939ced4f1c6c7be69f2a9db949853d9de0e6045bcfd369375087f5",
     "biomes/sedesert/src/50-biome-sedesert-species.js": "b04ddad3aea8ff4a0c4a7105a7bd561445d0a815916841136e8641cec3452b15",
-    "biomes/sedesert/src/55-biome-sedesert-trees.js": "485eab97efbe3671932e0e822081bb0fc3d132ad973c9d73c1fc5d49c3243e19",
+    "biomes/sedesert/src/55-biome-sedesert-trees.js": "7e33caf4a07bc5f335dcb47ee565ad0a71cdb7ddd7f76d3a0ae2c5912bd0c232",
     "biomes/sedesert/src/60-biome-sedesert-floor.js": "cad75f2f49764af618b944b6f4a4bb4f645b9a339c2e4bfe36fcc4f6dae91298",
     "biomes/sedesert/src/65-biome-sedesert-dress.js": "a62d183d561363388de39bec66418427031d7ac9d508331f25be50098aff54c3",
     "biomes/sedesert/src/70-biome-sedesert.js": "95d3436b5eacd3292632c0b3293fd5f3cbdd28db4d36e0ca65179fbad2ccae39",
@@ -77,7 +77,7 @@
     "core/minimap/88a-core-minimap-host.js": "af98407f9b7bbec2742cb7bbbb9f8ff2d8c18952d5a35a02d023273a0d7e6fcc",
     "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
     "core/sched/20-core-sched.js": "441ce27891b8e5e3f61dc799cf030086b3ce59ae81cb3c64e1f2a9ffb11b4d03",
-    "core/shader/06-core-khook.js": "263ba824c45b1f350a27ef1c2db3b89a022679fae4b9af234a6c2c6bfb740a04",
+    "core/shader/06-core-khook.js": "eb1a0436d3d5dbaab81c3e43de2b642c96d9c3b44331a8960801880e5e20c56d",
     "core/shader/06b-core-kcolor.js": "ededfc6b8a1a8aae5bf3c6ab40863478f9beb8e1aaf2acf4ba9da25ef6392115",
     "core/simulation/77-sim-0-core.js": "31d97155bb301076456f9efacc265f9c124cbde85103630214be874ce4134341",
     "core/simulation/77-sim-1-world.js": "9cd27ca489746cd6bb3ea7fbcfa605d335237167e27b1781f07dd6d7d3b200a7",
@@ -88,13 +88,15 @@
     "core/simulation/77-sim-5r-routes.js": "1b9aa6be405b573d53d38a99be3c3117bd5b34f47fa53737d38cb388f6259e7f",
     "core/simulation/77-sim-6-build.js": "0465f6b5e20233c913672becce42edadd97ede8724ee28872ae7c1c4c8d268da",
     "core/simulation/77-sim-6-crime.js": "84d17c14a369af25144217c3993ec67966ecf8d43044f02f088e9cc5830e5781",
-    "core/simulation/77-sim-6-economy.js": "16f318e46c1293f6bd20e611c8ee257e888ea7eac83fbe40fe104eb8da995015",
+    "core/simulation/77-sim-6-economy.js": "8cdd13a56234830109421cc0ede6ef8f56a77aeb390d96d8b3c8814a8f8c5055",
     "core/simulation/77-sim-6-govern.js": "ac852b2df0dc57c5aad1c5830fb71d9a59f3ecc28d992be70ac30eb34ddcfe77",
-    "core/simulation/77-sim-6-items.js": "3d5628edd4be0f7e320676ee57e1e74b101186f2f9609a84b52b9a2f4ccd3109",
+    "core/simulation/77-sim-6-items.js": "1a585669cfc508b8c5ca8cf4e97f6b3b0bb4e694694b9a6f35cef6d474dd0182",
     "core/simulation/77-sim-6-money.js": "5ac2d43c9c49f9788852a153833d49f25df38ef50eb68e030929234f80574910",
     "core/simulation/77-sim-6-needs.js": "14520bb1ccf451419b3661f5985fdd0bbc73092f6fc3bfb55c28ac52db412e01",
     "core/simulation/77-sim-6-population.js": "2f0146a3328350874fcb36fbb7d5eb759296d2be1898d3039c7f59cbb0917a0f",
-    "core/simulation/77-sim-6-trade.js": "ced320edc16f0388fcf2f2b0c70a65d24ccbe34d20b7a9668fbe362346ceb77c",
+    "core/simulation/77-sim-6-season.js": "344a5416aedab4782d68769779c12183058f8a673f58ca1cc0015cf3ff051fac",
+    "core/simulation/77-sim-6-trade.js": "0ac23cd8e053f2712eecd78f351de82c401a691875e4c64837b12eaac5a60738",
+    "core/simulation/77-sim-6-transfer.js": "254fa32d81e0e9439978bc779ff550e744ce1b42d14ac0629e1a1f17432dcde1",
     "core/simulation/77-sim-6-unrest.js": "5186f7f23c04ecafbf2042968b5b1b048ed5392b5bcc2ad6c85fd37b65dd5809",
     "core/simulation/77-sim-7-ledger.js": "d1c50086205d8c33d76636edd86a58e07fa93428e38a2c5bf5ce273107e34bc7",
     "core/simulation/77-sim-7-lod.js": "72b3f9c94ceaba426d70bdcd370a7c63fdfea3462f05cecdda3df1695c5dd2f7",
@@ -148,7 +150,7 @@
     "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
     "core/rand": "2174a8e3e509270343eb7e2c6e69ec9c0a221daa415e05d960123007b253bc77",
     "core/sched": "a2fbc91d2344c14e84e74c6d0f1d22208ffaa3273ee19e34c81937b6f43d6763",
-    "core/simulation": "5ca73e409403b2090d1cbdd18ab97599fc8e24b76b25997e58bc2d7e67fc1aae",
+    "core/simulation": "7f29a3754355f9c284bb6e487fb681cbf9dcd38215d0f1fade096c45e3eb20d9",
     "core/tags": "cd6f040d0e4dc63956ba50d287f27cda97e471bfd15ee98f2638981d4f9e1127",
     "settlements/shade/src": "007f7988b030872f22ef6b8571f153d6a2e1af58a0f01b556a17e1c44bb6f788",
     "settlements/shade/world": "451457ef10f68b3136be829a2576e01092745db084da738b8bf1cf3123d14a34",
@@ -156,10 +158,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "settlements/shade/dist/shade.html": "e4c98a6702e1ad7e506911772bd7ad0c6a8aa9bf26aff66cec52dd188f92a424"
+    "settlements/shade/dist/shade.html": "c15343febd86f33c6bd31d0aaea8acaf3c3434f41c3befd779c8558da59cb9bc"
    },
    "outputs_raw": {
-    "settlements/shade/dist/shade.html": "2a1b3a7585d0fedcb06e0ceaf3173dcb8bfad0e9e4d80ac2a90e1828841456ef"
+    "settlements/shade/dist/shade.html": "d4d5046584376b6b9c206b7eabdba28076f79598713b099ba190e262fd2ff17f"
    }
   }
  }

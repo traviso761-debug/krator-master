@@ -28,6 +28,13 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 
 ## Ride along with the next all-builds rebuild
 
+- **The balanced basket into Voth, Mungo and Dhelv** (2026-11-12, `core/simulation/77-sim-6-items.js`, branch
+  `claude/sim-s4-s7-fdaeba`). The change reaches `settlements/voth` (city and site), `settlements/mungo` and
+  `settlements/dhelv`. Their committed pages were built on 2026-11-08, before core/biome's e983ec13d and e6543a3a9. Rebuilt
+  now, they fail their GPU verifies on the biome side: Mungo's error panel has `ReferenceError: bk is not defined` at
+  `BIO.geo.stemClump`; Voth's city fails on page errors, flora (swbay), embassies, the Arena canton not walkable, and the
+  flora editor; Dhelv gave no result. Their pages were left as committed. Rebuild them with the biome rebuild. The basket
+  itself is tested in node: `test-sim.js` (Dhelv's trace), the isle demo's 15 tests, Godot's isle books.
 - **core/hamlet: a work camp** (2026-11-11, the oidong-highrift region's Vein Camp; the owner: "mostly miners"). A camp's people
   are nearly all at work (no families), so `openworld/oidong-highrift/src/48-world-site.js` defines a row of its own,
   `KHAMLET.CULTURES['xanadu-camp']` (the `xanadu` row with workShare .9, household 4, a cookhouse, store and tally house for

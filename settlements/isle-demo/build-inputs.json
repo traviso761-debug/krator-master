@@ -82,7 +82,7 @@
     "core/simulation/77-sim-6-crime.js": "84d17c14a369af25144217c3993ec67966ecf8d43044f02f088e9cc5830e5781",
     "core/simulation/77-sim-6-economy.js": "8cdd13a56234830109421cc0ede6ef8f56a77aeb390d96d8b3c8814a8f8c5055",
     "core/simulation/77-sim-6-govern.js": "ac852b2df0dc57c5aad1c5830fb71d9a59f3ecc28d992be70ac30eb34ddcfe77",
-    "core/simulation/77-sim-6-items.js": "3d5628edd4be0f7e320676ee57e1e74b101186f2f9609a84b52b9a2f4ccd3109",
+    "core/simulation/77-sim-6-items.js": "1a585669cfc508b8c5ca8cf4e97f6b3b0bb4e694694b9a6f35cef6d474dd0182",
     "core/simulation/77-sim-6-money.js": "5ac2d43c9c49f9788852a153833d49f25df38ef50eb68e030929234f80574910",
     "core/simulation/77-sim-6-needs.js": "14520bb1ccf451419b3661f5985fdd0bbc73092f6fc3bfb55c28ac52db412e01",
     "core/simulation/77-sim-6-population.js": "2f0146a3328350874fcb36fbb7d5eb759296d2be1898d3039c7f59cbb0917a0f",
@@ -977,8 +977,8 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "settlements/isle-demo/dist/isle-city.html": "22c81b4afc716d58b449296a92075b4a89357abd68ac38213beac7ac626f786a",
-    "settlements/isle-demo/dist/isle-city.plan.js": "60df45ba9a78011b289100ed349d30a0e374f1aa032d9e3ea16f272854d73ab4",
+    "settlements/isle-demo/dist/isle-city.html": "be11537e4f25000952c448903c8a0efa4e0940985e24c8d08ce145f5b3e2cedd",
+    "settlements/isle-demo/dist/isle-city.plan.js": "e6b84c4dbc539947c2c868849db1cf80ab88c83255712fdce82f048fe9b674bb",
     "settlements/isle-demo/dist/isle-city.tex.brtowns.js": "7e593dd1b45394583a5fb854cf7186f70472a71c929c365a495d3ef0748d6c5d",
     "settlements/isle-demo/dist/isle-city.tex.islanders-2.js": "a869e63f728e5f1ad426a9ab6bbbb2e84ef86800b51c1c78cbe72b0b1ec606d8",
     "settlements/isle-demo/dist/isle-city.tex.islanders.js": "5386bac4f108b5a05c35cb85da341c4b042296a3f5cfb51b9989a216db6834ed",
@@ -989,8 +989,8 @@
     "settlements/isle-demo/dist/isle-site.html": "60396318f2f46bba99deba23efa923224079e9b825414d184561d539b05f4b02"
    },
    "outputs_raw": {
-    "settlements/isle-demo/dist/isle-city.html": "22c81b4afc716d58b449296a92075b4a89357abd68ac38213beac7ac626f786a",
-    "settlements/isle-demo/dist/isle-city.plan.js": "60df45ba9a78011b289100ed349d30a0e374f1aa032d9e3ea16f272854d73ab4",
+    "settlements/isle-demo/dist/isle-city.html": "be11537e4f25000952c448903c8a0efa4e0940985e24c8d08ce145f5b3e2cedd",
+    "settlements/isle-demo/dist/isle-city.plan.js": "e6b84c4dbc539947c2c868849db1cf80ab88c83255712fdce82f048fe9b674bb",
     "settlements/isle-demo/dist/isle-city.tex.brtowns.js": "7e593dd1b45394583a5fb854cf7186f70472a71c929c365a495d3ef0748d6c5d",
     "settlements/isle-demo/dist/isle-city.tex.islanders-2.js": "a869e63f728e5f1ad426a9ab6bbbb2e84ef86800b51c1c78cbe72b0b1ec606d8",
     "settlements/isle-demo/dist/isle-city.tex.islanders.js": "5386bac4f108b5a05c35cb85da341c4b042296a3f5cfb51b9989a216db6834ed",
