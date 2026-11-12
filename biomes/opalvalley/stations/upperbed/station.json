@@ -1,0 +1,4 @@
+{
+ "note": "Station 2, the milk-opal tarns (PLAN.md section 6). kin: Oidong's high country read in place (OIDONG.buildHigh) on the moraine bars and the cold open ground.",
+ "kin": {"oidong": [["src/50-biome-oidong-species.js", "src/55-biome-oidong-trees.js", "src/60-biome-oidong-floor.js"], "OIDONG", ["cherrybloom", "heart", "lace", "leaf.moss", "leaf.small", "lily", "organic.mossball", "stone.granite"]]}
+}
