@@ -1,16 +1,16 @@
 {
  "pages": {
   "biomes/ancientsvalley/dist/ancientsvalley-terraces.html": {
-   "bytes": 4986737,
-   "sha256": "edcd633fe3ebea061cac79cf8e533810ffbc40dfe14f083567e71f3dc2cdd620"
+   "bytes": 4987513,
+   "sha256": "4f34b8a0ce7078bb4bb2982708589ff828bccc8ba72dc5fb0a381474ec236b89"
   },
   "biomes/ancientsvalley/dist/ancientsvalley-yards.html": {
-   "bytes": 5116083,
-   "sha256": "36f3b6114f011c3d806ae3d080f5b9ebb7f375d430981ec5bff52afbd7ca55aa"
+   "bytes": 5118022,
+   "sha256": "ec88d472bf123d0df977963e204fcad192332c42489649c29c574d51413f044e"
   },
   "biomes/ancientsvalley/dist/ancientsvalley.html": {
-   "bytes": 4884319,
-   "sha256": "7d80c821034c0166150c0d7b6b6f526a791d8a41a87fc4a6e429440f872e3a43"
+   "bytes": 4885095,
+   "sha256": "82d5c6a60248515ec310b90e24b9d3d237aa8ebe40072a8dba800b08652de864"
   },
   "biomes/crater-drylands/dist/crater-drylands.html": {
    "bytes": 4190377,
@@ -537,8 +537,8 @@
    "sha256": "ff6cdf1d23a993828e0a1791cb891f4c3aa030bfb1061f0fa2d46231cadb5c14"
   },
   "kits/metropolis/dist/metropolis.html": {
-   "bytes": 4213319,
-   "sha256": "f94a905b85613efe444c3f63985713a69eba26146ea3b0e4dc00330436fe7cfc"
+   "bytes": 4269092,
+   "sha256": "70f3d5d2607d82892f681968fb1c2ce44e255a2d9c936db7607de11b4c9652f0"
   },
   "kits/motor-vehicles/dist/motor-vehicles.html": {
    "bytes": 2289813,

@@ -189,7 +189,11 @@ AVC.boot=function(){if(AVC.ready)return true;if(window._texPending>0)return fals
  try{AVC.engines();}catch(e){reportErr('engines: '+e.stack);}AVC.engineMs=Math.round(performance.now()-t0);
  /* the shell records: every look the plan uses (a skeleton's towers take the stump's); a family whose record fails has no shell (its towers are heroes then impostors) */
  AVC.shellKeys=[];AVC.stub={};AVC.skeys.forEach(k=>{const p=k.split('.'),F=MP.FAMILY[p[0]];if(!F||!F.shell)return;try{AVC.rec[k]=KSHELL.record(F,p[1]);AVC.hero[k]=AVC.hero[k]||heroOf(k);AVC.shellKeys.push(k);}catch(e){reportErr('shell record '+k+': '+(e.message||e));}});
- const size=/[?&]atlas=1024\b/.test(location.search)?1024:2048,steps=/[?&]steps=(\d+)/.test(location.search)?+RegExp.$1:32,pxOf=()=>2*Math.tan(camera.fov*Math.PI/360)/Math.max(1,innerHeight);
+ /* the shell's trace takes 96 steps (the owner, 2026-11-11: "shells rendering incompletely?", the Yards from -2134,-20,-117): a long grazing ray over
+    a far skyline ran out of 32 steps inside the cage and was dropped, whole towers gone and the rest stippled; at 64 a tower came back and at 128
+    it stood taller. The trace stops at its hit, so the steps cost only the misses: 32, 64 and 96 drew a frame in the same time on the Arc lane
+    (2880 x 1620, within the run's noise) */
+ const size=/[?&]atlas=1024\b/.test(location.search)?1024:2048,steps=/[?&]steps=(\d+)/.test(location.search)?+RegExp.$1:96,pxOf=()=>2*Math.tan(camera.fov*Math.PI/360)/Math.max(1,innerHeight);
  /* pack the records into atlases, each as full as it goes (KSHELL.pack throws when one does not fit: the rest start the next) */
  AVC.atlases=[];AVC.mats=[];AVC.atlasOf={};{let left=AVC.shellKeys.slice();while(left.length){let n=left.length,packed=null;while(n>0){try{packed=KSHELL.pack([].concat(...left.slice(0,n).map(k=>KSHELL.slots(AVC.rec[k]))),size);break;}catch(e){n=Math.floor(n*.7);packed=null;}}
   if(!packed||!n){reportErr('shells: '+left[0]+' fits no atlas');left.shift();continue;}const at=KSHELL.atlas(size,renderer),mat=KSHELL.material(at,{steps}),ai=AVC.atlases.length;AVC.atlases.push(at);AVC.mats.push(mat);

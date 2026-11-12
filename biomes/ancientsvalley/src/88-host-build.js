@@ -17,7 +17,8 @@ const AV_STAGES={n:0,of:(typeof SWLOW!=='undefined'&&STAGE.swQ?2:0)+(typeof NWLO
 const avYield=t=>{AV_STAGES.n++;avLoadNote(t+' (stage '+AV_STAGES.n+' of '+AV_STAGES.of+', '+Math.round((performance.now()-AV_STAGES.t0)/1000)+' s so far; the page is busy until each stage ends)');return avTurn();};
 /* a turn for the browser that includes a paint: a frame, then a task after it (a bare zero timeout can run before the note is painted); a hidden tab
    draws no frames, so a 150 ms timer goes on without one */
-function avTurn(){return new Promise(r=>{let done=false;const go=()=>{if(!done){done=true;r();}};requestAnimationFrame(()=>setTimeout(go,0));setTimeout(go,150);});}
+function avTurn(){if(document.hidden)return Promise.resolve();return new Promise(r=>{   /* hidden: no turn (46y, AV_PARTS.turn) */
+ let done=false;const go=()=>{if(!done){done=true;r();}};requestAnimationFrame(()=>setTimeout(go,0));setTimeout(go,150);});}
 /* the rest of the page (the towers, the transit, the sky, the first frame: one task of 15 s or more on a slow machine) runs under a note of its own,
    painted first; the note goes once that task ends, the first frame drawn */
 const AV_AFTER=()=>{const el=document.getElementById('av-after');if(!el){avLoadNote(null);return;}avLoadNote('the towers, the streets and the sky (the last stage)');

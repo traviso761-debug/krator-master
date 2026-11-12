@@ -9,8 +9,9 @@
 const AV_PARTS={prep:{},t0:performance.now(),   /* the seconds the notes give count from here, the page's first script (not the navigation: a tab still busy with the page before may hold that for minutes) */
  note(t){let el=document.getElementById('av-loading');if(!el){el=document.createElement('div');el.id='av-loading';el.style.cssText='position:fixed;left:50%;top:46%;transform:translate(-50%,-50%);z-index:50;background:rgba(24,21,15,.88);color:#f3ecd8;font:13px Georgia,serif;padding:10px 16px;border-radius:8px;pointer-events:none';document.body.appendChild(el);}
   el.textContent='Building the valley: '+t+' ('+Math.round((performance.now()-AV_PARTS.t0)/1000)+' s so far)…';},
- /* a turn that includes a paint: a frame, then a task after it; a hidden tab draws no frames, so a 150 ms timer goes on without one */
- turn(){return new Promise(r=>{let done=false;const go=()=>{if(!done){done=true;r();}};requestAnimationFrame(()=>setTimeout(go,0));setTimeout(go,150);});},
+ /* a turn that includes a paint: a frame, then a task after it. A hidden tab takes no turn at all: it draws no frames, and the browser holds its
+    timers to a second each (a minute each after five minutes hidden), so the slices would take an age, and no one is there to read the note */
+ turn(){if(document.hidden)return Promise.resolve();return new Promise(r=>{let done=false;const go=()=>{if(!done){done=true;r();}};requestAnimationFrame(()=>setTimeout(go,0));setTimeout(go,150);});},
  /* fill a lattice's every tile in slices of about a quarter second, a note with the share done between them */
  async fill(L,label){const n=L.nt*L.nt;let t=performance.now();for(let k=0;k<n;k++){L.fill(k);if(performance.now()-t>250){AV_PARTS.note(label+', '+Math.floor(100*k/n)+'%');await AV_PARTS.turn();t=performance.now();}}},
  run(){const P=[...document.querySelectorAll('script[type="text/plain"][data-av-part]')];

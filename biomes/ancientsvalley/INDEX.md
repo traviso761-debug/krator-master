@@ -31,7 +31,7 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `46y-host-parts.js` | 3 |  |
 | `46z-host-stage.js` | 35 **big** |  |
 | `47-host-land.js` | 9 | the ground (29); the far ground (the model's country out to 24 km (63) |
-| `70-host-city.js` | 55 **big** | the rust (the owner, 2026-11-04: more rust) (72); the engines (kits/ancients 8ah, 8ai, read in pla (311); the lines: the viaduct (AV.viaduct's records dra (326) |
+| `70-host-city.js` | 55 **big** | the rust (the owner, 2026-11-04: more rust) (72); the engines (kits/ancients 8ah, 8ai, read in pla (315); the lines: the viaduct (AV.viaduct's records dra (330) |
 | `71-host-creepers.js` | 7 |  |
 | `72-host-keepers.js` | 10 |  |
 | `73-host-wrecks.js` | 7 |  |
