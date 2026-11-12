@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 28 (17%) | 0 (0%) | 0 (0%) | 5 (3%) | 135 (81%) |
+| KB | 28 (14%) | 0 (0%) | 0 (0%) | 5 (3%) | 172 (84%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -17,21 +17,24 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/37-wk-rec.js` | 2.8 | [draw] | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/40-fg-kit.js` | 17.6 | [draw] | 3 | 0 | 0 | 0 | 0 | 17 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/42-fg-mass.js` | 21.3 | [draw] | 1 | 0 | 0 | 0 | 0 | 14 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/44-fg-wc-plan.js` | 7.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | Wildcat's specs and dress records on core/pueblo: no three.js |
-| `src/46-fg-wc-draw.js` | 20.3 | [draw] | 1 | 0 | 0 | 0 | 0 | 28 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/44-fg-wc-plan.js` | 9.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | Wildcat's specs and dress records on core/pueblo: no three.js |
+| `src/45-fg-wc-furn.js` | 2.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the pueblo rooms' and kivas' furniture tables (catalog keys and sizes) |
+| `src/46-fg-wc-draw.js` | 28.6 | [draw] | 2 | 0 | 0 | 0 | 0 | 35 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/47-fg-bc-plan.js` | 5.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | Barricade's spec and dress records on core/pueblo: no three.js |
+| `src/48-fg-bc-draw.js` | 4.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 12 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/50-fg-dwell.js` | 9.8 | [draw] | 0 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/52-fg-civic.js` | 7.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 11 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/54-fg-stores.js` | 8.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 15 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/56-fg-works.js` | 13.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 20 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/60-fg-road.js` | 14.4 | [draw] | 0 | 0 | 0 | 0 | 0 | 23 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/80-fg-host.js` | 10.5 | [draw] | 1 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | the host API: a world's records drawn dry into a group of their own; its seating (fgSeat) and checks are data |
-| `src/82-wc-host.js` | 4.1 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the host API: TG.fg.pueblo draws a core/pueblo plan dry into a group of its own; its seating, registration and checks are data |
+| `src/82-wc-host.js` | 8.2 | [draw] | 2 | 0 | 0 | 0 | 0 | 2 | 1 | 0 | 0 | 0 | 0 | the host API: TG.fg.pueblo draws a core/pueblo plan dry into a group of its own; its seating, registration and checks are data |
 | `src/89-rows.js` | 2.4 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the sheet's rows (data) and its state, read from the URL (?state=worn) |
 | `src/89w-wc-rows.js` | 0.8 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the sheet's Wildcat rows (data) |
 | `src/91t-fg-sheet.js` | 8.9 | [draw] | 6 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/91w-wc-sheet.js` | 7.4 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the sheet's Wildcat ground: the knoll mesh and the host draws; window._wcChecks for verify.py |
+| `src/91w-wc-sheet.js` | 15.5 | [draw] | 0 | 0 | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | the sheet's Wildcat ground: the knoll mesh and the host draws; window._wcChecks for verify.py |
 | `src/96t-fg-views.js` | 0.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/96w-wc-views.js` | 1.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/96w-wc-views.js` | 3.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/99-sheet-fg.js` | 1.1 | [web] | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 
 ## Notes

@@ -19,7 +19,8 @@ passes is a failure too. The checks (kits/tungang/README.md, "Checks"):
   plinth-on-slope       on the sloped pad: the floor at the highest corner, the plinth to the lowest, the byre down-slope
   fixed-line-follows    the ropes on the test wall follow their records (no vertex strays, no point is left short)
   host-api              TG.fg.draw draws every record of the sample village (core/hamlet's fellgang row, fowling)
-  wildcat-plan, wildcat-on-knoll, wildcat-tags, wildcat-dress, wildcat-hamlets
+  wildcat-plan, wildcat-on-knoll, wildcat-tags, wildcat-dress, wildcat-hamlets, barricade-plan, barricade-in-the-gorge,
+  pueblo-interiors, pueblo-furniture-table, pueblo-section
                         the scrap pueblo (core/pueblo, TG.fg.pueblo): the plan's invariants and 1,000-2,000 people, the
                         floor on the knoll, every room registered, the dress drawn, the two hamlets
   coverage, no-nan, furniture-keys, material-records
@@ -82,7 +83,7 @@ ASSERT_JS = r"""()=>{const A=window._api,R=[],S=window._fgSheet||{},C=TG.fg.chec
    detail:(V.records?V.records.length:0)+' records (KHAMLET.village, fellgang, fowling: '+(V.census?V.census.pop:0)+' people), '+(vd.recs?vd.recs.length:0)+' drawn into '+vd.length+' meshes, '+vd.tris+' triangles'},
   {ok:!Object.keys(neg.missing).length,detail:'a record of a key the kit lacks: missing '+JSON.stringify(neg.missing)});
  /* coverage: every def drawn, on the rows or by the host API */
- const drawn=new Set(REG.map(r=>r.key));for(const k of ['pad','villageDraw','ropeDraw','wall','road','wildcat','wildcatPens'])for(const r of (S[k]&&S[k].recs||[]))drawn.add(r.key);
+ const drawn=new Set(REG.map(r=>r.key));for(const k of ['pad','villageDraw','ropeDraw','wall','road','wildcat','wildcatPens','barricade'])for(const r of (S[k]&&S[k].recs||[]))drawn.add(r.key);
  for(const h of (S.hamlets||[]))for(const r of h.recs)drawn.add(r.key);
  const miss=Object.keys(DEFS).filter(k=>!drawn.has(k));
  add('coverage',{ok:!miss.length,detail:miss.length?'not drawn: '+miss.join(', '):Object.keys(DEFS).length+' defs drawn'},{ok:!Object.keys(DEFS).concat(['fg-nonesuch']).filter(k=>!drawn.has(k)).length,detail:'fg-nonesuch'});

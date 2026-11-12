@@ -46,10 +46,17 @@
 - [ ] **Not yet built** from `PLAN.md` 3.3: the bands (`fg-war-camp`, `fg-raid-cache`),
       the fells (`fg-shieling`, `fg-cairn`, `fg-stone-sign`); the Tungang (`tg`) and Glazier (`gz`) sets. (Wildcat's scrap
       pueblo is built on `core/pueblo`, 2026-11-11: `PLAN.md` 1.3.1, "Built".)
-- [ ] **Wildcat: rooms as massing.** The great house's 805 rooms are core/pueblo records (registered in core/tags) drawn as
-      solid columns with their faces, doors, hatches and ladders: no interiors, no furniture inside, and no walk records on
-      the roofs or up the ladders (`core/walk` reads boxes, and a column is a prism). Interiors come with the hold work or a
-      Wildcat page of its own.
+- [ ] **The pueblos: no walk records.** The rooms are hollow and furnished (2026-11-11), but their walls and slabs are
+      prisms, which `core/walk` does not read: no floors on the roofs and terraces, no ladders as climbs. Owed with a pueblo
+      page of its own (or `KWALK` records written from core/pueblo's cells).
+- [ ] **The catalog's twelve new Fellgang pieces reach 36 builds** (every build that lists the catalog folder): only
+      `kits/catalog` and this kit are rebuilt on this branch; the others ride the next all-builds rebuild (as the
+      tungang-furniture branch's pieces do), so `check_stale` flags them until then.
+- [ ] **A host's ground under a pueblo**: the house paves its plazas and digs its kivas, so the world's terrain must sit
+      0.35 m under the plazas and open the pits (`fgWcCarve` on the sheet); a terrain that cannot be carved shows through.
+- [ ] **Barricade's river**: the sheet draws its bed in rock; the water is `core/water`'s, wired where Barricade is placed.
+- [ ] **Furniture triangles**: the two great houses hold 6,000 catalog pieces; they are drawn in 40 m chunks shown within 90 m
+      of the camera (260 m while the section is open). A world calls `TG.fg.chunksTick(camera)`; a LOD of the pieces is owed.
 - [ ] **Wildcat: the Deeds and the slogans are geometry** (block letters, marks and tallies as thin boxes), as the Fellgang
       set's slogans are, until the daub sheet is delivered (`core/materials/PROMPTS-NEEDED.md` section 43).
 - [ ] **Wildcat's triangles.** The great house draws about 190k triangles (2,400 vigas, 440 salvage panels, 98 ladders) and its

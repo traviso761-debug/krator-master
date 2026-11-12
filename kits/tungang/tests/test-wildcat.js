@@ -32,7 +32,7 @@ const knoll = (x, z) => { const d = Math.hypot((x - 200) / 1.3, z + 40); return 
 const T = KTAGS.create({ build: 'test-wildcat' }), o = { x: 200, z: -40, ry: 0.3, ground: knoll };
 const reg = TG.fg.puebloRegister(P, T, o), kids = T.query({ parent: reg.house.id }), au = T.audit();
 ok('registered before the draw: the house and ' + reg.count + ' children (rooms, kivas, ladders, plazas, dress, the stockade), the audit clean',
-  kids.filter(k => k.kind === 'room').length === P.rooms.length && kids.length === reg.count && au.unknown === 0 && au.missingCulture === 0,
+  kids.filter(k => k.kind === 'room').length === P.rooms.length && kids.length + T.query({ 'class': 'furniture' }).length === reg.count && au.unknown === 0 && au.missingCulture === 0,
   !(kids.filter(k => k.kind === 'room').length === P.rooms.length + 1), 'unknown ' + au.unknown);
 const scene = new THREE.Group(), D = TG.fg.pueblo(P, Object.assign({ scene }, o)), house = D.recs.find(r => r.key === 'fg-wc-greathouse'), st = D.recs.find(r => r.key === 'fg-wc-stockade');
 const c = TG.fg.check.pueblo(P, D.recs);
@@ -46,4 +46,21 @@ ok('the worn state: fewer facings and ladders (' + wf.faced + ' faces, ' + wf.la
   !(kf.faced < kf.faced * .8));
 const h0 = TG.fg.pueblo(H[0], { ground: () => 0, x: 0, z: 0 });
 ok('a hamlet draws through the same API (' + h0.recs.map(r => r.key).join(', ') + ')', TG.fg.check.pueblo(H[0], h0.recs).ok && h0.recs[0].key === 'fg-wc-hamlet', !TG.fg.check.pueblo(P, h0.recs).ok);
+// ---- Barricade: the wall across the pass
+const PB = TG.fg.barricade(), bcOk = allOk(PB), gate = PB.passages.find(p => p.kind === 'gate'), culv = PB.passages.find(p => p.kind === 'culvert');
+ok('Barricade: a wall across the pass (' + PB.bounds.w.toFixed(0) + ' x ' + PB.bounds.d.toFixed(0) + ' m, ' + PB.census.rooms + ' rooms up to ' + PB.census.maxStoreys + ' storeys, ' + PB.census.pop + ' people), a gate and a culvert under its rooms, every check passing',
+  PB.shape === 'bar' && !bcOk.length && PB.census.pop >= 600 && PB.census.pop <= 2000 && gate && culv && gate.plaza === PB.plazas[0].id && PB.kivas.some(k => k.great), !(PB.shape === 'D'), bcOk.join(', '));
+const TB = KTAGS.create({ build: 'test-barricade' }), ob = { x: -100, z: 50, ry: 0, ground: () => 2 }, rb = TG.fg.puebloRegister(PB, TB, ob);
+const kb = TB.query({ parent: rb.house.id }), furn = TB.query({ 'class': 'furniture' });
+ok('Barricade registered: its house (' + rb.house.key + '), ' + kb.filter(k => k.kind === 'room').length + ' rooms, its wrecks and gates as fixtures, ' + furn.length + ' pieces of furniture each under its room',
+  rb.house.key === 'fg-bc-greathouse' && kb.filter(k => k.kind === 'room').length === PB.rooms.length && kb.filter(k => k.kind === 'wreck').length >= 40 && furn.length === PB.furniture.length && TB.audit().unknown === 0,
+  !(furn.length === PB.furniture.length + 1), 'unknown ' + TB.audit().unknown);
+const DB = TG.fg.pueblo(PB, Object.assign({ scene: new THREE.Group() }, ob)), hb = DB.recs.find(r => r.key === 'fg-bc-greathouse'), cb = TG.fg.check.pueblo(PB, DB.recs);
+ok('TG.fg.pueblo draws Barricade (' + DB.tris + ' triangles): every room hollow, its wrecks (' + hb.fg.wrecks + '), gate and grates (' + hb.fg.gates + '), lookouts (' + hb.fg.lookouts + '), pickets (' + hb.fg.pickets + ')',
+  cb.ok && hb.fg.rooms === PB.rooms.length && hb.fg.wrecks >= 40 && hb.fg.gates === 2 && hb.fg.lookouts === 2 && TG.errors.length === 0, !TG.fg.check.pueblo(PB, D.recs).ok, cb.bad.concat(TG.errors).join('; '));
+const fcW = KPUEBLO.check.furniture(P), fcB = KPUEBLO.check.furniture(PB);
+const bedShare = Q => { const H = Q.rooms.filter(r => r.use === 'home'), B = new Set(Q.furniture.filter(f => f.key === 'fellgang_common_sleeping_platform').map(f => f.room)); return H.filter(r => B.has(r.id)).length / H.length; };
+ok('both great houses furnished room by room (' + P.furniture.length + ' and ' + PB.furniture.length + ' pieces; a sleeping platform in ' + (100 * bedShare(P)).toFixed(0) + ' % and ' + (100 * bedShare(PB)).toFixed(0) + ' % of the dwellings), each piece inside its room, clear of its door and hatch',
+  fcW.ok && fcB.ok && P.furniture.length > 2000 && PB.furniture.length > 1500 && bedShare(P) > .9 && bedShare(PB) > .9, !(bedShare(P) > 1), fcW.bad.concat(fcB.bad).slice(0, 3).join('; '));
+
 process.exit(bad ? 1 : 0);

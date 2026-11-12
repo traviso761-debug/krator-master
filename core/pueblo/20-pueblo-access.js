@@ -42,10 +42,12 @@
   K.rooms = function (P, Q) {
     var rooms = [], hatches = [], h = Q.storey, byId = P.byId;
     P.cells.forEach(function (c) {
-      var f = c.nb.front && byId[c.nb.front], ft = f ? f.storeys : 0;
-      for (var j = 0; j < c.storeys; j++) {
+      var f = c.nb.front && byId[c.nb.front], ft = f ? f.storeys : 0, base = c.base || 0, Lf = Math.hypot(c.pts[1][0] - c.pts[0][0], c.pts[1][1] - c.pts[0][1]);
+      for (var j = base; j < c.storeys; j++) {
         var top = j === c.storeys - 1, use = j === 0 ? 'store' : (c.hero && top ? 'hero' : 'home');
-        var r = { id: c.id + ':' + j, cell: c.id, storey: j, y0: j * h, h: h, use: use, face: null, entry: null };
+        /* u: the door's or window's place along the front wall from its middle; every room joins the rooms above and below by a hatch */
+        var r = { id: c.id + ':' + j, cell: c.id, storey: j, y0: j * h, h: h, use: use, face: null, entry: null,
+          u: +((K.u(Q.world, c.bi, c.row * 16 + j, c.seg, 92) - 0.5) * Math.max(0, Lf - 2.4)).toFixed(3), hatchUp: true, hatchDown: j > base };
         if (j === ft && (j > 0 || Q.groundDoors)) { r.face = 'door'; r.entry = { by: 'door', from: f ? f.id : K.groundAt(P, c.cx + c.n[0] * (c.r + 1), c.cz + c.n[1] * (c.r + 1)) }; }
         else {
           if (j > ft && j > 0 && K.u(Q.world, c.bi, c.row * 16 + j, c.seg, 23) < 0.45) r.face = 'window';
@@ -53,9 +55,9 @@
         }
         rooms.push(r);
       }
-      /* the roof hatch, set back from the front; a ladder stands out of some (the climb from the room below) */
-      var b = edgeOf(c, 'back'), bx = (b[0][0] + b[1][0]) / 2, bz = (b[0][1] + b[1][1]) / 2;
-      hatches.push({ id: c.id + ':hatch', cell: c.id, room: c.id + ':' + (c.storeys - 1), x: c.cx + (bx - c.cx) * 0.35, z: c.cz + (bz - c.cz) * 0.35, y: c.storeys * h,
+      /* the roof hatch, toward the back-left corner (the back wall stays free for a bed); a ladder stands out of some (the climb from the room below) */
+      var bl = c.pts[3];
+      hatches.push({ id: c.id + ':hatch', cell: c.id, room: c.id + ':' + (c.storeys - 1), x: c.cx + (bl[0] - c.cx) * 0.55, z: c.cz + (bl[1] - c.cz) * 0.55, y: c.storeys * h,
         ladder: K.u(Q.world, c.bi, c.row, c.seg, 29) < 0.3 });
     });
     P.rooms = rooms; P.hatches = hatches;
@@ -102,6 +104,9 @@
     P.ladders.forEach(function (L) { link(L.from, L.to); });
     (P.rooms || []).forEach(function (r) { link(r.id, r.entry.from); });
     (P.kivas || []).forEach(function (k) { link(k.id, k.plaza); });
+    /* a column's rooms are joined by their hatches; a gate joins the outside to the plaza behind it */
+    (P.rooms || []).forEach(function (r) { if (r.hatchDown) link(r.id, r.cell + ':' + (r.storey - 1)); });
+    (P.passages || []).forEach(function (p) { if (p.kind === 'gate' && p.plaza) link('out', p.plaza); });
     return G;
   };
   K.reach = function (P) {

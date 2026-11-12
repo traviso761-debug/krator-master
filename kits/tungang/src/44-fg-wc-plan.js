@@ -25,7 +25,8 @@ const FG_WC={
  SLOGANS:['NO SKABS','NO SKABS','ALL OUT','HOLD FAST','DEEDS NOT WORDS'],
  cache:{}};
 /* a plan, built once per spec id (the great house takes ~150 ms) */
-function fgWcPlan(spec){const k=spec.id+':'+spec.world;return FG_WC.cache[k]||(FG_WC.cache[k]=KPUEBLO.house(spec));}
+/* furnished as it is built (45-fg-wc-furn.js: the table by a room's use; KPUEBLO.furnish places the pieces) */
+function fgWcPlan(spec){const k=spec.id+':'+spec.world;if(FG_WC.cache[k])return FG_WC.cache[k];const P=KPUEBLO.house(spec);KPUEBLO.furnish(P,spec.furn||FG_WC_FURN);KPUEBLO.furnishKivas(P,spec.kivaFurn||FG_WC_KIVA);return FG_WC.cache[k]=P;}
 function fgWcU(P,a,b,salt){return KRAND.unit(KRAND.hash(P.world,a|0,b|0,salt|0));}
 /* the edge of cell c on its side ('front' ...): {a, b, m (midpoint), n (outward normal), L, ry (the yaw whose +z is n)} */
 function fgWcEdge(c,side){const e=KPUEBLO.edgeOf(c,side),n=KPUEBLO.outN(e[0],e[1],[c.cx,c.cz]),L=Math.hypot(e[1][0]-e[0][0],e[1][1]-e[0][1]);
@@ -69,4 +70,12 @@ function fgWcDress(P){const D={crest:[],trophies:[],deeds:[],slogans:[],shells:[
  P.plazas.forEach((pl,i)=>{for(let t=0;t<40;t++){const x=pl.cx+(fgWcU(P,i,t,76)-.5)*pl.w*.6,z=pl.cz+(fgWcU(P,i,t+50,76)-.5)*pl.d*.6;
   if(!KPUEBLO.inPoly(pl.pts,x,z)||KPUEBLO.clearance(pl.pts,x,z)<4||P.kivas.some(k=>Math.hypot(k.x-x,k.z-z)<k.r+5)||D.trophies.some(q=>Math.hypot(q.x-x,q.z-z)<3))continue;
   D.shells.push({id:pl.id+':shell',x,z,y:0,r:1.4,ry:fgWcU(P,i,t,77)*6.283});break;}});
+ /* the yards' work in each plaza: meat racks, tanning frames, windbreaks and braziers, clear of the kivas, the trophies, the
+    shells and any keep-out strip (a passage's trail or river): catalog pieces, placed as the drums are */
+ const YARD=[['fellgang_poor_meat_rack',1.8,.6],['fellgang_common_tanning_frame',1.8,.7],['fellgang_poor_windbreak',2,.3],['fellgang_common_brazier',.7,.7],['fellgang_poor_meat_rack',1.8,.6]],taken=[];
+ P.plazas.forEach((pl,i)=>{const n=Math.max(2,Math.min(9,Math.round(pl.area/420)));let put=0;
+  for(let t=0;t<120&&put<n;t++){const x=pl.cx+(fgWcU(P,i,t,78)-.5)*pl.w*.9,z=pl.cz+(fgWcU(P,i,t+200,78)-.5)*pl.d*.9,Y=YARD[(t+i)%YARD.length];
+   if(!KPUEBLO.inPoly(pl.pts,x,z)||KPUEBLO.clearance(pl.pts,x,z)<3.2||P.kivas.some(k=>Math.hypot(k.x-x,k.z-z)<k.r+3)||(P.keepOut||[]).some(k=>KPUEBLO.inPoly(k.pts,x,z)||KPUEBLO.clearance(k.pts,x,z)<2)
+    ||D.trophies.some(q=>Math.hypot(q.x-x,q.z-z)<3)||D.shells.some(q=>Math.hypot(q.x-x,q.z-z)<3)||taken.some(q=>Math.hypot(q[0]-x,q[1]-z)<4.5))continue;
+   taken.push([x,z]);D.drums.push({id:pl.id+':yard:'+put,key:Y[0],x,z,ry:fgWcU(P,i,t,79)*6.283});put++;}});
  return D;}

@@ -159,7 +159,8 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `ports/44-core-ports.js` | 7.5 | [draw] | 2 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | PORT marks for kits/beast-riders: bucket ranges are data; the box measure reads three.js |
 | `pueblo/10-pueblo-plan.js` | 13.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | KPUEBLO: shapes, blocks, room cells (convex quads by stable id), neighbours on core/space, the terraced storeys; no three.js |
 | `pueblo/20-pueblo-access.js` | 7.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | rooms, doors, hatches, ladders, the reach graph and its mending |
-| `pueblo/30-pueblo-court.js` | 14.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | kivas, the hull and enclosure, the census, KPUEBLO.house, register (core/tags), the checks |
+| `pueblo/30-pueblo-court.js` | 17.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | passages, kivas, the hull and enclosure, the census, KPUEBLO.house, register (core/tags), the checks |
+| `pueblo/40-pueblo-rooms.js` | 9.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | inside the rooms: each room's frame, the furnishing by use and the kivas' ring, furniture into core/tags, the checks |
 | `rand/08-core-rand.js` | 4.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | one stream (the lineages' mulberry32), an integer hash, noise: golden.json, test-rand.js, test_rand.py; GDScript twin krand.gd (passing in Godot 4.5 since 2026-10-05). Used by Ys's city |
 | `sched/20-core-sched.js` | 6.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `shader/06-core-khook.js` | 11.4 | [G shader] | 0 | 0 | 0 | 0 | 0 | 0 | 10 | 0 | 0 | 0 | 0 |  |

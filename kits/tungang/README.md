@@ -77,7 +77,26 @@ dress: the hero's horned crest and aurochs skulls, the Deeds on the front, NO SK
 | The great house | a D 148 x 83 m: 805 rooms up to five storeys, 1,145 people, two plazas, the round room and three kivas, 98 ladders, a stockade 24 m out at the knoll's foot |
 | The hamlets | the ford's U (60 people, a low stockade), the pens' L (82) |
 | Fragments | `44-fg-wc-plan.js` (the specs and the dress: records), `46-fg-wc-draw.js` (the drawing and the six `fg-wc-*` defs), `82-wc-host.js` (`TG.fg.pueblo`, `TG.fg.puebloRegister`, `TG.fg.check.pueblo`), and the sheet's `89w`, `91w`, `96w` |
-| On the sheet | the great house on a knoll at (600, -170), the hamlets below it; rows of one room block alone, the round room and kivas, the stockade; eight `Wildcat:` views |
+| On the sheet | the great house on a knoll at (600, -170), the hamlets below it; rows of one room block alone, the round room and kivas, the stockade; `Wildcat:` views |
+
+## Barricade: the wall across the pass
+
+The second great house (`PLAN.md` 1.3.2, the owner's round 7): Fellgangs who wall **the Weyt Warra's gorge**, a major pass into
+Firebliss, and count everyone through (*proposed*: the union's picket line made stone). core/pueblo's **`bar`**: one block four
+rows deep and 176 m across, its outer face sheer and **barricaded with stacked Ancient wrecks**, bastions of six storeys at
+the gorge's walls with crow's nests, terraces stepping down to a long plaza open toward Firebliss between two wings; **a gate
+tunnel** (the tallies of the crossings painted inside) and **a culvert** for the river under its rooms; red picket banners;
+NOBODY CROSSES. 620 rooms, 1,027 people; the count room (the great kiva) with its count boards and toll chests. Fragments
+`47-fg-bc-plan.js` (spec, dress) and `48-fg-bc-draw.js` (def `fg-bc-greathouse`); on the sheet across a gorge at (-480, -170).
+
+## Inside the pueblos
+
+Both great houses (and the hamlets and the row's blocks) are hollow (`PLAN.md` 1.3.5): every room walled, plastered, its
+door or window open, its hatch and ladder; the kivas dug (bench, pilasters, hearth, deflector); the plazas paved. Every room
+furnished by its use from the catalog (12 new Fellgang pueblo pieces: sleeping platform, mealing bins, corner hearth, wall
+shelves, grain bin, storage jars, water jar, felting frame, horned seat, spear rack, count board, salvage bin), placed by
+core/pueblo (`KPUEBLO.furnish`), drawn in chunks near the camera. **K** steps the storey section (whole, the kivas, storeys
+1-6); the `... inside:` views open it.
 
 ## Core adoption
 
@@ -117,6 +136,8 @@ What this set takes (trimmed from `PLAN.md` section 8 to what is built; `python3
 | `wildcat-on-knoll` | the floor at the hull's highest ground on the knoll, the footings to the ground, the stockade's stakes down the slope | the floor checked against the knoll 3 m lower |
 | `wildcat-tags` | every room, kiva and ladder a child of the house's record in core/tags | the rooms counted against one more |
 | `wildcat-dress`, `wildcat-hamlets` | the crest, six trophy poles, the Deeds, the slogans, the shells; both hamlets pass, 40-300 people, yards open | seven poles; the hamlets against the great house's range |
+| `barricade-plan`, `barricade-in-the-gorge` | Barricade's plan passes, 600-2,000 people, its gate and culvert, wrecks, gear, lookouts, pickets, slogans drawn; its floor on the gorge's floor, its bastions within 4 m of the walls, the river's bed under the culvert | its plan against Wildcat's draw; walls 1 m off |
+| `pueblo-interiors`, `pueblo-furniture-table`, `pueblo-section` | both houses' rooms hollow, every piece placed, `KPUEBLO.check.furniture` clean; the table's keys and sizes as the catalog's; the section clips every house at a storey and closes | a piece on its hatch; `fellgang_nonesuch`; storey 2 as the ground floor |
 
 `node tests/test-bundle.js` runs the sealed bundle without a browser: both riftrim villages (their stations' specs) drawn on a
 slope, the plinth, the hall variants by focus, the 14 boxes built alone, a rope, the road pieces; each with its negative.

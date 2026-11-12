@@ -61,6 +61,23 @@
       }
       return { blocks: blocks, plazas: plazas };
     },
+    /* a wall across a pass (Barricade): one long block L metres across, its plaza side on z = 0 facing -z, its rows growing
+       +z to a sheer outer face (the way up the pass); bastions at its ends (endRise storeys more within endLen of each
+       end, where it meets the pass's walls); two wings running back up the pass along its walls; the plaza between them
+       open upstream. passages: [{x, w, clear, kind ('gate' | 'culvert')}] cut through the wall at plan x, w wide, the rooms
+       bridging it from storey `clear` up; keep-out strips run from each passage across the plaza (the trail, the river) */
+    bar: function (sp, Q) {
+      var L = d(sp.L, 180), rows = d(sp.rows, 4), D = Q.deep, wl = d(sp.wingLen, 48), wr = d(sp.wingRows, 2), xw = L / 2 - wr * D;
+      var pass = (sp.passages || []).map(function (p, i) { return { id: 'wall:' + d(p.kind, 'gate') + i, t: L / 2 - p.x, w: d(p.w, 2 * Q.along), clear: d(p.clear, 2), kind: d(p.kind, 'gate') }; });
+      var blocks = [{ id: 'wall', kind: 'line', a: [L / 2, 0], b: [-L / 2, 0], n: [0, -1], rows: rows, base: d(sp.wallBase, 2), rise: 1, max: Q.maxStoreys, hero: true,
+        endRise: d(sp.endRise, 1), endLen: d(sp.endLen, 2 * Q.along), passages: pass }];
+      if (wl > 0 && wr > 0) blocks.push(
+        { id: 'wingw', kind: 'line', a: [-xw, -wl], b: [-xw, 0], n: [1, 0], rows: wr, base: 1, rise: 1, max: d(sp.wingMax, 3), taper: { a: true } },
+        { id: 'winge', kind: 'line', a: [xw, 0], b: [xw, -wl], n: [-1, 0], rows: wr, base: 1, rise: 1, max: d(sp.wingMax, 3), taper: { b: true } });
+      var x0 = wl > 0 && wr > 0 ? -xw : -L / 2, x1 = -x0, z0 = -Math.max(wl, d(sp.plazaD, 40));
+      var keep = pass.map(function (p) { var x = L / 2 - p.t, h = p.w / 2 + 2; return { id: p.id, pts: rectPts(x - h, z0 - 1, x + h, 0) }; });
+      return { blocks: blocks, plazas: [{ id: 'plaza', pts: rectPts(x0, z0, x1, 0), open: true }], keepOut: keep };
+    },
     /* a court: the plaza pw x pd, blocks on all four sides (the back the tallest, the front one storey with the way in) */
     rect: function (sp, Q) { return court(sp, Q, true, true, true); },
     U: function (sp, Q) { return court(sp, Q, true, true, false); },
@@ -95,7 +112,7 @@
     var c = centroid(pts), r = 0;
     for (var i = 0; i < 4; i++) r = Math.max(r, Math.hypot(pts[i][0] - c[0], pts[i][1] - c[1]));
     return { id: Q.id + ':' + B.id + ':' + k + ':' + s, block: B.id, bi: B.bi, row: k, seg: s, segs: segs, pts: pts, cx: c[0], cz: c[1], r: r, t: t, len: len,
-      n: outN(pts[0], pts[1], c), storeys: 0, hero: false, nb: { front: null, right: null, back: null, left: null } };
+      n: outN(pts[0], pts[1], c), storeys: 0, base: 0, passage: null, hero: false, nb: { front: null, right: null, back: null, left: null } };
   }
   K.cells = function (blocks, Q) {
     var cells = [], D = Q.deep;
@@ -116,7 +133,10 @@
           var P = function (t, o) { return [B.a[0] + ux * t - nx * o, B.a[1] + uz * t - nz * o]; };
           for (s = 0; s < segs; s++) {
             t0 = len * s / segs; t1 = len * (s + 1) / segs;
-            cells.push(mkCell(Q, B, k, s, segs, [P(t0, o0), P(t1, o0), P(t1, o1), P(t0, o1)], (t0 + t1) / 2, len));
+            var cl = mkCell(Q, B, k, s, segs, [P(t0, o0), P(t1, o0), P(t1, o1), P(t0, o1)], (t0 + t1) / 2, len);
+            /* a passage under the block: this column's rooms start at its clear storey (they bridge the gate or the culvert) */
+            (B.passages || []).forEach(function (p) { if (Math.abs(cl.t - p.t) < p.w / 2) { cl.base = p.clear; cl.passage = p.id; } });
+            cells.push(cl);
           }
         }
       }
@@ -124,9 +144,9 @@
     return cells;
   };
   /* move every plan point by (ox, oz): the plan's origin to its footprint's centre */
-  K.shift = function (cells, plazas, ox, oz) {
+  K.shift = function (cells, plazas, ox, oz, keep) {
     cells.forEach(function (c) { c.pts = c.pts.map(function (p) { return [p[0] + ox, p[1] + oz]; }); c.cx += ox; c.cz += oz; });
-    plazas.forEach(function (p) { p.pts = p.pts.map(function (q) { return [q[0] + ox, q[1] + oz]; }); });
+    plazas.concat(keep || []).forEach(function (p) { p.pts = p.pts.map(function (q) { return [q[0] + ox, q[1] + oz]; }); });
   };
   K.boundsOf = function (cells) {
     var b = { x0: 1e9, x1: -1e9, z0: 1e9, z1: -1e9 };
@@ -175,10 +195,14 @@
         if (B.taper.a) s = Math.min(s, fl + Math.floor((c.t - half) / tl));
         if (B.taper.b) s = Math.min(s, fl + Math.floor((c.len - c.t - half) / tl));
       }
-      c.hero = !!B.hero && c.row === B.rows - 1 && Math.abs(c.t / c.len - 0.5) < d(B.heroSpan, 0.07) && s === max;
+      /* bastions: a block's ends stand endRise storeys higher where it meets the pass's walls */
+      if (B.endRise && (c.t < d(B.endLen, 8.4) || c.len - c.t < d(B.endLen, 8.4))) s += B.endRise;
+      c.hero = !!B.hero && c.row === B.rows - 1 && Math.abs(c.t / c.len - 0.5) < d(B.heroSpan, 0.07) && s === max && !c.passage;
       /* a scrap pueblo's raw edges: a column that never got its top storey (the hero's never) */
       if (!c.hero && K.u(Q.world, c.bi, c.row, c.seg, 11) < d(B.ragged, Q.ragged)) s -= 1;
       c.storeys = Math.max(1, s);
+      /* a column over a passage keeps at least one room above it */
+      if (c.base) c.storeys = Math.max(c.storeys, c.base + 1);
     });
     /* a terrace is never higher than the cell behind it: from the back row forward, within each block */
     cells.slice().sort(function (a, b) { return b.row - a.row || (a.id < b.id ? -1 : 1); }).forEach(function (c) {

@@ -22,7 +22,7 @@
     "kits/catalog/krator-master-furniture-dalab.js": "b10c7416a46f718ecf6a394624e8d9183debef1368f47c3a9896293faa706e9a",
     "kits/catalog/krator-master-furniture-eastabyss.js": "c954ea72a5a724eda8543e81d2d49a6aed07bbc58e3e4ee7953c187e7a1fa5f1",
     "kits/catalog/krator-master-furniture-eternian.js": "bbbea71651baf5596b2d3ab3206e4d39383779ee44fc8de53755d7246473df07",
-    "kits/catalog/krator-master-furniture-fellgang.js": "1ee782b43dd12f1700744187dfb694da346600f4c38a749ad40d60d48308e475",
+    "kits/catalog/krator-master-furniture-fellgang.js": "3a2d164952e69b83b0417d69009a65af8b45e09ab81b2b36d6461301179eb7fd",
     "kits/catalog/krator-master-furniture-generic-fruit.js": "858ded98e076a6c6f96b5350718a514da4ecf5b161bcaed0805b837999b5dba5",
     "kits/catalog/krator-master-furniture-generic-goods.js": "1436ca9a4c6d8556cb1c6e1647150f5ec7f80c8ab0ded0ba54638805b6c750de",
     "kits/catalog/krator-master-furniture-generic.js": "990b05b8404c67ab960f6649babc8143c738ea600a04c0c22564296fa7786ea4",
@@ -69,12 +69,12 @@
     "tools": "2d2fdaca850a104a2a2c553313ccb3ad18dc6bc48cb554c8c714fc1ca39607bf"
    },
    "outputs": {
-    "kits/catalog/build-manifest.json": "25c826409d14b9eeb6e86d4492287e10a827be6f25225f4e1a42f176404c5ed5",
-    "kits/catalog/dist/catalog.html": "43d112c1308747841b1f9afc6f294cd8a3f9ba6821259d0837b8f7e52feaf8df"
+    "kits/catalog/build-manifest.json": "5b10779abb9aaae16f7c1775b077cb0fa44cbec53c3c801355fbb71db8a7e92d",
+    "kits/catalog/dist/catalog.html": "c43d24d358c32011b529a9dde94dfcc0e8f09d3119538a4d9b2da08caa636cae"
    },
    "outputs_raw": {
-    "kits/catalog/build-manifest.json": "9d197ad632aede808c5ecf2a6090cabfc9a06ee27151dff5dc12bdaf8c162581",
-    "kits/catalog/dist/catalog.html": "43d112c1308747841b1f9afc6f294cd8a3f9ba6821259d0837b8f7e52feaf8df"
+    "kits/catalog/build-manifest.json": "2391d874a7c239f8e6fa5b149dada6bf4a006bf892776a651d2ffae79e9d54e5",
+    "kits/catalog/dist/catalog.html": "c43d24d358c32011b529a9dde94dfcc0e8f09d3119538a4d9b2da08caa636cae"
    }
   }
  }

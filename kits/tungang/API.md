@@ -123,7 +123,22 @@ horns), war drums and braziers; **the Deeds** painted on three front-row faces o
 mark and whether it was made good); NO SKABS and the union's words man-high on the outer walls, a painted aurochs beside some;
 glyptodont shells as cisterns on the terraces and in the plazas.
 
-**The defs**: `fg-wc-greathouse`, `fg-wc-hamlet` (each draws `o.plan`, else its default), `fg-wc-block` (one block alone, the
+**Barricade** (`PLAN.md` 1.3.2): `TG.fg.barricade()` is its plan (core/pueblo's `bar`: 620 rooms, 1,027 people, a gate and a
+culvert under its rooms), `TG.fg.bcSpec` its spec and kiva table (`FG_BC`). The same two calls draw it
+(`TG.fg.puebloRegister`, `TG.fg.pueblo`): a plan of shape `bar` takes the key `fg-bc-greathouse` and Barricade's dress
+(`fgBcDress`: the wrecks, the gate's and the culvert's gear, the lookouts, the pickets, its slogans), registered as fixtures.
+A world places it across a gorge whose floor is flat under its hull, carves the plaza 0.35 m under the house's paving and the
+kivas' pits (`fgWcCarve` on the sheet shows how), and brings the river through the culvert (`core/water`).
+
+**Inside** (`PLAN.md` 1.3.5): every room is drawn hollow and every plan comes furnished (`P.furniture`, core/pueblo's records:
+`KPUEBLO.furnish` by the table `FG_WC_FURN`, `KPUEBLO.furnishKivas` by `FG_WC_KIVA` or Barricade's). `TG.fg.puebloRegister`
+registers each piece as its room's child. `TG.fg.pueblo` builds them through the catalog's batch in 40 m chunks (`.furniture`:
+`{pieces, missing, chunks}`) when the page or the bundle carries the catalog (`tungang_bundle.bundle(furniture=True)`); a
+world calls `TG.fg.chunksTick(camera)` each frame to show the chunks near the camera only. **The storey section**:
+`TG.fg.section(level)` clips every house drawn by `TG.fg.pueblo` at a storey (1 the ground floor), at `'kiva'` (the plaza's
+level: the kivas open), or `null` (whole); each house's materials are its own clones, so nothing else on the page is cut.
+
+**The defs**: `fg-wc-greathouse`, `fg-wc-hamlet`, `fg-bc-greathouse` (each draws `o.plan`, else its default), `fg-wc-block` (one block alone, the
 sheet's row: `v` 0-4, the hero's crest on the even seeds), `fg-wc-round-room` (the great kiva, the Boast's stand, trophies),
 `fg-wc-kiva`, `fg-wc-stockade` (`o.ring`: a plan's enclosure; alone, a 30 m run with its gate).
 
@@ -131,8 +146,9 @@ sheet's row: `v` 0-4, the hero's crest on the even seeds), `fg-wc-round-room` (t
 
 `dist/tungang.html`: `?state=worn` (the worn state), `?only=fg-hut,fg-pens` (only those rows), `?t=4` (the clock pinned),
 `?mat=proc` (vertex colours only). `window._fgSheet` holds the test grounds (`village`, `villageDraw`, `pad`, `ropes`,
-`ropeDraw`, `wall`, `road`; Wildcat's `wildcat`, `wildcatReg`, `hamlets`, `hamletRegs`, `wildcatPens`), `window._wcChecks()`
-Wildcat's page checks; `_api` is core/host's probe with the engine's fields (`footprints`, `tags`, `furniture`...).
+`ropeDraw`, `wall`, `road`; Wildcat's `wildcat`, `wildcatReg`, `hamlets`, `hamletRegs`, `wildcatPens`; `barricade`,
+`barricadeReg`), `window._wcChecks()` the pueblos' page checks, `window._wcSection(level)` the section (K steps it; a view's
+seventh entry `{section}` sets it); `_api` is core/host's probe with the engine's fields (`footprints`, `tags`, `furniture`...).
 
 ## The core/hamlet row
 

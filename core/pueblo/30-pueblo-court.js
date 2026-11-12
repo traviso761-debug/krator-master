@@ -25,6 +25,9 @@
   K.kivas = function (P, Q) {
     var kv = Q.kivas || {}, great = kv.great == null ? [0] : kv.great, small = d(kv.small, Q.small), out = [], S = K.space().create({ cell: 16 });
     var gr = d(kv.greatR, Q.greatR), sr = d(kv.smallR, Q.smallR), dep = Q.kivaDepth;
+    var keep = P.keepOut || [];
+    /* clear of every keep-out strip (a passage's trail or river across the plaza) by r + 1 */
+    function kept(x, z, r) { return keep.some(function (k) { return K.inPoly(k.pts, x, z) || K.clearance(k.pts, x, z) < r + 1; }); }
     function free(x, z, r) { return !S.some(x, z, r + 3 + gr, function (k) { return Math.hypot(k.x - x, k.z - z) < k.r + r + 3; }); }
     function put(pl, x, z, r, isGreat) {
       var k = { id: Q.id + ':kiva:' + out.length, plaza: pl.id, x: x, z: z, r: r, depth: isGreat ? dep + 0.6 : dep, roof: 0.45, great: isGreat,
@@ -38,6 +41,7 @@
       for (var x = Math.ceil(b[0]); x <= b[2]; x += 1) for (var z = Math.ceil(b[1]); z <= b[3]; z += 1) {
         if (!K.inPoly(pl.pts, x, z)) continue;
         var c = K.clearance(pl.pts, x, z);
+        for (var ki = 0; ki < keep.length; ki++) c = Math.min(c, K.inPoly(keep[ki].pts, x, z) ? 0 : K.clearance(keep[ki].pts, x, z) + 3);
         if (!best || c > best.c + 1e-9) best = { x: x, z: z, c: c };
       }
       if (best && best.c > 6) put(pl, best.x, best.z, Math.min(gr, best.c - 4), true);
@@ -46,12 +50,26 @@
     for (var i = 0, tries = 0; i < small && tries < 400; tries++) {
       var pl = P.plazas[tries % P.plazas.length], b2 = polyBox(pl.pts), u = K.u(Q.world, 900, tries, 0, 41), v = K.u(Q.world, 900, tries, 1, 41);
       var x2 = b2[0] + (b2[2] - b2[0]) * u, z2 = b2[1] + (b2[3] - b2[1]) * v, r2 = sr * (0.85 + 0.3 * K.u(Q.world, 900, tries, 2, 41));
-      if (!K.inPoly(pl.pts, x2, z2) || K.clearance(pl.pts, x2, z2) < r2 + 2.5 || !free(x2, z2, r2)) continue;
+      if (!K.inPoly(pl.pts, x2, z2) || K.clearance(pl.pts, x2, z2) < r2 + 2.5 || !free(x2, z2, r2) || kept(x2, z2, r2)) continue;
       put(pl, x2, z2, r2, false); i++;
     }
     P.kivas = out;
   };
 
+  /* ---------------------------------------------------------------- the passages: a gate or a culvert under a block's rooms
+     {id, kind, clear (storeys), h (metres), cells, x0, x1, z0, z1 (the plan box of its columns), x, z (its middle), plaza (the
+     plaza its inner mouth opens on), ry (the yaw from the outer mouth to the plaza)} */
+  K.passages = function (P) {
+    var by = {}, out = [];
+    P.cells.forEach(function (c) { if (c.passage) (by[c.passage] || (by[c.passage] = [])).push(c); });
+    Object.keys(by).sort().forEach(function (id) {
+      var cs = by[id], b = K.boundsOf(cs), front = cs.filter(function (c) { return c.row === 0; })[0] || cs[0], kind = id.split(':')[1].replace(/\d+$/, '');
+      out.push({ id: P.id + ':' + id, kind: kind, clear: cs[0].base, h: cs[0].base * P.storey, cells: cs.map(function (c) { return c.id; }), x0: b.x0, x1: b.x1, z0: b.z0, z1: b.z1,
+        x: (b.x0 + b.x1) / 2, z: (b.z0 + b.z1) / 2, plaza: K.groundAt(P, front.cx + front.n[0] * (front.r + 1), front.cz + front.n[1] * (front.r + 1)),
+        ry: Math.atan2(front.n[0], front.n[1]) });
+    });
+    P.passages = out;
+  };
   /* ---------------------------------------------------------------- the hull and the enclosure */
   K.hull = function (pts) {
     var p = pts.slice().sort(function (a, b) { return a[0] - b[0] || a[1] - b[1]; }), lo = [], hi = [], i;
@@ -110,15 +128,16 @@
     var P = { id: Q.id, shape: d(spec.shape, 'D'), world: Q.world, storey: Q.storey, errors: [] };
     if (!shape) { P.errors.push('unknown shape ' + spec.shape); return P; }
     var S = shape(spec, Q);
-    P.blocks = S.blocks; P.plazas = S.plazas;
+    P.blocks = S.blocks; P.plazas = S.plazas; P.keepOut = S.keepOut || [];
     P.cells = K.cells(P.blocks, Q);
     /* the origin to the footprint's centre */
     var b = K.boundsOf(P.cells), ox = -(b.x0 + b.x1) / 2, oz = -(b.z0 + b.z1) / 2;
-    K.shift(P.cells, P.plazas, ox, oz);
+    K.shift(P.cells, P.plazas, ox, oz, P.keepOut);
     P.offset = [ox, oz];
     P.byId = K.link(P.cells);
     K.storeys(P.cells, P.blocks, Q, P.byId);
     P.plazas.forEach(function (p) { var c = K.centroid(p.pts), bx = polyBox(p.pts); p.cx = c[0]; p.cz = c[1]; p.area = Math.abs(polyArea(p.pts)); p.w = bx[2] - bx[0]; p.d = bx[3] - bx[1]; p.open = !!p.open; });
+    K.passages(P);
     K.rooms(P, Q);
     K.ladders(P, Q);
     K.kivas(P, Q);
@@ -200,6 +219,7 @@
       P.kivas.forEach(function (k, i) {
         var p = pl[k.plaza];
         if (!p || !K.inPoly(p.pts, k.x, k.z) || K.clearance(p.pts, k.x, k.z) < k.r + 1) bad.push(k.id + ' not clear of its plaza\'s edge');
+        (P.keepOut || []).forEach(function (q) { if (K.inPoly(q.pts, k.x, k.z) || K.clearance(q.pts, k.x, k.z) < k.r) bad.push(k.id + ' on ' + q.id); });
         P.cells.forEach(function (c) { if (Math.hypot(c.cx - k.x, c.cz - k.z) < k.r + 1 && inQuad(c.pts, k.x, k.z)) bad.push(k.id + ' on ' + c.id); });
         for (var j = 0; j < i; j++) { var o = P.kivas[j]; if (Math.hypot(o.x - k.x, o.z - k.z) < o.r + k.r + 1) bad.push(k.id + ' on ' + o.id); }
       });

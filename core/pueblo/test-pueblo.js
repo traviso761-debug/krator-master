@@ -94,4 +94,34 @@ ok('every room, kiva, ladder and plaza registered in core/tags as the house\'s c
   reg.count === want && kids.length >= want && au.unknown === 0 && TG.get(reg.ids[P.D.rooms[0].id]).at[0] === +(byId[P.D.rooms[0].cell].cx + 100).toFixed(4), TN.audit().unknown > 0,
   'unknown ' + au.unknown + ' ' + JSON.stringify(au.unknownValues));
 
+// ---- the bar: a wall across a pass, with a gate and a culvert under its rooms
+const BAR = { id: 'bar', world: 7106, shape: 'bar', L: 168, rows: 4, maxStoreys: 5, wallBase: 2, wingLen: 44, wingRows: 2, ragged: 0.1, people: 2.4,
+  passages: [{ x: 20, w: 8.4, clear: 2, kind: 'gate' }, { x: -4, w: 12.6, clear: 1, kind: 'culvert' }], kivas: { great: [0], small: 3 } };
+const B = K.house(BAR), bc = allOk(B), wall = B.cells.filter(c => c.block === 'wall'), outer = wall.filter(c => c.row === 3);
+const endsH = Math.min(...outer.filter(c => c.seg < 2 || c.seg >= c.segs - 2).map(c => c.storeys)), midH = Math.max(...outer.filter(c => c.seg >= 2 && c.seg < c.segs - 2).map(c => c.storeys));
+ok('a wall across a pass: ' + B.census.rooms + ' rooms, ' + B.census.pop + ' people, its outer row ' + midH + ' storeys and bastions of ' + endsH + ' at the ends, every check passing',
+  !bc.length && !B.errors.length && endsH === midH + 1 && B.census.pop > 600, !(endsH === midH), bc.join(', '));
+const gate = B.passages.find(p => p.kind === 'gate'), culv = B.passages.find(p => p.kind === 'culvert'), G2 = K.graph(B);
+ok('the gate and the culvert run under the rooms (gate ' + gate.cells.length + ' columns clear ' + gate.clear + ' storeys, culvert ' + culv.cells.length + ' clear ' + culv.clear + '); the gate joins the outside to the plaza, the culvert does not',
+  gate.cells.length === 8 && culv.cells.length === 12 && B.rooms.every(r => { const c = B.byId[r.cell]; return !c.passage || r.storey >= c.base; }) && G2.out.filter(n => n === gate.plaza).length >= 1 && K.check.passages(B).ok,
+  (() => { const Q = clone(B); Q.rooms.push({ id: gate.cells[0] + ':0', cell: gate.cells[0], storey: 0, y0: 0, h: 2.6, use: 'store', entry: { by: 'hatch', from: 'out' } }); return !K.check.passages(Q).ok; })());
+ok('the kivas keep off the trail and the river across the plaza (' + B.keepOut.length + ' strips)', K.check.kivas(B).ok && B.kivas.length >= 3,
+  (() => { const Q = clone(B); Q.kivas[1].x = (B.keepOut[0].pts[0][0] + B.keepOut[0].pts[1][0]) / 2; Q.kivas[1].z = B.keepOut[0].pts[0][1] + 8; return !K.check.kivas(Q).ok; })());
+
+// ---- inside the rooms: frames and furniture
+const TABLE = { store: [{ key: 'bin', w: 1.4, d: .8, at: 'wall', n: [1, 3] }, { key: 'jars', w: .9, d: .7, at: 'corner', n: [0, 2] }],
+  home: [{ key: 'platform', w: 2.0, d: 1.0, at: 'back', n: [1, 1] }, { key: 'hearth', w: .9, d: .9, at: 'corner', n: [1, 1] }, { key: 'niche', w: .9, d: .35, at: 'wall', n: [0, 2] }],
+  hero: [{ key: 'seat', w: 1.2, d: 1, at: 'back', n: [1, 1] }, { key: 'platform', w: 2.0, d: 1.0, at: 'wall', n: [1, 1] }] };
+const FU = K.furnish(B, TABLE), fc = K.check.furniture(B), homes = B.rooms.filter(r => r.use === 'home'), plat = new Set(B.furniture.filter(f => f.key === 'platform').map(f => f.room));
+const fn = clone(B); fn.furniture = fn.furniture.slice(); fn.hatchByCell = B.hatchByCell; const fr = fn.furniture[0], F0 = K.frame(fn, fn.rooms.find(r => r.id === fr.room));
+fn.furniture[0] = Object.assign({}, fr, { lx: F0.hx, lz: F0.hz + .3 });
+ok('the rooms are furnished by their use (' + FU.pieces + ' pieces: ' + Object.entries(FU.byUse).map(e => e.join(' ')).join(', ') + '; ' + FU.skipped + ' did not fit), each piece inside its room, clear of its door and hatch, none overlapping',
+  fc.ok && FU.pieces > 1000 && plat.size >= homes.length * .9, !K.check.furniture(fn).ok, fc.bad.slice(0, 3).join('; '));
+ok('the same plan furnishes the same (' + B.furniture.length + ' pieces)', JSON.stringify(K.furnish(K.house(BAR), TABLE)) === JSON.stringify(FU) && JSON.stringify(K.house(BAR).rooms) === JSON.stringify(B.rooms),
+  JSON.stringify(K.furnish(K.house(Object.assign({}, BAR, { world: 9 })), TABLE)) !== JSON.stringify(FU));
+const TB = KTAGS.create({ build: 'test-pueblo-bar' }), hb = TB.add({ 'class': 'building', kind: 'bar', key: 'bar', name: 'A wall house', at: [0, 0, 0], size: [1, 1, 1], tags: { culture: 'fellgang', types: ['dwelling-multi'] } });
+const rb = K.register(B, TB, { parent: hb.id, culture: 'fellgang' }), nf = K.registerFurniture(B, TB, rb.ids, { culture: 'fellgang' });
+ok('every piece registered in core/tags as its room\'s child (' + nf + ')', nf === B.furniture.length && TB.query({ 'class': 'furniture' }).length === nf && TB.audit().unknown === 0,
+  !(nf === B.furniture.length + 1));
+
 process.exit(bad ? 1 : 0);

@@ -793,8 +793,8 @@
    "sha256": "caeca149d7a9a2a567164e45cede8b1fa77957e97a552bea4b89c0f59fbf27bf"
   },
   "kits/catalog/dist/catalog.html": {
-   "bytes": 2210863,
-   "sha256": "43d112c1308747841b1f9afc6f294cd8a3f9ba6821259d0837b8f7e52feaf8df"
+   "bytes": 2223662,
+   "sha256": "c43d24d358c32011b529a9dde94dfcc0e8f09d3119538a4d9b2da08caa636cae"
   },
   "kits/crops/dist/crops.html": {
    "bytes": 2570188,
@@ -997,8 +997,8 @@
    "sha256": "d3add636535274fd3f722369655b0025e5bf244eec089cc2e0b8e4f3ea9abd78"
   },
   "kits/tungang/dist/tungang.html": {
-   "bytes": 1111076,
-   "sha256": "6d2c89d570323725bf58f1dd8cce0ac5857fe10e5082632ef2cfdf2b9b67e287"
+   "bytes": 1177639,
+   "sha256": "a5e7a856b70561f6b74f80fd3d8305d45e05b3d957024bc88ad3874436cf70f1"
   },
   "kits/yeti/dist/yeti.html": {
    "bytes": 1065402,
