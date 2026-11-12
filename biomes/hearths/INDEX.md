@@ -6,7 +6,7 @@ The Hearths, a shared kit of life read in place by host kits (src/: the hearth t
 
 Docs: `KNOWN_ISSUES.md`, `PLAN.md`, `PORT.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/hearths-crystals.html`, `dist/hearths-hold.html`
+Built output (never open it; edit `src/` and rebuild): `dist/hearths-camera.html`, `dist/hearths-crystals.html`, `dist/hearths-hold.html`
 
 Build: `cd biomes/hearths && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -47,5 +47,6 @@ Each station builds one page (`build.py --station <name>`) from its own fragment
 
 | Station | Fragments | KB |
 |---|---|---|
+| camera | 98z-host-underground.js | 1 |
 | crystals | 00-head.html, 44z-host-site.js, 44zs-host-station.js, 48-hearths-hold.js, 49-host-stage.js, 84-host-rock.js, 85-host-crystals.js, 85b-host-speleo.js, 86-host-massing.js, 89x-host-air.js, 89z-host-build.js, 98u-host-eye.js, 98v-host-views.js, 99-host-take.js, 99-tail.html | 76 |
 | hold | 44zs-host-station.js, 98v-host-views.js | 2 |

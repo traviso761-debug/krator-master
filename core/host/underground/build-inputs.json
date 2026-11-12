@@ -1,0 +1,58 @@
+{
+ "what": "the inputs each build command read and the pages it wrote; tools/build.py writes it, tools/check_stale.py and tools/reach.py read it (tools/buildlib.py)",
+ "runs": {
+  "build.py": {
+   "inputs": {
+    "core/clock/20-core-clock.js": "27f205a2e908a21cb5d07f07431352d7a02a214baf543fc94cd545d7d588ddbe",
+    "core/edits/40-core-edits.js": "7eeb4220c100904bd42d761b29ad688a818620deaf2cb03dad8fb1bdff2b187b",
+    "core/host/90-host-camera.js": "6ad6af57adcf1fb2facd04968db769350c0d27de1d2fe20829d9948be75a2847",
+    "core/host/91-host-loop.js": "240f833bc2e031506de36b503594acd2939e3f45aee21115effd00666fa66986",
+    "core/host/91b-host-follow.js": "816e8b667b2b0ae5784c37d680933f1ebfe9f9ef33108bcf5882e2e34b6d1ea6",
+    "core/host/92-host-panel.js": "3d65cd6c0bb873e48eb4189fffad906ab21aef1950164a454254a4fefe7a0b88",
+    "core/host/93-host-inspect.js": "cf7e676324297688199a85d9a26c34381732955955985462aa3dbd2c12431f90",
+    "core/host/93-host-stocks.js": "ee986893621f17b4419db1feb1edbc01b7e28f067e85fd8b811112ec65456a69",
+    "core/host/94-host-marks.js": "a57a2a38ef92f4d06232659773249de63296e79e200da27a24f0253eff3f0284",
+    "core/host/95-host-probe.js": "91a9ef729db002716d0e840ebd6e0efc799f2ae0c99419fb06c3f44eda5f6471",
+    "core/host/96-host-pictures.js": "643e50e72e0586f75e2e56461fd58b14445099b551a591b839cf99dbbb5cf458",
+    "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
+    "core/host/97b-host-minimap-decks.js": "1fc9c23352334f7a795b09740884b567a7892aeca477cf21ec252c7cea925ff5",
+    "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
+    "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
+    "core/host/99-host-section.js": "091376eec18956c1ac853ae08e33dd3eb8b0930cd0fe1ca57632282944abdfdd",
+    "core/host/host.py": "18f80becdd343f7375785bc5aabdda290761d34376d890ebff8fab0d91fb5288",
+    "core/host/underground/00-head.html": "f6d91732204d09bca9744dbabf04d36554bcb43b6a07f295feb02d0472790a9d",
+    "core/host/underground/40-world.js": "dccdd52ae4d3f2afa8ab5db61b50c2b2592668ba3186c98aff47a66a2bc57240",
+    "core/host/underground/60-scene.js": "1b354c0826d4b20138c057491023cb1f23e6f3b854231e013e07fe1ee0dc5342",
+    "core/host/underground/98-take.js": "1c6107cc54b7903bc7db9c54928edd0da7bd83b3d7ab44d2cbb959a6c1b89190",
+    "core/host/underground/99-tail.html": "893cb35f3016a3523c33b676c4dfbe5686c4b99a1e7128d78e2e3fa271cd4829",
+    "core/host/underground/build.py": "eb8f30312bd35b66be67aa62793c3a46e97e0068fca9cb8d0c61ab6d55798549",
+    "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
+    "core/minimap/88a-core-minimap-host.js": "af98407f9b7bbec2742cb7bbbb9f8ff2d8c18952d5a35a02d023273a0d7e6fcc",
+    "core/minimap/decks/88b-core-minimap-decks.js": "558c225ef3243edae15d98c88beb1586fd478f3f8aeca6f2f8b0f9fbe55dd648",
+    "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
+    "core/shader/06-core-khook.js": "eb1a0436d3d5dbaab81c3e43de2b642c96d9c3b44331a8960801880e5e20c56d",
+    "core/shader/06b-core-kcolor.js": "ededfc6b8a1a8aae5bf3c6ab40863478f9beb8e1aaf2acf4ba9da25ef6392115",
+    "core/shader/aids/08-core-kfade.js": "14c523eb6cebce37b7da91f58d322ab614678ab4fc4ec80fede4602f1903ca64",
+    "core/space/20-core-space.js": "68068f0da30b9115d098604315be2364735b86833a6743ef4444e5e6adbe5780",
+    "core/tags/50-core-tags.js": "5d506746c4b5142f76e932cbd798d4ba6926e3865919d7ecd6d39a16e4e5b882",
+    "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
+    "core/tags/53-core-tags-host.js": "537daf189ec03498b134a049b1555a6d0795823a70e0d0b89e6c68b3b3106c25",
+    "core/terrain/39-core-cavern.js": "54c9c5227ff726739c4584dd30a1b98968985da89ab81e027242281bab7cdcf2",
+    "core/terrain/host/39e-core-cavern-draw.js": "f78779e717d386c236748329b58fc8587b33dfc24b718f3ea8899e3154f2156c",
+    "core/terrain/host/39h-core-cavern-cut.js": "e1c4c71c61abd891817635a16e8fd8b0684541321a5b622a0b0d8d486a9933f3",
+    "core/walk/20-core-walk.js": "66c2a5dfacc6e4ffc2cdc03dfa7d0f82ea991c312d5725d299e4e281fe148e03",
+    "tools/build_sources.py": "30e45c589b466ccf6f67f5efa801021ac245d05ef22700c1d51ff794dae900e2"
+   },
+   "listings": {
+    "core/host": "b79d4f397a8c035615dca741c529b92f4b7d0fc7e3a9910cae63c77596b72bfe",
+    "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512"
+   },
+   "outputs": {
+    "core/host/underground/underground.html": "7fdf53bad5af0b572c7066c74ba8462f50a5d89c195c32c877003596457fe8b8"
+   },
+   "outputs_raw": {
+    "core/host/underground/underground.html": "7fdf53bad5af0b572c7066c74ba8462f50a5d89c195c32c877003596457fe8b8"
+   }
+  }
+ }
+}

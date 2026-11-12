@@ -27,7 +27,7 @@
     "core/host/93-host-inspect.js": "cf7e676324297688199a85d9a26c34381732955955985462aa3dbd2c12431f90",
     "core/host/94-host-polytool.js": "73178f8a6f8632fa25802d8024ce753a209e29af018ae4b2297cea6e1b84d730",
     "core/host/95-host-probe.js": "91a9ef729db002716d0e840ebd6e0efc799f2ae0c99419fb06c3f44eda5f6471",
-    "core/host/host.py": "e0c566abb47f0e84324c13407b8b2e4c0f3566037e92e00c2e92cf8f120e71c6",
+    "core/host/host.py": "18f80becdd343f7375785bc5aabdda290761d34376d890ebff8fab0d91fb5288",
     "core/materials/20-textures.js": "9488f355ee917f901c062e119de4aa5e7ac53ed620ada2555bd2e2dfe1a9a3cb",
     "core/materials/22-materials.js": "8144ffe9a3a3330693f9def33d3a053e25668b52fda934ced0a9f9e0a5adae8d",
     "core/materials/68-mat-v5.js": "c1a3519d17542022794eb72184f189cac1f3de1bba6cf7348d58cde370cb587a",
@@ -288,7 +288,7 @@
    "listings": {
     "core/atmos/placeholder": "93e72701f4f204e698b400c25d1989704d985203b33d5a076ec9e170c3bb9552",
     "core/engine": "68c10fa5029a8ccb1f86b5138b48a7b71fec613998c3eab75790c04acc07b282",
-    "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
+    "core/host": "d729ffbc0ed36e68e9036bd9c454abc6462a27b22a4bc16b88c38d836e6f4a37",
     "core/materials": "3342416a526793b328fa0871f795bdf98d2084292aa7bcb917fecc405076716c",
     "kits/construction/dist": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "kits/construction/src": "2049130c9f8ee26cba461b50f6620450f75dd8e2f33202b9be4ba7912a6ef7bc",

@@ -1,0 +1,30 @@
+{
+ "what": "the inputs each build command read and the pages it wrote; tools/build.py writes it, tools/check_stale.py and tools/reach.py read it (tools/buildlib.py)",
+ "runs": {
+  "build.py": {
+   "inputs": {
+    "core/biome/37-core-traps.js": "50e90f6c662ee4e92a19d48f8c2ed66497dd27574e3b81f02372f969f846b2d6",
+    "core/cavelight/10-core-cavelight.js": "b7a1a18d631e35b1cfc57f22a385aae46118a16ba17b0e92e35b16aad34075e9",
+    "core/cavelight/90-core-cavelight-host.js": "fcbf68918b3309201002730fee54f4c10dcafc269de3dffdf5cfe29f68db3c5c",
+    "core/cavelight/demo/build.py": "6f59f54f444f4d139aa487fded1b95c13d67b8e7fdf09b8f3f81a47177bb0bac",
+    "core/cavelight/demo/src/00-head.html": "692060120a5086e5435dd011fc84f1e41e7bec25e9ae312c4be680e05f1f11bd",
+    "core/cavelight/demo/src/10-demo.js": "0b1fbde42012d5e21ec00c23e649f9875eff3f04c740c692387dd660472f7e4c",
+    "core/hazard/20-core-hazard.js": "5a623c9210f70a01f4e8647443de24283bcbc51eb6a12c649cf080f69cf3d7d2",
+    "core/hazard/22-core-hazard-tunnel.js": "8c5721753db1bb98dfafae80877ae5964ece0a318bf1dcf223ea5c2fcd323c44",
+    "core/rand/08-core-rand.js": "f315035a138a8818c87f55de56ae2dbf3a8d66ff3cc435d303332502d2f43ddf",
+    "core/tags/50-core-tags.js": "5d506746c4b5142f76e932cbd798d4ba6926e3865919d7ecd6d39a16e4e5b882",
+    "core/tags/52-core-tags-vocab.js": "34470fd7966f7d0684585b0bc2082875d5de0ec2ed11d141f79f9612462584d3",
+    "core/terrain/39-core-cavern.js": "54c9c5227ff726739c4584dd30a1b98968985da89ab81e027242281bab7cdcf2",
+    "core/terrain/39b-core-speleo.js": "5eafcf062f93eb1c57623726cf571e21e516210bed911a77a9024c6280ff2a03",
+    "core/terrain/39b2-core-speleo-cleft.js": "ff2eeeb09ca387c68bd34fa22bf8304eb0859c8566132d09ac3f25501de08e22"
+   },
+   "listings": {},
+   "outputs": {
+    "core/cavelight/demo/dist/cavelight-demo.html": "a88d47ed969f87c243adca5655b3fc08248503aa27ec6fb4812bf89d0b228167"
+   },
+   "outputs_raw": {
+    "core/cavelight/demo/dist/cavelight-demo.html": "a88d47ed969f87c243adca5655b3fc08248503aa27ec6fb4812bf89d0b228167"
+   }
+  }
+ }
+}

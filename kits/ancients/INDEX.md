@@ -70,7 +70,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `76-65-biome-hyperjungle-dress.js` | 7 |  |
 | `76-70-biome-hyperjungle.js` | <1 |  |
 | `76-campus.js` | 11 |  |
-| `77-dam.js` | 13 |  |
+| `77-dam.js` | 14 |  |
 | `77z-iziz-style.js` | 55 **big** | ANCIENT IZIZ STYLE (1) |
 | `78-factory-silo.js` | 2 |  |
 | `79-government.js` | 8 |  |
@@ -207,7 +207,7 @@ Each target adds its own fragments to `src/` and builds one output.
 | `spaceport` | `89z-rows.js`, `91z-views.js` | 2 |
 | `span` | `89z-rows.js`, `8as0-span-parts.js`, `91z-views.js` | 30 |
 | `spire` | `89z-rows.js`, `91z-views.js` | 4 |
-| `theodiga` | `89z-rows.js`, `91z-views.js` | 1 |
+| `theodiga` | `77a-theodiga-dome-plan.js`, `77b-theodiga-dome-draw.js`, `89z-rows.js`, `91z-views.js` | 16 |
 | `trigon` | `89z-rows.js`, `91z-views.js` | 5 |
 | `veladiga` | `89z-rows.js`, `91z-views.js` | 1 |
 | `wheel` | `89z-rows.js`, `91z-views.js` | 7 |

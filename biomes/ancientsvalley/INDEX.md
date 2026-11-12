@@ -22,14 +22,14 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `41-av-field.js` | 22 |  |
+| `41-av-field.js` | 24 |  |
 | `41b-av-wrecks.js` | 9 |  |
 | `41c-av-house.js` | 6 |  |
 | `41c-av-lobbies.js` | 32 **big** |  |
 | `41e-av-cardrects.js` | 7 |  |
 | `46-av-feral.js` | 13 |  |
-| `46z-host-stage.js` | 34 **big** |  |
-| `47-host-land.js` | 9 | the ground (27); the far ground (the model's country out to 24 km (61) |
+| `46z-host-stage.js` | 35 **big** |  |
+| `47-host-land.js` | 9 | the ground (29); the far ground (the model's country out to 24 km (63) |
 | `70-host-city.js` | 55 **big** | the rust (the owner, 2026-11-04: more rust) (72); the engines (kits/ancients 8ah, 8ai, read in pla (311); the lines: the viaduct (AV.viaduct's records dra (326) |
 | `71-host-creepers.js` | 7 |  |
 | `72-host-keepers.js` | 10 |  |
@@ -60,4 +60,4 @@ Each station builds one page (`build.py --station <name>`) from its own fragment
 | Station | Fragments | KB |
 |---|---|---|
 | terraces | 41d-av-farm.js, 46z-host-stage.js, 70t-host-farm.js, 72-host-keepers.js, 73-host-wrecks.js, 75-host-extraplanar.js, 75-host-house.js, 87t-host-thicket.js, 89y-host-anomaly.js | 83 |
-| yards | 46z-host-stage.js, 70y-host-yards.js, 75-host-extraplanar.js, 75-host-house.js, 89y-host-anomaly.js, 98y-host-yards-checks.js | 56 |
+| yards | 46z-host-stage.js, 70y-host-yards.js, 75-host-extraplanar.js, 75-host-house.js, 89y-host-anomaly.js, 98y-host-yards-checks.js | 57 |

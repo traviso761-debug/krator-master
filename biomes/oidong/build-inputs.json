@@ -3,7 +3,7 @@
  "runs": {
   "build.py": {
    "inputs": {
-    "biomes/oidong/KNOWN_ISSUES.md": "403d6715cd85398b7153b1c684c604684cd7b13b3c179791ee810bb441480ddb",
+    "biomes/oidong/KNOWN_ISSUES.md": "fbf9f096544830c2cd86b58cb71efdd889caf309c3df688d38847c572d190185",
     "biomes/oidong/PORT.md": "b064be911ed3f3b893b5ce80314afff9af5e3cea1e7726d8b05b215bf603744c",
     "biomes/oidong/build.py": "1e9b48d88cd5066d77033821884d3d9b28233c569a161759ff25386bc8de545f",
     "biomes/oidong/src/00-head.html": "faa1cf8280291175dad5f27fec09c77201da238fe161ffecebb86095794e13fb",
@@ -98,7 +98,7 @@
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
-    "core/host/host.py": "e0c566abb47f0e84324c13407b8b2e4c0f3566037e92e00c2e92cf8f120e71c6",
+    "core/host/host.py": "18f80becdd343f7375785bc5aabdda290761d34376d890ebff8fab0d91fb5288",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
@@ -135,7 +135,7 @@
    },
    "listings": {
     "biomes/oidong/src": "191fc485457e2ece2f6c57daeffde3a8d9b9d3f92be81ac7a87323519cc448ac",
-    "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
+    "core/host": "d729ffbc0ed36e68e9036bd9c454abc6462a27b22a4bc16b88c38d836e6f4a37",
     "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
@@ -151,7 +151,7 @@
     "biomes/hearths/src/50-biome-hearths-species.js": "e5d86542ef60897ac552bc34b63a67efa440eb57aa964181bd3cb72de0828df1",
     "biomes/hearths/src/55-biome-hearths-place.js": "c3f9fe77156a33211b51ffc6b5a03644ccd84360a7f4001c55baf34702e0e74e",
     "biomes/hearths/tex/pack.json": "4db485284f1bab6a0ffe8df38eeb660b293e70acf79263fc773d3605169368c1",
-    "biomes/oidong/KNOWN_ISSUES.md": "403d6715cd85398b7153b1c684c604684cd7b13b3c179791ee810bb441480ddb",
+    "biomes/oidong/KNOWN_ISSUES.md": "fbf9f096544830c2cd86b58cb71efdd889caf309c3df688d38847c572d190185",
     "biomes/oidong/PORT.md": "b064be911ed3f3b893b5ce80314afff9af5e3cea1e7726d8b05b215bf603744c",
     "biomes/oidong/build.py": "1e9b48d88cd5066d77033821884d3d9b28233c569a161759ff25386bc8de545f",
     "biomes/oidong/src/00-head.html": "faa1cf8280291175dad5f27fec09c77201da238fe161ffecebb86095794e13fb",
@@ -253,7 +253,7 @@
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
-    "core/host/host.py": "e0c566abb47f0e84324c13407b8b2e4c0f3566037e92e00c2e92cf8f120e71c6",
+    "core/host/host.py": "18f80becdd343f7375785bc5aabdda290761d34376d890ebff8fab0d91fb5288",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
@@ -293,7 +293,7 @@
     "biomes/oidong/src": "191fc485457e2ece2f6c57daeffde3a8d9b9d3f92be81ac7a87323519cc448ac",
     "biomes/oidong/stations/hearths": "1252f2b18a27eeff888bf1276fa272e459995ebd0f7cfbb3e85b0012772df750",
     "biomes/oidong/stations/passes": "03f125849e20d76ff54c10f553e2b407f25107aa40771aba2400f95bb1d6f1c3",
-    "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
+    "core/host": "d729ffbc0ed36e68e9036bd9c454abc6462a27b22a4bc16b88c38d836e6f4a37",
     "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
@@ -306,7 +306,7 @@
   },
   "build.py --station passes": {
    "inputs": {
-    "biomes/oidong/KNOWN_ISSUES.md": "403d6715cd85398b7153b1c684c604684cd7b13b3c179791ee810bb441480ddb",
+    "biomes/oidong/KNOWN_ISSUES.md": "fbf9f096544830c2cd86b58cb71efdd889caf309c3df688d38847c572d190185",
     "biomes/oidong/PORT.md": "b064be911ed3f3b893b5ce80314afff9af5e3cea1e7726d8b05b215bf603744c",
     "biomes/oidong/build.py": "1e9b48d88cd5066d77033821884d3d9b28233c569a161759ff25386bc8de545f",
     "biomes/oidong/src/00-head.html": "faa1cf8280291175dad5f27fec09c77201da238fe161ffecebb86095794e13fb",
@@ -402,7 +402,7 @@
     "core/host/97-host-minimap.js": "24758908dc1f6be4fed09e0aa3a23270187ccd93ff41ada5974bf49b194fc162",
     "core/host/98-host-edit.js": "89038217cde180a076b33d41644bd95285837a9d63f09199bd944e507596997e",
     "core/host/99-host-cutaway.js": "c67cea97b1b18a2a8b3bbc329d5bb5df7fd007a4aee033b21d91fe75cd0ad300",
-    "core/host/host.py": "e0c566abb47f0e84324c13407b8b2e4c0f3566037e92e00c2e92cf8f120e71c6",
+    "core/host/host.py": "18f80becdd343f7375785bc5aabdda290761d34376d890ebff8fab0d91fb5288",
     "core/materials/record/23-mat-record.js": "a426d4aa31d48338fad5acce9d2d52f21b2aac582ea824f5e6597423b4b916ab",
     "core/materials/record/25-matlib-host.js": "d0b23f3a543973cc437de9b30015281f7a0de5b0ba2dde153f5e1de24f1a7eab",
     "core/minimap/88-core-minimap.js": "b6c7e9c662f079c8f97cfc9f6bac2fea115b660f9b417056da54c3bf3c1129a1",
@@ -440,7 +440,7 @@
    "listings": {
     "biomes/oidong/src": "191fc485457e2ece2f6c57daeffde3a8d9b9d3f92be81ac7a87323519cc448ac",
     "biomes/oidong/stations/passes": "03f125849e20d76ff54c10f553e2b407f25107aa40771aba2400f95bb1d6f1c3",
-    "core/host": "5c20cad518d1dbf455b91354c2ce82ca921e7a87cb021bf8936452880cb66f1d",
+    "core/host": "d729ffbc0ed36e68e9036bd9c454abc6462a27b22a4bc16b88c38d836e6f4a37",
     "tools": "5d8cb54bfd5566913f21e3e094a6a85418e1354e6e39cf6138ec20bda1add512",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },

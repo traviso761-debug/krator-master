@@ -42,7 +42,7 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `89-host-sky.js` | 2 |  |
 | `89w-host-water.js` | 4 |  |
 | `89x-host-air.js` | 5 |  |
-| `99-host-take.js` | 21 | the inspector's words (66); the probe's budgets and the kit's own checks (ve (79); the page, handed to the host (149); the editor's world (core/host 98; ROADMAP.md sec (150) |
+| `99-host-take.js` | 23 | the inspector's words (76); the probe's budgets and the kit's own checks (ve (89); the page, handed to the host (159); the editor's world (core/host 98; ROADMAP.md sec (160) |
 | `99-tail.html` | <1 |  |
 
 ## stations/
