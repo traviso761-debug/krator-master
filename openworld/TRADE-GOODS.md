@@ -485,3 +485,8 @@ scripts (scratchpad `trade\`) to see them.
 6. **Specialties as written:** lenses to the Republic and books to the Monks (section 2); Jimjam's brick capped at 450 km; the Spice
    Isles' spice re-exported through Temora and Zey'danin (the isles have no pins).
 
+**The next round** (the owner, 2026-11-12) is scoped in `openworld/TRADE-SCOPE.md`: the East Rift trading through Iziz, Yuni and
+the Dasri; Xanadu's salt from the Catch, the Bowl and the north; Tallwalls a town; oil and rare earths extracted only by Yuni,
+the Eternians, the Order (and the Tungangs' rare earths), with Geomancer concessions and oil demand by use; Locus's oil lode;
+native crops; natural exports for the Republic, the Zeijani and Jimjam; scrap to iron. Not built yet.
+
