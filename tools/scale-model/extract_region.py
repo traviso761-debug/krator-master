@@ -1281,6 +1281,17 @@ def main():
                         item['m'] = [round((item['px'][0] - cx) * 2000.0, 1), round((item['px'][1] - cy) * 2000.0, 1)]
         tubes.append(tb_rec)
 
+    # ---- the landform records under a cell (DATA.landforms: edit_512's islets, edit_513's) whose reach meets the box, in
+    # the region's frame, for core/world/41l-world-landforms.js to stamp at 1:1 (openworld/PLAN-VOTH.md section 3, item 4)
+    landforms = []
+    for lf in (D.get('landforms') or {}).get('landforms', []):
+        r_px = 2.0 * float(lf.get('r_m', 0)) / 2000.0
+        if not (x0 - r_px <= lf['px'] <= x1 + r_px and y0 - r_px <= lf['py'] <= y1 + r_px):
+            continue
+        rec_l = copy.deepcopy(lf)
+        rec_l['x'], rec_l['z'] = round((lf['px'] - cx) * 2000.0, 1), round((lf['py'] - cy) * 2000.0, 1)
+        landforms.append(rec_l)
+
     # ---- settlements inside the polygon
     def inside_px(px, py):
         X, Y = int(round(px)) - x0, int(round(py)) - y0
@@ -1359,6 +1370,8 @@ def main():
         meta['overlays'] = overlays
     if palaeo:
         meta['palaeo'] = palaeo
+    if landforms:
+        meta['landforms'] = landforms
     json.dump(meta, open(os.path.join(out, 'region.json'), 'w', encoding='utf-8', newline='\n'), separators=(',', ':'))
     print('region %s: box px %s, %d x %d px, polygon %d km2' % (reg['name'], [x0, y0, x1, y1], W, H, meta['region']['area_km2']))
     print('heights %d x %d cells (%.0f m/cell, su=%.2f, synth=%s); %d channels, %d vertices; %d water cells lowered to their spill height' % (
@@ -1368,6 +1381,8 @@ def main():
     print('  %d dry valleys' % len(valleys))
     if tubes:
         print('  %d lava tubes/caverns' % len(tubes))
+    for lf in landforms:
+        print('  landform %s (%s): r %g m, crest %g m over water %g m' % (lf['id'], lf['kind'], lf['r_m'], lf['crest_m'], lf['water_m']))
     for b in biomes:
         print('  biome %2d %-18s kit %-16s %7d px (%d in region)' % (b['id'], b['name'], b['kit'], b['px'], b['px_in_region']))
     print('  %d px took the nearest overlay' % filled)
