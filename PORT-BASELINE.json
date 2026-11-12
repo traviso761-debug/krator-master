@@ -785,8 +785,8 @@
    "sha256": "7ee92af99c76cfad101519a3e72e968a1e497d1e24dff056419fbfa3999730f2"
   },
   "kits/beast-riders/dist/beast-riders.html": {
-   "bytes": 13420536,
-   "sha256": "71e5206e79268cf08fd9aac70dfe7916a3d1521c50b0c282a2b70de37844d9e8"
+   "bytes": 13420641,
+   "sha256": "1371ed8412f995c9e8a84a34ae48b21dda32bc194900759ab92cd33bdf80629a"
   },
   "kits/catalog/dist/catalog.html": {
    "bytes": 2210863,
@@ -1001,16 +1001,16 @@
    "sha256": "a3843bca9538ce870335a22d6b7f4a30d2b69fd8cf7b372f928c62346733e1eb"
   },
   "openworld/isle-demo/dist/isle-demo.artifact.html": {
-   "bytes": 8544886,
-   "sha256": "1e4167e3aa685163a2cd7902e5480c681e23875c2e26bd95fbb29991cc2df6ef"
+   "bytes": 8544991,
+   "sha256": "71896a873bd3e62980a35ab08f0129c605fdb51c5da402b8f64244e32c18b207"
   },
   "openworld/isle-demo/dist/isle-demo.html": {
-   "bytes": 8545144,
-   "sha256": "70d444cd27e2d657a99a4458d046a1c533ec4e61f3b2a0042427abb467a79dfe"
+   "bytes": 8545249,
+   "sha256": "a6dfbf0f43225df8442643a522f5a945ed0091293bddea32c110f81c9ada702c"
   },
   "openworld/iziz-cluster/dist/iziz-cluster.html": {
-   "bytes": 6035072,
-   "sha256": "0fc56d449ac24ad014a891d2fc1602762fb81d55b3e0312418a25c34597aca4c"
+   "bytes": 6035177,
+   "sha256": "14b058de4747d6e14c2548320277417dcdcd85cb9802663bdf5cabf0b0c35b47"
   },
   "openworld/little-demo/dist/little-demo.artifact.html": {
    "bytes": 5088461,
@@ -1025,8 +1025,8 @@
    "sha256": "2b3c0c748a20193d07a6150d3af70a4e6c966fcaa860e433f71e73ea44fb79aa"
   },
   "openworld/pinnacle/dist/pinnacle.html": {
-   "bytes": 5903260,
-   "sha256": "fbd1a1ff2d24f72bdc92c87b6e8496cab26fb605a0f849dfd72623d3c43530f4"
+   "bytes": 5903365,
+   "sha256": "629d43b1de1501110b4c07b29d508533a3389a516e21d0de9f3e9257eb73ec53"
   },
   "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.html": {
    "bytes": 8301221,
@@ -1137,8 +1137,8 @@
    "sha256": "f94028859f190afb0fe0831d17582c9eb9390565be504b0250d88feb6e0bef86"
   },
   "settlements/pinnacle-rock/dist/pinnacle-rock.html": {
-   "bytes": 4833716,
-   "sha256": "ecd2826e1b30dff23e7706009303afe60f61156c1b3e7b7d7fc98328a7c9e8b3"
+   "bytes": 4848624,
+   "sha256": "c8b228dc1764824c600b4bf9fa500659e8173fae558773e243bb03da1e0627e5"
   },
   "settlements/port/dist/cgBox.html": {
    "bytes": 884314,
