@@ -28,7 +28,7 @@
 KREGION.part('50-region-valley', function (H) {
 H.simValley = function (V) {
   var K = V.scale == null ? 10 : V.scale, m0 = V.start == null ? 0 : V.start, C = { m: m0, day: Math.floor(m0 / 1440), hour: (m0 % 1440 + 0.5) / 60, t: 0 };
-  var S = H.SIM = { clock: C, valley: V, towns: {}, order: [], problems: [], eaten: {}, hungry: {}, carry: {}, moves: [], last: m0 };
+  var S = H.SIM = { clock: C, valley: V, towns: {}, order: [], problems: [], eaten: {}, hungry: {}, fed: {}, starved: {}, away: {}, carry: {}, moves: [], last: m0 };
   SIM.init({ seed: V.seed == null ? 1 : V.seed, hour: function () { return C.hour; }, day: function () { return C.day; }, t: function () { return C.t; }, err: function (m) { S.problems.push(m); } });
   ['SLEEP', 'WORK', 'REST'].forEach(function (a) { if (!SIM.R.activity[a]) SIM.activity({ id: a, indoor: a !== 'WORK' }); });
   if (V.calendar) SIM.calendar(V.calendar);
@@ -82,12 +82,18 @@ H.simValley = function (V) {
       SIM.all('actor').forEach(function (a) { if (a.herd === (on ? w.id : w.pasture)) a.herd = on ? w.pasture : w.id; });
       S.moves.push({ minute: minute, settlement: s, herd: w.id, to: on ? w.pasture : w.id }); }); });
   });
-  /* each settlement's people eat from its warehouses, every hour of the clock, whatever their work */
+  /* each settlement's people eat from its warehouses, every hour of the clock, whatever their work; then its beasts (S4:
+     `feeds`, {good: kg a day} for all its beasts, a culture's table worked out by core/camp KCAMP.beastNeeds), booked `fed`
+     and `starved`. A settlement that is away (H.valleyAway: a band out ranging, its books with core/camp's world tick)
+     neither eats nor works here */
   SIM.stepHooks.push(function (minute) {
     var hrs = (minute - S.last) / 60; if (hrs <= 0) return; S.last = minute;
-    S.order.forEach(function (s) { var Sd = S.towns[s].spec, E = Sd.eats || {};
+    S.order.forEach(function (s) { var Sd = S.towns[s].spec, E = Sd.eats || {}; if (S.away && S.away[s]) return;
       Object.keys(E).sort().forEach(function (g) { var c = (S.carry[s][g] || 0) + Sd.people * E[g] * hrs / 24, n = Math.floor(c); S.carry[s][g] = c - n; if (n <= 0) return;
-        var got = SIM.supply(g, n, false, s); S.eaten[s][g] = (S.eaten[s][g] || 0) + got; if (got < n) S.hungry[s][g] = (S.hungry[s][g] || 0) + n - got; }); });
+        var got = SIM.supply(g, n, false, s); S.eaten[s][g] = (S.eaten[s][g] || 0) + got; if (got < n) S.hungry[s][g] = (S.hungry[s][g] || 0) + n - got; });
+      if (Sd.feeds) { var F = S.fed[s] || (S.fed[s] = {}), St = S.starved[s] || (S.starved[s] = {});
+        Object.keys(Sd.feeds).sort().forEach(function (g) { var k = 'beast:' + g, c = (S.carry[s][k] || 0) + Sd.feeds[g] * hrs / 24, n = Math.floor(c); S.carry[s][k] = c - n; if (n <= 0) return;
+          var got = SIM.supply(g, n, false, s); F[g] = (F[g] || 0) + got; if (got < n) St[g] = (St[g] || 0) + n - got; }); } });
   });
   S.order.forEach(function (s) { SIM.level(s, 'abstract'); });
   S.problems = S.problems.concat(SIM.check());
@@ -103,7 +109,16 @@ H.valleyBooks = function () {
   S.order.forEach(function (s) { var E = SIM.econ(s), st = {};
     Object.keys(E.goods).forEach(function (g) { var n = SIM.stockOf(g, s); if (n) st[g] = Math.round(n); });
     out.towns[s] = { people: S.towns[s].spec.people, stock: st, made: Object.assign({}, E.made), imported: Object.assign({}, E.imported), exported: Object.assign({}, E.exported),
-      used: Object.assign({}, E.used), short: Object.assign({}, E.short), eaten: Object.assign({}, S.eaten[s]), hungry: Object.assign({}, S.hungry[s]) }; });
+      used: Object.assign({}, E.used), short: Object.assign({}, E.short), eaten: Object.assign({}, S.eaten[s]), hungry: Object.assign({}, S.hungry[s]) };
+    if (S.towns[s].spec.feeds) { out.towns[s].fed = Object.assign({}, S.fed[s]); out.towns[s].starved = Object.assign({}, S.starved[s]); } });
   return out;
+};
+/* a band out ranging (S6: core/camp's hand-over): away, its people and beasts neither eat here nor its works make (each
+   held by SIM.recipeHold, 'away'); home again, they do */
+H.valleyAway = function (s, away) {
+  var S = H.SIM, X = S.towns[s]; if (!X) return false;
+  S.away[s] = !!away;
+  X.spec.works.forEach(function (Wk) { SIM.recipeHold(Wk.id, away ? 'away' : null); if (Wk.pasture) SIM.recipeHold(Wk.pasture.id, away ? 'away' : null); });
+  return true;
 };
 });
