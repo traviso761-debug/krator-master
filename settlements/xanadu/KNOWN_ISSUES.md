@@ -97,7 +97,13 @@ The flank's edge is the map's grey cliff (the owner: "that grey streak should de
 * **The mountain:** south of z 450 it keeps its height (`WEST_Z`).
 * **Heights now:** the flank is 66-124 m and the citadel's side 166-222 m. At z -150 the ground is 86 m at the cliff's
   foot and 174 m at its top.
-* **The layout:** the streets and houses on the flank follow the new ground: 1,608 buildings, from 1,652, and 272
+* **The north foot** (the owner's mark 'Area 2': "lowered and smoothed to its neighbors to extend the cliff face"):
+  - The slope between the citadel's north wall and the lake had taken the plateau's lift, so it ran down as a ramp.
+  - Inside the mark's outline (`NORTH_FOOT`) it is now a smooth fill (Laplace, 4 m grid). The fill meets the ground on
+    the west, north and east, is free along the wall (`NORTH_FOOT_FREE`) and only lowers.
+  - The plateau now ends in a drop on the north too: about 70-85 m at x -420 to -340, easing toward the town's ground
+    at the east end.
+* **The layout:** the streets and houses follow the new ground: 1,662 buildings, from 1,652 before this work, and 261
   streets, from 270.
 * **Where the fix lives:** the map's source PNG is not in the repo, so the fix is in the page's geometry, not in
   `tools/erewhon-map.py`.

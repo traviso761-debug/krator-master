@@ -130,6 +130,32 @@ const WEST_W=(function(){const C=ER_C,GW=C.w,GH=C.h,cell=C.cell,X=i=>-ER.W/2+(i+
   return (W[k]*(1-fu)+W[k+1]*fu)*(1-fv)+(W[k+GW]*(1-fu)+W[k+GW+1]*fu)*fv;}};})();
 {const raw=terrainBase;terrainBase=function(x,z){const h=raw(x,z);if(h<=0||z>=WEST_Z[0]||x>WEST_N[1])return h;
  const wt=WEST_W.at(x,z)*smoothstep(WEST_Z[0],WEST_Z[1],z);return wt>0?h*(1-(1-WEST_K)*wt):h;};}
+// ---------------------------------------------------------------- the citadel's north foot (the owner, 2026-11-12)
+// "Area 2 should be lowered and smoothed to its neighbors to extend the cliff face": the slope between the citadel's
+// north wall and the lake (the owner's mark 'Area 2', x z below) took the plateau's lift (erewhon-map.py's PLAT and its
+// fall-off), so it ran down from the wall as a ramp, not a cliff. Inside the outline the ground is a smooth surface
+// (a Laplace fill on a 4 m grid) meeting the ground round it on the west, north and east, and free along the wall
+// (NORTH_FOOT_FREE: the outline's first edges, the citadel's side), so it does not climb to the wall: the plateau ends
+// there in a drop, the cliff face carried on from the west. The fill only lowers (the lower of the two).
+const NORTH_FOOT=[[-530,-144],[-459,-207],[-430,-273],[-391,-315],[-346,-328],[-338,-323],[-323,-315],[-280,-309],[-241,-301],
+ [-128,-491],[-233,-460],[-329,-444],[-371,-446],[-422,-445],[-382,-545],[-521,-539],[-539,-478],[-533,-317],[-542,-173]],NORTH_FOOT_FREE=8;
+const NORTH_FILL=(function(){const P=NORTH_FOOT,S=4;let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9;for(const p of P){x0=Math.min(x0,p[0]);x1=Math.max(x1,p[0]);z0=Math.min(z0,p[1]);z1=Math.max(z1,p[1]);}
+ x0-=3*S;z0-=3*S;const NX=Math.ceil((x1-x0)/S)+4,NZ=Math.ceil((z1-z0)/S)+4,X=i=>x0+i*S,Z=j=>z0+j*S;
+ const inF=(x,z)=>{let c=false;for(let i=0,j=P.length-1;i<P.length;j=i++){const a=P[i],b=P[j];if((a[1]>z)!==(b[1]>z)&&x<(b[0]-a[0])*(z-a[1])/(b[1]-a[1])+a[0])c=!c;}return c;};
+ /* the outline's nearest edge to a point: edges 0..FREE-1 run along the wall */
+ const edgeAt=(x,z)=>{let bd=1e9,be=0;for(let e=0;e<P.length;e++){const a=P[e],b=P[(e+1)%P.length],dx=b[0]-a[0],dz=b[1]-a[1],l2=dx*dx+dz*dz||1,t=clamp(((x-a[0])*dx+(z-a[1])*dz)/l2,0,1),d=Math.hypot(x-a[0]-dx*t,z-a[1]-dz*t);if(d<bd){bd=d;be=e;}}return be;};
+ const G=new Float32Array(NX*NZ),IN=new Uint8Array(NX*NZ),FIX=new Uint8Array(NX*NZ);let sum=0,n=0;
+ for(let j=0;j<NZ;j++)for(let i=0;i<NX;i++){const k=j*NX+i,x=X(i),z=Z(j);G[k]=terrainBase(x,z);if(inF(x,z))IN[k]=1;}
+ for(let j=0;j<NZ;j++)for(let i=0;i<NX;i++){const k=j*NX+i;if(IN[k])continue;let near=false;for(const kk of[k-1,k+1,k-NX,k+NX])if(kk>=0&&kk<NX*NZ&&IN[kk])near=true;
+  if(near&&edgeAt(X(i),Z(j))>=NORTH_FOOT_FREE){FIX[k]=1;sum+=G[k];n++;}}
+ const H0=G.slice();for(let k=0;k<NX*NZ;k++)if(IN[k])G[k]=n?sum/n:G[k];
+ /* over-relaxed Gauss-Seidel: each inside cell the mean of its inside and fixed neighbours (a wall-side neighbour is left out) */
+ for(let it=0;it<900;it++)for(let j=1;j<NZ-1;j++)for(let i=1;i<NX-1;i++){const k=j*NX+i;if(!IN[k])continue;let s=0,c=0;
+  for(const kk of[k-1,k+1,k-NX,k+NX])if(IN[kk]||FIX[kk]){s+=G[kk];c++;}if(c)G[k]+=1.8*(s/c-G[k]);}
+ for(let k=0;k<NX*NZ;k++)G[k]=IN[k]?Math.min(G[k],H0[k]):H0[k];
+ return{inF,at(x,z){if(x<x0||z<z0||x>X(NX-1)||z>Z(NZ-1))return null;const u=(x-x0)/S,v=(z-z0)/S,i=Math.min(NX-2,Math.floor(u)),j=Math.min(NZ-2,Math.floor(v)),fu=u-i,fv=v-j,k=j*NX+i;
+  return (G[k]*(1-fu)+G[k+1]*fu)*(1-fv)+(G[k+NX]*(1-fu)+G[k+NX+1]*fu)*fv;}};})();
+{const raw=terrainBase;terrainBase=function(x,z){const h=raw(x,z);if(!NORTH_FILL.inF(x,z))return h;const t=NORTH_FILL.at(x,z);return t==null?h:Math.min(h,t);};}
 // nearest point on a polyline set: {x,z,d,seg:[a,b]}
 function nearestOnLines(lines,x,z){let best=null;for(const P of lines)for(let i=0;i<P.length-1;i++){const ax=P[i][0],az=P[i][1],bx=P[i+1][0],bz=P[i+1][1];const dx=bx-ax,dz=bz-az,l2=dx*dx+dz*dz||1;const t=clamp(((x-ax)*dx+(z-az)*dz)/l2,0,1);
  const qx=ax+dx*t,qz=az+dz*t,d=Math.hypot(x-qx,z-qz);if(!best||d<best.d)best={x:qx,z:qz,d,a:P[i],b:P[i+1]};}return best;}
