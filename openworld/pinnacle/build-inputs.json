@@ -232,7 +232,7 @@
     "kits/beast-riders/src/73-br-tents-pens.js": "22828f5363d15c7e7e3c94a183282e8403e2fa1b76fad152c9e7fee245bbe767",
     "kits/beast-riders/src/74-br-tents-bands.js": "54c2fcdd55d6c0607860845cd368f4e22d6d3129e80e81e6c99a2687663e1c41",
     "kits/beast-riders/src/75-br-tents-bounds.js": "869617890635ff19d85a127a6480eef7f8d5a924467d0cef4a764b6c45f01fba",
-    "kits/beast-riders/src/79-br-camp.js": "f918ff3b1d50d35ca927167099382de65122967918e9c905cfbbd27525a4502a",
+    "kits/beast-riders/src/79-br-camp.js": "468aead89e40ff670270786c8f610fef48ac6b72d9779ade0723bf7b418d612a",
     "kits/beast-riders/tex/bark.albedo.webp": "9aebafd0d55fc0618af2077cf085b806478c4e4e3b844f56675d03e873e26470",
     "kits/beast-riders/tex/brClothA.albedo.webp": "38009f3000a123d81c483e464c11e6a13081a701de1e08e7ce793301b296666a",
     "kits/beast-riders/tex/brClothB.albedo.webp": "16ee8bcaedacec55f525ba77db8380145c9fe9ae651763fa18053fa2b9e193d1",
@@ -473,7 +473,7 @@
     "settlements/girder/tex/wall.albedo.webp": "6720ad26b3a53004c4fde80615b23f94188e6d6dc8c5153688169747f972e048",
     "settlements/girder/tex/wall.normal.webp": "10538c0561a575ac090eeb9b12658116d7f9a698f4ef2c179e456da435b1f95f",
     "settlements/girder/tex/wall.rough.webp": "7b7d15580f9a3172b41867c437c4414b07578e2c381a2a1b19c0c60f65d9d201",
-    "settlements/isle-demo/bundles.py": "78630e55190cdbb5cd392808a5d73e17adfbcd1c5d31ebd0bcfff60895b2ed06",
+    "settlements/isle-demo/bundles.py": "0338146cd6003ff258efd0c3a0217c2cb28593d4d36028efee90cb74dcca48f3",
     "settlements/isle-demo/src/58-isle-protos.js": "d52cad0d76dfb40a6b226e2c4691e60821b346efaf78d12cba7c0214ccc526c0",
     "settlements/iziz/src/88y-iziz-matlib.js": "db4b8ff51d7235b7d06416c0901bf6fef806c078198c0439aadfcc5a40fadac9",
     "settlements/iziz/tex/brick.albedo.webp": "53082de37ff72e5737cb4c2033350174acf8be097c623f9e879b7a5e348cfffb",
@@ -720,7 +720,7 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "openworld/pinnacle/dist/pinnacle.html": "746a7d85f1dff23e82cf3a8318bc4ac3b43ae4ea973f6b8d43261e925c460451",
+    "openworld/pinnacle/dist/pinnacle.html": "25c152441681ed37e76c1ef68369b48a05a76f669d9970c50afe48d2f21f5ba4",
     "openworld/pinnacle/dist/pinnacle.land.js": "bd6049ca8f7ffbab16aebe28dd5c857c8e79e4ffe751e501ebd075216fbd7f09",
     "openworld/pinnacle/dist/pinnacle.tex.abyssal-savannah.js": "bd781c949ef3d14548d47dda1c157d95520495568aadb8eb7ee148d76d55180b",
     "openworld/pinnacle/dist/pinnacle.tex.brtowns.js": "8b0a64a836ed9f8241276c635367d5868add677be8077d5f2a8a957ac15621fa",
@@ -731,7 +731,7 @@
     "openworld/pinnacle/dist/pinnacle.tex.kftex.js": "0bccb579a7fae125f77c2db5d2d4cd5d294d58a281697a8230fb0e5829c4d4a6"
    },
    "outputs_raw": {
-    "openworld/pinnacle/dist/pinnacle.html": "746a7d85f1dff23e82cf3a8318bc4ac3b43ae4ea973f6b8d43261e925c460451",
+    "openworld/pinnacle/dist/pinnacle.html": "25c152441681ed37e76c1ef68369b48a05a76f669d9970c50afe48d2f21f5ba4",
     "openworld/pinnacle/dist/pinnacle.land.js": "bd6049ca8f7ffbab16aebe28dd5c857c8e79e4ffe751e501ebd075216fbd7f09",
     "openworld/pinnacle/dist/pinnacle.tex.abyssal-savannah.js": "bd781c949ef3d14548d47dda1c157d95520495568aadb8eb7ee148d76d55180b",
     "openworld/pinnacle/dist/pinnacle.tex.brtowns.js": "8b0a64a836ed9f8241276c635367d5868add677be8077d5f2a8a957ac15621fa",

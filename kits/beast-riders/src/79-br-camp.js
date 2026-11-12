@@ -28,7 +28,7 @@ function brcPasture(ha) { return { fence: { key: 'br_fence_rail', v: 0, gate: { 
 /* the six ground tribes' upper ground: the chief's pavilion, two family domes, a small dome, one trade, a hitching line */
 function brcUpperGround(trade, tv, line) {
   return { where: "the mesa top's open margin, away from the Crown",
-    tents: [brcE('br_tent_chief', 1, 1), brcE('br_tent_dome_double', 1, 0), brcE('br_tent_dome_family', 3, 0), brcE('br_tent_dome_small', 1, 0), brcE(trade, 1, tv)],
+    tents: [brcE('br_tent_chief', 1, 1), brcE('br_tent_dome_family', 2, 0), brcE('br_tent_dome_small', 1, 0), brcE(trade, 1, tv)],
     pens: [brcE('br_tent_hitch_line', 1, line)] };
 }
 /* a ground tribe's lower ground: its camp (the chief, the council, the dwellings, the shrine, its trades) and its pens */

@@ -5,9 +5,12 @@
       knoll's corrected ~1,100-1,400 mm the ground is semi-deciduous monsoon forest (50-100 m, bare in the dry season)
       with savanna glades, gallery forest along the K'etsaal Baatar, the closed jungle 20 km out. The hyperjungle kit's
       savanna-edge station (`biomes/hyperjungle/PLAN-STATIONS.md`) is meant to supply it; the page switches when it
-      exists. `region/` is re-cut (2026-11-12) from map 5.1 at the rock's open-world spot, px 1007,686 (about 1,500 mm,
-      1,200-1,600 within 12 km); the town, the mesa and the farms did not move in the page's frame. What is left is the
-      page's forest.
+      exists, and re-cuts `region/` at the rock's open-world spot. The town, the mesa and the farms do not move.
+- [ ] **The page has not moved to its open-world spot** (map 5.1 px 1007,686, since 2026-11-10). A re-cut of `region/`
+      there (2026-11-12, the same 120 km box at 2 km cells from the 5.1 model) built, but the page did not finish loading:
+      the GPU verify timed out at 15 minutes twice, and the browser's main thread was still busy at 16 minutes. On the old
+      cut it loads in about 6.5 minutes in a hidden pane. Not diagnosed. The cut is `settlements/pinnacle-rock/region/source`'s,
+      reproduced by `extract_region.py` with a box round 1007,686.
 
 - [ ] **P3 is laid but not seen by the owner** (the town, the farms, the bands' grounds, the Deep Root, the Garden): the
       life (riders, keepers, beasts in the pastures), the banners' claw and the night are P4.
