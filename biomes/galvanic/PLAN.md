@@ -18,7 +18,7 @@ answered, the conservative default is taken and marked **default taken, owner to
 | Folder | `biomes/galvanic/` (`src/`, `stations/`, `build.py`, `verify.py`, `tests/test-galvanic.js`, `materials.json`, `tex/`, `BIOME-API.md`, `PORT.md`, `INDEX.md`, `KNOWN_ISSUES.md`) |
 | Kind | **a band kit with its own station pages** (the Leucoxene's kind, section 0 of its plan, and High Rift's page frame): the battery's life (`GALV`: the species, the cell's physics, the placement) is one set of fragments any host can read in place; station 1 is this kit's own page because no host kit has the ground it needs (below) |
 | Pages | `dist/galvanic.html`, station 1, **the Gossan Strand** (section 12). Later stations: `python3 build.py --station <name>` -> `dist/galvanic-<name>.html` |
-| Object | `GALV` on the `BIOME-API.md` contract: `GALV.SPECIES`, `GALV.build`, `GALV.place`; the `[G data]` physics `GALV.cell`, `GALV.yield`, `GALV.acid`, `GALV.stream`, `GALV.season`, `GALV.store` (section 3), pure functions with a node test |
+| Object | `GALV` on the `BIOME-API.md` contract: `GALV.SPECIES`, `GALV.build`, `GALV.place`; the `[G data]` physics `GALV_PHYS.cell`, `GALV_PHYS.yield`, `GALV_PHYS.acid`, `GALV_PHYS.stream`, `GALV_PHYS.season`, `GALV_PHYS.store` (section 3), pure functions with a node test |
 | Read in place | `biomes/rift` (the Rift's savannah trees on the hills past the poisoned ground: `BIO.kin`, riftrim's way; its strata recipe `rift` through `KSTRATA`); nothing copied |
 | Out of scope | the scale model (no edits); `core/simulation` (the vitriol and ochre trade is a later sim pass); `LORE.md` (section 10's sentences are for the owner's hand); the animals' models (`kits/fauna`, data first, section 8) |
 
@@ -170,20 +170,20 @@ quoted here, each check with a negative.
     of vein a year under each square metre of contact, and half a kilogram of zinc to the water. That is why the
     strand's water is poison, and why the reefs stand over hollows.
 - **The acid.** Pyrite oxidation gives up to 4 H+ per FeS2 oxidised (2 directly, 2 more as the iron oxidises and
-  settles). `GALV.acid` takes the rate (the exposed pyrite's area, the oxygen, the temperature: Arrhenius from +25 degC)
+  settles). `GALV_PHYS.acid` takes the rate (the exposed pyrite's area, the oxygen, the temperature: Arrhenius from +25 degC)
   and the water through it, and gives the pH, floored at about 1.6 where sulfate's buffer (HSO4-) holds it; at the
-  strand's 2.2 atm and +36 degC the rate is about 2.7 times Rio Tinto's per unit of exposed ore. `GALV.stream` follows a
+  strand's 2.2 atm and +36 degC the rate is about 2.7 times Rio Tinto's per unit of exposed ore. `GALV_PHYS.stream` follows a
   stream down: rain and the sea's spray dilute it, so its pH rises with distance; **ochre drops out between pH 2.8 and 4**,
   where dissolved ferric iron can no longer stay up, so the stream lays its iron terraces in one band of its course, and
   its colour follows (wine-red at pH 2, orange over the terraces, clearing below).
 - **The season** (the falling shoreline). The terminal sea is fed by the Rift's rivers and emptied only by evaporation:
   it rises in the wet season and falls in the dry. **Default taken, owner to confirm**: a swing of 1.2 m a year (Lake
   Chad's order; the model holds the sea at -2,600 m and the strand at -2,600 to -2,597 m, so a metre's swing floods or
-  bares kilometres of it). `GALV.season(day)` gives the sea's level against its mean (lowest about day 70, highest about
+  bares kilometres of it). `GALV_PHYS.season(day)` gives the sea's level against its mean (lowest about day 70, highest about
   day 250: the southern summer's rains run in through autumn, with the year's day 350 the summer solstice, `LORE.md` section 2);
   the flooded strand is anoxic brine, the cathode drowns and the current falls to a trickle; the bared strand dries,
   its pores fill with air, and the current returns.
-- **The store.** `GALV.store(day)`: the jars charge through the dry months on the surplus over the body's upkeep and
+- **The store.** `GALV_PHYS.store(day)`: the jars charge through the dry months on the surplus over the body's upkeep and
   spend through the flood, with a capacity that holds about 60 days of upkeep (*Geobacter*'s cytochromes hold minutes; a
   fist of mixed-valence iron is another matter, and the number is the plan's, not a measurement). A jar flat at the
   end of a long flood is a dead colony: the test checks that a 120-day flood kills one and a 50-day flood does not.
@@ -191,8 +191,8 @@ quoted here, each check with a negative.
   (`gills/PLAN.md` section 3). It could pump fresh acid and oxygen into the strand's cracked ore and flush the products out
   once a day, so the current would swell daily: the Gills' breath again. **Default taken, owner to confirm: not taken.** The
   strand is flat sediment over a sunken vent, not a fissure swarm, and a battery that breathes daily is a Gills idea; the
-  battery's own rhythm is the season. `GALV.cell` takes an oxygen supply, so if the owner wants the tide, a daily term is one
-  line in `GALV.season` and nothing else changes (section 18, question 1).
+  battery's own rhythm is the season. `GALV_PHYS.cell` takes an oxygen supply, so if the owner wants the tide, a daily term is one
+  line in `GALV_PHYS.season` and nothing else changes (section 18, question 1).
 
 ## 4. Ideas considered and set aside
 
@@ -276,7 +276,7 @@ is kept (about four metres across it, from the model's -2,597 m at the hills' fo
   60 degC) at the sea's level: dense, still, anoxic, faintly steaming in the morning, its rim of sulfide mounds. The brine
   look (`WATER.lookDraw('brine')`, `core/water` ext/54) with its heat from `KTHERM`.
 - **The acid streams.** From the hills and the mounds' springs south across the strand to the sea: wine-red at pH 2,
-  laying **iron terraces** (orange rimstone, `WATER.terraces`) where their pH crosses 3 (`GALV.stream`), clearing to the
+  laying **iron terraces** (orange rimstone, `WATER.terraces`) where their pH crosses 3 (`GALV_PHYS.stream`), clearing to the
   brine-tinted sea. The water is `core/water` with the kit's own `acid` look as data (`lookOf` takes an object, so no
   core change, section 14).
 - **The hills.** The strand's northern edge rising into the XV savannah: weathered rift fill (`KSTRATA` `rift`), red soil,
@@ -379,7 +379,7 @@ Vertebrate-grade hexapods only, never insects.
 | `core/water` | yes | `WATER.open` (the sea, brine look; the Deep, brine look), `WATER.flow` (the acid streams, the kit's `acid` look as data), `WATER.terraces` (the iron terraces), `WATER.spring` (the mounds' acid springs), `WATER.fields` |
 | `core/atmos` | yes | the shared sky at the site, the 2.21 atm air, heat haze, the weather (`bindWeather`, hot climate), height fog, rain cover |
 | `core/hazard` | yes | `KHAZ`: acid, poison, heat, the Deep's brine |
-| `core/clock` | yes | the day of the year drives `GALV.season` (the shore and the jars) |
+| `core/clock` | yes | the day of the year drives `GALV_PHYS.season` (the shore and the jars) |
 | `core/materials` | yes | `materials.json`, `tools/textures/pack.py`, `KMAT`, `TEX` |
 | `core/export`, `core/shadow`, `core/edits`, `core/minimap` | yes | through the host shell, as High Rift |
 | `core/mask` | no | the placement masks are the stage's own functions of the ground (`BIO.mask`); nothing reads canvas pixels |
@@ -409,14 +409,14 @@ strand), `ground.travertine.acid`, `rock.galena`.
 ## 16. Order of work
 
 - **G0.** This plan, pushed before any fragment (done 2026-11-11).
-- **G1.** `src/40-galvanic-cell.js` (`[G data]`): `GALV.cell`, `GALV.yield`, `GALV.acid`, `GALV.stream`, `GALV.season`,
-  `GALV.store`, the site record; `tests/test-galvanic.js` checks every number in section 3, each with a negative.
-- **G2.** The station frame (`build.py` from High Rift's, with `tools/build_sources.py` and `report()`), the ground and the
+- **G1** (done 2026-11-11: 42 checks, each with a negative). `src/40-galvanic-cell.js` (`[G data]`): `GALV_PHYS.cell`, `GALV_PHYS.yield`, `GALV_PHYS.acid`, `GALV_PHYS.stream`, `GALV_PHYS.season`,
+  `GALV_PHYS.store`, the site record; `tests/test-galvanic.js` checks every number in section 3, each with a negative.
+- **G2** (done). The station frame (`build.py` from High Rift's, with `tools/build_sources.py` and `report()`), the ground and the
   water: the strand, the mounds, the Deep, the streams and their terraces, the sea at the season's level.
-- **G3.** The species (`50`) and their placement (`60`): runners between mineral patches, crusts on the contact lines,
+- **G3** (done). The species (`50`) and their placement (`60`): runners between mineral patches, crusts on the contact lines,
   masts in the streams, reefs in the terrace bands and pools, jars in the flood zone; the Rift's trees on the hills.
-- **G4.** `verify.py --assert` with the probe's invariants, each with a negative: every mast and reef stands in acid water
-  (pH under 4, `GALV.stream`); no native life on ground the acid never reaches, no kin tree on ground it does; every jar
+- **G4** (done in the cloud, software GL: every check and negative passes, 1.6 M triangles held, 30 draw calls; the GPU lanes owed, `KNOWN_ISSUES.md`). `verify.py --assert` with the probe's invariants, each with a negative: every mast and reef stands in acid water
+  (pH under 4, `GALV_PHYS.stream`); no native life on ground the acid never reaches, no kin tree on ground it does; every jar
   below the year's highest water; the terraces lie only where the stream's pH crosses 2.8-4; nothing glows (no emissive);
   the sea's level is the season's. `PORT.md`, `INDEX.md`, `BIOME-API.md`, `KNOWN_ISSUES.md`, `tools/check_core_use.py`.
 - **G5.** The owner's answers (section 18); stations 2 and 3; the wader in `kits/fauna`; zinc at the next resources rebake.

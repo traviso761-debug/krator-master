@@ -31,8 +31,8 @@ const SPECIES=GALV.SPECIES=[
  {key:'jar',name:'Store jar',how:'a bladder the size of a fist to a melon on a runner, banking electrons in mixed-valence iron: taut, dark and glossy after the dry season, slack and grey after the flood; only along the flood line, where it is needed',
   items:['gvjar'],tags:K('both',{acid:[1.6,4.5]})}];
 SPECIES.forEach((S,i)=>{S.i=i;});
-GALV.HARVEST={crust:HV('none',[],false,'Mineral: nothing eats it.'),runner:HV('sulfur (the dead cords: a small, clean source)',[],false,'Burns blue, choking.'),
- mast:HV('none',[],false,'The ochre wader crops the frills (PLAN.md section 8).'),reef:HV('ochre and red oxide (pigment)',[],false,'The red of an oxblood lacquer (proposed, PLAN.md section 10).'),
+GALV.HARVEST={crust:HV('none',[],false,'Mineral: nothing eats it.'),runner:HV('none (mineral: the dead cords are sulfur, a small, clean source)',[],false,'Burns blue, choking.'),
+ mast:HV('none',[],false,'The ochre wader crops the frills (PLAN.md section 8).'),reef:HV('none (mineral: ochre and red oxide, a pigment)',[],false,'The red of an oxblood lacquer (proposed, PLAN.md section 10).'),
  jar:HV('none',[],false,'A cut jar bleeds rust and gives a tingle: the strand\'s one battery you can hold.')};
 SPECIES.forEach(S=>{S.tags.harvest=GALV.HARVEST[S.key];});
 const byKey={};SPECIES.forEach(S=>byKey[S.key]=S);GALV.byKey=byKey;
