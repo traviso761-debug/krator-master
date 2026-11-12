@@ -1285,8 +1285,13 @@ def main():
     # the region's frame, for core/world/41l-world-landforms.js to stamp at 1:1 (openworld/PLAN-VOTH.md section 3, item 4)
     landforms = []
     for lf in (D.get('landforms') or {}).get('landforms', []):
-        r_px = 2.0 * float(lf.get('r_m', 0)) / 2000.0
-        if not (x0 - r_px <= lf['px'] <= x1 + r_px and y0 - r_px <= lf['py'] <= y1 + r_px):
+        # its points: the centre, a channel's path, a page water's parts; its reach: twice its radius or half-width, or 1 km
+        pts = [(lf['px'], lf['py'])] + [tuple(p) for p in lf.get('path_px', [])]
+        for part in lf.get('parts', []):
+            pts += [tuple(part['px'])] + ([tuple(part['px_to'])] if part.get('px_to') else [])
+        w = lf.get('width_m')
+        r_px = 2.0 * float(lf.get('r_m') or (max(w) if isinstance(w, list) else w) or 500) / 2000.0
+        if not any(x0 - r_px <= a <= x1 + r_px and y0 - r_px <= b <= y1 + r_px for a, b in pts):
             continue
         rec_l = copy.deepcopy(lf)
         rec_l['x'], rec_l['z'] = round((lf['px'] - cx) * 2000.0, 1), round((lf['py'] - cy) * 2000.0, 1)
@@ -1382,7 +1387,8 @@ def main():
     if tubes:
         print('  %d lava tubes/caverns' % len(tubes))
     for lf in landforms:
-        print('  landform %s (%s): r %g m, crest %g m over water %g m' % (lf['id'], lf['kind'], lf['r_m'], lf['crest_m'], lf['water_m']))
+        print('  landform %s (%s%s)%s' % (lf['id'], lf['kind'], '/' + lf['form'] if lf.get('form') else '',
+              ': r %g m, crest %g m over water %g m' % (lf['r_m'], lf['crest_m'], lf['water_m']) if 'r_m' in lf and 'crest_m' in lf else ''))
     for b in biomes:
         print('  biome %2d %-18s kit %-16s %7d px (%d in region)' % (b['id'], b['name'], b['kit'], b['px'], b['px_in_region']))
     print('  %d px took the nearest overlay' % filled)

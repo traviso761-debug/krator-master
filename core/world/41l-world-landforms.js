@@ -37,7 +37,9 @@
 //                     water (and a strait's banks dry beside it), outside every town's footprint
 var WLAND=(function(){'use strict';
 const W=WORLD,lerp=(a,b,t)=>a+(b-a)*t,smooth=(a,b,x)=>{let t=(x-a)/(b-a);t=t<0?0:t>1?1:t;return t*t*(3-2*t);};
-const KN=KRELIEF.noise(1414),REACH=1.8,SKIRT=8,REACH_W=900,TAPER=4000;
+// REACH_W: how far off a water record its shore raise reaches. It covers a whole coarse cell (2 km) and its ring: a channel
+// jogs from wet cell to wet cell, so a wet cell's far side can lie 1.6 km off the line (edit_513's strait)
+const KN=KRELIEF.noise(1414),REACH=1.8,SKIRT=8,REACH_W=2400,TAPER=4000;
 const KINDS={island:1,islet:1,stack:1,shoal:1};
 const api={list:[],waters:[],skipped:[]};
 const smin=(a,b,k)=>{const h=Math.max(0,Math.min(1,.5+.5*(b-a)/k));return lerp(b,a,h)-k*h*(1-h);};

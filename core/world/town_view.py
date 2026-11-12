@@ -40,7 +40,10 @@ def node():
     return BT.node()
 
 
-def cut(key, out, reach_km):
+MODEL = os.path.join(ROOT, 'tools', 'scale-model', 'model', 'data')
+
+
+def cut(key, out, reach_km, model=MODEL):
     import extract_region as XR
     T = BT.TOWNS[key]
     px, py = T['pin_px']
@@ -53,7 +56,7 @@ def cut(key, out, reach_km):
                                                   'notes': 'core/world/town_view.py: a scratch region round %s' % T['name']}]
     with open(os.path.join(src, 'regions.json'), 'w', encoding='utf-8', newline='\n') as f:
         json.dump(regs, f, ensure_ascii=False)
-    cmd = [sys.executable, os.path.join(ROOT, 'tools', 'scale-model', 'extract_region.py'), os.path.join(ROOT, 'tools', 'scale-model', 'model', 'data'),
+    cmd = [sys.executable, os.path.join(ROOT, 'tools', 'scale-model', 'extract_region.py'), model,
            os.path.join(src, 'regions.json'), 'model', name, data, '--upsample', 'auto']
     r_ = subprocess.call(cmd)
     if r_:
@@ -113,7 +116,12 @@ process.stdout.write(JSON.stringify({town:{name:T.name,x:T.x,z:T.z,y0:T.y0,R:T.R
         print('  cut model rivers: %s' % (c['cut'] or 'none'))
         bad += 0 if c['ok'] else 1
     for L in R['land']:
-        print('  %s landform %s (%s): top %.1f for crest %.1f, waterline %s' % ('PASS' if L['ok'] else 'FAIL', L['id'], L['kind'], L['top'], L['crest'], L['waterline']))
+        if 'top' in L:
+            print('  %s landform %s (%s): top %.1f for crest %.1f, waterline %s' % ('PASS' if L['ok'] else 'FAIL', L['id'], L['kind'], L['top'], L['crest'], L['waterline']))
+        else:
+            print('  %s landform %s (%s): %s of %s stations wet%s%s%s' % ('PASS' if L['ok'] else 'FAIL', L['id'], L['kind'], L.get('wet'), L.get('stations'),
+                  ', %d of %d banks dry' % (L['dryBanks'], L['banks']) if L.get('banks') else '', ', first bad %s' % L['firstBad'] if L.get('firstBad') else '',
+                  ' (%s)' % L['note'] if L.get('note') else ''))
         bad += 0 if L['ok'] else 1
     print('  %d landform records in the region%s; %d water bodies' % (len(R['land']), ' (skipped: %s)' % R['skipped'] if R['skipped'] else '', len(R['bodies'])))
     return bad
@@ -239,13 +247,14 @@ def main():
     ap.add_argument('--out', default=None)
     ap.add_argument('--reach-km', type=float, default=15)
     ap.add_argument('--no-cut', action='store_true', help='reuse DIR/data')
+    ap.add_argument('--model', default=MODEL, help='the scale model\'s data to cut from (another checkout\'s model/data: an edit not merged yet)')
     ap.add_argument('--shots', action='store_true')
     a = ap.parse_args()
     if a.town not in BT.TOWNS:
         sys.exit('town_view: no town %r (%s)' % (a.town, ', '.join(BT.TOWNS)))
     out = a.out or os.path.join(tempfile.gettempdir(), 'krator-town-view-' + a.town)
     os.makedirs(out, exist_ok=True)
-    data = os.path.join(out, 'data') if a.no_cut else cut(a.town, out, a.reach_km)
+    data = os.path.join(out, 'data') if a.no_cut else cut(a.town, out, a.reach_km, a.model)
     bad = check(a.town, data, out)
     html = page(a.town, data, out)
     if a.shots:

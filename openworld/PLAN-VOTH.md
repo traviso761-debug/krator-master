@@ -137,12 +137,20 @@ V1 and V2 can run in parallel.
   so 41's eight builds are untouched; folding it into 41 is parked in `TODO.md`.
 - `core/world/41l-world-landforms.js` stamps the landform records; `extract_region.py` carries them into region.json.
 - Tests: `node core/world/test-town-water.js` (a made-up region); `python3 core/world/town_view.py voth` (a scratch region round the pin).
-  On the scratch region the world's shoreline lies within 5.8 m of the page's trace (2.1 m on average) at 610 trace points, the river
-  is wet at all 72 stations, and the town's water is one body with the model's.
+  On the scratch region the world's shoreline lies within 6.1 m of the page's trace (2.2 m on average) at 695 trace points, the river
+  is wet at all 82 stations, and the town's water is one body with the model's. The footprint is R 5.3 km, not the ~4.8 km first
+  scoped: the lake's north shore reaches 4.9 km from the pin, and a 4.8 km footprint left the page's shallows in the band.
+- **On V1's map** (edit_513, cebf8c100, cut from its checkout without merging: `town_view.py voth --reach-km 30 --model <its model/data>`):
+  - the town joins the Turm by its id (r029, 'Turm Rivrh'): the model's Turm is cut 6.6 km east of the town and led in, one river of
+    1,238 points with no gap, never climbing, never under its ground;
+  - 41l stamps edit_513's records: the seven islets (each within 1 m of its crest), and the strait outside the town (116 stations under
+    the water, the coarse cells closed to its 680 m at all 192 bank points); the page water, the narrows, the shelf and the river lie
+    inside the town, which draws them from Voth's own ground;
+  - the town's water is the Ring Sea's body, joined through the strait.
 - **What V3/V4 still need:**
-  - The Turm join is tested only on the made-up region, because the Turm reaches the bay only after V1.
-  - A water-kind landform record (V1's) needs its profile added to 41l; unknown kinds are skipped and listed.
-  - Inside the band the land eases from the town's ground to the model's. Where the model is coarse, the side-by-side shows the seam.
+  - the towns-without-a-tile change to 98 and 88 (`TODO.md`);
+  - the 'SW Bay' overlay has no ground palette or style in 41, so the world's ground there is the desert's terracotta;
+  - inside the band the land eases from the town's ground to the model's; where the model is coarse, the side-by-side shows the seam.
 
 ## 5. Risks
 

@@ -11,7 +11,7 @@ page that reads it came out byte-identical after the move.
 | `00-head.html` | [web] | the page shell; a region's `build.py` swaps in its title and caption |
 | `41-world-fields.js` | [G data] | `WORLD`: the region's rasters decoded into the land. It holds:<ul><li>`WORLD.H(x, z, minWave)`: the model's heights, synthesized relief, scarps, river channels and `landHook`;</li><li>the water (`water`, `lakeWater`, `riverWater`);</li><li>the fields every kit reads (`at`, `fieldsFrom`);</li><li>`townW`, `clearHook`, the climate's colour.</li></ul> |
 | `41t-world-town-water.js` | [G data] | `WTOWN`: a town's own water with its ground (WORLD_DATA.towns, `bake_towns.py`): inside its footprint the town's water mask decides the water (`lakeWater`, `waterBodyAt`), its water joins the model's body at its level (one body, the mask taking it in), its river is served by `riverWater`, the model river it joins is cut outside the band and led in by a carved link; `drawn: false` keeps 41 from sinking the ground 3 m. `WTOWN.check()`: the shore against the page's trace, the river, one body. Listed right after 41 |
-| `41l-world-landforms.js` | [G data] | `WLAND`: the scale model's landform records under a cell (`DATA.landforms`, carried by `extract_region.py` into region.json) stamped at 1:1 through the land hook: island, islet, stack, shoal; `WLAND.check()` |
+| `41l-world-landforms.js` | [G data] | `WLAND`: the scale model's landform records under a cell (`DATA.landforms`, carried by `extract_region.py` into region.json) stamped at 1:1 through the land hook: island, islet, stack, shoal; water (edit_513's forms page, narrows and strait as one field: the bed set to the record's profile, the coarse wet cells beside closed to its width; river left to 41's named river) and shelf (the page's bed for the water it names); `WLAND.check()` |
 | `42-world-roads.js` | [G data] | `ROADS`: least-cost routing on the land at a held grade; the carriageway shaped into the ground |
 | `45-world-host.js` | [web] | the renderer, scene and frame loop the world draws into |
 | `80-world-sky.js` | [G native] | the sky and light |
@@ -69,7 +69,7 @@ layout is keyed to its page's ground (its shore, its river) hands that ground to
 - a region's build puts `bake_towns.record(town, region_meta)` in `WORLD_DATA.towns` and lists `41t` (and `41l`) after
   `41`; 41 already takes the ground (`buildTowns`, `townAt`), 41t the water, river and body;
 - `node core/world/test-town-water.js` tests 41t and 41l on a made-up region (with negatives);
-- `python3 core/world/town_view.py voth [--shots]` cuts a scratch region round the pin, runs `WTOWN.check()` and
+- `python3 core/world/town_view.py voth [--shots] [--reach-km 30] [--model <another checkout's model/data>]` cuts a scratch region round the pin, runs `WTOWN.check()` and
   `WLAND.check()` on the real town in node, builds a viewing page, and with `--shots` takes the same views on the town's
   page and in the world side by side (GPU, under the harness's lock). It writes nothing in the repo.
 

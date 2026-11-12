@@ -40,7 +40,7 @@
    "3": "a hollow under the level"
   }
  },
- "R": 4800,
+ "R": 5300,
  "band": 1500,
  "level": 0,
  "onWater": true,
@@ -3747,37 +3747,37 @@
   "joined_hollow_cells": 149,
   "hollow_cells": 0,
   "hollow_cells_in_R": 0,
-  "shore_points": 650,
+  "shore_points": 700,
   "shore_points_edited": 108,
   "shore_points_river": 42,
   "shore_worst": [
+   [
+    6.13,
+    1179.8,
+    -4670.5
+   ],
+   [
+    6.0,
+    1219.6,
+    -5019.1
+   ],
    [
     5.9,
     -411.3,
     -4709.1
    ],
    [
+    5.88,
+    -113.6,
+    -4799.2
+   ],
+   [
     5.77,
     2189.7,
     -3091.4
-   ],
-   [
-    5.54,
-    879.7,
-    429.0
-   ],
-   [
-    5.43,
-    -1540.0,
-    -3999.4
-   ],
-   [
-    5.39,
-    -1039.5,
-    -4319.7
    ]
   ],
-  "shore_err_max_m": 5.9,
+  "shore_err_max_m": 6.13,
   "shore_err_mean_m": 2.16,
   "shore_unmatched": 0,
   "river_bed_max_m": -5.5,
@@ -3796,7 +3796,7 @@
    "settlements/voth/targets/voth-site/10-site-model.js",
    "settlements/voth/site/voth-site.json"
   ],
-  "hash": "c3f5f5d34e7616c8",
+  "hash": "8bf3be42bcf25186",
   "by": "core/world/bake_towns.py"
  }
 }

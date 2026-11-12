@@ -12,8 +12,9 @@ Each folder is one settlement page's ground, baked by `python3 core/world/bake_t
 | `water.png` | one byte a cell: 1 the page's water polygon, 2 the river's channel, 4 edited ground under the level joined to them, 3 a hollow apart, 0 land |
 | `town.json` | the frame, footprint R and band, the level, the river (mouth first, a half-width a point) and the model river it joins, the shore trace and the points left out of the shore check, stats, source hashes |
 
-**Voth** (`voth/`, 2026-11-11): the frame ±5.4 km at 10 m, R 4.8 km, band 1.5 km, the river joining the Turm (r029,
-which edit_513 re-routes into the bay). Its baked shore lies within 5.9 m of the page's trace (2.2 m on average); the
-site's edits move the shore at 108 trace points (the quays raised, the bay's south edge lowered) and the river's vale at
-42, which the check leaves out. Rebake after a change to `settlements/voth/src/10-core.js`, `15-shore.js`, the site
+**Voth** (`voth/`, 2026-11-11; R from 4.8 to 5.3 km on 2026-11-12): the frame ±5.4 km at 10 m, R 5.3 km (the lake's north
+shore reaches 4.9 km from the pin), band 1.5 km, the river joining the Turm (r029, 'Turm Rivrh', which edit_513
+re-routes into the bay). Its baked shore lies within 6.1 m of the page's trace (2.2 m on average, 700 points); the site's
+edits move the shore at 108 trace points (the quays raised, the bay's south edge lowered) and the river's vale at 42,
+which the check leaves out. Rebake after a change to `settlements/voth/src/10-core.js`, `15-shore.js`, the site
 model's TERR or `site/voth-site.json` (`bake_towns.py voth --check` says when).
