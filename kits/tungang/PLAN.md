@@ -570,6 +570,39 @@ south-western pueblo culture**.
 - **Not the Zeijani's pueblo.** Dhelv took the kiva into carved rock with katsina-style spirits (`kits/zeijani/PLAN.md`
   6.2). Wildcat's pueblo is built above ground and holds no spirits at all: its walls carry heroes, deeds and trophies.
 
+### 1.3.2 The rim's market town at the Blak Riba head (the owner, 2026-11-11: the site; the rest *proposed*)
+
+The owner asked for a non-raiding Fellgang settlement of 1,000-2,000, related to the Fowlers and the Ice-cutters and
+culturally tied to both. **The site is settled: the Blak Riba head, model pixel 441,1400** (5.1, 2 km per px).
+
+**Where it is.** A sheltered bench on the Rift's south shoulder, about 3,650 m up, where the south road tops out of the Chimes
+gorge. That gorge at the Rift's head is the one land crossing between the north rim and the south, so the Fowlers
+(571,1397) and the Ice-cutters (470,1521) meet here, each about 250 km off. Wildcat (427,1453) is 110 km away, off the ice
+road it raids. Fells rise behind it to the south and west, to 4.1-4.2 km, and the gorge falls away north and east. It is the
+most sheltered of the three sites surveyed (wind 0.79 of the 22 km median); the Blak Riba runs perennial 2 km off
+(the falls bench is at 445,1397); the climate is Dsb, about 890 mm, +3 °C (16 / -10). The Line's Nulab-Chimes leg runs under
+the gorge floor 53 km off (Chimes station 56 km), with no shaft head on the fell. The western Hearth vent (430,1388) is 33 km
+away and Nulab 82 km. The two runners-up were the Wait Riba head (480,1378) and the high fell (464,1430: clear of Dalab's
+polygon, no water on the model).
+
+**What it is** (*proposed*; working name **Blakhed**, or **Twine**: rope and ice twined). The rim's market and meeting
+town, 150-300 households in longhouses, of mixed descent, ten times either village's size. It lives by storing and carrying,
+not one craft:
+- ice houses holding the Ice-cutters' blocks for the warm great-lake basin (+16 °C) and Nulab;
+- an egg and honey store for the Fowlers' take;
+- a rope walk that makes and keeps the gorge stair's ropes and ladders (Fowler craft);
+- beast pens and sledge sheds.
+
+Its meeting hall keeps both peoples' customs, the Fowlers' **rope wall** (a rope is a vote) beside the Ice-cutters' **tally
+board**. It keeps a **market peace**, since it lives by the trade that raiding kills. It is the Travellers' Fair's
+permanent ground and their winter quarter, and the Kradz may winter near the western vent's caves. Its buildings are the
+Fellgang set's (3.3), at town scale.
+
+**Open:** the site lies inside the **Realm of Dalab** polygon on the model; whether Dalab holds the ground or the town
+pays it, trades with it or keeps it out is the owner's (question 29). Wind direction, grazing, and water and slope at town
+scale are not on the 2 km model. The survey's scripts and outputs (`survey.py`, `detail.py`, `rays.py`, `lineprof.py`) were
+scratch, not committed.
+
 ### 1.4 The Glaziers: the eastern loj of Opal Valley (*proposed*, all of it but the place)
 
 **The place** (the owner, 2026-11-10: the Glaziers move to Opal Valley). The upper Opal Valley, above the Sultanate's writ
@@ -1308,6 +1341,10 @@ Big Meeting, 11 shine for rank, 12 the 0.94 scale, 14 the core extensions (each 
 19. **Loj Nahn** as a fourth set later (the Tungang shell under the sky on the Pile's crown), or the Tungang set dressed?
 27. **The Fellgang villages ahead of the order?** They need neither the Line nor the cavern setting: build the Fellgang
     village defs of section 3.3.1 (and the row's move into `core/hamlet`) in parallel with the Line's biome?
+29. **The market town and Dalab** (section 1.3.2): the Blak Riba head lies inside the Realm of Dalab polygon. Does Dalab
+    hold the ground (the town pays it a toll and keeps the market peace under it), merely claim it (the town trades with
+    Dalab and owes it nothing), or is the polygon to be pulled back off the gorge head? And the town's name: Blakhed, Twine,
+    or another?
 
 ## 11. Rejected and parked ideas
 
