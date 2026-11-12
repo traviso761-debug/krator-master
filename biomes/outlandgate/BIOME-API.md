@@ -36,7 +36,7 @@ nothing grows there). The host's mask keeps every root out of the water and the 
 |---|---|
 | `WIND` (89z) | `ATMOS.katabatic(...)`'s handle: `{night, day, wind}` now; `WIND_O` its options (`down` = `GAP_DOWN`, the river's line north; `speed` 2.6, `daySpeed` 1.1). `?wind=0` none |
 | `BANNERS` (89z) | the cloth on each tower and the keep, turned downwind each frame; `window._wind` |
-| `HAZ` (87) | `{drown: [records], flood: record, cycle, ambient}`: the river's `drown` cylinders, the outburst flood (a box over the floor on `cycle` `{period 900, warn 45, ramp 90, on 150, after 120, afterK .3}`), the heat provided (`KHAZ.provide('temperature')`). `?flood=now` / `?flood=0` |
+| `HAZ` (87) | `{drown: [records], flood: record, cycle, ambient}`: the river's `drown` cylinders, the outburst flood (a box over the floor on `cycle` `{period 1800, warn 45, ramp 90, on 150, after 120, afterK .3}`: the first warning 20 min after load), the heat provided (`KHAZ.provide('temperature')`). `?flood=now` / `?flood=0` |
 | `floodT()`, `floodK(t)` (87) | the flood's clock (seconds since load) and its k; `FLOOD_DRAW` (89zw) the still surface raised with it; `window._flood` |
 | `FAUNA` (87b) | `{groups, animals, drawn, people, plan}`: the land `outlandgate.narrows` planned and registered (FAUNALANDS); `OUTLANDGATE_FAUNA` the people's animals (runner birds on the road, the camp's camels and donkeys, the fort's goats), each a `fauna` record. `?fauna=0` none; `window._fauna` |
 

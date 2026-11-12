@@ -46,7 +46,7 @@ pass budget.
 - [ ] **The map edit is not made**: the scale model still has The Gate's marker (`sthegate`) at the old pass (5.1 px 1408,414) and the
   god's road over it. PLAN.md section 9 orders the map edit first (move the marker to 1438,326; `god_road.py` re-routes the road): that is
   the scale model's work and a publish of its artifact, not done from this kit.
-- [ ] **The flood is the page's own cycle, compressed** (900 s, the flood 150 s of it, the first warning 4 min after load: `87`, `?flood=now` starts one, `?flood=0` none):
+- [ ] **The flood is the page's own cycle, compressed** (30 min, the flood 150 s of it, the first warning 20 min after load so a long verify's views stay dry: `87`, `?flood=now` starts one, `?flood=0` none):
   the real outburst floods are decades apart and the plan's shared gorge-flood amendment (PLAN.md section 8, amendment 2) is not in
   core; the flood here is KHAZ's own cycle on a box record and one still surface raised with its k. It drowns; it does not yet crush,
   carry boulders, or rework the bars, and the reed beds and trees do not respond to it.

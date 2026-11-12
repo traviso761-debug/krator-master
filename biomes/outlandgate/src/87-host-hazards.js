@@ -21,7 +21,7 @@ const HAZ=(function(){const out={drown:[],flood:null,ambient:false};
    tags:{hazard:{kind:'drown',shape:{type:'poly',pts:L.concat(Rt.reverse()),h:6}}}}));}
  // ---- the outburst flood: a box over the floor (the page's square), on its cycle
  const Q=new URLSearchParams(location.search),fq=Q.get('flood');
- const CYC={period:900,warn:45,ramp:90,on:150,after:120,afterK:.3,offset:fq==='now'?-5:900-240};   /* the page opens idle: the first flood's warning 4 min in, at once with ?flood=now */
+ const CYC={period:1800,warn:45,ramp:90,on:150,after:120,afterK:.3,offset:fq==='now'?-5:1800-1200};   /* the page opens idle: the first flood's warning 20 min in (a long verify's views stay dry), at once with ?flood=now */
  if(fq!=='0')out.flood=BIO.record({kind:'hazard',key:'flood.outburst',name:'The outburst flood (the N Outlands\' lake breaking through: the gap\'s floor under water)',x:0,y:LVL(0)-3,z:0,r:TERR.R*1.42,h:14,
   tags:{hazard:{kind:'drown',danger:1,dose:.6,cycle:CYC,shape:{type:'box',w:TERR.R*2,d:TERR.R*2,h:14}}}});
  out.cycle=CYC;

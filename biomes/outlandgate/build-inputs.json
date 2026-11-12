@@ -11,7 +11,7 @@
     "biomes/ebadlands/tex/leaf.round.albedo.webp": "6dcc023461c90804aa7c5f3de5ea2bcf9bc140afdb489744ab0c1256206d31f8",
     "biomes/ebadlands/tex/pack.json": "8995fd803ea3d491277ebf898fb4f9584b0091eae9b1d74b208a1805ac9c1473",
     "biomes/ebadlands/tex/wood.silver.albedo.webp": "56b7afbaa148477bc1c306df83d9b770f107fd49d38ecaeb19d20bc1b02dfc9b",
-    "biomes/outlandgate/KNOWN_ISSUES.md": "69c7675f7324601c7e4a688fcb0f7a14c7e619f7e4ad2977918232ac255c728a",
+    "biomes/outlandgate/KNOWN_ISSUES.md": "4c2296666b780e2345163913173a50c3610e530523a5ae6ea94cb8522be403b7",
     "biomes/outlandgate/PORT.md": "83372e15b9acb666398a0e43b6e862c09e1fa5cbae708a435ed3d26d6ce4a781",
     "biomes/outlandgate/build.py": "631c9438a37643630e5fd8cdd0ef4e8d79695bca8c2a50f05e6e18f91108609e",
     "biomes/outlandgate/src/00-head.html": "848383daa78f5f94384a94f21b11bb9848d2ef9eb81fdabda8f0bc53fc641404",
@@ -23,7 +23,7 @@
     "biomes/outlandgate/src/84-host-ground.js": "0a2cc44761dfc88002fb566390dd5a242b21c938e11c2878c51c223476f3b340",
     "biomes/outlandgate/src/85-host-far.js": "06336c57dbd394d8d7d7d02285a3f1a44d40272f49b84c0b940f9d6f33200f19",
     "biomes/outlandgate/src/86-host-gate.js": "0165b5ddd9c975f4db60e7c4e9b21012e39a45b529142b9f6adc3dd94a9eedaa",
-    "biomes/outlandgate/src/87-host-hazards.js": "ac0d3ed0ff5b2e0c9e0c85b1039d51c6942edd08a4cf8657a01ebf9fe338064c",
+    "biomes/outlandgate/src/87-host-hazards.js": "64b79c9fc65c0d7c8bf4f32b4dae78f44f6bd574a3cad40bf5ba6eb0d5ddf44c",
     "biomes/outlandgate/src/87b-host-fauna.js": "de966d524e081ece66dd2c463f5223431bdfe4ad15da0d9f6965996f9468a92d",
     "biomes/outlandgate/src/89-host-sky.js": "63e9ff65c5f0c0cc50c9d8f409fc95fcdcf9f88af76120a346f45091d7015e09",
     "biomes/outlandgate/src/89z-host-atmos.js": "0f42ad2772a28d7336f25cdcaa332e0e97481a942e2097b3adb91ec523c3129e",
@@ -126,10 +126,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/outlandgate/dist/outlandgate.html": "801730e96dcd8649b14c27a7b5ddc2132bf713787f8664edf1c180544b25f696"
+    "biomes/outlandgate/dist/outlandgate.html": "2159bf3405f7001859a20c82c40e21969be8bbb0230e7daad34704664719424d"
    },
    "outputs_raw": {
-    "biomes/outlandgate/dist/outlandgate.html": "801730e96dcd8649b14c27a7b5ddc2132bf713787f8664edf1c180544b25f696"
+    "biomes/outlandgate/dist/outlandgate.html": "2159bf3405f7001859a20c82c40e21969be8bbb0230e7daad34704664719424d"
    }
   },
   "build.py --station mouth": {
@@ -145,7 +145,7 @@
     "biomes/nwlowlands/tex/feather.albedo.webp": "f36b3c65c37299cc808456a22e77c2fc7c6cefabd130099531b74c81658a4dd4",
     "biomes/nwlowlands/tex/lance.albedo.webp": "1e096b80fd8dd425c6b8cf6e697deb8862db5399b3bb5fb463c2b9b199af6ee4",
     "biomes/nwlowlands/tex/pack.json": "528eed19c67ef4e33c7701d7ec06d31ddea69ab689ff66fc87170ddf5eb93ce7",
-    "biomes/outlandgate/KNOWN_ISSUES.md": "69c7675f7324601c7e4a688fcb0f7a14c7e619f7e4ad2977918232ac255c728a",
+    "biomes/outlandgate/KNOWN_ISSUES.md": "4c2296666b780e2345163913173a50c3610e530523a5ae6ea94cb8522be403b7",
     "biomes/outlandgate/PORT.md": "83372e15b9acb666398a0e43b6e862c09e1fa5cbae708a435ed3d26d6ce4a781",
     "biomes/outlandgate/build.py": "631c9438a37643630e5fd8cdd0ef4e8d79695bca8c2a50f05e6e18f91108609e",
     "biomes/outlandgate/src/00-head.html": "848383daa78f5f94384a94f21b11bb9848d2ef9eb81fdabda8f0bc53fc641404",
@@ -157,7 +157,7 @@
     "biomes/outlandgate/stations/_shared/84-host-ground.js": "87f5724a33a6450d687faa7f2ac6e1fcb091c277f7135d8a0ee55df40b410f45",
     "biomes/outlandgate/stations/_shared/85-host-far.js": "724332fe70b92a0fc50d9f9bd5f13f6b71bcd621c328260a543dc83bdfcdebad",
     "biomes/outlandgate/stations/_shared/86-host-works.js": "835e0bf940cdd1f9d9c3282e6d2d581209d438ceb62a424e93ce69677bc6355a",
-    "biomes/outlandgate/stations/_shared/87-host-hazards.js": "609b3e24a2a18e1b5f4786b0b6f1451e1402fe74f7ac75274a4f52ff56c0aa87",
+    "biomes/outlandgate/stations/_shared/87-host-hazards.js": "3e56de77962b126c27bc87b0de6cb3ecf4b3518c7a353e0f71b3b371b355fe2e",
     "biomes/outlandgate/stations/_shared/87b-host-fauna.js": "602735e0b89b8fb7a740442f432e31582cff0ffacfa38c54c3aa1940cddc3a27",
     "biomes/outlandgate/stations/_shared/89-host-sky.js": "9e752f1b296f3e9e6a13c29d1ab99008a67b708c527a328e23d2eed7dc1c8675",
     "biomes/outlandgate/stations/_shared/89z-host-atmos.js": "2421dc50d13e7b024352c640ac15410abf04c0689fe011547910b173b59001b9",
@@ -265,10 +265,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/outlandgate/dist/outlandgate-mouth.html": "97c921e0bae17e30450a35e6a9080e8950234d8cb25616f403286b80e2ae186d"
+    "biomes/outlandgate/dist/outlandgate-mouth.html": "afa10fd4448563e5df83330fcd14e20e06cc165f12a4ccf8c1058c924d7a9532"
    },
    "outputs_raw": {
-    "biomes/outlandgate/dist/outlandgate-mouth.html": "97c921e0bae17e30450a35e6a9080e8950234d8cb25616f403286b80e2ae186d"
+    "biomes/outlandgate/dist/outlandgate-mouth.html": "afa10fd4448563e5df83330fcd14e20e06cc165f12a4ccf8c1058c924d7a9532"
    }
   },
   "build.py --station seeps": {
@@ -293,7 +293,7 @@
     "biomes/nwlowlands/tex/bk.fern.albedo.webp": "ce342b077688f8add82c8c410de57acd10764cb2b4a8c179cb8bb07ac638b8c1",
     "biomes/nwlowlands/tex/frond.albedo.webp": "2ff804af9c7e055dac1807c49e09dfc2933d4706d725208ab4d260cdb3f10943",
     "biomes/nwlowlands/tex/pack.json": "528eed19c67ef4e33c7701d7ec06d31ddea69ab689ff66fc87170ddf5eb93ce7",
-    "biomes/outlandgate/KNOWN_ISSUES.md": "69c7675f7324601c7e4a688fcb0f7a14c7e619f7e4ad2977918232ac255c728a",
+    "biomes/outlandgate/KNOWN_ISSUES.md": "4c2296666b780e2345163913173a50c3610e530523a5ae6ea94cb8522be403b7",
     "biomes/outlandgate/PORT.md": "83372e15b9acb666398a0e43b6e862c09e1fa5cbae708a435ed3d26d6ce4a781",
     "biomes/outlandgate/build.py": "631c9438a37643630e5fd8cdd0ef4e8d79695bca8c2a50f05e6e18f91108609e",
     "biomes/outlandgate/src/00-head.html": "848383daa78f5f94384a94f21b11bb9848d2ef9eb81fdabda8f0bc53fc641404",
@@ -306,7 +306,7 @@
     "biomes/outlandgate/stations/_shared/84b-host-rock.js": "f5dc0b1667959f65b6f84436d20cd29a4c3fdffa7c3262a32328e67eeea6e810",
     "biomes/outlandgate/stations/_shared/85-host-far.js": "724332fe70b92a0fc50d9f9bd5f13f6b71bcd621c328260a543dc83bdfcdebad",
     "biomes/outlandgate/stations/_shared/86-host-works.js": "835e0bf940cdd1f9d9c3282e6d2d581209d438ceb62a424e93ce69677bc6355a",
-    "biomes/outlandgate/stations/_shared/87-host-hazards.js": "609b3e24a2a18e1b5f4786b0b6f1451e1402fe74f7ac75274a4f52ff56c0aa87",
+    "biomes/outlandgate/stations/_shared/87-host-hazards.js": "3e56de77962b126c27bc87b0de6cb3ecf4b3518c7a353e0f71b3b371b355fe2e",
     "biomes/outlandgate/stations/_shared/87b-host-fauna.js": "602735e0b89b8fb7a740442f432e31582cff0ffacfa38c54c3aa1940cddc3a27",
     "biomes/outlandgate/stations/_shared/89-host-sky.js": "9e752f1b296f3e9e6a13c29d1ab99008a67b708c527a328e23d2eed7dc1c8675",
     "biomes/outlandgate/stations/_shared/89z-host-atmos.js": "2421dc50d13e7b024352c640ac15410abf04c0689fe011547910b173b59001b9",
@@ -415,10 +415,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/outlandgate/dist/outlandgate-seeps.html": "ba0d6cb7f27470b98d4e370fd6d707297bde5fa817ee2f566938fdc7b6f37928"
+    "biomes/outlandgate/dist/outlandgate-seeps.html": "dd7cfb6ca14d00c966a0f03601a819f1c6ab1b2c85c1714d90a40644fc850677"
    },
    "outputs_raw": {
-    "biomes/outlandgate/dist/outlandgate-seeps.html": "ba0d6cb7f27470b98d4e370fd6d707297bde5fa817ee2f566938fdc7b6f37928"
+    "biomes/outlandgate/dist/outlandgate-seeps.html": "dd7cfb6ca14d00c966a0f03601a819f1c6ab1b2c85c1714d90a40644fc850677"
    }
   },
   "build.py --station tarn": {
@@ -431,7 +431,7 @@
     "biomes/ebadlands/tex/leaf.round.albedo.webp": "6dcc023461c90804aa7c5f3de5ea2bcf9bc140afdb489744ab0c1256206d31f8",
     "biomes/ebadlands/tex/pack.json": "8995fd803ea3d491277ebf898fb4f9584b0091eae9b1d74b208a1805ac9c1473",
     "biomes/ebadlands/tex/wood.silver.albedo.webp": "56b7afbaa148477bc1c306df83d9b770f107fd49d38ecaeb19d20bc1b02dfc9b",
-    "biomes/outlandgate/KNOWN_ISSUES.md": "69c7675f7324601c7e4a688fcb0f7a14c7e619f7e4ad2977918232ac255c728a",
+    "biomes/outlandgate/KNOWN_ISSUES.md": "4c2296666b780e2345163913173a50c3610e530523a5ae6ea94cb8522be403b7",
     "biomes/outlandgate/PORT.md": "83372e15b9acb666398a0e43b6e862c09e1fa5cbae708a435ed3d26d6ce4a781",
     "biomes/outlandgate/build.py": "631c9438a37643630e5fd8cdd0ef4e8d79695bca8c2a50f05e6e18f91108609e",
     "biomes/outlandgate/src/00-head.html": "848383daa78f5f94384a94f21b11bb9848d2ef9eb81fdabda8f0bc53fc641404",
@@ -444,7 +444,7 @@
     "biomes/outlandgate/stations/_shared/84b-host-rock.js": "f5dc0b1667959f65b6f84436d20cd29a4c3fdffa7c3262a32328e67eeea6e810",
     "biomes/outlandgate/stations/_shared/85-host-far.js": "724332fe70b92a0fc50d9f9bd5f13f6b71bcd621c328260a543dc83bdfcdebad",
     "biomes/outlandgate/stations/_shared/86-host-works.js": "835e0bf940cdd1f9d9c3282e6d2d581209d438ceb62a424e93ce69677bc6355a",
-    "biomes/outlandgate/stations/_shared/87-host-hazards.js": "609b3e24a2a18e1b5f4786b0b6f1451e1402fe74f7ac75274a4f52ff56c0aa87",
+    "biomes/outlandgate/stations/_shared/87-host-hazards.js": "3e56de77962b126c27bc87b0de6cb3ecf4b3518c7a353e0f71b3b371b355fe2e",
     "biomes/outlandgate/stations/_shared/87b-host-fauna.js": "602735e0b89b8fb7a740442f432e31582cff0ffacfa38c54c3aa1940cddc3a27",
     "biomes/outlandgate/stations/_shared/89-host-sky.js": "9e752f1b296f3e9e6a13c29d1ab99008a67b708c527a328e23d2eed7dc1c8675",
     "biomes/outlandgate/stations/_shared/89z-host-atmos.js": "2421dc50d13e7b024352c640ac15410abf04c0689fe011547910b173b59001b9",
@@ -559,10 +559,10 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/outlandgate/dist/outlandgate-tarn.html": "336789fc20e1278426e442a5786c6917786a51a9c81c8843bc6ab430696fd7ac"
+    "biomes/outlandgate/dist/outlandgate-tarn.html": "17870953a19bf5fcdee5ff50b118719bf10435036fe7800f4e682c7e20459e3c"
    },
    "outputs_raw": {
-    "biomes/outlandgate/dist/outlandgate-tarn.html": "336789fc20e1278426e442a5786c6917786a51a9c81c8843bc6ab430696fd7ac"
+    "biomes/outlandgate/dist/outlandgate-tarn.html": "17870953a19bf5fcdee5ff50b118719bf10435036fe7800f4e682c7e20459e3c"
    }
   }
  }
