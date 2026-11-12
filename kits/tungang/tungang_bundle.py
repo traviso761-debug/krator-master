@@ -37,12 +37,13 @@ HEAD = r'''
    console). A host without an #errs panel is fine. */
 var TG_ERRS = [], TG_TEXRESET = false;
 /* _texPending: the sealed matlib host's opening reset (25-matlib-host.js: window._texPending = 0) must not wipe the host's own
-   count, so the FIRST 0-write is swallowed while the host holds a number; every later write passes, so the bundle's own loads
-   count up and back down to 0 on the host's counter (riftrim found the last decrement swallowed too, 2026-11-11). */
+   count, so the FIRST 0-write (the reset) is swallowed while the host holds a number, and passes when it holds none; either
+   way every later write passes, so the bundle's own loads count up and back down to 0 on the host's counter (riftrim found
+   the last decrement swallowed too, 2026-11-11; Loj Twenny found it again on a host with no counter of its own). */
 var window = new Proxy(globalThis.window || globalThis, { get: function (t, k) { if (k === 'addEventListener') return function () {};
     var v = t[k]; return typeof v === 'function' && !/^[A-Z]/.test(String(k)) ? v.bind(t) : v; },
   set: function (t, k, v) { if (k === 'onerror') return true;
-    if (k === '_texPending' && v === 0 && typeof t._texPending === 'number' && !TG_TEXRESET) { TG_TEXRESET = true; return true; }
+    if (k === '_texPending' && v === 0 && !TG_TEXRESET) { TG_TEXRESET = true; if (typeof t._texPending === 'number') return true; }
     t[k] = v; return true; } });
 var document = (function () { var D = globalThis.document, stub = { style: {}, textContent: '' };
   return { getElementById: function (id) { return (D && D.getElementById(id)) || stub; }, createElement: function (n) { return D ? D.createElement(n) : stub; } }; })();

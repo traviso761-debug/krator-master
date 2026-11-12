@@ -174,10 +174,10 @@
     "kits/tungang/tex/wood.albedo.webp": "af92ec5a90da3fb61efe4e041c3232dd7c10ae1e5484b016fc079799a2750966",
     "kits/tungang/tex/wood.normal.webp": "795ef401ec856aa70ef2659626f11e433e6bf0e39a3a4c2b4e21d7366950005b",
     "kits/tungang/tex/wood.rough.webp": "a0aaf35beedc4ad83f8ab4cd611e6a65ebd332b1fcfab7c33f2ad886bd0a7e17",
-    "kits/tungang/tungang_bundle.py": "522302e98904e2e2f39fdbd179a9eff280c02ac425352c66c3d8439c07b62567",
+    "kits/tungang/tungang_bundle.py": "8dfa9cfc4d221a68959ff636651983e0882720df1f72a3a35559e7be6f2a8c12",
     "settlements/loj-twenny/PORT.md": "b450aaed4563b38aea0c264c1a0b51a45dc1080f49a0b3c219ccc504402d32c0",
     "settlements/loj-twenny/build.py": "3960b18137fad98115dcc186b3705b62ef64690101c2fe99b3b0dd7137d3735b",
-    "settlements/loj-twenny/src/00-head.html": "c2fa09aa17b0fa678c8780c0e426c5dfc5b2a0040a3013b6bad180c8b947e272",
+    "settlements/loj-twenny/src/00-head.html": "cdfb923480c49219a95ee38d24e2c88448d1a2f92835f0708e8b31c0ebf8d49f",
     "settlements/loj-twenny/src/20-lt-plan.js": "1f43b123c3d30dfe17d5b5dcdc7bc8608806298e389059021aad987e79854379",
     "settlements/loj-twenny/src/40-lt-sim.js": "1b4ad251bd4566c12885c77fe8749daca49df624e2c4a4669f5dc05d29db73d5",
     "settlements/loj-twenny/src/42-lt-ride.js": "b635d30060ce57259e6d2138a91e6c0750e4fd0a49637c17056afbdc34045ef2",
@@ -205,10 +205,10 @@
     "tools": "2d2fdaca850a104a2a2c553313ccb3ad18dc6bc48cb554c8c714fc1ca39607bf"
    },
    "outputs": {
-    "settlements/loj-twenny/dist/loj-twenny.html": "789b1f30b49b923197efc9e3db0159c2905ffce517116aebc126829868c29ab9"
+    "settlements/loj-twenny/dist/loj-twenny.html": "56a3612ca687ac55a8f45ded3c83369f582329f64838cacbaa574e7d6d6767be"
    },
    "outputs_raw": {
-    "settlements/loj-twenny/dist/loj-twenny.html": "789b1f30b49b923197efc9e3db0159c2905ffce517116aebc126829868c29ab9"
+    "settlements/loj-twenny/dist/loj-twenny.html": "56a3612ca687ac55a8f45ded3c83369f582329f64838cacbaa574e7d6d6767be"
    }
   }
  }
