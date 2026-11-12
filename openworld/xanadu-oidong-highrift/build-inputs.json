@@ -143,14 +143,14 @@
     "core/world/86-world-floor.js": "92528cb595295f88b2a1fd040014636a8dc443d79e14391b2e50cda36d3510a5",
     "core/world/87-world-places.js": "c2e365d5edf628bb849a1c0e00453d4a6d0489fc2c2afd278d71df00d1471682",
     "core/world/88-world-towns.js": "e223a019a784cadc3f0a1c9891c0721e660498610064cde49a0850cae1152f67",
-    "core/world/88s-world-sites.js": "b7322b6a70c4e26fe8af57f8a80640345b7c42ed50204bc0d473c2a8d56a251a",
+    "core/world/88s-world-sites.js": "7618067344373f6eb10ac034751924b6f9621a48e9e75fb88341a7be18f68712",
     "core/world/89r-world-resources-map.js": "710c0886b885ee442c5426afc6f0896823a665d5111170ad66a71ebe4ec35563",
     "core/world/90-world-camera.js": "a772ca7598b110af2c126df79b3e76add563a9e0ff7407905548669f71124a65",
     "core/world/91-world-probe.js": "31602823aa1bc96f8b8f32ad9aa31f8c9084d46cfa1bc68976dbb951629eb8cd",
     "core/world/93-world-propose.js": "df6242ce0b069c014d9e4250610a7db1479b647974f00d9c1dda0432fe0c6917",
     "core/world/98-world-start.js": "ee26dc2dbbc1ce90133036d91177a23fef7435cc30121289756b86d9648c257b",
     "core/world/99-tail.html": "5c1404e034c7ec0d2b8ac19a6c1a2c4786dbd3037cbb48efdc8cfe4820c14aea",
-    "core/world/world_data.py": "a61840a73ea7932155d007604974884caccf7ac01a857662f19c6162f9aa9e9a",
+    "core/world/world_data.py": "7e09c945fef33bf318a24497fc19a0aa6e5dc2a45a9de48248861dacb3f68250",
     "kits/ancients/src/10-core.js": "7c31cf7eb63a1666c0f1c8cd97fd810c1531d10e8d014c105f807a2ad521138b",
     "kits/ancients/src/12-stats.js": "67d17e87faa80d6e5503dd3dc0d53cb2b9e0d68ce77f256187968ee914f881bd",
     "kits/ancients/src/30-kit.js": "8ee3b80e8e193d25f98b21c2c3e75724dba596160e589f43c77df0f2fde7db96",
@@ -287,12 +287,12 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.html": "15b75bfefb0674e9289e3fb5bca2d61fb8e7a53035528958116cd7253d026433",
+    "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.html": "5a1bd54f7c62e500caedef96fa96cb37ef48c495bb7bcda3aae9898146241592",
     "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.tex.oidong.js": "88510acf50c6f8c3830549722810e5183c685781ea2deaa2904e9297452e8086",
     "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.tex.xanadu.js": "7216145e7a4349521c0a4ed9f2f4478f5a709cb771ad7fa4c30270d0df288196"
    },
    "outputs_raw": {
-    "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.html": "15b75bfefb0674e9289e3fb5bca2d61fb8e7a53035528958116cd7253d026433",
+    "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.html": "5a1bd54f7c62e500caedef96fa96cb37ef48c495bb7bcda3aae9898146241592",
     "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.tex.oidong.js": "88510acf50c6f8c3830549722810e5183c685781ea2deaa2904e9297452e8086",
     "openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.tex.xanadu.js": "7216145e7a4349521c0a4ed9f2f4478f5a709cb771ad7fa4c30270d0df288196"
    }
