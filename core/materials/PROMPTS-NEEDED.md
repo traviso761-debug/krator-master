@@ -454,6 +454,27 @@ wheels' drums, under the Song in the real Xanadui script that the kit draws over
 | `metal.gold.sheet.beaten` | Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a Tibetan temple's gilt roof sheet: hand-beaten copper sheets fire-gilded with gold, laid in overlapping rectangular panels about 60 by 40 cm with narrow raised seams between them, every panel covered in small overlapping hammer facets, the gold rich and warm (#d8a838, #c8902a, #e8c060) and worn thin on the facets' edges so the coppery red beneath shows through (#a8583a), a little dark grime in the seams (#5a4024). Full colour: keep the gold and copper as they are, do not tint. |
 | `metal.copper.mantra` | Seamless tileable texture, square, 2048x2048. Orthographic view of a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no letters, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: the hammered copper skin of a great prayer wheel's drum: six plain horizontal bands of smooth beaten copper, each between two raised beaded ridges, the copper reddish-brown (#a8603a, #8a4a2c) with fine hammer facets, the beads rubbed bright by hands (#d89058), green-blue verdigris (#4a8a78) and dark tarnish (#3a2a20) gathered along the ridges. The bands stay blank: the script is drawn over them in the game. Full colour: keep the copper and verdigris as they are, do not tint. |
 
+## 46. Opal Valley (`biomes/opalvalley`, 2026-11-11)
+
+Numbered 46 to keep clear of the other branches of 2026-11-11 (41 is the Line's; the painted highlands, the cliff lungs and the siphon pits
+are being built beside it). Three sets the kit's surfaces want (`biomes/opalvalley/PLAN.md` section 11); until each comes the kit draws the
+stand-in its `KNOWN_ISSUES.md` names. Full colour: the colour is the point (do not tint them).
+
+`ground.sinter.opaline` (the middle bed's dams and aprons; 2 m a tile; today `ground.sinter` under the kit's procedural sheen):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: freshly precipitated opaline silica sinter on the floor of a terraced hot-spring apron: a hard, finely laminated white-to-pale-grey crust (#e6e2d8, #d8d6d0) in thin overlapping shelves and scalloped micro-rimstone ridges a few centimetres high, beaded geyserite knobs along the ridges, small shallow pools between them dried to a satin film, and here and there flecks and thin veinlets of precious opal showing play-of-colour (small sharp patches of electric blue #3a8ad8, green #3ac88a, violet #8a5ad8 and orange-red #e8602a, each a few millimetres, like broken pinfire opal) set in the white; faint orange and green mat stains in the lowest channels. Full colour: not tinted.
+```
+
+`rock.opal.matrix` (the risers' opal seams and the adits' faces; 1 m a tile; today the strata's thin seams and the sheen):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: boulder opal matrix: a broken face of brown ironstone and pale grey-buff rhyolite (#7a4a2a, #8a5634, #b6a490, #c2b19c), cut by thin wavy veins and lenses of precious opal 2-10 mm thick that fill cracks and cavities; the opal shows strong play-of-colour in patches (electric blue #2a6ad8, emerald #2ab878, violet #7a4ad8, flame orange #e8602a and red #d83a2a) against a dark potch backing in places, with milky white common-opal potch (#d0d6de) lining other veins; the rock between is rough and slightly porous. Full colour: not tinted.
+```
+
+`card.leaf.photonic` (the opal-bark tree's and the kit's own leaf sprays; a card: cut-out on green, as the library's leaf cards):
+```
+Leaf spray cut-out on a fully transparent background, PNG with alpha, square, 2048x2048: three short sprays of glossy oval leaves, each 4-7 cm, thick and waxy with a faint fine grain of silica, seen from above in soft even light. The leaves are a deep jade green (#2f8a76, #3a9a84) at their bases, and their surface carries a structural, view-dependent sheen: toward the tips and edges it shifts through peacock teal (#2aa8a8) to violet (#7a4ab8) and rose (#c86a8a), like a beetle's wing or a soap film, never a glow and never a flat pigment. No flowers, no stems longer than the leaves, nothing else on the card.
+```
+
 ## Gaps with no prompt yet
 
 Owed, but a prompt waits on something first; listed so they are not lost.
