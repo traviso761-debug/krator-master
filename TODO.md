@@ -28,10 +28,10 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 
 ## With the native-crop rule *(the owner, 2026-11-12; `openworld/TRADE-SCOPE.md` section 2.5)*
 
-- **Rework the isle demo's crops.** Under the native-crop rule cacao is the Vale's and indigo and annatto the
-  hyperjungle's, so the Ring Isles can no longer grow them. Nephtos's plantations (`settlements/isle-demo/src/15-isle-tune.js:663`)
-  and the traders' buy lists (`:335`, `:346`, `:347`) change to crops native to the isles (clove, coffee, kava, sugar cane;
-  tobacco stays, the isles being in its inner crater) or to goods bought in. The stocks proof and `test-sim.js` move on
+- **Rework the isle demo's crops.** Under the native-crop rule cacao is the Vale's, so the Ring Isles can no longer grow
+  it (indigo, annatto and tobacco stay: the isles are in their homes). Nephtos's cacao plantings
+  (`settlements/isle-demo/src/15-isle-tune.js:663`) and the cacao in the traders' buy lists (`:335`, `:346`) change to a crop
+  native to the isles (clove, coffee, kava, sugar cane) or to cacao bought in. The stocks proof and `test-sim.js` move on
   purpose and are re-baselined. Do it when the rule lands in `kits/crops`, not before.
 
 ## Ride along with the next all-builds rebuild
