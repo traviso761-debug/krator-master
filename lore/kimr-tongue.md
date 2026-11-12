@@ -414,9 +414,8 @@ holy figures and never as words.
 
 ## 10. For the owner
 
-**Settled** (2026-11-11): the family is the keepers' English, with Fellgang loans both ways (sections 1 and 7).
+**Settled** (2026-11-11): the family is the keepers' English, with Fellgang loans both ways (sections 1 and 7); the name *Kimr*
+comes from *keeper* (the owner).
 
-1. **The name** (TBD, the owner, 2026-11-11: open for now). *Kimr* < *keepers*, the people named for their ancestors' work keeping
-   the preserve's beasts, stays the working etymology until it is decided.
-2. **She and he.** The draft keeps *hi* and *shi* apart.
-3. **The tab.** A Kimr tab on `lore/tongues-of-krator.html` (family row, phrasebook, sound-change table), now the family is settled?
+1. **She and he.** The draft keeps *hi* and *shi* apart.
+2. **The tab.** A Kimr tab on `lore/tongues-of-krator.html` (family row, phrasebook, sound-change table), now the family is settled?

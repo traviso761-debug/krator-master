@@ -5,10 +5,8 @@ in `kits/catalog` plus a building kit, placed with `core/hamlet`: `PLAN.md` sect
 (`kits/ancients` targets/gatearc, `GATEARC.kimr`), their characters' dress (`core/charactermodels`) and their camps in the Firebliss
 Range (`core/camp`). The culture is `LORE.md` section 6.24; the tongue, and every Kimr word below, is `lore/kimr-tongue.md`.
 
-**Where this lives.** Here, with the biome that will place the Kimr, until the pueblo station is started. Then a culture kit is due:
-`kits/kimr/` (the catalog culture `kimr`, its building kit on `core/engine`, its `PLAN.md` with a `Core adoption` section first), and
-this file moves into it as its design sheet. No kit folder is made before that, so the index tools and `check_core_use` do not
-meet an empty kit.
+**Where this lives.** Here, with the biome that will place the Kimr: it is the design sheet of **`kits/kimr`**, the culture kit started
+2026-11-11 with its first def, the example house (`kits/kimr/README.md`).
 
 ## 1. The two halves, and what each gives
 

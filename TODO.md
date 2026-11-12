@@ -28,6 +28,10 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 
 ## Ride along with the next all-builds rebuild
 
+- **core/tags: the culture `kimr`** (2026-11-11, `kits/kimr`): add `'kimr'` to `CULTURES` and `'kimr': 'Kimr'` to `CULTURE_NAMES` in
+  `core/tags/52-core-tags-vocab.js` (every page carries the vocabulary). Until then `kits/kimr/src/89-rows.js` adds it to its own page at
+  load; drop those two lines when the vocabulary has it.
+
 - **`KSHADOW.units` counts what the GPU links** (2026-11-09, found by the Throne's fix): `core/shadow/host/12-core-shadow-host.js` counts
   declared samplers (some are never read and the GPU drops them), misses `scene.environment` on standard materials, and judges against the
   renderer's own limit (32 in SwiftShader, so shadows turn on where the GPU cannot link them). The Throne's `samplersOf`

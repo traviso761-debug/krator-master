@@ -953,7 +953,7 @@ everything else *proposed*, 2026-11-11; what is still open is at the end of the 
   are the scars of that war, and the Hall is named for those who fought it. *Proposed*: the Tellings of the war are the oldest and
   the most sung; they say the Dark Spirit came "out of the Boss's things" and was fought room by room down the columns, and that
   the survivors walked down into the Range and became the Kimr. What the Dark Spirit was, no Kimr knows, and the Tellings disagree.
-- **The keepers.** *Proposed*: they call themselves **Kimr**, "keepers" (*keepers* > *kipr* > *Kimr*: `lore/kimr-tongue.md` section 3),
+- **The keepers.** They call themselves **Kimr**, from *keeper* [the owner, 2026-11-11] (*keepers* > *kipr* > *Kimr*: `lore/kimr-tongue.md` section 3),
   for their ancestors were the preserve's staff and the town round them, who kept its beasts. They hold that they were set to keep
   the Range (*y Reinj*, the Labyrinth) by **the Boss** (*y Bos*), the preserve's owner, who was never at the Hall, and who will come
   back one day to **count the herd** (*y Kawnt*, the Count). This is the root of their law [the owner, 2026-11-11: keep it]:
@@ -1178,10 +1178,11 @@ Lu-Tze; the Two-Snouts are sapient, or very nearly so. Then (the owner, 2026-11-
 (a *haws*, its rooms and its clan pass through the mother, as among the Hopi and Zuni: a husband moves into his wife's house); **the
 Tellers, the Painters and the clowns are both women and men**; **Lu-Tze's report is in Longsong's archive** (§6.15).
 
+**The name is settled** (the owner, 2026-11-11): *Kimr* comes from *keeper*.
+
 **TBD (the owner, 2026-11-11: open for now)**
 
-1. **The name.** *Kimr* < *keepers*, the preserve's staff and their town, stays the working etymology until the owner decides.
-2. **The Dark Spirit.** Is it something the Historians know by another name (one of the Cataclysm's other enemies, §4, §6.19), or
+1. **The Dark Spirit.** Is it something the Historians know by another name (one of the Cataclysm's other enemies, §4, §6.19), or
    the Kimr's alone?
 
 ## 7. Peoples of Krator (species and kinds)
@@ -1333,7 +1334,7 @@ Rule: a building never names a culture. Its sockets (awning, banner, flag, emble
 - **Shell Province** (§6.2): the Izani names of Shell and Port Goto.
 - What does the abyssal people's ruler call themselves (the Headman placeholder)?
 - What exactly do the Screamers do with their captives in the Hexahedron?
-- **The Kimr** (§6.24, 2026-11-11; the drafts' questions answered): TBD are the name *Kimr* < *keepers* and what the Dark Spirit
+- **The Kimr** (§6.24, 2026-11-11; the drafts' questions answered): the name is settled (*Kimr* < *keeper*); TBD is what the Dark Spirit
   was. The list is at the end of §6.24.
 - **The rift rim** (§6.1, §6.20, `biomes/riftrim/PLAN.md` section 12): the Fellgangs (proposed name) and how far they have diverged; the Rift's ruins other than Arccube and Pluton (Chimes, Cthonos, The Tubes: names and places very tentative; Chimes may become The Span, which clashes with Dalab's Span); the model's Rift settlements want a rework; Ledge's own settlement plan.
 - **The Ancients' highways** (§4, `openworld/ANCIENT-ROADS.md` section 7): the Republic's arcology over the Inner Wall tunnel (Cascade or a new site), other cities on Ancient ground, and the tentative ruins, before the network is routed for good.
