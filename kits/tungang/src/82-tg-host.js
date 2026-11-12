@@ -34,7 +34,7 @@ TG.tg.proto=function(key,o){return TG.tg.draw([Object.assign({id:'proto:'+key,ke
 TG.tg.check={
  box(recs){const bad=[];for(const r of recs||[]){const B=TG.tg.BOX[r.key];if(!B||!r.bbox)continue;const mn=r.bbox.mn,mx=r.bbox.mx;
   /* the drawn box's centre within reach of the front (its box runs d into the rock; the gate spans its way) and no taller than h */
-  let ok=true;const hw=B.w/2+.6,ext=Math.max(hw,B.d+.6)+(r.key==='tg-doors'?(r.site&&r.site.span||6):0);
+  let ok=true;const hw=B.w/2+.6,ext=Math.max(hw,B.d+.6)+(r.key==='tg-doors'?(r.site&&r.site.span!=null?r.site.span:6):0);
   if(Math.abs((mn[0]+mx[0])/2-r.x)>ext||Math.abs((mn[2]+mx[2])/2-r.z)>ext||mx[1]-r.y>B.h+(r.key==='tg-night-mouth'?4.6:.6))ok=false;
   if(!ok)bad.push(r.key+' at '+r.x.toFixed(1)+','+r.z.toFixed(1)+' reaches past its box');}return bad;},
  plans(){const bad=[];for(const k in TG.tg.BOX){const B=TG.tg.BOX[k],P=TG.tg.plan(k);for(const v of P){if(v.kind==='stair'){if(Math.abs(v.a[0])>B.w/2||v.b[2]<-B.d-.01)bad.push(k+'.'+v.id+' leaves its box');continue;}

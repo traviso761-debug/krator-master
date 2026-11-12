@@ -6,12 +6,12 @@
 // The views are the walk-through of kits/tungang/PLAN.md 5.5 "A line loj", in its order.
 const LT_SOLID=KHOST.solidFrom({cavern:LTC.C,walk:KWALK});
 const LT_VIEWS={
- 'The night mouth: the climb down to the hooded lamp and the door':[126.4,10.8,-65.4,115.5,7.4,-65.4],
+ 'The night mouth - the climb down to the hooded lamp and the door':[126.4,10.8,-65.4,115.5,7.4,-65.4],
  'The platform under its vault, the green lamps':[12,3.7,-7.2,95,4.2,-3.5],
  'The shuttle at the platform':[64,4.2,8.6,84,2.6,-3],
- 'A siding of homes: cream over green, the numbers, the red lamps':[115,8.1,-21,115,7.4,-50],
- 'The dark beds: the pale fungus in amber light':[36.6,-.9,27.4,46,-1.8,27.4],
- 'The loj hall: the banner wall and the count wall':[160.8,5.6,4.2,173.6,3.4,-.4],
+ 'A siding of homes - cream over green, the numbers, the red lamps':[115,8.1,-21,115,7.4,-50],
+ 'The dark beds - the pale fungus in amber light':[36.6,-.9,27.4,46,-1.8,27.4],
+ 'The loj hall - the banner wall and the count wall':[160.8,5.6,4.2,173.6,3.4,-.4],
  'The doors and the branch west':[24,4.2,2.5,-40,3,0],
  'The hold cut open (the rock cut, H)':[132,30,34,128,2,2],
  'The carriage siding':[69,4.2,-13,69,3,-40],

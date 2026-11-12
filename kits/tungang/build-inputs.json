@@ -101,7 +101,7 @@
     "kits/tungang/src/56-tg-works.js": "23e515ddd8a01c7ab0532286a7bb94ee8daefd3901db4676015a38349d49f2b7",
     "kits/tungang/src/60-fg-road.js": "7f134411e8821ee65c91e2ab156b4be4eca292db7546a4d1f649e48ceafe97ac",
     "kits/tungang/src/80-fg-host.js": "dec187a9e4df1ddf39ccbbec3eed009dafd38be45fe19430813aebf6c83ccd44",
-    "kits/tungang/src/82-tg-host.js": "b6baa06e73f75c666d3e347b3827d6092f6590b119e654a5fa4b0447f1364294",
+    "kits/tungang/src/82-tg-host.js": "5b0225706b12caae14379e83d15906c87a92c8e2af9e7c86c071665c9cfb7e8f",
     "kits/tungang/src/89-rows.js": "1e3fd68e7c7bfd1d623e041f4a5afdec8342636c3adc9a01427e870464f8078e",
     "kits/tungang/src/91g-tg-sheet.js": "5a3d2b0f832aed40ca80d2edf803c167390599fdc8e9d966b30894544fef9b98",
     "kits/tungang/src/91t-fg-sheet.js": "4b0f950ff4e6876616233943e5830644913b2e853672a77eaaa478e49f43af13",
@@ -221,13 +221,13 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/tungang/build-manifest.json": "0448916aefdbfee1688f2b8df6f198fd7cbe6157df77bd078c1e072f0745027e",
-    "kits/tungang/dist/tungang.html": "ee6ecdba4a129ff357428990aadd3ea57b10f091ad8a60e56ca4edfcb0236f14",
+    "kits/tungang/build-manifest.json": "d6c3967e4ccb86bdb531f0f9c310c2890c431421684580da47b0f99957936c4e",
+    "kits/tungang/dist/tungang.html": "ed27416edffd2c19a42d96834647bd61a96fc673d70bfec17b216ed244436f2b",
     "kits/tungang/dist/tungang.tex.tungang.js": "68c3b000af1b2130000941b6ce097f125bcadf3f12433566c4ef0fa85f1992de"
    },
    "outputs_raw": {
-    "kits/tungang/build-manifest.json": "0448916aefdbfee1688f2b8df6f198fd7cbe6157df77bd078c1e072f0745027e",
-    "kits/tungang/dist/tungang.html": "ee6ecdba4a129ff357428990aadd3ea57b10f091ad8a60e56ca4edfcb0236f14",
+    "kits/tungang/build-manifest.json": "d6c3967e4ccb86bdb531f0f9c310c2890c431421684580da47b0f99957936c4e",
+    "kits/tungang/dist/tungang.html": "ed27416edffd2c19a42d96834647bd61a96fc673d70bfec17b216ed244436f2b",
     "kits/tungang/dist/tungang.tex.tungang.js": "68c3b000af1b2130000941b6ce097f125bcadf3f12433566c4ef0fa85f1992de"
    }
   }
