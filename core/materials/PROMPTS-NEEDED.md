@@ -3,7 +3,7 @@
 Every texture or pattern sheet the owner still has to source or generate, each with its finished prompt. Paste a block
 as it is, one image per block. **Everything delivered lives in `PROMPTS-archived.md`** (checked against `core/materials/library/`, `patterns/` and each build's `materials.json` on `origin/main`, 2026-10-19); this file holds only what is still owed.
 
-**Count: 22 prompt blocks** (2026-11-11: +3 for the Rift line, section 41; +1, `metal.scorched` for the Motor Vehicles kit's burnt ruins, section 36; 2026-11-10: -5, the owner's delivery of that day; 2026-11-09: +3 for the southern highlands' upper stations, section 37; +15 for the hyperjungle's lands and the savannah rims, section 40, 2026-11-08; counted 2026-11-04 before them).
+**Count: 25 prompt blocks** (2026-11-11: +3 more for the Rift line's later stations, section 41; +3 for the Rift line, section 41; +1, `metal.scorched` for the Motor Vehicles kit's burnt ruins, section 36; 2026-11-10: -5, the owner's delivery of that day; 2026-11-09: +3 for the southern highlands' upper stations, section 37; +15 for the hyperjungle's lands and the savannah rims, section 40, 2026-11-08; counted 2026-11-04 before them).
 
 **Delivered 2026-11-03:** section 31's five (the Gills: `rock.lamina.pipe`, `mineral.crust.ferromanganese`, `mineral.crust.brucite`,
 `card.breathfringe`, `card.turf.limed`) and ten owed on unmerged branches (High Rift, nwbay, nhighlands, ringisles, the rift rim, Copper Glacier),
@@ -451,6 +451,26 @@ Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfec
 `metal.plate.riveted.painted` (salvaged plate riveted over the Ancients' white panel: the kept cars and kept stations; about 2 m across the image):
 ```
 Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a patchwork of salvaged steel plates riveted over old smooth white metal panel: rectangular plates of different sizes overlapping at their edges, each fixed with neat rows of round domed rivets 2 cm across every 10 cm; the plates painted long ago in faded railway colours, dull bottle green (#3f5a43), cream (#d8cfb0) and red oxide (#8a3e2a), the paint worn through at the edges and around the rivets to brown rust and bare grey steel, chalky and faded, a few brush-painted repairs in slightly different shades; in two or three gaps between plates the original seamed white panel (#e6e5df) shows, scuffed and yellowed; soot and grime darkest at the plate edges. Full colour: not tinted.
+```
+
+**Added 2026-11-11 with the stations hotdoor, breach, fault and portal** (the owner: "write prompts for all textures"). The portal's
+turf needs no prompt: `ground.turf.native` (in the library) is the wet tableland's grass; wire it as the portal's `turf` family. Reuse notes:
+the spalled lining serves every ruined bore and the subway's cracked sections; the blast door serves any Ancient bulkhead, vault or hangar door;
+the smoky quartz serves any crystal cleft, geode or druse (KSPELEO's owed smoky-quartz preset takes its colours from it).
+
+`concrete.lining.spalled` (the hot section's vault where rockbursts broke the lining: about 3 m across the image):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: an old precast concrete tunnel lining (#a8a49a to #8f8b82) badly spalled by rock pressure and heat: large shallow craters where the face has burst off in slabs 20 to 60 cm across, their broken surfaces rough, coarse and paler (#b8b2a6) with grey aggregate showing; in the deepest craters rusted steel reinforcing bars (#7a4630, flaking orange-brown) crossing in a 15 cm grid; between the craters the original smooth face with its dark joint grooves and a few fine branching cracks; fine grey dust and small fragments in the hollows, a faint heat-darkened tan cast. Full colour: not tinted.
+```
+
+`metal.door.blast` (the hot doors' train leaves, the walkway hatches, the breach's bulkhead: about 2.5 m across the image):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: the face of a massive Ancient blast door: heavy dark grey steel plate (#5e6264, #4e5254) in large flush panels joined by deep recessed seams, horizontal stiffening ribs every 1.2 m raised 4 cm with rounded edges, rows of countersunk bolts along each seam, a narrow inset band of dull bronze (#8a6a3c) along one horizontal rib; the paint mostly gone to bare blued steel, a few chips of old cream enamel (#d8cfb0) left at the edges, worn bright where hands and tools have touched it, dark grime and dried water streaks below each rib, a little rust in the seams. Full colour: not tinted.
+```
+
+`mineral.quartz.smoky` (the crystal cleft shrine's points and any quartz-lined pocket: about 30 cm across the image):
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a dense crust of smoky quartz crystals seen from above, a close-packed druse of six-sided pointed crystals 1 to 6 cm across pointing toward the viewer at varied angles, translucent smoky brown to dark grey-brown (#6e665c, #4a443e) with clearer pale tips (#d8d6cc) and bright internal planes, a few milky white quartz crystals (#e6e4dc) among them, fine brown iron-oxide dust and tiny chlorite flecks (#4a5a42) in the gaps between the crystals. Full colour: not tinted.
 ```
 
 ## 42. The Ancient Transit kit (`kits/ancient-transit`, 2026-11-08)
