@@ -30,3 +30,6 @@ bare basalt. At 4.3 km (the first value) the snow cover lay on the 70-degree fac
 
 **The cards' normals.** A leafMat made with `aN:true` needs its item's def to list `attrs:['aN']`, or the per-instance normal is never uploaded
 and the card draws black (the shader normalises zero). Found here on 2026-11-12; biomes/highrift's `hrtuss` and `hrheath` defs look the same.
+
+**The LOD origins.** Every seep is one of the stage's LOD origins (`L.spine`): the reed is near-field life placed within `Lv.mid` (560 m) of an
+origin, and the outer seeps, more than a kilometre from the slab's points, stood bare until they were added (2026-11-12).

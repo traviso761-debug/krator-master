@@ -468,6 +468,10 @@
    "bytes": 3713416,
    "sha256": "b053c9661c53cc37fe78f4fc6b7c3edbd20a799f5f8bcb17459d5ef09489c013"
   },
+  "biomes/slabfields/dist/slabfields.html": {
+   "bytes": 5462684,
+   "sha256": "eb2b43fdced24724318b6d3c4d494e95cccf7237adbcc8192eb4df91cc59d694"
+  },
   "biomes/swbay/dist/swbay.html": {
    "bytes": 8889448,
    "sha256": "b4f0b23be11874165bc4b585d9b2e0659b062b8cb3c0083d2881e3a849f5b793"

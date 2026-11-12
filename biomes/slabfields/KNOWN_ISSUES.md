@@ -12,3 +12,8 @@
 - [ ] **The apron is one collapse.** The model's apron (four cliff heights, 264 km2) is many; the page draws the last lobe (H/L 0.46). The older
       lobes beyond its toe are not drawn (they would lie under the bench's steppe north of the page).
 - [ ] **No `KRELIEF.slab` yet.** The cliff is a `KRELIEF.scarp` and the ramp's tilt is the stage's (`PLAN.md` section 15, item 5).
+- [ ] **The blocks read as stacked beds, not broken basalt.** KSTACKS buttes round every bed's edge; a sturzstrom's blocks are angular and
+      jointed (columns snapped across). Wants a jointed-block form (KSTACKS or KRUBBLE) with sharp, fractured faces.
+- [ ] **The spring line's view hides its water.** From 1.8 m the seeps (7-20 m across) sit too low in the frame to read; move the camera onto
+      the toe's rim or lower its target.
+- [ ] **The bench's steppe looks noisy close up** (ground.steppe at a 3 m scale under the detail map): a larger scale or a softer detail.

@@ -77,7 +77,7 @@ const L=(function(){const S=SITE,SL=S.slab,AP=S.apron;
   return y;}
  function water(x,z){for(const s of SEEPS)if(Math.hypot(x-s.x,z-s.z)<s.r*.95)return s.level;
   if(z<s0.z+10){const b=nearBrook(x,z);if(b.d<SITE.brook.w*.5)return brookBed(b.i)+.35;}return -1e9;}
- const spine=[[0,footZ(0)-300],[0,toeZ(0)||-2000],[-1500,footZ(-1500)-1600],[1500,footZ(1500)-1600],[s0.x,s0.z]];
+ const spine=[[0,footZ(0)-300],[0,toeZ(0)||-2000],[-1500,footZ(-1500)-1600],[1500,footZ(1500)-1600]].concat(SEEPS.map(s=>[s.x,s.z]));   /* every seep a LOD origin: its reed is near-field life */
  return{land,water,bench,rimZ,footZ,toeZ,apronT,apronQ,W,SEEPS,brookL,brookBed,s0,farBase:S.base,spine};})();
 // THE BLOCKS: field-sized blocks of the slab's own basalt riding on the apron (KSTACKS buttes: a block is two or three flows still bedded, rotated as
 // it came down). Each from KRAND.hash(world, index, try); kept apart with KSPACE; the big ones on the distal half, where a sturzstrom drops its largest
