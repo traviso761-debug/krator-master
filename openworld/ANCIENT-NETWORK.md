@@ -890,6 +890,27 @@ The Ancient network is 63 sites and 22,026 km, 3,627 km of it in tunnel, with no
   south-east (801,871) of Zey'danin, each joined to it by a dirt path. Both are *proposed* places, and the scale model adds
   them (edit M12).
 
+### 8.16 Strongbow moves to Oidong (the owner, 2026-11-11)
+
+**Where it is now.** Strongbow is a cliff arcology at the Oidong Valley's east end, at 5.1 px 1298,1647. It was at 1026,1594.
+It stands on the valley floor at the foot of the High Rift's escarpment, over Oidong's lake.
+- **Source:** the Oidong-High Rift session's scale-model edit 5.1e5, on branch `claude/cool-tereshkova-d594e8` (`bd01a61f5`).
+- **The router:** `route51.py` takes the new place before `setts.json`'s snapshot catches up.
+
+Re-routed:
+- **The Rift line, Theodiga (10) to Strongbow (11): 890 km** (was 296), 120 km in tunnel.
+  - Its route: Theodiga, Qiblai, the valley of Strongbow's old site, Longsong, then east along the Oidong Valley to Strongbow.
+  - Xanadu's short line now runs on through Oidong, and Longsong stands on it.
+- **The Xanadu roads to Strongbow are dropped** as redundant beside the line: Qiblai to Strongbow, Strongbow to Longsong,
+  Qiblai to Longsong. Strongbow to Strongwall is no longer a neighbour pair. The line is an Ancient way, road and guideway in
+  one record (section 8.1), so Strongbow and Longsong are reached by it.
+- **Possible: Strongbow (11) to Stair (12): 562 km**, 403 km of it bored (was 344 and 329). It now runs north-west under the High
+  Rift.
+
+**Open for the owner:**
+- Should the line still continue (possibly) from Strongbow to Stair? From the new site, the bore is much longer.
+- Or should the possible leg to Stair branch from the line nearer Qiblai?
+
 ### 8.9 Still open (earlier list; items 2 to 5 answered in 8.10)
 
 1. **The Stair tunnel's canon: done** (the owner: "Yes, rewrite it"). `LORE.md` §4's Catch passage now says that no

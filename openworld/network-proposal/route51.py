@@ -45,6 +45,9 @@ def pxof(c): return [(c % VW) * F, (c // VW) * F]
 
 # ---- nodes (the owner, 2026-11-11)
 S = {s['name']: s for s in json.load(open(SP + '/setts.json', encoding='utf8'))}
+# Strongbow moved (the owner, 2026-11-11): a cliff arcology at the Oidong Valley's east end, under the High Rift's escarpment; the scale model's
+# edit 5.1e5 (branch claude/cool-tereshkova-d594e8, bd01a61f5), not yet in setts.json's snapshot
+S['Strongbow'] = dict(S['Strongbow'], px=1298, py=1647)
 ANC = ('arcology', 'ruined arcology', 'ruin', 'cavern')
 ZEIJ = tuple(n for n, s in S.items() if n == 'Dhelv' or (s['type'] == 'cavern' and 'Zeijani' in s['notes']))
 FORTS = [n for n in S if n.startswith('Fort ')]
