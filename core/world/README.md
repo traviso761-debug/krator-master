@@ -10,6 +10,8 @@ page that reads it came out byte-identical after the move.
 |---|---|---|
 | `00-head.html` | [web] | the page shell; a region's `build.py` swaps in its title and caption |
 | `41-world-fields.js` | [G data] | `WORLD`: the region's rasters decoded into the land. It holds:<ul><li>`WORLD.H(x, z, minWave)`: the model's heights, synthesized relief, scarps, river channels and `landHook`;</li><li>the water (`water`, `lakeWater`, `riverWater`);</li><li>the fields every kit reads (`at`, `fieldsFrom`);</li><li>`townW`, `clearHook`, the climate's colour.</li></ul> |
+| `41t-world-town-water.js` | [G data] | `WTOWN`: a town's own water with its ground (WORLD_DATA.towns, `bake_towns.py`): inside its footprint the town's water mask decides the water (`lakeWater`, `waterBodyAt`), its water joins the model's body at its level (one body, the mask taking it in), its river is served by `riverWater`, the model river it joins is cut outside the band and led in by a carved link; `drawn: false` keeps 41 from sinking the ground 3 m. `WTOWN.check()`: the shore against the page's trace, the river, one body. Listed right after 41 |
+| `41l-world-landforms.js` | [G data] | `WLAND`: the scale model's landform records under a cell (`DATA.landforms`, carried by `extract_region.py` into region.json) stamped at 1:1 through the land hook: island, islet, stack, shoal; `WLAND.check()` |
 | `42-world-roads.js` | [G data] | `ROADS`: least-cost routing on the land at a held grade; the carriageway shaped into the ground |
 | `45-world-host.js` | [web] | the renderer, scene and frame loop the world draws into |
 | `80-world-sky.js` | [G native] | the sky and light |
@@ -56,6 +58,23 @@ through the isle demo's `IZV` bundle and its instancer) and roads, joined or not
 `every` m of road and a rest stop between, drawn as one-building villages; a stop with no ground is a `gap`). The bake
 reads the kits' declared boxes from their source (`ASSET`, `XA.def`, `VERN.def`); a new village kit adds its records
 there and an entry in `VK`.
+
+**A town's own ground** (`openworld/PLAN-VOTH.md` section 3, Layer 2; Voth the first case, 2026-11-11). A settlement whose
+layout is keyed to its page's ground (its shore, its river) hands that ground to the world instead of being rebuilt on it:
+- `python3 core/world/bake_towns.py voth` runs the page's terrain code in node, read only (Voth: `src/10-core.js`
+  terrainH, the shore trace of `15-shore.js`, the site editor's edits replayed from `site/voth-site.json`), and writes
+  `openworld/towns/<town>/`: the ground every 10 m (16-bit PNG), the water mask (the page's water polygon, the river's
+  channel, the edited ground joined to them), `town.json` (frame, R, band, river, shore trace, stats). `--check` says
+  whether the files are behind the page's sources;
+- a region's build puts `bake_towns.record(town, region_meta)` in `WORLD_DATA.towns` and lists `41t` (and `41l`) after
+  `41`; 41 already takes the ground (`buildTowns`, `townAt`), 41t the water, river and body;
+- `node core/world/test-town-water.js` tests 41t and 41l on a made-up region (with negatives);
+- `python3 core/world/town_view.py voth [--shots]` cuts a scratch region round the pin, runs `WTOWN.check()` and
+  `WLAND.check()` on the real town in node, builds a viewing page, and with `--shots` takes the same views on the town's
+  page and in the world side by side (GPU, under the harness's lock). It writes nothing in the repo.
+
+41t and 41l are new fragments so that 41's reach (eight builds) is untouched; folding them into 41 waits for the next
+all-builds rebuild (`TODO.md`).
 
 **Known debt, moved with it** (from `tools/core_use_baseline.json` and `check_source_baseline.json`, where these were
 the isle demo's):

@@ -69,7 +69,7 @@ function linkCarve(e,x,z,h){const L=e.link;if(!L||x<L.box[0]||x>L.box[2]||z<L.bo
 // band (the point on the circle kept as its last), before 41 builds its channels: inside, the town's ground and river
 // stand. The cut is recorded.
 function cutRivers(){const D=(WORLD_DATA.towns&&WORLD_DATA.towns.towns)||[],R=WORLD_DATA.meta.rivers||[],cuts=[];
- for(const t of D){if(!t.water)continue;const rr=t.R+(t.band||400)+LINK_OUT;
+ for(const t of D){if(!t.water)continue;const rr=t.R+(t.band==null?400:t.band)+LINK_OUT;
   for(const r of R){const P=r.line;if(!P||P.length<2||r._cutBy)continue;
    const inside=p=>Math.hypot(p[0]-t.x,p[1]-t.z)<rr;let k=P.findIndex(inside);if(k<0)continue;
    if(k===0){cuts.push({river:r.name,town:t.name,dropped:true});r._cutBy=t.name;r.line=[];continue;}
@@ -82,7 +82,7 @@ W.init=function(R){const cuts=cutRivers();base.init(R);T.length=0;
  const D=(WORLD_DATA.towns&&WORLD_DATA.towns.towns)||[];
  D.forEach((rec,k)=>{const t=W.towns[k];if(!t||!rec.water)return;
   if(rec.drawn===false)t.own=false;   // the world draws the town's ground: no 3 m sink under a mesh of its own (41 townAt)
-  const m=rec.water,e={t,name:t.name,level:t.y0+(rec.level||0),mask:{n:m.n,step:m.step,x0:m.x0,z0:m.z0,data:rle(m.rle,m.n*m.n)},
+  const m=rec.water,e={t,name:t.name,level:t.y0+(rec.level==null?0:rec.level),mask:{n:m.n,step:m.step,x0:m.x0,z0:m.z0,data:rle(m.rle,m.n*m.n)},
    shore:rec.shore||null,shoreSkip:rec.shoreSkip||null,river:null,link:null,body:-1,cut:cuts.filter(c=>c.town===t.name)};
   if(rec.river){const pts=rec.river.pts.map(p=>{const w=toWorld(t,p[0],p[1]);return[w[0],w[1],p[2]];});
    // where the page's river leaves R going upstream (mouth first): C, the link's end
@@ -106,7 +106,7 @@ W.init=function(R){const cuts=cutRivers();base.init(R);T.length=0;
   for(let i=1;i<=nr;i++){const r=lerp(rD,t.R,i/nr);P.push([t.x+Math.cos(aC)*r,t.z+Math.sin(aC)*r,0]);}   // the radius in to C
   const ya0=base.riverWater(A[0],A[1]),ya=ya0>-1e8?ya0:W.H(A[0],A[1])+2;
   const cum=cumOf(P),Lt=cum[cum.length-1];P.forEach((p,i)=>{p[2]=Math.max(e.level,lerp(ya,e.level,cum[i]/Lt));});
-  const hw=Math.max(rv.pts.length?rv.pts[rv.pts.length-1][2]:20,(Mr&&Mr.width_m||40)/2),pad=hw*3+60;
+  const hw=Math.max(rv.pts.length?rv.pts[rv.pts.length-1][2]:20,(Mr&&Mr.width_m!=null?Mr.width_m:40)/2),pad=hw*3+60;
   let box=[1e18,1e18,-1e18,-1e18];for(const p of P){box=[Math.min(box[0],p[0]-pad),Math.min(box[1],p[1]-pad),Math.max(box[2],p[0]+pad),Math.max(box[3],p[1]+pad)];}
   e.link={pts:P,cum,hw,box,from:A,ya,len:Lt};rv.joined=rv.join;}
  if(T.some(e=>e.link)){const prev=W.landHook;W.landHook=(x,z,h,mw)=>{if(prev)h=prev(x,z,h,mw);for(const e of T)if(e.link)h=linkCarve(e,x,z,h);return h;};}};
@@ -203,9 +203,9 @@ function riverCheck(e,step){const rv=e.river;if(!rv)return{ok:true,none:true};le
  out.ok=dry===0&&(!rv.joined||(out.line.found&&out.line.gaps===0&&out.line.climbs===0&&out.line.buriedNearTown===0));return out;}
 function bodyCheck(e){const m=e.mask,ids=new Map();let n=0;
  for(let j=0;j<m.n;j+=10)for(let i=0;i<m.n;i+=10){if(!WET(m.data[j*m.n+i]))continue;const w=toWorld(e.t,m.x0+i*m.step,m.z0+j*m.step);
-  if(Math.hypot(w[0]-e.t.x,w[1]-e.t.z)>=e.t.R)continue;n++;const id=W.waterBodyAt(w[0],w[1]);ids.set(id,(ids.get(id)||0)+1);}
+  if(Math.hypot(w[0]-e.t.x,w[1]-e.t.z)>=e.t.R)continue;n++;const id=W.waterBodyAt(w[0],w[1]);ids.set(id,(ids.has(id)?ids.get(id):0)+1);}
  const B=W.waterBodies();return{cells:n,bodies:[...ids.keys()],one:ids.size===1&&!ids.has(-1),body:e.body,joinedModel:!!e.joinedBody,level:e.level,
   bodyLevel:e.body>=0?B[e.body].level:null};}
-api.check=function(o){o=o||{};return T.map(e=>{const sh=shoreCheck(e,o),rv=riverCheck(e,o.step||40),bd=bodyCheck(e),lim=o.shoreMax==null?8:o.shoreMax;
+api.check=function(o){o=o||{};return T.map(e=>{const sh=shoreCheck(e,o),rv=riverCheck(e,o.step==null?40:o.step),bd=bodyCheck(e),lim=o.shoreMax==null?8:o.shoreMax;
  return{town:e.name,level:e.level,cut:e.cut,shore:sh,river:rv,body:bd,ok:sh.missing===0&&sh.max<=lim&&rv.ok&&bd.one};});};
 return api;})();

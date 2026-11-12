@@ -28,6 +28,16 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 
 ## Ride along with the next all-builds rebuild
 
+- **core/world: fold 41t into 41** (2026-11-11, PLAN-VOTH V2): `core/world/41t-world-town-water.js` wraps WORLD's water calls
+  (`lakeWater`, `riverWater`, `water`, `waterBodies`, `waterBodyAt`, `riverLines`) and `init` from outside, because 41 reaches eight
+  builds. At the next all-builds rebuild, take a town's water into 41 itself: `buildTowns` reads `drawn`, `water`, `river`;
+  `W.water` calls the wrapped `riverWater` (today it calls 41's local one, so 41t replaces `W.water` too); the joined river's cut
+  happens in `buildChannels`. `node core/world/test-town-water.js` must pass unchanged.
+- **core/world: towns with no tile** (2026-11-11, PLAN-VOTH V2; needed before V4): `98-world-start.js` drops every town when the
+  first one's tile cannot be fetched (`T[0].tile`), and `88-world-towns.js` loads every town's tile. A town whose ground the world
+  draws itself (`drawn: false`: Voth, `bake_towns.py`) has no tile. Check only towns with a tile (`T.some(t=>t.tile)`,
+  `T.find(t=>t.tile).tile`) and draw only those (`RECS.filter(r=>r.tile)`). `core/world/town_view.py` patches its scratch page
+  this way for now.
 - **core/world: a kit on several biome overlays** (2026-11-11, the Iziz cluster's open-world region): `core/world/41-world-fields.js`
   matches a `WORLD_KITS` entry's `overlay` to one biome name (`k.overlay===name`). Let it take a list (`Array.isArray(k.overlay)?
   k.overlay.indexOf(name)>=0:...`), then drop the shim in `openworld/iziz-cluster/src/47-world-kits.js` (`WORLD_KITS.findIndex`, which

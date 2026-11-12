@@ -130,6 +130,20 @@ taking its ground from the world (the isle-demo route, `openworld/PLAN-SITES.md`
 
 V1 and V2 can run in parallel.
 
+**V2 built (2026-11-11, branch `claude/voth-v2-towns`):**
+- `core/world/bake_towns.py voth` writes `openworld/towns/voth`: Voth's ground at 10 m with the site's edits, its water mask, river and shore
+  trace. The page's code is run read only.
+- `core/world/41t-world-town-water.js` takes the town's water, river and body into the world. It wraps 41's calls rather than changing 41,
+  so 41's eight builds are untouched; folding it into 41 is parked in `TODO.md`.
+- `core/world/41l-world-landforms.js` stamps the landform records; `extract_region.py` carries them into region.json.
+- Tests: `node core/world/test-town-water.js` (a made-up region); `python3 core/world/town_view.py voth` (a scratch region round the pin).
+  On the scratch region the world's shoreline lies within 5.8 m of the page's trace (2.1 m on average) at 610 trace points, the river
+  is wet at all 72 stations, and the town's water is one body with the model's.
+- **What V3/V4 still need:**
+  - The Turm join is tested only on the made-up region, because the Turm reaches the bay only after V1.
+  - A water-kind landform record (V1's) needs its profile added to 41l; unknown kinds are skipped and listed.
+  - Inside the band the land eases from the town's ground to the model's. Where the model is coarse, the side-by-side shows the seam.
+
 ## 5. Risks
 
 - **Voth's page belongs to the city-layout work** (core/city and Voth's fragments 15 and 30-35; CLAUDE.md). This scope
