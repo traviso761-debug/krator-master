@@ -38,6 +38,11 @@ Built 2026-11-11 in the cloud: every check ran on software GL (SwiftShader), non
 - [ ] **The animals are drawn by `fauna-lands.js`'s maker** (2026-11-11, second pass: `src/89y-host-fauna.js`): the Ghaunt-Ox yoked in pairs
   on the terraces' fields, wild on the Scarp's ledges and the pit floor's felt, the Pipe-Borers on the felt, the Flenser-Hounds at the Arete's
   rims. They stand and walk where the plan puts them; they do not yet flee, hunt or follow a schedule (no behaviour module on a biome page).
+  The Arete holds about one Flenser-Hound a lair (`density` .02; at .5 it drew 194). Drawn after the height fog was bound (89a), so 89y
+  hooks the late materials again (`ATMOS.heightFogScene`; unhooked, they drew black under the deck).
+- [ ] **The Ghaunt-Ox's legs are short for its bulk.** Its coat (`faXnCoat` in `kits/fauna/krator-fauna-xeno.js`, 2026-11-12: a shaggy shell to
+  the knees) made it read as a woolly ox, not a bare grey slug, but the hexapod builder's legs stay stubby under it. Longer legs (a higher
+  `yb` and `R`) would change its measured box (`dim`) and its gait; a pass on the fauna sheet.
 
 - [ ] **The people's sites are placeholders** (boxes, cones): the farmsteads, the tollhouse, the beacons, the roper camp, the gantry. They are
   site records for a building kit and a hamlet pass; the culture is undecided. The Arete's stanchions and chains are the trail's own.
