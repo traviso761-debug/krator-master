@@ -19,7 +19,7 @@ PROPOSAL-LONGSONG-PINNACLE.md` holds the economy it is planned for.
   |---|---|---|---|
   | **Strongbow** (`sfgtxw10kr`) | 1013,1585 | the Ancients' cliff arcology in the north-west wall at the valley's west end, toward Qiblai (moved 2026-11-11); a road's end only so far | - |
   | **Longsong** (`sq80bzd7ep`) | 1226,1626 | the ring of 15 villages: Shar, Nub and Dzo-ling where its page lays them, ten more farming villages 4 to 8.5 km out, Drok-ri's high pastures, Dar-ling's silk and paper | 3,279 (the house itself is `settlements/longsong`'s, 1,344) |
-  | **The Singing Gjár** (`ssinggjar01`) | 1572,1643 | the Order's house (350), the Beck Fields (89), the Vein Camp (49) | 488 |
+  | **The Singing Gjár** (`ssinggjar01`) | 1572,1643 | the Order's house (350), the Beck Fields (89), the Vein Camp (50: 22 miners, 12 sorters, 6 smiths; a work camp, 90 % at work) | 489 |
   | **The Mirror Grange** (`smirrorgrange01`) | 1430,1644 | the Order's grange (80), its growers (200), the graben's herders (145) | 425 |
   | **The Caldron House** (`scaldronhouse01`) | 1366,1668 | the Order's hospice at the staircase foot (60), its shelf village (149) | 209 |
 

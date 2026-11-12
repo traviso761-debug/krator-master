@@ -98,7 +98,7 @@ Qiblai). Its purpose, confirmed by the owner (2026-11-11: "keep as proposed"):
 |---|---|---|---|
 | The house | `order`, monastery | 350 | on the plateau's lee at the gjá's lip |
 | The Beck Fields | `xanadu`, farming | 90 | down the beck below the plateau (barley terraces on the beck's water, the vent's warm ground, the yaks) |
-| The Vein Camp | `xanadu`, mine | 50 | the dead fissures north-east of the gjá (optical quartz, chalcedony, sulfur, copper salts, trace gold and silver) |
+| The Vein Camp | `xanadu-camp` (a work camp: 90 % at work, no families), mine | 50 | the dead fissures north-east of the gjá (optical quartz, chalcedony, sulfur, copper salts, trace gold and silver) |
 
 ### 3b. The Mirror Grange (`smirrorgrange01`, px 1430,1644; 2,952 m, Dfb, 439 mm, +10 °C): the productive house
 

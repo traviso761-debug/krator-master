@@ -14,6 +14,16 @@
 var ORDER_STOPS={every:25000,inn:'xa_rich_b',rest:'xa_teahouse',culture:'order',look:5000};
 // the Sultanate's road (the Ancient network's Xanadu class, openworld/ANCIENT-NETWORK.md 8.14): a han every 25 km
 var XANADU_STOPS={every:25000,inn:'xa_house_turk_a',rest:'xa_teahouse',culture:'xanadu',look:5000};
+/* a work camp (the Vein Camp; the owner 2026-11-11, "rebalance it so it is mostly miners"): its people are nearly all at
+   work, men who sleep in bunkhouses and send their pay home, with no families, so the `xanadu` row's 45 % at work becomes
+   90 %. A cookhouse, a store and the camp's tally house stand in for a village's temple, guild hall and bazaar (the
+   miners keep their own shrine). The row lives here until core/hamlet takes a `camp` option (TODO.md, ride along with the
+   next all-builds rebuild: core/hamlet reaches 56 pages) */
+KHAMLET.CULTURES['xanadu-camp']=Object.assign({},KHAMLET.CULTURES.xanadu,{workShare:0.9,household:4,
+ services:{religious:0,civic:1,general:1,food:2,warehouse:1},
+ houses:{poor:[['xa_poor_b',3,2],['xa_mid_c',4,1]],middling:[['xa_mid_c',4,1]],head:[['xa_rich_a',1,1]],middlingShare:0}});
+/* its buildings are the Sultanate's: the row's name tags as `xanadu` (core/tags' alias table, as 'yuni-order' is 'order') */
+if(typeof KTAGS!=='undefined')KTAGS.VOCAB.cultureAlias['xanadu-camp']={culture:'xanadu'};
 // bridges (core/world/42b-world-bridges.js, the owner 2026-11-11): every road and link this region lays is bridged where it
 // crosses a named river, so the links are laid on the ground and the rivers run on under them
 var SITE_SPEC={region:'oidong-highrift',world:1311634,bridges:{culture:'order'},
@@ -40,7 +50,7 @@ var SITE_SPEC={region:'oidong-highrift',world:1311634,bridges:{culture:'order'},
   ssinggjar01:{culture:'order',road:{r:150,hw:1.6,join:true},hamlets:[
    {id:'house',name:'The house at the Singing Gjar',focus:'monastery',near:[0,0],look:4000,pop:350,link:[-3000,0],road:false},
    {id:'beck-fields',name:'The Beck Fields',culture:'xanadu',focus:'farming',bearing:265,km:10,look:5000,pop:90},
-   {id:'vein-camp',name:'The Vein Camp',culture:'xanadu',focus:'mine',bearing:40,km:5,look:4000,pop:50}]},
+   {id:'vein-camp',name:'The Vein Camp',culture:'xanadu-camp',focus:'mine',bearing:40,km:5,look:4000,pop:50}]},
   smirrorgrange01:{culture:'order',road:{r:150,hw:1.6,join:true},hamlets:[
    {id:'house',name:'The Mirror Grange',focus:'monastery',near:[0,0],look:3000,pop:80,link:[-3000,0],road:false},
    {id:'growers',name:"The grange's growers",culture:'xanadu',focus:'farming',bearing:200,km:3,look:3000,pop:200},
