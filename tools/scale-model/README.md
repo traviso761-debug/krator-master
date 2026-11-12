@@ -652,6 +652,132 @@ section 9 is the plan's side.
   field test, and the Resources and Copper Glacier pages rebuilt. `tests/test_smodel.py` reads `archive/little-demo/source`
   (the open world's little demo moved there).
 
+## 5.1 edit 4: `edit_514.py` (2026-11-10): Ostrukh Riba into Lake Ostrukh; Godstep's dry playa
+
+`python3 tools/scale-model/edit_514.py` edits `model/data` in place and writes `edit_514.report.json`; it refuses to run
+twice (the river's `rerouted` field is its marker).
+
+- **Ostrukh Riba** (`r_mb_siphon_breach`; the owner, 2026-11-10: "course may be wrong", then "Yes, reroute it"; Mid Basin's
+  springs read as one aquifer shared with Lake Ostrukh). Its gloss said it feeds Lake Ostrukh, but it ran 300 km north out
+  of the flagship maar (40 cells at 2,040 m round 1584,1348) into Region 99. Now:
+  - a **travertine sill** across the north breach: the 39 cells within 2 of the pool and north of its south shore that stood
+    under 2,050 m (2,018-2,030 m) are held at 2,050 m (raised up to 32 m); the gorge below stays, dry;
+  - a **south outlet** at 1584,1351 with its sill at 2,036 m (the pool keeps its 2,040 m), and a channel routed
+    (`smodel.rivers.route_river`, never back north of the pool) 109 cells, **262 km**, to **Lake Ostrukh** (1,850 m) at
+    1528,1459, its bed falling at least 0.5 m a cell and at least 30 m under the land: cut 64 m on average, 148 m at most
+    (at 1582,1356, through the maar's south rim); banks eased as `carve_river` does. A flood from the pool now finds the
+    outlet at 2,036 m toward the lake and the sill at 2,050 m toward the gorge;
+  - its **flow is the model's**: Turc runoff (`evap_k` 1.24) down the carved ground's D8 drainage, 0.9 m³/s from 15,400 km²
+    of steppe, not Gemini's 340 m³/s; `perennial` (spring-fed), width 4 m. A springs term sized to close Lake Ostrukh's
+    books came out at zero: the land's runoff already brings the lake 13.4 m³/s against 9.2 m³/s of evaporation less
+    3.1 m³/s of rain on it, so the model says the closed lake gains water (an outlet the model does not draw, or rain to
+    scale down: `hydro.json`'s sealed books).
+- **Godstep's dry playa** (`biomes/godstep/PLAN.md` section 1, note 3; the owner, 2026-11-03): the 437 cells (1,748 km²) of
+  `godstep valley` (`rmvkbfspgsmr3`) classed WH with no water under them take the class of the dry land most like them
+  (the 12 nearest in place, height and mean temperature): BSk 383, Csb 35, Csa 11, Dsb 8. The climate map is repainted;
+  nothing else moves.
+- **The regions' source.** `openworld/little-demo/` was retired to `archive/` (5be246474), so `tests/test_smodel.py` read
+  no regions (and silently skipped the river-name check). `smodel.page.regions()` and `settlements()` now read the page's
+  own defaults (`model/src/51-region-store.js`, `60-settlements.js`), which hold the same 128 regions; the tests and this
+  edit use them. `build_425_master.py` (frozen) and the history above still name the old path.
+- `tests/test_smodel.py` section 16 checks the course, the pool, the sill and the playa.
+
+## 5.1 edit 5: `edit_515.py` (2026-11-11): Godshearth's vents and outlet, the Loom Chasms, the Catch's oases, High Rift's gorge, e highlands, the Stalker Peaks
+
+`python3 tools/scale-model/edit_515.py` edits `model/data` and the page's defaults (`model/src/51-region-store.js`,
+`60-settlements.js`, with one-time reconciles `krator.regMerged.5.1e5` and `SETT_ADDED['5.1e5']`; `5.1e2` is Pinnacle Rock's, `5.1e3` the Firebliss
+Range's) and writes `edit_515.report.json`; it refuses to run twice (the outlet river is its marker).
+The owner, 2026-11-11: "yes go godhearth vents etc; Region99 > neighbors (also can we fix its name as loom chasms once and
+for all), catch oases, high rift gorge", and "go 1 and 4" on the record list above.
+
+- **Godshearth** (`biomes/godshearth/PLAN.md` section 8, amendments 1-2):
+  - the caldera's **vents** are 5.1 edit 2's six records (the hot lake's bed and shore, the shore field and line, the
+    grove's line, the spillway's head): this edit, first run before that one landed, wrote three geyser records at the
+    same three sites, and on the merged model adds none (reconciled 2026-11-11; every other number below is the same in
+    both runs);
+  - an **outlet river**, `r_gh_spillway`, named by the model's namer **Āirã Siṭrīm** (Xanadui): the hot lake (3,642 m) stood
+    over its own shore (3,605 m at 838,1397), so a **sinter rim** holds it (7 shore cells to 3,644 m, up to 23 m) and its one
+    way out is a sill at **3,640 m** (837,1396); the channel runs 59 cells, **124 km**, down the spillway and off the shield
+    to r442 (Solṭ Siṭrīm, the old Rīfar al-Bihār: below) at 846.7,1453.6, its bed 3,640 to 2,549 m (cut up to 100 m);
+  - its flow is the model's Turc runoff down the carved drainage, every other course a sink: **183.7 m³/s** from about
+    74,000 km² with air. The number is the same in any box from 280 by 380 px to 530 by 650 px: the caldera, a hole in the
+    Godthrone's south flank, takes the drainage of the flank above it. r442 below the junction now carries 197.0 m³/s and
+    r272 (to the Rift's lake at -717 m) 198.1 m³/s. **Kept at 183.7 m³/s, perennial with a summer peak (the owner,
+    2026-11-11: "keep 184"); the rain field is left as it is.** The breakdown, per cell from the model's own rain (`p`)
+    and mean temperature (`tm`), Turc runoff with `evap_k` 1.24 (this basin is not one the hydro books scale; rain scale
+    1.0), the hot lake held by its rim:
+
+    | Part of the catchment | Area | Rain | Runoff | Flow |
+    |---|---|---|---|---|
+    | the whole catchment (D8, every other course a sink) | 74,644 km² (74,232 with air) | 193 mm | 78 mm | 183.7 m³/s |
+    | the caldera alone (the `godshearth` polygon) | 8,740 km² | 840 mm (the owner's 750-925 kept) | 379 mm | 104.0 m³/s |
+    | the flank outside it, 4-6 km | 8,912 km² | 508 mm | | 71 m³/s of its 79.7 |
+    | the flank above 6 km: dry | 55,060 km² | 5-42 mm | | 8.4 m³/s |
+    | the hot lake (72 km²) | | | | -2.3 m³/s evaporation, +0.1 rain: it spills |
+
+    **On record (2026-11-11): the flank's wet 4-6 km band is the 5.0 build's forced Godshearth rain** (`build_425_master.py`
+    l. 4173, `rain = native (1 - w) + target w`, the same 24 px weight as the temperatures), not the Godthrone's own: the
+    flank beyond that ring at 4-6 km has 10 mm, the Godthrone elsewhere at 4-5 and 5-6 km 273 and 179 mm (ET, EF), and the
+    band's rain recovered from the blend is ~280 mm. With that rain the flank gives ~27 m³/s and the river ~129 m³/s (~106
+    if the flank is as dry as past the ring). **Superseded by 5.1 edit 6** (the owner, 2026-11-11, after hearing this:
+    "make it 129", replacing "keep 184"): the walls are unforced and the river carries **130.7 m³/s** (below).
+- **The Loom Chasms** (`rmvraoas90co7`, the id kept: the store and the plans key on it) is the region's name; it was
+  **Region 99**. It wins its overlaps: **Stalker Gate** (`rmvstalkergate`) and the **stalker range** (`rmvkknh1am4fw`) lose
+  the cells they shared with it (shapely's polygon difference, the largest piece kept): 3,509 and 1,137 cells before, 75
+  and 36 shared edge cells after. Code that matches the old name keeps it beside the new (`geology.py` `BASALT_REGIONS`,
+  `smodel/river_names.py`, `extract_region.py`); the live plans say the Loom Chasms.
+- **e highlands** (`rmvkaq9fftvpp`) is the old `e inner wall`'s name (the record list's item 1; `ancient_roads.py` takes
+  both; `extract_region.py` already did).
+- **The Stalker Peaks** (`rmwstalkerpks`, geographic; item 4; `biomes/catch/PLAN.md` 6c): the hull of the Catch's eastern
+  edge and the plan's four peaks and Hub 01 (4.21 px + 272,330: 1287,1293 at 14.9 km; 1321,1481, 14.0; 1397,1505, 14.9;
+  1411,1409, 11.8; Hub 01 at 1344,1409, 4,351 m), less both Catch polygons: 11 points, 91,196 km², ground p10/50/90
+  5.9 / 8.4 / 12.7 km, every peak and Hub 01 inside, 59 edge cells shared with The Catch.
+- **The Catch's oases** (`biomes/catch/PLAN.md` section 8): four pins, outposts, Yuni names first and every form in the
+  note: **Kolli** 1058,1367 (1,446 m), **Arfwai** 1090,1387 (1,074 m), [Stair 1106,1442, already a pin], **Bitta**
+  1088,1455 (1,576 m), **Lasso** 1083,1474 (1,509 m). The plan's points were 4.22's; on 5.1 they land at 3.4-7.0 km, and
+  the Catch's floor (under 1,600 m) is ~110 px long, so the five sit at fans' toes (floor cells at 1,000-1,600 m under a
+  150 m rise) in the plan's order along it, two north of Stair and two south: closer than the plan's 100-150 km.
+- **High Rift's gorge** (`biomes/highrift/PLAN.md` section 1): the plan's "34 km gorge from px 1395 to 1361" is 34 px, 71 km
+  of Verdigris Beck's course (33 cells, 1394,1658 to 1362,1666). On 5.1 the stretch is a broad valley floor (2.6-2.9 km),
+  not a slot, so it is cut as an **inner gorge** one cell wide, its bed at least 100 m under the floor (cut 70 m on
+  average, 115 m at most; its walls 84 m over the bed at the median), falling from 2,783 m to a lip 15 m over the
+  Caldron (2,580 m): the floor near the Caldron stands only ~40 m over it, so the gorge shallows to its mouth and the
+  plan's cataract there is small. The beck's `bed_m` follows it.
+- **Xanadui river names.** `frozen_river_names.json` held the owner's 2026-11-03 names for the 30 Xanadui courses
+  (b6763589c), but `model/data/rivers.json` had been merged back to the old `Rīfar al-…` names; the edit carries the 30
+  over (`edit_515.report.json`, `xanadui_names_restored`), and the 4 junctions that named one of them now say its new
+  name. Nothing else's name moved (asserted).
+- The live artifact's database gets the three regions, the new region and the four pins.
+- `tests/test_smodel.py` section 17 checks each.
+
+## 5.1 edit 6: `edit_516.py` (2026-11-11): the Godthrone's walls round Godshearth unforced; Āirã Siṭrīm at 130.7 m³/s
+
+The owner, 2026-11-11: "make it 129" (after hearing that the flank's wet 4-6 km band was the 5.0 build's forced rain).
+`python3 tools/scale-model/edit_516.py` edits `model/data`, writes `edit_516.report.json`, refuses to run twice (the
+river's `walls_unforced` field is its marker).
+
+- **The rain.** `build_425_master.py` (l. 4173) forced Godshearth's rain in as `native (1 - w) + target w`, w reaching
+  24 px onto the walls. Inside the `godshearth` polygon the rain stays (the owner's 750-925 mm). Outside it the native rain
+  is recovered from the blend where w leaves enough of it (0.02 < w < 0.85) and carried in from the nearest such cell where
+  it does not: 5,451 cells changed; the walls' 4-6 km band (9,292 km²) from 541 to 300 mm, the walls as a whole from 324
+  to 156 mm. Temperatures, heights and water do not move.
+- **The walls' classes** (where the old block set them: w > 0.2, land, under 6,250 m, outside the polygon; 2,790 cells)
+  are the model's own again: each takes the class of the unforced land with its climate within 300 px (the 40 nearest
+  in rain, mean, warmest and coldest month and air, as `smodel.climate.reclimate` decides one), then the majority of each
+  5x5 window (one cell's vote is speckled). 2,256 moved, from Dwb 1,186, Cwb 590, ET 215, Dwc 172, Cwa 93 to Csb 575,
+  EF 572, ET 408, Dfb 352, Dsc 269, Dfc 33 and a few others: the dry-summer and cold classes the Godthrone's own flank
+  carries. A fresh Köppen with a summer-rain dry test would have made 1,239 of
+  them desert; the model's convention is kept instead.
+- **Āirã Siṭrīm** (`r_gh_spillway`), recomputed as edit 3 computed it, from the new field: **130.7 m³/s** (the caldera
+  104.1, the walls 27.1; it was 183.7), perennial, a summer peak. Every other course whose catchment held changed cells
+  scales its own share by its catchment's runoff, new over old, and passes the change down its `to` chain: **r442** 197.0
+  to **138.6** m³/s, **r272** 198.1 to **139.7** (to the Rift's lake at -717 m), **r836** (a wadi) 2.9 to **1.1** (runoff
+  ratio 0.375), **r837** 1.6 to **0.1** (0.046).
+- **What else it reaches:** regions over changed cells: godthrone (4,793), Xanadu Sultanate (663), xanadu (612), The Rift
+  (422). No biome station's pin and no lake stands on the changed ground. The Godthrone kit's `-blood` station (r442's
+  bloodfalls, not built) will read r442's lower flow.
+- `tests/test_smodel.py` section 18: the walls' band under 400 mm, the caldera's rain kept, the river at 120-135 m³/s.
+
 ## Cutting a region out for the open world
 
 `extract_region.py <page.html> <regions> <settlements> "<region name>" <out dir>` reads the same page (no edit) and
@@ -767,13 +893,14 @@ so the other cuts are unchanged. `openworld/north-basin/` is the first user.
   - **Recut** `openworld/pinnacle` and `settlements/pinnacle-rock/region/` at the new pixel, then rebake the site
     (`core/world/bake_sites.py pinnacle`).
 - **Record edits waiting on the owner** (offered 2026-10-23, not done):
-  - rename the political region **"Crag Men"** to **"Talovolci"** (`LORE.md` §6.21);
-  - rename the biome polygons **`e inner wall` → `e highlands`** and **`e highlands` → `painted highlands`**, so the
-    names match the kits (`biomes/WORLD.md`);
-  - **the Rift's settlements** reworked (names, places, types) with Arccube fixed (`biomes/riftrim/PLAN.md` section 12);
-  - the **Sanctum** (the Eternal State's arcology) placed near Centrum (`LORE.md` §6.19);
-  - notes on **Carcosa** (the Yusar's core) and **Henge** (a large Yusar segment), the cybernetics tribe's seats;
-  - a region **"Stalker Peaks"** east of the Catch: the ranges between its eastern wall and Hub 01, and the 13-15 km peaks
-    round Hub 01's high valley (px ~960-1140 by 950-1180; `biomes/catch/PLAN.md` section 6c).
+  - ~~rename the political region **"Crag Men"** to **"Talovolci"**~~ (done in 5.x: "Talovolci Chiefs");
+  - ~~rename the biome polygons **`e inner wall` → `e highlands`** and **`e highlands` → `painted highlands`**~~ (the
+    second done in 5.x; the first in **5.1 edit 3**, 2026-11-11);
+  - **the Rift's settlements** reworked (names, places, types) with Arccube fixed (`biomes/riftrim/PLAN.md` section 12):
+    **open**, waits on the owner's design;
+  - the **Sanctum** (the Eternal State's arcology) placed near Centrum (`LORE.md` §6.19): **open**, held (2026-11-11);
+  - notes on **Carcosa** (the Yusar's core) and **Henge** (a large Yusar segment), the cybernetics tribe's seats: **open**,
+    held (2026-11-11);
+  - ~~a region **"Stalker Peaks"** east of the Catch~~ (done in **5.1 edit 3**, 2026-11-11: `rmwstalkerpks`, geographic).
   Done on the model 2026-10-23: **Ledge** moved to the great lake's north cliff (px 165,1000; with 4.22); **Mantis** moved to the Bowl's oasis (px 841,834); **Daridel** moved into the cloud forest
   (px 528,687); **Stair** moved to the springs' hollow in the Catch's interior hills (px 834,1112), the Hill arcology's site. **`rift rim`** split into **`rift rim N`** (the old record, renamed and trimmed to the w rift highland's border) and **`rift rim S`** (`rmvriftrims01`, with the west bend south of the highland).

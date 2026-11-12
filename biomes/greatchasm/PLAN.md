@@ -66,10 +66,10 @@ step 5B-NEW-BIOMES (from l. 931), its climate at l. 4140 and its paint at l. 484
   The map's own names show the transition: Hum at the north end, Yuni at the south.
 - **Neighbours:**
   - the S Outlands (`rmvp52gbbc8pf`, x 1466-1783, y 617-960) wrap the north end and the west rim down to y 960;
-  - Region 99, the Loom-Chasms (`rmvraoas90co7`), begins at the south end;
+  - The Loom-Chasms (`rmvraoas90co7`), begins at the south end;
   - the Yuni Emirate's polygon (`rmw8ca6baau47`) reaches only x 1575-1592 at y 1073-1185, 200-260 km to the south-west.
 
-  Between the S Outlands and Region 99, west of the chasm, the ground is 9-12 km high and airless (O) from y 914 to 1000. So
+  Between the S Outlands and the Loom Chasms, west of the chasm, the ground is 9-12 km high and airless (O) from y 914 to 1000. So
   **the chasm is the only way between the two peoples' lands**.
 
 ## 2. Geology
@@ -396,7 +396,7 @@ sky. KHORIZON gives the shading, and the composition is the kit's.
 - the owner's brief, 2026-11-09, and the owner's note that NPC outposts are not player outposts;
 - `tools/scale-model/build_425_master.py` step 5B (l. 931-1107: the spine, the tiers, the chaos, the pins), l. 4140-4162
   (the climate) and l. 4844 (the paint);
-- `smodel/nw_expansion.py` (the region); `model/src/51-region-store.js` (S Outlands, Region 99, the Yuni Emirate, the
+- `smodel/nw_expansion.py` (the region); `model/src/51-region-store.js` (S Outlands, the Loom Chasms, the Yuni Emirate, the
   Stalker Gate);
 - `model/src/60-settlements.js` (Spindle Fan, Ostrukh-on-Water, Yuni, Trickster's House);
 - `model/data/rivers.json` (Sām-Hām, the Hum and Yuni wadis), `tubes.json`, `vents.json`; `smodel/river_names.py` (the

@@ -1,6 +1,6 @@
 # Mid Basin: the plan (2026-11-09)
 
-**Mid Basin** (`rmvmidbasin101`) lies on map 5.1 between the Loom-Chasms (Region 99, `rmvraoas90co7`, north) and the
+**Mid Basin** (`rmvmidbasin101`) lies on map 5.1 between the Loom-Chasms (`rmvraoas90co7`, north) and the
 Siphon Pits (`rmvra9zogfm9t`, south). The Stalker Gate's passes (`rmvstalkergate`) and the Stalker Range open onto it from the
 west.
 
@@ -58,7 +58,7 @@ continued from the Siphon Pits' Central Dividing Fault (`scarp_u`) splits the po
    |---|---|---|---|---|---|---|---|---|
    | m | 1,542 | 917 (chasm) | 2,372 | 2,625 | 3,188 | 3,249 | 3,973 | 4,391 |
 
-3. **The warp chasms** (the code: "Southward-Propagating Loom Warp Chasms"). Region 99's chasms cut south into the lower
+3. **The warp chasms** (the code: "Southward-Propagating Loom Warp Chasms"). The Loom Chasms' chasms cut south into the lower
    benches and fade out by `v_hinge` 0.82, with floors from 460 m (north) rising south. Data: under 1,500 m there are five
    chasm bodies of 17 to 1,267 cells, the largest centred at px 1681,1303 (x 1645-1707, floor 587 m). Their southern heads
    stop at y 1290-1340, at 1,380-1,500 m. At the head at px 1702,1340 the floor is about 1,350 m, and the headwall climbs to
@@ -83,7 +83,8 @@ continued from the Siphon Pits' Central Dividing Fault (`scarp_u`) splits the po
   - **One lake:** the flagship maar's, 40 cells (about 160 km²), level 2,040 m, bed 2,029 m, centre px 1584,1348, class WH.
   - **Ostrukh Riba** (`r_mb_siphon_breach`, Gemini's "Siphon-Breach Cascade"): perennial, 300 km, 340 m³/s at its mouth. It
     rises at the lake's outlet (px 1583,1343, 2,022 m), leaves the polygon at about px 1591,1269 and ends at 334 m at
-    px 1618,1214 in Region 99. 23 of its 39 points lie inside.
+    px 1618,1214 in the Loom Chasms. 23 of its 39 points lie inside. **Rerouted 2026-11-10** (section 9): it now runs south,
+    262 km to Lake Ostrukh, 0.9 m³/s.
   - **Gould Guli** (`r424`, Spindle Wash) and **Solt Guli** (`r553`): seasonal wadis rising in the NW corridor (px 1562,1265 at
     2,047 m; px 1556,1251 at 2,035 m) and running north to lakes at 644 and 639 m; 2.6 and 0.4 m³/s.
   - **Vents** (`vents.json`): three geyser vents inside, on the floors of the flagship, Central Chain-Graben and East-Central
@@ -328,10 +329,14 @@ camp ground.
 
 - **The outlaws:** do they exist as proposed (outcast houses, deserters, debtors)? Their name: Ranjos, Bushis or another? How
   many bands? A leader, or a hideout with a name? Should their story go in `LORE.md` §6.11?
-- **The springs' water:** confirm the shared-aquifer reading (section 3) in place of "seepage from Lake Ostrukh", which would run
-  190 m uphill.
-- **Ostrukh Riba's direction:** its gloss says it feeds Lake Ostrukh, but its course runs north into Region 99, away from the
-  lake. One of the two is Gemini's to fix on the map.
+- ~~**The springs' water**~~ **Settled (the owner, 2026-11-10): the shared-aquifer reading** (section 3): the springs and Lake
+  Ostrukh share one confined aquifer, recharged by the Stalker Range's snow; not "seepage from Lake Ostrukh".
+- ~~**Ostrukh Riba's direction**~~ **Settled (the owner, 2026-11-10): the course was wrong.** Scale model 5.1 edit 2
+  (`tools/scale-model/edit_512.py`) reroutes it south: a travertine sill at 2,050 m closes the north breach (the gorge stays,
+  dry), and the river leaves the pool's south shore at 1584,1351 (2,036 m) in a channel cut 64 m deep on average (148 m at
+  most), 262 km to Lake Ostrukh (1,850 m) at 1528,1459. Its flow is the model's runoff, 0.9 m³/s (15,400 km² of steppe),
+  not Gemini's 340 m³/s; it is spring-fed and perennial. Section 1's record above is the old course. Station 1's view now
+  looks south down the outlet, not north through the breach.
 - **The maars' scale:** 30-45 km across on the map. Keep them as maar-diatreme complexes, with true-scale maars nested on their
   floors at station scale?
 - **A limnic release:** may the flagship lake ever release its CO₂, as Lake Nyos did? It would make the best outpost site the

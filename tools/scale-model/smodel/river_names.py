@@ -170,6 +170,7 @@ REGION_TO_TONGUE = {
     'Oidong Valley': ('xanadui', 2),
     'Yuni Valley': ('yuni', 2),
     'Region 99': ('yuni', 2),
+    'Loom Chasms': ('yuni', 2),          # region 99's name since 5.1 edit 3 (2026-11-11)
     'Siphon Pits': ('yuni', 2),
     'Mid Basin': ('yuni', 2),
     'Stalker Gate': ('yuni', 2),

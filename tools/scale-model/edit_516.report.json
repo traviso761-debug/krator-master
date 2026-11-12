@@ -1,0 +1,78 @@
+{
+ "edit": "5.1 edit 6",
+ "date": "2026-11-11",
+ "walls_rain": {
+  "cells": 6259,
+  "cells_changed": 5451,
+  "band_4_6km_km2": 9292,
+  "band_rain_mm_before_after": [
+   541,
+   300
+  ],
+  "walls_rain_mm_before_after": [
+   324,
+   156
+  ]
+ },
+ "walls_classes": {
+  "reclassed_cells": 2790,
+  "changed": 2256,
+  "before": {
+   "Dwb": 1186,
+   "Cwb": 590,
+   "ET": 215,
+   "Dwc": 172,
+   "Cwa": 93
+  },
+  "after": {
+   "Csb": 575,
+   "EF": 572,
+   "ET": 408,
+   "Dfb": 352,
+   "Dsc": 269,
+   "Dfc": 33,
+   "HT": 24,
+   "Cfa": 17,
+   "BWk": 5,
+   "BSk": 1
+  }
+ },
+ "river_runoff_ratios": {
+  "r272": 0.989,
+  "r442": 0.756,
+  "r836": 0.375,
+  "r837": 0.046
+ },
+ "river_deltas_m3s": {
+  "r442": -2.15,
+  "r836": -1.81,
+  "r837": -1.53
+ },
+ "outlet": {
+  "q_before": 183.7,
+  "q_after": 130.7,
+  "caldera_part_m3s": 104.1,
+  "walls_part_m3s": 27.1
+ },
+ "rivers_changed_m3s": {
+  "r442": -58.49,
+  "r272": -58.49,
+  "r836": -1.81,
+  "r837": -1.53
+ },
+ "rivers_now": {
+  "r442": 138.6,
+  "r837": 0.1,
+  "r272": 139.7,
+  "r_gh_spillway": 130.7,
+  "r836": 1.1
+ },
+ "regions_touched": {
+  "The Rift": 422,
+  "Xanadu Sultanate": 663,
+  "godthrone": 4793,
+  "xanadu": 612
+ },
+ "stations_on_changed_ground": [],
+ "lakes_beside_changed_ground_cells": 0
+}
