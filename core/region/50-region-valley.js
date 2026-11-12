@@ -113,6 +113,28 @@ H.valleyBooks = function () {
     if (S.towns[s].spec.feeds) { out.towns[s].fed = Object.assign({}, S.fed[s]); out.towns[s].starved = Object.assign({}, S.starved[s]); } });
   return out;
 };
+/* core/camp's host (C4, S6: core/camp/60-camp-world.js, THE HOST): the world tick's view of the valley's books. A band's
+   stock handed in lands in its settlement's warehouses (imported); taken back out (exported) when it leaves; a market's
+   side of a caravan's barter; a raid's loot leaving the target (exported, tallied in H.SIM.raided) and its dead. Every
+   load is booked, so the sim's ledger holds across the hand-overs (off the map: the ledger's abroad columns) */
+H.valleyHost = function () {
+  var S = H.SIM; S.raided = S.raided || {}; S.killed = S.killed || {};
+  var wh = function (s, g) { var n = 0; SIM.econ(s).warehouses.forEach(function (P) { n += P.stock[g] || 0; }); return n; };
+  var put = function (s, goods, kind) { var out = {}; SIM.withEcon(s, function () { Object.keys(goods).sort().forEach(function (g) { var n = goods[g];
+    if (!(n > 0) || !SIM.ECON.goods[g]) return; if (SIM.economyLand(g, n) == null) return; SIM.economyBook(kind || 'imported', g, n); out[g] = n; }); }); return out; };
+  var out = function (s, goods) { var got = {}; SIM.withEcon(s, function () { Object.keys(goods).sort().forEach(function (g) { var n = Math.floor(Math.min(goods[g], wh(s, g)));
+    if (!(n > 0)) return; n = SIM.economyTake(g, n); if (n > 0) { SIM.economyBook('exported', g, n); got[g] = n; } }); }); return got; };
+  return {
+    land: function (s, goods) { return put(s, goods); },
+    take: function (s) { var all = {}; Object.keys(SIM.econ(s).goods).forEach(function (g) { var n = Math.floor(wh(s, g)); if (n > 0) all[g] = n; }); return out(s, all); },
+    away: function (s, a) { H.valleyAway(s, a); },
+    people: function (s) { return S.towns[s].spec.people; },
+    stock: function (s, g) { return wh(s, g); },
+    raid: function (s, goods) { var got = out(s, goods), R = S.raided[s] || (S.raided[s] = {}); Object.keys(got).forEach(function (g) { R[g] = (R[g] || 0) + got[g]; }); return got; },
+    kill: function (s, n) { var Sd = S.towns[s].spec; n = Math.min(n, Sd.people); Sd.people -= n; S.killed[s] = (S.killed[s] || 0) + n; },
+    trade: function (s, sold, bought) { put(s, sold); out(s, bought); }
+  };
+};
 /* a band out ranging (S6: core/camp's hand-over): away, its people and beasts neither eat here nor its works make (each
    held by SIM.recipeHold, 'away'); home again, they do */
 H.valleyAway = function (s, away) {
