@@ -141,7 +141,18 @@ V1 and V2 can run in parallel.
 - **The live map database is still on the old canvas** (`tools/scale-model/README.md:594-597`).
 - **Other edits in the same box:** none known. Torus and Daridel are on rivers that a Turm re-route would not cross.
 
-## 6. Questions for the owner
+## 6. The owner's answers (2026-11-11)
+
+1. **The bay is shrunk to the page's water system** (bay, narrows, lake, strait to the Ring Sea). Most of today's
+   ~1,190 km² becomes land.
+2. **The Turm is re-routed** into the bay's south-east corner through a gap in the peninsula, to carry Voth's river.
+3. **The whole bay's rim is softened** to low shores and hills, not only the city's shelves. Layer 1, item 2 becomes:
+   the whole rim comes down, and the page's ridges (170-300 m) and the scarp beyond the frame stay as the backdrop.
+
+Still assumed (question 4): Voth's own ground is handed to the world (Layer 2), and Voth is not rebuilt on the world's
+ground.
+
+The questions as asked:
 
 1. **The bay:** shrink it to the page's water system (bay, narrows, lake, strait to the Ring Sea), so most of today's
    ~1,190 km² becomes land? Or keep the big bay and set Voth in its south corner, the page's "lake" being the bay itself?
