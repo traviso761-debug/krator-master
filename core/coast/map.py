@@ -6,7 +6,8 @@ depth. With --off the coast module is left out (the land and masks as they were)
     python3 core/coast/map.py <region> --at x,z --size 16000 --px 512 --out coast.png [--off] [--lines]
     python3 core/coast/map.py <region> --find N --size 16000 --out <dir>     # N shore points, the biggest bodies first
 
---lines draws the coast field's zero set (white) and the mask's edge (red). Region frames are the region's metres
+--lines draws the coast field's zero set (white), the mask's edge (red) and the keeps (purple: where the coast is held as
+the region had it). --preset '{"high":{"k":6}}' tries KCOAST.PRESETS overrides; --site <name> centres on a site. Region frames are the region's metres
 (core/world/41-world-fields.js). Node and the region's data are all it needs."""
 import argparse, base64, json, os, struct, subprocess, sys, tempfile, zlib
 
@@ -15,6 +16,9 @@ ROOT = os.path.normpath(os.path.join(HERE, '..', '..'))
 sys.path.insert(0, os.path.join(ROOT, 'core', 'world'))
 import world_data as WD  # noqa: E402
 import bake_sites as BS  # noqa: E402
+
+
+PRESET = {}   # --preset: KCOAST.PRESETS overrides (one level deep), set before WORLD.init builds the coasts
 
 
 def script(region, off, body):
@@ -35,6 +39,8 @@ def script(region, off, body):
     parts.append(WD.geology_fragment(os.path.join(base, 'data')))
     for where, f in WD.RES_FRAGS:
         parts.append('\n// ---- %s/%s\n' % (where, f) + open(os.path.join(ROOT, where, f), encoding='utf-8').read())
+    if PRESET and not off:
+        parts.append('\n(function(P,O){for(const k in O){if(O[k]&&typeof O[k]==="object"&&!Array.isArray(O[k])&&P[k])Object.assign(P[k],O[k]);else P[k]=O[k];}})(KCOAST.PRESETS,%s);\n' % json.dumps(PRESET))
     parts.append('WORLD.init(WORLD_R);\n' + body)
     return ''.join(parts)
 
@@ -65,7 +71,8 @@ for(let j=0;j<N;j++)for(let i=0;i<N;i++){const X=x0+(i+.5)*st,Z=z0+(j+.5)*st,h=(
  let edge=0;for(const bd of B){const m=maskAt(bd.mask,X,Z);if(m>.5&&h<bd.level){const d=bd.level-h,t=Math.min(1,d/8),a=.55+.4*Math.min(1,d/2);
    r=r*(1-a)+(shal[0]+(deep[0]-shal[0])*t)*a;g=g*(1-a)+(shal[1]+(deep[1]-shal[1])*t)*a;b=b*(1-a)+(shal[2]+(deep[2]-shal[2])*t)*a;}
   if(lines&&m>0&&m<1&&Math.abs(m-.5)<Math.min(.25,.5*st/Math.max(bd.mask.cell,1)))edge=1;}
- if(lines&&WORLD.coast){const c=WORLD.coast.at(X,Z);if(c&&Math.abs(c.c)<st*.7){r=g=b=1;}}
+ if(lines&&WORLD.coast){const kp=WORLD.coast.keepAt(X,Z);if(kp>0){r+=(.55-r)*kp*.45;g+=(.2-g)*kp*.45;b+=(.6-b)*kp*.45;}
+  const c=WORLD.coast.at(X,Z);if(c&&Math.abs(c.c)<st*.7){r=g=b=1;}}
  if(edge){r=1;g=.1;b=.1;}
  const o=(j*N+i)*3;img[o]=S(r);img[o+1]=S(g);img[o+2]=S(b);}
 process.stdout.write(Buffer.from(img).toString('base64'));'''
@@ -102,8 +109,18 @@ def main():
     ap.add_argument('--out', default='coast.png')
     ap.add_argument('--off', action='store_true')
     ap.add_argument('--lines', action='store_true')
+    ap.add_argument('--preset', help='JSON: KCOAST.PRESETS overrides, e.g. {"high":{"k":6}}')
+    ap.add_argument('--site', help='centre on a site of the region (its name, as WORLD_DATA.meta.sites has it), offset by --at dx,dz')
     a = ap.parse_args()
-    pts = [dict(zip(('x', 'z'), map(float, s.split(',')[:2]))) for s in a.at]
+    if a.preset:
+        PRESET.update(json.loads(a.preset))
+    if a.site:
+        s = json.loads(run(script(a.region, True, 'process.stdout.write(JSON.stringify((WORLD_DATA.meta.sites||[]).find(s=>s.name===%s)||null));' % json.dumps(a.site))))
+        if not s:
+            sys.exit('map: no site %r in %s' % (a.site, a.region))
+        d = [float(v) for v in a.at[0].split(',')[:2]] if a.at else [0, 0]
+        a.at = ['%f,%f' % (s['x'] + d[0], s['z'] + d[1])]
+    pts =[dict(zip(('x', 'z'), map(float, s.split(',')[:2]))) for s in a.at]
     if a.from_:
         pts = json.load(open(a.from_, encoding='utf-8'))
     if a.find:

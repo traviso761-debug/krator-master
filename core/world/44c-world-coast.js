@@ -50,14 +50,27 @@ function keeps(){KEEPS.length=0;for(const t of (W.towns||[]))KEEPS.push({x:t.x,z
  if(typeof W.coastKeeps==='function')for(const k of W.coastKeeps()||[])if(k&&isFinite(k.x)&&isFinite(k.z)&&k.r>0)KEEPS.push({x:k.x,z:k.z,r:k.r});
  return KEEPS;}
 function keepAt(x,z){let k=0;for(let i=0;i<KEEPS.length;i++){const t=KEEPS[i],d=Math.hypot(x-t.x,z-t.z);if(d<t.r+EASE)k=Math.max(k,1-smooth(t.r,t.r+EASE,d));}return k;}
-const SAMPLE={bare:(x,z)=>W.Hbare(x,z,250),rock:rockAt,wet:wetAt,temp:(x,z)=>W.temp(x,z),chan:chanAt,keep:keepAt};
+/* round each keep (GUARD m past its ease) the coast may move out but not in: water reaching round behind a kept shore cut
+   a town's strip of old coast off as a barrier with a lagoon behind it (the isle demo's west coast) */
+const GUARD=2500;
+function guardAt(x,z){let k=0;for(let i=0;i<KEEPS.length;i++){const t=KEEPS[i],d=Math.hypot(x-t.x,z-t.z),r=t.r+EASE;if(d<r+GUARD)k=Math.max(k,1-smooth(r,r+GUARD,d));}return k;}
+const SAMPLE={bare:(x,z)=>W.Hbare(x,z,250),rock:rockAt,wet:wetAt,temp:(x,z)=>W.temp(x,z),chan:chanAt,keep:keepAt,guard:guardAt};
+/* the region's sub-cell landforms (region.json `landforms`, from the scale model's model/data/landforms.json): an island
+   under a 2 km cell, stamped by the body whose water it stands in (its water_m within 15 m of the body's level, its point
+   in the body's mask) */
+function islandsOf(b){const G=b.mask,out=[];
+ for(const L of (M.landforms||[])){if(L.kind!=='island'||!isFinite(L.x)||!isFinite(L.z))continue;
+  if(L.water_m!=null&&Math.abs(L.water_m-b.level)>15)continue;
+  const i=Math.floor((L.x-G.x0)/G.cell),j=Math.floor((L.z-G.z0)/(G.cellZ==null?G.cell:G.cellZ));if(i<0||j<0||i>=G.nx||j>=G.nz||G.data[j*G.nx+i]<128)continue;
+  out.push({id:L.id,x:L.x,z:L.z,r:L.r_m,top:L.crest_m-b.level});}
+ return out;}
 // ---------------------------------------------------------------- built at init
 const init0=W.init;
 W.init=function(R){init0(R);build();};
 function build(){const t0=Date.now();keeps();   /* first: a region's own shaping reads keepAt, and the bodies' old masks are flooded on it */
  const B=W.waterBodies();on=false;LIST.length=0;
  const HD=M.heights,cellM=Math.max(2000,Math.sqrt((2000/HD.su)*(2000/HD.sv)));   /* the cells the coast came from: the height grid's (4 km on the isles) or the scale model's 2 km pixel the finer grids were drawn up from */
- for(const b of B){const C=KCOAST.build({id:b.id,level:b.level,mask:b.mask,seed:SEED,salt:b.salt>.5,sample:SAMPLE,frame:{ox:OX,oz:OZ},sourceCell:cellM});
+ for(const b of B){const C=KCOAST.build({id:b.id,level:b.level,mask:b.mask,seed:SEED,salt:b.salt>.5,sample:SAMPLE,frame:{ox:OX,oz:OZ},sourceCell:cellM,islands:islandsOf(b)});
   C.body=b;LIST.push(C);}
  on=true;
  for(const C of LIST){const b=C.body,nm=KCOAST.mask(C);b.oldMask=b.mask;b.mask=nm;
@@ -108,6 +121,7 @@ W.coast={list:LIST,
   for(const C of LIST){const G=neg==='mask'&&C.body.oldMask?C.body.oldMask:C.body.mask,w=C.nx*C.cell,d=C.nz*C.cellZ;let got=0;
    for(let k=0;k<n*40&&got<n;k++){const x=C.x0+s.next()*w,z=C.z0+s.next()*d,a=KCOAST.at(C,x,z,0,AT);
     if(!a.band||a.keep>0||Math.abs(a.c)<2||a.c>C.P.band.lift||a.c<-C.P.band.water*.7||!W.inside(x,z))continue;
+    if(Math.min(x-C.x0,C.x0+w-x,z-C.z0,C.z0+d-z)<C.P.carry.rim*1.2)continue;   /* the raster's rim, where the coast fades out */
     if(W.roadD(x,z)<170||(C.CH&&chanAt(x,z)<460)||(W.townW(x,z)>0))continue;   /* a road holds its own grade; an estuary; a town's ground */
     got++;tested++;
     const h=W.H(x,z);if((h>C.level)!==(a.c>0)){sign++;if(bad.length<4)bad.push('sign '+Math.round(x)+','+Math.round(z)+' c '+a.c.toFixed(1)+' h-lv '+(h-C.level).toFixed(2));}

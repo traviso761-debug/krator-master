@@ -10,9 +10,11 @@
 // and its shader: outside the window the depth is the far bed's; inside, the window's own depth and shore distance are
 // eased into the far bed's (and into open water) over the window's outer 12 %, so no straight edge is left. The CPU side
 // (heightAt, shoreDist) is unchanged: the far bed only shades. Call it after WATER.open and before WATER.draw.
+// The surf's crests and foam also fade with the eye's distance (FAR, in surf wavelengths): seen from a few km their lines
+// aliased into a hatching over the shallows that stopped on the window's edge.
 (function(){'use strict';
 if(typeof WATER==='undefined'||!WATER.glsl)throw new Error('core/water/farbed needs core/water (20, 21, 50) before it');
-const W=WATER,LO=-10,SPAN=310,EDGE=.12;
+const W=WATER,LO=-10,SPAN=310,EDGE=.12,FAR=[60,150];   /* FAR: the surf fades out between 60 and 150 of its wavelengths from the eye (1.6 to 3.9 km) */
 const gf=v=>{const q=String(+v);return/[.e]/.test(q)?q:q+'.0';};
 W.farBed=function(S,o){o=o||{};const g=o.ground;if(typeof g!=='function')throw new Error('WATER.farBed: needs ground(x, z)');
  const M=S.mask,b=M?[M.x0,M.z0,M.x0+M.nx*M.cell,M.z0+M.nz*(M.cellZ==null?M.cell:M.cellZ)]:S.bounds;
@@ -35,6 +37,14 @@ W.glsl=S=>{let s=glsl0(S);if(!S.farBed||!S.shoreWin||!S.shore)return s;
   'float wtrEdgeK(vec2 uv){return smoothstep(0.0,'+gf(EDGE)+',min(min(uv.x,uv.y),min(1.0-uv.x,1.0-uv.y)));}';
  s=s.replace(reD,(m,inner)=>head+'float wtrDepth(vec2 p){vec2 uv=(p-wtrBedBox.xy)*wtrBedBox.zw;float fd=wtrFarDepth(p);if(uv.x<0.0||uv.y<0.0||uv.x>1.0||uv.y>1.0)return fd;return mix(fd,'+inner+',wtrEdgeK(uv));}');
  s=s.replace(reS,(m,band,inner)=>'float wtrShoreDist(vec2 p){vec2 uv=(p-wtrBedBox.xy)*wtrBedBox.zw;if(uv.x<0.0||uv.y<0.0||uv.x>1.0||uv.y>1.0)return '+band+';return mix('+band+','+inner+',wtrEdgeK(uv));}');
+ /* the surf's crests and foam fade with the eye's distance: their lines (lambda apart) alias into a hatching over the
+    shallows from a few km up, and that hatching ended on the window's edge; a pixel there spans a good part of a line */
+ const lam=W.PRESETS.shore.surf.lambda,f0=lam*FAR[0],f1=lam*FAR[1];
+ const fade='float wtrFarFade(vec2 p){return 1.0-smoothstep('+gf(f0)+','+gf(f1)+',distance(cameraPosition,vec3(p.x,wtrLevel,p.y)));}';
+ if(s.indexOf('float wtrSurf(vec2 p){')>=0&&s.indexOf('vec2 wtrSurfSlope(vec2 p){')>=0&&s.indexOf('float wtrSurfFoam(vec2 p){')>=0&&s.indexOf('vec2 wtrWetGround(')>=0){
+  s=s.replace('float wtrSurf(vec2 p){','float wtrSurf0(vec2 p){').replace('vec2 wtrSurfSlope(vec2 p){',fade+'float wtrSurf(vec2 p){return wtrSurf0(p)*wtrFarFade(p);}vec2 wtrSurfSlope(vec2 p){')
+   .replace('float wtrSurfFoam(vec2 p){','float wtrSurfFoam0(vec2 p){').replace('vec2 wtrWetGround(','float wtrSurfFoam(vec2 p){return wtrSurfFoam0(p)*wtrFarFade(p);}vec2 wtrWetGround(');}
+ else throw new Error('core/water/farbed: core/water\'s surf functions changed shape; update farbed');
  return s;};
 const uni0=W.uniformsOf;
 W.uniformsOf=S=>{const U=uni0(S);if(S.farBed&&!U.wtrFar){const F=S.farBed,T=(typeof THREE!=='undefined'?THREE:null);if(!T)return U;

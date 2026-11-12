@@ -1359,6 +1359,11 @@ def main():
         meta['overlays'] = overlays
     if palaeo:
         meta['palaeo'] = palaeo
+    # the sub-cell landforms (model/data/landforms.json: an island under a 2 km cell) in the box, for core/coast to stamp at 1:1
+    lfs = [dict(lf, x=round((lf['px'] - cx) * 2000.0, 1), z=round((lf['py'] - cy) * 2000.0, 1))
+           for lf in (D.get('landforms') or {}).get('landforms', []) if x0 <= lf['px'] <= x1 and y0 <= lf['py'] <= y1]
+    if lfs:
+        meta['landforms'] = lfs
     json.dump(meta, open(os.path.join(out, 'region.json'), 'w', encoding='utf-8', newline='\n'), separators=(',', ':'))
     print('region %s: box px %s, %d x %d px, polygon %d km2' % (reg['name'], [x0, y0, x1, y1], W, H, meta['region']['area_km2']))
     print('heights %d x %d cells (%.0f m/cell, su=%.2f, synth=%s); %d channels, %d vertices; %d water cells lowered to their spill height' % (

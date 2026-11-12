@@ -238,3 +238,26 @@ The original questions:
   isle demo's own mangrove flats still apply inside a keep (`WORLD.coast.keepAt`), so a kept coast is exactly the old one.
 - `map.py`: a CPU top-down map of a region's coast (node, no GPU), with the coast on or off and the shoreline and mask
   edge drawn: what the tuning was judged on while the GPU lanes were queued.
+
+### The second pass (2026-11-11, the owner: "work on rough parts first")
+
+- **The coast left a ridge where it moved inland.** Where the warp pushed a shoreline more than the band's 1.5 km
+  inland, the old land fell outside the band and was left as it was: a ridge on the old shoreline, a lagoon behind it.
+  The caldera's 40 km south wall looked unmoved for this reason. It was not the height term, as the first pass thought.
+  Measured on a transect at -781 km: the field moved the line 1.2 km inland, and the ground kept its old shore.
+- **The land is carried** (`PRESETS.carry`). Near the old shoreline or the new one (the nearer of `|F|` and `|c|`, full
+  within 500 m, none past 2 km), the bare land is read at the warped point: a headland is the wall moved out, a cove the
+  bed moved in. Before this, a headland was a plate 0.6 m over the level, and a cove into a hill was the hill cut down to
+  the level. With the land carried, the height term (`PRESETS.high`) did harm: it moved `c` without moving the land, and
+  left plates in coves. It is off (`k: 0`), and the mechanism stays.
+- **A 16 km octave** (`warp.a0`, 3 km) bends long straight shores into bays and headlands.
+- **Islets** (`PRESETS.islet`): an island of the mask under 2.5 km from its middle to its water was blurred under. (The
+  caldera's four islands were blurred under; the carry then took them away.) Near one, the coast is the land's own
+  contour, and the warp is cut to a quarter.
+- **Stamped islands** (`build({islands})`): the scale model's sub-cell landforms (`model/data/landforms.json`, edit
+  5.1-512: the Pleasure Dome's isle and the west stack in Erewhon's caldera) now reach `region.json` as `landforms`
+  (`tools/scale-model/extract_region.py`; the xanadu-oidong-highrift cut rerun added only that key). The glue gives
+  each one to the body it stands in. Each has a wandering outline, its own classes, and a dome to its crest.
+- **The window's seam** (`core/water/farbed`): the surf's crest lines (26 m apart) aliased into a hatching over the
+  shallows when seen from a few km, and the hatching stopped on the shore window's edge. The surf and its foam now fade
+  between 1.6 and 3.9 km from the eye. The far bed's coarse depth stays.

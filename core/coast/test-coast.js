@@ -11,13 +11,14 @@ let fails=0;const ok=(c,name,detail)=>{console.log((c?'  PASS  ':'  FAIL  ')+nam
 const neg=(c,name,detail)=>{console.log((c?'  PASS  negative ':'  MISSED negative ')+name+(detail?' : '+detail:''));if(!c)fails++;};
 
 const NX=120,CELL=500,X0=-30000,Z0=-30000,LV=0;
-const cellWater=(I,J)=>(I+J<7)&&!(I===1&&J===2);   // 4 km cells (8 texels): a diagonal staircase and a one-cell island
-const data=new Uint8Array(NX*NX);for(let j=0;j<NX;j++)for(let i=0;i<NX;i++)data[j*NX+i]=cellWater(i>>3,j>>3)?255:0;
+const cellWater=(I,J)=>(I+J<7);   // 4 km cells (8 texels): a diagonal staircase
+const ICX=X0+6000,ICZ=Z0+10000;   // and an islet ~1.4 km across in the water (the land's own bump, `bare`): the blur loses it
+const data=new Uint8Array(NX*NX);for(let j=0;j<NX;j++)for(let i=0;i<NX;i++)data[j*NX+i]=cellWater(i>>3,j>>3)&&Math.hypot(X0+(i+.5)*CELL-ICX,Z0+(j+.5)*CELL-ICZ)>700?255:0;
 const MASK={x0:X0,z0:Z0,cell:CELL,cellZ:CELL,nx:NX,nz:NX,data};
 // the land: the staircase's own distance (cells), gentle (1 %) in the south, steep (15 %) in the north
 const north=(x,z)=>(x+18000)/4000<0?0:(x+18000)/4000>1?1:(x+18000)/4000;   // 0..1: the eastern half of the diagonal coast is steep and hard (eased over 4 km)
 function stairD(x,z){const u=(x-X0)/4000,v=(z-Z0)/4000;return (u+v-7)*4000/Math.SQRT2;}
-function bare(x,z){const d=stairD(x,z),ix=x-(X0+6000),iz=z-(Z0+10000),isl=24*Math.max(0,1-Math.hypot(ix,iz)/2600);return d*(.01+.14*north(x,z))-2+isl;}
+function bare(x,z){const d=stairD(x,z),isl=110*Math.max(0,1-Math.hypot(x-ICX,z-ICZ)/2600);return d*(.01+.14*north(x,z))-2+isl;}
 function detail(x,z){return bare(x,z)+(KR.vnoise(x/600,.5,z/600,7)-.5)*6;}
 const sample={bare,rock:(x,z)=>.15+.75*north(x,z),wet:()=>.8,temp:()=>22};
 const C=KC.build({id:0,level:LV,mask:MASK,seed:1234,sample});
@@ -88,6 +89,30 @@ function stepCheck(f){const s=KR.stream(5);let worst=0;
 
 // ---- the fields
 {const F={};KC.fields(C,-18000,-18000+0,F);const keys=KC.FIELDS.every(k=>k in F);ok(keys,'fields: '+KC.FIELDS.join(', '),'');}
+
+// ---- islets and stamped islands
+// the islet: its land (bare over 12 m: its outline wanders by a quarter of the coast's warp) stays over the level
+function isletLost(Co){const s=KR.stream(13),cx=ICX,cz=ICZ;let n=0,lost=0;
+ for(let k=0;k<4000&&n<400;k++){const a=s.next()*2*Math.PI,r=Math.sqrt(s.next())*1600,x=cx+Math.cos(a)*r,z=cz+Math.sin(a)*r;if(bare(x,z)<LV+12)continue;n++;
+  if(KC.shape(Co,x,z,detail(x,z),0)<=LV)lost++;}
+ return{n,lost};}
+// and has a coast: on its land's own water line (bare = the level) the coast field is near 0
+function isletShore(Co){const A={cls:new Float32Array(5)};let worst=0;
+ for(let k=0;k<64;k++){const a=k/64*2*Math.PI;let lo=0,hi=2600;for(let q=0;q<40;q++){const m=(lo+hi)/2;if(bare(ICX+Math.cos(a)*m,ICZ+Math.sin(a)*m)>LV)lo=m;else hi=m;}
+  const q=KC.at(Co,ICX+Math.cos(a)*lo,ICZ+Math.sin(a)*lo,0,A);worst=Math.max(worst,Math.abs(q.c));}
+ return worst;}
+{const r=isletLost(C),w=isletShore(C);ok(C.islets>=1&&r.n>100&&r.lost===0&&w<400,'islets: the islet keeps its land over the level, its coast near its own water line',C.islets+' islet(s); '+r.lost+' of '+r.n+' land points lost; the field within '+w.toFixed(0)+' m of 0 on its water line');
+ const off=KC.build({id:0,level:LV,mask:MASK,seed:1234,sample,opts:{islet:null}}),w2=isletShore(off);
+ neg(w2>1000,'(no islet rule) the blur has taken it: no coast on its water line','the field '+w2.toFixed(0)+' m off 0');}
+// a stamped island (a sub-cell landform) in deep water: its crest over the level, its foot under it, sign-safe round it
+{const L={id:'test',x:X0+2000,z:Z0+2000,r:300,top:30},S=KC.build({id:0,level:LV,mask:MASK,seed:1234,sample,islands:[L]}),A={cls:new Float32Array(5)};
+ const top=KC.shape(S,L.x,L.z,detail(L.x,L.z),0),foot=KC.shape(S,L.x+L.r*1.6,L.z,detail(L.x+L.r*1.6,L.z),0);
+ const s=KR.stream(17);let n=0,bad=0;for(let k=0;k<800;k++){const a=s.next()*2*Math.PI,d=s.next()*L.r*1.8,x=L.x+Math.cos(a)*d,z=L.z+Math.sin(a)*d,q=KC.at(S,x,z,0,A);
+  if(Math.abs(q.c)<1)continue;n++;if((KC.shape(S,x,z,detail(x,z),0)>LV)!==(q.c>0))bad++;}
+ ok(Math.abs(top-LV-30)<3&&foot<LV&&bad===0,'stamped island: its crest at its top, its foot under the level, the ground on the field\'s side round it','crest '+(top-LV).toFixed(1)+' m, foot '+(foot-LV).toFixed(1)+' m, '+bad+' of '+n+' points on the wrong side');
+ neg(KC.shape(C,L.x,L.z,detail(L.x,L.z),0)<LV,'(not stamped) the spot is open water','');
+ const cs=(()=>{const st=0,stepAt=(x)=>KC.shape(S,x,L.z,detail(x,L.z),0);let w=0;for(let x=L.x-L.r*1.5;x<L.x+L.r*1.5;x+=7)w=Math.max(w,Math.abs(stepAt(x+.001)-stepAt(x)));return w;})();
+ ok(cs<.2,'stamped island: continuous across it','worst step '+cs.toFixed(3)+' m in 1 mm');}
 
 // ---- golden
 {const g={field:KC.hash(C),mask:(()=>{let h=0x811C9DC5>>>0;for(const b of NM.data){h^=b;h=Math.imul(h,0x01000193)>>>0;}return('0000000'+h.toString(16)).slice(-8);})()};
