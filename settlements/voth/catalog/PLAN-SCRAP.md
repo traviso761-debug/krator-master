@@ -72,6 +72,7 @@ the girders blackened, the bronze dull. Only the civic gold and purple are brigh
 | variation | the engine's seeded stream per entry and variant (`F.rnd`, `F.pick`, `F.rr`), as every catalog registry | no own PRNG |
 | walk records | the registries' `walkRec` contract (`catalog/README.md`, "Walk records") | every stair and ladder goes through the kit's helper |
 | LOD | `catalog/lod.js`, automatic from part size | big masses as big primitives, detail on top |
+| textures | the material library (`core/materials/library`) through `catalog/materials.json` and `tools/textures/pack.py`, applied by core/catalog's detail maps (`krator-furniture-detail.js`, `KF_API.detailize`: triplanar, grey detail under the buildings' own colours) | surfaces named by texture family (`vsStone/stone`: `stone.cut`; `vsBasalt`: `rock.basalt.vesicular`; `vsMud`: `earth.adobe`; `vsPanel`: `metal.enamel.scoured`; `vsVerd`: `metal.bronze.verdigris`; `vsSteel`: `metal.iron.pitted`; `vsBronze`: `metal.bronze.cast`; `vsWood`: `wood.weathered_brown_planks`; `vsCloth`: `cloth.canvas`). The owner, 2026-11-12: "these look very lightly textured, can we wire in textures?" On the catalog page `layout.js` builds scrap entries unmerged and detailizes them; `lod.js` and the city build are untouched |
 | tags | the `ASSET` record's culture, family, districts, wealth | core/city reads them when a city takes the registry |
 | check | `catalog/shoot.py --audit --src voth-scrap` (sizes, triangles per LOD level, errors) and its sheets | looked at, two rounds |
 
