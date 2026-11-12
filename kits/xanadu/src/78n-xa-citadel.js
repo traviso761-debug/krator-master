@@ -259,7 +259,8 @@ function buildXaCitVizier(G,o){reseed(33011);const it=xcItem('xa_cit_vizier'),C=
  const cobalt=xC(0x1c2fb8),turq=xC(0x36c0c8),lemon=xC(0xf0d040);
  vnReg("Vizier's palace",0,-18,24,12);vnReg("Vizier's palace — the Divan",-8,-27,10,6,{part:'divan'});vnReg("Vizier's palace — pool garden",0,28,20,3,{part:'garden'});
  // the house: Majorelle cobalt outside on a zellige dado, turquoise bands at the floors
- if(it)xcPlan(it,{ext:{core:'xPaint',coreC:cobalt,dado:'xmZel',band:'xPaint',bandC:turq},partC:xC(0xeadfcf)});
+ /* the cobalt on the textured lime-wash, not the flat paint (the owner, 2026-11-12: "vizier palace wall needs texture") */
+ if(it)xcPlan(it,{ext:{core:'xWashB',coreC:cobalt,dado:'xmZel',band:'xPaint',bandC:turq},partC:xC(0xeadfcf)});
  // the loggias' front: the three arches of the garden face, a pishtaq rising over the middle one (the Eram pavilion's)
  xmIwan(0,0,10.6,0,6,C.U+2.2,.05,{fw:11,fh:C.top+3.2,t:.6,mat:'Haft',tiers:4,cell:.9,back:false});
  xcParapetRect(-22.3,22.3,-46.3,10.3,C.top,'white');
@@ -267,8 +268,8 @@ function buildXaCitVizier(G,o){reseed(33011);const it=xcItem('xa_cit_vizier'),C=
  // the upper loggia's rail on the garden
  xmBalustrade([-22,10.2],[-3.2,10.2],C.U,{rail:'xmMarW'});xmBalustrade([3.2,10.2],[22,10.2],C.U,{rail:'xmMarW'});
  // the pool garden: its wall with a tiled coping, the gate, the beds of marigolds, cypresses and palms
- for(const s of[-1,1]){vB('xPaint',s*22.3,0,28,.6,2.8,36,0,cobalt);vB('xmZel',s*22.3,2.8,28,.9,.2,36.2,0,null);vB('xPaint',s*12.6,0,46.3,19.4,2.8,.6,0,cobalt);vB('xmZel',s*12.6,2.8,46.3,19.6,.2,.9,0,null);}
- xmArchHead('horseshoe',0,2.2,46.3,0,3,2.4,.8,'Zel','Gold');vB('xPaint',0,2.2+2.4,46.3,3.4,.4,.8,0,cobalt);
+ for(const s of[-1,1]){vB('xWashB',s*22.3,0,28,.6,2.8,36,0,cobalt);vB('xmZel',s*22.3,2.8,28,.9,.2,36.2,0,null);vB('xWashB',s*12.6,0,46.3,19.4,2.8,.6,0,cobalt);vB('xmZel',s*12.6,2.8,46.3,19.6,.2,.9,0,null);}
+ xmArchHead('horseshoe',0,2.2,46.3,0,3,2.4,.8,'Zel','Gold');vB('xWashB',0,2.2+2.4,46.3,3.4,.4,.8,0,cobalt);
  for(const s of[-1,1]){xnXMBed(s*11,28,8,22,0,.05);for(let k=0;k<6;k++)xnCypress(s*5,14+k*4.8,7,.05);xnXMPalm(s*18,18,6,.05);xnXMPalm(s*18,38,6.5,.05);}
  if(lit)for(const s of[-1,1])vnLampPost(s*4,.05,44,3.4);
  void lemon;vnFolk(0,24,4,3);}

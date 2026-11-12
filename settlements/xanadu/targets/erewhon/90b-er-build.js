@@ -13,7 +13,9 @@ const gy=(x,z)=>terrainBase(x,z);
 const CIT_TILES=[];
 function placeTileGround(G,TL,avoidLm){for(const B of G.blocks)planLandmark(B.key,B.x,B.z,0,{v:B.v,y:B.y,ppad:0,noFlat:true,o:B.o});
  const courts=['xa_star_court','xa_plunge_pool','xa_lily_pond','xa_cactus_court','xa_pergola','xa_kiosk','xa_brick_court','xa_bath_pool','xa_vault_pavilion','xa_rill_jets'];let ci=0;
+ const PATH=G.path||null;
  for(let r=0;r<G.NR;r++)for(let c=0;c<G.NC;c++){if(!G.ok[r][c]||G.used[r][c])continue;const x=G.X(c),z=G.Z(r),y=G.Q[r][c];let key,ry;
+  if(PATH&&PATH.has(r,c)){BIO_OBSTACLES.push({x,z,r:5.7});continue;}   // a path's tile: its walk is drawn below (citWalks)
   if(avoidLm&&PLAN.some(P=>{if(!P.landmark||!P.obb)return false;const o=P.obb,dx=x-o.x,dz=z-o.z,cc=Math.cos(o.ry),sn=Math.sin(o.ry);return Math.abs(dx*cc-dz*sn)<o.hx+6&&Math.abs(dx*sn+dz*cc)<o.hz+6;}))continue;   // a landmark stands here
   if((r+c)%3===0){key=courts[ci%courts.length];ci++;ry=[0,Math.PI/2,Math.PI,-Math.PI/2][(r*3+c)%4];}else{key='xa_parterre';ry=[0,Math.PI/2][(r+c)%2];}
   const T=plan(key,x,z,ry,{v:(r+c)%3,y},{h:6,garden:true});T.y=y;TL.push(T);BIO_OBSTACLES.push({x,z,r:5.7});}
@@ -21,10 +23,28 @@ function placeTileGround(G,TL,avoidLm){for(const B of G.blocks)planLandmark(B.ke
  // and the Way's own masonry is the step
  const GWC=typeof GOLDEN_WAY!=='undefined'&&GOLDEN_WAY?GOLDEN_WAY.built:null;
  const stone=xC(xPick(XPAL.stone));const wall=(x,z,w,d,lo,hi)=>{if(GWC&&x+w/2>GWC[0]&&x-w/2<GWC[1]&&z+d/2>GWC[2]&&z-d/2<GWC[3])return;vB('vStone',x,lo-.4,z,w,hi-lo+.5,d,0,stone);vB('vStone',x,hi+.1,z,w+.2,.14,d+.2,0,stone.clone().multiplyScalar(1.06));};
+ /* a wall the path crosses keeps a 3.2 m gap at its middle for the flight (citWalks) */
+ const onPath=(r,c,r2,c2)=>PATH&&PATH.has(r,c)&&PATH.has(r2,c2);
+ const wallGap=(x,z,w,d,lo,hi)=>{const along=w>d,L=along?w:d,s=(L-3.2)/2,o=(L-s)/2;
+  for(const sg of[-1,1])wall(along?x+sg*o:x,along?z:z+sg*o,along?s:w,along?d:s,lo,hi);};
  for(let r=0;r<G.NR;r++)for(let c=0;c<G.NC;c++){if(!G.ok[r][c])continue;const x=G.X(c),z=G.Z(r),q=G.Q[r][c];
-  if(c<G.NC-1&&G.ok[r][c+1]&&Math.abs(q-G.Q[r][c+1])>.05){const n=G.Q[r][c+1];wall(x+4+(q<n?-.3:.3),z,.6,8.2,Math.min(q,n),Math.max(q,n));}
-  if(r<G.NR-1&&G.ok[r+1][c]&&Math.abs(q-G.Q[r+1][c])>.05){const n=G.Q[r+1][c];wall(x,z+4+(q<n?-.3:.3),8.2,.6,Math.min(q,n),Math.max(q,n));}}
+  if(c<G.NC-1&&G.ok[r][c+1]&&Math.abs(q-G.Q[r][c+1])>.05){const n=G.Q[r][c+1];(onPath(r,c,r,c+1)?wallGap:wall)(x+4+(q<n?-.3:.3),z,.6,8.2,Math.min(q,n),Math.max(q,n));}
+  if(r<G.NR-1&&G.ok[r+1][c]&&Math.abs(q-G.Q[r+1][c])>.05){const n=G.Q[r+1][c];(onPath(r,c,r+1,c)?wallGap:wall)(x,z+4+(q<n?-.3:.3),8.2,.6,Math.min(q,n),Math.max(q,n));}}
+ if(PATH)citWalks(G,PATH);
 }
+// the citadel's walks (CIT_PATH, 87-er-layout; the owner, 2026-11-12): on a path's tile or band cell a paved square and an
+// arm 3 m wide to each neighbour on the path; on every link that steps, a flight of solid steps (risers 0.2 m or less,
+// treads 0.27 m) from the high cell's edge down into the low cell, through the wall's gap, and its strip in core/walk. The
+// Dome's precinct keeps its own walks. Paving and flights in the citadel's stone
+function citWalks(G,PATH){const pave=xC(XPAL.stone[0]),stair=xC(XPAL.stone[1]);let flights=0,steps=0;
+ const cellOf=new Map(PATH.cells.map(q=>[q.r+','+q.c,q]));
+ for(const q of PATH.cells){if(q.kind==='dome')continue;const y=q.y;vB('vStone',q.x,y-.06,q.z,3.4,.1,3.4,0,pave);
+  for(const [a,b] of[[0,1],[1,0],[0,-1],[-1,0]]){if(!cellOf.has((q.r+a)+','+(q.c+b)))continue;vB('vStone',q.x+b*2.85,y-.06,q.z+a*2.85,b?2.3:3,.1,a?2.3:3,0,pave);}}
+ for(const L of PATH.links){const A=cellOf.get(L.a.join(',')),B=cellOf.get(L.b.join(','));if(!A||!B)continue;const d=A.y-B.y;if(Math.abs(d)<.3)continue;
+  const hi=d>0?A:B,lo=d>0?B:A,ux=Math.sign(lo.x-hi.x),uz=Math.sign(lo.z-hi.z),ex=(hi.x+lo.x)/2,ez=(hi.z+lo.z)/2,D=Math.abs(d),n=Math.ceil(D/.2),t=.27;
+  for(let k=0;k<n-1;k++){const top=hi.y-(k+1)*D/n,cx=ex+ux*(k+.5)*t,cz=ez+uz*(k+.5)*t;vB('vStone',cx,lo.y-.05,cz,ux?t+.01:2.8,top-lo.y+.05,uz?t+.01:2.8,0,stair);steps++;}
+  flights++;if(typeof KWALK!=='undefined')KWALK.strip({a:[ex-ux*.4,hi.y,ez-uz*.4],b:[ex+ux*((n-1)*t+.3),lo.y,ez+uz*((n-1)*t+.3)],w:2.6,name:'citadel walk flight',tag:'citadel:walk'});}
+ window._citWalks={cells:PATH.cells.length,flights,steps};}
 // the citadel's grounds, then the gridded gardens (GRID_GARDENS: tiles only)
 placeTileGround(CIT_G,CIT_TILES);
 // the Golden Way (kits/xanadu 78o): the descending court from the Pleasure Dome's North Door to the palace's gate iwan and postern,

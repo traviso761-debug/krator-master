@@ -254,8 +254,16 @@ Open:
   them up to 6 m. Once only: iterating ratchets (the Chancellor climbed 18 m). The Dome and the palace keep theirs. A
   strip between two plots at different levels still lies between them (the Chancellor's at 169.5, 6 m over it), so
   the entries need the draft's stairs. Audit after: median 1.71 (was 1.77), 277 pairs over 2 (was 363).
-  Still to build: the draft's stairs between tiles and at the plot entries; doors facing out for the Temple and the
-  Envoys; the kitchens' street door turned south.
+  **The paths built** (`87-er-layout.js` `CIT_PATH`, `90b-er-build.js` `citWalks`): the draft's network as records (106
+  cells, 848 m, 111 links), its tiles regraded along it (no step over 3 m but at fixed ends; the tile before a door at
+  its plot's level), drawn as a paved square and 3 m arms on each path tile and band cell, and on every link that steps
+  a flight of solid steps (risers 0.2 m or less, treads 0.27 m) through a 3.2 m gap in the retaining wall, each with a
+  core/walk strip: 27 flights, 320 steps. Audit after: median 1.51 (was 1.71), 222 of 985 pairs over 2 (was 277).
+  Still open: five links step over 3 m at fixed ends (an entry, the band, the Dome's edge), so their flights run 6 to
+  8 m; the band's ground (`G.at`, nearest tile) can step without a wall where a path crosses it; the Pleasure Dome's
+  south door to the palace gate is still 104 m walked (the Golden Way's own flights); mines to kitchens (the kitchens'
+  door faces north) and the palace's west doors to the Chancellor are the worst left; the Temple and the Envoys have
+  no door facing out; the path tiles are plain walks, the garden pieces fitted to them are next.
 
 ## Erewhon (round 9)
 * The garden district's rectangle lies on 15–40° ground; its tiles are a stepped surface (no neighbour more than a

@@ -239,6 +239,59 @@ cpoly(cg,CIT_POLY,'#4f7f42');cpoly(mg,CIT_POLY,'#00ff00');cpoly(kg,CIT_POLY,KLCO
   const l=Math.hypot(b[0]-a[0],b[1]-a[1]);let nx=-(b[1]-a[1])/l,nz=(b[0]-a[0])/l;if(inPoly(CP,p[0]+nx*2,p[1]+nz*2)){nx=-nx;nz=-nz;}
   const dx=pl[0]-p[0],dz=pl[1]-p[1],dl=Math.hypot(dx,dz);if((dx*nx+dz*nz)/dl<.7)return;if(dl<bd){bd=dl;best={x:p[0],z:p[1],ry:Math.atan2(-nx,-nz)-Math.PI};}});
  if(best)GATES.push(Object.assign(best,{kind:'palace'}));else reportErr('citadel: no gate toward the plaza');}
+// ---------------------------------------------------------------- the citadel's paths (the walk audit's draft; the owner, 2026-11-12)
+// The plots fill the tile grid but for one-tile strips, the band along the wall and the Pleasure Dome's precinct, so the
+// paths run there: from the citadel gate to the tile before each house's street door (its face) and to the Dome's south and
+// north edges (the palace is entered by the Golden Way below the north edge), nearest first, then a cross-link wherever the
+// network makes a neighbour walk more than half again the direct way. The path's tiles are then regraded along it so no step
+// is over 3 m and the tile before a door lies at its plot's level; 90b draws them as walks and every step on the path as a
+// flight through its retaining wall. Records only: cells by grid index, levels, links (core/city will take them over)
+const CIT_PATH=(function(){const G=CIT_G,NR=G.NR,NC=G.NC,K=(r,c)=>r*NC+c,gate=GATES.find(g=>g.kind==='palace');if(!gate)return null;
+ const DOME=G.blocks.find(b=>b.key==='xa_pleasure_dome');
+ const kind=(r,c)=>{if(r<0||c<0||r>=NR||c>=NC)return null;const x=G.X(c),z=G.Z(r);if(!inPoly(CIT_POLY,x,z)||distToLoop(CIT_POLY,x,z)<3.5)return null;
+  const u=G.used[r][c];if(u)return u===DOME?'dome':null;return G.ok[r][c]?'tile':'band';};
+ const lvl=(r,c)=>{const k=kind(r,c);if(k==='tile')return G.Q[r][c];if(k==='dome')return DOME.y;const v=G.at(G.X(c),G.Z(r));return v==null?terrainBase(G.X(c),G.Z(r)):v;};
+ const NB=[[0,1],[1,0],[0,-1],[-1,0]],COST={tile:1,dome:1,band:1.25};
+ /* Dijkstra over the routable cells from a set of sources; allow(r,c,k) narrows it (the network itself, for its distances) */
+ const KD=[],LV=[];for(let r=0;r<NR;r++)for(let c=0;c<NC;c++){KD.push(kind(r,c));LV.push(KD[KD.length-1]?lvl(r,c):0);}
+ const grow=(src,allow)=>{const N=NR*NC,D=new Float64Array(N).fill(Infinity),Pv=new Int32Array(N).fill(-1),done=new Uint8Array(N),H=[];
+  const push=(d,k)=>{H.push([d,k]);let n=H.length-1;while(n>0){const p=(n-1)>>1;if(H[p][0]<=H[n][0])break;[H[p],H[n]]=[H[n],H[p]];n=p;}};
+  const pop=()=>{const t=H[0],l=H.pop();if(H.length){H[0]=l;let n=0;for(;;){const a=2*n+1,b=a+1;let m=n;if(a<H.length&&H[a][0]<H[m][0])m=a;if(b<H.length&&H[b][0]<H[m][0])m=b;if(m===n)break;[H[m],H[n]]=[H[n],H[m]];n=m;}}return t;};
+  for(const k of src){D[k]=0;push(0,k);}
+  while(H.length){const [d,k]=pop();if(done[k])continue;done[k]=1;const r=Math.floor(k/NC),c=k%NC;
+   for(const [a,b] of NB){const r2=r+a,c2=c+b;if(r2<0||c2<0||r2>=NR||c2>=NC)continue;const k2=K(r2,c2),kd=KD[k2];if(!kd||done[k2])continue;if(allow&&!allow(k2))continue;
+    const nd=d+COST[kd]+.35*Math.abs(LV[k2]-LV[k])/1.5;if(nd<D[k2]){D[k2]=nd;Pv[k2]=k;push(nd,k2);}}}
+  return{D,Pv};};
+ /* the targets: the gate's cell; the routable cell on each faced plot's face nearest its middle; the Dome's two edges */
+ const nearest=(x,z,ok)=>{let best=null,bd=1e9;for(let r=0;r<NR;r++)for(let c=0;c<NC;c++){if(!kind(r,c)||(ok&&!ok(r,c)))continue;const d=Math.hypot(G.X(c)-x,G.Z(r)-z);if(d<bd){bd=d;best=[r,c];}}return best;};
+ const T=[{name:'gate',cell:nearest(gate.x,gate.z)}];
+ for(const B of G.blocks){if(B===DOME)continue;if(!B.face||B.face==='ring'){continue;}
+  const mid=B.face[0]==='z'?[B.c0+(B.nc-1)/2,B.face==='z0'?B.r0-1:B.r0+B.nr]:[B.face==='x0'?B.c0-1:B.c0+B.nc,B.r0+(B.nr-1)/2];
+  const cell=nearest(G.X(mid[0]),G.Z(mid[1]),(r,c)=>kind(r,c)!=='dome'&&(B.face==='z0'?r===B.r0-1:B.face==='z1'?r===B.r0+B.nr:B.face==='x0'?c===B.c0-1:c===B.c0+B.nc));
+  if(cell)T.push({name:B.key,cell,plot:B});else reportErr('citadel paths: no tile before '+B.key);}
+ if(DOME){const mc=Math.round(DOME.c0+(DOME.nc-1)/2);T.push({name:'xa_pleasure_dome south',cell:[DOME.r0+DOME.nr-1,mc]});T.push({name:'xa_cit_palace (the Golden Way)',cell:[DOME.r0,mc]});}
+ const net=new Set([K(...T[0].cell)]);const todo=T.slice(1);
+ while(todo.length){const {D,Pv}=grow([...net]);let bi=-1,bd=Infinity;todo.forEach((t,i)=>{const d=D[K(...t.cell)];if(d<bd){bd=d;bi=i;}});
+  if(bi<0){reportErr('citadel paths: no way to '+todo.map(t=>t.name).join(', '));break;}const t=todo.splice(bi,1)[0];for(let k=K(...t.cell);k>=0&&!net.has(k);k=Pv[k])net.add(k);}
+ /* cross-links: a pair whose way on the network is half again its direct way and 40 m longer takes the direct way too */
+ for(let pass=0;pass<4;pass++){let best=null;
+  for(let i=0;i<T.length;i++){const on=grow([K(...T[i].cell)],k=>net.has(k)).D,any=grow([K(...T[i].cell)]);for(let j=i+1;j<T.length;j++){const kj=K(...T[j].cell),wn=on[kj],wa=any.D[kj];
+   if(!isFinite(wn)||!isFinite(wa))continue;const gain=(wn-wa)*8;if(wn>1.5*wa&&gain>40&&(!best||gain>best.gain))best={gain,i,j,Pv:any.Pv};}}
+  if(!best)break;for(let k=K(...T[best.j].cell);k>=0&&k!==K(...T[best.i].cell);k=best.Pv[k])net.add(k);}
+ /* regrade the path's tiles: anchors fixed (the gate, the band, the Dome, the tile before a door at its plot's level), every
+    link within 3 m, the rest as near the ground as that allows; then the grid takes the new levels */
+ const L=new Map(),fixed=new Set();for(const k of net){const r=Math.floor(k/NC),c=k%NC;L.set(k,lvl(r,c));if(kind(r,c)!=='tile')fixed.add(k);}
+ for(const t of T)if(t.plot){const k=K(...t.cell);if(kind(...t.cell)==='tile'){L.set(k,t.plot.y);fixed.add(k);}}
+ const links=[];for(const k of net){const r=Math.floor(k/NC),c=k%NC;for(const [a,b] of[[0,1],[1,0]]){const k2=K(r+a,c+b);if(net.has(k2))links.push([k,k2]);}}
+ const pass=(dir)=>{const V=new Map(L);for(let it=0;it<200;it++){let ch=false;for(const [p,q] of links)for(const [u,v] of[[p,q],[q,p]]){if(fixed.has(u))continue;
+   if(dir<0&&V.get(u)>V.get(v)+3){V.set(u,V.get(v)+3);ch=true;}if(dir>0&&V.get(u)<V.get(v)-3){V.set(u,V.get(v)-3);ch=true;}}if(!ch)break;}return V;};
+ {const lo=pass(-1),hi=pass(1);for(const k of net)if(!fixed.has(k))L.set(k,Math.round((lo.get(k)+hi.get(k))/2/1.5)*1.5);}
+ for(const k of net){const r=Math.floor(k/NC),c=k%NC;if(kind(r,c)==='tile')G.Q[r][c]=L.get(k);}
+ const steep=links.filter(([p,q])=>Math.abs(L.get(p)-L.get(q))>3.05).length;
+ return{cells:[...net].map(k=>{const r=Math.floor(k/NC),c=k%NC;return{r,c,x:G.X(c),z:G.Z(r),y:L.get(k),kind:kind(r,c)};}),
+  has:(r,c)=>net.has(K(r,c)),links:links.map(([p,q])=>({a:[Math.floor(p/NC),p%NC],b:[Math.floor(q/NC),q%NC],ya:L.get(p),yb:L.get(q)})),
+  targets:T.map(t=>({name:t.name,cell:t.cell})),steep,length:net.size*G.U};})();
+CIT_G.path=CIT_PATH;window._citPath=CIT_PATH&&{cells:CIT_PATH.cells.length,length:CIT_PATH.length,links:CIT_PATH.links.length,steep:CIT_PATH.steep};
 for(const g of GATES){disc(g.x,g.z,22,'plaza','#c9b48a');precinct(g.x,g.z,20,g.kind+' gate');}
 // ---------------------------------------------------------------- the plazas, the markets, the parks (painted; the build fills them)
 const PLAZAS=[];
