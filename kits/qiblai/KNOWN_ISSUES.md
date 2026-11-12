@@ -3,13 +3,14 @@
 - [ ] **The culture `qiblai` is not in core/tags' vocabulary yet.** The kit tags its buildings `culture:'qiblai'` (the owner's brief);
   `core/tags/52-core-tags-vocab.js` does not list it, so `KTAGS.page.audit()` counts it as an unknown value (counted, never thrown).
   Adding it moves every page that takes core/tags, so it waits in `TODO.md`, "Ride along with the next all-builds rebuild".
-- [ ] **The eight monasteries and the council have no names yet** (PLAN.md section 9, item 1). `qb_monastery` is one def in eight
-  dresses (`o.v` 0-7) labelled "spoke 1" to "spoke 8"; the names go in when the owner gives them.
+- [ ] **The eight monasteries and the council have no names yet** (PLAN.md section 9, item 1). Each monastery has its own colour
+  (the owner, 2026-11-11: crimson, saffron, gold, green, turquoise, blue, violet, white; `QSPOKE`, `src/89q0-qb-helpers.js`) and is
+  called by it ("Great monastery (spoke 4, Green)") until the names come; the abbots' thrones in the Hall of the Decree wear the same colours.
 - [ ] **The mixed rich street leaves a 4 m alley after the Xanadu merchant's konak** (`xa_rich_c`): it draws 3.3 m past its plot's `w`
   (its cumba), which the street audit measures. A fix belongs in `kits/xanadu` (an honest `w`), not here.
-- [ ] **No Qiblai textures of its own.** Qiblai is drawn in the Xanadu pack (`settlements/xanadu/materials.json`). The plan's three
-  candidates (dressed ashlar for the terraces and ring walls, a beaten-gold roof sheet, prayer-wheel copper with mantra relief) wait for
-  the owner's word (PLAN.md section 9, item 2).
+- [ ] **Two Qiblai textures are owed** (the owner, 2026-11-11: "sure new textures"): the beaten-gold roof sheet and the prayer-wheel
+  copper with mantra relief, `core/materials/PROMPTS-NEEDED.md` section 43. The dressed ashlar is in: `stone.sandstone.ashlar` as the
+  kit's own family `qAshlar` (`materials.json`, `tex/`, bound by `src/89q0z-qb-matlib.js`) on the plinths, the walls' bases and the ghats.
 - [ ] **kits/interiors: a fixture with a small front clearance blocks the wall pieces** (found 2026-11-11, a node probe on the
   interiors core): one room fixture whose `clearance.front` is under 0.4 m (0.2, 0 or absent) anywhere in a room leaves the placer
   unable to fit a required wall piece (the shrine's altar, the hall's table): "no-fit". The kit floors every fixture's front at 0.4 m

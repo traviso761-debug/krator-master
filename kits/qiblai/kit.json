@@ -4,8 +4,10 @@
  },
  "deterministic": [
   "89q0-qb-helpers.js",
+  "89q0z-qb-matlib.js",
   "90q-qb-furnish.js"
  ],
+ "pack": "qiblai",
  "interiors": ["kit"],
  "furniture": ["xanadu", "eastabyss", "generic", "generic-goods", "jobs"],
  "furnitureTex": true,

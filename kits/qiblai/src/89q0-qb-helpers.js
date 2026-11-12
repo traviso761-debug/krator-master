@@ -29,6 +29,19 @@ const QRING={
  kora:{wall:XPAL.wash,trim:[XPAL.saffron],band:XPAL.maroon},
  temple:{wall:XPAL.wash,trim:[XPAL.saffron,XPAL.red],band:XPAL.maroon},
 };
+// The eight great monasteries, one a spoke of the wheel, each with its own colour that sets its tone (the owner, 2026-11-11):
+// the wash of its walls, its trim and its twig band; the abbot's throne in the Hall of the Decree wears it too. Their names
+// are still to come (PLAN.md section 9); until then each is called by its colour. Earth-pigment tints over the textured wash.
+const QSPOKE=[
+ {name:'Crimson',wall:0xa8302a,trim:XPAL.saffron,band:0x5a1c1c},
+ {name:'Saffron',wall:0xd8862a,trim:XPAL.white,band:0x7a3a1a},
+ {name:'Gold',wall:0xd4b040,trim:XPAL.red,band:0x6e4a1a},
+ {name:'Green',wall:0x3f7a44,trim:XPAL.saffron,band:0x1f3f24},
+ {name:'Turquoise',wall:0x2a9a94,trim:XPAL.white,band:0x1a4a48},
+ {name:'Blue',wall:0x2a4a9a,trim:XPAL.gold[0],band:0x1a2a5a},
+ {name:'Violet',wall:0x6a3a8a,trim:XPAL.saffron,band:0x3a1a4a},
+ {name:'White',wall:0xeee8dc,trim:XPAL.red,band:0x6e2a2a},
+];
 function qnRingC(ring){const R=QRING[ring]||QRING.lay;return{wall:xC(xPick(R.wall)),trim:xC(xPick(R.trim)),band:R.band?xC(xPick(R.band)):null};}
 const QSTONE=[0xc8c0b0,0xbcb4a4,0xd0c8b8];   // the dressed plinth and terrace stone: a shade lighter than XPAL.stone
 
@@ -41,8 +54,9 @@ kdef('qCubeW98',QBAT98,MAT.xWash);kdef('qCubeD98',QBAT98,MAT.stone);kdef('qCubeE
 // A crisp cube: a box with a light batter (98 % at the top, or the kit's 96 % when the block is tall for its width, as a
 // 2-4 % batter wants). kind: wash | dressed | earth | stone. Returns the top's fraction k.
 function qnBatK(w,h,d){return 1-2*h*.025/Math.min(w,d)>.97?.98:.96;}
-function qnCube(x,y,z,w,h,d,ry,c,kind){const k=qnBatK(w,h,d),L={wash:'W',dressed:'D',earth:'E',stone:'S'}[kind||'wash'];
- kput((k===.98?'qCube':'xBat')+L+(k===.98?'98':'96'),[x,y,z],ry?qEuler(0,ry,0):null,[w,h,d],c||null);return k;}
+// ('ashlar': the dressed ashlar of the kit's own pack, src/89q0z-qb-matlib.js)
+function qnCube(x,y,z,w,h,d,ry,c,kind){const k=qnBatK(w,h,d),L={wash:'W',dressed:'D',earth:'E',stone:'S',ashlar:'A'}[kind||'wash'];
+ kput(L==='A'?'qCubeA'+(k===.98?'98':'96'):(k===.98?'qCube':'xBat')+L+(k===.98?'98':'96'),[x,y,z],ry?qEuler(0,ry,0):null,[w,h,d],c||null);return k;}
 // storeys stacked with the batter carried through, a crisp string course (a thin proud band) at each floor. Returns
 // {y: top, w, d: the top's plan, k}.
 function qnStack(x,y,z,w,d,ry,hs,c,kind,lineC){let yy=y,ww=w,dd=d,k=.98;
@@ -54,7 +68,7 @@ function qnStack(x,y,z,w,d,ry,hs,c,kind,lineC){let yy=y,ww=w,dd=d,k=.98;
 function qnEnds(o){const e=o&&o.ends;if(e==null||e===true)return{l:true,r:true};const s=String(e||'');return{l:s.indexOf('l')>=0,r:s.indexOf('r')>=0};}
 // a dressed plinth (the batter of a terrace) with its stone cap, proud at the front and back only (row houses' plinths meet
 // at the party walls, and two caps overlapping there would fight); returns its top
-function qnPlinth(x,z,w,d,h,ry,c){c=c||xC(xPick(QSTONE));qnCube(x,0,z,w,h,d,ry,c,'dressed');vB('vStone',x,h-.12,z,w,.12,d+.16,ry,c.clone().multiplyScalar(1.06));return h;}
+function qnPlinth(x,z,w,d,h,ry,c){c=c||xC(xPick(QSTONE));qnCube(x,0,z,w,h,d,ry,c,'ashlar');vB('qAshB',x,h-.12,z,w,.12,d+.16,ry,c.clone().multiplyScalar(1.06));return h;}
 
 // ---------------------------------------------------------------- windows in a grid
 // Black trapezoid windows (xnTibWin) in STRICT rows and columns on the faces of a stack (PLAN.md section 4: "the grid

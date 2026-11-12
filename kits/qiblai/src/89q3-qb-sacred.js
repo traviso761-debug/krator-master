@@ -21,11 +21,12 @@ function qnCloister(x,y,z,ry,L,dd,c,o){o=o||{};const wk=2.2,n=Math.max(2,Math.ro
 // the cell ranges round a cloistered court (two storeys of monks' cells, red, the maroon band), the gate range with its
 // gate tower in front, the assembly hall (dukhang) at the back of the court: three storeys, a painted portico, the gilt
 // crown with the wheel and deer. The court holds the spoke's own thing: a chorten, a flag mast, a wheel house or a tree.
-// The dress (o.v): the trim colour, the hall's crown, the court's piece, the storeys of the ranges.
+// The dress (o.v): the spoke's own colour (QSPOKE: walls, trim, band; the owner, 2026-11-11), the hall's crown, the court's
+// piece, the storeys of the ranges.
 function buildQbMonastery(G,o){const V=xV(o)%8;reseed(33501+V);const W=52,D=52,P=1.2,Dr=7;
- const red=xC(xPick(XPAL.redwall)).multiplyScalar(1-(V%3)*.04),wash=xC(xPick(XPAL.wash)),stone=xC(xPick(QSTONE)),band=xC(xPick(XPAL.maroon));
- const trim=xC([XPAL.saffron,XPAL.white,XPAL.turquoise,XPAL.saffron,XPAL.gold[0],XPAL.white,XPAL.blue,XPAL.saffron][V]),hr=V%2?[3.4,3.0,2.8]:[3.4,3.0];
- vnReg('Great monastery (spoke '+(V+1)+')',0,0,30,P+16+5);
+ const SP=QSPOKE[V],red=xC(SP.wall).multiplyScalar(rr(.96,1.02)),wash=xC(xPick(XPAL.wash)),stone=xC(xPick(QSTONE)),band=xC(SP.band);   /* red: the spoke's colour (QSPOKE) */
+ const trim=xC(SP.trim),hr=V%2?[3.4,3.0,2.8]:[3.4,3.0];
+ vnReg('Great monastery (spoke '+(V+1)+', '+SP.name+')',0,0,30,P+16+5,{colour:SP.name.toLowerCase()});
  qnPlinth(0,0,W,D,P,0,stone);
  // the four cell ranges; the front one parted by the gate
  const rr4=[[0,-D/2+Dr/2,W,Dr,Math.PI],[W/2-Dr/2,0,D-2*Dr,Dr,Math.PI/2],[-W/2+Dr/2,0,D-2*Dr,Dr,-Math.PI/2]];
@@ -193,8 +194,8 @@ function buildQbGhats(G,o){reseed(33601+(o.v|0));const V=xV(o),W=48,D=30,H=4.8,s
  vB('xWaterB',0,0,D/2-3.5,W,.12,7,0,xC(XPAL.water));
  const top=-D/2+8,run=(D/2-7)-top,nSt=Math.round(H/.3);
  // nested slabs, each higher one shorter toward the water and a centimetre narrower (no coplanar ends)
- for(let i=0;i<nSt;i++){const ze=top+run*(nSt-i)/nSt;vB('vStone',0,0,(top+ze)/2,W-i*.02,H*(i+1)/nSt,ze-top,0,stone.clone().multiplyScalar(1-.02*(i%2)));}
- vB('vStone',0,0,-D/2+4,W,H,8,0,stone);
+ for(let i=0;i<nSt;i++){const ze=top+run*(nSt-i)/nSt;vB('qAshB',0,0,(top+ze)/2,W-i*.02,H*(i+1)/nSt,ze-top,0,stone.clone().multiplyScalar(1-.02*(i%2)));}
+ vB('qAshB',0,0,-D/2+4,W,H,8,0,stone);
  // the bathing platforms out into the water, each with its umbrella seat
  for(const u of[-14,0,14]){vB('vStone',u,0,D/2-4,6,.4,4,0,stone);vPst('vPost',u+2,0.4,D/2-4,.05,2.6,xC(0x5a4632));
   kput('xConeT',[u+2,3.0,D/2-4],null,[1.6,.6,1.6],xC(xPick([XPAL.saffron,XPAL.red,XPAL.white])));xnFolk(u,.4,D/2-4,2,1.5);}

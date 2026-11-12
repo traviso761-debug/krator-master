@@ -161,6 +161,7 @@ if '--kit' in sys.argv:
 # library's detail maps on the pieces, "interiorSets": [kits/interiors sets]) take the catalog's furniture bundle and the interiors core as one generated fragment, as Iziz's
 # --kit pages do (KratorFurniture, KratorInteriors, ROOM, furnishRoom: closures, so the shared-scope rules skip it)
 KIT_FURN_BUNDLE = '88z-kit-furniture-bundle.js'
+KIT_MATLIB_PACK = '88x2-kit-matlib-pack.js'   # a kit's own library pack (kit.json "pack"), generated
 
 # Fragments with no builder in them: helpers, materials, the scene, the shell.
 DETERMINISTIC = {
@@ -187,7 +188,7 @@ DETERMINISTIC |= set(CORE_ATMOS) | set(CORE_WATER) | {'90-xa-still.js'}   # core
 DETERMINISTIC |= set(CORE_HOST) | set(TAGS_FILES) | {'99-start.js', '91t-xanadu-tags.js', '89-xa-trades.js'}   # core/host (no rnd()); core/rand, core/tags; the take; REG into core/tags (reads only)
 DETERMINISTIC |= set(DOOR_FILES) | {'71c-xa-openings.js', '90-xa-doors.js'}   # core/door, the openings (69e5, 71c), the leaves' hand-over: no rnd()
 if KIT:
-    DETERMINISTIC |= set(KIT.get('deterministic', []))
+    DETERMINISTIC |= set(KIT.get('deterministic', [])) | {KIT_MATLIB_PACK}
 
 # Seed ranges known to collide, kept here so the build stays green while the
 # collision is tracked in KNOWN_ISSUES.md. Remove an entry when it is fixed;
@@ -341,6 +342,11 @@ def build_one(target, do_checks):
     side = None if '--inline-packs' in sys.argv else {}
     bodies[MATLIB_PACK] = matlib_pack.fragment(HERE, 'xanadu', side=side)
     order = sorted(order + [MATLIB_PACK])
+    # a kit with library families of its own (kit.json "pack": its name; its materials.json packed into its tex/ by
+    # tools/textures/pack.py): KMAT.pack('<name>') inlined here, bound by the kit's own fragment (KMAT.bindMat), as Iziz's --kit
+    if KIT and KIT.get('pack') and os.path.isfile(os.path.join(KIT['dir'], 'tex', 'pack.json')):
+        bodies[KIT_MATLIB_PACK] = matlib_pack.fragment(KIT['dir'], KIT['pack'])
+        order = sorted(order + [KIT_MATLIB_PACK])
     if KIT and target in KIT.get('interiors', []):   # a kit target with interiors: the furniture bundle and the interiors core
         sys.path.insert(0, os.path.join(ROOT, 'kits', 'catalog'))
         sys.path.insert(0, os.path.join(ROOT, 'kits', 'interiors'))

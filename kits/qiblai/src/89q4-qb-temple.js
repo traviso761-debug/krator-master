@@ -97,7 +97,7 @@ const qnRun=h=>Math.max(2,Math.round(h/.17))*.34;   // a flight's run for a rise
 function buildQbWall(G,o){reseed(33741+(o.v|0));const V=xV(o),L=30,inner=V===1,H=inner?3.6:8,T=inner?1.4:4;
  const wash=xC(xPick(XPAL.wash)),stone=xC(xPick(QSTONE)),band=xC(xPick(XPAL.maroon));
  vnReg('Ring wall',0,0,15,H+2);
- qnCube(0,0,0,L,1.2,T+.6,0,stone,'dressed');const k=qnCube(0,1.2,0,L,H-1.2,T,0,wash,'wash');
+ qnCube(0,0,0,L,1.2,T+.6,0,stone,'ashlar');const k=qnCube(0,1.2,0,L,H-1.2,T,0,wash,'wash');
  vB('xBandB',0,H-.8,0,L,.5,T*k+.12,0,band);vB('xWashB',0,H-.3,0,L,.3,T*k+.2,0,wash);
  for(const s of[-1,1])vB('xWashB',0,H,s*(T*k/2-.15),L,inner?.5:1.1,.3,0,wash);
  if(!inner)for(let i=0;i<10;i++){const u=-L/2+1.5+i*3;vB('vDarkB',u,H+.35,T*k/2+.02,.25,.5,.06,0);}   // the loops in the parapet
@@ -107,7 +107,7 @@ function buildQbWall(G,o){reseed(33741+(o.v|0));const V=xV(o),L=30,inner=V===1,H
 function buildQbWallCorner(G,o){reseed(33751+(o.v|0));const V=xV(o),inner=V===1,S=inner?6:11,H=inner?6:14;
  const wash=xC(xPick(XPAL.wash)),stone=xC(xPick(QSTONE)),band=xC(xPick(XPAL.maroon));
  vnReg('Wall corner tower',0,0,S*.75,H+4);
- qnCube(0,0,0,S+.6,1.4,S+.6,0,stone,'dressed');const St=qnStack(0,1.4,0,S,S,0,[H-1.4],wash,'wash');
+ qnCube(0,0,0,S+.6,1.4,S+.6,0,stone,'ashlar');const St=qnStack(0,1.4,0,S,S,0,[H-1.4],wash,'wash');
  qnWins(0,1.4,0,S,S,0,[H-1.4],St.k,{pitch:2.6,ww:.3,wh:1.1,kind:'open',trim:xC(XPAL.black),sill:H*.55});
  const t=qnRoof(0,St.y,0,St.w,St.d,0,wash,{band,parapet:.9});
  for(const sx of[-1,1])for(const sz of[-1,1])qnBanner(sx*(St.w/2-.4),t,sz*(St.d/2-.4),inner?1.8:2.6);}
@@ -116,7 +116,7 @@ function buildQbWallCorner(G,o){reseed(33751+(o.v|0));const V=xV(o),inner=V===1,
 function buildQbWallGate(G,o){reseed(33761+(o.v|0));const V=xV(o),inner=V===1,W=inner?16:26,D=inner?8:14,H=inner?9:16,pw=inner?4:6,ph=inner?5:7.5;
  const wash=xC(xPick(XPAL.wash)),red=xC(xPick(XPAL.redwall)),stone=xC(xPick(QSTONE)),band=xC(xPick(XPAL.maroon)),g=xC(xPick(XPAL.gold)),trim=xC(XPAL.saffron);
  vnReg('Gate tower',0,0,W*.6,H+9);
- qnCube(0,0,0,W+.6,1.4,D+.6,0,stone,'dressed');const S=qnStack(0,1.4,0,W,D,0,[H-1.4],wash,'wash');
+ qnCube(0,0,0,W+.6,1.4,D+.6,0,stone,'ashlar');const S=qnStack(0,1.4,0,W,D,0,[H-1.4],wash,'wash');
  // the passage: its dark through-way, the arch frame and the leaves on both faces, the wheel above
  vB('vDarkB',0,0,0,pw,ph,D+.8,0);for(const s of[-1,1]){xnArch('xArchS',0,0,s*(D/2+.32),s>0?0:Math.PI,pw+1.6,ph+1.4,.5,stone);xnDoorway(0,0,s*(D/2+.05),s>0?0:Math.PI,pw,ph-.2,{});}
  qnWheel(0,ph+2.4,D/2+.3,0,inner?.9:1.5,g);

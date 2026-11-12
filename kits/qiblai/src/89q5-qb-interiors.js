@@ -51,7 +51,7 @@ function buildQbIxHall(G,o){reseed(33811+(o.v|0));const W=24,D=18,P=1.0,ch=1.6;
  kput('vCloth',[0,y+.95,-D/2+1.45],qEuler(-1.2,0,0),[1.7,1.4,1],white);qnWheel(0,y+2.4,-D/2+.8,0,.5,g);
  fix.push({kind:'dais',x:0,z:-D/2+2.2,w:6,d:3.2,h:2.8,front:1});
  // the eight abbots' thrones, four a side facing the aisle: timber, a cloth cushion, a hanging of the spoke's colour on the back
- const cols=[XPAL.saffron,XPAL.white,XPAL.turquoise,XPAL.saffron,XPAL.gold[0],XPAL.white,XPAL.blue,XPAL.saffron];
+ const cols=QSPOKE.map(S=>S.wall);   /* each abbot's hanging in his monastery's colour */
  for(let i=0;i<8;i++){const s=i<4?-1:1,k=i%4,x=s*5.2,z=-3.6+k*2.8,ry=-s*Math.PI/2;
   vB('vStone',x,y,z,1.8,.25,1.8,0,xC(xPick(QSTONE)));const b=loc(x,z,0,-.6,ry);vB('vWood',x,y+.25,z,1.1,.36,1.1,ry,tim);vB('vClothB',x,y+.61,z,1.0,.14,1.0,ry,seat);vB('vWood',b[0],y+.75,b[1],1.1,1.2,.16,ry,tim);const h=loc(x,z,0,-.5,ry);vB('vClothB',h[0],y+.85,h[1],.9,.95,.04,ry,xC(cols[i]));
   fix.push({kind:'throne',x,z,ry,w:1.8,d:1.8,h:2,front:.8});}

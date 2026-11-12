@@ -3,7 +3,7 @@
 Every texture or pattern sheet the owner still has to source or generate, each with its finished prompt. Paste a block
 as it is, one image per block. **Everything delivered lives in `PROMPTS-archived.md`** (checked against `core/materials/library/`, `patterns/` and each build's `materials.json` on `origin/main`, 2026-10-19); this file holds only what is still owed.
 
-**Count: 19 prompt blocks** (2026-11-11: +1, `metal.scorched` for the Motor Vehicles kit's burnt ruins, section 36; 2026-11-10: -5, the owner's delivery of that day; 2026-11-09: +3 for the southern highlands' upper stations, section 37; +15 for the hyperjungle's lands and the savannah rims, section 40, 2026-11-08; counted 2026-11-04 before them).
+**Count: 21 prompt blocks** (2026-11-11: +2 for the Qiblai kit, section 43; +1, `metal.scorched` for the Motor Vehicles kit's burnt ruins, section 36; 2026-11-10: -5, the owner's delivery of that day; 2026-11-09: +3 for the southern highlands' upper stations, section 37; +15 for the hyperjungle's lands and the savannah rims, section 40, 2026-11-08; counted 2026-11-04 before them).
 
 **Delivered 2026-11-03:** section 31's five (the Gills: `rock.lamina.pipe`, `mineral.crust.ferromanganese`, `mineral.crust.brucite`,
 `card.breathfringe`, `card.turf.limed`) and ten owed on unmerged branches (High Rift, nwbay, nhighlands, ringisles, the rift rim, Copper Glacier),
@@ -441,6 +441,18 @@ rails and every ruined metal. **3 prompts.** Each takes the base template, then:
 | `ground.asphalt.lanes` | Worn dark asphalt road surface with faded lane paint: fine aggregate showing through the bitumen (#4a4846, #585450), a patched crack running across, and one broken white lane dash (#d8d4c8, worn to 60%) along one edge of the tile and a faded yellow edge line (#c8a040) along the other, so the tile repeats as a lane. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. |
 | `ground.ballast.rail` | Railway track ballast: angular grey granite stones 3 to 6 cm (#7e7a74, #8a8680, #6a6660), packed, dusty with rust-brown fines between them (#6a4a36), two faint darker bands across the tile where sleepers lay. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. |
 | `metal.rail.rusted` | The head and web of a steel rail a thousand years idle: flaking orange-brown rust (#8a4a2c, #a65a36) over pitted dark steel (#4a4644), the running surface a dull grey band along the tile's middle with rust creeping over it, scale lifting at the edges. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. |
+
+## 43. The Qiblai kit (`kits/qiblai`, 2026-11-11)
+
+The holy city of the Decree (`kits/qiblai/PLAN.md` section 9, item 2; the owner, 2026-11-11: "sure new textures"). Its dressed
+stone reuses `stone.sandstone.ashlar` (wired: `kits/qiblai/materials.json`, `qAshlar`). Two are owed. They land as families in
+`kits/qiblai/materials.json` (`qGoldSheet` for the gilt roofs, crowns and finials, now the plain `xGold`; `qMantra` for the prayer
+wheels' drums, now the Xanadu mosaic `xDrumM`), then `python3 tools/textures/pack.py kits/qiblai` and a rebuild. **2 prompts**, both full colour.
+
+| id | Prompt |
+|---|---|
+| `metal.gold.sheet.beaten` | Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a Tibetan temple's gilt roof sheet: hand-beaten copper sheets fire-gilded with gold, laid in overlapping rectangular panels about 60 by 40 cm with narrow raised seams between them, every panel covered in small overlapping hammer facets, the gold rich and warm (#d8a838, #c8902a, #e8c060) and worn thin on the facets' edges so the coppery red beneath shows through (#a8583a), a little dark grime in the seams (#5a4024). Full colour: keep the gold and copper as they are, do not tint. |
+| `metal.copper.mantra` | Seamless tileable texture, square, 2048x2048. Orthographic view of a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: the hammered copper skin of a great prayer wheel's drum, embossed in repoussé: four rows of raised syllable glyphs in a strict square grid, each glyph an invented angular sign built from short straight strokes and dots on a square cell (not any real alphabet: no Tibetan, Devanagari, Chinese, Arabic or Latin letters), each row between two raised beaded bands; the copper reddish-brown (#a8603a, #8a4a2c), the raised glyphs and beads rubbed bright by hands (#d89058), green-blue verdigris (#4a8a78) and dark tarnish (#3a2a20) in the recesses. Full colour: keep the copper and verdigris as they are, do not tint. |
 
 ## Gaps with no prompt yet
 

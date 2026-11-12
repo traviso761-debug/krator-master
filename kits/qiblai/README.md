@@ -33,7 +33,7 @@ the furniture bundle and the interiors core for the Q6 rooms). Xanadu's own page
 | Light | electric only on rich and civic (`xLit()`) | the same |
 | Wealth tags | `poor`, `middle`, `rich`, `civic` | the same |
 | Colour | wash, earth, redwall, maroon band, gold | the same palette; the colour shows the ring (`QRING`): white wash lay, red clergy, saffron-trimmed white kora, white and gold Temple Mountain |
-| Materials | the Xanadu pack | the Xanadu pack (no new sets yet: `KNOWN_ISSUES.md`) |
+| Materials | the Xanadu pack | the Xanadu pack, and the kit's own (`materials.json`, `tex/`: `qAshlar`, the dressed ashlar); two sets owed (`KNOWN_ISSUES.md`) |
 
 **The mixed street** (`src/89q9-qb-street.js`): three streets, poor, middle and rich, where Qiblai's row houses in runs stand plot
 to plot between Xanadu houses on one street line. `verify.py --assert` measures each house's drawn footprint from the kit's instances
@@ -58,7 +58,7 @@ and fails on two neighbours that overlap by more than 0.3 m.
 | Trades | `qb_shop_row`, `qb_workshop`, `qb_bakery`, `qb_butcher`, `qb_weaver`, `qb_brewhouse`, `qb_tannery` |
 | Guilds | `qb_guild_gold`, `qb_guild_mason`, `qb_guild_spice`, `qb_guild_lodge` (Farmers', Miners', Alchemists' by `o.v`) |
 | Civic | `qb_gate_market`, `qb_bath`, `qb_granary` |
-| Sacred | `qb_monastery` (eight dresses, `o.v` 0-7: one a spoke), `qb_college`, `qb_gate_temple`, `qb_chorten` (three sizes), `qb_kora_arcade`, `qb_kora_corner`, `qb_wheel_house` (`o.v` 2 water-driven), `qb_shrine` |
+| Sacred | `qb_monastery` (eight dresses, `o.v` 0-7: one a spoke, each in its own colour, `QSPOKE`), `qb_college`, `qb_gate_temple`, `qb_chorten` (three sizes), `qb_kora_arcade`, `qb_kora_corner`, `qb_wheel_house` (`o.v` 2 water-driven), `qb_shrine` |
 | Pilgrims | `qb_hostel`, `qb_caravanserai`, `qb_ghats` (+z is the river) |
 | The Temple Mountain | `qb_temple`, `qb_hall_decree`, `qb_treasury`, `qb_great_wheel` |
 | Walls and gates | `qb_wall` (`o.v` 0 outer, 1 inner low, 2 with a tower), `qb_wall_corner`, `qb_wall_gate` (`o.v` 1 the inner rings') |
