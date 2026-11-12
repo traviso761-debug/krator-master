@@ -155,6 +155,24 @@ of schedule falls due over the hour's first minutes instead of all at :00 (the h
 stay consistent (nothing waits). A world may add an actor's own `lagBase` minutes (the Voth city's trades in two
 buckets, half of them a half-hour later).
 
+**Riding** (opt-in: the page lists `ride/78-sim-ride.js`, and `ride/79-sim-ride-porters.js` for porters; PLAN-RIDING.md).
+A **ride source** (`SIM.rideSource`) is one train: a track (`{pts, cum, len}`), a `KSCHED.timeline` of its fixed A end along
+it (dwells named `stop:<id>:<side>` or `stop:<id>`), cars `{off, b, cap: {seats, stand}, seats: [{id, at, yaw}], stand, doors:
+[{id, side, at}]}` in their own frame (car k's middle at s - off), stops `{place, side, gap, wait: [[x, y, z]...]}`; a gap's
+recorded walk between two stops by `SIM.rideFootpath({from, to, pts})`. A task's leg may carry `frame: {source, k}`: its route is
+in car k's frame and `SIM.pose` poses it through the car. `SIM.journey(a, {to})` plans (a connection scan over the runs,
+the walks between stops among the footpaths) and bakes walk, wait, board, ride, alight, walk; the actor is `driven` until
+it arrives. Occupancy is counted per run and car; `SIM.RIDE.log` holds every door crossing; `SIM.rideAudit()` checks them
+against the door windows and the room. `SIM.vehiclePose` answers a ride source, so `SIM.trade({line: <source>})` carries
+goods on a train; `SIM.porters({route, crew})` walks a crew in step with a timer route's carrier (a gap between two
+segments). `SIM.rideExportMotion` is `SIM.exportMotion` with each leg's frame and the sources (`ride/kride.gd` replays it).
+R6 (PLAN-RIDING.md section 8c): `SIM.lineEconomy({id, goods, lojes: [{id, stop, pop, makes, uses, stock}], links: [{from, to,
+rail | porters}]})` (`ride/80-sim-ride-line.js`) declares a line's settlements as books only (a store at each station, making
+and using by the hour from the population, no actors), its routes on the trains and porters, and the through-demand (each
+hop's `expect` = the net deficit beyond it, each good one way a hop); a role or actor with `ride: true` takes the train when
+the resolver's walk is impossible or slower (`ride/81-sim-ride-choose.js` wraps `SIM.plan`); `SIM.rideFromTransport(route,
+{car, stops})` turns a non-exclusive `SIM.transport` into one ride source a vessel.
+
 ## Settlements and their economies (P7a, 2026-10-19)
 
 A page may hold several settlements, each with its own economy (`settlements/isle-demo/PLAN.md` section 9). It is

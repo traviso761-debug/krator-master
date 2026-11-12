@@ -161,6 +161,18 @@
                                "port":  8831
                            },
                            {
+                               "name":  "ride-lab",
+                               "runtimeExecutable":  "python",
+                               "runtimeArgs":  [
+                                                   "-m",
+                                                   "http.server",
+                                                   "8857",
+                                                   "--directory",
+                                                   "core/simulation/ride/lab/dist"
+                                               ],
+                               "port":  8857
+                           },
+                           {
                              "name": "motor-vehicles",
                              "runtimeExecutable": "python",
                              "runtimeArgs": ["-m", "http.server", "8797", "--directory", "kits/motor-vehicles"],
