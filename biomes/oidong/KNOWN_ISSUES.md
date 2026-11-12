@@ -1,7 +1,7 @@
 # Oidong Valley — known issues
 
-- [ ] **No fauna**: it goes to the one fauna kit (biomes/README.md). The valley is the safest ground on the map in any case,
-      but the monks' dairy and the pools' birds are not drawn.
+- [ ] **No fauna yet**: it goes to the one fauna kit (biomes/README.md). The owner asked for peaceful fauna (2026-11-11): a moon
+      bear, the yak dairy, pool deer, mist cranes, petal moths and lotus carp, none aggressive to people (NOTES.md, "Fauna"). Not built.
 - [x] **The Koppen classes are the scale model's** (2026-10-19, the owner: "change the tags"): the 'Oidong Valley' overlay is on the
       model's biome layer (px 725-1035 by 1234-1350, 69,000 km2, walls included) and its rasters (4.21) read: the floor under
       2,600 m Cfb 44 %, BSk 24 %, Csa 11 %, Cfa 9 %, highland lakes 8 %, median rain 290 mm (wetter in the east: ~1,035 mm at

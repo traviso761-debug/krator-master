@@ -551,3 +551,21 @@ valley (SSE), ALONG the wall's strike (ENE).
   their dry-stone walls and stalk rows; the cairned way up beside the falls. The wet season, its fog. The ground's layers: red soil, the
   forest's litter, grass (15 units).
 
+## Fauna (proposed 2026-11-11, awaiting the owner)
+
+Drawn by `kits/fauna` and tagged by biome (`biomes/README.md`, "A fauna kit"); placed by `FAUNALANDS` (`kits/fauna/fauna-lands.js`).
+The brief (`kits/fauna/BIOME-FAUNA-PLAN.md`): two grazers, a predator, a flyer and a water creature, with **at least one animal
+found nowhere else**. **New** = to be built in the kit; *shared* = an existing key that also gets this biome's tag, because its
+range plausibly runs across the border. Nothing here is built.
+
+| Role | Animal | Status | Where | Why it is here |
+|---|---|---|---|---|
+| water | **playa shrimp** | **new, unique** | the salt playa on step 4, in the days of sheet water after a storm | a tadpole shrimp (*Triops*), forearm-long in the dense, warm air at the low end. Its eggs lie dormant in the salt for years; a storm fills the pan and within a day the sheet water is thick with them, then they are gone. The valley's only open water belongs to them. Drawn as a short-lived swarm on a storm flag (`core/atmos` weather) |
+| grazer | *argali*, *chamois* | shared (shighlands) | the north wall and the north arm (Cfa/Csa, the wet country) | the north wall's forest is the southern highlands' |
+| grazer | *desert-oryx*, *salt-beetle* | shared (sedesert) | steps 3-4 and the playa's edge (BSk, +15 to +22 °C) | steps 3-4 already read the sedesert's hot-steppe shrubs |
+| predator | *mountain-lion* | shared (shighlands) | the north wall and the fronts | |
+| predator | *coyote* | shared (sedesert) | steps 2-4 | |
+| flyer | *mountain-condor* | shared (shighlands) | over the fronts' updrafts | |
+| flyer | *giant-bat* | shared (hyperjungle; drawn wild) | the tube mouths | section 5's guano: the colonies roost just inside the mouths where the Talovolci harvest |
+| head (the Hearths) | fin-mouse, fin-owl, hearth-stalker; *cinder-crawler*, *cavern-leaper* | the Hearths' plan (the first three not built yet) | the vent pit and the tube mouths at step 1 | `biomes/hearths/PLAN.md`; read in place, not this kit's |
+| domestic | *goat*, *sheep* | shared | the Talovolci's rille farms | |

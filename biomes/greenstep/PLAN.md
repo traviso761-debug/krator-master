@@ -322,3 +322,22 @@ To realize this plan cleanly and honestly in [`build_425_master.py`](../../tools
 - **The model notes** above (the shield's centre, Terrace I's height, the river's mouth and its two discharge fields) go to Gemini
   when the model is next touched; none blocks the kit.
 - The *proposed* Vrivolci and Talovolci words in sections 2-4 are the plan's, unchanged; the owner's yes before they go into `LORE.md`.
+## Fauna (proposed 2026-11-11, awaiting the owner)
+
+Drawn by `kits/fauna` and tagged by biome (`biomes/README.md`, "A fauna kit"); placed by `FAUNALANDS` (`kits/fauna/fauna-lands.js`).
+The brief (`kits/fauna/BIOME-FAUNA-PLAN.md`): two grazers, a predator, a flyer and a water creature, with **at least one animal
+found nowhere else**. **New** = to be built in the kit; *shared* = an existing key that also gets this biome's tag, because its
+range plausibly runs across the border. Nothing here is built.
+
+| Role | Animal | Status | Where | Why it is here |
+|---|---|---|---|---|
+| flyer | **veil swift** | **new, unique** | behind the curtain waterfalls of the four risers; over the terraces | a swift that nests on the wet basalt **behind** the 350-460 m curtains, flying through the falling water to reach its nest, as Earth's black swifts do. Thousands at each riser; at dusk they pour out of the mist plumes. Built on `faHiBird` |
+| grazer | **mosshorn** | **new, unique** | Terrace IV's cloud forest and the moss-padded basalt bridges | a slow, heavy six-limbed browser (`faWdHex`, `amb`, `stock`) with a shaggy, moss-holding coat and a low swept horn it uses to rake the half-metre moss off the bridges and colonnades. Its coat grows moss of its own in the fog, so a standing mosshorn is hard to tell from a boulder. The Free Giants keep some half-tame |
+| grazer | *duckbill-browser*, *cypress-glider* | shared (swlowlands) | Terraces I-II, the lower rainforest | the lower belts are the SW lowlands' flora, and the valley opens onto them |
+| grazer | *argali*, *chamois* | shared (shighlands) | the paramo on Terrace V and the rim shoulders | the upper belts are the southern highlands' |
+| predator | *ridge-raptor* | shared (swlowlands) | Terraces I-II | |
+| predator | *mountain-lion* | shared (shighlands) | Terraces III-V | |
+| flyer | *sail-wing* | shared (swlowlands) | over the risers' updrafts | |
+| water | *giant-hellbender* | shared (shighlands) | the plunge basins and the rille streams | the highlands' giant salamander in clean, cold, fast water |
+| water | *long-snout-gharial*, *sail-skimmer* | shared (swlowlands) | the Clodosriba's lower course toward the Lake of Shim | |
+| domestic | *goat*, *sheep*, *burden-beast* | shared | the Giants' terrace farms and Tallwalls | runaways bring the stock of every people; the burden beast for the Giants' loads |

@@ -83,3 +83,36 @@ walls stand at head +-90. Without it the showcase is drawn as before (head 90, p
 The valley's pools are kept open by the vents on its north rim: the Cold Hearths (4,333 m) and the lower vent (3,322 m) on scale model 5.1 are the
 chilly valley's own warmth, the reason its mirror-still pools never freeze. The sentence's wording for `LORE.md` 6.15 is still a proposal; the
 Cold Hearths are station 3 (`--station hearths`).
+
+## Fauna (proposed 2026-11-11, the owner's ask: peaceful animals)
+
+The owner (2026-11-11): Oidong should have some fauna after all, **peaceful and never aggressive to people**: a black bear, the yak,
+and some peaceful grazers and flyers. This replaces the old "no fauna" rule. The valley stays the safest ground on Krator,
+because nothing here hunts people, guards against them or stings. Drawn by `kits/fauna`, tagged `oidong`, placed by `FAUNALANDS`.
+Proposed, nothing built yet.
+
+**The rule.** Every animal tagged `oidong` has `temperament` `'docile'` or `'skittish'` and `aggression` 0 toward people. It has no
+predator role that touches people or their stock. The bear eats fruit, nuts and roots and shrugs people off. A host check fails any
+`oidong` animal with aggression > 0 or temperament `'defensive'` or `'aggressive'` (with a negative: a planted aggressive entry
+must fail).
+
+| Role | Animal | Status | Where | What it is |
+|---|---|---|---|---|
+| big animal (omnivore, browses) | **moon bear** | **new, unique** | the cherry groves, the sacred figs, the camphor shade, the lotus margins | an Asiatic black bear (`faWdQuad`, a heavy round build with a shaggy ruff), black with a cream crescent on the chest. It eats fallen cherries, figs, lotus seeds and the bell-pod beads, and digs roots on the terraces. Docile, aggression 0: it ambles past pilgrims and sleeps in the moss. The monks leave the windfall under the oldest cherry for it. Low `fleeDistance`, slow `speed`, `schedule` dawn and dusk |
+| grazer | *yak* | shared (xanadu; domestic) | the monks' dairy round Longsong and the monasteries; the upper meadows | the dairy the known issues ask for: butter for the lamps, milk and cheese. Herds of 6-12, a herder's bell variant if the kit adds one |
+| grazer | **pool deer** | **new, unique** | the pools' shallows and the moss gardens | a small tuskless water deer (`faWdQuad`, `sleek`), soft fawn-grey with pale dapples that pick up the pastel palette's iridescent second colour at grazing angles. It wades the pools to eat the lotus pads and grazes the moss. Skittish but tame near the monasteries, in pairs and small family groups. It is the valley's own, as the giant lotus is |
+| grazer | *plateau-kiang* | shared (xanadu) | the gravel flats and the BSk at the valley's dry west end | Xanadu's wild ass comes over the pass with Xanadu's plants. Skittish |
+| flyer | **mist crane** | **new, unique** | the pools, the gravel flats, the marsh margins; flying over the mist in lines | a tall pale crane (`faHiBird`, a wader build), white and pearl-grey with a soft rose crown: **the pools' birds** the known issues ask for. Pairs dance on the gravel flats in spring. Holy to the monks; never hunted |
+| flyer | **petal moth** | **new, unique** | the cherry and haze-blossom groves, at dusk | a moth with a 20-30 cm span, blush and white like the blossom, so a swarm over a grove reads as petals blowing upward. Feeds on the lotus trumpet's nectar. Built as one of the hyperjungle file's moths in the valley's palette |
+| flyer | *giant-honeybee* | shared (domestic) | the monks' hives on the terraces | the Order's honey and wax; docile |
+| flyer | *bone-eater* | shared (xanadu) | high over the walls only | a harmless scavenger on the rims, never on the floor |
+| water | **lotus carp** | **new, unique** | the pools under the giant lotus | a large pastel carp (`faWdFish`): cream, peach and slate, after koi gone wild over centuries. The monks feed them; they rise at a footfall on the pool's edge |
+| water | *ice-lake-char* | shared (xanadu) | the cold tarns of the upper valley and the passes | |
+
+**Left out on purpose:** Xanadu's **cloud leopard** (a predator; it stays on Xanadu's side of the pass) and anything that stings.
+The Cold Hearths' fauna (`biomes/hearths`, station 3) is the Hearths' and stays inside the vents' discs.
+
+**Fit with the kit.** `FAUNALANDS` gets a land `oidong.floor` with no predator density (`density: {predator: 0}`) and low grazer
+density, so the valley reads as quiet: a bear in a grove, a pair of deer at a pool, a crane line overhead, not herds. The moon bear,
+pool deer and mist crane are good first users of `ANIMAL_KIN` if it lands first: the moon bear as a cousin of the shore bear
+(smaller, black, a chest crescent, docile), the pool deer of the marsh deer, the mist crane of a wader.

@@ -358,3 +358,24 @@ section 22 (2026-10-26), which also lists the library sets reused.
 - Names: the owner's or Dalab's for the native species (Dalab knows this country best).
 - How far the Iron Republic's farms reach in, and whether the Republic fights the forest or lives with it.
 - Whether the fishing bridge takes animals bigger than fish.
+
+## Fauna (proposed 2026-11-11, awaiting the owner)
+
+Drawn by `kits/fauna` and tagged by biome (`biomes/README.md`, "A fauna kit"); placed by `FAUNALANDS` (`kits/fauna/fauna-lands.js`).
+The brief (`kits/fauna/BIOME-FAUNA-PLAN.md`): two grazers, a predator, a flyer and a water creature, with **at least one animal
+found nowhere else**. **New** = to be built in the kit; *shared* = an existing key that also gets this biome's tag, because its
+range plausibly runs across the border. Nothing here is built.
+
+| Role | Animal | Status | Where | Why it is here |
+|---|---|---|---|---|
+| grazer | **bald browser** | **new, unique** | the balds under the pillar caps; the tableland | a heavy six-limbed grazer (`faWdHex`, `amb`, `stock`; native, like everything here), teal-grey with a lichen-mottled hide, that browses the bulb heath and rears on its hind pair to crop the green bulb fruits under a pillar cap. Its herds keep the balds open: a bald is the clearing under a cap, and the browsers are why it stays one |
+| flyer | **bead weaver** | **new, unique** | the coves; it lays on the bead cones | the insect the bead cone nurses (section 3: "hung with strings of gold eggs"): a slow, heavy, gold-banded flyer with a 0.8 m span that strings its eggs on the cone's spongy flesh and guards them. Ties the fauna to an existing set piece |
+| predator | **lattice stalker** | **new, unique** | the cove canopy: the lattice oaks | a lean six-limbed ambush hunter on the centaur gait that climbs the lattice oak's braided trunk and **passes through its gaps**; it takes bald browsers' young and bead weavers |
+| water | **cascade ribbon** | **new, unique** | the rain wall's streams, the cascades, the landslide lake (281 m deep) | a long, ribbon-finned native swimmer (`faWdFish`) that climbs the cascades in runs, as eels and gobies climb Earth's falls. **The fishing bridge's prey** (section 3), which answers half of the open question: the bridge takes ribbons, and nothing bigger is planned |
+| flyer | *cap-moth*, *bloom-glint*, *canopy-darter* | shared (swbay) | the low coves at the south-west edge | the bay's fungoid lineage climbs out of the bay with its insects and darters |
+| flyer | *sail-wing* | shared (swlowlands) | the crest's updrafts and the 4 km scarp | the lowlands' pterosaur soars where the wind meets the wall |
+| grazer | *duckbill-browser* | shared (swlowlands) | the lower western ramp (1-2 km) | the one lowland grazer that climbs this far |
+| domestic | *cattle*, *sheep*, *horse* | shared | the Iron Republic's farms in the north only | the plan's contrast: Earth stock only where Earth's farms are |
+
+Native life here owes nothing to Earth (section 3), so every new animal is a six-limbed native and the Earth animals stay inside the
+Republic's polygon.
