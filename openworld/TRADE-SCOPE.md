@@ -783,3 +783,49 @@ reach 33 °C, with 22-34 km²-eq of farmland.
 - **What it reaches:** `kits/crops` (`build.py`, `tests/test-crops.js`, `verify.py --assert`) and every build that reads it.
 
 Sent to the queue on the owner's choice (2026-11-12) as a terrain edit, to run in its turn; the crops wait for implementation.
+
+**A Coyote village on the northern fresh lake** (the owner: "we can add a coyote village at C"). The survey for Reed turned up the
+big fresh lake north of the abyss (~1227,546, 3,428 km², shore ~-287 m). Its south shore at **1220,564** is Aw, ~1,270 mm, +26 °C,
+with ~148 km²-eq of farmland within 10 km, inside the Coyote Kingdom's polygon, ~156 km from Coyote Canyon. A village, to be named,
+sent to the queue on the owner's word.
+
+## 11. The Scyvoi's Baelu (a proposal, 2026-11-12)
+
+The owner: "let's scope the scyvoi lands for baelu sites". **A Baelu** is the Scyvoi's fire-season redoubt: "round fortresses of
+fitted stone on the rocky outcrops of the western drylands" (`kits/scyvoi/README.md:5-6`), r 30 m, with a cistern well ("the water
+lies below the surface") and raised platforms where the bands pitch their tents (`:35-42`). The bands go "to the kopjes and the
+baelu before the fire season, then down to reap after the burn" (`core/camp/PLAN.md:284`): the Baelu is their seat
+(`kind: 'seat'`), with the grazing and the burn mosaic round it.
+
+**The ground.** The Scyvoi's polygon (px 618-729 by 674-950, 38,352 km²) is the low strip between the Inner Wall's scarp and the
+League's lakes: mostly BSh (21,800 km²), with Csa (7,500) and Aw (7,200). Ys, Trigon, Pontus, Tethis, Almua, Tzunfort and Drum stand
+round it.
+- **No granite on the model.** The geology has the whole polygon as sedimentary. The lore's granite kopjes (`LORE.md:581`) are
+  finer than the model's 2 km cells: the crater drylands kit draws them as stations' local relief. So the search took **outcrops in
+  the heights**: a local top 30 m or more over the median of the ground within 6 km.
+- **The other tests:** water within 10 km for the well (a river, a fresh lake or wadis), pasture round it for the bands, 25 km or
+  more from any pin, and the sites 50 km or more apart.
+- **Outside the polygon:** the rest of the northern drylands is Shell Province's, the Beast Riders' and the Screamers', so no Baelu
+  goes there. One site at 912,642 sits on a river with a Boruntun-sounding name (the Kumun Buruku), but it is Shell's.
+
+| | Site | Outcrop | Ground | Water | Pasture (10 km) | Nearest pin |
+|---|---|---|---|---|---|---|
+| **B1** | **651,857**, the south | 103 m over its surroundings, -305 m | Aw, 752 mm, +26 °C | the Cakmak Riviri, 22 m³/s | 276 km²-eq | Tzunfort 69 km |
+| **B2** | **669,831** | 91 m, -651 m | Aw, 800 mm, +29 °C | the Stahr Rhyver, 19 m³/s | 285 | Pontus 68 km |
+| **B3** | **683,802**, the middle | 183 m, -563 m | BSh, 564 mm, +28 °C | wadis (6 wadi px) | 259 | Pontus 83 km |
+| **B4** | **703,733**, the north | **225 m**, the highest outcrop, -897 m | BSh, 564 mm, +30 °C | wadis (7 wadi px) | 185 | Trigon 40 km |
+| **B5** | **725,706**, the far north, on the polygon's edge by Trigon's lake | 84 m, -1,096 m | BSh, 658 mm, +31 °C | wadis (13 wadi px), the lake 8-10 km off | 198 | Trigon 68 km |
+
+They run the length of the Scyvoi's land, 63-336 km apart: two pairs (B1-B2, B4-B5) and B3 between. That reads as five tribes'
+seats, or three seats and two outliers.
+- **Hot ground:** all lie under sea level (-300 to -1,100 m), as the strip does. The Scyvoi "do not overheat easily" (`LORE.md:581`).
+- **Trigon is close:** B4 is 40 km from Trigon (the League). A Baelu there faces the Hykkousoi, the Scyvoi's enemies: a border fort.
+  Move it inland if that is too close.
+- **The south is short:** from B1 down to Drum (-950) no site passes the tests. A sixth Baelu in the south would need a softer
+  outcrop rule.
+
+**What it reaches:**
+- **A pin or a seat?** Either a pin each (an `outpost`, or a new `fort` type) through the queue, or a `core/camp` seat site that is
+  not a pin: the owner's call.
+- **The Baelu building:** `kits/scyvoi` (`54-bl-baelu.js`); its interiors and its quarry are open items (`kits/scyvoi/KNOWN_ISSUES.md:26, 98`).
+- **The trade model:** a Baelu is seasonal, so its people are the bands', counted once (a camp, not a town).
