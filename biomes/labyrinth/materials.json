@@ -1,0 +1,12 @@
+{
+ "build": "labyrinth",
+ "note": "The Labyrinth's adapter onto the material library (core/materials/PLAN.md). The ground's KGROUND layers (84-host-ground.js): ground.steppe (the grazed steppe and meadow: ground.ground003), ground.mud (the trodden banks, the trails and the wallows: ground.brown_mud_02), ground.gravel (the river's bars and the causeways' shoulders), ground.sand (the pond's beach where the banks are low), rock.dome (the knobs' talus and the walls: the glaciated dome's banded gneiss). The flora is the nwlowlands kit's, read in place with its own pack (station 1's first cut: PLAN-GATE.md, KNOWN_ISSUES.md); the Hall and its stacks take the Ancients kit's pack.",
+ "size": 512,
+ "families": {
+  "ground.steppe": {"lib": "ground.ground003", "scale": [2.4, 2.4], "tint": {"keep": 0.55, "mean": null}, "roughLift": 0.3, "mapOnly": true},
+  "ground.mud": {"lib": "ground.brown_mud_02", "scale": [2.0, 2.0], "tint": {"keep": 0.6, "mean": null}, "roughLift": 0.25, "mapOnly": true},
+  "ground.gravel": {"lib": "ground.gravel042", "scale": [2.2, 2.2], "tint": {"keep": 0.6, "mean": null}, "roughLift": 0.35, "mapOnly": true},
+  "ground.sand": {"lib": "ground.coast_sand_01", "scale": [2.4, 2.4], "tint": {"keep": 0.6, "mean": null}, "roughLift": 0.3, "mapOnly": true},
+  "rock.dome": {"lib": "rock.gneiss.banded", "scale": [4, 4], "tint": {"keep": 0.0, "mean": 0.6}, "mapOnly": true, "roughLift": 0.3}
+ }
+}

@@ -62,7 +62,7 @@
     "biomes/farside/tex/wrack.albedo.webp": "6ef097b2934c16c8e1ea763c61fb0b27f4534a2dd9435c0ac027e1aec5bbb365",
     "biomes/nwlowlands/src/50-biome-nwlowlands-species.js": "76226c8dd9be28520d412f74fd5bb648411697a9b3cc2375aad50e9d05ff70bd",
     "biomes/nwlowlands/src/55-biome-nwlowlands-trees.js": "4d28afa5e508070571aaa01b7bb9d0f0a45bc39f378958d19e48477c71911ff4",
-    "biomes/nwlowlands/src/60-biome-nwlowlands-floor.js": "6453e75606cbc8fe44f208fd81a768916839963f372f53fcced605c8e2ec98b9",
+    "biomes/nwlowlands/src/60-biome-nwlowlands-floor.js": "34d677fc1c928abac1c51fabb3c2f1beb257c8466321b1cf981ce859ede03422",
     "biomes/nwlowlands/src/70-biome-nwlowlands.js": "099c64e24473674c8ba89f2158f4ac542977a3221b0eeead7aa4095685cf46c0",
     "biomes/nwlowlands/tex/beard.albedo.webp": "5e39c527ac293c9aa5b428b274756aecb7c5b8dc0ba609d9d6d86396ebde5db8",
     "biomes/nwlowlands/tex/bigfrond.albedo.webp": "3fe28e79714072b2df39421ec7c9789a225b1d438dcda96a23c131984d9bc9c2",
@@ -185,17 +185,18 @@
     "tools/textures/matlib_pack.py": "12a6a058b06ef511a7a14bbd70bfe802349d6d1eea4ddc6b4144ef5f7572f246"
    },
    "listings": {
+    "biomes/farside": "e245dd6768300b379375d79c21a4117b0f2de813ff1a6b7d3d216efe5e32324d",
     "biomes/farside/src": "6e8b8d98dea96e2f5ecf92fa99d0b85bc08a3fddcf7ac3d1f1cd00034efe76c9",
     "core/host": "533b5926eb3dd58d3c3fa68b435e82579b60c45d98e434ab99e890ddd82fe861",
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/farside/dist/farside.html": "3dfcc8e073a0cdde74012f0b2969630b42942751ba8eb7969ddea8e6aa607e83",
+    "biomes/farside/dist/farside.html": "a4bbd0d0a7b0046b3c004da25af82663cc2c304123fac07e344b181e5eb7b8c5",
     "biomes/farside/dist/farside.tex.farside.js": "6fd7911f31e5a5cf6ec104e3d72e4cdcff1b5ad498b1605c8e79bd0ae3aef8e1",
     "biomes/farside/dist/farside.tex.nwlowlands.js": "daecb463b948d27ccd02cb0c05af6ec8cce11a8c5b72f5f30414ed65f49916b5"
    },
    "outputs_raw": {
-    "biomes/farside/dist/farside.html": "3dfcc8e073a0cdde74012f0b2969630b42942751ba8eb7969ddea8e6aa607e83",
+    "biomes/farside/dist/farside.html": "a4bbd0d0a7b0046b3c004da25af82663cc2c304123fac07e344b181e5eb7b8c5",
     "biomes/farside/dist/farside.tex.farside.js": "6fd7911f31e5a5cf6ec104e3d72e4cdcff1b5ad498b1605c8e79bd0ae3aef8e1",
     "biomes/farside/dist/farside.tex.nwlowlands.js": "daecb463b948d27ccd02cb0c05af6ec8cce11a8c5b72f5f30414ed65f49916b5"
    }
@@ -262,7 +263,7 @@
     "biomes/farside/tex/wrack.albedo.webp": "6ef097b2934c16c8e1ea763c61fb0b27f4534a2dd9435c0ac027e1aec5bbb365",
     "biomes/nwlowlands/src/50-biome-nwlowlands-species.js": "76226c8dd9be28520d412f74fd5bb648411697a9b3cc2375aad50e9d05ff70bd",
     "biomes/nwlowlands/src/55-biome-nwlowlands-trees.js": "4d28afa5e508070571aaa01b7bb9d0f0a45bc39f378958d19e48477c71911ff4",
-    "biomes/nwlowlands/src/60-biome-nwlowlands-floor.js": "6453e75606cbc8fe44f208fd81a768916839963f372f53fcced605c8e2ec98b9",
+    "biomes/nwlowlands/src/60-biome-nwlowlands-floor.js": "34d677fc1c928abac1c51fabb3c2f1beb257c8466321b1cf981ce859ede03422",
     "biomes/nwlowlands/src/70-biome-nwlowlands.js": "099c64e24473674c8ba89f2158f4ac542977a3221b0eeead7aa4095685cf46c0",
     "biomes/nwlowlands/tex/beard.albedo.webp": "5e39c527ac293c9aa5b428b274756aecb7c5b8dc0ba609d9d6d86396ebde5db8",
     "biomes/nwlowlands/tex/bigfrond.albedo.webp": "3fe28e79714072b2df39421ec7c9789a225b1d438dcda96a23c131984d9bc9c2",
@@ -391,12 +392,12 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/farside/dist/farside-cloud.html": "e73b92e6295b9f3d88fcbaee64d640304954071508602c82c2b3a9c4a99b2f38",
+    "biomes/farside/dist/farside-cloud.html": "7c53f81f2ad32ced55581903e357f2ce07734af6d39462f8afd8ec8723285cae",
     "biomes/farside/dist/farside.tex.farside.js": "6fd7911f31e5a5cf6ec104e3d72e4cdcff1b5ad498b1605c8e79bd0ae3aef8e1",
     "biomes/farside/dist/farside.tex.nwlowlands.js": "daecb463b948d27ccd02cb0c05af6ec8cce11a8c5b72f5f30414ed65f49916b5"
    },
    "outputs_raw": {
-    "biomes/farside/dist/farside-cloud.html": "e73b92e6295b9f3d88fcbaee64d640304954071508602c82c2b3a9c4a99b2f38",
+    "biomes/farside/dist/farside-cloud.html": "7c53f81f2ad32ced55581903e357f2ce07734af6d39462f8afd8ec8723285cae",
     "biomes/farside/dist/farside.tex.farside.js": "6fd7911f31e5a5cf6ec104e3d72e4cdcff1b5ad498b1605c8e79bd0ae3aef8e1",
     "biomes/farside/dist/farside.tex.nwlowlands.js": "daecb463b948d27ccd02cb0c05af6ec8cce11a8c5b72f5f30414ed65f49916b5"
    }
@@ -463,7 +464,7 @@
     "biomes/farside/tex/wrack.albedo.webp": "6ef097b2934c16c8e1ea763c61fb0b27f4534a2dd9435c0ac027e1aec5bbb365",
     "biomes/nwlowlands/src/50-biome-nwlowlands-species.js": "76226c8dd9be28520d412f74fd5bb648411697a9b3cc2375aad50e9d05ff70bd",
     "biomes/nwlowlands/src/55-biome-nwlowlands-trees.js": "4d28afa5e508070571aaa01b7bb9d0f0a45bc39f378958d19e48477c71911ff4",
-    "biomes/nwlowlands/src/60-biome-nwlowlands-floor.js": "6453e75606cbc8fe44f208fd81a768916839963f372f53fcced605c8e2ec98b9",
+    "biomes/nwlowlands/src/60-biome-nwlowlands-floor.js": "34d677fc1c928abac1c51fabb3c2f1beb257c8466321b1cf981ce859ede03422",
     "biomes/nwlowlands/src/70-biome-nwlowlands.js": "099c64e24473674c8ba89f2158f4ac542977a3221b0eeead7aa4095685cf46c0",
     "biomes/nwlowlands/tex/beard.albedo.webp": "5e39c527ac293c9aa5b428b274756aecb7c5b8dc0ba609d9d6d86396ebde5db8",
     "biomes/nwlowlands/tex/bigfrond.albedo.webp": "3fe28e79714072b2df39421ec7c9789a225b1d438dcda96a23c131984d9bc9c2",
@@ -592,12 +593,12 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/farside/dist/farside-front.html": "42ab75f5e61390a9dfa25a325be7c00f6764493662d508217dd3c0c6a7b11d43",
+    "biomes/farside/dist/farside-front.html": "58231564f2581be1d69aab1c7ab21e70f67c931ffa2db1f4854c472899e3a1ea",
     "biomes/farside/dist/farside.tex.farside.js": "6fd7911f31e5a5cf6ec104e3d72e4cdcff1b5ad498b1605c8e79bd0ae3aef8e1",
     "biomes/farside/dist/farside.tex.nwlowlands.js": "daecb463b948d27ccd02cb0c05af6ec8cce11a8c5b72f5f30414ed65f49916b5"
    },
    "outputs_raw": {
-    "biomes/farside/dist/farside-front.html": "42ab75f5e61390a9dfa25a325be7c00f6764493662d508217dd3c0c6a7b11d43",
+    "biomes/farside/dist/farside-front.html": "58231564f2581be1d69aab1c7ab21e70f67c931ffa2db1f4854c472899e3a1ea",
     "biomes/farside/dist/farside.tex.farside.js": "6fd7911f31e5a5cf6ec104e3d72e4cdcff1b5ad498b1605c8e79bd0ae3aef8e1",
     "biomes/farside/dist/farside.tex.nwlowlands.js": "daecb463b948d27ccd02cb0c05af6ec8cce11a8c5b72f5f30414ed65f49916b5"
    }
@@ -664,7 +665,7 @@
     "biomes/farside/tex/wrack.albedo.webp": "6ef097b2934c16c8e1ea763c61fb0b27f4534a2dd9435c0ac027e1aec5bbb365",
     "biomes/nwlowlands/src/50-biome-nwlowlands-species.js": "76226c8dd9be28520d412f74fd5bb648411697a9b3cc2375aad50e9d05ff70bd",
     "biomes/nwlowlands/src/55-biome-nwlowlands-trees.js": "4d28afa5e508070571aaa01b7bb9d0f0a45bc39f378958d19e48477c71911ff4",
-    "biomes/nwlowlands/src/60-biome-nwlowlands-floor.js": "6453e75606cbc8fe44f208fd81a768916839963f372f53fcced605c8e2ec98b9",
+    "biomes/nwlowlands/src/60-biome-nwlowlands-floor.js": "34d677fc1c928abac1c51fabb3c2f1beb257c8466321b1cf981ce859ede03422",
     "biomes/nwlowlands/src/70-biome-nwlowlands.js": "099c64e24473674c8ba89f2158f4ac542977a3221b0eeead7aa4095685cf46c0",
     "biomes/nwlowlands/tex/beard.albedo.webp": "5e39c527ac293c9aa5b428b274756aecb7c5b8dc0ba609d9d6d86396ebde5db8",
     "biomes/nwlowlands/tex/bigfrond.albedo.webp": "3fe28e79714072b2df39421ec7c9789a225b1d438dcda96a23c131984d9bc9c2",
@@ -793,12 +794,12 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "biomes/farside/dist/farside-strand.html": "abe14ce4914bade32cddbc127e617318015391559edf7f2bf3f46ce35756a63a",
+    "biomes/farside/dist/farside-strand.html": "17031ab592422136b14265ffeb4b52d7af2fc6764fdd40e2739823488ece9b41",
     "biomes/farside/dist/farside.tex.farside.js": "6fd7911f31e5a5cf6ec104e3d72e4cdcff1b5ad498b1605c8e79bd0ae3aef8e1",
     "biomes/farside/dist/farside.tex.nwlowlands.js": "daecb463b948d27ccd02cb0c05af6ec8cce11a8c5b72f5f30414ed65f49916b5"
    },
    "outputs_raw": {
-    "biomes/farside/dist/farside-strand.html": "abe14ce4914bade32cddbc127e617318015391559edf7f2bf3f46ce35756a63a",
+    "biomes/farside/dist/farside-strand.html": "17031ab592422136b14265ffeb4b52d7af2fc6764fdd40e2739823488ece9b41",
     "biomes/farside/dist/farside.tex.farside.js": "6fd7911f31e5a5cf6ec104e3d72e4cdcff1b5ad498b1605c8e79bd0ae3aef8e1",
     "biomes/farside/dist/farside.tex.nwlowlands.js": "daecb463b948d27ccd02cb0c05af6ec8cce11a8c5b72f5f30414ed65f49916b5"
    }

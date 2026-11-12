@@ -115,12 +115,13 @@ below are the kit's targets: Earth's figure, then the Labyrinth's.
 to grip and throw. It is uncannily intelligent. Two-Snouts have been known to drop rocks from the graben rims on human
 hunters, and to set up feints: one shows itself while the rest of the family circles behind.
 
-**The History Monk's account.** A History Monk posted from Longsong to this remote and savage region wrote that the Two-Snouts:
+**The History Monk's account.** A History Monk (**Lu-Tze**: the owner, 2026-11-11) posted from Longsong to this remote and savage region wrote that the Two-Snouts:
 - keep their own funeral customs;
 - paint one another, with ochre and mud;
 - set fermented melons aside for later occasions.
 
-Many at Longsong think he may have had a few too many fermented melons himself. The kit may show all of it, as things a
+Many at Longsong think he may have had a few too many fermented melons himself. **The Two-Snouts are sapient, or very nearly so**
+(the owner, 2026-11-11): the kit shows it, never explains it. The kit may show all of it, as things a
 patient player might glimpse, never as anything explained:
 - a Two-Snout family standing round a bone heap;
 - smeared ochre on a flank;
@@ -154,8 +155,17 @@ pueblos.
 - **Their villages in the biome kit:** the biome kit places the village sites, plinths and keep-clears, as Crystal Cavern
   massed its caverns for the Hearth hold. The pueblos themselves are a **settlement kit** of their own: a culture in
   `kits/catalog` and a building kit, placed with `core/hamlet`.
+- **Their culture, tongue and look** (a first draft, 2026-11-11, awaiting the owner): the culture in `LORE.md` section 6.24 (virtue-taking,
+  the masked heroes, the Hall as necropolis, the Aurochs-horn kingship, the Fellgangs and the Monk); the tongue, Kimr tog, with its
+  names for the Labyrinth's places, in `lore/kimr-tongue.md`; the art and material rules for the kits in `KIMR.md`.
 
-## 6. The arcology at the gate (name TBD)
+## 6. The arcology at the gate: the Hall of Heroes
+
+**Settled 2026-11-11 (`PLAN-GATE.md`):** the owner named it the **Hall of Heroes**, a ruin where the Kimr bury their dead. Its form
+is Soleri's Arcvillage II with five carved stacks bridged to it (`kits/ancients` targets/gatearc), at the neck of the eastern
+opening, px 376.5,1473.5 (not the gate lake), and station 1 is built there. The text below is the seed's.
+
+### The seed (2026-11-09)
 
 At the eastern entrance, the breach to the Rift, stands an Ancient arcology (**TBD**). The natives' ancestors came out of it.
 - **Its site:** the gate lake (1,419 m, px 328,1476) and the lowest ground at px 367,1486, between the chaos mesas.
@@ -219,6 +229,21 @@ World km = 5.1 px x 2; a page's site is the old canvas px (5.1 px less 272, 330)
 Each page is the usual 5.2 km square round its site. Station 1 comes first: it holds the people, the ruin and the animals all
 at once.
 
+**Built 2026-11-11** (`stations/<name>/44z-host-site.js`; one stage, `src/45-host-stage.js`, makes every station's land from its site's
+numbers: lakes, rivers, `KRELIEF.scarp` walls and `KRELIEF.stepcut` pits read off the model's cells, `KSTACKS` knobs, the model's own
+heights past the square). Each site was surveyed again on the model and moved where the plan's point did not suit a page:
+
+| Station | Built at (5.1 px) | Ground | What is drawn |
+|---|---|---|---|
+| 1 The Gate | 376.5,1473.5 (the neck, east of the gate lake: PLAN-GATE.md) | floor 1,131 m, Cfb | the Hall of Heroes in its pond, its five stacks and bridges, the Gowd Warra, six knobs |
+| 2 The Paddocks | 245.5,1479.5 (the graben lake's north-east shore) | lake 1,820 m, Cfb 9 degC, 894 mm | the lake filling the south-west half, the bastion's benched face rising 3.2 km to the north-east, a beck from its ravine |
+| 3 The Mesas | 257.5,1590 (the canyon floor at the east mesa's foot; the plan's point is the mesa's EF top) | floor 1,960 m, BSk 8 degC, 298 mm | the east mesa's face (4 km), the west mesa's prow (3.4 km), seven knobs and pyramids on the floor |
+| 4 The Pit Chain | 148,1466 (the NW pit tarn's north shore) | tarn 2,920 m, Dfc 1 degC, 830 mm | the tarn, the dome's wall 2.5 km to the north, three stepped pits, one holding its own small tarn |
+
+```
+python3 build.py --station paddocks | mesas | pits     # dist/labyrinth-<name>.html
+```
+
 ## 9. For the owner
 
 - **Names:** the arcology, the wild melon, and the Two-Snout's own name in the natives' tongue. The rivers are
@@ -228,7 +253,7 @@ at once.
   villages, and how many people? The floors could feed a few tens of thousands.
 - **The arcology's form** (section 6).
 - **Scale:** are the sizes in section 4 right? The Aurochs as a small bus is the owner's figure; the rest follow it.
-- **The Monk:** does he get a name and an entry in Longsong's records?
+- **The Monk:** Lu-Tze (the owner, 2026-11-11); his report is in `LORE.md` sections 6.15 and 6.24.
 - **Order:** this kit waits behind the integration pass and the queued new-region kits (`biomes/STATIONS-MAP-5.1.md`). The four
   core amendments (section 7) can be done first, since the open world and other kits want them too.
 

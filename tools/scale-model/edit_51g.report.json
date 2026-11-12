@@ -1,0 +1,135 @@
+{
+ "edit": "scale model 5.1, the Gate edit (5.1g1)",
+ "date": "2026-11-11",
+ "pin": {
+  "id": "shallofheroes",
+  "name": "Hall of Heroes",
+  "type": "ruined arcology",
+  "px": 377,
+  "py": 1474,
+  "notes": "The Hall of Heroes: the Kimrs' ancestral arcology at the Labyrinth's one eastern opening, standing in its reflecting pond on the Gowd Warra (r331), 1,131 m, Cfb. After Soleri's Arcvillage II: a hexagon 424 m across and 400 m high on six columns, two topographies, a skylight well; five carved stacks bridged to it. A ruin: the Kimr bury their dead in its broken cells and walk their funerals along its causeways (biomes/labyrinth/PLAN-GATE.md; kits/ancients targets/gatearc; the Labyrinth's station 1, the Gate).",
+  "createdAt": "2026-11-11T12:00:00.000Z"
+ },
+ "region": "rmw8bqrn3dnx4",
+ "points_before": [
+  [
+   322,
+   1412
+  ],
+  [
+   293,
+   1349
+  ],
+  [
+   184,
+   1358
+  ],
+  [
+   113,
+   1402
+  ],
+  [
+   90,
+   1484
+  ],
+  [
+   136,
+   1580
+  ],
+  [
+   187,
+   1616
+  ],
+  [
+   252,
+   1640
+  ],
+  [
+   310,
+   1637
+  ],
+  [
+   354,
+   1607
+  ],
+  [
+   383,
+   1569
+  ],
+  [
+   393,
+   1513
+  ],
+  [
+   345,
+   1463
+  ]
+ ],
+ "points_after": [
+  [
+   322,
+   1412
+  ],
+  [
+   293,
+   1349
+  ],
+  [
+   184,
+   1358
+  ],
+  [
+   113,
+   1402
+  ],
+  [
+   90,
+   1484
+  ],
+  [
+   136,
+   1580
+  ],
+  [
+   187,
+   1616
+  ],
+  [
+   252,
+   1640
+  ],
+  [
+   310,
+   1637
+  ],
+  [
+   354,
+   1607
+  ],
+  [
+   383,
+   1569
+  ],
+  [
+   393,
+   1513
+  ],
+  [
+   394,
+   1484
+  ],
+  [
+   384,
+   1467
+  ],
+  [
+   345,
+   1463
+  ]
+ ],
+ "site_inside_before": false,
+ "site_inside_after": true,
+ "pin_inside_after": true,
+ "reconcile_key": "5.1g1",
+ "data_unchanged": true
+}
