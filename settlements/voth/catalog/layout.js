@@ -28,7 +28,7 @@
   const srcOf = (A) => A.source || 'voth-registry-v1';
   /* sheet order: the new work first, the first-generation registry, then
      the structures captured from the city */
-  const ORDER = ['voth-housing', 'voth-manors', 'voth-shops', 'voth-taverns', 'voth-warehouses',
+  const ORDER = ['voth-scrap', 'voth-housing', 'voth-manors', 'voth-shops', 'voth-taverns', 'voth-warehouses',
     'voth-civic', 'voth-military', 'voth-registry-v1', 'voth-city-captured'];
   const srcRank = (A) => { const i = ORDER.indexOf(srcOf(A)); return i < 0 ? ORDER.length : i; };
   const only = Q.get('only') ? Q.get('only').split(',') : null;
