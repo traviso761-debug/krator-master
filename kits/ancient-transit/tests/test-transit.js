@@ -40,6 +40,18 @@ const ground = (x, z) => 4 * Math.sin(x / 130) * Math.cos(z / 170) + (Math.hypot
     const Yo = Ph.YG.map(v => v + 0.06), g = 0.18; Yo[k] = 10; for (let pass = 0; pass < 4; pass++) { for (let i = 1; i < Ph.n; i++) { const d = Ph.S[i] - Ph.S[i - 1]; Yo[i] = Math.max(Yo[i - 1] - g * d, Math.min(Yo[i - 1] + g * d, Yo[i])); } Yo[k] = 10; for (let i = Ph.n - 2; i >= 0; i--) { const d = Ph.S[i + 1] - Ph.S[i]; Yo[i] = Math.max(Yo[i + 1] - g * d, Math.min(Yo[i + 1] + g * d, Yo[i])); } Yo[k] = 10; }
     let go = 0; for (let i = 1; i < Ph.n; i++) go = Math.max(go, Math.abs(Yo[i] - Yo[i - 1]) / (Ph.S[i] - Ph.S[i - 1])); ok(go > 0.5, 'negative: the old pass notches at a lone pin (' + (go * 100).toFixed(0) + ' %)'); } }
 
+/* a lane across a road at its level (KTRANSIT.crossPins, road o.crosses): held from kerb to kerb, never over the road's surface */
+{ const hill = (x, z) => 0.18 * x, Rd = T.road([[0, -200], [0, 200]], { ground: hill, width: 9, pavement: 1, maxGrade: 0.09 });
+  const pts = [[-150, -60], [150, 60]], P = T.path(pts, { ground: hill, radius: 40, step: 4 }), pins = T.crossPins(P, [Rd], {});
+  ok(pins.filter(p => p.centre).length === 1 && pins.length > 6, 'one centre pin and pins out to the kerbs: ' + pins.length);
+  const over = L => { let worst = -1e9; for (let s = 0; s < L.L; s += 0.5) { const q = L.path.at(s), pr = Rd.path.project(q.x, q.z); if (pr.d <= Rd.width / 2 + Rd.pavement) worst = Math.max(worst, L.yAt(s) - Rd.levelAt(q.x, q.z)); } return worst; };
+  const Ln = T.road(pts, { ground: hill, width: 2.4, pavement: 0, maxGrade: 0.18, radius: 40, crosses: [Rd] });
+  ok(Ln.crossings.length === 1 && over(Ln) < 0.02, 'a lane with crosses stays at the road\'s level across its width: ' + over(Ln).toFixed(3) + ' m');
+  const L1 = T.road(pts, { ground: hill, width: 2.4, pavement: 0, maxGrade: 0.18, radius: 40, pins: pins.filter(p => p.centre) });
+  ok(over(L1) > 0.1, 'negative: pinned on the centre line alone, the lane rides over the road (' + over(L1).toFixed(2) + ' m)');
+  const H = T.hull([[0, 0], [10, 0], [10, 10], [0, 10], [5, 5], [5, 1]]); ok(H.length === 4, 'the hull drops the inner points: ' + H.length);
+  let ccw = 0; for (let i = 0; i < H.length; i++) { const a = H[i], b = H[(i + 1) % H.length]; ccw += a[0] * b[1] - b[0] * a[1]; } ok(ccw > 0, 'the hull runs counter-clockwise'); }
+
 /* the highway */
 { const pts = [[-1400, -300], [-200, -300], [900, 500], [2200, 500]];
   const H = T.highway(pts, { id: 'h1', ground, ramps: [{ s: 700, side: 1, dir: 'off' }, { s: 1500, side: -1, dir: 'on' }] });

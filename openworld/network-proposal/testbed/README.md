@@ -56,13 +56,13 @@ The ground holds:
      15 m upslope, and the ground stood up to 0.3 m through the surface in a sawtooth (at the way × Izani junction).
    - **The check:** it reads the ground as the mesh draws it (`NT_meshH`: the refined cells' 1.8 m triangles), at nine
      points across every road, every 2 m.
-   - **Owed to the kit:** a junction's fill pad; the deepest-cut rule in its demo host.
+   - **Now in the kit:** a junction's fill pad (`draw.junctions`); the deepest-cut rule in its demo page.
 6. **A trail is held at the crossed road's level from kerb to kerb** (+1 m), every 2 m. Pinned only on the road's centre
    line, the trail followed the hillside between its pins and rode up to 0.5 m over the Xanadu road's surface.
-   **Owed to the kit:** a way to hold a lane at a crossed road's level across that road's width.
-7. **Surfaces by class.** The kit draws every road surface as asphalt. The bed gives each class its own surface through
-   `B.finish(name, {mats})`, and a junction takes its widest arm's surface. **Owed to the kit:** a `surface` option on
-   `draw.road` and `draw.junctions`.
+   **Now in the kit:** a road's `crosses` option (`KTRANSIT.crossPins`).
+7. **Surfaces by class.** The kit drew every road surface as asphalt. The bed gave each class its own surface through
+   `B.finish(name, {mats})`, and a junction took its widest arm's surface. **Now in the kit:** a road's `surface`, which
+   `draw.road` and `draw.junctions` lay.
 
 ## The checks (`verify.py --assert`)
 

@@ -952,8 +952,10 @@ Every check has a negative control, and all pass on the GPU. What the bed found:
 6. **Surfaces by class.** The kit draws every road surface as asphalt. The bed gives each class its own surface, and a
    junction takes the surface of its widest road.
 
-**Owed to the kit** (for the transit kit's session; they change no page until a host uses them):
-- a fill pad under a junction;
-- the deepest-cut rule in its demo host;
-- a way to hold a lane at a crossed road's level across its width (the bed pins it by hand);
-- a `surface` option on `draw.road` and `draw.junctions`.
+**Done in the kit** (2026-11-11, the owner: "work on owed issues"). The bed now uses each of these, and the bed's own stand-ins are gone:
+- `KTRANSIT.crossPins`, and a road's `o.crosses`: a lane held at the crossed road's level from kerb to kerb, with a test and a negative;
+- a `surface` on a road record or `draw.road` / `draw.junctions` (`KTRANSIT.surfaceOf`); a junction takes its widest arm's;
+- an earth pad under a junction on fill (`draw.junctions`, `pad: false` to leave it out);
+- the deepest-cut rule in the kit's demo page;
+- `KTRANSIT.hull`.
+The fill envelope under roads (finding 4) stays a host's job: the kit draws embankments, and a host raises its ground to them.

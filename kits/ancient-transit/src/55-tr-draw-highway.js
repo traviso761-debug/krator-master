@@ -12,6 +12,9 @@
 //   KTRANSIT.draw.road(B, road, ground, o)   a road surface at grade along pts ([{x, z, y}] or [[x, z]]): asphalt in bands every 3 m, lines, o.pavement m of pave
 //                                            each side; a KTRANSIT.road record (yAt, levelAt) is drawn at its graded level with embankment sides; road.shift
 //                                            or o.shift carries its points (an earthquake's slip)
+//                                            o.surface (or the record's surface): its family and colour (KTRANSIT.surfaceOf; asphalt)
+//   KTRANSIT.draw.junctions(B, N, ground, o) each junction's patch, corners, crosswalks; o.surface (a value, or J => value) or else its widest
+//                                            arm's road.surface; on fill, an earth pad under it, its sides falling to the ground at 1 : 1.5 (o.pad false: none)
 //   KTRANSIT.draw.rubble(list, o) -> InstancedMesh
 //   KTRANSIT.draw.growth(B, S, M, L, o)      a span's soil, stand-in plants and creepers (S.growth, KTRANSIT.overgrow), in the span's matrix M;
 //                                            o.plants false leaves the plants to the host
@@ -84,9 +87,18 @@
     L.piers.forEach(p => pier(B, p, L, L.width));
     return lamps;
   };
+  /* a road's surface: a family name ('asphalt', 'pave', 'concrete', 'rubble', 'ballast', ...) in its palette colour, or {fam, col} (col a linear
+     [r, g, b] or an sRGB hex); null is the asphalt. The colour multiplies the family's map (the vertex colours) */
+  T.surfaceOf = function (sf) {
+    const col = C(); if (sf == null) return { fam: 'asphalt', col: col.asphalt };
+    if (typeof sf === 'string') return { fam: sf, col: col[sf] || col.asphalt };
+    const fam = sf.fam == null ? (sf.family == null ? 'asphalt' : sf.family) : sf.fam, c = sf.col == null ? col[fam] || col.asphalt : sf.col;
+    return { fam: fam, col: typeof c === 'number' ? T.rgb(c) : c };
+  };
   T.draw.road = function (B, road, ground, o) {
     o = o || {}; const col = C(), w = road.width == null ? 11 : road.width, pave = o.pavement == null ? 0 : o.pavement, rd = road.yAt ? road : null, step = o.step == null ? 3 : o.step;
     const lev = rd ? (x, z) => rd.levelAt(x, z) : (x, z) => ground(x, z), lines = rd && rd.lines ? rd.lines : 'both', g = (x, z) => ground(x, z);
+    const sf = T.surfaceOf(o.surface == null ? road.surface : o.surface);
     /* the samples. A road record runs along its path by s (the path carries the shift) and is CUT at its network's junctions (KTRANSIT.cutsOf):
        each stretch between two cuts is a run of its own, ending exactly on the cut line, where the junction's patch takes over. A plain polyline
        (a street given as points, a ramp) is one run, resampled every `step` metres and carried by the shift */
@@ -116,7 +128,7 @@
         /* a fill: the embankment's side from the formation's edge down to the ground at 1 : 1.5 */
         if (rd) { const e = w / 2 + pave + 0.5; [-1, 1].forEach((sd, si) => { const top = at(sd * e, -0.02), gy = g(top[0], top[2]), fh = top[1] - gy; const foot = fh > 0.15 ? [top[0] + cx * sd * fh * 1.5, g(top[0] + cx * sd * fh * 1.5, top[2] + sz * sd * fh * 1.5), top[2] + sz * sd * fh * 1.5] : [top[0], top[1] - 0.05, top[2]]; (si ? ER : EL).push([top, foot]); }); }
         if (pave > 0) { PL.push(at(-w / 2 - pave, 0.22)); PR.push(at(w / 2 + pave, 0.22)); KL.push(at(-w / 2 - 0.02, 0.22)); KR.push(at(w / 2 + 0.02, 0.22)); for (let b = 0; b <= pb; b++) { paveL[b].push(at(-w / 2 - 0.02 - (pave - 0.02) * b / pb, 0.22)); paveR[b].push(at(w / 2 + 0.02 + (pave - 0.02) * b / pb, 0.22)); } } });
-      for (let b = 0; b < bands; b++) B.strip('asphalt', lanesL[b], lanesL[b + 1], col.asphalt);
+      for (let b = 0; b < bands; b++) B.strip(sf.fam, lanesL[b], lanesL[b + 1], sf.col);
       if (rd && EL.length) { B.strip('rubble', EL.map(e => e[1]), EL.map(e => e[0]), col.fill, { face: [0, 1, 0] }); B.strip('rubble', ER.map(e => e[0]), ER.map(e => e[1]), col.fill, { face: [0, 1, 0] }); }
       if (lines === 'both') B.strip('line', CL, CR, col.lineYellow);
       if (lines !== 'none') [[L, -1], [R, 1]].forEach(e => { const edge = k => e[0].map((p, i) => { const q = e[0][Math.min(e[0].length - 1, i + 1)], r = e[0][Math.max(0, i - 1)], yaw = Math.atan2(q[0] - r[0], q[2] - r[2]); return [p[0] - Math.cos(yaw) * e[1] * k, p[1] + 0.02, p[2] + Math.sin(yaw) * e[1] * k]; }), A = edge(0.3), Bb = edge(0.45); if (e[1] < 0) B.strip('line', Bb, A, col.lineWhite); else B.strip('line', A, Bb, col.lineWhite); });
@@ -149,15 +161,26 @@
   /* the junctions of a network, from their kerb-line geometry (41b): the asphalt patch over the star-shaped outline (cut lines and apexes), in
      three rings from the centre so it follows the ground; the pavement corners between the inner kerb (filleted) and the outer edge, with the
      kerb face; a crosswalk and a stop line across each arm just beyond its cut (junctions of three arms or more) */
-  T.draw.junctions = function (B, N, ground) {
-    const col = C(); void ground;
+  T.draw.junctions = function (B, N, ground, o) {
+    o = o || {}; const col = C();
     N.junctions.forEach(J => {
       const lev = J.levelAt, P3 = (q, lift) => [q[0], lev(q[0], q[1]) + lift, q[1]];
+      const wide = J.arms.reduce((b, a) => (N.roads[a.road].width > N.roads[b.road].width ? a : b), J.arms[0]), sf = T.surfaceOf(typeof o.surface === 'function' ? o.surface(J) : (o.surface == null ? N.roads[wide.road].surface : o.surface));
       /* the patch: the outline sampled every 3 m, then rings at 1/3 and 2/3 of the way to the centre, strips between them, a fan at the heart */
       const edge = []; J.patch.forEach((q, i) => { const r = J.patch[(i + 1) % J.patch.length], n = Math.max(1, Math.ceil(Math.hypot(r[0] - q[0], r[1] - q[1]) / 3)); for (let k = 0; k < n; k++) edge.push([q[0] + (r[0] - q[0]) * k / n, q[1] + (r[1] - q[1]) * k / n]); });
       const ring = f => edge.map(q => P3([J.x + (q[0] - J.x) * f, J.z + (q[1] - J.z) * f], 0.085)), r1 = ring(1 / 3), r2 = ring(2 / 3), r3 = ring(1), close = r => r.concat([r[0]]), c = P3([J.x, J.z], 0.085);
-      B.strip('asphalt', close(r1), close(r2), col.asphalt, { face: [0, 1, 0] }); B.strip('asphalt', close(r2), close(r3), col.asphalt, { face: [0, 1, 0] });
-      for (let i = 0; i < r1.length; i++) B.tri('asphalt', c, r1[i], r1[(i + 1) % r1.length], col.asphalt, { face: [0, 1, 0] });
+      B.strip(sf.fam, close(r1), close(r2), sf.col, { face: [0, 1, 0] }); B.strip(sf.fam, close(r2), close(r3), sf.col, { face: [0, 1, 0] });
+      for (let i = 0; i < r1.length; i++) B.tri(sf.fam, c, r1[i], r1[(i + 1) % r1.length], sf.col, { face: [0, 1, 0] });
+      /* THE PAD (the network test bed, 2026-11-11: a junction on fill stood over a hole, the roads' embankments ending at its arms' cuts): on
+         fill, an earth top over the hull of the patch and the pavement corners, just under them, and its sides from the hull's edge down to the
+         ground at 1 : 1.5, as a road's embankment falls */
+      if (o.pad !== false && ground) { const hp = J.patch.slice(); J.corners.forEach(cr => (cr.outer || []).forEach(q => hp.push(q)));
+        const hull = T.hull(hp), ring = []; hull.forEach((q, i) => { const r = hull[(i + 1) % hull.length], n = Math.max(1, Math.ceil(Math.hypot(r[0] - q[0], r[1] - q[1]) / 3)); for (let k = 0; k < n; k++) ring.push([q[0] + (r[0] - q[0]) * k / n, q[1] + (r[1] - q[1]) * k / n]); });
+        let high = 0; const tops = [], feet = [];
+        ring.forEach(q => { const top = P3(q, -0.03), fh = top[1] - ground(q[0], q[1]), dx = q[0] - J.x, dz = q[1] - J.z, dl = Math.hypot(dx, dz) || 1; high = Math.max(high, fh); tops.push(top);
+          if (fh > 0.15) { const fx = q[0] + dx / dl * fh * 1.5, fz = q[1] + dz / dl * fh * 1.5; feet.push([fx, ground(fx, fz), fz]); } else feet.push([top[0], top[1] - 0.05, top[2]]); });
+        if (high > 0.15) { const cc = P3([J.x, J.z], -0.03); for (let i = 0; i < tops.length; i++) B.tri('rubble', cc, tops[i], tops[(i + 1) % tops.length], col.fill, { face: [0, 1, 0] });
+          B.strip('rubble', close(feet), close(tops), col.fill, { face: [0, 1, 0] }); } }
       /* the corners */
       J.corners.forEach(cr => { const A = J.arms[cr.between[0]], Bm = J.arms[cr.between[1]]; if (A.p + Bm.p <= 0) return;
         const len = (pts) => { let l = 0; for (let i = 1; i < pts.length; i++) l += Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]); return l; }, m = Math.max(3, Math.ceil(Math.max(len(cr.inner), len(cr.outer)) / 1.5) + 1), inner = T.resample(cr.inner, m), outer = T.resample(cr.outer, m);

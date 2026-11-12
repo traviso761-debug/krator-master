@@ -1,20 +1,18 @@
 // ================================================================= HOST — the test bed's drawing and views  [web]
-// Each road class drawn by KTRANSIT.draw.road into a builder of its own and finished with its surface (the kit draws every surface as
-// 'asphalt'; B.finish's mats override puts the class's family and tint there); each junction finished with the surface of its widest arm;
+// Each road class drawn by KTRANSIT.draw.road into a builder of its own, in its class's surface (the records' surface); each junction by
+// KTRANSIT.draw.junctions in its widest arm's surface, on its pad where on fill;
 // the viaduct and the trestle by KTRANSIT.draw.highway; the guideway by KTRANSIT.draw.rail; the marsh's water a plain disc.
 const TRS={ready:false,groups:[],rec:{},ms:0};
 TRS.build=function(){if(TRS.ready)return true;if(window._texPending>0)return false;const t0=performance.now(),g=terrainH,sh=TR_SHADOW,M=KTRANSIT.mats();
  const add=(G,name,kind,tags)=>{scene.add(G);TRS.groups.push(G);if(sh)G.traverse(m=>{if(m.isMesh){m.castShadow=true;m.receiveShadow=true;}});const b=new THREE.Box3().setFromObject(G);if(!isFinite(b.min.x))return G;const cx=(b.min.x+b.max.x)/2,cz=(b.min.z+b.max.z)/2;
   REGISTER({name:name,kind:kind,x:cx,z:cz,y:b.min.y-1,r:Math.hypot(b.max.x-b.min.x,b.max.z-b.min.z)/2+2,h:b.max.y-b.min.y+2,tags:Object.assign({kind:kind,tris:Math.round(G.userData.tris||0)},tags||{})});return G;};
- const surf={};for(const k in NT_CLASS){const c=NT_CLASS[k],m=M[c.surf].clone();m.vertexColors=false;m.color=new THREE.Color(c.tint);m.name='nt.'+k;surf[k]=m;}
- const matsFor=k=>Object.assign({},M,{asphalt:surf[k]});
- /* the roads, class by class */
+ /* the roads, class by class (each road record carries its class's surface: KTRANSIT.draw.road lays it) */
  Object.keys(NT_CLASS).forEach(k=>{const idx=NT_DEFS.map((d,i)=>d.cls===k?i:-1).filter(i=>i>=0);if(!idx.length)return;const B=KTRANSIT.builder();
   idx.forEach(i=>{const Rd=NT_ROADS[i];KTRANSIT.draw.road(B,Rd,g,i<TR_ROADS.length?{pavement:Rd.pavement,network:NT_NET,road:i}:{pavement:0});});
-  add(B.finish('road.'+k,{mats:matsFor(k)}),NT_CLASS[k].label,'road',{cls:k,roads:idx.length});});
- /* the junctions, each in the surface of its widest arm */
- NT_NET.junctions.forEach(J=>{const top=J.arms.reduce((b,a)=>TR_ROADS[a.road].width>TR_ROADS[b.road].width?a:b,J.arms[0]),k=NT_DEFS[top.road].cls,B=KTRANSIT.builder();
-  KTRANSIT.draw.junctions(B,Object.assign({},NT_NET,{junctions:[J]}),g);add(B.finish('junction.'+J.id,{mats:matsFor(k)}),'Junction '+J.id+' ('+J.kind+': '+J.arms.map(a=>NT_DEFS[a.road].cls).join(' x ')+')','junction',{kind:J.kind});});
+  add(B.finish('road.'+k),NT_CLASS[k].label,'road',{cls:k,roads:idx.length});});
+ /* the junctions: each in its widest arm's surface, on an earth pad where it stands on fill (KTRANSIT.draw.junctions) */
+ NT_NET.junctions.forEach(J=>{const B=KTRANSIT.builder();KTRANSIT.draw.junctions(B,Object.assign({},NT_NET,{junctions:[J]}),g);
+  add(B.finish('junction.'+J.id),'Junction '+J.id+' ('+J.kind+': '+J.arms.map(a=>NT_DEFS[a.road].cls).join(' x ')+')','junction',{kind:J.kind});});
  /* the Ancient way's structures and its guideway */
  add(KTRANSIT.draw.highway(NT_VIADUCT,{shadow:sh}),'The Ancient way: the viaduct over the valley','viaduct',{spans:NT_VIADUCT.spans.length});
  add(KTRANSIT.draw.highway(NT_TRESTLE,{shadow:sh}),'The Ancient way: the trestle over the marsh','trestle',{spans:NT_TRESTLE.spans.length});

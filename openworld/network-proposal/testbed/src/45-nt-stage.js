@@ -50,7 +50,7 @@ const NT_DEFS=[
  {id:'yuni',cls:'yuni',pts:[[-200,700],[350,700]]},
  {id:'trade',cls:'trade',pts:[[-1450,400],[-200,400]]},
  {id:'dirt',cls:'dirt',pts:[[-1100,-1450],[-1100,0]]},
- {id:'trail',cls:'trail',pts:[[-1450,-450],[-800,-1150]]}].map(d=>{const c=NT_CLASS[d.cls];return Object.assign({width:c.width,pavement:c.pavement,lines:c.lines,maxGrade:c.maxGrade,radius:d.cls==='way'?0:30},d);});
+ {id:'trail',cls:'trail',pts:[[-1450,-450],[-800,-1150]]}].map(d=>{const c=NT_CLASS[d.cls];return Object.assign({width:c.width,pavement:c.pavement,lines:c.lines,maxGrade:c.maxGrade,radius:d.cls==='way'?0:30,surface:{fam:c.surf,col:c.tint}},d);});
 /* THE ORDER OF LEVELLING (found by this bed: a junction takes the level of the first road through it, from that road's alignment before the
    regrade, so a weak road crossing two stricter ones close together was pinned to two heights it could not join: the dirt road at 44 %). The
    network is built from the strictest classes, then each weaker class JOINS it (KTRANSIT.join), so a new road meets the others' finished
@@ -61,14 +61,10 @@ NT_DEFS.slice(NT_STRICT).filter(d=>d.cls!=='trail').forEach(d=>KTRANSIT.join(NT_
 const TR_ROADS=NT_NET.roads;
 /* A TRAIL CROSSES AT GRADE, WITH NO JUNCTION (found by this bed: a trail joined as a junction held the dirt road flat across it on an 11 %
    slope, and the dirt road had to drop 16 % beyond). A trail takes the crossed road's level at the crossing and never flattens that road */
-const NT_TRAIL=(()=>{const d=NT_DEFS.find(q=>q.cls==='trail'),P0=KTRANSIT.path(d.pts,{ground:TR_RELIEF,radius:0,step:4}),pins=[];
- /* held at the road's level every 2 m from kerb to kerb (+1 m), not only on its centre line: pinned at the centre alone, the trail climbed
-    18 % across the road's own width, and between sparse pins it followed the hillside over the road's surface (found by the mesh check) */
- const held=[];
- TR_ROADS.forEach(Rd=>KTRANSIT.intersections(P0,Rd.path).forEach(c=>{pins.push({s:c.sP,y:Rd.yAt(c.sQ)-0.04});
-  const sin=Math.max(0.3,Math.abs(Math.sin(P0.at(c.sP).yaw-Rd.path.at(c.sQ).yaw))),dl=(Rd.width/2+(Rd.pavement==null?0:Rd.pavement)+1)/sin;
-  for(let k=-1;k<=1;k+=2/Math.max(2,Math.ceil(dl))){const s=c.sP+k*dl;if(s<=0||s>=P0.L||Math.abs(k)<1e-6)continue;const p=P0.at(s);held.push({s,y:Rd.levelAt(p.x,p.z)-0.04});}}));
- const T=KTRANSIT.road(d.pts,{id:d.id,ground:TR_RELIEF,width:d.width,pavement:0,lines:'none',kind:'lane',maxGrade:d.maxGrade,radius:0,pins:pins.concat(held)});T.crossPins=pins;return T;})();
+/* held at the crossed road's level from kerb to kerb (the kit's o.crosses: KTRANSIT.crossPins), not only on its centre line: pinned at the
+   centre alone, the trail climbed 18 % across the road's own width, and between sparse pins it followed the hillside over the road's surface */
+const NT_TRAIL=(()=>{const d=NT_DEFS.find(q=>q.cls==='trail');
+ const T=KTRANSIT.road(d.pts,{id:d.id,ground:TR_RELIEF,width:d.width,pavement:0,lines:'none',kind:'lane',maxGrade:d.maxGrade,radius:0,crosses:TR_ROADS,surface:d.surface});T.crossPins=T.crossings;return T;})();
 const NT_ROADS=TR_ROADS.concat([NT_TRAIL]);
 /* the ground under the roads: the DEEPEST single cutting where two roads' cuttings overlap, not their sum (summed, the ground at a junction
    was carved twice), and RAISED under a road on fill, junctions included, falling away at 1 : 1.5 (found by this bed: the kit draws a road's
