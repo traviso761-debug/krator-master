@@ -85,11 +85,22 @@ hash differs between two runs of the same page too.
 ## Erewhon: the citadel's table (2026-11-12, fixed)
 The owner: "this ridge runs higher than the citadel's ridge, when it should run lower; the citadel will be on a plateau/
 table overlooking its surroundings". The map's steep west flank climbed to 240-275 m along its cliff line (z +20 to +80),
-over the citadel's grounds (147-191 m). `84-er-geo.js` now scales its heights over the lake to 45 % west of the plateau's
-west cliff (`WEST_K`, `WEST_X`, `WEST_Z`). West of x -650 it is 66-124 m; the citadel's side is 166-222 m; the mountain
-south of z 450 keeps its height. The streets and houses on the flank follow the new ground: 1,546 buildings, from 1,652,
-and 263 streets, from 270. The map's source PNG is not in the repo, so the fix is in the page's geometry, not in
-`tools/erewhon-map.py`.
+over the citadel's grounds (147-191 m). `84-er-geo.js` now scales the flank's heights over the lake to 45 % (`WEST_K`).
+The flank's edge is the map's grey cliff (the owner: "that grey streak should define the edge of the plateau"):
+* **The flank:** the ground flooded from the frame's west edge on the class grid, stopped by:
+  - the cliff and unbuildable cells;
+  - the lake;
+  - the palace plateau;
+  - two straight stops where no cliff is drawn: due north of the citadel's north-west corner (`WEST_N`) and due south
+    of the cliff's foot (`WEST_S`).
+* **The cliff band:** it takes the lowering in proportion across its width, so the grey face is the drop.
+* **The mountain:** south of z 450 it keeps its height (`WEST_Z`).
+* **Heights now:** the flank is 66-124 m and the citadel's side 166-222 m. At z -150 the ground is 86 m at the cliff's
+  foot and 174 m at its top.
+* **The layout:** the streets and houses on the flank follow the new ground: 1,608 buildings, from 1,652, and 272
+  streets, from 270.
+* **Where the fix lives:** the map's source PNG is not in the repo, so the fix is in the page's geometry, not in
+  `tools/erewhon-map.py`.
 
 ## Erewhon (round 9)
 * The garden district's rectangle lies on 15–40° ground; its tiles are a stepped surface (no neighbour more than a
