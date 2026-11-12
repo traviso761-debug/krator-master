@@ -128,8 +128,13 @@ def net_fragment(spec_path):
     routes = {}
     if ids:
         N = json.load(open(NET, encoding='utf-8'))
-        by = {r['id']: r for r in N['routes']}
+        by, seen = {}, {}
+        for r in N['routes']:
+            by[r['id']] = r
+            seen[r['id']] = seen.get(r['id'], 0) + 1
         for i in ids:
+            if seen.get(i, 0) > 1:   # net51.json's ids are not unique (the Rift line's legs share 'rift'): a leg must be named exactly
+                raise SystemExit('net_fragment: route id %s names %d legs in openworld/network-proposal/net51.json; use a leg\'s own id' % (i, seen[i]))
             if i not in by:
                 raise SystemExit('net_fragment: no route %s in openworld/network-proposal/net51.json' % i)
             r = by[i]
