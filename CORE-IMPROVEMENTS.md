@@ -837,6 +837,40 @@ clones: kbake's clones dropped them (Ancients, Screamers' wind). A node test run
 **Not recurring enough to rank.** NaN geometry (one case; the probe's `nanSweep` exists). Triangle soup (two). `x || d`
 eating a 0 (no recorded case in the settlements; four in the biomes, item 14).
 
+## Survey of 2026-11-11: what the biome rebuild round's sessions hit (check requests)
+
+At the end of the biome rebuild round the owner asked about 60 sessions for their pitfalls; 57 answered (the story, by
+theme, is the skill's 5w in `references/stories-rounds.md`). Per the skill's growth rule, every lesson two or more
+sessions hit is a check request here, not a third paragraph. Most are tools-only (no page moves).
+
+- **22. A "GPU" verify in SwiftShader** (7 sessions). Make `gpu-renderer` a hard fail whenever a lane lock is held (a lane
+  without `KRATOR_GL=gpu` is a mistake, not a mode), and print the renderer in the harness's first line.
+- **23. LFS pointers read in place** (10+). `tools/build.py --pull` (or a `tools/lfs_needs.py <build>`) that lists every
+  `tex/` and `dist/*.js` a page reads, from `--list-sources` and `fragment_needs.json`, and pulls them in one go; plain
+  `build.py` files refuse pointers as `tools/build.py` does; node tests that require a `dist/` file name the pull to run.
+- **24. Docs and listed folders as build inputs** (5). `check_stale` says "docs only: rebuild, bytes unchanged" when the
+  only changed inputs are `KNOWN_ISSUES.md`/`PORT.md` or a folder listing, so nobody chases it.
+- **25. Builds that skip `tools/build.py`** (5). Each kit's `build.py` writes `build-inputs.json` itself (shared helper),
+  or refuses to write `dist/` unless called through `tools/build.py`.
+- **26. Missing core fragments on hand-listed pages** (4: `31b-core-leafset.js`). `check_assembly` names the fragment to add,
+  and a `CORE_BIOME_MIN` list (10, 20, 30, 31b, 34, 40) is the default a build extends.
+- **27. Texture units** (4 + the ground that vanished). A universal assert that reads every linked program's sampler count
+  (fail at 16 on any lane, warn at 15), replacing `samplersOf`'s guess, which overcounts.
+- **28. Audits against the drawn ground** (5). `drawnH` as a core function (strip cells, else the mesh's triangles); the
+  eye check, the water audit, the cliff gate and the attach audit's ground all take it by default.
+- **29. Negatives written backwards, predicates shadowing `ok`** (3). The node test helper refuses a negative that passes
+  on the fixed code and refuses a local named `ok`; the pass count is printed against the number of `ok(` calls in the file.
+- **30. Windows text traps** (9 commit messages, 8 heredocs, BOMs twice). A `tools/commit.py -m-file` helper; a pre-commit
+  check for a BOM, mojibake (`Ã`, `â€`) or CRLF in staged text; `check_views` and the build both refuse apostrophes and
+  colons in view and check names.
+- **31. Stale committed pages passing verify** (3). The verify cache records the page's source hash; a pass on a page whose
+  sources moved since is reported "stale pass", not "pass".
+- **32. Owed fixes the survey found** (one session each, each small): KHOOK clones re-running layers; `43-core-ground.js`
+  reading `kEye`; `kits/fauna/src/90-sheet.js:147` `_texPending` as a function; `BIO.alphaTex` without
+  `willReadFrequently`; library-card mipmap fringes (fill transparent texels as `alphaTex` does); KKARST duplicate sink ids
+  across branch levels; 19 biome `build.py` files writing CRLF pages; `check_source` not scanning kits' top-level files;
+  hyperjungle's harvest-wood phrases failing `test-hamlet.js`; the ISK error loop.
+
 ## Order of work this suggests
 
 1. **Now, tools only, no page moves** (an afternoon or two each):

@@ -1,0 +1,116 @@
+[
+ {
+  "src": "mineral.selenite.webp",
+  "out": "core/materials/library/mineral.selenite",
+  "record": {
+   "id": "mineral.selenite",
+   "family": "rock",
+   "colour": "#ffffff",
+   "roughness": 0.35,
+   "metal": 0,
+   "scale": [2, 2],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (krator-textures-2026-11-10, webp, 2000 px), generated from core/materials/PROMPTS-NEEDED.md section 36 (biomes/hearths/PLAN.md section 18)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: the side face of a giant selenite (gypsum) crystal, milky translucent white to the palest green (#dfe8da), long straight growth striations and fine parallel cleavage lines running from top to bottom, faint cloudy veils and inclusions deeper inside, a few thin hairline fractures across the grain, a soft satin sheen, no bubbles and no colour patches.",
+    "prompt_where": "core/materials/PROMPTS-NEEDED.md section 36 (biomes/hearths/PLAN.md section 18)",
+    "reuse": "the Cave of Crystals' selenite beams and blades (hearths, crystal.selenite; up is the crystal's length, 2 m a tile); any gypsum, selenite or satin-spar crystal face, milky striated quartz",
+    "size_note": "the source is 2000 px, under the prompt's 2048: the pipeline writes 1024 px sets, so nothing was upscaled",
+    "look_note": "on its prompt; the striations are colour, not relief, so the normal is kept faint (normal_strength 0.35): a satin crystal face"
+   }
+  },
+  "options": {"rough": 0.35, "rough_var": 0.15, "lift": 0.1, "normal_strength": 0.35}
+ },
+ {
+  "src": "rock.limestone.ironstained.webp",
+  "out": "core/materials/library/rock.limestone.ironstained",
+  "record": {
+   "id": "rock.limestone.ironstained",
+   "family": "rock",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [3, 3],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (krator-textures-2026-11-10, webp, 1254 px), generated from core/materials/PROMPTS-NEEDED.md section 36 (biomes/hearths/PLAN.md section 18)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a damp limestone cave wall stained by iron oxide: dull rust red and red-brown staining (#7a3a22, #9a5a34) in irregular blotches and runs over grey-buff limestone (#8a8478), small solution pits and shallow scallops, crusts of tiny white gypsum crystals in the hollows, a thin wet film with darker damp patches, matte.",
+    "prompt_where": "core/materials/PROMPTS-NEEDED.md section 36 (biomes/hearths/PLAN.md section 18)",
+    "reuse": "the Cave of Crystals' iron-stained roofs and walls (hearths, rock.ironstain, 3 m); any rust-stained limestone or cave wall, gossan, iron-stained karst",
+    "size_note": "the source is 1254 px, under the prompt's 2048: the pipeline writes 1024 px sets, so nothing was upscaled",
+    "look_note": "off its prompt a little: the rust covers most of the face, the grey-buff limestone shows only in small patches and the white gypsum crusts are missing; usable as the cave's stained walls, where the stain is the point"
+   }
+  },
+  "options": {"rough": 0.85, "rough_var": 0.15, "lift": 0.12}
+ },
+ {
+  "src": "rock.megabreccia.polished.webp",
+  "out": "core/materials/library/rock.megabreccia.polished",
+  "record": {
+   "id": "rock.megabreccia.polished",
+   "family": "rock",
+   "colour": "#ffffff",
+   "roughness": 0.3,
+   "metal": 0,
+   "scale": [2, 2],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (krator-textures-2026-11-10, webp, 1254 px), generated from core/materials/PROMPTS-NEEDED.md section 33 (biomes/cut, station face)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no reflections, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a sawn and finely polished slab of impact megabreccia, like a polished breccia countertop, perfectly flat and smooth: angular clasts of many different rocks from fist size to half a metre packed together at every angle in a fine grey crushed matrix, each clast cut clean through so its inner texture shows: black basalt with tiny pale crystals, rusty red basalt, banded pale grey gneiss with fine wavy foliation, cream tuff, brick-red sandstone with faint lamination, pale grey limestone, a few clasts themselves made of smaller clasts; thin black glassy veins (pseudotachylite) cutting straight across several clasts; scattered tiny bottle-green and black glass flecks in the matrix; sharp crisp clast edges; no lichen, no dirt, no weathering, no cracks, no pits, no saw marks; every rock type clearly different in colour.",
+    "prompt_where": "core/materials/PROMPTS-NEEDED.md section 33 (biomes/cut, station face)",
+    "reuse": "the Cut's polished face (cut, ground.breccia: the grain under KSTRATA's megabreccia blocks); any sawn and polished breccia, conglomerate or terrazzo slab, a polished floor or counter",
+    "size_note": "the source is 1254 px, under the prompt's 2048: the pipeline writes 1024 px sets, so nothing was upscaled",
+    "look_note": "on its prompt but for two clasts with a hairline crack across them (the prompt said no cracks); the luminance invents relief on a polished slab, so the normal is kept faint (normal_strength 0.25); 2 m a tile puts the largest clasts at the prompt's half metre (the Cut's face packs it at 3 m)"
+   }
+  },
+  "options": {"rough": 0.3, "rough_var": 0.1, "lift": 0.1, "normal_strength": 0.25}
+ },
+ {
+  "src": "ground.bench.webp",
+  "out": "core/materials/library/ground.bench",
+  "record": {
+   "id": "ground.bench",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [3, 3],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (krator-textures-2026-11-10, webp, 1254 px), generated from core/materials/PROMPTS-NEEDED.md section 14 (biomes/farside, station 1)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: wave-planed coastal bedrock scoured by a tsunami, seen from directly above: a flat, smoothed surface of grey-brown volcanic and sedimentary rock bleached pale by salt, a fine white salt crust in the hollows and along hairline cracks, shallow scour grooves all running one way, scattered rounded cobbles and a few half-buried boulders worn smooth, patches of dried brown wrack and small dark limpet scars. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.",
+    "prompt_where": "core/materials/PROMPTS-NEEDED.md section 14 (biomes/farside, station 1: the tsunami's scour bench); the base surface template, then the entry's Material",
+    "reuse": "Farside's tsunami scour bench (farside, ground.bench, the ground's eighth layer); any wave-cut platform, scoured shore bedrock, salt-bleached flood-scoured rock",
+    "size_note": "the source is 1254 px, under the prompt's 2048: the pipeline writes 1024 px sets, so nothing was upscaled",
+    "orientation": "the scour grooves run across (left to right)"
+   }
+  },
+  "options": {"rough": 0.85, "rough_var": 0.2, "lift": 0.12, "mute": 0.3}
+ },
+ {
+  "src": "metal.scorched.webp",
+  "out": "core/materials/library/metal.scorched",
+  "record": {
+   "id": "metal.scorched",
+   "family": "metal",
+   "colour": "#ffffff",
+   "roughness": 0.75,
+   "metal": 0,
+   "scale": [1.5, 1.5],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (krator-textures-2026-11-10, webp, 1254 px), generated from the prompt in core/materials/PROMPTS-NEEDED.md section 36 on the Ancient's Valley branches (claude/ancient-vehicles-935f93, claude/ancientsvalley-7f521c); not on main",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: burnt-out vehicle body panel after a fire: sheet steel whose paint has burnt off in blistered, curling flakes, leaving bare heat-scaled metal with a fine crazed pattern, patches of matte soot, a few blisters of paint still clinging at the edges of the burnt areas, light surface rust blooming through the scale, faint heat-tint rings (straw, brown, blue) where the metal got hottest, a little grey ash caught in the seams. Near-colourless grey only (the heat-tint rings faint), so it can be tinted.",
+    "prompt_where": "core/materials/PROMPTS-NEEDED.md section 36 on claude/ancient-vehicles-935f93 (the Motor Vehicles kit's burnt ruins)",
+    "reuse": "the Motor Vehicles kit's ruin pass, family scorched (slot 23, a grey detail; replaces rustHeavy and bark.char on burnt surfaces); any burnt sheet metal, fire-gutted car body, scorched machine casing",
+    "size_note": "the source is 1254 px, under the prompt's 2048: the pipeline writes 1024 px sets, so nothing was upscaled"
+   }
+  },
+  "options": {"rough": 0.75, "rough_var": 0.2, "lift": 0.12, "mute": 0.5}
+ }
+]
