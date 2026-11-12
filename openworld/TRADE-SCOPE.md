@@ -212,11 +212,16 @@ For the scale-model session's queue (`local_bf163a02`), not edited here. A propo
 
 | Edit | Name | px | Type | Polity, culture | Why |
 |---|---|---|---|---|---|
-| SETT_ADDED | the Dasri salt works on the Catch (to be named, in Dasrī) | 1080,1428 | outpost | Nomad Country (the Dasri) | rock salt 243 (2.2); a seasonal camp, the Catch too hostile for more |
-| SETT_ADDED | the Bowl salt works (to be named, in Izani) | 1169,1150 | village | Empire of Iziz (Mantis's merchant houses) | rock salt 234, gypsum 253 by the Bowl's salt lake (2.2) |
+| SETT_ADDED | **Ṣalṭ al-Bān** (Dasrī, "salt of the pan"), the Dasri salt works on the Catch | 1080,1428 | outpost | Nomad Country (the Dasri) | rock salt 243 (2.2); a seasonal camp, the Catch too hostile for more |
+| SETT_ADDED | **Solta** (Izani, "salt", said solt'a), the Bowl salt works | 1169,1150 | village | Empire of Iziz (Mantis's merchant houses) | rock salt 234, gypsum 253 by the Bowl's salt lake (2.2) |
 | SETT_ADDED | the Lipp tin mine (to be named) | 706,628 | village | Iron Republic | tin, 25 node-yield (2.6) |
-| SETT_ADDED | the Dhelv silver works (to be named, in Zeijani) | 851,774 | village | Zeijani | gold 10.5 and silver 11.3 node-yield (2.6) |
+| SETT_ADDED | **Ṣilbaru** (Zeijani, "silver"), the Dhelv silver works | 851,774 | village | Zeijani | gold 10.5 and silver 11.3 node-yield (2.6) |
 | type change | Tallwalls | 650,1268 (unchanged) | city to **town** | Free Giants | the owner: poorer (2.3) |
+| page code | a **town** settlement type | - | - | - | the page's `SETT_TYPES` has no town (city, outpost, village, cavern, arcology, the ruins); the owner chose to add one, a glyph and a key entry, rather than make Tallwalls a village. The Tabist town takes it too |
+
+The names are the owner's picks (2026-11-12) from proposals in each tongue (`LORE.md` 6.8 for Dasrī, `tools/names/izani.py`,
+LORE.md:585 for Zeijani). The queue session checked the four points: none collides with a pin; the nearest is the Catch's
+oasis Bitta (1088,1455), ~28 px from Ṣalṭ al-Bān.
 
 Each pin wants the census's rescan and the trade model's rerun after it lands (`res_scan.py`, `crops_pass.js`, `trade.py`).
 
