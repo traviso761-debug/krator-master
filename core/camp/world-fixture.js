@@ -10,6 +10,7 @@ load('core/rand/08-core-rand.js');
 fs.readdirSync(__dirname).filter(f => /^\d\d-camp-.*\.js$/.test(f)).sort().forEach(f => load('core/camp/' + f));
 load('core/world/48t-world-travel.js');
 load('kits/beast-riders/src/79-br-camp.js');
+load('settlements/pinnacle-rock/src/14-pr-legs.js');
 load('settlements/pinnacle-rock/src/15-pr-tune.js');
 const BR_CAMP = vm.runInThisContext('BR_CAMP'), T = vm.runInThisContext('PR_TUNE').beasts;
 const RULES = { diet: { grain: 0.3, meat: 0.15, fruit: 0.1 }, food: { grain: 1, meat: 1.6, fruit: 0.5 }, hunt: { meat: 12, hides: 0.8 }, gather: { fruit: 6 },

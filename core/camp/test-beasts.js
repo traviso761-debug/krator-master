@@ -9,6 +9,7 @@ global.window = global;
 load('core/rand/08-core-rand.js');
 fs.readdirSync(__dirname).filter(f => /^\d\d-camp-.*\.js$/.test(f)).sort().forEach(f => load('core/camp/' + f));
 load('kits/beast-riders/src/79-br-camp.js');
+load('settlements/pinnacle-rock/src/14-pr-legs.js');
 load('settlements/pinnacle-rock/src/15-pr-tune.js');
 const BR_CAMP = vm.runInThisContext('BR_CAMP'), TRIBES = vm.runInThisContext('BR_CAMP_TRIBES'), T = vm.runInThisContext('PR_TUNE').beasts;
 let bad = 0;

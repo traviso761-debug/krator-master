@@ -12,9 +12,15 @@ cd dist && python3 ../verify.py pinnacle-rock.html --assert [--all-views --out .
 
 ## What the page is
 
-- **The site is the scale model's** (4.21, px 755,351). `region/` holds the cut round it (120 km square, from
-  `tools/scale-model/extract_region.py`; the model's regions and settlements as read on 2026-10-19 in `region/source/`,
-  the cut's box added as `regions-cut.json`). `tools/world_data.py` decodes the rasters at build time into the typed
+- **The site is the open world's** (map 5.1, px 1007,686: `openworld/SITES.json` `staiytii0y`, the spot the owner moved
+  the rock to on 2026-11-10; re-cut here 2026-11-12). Before that the page stood on 4.21 px 755,351. `region/` holds the
+  cut round it (120 km square at 2 km cells, from `tools/scale-model/extract_region.py` on the model's 5.1 data; the
+  model's regions and the cut's box in `region/source/regions-cut.json`).
+- **On the sim** (2026-11-12, phase S7 of `core/simulation/PROPOSAL-LONGSONG-PINNACLE.md`): `src/15-pr-tune.js` (`PR_TUNE`,
+  `[G data]`) is the Beast Riders' table. It holds the beasts' appetites and loads, and the town of 3,000. It also holds the
+  floor ring, the four clearings of `openworld/pinnacle`'s plan, and the eighteen bands with their dry-season ventures.
+  `node tests/test-pr-economy.js` runs two years on core/region's valley host and core/camp's world tick, and holds the
+  second year to the proposal. The page itself does not run the sim yet. `tools/world_data.py` decodes the rasters at build time into the typed
   arrays the open world's fields take (`openworld/little-demo/src/41-world-fields.js`, read in place: `WORLD.H`). The
   page's floor IS the model's land (y 0 = the knoll's ground at the mesa's south foot), with one cut finer than its
   4 km cells: the dry gorge under the north rim (the plan's). `86-pr-far.js` draws the rest of the cut to 60 km: the
