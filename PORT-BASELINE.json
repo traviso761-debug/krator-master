@@ -392,6 +392,18 @@
    "bytes": 3643337,
    "sha256": "8f9968ae2635680365d8793464b252210fd82b53dd723929cdddd67325be755b"
   },
+  "biomes/outlandgate/dist/outlandgate-mouth.html": {
+   "bytes": 2856916,
+   "sha256": "afa10fd4448563e5df83330fcd14e20e06cc165f12a4ccf8c1058c924d7a9532"
+  },
+  "biomes/outlandgate/dist/outlandgate-seeps.html": {
+   "bytes": 3954480,
+   "sha256": "dd7cfb6ca14d00c966a0f03601a819f1c6ab1b2c85c1714d90a40644fc850677"
+  },
+  "biomes/outlandgate/dist/outlandgate-tarn.html": {
+   "bytes": 3098596,
+   "sha256": "17870953a19bf5fcdee5ff50b118719bf10435036fe7800f4e682c7e20459e3c"
+  },
   "biomes/outlandgate/dist/outlandgate.html": {
    "bytes": 2510738,
    "sha256": "801730e96dcd8649b14c27a7b5ddc2132bf713787f8664edf1c180544b25f696"
