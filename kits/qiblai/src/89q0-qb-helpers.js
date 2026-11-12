@@ -30,8 +30,10 @@ const QRING={
  temple:{wall:XPAL.wash,trim:[XPAL.saffron,XPAL.red],band:XPAL.maroon},
 };
 // The eight great monasteries, one a spoke of the wheel, each with its own colour that sets its tone (the owner, 2026-11-11):
-// the wash of its walls, its trim and its twig band; the abbot's throne in the Hall of the Decree wears it too. Their names
-// are still to come (PLAN.md section 9); until then each is called by its colour. Earth-pigment tints over the textured wash.
+// the wash of its walls, its trim and its twig band. Their abbots are the Prismarchs, and their council, which sits in the
+// Hall of the Decree, is the Prismarchy; each Prismarch's throne wears his monastery's colour. The great temple flies a banner
+// of each colour toward its monastery, so it is also called the Rainbow Temple (qnSpokeBanner). Spoke i stands on the bearing
+// i x 45 degrees, clockwise from north (qnSpokeDir: local -z is north). Earth-pigment tints over the textured wash.
 const QSPOKE=[
  {name:'Crimson',wall:0xa8302a,trim:XPAL.saffron,band:0x5a1c1c},
  {name:'Saffron',wall:0xd8862a,trim:XPAL.white,band:0x7a3a1a},
@@ -42,6 +44,17 @@ const QSPOKE=[
  {name:'Violet',wall:0x6a3a8a,trim:XPAL.saffron,band:0x3a1a4a},
  {name:'White',wall:0xeee8dc,trim:XPAL.red,band:0x6e2a2a},
 ];
+// spoke i's direction on the ground plan, [dx, dz] (north is -z, east +x), and its yaw (a face's +z toward it)
+const qnSpokeDir=i=>{const b=i*Math.PI/4;return[Math.sin(b),-Math.cos(b)];};
+const qnSpokeYaw=i=>{const d=qnSpokeDir(i);return Math.atan2(d[0],d[1]);};
+// a spoke's banner: a tall pole, a gilt finial, a crossbar and a long cloth in the spoke's colour, its face turned toward the
+// spoke's monastery (the Rainbow Temple's); base at (x,y,z), h the pole's height
+function qnSpokeBanner(x,y,z,i,h,cw){cw=cw==null?3.2:cw;const ry=qnSpokeYaw(i),g=xC(xPick(XPAL.gold)),col=xC(QSPOKE[i].wall);
+ vPst('vPostB',x,y,z,.16,h,xC(0x5a4632));kput('xConeG',[x,y+h,z],null,[.22,.7,.22],g);vBall('xGold',x,y+h+.75,z,.18,g);
+ vB('vWood',x,y+h-.45,z,cw+.3,.16,.16,ry,xC(xPick(XPAL.dark)));
+ const L=h*.58,p=loc(x,z,0,.14,ry);vB('vClothB',p[0],y+h-.55-L,p[1],cw,L,.06,ry,col);
+ vB('vClothB',p[0],y+h-.55-L-.4,p[1],cw,.4,.07,ry,xC(QSPOKE[i].band));   /* a dark hem along the foot */
+ for(let k=0;k<3;k++){const t=loc(x,z,(k-1)*cw/3,.14,ry);vB('vClothB',t[0],y+h-.55-L-1.6,t[1],cw/3-.15,1.2,.06,ry,col);}}   /* three tails */
 function qnRingC(ring){const R=QRING[ring]||QRING.lay;return{wall:xC(xPick(R.wall)),trim:xC(xPick(R.trim)),band:R.band?xC(xPick(R.band)):null};}
 const QSTONE=[0xc8c0b0,0xbcb4a4,0xd0c8b8];   // the dressed plinth and terrace stone: a shade lighter than XPAL.stone
 
@@ -134,8 +147,8 @@ function qnWheelDeer(x,y,z,ry,s,c){c=c||xC(xPick(XPAL.gold));vB('xGoldB',x,y,z,1
  kput('xDiscG',[x,y+.18*s,z],null,[.34*s,.12*s,.34*s],c);qnWheel(x,y+.82*s,z,ry,.55*s,c);
  for(const e of[-1,1]){const p=loc(x,z,e*.72*s,0,ry);qnDeer(p[0],y+.12*s,p[1],ry-e*Math.PI/2,.62*s,c);}}
 // the victory banner (gyaltsen): a black felt drum on a post, gilt rings, a gilt cap and knob; base at y, h tall
-function qnBanner(x,y,z,h,c){c=c||xC(xPick(XPAL.gold));vPst('vPost',x,y,z,.05,h*.32,xC(0x3a2c22));
- vPst('xCol',x,y+h*.32,z,.2,h*.46,xC(0x2a2420));for(const t of[0,.5,1])vPst('xColG',x,y+h*(.32+.44*t),z,.23,.07,c);
+function qnBanner(x,y,z,h,c,drumC){c=c||xC(xPick(XPAL.gold));vPst('vPost',x,y,z,.05,h*.32,xC(0x3a2c22));
+ vPst('xCol',x,y+h*.32,z,.2,h*.46,drumC||xC(0x2a2420));   /* drumC: a Prismarch's colour (the Hall of the Decree's eight) */for(const t of[0,.5,1])vPst('xColG',x,y+h*(.32+.44*t),z,.23,.07,c);
  kput('xConeG',[x,y+h*.79,z],null,[.26,h*.14,.26],c);vBall('xGold',x,y+h*.95,z,.09,c);}
 // the gilt crown on a holy roof: a gilt pavilion roof on a red frame (xnGiltRoof), victory banners at the corners of the
 // roof below it, the wheel and deer on its front. (x,y,z) the roof centre at its parapet top, w x d the roof, ry the front.

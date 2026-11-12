@@ -492,7 +492,10 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
     milk.
   - **Pilgrimage.** The kora is walked three times with eyes lowered. The **Ālph** is the sacred river; the geysers, the
     Caves of Ice and **the Singing Gjár** in the High Rift are holy places.
-  - **Qiblai** (Kubla's city) is its holy city, under a council of abbots.
+  - **Qiblai** (Kubla's city) is its holy city, under the **Prismarchy**, the council of the eight abbots of its great
+    monasteries. Each abbot is a **Prismarch**, and each monastery has its own colour (crimson, saffron, gold, green,
+    turquoise, blue, violet, white). The great temple flies a banner of each colour turned toward its monastery, so it is
+    also called the **Rainbow Temple** [the owner, 2026-11-11].
   - **Theodiga.** *Proposed:* Theodiga, the arcology the Xanadui come from, is the dome on earth; it is to be redesigned
     with a dome or domes.
   - **Distinct from the History Monks,** who keep the same poem as an English text with its author's name, and say

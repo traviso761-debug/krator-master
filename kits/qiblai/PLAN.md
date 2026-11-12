@@ -125,9 +125,13 @@ Scripture is cited with the evidential *-se* ("they say"), the Monks' margin mar
 - **The city is the sound grid made in stone.** The grammarians' syllabary sits on a grid of sounds. Qiblai's plan is that
   grid: each ring a vowel, each cross-street a consonant, each block a syllable. A pilgrim walking the kora "reads" the
   city's prayer. This is why the grid is strict: a crooked street would misspell it.
-- **The council of abbots** sits in the Hall of the Decree in the inner square. One abbot comes from each of the eight great
-  monasteries, one for each spoke of the wheel. The Sultan's suzerainty is a seat kept empty in the hall and a yearly
-  exchange like Longsong's: a grant of fealty answered by grants of esteem.
+- **The Prismarchy,** the council of abbots (the owner, 2026-11-11), sits in the Hall of the Decree in the inner square. Each
+  abbot is a **Prismarch**, one from each of the eight great monasteries, one for each spoke of the wheel. Each monastery has
+  its own colour, which sets its tone (crimson, saffron, gold, green, turquoise, blue, violet, white), and its Prismarch
+  wears it. The Sultan's suzerainty is a seat kept empty in the hall and a yearly exchange like Longsong's: a grant of
+  fealty answered by grants of esteem.
+- **The Rainbow Temple.** The great temple on the Temple Mountain flies eight banners, one of each monastery's colour, each
+  turned toward its monastery; so it is also known as the Rainbow Temple (the owner, 2026-11-11).
 - **The river is the ninth spoke:** the processional way leaves the east gate for the ghats at the cataracts of Nahr
   ash-Shalālāt. The pilgrims' road goes on to the Ālph, ~75 km away.
 
@@ -264,8 +268,9 @@ This is the open world region's next re-plan when Qiblai's city goes on its grou
 
 ## 9. Still open
 
-1. **The faith** is the Decree and the Broken Wheel together (section 2a). Still to name: the eight monasteries and the
-   council's title. **Theodiga's domes:** a redesign of `kits/ancients/targets/theodiga` with a dome or a series of
+1. **The faith** is the Decree and the Broken Wheel together (section 2a). The council is the Prismarchy and its abbots the
+   Prismarchs; the monasteries have their colours (section 2b; settled 2026-11-11). Still to name: the eight monasteries
+   themselves, if they are to be more than their colours. **Theodiga's domes:** a redesign of `kits/ancients/targets/theodiga` with a dome or a series of
    domes, so it can be the Song's dome on earth.
 2. **The textures,** if the Xanadu pack is not enough. Candidates:
    - dressed ashlar for the terrace platforms and ring walls (the pack has rammed earth, stucco and rubble);

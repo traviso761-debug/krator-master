@@ -43,14 +43,14 @@ function buildQbIxAssembly(G,o){reseed(33801+(o.v|0));const W=22,D=16,P=.8,ch=1.
 // ---------------------------------------------------------------- the council chamber of the Hall of the Decree
 function buildQbIxHall(G,o){reseed(33811+(o.v|0));const W=24,D=18,P=1.0,ch=1.6;
  const red=xC(xPick(XPAL.redwall)),floor=xC(0x7a5a3a),g=xC(xPick(XPAL.gold)),seat=xC(xPick(XPAL.maroon)),white=xC(XPAL.white),tim=xC(xPick(XPAL.dark)),gilt=xC(XPAL.gold[0]);
- vnReg('Council chamber (interior)',0,0,14,P+4);
+ vnReg('Council chamber of the Prismarchy (interior)',0,0,14,P+4);
  const y=qnCutShell(W,D,P,ch,red,floor,[[-1.8,1.8]]);
  const fix=[];
  // the Sultan's seat: a dais at the head, the throne of gilded carved wood with its high back, a white cloth over it (the seat\n // kept empty)
  vB('vStone',0,y,-D/2+2.2,6,.5,3.2,0,xC(xPick(QSTONE)));vB('vWood',0,y+.5,-D/2+1.4,1.6,.55,1.2,0,gilt);vB('vWood',0,y+1.05,-D/2+.9,1.6,1.8,.22,0,gilt);
  kput('vCloth',[0,y+.95,-D/2+1.45],qEuler(-1.2,0,0),[1.7,1.4,1],white);qnWheel(0,y+2.4,-D/2+.8,0,.5,g);
  fix.push({kind:'dais',x:0,z:-D/2+2.2,w:6,d:3.2,h:2.8,front:1});
- // the eight abbots' thrones, four a side facing the aisle: timber, a cloth cushion, a hanging of the spoke's colour on the back
+ // the eight Prismarchs' thrones, four a side facing the aisle: timber, a cloth cushion, a hanging of the spoke's colour on the back
  const cols=QSPOKE.map(S=>S.wall);   /* each abbot's hanging in his monastery's colour */
  for(let i=0;i<8;i++){const s=i<4?-1:1,k=i%4,x=s*5.2,z=-3.6+k*2.8,ry=-s*Math.PI/2;
   vB('vStone',x,y,z,1.8,.25,1.8,0,xC(xPick(QSTONE)));const b=loc(x,z,0,-.6,ry);vB('vWood',x,y+.25,z,1.1,.36,1.1,ry,tim);vB('vClothB',x,y+.61,z,1.0,.14,1.0,ry,seat);vB('vWood',b[0],y+.75,b[1],1.1,1.2,.16,ry,tim);const h=loc(x,z,0,-.5,ry);vB('vClothB',h[0],y+.85,h[1],.9,.95,.04,ry,xC(cols[i]));
@@ -58,7 +58,7 @@ function buildQbIxHall(G,o){reseed(33811+(o.v|0));const W=24,D=18,P=1.0,ch=1.6;
  // the long carpet up the aisle to the empty seat
  // the aisle is kept clear of furniture from the dais to 4 m short of the door (a walker gets round it from the door)
  vB('vClothB',0,y,0,2.4,.03,D-5,0,xC(XPAL.red));fix.push({kind:'aisle',x:0,z:.5,w:2.6,d:9,h:.05,front:0});
- qnRoomRec('Council chamber','hall',.9,[[-W/2,-D/2],[W/2,-D/2],[W/2,D/2],[-W/2,D/2]],y,5.2,[[0,D/2,3.6]],fix);}
+ qnRoomRec('Council chamber of the Prismarchy','hall',.9,[[-W/2,-D/2],[W/2,-D/2],[W/2,D/2],[-W/2,D/2]],y,5.2,[[0,D/2,3.6]],fix);}
 
 // ---------------------------------------------------------------- the pilgrims' hostel dormitory
 function buildQbIxHostel(G,o){reseed(33821+(o.v|0));const W=16,D=10,P=.7,ch=1.6;
@@ -70,5 +70,5 @@ function buildQbIxHostel(G,o){reseed(33821+(o.v|0));const W=16,D=10,P=.7,ch=1.6;
  qnRoomRec('Hostel dormitory','barracks',.35,[[-W/2,-D/2],[W/2,-D/2],[W/2,D/2],[-W/2,D/2]],y,3.2,[[0,D/2,2]],[{kind:'stove',x:0,z:-D/2+.6,w:1.4,d:1.0,h:1.2,front:.8}]);}
 
 QB.def({key:'qb_ix_assembly',name:'Assembly hall (interior)',family:'Interiors (cut-away)',tags:QTAG('civic',['religious'],{note:'a great monastery\'s assembly hall, cut away'}),w:24,d:18,h:5,nv:1,eyes:[['above',0,13,0,-1,9]],build:buildQbIxAssembly});
-QB.def({key:'qb_ix_hall',name:'Council chamber (interior)',family:'Interiors (cut-away)',tags:QTAG('civic',['civic'],{note:'the Hall of the Decree\'s chamber: the eight abbots and the empty seat, cut away'}),w:26,d:20,h:5,nv:1,eyes:[['above',0,14,0,-1,10]],build:buildQbIxHall});
+QB.def({key:'qb_ix_hall',name:'Council chamber of the Prismarchy (interior)',family:'Interiors (cut-away)',tags:QTAG('civic',['civic'],{note:'the Hall of the Decree\'s chamber: the eight abbots and the empty seat, cut away'}),w:26,d:20,h:5,nv:1,eyes:[['above',0,14,0,-1,10]],build:buildQbIxHall});
 QB.def({key:'qb_ix_hostel',name:'Hostel dormitory (interior)',family:'Interiors (cut-away)',tags:QTAG('civic',['tavern/inn']),w:18,d:12,h:4,nv:1,eyes:[['above',0,10,0,-1,7]],build:buildQbIxHostel});

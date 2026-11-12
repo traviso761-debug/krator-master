@@ -10,7 +10,7 @@
 function buildQbTemple(G,o){reseed(33701+(o.v|0));const V=xV(o),TH=6;
  const wash=xC(xPick(XPAL.wash)),red=xC(xPick(XPAL.redwall)),stone=xC(xPick(QSTONE)),band=xC(xPick(XPAL.maroon)),g=xC(xPick(XPAL.gold)),trim=xC(XPAL.saffron);
  const T=[[90,90],[66,66],[44,44]];
- vnReg('Great temple',0,0,48,3*TH+24);
+ vnReg('Great temple (the Rainbow Temple)',0,0,48,3*TH+24);
  let y=0;const run=Math.max(2,Math.round(TH/.17))*.34;
  T.forEach(([w,d],i)=>{const c=i===2?red:wash;const k=qnCube(0,y,0,w,TH,d,0,c,i===2?'wash':'wash');
   // the chapels behind the terrace wall: one row of windows, the flights' bays left clear
@@ -32,16 +32,20 @@ function buildQbTemple(G,o){reseed(33701+(o.v|0));const V=xV(o),TH=6;
  const top=xnDome(0,t2-.3,0,R.w*.32,'G',{drum:2.6,drumItem:'xDrumM',fin:2.4});
  for(const a of[0,1,2,3]){const ry=a*Math.PI/2,p=loc(0,0,0,R.d/2-.6,ry);qnWheelDeer(p[0],t2,p[1],ry,1.3,g);}
  for(const sx of[-1,1])for(const sz of[-1,1])qnBanner(sx*(R.w/2-.4),t2,sz*(R.d/2-.4),3);
+ // the eight banners on the top terrace, each in a monastery's colour and turned toward it (the owner, 2026-11-11: hence the
+ // Rainbow Temple): the cardinal four beside the stairs' heads (the flights land on the axes), the diagonal four at the corners
+ for(let i=0;i<8;i++){const d=qnSpokeDir(i),r=i%2?26.9:19.6,side=i%2?0:5.4;qnSpokeBanner(d[0]*r-d[1]*side,y,d[1]*r+d[0]*side,i,15);}
  // the great court at the foot: paving round the platform, pilgrims on the kora round it
  for(const a of[0,1,2,3]){const ry=a*Math.PI/2,p=loc(0,0,0,45+run+6,ry);qnPave(p[0],p[1],a%2?10:96,a%2?96:10,0);}
  xnFolk(0,0,45+run+5,10,30);xnFolk(-45-run-5,0,0,8,30);if(V===1)for(let i=0;i<12;i++)vBall('xGold',-30+i*5.4,TH+1.4,45.4,.12,xC(0xe8a030));}   // the festival's butter lamps along the first terrace
 
 // ---------------------------------------------------------------- the Hall of the Decree
-// a red hall on a high plinth, a ten-column portico, three storeys; eight banners on its front parapet, one for each abbot
-// of the council; the gilt crown with the wheel and deer. (The Sultan's empty seat is inside: Q6's interior.)
+// The seat of the Prismarchy, the council of the eight abbots (the Prismarchs; the owner, 2026-11-11): a red hall on a high
+// plinth, a ten-column portico, three storeys; eight banners on its front parapet, one for each Prismarch in his monastery's
+// colour; the gilt crown with the wheel and deer. (The Sultan's empty seat is inside: Q6's interior.)
 function buildQbHallDecree(G,o){reseed(33711+(o.v|0));const V=xV(o),W=40,D=28,P=2.2,ZB=-3,hs=[6.0,4.6,4.2];
  const red=xC(xPick(XPAL.redwall)),wash=xC(xPick(XPAL.wash)),stone=xC(xPick(QSTONE)),band=xC(xPick(XPAL.maroon)),g=xC(xPick(XPAL.gold)),trim=xC(XPAL.saffron);
- vnReg('Hall of the Decree',0,ZB,26,P+15+8);
+ vnReg('Hall of the Decree (the Prismarchy)',0,ZB,26,P+15+8);
  const F=ZB+D/2;qnPlinth(0,ZB+2,W+2,D+4,P,0,stone);
  const S=qnStack(0,P,ZB,W,D,0,hs,red,'wash',xC(XPAL.white));
  qnWins(0,P,ZB,W,D,0,hs,S.k,{pitch:3.0,ww:1.2,wh:1.8,kind:'lit',trim,val:'all',skip:[[-15,15]]});
@@ -50,7 +54,7 @@ function buildQbHallDecree(G,o){reseed(33711+(o.v|0));const V=xV(o),W=40,D=28,P=
  xnFlight(0,0,F+4+Math.max(2,Math.round(P/.17))*.34-.2,0,16,P,'vStone',stone);
  const t=qnRoof(0,S.y,ZB,S.w,S.d,0,red,{band,gold:true,eave:true,eaveC:xC(xPick(XPAL.dark)),parapet:.8,corner:'gold'});
  qnCrown(0,t,ZB,S.w,S.d,0,{pav:[S.w*.42,S.d*.45],deerS:1.5,banners:false});
- for(let i=0;i<8;i++){const u=-S.w/2+2+i*(S.w-4)/7;qnBanner(u,t,ZB+S.d/2-.4,3.2);}
+ for(let i=0;i<8;i++){const u=-S.w/2+2+i*(S.w-4)/7;qnBanner(u,t,ZB+S.d/2-.4,3.2,null,xC(QSPOKE[i].wall));}   /* one per Prismarch, in his colour */
  for(const s of[-1,1])for(const sz of[-1,1])qnBanner(s*(S.w/2-.4),t,ZB+sz*(S.d/2-.4)-(sz>0?0:0),2.4);
  qnPave(0,F+4+4.5,W,3,0);xnFolk(0,0,F+9,6,10);}
 
@@ -127,8 +131,8 @@ function buildQbWallGate(G,o){reseed(33761+(o.v|0));const V=xV(o),inner=V===1,W=
   const tt=qnRoof(x,Tt.y,0,Tt.w,Tt.d,0,red,{band,gold:true,parapet:.7,corner:'gold'});}
  qnCrown(0,t,0,S.w,S.d,0,{pav:[S.w*.4,S.d*.5],deerS:inner?.8:1.2});}
 
-QB.def({key:'qb_temple',name:'Great temple',family:'The Temple Mountain',tags:QTAG('civic',['religious'],{landmark:true,job:'worship',note:'ring 0: the stepped platform, the sanctum, the central dome'}),w:120,d:120,h:48,fw:92,fd:92,nv:2,build:buildQbTemple});
-QB.def({key:'qb_hall_decree',name:'Hall of the Decree',family:'The Temple Mountain',tags:QTAG('civic',['civic','religious'],{landmark:true,note:'the council of abbots; the Sultan\'s seat kept empty'}),w:42,d:42,h:26,fw:42,fd:32,nv:2,build:buildQbHallDecree});
+QB.def({key:'qb_temple',name:'Great temple (the Rainbow Temple)',family:'The Temple Mountain',tags:QTAG('civic',['religious'],{landmark:true,job:'worship',note:'ring 0: the stepped platform, the sanctum, the central dome'}),w:120,d:120,h:48,fw:92,fd:92,nv:2,build:buildQbTemple});
+QB.def({key:'qb_hall_decree',name:'Hall of the Decree (the Prismarchy)',family:'The Temple Mountain',tags:QTAG('civic',['civic','religious'],{landmark:true,note:'the Prismarchy, the council of the eight Prismarchs; the Sultan\'s seat kept empty'}),w:42,d:42,h:26,fw:42,fd:32,nv:2,build:buildQbHallDecree});
 QB.def({key:'qb_treasury',name:'Treasury',family:'The Temple Mountain',tags:QTAG('civic',['civic']),w:24,d:26,h:22,fw:24,fd:20,nv:2,build:buildQbTreasury});
 QB.def({key:'qb_great_wheel',name:'Great wheel house',family:'The Temple Mountain',tags:QTAG('civic',['religious'],{landmark:true}),w:34,d:28,h:28,fw:20,fd:20,nv:2,build:buildQbGreatWheel});
 QB.def({key:'qb_wall',name:'Ring wall',family:'Walls and gates',tags:QTAG('civic',['military','infrastructure']),w:30,d:14,h:12,fw:30,fd:5,build:buildQbWall});
