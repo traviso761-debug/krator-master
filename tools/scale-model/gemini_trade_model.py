@@ -50,10 +50,10 @@ from smodel.page import LEGACY_SHIFT, load as load_page, raster  # noqa: E402
 
 
 # ---------------------------------------------------------------------------
-# 1. Load 5.1 Rasters, Geology, Polygons & Base Censuses (Read-Only)
+# 1. Load 5.1 Rasters, Rebaked Geology, Polygons & Base Censuses (Read-Only)
 # ---------------------------------------------------------------------------
-def load_world():
-    D = load_page()
+def load_world(model_data_dir=None, regs_js_path=None, geo_json_path=None):
+    D = load_page(model_data_dir) if model_data_dir else load_page()
     OW, OH = D["fullW"], D["fullH"]  # 1821 x 1723 (2 km/px)
     h_img = raster(D, "h")
     lo, hi = D["lo"], D["hi"]
@@ -63,7 +63,10 @@ def load_world():
     tm_img = raster(D, "tm")[..., 0].astype(np.float32) / 255.0 * 110.0 - 50.0
     rain_img = (raster(D, "p")[..., 0].astype(np.float32) / 255.0) ** 2 * 5000.0
 
-    G = json.load(open(os.path.join(ROOT, "kits", "resources", "data", "geology.json"), encoding="utf-8"))
+    default_geo = os.path.join(ROOT, "kits", "resources", "data", "geology-gemini.json")
+    if not os.path.isfile(default_geo):
+        default_geo = os.path.join(ROOT, "kits", "resources", "data", "geology.json")
+    G = json.load(open(geo_json_path or default_geo, encoding="utf-8"))
     GW, GH = G["grid"]["w"], G["grid"]["h"]  # 911 x 862 (4 km/cell)
 
     # Subsample 2 km rasters onto 4 km geology grid
@@ -79,8 +82,9 @@ def load_world():
         b = np.frombuffer(base64.b64decode(b64), dtype=np.uint8)
         layers[k] = np.repeat(b[1::2], b[0::2].astype(np.int32) + 1).reshape(GH, GW)
 
-    reg_txt = open(os.path.join(HERE, "model", "src", "51-region-store.js"), encoding="utf-8").read()
-    regs = json.loads(re.search(r"const defRegs = (\[.*?\]);\n", reg_txt, re.S).group(1))
+    rpath = regs_js_path or os.path.join(HERE, "model", "src", "51-region-store.js")
+    reg_txt = open(rpath, encoding="utf-8").read()
+    regs = json.loads(re.search(r"const defRegs = (\[.*?\]);\r?\n", reg_txt, re.S).group(1))
 
     rs = json.load(open(os.path.join(ROOT, "openworld", "resources-settlements.json"), encoding="utf-8"))
     tg = json.load(open(os.path.join(ROOT, "openworld", "trade-goods.json"), encoding="utf-8"))
@@ -136,7 +140,11 @@ def scan_site_geo(world, px, py, reach_km=15):
     out = {"sea_cells": int(sea.sum()), "land_cells": int(land.sum())}
     for fam in ("iron", "copper", "gold", "tin", "silver", "rare-earth", "coal",
                 "sulfur", "saltpeter", "oil", "gypsum", "halite", "potash",
-                "alkali", "nickel", "marble", "stone", "clay", "wood"):
+                "alkali", "nickel", "marble", "zinc", "stone", "clay", "wood"):
+        if fam not in world["layers"]:
+            out[fam] = 0.0
+            out[fam + "_max"] = 0
+            continue
         arr = world["layers"][fam][j0:j1, i0:i1]
         vals = arr[land] if land.any() else arr[disk]
         out[fam] = float(vals.mean()) if vals.size else 0.0
@@ -326,6 +334,7 @@ GOODS = [
     {"id": "copper", "label": "copper", "class": "metal", "tier": "medium", "unit": "t", "note": "bronze base, roofing, wire, coin"},
     {"id": "tin", "label": "tin", "class": "metal", "tier": "compact", "unit": "t", "note": "scarce alloying half of bronze; carries long range"},
     {"id": "bronze", "label": "bronze", "class": "metal", "tier": "medium", "unit": "t", "note": "cast fittings, bells, naval cannon, Eternian window tracery"},
+    {"id": "zinc", "label": "zinc & brass spelter", "class": "metal", "tier": "medium", "unit": "t", "note": "sphalerite ore & brass spelter for Roketstad optics, naval instruments & fittings"},
     {"id": "nickel", "label": "nickel & alloy steel", "class": "metal", "tier": "medium", "unit": "t", "note": "armour plate & high-grade alloys"},
     {"id": "rare-earth", "label": "rare earths", "class": "metal", "tier": "compact", "unit": "t", "note": "extracted only by Yuni, Eternia, Order & Tungangs"},
     {"id": "gold", "label": "gold", "class": "precious", "tier": "compact", "unit": "kg", "note": "bullion, coin, Xanadu leaf"},
@@ -486,6 +495,11 @@ def populate_supply_demand(world, setts):
         is_high = gs["h_m"] > 2200 or pol in ("Realm of Dalab", "Xanadu Sultanate", "Tungang Union", "Order of Historians", "Yuni Emirate", "Empire of Iziz")
 
         dem["marble"] = (0.75 if s["type"] in ("city", "arcology") else 0.15) * kpop
+        dem["zinc"] = (0.38 if pol in ("Iron Republic", "Eternal State", "Empire of Iziz", "Yuni Emirate", "Yusar (Cybernetics)") else 0.14) * kpop
+        if nm == "Roketstad":
+            dem["zinc"] = max(dem["zinc"], 8.5)  # brass telescope & sextant barrels!
+        if gs.get("zinc_max", 0) >= 95 and pol not in ("Lizardmen", "Ring Sea Pirates"):
+            sup["zinc"] = max(sup.get("zinc", 0.0), gs["zinc"] * 0.065 * (0.6 + 0.4 * min(kpop, 3.0)))
         if nm == "Jimjam":
             dem["marble"] = 68.0  # brick-built Jimjam imports contact-belt marble up The Cut!
             dem["coal"] = max(dem.get("coal", 0.0), 195.0)  # kiln fuel for Kiln Country!
@@ -668,9 +682,16 @@ def build_multimodal_graphs(world, setts):
     assert ring_sea_comp > 0, "Expected Ring Sea water component > 0"
     is_ring_sea = (lbl == ring_sea_comp)
 
-    # Blocked & penalized polygons
+    # Blocked & penalized polygons (incl. hostile Lizardman Rift zone — LORE.md s6.20: never trade, raid caravans!)
     mask_valley = poly_mask(world["regs"], {"ancient's valley", "ancients valley"}, GW, GH, OW, OH)
     mask_korona = poly_mask(world["regs"], {"korona / ne"}, GW, GH, OW, OH)
+    mask_lizard_poly = poly_mask(world["regs"], {"lizardmen"}, GW, GH, OW, OH)
+    mask_lizard_hostile = mask_lizard_poly | (ndimage.binary_dilation(mask_lizard_poly, iterations=10) & (E < 4400.0))
+    for sid_lz, s_lz in setts.items():
+        if s_lz["polity"] == "Lizardmen":
+            li, lj = int(round(s_lz["px"] * su)), int(round(s_lz["py"] * sv))
+            yy_l, xx_l = np.ogrid[0:GH, 0:GW]
+            mask_lizard_hostile |= (((xx_l - li) ** 2 + (yy_l - lj) ** 2) <= 12 ** 2) & (E < 4400.0)
 
     # Rasterize kept / partly-kept Ancient highways & God's Road (remember +272,+330 legacy shift!)
     road_mult = np.ones((GH, GW), dtype=np.float32)
@@ -732,10 +753,15 @@ def build_multimodal_graphs(world, setts):
         return int(round(py * sv)) * GW + int(round(px * su))
 
     # Assign settlement cells & identify ports/harbours connected to Layer 1 (N_CELL + cell)
+    # Note: Hostile Lizardman settlements never host external ships or barges!
     port_links = []
     for sid, s in setts.items():
         c = cell_of(s["px"], s["py"])
         s["cell"] = c
+        if s["polity"] == "Lizardmen":
+            s["water_cell"] = None
+            s["is_ring_sea_port"] = False
+            continue
         cj, ci = divmod(c, GW)
         # Check if within 3 cells (12 km) of navigable sea/lake water
         best_w = None
@@ -827,6 +853,10 @@ def build_multimodal_graphs(world, setts):
             kor = (mask_korona.flat[a] | mask_korona.flat[b]) & (~has_road)
             c_land = np.where(kor, c_land * 3.6, c_land)
 
+            # Hostile Lizardman Rift territory (LORE.md s6.20: hostile to humans, caravans raided & seldom used!)
+            liz = mask_lizard_hostile.flat[a] | mask_lizard_hostile.flat[b]
+            c_land = np.where(liz, c_land * (9.5 if use_bulk else 8.2), c_land)
+
             # Altitude hypoxia & airless rim block (>7,500 m impassable overland)
             emax = np.maximum(ea, eb)
             high = emax > 4200.0
@@ -847,6 +877,8 @@ def build_multimodal_graphs(world, setts):
             if nwa.any():
                 aw, bw = a[nwa] + N_CELL, b[nwa] + N_CELL
                 cw = np.full(aw.shape, d_km * sea_mult, dtype=np.float64)
+                liz_w = mask_lizard_hostile.flat[a[nwa]] | mask_lizard_hostile.flat[b[nwa]]
+                cw = np.where(liz_w, cw * 10.0, cw)
                 rows += [aw, bw]
                 cols += [bw, aw]
                 costs += [cw, cw]
@@ -888,6 +920,7 @@ def build_multimodal_graphs(world, setts):
         "dist_comp": dist_comp, "pred_comp": pred_comp,
         "is_ring_sea": is_ring_sea, "river_nav": river_nav, "canal_nav": canal_nav,
         "road_mult": road_mult, "special_corridors": SPECIAL_CORRIDORS,
+        "mask_lizard_hostile": mask_lizard_hostile, "mask_lizard_poly": mask_lizard_poly,
     }
 
 
@@ -932,6 +965,7 @@ def analyze_pair_path(world, graph, setts, i_src, j_dst, tier):
 
     sea_km = riv_km = hwy_km = trail_km = spec_km = 0.0
     ring_sea_km = 0.0
+    lizard_km = 0.0
     min_pirate_dist_km = 9999.0
     noa_i, noa_j = 896 * su, 866 * sv
 
@@ -977,6 +1011,8 @@ def analyze_pair_path(world, graph, setts, i_src, j_dst, tier):
                     min_pirate_dist_km = d_noa
             mode = "sea"
         else:
+            if graph["mask_lizard_hostile"][aj, ai] or graph["mask_lizard_hostile"][bj, bi]:
+                lizard_km += step_km
             if (graph["river_nav"][aj, ai] and graph["river_nav"][bj, bi]) or (
                 graph["canal_nav"][aj, ai] and graph["canal_nav"][bj, bi]
             ):
@@ -1026,6 +1062,7 @@ def analyze_pair_path(world, graph, setts, i_src, j_dst, tier):
         "highway_km": round(hwy_km),
         "caravan_km": round(trail_km),
         "corridor_km": round(spec_km),
+        "lizard_km": round(lizard_km),
         "ports": ports_used,
         "corridors": corridors_used,
         "gateways": gateways_hit,
@@ -1087,8 +1124,8 @@ def solve_trade(world, setts, graph):
         pol_deficit_map = {}
 
         for pol, members in pol_members.items():
-            if pol == "Ring Sea Pirates":
-                continue  # Pirates don't produce normal goods; handled in Pass 2!
+            if pol in ("Ring Sea Pirates", "Lizardmen"):
+                continue  # Pirates fence captured cargo in Pass 2; Lizardmen trade strictly internally (LORE.md s6.20)!
             tot_s = sum(setts[m]["supply"].get(gid, 0.0) for m in members)
             tot_d = sum(setts[m]["demand"].get(gid, 0.0) for m in members)
             if tot_s > tot_d + 1e-6:
@@ -1281,6 +1318,8 @@ def solve_trade(world, setts, graph):
                 mids = [x for x in pinfo["gateways"] if x not in (setts[s_sid]["name"], setts[b_sid]["name"])]
                 if mids:
                     via_parts.append("via " + " -> ".join(mids[:3]))
+            if pinfo.get("lizard_km", 0) > 20:
+                via_parts.append(f"HAZARDOUS RIFT ({pinfo['lizard_km']} km)")
             if is_pirate:
                 via_parts.insert(0, "PIRATE PRIZE FENCE")
 
@@ -1344,8 +1383,9 @@ def solve_trade(world, setts, graph):
 # ---------------------------------------------------------------------------
 # 8. Render High-Resolution Multimodal Trade Route Map (1821 x 1723)
 # ---------------------------------------------------------------------------
-def render_trade_map(world, setts, results, out_jpg):
+def render_trade_map(world, setts, graph, results, out_jpg):
     OW, OH = world["OW"], world["OH"]
+    GW, GH = world["GW"], world["GH"]
     E2, W2 = world["E2"], world["W2"]
 
     # Shaded hypsometric relief base
@@ -1362,6 +1402,17 @@ def render_trade_map(world, setts, results, out_jpg):
     rgb[W2, 0] = 24
     rgb[W2, 1] = 48
     rgb[W2, 2] = 74
+
+    # Crimson hazard hatch over hostile Lizardman territory (internal trade only; dangerous to caravans)
+    yy_2, xx_2 = np.mgrid[0:OH, 0:OW]
+    gi = np.clip(np.round(xx_2 * (GW - 1) / (OW - 1)).astype(int), 0, GW - 1)
+    gj = np.clip(np.round(yy_2 * (GH - 1) / (OH - 1)).astype(int), 0, GH - 1)
+    liz_2 = graph["mask_lizard_poly"][gj, gi] & (~W2)
+    hatch = liz_2 & (((xx_2 + yy_2) % 9) <= 2)
+    rgb[liz_2, 0] = rgb[liz_2, 0] * 0.78 + 48.0
+    rgb[liz_2, 1] = rgb[liz_2, 1] * 0.72 + 12.0
+    rgb[liz_2, 2] = rgb[liz_2, 2] * 0.72 + 12.0
+    rgb[hatch] = [195.0, 48.0, 48.0]
 
     base_img = Image.fromarray(np.clip(rgb, 0, 255).astype(np.uint8), mode="RGB").convert("RGBA")
     overlay = Image.new("RGBA", (OW, OH), (0, 0, 0, 0))
@@ -1422,9 +1473,13 @@ def render_trade_map(world, setts, results, out_jpg):
             tcol = (255, 130, 130) if nm == "Noa's Regret" else (248, 246, 236)
             d2.text((x, y), nm, fill=tcol, font=font)
 
+    # Label Hostile Lizardman Rift Zone
+    d2.text((641, 1529), "LIZARDMAN RIFT (Autarkic — Hostile to Caravans)", fill=(12, 12, 16), font=font_b)
+    d2.text((640, 1528), "LIZARDMAN RIFT (Autarkic — Hostile to Caravans)", fill=(255, 138, 138), font=font_b)
+
     # Legend box (bottom-left)
-    lx, ly = 28, OH - 188
-    d2.rectangle((lx, ly, lx + 470, OH - 24), fill=(18, 24, 34), outline=(120, 140, 165), width=2)
+    lx, ly = 28, OH - 210
+    d2.rectangle((lx, ly, lx + 492, OH - 24), fill=(18, 24, 34), outline=(120, 140, 165), width=2)
     d2.text((lx + 14, ly + 10), "KRATOR 5.1 MULTIMODAL TRADE NETWORK (gemini-trade)", fill=(255, 240, 190), font=font_b)
     legend_rows = [
         ((64, 212, 255), "Sea Shipping Lanes (Ring Sea & Farside Ocean)"),
@@ -1433,6 +1488,7 @@ def render_trade_map(world, setts, results, out_jpg):
         ((255, 148, 66), "Overland Caravan Trunks (Camels / Lizards / Ostriches)"),
         ((255, 92, 140), "Tunnels, Cliff Lifts, Lava Tubes & Thin-Air Passes"),
         ((240, 60, 60), "Noa's Regret Pirate Prize Fence Lanes"),
+        ((195, 48, 48), "Hostile Lizardman Territory (No External Trade; Raided)"),
     ]
     for idx_l, (c_rgb, lbl_txt) in enumerate(legend_rows):
         ry = ly + 38 + idx_l * 20
@@ -1443,18 +1499,121 @@ def render_trade_map(world, setts, results, out_jpg):
     print("Saved trade map:", out_jpg)
 
 
+def write_trade_markdown(payload, out_md):
+    lines = [
+        "# State of Trade & Trade Goods on Krator (5.1 Multimodal Network — Rebaked Geology)",
+        "",
+        "Generated by [gemini_trade_model.py](file:///C:/Users/travi/Documents/krator-trade/tools/scale-model/gemini_trade_model.py) "
+        "from [geology-gemini.json](file:///C:/Users/travi/Documents/krator-trade/kits/resources/data/geology-gemini.json) "
+        "into [trade-gemini.json](file:///C:/Users/travi/Documents/krator-trade/openworld/trade-gemini.json) on branch `gemini-trade` (leaving all base files untouched).",
+        "",
+        "> [!IMPORTANT]",
+        f"> **Model Summary**: **{payload['good_count']} trade goods** (including `zinc` / brass spelter) solved across "
+        f"**{payload['polity_count']} polities & maritime poleis** (`{payload['settlement_count']}` settlements & gateways) over a "
+        "**two-layer 4 km Dijkstra multimodal graph** backed by the rebaked 5.1 geology.",
+        "> - **Lizardman Autarky & Hostile Rift Rule (`LORE.md §6.20`)**: `Lizardmen` (`Sauropolis`, `Komodo`, `Gila`, `Tuatara`) trade strictly internally to meet domestic needs (`0` external exports, `0` external imports, `0` external ship/barge port calls), and caravans entering the West–East Rift face severe ambush penalties (`8.2x–9.5x`), pushing Ring Sea ↔ Xanadu trade onto **The Catch / Twins / White Gills** corridor.",
+        "",
+        "## 1. Top Maritime Port & Overland Chokepoint Entrepôts",
+        "",
+        "| Rank | Hub / Chokepoint | Sea Break-of-Bulk (t-eq) | Land Transit (t-eq) | Active Flows | Top Transit Cargoes |",
+        "|---:|:---|---:|---:|---:|:---|",
+    ]
+    for rk, e in enumerate(payload["entrepots"][:22], 1):
+        lines.append(
+            f"| {rk} | **{e['hub']}** | {e['sea_tons_eq']} | {e['land_tons_eq']} | {e['flow_count']} | {', '.join(e['top_transit_goods'][:4])} |"
+        )
+
+    lines += [
+        "",
+        "---",
+        "",
+        "## 2. `Noa's Regret` Maritime Piracy & Prize-Fencing Ledger",
+        "",
+        "| Good | Captured at Sea | Fenced Onward | Primary Victim Fleets | Primary Prize Buyers |",
+        "|:---|---:|---:|:---|:---|",
+    ]
+    for p in payload["noas_regret_piracy"][:24]:
+        lines.append(
+            f"| **`{p['good']}`** ({p['unit']}) | {p['captured']} | {p['fenced']} | {', '.join(p['top_victims'])} | {', '.join(p['top_fence_buyers'])} |"
+        )
+
+    lines += [
+        "",
+        "---",
+        "",
+        "## 3. Trade Balances by Polity & Maritime Polis",
+        "",
+        "| Polity / Polis | Setts | Pop | Top Exports (Net Cross-Polity Outflow) | Top Imports (Cross-Polity Inflow) |",
+        "|:---|---:|---:|:---|:---|",
+    ]
+    pol_sorted = sorted(payload["polities"].values(), key=lambda x: -x["population"])
+    for pol in pol_sorted:
+        if pol.get("trade_regime") == "internal_autarky_hostile":
+            exp_str = "*(0 — internal Rift trade only; hostile to humans)*"
+            imp_str = "*(0 — internal Rift trade only; raids Rift caravans)*"
+        else:
+            exp_str = ", ".join(f"`{x['good']}` ({x['amount']} {x['unit']})" for x in pol["top_exports"][:5]) or "*(minimal)*"
+            imp_str = ", ".join(f"`{x['good']}` ({x['amount']} {x['unit']})" for x in pol["top_imports"][:5]) or "*(minimal)*"
+        lines.append(f"| **{pol['polity']}** | {pol['settlement_count']} | {pol['population']:,} | {exp_str} | {imp_str} |")
+
+    SECTIONS = [
+        ("I. Metals, Bullion & Structural Salvage", ["iron", "copper", "tin", "bronze", "zinc", "nickel", "rare-earth", "gold", "silver", "scrap"]),
+        ("II. Fuels, Industrial Minerals & Building Stone", ["coal", "oil", "salt", "sulfur", "saltpeter", "potash", "marble", "alabaster", "brick", "machine-wax", "pitch-tar"]),
+        ("III. Timber, Naval Rigging, Fibres, Textiles, Beasts & Staples", ["timber", "cordage", "cotton", "silk", "qiviut", "plaid", "dye-tropical", "dye-temperate", "mounts", "food"]),
+        ("IV. Spices, Stimulants, Incense, Medicines & Alchemicals", ["spice-tropical", "isle-spice", "spice-highland", "cacao", "coffee", "tea", "sugar", "tobacco", "incense", "medicine", "lung-salt", "reagent", "fungal"]),
+        ("V. Gems, Kilnware, Knowledge, Optics, Arms & Ancient Tech", ["pearls", "gems", "goldwork", "fine-ceramics", "porcelain", "almanacs", "books", "lenses", "rockets", "arms", "electrics", "cybernetics", "genecraft", "scrapgoods", "relics", "oversea-luxuries"]),
+    ]
+
+    lines += ["", "---", "", f"## 4. Complete Good-by-Good Atlas (All {payload['good_count']} Goods)", ""]
+    for sec_title, gids in SECTIONS:
+        lines += [f"### {sec_title}", ""]
+        for gid in gids:
+            gd = payload["per_good"][gid]
+            mp = gd["mode_pct"]
+            lines.append(f"#### `{gid}` — {gd['label'].title()} (`{gd['tier']}`, unit: `{gd['unit']}`)")
+            lines.append(f"- **Role**: {gd['note']}")
+            lines.append(
+                f"- **Cross-Polity Volume**: **`{gd['total_traded']} {gd['unit']}/yr`** · **Pirate Capture**: `{gd['pirate_captured']} {gd['unit']}` · "
+                f"**Mode Split**: Ship `{mp.get('sea', 0.0)}%` | River/Canal `{mp.get('river', mp.get('river_canal', 0.0))}%` | Highway `{mp.get('highway', 0.0)}%` | Caravan `{mp.get('caravan', 0.0)}%` | Tunnel/Pass `{mp.get('corridor', 0.0)}%`"
+            )
+            prod_s = ", ".join(f"**{p['polity']}** (`{p['exported']}` exp / `{p['surplus']}` surp, {p['share_pct']}%)" for p in gd["producers"][:6])
+            imp_s = ", ".join(f"**{p['polity']}** (`{p['imported']}` imp / `{p['deficit']}` need, {p['share_pct']}%)" for p in gd["importers"][:6])
+            lines.append(f"- **Producers (Exporters)**: {prod_s or '*(none)*'}")
+            lines.append(f"- **Importers (Customers)**: {imp_s or '*(none)*'}")
+            lines.append("")
+            lines.append("| Flow (`Origin -> Destination`) | Origin Polity -> Buyer Polity | Volume | Dist (`eff km`) | Mode | Ports, Passes & Corridors Traversed |")
+            lines.append("|:---|:---|---:|---:|:---|:---|")
+            top_r = [r for r in gd["routes"] if not r["pirate_fenced"]][:5]
+            pir_r = [r for r in gd["routes"] if r["pirate_fenced"]][:1]
+            for r in top_r + pir_r:
+                lines.append(
+                    f"| **{r['from']} -> {r['to']}** | {r['from_polity']} -> {r['to_polity']} | "
+                    f"`{r['amount']} {gd['unit']}` | {r['km']} km (`{r['effective_km']}`) | `{r['mode']}` | {r['via']} |"
+                )
+            lines.append("")
+
+    with open(out_md, "w", encoding="utf-8") as f:
+        f.write("\n".join(lines) + "\n")
+    print("Saved Markdown:", out_md)
+
+
 # ---------------------------------------------------------------------------
 # 9. Write JSON & Repo Summary Doc (100% Additive on gemini-trade)
 # ---------------------------------------------------------------------------
-def main():
-    world = load_world()
+def main(argv=None):
+    argv = argv if argv is not None else sys.argv[1:]
+    mdata = argv[argv.index("--model-data") + 1] if "--model-data" in argv else None
+    rpath = argv[argv.index("--regions") + 1] if "--regions" in argv else None
+    gpath = argv[argv.index("--geology") + 1] if "--geology" in argv else None
+
+    world = load_world(mdata, rpath, gpath)
     setts = build_settlements(world)
     populate_supply_demand(world, setts)
     graph = build_multimodal_graphs(world, setts)
     res = solve_trade(world, setts, graph)
 
     out_jpg = os.path.join(ROOT, "openworld", "trade-routes-gemini.jpg")
-    render_trade_map(world, setts, res, out_jpg)
+    render_trade_map(world, setts, graph, res, out_jpg)
 
     # Assemble polity summary
     pol_summary = {}
@@ -1465,7 +1624,7 @@ def main():
     for pol, members in sorted(pol_members.items()):
         exps = sorted(res["polity_exports"][pol].items(), key=lambda kv: kv[1], reverse=True)
         imps = sorted(res["polity_imports"][pol].items(), key=lambda kv: kv[1], reverse=True)
-        pol_summary[pol] = {
+        entry = {
             "polity": pol,
             "settlement_count": len(members),
             "population": sum(m["population"] for m in members),
@@ -1473,6 +1632,10 @@ def main():
             "top_exports": [{"good": g, "amount": round(v, 2), "unit": GOOD_BY_ID[g]["unit"]} for g, v in exps[:10] if v > 0.01],
             "top_imports": [{"good": g, "amount": round(v, 2), "unit": GOOD_BY_ID[g]["unit"]} for g, v in imps[:10] if v > 0.01],
         }
+        if pol == "Lizardmen":
+            entry["trade_regime"] = "internal_autarky_hostile"
+            entry["note"] = "Trades strictly internally among Sauropolis, Komodo, Gila, and Tuatara; hostile to humans — zero external trade and Rift caravans face severe raid risk."
+        pol_summary[pol] = entry
 
     entrepots = []
     for nm, ed in sorted(res["entrepot_totals"].items(), key=lambda kv: -(kv[1]["sea_tons"] + kv[1]["land_tons"])):
@@ -1516,6 +1679,8 @@ def main():
     with open(out_json, "w", encoding="utf-8") as f:
         json.dump(payload, f, indent=2)
     print(f"Saved JSON: {out_json} ({len(GOODS)} goods, {len(pol_summary)} polities, {len(setts)} settlements)")
+    out_md = os.path.join(ROOT, "openworld", "TRADE-GEMINI.md")
+    write_trade_markdown(payload, out_md)
 
 
 if __name__ == "__main__":
