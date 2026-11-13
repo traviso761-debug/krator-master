@@ -196,11 +196,27 @@ VITRIFIED = [
     (420.0, 984.0, 6.5),
 ]
 
-# Authored lodes: preserves lode:xanadu-gold and stamps 5.1 biome-specific deposits
+# Authored lodes: upgrades Xanadu's Vale-wide epithermal & placer gold belt and stamps 5.1 biome-specific deposits
 AUTHORED_LODES = [
     {
-        'id': 'lode:xanadu-gold', 'family': 'gold', 'px': 911, 'py': 1665, 'r_km': 16, 'peak': 225,
-        'why': "Xanadu's epithermal gold field near Qiblai & Strongwall (LORE.md 6.13; kits/resources/data/lodes.json).",
+        'id': 'lode:xanadu-gold', 'family': 'gold', 'px': 911, 'py': 1665, 'r_km': 28, 'peak': 252,
+        'why': "Xanadu's South Rift-scarp bonanza epithermal gold field above Strongwall & Qiblai (LORE.md 6.13; kits/resources/data/lodes.json).",
+    },
+    {
+        'id': 'lode:xanadu-qiblai-au', 'family': 'gold', 'px': 920, 'py': 1608, 'r_km': 28, 'peak': 248,
+        'why': 'Qiblai–Strongwall Rift-floor hydrothermal bonanza veins & Lake Xanadu south-shore placer fans making gold plentiful across the Vale.',
+    },
+    {
+        'id': 'lode:xanadu-erehwon-au', 'family': 'gold', 'px': 808, 'py': 1516, 'r_km': 26, 'peak': 244,
+        'why': 'Erehwon West Vale bounding-fault epithermal gold-quartz terraces & Pleasure-Dome stream placers.',
+    },
+    {
+        'id': 'lode:xanadu-theodiga-au', 'family': 'gold', 'px': 908, 'py': 1535, 'r_km': 24, 'peak': 240,
+        'why': 'Theodiga / Godthrone south-toe boiling-zone hot-spring sinters & gold-electrum veins.',
+    },
+    {
+        'id': 'lode:xanadu-strongbow-au', 'family': 'gold', 'px': 994, 'py': 1598, 'r_km': 22, 'peak': 234,
+        'why': 'Kirstabal–Strongbow East Vale Rift-margin epithermal gold veins & alluvial terraces.',
     },
     {
         'id': 'lode:galvanic-vms-zn', 'family': 'zinc', 'px': 801, 'py': 1573, 'r_km': 16, 'peak': 248,

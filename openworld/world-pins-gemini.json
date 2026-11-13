@@ -12926,6 +12926,15 @@
       "px": 1042,
       "py": 1525,
       "notes": "Geothermal steam-vent pass fort between Stair and Strongbow."
+    },
+    {
+      "id": "gem_xanadu_goldfields",
+      "name": "Xanadu Goldfields",
+      "type": "village",
+      "polity": "Xanadu Sultanate",
+      "px": 911,
+      "py": 1665,
+      "notes": "Bonanza South Rift-scarp epithermal gold-mining village on lode:xanadu-gold above Strongwall & Qiblai."
     }
   ],
   "net51_overrides": {
@@ -14882,7 +14891,16 @@
       "px": 1042,
       "py": 1525,
       "notes": "Geothermal steam-vent pass fort between Stair and Strongbow."
+    },
+    {
+      "id": "gem_xanadu_goldfields",
+      "name": "Xanadu Goldfields",
+      "type": "village",
+      "polity": "Xanadu Sultanate",
+      "px": 911,
+      "py": 1665,
+      "notes": "Bonanza South Rift-scarp epithermal gold-mining village on lode:xanadu-gold above Strongwall & Qiblai."
     }
   ],
-  "settlement_count": 168
+  "settlement_count": 169
 }

@@ -288,9 +288,10 @@ NEW_SETTLEMENTS = [
     {"id": "sr666p3u3p", "name": "Cline", "px": 1225, "py": 646, "type": "village", "population": 750, "polity": "Nomad Country", "reach_km": 15},
     # Tiguantin (Iziz tributary on the Eastern Highlands & Lesser Throne; capital town Guari at 1095,911)
     {"name": "Guari", "px": 1095, "py": 911, "type": "town", "population": 5500, "polity": "Tiguantin", "reach_km": 20},
-    # Xanadu Sultanate additions (Kirstabal plantation town & Thalaba Godshearth expedition base)
+    # Xanadu Sultanate additions (Kirstabal plantation town, Thalaba Godshearth expedition base & Xanadu Goldfields on lode:xanadu-gold)
     {"id": "sl758m2396", "name": "Kirstabal", "px": 989, "py": 1600, "type": "town", "population": 2200, "polity": "Xanadu Sultanate", "reach_km": 18},
     {"id": "shvo49k0y2", "name": "Thalaba", "px": 825, "py": 1481, "type": "village", "population": 750, "polity": "Xanadu Sultanate", "reach_km": 15},
+    {"name": "Xanadu Goldfields", "px": 911, "py": 1665, "type": "village", "population": 950, "polity": "Xanadu Sultanate", "reach_km": 18},
     # Eternal State additions (Tone, Sheritu, & Palewharf lakeshore barge village on western Jimjam's Lake)
     {"id": "sgzl17vqfx", "name": "Tone", "px": 368, "py": 776, "type": "village", "population": 1100, "polity": "Eternal State", "reach_km": 15},
     {"id": "s5qv4dxo1j", "name": "Sheritu", "px": 384, "py": 666, "type": "village", "population": 950, "polity": "Eternal State", "reach_km": 15},
@@ -382,9 +383,12 @@ def build_settlements(world):
                     rec["demand"][k] *= scale
                 if nm in ("Iziz", "Fulcrum"):
                     # Modeled as having the supply & demand of 120k people (6x 20k rendered scale);
-                    # cap fixed-site vault/arsenal constants (relics, arms) at 2.5x so they don't swamp world totals.
+                    # cap fixed-site vault/arsenal constants (relics, arms) at 2.5x and keep bedrock precious-metal lodes at 1.0x.
                     FIXED_VAULT_KEYS = {"relics", "arms"}
+                    BEDROCK_PRECIOUS_KEYS = {"gold", "silver"}
                     for k in list(rec["supply"].keys()):
+                        if k in BEDROCK_PRECIOUS_KEYS:
+                            continue
                         rec["supply"][k] *= (2.5 if k in FIXED_VAULT_KEYS else scale)
                 else:
                     for k in ("plaid", "saltpeter", "tin", "nickel"):
@@ -453,7 +457,8 @@ GOODS = [
     {"id": "salt", "label": "salt", "class": "mineral", "tier": "bulk", "unit": "t", "note": "dietary & curing staple; Catch/Bowl supply Xanadu"},
     {"id": "sulfur", "label": "volcanic & fumarole sulfur", "class": "mineral", "tier": "medium", "unit": "t", "note": "Gunpowder & Steel Triangle leg 2: Kautoa, Throne (Dhelv/Andaru/Mira) & Godshearth sulfur shipped to arsenals"},
     {"id": "saltpeter", "label": "playa & guano-tube saltpeter", "class": "mineral", "tier": "medium", "unit": "t", "note": "Gunpowder & Steel Triangle leg 3: Bowl/Catch playas, Tallwalls Da-Holwey guano tubes & East Abyss pans"},
-    {"id": "potash", "label": "potash & soda ash", "class": "mineral", "tier": "bulk", "unit": "t", "note": "glass, soap, ceramic glazes"},
+    {"id": "potash", "label": "potash (fertilizer & powder salt)", "class": "mineral", "tier": "bulk", "unit": "t", "note": "Bowl, Catch & dry-basin sylvite/potash for crop fields, black-powder conversion & soft soap"},
+    {"id": "alkali", "label": "Catch alkali salts (soda, borax & lithium)", "class": "mineral", "tier": "medium", "unit": "t", "note": "caustic Catch soda-lake natron, borates & lithium salts for rebuilding Ancient energy-cells & Geomancer wet-cells, paper-pulp delignification, optical borosilicate glass, ceramic glazes & bullion flux"},
     {"id": "marble", "label": "carved contact-belt marble", "class": "stone", "tier": "bulk", "unit": "t", "note": "NW & SW Bay contact-marble belts shipped to Jimjam & courts"},
     {"id": "alabaster", "label": "translucent alabaster", "class": "stone", "tier": "medium", "unit": "t", "note": "Jimjam gypsum-alabaster for Eternian bronze-tracery palace windows"},
     {"id": "brick", "label": "Jimjam silt brick", "class": "bulk", "tier": "bulk", "unit": "unit", "note": "red & yellow flood-silt brick; short-haul & Cut masonry"},
@@ -477,11 +482,12 @@ GOODS = [
     {"id": "spice-tropical", "label": "tropical spice (clove, citron)", "class": "crop", "tier": "compact", "unit": "t", "note": "East & West Ring Isles and Throne plantations"},
     {"id": "isle-spice", "label": "West Spice Isles & Throne Ranj", "class": "specialty", "tier": "compact", "unit": "unit", "note": "Ranj & isle spice supplied by Port Mira, Ybera, Western Spice Isles, Temora, Zey'danin & Andaru"},
     {"id": "spice-highland", "label": "highland spice (saffron, umbel)", "class": "crop", "tier": "compact", "unit": "t", "note": "high-valley saffron & aromatics"},
-    {"id": "cacao", "label": "cacao", "class": "crop", "tier": "compact", "unit": "t", "note": "Vale of Xanadu & warm basin cacao"},
+    {"id": "cacao", "label": "cacao", "class": "crop", "tier": "compact", "unit": "t", "note": "native Vale of Xanadu cacao (Erehwon, Qiblai, Theodiga, Kirstabal, Strongbow) plus minor transplanted Kautoan groves"},
     {"id": "coffee", "label": "coffee", "class": "crop", "tier": "compact", "unit": "t", "note": "Throne converted estates, Voth & foothill coffee"},
     {"id": "tea", "label": "mist tea & ivan-chai", "class": "crop", "tier": "compact", "unit": "t", "note": "Oidong/cloud-forest mist tea & northern ivan-chai"},
     {"id": "sugar", "label": "cane sugar & manna syrup", "class": "crop", "tier": "medium", "unit": "t", "note": "Shim & Ring Isles cane sugar, Dasri tamarisk-manna"},
     {"id": "tobacco", "label": "tobacco", "class": "crop", "tier": "compact", "unit": "t", "note": "Nephtos, Voth & lowland cured leaf"},
+    {"id": "hashish", "label": "Dalab hashish & pressed hemp-resin", "class": "crop", "tier": "compact", "unit": "t", "note": "pressed SW Lowlands hemp-resin native to Realm of Dalab (Dalab, Dapor, Dayshun, Nufelds, Rokwal, Span) and transplanted to the Rift Rim (Ledge & Nulab)"},
     {"id": "incense", "label": "swamp copal, myrrh & brush-oil incense", "class": "crop", "tier": "compact", "unit": "t", "note": "East Abyss Carboniferous swamp copal (Sfenops & Liikofi), Bowl myrrh, Outlands comb-mast & SW brush-oil"},
     {"id": "abyss-lac", "label": "East Abyss lac, scale-shellac & swamp-amber", "class": "specialty", "tier": "compact", "unit": "t", "note": "unique East Abyss scale-insect shellac & cordaite swamp-amber from Sfenops & Liikofi for marine varnish, lacquerware & wire insulation"},
     {"id": "medicine", "label": "medicines & anti-scurvy stores", "class": "crop", "tier": "compact", "unit": "t", "note": "rimdew, ginseng, Hykkousoi gill-salve, pyre-thistle & ember-plum scurvy powder"},
@@ -496,7 +502,8 @@ GOODS = [
     {"id": "photonic-opals", "label": "Opal Valley photonic crystal opals", "class": "precious", "tier": "compact", "unit": "kg", "note": "Opal Valley photonic-bandgap crystal opals exported via Strongbow/Xanadu to Carcosa Yusar, Iron Republic optical labs & Yuni Geomancers"},
     {"id": "goldwork", "label": "Xanadu goldwork & prayer wheels", "class": "specialty", "tier": "compact", "unit": "unit", "note": "Vale of Xanadu Goldsmiths' bullion craft"},
     {"id": "fine-ceramics", "label": "Jimjam kilnware & glazed ceramics", "class": "specialty", "tier": "compact", "unit": "unit", "note": "Jimjam ('Kiln Country') painted kilnware & glazed tile, plus Yuni/Xanadu glazes"},
-    {"id": "porcelain", "label": "Eternian imperial porcelain & paper", "class": "specialty", "tier": "compact", "unit": "unit", "note": "Eternal State kaolin porcelain, celadon & rag/bamboo paper (plus Yeti raid booty)"},
+    {"id": "porcelain", "label": "Eternian imperial porcelain & celadon", "class": "specialty", "tier": "compact", "unit": "unit", "note": "Eternal State kaolin porcelain & celadon kilnware (plus Yeti raid booty)"},
+    {"id": "paper", "label": "rag, bamboo & marsh-reed paper", "class": "craft", "tier": "medium", "unit": "t", "note": "alkali-pulped bamboo, mulberry, rag & marsh-reed paper from Eternal State mills, Longsong's Order paper mill, Abyssal reed-mills (Sfenops, Liikofi, Reed) & Dalab hemp-rag mills"},
     {"id": "almanacs", "label": "Jimjam Long Count almanacs", "class": "specialty", "tier": "compact", "unit": "unit", "note": "universal caravan & port contract-dating calendars & eclipse tables"},
     {"id": "books", "label": "books, codices & copied records", "class": "specialty", "tier": "compact", "unit": "unit", "note": "domestic presses in literate states; rare histories exported by Longsong (banned in Voth)"},
     {"id": "lenses", "label": "telescopes, sextants & lenses", "class": "specialty", "tier": "compact", "unit": "unit", "note": "Roketstad Astronomers' Guild optics ground from Ancient glass, High Rift quartz & photonic opals"},
@@ -564,9 +571,12 @@ def populate_supply_demand(world, setts):
             else:
                 sup["frost-coral"] = 56.0
             dem.update({
-                "gold": 26.0 * sc,
+                "gold": 32.0 * sc,
                 "silver": 140.0 * sc,
                 # Unique regional resources of Krator:
+                "cacao": 5.5 * sc,
+                "hashish": 4.2 * sc,
+                "paper": 6.0 * sc,
                 "isle-spice": 12.0 * sc,
                 "wormwick": 8.5 * sc,
                 "fungal": 11.0 * sc,
@@ -1311,6 +1321,205 @@ def populate_supply_demand(world, setts):
             "Jimjam", "Iron Republic", "Yuni Emirate", "Xanadu Sultanate", "Tungang Union",
         ):
             sup["mounts"] = max(sup.get("mounts", 0.0), dem.get("mounts", 0.0) * 0.72)
+
+        # --- NEW RECALIBRATIONS: (1) Xanadu Gold Exporter, (2) Native Vale Cacao, (3) Dalab Hashish, (4) Separate Paper, (5) Catch Alkali Salts ---
+
+        # 1. Xanadu Bonanza Gold Province + Rebaked Geology Gold Gate (geology-gemini.json lodes + placers):
+        # Pre-fix trade-goods.json gave large cities on 0-90 background cells (Voth 212, Yuni 141, Tallwalls 110, Dilihan 85)
+        # phantom gold from old gneiss rules. Under rebaked geology-gemini.json, commercial gold mining requires genuine
+        # hydrothermal/placer mineralization (gold_max >= 115: Xanadu 234-251 bonanza belt, Throne Dhelv/Zey'danin 140, Verge 153, Kautoa 140).
+        if pol == "Xanadu Sultanate":
+            XAN_GOLD_BONANZA = {
+                "Xanadu Goldfields": 155.0,  # South Rift-scarp bonanza lode (911,1665; gold_max=251)
+                "Qiblai": 105.0,             # South Vale hydrothermal veins & Lake Xanadu placers (gold_max=235)
+                "Erehwon": 98.0,             # West Vale bounding-fault epithermal veins & Pleasure-Dome placers (gold_max=244)
+                "Theodiga": 82.0,            # Godthrone south-toe boiling-zone hot-spring gold sinters (gold_max=239)
+                "Kirstabal": 44.0,           # East Vale Rift-margin veins (gold_max=234)
+                "Strongbow": 42.0,           # Eastern scarp gold-quartz lodes (gold_max=234)
+                "Strongwall": 28.0,          # Upper Strongwall bench veins (gold_max=173)
+                "Thalaba": 8.5,
+                "Opal Valley Mines": 6.5,
+            }
+            sup["gold"] = max(gs["gold"] * 0.42, XAN_GOLD_BONANZA.get(nm, gs["gold"] * 0.30))
+            dem["gold"] = 1.65 * kpop + (24.0 if nm == "Erehwon" else (16.0 if nm in ("Qiblai", "Theodiga") else 0.0))
+        else:
+            if pol == "Western Spice Isles":
+                sup["gold"] = 0.0  # low coral spice atolls, not bedrock Throne mines
+            elif gs["gold_max"] >= 115:
+                # Genuine rebaked hydrothermal/epithermal/placer gold provinces (Throne Dhelv/Zey'danin, Verge, Kautoa, Singing Gjar)
+                THRONE_AND_RIFT_GOLD = {
+                    "Dhelv": 48.0,           # Zeijani Silbaru Au-Ag veins (TRADE-SCOPE s2.6)
+                    "Šurpu-Dhelv": 18.0,
+                    "Qarnu-Tūbu": 18.0,
+                    "Zey'danin": 48.0,       # Vothic Throne gold mines
+                    "Port Mira": 16.0,
+                    "Verge": 54.0,           # Yuni Stalker/East-Wall gold veins
+                    "Kautoa": 24.0,
+                    "Singing Gjar Quartz": 16.0,
+                }
+                sup["gold"] = THRONE_AND_RIFT_GOLD.get(nm, min(22.0, gs["gold"] * 0.16))
+            else:
+                # Background trace rock (<=90) yields minor alluvial panning at most, not commercial bullion mines
+                sup["gold"] = min(sup.get("gold", 0.0), 4.5 if gs["gold_max"] >= 85 else 0.0)
+            GOLD_MINT_COURTS = {
+                "Iziz": 96.0,       # 120k Imperial Treasury & golden dome leaf
+                "Fulcrum": 108.0,   # 120k Eternal State Imperial Court (replaces raw 6x=384 kg artifact)
+                "Voth": 44.0,       # Vothic Royal Treasury & Ordinator shrines (imports Throne & Vale bullion)
+                "Lux": 20.0,        # Rich Eternian river-port merchant houses
+                "Farport": 22.0,    # Pelagic bullion clearinghouse
+                "Dalab": 36.0,      # Sacred Temple of The God & Genepriest coffers
+                "Roketstad": 24.0,  # Iron Republic Mint bullion reserve
+                "Jimjam": 26.0,     # Kiln Country temple gilding & caravan banking
+                "Yuni": 24.0,       # Emirate gold coinage & Geomancer contacts
+                "Ys": 18.0,         # League commercial coinage
+                "Tethis": 14.0,
+                "Marr": 12.0,
+                "Jabal": 18.0,
+            }
+            if nm in GOLD_MINT_COURTS:
+                dem["gold"] = GOLD_MINT_COURTS[nm]
+
+        # 2. Native Crop Rule on Cacao (TRADE-SCOPE s2.5 & s8.2 #3):
+        # Cacao is native to the Vale of Xanadu (main producer/exporter!), with only minor transplanted groves in Kautoa (isle-demo/PLAN.md:515).
+        # Pre-fix warm lowlands (Eternal State / Lux & Fulcrum, Voth, Jimjam, Dalab, Iziz, Yuni) do NOT grow cacao!
+        XAN_CACAO_SUP = {
+            "Erehwon": 62.0,
+            "Qiblai": 42.0,
+            "Theodiga": 32.0,
+            "Kirstabal": 28.0,
+            "Strongbow": 14.0,
+        }
+        KAUTOA_TRANSPLANT_CACAO = {
+            "Kautoa": 12.5,
+            "Valapo": 4.5,
+            "Bipo": 2.5,
+        }
+        if nm in XAN_CACAO_SUP:
+            sup["cacao"] = XAN_CACAO_SUP[nm]
+            dem["cacao"] = 0.72 * kpop  # 3x cultural Pleasure-Dome chocolate consumption, leaving ~140+ t/yr net export!
+        elif nm in KAUTOA_TRANSPLANT_CACAO:
+            sup["cacao"] = KAUTOA_TRANSPLANT_CACAO[nm]
+            dem["cacao"] = 0.28 * kpop
+        else:
+            sup["cacao"] = 0.0
+            dem["cacao"] = (0.30 if st_type in ("city", "arcology") else (0.18 if st_type == "town" else 0.08)) * kpop_lux
+            if nm in ("Iziz", "Fulcrum", "Voth", "Dalab", "Jimjam", "Lux", "Ys", "Tethis", "Roketstad", "Yuni", "Marr"):
+                dem["cacao"] = max(dem["cacao"], 0.34 * kpop_lux)
+
+        # 3. Dalab Hashish (TRADE-SCOPE s2.5, lines 26, 166, 374):
+        # Native to swlowlands (Realm of Dalab) and transplanted by Dalab to the Rift Rim (Ledge & Nulab).
+        DALAB_HASHISH_SUP = {
+            "Dalab": 36.0,
+            "Dapor": 16.5,
+            "Dayshun": 14.5,
+            "Nufelds": 10.5,
+            "Rokwal": 9.0,
+            "Daranch": 6.5,
+            "Span": 5.5,
+            # Transplanted by Dalab to the Rift Rim (riftrim):
+            "Ledge": 12.0,
+            "Nulab": 8.5,
+        }
+        sup["hashish"] = DALAB_HASHISH_SUP.get(nm, 0.0)
+        if pol == "Vothic Kingdom":
+            dem["hashish"] = 0.07 * kpop_lux  # Ordinator censorate restricts open consumption
+        elif pol in ("Realm of Dalab", "Tungang Union"):
+            dem["hashish"] = 0.28 * kpop
+        elif is_port or pol in ("Hookfleet", "Ring Sea Pirates", "Nomad Country", "Jabal Shiekdom", "Empire of Iziz", "Iron Republic", "Xanadu Sultanate", "Yuni Emirate", "Jimjam"):
+            dem["hashish"] = 0.24 * kpop_lux
+        else:
+            dem["hashish"] = 0.12 * kpop_lux
+        if nm in ("Marr", "Port Mira", "Nephtos", "Hook", "Iziz", "Jabal"):
+            dem["hashish"] = max(dem["hashish"], 3.8 if nm not in ("Iziz",) else 14.5)
+
+        # 4. Paper as Its Own Good (unbundled from porcelain; LORE.md:748, 762 & TRADE-SCOPE.md:562):
+        # Produced by Eternal State bamboo/mulberry/rag mills (pneumatic-tube bureaucracy surplus), Order of Historians' Longsong paper mill,
+        # East/North Abyss marsh-reed (totora) mills (Sfenops, Liikofi, Reed, Locus), and Dalab hemp-hurd/rag mills (Dalab, Dapor).
+        PAPER_MILLS = {
+            "Fulcrum": 96.0,      # Imperial water-powered rag & bamboo paper mills
+            "Lux": 54.0,          # Lowland river-canal bamboo & mulberry paper center!
+            "Mirabilis": 24.0,
+            "Farport": 18.0,
+            "Palewharf": 10.0,    # Ships Eternian paper bales across Jimjam's Lake to Jimjam's almanac presses!
+            "Longsong": 16.5,     # Order of Historians paper mill (BLUEPRINT.md:94; banned in Voth!)
+            "Sfenops": 32.0,      # East Abyss totora marsh-reed & cotton-rag paper mills
+            "Liikofi": 28.0,
+            "Reed": 10.0,         # North Abyss reed-bed paper works
+            "Locus": 14.0,
+            "Dalab": 42.0,        # SW Lowlands hemp-hurd (by-product of hashish hemp!) & rag paper mills
+            "Dapor": 24.0,
+            "Shim": 14.0,         # Lake Shim blood-reed/papyrus domestic Vothic mill (covers part of Voth's registries)
+            "Erehwon": 8.5,       # Vale mulberry/lotus-bast court paper (partial self-supply)
+        }
+        sup["paper"] = PAPER_MILLS.get(nm, 0.0)
+        if pol == "Yeti Kingdom":
+            # Plundered Eternian paper bundles fenced east down the Qoold Lheek-Jimjam trail alongside porcelain!
+            sup["paper"] = 3.6 if nm == "Qoold Lheek" else 1.1
+            dem["paper"] = 0.15 * kpop
+        else:
+            # Demand driven by book presses, Long Count almanac printing, pneumatic/imperial bureaucracies, customs posts & academies:
+            lit_w = LITERATE_BOOK_SELF.get(pol, 0.22)
+            dem["paper"] = (0.58 * lit_w) * kpop + 0.85 * sup.get("books", 0.0) + 0.11 * sup.get("almanacs", 0.0)
+            if nm == "Fulcrum":
+                dem["paper"] = 62.0   # pneumatic-tube ministries consume huge volumes while still leaving major export surplus
+            elif nm == "Iziz":
+                dem["paper"] = 58.0   # 120k Imperial chancellery, courts & academies (imports reams by sea & highway!)
+            elif nm == "Jimjam":
+                dem["paper"] = max(dem["paper"], 38.0)  # Kiln Country's massive Long Count almanac & chronicle presses!
+            elif nm == "Skywatch":
+                dem["paper"] = max(dem["paper"], 9.5)   # Royal observatory star-tables & eclipse almanacs
+            elif nm in ("Roketstad", "Ys", "Voth", "Talia", "Marr"):
+                dem["paper"] = max(dem["paper"], 8.5 if nm != "Voth" else 22.0)
+
+        # 5. Catch Alkali Salts (soda ash / natron / trona + borates + lithium; biomes/catch/PLAN.md:178-196 & LORE.md:86-87):
+        # The Catch is Krator's one great soda-lake alkali field (226 cells >80, peak 255), with only minor coastal kelp-ash soda at Kautoa.
+        # Concrete industrial uses wired directly into demand:
+        #   (a) Rebuilding sealed Ancient energy-cells & wet-cell electrolytes (Yusar Carcosa/Henge, Yuni/Locus Geomancers, Xanadu engine-keepers)
+        #   (b) Caustic soda-lye delignification for bamboo, mulberry & marsh-reed paper mills (Eternal State, Longsong, Sfenops, Liikofi, Reed, Dalab)
+        #   (c) Low-iron optical borosilicate crown glass for telescopes & sextants (Roketstad, Glaive, Longsong)
+        #   (d) Alkaline turquoise fritware & celadon ceramic glazes (Jimjam, Serai, Yuni, Eternal State)
+        #   (e) Goldsmith & Mint borax assaying/soldering flux + armourers' brazing & cloth scouring (Xanadu Qiblai/Strongbow, Iziz, Marr, Voth, Ys)
+        ALKALI_PRODUCERS = {
+            "Catch Salt Works": 155.0,  # Terminal Catch soda-lake crust & borate/lithium pans (alkali_max = 226-255!)
+            "Stair": 52.0,              # Stair oasis merchants selling Catch soda/lithium salts alongside sealed cells (catch/PLAN.md:194)
+            "Arfwai Oasis": 38.0,       # South-Central Catch soda playa scrapers
+            "Kolli Oasis": 16.0,        # Mid-Catch natron pans
+            "Kautoa": 22.0,             # Minor maritime competitor: burned sea-kelp wrack soda ash (LORE.md:644; TRADE-SCOPE.md:566)
+            "Valapo": 7.5,
+        }
+        sup["alkali"] = ALKALI_PRODUCERS.get(nm, 0.0)
+        dem["alkali"] = (
+            0.22 * sup.get("paper", 0.0)           # (b) soda/Kraft pulp delignification
+            + 0.45 * sup.get("energy-cells", 0.0)  # (a) lithium/alkaline cell reconditioning electrolyte
+            + 0.06 * sup.get("electrics", 0.0)     # (a) Geomancer wet-cell storage banks
+            + 0.07 * sup.get("lenses", 0.0)        # (c) borosilicate optical glass melting
+            + 0.25 * sup.get("fine-ceramics", 0.0) # (d) alkaline fritware glazes
+            + 0.05 * kpop_lux                      # baseline soap & cloth-bleaching
+        )
+        ALKALI_INDUSTRIAL_HUBS = {
+            "Carcosa": 24.0,     # Yusar cybernetics & Valley energy-cell rebuilding baths (catch/PLAN.md:195)
+            "Henge": 11.5,
+            "Yuni": 26.0,        # Geomancer alkaline storage batteries, condensers & turquoise glazes (catch/PLAN.md:196)
+            "Locus": 16.5,
+            "Mungo": 6.5,
+            "Roketstad": 19.5,   # Astronomers' Guild low-iron borosilicate optical glass & Mint assaying flux!
+            "Glaive": 6.5,
+            "Jimjam": 24.0,      # Kiln Country alkaline turquoise glazes & fritware!
+            "Iziz": 28.0,        # Imperial armourers' brazing flux (catch/PLAN.md:196), glassworks & textile bleaching
+            "Marr": 8.5,
+            "Fulcrum": 34.0,     # State bamboo-paper delignification & celadon flux
+            "Lux": 18.0,
+            "Erehwon": 15.0,     # Xanadu salvaged Ancient engine-keepers (catch/PLAN.md:196) & court glass
+            "Qiblai": 13.5,      # Xanadu goldsmiths' borax soldering & bullion-assaying flux!
+            "Theodiga": 8.5,
+            "Strongbow": 6.5,    # Opal-polishing & goldsmith flux right below The Twins!
+            "Voth": 14.0,
+            "Ys": 9.5,           # League clear glass & purple-dye scouring
+        }
+        if nm in ALKALI_INDUSTRIAL_HUBS:
+            dem["alkali"] = max(dem["alkali"], ALKALI_INDUSTRIAL_HUBS[nm])
+        if nm in ALKALI_PRODUCERS:
+            dem["alkali"] = min(dem["alkali"], 1.5)
 
 
 # ---------------------------------------------------------------------------
@@ -3255,8 +3464,8 @@ def solve_trade(world, setts, graph):
                         w_row.append(0.0)
                         continue
                     # Lore bans & fraught bilateral embargoes:
-                    # 1. Order of Historians banned from Voth (LORE.md:436)
-                    if gid == "books" and s_pol == "Order of Historians" and b_pol == "Vothic Kingdom":
+                    # 1. Order of Historians banned from Voth (LORE.md:436; TRADE-SCOPE.md:593)
+                    if {s_pol, b_pol} == {"Order of Historians", "Vothic Kingdom"}:
                         w_row.append(0.0)
                         continue
                     # 2. Firearms/rockets barred to Coyote Kingdom north of The Sill
@@ -4111,10 +4320,10 @@ def write_trade_markdown(payload, out_md):
 
     SECTIONS = [
         ("I. Metals, Bullion & Structural Salvage", ["iron", "copper", "tin", "bronze", "zinc", "nickel", "rare-earth", "gold", "silver", "scrap"]),
-        ("II. Fuels, Gunpowder Minerals & Building Stone", ["coal", "oil", "salt", "sulfur", "saltpeter", "potash", "marble", "alabaster", "brick", "machine-wax", "pitch-tar"]),
+        ("II. Fuels, Gunpowder Minerals, Catch Alkali Salts & Building Stone", ["coal", "oil", "salt", "sulfur", "saltpeter", "potash", "alkali", "marble", "alabaster", "brick", "machine-wax", "pitch-tar"]),
         ("III. Timber, Shipbuilding, Naval Rigging, Fibres, Textiles, Beasts & Staples", ["timber", "ship-timber", "ship-hulls", "cordage", "cotton", "silk", "qiviut", "cushion-wool", "plaid", "dye-tropical", "dye-temperate", "mounts", "food"]),
-        ("IV. Spices, Stimulants, Incense, Abyssal Lac, Wormwick & Fungal Goods", ["spice-tropical", "isle-spice", "spice-highland", "cacao", "coffee", "tea", "sugar", "tobacco", "incense", "abyss-lac", "wormwick", "medicine", "lung-salt", "reagent", "fungal"]),
-        ("V. Gems, Photonic Opals, Ivory, Kilnware, Knowledge, Optics, Arms & Exterior Luxuries", ["pearls", "gems", "photonic-opals", "ivory", "goldwork", "fine-ceramics", "porcelain", "almanacs", "books", "lenses", "rockets", "arms", "electrics", "energy-cells", "cybernetics", "genecraft", "scrapgoods", "relics", "oversea-luxuries", "frost-coral", "ria-amber"]),
+        ("IV. Spices, Vale Cacao, Dalab Hashish, Incense, Abyssal Lac, Wormwick & Fungal Goods", ["spice-tropical", "isle-spice", "spice-highland", "cacao", "coffee", "tea", "sugar", "tobacco", "hashish", "incense", "abyss-lac", "wormwick", "medicine", "lung-salt", "reagent", "fungal"]),
+        ("V. Gems, Photonic Opals, Ivory, Kilnware, Paper, Books, Optics, Arms & Exterior Luxuries", ["pearls", "gems", "photonic-opals", "ivory", "goldwork", "fine-ceramics", "porcelain", "paper", "almanacs", "books", "lenses", "rockets", "arms", "electrics", "energy-cells", "cybernetics", "genecraft", "scrapgoods", "relics", "oversea-luxuries", "frost-coral", "ria-amber"]),
     ]
 
     lines += ["", "---", "", f"## 4. Complete Good-by-Good Atlas (All {payload['good_count']} Goods)", ""]
