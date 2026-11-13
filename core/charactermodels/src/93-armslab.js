@@ -310,6 +310,7 @@
     if(rKind === 'rifle') return 'gun_shot';
     if(rKind === 'crossbow') return 'gun_shot';
     if(rKind === 'pistol') return 'ual_pistol_aim';
+    if(rKind === 'dart') return 'spear_thrust';
     if(rKind === 'spear' || rKind === 'staff') return 'spear_thrust';
     if(rKind === 'axe') return lKind === 'shield' ? 'ual_sword_combo' : 'axe_chop';
     if(rKind === 'mace') return lKind === 'shield' ? 'shield_push' : 'blunt_swing';
@@ -329,9 +330,10 @@
       $('clip-pick').value = currentClip;
     }
     var wantHold = { R:held.R, L:held.L, both:!!held.both };
-    // When a bow is held in L and R is empty, nock the arrow in R automatically during bow clips
+    // When a bow is held in L and R is empty, nock the bow's cultural arrow (or generic arrow) in R automatically
     if(wantHold.L && PROP[wantHold.L] && PROP[wantHold.L].kind === 'bow' && !wantHold.R){
-      wantHold.R = 'arrow';
+      var bowArrow = PROP[wantHold.L].arrow;
+      wantHold.R = (bowArrow && PROP[bowArrow]) ? bowArrow : 'arrow';
     }
     updateEquippedUI();
     return fig.hold(wantHold).then(function(){
@@ -466,7 +468,9 @@
       var wp = PROP[p.for_weapon];
       var wSide = (wp.hand === 'L' || wp.kind === 'bow') ? 'L' : 'R';
       held[wSide] = wp.id;
-      if(wSide === 'L' && wp.kind === 'bow' && held.R && held.R !== 'arrow') held.R = null;
+      if(wSide === 'L' && wp.kind === 'bow'){
+        held.R = (wp.arrow && PROP[wp.arrow] && wp.arrow !== 'arrow') ? wp.arrow : null;
+      }
       selectForReview(pid, wSide);
       if($('auto-outfit').checked && p.people && PEOPLE_OUTFIT_MAP[p.people]){
         var targetPeople0 = PEOPLE_OUTFIT_MAP[p.people];
@@ -484,9 +488,27 @@
     var mode = forceSide || $('target-hand').value;
     var side = mode === 'R' ? 'R' : mode === 'L' ? 'L' : (p.hand === 'L' || p.kind === 'shield' || p.kind === 'bow' ? 'L' : 'R');
     held[side] = pid;
-    // If equipping a bow in L and R holds a non-arrow weapon, clear R so the bow clip can nock an arrow
-    if(side === 'L' && p.kind === 'bow' && held.R && held.R !== 'arrow'){
-      held.R = null;
+    // If equipping a bow in L, automatically pair its cultural arrow in R
+    if(side === 'L' && p.kind === 'bow'){
+      if(p.arrow && PROP[p.arrow] && p.arrow !== 'arrow'){
+        held.R = p.arrow;
+      } else if(held.R && PROP[held.R] && PROP[held.R].kind !== 'arrow'){
+        held.R = null;
+      }
+    }
+    // If clicking an arrow card directly, equip it in R and pair its bow in L if L doesn't already hold a bow
+    if(side === 'R' && p.kind === 'arrow' && (!held.L || !PROP[held.L] || PROP[held.L].kind !== 'bow') && p.for_weapon && PROP[p.for_weapon]){
+      held.L = p.for_weapon;
+    }
+    // If clicking a blowgun dart card directly and its blowgun is known, hold the blowgun in L and the dart in R
+    if(side === 'R' && p.kind === 'dart' && p.for_weapon && PROP[p.for_weapon]){
+      held.L = p.for_weapon;
+    }
+    // If equipping a blowgun that has a separated dart, hold the blowgun in L and its dart in R
+    if(p.dart && PROP[p.dart] && !forceSide && mode === 'auto'){
+      held.L = pid;
+      held.R = p.dart;
+      side = 'L';
     }
     // Two-handed weapons (rifles, crossbows) default to two-handed grip unless a shield is held in L
     if(side === 'R' && (p.kind === 'rifle' || p.kind === 'crossbow') && !held.L){
@@ -575,9 +597,10 @@
     if(activeCulture !== 'all' && (p.people || 'general') !== activeCulture) return false;
     var kf = $('kind-filter').value;
     if(kf === 'weapons' && (p.kind === 'shield' || p.kind === 'sheath')) return false;
+    else if(kf === 'arrow' && p.kind !== 'arrow' && p.kind !== 'dart') return false;
     else if(kf === 'bow' && p.kind !== 'bow' && p.kind !== 'crossbow' && p.kind !== 'sling') return false;
     else if(kf === 'rifle' && p.kind !== 'rifle' && p.kind !== 'pistol') return false;
-    else if(kf !== 'all' && kf !== 'weapons' && kf !== 'bow' && kf !== 'rifle' && p.kind !== kf) return false;
+    else if(kf !== 'all' && kf !== 'weapons' && kf !== 'arrow' && kf !== 'bow' && kf !== 'rifle' && p.kind !== kf) return false;
 
     var sf = $('status-filter').value;
     var rv = reviews[p.id];
@@ -628,10 +651,11 @@
       var sec = document.createElement('div');
       sec.className = 'culture-section';
       var h3 = document.createElement('h3');
-      var wCount = g.items.filter(function(x){ return x.kind !== 'shield' && x.kind !== 'sheath'; }).length;
+      var wCount = g.items.filter(function(x){ return x.kind !== 'shield' && x.kind !== 'sheath' && x.kind !== 'arrow' && x.kind !== 'dart'; }).length;
+      var aCount = g.items.filter(function(x){ return x.kind === 'arrow' || x.kind === 'dart'; }).length;
       var shCount = g.items.filter(function(x){ return x.kind === 'sheath'; }).length;
       var sCount = g.items.filter(function(x){ return x.kind === 'shield'; }).length;
-      h3.innerHTML = '<span>' + g.title + '</span><small>' + wCount + ' arms' + (shCount ? ' · ' + shCount + ' sheaths' : '') + ' · ' + sCount + ' shields</small>';
+      h3.innerHTML = '<span>' + g.title + '</span><small>' + wCount + ' arms' + (aCount ? ' · ' + aCount + ' arrows/darts' : '') + (shCount ? ' · ' + shCount + ' sheaths' : '') + ' · ' + sCount + ' shields</small>';
       sec.appendChild(h3);
 
       var grid = document.createElement('div');

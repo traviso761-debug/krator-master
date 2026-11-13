@@ -294,12 +294,118 @@ def extract_shield_for_row(fname, row, P, N, UV, T, rmask):
     return Pf, Nf, UVf, Tf
 
 
+def make_shaft_cylinder(x0, x1, y_mid, z_mid, radius, uv_sample, n_sides=8, n_segs=10):
+    xs = np.linspace(x0, x1, n_segs + 1)
+    angles = np.linspace(0, 2 * np.pi, n_sides, endpoint=False)
+    P_list, N_list = [], []
+    for x in xs:
+        for a in angles:
+            cy, cz = np.cos(a), np.sin(a)
+            P_list.append([x, y_mid + radius * cy, z_mid + radius * cz])
+            N_list.append([0.0, cy, cz])
+    P_c = np.array(P_list, dtype=float)
+    N_c = np.array(N_list, dtype=float)
+    UV_c = np.tile(uv_sample.reshape(1, 2), (len(P_c), 1)).astype(np.float32)
+    T_list = []
+    for i in range(n_segs):
+        b0 = i * n_sides
+        b1 = (i + 1) * n_sides
+        for j in range(n_sides):
+            jn = (j + 1) % n_sides
+            T_list.append([b0 + j, b1 + j, b1 + jn])
+            T_list.append([b0 + j, b1 + jn, b0 + jn])
+    return P_c, N_c, UV_c, np.array(T_list, dtype=np.int64)
+
+
+def bridge_arrow_shaft(P, N, UV, T, radius=0.0028):
+    """Bridge thin wooden arrow/dart shafts across Tripo's dropout gaps while preserving fletching and arrowhead."""
+    x0, x1 = float(P[:, 0].min()), float(P[:, 0].max())
+    dx = x1 - x0
+    mid_m = (P[:, 0] >= x0 + 0.15 * dx) & (P[:, 0] <= x1 - 0.15 * dx)
+    if mid_m.sum() >= 3:
+        y_mid = float(np.median(P[mid_m, 1]))
+        z_mid = float(np.median(P[mid_m, 2]))
+        uv_s = UV[mid_m].mean(axis=0)
+    else:
+        y_mid = float(0.5 * (P[:, 1].min() + P[:, 1].max()))
+        z_mid = float(0.5 * (P[:, 2].min() + P[:, 2].max()))
+        uv_s = UV.mean(axis=0)
+    Pc, Nc, UVc, Tc = make_shaft_cylinder(x0 + 0.04 * dx, x1 - 0.04 * dx, y_mid, z_mid, radius, uv_s)
+    n_prev = len(P)
+    return np.vstack([P, Pc]), np.vstack([N, Nc]), np.vstack([UV, UVc]), np.vstack([T, Tc + n_prev])
+
+
+def extract_tripo_projectiles(fname, P, N, UV, T):
+    """Extract separated arrows and blowgun darts from Tripo culture sheets."""
+    tc = P[T].mean(axis=1)
+    out = []
+    if fname == 'korona - bog.glb':
+        # Row 0: Blowgun Dart (between blowgun tube at y>0.883 and dart case at y<0.858)
+        m_dart = (tc[:, 0] < 0.025) & (tc[:, 1] >= 0.860) & (tc[:, 1] <= 0.883)
+        Pd, Nd, UVd, Td = bridge_arrow_shaft(*submesh(P, N, UV, T, m_dart), radius=0.0022)
+        out.append(('kor_bog_w1_dart', 'Korona Bog-Reed Blowgun Dart', 'dart', 0.42, Pd, Nd, UVd, Td, 'kor_bog_w1_spear'))
+        # Row 1: Hunting Arrow (below bow at y<0.583)
+        m_arr = (tc[:, 0] < -0.05) & (tc[:, 1] >= 0.556) & (tc[:, 1] <= 0.583)
+        Pa, Na, UVa, Ta = bridge_arrow_shaft(*submesh(P, N, UV, T, m_arr), radius=0.0026)
+        out.append(('kor_bog_w2_arrow', 'Korona Bog-Yew Hunting Arrow', 'arrow', 0.78, Pa, Na, UVa, Ta, 'kor_bog_w2_bow'))
+    elif fname == 'korona - bird.glb':
+        # Row 0: Blowgun Dart
+        m_dart = (tc[:, 0] < 0.020) & (tc[:, 1] >= 0.865) & (tc[:, 1] <= 0.892)
+        Pd, Nd, UVd, Td = bridge_arrow_shaft(*submesh(P, N, UV, T, m_dart), radius=0.0022)
+        out.append(('kor_bird_w1_dart', 'Korona Bird-Clan Plumed Blowgun Dart', 'dart', 0.42, Pd, Nd, UVd, Td, 'kor_bird_w1_spear'))
+        # Row 1: Feather Arrow
+        m_arr = (tc[:, 0] < -0.05) & (tc[:, 1] >= 0.560) & (tc[:, 1] <= 0.583)
+        Pa, Na, UVa, Ta = bridge_arrow_shaft(*submesh(P, N, UV, T, m_arr), radius=0.0026)
+        out.append(('kor_bird_w2_arrow', 'Korona Bird-Clan Feather Arrow', 'arrow', 0.78, Pa, Na, UVa, Ta, 'kor_bird_w2_bow'))
+    elif fname == 'Shumar.glb':
+        # Row 4: Shumar Recurve Arrow
+        m_arr = (tc[:, 0] < -0.05) & (tc[:, 1] >= 0.041) & (tc[:, 1] <= 0.063)
+        Pa, Na, UVa, Ta = bridge_arrow_shaft(*submesh(P, N, UV, T, m_arr), radius=0.0026)
+        out.append(('shumar_w5_arrow', 'Shumar Bronze-Tipped Recurve Arrow', 'arrow', 0.78, Pa, Na, UVa, Ta, 'shumar_w5_bow'))
+    elif fname == 'paintedman.glb':
+        # Row 4: Painted Man Feathered Arrow (fletching at x in [-0.44,-0.36], y in [0.042,0.064] + stone point from R1 lance tip)
+        m_fl = (tc[:, 0] < -0.35) & (tc[:, 1] >= 0.042) & (tc[:, 1] <= 0.064)
+        Pf, Nf, UVf, Tf = submesh(P, N, UV, T, m_fl)
+        m_pt = (tc[:, 0] < -0.41) & (tc[:, 1] >= 0.470) & (tc[:, 1] <= 0.502)
+        Pp, Np, UVp, Tp = submesh(P, N, UV, T, m_pt)
+        # Flip point so tip points toward +X and place at x = -0.15
+        R_flip = rot_z(180)
+        pc = 0.5 * (Pp.min(0) + Pp.max(0))
+        Pp = (Pp - pc) * 0.55 @ R_flip.T
+        Np = Np @ R_flip.T
+        y_mid = float(0.5 * (Pf[:, 1].min() + Pf[:, 1].max()))
+        z_mid = float(0.5 * (Pf[:, 2].min() + Pf[:, 2].max()))
+        Pp += np.array([-0.155, y_mid, z_mid])
+        n0 = len(Pf)
+        Pa = np.vstack([Pf, Pp]); Na = np.vstack([Nf, Np]); UVa = np.vstack([UVf, UVp]); Ta = np.vstack([Tf, Tp + n0])
+        Pa, Na, UVa, Ta = bridge_arrow_shaft(Pa, Na, UVa, Ta, radius=0.0026)
+        out.append(('pman_w5_arrow', 'Painted Man Feathered Arrow', 'arrow', 0.78, Pa, Na, UVa, Ta, 'pman_w5_bow'))
+    elif fname == 'voth - ornate.glb':
+        # Row 3: Voth Ornate Feathered Arrow (golden fletching at x in [-0.080,-0.038], y in [0.162,0.180] + obsidian point from R4)
+        m_fl = (tc[:, 0] >= -0.080) & (tc[:, 0] <= -0.038) & (tc[:, 1] >= 0.162) & (tc[:, 1] <= 0.180)
+        Pf, Nf, UVf, Tf = submesh(P, N, UV, T, m_fl)
+        m_pt = (tc[:, 0] < -0.38) & (tc[:, 1] >= 0.056) & (tc[:, 1] <= 0.082)
+        Pp, Np, UVp, Tp = submesh(P, N, UV, T, m_pt)
+        pc = 0.5 * (Pp.min(0) + Pp.max(0))
+        Pp = (Pp - pc) * 0.48
+        y_mid = float(0.5 * (Pf[:, 1].min() + Pf[:, 1].max()))
+        z_mid = float(0.5 * (Pf[:, 2].min() + Pf[:, 2].max()))
+        Pp += np.array([-0.33, y_mid, z_mid])
+        n0 = len(Pf)
+        Pa = np.vstack([Pf, Pp]); Na = np.vstack([Nf, Np]); UVa = np.vstack([UVf, UVp]); Ta = np.vstack([Tf, Tp + n0])
+        Pa, Na, UVa, Ta = bridge_arrow_shaft(Pa, Na, UVa, Ta, radius=0.0026)
+        out.append(('voth_orn_w4_arrow', 'Voth Ornate Feathered Arrow', 'arrow', 0.78, Pa, Na, UVa, Ta, 'voth_orn_w4_bow'))
+    return out
+
+
 def extract_weapons_and_sheaths(fname, P, N, UV, T, w_specs):
     splits = find_row_splits(P, T)
     if fname == 'voth - ornate.glb':
         splits[3] = 0.11
     tc_all = P[T].mean(axis=1)
     w_mask = tc_all[:, 0] < 0.02
+    if fname == 'korona - bog.glb':
+        w_mask = w_mask & ~((tc_all[:, 1] > 0.48) & (tc_all[:, 1] < 0.72) & (tc_all[:, 0] > -0.015))
     drum_sheath_mesh = None
     if fname == 'drum.glb':
         s_mask = w_mask & (tc_all[:, 1] > 0.74) & (tc_all[:, 1] < 0.842)
@@ -319,6 +425,8 @@ def extract_weapons_and_sheaths(fname, P, N, UV, T, w_specs):
         if fname == 'tungang.glb':
             if cx > -0.20:
                 continue
+        elif fname == 'korona - bog.glb' and cy > 0.50 and cy < 0.72 and cx > -0.02:
+            continue
         else:
             if cx > -0.16 and dx < 0.16:
                 continue
@@ -484,7 +592,38 @@ def orient_and_place(P, N, UV, T, kind, length, is_spliced_shield=False):
         support = [0.0, 0.075, 0.10, 0.0, 0.075, 0.30]
         return P, N, UV, T, None, support
 
-    # All shaft/blade/bow weapons: align longest axis to Y, second-longest to Z, thinnest to X
+    if kind == 'arrow':
+        # Bow arrow in make_props.py / 50-figure.js bowString() frame:
+        # Longest axis along +Z from nock (0, 0, 0) to arrowhead (0, 0, +length)
+        exts = [np.ptp(P[:, 0]), np.ptp(P[:, 1]), np.ptp(P[:, 2])]
+        order = np.argsort(exts)  # [thin, mid, long]
+        R0 = np.zeros((3, 3), dtype=float)
+        R0[0, order[0]] = 1.0     # thin -> X
+        R0[1, order[1]] = 1.0     # mid -> Y (feather vane height)
+        R0[2, order[2]] = 1.0     # long -> Z (shaft)
+        if np.linalg.det(R0) < 0:
+            R0[0, :] *= -1.0
+        P = P @ R0.T; N = N @ R0.T
+        P *= length / max(1e-4, np.ptp(P[:, 2]))
+        zlo, zhi = P[:, 2].min(), P[:, 2].max()
+        L = zhi - zlo
+        lo_m = P[:, 2] <= zlo + 0.22 * L
+        hi_m = P[:, 2] >= zhi - 0.22 * L
+        w_lo = max(np.ptp(P[lo_m, 0]), np.ptp(P[lo_m, 1])) if lo_m.any() else 0.0
+        w_hi = max(np.ptp(P[hi_m, 0]), np.ptp(P[hi_m, 1])) if hi_m.any() else 0.0
+        if w_hi > w_lo:
+            # Fletching is at +Z; rotate 180 deg around Y so fletching/nock is at -Z and arrowhead is at +Z
+            R = rot_y(180)
+            P = P @ R.T; N = N @ R.T
+        zlo, zhi = P[:, 2].min(), P[:, 2].max()
+        L = zhi - zlo
+        mid_m = np.abs(P[:, 2] - (zlo + 0.5 * L)) <= 0.25 * L
+        gx = float(P[mid_m, 0].mean()) if mid_m.any() else 0.0
+        gy = float(P[mid_m, 1].mean()) if mid_m.any() else 0.0
+        P -= np.array([gx, gy, zlo])
+        return P, N, UV, T, None, None
+
+    # All shaft/blade/bow/dart weapons: align longest axis to Y, second-longest to Z, thinnest to X
     exts = [np.ptp(P[:, 0]), np.ptp(P[:, 1]), np.ptp(P[:, 2])]
     order = np.argsort(exts)  # [thin, mid, long]
     R0 = np.zeros((3, 3), dtype=float)
@@ -521,6 +660,24 @@ def orient_and_place(P, N, UV, T, kind, length, is_spliced_shield=False):
         gx, gz = axis_at(P, susp_y)
         P -= np.array([gx, susp_y, gz])
         return P, N, UV, T, None, None
+
+    if kind == 'dart':
+        # Hand-held / thrown dart or blowgun dart: longest axis along Y (+Y = sharp tip, -Y = fletching/tuft)
+        ylo, yhi = P[:, 1].min(), P[:, 1].max()
+        L = yhi - ylo
+        lo_m = P[:, 1] <= ylo + 0.22 * L
+        hi_m = P[:, 1] >= yhi - 0.22 * L
+        w_lo = max(np.ptp(P[lo_m, 0]), np.ptp(P[lo_m, 2])) if lo_m.any() else 0.0
+        w_hi = max(np.ptp(P[hi_m, 0]), np.ptp(P[hi_m, 2])) if hi_m.any() else 0.0
+        if w_hi > w_lo:
+            P = P @ FLIP.T; N = N @ FLIP.T
+        ylo, yhi = P[:, 1].min(), P[:, 1].max()
+        L = yhi - ylo
+        grip_y = ylo + 0.42 * L
+        gx, gz = axis_at(P, grip_y)
+        P -= np.array([gx, grip_y, gz])
+        blade = [round(float(0.22 * L), 3), round(float(yhi - grip_y), 3)]
+        return P, N, UV, T, blade, None
 
     prof, yc = profile(P)
     top = int(prof.argmax())
@@ -675,8 +832,8 @@ def render_prop_thumb(out_png, P, N, UV, T, base_pil=None, vtx_rgb=None, kind='s
     if kind == 'shield':
         # Shield front face points toward -X; rot_y(+102) rotates -X toward +Z camera, tilted slightly for 3D depth
         R = rot_x(10) @ rot_y(102)
-    elif kind in ('rifle', 'pistol', 'crossbow'):
-        # Barrel is +Z, grip is -Y; rotate so side profile (+Z to right, +Y up) faces +Z camera at a 28 deg angle
+    elif kind in ('rifle', 'pistol', 'crossbow', 'arrow'):
+        # Barrel/shaft is +Z, grip/fletching is Y; rotate so side profile (+Z to right, +Y up) faces +Z camera at a 28 deg angle
         R = rot_z(28) @ rot_x(14) @ rot_y(-75)
     else:
         # Shaft/blade is +Y, edge is +Z; show broadside (+Z/+Y) tilted -34 deg diagonally across frame
@@ -922,18 +1079,18 @@ TRIPO_SHEETS = [
         ('spear', 1.85, 'Painted Man Feathered Lance', False),
         ('axe', 0.85, 'Painted Man Stone Tomahawk', False),
         ('dagger', 0.48, 'Painted Man Knapped Flint Knife', True),
-        ('bow', 1.40, 'Painted Man Sinew-Backed Bow', True),
+        ('bow', 1.40, 'Painted Man Sinew-Backed Bow', False),
     ], ['Painted Man Handprint Hide Shield', 'Painted Man Horned Wing Shield', 'Painted Man Spiral Sun Shield', 'Painted Man Bone-Spoke Shield', 'Painted Man Medicine Wheel Shield']),
     ('korona - bog.glb', 'kor_bog', 'korona', 'Korona (Abyssal)', 'Korona Bog', [
         ('spear', 1.65, 'Korona Bog-Reed Blowgun', True),
-        ('bow', 1.38, 'Korona Bog-Yew Hunting Bow', True),
+        ('bow', 1.38, 'Korona Bog-Yew Hunting Bow', False),
         ('mace', 0.92, 'Korona Bog-Oak Paddle War-Club', False),
         ('mace', 0.85, 'Korona Bog-Root Ball Club', False),
         ('dagger', 0.48, 'Korona Bog-Iron Carving Knife', True),
     ], ['Korona Bog-Oak Round Shield', 'Korona Moss-Wicker Shield', 'Korona Peat-Hide Buckler', 'Korona Fen-Serpent Shield', 'Korona Mire-Bark Oval Shield']),
     ('korona - bird.glb', 'kor_bird', 'korona', 'Korona (Abyssal)', 'Korona Bird', [
         ('spear', 1.65, 'Korona Bird-Clan Plumed Blowgun', True),
-        ('bow', 1.38, 'Korona Bird-Clan Feather Bow', True),
+        ('bow', 1.38, 'Korona Bird-Clan Feather Bow', False),
         ('mace', 0.92, 'Korona Bird-Clan Wing-Paddle Club', False),
         ('mace', 0.85, 'Korona Bird-Clan Talon Ball-Club', False),
         ('dagger', 0.48, 'Korona Bird-Clan Beak Knife', True),
@@ -1020,13 +1177,16 @@ def import_all():
             e['arrow_arm'] = 1.65
             e['string'] = [0.0, h_half, -0.09, 0.0, -h_half, -0.09]
             e['arrow'] = 'arrow'
+        if kind in ('arrow', 'dart'):
+            e['length'] = round(float(length), 3)
         new_entries.append(e)
         entry_by_id[pid] = e
         return e
 
-    # 1. Process all 21 Two-Column Tripo Culture Sheets (5 weapons + sheaths + 5 shields per sheet)
+    # 1. Process all 21 Two-Column Tripo Culture Sheets (5 weapons + sheaths + arrows/darts + 5 shields per sheet)
     print("=== 1. Dissecting & Splicing 21 Two-Column Tripo Culture Sheets ===")
     tripo_sheath_count = 0
+    tripo_proj_count = 0
     for fname, pref, people, clabel, subset, w_specs, s_labels in TRIPO_SHEETS:
         fpath = os.path.join(DL, fname)
         r = glbio.read_mesh(fpath)
@@ -1047,6 +1207,16 @@ def import_all():
                 add_item(s_pid, f"{w_label} {s_KindLabel}", 'sheath', s_len, Ps_sh, Ns_sh, UVs_sh, Ts_sh, tex_blobs, people, clabel, subset, fname, for_weapon=pid)
                 tripo_sheath_count += 1
 
+        #Separated Arrows & Blowgun Darts from this Tripo sheet
+        for p_pid, p_label, p_kind, p_len, Pp, Np, UVp, Tp, w_pid in extract_tripo_projectiles(fname, P, N, UV, T):
+            add_item(p_pid, p_label, p_kind, p_len, Pp, Np, UVp, Tp, tex_blobs, people, clabel, subset, fname, for_weapon=w_pid)
+            if w_pid in entry_by_id:
+                if p_kind == 'arrow':
+                    entry_by_id[w_pid]['arrow'] = p_pid
+                elif p_kind == 'dart':
+                    entry_by_id[w_pid]['dart'] = p_pid
+            tripo_proj_count += 1
+
         # 5 Shields with spliced rear handles
         splits = find_row_splits(P, T)
         tc = P[T].mean(axis=1)
@@ -1058,7 +1228,7 @@ def import_all():
             pid = f"{pref}_s{i+1}_shield"
             add_item(pid, s_label, 'shield', 0.85, Ps, Ns, UVs, Ts, tex_blobs, people, clabel, subset, fname, is_spliced_shield=True)
         print(f"  {fname:24s} -> 5 weapons + 5 shields ({pref}_*)")
-    print(f"  Extracted {tripo_sheath_count} matching sheaths/scabbards/quivers from Tripo sheets")
+    print(f"  Extracted {tripo_sheath_count} sheaths/quivers and {tripo_proj_count} arrows/darts from Tripo sheets")
 
     # 2. Process the 14 Standalone GLBs in Downloads (26 items; flying bat & duplicate andaru 2 ignored)
     print("=== 2. Processing 14 Standalone GLBs from Downloads (26 items) ===")
@@ -1189,9 +1359,11 @@ def import_all():
             kind, length = 'rifle', 1.08
         elif 'sling' in s_low:
             kind, length = 'sling', 0.90
-        elif any(k in s_low for k in ('spear', 'lance', 'pilum', 'hasta', 'plumbata', 'yari', 'naginata', 'glaive', 'gaesum', 'akontion', 'dory', 'sarissa', 'rhomphaia')):
+        elif 'plumbata' in s_low or 'dart' in s_low:
+            kind, length = 'dart', 0.55
+        elif any(k in s_low for k in ('spear', 'lance', 'pilum', 'hasta', 'yari', 'naginata', 'glaive', 'gaesum', 'akontion', 'dory', 'sarissa', 'rhomphaia')):
             kind = 'spear'
-            length = 2.15 if 'sarissa' in s_low else (1.45 if 'plumbata' in s_low else 1.95)
+            length = 2.15 if 'sarissa' in s_low else 1.95
         elif any(k in s_low for k in ('axe', 'ge_dagger_axe')):
             kind, length = 'axe', 0.95
         elif any(k in s_low for k in ('mace', 'kanabo')):
@@ -1205,22 +1377,38 @@ def import_all():
 
         pid = 'msh_' + re.sub(r'[^a-z0-9_]+', '_', s_low).strip('_')
         label = stem.replace('_', ' ').title()
+        if kind == 'bow':
+            label = re.sub(r'\s+Arrows?$', '', label)
+        elif kind == 'dart' and 'Dart' not in label:
+            label = label + ' Dart'
 
         r = glbio.read_mesh(item['path'])
         tex_blobs = encode_textures_from_rig(r)
         P, N, UV, T = r.pos, r.nrm, r.uv, r.tri
 
-        # For bow models that include detached arrows next to the bow, keep the main bow component
+        # For bow models that include detached arrows next to the bow, separate the bow and the arrow!
+        extracted_arrow = None
         if kind == 'bow':
             comps = connected_components_tris(P, T)
             if len(comps) > 1:
                 comps.sort(key=lambda c: -len(c))
+                if len(comps[1]) >= 200:
+                    amask = np.zeros(len(T), dtype=bool)
+                    amask[comps[1]] = True
+                    extracted_arrow = submesh(P, N, UV, T, amask)
                 tmask = np.zeros(len(T), dtype=bool)
                 tmask[comps[0]] = True
                 P, N, UV, T = submesh(P, N, UV, T, tmask)
 
-        add_item(pid, label, kind, length, P, N, UV, T, tex_blobs, people, clabel, subset, folder)
+        bow_entry = add_item(pid, label, kind, length, P, N, UV, T, tex_blobs, people, clabel, subset, folder)
         meshy_count += 1
+        if extracted_arrow is not None:
+            Pa, Na, UVa, Ta = extracted_arrow
+            a_stem = re.sub(r'_bow(_arrows?)?$', '_arrow', pid)
+            a_label = re.sub(r'\s+Bow$', ' Arrow', label)
+            add_item(a_stem, a_label, 'arrow', 0.78, Pa, Na, UVa, Ta, tex_blobs, people, clabel, subset, folder, for_weapon=pid)
+            bow_entry['arrow'] = a_stem
+            meshy_count += 1
 
     # Link Meshy weapons and sheaths
     for s_pid, w_pid in MESHY_SHEATH_PAIRS.items():
@@ -1256,7 +1444,10 @@ def import_all():
             p.setdefault('people', 'general')
             p.setdefault('culture_label', 'General (Built-In)')
             p.setdefault('subset', 'Base Props')
-            p.setdefault('kind', pid if pid in ('sword', 'dagger', 'axe', 'mace', 'spear', 'shield', 'bow', 'crossbow', 'rifle', 'pistol') else 'tool')
+            if pid == 'arrow':
+                p['kind'] = 'arrow'
+            else:
+                p.setdefault('kind', pid if pid in ('sword', 'dagger', 'axe', 'mace', 'spear', 'shield', 'bow', 'crossbow', 'rifle', 'pistol', 'arrow', 'dart') else 'tool')
         thumb_path = os.path.join(OUT_THUMBS, f"{pid}.png")
         glb_path = os.path.join(HERE, p['glb'])
         if os.path.isfile(glb_path):

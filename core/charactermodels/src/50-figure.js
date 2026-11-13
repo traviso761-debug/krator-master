@@ -1279,7 +1279,7 @@ function KCharFigure(body, sliders, load){
       held[side] = id;
       var g = holder(side);
       while(g.children.length) g.remove(g.children[0]);
-      if(side === 'L') bow = null;
+      if(side === 'L'){ bow = null; if(holders.R) holders.R.visible = true; }
       delete hangs[side];
       if(!id) return null;
       var p = prop(id);
@@ -1298,6 +1298,18 @@ function KCharFigure(body, sliders, load){
         // shield stands up and faces outward instead of lying flat like a tray; in the right upper hand, turn half round
         if(side.length > 1 && p.low_turn) m.rotation.y = (side.charAt(0) === 'L' ? 1 : -1) * p.low_turn * Math.PI / 180;
         else if(side === 'R' && p.low_turn) m.rotation.y = Math.PI;
+        if(p.kind === 'arrow'){
+          m.rotation.x = -Math.PI / 2;
+          m.position.y = -0.28;
+          if(side === 'R' && bow && bow.cant){
+            if(bow.arrow) bow.cant.remove(bow.arrow);
+            bow.arrow = scene.clone(true);
+            bow.arrow.visible = false;
+            bow.arrowId = id;
+            bow.cant.add(bow.arrow);
+            bowString();
+          }
+        }
         if(side === 'L' && p.string) return makeBow(g, p);
       });
     })).then(function(){
@@ -1334,6 +1346,7 @@ function KCharFigure(body, sliders, load){
       var id = held[side] || (side === 'L' && held.both && support() ? held.R : null);
       if(side.length > 1 && holders[side]) holders[side].visible = !!self.fourArms;
       if(!id) return;
+      if(side === 'R' && self.drawn && held.R && prop(held.R).kind === 'arrow') return;
       var h = skel.hands[side], style = held[side] ? prop(id).grip : 'fist';
       if(style === 'flat') return;                            // an open hand under a bowl: the clip's own fingers
       var curl = h.curls ? h.curls[style] || h.curls.fist : h.curl;
@@ -2618,12 +2631,13 @@ function KCharFigure(body, sliders, load){
     var cyl = new THREE.CylinderGeometry(0.0025, 0.0025, 1, 4, 1, true), pivot = new THREE.Group(), cant = new THREE.Group();
     while(g.children.length) cant.add(g.children[0]);
     pivot.add(cant); g.add(pivot);
+    var arrowId = (held.R && prop(held.R).kind === 'arrow') ? held.R : p.arrow;
     var b = { top:V().fromArray(p.string, 0), bot:V().fromArray(p.string, 3), a:new THREE.Mesh(cyl, sMat),
-              c:new THREE.Mesh(cyl, sMat), arrow:null, pivot:pivot, cant:cant, cantA:0, turn:0 };
+              c:new THREE.Mesh(cyl, sMat), arrow:null, arrowId:arrowId, pivot:pivot, cant:cant, cantA:0, turn:0 };
     cant.add(b.a); cant.add(b.c);
     bow = b;
     bowString();
-    return p.arrow ? propScene(p.arrow).then(function(scene){
+    return arrowId ? propScene(arrowId).then(function(scene){
       if(bow !== b) return;
       b.arrow = scene.clone(true); b.arrow.visible = false; cant.add(b.arrow);
     }) : null;
@@ -2737,17 +2751,21 @@ function KCharFigure(body, sliders, load){
     if(bow.arrow){
       var drawn = mid && (nk === null ? mid.z < -0.2 : true);
       bow.arrow.visible = !!drawn;
+      if(holders.R && held.R && prop(held.R).kind === 'arrow') holders.R.visible = !drawn;
       if(drawn){
-        bow.arrow.scale.set(1, 1, len / (prop(prop(held.L).arrow).length || 0.78));
+        var aId = bow.arrowId || prop(held.L).arrow;
+        bow.arrow.scale.set(1, 1, len / (prop(aId).length || 0.78));
         bow.arrow.position.copy(mid);
         bow.arrow.quaternion.setFromUnitVectors(zAx, tV.set(0, 0.04 * Math.sign(mid.y || 1), 0).sub(mid).normalize());
       }
+    } else if(holders.R){
+      holders.R.visible = true;
     }
     self.drawn = !!mid;
     bow.ahead = mid ? len - mid.length() : null;           // how far the arrow's head is in front of the bow (its units)
     // the drawing hand hooks three fingers on the string
     var hR = skel.hands && skel.hands.R, dc = mid && hR && hR.curls && hR.curls.draw;
-    if(dc && !held.R) dc.forEach(function(q){ bones[q[0]].quaternion.fromArray(J[q[0]].r).multiply(curlQ.set(q[1], q[2], q[3], q[4])); });
+    if(dc && (!held.R || prop(held.R).kind === 'arrow')) dc.forEach(function(q){ bones[q[0]].quaternion.fromArray(J[q[0]].r).multiply(curlQ.set(q[1], q[2], q[3], q[4])); });
   }
   /* ---- posture: after each clip the spine, neck and head are pitched (data/posture.json: degrees per joint in the
      figure's frame, negative forward) and the shoulders dropped and drawn back. The clips, retargeted onto

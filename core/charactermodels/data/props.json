@@ -335,7 +335,7 @@
    "people": "general",
    "culture_label": "General (Built-In)",
    "subset": "Base Props",
-   "kind": "tool"
+   "kind": "arrow"
   },
   {
    "id": "bowl",
@@ -544,7 +544,7 @@
     -0.63,
     -0.09
    ],
-   "arrow": "arrow"
+   "arrow": "voth_orn_w4_arrow"
   },
   {
    "id": "voth_orn_w4_sheath",
@@ -582,6 +582,20 @@
     0.898,
     1.203
    ]
+  },
+  {
+   "id": "voth_orn_w4_arrow",
+   "label": "Voth Ornate Feathered Arrow",
+   "hand": "R",
+   "kind": "arrow",
+   "glb": "pieces/props/voth_orn_w4_arrow.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "culture_label": "Chichani (Voth)",
+   "subset": "Voth Ornate",
+   "src": "voth - ornate.glb",
+   "for_weapon": "voth_orn_w4_bow",
+   "length": 0.78
   },
   {
    "id": "voth_orn_s1_shield",
@@ -3340,7 +3354,6 @@
    "culture_label": "Painted Men",
    "subset": "Painted Men Set",
    "src": "paintedman.glb",
-   "sheath": "pman_w5_sheath",
    "arrow_arm": 1.65,
    "string": [
     0.0,
@@ -3350,20 +3363,21 @@
     -0.63,
     -0.09
    ],
-   "arrow": "arrow"
+   "arrow": "pman_w5_arrow"
   },
   {
-   "id": "pman_w5_sheath",
-   "label": "Painted Man Sinew-Backed Bow Quiver",
-   "hand": "L",
-   "kind": "sheath",
-   "glb": "pieces/props/pman_w5_sheath.glb",
+   "id": "pman_w5_arrow",
+   "label": "Painted Man Feathered Arrow",
+   "hand": "R",
+   "kind": "arrow",
+   "glb": "pieces/props/pman_w5_arrow.glb",
    "grip": "fist",
    "people": "painted_men",
    "culture_label": "Painted Men",
    "subset": "Painted Men Set",
    "src": "paintedman.glb",
-   "for_weapon": "pman_w5_bow"
+   "for_weapon": "pman_w5_bow",
+   "length": 0.78
   },
   {
    "id": "pman_s1_shield",
@@ -3453,7 +3467,8 @@
    "blade": [
     0.998,
     1.073
-   ]
+   ],
+   "dart": "kor_bog_w1_dart"
   },
   {
    "id": "kor_bog_w1_sheath",
@@ -3479,7 +3494,6 @@
    "culture_label": "Korona (Abyssal)",
    "subset": "Korona Bog",
    "src": "korona - bog.glb",
-   "sheath": "kor_bog_w2_sheath",
    "arrow_arm": 1.65,
    "string": [
     0.0,
@@ -3489,20 +3503,7 @@
     -0.621,
     -0.09
    ],
-   "arrow": "arrow"
-  },
-  {
-   "id": "kor_bog_w2_sheath",
-   "label": "Korona Bog-Yew Hunting Bow Quiver",
-   "hand": "L",
-   "kind": "sheath",
-   "glb": "pieces/props/kor_bog_w2_sheath.glb",
-   "grip": "fist",
-   "people": "korona",
-   "culture_label": "Korona (Abyssal)",
-   "subset": "Korona Bog",
-   "src": "korona - bog.glb",
-   "for_weapon": "kor_bog_w2_bow"
+   "arrow": "kor_bog_w2_arrow"
   },
   {
    "id": "kor_bog_w3_mace",
@@ -3581,6 +3582,38 @@
    "subset": "Korona Bog",
    "src": "korona - bog.glb",
    "for_weapon": "kor_bog_w5_dagger"
+  },
+  {
+   "id": "kor_bog_w1_dart",
+   "label": "Korona Bog-Reed Blowgun Dart",
+   "hand": "R",
+   "kind": "dart",
+   "glb": "pieces/props/kor_bog_w1_dart.glb",
+   "grip": "fist",
+   "people": "korona",
+   "culture_label": "Korona (Abyssal)",
+   "subset": "Korona Bog",
+   "src": "korona - bog.glb",
+   "for_weapon": "kor_bog_w1_spear",
+   "blade": [
+    0.092,
+    0.244
+   ],
+   "length": 0.42
+  },
+  {
+   "id": "kor_bog_w2_arrow",
+   "label": "Korona Bog-Yew Hunting Arrow",
+   "hand": "R",
+   "kind": "arrow",
+   "glb": "pieces/props/kor_bog_w2_arrow.glb",
+   "grip": "fist",
+   "people": "korona",
+   "culture_label": "Korona (Abyssal)",
+   "subset": "Korona Bog",
+   "src": "korona - bog.glb",
+   "for_weapon": "kor_bog_w2_bow",
+   "length": 0.78
   },
   {
    "id": "kor_bog_s1_shield",
@@ -3670,7 +3703,8 @@
    "blade": [
     1.028,
     1.073
-   ]
+   ],
+   "dart": "kor_bird_w1_dart"
   },
   {
    "id": "kor_bird_w1_sheath",
@@ -3696,7 +3730,6 @@
    "culture_label": "Korona (Abyssal)",
    "subset": "Korona Bird",
    "src": "korona - bird.glb",
-   "sheath": "kor_bird_w2_sheath",
    "arrow_arm": 1.65,
    "string": [
     0.0,
@@ -3706,20 +3739,7 @@
     -0.621,
     -0.09
    ],
-   "arrow": "arrow"
-  },
-  {
-   "id": "kor_bird_w2_sheath",
-   "label": "Korona Bird-Clan Feather Bow Quiver",
-   "hand": "L",
-   "kind": "sheath",
-   "glb": "pieces/props/kor_bird_w2_sheath.glb",
-   "grip": "fist",
-   "people": "korona",
-   "culture_label": "Korona (Abyssal)",
-   "subset": "Korona Bird",
-   "src": "korona - bird.glb",
-   "for_weapon": "kor_bird_w2_bow"
+   "arrow": "kor_bird_w2_arrow"
   },
   {
    "id": "kor_bird_w3_mace",
@@ -3798,6 +3818,38 @@
    "subset": "Korona Bird",
    "src": "korona - bird.glb",
    "for_weapon": "kor_bird_w5_dagger"
+  },
+  {
+   "id": "kor_bird_w1_dart",
+   "label": "Korona Bird-Clan Plumed Blowgun Dart",
+   "hand": "R",
+   "kind": "dart",
+   "glb": "pieces/props/kor_bird_w1_dart.glb",
+   "grip": "fist",
+   "people": "korona",
+   "culture_label": "Korona (Abyssal)",
+   "subset": "Korona Bird",
+   "src": "korona - bird.glb",
+   "for_weapon": "kor_bird_w1_spear",
+   "blade": [
+    0.092,
+    0.244
+   ],
+   "length": 0.42
+  },
+  {
+   "id": "kor_bird_w2_arrow",
+   "label": "Korona Bird-Clan Feather Arrow",
+   "hand": "R",
+   "kind": "arrow",
+   "glb": "pieces/props/kor_bird_w2_arrow.glb",
+   "grip": "fist",
+   "people": "korona",
+   "culture_label": "Korona (Abyssal)",
+   "subset": "Korona Bird",
+   "src": "korona - bird.glb",
+   "for_weapon": "kor_bird_w2_bow",
+   "length": 0.78
   },
   {
    "id": "kor_bird_s1_shield",
@@ -4173,7 +4225,21 @@
     -0.63,
     -0.09
    ],
-   "arrow": "arrow"
+   "arrow": "shumar_w5_arrow"
+  },
+  {
+   "id": "shumar_w5_arrow",
+   "label": "Shumar Bronze-Tipped Recurve Arrow",
+   "hand": "R",
+   "kind": "arrow",
+   "glb": "pieces/props/shumar_w5_arrow.glb",
+   "grip": "fist",
+   "people": "shumar",
+   "culture_label": "Shumar",
+   "subset": "Shumar Set",
+   "src": "Shumar.glb",
+   "for_weapon": "shumar_w5_bow",
+   "length": 0.78
   },
   {
    "id": "shumar_s1_shield",
@@ -5465,7 +5531,7 @@
   },
   {
    "id": "msh_coyoteman_dine_bow_arrows",
-   "label": "Coyoteman Dine Bow Arrows",
+   "label": "Coyoteman Dine Bow",
    "hand": "L",
    "kind": "bow",
    "glb": "pieces/props/msh_coyoteman_dine_bow_arrows.glb",
@@ -5537,7 +5603,7 @@
   },
   {
    "id": "msh_coyoteman_short_bow_arrows",
-   "label": "Coyoteman Short Bow Arrows",
+   "label": "Coyoteman Short Bow",
    "hand": "L",
    "kind": "bow",
    "glb": "pieces/props/msh_coyoteman_short_bow_arrows.glb",
@@ -5890,27 +5956,20 @@
   },
   {
    "id": "msh_izani_legion_plumbata",
-   "label": "Izani Legion Plumbata",
+   "label": "Izani Legion Plumbata Dart",
    "hand": "R",
-   "kind": "spear",
+   "kind": "dart",
    "glb": "pieces/props/msh_izani_legion_plumbata.glb",
    "grip": "fist",
    "people": "izani",
    "culture_label": "Izani (Iziz)",
    "subset": "Izani Legion",
    "src": "Meshy_AI_Izani_Legion_Plumbata_20261106_texture_74f590f0",
-   "support": [
-    0.0,
-    0.25,
-    0.0,
-    0.0,
-    0.589,
-    0.0
-   ],
    "blade": [
-    0.693,
-    0.943
-   ]
+    0.121,
+    0.319
+   ],
+   "length": 0.55
   },
   {
    "id": "msh_izani_legion_pugio",
@@ -6043,27 +6102,20 @@
   },
   {
    "id": "msh_izani_plumbata",
-   "label": "Izani Plumbata",
+   "label": "Izani Plumbata Dart",
    "hand": "R",
-   "kind": "spear",
+   "kind": "dart",
    "glb": "pieces/props/msh_izani_plumbata.glb",
    "grip": "fist",
    "people": "izani",
    "culture_label": "Izani (Iziz)",
    "subset": "Izani Legion",
    "src": "Meshy_AI_Izani_Plumbata_20261106_texture_bcf988d6",
-   "support": [
-    0.0,
-    0.25,
-    0.0,
-    0.0,
-    0.678,
-    0.0
-   ],
    "blade": [
-    0.798,
-    0.943
-   ]
+    0.121,
+    0.319
+   ],
+   "length": 0.55
   },
   {
    "id": "msh_izani_pugio",
@@ -6402,7 +6454,7 @@
   },
   {
    "id": "msh_voth_mothwing_bow_arrows",
-   "label": "Voth Mothwing Bow Arrows",
+   "label": "Voth Mothwing Bow",
    "hand": "L",
    "kind": "bow",
    "glb": "pieces/props/msh_voth_mothwing_bow_arrows.glb",
@@ -6420,7 +6472,21 @@
     -0.652,
     -0.09
    ],
-   "arrow": "arrow"
+   "arrow": "msh_voth_mothwing_arrow"
+  },
+  {
+   "id": "msh_voth_mothwing_arrow",
+   "label": "Voth Mothwing Arrow",
+   "hand": "R",
+   "kind": "arrow",
+   "glb": "pieces/props/msh_voth_mothwing_arrow.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "culture_label": "Chichani (Voth)",
+   "subset": "Voth Meshy",
+   "src": "Meshy_AI_voth_mothwing_bow_arrows_20261106_texture_remesh_tri_b9275e61",
+   "for_weapon": "msh_voth_mothwing_bow_arrows",
+   "length": 0.78
   },
   {
    "id": "msh_voth_obsidian_moonblade",
@@ -6614,7 +6680,7 @@
   },
   {
    "id": "msh_talovolci_celtic_bow_arrow",
-   "label": "Talovolci Celtic Bow Arrow",
+   "label": "Talovolci Celtic Bow",
    "hand": "L",
    "kind": "bow",
    "glb": "pieces/props/msh_talovolci_celtic_bow_arrow.glb",
@@ -6632,7 +6698,21 @@
     -0.652,
     -0.09
    ],
-   "arrow": "arrow"
+   "arrow": "msh_talovolci_celtic_arrow"
+  },
+  {
+   "id": "msh_talovolci_celtic_arrow",
+   "label": "Talovolci Celtic Arrow",
+   "hand": "R",
+   "kind": "arrow",
+   "glb": "pieces/props/msh_talovolci_celtic_arrow.glb",
+   "grip": "fist",
+   "people": "talovolci",
+   "culture_label": "Talovolci (Free Clans)",
+   "subset": "Talovolci Arms",
+   "src": "Meshy_AI_Talovolci_Celtic_Bow_Arrow_20261106_texture_remesh_tri_07a650f0",
+   "for_weapon": "msh_talovolci_celtic_bow_arrow",
+   "length": 0.78
   },
   {
    "id": "msh_talovolci_gaesum",
