@@ -187,7 +187,7 @@ export function flight(W){
     if(!S.warp){
       // the push: 26 g at low speed, more as the gap to the speed asked for grows (the engines run up to full
       // impulse in about half a minute, but nudge a ship this size gently)
-      const along=S.vel.dot(fwd),target=S.thr*S.thr*FULL,gap=Math.abs(target-along),th=Math.max(THRUST,gap*0.12);
+      const along=S.vel.dot(fwd),target=S.thr*S.thr*FULL*(W.sys?W.sys.impulse():1),gap=Math.abs(target-along),th=Math.max(THRUST,gap*0.12);
       const dv=Math.max(-th*1.2*dt,Math.min(th*dt,target-along));
       S.acc+=((dv/dt)-S.acc)*(1-Math.exp(-dt*4));
       tmp.copy(fwd).multiplyScalar(along);r1.copy(S.vel).sub(tmp).multiplyScalar(Math.exp(-dt*0.9));

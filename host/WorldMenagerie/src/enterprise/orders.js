@@ -4,7 +4,13 @@
 // button for the next one where it has an obvious one (a course, docking, a scan), the step's target is always
 // marked on screen (cartography.js's markers), and each step is ticked off by what the other modules report
 // happening (W.emit: 'scan', 'rescued', 'docked', 'escort', 'wormhole', 'away', and arriving, and the hostiles being
-// gone). A finished mission is a commendation (kept in this browser) and the next orders come in.
+// gone). A finished mission is a commendation and the next orders come in.
+//
+// The career is kept in this browser (localStorage 'ent-career', every read and write guarded: with storage blocked
+// the page runs as a first visit): commendations, the missions flown by kind, crew brought off, battles won,
+// light-years, the places visited, the number of visits, and the log itself, so the stardate and the log run on
+// from one visit to the next. The orders panel shows it as the service record. #fresh starts as a first visit
+// without touching what is kept (for tests).
 //
 // The log keeps itself: arrivals, docking, battles, rescues, scans and the wormhole go in it by stardate (a made-up
 // clock that runs with time and with light-years travelled).
@@ -20,7 +26,7 @@ const WRECKS=[['USS Wren','NCC-80211','kestrel'],['USS Sable Point','NCC-77140',
 const TRANSPORTS=[['USS Bellwether','NCC-61120','halyard'],['USS Merrow','NCC-61307','halyard'],['USS Kittiwake','NCC-62044','halyard']];
 const CARGO=['vaccines for the outer colonies','spare parts for a starbase\'s reactor','a diplomatic pouch','seed stock for a new colony','a relief team of doctors'];
 const SURVEY=['comet','binary','nebula','hole','pulsar','disc','eye','rogue','lava','ice'];
-const KINDS=['rescue','survey','escort','defend','wormhole','deliver','patrol','contact','probe','evacuate','swarm','storm','relic','hunt'];
+const KINDS=['rescue','survey','escort','defend','wormhole','deliver','patrol','contact','probe','evacuate','swarm','storm','relic','hunt','limp'];
 const VARR=['Kesh Tal-Varo','Dagh the Unbent','Oru Sevanne','Tarvek of the Long Night'];
 const PROBES=['Wayfarer 9','Lantern 14','Meridian Deep 3','Pathfinder 22'];
 const PEACEFUL=['rogue','eye','disc','pulsar','relic','comet','binary','nebula','shattered'];
@@ -28,10 +34,23 @@ const PEACEFUL=['rogue','eye','disc','pulsar','relic','comet','binary','nebula',
 export function orders(W){
   const {THREE,ROOT,animHooks}=W,F=W.fx,S=W.flight,V=()=>new THREE.Vector3();
   const P=sidePanel('ent-orders','Orders and log',o=>{W.onLogToggle&&W.onLogToggle(o);if(o)dirty=true;});
-  const LS='ent-commendations';let commend=0;try{commend=+localStorage.getItem(LS)||0;}catch(e){}
-  let ly=0;const t0=performance.now(),lastMap=S.map.clone();
-  const stardate=()=>(51204.3+(performance.now()-t0)/600000+ly*0.04).toFixed(1);
-  const log=[];let dirty=true;
+  // ---- the career ----
+  const CK='ent-career',FRESH=new URLSearchParams(location.hash.slice(1)).has('fresh');
+  const blank=()=>({v:1,commend:0,missions:{},rescued:0,battles:0,ly:0,visited:[],visits:0,sd:51204.3,log:[]});
+  let career=blank();
+  if(!FRESH){try{const j=JSON.parse(localStorage.getItem(CK)||'null');if(j&&j.v===1)career=Object.assign(blank(),j);}catch(e){}
+    try{const old=+localStorage.getItem('ent-commendations')||0;if(old>career.commend)career.commend=old;}catch(e){}}   // before the career, only this was kept
+  career.visits++;
+  let commend=career.commend;
+  let ly=0;const t0=performance.now(),lastMap=S.map.clone(),sd0=career.sd+0.1;
+  const stardate=()=>(sd0+(performance.now()-t0)/600000+ly*0.04).toFixed(1);
+  const log=career.log.slice(0,40);let dirty=true;
+  let saveAt=0;
+  const save=now=>{if(FRESH)return;if(!now&&performance.now()-saveAt<5000)return;saveAt=performance.now();
+    career.commend=commend;career.sd=+stardate();career.log=log.slice(0,40);
+    try{localStorage.setItem(CK,JSON.stringify({...career,ly:+(career.ly+ly).toFixed(3)}));}catch(e){}
+    };
+  addEventListener('pagehide',()=>save(true));
   const entry=t=>{log.unshift([stardate(),t]);if(log.length>40)log.pop();dirty=true;};
   const place=id=>PLACES.find(p=>p.id===id),here=()=>W.herePlace().P.id;
   const stName=n=>stationName({n}),stPlace=n=>STATIONS.find(s=>s.n===n).place;
@@ -152,7 +171,7 @@ export function orders(W){
         ...(pid==='farside'?[{text:'Fly through the wormhole.',test:(e,d)=>e==='wormhole'&&d.to.id==='farside',go:goTo('the wormhole'),target:()=>'the wormhole'}]:[]),
         {text:'Go into standard orbit over '+body+' (O).',target:()=>body,test:e=>e==='tick'&&here()===pid&&S.orbit&&S.orbit.b&&S.orbit.b.name===body,go:goTo(body)},
         {text:'Beam down a medical team (B).',test:e=>e==='away'&&here()===pid,go:()=>W.beam()},
-        {text:'Bring them up, with the injured (B).',test:e=>e==='aboard',go:()=>W.beam(),done:()=>F.note('Sickbay reports three hundred and twelve aboard. Every bed full, and the corridors.')},
+        {text:'Bring them up, with the injured (B).',test:e=>e==='aboard',go:()=>W.beam(),done:()=>{career.rescued+=312;F.note('Sickbay reports three hundred and twelve aboard. Every bed full, and the corridors.');}},
         {text:'Take them to a starbase: dock at any.',test:e=>e==='docked',go:dockAny}]};}
     if(kind==='swarm'||kind==='hunt'){
       const Pl=place(pk(not(['giant','ice','ocean','lava','belt','comet','shattered','relic','colony']))),fl={on:false},cap=pk(VARR);
@@ -160,6 +179,17 @@ export function orders(W){
         'The Varr raider-captain '+cap+' has been burning colony ships. Starfleet has a fix on '+(cap.split(' ')[0])+'\'s cruiser at '+nm(Pl)+'. Bring it to battle.',steps:[
         {...arrive(Pl),done:()=>ambush(Pl,()=>{if(kind==='swarm')W.HO.swarm(5+Math.floor(r()*3));else{W.HO.contact('varr');if(r()<0.5)setTimeout(()=>W.HO.contact('raider'),3000);}},fl)},
         {text:kind==='swarm'?'Destroy the swarm (shields up: Z).':'Defeat '+cap+'\'s cruiser, or make it run.',test:e=>e==='won'&&fl.on,go:()=>{if(!W.shieldsState().up)W.toggleShields();}}]};}
+    if(kind==='limp'){
+      // a lure: mines where the convoy should be, and raiders waiting for a ship with no warp drive (systems.js)
+      const Pl=place(pk(not(['giant','ice','ocean','lava','belt','comet','shattered','relic','colony','storm','gate','farside']))),fl={on:false},
+        other=pk(['sensors','torpedoes','transporter','impulse']);
+      return {kind,title:'Silence at '+nm(Pl),brief:'A supply convoy reported in from '+nm(Pl)+' and then went silent. Find out why.',steps:[
+        {...arrive(Pl),done:()=>whenSlow(Pl,()=>{if(W.sys){W.sys.damage('warp',92);W.sys.damage(other,60);}W.flight.shake=(W.flight.shake||0)+40;
+          F.note('Mines! There was never a convoy. The warp drive is down, and the '+other+' with it.');ambush(Pl,()=>{W.HO.contact();setTimeout(()=>W.HO.contact(),2500);},fl);})},
+        {text:'Raiders, come for a crippled ship: drive them off (shields up: Z).',test:e=>e==='won'&&fl.on,go:()=>{if(!W.shieldsState().up)W.toggleShields();}},
+        {text:'Wait for damage control to get the warp drive back online (I: Engineering).',test:e=>e==='tick'&&(!W.sys||W.sys.get('warp')>=25),go:()=>W.openEng&&W.openEng()},
+        {text:'Limp to a starbase at what warp you have, and dock for repairs.',test:e=>e==='docked',go:dockAny,
+          done:()=>F.note('Repair crews are aboard. Engineering says the warp drive will be good as new by the time we cast off.')}]};}
     if(kind==='storm'){
       const fl={on:false};
       return {kind,title:'Into the ion storm',brief:'The Science Council wants readings from the eye of the ion storm, where no probe has survived. The Enterprise can.',steps:[
@@ -194,8 +224,8 @@ export function orders(W){
   function abandon(){if(!active)return;entry('Orders abandoned: '+active.title+'.');active=null;fights=[];dockOnArrival=false;offer();}
   function check(e,d){if(!active)return;const st=active.steps[active.i];if(!st||!st.test(e,d))return;
     st.ok=true;if(st.done)st.done();active.i++;dirty=true;
-    if(active.i>=active.steps.length){commend++;try{localStorage.setItem(LS,String(commend));}catch(err){}
-      entry('Mission complete: '+active.title+'. Starfleet sends its compliments (commendation '+commend+').');
+    if(active.i>=active.steps.length){commend++;career.missions[active.kind]=(career.missions[active.kind]||0)+1;save(true);
+      entry('Mission complete: '+active.title+'. Starfleet sends its compliments (commendation '+commend+').');W.emit('mission',active);
       W.toast&&W.toast('Starfleet Command',' Well done, Enterprise: '+active.title.toLowerCase()+', done. New orders follow.');fanfare(true);
       active=null;setTimeout(()=>offer(),3000);}
     else{const nx=active.steps[active.i];W.toast&&W.toast('Orders',' '+nx.text);if(e!=='tick')check('tick');}}
@@ -206,9 +236,9 @@ export function orders(W){
 
   // ================= what happens, from the other modules =================
   for(const k of ['scan','rescued','recovered','docked','escort','wormhole','away','aboard','surrender','hail'])W.on(k,d=>check(k,d));
-  W.arriveHooks.push(pl=>{entry('Arrived: '+pl.P.name+'.');check('arrive',pl);});
+  W.arriveHooks.push(pl=>{entry('Arrived: '+pl.P.name+'.');if(!career.visited.includes(pl.P.id))career.visited.push(pl.P.id);save(true);check('arrive',pl);});
   W.on('docked',st=>entry('Docked at '+st.name+'.'));
-  W.on('rescued',t=>entry('Took '+t.name.replace(/^USS /,'the ')+'\'s crew off. All alive.'));
+  W.on('rescued',t=>{const n=t.task&&t.task.crew||0;career.rescued+=n;entry('Took '+t.name.replace(/^USS /,'the ')+'\'s crew off'+(n?', '+n+' of them':'')+'. All alive.');});
   W.on('wormhole',d=>entry('Through the wormhole: from '+d.from.name.toLowerCase()+' to '+d.to.name.toLowerCase()+'.'));
   W.on('away',a=>entry('Away team down on '+a.body+'.'));
   W.on('aboard',a=>entry('Away team back aboard. '+a.found));
@@ -221,12 +251,13 @@ export function orders(W){
   animHooks.push(()=>{ly+=S.map.distanceTo(lastMap);lastMap.copy(S.map);
     // gone because we went to warp is not driven off
     const n=W.foes?W.foes().length:0;if(n&&!foes)entry('Hostile contact. Red alert.');
-    if(!n&&foes){if(S.warp||W.spooling){entry('We left the hostiles behind.');for(const f of fights)if(f.m===active&&f.flag.on)f.flag.on=false;}else{entry('The hostiles are gone.');W.emit('won');check('won');}}foes=n;
-    if(++tk%20===0)check('tick');if(P.open()&&(dirty||tk%120===0))render();});
+    if(!n&&foes){if(S.warp||W.spooling){entry('We left the hostiles behind.');for(const f of fights)if(f.m===active&&f.flag.on)f.flag.on=false;}else{entry('The hostiles are gone.');career.battles++;save(true);W.emit('won');check('won');}}foes=n;
+    if(++tk%20===0)check('tick');if(tk%600===0)save();if(P.open()&&(dirty||tk%120===0))render();});
 
   // ================= the panel =================
   function render(){dirty=false;P.body.innerHTML='';
     P.body.append(el('div','row',[el('span',null,'Stardate '+stardate()),el('span',null,commend+' commendation'+(commend===1?'':'s'))]));
+    P.body.append(record());
     if(active){const card=el('div','card ok',[el('b',null,active.title),el('div',null,active.brief)]);const ul=el('ul');
       active.steps.forEach((s,i)=>ul.append(el('li',i<active.i?'done':i===active.i?'now':null,s.text)));card.append(ul);
       const st=active.steps[active.i],a=el('div','acts');if(st&&st.go)a.append(button(goLabel(st),()=>{W.audio&&W.audio();st.go();}));a.append(button('Abandon',abandon));card.append(a);P.body.append(card);}
@@ -234,15 +265,59 @@ export function orders(W){
       el('div','acts',[button('Accept',()=>{W.audio&&W.audio();accept();}),button('Something else',decline)])]));}
     const lg=el('div','log');for(const [d,t] of log.slice(0,14))lg.append(el('p',null,[el('em',null,d),t]));
     P.body.append(el('small',null,'Captain\'s log'),log.length?lg:el('div','say','Nothing yet.'),el('small',null,'J opens orders. N scans, H hails, B energises, P is the chart.'));}
+  // the service record: what this captain has done, over every visit
+  let recOpen=false;
+  function record(){const c=career,flown=Object.values(c.missions).reduce((a,b)=>a+b,0);
+    const kinds=Object.entries(c.missions).sort((a,b)=>b[1]-a[1]).map(([k,n])=>k+(n>1?' \u00d7'+n:'')).join(', ');
+    const det=el('details','card record');det.open=recOpen;det.addEventListener('toggle',()=>{recOpen=det.open;});
+    const rows=[['Visits',String(c.visits)],['Missions flown',String(flown)],['Commendations',String(commend)],['Crew brought off',String(c.rescued)],
+      ['Battles won',String(c.battles)],['First contacts',String(c.missions.contact||0)],['Light-years',(c.ly+ly).toFixed(1)],
+      ['Places visited',c.visited.length+' of '+PLACES.length]];
+    det.append(el('summary',null,'Service record'),...rows.map(([k,v])=>el('div','row',[el('span',null,k),el('b',null,v)])));
+    if(kinds)det.append(el('div','say',kinds));
+    det.append(el('div','acts',[button('Start a new career',()=>{if(!confirm('Forget this captain\'s record and log, and start again?'))return;
+      try{localStorage.removeItem(CK);localStorage.removeItem('ent-commendations');}catch(e){}career=blank();career.visits=1;commend=0;log.length=0;ly=0;
+      entry('Ship\'s log: a new captain takes command.');save(true);dirty=true;})]));
+    return det;}
   const goLabel=s=>/course|^Go to|^Bring/.test(s.text)?'Lay in a course':/Dock/.test(s.text)?'Dock':/Scan|Sweep/.test(s.text)?'Scan':/Beam/.test(s.text)?'Energise':/Hail/.test(s.text)?'Open comms':/Find/.test(s.text)?'Approach':/Fly into|through/.test(s.text)?'Fly in':/orbit/.test(s.text)?'Go into orbit':/Drive/.test(s.text)?'Fire':'Go';
   W.orderTarget=()=>{const st=active&&active.steps[active.i];return st&&st.target?st.target():null;};
   W.orders={brief:()=>active?'Your orders stand, Enterprise: '+active.steps[active.i].text:offered?'New orders for you, Enterprise: '+offered.brief+' (J to read them.)':'No new orders. Enjoy the quiet.'};
   W.openLog=()=>P.toggle(true);
   addEventListener('keydown',e=>{if(e.repeat||typing(e))return;if(e.key==='j'||e.key==='J'){W.audio&&W.audio();P.toggle();}else if(e.key==='Escape'&&P.open())P.toggle(false);});
-  offer();entry('Ship\'s log: the Enterprise, alongside Starbase 1. All systems ready.');
+  offer();entry(career.visits>1?'Ship\'s log: the Enterprise, alongside Starbase 1, back on station. Visit '+career.visits+'.':'Ship\'s log: the Enterprise, alongside Starbase 1. All systems ready.');
   {const h=new URLSearchParams(location.hash.slice(1)),k=h.get('mission');if(k&&KINDS.includes(k)){num=0;offer(k);setTimeout(accept,+(h.get('evt')||1.5)*1000);}}
-  const state=()=>({active:active&&active.kind,step:active&&active.i,of:active&&active.steps.length,offered:offered&&offered.kind,commend,log:log.length,last:log[0]&&log[0][1]});
+  const state=()=>({active:active&&active.kind,step:active&&active.i,of:active&&active.steps.length,offered:offered&&offered.kind,commend,log:log.length,last:log[0]&&log[0][1],career:{visits:career.visits,missions:career.missions,rescued:career.rescued,battles:career.battles,visited:career.visited.length}});
+  W.career=()=>career;
   W.orders.state=state;W.orders.next=()=>{const st=active&&active.steps[active.i];if(st&&st.go)st.go();};
+  // #mauto (for tests, with #mission=<kind>): plays the mission through as a captain would, pressing each step's own
+  // button when the ship is not already busy (at warp, on a course, under the impulse autopilot, docking), fighting
+  // whatever turns up, and energising where a step has no button. window._details.orders says how far it got, so
+  // tools/test-enterprise.py can fail a mission that throws or stalls.
+  {const h=new URLSearchParams(location.hash.slice(1));
+   if(h.has('mauto')){const t0=performance.now(),done=[];let at=-1,since=0,pressed=0,stuck='';
+     const errs=[];{const ce=console.error.bind(console);console.error=(...x)=>{errs.push(x.map(v=>v&&v.stack?v.stack.split('\n').slice(0,2).join(' '):String(v)).join(' ').slice(0,300));ce(...x);};}
+     addEventListener('error',e=>errs.push((e.message||String(e))+' @'+(e.filename||'').split('/').pop()+':'+e.lineno));
+     const dp=()=>W.dockPhase&&W.dockPhase();
+     W.on('mission',m=>done.push(m.kind));
+     setInterval(()=>{const now=performance.now(),st=active&&active.steps[active.i],S=W.flight;
+       if(active&&active.i!==at){at=active.i;since=now;pressed=0;}
+       const busy=S.warp||W.spooling||W.course.dest||(W.autoDir&&W.autoDir())||(dp()&&dp()!=='docked');
+       const foes=W.foes?W.foes().length:0;
+       if(foes){if(!W.shieldsState().up)W.toggleShields();if(!S.on)W.startFlight();W.fire(Math.random()<0.6?'phasers':'torpedo');}
+       else if(st&&!busy&&now-pressed>4000){pressed=now;const tn=st.target&&st.target(),tc=tn&&W.contacts().find(c=>c.name===tn);
+         if(dp()==='docked'&&!/[Dd]ock/.test(st.text))W.dock&&W.dock();
+         // the comms steps: hail the ship named (and have her form up, for an escort), as the captain would in the panel
+         else if(/\bhail\b|^Keep talking|form up/i.test(st.text)&&tc&&W.comms){W.comms.hail(tc);if(/form up/.test(st.text))W.comms.formUp(tc.ship);}
+         // orbit, then a team down: O once the body is close enough to orbit, B once in orbit
+         else if(/orbit/.test(st.text)&&!S.orbit&&W.orbitable&&W.orbitable()&&(!tn||W.orbitable().name===tn||/^the uncharted/.test(tn)))dispatchEvent(new KeyboardEvent('keydown',{key:'o'}));
+         else if(/orbit/.test(st.text)&&S.orbit&&/\bB\)/.test(st.text))W.beam();
+         else if(st.go)st.go();else if(/\(B\)/.test(st.text))W.beam();}
+       stuck=st?st.text:'';
+       (window._details=window._details||{}).orders={kind:h.get('mission'),done,active:active&&active.kind,step:active?active.i:null,
+         of:active?active.steps.length:null,stepFor:Math.round((now-since)/1000),stuck,t:Math.round((now-t0)/1000),
+         hull:Math.round(W.hull?W.hull():100),sys:W.sys?Object.fromEntries(Object.entries(W.sys.all()).map(([k,v])=>[k,Math.round(v)])):null,
+         career:state().career,saved:(()=>{try{return !!localStorage.getItem(CK);}catch(e){return null;}})(),errors:errs.slice(0,8)};
+       if(done.length||errs.length)window.__probeDone=true;},1000);}}
   return {toggle:o=>P.toggle(o),
     act:{orders:()=>P.toggle(true),accept,next:()=>{const st=active&&active.steps[active.i];if(st&&st.go)st.go();}},
     hud:()=>active?'orders: '+(active.i+1)+'/'+active.steps.length+' '+active.title.toLowerCase():offered&&S.on?'new orders (J)':'',

@@ -44,6 +44,7 @@ export function transporter(W){
   const km=m=>m<1000?Math.round(m)+' m':(m/1000).toFixed(1)+' km';
   function beam(target){
     W.audio&&W.audio();
+    if(W.sys&&W.sys.down('transporter'))return;
     if(busy){note('Still energising.');return;}
     const cs=W.contacts?W.contacts():[];
     // a ship's crew off a wreck

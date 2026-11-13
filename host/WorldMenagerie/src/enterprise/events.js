@@ -131,6 +131,7 @@ export function events(W){
   function engage(factor){
     const S=W.flight;
     if(!S.on){warpShowRun();return;}
+    if(W.sys){if(W.sys.down('warp'))return;factor=Math.min(factor,W.sys.warpMax());}
     if(S.warp){S.warp=factor;return;}
     if(W.spooling)return;W.spooling=true;sound('warp');powerTo=1;const t0=T;let went=false;
     run(t=>{const u=t-t0;if(!W.spooling||!S.on){ROOT.scale.x=1;W.spooling=false;if(!S.warp)powerTo=0;return false;}if(u<1.4)return;
@@ -176,8 +177,8 @@ export function events(W){
   let shUp=false,shT=-99;
   animHooks.push(()=>{shMat.uniforms.uT.value=T;const u=T-shT;shMat.uniforms.uOn.value=shUp?Math.max(0.0,1.2*Math.exp(-u*1.1)):0;
     shield.visible=shUp||T-shMat.uniforms.uHit.value.w<4;});
-  function shields(){if(!shUp&&shStr<10){note('Shields are too weak to raise.');return;}shUp=!shUp;shT=T;if(shUp)sound('shield');}
-  animHooks.push(()=>{if(shUp&&shStr<100)shStr=Math.min(100,shStr+0.02);else if(!shUp&&shStr<100)shStr=Math.min(100,shStr+0.01);});
+  function shields(){if(!shUp&&W.sys&&W.sys.down('shields'))return;if(!shUp&&shStr<10){note('Shields are too weak to raise.');return;}shUp=!shUp;shT=T;if(shUp)sound('shield');}
+  animHooks.push(()=>{const k=W.sys?W.sys.shieldRate():1;if(shUp&&shStr<100)shStr=Math.min(100,shStr+0.02*k);else if(!shUp&&shStr<100)shStr=Math.min(100,shStr+0.01*k);});
   function shieldHit(worldP){const l=shield.worldToLocal(worldP.clone()).normalize();const p=l.multiply(SR);shMat.uniforms.uHit.value.set(p.x,p.y,p.z,T);}
 
   // ---------- phasers ----------
@@ -188,6 +189,7 @@ export function events(W){
   const beamMat=c=>new THREE.MeshBasicMaterial({color:c,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,toneMapped:false});
   const Y=new THREE.Vector3(0,1,0);
   function phasers(){
+    if(W.sys&&W.sys.down('phasers'))return;
     const tg=targetPos();const tl=SAU.worldToLocal(tg.p.clone());const top=tl.y>-25;
     // the point on the strip that looks most nearly at the target (skipping the gap over the impulse deck)
     let best=0,bd=-2;for(let i=0;i<180;i++){const th=i/180*Math.PI*2,p=stripAt(th,top);if(p.x<-95&&Math.abs(p.z)<150)continue;
@@ -215,6 +217,7 @@ export function events(W){
   // ---------- torpedoes ----------
   const launcher=()=>{const y=TORPEDO.fore.y;return world(G,new THREE.Vector3(neckLead(y)+1.5,y,0));};
   function torpedo(off){
+    if(W.sys&&W.sys.down('torpedoes'))return;
     const tg=targetPos(),p=launcher(),dir=tg.p.clone().sub(p).normalize();
     if(off)dir.applyAxisAngle(new THREE.Vector3(0,1,0).applyQuaternion(ROOT.quaternion),off);
     sound('torpedo');flash(p,0xff6030,60,0.5);
@@ -271,6 +274,7 @@ export function events(W){
         return cc.add(s.multiplyScalar(1/n));})():SAU.localToWorld(aimL.clone());
       if(u<1){bolt.position.copy(toFX(start.clone().lerp(aimW,u)));return;}
       FX.remove(bolt);
+      if(W.sys)W.sys.hit(dm,shUp,shStr);
       if(shUp){shieldHit(aimW);sound('shield');flash(aimW,0x80c8ff,180,0.6);shStr=Math.max(0,shStr-(7+Math.random()*5)*dm);
         if(shStr<=0){shUp=false;note('Shields have failed.');sync();}}
       else{sound('hit');hullP=Math.max(5,hullP-(4+Math.random()*5)*dm);lastHit=T;if(W.breach&&(hullP<80||Math.random()<0.3))W.breach(aimW);flash(aimW,0xffd090,240,1.0);flash(aimW,0xff5020,420,1.6);
@@ -365,7 +369,7 @@ export function events(W){
   W.HO=HO;W.damage=()=>({hull:hullP,shields:shStr});
   // for helm.js and the Z key: the two toggles a captain wants under one finger
   W.toggleShields=()=>{shields();sync();};W.toggleRed=()=>{redAlert();sync();};W.shieldsState=()=>({up:shUp,str:shStr,red});
-  W.repair=k=>{hullP=Math.min(100,hullP+k);shStr=Math.min(100,shStr+k);};
+  W.repair=k=>{hullP=Math.min(100,hullP+k);shStr=Math.min(100,shStr+k);if(W.sys)W.sys.repair(k);};
   // for extras.js: the effects kit
   W.fx={sound,flash,run,debris,sprite,world,toFX,dirFX,shipCentre,note,T:()=>T,ease,sync:()=>sync()};
   const spread=()=>{torpedo(-0.09);setTimeout(()=>torpedo(0),140);setTimeout(()=>torpedo(0.09),280);};

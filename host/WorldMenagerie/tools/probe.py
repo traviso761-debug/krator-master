@@ -37,11 +37,13 @@ let wantShot=false,shotTaken=false;
 if(window.THREE){const W=THREE.WebGLRenderer;THREE.WebGLRenderer=function(o){const r=new W(o);rd=r;const R0=r.render;r.render=function(scene,cam){sc=scene;window.__probeCam=cam;const t=performance.now();if(last)frames.push(t-last);last=t;const out=R0.call(r,scene,cam);if(wantShot){wantShot=false;shotTaken=true;queueMicrotask(()=>{try{const u=r.domElement.toDataURL('image/jpeg',0.8);fetch('http://127.0.0.1:SHOTPORT/shot',{method:'POST',mode:'no-cors',body:u});}catch(e){}});}return out;};return r;};}
 // Ready: the loading overlay is gone (#loading removed, or Voth's #load hidden) and, on a 3D page, 30 frames have
 // been drawn since and 1.2 s has passed. WAIT is only the ceiling; a page that never gets there is reported as timed out.
+// A page that runs a test of its own (the Enterprise's #mauto) sets window.__probeDone when it has finished, and is
+// reported then; SETTLE is the ceiling for it.
 const t0=performance.now();let readyAt=0,framesAt=0;
 const loadingGone=()=>{if(document.readyState==='loading')return false;for(const id of ['loading','load']){const e=document.getElementById(id);
  if(e&&e.isConnected){const cs=getComputedStyle(e);if(cs.display!=='none'&&cs.visibility!=='hidden')return false;}}return true;};
 const tick=()=>{const now=performance.now();if(!readyAt&&loadingGone()){readyAt=now;framesAt=frames.length;}
- const settled=readyAt&&now-readyAt>1200+SETTLE&&(!rd||frames.length-framesAt>=30);
+ const settled=readyAt&&(now-readyAt>1200+SETTLE||window.__probeDone&&now-readyAt>1200)&&(!rd||frames.length-framesAt>=30);
  if(settled||now-t0>WAIT){finish(!settled);return;}setTimeout(tick,150);};
 setTimeout(tick,150);
 const rep=o=>{new Image().src='/__probe?'+encodeURIComponent(JSON.stringify(o));};
@@ -196,9 +198,9 @@ def main():
     url = f"http://127.0.0.1:{a.port}/?debug" + (f"&seed={a.seed}" if a.seed else "") + (f"&{a.query}" if a.query else "") + (f"#{a.hash}" if a.hash else "")
     fx = subprocess.Popen([ff, "--headless", "--no-remote", f"--window-size={a.size}", "--profile", profile, url], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     report = None
-    deadline = time.time() + a.wait + 60
+    deadline = time.monotonic() + a.wait + 60   # monotonic: an NTP step of the wall clock once ended a probe early
     try:
-        while time.time() < deadline:
+        while time.monotonic() < deadline:
             time.sleep(1)
             log.seek(0)
             for line in log:

@@ -2128,6 +2128,22 @@ wireframe and menagerie menu every other page has.
     shields, and a strip of quick controls down the right (`helm.js`: shields, red alert, phasers, torpedo, scan, hail,
     energise, dock, lit while on); every panel has a Close of its own, and Escape closes them. For tests:
     `#ev=swarm`, `#ev=ossari`, `#mission=patrol` (or contact, probe, evacuate, swarm, hunt, storm, relic).
+  - **Ninth pass: systems that break, a career that lasts, and missions that test themselves**
+    (`src/enterprise/BACKLOG.md` keeps what is still to do). **Seven systems** (`systems.js`: warp, impulse,
+    phasers, torpedoes, the shield generator, sensors, the transporter) each have an integrity a hit can take away: a
+    hit on the hull usually hurts one, a hit on weak shields sometimes does. Below a quarter a system is offline (no
+    warp, no phasers, no scans, the shields fall); a hurt warp drive caps the warp factor and hurt impulse engines the
+    speed. Damage control works on the worst of it but only to half; a starbase's crews do the rest while she is
+    docked. **I** (or **Engineering**) opens the panel, and the HUD says what is down. A fifteenth kind of orders,
+    **silence** (`limp`): a lure, mines that take out the warp drive, raiders come for the cripple, and she waits for
+    damage control and limps to a starbase. The **career** is kept in the browser (`ent-career`): commendations,
+    missions by kind, crew brought off, battles won, light-years, places visited, visits, and the log itself, so the
+    stardate and the log run on between visits; the orders panel shows it as the **service record**, with a button to
+    start again. For tests: `#sysdmg=warp:80,phasers:60` damages systems once the page is up, `#fresh` starts as a
+    first visit without reading or writing what is kept, and `#mauto` (with `#mission=<kind>`) flies the mission
+    through as a captain would; **`tools/test-enterprise.py`** runs every kind that way in headless Firefox and fails
+    one that throws or stalls (about a quarter of an hour for all fifteen). `tools/probe.py` now reports a page early
+    when it sets `window.__probeDone`.
   - **Performance.** The hull's grids keep only the rows they need (`rows()` in `hull.js`): each part is sampled
     on its old even grid, and a row is dropped wherever every sample between the rows kept either side lies within
     2 cm of the straight line between them. The kept rows are still exact (u, v), so the textures land where they

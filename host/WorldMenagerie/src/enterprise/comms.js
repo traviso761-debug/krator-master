@@ -76,6 +76,7 @@ export function comms(W){
   let tk=0;animHooks.push(()=>{if(P.open()&&++tk%30===0)refresh();});
   addEventListener('keydown',e=>{if(e.repeat||typing(e))return;if(e.key==='h'||e.key==='H'){W.audio&&W.audio();P.toggle();}else if(e.key==='Escape'&&P.open())P.toggle(false);});
   W.openComms=()=>P.toggle(true);
+  W.comms={hail:c=>hail(c),formUp:t=>formUp(t)};   // for orders.js's #mauto
   const escorts=()=>W.traffic?W.traffic.escorts():[];
   // #ev=formup: the nearest Federation ship here forms up
   const formNearest=()=>{const c=(W.contacts?W.contacts():[]).filter(c=>c.kind==='ship'&&!/escort|wreck|contact|cargo/.test(c.ship.task.kind)).sort((a,b)=>a.d-b.d)[0];if(c)formUp(c.ship);};

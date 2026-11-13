@@ -119,7 +119,7 @@ export function nav(W){
     clear(){this.dest=null;this.arrived=false;sync();},
     set(P){this.dest=P;this.arrived=false;if(!S.on)W.startFlight();S.orbit=null;if(S.warp&&!this.lined()){/* turning at warp is allowed: hold the warp */}
       if(S.thr<0.25)W.setThrottle(0.25);sync();},
-    setWarp(w){this.w=w;if(S.warp)S.warp=w;sync();},
+    setWarp(w){this.w=w;if(S.warp)S.warp=W.sys?Math.min(w,Math.max(1,W.sys.warpMax())):w;sync();},
     bearing(){const to=new THREE.Vector2(...this.dest.ly).sub(S.map);return Math.atan2(to.y,to.x);},
     dir(){if(!this.dest)return null;const b=this.bearing();return new THREE.Vector3(Math.cos(b),0,-Math.sin(b)).applyQuaternion(SKY.quaternion);},
     lined(){return S.steerErr!=null&&S.steerErr<0.025&&S.rate.length()<0.02;}};
