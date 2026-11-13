@@ -394,7 +394,8 @@ GOODS = [
     {"id": "lenses", "label": "telescopes, sextants & lenses", "class": "specialty", "tier": "compact", "unit": "unit", "note": "Roketstad Astronomers' Guild optics ground from Ancient glass & High Rift quartz"},
     {"id": "rockets", "label": "rockets, muskets & artillery", "class": "specialty", "tier": "medium", "unit": "unit", "note": "Iron Republic Arsenal firearms & rocket racks"},
     {"id": "arms", "label": "Forgemaster mech parts & steel arms", "class": "specialty", "tier": "medium", "unit": "unit", "note": "Iziz & Yuni weapons/mech parts (firearms barred north of Great Chasm Sill)"},
-    {"id": "electrics", "label": "generators, lamps & Stair cells", "class": "specialty", "tier": "compact", "unit": "unit", "note": "Yuni/Locus Geomancer electrics & Stair Catch-divers' charged Ancient cells"},
+    {"id": "electrics", "label": "Geomancer generators, lamps & wire", "class": "specialty", "tier": "compact", "unit": "unit", "note": "Yuni & Locus Geomancer dynamos, arc-lamps & insulated wire"},
+    {"id": "energy-cells", "label": "Ancient energy cells", "class": "specialty", "tier": "compact", "unit": "unit", "note": "sealed-vault Ancient power cells from Valley of the Ancient (via Yusar) & Stair; strong Eternian demand"},
     {"id": "cybernetics", "label": "Yusar cybernetics & servo-craft", "class": "specialty", "tier": "compact", "unit": "unit", "note": "Carcosa & Henge Yusar implants and mech-servos"},
     {"id": "genecraft", "label": "Dalab gene-craft & pressure mods", "class": "specialty", "tier": "compact", "unit": "unit", "note": "Genepriest altitude/pressure/cold adaptations & healers"},
     {"id": "scrapgoods", "label": "Abyssal recycled scrap-wares", "class": "specialty", "tier": "medium", "unit": "unit", "note": "Locus, Mungo & Tabisti worked tin-mirror & ruin craft"},
@@ -525,6 +526,14 @@ def populate_supply_demand(world, setts):
         dem["gems"] = (0.55 if s["type"] in ("city", "arcology") or pol == "Yusar (Cybernetics)" else 0.08) * kpop
         dem["fine-ceramics"] = 0.22 * kpop
         dem["cybernetics"] = (0.14 if pol in ("Eternal State", "Realm of Dalab", "Empire of Iziz", "Yuni Emirate", "Order of Historians") else 0.015) * kpop
+        if pol == "Eternal State":
+            dem["energy-cells"] = 0.28 * kpop  # Eternal State high demand, sourced mostly from Valley of the Ancient via Yusar!
+            if nm == "Veil":
+                sup["energy-cells"] = 0.6      # minor State rim recovery
+        elif pol in ("Realm of Dalab", "Empire of Iziz", "Iron Republic", "Yuni Emirate", "Xanadu Sultanate", "Tungang Union"):
+            dem["energy-cells"] = 0.052 * kpop
+        else:
+            dem["energy-cells"] = 0.0
         dem["oversea-luxuries"] = (0.20 if s["type"] in ("city", "arcology") else 0.03) * kpop
 
         # --- Owner Item #4: Literate societies produce domestic books; Longsong exports curated rare histories ---
@@ -560,6 +569,9 @@ def populate_supply_demand(world, setts):
         # --- Specialized Regional Producers ---
         if pol == "Yusar (Cybernetics)":
             sup["cybernetics"] = 8.5 if nm == "Carcosa" else 4.0
+            # Harvests sealed-vault Ancient energy cells from adjacent Valley of the Ancient (primary supplier to Eternal State!)
+            sup["energy-cells"] = 16.5 if nm == "Carcosa" else 8.5
+            dem["energy-cells"] = 2.4 if nm == "Carcosa" else 1.2
             dem["scrap"] = max(dem.get("scrap", 0.0), 28.0 * kpop)
             dem["electrics"] = max(dem.get("electrics", 0.0), 1.2 * kpop)
             dem["gems"] = max(dem.get("gems", 0.0), 2.2 * kpop)  # photonic opals
@@ -575,10 +587,15 @@ def populate_supply_demand(world, setts):
             sup["food"] = 190.0 * kpop
 
         if nm == "Stair":
-            sup["electrics"] = 5.5   # charged Ancient energy cells from sealed tunnel
-            sup["relics"] = 2.2      # uncorroded tunnel artifacts
-            sup["nickel"] = 4.5      # preserved alloys
-            sup["food"] = 10.0       # oasis dates only; imports food!
+            sup["energy-cells"] = 5.5  # charged Ancient energy cells from sealed Catch tunnel
+            sup["electrics"] = 1.2     # salvaged tunnel switchgear & lamps
+            sup["relics"] = 2.2        # uncorroded tunnel artifacts
+            sup["nickel"] = 4.5        # preserved alloys
+            sup["food"] = 10.0         # oasis dates only; imports food!
+
+        if nm == "Longsong":
+            sup["energy-cells"] = 1.4  # Order vault-recovered Ancient cells
+            dem["energy-cells"] = 0.2
 
         if nm == "Nephtos":
             sup["copper"] = 48.0
@@ -682,6 +699,7 @@ def populate_supply_demand(world, setts):
             sup["scrap"] = max(sup.get("scrap", 0.0), 48.0)
             sup["lenses"] = max(sup.get("lenses", 0.0), 1.8)
             sup["scrapgoods"] = max(sup.get("scrapgoods", 0.0), 4.5)
+            sup["energy-cells"] = max(sup.get("energy-cells", 0.0), 0.5)
 
         if nm == "Port Visas":
             # LORE.md s6.2 & s6.7: burnt-out ruin sacked by Screamers where ~1,000 people keep the few working quays for Iziz;
@@ -713,11 +731,14 @@ def build_multimodal_graphs(world, setts):
     assert ring_sea_comp > 0, "Expected Ring Sea water component > 0"
     is_ring_sea = (lbl == ring_sea_comp)
 
-    # Blocked & raider-hazard polygons:
+    # Blocked, wartime & raider-hazard polygons:
     #   - Autarkic hostile raiders (0 external trade): Lizardman Rift & Screamer Country
+    #   - State of War (mutual port/land closure, naval commerce raids, smuggler/intermediary trade only): Empire of Iziz (+ Shell) <-> Vothic Kingdom
+    #   - Hostile marches (raids common, few Iziz caravans cross): Beast Riders <-> Empire of Iziz
     #   - Fraught hostile frontier (0 direct bilateral trade with Eternal State): Yeti Kingdom
-    #   - Neighbor-raiding groups (raise route danger without preventing trade):
-    #     Painted Men, Fellgangs, Lizardmen border raids (Vale of Xanadu & S Dalab/Fellgangs), Scyvoi
+    #   - Neighbor-raiding & bandit groups: Painted Men, Fellgangs, Lizardmen border raids, Scyvoi,
+    #     Vrivolci (raid Dalab & Voth), Boatmurder highwaymen (NE highways), SW Highlanders (raid neighbors except Dalab peace treaty),
+    #     Coyotemen <-> Eastern Nomads border raids, and Eastern Nomad desert-crossing caravan bandits.
     mask_valley = poly_mask(world["regs"], {"ancient's valley", "ancients valley"}, GW, GH, OW, OH)
     mask_korona = poly_mask(world["regs"], {"korona / ne"}, GW, GH, OW, OH)
     mask_lizard_poly = poly_mask(world["regs"], {"lizardmen"}, GW, GH, OW, OH)
@@ -727,6 +748,22 @@ def build_multimodal_graphs(world, setts):
     mask_fellgang_poly = poly_mask(world["regs"], {"fellgangs"}, GW, GH, OW, OH)
     mask_scyvoi_poly = poly_mask(world["regs"], {"scyvoi"}, GW, GH, OW, OH)
     mask_vale_xanadu = poly_mask(world["regs"], {"vale of xanadu"}, GW, GH, OW, OH)
+    mask_iziz_poly = poly_mask(world["regs"], {"empire of iziz"}, GW, GH, OW, OH)
+    mask_shell_poly = poly_mask(world["regs"], {"shell province"}, GW, GH, OW, OH)
+    mask_kautoa_poly = poly_mask(world["regs"], {"kautoa"}, GW, GH, OW, OH)
+    mask_voth_poly = poly_mask(world["regs"], {"vothic kingdom"}, GW, GH, OW, OH)
+    mask_dalab_poly = poly_mask(world["regs"], {"realm of dalab"}, GW, GH, OW, OH)
+    mask_vrivolci_poly = poly_mask(world["regs"], {"vrivolci"}, GW, GH, OW, OH)
+    mask_swhigh_poly = poly_mask(world["regs"], {"sw highlands"}, GW, GH, OW, OH)
+    mask_beastrider_raw = poly_mask(world["regs"], {"hyperjungle n", "savage hyperjungle"}, GW, GH, OW, OH)
+    mask_dam_ne = poly_mask(world["regs"], {"dam", "dam 2", "n semiarid"}, GW, GH, OW, OH)
+    mask_coyote_full = poly_mask(world["regs"], {"coyote kingdom", "n outlands", "s outlands"}, GW, GH, OW, OH) & (~W)
+    mask_nomad_full = poly_mask(world["regs"], {"nomad country", "e abyss", "e abysss", "e badlands"}, GW, GH, OW, OH) & (~W)
+    mask_desert_polys = poly_mask(
+        world["regs"],
+        {"nomad country", "the bowl", "the catch", "e abyss", "e abysss", "e badlands", "sedesert"},
+        GW, GH, OW, OH,
+    )
 
     yy_g, xx_g = np.mgrid[0:GH, 0:GW]
     px_g, py_g = xx_g / su, yy_g / sv
@@ -772,6 +809,38 @@ def build_multimodal_graphs(world, setts):
     # 6. Scyvoi drylands & lowland neighbor-raiding belt (League poleis, S Cut/Dilihan, N Voth/Drum/Tzunfort)
     mask_scyvoi_core = mask_scyvoi_poly & (~W)
     mask_scyvoi_halo = (ndimage.binary_dilation(mask_scyvoi_poly, iterations=5) & (~mask_scyvoi_poly) & (E < 950.0)) & (~W)
+
+    # 7. Beast Riders (hyperjungle n & savage hyperjungle: hostile to Iziz, raids common, few Iziz caravans cross)
+    kautoa_shell_safe = mask_kautoa_poly | mask_shell_poly | (py_g >= 902.0)
+    br_disks = np.zeros((GH, GW), dtype=bool)
+    for sid_br, s_br in setts.items():
+        if s_br["polity"] == "Beast Riders":
+            bi_, bj_ = int(round(s_br["px"] * su)), int(round(s_br["py"] * sv))
+            br_disks |= ((xx_g - bi_) ** 2 + (yy_g - bj_) ** 2) <= 10 ** 2
+        elif s_br["name"] in ("Kautoa", "Valapo", "Bipo", "Port Goto", "Shell", "Fort Vaklu", "Fridon", "Talia"):
+            si_k, sj_k = int(round(s_br["px"] * su)), int(round(s_br["py"] * sv))
+            kautoa_shell_safe |= ((xx_g - si_k) ** 2 + (yy_g - sj_k) ** 2) <= 4 ** 2
+    mask_beastrider_core = ((mask_beastrider_raw | br_disks) & (~kautoa_shell_safe)) & (~W)
+    mask_beastrider_halo = (ndimage.binary_dilation(mask_beastrider_core, iterations=4) & (~mask_beastrider_core)) & (~W)
+
+    # 8. Free Giants (Vrivolci) raiding Realm of Dalab & Vothic Kingdom
+    mask_vrivolci_core = mask_vrivolci_poly & (~W)
+    mask_vrivolci_halo = (ndimage.binary_dilation(mask_vrivolci_poly, iterations=6) & (~mask_vrivolci_poly)) & (~W)
+
+    # 9. Boatmurder Bandits — highwaymen on the NE highways (Dam Basin, Serai, Ardent N marches & N Semiarid trunks)
+    ne_hwy_box = (px_g >= 690.0) & (px_g <= 1195.0) & (py_g >= 350.0) & (py_g <= 525.0)
+    mask_boatmurder_bandits = (mask_dam_ne | ne_hwy_box) & (~W)
+
+    # 10. SW Highlanders (SW Highland Frogmen) raiding neighbors EXCEPT Realm of Dalab (peace treaty via Span!)
+    span_safe = ((xx_g - int(round(554 * su))) ** 2 + (yy_g - int(round(1010 * sv))) ** 2) <= 4 ** 2
+    mask_swhigh_core = (mask_swhigh_poly & (~span_safe)) & (~W)
+    mask_swhigh_halo = (
+        ndimage.binary_dilation(mask_swhigh_poly, iterations=6) & (~mask_swhigh_poly) & (~mask_dalab_poly) & (~span_safe)
+    ) & (~W)
+
+    # 11. Coyotemen <-> Eastern Nomads border raids & Eastern Nomad desert-crossing caravan bandits
+    mask_coyote_nomad_raid = ndimage.binary_dilation(mask_coyote_full, iterations=6) & ndimage.binary_dilation(mask_nomad_full, iterations=6) & (~W)
+    mask_nomad_desert_bandits = (mask_desert_polys & (RAIN < 320.0)) & (~W)
 
     # Cold/airless N Rift Rim & SW Highlands barrier (severs Tallwalls <-> Erehwon & N Rift-rim grid shortcuts west of Stair;
     # the once-a-year Annual Great Caravan traverses the North Rift Bench via explicit SPECIAL_CORRIDORS)
@@ -918,14 +987,14 @@ def build_multimodal_graphs(world, setts):
         ("Span Basin Tunnel", 477, 1108, 554, 1010, 240, 185.0, 155.0),
         ("Inner Wall Karst Tunnel (Drum-Cascade)", 673, 932, 568, 841, 275, 445.0, 250.0),
         ("Verge 16-Hairpin Scarp", 1240, 960, 1268, 949, 60, 115.0, 75.0),
-        # Bowl solar-furnace arcology Parabola & Godsgate way (no Arcbeam-Stair tunnel per ANCIENT-NETWORK.md s8.8-s8.14)
-        ("Bowl Solar Road (Arcbeam-Parabola)", 1016, 1058, 970, 1186, 308, 255.0, 195.0),
-        ("Izani Bowl Spur (Mantis-Parabola)", 1113, 1164, 970, 1186, 315, 265.0, 202.0),
-        ("Godsgate Way N (Parabola-Bab al-Hawa)", 970, 1186, 1028, 1246, 175, 205.0, 148.0),
-        ("Godsgate & Bab al-Hawa (Mantis-Godsgate)", 1113, 1164, 1028, 1246, 235, 275.0, 195.0),
-        ("Catch North Oases (Godsgate-Arfwai)", 1028, 1246, 1038, 1324, 172, 205.0, 148.0),
-        ("Catch Mid Oasis (Arfwai-Stair)", 1038, 1324, 1106, 1442, 278, 325.0, 232.0),
-        ("Dasri Bowl-Catch Oasis Trail", 1219, 1148, 1038, 1324, 480, 575.0, 405.0),
+        # Bowl solar-furnace arcology Parabola & Godsgate way (Eastern Nomad desert-bandit risk on arid Bowl/Catch crossings)
+        ("Bowl Solar Road (Arcbeam-Parabola)", 1016, 1058, 970, 1186, 308, 295.0, 226.0),
+        ("Izani Bowl Spur (Mantis-Parabola)", 1113, 1164, 970, 1186, 315, 308.0, 236.0),
+        ("Godsgate Way N (Parabola-Bab al-Hawa)", 970, 1186, 1028, 1246, 175, 238.0, 174.0),
+        ("Godsgate & Bab al-Hawa (Mantis-Godsgate)", 1113, 1164, 1028, 1246, 235, 320.0, 228.0),
+        ("Catch North Oases (Godsgate-Arfwai)", 1028, 1246, 1038, 1324, 172, 240.0, 175.0),
+        ("Catch Mid Oasis (Arfwai-Stair)", 1038, 1324, 1106, 1442, 278, 382.0, 274.0),
+        ("Dasri Bowl-Catch Oasis Trail", 1219, 1148, 1038, 1324, 480, 675.0, 480.0),
         # Three Catch-Xanadu crossings (ANCIENT-NETWORK.md s8.16): The Twins, White Gills, & Theodiga-Stair dark dead bore (no trains)
         ("The Twins Lava-Tube & Steam Pass", 1106, 1442, 1042, 1525, 215, 290.0, 192.0),
         ("Twins-Strongbow Descent", 1042, 1525, 1001, 1596, 165, 220.0, 148.0),
@@ -951,14 +1020,14 @@ def build_multimodal_graphs(world, setts):
         ("Yeti Winter Pycrete Road (Qoold Lheek-Leng)", 410, 506, 490, 554, 185, 290.0, 185.0),
         ("Yeti North Rim Trail W (Leng-West Dam)", 490, 554, 575, 475, 215, 255.0, 185.0),
         ("Yeti North Rim Trail Mid (West Dam-Mid Dam)", 575, 475, 665, 435, 195, 220.0, 160.0),
-        ("Yeti North Rim Trail E (Mid Dam-Boatmurder)", 665, 435, 766, 404, 212, 235.0, 170.0),
+        ("Yeti North Rim Trail E (Mid Dam-Boatmurder)", 665, 435, 766, 404, 212, 285.0, 208.0),
         ("Outland Gate & Hau-Gel Trough", 1288, 220, 1368, 272, 195, 180.0, 152.0),
         ("Hau-Gel Narrows to The Gate", 1368, 272, 1438, 326, 175, 160.0, 138.0),
         ("Tierhound Seed-Law Gate (Gate-Gate Tarn)", 1438, 326, 1544, 474, 365, 380.0, 310.0),
         ("SW Spillway & Arachnoid Gorge (Spider Lake-Ham-Tsek)", 1288, 220, 1055, 219, 466, 510.0, 370.0),
         ("Korona Guided Silk River (Ham-Tsek-K6-K1)", 1055, 219, 1006, 340, 265, 295.0, 215.0),
         ("Korona Ring Trail (K6-K1)", 1006, 340, 952, 423, 198, 220.0, 162.0),
-        ("Korona West Descent (K1-Serai)", 952, 423, 826, 478, 275, 320.0, 245.0),
+        ("Korona West Descent (K1-Serai)", 952, 423, 826, 478, 275, 385.0, 298.0),
         ("God's Road North (Pinnacle-Ria)", 1018, 678, 1165, 395, 630, 790.0, 540.0),
         ("God's Road Upper (Ria-Spider Lake)", 1165, 395, 1288, 220, 430, 460.0, 315.0),
         ("Outlands Rim to Great Chasm", 1654, 701, 1685, 785, 180, 215.0, 152.0),
@@ -980,8 +1049,10 @@ def build_multimodal_graphs(world, setts):
 
     idx = np.arange(N_CELL).reshape(GH, GW)
 
-    def make_csr(sea_mult, riv_mult, road_scale, trail_mult, port_fee, use_bulk, iziz_mode=False):
+    def make_csr(sea_mult, riv_mult, road_scale, trail_mult, port_fee, use_bulk, regime="std"):
         rows, cols, costs = [], [], []
+        is_iziz_reg = regime in ("iziz", "iziz_visas")
+        is_voth_reg = regime == "voth"
         for dj, di in ((0, 1), (1, 0), (1, 1), (1, -1)):
             a = idx[max(0, -dj):GH - max(0, dj), max(0, -di):GW - max(0, di)].ravel()
             b = idx[max(0, dj):GH + min(0, dj) or None, max(0, di):GW + min(0, di) or None].ravel()
@@ -1019,11 +1090,19 @@ def build_multimodal_graphs(world, setts):
             c_land = np.where(liz, c_land * (9.5 if use_bulk else 8.2), c_land)
             scr = mask_screamer_hostile.flat[a] | mask_screamer_hostile.flat[b]
             c_land = np.where(scr, c_land * (8.5 if use_bulk else 7.5), c_land)
-            if not iziz_mode:
+            if regime != "iziz_visas":
                 vis_un = mask_visas_unescorted.flat[a] | mask_visas_unescorted.flat[b]
                 c_land = np.where(vis_un, c_land * (5.2 if use_bulk else 4.6), c_land)
 
-            # Neighbor-raiding hazard surcharges (raise danger & shift flows without blocking trade)
+            # Wartime land border blocks (Iziz <-> Voth in a state of war)
+            if is_iziz_reg:
+                voth_blk = mask_voth_poly.flat[a] | mask_voth_poly.flat[b]
+                c_land = np.where(voth_blk, c_land * 9.5, c_land)
+            elif is_voth_reg:
+                iz_blk = mask_iziz_poly.flat[a] | mask_iziz_poly.flat[b] | mask_shell_poly.flat[a] | mask_shell_poly.flat[b]
+                c_land = np.where(iz_blk, c_land * 9.5, c_land)
+
+            # Neighbor-raiding & bandit hazard surcharges (raise danger & shift flows without blocking trade)
             yeti_r = mask_yeti_raid.flat[a] | mask_yeti_raid.flat[b]
             c_land = np.where(yeti_r, c_land * (2.15 if use_bulk else 1.85), c_land)
 
@@ -1046,6 +1125,38 @@ def build_multimodal_graphs(world, setts):
             scy_h = (mask_scyvoi_halo.flat[a] | mask_scyvoi_halo.flat[b]) & (~scy_c)
             c_land = np.where(scy_c, c_land * (1.75 if use_bulk else 1.55), c_land)
             c_land = np.where(scy_h, c_land * (1.38 if use_bulk else 1.28), c_land)
+
+            # Beast Riders: hostile to Iziz (raids common — few Iziz caravans cross their territory)
+            br_c = mask_beastrider_core.flat[a] | mask_beastrider_core.flat[b]
+            br_h = (mask_beastrider_halo.flat[a] | mask_beastrider_halo.flat[b]) & (~br_c)
+            if is_iziz_reg:
+                c_land = np.where(br_c, c_land * (5.6 if use_bulk else 4.8), c_land)
+            else:
+                c_land = np.where(br_c, c_land * (1.35 if use_bulk else 1.28), c_land)
+            c_land = np.where(br_h, c_land * (1.42 if use_bulk else 1.32), c_land)
+
+            # Vrivolci Giants raiding Dalab & Voth
+            vr_c = mask_vrivolci_core.flat[a] | mask_vrivolci_core.flat[b]
+            vr_h = (mask_vrivolci_halo.flat[a] | mask_vrivolci_halo.flat[b]) & (~vr_c)
+            c_land = np.where(vr_c, c_land * (1.75 if use_bulk else 1.58), c_land)
+            c_land = np.where(vr_h, c_land * (1.38 if use_bulk else 1.30), c_land)
+
+            # Boatmurder highwaymen ambushing the NE highways
+            bm_b = mask_boatmurder_bandits.flat[a] | mask_boatmurder_bandits.flat[b]
+            c_land = np.where(bm_b & has_road, c_land * (1.62 if use_bulk else 1.72), c_land)
+            c_land = np.where(bm_b & (~has_road), c_land * (1.35 if use_bulk else 1.40), c_land)
+
+            # SW Highlanders raiding neighbors EXCEPT Realm of Dalab (peace treaty)
+            swh_c = mask_swhigh_core.flat[a] | mask_swhigh_core.flat[b]
+            swh_h = (mask_swhigh_halo.flat[a] | mask_swhigh_halo.flat[b]) & (~swh_c)
+            c_land = np.where(swh_c, c_land * (1.72 if use_bulk else 1.55), c_land)
+            c_land = np.where(swh_h, c_land * (1.42 if use_bulk else 1.32), c_land)
+
+            # Coyotemen <-> Eastern Nomads border raids & Eastern Nomad desert-crossing caravan bandits
+            cn_r = mask_coyote_nomad_raid.flat[a] | mask_coyote_nomad_raid.flat[b]
+            c_land = np.where(cn_r, c_land * (1.42 if use_bulk else 1.35), c_land)
+            nd_b = mask_nomad_desert_bandits.flat[a] | mask_nomad_desert_bandits.flat[b]
+            c_land = np.where(nd_b, c_land * (1.38 if use_bulk else 1.42), c_land)
 
             # Altitude hypoxia, cold/airless N Rift Rim barrier (Tallwalls-Erehwon impassable), & S Rift Rim unescorted block
             emax = np.maximum(ea, eb)
@@ -1074,6 +1185,10 @@ def build_multimodal_graphs(world, setts):
                 cw = np.full(aw.shape, d_km * sea_mult, dtype=np.float64)
                 liz_w = mask_lizard_hostile.flat[a[nwa]] | mask_lizard_hostile.flat[b[nwa]]
                 cw = np.where(liz_w, cw * 10.0, cw)
+                if is_iziz_reg or is_voth_reg:
+                    # Iziz & Voth raid each other's Ring Sea shipping (convoy / privateer risk surcharge)
+                    rs_w = is_ring_sea.flat[a[nwa]] | is_ring_sea.flat[b[nwa]]
+                    cw = np.where(rs_w, cw * 1.18, cw)
                 rows += [aw, bw]
                 cols += [bw, aw]
                 costs += [cw, cw]
@@ -1081,22 +1196,33 @@ def build_multimodal_graphs(world, setts):
         # Port break-of-bulk transfer edges (Layer 0 <-> Layer 1 ONLY at ports!)
         for c_land_idx, c_wat_idx, p_name, p_pol in port_links:
             pf = port_fee
-            if p_name == "Port Visas":
+            if is_iziz_reg and p_pol == "Vothic Kingdom":
+                pf = np.inf  # Enemy ports closed during Iziz-Voth war
+            elif is_voth_reg and p_pol in ("Empire of Iziz", "Shell Province"):
+                pf = np.inf  # Enemy ports closed during Iziz-Voth war
+            elif p_name == "Port Visas":
                 # Ruined quays kept operational for Iziz convoys; non-Iziz ships avoid ruined Screamer-fringe quays for Hykkousoi ports!
-                pf = (port_fee - 2.0) if iziz_mode else 165.0
-            elif iziz_mode and p_pol.startswith("League:") and p_name != "Nephtos":
+                pf = (port_fee - 2.0) if regime == "iziz_visas" else ((port_fee + 8.0) if regime == "iziz" else 165.0)
+            elif regime == "iziz_visas" and p_pol.startswith("League:") and p_name != "Nephtos":
                 # LORE.md s6.2 & s6.16: Hykkousoi League wary of Izani imperial supply/reunification columns crossing League ports to Dilihan
                 pf = port_fee + 175.0
+            elif is_voth_reg and p_pol.startswith("League:"):
+                # Voth and Hykkousoi are commercial rivals & discourage each other's shipping
+                pf = port_fee + 58.0
+            if not np.isfinite(pf):
+                continue
             rows += [np.array([c_land_idx, c_wat_idx])]
             cols += [np.array([c_wat_idx, c_land_idx])]
             costs += [np.array([pf, pf], dtype=np.float64)]
 
-        # Engineered tunnels, lifts & pass corridors on Layer 0 (+ Iziz-guarded Visas caravan on Iziz graph)
-        corridor_list = SPECIAL_CORRIDORS + (IZIZ_VISAS_CORRIDORS if iziz_mode else [])
-        for _, x0, y0, x1, y1, _, b_eq, c_eq in corridor_list:
+        # Engineered tunnels, lifts & pass corridors on Layer 0 (+ Iziz-guarded Visas caravan on iziz_visas graph)
+        corridor_list = SPECIAL_CORRIDORS + (IZIZ_VISAS_CORRIDORS if regime == "iziz_visas" else [])
+        for cname, x0, y0, x1, y1, _, b_eq, c_eq in corridor_list:
             eq = b_eq if use_bulk else c_eq
             if not np.isfinite(eq):
                 continue
+            if is_iziz_reg and cname == "God's Road North (Pinnacle-Ria)":
+                eq *= 3.8  # Originates at Beast Rider capital Pinnacle Rock — hostile raids on Iziz caravans!
             u = cell_of(*snap_to_land(world, x0, y0))
             v = cell_of(*snap_to_land(world, x1, y1))
             rows += [np.array([u, v])]
@@ -1108,30 +1234,48 @@ def build_multimodal_graphs(world, setts):
         v_all = np.concatenate(costs)
         return coo_matrix((v_all, (r_all, c_all)), shape=(2 * N_CELL, 2 * N_CELL)).tocsr()
 
-    G_bulk = make_csr(sea_mult=0.16, riv_mult=0.34, road_scale=1.15, trail_mult=1.35, port_fee=26.0, use_bulk=True, iziz_mode=False)
-    G_comp = make_csr(sea_mult=0.28, riv_mult=0.45, road_scale=1.00, trail_mult=1.00, port_fee=22.0, use_bulk=False, iziz_mode=False)
-    G_iziz_bulk = make_csr(sea_mult=0.16, riv_mult=0.34, road_scale=1.15, trail_mult=1.35, port_fee=26.0, use_bulk=True, iziz_mode=True)
-    G_iziz_comp = make_csr(sea_mult=0.28, riv_mult=0.45, road_scale=1.00, trail_mult=1.00, port_fee=22.0, use_bulk=False, iziz_mode=True)
+    G_bulk = make_csr(sea_mult=0.16, riv_mult=0.34, road_scale=1.15, trail_mult=1.35, port_fee=26.0, use_bulk=True, regime="std")
+    G_comp = make_csr(sea_mult=0.28, riv_mult=0.45, road_scale=1.00, trail_mult=1.00, port_fee=22.0, use_bulk=False, regime="std")
+    G_iziz_bulk = make_csr(sea_mult=0.16, riv_mult=0.34, road_scale=1.15, trail_mult=1.35, port_fee=26.0, use_bulk=True, regime="iziz")
+    G_iziz_comp = make_csr(sea_mult=0.28, riv_mult=0.45, road_scale=1.00, trail_mult=1.00, port_fee=22.0, use_bulk=False, regime="iziz")
+    G_izv_bulk = make_csr(sea_mult=0.16, riv_mult=0.34, road_scale=1.15, trail_mult=1.35, port_fee=26.0, use_bulk=True, regime="iziz_visas")
+    G_izv_comp = make_csr(sea_mult=0.28, riv_mult=0.45, road_scale=1.00, trail_mult=1.00, port_fee=22.0, use_bulk=False, regime="iziz_visas")
+    G_voth_bulk = make_csr(sea_mult=0.16, riv_mult=0.34, road_scale=1.15, trail_mult=1.35, port_fee=26.0, use_bulk=True, regime="voth")
+    G_voth_comp = make_csr(sea_mult=0.28, riv_mult=0.45, road_scale=1.00, trail_mult=1.00, port_fee=22.0, use_bulk=False, regime="voth")
 
     sids = sorted(setts.keys())
     src_cells = [setts[sid]["cell"] for sid in sids]
     iziz_sids = [sid for sid in sids if setts[sid]["polity"] in ("Empire of Iziz", "Shell Province")]
     iziz_cells = [setts[sid]["cell"] for sid in iziz_sids]
+    voth_sids = [sid for sid in sids if setts[sid]["polity"] == "Vothic Kingdom"]
+    voth_cells = [setts[sid]["cell"] for sid in voth_sids]
 
-    print(f"Running multimodal Dijkstra for {len(sids)} settlements (+ {len(iziz_sids)} Iziz-guarded Visas sources) across {2*N_CELL:,} graph nodes...")
+    print(
+        f"Running multimodal Dijkstra for {len(sids)} settlements "
+        f"(+ {len(iziz_sids)} Iziz wartime/Visas & {len(voth_sids)} Voth wartime sources) across {2*N_CELL:,} graph nodes..."
+    )
     dist_bulk, pred_bulk = dijkstra(G_bulk, directed=False, indices=src_cells, return_predecessors=True)
     dist_comp, pred_comp = dijkstra(G_comp, directed=False, indices=src_cells, return_predecessors=True)
     dist_iziz_bulk, pred_iziz_bulk = dijkstra(G_iziz_bulk, directed=False, indices=iziz_cells, return_predecessors=True)
     dist_iziz_comp, pred_iziz_comp = dijkstra(G_iziz_comp, directed=False, indices=iziz_cells, return_predecessors=True)
+    dist_izv_bulk, pred_izv_bulk = dijkstra(G_izv_bulk, directed=False, indices=iziz_cells, return_predecessors=True)
+    dist_izv_comp, pred_izv_comp = dijkstra(G_izv_comp, directed=False, indices=iziz_cells, return_predecessors=True)
+    dist_voth_bulk, pred_voth_bulk = dijkstra(G_voth_bulk, directed=False, indices=voth_cells, return_predecessors=True)
+    dist_voth_comp, pred_voth_comp = dijkstra(G_voth_comp, directed=False, indices=voth_cells, return_predecessors=True)
 
     return {
         "N_CELL": N_CELL, "GW": GW, "GH": GH,
         "sids": sids, "sid_to_idx": {sid: i for i, sid in enumerate(sids)},
         "iziz_sids": iziz_sids, "iziz_sid_to_idx": {sid: i for i, sid in enumerate(iziz_sids)},
+        "voth_sids": voth_sids, "voth_sid_to_idx": {sid: i for i, sid in enumerate(voth_sids)},
         "dist_bulk": dist_bulk, "pred_bulk": pred_bulk,
         "dist_comp": dist_comp, "pred_comp": pred_comp,
         "dist_iziz_bulk": dist_iziz_bulk, "pred_iziz_bulk": pred_iziz_bulk,
         "dist_iziz_comp": dist_iziz_comp, "pred_iziz_comp": pred_iziz_comp,
+        "dist_izv_bulk": dist_izv_bulk, "pred_izv_bulk": pred_izv_bulk,
+        "dist_izv_comp": dist_izv_comp, "pred_izv_comp": pred_izv_comp,
+        "dist_voth_bulk": dist_voth_bulk, "pred_voth_bulk": pred_voth_bulk,
+        "dist_voth_comp": dist_voth_comp, "pred_voth_comp": pred_voth_comp,
         "is_ring_sea": is_ring_sea, "river_nav": river_nav, "canal_nav": canal_nav,
         "road_mult": road_mult, "special_corridors": SPECIAL_CORRIDORS + IZIZ_VISAS_CORRIDORS,
         "mask_lizard_hostile": mask_lizard_hostile, "mask_lizard_poly": mask_lizard_poly,
@@ -1141,6 +1285,12 @@ def build_multimodal_graphs(world, setts):
         "mask_painted_poly": mask_painted_poly, "mask_painted_raid": mask_painted_core | mask_painted_halo,
         "mask_fellgang_poly": mask_fellgang_poly, "mask_fellgang_raid": mask_fellgang_core | mask_fellgang_halo,
         "mask_scyvoi_poly": mask_scyvoi_poly, "mask_scyvoi_raid": mask_scyvoi_core | mask_scyvoi_halo,
+        "mask_beastrider_core": mask_beastrider_core, "mask_beastrider_raid": mask_beastrider_core | mask_beastrider_halo,
+        "mask_vrivolci_poly": mask_vrivolci_poly, "mask_vrivolci_raid": mask_vrivolci_core | mask_vrivolci_halo,
+        "mask_boatmurder_bandits": mask_boatmurder_bandits,
+        "mask_swhigh_poly": mask_swhigh_poly, "mask_swhigh_raid": mask_swhigh_core | mask_swhigh_halo,
+        "mask_coyote_nomad_raid": mask_coyote_nomad_raid,
+        "mask_nomad_desert_bandits": mask_nomad_desert_bandits,
     }
 
 
@@ -1149,6 +1299,7 @@ def build_multimodal_graphs(world, setts):
 # ---------------------------------------------------------------------------
 IZIZ_IMPERIAL_POLS = {"Empire of Iziz", "Shell Province"}
 CUT_VISAS_PARTNER_POLS = {"Dilihan Province", "Jimjam", "Dam Basin Salvagers", "Free Clans"}
+BELLIGERENT_NAVAL_POLS = {"Empire of Iziz", "Shell Province", "Vothic Kingdom"}
 
 
 def uses_iziz_visas_regime(pol_a, pol_b):
@@ -1157,18 +1308,45 @@ def uses_iziz_visas_regime(pol_a, pol_b):
     )
 
 
+def is_iziz_voth_war_pair(pol_a, pol_b):
+    return (pol_a in IZIZ_IMPERIAL_POLS and pol_b == "Vothic Kingdom") or (
+        pol_b in IZIZ_IMPERIAL_POLS and pol_a == "Vothic Kingdom"
+    )
+
+
+def pick_pair_regime(pol_a, pol_b):
+    if is_iziz_voth_war_pair(pol_a, pol_b):
+        return "war_intermediary"
+    if uses_iziz_visas_regime(pol_a, pol_b):
+        return "iziz_visas"
+    if pol_a in IZIZ_IMPERIAL_POLS or pol_b in IZIZ_IMPERIAL_POLS:
+        return "iziz"
+    if pol_a == "Vothic Kingdom" or pol_b == "Vothic Kingdom":
+        return "voth"
+    return "std"
+
+
 def analyze_pair_path(world, graph, setts, sid_src, sid_dst, tier):
     N_CELL, GW = graph["N_CELL"], graph["GW"]
     OW, OH, GH = world["OW"], world["OH"], world["GH"]
     su, sv = (GW - 1) / (OW - 1), (GH - 1) / (OH - 1)
 
     pol_s, pol_d = setts[sid_src]["polity"], setts[sid_dst]["polity"]
-    iz_mode = uses_iziz_visas_regime(pol_s, pol_d)
+    reg = pick_pair_regime(pol_s, pol_d)
 
     u_src = setts[sid_src]["cell"]
     u_dst = setts[sid_dst]["cell"]
 
-    if iz_mode:
+    if reg == "iziz_visas":
+        if sid_src in graph["iziz_sid_to_idx"]:
+            iz_i = graph["iziz_sid_to_idx"][sid_src]
+            pred = graph["pred_izv_bulk"][iz_i] if tier == "bulk" else graph["pred_izv_comp"][iz_i]
+            root_cell, leaf_cell, need_rev = u_src, u_dst, True
+        else:
+            iz_j = graph["iziz_sid_to_idx"][sid_dst]
+            pred = graph["pred_izv_bulk"][iz_j] if tier == "bulk" else graph["pred_izv_comp"][iz_j]
+            root_cell, leaf_cell, need_rev = u_dst, u_src, False
+    elif reg == "iziz":
         if sid_src in graph["iziz_sid_to_idx"]:
             iz_i = graph["iziz_sid_to_idx"][sid_src]
             pred = graph["pred_iziz_bulk"][iz_i] if tier == "bulk" else graph["pred_iziz_comp"][iz_i]
@@ -1176,6 +1354,15 @@ def analyze_pair_path(world, graph, setts, sid_src, sid_dst, tier):
         else:
             iz_j = graph["iziz_sid_to_idx"][sid_dst]
             pred = graph["pred_iziz_bulk"][iz_j] if tier == "bulk" else graph["pred_iziz_comp"][iz_j]
+            root_cell, leaf_cell, need_rev = u_dst, u_src, False
+    elif reg == "voth":
+        if sid_src in graph["voth_sid_to_idx"]:
+            vt_i = graph["voth_sid_to_idx"][sid_src]
+            pred = graph["pred_voth_bulk"][vt_i] if tier == "bulk" else graph["pred_voth_comp"][vt_i]
+            root_cell, leaf_cell, need_rev = u_src, u_dst, True
+        else:
+            vt_j = graph["voth_sid_to_idx"][sid_dst]
+            pred = graph["pred_voth_bulk"][vt_j] if tier == "bulk" else graph["pred_voth_comp"][vt_j]
             root_cell, leaf_cell, need_rev = u_dst, u_src, False
     else:
         i_src = graph["sid_to_idx"][sid_src]
@@ -1219,6 +1406,13 @@ def analyze_pair_path(world, graph, setts, sid_src, sid_dst, tier):
     painted_km = 0.0
     fellgang_km = 0.0
     scyvoi_km = 0.0
+    beastrider_km = 0.0
+    beastrider_core_km = 0.0
+    vrivolci_km = 0.0
+    boatmurder_km = 0.0
+    swhigh_km = 0.0
+    coyote_nomad_km = 0.0
+    desert_bandit_km = 0.0
     min_pirate_dist_km = 9999.0
     noa_i, noa_j = 896 * su, 866 * sv
 
@@ -1256,8 +1450,14 @@ def analyze_pair_path(world, graph, setts, sid_src, sid_dst, tier):
                 fellgang_km += rkm
             if "Yeti North Rim" in cname or "Yeti Winter Pycrete" in cname:
                 yeti_km += rkm
+            if "Boatmurder" in cname or "Serai" in cname:
+                boatmurder_km += rkm
+            if "Bowl" in cname or "Godsgate" in cname or "Catch" in cname:
+                desert_bandit_km += rkm
             if "God's Road North" in cname:
                 painted_km += 80.0
+                beastrider_core_km += 120.0
+                beastrider_km += 120.0
             poly_51.append([round(px_b, 1), round(py_b, 1)])
             seg_modes.append("corridor")
             continue
@@ -1289,6 +1489,20 @@ def analyze_pair_path(world, graph, setts, sid_src, sid_dst, tier):
                 fellgang_km += step_km
             if graph["mask_scyvoi_raid"][aj, ai] or graph["mask_scyvoi_raid"][bj, bi]:
                 scyvoi_km += step_km
+            if graph["mask_beastrider_core"][aj, ai] or graph["mask_beastrider_core"][bj, bi]:
+                beastrider_core_km += step_km
+            if graph["mask_beastrider_raid"][aj, ai] or graph["mask_beastrider_raid"][bj, bi]:
+                beastrider_km += step_km
+            if graph["mask_vrivolci_raid"][aj, ai] or graph["mask_vrivolci_raid"][bj, bi]:
+                vrivolci_km += step_km
+            if graph["mask_boatmurder_bandits"][aj, ai] or graph["mask_boatmurder_bandits"][bj, bi]:
+                boatmurder_km += step_km
+            if graph["mask_swhigh_raid"][aj, ai] or graph["mask_swhigh_raid"][bj, bi]:
+                swhigh_km += step_km
+            if graph["mask_coyote_nomad_raid"][aj, ai] or graph["mask_coyote_nomad_raid"][bj, bi]:
+                coyote_nomad_km += step_km
+            if graph["mask_nomad_desert_bandits"][aj, ai] or graph["mask_nomad_desert_bandits"][bj, bi]:
+                desert_bandit_km += step_km
             if (graph["river_nav"][aj, ai] and graph["river_nav"][bj, bi]) or (
                 graph["canal_nav"][aj, ai] and graph["canal_nav"][bj, bi]
             ):
@@ -1306,10 +1520,10 @@ def analyze_pair_path(world, graph, setts, sid_src, sid_dst, tier):
 
     # Detect key land gateway settlements passed within 16 km (4 cells)
     GATEWAY_NAMES = [
-        "Dilihan", "Port Visas", "Jimjam", "Talia", "Verge", "Parabola", "Stair", "Strongbow",
+        "Dilihan", "Port Visas", "Ardent", "Jimjam", "Talia", "Verge", "Parabola", "Stair", "Strongbow",
         "Roketstad", "Cascade", "Span", "Ledge", "The Gate", "The Sill (Sam-Lok)",
         "Spider Lake Weirs", "Hook", "Port Tobin", "Port Goto", "Ys", "Tethis",
-        "Trigon", "Almua", "Zey'danin", "Kautoa", "Farport", "Boatmurder",
+        "Trigon", "Almua", "Zey'danin", "Dhelv", "Kautoa", "Farport", "Boatmurder",
     ]
     gw_cells = [(nm, setts[sid]["cell"] % N_CELL) for sid, s in setts.items() for nm in [s["name"]] if nm in GATEWAY_NAMES]
     gateways_hit = []
@@ -1324,13 +1538,19 @@ def analyze_pair_path(world, graph, setts, sid_src, sid_dst, tier):
                 break
 
     total_km = max(1.0, sea_km + riv_km + hwy_km + trail_km + spec_km)
-    # Pirate capture rate on Ring Sea shipping: 3.5% baseline up to 7.5% when passing near Noa's Regret
+    # Pirate capture rate on Ring Sea shipping: 2.5% baseline up to 7.5% near Noa's Regret,
+    # PLUS 4.8% wartime naval commerce raiding when Empire of Iziz / Shell Province or Vothic Kingdom ships sail the Ring Sea!
     pirate_rate = 0.0
+    naval_war_rate = 0.0
     if ring_sea_km >= 24.0:
         prox = math.exp(-max(0.0, min_pirate_dist_km - 40.0) / 260.0)
         pirate_rate = min(0.075, 0.025 + 0.050 * prox)
+        if pol_s in BELLIGERENT_NAVAL_POLS or pol_d in BELLIGERENT_NAVAL_POLS:
+            naval_war_rate = 0.048
 
     raider_tags = []
+    if naval_war_rate > 0:
+        raider_tags.append("Iziz-Voth Naval War (Shipping Raids)")
     if any("Iziz-Guarded Visas Caravan" in c for c in corridors_used):
         raider_tags.append("ARMED IZIZ GUARD ESCORT (Screamer Fringe)")
     elif screamer_km > 12:
@@ -1339,6 +1559,18 @@ def analyze_pair_path(world, graph, setts, sid_src, sid_dst, tier):
         raider_tags.append(f"Hostile Rift Floor ({round(lizard_km)} km)")
     elif lizard_raid_km >= 28:
         raider_tags.append("Lizardman Raid Hazard")
+    if boatmurder_km >= 24:
+        raider_tags.append("Boatmurder Highwaymen (NE Highways)")
+    if beastrider_km >= 20:
+        raider_tags.append("Beast Rider Raids")
+    if vrivolci_km >= 20:
+        raider_tags.append("Vrivolci Giant Raids")
+    if swhigh_km >= 20 and "Realm of Dalab" not in (pol_s, pol_d):
+        raider_tags.append("SW Highlander Raids")
+    if desert_bandit_km >= 32:
+        raider_tags.append("Eastern Nomad Desert Bandits")
+    if coyote_nomad_km >= 20:
+        raider_tags.append("Coyote-Nomad Border Raids")
     if fellgang_km >= 24:
         raider_tags.append("Fellgang Raider Risk")
     if scyvoi_km >= 24:
@@ -1363,11 +1595,19 @@ def analyze_pair_path(world, graph, setts, sid_src, sid_dst, tier):
         "painted_km": round(painted_km),
         "fellgang_km": round(fellgang_km),
         "scyvoi_km": round(scyvoi_km),
+        "beastrider_km": round(beastrider_km),
+        "beastrider_core_km": round(beastrider_core_km),
+        "vrivolci_km": round(vrivolci_km),
+        "boatmurder_km": round(boatmurder_km),
+        "swhigh_km": round(swhigh_km),
+        "coyote_nomad_km": round(coyote_nomad_km),
+        "desert_bandit_km": round(desert_bandit_km),
         "raider_tags": raider_tags,
         "ports": ports_used,
         "corridors": corridors_used,
         "gateways": gateways_hit,
         "pirate_rate": pirate_rate,
+        "naval_war_rate": naval_war_rate,
         "poly_51": poly_51[::max(1, len(poly_51) // 45)] + ([poly_51[-1]] if poly_51 else []),
         "seg_modes": seg_modes,
         "full_poly": poly_51,
@@ -1384,7 +1624,11 @@ def solve_trade(world, setts, graph):
     sids = graph["sids"]
     sid_to_idx = graph["sid_to_idx"]
     iziz_sid_to_idx = graph["iziz_sid_to_idx"]
+    voth_sid_to_idx = graph["voth_sid_to_idx"]
     pirate_sid = next(sid for sid, s in setts.items() if s["name"] == "Noa's Regret")
+    dhelv_sid = next(sid for sid, s in setts.items() if s["name"] == "Dhelv")
+    kautoa_sid = next(sid for sid, s in setts.items() if s["name"] == "Kautoa")
+    neutral_intermediaries = [dhelv_sid, kautoa_sid]
 
     # Group settlements by polity
     pol_members = defaultdict(list)
@@ -1393,25 +1637,101 @@ def solve_trade(world, setts, graph):
 
     path_cache = {}
 
-    def fast_eff(sid_a, sid_b, tier):
+    def single_leg_eff(sid_a, sid_b, is_bulk):
         pol_a, pol_b = setts[sid_a]["polity"], setts[sid_b]["polity"]
-        is_bulk = tier == "bulk"
-        if uses_iziz_visas_regime(pol_a, pol_b):
+        reg = pick_pair_regime(pol_a, pol_b)
+        if reg == "iziz_visas":
+            if sid_a in iziz_sid_to_idx:
+                dmat = graph["dist_izv_bulk"] if is_bulk else graph["dist_izv_comp"]
+                return float(dmat[iziz_sid_to_idx[sid_a], setts[sid_b]["cell"]])
+            dmat = graph["dist_izv_bulk"] if is_bulk else graph["dist_izv_comp"]
+            return float(dmat[iziz_sid_to_idx[sid_b], setts[sid_a]["cell"]])
+        if reg == "iziz":
             if sid_a in iziz_sid_to_idx:
                 dmat = graph["dist_iziz_bulk"] if is_bulk else graph["dist_iziz_comp"]
                 return float(dmat[iziz_sid_to_idx[sid_a], setts[sid_b]["cell"]])
             dmat = graph["dist_iziz_bulk"] if is_bulk else graph["dist_iziz_comp"]
             return float(dmat[iziz_sid_to_idx[sid_b], setts[sid_a]["cell"]])
+        if reg == "voth":
+            if sid_a in voth_sid_to_idx:
+                dmat = graph["dist_voth_bulk"] if is_bulk else graph["dist_voth_comp"]
+                return float(dmat[voth_sid_to_idx[sid_a], setts[sid_b]["cell"]])
+            dmat = graph["dist_voth_bulk"] if is_bulk else graph["dist_voth_comp"]
+            return float(dmat[voth_sid_to_idx[sid_b], setts[sid_a]["cell"]])
         ia = sid_to_idx[sid_a]
         dmat = graph["dist_bulk"] if is_bulk else graph["dist_comp"]
         return float(dmat[ia, setts[sid_b]["cell"]])
+
+    def best_war_intermediary(sid_a, sid_b, is_bulk):
+        best = (float("inf"), None)
+        for mid_sid in neutral_intermediaries:
+            e1 = single_leg_eff(sid_a, mid_sid, is_bulk)
+            e2 = single_leg_eff(mid_sid, sid_b, is_bulk)
+            tot = e1 + e2 + 42.0  # Smuggler / neutral intermediary transshipment & relabeling fee
+            if tot < best[0]:
+                best = (tot, mid_sid)
+        return best
+
+    def fast_eff(sid_a, sid_b, tier):
+        pol_a, pol_b = setts[sid_a]["polity"], setts[sid_b]["polity"]
+        is_bulk = tier == "bulk"
+        if is_iziz_voth_war_pair(pol_a, pol_b):
+            return best_war_intermediary(sid_a, sid_b, is_bulk)[0]
+        return single_leg_eff(sid_a, sid_b, is_bulk)
+
+    def compose_intermediary_path(sid_a, mid_sid, sid_b, tkey):
+        p1 = analyze_pair_path(world, graph, setts, sid_a, mid_sid, tkey)
+        p2 = analyze_pair_path(world, graph, setts, mid_sid, sid_b, tkey)
+        if not p1 or not p2:
+            return None
+        mid_nm = setts[mid_sid]["name"]
+        mid_pol = setts[mid_sid]["polity"]
+        ports = list(p1["ports"])
+        if mid_nm not in ports:
+            ports.append(mid_nm)
+        for p in p2["ports"]:
+            if not ports or ports[-1] != p:
+                ports.append(p)
+        corrs = list(dict.fromkeys(p1["corridors"] + p2["corridors"]))
+        gws = list(dict.fromkeys(p1["gateways"] + [mid_nm] + p2["gateways"]))
+        full_poly = p1["full_poly"] + (p2["full_poly"][1:] if len(p2["full_poly"]) > 1 else [])
+        seg_modes = p1["seg_modes"] + p2["seg_modes"]
+        comb_pirate = 1.0 - (1.0 - p1["pirate_rate"]) * (1.0 - p2["pirate_rate"])
+        comb_war = 0.065 if (p1["ring_sea_km"] + p2["ring_sea_km"]) >= 24 else 0.0
+        tag_lead = f"WARTIME SMUGGLERS / INTERMEDIARY via {mid_nm} ({mid_pol})"
+        rtags = [tag_lead] + [t for t in dict.fromkeys(p1["raider_tags"] + p2["raider_tags"]) if t != tag_lead]
+        out = {}
+        for k_num in (
+            "real_km", "sea_km", "ring_sea_km", "river_km", "highway_km", "caravan_km", "corridor_km",
+            "lizard_km", "lizard_raid_km", "screamer_km", "yeti_km", "painted_km", "fellgang_km", "scyvoi_km",
+            "beastrider_km", "beastrider_core_km", "vrivolci_km", "boatmurder_km", "swhigh_km",
+            "coyote_nomad_km", "desert_bandit_km",
+        ):
+            out[k_num] = p1[k_num] + p2[k_num]
+        out.update({
+            "raider_tags": rtags,
+            "ports": ports,
+            "corridors": corrs,
+            "gateways": gws,
+            "pirate_rate": comb_pirate,
+            "naval_war_rate": comb_war,
+            "poly_51": full_poly[::max(1, len(full_poly) // 45)] + ([full_poly[-1]] if full_poly else []),
+            "seg_modes": seg_modes,
+            "full_poly": full_poly,
+        })
+        return out
 
     def get_pair(sid_a, sid_b, tier):
         tkey = "bulk" if tier == "bulk" else "comp"
         key = (sid_a, sid_b, tkey)
         if key not in path_cache:
-            eff = fast_eff(sid_a, sid_b, tkey)
-            info = analyze_pair_path(world, graph, setts, sid_a, sid_b, tkey) if np.isfinite(eff) else None
+            pol_a, pol_b = setts[sid_a]["polity"], setts[sid_b]["polity"]
+            if is_iziz_voth_war_pair(pol_a, pol_b):
+                eff, mid_sid = best_war_intermediary(sid_a, sid_b, tkey == "bulk")
+                info = compose_intermediary_path(sid_a, mid_sid, sid_b, tkey) if (np.isfinite(eff) and mid_sid) else None
+            else:
+                eff = single_leg_eff(sid_a, sid_b, tkey == "bulk")
+                info = analyze_pair_path(world, graph, setts, sid_a, sid_b, tkey) if np.isfinite(eff) else None
             path_cache[key] = (eff, info)
         return path_cache[key]
 
@@ -1487,6 +1807,17 @@ def solve_trade(world, setts, graph):
                     if {s_pol, b_pol} == {"Yeti Kingdom", "Eternal State"}:
                         w_row.append(0.0)
                         continue
+                    # 4. Empire of Iziz (+ Shell) <-> Vothic Kingdom State of War:
+                    #    Zero war materiel or direct open bulk trade; only covert smuggler / neutral-intermediary cargoes!
+                    war_pair = is_iziz_voth_war_pair(s_pol, b_pol)
+                    if war_pair and (gid in ("arms", "rockets") or tier == "bulk"):
+                        w_row.append(0.0)
+                        continue
+                    # 5. Beast Riders <-> Empire of Iziz / Shell Province hostile (no arms exports to Beast Riders)
+                    br_iz_pair = ("Beast Riders" in (s_pol, b_pol)) and (s_pol in IZIZ_IMPERIAL_POLS or b_pol in IZIZ_IMPERIAL_POLS)
+                    if br_iz_pair and gid in ("arms", "rockets"):
+                        w_row.append(0.0)
+                        continue
                     eff_km = fast_eff(s_sid, b_sid, tier)
                     if not np.isfinite(eff_km):
                         w_row.append(0.0)
@@ -1507,6 +1838,42 @@ def solve_trade(world, setts, graph):
                             w_row.append(0.0)
                             continue
                     w = s_avail / ((eff_km + 45.0) ** alpha)
+                    # Bilateral war, hostilities, commercial rivalries & border-raider frictions:
+                    if war_pair:
+                        # Iziz <-> Voth at war: trade only via smugglers or neutral intermediaries (Dhelv / Kautoa)
+                        w *= 0.085
+                    if br_iz_pair:
+                        # Beast Riders & Iziz hostile (not quite full war, raids common)
+                        w *= 0.12
+                    if (s_pol == "Vothic Kingdom" and b_pol.startswith("League:")) or (
+                        b_pol == "Vothic Kingdom" and s_pol.startswith("League:")
+                    ):
+                        # Voth and Hykkousoi League are rivals & discourage merchants from trading with each other
+                        w *= 0.20
+                    if (s_pol == "Iron Republic" and b_pol in ("Dilihan Province", "Free Clans")) or (
+                        b_pol == "Iron Republic" and s_pol in ("Dilihan Province", "Free Clans")
+                    ):
+                        # Iron Republic and Dilihan / Ardent (Free Clans) are commercial & political rivals
+                        w *= 0.20
+                    if "Free Giants (Vrivolci)" in (s_pol, b_pol) and (
+                        "Realm of Dalab" in (s_pol, b_pol) or "Vothic Kingdom" in (s_pol, b_pol)
+                    ):
+                        # Vrivolci raid Dalab and Voth
+                        w *= 0.25
+                    if "SW Highland Frogmen" in (s_pol, b_pol):
+                        if "Realm of Dalab" in (s_pol, b_pol):
+                            # Peace treaty via Span — Dalab is SW Highlanders' primary peaceful trade partner!
+                            w *= 1.35
+                        elif any(
+                            nb in (s_pol, b_pol)
+                            for nb in ("Vothic Kingdom", "Yusar (Cybernetics)", "Iron Republic", "Shumari", "Scyvoi", "Free Giants (Vrivolci)")
+                        ):
+                            # SW Highlanders raid neighbors except Dalab
+                            w *= 0.22
+                    if {s_pol, b_pol} == {"Coyote Kingdom", "Nomad Country"}:
+                        # Coyotemen and Eastern Nomads occasionally raid each other
+                        w *= 0.45
+
                     # Once-a-year Annual Great Caravan (Nulab <-> Erehwon North Rift Bench):
                     # bulk is already blocked (inf); medium cargo faces heavy annual-convoy capacity friction!
                     _, pinfo_chk = get_pair(s_sid, b_sid, tier)
@@ -1516,6 +1883,16 @@ def solve_trade(world, setts, graph):
                     if "Yeti Kingdom" in (s_pol, b_pol) and pinfo_chk:
                         if any(ep in pinfo_chk["ports"] or ep in pinfo_chk["gateways"] for ep in ("Lux", "Fulcrum", "Bastion", "Farport")):
                             w = 0.0
+                    # Rivalry transit discouragement:
+                    # - Hykkousoi merchants avoid transiting Vothic ports to third parties
+                    if (s_pol.startswith("League:") or b_pol.startswith("League:")) and ("Vothic Kingdom" not in (s_pol, b_pol)) and pinfo_chk:
+                        if any(vp in pinfo_chk["ports"] for vp in ("Voth", "Shim", "Almua", "Zey'danin", "Torus")):
+                            w *= 0.35
+                    # - Iron Republic & Dilihan/Ardent rivals avoid transiting each other's hubs
+                    if "Iron Republic" in (s_pol, b_pol) and pinfo_chk:
+                        if any(dp in pinfo_chk["ports"] or dp in pinfo_chk["gateways"] for dp in ("Dilihan", "Port Visas", "Ardent")):
+                            if b_pol not in ("Dilihan Province", "Free Clans") and s_pol not in ("Dilihan Province", "Free Clans"):
+                                w *= 0.38
                     # Occasional tribal isolation friction for Painted Men canyon holds (TRADE-SCOPE s7.6: rare traders)
                     if "Painted Men" in (s_pol, b_pol):
                         w *= 0.45
@@ -1539,28 +1916,37 @@ def solve_trade(world, setts, graph):
                     if col_sums[j] > b_need and col_sums[j] > 0:
                         F[:, j] *= b_need / col_sums[j]
 
+            war_prize_pool = 0.0
             for i, (s_sid, _) in enumerate(sellers):
                 for j, (b_sid, _) in enumerate(buyers):
                     amt = float(F[i, j])
                     if amt <= 1e-4:
                         continue
                     eff_km, pinfo = get_pair(s_sid, b_sid, tier)
-                    # Check Ring Sea pirate interception by Noa's Regret!
+                    # Check Ring Sea pirate interception (Noa's Regret) + Iziz-Voth wartime naval commerce raiding!
                     prate = pinfo["pirate_rate"]
-                    taken = amt * prate
+                    wrate = pinfo.get("naval_war_rate", 0.0)
+                    tot_rate = min(0.18, prate + wrate)
+                    taken = amt * tot_rate
                     delivered = amt - taken
                     if taken > 1e-4:
-                        captured_pool += taken
+                        # Freebooter share + half of wartime privateer captures fenced via Noa's Regret;
+                        # remaining wartime privateer prizes auctioned via neutral Kautoa / Dhelv (Zeijani)!
+                        taken_pir = amt * prate + 0.50 * (amt * wrate)
+                        taken_mid = max(0.0, taken - taken_pir)
+                        captured_pool += taken_pir
+                        war_prize_pool += taken_mid
                         pirate_ledger[gid]["captured"] += taken
                         pirate_ledger[gid]["victims"][setts[s_sid]["polity"]] += taken
                     raw_flows.append((s_sid, b_sid, delivered, eff_km, pinfo, False))
 
-            # Pass 2: Noa's Regret fences its captured maritime prizes by ship to Ring Sea buyers!
+            # Pass 2a: Noa's Regret fences its captured maritime & privateer prizes by ship to Ring Sea buyers!
             if captured_pool > 1e-4:
                 fence_cands = []
                 for b_sid, b_need in buyers:
                     b_pol = setts[b_sid]["polity"]
-                    # Pirates fence to coastal/reachable buyers (excluding Voth Ordinator navy blockades on banned books)
+                    if gid == "books" and b_pol == "Vothic Kingdom":
+                        continue
                     eff_km, pinfo = get_pair(pirate_sid, b_sid, tier)
                     if np.isfinite(eff_km) and pinfo is not None and pinfo["sea_km"] > 0 and eff_km < 420.0:
                         fence_cands.append((b_sid, b_need / ((eff_km + 35.0) ** 1.2), eff_km, pinfo))
@@ -1574,6 +1960,33 @@ def solve_trade(world, setts, graph):
                         if share_f > 1e-4:
                             pirate_ledger[gid]["buyers"][setts[b_sid]["polity"]] += share_f
                             raw_flows.append((pirate_sid, b_sid, share_f, eff_km, pinfo, True))
+
+            # Pass 2b: Wartime privateer prizes auctioned at neutral Ring Sea intermediaries (Kautoa & Dhelv [Zeijani])
+            if war_prize_pool > 1e-4:
+                for mid_sid, mid_share in ((kautoa_sid, 0.55), (dhelv_sid, 0.45)):
+                    sub_pool = war_prize_pool * mid_share * 0.92
+                    if sub_pool <= 1e-4:
+                        continue
+                    mid_pol = setts[mid_sid]["polity"]
+                    mid_cands = []
+                    for b_sid, b_need in buyers:
+                        b_pol = setts[b_sid]["polity"]
+                        if b_pol == mid_pol or (gid == "books" and b_pol == "Vothic Kingdom"):
+                            continue
+                        eff_km, pinfo = get_pair(mid_sid, b_sid, tier)
+                        if np.isfinite(eff_km) and pinfo is not None and pinfo["sea_km"] > 0 and eff_km < 460.0:
+                            mid_cands.append((b_sid, b_need / ((eff_km + 35.0) ** 1.2), eff_km, pinfo))
+                    sw_m = sum(x[1] for x in mid_cands)
+                    if sw_m > 0:
+                        pirate_ledger[gid]["fenced"] += sub_pool
+                        pol_surplus_map[mid_pol] = pol_surplus_map.get(mid_pol, 0.0) + sub_pool
+                        for b_sid, w_m, eff_km, pinfo in mid_cands:
+                            share_m = sub_pool * (w_m / sw_m)
+                            if share_m > 1e-4:
+                                pinfo_tag = dict(pinfo)
+                                pinfo_tag["raider_tags"] = ["WARTIME PRIZE INTERMEDIARY"] + list(pinfo.get("raider_tags", []))
+                                pirate_ledger[gid]["buyers"][setts[b_sid]["polity"]] += share_m
+                                raw_flows.append((mid_sid, b_sid, share_m, eff_km, pinfo_tag, False))
 
         # Tally polity balances, mode shares & entrepot hub volumes
         raw_flows.sort(key=lambda x: x[2], reverse=True)
@@ -1642,6 +2055,11 @@ def solve_trade(world, setts, graph):
         denom_m = sum(mode_km_wt.values()) or 1.0
         mode_pct = {k: round(100.0 * v / denom_m, 1) for k, v in mode_km_wt.items()}
 
+        war_smug_featured = [
+            x for x in raw_flows
+            if not x[5] and any("WARTIME SMUGGLERS / INTERMEDIARY" in t or "WARTIME PRIZE INTERMEDIARY" in t for t in x[4].get("raider_tags", []))
+        ]
+
         selected_for_table = list(raw_flows[:8])
         if special_featured and not any(
             any("Annual Great Caravan" in c or "Iziz-Guarded Visas Caravan" in c for c in x[4]["corridors"])
@@ -1649,6 +2067,12 @@ def solve_trade(world, setts, graph):
         ):
             if tot_flow > 0 and special_featured[0][2] / tot_flow >= 0.008:
                 selected_for_table = list(raw_flows[:4]) + [special_featured[0]] + list(raw_flows[4:7])
+        if war_smug_featured and not any(
+            any("WARTIME SMUGGLERS / INTERMEDIARY" in t or "WARTIME PRIZE INTERMEDIARY" in t for t in x[4].get("raider_tags", []))
+            for x in selected_for_table[:5]
+        ):
+            if tot_flow > 0 and war_smug_featured[0][2] / tot_flow >= 0.0025:
+                selected_for_table = list(selected_for_table[:4]) + [war_smug_featured[0]] + list(selected_for_table[4:7])
         if pirate_flows and not any(x[5] for x in selected_for_table[:6]):
             selected_for_table = list(selected_for_table[:5]) + [pirate_flows[0]] + list(selected_for_table[5:7])
 
@@ -1779,6 +2203,9 @@ def render_trade_map(world, setts, graph, results, out_jpg):
         | graph["mask_painted_poly"][gj, gi]
         | graph["mask_fellgang_poly"][gj, gi]
         | graph["mask_scyvoi_poly"][gj, gi]
+        | graph["mask_beastrider_core"][gj, gi]
+        | graph["mask_vrivolci_poly"][gj, gi]
+        | graph["mask_swhigh_poly"][gj, gi]
     ) & (~W2) & (~liz_2) & (~scr_2)
     stipple_nb = raid_nb_2 & (((xx_2 + 2 * yy_2) % 11) == 0)
     rgb[raid_nb_2, 0] = rgb[raid_nb_2, 0] * 0.88 + 26.0
@@ -1862,6 +2289,8 @@ def render_trade_map(world, setts, graph, results, out_jpg):
                 x, y = int(s["px"]) + 7, int(s["py"]) - 14
             elif nm == "Ys":
                 x, y = int(s["px"]) + 6, int(s["py"]) + 3
+            elif nm == "The Sill (Sam-Lok)":
+                x, y = int(s["px"]) - 142, int(s["py"]) - 8
             d2.text((x + 1, y + 1), nm, fill=(10, 12, 16), font=font)
             tcol = (255, 130, 130) if nm == "Noa's Regret" else (248, 246, 236)
             d2.text((x, y), nm, fill=tcol, font=font)
@@ -1873,25 +2302,32 @@ def render_trade_map(world, setts, graph, results, out_jpg):
 
     draw_tag(605, 1545, "LIZARDMAN RIFT (No Trade — Raids Xanadu & S. Dalab)", (255, 138, 138))
     draw_tag(768, 602, "SCREAMER COUNTRY (Raiders — No Trade)", (255, 145, 210))
+    draw_tag(818, 952, "IZIZ–VOTH NAVAL WAR", (255, 122, 122))
+    draw_tag(1030, 775, "BEAST RIDERS (Hostile to Iziz)", (255, 188, 120))
+    draw_tag(785, 366, "BOATMURDER HIGHWAYMEN", (255, 188, 120))
     draw_tag(548, 1378, "Annual Great Caravan (North Rift Bench)", (255, 175, 215))
     draw_tag(352, 468, "YETI RAIDERS (No Eternian Trade)", (255, 188, 120))
     draw_tag(942, 560, "PAINTED MEN RAIDERS", (255, 188, 120))
     draw_tag(572, 782, "SCYVOI RAIDERS", (255, 188, 120))
+    draw_tag(470, 955, "SW HIGHLAND RAIDERS", (255, 188, 120))
+    draw_tag(578, 1222, "VRIVOLCI RAIDERS", (255, 188, 120))
     draw_tag(326, 1432, "FELLGANG RAIDERS", (255, 188, 120))
+    draw_tag(1365, 650, "COYOTE–NOMAD RAIDS", (255, 188, 120))
+    draw_tag(1130, 1285, "NOMAD DESERT BANDITS", (255, 188, 120))
 
     # Legend box (bottom-left)
     lx, ly = 28, OH - 232
-    d2.rectangle((lx, ly, lx + 528, OH - 24), fill=(18, 24, 34), outline=(120, 140, 165), width=2)
+    d2.rectangle((lx, ly, lx + 548, OH - 24), fill=(18, 24, 34), outline=(120, 140, 165), width=2)
     d2.text((lx + 14, ly + 10), "KRATOR 5.1 MULTIMODAL TRADE NETWORK (gemini-trade)", fill=(255, 240, 190), font=font_b)
     legend_rows = [
-        ((64, 212, 255), "Sea Shipping Lanes (Ring Sea & Farside Ocean)"),
+        ((64, 212, 255), "Sea Shipping Lanes (Iziz–Voth Naval War on Ring Sea)"),
         ((52, 235, 178), "Navigable Rivers, Lakes & Eternian Canals"),
         ((255, 210, 72), "Kept Ancient 30 m Highways"),
         ((255, 148, 66), "Overland Caravan Trunks (Camels / Lizards / Ostriches)"),
         ((255, 92, 140), "Tunnels, Armed Iziz-Visas Convoy & N-Rift Great Caravan"),
-        ((240, 60, 60), "Noa's Regret Pirate Prize Fence Lanes"),
+        ((240, 60, 60), "Noa's Regret Pirate & Privateer Prize Fence Lanes"),
         ((195, 48, 92), "Autarkic Raiders (No Trade): Lizardmen & Screamers"),
-        ((212, 118, 52), "Neighbor-Raider Polities: Yeti, Painted Men, Scyvoi, Fellgangs"),
+        ((212, 118, 52), "Raider & Bandit Zones (Beast Riders, Vrivolci, SW High, etc.)"),
     ]
     for idx_l, (c_rgb, lbl_txt) in enumerate(legend_rows):
         ry = ly + 38 + idx_l * 20
@@ -1912,15 +2348,17 @@ def write_trade_markdown(payload, out_md):
         "into [trade-gemini.json](file:///C:/Users/travi/Documents/krator-trade/openworld/trade-gemini.json) on branch `gemini-trade` (leaving all base files untouched).",
         "",
         "> [!IMPORTANT]",
-        f"> **Model Summary**: **{payload['good_count']} trade goods** (including `zinc` / brass spelter) solved across "
+        f"> **Model Summary**: **{payload['good_count']} trade goods** (including `zinc` / brass spelter and dedicated `energy-cells`) solved across "
         f"**{payload['polity_count']} polities & maritime poleis** (`{payload['settlement_count']}` settlements & gateways) over a "
-        "**two-layer 4 km Dijkstra multimodal graph** backed by the rebaked 5.1 geology and the `claude/ancient-network-9cc3e7` 5.1 road network (`142` routes).",
-        "> - **5.1 Road & Tunnel Network (`claude/ancient-network-9cc3e7`)**: Replaces legacy shifted roads with native 5.1 Ancient trunks, Izani/Vothic/Xanadu/Yuni state roads, trade highways (`Jimjam–Lux`, `Yuni–Locus–Mungo`), Bowl solar-furnace customs post **`Parabola`** (`970, 1186`; no Arcbeam–Stair tunnel), the three Catch–Xanadu crossings (**The Twins**, **White Gills**, and the compact-only **`Theodiga–Stair` dark dead foot-bore**), and **Strongbow's `3,100 m` scarp elevator** feeding both the Vale of Xanadu and the **Oidong Valley floor road (`Strongbow–Longsong`)**.",
-        "> - **Autarkic Raiders (`0` External Trade)**: `Lizardmen` (`Sauropolis`, `Komodo`, `Gila`, `Tuatara`) and `Screamer Country` (`Hexahedron`) have **`0` external exports, `0` external imports, and `0` external port calls**. Lizardmen also raid `Xanadu` (`Vale of Xanadu`, `LORE.md §6.20`) and occasionally southern `Dalab` / `Fellgangs` (`1.35x–1.55x` border hazard).",
-        "> - **Neighbor-Raiding Polities & Bilateral Friction**: `Yeti Kingdom` raids the `Eternal State` and relations are fraught (**`0` direct bilateral trade** between Yeti and Eternia; Yeti trades via `Dam Basin Salvagers`, `Jimjam`, `Iron Republic`, and `Free Clans` along northern trails). `Painted Men` (`1.35x–2.25x`), `Fellgangs` (`1.32x–1.95x`), and `Scyvoi` (`1.28x–1.75x` across lowland neighbors) raise route danger and shift cargo flows without halting trade.",
-        "> - **North-Side Rift `Annual Great Caravan` & `Tallwalls ↔ Erehwon` Block**: `Tallwalls ↔ Erehwon` across the freezing Northern Rift peaks remains **impassable**; because Lizardmen and Fellgangs raid southern `Dalab` / `Fellgangs`, the once-a-year **Annual Great Caravan** (`Nulab ↔ Erehwon`, compact goods only) traverses the **North Rift Bench** (`1,900–3,880 m`) above the Lizardman floor.",
-        "> - **`Dilihan ↔ Port Visas` Armed Iziz Caravans vs Hykkousoi Ports**: `Empire of Iziz` (and loyalist `Shell Province`) prefers **`Dilihan ↔ Port Visas`** using **armed caravans protected by Iziz guards** (`152 km` skirting the Screamer fringe, moderately costly/dangerous), whereas **all other polities** route 100% of their Cut-to-Sea traffic through the **Hykkousoi ports (`Ys`, `Tethis`, `Trigon`)**.",
-        "> - **Spider Lake SW Spillway**: `Spider Lake Weirs` drains exclusively SW across its secondary-crater breach into `9102` (`Hām-Tsēk / Arachnoid River`) past `Ham-Tsek Silk Post`.",
+        "**four-regime two-layer 4 km Dijkstra multimodal graph** backed by the rebaked 5.1 geology and the `claude/ancient-network-9cc3e7` 5.1 road network (`142` routes).",
+        "> - **`Empire of Iziz` (+ `Shell Province`) ↔ `Vothic Kingdom` State of War**: Mutual port and land-border closure (`0` open bulk trade, `0` war materiel), mutual **Ring Sea commerce raiding / privateering** (`+4.8%` wartime shipping interception on top of `Noa's Regret` piracy), and all wartime trade between them routed strictly via **smugglers or neutral Ring Sea intermediaries (`Dhelv` [Zeijani] & `Kautoa`)**.",
+        "> - **Hostilities & Commercial Rivalries**: **`Beast Riders` ↔ `Empire of Iziz`** are hostile with frequent raids (`0.12x` bilateral trade, `4.8x–5.6x` ambush surcharge keeping Iziz caravans out of Beast Rider hyperjungle); **`Vothic Kingdom` ↔ `Hykkousoi League` (`League:*`)** are maritime rivals discouraging mutual trade (`0.20x` + `+58 eff km` rivalry port tariff); **`Iron Republic` ↔ `Dilihan Province` / `Free Clans` (`Ardent`)** are rivals discouraging bilateral trade (`0.20x`) and rival hub transit.",
+        "> - **Raider Polities & Highway/Desert Banditry**:",
+        ">   - **Autarkic Raiders (`0` External Trade)**: `Lizardmen` (also raid `Xanadu` & S. `Dalab`/`Fellgangs`) and `Screamer Country` (`Hexahedron`).",
+        ">   - **Fraught Frontier**: `Yeti Kingdom` raids `Eternal State` (**`0` direct trade** or customs transit through Eternia).",
+        ">   - **Border Raiders & Highwaymen**: **`Free Giants (Vrivolci)`** raid `Dalab` and `Voth` (`0.25x` bilateral + `1.30x–1.75x` march hazard); **`Boatmurder` highwaymen** ambush the NE highways (`1.62x–1.72x` road surcharge); **`SW Highlanders` (`SW Highland Frogmen`)** raid neighbors **except `Realm of Dalab` (peace treaty via `Span`)**; **`Coyotemen` & `Eastern Nomads`** occasionally raid each other (`0.45x` + frontier surcharge), while **Eastern Nomad desert bandits** raid Bowl, Catch, and Dasri desert-crossing caravans (`1.38x–1.42x`); **`Painted Men`**, **`Fellgangs`**, and **`Scyvoi`** raid neighboring marches.",
+        "> - **Eternian Ancient Energy Cells (`energy-cells`) via `Yusar`**: `Eternal State` (`Fulcrum`, `Lux`, `Farport`) has strong demand for sealed Ancient power cells and sources **>90% of its `energy-cells` from `Valley of the Ancient` by way of `Yusar (Cybernetics)` (`Carcosa` & `Henge`)**, while `Stair` supplies the southern/eastern basins.",
+        "> - **North-Side Rift `Annual Great Caravan` & `Dilihan ↔ Port Visas` Armed Iziz Convoys**: `Tallwalls ↔ Erehwon` remains impassable; `Nulab ↔ Erehwon` runs once a year along the **North Rift Bench** (`compact` only); `Iziz` uses **armed guard convoys** on `Dilihan ↔ Port Visas`, while all other polities use the Hykkousoi ports (`Ys`, `Tethis`, `Trigon`).",
         "",
         "## 1. Top Maritime Port & Overland Chokepoint Entrepôts",
         "",
@@ -1936,9 +2374,9 @@ def write_trade_markdown(payload, out_md):
         "",
         "---",
         "",
-        "## 2. `Noa's Regret` Maritime Piracy & Prize-Fencing Ledger",
+        "## 2. `Noa's Regret` Piracy & Iziz–Voth Wartime Commerce-Raiding Ledger",
         "",
-        "| Good | Captured at Sea | Fenced Onward | Primary Victim Fleets | Primary Prize Buyers |",
+        "| Good | Captured at Sea (Pirates + Privateers) | Fenced Onward (`Noa's Regret`, `Kautoa`, `Dhelv`) | Primary Victim Fleets | Primary Prize Buyers |",
         "|:---|---:|---:|:---|:---|",
     ]
     for p in payload["noas_regret_piracy"][:24]:
@@ -1973,7 +2411,7 @@ def write_trade_markdown(payload, out_md):
         ("II. Fuels, Industrial Minerals & Building Stone", ["coal", "oil", "salt", "sulfur", "saltpeter", "potash", "marble", "alabaster", "brick", "machine-wax", "pitch-tar"]),
         ("III. Timber, Naval Rigging, Fibres, Textiles, Beasts & Staples", ["timber", "cordage", "cotton", "silk", "qiviut", "plaid", "dye-tropical", "dye-temperate", "mounts", "food"]),
         ("IV. Spices, Stimulants, Incense, Medicines & Alchemicals", ["spice-tropical", "isle-spice", "spice-highland", "cacao", "coffee", "tea", "sugar", "tobacco", "incense", "medicine", "lung-salt", "reagent", "fungal"]),
-        ("V. Gems, Kilnware, Knowledge, Optics, Arms & Ancient Tech", ["pearls", "gems", "goldwork", "fine-ceramics", "porcelain", "almanacs", "books", "lenses", "rockets", "arms", "electrics", "cybernetics", "genecraft", "scrapgoods", "relics", "oversea-luxuries"]),
+        ("V. Gems, Kilnware, Knowledge, Optics, Arms & Ancient Tech", ["pearls", "gems", "goldwork", "fine-ceramics", "porcelain", "almanacs", "books", "lenses", "rockets", "arms", "electrics", "energy-cells", "cybernetics", "genecraft", "scrapgoods", "relics", "oversea-luxuries"]),
     ]
 
     lines += ["", "---", "", f"## 4. Complete Good-by-Good Atlas (All {payload['good_count']} Goods)", ""]
@@ -2053,9 +2491,21 @@ def main(argv=None):
         elif pol == "Yeti Kingdom":
             entry["trade_regime"] = "raider_fraught_eternia_embargo"
             entry["note"] = "Raids the Eternal State and relations are fraught — zero direct bilateral trade with Eternia; trades indirectly via Dam Basin Salvagers, Jimjam, Iron Republic, and Free Clans."
-        elif pol in ("Painted Men", "Fellgangs", "Scyvoi"):
+        elif pol in ("Empire of Iziz", "Shell Province"):
+            entry["trade_regime"] = "wartime_belligerent_iziz"
+            entry["note"] = "At war with Vothic Kingdom (mutual port closure, Ring Sea commerce raids, trade only via smugglers or neutral Dhelv/Kautoa intermediaries); hostile to Beast Riders; armed convoys on Dilihan-Port Visas."
+        elif pol == "Vothic Kingdom":
+            entry["trade_regime"] = "wartime_belligerent_voth"
+            entry["note"] = "At war with Empire of Iziz & Shell Province (mutual port closure, Ring Sea commerce raids, trade only via smugglers or neutral Dhelv/Kautoa intermediaries); commercial rival of Hykkousoi League; raided by Vrivolci & SW Highlanders."
+        elif pol == "SW Highland Frogmen":
+            entry["trade_regime"] = "neighbor_raider_dalab_treaty"
+            entry["note"] = "Raids neighboring marches (Voth, Yusar, Republic, Shumari) EXCEPT Realm of Dalab, with whom it maintains a peace treaty via Span."
+        elif pol == "Dam Basin Salvagers":
+            entry["trade_regime"] = "salvager_highwaymen"
+            entry["note"] = "Boatmurder salvagers & highwaymen preying on caravans along the NE Dam Basin and semi-arid highways."
+        elif pol in ("Painted Men", "Fellgangs", "Scyvoi", "Free Giants (Vrivolci)", "Beast Riders", "Coyote Kingdom", "Nomad Country"):
             entry["trade_regime"] = "neighbor_raider_trading"
-            entry["note"] = "Participates in limited external trade while raiding neighboring marches, raising caravan hazard and escort costs along bordering routes."
+            entry["note"] = "Participates in external trade while conducting frontier or desert raids that raise escort costs and shift cargo flows."
         pol_summary[pol] = entry
 
     entrepots = []
