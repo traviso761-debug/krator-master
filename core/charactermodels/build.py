@@ -52,7 +52,8 @@ BODIES = tuple(sorted(b for b in os.listdir(os.path.join(HERE, 'data')) if os.pa
 
 
 # page -> (its head fragment, its own script fragment); every page also takes the shared src/10-89*.js
-PAGES = {'cosmetic-lab': ('00-head.html', '90-editor.js'), 'animation-lab': ('01-animlab.html', '92-animlab.js')}
+PAGES = {'cosmetic-lab': ('00-head.html', '90-editor.js'), 'animation-lab': ('01-animlab.html', '92-animlab.js'),
+         'arms-lab': ('02-armslab.html', '93-armslab.js')}
 
 
 def main():

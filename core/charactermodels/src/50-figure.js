@@ -1276,8 +1276,9 @@ function KCharFigure(body, sliders, load){
           hangs[side] = { pivot:pv, axis:new THREE.Vector3().fromArray(p.hang).normalize() };
         }
         // in a lower hand (the forearm held forward in its guard) a prop with low_turn turns about its handle: the
-        // shield stands up and faces outward instead of lying flat like a tray
+        // shield stands up and faces outward instead of lying flat like a tray; in the right upper hand, turn half round
         if(side.length > 1 && p.low_turn) m.rotation.y = (side.charAt(0) === 'L' ? 1 : -1) * p.low_turn * Math.PI / 180;
+        else if(side === 'R' && p.low_turn) m.rotation.y = Math.PI;
         if(side === 'L' && p.string) return makeBow(g, p);
       });
     }));

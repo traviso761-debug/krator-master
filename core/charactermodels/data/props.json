@@ -18,7 +18,11 @@
    "blade": [
     0.1,
     0.91
-   ]
+   ],
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "sword"
   },
   {
    "id": "dagger",
@@ -29,7 +33,11 @@
    "blade": [
     0.07,
     0.32
-   ]
+   ],
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "dagger"
   },
   {
    "id": "axe",
@@ -48,7 +56,11 @@
    "blade": [
     0.4,
     0.68
-   ]
+   ],
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "axe"
   },
   {
    "id": "mace",
@@ -67,7 +79,11 @@
    "blade": [
     0.42,
     0.65
-   ]
+   ],
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "mace"
   },
   {
    "id": "warhammer",
@@ -86,7 +102,11 @@
    "blade": [
     0.5,
     0.65
-   ]
+   ],
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "tool"
   },
   {
    "id": "spear",
@@ -101,7 +121,11 @@
     0,
     1.0,
     0
-   ]
+   ],
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "spear"
   },
   {
    "id": "shield",
@@ -109,7 +133,11 @@
    "hand": "L",
    "glb": "pieces/props/shield.glb",
    "grip": "fist",
-   "low_turn": 90
+   "low_turn": 90,
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "shield"
   },
   {
    "id": "bow",
@@ -126,7 +154,11 @@
     -0.72,
     -0.09
    ],
-   "arrow": "arrow"
+   "arrow": "arrow",
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "bow"
   },
   {
    "id": "crossbow",
@@ -141,7 +173,11 @@
     0,
     0.075,
     0.3
-   ]
+   ],
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "crossbow"
   },
   {
    "id": "rifle",
@@ -156,7 +192,11 @@
     0,
     0.06,
     0.42
-   ]
+   ],
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "rifle"
   },
   {
    "id": "pistol",
@@ -171,7 +211,11 @@
     0.04,
     -0.03,
     0.02
-   ]
+   ],
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "pistol"
   },
   {
    "id": "pickaxe",
@@ -186,7 +230,11 @@
     0,
     0.5,
     0
-   ]
+   ],
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "tool"
   },
   {
    "id": "hoe",
@@ -201,14 +249,22 @@
     0,
     0.9,
     0
-   ]
+   ],
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "tool"
   },
   {
    "id": "hammer",
    "label": "Hammer",
    "hand": "R",
    "glb": "pieces/props/hammer.glb",
-   "grip": "fist"
+   "grip": "fist",
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "tool"
   },
   {
    "id": "bucket",
@@ -220,7 +276,11 @@
     0,
     0,
     1
-   ]
+   ],
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "tool"
   },
   {
    "id": "cup",
@@ -232,7 +292,11 @@
     0,
     1,
     0
-   ]
+   ],
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "tool"
   },
   {
    "id": "lantern",
@@ -244,14 +308,22 @@
     0,
     0,
     1
-   ]
+   ],
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "tool"
   },
   {
    "id": "torch",
    "label": "Torch",
    "hand": "L",
    "glb": "pieces/props/torch.glb",
-   "grip": "fist"
+   "grip": "fist",
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "tool"
   },
   {
    "id": "arrow",
@@ -259,7 +331,11 @@
    "hand": "R",
    "glb": "pieces/props/arrow.glb",
    "grip": "fist",
-   "length": 0.78
+   "length": 0.78,
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "tool"
   },
   {
    "id": "bowl",
@@ -276,14 +352,22 @@
     -0.12,
     0.02,
     0.26
-   ]
+   ],
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "tool"
   },
   {
    "id": "bread",
    "label": "Bread",
    "hand": "L",
    "glb": "pieces/props/bread.glb",
-   "grip": "wide"
+   "grip": "wide",
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "tool"
   },
   {
    "id": "tg_lamp_pole",
@@ -298,7 +382,11 @@
     0,
     0.8,
     0
-   ]
+   ],
+   "people": "tungang",
+   "culture_label": "Tungangs",
+   "subset": "Tungang Tools",
+   "kind": "staff"
   },
   {
    "id": "tg_spanner",
@@ -313,7 +401,11 @@
     0,
     0.5,
     0
-   ]
+   ],
+   "people": "tungang",
+   "culture_label": "Tungangs",
+   "subset": "Tungang Tools",
+   "kind": "mace"
   },
   {
    "id": "tg_bait_tin",
@@ -325,7 +417,11 @@
     0,
     0,
     1
-   ]
+   ],
+   "people": "tungang",
+   "culture_label": "Tungangs",
+   "subset": "Tungang Tools",
+   "kind": "tool"
   },
   {
    "id": "tz_scepter",
@@ -347,7 +443,10 @@
    "blade": [
     0.632,
     0.952
-   ]
+   ],
+   "culture_label": "Chichani (Voth)",
+   "subset": "Tzintzun",
+   "kind": "staff"
   },
   {
    "id": "tz_scimitar",
@@ -361,7 +460,10 @@
    "blade": [
     0.158,
     0.86
-   ]
+   ],
+   "culture_label": "Chichani (Voth)",
+   "subset": "Tzintzun",
+   "kind": "scimitar"
   },
   {
    "id": "tz_sword",
@@ -375,7 +477,10 @@
    "blade": [
     0.202,
     0.885
-   ]
+   ],
+   "culture_label": "Chichani (Voth)",
+   "subset": "Tzintzun",
+   "kind": "sword"
   },
   {
    "id": "tz_axe",
@@ -397,7 +502,10 @@
    "blade": [
     0.49,
     0.76
-   ]
+   ],
+   "culture_label": "Chichani (Voth)",
+   "subset": "Tzintzun",
+   "kind": "axe"
   },
   {
    "id": "tz_spear",
@@ -419,7 +527,10 @@
    "blade": [
     0.72,
     1.365
-   ]
+   ],
+   "culture_label": "Chichani (Voth)",
+   "subset": "Tzintzun",
+   "kind": "spear"
   },
   {
    "id": "tz_shield",
@@ -430,7 +541,6063 @@
    "people": "chichani",
    "owner": "tzintzun",
    "src": "Meshy_AI_Shield_Low_Poly_1106030822_texture.glb",
+   "low_turn": 90,
+   "culture_label": "Chichani (Voth)",
+   "subset": "Tzintzun",
+   "kind": "shield"
+  },
+  {
+   "id": "voth_orn_w1_sword",
+   "label": "Voth Ornate Macuahuitl",
+   "hand": "R",
+   "kind": "sword",
+   "glb": "pieces/props/voth_orn_w1_sword.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "culture_label": "Chichani (Voth)",
+   "subset": "Voth Ornate",
+   "src": "voth - ornate.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    -0.1,
+    0.0
+   ],
+   "blade": [
+    0.06,
+    0.94
+   ]
+  },
+  {
+   "id": "voth_orn_w2_dagger",
+   "label": "Voth Ornate Obsidian Dagger",
+   "hand": "R",
+   "kind": "dagger",
+   "glb": "pieces/props/voth_orn_w2_dagger.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "culture_label": "Chichani (Voth)",
+   "subset": "Voth Ornate",
+   "src": "voth - ornate.glb",
+   "blade": [
+    0.05,
+    0.451
+   ]
+  },
+  {
+   "id": "voth_orn_w3_axe",
+   "label": "Voth Ornate Sun-Crest Halberd",
+   "hand": "R",
+   "kind": "axe",
+   "glb": "pieces/props/voth_orn_w3_axe.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "culture_label": "Chichani (Voth)",
+   "subset": "Voth Ornate",
+   "src": "voth - ornate.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    0.518,
+    0.0
+   ],
+   "blade": [
+    0.648,
+    0.873
+   ]
+  },
+  {
+   "id": "voth_orn_w4_mace",
+   "label": "Voth Ornate Feathered Club",
+   "hand": "R",
+   "kind": "mace",
+   "glb": "pieces/props/voth_orn_w4_mace.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "culture_label": "Chichani (Voth)",
+   "subset": "Voth Ornate",
+   "src": "voth - ornate.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    0.528,
+    0.0
+   ],
+   "blade": [
+    0.659,
+    0.764
+   ]
+  },
+  {
+   "id": "voth_orn_w5_spear",
+   "label": "Voth Ornate Serpent Spear",
+   "hand": "R",
+   "kind": "spear",
+   "glb": "pieces/props/voth_orn_w5_spear.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "culture_label": "Chichani (Voth)",
+   "subset": "Voth Ornate",
+   "src": "voth - ornate.glb",
+   "support": [
+    0.0,
+    0.25,
+    0.0,
+    0.0,
+    0.763,
+    0.0
+   ],
+   "blade": [
+    0.898,
+    1.203
+   ]
+  },
+  {
+   "id": "voth_orn_s1_shield",
+   "label": "Voth Ornate Sun-Disc Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/voth_orn_s1_shield.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "culture_label": "Chichani (Voth)",
+   "subset": "Voth Ornate",
+   "src": "voth - ornate.glb",
    "low_turn": 90
+  },
+  {
+   "id": "voth_orn_s2_shield",
+   "label": "Voth Ornate Step-Fret Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/voth_orn_s2_shield.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "culture_label": "Chichani (Voth)",
+   "subset": "Voth Ornate",
+   "src": "voth - ornate.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "voth_orn_s3_shield",
+   "label": "Voth Ornate Feathered Chimalli",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/voth_orn_s3_shield.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "culture_label": "Chichani (Voth)",
+   "subset": "Voth Ornate",
+   "src": "voth - ornate.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "voth_orn_s4_shield",
+   "label": "Voth Ornate Jaguar Buckler",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/voth_orn_s4_shield.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "culture_label": "Chichani (Voth)",
+   "subset": "Voth Ornate",
+   "src": "voth - ornate.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "voth_orn_s5_shield",
+   "label": "Voth Ornate Turquoise Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/voth_orn_s5_shield.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "culture_label": "Chichani (Voth)",
+   "subset": "Voth Ornate",
+   "src": "voth - ornate.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "voth_drum_w1_sword",
+   "label": "Voth Drum-Hilt Sword",
+   "hand": "R",
+   "kind": "sword",
+   "glb": "pieces/props/voth_drum_w1_sword.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "culture_label": "Chichani (Voth)",
+   "subset": "Voth Drum",
+   "src": "drum.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    -0.1,
+    0.0
+   ],
+   "blade": [
+    0.057,
+    0.893
+   ]
+  },
+  {
+   "id": "voth_drum_w2_dagger",
+   "label": "Voth Drum-Pommel Dagger",
+   "hand": "R",
+   "kind": "dagger",
+   "glb": "pieces/props/voth_drum_w2_dagger.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "culture_label": "Chichani (Voth)",
+   "subset": "Voth Drum",
+   "src": "drum.glb",
+   "blade": [
+    0.05,
+    0.423
+   ]
+  },
+  {
+   "id": "voth_drum_w3_mace",
+   "label": "Voth Drum-Head War Club",
+   "hand": "R",
+   "kind": "mace",
+   "glb": "pieces/props/voth_drum_w3_mace.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "culture_label": "Chichani (Voth)",
+   "subset": "Voth Drum",
+   "src": "drum.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    0.358,
+    0.0
+   ],
+   "blade": [
+    0.447,
+    0.552
+   ]
+  },
+  {
+   "id": "voth_drum_w4_axe",
+   "label": "Voth Drum-Crest Battle Axe",
+   "hand": "R",
+   "kind": "axe",
+   "glb": "pieces/props/voth_drum_w4_axe.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "culture_label": "Chichani (Voth)",
+   "subset": "Voth Drum",
+   "src": "drum.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    0.307,
+    0.0
+   ],
+   "blade": [
+    0.384,
+    0.484
+   ]
+  },
+  {
+   "id": "voth_drum_w5_spear",
+   "label": "Voth Drum-Banner Spear",
+   "hand": "R",
+   "kind": "spear",
+   "glb": "pieces/props/voth_drum_w5_spear.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "culture_label": "Chichani (Voth)",
+   "subset": "Voth Drum",
+   "src": "drum.glb",
+   "support": [
+    0.0,
+    0.25,
+    0.0,
+    0.0,
+    0.55,
+    0.0
+   ],
+   "blade": [
+    0.647,
+    1.202
+   ]
+  },
+  {
+   "id": "voth_drum_s1_shield",
+   "label": "Voth Drum Hide Shield I",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/voth_drum_s1_shield.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "culture_label": "Chichani (Voth)",
+   "subset": "Voth Drum",
+   "src": "drum.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "voth_drum_s2_shield",
+   "label": "Voth Drum Hide Shield II",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/voth_drum_s2_shield.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "culture_label": "Chichani (Voth)",
+   "subset": "Voth Drum",
+   "src": "drum.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "voth_drum_s3_shield",
+   "label": "Voth Drum Resonator Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/voth_drum_s3_shield.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "culture_label": "Chichani (Voth)",
+   "subset": "Voth Drum",
+   "src": "drum.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "voth_drum_s4_shield",
+   "label": "Voth Drum Ceremonial Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/voth_drum_s4_shield.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "culture_label": "Chichani (Voth)",
+   "subset": "Voth Drum",
+   "src": "drum.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "voth_drum_s5_shield",
+   "label": "Voth Drum Tower Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/voth_drum_s5_shield.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "culture_label": "Chichani (Voth)",
+   "subset": "Voth Drum",
+   "src": "drum.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "voth_torus_w1_sword",
+   "label": "Voth Torus Ring-Broadsword",
+   "hand": "R",
+   "kind": "sword",
+   "glb": "pieces/props/voth_torus_w1_sword.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "culture_label": "Chichani (Voth)",
+   "subset": "Voth Torus",
+   "src": "torus.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    -0.1,
+    0.0
+   ],
+   "blade": [
+    0.06,
+    0.88
+   ]
+  },
+  {
+   "id": "voth_torus_w2_dagger",
+   "label": "Voth Torus Ring-Hilt Dagger",
+   "hand": "R",
+   "kind": "dagger",
+   "glb": "pieces/props/voth_torus_w2_dagger.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "culture_label": "Chichani (Voth)",
+   "subset": "Voth Torus",
+   "src": "torus.glb",
+   "blade": [
+    0.05,
+    0.423
+   ]
+  },
+  {
+   "id": "voth_torus_w3_mace",
+   "label": "Voth Torus Disc Mace",
+   "hand": "R",
+   "kind": "mace",
+   "glb": "pieces/props/voth_torus_w3_mace.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "culture_label": "Chichani (Voth)",
+   "subset": "Voth Torus",
+   "src": "torus.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    0.458,
+    0.0
+   ],
+   "blade": [
+    0.573,
+    0.673
+   ]
+  },
+  {
+   "id": "voth_torus_w4_axe",
+   "label": "Voth Torus Crescent Axe",
+   "hand": "R",
+   "kind": "axe",
+   "glb": "pieces/props/voth_torus_w4_axe.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "culture_label": "Chichani (Voth)",
+   "subset": "Voth Torus",
+   "src": "torus.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    0.595,
+    0.0
+   ],
+   "blade": [
+    0.744,
+    0.844
+   ]
+  },
+  {
+   "id": "voth_torus_w5_spear",
+   "label": "Voth Torus Ring-Head Spear",
+   "hand": "R",
+   "kind": "spear",
+   "glb": "pieces/props/voth_torus_w5_spear.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "culture_label": "Chichani (Voth)",
+   "subset": "Voth Torus",
+   "src": "torus.glb",
+   "support": [
+    0.0,
+    0.25,
+    0.0,
+    0.0,
+    0.865,
+    0.0
+   ],
+   "blade": [
+    1.018,
+    1.202
+   ]
+  },
+  {
+   "id": "voth_torus_s1_shield",
+   "label": "Voth Torus Ring Buckler",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/voth_torus_s1_shield.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "culture_label": "Chichani (Voth)",
+   "subset": "Voth Torus",
+   "src": "torus.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "voth_torus_s2_shield",
+   "label": "Voth Torus Annular Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/voth_torus_s2_shield.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "culture_label": "Chichani (Voth)",
+   "subset": "Voth Torus",
+   "src": "torus.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "voth_torus_s3_shield",
+   "label": "Voth Torus Sun-Wheel Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/voth_torus_s3_shield.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "culture_label": "Chichani (Voth)",
+   "subset": "Voth Torus",
+   "src": "torus.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "voth_torus_s4_shield",
+   "label": "Voth Torus Jade-Ring Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/voth_torus_s4_shield.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "culture_label": "Chichani (Voth)",
+   "subset": "Voth Torus",
+   "src": "torus.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "voth_torus_s5_shield",
+   "label": "Voth Torus Eclipse Oval Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/voth_torus_s5_shield.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "culture_label": "Chichani (Voth)",
+   "subset": "Voth Torus",
+   "src": "torus.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "and1_w1_scimitar",
+   "label": "Andaru Curved Shamshir",
+   "hand": "R",
+   "kind": "scimitar",
+   "glb": "pieces/props/and1_w1_scimitar.glb",
+   "grip": "fist",
+   "people": "andaru",
+   "culture_label": "Andaru",
+   "subset": "Andaru Set 1",
+   "src": "andaru.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    -0.1,
+    0.0
+   ],
+   "blade": [
+    0.057,
+    0.785
+   ]
+  },
+  {
+   "id": "and1_w2_dagger",
+   "label": "Andaru Jambiya Dagger",
+   "hand": "R",
+   "kind": "dagger",
+   "glb": "pieces/props/and1_w2_dagger.glb",
+   "grip": "fist",
+   "people": "andaru",
+   "culture_label": "Andaru",
+   "subset": "Andaru Set 1",
+   "src": "andaru.glb",
+   "blade": [
+    0.05,
+    0.423
+   ]
+  },
+  {
+   "id": "and1_w3_mace",
+   "label": "Andaru Flanged Mace",
+   "hand": "R",
+   "kind": "mace",
+   "glb": "pieces/props/and1_w3_mace.glb",
+   "grip": "fist",
+   "people": "andaru",
+   "culture_label": "Andaru",
+   "subset": "Andaru Set 1",
+   "src": "andaru.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    0.25,
+    0.0
+   ],
+   "blade": [
+    0.212,
+    0.477
+   ]
+  },
+  {
+   "id": "and1_w4_axe",
+   "label": "Andaru Tabar Battle Axe",
+   "hand": "R",
+   "kind": "axe",
+   "glb": "pieces/props/and1_w4_axe.glb",
+   "grip": "fist",
+   "people": "andaru",
+   "culture_label": "Andaru",
+   "subset": "Andaru Set 1",
+   "src": "andaru.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    0.463,
+    0.0
+   ],
+   "blade": [
+    0.579,
+    0.744
+   ]
+  },
+  {
+   "id": "and1_w5_spear",
+   "label": "Andaru Cavalry Lance",
+   "hand": "R",
+   "kind": "spear",
+   "glb": "pieces/props/and1_w5_spear.glb",
+   "grip": "fist",
+   "people": "andaru",
+   "culture_label": "Andaru",
+   "subset": "Andaru Set 1",
+   "src": "andaru.glb",
+   "support": [
+    0.0,
+    0.25,
+    0.0,
+    0.0,
+    0.671,
+    0.0
+   ],
+   "blade": [
+    0.79,
+    1.235
+   ]
+  },
+  {
+   "id": "and1_s1_shield",
+   "label": "Andaru Bronze Boss Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/and1_s1_shield.glb",
+   "grip": "fist",
+   "people": "andaru",
+   "culture_label": "Andaru",
+   "subset": "Andaru Set 1",
+   "src": "andaru.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "and1_s2_shield",
+   "label": "Andaru Crescent Sipar Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/and1_s2_shield.glb",
+   "grip": "fist",
+   "people": "andaru",
+   "culture_label": "Andaru",
+   "subset": "Andaru Set 1",
+   "src": "andaru.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "and1_s3_shield",
+   "label": "Andaru Sunburst Round Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/and1_s3_shield.glb",
+   "grip": "fist",
+   "people": "andaru",
+   "culture_label": "Andaru",
+   "subset": "Andaru Set 1",
+   "src": "andaru.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "and1_s4_shield",
+   "label": "Andaru Gilded Kalkan Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/and1_s4_shield.glb",
+   "grip": "fist",
+   "people": "andaru",
+   "culture_label": "Andaru",
+   "subset": "Andaru Set 1",
+   "src": "andaru.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "and1_s5_shield",
+   "label": "Andaru Royal Guard Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/and1_s5_shield.glb",
+   "grip": "fist",
+   "people": "andaru",
+   "culture_label": "Andaru",
+   "subset": "Andaru Set 1",
+   "src": "andaru.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "and2_w1_scimitar",
+   "label": "Andaru Ornate Kilij",
+   "hand": "R",
+   "kind": "scimitar",
+   "glb": "pieces/props/and2_w1_scimitar.glb",
+   "grip": "fist",
+   "people": "andaru",
+   "culture_label": "Andaru",
+   "subset": "Andaru Set 2",
+   "src": "andaru 2.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    -0.1,
+    0.0
+   ],
+   "blade": [
+    0.057,
+    0.77
+   ]
+  },
+  {
+   "id": "and2_w2_dagger",
+   "label": "Andaru Khanjar Dagger",
+   "hand": "R",
+   "kind": "dagger",
+   "glb": "pieces/props/and2_w2_dagger.glb",
+   "grip": "fist",
+   "people": "andaru",
+   "culture_label": "Andaru",
+   "subset": "Andaru Set 2",
+   "src": "andaru 2.glb",
+   "blade": [
+    0.05,
+    0.32
+   ]
+  },
+  {
+   "id": "and2_w3_mace",
+   "label": "Andaru Bull-Head Mace",
+   "hand": "R",
+   "kind": "mace",
+   "glb": "pieces/props/and2_w3_mace.glb",
+   "grip": "fist",
+   "people": "andaru",
+   "culture_label": "Andaru",
+   "subset": "Andaru Set 2",
+   "src": "andaru 2.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    0.526,
+    0.0
+   ],
+   "blade": [
+    0.657,
+    0.757
+   ]
+  },
+  {
+   "id": "and2_w4_axe",
+   "label": "Andaru Double-Bit Tabar",
+   "hand": "R",
+   "kind": "axe",
+   "glb": "pieces/props/and2_w4_axe.glb",
+   "grip": "fist",
+   "people": "andaru",
+   "culture_label": "Andaru",
+   "subset": "Andaru Set 2",
+   "src": "andaru 2.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    0.415,
+    0.0
+   ],
+   "blade": [
+    0.519,
+    0.744
+   ]
+  },
+  {
+   "id": "and2_w5_spear",
+   "label": "Andaru Winged Spear",
+   "hand": "R",
+   "kind": "spear",
+   "glb": "pieces/props/and2_w5_spear.glb",
+   "grip": "fist",
+   "people": "andaru",
+   "culture_label": "Andaru",
+   "subset": "Andaru Set 2",
+   "src": "andaru 2.glb",
+   "support": [
+    0.0,
+    0.25,
+    0.0,
+    0.0,
+    0.901,
+    0.0
+   ],
+   "blade": [
+    1.06,
+    1.235
+   ]
+  },
+  {
+   "id": "and2_s1_shield",
+   "label": "Andaru Enamel Sipar I",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/and2_s1_shield.glb",
+   "grip": "fist",
+   "people": "andaru",
+   "culture_label": "Andaru",
+   "subset": "Andaru Set 2",
+   "src": "andaru 2.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "and2_s2_shield",
+   "label": "Andaru Enamel Sipar II",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/and2_s2_shield.glb",
+   "grip": "fist",
+   "people": "andaru",
+   "culture_label": "Andaru",
+   "subset": "Andaru Set 2",
+   "src": "andaru 2.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "and2_s3_shield",
+   "label": "Andaru Lion-Boss Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/and2_s3_shield.glb",
+   "grip": "fist",
+   "people": "andaru",
+   "culture_label": "Andaru",
+   "subset": "Andaru Set 2",
+   "src": "andaru 2.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "and2_s4_shield",
+   "label": "Andaru Star-Crest Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/and2_s4_shield.glb",
+   "grip": "fist",
+   "people": "andaru",
+   "culture_label": "Andaru",
+   "subset": "Andaru Set 2",
+   "src": "andaru 2.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "and2_s5_shield",
+   "label": "Andaru Teardrop Kite Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/and2_s5_shield.glb",
+   "grip": "fist",
+   "people": "andaru",
+   "culture_label": "Andaru",
+   "subset": "Andaru Set 2",
+   "src": "andaru 2.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "zeij_grd_w1_scimitar",
+   "label": "Zeijani Guard Saber",
+   "hand": "R",
+   "kind": "scimitar",
+   "glb": "pieces/props/zeij_grd_w1_scimitar.glb",
+   "grip": "fist",
+   "people": "zeijani",
+   "culture_label": "Zeijani",
+   "subset": "Zeijani Guard",
+   "src": "zeijani guard.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    -0.1,
+    0.0
+   ],
+   "blade": [
+    0.057,
+    0.646
+   ]
+  },
+  {
+   "id": "zeij_grd_w2_dagger",
+   "label": "Zeijani Guard Bayonet Knife",
+   "hand": "R",
+   "kind": "dagger",
+   "glb": "pieces/props/zeij_grd_w2_dagger.glb",
+   "grip": "fist",
+   "people": "zeijani",
+   "culture_label": "Zeijani",
+   "subset": "Zeijani Guard",
+   "src": "zeijani guard.glb",
+   "blade": [
+    0.05,
+    0.423
+   ]
+  },
+  {
+   "id": "zeij_grd_w3_mace",
+   "label": "Zeijani Guard Shock Baton",
+   "hand": "R",
+   "kind": "mace",
+   "glb": "pieces/props/zeij_grd_w3_mace.glb",
+   "grip": "fist",
+   "people": "zeijani",
+   "culture_label": "Zeijani",
+   "subset": "Zeijani Guard",
+   "src": "zeijani guard.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    0.394,
+    0.0
+   ],
+   "blade": [
+    0.492,
+    0.592
+   ]
+  },
+  {
+   "id": "zeij_grd_w4_axe",
+   "label": "Zeijani Guard Trench Axe",
+   "hand": "R",
+   "kind": "axe",
+   "glb": "pieces/props/zeij_grd_w4_axe.glb",
+   "grip": "fist",
+   "people": "zeijani",
+   "culture_label": "Zeijani",
+   "subset": "Zeijani Guard",
+   "src": "zeijani guard.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    0.422,
+    0.0
+   ],
+   "blade": [
+    0.528,
+    0.708
+   ]
+  },
+  {
+   "id": "zeij_grd_w5_spear",
+   "label": "Zeijani Guard Halberd Pike",
+   "hand": "R",
+   "kind": "spear",
+   "glb": "pieces/props/zeij_grd_w5_spear.glb",
+   "grip": "fist",
+   "people": "zeijani",
+   "culture_label": "Zeijani",
+   "subset": "Zeijani Guard",
+   "src": "zeijani guard.glb",
+   "support": [
+    0.0,
+    0.25,
+    0.0,
+    0.0,
+    0.55,
+    0.0
+   ],
+   "blade": [
+    0.648,
+    1.203
+   ]
+  },
+  {
+   "id": "zeij_grd_s1_shield",
+   "label": "Zeijani Guard Riot Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/zeij_grd_s1_shield.glb",
+   "grip": "fist",
+   "people": "zeijani",
+   "culture_label": "Zeijani",
+   "subset": "Zeijani Guard",
+   "src": "zeijani guard.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "zeij_grd_s2_shield",
+   "label": "Zeijani Guard Tower Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/zeij_grd_s2_shield.glb",
+   "grip": "fist",
+   "people": "zeijani",
+   "culture_label": "Zeijani",
+   "subset": "Zeijani Guard",
+   "src": "zeijani guard.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "zeij_grd_s3_shield",
+   "label": "Zeijani Guard Buckler",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/zeij_grd_s3_shield.glb",
+   "grip": "fist",
+   "people": "zeijani",
+   "culture_label": "Zeijani",
+   "subset": "Zeijani Guard",
+   "src": "zeijani guard.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "zeij_grd_s4_shield",
+   "label": "Zeijani Guard Chevrons Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/zeij_grd_s4_shield.glb",
+   "grip": "fist",
+   "people": "zeijani",
+   "culture_label": "Zeijani",
+   "subset": "Zeijani Guard",
+   "src": "zeijani guard.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "zeij_grd_s5_shield",
+   "label": "Zeijani Guard Bastion Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/zeij_grd_s5_shield.glb",
+   "grip": "fist",
+   "people": "zeijani",
+   "culture_label": "Zeijani",
+   "subset": "Zeijani Guard",
+   "src": "zeijani guard.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "zeij_camo_w1_sword",
+   "label": "Zeijani Jungle Machete Sword",
+   "hand": "R",
+   "kind": "sword",
+   "glb": "pieces/props/zeij_camo_w1_sword.glb",
+   "grip": "fist",
+   "people": "zeijani",
+   "culture_label": "Zeijani",
+   "subset": "Zeijani Jungle Camo",
+   "src": "zeijani jungle camo.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    -0.1,
+    0.0
+   ],
+   "blade": [
+    0.053,
+    0.827
+   ]
+  },
+  {
+   "id": "zeij_camo_w2_dagger",
+   "label": "Zeijani Jungle Survival Knife",
+   "hand": "R",
+   "kind": "dagger",
+   "glb": "pieces/props/zeij_camo_w2_dagger.glb",
+   "grip": "fist",
+   "people": "zeijani",
+   "culture_label": "Zeijani",
+   "subset": "Zeijani Jungle Camo",
+   "src": "zeijani jungle camo.glb",
+   "blade": [
+    0.05,
+    0.395
+   ]
+  },
+  {
+   "id": "zeij_camo_w3_mace",
+   "label": "Zeijani Jungle Breaching Club",
+   "hand": "R",
+   "kind": "mace",
+   "glb": "pieces/props/zeij_camo_w3_mace.glb",
+   "grip": "fist",
+   "people": "zeijani",
+   "culture_label": "Zeijani",
+   "subset": "Zeijani Jungle Camo",
+   "src": "zeijani jungle camo.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    0.422,
+    0.0
+   ],
+   "blade": [
+    0.527,
+    0.627
+   ]
+  },
+  {
+   "id": "zeij_camo_w4_axe",
+   "label": "Zeijani Jungle Tomahawk",
+   "hand": "R",
+   "kind": "axe",
+   "glb": "pieces/props/zeij_camo_w4_axe.glb",
+   "grip": "fist",
+   "people": "zeijani",
+   "culture_label": "Zeijani",
+   "subset": "Zeijani Jungle Camo",
+   "src": "zeijani jungle camo.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    0.398,
+    0.0
+   ],
+   "blade": [
+    0.497,
+    0.597
+   ]
+  },
+  {
+   "id": "zeij_camo_w5_spear",
+   "label": "Zeijani Jungle Boar Spear",
+   "hand": "R",
+   "kind": "spear",
+   "glb": "pieces/props/zeij_camo_w5_spear.glb",
+   "grip": "fist",
+   "people": "zeijani",
+   "culture_label": "Zeijani",
+   "subset": "Zeijani Jungle Camo",
+   "src": "zeijani jungle camo.glb",
+   "support": [
+    0.0,
+    0.25,
+    0.0,
+    0.0,
+    0.535,
+    0.0
+   ],
+   "blade": [
+    0.63,
+    1.17
+   ]
+  },
+  {
+   "id": "zeij_camo_s1_shield",
+   "label": "Zeijani Camo Round Targe",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/zeij_camo_s1_shield.glb",
+   "grip": "fist",
+   "people": "zeijani",
+   "culture_label": "Zeijani",
+   "subset": "Zeijani Jungle Camo",
+   "src": "zeijani jungle camo.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "zeij_camo_s2_shield",
+   "label": "Zeijani Camo Bark Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/zeij_camo_s2_shield.glb",
+   "grip": "fist",
+   "people": "zeijani",
+   "culture_label": "Zeijani",
+   "subset": "Zeijani Jungle Camo",
+   "src": "zeijani jungle camo.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "zeij_camo_s3_shield",
+   "label": "Zeijani Camo Skirmish Buckler",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/zeij_camo_s3_shield.glb",
+   "grip": "fist",
+   "people": "zeijani",
+   "culture_label": "Zeijani",
+   "subset": "Zeijani Jungle Camo",
+   "src": "zeijani jungle camo.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "zeij_camo_s4_shield",
+   "label": "Zeijani Camo Leaf-Pattern Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/zeij_camo_s4_shield.glb",
+   "grip": "fist",
+   "people": "zeijani",
+   "culture_label": "Zeijani",
+   "subset": "Zeijani Jungle Camo",
+   "src": "zeijani jungle camo.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "zeij_camo_s5_shield",
+   "label": "Zeijani Camo Patrol Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/zeij_camo_s5_shield.glb",
+   "grip": "fist",
+   "people": "zeijani",
+   "culture_label": "Zeijani",
+   "subset": "Zeijani Jungle Camo",
+   "src": "zeijani jungle camo.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "zeij_pylon_w1_sword",
+   "label": "Pylon Arc Broadsword",
+   "hand": "R",
+   "kind": "sword",
+   "glb": "pieces/props/zeij_pylon_w1_sword.glb",
+   "grip": "fist",
+   "people": "zeijani",
+   "culture_label": "Zeijani",
+   "subset": "Zeijani Pylon",
+   "src": "pylon.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    -0.1,
+    0.0
+   ],
+   "blade": [
+    0.06,
+    0.925
+   ]
+  },
+  {
+   "id": "zeij_pylon_w2_dagger",
+   "label": "Pylon Shard Dagger",
+   "hand": "R",
+   "kind": "dagger",
+   "glb": "pieces/props/zeij_pylon_w2_dagger.glb",
+   "grip": "fist",
+   "people": "zeijani",
+   "culture_label": "Zeijani",
+   "subset": "Zeijani Pylon",
+   "src": "pylon.glb",
+   "blade": [
+    0.05,
+    0.423
+   ]
+  },
+  {
+   "id": "zeij_pylon_w3_mace",
+   "label": "Pylon Resonator Mace",
+   "hand": "R",
+   "kind": "mace",
+   "glb": "pieces/props/zeij_pylon_w3_mace.glb",
+   "grip": "fist",
+   "people": "zeijani",
+   "culture_label": "Zeijani",
+   "subset": "Zeijani Pylon",
+   "src": "pylon.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    0.482,
+    0.0
+   ],
+   "blade": [
+    0.603,
+    0.703
+   ]
+  },
+  {
+   "id": "zeij_pylon_w4_axe",
+   "label": "Pylon Cleaver Axe",
+   "hand": "R",
+   "kind": "axe",
+   "glb": "pieces/props/zeij_pylon_w4_axe.glb",
+   "grip": "fist",
+   "people": "zeijani",
+   "culture_label": "Zeijani",
+   "subset": "Zeijani Pylon",
+   "src": "pylon.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    0.559,
+    0.0
+   ],
+   "blade": [
+    0.699,
+    0.799
+   ]
+  },
+  {
+   "id": "zeij_pylon_w5_spear",
+   "label": "Pylon Conduit Lance",
+   "hand": "R",
+   "kind": "spear",
+   "glb": "pieces/props/zeij_pylon_w5_spear.glb",
+   "grip": "fist",
+   "people": "zeijani",
+   "culture_label": "Zeijani",
+   "subset": "Zeijani Pylon",
+   "src": "pylon.glb",
+   "support": [
+    0.0,
+    0.25,
+    0.0,
+    0.0,
+    0.725,
+    0.0
+   ],
+   "blade": [
+    0.852,
+    1.203
+   ]
+  },
+  {
+   "id": "zeij_pylon_s1_shield",
+   "label": "Pylon Hex Aegis I",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/zeij_pylon_s1_shield.glb",
+   "grip": "fist",
+   "people": "zeijani",
+   "culture_label": "Zeijani",
+   "subset": "Zeijani Pylon",
+   "src": "pylon.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "zeij_pylon_s2_shield",
+   "label": "Pylon Coil Round Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/zeij_pylon_s2_shield.glb",
+   "grip": "fist",
+   "people": "zeijani",
+   "culture_label": "Zeijani",
+   "subset": "Zeijani Pylon",
+   "src": "pylon.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "zeij_pylon_s3_shield",
+   "label": "Pylon Spire Tower Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/zeij_pylon_s3_shield.glb",
+   "grip": "fist",
+   "people": "zeijani",
+   "culture_label": "Zeijani",
+   "subset": "Zeijani Pylon",
+   "src": "pylon.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "zeij_pylon_s4_shield",
+   "label": "Pylon Capacitor Buckler",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/zeij_pylon_s4_shield.glb",
+   "grip": "fist",
+   "people": "zeijani",
+   "culture_label": "Zeijani",
+   "subset": "Zeijani Pylon",
+   "src": "pylon.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "zeij_pylon_s5_shield",
+   "label": "Pylon Monolith Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/zeij_pylon_s5_shield.glb",
+   "grip": "fist",
+   "people": "zeijani",
+   "culture_label": "Zeijani",
+   "subset": "Zeijani Pylon",
+   "src": "pylon.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "rep_std_w1_scimitar",
+   "label": "Republic Officer Saber",
+   "hand": "R",
+   "kind": "scimitar",
+   "glb": "pieces/props/rep_std_w1_scimitar.glb",
+   "grip": "fist",
+   "people": "iron_republic",
+   "culture_label": "Iron Republic",
+   "subset": "Republic Standard",
+   "src": "republic.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    -0.1,
+    0.0
+   ],
+   "blade": [
+    0.057,
+    0.893
+   ]
+  },
+  {
+   "id": "rep_std_w2_rifle",
+   "label": "Republic Infantry Rifle",
+   "hand": "R",
+   "kind": "rifle",
+   "glb": "pieces/props/rep_std_w2_rifle.glb",
+   "grip": "trigger",
+   "people": "iron_republic",
+   "culture_label": "Iron Republic",
+   "subset": "Republic Standard",
+   "src": "republic.glb",
+   "support": [
+    0.0,
+    0.06,
+    0.16,
+    0.0,
+    0.06,
+    0.42
+   ]
+  },
+  {
+   "id": "rep_std_w3_rifle",
+   "label": "Republic Trench Carbine",
+   "hand": "R",
+   "kind": "rifle",
+   "glb": "pieces/props/rep_std_w3_rifle.glb",
+   "grip": "trigger",
+   "people": "iron_republic",
+   "culture_label": "Iron Republic",
+   "subset": "Republic Standard",
+   "src": "republic.glb",
+   "support": [
+    0.0,
+    0.06,
+    0.16,
+    0.0,
+    0.06,
+    0.42
+   ]
+  },
+  {
+   "id": "rep_std_w4_axe",
+   "label": "Republic Boarding Axe",
+   "hand": "R",
+   "kind": "axe",
+   "glb": "pieces/props/rep_std_w4_axe.glb",
+   "grip": "fist",
+   "people": "iron_republic",
+   "culture_label": "Iron Republic",
+   "subset": "Republic Standard",
+   "src": "republic.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    0.43,
+    0.0
+   ],
+   "blade": [
+    0.537,
+    0.687
+   ]
+  },
+  {
+   "id": "rep_std_w5_rifle",
+   "label": "Republic Heavy Volley Gun",
+   "hand": "R",
+   "kind": "rifle",
+   "glb": "pieces/props/rep_std_w5_rifle.glb",
+   "grip": "trigger",
+   "people": "iron_republic",
+   "culture_label": "Iron Republic",
+   "subset": "Republic Standard",
+   "src": "republic.glb",
+   "support": [
+    0.0,
+    0.06,
+    0.16,
+    0.0,
+    0.06,
+    0.42
+   ]
+  },
+  {
+   "id": "rep_std_s1_shield",
+   "label": "Republic Riveted Ballistic Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/rep_std_s1_shield.glb",
+   "grip": "fist",
+   "people": "iron_republic",
+   "culture_label": "Iron Republic",
+   "subset": "Republic Standard",
+   "src": "republic.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "rep_std_s2_shield",
+   "label": "Republic Siege Mantlet Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/rep_std_s2_shield.glb",
+   "grip": "fist",
+   "people": "iron_republic",
+   "culture_label": "Iron Republic",
+   "subset": "Republic Standard",
+   "src": "republic.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "rep_std_s3_shield",
+   "label": "Republic Trench Gun-Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/rep_std_s3_shield.glb",
+   "grip": "fist",
+   "people": "iron_republic",
+   "culture_label": "Iron Republic",
+   "subset": "Republic Standard",
+   "src": "republic.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "rep_std_s4_shield",
+   "label": "Republic Sapper Buckler",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/rep_std_s4_shield.glb",
+   "grip": "fist",
+   "people": "iron_republic",
+   "culture_label": "Iron Republic",
+   "subset": "Republic Standard",
+   "src": "republic.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "rep_std_s5_shield",
+   "label": "Republic Ironclad Pavise",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/rep_std_s5_shield.glb",
+   "grip": "fist",
+   "people": "iron_republic",
+   "culture_label": "Iron Republic",
+   "subset": "Republic Standard",
+   "src": "republic.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "shell_w1_sword",
+   "label": "Shell Coral-Tooth Sword",
+   "hand": "R",
+   "kind": "sword",
+   "glb": "pieces/props/shell_w1_sword.glb",
+   "grip": "fist",
+   "people": "islanders",
+   "culture_label": "Ring Sea (Shell)",
+   "subset": "Shell Set",
+   "src": "shell.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    -0.1,
+    0.0
+   ],
+   "blade": [
+    0.057,
+    0.893
+   ]
+  },
+  {
+   "id": "shell_w2_dagger",
+   "label": "Shell Abalone Kris Dagger",
+   "hand": "R",
+   "kind": "dagger",
+   "glb": "pieces/props/shell_w2_dagger.glb",
+   "grip": "fist",
+   "people": "islanders",
+   "culture_label": "Ring Sea (Shell)",
+   "subset": "Shell Set",
+   "src": "shell.glb",
+   "blade": [
+    0.05,
+    0.38
+   ]
+  },
+  {
+   "id": "shell_w3_mace",
+   "label": "Shell Conch-Spire Club",
+   "hand": "R",
+   "kind": "mace",
+   "glb": "pieces/props/shell_w3_mace.glb",
+   "grip": "fist",
+   "people": "islanders",
+   "culture_label": "Ring Sea (Shell)",
+   "subset": "Shell Set",
+   "src": "shell.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    0.346,
+    0.0
+   ],
+   "blade": [
+    0.432,
+    0.687
+   ]
+  },
+  {
+   "id": "shell_w4_axe",
+   "label": "Shell Giant-Clam Axe",
+   "hand": "R",
+   "kind": "axe",
+   "glb": "pieces/props/shell_w4_axe.glb",
+   "grip": "fist",
+   "people": "islanders",
+   "culture_label": "Ring Sea (Shell)",
+   "subset": "Shell Set",
+   "src": "shell.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    0.523,
+    0.0
+   ],
+   "blade": [
+    0.654,
+    0.754
+   ]
+  },
+  {
+   "id": "shell_w5_spear",
+   "label": "Shell Trident Harpoon",
+   "hand": "R",
+   "kind": "spear",
+   "glb": "pieces/props/shell_w5_spear.glb",
+   "grip": "fist",
+   "people": "islanders",
+   "culture_label": "Ring Sea (Shell)",
+   "subset": "Shell Set",
+   "src": "shell.glb",
+   "support": [
+    0.0,
+    0.25,
+    0.0,
+    0.0,
+    0.774,
+    0.0
+   ],
+   "blade": [
+    0.91,
+    1.235
+   ]
+  },
+  {
+   "id": "shell_s1_shield",
+   "label": "Shell Nautilus Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/shell_s1_shield.glb",
+   "grip": "fist",
+   "people": "islanders",
+   "culture_label": "Ring Sea (Shell)",
+   "subset": "Shell Set",
+   "src": "shell.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "shell_s2_shield",
+   "label": "Shell Scallop Crest Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/shell_s2_shield.glb",
+   "grip": "fist",
+   "people": "islanders",
+   "culture_label": "Ring Sea (Shell)",
+   "subset": "Shell Set",
+   "src": "shell.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "shell_s3_shield",
+   "label": "Shell Abalone Oval Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/shell_s3_shield.glb",
+   "grip": "fist",
+   "people": "islanders",
+   "culture_label": "Ring Sea (Shell)",
+   "subset": "Shell Set",
+   "src": "shell.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "shell_s4_shield",
+   "label": "Shell Sea-Urchin Buckler",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/shell_s4_shield.glb",
+   "grip": "fist",
+   "people": "islanders",
+   "culture_label": "Ring Sea (Shell)",
+   "subset": "Shell Set",
+   "src": "shell.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "shell_s5_shield",
+   "label": "Shell Horseshoe Carapace Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/shell_s5_shield.glb",
+   "grip": "fist",
+   "people": "islanders",
+   "culture_label": "Ring Sea (Shell)",
+   "subset": "Shell Set",
+   "src": "shell.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "liz1_w1_sword",
+   "label": "Lizard Fang Macuahuitl",
+   "hand": "R",
+   "kind": "sword",
+   "glb": "pieces/props/liz1_w1_sword.glb",
+   "grip": "fist",
+   "people": "lizardmen",
+   "culture_label": "Lizardmen",
+   "subset": "Lizard Set 1",
+   "src": "lizard.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    -0.1,
+    0.0
+   ],
+   "blade": [
+    0.057,
+    0.845
+   ]
+  },
+  {
+   "id": "liz1_w2_dagger",
+   "label": "Lizard Claw Ritual Dagger",
+   "hand": "R",
+   "kind": "dagger",
+   "glb": "pieces/props/liz1_w2_dagger.glb",
+   "grip": "fist",
+   "people": "lizardmen",
+   "culture_label": "Lizardmen",
+   "subset": "Lizard Set 1",
+   "src": "lizard.glb",
+   "blade": [
+    0.05,
+    0.423
+   ]
+  },
+  {
+   "id": "liz1_w3_mace",
+   "label": "Lizard Tail-Spike Club",
+   "hand": "R",
+   "kind": "mace",
+   "glb": "pieces/props/liz1_w3_mace.glb",
+   "grip": "fist",
+   "people": "lizardmen",
+   "culture_label": "Lizardmen",
+   "subset": "Lizard Set 1",
+   "src": "lizard.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    0.506,
+    0.0
+   ],
+   "blade": [
+    0.633,
+    0.733
+   ]
+  },
+  {
+   "id": "liz1_w4_axe",
+   "label": "Lizard Bone-Crest Axe",
+   "hand": "R",
+   "kind": "axe",
+   "glb": "pieces/props/liz1_w4_axe.glb",
+   "grip": "fist",
+   "people": "lizardmen",
+   "culture_label": "Lizardmen",
+   "subset": "Lizard Set 1",
+   "src": "lizard.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    0.415,
+    0.0
+   ],
+   "blade": [
+    0.519,
+    0.619
+   ]
+  },
+  {
+   "id": "liz1_w5_spear",
+   "label": "Lizard Barbed Hunting Spear",
+   "hand": "R",
+   "kind": "spear",
+   "glb": "pieces/props/liz1_w5_spear.glb",
+   "grip": "fist",
+   "people": "lizardmen",
+   "culture_label": "Lizardmen",
+   "subset": "Lizard Set 1",
+   "src": "lizard.glb",
+   "support": [
+    0.0,
+    0.25,
+    0.0,
+    0.0,
+    0.89,
+    0.0
+   ],
+   "blade": [
+    1.047,
+    1.203
+   ]
+  },
+  {
+   "id": "liz1_s1_shield",
+   "label": "Lizard Scale Round Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/liz1_s1_shield.glb",
+   "grip": "fist",
+   "people": "lizardmen",
+   "culture_label": "Lizardmen",
+   "subset": "Lizard Set 1",
+   "src": "lizard.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "liz1_s2_shield",
+   "label": "Lizard Croc-Hide Tower Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/liz1_s2_shield.glb",
+   "grip": "fist",
+   "people": "lizardmen",
+   "culture_label": "Lizardmen",
+   "subset": "Lizard Set 1",
+   "src": "lizard.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "liz1_s3_shield",
+   "label": "Lizard Rib-Bone Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/liz1_s3_shield.glb",
+   "grip": "fist",
+   "people": "lizardmen",
+   "culture_label": "Lizardmen",
+   "subset": "Lizard Set 1",
+   "src": "lizard.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "liz1_s4_shield",
+   "label": "Lizard Raptor-Skull Buckler",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/liz1_s4_shield.glb",
+   "grip": "fist",
+   "people": "lizardmen",
+   "culture_label": "Lizardmen",
+   "subset": "Lizard Set 1",
+   "src": "lizard.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "liz1_s5_shield",
+   "label": "Lizard Frilled Carapace Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/liz1_s5_shield.glb",
+   "grip": "fist",
+   "people": "lizardmen",
+   "culture_label": "Lizardmen",
+   "subset": "Lizard Set 1",
+   "src": "lizard.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "liz2_w1_sword",
+   "label": "Lizard Jade Broadsword",
+   "hand": "R",
+   "kind": "sword",
+   "glb": "pieces/props/liz2_w1_sword.glb",
+   "grip": "fist",
+   "people": "lizardmen",
+   "culture_label": "Lizardmen",
+   "subset": "Lizard Set 2",
+   "src": "lizard 2.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    -0.1,
+    0.0
+   ],
+   "blade": [
+    0.057,
+    0.83
+   ]
+  },
+  {
+   "id": "liz2_w2_dagger",
+   "label": "Lizard Serpent Sacrificial Knife",
+   "hand": "R",
+   "kind": "dagger",
+   "glb": "pieces/props/liz2_w2_dagger.glb",
+   "grip": "fist",
+   "people": "lizardmen",
+   "culture_label": "Lizardmen",
+   "subset": "Lizard Set 2",
+   "src": "lizard 2.glb",
+   "blade": [
+    0.05,
+    0.41
+   ]
+  },
+  {
+   "id": "liz2_w3_mace",
+   "label": "Lizard Skull Totem Mace",
+   "hand": "R",
+   "kind": "mace",
+   "glb": "pieces/props/liz2_w3_mace.glb",
+   "grip": "fist",
+   "people": "lizardmen",
+   "culture_label": "Lizardmen",
+   "subset": "Lizard Set 2",
+   "src": "lizard 2.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    0.338,
+    0.0
+   ],
+   "blade": [
+    0.423,
+    0.523
+   ]
+  },
+  {
+   "id": "liz2_w4_axe",
+   "label": "Lizard Twin-Fang Battle Axe",
+   "hand": "R",
+   "kind": "axe",
+   "glb": "pieces/props/liz2_w4_axe.glb",
+   "grip": "fist",
+   "people": "lizardmen",
+   "culture_label": "Lizardmen",
+   "subset": "Lizard Set 2",
+   "src": "lizard 2.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    0.439,
+    0.0
+   ],
+   "blade": [
+    0.549,
+    0.649
+   ]
+  },
+  {
+   "id": "liz2_w5_spear",
+   "label": "Lizard Serpent Glaive",
+   "hand": "R",
+   "kind": "spear",
+   "glb": "pieces/props/liz2_w5_spear.glb",
+   "grip": "fist",
+   "people": "lizardmen",
+   "culture_label": "Lizardmen",
+   "subset": "Lizard Set 2",
+   "src": "lizard 2.glb",
+   "support": [
+    0.0,
+    0.25,
+    0.0,
+    0.0,
+    0.572,
+    0.0
+   ],
+   "blade": [
+    0.672,
+    1.203
+   ]
+  },
+  {
+   "id": "liz2_s1_shield",
+   "label": "Lizard Jade-Boss Buckler",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/liz2_s1_shield.glb",
+   "grip": "fist",
+   "people": "lizardmen",
+   "culture_label": "Lizardmen",
+   "subset": "Lizard Set 2",
+   "src": "lizard 2.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "liz2_s2_shield",
+   "label": "Lizard Horned Hide Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/liz2_s2_shield.glb",
+   "grip": "fist",
+   "people": "lizardmen",
+   "culture_label": "Lizardmen",
+   "subset": "Lizard Set 2",
+   "src": "lizard 2.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "liz2_s3_shield",
+   "label": "Lizard Fang-Rim Oval Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/liz2_s3_shield.glb",
+   "grip": "fist",
+   "people": "lizardmen",
+   "culture_label": "Lizardmen",
+   "subset": "Lizard Set 2",
+   "src": "lizard 2.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "liz2_s4_shield",
+   "label": "Lizard Swamp-Turtle Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/liz2_s4_shield.glb",
+   "grip": "fist",
+   "people": "lizardmen",
+   "culture_label": "Lizardmen",
+   "subset": "Lizard Set 2",
+   "src": "lizard 2.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "liz2_s5_shield",
+   "label": "Lizard Great Totem Pavise",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/liz2_s5_shield.glb",
+   "grip": "fist",
+   "people": "lizardmen",
+   "culture_label": "Lizardmen",
+   "subset": "Lizard Set 2",
+   "src": "lizard 2.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "xan_w1_scimitar",
+   "label": "Xanadu Imperial Dao",
+   "hand": "R",
+   "kind": "scimitar",
+   "glb": "pieces/props/xan_w1_scimitar.glb",
+   "grip": "fist",
+   "people": "xanadu",
+   "culture_label": "Xanadu",
+   "subset": "Xanadu Set",
+   "src": "xanadu.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    -0.1,
+    0.0
+   ],
+   "blade": [
+    0.057,
+    0.89
+   ]
+  },
+  {
+   "id": "xan_w2_dagger",
+   "label": "Xanadu Jade-Hilt Dagger",
+   "hand": "R",
+   "kind": "dagger",
+   "glb": "pieces/props/xan_w2_dagger.glb",
+   "grip": "fist",
+   "people": "xanadu",
+   "culture_label": "Xanadu",
+   "subset": "Xanadu Set",
+   "src": "xanadu.glb",
+   "blade": [
+    0.05,
+    0.423
+   ]
+  },
+  {
+   "id": "xan_w3_mace",
+   "label": "Xanadu Gilded Melon Hammer",
+   "hand": "R",
+   "kind": "mace",
+   "glb": "pieces/props/xan_w3_mace.glb",
+   "grip": "fist",
+   "people": "xanadu",
+   "culture_label": "Xanadu",
+   "subset": "Xanadu Set",
+   "src": "xanadu.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    0.442,
+    0.0
+   ],
+   "blade": [
+    0.552,
+    0.652
+   ]
+  },
+  {
+   "id": "xan_w4_axe",
+   "label": "Xanadu Dragon-Beard Fu Axe",
+   "hand": "R",
+   "kind": "axe",
+   "glb": "pieces/props/xan_w4_axe.glb",
+   "grip": "fist",
+   "people": "xanadu",
+   "culture_label": "Xanadu",
+   "subset": "Xanadu Set",
+   "src": "xanadu.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    0.475,
+    0.0
+   ],
+   "blade": [
+    0.594,
+    0.714
+   ]
+  },
+  {
+   "id": "xan_w5_spear",
+   "label": "Xanadu Red-Tassel Qiang Spear",
+   "hand": "R",
+   "kind": "spear",
+   "glb": "pieces/props/xan_w5_spear.glb",
+   "grip": "fist",
+   "people": "xanadu",
+   "culture_label": "Xanadu",
+   "subset": "Xanadu Set",
+   "src": "xanadu.glb",
+   "support": [
+    0.0,
+    0.25,
+    0.0,
+    0.0,
+    0.565,
+    0.0
+   ],
+   "blade": [
+    0.665,
+    1.235
+   ]
+  },
+  {
+   "id": "xan_s1_shield",
+   "label": "Xanadu Tiger-Face \u85e4\u724c Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/xan_s1_shield.glb",
+   "grip": "fist",
+   "people": "xanadu",
+   "culture_label": "Xanadu",
+   "subset": "Xanadu Set",
+   "src": "xanadu.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "xan_s2_shield",
+   "label": "Xanadu Cloud-Lacquer Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/xan_s2_shield.glb",
+   "grip": "fist",
+   "people": "xanadu",
+   "culture_label": "Xanadu",
+   "subset": "Xanadu Set",
+   "src": "xanadu.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "xan_s3_shield",
+   "label": "Xanadu Imperial Lotus Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/xan_s3_shield.glb",
+   "grip": "fist",
+   "people": "xanadu",
+   "culture_label": "Xanadu",
+   "subset": "Xanadu Set",
+   "src": "xanadu.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "xan_s4_shield",
+   "label": "Xanadu Phoenix-Crest Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/xan_s4_shield.glb",
+   "grip": "fist",
+   "people": "xanadu",
+   "culture_label": "Xanadu",
+   "subset": "Xanadu Set",
+   "src": "xanadu.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "xan_s5_shield",
+   "label": "Xanadu Fortress Pavilion Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/xan_s5_shield.glb",
+   "grip": "fist",
+   "people": "xanadu",
+   "culture_label": "Xanadu",
+   "subset": "Xanadu Set",
+   "src": "xanadu.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "tg_set_w1_sword",
+   "label": "Tungang Pipe-Wrench Cleaver",
+   "hand": "R",
+   "kind": "sword",
+   "glb": "pieces/props/tg_set_w1_sword.glb",
+   "grip": "fist",
+   "people": "tungang",
+   "culture_label": "Tungangs",
+   "subset": "Tungang Set",
+   "src": "tungang.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    -0.1,
+    0.0
+   ],
+   "blade": [
+    0.054,
+    0.612
+   ]
+  },
+  {
+   "id": "tg_set_w2_dagger",
+   "label": "Tungang Bilge Utility Shiv",
+   "hand": "R",
+   "kind": "dagger",
+   "glb": "pieces/props/tg_set_w2_dagger.glb",
+   "grip": "fist",
+   "people": "tungang",
+   "culture_label": "Tungangs",
+   "subset": "Tungang Set",
+   "src": "tungang.glb",
+   "blade": [
+    0.05,
+    0.395
+   ]
+  },
+  {
+   "id": "tg_set_w3_mace",
+   "label": "Tungang Valve-Wheel Mace",
+   "hand": "R",
+   "kind": "mace",
+   "glb": "pieces/props/tg_set_w3_mace.glb",
+   "grip": "fist",
+   "people": "tungang",
+   "culture_label": "Tungangs",
+   "subset": "Tungang Set",
+   "src": "tungang.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    0.55,
+    0.0
+   ],
+   "blade": [
+    0.687,
+    0.787
+   ]
+  },
+  {
+   "id": "tg_set_w4_axe",
+   "label": "Tungang Bulkhead Fire Axe",
+   "hand": "R",
+   "kind": "axe",
+   "glb": "pieces/props/tg_set_w4_axe.glb",
+   "grip": "fist",
+   "people": "tungang",
+   "culture_label": "Tungangs",
+   "subset": "Tungang Set",
+   "src": "tungang.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    0.494,
+    0.0
+   ],
+   "blade": [
+    0.618,
+    0.718
+   ]
+  },
+  {
+   "id": "tg_set_w5_spear",
+   "label": "Tungang Deck Harpoon Pike",
+   "hand": "R",
+   "kind": "spear",
+   "glb": "pieces/props/tg_set_w5_spear.glb",
+   "grip": "fist",
+   "people": "tungang",
+   "culture_label": "Tungangs",
+   "subset": "Tungang Set",
+   "src": "tungang.glb",
+   "support": [
+    0.0,
+    0.25,
+    0.0,
+    0.0,
+    0.98,
+    0.0
+   ],
+   "blade": [
+    1.152,
+    1.203
+   ]
+  },
+  {
+   "id": "tg_set_s1_shield",
+   "label": "Tungang Porthole Hatch Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/tg_set_s1_shield.glb",
+   "grip": "fist",
+   "people": "tungang",
+   "culture_label": "Tungangs",
+   "subset": "Tungang Set",
+   "src": "tungang.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "tg_set_s2_shield",
+   "label": "Tungang Riveted Hull Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/tg_set_s2_shield.glb",
+   "grip": "fist",
+   "people": "tungang",
+   "culture_label": "Tungangs",
+   "subset": "Tungang Set",
+   "src": "tungang.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "tg_set_s3_shield",
+   "label": "Tungang Buoy-Ring Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/tg_set_s3_shield.glb",
+   "grip": "fist",
+   "people": "tungang",
+   "culture_label": "Tungangs",
+   "subset": "Tungang Set",
+   "src": "tungang.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "tg_set_s4_shield",
+   "label": "Tungang Boiler-Door Pavise",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/tg_set_s4_shield.glb",
+   "grip": "fist",
+   "people": "tungang",
+   "culture_label": "Tungangs",
+   "subset": "Tungang Set",
+   "src": "tungang.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "tg_set_s5_shield",
+   "label": "Tungang Barnacle Plate Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/tg_set_s5_shield.glb",
+   "grip": "fist",
+   "people": "tungang",
+   "culture_label": "Tungangs",
+   "subset": "Tungang Set",
+   "src": "tungang.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "pman_w1_sword",
+   "label": "Painted Man Bone-Inlaid Sword",
+   "hand": "R",
+   "kind": "sword",
+   "glb": "pieces/props/pman_w1_sword.glb",
+   "grip": "fist",
+   "people": "painted_men",
+   "culture_label": "Painted Men",
+   "subset": "Painted Men Set",
+   "src": "paintedman.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    -0.1,
+    0.0
+   ],
+   "blade": [
+    0.057,
+    0.845
+   ]
+  },
+  {
+   "id": "pman_w2_dagger",
+   "label": "Painted Man Knapped Flint Knife",
+   "hand": "R",
+   "kind": "dagger",
+   "glb": "pieces/props/pman_w2_dagger.glb",
+   "grip": "fist",
+   "people": "painted_men",
+   "culture_label": "Painted Men",
+   "subset": "Painted Men Set",
+   "src": "paintedman.glb",
+   "blade": [
+    0.05,
+    0.423
+   ]
+  },
+  {
+   "id": "pman_w3_mace",
+   "label": "Painted Man War-Totem Club",
+   "hand": "R",
+   "kind": "mace",
+   "glb": "pieces/props/pman_w3_mace.glb",
+   "grip": "fist",
+   "people": "painted_men",
+   "culture_label": "Painted Men",
+   "subset": "Painted Men Set",
+   "src": "paintedman.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    0.406,
+    0.0
+   ],
+   "blade": [
+    0.507,
+    0.657
+   ]
+  },
+  {
+   "id": "pman_w4_axe",
+   "label": "Painted Man Stone Tomahawk",
+   "hand": "R",
+   "kind": "axe",
+   "glb": "pieces/props/pman_w4_axe.glb",
+   "grip": "fist",
+   "people": "painted_men",
+   "culture_label": "Painted Men",
+   "subset": "Painted Men Set",
+   "src": "paintedman.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    0.298,
+    0.0
+   ],
+   "blade": [
+    0.372,
+    0.472
+   ]
+  },
+  {
+   "id": "pman_w5_spear",
+   "label": "Painted Man Feathered Lance",
+   "hand": "R",
+   "kind": "spear",
+   "glb": "pieces/props/pman_w5_spear.glb",
+   "grip": "fist",
+   "people": "painted_men",
+   "culture_label": "Painted Men",
+   "subset": "Painted Men Set",
+   "src": "paintedman.glb",
+   "support": [
+    0.0,
+    0.25,
+    0.0,
+    0.0,
+    0.55,
+    0.0
+   ],
+   "blade": [
+    0.647,
+    1.203
+   ]
+  },
+  {
+   "id": "pman_s1_shield",
+   "label": "Painted Man Handprint Hide Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/pman_s1_shield.glb",
+   "grip": "fist",
+   "people": "painted_men",
+   "culture_label": "Painted Men",
+   "subset": "Painted Men Set",
+   "src": "paintedman.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "pman_s2_shield",
+   "label": "Painted Man Horned Wing Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/pman_s2_shield.glb",
+   "grip": "fist",
+   "people": "painted_men",
+   "culture_label": "Painted Men",
+   "subset": "Painted Men Set",
+   "src": "paintedman.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "pman_s3_shield",
+   "label": "Painted Man Spiral Sun Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/pman_s3_shield.glb",
+   "grip": "fist",
+   "people": "painted_men",
+   "culture_label": "Painted Men",
+   "subset": "Painted Men Set",
+   "src": "paintedman.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "pman_s4_shield",
+   "label": "Painted Man Bone-Spoke Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/pman_s4_shield.glb",
+   "grip": "fist",
+   "people": "painted_men",
+   "culture_label": "Painted Men",
+   "subset": "Painted Men Set",
+   "src": "paintedman.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "pman_s5_shield",
+   "label": "Painted Man Medicine Wheel Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/pman_s5_shield.glb",
+   "grip": "fist",
+   "people": "painted_men",
+   "culture_label": "Painted Men",
+   "subset": "Painted Men Set",
+   "src": "paintedman.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "kor_bog_w1_sword",
+   "label": "Korona Bog-Iron Leaf Sword",
+   "hand": "R",
+   "kind": "sword",
+   "glb": "pieces/props/kor_bog_w1_sword.glb",
+   "grip": "fist",
+   "people": "korona",
+   "culture_label": "Korona (Abyssal)",
+   "subset": "Korona Bog",
+   "src": "korona - bog.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    -0.1,
+    0.0
+   ],
+   "blade": [
+    0.057,
+    0.893
+   ]
+  },
+  {
+   "id": "kor_bog_w2_dagger",
+   "label": "Korona Bog-Root Dagger",
+   "hand": "R",
+   "kind": "dagger",
+   "glb": "pieces/props/kor_bog_w2_dagger.glb",
+   "grip": "fist",
+   "people": "korona",
+   "culture_label": "Korona (Abyssal)",
+   "subset": "Korona Bog",
+   "src": "korona - bog.glb",
+   "blade": [
+    0.05,
+    0.32
+   ]
+  },
+  {
+   "id": "kor_bog_w3_mace",
+   "label": "Korona Bog-Stone Knot Club",
+   "hand": "R",
+   "kind": "mace",
+   "glb": "pieces/props/kor_bog_w3_mace.glb",
+   "grip": "fist",
+   "people": "korona",
+   "culture_label": "Korona (Abyssal)",
+   "subset": "Korona Bog",
+   "src": "korona - bog.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    0.322,
+    0.0
+   ],
+   "blade": [
+    0.402,
+    0.687
+   ]
+  },
+  {
+   "id": "kor_bog_w4_axe",
+   "label": "Korona Bog-Iron Bearded Axe",
+   "hand": "R",
+   "kind": "axe",
+   "glb": "pieces/props/kor_bog_w4_axe.glb",
+   "grip": "fist",
+   "people": "korona",
+   "culture_label": "Korona (Abyssal)",
+   "subset": "Korona Bog",
+   "src": "korona - bog.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    0.494,
+    0.0
+   ],
+   "blade": [
+    0.618,
+    0.723
+   ]
+  },
+  {
+   "id": "kor_bog_w5_spear",
+   "label": "Korona Bog-Reed Barbed Spear",
+   "hand": "R",
+   "kind": "spear",
+   "glb": "pieces/props/kor_bog_w5_spear.glb",
+   "grip": "fist",
+   "people": "korona",
+   "culture_label": "Korona (Abyssal)",
+   "subset": "Korona Bog",
+   "src": "korona - bog.glb",
+   "support": [
+    0.0,
+    0.25,
+    0.0,
+    0.0,
+    0.55,
+    0.0
+   ],
+   "blade": [
+    0.648,
+    1.203
+   ]
+  },
+  {
+   "id": "kor_bog_s1_shield",
+   "label": "Korona Bog-Oak Round Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/kor_bog_s1_shield.glb",
+   "grip": "fist",
+   "people": "korona",
+   "culture_label": "Korona (Abyssal)",
+   "subset": "Korona Bog",
+   "src": "korona - bog.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "kor_bog_s2_shield",
+   "label": "Korona Moss-Wicker Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/kor_bog_s2_shield.glb",
+   "grip": "fist",
+   "people": "korona",
+   "culture_label": "Korona (Abyssal)",
+   "subset": "Korona Bog",
+   "src": "korona - bog.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "kor_bog_s3_shield",
+   "label": "Korona Peat-Hide Buckler",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/kor_bog_s3_shield.glb",
+   "grip": "fist",
+   "people": "korona",
+   "culture_label": "Korona (Abyssal)",
+   "subset": "Korona Bog",
+   "src": "korona - bog.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "kor_bog_s4_shield",
+   "label": "Korona Fen-Serpent Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/kor_bog_s4_shield.glb",
+   "grip": "fist",
+   "people": "korona",
+   "culture_label": "Korona (Abyssal)",
+   "subset": "Korona Bog",
+   "src": "korona - bog.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "kor_bog_s5_shield",
+   "label": "Korona Mire-Bark Oval Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/kor_bog_s5_shield.glb",
+   "grip": "fist",
+   "people": "korona",
+   "culture_label": "Korona (Abyssal)",
+   "subset": "Korona Bog",
+   "src": "korona - bog.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "kor_bird_w1_sword",
+   "label": "Korona Bird-Clan Talon Sword",
+   "hand": "R",
+   "kind": "sword",
+   "glb": "pieces/props/kor_bird_w1_sword.glb",
+   "grip": "fist",
+   "people": "korona",
+   "culture_label": "Korona (Abyssal)",
+   "subset": "Korona Bird",
+   "src": "korona - bird.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    -0.1,
+    0.0
+   ],
+   "blade": [
+    0.057,
+    0.845
+   ]
+  },
+  {
+   "id": "kor_bird_w2_dagger",
+   "label": "Korona Bird-Clan Beak Dagger",
+   "hand": "R",
+   "kind": "dagger",
+   "glb": "pieces/props/kor_bird_w2_dagger.glb",
+   "grip": "fist",
+   "people": "korona",
+   "culture_label": "Korona (Abyssal)",
+   "subset": "Korona Bird",
+   "src": "korona - bird.glb",
+   "blade": [
+    0.05,
+    0.423
+   ]
+  },
+  {
+   "id": "kor_bird_w3_axe",
+   "label": "Korona Bird-Clan Winged Axe",
+   "hand": "R",
+   "kind": "axe",
+   "glb": "pieces/props/kor_bird_w3_axe.glb",
+   "grip": "fist",
+   "people": "korona",
+   "culture_label": "Korona (Abyssal)",
+   "subset": "Korona Bird",
+   "src": "korona - bird.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    0.367,
+    0.0
+   ],
+   "blade": [
+    0.459,
+    0.714
+   ]
+  },
+  {
+   "id": "kor_bird_w4_mace",
+   "label": "Korona Bird-Clan Plumed Mace",
+   "hand": "R",
+   "kind": "mace",
+   "glb": "pieces/props/kor_bird_w4_mace.glb",
+   "grip": "fist",
+   "people": "korona",
+   "culture_label": "Korona (Abyssal)",
+   "subset": "Korona Bird",
+   "src": "korona - bird.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    0.466,
+    0.0
+   ],
+   "blade": [
+    0.582,
+    0.687
+   ]
+  },
+  {
+   "id": "kor_bird_w5_spear",
+   "label": "Korona Bird-Clan Heron Spear",
+   "hand": "R",
+   "kind": "spear",
+   "glb": "pieces/props/kor_bird_w5_spear.glb",
+   "grip": "fist",
+   "people": "korona",
+   "culture_label": "Korona (Abyssal)",
+   "subset": "Korona Bird",
+   "src": "korona - bird.glb",
+   "support": [
+    0.0,
+    0.25,
+    0.0,
+    0.0,
+    0.89,
+    0.0
+   ],
+   "blade": [
+    1.047,
+    1.203
+   ]
+  },
+  {
+   "id": "kor_bird_s1_shield",
+   "label": "Korona Feather-Rim Round Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/kor_bird_s1_shield.glb",
+   "grip": "fist",
+   "people": "korona",
+   "culture_label": "Korona (Abyssal)",
+   "subset": "Korona Bird",
+   "src": "korona - bird.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "kor_bird_s2_shield",
+   "label": "Korona Wing-Pair Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/kor_bird_s2_shield.glb",
+   "grip": "fist",
+   "people": "korona",
+   "culture_label": "Korona (Abyssal)",
+   "subset": "Korona Bird",
+   "src": "korona - bird.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "kor_bird_s3_shield",
+   "label": "Korona Owl-Visage Buckler",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/kor_bird_s3_shield.glb",
+   "grip": "fist",
+   "people": "korona",
+   "culture_label": "Korona (Abyssal)",
+   "subset": "Korona Bird",
+   "src": "korona - bird.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "kor_bird_s4_shield",
+   "label": "Korona Hawk-Pinion Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/kor_bird_s4_shield.glb",
+   "grip": "fist",
+   "people": "korona",
+   "culture_label": "Korona (Abyssal)",
+   "subset": "Korona Bird",
+   "src": "korona - bird.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "kor_bird_s5_shield",
+   "label": "Korona Crane-Crest Oval Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/kor_bird_s5_shield.glb",
+   "grip": "fist",
+   "people": "korona",
+   "culture_label": "Korona (Abyssal)",
+   "subset": "Korona Bird",
+   "src": "korona - bird.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "dasri_w1_scimitar",
+   "label": "Dasri Curved Talwar",
+   "hand": "R",
+   "kind": "scimitar",
+   "glb": "pieces/props/dasri_w1_scimitar.glb",
+   "grip": "fist",
+   "people": "dasri",
+   "culture_label": "Dasri",
+   "subset": "Dasri Set",
+   "src": "dasri.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    -0.1,
+    0.0
+   ],
+   "blade": [
+    0.057,
+    0.893
+   ]
+  },
+  {
+   "id": "dasri_w2_dagger",
+   "label": "Dasri Pesh-Kabz Dagger",
+   "hand": "R",
+   "kind": "dagger",
+   "glb": "pieces/props/dasri_w2_dagger.glb",
+   "grip": "fist",
+   "people": "dasri",
+   "culture_label": "Dasri",
+   "subset": "Dasri Set",
+   "src": "dasri.glb",
+   "blade": [
+    0.05,
+    0.423
+   ]
+  },
+  {
+   "id": "dasri_w3_mace",
+   "label": "Dasri Flanged Shishpar Mace",
+   "hand": "R",
+   "kind": "mace",
+   "glb": "pieces/props/dasri_w3_mace.glb",
+   "grip": "fist",
+   "people": "dasri",
+   "culture_label": "Dasri",
+   "subset": "Dasri Set",
+   "src": "dasri.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    0.454,
+    0.0
+   ],
+   "blade": [
+    0.567,
+    0.667
+   ]
+  },
+  {
+   "id": "dasri_w4_axe",
+   "label": "Dasri Crescent Tabar Axe",
+   "hand": "R",
+   "kind": "axe",
+   "glb": "pieces/props/dasri_w4_axe.glb",
+   "grip": "fist",
+   "people": "dasri",
+   "culture_label": "Dasri",
+   "subset": "Dasri Set",
+   "src": "dasri.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    0.578,
+    0.0
+   ],
+   "blade": [
+    0.723,
+    0.823
+   ]
+  },
+  {
+   "id": "dasri_w5_spear",
+   "label": "Dasri Steel-Tipped Lance",
+   "hand": "R",
+   "kind": "spear",
+   "glb": "pieces/props/dasri_w5_spear.glb",
+   "grip": "fist",
+   "people": "dasri",
+   "culture_label": "Dasri",
+   "subset": "Dasri Set",
+   "src": "dasri.glb",
+   "support": [
+    0.0,
+    0.25,
+    0.0,
+    0.0,
+    0.565,
+    0.0
+   ],
+   "blade": [
+    0.665,
+    1.235
+   ]
+  },
+  {
+   "id": "dasri_s1_shield",
+   "label": "Dasri Four-Boss Dhal I",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/dasri_s1_shield.glb",
+   "grip": "fist",
+   "people": "dasri",
+   "culture_label": "Dasri",
+   "subset": "Dasri Set",
+   "src": "dasri.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "dasri_s2_shield",
+   "label": "Dasri Brass-Studded Dhal II",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/dasri_s2_shield.glb",
+   "grip": "fist",
+   "people": "dasri",
+   "culture_label": "Dasri",
+   "subset": "Dasri Set",
+   "src": "dasri.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "dasri_s3_shield",
+   "label": "Dasri Velvet-Rim Buckler",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/dasri_s3_shield.glb",
+   "grip": "fist",
+   "people": "dasri",
+   "culture_label": "Dasri",
+   "subset": "Dasri Set",
+   "src": "dasri.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "dasri_s4_shield",
+   "label": "Dasri Sunburst Dhal Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/dasri_s4_shield.glb",
+   "grip": "fist",
+   "people": "dasri",
+   "culture_label": "Dasri",
+   "subset": "Dasri Set",
+   "src": "dasri.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "dasri_s5_shield",
+   "label": "Dasri Rhinoceros-Hide Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/dasri_s5_shield.glb",
+   "grip": "fist",
+   "people": "dasri",
+   "culture_label": "Dasri",
+   "subset": "Dasri Set",
+   "src": "dasri.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "shumar_w1_scimitar",
+   "label": "Shumar Bronze Sickle-Sword",
+   "hand": "R",
+   "kind": "scimitar",
+   "glb": "pieces/props/shumar_w1_scimitar.glb",
+   "grip": "fist",
+   "people": "shumar",
+   "culture_label": "Shumar",
+   "subset": "Shumar Set",
+   "src": "Shumar.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    -0.1,
+    0.0
+   ],
+   "blade": [
+    0.054,
+    0.846
+   ]
+  },
+  {
+   "id": "shumar_w2_dagger",
+   "label": "Shumar Lapis-Hilt Dagger",
+   "hand": "R",
+   "kind": "dagger",
+   "glb": "pieces/props/shumar_w2_dagger.glb",
+   "grip": "fist",
+   "people": "shumar",
+   "culture_label": "Shumar",
+   "subset": "Shumar Set",
+   "src": "Shumar.glb",
+   "blade": [
+    0.05,
+    0.41
+   ]
+  },
+  {
+   "id": "shumar_w3_mace",
+   "label": "Shumar Star-Head Bronze Mace",
+   "hand": "R",
+   "kind": "mace",
+   "glb": "pieces/props/shumar_w3_mace.glb",
+   "grip": "fist",
+   "people": "shumar",
+   "culture_label": "Shumar",
+   "subset": "Shumar Set",
+   "src": "Shumar.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    0.43,
+    0.0
+   ],
+   "blade": [
+    0.537,
+    0.637
+   ]
+  },
+  {
+   "id": "shumar_w4_axe",
+   "label": "Shumar Socketed Epsilon Axe",
+   "hand": "R",
+   "kind": "axe",
+   "glb": "pieces/props/shumar_w4_axe.glb",
+   "grip": "fist",
+   "people": "shumar",
+   "culture_label": "Shumar",
+   "subset": "Shumar Set",
+   "src": "Shumar.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    0.386,
+    0.0
+   ],
+   "blade": [
+    0.483,
+    0.648
+   ]
+  },
+  {
+   "id": "shumar_w5_spear",
+   "label": "Shumar Chariot Spear",
+   "hand": "R",
+   "kind": "spear",
+   "glb": "pieces/props/shumar_w5_spear.glb",
+   "grip": "fist",
+   "people": "shumar",
+   "culture_label": "Shumar",
+   "subset": "Shumar Set",
+   "src": "Shumar.glb",
+   "support": [
+    0.0,
+    0.25,
+    0.0,
+    0.0,
+    0.55,
+    0.0
+   ],
+   "blade": [
+    0.647,
+    1.202
+   ]
+  },
+  {
+   "id": "shumar_s1_shield",
+   "label": "Shumar Rosette Round Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/shumar_s1_shield.glb",
+   "grip": "fist",
+   "people": "shumar",
+   "culture_label": "Shumar",
+   "subset": "Shumar Set",
+   "src": "Shumar.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "shumar_s2_shield",
+   "label": "Shumar Winged-Bull Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/shumar_s2_shield.glb",
+   "grip": "fist",
+   "people": "shumar",
+   "culture_label": "Shumar",
+   "subset": "Shumar Set",
+   "src": "Shumar.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "shumar_s3_shield",
+   "label": "Shumar Ziggurat Step Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/shumar_s3_shield.glb",
+   "grip": "fist",
+   "people": "shumar",
+   "culture_label": "Shumar",
+   "subset": "Shumar Set",
+   "src": "Shumar.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "shumar_s4_shield",
+   "label": "Shumar Bronze Boss Buckler",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/shumar_s4_shield.glb",
+   "grip": "fist",
+   "people": "shumar",
+   "culture_label": "Shumar",
+   "subset": "Shumar Set",
+   "src": "Shumar.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "shumar_s5_shield",
+   "label": "Shumar Lamassu Tower Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/shumar_s5_shield.glb",
+   "grip": "fist",
+   "people": "shumar",
+   "culture_label": "Shumar",
+   "subset": "Shumar Set",
+   "src": "Shumar.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "scrm_w1_sword",
+   "label": "Screamer Jagged Saw-Blade",
+   "hand": "R",
+   "kind": "sword",
+   "glb": "pieces/props/scrm_w1_sword.glb",
+   "grip": "fist",
+   "people": "screamer",
+   "culture_label": "Screamers",
+   "subset": "Screamer Set",
+   "src": "screamer.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    -0.1,
+    0.0
+   ],
+   "blade": [
+    0.057,
+    0.755
+   ]
+  },
+  {
+   "id": "scrm_w2_dagger",
+   "label": "Screamer Bone-Ripper Knife",
+   "hand": "R",
+   "kind": "dagger",
+   "glb": "pieces/props/scrm_w2_dagger.glb",
+   "grip": "fist",
+   "people": "screamer",
+   "culture_label": "Screamers",
+   "subset": "Screamer Set",
+   "src": "screamer.glb",
+   "blade": [
+    0.05,
+    0.423
+   ]
+  },
+  {
+   "id": "scrm_w3_mace",
+   "label": "Screamer Spiked Skull Club",
+   "hand": "R",
+   "kind": "mace",
+   "glb": "pieces/props/scrm_w3_mace.glb",
+   "grip": "fist",
+   "people": "screamer",
+   "culture_label": "Screamers",
+   "subset": "Screamer Set",
+   "src": "screamer.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    0.31,
+    0.0
+   ],
+   "blade": [
+    0.387,
+    0.597
+   ]
+  },
+  {
+   "id": "scrm_w4_axe",
+   "label": "Screamer Chain-Bit Chopper",
+   "hand": "R",
+   "kind": "axe",
+   "glb": "pieces/props/scrm_w4_axe.glb",
+   "grip": "fist",
+   "people": "screamer",
+   "culture_label": "Screamers",
+   "subset": "Screamer Set",
+   "src": "screamer.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    0.331,
+    0.0
+   ],
+   "blade": [
+    0.414,
+    0.729
+   ]
+  },
+  {
+   "id": "scrm_w5_spear",
+   "label": "Screamer Impaling Pike",
+   "hand": "R",
+   "kind": "spear",
+   "glb": "pieces/props/scrm_w5_spear.glb",
+   "grip": "fist",
+   "people": "screamer",
+   "culture_label": "Screamers",
+   "subset": "Screamer Set",
+   "src": "screamer.glb",
+   "support": [
+    0.0,
+    0.25,
+    0.0,
+    0.0,
+    0.85,
+    0.0
+   ],
+   "blade": [
+    1.0,
+    1.235
+   ]
+  },
+  {
+   "id": "scrm_s1_shield",
+   "label": "Screamer Shrieking-Maw Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/scrm_s1_shield.glb",
+   "grip": "fist",
+   "people": "screamer",
+   "culture_label": "Screamers",
+   "subset": "Screamer Set",
+   "src": "screamer.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "scrm_s2_shield",
+   "label": "Screamer Spiked Scrap Targe",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/scrm_s2_shield.glb",
+   "grip": "fist",
+   "people": "screamer",
+   "culture_label": "Screamers",
+   "subset": "Screamer Set",
+   "src": "screamer.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "scrm_s3_shield",
+   "label": "Screamer Ribcage Buckler",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/scrm_s3_shield.glb",
+   "grip": "fist",
+   "people": "screamer",
+   "culture_label": "Screamers",
+   "subset": "Screamer Set",
+   "src": "screamer.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "scrm_s4_shield",
+   "label": "Screamer Razor-Rim Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/scrm_s4_shield.glb",
+   "grip": "fist",
+   "people": "screamer",
+   "culture_label": "Screamers",
+   "subset": "Screamer Set",
+   "src": "screamer.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "scrm_s5_shield",
+   "label": "Screamer Gore-Plate Pavise",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/scrm_s5_shield.glb",
+   "grip": "fist",
+   "people": "screamer",
+   "culture_label": "Screamers",
+   "subset": "Screamer Set",
+   "src": "screamer.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "salv_w1_sword",
+   "label": "Salvaged Lawn-Blade Machete",
+   "hand": "R",
+   "kind": "sword",
+   "glb": "pieces/props/salv_w1_sword.glb",
+   "grip": "fist",
+   "people": "salvagers",
+   "culture_label": "Salvagers",
+   "subset": "Salvage Gear",
+   "src": "salvage_gear.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    -0.1,
+    0.0
+   ],
+   "blade": [
+    0.054,
+    0.765
+   ]
+  },
+  {
+   "id": "salv_w2_dagger",
+   "label": "Salvaged Rebar Shank",
+   "hand": "R",
+   "kind": "dagger",
+   "glb": "pieces/props/salv_w2_dagger.glb",
+   "grip": "fist",
+   "people": "salvagers",
+   "culture_label": "Salvagers",
+   "subset": "Salvage Gear",
+   "src": "salvage_gear.glb",
+   "blade": [
+    0.05,
+    0.395
+   ]
+  },
+  {
+   "id": "salv_w3_mace",
+   "label": "Salvaged Gear-Cog Maul",
+   "hand": "R",
+   "kind": "mace",
+   "glb": "pieces/props/salv_w3_mace.glb",
+   "grip": "fist",
+   "people": "salvagers",
+   "culture_label": "Salvagers",
+   "subset": "Salvage Gear",
+   "src": "salvage_gear.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    0.286,
+    0.0
+   ],
+   "blade": [
+    0.357,
+    0.457
+   ]
+  },
+  {
+   "id": "salv_w4_axe",
+   "label": "Salvaged Stop-Sign Hatchet",
+   "hand": "R",
+   "kind": "axe",
+   "glb": "pieces/props/salv_w4_axe.glb",
+   "grip": "fist",
+   "people": "salvagers",
+   "culture_label": "Salvagers",
+   "subset": "Salvage Gear",
+   "src": "salvage_gear.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    0.418,
+    0.0
+   ],
+   "blade": [
+    0.522,
+    0.687
+   ]
+  },
+  {
+   "id": "salv_w5_spear",
+   "label": "Salvaged Conduit Spear",
+   "hand": "R",
+   "kind": "spear",
+   "glb": "pieces/props/salv_w5_spear.glb",
+   "grip": "fist",
+   "people": "salvagers",
+   "culture_label": "Salvagers",
+   "subset": "Salvage Gear",
+   "src": "salvage_gear.glb",
+   "support": [
+    0.0,
+    0.25,
+    0.0,
+    0.0,
+    0.686,
+    0.0
+   ],
+   "blade": [
+    0.807,
+    1.203
+   ]
+  },
+  {
+   "id": "salv_s1_shield",
+   "label": "Salvaged Road-Sign Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/salv_s1_shield.glb",
+   "grip": "fist",
+   "people": "salvagers",
+   "culture_label": "Salvagers",
+   "subset": "Salvage Gear",
+   "src": "salvage_gear.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "salv_s2_shield",
+   "label": "Salvaged Hubcap Buckler",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/salv_s2_shield.glb",
+   "grip": "fist",
+   "people": "salvagers",
+   "culture_label": "Salvagers",
+   "subset": "Salvage Gear",
+   "src": "salvage_gear.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "salv_s3_shield",
+   "label": "Salvaged Corrugated Tin Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/salv_s3_shield.glb",
+   "grip": "fist",
+   "people": "salvagers",
+   "culture_label": "Salvagers",
+   "subset": "Salvage Gear",
+   "src": "salvage_gear.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "salv_s4_shield",
+   "label": "Salvaged Tire-Tread Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/salv_s4_shield.glb",
+   "grip": "fist",
+   "people": "salvagers",
+   "culture_label": "Salvagers",
+   "subset": "Salvage Gear",
+   "src": "salvage_gear.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "salv_s5_shield",
+   "label": "Salvaged Car-Door Pavise",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/salv_s5_shield.glb",
+   "grip": "fist",
+   "people": "salvagers",
+   "culture_label": "Salvagers",
+   "subset": "Salvage Gear",
+   "src": "salvage_gear.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "voth_obs_macuahuitl",
+   "label": "Obsidian Feathered Macuahuitl",
+   "hand": "R",
+   "kind": "sword",
+   "glb": "pieces/props/voth_obs_macuahuitl.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "culture_label": "Chichani (Voth)",
+   "subset": "Obsidian",
+   "src": "obsidian.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    -0.1,
+    0.0
+   ],
+   "blade": [
+    0.06,
+    0.94
+   ]
+  },
+  {
+   "id": "voth_obs_club",
+   "label": "Obsidian Spiked War Club",
+   "hand": "R",
+   "kind": "mace",
+   "glb": "pieces/props/voth_obs_club.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "culture_label": "Chichani (Voth)",
+   "subset": "Obsidian",
+   "src": "obsidian.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    0.374,
+    0.0
+   ],
+   "blade": [
+    0.468,
+    0.693
+   ]
+  },
+  {
+   "id": "voth_obs_dagger",
+   "label": "Obsidian Sacrificial Dagger",
+   "hand": "R",
+   "kind": "dagger",
+   "glb": "pieces/props/voth_obs_dagger.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "culture_label": "Chichani (Voth)",
+   "subset": "Obsidian",
+   "src": "obsidian.glb",
+   "blade": [
+    0.05,
+    0.451
+   ]
+  },
+  {
+   "id": "voth_obs_axe",
+   "label": "Obsidian Crescent Battle Axe",
+   "hand": "R",
+   "kind": "axe",
+   "glb": "pieces/props/voth_obs_axe.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "culture_label": "Chichani (Voth)",
+   "subset": "Obsidian",
+   "src": "obsidian.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    0.427,
+    0.0
+   ],
+   "blade": [
+    0.534,
+    0.774
+   ]
+  },
+  {
+   "id": "voth_obs_spear",
+   "label": "Obsidian Twin-Prong Spear",
+   "hand": "R",
+   "kind": "spear",
+   "glb": "pieces/props/voth_obs_spear.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "culture_label": "Chichani (Voth)",
+   "subset": "Obsidian",
+   "src": "obsidian.glb",
+   "support": [
+    0.0,
+    0.25,
+    0.0,
+    0.0,
+    0.572,
+    0.0
+   ],
+   "blade": [
+    0.672,
+    1.203
+   ]
+  },
+  {
+   "id": "voth_obs_knife",
+   "label": "Obsidian Curved Flaying Knife",
+   "hand": "R",
+   "kind": "dagger",
+   "glb": "pieces/props/voth_obs_knife.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "culture_label": "Chichani (Voth)",
+   "subset": "Obsidian",
+   "src": "obsidian.glb",
+   "blade": [
+    0.05,
+    0.451
+   ]
+  },
+  {
+   "id": "voth_mac_broadblade",
+   "label": "Macahuitl Broadblade I",
+   "hand": "R",
+   "kind": "sword",
+   "glb": "pieces/props/voth_mac_broadblade.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "culture_label": "Chichani (Voth)",
+   "subset": "Macahuitl",
+   "src": "macahuitl.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    -0.1,
+    0.0
+   ],
+   "blade": [
+    0.06,
+    0.94
+   ]
+  },
+  {
+   "id": "voth_mac_greatblade",
+   "label": "Macahuitl Greatblade II",
+   "hand": "R",
+   "kind": "sword",
+   "glb": "pieces/props/voth_mac_greatblade.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "culture_label": "Chichani (Voth)",
+   "subset": "Macahuitl",
+   "src": "macahuitl.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    -0.1,
+    0.0
+   ],
+   "blade": [
+    0.065,
+    1.015
+   ]
+  },
+  {
+   "id": "voth_mac_sawblade",
+   "label": "Macahuitl Sawblade III",
+   "hand": "R",
+   "kind": "sword",
+   "glb": "pieces/props/voth_mac_sawblade.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "culture_label": "Chichani (Voth)",
+   "subset": "Macahuitl",
+   "src": "macahuitl.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    -0.1,
+    0.0
+   ],
+   "blade": [
+    0.061,
+    0.959
+   ]
+  },
+  {
+   "id": "voth_mask_shield_1",
+   "label": "Ancient Sun-God Visage Buckler",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/voth_mask_shield_1.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "culture_label": "Chichani (Voth)",
+   "subset": "Ancient Masks",
+   "src": "ancient masks 3d model.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "voth_mask_shield_2",
+   "label": "Ancient Tlaloc Visage Buckler",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/voth_mask_shield_2.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "culture_label": "Chichani (Voth)",
+   "subset": "Ancient Masks",
+   "src": "ancient masks 3d model.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "voth_mask_shield_3",
+   "label": "Ancient Jade-Fret Visage Buckler",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/voth_mask_shield_3.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "culture_label": "Chichani (Voth)",
+   "subset": "Ancient Masks",
+   "src": "ancient masks 3d model.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "voth_mask_shield_4",
+   "label": "Ancient Feathered-Serpent Buckler",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/voth_mask_shield_4.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "culture_label": "Chichani (Voth)",
+   "subset": "Ancient Masks",
+   "src": "ancient masks 3d model.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "voth_mask_shield_5",
+   "label": "Ancient Bat-Lord Visage Buckler",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/voth_mask_shield_5.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "culture_label": "Chichani (Voth)",
+   "subset": "Ancient Masks",
+   "src": "ancient masks 3d model.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "voth_mask_shield_6",
+   "label": "Ancient Skull-Crown Visage Buckler",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/voth_mask_shield_6.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "culture_label": "Chichani (Voth)",
+   "subset": "Ancient Masks",
+   "src": "ancient masks 3d model.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "iziz_ornate_sword",
+   "label": "Iziz Ornate Gladius Sword",
+   "hand": "R",
+   "kind": "sword",
+   "glb": "pieces/props/iziz_ornate_sword.glb",
+   "grip": "fist",
+   "people": "izani",
+   "culture_label": "Izani (Iziz)",
+   "subset": "Iziz Ornate",
+   "src": "iziz sword.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    -0.1,
+    0.0
+   ],
+   "blade": [
+    0.057,
+    0.83
+   ]
+  },
+  {
+   "id": "iziz_ornate_shield",
+   "label": "Iziz Ornate Imperial Scutum",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/iziz_ornate_shield.glb",
+   "grip": "fist",
+   "people": "izani",
+   "culture_label": "Izani (Iziz)",
+   "subset": "Iziz Ornate",
+   "src": "iziz - ornate.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "coyote_ornate_shield",
+   "label": "Coyote Men Painted Medicine Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/coyote_ornate_shield.glb",
+   "grip": "fist",
+   "people": "coyote_men",
+   "culture_label": "Coyote Men",
+   "subset": "Coyote Ornate",
+   "src": "coyote.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "rep_steampunk_pistol",
+   "label": "Republic Brass Steampunk Pistol",
+   "hand": "R",
+   "kind": "pistol",
+   "glb": "pieces/props/rep_steampunk_pistol.glb",
+   "grip": "trigger",
+   "people": "iron_republic",
+   "culture_label": "Iron Republic",
+   "subset": "Republic Firearms",
+   "src": "steampunk handgun 3d model_Clone1.glb",
+   "support": [
+    0.04,
+    -0.03,
+    0.02,
+    0.04,
+    -0.03,
+    0.02
+   ]
+  },
+  {
+   "id": "relic_sniper_rifle",
+   "label": "Ancient Relic Long-Range Sniper Rifle",
+   "hand": "R",
+   "kind": "rifle",
+   "glb": "pieces/props/relic_sniper_rifle.glb",
+   "grip": "trigger",
+   "people": "yuni",
+   "culture_label": "Yuni & Relics",
+   "subset": "Relic Firearms",
+   "src": "sniper rifle 3d model.glb",
+   "support": [
+    0.0,
+    0.06,
+    0.16,
+    0.0,
+    0.06,
+    0.42
+   ]
+  },
+  {
+   "id": "relic_ornate_assault_rifle",
+   "label": "Gilded Relic Assault Rifle",
+   "hand": "R",
+   "kind": "rifle",
+   "glb": "pieces/props/relic_ornate_assault_rifle.glb",
+   "grip": "trigger",
+   "people": "yuni",
+   "culture_label": "Yuni & Relics",
+   "subset": "Relic Firearms",
+   "src": "ornate assault rifle 3d model.glb",
+   "support": [
+    0.0,
+    0.06,
+    0.16,
+    0.0,
+    0.06,
+    0.42
+   ]
+  },
+  {
+   "id": "relic_futuristic_gun",
+   "label": "Relic Pulse Blaster Rifle",
+   "hand": "R",
+   "kind": "rifle",
+   "glb": "pieces/props/relic_futuristic_gun.glb",
+   "grip": "trigger",
+   "people": "yuni",
+   "culture_label": "Yuni & Relics",
+   "subset": "Relic Firearms",
+   "src": "futuristic gun 3d model.glb",
+   "support": [
+    0.0,
+    0.06,
+    0.16,
+    0.0,
+    0.06,
+    0.42
+   ]
+  },
+  {
+   "id": "relic_futuristic_carbine",
+   "label": "Relic Plasma Carbine",
+   "hand": "R",
+   "kind": "rifle",
+   "glb": "pieces/props/relic_futuristic_carbine.glb",
+   "grip": "trigger",
+   "people": "yuni",
+   "culture_label": "Yuni & Relics",
+   "subset": "Relic Firearms",
+   "src": "futuristic weapon 3d model.glb",
+   "support": [
+    0.0,
+    0.06,
+    0.16,
+    0.0,
+    0.06,
+    0.42
+   ]
+  },
+  {
+   "id": "relic_futuristic_cannon",
+   "label": "Relic Heavy Arc Cannon",
+   "hand": "R",
+   "kind": "rifle",
+   "glb": "pieces/props/relic_futuristic_cannon.glb",
+   "grip": "trigger",
+   "people": "yuni",
+   "culture_label": "Yuni & Relics",
+   "subset": "Relic Firearms",
+   "src": "futuristic weapon 3d model (1).glb",
+   "support": [
+    0.0,
+    0.06,
+    0.16,
+    0.0,
+    0.06,
+    0.42
+   ]
+  },
+  {
+   "id": "relic_missile_launcher",
+   "label": "Relic Guided Ordnance Tube",
+   "hand": "R",
+   "kind": "rifle",
+   "glb": "pieces/props/relic_missile_launcher.glb",
+   "grip": "trigger",
+   "people": "yuni",
+   "culture_label": "Yuni & Relics",
+   "subset": "Relic Ordnance",
+   "src": "missile 3d model.glb",
+   "support": [
+    0.0,
+    0.06,
+    0.16,
+    0.0,
+    0.06,
+    0.42
+   ]
+  },
+  {
+   "id": "relic_scifi_turret_gun",
+   "label": "Relic Twin-Mount Turret Autocannon",
+   "hand": "R",
+   "kind": "rifle",
+   "glb": "pieces/props/relic_scifi_turret_gun.glb",
+   "grip": "trigger",
+   "people": "yuni",
+   "culture_label": "Yuni & Relics",
+   "subset": "Relic Ordnance",
+   "src": "sci-fi turret 3d model.glb",
+   "support": [
+    0.0,
+    0.06,
+    0.16,
+    0.0,
+    0.06,
+    0.42
+   ]
+  },
+  {
+   "id": "msh_khaayken_forearm_guard",
+   "label": "Khaayken Forearm Guard",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/msh_khaayken_forearm_guard.glb",
+   "grip": "fist",
+   "people": "khaayken",
+   "culture_label": "Khaayken",
+   "subset": "Khaayken Shields",
+   "src": "Meshy_AI_khaayken_forearm_guard_20261106_texture_remesh_tri_1f8e48eb",
+   "low_turn": 90
+  },
+  {
+   "id": "msh_khaayken_narrow_shield",
+   "label": "Khaayken Narrow Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/msh_khaayken_narrow_shield.glb",
+   "grip": "fist",
+   "people": "khaayken",
+   "culture_label": "Khaayken",
+   "subset": "Khaayken Shields",
+   "src": "Meshy_AI_khaayken_narrow_shield_20261106_texture_remesh_tri_30e89f15",
+   "low_turn": 90
+  },
+  {
+   "id": "msh_khaayken_oval_shield",
+   "label": "Khaayken Oval Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/msh_khaayken_oval_shield.glb",
+   "grip": "fist",
+   "people": "khaayken",
+   "culture_label": "Khaayken",
+   "subset": "Khaayken Shields",
+   "src": "Meshy_AI_khaayken_oval_shield_20261106_texture_remesh_tri_35ca18ff",
+   "low_turn": 90
+  },
+  {
+   "id": "msh_khaayken_round_shield",
+   "label": "Khaayken Round Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/msh_khaayken_round_shield.glb",
+   "grip": "fist",
+   "people": "khaayken",
+   "culture_label": "Khaayken",
+   "subset": "Khaayken Shields",
+   "src": "Meshy_AI_khaayken_round_shield_20261106_texture_remesh_tri_f4de58a3",
+   "low_turn": 90
+  },
+  {
+   "id": "msh_khaayken_standing_shield",
+   "label": "Khaayken Standing Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/msh_khaayken_standing_shield.glb",
+   "grip": "fist",
+   "people": "khaayken",
+   "culture_label": "Khaayken",
+   "subset": "Khaayken Shields",
+   "src": "Meshy_AI_khaayken_standing_shield_20261106_texture_remesh_tri_4c4e2e48",
+   "low_turn": 90
+  },
+  {
+   "id": "msh_lizardman_narrow_shield",
+   "label": "Lizardman Narrow Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/msh_lizardman_narrow_shield.glb",
+   "grip": "fist",
+   "people": "lizardmen",
+   "culture_label": "Lizardmen",
+   "subset": "Lizardmen Meshy",
+   "src": "Meshy_AI_lizardman_narrow_shield_20261106_texture_remesh_tri_50c77085",
+   "low_turn": 90
+  },
+  {
+   "id": "msh_lizardman_oval_shield",
+   "label": "Lizardman Oval Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/msh_lizardman_oval_shield.glb",
+   "grip": "fist",
+   "people": "lizardmen",
+   "culture_label": "Lizardmen",
+   "subset": "Lizardmen Meshy",
+   "src": "Meshy_AI_lizardman_oval_shield_20261106_texture_remesh_tri_44092462",
+   "low_turn": 90
+  },
+  {
+   "id": "msh_lizardman_round_shield",
+   "label": "Lizardman Round Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/msh_lizardman_round_shield.glb",
+   "grip": "fist",
+   "people": "lizardmen",
+   "culture_label": "Lizardmen",
+   "subset": "Lizardmen Meshy",
+   "src": "Meshy_AI_lizardman_round_shield_20261106_texture_remesh_tri_7ad0f667",
+   "low_turn": 90
+  },
+  {
+   "id": "msh_lizardman_standing_shield",
+   "label": "Lizardman Standing Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/msh_lizardman_standing_shield.glb",
+   "grip": "fist",
+   "people": "lizardmen",
+   "culture_label": "Lizardmen",
+   "subset": "Lizardmen Meshy",
+   "src": "Meshy_AI_lizardman_standing_shield_20261106_texture_remesh_tri_a7b3c18f",
+   "low_turn": 90
+  },
+  {
+   "id": "msh_lizardman_tall_shield",
+   "label": "Lizardman Tall Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/msh_lizardman_tall_shield.glb",
+   "grip": "fist",
+   "people": "lizardmen",
+   "culture_label": "Lizardmen",
+   "subset": "Lizardmen Meshy",
+   "src": "Meshy_AI_lizardman_tall_shield_20261106_texture_remesh_tri_48338496",
+   "low_turn": 90
+  },
+  {
+   "id": "msh_voth_eclipse_carapace_shield",
+   "label": "Voth Eclipse Carapace Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/msh_voth_eclipse_carapace_shield.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "culture_label": "Chichani (Voth)",
+   "subset": "Voth Meshy",
+   "src": "Meshy_AI_voth_eclipse_carapace_shield_20261106_texture_remesh_tri_a29d7cff",
+   "low_turn": 90
+  },
+  {
+   "id": "msh_voth_golden_third_eye_mask_shield",
+   "label": "Voth Golden Third Eye Mask Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/msh_voth_golden_third_eye_mask_shield.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "culture_label": "Chichani (Voth)",
+   "subset": "Voth Meshy",
+   "src": "Meshy_AI_voth_golden_third_eye_mask_shield_20261106_texture_remesh_tri_c94b9a4f",
+   "low_turn": 90
+  },
+  {
+   "id": "msh_voth_jaguar_fang_shield",
+   "label": "Voth Jaguar Fang Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/msh_voth_jaguar_fang_shield.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "culture_label": "Chichani (Voth)",
+   "subset": "Voth Meshy",
+   "src": "Meshy_AI_voth_jaguar_fang_shield_20261106_texture_remesh_tri_7469a2e5",
+   "low_turn": 90
+  },
+  {
+   "id": "msh_voth_mothwing_aegis",
+   "label": "Voth Mothwing Aegis",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/msh_voth_mothwing_aegis.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "culture_label": "Chichani (Voth)",
+   "subset": "Voth Meshy",
+   "src": "Meshy_AI_voth_mothwing_aegis_20261106_texture_remesh_tri_f0e9b0de",
+   "low_turn": 90
+  },
+  {
+   "id": "msh_voth_sunstep_tower_shield",
+   "label": "Voth Sunstep Tower Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/msh_voth_sunstep_tower_shield.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "culture_label": "Chichani (Voth)",
+   "subset": "Voth Meshy",
+   "src": "Meshy_AI_voth_sunstep_tower_shield_20261106_texture_remesh_tri_8a37e11a",
+   "low_turn": 90
+  },
+  {
+   "id": "msh_tabisti_adarga",
+   "label": "Tabisti Adarga",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/msh_tabisti_adarga.glb",
+   "grip": "fist",
+   "people": "tabisti",
+   "culture_label": "Tabisti",
+   "subset": "Tabisti Arms",
+   "src": "Meshy_AI_tabisti_adarga_20261106_texture_remesh_tri_0b45935a",
+   "low_turn": 90
+  },
+  {
+   "id": "msh_tabisti_copper_axe",
+   "label": "Tabisti Copper Axe",
+   "hand": "R",
+   "kind": "axe",
+   "glb": "pieces/props/msh_tabisti_copper_axe.glb",
+   "grip": "fist",
+   "people": "tabisti",
+   "culture_label": "Tabisti",
+   "subset": "Tabisti Arms",
+   "src": "Meshy_AI_tabisti_copper_axe_20261106_texture_160829dc",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    0.571,
+    0.0
+   ],
+   "blade": [
+    0.714,
+    0.814
+   ]
+  },
+  {
+   "id": "msh_tabisti_flyssa_dagger",
+   "label": "Tabisti Flyssa Dagger",
+   "hand": "R",
+   "kind": "dagger",
+   "glb": "pieces/props/msh_tabisti_flyssa_dagger.glb",
+   "grip": "fist",
+   "people": "tabisti",
+   "culture_label": "Tabisti",
+   "subset": "Tabisti Arms",
+   "src": "Meshy_AI_tabisti_flyssa_dagger_20261106_texture_4d6016e0",
+   "blade": [
+    0.05,
+    0.451
+   ]
+  },
+  {
+   "id": "msh_tabisti_fusion_shield",
+   "label": "Tabisti Fusion Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/msh_tabisti_fusion_shield.glb",
+   "grip": "fist",
+   "people": "tabisti",
+   "culture_label": "Tabisti",
+   "subset": "Tabisti Arms",
+   "src": "Meshy_AI_tabisti_fusion_shield_20261106_texture_remesh_tri_ce67e40b",
+   "low_turn": 90
+  },
+  {
+   "id": "msh_tabisti_inka_square_shield",
+   "label": "Tabisti Inka Square Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/msh_tabisti_inka_square_shield.glb",
+   "grip": "fist",
+   "people": "tabisti",
+   "culture_label": "Tabisti",
+   "subset": "Tabisti Arms",
+   "src": "Meshy_AI_tabisti_inka_square_shield_20261106_texture_remesh_tri_c24db866",
+   "low_turn": 90
+  },
+  {
+   "id": "msh_tabisti_round_hide_shield",
+   "label": "Tabisti Round Hide Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/msh_tabisti_round_hide_shield.glb",
+   "grip": "fist",
+   "people": "tabisti",
+   "culture_label": "Tabisti",
+   "subset": "Tabisti Arms",
+   "src": "Meshy_AI_tabisti_round_hide_shield_20261106_texture_remesh_tri_814adaf0",
+   "low_turn": 90
+  },
+  {
+   "id": "msh_tabisti_star_mace",
+   "label": "Tabisti Star Mace",
+   "hand": "R",
+   "kind": "mace",
+   "glb": "pieces/props/msh_tabisti_star_mace.glb",
+   "grip": "fist",
+   "people": "tabisti",
+   "culture_label": "Tabisti",
+   "subset": "Tabisti Arms",
+   "src": "Meshy_AI_tabisti_star_mace_20261106_texture_b1ef3aa6",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    0.54,
+    0.0
+   ],
+   "blade": [
+    0.674,
+    0.774
+   ]
+  },
+  {
+   "id": "msh_tabisti_takouba_sheath",
+   "label": "Tabisti Takouba Sheath",
+   "hand": "R",
+   "kind": "sword",
+   "glb": "pieces/props/msh_tabisti_takouba_sheath.glb",
+   "grip": "fist",
+   "people": "tabisti",
+   "culture_label": "Tabisti",
+   "subset": "Tabisti Arms",
+   "src": "Meshy_AI_tabisti_takouba_sheath_20261106_texture_1df5c4aa",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    -0.1,
+    0.0
+   ],
+   "blade": [
+    0.059,
+    0.921
+   ]
+  },
+  {
+   "id": "msh_tabisti_tuareg_arer",
+   "label": "Tabisti Tuareg Arer",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/msh_tabisti_tuareg_arer.glb",
+   "grip": "fist",
+   "people": "tabisti",
+   "culture_label": "Tabisti",
+   "subset": "Tabisti Arms",
+   "src": "Meshy_AI_tabisti_tuareg_arer_20261106_texture_remesh_tri_00578810",
+   "low_turn": 90
+  },
+  {
+   "id": "msh_tabisti_waraka_sling",
+   "label": "Tabisti Waraka Sling",
+   "hand": "R",
+   "kind": "sling",
+   "glb": "pieces/props/msh_tabisti_waraka_sling.glb",
+   "grip": "fist",
+   "people": "tabisti",
+   "culture_label": "Tabisti",
+   "subset": "Tabisti Arms",
+   "src": "Meshy_AI_tabisti_waraka_sling_20261106_texture_remesh_tri_cd786cfe",
+   "blade": [
+    0.387,
+    0.522
+   ]
+  },
+  {
+   "id": "msh_coyoteman_buffalo_hide_shield",
+   "label": "Coyoteman Buffalo Hide Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/msh_coyoteman_buffalo_hide_shield.glb",
+   "grip": "fist",
+   "people": "coyote_men",
+   "culture_label": "Coyote Men",
+   "subset": "Coyote Men Arms",
+   "src": "Meshy_AI_coyoteman_buffalo_hide_shield_20261106_texture_remesh_tri_57dfe42f",
+   "low_turn": 90
+  },
+  {
+   "id": "msh_coyoteman_dine_bow_arrows",
+   "label": "Coyoteman Dine Bow Arrows",
+   "hand": "L",
+   "kind": "bow",
+   "glb": "pieces/props/msh_coyoteman_dine_bow_arrows.glb",
+   "grip": "fist",
+   "people": "coyote_men",
+   "culture_label": "Coyote Men",
+   "subset": "Coyote Men Arms",
+   "src": "Meshy_AI_coyoteman_dine_bow_arrows_20261106_texture_remesh_tri_85148b60",
+   "arrow_arm": 1.65,
+   "string": [
+    0.0,
+    0.652,
+    -0.09,
+    0.0,
+    -0.652,
+    -0.09
+   ],
+   "arrow": "arrow"
+  },
+  {
+   "id": "msh_coyoteman_lance",
+   "label": "Coyoteman Lance",
+   "hand": "R",
+   "kind": "spear",
+   "glb": "pieces/props/msh_coyoteman_lance.glb",
+   "grip": "fist",
+   "people": "coyote_men",
+   "culture_label": "Coyote Men",
+   "subset": "Coyote Men Arms",
+   "src": "Meshy_AI_coyoteman_lance_20261106_texture_remesh_tri_aef35d44",
+   "support": [
+    0.0,
+    0.25,
+    0.0,
+    0.0,
+    0.58,
+    0.0
+   ],
+   "blade": [
+    0.682,
+    1.268
+   ]
+  },
+  {
+   "id": "msh_coyoteman_painted_rawhide_shield",
+   "label": "Coyoteman Painted Rawhide Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/msh_coyoteman_painted_rawhide_shield.glb",
+   "grip": "fist",
+   "people": "coyote_men",
+   "culture_label": "Coyote Men",
+   "subset": "Coyote Men Arms",
+   "src": "Meshy_AI_coyoteman_painted_rawhide_shield_20261106_texture_remesh_tri_03b4daac",
+   "low_turn": 90
+  },
+  {
+   "id": "msh_coyoteman_shield_with_cover",
+   "label": "Coyoteman Shield With Cover",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/msh_coyoteman_shield_with_cover.glb",
+   "grip": "fist",
+   "people": "coyote_men",
+   "culture_label": "Coyote Men",
+   "subset": "Coyote Men Arms",
+   "src": "Meshy_AI_coyoteman_shield_with_cover_20261106_texture_remesh_tri_be42dbf2",
+   "low_turn": 90
+  },
+  {
+   "id": "msh_coyoteman_short_bow_arrows",
+   "label": "Coyoteman Short Bow Arrows",
+   "hand": "L",
+   "kind": "bow",
+   "glb": "pieces/props/msh_coyoteman_short_bow_arrows.glb",
+   "grip": "fist",
+   "people": "coyote_men",
+   "culture_label": "Coyote Men",
+   "subset": "Coyote Men Arms",
+   "src": "Meshy_AI_coyoteman_short_bow_arrows_20261106_texture_remesh_tri_0d194510",
+   "arrow_arm": 1.65,
+   "string": [
+    0.0,
+    0.652,
+    -0.09,
+    0.0,
+    -0.652,
+    -0.09
+   ],
+   "arrow": "arrow"
+  },
+  {
+   "id": "msh_coyoteman_small_round_shield",
+   "label": "Coyoteman Small Round Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/msh_coyoteman_small_round_shield.glb",
+   "grip": "fist",
+   "people": "coyote_men",
+   "culture_label": "Coyote Men",
+   "subset": "Coyote Men Arms",
+   "src": "Meshy_AI_coyoteman_small_round_shield_20261106_texture_remesh_tri_5206ea13",
+   "low_turn": 90
+  },
+  {
+   "id": "msh_coyoteman_thick_round_shield",
+   "label": "Coyoteman Thick Round Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/msh_coyoteman_thick_round_shield.glb",
+   "grip": "fist",
+   "people": "coyote_men",
+   "culture_label": "Coyote Men",
+   "subset": "Coyote Men Arms",
+   "src": "Meshy_AI_coyoteman_thick_round_shield_20261106_texture_remesh_tri_65d0fd84",
+   "low_turn": 90
+  },
+  {
+   "id": "msh_tabisti_flyssa_sheath",
+   "label": "Tabisti Flyssa Sheath",
+   "hand": "R",
+   "kind": "sword",
+   "glb": "pieces/props/msh_tabisti_flyssa_sheath.glb",
+   "grip": "fist",
+   "people": "tabisti",
+   "culture_label": "Tabisti",
+   "subset": "Tabisti Arms",
+   "src": "Meshy_AI_tabisti_flyssa_sheath_20261106_texture_c83829f1",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    -0.1,
+    0.0
+   ],
+   "blade": [
+    0.059,
+    0.921
+   ]
+  },
+  {
+   "id": "msh_tabisti_takouba_sword",
+   "label": "Tabisti Takouba Sword",
+   "hand": "R",
+   "kind": "sword",
+   "glb": "pieces/props/msh_tabisti_takouba_sword.glb",
+   "grip": "fist",
+   "people": "tabisti",
+   "culture_label": "Tabisti",
+   "subset": "Tabisti Arms",
+   "src": "Meshy_AI_tabisti_takouba_sword_20261106_texture_b0344a1b",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    -0.1,
+    0.0
+   ],
+   "blade": [
+    0.059,
+    0.89
+   ]
+  },
+  {
+   "id": "msh_eternian_broad_standing_tate",
+   "label": "Eternian Broad Standing Tate",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/msh_eternian_broad_standing_tate.glb",
+   "grip": "fist",
+   "people": "eternian",
+   "culture_label": "Eternians",
+   "subset": "Eternian Arms",
+   "src": "Meshy_AI_Eternian_Broad_Standing_Tate_20261106_texture_remesh_tri_0a017057",
+   "low_turn": 90
+  },
+  {
+   "id": "msh_eternian_crest_tate",
+   "label": "Eternian Crest Tate",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/msh_eternian_crest_tate.glb",
+   "grip": "fist",
+   "people": "eternian",
+   "culture_label": "Eternians",
+   "subset": "Eternian Arms",
+   "src": "Meshy_AI_Eternian_Crest_Tate_20261106_texture_remesh_tri_7fb376b3",
+   "low_turn": 90
+  },
+  {
+   "id": "msh_eternian_hand_shield_tate",
+   "label": "Eternian Hand Shield Tate",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/msh_eternian_hand_shield_tate.glb",
+   "grip": "fist",
+   "people": "eternian",
+   "culture_label": "Eternians",
+   "subset": "Eternian Arms",
+   "src": "Meshy_AI_Eternian_Hand_Shield_Tate_20261106_texture_remesh_tri_cb8abafa",
+   "low_turn": 90
+  },
+  {
+   "id": "msh_eternian_rectangular_tate",
+   "label": "Eternian Rectangular Tate",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/msh_eternian_rectangular_tate.glb",
+   "grip": "fist",
+   "people": "eternian",
+   "culture_label": "Eternians",
+   "subset": "Eternian Arms",
+   "src": "Meshy_AI_Eternian_Rectangular_Tate_20261106_texture_remesh_tri_e2ac5863",
+   "low_turn": 90
+  },
+  {
+   "id": "msh_eternian_rounded_top_tate",
+   "label": "Eternian Rounded Top Tate",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/msh_eternian_rounded_top_tate.glb",
+   "grip": "fist",
+   "people": "eternian",
+   "culture_label": "Eternians",
+   "subset": "Eternian Arms",
+   "src": "Meshy_AI_Eternian_Rounded_Top_Tate_20261106_texture_remesh_tri_f52a575d",
+   "low_turn": 90
+  },
+  {
+   "id": "msh_talovolci_hexagonal_shield",
+   "label": "Talovolci Hexagonal Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/msh_talovolci_hexagonal_shield.glb",
+   "grip": "fist",
+   "people": "talovolci",
+   "culture_label": "Talovolci (Free Clans)",
+   "subset": "Talovolci Arms",
+   "src": "Meshy_AI_Talovolci_Hexagonal_Shield_20261106_texture_remesh_tri_03e3e97a",
+   "low_turn": 90
+  },
+  {
+   "id": "msh_talovolci_long_oval_shield",
+   "label": "Talovolci Long Oval Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/msh_talovolci_long_oval_shield.glb",
+   "grip": "fist",
+   "people": "talovolci",
+   "culture_label": "Talovolci (Free Clans)",
+   "subset": "Talovolci Arms",
+   "src": "Meshy_AI_Talovolci_Long_Oval_Shield_20261106_texture_remesh_tri_553fef9e",
+   "low_turn": 90
+  },
+  {
+   "id": "msh_talovolci_oblong_shield",
+   "label": "Talovolci Oblong Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/msh_talovolci_oblong_shield.glb",
+   "grip": "fist",
+   "people": "talovolci",
+   "culture_label": "Talovolci (Free Clans)",
+   "subset": "Talovolci Arms",
+   "src": "Meshy_AI_Talovolci_Oblong_Shield_20261106_texture_remesh_tri_43bd012a",
+   "low_turn": 90
+  },
+  {
+   "id": "msh_talovolci_rectangular_shield",
+   "label": "Talovolci Rectangular Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/msh_talovolci_rectangular_shield.glb",
+   "grip": "fist",
+   "people": "talovolci",
+   "culture_label": "Talovolci (Free Clans)",
+   "subset": "Talovolci Arms",
+   "src": "Meshy_AI_Talovolci_Rectangular_Shield_20261106_texture_remesh_tri_e23d5ab7",
+   "low_turn": 90
+  },
+  {
+   "id": "msh_talovolci_round_shield",
+   "label": "Talovolci Round Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/msh_talovolci_round_shield.glb",
+   "grip": "fist",
+   "people": "talovolci",
+   "culture_label": "Talovolci (Free Clans)",
+   "subset": "Talovolci Arms",
+   "src": "Meshy_AI_Talovolci_Round_Shield_20261106_texture_remesh_tri_26a97dcd",
+   "low_turn": 90
+  },
+  {
+   "id": "msh_hykkousoi_aspis_shield",
+   "label": "Hykkousoi Aspis Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/msh_hykkousoi_aspis_shield.glb",
+   "grip": "fist",
+   "people": "hykkousoi",
+   "culture_label": "Hykkousoi",
+   "subset": "Hykkousoi Panoply",
+   "src": "Meshy_AI_Hykkousoi_Aspis_Shield_20261106_texture_remesh_tri_efd64568",
+   "low_turn": 90
+  },
+  {
+   "id": "msh_hykkousoi_dipylon_shield",
+   "label": "Hykkousoi Dipylon Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/msh_hykkousoi_dipylon_shield.glb",
+   "grip": "fist",
+   "people": "hykkousoi",
+   "culture_label": "Hykkousoi",
+   "subset": "Hykkousoi Panoply",
+   "src": "Meshy_AI_Hykkousoi_Dipylon_Shield_20261106_texture_remesh_tri_83e19e11",
+   "low_turn": 90
+  },
+  {
+   "id": "msh_hykkousoi_figure_eight_shield",
+   "label": "Hykkousoi Figure Eight Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/msh_hykkousoi_figure_eight_shield.glb",
+   "grip": "fist",
+   "people": "hykkousoi",
+   "culture_label": "Hykkousoi",
+   "subset": "Hykkousoi Panoply",
+   "src": "Meshy_AI_Hykkousoi_Figure_Eight_Shield_20261106_texture_remesh_tri_14a168a2",
+   "low_turn": 90
+  },
+  {
+   "id": "msh_hykkousoi_pelta_shield",
+   "label": "Hykkousoi Pelta Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/msh_hykkousoi_pelta_shield.glb",
+   "grip": "fist",
+   "people": "hykkousoi",
+   "culture_label": "Hykkousoi",
+   "subset": "Hykkousoi Panoply",
+   "src": "Meshy_AI_Hykkousoi_Pelta_Shield_20261106_texture_remesh_tri_9acf780b",
+   "low_turn": 90
+  },
+  {
+   "id": "msh_hykkousoi_thureos_shield",
+   "label": "Hykkousoi Thureos Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/msh_hykkousoi_thureos_shield.glb",
+   "grip": "fist",
+   "people": "hykkousoi",
+   "culture_label": "Hykkousoi",
+   "subset": "Hykkousoi Panoply",
+   "src": "Meshy_AI_Hykkousoi_Thureos_Shield_20261106_texture_remesh_tri_2cd1fd5d",
+   "low_turn": 90
+  },
+  {
+   "id": "msh_izani_legion_gladius",
+   "label": "Izani Legion Gladius",
+   "hand": "R",
+   "kind": "sword",
+   "glb": "pieces/props/msh_izani_legion_gladius.glb",
+   "grip": "fist",
+   "people": "izani",
+   "culture_label": "Izani (Iziz)",
+   "subset": "Izani Legion",
+   "src": "Meshy_AI_Izani_Legion_Gladius_20261106_texture_422f5e2a",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    -0.1,
+    0.0
+   ],
+   "blade": [
+    0.059,
+    0.8
+   ]
+  },
+  {
+   "id": "msh_izani_legion_hasta",
+   "label": "Izani Legion Hasta",
+   "hand": "R",
+   "kind": "spear",
+   "glb": "pieces/props/msh_izani_legion_hasta.glb",
+   "grip": "fist",
+   "people": "izani",
+   "culture_label": "Izani (Iziz)",
+   "subset": "Izani Legion",
+   "src": "Meshy_AI_Izani_Legion_Hasta_20261106_texture_25f62110",
+   "support": [
+    0.0,
+    0.25,
+    0.0,
+    0.0,
+    0.797,
+    0.0
+   ],
+   "blade": [
+    0.938,
+    1.267
+   ]
+  },
+  {
+   "id": "msh_izani_legion_pilum",
+   "label": "Izani Legion Pilum",
+   "hand": "R",
+   "kind": "spear",
+   "glb": "pieces/props/msh_izani_legion_pilum.glb",
+   "grip": "fist",
+   "people": "izani",
+   "culture_label": "Izani (Iziz)",
+   "subset": "Izani Legion",
+   "src": "Meshy_AI_Izani_Legion_Pilum_20261106_texture_remesh_tri_1eb3e499",
+   "support": [
+    0.0,
+    0.25,
+    0.0,
+    0.0,
+    0.835,
+    0.0
+   ],
+   "blade": [
+    0.982,
+    1.268
+   ]
+  },
+  {
+   "id": "msh_izani_legion_plumbata",
+   "label": "Izani Legion Plumbata",
+   "hand": "R",
+   "kind": "spear",
+   "glb": "pieces/props/msh_izani_legion_plumbata.glb",
+   "grip": "fist",
+   "people": "izani",
+   "culture_label": "Izani (Iziz)",
+   "subset": "Izani Legion",
+   "src": "Meshy_AI_Izani_Legion_Plumbata_20261106_texture_74f590f0",
+   "support": [
+    0.0,
+    0.25,
+    0.0,
+    0.0,
+    0.589,
+    0.0
+   ],
+   "blade": [
+    0.693,
+    0.943
+   ]
+  },
+  {
+   "id": "msh_izani_legion_pugio",
+   "label": "Izani Legion Pugio",
+   "hand": "R",
+   "kind": "dagger",
+   "glb": "pieces/props/msh_izani_legion_pugio.glb",
+   "grip": "fist",
+   "people": "izani",
+   "culture_label": "Izani (Iziz)",
+   "subset": "Izani Legion",
+   "src": "Meshy_AI_Izani_Legion_Pugio_20261106_texture_505bfa3e",
+   "blade": [
+    0.05,
+    0.395
+   ]
+  },
+  {
+   "id": "msh_izani_gladius",
+   "label": "Izani Gladius",
+   "hand": "R",
+   "kind": "sword",
+   "glb": "pieces/props/msh_izani_gladius.glb",
+   "grip": "fist",
+   "people": "izani",
+   "culture_label": "Izani (Iziz)",
+   "subset": "Izani Legion",
+   "src": "Meshy_AI_Izani_Gladius_20261106_texture_75029fc3",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    -0.1,
+    0.0
+   ],
+   "blade": [
+    0.059,
+    0.845
+   ]
+  },
+  {
+   "id": "msh_izani_legion_clipeus",
+   "label": "Izani Legion Clipeus",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/msh_izani_legion_clipeus.glb",
+   "grip": "fist",
+   "people": "izani",
+   "culture_label": "Izani (Iziz)",
+   "subset": "Izani Legion",
+   "src": "Meshy_AI_Izani_Legion_Clipeus_20261106_texture_remesh_tri_684f68b0",
+   "low_turn": 90
+  },
+  {
+   "id": "msh_izani_legion_hexagonal_shield",
+   "label": "Izani Legion Hexagonal Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/msh_izani_legion_hexagonal_shield.glb",
+   "grip": "fist",
+   "people": "izani",
+   "culture_label": "Izani (Iziz)",
+   "subset": "Izani Legion",
+   "src": "Meshy_AI_Izani_Legion_Hexagonal_Shield_20261106_texture_remesh_tri_729b0929",
+   "low_turn": 90
+  },
+  {
+   "id": "msh_izani_legion_oval_shield",
+   "label": "Izani Legion Oval Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/msh_izani_legion_oval_shield.glb",
+   "grip": "fist",
+   "people": "izani",
+   "culture_label": "Izani (Iziz)",
+   "subset": "Izani Legion",
+   "src": "Meshy_AI_Izani_Legion_Oval_Shield_20261106_texture_remesh_tri_774ec889",
+   "low_turn": 90
+  },
+  {
+   "id": "msh_izani_legion_parma",
+   "label": "Izani Legion Parma",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/msh_izani_legion_parma.glb",
+   "grip": "fist",
+   "people": "izani",
+   "culture_label": "Izani (Iziz)",
+   "subset": "Izani Legion",
+   "src": "Meshy_AI_Izani_Legion_Parma_20261106_texture_remesh_tri_c2d23b15",
+   "low_turn": 90
+  },
+  {
+   "id": "msh_izani_legion_scutum",
+   "label": "Izani Legion Scutum",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/msh_izani_legion_scutum.glb",
+   "grip": "fist",
+   "people": "izani",
+   "culture_label": "Izani (Iziz)",
+   "subset": "Izani Legion",
+   "src": "Meshy_AI_Izani_Legion_Scutum_20261106_texture_remesh_tri_78eecfa6",
+   "low_turn": 90
+  },
+  {
+   "id": "msh_izani_pilum",
+   "label": "Izani Pilum",
+   "hand": "R",
+   "kind": "spear",
+   "glb": "pieces/props/msh_izani_pilum.glb",
+   "grip": "fist",
+   "people": "izani",
+   "culture_label": "Izani (Iziz)",
+   "subset": "Izani Legion",
+   "src": "Meshy_AI_Izani_Pilum_20261106_texture_remesh_tri_f016a043",
+   "support": [
+    0.0,
+    0.25,
+    0.0,
+    0.0,
+    0.861,
+    0.0
+   ],
+   "blade": [
+    1.013,
+    1.267
+   ]
+  },
+  {
+   "id": "msh_izani_plumbata",
+   "label": "Izani Plumbata",
+   "hand": "R",
+   "kind": "spear",
+   "glb": "pieces/props/msh_izani_plumbata.glb",
+   "grip": "fist",
+   "people": "izani",
+   "culture_label": "Izani (Iziz)",
+   "subset": "Izani Legion",
+   "src": "Meshy_AI_Izani_Plumbata_20261106_texture_bcf988d6",
+   "support": [
+    0.0,
+    0.25,
+    0.0,
+    0.0,
+    0.678,
+    0.0
+   ],
+   "blade": [
+    0.798,
+    0.943
+   ]
+  },
+  {
+   "id": "msh_izani_pugio",
+   "label": "Izani Pugio",
+   "hand": "R",
+   "kind": "dagger",
+   "glb": "pieces/props/msh_izani_pugio.glb",
+   "grip": "fist",
+   "people": "izani",
+   "culture_label": "Izani (Iziz)",
+   "subset": "Izani Legion",
+   "src": "Meshy_AI_Izani_Pugio_20261106_texture_3012d7ee",
+   "blade": [
+    0.05,
+    0.38
+   ]
+  },
+  {
+   "id": "msh_ninja_katana",
+   "label": "Ninja Katana",
+   "hand": "R",
+   "kind": "scimitar",
+   "glb": "pieces/props/msh_ninja_katana.glb",
+   "grip": "fist",
+   "people": "eternian",
+   "culture_label": "Eternians",
+   "subset": "Eternian Arms",
+   "src": "Meshy_AI_ninja_katana_20261004_image-to-3d-texture_1771b64e",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    -0.1,
+    0.0
+   ],
+   "blade": [
+    0.058,
+    0.825
+   ]
+  },
+  {
+   "id": "msh_dalab_rhomphaia",
+   "label": "Dalab Rhomphaia",
+   "hand": "R",
+   "kind": "spear",
+   "glb": "pieces/props/msh_dalab_rhomphaia.glb",
+   "grip": "fist",
+   "people": "dalabites",
+   "culture_label": "Dalabites",
+   "subset": "Dalab Arms",
+   "src": "Meshy_AI_dalab_rhomphaia_20261106_texture_remesh_tri_b39517a0",
+   "support": [
+    0.0,
+    0.25,
+    0.0,
+    0.0,
+    0.58,
+    0.0
+   ],
+   "blade": [
+    0.682,
+    1.267
+   ]
+  },
+  {
+   "id": "msh_dalab_sica_sheath",
+   "label": "Dalab Sica Sheath",
+   "hand": "R",
+   "kind": "scimitar",
+   "glb": "pieces/props/msh_dalab_sica_sheath.glb",
+   "grip": "fist",
+   "people": "dalabites",
+   "culture_label": "Dalabites",
+   "subset": "Dalab Arms",
+   "src": "Meshy_AI_dalab_sica_sheath_20261106_texture_6ddc86ce",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    -0.1,
+    0.0
+   ],
+   "blade": [
+    0.058,
+    0.653
+   ]
+  },
+  {
+   "id": "msh_dalab_spear",
+   "label": "Dalab Spear",
+   "hand": "R",
+   "kind": "spear",
+   "glb": "pieces/props/msh_dalab_spear.glb",
+   "grip": "fist",
+   "people": "dalabites",
+   "culture_label": "Dalabites",
+   "subset": "Dalab Arms",
+   "src": "Meshy_AI_dalab_spear_20261106_texture_remesh_tri_1ed7312b",
+   "support": [
+    0.0,
+    0.25,
+    0.0,
+    0.0,
+    0.759,
+    0.0
+   ],
+   "blade": [
+    0.893,
+    1.268
+   ]
+  },
+  {
+   "id": "msh_lizardman_crossbow",
+   "label": "Lizardman Crossbow",
+   "hand": "R",
+   "kind": "crossbow",
+   "glb": "pieces/props/msh_lizardman_crossbow.glb",
+   "grip": "trigger",
+   "people": "lizardmen",
+   "culture_label": "Lizardmen",
+   "subset": "Lizardmen Meshy",
+   "src": "Meshy_AI_lizardman_crossbow_20261106_texture_6b2e2e5a",
+   "support": [
+    0.0,
+    0.075,
+    0.1,
+    0.0,
+    0.075,
+    0.3
+   ]
+  },
+  {
+   "id": "msh_lizardman_dao_scabbard",
+   "label": "Lizardman Dao Scabbard",
+   "hand": "R",
+   "kind": "scimitar",
+   "glb": "pieces/props/msh_lizardman_dao_scabbard.glb",
+   "grip": "fist",
+   "people": "lizardmen",
+   "culture_label": "Lizardmen",
+   "subset": "Lizardmen Meshy",
+   "src": "Meshy_AI_lizardman_dao_scabbard_20261106_texture_da958898",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    -0.1,
+    0.0
+   ],
+   "blade": [
+    0.058,
+    0.855
+   ]
+  },
+  {
+   "id": "msh_lizardman_dao_sword",
+   "label": "Lizardman Dao Sword",
+   "hand": "R",
+   "kind": "scimitar",
+   "glb": "pieces/props/msh_lizardman_dao_sword.glb",
+   "grip": "fist",
+   "people": "lizardmen",
+   "culture_label": "Lizardmen",
+   "subset": "Lizardmen Meshy",
+   "src": "Meshy_AI_lizardman_dao_sword_20261106_texture_ddc35d30",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    -0.1,
+    0.0
+   ],
+   "blade": [
+    0.058,
+    0.902
+   ]
+  },
+  {
+   "id": "msh_lizardman_ge_dagger_axe",
+   "label": "Lizardman Ge Dagger Axe",
+   "hand": "R",
+   "kind": "axe",
+   "glb": "pieces/props/msh_lizardman_ge_dagger_axe.glb",
+   "grip": "fist",
+   "people": "lizardmen",
+   "culture_label": "Lizardmen",
+   "subset": "Lizardmen Meshy",
+   "src": "Meshy_AI_lizardman_ge_dagger_axe_20261106_texture_5bff682e",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    0.427,
+    0.0
+   ],
+   "blade": [
+    0.534,
+    0.634
+   ]
+  },
+  {
+   "id": "msh_lizardman_jian_scabbard",
+   "label": "Lizardman Jian Scabbard",
+   "hand": "R",
+   "kind": "sword",
+   "glb": "pieces/props/msh_lizardman_jian_scabbard.glb",
+   "grip": "fist",
+   "people": "lizardmen",
+   "culture_label": "Lizardmen",
+   "subset": "Lizardmen Meshy",
+   "src": "Meshy_AI_lizardman_jian_scabbard_20261106_texture_66949d0f",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    -0.1,
+    0.0
+   ],
+   "blade": [
+    0.059,
+    0.921
+   ]
+  },
+  {
+   "id": "msh_lizardman_jian_sword",
+   "label": "Lizardman Jian Sword",
+   "hand": "R",
+   "kind": "sword",
+   "glb": "pieces/props/msh_lizardman_jian_sword.glb",
+   "grip": "fist",
+   "people": "lizardmen",
+   "culture_label": "Lizardmen",
+   "subset": "Lizardmen Meshy",
+   "src": "Meshy_AI_lizardman_jian_sword_20261106_texture_0e4e702f",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    -0.1,
+    0.0
+   ],
+   "blade": [
+    0.059,
+    0.86
+   ]
+  },
+  {
+   "id": "msh_lizardman_spear",
+   "label": "Lizardman Spear",
+   "hand": "R",
+   "kind": "spear",
+   "glb": "pieces/props/msh_lizardman_spear.glb",
+   "grip": "fist",
+   "people": "lizardmen",
+   "culture_label": "Lizardmen",
+   "subset": "Lizardmen Meshy",
+   "src": "Meshy_AI_lizardman_spear_20261106_texture_remesh_tri_af861579",
+   "support": [
+    0.0,
+    0.25,
+    0.0,
+    0.0,
+    0.733,
+    0.0
+   ],
+   "blade": [
+    0.863,
+    1.267
+   ]
+  },
+  {
+   "id": "msh_dalab_axe",
+   "label": "Dalab Axe",
+   "hand": "R",
+   "kind": "axe",
+   "glb": "pieces/props/msh_dalab_axe.glb",
+   "grip": "fist",
+   "people": "dalabites",
+   "culture_label": "Dalabites",
+   "subset": "Dalab Arms",
+   "src": "Meshy_AI_dalab_axe_20261106_texture_99b9afb4",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    0.487,
+    0.0
+   ],
+   "blade": [
+    0.609,
+    0.709
+   ]
+  },
+  {
+   "id": "msh_dalab_falx",
+   "label": "Dalab Falx",
+   "hand": "R",
+   "kind": "scimitar",
+   "glb": "pieces/props/msh_dalab_falx.glb",
+   "grip": "fist",
+   "people": "dalabites",
+   "culture_label": "Dalabites",
+   "subset": "Dalab Arms",
+   "src": "Meshy_AI_dalab_falx_20261106_texture_3939aba7",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    -0.1,
+    0.0
+   ],
+   "blade": [
+    0.058,
+    0.902
+   ]
+  },
+  {
+   "id": "msh_dalab_sica_dagger",
+   "label": "Dalab Sica Dagger",
+   "hand": "R",
+   "kind": "dagger",
+   "glb": "pieces/props/msh_dalab_sica_dagger.glb",
+   "grip": "fist",
+   "people": "dalabites",
+   "culture_label": "Dalabites",
+   "subset": "Dalab Arms",
+   "src": "Meshy_AI_dalab_sica_dagger_20261106_texture_f46bc707",
+   "blade": [
+    0.05,
+    0.451
+   ]
+  },
+  {
+   "id": "msh_voth_jaguar_claw_axe",
+   "label": "Voth Jaguar Claw Axe",
+   "hand": "R",
+   "kind": "axe",
+   "glb": "pieces/props/msh_voth_jaguar_claw_axe.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "culture_label": "Chichani (Voth)",
+   "subset": "Voth Meshy",
+   "src": "Meshy_AI_voth_jaguar_claw_axe_20261106_texture_0d94f6b4",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    0.451,
+    0.0
+   ],
+   "blade": [
+    0.564,
+    0.664
+   ]
+  },
+  {
+   "id": "msh_voth_mothwing_bow_arrows",
+   "label": "Voth Mothwing Bow Arrows",
+   "hand": "L",
+   "kind": "bow",
+   "glb": "pieces/props/msh_voth_mothwing_bow_arrows.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "culture_label": "Chichani (Voth)",
+   "subset": "Voth Meshy",
+   "src": "Meshy_AI_voth_mothwing_bow_arrows_20261106_texture_remesh_tri_b9275e61",
+   "arrow_arm": 1.65,
+   "string": [
+    0.0,
+    0.652,
+    -0.09,
+    0.0,
+    -0.652,
+    -0.09
+   ],
+   "arrow": "arrow"
+  },
+  {
+   "id": "msh_voth_obsidian_moonblade",
+   "label": "Voth Obsidian Moonblade",
+   "hand": "R",
+   "kind": "scimitar",
+   "glb": "pieces/props/msh_voth_obsidian_moonblade.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "culture_label": "Chichani (Voth)",
+   "subset": "Voth Meshy",
+   "src": "Meshy_AI_voth_obsidian_moonblade_20261106_texture_a828471c",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    -0.1,
+    0.0
+   ],
+   "blade": [
+    0.058,
+    0.902
+   ]
+  },
+  {
+   "id": "msh_voth_solar_mace",
+   "label": "Voth Solar Mace",
+   "hand": "R",
+   "kind": "mace",
+   "glb": "pieces/props/msh_voth_solar_mace.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "culture_label": "Chichani (Voth)",
+   "subset": "Voth Meshy",
+   "src": "Meshy_AI_voth_solar_mace_20261106_texture_3fe8154e",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    0.444,
+    0.0
+   ],
+   "blade": [
+    0.554,
+    0.704
+   ]
+  },
+  {
+   "id": "msh_voth_sun_eater_glaive",
+   "label": "Voth Sun Eater Glaive",
+   "hand": "R",
+   "kind": "spear",
+   "glb": "pieces/props/msh_voth_sun_eater_glaive.glb",
+   "grip": "fist",
+   "people": "chichani",
+   "culture_label": "Chichani (Voth)",
+   "subset": "Voth Meshy",
+   "src": "Meshy_AI_voth_sun_eater_glaive_20261106_texture_remesh_tri_e9e81394",
+   "support": [
+    0.0,
+    0.25,
+    0.0,
+    0.0,
+    0.58,
+    0.0
+   ],
+   "blade": [
+    0.682,
+    1.268
+   ]
+  },
+  {
+   "id": "msh_eternian_kanabo",
+   "label": "Eternian Kanabo",
+   "hand": "R",
+   "kind": "mace",
+   "glb": "pieces/props/msh_eternian_kanabo.glb",
+   "grip": "fist",
+   "people": "eternian",
+   "culture_label": "Eternians",
+   "subset": "Eternian Arms",
+   "src": "Meshy_AI_Eternian_Kanabo_20261106_texture_a5f6ad32",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    0.516,
+    0.0
+   ],
+   "blade": [
+    0.644,
+    0.744
+   ]
+  },
+  {
+   "id": "msh_eternian_katana",
+   "label": "Eternian Katana",
+   "hand": "R",
+   "kind": "scimitar",
+   "glb": "pieces/props/msh_eternian_katana.glb",
+   "grip": "fist",
+   "people": "eternian",
+   "culture_label": "Eternians",
+   "subset": "Eternian Arms",
+   "src": "Meshy_AI_Eternian_Katana_20261106_texture_c2ed967b",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    -0.1,
+    0.0
+   ],
+   "blade": [
+    0.058,
+    0.795
+   ]
+  },
+  {
+   "id": "msh_eternian_naginata",
+   "label": "Eternian Naginata",
+   "hand": "R",
+   "kind": "spear",
+   "glb": "pieces/props/msh_eternian_naginata.glb",
+   "grip": "fist",
+   "people": "eternian",
+   "culture_label": "Eternians",
+   "subset": "Eternian Arms",
+   "src": "Meshy_AI_Eternian_Naginata_20261106_texture_remesh_tri_d784a7d7",
+   "support": [
+    0.0,
+    0.25,
+    0.0,
+    0.0,
+    0.937,
+    0.0
+   ],
+   "blade": [
+    1.103,
+    1.268
+   ]
+  },
+  {
+   "id": "msh_eternian_yari",
+   "label": "Eternian Yari",
+   "hand": "R",
+   "kind": "spear",
+   "glb": "pieces/props/msh_eternian_yari.glb",
+   "grip": "fist",
+   "people": "eternian",
+   "culture_label": "Eternians",
+   "subset": "Eternian Arms",
+   "src": "Meshy_AI_Eternian_Yari_20261106_texture_remesh_tri_731fe74b",
+   "support": [
+    0.0,
+    0.25,
+    0.0,
+    0.0,
+    0.733,
+    0.0
+   ],
+   "blade": [
+    0.863,
+    1.268
+   ]
+  },
+  {
+   "id": "msh_eternian_yumi",
+   "label": "Eternian Yumi",
+   "hand": "L",
+   "kind": "bow",
+   "glb": "pieces/props/msh_eternian_yumi.glb",
+   "grip": "fist",
+   "people": "eternian",
+   "culture_label": "Eternians",
+   "subset": "Eternian Arms",
+   "src": "Meshy_AI_Eternian_Yumi_20261106_texture_remesh_tri_7c5333ad",
+   "arrow_arm": 1.65,
+   "string": [
+    0.0,
+    0.652,
+    -0.09,
+    0.0,
+    -0.652,
+    -0.09
+   ],
+   "arrow": "arrow"
+  },
+  {
+   "id": "msh_talovolci_celtic_bow_arrow",
+   "label": "Talovolci Celtic Bow Arrow",
+   "hand": "L",
+   "kind": "bow",
+   "glb": "pieces/props/msh_talovolci_celtic_bow_arrow.glb",
+   "grip": "fist",
+   "people": "talovolci",
+   "culture_label": "Talovolci (Free Clans)",
+   "subset": "Talovolci Arms",
+   "src": "Meshy_AI_Talovolci_Celtic_Bow_Arrow_20261106_texture_remesh_tri_07a650f0",
+   "arrow_arm": 1.65,
+   "string": [
+    0.0,
+    0.652,
+    -0.09,
+    0.0,
+    -0.652,
+    -0.09
+   ],
+   "arrow": "arrow"
+  },
+  {
+   "id": "msh_talovolci_gaesum",
+   "label": "Talovolci Gaesum",
+   "hand": "R",
+   "kind": "spear",
+   "glb": "pieces/props/msh_talovolci_gaesum.glb",
+   "grip": "fist",
+   "people": "talovolci",
+   "culture_label": "Talovolci (Free Clans)",
+   "subset": "Talovolci Arms",
+   "src": "Meshy_AI_Talovolci_Gaesum_20261106_texture_remesh_tri_8ebbd8a6",
+   "support": [
+    0.0,
+    0.25,
+    0.0,
+    0.0,
+    0.657,
+    0.0
+   ],
+   "blade": [
+    0.772,
+    1.268
+   ]
+  },
+  {
+   "id": "msh_talovolci_gallic_spear",
+   "label": "Talovolci Gallic Spear",
+   "hand": "R",
+   "kind": "spear",
+   "glb": "pieces/props/msh_talovolci_gallic_spear.glb",
+   "grip": "fist",
+   "people": "talovolci",
+   "culture_label": "Talovolci (Free Clans)",
+   "subset": "Talovolci Arms",
+   "src": "Meshy_AI_Talovolci_Gallic_Spear_20261106_texture_remesh_tri_52646ccf",
+   "support": [
+    0.0,
+    0.25,
+    0.0,
+    0.0,
+    0.682,
+    0.0
+   ],
+   "blade": [
+    0.802,
+    1.268
+   ]
+  },
+  {
+   "id": "msh_talovolci_la_tene_long_sword",
+   "label": "Talovolci La Tene Long Sword",
+   "hand": "R",
+   "kind": "sword",
+   "glb": "pieces/props/msh_talovolci_la_tene_long_sword.glb",
+   "grip": "fist",
+   "people": "talovolci",
+   "culture_label": "Talovolci (Free Clans)",
+   "subset": "Talovolci Arms",
+   "src": "Meshy_AI_Talovolci_La_Tene_Long_Sword_20261106_texture_b5f177c5",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    -0.1,
+    0.0
+   ],
+   "blade": [
+    0.059,
+    0.92
+   ]
+  },
+  {
+   "id": "msh_coyoteman_trade_rifle",
+   "label": "Coyoteman Trade Rifle",
+   "hand": "R",
+   "kind": "rifle",
+   "glb": "pieces/props/msh_coyoteman_trade_rifle.glb",
+   "grip": "trigger",
+   "people": "coyote_men",
+   "culture_label": "Coyote Men",
+   "subset": "Coyote Men Arms",
+   "src": "Meshy_AI_coyoteman_trade_rifle_20261106_texture_69213e44",
+   "support": [
+    0.0,
+    0.06,
+    0.16,
+    0.0,
+    0.06,
+    0.42
+   ]
+  },
+  {
+   "id": "msh_hykkousoi_akontion",
+   "label": "Hykkousoi Akontion",
+   "hand": "R",
+   "kind": "spear",
+   "glb": "pieces/props/msh_hykkousoi_akontion.glb",
+   "grip": "fist",
+   "people": "hykkousoi",
+   "culture_label": "Hykkousoi",
+   "subset": "Hykkousoi Panoply",
+   "src": "Meshy_AI_Hykkousoi_Akontion_20261106_texture_remesh_tri_61741e2e",
+   "support": [
+    0.0,
+    0.25,
+    0.0,
+    0.0,
+    0.848,
+    0.0
+   ],
+   "blade": [
+    0.998,
+    1.268
+   ]
+  },
+  {
+   "id": "msh_hykkousoi_dory",
+   "label": "Hykkousoi Dory",
+   "hand": "R",
+   "kind": "spear",
+   "glb": "pieces/props/msh_hykkousoi_dory.glb",
+   "grip": "fist",
+   "people": "hykkousoi",
+   "culture_label": "Hykkousoi",
+   "subset": "Hykkousoi Panoply",
+   "src": "Meshy_AI_Hykkousoi_Dory_20261106_texture_remesh_tri_374727d9",
+   "support": [
+    0.0,
+    0.25,
+    0.0,
+    0.0,
+    0.822,
+    0.0
+   ],
+   "blade": [
+    0.968,
+    1.268
+   ]
+  },
+  {
+   "id": "msh_hykkousoi_kopis",
+   "label": "Hykkousoi Kopis",
+   "hand": "R",
+   "kind": "scimitar",
+   "glb": "pieces/props/msh_hykkousoi_kopis.glb",
+   "grip": "fist",
+   "people": "hykkousoi",
+   "culture_label": "Hykkousoi",
+   "subset": "Hykkousoi Panoply",
+   "src": "Meshy_AI_Hykkousoi_Kopis_20261106_texture_e203d708",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    -0.1,
+    0.0
+   ],
+   "blade": [
+    0.058,
+    0.825
+   ]
+  },
+  {
+   "id": "msh_hykkousoi_sarissa",
+   "label": "Hykkousoi Sarissa",
+   "hand": "R",
+   "kind": "spear",
+   "glb": "pieces/props/msh_hykkousoi_sarissa.glb",
+   "grip": "fist",
+   "people": "hykkousoi",
+   "culture_label": "Hykkousoi",
+   "subset": "Hykkousoi Panoply",
+   "src": "Meshy_AI_Hykkousoi_Sarissa_20261106_texture_remesh_tri_7dcbff2a",
+   "support": [
+    0.0,
+    0.25,
+    0.0,
+    0.0,
+    0.954,
+    0.0
+   ],
+   "blade": [
+    1.123,
+    1.397
+   ]
+  },
+  {
+   "id": "msh_hykkousoi_xiphos",
+   "label": "Hykkousoi Xiphos",
+   "hand": "R",
+   "kind": "sword",
+   "glb": "pieces/props/msh_hykkousoi_xiphos.glb",
+   "grip": "fist",
+   "people": "hykkousoi",
+   "culture_label": "Hykkousoi",
+   "subset": "Hykkousoi Panoply",
+   "src": "Meshy_AI_Hykkousoi_Xiphos_20261106_texture_005e2119",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    -0.1,
+    0.0
+   ],
+   "blade": [
+    0.059,
+    0.86
+   ]
+  },
+  {
+   "id": "msh_talovolci_la_tene_dagger",
+   "label": "Talovolci La Tene Dagger",
+   "hand": "R",
+   "kind": "dagger",
+   "glb": "pieces/props/msh_talovolci_la_tene_dagger.glb",
+   "grip": "fist",
+   "people": "talovolci",
+   "culture_label": "Talovolci (Free Clans)",
+   "subset": "Talovolci Arms",
+   "src": "Meshy_AI_Talovolci_La_Tene_Dagger_20261106_texture_cfcb8af3",
+   "blade": [
+    0.05,
+    0.425
+   ]
+  },
+  {
+   "id": "msh_centurion_shield",
+   "label": "Centurion Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/msh_centurion_shield.glb",
+   "grip": "fist",
+   "people": "izani",
+   "culture_label": "Izani (Iziz)",
+   "subset": "Izani Legion",
+   "src": "Meshy_AI_centurion_shield_20261003_image-to-3d-texture_04612461",
+   "low_turn": 90
+  },
+  {
+   "id": "msh_centurion_sword",
+   "label": "Centurion Sword",
+   "hand": "R",
+   "kind": "sword",
+   "glb": "pieces/props/msh_centurion_sword.glb",
+   "grip": "fist",
+   "people": "izani",
+   "culture_label": "Izani (Iziz)",
+   "subset": "Izani Legion",
+   "src": "Meshy_AI_centurion_sword_20261003_image-to-3d-texture_b39c25cf",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    -0.1,
+    0.0
+   ],
+   "blade": [
+    0.059,
+    0.83
+   ]
   }
  ]
 }

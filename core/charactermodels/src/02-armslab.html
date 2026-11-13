@@ -1,0 +1,664 @@
+<title>Arms Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya+SC:wght@500;700&family=Alegreya+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Arms Lab: a human model on stage with combat animations loaded, R and L hands equippable with any cultural weapon or
+   shield, an outfit selector box, an item review box (Reject checkbox + comments), and a cultural arms thumbnail browser. */
+:root {
+  --bg: #e6e9e1;
+  --stage: #d5dacd;
+  --panel: #f3f4ef;
+  --ink: #1d2620;
+  --muted: #5b6a5f;
+  --line: #c3cabd;
+  --accent: #9a5a17;
+  --accent-ink: #ffffff;
+  --chip: #e9ece4;
+  --chip-on: #fbf1e3;
+  --stage-top: #cfd6c6;
+  --stage-floor: #a9b3a0;
+  --good: #3f7d3a;
+  --fix: #b9800f;
+  --bad: #b23a2b;
+  --none: #b7bfb3;
+  --display: "Alegreya SC", "Palatino Linotype", Palatino, Georgia, serif;
+  --body: "Alegreya Sans", "Gill Sans", "Trebuchet MS", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #121815; --stage: #18201b; --panel: #19211c; --ink: #e2e8df; --muted: #93a197; --line: #2c3830;
+  --accent: #e3a457; --accent-ink: #1a140b; --chip: #212b25; --chip-on: #3a2c1a;
+  --stage-top: #1d2721; --stage-floor: #0d120f; --good: #79c06f; --fix: #e3b04f; --bad: #e57a69; --none: #3d4a42; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #121815; --stage: #18201b; --panel: #19211c; --ink: #e2e8df; --muted: #93a197; --line: #2c3830;
+  --accent: #e3a457; --accent-ink: #1a140b; --chip: #212b25; --chip-on: #3a2c1a;
+  --stage-top: #1d2721; --stage-floor: #0d120f; --good: #79c06f; --fix: #e3b04f; --bad: #e57a69; --none: #3d4a42; color-scheme: dark; }
+
+html, body { height: 100%; margin: 0; }
+[hidden] { display: none !important; }
+body { background: var(--bg); color: var(--ink); font: 14px/1.4 var(--body); overflow: hidden; }
+#app { height: 100%; display: grid; grid-template-columns: 340px minmax(0, 1fr) 500px; grid-template-rows: minmax(0, 1fr); }
+
+/* Left Column: Outfit Box, Equipped Hands Box, Combat Animation Box, Review Box */
+#left-col {
+  background: var(--panel);
+  border-right: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: auto;
+}
+.box {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.box h2 {
+  margin: 0;
+  font: 700 16px/1.1 var(--display);
+  letter-spacing: .03em;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.box h2 small {
+  font: 400 11px var(--mono);
+  color: var(--muted);
+}
+.row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.row label {
+  font-size: 12px;
+  color: var(--muted);
+  min-width: 58px;
+}
+select, input[type="text"], input[type="search"] {
+  font: 500 13px/1.2 var(--body);
+  color: var(--ink);
+  background: var(--chip);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 6px 8px;
+}
+.row select { flex: 1; min-width: 0; }
+button {
+  font: 500 12.5px/1 var(--body);
+  color: var(--ink);
+  background: var(--chip);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 7px 10px;
+  cursor: pointer;
+}
+button:hover { filter: brightness(1.06); }
+button[aria-pressed="true"], button.active {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-color: var(--accent);
+}
+.chk-line {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  cursor: pointer;
+  user-select: none;
+}
+.chk-line input[type="checkbox"] {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+/* Equipped R & L Hand Slots */
+.hand-slots {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.hand-slot {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 7px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  cursor: pointer;
+  position: relative;
+}
+.hand-slot.inspecting {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+  background: var(--chip-on);
+}
+.hand-slot-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font: 700 12px var(--mono);
+  color: var(--muted);
+}
+.hand-slot-head button {
+  padding: 2px 6px;
+  font-size: 11px;
+}
+.hand-slot-body {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 44px;
+}
+.hand-thumb {
+  width: 42px;
+  height: 42px;
+  border-radius: 5px;
+  background-color: var(--chip);
+  border: 1px solid var(--line);
+  flex-shrink: 0;
+  background-repeat: no-repeat;
+}
+.hand-info {
+  min-width: 0;
+  flex: 1;
+}
+.hand-info b {
+  display: block;
+  font-size: 12.5px;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.hand-info small {
+  font: 11px var(--mono);
+  color: var(--muted);
+}
+
+/* Review Box */
+#review-box {
+  background: color-mix(in srgb, var(--panel) 92%, var(--chip-on));
+}
+.reject-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 7px 10px;
+}
+.reject-bar.is-rejected {
+  border-color: var(--bad);
+  background: color-mix(in srgb, var(--bad) 16%, var(--bg));
+}
+.reject-bar label {
+  font-weight: 700;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+.reject-bar input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--bad);
+}
+#rv-comment {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 68px;
+  font: 13px/1.4 var(--body);
+  color: var(--ink);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 7px 9px;
+  resize: vertical;
+}
+
+/* Center Stage */
+#stage {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background: radial-gradient(130% 90% at 50% 15%, var(--stage-top), var(--stage) 55%, var(--stage-floor));
+}
+#stage canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  cursor: grab;
+}
+#stage canvas:active { cursor: grabbing; }
+#brand {
+  position: absolute;
+  left: 18px;
+  top: 14px;
+  pointer-events: none;
+  max-width: 44ch;
+}
+#brand h1 { margin: 0; font: 700 25px/1 var(--display); letter-spacing: .02em; }
+#brand p { margin: 4px 0 0; color: var(--muted); font-size: 12.5px; }
+#now {
+  position: absolute;
+  right: 16px;
+  top: 14px;
+  text-align: right;
+  pointer-events: none;
+}
+#now b { display: block; font: 700 18px/1.1 var(--display); }
+#now span { font: 11.5px var(--mono); color: var(--muted); }
+#loading {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  display: grid;
+  place-items: center;
+  font: 500 15px var(--body);
+  color: var(--muted);
+}
+#bar {
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+.grp {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 3px;
+}
+.grp button { border: 0; background: transparent; padding: 6px 9px; }
+.grp button:hover { background: var(--chip); }
+.grp button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+.grp.scrub { flex: 1 1 180px; padding: 3px 10px; gap: 8px; }
+.grp.scrub input { flex: 1; min-width: 70px; accent-color: var(--accent); }
+#clock { font: 11.5px var(--mono); color: var(--muted); white-space: nowrap; }
+
+/* Right Column: Cultural Arms Thumbnail Selection Box */
+#right-col {
+  background: var(--panel);
+  border-left: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-width: 0;
+}
+#catalog-head {
+  padding: 12px 14px 10px;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+#catalog-head h2 {
+  margin: 0;
+  font: 700 17px/1.1 var(--display);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+#catalog-tally {
+  font: 11.5px var(--mono);
+  color: var(--muted);
+}
+.culture-pills {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: thin;
+}
+.culture-pills button {
+  white-space: nowrap;
+  padding: 5px 9px;
+  font-size: 12px;
+  border-radius: 999px;
+}
+.culture-pills button small {
+  font: 10.5px var(--mono);
+  opacity: 0.8;
+  margin-left: 3px;
+}
+#arms-grid-wrap {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 12px 24px;
+}
+.culture-section {
+  margin-bottom: 16px;
+}
+.culture-section h3 {
+  margin: 8px 2px 6px;
+  font: 700 14px/1.2 var(--display);
+  letter-spacing: .03em;
+  color: var(--ink);
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.culture-section h3 small {
+  font: 400 11px var(--mono);
+  color: var(--muted);
+}
+.arms-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+  gap: 7px;
+}
+.arm-card {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  cursor: pointer;
+  position: relative;
+  text-align: left;
+  transition: transform 0.08s ease, border-color 0.08s ease;
+}
+.arm-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+.arm-card.selected {
+  background: var(--chip-on);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1.5px var(--accent);
+}
+.arm-card.rejected {
+  border-color: var(--bad);
+  background: color-mix(in srgb, var(--bad) 12%, var(--bg));
+}
+.arm-thumb {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 5px;
+  background-color: var(--chip);
+  background-repeat: no-repeat;
+  border: 1px solid color-mix(in srgb, var(--line) 60%, transparent);
+}
+.arm-title {
+  font-size: 11.5px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--ink);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 2.4em;
+}
+.arm-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font: 10px var(--mono);
+  color: var(--muted);
+}
+.arm-badges {
+  position: absolute;
+  top: 9px;
+  left: 9px;
+  right: 9px;
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
+}
+.badge {
+  font: 700 9.5px/1 var(--mono);
+  padding: 2px 4px;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--panel) 88%, transparent);
+  color: var(--ink);
+  border: 1px solid var(--line);
+}
+.badge.eq-r, .badge.eq-l {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-color: var(--accent);
+}
+.badge.rej {
+  background: var(--bad);
+  color: #fff;
+  border-color: var(--bad);
+}
+.badge.note {
+  background: var(--fix);
+  color: #fff;
+  border-color: var(--fix);
+}
+
+@media (max-width: 1080px) {
+  body { overflow: auto; }
+  #app { grid-template-columns: 1fr; grid-template-rows: auto 56vh auto; height: auto; }
+  #stage { height: 56vh; }
+  #left-col, #right-col { height: auto; border: 0; border-top: 1px solid var(--line); }
+}
+</style>
+
+<div id="app">
+  <!-- Left Column: Outfit Box, Hands Box, Combat Animations Box, Review Box -->
+  <div id="left-col">
+    <!-- 1. Outfit Selection Box -->
+    <div class="box" id="outfit-box">
+      <h2>Outfit Selection <small id="outfit-meta">Human Model</small></h2>
+      <div class="row">
+        <label for="body-pick">Body</label>
+        <select id="body-pick">
+          <option value="mpfb_male">Man (Neutral)</option>
+          <option value="mpfb_female">Woman (Neutral)</option>
+          <option value="mpfb_giant">Giant (Dalab)</option>
+        </select>
+        <select id="build-pick" title="Body build morphs">
+          <option value="neutral">Neutral build</option>
+          <option value="short">Short &amp; broad</option>
+          <option value="tall">Tall &amp; lanky</option>
+          <option value="heavy">Heavy / muscular</option>
+        </select>
+      </div>
+      <div class="row">
+        <label for="outfit-culture">Culture</label>
+        <select id="outfit-culture"><option value="">Plain Clothes</option></select>
+      </div>
+      <div class="row">
+        <label for="outfit-tier">Outfit</label>
+        <select id="outfit-tier"><option value="">Default Tier</option></select>
+      </div>
+      <div class="row">
+        <label for="named-pick">Preset</label>
+        <select id="named-pick"><option value="">— Named Character —</option></select>
+      </div>
+      <label class="chk-line">
+        <input type="checkbox" id="auto-outfit" checked>
+        <span>Auto-match outfit when selecting a culture's arms</span>
+      </label>
+    </div>
+
+    <!-- 2. R & L Hand Equipment Box -->
+    <div class="box" id="equip-box">
+      <h2>Equipped Hands <small>Click card = Equip · Right-click = L Hand</small></h2>
+      <div class="hand-slots">
+        <div class="hand-slot inspecting" id="slot-R" title="Click to inspect R Hand item in Review Box">
+          <div class="hand-slot-head">
+            <span>R HAND</span>
+            <button type="button" id="clear-R" title="Unequip Right Hand">✕</button>
+          </div>
+          <div class="hand-slot-body">
+            <div class="hand-thumb" id="thumb-R"></div>
+            <div class="hand-info">
+              <b id="name-R">Empty</b>
+              <small id="kind-R">—</small>
+            </div>
+          </div>
+        </div>
+        <div class="hand-slot" id="slot-L" title="Click to inspect L Hand item in Review Box">
+          <div class="hand-slot-head">
+            <span>L HAND</span>
+            <button type="button" id="clear-L" title="Unequip Left Hand">✕</button>
+          </div>
+          <div class="hand-slot-body">
+            <div class="hand-thumb" id="thumb-L"></div>
+            <div class="hand-info">
+              <b id="name-L">Empty</b>
+              <small id="kind-L">—</small>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <label for="target-hand">Click Equips</label>
+        <select id="target-hand">
+          <option value="auto">Auto (Weapons → R, Shields/Bows → L)</option>
+          <option value="R">Always R Hand</option>
+          <option value="L">Always L Hand</option>
+        </select>
+        <button type="button" id="swap-hands" title="Swap R and L Hand items">Swap R ⇄ L</button>
+      </div>
+      <label class="chk-line">
+        <input type="checkbox" id="two-hands">
+        <span>Two-handed grip (L hand supports R weapon shaft)</span>
+      </label>
+    </div>
+
+    <!-- 3. Combat Animations Box -->
+    <div class="box" id="anim-box">
+      <h2>Combat Animations <small id="clip-group-label">Combat</small></h2>
+      <div class="row" id="anim-cats">
+        <button type="button" data-cat="combat" aria-pressed="true">All Combat</button>
+        <button type="button" data-cat="melee" aria-pressed="false">Melee</button>
+        <button type="button" data-cat="ranged" aria-pressed="false">Ranged</button>
+        <button type="button" data-cat="defend" aria-pressed="false">Shield/Defend</button>
+        <button type="button" data-cat="all" aria-pressed="false">Every Clip</button>
+      </div>
+      <div class="row">
+        <label for="clip-pick">Clip</label>
+        <select id="clip-pick"></select>
+      </div>
+      <label class="chk-line">
+        <input type="checkbox" id="auto-clip" checked>
+        <span>Auto-select combat animation matching equipped weapon</span>
+      </label>
+    </div>
+
+    <!-- 4. Item Review Box (Reject Checkbox & Comments) -->
+    <div class="box" id="review-box">
+      <h2>Item Review <small id="rv-item-id">No item selected</small></h2>
+      <div id="rv-item-title" style="font-weight:700;font-size:14px;">Select an arm or shield to review</div>
+      <div id="rv-item-sub" style="font:11.5px var(--mono);color:var(--muted);">—</div>
+      <div class="reject-bar" id="reject-bar">
+        <label for="rv-reject">
+          <input type="checkbox" id="rv-reject">
+          <span>Reject item (not working / needs fix)</span>
+        </label>
+        <span id="rv-badge" class="badge" hidden>REJECTED</span>
+      </div>
+      <textarea id="rv-comment" placeholder="Add comments on grip, scale, orientation, handle splice, or mesh issues…"></textarea>
+      <div class="row" style="justify-content:space-between;">
+        <span id="rv-status" style="font:11.5px var(--mono);color:var(--muted);">Saved in browser</span>
+        <div class="row">
+          <button type="button" id="rv-copy" title="Copy all reviews JSON to clipboard">Copy JSON</button>
+          <button type="button" id="rv-export" title="Download arms-reviews.json">Export</button>
+          <button type="button" id="rv-import" title="Import reviews JSON">Import</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Center Column: 3D Stage & Transport Bar -->
+  <div id="stage">
+    <div id="loading">Loading human model &amp; arms…</div>
+    <div id="brand">
+      <h1>Arms Lab</h1>
+      <p>Equip cultural weapons &amp; shields in R and L hands on a combat-animated figure. Drag to orbit, scroll to zoom.</p>
+    </div>
+    <div id="now">
+      <b id="now-equipped">Armed</b>
+      <span id="now-clip">idle</span>
+    </div>
+    <div id="bar">
+      <div class="grp" role="group" aria-label="Playback">
+        <button type="button" id="play" aria-pressed="true">Pause</button>
+        <button type="button" id="restart">Restart</button>
+        <select id="speed" title="Playback speed">
+          <option value="0.1">0.1×</option>
+          <option value="0.25">0.25×</option>
+          <option value="0.5">0.5×</option>
+          <option value="1" selected>1×</option>
+          <option value="1.5">1.5×</option>
+        </select>
+      </div>
+      <div class="grp scrub">
+        <input id="scrub" type="range" min="0" max="1000" value="0">
+        <span id="clock">0.00 / 0.00 s</span>
+      </div>
+      <div class="grp" role="group" aria-label="Camera Views">
+        <button type="button" data-cam="front">Front</button>
+        <button type="button" data-cam="right">R Hand</button>
+        <button type="button" data-cam="left">L Shield</button>
+        <button type="button" data-cam="back">Back</button>
+        <button type="button" id="cloth-toggle" aria-pressed="true">Cloth</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Column: Arms & Shields Thumbnail Browser Organized by Culture -->
+  <div id="right-col">
+    <div id="catalog-head">
+      <h2>
+        <span>Arms &amp; Shields by Culture</span>
+        <span id="catalog-tally">0 items</span>
+      </h2>
+      <div class="culture-pills" id="culture-pills"></div>
+      <div class="row">
+        <input type="search" id="search-input" placeholder="Search weapons, shields, cultures, subsets…" style="flex:1;">
+        <select id="kind-filter" title="Filter by weapon/shield type">
+          <option value="all">All Types</option>
+          <option value="weapons">All Weapons (R)</option>
+          <option value="shield">Shields (L)</option>
+          <option value="sword">Swords</option>
+          <option value="scimitar">Scimitars / Curved</option>
+          <option value="dagger">Daggers / Knives</option>
+          <option value="axe">Axes / Halberds</option>
+          <option value="mace">Maces / Clubs</option>
+          <option value="spear">Spears / Polearms</option>
+          <option value="bow">Bows &amp; Crossbows</option>
+          <option value="rifle">Firearms &amp; Relics</option>
+        </select>
+        <select id="status-filter" title="Filter by review status">
+          <option value="all">All Status</option>
+          <option value="rejected">Rejected Only</option>
+          <option value="commented">With Comments</option>
+          <option value="ok">Not Rejected</option>
+        </select>
+      </div>
+    </div>
+    <div id="arms-grid-wrap"></div>
+  </div>
+</div>
