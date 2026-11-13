@@ -355,3 +355,6 @@ killers, in pairs or triads, hunting stragglers, ambushing from under the sand; 
 `kits/mechs`; a wise caravan carries explosives or exotic Ancient weapons against them, a foolish one flees; their source Hub 01's mad AI,
 driven mad in the Cataclysm by a cause no one is sure of, unknown in the world); the residents, traders and names Yuni, Izani, Dasrī or Xanadui, with rare ventures from further off; two resources,
 potash and alkali salts, added at the kit's build; the rain correction in 4.22; wind-carved lake beds, not tuff.
+
+## 11. Scale-Model 5.1 Evaporite Strandline Binding (`2026-11-13`)
+- **Station 3 Soda-Lake Benches & White Dragon Yardangs (`763, 1062`, `+318 m`):** The pale wind-fluted yardang mesas (`KSTACKS`) and concentric paleolake recession steps framing The Catch's terminal soda/potash playa bind to `KSTRATA` **`evaporite-strand`** (`core/terrain/35-core-strata.js` — `0.4–1.5 m` crisp horizontal aragonite/trona tufa benches, specular `gypsum` crystal seams, pale green-grey lacustrine `marl` partings, and dazzling white alkali/potash `halite` crusts), grounding the potash and alkali-salt resources harvested by Yuni and Izani caravans.

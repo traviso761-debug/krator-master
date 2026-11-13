@@ -230,7 +230,74 @@
       black:{p:.24,th:[4,25],col:[0x3a3634,0x2e2b2a,0x45403d],hard:.95,xbed:.2,varnish:1},
       rust:{p:.24,th:[3,20],col:[0x8a4a2a,0x9a5530,0x7e4224],hard:.9,xbed:.3,varnish:1},
       parting:{p:.16,th:[.2,1],col:[0x6a5a50,0x5e5048],hard:.3,xbed:0,varnish:.3,between:true}},
-      fx:{varnish:1,varnishCol:[.16,.2,.15],xbed:.3}}
+      fx:{varnish:1,varnishCol:[.16,.2,.15],xbed:.3}},
+
+    // STRATA-PLAN section 11's six scale-model 5.1 geological recipes (strictly additive).
+    // 1. `carbonate-shelf`: bedded warm-water bioclastic/oolitic platform limestone and pale marl (2-5 m tabular beds,
+    // solution-notched tidal visors, high warm cream/buff albedo) for ringisles, swbay, hyperjungle shelf benches, and
+    // crater-drylands lower benches (plus swlowlands box-canyon bluffs, spiderlake basement, and riavalley dolomite palisades)
+    'carbonate-shelf':{main:'bioclastic',kinds:{
+      bioclastic:{p:.38,th:[2,5],col:[0xe8dfc8,0xdfd3b6,0xede5d0],hard:.82,xbed:.25,varnish:.2},
+      oolite:{p:.26,th:[2,4.5],col:[0xf0e8d5,0xe6dcc4,0xd9ccb0],hard:.85,xbed:.4,varnish:.18},
+      marl:{p:.18,th:[.4,1.4],col:[0xd6ceb8,0xccc3ab,0xded7c4],hard:.3,xbed:0,varnish:.08,between:true},
+      visor:{p:.12,th:[.6,1.8],col:[0xc9bda4,0xbfb298,0xd2c7ae],hard:.42,xbed:.1,varnish:.35},
+      terrarossa:{p:.06,th:[.15,.5],col:[0xb55a3c,0xa64e34,0xc26646],hard:.2,xbed:0,varnish:.1,between:true}},
+      fx:{xbed:.3,varnish:.2,joints:1,regolith:.5}},
+
+    // 2. `contact-marble`: recrystallized massive white-to-blue-veined calcite/dolomite marble with dark epidote-garnet-magnetite
+    // skarn selvages (4-8 m massive blocks, crisp quarry/scarp fracture, specular glint) for inner-wall contact-metamorphic
+    // belts (swbay Almua, cut Dilihan, ringisles Tethis/Ys, greenstep/riftrim Tallwalls, korona trenches, seouterwall, copperglacier)
+    'contact-marble':{main:'calcite',noRepeat:true,kinds:{
+      calcite:{p:.42,th:[4,8],col:[0xedeae2,0xf3f0e8,0xe5e1d8],hard:.86,xbed:0,varnish:.15,jit:.04},
+      bluevein:{p:.24,th:[4,7.5],col:[0xdce2e8,0xcfd7df,0xe4e8ee],hard:.88,xbed:.15,varnish:.15,jit:.04},
+      rosemarble:{p:.1,th:[3.5,6.5],col:[0xe8d6d0,0xdfc8c0,0xeee0da],hard:.85,xbed:.1,varnish:.15,jit:.05},
+      epidote:{p:.1,th:[.4,1.8],col:[0x5d6e32,0x6b7d3a,0x4e5e2a],hard:.9,xbed:0,varnish:.25,between:true},
+      garnet:{p:.08,th:[.4,1.6],col:[0x7d3a28,0x8e4430,0x6b3020],hard:.92,xbed:0,varnish:.25,between:true},
+      magnetite:{p:.06,th:[.25,1.2],col:[0x222428,0x2b2d33,0x1b1c20],hard:.95,xbed:0,varnish:.1,irid:1,between:true}},
+      fx:{sheen:1,joints:1,varnish:.15}},
+
+    // 3. `evaporite-strand`: thin-bedded white lacustrine aragonite/tufa benches, gypsum crystal crusts, and bright halite/borate
+    // salt-pan laminations (0.4-1.5 m crisp horizontal wave-cut strandline steps) for nsemiarid, dambasins, bowl, catch, and eabyss
+    'evaporite-strand':{main:'aragonite',noRepeat:true,kinds:{
+      aragonite:{p:.32,th:[.5,1.5],col:[0xebe7dc,0xf2efe6,0xe2ddd0],hard:.74,xbed:0,varnish:.1,jit:.03},
+      tufa:{p:.2,th:[.4,1.4],col:[0xded6c2,0xd4cab4,0xe6dfd0],hard:.7,xbed:.15,varnish:.15,jit:.04},
+      gypsum:{p:.22,th:[.4,1.2],col:[0xe2e7e8,0xd8dfe0,0xecf0f0],hard:.48,xbed:0,varnish:0,jit:.03},
+      halite:{p:.16,th:[.4,1.1],col:[0xf4f5f7,0xebedf0,0xfafbfc],hard:.25,xbed:0,varnish:0,jit:.02},
+      potash:{p:.06,th:[.15,.5],col:[0xdc9a8c,0xe4a89a,0xcf8c7e],hard:.18,xbed:0,varnish:0,between:true,jit:.04},
+      clay:{p:.04,th:[.2,.6],col:[0xb8b4a6,0xaca89a],hard:.15,xbed:0,varnish:0,between:true}},
+      fx:{sheen:1,regolith:.75,wash:1.2}},
+
+    // 4. `secondary-ejecta`: coarse polymictic impact-melt and megablock boulder breccia (3-9 m chaotic angular clast beds
+    // capped by hummocky radial ejecta) for spiderlake, seouterwall (Tharn secondary crater), copperglacier (Copper Tarn collar),
+    // and arch (Crookshore twin ejecta bays)
+    'secondary-ejecta':{main:'breccia',kinds:{
+      breccia:{p:.34,th:[3,9],col:[0x78736c,0x6b6760,0x857f76,0x706c66],hard:.86,xbed:.35,varnish:.35,jit:.12},
+      melt:{p:.2,th:[3,7.5],col:[0x2f2d30,0x3a3638,0x262528],hard:.93,xbed:.15,varnish:.2,jit:.08},
+      megaclast:{p:.18,th:[3.5,9],col:[0xc8c2b4,0xb8b0a0,0xd4cec0],hard:.88,xbed:.2,varnish:.3,jit:.12},
+      radial:{p:.18,th:[3,8],col:[0x94897a,0xa09484,0x877d6f],hard:.62,xbed:.5,varnish:.25,jit:.1},
+      fallback:{p:.1,th:[.5,2],col:[0x5e5952,0x68625a],hard:.3,xbed:0,varnish:.1,between:true,jit:.1}},
+      fx:{xbed:.4,varnish:.3,joints:1,sheen:.5,regolith:.55}},
+
+    // 5. `arch-rift-basalt`: dark columnar and entablature flood/rift-shoulder tholeiitic basalt with red baked-bolus interbeds
+    // (3-7 m colonnade tiers, plus slickensided serpentinite fault lenses) for arch (Crookshore and Double Delta onshore horsts)
+    // and outer structural lineaments (gills White Gills detachment windows)
+    'arch-rift-basalt':{main:'colonnade',kinds:{
+      colonnade:{p:.46,th:[3,7],col:[0x20232a,0x272a32,0x1b1e24],hard:.95,xbed:0,varnish:.15,jit:.04},
+      entablature:{p:.24,th:[3,6.5],col:[0x2c3038,0x343840,0x252830],hard:.93,xbed:.15,varnish:.2,jit:.05},
+      amygdaloid:{p:.1,th:[1.5,3.5],col:[0x434846,0x4d5350,0x3a3f3d],hard:.55,xbed:0,varnish:.15},
+      bole:{p:.14,th:[.3,1.2],col:[0x9e3c26,0xae462e,0x8c3320],hard:.22,xbed:0,varnish:.1,between:true},
+      serpentinite:{p:.06,th:[1,3],col:[0x2d4234,0x38503f,0x24362a],hard:.6,xbed:.2,varnish:.1,between:true}},
+      fx:{columns:1,sheen:1,varnish:.15}},
+
+    // 6. `obsidian-pancake`: flow-banded glassy rhyolite/dacite dome carapace with pumiceous breccia talus (2-6 m foliated
+    // vitreous ledges) for firebliss silicic pancake domes and godshearth / throne / korona evolved domes
+    'obsidian-pancake':{main:'obsidian',kinds:{
+      obsidian:{p:.36,th:[2,6],col:[0x15161a,0x1d1f26,0x111216],hard:.9,xbed:.35,varnish:.1,irid:1,jit:.04},
+      rhyodacite:{p:.28,th:[2.5,6],col:[0x6e6764,0x7d7470,0x5f5957],hard:.88,xbed:.4,varnish:.2,jit:.05},
+      perlite:{p:.18,th:[2,4.5],col:[0xaeb3b8,0xbcc1c6,0x9ea3a8],hard:.58,xbed:.25,varnish:.1},
+      pumice:{p:.14,th:[.8,2.5],col:[0xd6cfc2,0xe0d9cc,0xc8c0b2],hard:.28,xbed:0,varnish:0,between:true},
+      fumarolic:{p:.04,th:[.3,1.2],col:[0xc89648,0xb87638,0xd4ae5c],hard:.35,xbed:0,varnish:.2,between:true}},
+      fx:{sheen:1,xbed:.35,joints:1,regolith:.45}}
   };
   function recipe(name){var r=RECIPES[name],n=0;
     while(r&&r.alias&&n++<8)r=RECIPES[r.alias];
