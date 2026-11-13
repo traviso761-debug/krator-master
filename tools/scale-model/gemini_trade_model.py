@@ -90,11 +90,13 @@ def load_world(model_data_dir=None, regs_js_path=None, geo_json_path=None):
     tg = json.load(open(os.path.join(ROOT, "openworld", "trade-goods.json"), encoding="utf-8"))
     ar = json.load(open(os.path.join(ROOT, "openworld", "ancient-roads-draft.json"), encoding="utf-8"))
     gr = json.load(open(os.path.join(ROOT, "openworld", "gods-road.json"), encoding="utf-8"))
+    net51_path = os.path.join(ROOT, "openworld", "net51-gemini.json")
+    net51 = json.load(open(net51_path, encoding="utf-8")) if os.path.exists(net51_path) else None
 
     return {
         "D": D, "OW": OW, "OH": OH, "GW": GW, "GH": GH,
         "E2": E2, "W2": W2, "E": E, "W": W, "TM": TM, "RAIN": RAIN,
-        "layers": layers, "regs": regs, "rs": rs, "tg": tg, "ar": ar, "gr": gr,
+        "layers": layers, "regs": regs, "rs": rs, "tg": tg, "ar": ar, "gr": gr, "net51": net51,
     }
 
 
@@ -256,6 +258,10 @@ NEW_SETTLEMENTS = [
     {"name": "Opal Valley Mines", "px": 1038, "py": 1662, "type": "village", "population": 850, "polity": "Xanadu Sultanate", "reach_km": 15},
     {"name": "White Gills Hermitage", "px": 1035, "py": 1535, "type": "outpost", "population": 120, "polity": "Order of Historians", "reach_km": 12},
     {"name": "Singing Gjar Quartz", "px": 1572, "py": 1643, "type": "outpost", "population": 200, "polity": "Order of Historians", "reach_km": 12},
+    # Painted Men canyon cliff-hold (TRADE-SCOPE s7.6: occasional neighbor raiders; small mineral/plant dye & medicine trade)
+    {"name": "Painted Canyon Cliff-Hold", "px": 1055, "py": 622, "type": "village", "population": 650, "polity": "Painted Men", "reach_km": 15},
+    # Parabola solar-furnace Bowl arcology (ANCIENT-NETWORK.md s8.11: Izani customs post, caravanserai & mirror-glass scree prospectors)
+    {"name": "Parabola", "px": 970, "py": 1186, "type": "outpost", "population": 450, "polity": "Empire of Iziz", "reach_km": 12},
 ]
 
 
@@ -660,6 +666,31 @@ def populate_supply_demand(world, setts):
 
         if nm == "Boatmurder":
             sup["scrap"] = 680.0     # Dam Basin stranded-freighter hull salvage!
+            sup["timber"] = max(sup.get("timber", 0.0), 1650.0)  # Dam-rim driftwood & conifer salvage
+
+        if pol == "Painted Men":
+            # TRADE-SCOPE s7.6: cliff settlements raid neighbors occasionally & trade small black/red/teal dyes + paintbrush medicine
+            for k in list(dem.keys()):
+                dem[k] *= 0.35
+            sup["dye-temperate"] = 3.2
+            sup["medicine"] = 1.4
+            sup["food"] = max(sup.get("food", 0.0), dem.get("food", 0.0))
+            sup["timber"] = max(sup.get("timber", 0.0), dem.get("timber", 0.0))
+
+        if nm == "Parabola":
+            # ANCIENT-NETWORK.md s8.11: Bowl solar-furnace arcology — Izani customs post, caravanserai & mirror-glass scree prospectors
+            sup["scrap"] = max(sup.get("scrap", 0.0), 48.0)
+            sup["lenses"] = max(sup.get("lenses", 0.0), 1.8)
+            sup["scrapgoods"] = max(sup.get("scrapgoods", 0.0), 4.5)
+
+        if nm == "Port Visas":
+            # LORE.md s6.2 & s6.7: burnt-out ruin sacked by Screamers where ~1,000 people keep the few working quays for Iziz;
+            # Dilihan Province's commercial surpluses originate at Dilihan, not unlogged Screamer-fringe jungle round the ruin!
+            for k in list(sup.keys()):
+                if k not in ("food", "salt", "scrap"):
+                    sup[k] = min(sup[k], dem.get(k, 0.0) * 0.9)
+            sup["food"] = 260.0
+            sup["scrap"] = max(sup.get("scrap", 0.0), 28.0)
 
 
 # ---------------------------------------------------------------------------
@@ -682,58 +713,133 @@ def build_multimodal_graphs(world, setts):
     assert ring_sea_comp > 0, "Expected Ring Sea water component > 0"
     is_ring_sea = (lbl == ring_sea_comp)
 
-    # Blocked & penalized polygons:
-    #   - Hostile Lizardman Rift zone (LORE.md s6.20: never trade externally, raid caravans!)
-    #   - Hostile Screamer Country / Hexahedron zone (LORE.md: never trade externally, raid for supplies & captives!)
-    #   - High freezing N Rift Rim / SW Highlands barrier blocking Tallwalls <-> Erehwon & N Rift shortcuts
-    #   - Rough S Rift Rim barrier where Nulab <-> Erehwon is passable ONLY via the once-a-year Annual Great Caravan
+    # Blocked & raider-hazard polygons:
+    #   - Autarkic hostile raiders (0 external trade): Lizardman Rift & Screamer Country
+    #   - Fraught hostile frontier (0 direct bilateral trade with Eternal State): Yeti Kingdom
+    #   - Neighbor-raiding groups (raise route danger without preventing trade):
+    #     Painted Men, Fellgangs, Lizardmen border raids (Vale of Xanadu & S Dalab/Fellgangs), Scyvoi
     mask_valley = poly_mask(world["regs"], {"ancient's valley", "ancients valley"}, GW, GH, OW, OH)
     mask_korona = poly_mask(world["regs"], {"korona / ne"}, GW, GH, OW, OH)
     mask_lizard_poly = poly_mask(world["regs"], {"lizardmen"}, GW, GH, OW, OH)
     mask_screamer_poly = poly_mask(world["regs"], {"screamer country"}, GW, GH, OW, OH)
+    mask_yeti_poly = poly_mask(world["regs"], {"yeti kingdom"}, GW, GH, OW, OH)
+    mask_painted_poly = poly_mask(world["regs"], {"painted men"}, GW, GH, OW, OH)
+    mask_fellgang_poly = poly_mask(world["regs"], {"fellgangs"}, GW, GH, OW, OH)
+    mask_scyvoi_poly = poly_mask(world["regs"], {"scyvoi"}, GW, GH, OW, OH)
+    mask_vale_xanadu = poly_mask(world["regs"], {"vale of xanadu"}, GW, GH, OW, OH)
 
     yy_g, xx_g = np.mgrid[0:GH, 0:GW]
     px_g, py_g = xx_g / su, yy_g / sv
 
-    # Xanadu Sultanate patrolled corridor (Strongbow -> Qiblai -> Theodiga -> Erehwon) kept clear of Lizardman dilation
-    xanadu_safe = (px_g >= 798.0) & (px_g <= 1045.0) & (py_g >= 1502.0) & (py_g <= 1612.0) & (~W)
+    # 1. Lizardman core Rift floor (impassably hostile to human merchants) vs border raid belts into Xanadu & S Dalab/Fellgangs
+    xanadu_core = (px_g >= 792.0) & (px_g <= 1050.0) & (py_g >= 1495.0) & (py_g <= 1625.0) & (~W)
     mask_lizard_hostile = (
-        mask_lizard_poly | (ndimage.binary_dilation(mask_lizard_poly, iterations=8) & (E < 4400.0))
-    ) & (~xanadu_safe)
+        mask_lizard_poly | (ndimage.binary_dilation(mask_lizard_poly, iterations=5) & (E < 1400.0))
+    ) & (~xanadu_core)
     for sid_lz, s_lz in setts.items():
         if s_lz["polity"] == "Lizardmen":
             li, lj = int(round(s_lz["px"] * su)), int(round(s_lz["py"] * sv))
-            mask_lizard_hostile |= (((xx_g - li) ** 2 + (yy_g - lj) ** 2) <= 10 ** 2) & (E < 4400.0) & (~xanadu_safe)
+            mask_lizard_hostile |= (((xx_g - li) ** 2 + (yy_g - lj) ** 2) <= 7 ** 2) & (E < 1400.0) & (~xanadu_core)
 
-    mask_screamer_hostile = (mask_screamer_poly | ndimage.binary_dilation(mask_screamer_poly, iterations=3)) & (~W)
+    # LORE.md s6.20: Xanadu's vigilance is waning and Lizardman raids reach the Vale; also occasional raids into S Dalab/Fellgangs
+    mask_lizard_raid_xanadu = (
+        mask_vale_xanadu | ((px_g >= 775.0) & (px_g <= 965.0) & (py_g >= 1485.0) & (py_g <= 1625.0))
+    ) & (~W) & (~mask_lizard_hostile)
+    mask_lizard_raid_dalab = (
+        (px_g >= 395.0) & (px_g <= 585.0) & (py_g >= 1345.0) & (py_g <= 1575.0)
+    ) & (~W) & (~mask_lizard_hostile)
+
+    # 2. Screamer Country core (Hexahedron) + unescorted Dilihan-Port Visas Screamer-wood fringe
+    mask_screamer_hostile = (mask_screamer_poly | ndimage.binary_dilation(mask_screamer_poly, iterations=2)) & (~W)
     for sid_sc, s_sc in setts.items():
         if s_sc["polity"] == "Screamer Country":
             si_, sj_ = int(round(s_sc["px"] * su)), int(round(s_sc["py"] * sv))
-            mask_screamer_hostile |= (((xx_g - si_) ** 2 + (yy_g - sj_) ** 2) <= 8 ** 2) & (~W)
+            mask_screamer_hostile |= (((xx_g - si_) ** 2 + (yy_g - sj_) ** 2) <= 6 ** 2) & (~W)
+    # Unescorted overland approach to ruined Port Visas (skirts Screamer wood & Scyvoi raiders unless guarded by Iziz!)
+    mask_visas_unescorted = ((px_g >= 752.0) & (px_g <= 816.0) & (py_g >= 668.0) & (py_g <= 724.0)) & (~W)
 
-    # Cold/airless N Rift Rim & SW Highlands barrier (severs Tallwalls <-> Erehwon & N Rift-rim shortcuts west of Stair)
-    mask_north_rift_barrier = (px_g >= 468.0) & (px_g <= 1022.0) & (py_g >= 1318.0) & (py_g <= 1498.0)
-    # Harsh S Rift Rim / W-Central Rift barrier (blocks casual unescorted Nulab <-> Erehwon traffic; routed via Annual Great Caravan)
-    mask_south_rift_barrier = (px_g >= 468.0) & (px_g <= 788.0) & (py_g >= 1498.0) & (py_g <= 1722.0)
+    # 3. Yeti frontier & northern Eternian / Farside raid belt
+    mask_yeti_raid = (mask_yeti_poly | ndimage.binary_dilation(mask_yeti_poly, iterations=4)) & (~W)
 
-    # Rasterize kept / partly-kept Ancient highways & God's Road (remember +272,+330 legacy shift!)
+    # 4. Painted Men plateau & occasional neighbor-raiding halo (Pinnacle Rock, Korona, Free Clans, NW Nomad Country)
+    mask_painted_core = mask_painted_poly & (~W)
+    mask_painted_halo = (ndimage.binary_dilation(mask_painted_poly, iterations=5) & (~mask_painted_poly)) & (~W)
+
+    # 5. Fellgang highland raider tribes & southern Dalab border halo
+    mask_fellgang_core = mask_fellgang_poly & ((py_g >= 1368.0) | (E > 1800.0)) & (~W)
+    mask_fellgang_halo = (ndimage.binary_dilation(mask_fellgang_poly, iterations=4) & (~mask_fellgang_core)) & (~W)
+
+    # 6. Scyvoi drylands & lowland neighbor-raiding belt (League poleis, S Cut/Dilihan, N Voth/Drum/Tzunfort)
+    mask_scyvoi_core = mask_scyvoi_poly & (~W)
+    mask_scyvoi_halo = (ndimage.binary_dilation(mask_scyvoi_poly, iterations=5) & (~mask_scyvoi_poly) & (E < 950.0)) & (~W)
+
+    # Cold/airless N Rift Rim & SW Highlands barrier (severs Tallwalls <-> Erehwon & N Rift-rim grid shortcuts west of Stair;
+    # the once-a-year Annual Great Caravan traverses the North Rift Bench via explicit SPECIAL_CORRIDORS)
+    erehwon_pocket = (px_g >= 796.0) & (px_g <= 825.0) & (py_g >= 1506.0) & (py_g <= 1528.0)
+    mask_north_rift_barrier = ((px_g >= 468.0) & (px_g <= 1022.0) & (py_g >= 1318.0) & (py_g <= 1509.0)) & (~erehwon_pocket)
+    # Harsh S Rift Rim / W-Central Rift barrier (blocks unescorted southern Rift crossings where Lizardmen + Fellgangs raid)
+    mask_south_rift_barrier = (px_g >= 468.0) & (px_g <= 788.0) & (py_g >= 1509.0) & (py_g <= 1722.0)
+
+    # Rasterize native 5.1 road network from claude/ancient-network-9cc3e7 (openworld/net51-gemini.json) + God's Road
     road_mult = np.ones((GH, GW), dtype=np.float32)
+    net_eng = np.zeros((GH, GW), dtype=bool)
     dx_leg, dy_leg = LEGACY_SHIFT
-    for r in world["ar"]["routes"]:
-        up = r.get("upkeep", [])
-        pts = r.get("px", [])
-        for idx_p in range(len(pts) - 1):
-            st = up[min(idx_p, len(up) - 1)] if up else "broken"
-            if st not in ("kept", "partly"):
+
+    SKIP_NET51_IDS = {
+        "rift.chimes-cthonos", "rift.cthonos-tubes", "rift.tubes-pile", "rift.pile-theodiga",
+        "rift.theodiga-strongbow", "rift.bowl.theodiga-stair", "ext.southwest",
+    }
+    CLASS_UP_MULT = {
+        "trunk": {"kept": 0.55, "partly": 0.72, "shoddy": 0.76, "lapsed": 0.86, "decayed": 0.95},
+        "line": {"kept": 0.56, "partly": 0.72, "shoddy": 0.76, "lapsed": 0.86, "decayed": 0.95},
+        "branch": {"kept": 0.58, "partly": 0.74, "shoddy": 0.78, "lapsed": 0.87, "decayed": 0.95},
+        "izani": {"kept": 0.62, "partly": 0.75, "shoddy": 0.78, "lapsed": 0.88, "decayed": 0.96},
+        "vothic": {"kept": 0.62, "partly": 0.75, "shoddy": 0.78, "lapsed": 0.88, "decayed": 0.96},
+        "trade": {"kept": 0.66, "partly": 0.76, "shoddy": 0.80, "lapsed": 0.88, "decayed": 0.96},
+        "xanadu": {"kept": 0.66, "partly": 0.76, "shoddy": 0.80, "lapsed": 0.88, "decayed": 0.96},
+        "yuni": {"kept": 0.66, "partly": 0.76, "shoddy": 0.80, "lapsed": 0.88, "decayed": 0.96},
+    }
+    DEFAULT_UP_MULT = {"kept": 0.78, "partly": 0.84, "shoddy": 0.86, "lapsed": 0.88, "decayed": 0.93}
+
+    if world.get("net51"):
+        for r in world["net51"].get("routes", []):
+            if r.get("id") in SKIP_NET51_IDS:
                 continue
-            m_val = 0.58 if st == "kept" else 0.78
-            x0, y0 = (pts[idx_p][0] + dx_leg) * su, (pts[idx_p][1] + dy_leg) * sv
-            x1, y1 = (pts[idx_p + 1][0] + dx_leg) * su, (pts[idx_p + 1][1] + dy_leg) * sv
-            steps = max(2, int(math.hypot(x1 - x0, y1 - y0) * 2) + 1)
-            for t in np.linspace(0, 1, steps):
-                ci, cj = int(round(x0 + t * (x1 - x0))), int(round(y0 + t * (y1 - y0)))
-                if 0 <= cj < GH and 0 <= ci < GW:
-                    road_mult[cj, ci] = min(road_mult[cj, ci], m_val)
+            rcls = r.get("class", "dirt")
+            up_list = r.get("up", [])
+            form_list = r.get("form", [])
+            pts = r.get("px", [])
+            cmap = CLASS_UP_MULT.get(rcls, DEFAULT_UP_MULT)
+            for idx_p in range(len(pts) - 1):
+                st = up_list[min(idx_p, len(up_list) - 1)] if up_list else "lapsed"
+                fm = form_list[min(idx_p, len(form_list) - 1)] if form_list else "open"
+                m_val = cmap.get(st, 0.92)
+                is_eng = fm in ("tunnel", "viaduct", "causeway", "cut") and st in ("kept", "partly", "shoddy", "lapsed")
+                x0, y0 = pts[idx_p][0] * su, pts[idx_p][1] * sv
+                x1, y1 = pts[idx_p + 1][0] * su, pts[idx_p + 1][1] * sv
+                steps = max(2, int(math.hypot(x1 - x0, y1 - y0) * 2) + 1)
+                for t in np.linspace(0, 1, steps):
+                    ci, cj = int(round(x0 + t * (x1 - x0))), int(round(y0 + t * (y1 - y0)))
+                    if 0 <= cj < GH and 0 <= ci < GW and not W[cj, ci]:
+                        road_mult[cj, ci] = min(road_mult[cj, ci], m_val)
+                        if is_eng:
+                            net_eng[cj, ci] = True
+    else:
+        for r in world["ar"]["routes"]:
+            up = r.get("upkeep", [])
+            pts = r.get("px", [])
+            for idx_p in range(len(pts) - 1):
+                st = up[min(idx_p, len(up) - 1)] if up else "broken"
+                if st not in ("kept", "partly"):
+                    continue
+                m_val = 0.58 if st == "kept" else 0.78
+                x0, y0 = (pts[idx_p][0] + dx_leg) * su, (pts[idx_p][1] + dy_leg) * sv
+                x1, y1 = (pts[idx_p + 1][0] + dx_leg) * su, (pts[idx_p + 1][1] + dy_leg) * sv
+                steps = max(2, int(math.hypot(x1 - x0, y1 - y0) * 2) + 1)
+                for t in np.linspace(0, 1, steps):
+                    ci, cj = int(round(x0 + t * (x1 - x0))), int(round(y0 + t * (y1 - y0)))
+                    if 0 <= cj < GH and 0 <= ci < GW and not W[cj, ci]:
+                        road_mult[cj, ci] = min(road_mult[cj, ci], m_val)
 
     for pts_src in [world["gr"].get("px", [])]:
         for idx_p in range(len(pts_src) - 1):
@@ -742,7 +848,7 @@ def build_multimodal_graphs(world, setts):
             steps = max(2, int(math.hypot(x1 - x0, y1 - y0) * 2) + 1)
             for t in np.linspace(0, 1, steps):
                 ci, cj = int(round(x0 + t * (x1 - x0))), int(round(y0 + t * (y1 - y0)))
-                if 0 <= cj < GH and 0 <= ci < GW:
+                if 0 <= cj < GH and 0 <= ci < GW and not W[cj, ci]:
                     road_mult[cj, ci] = min(road_mult[cj, ci], 0.80)
 
     # Rasterize cataract-free navigable rivers (Q >= 35 m3/s and slope < 0.004)
@@ -798,37 +904,54 @@ def build_multimodal_graphs(world, setts):
         if best_w is not None:
             s["water_cell"] = best_w[1]
             s["is_ring_sea_port"] = bool(is_ring_sea.flat[best_w[1]])
-            port_links.append((c, N_CELL + best_w[1]))
+            port_links.append((c, N_CELL + best_w[1], s["name"], s["polity"]))
         else:
             s["water_cell"] = None
             s["is_ring_sea_port"] = False
 
-    # Engineered corridors, tunnels, lifts & mountain passes broken into natural terrain waypoints
+    # Engineered corridors, tunnels, lifts & mountain passes aligned with claude/ancient-network-9cc3e7 (ANCIENT-NETWORK.md)
     SPECIAL_CORRIDORS = [
         ("Tungang Rift-Line Train Bore", 477, 1108, 461, 1161, 115, 58.0, 72.0),
         ("Tungang Deep Hot Bore (>100 C)", 461, 1161, 457, 1269, 215, 108.0, 138.0),
         ("Tungang South Bore", 457, 1269, 437, 1330, 125, 68.0, 85.0),
-        ("Loj Fower Cliff Lifts (Ledge-Nulab)", 437, 1330, 443, 1359, 60, 52.0, 42.0),
+        ("Loj Fower Cliff Lifts (Ledge-Nulab)", 437, 1330, 443, 1359, 60, 68.0, 54.0),
         ("Span Basin Tunnel", 477, 1108, 554, 1010, 240, 185.0, 155.0),
-        ("Inner Wall Karst Tunnel (Drum-Cascade)", 673, 932, 568, 841, 275, 420.0, 235.0),
+        ("Inner Wall Karst Tunnel (Drum-Cascade)", 673, 932, 568, 841, 275, 445.0, 250.0),
         ("Verge 16-Hairpin Scarp", 1240, 960, 1268, 949, 60, 115.0, 75.0),
-        ("Godsgate & Bab al-Hawa", 1113, 1164, 1033, 1258, 245, 290.0, 205.0),
-        ("Catch North Oases (Kolli-Arfwai)", 1033, 1258, 1072, 1355, 210, 250.0, 178.0),
-        ("Catch Mid Oasis (Arfwai-Stair)", 1072, 1355, 1106, 1442, 190, 225.0, 160.0),
-        ("Dasri Bowl-Catch Oasis Trail", 1219, 1148, 1072, 1355, 480, 575.0, 405.0),
+        # Bowl solar-furnace arcology Parabola & Godsgate way (no Arcbeam-Stair tunnel per ANCIENT-NETWORK.md s8.8-s8.14)
+        ("Bowl Solar Road (Arcbeam-Parabola)", 1016, 1058, 970, 1186, 308, 255.0, 195.0),
+        ("Izani Bowl Spur (Mantis-Parabola)", 1113, 1164, 970, 1186, 315, 265.0, 202.0),
+        ("Godsgate Way N (Parabola-Bab al-Hawa)", 970, 1186, 1028, 1246, 175, 205.0, 148.0),
+        ("Godsgate & Bab al-Hawa (Mantis-Godsgate)", 1113, 1164, 1028, 1246, 235, 275.0, 195.0),
+        ("Catch North Oases (Godsgate-Arfwai)", 1028, 1246, 1038, 1324, 172, 205.0, 148.0),
+        ("Catch Mid Oasis (Arfwai-Stair)", 1038, 1324, 1106, 1442, 278, 325.0, 232.0),
+        ("Dasri Bowl-Catch Oasis Trail", 1219, 1148, 1038, 1324, 480, 575.0, 405.0),
+        # Three Catch-Xanadu crossings (ANCIENT-NETWORK.md s8.16): The Twins, White Gills, & Theodiga-Stair dark dead bore (no trains)
         ("The Twins Lava-Tube & Steam Pass", 1106, 1442, 1042, 1525, 215, 290.0, 192.0),
         ("Twins-Strongbow Descent", 1042, 1525, 1001, 1596, 165, 220.0, 148.0),
         ("White Gills Breath-Pass (Stair-Gills)", 1106, 1442, 1035, 1535, 235, 340.0, 215.0),
         ("White Gills Descent (Gills-Strongbow)", 1035, 1535, 1001, 1596, 140, 210.0, 130.0),
-        ("Xanadu East Royal Road (Strongbow-Theodiga)", 1001, 1596, 908, 1535, 224, 185.0, 152.0),
-        ("Vale of Xanadu Royal Road (Theodiga-Erehwon)", 908, 1535, 805, 1516, 212, 175.0, 142.0),
-        ("Annual Great Caravan W (Nulab-West South Rim)", 443, 1359, 522, 1542, 225, float("inf"), 360.0),
-        ("Annual Great Caravan Mid-W (South Rim High Saddle)", 522, 1542, 624, 1618, 215, float("inf"), 350.0),
-        ("Annual Great Caravan Mid-E (South Rim Gneiss Crest)", 624, 1618, 728, 1614, 195, float("inf"), 320.0),
-        ("Annual Great Caravan E (Cube Plateau-Erehwon)", 728, 1614, 805, 1516, 195, float("inf"), 310.0),
+        ("Theodiga-Stair Dead Bore E (Stair-Mid Bore)", 1106, 1442, 1006, 1490, 219, float("inf"), 225.0),
+        ("Theodiga-Stair Dead Bore W (Mid Bore-Theodiga)", 1006, 1490, 908, 1535, 219, float("inf"), 225.0),
+        # Strongbow 3,100 m scarp elevator + Vale of Xanadu roads (Lizardman raid hazard) + Oidong Valley floor road (xanadu.3.5)
+        ("Strongbow Scarp Elevator & Vale Road (Strongbow-Qiblai)", 1001, 1596, 922, 1595, 166, 195.0, 148.0),
+        ("Vale of Xanadu Road (Qiblai-Theodiga)", 922, 1595, 908, 1535, 126, 145.0, 112.0),
+        ("Vale of Xanadu Royal Road (Theodiga-Erehwon)", 908, 1535, 805, 1516, 212, 248.0, 196.0),
+        ("Vale South Road (Qiblai-Erehwon)", 922, 1595, 805, 1516, 282, 315.0, 242.0),
+        ("Oidong Valley Road W (Strongbow-Mid Oidong)", 1001, 1596, 1111, 1602, 224, 245.0, 185.0),
+        ("Oidong Valley Road E (Mid Oidong-Longsong)", 1111, 1602, 1229, 1621, 245, 268.0, 202.0),
+        # Once-a-year Annual Great Caravan routed along the NORTH side of the Rift (above Lizardman floor, avoiding S Dalab/Fellgang/Lizardman raids)
+        ("Annual Great Caravan N1 (Nulab-North Rift W Bench)", 443, 1359, 520, 1402, 180, float("inf"), 305.0),
+        ("Annual Great Caravan N2 (North Rift Mid-W Terrace)", 520, 1402, 565, 1411, 98, float("inf"), 165.0),
+        ("Annual Great Caravan N3 (North Rift Central Bench)", 565, 1411, 640, 1447, 172, float("inf"), 290.0),
+        ("Annual Great Caravan N4 (North Rift East Shoulder)", 640, 1447, 720, 1501, 198, float("inf"), 330.0),
+        ("Annual Great Caravan N5 (North Rift-West Vale Gate)", 720, 1501, 775, 1504, 115, float("inf"), 192.0),
+        ("Annual Great Caravan N6 (West Vale Gate-Erehwon)", 775, 1504, 805, 1516, 68, float("inf"), 115.0),
         ("Talovolci Cliff-Lung Stairs (Torus-Spirladunon)", 777, 1005, 800, 1017, 52, 190.0, 82.0),
         ("Yeti Winter Pycrete Road (Qoold Lheek-Leng)", 410, 506, 490, 554, 185, 290.0, 185.0),
-        ("Yeti Descent (Leng-Lux)", 490, 554, 495, 645, 182, 260.0, 175.0),
+        ("Yeti North Rim Trail W (Leng-West Dam)", 490, 554, 575, 475, 215, 255.0, 185.0),
+        ("Yeti North Rim Trail Mid (West Dam-Mid Dam)", 575, 475, 665, 435, 195, 220.0, 160.0),
+        ("Yeti North Rim Trail E (Mid Dam-Boatmurder)", 665, 435, 766, 404, 212, 235.0, 170.0),
         ("Outland Gate & Hau-Gel Trough", 1288, 220, 1368, 272, 195, 180.0, 152.0),
         ("Hau-Gel Narrows to The Gate", 1368, 272, 1438, 326, 175, 160.0, 138.0),
         ("Tierhound Seed-Law Gate (Gate-Gate Tarn)", 1438, 326, 1544, 474, 365, 380.0, 310.0),
@@ -836,7 +959,7 @@ def build_multimodal_graphs(world, setts):
         ("Korona Guided Silk River (Ham-Tsek-K6-K1)", 1055, 219, 1006, 340, 265, 295.0, 215.0),
         ("Korona Ring Trail (K6-K1)", 1006, 340, 952, 423, 198, 220.0, 162.0),
         ("Korona West Descent (K1-Serai)", 952, 423, 826, 478, 275, 320.0, 245.0),
-        ("God's Road North (Pinnacle-Ria)", 1018, 678, 1165, 395, 630, 680.0, 465.0),
+        ("God's Road North (Pinnacle-Ria)", 1018, 678, 1165, 395, 630, 790.0, 540.0),
         ("God's Road Upper (Ria-Spider Lake)", 1165, 395, 1288, 220, 430, 460.0, 315.0),
         ("Outlands Rim to Great Chasm", 1654, 701, 1685, 785, 180, 215.0, 152.0),
         ("Great Chasm East Bench Road", 1685, 785, 1708, 915, 268, 320.0, 225.0),
@@ -848,9 +971,16 @@ def build_multimodal_graphs(world, setts):
         ("High Rift Quartz Pack Train (Longsong-Singing Gjar)", 1229, 1621, 1572, 1643, 690, 980.0, 620.0),
     ]
 
+    # Armed Iziz-guarded caravan corridor between Dilihan and Port Visas along izani.dilihan-portvisas (152 km skirting Screamer wood;
+    # Iziz's preferred lifeline to Dilihan, somewhat dangerous & costly due to guard escorts; unavailable to non-Iziz traders)
+    IZIZ_VISAS_CORRIDORS = [
+        ("Iziz-Guarded Visas Caravan W (Dilihan-Screamer Fringe)", 744, 663, 768, 686, 76, 122.0, 96.0),
+        ("Iziz-Guarded Visas Caravan E (Screamer Fringe-Port Visas)", 768, 686, 800, 712, 76, 118.0, 94.0),
+    ]
+
     idx = np.arange(N_CELL).reshape(GH, GW)
 
-    def make_csr(sea_mult, riv_mult, road_scale, trail_mult, port_fee, use_bulk):
+    def make_csr(sea_mult, riv_mult, road_scale, trail_mult, port_fee, use_bulk, iziz_mode=False):
         rows, cols, costs = [], [], []
         for dj, di in ((0, 1), (1, 0), (1, 1), (1, -1)):
             a = idx[max(0, -dj):GH - max(0, dj), max(0, -di):GW - max(0, di)].ravel()
@@ -866,8 +996,10 @@ def build_multimodal_graphs(world, setts):
             has_road = rm < 0.95
 
             c_land = np.full(a.shape, d_km * trail_mult, dtype=np.float64) * slope_pen
-            # Kept / partly-kept Ancient road overrides steep local micro-relief
-            c_road = d_km * rm * road_scale * (1.0 + 0.4 * (g / 0.08) ** 2)
+            # Kept / partly-kept Ancient road & engineered viaducts/cuts/tunnels override steep local micro-relief
+            eng_edge = net_eng.flat[a] | net_eng.flat[b]
+            g_road = np.where(eng_edge, np.minimum(g, 0.045), g)
+            c_road = d_km * rm * road_scale * (1.0 + 0.4 * (g_road / 0.08) ** 2)
             c_land = np.where(has_road, np.minimum(c_land, c_road), c_land)
 
             # Navigable river or Eternian canal
@@ -882,11 +1014,38 @@ def build_multimodal_graphs(world, setts):
             kor = (mask_korona.flat[a] | mask_korona.flat[b]) & (~has_road)
             c_land = np.where(kor, c_land * 3.6, c_land)
 
-            # Hostile Lizardman Rift & Screamer Country raid zones (LORE.md: never trade externally, raid passing caravans!)
+            # Hostile autarkic Lizardman Rift & Screamer Country raid zones
             liz = mask_lizard_hostile.flat[a] | mask_lizard_hostile.flat[b]
             c_land = np.where(liz, c_land * (9.5 if use_bulk else 8.2), c_land)
             scr = mask_screamer_hostile.flat[a] | mask_screamer_hostile.flat[b]
             c_land = np.where(scr, c_land * (8.5 if use_bulk else 7.5), c_land)
+            if not iziz_mode:
+                vis_un = mask_visas_unescorted.flat[a] | mask_visas_unescorted.flat[b]
+                c_land = np.where(vis_un, c_land * (5.2 if use_bulk else 4.6), c_land)
+
+            # Neighbor-raiding hazard surcharges (raise danger & shift flows without blocking trade)
+            yeti_r = mask_yeti_raid.flat[a] | mask_yeti_raid.flat[b]
+            c_land = np.where(yeti_r, c_land * (2.15 if use_bulk else 1.85), c_land)
+
+            pm_c = mask_painted_core.flat[a] | mask_painted_core.flat[b]
+            pm_h = (mask_painted_halo.flat[a] | mask_painted_halo.flat[b]) & (~pm_c)
+            c_land = np.where(pm_c, c_land * (2.25 if use_bulk else 1.95), c_land)
+            c_land = np.where(pm_h, c_land * (1.45 if use_bulk else 1.35), c_land)
+
+            fg_c = mask_fellgang_core.flat[a] | mask_fellgang_core.flat[b]
+            fg_h = (mask_fellgang_halo.flat[a] | mask_fellgang_halo.flat[b]) & (~fg_c)
+            c_land = np.where(fg_c, c_land * (1.95 if use_bulk else 1.75), c_land)
+            c_land = np.where(fg_h, c_land * (1.42 if use_bulk else 1.32), c_land)
+
+            lz_xan = mask_lizard_raid_xanadu.flat[a] | mask_lizard_raid_xanadu.flat[b]
+            c_land = np.where(lz_xan, c_land * (1.55 if use_bulk else 1.42), c_land)
+            lz_dal = mask_lizard_raid_dalab.flat[a] | mask_lizard_raid_dalab.flat[b]
+            c_land = np.where(lz_dal, c_land * (1.35 if use_bulk else 1.28), c_land)
+
+            scy_c = mask_scyvoi_core.flat[a] | mask_scyvoi_core.flat[b]
+            scy_h = (mask_scyvoi_halo.flat[a] | mask_scyvoi_halo.flat[b]) & (~scy_c)
+            c_land = np.where(scy_c, c_land * (1.75 if use_bulk else 1.55), c_land)
+            c_land = np.where(scy_h, c_land * (1.38 if use_bulk else 1.28), c_land)
 
             # Altitude hypoxia, cold/airless N Rift Rim barrier (Tallwalls-Erehwon impassable), & S Rift Rim unescorted block
             emax = np.maximum(ea, eb)
@@ -896,8 +1055,9 @@ def build_multimodal_graphs(world, setts):
                 mask_north_rift_barrier.flat[a] | mask_north_rift_barrier.flat[b]
                 | mask_south_rift_barrier.flat[a] | mask_south_rift_barrier.flat[b]
             )
-            impass = (emax > 7500.0) | mask_valley.flat[a] | mask_valley.flat[b] | rift_bar | (wa & wb)
-            # Narrow 1-cell river/strait bridges allowed on land at high bridge cost; open water blocked on Layer 0
+            ring_w = is_ring_sea.flat[a] | is_ring_sea.flat[b]
+            impass = (emax > 7500.0) | mask_valley.flat[a] | mask_valley.flat[b] | rift_bar | (wa & wb) | ring_w
+            # Narrow 1-cell inland river/lake fords allowed on land at high bridge cost; ALL Ring Sea water blocked on Layer 0!
             one_w = wa ^ wb
             c_land = np.where(one_w & (~is_riv), c_land * 4.5, c_land)
             c_land[impass] = np.inf
@@ -919,13 +1079,21 @@ def build_multimodal_graphs(world, setts):
                 costs += [cw, cw]
 
         # Port break-of-bulk transfer edges (Layer 0 <-> Layer 1 ONLY at ports!)
-        for c_land_idx, c_wat_idx in port_links:
+        for c_land_idx, c_wat_idx, p_name, p_pol in port_links:
+            pf = port_fee
+            if p_name == "Port Visas":
+                # Ruined quays kept operational for Iziz convoys; non-Iziz ships avoid ruined Screamer-fringe quays for Hykkousoi ports!
+                pf = (port_fee - 2.0) if iziz_mode else 165.0
+            elif iziz_mode and p_pol.startswith("League:") and p_name != "Nephtos":
+                # LORE.md s6.2 & s6.16: Hykkousoi League wary of Izani imperial supply/reunification columns crossing League ports to Dilihan
+                pf = port_fee + 175.0
             rows += [np.array([c_land_idx, c_wat_idx])]
             cols += [np.array([c_wat_idx, c_land_idx])]
-            costs += [np.array([port_fee, port_fee], dtype=np.float64)]
+            costs += [np.array([pf, pf], dtype=np.float64)]
 
-        # Engineered tunnels, lifts & pass corridors on Layer 0
-        for _, x0, y0, x1, y1, _, b_eq, c_eq in SPECIAL_CORRIDORS:
+        # Engineered tunnels, lifts & pass corridors on Layer 0 (+ Iziz-guarded Visas caravan on Iziz graph)
+        corridor_list = SPECIAL_CORRIDORS + (IZIZ_VISAS_CORRIDORS if iziz_mode else [])
+        for _, x0, y0, x1, y1, _, b_eq, c_eq in corridor_list:
             eq = b_eq if use_bulk else c_eq
             if not np.isfinite(eq):
                 continue
@@ -940,51 +1108,92 @@ def build_multimodal_graphs(world, setts):
         v_all = np.concatenate(costs)
         return coo_matrix((v_all, (r_all, c_all)), shape=(2 * N_CELL, 2 * N_CELL)).tocsr()
 
-    G_bulk = make_csr(sea_mult=0.16, riv_mult=0.34, road_scale=1.15, trail_mult=1.35, port_fee=26.0, use_bulk=True)
-    G_comp = make_csr(sea_mult=0.28, riv_mult=0.45, road_scale=1.00, trail_mult=1.00, port_fee=22.0, use_bulk=False)
+    G_bulk = make_csr(sea_mult=0.16, riv_mult=0.34, road_scale=1.15, trail_mult=1.35, port_fee=26.0, use_bulk=True, iziz_mode=False)
+    G_comp = make_csr(sea_mult=0.28, riv_mult=0.45, road_scale=1.00, trail_mult=1.00, port_fee=22.0, use_bulk=False, iziz_mode=False)
+    G_iziz_bulk = make_csr(sea_mult=0.16, riv_mult=0.34, road_scale=1.15, trail_mult=1.35, port_fee=26.0, use_bulk=True, iziz_mode=True)
+    G_iziz_comp = make_csr(sea_mult=0.28, riv_mult=0.45, road_scale=1.00, trail_mult=1.00, port_fee=22.0, use_bulk=False, iziz_mode=True)
 
     sids = sorted(setts.keys())
     src_cells = [setts[sid]["cell"] for sid in sids]
+    iziz_sids = [sid for sid in sids if setts[sid]["polity"] in ("Empire of Iziz", "Shell Province")]
+    iziz_cells = [setts[sid]["cell"] for sid in iziz_sids]
 
-    print(f"Running multimodal Dijkstra for {len(sids)} settlements across {2*N_CELL:,} graph nodes...")
+    print(f"Running multimodal Dijkstra for {len(sids)} settlements (+ {len(iziz_sids)} Iziz-guarded Visas sources) across {2*N_CELL:,} graph nodes...")
     dist_bulk, pred_bulk = dijkstra(G_bulk, directed=False, indices=src_cells, return_predecessors=True)
     dist_comp, pred_comp = dijkstra(G_comp, directed=False, indices=src_cells, return_predecessors=True)
+    dist_iziz_bulk, pred_iziz_bulk = dijkstra(G_iziz_bulk, directed=False, indices=iziz_cells, return_predecessors=True)
+    dist_iziz_comp, pred_iziz_comp = dijkstra(G_iziz_comp, directed=False, indices=iziz_cells, return_predecessors=True)
 
     return {
         "N_CELL": N_CELL, "GW": GW, "GH": GH,
         "sids": sids, "sid_to_idx": {sid: i for i, sid in enumerate(sids)},
+        "iziz_sids": iziz_sids, "iziz_sid_to_idx": {sid: i for i, sid in enumerate(iziz_sids)},
         "dist_bulk": dist_bulk, "pred_bulk": pred_bulk,
         "dist_comp": dist_comp, "pred_comp": pred_comp,
+        "dist_iziz_bulk": dist_iziz_bulk, "pred_iziz_bulk": pred_iziz_bulk,
+        "dist_iziz_comp": dist_iziz_comp, "pred_iziz_comp": pred_iziz_comp,
         "is_ring_sea": is_ring_sea, "river_nav": river_nav, "canal_nav": canal_nav,
-        "road_mult": road_mult, "special_corridors": SPECIAL_CORRIDORS,
+        "road_mult": road_mult, "special_corridors": SPECIAL_CORRIDORS + IZIZ_VISAS_CORRIDORS,
         "mask_lizard_hostile": mask_lizard_hostile, "mask_lizard_poly": mask_lizard_poly,
+        "mask_lizard_raid_xanadu": mask_lizard_raid_xanadu, "mask_lizard_raid_dalab": mask_lizard_raid_dalab,
         "mask_screamer_hostile": mask_screamer_hostile, "mask_screamer_poly": mask_screamer_poly,
+        "mask_yeti_poly": mask_yeti_poly, "mask_yeti_raid": mask_yeti_raid,
+        "mask_painted_poly": mask_painted_poly, "mask_painted_raid": mask_painted_core | mask_painted_halo,
+        "mask_fellgang_poly": mask_fellgang_poly, "mask_fellgang_raid": mask_fellgang_core | mask_fellgang_halo,
+        "mask_scyvoi_poly": mask_scyvoi_poly, "mask_scyvoi_raid": mask_scyvoi_core | mask_scyvoi_halo,
     }
 
 
 # ---------------------------------------------------------------------------
 # 6. Reconstruct Pairwise Paths, Mode Shares, Chokepoints & Pirate Exposure
 # ---------------------------------------------------------------------------
-def analyze_pair_path(world, graph, setts, i_src, j_dst, tier):
+IZIZ_IMPERIAL_POLS = {"Empire of Iziz", "Shell Province"}
+CUT_VISAS_PARTNER_POLS = {"Dilihan Province", "Jimjam", "Dam Basin Salvagers", "Free Clans"}
+
+
+def uses_iziz_visas_regime(pol_a, pol_b):
+    return (pol_a in IZIZ_IMPERIAL_POLS and pol_b in CUT_VISAS_PARTNER_POLS) or (
+        pol_b in IZIZ_IMPERIAL_POLS and pol_a in CUT_VISAS_PARTNER_POLS
+    )
+
+
+def analyze_pair_path(world, graph, setts, sid_src, sid_dst, tier):
     N_CELL, GW = graph["N_CELL"], graph["GW"]
     OW, OH, GH = world["OW"], world["OH"], world["GH"]
     su, sv = (GW - 1) / (OW - 1), (GH - 1) / (OH - 1)
 
-    pred = graph["pred_bulk"][i_src] if tier == "bulk" else graph["pred_comp"][i_src]
-    sids = graph["sids"]
-    u_start = setts[sids[i_src]]["cell"]
-    cur = setts[sids[j_dst]]["cell"]
+    pol_s, pol_d = setts[sid_src]["polity"], setts[sid_dst]["polity"]
+    iz_mode = uses_iziz_visas_regime(pol_s, pol_d)
+
+    u_src = setts[sid_src]["cell"]
+    u_dst = setts[sid_dst]["cell"]
+
+    if iz_mode:
+        if sid_src in graph["iziz_sid_to_idx"]:
+            iz_i = graph["iziz_sid_to_idx"][sid_src]
+            pred = graph["pred_iziz_bulk"][iz_i] if tier == "bulk" else graph["pred_iziz_comp"][iz_i]
+            root_cell, leaf_cell, need_rev = u_src, u_dst, True
+        else:
+            iz_j = graph["iziz_sid_to_idx"][sid_dst]
+            pred = graph["pred_iziz_bulk"][iz_j] if tier == "bulk" else graph["pred_iziz_comp"][iz_j]
+            root_cell, leaf_cell, need_rev = u_dst, u_src, False
+    else:
+        i_src = graph["sid_to_idx"][sid_src]
+        pred = graph["pred_bulk"][i_src] if tier == "bulk" else graph["pred_comp"][i_src]
+        root_cell, leaf_cell, need_rev = u_src, u_dst, True
 
     nodes = []
+    cur = leaf_cell
     steps_guard = 0
-    while cur != u_start and cur >= 0 and steps_guard < 10000:
+    while cur != root_cell and cur >= 0 and steps_guard < 10000:
         nodes.append(cur)
         cur = int(pred[cur])
         steps_guard += 1
-    if cur != u_start:
+    if cur != root_cell:
         return None
-    nodes.append(u_start)
-    nodes.reverse()
+    nodes.append(root_cell)
+    if need_rev:
+        nodes.reverse()
 
     # Map port water/land transitions & mode distances
     cell_to_port = {}
@@ -1004,7 +1213,12 @@ def analyze_pair_path(world, graph, setts, i_src, j_dst, tier):
     sea_km = riv_km = hwy_km = trail_km = spec_km = 0.0
     ring_sea_km = 0.0
     lizard_km = 0.0
+    lizard_raid_km = 0.0
     screamer_km = 0.0
+    yeti_km = 0.0
+    painted_km = 0.0
+    fellgang_km = 0.0
+    scyvoi_km = 0.0
     min_pirate_dist_km = 9999.0
     noa_i, noa_j = 896 * su, 866 * sv
 
@@ -1036,6 +1250,14 @@ def analyze_pair_path(world, graph, setts, i_src, j_dst, tier):
             spec_km += rkm
             if cname not in corridors_used:
                 corridors_used.append(cname)
+            if "Xanadu" in cname or "Vale Gate" in cname:
+                lizard_raid_km += rkm
+            if "Loj Fower" in cname or "Nulab" in cname:
+                fellgang_km += rkm
+            if "Yeti North Rim" in cname or "Yeti Winter Pycrete" in cname:
+                yeti_km += rkm
+            if "God's Road North" in cname:
+                painted_km += 80.0
             poly_51.append([round(px_b, 1), round(py_b, 1)])
             seg_modes.append("corridor")
             continue
@@ -1052,8 +1274,21 @@ def analyze_pair_path(world, graph, setts, i_src, j_dst, tier):
         else:
             if graph["mask_lizard_hostile"][aj, ai] or graph["mask_lizard_hostile"][bj, bi]:
                 lizard_km += step_km
+            if (
+                graph["mask_lizard_raid_xanadu"][aj, ai] or graph["mask_lizard_raid_xanadu"][bj, bi]
+                or graph["mask_lizard_raid_dalab"][aj, ai] or graph["mask_lizard_raid_dalab"][bj, bi]
+            ):
+                lizard_raid_km += step_km
             if graph["mask_screamer_hostile"][aj, ai] or graph["mask_screamer_hostile"][bj, bi]:
                 screamer_km += step_km
+            if graph["mask_yeti_raid"][aj, ai] or graph["mask_yeti_raid"][bj, bi]:
+                yeti_km += step_km
+            if graph["mask_painted_raid"][aj, ai] or graph["mask_painted_raid"][bj, bi]:
+                painted_km += step_km
+            if graph["mask_fellgang_raid"][aj, ai] or graph["mask_fellgang_raid"][bj, bi]:
+                fellgang_km += step_km
+            if graph["mask_scyvoi_raid"][aj, ai] or graph["mask_scyvoi_raid"][bj, bi]:
+                scyvoi_km += step_km
             if (graph["river_nav"][aj, ai] and graph["river_nav"][bj, bi]) or (
                 graph["canal_nav"][aj, ai] and graph["canal_nav"][bj, bi]
             ):
@@ -1071,10 +1306,10 @@ def analyze_pair_path(world, graph, setts, i_src, j_dst, tier):
 
     # Detect key land gateway settlements passed within 16 km (4 cells)
     GATEWAY_NAMES = [
-        "Dilihan", "Jimjam", "Talia", "Verge", "Stair", "Strongbow",
+        "Dilihan", "Port Visas", "Jimjam", "Talia", "Verge", "Parabola", "Stair", "Strongbow",
         "Roketstad", "Cascade", "Span", "Ledge", "The Gate", "The Sill (Sam-Lok)",
         "Spider Lake Weirs", "Hook", "Port Tobin", "Port Goto", "Ys", "Tethis",
-        "Almua", "Zey'danin", "Kautoa", "Farport",
+        "Trigon", "Almua", "Zey'danin", "Kautoa", "Farport", "Boatmurder",
     ]
     gw_cells = [(nm, setts[sid]["cell"] % N_CELL) for sid, s in setts.items() for nm in [s["name"]] if nm in GATEWAY_NAMES]
     gateways_hit = []
@@ -1095,6 +1330,24 @@ def analyze_pair_path(world, graph, setts, i_src, j_dst, tier):
         prox = math.exp(-max(0.0, min_pirate_dist_km - 40.0) / 260.0)
         pirate_rate = min(0.075, 0.025 + 0.050 * prox)
 
+    raider_tags = []
+    if any("Iziz-Guarded Visas Caravan" in c for c in corridors_used):
+        raider_tags.append("ARMED IZIZ GUARD ESCORT (Screamer Fringe)")
+    elif screamer_km > 12:
+        raider_tags.append(f"Screamer Raid Zone ({round(screamer_km)} km)")
+    if lizard_km > 20:
+        raider_tags.append(f"Hostile Rift Floor ({round(lizard_km)} km)")
+    elif lizard_raid_km >= 28:
+        raider_tags.append("Lizardman Raid Hazard")
+    if fellgang_km >= 24:
+        raider_tags.append("Fellgang Raider Risk")
+    if scyvoi_km >= 24:
+        raider_tags.append("Scyvoi Lowland Raids")
+    if painted_km >= 24:
+        raider_tags.append("Painted Men Raid Risk")
+    if yeti_km >= 24:
+        raider_tags.append("Yeti Raid Frontier")
+
     return {
         "real_km": round(total_km),
         "sea_km": round(sea_km),
@@ -1104,7 +1357,13 @@ def analyze_pair_path(world, graph, setts, i_src, j_dst, tier):
         "caravan_km": round(trail_km),
         "corridor_km": round(spec_km),
         "lizard_km": round(lizard_km),
+        "lizard_raid_km": round(lizard_raid_km),
         "screamer_km": round(screamer_km),
+        "yeti_km": round(yeti_km),
+        "painted_km": round(painted_km),
+        "fellgang_km": round(fellgang_km),
+        "scyvoi_km": round(scyvoi_km),
+        "raider_tags": raider_tags,
         "ports": ports_used,
         "corridors": corridors_used,
         "gateways": gateways_hit,
@@ -1124,6 +1383,7 @@ TIER_ALPHA = {"bulk": 2.15, "medium": 1.48, "compact": 1.08}
 def solve_trade(world, setts, graph):
     sids = graph["sids"]
     sid_to_idx = graph["sid_to_idx"]
+    iziz_sid_to_idx = graph["iziz_sid_to_idx"]
     pirate_sid = next(sid for sid, s in setts.items() if s["name"] == "Noa's Regret")
 
     # Group settlements by polity
@@ -1134,16 +1394,24 @@ def solve_trade(world, setts, graph):
     path_cache = {}
 
     def fast_eff(sid_a, sid_b, tier):
+        pol_a, pol_b = setts[sid_a]["polity"], setts[sid_b]["polity"]
+        is_bulk = tier == "bulk"
+        if uses_iziz_visas_regime(pol_a, pol_b):
+            if sid_a in iziz_sid_to_idx:
+                dmat = graph["dist_iziz_bulk"] if is_bulk else graph["dist_iziz_comp"]
+                return float(dmat[iziz_sid_to_idx[sid_a], setts[sid_b]["cell"]])
+            dmat = graph["dist_iziz_bulk"] if is_bulk else graph["dist_iziz_comp"]
+            return float(dmat[iziz_sid_to_idx[sid_b], setts[sid_a]["cell"]])
         ia = sid_to_idx[sid_a]
-        dmat = graph["dist_bulk"] if tier == "bulk" else graph["dist_comp"]
+        dmat = graph["dist_bulk"] if is_bulk else graph["dist_comp"]
         return float(dmat[ia, setts[sid_b]["cell"]])
 
     def get_pair(sid_a, sid_b, tier):
-        key = (sid_a, sid_b, "bulk" if tier == "bulk" else "comp")
+        tkey = "bulk" if tier == "bulk" else "comp"
+        key = (sid_a, sid_b, tkey)
         if key not in path_cache:
-            ia, ib = sid_to_idx[sid_a], sid_to_idx[sid_b]
-            eff = fast_eff(sid_a, sid_b, tier)
-            info = analyze_pair_path(world, graph, setts, ia, ib, "bulk" if tier == "bulk" else "comp") if np.isfinite(eff) else None
+            eff = fast_eff(sid_a, sid_b, tkey)
+            info = analyze_pair_path(world, graph, setts, sid_a, sid_b, tkey) if np.isfinite(eff) else None
             path_cache[key] = (eff, info)
         return path_cache[key]
 
@@ -1206,13 +1474,17 @@ def solve_trade(world, setts, graph):
                     if s_pol == b_pol:
                         w_row.append(0.0)
                         continue
-                    # Lore bans:
+                    # Lore bans & fraught bilateral embargoes:
                     # 1. Order of Historians banned from Voth (LORE.md:436)
                     if gid == "books" and s_pol == "Order of Historians" and b_pol == "Vothic Kingdom":
                         w_row.append(0.0)
                         continue
                     # 2. Firearms/rockets barred to Coyote Kingdom north of The Sill
                     if gid == "rockets" and b_pol in ("Coyote Kingdom", "Dilihan Province"):
+                        w_row.append(0.0)
+                        continue
+                    # 3. Yeti Kingdom raids Eternal State & relations are fraught — no direct bilateral trade (LORE.md s6.19)
+                    if {s_pol, b_pol} == {"Yeti Kingdom", "Eternal State"}:
                         w_row.append(0.0)
                         continue
                     eff_km = fast_eff(s_sid, b_sid, tier)
@@ -1235,11 +1507,18 @@ def solve_trade(world, setts, graph):
                             w_row.append(0.0)
                             continue
                     w = s_avail / ((eff_km + 45.0) ** alpha)
-                    # Once-a-year Annual Great Caravan (Nulab <-> Erehwon South Rim):
+                    # Once-a-year Annual Great Caravan (Nulab <-> Erehwon North Rift Bench):
                     # bulk is already blocked (inf); medium cargo faces heavy annual-convoy capacity friction!
                     _, pinfo_chk = get_pair(s_sid, b_sid, tier)
                     if pinfo_chk and any("Annual Great Caravan" in c for c in pinfo_chk["corridors"]):
                         w *= (0.14 if tier == "medium" else 0.55)
+                    # Yeti caravans cannot clear customs through Eternal State ports/cities (Lux, Fulcrum, Bastion, Farport)
+                    if "Yeti Kingdom" in (s_pol, b_pol) and pinfo_chk:
+                        if any(ep in pinfo_chk["ports"] or ep in pinfo_chk["gateways"] for ep in ("Lux", "Fulcrum", "Bastion", "Farport")):
+                            w = 0.0
+                    # Occasional tribal isolation friction for Painted Men canyon holds (TRADE-SCOPE s7.6: rare traders)
+                    if "Painted Men" in (s_pol, b_pol):
+                        w *= 0.45
                     w_row.append(w)
                 buyer_weights.append((b_sid, b_need, w_row))
 
@@ -1326,12 +1605,25 @@ def solve_trade(world, setts, graph):
                     entrepot_totals[g_nm]["flows"] += 1
                     entrepot_totals[g_nm]["goods"][gid] += amt
 
-        # Save top 8 flows of each good + top pirate prize-fence lanes for map visualization
+        # Save top 8 flows of each good + key Annual Great Caravan & Iziz-Port Visas corridors + pirate lanes for map visualization
         for s_sid, b_sid, amt, eff_km, pinfo, is_pirate in raw_flows[:8]:
             if tot_flow > 0 and amt / tot_flow >= 0.03:
                 rendered_corridors.append({
                     "good": gid, "tier": tier, "share": amt / tot_flow,
                     "is_pirate": is_pirate, "poly": pinfo["full_poly"], "modes": pinfo["seg_modes"],
+                })
+        special_featured = [
+            x for x in raw_flows
+            if not x[5] and (
+                any("Annual Great Caravan" in c or "Iziz-Guarded Visas Caravan" in c for c in x[4]["corridors"])
+                or "Port Visas" in x[4]["ports"]
+            )
+        ]
+        for s_sid, b_sid, amt, eff_km, pinfo, is_pirate in special_featured[:2]:
+            if tot_flow > 0 and amt / tot_flow >= 0.005:
+                rendered_corridors.append({
+                    "good": gid, "tier": tier, "share": max(0.045, amt / tot_flow * 2.0),
+                    "is_pirate": False, "poly": pinfo["full_poly"], "modes": pinfo["seg_modes"],
                 })
         pirate_flows = [x for x in raw_flows if x[5]]
         for s_sid, b_sid, amt, eff_km, pinfo, is_pirate in pirate_flows[:2]:
@@ -1351,8 +1643,14 @@ def solve_trade(world, setts, graph):
         mode_pct = {k: round(100.0 * v / denom_m, 1) for k, v in mode_km_wt.items()}
 
         selected_for_table = list(raw_flows[:8])
+        if special_featured and not any(
+            any("Annual Great Caravan" in c or "Iziz-Guarded Visas Caravan" in c for c in x[4]["corridors"])
+            for x in selected_for_table[:5]
+        ):
+            if tot_flow > 0 and special_featured[0][2] / tot_flow >= 0.008:
+                selected_for_table = list(raw_flows[:4]) + [special_featured[0]] + list(raw_flows[4:7])
         if pirate_flows and not any(x[5] for x in selected_for_table[:6]):
-            selected_for_table = list(raw_flows[:5]) + [pirate_flows[0]] + list(raw_flows[5:7])
+            selected_for_table = list(selected_for_table[:5]) + [pirate_flows[0]] + list(selected_for_table[5:7])
 
         routes_out = []
         for s_sid, b_sid, amt, eff_km, pinfo, is_pirate in selected_for_table:
@@ -1360,15 +1658,19 @@ def solve_trade(world, setts, graph):
             if pinfo["ports"]:
                 via_parts.append("ports: " + " -> ".join(pinfo["ports"][:3]))
             if pinfo["corridors"]:
-                via_parts.append(" + ".join(pinfo["corridors"][:2]))
+                if any("Annual Great Caravan" in c for c in pinfo["corridors"]):
+                    via_parts.append("Annual Great Caravan (North Rift Bench)")
+                elif any("Iziz-Guarded Visas Caravan" in c for c in pinfo["corridors"]):
+                    via_parts.append("Iziz-Guarded Visas Caravan (Dilihan-Port Visas)")
+                else:
+                    via_parts.append(" + ".join(pinfo["corridors"][:2]))
             elif pinfo["gateways"]:
                 mids = [x for x in pinfo["gateways"] if x not in (setts[s_sid]["name"], setts[b_sid]["name"])]
                 if mids:
                     via_parts.append("via " + " -> ".join(mids[:3]))
-            if pinfo.get("lizard_km", 0) > 20:
-                via_parts.append(f"HAZARDOUS RIFT ({pinfo['lizard_km']} km)")
-            if pinfo.get("screamer_km", 0) > 12:
-                via_parts.append(f"SCREAMER RAID ZONE ({pinfo['screamer_km']} km)")
+            for rtag in pinfo.get("raider_tags", [])[:2]:
+                if rtag not in "; ".join(via_parts):
+                    via_parts.append(rtag)
             if is_pirate:
                 via_parts.insert(0, "PIRATE PRIZE FENCE")
 
@@ -1452,7 +1754,9 @@ def render_trade_map(world, setts, graph, results, out_jpg):
     rgb[W2, 1] = 48
     rgb[W2, 2] = 74
 
-    # Crimson hazard hatch over hostile Lizardman territory (internal trade only; dangerous to caravans)
+    # Raider territory hazard shading:
+    # 1. Crimson/magenta cross-hatch on autarkic no-trade raider zones (Lizardmen & Screamers)
+    # 2. Subtle burnt-ochre stipple on neighbor-raiding territories (Yeti, Painted Men, Fellgangs, Scyvoi)
     yy_2, xx_2 = np.mgrid[0:OH, 0:OW]
     gi = np.clip(np.round(xx_2 * (GW - 1) / (OW - 1)).astype(int), 0, GW - 1)
     gj = np.clip(np.round(yy_2 * (GH - 1) / (OH - 1)).astype(int), 0, GH - 1)
@@ -1470,15 +1774,44 @@ def render_trade_map(world, setts, graph, results, out_jpg):
     rgb[scr_2, 2] = rgb[scr_2, 2] * 0.76 + 38.0
     rgb[hatch_sc] = [205.0, 56.0, 138.0]
 
+    raid_nb_2 = (
+        graph["mask_yeti_poly"][gj, gi]
+        | graph["mask_painted_poly"][gj, gi]
+        | graph["mask_fellgang_poly"][gj, gi]
+        | graph["mask_scyvoi_poly"][gj, gi]
+    ) & (~W2) & (~liz_2) & (~scr_2)
+    stipple_nb = raid_nb_2 & (((xx_2 + 2 * yy_2) % 11) == 0)
+    rgb[raid_nb_2, 0] = rgb[raid_nb_2, 0] * 0.88 + 26.0
+    rgb[raid_nb_2, 1] = rgb[raid_nb_2, 1] * 0.85 + 14.0
+    rgb[raid_nb_2, 2] = rgb[raid_nb_2, 2] * 0.84 + 6.0
+    rgb[stipple_nb] = [212.0, 118.0, 52.0]
+
     base_img = Image.fromarray(np.clip(rgb, 0, 255).astype(np.uint8), mode="RGB").convert("RGBA")
     overlay = Image.new("RGBA", (OW, OH), (0, 0, 0, 0))
     draw = ImageDraw.Draw(overlay)
+
+    # Subtle 5.1 road infrastructure underlay from claude/ancient-network-9cc3e7 (net51-gemini.json)
+    if world.get("net51"):
+        for r_net in world["net51"].get("routes", []):
+            if r_net.get("id") == "ext.southwest":
+                continue
+            pts_n = r_net.get("px", [])
+            up_n = r_net.get("up", [])
+            for kn in range(len(pts_n) - 1):
+                st_n = up_n[min(kn, len(up_n) - 1)] if up_n else "lapsed"
+                if st_n == "decayed":
+                    rcol = (145, 130, 112, 62)
+                elif st_n in ("kept", "partly"):
+                    rcol = (212, 188, 132, 108)
+                else:
+                    rcol = (176, 156, 122, 82)
+                draw.line([tuple(pts_n[kn]), tuple(pts_n[kn + 1])], fill=rcol, width=1)
 
     MODE_COLORS = {
         "sea": (64, 218, 255, 165),      # bright cyan shipping lanes
         "river": (52, 238, 178, 175),    # emerald/teal barge rivers & canals
         "highway": (255, 214, 72, 180),  # gold kept Ancient highways
-        "corridor": (255, 96, 150, 195), # magenta/crimson tunnels, lifts & high passes
+        "corridor": (255, 96, 150, 195), # magenta/crimson tunnels, lifts, armed Visas convoys & Great Caravan
         "caravan": (255, 152, 66, 155),  # warm amber caravan trails
     }
 
@@ -1500,11 +1833,11 @@ def render_trade_map(world, setts, graph, results, out_jpg):
         font = font_b = font_t = ImageFont.load_default()
 
     MAJOR_LABELS = {
-        "Farport", "Fulcrum", "Carcosa", "Qoold Lheek", "Jimjam", "Boatmurder",
-        "Dilihan", "Ardent", "Roketstad", "Ys", "Tethis", "Nephtos", "Hook",
+        "Farport", "Fulcrum", "Carcosa", "Qoold Lheek", "Leng", "Jimjam", "Boatmurder",
+        "Dilihan", "Port Visas", "Ardent", "Roketstad", "Ys", "Tethis", "Trigon", "Nephtos", "Hook",
         "Port Tobin", "Port Goto", "Shell", "Almua", "Zey'danin", "Voth", "Shim",
-        "Dalab", "Span", "Ledge", "Nulab", "Tallwalls", "Betun-Sumar",
-        "Spirladunon", "Iziz", "Talia", "Verge", "Locus", "Mungo", "Reed",
+        "Dalab", "Span", "Ledge", "Nulab", "Wildcat", "Tallwalls", "Betun-Sumar",
+        "Spirladunon", "Iziz", "Talia", "Verge", "Parabola", "Locus", "Mungo", "Reed",
         "Yuni", "Ostrukh-on-Water", "Spindle Fan", "The Sill (Sam-Lok)",
         "Spider Lake Weirs", "The Gate", "Stair", "Strongbow", "Erehwon",
         "Opal Valley Mines", "Longsong", "Kautoa", "Noa's Regret", "Hetanini Spice Port",
@@ -1525,28 +1858,40 @@ def render_trade_map(world, setts, graph, results, out_jpg):
         nm = s["name"]
         if nm in MAJOR_LABELS:
             x, y = int(s["px"]) + 6, int(s["py"]) - 8
+            if nm == "Port Visas":
+                x, y = int(s["px"]) + 7, int(s["py"]) - 14
+            elif nm == "Ys":
+                x, y = int(s["px"]) + 6, int(s["py"]) + 3
             d2.text((x + 1, y + 1), nm, fill=(10, 12, 16), font=font)
             tcol = (255, 130, 130) if nm == "Noa's Regret" else (248, 246, 236)
             d2.text((x, y), nm, fill=tcol, font=font)
 
-    # Label Hostile Lizardman Rift & Screamer Country Raider Zones
-    d2.text((641, 1529), "LIZARDMAN RIFT (Autarkic — Hostile to Caravans)", fill=(12, 12, 16), font=font_b)
-    d2.text((640, 1528), "LIZARDMAN RIFT (Autarkic — Hostile to Caravans)", fill=(255, 138, 138), font=font_b)
-    d2.text((739, 603), "SCREAMER COUNTRY (Raiders — No Trade)", fill=(12, 12, 16), font=font_b)
-    d2.text((738, 602), "SCREAMER COUNTRY (Raiders — No Trade)", fill=(255, 145, 210), font=font_b)
+    # Label Autarkic Hostile Zones, Raider Frontier Zones & North-Rift Great Caravan
+    def draw_tag(tx, ty, txt, col):
+        d2.text((tx + 1, ty + 1), txt, fill=(10, 12, 16), font=font_b)
+        d2.text((tx, ty), txt, fill=col, font=font_b)
+
+    draw_tag(605, 1545, "LIZARDMAN RIFT (No Trade — Raids Xanadu & S. Dalab)", (255, 138, 138))
+    draw_tag(768, 602, "SCREAMER COUNTRY (Raiders — No Trade)", (255, 145, 210))
+    draw_tag(548, 1378, "Annual Great Caravan (North Rift Bench)", (255, 175, 215))
+    draw_tag(352, 468, "YETI RAIDERS (No Eternian Trade)", (255, 188, 120))
+    draw_tag(942, 560, "PAINTED MEN RAIDERS", (255, 188, 120))
+    draw_tag(572, 782, "SCYVOI RAIDERS", (255, 188, 120))
+    draw_tag(326, 1432, "FELLGANG RAIDERS", (255, 188, 120))
 
     # Legend box (bottom-left)
-    lx, ly = 28, OH - 210
-    d2.rectangle((lx, ly, lx + 492, OH - 24), fill=(18, 24, 34), outline=(120, 140, 165), width=2)
+    lx, ly = 28, OH - 232
+    d2.rectangle((lx, ly, lx + 528, OH - 24), fill=(18, 24, 34), outline=(120, 140, 165), width=2)
     d2.text((lx + 14, ly + 10), "KRATOR 5.1 MULTIMODAL TRADE NETWORK (gemini-trade)", fill=(255, 240, 190), font=font_b)
     legend_rows = [
         ((64, 212, 255), "Sea Shipping Lanes (Ring Sea & Farside Ocean)"),
         ((52, 235, 178), "Navigable Rivers, Lakes & Eternian Canals"),
         ((255, 210, 72), "Kept Ancient 30 m Highways"),
         ((255, 148, 66), "Overland Caravan Trunks (Camels / Lizards / Ostriches)"),
-        ((255, 92, 140), "Tunnels, Cliff Lifts, Lava Tubes & Annual Great Caravan"),
+        ((255, 92, 140), "Tunnels, Armed Iziz-Visas Convoy & N-Rift Great Caravan"),
         ((240, 60, 60), "Noa's Regret Pirate Prize Fence Lanes"),
-        ((195, 48, 92), "Hostile Raider Zones: Lizardman Rift & Screamer Country"),
+        ((195, 48, 92), "Autarkic Raiders (No Trade): Lizardmen & Screamers"),
+        ((212, 118, 52), "Neighbor-Raider Polities: Yeti, Painted Men, Scyvoi, Fellgangs"),
     ]
     for idx_l, (c_rgb, lbl_txt) in enumerate(legend_rows):
         ry = ly + 38 + idx_l * 20
@@ -1563,14 +1908,18 @@ def write_trade_markdown(payload, out_md):
         "",
         "Generated by [gemini_trade_model.py](file:///C:/Users/travi/Documents/krator-trade/tools/scale-model/gemini_trade_model.py) "
         "from [geology-gemini.json](file:///C:/Users/travi/Documents/krator-trade/kits/resources/data/geology-gemini.json) "
+        "and the native 5.1 road network [net51-gemini.json](file:///C:/Users/travi/Documents/krator-trade/openworld/net51-gemini.json) (`claude/ancient-network-9cc3e7`) "
         "into [trade-gemini.json](file:///C:/Users/travi/Documents/krator-trade/openworld/trade-gemini.json) on branch `gemini-trade` (leaving all base files untouched).",
         "",
         "> [!IMPORTANT]",
         f"> **Model Summary**: **{payload['good_count']} trade goods** (including `zinc` / brass spelter) solved across "
         f"**{payload['polity_count']} polities & maritime poleis** (`{payload['settlement_count']}` settlements & gateways) over a "
-        "**two-layer 4 km Dijkstra multimodal graph** backed by the rebaked 5.1 geology.",
-        "> - **Lizardman & Screamer Raider Exclusion (`LORE.md`)**: Both `Lizardmen` (`Sauropolis`, `Komodo`, `Gila`, `Tuatara`) and `Screamer Country` (`Hexahedron`) have **`0` external exports, `0` external imports, and `0` external port calls**. Caravans entering the Lizardman Rift (`8.2x–9.5x`) or Screamer Country (`7.5x–8.5x`) face severe ambush/raid hazards.",
-        "> - **Rift Rim & Xanadu Access Rules**: `Tallwalls ↔ Erehwon` across the freezing/airless Northern Rift Rim is **impassable**; Ring Sea ↔ `Xanadu` trade routes cleanly via **The Catch → The Twins / White Gills → Strongbow → Theodiga → Erehwon**; and `Nulab ↔ Erehwon` operates exclusively as a once-a-year armed **Annual Great Caravan** along the Southern Rift Rim (bulk staples/fuels/stone barred; compact high-value goods only).",
+        "**two-layer 4 km Dijkstra multimodal graph** backed by the rebaked 5.1 geology and the `claude/ancient-network-9cc3e7` 5.1 road network (`142` routes).",
+        "> - **5.1 Road & Tunnel Network (`claude/ancient-network-9cc3e7`)**: Replaces legacy shifted roads with native 5.1 Ancient trunks, Izani/Vothic/Xanadu/Yuni state roads, trade highways (`Jimjam–Lux`, `Yuni–Locus–Mungo`), Bowl solar-furnace customs post **`Parabola`** (`970, 1186`; no Arcbeam–Stair tunnel), the three Catch–Xanadu crossings (**The Twins**, **White Gills**, and the compact-only **`Theodiga–Stair` dark dead foot-bore**), and **Strongbow's `3,100 m` scarp elevator** feeding both the Vale of Xanadu and the **Oidong Valley floor road (`Strongbow–Longsong`)**.",
+        "> - **Autarkic Raiders (`0` External Trade)**: `Lizardmen` (`Sauropolis`, `Komodo`, `Gila`, `Tuatara`) and `Screamer Country` (`Hexahedron`) have **`0` external exports, `0` external imports, and `0` external port calls**. Lizardmen also raid `Xanadu` (`Vale of Xanadu`, `LORE.md §6.20`) and occasionally southern `Dalab` / `Fellgangs` (`1.35x–1.55x` border hazard).",
+        "> - **Neighbor-Raiding Polities & Bilateral Friction**: `Yeti Kingdom` raids the `Eternal State` and relations are fraught (**`0` direct bilateral trade** between Yeti and Eternia; Yeti trades via `Dam Basin Salvagers`, `Jimjam`, `Iron Republic`, and `Free Clans` along northern trails). `Painted Men` (`1.35x–2.25x`), `Fellgangs` (`1.32x–1.95x`), and `Scyvoi` (`1.28x–1.75x` across lowland neighbors) raise route danger and shift cargo flows without halting trade.",
+        "> - **North-Side Rift `Annual Great Caravan` & `Tallwalls ↔ Erehwon` Block**: `Tallwalls ↔ Erehwon` across the freezing Northern Rift peaks remains **impassable**; because Lizardmen and Fellgangs raid southern `Dalab` / `Fellgangs`, the once-a-year **Annual Great Caravan** (`Nulab ↔ Erehwon`, compact goods only) traverses the **North Rift Bench** (`1,900–3,880 m`) above the Lizardman floor.",
+        "> - **`Dilihan ↔ Port Visas` Armed Iziz Caravans vs Hykkousoi Ports**: `Empire of Iziz` (and loyalist `Shell Province`) prefers **`Dilihan ↔ Port Visas`** using **armed caravans protected by Iziz guards** (`152 km` skirting the Screamer fringe, moderately costly/dangerous), whereas **all other polities** route 100% of their Cut-to-Sea traffic through the **Hykkousoi ports (`Ys`, `Tethis`, `Trigon`)**.",
         "> - **Spider Lake SW Spillway**: `Spider Lake Weirs` drains exclusively SW across its secondary-crater breach into `9102` (`Hām-Tsēk / Arachnoid River`) past `Ham-Tsek Silk Post`.",
         "",
         "## 1. Top Maritime Port & Overland Chokepoint Entrepôts",
@@ -1578,7 +1927,7 @@ def write_trade_markdown(payload, out_md):
         "| Rank | Hub / Chokepoint | Sea Break-of-Bulk (t-eq) | Land Transit (t-eq) | Active Flows | Top Transit Cargoes |",
         "|---:|:---|---:|---:|---:|:---|",
     ]
-    for rk, e in enumerate(payload["entrepots"][:22], 1):
+    for rk, e in enumerate(payload["entrepots"][:24], 1):
         lines.append(
             f"| {rk} | **{e['hub']}** | {e['sea_tons_eq']} | {e['land_tons_eq']} | {e['flow_count']} | {', '.join(e['top_transit_goods'][:4])} |"
         )
@@ -1610,7 +1959,7 @@ def write_trade_markdown(payload, out_md):
     for pol in pol_sorted:
         if pol.get("trade_regime") == "internal_autarky_hostile":
             exp_str = "*(0 — internal Rift trade only; hostile to humans)*"
-            imp_str = "*(0 — internal Rift trade only; raids Rift caravans)*"
+            imp_str = "*(0 — internal Rift trade only; raids Xanadu & S. Dalab)*"
         elif pol.get("trade_regime") == "raider_autarky_hostile":
             exp_str = "*(0 — Screamer raiders do not trade; raid for supplies & captives)*"
             imp_str = "*(0 — Screamer raiders do not trade; hazard to passing caravans)*"
@@ -1697,10 +2046,16 @@ def main(argv=None):
         }
         if pol == "Lizardmen":
             entry["trade_regime"] = "internal_autarky_hostile"
-            entry["note"] = "Trades strictly internally among Sauropolis, Komodo, Gila, and Tuatara; hostile to humans — zero external trade and Rift caravans face severe raid risk."
+            entry["note"] = "Trades strictly internally among Sauropolis, Komodo, Gila, and Tuatara; hostile to humans — zero external trade, and raids Vale of Xanadu and southern Dalab/Fellgangs."
         elif pol == "Screamer Country":
             entry["trade_regime"] = "raider_autarky_hostile"
             entry["note"] = "Screamer raiders (Hexahedron) do not trade externally — raid passing caravans and neighboring marches for supplies and captives; zero external exports or imports."
+        elif pol == "Yeti Kingdom":
+            entry["trade_regime"] = "raider_fraught_eternia_embargo"
+            entry["note"] = "Raids the Eternal State and relations are fraught — zero direct bilateral trade with Eternia; trades indirectly via Dam Basin Salvagers, Jimjam, Iron Republic, and Free Clans."
+        elif pol in ("Painted Men", "Fellgangs", "Scyvoi"):
+            entry["trade_regime"] = "neighbor_raider_trading"
+            entry["note"] = "Participates in limited external trade while raiding neighboring marches, raising caravan hazard and escort costs along bordering routes."
         pol_summary[pol] = entry
 
     entrepots = []
