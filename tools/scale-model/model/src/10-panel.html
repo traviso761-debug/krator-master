@@ -102,18 +102,21 @@
     </div>
     <div class="unified-tabs">
       <div id="rTabs" role="tablist" aria-label="Region list"></div>
-      <button id="bSettTab" type="button" aria-selected="false" title="View & Edit 117 Canonical Settlements">Sett<b id="settCountBadge">117</b></button>
+      <button id="bSettTab" type="button" aria-selected="false" title="View & Edit 187 Canonical Settlements">Sett<b id="settCountBadge">187</b></button>
     </div>
     <input type="text" id="rSearch" placeholder="Filter regions or settlements...">
     <div class="filter-pills" id="settPills" hidden>
       <button class="pill-btn active" data-type="all">All</button>
       <button class="pill-btn" data-type="city">City</button>
+      <button class="pill-btn" data-type="town">Town</button>
       <button class="pill-btn" data-type="village">Village</button>
-      <button class="pill-btn" data-type="arcology">Arcology</button>
-      <button class="pill-btn" data-type="ruined arcology">Ruined Arc</button>
-      <button class="pill-btn" data-type="ruin">Ruin</button>
+      <button class="pill-btn" data-type="fort">Fort</button>
       <button class="pill-btn" data-type="outpost">Outpost</button>
       <button class="pill-btn" data-type="cavern">Cavern</button>
+      <button class="pill-btn" data-type="arcology">Arcology</button>
+      <button class="pill-btn" data-type="inhabited ruin">Inhabited Ruin</button>
+      <button class="pill-btn" data-type="ruin">Ruin</button>
+      <button class="pill-btn" data-type="ruined arcology">Ruined Arc</button>
     </div>
   </div>
 
@@ -137,7 +140,8 @@
     </div>
 
     <div class="sec" id="settPanel" hidden>
-      <div class="row"><button id="bSettAdd" aria-pressed="false">Add settlement</button><button id="bSettImport">Import (city)</button><button id="bSettCopy">Copy JSON</button></div>
+      <div class="row"><button id="bSettAdd" aria-pressed="false">Add settlement</button><button id="bSettImport">Import (city)</button><button id="bSettLoad" title="Import settlements JSON file">Import JSON</button><button id="bSettCopy">Copy JSON</button></div>
+      <input type="file" id="fSettLoad" accept=".json,application/json" hidden>
       <ul id="settList"></ul>
       <div class="status" id="settStatus">—</div>
       <div id="settKey"></div>

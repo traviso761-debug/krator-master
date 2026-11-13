@@ -152,7 +152,7 @@ for v in [D.get('volc', {})] + list(D.get('vents', [])):
     in_disc = np.hypot(xx - vx, yy - vy) <= r_cells
     check('vent peak near %s' % v['px'], float(E[j0:j1, i0:i1][in_disc].max()) >= float(v['peak']) - 400.0)
 
-# ---- 5. biome stations (every station's stated `base` must be within 150 m of the ground at its `px`)
+# ---- 5. biome stations (every station's stated `base` must be within 150 m of the ground at its `px`, or its tarn's water level when `level: true`)
 import glob as _glob, json as _json   # noqa: E402
 REPO_ROOT = os.path.abspath(os.path.join(TOOL, '..', '..'))
 for st_path in sorted(_glob.glob(os.path.join(REPO_ROOT, 'biomes', '**', 'station*.json'), recursive=True)):
@@ -161,11 +161,17 @@ for st_path in sorted(_glob.glob(os.path.join(REPO_ROOT, 'biomes', '**', 'statio
     if 'px' not in site or 'py' not in site or 'base' not in site:
         continue
     raw_px, raw_py = float(site['px']), float(site['py'])
-    if '4.2' in st_doc.get('source', '') and '5.' not in st_doc.get('canvas', ''):
-        raw_px, raw_py = P.legacy_px(raw_px, raw_py, D)
-    spx = min(E.shape[1] - 1, max(0, int(round(raw_px * su))))
-    spy = min(E.shape[0] - 1, max(0, int(round(raw_py * sv))))
-    ground_m = float(E[spy, spx])
+    if site.get('level') and site.get('clim_px'):
+        cpx, cpy = float(site['clim_px'][0]), float(site['clim_px'][1])
+        csx = min(E.shape[1] - 1, max(0, int(round(cpx * su))))
+        csy = min(E.shape[0] - 1, max(0, int(round(cpy * sv))))
+        ground_m = float(wlev[csy, csx]) if whas[csy, csx] else float(E[csy, csx])
+    else:
+        if '4.2' in st_doc.get('source', '') and '5.' not in st_doc.get('canvas', ''):
+            raw_px, raw_py = P.legacy_px(raw_px, raw_py, D)
+        spx = min(E.shape[1] - 1, max(0, int(round(raw_px * su))))
+        spy = min(E.shape[0] - 1, max(0, int(round(raw_py * sv))))
+        ground_m = float(E[spy, spx])
     base_m = float(site['base'])
     rel_st = os.path.relpath(st_path, REPO_ROOT).replace('\\', '/')
     check('station base within 150 m: %s (stated %.0f m vs ground %.0f m)' % (rel_st, base_m, ground_m),
@@ -515,7 +521,7 @@ check('Godshearth floor is mostly Cwb, the rest Dwb (%.0f%% Cwb)' % (100.0 * gh_
       gh_cls.count('Cwb') / len(gh_cls) >= .6 and gh_cls.count('Cwb') + gh_cls.count('Dwb') == len(gh_cls))
 s_src = open(os.path.join(TOOL, 'model', 'src', '60-settlements.js'), encoding='utf-8').read()
 check('The Gate (sthegate) stands at the Narrows, 1438,326 (ground %.0f m)' % E[326, 1438],
-      '"id": "sthegate", "name": "The Gate", "type": "outpost", "px": 1438, "py": 326' in s_src
+      '"id": "sthegate", "name": "The Gate", "type": "fort", "px": 1438, "py": 326' in s_src
       and abs(float(E[326, 1438]) - 1423.0) <= 50.0)
 r99_t = next(r for r in R if r.get('id') == 'rmvraoas90co7')
 gc_t = next(r for r in R if r.get('id') == 'rmw4vh9t20da4')
@@ -629,4 +635,64 @@ check('the Godthrone walls round Godshearth are dry again (4-6 km band %.0f mm)'
 check('Godshearth keeps its own rain inside the caldera (%.0f mm)' % _rain4[gh_floor].mean(), 700 <= _rain4[gh_floor].mean() <= 950)
 gso4 = next(r for r in D['rivers'] if r['id'] == 'r_gh_spillway')
 check('Āirã Siṭrīm carries about 129 m3/s (%.1f), perennial' % gso4['q_mouth_m3s'], 120 <= gso4['q_mouth_m3s'] <= 135 and gso4['perennial'])
+# ---- 19. 5.1 settlement stages (town, inhabited ruin, fort) & reconciled pins/polities (2026-11-13)
+p10_src = open(os.path.join(TOOL, 'model', 'src', '10-panel.html'), encoding='utf-8').read()
+EXPECTED_STAGES = [
+    'city', 'town', 'village', 'fort', 'outpost',
+    'cavern', 'arcology', 'inhabited ruin', 'ruin', 'ruined arcology',
+]
+check('60-settlements.js defines all 10 SETT_TYPES stages in hierarchy order',
+      [m for m in _re.findall(r"\{k:'([^']+)'", s_src)] == EXPECTED_STAGES)
+check('10-panel.html #settPills exposes filter pills for all 10 settlement stages',
+      all(f'data-type="{k}"' in p10_src for k in EXPECTED_STAGES))
+all_setts = P.settlements()
+by_nm_19 = {s['name']: s for s in all_setts}
+check('reconciled settlement dataset holds 187 unique pins across all 10 stages, with no Tabist town placeholder',
+      len(all_setts) == 187
+      and len({s['id'] for s in all_setts}) == 187
+      and {s['type'] for s in all_setts} == set(EXPECTED_STAGES)
+      and not any('tabist town' in s['name'].lower() or s['id'] == 'seur98e8mv' for s in all_setts))
+check('living ruins classified as inhabited ruin (Carcosa, Henge, Leng, Stair, Noa\'s Regret, Port Visas, Parabola, Hall of Heroes)',
+      all(by_nm_19.get(nm, {}).get('type') == 'inhabited ruin' for nm in (
+          'Carcosa', 'Henge', 'Leng', 'Stair', "Noa's Regret", 'Port Visas', 'Parabola', 'Hall of Heroes'))
+      and (by_nm_19['Parabola']['px'], by_nm_19['Parabola']['py']) == (970, 1186)
+      and (by_nm_19['Hall of Heroes']['px'], by_nm_19['Hall of Heroes']['py']) == (365, 1474))
+check('military strongholds & passes classified as fort (incl. Span, Blade, Bastion, Fort Vaklu, Tzunfort, The Gate, Strongwall, Veil, Tallhouse, Tzinguard, The Sill, Baelu seats)',
+      all(by_nm_19.get(nm, {}).get('type') == 'fort' for nm in (
+          'Span', 'Blade', 'Bastion', 'Fort Vaklu', 'Tzunfort', 'The Gate', 'Strongwall',
+          'Veil', 'Tallhouse', 'Tzinguard', 'The Sill', 'Baelu North (B4)', 'Baelu Mid (B3)', 'Baelu South (B1)'))
+      and (by_nm_19['Tzinguard']['px'], by_nm_19['Tzinguard']['py']) == (773, 922)
+      and (by_nm_19['The Sill']['px'], by_nm_19['The Sill']['py']) == (1697, 1028))
+check('intermediate urban centers classified as town, Port Tobin at 956,943, Port Goto at 920,703, Sfenops & Liikofi as city',
+      all(by_nm_19.get(nm, {}).get('type') == 'town' for nm in (
+          'Spirladunon', 'Tallwalls', 'Pinnacle Rock', "Mav's Refuge", 'Nulab', 'Furrow', 'Pontus',
+          'Mantis', 'Serai', 'Locus', 'Mungo', 'Mirabilis', 'Glaive', 'Longsong', 'Port Tobin', 'Port Goto',
+          'Guari', 'Port Mira', 'Nephtos', 'Ybera', 'Ṣunu-Ašru', 'Sethas', 'Dapor', 'Amaro', 'Daridel',
+          'Kirstabal', 'Stahlborn', 'Silkhead', 'Skywatch', 'Qoold Lheek', 'Ostrukh-on-Water',
+          'Spider Lake Weirs', 'Peak Coyote Plume-Camp'))
+      and (by_nm_19['Port Tobin']['px'], by_nm_19['Port Tobin']['py']) == (956, 943)
+      and (by_nm_19['Port Goto']['px'], by_nm_19['Port Goto']['py']) == (920, 703)
+      and (by_nm_19['Sfenops']['px'], by_nm_19['Sfenops']['py'], by_nm_19['Sfenops']['type']) == (1282, 663, 'city')
+      and (by_nm_19['Liikofi']['px'], by_nm_19['Liikofi']['py'], by_nm_19['Liikofi']['type']) == (1316, 797, 'city'))
+check('claude/integration-4 coordinates preserved (Strongbow, Longsong, Erehwon, Ardent, Dalab, Roketstad, Verge, Ys, Talia)',
+      (by_nm_19['Strongbow']['px'], by_nm_19['Strongbow']['py']) == (1026, 1594)
+      and (by_nm_19['Longsong']['px'], by_nm_19['Longsong']['py']) == (1226, 1626)
+      and (by_nm_19['Erehwon']['px'], by_nm_19['Erehwon']['py']) == (800, 1503)
+      and (by_nm_19['Ardent']['px'], by_nm_19['Ardent']['py']) == (851, 572)
+      and (by_nm_19['Dalab']['px'], by_nm_19['Dalab']['py']) == (464, 1112)
+      and (by_nm_19['Roketstad']['px'], by_nm_19['Roketstad']['py']) == (609, 684)
+      and (by_nm_19['Verge']['px'], by_nm_19['Verge']['py']) == (1263, 946)
+      and (by_nm_19['Ys']['px'], by_nm_19['Ys']['py']) == (789, 738)
+      and (by_nm_19['Talia']['px'], by_nm_19['Talia']['py']) == (1073, 939))
+reg_names_lower = [r['name'].strip().lower() for r in R]
+REQ_REGS_19 = [
+    'frogmen', 'hookfleet', 'tiguantin', 'andaru', 'screamer country',
+    'east ring isles', 'steampits', 'ruins of nazar', 'jabal shiekdom', 'kimr',
+]
+check('all 10 reconciled political & geographic regions present once in 51-region-store.js without duplicates',
+      all(reg_names_lower.count(rn) == 1 for rn in REQ_REGS_19))
+check('Dhelv and Šurpu-Dhelv (Zeijani caverns) stand on dry inland Throne land, not water',
+      by_nm_19['Dhelv']['type'] == 'cavern'
+      and not bool(whas[by_nm_19['Dhelv']['py'], by_nm_19['Dhelv']['px']])
+      and not bool(whas[by_nm_19['Šurpu-Dhelv']['py'], by_nm_19['Šurpu-Dhelv']['px']]))
 print('%d checks passed' % ok)
