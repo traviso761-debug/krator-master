@@ -16,7 +16,7 @@ from scipy.sparse.csgraph import dijkstra, minimum_spanning_tree, connected_comp
 from PIL import Image, ImageDraw, ImageFont
 sys.stdout.reconfigure(encoding='utf-8')
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from extract_region import load_page, raster
+from smodel.page import load as load_page, raster   # a saved page or model/data
 
 if len(sys.argv) != 5:
     sys.exit(__doc__)
