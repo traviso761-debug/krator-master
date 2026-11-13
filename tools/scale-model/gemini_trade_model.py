@@ -682,16 +682,39 @@ def build_multimodal_graphs(world, setts):
     assert ring_sea_comp > 0, "Expected Ring Sea water component > 0"
     is_ring_sea = (lbl == ring_sea_comp)
 
-    # Blocked & penalized polygons (incl. hostile Lizardman Rift zone — LORE.md s6.20: never trade, raid caravans!)
+    # Blocked & penalized polygons:
+    #   - Hostile Lizardman Rift zone (LORE.md s6.20: never trade externally, raid caravans!)
+    #   - Hostile Screamer Country / Hexahedron zone (LORE.md: never trade externally, raid for supplies & captives!)
+    #   - High freezing N Rift Rim / SW Highlands barrier blocking Tallwalls <-> Erehwon & N Rift shortcuts
+    #   - Rough S Rift Rim barrier where Nulab <-> Erehwon is passable ONLY via the once-a-year Annual Great Caravan
     mask_valley = poly_mask(world["regs"], {"ancient's valley", "ancients valley"}, GW, GH, OW, OH)
     mask_korona = poly_mask(world["regs"], {"korona / ne"}, GW, GH, OW, OH)
     mask_lizard_poly = poly_mask(world["regs"], {"lizardmen"}, GW, GH, OW, OH)
-    mask_lizard_hostile = mask_lizard_poly | (ndimage.binary_dilation(mask_lizard_poly, iterations=10) & (E < 4400.0))
+    mask_screamer_poly = poly_mask(world["regs"], {"screamer country"}, GW, GH, OW, OH)
+
+    yy_g, xx_g = np.mgrid[0:GH, 0:GW]
+    px_g, py_g = xx_g / su, yy_g / sv
+
+    # Xanadu Sultanate patrolled corridor (Strongbow -> Qiblai -> Theodiga -> Erehwon) kept clear of Lizardman dilation
+    xanadu_safe = (px_g >= 798.0) & (px_g <= 1045.0) & (py_g >= 1502.0) & (py_g <= 1612.0) & (~W)
+    mask_lizard_hostile = (
+        mask_lizard_poly | (ndimage.binary_dilation(mask_lizard_poly, iterations=8) & (E < 4400.0))
+    ) & (~xanadu_safe)
     for sid_lz, s_lz in setts.items():
         if s_lz["polity"] == "Lizardmen":
             li, lj = int(round(s_lz["px"] * su)), int(round(s_lz["py"] * sv))
-            yy_l, xx_l = np.ogrid[0:GH, 0:GW]
-            mask_lizard_hostile |= (((xx_l - li) ** 2 + (yy_l - lj) ** 2) <= 12 ** 2) & (E < 4400.0)
+            mask_lizard_hostile |= (((xx_g - li) ** 2 + (yy_g - lj) ** 2) <= 10 ** 2) & (E < 4400.0) & (~xanadu_safe)
+
+    mask_screamer_hostile = (mask_screamer_poly | ndimage.binary_dilation(mask_screamer_poly, iterations=3)) & (~W)
+    for sid_sc, s_sc in setts.items():
+        if s_sc["polity"] == "Screamer Country":
+            si_, sj_ = int(round(s_sc["px"] * su)), int(round(s_sc["py"] * sv))
+            mask_screamer_hostile |= (((xx_g - si_) ** 2 + (yy_g - sj_) ** 2) <= 8 ** 2) & (~W)
+
+    # Cold/airless N Rift Rim & SW Highlands barrier (severs Tallwalls <-> Erehwon & N Rift-rim shortcuts west of Stair)
+    mask_north_rift_barrier = (px_g >= 468.0) & (px_g <= 1022.0) & (py_g >= 1318.0) & (py_g <= 1498.0)
+    # Harsh S Rift Rim / W-Central Rift barrier (blocks casual unescorted Nulab <-> Erehwon traffic; routed via Annual Great Caravan)
+    mask_south_rift_barrier = (px_g >= 468.0) & (px_g <= 788.0) & (py_g >= 1498.0) & (py_g <= 1722.0)
 
     # Rasterize kept / partly-kept Ancient highways & God's Road (remember +272,+330 legacy shift!)
     road_mult = np.ones((GH, GW), dtype=np.float32)
@@ -753,12 +776,12 @@ def build_multimodal_graphs(world, setts):
         return int(round(py * sv)) * GW + int(round(px * su))
 
     # Assign settlement cells & identify ports/harbours connected to Layer 1 (N_CELL + cell)
-    # Note: Hostile Lizardman settlements never host external ships or barges!
+    # Note: Hostile Lizardman & Screamer settlements never host external ships or barges!
     port_links = []
     for sid, s in setts.items():
         c = cell_of(s["px"], s["py"])
         s["cell"] = c
-        if s["polity"] == "Lizardmen":
+        if s["polity"] in ("Lizardmen", "Screamer Country"):
             s["water_cell"] = None
             s["is_ring_sea_port"] = False
             continue
@@ -797,13 +820,19 @@ def build_multimodal_graphs(world, setts):
         ("Twins-Strongbow Descent", 1042, 1525, 1001, 1596, 165, 220.0, 148.0),
         ("White Gills Breath-Pass (Stair-Gills)", 1106, 1442, 1035, 1535, 235, 340.0, 215.0),
         ("White Gills Descent (Gills-Strongbow)", 1035, 1535, 1001, 1596, 140, 210.0, 130.0),
+        ("Xanadu East Royal Road (Strongbow-Theodiga)", 1001, 1596, 908, 1535, 224, 185.0, 152.0),
+        ("Vale of Xanadu Royal Road (Theodiga-Erehwon)", 908, 1535, 805, 1516, 212, 175.0, 142.0),
+        ("Annual Great Caravan W (Nulab-West South Rim)", 443, 1359, 522, 1542, 225, float("inf"), 360.0),
+        ("Annual Great Caravan Mid-W (South Rim High Saddle)", 522, 1542, 624, 1618, 215, float("inf"), 350.0),
+        ("Annual Great Caravan Mid-E (South Rim Gneiss Crest)", 624, 1618, 728, 1614, 195, float("inf"), 320.0),
+        ("Annual Great Caravan E (Cube Plateau-Erehwon)", 728, 1614, 805, 1516, 195, float("inf"), 310.0),
         ("Talovolci Cliff-Lung Stairs (Torus-Spirladunon)", 777, 1005, 800, 1017, 52, 190.0, 82.0),
         ("Yeti Winter Pycrete Road (Qoold Lheek-Leng)", 410, 506, 490, 554, 185, 290.0, 185.0),
         ("Yeti Descent (Leng-Lux)", 490, 554, 495, 645, 182, 260.0, 175.0),
         ("Outland Gate & Hau-Gel Trough", 1288, 220, 1368, 272, 195, 180.0, 152.0),
         ("Hau-Gel Narrows to The Gate", 1368, 272, 1438, 326, 175, 160.0, 138.0),
         ("Tierhound Seed-Law Gate (Gate-Gate Tarn)", 1438, 326, 1544, 474, 365, 380.0, 310.0),
-        ("Web-Cleaver Gorge (Spider Lake-Ham-Tsek)", 1288, 220, 1055, 219, 466, 510.0, 370.0),
+        ("SW Spillway & Arachnoid Gorge (Spider Lake-Ham-Tsek)", 1288, 220, 1055, 219, 466, 510.0, 370.0),
         ("Korona Guided Silk River (Ham-Tsek-K6-K1)", 1055, 219, 1006, 340, 265, 295.0, 215.0),
         ("Korona Ring Trail (K6-K1)", 1006, 340, 952, 423, 198, 220.0, 162.0),
         ("Korona West Descent (K1-Serai)", 952, 423, 826, 478, 275, 320.0, 245.0),
@@ -853,15 +882,21 @@ def build_multimodal_graphs(world, setts):
             kor = (mask_korona.flat[a] | mask_korona.flat[b]) & (~has_road)
             c_land = np.where(kor, c_land * 3.6, c_land)
 
-            # Hostile Lizardman Rift territory (LORE.md s6.20: hostile to humans, caravans raided & seldom used!)
+            # Hostile Lizardman Rift & Screamer Country raid zones (LORE.md: never trade externally, raid passing caravans!)
             liz = mask_lizard_hostile.flat[a] | mask_lizard_hostile.flat[b]
             c_land = np.where(liz, c_land * (9.5 if use_bulk else 8.2), c_land)
+            scr = mask_screamer_hostile.flat[a] | mask_screamer_hostile.flat[b]
+            c_land = np.where(scr, c_land * (8.5 if use_bulk else 7.5), c_land)
 
-            # Altitude hypoxia & airless rim block (>7,500 m impassable overland)
+            # Altitude hypoxia, cold/airless N Rift Rim barrier (Tallwalls-Erehwon impassable), & S Rift Rim unescorted block
             emax = np.maximum(ea, eb)
             high = emax > 4200.0
             c_land = np.where(high, c_land * (1.0 + ((np.maximum(emax, 4200.0) - 4200.0) / 1700.0) ** 2), c_land)
-            impass = (emax > 7500.0) | mask_valley.flat[a] | mask_valley.flat[b] | (wa & wb)
+            rift_bar = (
+                mask_north_rift_barrier.flat[a] | mask_north_rift_barrier.flat[b]
+                | mask_south_rift_barrier.flat[a] | mask_south_rift_barrier.flat[b]
+            )
+            impass = (emax > 7500.0) | mask_valley.flat[a] | mask_valley.flat[b] | rift_bar | (wa & wb)
             # Narrow 1-cell river/strait bridges allowed on land at high bridge cost; open water blocked on Layer 0
             one_w = wa ^ wb
             c_land = np.where(one_w & (~is_riv), c_land * 4.5, c_land)
@@ -891,9 +926,11 @@ def build_multimodal_graphs(world, setts):
 
         # Engineered tunnels, lifts & pass corridors on Layer 0
         for _, x0, y0, x1, y1, _, b_eq, c_eq in SPECIAL_CORRIDORS:
+            eq = b_eq if use_bulk else c_eq
+            if not np.isfinite(eq):
+                continue
             u = cell_of(*snap_to_land(world, x0, y0))
             v = cell_of(*snap_to_land(world, x1, y1))
-            eq = b_eq if use_bulk else c_eq
             rows += [np.array([u, v])]
             cols += [np.array([v, u])]
             costs += [np.array([eq, eq], dtype=np.float64)]
@@ -921,6 +958,7 @@ def build_multimodal_graphs(world, setts):
         "is_ring_sea": is_ring_sea, "river_nav": river_nav, "canal_nav": canal_nav,
         "road_mult": road_mult, "special_corridors": SPECIAL_CORRIDORS,
         "mask_lizard_hostile": mask_lizard_hostile, "mask_lizard_poly": mask_lizard_poly,
+        "mask_screamer_hostile": mask_screamer_hostile, "mask_screamer_poly": mask_screamer_poly,
     }
 
 
@@ -966,6 +1004,7 @@ def analyze_pair_path(world, graph, setts, i_src, j_dst, tier):
     sea_km = riv_km = hwy_km = trail_km = spec_km = 0.0
     ring_sea_km = 0.0
     lizard_km = 0.0
+    screamer_km = 0.0
     min_pirate_dist_km = 9999.0
     noa_i, noa_j = 896 * su, 866 * sv
 
@@ -1013,6 +1052,8 @@ def analyze_pair_path(world, graph, setts, i_src, j_dst, tier):
         else:
             if graph["mask_lizard_hostile"][aj, ai] or graph["mask_lizard_hostile"][bj, bi]:
                 lizard_km += step_km
+            if graph["mask_screamer_hostile"][aj, ai] or graph["mask_screamer_hostile"][bj, bi]:
+                screamer_km += step_km
             if (graph["river_nav"][aj, ai] and graph["river_nav"][bj, bi]) or (
                 graph["canal_nav"][aj, ai] and graph["canal_nav"][bj, bi]
             ):
@@ -1063,6 +1104,7 @@ def analyze_pair_path(world, graph, setts, i_src, j_dst, tier):
         "caravan_km": round(trail_km),
         "corridor_km": round(spec_km),
         "lizard_km": round(lizard_km),
+        "screamer_km": round(screamer_km),
         "ports": ports_used,
         "corridors": corridors_used,
         "gateways": gateways_hit,
@@ -1124,8 +1166,8 @@ def solve_trade(world, setts, graph):
         pol_deficit_map = {}
 
         for pol, members in pol_members.items():
-            if pol in ("Ring Sea Pirates", "Lizardmen"):
-                continue  # Pirates fence captured cargo in Pass 2; Lizardmen trade strictly internally (LORE.md s6.20)!
+            if pol in ("Ring Sea Pirates", "Lizardmen", "Screamer Country"):
+                continue  # Pirates fence prizes in Pass 2; Lizardmen & Screamers never trade externally (raid caravans)!
             tot_s = sum(setts[m]["supply"].get(gid, 0.0) for m in members)
             tot_d = sum(setts[m]["demand"].get(gid, 0.0) for m in members)
             if tot_s > tot_d + 1e-6:
@@ -1193,6 +1235,11 @@ def solve_trade(world, setts, graph):
                             w_row.append(0.0)
                             continue
                     w = s_avail / ((eff_km + 45.0) ** alpha)
+                    # Once-a-year Annual Great Caravan (Nulab <-> Erehwon South Rim):
+                    # bulk is already blocked (inf); medium cargo faces heavy annual-convoy capacity friction!
+                    _, pinfo_chk = get_pair(s_sid, b_sid, tier)
+                    if pinfo_chk and any("Annual Great Caravan" in c for c in pinfo_chk["corridors"]):
+                        w *= (0.14 if tier == "medium" else 0.55)
                     w_row.append(w)
                 buyer_weights.append((b_sid, b_need, w_row))
 
@@ -1320,6 +1367,8 @@ def solve_trade(world, setts, graph):
                     via_parts.append("via " + " -> ".join(mids[:3]))
             if pinfo.get("lizard_km", 0) > 20:
                 via_parts.append(f"HAZARDOUS RIFT ({pinfo['lizard_km']} km)")
+            if pinfo.get("screamer_km", 0) > 12:
+                via_parts.append(f"SCREAMER RAID ZONE ({pinfo['screamer_km']} km)")
             if is_pirate:
                 via_parts.insert(0, "PIRATE PRIZE FENCE")
 
@@ -1414,6 +1463,13 @@ def render_trade_map(world, setts, graph, results, out_jpg):
     rgb[liz_2, 2] = rgb[liz_2, 2] * 0.72 + 12.0
     rgb[hatch] = [195.0, 48.0, 48.0]
 
+    scr_2 = graph["mask_screamer_poly"][gj, gi] & (~W2)
+    hatch_sc = scr_2 & (((xx_2 - yy_2) % 9) <= 2)
+    rgb[scr_2, 0] = rgb[scr_2, 0] * 0.76 + 46.0
+    rgb[scr_2, 1] = rgb[scr_2, 1] * 0.70 + 10.0
+    rgb[scr_2, 2] = rgb[scr_2, 2] * 0.76 + 38.0
+    rgb[hatch_sc] = [205.0, 56.0, 138.0]
+
     base_img = Image.fromarray(np.clip(rgb, 0, 255).astype(np.uint8), mode="RGB").convert("RGBA")
     overlay = Image.new("RGBA", (OW, OH), (0, 0, 0, 0))
     draw = ImageDraw.Draw(overlay)
@@ -1473,9 +1529,11 @@ def render_trade_map(world, setts, graph, results, out_jpg):
             tcol = (255, 130, 130) if nm == "Noa's Regret" else (248, 246, 236)
             d2.text((x, y), nm, fill=tcol, font=font)
 
-    # Label Hostile Lizardman Rift Zone
+    # Label Hostile Lizardman Rift & Screamer Country Raider Zones
     d2.text((641, 1529), "LIZARDMAN RIFT (Autarkic — Hostile to Caravans)", fill=(12, 12, 16), font=font_b)
     d2.text((640, 1528), "LIZARDMAN RIFT (Autarkic — Hostile to Caravans)", fill=(255, 138, 138), font=font_b)
+    d2.text((739, 603), "SCREAMER COUNTRY (Raiders — No Trade)", fill=(12, 12, 16), font=font_b)
+    d2.text((738, 602), "SCREAMER COUNTRY (Raiders — No Trade)", fill=(255, 145, 210), font=font_b)
 
     # Legend box (bottom-left)
     lx, ly = 28, OH - 210
@@ -1486,9 +1544,9 @@ def render_trade_map(world, setts, graph, results, out_jpg):
         ((52, 235, 178), "Navigable Rivers, Lakes & Eternian Canals"),
         ((255, 210, 72), "Kept Ancient 30 m Highways"),
         ((255, 148, 66), "Overland Caravan Trunks (Camels / Lizards / Ostriches)"),
-        ((255, 92, 140), "Tunnels, Cliff Lifts, Lava Tubes & Thin-Air Passes"),
+        ((255, 92, 140), "Tunnels, Cliff Lifts, Lava Tubes & Annual Great Caravan"),
         ((240, 60, 60), "Noa's Regret Pirate Prize Fence Lanes"),
-        ((195, 48, 48), "Hostile Lizardman Territory (No External Trade; Raided)"),
+        ((195, 48, 92), "Hostile Raider Zones: Lizardman Rift & Screamer Country"),
     ]
     for idx_l, (c_rgb, lbl_txt) in enumerate(legend_rows):
         ry = ly + 38 + idx_l * 20
@@ -1511,7 +1569,9 @@ def write_trade_markdown(payload, out_md):
         f"> **Model Summary**: **{payload['good_count']} trade goods** (including `zinc` / brass spelter) solved across "
         f"**{payload['polity_count']} polities & maritime poleis** (`{payload['settlement_count']}` settlements & gateways) over a "
         "**two-layer 4 km Dijkstra multimodal graph** backed by the rebaked 5.1 geology.",
-        "> - **Lizardman Autarky & Hostile Rift Rule (`LORE.md §6.20`)**: `Lizardmen` (`Sauropolis`, `Komodo`, `Gila`, `Tuatara`) trade strictly internally to meet domestic needs (`0` external exports, `0` external imports, `0` external ship/barge port calls), and caravans entering the West–East Rift face severe ambush penalties (`8.2x–9.5x`), pushing Ring Sea ↔ Xanadu trade onto **The Catch / Twins / White Gills** corridor.",
+        "> - **Lizardman & Screamer Raider Exclusion (`LORE.md`)**: Both `Lizardmen` (`Sauropolis`, `Komodo`, `Gila`, `Tuatara`) and `Screamer Country` (`Hexahedron`) have **`0` external exports, `0` external imports, and `0` external port calls**. Caravans entering the Lizardman Rift (`8.2x–9.5x`) or Screamer Country (`7.5x–8.5x`) face severe ambush/raid hazards.",
+        "> - **Rift Rim & Xanadu Access Rules**: `Tallwalls ↔ Erehwon` across the freezing/airless Northern Rift Rim is **impassable**; Ring Sea ↔ `Xanadu` trade routes cleanly via **The Catch → The Twins / White Gills → Strongbow → Theodiga → Erehwon**; and `Nulab ↔ Erehwon` operates exclusively as a once-a-year armed **Annual Great Caravan** along the Southern Rift Rim (bulk staples/fuels/stone barred; compact high-value goods only).",
+        "> - **Spider Lake SW Spillway**: `Spider Lake Weirs` drains exclusively SW across its secondary-crater breach into `9102` (`Hām-Tsēk / Arachnoid River`) past `Ham-Tsek Silk Post`.",
         "",
         "## 1. Top Maritime Port & Overland Chokepoint Entrepôts",
         "",
@@ -1551,6 +1611,9 @@ def write_trade_markdown(payload, out_md):
         if pol.get("trade_regime") == "internal_autarky_hostile":
             exp_str = "*(0 — internal Rift trade only; hostile to humans)*"
             imp_str = "*(0 — internal Rift trade only; raids Rift caravans)*"
+        elif pol.get("trade_regime") == "raider_autarky_hostile":
+            exp_str = "*(0 — Screamer raiders do not trade; raid for supplies & captives)*"
+            imp_str = "*(0 — Screamer raiders do not trade; hazard to passing caravans)*"
         else:
             exp_str = ", ".join(f"`{x['good']}` ({x['amount']} {x['unit']})" for x in pol["top_exports"][:5]) or "*(minimal)*"
             imp_str = ", ".join(f"`{x['good']}` ({x['amount']} {x['unit']})" for x in pol["top_imports"][:5]) or "*(minimal)*"
@@ -1635,6 +1698,9 @@ def main(argv=None):
         if pol == "Lizardmen":
             entry["trade_regime"] = "internal_autarky_hostile"
             entry["note"] = "Trades strictly internally among Sauropolis, Komodo, Gila, and Tuatara; hostile to humans — zero external trade and Rift caravans face severe raid risk."
+        elif pol == "Screamer Country":
+            entry["trade_regime"] = "raider_autarky_hostile"
+            entry["note"] = "Screamer raiders (Hexahedron) do not trade externally — raid passing caravans and neighboring marches for supplies and captives; zero external exports or imports."
         pol_summary[pol] = entry
 
     entrepots = []

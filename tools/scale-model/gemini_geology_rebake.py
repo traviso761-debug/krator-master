@@ -1043,7 +1043,10 @@ def main(argv):
     wall |= named(('farside',)) & (d_nwwall <= 90.0) & (relief > 700.0)
 
     # Radial Secondary Ejecta Craters punched into the exterior / Tharn continental margins:
-    #   1) Spider Lake Secondary Ejecta Crater (center 1295,212; 176x124 km radial ellipse, rim collar = impact, floor = carbonate window!)
+    #   1) Spider Lake Secondary Ejecta Crater (center 1295,212; 176x124 km radial ellipse):
+    #      - Asymmetric downrange NW/N/NNE boulder-ejecta rampart seals off the Ria headwaters (`9101`/`9109`),
+    #      - Lower uprange SW rim is breached by the single spillway gorge (`1258..1282 x 188..218`) draining SW into
+    #        `9102` (`Hām-Tsēk / Arachnoid River`), while the crater floor exposes the Neo-Ozarks `carbonate` window!
     ang_sl = math.radians(-28.0)
     dx_sl = (px_f - 1295.0) * 2.0
     dy_sl = (py_f - 212.0) * 2.0
@@ -1051,7 +1054,13 @@ def main(argv):
         (dx_sl * math.cos(ang_sl) + dy_sl * math.sin(ang_sl)) / 88.0,
         (-dx_sl * math.sin(ang_sl) + dy_sl * math.cos(ang_sl)) / 62.0,
     )
-    spider_rim = land & (rho_sl >= 0.80) & (rho_sl <= 1.26) & (E >= 1580.0)
+    sw_arachnoid_breach = (px_f >= 1254.0) & (px_f <= 1284.0) & (py_f >= 186.0) & (py_f <= 222.0)
+    nw_downrange_collar = (py_f <= 198.0) & (px_f <= 1375.0)
+    spider_rim = (
+        land & (rho_sl >= 0.80) & (rho_sl <= 1.26)
+        & ((E >= 1580.0) | nw_downrange_collar)
+        & (~sw_arachnoid_breach)
+    )
     #   2) Unmarked SE Tharn-Continent Ice-Filled Secondary Ejecta Crater (center 1375,1525; D ~ 108 km)
     d_se_ej = np.hypot(px_f - 1375.0, py_f - 1525.0) * 2.0
     se_ejecta_crater = land & (d_se_ej <= 54.0)
