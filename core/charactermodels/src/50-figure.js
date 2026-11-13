@@ -1235,7 +1235,7 @@ function KCharFigure(body, sliders, load){
      trigger, wide): their local rotation becomes the rest one times the curl, every frame after the clip (a clip's own
      finger motion gives way to the grip). With both, the left hand takes hold of the right's prop too (twoHands); a
      prop with a string (the bow) gets it drawn live, and an arrow while the right hand draws it (bowString) */
-  var held = { R:null, L:null, R2:null, L2:null, both:false }, holders = {}, hangs = {}, propCache = {}, curlQ = new THREE.Quaternion();
+  var held = { R:null, L:null, R2:null, L2:null, both:false }, holders = {}, sheaths = {}, hangs = {}, propCache = {}, curlQ = new THREE.Quaternion();
   // every hand the skeleton has a grip for: R and L, and a giant's lower pair R2 and L2 (hidden with its arms)
   var HANDS = ['R', 'L', 'R2', 'L2'].filter(function(sd){ return skel.hands && skel.hands[sd]; });
   function prop(id){ return (id && KCharFigure.props[id]) || {}; }
@@ -1247,6 +1247,24 @@ function KCharFigure(body, sliders, load){
       holders[side] = g;
     }
     return holders[side];
+  }
+  function sheathHolder(hipSide, isQuiver){
+    var key = hipSide + (isQuiver ? '_q' : '');
+    if(!sheaths[key] && byName.Hips !== undefined){
+      var g = new THREE.Group(), leftHip = hipSide === 'L';
+      // Hips local space: +X is left hip, -X is right hip, +Y is up, +Z is forward
+      g.position.set(leftHip ? 0.205 : -0.215, isQuiver ? -0.02 : -0.035, isQuiver ? 0.02 : 0.045);
+      g.rotation.set(isQuiver ? -0.55 : -0.92, 0, leftHip ? 0.16 : -0.16);
+      bones[byName.Hips].add(g);
+      sheaths[key] = g;
+    }
+    return sheaths[key];
+  }
+  function clearSheaths(){
+    Object.keys(sheaths).forEach(function(k){
+      var g = sheaths[k];
+      while(g && g.children.length) g.remove(g.children[0]);
+    });
   }
   function propScene(id){
     if(!propCache[id]) propCache[id] = load('props/' + id).then(function(gl){ return gl.scene; });
@@ -1264,12 +1282,13 @@ function KCharFigure(body, sliders, load){
       if(side === 'L') bow = null;
       delete hangs[side];
       if(!id) return null;
+      var p = prop(id);
+      if(p.kind === 'sheath') return null;
       return propScene(id).then(function(scene){
         if(held[side] !== id) return;
         var m = scene.clone(true);
         m.traverse(function(o){ if(o.isMesh){ o.castShadow = true; o.frustumCulled = false; } });
         g.add(m);
-        var p = prop(id);
         // a prop that hangs (a bucket, a lantern) or stands level (a bowl) turns on a pivot at the grip (hang())
         if(p.hang && side.length === 1){
           var pv = new THREE.Group(); g.remove(m); pv.add(m); g.add(pv);
@@ -1281,9 +1300,31 @@ function KCharFigure(body, sliders, load){
         else if(side === 'R' && p.low_turn) m.rotation.y = Math.PI;
         if(side === 'L' && p.string) return makeBow(g, p);
       });
-    }));
+    })).then(function(){
+      clearSheaths();
+      var sheathJobs = [];
+      ['R', 'L'].forEach(function(side){
+        var id = held[side], p = id && prop(id);
+        if(!p) return;
+        var sId = p.sheath || (p.kind === 'sheath' ? id : null);
+        if(!sId || !KCharFigure.props[sId]) return;
+        var isQuiver = p.kind === 'bow';
+        // Right-hand weapons wear their sheath on the left hip ('L'); left-hand melee weapons or bows wear it on the right hip ('R')
+        var hipSide = (side === 'R' && !isQuiver) ? 'L' : 'R';
+        var sg = sheathHolder(hipSide, isQuiver);
+        if(!sg) return;
+        sheathJobs.push(propScene(sId).then(function(scene){
+          if(held[side] !== id) return;
+          var sm = scene.clone(true);
+          sm.traverse(function(o){ if(o.isMesh){ o.castShadow = true; o.frustumCulled = false; } });
+          sg.add(sm);
+        }));
+      });
+      return Promise.all(sheathJobs);
+    });
   };
   this.held = held;
+  this.sheaths = sheaths;
   // the playing clip's data/clips.json entry (KCharFigure.clipData, the page fills it) and its time
   function clipNow(){ var a = self.action; return a ? { info:KCharFigure.clipData[a.getClip().name] || {}, t:a.time, dur:a.getClip().duration } : null; }
   function grip(){

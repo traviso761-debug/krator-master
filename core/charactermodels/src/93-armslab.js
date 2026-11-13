@@ -12,13 +12,24 @@
     return new Response(new Blob([u]).stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();
   }
   var raws = {}, cache = {}, texts = {};
+  function fetchRel(rel){
+    return fetch(rel).then(function(r){
+      if(!r.ok) throw new Error(rel + ': ' + r.status);
+      return r;
+    }).catch(function(){
+      return fetch('http://127.0.0.1:8123/' + rel).then(function(r){
+        if(!r.ok) throw new Error(rel + ': ' + r.status);
+        return r;
+      });
+    });
+  }
   function fetchText(key){
     var base = key.replace(/\.morph$/, ''), line = base === key ? 0 : 1;
-    if(!texts[base]) texts[base] = fetch('pieces/' + base + '.txt').then(function(r){ if(!r.ok) throw new Error(base + ': ' + r.status); return r.text(); });
+    if(!texts[base]) texts[base] = fetchRel('pieces/' + base + '.txt').then(function(r){ return r.text(); });
     return texts[base].then(function(t){
       var s = t.split('\n')[line];
       if(s) return gunzip(b64(s));
-      return fetch('pieces/' + key + '.txt').then(function(r){ if(!r.ok) throw new Error(key + ': ' + r.status); return r.text(); }).then(b64).then(gunzip);
+      return fetchRel('pieces/' + key + '.txt').then(function(r){ return r.text(); }).then(b64).then(gunzip);
     });
   }
   function fetchPiece(key){
@@ -48,7 +59,15 @@
 
   /* ---- thumbnail atlas (dist/thumbs/props.json + props.png) ---- */
   var thumbAtlas = null;
-  fetch('thumbs/props.json').then(function(r){ return r.ok ? r.json() : null; }).then(function(j){
+  fetch('thumbs/props.json').then(function(r){
+    if(!r.ok) throw new Error(r.status);
+    return r.json();
+  }).catch(function(){
+    return fetch('http://127.0.0.1:8123/thumbs/props.json').then(function(r){
+      if(!r.ok) throw new Error(r.status);
+      return r.json().then(function(j){ j._base = 'http://127.0.0.1:8123/'; return j; });
+    });
+  }).then(function(j){
     thumbAtlas = j;
     refreshThumbStyles();
   }).catch(function(){});
@@ -59,16 +78,17 @@
       el.style.backgroundImage = 'none';
       return;
     }
+    var base = (thumbAtlas && thumbAtlas._base) || '';
     if(thumbAtlas && thumbAtlas.keys && thumbAtlas.keys[pid] !== undefined){
       var idx = thumbAtlas.keys[pid], cols = thumbAtlas.cols || 16, rows = thumbAtlas.rows || 1;
       var cx = idx % cols, cy = Math.floor(idx / cols);
-      el.style.backgroundImage = 'url("thumbs/props.png?v=' + (thumbAtlas.v || '1') + '")';
+      el.style.backgroundImage = 'url("' + base + 'thumbs/props.png?v=' + (thumbAtlas.v || '1') + '")';
       el.style.backgroundSize = (cols * 100) + '% ' + (rows * 100) + '%';
       var px = cols > 1 ? (cx / (cols - 1) * 100) : 0;
       var py = rows > 1 ? (cy / (rows - 1) * 100) : 0;
       el.style.backgroundPosition = px.toFixed(3) + '% ' + py.toFixed(3) + '%';
     } else {
-      el.style.backgroundImage = 'url("thumbs/props/' + pid + '.png")';
+      el.style.backgroundImage = 'url("' + base + 'thumbs/props/' + pid + '.png")';
       el.style.backgroundSize = 'contain';
       el.style.backgroundPosition = 'center';
     }
@@ -213,8 +233,8 @@
   var renderer, scene, camera, clock = new THREE.Clock(), fig = null, currentBody = 'mpfb_male';
   var cam = { yaw:0.28, pitch:0.12, dist:3.3, x:0, ty:0.95, want:{ yaw:0.28, pitch:0.12, dist:3.3, x:0, ty:0.95 } };
   var currentClip = 'combat_idle', paused = false, speed = 1, scrubbing = false;
-  var held = { R:'voth_orn_w1_sword', L:'voth_orn_s1_shield', both:false };
-  var inspectedId = 'voth_orn_w1_sword', inspectedSide = 'R';
+  var held = { R:'voth_orn_w1_scimitar', L:'voth_orn_s1_shield', both:false };
+  var inspectedId = 'voth_orn_w1_scimitar', inspectedSide = 'R';
 
   function spawnFigure(bodyId){
     if(!D.bodies[bodyId]) bodyId = Object.keys(D.bodies)[0];
@@ -335,13 +355,15 @@
     ['R', 'L'].forEach(function(side){
       var pid = held[side], p = pid && PROP[pid];
       $('name-' + side).textContent = p ? p.label : 'Empty';
-      $('kind-' + side).textContent = p ? ((p.culture_label || p.people || '') + ' · ' + (p.kind || p.hand)) : '—';
+      var kindTxt = p ? ((p.culture_label || p.people || '') + ' · ' + (p.kind || p.hand) + (p.sheath ? ' + sheath' : '')) : '—';
+      $('kind-' + side).textContent = kindTxt;
       applyThumbStyle($('thumb-' + side), pid);
       $('slot-' + side).classList.toggle('inspecting', inspectedSide === side);
     });
     $('two-hands').checked = !!held.both;
-    var rLabel = held.R && PROP[held.R] ? PROP[held.R].label : 'Unarmed';
-    var lLabel = held.L && PROP[held.L] ? PROP[held.L].label : '';
+    var rP = held.R && PROP[held.R], lP = held.L && PROP[held.L];
+    var rLabel = rP ? (rP.label + (rP.sheath ? ' (+Sheath)' : '')) : 'Unarmed';
+    var lLabel = lP ? (lP.label + (lP.sheath ? ' (+Sheath)' : '')) : '';
     $('now-equipped').textContent = rLabel + (lLabel ? ' + ' + lLabel : '');
     updateCardHighlights();
   }
@@ -438,6 +460,27 @@
   function equipProp(pid, forceSide){
     var p = PROP[pid];
     if(!p) return;
+    // If clicking a sheath card directly, equip its paired weapon so the weapon is held and the sheath is worn on the hip,
+    // while selecting the sheath itself in the Item Review box!
+    if(p.kind === 'sheath' && p.for_weapon && PROP[p.for_weapon]){
+      var wp = PROP[p.for_weapon];
+      var wSide = (wp.hand === 'L' || wp.kind === 'bow') ? 'L' : 'R';
+      held[wSide] = wp.id;
+      if(wSide === 'L' && wp.kind === 'bow' && held.R && held.R !== 'arrow') held.R = null;
+      selectForReview(pid, wSide);
+      if($('auto-outfit').checked && p.people && PEOPLE_OUTFIT_MAP[p.people]){
+        var targetPeople0 = PEOPLE_OUTFIT_MAP[p.people];
+        if($('outfit-culture').value !== targetPeople0){
+          $('named-pick').value = '';
+          $('outfit-culture').value = targetPeople0;
+          populateOutfitTiers(targetPeople0, '2');
+          refreshOutfit();
+        }
+      }
+      var nextClip0 = $('auto-clip').checked ? bestCombatClipFor(held.R, held.L) : currentClip;
+      applyHoldAndPlay(nextClip0);
+      return;
+    }
     var mode = forceSide || $('target-hand').value;
     var side = mode === 'R' ? 'R' : mode === 'L' ? 'L' : (p.hand === 'L' || p.kind === 'shield' || p.kind === 'bow' ? 'L' : 'R');
     held[side] = pid;
@@ -531,7 +574,7 @@
     if(p.id === 'arrow') return false;
     if(activeCulture !== 'all' && (p.people || 'general') !== activeCulture) return false;
     var kf = $('kind-filter').value;
-    if(kf === 'weapons' && p.kind === 'shield') return false;
+    if(kf === 'weapons' && (p.kind === 'shield' || p.kind === 'sheath')) return false;
     else if(kf === 'bow' && p.kind !== 'bow' && p.kind !== 'crossbow' && p.kind !== 'sling') return false;
     else if(kf === 'rifle' && p.kind !== 'rifle' && p.kind !== 'pistol') return false;
     else if(kf !== 'all' && kf !== 'weapons' && kf !== 'bow' && kf !== 'rifle' && p.kind !== kf) return false;
@@ -585,9 +628,10 @@
       var sec = document.createElement('div');
       sec.className = 'culture-section';
       var h3 = document.createElement('h3');
-      var wCount = g.items.filter(function(x){ return x.kind !== 'shield'; }).length;
+      var wCount = g.items.filter(function(x){ return x.kind !== 'shield' && x.kind !== 'sheath'; }).length;
+      var shCount = g.items.filter(function(x){ return x.kind === 'sheath'; }).length;
       var sCount = g.items.filter(function(x){ return x.kind === 'shield'; }).length;
-      h3.innerHTML = '<span>' + g.title + '</span><small>' + wCount + ' arms · ' + sCount + ' shields</small>';
+      h3.innerHTML = '<span>' + g.title + '</span><small>' + wCount + ' arms' + (shCount ? ' · ' + shCount + ' sheaths' : '') + ' · ' + sCount + ' shields</small>';
       sec.appendChild(h3);
 
       var grid = document.createElement('div');
@@ -596,7 +640,7 @@
         var card = document.createElement('div');
         card.className = 'arm-card';
         card.setAttribute('data-pid', p.id);
-        card.title = p.label + ' (' + p.id + ')\nLeft-click: Equip · Right-click: Equip in opposite hand';
+        card.title = p.label + ' (' + p.id + ')' + (p.sheath ? '\nIncludes Hip Sheath: ' + p.sheath : '') + '\nLeft-click: Equip · Right-click: Equip in opposite hand';
 
         var badges = document.createElement('div');
         badges.className = 'arm-badges';
@@ -615,7 +659,9 @@
 
         var meta = document.createElement('div');
         meta.className = 'arm-meta';
-        meta.innerHTML = '<span>' + (p.kind || 'prop') + '</span><span>' + p.hand + '</span>';
+        var kLabel = (p.kind || 'prop') + (p.sheath ? '+sheath' : '');
+        var hLabel = p.kind === 'sheath' ? 'HIP' : p.hand;
+        meta.innerHTML = '<span>' + kLabel + '</span><span>' + hLabel + '</span>';
         card.appendChild(meta);
 
         card.addEventListener('click', function(e){
@@ -646,15 +692,20 @@
     if(!badges) return;
     badges.innerHTML = '';
     var leftSpan = document.createElement('span');
+    var rSheath = held.R && PROP[held.R] && PROP[held.R].sheath;
+    var lSheath = held.L && PROP[held.L] && PROP[held.L].sheath;
     if(held.R === pid && held.L === pid){
       leftSpan.className = 'badge eq-r';
       leftSpan.textContent = 'R+L';
     } else if(held.R === pid){
       leftSpan.className = 'badge eq-r';
-      leftSpan.textContent = 'R';
+      leftSpan.textContent = rSheath ? 'R+HIP' : 'R';
     } else if(held.L === pid){
       leftSpan.className = 'badge eq-l';
-      leftSpan.textContent = 'L';
+      leftSpan.textContent = lSheath ? 'L+HIP' : 'L';
+    } else if(rSheath === pid || lSheath === pid){
+      leftSpan.className = 'badge eq-l';
+      leftSpan.textContent = 'HIP';
     }
     badges.appendChild(leftSpan);
 

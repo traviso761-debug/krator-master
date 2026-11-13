@@ -294,13 +294,16 @@ def extract_shield_for_row(fname, row, P, N, UV, T, rmask):
     return Pf, Nf, UVf, Tf
 
 
-def extract_5_weapons(fname, P, N, UV, T):
+def extract_weapons_and_sheaths(fname, P, N, UV, T, w_specs):
     splits = find_row_splits(P, T)
     if fname == 'voth - ornate.glb':
         splits[3] = 0.11
     tc_all = P[T].mean(axis=1)
     w_mask = tc_all[:, 0] < 0.02
+    drum_sheath_mesh = None
     if fname == 'drum.glb':
+        s_mask = w_mask & (tc_all[:, 1] > 0.74) & (tc_all[:, 1] < 0.842)
+        drum_sheath_mesh = submesh(P, N, UV, T, s_mask)
         w_mask = w_mask & ~((tc_all[:, 1] > 0.74) & (tc_all[:, 1] < 0.842))
 
     Pw, Nw, UVw, Tw = submesh(P, N, UV, T, w_mask)
@@ -329,25 +332,38 @@ def extract_5_weapons(fname, P, N, UV, T):
         rows[r_idx].append((cy, cx, len(idx), dx, dy, idx))
 
     out_weapons = []
+    out_sheaths = []
     for r_idx in range(5):
         cand = rows[r_idx]
         cand.sort(key=lambda x: -x[0])
-        if fname == 'republic.glb' and r_idx in (1, 2):
-            cand.sort(key=lambda x: -x[2])
-            best_cy = cand[0][0]
-        elif fname == 'voth - ornate.glb' and r_idx == 3:
-            cand.sort(key=lambda x: -x[2])
-            best_cy = cand[0][0]
-        else:
-            major = [c for c in cand if (c[3] >= 0.18 and c[2] >= 350) or fname == 'tungang.glb']
-            if not major:
-                major = [c for c in cand if c[3] >= 0.18]
-            best_cy = major[0][0] if major else cand[0][0]
+        has_sheath = len(w_specs[r_idx]) >= 4 and bool(w_specs[r_idx][3])
+        major = [c for c in cand if (c[3] >= 0.18 and c[2] >= 160) or fname == 'tungang.glb']
+        if not major:
+            major = [c for c in cand if c[3] >= 0.18]
+        best_cy = major[0][0] if major else cand[0][0]
         chosen_idx = np.concatenate([c[5] for c in cand if abs(c[0] - best_cy) < 0.028])
         tmask = np.zeros(len(Tw), dtype=bool)
         tmask[chosen_idx] = True
         out_weapons.append(submesh(Pw, Nw, UVw, Tw, tmask))
-    return out_weapons
+
+        if has_sheath:
+            if fname == 'drum.glb' and r_idx == 0 and drum_sheath_mesh is not None:
+                out_sheaths.append(drum_sheath_mesh)
+            else:
+                rem = [c for c in cand if c[0] < best_cy - 0.032 and c[2] >= 160]
+                if not rem:
+                    rem = [c for c in cand if c[0] < best_cy - 0.032]
+                if rem:
+                    s_cy = rem[0][0]
+                    s_idx = np.concatenate([c[5] for c in cand if abs(c[0] - s_cy) < 0.028])
+                    smask = np.zeros(len(Tw), dtype=bool)
+                    smask[s_idx] = True
+                    out_sheaths.append(submesh(Pw, Nw, UVw, Tw, smask))
+                else:
+                    out_sheaths.append(None)
+        else:
+            out_sheaths.append(None)
+    return out_weapons, out_sheaths
 
 
 def profile(P):
@@ -491,6 +507,19 @@ def orient_and_place(P, N, UV, T, kind, length, is_spliced_shield=False):
         gx, gz = axis_at(P, 0.0, half=0.08)
         grip = np.array([gx, 0.0, gz])
         P -= grip
+        return P, N, UV, T, None, None
+
+    if kind == 'sheath':
+        # Longest axis -> Y (+Y = mouth/throat of sheath, -Y = chape/tip), mid -> Z (width/rings), thin -> X (flat)
+        prof, _ = profile(P)
+        n_half = max(1, len(prof) // 2)
+        if prof[:n_half].mean() > prof[-n_half:].mean():
+            P = P @ FLIP.T; N = N @ FLIP.T
+        ylo, yhi = P[:, 1].min(), P[:, 1].max()
+        L = yhi - ylo
+        susp_y = ylo + 0.72 * L
+        gx, gz = axis_at(P, susp_y)
+        P -= np.array([gx, susp_y, gz])
         return P, N, UV, T, None, None
 
     prof, yc = profile(P)
@@ -788,164 +817,173 @@ def render_existing_prop_thumb(glb_path, out_png, kind='sword'):
 
 
 # 21 Two-Column Tripo Culture Sheets specification:
-# (filename, id_prefix, people, culture_label, subset, [(w_kind, w_len, w_label), ...], [s_label_1..5])
+# (filename, id_prefix, people, culture_label, subset, [(w_kind, w_len, w_label, has_sheath), ...], [s_label_1..5])
 TRIPO_SHEETS = [
     ('voth - ornate.glb', 'voth_orn', 'chichani', 'Chichani (Voth)', 'Voth Ornate', [
-        ('sword', 1.00, 'Voth Ornate Macuahuitl'),
-        ('dagger', 0.48, 'Voth Ornate Obsidian Dagger'),
-        ('axe', 1.15, 'Voth Ornate Sun-Crest Halberd'),
-        ('mace', 0.92, 'Voth Ornate Feathered Club'),
-        ('spear', 1.85, 'Voth Ornate Serpent Spear'),
+        ('scimitar', 1.00, 'Voth Ornate Curved Macuahuitl', True),
+        ('sword', 0.98, 'Voth Ornate Obsidian Broadsword', True),
+        ('mace', 1.05, 'Voth Ornate Sun-Crest Scepter Mace', False),
+        ('bow', 1.40, 'Voth Ornate Feathered War Bow', True),
+        ('spear', 1.85, 'Voth Ornate Serpent Spear', False),
     ], ['Voth Ornate Sun-Disc Shield', 'Voth Ornate Step-Fret Shield', 'Voth Ornate Feathered Chimalli', 'Voth Ornate Jaguar Buckler', 'Voth Ornate Turquoise Shield']),
     ('drum.glb', 'voth_drum', 'chichani', 'Chichani (Voth)', 'Voth Drum', [
-        ('sword', 0.95, 'Voth Drum-Hilt Sword'),
-        ('dagger', 0.45, 'Voth Drum-Pommel Dagger'),
-        ('mace', 0.85, 'Voth Drum-Head War Club'),
-        ('axe', 0.95, 'Voth Drum-Crest Battle Axe'),
-        ('spear', 1.85, 'Voth Drum-Banner Spear'),
+        ('sword', 0.96, 'Voth Drum-Hilt Sword', True),
+        ('scimitar', 0.95, 'Voth Drum Curved War-Blade', False),
+        ('axe', 0.95, 'Voth Drum-Crest Battle Axe', False),
+        ('mace', 0.88, 'Voth Drum-Head War Club', False),
+        ('spear', 1.85, 'Voth Drum-Banner Spear', False),
     ], ['Voth Drum Hide Shield I', 'Voth Drum Hide Shield II', 'Voth Drum Resonator Shield', 'Voth Drum Ceremonial Shield', 'Voth Drum Tower Shield']),
     ('torus.glb', 'voth_torus', 'chichani', 'Chichani (Voth)', 'Voth Torus', [
-        ('sword', 1.00, 'Voth Torus Ring-Broadsword'),
-        ('dagger', 0.45, 'Voth Torus Ring-Hilt Dagger'),
-        ('mace', 0.90, 'Voth Torus Disc Mace'),
-        ('axe', 0.95, 'Voth Torus Crescent Axe'),
-        ('spear', 1.85, 'Voth Torus Ring-Head Spear'),
+        ('sword', 1.00, 'Voth Torus Ring-Broadsword', True),
+        ('scimitar', 0.95, 'Voth Torus Curved Ring-Saber', False),
+        ('axe', 0.95, 'Voth Torus Crescent Axe', False),
+        ('mace', 0.90, 'Voth Torus Disc Mace', False),
+        ('spear', 1.85, 'Voth Torus Ring-Head Spear', False),
     ], ['Voth Torus Ring Buckler', 'Voth Torus Annular Shield', 'Voth Torus Sun-Wheel Shield', 'Voth Torus Jade-Ring Shield', 'Voth Torus Eclipse Oval Shield']),
     ('andaru.glb', 'and1', 'andaru', 'Andaru', 'Andaru Set 1', [
-        ('scimitar', 0.95, 'Andaru Curved Shamshir'),
-        ('dagger', 0.45, 'Andaru Jambiya Dagger'),
-        ('mace', 0.85, 'Andaru Flanged Mace'),
-        ('axe', 0.95, 'Andaru Tabar Battle Axe'),
-        ('spear', 1.90, 'Andaru Cavalry Lance'),
+        ('sword', 0.96, 'Andaru Broadsword', False),
+        ('spear', 1.90, 'Andaru Cavalry Lance', False),
+        ('dagger', 0.48, 'Andaru Jambiya Dagger', False),
+        ('axe', 0.95, 'Andaru Tabar Battle Axe', False),
+        ('mace', 0.88, 'Andaru Flanged Mace', False),
     ], ['Andaru Bronze Boss Shield', 'Andaru Crescent Sipar Shield', 'Andaru Sunburst Round Shield', 'Andaru Gilded Kalkan Shield', 'Andaru Royal Guard Shield']),
     ('andaru 2.glb', 'and2', 'andaru', 'Andaru', 'Andaru Set 2', [
-        ('scimitar', 0.95, 'Andaru Ornate Kilij'),
-        ('dagger', 0.45, 'Andaru Khanjar Dagger'),
-        ('mace', 0.85, 'Andaru Bull-Head Mace'),
-        ('axe', 0.95, 'Andaru Double-Bit Tabar'),
-        ('spear', 1.90, 'Andaru Winged Spear'),
+        ('sword', 0.96, 'Andaru Royal Straight Sword', True),
+        ('scimitar', 0.95, 'Andaru Ornate Kilij', False),
+        ('spear', 1.90, 'Andaru Winged Spear', False),
+        ('axe', 0.95, 'Andaru Double-Bit Tabar', False),
+        ('mace', 0.88, 'Andaru Bull-Head Mace', False),
     ], ['Andaru Enamel Sipar I', 'Andaru Enamel Sipar II', 'Andaru Lion-Boss Shield', 'Andaru Star-Crest Shield', 'Andaru Teardrop Kite Shield']),
     ('zeijani guard.glb', 'zeij_grd', 'zeijani', 'Zeijani', 'Zeijani Guard', [
-        ('scimitar', 0.95, 'Zeijani Guard Saber'),
-        ('dagger', 0.45, 'Zeijani Guard Bayonet Knife'),
-        ('mace', 0.85, 'Zeijani Guard Shock Baton'),
-        ('axe', 0.90, 'Zeijani Guard Trench Axe'),
-        ('spear', 1.85, 'Zeijani Guard Halberd Pike'),
+        ('sword', 0.96, 'Zeijani Guard Officer Sword', True),
+        ('spear', 1.85, 'Zeijani Guard Halberd Pike', False),
+        ('axe', 0.92, 'Zeijani Guard Trench Axe', False),
+        ('mace', 0.88, 'Zeijani Guard Shock Mace', False),
+        ('spear', 1.90, 'Zeijani Guard Partisan Spear', False),
     ], ['Zeijani Guard Riot Shield', 'Zeijani Guard Tower Shield', 'Zeijani Guard Buckler', 'Zeijani Guard Chevrons Shield', 'Zeijani Guard Bastion Shield']),
     ('zeijani jungle camo.glb', 'zeij_camo', 'zeijani', 'Zeijani', 'Zeijani Jungle Camo', [
-        ('sword', 0.88, 'Zeijani Jungle Machete Sword'),
-        ('dagger', 0.42, 'Zeijani Jungle Survival Knife'),
-        ('mace', 0.82, 'Zeijani Jungle Breaching Club'),
-        ('axe', 0.82, 'Zeijani Jungle Tomahawk'),
-        ('spear', 1.80, 'Zeijani Jungle Boar Spear'),
+        ('sword', 0.92, 'Zeijani Jungle Machete Sword', True),
+        ('scimitar', 0.92, 'Zeijani Jungle Curved Brush-Saber', False),
+        ('axe', 0.88, 'Zeijani Jungle Tomahawk Axe', False),
+        ('mace', 0.85, 'Zeijani Jungle Breaching Club', False),
+        ('spear', 1.85, 'Zeijani Jungle Boar Spear', False),
     ], ['Zeijani Camo Round Targe', 'Zeijani Camo Bark Shield', 'Zeijani Camo Skirmish Buckler', 'Zeijani Camo Leaf-Pattern Shield', 'Zeijani Camo Patrol Shield']),
     ('pylon.glb', 'zeij_pylon', 'zeijani', 'Zeijani', 'Zeijani Pylon', [
-        ('sword', 1.00, 'Pylon Arc Broadsword'),
-        ('dagger', 0.45, 'Pylon Shard Dagger'),
-        ('mace', 0.90, 'Pylon Resonator Mace'),
-        ('axe', 0.95, 'Pylon Cleaver Axe'),
-        ('spear', 1.85, 'Pylon Conduit Lance'),
+        ('sword', 1.00, 'Pylon Arc Broadsword', True),
+        ('scimitar', 0.95, 'Pylon Curved Conduit Saber', False),
+        ('axe', 0.95, 'Pylon Cleaver Axe', False),
+        ('mace', 0.90, 'Pylon Resonator Mace', False),
+        ('spear', 1.85, 'Pylon Conduit Lance', False),
     ], ['Pylon Hex Aegis I', 'Pylon Coil Round Shield', 'Pylon Spire Tower Shield', 'Pylon Capacitor Buckler', 'Pylon Monolith Shield']),
     ('republic.glb', 'rep_std', 'iron_republic', 'Iron Republic', 'Republic Standard', [
-        ('scimitar', 0.95, 'Republic Officer Saber'),
-        ('rifle', 1.05, 'Republic Infantry Rifle'),
-        ('rifle', 0.96, 'Republic Trench Carbine'),
-        ('axe', 0.85, 'Republic Boarding Axe'),
-        ('rifle', 1.12, 'Republic Heavy Volley Gun'),
+        ('spear', 1.90, 'Republic Infantry Halberd', False),
+        ('sword', 0.98, 'Republic Heavy Broadsword', True),
+        ('scimitar', 0.95, 'Republic Officer Saber', True),
+        ('axe', 0.92, 'Republic Boarding Axe', False),
+        ('crossbow', 0.88, 'Republic Heavy Siege Arbalest', False),
     ], ['Republic Riveted Ballistic Shield', 'Republic Siege Mantlet Shield', 'Republic Trench Gun-Shield', 'Republic Sapper Buckler', 'Republic Ironclad Pavise']),
     ('shell.glb', 'shell', 'islanders', 'Ring Sea (Shell)', 'Shell Set', [
-        ('sword', 0.95, 'Shell Coral-Tooth Sword'),
-        ('dagger', 0.45, 'Shell Abalone Kris Dagger'),
-        ('mace', 0.85, 'Shell Conch-Spire Club'),
-        ('axe', 0.95, 'Shell Giant-Clam Axe'),
-        ('spear', 1.90, 'Shell Trident Harpoon'),
+        ('sword', 0.95, 'Shell Coral-Tooth Sword', True),
+        ('scimitar', 0.94, 'Shell Abalone Wave-Saber', True),
+        ('axe', 0.95, 'Shell Giant-Clam Axe', False),
+        ('mace', 0.88, 'Shell Conch-Spire Club', False),
+        ('spear', 1.90, 'Shell Trident Harpoon', False),
     ], ['Shell Nautilus Shield', 'Shell Scallop Crest Shield', 'Shell Abalone Oval Shield', 'Shell Sea-Urchin Buckler', 'Shell Horseshoe Carapace Shield']),
     ('lizard.glb', 'liz1', 'lizardmen', 'Lizardmen', 'Lizard Set 1', [
-        ('sword', 0.95, 'Lizard Fang Macuahuitl'),
-        ('dagger', 0.45, 'Lizard Claw Ritual Dagger'),
-        ('mace', 0.90, 'Lizard Tail-Spike Club'),
-        ('axe', 0.95, 'Lizard Bone-Crest Axe'),
-        ('spear', 1.85, 'Lizard Barbed Hunting Spear'),
+        ('sword', 0.95, 'Lizard Fang Macuahuitl', False),
+        ('scimitar', 0.95, 'Lizard Claw Curved Cleaver', False),
+        ('spear', 1.85, 'Lizard Barbed Hunting Spear', False),
+        ('axe', 0.95, 'Lizard Bone-Crest Axe', False),
+        ('crossbow', 0.86, 'Lizard Bone-Prod Crossbow', False),
     ], ['Lizard Scale Round Shield', 'Lizard Croc-Hide Tower Shield', 'Lizard Rib-Bone Shield', 'Lizard Raptor-Skull Buckler', 'Lizard Frilled Carapace Shield']),
     ('lizard 2.glb', 'liz2', 'lizardmen', 'Lizardmen', 'Lizard Set 2', [
-        ('sword', 0.95, 'Lizard Jade Broadsword'),
-        ('dagger', 0.45, 'Lizard Serpent Sacrificial Knife'),
-        ('mace', 0.90, 'Lizard Skull Totem Mace'),
-        ('axe', 0.95, 'Lizard Twin-Fang Battle Axe'),
-        ('spear', 1.85, 'Lizard Serpent Glaive'),
+        ('sword', 0.95, 'Lizard Jade Broadsword', False),
+        ('scimitar', 0.95, 'Lizard Serpent Curved Saber', False),
+        ('axe', 0.95, 'Lizard Twin-Fang Battle Axe', False),
+        ('spear', 1.85, 'Lizard Serpent Glaive', False),
+        ('crossbow', 0.86, 'Lizard Swamp Repeater Crossbow', False),
     ], ['Lizard Jade-Boss Buckler', 'Lizard Horned Hide Shield', 'Lizard Fang-Rim Oval Shield', 'Lizard Swamp-Turtle Shield', 'Lizard Great Totem Pavise']),
     ('xanadu.glb', 'xan', 'xanadu', 'Xanadu', 'Xanadu Set', [
-        ('scimitar', 0.95, 'Xanadu Imperial Dao'),
-        ('dagger', 0.45, 'Xanadu Jade-Hilt Dagger'),
-        ('mace', 0.85, 'Xanadu Gilded Melon Hammer'),
-        ('axe', 0.95, 'Xanadu Dragon-Beard Fu Axe'),
-        ('spear', 1.90, 'Xanadu Red-Tassel Qiang Spear'),
+        ('scimitar', 0.95, 'Xanadu Imperial Dao', True),
+        ('sword', 0.96, 'Xanadu Scholar Jian Sword', True),
+        ('spear', 1.90, 'Xanadu Red-Tassel Qiang Spear', False),
+        ('mace', 0.88, 'Xanadu Gilded Melon Hammer', False),
+        ('bow', 1.40, 'Xanadu Reflex Horn Bow', True),
     ], ['Xanadu Tiger-Face 藤牌 Shield', 'Xanadu Cloud-Lacquer Shield', 'Xanadu Imperial Lotus Shield', 'Xanadu Phoenix-Crest Shield', 'Xanadu Fortress Pavilion Shield']),
     ('tungang.glb', 'tg_set', 'tungang', 'Tungangs', 'Tungang Set', [
-        ('sword', 0.90, 'Tungang Pipe-Wrench Cleaver'),
-        ('dagger', 0.42, 'Tungang Bilge Utility Shiv'),
-        ('mace', 0.85, 'Tungang Valve-Wheel Mace'),
-        ('axe', 0.90, 'Tungang Bulkhead Fire Axe'),
-        ('spear', 1.85, 'Tungang Deck Harpoon Pike'),
+        ('axe', 0.92, 'Tungang Heavy Mining Pickaxe', False),
+        ('mace', 0.92, 'Tungang Riveter Sledgehammer', False),
+        ('mace', 0.85, 'Tungang Wrecking Prybar', False),
+        ('mace', 0.85, 'Tungang Heavy Pipe-Wrench Club', False),
+        ('axe', 1.15, 'Tungang Long-Handled Deck Scraper', False),
     ], ['Tungang Porthole Hatch Shield', 'Tungang Riveted Hull Shield', 'Tungang Buoy-Ring Shield', 'Tungang Boiler-Door Pavise', 'Tungang Barnacle Plate Shield']),
     ('paintedman.glb', 'pman', 'painted_men', 'Painted Men', 'Painted Men Set', [
-        ('sword', 0.95, 'Painted Man Bone-Inlaid Sword'),
-        ('dagger', 0.45, 'Painted Man Knapped Flint Knife'),
-        ('mace', 0.85, 'Painted Man War-Totem Club'),
-        ('axe', 0.85, 'Painted Man Stone Tomahawk'),
-        ('spear', 1.85, 'Painted Man Feathered Lance'),
+        ('sword', 0.95, 'Painted Man Bone-Inlaid Sword', True),
+        ('spear', 1.85, 'Painted Man Feathered Lance', False),
+        ('axe', 0.85, 'Painted Man Stone Tomahawk', False),
+        ('dagger', 0.48, 'Painted Man Knapped Flint Knife', True),
+        ('bow', 1.40, 'Painted Man Sinew-Backed Bow', True),
     ], ['Painted Man Handprint Hide Shield', 'Painted Man Horned Wing Shield', 'Painted Man Spiral Sun Shield', 'Painted Man Bone-Spoke Shield', 'Painted Man Medicine Wheel Shield']),
     ('korona - bog.glb', 'kor_bog', 'korona', 'Korona (Abyssal)', 'Korona Bog', [
-        ('sword', 0.95, 'Korona Bog-Iron Leaf Sword'),
-        ('dagger', 0.45, 'Korona Bog-Root Dagger'),
-        ('mace', 0.85, 'Korona Bog-Stone Knot Club'),
-        ('axe', 0.90, 'Korona Bog-Iron Bearded Axe'),
-        ('spear', 1.85, 'Korona Bog-Reed Barbed Spear'),
+        ('spear', 1.65, 'Korona Bog-Reed Blowgun', True),
+        ('bow', 1.38, 'Korona Bog-Yew Hunting Bow', True),
+        ('mace', 0.92, 'Korona Bog-Oak Paddle War-Club', False),
+        ('mace', 0.85, 'Korona Bog-Root Ball Club', False),
+        ('dagger', 0.48, 'Korona Bog-Iron Carving Knife', True),
     ], ['Korona Bog-Oak Round Shield', 'Korona Moss-Wicker Shield', 'Korona Peat-Hide Buckler', 'Korona Fen-Serpent Shield', 'Korona Mire-Bark Oval Shield']),
     ('korona - bird.glb', 'kor_bird', 'korona', 'Korona (Abyssal)', 'Korona Bird', [
-        ('sword', 0.95, 'Korona Bird-Clan Talon Sword'),
-        ('dagger', 0.45, 'Korona Bird-Clan Beak Dagger'),
-        ('axe', 0.95, 'Korona Bird-Clan Winged Axe'),
-        ('mace', 0.85, 'Korona Bird-Clan Plumed Mace'),
-        ('spear', 1.85, 'Korona Bird-Clan Heron Spear'),
+        ('spear', 1.65, 'Korona Bird-Clan Plumed Blowgun', True),
+        ('bow', 1.38, 'Korona Bird-Clan Feather Bow', True),
+        ('mace', 0.92, 'Korona Bird-Clan Wing-Paddle Club', False),
+        ('mace', 0.85, 'Korona Bird-Clan Talon Ball-Club', False),
+        ('dagger', 0.48, 'Korona Bird-Clan Beak Knife', True),
     ], ['Korona Feather-Rim Round Shield', 'Korona Wing-Pair Shield', 'Korona Owl-Visage Buckler', 'Korona Hawk-Pinion Shield', 'Korona Crane-Crest Oval Shield']),
     ('dasri.glb', 'dasri', 'dasri', 'Dasri', 'Dasri Set', [
-        ('scimitar', 0.95, 'Dasri Curved Talwar'),
-        ('dagger', 0.45, 'Dasri Pesh-Kabz Dagger'),
-        ('mace', 0.85, 'Dasri Flanged Shishpar Mace'),
-        ('axe', 0.90, 'Dasri Crescent Tabar Axe'),
-        ('spear', 1.90, 'Dasri Steel-Tipped Lance'),
+        ('spear', 1.90, 'Dasri Steel-Tipped Cavalry Lance', False),
+        ('scimitar', 0.95, 'Dasri Curved Shamshir', True),
+        ('dagger', 0.48, 'Dasri Curved Jambiya Dagger', False),
+        ('rifle', 1.15, 'Dasri Inlaid Matchlock Jezail', False),
+        ('sling', 0.92, 'Dasri Braided Desert Sling', False),
     ], ['Dasri Four-Boss Dhal I', 'Dasri Brass-Studded Dhal II', 'Dasri Velvet-Rim Buckler', 'Dasri Sunburst Dhal Shield', 'Dasri Rhinoceros-Hide Shield']),
     ('Shumar.glb', 'shumar', 'shumar', 'Shumar', 'Shumar Set', [
-        ('scimitar', 0.90, 'Shumar Bronze Sickle-Sword'),
-        ('dagger', 0.45, 'Shumar Lapis-Hilt Dagger'),
-        ('mace', 0.85, 'Shumar Star-Head Bronze Mace'),
-        ('axe', 0.90, 'Shumar Socketed Epsilon Axe'),
-        ('spear', 1.85, 'Shumar Chariot Spear'),
+        ('scimitar', 0.92, 'Shumar Bronze Curved Saber', True),
+        ('sword', 0.95, 'Shumar Lapis-Hilt Broadsword', False),
+        ('spear', 1.85, 'Shumar Chariot Spear', False),
+        ('mace', 0.88, 'Shumar Star-Head Bronze Mace', False),
+        ('bow', 1.40, 'Shumar Horn-Tipped Recurve Bow', False),
     ], ['Shumar Rosette Round Shield', 'Shumar Winged-Bull Shield', 'Shumar Ziggurat Step Shield', 'Shumar Bronze Boss Buckler', 'Shumar Lamassu Tower Shield']),
     ('screamer.glb', 'scrm', 'screamer', 'Screamers', 'Screamer Set', [
-        ('sword', 0.95, 'Screamer Jagged Saw-Blade'),
-        ('dagger', 0.45, 'Screamer Bone-Ripper Knife'),
-        ('mace', 0.85, 'Screamer Spiked Skull Club'),
-        ('axe', 0.95, 'Screamer Chain-Bit Chopper'),
-        ('spear', 1.90, 'Screamer Impaling Pike'),
+        ('sword', 0.95, 'Screamer Jagged Saw-Blade', True),
+        ('dagger', 0.52, 'Screamer Bone-Ripper Cleaver', False),
+        ('mace', 0.88, 'Screamer Barbed Nail-Bat', False),
+        ('axe', 0.95, 'Screamer Chain-Bit Chopper', False),
+        ('mace', 1.10, 'Screamer Spiked Pole-Maul', False),
     ], ['Screamer Shrieking-Maw Shield', 'Screamer Spiked Scrap Targe', 'Screamer Ribcage Buckler', 'Screamer Razor-Rim Shield', 'Screamer Gore-Plate Pavise']),
     ('salvage_gear.glb', 'salv', 'salvagers', 'Salvagers', 'Salvage Gear', [
-        ('sword', 0.90, 'Salvaged Lawn-Blade Machete'),
-        ('dagger', 0.42, 'Salvaged Rebar Shank'),
-        ('mace', 0.85, 'Salvaged Gear-Cog Maul'),
-        ('axe', 0.85, 'Salvaged Stop-Sign Hatchet'),
-        ('spear', 1.85, 'Salvaged Conduit Spear'),
+        ('sword', 0.90, 'Salvaged Lawn-Blade Machete', False),
+        ('dagger', 0.50, 'Salvaged Saw-Tooth Cleaver', False),
+        ('mace', 0.88, 'Salvaged Pipe-Fitting Club', False),
+        ('axe', 0.88, 'Salvaged Stop-Sign Hatchet', False),
+        ('mace', 0.92, 'Salvaged Gear-Cog Maul', False),
     ], ['Salvaged Road-Sign Shield', 'Salvaged Hubcap Buckler', 'Salvaged Corrugated Tin Shield', 'Salvaged Tire-Tread Shield', 'Salvaged Car-Door Pavise']),
 ]
+
+MESHY_SHEATH_PAIRS = {
+    'msh_tabisti_takouba_sheath': 'msh_tabisti_takouba_sword',
+    'msh_tabisti_flyssa_sheath': 'msh_tabisti_flyssa_dagger',
+    'msh_dalab_sica_sheath': 'msh_dalab_sica_dagger',
+    'msh_lizardman_dao_scabbard': 'msh_lizardman_dao_sword',
+    'msh_lizardman_jian_scabbard': 'msh_lizardman_jian_sword',
+}
 
 
 def import_all():
     os.makedirs(OUT_PROPS, exist_ok=True)
     os.makedirs(OUT_THUMBS, exist_ok=True)
     new_entries = []
+    entry_by_id = {}
 
-    def add_item(pid, label, kind, length, P, N, UV, T, tex_blobs, people, culture_label, subset, src_name, is_spliced_shield=False):
+    def add_item(pid, label, kind, length, P, N, UV, T, tex_blobs, people, culture_label, subset, src_name, is_spliced_shield=False, sheath_id=None, for_weapon=None):
         P_d, N_d, UV_d, T_d = decimate_uv_preserving(P, N, UV, T, target_tris=4200)
         P_f, N_f, UV_f, T_f, blade, support = orient_and_place(P_d, N_d, UV_d, T_d, kind, length, is_spliced_shield=is_spliced_shield)
         glb_path = os.path.join(OUT_PROPS, f"{pid}.glb")
@@ -953,7 +991,7 @@ def import_all():
         thumb_path = os.path.join(OUT_THUMBS, f"{pid}.png")
         render_prop_thumb(thumb_path, P_f, N_f, UV_f, T_f, base_pil=tex_blobs.get('base_pil'), kind=kind)
 
-        hand = 'L' if kind in ('shield', 'bow') else 'R'
+        hand = 'L' if kind in ('shield', 'bow', 'sheath') else 'R'
         grip_type = 'trigger' if kind in ('rifle', 'pistol', 'crossbow') else 'fist'
         e = {
             'id': pid,
@@ -967,6 +1005,10 @@ def import_all():
             'subset': subset,
             'src': src_name,
         }
+        if sheath_id:
+            e['sheath'] = sheath_id
+        if for_weapon:
+            e['for_weapon'] = for_weapon
         if support:
             e['support'] = [round(float(x), 3) for x in support]
         if blade:
@@ -979,20 +1021,31 @@ def import_all():
             e['string'] = [0.0, h_half, -0.09, 0.0, -h_half, -0.09]
             e['arrow'] = 'arrow'
         new_entries.append(e)
+        entry_by_id[pid] = e
+        return e
 
-    # 1. Process all 21 Two-Column Tripo Culture Sheets (210 items)
-    print("=== 1. Dissecting & Splicing 21 Two-Column Tripo Culture Sheets (210 items) ===")
+    # 1. Process all 21 Two-Column Tripo Culture Sheets (5 weapons + sheaths + 5 shields per sheet)
+    print("=== 1. Dissecting & Splicing 21 Two-Column Tripo Culture Sheets ===")
+    tripo_sheath_count = 0
     for fname, pref, people, clabel, subset, w_specs, s_labels in TRIPO_SHEETS:
         fpath = os.path.join(DL, fname)
         r = glbio.read_mesh(fpath)
         tex_blobs = encode_textures_from_rig(r)
         P, N, UV, T = r.pos, r.nrm, r.uv, r.tri
 
-        # 5 Weapons
-        weapons = extract_5_weapons(fname, P, N, UV, T)
-        for i, ((Pw, Nw, UVw, Tw), (w_kind, w_len, w_label)) in enumerate(zip(weapons, w_specs)):
+        # 5 Weapons (+ matching row sheaths/scabbards/quivers)
+        weapons, sheaths = extract_weapons_and_sheaths(fname, P, N, UV, T, w_specs)
+        for i, ((Pw, Nw, UVw, Tw), P_sheath, spec) in enumerate(zip(weapons, sheaths, w_specs)):
+            w_kind, w_len, w_label = spec[0], spec[1], spec[2]
             pid = f"{pref}_w{i+1}_{w_kind}"
-            add_item(pid, w_label, w_kind, w_len, Pw, Nw, UVw, Tw, tex_blobs, people, clabel, subset, fname)
+            s_pid = f"{pref}_w{i+1}_sheath" if P_sheath is not None else None
+            add_item(pid, w_label, w_kind, w_len, Pw, Nw, UVw, Tw, tex_blobs, people, clabel, subset, fname, sheath_id=s_pid)
+            if P_sheath is not None:
+                Ps_sh, Ns_sh, UVs_sh, Ts_sh = P_sheath
+                s_len = 0.58 if w_kind == 'bow' else (0.50 if 'Blowgun' in w_label else round(w_len * 0.78, 2))
+                s_KindLabel = 'Quiver' if w_kind == 'bow' else ('Dart Case' if 'Blowgun' in w_label else 'Sheath')
+                add_item(s_pid, f"{w_label} {s_KindLabel}", 'sheath', s_len, Ps_sh, Ns_sh, UVs_sh, Ts_sh, tex_blobs, people, clabel, subset, fname, for_weapon=pid)
+                tripo_sheath_count += 1
 
         # 5 Shields with spliced rear handles
         splits = find_row_splits(P, T)
@@ -1005,6 +1058,7 @@ def import_all():
             pid = f"{pref}_s{i+1}_shield"
             add_item(pid, s_label, 'shield', 0.85, Ps, Ns, UVs, Ts, tex_blobs, people, clabel, subset, fname, is_spliced_shield=True)
         print(f"  {fname:24s} -> 5 weapons + 5 shields ({pref}_*)")
+    print(f"  Extracted {tripo_sheath_count} matching sheaths/scabbards/quivers from Tripo sheets")
 
     # 2. Process the 14 Standalone GLBs in Downloads (26 items; flying bat & duplicate andaru 2 ignored)
     print("=== 2. Processing 14 Standalone GLBs from Downloads (26 items) ===")
@@ -1121,7 +1175,10 @@ def import_all():
             people, clabel, subset = 'general', 'General', 'Meshy Arms'
 
         # Classify kind & length
-        if any(k in s_low for k in ('shield', 'tate', 'adarga', 'arer', 'aegis', 'clipeus', 'parma', 'scutum', 'forearm_guard')):
+        if any(k in s_low for k in ('sheath', 'scabbard')):
+            kind = 'sheath'
+            length = 0.42 if any(k in s_low for k in ('flyssa', 'sica')) else 0.78
+        elif any(k in s_low for k in ('shield', 'tate', 'adarga', 'arer', 'aegis', 'clipeus', 'parma', 'scutum', 'forearm_guard')):
             kind = 'shield'
             length = 1.02 if any(k in s_low for k in ('tower', 'standing', 'tall', 'scutum', 'tate')) else 0.85
         elif 'bow' in s_low and 'crossbow' not in s_low or 'yumi' in s_low:
@@ -1164,7 +1221,16 @@ def import_all():
 
         add_item(pid, label, kind, length, P, N, UV, T, tex_blobs, people, clabel, subset, folder)
         meshy_count += 1
-    print(f"  Imported {meshy_count} unique Meshy weapons & shields")
+
+    # Link Meshy weapons and sheaths
+    for s_pid, w_pid in MESHY_SHEATH_PAIRS.items():
+        if s_pid in entry_by_id and w_pid in entry_by_id:
+            entry_by_id[w_pid]['sheath'] = s_pid
+            entry_by_id[s_pid]['for_weapon'] = w_pid
+    if 'msh_dalab_falx' in entry_by_id and 'msh_dalab_sica_sheath' in entry_by_id:
+        entry_by_id['msh_dalab_falx']['sheath'] = 'msh_dalab_sica_sheath'
+
+    print(f"  Imported {meshy_count} unique Meshy weapons, shields & sheaths")
 
     # 4. Update data/props.json and render thumbnails for existing built-in props too
     pj = os.path.join(HERE, 'data', 'props.json')
@@ -1172,9 +1238,9 @@ def import_all():
     new_ids = {e['id'] for e in new_entries}
     kept_props = []
     for p in props_doc['props']:
-        if p['id'] in new_ids:
+        if p['id'] in new_ids or p.get('src'):
             continue
-        # Enrich existing props with kind, people, culture_label, subset for the Arms Lab
+        # Enrich existing built-in props with kind, people, culture_label, subset for the Arms Lab
         pid = p['id']
         if pid.startswith('tz_'):
             p.setdefault('people', 'chichani')
@@ -1196,6 +1262,17 @@ def import_all():
         if os.path.isfile(glb_path):
             render_existing_prop_thumb(glb_path, thumb_path, kind=p.get('kind', 'sword'))
         kept_props.append(p)
+
+    # Remove any stale GLBs or thumbs from previous import passes whose IDs were renamed
+    valid_ids = {p['id'] for p in kept_props} | new_ids
+    for gpath in glob.glob(os.path.join(OUT_PROPS, '*.glb')):
+        stem = os.path.splitext(os.path.basename(gpath))[0]
+        if stem not in valid_ids:
+            os.remove(gpath)
+    for tpath in glob.glob(os.path.join(OUT_THUMBS, '*.png')):
+        stem = os.path.splitext(os.path.basename(tpath))[0]
+        if stem not in valid_ids:
+            os.remove(tpath)
 
     props_doc['props'] = kept_props + new_entries
     with open(pj, 'w', encoding='utf-8', newline='\n') as f:
