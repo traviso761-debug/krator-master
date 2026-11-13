@@ -232,7 +232,7 @@ PIN_OVERRIDES = {
     "Mirabilis": {"type": "town"},
     "Glaive": {"type": "town"},
     "The Gate": {"type": "fort", "population": 800, "polity": "Coyote Kingdom"},
-    "Bastion": {"type": "fort"},
+    "Bastion": {"type": "fort", "polity": "Eternal State"},
     "Fort Vaklu": {"type": "fort"},
     "Tzunfort": {"type": "fort"},
     "Strongwall": {"type": "fort"},
@@ -247,11 +247,11 @@ PIN_OVERRIDES = {
 }
 
 # Superseded placeholder IDs/names in trade-goods.json replaced by canonical named settlements
-SUPERSEDED_TG_NAMES = {"Tabist town (to be named)"}
+SUPERSEDED_TG_NAMES = {"Tabist town (to be named)", "Singing Gjar outpost"}
 
 # Canonical new settlements (user 2026-11-13 export + claude/ancient-network-9cc3e7 precedence + approved gateways + town/fort/inhabited-ruin stages)
 NEW_SETTLEMENTS = [
-    # Hookfleet (rump Hook navy on SE Throne — pirate & smuggling haven with 100-kil truce waters!)
+    # Hookfleet (rump Hook navy on SE Throne — pirate & smuggling haven with 50-kil truce waters!)
     {"id": "sgre336q61", "name": "Port Mira", "px": 865, "py": 895, "type": "town", "population": 1800, "polity": "Hookfleet", "reach_km": 18},
     # Andaru (Throne ash-nomads & vent-shoulder villagers; kin of Zeijani, raid colonizers, export plume fungal goods & Ranj)
     {"name": "Ṣunu-Ašru", "px": 892, "py": 852, "type": "town", "population": 1400, "polity": "Andaru", "reach_km": 18},
@@ -291,9 +291,10 @@ NEW_SETTLEMENTS = [
     # Xanadu Sultanate additions (Kirstabal plantation town & Thalaba Godshearth expedition base)
     {"id": "sl758m2396", "name": "Kirstabal", "px": 989, "py": 1600, "type": "town", "population": 2200, "polity": "Xanadu Sultanate", "reach_km": 18},
     {"id": "shvo49k0y2", "name": "Thalaba", "px": 825, "py": 1481, "type": "village", "population": 750, "polity": "Xanadu Sultanate", "reach_km": 15},
-    # Eternal State additions (Tone & Sheritu)
+    # Eternal State additions (Tone, Sheritu, & Palewharf lakeshore barge village on western Jimjam's Lake)
     {"id": "sgzl17vqfx", "name": "Tone", "px": 368, "py": 776, "type": "village", "population": 1100, "polity": "Eternal State", "reach_km": 15},
     {"id": "s5qv4dxo1j", "name": "Sheritu", "px": 384, "py": 666, "type": "village", "population": 950, "polity": "Eternal State", "reach_km": 15},
+    {"name": "Palewharf", "px": 565, "py": 604, "type": "village", "population": 850, "polity": "Eternal State", "reach_km": 15},
     # Kimr sacred arcology & Pleistocene megafauna market in the Labyrinth (Kimr polygon rmwelrhij6khp)
     {"id": "s3zzt8dujb", "name": "Hall of Heroes", "px": 365, "py": 1474, "type": "inhabited ruin", "population": 1600, "polity": "Kimr", "reach_km": 22},
     # Iron Republic addition
@@ -343,8 +344,12 @@ NEW_SETTLEMENTS = [
     {"name": "Singing Gjar Quartz", "px": 1572, "py": 1643, "type": "outpost", "population": 200, "polity": "Order of Historians", "reach_km": 12},
     # Painted Men canyon cliff-hold (TRADE-SCOPE s7.6)
     {"name": "Painted Canyon Cliff-Hold", "px": 1055, "py": 622, "type": "village", "population": 650, "polity": "Painted Men", "reach_km": 15},
-    # Parabola solar-furnace Bowl inhabited ruin (ANCIENT-NETWORK.md s8.11)
+    # Parabola solar-furnace Bowl inhabited ruin (ANCIENT-NETWORK.md s8.11) + Catch & Twins Oasis/Pass Stops
     {"name": "Parabola", "px": 970, "py": 1186, "type": "inhabited ruin", "population": 450, "polity": "Empire of Iziz", "reach_km": 14},
+    {"name": "Bab al-Hawa (Godsgate)", "px": 1028, "py": 1246, "type": "outpost", "population": 320, "polity": "Catch Oasis Stations", "reach_km": 14},
+    {"name": "Kolli Oasis", "px": 1058, "py": 1367, "type": "village", "population": 550, "polity": "Catch Oasis Stations", "reach_km": 15},
+    {"name": "Arfwai Oasis", "px": 1090, "py": 1387, "type": "village", "population": 650, "polity": "Catch Oasis Stations", "reach_km": 15},
+    {"name": "The Twins", "px": 1042, "py": 1525, "type": "fort", "population": 420, "polity": "Twins Pass Wardenry", "reach_km": 14},
     # Abstract exterior maritime trade regions (shipped exclusively into Farport's Factory Quarter and disseminated from there)
     {"name": "Ria Valley (Sea Trade)", "px": 520, "py": 185, "type": "abstract_region", "population": 28000, "polity": "Ria Valley", "reach_km": 20, "abstract_region": True},
     {"name": "The Crook (Sea Trade)", "px": 120, "py": 595, "type": "abstract_region", "population": 22000, "polity": "The Crook", "reach_km": 20, "abstract_region": True},
@@ -765,6 +770,8 @@ def populate_supply_demand(world, setts):
 
         if pol == "Yeti Kingdom":
             # Upland resources + Eternian raid booty exported along the hazardous Qoold Lheek–Jimjam dirt road!
+            # Subalpine birch/conifer taiga & frozen-lake fisheries make Yetis locally self-sufficient in bulk timber & food
+            # (bulk wagon hauls are impractical on the dangerous northern upland dirt road).
             sup["qiviut"] = 7.5 if nm == "Qoold Lheek" else 2.4
             sup["lung-salt"] = 4.5 if nm == "Qoold Lheek" else 1.5   # goldroot hypoxia adaptogen
             sup["pitch-tar"] = 24.0 if nm == "Qoold Lheek" else 8.0  # subalpine birch-tar
@@ -776,9 +783,78 @@ def populate_supply_demand(world, setts):
             sup["oversea-luxuries"] = dem.get("oversea-luxuries", 0.0) + (4.5 if nm == "Qoold Lheek" else 1.4)
             sup["relics"] = dem.get("relics", 0.0) + (3.8 if nm == "Qoold Lheek" else 1.2)
             sup["silk"] = dem.get("silk", 0.0) + (2.6 if nm == "Qoold Lheek" else 0.8)
-            dem["iron"] = max(dem.get("iron", 0.0), 18.0 * kpop)
-            dem["food"] = max(dem.get("food", 0.0), 310.0 * kpop)
-            sup["food"] = 190.0 * kpop
+            dem["iron"] = 0.0
+            dem["salt"] = 0.0
+            dem["coal"] = 0.0
+            sup["saltpeter"] = 0.0  # frozen snowfields cannot solar-evaporate desert nitre!
+            dem["timber"] = 95.0 * kpop
+            sup["timber"] = max(sup.get("timber", 0.0), dem["timber"] * 1.04)
+            dem["food"] = 240.0 * kpop
+            sup["food"] = max(sup.get("food", 0.0), dem["food"] * 1.03)
+            dem["arms"] = max(dem.get("arms", 0.0), 1.4 * kpop)
+            dem["bronze"] = max(dem.get("bronze", 0.0), 1.8 * kpop)
+            dem["cotton"] = max(dem.get("cotton", 0.0), 2.2 * kpop)
+
+        if pol == "Eternal State":
+            # Humid oceanic Eternian lowlands lack dry evaporite gypsum/alabaster beds -> imported by lake barge from Jimjam via Palewharf!
+            sup["alabaster"] = 0.0
+            if nm == "Fulcrum":
+                dem["alabaster"] = max(dem.get("alabaster", 0.0), 22.0)
+        if nm == "Jimjam":
+            # Dry NE Dam-Basin evaporite & travertine shore quarries at the eastern head of Jimjam's Lake!
+            sup["alabaster"] = max(sup.get("alabaster", 0.0), 46.0)
+        if nm == "Palewharf":
+            # Eternian lakeshore village port on the western cove of Jimjam's Lake — primary barge receiving & stone-dressing wharf for Jimjam alabaster!
+            dem["alabaster"] = max(dem.get("alabaster", 0.0), 18.5)
+            dem["fine-ceramics"] = max(dem.get("fine-ceramics", 0.0), 2.8)
+            sup["porcelain"] = max(sup.get("porcelain", 0.0), 3.4)
+            sup["food"] = max(sup.get("food", 0.0), 340.0)
+
+        if pol == "Catch Oasis Stations":
+            dem["timber"] = 28.0 * kpop
+            sup["timber"] = dem["timber"] * 1.02
+            if nm == "Bab al-Hawa (Godsgate)":
+                sup["incense"] = 5.5
+                sup["mounts"] = 22.0
+                sup["food"] = 35.0
+                dem["food"] = 110.0
+                dem["lung-salt"] = max(dem.get("lung-salt", 0.0), 0.65)
+                dem["cotton"] = max(dem.get("cotton", 0.0), 1.6)
+                dem["tea"] = max(dem.get("tea", 0.0), 0.9)
+            elif nm == "Kolli Oasis":
+                sup["sugar"] = 38.0
+                sup["mounts"] = 28.0
+                sup["incense"] = 4.2
+                sup["food"] = 125.0
+                dem["food"] = 165.0
+                dem["cotton"] = max(dem.get("cotton", 0.0), 2.2)
+                dem["tea"] = max(dem.get("tea", 0.0), 1.2)
+                dem["fine-ceramics"] = max(dem.get("fine-ceramics", 0.0), 0.8)
+            elif nm == "Arfwai Oasis":
+                sup["salt"] = 165.0
+                sup["saltpeter"] = 9.5
+                sup["mounts"] = 34.0
+                sup["sugar"] = 44.0
+                sup["food"] = 140.0
+                dem["food"] = 195.0
+                dem["cotton"] = max(dem.get("cotton", 0.0), 2.6)
+                dem["tea"] = max(dem.get("tea", 0.0), 1.5)
+                dem["almanacs"] = max(dem.get("almanacs", 0.0), 0.85)
+                dem["arms"] = max(dem.get("arms", 0.0), 0.65)
+
+        if pol == "Twins Pass Wardenry":
+            # High geothermal steam-vent pass fort (4,448 m) between Stair and Strongbow
+            dem["timber"] = 22.0 * kpop
+            sup["timber"] = dem["timber"] * 1.02
+            sup["sulfur"] = 18.0
+            sup["reagent"] = 3.4
+            sup["mounts"] = 18.0
+            sup["food"] = 22.0
+            dem["food"] = 118.0
+            dem["lung-salt"] = max(dem.get("lung-salt", 0.0), 2.2)
+            dem["qiviut"] = max(dem.get("qiviut", 0.0), 0.85)
+            dem["tea"] = max(dem.get("tea", 0.0), 1.4)
+            dem["arms"] = max(dem.get("arms", 0.0), 0.7)
 
         if nm == "Stair":
             sup["energy-cells"] = 5.5  # charged Ancient energy cells from sealed Catch tunnel
@@ -881,7 +957,9 @@ def populate_supply_demand(world, setts):
 
         # --- Shumari (Amaro & Urundashi) + former Shumar cities (Driyan, Azoth, Dayshun) ---
         if pol == "Shumari":
-            sup["mounts"] = 85.0 if nm == "Amaro" else 24.0
+            dem["timber"] = dem.get("timber", 0.0) * 0.08  # dry Shumar plateau stone & mudbrick architecture
+            sup["timber"] = max(sup.get("timber", 0.0), dem["timber"] * 1.02)
+            sup["mounts"] = 215.0 if nm == "Amaro" else 55.0  # premier Shumar Mamluk war-mounts & steppe cavalry stock!
             sup["saltpeter"] = 5.5 if nm == "Amaro" else 2.0
             sup["spice-highland"] = 2.6 if nm == "Amaro" else 0.9
             dem["arms"] = max(dem.get("arms", 0.0), 1.4 * kpop)  # Mamluk Sword-Caste demand
@@ -1101,7 +1179,7 @@ def populate_supply_demand(world, setts):
             "Iziz": 9.5, "Marr": 3.2, "Port Tobin": 2.2,
             "Hook": 4.4, "Dapor": 3.4,
             "Mantis": 4.2,       # Beast Riders commission coastal factor craft via Kautoa!
-            "Hetanini Spice Port": 1.6, "Dhelv": 1.5, "Erehwon": 2.2, "Reed": 1.8, "Ostrukh-on-Water": 1.6,
+            "Hetanini Spice Port": 1.6, "Erehwon": 2.2, "Reed": 1.8, "Ostrukh-on-Water": 1.6,
         }
         if nm in SHIP_HULL_SUP:
             sup["ship-hulls"] = SHIP_HULL_SUP[nm]
@@ -1200,6 +1278,40 @@ def populate_supply_demand(world, setts):
             sup["food"] = 260.0
             sup["scrap"] = max(sup.get("scrap", 0.0), 28.0)
 
+        # --- Climate & Architectural Timber Calibration + Domestic Lowland Draught-Stock Self-Sufficiency ---
+        # Arid, plateau, cavern & mudbrick/stone polities do NOT consume 420 t/1k wood-cabin construction timber;
+        # raw construction logs only move on short regional/waterborne hauls, whereas naval spars move as ship-timber!
+        TIMBER_ARCH_SCALE = {
+            "Nomad Country": 0.08,
+            "Coyote Kingdom": 0.12,
+            "Stair Divers (Catch)": 0.08,
+            "Tabisti: Sfenops": 0.15,
+            "Tabisti: Liikofi": 0.15,
+            "Tiguantin": 0.16,
+            "Scyvoi": 0.15,
+            "Zeijani": 0.12,
+            "Andaru": 0.12,
+            "Order of Historians": 0.16,
+            "Yuni Emirate": 0.22,
+            "Kimr": 0.12,
+            "Korona Tribes": 0.18,
+            "Silkhead (Korona Gateway)": 0.25,
+            "Xanadu Sultanate": 0.35,
+            "Tungang Union": 0.22,
+        }
+        if pol in TIMBER_ARCH_SCALE:
+            dem["timber"] = dem.get("timber", 0.0) * TIMBER_ARCH_SCALE[pol]
+        if pol in ("Nomad Country", "Coyote Kingdom", "Stair Divers (Catch)", "Scyvoi", "Kimr", "Korona Tribes", "Zeijani", "Tiguantin"):
+            sup["timber"] = max(sup.get("timber", 0.0), dem.get("timber", 0.0) * 1.02)
+
+        # Settled agricultural heartlands breed domestic plough-oxen, mules & cart-stock (~72% of routine draught demand),
+        # so cross-polity `mounts` flows represent specialized pastoral war-mounts, desert caravan camels & inner-crater pack-beasts!
+        if pol in (
+            "Empire of Iziz", "Eternal State", "Vothic Kingdom", "Realm of Dalab",
+            "Jimjam", "Iron Republic", "Yuni Emirate", "Xanadu Sultanate", "Tungang Union",
+        ):
+            sup["mounts"] = max(sup.get("mounts", 0.0), dem.get("mounts", 0.0) * 0.72)
+
 
 # ---------------------------------------------------------------------------
 # 5. Supplemental Polity Highways / Dirt Roads + 3-Layer Directed Multimodal Graph
@@ -1240,6 +1352,8 @@ def build_supplemental_roads(
 
     # Build 8-connected overland road-survey CSR graph on N_CELL
     idx = np.arange(N_CELL).reshape(GH, GW)
+    yy_s, xx_s = np.mgrid[0:GH, 0:GW]
+    px_s, py_s = xx_s / su, yy_s / sv
     rows, cols, costs = [], [], []
     rows_ye, cols_ye, costs_ye = [], [], []
     impass_cell = (
@@ -1247,7 +1361,8 @@ def build_supplemental_roads(
         | mask_lizard_hostile | mask_screamer_hostile
         | mask_north_rift_barrier | mask_south_rift_barrier
     )
-    impass_yeti = impass_cell | mask_eternal_poly
+    # Yeti hazardous northern dirt road skirts strictly NORTH of Jimjam's Lake & outside Eternal State land!
+    impass_yeti = impass_cell | mask_eternal_poly | ((px_s < 665.0) & (py_s > 560.0)) | ((px_s >= 560.0) & (px_s <= 740.0) & (py_s > 515.0))
 
     for dj, di in ((0, 1), (1, 0), (1, 1), (1, -1)):
         a = idx[max(0, -dj):GH - max(0, dj), max(0, -di):GW - max(0, di)].ravel()
@@ -1382,10 +1497,8 @@ def build_supplemental_roads(
         if s["polity"] not in ("Lizardmen", "Screamer Country") and not s.get("abstract_region")
     ]
 
-    # Also include unpinned Catch desert oasis stations (Kolli, Arfwai, Bitta, Lasso) as dirt-road stations
+    # Also include unpinned minor Catch desert oasis stations (Bitta, Lasso) as dirt-road stations
     extra_oases = [
-        ("oasis_kolli", "Kolli", 1058.0, 1367.0),
-        ("oasis_arfwai", "Arfwai", 1090.0, 1387.0),
         ("oasis_bitta", "Bitta", 1088.0, 1455.0),
         ("oasis_lasso", "Lasso", 1083.0, 1474.0),
     ]
@@ -1539,6 +1652,44 @@ def build_supplemental_roads(
                     "px": pts_px,
                 })
 
+    # Wire engineered mountain switchback road across Strongbow–Kirstabal scarp (connecting xanadu.1.3 [992,1596] to Strongbow [1001,1596]
+    # so ALL intra-Xanadu trade moves on Xanadu roads!) and the Twins / White Gills mountain pass roads from Stair to Strongbow:
+    engineered_pass_chains = [
+        ("supp.xanadu_strongbow_scarp_hwy", "Strongbow <-> Kirstabal <-> Vale Road", "Xanadu Sultanate", "polity_highway", 0.64, True,
+         [(1001.0, 1596.0), (992.0, 1596.0), (989.0, 1600.0)]),
+        ("supp.catch_twins_pass", "Stair <-> The Twins <-> Strongbow", "Twins Pass Wardenry", "dirt_road", 0.78, True,
+         [(1106.0, 1442.0), (1042.0, 1525.0), (1001.0, 1596.0)]),
+        ("supp.catch_white_gills_pass", "Stair <-> White Gills Hermitage <-> Strongbow", "Order of Historians", "dirt_road", 0.80, True,
+         [(1106.0, 1442.0), (1035.0, 1535.0), (1001.0, 1596.0)]),
+    ]
+    for pid, pset, ppol, pcls, pmul, peng, wpts in engineered_pass_chains:
+        pts_chain = []
+        cell_count = 0
+        for kw in range(len(wpts) - 1):
+            wx0, wy0 = snap_to_land(world, wpts[kw][0], wpts[kw][1])
+            wx1, wy1 = snap_to_land(world, wpts[kw + 1][0], wpts[kw + 1][1])
+            x0c, y0c = wx0 * su, wy0 * sv
+            x1c, y1c = wx1 * su, wy1 * sv
+            st_n = max(2, int(math.hypot(x1c - x0c, y1c - y0c) * 2) + 1)
+            for t_v in np.linspace(0.0, 1.0, st_n):
+                ci_p, cj_p = int(round(x0c + t_v * (x1c - x0c))), int(round(y0c + t_v * (y1c - y0c)))
+                if 0 <= cj_p < GH and 0 <= ci_p < GW and not W[cj_p, ci_p]:
+                    road_mult[cj_p, ci_p] = min(road_mult[cj_p, ci_p], pmul)
+                    if peng:
+                        net_eng[cj_p, ci_p] = True
+                    existing_road_mask[cj_p, ci_p] = True
+                    cell_count += 1
+            pts_chain.append([round(wx0, 1), round(wy0, 1)])
+        pts_chain.append([round(wpts[-1][0], 1), round(wpts[-1][1], 1)])
+        supp_routes.append({
+            "id": pid,
+            "settlement": pset,
+            "polity": ppol,
+            "class": pcls,
+            "km": round(2.2 * cell_count, 1),
+            "px": pts_chain,
+        })
+
     out_supp = os.path.join(ROOT, "openworld", "roads-supplement-gemini.json")
     with open(out_supp, "w", encoding="utf-8") as f:
         json.dump(
@@ -1603,12 +1754,16 @@ def build_multimodal_graphs(world, setts):
     mask_nomad_full = poly_mask(world["regs"], {"nomad country", "e abyss", "e abysss", "e badlands"}, GW, GH, OW, OH) & (~W)
     mask_desert_polys = poly_mask(
         world["regs"],
-        {"nomad country", "the bowl", "the catch", "e abyss", "e abysss", "e badlands", "sedesert"},
+        {
+            "nomad country", "n outlands", "s outlands", "coyote kingdom", "the tiers",
+            "the bowl", "the catch", "e abyss", "e abysss", "e badlands", "sedesert",
+        },
         GW, GH, OW, OH,
     )
 
     yy_g, xx_g = np.mgrid[0:GH, 0:GW]
     px_g, py_g = xx_g / su, yy_g / sv
+    mask_desert_polys |= (px_g >= 980.0) & (py_g >= 340.0) & (py_g <= 1515.0) & (RAIN < 430.0)
 
     # 1. Lizardman core Rift floor (impassably hostile to human merchants) vs border raid belts into Xanadu & S Dalab/Fellgangs
     xanadu_core = (mask_vale_xanadu | ((px_g >= 792.0) & (px_g <= 1050.0) & (py_g >= 1475.0) & (py_g <= 1625.0))) & (~W)
@@ -1678,12 +1833,13 @@ def build_multimodal_graphs(world, setts):
         ndimage.binary_dilation(mask_swhigh_poly, iterations=6) & (~mask_swhigh_poly) & (~mask_dalab_poly) & (~span_safe)
     ) & (~W)
 
-    # 11. Coyotemen <-> Eastern Nomads border raids & Eastern Nomad desert-crossing caravan bandits
+    # 11. Coyotemen <-> Eastern Nomads border raids & Desert Nomad bandits ranging across the WHOLE eastern & northern desert
     mask_coyote_nomad_raid = ndimage.binary_dilation(mask_coyote_full, iterations=6) & ndimage.binary_dilation(mask_nomad_full, iterations=6) & (~W)
-    mask_nomad_desert_bandits = (mask_desert_polys & (RAIN < 320.0)) & (~W)
+    mask_nomad_desert_bandits = (mask_desert_polys & ((RAIN < 480.0) | mask_nomad_full)) & (~W)
 
-    # Cold/airless N Rift Rim & SW Highlands barrier (exempting Vale of Xanadu so Thalaba <-> Erehwon/Theodiga is open!)
-    erehwon_pocket = ((px_g >= 796.0) & (px_g <= 845.0) & (py_g >= 1476.0) & (py_g <= 1528.0)) | mask_vale_xanadu
+    # Cold/airless N Rift Rim & SW Highlands barrier (exempting Vale of Xanadu AND the Twins / White Gills pass pocket!)
+    twins_pass_pocket = (px_g >= 990.0) & (px_g <= 1118.0) & (py_g >= 1435.0) & (py_g <= 1605.0)
+    erehwon_pocket = ((px_g >= 796.0) & (px_g <= 845.0) & (py_g >= 1476.0) & (py_g <= 1528.0)) | mask_vale_xanadu | twins_pass_pocket
     mask_north_rift_barrier = ((px_g >= 468.0) & (px_g <= 1022.0) & (py_g >= 1318.0) & (py_g <= 1509.0)) & (~erehwon_pocket)
     mask_south_rift_barrier = (px_g >= 468.0) & (px_g <= 788.0) & (py_g >= 1509.0) & (py_g <= 1722.0)
 
@@ -1695,6 +1851,7 @@ def build_multimodal_graphs(world, setts):
     SKIP_NET51_IDS = {
         "rift.chimes-cthonos", "rift.cthonos-tubes", "rift.tubes-pile", "rift.pile-theodiga",
         "rift.theodiga-strongbow", "rift.bowl.theodiga-stair", "ext.southwest",
+        "r.sevq8lqqjy.s1ugpi6uas",  # dead/severed Leng-to-Lux link across hostile Yeti-Eternia frontier!
     }
     CLASS_UP_MULT = {
         "trunk": {"kept": 0.55, "partly": 0.72, "shoddy": 0.76, "lapsed": 0.86, "decayed": 0.95},
@@ -1703,14 +1860,15 @@ def build_multimodal_graphs(world, setts):
         "izani": {"kept": 0.62, "partly": 0.75, "shoddy": 0.78, "lapsed": 0.88, "decayed": 0.96},
         "vothic": {"kept": 0.62, "partly": 0.75, "shoddy": 0.78, "lapsed": 0.88, "decayed": 0.96},
         "trade": {"kept": 0.66, "partly": 0.76, "shoddy": 0.80, "lapsed": 0.88, "decayed": 0.96},
-        "xanadu": {"kept": 0.66, "partly": 0.76, "shoddy": 0.80, "lapsed": 0.88, "decayed": 0.96},
+        "xanadu": {"kept": 0.64, "partly": 0.72, "shoddy": 0.78, "lapsed": 0.86, "decayed": 0.94},
         "yuni": {"kept": 0.66, "partly": 0.76, "shoddy": 0.80, "lapsed": 0.88, "decayed": 0.96},
     }
     DEFAULT_UP_MULT = {"kept": 0.78, "partly": 0.84, "shoddy": 0.86, "lapsed": 0.88, "decayed": 0.93}
 
     if world.get("net51"):
         for r in world["net51"].get("routes", []):
-            if r.get("id") in SKIP_NET51_IDS:
+            rid = r.get("id")
+            if rid in SKIP_NET51_IDS:
                 continue
             rcls = r.get("class", "dirt")
             up_list = r.get("up", [])
@@ -1722,6 +1880,14 @@ def build_multimodal_graphs(world, setts):
                 fm = form_list[min(idx_p, len(form_list) - 1)] if form_list else "open"
                 m_val = cmap.get(st, 0.92)
                 is_eng = fm in ("tunnel", "viaduct", "causeway", "cut") and st in ("kept", "partly", "shoddy", "lapsed")
+                # No functional ancient tubes between Parabola and Arcbeam — open surface Ancient highway ONLY!
+                if rid in ("r.skz25tuq0w.tbd.bowl", "izani.mantis-bowl"):
+                    m_val = min(m_val, 0.58 if rid == "r.skz25tuq0w.tbd.bowl" else 0.66)
+                    is_eng = False
+                elif rid == "rift.bowl.stair-bowl-arcology":
+                    # Active Catch desert oasis caravan road linking Parabola -> Bab al-Hawa -> Kolli -> Arfwai -> Stair
+                    m_val = min(m_val, 0.66)
+                    is_eng = True
                 x0, y0 = pts[idx_p][0] * su, pts[idx_p][1] * sv
                 x1, y1 = pts[idx_p + 1][0] * su, pts[idx_p + 1][1] * sv
                 steps = max(2, int(math.hypot(x1 - x0, y1 - y0) * 2) + 1)
@@ -1828,18 +1994,21 @@ def build_multimodal_graphs(world, setts):
         return int(round(py * sv)) * GW + int(round(px * su))
 
     # Canonical shoreline & island ports allowed a wider coastal snap; all other settlements must sit directly on water (<= 1.41 cells)
-    # so inland/bluff towns like Sethas (12.6 km inland), Azoth, Dayshun, Dilihan (1,000 m cliff), Carcosa, etc. NEVER get fake sea ports!
+    # so inland/bluff/cavern towns like Dhelv (inland Throne cavern!), Sethas, Azoth, Dayshun, Dilihan, Guari, etc. NEVER get fake sea ports!
     EXPLICIT_COASTAL_PORTS = {
-        "Farport", "Voth", "Shim", "Dapor", "Almua", "Tzinguard", "Temora", "Zey'danin",
+        "Farport", "Palewharf", "Jimjam", "Voth", "Shim", "Dapor", "Almua", "Tzinguard", "Temora", "Zey'danin",
         "Port Mira", "Hook", "Ys", "Ybera", "Tethis", "Nephtos", "Trigon", "Limnaia",
         "Pontus", "Nereus", "Kierson", "Kyra Isle", "Skopelos Isle",
-        "Hetanini Spice Port", "Vana Clove Atoll", "Dhelv",
+        "Hetanini Spice Port", "Vana Clove Atoll",
         "Kautoa", "Valapo", "Bipo", "Shell", "Port Goto", "Port Tobin", "Marr", "Iziz",
         "Torus", "Port Visas", "Erehwon", "Kirstabal", "Thalaba",
         "Spider Lake Weirs", "Reed", "Ostrukh-on-Water",
         "Noa's Regret", "Shanty", "Boiling Bay",
         "Ria Valley (Sea Trade)", "The Crook (Sea Trade)",
     }
+
+    # Polities with ZERO fleets of their own (traders must come to them via overland trails or neighboring coastal anchorages!):
+    NO_FLEET_POLS = {"Lizardmen", "Screamer Country", "Beast Riders", "Zeijani", "Andaru", "Tiguantin"}
 
     # Assign settlement cells, sea/lake port links (Layer 0 <-> Layer 1), & river barge landings (Layer 0 <-> Layer 2)
     port_links = []
@@ -1854,18 +2023,18 @@ def build_multimodal_graphs(world, setts):
         if s.get("abstract_region"):
             abstract_land_mask[cj, ci] = True
 
-        # Lizardmen, Screamers & Beast Riders have ZERO independent shipping (Beast Riders rely on Kautoa as their navy!);
-        # Eternal State restricts pelagic sea shipping exclusively to Farport's Factory Quarter (inland cities use Layer 2 canals).
-        if s["polity"] in ("Lizardmen", "Screamer Country", "Beast Riders") or (
-            s["polity"] == "Eternal State" and s["name"] != "Farport"
+        # Lizardmen, Screamers, Beast Riders, Zeijani, Andaru & Tiguantin have ZERO fleets (traders must come to them; Dhelv is inland!);
+        # Eternal State restricts pelagic sea shipping exclusively to Farport's Factory Quarter, while Palewharf operates lake barges on Jimjam's Lake!
+        if s["polity"] in NO_FLEET_POLS or (
+            s["polity"] == "Eternal State" and s["name"] not in ("Farport", "Palewharf")
         ):
             s["water_cell"] = None
             s["is_ring_sea_port"] = False
-            if s["polity"] in ("Lizardmen", "Screamer Country", "Beast Riders"):
+            if s["polity"] in NO_FLEET_POLS:
                 s["river_cell"] = None
                 continue
         else:
-            # Check shoreline proximity for navigable sea/lake water
+            # Check shoreline proximity for navigable sea/lake water (Palewharf connects strictly to inland_lake Jimjam's Lake!)
             best_w = None
             rad_w = 5 if s["name"] in EXPLICIT_COASTAL_PORTS else 1
             for dj in range(-rad_w, rad_w + 1):
@@ -1874,6 +2043,8 @@ def build_multimodal_graphs(world, setts):
                         continue
                     nj, ni = cj + dj, ci + di
                     if 0 <= nj < GH and 0 <= ni < GW and nav_water[nj, ni]:
+                        if s["name"] == "Palewharf" and not inland_lake[nj, ni]:
+                            continue
                         d = dj * dj + di * di
                         if best_w is None or d < best_w[0]:
                             best_w = (d, nj * GW + ni)
@@ -1973,6 +2144,11 @@ def build_multimodal_graphs(world, setts):
         dr_km = dr_sl = dr_q = np.zeros(0, dtype=np.float64)
 
     # Engineered corridors, tunnels, lifts & mountain passes aligned with claude/ancient-network-9cc3e7 + updated 5.1 pins
+    # NOTE:
+    # - Intra-Xanadu trade moves 100% on Layer 0 Xanadu roads (zero SPECIAL_CORRIDORS inside Xanadu).
+    # - Parabola <-> Arcbeam & Mantis <-> Parabola move 100% on open surface Ancient highways on Layer 0 (zero ancient tubes).
+    # - Catch & Twins caravan stops move on Layer 0 desert oasis tracks & mountain pass switchbacks.
+    # - Qoold Lheek <-> Leng <-> Jimjam moves on the Layer 0 northern dirt road supp.jimjam_qoold_lheek_dirt.
     SPECIAL_CORRIDORS = [
         ("Tungang Rift-Line Train Bore", 464, 1112, 461, 1161, 115, 58.0, 72.0),
         ("Tungang Deep Hot Bore (>100 C)", 461, 1161, 457, 1269, 215, 108.0, 138.0),
@@ -1981,29 +2157,6 @@ def build_multimodal_graphs(world, setts):
         ("Span Basin Tunnel", 464, 1112, 554, 1010, 240, 185.0, 155.0),
         ("Inner Wall Karst Tunnel (Drum-Cascade)", 673, 932, 568, 841, 275, 445.0, 250.0),
         ("Verge 16-Hairpin Scarp", 1240, 960, 1263, 946, 60, 115.0, 75.0),
-        # Bowl solar-furnace arcology Parabola & Godsgate way + canonical Catch oasis chain (Kolli, Arfwai, Stair)
-        ("Bowl Solar Road (Arcbeam-Parabola)", 1016, 1058, 970, 1186, 308, 295.0, 226.0),
-        ("Izani Bowl Spur (Mantis-Parabola)", 1113, 1164, 970, 1186, 315, 308.0, 236.0),
-        ("Godsgate Way N (Parabola-Bab al-Hawa)", 970, 1186, 1028, 1246, 175, 238.0, 174.0),
-        ("Godsgate & Bab al-Hawa (Mantis-Godsgate)", 1113, 1164, 1028, 1246, 235, 320.0, 228.0),
-        ("Catch North Oases (Godsgate-Kolli)", 1028, 1246, 1058, 1367, 248, 330.0, 238.0),
-        ("Catch Mid Oasis (Kolli-Arfwai)", 1058, 1367, 1090, 1387, 76, 98.0, 72.0),
-        ("Catch South Oasis (Arfwai-Stair)", 1090, 1387, 1106, 1442, 115, 152.0, 110.0),
-        ("Dasri Bowl-Catch Oasis Trail (Jabal-Arfwai)", 1225, 1149, 1090, 1387, 548, 720.0, 510.0),
-        # Three Catch-Xanadu crossings (ANCIENT-NETWORK.md s8.16): The Twins, White Gills, & Theodiga-Stair dark dead bore
-        ("The Twins Lava-Tube & Steam Pass", 1106, 1442, 1042, 1525, 215, 290.0, 192.0),
-        ("Twins-Strongbow Descent", 1042, 1525, 1001, 1596, 165, 220.0, 148.0),
-        ("White Gills Breath-Pass (Stair-Gills)", 1106, 1442, 1035, 1535, 235, 340.0, 215.0),
-        ("White Gills Descent (Gills-Strongbow)", 1035, 1535, 1001, 1596, 140, 210.0, 130.0),
-        ("Theodiga-Stair Dead Bore E (Stair-Mid Bore)", 1106, 1442, 1006, 1490, 219, float("inf"), 225.0),
-        ("Theodiga-Stair Dead Bore W (Mid Bore-Theodiga)", 1006, 1490, 908, 1535, 219, float("inf"), 225.0),
-        # Strongbow 3,100 m scarp elevator + Vale of Xanadu roads + Oidong Valley floor road
-        ("Strongbow Scarp Elevator & Vale Road (Strongbow-Qiblai)", 1001, 1596, 922, 1595, 166, 195.0, 148.0),
-        ("Vale of Xanadu Road (Qiblai-Theodiga)", 922, 1595, 908, 1535, 126, 145.0, 112.0),
-        ("Vale of Xanadu Royal Road (Theodiga-Erehwon)", 908, 1535, 805, 1516, 212, 248.0, 196.0),
-        ("Vale South Road (Qiblai-Erehwon)", 922, 1595, 805, 1516, 282, 315.0, 242.0),
-        ("Oidong Valley Road W (Strongbow-Mid Oidong)", 1001, 1596, 1111, 1602, 224, 245.0, 185.0),
-        ("Oidong Valley Road E (Mid Oidong-Longsong)", 1111, 1602, 1229, 1621, 245, 268.0, 202.0),
         # Once-a-year Annual Great Caravan routed along the NORTH side of the Rift
         ("Annual Great Caravan N1 (Nulab-North Rift W Bench)", 443, 1359, 520, 1402, 180, float("inf"), 305.0),
         ("Annual Great Caravan N2 (North Rift Mid-W Terrace)", 520, 1402, 565, 1411, 98, float("inf"), 165.0),
@@ -2012,15 +2165,6 @@ def build_multimodal_graphs(world, setts):
         ("Annual Great Caravan N5 (North Rift-West Vale Gate)", 720, 1501, 775, 1504, 115, float("inf"), 192.0),
         ("Annual Great Caravan N6 (West Vale Gate-Erehwon)", 775, 1504, 805, 1516, 68, float("inf"), 115.0),
         ("Talovolci Cliff-Lung Stairs (Torus-Spirladunon)", 777, 1005, 800, 1017, 52, 190.0, 82.0),
-        # Hazardous, navigable dirt road stretching from Qoold Lheek (410,506) via Leng (490,554) to Jimjam (745,546)
-        # (stresses northern uplands outside Eternal State; carries Yeti upland goods & Eternian raid booty!)
-        ("Qoold Lheek–Jimjam Dirt Road W (Qoold Lheek–Leng)", 410, 506, 490, 554, 185, 225.0, 148.0),
-        ("Qoold Lheek–Jimjam Dirt Road Mid-W (Leng–South Yeti Pass)", 490, 554, 548, 608, 162, 198.0, 132.0),
-        ("Qoold Lheek–Jimjam Dirt Road Mid-E (South Yeti Pass–Lake Bend)", 548, 608, 622, 626, 152, 185.0, 124.0),
-        ("Qoold Lheek–Jimjam Dirt Road E (Lake Bend–Jimjam)", 622, 626, 745, 546, 294, 345.0, 228.0),
-        ("Yeti North Rim Trail W (Leng-West Dam)", 490, 554, 575, 475, 215, 285.0, 205.0),
-        ("Yeti North Rim Trail Mid (West Dam-Mid Dam)", 575, 475, 665, 435, 195, 245.0, 180.0),
-        ("Yeti North Rim Trail E (Mid Dam-Boatmurder)", 665, 435, 766, 404, 212, 315.0, 228.0),
         # Kautoa serves as the Beast Riders' effective navy and coastal presence:
         ("Kautoa–Beast Rider Drua Factor (Mav's Refuge–Bipo)", 1049, 841, 1000, 814, 108, 34.0, 26.0),
         ("Kautoa–Beast Rider North Factor (Talon–Kautoa)", 1026, 760, 964, 725, 142, 44.0, 34.0),
@@ -2125,10 +2269,13 @@ def build_multimodal_graphs(world, setts):
             c_arr = np.where(th_r, c_arr * (1.48 if use_bulk else 1.38), c_arr)
         return c_arr
 
+    yeti_eternia_block = mask_eternal_poly | ((px_g < 665.0) & (py_g >= 556.0) & (py_g <= 666.0))
+
     def make_csr(sea_mult, road_scale, trail_mult, port_fee, barge_fee, use_bulk, regime="std"):
         rows, cols, costs = [], [], []
         is_iziz_reg = regime in ("iziz", "iziz_visas")
         is_voth_reg = regime == "voth"
+        is_yeti_reg = regime == "yeti"
 
         for dj, di in ((0, 1), (1, 0), (1, 1), (1, -1)):
             a = idx[max(0, -dj):GH - max(0, dj), max(0, -di):GW - max(0, di)].ravel()
@@ -2164,9 +2311,14 @@ def build_multimodal_graphs(world, setts):
             ford_pen = np.where(cross_250 & (~has_road), 32.0 if use_bulk else 11.5, ford_pen)
             c_land = c_land + ford_pen
 
-            # Arid off-road surcharge & Korona maze penalty
+            # Arid off-road surcharge, hyper-arid waterless Catch/Bowl playa penalty (caravans MUST follow oasis wells!) & Korona maze penalty
             arid = ((RAIN.flat[a] < 260) | (RAIN.flat[b] < 260)) & (~has_road)
-            c_land = np.where(arid, c_land * 1.25, c_land)
+            c_land = np.where(arid, c_land * 1.35, c_land)
+            hyper_arid_catch = (
+                ((RAIN.flat[a] < 175) | (RAIN.flat[b] < 175) | ((px_g.flat[a] >= 940.0) & (px_g.flat[a] <= 1240.0) & (py_g.flat[a] >= 1170.0) & (py_g.flat[a] <= 1545.0)))
+                & (~has_road)
+            )
+            c_land = np.where(hyper_arid_catch, c_land * 2.45, c_land)
             kor = (mask_korona.flat[a] | mask_korona.flat[b]) & (~has_road)
             c_land = np.where(kor, c_land * 3.6, c_land)
 
@@ -2182,6 +2334,12 @@ def build_multimodal_graphs(world, setts):
             ring_w = is_ring_sea.flat[a] | is_ring_sea.flat[b]
             abs_bar = abstract_land_mask.flat[a] | abstract_land_mask.flat[b]  # abstract sea regions move ONLY via ship to Farport!
             impass = (emax > 7500.0) | mask_valley.flat[a] | mask_valley.flat[b] | rift_bar | (wa & wb) | ring_w | abs_bar
+            if use_bulk:
+                # Bulk wagon transport is impractical on the hazardous Yeti highland dirt road!
+                impass = impass | mask_yeti_poly.flat[a] | mask_yeti_poly.flat[b]
+            if is_yeti_reg:
+                # Yeti trade NEVER cuts south through Eternian land — exits strictly east via Jimjam & the eastern highway!
+                impass = impass | yeti_eternia_block.flat[a] | yeti_eternia_block.flat[b]
             one_w = wa ^ wb
             c_land = np.where(one_w, c_land * 4.5, c_land)
             c_land[impass] = np.inf
@@ -2207,6 +2365,8 @@ def build_multimodal_graphs(world, setts):
 
             # --- Layer 2a: Eternian Locked Canals (2*N_CELL .. 3*N_CELL - 1, symmetric slackwater) ---
             cna = canal_nav.flat[a] & canal_nav.flat[b] & (g < 0.008)
+            if is_yeti_reg:
+                cna = cna & (~yeti_eternia_block.flat[a]) & (~yeti_eternia_block.flat[b])
             if cna.any():
                 ac, bc = a[cna] + 2 * N_CELL, b[cna] + 2 * N_CELL
                 cc = np.full(ac.shape, d_km * (0.22 if use_bulk else 0.34), dtype=np.float64)
@@ -2233,6 +2393,8 @@ def build_multimodal_graphs(world, setts):
                 | mask_north_rift_barrier.flat[dr_u] | mask_north_rift_barrier.flat[dr_v]
                 | mask_south_rift_barrier.flat[dr_u] | mask_south_rift_barrier.flat[dr_v]
             )
+            if is_yeti_reg:
+                riv_impass = riv_impass | yeti_eternia_block.flat[dr_u] | yeti_eternia_block.flat[dr_v]
             c_down[riv_impass] = np.inf
             c_up[riv_impass] = np.inf
             ok_d = np.isfinite(c_down)
@@ -2243,6 +2405,8 @@ def build_multimodal_graphs(world, setts):
 
         # Port tariff helper (shared by Layer 0 <-> Layer 1 ports & Layer 2 <-> Layer 1 estuary lighterage)
         def calc_port_tariff(base_fee, p_name, p_pol):
+            if is_yeti_reg and (p_pol == "Eternal State" or p_name in ("Palewharf", "Farport", "Jimjam")):
+                return np.inf
             # Port Mira (Hookfleet) is an open pirate & smuggler haven — accepts ALL ships under every flag!
             if p_name == "Port Mira":
                 return base_fee * 0.68
@@ -2277,6 +2441,8 @@ def build_multimodal_graphs(world, setts):
 
         # 2. River & Canal Barge Wharves at Settlements (Layer 0 <-> Layer 2)
         for c_land_idx, c_riv_idx, p_name, p_pol in barge_links:
+            if is_yeti_reg and p_pol == "Eternal State":
+                continue
             if is_iziz_reg and p_pol == "Vothic Kingdom":
                 continue
             if is_voth_reg and p_pol in ("Empire of Iziz", "Shell Province"):
@@ -2308,7 +2474,9 @@ def build_multimodal_graphs(world, setts):
             bb_0 = np.array(bridge_barge_cells, dtype=np.int32)
             bb_2 = bb_0 + 2 * N_CELL
             bb_c = np.full(bb_0.shape, barge_fee + 5.0, dtype=np.float64)
-            if is_iziz_reg:
+            if is_yeti_reg:
+                bb_c = np.where(yeti_eternia_block.flat[bb_0], np.inf, bb_c)
+            elif is_iziz_reg:
                 bb_c = np.where(mask_voth_poly.flat[bb_0], np.inf, bb_c)
             elif is_voth_reg:
                 bb_c = np.where(mask_iziz_poly.flat[bb_0] | mask_shell_poly.flat[bb_0], np.inf, bb_c)
@@ -2344,6 +2512,8 @@ def build_multimodal_graphs(world, setts):
     G_izv_comp = make_csr(sea_mult=0.28, road_scale=1.00, trail_mult=1.00, port_fee=22.0, barge_fee=11.0, use_bulk=False, regime="iziz_visas")
     G_voth_bulk = make_csr(sea_mult=0.16, road_scale=1.15, trail_mult=1.35, port_fee=26.0, barge_fee=9.0, use_bulk=True, regime="voth")
     G_voth_comp = make_csr(sea_mult=0.28, road_scale=1.00, trail_mult=1.00, port_fee=22.0, barge_fee=11.0, use_bulk=False, regime="voth")
+    G_yeti_bulk = make_csr(sea_mult=0.16, road_scale=1.15, trail_mult=1.35, port_fee=26.0, barge_fee=9.0, use_bulk=True, regime="yeti")
+    G_yeti_comp = make_csr(sea_mult=0.28, road_scale=1.00, trail_mult=1.00, port_fee=22.0, barge_fee=11.0, use_bulk=False, regime="yeti")
 
     sids = sorted(setts.keys())
     src_cells = [setts[sid]["cell"] for sid in sids]
@@ -2351,10 +2521,12 @@ def build_multimodal_graphs(world, setts):
     iziz_cells = [setts[sid]["cell"] for sid in iziz_sids]
     voth_sids = [sid for sid in sids if setts[sid]["polity"] == "Vothic Kingdom"]
     voth_cells = [setts[sid]["cell"] for sid in voth_sids]
+    yeti_sids = [sid for sid in sids if setts[sid]["polity"] == "Yeti Kingdom"]
+    yeti_cells = [setts[sid]["cell"] for sid in yeti_sids]
 
     print(
         f"Running directed 3-layer multimodal Dijkstra for {len(sids)} settlements "
-        f"(+ {len(iziz_sids)} Iziz wartime/Visas & {len(voth_sids)} Voth wartime sources) across {3*N_CELL:,} graph nodes..."
+        f"(+ {len(iziz_sids)} Iziz, {len(voth_sids)} Voth & {len(yeti_sids)} Yeti regime sources) across {3*N_CELL:,} graph nodes..."
     )
     dist_bulk, pred_bulk = dijkstra(G_bulk, directed=True, indices=src_cells, return_predecessors=True)
     dist_comp, pred_comp = dijkstra(G_comp, directed=True, indices=src_cells, return_predecessors=True)
@@ -2374,11 +2546,17 @@ def build_multimodal_graphs(world, setts):
     dist_voth_bulk_rev, pred_voth_bulk_rev = dijkstra(G_voth_bulk.T, directed=True, indices=voth_cells, return_predecessors=True)
     dist_voth_comp_rev, pred_voth_comp_rev = dijkstra(G_voth_comp.T, directed=True, indices=voth_cells, return_predecessors=True)
 
+    dist_yeti_bulk, pred_yeti_bulk = dijkstra(G_yeti_bulk, directed=True, indices=yeti_cells, return_predecessors=True)
+    dist_yeti_comp, pred_yeti_comp = dijkstra(G_yeti_comp, directed=True, indices=yeti_cells, return_predecessors=True)
+    dist_yeti_bulk_rev, pred_yeti_bulk_rev = dijkstra(G_yeti_bulk.T, directed=True, indices=yeti_cells, return_predecessors=True)
+    dist_yeti_comp_rev, pred_yeti_comp_rev = dijkstra(G_yeti_comp.T, directed=True, indices=yeti_cells, return_predecessors=True)
+
     return {
         "N_CELL": N_CELL, "GW": GW, "GH": GH,
         "sids": sids, "sid_to_idx": {sid: i for i, sid in enumerate(sids)},
         "iziz_sids": iziz_sids, "iziz_sid_to_idx": {sid: i for i, sid in enumerate(iziz_sids)},
         "voth_sids": voth_sids, "voth_sid_to_idx": {sid: i for i, sid in enumerate(voth_sids)},
+        "yeti_sids": yeti_sids, "yeti_sid_to_idx": {sid: i for i, sid in enumerate(yeti_sids)},
         "dist_bulk": dist_bulk, "pred_bulk": pred_bulk,
         "dist_comp": dist_comp, "pred_comp": pred_comp,
         "dist_iziz_bulk": dist_iziz_bulk, "pred_iziz_bulk": pred_iziz_bulk,
@@ -2393,7 +2571,11 @@ def build_multimodal_graphs(world, setts):
         "dist_voth_comp": dist_voth_comp, "pred_voth_comp": pred_voth_comp,
         "dist_voth_bulk_rev": dist_voth_bulk_rev, "pred_voth_bulk_rev": pred_voth_bulk_rev,
         "dist_voth_comp_rev": dist_voth_comp_rev, "pred_voth_comp_rev": pred_voth_comp_rev,
-        "is_ring_sea": is_ring_sea, "river_nav": river_nav, "canal_nav": canal_nav,
+        "dist_yeti_bulk": dist_yeti_bulk, "pred_yeti_bulk": pred_yeti_bulk,
+        "dist_yeti_comp": dist_yeti_comp, "pred_yeti_comp": pred_yeti_comp,
+        "dist_yeti_bulk_rev": dist_yeti_bulk_rev, "pred_yeti_bulk_rev": pred_yeti_bulk_rev,
+        "dist_yeti_comp_rev": dist_yeti_comp_rev, "pred_yeti_comp_rev": pred_yeti_comp_rev,
+        "is_ring_sea": is_ring_sea, "inland_lake": inland_lake, "river_nav": river_nav, "canal_nav": canal_nav,
         "road_mult": road_mult, "supp_roads": supp_roads,
         "special_corridors": SPECIAL_CORRIDORS + IZIZ_VISAS_CORRIDORS,
         "mask_lizard_hostile": mask_lizard_hostile, "mask_lizard_poly": mask_lizard_poly,
@@ -2446,6 +2628,8 @@ def is_iziz_voth_war_pair(pol_a, pol_b):
 def pick_pair_regime(pol_a, pol_b):
     if is_iziz_voth_war_pair(pol_a, pol_b):
         return "war_intermediary"
+    if "Yeti Kingdom" in (pol_a, pol_b):
+        return "yeti"
     if uses_iziz_visas_regime(pol_a, pol_b):
         return "iziz_visas"
     if pol_a in IZIZ_IMPERIAL_POLS or pol_b in IZIZ_IMPERIAL_POLS:
@@ -2453,6 +2637,27 @@ def pick_pair_regime(pol_a, pol_b):
     if pol_a == "Vothic Kingdom" or pol_b == "Vothic Kingdom":
         return "voth"
     return "std"
+
+
+def downsample_poly_and_modes(full_poly, seg_modes, target_pts=55):
+    if len(full_poly) <= 2 or not seg_modes:
+        return list(full_poly), list(seg_modes[:max(0, len(full_poly) - 1)])
+    step = max(1, (len(full_poly) - 1) // target_pts)
+    idxs = list(range(0, len(full_poly) - 1, step))
+    if idxs[-1] != len(full_poly) - 1:
+        idxs.append(len(full_poly) - 1)
+    ds_poly = [full_poly[i] for i in idxs]
+    ds_modes = []
+    for k in range(len(idxs) - 1):
+        chunk = seg_modes[idxs[k]:idxs[k + 1]]
+        if not chunk:
+            ds_modes.append(seg_modes[min(idxs[k], len(seg_modes) - 1)])
+        else:
+            counts = defaultdict(int)
+            for m in chunk:
+                counts[m] += 1
+            ds_modes.append(max(counts.items(), key=lambda kv: kv[1])[0])
+    return ds_poly, ds_modes
 
 
 def analyze_pair_path(world, graph, setts, sid_src, sid_dst, tier):
@@ -2466,7 +2671,16 @@ def analyze_pair_path(world, graph, setts, sid_src, sid_dst, tier):
     u_src = setts[sid_src]["cell"]
     u_dst = setts[sid_dst]["cell"]
 
-    if reg == "iziz_visas":
+    if reg == "yeti":
+        if sid_src in graph["yeti_sid_to_idx"]:
+            yt_i = graph["yeti_sid_to_idx"][sid_src]
+            pred = graph["pred_yeti_bulk"][yt_i] if tier == "bulk" else graph["pred_yeti_comp"][yt_i]
+            root_cell, leaf_cell, need_rev = u_src, u_dst, True
+        else:
+            yt_j = graph["yeti_sid_to_idx"][sid_dst]
+            pred = graph["pred_yeti_bulk_rev"][yt_j] if tier == "bulk" else graph["pred_yeti_comp_rev"][yt_j]
+            root_cell, leaf_cell, need_rev = u_dst, u_src, False
+    elif reg == "iziz_visas":
         if sid_src in graph["iziz_sid_to_idx"]:
             iz_i = graph["iziz_sid_to_idx"][sid_src]
             pred = graph["pred_izv_bulk"][iz_i] if tier == "bulk" else graph["pred_izv_comp"][iz_i]
@@ -2619,9 +2833,9 @@ def analyze_pair_path(world, graph, setts, sid_src, sid_dst, tier):
                 sea_km += step_km
                 ring_sea_km += step_km
                 mx_i, my_j = 0.5 * (ai + bi), 0.5 * (aj + bj)
-                # Port Mira's 100 Izani kil (~100 km) rule: NO shipjacking within 100 km of Port Mira!
+                # Port Mira's 50-km rule: NO shipjacking within 50 km of Port Mira!
                 d_mira_km = 4.0 * math.hypot(mx_i - mira_ci, my_j - mira_cj)
-                if d_mira_km <= 100.0:
+                if d_mira_km <= 50.0:
                     mira_truce_km += step_km
                 else:
                     exposed_ring_sea_km += step_km
@@ -2631,14 +2845,14 @@ def analyze_pair_path(world, graph, setts, sid_src, sid_dst, tier):
                             min_pirate_dist_km = d_pir
                 mode = "sea"
             else:
-                # Farside Ocean vs calm inland lake (Shim, Iziz, Xanadu, Trigon, Spider):
-                # Open ocean (px < 460 and py < 620) counts as sea; inland lakes count with river/lake barging or sea!
+                # Farside Ocean vs calm inland lake (Jimjam's Lake, Lake Shim, Iziz Lake, Lake Xanadu, Spider Lake):
+                # Open ocean (px < 465 and py < 630) counts as sea; calm inland lakes count as lake barging ("river")!
                 if px_a < 465.0 and py_a < 630.0:
                     sea_km += step_km
                     mode = "sea"
                 else:
-                    sea_km += step_km
-                    mode = "sea"
+                    riv_km += step_km
+                    mode = "river"
         else:
             if graph["mask_lizard_hostile"][aj, ai] or graph["mask_lizard_hostile"][bj, bi]:
                 lizard_km += step_km
@@ -2689,7 +2903,9 @@ def analyze_pair_path(world, graph, setts, sid_src, sid_dst, tier):
 
     # Detect key land/river gateway settlements passed within 12 km (3 cells)
     GATEWAY_NAMES = [
-        "Dilihan", "Port Visas", "Ardent", "Jimjam", "Leng", "Talia", "Verge", "Parabola", "Stair", "Strongbow",
+        "Dilihan", "Port Visas", "Ardent", "Jimjam", "Leng", "Palewharf", "Bastion", "Talia", "Verge",
+        "Arcbeam", "Mantis", "Parabola", "Bab al-Hawa (Godsgate)", "Kolli Oasis", "Arfwai Oasis",
+        "Catch Salt Works", "Stair", "The Twins", "White Gills Hermitage", "Strongbow", "Kirstabal", "Qiblai", "Theodiga",
         "Roketstad", "Cascade", "Span", "Ledge", "The Gate", "The Sill (Sam-Lok)",
         "Spider Lake Weirs", "Hook", "Port Mira", "Port Tobin", "Port Goto", "Marr", "Ys", "Tethis", "Nephtos",
         "Trigon", "Almua", "Zey'danin", "Dhelv", "Kautoa", "Bipo", "Farport", "Fulcrum", "Boatmurder",
@@ -2702,12 +2918,12 @@ def analyze_pair_path(world, graph, setts, sid_src, sid_dst, tier):
         if nm in GATEWAY_NAMES and not s.get("abstract_region")
     ]
     gateways_hit = list(barge_hubs_used)
-    land_pts = [(n % N_CELL) for n in nodes[::2] if (n // N_CELL) in (0, 2)]
+    land_pts = [(n % N_CELL) for n in nodes if (n // N_CELL) in (0, 2)]
     for gname, gc in gw_cells:
         gj, gi = divmod(gc, GW)
         for lp in land_pts:
             lj, li = divmod(lp, GW)
-            if (lj - gj) ** 2 + (li - gi) ** 2 <= 9:
+            if (lj - gj) ** 2 + (li - gi) ** 2 <= 25:
                 if gname not in gateways_hit:
                     gateways_hit.append(gname)
                 break
@@ -2715,7 +2931,7 @@ def analyze_pair_path(world, graph, setts, sid_src, sid_dst, tier):
     total_km = max(1.0, sea_km + riv_km + hwy_km + trail_km + spec_km)
     pirate_rate = 0.0
     naval_war_rate = 0.0
-    # Enforce Port Mira's 100-kil truce zone: zero shipjacking inside 100 km of Port Mira;
+    # Enforce Port Mira's 50-km truce zone: zero shipjacking inside 50 km of Port Mira;
     # voyages passing partially outside scale exposure by exposed_ring_sea_km / ring_sea_km!
     if exposed_ring_sea_km >= 12.0 and ring_sea_km > 0.0:
         exp_frac = min(1.0, exposed_ring_sea_km / max(ring_sea_km, 1.0))
@@ -2726,7 +2942,7 @@ def analyze_pair_path(world, graph, setts, sid_src, sid_dst, tier):
 
     raider_tags = []
     if mira_truce_km >= 16.0 and exposed_ring_sea_km < 12.0:
-        raider_tags.append("Port Mira 100-Kil Truce Zone (No Shipjacking)")
+        raider_tags.append("Port Mira 50-Kil Truce Zone (No Shipjacking)")
     if naval_war_rate > 0:
         raider_tags.append("Iziz-Voth Naval War (Shipping Raids)")
     if any("Iziz-Guarded Visas Caravan" in c for c in corridors_used):
@@ -2752,7 +2968,7 @@ def analyze_pair_path(world, graph, setts, sid_src, sid_dst, tier):
     if swhigh_km >= 20 and "Realm of Dalab" not in (pol_s, pol_d):
         raider_tags.append("Frogmen / SW Highlander Raids")
     if desert_bandit_km >= 32:
-        raider_tags.append("Eastern Nomad Desert Bandits")
+        raider_tags.append("Desert Nomad Bandits")
     if coyote_nomad_km >= 20:
         raider_tags.append("Coyote-Nomad Border Raids")
     if fellgang_km >= 24:
@@ -2764,6 +2980,7 @@ def analyze_pair_path(world, graph, setts, sid_src, sid_dst, tier):
     if yeti_km >= 24:
         raider_tags.append("Yeti Raid Frontier")
 
+    ds_poly, ds_modes = downsample_poly_and_modes(poly_51, seg_modes, target_pts=55)
     return {
         "real_km": round(total_km),
         "sea_km": round(sea_km),
@@ -2795,7 +3012,8 @@ def analyze_pair_path(world, graph, setts, sid_src, sid_dst, tier):
         "gateways": gateways_hit,
         "pirate_rate": pirate_rate,
         "naval_war_rate": naval_war_rate,
-        "poly_51": poly_51[::max(1, len(poly_51) // 45)] + ([poly_51[-1]] if poly_51 else []),
+        "poly_51": ds_poly,
+        "poly_modes": ds_modes,
         "seg_modes": seg_modes,
         "full_poly": poly_51,
     }
@@ -2812,21 +3030,21 @@ def solve_trade(world, setts, graph):
     sid_to_idx = graph["sid_to_idx"]
     iziz_sid_to_idx = graph["iziz_sid_to_idx"]
     voth_sid_to_idx = graph["voth_sid_to_idx"]
+    yeti_sid_to_idx = graph["yeti_sid_to_idx"]
     noas_sid = next(sid for sid, s in setts.items() if s["name"] == "Noa's Regret")
     shanty_sid = next(sid for sid, s in setts.items() if s["name"] == "Shanty")
     boiling_sid = next(sid for sid, s in setts.items() if s["name"] == "Boiling Bay")
     port_mira_sid = next(sid for sid, s in setts.items() if s["name"] == "Port Mira")
     nephtos_sid = next(sid for sid, s in setts.items() if s["name"] == "Nephtos")
     marr_sid = next(sid for sid, s in setts.items() if s["name"] == "Marr")
-    dhelv_sid = next(sid for sid, s in setts.items() if s["name"] == "Dhelv")
     kautoa_sid = next(sid for sid, s in setts.items() if s["name"] == "Kautoa")
     # Pirate prize fencing havens: Port Mira (pirate & smuggler haven accepting all ships!) + 3 Ring Sea Pirate coves.
     # NOTE: Nephtos is strictly a SMUGGLING haven, NEVER a piracy haven!
     pirate_cove_shares = [(port_mira_sid, 0.34), (noas_sid, 0.31), (shanty_sid, 0.20), (boiling_sid, 0.15)]
     # Wartime smuggling intermediaries between Iziz & Voth:
-    # Nephtos (northern/eastern Ring Sea smuggling haven!) & Port Mira (southern Throne smuggling & pirate haven!) & Dhelv (Zeijani);
-    # Kautoa removed (cool with Iziz as Beast Riders' navy!).
-    neutral_intermediaries = [(nephtos_sid, 18.0), (port_mira_sid, 20.0), (dhelv_sid, 38.0)]
+    # Nephtos (northern/eastern Ring Sea smuggling haven!) & Port Mira (southern Throne smuggling & pirate haven!);
+    # Dhelv excluded (inland cavern, Zeijani have zero fleet!) and Kautoa excluded (cool with Iziz as Beast Riders' navy!).
+    neutral_intermediaries = [(nephtos_sid, 18.0), (port_mira_sid, 20.0)]
 
     # Group settlements by polity
     pol_members = defaultdict(list)
@@ -2838,6 +3056,12 @@ def solve_trade(world, setts, graph):
     def single_leg_eff(sid_a, sid_b, is_bulk):
         pol_a, pol_b = setts[sid_a]["polity"], setts[sid_b]["polity"]
         reg = pick_pair_regime(pol_a, pol_b)
+        if reg == "yeti":
+            if sid_a in yeti_sid_to_idx:
+                dmat = graph["dist_yeti_bulk"] if is_bulk else graph["dist_yeti_comp"]
+                return float(dmat[yeti_sid_to_idx[sid_a], setts[sid_b]["cell"]])
+            dmat = graph["dist_yeti_bulk_rev"] if is_bulk else graph["dist_yeti_comp_rev"]
+            return float(dmat[yeti_sid_to_idx[sid_b], setts[sid_a]["cell"]])
         if reg == "iziz_visas":
             if sid_a in iziz_sid_to_idx:
                 dmat = graph["dist_izv_bulk"] if is_bulk else graph["dist_izv_comp"]
@@ -2916,6 +3140,7 @@ def solve_trade(world, setts, graph):
             "coyote_nomad_km", "desert_bandit_km", "throne_native_km",
         ):
             out[k_num] = p1[k_num] + p2[k_num]
+        ds_poly_c, ds_modes_c = downsample_poly_and_modes(full_poly, seg_modes, target_pts=55)
         out.update({
             "raider_tags": rtags,
             "ports": ports,
@@ -2923,7 +3148,8 @@ def solve_trade(world, setts, graph):
             "gateways": gws,
             "pirate_rate": comb_pirate,
             "naval_war_rate": comb_war,
-            "poly_51": full_poly[::max(1, len(full_poly) // 45)] + ([full_poly[-1]] if full_poly else []),
+            "poly_51": ds_poly_c,
+            "poly_modes": ds_modes_c,
             "seg_modes": seg_modes,
             "full_poly": full_poly,
         })
@@ -2969,9 +3195,12 @@ def solve_trade(world, setts, graph):
     per_good = {}
     polity_exports = defaultdict(lambda: defaultdict(float))
     polity_imports = defaultdict(lambda: defaultdict(float))
+    sett_exports = defaultdict(lambda: defaultdict(float))
+    sett_imports = defaultdict(lambda: defaultdict(float))
     entrepot_totals = defaultdict(lambda: {"sea_tons": 0.0, "land_tons": 0.0, "flows": 0, "goods": defaultdict(float)})
     pirate_ledger = defaultdict(lambda: {"captured": 0.0, "fenced": 0.0, "victims": defaultdict(float), "buyers": defaultdict(float)})
     rendered_corridors = []  # collected weighted polylines for map visualization
+    FLEETLESS_VICTIM_POLS = {"Zeijani", "Andaru", "Tiguantin", "Beast Riders"}
 
     for g in GOODS:
         gid = g["id"]
@@ -3075,12 +3304,21 @@ def solve_trade(world, setts, graph):
                     if s_pol in THRONE_COLONIAL_POLS and b_pol in ("Zeijani", "Andaru") and gid in ("arms", "rockets"):
                         w_row.append(0.0)
                         continue
+                    # 8. Bulk transport is impractical on the hazardous Yeti highland dirt road!
+                    if "Yeti Kingdom" in (s_pol, b_pol) and tier == "bulk":
+                        w_row.append(0.0)
+                        continue
                     eff_km = fast_eff(s_sid, b_sid, tier)
                     if not np.isfinite(eff_km):
                         w_row.append(0.0)
                         continue
-                    # Staple food range cap: <= 240 effective km (~180 km overland OR ~1,100 km by ship!)
+                    # Staple food & raw construction timber range caps:
+                    # - Food <= 240 effective km (~180 km overland OR ~1,100 km by ship!)
+                    # - Raw construction timber <= 250 effective km (short regional river/coastal log rafts only; naval yards buy ship-timber!)
                     if gid == "food" and eff_km > 240.0:
+                        w_row.append(0.0)
+                        continue
+                    if gid == "timber" and eff_km > 250.0:
                         w_row.append(0.0)
                         continue
                     if gid == "brick" and eff_km > 210.0:
@@ -3094,7 +3332,17 @@ def solve_trade(world, setts, graph):
                         if eff_km > max_bulk_eff:
                             w_row.append(0.0)
                             continue
-                    w = s_avail / ((eff_km + 45.0) ** alpha)
+                    if gid == "mounts":
+                        # Live riding/pack beasts require fodder & watering and suffer heavy sea-stallage mortality on long voyages:
+                        _, pinfo_m = get_pair(s_sid, b_sid, tier)
+                        sea_m = pinfo_m["sea_km"] if pinfo_m else 0.0
+                        eff_m = eff_km + 0.60 * sea_m
+                        if eff_m > 460.0 or sea_m > 420.0:
+                            w_row.append(0.0)
+                            continue
+                        w = s_avail / ((eff_m + 45.0) ** 1.65)
+                    else:
+                        w = s_avail / ((eff_km + 45.0) ** alpha)
                     # Bilateral war, hostilities, commercial rivalries & border-raider frictions:
                     # Tiguantin is an Empire of Iziz tributary — strong tributary trade orientation toward Iziz!
                     if {s_pol, b_pol} == {"Tiguantin", "Empire of Iziz"}:
@@ -3170,9 +3418,9 @@ def solve_trade(world, setts, graph):
                             w *= 1.65
                         else:
                             w *= 0.20
-                    # Yeti caravans cannot clear customs through Eternal State ports/cities (Lux, Fulcrum, Bastion, Farport)
+                    # Yeti caravans cannot clear customs through Eternal State ports/cities (Lux, Fulcrum, Bastion, Palewharf, Farport)
                     if "Yeti Kingdom" in (s_pol, b_pol) and pinfo_chk:
-                        if any(ep in pinfo_chk["ports"] or ep in pinfo_chk["gateways"] for ep in ("Lux", "Fulcrum", "Bastion", "Farport")):
+                        if any(ep in pinfo_chk["ports"] or ep in pinfo_chk["gateways"] for ep in ("Lux", "Fulcrum", "Bastion", "Palewharf", "Farport")):
                             w = 0.0
                     # Rivalry transit discouragement:
                     # - Hykkousoi merchants avoid transiting Vothic ports to third parties
@@ -3228,7 +3476,8 @@ def solve_trade(world, setts, graph):
                         captured_pool += taken_pir
                         war_prize_pool += taken_mid
                         pirate_ledger[gid]["captured"] += taken
-                        pirate_ledger[gid]["victims"][setts[s_sid]["polity"]] += taken
+                        vic_pol = setts[b_sid]["polity"] if setts[s_sid]["polity"] in FLEETLESS_VICTIM_POLS else setts[s_sid]["polity"]
+                        pirate_ledger[gid]["victims"][vic_pol] += taken
                     raw_flows.append((s_sid, b_sid, delivered, eff_km, pinfo, False))
 
             # Pass 2a: Port Mira (pirate & smuggler haven) + Ring Sea Pirates (Noa's Regret, Shanty, Boiling Bay)
@@ -3273,10 +3522,10 @@ def solve_trade(world, setts, graph):
                 if tot_pir_fenced > 0:
                     pol_surplus_map["Ring Sea Pirates"] = tot_pir_fenced
 
-            # Pass 2b: Wartime privateer prizes auctioned via Port Mira (Hookfleet) & Dhelv (Zeijani)
-            # (Nephtos excluded — smuggling, NOT piracy haven; Kautoa excluded from Iziz-Voth war brokering!)
+            # Pass 2b: Wartime privateer prizes auctioned via Port Mira (Hookfleet)
+            # (Nephtos excluded — smuggling, NOT piracy haven; Dhelv excluded — inland cavern & fleetless Zeijani!)
             if war_prize_pool > 1e-4:
-                for mid_sid, mid_share in ((port_mira_sid, 0.65), (dhelv_sid, 0.35)):
+                for mid_sid, mid_share in ((port_mira_sid, 1.0),):
                     sub_pool = war_prize_pool * mid_share * 0.92
                     if sub_pool <= 1e-4:
                         continue
@@ -3319,6 +3568,8 @@ def solve_trade(world, setts, graph):
             s_pol, b_pol = setts[s_sid]["polity"], setts[b_sid]["polity"]
             polity_exports[s_pol][gid] += amt
             polity_imports[b_pol][gid] += amt
+            sett_exports[gid][s_sid] += amt
+            sett_imports[gid][b_sid] += amt
 
             rkm = max(1.0, pinfo["real_km"])
             mode_km_wt["sea"] += amt * (pinfo["sea_km"] / rkm)
@@ -3382,21 +3633,21 @@ def solve_trade(world, setts, graph):
             if not x[5] and any("WARTIME SMUGGLERS / INTERMEDIARY" in t or "WARTIME PRIZE INTERMEDIARY" in t for t in x[4].get("raider_tags", []))
         ]
 
-        selected_for_table = list(raw_flows[:8])
+        selected_for_table = list(raw_flows[:14])
         if special_featured and not any(
             any("Annual Great Caravan" in c or "Iziz-Guarded Visas Caravan" in c for c in x[4]["corridors"])
-            for x in selected_for_table[:5]
+            for x in selected_for_table[:6]
         ):
             if tot_flow > 0 and special_featured[0][2] / tot_flow >= 0.008:
-                selected_for_table = list(raw_flows[:4]) + [special_featured[0]] + list(raw_flows[4:7])
+                selected_for_table = list(raw_flows[:5]) + [special_featured[0]] + [x for x in raw_flows[5:13] if x is not special_featured[0]]
         if war_smug_featured and not any(
             any("WARTIME SMUGGLERS / INTERMEDIARY" in t or "WARTIME PRIZE INTERMEDIARY" in t for t in x[4].get("raider_tags", []))
-            for x in selected_for_table[:5]
+            for x in selected_for_table[:6]
         ):
             if tot_flow > 0 and war_smug_featured[0][2] / tot_flow >= 0.0025:
-                selected_for_table = list(selected_for_table[:4]) + [war_smug_featured[0]] + list(selected_for_table[4:7])
-        if pirate_flows and not any(x[5] for x in selected_for_table[:6]):
-            selected_for_table = list(selected_for_table[:5]) + [pirate_flows[0]] + list(selected_for_table[5:7])
+                selected_for_table = list(selected_for_table[:5]) + [war_smug_featured[0]] + [x for x in selected_for_table[5:13] if x is not war_smug_featured[0]]
+        if pirate_flows and not any(x[5] for x in selected_for_table[:8]):
+            selected_for_table = list(selected_for_table[:6]) + [pirate_flows[0]] + [x for x in selected_for_table[6:13] if x is not pirate_flows[0]]
 
         routes_out = []
         for s_sid, b_sid, amt, eff_km, pinfo, is_pirate in selected_for_table:
@@ -3413,7 +3664,7 @@ def solve_trade(world, setts, graph):
             elif pinfo["gateways"]:
                 mids = [x for x in pinfo["gateways"] if x not in (setts[s_sid]["name"], setts[b_sid]["name"])]
                 if mids:
-                    via_parts.append("via " + " -> ".join(mids[:3]))
+                    via_parts.append("via " + " -> ".join(mids[:4]))
             for rtag in pinfo.get("raider_tags", [])[:2]:
                 if rtag not in "; ".join(via_parts):
                     via_parts.append(rtag)
@@ -3431,9 +3682,11 @@ def solve_trade(world, setts, graph):
                 "from_id": s_sid,
                 "from": setts[s_sid]["name"],
                 "from_polity": setts[s_sid]["polity"],
+                "from_pos": [round(setts[s_sid]["px"], 1), round(setts[s_sid]["py"], 1)],
                 "to_id": b_sid,
                 "to": setts[b_sid]["name"],
                 "to_polity": setts[b_sid]["polity"],
+                "to_pos": [round(setts[b_sid]["px"], 1), round(setts[b_sid]["py"], 1)],
                 "amount": round(amt, 3),
                 "km": pinfo["real_km"],
                 "effective_km": round(eff_km, 1),
@@ -3442,7 +3695,12 @@ def solve_trade(world, setts, graph):
                 "river_km": pinfo["river_km"],
                 "via": "; ".join(via_parts) if via_parts else "direct trail",
                 "pirate_fenced": is_pirate,
+                "poly": pinfo["poly_51"],
+                "poly_modes": pinfo["poly_modes"],
             })
+
+        top_prod_setts = sorted(sett_exports[gid].items(), key=lambda kv: kv[1], reverse=True)
+        top_imp_setts = sorted(sett_imports[gid].items(), key=lambda kv: kv[1], reverse=True)
 
         per_good[gid] = {
             "id": gid,
@@ -3457,23 +3715,82 @@ def solve_trade(world, setts, graph):
             "producers": [
                 {"polity": p, "surplus": round(v, 2), "share_pct": round(100.0 * v / sum_surp, 1),
                  "exported": round(polity_exports[p].get(gid, 0.0), 2)}
-                for p, v in prod_pols[:8]
+                for p, v in prod_pols[:10]
             ],
             "importers": [
                 {"polity": p, "deficit": round(v, 2), "share_pct": round(100.0 * v / sum_def, 1),
                  "imported": round(polity_imports[p].get(gid, 0.0), 2)}
-                for p, v in imp_pols[:8]
+                for p, v in imp_pols[:10]
+            ],
+            "producer_settlements": [
+                {"id": sid_p, "name": setts[sid_p]["name"], "polity": setts[sid_p]["polity"],
+                 "pos": [round(setts[sid_p]["px"], 1), round(setts[sid_p]["py"], 1)], "exported": round(v_p, 2)}
+                for sid_p, v_p in top_prod_setts[:12] if v_p > 1e-3
+            ],
+            "importer_settlements": [
+                {"id": sid_i, "name": setts[sid_i]["name"], "polity": setts[sid_i]["polity"],
+                 "pos": [round(setts[sid_i]["px"], 1), round(setts[sid_i]["py"], 1)], "imported": round(v_i, 2)}
+                for sid_i, v_i in top_imp_setts[:12] if v_i > 1e-3
             ],
             "routes": routes_out,
         }
+
+    # Assemble step-by-step caravan trade ledger along The Catch & The Twins (Parabola <-> Strongbow)
+    CATCH_TWINS_CHAIN = [
+        ("Parabola", "Bowl Solar-Furnace Arcology & Izani Customs Caravanserai"),
+        ("Bab al-Hawa (Godsgate)", "North Catch Gate & Wind-Gap Caravanserai"),
+        ("Kolli Oasis", "Mid-North Catch Artesian Date & Camel Oasis"),
+        ("Arfwai Oasis", "South-Central Catch Oasis, Nitre Pan & Dasri Trail Junction"),
+        ("Catch Salt Works", "Hyper-Arid Catch Playa Salt & Saltpeter Works"),
+        ("Stair", "Sealed Catch Tunnel-Mouth Oasis & Relic/Cell Salvage Station"),
+        ("The Twins", "4,448 m Geothermal Steam-Vent Pass Fort into Xanadu"),
+        ("White Gills Hermitage", "Charged-Collar Lag Solt (Lung-Salt) Breath-Pass Hermitage"),
+        ("Strongbow", "Eastern Vale of Xanadu Scarp Switchback & Royal Opal Gate"),
+    ]
+    name_to_sid = {s["name"]: sid for sid, s in setts.items()}
+    catch_twins_stops = []
+    for st_nm, st_role in CATCH_TWINS_CHAIN:
+        sid_c = name_to_sid.get(st_nm)
+        if not sid_c:
+            continue
+        sc = setts[sid_c]
+        ed = entrepot_totals.get(st_nm, {"sea_tons": 0.0, "land_tons": 0.0, "flows": 0, "goods": {}})
+        loc_exp = sorted(
+            [(gid_x, sett_exports[gid_x].get(sid_c, 0.0)) for gid_x in GOOD_BY_ID if sett_exports[gid_x].get(sid_c, 0.0) > 0.01],
+            key=lambda kv: -kv[1],
+        )
+        loc_imp = sorted(
+            [(gid_x, sett_imports[gid_x].get(sid_c, 0.0)) for gid_x in GOOD_BY_ID if sett_imports[gid_x].get(sid_c, 0.0) > 0.01],
+            key=lambda kv: -kv[1],
+        )
+        tr_g = sorted(ed["goods"].items(), key=lambda kv: -kv[1])[:6]
+        ey = max(0, min(world["OH"] - 1, int(round(sc["py"]))))
+        ex = max(0, min(world["OW"] - 1, int(round(sc["px"]))))
+        catch_twins_stops.append({
+            "stop": st_nm,
+            "polity": sc["polity"],
+            "type": sc["type"],
+            "pos": [round(sc["px"], 1), round(sc["py"], 1)],
+            "elev_m": round(float(world["E2"][ey, ex])),
+            "population": sc["population"],
+            "role": st_role,
+            "local_exports": [f"{gx} ({round(vx, 2)} {GOOD_BY_ID[gx]['unit']})" for gx, vx in loc_exp[:5]],
+            "local_imports": [f"{gx} ({round(vx, 2)} {GOOD_BY_ID[gx]['unit']})" for gx, vx in loc_imp[:5]],
+            "transit_tons_eq": round(ed["land_tons"] + ed["sea_tons"], 1),
+            "transit_flows": ed["flows"],
+            "top_transit_goods": [f"{gx} ({round(vx, 1)} {GOOD_BY_ID[gx]['unit']})" for gx, vx in tr_g],
+        })
 
     return {
         "per_good": per_good,
         "polity_exports": polity_exports,
         "polity_imports": polity_imports,
+        "sett_exports": sett_exports,
+        "sett_imports": sett_imports,
         "entrepot_totals": entrepot_totals,
         "pirate_ledger": pirate_ledger,
         "rendered_corridors": rendered_corridors,
+        "catch_twins_stops": catch_twins_stops,
     }
 
 
@@ -3528,6 +3845,7 @@ def render_trade_map(world, setts, graph, results, out_jpg):
         | graph["mask_beastrider_core"][gj, gi]
         | graph["mask_vrivolci_poly"][gj, gi]
         | graph["mask_swhigh_poly"][gj, gi]
+        | graph["mask_nomad_desert_bandits"][gj, gi]
     ) & (~W2) & (~liz_2) & (~scr_2)
     stipple_nb = raid_nb_2 & (((xx_2 + 2 * yy_2) % 11) == 0)
     rgb[raid_nb_2, 0] = rgb[raid_nb_2, 0] * 0.88 + 26.0
@@ -3592,21 +3910,22 @@ def render_trade_map(world, setts, graph, results, out_jpg):
         font = font_b = font_t = ImageFont.load_default()
 
     MAJOR_LABELS = {
-        "Farport", "Fulcrum", "Mirabilis", "Sheritu", "Carcosa", "Qoold Lheek", "Leng", "Jimjam", "Boatmurder", "Silkhead",
+        "Farport", "Palewharf", "Fulcrum", "Mirabilis", "Sheritu", "Carcosa", "Qoold Lheek", "Leng", "Jimjam", "Boatmurder", "Silkhead",
         "Dilihan", "Port Visas", "Ardent", "Roketstad", "Ys", "Ybera", "Tethis", "Trigon", "Nephtos", "Hook", "Port Mira",
         "Ṣunu-Ašru", "Dhelv", "Port Tobin", "Port Goto", "Shell", "Almua", "Zey'danin", "Voth", "Shim", "Driyan", "Dayshun", "Amaro",
         "Dalab", "Dapor", "Span", "Ledge", "Nulab", "Wildcat", "Tallwalls", "Hall of Heroes",
-        "Spirladunon", "Iziz", "Marr", "Talia", "Guari", "Verge", "Parabola", "Jabal", "Locus", "Mungo", "Reed",
+        "Spirladunon", "Iziz", "Marr", "Talia", "Guari", "Verge", "Arcbeam", "Parabola", "Bab al-Hawa (Godsgate)",
+        "Kolli Oasis", "Arfwai Oasis", "Jabal", "Locus", "Mungo", "Reed",
         "Sfenops", "Liikofi", "Yuni", "Ostrukh-on-Water", "Spindle Fan", "The Sill (Sam-Lok)",
-        "Spider Lake Weirs", "The Gate", "Stair", "Strongbow", "Erehwon", "Kirstabal",
+        "Spider Lake Weirs", "The Gate", "Stair", "The Twins", "Strongbow", "Erehwon", "Kirstabal",
         "Opal Valley Mines", "Longsong", "Kautoa", "Noa's Regret", "Boiling Bay", "Shanty", "Hetanini Spice Port",
     }
 
-    # Draw Port Mira's 100 Izani kil (~100 km = 50 px) No-Shipjacking Truce Circle on the Ring Sea
+    # Draw Port Mira's 50-km (25 px @ 2 km/px) No-Shipjacking Truce Circle on the Ring Sea
     pm_s = next((s for s in setts.values() if s["name"] == "Port Mira"), None)
     if pm_s is not None:
         pmx, pmy = int(pm_s["px"]), int(pm_s["py"])
-        rad_px = 50  # 100 km @ 2 km/px
+        rad_px = 25  # 50 km @ 2 km/px
         for deg in range(0, 360, 12):
             a0, a1 = math.radians(deg), math.radians(deg + 7)
             p0 = (pmx + rad_px * math.cos(a0), pmy + rad_px * math.sin(a0))
@@ -3668,11 +3987,11 @@ def render_trade_map(world, setts, graph, results, out_jpg):
 
     draw_tag(605, 1545, "LIZARDMAN RIFT (No Trade — Raids Xanadu & S. Dalab)", (255, 138, 138))
     draw_tag(768, 602, "SCREAMER COUNTRY (Raiders — No Trade)", (255, 145, 210))
-    draw_tag(818, 956, "IZIZ–VOTH NAVAL WAR (Mira 100-Kil Truce)", (255, 122, 122))
+    draw_tag(818, 956, "IZIZ–VOTH NAVAL WAR (Mira 50-km Truce)", (255, 122, 122))
     draw_tag(1030, 775, "BEAST RIDERS (Inner Crater — Kautoa Navy)", (255, 188, 120))
     draw_tag(785, 366, "BOATMURDER HIGHWAYMEN", (255, 188, 120))
     draw_tag(548, 1378, "Annual Great Caravan (North Rift Bench)", (255, 175, 215))
-    draw_tag(430, 522, "Qoold Lheek–Jimjam Yeti Trail", (255, 208, 132))
+    draw_tag(530, 488, "Qoold Lheek–Jimjam Yeti Dirt Road", (255, 208, 132))
     draw_tag(352, 468, "YETI RAIDERS (No Eternian Trade)", (255, 188, 120))
     draw_tag(942, 560, "PAINTED MEN RAIDERS", (255, 188, 120))
     draw_tag(572, 782, "SCYVOI RAIDERS", (255, 188, 120))
@@ -3680,7 +3999,8 @@ def render_trade_map(world, setts, graph, results, out_jpg):
     draw_tag(578, 1222, "VRIVOLCI RAIDERS", (255, 188, 120))
     draw_tag(326, 1432, "FELLGANG RAIDERS", (255, 188, 120))
     draw_tag(1365, 650, "COYOTE–NOMAD RAIDS", (255, 188, 120))
-    draw_tag(1130, 1285, "NOMAD DESERT BANDITS", (255, 188, 120))
+    draw_tag(1155, 720, "DESERT NOMAD BANDITS (North Desert)", (255, 188, 120))
+    draw_tag(1130, 1285, "DESERT NOMAD BANDITS (Bowl & Catch)", (255, 188, 120))
 
     # Legend box (bottom-left, below Hall of Heroes y=1474)
     lx, ly = 24, OH - 218
@@ -3722,9 +4042,9 @@ def write_trade_markdown(payload, out_md):
         f"backed by the rebaked 5.1 geology, `135` reconciled regions ([world-pins-gemini.json](file:///C:/Users/travi/Documents/krator-trade/openworld/world-pins-gemini.json)), "
         f"`claude/ancient-network-9cc3e7` ([net51-gemini.json](file:///C:/Users/travi/Documents/krator-trade/openworld/net51-gemini.json)), and `{payload.get('supplemental_road_count', 0)}` supplemental polity highways & stateless dirt roads ([roads-supplement-gemini.json](file:///C:/Users/travi/Documents/krator-trade/openworld/roads-supplement-gemini.json)).",
         "> - **120,000 Metropolitan Economic Scale (`Iziz` & `Fulcrum`) + Exterior Sea Gateways (`The Crook` & `Ria Valley`)**: `Iziz` and `Fulcrum` are modeled at their full **120,000** metropolitan economic demand & supply (rendered smaller in-game for playability). Abstract exterior regions **`The Crook`** (`frost-coral`) and **`Ria Valley`** (`ria-amber`) arrive exclusively by ship into **`Farport`** and draw **`gold`, `silver`, and Krator's unique regional specialties** back out through Farport.",
-        "> - **Directed River Navigation, `Shim` River Outlet (`Riv 0`) & `Eternal State` Mid-Quality Highways**: `Layer 2` models bulk river barges with downstream drift vs upstream haulage, estuary lighterage at **`Shim`** (`Riv 0`, `5,744 m³/s` linking Lake Shim to the Ring Sea — eliminating inland `Sethas`'s former fake sea port!), **`Port Tobin (956, 943)`** (`Riv 12`), `Farport`, `Reed`, `Ostrukh-on-Water`, and `Dapor`, plus engineered **mid-quality Eternal State highways (`0.72x`)** linking `Sheritu`, `Mirabilis`, `Veil`, `Tone`, `Lux`, and `Farport` to `Fulcrum`, and the hazardous navigable **`Qoold Lheek ↔ Leng ↔ Jimjam` dirt road** carrying Yeti upland goods and plundered Eternian raid booty.",
+        "> - **Directed River & Lake Barges (`Jimjam -> Palewharf` Alabaster, `Shim` River Outlet), Surface `Arcbeam–Parabola` Highway, Intra-Xanadu Roads & `Catch/Twins` Stops**: `Layer 2` & calm `inland_lake` `Layer 1` model bulk river and lake barges (`Jimjam -> Palewharf` `alabaster` across Jimjam's Lake, `Shim` `Riv 0`, `Port Tobin` `Riv 12`, `Farport`, `Reed`, `Ostrukh-on-Water`, `Dapor`), **mid-quality Eternal State highways (`0.72x`)** linking `Palewharf`, `Bastion`, `Sheritu`, `Mirabilis`, `Veil`, `Tone`, `Lux`, and `Farport` to `Fulcrum`, pure **surface Ancient highway** between `Arcbeam` and `Parabola` (zero ancient tubes), **intra-Xanadu trade on surface roads** (zero ancient routes), explicit stop-by-stop trade along **`The Catch` & `The Twins`** (`Parabola -> Bab al-Hawa -> Kolli Oasis -> Arfwai Oasis -> Catch Salt Works -> Stair -> The Twins / White Gills -> Strongbow`), and the northern **`Qoold Lheek ↔ Leng ↔ Jimjam` dirt road** exiting exclusively down the eastern highway (zero Eternian transit, zero bulk log transport).",
         "> - **Shipbuilding & Naval Stores Chain + Gunpowder & Steel Triangle + Opal Valley Three Grades**: Shipbuilding splits crooked knees/spars (`ship-timber`) and caulking/rigging (`pitch-tar`, `cordage`, `cotton` canvas) from commissioned hulls (`ship-hulls`, built at `Nephtos` for the League, `Kautoa` for the `Beast Riders`, `Almua`/`Shim`, `Port Mira`, `Farport`, `Shell`). No military power is self-sufficient in gunpowder (`coal` + volcanic `sulfur` + arid playa / *Da-Holwey* guano `saltpeter`). `Opal Valley` exports both court `gems` (`black`/`fire` opals) and `photonic-opals` (`Yusar` cybernetics, `Roketstad` optics, `Yuni` Geomancers).",
-        "> - **Ring Sea Smuggling, Piracy & Inner-Crater Geopolitics**: **`Port Mira`** (`Hookfleet`) is both a major **Ranj (`isle-spice`)** supplier (alongside **`Ybera`**, `Western Spice Isles`, `Zey'danin`/`Temora`, and `Andaru`) and a **pirate + smuggler haven** accepting all ships under a strict **100 Izani kil (`~100 km`) no-shipjacking truce zone**. **`Nephtos`** (`League: Tethys`) is a **smuggling (never piracy) haven** whose contested island claim makes **`Kautoa`** hostile to `Tethys` (`0.08x`) and the `League` (`0.28x`). **`Marr`** remains friendly to smugglers as their preferred Izani entrepôt. **`Beast Riders`** (including the wide-ranging `Millipede Tribe`) stay strictly within the inner crater and rely on **`Kautoa`** as their navy (`Kautoa ↔ Iziz` cool at `0.32x`). **`Zeijani` & `Andaru`** are friendly kin (`1.85x`), raid Throne colonizers, and supply Krator's `fungal` network. **`Tiguantin`** (`Guari` at `1095, 911`) exports `cushion-wool` and separate `wormwick`. **`Sfenops` & `Liikofi`** export zero arcology scrap — instead exporting Carboniferous swamp-copal `incense` and East Abyss **`abyss-lac`**.",
+        "> - **Ring Sea Smuggling, 50-km `Port Mira` Truce Zone & Fleetless Peoples**: **`Port Mira`** (`Hookfleet`) is both a major **Ranj (`isle-spice`)** supplier (alongside **`Ybera`**, `Western Spice Isles`, `Zey'danin`/`Temora`, and `Andaru`) and a **pirate + smuggler haven** accepting all ships under a strict **50-km no-piracy zone**. **`Nephtos`** (`League: Tethys`) is a **smuggling (never piracy) haven** whose contested island claim makes **`Kautoa`** hostile to `Tethys` (`0.08x`) and the `League` (`0.28x`). **`Marr`** remains friendly to smugglers as their preferred Izani entrepôt. **`Zeijani`**, **`Andaru`**, **`Tiguantin`**, and **`Beast Riders`** have **zero fleets** (`Dhelv` is strictly an inland Throne cavern — maritime traders must come to neighboring anchorages or overland trails to trade with them).",
         "",
         "## 1. Top Maritime Port & Overland Chokepoint Entrepôts",
         "",
@@ -3736,13 +4056,30 @@ def write_trade_markdown(payload, out_md):
             f"| {rk} | **{e['hub']}** | {e['sea_tons_eq']} | {e['land_tons_eq']} | {e['flow_count']} | {', '.join(e['top_transit_goods'][:4])} |"
         )
 
+    if payload.get("catch_twins_stops"):
+        lines += [
+            "",
+            "---",
+            "",
+            "## 1b. Caravan Stops Along `The Catch` & `The Twins` (`Parabola ↔ Strongbow`)",
+            "",
+            "| Stop (`N -> S`) | Polity | Coords (`px, py`) | Elev | Local Exports | Station Imports | Transit (`t-eq` / flows) | Top Transit Cargoes |",
+            "|:---|:---|:---|---:|:---|:---|---:|:---|",
+        ]
+        for cs in payload["catch_twins_stops"]:
+            lines.append(
+                f"| **{cs['stop']}** | {cs['polity']} | `{cs['pos'][0]}, {cs['pos'][1]}` | {cs['elev_m']} m | "
+                f"{', '.join(cs['local_exports']) or '—'} | {', '.join(cs['local_imports']) or '—'} | "
+                f"`{cs['transit_tons_eq']}` ({cs['transit_flows']}) | {', '.join(cs['top_transit_goods'][:4]) or '—'} |"
+            )
+
     lines += [
         "",
         "---",
         "",
         "## 2. Ring Sea Piracy (`Port Mira`, `Noa's Regret`, `Shanty`, `Boiling Bay`) & Wartime Prize Ledger",
         "",
-        "| Good | Captured at Sea (Outside Port Mira 100-Kil Truce) | Fenced Onward (`Port Mira`, `Noa's Regret`, `Shanty`, `Boiling Bay`, `Dhelv`) | Primary Victim Fleets | Primary Prize Buyers (`Nephtos` Excluded; `Marr` Preferred) |",
+        "| Good | Captured at Sea (Outside Port Mira 50-km Truce) | Fenced Onward (`Port Mira`, `Noa's Regret`, `Shanty`, `Boiling Bay`) | Primary Victim Fleets | Primary Prize Buyers (`Nephtos` Excluded; `Marr` Preferred) |",
         "|:---|---:|---:|:---|:---|",
     ]
     for p in payload["noas_regret_piracy"][:24]:
@@ -3856,19 +4193,19 @@ def main(argv=None):
             entry["note"] = "Screamer raiders (Hexahedron) do not trade externally — raid passing caravans and neighboring marches for supplies and captives; zero external exports or imports."
         elif pol == "Yeti Kingdom":
             entry["trade_regime"] = "raider_fraught_eternia_embargo"
-            entry["note"] = "Raids the Eternal State (zero direct bilateral trade with Eternia); exports upland qiviut, lung-salt, birch-tar, silver, and plundered Eternian raid booty (porcelain, relics, silk, pelagic luxuries) east along the hazardous navigable Qoold Lheek–Leng–Jimjam dirt road."
+            entry["note"] = "Raids the Eternal State (zero direct bilateral trade or transit through Eternia, zero bulk log transport); exports compact/medium upland qiviut, lung-salt, birch-tar, silver, and plundered Eternian raid booty east along the northern Qoold Lheek–Leng–Jimjam dirt road and down the eastern highway."
         elif pol in ("Empire of Iziz", "Shell Province"):
             entry["trade_regime"] = "wartime_belligerent_iziz"
-            entry["note"] = "Iziz modeled at 120,000 economic population; at war with Vothic Kingdom (mutual port closure, Ring Sea commerce raids outside Port Mira's 100-kil truce zone, wartime smuggling via Port Mira, Nephtos & Dhelv landing preferentially at smuggler-friendly Marr); cool relations with Kautoa; hostile to Beast Riders."
+            entry["note"] = "Iziz modeled at 120,000 economic population; at war with Vothic Kingdom (mutual port closure, Ring Sea commerce raids outside Port Mira's 50-km truce zone, wartime smuggling via Port Mira & Nephtos landing preferentially at smuggler-friendly Marr); cool relations with Kautoa; hostile to Beast Riders."
         elif pol == "Vothic Kingdom":
             entry["trade_regime"] = "wartime_belligerent_voth"
             entry["note"] = "At war with Empire of Iziz & Shell Province; SW Bay maritime & Lake Shim river-barge trade routed through Shim (Riv 0, 5,744 m³/s) rather than inland Sethas; commercial rival of Hykkousoi League."
         elif pol == "Eternal State":
             entry["trade_regime"] = "metropolitan_monopoly_state"
-            entry["note"] = "Fulcrum modeled at 120,000 economic population; mid-quality State highways link Sheritu, Mirabilis, Veil, Tone, Lux, and Farport to Fulcrum; Farport's Factory Quarter monopolizes exterior pelagic trade with The Crook (frost-coral) and Ria Valley (ria-amber)."
+            entry["note"] = "Fulcrum modeled at 120,000 economic population; mid-quality State highways link Palewharf (receiving Jimjam lake-barge alabaster across Jimjam's Lake), Bastion, Sheritu, Mirabilis, Veil, Tone, Lux, and Farport to Fulcrum; Farport's Factory Quarter monopolizes exterior pelagic trade with The Crook (frost-coral) and Ria Valley (ria-amber)."
         elif pol == "Hookfleet":
             entry["trade_regime"] = "pirate_and_smuggler_haven_truce_zone"
-            entry["note"] = "Port Mira on SE Throne is a major Ranj (isle-spice) supplier AND a pirate + smuggler haven accepting all ships under one strict rule: zero shipjacking within 100 Izani kils (~100 km) of the city."
+            entry["note"] = "Port Mira on SE Throne is a major Ranj (isle-spice) supplier AND a pirate + smuggler haven accepting all ships under one strict rule: zero shipjacking within 50 km of the city."
         elif pol == "League: Tethys":
             entry["trade_regime"] = "maritime_polis_nephtos_smuggler_haven"
             entry["note"] = "Includes Nephtos (smuggling, NOT piracy haven & master shipyard colony) founded on an island claimed by Kautoa, driving severe hostility with Kautoa."
@@ -3882,17 +4219,17 @@ def main(argv=None):
             entry["trade_regime"] = "inner_crater_tribes_kautoa_navy"
             entry["note"] = "Includes the wide-ranging Millipede Tribe, which never leaves the inner crater; zero independent shipping — relies on Kautoa as its coastal presence and effective navy."
         elif pol in ("Zeijani", "Andaru"):
-            entry["trade_regime"] = "throne_native_kin_anticolonial"
-            entry["note"] = "Brother native peoples of Throne (friendly with each other, raid colonizing powers from time to time); wired into Krator's fungal goods, Ranj, and volcanic sulfur networks."
+            entry["trade_regime"] = "throne_native_kin_fleetless"
+            entry["note"] = "Brother native peoples of Throne (friendly with each other, raid colonizing powers from time to time); possess NO fleets (Dhelv is strictly an inland Throne cavern — traders must come to them); wired into Krator's fungal goods, Ranj, and volcanic sulfur networks."
         elif pol == "Ring Sea Pirates":
             entry["trade_regime"] = "maritime_freebooters"
-            entry["note"] = "Maritime freebooters operating out of Noa's Regret, Shanty (East Ring Isles), and Boiling Bay (Steampits), intercepting Ring Sea shipping outside Port Mira's 100-kil truce zone."
+            entry["note"] = "Maritime freebooters operating out of Noa's Regret, Shanty (East Ring Isles), and Boiling Bay (Steampits), intercepting Ring Sea shipping outside Port Mira's 50-km truce zone."
         elif pol == "Frogmen":
             entry["trade_regime"] = "neighbor_raider_dalab_treaty"
             entry["note"] = "SW Highlands native Frogmen (Krrmt & Jrrmiah); raid neighboring marches EXCEPT Realm of Dalab, with whom they maintain a peace treaty via Span."
         elif pol == "Tiguantin":
-            entry["trade_regime"] = "iziz_tributary_highland_state"
-            entry["note"] = "Iziz tributary polity on the Eastern Highlands & Lesser Throne centered at town Guari (1095, 911); exports cushion-wool AND separate parasitic caterpillar-fungus medicine (wormwick), plus fumarole sulfur and First Monastery relics."
+            entry["trade_regime"] = "iziz_tributary_highland_fleetless"
+            entry["note"] = "Fleetless Iziz tributary polity on the Eastern Highlands & Lesser Throne centered at town Guari (1095, 911); traders come to them overland/coastal-anchorages for cushion-wool, separate parasitic caterpillar-fungus medicine (wormwick), fumarole sulfur, and First Monastery relics."
         elif pol == "Jabal Shiekdom":
             entry["trade_regime"] = "bowl_oasis_sheikhdom"
             entry["note"] = "Independent Dasri oasis sheikhdom in the eastern Bowl (Jabal & Bowl Salt Works); major exporter of salt, saltpeter, pack camels/mounts, myrrh incense, and tamarisk-manna sugar."
@@ -3952,6 +4289,7 @@ def main(argv=None):
         "good_count": len(GOODS),
         "supplemental_road_count": len(graph.get("supp_roads", [])),
         "entrepots": entrepots[:35],
+        "catch_twins_stops": res.get("catch_twins_stops", []),
         "noas_regret_piracy": pirates_out,
         "polities": pol_summary,
         "per_good": res["per_good"],
