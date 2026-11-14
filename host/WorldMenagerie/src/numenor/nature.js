@@ -99,7 +99,7 @@ export function nature(api){
   for(const t of terr){const g=t.geometry,p=g.attributes.position,n=g.attributes.normal,c=g.attributes.color;
     for(let i=0;i<p.count;i++){colourAt(p.getX(i),p.getY(i),p.getZ(i),n.getY(i));c.setXYZ(i,cc.r,cc.g,cc.b);recoloured++;}
     c.needsUpdate=true;addCover(g);t.castShadow=false;}
-  let fineVerts=0,pressed=0;
+  let fineVerts=0,pressed=0;const fineChunks=[];
   if(FINE&&FINE.patches.length&&terr.length){
     // a coarser level of detail has its vertices further apart, and a chord between two of them on the mountain's
     // concave flanks stands above the fine ground: each is pressed below the lowest fine ground across its own span
@@ -107,14 +107,32 @@ export function nature(api){
       for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i);if(!FINE.inside(x,z,span+100))continue;
         const m=FINE.minNear(x,z,span);if(m<Infinity&&p.getY(i)>m-8){p.setY(i,m-8);hit++;}}
       if(hit){p.needsUpdate=true;t.geometry.computeBoundingSphere();pressed+=hit;}}
-    for(const P of FINE.patches){const n=P.nx*P.nz,pos=new Float32Array(n*3),idx=new Uint32Array((P.nx-1)*(P.nz-1)*6);
-      for(let j=0;j<P.nz;j++)for(let i=0;i<P.nx;i++){const k=j*P.nx+i;pos[k*3]=P.x0+i*P.step;pos[k*3+1]=P.H[k];pos[k*3+2]=P.z0+j*P.step;}
-      let q=0;for(let j=0;j<P.nz-1;j++)for(let i=0;i<P.nx-1;i++){const a=j*P.nx+i,b=a+1,c=a+P.nx,d=c+1;idx[q++]=a;idx[q++]=d;idx[q++]=b;idx[q++]=a;idx[q++]=c;idx[q++]=d;}
-      const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();
-      const nr=g.attributes.normal,cl=new Float32Array(n*3);
-      for(let k=0;k<n;k++){colourAt(pos[k*3],pos[k*3+1],pos[k*3+2],nr.getY(k));cl[k*3]=cc.r;cl[k*3+1]=cc.g;cl[k*3+2]=cc.b;}
-      g.setAttribute('color',new THREE.BufferAttribute(cl,3));addCover(g);
-      const m=new THREE.Mesh(g,terr[0].material);m.name='fine:'+P.n;m.receiveShadow=true;m.userData.wireCat='ground';m.userData.info={name:P.n};scene.add(m);fineVerts+=n;}}
+    // Each patch is cut into chunks of 48 cells, each drawn at full resolution near the camera and at every second
+    // and every fourth point further off; every level hangs a skirt from its edges, so where two chunks at different
+    // levels meet there is no crack to see through. The colours and cover are worked out once, at full resolution.
+    const CS=48;
+    for(const P of FINE.patches){const n=P.nx*P.nz,H=P.H,NX=P.nx,st=P.step,pos=new Float32Array(n*3),nrm=new Float32Array(n*3),cl=new Float32Array(n*3),CA=new Uint8Array(n*4),CB=new Uint8Array(n*4);
+      for(let j=0;j<P.nz;j++)for(let i=0;i<NX;i++){const k=j*NX+i;pos[k*3]=P.x0+i*st;pos[k*3+1]=H[k];pos[k*3+2]=P.z0+j*st;
+        const hx=(H[j*NX+Math.min(NX-1,i+1)]-H[j*NX+Math.max(0,i-1)])/(2*st),hz=(H[Math.min(P.nz-1,j+1)*NX+i]-H[Math.max(0,j-1)*NX+i])/(2*st),l=Math.hypot(hx,1,hz);
+        nrm[k*3]=-hx/l;nrm[k*3+1]=1/l;nrm[k*3+2]=-hz/l;
+        colourAt(pos[k*3],H[k],pos[k*3+2],1/l);cl[k*3]=cc.r;cl[k*3+1]=cc.g;cl[k*3+2]=cc.b;const [a,b]=covW(pos[k*3],H[k],pos[k*3+2],1/l);CA.set(a,k*4);CB.set(b,k*4);}
+      for(let cj=0;cj<P.nz-1;cj+=CS)for(let ci=0;ci<NX-1;ci+=CS){const w=Math.min(CS,NX-1-ci),d=Math.min(CS,P.nz-1-cj),levels=[];
+        for(const s2 of [1,2,4]){const I=[];for(let a=0;a<w;a+=s2)I.push(ci+a);I.push(ci+w);const J=[];for(let b=0;b<d;b+=s2)J.push(cj+b);J.push(cj+d);
+          const W=I.length,D=J.length,vs=[];for(const jj of J)for(const ii of I)vs.push(jj*NX+ii);
+          // the skirt: the edge's vertices again, hung below it
+          const edge=[];for(let a=0;a<W;a++)edge.push(a);for(let b=1;b<D;b++)edge.push(b*W+W-1);for(let a=W-2;a>=0;a--)edge.push((D-1)*W+a);for(let b=D-2;b>0;b--)edge.push(b*W);edge.push(0);
+          const NV=vs.length+edge.length,ps=new Float32Array(NV*3),ns=new Float32Array(NV*3),cs=new Float32Array(NV*3),A=new Uint8Array(NV*4),Bb=new Uint8Array(NV*4),drop=30*s2;
+          const put=(t,k,dy)=>{ps[t*3]=pos[k*3];ps[t*3+1]=pos[k*3+1]-dy;ps[t*3+2]=pos[k*3+2];for(let c=0;c<3;c++){ns[t*3+c]=nrm[k*3+c];cs[t*3+c]=cl[k*3+c];}for(let c=0;c<4;c++){A[t*4+c]=CA[k*4+c];Bb[t*4+c]=CB[k*4+c];}};
+          vs.forEach((k,t)=>put(t,k,0));edge.forEach((e,t)=>put(vs.length+t,vs[e],drop));
+          const idx=[];for(let b=0;b<D-1;b++)for(let a=0;a<W-1;a++){const v0=b*W+a,v1=v0+1,v2=v0+W,v3=v2+1;idx.push(v0,v3,v1,v0,v2,v3);}
+          for(let t=0;t+1<edge.length;t++){const a=edge[t],b=edge[t+1],c=vs.length+t,e=vs.length+t+1;idx.push(a,c,b,b,c,e);}
+          const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(ps,3));g.setAttribute('normal',new THREE.BufferAttribute(ns,3));g.setAttribute('color',new THREE.BufferAttribute(cs,3));
+          g.setAttribute('aCovA',new THREE.BufferAttribute(A,4,true));g.setAttribute('aCovB',new THREE.BufferAttribute(Bb,4,true));g.setIndex(idx);g.computeBoundingSphere();
+          const m=new THREE.Mesh(g,terr[0].material);m.name='fine:'+P.n;m.receiveShadow=true;m.userData.wireCat='ground';m.userData.info={name:P.n};m.visible=s2===1;scene.add(m);levels.push(m);if(s2===1)fineVerts+=vs.length;}
+        fineChunks.push({x:P.x0+(ci+w/2)*st,z:P.z0+(cj+d/2)*st,y:H[(cj+(d>>1))*NX+ci+(w>>1)],levels,cur:0});}}}
+  // which level each chunk shows: full within seven kilometres, half to twenty, a quarter beyond
+  animHooks.push(()=>{const c=camera.position;let drawn=0;for(const ch of fineChunks){const dd=Math.hypot(c.x-ch.x,c.y-ch.y,c.z-ch.z),L=dd<7000?0:dd<20000?1:2;
+    if(L!==ch.cur){ch.levels[ch.cur].visible=false;ch.levels[L].visible=true;ch.cur=L;}drawn+=L;}ctx.details.fineLevels=drawn;});
 
   // ---- the clouds: fair-weather heaps drifting in off the sea ----
   const CL=(()=>{const W=B.x1-B.x0,Dz=B.z1-B.z0,R=mkRng(1938),N=Y.clouds===undefined?160:Y.clouds,S=512;

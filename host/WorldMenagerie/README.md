@@ -984,6 +984,9 @@ kilometres across and the five promontories run out from it, about seven hundred
   coarse ground (every level of detail, by its own vertex spacing) below them. A patch fades into the coarse
   grid over its last two kilometres, and inside a town it keeps the coarse ground where that is dry, so the
   houses and streets the engine set on it stay seated. The surf follows each patch's own coast.
+  Each patch is cut into chunks of 48 cells drawn at full, half and quarter resolution by distance (within 7 km,
+  to 20 km, beyond), each level with a skirt so chunks at different levels show no crack; at the firth that takes
+  the view from 1.35 to 0.76 million triangles.
 - **The Meneltarma** rises in the middle of Mittalmar, about three thousand metres, a skirt of grass and
   then the mountain proper, grass to the summit except where it is steep or high. The road goes round it three and a half times to the Hallow, a ring of turf with
   nothing built on it, and three eagles circle overhead. The Noirinan, the valley of the tombs, is at its foot.
