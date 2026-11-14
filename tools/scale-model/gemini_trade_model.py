@@ -311,9 +311,9 @@ NEW_SETTLEMENTS = [
     {"name": "Skopelos Isle", "px": 724, "py": 847, "type": "village", "population": 450, "polity": "League: Pontus", "reach_km": 12},
     # Yeti capital at frozen lake
     {"name": "Qoold Lheek", "px": 410, "py": 506, "type": "town", "population": 2200, "polity": "Yeti Kingdom", "reach_km": 20},
-    # Western Spice Isles
-    {"name": "Hetanini Spice Port", "px": 755, "py": 836, "type": "village", "population": 950, "polity": "Western Spice Isles", "reach_km": 15},
-    {"name": "Vana Clove Atoll", "px": 773, "py": 842, "type": "village", "population": 650, "polity": "Western Spice Isles", "reach_km": 15},
+    # West Ring Islanders (two Hikau villages on distinct western islands: Taikoro on N West Isle, Kautono on S West Isle off Almua)
+    {"id": "syen8wxax5", "name": "Taikoro", "px": 752, "py": 781, "type": "village", "population": 850, "polity": "West Ring Islanders", "reach_km": 15},
+    {"id": "szru86us3f", "name": "Kautono", "px": 749, "py": 894, "type": "village", "population": 750, "polity": "West Ring Islanders", "reach_km": 15},
     # Outlands Coyote nodes & Great Chasm Sill fort
     {"name": "Coyote Lake Village", "px": 1220, "py": 564, "type": "village", "population": 500, "polity": "Coyote Kingdom", "reach_km": 15},
     {"name": "Gate Tarn Mires", "px": 1544, "py": 474, "type": "village", "population": 900, "polity": "Coyote Kingdom", "reach_km": 18},
@@ -495,8 +495,8 @@ GOODS = [
     {"id": "mezcal", "label": "wild desert-agave mezcal", "class": "luxury", "tier": "compact", "unit": "t", "note": "pit-roasted wild desert agave + fuel + glass/glazed-ceramic flasks -> signature Dasri spirit led by Jabal Shiekdom (Jabal) & Nomad/Catch oases"},
     # Spices, Stimulants, Cigars, Opium, Resins & Botanicals (18)
     {"id": "spice-tropical", "label": "tropical spice (clove, citron)", "class": "crop", "tier": "compact", "unit": "t", "note": "East & West Ring Isles and Throne plantations"},
-    {"id": "isle-spice", "label": "West Spice Isles & Throne Ranj", "class": "specialty", "tier": "compact", "unit": "unit", "note": "Ranj & isle spice supplied by Port Mira, Ybera, Western Spice Isles, Temora, Zey'danin & Andaru (also feeds ranjrum)"},
-    {"id": "spice-highland", "label": "highland spice (saffron, umbel)", "class": "crop", "tier": "compact", "unit": "t", "note": "high-valley saffron & aromatics"},
+    {"id": "isle-spice", "label": "West Spice Isles & Throne Ranj", "class": "specialty", "tier": "compact", "unit": "unit", "note": "Ranj & isle spice supplied by Port Mira, Ybera, West Ring Islanders (Taikoro & Kautono), Temora, Zey'danin & Andaru (also feeds ranjrum)"},
+    {"id": "spice-highland", "label": "Vale & Oidong saffron", "class": "crop", "tier": "compact", "unit": "t", "note": "native Vale of Xanadu & Oidong monastery saffron carried north across The Twins & Catch"},
     {"id": "cacao", "label": "cacao", "class": "crop", "tier": "compact", "unit": "t", "note": "native Vale of Xanadu cacao (Erehwon, Qiblai, Theodiga, Kirstabal, Strongbow) plus minor transplanted Kautoan groves"},
     {"id": "coffee", "label": "coffee", "class": "crop", "tier": "compact", "unit": "t", "note": "Throne converted estates, Voth & foothill coffee"},
     {"id": "tea", "label": "mist tea & ivan-chai", "class": "crop", "tier": "compact", "unit": "t", "note": "Oidong/cloud-forest mist tea & northern ivan-chai"},
@@ -598,6 +598,7 @@ def populate_supply_demand(world, setts):
                 "silver": 140.0 * sc,
                 # Unique regional resources of Krator:
                 "cacao": 5.5 * sc,
+                "spice-highland": 2.2 * sc,
                 "hashish": 4.2 * sc,
                 "paper": 6.0 * sc,
                 "isle-spice": 12.0 * sc,
@@ -979,9 +980,9 @@ def populate_supply_demand(world, setts):
             sup["cotton"] = max(sup.get("cotton", 0.0), 6.5)  # Trigon Lake sea-linen flax
             sup["food"] = max(sup.get("food", 0.0), 320.0)
 
-        if pol == "Western Spice Isles":
-            sup["isle-spice"] = 52.0 if "Hetanini" in nm else 36.0
-            sup["spice-tropical"] = 18.0 if "Hetanini" in nm else 12.0
+        if pol == "West Ring Islanders":
+            sup["isle-spice"] = 50.0 if nm == "Taikoro" else 42.0
+            sup["spice-tropical"] = 18.0 if nm == "Taikoro" else 14.0
             sup["sugar"] = 180.0
             sup["pearls"] = 24.0
 
@@ -1014,9 +1015,9 @@ def populate_supply_demand(world, setts):
         if pol == "Shumari":
             dem["timber"] = dem.get("timber", 0.0) * 0.08  # dry Shumar plateau stone & mudbrick architecture
             sup["timber"] = max(sup.get("timber", 0.0), dem["timber"] * 1.02)
+            sup["food"] = 244.0 * kpop  # hardy Shumar plateau pastoral herds, highland barley & dryland terraces (~97.6% self-feeding!)
             sup["mounts"] = 215.0 if nm == "Amaro" else 55.0  # premier Shumar Mamluk war-mounts & steppe cavalry stock!
             sup["saltpeter"] = 5.5 if nm == "Amaro" else 2.0
-            sup["spice-highland"] = 2.6 if nm == "Amaro" else 0.9
             dem["arms"] = max(dem.get("arms", 0.0), 1.4 * kpop)  # Mamluk Sword-Caste demand
         if nm in ("Driyan", "Azoth", "Dayshun"):
             sup["mounts"] = max(sup.get("mounts", 0.0), 14.0 * kpop)
@@ -1035,7 +1036,6 @@ def populate_supply_demand(world, setts):
         # --- Empire of Iziz / Shell Province updates (Marr smuggler entrepot, Fridon wormwick, Daridel plaid) ---
         if nm == "Daridel":
             sup["plaid"] = 6.5           # Talovolci three-dye checked wool under Iziz sovereignty
-            sup["spice-highland"] = 1.6
             sup["dye-temperate"] = 2.4
             sup["tea"] = 2.2
         elif nm == "Marr":
@@ -1060,7 +1060,7 @@ def populate_supply_demand(world, setts):
                 sup["sugar"] = dem.get("sugar", 0.0) + 65.0      # Bowl tamarisk-manna syrup
                 sup["salt"] = max(sup.get("salt", 0.0), 420.0)
                 sup["saltpeter"] = max(sup.get("saltpeter", 0.0), 8.5)
-                sup["food"] = 175.0 * kpop                       # arid Bowl oasis — net importer of bulk grain!
+                sup["food"] = 245.5 * kpop                       # irrigated Bowl fan date-palms, qanat wheat & Dasri flocks (only modest grain supplement!)
         elif pol in ("Tabisti: Sfenops", "Tabisti: Liikofi"):
             # NO arcology down in the East Abyss! Zero scrap & scrapgoods exports; instead export Carboniferous
             # swamp-copal incense AND unique East Abyss lac / scale-shellac / swamp-amber (abyss-lac)!
@@ -1086,7 +1086,6 @@ def populate_supply_demand(world, setts):
             sup["qiviut"] = dem.get("qiviut", 0.0) + 3.6               # Fine underfleece
             sup["plaid"] = dem.get("plaid", 0.0) + 6.5                 # Andean-style terraced highland woven cloth
             sup["tea"] = dem.get("tea", 0.0) + 5.2                     # Wet-face cloud-montane terrace tea
-            sup["spice-highland"] = dem.get("spice-highland", 0.0) + 2.8
             sup["silver"] = max(sup.get("silver", 0.0), dem.get("silver", 0.0) + 4.5)
             sup["copper"] = max(sup.get("copper", 0.0), dem.get("copper", 0.0) + 16.0)
             sup["sulfur"] = max(sup.get("sulfur", 0.0), dem.get("sulfur", 0.0) + 14.0)  # Lesser Throne fumaroles
@@ -1237,7 +1236,7 @@ def populate_supply_demand(world, setts):
             "Iziz": 9.5, "Marr": 3.2, "Port Tobin": 2.2,
             "Hook": 4.4, "Dapor": 3.4,
             "Mantis": 4.2,       # Beast Riders commission coastal factor craft via Kautoa!
-            "Hetanini Spice Port": 1.6, "Erehwon": 2.2, "Reed": 1.8, "Ostrukh-on-Water": 1.6,
+            "Taikoro": 1.6, "Erehwon": 2.2, "Reed": 1.8, "Ostrukh-on-Water": 1.6,
         }
         if nm in SHIP_HULL_SUP:
             sup["ship-hulls"] = SHIP_HULL_SUP[nm]
@@ -1391,7 +1390,7 @@ def populate_supply_demand(world, setts):
             sup["gold"] = max(gs["gold"] * 0.42, XAN_GOLD_BONANZA.get(nm, gs["gold"] * 0.30))
             dem["gold"] = 1.65 * kpop + (24.0 if nm == "Erehwon" else (16.0 if nm in ("Qiblai", "Theodiga") else 0.0))
         else:
-            if pol == "Western Spice Isles":
+            if pol == "West Ring Islanders":
                 sup["gold"] = 0.0  # low coral spice atolls, not bedrock Throne mines
             elif gs["gold_max"] >= 115:
                 # Genuine rebaked hydrothermal/epithermal/placer gold provinces (Throne Dhelv/Zey'danin, Verge, Kautoa, Singing Gjar)
@@ -1585,7 +1584,7 @@ def populate_supply_demand(world, setts):
         #     Temperate/cool-coastal Eternal State, Iron Republic, Jimjam, Dalab, Yuni uplands & highlands grow 0 cane —
         #     so Eternal State MUST import `sugar` to ferment `champagne`!
         SUGAR_PRODUCER_POLS = {
-            "Western Spice Isles", "Kautoa", "Hookfleet", "Shell Province",
+            "West Ring Islanders", "Kautoa", "Hookfleet", "Shell Province",
             "League: Ys", "League: Tethys", "League: Trigon", "League: Pontus",
             "Tabisti: Sfenops", "Tabisti: Liikofi", "Jabal Shiekdom", "Catch Oasis Stations",
         }
@@ -1598,7 +1597,7 @@ def populate_supply_demand(world, setts):
             "Tethis": 95.0, "Nephtos": 88.0, "Nereus": 36.0,
             "Trigon": 55.0, "Pontus": 58.0, "Kyra Isle": 28.0, "Skopelos Isle": 24.0,
             "Kautoa": 175.0, "Valapo": 68.0, "Bipo": 48.0,
-            "Hetanini Spice Port": 195.0, "Vana Clove Atoll": 145.0,
+            "Taikoro": 185.0, "Kautono": 155.0,
             "Kirstabal": 155.0, "Erehwon": 18.0,
             "Locus": 36.0,
         }
@@ -1617,7 +1616,7 @@ def populate_supply_demand(world, setts):
             "Ys": 32.0, "Ybera": 24.0, "Kierson": 10.0,
             "Trigon": 16.0, "Pontus": 15.0, "Kyra Isle": 8.0,
             "Kautoa": 46.0, "Valapo": 18.0, "Bipo": 12.0,
-            "Hetanini Spice Port": 26.0, "Vana Clove Atoll": 18.0,
+            "Taikoro": 24.0, "Kautono": 20.0,
             "Port Mira": 36.0,
             "Shell": 30.0, "Port Goto": 14.0, "Dilihan": 24.0,
             "Marr": 42.0, "Port Tobin": 20.0, "Hook": 18.0, "Iziz": 24.0, "Talia": 16.0,
@@ -1626,8 +1625,8 @@ def populate_supply_demand(world, setts):
         sup["tobacco"] = INNER_TOBACCO_SUP.get(nm, 0.0)
         dem["tobacco"] = (0.34 if is_port else 0.24) * kpop
 
-        # 6c-ii. Native Crop Gates on `coffee`, `spice-tropical`, `dye-tropical`, `tea` & `silk` (TRADE-SCOPE.md s2.5, lines 161-195):
-        # Pre-fix `trade-goods.json` grew coffee, clove, tropical dyes, tea & silk anywhere Koppen climate fit (amplified 6x at Fulcrum!).
+        # 6c-ii. Native Crop Gates on `coffee`, `spice-tropical`, `dye-tropical`, `tea`, `silk` & `spice-highland` (saffron) (TRADE-SCOPE.md s2.5, lines 149-217, 540):
+        # Pre-fix `trade-goods.json` grew coffee, clove, tropical dyes, tea, silk & saffron anywhere Koppen climate fit.
         # Enforce canon home biomes + recorded transplants:
         # (1) `coffee` (home: `ringisles` + Throne converted Ranj estates per LORE.md:460 + warm SW Bay/Shell/Kirstabal; 0 in Eternal State!):
         COFFEE_SUP = {
@@ -1637,7 +1636,7 @@ def populate_supply_demand(world, setts):
             "Nephtos": 28.0, "Tethis": 12.0, "Nereus": 9.5,
             "Pontus": 11.0, "Kyra Isle": 6.5, "Skopelos Isle": 6.0,
             "Port Mira": 28.0,
-            "Hetanini Spice Port": 24.0, "Vana Clove Atoll": 16.0,
+            "Taikoro": 22.0, "Kautono": 18.0,
             "Shell": 26.0, "Port Goto": 10.0, "Marr": 16.0,
             "Kirstabal": 22.0, "Erehwon": 8.0,
         }
@@ -1648,7 +1647,7 @@ def populate_supply_demand(world, setts):
         SPICE_TROPICAL_SUP = {
             "Temora": 26.0, "Zey'danin": 22.0, "Shim": 20.0, "Voth": 14.0,  # incl. SW Bay rosette-vanilla (TRADE-SCOPE s2.5a)
             "Kautoa": 28.0, "Valapo": 12.0, "Bipo": 9.0,
-            "Hetanini Spice Port": 22.0, "Vana Clove Atoll": 16.0,
+            "Taikoro": 20.0, "Kautono": 18.0,
             "Port Mira": 16.0, "Ybera": 15.0, "Nephtos": 14.0,
             "Nereus": 7.5, "Kierson": 7.5, "Kyra Isle": 5.5, "Skopelos Isle": 5.5,
             "Shell": 16.0, "Port Goto": 8.0, "Mav's Refuge": 9.5,
@@ -1663,7 +1662,7 @@ def populate_supply_demand(world, setts):
             "Ys": 24.0, "Kierson": 6.5, "Ybera": 7.5,                                     # Ys murex purple!
             "Nephtos": 16.0, "Tethis": 8.5, "Nereus": 6.5, "Trigon": 7.5, "Pontus": 6.5,  # Ring Isles/Bay indigo & annatto
             "Kautoa": 18.0, "Valapo": 7.5, "Bipo": 5.0,
-            "Port Mira": 8.5, "Hetanini Spice Port": 7.5, "Vana Clove Atoll": 5.5,
+            "Port Mira": 8.5, "Taikoro": 6.8, "Kautono": 6.2,
             "Shell": 12.0, "Dilihan": 9.5, "Mav's Refuge": 8.5, "Girder": 4.0,
         }
         sup["dye-tropical"] = DYE_TROPICAL_SUP.get(nm, 0.0)
@@ -1694,10 +1693,26 @@ def populate_supply_demand(world, setts):
         sup["silk"] = SILK_SUP.get(nm, 0.0)
         dem["silk"] = (0.14 if st_type in ("city", "arcology") else 0.06) * kpop_lux
 
+        # (6) `spice-highland` — Vale of Xanadu & Oidong Saffron (TRADE-SCOPE.md:149, 161, 217, 540; LORE.md:502, 553-554):
+        #     Native exclusively to the Vale of Xanadu (`xanadu`) and Oidong (`Order of Historians` at Longsong);
+        #     0 in northern Koppen holdovers so prized saffron travels north across The Twins & Catch to courts, dye-houses & ports!
+        SAFFRON_SUP = {
+            "Erehwon": 18.0, "Qiblai": 14.5, "Theodiga": 11.0, "Strongbow": 9.5, "Kirstabal": 7.5,  # Vale of Xanadu saffron!
+            "Longsong": 14.5,                                                                       # Oidong monastery saffron terraces!
+        }
+        if nm in SAFFRON_SUP:
+            sup["spice-highland"] = SAFFRON_SUP[nm]
+            dem["spice-highland"] = (1.15 if nm == "Longsong" else 0.22) * kpop  # monastic saffron-robe dye & Broken-Wheel temple rites
+        else:
+            sup["spice-highland"] = 0.0
+            dem["spice-highland"] = (0.115 if st_type in ("city", "arcology") else (0.068 if st_type == "town" else 0.030)) * kpop_lux
+            if nm in ("Iziz", "Fulcrum", "Lux", "Voth", "Dalab", "Yuni", "Jabal", "Ys", "Tethis", "Roketstad", "Jimjam", "Marr", "Kautoa", "Port Mira"):
+                dem["spice-highland"] = max(dem["spice-highland"], 0.14 * kpop_lux)
+
         # Boost Throne & Spice Isles Ranj (`isle-spice`) slightly so Throne estates supply both raw Ranj trade & Ranj-rum stills:
         RANJ_BOOST = {
             "Port Mira": 102.0, "Ybera": 88.0, "Zey'danin": 48.0, "Temora": 38.0,
-            "Hetanini Spice Port": 62.0, "Vana Clove Atoll": 42.0,
+            "Taikoro": 54.0, "Kautono": 48.0,
             "Ṣunu-Ašru": 22.0, "Šadū-Qarnu": 14.0,
         }
         if nm in RANJ_BOOST:
@@ -1847,7 +1862,7 @@ def populate_supply_demand(world, setts):
         RUM_DISTILLERIES = {
             "Shim": 44.0, "Voth": 24.0, "Temora": 18.5, "Almua": 14.0,
             "Kautoa": 35.0, "Valapo": 12.5,
-            "Hetanini Spice Port": 28.0, "Vana Clove Atoll": 16.0,
+            "Taikoro": 24.0, "Kautono": 20.0,
             "Ys": 24.0, "Tethis": 18.0, "Pontus": 12.0,
             "Port Mira": 22.0,
             "Shell": 20.0, "Marr": 16.0,
@@ -1865,7 +1880,7 @@ def populate_supply_demand(world, setts):
             "Temora": 9.5,
             "Nephtos": 11.0,            # League: Tethys Throne-strait island (imports raw Ranj & sugar!)
             "Ṣunu-Ašru": 6.5,           # Andaru volcanic pot-stills (traders come to buy)
-            "Hetanini Spice Port": 8.5, # Western Spice Isles Ranj-cane reserve
+            "Taikoro": 8.5,             # West Ring Islanders Ranj-cane reserve
         }
         sup["ranjrum"] = RANJRUM_STILLS.get(nm, 0.0)
         dem["ranjrum"] = (0.24 if is_port else 0.15) * urb_mult * kpop_lux
@@ -2854,7 +2869,7 @@ def build_multimodal_graphs(world, setts):
         "Farport", "Palewharf", "Jimjam", "Voth", "Shim", "Dapor", "Almua", "Tzinguard", "Temora", "Zey'danin",
         "Port Mira", "Hook", "Ys", "Ybera", "Tethis", "Nephtos", "Trigon", "Limnaia",
         "Pontus", "Nereus", "Kierson", "Kyra Isle", "Skopelos Isle",
-        "Hetanini Spice Port", "Vana Clove Atoll",
+        "Taikoro", "Kautono",
         "Kautoa", "Valapo", "Bipo", "Shell", "Port Goto", "Port Tobin", "Marr", "Iziz",
         "Torus", "Port Visas", "Erehwon", "Kirstabal", "Thalaba",
         "Spider Lake Weirs", "Reed", "Ostrukh-on-Water",
@@ -3463,7 +3478,7 @@ THRONE_COLONIAL_POLS = {"Vothic Kingdom", "Empire of Iziz", "Shell Province", "L
 INNER_CRATER_POLS = {
     "Beast Riders", "Kautoa", "Empire of Iziz", "Shell Province", "Dilihan Province",
     "Vothic Kingdom", "League: Ys", "League: Tethys", "League: Trigon", "League: Pontus",
-    "Hookfleet", "Western Spice Isles", "Zeijani", "Andaru",
+    "Hookfleet", "West Ring Islanders", "Zeijani", "Andaru",
     "Shumari", "Scyvoi", "Free Giants (Vrivolci)",
 }
 
@@ -4201,9 +4216,18 @@ def solve_trade(world, setts, graph):
                             w_row.append(0.0)
                             continue
                         w = s_avail / ((eff_m + 45.0) ** 1.65)
+                    elif gid == "spice-highland":
+                        # Saffron is ultra-high-value per kg -> minimal distance decay so Vale & Oidong saffron travels all across Krator!
+                        w = s_avail / ((eff_km + 65.0) ** (alpha * 0.55))
                     else:
                         w = s_avail / ((eff_km + 45.0) ** alpha)
                     # Bilateral war, hostilities, commercial rivalries & border-raider frictions:
+                    # Shumari & Vothic Kingdom: centuries of war drove Shumar onto the plateau; escaped Nazari slaves flee Voth to join Shumar (LORE.md s6.23)
+                    if {s_pol, b_pol} == {"Vothic Kingdom", "Shumari"}:
+                        if gid in MILITARY_GOODS:
+                            w_row.append(0.0)
+                            continue
+                        w *= 0.14
                     # Tiguantin is an Empire of Iziz tributary — strong tributary trade orientation toward Iziz!
                     if {s_pol, b_pol} == {"Tiguantin", "Empire of Iziz"}:
                         w *= 1.55
@@ -4233,8 +4257,8 @@ def solve_trade(world, setts, graph):
                         # Zeijani & Andaru raid colonizing powers from time to time
                         w *= 0.48
                     if marr_sid in (s_sid, b_sid) and (
-                        s_pol in ("Hookfleet", "League: Tethys", "Zeijani", "Andaru", "Western Spice Isles")
-                        or b_pol in ("Hookfleet", "League: Tethys", "Zeijani", "Andaru", "Western Spice Isles")
+                        s_pol in ("Hookfleet", "League: Tethys", "Zeijani", "Andaru", "West Ring Islanders")
+                        or b_pol in ("Hookfleet", "League: Tethys", "Zeijani", "Andaru", "West Ring Islanders")
                     ):
                         # Marr is friendly to smugglers despite official efforts to stamp it out -> preferred Izani entrepot!
                         w *= 1.80
@@ -4778,7 +4802,7 @@ def render_trade_map(world, setts, graph, results, out_jpg):
         "Kolli Oasis", "Arfwai Oasis", "Jabal", "Locus", "Mungo", "Reed",
         "Sfenops", "Liikofi", "Yuni", "Ostrukh-on-Water", "Spindle Fan", "The Sill (Sam-Lok)",
         "Spider Lake Weirs", "The Gate", "Stair", "The Twins", "Strongbow", "Erehwon", "Kirstabal",
-        "Opal Valley Mines", "Longsong", "Kautoa", "Noa's Regret", "Boiling Bay", "Shanty", "Hetanini Spice Port",
+        "Opal Valley Mines", "Longsong", "Kautoa", "Noa's Regret", "Boiling Bay", "Shanty", "Taikoro", "Kautono",
     }
 
     # Draw Port Mira's 50-km (25 px @ 2 km/px) No-Shipjacking Truce Circle on the Ring Sea
@@ -4905,7 +4929,7 @@ def write_trade_markdown(payload, out_md):
         "> - **Directed River & Lake Barges (`Jimjam -> Palewharf` Alabaster, `Shim` River Outlet), Surface `Arcbeam–Parabola` Highway, Intra-Xanadu Roads & `Catch/Twins` Stops**: `Layer 2` & calm `inland_lake` `Layer 1` model bulk river and lake barges (`Jimjam -> Palewharf` `alabaster` across Jimjam's Lake, `Shim` `Riv 0`, `Port Tobin` `Riv 12`, `Farport`, `Reed`, `Ostrukh-on-Water`, `Dapor`), **mid-quality Eternal State highways (`0.72x`)** linking `Palewharf`, `Bastion`, `Sheritu`, `Mirabilis`, `Veil`, `Tone`, `Lux`, and `Farport` to `Fulcrum`, pure **surface Ancient highway** between `Arcbeam` and `Parabola` (zero ancient tubes), **intra-Xanadu trade on surface roads** (zero ancient routes), explicit stop-by-stop trade along **`The Catch` & `The Twins`** (`Parabola -> Bab al-Hawa -> Kolli Oasis -> Arfwai Oasis -> Catch Salt Works -> Stair -> The Twins / White Gills -> Strongbow`), and the northern **`Qoold Lheek ↔ Leng ↔ Jimjam` dirt road** exiting exclusively down the eastern highway (zero Eternian transit, zero bulk log transport).",
         "> - **Shipbuilding & Naval Stores Chain + Gunpowder & Steel Triangle + Opal Valley Three Grades**: Shipbuilding splits crooked knees/spars (`ship-timber`) and caulking/rigging (`pitch-tar`, `cordage`, `cotton` canvas) from commissioned hulls (`ship-hulls`, built at `Nephtos` for the League, `Kautoa` for the `Beast Riders`, `Almua`/`Shim`, `Port Mira`, `Farport`, `Shell`). No military power is self-sufficient in gunpowder (`coal` + volcanic `sulfur` + arid playa / *Da-Holwey* guano `saltpeter`). `Opal Valley` exports both court `gems` (`black`/`fire` opals) and `photonic-opals` (`Yusar` cybernetics, `Roketstad` optics, `Yuni` Geomancers).",
         "> - **Glass Chain, East Abyss Rubber Scale-Tree, Fermented/Distilled Luxury Spirits, Vale Opium & Finished Crafts/Arms**: `silica-sand` + Catch/kelp `alkali` + `coal`/`peat` feed glasshouses (`glass` windows, bulbs & spirit bottles); East Abyss Carboniferous **`rubber scale-trees`** (`Sfenops`, `Liikofi`, `Locus`, `Mungo`, `Reed`) yield sulfur-vulcanized `rubber`; fermented & botanical chains convert grain -> `beer`/`whiskey` (`+ peat` -> Iron Republic `scotch`), rice/`salt-rice` -> `sake`, Eternian grapes -> `wine` (`+ sugar` -> `champagne`), cane -> `rum` (`+ isle-spice` -> Throne `ranjrum`), cultivated agave -> `tequila` vs wild Dasri agave -> `mezcal` (led by `Jabal`), inner-crater `tobacco` -> `cigars`, and Xanadu sky-poppy -> `opium`, alongside finished `clothes`, `furniture`, `firearms`, `armor`, and melee `weapons`.",
-        "> - **Ring Sea Smuggling, 50-km `Port Mira` Truce Zone & Fleetless Peoples**: **`Port Mira`** (`Hookfleet`) is both a major **Ranj (`isle-spice`)** supplier (alongside **`Ybera`**, `Western Spice Isles`, `Zey'danin`/`Temora`, and `Andaru`) and a **pirate + smuggler haven** accepting all ships under a strict **50-km no-piracy zone**. **`Nephtos`** (`League: Tethys`) is a **smuggling (never piracy) haven** whose contested island claim makes **`Kautoa`** hostile to `Tethys` (`0.08x`) and the `League` (`0.28x`). **`Marr`** remains friendly to smugglers as their preferred Izani entrepôt. **`Zeijani`**, **`Andaru`**, **`Tiguantin`**, and **`Beast Riders`** have **zero fleets** (`Dhelv` is strictly an inland Throne cavern — maritime traders must come to neighboring anchorages or overland trails to trade with them).",
+        "> - **Ring Sea Smuggling, 50-km `Port Mira` Truce Zone & Fleetless Peoples**: **`Port Mira`** (`Hookfleet`) is both a major **Ranj (`isle-spice`)** supplier (alongside **`Ybera`**, `West Ring Islanders` (`Taikoro` & `Kautono`), `Zey'danin`/`Temora`, and `Andaru`) and a **pirate + smuggler haven** accepting all ships under a strict **50-km no-piracy zone**. **`Nephtos`** (`League: Tethys`) is a **smuggling (never piracy) haven** whose contested island claim makes **`Kautoa`** hostile to `Tethys` (`0.08x`) and the `League` (`0.28x`). **`Marr`** remains friendly to smugglers as their preferred Izani entrepôt. **`Zeijani`**, **`Andaru`**, **`Tiguantin`**, and **`Beast Riders`** have **zero fleets** (`Dhelv` is strictly an inland Throne cavern — maritime traders must come to neighboring anchorages or overland trails to trade with them).",
         "",
         "## 1. Top Maritime Port & Overland Chokepoint Entrepôts",
         "",

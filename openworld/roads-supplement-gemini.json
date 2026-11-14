@@ -2,7 +2,7 @@
   "format": "krator-roads-supplement-gemini",
   "version": 1,
   "highway_count": 37,
-  "dirt_road_count": 49,
+  "dirt_road_count": 48,
   "routes": [
     {
       "id": "supp.eternal_mid_hwy.sakq13nyhr",
@@ -4938,47 +4938,6 @@
         [
           1438.0,
           326.0
-        ]
-      ]
-    },
-    {
-      "id": "supp.syen8wxax5",
-      "settlement": "Hetanini Spice Port",
-      "polity": "Western Spice Isles",
-      "class": "dirt_road",
-      "km": 52.0,
-      "px": [
-        [
-          754.0,
-          836.0
-        ],
-        [
-          754.0,
-          832.0
-        ],
-        [
-          754.0,
-          828.0
-        ],
-        [
-          756.0,
-          824.0
-        ],
-        [
-          756.0,
-          820.0
-        ],
-        [
-          756.0,
-          816.0
-        ],
-        [
-          760.0,
-          812.0
-        ],
-        [
-          762.0,
-          810.0
         ]
       ]
     },

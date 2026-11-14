@@ -14609,23 +14609,23 @@
     },
     {
       "id": "syen8wxax5",
-      "name": "Hetanini Spice Port",
-      "x": 754,
-      "y": 836,
+      "name": "Taikoro",
+      "x": 752,
+      "y": 781,
       "type": "village",
-      "population": 950,
-      "polity": "Western Spice Isles",
-      "notes": ""
+      "population": 850,
+      "polity": "West Ring Islanders",
+      "notes": "West Islander (Hikau) spice & pearl fishing village on northern West Ring Isle"
     },
     {
       "id": "szru86us3f",
-      "name": "Vana Clove Atoll",
-      "x": 773,
-      "y": 842,
+      "name": "Kautono",
+      "x": 749,
+      "y": 894,
       "type": "village",
-      "population": 650,
-      "polity": "Western Spice Isles",
-      "notes": ""
+      "population": 750,
+      "polity": "West Ring Islanders",
+      "notes": "West Islander (Hikau) spice & outrigger village on southern West Ring Isle off Almua"
     },
     {
       "id": "s7ci2atl8h",
