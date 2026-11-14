@@ -683,7 +683,13 @@ def populate_supply_demand(world, setts):
                 sup["timber"] = gs["wood"] * 55.0 * max(1.0, 0.45 * kpop)
             if gs["rain_mm"] >= 450 and -2.0 <= gs["temp_c"] <= 35.0:
                 sup["food"] = max(255.0 * kpop, gs["land_cells"] * 38.0)
-            elif gs["sea_cells"] > 5:
+            elif (
+                gs["sea_cells"] > 5
+                and gs["rain_mm"] >= 260
+                and gs.get("halite_max", 0) < 150
+                and gs.get("alkali_max", 0) < 120
+                and nm not in ("Catch Salt Works", "Bowl Salt Works", "Noa's Regret", "Boiling Bay", "Shanty")
+            ):
                 sup["food"] = 225.0 * kpop + gs["sea_cells"] * 25.0
 
         # Apply TRADE-SCOPE s2.4 extraction gate on oil & rare-earth (except Geomancer concessions)
@@ -1167,6 +1173,9 @@ def populate_supply_demand(world, setts):
         if nm in ("Catch Salt Works", "Bowl Salt Works"):
             sup["salt"] = 1850.0
             sup["saltpeter"] = 38.0 if nm == "Catch Salt Works" else 34.0
+            sup["food"] = 0.0  # Hostile hypersaline salt/soda pans (TRADE-SCOPE s4: Salt al-Ban & Solta) produce ZERO food!
+        if nm in ("Opal Valley Mines", "Xanadu Goldfields", "Siphon Maar Works", "Singing Gjar Quartz", "White Gills Hermitage", "Parabola"):
+            sup["food"] = 0.0  # Arid mining, maar & high-pass hermitage outposts import food!
         if pol == "Xanadu Sultanate":
             # TRADE-SCOPE s2.2: Xanadu imports salt across the Catch
             sup["salt"] = min(sup.get("salt", 0.0), 35.0)
@@ -1616,6 +1625,74 @@ def populate_supply_demand(world, setts):
         }
         sup["tobacco"] = INNER_TOBACCO_SUP.get(nm, 0.0)
         dem["tobacco"] = (0.34 if is_port else 0.24) * kpop
+
+        # 6c-ii. Native Crop Gates on `coffee`, `spice-tropical`, `dye-tropical`, `tea` & `silk` (TRADE-SCOPE.md s2.5, lines 161-195):
+        # Pre-fix `trade-goods.json` grew coffee, clove, tropical dyes, tea & silk anywhere Koppen climate fit (amplified 6x at Fulcrum!).
+        # Enforce canon home biomes + recorded transplants:
+        # (1) `coffee` (home: `ringisles` + Throne converted Ranj estates per LORE.md:460 + warm SW Bay/Shell/Kirstabal; 0 in Eternal State!):
+        COFFEE_SUP = {
+            "Zey'danin": 48.0, "Temora": 34.0, "Shim": 36.0, "Voth": 24.0, "Almua": 14.0,
+            "Kautoa": 44.0, "Valapo": 18.0, "Bipo": 12.0,
+            "Ybera": 32.0, "Ys": 16.0, "Kierson": 8.5,
+            "Nephtos": 28.0, "Tethis": 12.0, "Nereus": 9.5,
+            "Pontus": 11.0, "Kyra Isle": 6.5, "Skopelos Isle": 6.0,
+            "Port Mira": 28.0,
+            "Hetanini Spice Port": 24.0, "Vana Clove Atoll": 16.0,
+            "Shell": 26.0, "Port Goto": 10.0, "Marr": 16.0,
+            "Kirstabal": 22.0, "Erehwon": 8.0,
+        }
+        sup["coffee"] = COFFEE_SUP.get(nm, 0.0)
+        dem["coffee"] = (0.42 if st_type in ("city", "arcology") or is_port else 0.24) * kpop_lux
+
+        # (2) `spice-tropical` (clove, rosette-vanilla & tropical island spice — home: `ringisles`, `swbay`, `throne`, `hyperjungle`; 0 in Eternal State!):
+        SPICE_TROPICAL_SUP = {
+            "Temora": 26.0, "Zey'danin": 22.0, "Shim": 20.0, "Voth": 14.0,  # incl. SW Bay rosette-vanilla (TRADE-SCOPE s2.5a)
+            "Kautoa": 28.0, "Valapo": 12.0, "Bipo": 9.0,
+            "Hetanini Spice Port": 22.0, "Vana Clove Atoll": 16.0,
+            "Port Mira": 16.0, "Ybera": 15.0, "Nephtos": 14.0,
+            "Nereus": 7.5, "Kierson": 7.5, "Kyra Isle": 5.5, "Skopelos Isle": 5.5,
+            "Shell": 16.0, "Port Goto": 8.0, "Mav's Refuge": 9.5,
+            "Kirstabal": 10.5,
+        }
+        sup["spice-tropical"] = SPICE_TROPICAL_SUP.get(nm, 0.0)
+        dem["spice-tropical"] = (0.18 if st_type in ("city", "arcology") or is_port else 0.10) * kpop_lux
+
+        # (3) `dye-tropical` (Shim Blitrit purple, Ys murex, Ring Isles/Bay/Throne/Hyperjungle indigo & annatto — 0 in Eternal State!):
+        DYE_TROPICAL_SUP = {
+            "Shim": 34.0, "Voth": 16.0, "Almua": 10.0, "Temora": 8.5, "Zey'danin": 7.5,  # Blitrit blood-reed & bay-purple!
+            "Ys": 24.0, "Kierson": 6.5, "Ybera": 7.5,                                     # Ys murex purple!
+            "Nephtos": 16.0, "Tethis": 8.5, "Nereus": 6.5, "Trigon": 7.5, "Pontus": 6.5,  # Ring Isles/Bay indigo & annatto
+            "Kautoa": 18.0, "Valapo": 7.5, "Bipo": 5.0,
+            "Port Mira": 8.5, "Hetanini Spice Port": 7.5, "Vana Clove Atoll": 5.5,
+            "Shell": 12.0, "Dilihan": 9.5, "Mav's Refuge": 8.5, "Girder": 4.0,
+        }
+        sup["dye-tropical"] = DYE_TROPICAL_SUP.get(nm, 0.0)
+        dem["dye-tropical"] = (0.11 if st_type in ("city", "arcology") else 0.06) * kpop_lux
+
+        # (4) `tea` (TRADE-SCOPE.md:161, 163, 165, 193 — native to `xanadu`, `oidong`, and `nwlowlands` Eternian tea + Yeti ivan-chai & Tiguantin; cuts Republic/Dalab/Giants!):
+        TEA_SUP = {
+            "Fulcrum": 48.0, "Lux": 38.0, "Mirabilis": 24.0, "Tone": 20.0, "Sheritu": 14.0,  # Native `nwlowlands` Eternian tea
+            "Erehwon": 38.0, "Qiblai": 26.0, "Theodiga": 22.0, "Kirstabal": 18.0, "Strongbow": 10.0,  # Vale mist tea
+            "Longsong": 18.5,                                                                 # Oidong monastery mist tea
+            "Guari": 9.5, "Daridel": 3.5,                                                     # Wet-face montane tea
+            "Qoold Lheek": 14.0, "Leng": 5.0,                                                 # Northern ivan-chai
+        }
+        sup["tea"] = TEA_SUP.get(nm, 0.0)
+        dem["tea"] = (0.42 if pol in ("Eternal State", "Xanadu Sultanate", "Order of Historians", "Yuni Emirate", "Jimjam", "Nomad Country", "Jabal Shiekdom") else 0.26) * kpop_lux
+
+        # (5) `silk` (TRADE-SCOPE.md:163, 213, 572 — Vale/Eternian mulberry, Oidong lotus, Spider Lake Gossamer, Korona Silkhead, SW beadcone-silk & Beast Rider spider silk; cuts cold Republic/Giants!):
+        SILK_SUP = {
+            "Erehwon": 22.0, "Qiblai": 15.0, "Theodiga": 11.0, "Kirstabal": 9.5,   # Vale mulberry & lotus silk
+            "Lux": 24.0, "Fulcrum": 20.0, "Mirabilis": 11.0,                       # Eternian mulberry silk
+            "Longsong": 8.5,                                                        # Oidong lotus silk
+            "Spider Lake Weirs": 9.5, "Ham-Tsek Silk Post": 3.2,                    # Spider Lake Gossamer
+            "Silkhead": 8.5,                                                        # Korona Silk River
+            "Krrmt": 5.5, "Jrrmiah": 4.2, "Span": 4.5, "Shim": 6.5, "Voth": 5.5,    # SW Highland & Bay beadcone-silk
+            "Pinnacle Rock": 5.5, "Mav's Refuge": 5.0,                              # Beast Rider spider silk
+            "Qoold Lheek": 3.2, "Leng": 1.0,                                        # Plundered Eternian silk raid booty
+        }
+        sup["silk"] = SILK_SUP.get(nm, 0.0)
+        dem["silk"] = (0.14 if st_type in ("city", "arcology") else 0.06) * kpop_lux
 
         # Boost Throne & Spice Isles Ranj (`isle-spice`) slightly so Throne estates supply both raw Ranj trade & Ranj-rum stills:
         RANJ_BOOST = {
