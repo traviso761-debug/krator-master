@@ -1057,6 +1057,12 @@ def main():
        "and before it the White Tree, Nimloth, the gift of the Eldar, which flowers white and is fragrant at dusk. "
        "Every building here is our own; the texts give the city a court, a tower and a tree, not a plan.",
        model="armenelos", aka=["The City of Kings"], tower=130, walls=2820)
+    # the Downfall's (src/numenor/main.js keeps a landmark tagged with an era only in that era)
+    temple = (T2["Armenelos"][0] + 420.0, T2["Armenelos"][1] + 310.0)
+    lm("The Temple", temple, "The temple Sauron had raised in Armenelos when the Faithful were persecuted: a drum of dark stone with a "
+       "silver dome gone black with smoke, and the louver at its top always smoking. The White Tree had been cut down to feed its first fire. "
+       "Its shape is ours, from the description of its size only.",
+       model="temple", era="downfall", clear=[115], radius=76, wall=120)
     lm("Romenna", T2["Romenna"], "The great haven of the east, at the head of its firth: the port of the King's Road and of the ships that sailed for Middle-earth. "
        "It faces east, toward the lands Numenor went back to.", model="haven", ships=10, turn=math.radians(108 - 90))
     lm("Tol Uinen", tu, "An island in the Firth of Romenna, and the tower of Calmindon on it, built to watch the ships come and go.",
@@ -1095,6 +1101,12 @@ def main():
     V["Sorontil"] = view((sor[0] * 0.94 - 6000, sor[1] * 0.94), (sor[0] * 0.985, sor[1] * 0.985), 1200, 600)
     V["The whole island"] = view((0.0, 520000.0), (0.0, 20000.0), 330000, 0)
     V["Over Mittalmar"] = view((-40000.0, 60000.0), MENEL, 4200, 1600)
+    tm = temple
+    cfg["eraViews"] = {"downfall": {
+        "The Temple": view((tm[0] + 900, tm[1] + 700), tm, hm(tm) + 260, hm(tm) + 120),
+        "The Downfall": view((70000.0, 45000.0), MENEL, 9000, 1200),
+        "The Meneltarma, last": view((22000.0, 16000.0), MENEL, 4200, MENEL_H * 0.85)},
+        "defaultView": "The Downfall"}
     V["Hyarrostar's forests"] = view((bdir(146)[0] * 260000, bdir(146)[1] * 260000), (bdir(146)[0] * 300000, bdir(146)[1] * 300000), 1500, 100)
     json.dump(cfg, open(CFG, "w", encoding="utf-8", newline="\n"), indent=1, ensure_ascii=False)
 

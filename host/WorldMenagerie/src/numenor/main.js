@@ -8,7 +8,10 @@ import {landmarks} from './landmarks.js';
 import {nature} from './nature.js';
 import {life} from './life.js';
 import {makeFine} from './fine.js';
+import {downfall} from './downfall.js';
 installErrorHandlers();window.LOAD=LOAD;
+const ERA=(()=>{try{return new URLSearchParams(location.hash.slice(1)).get('era')==='downfall'?'downfall':'height';}catch(e){return 'height';}})();
+
 configureLoading({
   lines:[
     'Fan work. Tolkien\'s world belongs to the Tolkien Estate; nothing from any book, film or game is used.',
@@ -23,10 +26,18 @@ configureLoading({
     'A ship is forty metres long and the island seven hundred kilometres across, so the ships are grown with distance to stay in sight.',
     'The eagles on the Meneltarma keep watch. They circle it very slowly, very high.',
   ],
-  prefix:'raising Númenor… ',labels:{'map-data':'reading the land',ground:'raising the island',buildings:'building the towns',details:'',landmarks:'planting the White Tree',el:'',traffic:'',nature:'growing the forests',life:'putting out the ships',ui:'opening the windows'}});
+  prefix:ERA==='downfall'?'the Downfall… ':'raising Númenor… ',labels:{'map-data':'reading the land',ground:'raising the island',buildings:'building the towns',details:'',landmarks:'planting the White Tree',el:'',traffic:'',nature:'growing the forests',life:'putting out the ships',ui:'opening the windows'}});
 // the land cover, the rivers and the coast are not map data the engine reads, so they come in their own file,
 // fetched before the build so that the extras can use them synchronously like everything else
-const ctx=window._iz={defaultCity:'numenor',models:[landmarks],extras:[{name:'nature',fn:nature},{name:'life',fn:life}]};
+// Two eras (#era=downfall): the height of Numenor, before the Shadow, which is the default; and the Downfall, the
+// Hallow forsaken, the White Tree cut down and the Temple standing in Armenelos, with the eagle-shaped storm coming
+// out of the West and, when it is begun, the island going down under the sea (src/numenor/downfall.js).
+const ctx=window._iz={defaultCity:'numenor',era:ERA,models:[landmarks],extras:[{name:'nature',fn:nature},{name:'life',fn:life},{name:'downfall',fn:downfall}],
+  configure(C){
+    // a landmark tagged with an era stands only in that era; an era's own views come in with it
+    C.landmarks=C.landmarks.filter(l=>!l.era||l.era===ERA);
+    const ev=(C.eraViews||{})[ERA];if(ev){for(const k in ev)if(k!=='defaultView')C.views[k]=ev[k];if(ev.defaultView)C.defaultView=ev.defaultView;}
+    if(ERA==='downfall'){C.weather=Object.assign({},C.weather,{climate:'maritime',weights:{cloud:6,rain:1,storm:0,clear:0,fair:0,fog:0,drizzle:1}});}}};
 boot(()=>fetch('data/cities/numenor-land.json').then(r=>{if(!r.ok)throw new Error('numenor-land.json: HTTP '+r.status);return r.json();})
   .then(land=>{ctx.nmLand=land;ctx.fine=makeFine(land);},e=>report('land',e))
   .then(()=>build(ctx)));

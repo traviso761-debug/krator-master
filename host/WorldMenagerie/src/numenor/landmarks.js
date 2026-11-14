@@ -56,7 +56,8 @@ export function landmarks(api){
       const pick=new THREE.Mesh(new THREE.CylinderGeometry(HAL,HAL,30,24),new THREE.MeshBasicMaterial({visible:false}));pick.position.set(x,fineH(x,z)+15,z);parts.push(pick);}
     const g=group(L,parts);
     // the eagles of Manwe, keeping watch: three of them circling the summit, high, very slowly
-    {const E=[],M=new THREE.MeshLambertMaterial({color:0x5a4632,flatShading:true}),N=L.eagles||3;
+    // (in the Downfall the Hallow is forsaken and they are gone)
+    if(ctx.era!=='downfall'){const E=[],M=new THREE.MeshLambertMaterial({color:0x5a4632,flatShading:true}),N=L.eagles||3;
       const wingG=new THREE.BufferGeometry();
       wingG.setAttribute('position',new THREE.Float32BufferAttribute([0,0,-0.5, 0,0,0.5, -1.4,0.05,0, 0,0,-0.5, 0,0,0.5, 1.4,0.05,0],3));wingG.computeVertexNormals();
       for(let k=0;k<N;k++){const o=new THREE.Group(),body=new THREE.Mesh(new THREE.ConeGeometry(0.22,1.4,5).rotateX(Math.PI/2),M);o.add(body);
@@ -93,8 +94,12 @@ export function landmarks(api){
       const lan=new THREE.Mesh(new THREE.CylinderGeometry(10,10,12,16).translate(0,TH+6,0),new THREE.MeshPhongMaterial({color:0xfff2c8,emissive:0x302010}));lan.position.copy(tw.position);parts.push(lan);
       const cap=new THREE.Mesh(new THREE.ConeGeometry(12,30,16).translate(0,TH+12+15,0),silver);cap.position.copy(tw.position);parts.push(cap);
       ctx.towerLamp=lan.material;}
-    // Nimloth, the White Tree, in the middle of the court: a wide crown of white blossom on a pale trunk, fragrant at dusk
-    {const tx=x,tz=z+20,trunkM=new THREE.MeshLambertMaterial({color:0xbab4a8}),bloom=new THREE.MeshPhongMaterial({color:0xffffff,emissive:0x2a2a30,shininess:4,flatShading:true});
+    // Nimloth, the White Tree, in the middle of the court: a wide crown of white blossom on a pale trunk, fragrant at dusk.
+    // In the Downfall it has been cut down: a stump inside its rail
+    if(ctx.era==='downfall'){const tx=x,tz=z+20,st=new THREE.Mesh(new THREE.CylinderGeometry(1.5,1.8,1.2,9).translate(0,0.6,0),new THREE.MeshLambertMaterial({color:0x8a8478}));
+      st.position.set(tx,g0+1,tz);parts.push(st);const rail=new THREE.Mesh(new THREE.TorusGeometry(11,0.5,4,32).rotateX(Math.PI/2),white);rail.position.set(tx,g0+1.6,tz);parts.push(rail);
+      animHooks.push(()=>{const n=nightF(hour());if(ctx.towerLamp)ctx.towerLamp.emissive.setRGB(0.2+0.8*n,0.14+0.6*n,0.06+0.25*n);});}
+    else {const tx=x,tz=z+20,trunkM=new THREE.MeshLambertMaterial({color:0xbab4a8}),bloom=new THREE.MeshPhongMaterial({color:0xffffff,emissive:0x2a2a30,shininess:4,flatShading:true});
       const tr=new THREE.Mesh(new THREE.CylinderGeometry(0.9,1.6,10,7).translate(0,5,0),trunkM);tr.position.set(tx,g0+1,tz);parts.push(tr);
       const R=mkRng(1700),crown=[];
       for(let k=0;k<5;k++){const a=k/5*Math.PI*2+0.3,l=5+R()*2;const br=new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.6,l,5).translate(0,l/2,0),trunkM);
@@ -112,6 +117,34 @@ export function landmarks(api){
       const b=box(hx,gh(hx,hz)-1,hz,50,18,30,white);b.rotation.y=-a;parts.push(b);
       const rf=new THREE.Mesh(new THREE.CylinderGeometry(1,1,50,3).rotateZ(Math.PI/2),slate);rf.scale.set(1,8,16);rf.position.set(hx,gh(hx,hz)+17+4,hz);rf.rotation.y=-a;parts.push(rf);}
     return group(L,parts);},
+
+  temple(L,x,z){   // the Temple of the Downfall: a drum of dark stone, a dome once silver and black with smoke, smoke from its louver
+    const parts=[],R0=L.radius||76,WH=L.wall||120,g0=gh(x,z),stone=new THREE.MeshLambertMaterial({color:0x4a4640}),
+      dome=new THREE.MeshPhongMaterial({color:0x2a2a2e,specular:0x55555a,shininess:30}),dark=new THREE.MeshLambertMaterial({color:0x1c1a18});
+    // the drum: fifty feet thick (the hall within is not modelled), buttressed, on a stepped base
+    for(let k=0;k<3;k++)parts.push(new THREE.Mesh(new THREE.CylinderGeometry(R0+18-k*6,R0+18-k*6,4,64).translate(x,g0+2+k*4,z),stone));
+    parts.push(new THREE.Mesh(new THREE.CylinderGeometry(R0,R0*1.03,WH,64).translate(x,g0+12+WH/2,z),stone));
+    for(let k=0;k<24;k++){const a=k/24*Math.PI*2,b=new THREE.Mesh(new THREE.BoxGeometry(7,WH*0.92,10).translate(0,WH*0.46,0),stone);b.position.set(x+Math.cos(a)*(R0+3),g0+12,z+Math.sin(a)*(R0+3));b.rotation.y=-a;parts.push(b);}
+    // the doors: four, dark, and a road up to the west one
+    for(let k=0;k<4;k++){const a=k/4*Math.PI*2+Math.PI/4,d=new THREE.Mesh(new THREE.BoxGeometry(2,26,14).translate(0,13,0),dark);d.position.set(x+Math.cos(a)*(R0+0.6),g0+12,z+Math.sin(a)*(R0+0.6));d.rotation.y=-a;parts.push(d);}
+    // the dome, and the louver on it that the smoke comes out of
+    const DH=R0*0.8;parts.push(new THREE.Mesh(new THREE.SphereGeometry(R0,48,16,0,Math.PI*2,0,Math.PI/2).scale(1,DH/R0,1).translate(x,g0+12+WH,z),dome));
+    const TOP=g0+12+WH+DH;parts.push(new THREE.Mesh(new THREE.CylinderGeometry(9,11,14,12).translate(x,TOP+5,z),dark));
+    const g=group(L,parts);
+    // the smoke: a column out of the louver, leaning downwind, and the fire under it red at night
+    {const N=420,pos=new Float32Array(N*3),age=new Float32Array(N),R=mkRng(666),tex=(()=>{const c=document.createElement('canvas');c.width=c.height=64;const q=c.getContext('2d'),gr=q.createRadialGradient(32,32,0,32,32,32);
+      gr.addColorStop(0,'rgba(255,255,255,1)');gr.addColorStop(0.5,'rgba(255,255,255,0.5)');gr.addColorStop(1,'rgba(255,255,255,0)');q.fillStyle=gr;q.fillRect(0,0,64,64);return new THREE.CanvasTexture(c);})();
+      for(let k=0;k<N;k++)age[k]=R();
+      const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
+      const sm=new THREE.Points(geo,new THREE.PointsMaterial({color:0x2a2624,size:90,map:tex,transparent:true,opacity:0.75,depthWrite:false}));sm.frustumCulled=false;sm.userData.noWire=true;scene.add(sm);
+      const glow=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,color:0xff5a20,transparent:true,opacity:0,depthWrite:false,blending:THREE.AdditiveBlending}));glow.scale.set(120,120,1);glow.position.set(x,TOP+12,z);scene.add(glow);
+      ctx.temple={x,z,top:TOP,fire:0,glow,smoke:sm};let last=0;
+      animHooks.push(now=>{const dt=Math.min(0.1,(now-(last||now))/1000);last=now;const f=ctx.temple.fire,rate=0.03*(1+3*f),w=(ctx.weather&&ctx.weather.wind)||0.3;
+        for(let k=0;k<N;k++){age[k]+=dt*rate;if(age[k]>1)age[k]-=1;const a=age[k],h=a*(900+1500*f),sp=10+a*(160+260*f);
+          pos[k*3]=x+h*(0.35+w*0.6)+Math.sin(k*1.7+a*6)*sp;pos[k*3+1]=TOP+12+h;pos[k*3+2]=z+h*0.12+Math.cos(k*2.3+a*5)*sp;}
+        geo.attributes.position.needsUpdate=true;sm.material.size=90+160*f;sm.material.color.setRGB(0.16+0.1*f,0.15+0.05*f,0.14);
+        const n=nightF(hour());glow.material.opacity=Math.min(1,0.25+0.6*n+0.9*f);glow.scale.setScalar(120+520*f);});}
+    return g;},
 
   haven(L,x,z){   // a haven's ships: moored off its quays, sails furled on some, others coming and going (life.js)
     const parts=[],R=mkRng(Math.round(x)^Math.round(z)),n=L.ships||6,A=L.turn||0;

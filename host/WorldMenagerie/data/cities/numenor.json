@@ -176,6 +176,21 @@
    "walls": 2820
   },
   {
+   "name": "The Temple",
+   "at": [
+    0.0422,
+    0.2014
+   ],
+   "info": "The temple Sauron had raised in Armenelos when the Faithful were persecuted: a drum of dark stone with a silver dome gone black with smoke, and the louver at its top always smoking. The White Tree had been cut down to feed its first fire. Its shape is ours, from the description of its size only.",
+   "model": "temple",
+   "era": "downfall",
+   "clear": [
+    115
+   ],
+   "radius": 76,
+   "wall": 120
+  },
+  {
    "name": "Romenna",
    "at": [
     -0.29697,
@@ -453,5 +468,46 @@
     100
    ]
   ]
+ },
+ "eraViews": {
+  "downfall": {
+   "The Temple": [
+    [
+     0.0359,
+     0.20949,
+     969.0
+    ],
+    [
+     0.0422,
+     0.2014,
+     829.0
+    ]
+   ],
+   "The Downfall": [
+    [
+     -0.40492,
+     0.62882,
+     9000
+    ],
+    [
+     -0.0,
+     0.0,
+     1200
+    ]
+   ],
+   "The Meneltarma, last": [
+    [
+     -0.14397,
+     0.19763,
+     4200
+    ],
+    [
+     -0.0,
+     0.0,
+     2550.0
+    ]
+   ]
+  },
+  "defaultView": "The Downfall"
  }
 }

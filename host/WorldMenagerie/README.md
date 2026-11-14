@@ -1004,7 +1004,31 @@ kilometres across and the five promontories run out from it, about seven hundred
   firth and the others along the longest run of open sea from the quay, and fishing boats off four of them.
   A ship is forty metres and the island seven hundred kilometres, so they are grown with distance.
 
-Known gaps: away from the patches the coast is still the kilometre grid's; beaches and marsh barely show.
+- **Two eras.** The page opens on Númenor at its height. `#era=downfall` (or the button at the foot of the
+  page) is the Downfall, with these changes (`src/numenor/downfall.js`):
+  - The Hallow is forsaken (no eagles) and Nimloth is a stump inside its rail.
+  - The Temple stands in Armenelos: a drum of dark stone 150 m across with a blackened dome, its louver
+    always smoking, and the houses where it stands cleared. It is the generator's landmark tagged
+    `era: "downfall"`, and `main.js`'s `configure` keeps a tagged landmark, and an era's own views
+    (`eraViews`), only in their era.
+  - The weather is held fair, with no fog, since this is a thing seen from far off, and a dark dome round the
+    camera darkens the sky above the horizon.
+  - Three clouds in the shape of eagles stand over the western sea, wings spread north and south, lit red
+    underneath toward evening.
+  - "Begin the Downfall" (or `#fall=<second>`, which starts it that far in) runs the end, about three and a
+    half minutes long, captioned as it goes:
+    - The eagles come over the island.
+    - Lightning breaks on the Temple and its dome burns.
+    - The Meneltarma takes fire.
+    - The sea rises over everything, the mountain last.
+
+    The island goes down by raising the water: the engine's sea tiles, the far ring with them and the ships on
+    them (`ctx.seaLevel`).
+  - Golden `numenor-downfall` (60 seconds in).
+
+Known gaps: away from the patches the coast is still the kilometre grid's; beaches and marsh barely show. The
+captions, the lightning's flash over the whole view and the tint below the water are page overlays, which
+`tools/probe.py`'s canvas shots do not show.
 
 Regenerate with `python3 tools/make-numenor.py` (about a minute and a half; it writes `data/cities/numenor.json`,
 `numenor-osm.json` and `numenor-land.json`).

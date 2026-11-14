@@ -38,10 +38,10 @@ export function life(api){
   animHooks.push(now=>{const dt=Math.min(0.1,(now-(last||now))/1000);last=now;
     const fovK=Math.tan(camera.fov*Math.PI/360)*2/innerHeight;
     for(const sh of ships){sh.s=(sh.s+sh.v*dt)%(sh.L*2);const out=sh.s<sh.L,s=out?sh.s:2*sh.L-sh.s,[x,z,a]=at(sh.pts,s);
-      sh.o.position.set(x,0.4,z);sh.o.rotation.y=-(out?a:a+Math.PI);
+      sh.o.position.set(x,(ctx.seaLevel||0)+0.4,z);sh.o.rotation.y=-(out?a:a+Math.PI);
       const d=camera.position.distanceTo(sh.o.position),need=d*fovK*5/sh.len;sh.o.scale.setScalar(Math.max(1,need));
       sh.o.visible=d<160000;}
     for(const b of boats){b.a+=b.w*dt*12;const x=b.cx+Math.cos(b.a)*b.r,z=b.cz+Math.sin(b.a)*b.r;
-      if(!wet(x,z)){b.w=-b.w;continue;}b.o.position.set(x,0.4,z);b.o.rotation.y=-(b.a+Math.sign(b.w)*Math.PI/2);b.o.visible=camera.position.distanceTo(b.o.position)<30000;}});
+      if(!(ctx.seaLevel>2)&&!wet(x,z)){b.w=-b.w;continue;}b.o.position.set(x,(ctx.seaLevel||0)+0.4,z);b.o.rotation.y=-(b.a+Math.sign(b.w)*Math.PI/2);b.o.visible=camera.position.distanceTo(b.o.position)<30000;}});
   ctx.details=Object.assign(ctx.details||{},{ships:ships.length,boats:boats.length,routes:Object.fromEntries(Object.entries(routes).map(([k,v])=>[k,Math.round(lenOf(v)/1000)+' km']))});
 }
