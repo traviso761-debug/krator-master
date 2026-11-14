@@ -23,7 +23,7 @@
 import {SAUCER,NACELLE,DEFLECTOR,BAYS,TORPEDO} from './dims.js';
 import {surface,thinSurface,rows,saucerSurf,rimSurf,engSurf,neckSurf,nacSurf,pylonSurf,bridgeSurf,MODTOP,patch,nacPhi,nacHalf,rho,saucerTop,saucerBot,
         deflPlane,smooth,ND0,ND1,NACZ,NACY,neckLead,NECKY,normalAt} from './hull.js';
-import {saucerTextures,loftTex,hullPainter,hullMaterial,planUV} from './skin.js';
+import {saucerTextures,skinTexture,hullMaterial,planUV} from './skin.js';
 import {flight} from './flight.js';
 import {events} from './events.js';
 import {systems} from './systems.js';
@@ -156,25 +156,13 @@ export function model(api){
    {const g=surface(THREE,sB,U,rows([sB],112,384,1),true);planUV(g);add(g,saucerMat(T.bot),INFO.saucer);}
    add(surface(THREE,rimSurf,U,rows([rimSurf],8,1024,1),false),hullMaterial(THREE,T.rim,env,{bump:0.25}),INFO.saucer);}
   into=G;
-  // the stardrive: the engineering hull and the neck share one painter, so the decks run on across the join
   const DF=DEFLECTOR;
-  const nearDefl=p=>Math.pow((p.y-DF.y)/DF.ry,2)+Math.pow(p.z/DF.rz,2)<2.2&&p.x>DF.x-12;
-  const engLetters=(ctx,W,H)=>{
-    // the registry on both sides of the raised after body, over the pylons
-    for(const side of [1,-1]){
-      const u=0.84,v=side>0?0.12:0.38;
-      ctx.save();ctx.translate(u*W,v*H);if(side>0)ctx.rotate(Math.PI);ctx.scale(W/300*0.95,H/360*1.0);
-      ctx.font='700 6px "Arial Narrow","Helvetica Neue",Arial,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
-      ctx.lineJoin='round';ctx.lineWidth=0.7;ctx.strokeStyle='rgb(160,36,30)';ctx.strokeText('NCC-1701-D',0,0);
-      ctx.fillStyle='rgb(36,40,48)';ctx.fillText('NCC-1701-D',0,0);ctx.restore();}
-  };
-  const engT=loftTex(THREE,renderer,engSurf,true,2048,1024,hullPainter({seed:51,skip:nearDefl,spine:true,ventral:true}),engLetters);
+  // the stardrive and the nacelles and pylons (skin.js paints them, by name; skincache.js has most likely done it already)
+  const engT=skinTexture(THREE,renderer,'eng');
   add(thinSurface(THREE,engSurf,256,128,true),hullMaterial(THREE,engT,env),INFO.eng);
-  const neckT=loftTex(THREE,renderer,neckSurf,false,1024,1024,hullPainter({seed:51,spine:true}));
+  const neckT=skinTexture(THREE,renderer,'neck');
   add(thinSurface(THREE,neckSurf,96,128,false),hullMaterial(THREE,neckT,env),INFO.neck);
-  // the nacelles and pylons: one texture each, both sides
-  const nacT=loftTex(THREE,renderer,nacSurf(1),true,2048,512,hullPainter({windows:false,seed:71,cw:12,ch:5,nacelle:true}));
-  const pyT=loftTex(THREE,renderer,pylonSurf(1),false,512,256,hullPainter({windows:false,seed:81,cw:10,ch:6}));
+  const nacT=skinTexture(THREE,renderer,'nac'),pyT=skinTexture(THREE,renderer,'py');
   // a material each side (on the same textures), so a scorch on one nacelle (damage.js) is not on the other
   const nacMat=s=>hullMaterial(THREE,nacT,env,{metal:0.22}),pyMat=s=>hullMaterial(THREE,pyT,env);
   for(const side of [1,-1]){

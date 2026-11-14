@@ -94,7 +94,9 @@ try{const out={timedOut,readyMs:readyAt?Math.round(readyAt-t0):null};const IZ=wi
  if(rd&&sc){const inf=rd.info;let n=0,inst=0,cap=0,used=0,pts=0,meshes=0,nocull=0;const mats=new Set();sc.traverse(o=>{n++;if(o.isInstancedMesh){inst++;cap+=o.instanceMatrix.count;used+=o.count;}else if(o.isPoints)pts++;else if(o.isMesh)meshes++;if(o.material)mats.add(o.material);if(o.frustumCulled===false)nocull++;});
   frames=frames.slice(-120);const srt=[...frames].sort((a,b)=>a-b);
   Object.assign(out,{calls:inf.render.calls,triangles:inf.render.triangles,programs:inf.programs.length,textures:inf.memory.textures,objects:n,instanced:inst,instCap:cap,instUsed:used,points:pts,meshes,materials:mats.size,noCull:nocull,
-   frameP50:srt.length?+srt[srt.length>>1].toFixed(1):null,frameP95:srt.length?+srt[Math.floor(srt.length*0.95)].toFixed(1):null,canvas:[rd.domElement.width,rd.domElement.height]});}
+   frameP50:srt.length?+srt[srt.length>>1].toFixed(1):null,frameP95:srt.length?+srt[Math.floor(srt.length*0.95)].toFixed(1):null,canvas:[rd.domElement.width,rd.domElement.height]});
+  // which GPU drew it (the browser may only give a generic name)
+  try{const gl=rd.getContext(),x=gl.getExtension('WEBGL_debug_renderer_info');out.gpu=gl.getParameter(x?x.UNMASKED_RENDERER_WEBGL:gl.RENDERER);}catch(e){}}
  if(window._lotList){const L=window._lotList.map(l=>[r2(l.x),r2(l.z),r2(l.w),r2(l.dpt),r2(l.h),Math.round(l.ry*1000)/1000,l.kind,l.fixed?1:0]);out.lots=L.length;out.lotHash=await sha(JSON.stringify(L));}
  // the interface's layout: every visible fixed or absolute element's box, for checking that nothing tramples anything
  try{out.ui=[...document.querySelectorAll('body *')].filter(e=>{const cs=getComputedStyle(e);if(cs.position!=='fixed'&&cs.position!=='absolute'&&e.tagName!=='BUTTON'&&!['timebar','compass','hud','tslider'].includes(e.id))return false;if(cs.display==='none'||cs.visibility==='hidden'||+cs.opacity===0)return false;const r=e.getBoundingClientRect();return r.width>4&&r.height>4&&e.tagName!=='CANVAS';}).map(e=>{const r=e.getBoundingClientRect();return {id:e.id||'',cls:(e.className&&e.className.baseVal===undefined?e.className:'')+'',tag:e.tagName,text:(e.innerText||'').slice(0,40).replace(/\s+/g,' '),x:Math.round(r.left),y:Math.round(r.top),w:Math.round(r.width),h:Math.round(r.height)};});out.viewport=[innerWidth,innerHeight];}catch(e){out.uiError=String(e);}
@@ -146,6 +148,10 @@ def main():
     ap.add_argument("--no-build", action="store_true", help="do not regenerate src/*/build.js first (the test runner checks it instead)")
     ap.add_argument("--expect", help="golden JSON (tests/golden/iziz-<seed>.json): exit 2 if the layout fingerprint differs")
     ap.add_argument("--save-golden", help="write the layout fingerprint to this golden JSON")
+    ap.add_argument("--profile", help="a Firefox profile folder to keep between runs (created if missing), so a second run sees the "
+                    "first one's storage; give --port too, as storage belongs to the origin (with a snap Firefox, keep it under ~/snap/firefox/common)")
+    ap.add_argument("--uncapped", action="store_true", help="draw frames as fast as they come (layout.frame_rate=0), not at the "
+                    "display's 60 Hz, so frameP50/frameP95 are what a frame costs and not the vsync interval")
     a = ap.parse_args()
 
     src = open(a.page, encoding="utf-8").read()
@@ -167,8 +173,13 @@ def main():
     ff, snap = firefox_cmd()
     home = os.path.expanduser("~")
     work = tempfile.mkdtemp(prefix="iziz-probe-", dir=os.path.join(home, "snap/firefox/common") if snap and os.path.isdir(os.path.join(home, "snap/firefox/common")) else None)
-    profile = os.path.join(work, "profile")
-    os.mkdir(profile)
+    profile = os.path.abspath(a.profile) if a.profile else os.path.join(work, "profile")
+    os.makedirs(profile, exist_ok=True)
+    # a kept profile gets its prefs written afresh each run; a fresh one only when asked for something
+    prefs = {"layout.frame_rate": 0} if a.uncapped else {}
+    if prefs or a.profile:
+        open(os.path.join(profile, "user.js"), "w").write("".join(f'user_pref("{k}", {json.dumps(v)});\n' for k, v in prefs.items())
+                                                           + ('user_pref("layout.frame_rate", -1);\n' if not a.uncapped else ""))
     page = os.path.join(work, "page.html")
     open(page, "w", encoding="utf-8").write(src)
 

@@ -2229,8 +2229,7 @@ wireframe and menagerie menu every other page has.
     through as a captain would; **`tools/test-enterprise.py`** runs every kind that way in headless Firefox and fails
     one that throws or stalls (about a quarter of an hour for all fifteen). `tools/probe.py` now reports a page early
     when it sets `window.__probeDone`.
-  - **Tenth pass: the backlog, nearly all of it** (2026-11-14; `src/enterprise/BACKLOG.md` keeps the two items
-    left, Q6 and Q7). Twenty kinds of orders now, and `tools/test-enterprise.py` flies all twenty.
+  - **Tenth pass: the rest of the backlog** (2026-11-14; `src/enterprise/BACKLOG.md` is now empty). Twenty kinds of orders now, and `tools/test-enterprise.py` flies all twenty.
     - **Combat** (`tactical.js`, the **Tactical** button). The shields are four facings, fore, aft, port and starboard;
       a bolt wears the facing on its side, a buckled facing lets bolts through while the others hold, and
       Reinforce moves power from the opposite one. **U** aims at a ship's engines once her shields are down: with
@@ -2291,6 +2290,20 @@ wireframe and menagerie menu every other page has.
       asks for it). Any single-key order can be moved to another key there. A first visit gets a walkthrough card
       that follows the orders' next steps (`help.js`, `access.js`). A **touch** stick sits beside the helm strip, and
       a **gamepad** flies her: sticks for heading, pitch, roll and impulse, buttons for the strip's orders (`pad.js`).
+    - **Loading faster** (`skincache.js`, `skinworker.js`). The hull's seven textures are still painted a texel at a
+      time, but in module workers (the painting is plain functions over `hull.js` and `dims.js`), one per texture,
+      while the page reads its config and hangs the stars. Each worker keeps what it painted in IndexedDB under a hash
+      of the painting's own source, so a second visit paints nothing. Every step falls back to the main thread (no
+      workers, no IndexedDB, a store that never answers), and what comes back is byte for byte a fresh paint. On the
+      Adreno X1 a first visit went from 4.4 s to 2.7 s and a second from 3.7 s to 1.6 s. For tests: `#nocache`,
+      `#noworker`, `#paintcheck`; `window._details.skins` says where each texture came from.
+    - **A performance budget** (`src/enterprise/BUDGET.md`, `tools/enterprise-budget.py`, `tests/budget/enterprise.json`):
+      frame time (p50, p95, frames uncapped) and draw calls in the busiest places (the ship alone, the home starbase
+      with traffic, the home world filling the view, the swarm fight, warp 9) and a first and second visit's load,
+      each held to what was measured plus a margin, and every p95 under 16.7 ms. On the Adreno X1 the worst is the
+      starbase, 12 ms p50, 14 ms p95, 259 calls; a planet's per-pixel noise costs more than the fight. About five
+      minutes, not part of `test-pages`; `--save` on another machine writes its own numbers. A phone is still to be
+      measured. `tools/probe.py` gained `--uncapped` and `--profile` for it.
     - **A fix on the way:** the floating origin's rebase did not move a standard orbit's centre, so an orbit round any
       planet steered round the wrong point.
     - For tests: `#sep`, `#cloak`, `#fuel=am,dl`, `#breach=s`, `#enc=<kind>`/`#noenc`, `#clock=k`, `#aim=engines`,

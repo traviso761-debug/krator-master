@@ -306,6 +306,9 @@ export async function starshipPage(opts){
     });
 
     // ---- the ship ----
+    // a model that does slow work of its own before it can be built (the Enterprise paints its hull's textures in
+    // workers, started as its script was) is waited for here, after the config and the stars
+    if(opts.ready){await stage('paint');try{await opts.ready();}catch(e){report('paint',e);}}
     await stage('hull');
     const api={THREE,C,ctx,scene,camera,renderer,animHooks,mergeParts:(m,mat)=>mergeParts(THREE,m,mat),
                fold:(g,p)=>fold(THREE,g,p),palette:o=>hullPalette(THREE,o)};
