@@ -3243,7 +3243,7 @@ The probe runs a page in headless Firefox against a copy of the site config and 
 timings, draw calls, triangles, programs, frame times, the adaptive resolution and a SHA-256 fingerprint of
 the layout. It reports as soon as the page has finished building - its loading overlay is gone and it has drawn
 30 frames - so `--wait` is only a ceiling; a page that never gets there is reported as timed out. It picks free
-ports for itself. `--shot` saves the rendered canvas as a JPEG.
+ports for itself. `--shot` saves the rendered canvas as a JPEG. With `--overlays` it also paints the page's own elements over the canvas (captions, panels, a full-view flash or tint), roughly: backgrounds, gradients, opacity and text, without borders, shadows or images.
 
 `tools/test-pages.py` runs every golden in `tests/golden/` three at a time. A golden's file name is
 `<page>-<seed>.json`; it may also carry the `page`, `query` and `hash` it was made with (`iziz-b-7.json` is

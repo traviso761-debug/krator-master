@@ -16,7 +16,7 @@ export function downfall(api){
   const land=ctx.nmLand||{},MEN=land.menel||{},MX=(MEN.at||[0,0])[0],MZ=(MEN.at||[0,0])[1],MH=MEN.h||3000;
   const peak=(ctx.menelH?ctx.menelH(MX,MZ):MH)+0;
   // ---- the way between the eras ----
-  const css='position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:40;display:flex;gap:8px;font:13px/1.2 Georgia,serif';
+  const css='position:fixed;left:50%;bottom:64px;transform:translateX(-50%);z-index:40;display:flex;gap:8px;font:13px/1.2 Georgia,serif';
   const bar=document.createElement('div');bar.style.cssText=css;document.body.appendChild(bar);
   const btn=(label,fn)=>{const b=document.createElement('button');b.textContent=label;b.style.cssText='padding:7px 13px;border-radius:4px;border:1px solid #8a7a5a;background:rgba(20,18,16,0.78);color:#efe4c8;cursor:pointer;font:inherit';b.onclick=fn;bar.appendChild(b);return b;};
   const goEra=e=>{const q=new URLSearchParams(location.hash.slice(1));q.delete('v');q.delete('view');q.delete('fall');if(e==='height')q.delete('era');else q.set('era',e);location.hash=q.toString();location.reload();};

@@ -34,7 +34,25 @@ PROBE = r"""<script>window.__probeErrs=[];addEventListener('error',e=>window.__p
 // once the task that drew it is over, still before the buffer is cleared
 (function(){let rd=null,sc=null,frames=[],last=0;
 let wantShot=false,shotTaken=false;
-if(window.THREE){const W=THREE.WebGLRenderer;THREE.WebGLRenderer=function(o){const r=new W(o);rd=r;const R0=r.render;r.render=function(scene,cam){sc=scene;window.__probeCam=cam;const t=performance.now();if(last)frames.push(t-last);last=t;const out=R0.call(r,scene,cam);if(wantShot){wantShot=false;shotTaken=true;queueMicrotask(()=>{try{const u=r.domElement.toDataURL('image/jpeg',0.8);fetch('http://127.0.0.1:SHOTPORT/shot',{method:'POST',mode:'no-cors',body:u});}catch(e){}});}return out;};return r;};}
+// --overlays: the canvas is only the 3D view; the page's own elements (captions, panels, a flash over the whole view,
+// a tint below the water) are painted over it here, roughly: each visible element's background (a colour, or a
+// gradient's colours top to bottom) at its opacity, and its text in its own font and colour. No borders, shadows,
+// images or transforms.
+function withOverlays(gl){const W=innerWidth,H=innerHeight,cv=document.createElement('canvas');cv.width=W;cv.height=H;const g=cv.getContext('2d');
+ const gr=gl.getBoundingClientRect();g.drawImage(gl,gr.left,gr.top,gr.width,gr.height);
+ const cols=t=>(t.match(/rgba?\([^)]*\)|#[0-9a-f]{3,8}\b/gi)||[]);
+ const opac=e=>{let o=1;for(let x=e;x&&x.nodeType===1;x=x.parentElement){const cs=getComputedStyle(x);if(cs.display==='none'||cs.visibility==='hidden')return 0;o*=parseFloat(cs.opacity);}return o;};
+ for(const e of document.body.querySelectorAll('*')){if(e===gl||/^(SCRIPT|STYLE|CANVAS|svg)$/i.test(e.tagName))continue;const b=e.getBoundingClientRect();if(b.width<1||b.height<1||b.bottom<0||b.top>H)continue;
+  const o=opac(e);if(o<0.01)continue;const cs=getComputedStyle(e);g.globalAlpha=o;
+  const bi=cs.backgroundImage;if(bi&&bi.startsWith('linear-gradient')){const c=cols(bi);if(c.length){const lg=g.createLinearGradient(0,b.top,0,b.bottom);c.forEach((k,i)=>lg.addColorStop(c.length>1?i/(c.length-1):0,k));g.fillStyle=lg;g.fillRect(b.left,b.top,b.width,b.height);}}
+  else if(cs.backgroundColor&&!/rgba\(0, 0, 0, 0\)|transparent/.test(cs.backgroundColor)){g.fillStyle=cs.backgroundColor;g.fillRect(b.left,b.top,b.width,b.height);}
+  g.font=cs.font||(cs.fontSize+' '+cs.fontFamily);g.fillStyle=cs.color;g.textBaseline='alphabetic';
+  for(const n of e.childNodes){if(n.nodeType!==3||!n.textContent.trim())continue;const rg=document.createRange();rg.selectNodeContents(n);const rs=[...rg.getClientRects()].filter(q=>q.width>0);if(!rs.length)continue;
+   // the words laid out over the line boxes the browser made, greedily by width
+   const words=n.textContent.replace(/\s+/g,' ').trim().split(' ');let wi=0;
+   for(const q of rs){let line='';while(wi<words.length){const t=line?line+' '+words[wi]:words[wi];if(line&&g.measureText(t).width>q.width+2)break;line=t;wi++;}g.fillText(line,q.left,q.bottom-q.height*0.22);}}}
+ g.globalAlpha=1;return cv.toDataURL('image/jpeg',0.85);}
+if(window.THREE){const W=THREE.WebGLRenderer;THREE.WebGLRenderer=function(o){const r=new W(o);rd=r;const R0=r.render;r.render=function(scene,cam){sc=scene;window.__probeCam=cam;const t=performance.now();if(last)frames.push(t-last);last=t;const out=R0.call(r,scene,cam);if(wantShot){wantShot=false;shotTaken=true;queueMicrotask(()=>{try{const u=OVERLAYS?withOverlays(r.domElement):r.domElement.toDataURL('image/jpeg',0.8);fetch('http://127.0.0.1:SHOTPORT/shot',{method:'POST',mode:'no-cors',body:u});}catch(e){}});}return out;};return r;};}
 // Ready: the loading overlay is gone (#loading removed, or Voth's #load hidden) and, on a 3D page, 30 frames have
 // been drawn since and 1.2 s has passed. WAIT is only the ceiling; a page that never gets there is reported as timed out.
 // A page that runs a test of its own (the Enterprise's #mauto) sets window.__probeDone when it has finished, and is
@@ -120,6 +138,7 @@ def main():
     ap.add_argument("--query", default="", help="extra URL query, e.g. city=iziz-b")
     ap.add_argument("--hash", default="", help="URL hash, e.g. v=0,720,620,0,20,0&t=12")
     ap.add_argument("--shot", help="save a JPEG of the rendered canvas here (taken just before the report)")
+    ap.add_argument("--overlays", action="store_true", help="with --shot: paint the page's own elements (captions, panels, overlays) over the canvas, roughly")
     ap.add_argument("--size", default="1600,900", help="browser window size")
     ap.add_argument("--quiet", action="store_true")
     ap.add_argument("--settle", type=float, default=0, help="seconds more to let it run once it is ready (to catch something part-way through)")
@@ -143,7 +162,7 @@ def main():
     if not a.port:
         a.port = free_port()
     shot_port = free_port() if a.shot else 0
-    src = src[:cut] + PROBE.replace("WAIT", str(a.wait * 1000)).replace("INPUT", "true" if a.input else "false").replace("SETTLE", str(int(a.settle * 1000))).replace("SHOTPORT", str(shot_port)) + src[cut:]
+    src = src[:cut] + PROBE.replace("WAIT", str(a.wait * 1000)).replace("INPUT", "true" if a.input else "false").replace("SETTLE", str(int(a.settle * 1000))).replace("SHOTPORT", str(shot_port)).replace("OVERLAYS", "true" if a.overlays else "false") + src[cut:]
 
     ff, snap = firefox_cmd()
     home = os.path.expanduser("~")
