@@ -14,6 +14,7 @@ import {planetMesh} from './planets.js';
 import {pulsar,disc,eye,rogue} from './exotic.js';
 import {mouth} from './wormhole.js';
 import {storm,ring} from './wilds.js';
+import {ds9Place} from './ds9.js';
 
 const D=900000;
 const dirOf=(az,el)=>[Math.cos(az)*Math.cos(el),Math.sin(el),Math.sin(az)*Math.cos(el)];
@@ -79,6 +80,11 @@ export const PLACES=[
     sky:{nebulae:[{colour:'#7a3a8a',az:2.4,el:0.3,dist:0.32,size:240000,puffs:240,opacity:0.012},{colour:'#c0703a',az:-2.2,el:-0.2,dist:0.3,size:200000,puffs:200,opacity:0.01}],
       bodies:[{name:'the uncharted world',type:'terran',az:-0.7,el:-0.1,dist:0.55,deg:12,seed:4.4,sea:0.5,colours:['#2a1a50','#5a3a62','#b08a6a','#f0e8f6'],clouds:true,cloudK:0.8,atmos:'#c08aff',atmosK:0.9,rate:2e-5}]},
     build:(T,g,k)=>mouth(T,g,k,{az:0.15,el:0.03,near:0xffc870,far:0x9fc8ff})},
+  // Deep Space 9 (ds9.js, from the DS9 page's own model): a station on the western frontier, docked at like a starbase
+  {id:'ds9',name:'Deep Space 9',ly:[-10.5,3.5],note:'A Cardassian-built station run by Starfleet, out on the western frontier at the mouth of a wormhole of its own. K docks; it has a page of its own.',
+    light:{colour:'#ffe8c8',intensity:1.4,az:0.7,el:0.35,ambient:0.3,fill:{colour:'#c08850',intensity:0.5,az:-1.3,el:-0.1}},
+    sky:{bodies:[{name:'the station\'s planet',type:'terran',az:0.3,el:-0.12,dist:0.6,deg:11,seed:5.3,sea:0.45,colours:['#2a4a5e','#7a6a3a','#b09060','#f2efe8'],clouds:true,cloudK:0.8,atmos:'#8ab8ff',atmosK:0.9,rate:2e-5}]},
+    build:ds9Place}
 ];
 export const DEEP={id:'deep',name:'Interstellar space',note:'Nothing for light-years: the stars, and the dark between them.',
   light:{colour:'#dfe6f2',intensity:0.5,az:0.5,el:0.6,ambient:0.3,fill:{colour:'#405070',intensity:0.25,az:-2,el:-0.4}}};

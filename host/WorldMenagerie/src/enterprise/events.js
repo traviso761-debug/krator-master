@@ -11,7 +11,8 @@
 //                 meet; then the beam.
 //   Torpedo       out of the forward launcher at the foot of the neck; it blows the target rock apart.
 //   Incoming fire a bolt from somewhere off the bow quarter: on the shields if they are up, on the hull if not.
-//   Separate      the saucer lifts off the neck and moves ahead; again, and it comes back and docks.
+//   Separate      the saucer lifts off the neck and flies clear on its own (saucer.js); again, and it comes back
+//                 and docks.
 //   Shuttle       a shuttle out of the main bay at the stern, peeling away.
 import {saucerTop,saucerBot} from './hull.js';
 import {SAUCER,TORPEDO,BAYS} from './dims.js';
@@ -71,6 +72,8 @@ export function events(W){
     s.scale.setScalar(size);s.userData.noWire=true;return s;};
   // a flash where something happened, in the world: it swells and fades
   function flash(pos,col,size,dur,parent){
+    // reduced motion (access.js): the great white flashes of going to warp and coming out are left out
+    if(W.calm&&W.calm()&&size>=1000&&col===0xcfe4ff)return;
     const s=sprite(col,size*0.3);s.position.copy(pos);(parent||FX).add(s);const t0=T;
     run(t=>{const u=(t-t0)/dur;if(u>=1){s.parent.remove(s);s.material.dispose();return false;}
       s.scale.setScalar(size*(0.3+0.9*Math.sqrt(u)));s.material.opacity=Math.pow(1-u,1.6);});
@@ -101,9 +104,14 @@ export function events(W){
   }
   W.placeTarget=placeTarget;
   animHooks.push(()=>{rock.rotation.x+=0.0007;rock.rotation.y+=0.0011;rockHeat*=0.96;rock.material.emissiveIntensity=rockHeat;});
+  // other things the weapons can be aimed at when no hostile is in range, each a function giving {p, hit(dmg, weapon,
+  // at), fuse (how near a torpedo must come), r (range)} or nothing: a cloaked ship's ripple (cloak.js), a mine
+  // (hazards.js)
+  W.targets=[];
   const targetPos=()=>{
     const c=shipCentre();
     const en=W.enemy;if(en&&!en.gone){const p=en.m.g.getWorldPosition(V3());if(p.distanceTo(c)<15000)return {p,enemy:en};}
+    for(const f of W.targets){const x=f();if(x&&x.p.distanceTo(c)<(x.r||15000))return {p:x.p.clone(),ext:x};}
     if(rock.visible){const p=rock.getWorldPosition(V3());if(p.distanceTo(c)<15000)return {p,rock:true};}
     return {p:c.addScaledVector(new THREE.Vector3(1,0,0).applyQuaternion(ROOT.quaternion),3500),rock:false};
   };
@@ -131,7 +139,9 @@ export function events(W){
   function engage(factor){
     const S=W.flight;
     if(!S.on){warpShowRun();return;}
-    if(W.sys){if(W.sys.down('warp'))return;factor=Math.min(factor,W.sys.warpMax());}
+    if(W.sys){if(W.sys.down('warp'))return;factor=Math.min(factor,W.sys.warpMax());if(factor<1){W.sys.noWarp&&W.sys.noWarp();return;}}
+    // the saucer has no warp drive: the stardrive does not leave it behind
+    if(W.saucer&&!W.saucer.home()){if(T-warpNag>5){warpNag=T;note('Not with the saucer away: it has no warp drive. U, or Rejoin on the Tactical panel, brings it back.');}return;}
     if(S.warp){S.warp=factor;return;}
     if(W.spooling)return;W.spooling=true;sound('warp');powerTo=1;const t0=T;let went=false;
     run(t=>{const u=t-t0;if(!W.spooling||!S.on){ROOT.scale.x=1;W.spooling=false;if(!S.warp)powerTo=0;return false;}if(u<1.4)return;
@@ -143,6 +153,7 @@ export function events(W){
     const S=W.flight;W.spooling=false;if(!S.warp)return;S.warp=0;powerTo=0;
     W.arrive();if(!quiet){sound('warp');flash(shipCentre().add(new THREE.Vector3(1,0,0).applyQuaternion(ROOT.quaternion).multiplyScalar(500)),0xcfe4ff,2400,1.1);}
   }
+  let warpNag=-99;
   W.engage=engage;W.dropOut=dropOut;
 
   // ---------- red alert ----------
@@ -177,8 +188,12 @@ export function events(W){
   let shUp=false,shT=-99;
   animHooks.push(()=>{shMat.uniforms.uT.value=T;const u=T-shT;shMat.uniforms.uOn.value=shUp?Math.max(0.0,1.2*Math.exp(-u*1.1)):0;
     shield.visible=shUp||T-shMat.uniforms.uHit.value.w<4;});
-  function shields(){if(!shUp&&W.sys&&W.sys.down('shields'))return;if(!shUp&&shStr<10){note('Shields are too weak to raise.');return;}shUp=!shUp;shT=T;if(shUp)sound('shield');}
-  animHooks.push(()=>{const k=W.sys?W.sys.shieldRate():1;if(shUp&&shStr<100)shStr=Math.min(100,shStr+0.02*k);else if(!shUp&&shStr<100)shStr=Math.min(100,shStr+0.01*k);});
+  // a place can forbid them (hazards.js: the nebula's gas shorts the grid)
+  let shNag=-99;
+  function shields(){if(!shUp&&W.sys&&W.sys.down('shields'))return;if(!shUp&&W.hazard&&W.hazard.noShields()){if(T-shNag>5){shNag=T;note(W.hazard.noShields());}return;}
+    if(!shUp&&shStr()<10){note('Shields are too weak to raise.');return;}shUp=!shUp;shT=T;if(shUp)sound('shield');}
+  animHooks.push(()=>{const k=W.sys?W.sys.shieldRate():1;for(const f of FACES)if(shF[f]<100)shF[f]=Math.min(100,shF[f]+(shUp?0.02:0.01)*k);
+    if(shUp&&W.hazard&&W.hazard.noShields()){shUp=false;note(W.hazard.noShields());sync();}});
   function shieldHit(worldP){const l=shield.worldToLocal(worldP.clone()).normalize();const p=l.multiply(SR);shMat.uniforms.uHit.value.set(p.x,p.y,p.z,T);}
 
   // ---------- phasers ----------
@@ -191,27 +206,30 @@ export function events(W){
   function phasers(){
     if(W.sys&&W.sys.down('phasers'))return;
     const tg=targetPos();const tl=SAU.worldToLocal(tg.p.clone());const top=tl.y>-25;
+    // with the saucer away, the stardrive's own strip, under the engineering hull, does the firing
+    const away=W.saucer&&!W.saucer.home(),EM=away?G:SAU,emAt=(th,tp)=>away?new THREE.Vector3(-160+(th-best)*60,-88,0):stripAt(th,tp);
     // the point on the strip that looks most nearly at the target (skipping the gap over the impulse deck)
-    let best=0,bd=-2;for(let i=0;i<180;i++){const th=i/180*Math.PI*2,p=stripAt(th,top);if(p.x<-95&&Math.abs(p.z)<150)continue;
+    let best=0,bd=-2;if(!away)for(let i=0;i<180;i++){const th=i/180*Math.PI*2,p=stripAt(th,top);if(p.x<-95&&Math.abs(p.z)<150)continue;
       const d=tl.clone().sub(p).normalize().dot(new THREE.Vector3(p.x/A,0,p.z/B).normalize());if(d>bd){bd=d;best=th;}}
     sound('phaser');
-    const em=[sprite(0xffa040,26),sprite(0xffa040,26)];for(const s of em)SAU.add(s);
+    const em=[sprite(0xffa040,26),sprite(0xffa040,26)];for(const s of em)EM.add(s);
     const outer=new THREE.Mesh(beamGeo,beamMat(0xff5a1a)),core=new THREE.Mesh(beamGeo,beamMat(0xfff0c8));
     const hitS=sprite(0xffb060,90);for(const o of [outer,core,hitS]){o.visible=false;o.userData.noWire=true;FX.add(o);}
     const t0=T;
     run((t,dt)=>{const u=t-t0;
       if(tg.enemy){if(tg.enemy.gone)tg.enemy=null;else tg.p=tg.enemy.m.g.getWorldPosition(V3());}
-      if(u<0.42){const k=ease(u/0.42);em[0].position.copy(stripAt(best-0.5*(1-k),top));em[1].position.copy(stripAt(best+0.5*(1-k),top));return;}
+      if(u<0.42){const k=ease(u/0.42);em[0].position.copy(emAt(best-0.5*(1-k),top));em[1].position.copy(emAt(best+0.5*(1-k),top));return;}
       if(u<2.0){
-        const a=world(SAU,stripAt(best,top)),b=tg.enemy?tg.p.clone().add(a.clone().sub(tg.p).normalize().multiplyScalar(tg.enemy.sh>0?150:40)):tg.rock?rock.getWorldPosition(V3()).add(a.clone().sub(rock.getWorldPosition(V3())).normalize().multiplyScalar(48)):tg.p;
+        const a=world(EM,emAt(best,top)),b=tg.enemy?tg.p.clone().add(a.clone().sub(tg.p).normalize().multiplyScalar(tg.enemy.sh>0?150:40)):tg.rock?rock.getWorldPosition(V3()).add(a.clone().sub(rock.getWorldPosition(V3())).normalize().multiplyScalar(48)):tg.p;
         const A0=toFX(a),B0=toFX(b),d=B0.clone().sub(A0),L=d.length(),fl=0.75+0.25*Math.sin(u*90);
         for(const [m,r] of [[outer,4.2*fl],[core,1.5]]){m.visible=true;m.position.copy(A0);m.quaternion.setFromUnitVectors(Y,d.clone().normalize());m.scale.set(r,L,r);}
-        em[0].position.copy(stripAt(best,top));em[1].visible=false;em[0].scale.setScalar(40*fl);
+        em[0].position.copy(emAt(best,top));em[1].visible=false;em[0].scale.setScalar(40*fl);
         hitS.visible=true;hitS.position.copy(B0);hitS.scale.setScalar(80+40*Math.random());
         if(tg.rock)rockHeat=Math.min(1.4,rockHeat+0.06);
-        if(tg.enemy)HO.hit(tg.enemy,dt*20,b);
+        if(tg.enemy)HO.hit(tg.enemy,dt*20,b,'ph');
+        if(tg.ext&&tg.ext.hit)tg.ext.hit(dt*20,'ph',b);
         return;}
-      for(const o of [outer,core,hitS])FX.remove(o);for(const s of em)SAU.remove(s);return false;});
+      for(const o of [outer,core,hitS])FX.remove(o);for(const s of em)EM.remove(s);return false;});
   }
 
   // ---------- torpedoes ----------
@@ -231,7 +249,9 @@ export function events(W){
       const wp=g.getWorldPosition(V3());
       const hit=tg.rock&&rock.visible&&wp.distanceTo(rock.getWorldPosition(V3()))<70;
       const hitE=tg.enemy&&!tg.enemy.gone&&wp.distanceTo(tg.enemy.m.g.getWorldPosition(V3()))<160;
-      if(hitE){FX.remove(g);explode(wp,false);HO.hit(tg.enemy,34,wp);return false;}
+      if(hitE){FX.remove(g);explode(wp,false);HO.hit(tg.enemy,34*(W.refit?W.refit.torp:1),wp,'tp');return false;}
+      // a point (a ripple, a mine): it goes off when it gets there, and what is near the blast takes it
+      if(tg.ext&&wp.distanceTo(tg.p)<(tg.ext.fuse||150)){FX.remove(g);explode(wp,false);if(tg.ext.hit)tg.ext.hit(34,'tp',wp);return false;}
       if(hit||u>3.2){FX.remove(g);explode(wp,hit);return false;}});
   }
   function explode(p,onRock){
@@ -254,8 +274,17 @@ export function events(W){
   }
 
   // ---------- incoming fire ----------
-  // the ship's own state: shield strength (worn by hits, coming back while raised) and hull
-  let shStr=100,hullP=100,lastHit=-99;
+  // the ship's own state: shield strength (worn by hits, coming back while raised) and hull. The shields are four
+  // facings, fore, aft, port and starboard: a bolt wears down the one on the side it comes from, and one that has
+  // buckled lets bolts through to the hull while the others hold. So which way she turns in a fight matters: a
+  // fresh side to the enemy, the worn one away. The Tactical panel can shift power from one facing to another.
+  const FACES=['fore','aft','port','starboard'],shF={fore:100,aft:100,port:100,starboard:100};
+  const shStr=()=>(shF.fore+shF.aft+shF.port+shF.starboard)/4;
+  // which facing a point in the world is on: the ship's own frame (+x ahead, +z to starboard)
+  const faceOf=p=>{const l=ROOT.worldToLocal(p.clone());return Math.abs(l.x)*0.8>Math.abs(l.z)?(l.x>0?'fore':'aft'):(l.z>0?'starboard':'port');};
+  function reinforce(f){const o={fore:'aft',aft:'fore',port:'starboard',starboard:'port'}[f],k=Math.min(25,shF[o],100-shF[f]);
+    if(k<=0){note('Nothing to spare for the '+f+' shields.');return;}shF[o]-=k;shF[f]+=k;note('Power to the '+f+' shields, from the '+o+'.');}
+  let hullP=100,lastHit=-99;
   // damage control: ten seconds after the last hit, the hull is patched up, slowly
   animHooks.push(()=>{if(hullP<100&&T-lastHit>10){hullP=Math.min(100,hullP+0.006);if(hullP>=100)note('Damage control: the hull is sound.');}});
   W.hull=()=>hullP;
@@ -264,39 +293,36 @@ export function events(W){
     const c=shipCentre(),q=ROOT.quaternion;
     const from=new THREE.Vector3(1,(Math.random()-0.3)*0.6,(Math.random()<0.5?-1:1)*(0.4+Math.random()*0.6)).normalize().applyQuaternion(q);
     const start=fromW&&fromW.isVector3?fromW.clone():c.clone().addScaledVector(from,5000),fl=Math.max(0.35,start.distanceTo(c)/6000);
-    // where it lands: on the shield's skin if the shields are up, on the hull (somewhere on the saucer) if not
-    const aimL=new THREE.Vector3((Math.random()-0.2)*260,0,(Math.random()-0.5)*300);aimL.y=saucerTop(aimL.x,aimL.z)*(Math.random()<0.6?1:0)+(Math.random()<0.6?0:saucerBot(aimL.x,aimL.z));
+    // where it lands: on the shield's skin if the facing it comes at is holding, on the hull if not (somewhere on the
+    // saucer; with the saucer away, on the stardrive's engineering hull)
+    const face=faceOf(start),held=()=>shUp&&shF[face]>0;
+    const away=W.saucer&&!W.saucer.home(),HB=away?G:SAU;
+    const aimL=away?new THREE.Vector3(-170-Math.random()*240,-70+Math.random()*30,(Math.random()-0.5)*40):new THREE.Vector3((Math.random()-0.2)*260,0,(Math.random()-0.5)*300);
+    if(!away)aimL.y=saucerTop(aimL.x,aimL.z)*(Math.random()<0.6?1:0)+(Math.random()<0.6?0:saucerBot(aimL.x,aimL.z));
+    // (damage.js may aim it at a nacelle instead, in the stardrive's frame, which is the saucer's while it is home)
+    {const a=W.aimHull&&W.aimHull();if(a)aimL.copy(a);}
     const bolt=new THREE.Group(),h=sprite(o.colour||0x60ff70,70*(o.size||1)),k2=sprite(0xfff0e0,22*(o.size||1));bolt.add(h,k2);bolt.position.copy(toFX(start));FX.add(bolt);
     const t0=T;
     run((t,dt)=>{const u=(t-t0)/fl;
-      const aimW=shUp?(()=>{const l=SAU.localToWorld(aimL.clone()),cc=shield.getWorldPosition(V3());
+      const aimW=held()?(()=>{const l=HB.localToWorld(aimL.clone()),cc=shield.getWorldPosition(V3());
         const s=l.sub(cc),loc=s.clone().applyQuaternion(G.getWorldQuaternion(new THREE.Quaternion()).invert());loc.divide(SR);const n=loc.length();
-        return cc.add(s.multiplyScalar(1/n));})():SAU.localToWorld(aimL.clone());
+        return cc.add(s.multiplyScalar(1/n));})():HB.localToWorld(aimL.clone());
       if(u<1){bolt.position.copy(toFX(start.clone().lerp(aimW,u)));return;}
       FX.remove(bolt);
-      if(W.sys)W.sys.hit(dm,shUp,shStr);
-      if(shUp){shieldHit(aimW);sound('shield');flash(aimW,0x80c8ff,180,0.6);shStr=Math.max(0,shStr-(7+Math.random()*5)*dm);
-        if(shStr<=0){shUp=false;note('Shields have failed.');sync();}}
-      else{sound('hit');hullP=Math.max(5,hullP-(4+Math.random()*5)*dm);lastHit=T;if(W.breach&&(hullP<80||Math.random()<0.3))W.breach(aimW);flash(aimW,0xffd090,240,1.0);flash(aimW,0xff5020,420,1.6);
+      const on=held();
+      if(W.sys)W.sys.hit(dm,on,on?shF[face]:0);
+      if(on){shieldHit(aimW);sound('shield');flash(aimW,0x80c8ff,180,0.6);shF[face]=Math.max(0,shF[face]-(7+Math.random()*5)*dm*(o.shK||1)/(W.refit?W.refit.shield:1));
+        if(shF[face]<=0){if(shStr()<=0){shUp=false;note('Shields have failed.');sync();}else note('The '+face+' shields have buckled! Turn a fresh side to them.');}}
+      else{sound('hit');hullP=Math.max(5,hullP-(4+Math.random()*5)*dm);lastHit=T;W.emit&&W.emit('hullhit',{p:aimW.clone(),from:start.clone(),dm});if(W.breach&&(hullP<80||Math.random()<0.3))W.breach(aimW);flash(aimW,0xffd090,240,1.0);flash(aimW,0xff5020,420,1.6);
         // a scorch that glows and fades where it struck
-        const s=sprite(0xff6020,60);s.position.copy(SAU.worldToLocal(aimW.clone()));SAU.add(s);const t1=T;
-        run(tt=>{const v=1-(tt-t1)/6;if(v<=0){SAU.remove(s);return false;}s.material.opacity=v*(0.7+0.3*Math.sin(tt*30));});}
+        const s=sprite(0xff6020,60);s.position.copy(HB.worldToLocal(aimW.clone()));HB.add(s);const t1=T;
+        run(tt=>{const v=1-(tt-t1)/6;if(v<=0){HB.remove(s);return false;}s.material.opacity=v*(0.7+0.3*Math.sin(tt*30));});}
       W.flight.shake=(W.flight.shake||0)+18;
       return false;});
   }
 
   // ---------- saucer separation ----------
-  let sep=false,sepBusy=false;
-  function separate(){
-    if(sepBusy)return;sepBusy=true;sep=!sep;const from=SAU.position.clone(),to=sep?new THREE.Vector3(240,34,0):new THREE.Vector3(0,0,0),t0=T,D=sep?9:11;
-    for(const g of W.impGlows)g.userData.k=1;
-    run(t=>{const u=(t-t0)/D,k=ease(u);
-      // up off the latches first, then ahead; coming back, ahead first and then down onto them
-      const ky=sep?ease(u*2.2):ease(u*1.6-0.6),kx=sep?ease(u*1.3-0.3):ease(u*1.3);
-      SAU.position.set(from.x+(to.x-from.x)*kx,from.y+(to.y-from.y)*ky,0);
-      for(const g of W.impGlows)g.scale.setScalar(40*(1+1.5*Math.sin(Math.PI*Math.min(1,u))));
-      if(u>=1){SAU.position.copy(to);sepBusy=false;return false;}});
-  }
+  // saucer.js: the saucer flies clear on its own, and comes back (W.saucer, made after this)
 
   // ---------- the shuttle ----------
   // A small boxy shuttle of this project's own drawing: a body with a sloped nose, two engine pods, windows.
@@ -334,11 +360,19 @@ export function events(W){
   // From the emitter under the saucer's after edge: a pale blue cone to the rock that pulls it in to a few hundred
   // metres under the ship and holds it there, wherever the ship goes, until you let go. The rock has to be within
   // ten kilometres.
+  // It takes a hostile too, once its engines are out (hostile.js): drawn in under the ship and held there long enough,
+  // she is a prize (W.HO.capture), and the beam holds her until it is let go.
   let tractor=null;
   function tractorBeam(){
-    if(tractor){tractor.off=true;return;}
-    if(!rock.visible||rock.getWorldPosition(V3()).distanceTo(shipCentre())>10000){sound('hit');return;}
-    const em=new THREE.Vector3(-125,saucerBot(-125,0)-1.2,0);
+    if(tractor){tractor.off=true;if(tractor.foe&&tractor.foe.captured)HO.release(tractor.foe);return;}
+    const c=shipCentre(),en=HO.disabled();
+    // what it takes: a disabled hostile within ten kilometres, or else the rock
+    let obj=null;
+    if(en&&en.m.g.getWorldPosition(V3()).distanceTo(c)<15000){const g=en.m.g;obj={foe:en,get:()=>g.getWorldPosition(V3()),set:p=>g.position.copy(toFX(p)),live:()=>!en.gone||en.captured,hold:new THREE.Vector3(-160,-520,0)};}
+    else if(rock.visible&&rock.getWorldPosition(V3()).distanceTo(c)<10000)obj={get:()=>rock.getWorldPosition(V3()),set:p=>rock.position.copy(SYS.worldToLocal(p.clone())),live:()=>rock.visible,hold:new THREE.Vector3(-160,-420,0)};
+    if(!obj){sound('hit');if(W.enemy&&!W.enemy.disabled)note('The tractor beam cannot hold a ship under her own power: take out her engines first (U aims at them).');return;}
+    const away=W.saucer&&!W.saucer.home(),EM=away?G:SAU;
+    const em=away?new THREE.Vector3(-300,-86,0):new THREE.Vector3(-125,saucerBot(-125,0)-1.2,0);
     const mat=new THREE.ShaderMaterial({transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide,toneMapped:false,
       uniforms:{uT:{value:0},uA:{value:0}},
       vertexShader:`varying vec2 vU;void main(){vU=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
@@ -346,16 +380,21 @@ export function events(W){
         float bands=0.75+0.25*sin(vU.y*60.-uT*10.);float a=uA*e*bands*(0.35+0.65*vU.y);gl_FragColor=vec4(vec3(0.62,0.82,1.)*a,a);}`});
     const geo=new THREE.CylinderGeometry(1,0.12,1,24,1,true);geo.translate(0,0.5,0);
     const beam=new THREE.Mesh(geo,mat);beam.userData.noWire=true;FX.add(beam);
-    const glowE=sprite(0xa8d0ff,40,0.9);SAU.add(glowE);glowE.position.copy(em);
-    const hold=new THREE.Vector3(-160,-420,0);
-    sound('shield');
-    tractor={off:false};const tr=tractor,t0=T;let a=0;
+    const glowE=sprite(0xa8d0ff,40,0.9);EM.add(glowE);glowE.position.copy(em);
+    const hold=obj.hold;
+    sound('shield');if(obj.foe)note('Tractor beam locked on the '+obj.foe.K.name+'. Drawing her in.');
+    tractor={off:false,foe:obj.foe};const tr=tractor,t0=T;let a=0,heldT=0;
     run((t,dt)=>{
       a+=((tr.off?0:1)-a)*Math.min(1,dt*3);mat.uniforms.uA.value=a;mat.uniforms.uT.value=t;glowE.material.opacity=0.9*a;
-      if(tr.off&&a<0.02||!rock.visible){FX.remove(beam);SAU.remove(glowE);geo.dispose();mat.dispose();if(tractor===tr)tractor=null;return false;}
-      const A0=world(SAU,em),R0=rock.getWorldPosition(V3());
+      // a warp jump breaks any beam
+      if(W.flight.warp&&!tr.off){tr.off=true;if(tr.foe&&tr.foe.captured)HO.release(tr.foe);}
+      if(tr.off&&a<0.02||!obj.live()){FX.remove(beam);EM.remove(glowE);geo.dispose();mat.dispose();if(tractor===tr)tractor=null;sync();return false;}
+      const A0=world(EM,em),R0=obj.get();
+      // (it is carried along with the ship as well as drawn in, or a ship under way would leave it standing)
       if(!tr.off){const H=world(G,hold),d=H.clone().sub(R0),L=d.length(),sp=Math.min(L,Math.max(60,L*0.6)*dt);
-        R0.addScaledVector(d.normalize(),sp);rock.position.copy(SYS.worldToLocal(R0.clone()));}
+        R0.addScaledVector(d.normalize(),sp);if(W.flight.vel&&L>sp)R0.addScaledVector(W.flight.vel,dt);obj.set(R0);
+        // held close for three seconds: she is ours
+        if(tr.foe&&!tr.foe.captured){heldT=L<350?heldT+dt:0;if(heldT>3)HO.capture(tr.foe);}}
       const A=toFX(A0),B=toFX(R0),dd=B.clone().sub(A),L=dd.length();
       beam.position.copy(A);beam.quaternion.setFromUnitVectors(Y,dd.normalize());const r=Math.min(80,8+L*0.03);
       // a cone: narrow at the emitter, as wide as the rock at the far end
@@ -366,10 +405,15 @@ export function events(W){
   const HO=hostile(W,{sprite,flash,run,sound,toFX,dirFX,shipCentre,world,T:()=>T,red:()=>red,redAlert:()=>redAlert(),sync:()=>sync(),incoming,note,debris});
   W.contact=()=>{HO.contact();};
   // for orders.js and comms.js: the fights, and a starbase's repair crews
-  W.HO=HO;W.damage=()=>({hull:hullP,shields:shStr});
+  W.HO=HO;W.damage=()=>({hull:hullP,shields:shStr(),faces:{...shF}});
   // for helm.js and the Z key: the two toggles a captain wants under one finger
-  W.toggleShields=()=>{shields();sync();};W.toggleRed=()=>{redAlert();sync();};W.shieldsState=()=>({up:shUp,str:shStr,red});
-  W.repair=k=>{hullP=Math.min(100,hullP+k);shStr=Math.min(100,shStr+k);if(W.sys)W.sys.repair(k);};
+  W.toggleShields=()=>{shields();sync();};W.toggleRed=()=>{redAlert();sync();};W.shieldsState=()=>({up:shUp,str:shStr(),red,faces:{...shF}});
+  W.reinforce=f=>{reinforce(f);sync();};W.faceOf=faceOf;W.tractorOn=()=>!!tractor&&!tractor.off;
+  // a starbase's crews, k a frame while docked: and the fuel (fuel.js) is topped up from the same lines
+  W.repair=k=>{hullP=Math.min(100,hullP+k);for(const f of FACES)shF[f]=Math.min(100,shF[f]+k);if(W.sys)W.sys.repair(k);if(W.fuel)W.fuel.refill(k);};
+  // a blow straight to the hull, from something too close for the shields to matter (a core going up near by)
+  W.incoming=incoming;
+  W.hullHit=(dm,at)=>{sound('hit');hullP=Math.max(5,hullP-dm);lastHit=T;if(at)flash(at,0xffd090,400,1.2);W.flight.shake=(W.flight.shake||0)+30;};
   // for extras.js: the effects kit
   W.fx={sound,flash,run,debris,sprite,world,toFX,dirFX,shipCentre,note,T:()=>T,ease,sync:()=>sync()};
   const spread=()=>{torpedo(-0.09);setTimeout(()=>torpedo(0),140);setTimeout(()=>torpedo(0.09),280);};
@@ -377,6 +421,7 @@ export function events(W){
   W.tractor=()=>{tractorBeam();sync();};
   // the events panel
   const panel=document.createElement('div');panel.id='pitpanel';panel.setAttribute('role','dialog');panel.setAttribute('aria-label','Events');
+  const separate=()=>W.saucer&&W.saucer.toggle();
   const list=[['Warp',()=>W.flight.on?(W.flight.warp?(W.course.clear(),dropOut()):engage(W.course.w)):engage(5)],['Red alert',redAlert],['Shields',shields],['Phasers',phasers],['Torpedo',()=>torpedo()],['Torpedo spread',spread],
     ['Hostile contact',()=>HO.contact()],['A Varr cruiser',()=>HO.contact('varr')],['A Lattice ship',()=>HO.contact('lattice')],['A Kethri swarm',()=>HO.swarm(5)],['An Ossari ship (first contact)',()=>W.ossari&&W.ossari()],['Battle',()=>HO.battle()],
     ['A Sere ship (a friend)',()=>HO.sere()],['A trader convoy',()=>HO.convoy()],['A derelict',()=>HO.derelict()],['Tractor beam',tractorBeam],['Incoming fire',incoming],['Separate the saucer',separate],['Launch a shuttle',shuttle]];
@@ -384,8 +429,12 @@ export function events(W){
   for(const [lab,fn] of list){const b=document.createElement('button');b.type='button';b.textContent=lab;b.onclick=()=>{ac();fn();sync();};panel.appendChild(b);}
   document.body.appendChild(panel);
   const sync=()=>{for(const b of panel.querySelectorAll(':scope > button')){const t=b.textContent;
-    b.setAttribute('aria-pressed',String(t==='Tractor beam'?!!tractor&&!tractor.off:t==='Red alert'?red:t==='Shields'?shUp:t==='Separate the saucer'?sep:false));}};
-  const hud=()=>[red?'RED ALERT':'',HO.hud(),shUp||shStr<100?'shields '+(shUp?'up ':'down ')+Math.round(shStr)+'%':'',hullP<100?'hull '+Math.round(hullP)+'%':'',tractor&&!tractor.off?'tractor beam':'',sep?'saucer separated':''].filter(Boolean).join(' · ');
+    b.setAttribute('aria-pressed',String(t==='Tractor beam'?!!tractor&&!tractor.off:t==='Red alert'?red:t==='Shields'?shUp:t==='Separate the saucer'?sep():false));}};
+  const sep=()=>!!W.saucer&&!W.saucer.home();
+  // the shields as their four facings (fore, aft, port, starboard) once any is worn
+  const shTxt=()=>{if(FACES.every(f=>shF[f]>=99.5))return shUp?'shields up':'';
+    return 'shields '+(shUp?'up':'down')+' F'+Math.round(shF.fore)+' A'+Math.round(shF.aft)+' P'+Math.round(shF.port)+' S'+Math.round(shF.starboard);};
+  const hud=()=>[red?'RED ALERT':'',HO.hud(),shTxt(),hullP<100?'hull '+Math.round(hullP)+'%':'',tractor&&!tractor.off?(tractor.foe&&tractor.foe.captured?'a prize in tow':'tractor beam'):''].filter(Boolean).join(' · ');
   const act={spread,warp:list[0][1],hostile:()=>HO.contact(),varr:()=>HO.contact('varr'),lattice:()=>HO.contact('lattice'),swarm:()=>HO.swarm(5),ossari:()=>W.ossari&&W.ossari(),sere:()=>HO.sere(),convoy:()=>HO.convoy(),derelict:()=>HO.derelict(),battle:()=>HO.battle(),red:redAlert,tractor:tractorBeam,shields,phasers,torpedo,incoming,separate,shuttle};
-  return {panel,hud,act,sync,state:()=>({red,shUp,sep,rockDead})};
+  return {panel,hud,act,sync,state:()=>({red,shUp,sep:sep(),rockDead,faces:{...shF}})};
 }

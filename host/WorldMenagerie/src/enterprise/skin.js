@@ -242,10 +242,28 @@ export function hullMaterial(THREE,tex,env,o={}){
   const m=new THREE.MeshStandardMaterial({map:tex.map,bumpMap:tex.data,bumpScale:o.bump===undefined?0.25:o.bump,roughnessMap:tex.data,roughness:1,
     metalness:o.metal===undefined?0.18:o.metal,emissive:new THREE.Color(o.window||0xffd8a0),emissiveMap:tex.data,emissiveIntensity:o.glow===undefined?1.6:o.glow,
     envMap:env,envMapIntensity:o.env===undefined?1.3:o.env});
-  m.onBeforeCompile=sh=>{sh.fragmentShader=sh.fragmentShader.replace('#include <emissivemap_fragment>',
-    '#ifdef USE_EMISSIVEMAP\n totalEmissiveRadiance *= texture2D( emissiveMap, vUv ).b;\n#endif');};
+  // The damage (damage.js) is painted into a scorch map of its own, a small texture over the same uv as the colour:
+  // red is soot (it darkens the plate, roughens it and puts its windows out), green is the heat still in a fresh
+  // hit (it glows orange and cools). Every hull material starts on one shared black texel and is given a map of its
+  // own only when it is first hit, so a ship that is never hit carries nothing for it.
+  const sc={value:ZERO(THREE)};m.userData.scorch=sc;
+  m.onBeforeCompile=sh=>{sh.uniforms.uScorch=sc;
+    sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uScorch;')
+      .replace('#include <map_fragment>','#include <map_fragment>\n vec4 scR=texture2D(uScorch,vUv);diffuseColor.rgb*=1.-0.8*scR.r;')
+      .replace('#include <roughnessmap_fragment>','#include <roughnessmap_fragment>\n roughnessFactor=mix(roughnessFactor,1.,scR.r*0.8);')
+      .replace('#include <emissivemap_fragment>',
+    '#ifdef USE_EMISSIVEMAP\n totalEmissiveRadiance *= texture2D( emissiveMap, vUv ).b;\n#endif\n totalEmissiveRadiance*=1.-scR.r;totalEmissiveRadiance+=vec3(1.,.36,.08)*scR.g*2.2;');};
   m.customProgramCacheKey=()=>'krator-galaxy-hull';
   return m;
+}
+let ZT=null;
+const ZERO=THREE=>{if(!ZT){ZT=new THREE.DataTexture(new Uint8Array(4),1,1,THREE.RGBAFormat);ZT.needsUpdate=true;}return ZT;};
+// a hull material's own scorch map, made the first time it is hit (W x H texels over the same uv as its colour)
+export function scorchMap(THREE,m,W,H){
+  if(m.userData.scorchMap)return m.userData.scorchMap;
+  const t=new THREE.DataTexture(new Uint8Array(W*H*4),W,H,THREE.RGBAFormat);
+  t.wrapS=THREE.RepeatWrapping;t.wrapT=THREE.ClampToEdgeWrapping;t.magFilter=t.minFilter=THREE.LinearFilter;t.flipY=false;t.needsUpdate=true;
+  m.userData.scorch.value=t;return m.userData.scorchMap=t;
 }
 export function saucerTextures(THREE,renderer){
   return {top:saucerTex(THREE,renderer,true,2048),bot:saucerTex(THREE,renderer,false,1536),rim:rimTex(THREE,renderer)};

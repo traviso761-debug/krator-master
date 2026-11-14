@@ -24,7 +24,7 @@ import time
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PROBE = os.path.join(ROOT, "tools", "probe.py")
 KINDS = ["rescue", "survey", "escort", "defend", "wormhole", "deliver", "patrol", "contact", "probe", "evacuate",
-         "swarm", "storm", "relic", "hunt", "limp"]
+         "swarm", "storm", "relic", "hunt", "limp", "envoy", "saucer", "cloak", "chase", "mines"]
 
 
 def run(kind, budget, seed):

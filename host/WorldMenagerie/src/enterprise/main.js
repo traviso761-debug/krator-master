@@ -8,6 +8,7 @@ lcars();
 starshipPage({
   city:'enterprise',
   model,
+  photo:true,
   prefix:'making way… ',
   labels:{config:'reading the specification',sky:'hanging the stars',hull:'laying the keel and painting the hull',ui:'running the lights'},
   lines:[

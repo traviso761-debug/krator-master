@@ -294,7 +294,14 @@ export function model(api){
 
   fold(G,parts);
   scene.add(G);
-  return {radius:LEN*0.5, group:G, buttons:{
+  // the shared bridge view and warp smear (src/starship/bridge.js, warpfx.js): the eye just outside the bridge's
+  // forward windows, looking out over the bow; and once the pylons have locked for warp, the stars stream past
+  const X1=new THREE.Vector3(1,0,0);
+  const bridge={title:'USS Voyager · NCC-74656 · main viewer',down:0.07,
+    eye:v=>G.localToWorld(v.set(100.8,15.6,0)),quat:q=>G.getWorldQuaternion(q),
+    readout:()=>W.e>0.9?'Warp drive engaged · pylons locked · warp 6':W.e>0.05?'Nacelle pylons in motion · '+Math.round(W.e*100)+'%':'Impulse · station keeping · deflector nominal'};
+  const warp=()=>({f:W.e>0.9?(W.e-0.9)/0.1*6:0,fwd:X1.clone().applyQuaternion(G.getWorldQuaternion(new THREE.Quaternion()))});
+  return {radius:LEN*0.5, group:G, bridge, warp, buttons:{
     // auto -> hold at warp -> hold at cruise -> auto
     'Drive: auto':ev=>{
       const el=ev&&ev.currentTarget;

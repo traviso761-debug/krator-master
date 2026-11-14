@@ -14,7 +14,7 @@
 //
 // The noise is Stefan Gustavson's and Ian McEwan's 3D simplex noise (webgl-noise, MIT licence).
 export const PLANET_UNIFORMS=[];
-const NOISE=`
+export const NOISE=`
 vec3 mod289(vec3 x){return x-floor(x*(1./289.))*289.;}vec4 mod289(vec4 x){return x-floor(x*(1./289.))*289.;}
 vec4 permute(vec4 x){return mod289(((x*34.)+1.)*x);}vec4 taylorInvSqrt(vec4 r){return 1.79284291400159-0.85373472095314*r;}
 float snoise(vec3 v){const vec2 C=vec2(1./6.,1./3.);const vec4 D=vec4(0.,.5,1.,2.);

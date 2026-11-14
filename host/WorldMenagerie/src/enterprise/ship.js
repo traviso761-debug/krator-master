@@ -37,7 +37,31 @@ import {sensors} from './sensors.js';
 import {comms} from './comms.js';
 import {transporter} from './transporter.js';
 import {orders} from './orders.js';
+import {standing} from './standing.js';
+import {away} from './away.js';
+import {diplomats} from './diplomats.js';
+import {refit} from './refit.js';
+import {neighbours} from './ds9.js';
 import {helm} from './helm.js';
+import {fuel} from './fuel.js';
+import {saucer} from './saucer.js';
+import {cloak} from './cloak.js';
+import {hazards} from './hazards.js';
+import {encounters} from './encounters.js';
+import {allies} from './allies.js';
+import {clock} from './clock.js';
+import {tactical} from './tactical.js';
+import {access} from './access.js';
+import {audio} from './audio.js';
+import {pad} from './pad.js';
+import {help} from './help.js';
+import {bridgeview} from './bridgeview.js';
+import {warpfx} from './warpfx.js';
+import {redhull} from './redhull.js';
+import {damage} from './damage.js';
+import {life} from './life.js';
+import {lowOrbit} from './loworbit.js';
+import {library} from './library.js';
 import {PLACES} from './places.js';
 
 export function model(api){
@@ -124,7 +148,8 @@ export function model(api){
     bussard:{name:'A Bussard collector',info:'A magnetic scoop for interstellar hydrogen, glowing red.'},
     impulse:{name:'The main impulse engine',info:'Across the trailing edge of the saucer, under the dorsal stem.'},
   };
-  const saucerMat=t=>hullMaterial(THREE,t,env);
+  // (the saucer's top and underside are mapped flat over its plan: damage.js does not wrap a scorch round them)
+  const saucerMat=t=>{const m=hullMaterial(THREE,t,env);m.userData.planUV=true;return m;};
   // the top, the underside and the rim between them meet round the edge, so they share their rows round the saucer
   {const sT=saucerSurf(true),sB=saucerSurf(false),U=rows([sT,sB,rimSurf],1024,128,0);
    {const g=surface(THREE,sT,U,rows([sT],128,384,1),false);planUV(g);add(g,saucerMat(T.top),INFO.saucer);}
@@ -150,10 +175,11 @@ export function model(api){
   // the nacelles and pylons: one texture each, both sides
   const nacT=loftTex(THREE,renderer,nacSurf(1),true,2048,512,hullPainter({windows:false,seed:71,cw:12,ch:5,nacelle:true}));
   const pyT=loftTex(THREE,renderer,pylonSurf(1),false,512,256,hullPainter({windows:false,seed:81,cw:10,ch:6}));
-  const nacMat=hullMaterial(THREE,nacT,env,{metal:0.22}),pyMat=hullMaterial(THREE,pyT,env);
+  // a material each side (on the same textures), so a scorch on one nacelle (damage.js) is not on the other
+  const nacMat=s=>hullMaterial(THREE,nacT,env,{metal:0.22}),pyMat=s=>hullMaterial(THREE,pyT,env);
   for(const side of [1,-1]){
-    add(thinSurface(THREE,nacSurf(side),320,96,side>0),nacMat,INFO.nacelle);
-    add(thinSurface(THREE,pylonSurf(side),96,48,side<0),pyMat,INFO.pylon);
+    add(thinSurface(THREE,nacSurf(side),320,96,side>0),nacMat(side),INFO.nacelle);
+    add(thinSurface(THREE,pylonSurf(side),96,48,side<0),pyMat(side),INFO.pylon);
   }
 
   // ---------- the lights it makes ----------
@@ -342,6 +368,24 @@ export function model(api){
   const BT=transporter(W);
   const OR=orders(W);
   const HE=helm(W);
+  // the things to see (BACKLOG V1-V8): the bridge view's eye and readout, the nacelles at warp, red alert on the hull,
+  // scorches and venting plasma, shuttles and workbees and berthed ships, low orbit, the library computer
+  W.redAlert=()=>EV.state().red;
+  const BV=bridgeview(W);warpfx(W);redhull(W);const DM=damage(W),LI=life(W),LO=lowOrbit(W),LB=library(W);
+  if(/[#&]dbg/.test(location.hash))setInterval(()=>{(window._details=window._details||{}).vis={life:LI.state(),dmg:DM.state(),low:LO.state(),lib:LB.state(),red:W.redAlert()};},500);
+  for(const [lab,fn] of [['Low orbit',()=>W.lowOrbit()],['Library computer',()=>LB.toggle()]]){const b=document.createElement('button');b.type='button';b.textContent=lab;b.onclick=()=>{W.audio&&W.audio();fn();};EV.panel.appendChild(b);}
+  // fuel and the warp core, the saucer flown apart, cloaked ships, places with rules of their own, things met on the
+  // way, help from the fleet, orders against the clock, and the Tactical panel that holds the fight's finer orders
+  const FU=fuel(W),SC=saucer(W),CL=cloak(W),HZ=hazards(W),EN=encounters(W),AL=allies(W),CK=clock(W),TC=tactical(W);
+  const GAME={fuel:FU,saucer:SC,cloak:CL,hazards:HZ,encounters:EN,allies:AL,clock:CK};
+  // what the career remembers (standing and commendations), away teams and sickbay, diplomats aboard, refits, and the
+  // other ships' pages on the chart (Deep Space 9, Voyager)
+  const SD=standing(W),AW=away(W),DP=diplomats(W),RF=refit(W),N9=neighbours(W);
+  // the keys' table and the palette and motion choices first (the help lists them), the sound, the gamepad, the help
+  const AX=access(W);
+  const AU=audio(W);
+  const PD=pad(W);
+  const HP=help(W);
   // the interface goes red under red alert (lcars.js)
   {let was=null;animHooks.push(()=>{const r=EV.state().red;if(r!==was){was=r;document.documentElement.classList.toggle('alert',r);}});}
   // the extras' buttons go in the events panel
@@ -356,6 +400,8 @@ export function model(api){
   W.onLogToggle=o=>{const b=btn('Orders');if(b)b.setAttribute('aria-expanded',String(o));};
   W.onCommsToggle=o=>{const b=btn('Comms');if(b)b.setAttribute('aria-expanded',String(o));};
   W.onEngToggle=o=>{const b=btn('Engineering');if(b)b.setAttribute('aria-expanded',String(o));};
+  W.onTacToggle=o=>{const b=btn('Tactical');if(b)b.setAttribute('aria-expanded',String(o));};
+  W.onHelpToggle=o=>{const b=btn('Help');if(b)b.setAttribute('aria-expanded',String(o));};
   const evBtn=()=>{const o=!EV.panel.classList.contains('open');EV.panel.classList.toggle('open',o);
     const b=[...document.querySelectorAll('#ui button')].find(b=>b.textContent==='Events');if(b)b.setAttribute('aria-expanded',String(o));};
   // #fly opens at the helm; #ev=name[,name...] runs events once the page is up (Warp, red, shields, phasers,
@@ -366,7 +412,7 @@ export function model(api){
    // #dbg: the events' state in the probe's report
    const hist=[];if(h.has('dbg'))setInterval(()=>{hist.push([W.heading().hd,Math.round(ROOT.position.x),Math.round(ROOT.position.z),+W.flight.rate.y.toFixed(3)].join('/'));if(hist.length>12)hist.shift();},1000);
    if(h.has('dbg'))setInterval(()=>{(window._details=window._details||{}).ent={root:[ROOT.scale.x,ROOT.position.x,ROOT.visible],sau:SAU.position.toArray(),
-     fx:W.FX.children.map(o=>o.type+(o.visible?'':'-hid')+':'+o.scale.toArray().map(Math.round)+'@'+o.position.toArray().map(Math.round)),fl:W.flight.on,v:Math.round(W.flight.v),warp:W.flight.warp,map:W.flight.map.toArray().map(x=>+x.toFixed(2)),here:NV.here().P.id,hist:hist.join(' '),ad:(()=>{const a=W.autoDir&&W.autoDir();const f=new THREE.Vector3(1,0,0).applyQuaternion(ROOT.quaternion);return a&&[a.toArray().map(x=>+x.toFixed(2)),f.toArray().map(x=>+x.toFixed(2))];})(),dock:Object.assign(EX.state(),SBM.state()),carto:CA.state(),traffic:TR.state(),orders:OR.state(),sensors:SE.state(),comms:CO.state(),beam:BT.state(),worm:WH.state(),helm:HE.state(),err:W.flight.steerErr,rate:W.flight.rate.toArray().map(x=>+x.toFixed(3)),hud:(document.getElementById('side')||{}).textContent,orb:W.orbitInfo(),near:(()=>{const b=W.nearest();return b&&[b.name,Math.round(b.d),Math.round(b.r)];})(),thr:W.flight.thr,bank:+W.flight.bank.toFixed(3),sys:W.SYS.position.toArray().map(Math.round),cam:api.camera.position.toArray().map(Math.round),sky:W.SKY.quaternion.toArray().map(x=>x.toFixed(2))};},200);
+     fx:W.FX.children.map(o=>o.type+(o.visible?'':'-hid')+':'+o.scale.toArray().map(Math.round)+'@'+o.position.toArray().map(Math.round)),fl:W.flight.on,v:Math.round(W.flight.v),warp:W.flight.warp,map:W.flight.map.toArray().map(x=>+x.toFixed(2)),here:NV.here().P.id,hist:hist.join(' '),ad:(()=>{const a=W.autoDir&&W.autoDir();const f=new THREE.Vector3(1,0,0).applyQuaternion(ROOT.quaternion);return a&&[a.toArray().map(x=>+x.toFixed(2)),f.toArray().map(x=>+x.toFixed(2))];})(),dock:Object.assign(EX.state(),SBM.state()),carto:CA.state(),traffic:TR.state(),orders:OR.state(),sensors:SE.state(),comms:CO.state(),beam:BT.state(),career:{sd:SD.state(),aw:AW.state(),dp:DP.state(),rf:RF.state(),n9:N9.state()},worm:WH.state(),helm:HE.state(),game:Object.fromEntries(Object.entries(GAME).map(([k,m])=>[k,m.state()])),senses:{access:AX.state(),audio:AU.state(),pad:PD.state(),help:HP.state()},err:W.flight.steerErr,rate:W.flight.rate.toArray().map(x=>+x.toFixed(3)),hud:(document.getElementById('side')||{}).textContent,orb:W.orbitInfo(),near:(()=>{const b=W.nearest();return b&&[b.name,Math.round(b.d),Math.round(b.r)];})(),thr:W.flight.thr,bank:+W.flight.bank.toFixed(3),sys:W.SYS.position.toArray().map(Math.round),cam:api.camera.position.toArray().map(Math.round),sky:W.SKY.quaternion.toArray().map(x=>x.toFixed(2))};},200);
    // #course=<place id>[&warpf=n]: set a course at once (giant, ice, comet, binary, belt, nebula, hole, home)
    if(h.has('warpf'))NV.course.w=+h.get('warpf');
    if(h.has('course')){const P=PLACES.find(p=>p.id===h.get('course'));if(P)setTimeout(()=>NV.course.set(P),+(h.get('evt')||1.5)*1000);}
@@ -377,13 +423,19 @@ export function model(api){
      const p=f.m.g.getWorldPosition(new THREE.Vector3());api.view({az,el,d,tx:p.x,ty:p.y,tz:p.z});},100);}
    // #keys=a,w: hold keys down from evt on (for tests of the helm)
    if(h.has('keys'))setTimeout(()=>{for(const k of h.get('keys').split(','))dispatchEvent(new KeyboardEvent('keydown',{key:k}));},+(h.get('evt')||1.5)*1000+500);
-   const act={...EV.act,...SBM.act,...EX.act,...CA.act,...SE.act,...CO.act,...BT.act,...OR.act,...WH.act,...SY.act,fly,drop:()=>W.dropOut(),orbit:()=>window.dispatchEvent(new KeyboardEvent('keydown',{key:'o'})),chart:()=>W.openNav(),engage:()=>W.engage(6),stop:()=>{if(W.flight.on)fly();}};
+   const act={...EV.act,...SBM.act,...EX.act,...CA.act,...SE.act,...CO.act,...BT.act,...OR.act,...WH.act,...SY.act,...SD.act,...AW.act,...DP.act,...RF.act,...N9.act,...Object.assign({},...Object.values(GAME).map(m=>m.act||{})),...TC.act,fly,drop:()=>W.dropOut(),orbit:()=>window.dispatchEvent(new KeyboardEvent('keydown',{key:'o'})),chart:()=>W.openNav(),engage:()=>W.engage(6),stop:()=>{if(W.flight.on)fly();},
+     lib:()=>LB.toggle(true),low:()=>W.lowOrbit(),repair:()=>DM.repair(),...LI.act,
+     help:()=>HP.toggle(true),walk:()=>HP.tour.start(true),cb:()=>W.access.set('cb',!W.access.get('cb')),calm:()=>W.access.set('calm',!W.access.get('calm')),mute:()=>W.mute(),music:()=>W.sound.set('music',!W.sound.get('music')),speak:()=>W.sound.set('speak',!W.sound.get('speak'))};
    // name@secs runs that one at that many seconds after evt, instead of a second after the one before
    const ev=(h.get('ev')||'').split(',').map(k=>k.split('@')).filter(([k])=>act[k]);const t0=+(h.get('evt')||1.5)*1000;ev.forEach(([k,at],i)=>setTimeout(()=>{act[k]();EV.sync();},t0+(at!=null?+at*1000:i*1000)));}
   return {radius:LEN*0.5,group:ROOT,pick,minD:60,
-    buttons:{'Fly':fly,'Course':()=>W.openNav(),'Cartography':()=>{W.audio&&W.audio();W.openCarto();},'Orders':()=>{W.audio&&W.audio();OR.toggle();},'Comms':()=>{W.audio&&W.audio();CO.toggle();},'Engineering':()=>{W.audio&&W.audio();SY.toggle();},'Events':evBtn},
+    buttons:{'Fly':fly,'Course':()=>W.openNav(),'Cartography':()=>{W.audio&&W.audio();W.openCarto();},'Orders':()=>{W.audio&&W.audio();OR.toggle();},'Comms':()=>{W.audio&&W.audio();CO.toggle();},'Engineering':()=>{W.audio&&W.audio();SY.toggle();},'Events':evBtn,'Tactical':()=>{W.audio&&W.audio();TC.toggle();},'Help':()=>HP.toggle()},
     camFrame:FL.camFrame,ownsInput:()=>W.flight.on,
+    // the shared bridge view (src/starship/bridge.js) at bridgeview.js's eye; the star field smeared with the warp
+    // factor and the flash of the jump (src/starship/warpfx.js); photo mode aimed at the ship wherever she is
+    bridge:BV,warp:()=>({f:W.flight.warp||0,fwd:new THREE.Vector3(1,0,0).applyQuaternion(ROOT.quaternion)}),
+    photoTarget:()=>ROOT.getWorldPosition(new THREE.Vector3()),
     // a viewpoint chosen while flying hands the helm back first, so the view is of the ship where it is
     onView:()=>{if(W.flight.on)fly();},
-    hud:()=>[FL.hud(),NV.hud(),CA.hud(),SBM.hud(),OR.hud(),SE.hud(),BT.hud(),CO.hud(),SY.hud(),EV.hud(),EX.hud()].filter(Boolean).join(' · ')};
+    hud:()=>[FL.hud(),NV.hud(),CA.hud(),SBM.hud(),OR.hud(),SE.hud(),BT.hud(),CO.hud(),SY.hud(),EV.hud(),EX.hud(),AW.hud(),DP.hud(),RF.hud(),...Object.values(GAME).map(m=>m.hud?m.hud():''),TC.hud()].filter(Boolean).join(' · ')};
 }

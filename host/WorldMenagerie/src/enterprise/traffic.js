@@ -33,6 +33,8 @@ const CLASSES={
   anvil:{title:'Anvil-class fleet tender',blurb:'A heavy tender and tug: a slab of a hull, a great tractor emitter at the bow, four nacelles in an X.'},
   ossari:{title:'An Ossari vessel',blurb:'A grown ship of a people the Federation has never met: pearl-white pods along a curved spine, sails of faint light.',alien:true},
   probe:{title:'A survey probe',blurb:'A long-range probe, forty metres of instruments, its beacon still blinking.',alien:true},
+  // Voyager, from her own page's model (ds9.js puts the builder in W.FA)
+  intrepid:{title:'An Intrepid-class starship, from the Voyager page',blurb:'Three hundred and forty metres, her nacelles on pylons that swing up for warp.',alien:true},
 };
 const NAMES=[['USS Arden','NCC-71802','kestrel'],['USS Callander','NCC-75530','meridian'],['USS Tamsin','NCC-68211','tamar'],['USS Halvard','NCC-59003','halyard'],
   ['USS Corvo','NCC-72940','kestrel'],['USS Ilsabet','NCC-77104','meridian'],['USS Vantor','NCC-66318','tamar'],['USS Ellery','NCC-70455','kestrel'],
@@ -213,7 +215,8 @@ export function traffic(W){
     F.note&&W.toast&&W.toast('Sensors',' A ship we have never seen, six kilometres ahead: grown, not built. It is not hostile. It is waiting.');W.emit&&W.emit('ossari',t);return t;};
   // going: to warp, and gone for good
   const leave=t=>{if(!t.g.visible)return;warpFx(t,true);setTimeout(()=>{if(all.includes(t))W.traffic.remove(t);},900);};
-  W.traffic={stranger,leave,here:()=>all.filter(t=>t.pl===W.herePlace()&&t.g.visible),all,escort,release,escorts,wreck,setTask,
+  // (make: a ship of a class, built once and cloned, that is not traffic: life.js berths them at the starbases' arms)
+  W.traffic={stranger,leave,here:()=>all.filter(t=>t.pl===W.herePlace()&&t.g.visible),all,escort,release,escorts,wreck,setTask,make,classTitle:c=>CLASSES[c]&&CLASSES[c].title,
     spawn:(pl,cls,task,name)=>ship(pl,cls,task,name),remove:t=>{const j=all.indexOf(t);if(j<0)return;t.pl.group.remove(t.g);all.splice(j,1);const i=W.pick.indexOf(t.g);if(i>=0)W.pick.splice(i,1);}};
   return {state:()=>({ships:all.length,here:W.traffic.here().map(t=>t.name+':'+t.task.kind)})};
 }

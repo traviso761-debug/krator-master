@@ -2229,6 +2229,74 @@ wireframe and menagerie menu every other page has.
     through as a captain would; **`tools/test-enterprise.py`** runs every kind that way in headless Firefox and fails
     one that throws or stalls (about a quarter of an hour for all fifteen). `tools/probe.py` now reports a page early
     when it sets `window.__probeDone`.
+  - **Tenth pass: the backlog, nearly all of it** (2026-11-14; `src/enterprise/BACKLOG.md` keeps the two items
+    left, Q6 and Q7). Twenty kinds of orders now, and `tools/test-enterprise.py` flies all twenty.
+    - **Combat** (`tactical.js`, the **Tactical** button). The shields are four facings, fore, aft, port and starboard;
+      a bolt wears the facing on its side, a buckled facing lets bolts through while the others hold, and
+      Reinforce moves power from the opposite one. **U** aims at a ship's engines once her shields are down: with
+      her drive gone she is dead in space, and the tractor beam (**G**) holding her close for three seconds takes her
+      as a prize. The Lattice learns whichever weapon hits it; switching weapons or Remodulate undoes it. **Call
+      for help** brings a Starfleet ship into the fight (`allies.js`), at a cost to Command's standing if it is
+      used against nothing much, or twice in five minutes.
+    - **The saucer flown apart** (`saucer.js`): separated from the Tactical panel (out of warp, under 2 km/s), it
+      withdraws to the far side of the fight while the helm flies the quicker stardrive; they dock again by flying
+      in under it, or by Rejoin. The `saucer` orders take a thousand families clear of a Varr ambush.
+    - **Fuel and the core** (`fuel.js`): antimatter burns by the light-year and dilithium wears with the cube of the
+      warp factor; low stocks cap the warp factor, and a starbase refills both. A breach counts down a minute in
+      Engineering: stabilise once, or eject the core and get clear, then impulse only until a starbase fits a new
+      one or a tender tows her.
+    - **The cloaked ship** (`cloak.js`): **Y** lays a tachyon net, seven beams across the ninety degrees ahead for
+      thirty seconds; a cloaked hull crossing one ripples, and a hit near the ripple forces her out. The `cloak`
+      orders are built on it.
+    - **Places with rules of their own** (`hazards.js`): no shields in the emission nebula and sensors cut to 8 km;
+      a minefield across the shattered world's approach (the `mines` orders clear it); rocks on the forward
+      shields above 6 km/s in the belt, where the `chase` orders run down a stolen courier.
+    - **On the way** (`encounters.js`): about one long jump in four is pulled out of warp for a distress call, a lure,
+      a derelict, a sleeping swarm or a raiders' snare, and the course is laid in again after.
+    - **Against the clock** (`clock.js`): rescues and evacuations count down life support in the orders panel and
+      on the HUD; arrive late and fewer are saved, and the log says how many were lost.
+    - **Standing** (`standing.js`): the career keeps a standing with Starfleet Command, the Ossari, the Kethri and the
+      Varr, on the service record. A good first contact brings Ossari traders; firing in front of them makes them
+      wary; every broken swarm makes the next bigger; a hunted Varr captain deepens their grudge. **Refits**
+      (`refit.js`, from a starbase's card or the service record) are signed off as Command's standing rises: Mark IX
+      torpedoes, a faster pattern buffer, a stronger shield grid (`W.refit`).
+    - **People** (`away.js`, `diplomats.js`): an away team's report is a short scene with two or three choices, its
+      outcome drawn from the run's seed; the hurt go to sickbay. The `envoy` orders carry delegations between
+      starbases, who complain, and two aboard at once may quarrel, to be settled before arrival.
+    - **A run you can share.** `#seed=<n>` deals the same run of orders, places, odds, chains and outcomes; the
+      service record shows the seed with a link. A finished mission may lead to the next (`CHAIN` in `orders.js`):
+      a probe's readings to the wormhole, a derelict's log to the ring, the storm to a swarm and the swarm to the Varr
+      behind it. **Commendations** for conduct (no shot fired at a first contact, a rescue with no one lost, a swarm
+      broken with shields above half, and more) are kept and listed.
+    - **Deep Space 9 and Voyager** (`ds9.js`): DS9 is a place on the western frontier, drawn by the DS9 page's own
+      model; docked there, a panel links to `/ds9`. Voyager, from her page's model, is met in traffic once a run.
+    - **Things to see.** The **bridge view** (Views, or `#bridge`; at the helm the V camera's bridge eye) looks out
+      over the dish from the bridge windows inside LCARS chrome. **Photo mode** (Views, or `#photo`) freezes the
+      scene, frees the camera, hides the interface and saves a PNG. Going to warp, the nacelle grilles glow up and
+      the stars smear in proportion to the warp factor. Under red alert the window rings dim and red lamps strobe
+      in a wave aft along the hull (`redhull.js`). Hits with the shields down leave scorches painted into the skin
+      where they land and nacelle hits vent plasma, repaired at a starbase (`damage.js`). Shuttles come and go,
+      workbees work round the starbases, ships lie berthed on their arms, and traffic carries strobes and beacons
+      (`life.js`). **Low orbit** (Events) takes her down to the top of a world's air over a cloud deck that keeps
+      the planet's own weather (`loworbit.js`). The **library computer** (Events, or `#ev=lib`) keeps every class
+      and people met, each turning on a small stage, and every place charted with its scans (`library.js`). The
+      bridge view, photo mode and the warp effect are shared (`src/starship/bridge.js`, `photo.js`, `warpfx.js`):
+      Voyager has all three and Deep Space 9 an Ops view and photo mode.
+    - **Sound** (`audio.js`), all synthesised, silent until the first click: the warp core's hum rising with the
+      warp factor, console chirps, the hull groaning in a hard turn, and a quiet generated music bed in a mode for
+      exploring, red alert and first contact. **M** mutes. The log can be read aloud by the browser's voice (off
+      by default; a switch in the log's title).
+    - **Help and access.** **?** (or Help) lists every key, with the switches for sound, music, voice, the
+      colour-blind palette (Okabe-Ito) and reduced motion (no shake, lurch or flash; on by default where the system
+      asks for it). Any single-key order can be moved to another key there. A first visit gets a walkthrough card
+      that follows the orders' next steps (`help.js`, `access.js`). A **touch** stick sits beside the helm strip, and
+      a **gamepad** flies her: sticks for heading, pitch, roll and impulse, buttons for the strip's orders (`pad.js`).
+    - **A fix on the way:** the floating origin's rebase did not move a standard orbit's centre, so an orbit round any
+      planet steered round the wrong point.
+    - For tests: `#sep`, `#cloak`, `#fuel=am,dl`, `#breach=s`, `#enc=<kind>`/`#noenc`, `#clock=k`, `#aim=engines`,
+      `#low=<km>`, `#bridge`, `#photo`, `#walk`, `#help`, `#cb`, `#calm`, `#touch`, `#axes=t,p,r,thr`, `#gesture`, and the
+      acts `lib`, `low`, `repair`, `voyager`, `ds9`, `quarrel`, `awayscene`, `refit`. Encounters are off under `#mauto`
+      unless `#enc` asks, so the mission tests stay repeatable.
   - **Performance.** The hull's grids keep only the rows they need (`rows()` in `hull.js`): each part is sampled
     on its old even grid, and a row is dropped wherever every sample between the rows kept either side lies within
     2 cm of the straight line between them. The kept rows are still exact (u, v), so the textures land where they

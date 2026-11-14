@@ -12,6 +12,10 @@
 // once they are weak. Damage control works on whatever is hurt, slowly, but can only bring a system back to half:
 // past that it takes a starbase's repair crews (docked: starbases.js calls W.repair). So a ship that has fought
 // hard limps home. I (or the Engineering button) opens the panel; damage shows on the HUD while there is any.
+//
+// The warp drive also needs what fuel.js keeps: antimatter and dilithium, which set a ceiling of their own, and the
+// core itself. A heavy hit on a warp drive already near ruin can start a core breach (fuel.js); the panel shows the
+// fuel and, in a breach, the order to eject the core.
 import {sidePanel,el,button,typing} from './ui.js';
 
 export const SYSTEMS=[['warp','Warp drive'],['impulse','Impulse engines'],['phasers','Phasers'],['torpedoes','Torpedo launchers'],
@@ -37,8 +41,12 @@ export function systems(W){
     const r=Math.random();
     if(onShields){if(shStr>30||r>0.25)return;}else if(r>0.6)return;
     const k=SYSTEMS[Math.floor(Math.random()*SYSTEMS.length)][0];
-    damage(k,(onShields?5+Math.random()*7:10+Math.random()*15)*(dm||1));}
-  const warpMax=()=>I.warp<OFF?0:I.warp<50?3:I.warp<75?6:9;
+    damage(k,(onShields?5+Math.random()*7:10+Math.random()*15)*(dm||1));
+    // a heavy blow to a warp drive already in pieces can crack the core's containment
+    if(k==='warp'&&I.warp<10&&(dm||1)>=1.5&&Math.random()<0.3&&W.fuel)W.fuel.breach('A hit to the warp drive has cracked the core\'s containment.');}
+  const warpMax=()=>Math.min(I.warp<OFF?0:I.warp<50?3:I.warp<75?6:9,W.fuel?W.fuel.cap():9);
+  // asked for warp and none to be had (a course laid in asks every frame): say why, every five seconds at most
+  function noWarp(){if(performance.now()-lastNote<5000)return;lastNote=performance.now();say(W.fuel&&W.fuel.why()||'The warp drive cannot give us warp.');}
   // is k down? (and say so, once a second at most, when asked by something the captain pressed)
   function down(k,quiet){if(I[k]>=OFF)return false;
     if(!quiet&&performance.now()-lastNote>1000){lastNote=performance.now();say(name(k)+(k==='warp'?' is offline: impulse only until it is repaired.':' offline. Damage control is working on it.'));}
@@ -58,6 +66,7 @@ export function systems(W){
       const bar=el('i');bar.style.width=v+'%';
       row.append(el('span',null,lab),el('b',null,v<OFF?'offline':v+'%'),el('div','sysbar',[bar]));bars.append(row);}
     P.body.append(bars);
+    if(W.fuel)W.fuel.panel(P.body);
     const hurt=SYSTEMS.filter(([k])=>I[k]<100);
     P.body.append(el('div','say',!hurt.length?'All systems at full strength.':
       hurt.some(([k])=>I[k]<DC)?'Damage control is working on the worst of it; it can bring a system back to half. A starbase can do the rest.':
@@ -73,7 +82,7 @@ export function systems(W){
     if(e.key==='i'||e.key==='I'){W.audio&&W.audio();P.toggle();}else if(e.key==='Escape'&&P.open())P.toggle(false);});
 
   W.openEng=()=>P.toggle(true);
-  W.sys={get:k=>I[k],all:()=>({...I}),damage,hit,down,repair,warpMax,impulse:()=>0.35+0.65*I.impulse/100,shieldRate:()=>I.shields/100,
+  W.sys={get:k=>I[k],all:()=>({...I}),damage,hit,down,repair,warpMax,noWarp,dirty:()=>{dirty=true;},impulse:()=>0.35+0.65*I.impulse/100,shieldRate:()=>I.shields/100,
     // for tests: #sysdmg=warp:80,phasers:60 sets damage once the page is up
     set:(k,v)=>{I[k]=Math.max(0,Math.min(100,v));dirty=true;}};
   {const h=new URLSearchParams(location.hash.slice(1));if(h.has('sysdmg'))setTimeout(()=>{for(const kv of h.get('sysdmg').split(',')){const [k,v]=kv.split(':');if(k in I)damage(k,+v);}},+(h.get('evt')||1.5)*1000);}

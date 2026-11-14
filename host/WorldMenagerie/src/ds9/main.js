@@ -6,6 +6,7 @@ import {model} from './station.js';
 starshipPage({
   city:'ds9',
   model,
+  photo:true,
   prefix:'station keeping… ',
   labels:{config:'reading the specification',sky:'hanging the stars',hull:'building the ring',ui:'lighting the Promenade'},
   lines:[

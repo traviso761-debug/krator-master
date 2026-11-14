@@ -12,6 +12,15 @@
 // locks a tractor on the ship and drags at it, and it adapts: the more of one weapon it takes, the less that weapon
 // does, so the way to beat it is to change weapons. Not hostile: a Sere survey ship keeps station alongside and
 // fires on whatever is attacking you; a trader convoy crosses the bow and goes on its way; a derelict drifts.
+//
+// Aiming (U, or the Tactical panel): at the hull, or at the engines. Once a ship's shields are down, fire at her
+// engines does little to her hull and much to her drive; with the drive gone she is dead in space, her guns cold,
+// and the tractor beam (G) can draw her in and hold her: a prize (W.emit('captured')). The Lattice cannot be
+// disabled so (it has no engines to speak of), and it learns: each weapon does less the more of it it takes (the
+// escorts' phasers count), so change weapons, or remodulate the phasers (the Tactical panel), which undoes what it
+// has learned of them, though it learns faster each time.
+//
+// A stolen courier (the chase in the asteroid belt, hazards.js) runs a wide fast circle and never goes to warp.
 import {factions} from './factions.js';
 export function hostile(W,E){
   const {THREE,ROOT}=W;
@@ -20,12 +29,14 @@ export function hostile(W,E){
     raider:{name:'raider',mesh:()=>raiderMesh(),sh:100,hp:100,R:[2200,1400],w:[0.08,0.06],hy:[200,300],fire:[2.2,1.8],bolt:{},glow:0xb8ffc8,flee:true,cap:900,spawnD:5200,debris:0x5a665c,boom:1},
     varr:{name:'Varr cruiser',mesh:FA.varr,sh:150,hp:130,R:[1500,700],w:[0.13,0.05],hy:[120,180],fire:[1.6,1.2],volley:2,bolt:{colour:0xff5a20,dmg:1.15},glow:0xffa070,flee:false,cap:1400,spawnD:2600,cloak:true,debris:0x5e4636,boom:1.5},
     kethri:{name:'Kethri dart',mesh:FA.kethri,sh:25,hp:40,R:[900,700],w:[0.22,0.1],hy:[90,160],fire:[1.5,1.2],bolt:{colour:0x40ffd0,dmg:0.45},glow:0x60ffe0,flee:false,cap:2600,spawnD:3800,debris:0x1f6a64,boom:0.5},
-    lattice:{name:'Lattice ship',mesh:FA.lattice,sh:300,hp:420,R:[5200,800],w:[0.022,0.01],hy:[300,200],fire:[3.2,1.6],bolt:{colour:0xa070ff,dmg:2.2,size:2},glow:0xc8a0ff,flee:false,cap:500,spawnD:11000,adapt:true,drag:true,debris:0x2a2c30,boom:4},
+    lattice:{name:'Lattice ship',mesh:FA.lattice,sh:300,hp:420,R:[5200,800],w:[0.022,0.01],hy:[300,200],fire:[3.2,1.6],bolt:{colour:0xa070ff,dmg:2.2,size:2},glow:0xc8a0ff,flee:false,cap:500,spawnD:11000,adapt:true,drag:true,debris:0x2a2c30,boom:4,noDisable:true},
+    thief:{name:'stolen courier',mesh:()=>raiderMesh(0x8a8f96),sh:60,hp:90,R:[6500,2500],w:[0.12,0.04],hy:[700,500],fire:[5,3],bolt:{colour:0xffe070,dmg:0.5},glow:0xd8e8ff,flee:false,cap:4200,spawnD:6500,debris:0x6a6e74,boom:0.8,noWarp:true,
+      info:{name:'A stolen courier',info:'A fast courier taken from the yards by a gang of raiders: lightly armed, and running. Her warp drive will not start in the belt.'}},
   };
 
-  function raiderMesh(){
+  function raiderMesh(col){
     const g=new THREE.Group();
-    const hull=new THREE.MeshStandardMaterial({color:0x5a665c,metalness:0.6,roughness:0.42,envMap:W.env,envMapIntensity:1.1});
+    const hull=new THREE.MeshStandardMaterial({color:col||0x5a665c,metalness:0.6,roughness:0.42,envMap:W.env,envMapIntensity:1.1});
     const dark=new THREE.MeshStandardMaterial({color:0x22282a,metalness:0.4,roughness:0.6,envMap:W.env});
     const glowM=new THREE.MeshBasicMaterial({color:0x7dff8a,toneMapped:false});
     // the body: an arrowhead in plan, extruded and bevelled, lying flat
@@ -66,24 +77,27 @@ export function hostile(W,E){
   Object.defineProperty(W,'enemy',{configurable:true,get(){const c=E.shipCentre();let b=null,bd=1e18;
     for(const f of live()){const d=f.m.g.getWorldPosition(V()).distanceToSquared(c);if(d<bd){bd=d;b=f;}}return b;}});
   const rr=a=>a[0]+Math.random()*a[1];
-  function contact(k,kind){
+  // o (optional): {at: a world point to appear at, sh: the fraction of its shields it has, note: what is said}
+  function contact(k,kind,o){o=o||{};
     const K=KINDS[kind||'raider'],m=K.mesh(),c=E.shipCentre(),q=shipQ();
     const th=(k==null?(Math.random()<0.5?1:-1)*(0.6+Math.random()*0.8):k*2.1+Math.random()*0.6);
-    const spawn=c.clone().add(new THREE.Vector3(Math.cos(th)*K.spawnD,400+(Math.random()-0.5)*800,Math.sin(th)*K.spawnD).applyQuaternion(q));
-    m.g.position.copy(E.toFX(spawn));W.FX.add(m.g);
+    const spawn=o.at?o.at.clone():c.clone().add(new THREE.Vector3(Math.cos(th)*K.spawnD,400+(Math.random()-0.5)*800,Math.sin(th)*K.spawnD).applyQuaternion(q));
+    m.g.position.copy(E.toFX(spawn));W.FX.add(m.g);if(K.info)m.g.userData.info=K.info;
     for(const e of m.engines)e.userData.s0=e.scale.x;
     // each keeps its own circle: a little nearer or further, faster or slower, the other way round
-    const foe={K,m,sh:K.sh,hp:K.hp,sh0:K.sh,hp0:K.hp,vel:V(),th,gone:false,flee:false,fireT:E.T()+3.5+Math.random()*2,born:E.T(),hitT:-9,warpT:null,
-      R:rr(K.R),w:(Math.random()<0.3?-1:1)*rr(K.w),hy:rr(K.hy),adapt:{ph:0,tp:0},told:{},dragT:-99};
+    const foe={K,m,sh:K.sh*(o.sh==null?1:o.sh),hp:K.hp,sh0:K.sh,hp0:K.hp,eng:K.hp*0.6,eng0:K.hp*0.6,disabled:false,vel:V(),th,gone:false,flee:false,fireT:E.T()+3.5+Math.random()*2,born:E.T(),hitT:-9,warpT:null,
+      R:rr(K.R),w:(Math.random()<0.3?-1:1)*rr(K.w),hy:rr(K.hy),adapt:{ph:0,tp:0},learn:1,told:{},dragT:-99};
+    // where it is on its circle: where it appeared, when it was put somewhere
+    if(o.at){const l=E.toFX(spawn).sub(E.toFX(c)).applyQuaternion(shipQ().premultiply(W.FX.quaternion.clone().invert()).invert());foe.th=Math.atan2(l.z,l.x);foe.R=Math.max(1200,Math.hypot(l.x,l.z));}
     foes.push(foe);
     if(K.cloak){
       // out of its cloak: a shimmer, and the hull fading up out of nothing
       const mats=[];m.g.traverse(o=>{if(o.material&&!o.isSprite){o.material.transparent=true;o.material.opacity=0;mats.push(o.material);}});
       const sp=[];m.g.traverse(o=>{if(o.isSprite){sp.push([o.material,o.material.opacity]);o.material.opacity=0;}});
-      foe.fireT=E.T()+3;const t0=E.T();E.sound('shield');E.note('Decloaking, close aboard: a Varr cruiser!');
+      foe.fireT=E.T()+3;const t0=E.T();E.sound('shield');E.note(o.note||'Decloaking, close aboard: a Varr cruiser!');
       E.run(t=>{const u=Math.min(1,(t-t0)/2.5);for(const mt of mats)mt.opacity=u;for(const [mt,o] of sp)mt.opacity=o*u;
         m.bubble.material.opacity=0.5*Math.sin(u*Math.PI);if(u>=1){for(const mt of mats)mt.transparent=false;return false;}});}
-    else{E.sound('warp');E.flash(spawn,K.glow,900*K.boom,0.9);if(kind==='lattice')E.note('A Lattice ship has come out of warp. It is hailing: it says nothing we can understand.');}
+    else{E.sound('warp');E.flash(spawn,K.glow,900*K.boom,0.9);if(kind==='lattice')E.note('A Lattice ship has come out of warp. It is hailing: it says nothing we can understand.');else if(o.note)E.note(o.note);}
     if(!E.red())E.redAlert();
     E.sync();
     const tmp=V(),want=V(),toShip=V(),m4=new THREE.Matrix4(),qq=new THREE.Quaternion();
@@ -93,6 +107,10 @@ export function hostile(W,E){
       const shipV=E.dirFX(W.flight.vel||V());
       // warp-in: it decelerates out of a streak
       if(u<0.4&&!K.cloak){g.scale.set(1+6*(1-u/0.4),1,1);}else g.scale.set(1,1,1);
+      // dead in space: she drifts to a stop where she is, her lights going, and fires no more (or is held in a beam)
+      if(foe.disabled){foe.vel.multiplyScalar(Math.exp(-dt*0.15));if(!foe.captured)g.position.addScaledVector(foe.vel,dt);
+        for(const e of m.engines)e.scale.setScalar(e.userData.s0*0.05);m.nose.material.opacity=0.15+0.15*Math.sin(t*3);
+        if(W.flight.warp){W.FX.remove(g);foe.gone=true;foe.left=true;E.sync();done();return false;}return;}
       // left behind when the ship goes to warp
       if(W.flight.warp){W.FX.remove(g);foe.gone=true;foe.left=true;E.sync();done();return false;}
       if(foe.warpT!=null){const k=(t-foe.warpT)/0.4;g.scale.set(1+6*k*k,1,1);g.position.addScaledVector(tmp.set(1,0,0).applyQuaternion(g.quaternion),60000*k*dt);
@@ -122,23 +140,40 @@ export function hostile(W,E){
         if(K.drag&&Math.random()<0.35&&t>foe.dragT+6){foe.dragT=t+5;E.note('The Lattice ship has a tractor lock on us.');
           beam(()=>E.world(m.nose,V()),()=>E.shipCentre(),0xa070ff,5,14);}}
       // run for it, then go to warp
-      if(foe.flee&&foe.warpT==null&&t-foe.fleeT>4){foe.warpT=t;E.sound('warp');}
+      if(foe.flee&&foe.warpT==null&&t-foe.fleeT>4&&!K.noWarp){foe.warpT=t;E.sound('warp');}
     });
     return foe;
   }
-  // a hit on one: shields first, then the hull
-  function hit(foe,dmg,at){
-    if(!foe||foe.gone)return;const t=E.T();foe.hitT=t;
+  // a hit on one: shields first, then the hull (or, aimed at them, the engines). w is the weapon ('ph', 'tp'): a
+  // hit that does not say is guessed from its size
+  function hit(foe,dmg,at,w){
+    if(!foe||foe.gone||foe.captured)return;const t=E.T();foe.hitT=t;w=w||(dmg>=20?'tp':'ph');
     // the Lattice learns: each weapon does less the more of it it has taken
-    if(foe.K.adapt){const w=dmg>=20?'tp':'ph';dmg/=1+foe.adapt[w]*0.35;foe.adapt[w]+=w==='tp'?1:dmg/12;
+    if(foe.K.adapt){dmg/=1+foe.adapt[w]*0.35;foe.adapt[w]+=(w==='tp'?1:dmg/12)*foe.learn;
       const o=w==='tp'?'ph':'tp';foe.adapt[o]=Math.max(0,foe.adapt[o]-(w==='tp'?0.4:dmg/40));
       if(foe.adapt[w]>3&&!foe.told[w]){foe.told[w]=1;E.note('The Lattice ship has adapted to our '+(w==='tp'?'torpedoes':'phasers')+'. Change weapons!');}
       if(foe.adapt[w]<1)foe.told[w]=0;}
-    if(foe.sh>0){foe.sh=Math.max(0,foe.sh-dmg);if(foe.sh===0)E.note('The '+foe.K.name+'\'s shields are down.');}
+    if(foe.sh>0){foe.sh=Math.max(0,foe.sh-dmg);if(foe.sh===0)E.note('The '+foe.K.name+'\'s shields are down.'+(W.aim==='engines'&&!foe.K.noDisable?' Her engines are open to us.':''));}
+    else if(W.aim==='engines'&&!foe.K.noDisable&&!foe.disabled){foe.eng=Math.max(0,foe.eng-dmg*1.4);foe.hp=Math.max(1,foe.hp-dmg*0.25);E.flash(at||E.world(foe.m.g,V()),0x9fd0ff,110,0.5);
+      if(foe.eng<=0)disable(foe);}
     else{foe.hp=Math.max(0,foe.hp-dmg*1.2);E.flash(at||E.world(foe.m.g,V()),0xffb070,120,0.6);}
     if(foe.hp<=0){destroy(foe);return;}
+    if(foe.disabled)return;
     if(foe.K.flee&&!foe.flee&&foe.hp<35&&Math.random()<0.5){foe.flee=true;foe.fleeT=t;E.note('A raider is breaking off.');}
   }
+  // her engines out: dead in space (and her guns with them)
+  function disable(foe){foe.disabled=true;foe.flee=false;foe.warpT=null;E.sound('boom');E.flash(E.world(foe.m.g,V().set(-60,8,0)),0x9fd0ff,400,1.2);
+    E.note('The '+foe.K.name+'\'s engines are out: she is dead in space. G, the tractor beam, to take her in.');W.emit&&W.emit('disabled',foe);E.sync();}
+  // held in the tractor beam long enough: a prize. Out of the fight (the orders count the fight won), still held
+  // under the ship until the beam lets go, when a prize crew takes her off to the nearest starbase
+  function capture(foe){if(foe.captured)return;foe.captured=true;foe.gone=true;battle.kills++;
+    E.note('The '+foe.K.name+' is in tow. A prize crew is aboard her.');W.emit&&W.emit('captured',foe);E.sync();done();}
+  function release(foe){if(!foe.captured||foe.released)return;foe.released=true;W.FX.remove(foe.m.g);E.note('The prize crew has her: they will take her to the nearest starbase.');E.sync();}
+  // the Tactical panel's remodulation: what the Lattice has learned of the phasers is undone, but each time it learns faster
+  let remodT=-99;
+  function remodulate(){const t=E.T();if(t-remodT<15){E.note('The phasers are still settling on their last frequency: '+Math.ceil(15-(t-remodT))+' seconds.');return false;}
+    remodT=t;let n=0;for(const f of live())if(f.K.adapt){f.adapt.ph=0;f.told.ph=0;f.learn*=1.5;n++;}
+    E.note(n?'Phasers remodulated to a new frequency. The Lattice will learn this one faster.':'Phasers remodulated to a new frequency.');E.sound('shield');return true;}
   function destroy(foe){
     const g=foe.m.g,p=E.world(g,V());foe.gone=true;
     E.sound('boom');setTimeout(()=>E.sound('boom'),350);
@@ -163,7 +198,7 @@ export function hostile(W,E){
     if(battle.on){if(battle.wave<3)setTimeout(nextWave,5000);else{battle.on=false;E.note('The last of them is gone. '+battle.kills+' destroyed.');}}}
 
   const hud=()=>{const L=live();if(!L.length)return battle.on?'wave '+battle.wave+' cleared':'';const f=W.enemy;
-    return (battle.on?'wave '+battle.wave+'/3 · ':'')+(L.length>1?L.length+' hostiles · nearest ':f.flee?'running: ':'')+f.K.name+' · shields '+Math.round(f.sh/f.sh0*100)+'% hull '+Math.round(f.hp/f.hp0*100)+'% · '+
+    return (battle.on?'wave '+battle.wave+'/3 · ':'')+(L.length>1?L.length+' hostiles · nearest ':'')+(f.disabled?'dead in space: ':f.flee?'running: ':'')+f.K.name+' · shields '+Math.round(f.sh/f.sh0*100)+'% hull '+Math.round(f.hp/f.hp0*100)+'% · '+
     (E.world(f.m.g,V()).distanceTo(E.shipCentre())/1000).toFixed(1)+' km';};
 
   // ---- a beam between two moving points, for a while ----
@@ -227,5 +262,6 @@ export function hostile(W,E){
   }
   // a Kethri swarm: n darts out of warp round the ship, a moment apart
   function swarm(n){n=n||5;E.note('Multiple contacts: a Kethri swarm, '+n+' darts. They do not answer hails.');for(let i=0;i<n;i++)setTimeout(()=>contact(i,'kethri'),i*450);}
-  return {swarm,contact:(kind)=>contact(null,kind),hit,hud:()=>[hud(),ally.on?'a Sere ship alongside':'',wreck?'a derelict':''].filter(Boolean).join(' · '),battle:startBattle,count:()=>live().length,sere,convoy,derelict};
+  return {swarm,contact:(kind,o)=>contact(null,kind,o),hit,capture,release,remodulate,disabled:()=>{const c=E.shipCentre();let b=null,bd=1e18;
+      for(const f of live())if(f.disabled){const d=f.m.g.getWorldPosition(V()).distanceToSquared(c);if(d<bd){bd=d;b=f;}}return b;},hud:()=>[hud(),ally.on?'a Sere ship alongside':'',wreck?'a derelict':''].filter(Boolean).join(' · '),battle:startBattle,count:()=>live().length,sere,convoy,derelict};
 }
