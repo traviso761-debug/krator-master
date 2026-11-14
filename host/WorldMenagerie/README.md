@@ -1025,9 +1025,13 @@ kilometres across and the five promontories run out from it, about seven hundred
     - Lightning breaks on the Temple and its dome burns.
     - The Meneltarma takes fire.
     - The sea rises over everything, the mountain last.
+    - Nine ships of the Faithful put out from Romenna when the lightning breaks, run down the firth in line and
+      open into three columns at sea, heading east. "Follow the Faithful" (or `#follow`) carries the camera with
+      them.
 
     The island goes down by raising the water: the engine's sea tiles, the far ring with them and the ships on
-    them (`ctx.seaLevel`).
+    them (`ctx.seaLevel`); once the water is up a single flood sheet covers the map, and a camera below the
+    surface is lifted with it.
   - Golden `numenor-downfall` (60 seconds in).
 
 Known gaps: away from the patches the coast is still the kilometre grid's; beaches and marsh barely show. The

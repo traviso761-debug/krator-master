@@ -37,6 +37,33 @@ export function downfall(api){
   // ---- the Meneltarma's fire: a glow on the summit and a column of smoke ----
   const fire=plume(api,{x:MX,y:peak+40,z:MZ,tex,count:500,height:6000,spread:1800,glowSize:900});
 
+  // ---- the ships of the Faithful: nine, lying in the firth below Romenna, that put out when the lightning breaks
+  // and run east before the storm, down the firth and on out to sea toward Middle-earth ----
+  const FAITH=[],fr=(land.firth||[]).map(([x,z])=>[x,z]);let fL=0,fRoute=null;
+  if(fr.length>1&&ctx.shipParts){const [ax,az]=fr[fr.length-2],[bx,bz]=fr[fr.length-1],dx=bx-ax,dz=bz-az,l=Math.hypot(dx,dz);
+    fRoute=fr.concat([[bx+dx/l*90000,bz+dz/l*90000]]);for(let i=1;i<fr.length;i++)fL+=Math.hypot(fr[i][0]-fr[i-1][0],fr[i][1]-fr[i-1][1]);
+    for(let k=0;k<9;k++){const len=k<4?62:50,o=ctx.shipParts(len,3,0xcfc8bc);o.traverse(m=>{if(m.isMesh){m.castShadow=true;m.userData.noWire=true;}});scene.add(o);
+      // a line ahead in the firth, opening into three columns of three at sea; the four great ships lead
+      FAITH.push({o,len,col:(k%3)-1,row:Math.floor(k/3)});}}
+  const along=(pts,s)=>{for(let i=1;i<pts.length;i++){const [ax,az]=pts[i-1],[bx,bz]=pts[i],l=Math.hypot(bx-ax,bz-az);if(s<=l||i===pts.length-1){const t=Math.max(0,Math.min(1,s/l));return [ax+(bx-ax)*t,az+(bz-az)*t,Math.atan2(bz-az,bx-ax)];}s-=l;}return [pts[0][0],pts[0][1],0];};
+  const fovK=()=>Math.tan(camera.fov*Math.PI/360)*2/innerHeight;
+  function sailFaithful(T){if(!fRoute)return;const go=T<D.strike?0:T-D.strike,lead=Math.min(go,8)*go*90+Math.max(0,go-8)*1500;   // gathering way, then running
+    for(const f of FAITH){const open=Math.min(1,Math.max(0,(lead-fL+20000)/30000)),s0=lead-f.row*(900-open*400)-(open<1?Math.abs(f.col)*300*(1-open):0);
+      const [x,z,a]=along(fRoute,Math.max(0,s0)),lat=f.col*(open*1600);
+      f.o.position.set(x-Math.sin(a)*lat,(ctx.seaLevel||0)+0.4,z+Math.cos(a)*lat);f.o.rotation.y=-a;
+      const d=camera.position.distanceTo(f.o.position);f.o.scale.setScalar(Math.max(1,d*fovK()*9/f.len));}
+    // following: the camera and its target move with the lead ship, keeping wherever the viewer has put them
+    const L0=FAITH[4].o.position;if(follow&&placeAt&&performance.now()>placeAt){placeAt=0;place0();}
+    if(follow&&lastLead){const dx=L0.x-lastLead.x,dz=L0.z-lastLead.z;if(api.ctl&&api.ctl.target){api.ctl.target.x+=dx;api.ctl.target.z+=dz;if(api.applyCam)api.applyCam();}}
+    lastLead=L0.clone();}
+  let follow=false,lastLead=null,placeAt=0;
+  // behind the lead ship and off its quarter, looking ahead past it
+  const place0=()=>{const L0=FAITH[4].o.position,h=-FAITH[4].o.rotation.y,cx=Math.cos(h),cz=Math.sin(h),sl=ctx.seaLevel||0;
+    if(api.setView)api.setView(L0.x-cx*3800,sl+900,L0.z-cz*3800,L0.x+cx*1800,sl,L0.z+cz*1800,false);};
+  const fol=fRoute?btn('Follow the Faithful',()=>{follow=!follow;fol.textContent=follow?'Stop following':'Follow the Faithful';
+    if(follow)placeAt=performance.now()+(performance.now()<8000?1500:0);}):null;
+  try{if(new URLSearchParams(location.hash.slice(1)).has('follow'))setTimeout(()=>fol&&fol.onclick(),50);}catch(e){}
+
   const under=document.createElement('div');under.style.cssText='position:fixed;inset:0;pointer-events:none;z-index:29;background:linear-gradient(#1c4a5a,#08202a);opacity:0;transition:opacity 0.3s';document.body.appendChild(under);
   const cap=document.createElement('div');cap.style.cssText='position:fixed;left:50%;top:18%;transform:translateX(-50%);z-index:41;color:#f2e6c8;font:italic 22px/1.3 Georgia,serif;text-shadow:0 2px 8px #000;text-align:center;opacity:0;transition:opacity 1.2s;pointer-events:none;max-width:80vw';document.body.appendChild(cap);
   const say=t=>{cap.textContent=t;cap.style.opacity=t?'1':'0';};
@@ -46,7 +73,7 @@ export function downfall(api){
   const D=Object.assign({arrive:30,strike:12,mountain:24,rise0:34,rise1:190,end:200},(ctx.downfallTimes||{}));
   const TOPL=peak+120;
   const CAPS=[[1,'Out of the West the clouds came, in the shape of eagles'],[D.strike,'The lightning broke on the Temple, and its dome burned'],[D.mountain,'Fire came out of the Meneltarma'],
-    [D.rise0+6,'And the sea rose'],[D.rise1-30,'The Pillar of Heaven, last of all'],[D.end,'Akallabêth: the Downfallen']];
+    [D.rise0+6,'And the sea rose'],[D.rise0+40,'Nine ships of the Faithful ran east before the storm'],[D.rise1-30,'The Pillar of Heaven, last of all'],[D.end,'Akallabêth: the Downfallen']];
   let t0=null,lastStrike=0,ci=-1;
   function start(at){t0=performance.now()/1000-(at||0);go.textContent='Again';go.onclick=()=>{const q=new URLSearchParams(location.hash.slice(1));q.set('fall','0');location.hash=q.toString();location.reload();};}
   const ease=x=>x<=0?0:x>=1?1:x*x*(3-2*x);
@@ -58,6 +85,7 @@ export function downfall(api){
       // lit red underneath toward evening, black in the night
       e.material.color.setRGB(1+1.4*n,1+0.1*n,1).multiplyScalar(1-0.5*n);}
     gloom.update(dt);bolt.update(dt);
+    sailFaithful(T);
     if(T<0){setSea(0);return;}
     gloom.alpha=0.45+0.4*Math.min(1,T/D.arrive);
     while(ci+1<CAPS.length&&T>=CAPS[ci+1][0]){ci++;say(CAPS[ci][1]);}
@@ -78,7 +106,7 @@ export function downfall(api){
     // (high enough that the camera's near plane, which the engine sets from its height over the ground, does not cut the water away under it)
     {const sl=ctx.seaLevel||0,lift=sl+Math.max(40,camera.near*4)-camera.position.y;if(sl>0&&lift>0){camera.position.y+=lift;if(api.ctl&&api.ctl.target)api.ctl.target.y+=lift;}}
     under.style.opacity=camera.position.y<(ctx.seaLevel||0)-5?'0.72':'0';
-    ctx.details.downfall={t:Math.round(T),sea:Math.round(ctx.seaLevel||0),peak:Math.round(peak),drowned};});
+    ctx.details.downfall={t:Math.round(T),sea:Math.round(ctx.seaLevel||0),peak:Math.round(peak),drowned,faithful:FAITH.length?[Math.round(FAITH[0].o.position.x),Math.round(FAITH[0].o.position.z)]:null};});
   ctx.details=Object.assign(ctx.details||{},{era:'downfall',eagles:EAGLES.length,waters:sea.count});
   // #fall=<second>: begin it already, that far in
   try{const q=new URLSearchParams(location.hash.slice(1));if(q.has('fall'))start(parseFloat(q.get('fall'))||0);}catch(e){}
